@@ -232,6 +232,7 @@ static int remoteSplitURIScheme(virURIPtr uri,
 
 static int
 remoteStateInitialize(bool privileged G_GNUC_UNUSED,
+                      const char *root G_GNUC_UNUSED,
                       virStateInhibitCallback callback G_GNUC_UNUSED,
                       void *opaque G_GNUC_UNUSED)
 {

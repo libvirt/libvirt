@@ -631,6 +631,7 @@ qemuDomainFindMaxID(virDomainObjPtr vm,
  */
 static int
 qemuStateInitialize(bool privileged,
+                    const char *root,
                     virStateInhibitCallback callback,
                     void *opaque)
 {
@@ -643,6 +644,12 @@ qemuStateInitialize(bool privileged,
     size_t i;
     const char *defsecmodel = NULL;
     g_autofree virSecurityManagerPtr *sec_managers = NULL;
+
+    if (root != NULL) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Driver does not support embedded mode"));
+        return -1;
+    }
 
     if (VIR_ALLOC(qemu_driver) < 0)
         return VIR_DRV_STATE_INIT_ERROR;

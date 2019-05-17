@@ -1781,12 +1781,19 @@ udevPCITranslateInit(bool privileged G_GNUC_UNUSED)
 
 static int
 nodeStateInitialize(bool privileged,
+                    const char *root,
                     virStateInhibitCallback callback G_GNUC_UNUSED,
                     void *opaque G_GNUC_UNUSED)
 {
     udevEventDataPtr priv = NULL;
     struct udev *udev = NULL;
     virThread enumThread;
+
+    if (root != NULL) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Driver does not support embedded mode"));
+        return -1;
+    }
 
     if (VIR_ALLOC(driver) < 0)
         return VIR_DRV_STATE_INIT_ERROR;

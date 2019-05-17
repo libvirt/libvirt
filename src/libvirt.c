@@ -605,16 +605,36 @@ virRegisterStateDriver(virStateDriverPtr driver)
  * virStateInitialize:
  * @privileged: set to true if running with root privilege, false otherwise
  * @mandatory: set to true if all drivers must report success, not skipped
+ * @root: directory to use for embedded mode
  * @callback: callback to invoke to inhibit shutdown of the daemon
  * @opaque: data to pass to @callback
  *
  * Initialize all virtualization drivers.
+ *
+ * Passing a non-NULL @root instructs the driver to run in embedded mode.
+ * Instead of using the compile time $prefix as the basis for directory
+ * paths, @root should be used instead. In addition any '/libvirt'
+ * component of the paths should be stripped.
+ *
+ * eg consider a build with prefix=/usr/local. A driver might use the
+ * locations
+ *
+ *    /usr/local/etc/libvirt/$DRIVER/
+ *    /usr/local/var/lib/libvirt/$DRIVER/
+ *    /usr/local/run/libvirt/$DRIVER/
+ *
+ * When run with @root, the locations should instead be
+ *
+ *    @root/etc/$DRIVER/
+ *    @root/var/lib/$DRIVER/
+ *    @root/run/$DRIVER/
  *
  * Returns 0 if all succeed, -1 upon any failure.
  */
 int
 virStateInitialize(bool privileged,
                    bool mandatory,
+                   const char *root,
                    virStateInhibitCallback callback,
                    void *opaque)
 {
@@ -629,6 +649,7 @@ virStateInitialize(bool privileged,
             VIR_DEBUG("Running global init for %s state driver",
                       virStateDriverTab[i]->name);
             ret = virStateDriverTab[i]->stateInitialize(privileged,
+                                                        root,
                                                         callback,
                                                         opaque);
             VIR_DEBUG("State init result %d (mandatory=%d)", ret, mandatory);

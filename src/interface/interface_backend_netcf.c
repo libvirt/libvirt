@@ -89,9 +89,16 @@ virNetcfDriverStateDispose(void *obj)
 
 static int
 netcfStateInitialize(bool privileged,
+                     const char *root,
                      virStateInhibitCallback callback G_GNUC_UNUSED,
                      void *opaque G_GNUC_UNUSED)
 {
+    if (root != NULL) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Driver does not support embedded mode"));
+        return -1;
+    }
+
     if (virNetcfDriverStateInitialize() < 0)
         return VIR_DRV_STATE_INIT_ERROR;
 

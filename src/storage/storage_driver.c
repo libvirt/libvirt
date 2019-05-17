@@ -250,12 +250,19 @@ storageDriverAutostart(void)
  */
 static int
 storageStateInitialize(bool privileged,
+                       const char *root,
                        virStateInhibitCallback callback G_GNUC_UNUSED,
                        void *opaque G_GNUC_UNUSED)
 {
     g_autofree char *configdir = NULL;
     g_autofree char *rundir = NULL;
     bool autostart = true;
+
+    if (root != NULL) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Driver does not support embedded mode"));
+        return -1;
+    }
 
     if (VIR_ALLOC(driver) < 0)
         return VIR_DRV_STATE_INIT_ERROR;

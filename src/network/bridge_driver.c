@@ -702,6 +702,7 @@ firewalld_dbus_filter_bridge(DBusConnection *connection G_GNUC_UNUSED,
  */
 static int
 networkStateInitialize(bool privileged,
+                       const char *root,
                        virStateInhibitCallback callback G_GNUC_UNUSED,
                        void *opaque G_GNUC_UNUSED)
 {
@@ -712,6 +713,12 @@ networkStateInitialize(bool privileged,
 #ifdef WITH_FIREWALLD
     DBusConnection *sysbus = NULL;
 #endif
+
+    if (root != NULL) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Driver does not support embedded mode"));
+        return -1;
+    }
 
     if (VIR_ALLOC(network_driver) < 0)
         goto error;

@@ -580,6 +580,7 @@ device_prop_modified(LibHalContext *ctx G_GNUC_UNUSED,
 
 static int
 nodeStateInitialize(bool privileged G_GNUC_UNUSED,
+                    const char *root,
                     virStateInhibitCallback callback G_GNUC_UNUSED,
                     void *opaque G_GNUC_UNUSED)
 {
@@ -590,6 +591,12 @@ nodeStateInitialize(bool privileged G_GNUC_UNUSED,
     int ret = VIR_DRV_STATE_INIT_ERROR;
     DBusConnection *sysbus;
     DBusError err;
+
+    if (root != NULL) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Driver does not support embedded mode"));
+        return -1;
+    }
 
     /* Ensure caps_tbl is sorted by capability name */
     qsort(caps_tbl, G_N_ELEMENTS(caps_tbl), sizeof(caps_tbl[0]),

@@ -648,6 +648,7 @@ libxlAddDom0(libxlDriverPrivatePtr driver)
 
 static int
 libxlStateInitialize(bool privileged,
+                     const char *root,
                      virStateInhibitCallback callback,
                      void *opaque)
 {
@@ -655,6 +656,12 @@ libxlStateInitialize(bool privileged,
     char *driverConf = NULL;
     char ebuf[1024];
     bool autostart = true;
+
+    if (root != NULL) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Driver does not support embedded mode"));
+        return -1;
+    }
 
     if (!libxlDriverShouldLoad(privileged))
         return VIR_DRV_STATE_INIT_SKIPPED;
