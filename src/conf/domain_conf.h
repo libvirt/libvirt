@@ -2296,6 +2296,7 @@ struct _virDomainSEVDef {
 
 typedef enum {
     VIR_DOMAIN_IOMMU_MODEL_INTEL,
+    VIR_DOMAIN_IOMMU_MODEL_SMMUV3,
 
     VIR_DOMAIN_IOMMU_MODEL_LAST
 } virDomainIOMMUModel;

@@ -4375,7 +4375,10 @@
   <define name="iommu">
     <element name="iommu">
       <attribute name="model">
-        <value>intel</value>
+        <choice>
+          <value>intel</value>
+          <value>smmuv3</value>
+        </choice>
       </attribute>
       <optional>
         <element name="driver">

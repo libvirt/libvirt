@@ -1122,6 +1122,7 @@ VIR_ENUM_IMPL(virDomainTPMVersion,
 VIR_ENUM_IMPL(virDomainIOMMUModel,
               VIR_DOMAIN_IOMMU_MODEL_LAST,
               "intel",
+              "smmuv3",
 );
 
 VIR_ENUM_IMPL(virDomainVsockModel,

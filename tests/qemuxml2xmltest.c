@@ -1207,6 +1207,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("intel-iommu-caching-mode");
     DO_TEST_CAPS_LATEST("intel-iommu-eim");
     DO_TEST_CAPS_LATEST("intel-iommu-device-iotlb");
+    DO_TEST_CAPS_ARCH_LATEST("iommu-smmuv3", "aarch64");
 
     DO_TEST("cpu-check-none", NONE);
     DO_TEST("cpu-check-partial", NONE);

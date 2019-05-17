@@ -6967,6 +6967,9 @@ qemuBuildIOMMUCommandLine(virCommandPtr cmd,
         break;
     }
 
+    case VIR_DOMAIN_IOMMU_MODEL_SMMUV3:
+        break;
+
     case VIR_DOMAIN_IOMMU_MODEL_LAST:
     default:
         virReportEnumRangeError(virDomainIOMMUModel, iommu->model);
@@ -7612,6 +7615,10 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_IOMMU))
                 virBufferAddLit(&buf, ",iommu=on");
             break;
+
+        case VIR_DOMAIN_IOMMU_MODEL_SMMUV3:
+            break;
+
         case VIR_DOMAIN_IOMMU_MODEL_LAST:
         default:
             virReportEnumRangeError(virDomainIOMMUModel, def->iommu->model);

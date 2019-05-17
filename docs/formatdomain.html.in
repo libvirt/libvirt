@@ -8675,14 +8675,17 @@ qemu-kvm -net nic,model=? /dev/null
       <dt><code>model</code></dt>
       <dd>
         <p>
-          Currently only the <code>intel</code> model is supported.
+          Supported values are <code>intel</code> (for Q35 guests) and,
+          <span class="since">since 5.5.0</span>, <code>smmuv3</code> (for
+          ARM virt guests).
         </p>
       </dd>
       <dt><code>driver</code></dt>
       <dd>
         <p>
           The <code>driver</code> subelement can be used to configure
-          additional options:
+          additional options, some of which might only be available for
+          certain IOMMU models:
         </p>
         <dl>
           <dt><code>intremap</code></dt>
