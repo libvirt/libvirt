@@ -243,3 +243,16 @@ EXTRA_DIST += \
 	qemu/THREADS.txt \
 	libvirt_qemu_probes.d \
 	$(NULL)
+
+QEMU_SHIM_SOURCES = qemu/qemu_shim.c
+
+EXTRA_DIST += $(QEMU_SHIM_SOURCES)
+
+if WITH_QEMU
+bin_PROGRAMS += virt-qemu-run
+
+virt_qemu_run_SOURCES = $(QEMU_SHIM_SOURCES)
+
+virt_qemu_run_LDADD = libvirt.la
+virt_qemu_run_LDFLAGS = -Wl,--export-dynamic
+endif WITH_QEMU

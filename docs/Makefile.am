@@ -248,6 +248,11 @@ if WITH_SANLOCK
 else ! WITH_SANLOCK
   manpages_rst += manpages/virt-sanlock-cleanup.rst
 endif ! WITH_SANLOCK
+if WITH_QEMU
+  manpages1_rst += manpages/virt-qemu-run.rst
+else ! WITH_QEMU
+  manpages_rst += manpages/virt-qemu-run.rst
+endif ! WITH_QEMU
 manpages_rst_html_in = \
   $(manpages_rst:%.rst=%.html.in)
 manpages_html = \
