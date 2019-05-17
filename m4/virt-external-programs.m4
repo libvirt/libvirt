@@ -46,7 +46,6 @@ AC_DEFUN([LIBVIRT_CHECK_EXTERNAL_PROGRAMS], [
   AC_PATH_PROG([RADVD], [radvd], [radvd], [$LIBVIRT_SBIN_PATH])
   AC_PATH_PROG([TC], [tc], [tc], [$LIBVIRT_SBIN_PATH])
   AC_PATH_PROG([UDEVADM], [udevadm], [], [$LIBVIRT_SBIN_PATH])
-  AC_PATH_PROG([UDEVSETTLE], [udevsettle], [], [$LIBVIRT_SBIN_PATH])
   AC_PATH_PROG([MODPROBE], [modprobe], [modprobe], [$LIBVIRT_SBIN_PATH])
   AC_PATH_PROG([RMMOD], [rmmod], [rmmod], [$LIBVIRT_SBIN_PATH])
   AC_PATH_PROG([MMCTL], [mm-ctl], [mm-ctl], [$LIBVIRT_SBIN_PATH])
@@ -70,10 +69,6 @@ AC_DEFUN([LIBVIRT_CHECK_EXTERNAL_PROGRAMS], [
   if test -n "$UDEVADM"; then
     AC_DEFINE_UNQUOTED([UDEVADM], ["$UDEVADM"],
                        [Location or name of the udevadm program])
-  fi
-  if test -n "$UDEVSETTLE"; then
-    AC_DEFINE_UNQUOTED([UDEVSETTLE], ["$UDEVSETTLE"],
-                       [Location or name of the udevsettle program])
   fi
   if test -n "$MODPROBE"; then
     AC_DEFINE_UNQUOTED([MODPROBE], ["$MODPROBE"],
