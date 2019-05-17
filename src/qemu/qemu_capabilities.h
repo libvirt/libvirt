@@ -507,6 +507,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL, /* virtio *-pci-{non-}transitional devices */
     QEMU_CAPS_OVERCOMMIT, /* -overcommit */
     QEMU_CAPS_QUERY_CURRENT_MACHINE, /* query-current-machine command */
+    QEMU_CAPS_MACHINE_VIRT_IOMMU, /* -machine virt,iommu */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

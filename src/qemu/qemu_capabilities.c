@@ -525,6 +525,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "virtio-pci-non-transitional",
               "overcommit",
               "query-current-machine",
+              "machine.virt.iommu",
     );
 
 
@@ -1406,9 +1407,16 @@ static struct virQEMUCapsStringFlags virQEMUCapsMachinePropsPSeries[] = {
     { "cap-nested-hv", QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV },
 };
 
+static struct virQEMUCapsStringFlags virQEMUCapsMachinePropsVirt[] = {
+    { "iommu", QEMU_CAPS_MACHINE_VIRT_IOMMU },
+};
+
 static virQEMUCapsObjectTypeProps virQEMUCapsMachineProps[] = {
     { "pseries", virQEMUCapsMachinePropsPSeries,
       ARRAY_CARDINALITY(virQEMUCapsMachinePropsPSeries),
+      -1 },
+    { "virt", virQEMUCapsMachinePropsVirt,
+      ARRAY_CARDINALITY(virQEMUCapsMachinePropsVirt),
       -1 },
 };
 

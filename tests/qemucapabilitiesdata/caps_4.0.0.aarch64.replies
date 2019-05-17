@@ -6211,8 +6211,151 @@
 }
 
 {
-  "execute": "query-cpu-definitions",
+  "execute": "qom-list-properties",
+  "arguments": {
+    "typename": "virt-4.0-machine"
+  },
   "id": "libvirt-33"
+}
+
+{
+  "return": [
+    {
+      "name": "type",
+      "type": "string"
+    },
+    {
+      "name": "graphics",
+      "description": "Set on/off to enable/disable graphics emulation",
+      "type": "bool"
+    },
+    {
+      "name": "phandle-start",
+      "description": "The first phandle ID we may generate dynamically",
+      "type": "int"
+    },
+    {
+      "name": "dump-guest-core",
+      "description": "Include guest memory in a core dump",
+      "type": "bool"
+    },
+    {
+      "name": "kernel-irqchip",
+      "description": "Configure KVM in-kernel irqchip",
+      "type": "on|off|split"
+    },
+    {
+      "name": "accel",
+      "description": "Accelerator list",
+      "type": "string"
+    },
+    {
+      "name": "append",
+      "description": "Linux kernel command line",
+      "type": "string"
+    },
+    {
+      "name": "dumpdtb",
+      "description": "Dump current dtb to a file and quit",
+      "type": "string"
+    },
+    {
+      "name": "memory-encryption",
+      "description": "Set memory encryption object to use",
+      "type": "string"
+    },
+    {
+      "name": "igd-passthru",
+      "description": "Set on/off to enable/disable igd passthrou",
+      "type": "bool"
+    },
+    {
+      "name": "dt-compatible",
+      "description": "Overrides the \"compatible\" property of the dt root node",
+      "type": "string"
+    },
+    {
+      "name": "kernel",
+      "description": "Linux kernel image file",
+      "type": "string"
+    },
+    {
+      "name": "usb",
+      "description": "Set on/off to enable/disable usb",
+      "type": "bool"
+    },
+    {
+      "name": "suppress-vmdesc",
+      "description": "Set on to disable self-describing migration",
+      "type": "bool"
+    },
+    {
+      "name": "dtb",
+      "description": "Linux kernel device tree file",
+      "type": "string"
+    },
+    {
+      "name": "firmware",
+      "description": "Firmware image",
+      "type": "string"
+    },
+    {
+      "name": "mem-merge",
+      "description": "Enable/disable memory merge support",
+      "type": "bool"
+    },
+    {
+      "name": "initrd",
+      "description": "Linux initial ramdisk file",
+      "type": "string"
+    },
+    {
+      "name": "enforce-config-section",
+      "description": "Set on to enforce configuration section migration",
+      "type": "bool"
+    },
+    {
+      "name": "kvm-shadow-mem",
+      "description": "KVM shadow MMU size",
+      "type": "int"
+    },
+    {
+      "name": "virtualization",
+      "description": "Set on/off to enable/disable emulating a guest CPU which implements the ARM Virtualization Extensions",
+      "type": "bool"
+    },
+    {
+      "name": "its",
+      "description": "Set on/off to enable/disable ITS instantiation",
+      "type": "bool"
+    },
+    {
+      "name": "gic-version",
+      "description": "Set GIC version. Valid values are 2, 3 and host",
+      "type": "string"
+    },
+    {
+      "name": "highmem",
+      "description": "Set on/off to enable/disable using physical address space above 32 bits",
+      "type": "bool"
+    },
+    {
+      "name": "secure",
+      "description": "Set on/off to enable/disable the ARM Security Extensions (TrustZone)",
+      "type": "bool"
+    },
+    {
+      "name": "iommu",
+      "description": "Set the IOMMU type. Valid values are none and smmuv3",
+      "type": "string"
+    }
+  ],
+  "id": "libvirt-33"
+}
+
+{
+  "execute": "query-cpu-definitions",
+  "id": "libvirt-34"
 }
 
 {
@@ -6403,34 +6546,34 @@
       "static": false
     }
   ],
-  "id": "libvirt-33"
+  "id": "libvirt-34"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
@@ -7578,12 +7721,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
@@ -7657,12 +7800,12 @@
       "capability": "x-ignore-shared"
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
   "execute": "query-qmp-schema",
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
@@ -19749,12 +19892,12 @@
       ]
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
   "execute": "query-gic-capabilities",
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -19770,7 +19913,7 @@
       "kernel": false
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {

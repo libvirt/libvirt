@@ -160,6 +160,7 @@
   <flag name='virtio-pci-non-transitional'/>
   <flag name='overcommit'/>
   <flag name='query-current-machine'/>
+  <flag name='machine.virt.iommu'/>
   <version>4000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>61700758</microcodeVersion>
