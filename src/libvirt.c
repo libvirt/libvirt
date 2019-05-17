@@ -47,6 +47,7 @@
 #include "virconf.h"
 #include "rpc/virnettlscontext.h"
 #include "vircommand.h"
+#include "virevent.h"
 #include "virfile.h"
 #include "virrandom.h"
 #include "viruri.h"
@@ -76,6 +77,7 @@
 #ifdef WITH_BHYVE
 # include "bhyve/bhyve_driver.h"
 #endif
+#include "access/viraccessmanager.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -644,10 +646,12 @@ virStateInitialize(bool privileged,
         return -1;
 
     for (i = 0; i < virStateDriverTabCount; i++) {
-        if (virStateDriverTab[i]->stateInitialize) {
+        if (virStateDriverTab[i]->stateInitialize &&
+            !virStateDriverTab[i]->initialized) {
             virDrvStateInitResult ret;
             VIR_DEBUG("Running global init for %s state driver",
                       virStateDriverTab[i]->name);
+            virStateDriverTab[i]->initialized = true;
             ret = virStateDriverTab[i]->stateInitialize(privileged,
                                                         root,
                                                         callback,
@@ -840,6 +844,7 @@ virConnectOpenInternal(const char *name,
     virConnectPtr ret;
     g_autoptr(virConf) conf = NULL;
     char *uristr = NULL;
+    bool embed = false;
 
     ret = virGetConnect();
     if (ret == NULL)
@@ -930,6 +935,47 @@ virConnectOpenInternal(const char *name,
                                            ret->uri) < 0) {
             goto failed;
         }
+
+        if (STREQ(ret->uri->path, "/embed")) {
+            const char *root = NULL;
+            g_autofree char *regMethod = NULL;
+            VIR_DEBUG("URI path requests %s driver embedded mode",
+                      ret->uri->scheme);
+            if (strspn(ret->uri->scheme, "abcdefghijklmnopqrstuvwxyz")  !=
+                strlen(ret->uri->scheme)) {
+                virReportError(VIR_ERR_NO_CONNECT,
+                               _("URI scheme '%s' for embedded driver is not valid"),
+                               ret->uri->scheme);
+                goto failed;
+            }
+
+            root = virURIGetParam(ret->uri, "root");
+            if (!root)
+                goto failed;
+
+            if (virEventRequireImpl() < 0)
+                goto failed;
+
+            regMethod = g_strdup_printf("%sRegister", ret->uri->scheme);
+
+            if (virDriverLoadModule(ret->uri->scheme, regMethod, false) < 0)
+                goto failed;
+
+            if (virAccessManagerGetDefault() == NULL) {
+                virAccessManagerPtr acl;
+
+                virResetLastError();
+
+                if (!(acl = virAccessManagerNew("none")))
+                    goto failed;
+                virAccessManagerSetDefault(acl);
+            }
+
+            if (virStateInitialize(geteuid() == 0, true, root, NULL, NULL) < 0)
+                goto failed;
+
+            embed = true;
+        }
     } else {
         VIR_DEBUG("no name, allowing driver auto-select");
     }
@@ -983,6 +1029,12 @@ virConnectOpenInternal(const char *name,
                 VIR_DEBUG("No URI, skipping driver with URI whitelist");
                 continue;
             }
+            if (embed && !virConnectDriverTab[i]->embeddable) {
+                VIR_DEBUG("Ignoring non-embeddable driver %s",
+                          virConnectDriverTab[i]->hypervisorDriver->name);
+                continue;
+            }
+
             VIR_DEBUG("Checking for supported URI schemes");
             for (s = 0; virConnectDriverTab[i]->uriSchemes[s] != NULL; s++) {
                 if (STREQ(ret->uri->scheme, virConnectDriverTab[i]->uriSchemes[s])) {
@@ -996,9 +1048,20 @@ virConnectOpenInternal(const char *name,
                 continue;
             }
         } else {
-            VIR_DEBUG("Matching any URI scheme for '%s'", ret->uri ? ret->uri->scheme : "");
+            if (embed) {
+                VIR_DEBUG("Skipping wildcard for embedded URI");
+                continue;
+            } else {
+                VIR_DEBUG("Matching any URI scheme for '%s'", ret->uri ? ret->uri->scheme : "");
+            }
         }
 
+        if (embed && !virConnectDriverTab[i]->embeddable) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Driver %s cannot be used in embedded mode"),
+                           virConnectDriverTab[i]->hypervisorDriver->name);
+            goto failed;
+        }
         /* before starting the new connection, check if the driver only works
          * with a server, and so return an error if the server is missing */
         if (virConnectDriverTab[i]->remoteOnly && ret->uri && !ret->uri->server) {

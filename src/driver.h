@@ -82,6 +82,8 @@ struct _virConnectDriver {
     bool localOnly;
     /* Whether driver needs a server in the URI */
     bool remoteOnly;
+    /* Whether driver can be used in embedded mode */
+    bool embeddable;
     /*
      * NULL terminated list of supported URI schemes.
      *  - Single element { NULL } list indicates no supported schemes
