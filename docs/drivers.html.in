@@ -8,6 +8,7 @@
       <li><a href="#hypervisor">Hypervisor drivers</a></li>
       <li><a href="storage.html">Storage drivers</a></li>
       <li><a href="drvnodedev.html">Node device driver</a></li>
+      <li><a href="drvsecret.html">Secret driver</a></li>
     </ul>
 
     <p>

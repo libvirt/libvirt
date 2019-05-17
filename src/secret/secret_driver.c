@@ -55,6 +55,8 @@ typedef virSecretDriverState *virSecretDriverStatePtr;
 struct _virSecretDriverState {
     virMutex lock;
     bool privileged; /* readonly */
+    char *embeddedRoot; /* readonly */
+    int embeddedRefs;
     virSecretObjListPtr secrets;
     char *stateDir;
     char *configDir;
@@ -456,12 +458,6 @@ secretStateInitialize(bool privileged,
                       virStateInhibitCallback callback G_GNUC_UNUSED,
                       void *opaque G_GNUC_UNUSED)
 {
-    if (root != NULL) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("Driver does not support embedded mode"));
-        return -1;
-    }
-
     if (VIR_ALLOC(driver) < 0)
         return VIR_DRV_STATE_INIT_ERROR;
 
@@ -475,7 +471,11 @@ secretStateInitialize(bool privileged,
     driver->secretEventState = virObjectEventStateNew();
     driver->privileged = privileged;
 
-    if (privileged) {
+    if (root) {
+        driver->embeddedRoot = g_strdup(root);
+        driver->configDir = g_strdup_printf("%s/etc/secrets", root);
+        driver->stateDir = g_strdup_printf("%s/run/secrets", root);
+    } else if (privileged) {
         driver->configDir = g_strdup_printf("%s/libvirt/secrets", SYSCONFDIR);
         driver->stateDir = g_strdup_printf("%s/libvirt/secrets", RUNSTATEDIR);
     } else {
@@ -550,19 +550,54 @@ secretConnectOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_ERROR;
     }
 
-    if (!virConnectValidateURIPath(conn->uri->path,
-                                   "secret",
-                                   driver->privileged))
-        return VIR_DRV_OPEN_ERROR;
+    if (driver->embeddedRoot) {
+        const char *root = virURIGetParam(conn->uri, "root");
+        if (!root)
+            return VIR_DRV_OPEN_ERROR;
+
+        if (STRNEQ(conn->uri->path, "/embed")) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("URI must be secret:///embed"));
+            return VIR_DRV_OPEN_ERROR;
+        }
+
+        if (STRNEQ(root, driver->embeddedRoot)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Cannot open embedded driver at path '%s', "
+                             "already open with path '%s'"),
+                           root, driver->embeddedRoot);
+            return VIR_DRV_OPEN_ERROR;
+        }
+    } else {
+        if (!virConnectValidateURIPath(conn->uri->path,
+                                       "secret",
+                                       driver->privileged))
+            return VIR_DRV_OPEN_ERROR;
+    }
 
     if (virConnectOpenEnsureACL(conn) < 0)
         return VIR_DRV_OPEN_ERROR;
+
+    if (driver->embeddedRoot) {
+        secretDriverLock();
+        if (driver->embeddedRefs == 0)
+            virSetConnectSecret(conn);
+        driver->embeddedRefs++;
+        secretDriverUnlock();
+    }
 
     return VIR_DRV_OPEN_SUCCESS;
 }
 
 static int secretConnectClose(virConnectPtr conn G_GNUC_UNUSED)
 {
+    if (driver->embeddedRoot) {
+        secretDriverLock();
+        driver->embeddedRefs--;
+        if (driver->embeddedRefs == 0)
+            virSetConnectSecret(NULL);
+        secretDriverUnlock();
+    }
     return 0;
 }
 
@@ -655,6 +690,7 @@ static virHypervisorDriver secretHypervisorDriver = {
 static virConnectDriver secretConnectDriver = {
     .localOnly = true,
     .uriSchemes = (const char *[]){ "secret", NULL },
+    .embeddable = true,
     .hypervisorDriver = &secretHypervisorDriver,
     .secretDriver = &secretDriver,
 };
