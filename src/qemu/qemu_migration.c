@@ -793,10 +793,6 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriverPtr driver,
     int mon_ret = 0;
     int ret = -1;
     VIR_AUTOUNREF(virStorageSourcePtr) copysrc = NULL;
-    unsigned int mirror_flags = 0;
-
-    if (mirror_shallow)
-        mirror_flags |= VIR_DOMAIN_BLOCK_REBASE_SHALLOW;
 
     VIR_DEBUG("starting blockdev mirror for disk=%s to host=%s", diskAlias, host);
 
@@ -841,7 +837,7 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriverPtr driver,
     if (mon_ret == 0)
         mon_ret = qemuMonitorBlockdevMirror(qemuDomainGetMonitor(vm), NULL,
                                             diskAlias, copysrc->nodeformat,
-                                            mirror_speed, 0, 0, mirror_flags);
+                                            mirror_speed, 0, 0, mirror_shallow);
 
     if (mon_ret != 0)
         qemuBlockStorageSourceAttachRollback(qemuDomainGetMonitor(vm), data);

@@ -1343,8 +1343,7 @@ GEN_TEST_FUNC(qemuMonitorJSONDelDevice, "ide0")
 GEN_TEST_FUNC(qemuMonitorJSONAddDevice, "some_dummy_devicestr")
 GEN_TEST_FUNC(qemuMonitorJSONDriveMirror, "vdb", "/foo/bar", "formatstr", 1024, 1234, 31234,
               VIR_DOMAIN_BLOCK_REBASE_SHALLOW | VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT)
-GEN_TEST_FUNC(qemuMonitorJSONBlockdevMirror, "jobname", "vdb", "targetnode", 1024, 1234, 31234,
-              VIR_DOMAIN_BLOCK_REBASE_SHALLOW | VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT)
+GEN_TEST_FUNC(qemuMonitorJSONBlockdevMirror, "jobname", "vdb", "targetnode", 1024, 1234, 31234, true)
 GEN_TEST_FUNC(qemuMonitorJSONBlockStream, "vdb", "/foo/bar1", "backingfilename", 1024)
 GEN_TEST_FUNC(qemuMonitorJSONBlockCommit, "vdb", "/foo/bar1", "/foo/bar2", "backingfilename", 1024)
 GEN_TEST_FUNC(qemuMonitorJSONDrivePivot, "vdb")

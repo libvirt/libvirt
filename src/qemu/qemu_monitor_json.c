@@ -4320,12 +4320,11 @@ qemuMonitorJSONBlockdevMirror(qemuMonitorPtr mon,
                               unsigned long long speed,
                               unsigned int granularity,
                               unsigned long long buf_size,
-                              unsigned int flags)
+                              bool shallow)
 {
     int ret = -1;
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
-    bool shallow = (flags & VIR_DOMAIN_BLOCK_REBASE_SHALLOW) != 0;
 
     cmd = qemuMonitorJSONMakeCommand("blockdev-mirror",
                                      "S:job-id", jobname,

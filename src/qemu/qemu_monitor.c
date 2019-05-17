@@ -3266,17 +3266,17 @@ qemuMonitorBlockdevMirror(qemuMonitorPtr mon,
                           unsigned long long bandwidth,
                           unsigned int granularity,
                           unsigned long long buf_size,
-                          unsigned int flags)
+                          bool shallow)
 {
     VIR_DEBUG("jobname=%s, device=%s, target=%s, bandwidth=%lld, "
-              "granularity=%#x, buf_size=%lld, flags=0x%x",
+              "granularity=%#x, buf_size=%lld, shallow=%d",
               NULLSTR(jobname), device, target, bandwidth, granularity,
-              buf_size, flags);
+              buf_size, shallow);
 
     QEMU_CHECK_MONITOR(mon);
 
     return qemuMonitorJSONBlockdevMirror(mon, jobname, device, target, bandwidth,
-                                         granularity, buf_size, flags);
+                                         granularity, buf_size, shallow);
 }
 
 

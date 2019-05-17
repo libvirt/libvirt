@@ -893,7 +893,7 @@ int qemuMonitorBlockdevMirror(qemuMonitorPtr mon,
                               unsigned long long bandwidth,
                               unsigned int granularity,
                               unsigned long long buf_size,
-                              unsigned int flags)
+                              bool shallow)
     ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
 int qemuMonitorDrivePivot(qemuMonitorPtr mon,
                           const char *jobname)
