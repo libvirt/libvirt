@@ -1495,8 +1495,6 @@ void virWaitForDevices(void)
     /*
      * NOTE: we ignore errors here; this is just to make sure that any device
      * nodes that are being created finish before we try to scan them.
-     * If this fails for any reason, we still have the backup of polling for
-     * 5 seconds for device nodes.
      */
     ignore_value(virRun(settleprog, &exitstatus));
 }
