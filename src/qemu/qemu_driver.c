@@ -645,12 +645,6 @@ qemuStateInitialize(bool privileged,
     const char *defsecmodel = NULL;
     g_autofree virSecurityManagerPtr *sec_managers = NULL;
 
-    if (root != NULL) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("Driver does not support embedded mode"));
-        return -1;
-    }
-
     if (VIR_ALLOC(qemu_driver) < 0)
         return VIR_DRV_STATE_INIT_ERROR;
 
@@ -668,6 +662,8 @@ qemuStateInitialize(bool privileged,
 
     qemu_driver->privileged = privileged;
     qemu_driver->hostarch = virArchFromHost();
+    if (root != NULL)
+        qemu_driver->embeddedRoot = g_strdup(root);
 
     if (!(qemu_driver->domains = virDomainObjListNew()))
         goto error;
@@ -681,7 +677,7 @@ qemuStateInitialize(bool privileged,
     if (privileged)
         qemu_driver->hostsysinfo = virSysinfoRead();
 
-    if (!(qemu_driver->config = cfg = virQEMUDriverConfigNew(privileged)))
+    if (!(qemu_driver->config = cfg = virQEMUDriverConfigNew(privileged, root)))
         goto error;
 
     if (!(driverConf = g_strdup_printf("%s/qemu.conf", cfg->configBaseDir)))
@@ -1185,10 +1181,30 @@ static virDrvOpenStatus qemuConnectOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_ERROR;
     }
 
-    if (!virConnectValidateURIPath(conn->uri->path,
-                                   "qemu",
-                                   virQEMUDriverIsPrivileged(qemu_driver)))
-        return VIR_DRV_OPEN_ERROR;
+    if (qemu_driver->embeddedRoot) {
+        const char *root = virURIGetParam(conn->uri, "root");
+        if (!root)
+            return VIR_DRV_OPEN_ERROR;
+
+        if (STRNEQ(conn->uri->path, "/embed")) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("URI must be qemu:///embed"));
+            return VIR_DRV_OPEN_ERROR;
+        }
+
+        if (STRNEQ(root, qemu_driver->embeddedRoot)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Cannot open embedded driver at path '%s', "
+                             "already open with path '%s'"),
+                           root, qemu_driver->embeddedRoot);
+            return VIR_DRV_OPEN_ERROR;
+        }
+    } else {
+        if (!virConnectValidateURIPath(conn->uri->path,
+                                       "qemu",
+                                       virQEMUDriverIsPrivileged(qemu_driver)))
+            return VIR_DRV_OPEN_ERROR;
+    }
 
     if (virConnectOpenEnsureACL(conn) < 0)
         return VIR_DRV_OPEN_ERROR;
@@ -23416,6 +23432,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
 static virConnectDriver qemuConnectDriver = {
     .localOnly = true,
     .uriSchemes = (const char *[]){ "qemu", NULL },
+    .embeddable = true,
     .hypervisorDriver = &qemuHypervisorDriver,
 };
 

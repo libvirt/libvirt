@@ -63,6 +63,105 @@ qemu+tcp://example.com/system        (remote access, SASl/Kerberos)
 qemu+ssh://root@example.com/system   (remote access, SSH tunnelled)
 </pre>
 
+    <h3><a id="uriembedded">Embedded driver</a></h3>
+
+    <p>
+      Since 6.0.0 the QEMU driver has experimental support for operating
+      in an embedded mode. In this scenario, rather than connecting to
+      the libvirtd daemon, the QEMU driver runs in the client application
+      process directly. To use this the client application must have
+      registered &amp; be running an instance of the event loop. To open
+      the driver in embedded mode the app use the new URI path and specify
+      a virtual root directory under which the driver will create content.
+    </p>
+
+    <pre>
+      qemu:///embed?root=/some/dir
+    </pre>
+
+    <p>
+      Broadly speaking the range of functionality is intended to be
+      on a par with that seen when using the traditional system or
+      session libvirt connections to QEMU. The features will of course
+      differ depending on whether the application using the embedded
+      driver is running privileged or unprivileged. For example PCI
+      device assignment or TAP based networking are only available
+      when running privileged. While the embedded mode is still classed
+      as experimental some features may change their default settings
+      between releases.
+    </p>
+
+    <p>
+      By default if the application uses any APIs associated with
+      secondary drivers, these will result in a connection being
+      opened to the corresponding driver in libvirtd. For example,
+      this allows a virtual machine from the embedded QEMU to connect
+      its NIC to a virtual network or connect its disk to a storage
+      volume. Some of the secondary drivers will also be able to support
+      running in embedded mode. Currently this is supported by the
+      secrets driver, to allow for use of VMs with encrypted disks
+    </p>
+
+    <h4><a id="embedTree">Directory tree</a></h4>
+
+    <p>
+      Under the specified root directory the following locations will
+      be used
+    </p>
+
+    <pre>
+/some/dir
+  |
+  +- log
+  |   |
+  |   +- qemu
+  |   +- swtpm
+  |
+  +- etc
+  |   |
+  |   +- qemu
+  |   +- pki
+  |       |
+  |       +- qemu
+  |
+  +- run
+  |   |
+  |   +- qemu
+  |   +- swtpm
+  |
+  +- cache
+  |   |
+  |   +- qemu
+  |
+  +- lib
+      |
+      +- qemu
+      +- swtpm
+    </pre>
+
+    <p>
+      Note that UNIX domain sockets used for QEMU virtual machines had
+      a maximum filename length of 108 characters. Bear this in mind
+      when picking a root directory to avoid risk of exhausting the
+      filename space. The application is responsible for recursively
+      purging the contents of this directory tree once they no longer
+      require a connection, though it can also be left intact for reuse
+      when opening a future connection.
+    </p>
+
+    <h4><a id="embedAPI">API usage with event loop></a></h4>
+
+    <p>
+      To use the QEMU driver in embedded mode the application must
+      register an event loop with libvirt. Many of the QEMU driver
+      API calls will rely on the event loop processing data. With this
+      in mind, applications must <strong>NEVER</strong> invoke API
+      calls from the event loop thread itself, only other threads.
+      Not following this rule will lead to deadlocks in the API.
+      This restriction is intended to be lifted in a future release
+      of libvirt, once QMP processing moves to a dedicated thread.
+    </p>
+
     <h2><a id="security">Driver security architecture</a></h2>
 
     <p>

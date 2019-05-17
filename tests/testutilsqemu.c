@@ -380,8 +380,7 @@ int qemuTestDriverInit(virQEMUDriver *driver)
         return -1;
 
     driver->hostarch = virArchFromHost();
-
-    driver->config = virQEMUDriverConfigNew(false);
+    driver->config = virQEMUDriverConfigNew(false, "");
     if (!driver->config)
         goto error;
 

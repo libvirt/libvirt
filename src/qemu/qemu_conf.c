@@ -104,7 +104,8 @@ qemuDriverUnlock(virQEMUDriverPtr driver)
 #endif
 
 
-virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
+virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged,
+                                              const char *root)
 {
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
 
@@ -114,7 +115,11 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
     if (!(cfg = virObjectNew(virQEMUDriverConfigClass)))
         return NULL;
 
-    cfg->uri = privileged ? "qemu:///system" : "qemu:///session";
+    if (root) {
+        cfg->uri = g_strdup_printf("qemu:///embed?root=%s", root);
+    } else {
+        cfg->uri = g_strdup(privileged ? "qemu:///system" : "qemu:///session");
+    }
 
     if (privileged) {
         if (virGetUserID(QEMU_USER, &cfg->user) < 0)
@@ -130,7 +135,24 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
 
     cfg->cgroupControllers = -1; /* -1 == auto-detect */
 
-    if (privileged) {
+    if (root != NULL) {
+        cfg->logDir = g_strdup_printf("%s/log/qemu", root);
+        cfg->swtpmLogDir = g_strdup_printf("%s/log/swtpm", root);
+        cfg->configBaseDir = g_strdup_printf("%s/etc", root);
+        cfg->stateDir = g_strdup_printf("%s/run/qemu", root);
+        cfg->swtpmStateDir = g_strdup_printf("%s/run/swtpm", root);
+        cfg->cacheDir = g_strdup_printf("%s/cache/qemu", root);
+        cfg->libDir = g_strdup_printf("%s/lib/qemu", root);
+        cfg->swtpmStorageDir = g_strdup_printf("%s/lib/swtpm", root);
+
+        cfg->saveDir = g_strdup_printf("%s/save", cfg->libDir);
+        cfg->snapshotDir = g_strdup_printf("%s/snapshot", cfg->libDir);
+        cfg->checkpointDir = g_strdup_printf("%s/checkpoint", cfg->libDir);
+        cfg->autoDumpPath = g_strdup_printf("%s/dump", cfg->libDir);
+        cfg->channelTargetDir = g_strdup_printf("%s/channel/target", cfg->libDir);
+        cfg->nvramDir = g_strdup_printf("%s/nvram", cfg->libDir);
+        cfg->memoryBackingDir = g_strdup_printf("%s/ram", cfg->libDir);
+    } else if (privileged) {
         cfg->logDir = g_strdup_printf("%s/log/libvirt/qemu", LOCALSTATEDIR);
 
         cfg->swtpmLogDir = g_strdup_printf("%s/log/swtpm/libvirt/qemu",
@@ -189,6 +211,16 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
         cfg->memoryBackingDir = g_strdup_printf("%s/qemu/ram", cfg->configBaseDir);
         cfg->swtpmStorageDir = g_strdup_printf("%s/qemu/swtpm",
                                                cfg->configBaseDir);
+    }
+
+    if (privileged) {
+        if (!virDoesUserExist("tss") ||
+            virGetUserID("tss", &cfg->swtpm_user) < 0)
+            cfg->swtpm_user = 0; /* fall back to root */
+        if (!virDoesGroupExist("tss") ||
+            virGetGroupID("tss", &cfg->swtpm_group) < 0)
+            cfg->swtpm_group = 0; /* fall back to root */
+    } else {
         cfg->swtpm_user = (uid_t)-1;
         cfg->swtpm_group = (gid_t)-1;
     }
@@ -201,7 +233,11 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
      * This will then be used as a fallback if the service specific
      * directory doesn't exist (although we don't check if this exists).
      */
-    cfg->defaultTLSx509certdir = g_strdup(SYSCONFDIR "/pki/qemu");
+    if (root == NULL) {
+        cfg->defaultTLSx509certdir = g_strdup(SYSCONFDIR "pki/qemu");
+    } else {
+        cfg->defaultTLSx509certdir = g_strdup_printf("%s/etc/pki/qemu", root);
+    }
 
     cfg->vncListen = g_strdup(VIR_LOOPBACK_IPV4_ADDR);
     cfg->spiceListen = g_strdup(VIR_LOOPBACK_IPV4_ADDR);
@@ -264,6 +300,7 @@ static void virQEMUDriverConfigDispose(void *obj)
     virBitmapFree(cfg->namespaces);
 
     virStringListFree(cfg->cgroupDeviceACL);
+    VIR_FREE(cfg->uri);
 
     VIR_FREE(cfg->configBaseDir);
     VIR_FREE(cfg->configDir);

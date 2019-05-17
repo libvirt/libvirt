@@ -6683,10 +6683,17 @@ qemuProcessLaunch(virConnectPtr conn,
 
     cfg = virQEMUDriverGetConfig(driver);
 
-    if ((flags & VIR_QEMU_PROCESS_START_AUTODESTROY) && !conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Domain autodestroy requires a connection handle"));
-        return -1;
+    if (flags & VIR_QEMU_PROCESS_START_AUTODESTROY) {
+        if (!conn) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Domain autodestroy requires a connection handle"));
+            return -1;
+        }
+        if (driver->embeddedRoot) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Domain autodestroy not supported for embedded drivers yet"));
+            return -1;
+        }
     }
 
     hookData.vm = vm;
