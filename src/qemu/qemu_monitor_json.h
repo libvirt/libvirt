@@ -250,7 +250,8 @@ int qemuMonitorJSONDriveMirror(qemuMonitorPtr mon,
                                unsigned long long speed,
                                unsigned int granularity,
                                unsigned long long buf_size,
-                               unsigned int flags)
+                               bool shallow,
+                               bool reuse)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 int qemuMonitorJSONBlockdevMirror(qemuMonitorPtr mon,
                                   const char *jobname,

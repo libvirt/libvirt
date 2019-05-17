@@ -17786,7 +17786,9 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     /* qemuMonitorDriveMirror needs to honor the REUSE_EXT flag as specified
      * by the user regardless of how @reuse was modified */
     ret = qemuMonitorDriveMirror(priv->mon, device, mirror->path, format,
-                                 bandwidth, granularity, buf_size, flags);
+                                 bandwidth, granularity, buf_size,
+                                 flags & VIR_DOMAIN_BLOCK_COPY_SHALLOW,
+                                 flags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT);
     virDomainAuditDisk(vm, NULL, mirror, "mirror", ret >= 0);
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -1;

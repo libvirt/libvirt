@@ -884,7 +884,8 @@ int qemuMonitorDriveMirror(qemuMonitorPtr mon,
                            unsigned long long bandwidth,
                            unsigned int granularity,
                            unsigned long long buf_size,
-                           unsigned int flags)
+                           bool shallow,
+                           bool reuse)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 int qemuMonitorBlockdevMirror(qemuMonitorPtr mon,
                               const char *jobname,

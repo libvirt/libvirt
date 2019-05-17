@@ -3244,17 +3244,18 @@ qemuMonitorDriveMirror(qemuMonitorPtr mon,
                        const char *device, const char *file,
                        const char *format, unsigned long long bandwidth,
                        unsigned int granularity, unsigned long long buf_size,
-                       unsigned int flags)
+                       bool shallow,
+                       bool reuse)
 {
     VIR_DEBUG("device=%s, file=%s, format=%s, bandwidth=%lld, "
-              "granularity=%#x, buf_size=%lld, flags=0x%x",
+              "granularity=%#x, buf_size=%lld, shallow=%d, reuse=%d",
               device, file, NULLSTR(format), bandwidth, granularity,
-              buf_size, flags);
+              buf_size, shallow, reuse);
 
     QEMU_CHECK_MONITOR(mon);
 
     return qemuMonitorJSONDriveMirror(mon, device, file, format, bandwidth,
-                                      granularity, buf_size, flags);
+                                      granularity, buf_size, shallow, reuse);
 }
 
 

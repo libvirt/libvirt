@@ -866,10 +866,6 @@ qemuMigrationSrcNBDStorageCopyDriveMirror(virQEMUDriverPtr driver,
     char *nbd_dest = NULL;
     int mon_ret;
     int ret = -1;
-    unsigned int mirror_flags = VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT;
-
-    if (mirror_shallow)
-        mirror_flags |= VIR_DOMAIN_BLOCK_REBASE_SHALLOW;
 
     if (strchr(host, ':')) {
         if (virAsprintf(&nbd_dest, "nbd:[%s]:%d:exportname=%s",
@@ -887,7 +883,7 @@ qemuMigrationSrcNBDStorageCopyDriveMirror(virQEMUDriverPtr driver,
 
     mon_ret = qemuMonitorDriveMirror(qemuDomainGetMonitor(vm),
                                      diskAlias, nbd_dest, "raw",
-                                     mirror_speed, 0, 0, mirror_flags);
+                                     mirror_speed, 0, 0, mirror_shallow, true);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || mon_ret < 0)
         goto cleanup;

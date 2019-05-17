@@ -4277,13 +4277,12 @@ qemuMonitorJSONDriveMirror(qemuMonitorPtr mon,
                            const char *format, unsigned long long speed,
                            unsigned int granularity,
                            unsigned long long buf_size,
-                           unsigned int flags)
+                           bool shallow,
+                           bool reuse)
 {
     int ret = -1;
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
-    bool shallow = (flags & VIR_DOMAIN_BLOCK_REBASE_SHALLOW) != 0;
-    bool reuse = (flags & VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT) != 0;
 
     cmd = qemuMonitorJSONMakeCommand("drive-mirror",
                                      "s:device", device,
