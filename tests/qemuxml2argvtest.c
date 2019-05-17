@@ -2812,7 +2812,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("intel-iommu-caching-mode");
     DO_TEST_CAPS_LATEST("intel-iommu-eim");
     DO_TEST_CAPS_LATEST("intel-iommu-device-iotlb");
-    DO_TEST_FAILURE("intel-iommu-wrong-machine", NONE);
+    DO_TEST_PARSE_ERROR("intel-iommu-wrong-machine", NONE);
 
     DO_TEST("cpu-hotplug-startup", QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS);
     DO_TEST_PARSE_ERROR("cpu-hotplug-granularity",

@@ -6935,60 +6935,11 @@ qemuBuildIOMMUCommandLine(virCommandPtr cmd,
     if (!iommu)
         return 0;
 
-    switch (iommu->model) {
-    case VIR_DOMAIN_IOMMU_MODEL_INTEL:
-        if (iommu->intremap != VIR_TRISTATE_SWITCH_ABSENT &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_INTREMAP)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("iommu: interrupt remapping is not supported "
-                             "with this QEMU binary"));
-            return -1;
-        }
-        if (iommu->caching_mode != VIR_TRISTATE_SWITCH_ABSENT &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_CACHING_MODE))  {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("iommu: caching mode is not supported "
-                             "with this QEMU binary"));
-            return -1;
-        }
-        if (iommu->eim != VIR_TRISTATE_SWITCH_ABSENT &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_EIM))  {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("iommu: eim is not supported "
-                             "with this QEMU binary"));
-            return -1;
-        }
-        if (iommu->iotlb != VIR_TRISTATE_SWITCH_ABSENT &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_DEVICE_IOTLB)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("iommu: device IOTLB is not supported "
-                             "with this QEMU binary"));
-            return -1;
-        }
-        break;
-    case VIR_DOMAIN_IOMMU_MODEL_LAST:
-        break;
-    }
-
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_IOMMU))
         return 0; /* Already handled via -machine */
 
     switch (iommu->model) {
     case VIR_DOMAIN_IOMMU_MODEL_INTEL:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_INTEL_IOMMU)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("IOMMU device: '%s' is not supported with "
-                             "this QEMU binary"),
-                           virDomainIOMMUModelTypeToString(iommu->model));
-            return -1;
-        }
-        if (!qemuDomainIsQ35(def)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("IOMMU device: '%s' is only supported with "
-                             "Q35 machines"),
-                           virDomainIOMMUModelTypeToString(iommu->model));
-            return -1;
-        }
         virBufferAddLit(&opts, "intel-iommu");
         if (iommu->intremap != VIR_TRISTATE_SWITCH_ABSENT) {
             virBufferAsprintf(&opts, ",intremap=%s",
@@ -7648,13 +7599,6 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_IOMMU)) {
         switch (def->iommu->model) {
         case VIR_DOMAIN_IOMMU_MODEL_INTEL:
-            if (!qemuDomainIsQ35(def)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("IOMMU device: '%s' is only supported with "
-                                 "Q35 machines"),
-                               virDomainIOMMUModelTypeToString(def->iommu->model));
-                return -1;
-            }
             virBufferAddLit(&buf, ",iommu=on");
             break;
         case VIR_DOMAIN_IOMMU_MODEL_LAST:

@@ -6084,6 +6084,67 @@ qemuDomainDeviceDefValidateMemballoon(const virDomainMemballoonDef *memballoon,
 
 
 static int
+qemuDomainDeviceDefValidateIOMMU(const virDomainIOMMUDef *iommu,
+                                 const virDomainDef *def,
+                                 virQEMUCapsPtr qemuCaps)
+{
+    switch (iommu->model) {
+    case VIR_DOMAIN_IOMMU_MODEL_INTEL:
+        if (!qemuDomainIsQ35(def)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("IOMMU device: '%s' is only supported with "
+                             "Q35 machines"),
+                           virDomainIOMMUModelTypeToString(iommu->model));
+            return -1;
+        }
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_INTEL_IOMMU) &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_IOMMU)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("IOMMU device: '%s' is not supported with "
+                             "this QEMU binary"),
+                           virDomainIOMMUModelTypeToString(iommu->model));
+            return -1;
+        }
+        if (iommu->intremap != VIR_TRISTATE_SWITCH_ABSENT &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_INTREMAP)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("iommu: interrupt remapping is not supported "
+                             "with this QEMU binary"));
+            return -1;
+        }
+        if (iommu->caching_mode != VIR_TRISTATE_SWITCH_ABSENT &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_CACHING_MODE))  {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("iommu: caching mode is not supported "
+                             "with this QEMU binary"));
+            return -1;
+        }
+        if (iommu->eim != VIR_TRISTATE_SWITCH_ABSENT &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_EIM))  {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("iommu: eim is not supported "
+                             "with this QEMU binary"));
+            return -1;
+        }
+        if (iommu->iotlb != VIR_TRISTATE_SWITCH_ABSENT &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_DEVICE_IOTLB)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("iommu: device IOTLB is not supported "
+                             "with this QEMU binary"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_IOMMU_MODEL_LAST:
+    default:
+        virReportEnumRangeError(virDomainIOMMUModel, iommu->model);
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDeviceDefValidateZPCIAddress(virDomainDeviceInfoPtr info,
                                        virQEMUCapsPtr qemuCaps)
 {
@@ -6195,6 +6256,10 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
         ret = qemuDomainDeviceDefValidateMemballoon(dev->data.memballoon, qemuCaps);
         break;
 
+    case VIR_DOMAIN_DEVICE_IOMMU:
+        ret = qemuDomainDeviceDefValidateIOMMU(dev->data.iommu, def, qemuCaps);
+        break;
+
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_SOUND:
@@ -6203,7 +6268,6 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_SHMEM:
     case VIR_DOMAIN_DEVICE_MEMORY:
     case VIR_DOMAIN_DEVICE_PANIC:
-    case VIR_DOMAIN_DEVICE_IOMMU:
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_LAST:
         break;
