@@ -8,9 +8,11 @@ XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest1/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
--name QEMUGuest1 \
+-name guest=QEMUGuest1,debug-threads=on \
 -S \
--machine q35,accel=kvm,usb=off,dump-guest-core=off,kernel_irqchip=split \
+-object secret,id=masterKey0,format=raw,\
+file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
+-machine pc-q35-2.6,accel=tcg,usb=off,dump-guest-core=off,iommu=on \
 -m 214 \
 -realtime mlock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
@@ -24,4 +26,5 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--device intel-iommu,intremap=on,caching-mode=on
+-boot strict=on \
+-msg timestamp=on

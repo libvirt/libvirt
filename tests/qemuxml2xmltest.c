@@ -1202,16 +1202,11 @@ mymain(void)
             QEMU_CAPS_DEVICE_VIRTIO_GPU_CCW);
     DO_TEST("video-none-device", NONE);
 
-    DO_TEST("intel-iommu",
-            QEMU_CAPS_DEVICE_INTEL_IOMMU);
-    DO_TEST("intel-iommu-machine",
-            QEMU_CAPS_MACHINE_IOMMU);
-    DO_TEST("intel-iommu-caching-mode",
-            QEMU_CAPS_DEVICE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_IOH3420);
-    DO_TEST("intel-iommu-eim", NONE);
-    DO_TEST("intel-iommu-device-iotlb", NONE);
+    DO_TEST_CAPS_LATEST("intel-iommu");
+    DO_TEST_CAPS_VER("intel-iommu", "2.6.0");
+    DO_TEST_CAPS_LATEST("intel-iommu-caching-mode");
+    DO_TEST_CAPS_LATEST("intel-iommu-eim");
+    DO_TEST_CAPS_LATEST("intel-iommu-device-iotlb");
 
     DO_TEST("cpu-check-none", NONE);
     DO_TEST("cpu-check-partial", NONE);

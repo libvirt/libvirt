@@ -5,7 +5,7 @@
   <currentMemory unit='KiB'>219100</currentMemory>
   <vcpu placement='static'>1</vcpu>
   <os>
-    <type arch='x86_64' machine='q35'>hvm</type>
+    <type arch='x86_64' machine='pc-q35-2.6'>hvm</type>
     <boot dev='hd'/>
   </os>
   <clock offset='utc'/>

@@ -2806,33 +2806,12 @@ mymain(void)
                         QEMU_CAPS_USB_HUB);
 
     DO_TEST("acpi-table", NONE);
-    DO_TEST("intel-iommu",
-            QEMU_CAPS_DEVICE_INTEL_IOMMU);
-    DO_TEST("intel-iommu-machine",
-            QEMU_CAPS_MACHINE_IOMMU);
-    DO_TEST("intel-iommu-caching-mode",
-            QEMU_CAPS_MACHINE_KERNEL_IRQCHIP,
-            QEMU_CAPS_MACHINE_KERNEL_IRQCHIP_SPLIT,
-            QEMU_CAPS_DEVICE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_IOH3420,
-            QEMU_CAPS_ICH9_AHCI,
-            QEMU_CAPS_ICH9_USB_EHCI1,
-            QEMU_CAPS_DEVICE_INTEL_IOMMU,
-            QEMU_CAPS_INTEL_IOMMU_INTREMAP,
-            QEMU_CAPS_INTEL_IOMMU_CACHING_MODE);
-    DO_TEST("intel-iommu-eim",
-            QEMU_CAPS_MACHINE_KERNEL_IRQCHIP,
-            QEMU_CAPS_MACHINE_KERNEL_IRQCHIP_SPLIT,
-            QEMU_CAPS_INTEL_IOMMU_INTREMAP,
-            QEMU_CAPS_INTEL_IOMMU_EIM,
-            QEMU_CAPS_DEVICE_INTEL_IOMMU);
-    DO_TEST("intel-iommu-device-iotlb",
-            QEMU_CAPS_MACHINE_KERNEL_IRQCHIP,
-            QEMU_CAPS_MACHINE_KERNEL_IRQCHIP_SPLIT,
-            QEMU_CAPS_INTEL_IOMMU_INTREMAP,
-            QEMU_CAPS_INTEL_IOMMU_DEVICE_IOTLB,
-            QEMU_CAPS_DEVICE_INTEL_IOMMU);
+
+    DO_TEST_CAPS_LATEST("intel-iommu");
+    DO_TEST_CAPS_VER("intel-iommu", "2.6.0");
+    DO_TEST_CAPS_LATEST("intel-iommu-caching-mode");
+    DO_TEST_CAPS_LATEST("intel-iommu-eim");
+    DO_TEST_CAPS_LATEST("intel-iommu-device-iotlb");
 
     DO_TEST("cpu-hotplug-startup", QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS);
     DO_TEST_PARSE_ERROR("cpu-hotplug-granularity",
