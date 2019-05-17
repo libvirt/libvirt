@@ -1479,25 +1479,24 @@ virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
 #endif
 
 
-#if defined(UDEVADM)
 void virWaitForDevices(void)
 {
-    const char *const settleprog[] = { UDEVADM, "settle", NULL };
+    VIR_AUTOPTR(virCommand) cmd = NULL;
+    VIR_AUTOFREE(char *) udev = NULL;
     int exitstatus;
 
-    if (access(settleprog[0], X_OK) != 0)
+    if (!(udev = virFindFileInPath(UDEVADM)))
+        return;
+
+    if (!(cmd = virCommandNewArgList(udev, "settle", NULL)))
         return;
 
     /*
      * NOTE: we ignore errors here; this is just to make sure that any device
      * nodes that are being created finish before we try to scan them.
      */
-    ignore_value(virRun(settleprog, &exitstatus));
+    ignore_value(virCommandRun(cmd, &exitstatus));
 }
-#else
-void virWaitForDevices(void)
-{}
-#endif
 
 #if WITH_DEVMAPPER
 bool

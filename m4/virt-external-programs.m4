@@ -45,7 +45,7 @@ AC_DEFUN([LIBVIRT_CHECK_EXTERNAL_PROGRAMS], [
   AC_PATH_PROG([DNSMASQ], [dnsmasq], [dnsmasq], [$LIBVIRT_SBIN_PATH])
   AC_PATH_PROG([RADVD], [radvd], [radvd], [$LIBVIRT_SBIN_PATH])
   AC_PATH_PROG([TC], [tc], [tc], [$LIBVIRT_SBIN_PATH])
-  AC_PATH_PROG([UDEVADM], [udevadm], [], [$LIBVIRT_SBIN_PATH])
+  AC_PATH_PROG([UDEVADM], [udevadm], [udevadm], [$LIBVIRT_SBIN_PATH])
   AC_PATH_PROG([MODPROBE], [modprobe], [modprobe], [$LIBVIRT_SBIN_PATH])
   AC_PATH_PROG([RMMOD], [rmmod], [rmmod], [$LIBVIRT_SBIN_PATH])
   AC_PATH_PROG([MMCTL], [mm-ctl], [mm-ctl], [$LIBVIRT_SBIN_PATH])
@@ -65,11 +65,8 @@ AC_DEFUN([LIBVIRT_CHECK_EXTERNAL_PROGRAMS], [
                      [Location or name of the mm-ctl program])
   AC_DEFINE_UNQUOTED([OVSVSCTL], ["$OVSVSCTL"],
                      [Location or name of the ovs-vsctl program])
-
-  if test -n "$UDEVADM"; then
-    AC_DEFINE_UNQUOTED([UDEVADM], ["$UDEVADM"],
-                       [Location or name of the udevadm program])
-  fi
+  AC_DEFINE_UNQUOTED([UDEVADM], ["$UDEVADM"],
+                     [Location or name of the udevadm program])
   if test -n "$MODPROBE"; then
     AC_DEFINE_UNQUOTED([MODPROBE], ["$MODPROBE"],
                        [Location or name of the modprobe program])
