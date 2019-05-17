@@ -67,14 +67,10 @@ AC_DEFUN([LIBVIRT_CHECK_EXTERNAL_PROGRAMS], [
                      [Location or name of the ovs-vsctl program])
   AC_DEFINE_UNQUOTED([UDEVADM], ["$UDEVADM"],
                      [Location or name of the udevadm program])
-  if test -n "$MODPROBE"; then
-    AC_DEFINE_UNQUOTED([MODPROBE], ["$MODPROBE"],
-                       [Location or name of the modprobe program])
-  fi
-  if test -n "$RMMOD"; then
-    AC_DEFINE_UNQUOTED([RMMOD], ["$RMMOD"],
-                       [Location or name of the rmmod program])
-  fi
+  AC_DEFINE_UNQUOTED([MODPROBE], ["$MODPROBE"],
+                     [Location or name of the modprobe program])
+  AC_DEFINE_UNQUOTED([RMMOD], ["$RMMOD"],
+                     [Location or name of the rmmod program])
   AC_DEFINE_UNQUOTED([SCRUB], ["$SCRUB"],
                      [Location or name of the scrub program (for wiping algorithms)])
   AC_DEFINE_UNQUOTED([ADDR2LINE], ["$ADDR2LINE"],
