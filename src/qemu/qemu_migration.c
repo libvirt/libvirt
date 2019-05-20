@@ -785,7 +785,7 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriverPtr driver,
                                        const char *host,
                                        int port,
                                        unsigned long long mirror_speed,
-                                       unsigned int mirror_flags,
+                                       unsigned int mirror_shallow,
                                        const char *tlsAlias)
 {
     VIR_AUTOPTR(qemuBlockStorageSourceAttachData) data = NULL;
@@ -793,6 +793,10 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriverPtr driver,
     int mon_ret = 0;
     int ret = -1;
     VIR_AUTOUNREF(virStorageSourcePtr) copysrc = NULL;
+    unsigned int mirror_flags = 0;
+
+    if (mirror_shallow)
+        mirror_flags |= VIR_DOMAIN_BLOCK_REBASE_SHALLOW;
 
     VIR_DEBUG("starting blockdev mirror for disk=%s to host=%s", diskAlias, host);
 
@@ -861,11 +865,15 @@ qemuMigrationSrcNBDStorageCopyDriveMirror(virQEMUDriverPtr driver,
                                           const char *host,
                                           int port,
                                           unsigned long long mirror_speed,
-                                          unsigned int mirror_flags)
+                                          bool mirror_shallow)
 {
     char *nbd_dest = NULL;
     int mon_ret;
     int ret = -1;
+    unsigned int mirror_flags = VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT;
+
+    if (mirror_shallow)
+        mirror_flags |= VIR_DOMAIN_BLOCK_REBASE_SHALLOW;
 
     if (strchr(host, ':')) {
         if (virAsprintf(&nbd_dest, "nbd:[%s]:%d:exportname=%s",
@@ -903,7 +911,7 @@ qemuMigrationSrcNBDStorageCopyOne(virQEMUDriverPtr driver,
                                   const char *host,
                                   int port,
                                   unsigned long long mirror_speed,
-                                  unsigned int mirror_flags,
+                                  bool mirror_shallow,
                                   const char *tlsAlias,
                                   unsigned int flags)
 {
@@ -926,13 +934,13 @@ qemuMigrationSrcNBDStorageCopyOne(virQEMUDriverPtr driver,
                                                     disk, diskAlias,
                                                     host, port,
                                                     mirror_speed,
-                                                    mirror_flags,
+                                                    mirror_shallow,
                                                     tlsAlias);
     } else {
         rc = qemuMigrationSrcNBDStorageCopyDriveMirror(driver, vm, diskAlias,
                                                        host, port,
                                                        mirror_speed,
-                                                       mirror_flags);
+                                                       mirror_shallow);
     }
 
     if (rc < 0)
@@ -987,7 +995,7 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriverPtr driver,
     int port;
     size_t i;
     unsigned long long mirror_speed = speed;
-    unsigned int mirror_flags = VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT;
+    bool mirror_shallow = *migrate_flags & QEMU_MONITOR_MIGRATE_NON_SHARED_INC;
     int rv;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
@@ -1005,9 +1013,6 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriverPtr driver,
     port = mig->nbd->port;
     mig->nbd->port = 0;
 
-    if (*migrate_flags & QEMU_MONITOR_MIGRATE_NON_SHARED_INC)
-        mirror_flags |= VIR_DOMAIN_BLOCK_REBASE_SHALLOW;
-
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDefPtr disk = vm->def->disks[i];
 
@@ -1016,7 +1021,7 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriverPtr driver,
             continue;
 
         if (qemuMigrationSrcNBDStorageCopyOne(driver, vm, disk, host, port,
-                                              mirror_speed, mirror_flags,
+                                              mirror_speed, mirror_shallow,
                                               tlsAlias, flags) < 0)
             goto cleanup;
 
