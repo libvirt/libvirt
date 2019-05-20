@@ -6935,8 +6935,12 @@ qemuBuildIOMMUCommandLine(virCommandPtr cmd,
     if (!iommu)
         return 0;
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_IOMMU))
-        return 0; /* Already handled via -machine */
+    /* qemuDomainDeviceDefValidate() already made sure we have one of
+     * QEMU_CAPS_DEVICE_INTEL_IOMMU or QEMU_CAPS_MACHINE_IOMMU: here we
+     * handle the former case, while the latter is taken care of in
+     * qemuBuildMachineCommandLine() */
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_INTEL_IOMMU))
+        return 0;
 
     switch (iommu->model) {
     case VIR_DOMAIN_IOMMU_MODEL_INTEL:
@@ -7594,7 +7598,10 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
         }
     }
 
-    /* We don't report errors on missing cap here - -device code will do that */
+    /* qemuDomainDeviceDefValidate() already made sure we have one of
+     * QEMU_CAPS_DEVICE_INTEL_IOMMU or QEMU_CAPS_MACHINE_IOMMU: here we
+     * handle the latter case, while the former is taken care of in
+     * qemuBuildIOMMUCommandLine() */
     if (def->iommu &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_IOMMU)) {
         switch (def->iommu->model) {
