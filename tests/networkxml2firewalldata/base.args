@@ -1,0 +1,116 @@
+iptables \
+--table filter \
+--list-rules
+iptables \
+--table nat \
+--list-rules
+iptables \
+--table mangle \
+--list-rules
+iptables \
+--table filter \
+--new-chain LIBVIRT_INP
+iptables \
+--table filter \
+--insert INPUT \
+--jump LIBVIRT_INP
+iptables \
+--table filter \
+--new-chain LIBVIRT_OUT
+iptables \
+--table filter \
+--insert OUTPUT \
+--jump LIBVIRT_OUT
+iptables \
+--table filter \
+--new-chain LIBVIRT_FWO
+iptables \
+--table filter \
+--insert FORWARD \
+--jump LIBVIRT_FWO
+iptables \
+--table filter \
+--new-chain LIBVIRT_FWI
+iptables \
+--table filter \
+--insert FORWARD \
+--jump LIBVIRT_FWI
+iptables \
+--table filter \
+--new-chain LIBVIRT_FWX
+iptables \
+--table filter \
+--insert FORWARD \
+--jump LIBVIRT_FWX
+iptables \
+--table nat \
+--new-chain LIBVIRT_PRT
+iptables \
+--table nat \
+--insert POSTROUTING \
+--jump LIBVIRT_PRT
+iptables \
+--table mangle \
+--new-chain LIBVIRT_PRT
+iptables \
+--table mangle \
+--insert POSTROUTING \
+--jump LIBVIRT_PRT
+ip6tables \
+--table filter \
+--list-rules
+ip6tables \
+--table nat \
+--list-rules
+ip6tables \
+--table mangle \
+--list-rules
+ip6tables \
+--table filter \
+--new-chain LIBVIRT_INP
+ip6tables \
+--table filter \
+--insert INPUT \
+--jump LIBVIRT_INP
+ip6tables \
+--table filter \
+--new-chain LIBVIRT_OUT
+ip6tables \
+--table filter \
+--insert OUTPUT \
+--jump LIBVIRT_OUT
+ip6tables \
+--table filter \
+--new-chain LIBVIRT_FWO
+ip6tables \
+--table filter \
+--insert FORWARD \
+--jump LIBVIRT_FWO
+ip6tables \
+--table filter \
+--new-chain LIBVIRT_FWI
+ip6tables \
+--table filter \
+--insert FORWARD \
+--jump LIBVIRT_FWI
+ip6tables \
+--table filter \
+--new-chain LIBVIRT_FWX
+ip6tables \
+--table filter \
+--insert FORWARD \
+--jump LIBVIRT_FWX
+ip6tables \
+--table nat \
+--new-chain LIBVIRT_PRT
+ip6tables \
+--table nat \
+--insert POSTROUTING \
+--jump LIBVIRT_PRT
+ip6tables \
+--table mangle \
+--new-chain LIBVIRT_PRT
+ip6tables \
+--table mangle \
+--insert POSTROUTING \
+--jump LIBVIRT_PRT

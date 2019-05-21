@@ -84,16 +84,57 @@ static void networkSetupPrivateChains(void)
     }
 }
 
-void networkPreReloadFirewallRules(bool startup)
+
+static int
+networkHasRunningNetworksHelper(virNetworkObjPtr obj,
+                                void *opaque)
 {
-    /* We create global rules upfront as we don't want
-     * the perf hit of conditionally figuring out whether
-     * to create them each time a network is started.
+    bool *running = opaque;
+
+    virObjectLock(obj);
+    if (virNetworkObjIsActive(obj))
+        *running = true;
+    virObjectUnlock(obj);
+
+    return 0;
+}
+
+
+static bool
+networkHasRunningNetworks(virNetworkDriverStatePtr driver)
+{
+    bool running = false;
+    virNetworkObjListForEach(driver->networks,
+                             networkHasRunningNetworksHelper,
+                             &running);
+    return running;
+}
+
+
+void networkPreReloadFirewallRules(virNetworkDriverStatePtr driver, bool startup)
+{
+    /*
+     * If there are any running networks, we need to
+     * create the global rules upfront. This allows us
+     * convert rules created by old libvirt into the new
+     * format.
+     *
+     * If there are not any running networks, then we
+     * must not create rules, because the rules will
+     * cause the conntrack kernel module to be loaded.
+     * This imposes a significant performance hit on
+     * the networking stack. Thus we will only create
+     * rules if a network is later startup.
      *
      * Any errors here are saved to be reported at time
      * of starting the network though as that makes them
      * more likely to be seen by a human
      */
+    if (!networkHasRunningNetworks(driver)) {
+        VIR_DEBUG("Delayed global rule setup as no networks are running");
+        return;
+    }
+
     ignore_value(virOnce(&createdOnce, networkSetupPrivateChains));
 
     /*
@@ -725,6 +766,9 @@ int networkAddFirewallRules(virNetworkDefPtr def)
     virNetworkIPDefPtr ipdef;
     virFirewallPtr fw = NULL;
     int ret = -1;
+
+    if (virOnce(&createdOnce, networkSetupPrivateChains) < 0)
+        return -1;
 
     if (errInitV4 &&
         (virNetworkDefGetIPByIndex(def, AF_INET, 0) ||

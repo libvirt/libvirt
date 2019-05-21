@@ -22,6 +22,7 @@
 #include <config.h>
 
 #include "testutils.h"
+#include "viralloc.h"
 
 #if defined (__linux__)
 
@@ -57,13 +58,15 @@ testCommandDryRun(const char *const*args ATTRIBUTE_UNUSED,
 }
 
 static int testCompareXMLToArgvFiles(const char *xml,
-                                     const char *cmdline)
+                                     const char *cmdline,
+                                     const char *baseargs)
 {
     char *expectargv = NULL;
     char *actualargv = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     virNetworkDefPtr def = NULL;
     int ret = -1;
+    char *actual;
 
     virCommandSetDryRun(&buf, testCommandDryRun, NULL);
 
@@ -76,11 +79,18 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (virBufferError(&buf))
         goto cleanup;
 
-    actualargv = virBufferContentAndReset(&buf);
+    actual = actualargv = virBufferContentAndReset(&buf);
     virTestClearCommandPath(actualargv);
     virCommandSetDryRun(NULL, NULL, NULL);
 
-    if (virTestCompareToFile(actualargv, cmdline) < 0)
+    /* The first network to be created populates the
+     * libvirt global chains. We must skip args for
+     * that if present
+     */
+    if (STRPREFIX(actual, baseargs))
+        actual += strlen(baseargs);
+
+    if (virTestCompareToFile(actual, cmdline) < 0)
         goto cleanup;
 
     ret = 0;
@@ -95,6 +105,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
 struct testInfo {
     const char *name;
+    const char *baseargs;
 };
 
 
@@ -112,7 +123,7 @@ testCompareXMLToIPTablesHelper(const void *data)
                     abs_srcdir, info->name, RULESTYPE) < 0)
         goto cleanup;
 
-    result = testCompareXMLToArgvFiles(xml, args);
+    result = testCompareXMLToArgvFiles(xml, args, info->baseargs);
 
  cleanup:
     VIR_FREE(xml);
@@ -133,11 +144,13 @@ static int
 mymain(void)
 {
     int ret = 0;
+    VIR_AUTOFREE(char *)basefile = NULL;
+    VIR_AUTOFREE(char *)baseargs = NULL;
 
 # define DO_TEST(name) \
     do { \
-        static struct testInfo info = { \
-            name, \
+        struct testInfo info = { \
+            name, baseargs, \
         }; \
         if (virTestRun("Network XML-2-iptables " name, \
                        testCompareXMLToIPTablesHelper, &info) < 0) \
@@ -152,6 +165,17 @@ mymain(void)
             return EXIT_AM_SKIP;
         }
 
+        ret = -1;
+        goto cleanup;
+    }
+
+    if (virAsprintf(&basefile, "%s/networkxml2firewalldata/base.args",
+                    abs_srcdir) < 0) {
+        ret = -1;
+        goto cleanup;
+    }
+
+    if (virTestLoadFile(basefile, &baseargs) < 0) {
         ret = -1;
         goto cleanup;
     }

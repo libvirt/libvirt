@@ -2122,7 +2122,7 @@ networkReloadFirewallRules(virNetworkDriverStatePtr driver, bool startup)
      * but until we untangle the virt driver that's not viable */
     if (!driver->privileged)
         return;
-    networkPreReloadFirewallRules(startup);
+    networkPreReloadFirewallRules(driver, startup);
     virNetworkObjListForEach(driver->networks,
                              networkReloadFirewallRulesHelper,
                              NULL);
