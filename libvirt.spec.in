@@ -1479,14 +1479,6 @@ exit 0
 %postun client
 %systemd_postun libvirt-guests.service
 
-%if %{with_sanlock}
-%post lock-sanlock
-if getent group sanlock > /dev/null ; then
-    chmod 0770 %{_localstatedir}/lib/libvirt/sanlock
-    chown root:sanlock %{_localstatedir}/lib/libvirt/sanlock
-fi
-%endif
-
 %if %{with_lxc}
 %pre login-shell
 getent group virtlogin >/dev/null || groupadd -r virtlogin
@@ -1739,7 +1731,7 @@ exit 0
 %attr(0755, root, root) %{_libdir}/libvirt/lock-driver/sanlock.so
 %{_datadir}/augeas/lenses/libvirt_sanlock.aug
 %{_datadir}/augeas/lenses/tests/test_libvirt_sanlock.aug
-%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/sanlock
+%dir %attr(0770, root, sanlock) %{_localstatedir}/lib/libvirt/sanlock
 %{_sbindir}/virt-sanlock-cleanup
 %{_mandir}/man8/virt-sanlock-cleanup.8*
 %attr(0755, root, root) %{_libexecdir}/libvirt_sanlock_helper
