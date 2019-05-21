@@ -17516,7 +17516,9 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     bool need_unlink = false;
     VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
     const char *format = NULL;
-    bool reuse = !!(flags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT);
+    bool mirror_reuse = !!(flags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT);
+    bool mirror_shallow = !!(flags & VIR_DOMAIN_BLOCK_COPY_SHALLOW);
+    bool existing = mirror_reuse;
     qemuBlockJobDataPtr job = NULL;
     VIR_AUTOUNREF(virStorageSourcePtr) mirror = mirrorsrc;
     bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
@@ -17580,8 +17582,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
 
     /* unless the user provides a pre-created file, shallow copy into a raw
      * file is not possible */
-    if ((flags & VIR_DOMAIN_BLOCK_COPY_SHALLOW) && !reuse &&
-        mirror->format == VIR_STORAGE_FILE_RAW) {
+    if (mirror_shallow && !existing && mirror->format == VIR_STORAGE_FILE_RAW) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("shallow copy of disk '%s' into a raw file "
                          "is not possible"),
@@ -17600,11 +17601,11 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     if (qemuDomainStorageFileInit(driver, vm, mirror, NULL) < 0)
         goto endjob;
 
-    if (qemuDomainBlockCopyValidateMirror(mirror, disk->dst, &reuse) < 0)
+    if (qemuDomainBlockCopyValidateMirror(mirror, disk->dst, &existing) < 0)
         goto endjob;
 
     if (!mirror->format) {
-        if (!(flags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT)) {
+        if (!mirror_reuse) {
             mirror->format = disk->src->format;
         } else {
             /* If the user passed the REUSE_EXT flag, then either they
@@ -17627,7 +17628,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     }
 
     /* pre-create the image file */
-    if (!reuse) {
+    if (!existing) {
         if (virStorageFileCreate(mirror) < 0) {
             virReportSystemError(errno, "%s", _("failed to create copy target"));
             goto endjob;
@@ -17645,7 +17646,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
 
     /* If reusing an external image that includes a backing file but the user
      * did not enumerate the chain in the XML we need to detect the chain */
-    if (flags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT &&
+    if (mirror_reuse &&
         mirror->format >= VIR_STORAGE_FILE_BACKING &&
         mirror->backingStore == NULL &&
         qemuDomainDetermineDiskChain(driver, vm, disk, mirror, true) < 0)
@@ -17662,11 +17663,10 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     /* Actually start the mirroring */
     qemuDomainObjEnterMonitor(driver, vm);
     /* qemuMonitorDriveMirror needs to honor the REUSE_EXT flag as specified
-     * by the user regardless of how @reuse was modified */
+     * by the user */
     ret = qemuMonitorDriveMirror(priv->mon, device, mirror->path, format,
                                  bandwidth, granularity, buf_size,
-                                 flags & VIR_DOMAIN_BLOCK_COPY_SHALLOW,
-                                 flags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT);
+                                 mirror_shallow, mirror_reuse);
     virDomainAuditDisk(vm, NULL, mirror, "mirror", ret >= 0);
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -1;
