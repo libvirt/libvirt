@@ -35,22 +35,18 @@ VIR_LOG_INIT("network.bridge_driver_linux");
 
 #define PROC_NET_ROUTE "/proc/net/route"
 
+static virOnceControl createdOnce;
+static bool createdChains;
 static virErrorPtr errInitV4;
 static virErrorPtr errInitV6;
 
-void networkPreReloadFirewallRules(bool startup)
+/* Only call via virOnce */
+static void networkSetupPrivateChains(void)
 {
-    bool created = false;
     int rc;
 
-    /* We create global rules upfront as we don't want
-     * the perf hit of conditionally figuring out whether
-     * to create them each time a network is started.
-     *
-     * Any errors here are saved to be reported at time
-     * of starting the network though as that makes them
-     * more likely to be seen by a human
-     */
+    createdChains = false;
+
     rc = iptablesSetupPrivateChains(VIR_FIREWALL_LAYER_IPV4);
     if (rc < 0) {
         errInitV4 = virSaveLastError();
@@ -58,9 +54,9 @@ void networkPreReloadFirewallRules(bool startup)
     } else {
         virFreeError(errInitV4);
         errInitV4 = NULL;
+        if (rc)
+            createdChains = true;
     }
-    if (rc)
-        created = true;
 
     rc = iptablesSetupPrivateChains(VIR_FIREWALL_LAYER_IPV6);
     if (rc < 0) {
@@ -69,9 +65,22 @@ void networkPreReloadFirewallRules(bool startup)
     } else {
         virFreeError(errInitV6);
         errInitV6 = NULL;
+        if (rc)
+            createdChains = true;
     }
-    if (rc)
-        created = true;
+}
+
+void networkPreReloadFirewallRules(bool startup)
+{
+    /* We create global rules upfront as we don't want
+     * the perf hit of conditionally figuring out whether
+     * to create them each time a network is started.
+     *
+     * Any errors here are saved to be reported at time
+     * of starting the network though as that makes them
+     * more likely to be seen by a human
+     */
+    ignore_value(virOnce(&createdOnce, networkSetupPrivateChains));
 
     /*
      * If this is initial startup, and we just created the
@@ -86,7 +95,7 @@ void networkPreReloadFirewallRules(bool startup)
      * rules will be present. Thus we can safely just tell it
      * to always delete from the builin chain
      */
-    if (startup && created)
+    if (startup && createdChains)
         iptablesSetDeletePrivate(false);
 }
 
