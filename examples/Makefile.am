@@ -115,7 +115,6 @@ endif WITH_NWFILTER
 examplesdir = $(docdir)/examples
 
 install-data-local: $(INSTALL_DATA_LOCAL)
-	$(mkinstalldirs) $(DESTDIR)$(examplesdir)
 	for p in $(EXAMPLES); do \
 		d=$$(dirname $$p); \
 		$(mkinstalldirs) $(DESTDIR)$(examplesdir)/$$d; \
