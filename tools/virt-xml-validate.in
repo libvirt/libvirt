@@ -16,7 +16,17 @@
 
 set -e
 
-case $1 in
+TMPFILE=
+
+cleanup() {
+  if [ -n "$TMPFILE" ]; then
+    rm -f "$TMPFILE"
+  fi
+}
+
+trap cleanup EXIT
+
+case "$1" in
   -h | --h | --he | --hel | --help)
     cat <<EOF
 Usage:
@@ -34,7 +44,7 @@ $0 (libvirt) @VERSION@
 EOF
     exit ;;
   --) shift ;;
-  -*)
+  -?*)
     echo "$0: unrecognized option '$1'" >&2
     exit 1 ;;
 esac
@@ -42,18 +52,27 @@ esac
 XMLFILE="$1"
 TYPE="$2"
 
-if [ -z "$XMLFILE" ]; then
-  echo "syntax: $0 XMLFILE [TYPE]" >&2
-  exit 1
-fi
+if [ "$XMLFILE" = "-" ]; then
+  TMPFILE=`mktemp --tmpdir virt-xml.XXXX`
+  cat > "$TMPFILE"
+else
+  if [ -z "$XMLFILE" ]; then
+    echo "syntax: $0 XMLFILE [TYPE]" >&2
+    exit 1
+  fi
 
-if [ ! -f "$XMLFILE" ]; then
-  echo "$0: document $XMLFILE does not exist" >&2
-  exit 2
+  if [ ! -f "$XMLFILE" ]; then
+    echo "$0: document $XMLFILE does not exist" >&2
+    exit 2
+  fi
 fi
 
 if [ -z "$TYPE" ]; then
-  ROOT=`xmllint --stream --debug "$XMLFILE" 2>/dev/null | grep "^0 1 " | awk '{ print $3 }'`
+  if [ -n "$TMPFILE" ]; then
+    ROOT=`xmllint --stream --debug - < "$TMPFILE" 2>/dev/null | grep "^0 1 " | awk '{ print $3 }'`
+  else
+    ROOT=`xmllint --stream --debug "$XMLFILE" 2>/dev/null | grep "^0 1 " | awk '{ print $3 }'`
+  fi
   case "$ROOT" in
      *domainsnapshot*) # Must come first, since *domain* is a substring
         TYPE="domainsnapshot"
@@ -101,6 +120,9 @@ if [ ! -f "$SCHEMA" ]; then
   exit 4
 fi
 
-xmllint --noout --relaxng "$SCHEMA" "$XMLFILE"
-
+if [ -n "$TMPFILE" ]; then
+  xmllint --noout --relaxng "$SCHEMA" - < "$TMPFILE"
+else
+  xmllint --noout --relaxng "$SCHEMA" "$XMLFILE"
+fi
 exit
