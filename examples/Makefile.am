@@ -90,38 +90,23 @@ admin_client_info_SOURCES = admin/client_info.c
 admin_client_close_SOURCES = admin/client_close.c
 admin_logging_SOURCES = admin/logging.c
 
-INSTALL_DATA_LOCAL =
-UNINSTALL_LOCAL =
-
 if WITH_NWFILTER
-NWFILTER_DIR = "$(DESTDIR)$(sysconfdir)/libvirt/nwfilter"
 
-install-nwfilter-local:
-	$(MKDIR_P) "$(NWFILTER_DIR)"
-	for f in $(FILTERS); do \
-		$(INSTALL_DATA) $$f "$(NWFILTER_DIR)"; \
-	done
+nwfilterdir = $(sysconfdir)/libvirt/nwfilter
+nwfilter_DATA = $(FILTERS)
 
-uninstall-nwfilter-local::
-	for f in $(FILTERS); do \
-		rm -f "$(NWFILTER_DIR)/`basename $$f`"; \
-	done
-	-test -z "$(shell ls $(NWFILTER_DIR))" || rmdir $(NWFILTER_DIR)
-
-INSTALL_DATA_LOCAL += install-nwfilter-local
-UNINSTALL_LOCAL += uninstall-nwfilter-local
 endif WITH_NWFILTER
 
 examplesdir = $(docdir)/examples
 
-install-data-local: $(INSTALL_DATA_LOCAL)
+install-data-local:
 	for p in $(EXAMPLES); do \
 		d=$$(dirname $$p); \
 		$(mkinstalldirs) $(DESTDIR)$(examplesdir)/$$d; \
 		$(INSTALL_DATA) $(srcdir)/$${p}.c $(DESTDIR)$(examplesdir)/$$d/; \
 	done
 
-uninstall-local: $(UNINSTALL_LOCAL)
+uninstall-local:
 	for p in $(EXAMPLES); do \
 		rm -f $(DESTDIR)$(examplesdir)/$${p}.c; \
 	done
