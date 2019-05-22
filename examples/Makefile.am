@@ -18,9 +18,13 @@
 
 FILTERS = $(wildcard $(srcdir)/xml/nwfilter/*.xml)
 
+POLKIT_EXAMPLES = \
+	$(wildcard $(srcdir)/polkit/*.rules) \
+	$(NULL)
+
 EXTRA_DIST = \
 	lxcconvert/virt-lxc-convert \
-	polkit/libvirt-acl.rules \
+	$(POLKIT_EXAMPLES) \
 	$(wildcard $(srcdir)/systemtap/*.stp) \
 	$(FILTERS) \
 	$(wildcard $(srcdir)/xml/storage/*.xml) \
@@ -98,6 +102,9 @@ nwfilter_DATA = $(FILTERS)
 endif WITH_NWFILTER
 
 examplesdir = $(docdir)/examples
+
+polkitexamplesdir = $(examplesdir)/polkit
+polkitexamples_DATA = $(POLKIT_EXAMPLES)
 
 install-data-local:
 	for p in $(EXAMPLES); do \

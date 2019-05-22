@@ -1568,8 +1568,6 @@ exit 0
 %{_mandir}/man8/virtlockd.8*
 %{_mandir}/man7/virkey*.7*
 
-%doc examples/polkit/*.rules
-
 %files daemon-config-network
 %dir %{_datadir}/libvirt/networks/
 %{_datadir}/libvirt/networks/default.xml
