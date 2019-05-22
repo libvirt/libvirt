@@ -22,6 +22,10 @@ POLKIT_EXAMPLES = \
 	$(wildcard $(srcdir)/polkit/*.rules) \
 	$(NULL)
 
+SH_EXAMPLES = \
+	$(wildcard $(srcdir)/sh/*) \
+	$(NULL)
+
 STORAGE_XML_EXAMPLES = \
 	$(wildcard $(srcdir)/xml/storage/*.xml) \
 	$(NULL)
@@ -35,8 +39,8 @@ TEST_XML_EXAMPLES = \
 	$(NULL)
 
 EXTRA_DIST = \
-	lxcconvert/virt-lxc-convert \
 	$(POLKIT_EXAMPLES) \
+	$(SH_EXAMPLES) \
 	$(STORAGE_XML_EXAMPLES) \
 	$(SYSTEMTAP_EXAMPLES) \
 	$(TEST_XML_EXAMPLES) \
@@ -118,6 +122,9 @@ examplesdir = $(docdir)/examples
 
 polkitexamplesdir = $(examplesdir)/polkit
 polkitexamples_DATA = $(POLKIT_EXAMPLES)
+
+shexamplesdir = $(examplesdir)/sh
+shexamples_DATA = $(SH_EXAMPLES)
 
 storagexmlexamplesdir = $(examplesdir)/xml/storage
 storagexmlexamples_DATA = $(STORAGE_XML_EXAMPLES)
