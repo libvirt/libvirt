@@ -26,13 +26,19 @@ EXTRA_DIST = \
 	$(wildcard $(srcdir)/xml/storage/*.xml) \
 	$(wildcard $(srcdir)/xml/test/*.xml)
 
-
 AM_CPPFLAGS = \
-	-I$(top_builddir)/include -I$(top_srcdir)/include -I$(top_srcdir) \
-	$(WARN_CFLAGS)
-LDADD = $(STATIC_BINARIES) $(WARN_CFLAGS) \
+	-I$(top_builddir)/include \
+	-I$(top_srcdir)/include \
+	-I$(top_srcdir) \
+	$(WARN_CFLAGS) \
+	$(NULL)
+
+LDADD = \
+	$(STATIC_BINARIES) \
+	$(WARN_CFLAGS) \
 	$(top_builddir)/src/libvirt.la \
-	$(top_builddir)/src/libvirt-admin.la
+	$(top_builddir)/src/libvirt-admin.la \
+	$(NULL)
 
 # List of example programs. We need to list them here instead of using
 # $(noinst_PROGRAMS) directly because we want to have access to the
