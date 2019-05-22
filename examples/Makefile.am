@@ -29,7 +29,6 @@ EXTRA_DIST = \
 AM_CPPFLAGS = \
 	-I$(top_builddir)/include \
 	-I$(top_srcdir)/include \
-	-I$(top_srcdir) \
 	$(WARN_CFLAGS) \
 	$(NULL)
 
