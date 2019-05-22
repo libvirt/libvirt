@@ -18,6 +18,18 @@
 
 FILTERS = $(wildcard $(srcdir)/xml/nwfilter/*.xml)
 
+ADMIN_EXAMPLES = \
+	$(wildcard $(srcdir)/admin/*.c) \
+	$(NULL)
+
+DOMAIN_EXAMPLES = \
+	$(wildcard $(srcdir)/domain/*.c) \
+	$(NULL)
+
+MISC_EXAMPLES = \
+	$(wildcard $(srcdir)/misc/*.c) \
+	$(NULL)
+
 POLKIT_EXAMPLES = \
 	$(wildcard $(srcdir)/polkit/*.rules) \
 	$(NULL)
@@ -65,12 +77,7 @@ LDADD = \
 	$(top_builddir)/src/libvirt-admin.la \
 	$(NULL)
 
-# List of example programs. We need to list them here instead of using
-# $(noinst_PROGRAMS) directly because we want to have access to the
-# unmodified list during (un)installation, but at the same time automake
-# might tweak $(noinst_PROGRAMS) to eg. automatically add the .exe file
-# extension when targeting Windows.
-EXAMPLES = \
+noinst_PROGRAMS = \
 	admin/client_close \
 	admin/client_info \
 	admin/client_limits \
@@ -86,10 +93,6 @@ EXAMPLES = \
 	misc/event-test \
 	misc/hellolibvirt \
 	misc/openauth \
-	$(NULL)
-
-noinst_PROGRAMS = \
-	$(EXAMPLES) \
 	$(NULL)
 
 admin_client_close_SOURCES = admin/client_close.c
@@ -117,6 +120,15 @@ endif WITH_NWFILTER
 
 examplesdir = $(docdir)/examples
 
+adminexamplesdir = $(examplesdir)/admin
+adminexamples_DATA = $(ADMIN_EXAMPLES)
+
+domainexamplesdir = $(examplesdir)/domain
+domainexamples_DATA = $(DOMAIN_EXAMPLES)
+
+miscexamplesdir = $(examplesdir)/misc
+miscexamples_DATA = $(MISC_EXAMPLES)
+
 polkitexamplesdir = $(examplesdir)/polkit
 polkitexamples_DATA = $(POLKIT_EXAMPLES)
 
@@ -131,15 +143,3 @@ systemtapexamples_DATA = $(SYSTEMTAP_EXAMPLES)
 
 testxmlexamplesdir = $(examplesdir)/xml/test
 testxmlexamples_DATA = $(TEST_XML_EXAMPLES)
-
-install-data-local:
-	for p in $(EXAMPLES); do \
-		d=$$(dirname $$p); \
-		$(mkinstalldirs) $(DESTDIR)$(examplesdir)/$$d; \
-		$(INSTALL_DATA) $(srcdir)/$${p}.c $(DESTDIR)$(examplesdir)/$$d/; \
-	done
-
-uninstall-local:
-	for p in $(EXAMPLES); do \
-		rm -f $(DESTDIR)$(examplesdir)/$${p}.c; \
-	done
