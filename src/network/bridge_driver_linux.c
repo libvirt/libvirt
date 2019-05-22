@@ -45,28 +45,42 @@ static void networkSetupPrivateChains(void)
 {
     int rc;
 
+    VIR_DEBUG("Setting up global firewall chains");
+
     createdChains = false;
 
     rc = iptablesSetupPrivateChains(VIR_FIREWALL_LAYER_IPV4);
     if (rc < 0) {
+        VIR_DEBUG("Failed to create global IPv4 chains: %s",
+                  virGetLastErrorMessage());
         errInitV4 = virSaveLastError();
         virResetLastError();
     } else {
         virFreeError(errInitV4);
         errInitV4 = NULL;
-        if (rc)
+        if (rc) {
+            VIR_DEBUG("Created global IPv4 chains");
             createdChains = true;
+        } else {
+            VIR_DEBUG("Global IPv4 chains already exist");
+        }
     }
 
     rc = iptablesSetupPrivateChains(VIR_FIREWALL_LAYER_IPV6);
     if (rc < 0) {
+        VIR_DEBUG("Failed to create global IPv6 chains: %s",
+                  virGetLastErrorMessage());
         errInitV6 = virSaveLastError();
         virResetLastError();
     } else {
         virFreeError(errInitV6);
         errInitV6 = NULL;
-        if (rc)
+        if (rc) {
+            VIR_DEBUG("Created global IPv6 chains");
             createdChains = true;
+        } else {
+            VIR_DEBUG("Global IPv6 chains already exist");
+        }
     }
 }
 
@@ -95,8 +109,10 @@ void networkPreReloadFirewallRules(bool startup)
      * rules will be present. Thus we can safely just tell it
      * to always delete from the builin chain
      */
-    if (startup && createdChains)
+    if (startup && createdChains) {
+        VIR_DEBUG("Requesting cleanup of legacy firewall rules");
         iptablesSetDeletePrivate(false);
+    }
 }
 
 
