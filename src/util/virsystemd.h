@@ -50,7 +50,8 @@ int virSystemdCreateMachine(const char *name,
                             bool iscontainer,
                             size_t nnicindexes,
                             int *nicindexes,
-                            const char *partition);
+                            const char *partition,
+                            unsigned int maxthreads);
 
 int virSystemdTerminateMachine(const char *name);
 

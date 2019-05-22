@@ -76,6 +76,7 @@ module Test_libvirtd_qemu =
 { "set_process_name" = "1" }
 { "max_processes" = "0" }
 { "max_files" = "0" }
+{ "max_threads_per_process" = "0" }
 { "max_core" = "unlimited" }
 { "dump_guest_core" = "1" }
 { "mac_filter" = "1" }

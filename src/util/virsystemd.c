@@ -252,12 +252,14 @@ int virSystemdCreateMachine(const char *name,
                             bool iscontainer,
                             size_t nnicindexes,
                             int *nicindexes,
-                            const char *partition)
+                            const char *partition,
+                            unsigned int maxthreads)
 {
     int ret;
     DBusConnection *conn;
     char *creatorname = NULL;
     char *slicename = NULL;
+    char *scopename = NULL;
     static int hasCreateWithNetwork = 1;
 
     if ((ret = virSystemdHasMachined()) < 0)
@@ -403,11 +405,31 @@ int virSystemdCreateMachine(const char *name,
             goto cleanup;
     }
 
+    if (maxthreads > 0) {
+        if (!(scopename = virSystemdMakeScopeName(name, drivername, false)))
+            goto cleanup;
+
+        if (virDBusCallMethod(conn,
+                              NULL,
+                              NULL,
+                              "org.freedesktop.systemd1",
+                              "/org/freedesktop/systemd1",
+                              "org.freedesktop.systemd1.Manager",
+                              "SetUnitProperties",
+                              "sba(sv)",
+                              scopename,
+                              true,
+                              1,
+                              "TasksMax", "t", (uint64_t)maxthreads) < 0)
+            goto cleanup;
+    }
+
     ret = 0;
 
  cleanup:
     VIR_FREE(creatorname);
     VIR_FREE(slicename);
+    VIR_FREE(scopename);
     return ret;
 }
 

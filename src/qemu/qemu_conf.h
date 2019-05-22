@@ -162,6 +162,7 @@ struct _virQEMUDriverConfig {
 
     unsigned int maxProcesses;
     unsigned int maxFiles;
+    unsigned int maxThreadsPerProc;
     unsigned long long maxCore;
     bool dumpGuestCore;
 

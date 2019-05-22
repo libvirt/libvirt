@@ -455,6 +455,7 @@ virCgroupPtr virLXCCgroupCreate(virDomainDefPtr def,
                             nnicindexes, nicindexes,
                             def->resource->partition,
                             -1,
+                            0,
                             &cgroup) < 0)
         goto cleanup;
 

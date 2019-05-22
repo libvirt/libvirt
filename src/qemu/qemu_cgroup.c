@@ -929,6 +929,7 @@ qemuInitCgroup(virDomainObjPtr vm,
                             nnicindexes, nicindexes,
                             vm->def->resource->partition,
                             cfg->cgroupControllers,
+                            cfg->maxThreadsPerProc,
                             &priv->cgroup) < 0) {
         if (virCgroupNewIgnoreError())
             goto done;

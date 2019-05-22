@@ -98,6 +98,7 @@ int virCgroupNewMachine(const char *name,
                         int *nicindexes,
                         const char *partition,
                         int controllers,
+                        unsigned int maxthreads,
                         virCgroupPtr *group)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
     ATTRIBUTE_NONNULL(3);

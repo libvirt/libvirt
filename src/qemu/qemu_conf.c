@@ -670,6 +670,8 @@ virQEMUDriverConfigLoadProcessEntry(virQEMUDriverConfigPtr cfg,
         return -1;
     if (virConfGetValueUInt(conf, "max_files", &cfg->maxFiles) < 0)
         return -1;
+    if (virConfGetValueUInt(conf, "max_threads_per_process", &cfg->maxThreadsPerProc) < 0)
+        return -1;
 
     if (virConfGetValueType(conf, "max_core") == VIR_CONF_STRING) {
         if (virConfGetValueString(conf, "max_core", &corestr) < 0)
