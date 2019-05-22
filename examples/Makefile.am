@@ -22,10 +22,14 @@ POLKIT_EXAMPLES = \
 	$(wildcard $(srcdir)/polkit/*.rules) \
 	$(NULL)
 
+SYSTEMTAP_EXAMPLES = \
+	$(wildcard $(srcdir)/systemtap/*.stp) \
+	$(NULL)
+
 EXTRA_DIST = \
 	lxcconvert/virt-lxc-convert \
 	$(POLKIT_EXAMPLES) \
-	$(wildcard $(srcdir)/systemtap/*.stp) \
+	$(SYSTEMTAP_EXAMPLES) \
 	$(FILTERS) \
 	$(wildcard $(srcdir)/xml/storage/*.xml) \
 	$(wildcard $(srcdir)/xml/test/*.xml)
@@ -105,6 +109,9 @@ examplesdir = $(docdir)/examples
 
 polkitexamplesdir = $(examplesdir)/polkit
 polkitexamples_DATA = $(POLKIT_EXAMPLES)
+
+systemtapexamplesdir = $(examplesdir)/systemtap
+systemtapexamples_DATA = $(SYSTEMTAP_EXAMPLES)
 
 install-data-local:
 	for p in $(EXAMPLES); do \
