@@ -32,8 +32,11 @@ AM_CPPFLAGS = \
 	$(WARN_CFLAGS) \
 	$(NULL)
 
-LDADD = \
+AM_LDFLAGS = \
 	$(STATIC_BINARIES) \
+	$(NULL)
+
+LDADD = \
 	$(top_builddir)/src/libvirt.la \
 	$(top_builddir)/src/libvirt-admin.la \
 	$(NULL)
