@@ -2658,8 +2658,9 @@ qemuProcessSetupPid(virDomainObjPtr vm,
     if (use_cpumask && virProcessSetAffinity(pid, use_cpumask) < 0)
         goto cleanup;
 
-    /* Set scheduler type and priority. */
+    /* Set scheduler type and priority, but not for the main thread. */
     if (sched &&
+        nameval != VIR_CGROUP_THREAD_EMULATOR &&
         virProcessSetScheduler(pid, sched->policy, sched->priority) < 0)
         goto cleanup;
 
@@ -6771,6 +6772,13 @@ qemuProcessLaunch(virConnectPtr conn,
 
     VIR_DEBUG("Setting IOThread tuning/settings");
     if (qemuProcessSetupIOThreads(vm) < 0)
+        goto cleanup;
+
+    VIR_DEBUG("Setting emulator scheduler");
+    if (vm->def->cputune.emulatorsched &&
+        virProcessSetScheduler(vm->pid,
+                               vm->def->cputune.emulatorsched->policy,
+                               vm->def->cputune.emulatorsched->priority) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting any required VM passwords");
