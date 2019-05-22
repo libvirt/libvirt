@@ -1865,8 +1865,6 @@ exit 0
 %{_datadir}/libvirt/api/libvirt-admin-api.xml
 %{_datadir}/libvirt/api/libvirt-qemu-api.xml
 %{_datadir}/libvirt/api/libvirt-lxc-api.xml
-# Needed building python bindings
-%doc docs/libvirt-api.xml
 
 
 %changelog
