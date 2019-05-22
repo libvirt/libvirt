@@ -22,17 +22,26 @@ POLKIT_EXAMPLES = \
 	$(wildcard $(srcdir)/polkit/*.rules) \
 	$(NULL)
 
+STORAGE_XML_EXAMPLES = \
+	$(wildcard $(srcdir)/xml/storage/*.xml) \
+	$(NULL)
+
 SYSTEMTAP_EXAMPLES = \
 	$(wildcard $(srcdir)/systemtap/*.stp) \
+	$(NULL)
+
+TEST_XML_EXAMPLES = \
+	$(wildcard $(srcdir)/xml/test/*.xml) \
 	$(NULL)
 
 EXTRA_DIST = \
 	lxcconvert/virt-lxc-convert \
 	$(POLKIT_EXAMPLES) \
+	$(STORAGE_XML_EXAMPLES) \
 	$(SYSTEMTAP_EXAMPLES) \
+	$(TEST_XML_EXAMPLES) \
 	$(FILTERS) \
-	$(wildcard $(srcdir)/xml/storage/*.xml) \
-	$(wildcard $(srcdir)/xml/test/*.xml)
+	$(NULL)
 
 AM_CPPFLAGS = \
 	-I$(top_builddir)/include \
@@ -110,8 +119,14 @@ examplesdir = $(docdir)/examples
 polkitexamplesdir = $(examplesdir)/polkit
 polkitexamples_DATA = $(POLKIT_EXAMPLES)
 
+storagexmlexamplesdir = $(examplesdir)/xml/storage
+storagexmlexamples_DATA = $(STORAGE_XML_EXAMPLES)
+
 systemtapexamplesdir = $(examplesdir)/systemtap
 systemtapexamples_DATA = $(SYSTEMTAP_EXAMPLES)
+
+testxmlexamplesdir = $(examplesdir)/xml/test
+testxmlexamples_DATA = $(TEST_XML_EXAMPLES)
 
 install-data-local:
 	for p in $(EXAMPLES); do \
