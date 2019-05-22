@@ -45,6 +45,18 @@
     <section title="Improvements">
     </section>
     <section title="Bug fixes">
+      <change>
+        <summary>
+          qemu: Fix emulator scheduler support
+        </summary>
+        <description>
+          Setting the scheduler for QEMU's main thread before QEMU had a chance
+          to start up other threads was misleading as it would affect other
+          threads (vCPU and I/O) as well.  In some particular situations this
+          could also lead to an error when the thread for vCPU #0 was being
+          moved to its cpu,cpuacct cgroup.  This was fixed so that the scheduler for the main thread is set after QEMU starts.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v5.3.0" date="2019-05-04">
