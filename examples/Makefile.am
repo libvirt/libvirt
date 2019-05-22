@@ -19,15 +19,15 @@
 FILTERS = $(wildcard $(srcdir)/xml/nwfilter/*.xml)
 
 ADMIN_EXAMPLES = \
-	$(wildcard $(srcdir)/admin/*.c) \
+	$(wildcard $(srcdir)/c/admin/*.c) \
 	$(NULL)
 
 DOMAIN_EXAMPLES = \
-	$(wildcard $(srcdir)/domain/*.c) \
+	$(wildcard $(srcdir)/c/domain/*.c) \
 	$(NULL)
 
 MISC_EXAMPLES = \
-	$(wildcard $(srcdir)/misc/*.c) \
+	$(wildcard $(srcdir)/c/misc/*.c) \
 	$(NULL)
 
 POLKIT_EXAMPLES = \
@@ -78,38 +78,38 @@ LDADD = \
 	$(NULL)
 
 noinst_PROGRAMS = \
-	admin/client_close \
-	admin/client_info \
-	admin/client_limits \
-	admin/list_clients \
-	admin/list_servers \
-	admin/logging \
-	admin/threadpool_params \
-	domain/dommigrate \
-	domain/domtop \
-	domain/info1 \
-	domain/rename \
-	domain/suspend \
-	misc/event-test \
-	misc/hellolibvirt \
-	misc/openauth \
+	c/admin/client_close \
+	c/admin/client_info \
+	c/admin/client_limits \
+	c/admin/list_clients \
+	c/admin/list_servers \
+	c/admin/logging \
+	c/admin/threadpool_params \
+	c/domain/dommigrate \
+	c/domain/domtop \
+	c/domain/info1 \
+	c/domain/rename \
+	c/domain/suspend \
+	c/misc/event-test \
+	c/misc/hellolibvirt \
+	c/misc/openauth \
 	$(NULL)
 
-admin_client_close_SOURCES = admin/client_close.c
-admin_client_info_SOURCES = admin/client_info.c
-admin_client_limits_SOURCES = admin/client_limits.c
-admin_list_clients_SOURCES = admin/list_clients.c
-admin_list_servers_SOURCES = admin/list_servers.c
-admin_logging_SOURCES = admin/logging.c
-admin_threadpool_params_SOURCES = admin/threadpool_params.c
-domain_dommigrate_SOURCES = domain/dommigrate.c
-domain_domtop_SOURCES = domain/domtop.c
-domain_info1_SOURCES = domain/info1.c
-domain_rename_SOURCES = domain/rename.c
-domain_suspend_SOURCES = domain/suspend.c
-misc_event_test_SOURCES = misc/event-test.c
-misc_hellolibvirt_SOURCES = misc/hellolibvirt.c
-misc_openauth_SOURCES = misc/openauth.c
+c_admin_client_close_SOURCES = c/admin/client_close.c
+c_admin_client_info_SOURCES = c/admin/client_info.c
+c_admin_client_limits_SOURCES = c/admin/client_limits.c
+c_admin_list_clients_SOURCES = c/admin/list_clients.c
+c_admin_list_servers_SOURCES = c/admin/list_servers.c
+c_admin_logging_SOURCES = c/admin/logging.c
+c_admin_threadpool_params_SOURCES = c/admin/threadpool_params.c
+c_domain_dommigrate_SOURCES = c/domain/dommigrate.c
+c_domain_domtop_SOURCES = c/domain/domtop.c
+c_domain_info1_SOURCES = c/domain/info1.c
+c_domain_rename_SOURCES = c/domain/rename.c
+c_domain_suspend_SOURCES = c/domain/suspend.c
+c_misc_event_test_SOURCES = c/misc/event-test.c
+c_misc_hellolibvirt_SOURCES = c/misc/hellolibvirt.c
+c_misc_openauth_SOURCES = c/misc/openauth.c
 
 if WITH_NWFILTER
 
@@ -120,13 +120,13 @@ endif WITH_NWFILTER
 
 examplesdir = $(docdir)/examples
 
-adminexamplesdir = $(examplesdir)/admin
+adminexamplesdir = $(examplesdir)/c/admin
 adminexamples_DATA = $(ADMIN_EXAMPLES)
 
-domainexamplesdir = $(examplesdir)/domain
+domainexamplesdir = $(examplesdir)/c/domain
 domainexamples_DATA = $(DOMAIN_EXAMPLES)
 
-miscexamplesdir = $(examplesdir)/misc
+miscexamplesdir = $(examplesdir)/c/misc
 miscexamples_DATA = $(MISC_EXAMPLES)
 
 polkitexamplesdir = $(examplesdir)/polkit
