@@ -78,38 +78,35 @@ EXAMPLES = \
 	admin/list_servers \
 	admin/logging \
 	admin/threadpool_params \
-	dominfo/info1 \
-	dommigrate/dommigrate \
-	domsuspend/suspend \
-	domtop/domtop \
-	hellolibvirt/hellolibvirt \
-	object-events/event-test \
-	openauth/openauth \
-	rename/rename \
+	domain/dommigrate \
+	domain/domtop \
+	domain/info1 \
+	domain/rename \
+	domain/suspend \
+	misc/event-test \
+	misc/hellolibvirt \
+	misc/openauth \
 	$(NULL)
 
 noinst_PROGRAMS = \
 	$(EXAMPLES) \
 	$(NULL)
 
-dominfo_info1_SOURCES = dominfo/info1.c
-dommigrate_dommigrate_SOURCES = dommigrate/dommigrate.c
-domsuspend_suspend_SOURCES = domsuspend/suspend.c
-domtop_domtop_SOURCES = domtop/domtop.c
-hellolibvirt_hellolibvirt_SOURCES = hellolibvirt/hellolibvirt.c
-
-object_events_event_test_SOURCES = object-events/event-test.c
-
-openauth_openauth_SOURCES = openauth/openauth.c
-rename_rename_SOURCES = rename/rename.c
-
-admin_list_servers_SOURCES = admin/list_servers.c
-admin_list_clients_SOURCES = admin/list_clients.c
-admin_threadpool_params_SOURCES = admin/threadpool_params.c
-admin_client_limits_SOURCES = admin/client_limits.c
-admin_client_info_SOURCES = admin/client_info.c
 admin_client_close_SOURCES = admin/client_close.c
+admin_client_info_SOURCES = admin/client_info.c
+admin_client_limits_SOURCES = admin/client_limits.c
+admin_list_clients_SOURCES = admin/list_clients.c
+admin_list_servers_SOURCES = admin/list_servers.c
 admin_logging_SOURCES = admin/logging.c
+admin_threadpool_params_SOURCES = admin/threadpool_params.c
+domain_dommigrate_SOURCES = domain/dommigrate.c
+domain_domtop_SOURCES = domain/domtop.c
+domain_info1_SOURCES = domain/info1.c
+domain_rename_SOURCES = domain/rename.c
+domain_suspend_SOURCES = domain/suspend.c
+misc_event_test_SOURCES = misc/event-test.c
+misc_hellolibvirt_SOURCES = misc/hellolibvirt.c
+misc_openauth_SOURCES = misc/openauth.c
 
 if WITH_NWFILTER
 
