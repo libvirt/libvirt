@@ -111,6 +111,9 @@ struct _libxlDriverPrivate {
      * then lockless thereafter */
     libxlDriverConfigPtr config;
 
+    /* pid file FD, ensures two copies of the driver can't use the same root */
+    int lockFD;
+
     /* Atomic inc/dec only */
     unsigned int nactive;
 

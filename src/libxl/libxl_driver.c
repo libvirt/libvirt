@@ -53,6 +53,7 @@
 #include "viraccessapicheck.h"
 #include "viratomic.h"
 #include "virhostdev.h"
+#include "virpidfile.h"
 #include "locking/domain_lock.h"
 #include "virnetdevtap.h"
 #include "cpu/cpu.h"
@@ -506,7 +507,6 @@ libxlStateCleanup(void)
         return -1;
 
     virObjectUnref(libxl_driver->hostdevMgr);
-    virObjectUnref(libxl_driver->config);
     virObjectUnref(libxl_driver->xmlopt);
     virObjectUnref(libxl_driver->domains);
     virPortAllocatorRangeFree(libxl_driver->reservedGraphicsPorts);
@@ -516,6 +516,10 @@ libxlStateCleanup(void)
     virObjectUnref(libxl_driver->domainEventState);
     virSysinfoDefFree(libxl_driver->hostsysinfo);
 
+    if (libxl_driver->lockFD != -1)
+        virPidFileRelease(libxl_driver->config->stateDir, "driver", libxl_driver->lockFD);
+
+    virObjectUnref(libxl_driver->config);
     virMutexDestroy(&libxl_driver->lock);
     VIR_FREE(libxl_driver);
 
@@ -658,6 +662,7 @@ libxlStateInitialize(bool privileged,
     if (VIR_ALLOC(libxl_driver) < 0)
         return -1;
 
+    libxl_driver->lockFD = -1;
     if (virMutexInit(&libxl_driver->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("cannot initialize mutex"));
@@ -740,6 +745,10 @@ libxlStateInitialize(bool privileged,
                        virStrerror(errno, ebuf, sizeof(ebuf)));
         goto error;
     }
+
+    if ((libxl_driver->lockFD =
+         virPidFileAcquire(cfg->stateDir, "driver", true, getpid())) < 0)
+        goto error;
 
     if (!(libxl_driver->lockManager =
           virLockManagerPluginNew(cfg->lockManagerName ?
