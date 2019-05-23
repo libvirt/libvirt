@@ -43,6 +43,7 @@
 #include "virthread.h"
 #include "virlog.h"
 #include "virfile.h"
+#include "virpidfile.h"
 #include "virtypedparam.h"
 #include "virrandom.h"
 #include "virstring.h"
@@ -1203,6 +1204,9 @@ bhyveStateCleanup(void)
     virObjectUnref(bhyve_driver->config);
     virPortAllocatorRangeFree(bhyve_driver->remotePorts);
 
+    if (bhyve_driver->lockFD != -1)
+        virPidFileRelease(BHYVE_STATE_DIR, "driver", bhyve_driver->lockFD);
+
     virMutexDestroy(&bhyve_driver->lock);
     VIR_FREE(bhyve_driver);
 
@@ -1222,6 +1226,7 @@ bhyveStateInitialize(bool privileged,
     if (VIR_ALLOC(bhyve_driver) < 0)
         return -1;
 
+    bhyve_driver->lockFD = -1;
     if (virMutexInit(&bhyve_driver->lock) < 0) {
         VIR_FREE(bhyve_driver);
         return -1;
@@ -1273,6 +1278,10 @@ bhyveStateInitialize(bool privileged,
                              BHYVE_STATE_DIR);
         goto cleanup;
     }
+
+    if ((bhyve_driver->lockFD =
+         virPidFileAcquire(BHYVE_STATE_DIR, "driver", true, getpid())) < 0)
+        goto cleanup;
 
     if (virDomainObjListLoadAllConfigs(bhyve_driver->domains,
                                        BHYVE_STATE_DIR,

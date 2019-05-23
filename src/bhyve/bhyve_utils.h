@@ -48,6 +48,9 @@ struct _bhyveConn {
 
     virBhyveDriverConfigPtr config;
 
+    /* pid file FD, ensures two copies of the driver can't use the same root */
+    int lockFD;
+
     virDomainObjListPtr domains;
     virCapsPtr caps;
     virDomainXMLOptionPtr xmlopt;
