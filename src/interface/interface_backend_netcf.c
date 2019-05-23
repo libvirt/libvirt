@@ -29,9 +29,13 @@
 #include "interface_conf.h"
 #include "viralloc.h"
 #include "virlog.h"
+#include "virfile.h"
+#include "virpidfile.h"
 #include "virstring.h"
 #include "viraccessapicheck.h"
 #include "virinterfaceobj.h"
+
+#include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_INTERFACE
 
@@ -43,6 +47,10 @@ VIR_LOG_INIT("interface.interface_backend_netcf");
 typedef struct
 {
     virObjectLockable parent;
+    /* pid file FD, ensures two copies of the driver can't use the same root */
+    int lockFD;
+
+    char *stateDir;
     struct netcf *netcf;
     bool privileged;
 } virNetcfDriverState, *virNetcfDriverStatePtr;
@@ -71,6 +79,11 @@ virNetcfDriverStateDispose(void *obj)
 
     if (_driver->netcf)
         ncf_close(_driver->netcf);
+
+    if (_driver->lockFD != -1)
+        virPidFileRelease(_driver->stateDir, "driver", _driver->lockFD);
+
+    VIR_FREE(_driver->stateDir);
 }
 
 
@@ -87,15 +100,41 @@ netcfStateInitialize(bool privileged,
 
     driver->privileged = privileged;
 
+    if (privileged) {
+        if (virAsprintf(&driver->stateDir,
+                        "%s/run/libvirt/nodedev", LOCALSTATEDIR) < 0)
+            goto error;
+    } else {
+        VIR_AUTOFREE(char *) rundir = NULL;
+
+        if (!(rundir = virGetUserRuntimeDirectory()))
+            goto error;
+        if (virAsprintf(&driver->stateDir, "%s/nodedev/run", rundir) < 0)
+            goto error;
+    }
+
+    if (virFileMakePathWithMode(driver->stateDir, S_IRWXU) < 0) {
+        virReportSystemError(errno, _("cannot create state directory '%s'"),
+                             driver->stateDir);
+        goto error;
+    }
+
+    if ((driver->lockFD =
+         virPidFileAcquire(driver->stateDir, "driver", true, getpid())) < 0)
+        goto error;
+
     /* open netcf */
     if (ncf_init(&driver->netcf, NULL) != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to initialize netcf"));
-        virObjectUnref(driver);
-        driver = NULL;
-        return -1;
+        goto error;
     }
     return 0;
+
+ error:
+    virObjectUnref(driver);
+    driver = NULL;
+    return -1;
 }
 
 

@@ -32,14 +32,21 @@
 #include "interface_conf.h"
 #include "viralloc.h"
 #include "virstring.h"
+#include "virpidfile.h"
 #include "viraccessapicheck.h"
 #include "virinterfaceobj.h"
 #include "virnetdev.h"
+
+#include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_INTERFACE
 
 struct udev_iface_driver {
     struct udev *udev;
+    /* pid file FD, ensures two copies of the driver can't use the same root */
+    int lockFD;
+
+    char *stateDir;
     bool privileged;
 };
 
@@ -1158,6 +1165,9 @@ udevInterfaceIsActive(virInterfacePtr ifinfo)
 
 
 static int
+udevStateCleanup(void);
+
+static int
 udevStateInitialize(bool privileged,
                     virStateInhibitCallback callback ATTRIBUTE_UNUSED,
                     void *opaque ATTRIBUTE_UNUSED)
@@ -1165,6 +1175,31 @@ udevStateInitialize(bool privileged,
     int ret = -1;
 
     if (VIR_ALLOC(driver) < 0)
+        goto cleanup;
+
+    driver->lockFD = -1;
+
+    if (privileged) {
+        if (virAsprintf(&driver->stateDir,
+                        "%s/run/libvirt/nodedev", LOCALSTATEDIR) < 0)
+            goto cleanup;
+    } else {
+        VIR_AUTOFREE(char *) rundir = NULL;
+
+        if (!(rundir = virGetUserRuntimeDirectory()))
+            goto cleanup;
+        if (virAsprintf(&driver->stateDir, "%s/nodedev/run", rundir) < 0)
+            goto cleanup;
+    }
+
+    if (virFileMakePathWithMode(driver->stateDir, S_IRWXU) < 0) {
+        virReportSystemError(errno, _("cannot create state directory '%s'"),
+                             driver->stateDir);
+        goto cleanup;
+    }
+
+    if ((driver->lockFD =
+         virPidFileAcquire(driver->stateDir, "driver", true, getpid())) < 0)
         goto cleanup;
 
     driver->udev = udev_new();
@@ -1178,6 +1213,8 @@ udevStateInitialize(bool privileged,
     ret = 0;
 
  cleanup:
+    if (ret < 0)
+        udevStateCleanup();
     return ret;
 }
 
@@ -1187,8 +1224,13 @@ udevStateCleanup(void)
     if (!driver)
         return -1;
 
-    udev_unref(driver->udev);
+    if (driver->udev)
+        udev_unref(driver->udev);
 
+    if (driver->lockFD != -1)
+        virPidFileRelease(driver->stateDir, "driver", driver->lockFD);
+
+    VIR_FREE(driver->stateDir);
     VIR_FREE(driver);
     return 0;
 }
