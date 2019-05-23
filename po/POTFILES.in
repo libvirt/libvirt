@@ -240,6 +240,7 @@
 @SRCDIR@/src/util/virdnsmasq.c
 @SRCDIR@/src/util/virerror.c
 @SRCDIR@/src/util/virerror.h
+@SRCDIR@/src/util/virevent.c
 @SRCDIR@/src/util/vireventpoll.c
 @SRCDIR@/src/util/virfcp.c
 @SRCDIR@/src/util/virfdstream.c

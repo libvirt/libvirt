@@ -21,3 +21,5 @@
 
 #pragma once
 #include "internal.h"
+
+int virEventRequireImpl(void);
