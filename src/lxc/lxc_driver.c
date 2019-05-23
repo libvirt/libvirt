@@ -1559,6 +1559,7 @@ static int lxcStateInitialize(bool privileged,
 
     if (VIR_ALLOC(lxc_driver) < 0)
         return -1;
+    lxc_driver->lockFD = -1;
     if (virMutexInit(&lxc_driver->lock) < 0) {
         VIR_FREE(lxc_driver);
         return -1;
@@ -1604,6 +1605,10 @@ static int lxcStateInitialize(bool privileged,
                              cfg->stateDir);
         goto cleanup;
     }
+
+    if ((lxc_driver->lockFD =
+         virPidFileAcquire(cfg->stateDir, "driver", true, getpid())) < 0)
+        goto cleanup;
 
     /* Get all the running persistent or transient configs first */
     if (virDomainObjListLoadAllConfigs(lxc_driver->domains,
@@ -1696,6 +1701,10 @@ static int lxcStateCleanup(void)
     virObjectUnref(lxc_driver->caps);
     virObjectUnref(lxc_driver->securityManager);
     virObjectUnref(lxc_driver->xmlopt);
+
+    if (lxc_driver->lockFD != -1)
+        virPidFileRelease(lxc_driver->config->stateDir, "driver", lxc_driver->lockFD);
+
     virObjectUnref(lxc_driver->config);
     virMutexDestroy(&lxc_driver->lock);
     VIR_FREE(lxc_driver);

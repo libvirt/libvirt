@@ -70,6 +70,9 @@ struct _virLXCDriver {
      * then lockless thereafter */
     virLXCDriverConfigPtr config;
 
+    /* pid file FD, ensures two copies of the driver can't use the same root */
+    int lockFD;
+
     /* Require lock to get a reference on the object,
      * lockless access thereafter */
     virCapsPtr caps;
