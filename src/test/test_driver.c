@@ -6072,6 +6072,42 @@ testDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
     return 0;
 }
 
+static int
+testDomainMemoryPeek(virDomainPtr dom,
+                     unsigned long long start,
+                     size_t size,
+                     void *buffer,
+                     unsigned int flags)
+{
+    int ret = -1;
+    size_t i;
+    unsigned char b = start;
+    virDomainObjPtr vm = NULL;
+
+    virCheckFlags(VIR_MEMORY_VIRTUAL | VIR_MEMORY_PHYSICAL, -1);
+
+    if (flags != VIR_MEMORY_VIRTUAL && flags != VIR_MEMORY_PHYSICAL) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       "%s", _("flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"));
+        goto cleanup;
+    }
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto cleanup;
+
+    for (i = 0; i < size; i++)
+        ((unsigned char *) buffer)[i] = b++;
+
+    ret = 0;
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
 
 /*
  * Snapshot APIs
@@ -6970,6 +7006,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainManagedSave = testDomainManagedSave, /* 1.1.4 */
     .domainHasManagedSaveImage = testDomainHasManagedSaveImage, /* 1.1.4 */
     .domainManagedSaveRemove = testDomainManagedSaveRemove, /* 1.1.4 */
+    .domainMemoryPeek = testDomainMemoryPeek, /* 5.4.0 */
 
     .domainSnapshotNum = testDomainSnapshotNum, /* 1.1.4 */
     .domainSnapshotListNames = testDomainSnapshotListNames, /* 1.1.4 */
