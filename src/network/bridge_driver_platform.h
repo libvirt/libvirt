@@ -34,6 +34,9 @@ struct _virNetworkDriverState {
     /* Read-only */
     bool privileged;
 
+    /* pid file FD, ensures two copies of the driver can't use the same root */
+    int lockFD;
+
     /* Immutable pointer, self-locking APIs */
     virNetworkObjListPtr networks;
 

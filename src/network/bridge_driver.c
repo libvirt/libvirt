@@ -597,6 +597,7 @@ networkStateInitialize(bool privileged,
     if (VIR_ALLOC(network_driver) < 0)
         goto error;
 
+    network_driver->lockFD = -1;
     if (virMutexInit(&network_driver->lock) < 0) {
         VIR_FREE(network_driver);
         goto error;
@@ -650,6 +651,11 @@ networkStateInitialize(bool privileged,
                              network_driver->stateDir);
         goto error;
     }
+
+    if ((network_driver->lockFD =
+         virPidFileAcquire(network_driver->stateDir, "driver",
+                           true, getpid())) < 0)
+        goto error;
 
     /* if this fails now, it will be retried later with dnsmasqCapsRefresh() */
     network_driver->dnsmasqCaps = dnsmasqCapsNewFromBinary(DNSMASQ);
@@ -763,6 +769,10 @@ networkStateCleanup(void)
 
     /* free inactive networks */
     virObjectUnref(network_driver->networks);
+
+    if (network_driver->lockFD != -1)
+        virPidFileRelease(network_driver->stateDir, "driver",
+                          network_driver->lockFD);
 
     VIR_FREE(network_driver->networkConfigDir);
     VIR_FREE(network_driver->networkAutostartDir);
