@@ -3228,6 +3228,71 @@ static int testDomainBlockStats(virDomainPtr domain,
 }
 
 static int
+testDomainInterfaceAddresses(virDomainPtr dom,
+                             virDomainInterfacePtr **ifaces,
+                             unsigned int source ATTRIBUTE_UNUSED,
+                             unsigned int flags)
+{
+    size_t i;
+    size_t ifaces_count = 0;
+    int ret = -1;
+    char macaddr[VIR_MAC_STRING_BUFLEN];
+    virDomainObjPtr vm = NULL;
+    virDomainInterfacePtr iface = NULL;
+    virDomainInterfacePtr *ifaces_ret = NULL;
+
+    virCheckFlags(0, -1);
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto cleanup;
+
+    if (VIR_ALLOC_N(ifaces_ret, vm->def->nnets) < 0)
+        goto cleanup;
+
+    for (i = 0; i < vm->def->nnets; i++) {
+        if (VIR_ALLOC(iface) < 0)
+            goto cleanup;
+
+        if (VIR_STRDUP(iface->name, vm->def->nets[i]->ifname) < 0)
+            goto cleanup;
+
+        virMacAddrFormat(&(vm->def->nets[i]->mac), macaddr);
+        if (VIR_STRDUP(iface->hwaddr, macaddr) < 0)
+            goto cleanup;
+
+        if (VIR_ALLOC(iface->addrs) < 0)
+            goto cleanup;
+
+        iface->addrs[0].type = VIR_IP_ADDR_TYPE_IPV4;
+        iface->addrs[0].prefix = 24;
+        if (virAsprintf(&iface->addrs[0].addr, "192.168.0.%ld", 1 + i) < 0)
+            goto cleanup;
+
+        iface->naddrs = 1;
+
+        VIR_APPEND_ELEMENT_INPLACE(ifaces_ret, ifaces_count, iface);
+    }
+
+    VIR_STEAL_PTR(*ifaces, ifaces_ret);
+    ret = ifaces_count;
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+
+    if (ifaces_ret) {
+        for (i = 0; i < ifaces_count; i++)
+            virDomainInterfaceFree(ifaces_ret[i]);
+    }
+    virDomainInterfaceFree(iface);
+
+    VIR_FREE(ifaces_ret);
+    return ret;
+}
+
+static int
 testDomainInterfaceStats(virDomainPtr domain,
                          const char *device,
                          virDomainInterfaceStatsPtr stats)
@@ -6883,6 +6948,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainSetSchedulerParameters = testDomainSetSchedulerParameters, /* 0.3.2 */
     .domainSetSchedulerParametersFlags = testDomainSetSchedulerParametersFlags, /* 0.9.2 */
     .domainBlockStats = testDomainBlockStats, /* 0.7.0 */
+    .domainInterfaceAddresses = testDomainInterfaceAddresses, /* 5.4.0 */
     .domainInterfaceStats = testDomainInterfaceStats, /* 0.7.0 */
     .nodeGetCellsFreeMemory = testNodeGetCellsFreeMemory, /* 0.4.2 */
     .connectDomainEventRegister = testConnectDomainEventRegister, /* 0.6.0 */
