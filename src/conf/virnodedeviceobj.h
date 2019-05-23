@@ -37,6 +37,11 @@ typedef virNodeDeviceDriverState *virNodeDeviceDriverStatePtr;
 struct _virNodeDeviceDriverState {
     virMutex lock;
 
+    /* pid file FD, ensures two copies of the driver can't use the same root */
+    int lockFD;
+
+    char *stateDir;
+
     virNodeDeviceObjListPtr devs;       /* currently-known devices */
     void *privateData;                  /* driver-specific private data */
     bool privileged;                    /* whether we run in privileged mode */

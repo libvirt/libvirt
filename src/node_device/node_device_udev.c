@@ -38,9 +38,12 @@
 #include "virbuffer.h"
 #include "virfile.h"
 #include "virpci.h"
+#include "virpidfile.h"
 #include "virstring.h"
 #include "virnetdev.h"
 #include "virmdev.h"
+
+#include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_NODEDEV
 
@@ -1494,6 +1497,11 @@ nodeStateCleanup(void)
     virObjectUnref(driver->nodeDeviceEventState);
 
     virNodeDeviceObjListFree(driver->devs);
+
+    if (driver->lockFD != -1)
+        virPidFileRelease(driver->stateDir, "driver", driver->lockFD);
+
+    VIR_FREE(driver->stateDir);
     virMutexDestroy(&driver->lock);
     VIR_FREE(driver);
 
@@ -1810,6 +1818,7 @@ nodeStateInitialize(bool privileged,
     if (VIR_ALLOC(driver) < 0)
         return -1;
 
+    driver->lockFD = -1;
     if (virMutexInit(&driver->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unable to initialize mutex"));
@@ -1818,6 +1827,29 @@ nodeStateInitialize(bool privileged,
     }
 
     driver->privileged = privileged;
+
+    if (privileged) {
+        if (virAsprintf(&driver->stateDir,
+                        "%s/run/libvirt/nodedev", LOCALSTATEDIR) < 0)
+            goto cleanup;
+    } else {
+        VIR_AUTOFREE(char *) rundir = NULL;
+
+        if (!(rundir = virGetUserRuntimeDirectory()))
+            goto cleanup;
+        if (virAsprintf(&driver->stateDir, "%s/nodedev/run", rundir) < 0)
+            goto cleanup;
+    }
+
+    if (virFileMakePathWithMode(driver->stateDir, S_IRWXU) < 0) {
+        virReportSystemError(errno, _("cannot create state directory '%s'"),
+                             driver->stateDir);
+        goto cleanup;
+    }
+
+    if ((driver->lockFD =
+         virPidFileAcquire(driver->stateDir, "driver", true, getpid())) < 0)
+        goto cleanup;
 
     if (!(driver->devs = virNodeDeviceObjListNew()) ||
         !(priv = udevEventDataNew()))

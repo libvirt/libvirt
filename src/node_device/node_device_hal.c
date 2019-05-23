@@ -33,9 +33,12 @@
 #include "viralloc.h"
 #include "viruuid.h"
 #include "virpci.h"
+#include "virpidfile.h"
 #include "virlog.h"
 #include "virdbus.h"
 #include "virstring.h"
+
+#include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_NODEDEV
 
@@ -606,11 +609,35 @@ nodeStateInitialize(bool privileged ATTRIBUTE_UNUSED,
     if (VIR_ALLOC(driver) < 0)
         return -1;
 
+    driver->lockFD = -1;
     if (virMutexInit(&driver->lock) < 0) {
         VIR_FREE(driver);
         return -1;
     }
     nodeDeviceLock();
+
+    if (privileged) {
+        if (virAsprintf(&driver->stateDir,
+                        "%s/run/libvirt/nodedev", LOCALSTATEDIR) < 0)
+            goto failure;
+    } else {
+        VIR_AUTOFREE(char *) rundir = NULL;
+
+        if (!(rundir = virGetUserRuntimeDirectory()))
+            goto failure;
+        if (virAsprintf(&driver->stateDir, "%s/nodedev/run", rundir) < 0)
+            goto failure;
+    }
+
+    if (virFileMakePathWithMode(driver->stateDir, S_IRWXU) < 0) {
+        virReportSystemError(errno, _("cannot create state directory '%s'"),
+                             driver->stateDir);
+        goto failure;
+    }
+
+    if ((driver->lockFD =
+         virPidFileAcquire(driver->stateDir, "driver", true, getpid())) < 0)
+        goto failure;
 
     if (!(driver->devs = virNodeDeviceObjListNew()))
         goto failure;
@@ -708,6 +735,10 @@ nodeStateCleanup(void)
         virNodeDeviceObjListFree(driver->devs);
         (void)libhal_ctx_shutdown(hal_ctx, NULL);
         (void)libhal_ctx_free(hal_ctx);
+        if (driver->lockFD != -1)
+            virPidFileRelease(driver->stateDir, "driver", driver->lockFD);
+
+        VIR_FREE(driver->stateDir);
         nodeDeviceUnlock();
         virMutexDestroy(&driver->lock);
         VIR_FREE(driver);
