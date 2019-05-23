@@ -5803,7 +5803,8 @@ virDomainDefPostParse(virDomainDefPtr def,
     /* iterate the devices */
     ret = virDomainDeviceInfoIterateInternal(def,
                                              virDomainDefPostParseDeviceIterator,
-                                             DOMAIN_DEVICE_ITERATE_ALL_CONSOLES,
+                                             DOMAIN_DEVICE_ITERATE_ALL_CONSOLES |
+                                             DOMAIN_DEVICE_ITERATE_MISSING_INFO,
                                              &data);
 
     if (virDomainDefPostParseCheckFailure(def, parseFlags, ret) < 0)
