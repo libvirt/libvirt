@@ -2602,9 +2602,6 @@ virDomainChrSourceDefDispose(void *obj)
     virDomainChrSourceDefPtr def = obj;
     size_t i;
 
-    if (!def)
-        return;
-
     virDomainChrSourceDefClear(def);
     virObjectUnref(def->privateData);
 

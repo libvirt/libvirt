@@ -156,9 +156,6 @@ virStorageVolObjDispose(void *opaque)
 {
     virStorageVolObjPtr obj = opaque;
 
-    if (!obj)
-        return;
-
     virStorageVolDefFree(obj->voldef);
 }
 
@@ -189,9 +186,6 @@ static void
 virStorageVolObjListDispose(void *opaque)
 {
     virStorageVolObjListPtr vols = opaque;
-
-    if (!vols)
-        return;
 
     virHashFree(vols->objsKey);
     virHashFree(vols->objsName);
@@ -361,9 +355,6 @@ void
 virStoragePoolObjDispose(void *opaque)
 {
     virStoragePoolObjPtr obj = opaque;
-
-    if (!obj)
-        return;
 
     virStoragePoolObjClearVols(obj);
     virObjectUnref(obj->volumes);

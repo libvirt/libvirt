@@ -135,9 +135,6 @@ virNetSSHSessionDispose(void *obj)
     virNetSSHSessionPtr sess = obj;
     VIR_DEBUG("sess=0x%p", sess);
 
-    if (!sess)
-        return;
-
     if (sess->channel) {
         libssh2_channel_send_eof(sess->channel);
         libssh2_channel_close(sess->channel);

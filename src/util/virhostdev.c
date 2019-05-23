@@ -131,9 +131,6 @@ virHostdevManagerDispose(void *obj)
 {
     virHostdevManagerPtr hostdevMgr = obj;
 
-    if (!hostdevMgr)
-        return;
-
     virObjectUnref(hostdevMgr->activePCIHostdevs);
     virObjectUnref(hostdevMgr->inactivePCIHostdevs);
     virObjectUnref(hostdevMgr->activeUSBHostdevs);
