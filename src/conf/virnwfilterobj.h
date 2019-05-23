@@ -36,10 +36,14 @@ struct _virNWFilterDriverState {
     virMutex lock;
     bool privileged;
 
+    /* pid file FD, ensures two copies of the driver can't use the same root */
+    int lockFD;
+
     virNWFilterObjListPtr nwfilters;
 
     virNWFilterBindingObjListPtr bindings;
 
+    char *stateDir;
     char *configDir;
     char *bindingDir;
 };

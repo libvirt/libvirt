@@ -38,6 +38,7 @@
 #include "nwfilter_gentech_driver.h"
 #include "configmake.h"
 #include "virfile.h"
+#include "virpidfile.h"
 #include "virstring.h"
 #include "viraccessapicheck.h"
 
@@ -188,6 +189,7 @@ nwfilterStateInitialize(bool privileged,
     if (VIR_ALLOC(driver) < 0)
         return -1;
 
+    driver->lockFD = -1;
     if (virMutexInit(&driver->lock) < 0)
         goto err_free_driverstate;
 
@@ -202,6 +204,19 @@ nwfilterStateInitialize(bool privileged,
         return 0;
 
     nwfilterDriverLock();
+
+    if (VIR_STRDUP(driver->stateDir, LOCALSTATEDIR "/run/libvirt/nwfilter") < 0)
+        goto error;
+
+    if (virFileMakePathWithMode(driver->stateDir, S_IRWXU) < 0) {
+        virReportSystemError(errno, _("cannot create state directory '%s'"),
+                             driver->stateDir);
+        goto error;
+    }
+
+    if ((driver->lockFD =
+         virPidFileAcquire(driver->stateDir, "driver", true, getpid())) < 0)
+        goto error;
 
     if (virNWFilterIPAddrMapInit() < 0)
         goto err_free_driverstate;
@@ -346,6 +361,10 @@ nwfilterStateCleanup(void)
 
         nwfilterDriverRemoveDBusMatches();
 
+        if (driver->lockFD != -1)
+            virPidFileRelease(driver->stateDir, "driver", driver->lockFD);
+
+        VIR_FREE(driver->stateDir);
         VIR_FREE(driver->configDir);
         VIR_FREE(driver->bindingDir);
         nwfilterDriverUnlock();
