@@ -43,6 +43,7 @@
 #include "virlog.h"
 #include "virfile.h"
 #include "virfdstream.h"
+#include "virpidfile.h"
 #include "configmake.h"
 #include "virsecret.h"
 #include "virstring.h"
@@ -256,6 +257,7 @@ storageStateInitialize(bool privileged,
     if (VIR_ALLOC(driver) < 0)
         return -1;
 
+    driver->lockFD = -1;
     if (virMutexInit(&driver->lock) < 0) {
         VIR_FREE(driver);
         return -1;
@@ -295,6 +297,11 @@ storageStateInitialize(bool privileged,
                        driver->stateDir);
         goto error;
     }
+
+    if ((driver->lockFD =
+         virPidFileAcquire(driver->stateDir, "driver",
+                           true, getpid())) < 0)
+        goto error;
 
     if (virStoragePoolObjLoadAllState(driver->pools,
                                       driver->stateDir) < 0)
@@ -370,6 +377,10 @@ storageStateCleanup(void)
 
     /* free inactive pools */
     virObjectUnref(driver->pools);
+
+    if (driver->lockFD != -1)
+        virPidFileRelease(driver->stateDir, "driver",
+                          driver->lockFD);
 
     VIR_FREE(driver->configDir);
     VIR_FREE(driver->autostartDir);
