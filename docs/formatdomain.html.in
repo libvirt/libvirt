@@ -8924,7 +8924,7 @@ qemu-kvm -net nic,model=? /dev/null
 
     <p>Note: DEA/TDEA is synonymous with DES/TDES.</p>
 
-    <h3><a id="sev">Launch Security</a></h3>
+    <h3><a id="launchSecurity">Launch Security</a></h3>
 
     <p>
        The contents of the <code>&lt;launchSecurity type='sev'&gt;</code> element
