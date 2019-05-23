@@ -70,6 +70,7 @@
 #include "node_device_conf.h"
 #include "virpci.h"
 #include "virusb.h"
+#include "virpidfile.h"
 #include "virprocess.h"
 #include "libvirt_internal.h"
 #include "virxml.h"
@@ -587,6 +588,8 @@ qemuStateInitialize(bool privileged,
     if (VIR_ALLOC(qemu_driver) < 0)
         return -1;
 
+    qemu_driver->lockFD = -1;
+
     if (virMutexInit(&qemu_driver->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("cannot initialize mutex"));
@@ -672,6 +675,10 @@ qemuStateInitialize(bool privileged,
                              cfg->memoryBackingDir);
         goto error;
     }
+
+    if ((qemu_driver->lockFD =
+         virPidFileAcquire(cfg->stateDir, "driver", true, getpid())) < 0)
+        goto error;
 
     qemu_driver->qemuImgBinary = virFindFileInPath("qemu-img");
 
@@ -1032,6 +1039,8 @@ qemuStateCleanup(void)
     if (!qemu_driver)
         return -1;
 
+    if (qemu_driver->lockFD != -1)
+        virPidFileRelease(qemu_driver->config->stateDir, "driver", qemu_driver->lockFD);
     virThreadPoolFree(qemu_driver->workerPool);
     virObjectUnref(qemu_driver->config);
     virObjectUnref(qemu_driver->hostdevMgr);

@@ -221,6 +221,9 @@ struct _virQEMUDriver {
      * then lockless thereafter */
     virQEMUDriverConfigPtr config;
 
+    /* pid file FD, ensures two copies of the driver can't use the same root */
+    int lockFD;
+
     /* Immutable pointer, self-locking APIs */
     virThreadPoolPtr workerPool;
 
