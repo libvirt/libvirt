@@ -6695,16 +6695,18 @@ qemuProcessLaunch(virConnectPtr conn,
 
     /* wait for qemu process to show up */
     if (rv == 0) {
-        if (virPidFileReadPath(priv->pidfile, &vm->pid) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Domain %s didn't show up"), vm->def->name);
-            rv = -1;
+        if ((rv = virPidFileReadPath(priv->pidfile, &vm->pid)) < 0) {
+            virReportSystemError(-rv,
+                                 _("Domain %s didn't show up"),
+                                 vm->def->name);
+            goto cleanup;
         }
         VIR_DEBUG("QEMU vm=%p name=%s running with pid=%lld",
                   vm, vm->def->name, (long long)vm->pid);
     } else {
         VIR_DEBUG("QEMU vm=%p name=%s failed to spawn",
                   vm, vm->def->name);
+        goto cleanup;
     }
 
     VIR_DEBUG("Writing early domain status to disk");
