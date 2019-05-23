@@ -37,6 +37,7 @@
 #include "viruuid.h"
 #include "virerror.h"
 #include "virfile.h"
+#include "virpidfile.h"
 #include "configmake.h"
 #include "virstring.h"
 #include "viraccessapicheck.h"
@@ -56,7 +57,11 @@ struct _virSecretDriverState {
     virMutex lock;
     bool privileged; /* readonly */
     virSecretObjListPtr secrets;
+    char *stateDir;
     char *configDir;
+
+    /* pid file FD, ensures two copies of the driver can't use the same root */
+    int lockFD;
 
     /* Immutable pointer, self-locking APIs */
     virObjectEventStatePtr secretEventState;
@@ -434,6 +439,10 @@ secretStateCleanup(void)
 
     virObjectUnref(driver->secretEventState);
 
+    if (driver->lockFD != -1)
+        virPidFileRelease(driver->stateDir, "driver", driver->lockFD);
+
+    VIR_FREE(driver->stateDir);
     secretDriverUnlock();
     virMutexDestroy(&driver->lock);
     VIR_FREE(driver);
@@ -447,11 +456,10 @@ secretStateInitialize(bool privileged,
                       virStateInhibitCallback callback ATTRIBUTE_UNUSED,
                       void *opaque ATTRIBUTE_UNUSED)
 {
-    char *base = NULL;
-
     if (VIR_ALLOC(driver) < 0)
         return -1;
 
+    driver->lockFD = -1;
     if (virMutexInit(&driver->lock) < 0) {
         VIR_FREE(driver);
         return -1;
@@ -462,21 +470,42 @@ secretStateInitialize(bool privileged,
     driver->privileged = privileged;
 
     if (privileged) {
-        if (VIR_STRDUP(base, SYSCONFDIR "/libvirt") < 0)
+        if (virAsprintf(&driver->configDir,
+                        "%s/libvirt/secrets", SYSCONFDIR) < 0)
+            goto error;
+        if (virAsprintf(&driver->stateDir,
+                        "%s/run/libvirt/secrets", LOCALSTATEDIR) < 0)
             goto error;
     } else {
-        if (!(base = virGetUserConfigDirectory()))
+        VIR_AUTOFREE(char *) rundir = NULL;
+        VIR_AUTOFREE(char *) cfgdir = NULL;
+
+        if (!(cfgdir = virGetUserConfigDirectory()))
+            goto error;
+        if (virAsprintf(&driver->configDir, "%s/secrets/", cfgdir) < 0)
+            goto error;
+
+        if (!(rundir = virGetUserRuntimeDirectory()))
+            goto error;
+        if (virAsprintf(&driver->stateDir, "%s/secrets/run", rundir) < 0)
             goto error;
     }
-    if (virAsprintf(&driver->configDir, "%s/secrets", base) < 0)
-        goto error;
-    VIR_FREE(base);
 
     if (virFileMakePathWithMode(driver->configDir, S_IRWXU) < 0) {
         virReportSystemError(errno, _("cannot create config directory '%s'"),
                              driver->configDir);
         goto error;
     }
+
+    if (virFileMakePathWithMode(driver->stateDir, S_IRWXU) < 0) {
+        virReportSystemError(errno, _("cannot create state directory '%s'"),
+                             driver->stateDir);
+        goto error;
+    }
+
+    if ((driver->lockFD =
+         virPidFileAcquire(driver->stateDir, "driver", true, getpid())) < 0)
+        goto error;
 
     if (!(driver->secrets = virSecretObjListNew()))
         goto error;
@@ -488,7 +517,6 @@ secretStateInitialize(bool privileged,
     return 0;
 
  error:
-    VIR_FREE(base);
     secretDriverUnlock();
     secretStateCleanup();
     return -1;
