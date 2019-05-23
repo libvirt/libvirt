@@ -41,6 +41,7 @@
 #include "vircommand.h"
 #include "configmake.h"
 #include "virfile.h"
+#include "virpidfile.h"
 #include "virstoragefile.h"
 #include "virstring.h"
 #include "cpu/cpu.h"
@@ -59,8 +60,13 @@ VIR_LOG_INIT("parallels.parallels_driver");
 
 #define PRLCTL                      "prlctl"
 
+#define VZ_STATEDIR LOCALSTATEDIR "/run/libvirt/vz"
+
 static virClassPtr vzDriverClass;
 
+static bool vz_driver_privileged;
+/* pid file FD, ensures two copies of the driver can't use the same root */
+static int vz_driver_lock_fd = -1;
 static virMutex vz_driver_lock;
 static vzDriverPtr vz_driver;
 static vzConnPtr vz_conn_list;
@@ -166,6 +172,11 @@ VIR_ONCE_GLOBAL_INIT(vzDriver);
 vzDriverPtr
 vzGetDriverConnection(void)
 {
+    if (!vz_driver_privileged) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("vz state driver is not active"));
+        return NULL;
+    }
     virMutexLock(&vz_driver_lock);
     if (!vz_driver)
         vz_driver = vzDriverObjNew();
@@ -4090,18 +4101,37 @@ static virConnectDriver vzConnectDriver = {
 static int
 vzStateCleanup(void)
 {
-    virObjectUnref(vz_driver);
-    vz_driver = NULL;
-    virMutexDestroy(&vz_driver_lock);
-    prlsdkDeinit();
+    if (vz_driver_privileged) {
+        virObjectUnref(vz_driver);
+        vz_driver = NULL;
+        if (vz_driver_lock_fd != -1)
+            virPidFileRelease(VZ_STATEDIR, "driver", vz_driver_lock_fd);
+        virMutexDestroy(&vz_driver_lock);
+        prlsdkDeinit();
+    }
     return 0;
 }
 
 static int
-vzStateInitialize(bool privileged ATTRIBUTE_UNUSED,
+vzStateInitialize(bool privileged,
                   virStateInhibitCallback callback ATTRIBUTE_UNUSED,
                   void *opaque ATTRIBUTE_UNUSED)
 {
+    if (!privileged)
+        return 0;
+
+    vz_driver_privileged = privileged;
+
+    if (virFileMakePathWithMode(VZ_STATEDIR, S_IRWXU) < 0) {
+        virReportSystemError(errno, _("cannot create state directory '%s'"),
+                             VZ_STATEDIR);
+        return -1;
+    }
+
+    if ((vz_driver_lock_fd =
+         virPidFileAcquire(VZ_STATEDIR, "driver", true, getpid())) < 0)
+        return -1;
+
     if (prlsdkInit() < 0) {
         VIR_DEBUG("%s", _("Can't initialize Parallels SDK"));
         return -1;
