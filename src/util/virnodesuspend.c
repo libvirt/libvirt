@@ -330,11 +330,10 @@ virNodeSuspendSupportsTarget(unsigned int target, bool *supported)
     if (ret == -2)
         ret = virNodeSuspendSupportsTargetPMUtils(target, supported);
 
-    /* If still unavailable, then report error */
+    /* If still unavailable, then report unsupported */
     if (ret == -2) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot probe for supported suspend types"));
-        ret = -1;
+        *supported = false;
+        ret = 0;
     }
 
     return ret;
