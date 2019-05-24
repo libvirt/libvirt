@@ -754,7 +754,8 @@ storagePoolCreateXML(virConnectPtr conn,
     if ((backend = virStorageBackendForType(newDef->type)) == NULL)
         goto cleanup;
 
-    if (!(obj = virStoragePoolObjListAdd(driver->pools, newDef, true)))
+    if (!(obj = virStoragePoolObjListAdd(driver->pools, newDef,
+                                         VIR_STORAGE_POOL_OBJ_LIST_ADD_CHECK_LIVE)))
         goto cleanup;
     newDef = NULL;
     def = virStoragePoolObjGetDef(obj);
@@ -829,7 +830,7 @@ storagePoolDefineXML(virConnectPtr conn,
     if (virStorageBackendForType(newDef->type) == NULL)
         goto cleanup;
 
-    if (!(obj = virStoragePoolObjListAdd(driver->pools, newDef, false)))
+    if (!(obj = virStoragePoolObjListAdd(driver->pools, newDef, 0)))
         goto cleanup;
     newDef = virStoragePoolObjGetNewDef(obj);
     def = virStoragePoolObjGetDef(obj);

@@ -194,10 +194,14 @@ virStoragePoolObjVolumeListExport(virConnectPtr conn,
                                   virStorageVolPtr **vols,
                                   virStoragePoolVolumeACLFilter filter);
 
+typedef enum {
+    VIR_STORAGE_POOL_OBJ_LIST_ADD_CHECK_LIVE = (1 << 1),
+} virStoragePoolObjListFlags;
+
 virStoragePoolObjPtr
 virStoragePoolObjListAdd(virStoragePoolObjListPtr pools,
                          virStoragePoolDefPtr def,
-                         bool check_active);
+                         unsigned int flags);
 
 int
 virStoragePoolObjSaveDef(virStorageDriverStatePtr driver,

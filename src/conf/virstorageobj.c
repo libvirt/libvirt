@@ -1509,17 +1509,20 @@ virStoragePoolObjSourceFindDuplicate(virStoragePoolObjListPtr pools,
  * virStoragePoolObjListAdd:
  * @pools: Storage Pool object list pointer
  * @def: Storage pool definition to add or update
- * @check_active: If true, ensure that pool is not active
+ * @flags: bitwise-OR of VIR_STORAGE_POOL_OBJ_LIST_* flags
  *
  * Lookup the @def to see if it already exists in the @pools in order
  * to either update or add if it does not exist.
+ *
+ * If VIR_STORAGE_POOL_OBJ_LIST_ADD_CHECK_LIVE is set in @flags
+ * then this will fail if the pool exists and is active.
  *
  * Returns locked and reffed object pointer or NULL on error
  */
 virStoragePoolObjPtr
 virStoragePoolObjListAdd(virStoragePoolObjListPtr pools,
                          virStoragePoolDefPtr def,
-                         bool check_active)
+                         unsigned int flags)
 {
     virStoragePoolObjPtr obj = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -1530,7 +1533,9 @@ virStoragePoolObjListAdd(virStoragePoolObjListPtr pools,
     if (virStoragePoolObjSourceFindDuplicate(pools, def) < 0)
         goto error;
 
-    rc = virStoragePoolObjIsDuplicate(pools, def, check_active, &obj);
+    rc = virStoragePoolObjIsDuplicate(pools, def,
+                                      !!(flags & VIR_STORAGE_POOL_OBJ_LIST_ADD_CHECK_LIVE),
+                                      &obj);
 
     if (rc < 0)
         goto error;
@@ -1590,7 +1595,7 @@ virStoragePoolObjLoad(virStoragePoolObjListPtr pools,
         return NULL;
     }
 
-    if (!(obj = virStoragePoolObjListAdd(pools, def, false)))
+    if (!(obj = virStoragePoolObjListAdd(pools, def, 0)))
         return NULL;
     def = NULL;
 
@@ -1651,7 +1656,8 @@ virStoragePoolObjLoadState(virStoragePoolObjListPtr pools,
     }
 
     /* create the object */
-    if (!(obj = virStoragePoolObjListAdd(pools, def, true)))
+    if (!(obj = virStoragePoolObjListAdd(pools, def,
+                                         VIR_STORAGE_POOL_OBJ_LIST_ADD_CHECK_LIVE)))
         goto cleanup;
     def = NULL;
 
