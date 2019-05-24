@@ -755,6 +755,7 @@ storagePoolCreateXML(virConnectPtr conn,
         goto cleanup;
 
     if (!(obj = virStoragePoolObjListAdd(driver->pools, newDef,
+                                         VIR_STORAGE_POOL_OBJ_LIST_ADD_LIVE |
                                          VIR_STORAGE_POOL_OBJ_LIST_ADD_CHECK_LIVE)))
         goto cleanup;
     newDef = NULL;
@@ -801,7 +802,7 @@ storagePoolCreateXML(virConnectPtr conn,
     return pool;
 
  error:
-    virStoragePoolObjRemove(driver->pools, obj);
+    virStoragePoolUpdateInactive(obj);
     goto cleanup;
 }
 
