@@ -195,9 +195,9 @@ virStoragePoolObjVolumeListExport(virConnectPtr conn,
                                   virStoragePoolVolumeACLFilter filter);
 
 virStoragePoolObjPtr
-virStoragePoolObjAssignDef(virStoragePoolObjListPtr pools,
-                           virStoragePoolDefPtr def,
-                           bool check_active);
+virStoragePoolObjListAdd(virStoragePoolObjListPtr pools,
+                         virStoragePoolDefPtr def,
+                         bool check_active);
 
 int
 virStoragePoolObjSaveDef(virStorageDriverStatePtr driver,

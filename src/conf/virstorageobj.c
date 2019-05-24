@@ -1506,7 +1506,7 @@ virStoragePoolObjSourceFindDuplicate(virStoragePoolObjListPtr pools,
 
 
 /**
- * virStoragePoolObjAssignDef:
+ * virStoragePoolObjListAdd:
  * @pools: Storage Pool object list pointer
  * @def: Storage pool definition to add or update
  * @check_active: If true, ensure that pool is not active
@@ -1517,9 +1517,9 @@ virStoragePoolObjSourceFindDuplicate(virStoragePoolObjListPtr pools,
  * Returns locked and reffed object pointer or NULL on error
  */
 virStoragePoolObjPtr
-virStoragePoolObjAssignDef(virStoragePoolObjListPtr pools,
-                           virStoragePoolDefPtr def,
-                           bool check_active)
+virStoragePoolObjListAdd(virStoragePoolObjListPtr pools,
+                         virStoragePoolDefPtr def,
+                         bool check_active)
 {
     virStoragePoolObjPtr obj = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -1590,7 +1590,7 @@ virStoragePoolObjLoad(virStoragePoolObjListPtr pools,
         return NULL;
     }
 
-    if (!(obj = virStoragePoolObjAssignDef(pools, def, false)))
+    if (!(obj = virStoragePoolObjListAdd(pools, def, false)))
         return NULL;
     def = NULL;
 
@@ -1651,7 +1651,7 @@ virStoragePoolObjLoadState(virStoragePoolObjListPtr pools,
     }
 
     /* create the object */
-    if (!(obj = virStoragePoolObjAssignDef(pools, def, true)))
+    if (!(obj = virStoragePoolObjListAdd(pools, def, true)))
         goto cleanup;
     def = NULL;
 
