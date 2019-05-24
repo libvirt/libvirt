@@ -3268,7 +3268,7 @@ testDomainInterfaceAddresses(virDomainPtr dom,
 
         iface->addrs[0].type = VIR_IP_ADDR_TYPE_IPV4;
         iface->addrs[0].prefix = 24;
-        if (virAsprintf(&iface->addrs[0].addr, "192.168.0.%ld", 1 + i) < 0)
+        if (virAsprintf(&iface->addrs[0].addr, "192.168.0.%zu", 1 + i) < 0)
             goto cleanup;
 
         iface->naddrs = 1;
