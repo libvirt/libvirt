@@ -113,7 +113,7 @@ storagePoolRefreshImpl(virStorageBackendPtr backend,
 
 /**
  * virStoragePoolUpdateInactive:
- * @poolptr: pointer to a variable holding the pool object pointer
+ * @objptr: pointer to a variable holding the pool object pointer
  *
  * This function is supposed to be called after a pool becomes inactive. The
  * function switches to the new config object for persistent pools. Inactive
