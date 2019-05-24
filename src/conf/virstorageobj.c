@@ -1505,6 +1505,21 @@ virStoragePoolObjSourceFindDuplicate(virStoragePoolObjListPtr pools,
 }
 
 
+static void
+virStoragePoolObjAssignDef(virStoragePoolObjPtr obj,
+                           virStoragePoolDefPtr def,
+                           unsigned int flgs ATTRIBUTE_UNUSED)
+{
+    if (!virStoragePoolObjIsActive(obj)) {
+        virStoragePoolDefFree(obj->def);
+        obj->def = def;
+    } else {
+        virStoragePoolDefFree(obj->newDef);
+        obj->newDef = def;
+    }
+}
+
+
 /**
  * virStoragePoolObjListAdd:
  * @pools: Storage Pool object list pointer
@@ -1540,13 +1555,7 @@ virStoragePoolObjListAdd(virStoragePoolObjListPtr pools,
     if (rc < 0)
         goto error;
     if (rc > 0) {
-        if (!virStoragePoolObjIsActive(obj)) {
-            virStoragePoolDefFree(obj->def);
-            obj->def = def;
-        } else {
-            virStoragePoolDefFree(obj->newDef);
-            obj->newDef = def;
-        }
+        virStoragePoolObjAssignDef(obj, def, flags);
         virObjectRWUnlock(pools);
         return obj;
     }
