@@ -514,7 +514,6 @@ virStoragePoolObjRemove(virStoragePoolObjListPtr pools,
     virObjectLock(obj);
     virHashRemoveEntry(pools->objs, uuidstr);
     virHashRemoveEntry(pools->objsName, obj->def->name);
-    virObjectUnlock(obj);
     virObjectUnref(obj);
     virObjectRWUnlock(pools);
 }
@@ -1594,13 +1593,13 @@ virStoragePoolObjLoad(virStoragePoolObjListPtr pools,
     VIR_FREE(obj->configFile);  /* for driver reload */
     if (VIR_STRDUP(obj->configFile, path) < 0) {
         virStoragePoolObjRemove(pools, obj);
-        virObjectUnref(obj);
+        virStoragePoolObjEndAPI(&obj);
         return NULL;
     }
     VIR_FREE(obj->autostartLink); /* for driver reload */
     if (VIR_STRDUP(obj->autostartLink, autostartLink) < 0) {
         virStoragePoolObjRemove(pools, obj);
-        virObjectUnref(obj);
+        virStoragePoolObjEndAPI(&obj);
         return NULL;
     }
 

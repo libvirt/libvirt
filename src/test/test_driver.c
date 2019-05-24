@@ -6450,16 +6450,12 @@ testStoragePoolCreateXML(virConnectPtr conn,
                             def->source.adapter.data.fchost.wwnn,
                             def->source.adapter.data.fchost.wwpn) < 0) {
             virStoragePoolObjRemove(privconn->pools, obj);
-            virObjectUnref(obj);
-            obj = NULL;
             goto cleanup;
         }
     }
 
     if (testStoragePoolObjSetDefaults(obj) == -1) {
         virStoragePoolObjRemove(privconn->pools, obj);
-        virObjectUnref(obj);
-        obj = NULL;
         goto cleanup;
     }
 
@@ -6517,8 +6513,6 @@ testStoragePoolDefineXML(virConnectPtr conn,
 
     if (testStoragePoolObjSetDefaults(obj) == -1) {
         virStoragePoolObjRemove(privconn->pools, obj);
-        virObjectUnref(obj);
-        obj = NULL;
         goto cleanup;
     }
 
@@ -6547,7 +6541,7 @@ testStoragePoolUndefine(virStoragePoolPtr pool)
                                             0);
 
     virStoragePoolObjRemove(privconn->pools, obj);
-    virObjectUnref(obj);
+    virStoragePoolObjEndAPI(&obj);
 
     virObjectEventStateQueue(privconn->eventState, event);
     return 0;
@@ -6639,11 +6633,9 @@ testStoragePoolDestroy(virStoragePoolPtr pool)
                                             VIR_STORAGE_POOL_EVENT_STOPPED,
                                             0);
 
-    if (!(virStoragePoolObjGetConfigFile(obj))) {
+    if (!(virStoragePoolObjGetConfigFile(obj)))
         virStoragePoolObjRemove(privconn->pools, obj);
-        virObjectUnref(obj);
-        obj = NULL;
-    }
+
     ret = 0;
 
  cleanup:
