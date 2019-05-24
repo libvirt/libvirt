@@ -113,20 +113,17 @@ storagePoolRefreshImpl(virStorageBackendPtr backend,
 
 /**
  * virStoragePoolUpdateInactive:
- * @objptr: pointer to a variable holding the pool object pointer
+ * @obj: pool object
  *
  * This function is supposed to be called after a pool becomes inactive. The
  * function switches to the new config object for persistent pools. Inactive
  * pools are removed.
  */
 static void
-virStoragePoolUpdateInactive(virStoragePoolObjPtr *objptr)
+virStoragePoolUpdateInactive(virStoragePoolObjPtr obj)
 {
-    virStoragePoolObjPtr obj = *objptr;
-
     if (!virStoragePoolObjGetConfigFile(obj)) {
         virStoragePoolObjRemove(driver->pools, obj);
-        virStoragePoolObjEndAPI(objptr);
     } else if (virStoragePoolObjGetNewDef(obj)) {
         virStoragePoolObjDefUseNewDef(obj);
     }
@@ -177,7 +174,7 @@ storagePoolUpdateStateCallback(virStoragePoolObjPtr obj,
     virStoragePoolObjSetActive(obj, active);
 
     if (!virStoragePoolObjIsActive(obj))
-        virStoragePoolUpdateInactive(&obj);
+        virStoragePoolUpdateInactive(obj);
 
     return;
 }
@@ -1087,7 +1084,7 @@ storagePoolDestroy(virStoragePoolPtr pool)
 
     virStoragePoolObjSetActive(obj, false);
 
-    virStoragePoolUpdateInactive(&obj);
+    virStoragePoolUpdateInactive(obj);
 
     ret = 0;
 
@@ -1205,7 +1202,7 @@ storagePoolRefresh(virStoragePoolPtr pool,
                                                 0);
         virStoragePoolObjSetActive(obj, false);
 
-        virStoragePoolUpdateInactive(&obj);
+        virStoragePoolUpdateInactive(obj);
 
         goto cleanup;
     }
