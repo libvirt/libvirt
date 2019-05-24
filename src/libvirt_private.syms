@@ -1246,6 +1246,7 @@ virStoragePoolObjGetVolumesCount;
 virStoragePoolObjIncrAsyncjobs;
 virStoragePoolObjIsActive;
 virStoragePoolObjIsAutostart;
+virStoragePoolObjIsStarting;
 virStoragePoolObjListAdd;
 virStoragePoolObjListExport;
 virStoragePoolObjListForEach;
@@ -1264,6 +1265,7 @@ virStoragePoolObjSetActive;
 virStoragePoolObjSetAutostart;
 virStoragePoolObjSetConfigFile;
 virStoragePoolObjSetDef;
+virStoragePoolObjSetStarting;
 virStoragePoolObjVolumeGetNames;
 virStoragePoolObjVolumeListExport;
 

@@ -202,12 +202,14 @@ storageDriverAutostartCallback(virStoragePoolObjPtr obj,
 
     if (virStoragePoolObjIsAutostart(obj) &&
         !virStoragePoolObjIsActive(obj)) {
+
+        virStoragePoolObjSetStarting(obj, true);
         if (backend->startPool &&
             backend->startPool(obj) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to autostart storage pool '%s': %s"),
                            def->name, virGetLastErrorMessage());
-            return;
+            goto cleanup;
         }
         started = true;
     }
@@ -225,6 +227,13 @@ storageDriverAutostartCallback(virStoragePoolObjPtr obj,
         } else {
             virStoragePoolObjSetActive(obj, true);
         }
+    }
+
+ cleanup:
+    if (virStoragePoolObjIsStarting(obj)) {
+        if (!virStoragePoolObjIsActive(obj))
+            virStoragePoolUpdateInactive(obj);
+        virStoragePoolObjSetStarting(obj, false);
     }
 }
 
@@ -761,6 +770,8 @@ storagePoolCreateXML(virConnectPtr conn,
     newDef = NULL;
     def = virStoragePoolObjGetDef(obj);
 
+    virStoragePoolObjSetStarting(obj, true);
+
     if (backend->buildPool) {
         if (flags & VIR_STORAGE_POOL_CREATE_WITH_BUILD_OVERWRITE)
             build_flags |= VIR_STORAGE_POOL_BUILD_OVERWRITE;
@@ -797,6 +808,11 @@ storagePoolCreateXML(virConnectPtr conn,
     pool = virGetStoragePool(conn, def->name, def->uuid, NULL, NULL);
 
  cleanup:
+    if (virStoragePoolObjIsStarting(obj)) {
+        if (!virStoragePoolObjIsActive(obj))
+            virStoragePoolUpdateInactive(obj);
+        virStoragePoolObjSetStarting(obj, false);
+    }
     virObjectEventStateQueue(driver->storageEventState, event);
     virStoragePoolObjEndAPI(&obj);
     return pool;
@@ -879,6 +895,13 @@ storagePoolUndefine(virStoragePoolPtr pool)
         goto cleanup;
     }
 
+    if (virStoragePoolObjIsStarting(obj)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("storage pool '%s' is starting up"),
+                       def->name);
+        goto cleanup;
+    }
+
     if (virStoragePoolObjGetAsyncjobs(obj) > 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("pool '%s' has asynchronous jobs running."),
@@ -923,6 +946,7 @@ storagePoolCreate(virStoragePoolPtr pool,
     int ret = -1;
     unsigned int build_flags = 0;
     VIR_AUTOFREE(char *) stateFile = NULL;
+    bool restoreStarting = false;
 
     virCheckFlags(VIR_STORAGE_POOL_CREATE_WITH_BUILD |
                   VIR_STORAGE_POOL_CREATE_WITH_BUILD_OVERWRITE |
@@ -947,6 +971,16 @@ storagePoolCreate(virStoragePoolPtr pool,
                        def->name);
         goto cleanup;
     }
+
+    if (virStoragePoolObjIsStarting(obj)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("storage pool '%s' is starting up"),
+                       def->name);
+        goto cleanup;
+    }
+
+    virStoragePoolObjSetStarting(obj, true);
+    restoreStarting = true;
 
     if (backend->buildPool) {
         if (flags & VIR_STORAGE_POOL_CREATE_WITH_BUILD_OVERWRITE)
@@ -983,6 +1017,12 @@ storagePoolCreate(virStoragePoolPtr pool,
     ret = 0;
 
  cleanup:
+    if (restoreStarting &&
+        virStoragePoolObjIsStarting(obj)) {
+        if (!virStoragePoolObjIsActive(obj))
+            virStoragePoolUpdateInactive(obj);
+        virStoragePoolObjSetStarting(obj, false);
+    }
     virObjectEventStateQueue(driver->storageEventState, event);
     virStoragePoolObjEndAPI(&obj);
     return ret;
@@ -996,6 +1036,7 @@ storagePoolBuild(virStoragePoolPtr pool,
     virStoragePoolDefPtr def;
     virStorageBackendPtr backend;
     virObjectEventPtr event = NULL;
+    bool restoreStarting = false;
     int ret = -1;
 
     if (!(obj = virStoragePoolObjFromStoragePool(pool)))
@@ -1015,6 +1056,16 @@ storagePoolBuild(virStoragePoolPtr pool,
         goto cleanup;
     }
 
+    if (virStoragePoolObjIsStarting(obj)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("storage pool '%s' is starting up"),
+                       def->name);
+        goto cleanup;
+    }
+
+    virStoragePoolObjSetStarting(obj, true);
+    restoreStarting = true;
+
     if (backend->buildPool &&
         backend->buildPool(obj, flags) < 0)
         goto cleanup;
@@ -1027,6 +1078,11 @@ storagePoolBuild(virStoragePoolPtr pool,
     ret = 0;
 
  cleanup:
+    if (restoreStarting &&
+        virStoragePoolObjIsStarting(obj)) {
+        virStoragePoolUpdateInactive(obj);
+        virStoragePoolObjSetStarting(obj, false);
+    }
     virObjectEventStateQueue(driver->storageEventState, event);
     virStoragePoolObjEndAPI(&obj);
     return ret;
@@ -1058,6 +1114,13 @@ storagePoolDestroy(virStoragePoolPtr pool)
     if (!virStoragePoolObjIsActive(obj)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("storage pool '%s' is not active"), def->name);
+        goto cleanup;
+    }
+
+    if (virStoragePoolObjIsStarting(obj)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("storage pool '%s' is starting up"),
+                       def->name);
         goto cleanup;
     }
 
@@ -1126,6 +1189,13 @@ storagePoolDelete(virStoragePoolPtr pool,
         goto cleanup;
     }
 
+    if (virStoragePoolObjIsStarting(obj)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("storage pool '%s' is starting up"),
+                       def->name);
+        goto cleanup;
+    }
+
     if (virStoragePoolObjGetAsyncjobs(obj) > 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("pool '%s' has asynchronous jobs running."),
@@ -1186,6 +1256,13 @@ storagePoolRefresh(virStoragePoolPtr pool,
     if (!virStoragePoolObjIsActive(obj)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("storage pool '%s' is not active"), def->name);
+        goto cleanup;
+    }
+
+    if (virStoragePoolObjIsStarting(obj)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("storage pool '%s' is starting up"),
+                       def->name);
         goto cleanup;
     }
 

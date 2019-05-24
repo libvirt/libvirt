@@ -94,6 +94,12 @@ void
 virStoragePoolObjSetActive(virStoragePoolObjPtr obj,
                            bool active);
 
+void
+virStoragePoolObjSetStarting(virStoragePoolObjPtr obj,
+                             bool starting);
+bool
+virStoragePoolObjIsStarting(virStoragePoolObjPtr obj);
+
 bool
 virStoragePoolObjIsAutostart(virStoragePoolObjPtr obj);
 

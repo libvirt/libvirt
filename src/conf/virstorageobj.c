@@ -86,6 +86,7 @@ struct _virStoragePoolObj {
     char *configFile;
     char *autostartLink;
     bool active;
+    bool starting;
     bool autostart;
     unsigned int asyncjobs;
 
@@ -309,6 +310,21 @@ virStoragePoolObjSetActive(virStoragePoolObjPtr obj,
                            bool active)
 {
     obj->active = active;
+}
+
+
+void
+virStoragePoolObjSetStarting(virStoragePoolObjPtr obj,
+                             bool starting)
+{
+    obj->starting = starting;
+}
+
+
+bool
+virStoragePoolObjIsStarting(virStoragePoolObjPtr obj)
+{
+    return obj->starting;
 }
 
 
@@ -1090,6 +1106,13 @@ virStoragePoolObjIsDuplicate(virStoragePoolObjListPtr pools,
                                obj->def->name);
                 goto cleanup;
             }
+
+            if (virStoragePoolObjIsStarting(obj)) {
+                virReportError(VIR_ERR_OPERATION_INVALID,
+                               _("pool '%s' is starting up"),
+                               obj->def->name);
+                goto cleanup;
+            }
         }
 
         VIR_STEAL_PTR(*objRet, obj);
@@ -1510,7 +1533,8 @@ virStoragePoolObjAssignDef(virStoragePoolObjPtr obj,
                            virStoragePoolDefPtr def,
                            unsigned int flags)
 {
-    if (virStoragePoolObjIsActive(obj)) {
+    if (virStoragePoolObjIsActive(obj) ||
+        virStoragePoolObjIsStarting(obj)) {
         virStoragePoolDefFree(obj->newDef);
         obj->newDef = def;
     } else {
