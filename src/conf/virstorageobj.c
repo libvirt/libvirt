@@ -411,9 +411,13 @@ virStoragePoolObjListForEachCb(void *payload,
     virStoragePoolObjPtr obj = payload;
     struct _virStoragePoolObjListForEachData *data = opaque;
 
+    /* Grab a reference so that we don't rely only on references grabbed by
+     * hash table earlier. Remember, an iterator can remove object from the
+     * hash table. */
+    virObjectRef(obj);
     virObjectLock(obj);
     data->iter(obj, data->opaque);
-    virObjectUnlock(obj);
+    virStoragePoolObjEndAPI(&obj);
 
     return 0;
 }
