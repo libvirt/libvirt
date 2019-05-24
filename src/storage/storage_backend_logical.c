@@ -50,9 +50,15 @@ virStorageBackendLogicalSetActive(virStoragePoolObjPtr pool,
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     VIR_AUTOPTR(virCommand) cmd = NULL;
+    int ret;
 
     cmd = virStorageBackendLogicalChangeCmd(VGCHANGE, def, on);
-    return virCommandRun(cmd, NULL);
+
+    virObjectUnlock(pool);
+    ret = virCommandRun(cmd, NULL);
+    virObjectLock(pool);
+
+    return ret;
 }
 
 
@@ -723,11 +729,10 @@ virStorageBackendLogicalBuildPool(virStoragePoolObjPtr pool,
         virCommandAddArg(vgcmd, path);
     }
 
+    virObjectUnlock(pool);
     /* Now create the volume group itself */
-    if (virCommandRun(vgcmd, NULL) < 0)
-        goto cleanup;
-
-    ret = 0;
+    ret = virCommandRun(vgcmd, NULL);
+    virObjectLock(pool);
 
  cleanup:
     /* On any failure, run through the devices that had pvcreate run in

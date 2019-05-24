@@ -385,6 +385,7 @@ virStorageBackendZFSBuildPool(virStoragePoolObjPtr pool,
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     size_t i;
     VIR_AUTOPTR(virCommand) cmd = NULL;
+    int ret = -1;
 
     virCheckFlags(0, -1);
 
@@ -400,7 +401,11 @@ virStorageBackendZFSBuildPool(virStoragePoolObjPtr pool,
     for (i = 0; i < def->source.ndevice; i++)
         virCommandAddArg(cmd, def->source.devices[i].path);
 
-    return virCommandRun(cmd, NULL);
+    virObjectUnlock(pool);
+    ret = virCommandRun(cmd, NULL);
+    virObjectLock(pool);
+
+    return ret;
 }
 
 static int

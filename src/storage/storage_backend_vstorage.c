@@ -42,6 +42,7 @@ virStorageBackendVzPoolStart(virStoragePoolObjPtr pool)
     VIR_AUTOFREE(char *) usr_name = NULL;
     VIR_AUTOFREE(char *) mode = NULL;
     VIR_AUTOPTR(virCommand) cmd = NULL;
+    int ret;
 
     /* Check the permissions */
     if (def->target.perms.mode == (mode_t)-1)
@@ -69,7 +70,13 @@ virStorageBackendVzPoolStart(virStoragePoolObjPtr pool)
                                "-g", grp_name, "-u", usr_name,
                                NULL);
 
-    return virCommandRun(cmd, NULL);
+    /* Mounting a shared FS might take a long time. Don't hold
+     * the pool locked meanwhile. */
+    virObjectUnlock(pool);
+    ret = virCommandRun(cmd, NULL);
+    virObjectLock(pool);
+
+    return ret;
 }
 
 

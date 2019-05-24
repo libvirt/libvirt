@@ -317,7 +317,14 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool)
         return -1;
 
     cmd = virStorageBackendFileSystemMountCmd(MOUNT, def, src);
-    return virCommandRun(cmd, NULL);
+
+    /* Mounting a shared FS might take a long time. Don't hold
+     * the pool locked meanwhile. */
+    virObjectUnlock(pool);
+    rc = virCommandRun(cmd, NULL);
+    virObjectLock(pool);
+
+    return rc;
 }
 
 
@@ -456,13 +463,14 @@ virStorageBackendMakeFileSystem(virStoragePoolObjPtr pool,
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("No source device specified when formatting pool '%s'"),
                        def->name);
-        goto error;
+        return -1;
     }
 
     device = def->source.devices[0].path;
     format = virStoragePoolFormatFileSystemTypeToString(def->source.format);
     VIR_DEBUG("source device: '%s' format: '%s'", device, format);
 
+    virObjectUnlock(pool);
     if (!virFileExists(device)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("Source device does not exist when formatting pool '%s'"),
@@ -481,6 +489,7 @@ virStorageBackendMakeFileSystem(virStoragePoolObjPtr pool,
         ret = virStorageBackendExecuteMKFS(device, format);
 
  error:
+    virObjectLock(pool);
     return ret;
 }
 

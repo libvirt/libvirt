@@ -461,7 +461,10 @@ virStorageBackendDiskStartPool(virStoragePoolObjPtr pool)
     const char *format;
     const char *path = def->source.devices[0].path;
 
+    /* This can take a significant amount of time. */
+    virObjectUnlock(pool);
     virWaitForDevices();
+    virObjectLock(pool);
 
     if (!virFileExists(path)) {
         virReportError(VIR_ERR_INVALID_ARG,
@@ -490,6 +493,7 @@ virStorageBackendDiskBuildPool(virStoragePoolObjPtr pool,
     int format = def->source.format;
     const char *fmt;
     VIR_AUTOPTR(virCommand) cmd = NULL;
+    int ret = -1;
 
     virCheckFlags(VIR_STORAGE_POOL_BUILD_OVERWRITE |
                   VIR_STORAGE_POOL_BUILD_NO_OVERWRITE, -1);
@@ -523,7 +527,12 @@ virStorageBackendDiskBuildPool(virStoragePoolObjPtr pool,
                                "--script",
                                fmt,
                                NULL);
-    return virCommandRun(cmd, NULL);
+
+    virObjectUnlock(pool);
+    ret = virCommandRun(cmd, NULL);
+    virObjectLock(pool);
+
+    return ret;
 }
 
 
