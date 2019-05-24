@@ -195,6 +195,7 @@ virStoragePoolObjVolumeListExport(virConnectPtr conn,
                                   virStoragePoolVolumeACLFilter filter);
 
 typedef enum {
+    VIR_STORAGE_POOL_OBJ_LIST_ADD_LIVE = (1 << 0),
     VIR_STORAGE_POOL_OBJ_LIST_ADD_CHECK_LIVE = (1 << 1),
 } virStoragePoolObjListFlags;
 

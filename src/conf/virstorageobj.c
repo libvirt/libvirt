@@ -1508,14 +1508,18 @@ virStoragePoolObjSourceFindDuplicate(virStoragePoolObjListPtr pools,
 static void
 virStoragePoolObjAssignDef(virStoragePoolObjPtr obj,
                            virStoragePoolDefPtr def,
-                           unsigned int flgs ATTRIBUTE_UNUSED)
+                           unsigned int flags)
 {
-    if (!virStoragePoolObjIsActive(obj)) {
-        virStoragePoolDefFree(obj->def);
-        obj->def = def;
-    } else {
+    if (virStoragePoolObjIsActive(obj)) {
         virStoragePoolDefFree(obj->newDef);
         obj->newDef = def;
+    } else {
+        if (!obj->newDef &&
+            flags & VIR_STORAGE_POOL_OBJ_LIST_ADD_LIVE)
+            VIR_STEAL_PTR(obj->newDef, obj->def);
+
+        virStoragePoolDefFree(obj->def);
+        obj->def = def;
     }
 }
 
@@ -1528,6 +1532,11 @@ virStoragePoolObjAssignDef(virStoragePoolObjPtr obj,
  *
  * Lookup the @def to see if it already exists in the @pools in order
  * to either update or add if it does not exist.
+ *
+ * Use VIR_STORAGE_POOL_OBJ_LIST_ADD_LIVE to denote that @def
+ * refers to an active definition and thus any possible inactive
+ * definition found should be saved to ->newDef (in case of
+ * future restore).
  *
  * If VIR_STORAGE_POOL_OBJ_LIST_ADD_CHECK_LIVE is set in @flags
  * then this will fail if the pool exists and is active.
