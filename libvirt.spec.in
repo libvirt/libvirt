@@ -1250,8 +1250,8 @@ install -d -m 0755 $RPM_BUILD_ROOT%{_datadir}/lib/libvirt/dnsmasq/
 install -d -m 0755 $RPM_BUILD_ROOT%{_datadir}/libvirt/networks/
 cp $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/qemu/networks/default.xml \
    $RPM_BUILD_ROOT%{_datadir}/libvirt/networks/default.xml
-rm -f $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/qemu/networks/default.xml
-rm -f $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
+# libvirt saves this file with mode 0600
+chmod 0600 $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/qemu/networks/default.xml
 
 # nwfilter files are installed in /usr/share/libvirt and copied to /etc in %post
 # to avoid verification errors on changed files in /etc
@@ -1427,6 +1427,8 @@ if test $1 -eq 1 && test ! -f %{_sysconfdir}/libvirt/qemu/networks/default.xml ;
          < %{_datadir}/libvirt/networks/default.xml \
          > %{_sysconfdir}/libvirt/qemu/networks/default.xml
     ln -s ../default.xml %{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
+    # libvirt saves this file with mode 0600
+    chmod 0600 %{_sysconfdir}/libvirt/qemu/networks/default.xml
 
     # Make sure libvirt picks up the new network defininiton
     mkdir -p %{_localstatedir}/lib/rpm-state/libvirt || :
@@ -1571,6 +1573,8 @@ exit 0
 %files daemon-config-network
 %dir %{_datadir}/libvirt/networks/
 %{_datadir}/libvirt/networks/default.xml
+%ghost %{_sysconfdir}/libvirt/qemu/networks/default.xml
+%ghost %{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
 
 %files daemon-config-nwfilter
 %dir %{_datadir}/libvirt/nwfilter/
