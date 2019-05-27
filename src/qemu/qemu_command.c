@@ -3573,7 +3573,7 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
         pagesize = 0;
         needHugepage = false;
         useHugepage = false;
-    } else if (pagesize == 0) {
+    } else if (useHugepage && pagesize == 0) {
         if (qemuBuildMemoryGetDefaultPagesize(cfg, &pagesize) < 0)
             goto cleanup;
     }
