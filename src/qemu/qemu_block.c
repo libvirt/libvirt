@@ -1450,6 +1450,80 @@ qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSourcePtr src)
 }
 
 
+static int
+qemuBlockStorageSourceAttachApplyStorageDeps(qemuMonitorPtr mon,
+                                             qemuBlockStorageSourceAttachDataPtr data)
+{
+    if (data->prmgrProps &&
+        qemuMonitorAddObject(mon, &data->prmgrProps, &data->prmgrAlias) < 0)
+        return -1;
+
+    if (data->authsecretProps &&
+        qemuMonitorAddObject(mon, &data->authsecretProps,
+                             &data->authsecretAlias) < 0)
+        return -1;
+
+    if (data->tlsProps &&
+        qemuMonitorAddObject(mon, &data->tlsProps, &data->tlsAlias) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+qemuBlockStorageSourceAttachApplyStorage(qemuMonitorPtr mon,
+                                         qemuBlockStorageSourceAttachDataPtr data)
+{
+    int rv;
+
+    if (data->storageProps) {
+        rv = qemuMonitorBlockdevAdd(mon, data->storageProps);
+        data->storageProps = NULL;
+
+        if (rv < 0)
+            return -1;
+
+        data->storageAttached = true;
+    }
+
+    return 0;
+}
+
+
+static int
+qemuBlockStorageSourceAttachApplyFormatDeps(qemuMonitorPtr mon,
+                                            qemuBlockStorageSourceAttachDataPtr data)
+{
+    if (data->encryptsecretProps &&
+        qemuMonitorAddObject(mon, &data->encryptsecretProps,
+                             &data->encryptsecretAlias) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+qemuBlockStorageSourceAttachApplyFormat(qemuMonitorPtr mon,
+                                        qemuBlockStorageSourceAttachDataPtr data)
+{
+    int rv;
+
+    if (data->formatProps) {
+        rv = qemuMonitorBlockdevAdd(mon, data->formatProps);
+        data->formatProps = NULL;
+
+        if (rv < 0)
+            return -1;
+
+        data->formatAttached = true;
+    }
+
+    return 0;
+}
+
+
 /**
  * qemuBlockStorageSourceAttachApply:
  * @mon: monitor object
@@ -1467,45 +1541,11 @@ int
 qemuBlockStorageSourceAttachApply(qemuMonitorPtr mon,
                                   qemuBlockStorageSourceAttachDataPtr data)
 {
-    int rv;
-
-    if (data->prmgrProps &&
-        qemuMonitorAddObject(mon, &data->prmgrProps, &data->prmgrAlias) < 0)
+    if (qemuBlockStorageSourceAttachApplyStorageDeps(mon, data) < 0 ||
+        qemuBlockStorageSourceAttachApplyStorage(mon, data) < 0 ||
+        qemuBlockStorageSourceAttachApplyFormatDeps(mon, data) < 0 ||
+        qemuBlockStorageSourceAttachApplyFormat(mon, data) < 0)
         return -1;
-
-    if (data->authsecretProps &&
-        qemuMonitorAddObject(mon, &data->authsecretProps,
-                             &data->authsecretAlias) < 0)
-        return -1;
-
-    if (data->encryptsecretProps &&
-        qemuMonitorAddObject(mon, &data->encryptsecretProps,
-                             &data->encryptsecretAlias) < 0)
-        return -1;
-
-    if (data->tlsProps &&
-        qemuMonitorAddObject(mon, &data->tlsProps, &data->tlsAlias) < 0)
-        return -1;
-
-    if (data->storageProps) {
-        rv = qemuMonitorBlockdevAdd(mon, data->storageProps);
-        data->storageProps = NULL;
-
-        if (rv < 0)
-            return -1;
-
-        data->storageAttached = true;
-    }
-
-    if (data->formatProps) {
-        rv = qemuMonitorBlockdevAdd(mon, data->formatProps);
-        data->formatProps = NULL;
-
-        if (rv < 0)
-            return -1;
-
-        data->formatAttached = true;
-    }
 
     if (data->driveCmd) {
         if (qemuMonitorAddDrive(mon, data->driveCmd) < 0)
