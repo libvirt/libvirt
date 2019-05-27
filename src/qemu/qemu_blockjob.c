@@ -428,7 +428,6 @@ qemuBlockJobSyncBegin(qemuBlockJobDataPtr job)
 
     VIR_DEBUG("disk=%s", NULLSTR(diskdst));
     job->synchronous = true;
-    job->newstate = -1;
 }
 
 
