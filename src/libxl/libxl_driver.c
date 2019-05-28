@@ -606,7 +606,6 @@ libxlAddDom0(libxlDriverPrivatePtr driver)
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
     virDomainDefPtr def = NULL;
     virDomainObjPtr vm = NULL;
-    virDomainDefPtr oldDef = NULL;
     libxl_dominfo d_info;
     unsigned long long maxmem;
     int ret = -1;
@@ -636,7 +635,7 @@ libxlAddDom0(libxlDriverPrivatePtr driver)
     if (!(vm = virDomainObjListAdd(driver->domains, def,
                                    driver->xmlopt,
                                    0,
-                                   &oldDef)))
+                                   NULL)))
         goto cleanup;
     def = NULL;
 
@@ -657,7 +656,6 @@ libxlAddDom0(libxlDriverPrivatePtr driver)
  cleanup:
     libxl_dominfo_dispose(&d_info);
     virDomainDefFree(def);
-    virDomainDefFree(oldDef);
     virDomainObjEndAPI(&vm);
     virObjectUnref(cfg);
     return ret;
