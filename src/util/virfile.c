@@ -3434,6 +3434,9 @@ int virFilePrintf(FILE *fp, const char *msg, ...)
 # ifndef GPFS_SUPER_MAGIC
 #  define GPFS_SUPER_MAGIC 0x47504653
 # endif
+# ifndef QB_MAGIC
+#  define QB_MAGIC 0x51626d6e
+# endif
 
 # define PROC_MOUNTS "/proc/mounts"
 
@@ -3490,6 +3493,10 @@ virFileIsSharedFixFUSE(const char *path,
         VIR_DEBUG("Found gluster FUSE mountpoint=%s for path=%s. "
                   "Fixing shared FS type", mntDir, canonPath);
         *f_type = GFS2_MAGIC;
+    } else if (STREQ_NULLABLE(mntType, "fuse.quobyte")) {
+        VIR_DEBUG("Found Quobyte FUSE mountpoint=%s for path=%s. "
+                  "Fixing shared FS type", mntDir, canonPath);
+        *f_type = QB_MAGIC;
     }
 
     ret = 0;
@@ -3581,6 +3588,9 @@ virFileIsSharedFSType(const char *path,
         return 1;
     if ((fstypes & VIR_FILE_SHFS_GPFS) &&
         (f_type == GPFS_SUPER_MAGIC))
+        return 1;
+    if ((fstypes & VIR_FILE_SHFS_QB) &&
+        (f_type == QB_MAGIC))
         return 1;
 
     return 0;
@@ -3771,7 +3781,8 @@ int virFileIsSharedFS(const char *path)
                                  VIR_FILE_SHFS_SMB |
                                  VIR_FILE_SHFS_CIFS |
                                  VIR_FILE_SHFS_CEPH |
-                                 VIR_FILE_SHFS_GPFS);
+                                 VIR_FILE_SHFS_GPFS|
+                                 VIR_FILE_SHFS_QB);
 }
 
 

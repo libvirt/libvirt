@@ -36,3 +36,4 @@ root@host:/tmp/mkdir /gluster/sshfs fuse.sshfs rw 0 0
 192.168.0.1:/ceph/data /ceph ceph rw,noatime,name=cephfs,secret=<hidden>,acl,wsize=16777216 0 0
 192.168.0.1,192.168.0.2,192.168.0.3:/ceph/data2 /ceph/multi ceph rw,noatime,name=cephfs,secret=<hidden>,acl,wsize=16777216 0 0
 gpfs_data /gpfs/data gpfs rw,relatime 0 0
+quobyte@192.168.0.1/data /quobyte fuse.quobyte rw,nosuid,nodev,noatime,user_id=0,group_id=0,allow_other 0 0

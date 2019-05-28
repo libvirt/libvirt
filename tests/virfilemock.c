@@ -92,6 +92,9 @@ setmntent(const char *filename, const char *type)
 #ifndef GPFS_SUPER_MAGIC
 # define GPFS_SUPER_MAGIC 0x47504653
 #endif
+#ifndef QB_MAGIC
+# define QB_MAGIC 0x51626d6e
+#endif
 
 
 static int

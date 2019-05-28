@@ -458,6 +458,7 @@ mymain(void)
     DO_TEST_FILE_IS_SHARED_FS_TYPE("mounts3.txt", "/ceph/file", true);
     DO_TEST_FILE_IS_SHARED_FS_TYPE("mounts3.txt", "/ceph/multi/file", true);
     DO_TEST_FILE_IS_SHARED_FS_TYPE("mounts3.txt", "/gpfs/data", true);
+    DO_TEST_FILE_IS_SHARED_FS_TYPE("mounts3.txt", "/quobyte", true);
 
     return ret != 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }
