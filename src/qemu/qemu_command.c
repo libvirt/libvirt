@@ -6968,7 +6968,8 @@ qemuBuildIOMMUCommandLine(virCommandPtr cmd,
     }
 
     case VIR_DOMAIN_IOMMU_MODEL_SMMUV3:
-        break;
+        /* There is no -device for SMMUv3, so nothing to be done here */
+        return 0;
 
     case VIR_DOMAIN_IOMMU_MODEL_LAST:
     default:
@@ -7617,6 +7618,7 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
             break;
 
         case VIR_DOMAIN_IOMMU_MODEL_SMMUV3:
+            virBufferAddLit(&buf, ",iommu=smmuv3");
             break;
 
         case VIR_DOMAIN_IOMMU_MODEL_LAST:
