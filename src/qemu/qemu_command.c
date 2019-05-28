@@ -6928,7 +6928,6 @@ qemuBuildIOMMUCommandLine(virCommandPtr cmd,
                           const virDomainDef *def,
                           virQEMUCapsPtr qemuCaps)
 {
-    VIR_AUTOCLEAN(virBuffer) opts = VIR_BUFFER_INITIALIZER;
     const virDomainIOMMUDef *iommu = def->iommu;
 
     if (!iommu)
@@ -6942,7 +6941,9 @@ qemuBuildIOMMUCommandLine(virCommandPtr cmd,
         return 0;
 
     switch (iommu->model) {
-    case VIR_DOMAIN_IOMMU_MODEL_INTEL:
+    case VIR_DOMAIN_IOMMU_MODEL_INTEL: {
+        VIR_AUTOCLEAN(virBuffer) opts = VIR_BUFFER_INITIALIZER;
+
         virBufferAddLit(&opts, "intel-iommu");
         if (iommu->intremap != VIR_TRISTATE_SWITCH_ABSENT) {
             virBufferAsprintf(&opts, ",intremap=%s",
@@ -6960,15 +6961,17 @@ qemuBuildIOMMUCommandLine(virCommandPtr cmd,
             virBufferAsprintf(&opts, ",device-iotlb=%s",
                               virTristateSwitchTypeToString(iommu->iotlb));
         }
+
+        virCommandAddArg(cmd, "-device");
+        virCommandAddArgBuffer(cmd, &opts);
         break;
+    }
 
     case VIR_DOMAIN_IOMMU_MODEL_LAST:
     default:
         virReportEnumRangeError(virDomainIOMMUModel, iommu->model);
         return -1;
     }
-    virCommandAddArg(cmd, "-device");
-    virCommandAddArgBuffer(cmd, &opts);
 
     return 0;
 }
