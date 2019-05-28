@@ -41,6 +41,14 @@
 <libvirt>
   <release version="v5.5.0" date="unreleased">
     <section title="New features">
+      <change>
+        <summary>
+          qemu: Support SMMUv3 IOMMU
+        </summary>
+        <description>
+          SMMUv3 is an IOMMU implementation for ARM virt guests.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
