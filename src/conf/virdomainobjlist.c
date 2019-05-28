@@ -332,7 +332,7 @@ virDomainObjListAddLocked(virDomainObjListPtr doms,
         }
 
         if (!(vm = virDomainObjNew(xmlopt)))
-            goto cleanup;
+            goto error;
         vm->def = def;
 
         if (virDomainObjListAddObjLocked(doms, vm) < 0) {
@@ -340,7 +340,7 @@ virDomainObjListAddLocked(virDomainObjListPtr doms,
             goto error;
         }
     }
- cleanup:
+
     return vm;
 
  error:
