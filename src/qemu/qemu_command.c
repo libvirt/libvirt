@@ -6928,7 +6928,7 @@ qemuBuildIOMMUCommandLine(virCommandPtr cmd,
                           const virDomainDef *def,
                           virQEMUCapsPtr qemuCaps)
 {
-    virBuffer opts = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) opts = VIR_BUFFER_INITIALIZER;
     const virDomainIOMMUDef *iommu = def->iommu;
 
     if (!iommu)
@@ -6970,7 +6970,6 @@ qemuBuildIOMMUCommandLine(virCommandPtr cmd,
     virCommandAddArg(cmd, "-device");
     virCommandAddArgBuffer(cmd, &opts);
 
-    virBufferFreeAndReset(&opts);
     return 0;
 }
 
