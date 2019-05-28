@@ -6961,8 +6961,12 @@ qemuBuildIOMMUCommandLine(virCommandPtr cmd,
             virBufferAsprintf(&opts, ",device-iotlb=%s",
                               virTristateSwitchTypeToString(iommu->iotlb));
         }
-    case VIR_DOMAIN_IOMMU_MODEL_LAST:
         break;
+
+    case VIR_DOMAIN_IOMMU_MODEL_LAST:
+    default:
+        virReportEnumRangeError(virDomainIOMMUModel, iommu->model);
+        return -1;
     }
     virCommandAddArg(cmd, "-device");
     virCommandAddArgBuffer(cmd, &opts);
@@ -7609,7 +7613,9 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
             virBufferAddLit(&buf, ",iommu=on");
             break;
         case VIR_DOMAIN_IOMMU_MODEL_LAST:
-            break;
+        default:
+            virReportEnumRangeError(virDomainIOMMUModel, def->iommu->model);
+            return -1;
         }
     }
 

@@ -6138,6 +6138,7 @@ qemuDomainDeviceDefValidateIOMMU(const virDomainIOMMUDef *iommu,
     case VIR_DOMAIN_IOMMU_MODEL_LAST:
     default:
         virReportEnumRangeError(virDomainIOMMUModel, iommu->model);
+        return -1;
     }
 
     return 0;
