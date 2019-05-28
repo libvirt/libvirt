@@ -2460,14 +2460,14 @@ vzDomainSnapshotGetParent(virDomainSnapshotPtr snapshot, unsigned int flags)
     if (!(snap = vzSnapObjFromSnapshot(snapshots, snapshot)))
         goto cleanup;
 
-    if (!snap->def->parent) {
+    if (!snap->def->parent_name) {
         virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
                        _("snapshot '%s' does not have a parent"),
                        snap->def->name);
         goto cleanup;
     }
 
-    parent = virGetDomainSnapshot(snapshot->domain, snap->def->parent);
+    parent = virGetDomainSnapshot(snapshot->domain, snap->def->parent_name);
 
  cleanup:
     virDomainSnapshotObjListFree(snapshots);
