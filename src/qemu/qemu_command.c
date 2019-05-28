@@ -6933,16 +6933,16 @@ qemuBuildIOMMUCommandLine(virCommandPtr cmd,
     if (!iommu)
         return 0;
 
-    /* qemuDomainDeviceDefValidate() already made sure we have one of
-     * QEMU_CAPS_DEVICE_INTEL_IOMMU or QEMU_CAPS_MACHINE_IOMMU: here we
-     * handle the former case, while the latter is taken care of in
-     * qemuBuildMachineCommandLine() */
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_INTEL_IOMMU))
-        return 0;
-
     switch (iommu->model) {
     case VIR_DOMAIN_IOMMU_MODEL_INTEL: {
         VIR_AUTOCLEAN(virBuffer) opts = VIR_BUFFER_INITIALIZER;
+
+        /* qemuDomainDeviceDefValidateIOMMU() already made sure we have
+         * one of QEMU_CAPS_DEVICE_INTEL_IOMMU or QEMU_CAPS_MACHINE_IOMMU:
+         * here we handle the former case, while the latter is taken care
+         * of in qemuBuildMachineCommandLine() */
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_INTEL_IOMMU))
+            return 0;
 
         virBufferAddLit(&opts, "intel-iommu");
         if (iommu->intremap != VIR_TRISTATE_SWITCH_ABSENT) {
@@ -7602,15 +7602,15 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
         }
     }
 
-    /* qemuDomainDeviceDefValidate() already made sure we have one of
-     * QEMU_CAPS_DEVICE_INTEL_IOMMU or QEMU_CAPS_MACHINE_IOMMU: here we
-     * handle the latter case, while the former is taken care of in
-     * qemuBuildIOMMUCommandLine() */
-    if (def->iommu &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_IOMMU)) {
+    if (def->iommu) {
         switch (def->iommu->model) {
         case VIR_DOMAIN_IOMMU_MODEL_INTEL:
-            virBufferAddLit(&buf, ",iommu=on");
+            /* qemuDomainDeviceDefValidateIOMMU() already made sure we have
+             * one of QEMU_CAPS_DEVICE_INTEL_IOMMU or QEMU_CAPS_MACHINE_IOMMU:
+             * here we handle the latter case, while the former is taken care
+             * of in qemuBuildIOMMUCommandLine() */
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_IOMMU))
+                virBufferAddLit(&buf, ",iommu=on");
             break;
         case VIR_DOMAIN_IOMMU_MODEL_LAST:
         default:
