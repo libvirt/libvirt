@@ -557,7 +557,7 @@ endif WITH_DTRACE_PROBES
 
 libqemutestdriver_la_SOURCES =
 libqemutestdriver_la_LDFLAGS = $(DRIVERLIB_LDFLAGS)
-libqemutestdriver_la_LIBADD = $(qemu_LDADDS)
+libqemutestdriver_la_LIBADD = $(qemu_LDADDS) $(LDADDS)
 
 qemucpumock_la_SOURCES = \
 	qemucpumock.c testutilshostcpus.h
