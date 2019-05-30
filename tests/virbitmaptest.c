@@ -740,6 +740,34 @@ test14(const void *opaque)
     return ret;
 }
 
+/* virBitmapUnion() */
+static int
+test15(const void *opaque)
+{
+    const struct testBinaryOpData *data = opaque;
+    VIR_AUTOPTR(virBitmap) amap = NULL;
+    VIR_AUTOPTR(virBitmap) bmap = NULL;
+    VIR_AUTOPTR(virBitmap) resmap = NULL;
+
+    if (!(amap = virBitmapParseUnlimited(data->a)) ||
+        !(bmap = virBitmapParseUnlimited(data->b)) ||
+        !(resmap = virBitmapParseUnlimited(data->res))) {
+        return -1;
+    }
+
+    if (virBitmapUnion(amap, bmap) < 0)
+        return -1;
+
+    if (!virBitmapEqual(amap, resmap)) {
+        fprintf(stderr,
+                "\n bitmap union failed: union('%s', '%s') != '%s'\n",
+                data->a, data->b, data->res);
+        return -1;
+    }
+
+    return 0;
+}
+
 
 #define TESTBINARYOP(A, B, RES, FUNC) \
     testBinaryOpData.a = A; \
@@ -797,6 +825,16 @@ mymain(void)
     TESTBINARYOP("0-3", "0-3", "0,^0", test14);
     TESTBINARYOP("0-3", "0,^0", "0-3", test14);
     TESTBINARYOP("0,2", "1,3", "0,2", test14);
+
+    /* virBitmapUnion() */
+    virTestCounterReset("test15-");
+    TESTBINARYOP("0-1", "0-1", "0-1", test15);
+    TESTBINARYOP("0", "1", "0-1", test15);
+    TESTBINARYOP("0-1", "2-3", "0-3", test15);
+    TESTBINARYOP("0-3", "1-2", "0-3", test15);
+    TESTBINARYOP("0,^0", "12345", "12345", test15);
+    TESTBINARYOP("12345", "0,^0", "12345", test15);
+    TESTBINARYOP("0,^0", "0,^0", "0,^0", test15);
 
     return ret;
 }
