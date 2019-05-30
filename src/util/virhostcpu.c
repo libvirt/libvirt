@@ -1324,6 +1324,69 @@ virHostCPUGetMSR(unsigned long index,
     return virHostCPUGetMSRFromKVM(index, msr);
 }
 
+
+# define VMX_PROCBASED_CTLS2_MSR 0x48b
+# define VMX_USE_TSC_SCALING (1 << 25)
+
+/*
+ * This function should only be called when the host CPU supports invariant TSC
+ * (invtsc CPUID feature).
+ *
+ * Returns pointer to the TSC info structure on success,
+ *         NULL when TSC cannot be probed otherwise.
+ */
+virHostCPUTscInfoPtr
+virHostCPUGetTscInfo(void)
+{
+    virHostCPUTscInfoPtr info;
+    VIR_AUTOCLOSE kvmFd = -1;
+    VIR_AUTOCLOSE vmFd = -1;
+    VIR_AUTOCLOSE vcpuFd = -1;
+    uint64_t msr = 0;
+    int rc;
+
+    if ((kvmFd = open(KVM_DEVICE, O_RDONLY)) < 0) {
+        virReportSystemError(errno, _("Unable to open %s"), KVM_DEVICE);
+        return NULL;
+    }
+
+    if ((vmFd = ioctl(kvmFd, KVM_CREATE_VM, 0)) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to create KVM VM for TSC probing"));
+        return NULL;
+    }
+
+    if ((vcpuFd = ioctl(vmFd, KVM_CREATE_VCPU, 0)) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to create KVM vCPU for TSC probing"));
+        return NULL;
+    }
+
+    if ((rc = ioctl(vcpuFd, KVM_GET_TSC_KHZ)) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to probe TSC frequency"));
+        return NULL;
+    }
+
+    if (VIR_ALLOC(info) < 0)
+        return NULL;
+
+    info->frequency = rc * 1000ULL;
+
+    if (virHostCPUGetMSR(VMX_PROCBASED_CTLS2_MSR, &msr) == 0) {
+        /* High 32 bits of the MSR value indicate whether specific control
+         * can be set to 1. */
+        msr >>= 32;
+
+        info->scaling = virTristateBoolFromBool(!!(msr & VMX_USE_TSC_SCALING));
+    }
+
+    VIR_DEBUG("Detected TSC frequency %llu Hz, scaling %s",
+              info->frequency, virTristateBoolTypeToString(info->scaling));
+
+    return info;
+}
+
 #else
 
 int
@@ -1333,6 +1396,14 @@ virHostCPUGetMSR(unsigned long index ATTRIBUTE_UNUSED,
     virReportSystemError(ENOSYS, "%s",
                          _("Reading MSRs is not supported on this platform"));
     return -1;
+}
+
+virHostCPUTscInfoPtr
+virHostCPUGetTscInfo(void)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Probing TSC is not supported on this platform"));
+    return NULL;
 }
 
 #endif /* HAVE_LINUX_KVM_H && defined(KVM_GET_MSRS) && \

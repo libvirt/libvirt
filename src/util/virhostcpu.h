@@ -25,6 +25,15 @@
 # include "internal.h"
 # include "virarch.h"
 # include "virbitmap.h"
+# include "virenum.h"
+
+
+typedef struct _virHostCPUTscInfo virHostCPUTscInfo;
+typedef virHostCPUTscInfo *virHostCPUTscInfoPtr;
+struct _virHostCPUTscInfo {
+    unsigned long long frequency;
+    virTristateBool scaling;
+};
 
 
 int virHostCPUGetStats(int cpuNum,
@@ -68,5 +77,7 @@ unsigned int virHostCPUGetMicrocodeVersion(void);
 
 int virHostCPUGetMSR(unsigned long index,
                      uint64_t *msr);
+
+virHostCPUTscInfoPtr virHostCPUGetTscInfo(void);
 
 #endif /* LIBVIRT_VIRHOSTCPU_H */
