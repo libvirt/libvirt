@@ -1,0 +1,618 @@
+# dmidecode 3.2
+Getting SMBIOS data from sysfs.
+SMBIOS 3.0.0 present.
+Table at 0xFFFA0000.
+
+Handle 0x0000, DMI type 0, 24 bytes
+BIOS Information
+	Vendor: GIGABYTE
+	Version: T49
+	Release Date: 02/02/2018
+	Address: 0xF0000
+	Runtime Size: 64 kB
+	ROM Size: 9216 kB
+	Characteristics:
+		PCI is supported
+		BIOS is upgradeable
+		BIOS shadowing is allowed
+		Boot from CD is supported
+		Selectable boot is supported
+		BIOS ROM is socketed
+		EDD is supported
+		5.25"/1.2 MB floppy services are supported (int 13h)
+		3.5"/720 kB floppy services are supported (int 13h)
+		3.5"/2.88 MB floppy services are supported (int 13h)
+		Print screen service is supported (int 5h)
+		Serial services are supported (int 14h)
+		Printer services are supported (int 17h)
+		ACPI is supported
+		USB legacy is supported
+		BIOS boot specification is supported
+		Targeted content distribution is supported
+		UEFI is supported
+	BIOS Revision: 5.11
+
+Handle 0x0001, DMI type 1, 27 bytes
+System Information
+	Manufacturer: GIGABYTE
+	Product Name: R120-T34-00
+	Version: 0100
+	Serial Number: 01234567890ABC
+	UUID: 01234567-89AB-CDEF-0123-4567890ABCDE
+	Wake-up Type: Power Switch
+	SKU Number: 01234567890123456789AB
+	Family: Server
+
+Handle 0x0002, DMI type 2, 15 bytes
+Base Board Information
+	Manufacturer: GIGABYTE
+	Product Name: MT30-GS2-00
+	Version: 01234567
+	Serial Number: 01234567890
+	Asset Tag: 01234567890123456789AB
+	Features:
+		Board is a hosting board
+		Board is replaceable
+	Location In Chassis: Default string
+	Chassis Handle: 0x0003
+	Type: Motherboard
+	Contained Object Handles: 0
+
+Handle 0x0003, DMI type 3, 22 bytes
+Chassis Information
+	Manufacturer: GIGABYTE
+	Type: Main Server Chassis
+	Lock: Not Present
+	Version: 01234567
+	Serial Number: 01234567890123456789AB
+	Asset Tag: 01234567890123456789AB
+	Boot-up State: Safe
+	Power Supply State: Safe
+	Thermal State: Safe
+	Security Status: None
+	OEM Information: 0x00000000
+	Height: Unspecified
+	Number Of Power Cords: 1
+	Contained Elements: 0
+	SKU Number: SYS_CHASSIS_SKU_NUMBER_1
+
+Handle 0x0004, DMI type 10, 6 bytes
+On Board Device Information
+	Type: Unknown
+	Status: Enabled
+	Description: Device 1
+
+Handle 0x0005, DMI type 13, 22 bytes
+BIOS Language Information
+	Language Description Format: Long
+	Installable Languages: 1
+		en|US|iso8859-1
+	Currently Installed Language: en|US|iso8859-1
+
+Handle 0x0006, DMI type 31, 28 bytes
+Boot Integrity Services Entry Point
+	Checksum: Invalid
+	16-bit Entry Point Address: FFFF:FFFF
+	32-bit Entry Point Address: 0xFFFFFFFF
+
+Handle 0x0007, DMI type 39, 22 bytes
+System Power Supply
+	Power Unit Group: 1
+	Location: Default string
+	Name: DPS-400AB-12 A
+	Manufacturer: DELTA
+	Serial Number: Default string
+	Asset Tag: Default string
+	Model Part Number: DPS-400AB-12 A
+	Revision: Default string
+	Max Power Capacity: 0 W
+	Status: Present, OK
+	Type: Switching
+	Input Voltage Range Switching: Wide Range
+	Plugged: Yes
+	Hot Replaceable: Yes
+
+Handle 0x0008, DMI type 39, 22 bytes
+System Power Supply
+	Power Unit Group: 1
+	Location: Default string
+	Name: Default string
+	Manufacturer: Default string
+	Serial Number: Default string
+	Asset Tag: Default string
+	Model Part Number: Default string
+	Revision: Default string
+	Max Power Capacity: 0 W
+	Status: Present, OK
+	Type: Switching
+	Input Voltage Range Switching: Auto-switch
+	Plugged: No
+	Hot Replaceable: No
+
+Handle 0x0009, DMI type 41, 11 bytes
+Onboard Device
+	Reference Designation: Device 1
+	Type: Unknown
+	Status: Enabled
+	Type Instance: 1
+	Bus Address: 0000:00:00.0
+
+Handle 0x0010, DMI type 41, 11 bytes
+Onboard Device
+	Reference Designation: Device 2
+	Type: Unknown
+	Status: Enabled
+	Type Instance: 1
+	Bus Address: 0000:00:00.0
+
+Handle 0x0011, DMI type 41, 11 bytes
+Onboard Device
+	Reference Designation: Device 3
+	Type: Unknown
+	Status: Enabled
+	Type Instance: 1
+	Bus Address: 0000:00:00.0
+
+Handle 0x0012, DMI type 38, 18 bytes
+IPMI Device Information
+	Interface Type: SSIF (SMBus System Interface)
+	Specification Version: 2.0
+	I2C Slave Address: 0x10
+	NV Storage Device: Not Present
+	Base Address: 0x10 (SMBus)
+
+Handle 0x0020, DMI type 8, 9 bytes
+Port Connector Information
+	Internal Reference Designator: Not Specified
+	Internal Connector Type: None
+	External Reference Designator: DB-9 Male
+	External Connector Type: DB-9 male
+	Port Type: Serial Port 16550A Compatible
+
+Handle 0x0021, DMI type 8, 9 bytes
+Port Connector Information
+	Internal Reference Designator: Not Specified
+	Internal Connector Type: None
+	External Reference Designator: VGA Port
+	External Connector Type: DB-15 female
+	Port Type: Video Port
+
+Handle 0x0022, DMI type 8, 9 bytes
+Port Connector Information
+	Internal Reference Designator: Not Specified
+	Internal Connector Type: None
+	External Reference Designator: BMC Ethernet
+	External Connector Type: RJ-45
+	Port Type: Network Port
+
+Handle 0x0023, DMI type 8, 9 bytes
+Port Connector Information
+	Internal Reference Designator: Not Specified
+	Internal Connector Type: None
+	External Reference Designator: USB0
+	External Connector Type: Access Bus (USB)
+	Port Type: USB
+
+Handle 0x0024, DMI type 8, 9 bytes
+Port Connector Information
+	Internal Reference Designator: Not Specified
+	Internal Connector Type: None
+	External Reference Designator: USB1
+	External Connector Type: Access Bus (USB)
+	Port Type: USB
+
+Handle 0x0025, DMI type 8, 9 bytes
+Port Connector Information
+	Internal Reference Designator: Not Specified
+	Internal Connector Type: None
+	External Reference Designator: USB2
+	External Connector Type: Access Bus (USB)
+	Port Type: USB
+
+Handle 0x0026, DMI type 8, 9 bytes
+Port Connector Information
+	Internal Reference Designator: Not Specified
+	Internal Connector Type: None
+	External Reference Designator: USB3
+	External Connector Type: Access Bus (USB)
+	Port Type: USB
+
+Handle 0x0027, DMI type 8, 9 bytes
+Port Connector Information
+	Internal Reference Designator: Not Specified
+	Internal Connector Type: None
+	External Reference Designator: 10Gbps Eth
+	External Connector Type: Other
+	Port Type: Network Port
+
+Handle 0x0028, DMI type 8, 9 bytes
+Port Connector Information
+	Internal Reference Designator: Not Specified
+	Internal Connector Type: None
+	External Reference Designator: 10Gbps Eth
+	External Connector Type: Other
+	Port Type: Network Port
+
+Handle 0x0029, DMI type 8, 9 bytes
+Port Connector Information
+	Internal Reference Designator: Not Specified
+	Internal Connector Type: None
+	External Reference Designator: 40Gbps Eth
+	External Connector Type: Other
+	Port Type: Network Port
+
+Handle 0x002A, DMI type 9, 17 bytes
+System Slot Information
+	Designation: PCIe 3.0 x8
+	Type: x8 PCI Express 3 x8
+	Current Usage: Unknown
+	Length: Other
+	ID: 0
+	Characteristics: Unknown
+	Bus Address: 0000:00:00.0
+
+Handle 0x002B, DMI type 9, 17 bytes
+System Slot Information
+	Designation: PCIe 3.0 x8
+	Type: x8 PCI Express 3 x8
+	Current Usage: Unknown
+	Length: Other
+	ID: 0
+	Characteristics: Unknown
+	Bus Address: 0000:00:00.0
+
+Handle 0x002C, DMI type 9, 17 bytes
+System Slot Information
+	Designation: PCIe 3.0 x4
+	Type: x4 PCI Express 3 x4
+	Current Usage: Unknown
+	Length: Other
+	ID: 0
+	Characteristics: Unknown
+	Bus Address: 0000:00:00.0
+
+Handle 0x002D, DMI type 23, 13 bytes
+System Reset
+	Status: Enabled
+	Watchdog Timer: Present
+	Boot Option: Operating System
+	Boot Option On Limit: Do Not Reboot
+	Reset Count: Unknown
+	Reset Limit: Unknown
+	Timer Interval: Unknown
+	Timeout: Unknown
+
+Handle 0x002E, DMI type 4, 48 bytes
+Processor Information
+	Socket Designation: Socket
+	Type: Central Processor
+	Family: ARM
+	Manufacturer: CN8880-1800BG2601-CP-Y-G
+	ID: 11 0A 1F 43 01 00 00 00
+	Signature: Implementor 0x43, Variant 0x1, Architecture 15, Part 0x0a1, Revision 1
+	Version: 2.1
+	Voltage: 1.2 V
+	External Clock: 156 MHz
+	Max Speed: 1800 MHz
+	Current Speed: 1800 MHz
+	Status: Populated, Enabled
+	Upgrade: Other
+	L1 Cache Handle: 0x002F
+	L2 Cache Handle: 0x0031
+	L3 Cache Handle: 0x0000
+	Serial Number: CPU Serial#
+	Asset Tag: CPU Asset Tag#
+	Part Number: CN88xx
+	Core Count: 32
+	Core Enabled: 32
+	Thread Count: 32
+	Characteristics:
+		64-bit capable
+		Multi-Core
+		Execute Protection
+		Enhanced Virtualization
+		Power/Performance Control
+
+Handle 0x002F, DMI type 7, 19 bytes
+Cache Information
+	Socket Designation: Internal L1D Cache
+	Configuration: Enabled, Not Socketed, Level 1
+	Operational Mode: Write Back
+	Location: Internal
+	Installed Size: 1536 kB
+	Maximum Size: 1536 kB
+	Supported SRAM Types:
+		Other
+	Installed SRAM Type: Other
+	Speed: Unknown
+	Error Correction Type: Single-bit ECC
+	System Type: Data
+	Associativity: 32-way Set-associative
+
+Handle 0x0030, DMI type 7, 19 bytes
+Cache Information
+	Socket Designation: Internal L1I Cache
+	Configuration: Enabled, Not Socketed, Level 1
+	Operational Mode: Write Back
+	Location: Internal
+	Installed Size: 3744 kB
+	Maximum Size: 3744 kB
+	Supported SRAM Types:
+		Other
+	Installed SRAM Type: Other
+	Speed: Unknown
+	Error Correction Type: Single-bit ECC
+	System Type: Instruction
+	Associativity: Other
+
+Handle 0x0031, DMI type 7, 19 bytes
+Cache Information
+	Socket Designation: Internal L2 Cache
+	Configuration: Enabled, Not Socketed, Level 2
+	Operational Mode: Write Back
+	Location: Internal
+	Installed Size: 16 MB
+	Maximum Size: 16 MB
+	Supported SRAM Types:
+		Other
+	Installed SRAM Type: Other
+	Speed: Unknown
+	Error Correction Type: Single-bit ECC
+	System Type: Unified
+	Associativity: 16-way Set-associative
+
+Handle 0x0032, DMI type 16, 23 bytes
+Physical Memory Array
+	Location: System Board Or Motherboard
+	Use: System Memory
+	Error Correction Type: None
+	Maximum Capacity: 1 TB
+	Error Information Handle: Not Provided
+	Number Of Devices: 8
+
+Handle 0x0033, DMI type 19, 31 bytes
+Memory Array Mapped Address
+	Starting Address: 0x0000000000000000k
+	Ending Address: 0x0000000FFFFFFFFFk
+	Range Size: 64 GB
+	Physical Array Handle: 0x0032
+	Partition Width: 1
+
+Handle 0x0034, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0032
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 16384 MB
+	Form Factor: DIMM
+	Set: Unknown
+	Locator: DIMM_P0_A0
+	Bank Locator: P0_Node0_Channel0_Dimm0
+	Type: DDR4
+	Type Detail: Registered (Buffered)
+	Speed: 2400 MT/s
+	Manufacturer: Samsung
+	Serial Number: 01234567
+	Asset Tag: DIMM_P0_A0_AssetTag
+	Part Number: M393A2K40BB1-CRC
+	Rank: 1
+	Configured Memory Speed: 2100 MT/s
+	Minimum Voltage: Unknown
+	Maximum Voltage: Unknown
+	Configured Voltage: Unknown
+
+Handle 0x0035, DMI type 20, 35 bytes
+Memory Device Mapped Address
+	Starting Address: 0x0000000000000000k
+	Ending Address: 0x00000003FFFFFFFFk
+	Range Size: 16 GB
+	Physical Device Handle: 0x0034
+	Memory Array Mapped Address Handle: 0x0033
+	Partition Row Position: Unknown
+	Interleave Position: Unknown
+	Interleaved Data Depth: Unknown
+
+Handle 0x0036, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0032
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: No Module Installed
+	Form Factor: Unknown
+	Set: Unknown
+	Locator: DIMM_P0_A1
+	Bank Locator: P0_Node0_Channel0_Dimm1
+	Type: DDR4
+	Type Detail: Unknown
+	Speed: Unknown
+	Manufacturer: NO DIMM
+	Serial Number: NO DIMM
+	Asset Tag: NO DIMM
+	Part Number: NO DIMM
+	Rank: Unknown
+	Configured Memory Speed: Unknown
+	Minimum Voltage: Unknown
+	Maximum Voltage: Unknown
+	Configured Voltage: Unknown
+
+Handle 0x0037, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0032
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 16384 MB
+	Form Factor: DIMM
+	Set: Unknown
+	Locator: DIMM_P0_B0
+	Bank Locator: P0_Node0_Channel1_Dimm0
+	Type: DDR4
+	Type Detail: Registered (Buffered)
+	Speed: 2400 MT/s
+	Manufacturer: Samsung
+	Serial Number: 3405E86E
+	Asset Tag: DIMM_P0_B0_AssetTag
+	Part Number: M393A2K40BB1-CRC
+	Rank: 1
+	Configured Memory Speed: 2100 MT/s
+	Minimum Voltage: Unknown
+	Maximum Voltage: Unknown
+	Configured Voltage: Unknown
+
+Handle 0x0038, DMI type 20, 35 bytes
+Memory Device Mapped Address
+	Starting Address: 0x0000000400000000k
+	Ending Address: 0x00000007FFFFFFFFk
+	Range Size: 16 GB
+	Physical Device Handle: 0x0037
+	Memory Array Mapped Address Handle: 0x0033
+	Partition Row Position: Unknown
+	Interleave Position: Unknown
+	Interleaved Data Depth: Unknown
+
+Handle 0x0039, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0032
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: No Module Installed
+	Form Factor: Unknown
+	Set: Unknown
+	Locator: DIMM_P0_B1
+	Bank Locator: P0_Node0_Channel1_Dimm1
+	Type: DDR4
+	Type Detail: Unknown
+	Speed: Unknown
+	Manufacturer: NO DIMM
+	Serial Number: NO DIMM
+	Asset Tag: NO DIMM
+	Part Number: NO DIMM
+	Rank: Unknown
+	Configured Memory Speed: Unknown
+	Minimum Voltage: Unknown
+	Maximum Voltage: Unknown
+	Configured Voltage: Unknown
+
+Handle 0x003A, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0032
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 16384 MB
+	Form Factor: DIMM
+	Set: Unknown
+	Locator: DIMM_P0_C0
+	Bank Locator: P0_Node0_Channel2_Dimm0
+	Type: DDR4
+	Type Detail: Registered (Buffered)
+	Speed: 2400 MT/s
+	Manufacturer: Samsung
+	Serial Number: 01234567
+	Asset Tag: DIMM_P0_C0_AssetTag
+	Part Number: M393A2K40BB1-CRC
+	Rank: 1
+	Configured Memory Speed: 2100 MT/s
+	Minimum Voltage: Unknown
+	Maximum Voltage: Unknown
+	Configured Voltage: Unknown
+
+Handle 0x003B, DMI type 20, 35 bytes
+Memory Device Mapped Address
+	Starting Address: 0x0000000800000000k
+	Ending Address: 0x0000000BFFFFFFFFk
+	Range Size: 16 GB
+	Physical Device Handle: 0x003A
+	Memory Array Mapped Address Handle: 0x0033
+	Partition Row Position: Unknown
+	Interleave Position: Unknown
+	Interleaved Data Depth: Unknown
+
+Handle 0x003C, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0032
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: No Module Installed
+	Form Factor: Unknown
+	Set: Unknown
+	Locator: DIMM_P0_C1
+	Bank Locator: P0_Node0_Channel2_Dimm1
+	Type: DDR4
+	Type Detail: Unknown
+	Speed: Unknown
+	Manufacturer: NO DIMM
+	Serial Number: NO DIMM
+	Asset Tag: NO DIMM
+	Part Number: NO DIMM
+	Rank: Unknown
+	Configured Memory Speed: Unknown
+	Minimum Voltage: Unknown
+	Maximum Voltage: Unknown
+	Configured Voltage: Unknown
+
+Handle 0x003D, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0032
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: 16384 MB
+	Form Factor: DIMM
+	Set: Unknown
+	Locator: DIMM_P0_D0
+	Bank Locator: P0_Node0_Channel3_Dimm0
+	Type: DDR4
+	Type Detail: Registered (Buffered)
+	Speed: 2400 MT/s
+	Manufacturer: Samsung
+	Serial Number: 01234567
+	Asset Tag: DIMM_P0_D0_AssetTag
+	Part Number: M393A2K40BB1-CRC
+	Rank: 1
+	Configured Memory Speed: 2100 MT/s
+	Minimum Voltage: Unknown
+	Maximum Voltage: Unknown
+	Configured Voltage: Unknown
+
+Handle 0x003E, DMI type 20, 35 bytes
+Memory Device Mapped Address
+	Starting Address: 0x0000000C00000000k
+	Ending Address: 0x0000000FFFFFFFFFk
+	Range Size: 16 GB
+	Physical Device Handle: 0x003D
+	Memory Array Mapped Address Handle: 0x0033
+	Partition Row Position: Unknown
+	Interleave Position: Unknown
+	Interleaved Data Depth: Unknown
+
+Handle 0x003F, DMI type 17, 40 bytes
+Memory Device
+	Array Handle: 0x0032
+	Error Information Handle: Not Provided
+	Total Width: 72 bits
+	Data Width: 64 bits
+	Size: No Module Installed
+	Form Factor: Unknown
+	Set: Unknown
+	Locator: DIMM_P0_D1
+	Bank Locator: P0_Node0_Channel3_Dimm1
+	Type: DDR4
+	Type Detail: Unknown
+	Speed: Unknown
+	Manufacturer: NO DIMM
+	Serial Number: NO DIMM
+	Asset Tag: NO DIMM
+	Part Number: NO DIMM
+	Rank: Unknown
+	Configured Memory Speed: Unknown
+	Minimum Voltage: Unknown
+	Maximum Voltage: Unknown
+	Configured Voltage: Unknown
+
+Handle 0x0043, DMI type 127, 4 bytes
+End Of Table

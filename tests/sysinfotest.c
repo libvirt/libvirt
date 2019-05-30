@@ -138,6 +138,8 @@ mymain(void)
     TEST("arm-rpi2", virSysinfoReadARM);
     TEST("aarch64", virSysinfoReadARM);
     TEST("aarch64-moonshot", virSysinfoReadARM);
+    TEST_FULL("aarch64-gigabyte", virSysinfoReadARM,
+              "/sysinfodata/aarch64-gigabytedmidecode.sh");
 
     return ret;
 }
