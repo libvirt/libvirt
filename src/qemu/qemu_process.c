@@ -2489,10 +2489,15 @@ qemuProcessInitCpuAffinity(virDomainObjPtr vm)
     if (virDomainNumaGetNodeCount(vm->def->numa) <= 1 &&
         virDomainNumatuneGetMode(vm->def->numa, -1, &mem_mode) == 0 &&
         mem_mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT) {
+        virBitmapPtr nodeset = NULL;
+
         if (virDomainNumatuneMaybeGetNodeset(vm->def->numa,
                                              priv->autoNodeset,
-                                             &cpumapToSet,
+                                             &nodeset,
                                              -1) < 0)
+            goto cleanup;
+
+        if (virNumaNodesetToCPUset(nodeset, &cpumapToSet) < 0)
             goto cleanup;
     } else if (vm->def->cputune.emulatorpin) {
         cpumapToSet = vm->def->cputune.emulatorpin;
