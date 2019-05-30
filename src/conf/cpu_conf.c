@@ -112,6 +112,7 @@ virCPUDefFree(virCPUDefPtr def)
 
     virCPUDefFreeModel(def);
     VIR_FREE(def->cache);
+    VIR_FREE(def->tsc);
     VIR_FREE(def);
 }
 
@@ -233,6 +234,13 @@ virCPUDefCopyWithoutModel(const virCPUDef *cpu)
         *copy->cache = *cpu->cache;
     }
 
+    if (cpu->tsc) {
+        if (VIR_ALLOC(copy->tsc) < 0)
+            goto error;
+
+        *copy->tsc = *cpu->tsc;
+    }
+
     return copy;
 
  error:
@@ -286,6 +294,8 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
     char *cpuMode;
     char *fallback = NULL;
     char *vendor_id = NULL;
+    char *tscScaling = NULL;
+    virHostCPUTscInfoPtr tsc = NULL;
     int ret = -1;
 
     *cpu = NULL;
@@ -401,6 +411,32 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("invalid microcode version"));
             goto cleanup;
+        }
+
+        if (virXPathBoolean("boolean(./counter[@name='tsc'])", ctxt) > 0) {
+            if (VIR_ALLOC(tsc) < 0)
+                goto cleanup;
+
+            if (virXPathULongLong("./counter[@name='tsc']/@frequency", ctxt,
+                                  &tsc->frequency) < 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Invalid TSC frequency"));
+                goto cleanup;
+            }
+
+            tscScaling = virXPathString("string(./counter[@name='tsc']/@scaling)",
+                                        ctxt);
+            if (tscScaling) {
+                int scaling = virTristateBoolTypeFromString(tscScaling);
+                if (scaling < 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("Invalid TSC scaling attribute"));
+                    goto cleanup;
+                }
+                tsc->scaling = scaling;
+            }
+
+            VIR_STEAL_PTR(def->tsc, tsc);
         }
     }
 
@@ -587,6 +623,8 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
     VIR_FREE(fallback);
     VIR_FREE(vendor_id);
     VIR_FREE(nodes);
+    VIR_FREE(tscScaling);
+    VIR_FREE(tsc);
     virCPUDefFree(def);
     return ret;
 }
@@ -743,6 +781,16 @@ virCPUDefFormatBuf(virBufferPtr buf,
     if (def->type == VIR_CPU_TYPE_HOST && def->microcodeVersion)
         virBufferAsprintf(buf, "<microcode version='%u'/>\n",
                           def->microcodeVersion);
+
+    if (def->type == VIR_CPU_TYPE_HOST && def->tsc) {
+        virBufferAddLit(buf, "<counter name='tsc'");
+        virBufferAsprintf(buf, " frequency='%llu'", def->tsc->frequency);
+        if (def->tsc->scaling) {
+            virBufferAsprintf(buf, " scaling='%s'",
+                              virTristateBoolTypeToString(def->tsc->scaling));
+        }
+        virBufferAddLit(buf, "/>\n");
+    }
 
     if (def->sockets && def->cores && def->threads) {
         virBufferAddLit(buf, "<topology");
