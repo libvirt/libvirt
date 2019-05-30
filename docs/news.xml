@@ -42,7 +42,60 @@
   <release version="v5.4.0" date="unreleased">
     <section title="New features">
     </section>
+    <section title="Security">
+      <change>
+        <summary>
+          cpu: Introduce support for the md-clear CPUID bit
+        </summary>
+        <description>
+          This bit is set when microcode provides the mechanism to invoke a
+          flush of various exploitable CPU buffers by invoking the x86
+          <code>VERW</code> instruction. CVE-2018-12126, CVE-2018-12127,
+          CVE-2018-12130, CVE-2019-11091.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Restrict user access to virt-admin, virtlogd and virtlockd
+        </summary>
+        <description>
+          The intended users for these facilities are the <code>root</code>
+          user and the <code>libvirtd</code> service respectively, but these
+          restrictions were not enforced correctly. CVE-2019-10132.
+        </description>
+      </change>
+    </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          test driver: Expand API coverage
+        </summary>
+        <description>
+          Several APIs that were missing from the test driver have now been
+          implemented.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Avoid unnecessary static linking
+        </summary>
+        <description>
+          Most binaries shipped as part of libvirt, for example
+          <code>virtlogd</code> and <code>libvirt_iohelper</code>, were
+          embedding parts of the library even though they also linked against
+          the <code>libvirt.so</code> dynamic library. This is no longer the
+          case, which results in both the disk and memory footprint being
+          reduced.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Report stat-htlb-pgalloc and stat-htlb-pgfail balloon stats
+        </summary>
+        <description>
+          These stats have been introduced in QEMU 3.0.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
       <change>
@@ -57,6 +110,11 @@
           moved to its cpu,cpuacct cgroup.  This was fixed so that the
           scheduler for the main thread is set after QEMU starts.
         </description>
+      </change>
+      <change>
+        <summary>
+          apparmor: Allow hotplug of vhost-scsi devices
+        </summary>
       </change>
     </section>
   </release>
