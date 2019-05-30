@@ -54,7 +54,8 @@
           to start up other threads was misleading as it would affect other
           threads (vCPU and I/O) as well.  In some particular situations this
           could also lead to an error when the thread for vCPU #0 was being
-          moved to its cpu,cpuacct cgroup.  This was fixed so that the scheduler for the main thread is set after QEMU starts.
+          moved to its cpu,cpuacct cgroup.  This was fixed so that the
+          scheduler for the main thread is set after QEMU starts.
         </description>
       </change>
     </section>
