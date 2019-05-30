@@ -56,61 +56,61 @@ static int testURIParse(const void *args)
         goto cleanup;
 
     if (STRNEQ(uri->scheme, data->scheme)) {
-        VIR_DEBUG("Expected scheme '%s', actual '%s'",
-                  data->scheme, uri->scheme);
+        VIR_TEST_DEBUG("Expected scheme '%s', actual '%s'",
+                       data->scheme, uri->scheme);
         goto cleanup;
     }
 
     if (STRNEQ(uri->server, data->server)) {
-        VIR_DEBUG("Expected server '%s', actual '%s'",
-                  data->server, uri->server);
+        VIR_TEST_DEBUG("Expected server '%s', actual '%s'",
+                       data->server, uri->server);
         goto cleanup;
     }
 
     if (uri->port != data->port) {
-        VIR_DEBUG("Expected port '%d', actual '%d'",
-                  data->port, uri->port);
+        VIR_TEST_DEBUG("Expected port '%d', actual '%d'",
+                       data->port, uri->port);
         goto cleanup;
     }
 
     if (STRNEQ_NULLABLE(uri->path, data->path)) {
-        VIR_DEBUG("Expected path '%s', actual '%s'",
-                  data->path, uri->path);
+        VIR_TEST_DEBUG("Expected path '%s', actual '%s'",
+                       data->path, uri->path);
         goto cleanup;
     }
 
     if (STRNEQ_NULLABLE(uri->query, data->query)) {
-        VIR_DEBUG("Expected query '%s', actual '%s'",
-                  data->query, uri->query);
+        VIR_TEST_DEBUG("Expected query '%s', actual '%s'",
+                       data->query, uri->query);
         goto cleanup;
     }
 
     if (STRNEQ_NULLABLE(uri->fragment, data->fragment)) {
-        VIR_DEBUG("Expected fragment '%s', actual '%s'",
-                  data->fragment, uri->fragment);
+        VIR_TEST_DEBUG("Expected fragment '%s', actual '%s'",
+                       data->fragment, uri->fragment);
         goto cleanup;
     }
 
     for (i = 0; data->params && data->params[i].name && i < uri->paramsCount; i++) {
         if (STRNEQ_NULLABLE(data->params[i].name, uri->params[i].name)) {
-            VIR_DEBUG("Expected param name %zu '%s', actual '%s'",
-                      i, data->params[i].name, uri->params[i].name);
+            VIR_TEST_DEBUG("Expected param name %zu '%s', actual '%s'",
+                           i, data->params[i].name, uri->params[i].name);
             goto cleanup;
         }
         if (STRNEQ_NULLABLE(data->params[i].value, uri->params[i].value)) {
-            VIR_DEBUG("Expected param value %zu '%s', actual '%s'",
-                      i, data->params[i].value, uri->params[i].value);
+            VIR_TEST_DEBUG("Expected param value %zu '%s', actual '%s'",
+                           i, data->params[i].value, uri->params[i].value);
             goto cleanup;
         }
     }
     if (data->params && data->params[i].name) {
-        VIR_DEBUG("Missing parameter %zu %s=%s",
-                  i, data->params[i].name, data->params[i].value);
+        VIR_TEST_DEBUG("Missing parameter %zu %s=%s",
+                       i, data->params[i].name, data->params[i].value);
         goto cleanup;
     }
     if (i != uri->paramsCount) {
-        VIR_DEBUG("Unexpected parameter %zu %s=%s",
-                  i, uri->params[i].name, uri->params[i].value);
+        VIR_TEST_DEBUG("Unexpected parameter %zu %s=%s",
+                       i, uri->params[i].name, uri->params[i].value);
         goto cleanup;
     }
 
@@ -121,8 +121,8 @@ static int testURIParse(const void *args)
         goto cleanup;
 
     if (STRNEQ(uristr, data->uri_out)) {
-        VIR_DEBUG("URI did not roundtrip, expect '%s', actual '%s'",
-                  data->uri_out, uristr);
+        VIR_TEST_DEBUG("URI did not roundtrip, expect '%s', actual '%s'",
+                       data->uri_out, uristr);
         goto cleanup;
     }
 
