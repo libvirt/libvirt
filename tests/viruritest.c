@@ -178,6 +178,14 @@ mymain(void)
     TEST_PARSE("test://[2001:41c8:1:4fd4::2]:123/system", "test", "2001:41c8:1:4fd4::2", 123, "/system", NULL, NULL, NULL, NULL);
     TEST_PARSE("gluster+rdma://example.com:1234/gv0/vol.img", "gluster+rdma", "example.com", 1234, "/gv0/vol.img", NULL, NULL, NULL, NULL);
 
+    virURIParam spiceparams[] = {
+        { (char *) "tlsSubject", (char *) "C=XX,L=Testtown,O=Test Company,CN=tester.test", false },
+        { NULL, NULL, false },
+    };
+    TEST_FULL("spice://[3ffe::104]:5900/?tlsSubject=C=XX,L=Testtown,O=Test%20Company,CN=tester.test",
+              "spice://[3ffe::104]:5900/?tlsSubject=C%3dXX%2cL%3dTesttown%2cO%3dTest%20Company%2cCN%3dtester%2etest",
+              "spice", "3ffe::104", 5900, "/", "tlsSubject=C=XX,L=Testtown,O=Test%20Company,CN=tester.test", NULL, NULL, spiceparams);
+
     virURIParam params1[] = {
         { (char*)"foo", (char*)"one", false },
         { (char*)"bar", (char*)"two", false },
