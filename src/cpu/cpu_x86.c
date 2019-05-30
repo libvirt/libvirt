@@ -2762,6 +2762,15 @@ virCPUx86GetHost(virCPUDefPtr cpu,
     ret = x86DecodeCPUData(cpu, cpuData, models);
     cpu->microcodeVersion = virHostCPUGetMicrocodeVersion();
 
+    /* Probing for TSC frequency makes sense only if the CPU supports
+     * invariant TSC (Linux calls this constant_tsc in /proc/cpuinfo). */
+    if (virCPUx86DataCheckFeature(cpuData, "invtsc") == 1) {
+        VIR_DEBUG("Checking invariant TSC frequency");
+        cpu->tsc = virHostCPUGetTscInfo();
+    } else {
+        VIR_DEBUG("Host CPU does not support invariant TSC");
+    }
+
  cleanup:
     virCPUx86DataFree(cpuData);
     return ret;
