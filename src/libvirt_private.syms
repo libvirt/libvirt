@@ -2556,6 +2556,7 @@ virNumaGetPages;
 virNumaIsAvailable;
 virNumaNodeIsAvailable;
 virNumaNodesetIsAvailable;
+virNumaNodesetToCPUset;
 virNumaSetPagePoolSize;
 virNumaSetupMemoryPolicy;
 

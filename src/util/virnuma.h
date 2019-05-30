@@ -48,6 +48,8 @@ int virNumaGetNodeMemory(int node,
 unsigned int virNumaGetMaxCPUs(void);
 
 int virNumaGetNodeCPUs(int node, virBitmapPtr *cpus) ATTRIBUTE_NOINLINE;
+int virNumaNodesetToCPUset(virBitmapPtr nodeset,
+                           virBitmapPtr *cpuset);
 
 int virNumaGetPageInfo(int node,
                        unsigned int page_size,
