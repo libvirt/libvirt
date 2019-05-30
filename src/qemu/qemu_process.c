@@ -5282,6 +5282,56 @@ qemuProcessStartValidateDisks(virDomainObjPtr vm,
 }
 
 
+static int
+qemuProcessStartValidateTSC(virDomainObjPtr vm,
+                            virCapsPtr caps)
+{
+    size_t i;
+    unsigned long long freq = 0;
+    virHostCPUTscInfoPtr tsc;
+
+    for (i = 0; i < vm->def->clock.ntimers; i++) {
+        virDomainTimerDefPtr timer = vm->def->clock.timers[i];
+
+        if (timer->name == VIR_DOMAIN_TIMER_NAME_TSC &&
+            timer->frequency > 0) {
+            freq = timer->frequency;
+            break;
+        }
+    }
+
+    if (freq == 0)
+        return 0;
+
+    VIR_DEBUG("Requested TSC frequency %llu Hz", freq);
+
+    if (!caps->host.cpu || !caps->host.cpu->tsc) {
+        VIR_DEBUG("Host TSC frequency could not be probed");
+        return 0;
+    }
+
+    tsc = caps->host.cpu->tsc;
+    VIR_DEBUG("Host TSC frequency %llu Hz, scaling %s",
+              tsc->frequency, virTristateBoolTypeToString(tsc->scaling));
+
+    if (freq == tsc->frequency || tsc->scaling == VIR_TRISTATE_BOOL_YES)
+        return 0;
+
+    if (tsc->scaling == VIR_TRISTATE_BOOL_ABSENT) {
+        VIR_DEBUG("TSC frequencies do not match and scaling support is "
+                  "unknown, QEMU will try and possibly fail later");
+        return 0;
+    }
+
+    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                   _("Requested TSC frequency %llu Hz does not match "
+                     "host (%llu Hz) and TSC scaling is not supported "
+                     "by the host CPU"),
+                   freq, tsc->frequency);
+    return -1;
+}
+
+
 /**
  * qemuProcessStartValidate:
  * @vm: domain object
@@ -5344,6 +5394,9 @@ qemuProcessStartValidate(virQEMUDriverPtr driver,
         return -1;
 
     if (qemuProcessStartValidateDisks(vm, qemuCaps) < 0)
+        return -1;
+
+    if (qemuProcessStartValidateTSC(vm, caps) < 0)
         return -1;
 
     VIR_DEBUG("Checking for any possible (non-fatal) issues");
