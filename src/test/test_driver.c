@@ -1910,6 +1910,30 @@ static int testDomainReboot(virDomainPtr domain,
     return ret;
 }
 
+
+static char *
+testDomainGetHostname(virDomainPtr domain,
+                      unsigned int flags)
+{
+    char *ret = NULL;
+    virDomainObjPtr vm = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (!(vm = testDomObjFromDomain(domain)))
+        goto cleanup;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto cleanup;
+
+    ignore_value(virAsprintf(&ret, "%shost", domain->name));
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
 static int testDomainGetInfo(virDomainPtr domain,
                              virDomainInfoPtr info)
 {
@@ -6950,6 +6974,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainGetMaxMemory = testDomainGetMaxMemory, /* 0.1.4 */
     .domainSetMaxMemory = testDomainSetMaxMemory, /* 0.1.1 */
     .domainSetMemory = testDomainSetMemory, /* 0.1.4 */
+    .domainGetHostname = testDomainGetHostname, /* 5.5.0 */
     .domainGetInfo = testDomainGetInfo, /* 0.1.1 */
     .domainGetState = testDomainGetState, /* 0.9.2 */
     .domainGetTime = testDomainGetTime, /* 5.4.0 */
