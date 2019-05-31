@@ -17289,6 +17289,7 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom,
     virDomainDiskDefPtr disk;
     int ret = -1;
     qemuMonitorBlockJobInfo rawInfo;
+    VIR_AUTOUNREF(qemuBlockJobDataPtr) job = NULL;
 
     virCheckFlags(VIR_DOMAIN_BLOCK_JOB_INFO_BANDWIDTH_BYTES, -1);
 
@@ -17311,9 +17312,13 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom,
         goto endjob;
     }
 
+    if (!(job = qemuBlockJobDiskGetJob(disk))) {
+        ret = 0;
+        goto endjob;
+    }
+
     qemuDomainObjEnterMonitor(driver, vm);
-    ret = qemuMonitorGetBlockJobInfo(qemuDomainGetMonitor(vm),
-                                     disk->info.alias, &rawInfo);
+    ret = qemuMonitorGetBlockJobInfo(qemuDomainGetMonitor(vm), job->name, &rawInfo);
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -1;
     if (ret <= 0)

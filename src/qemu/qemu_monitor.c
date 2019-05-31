@@ -3463,7 +3463,7 @@ qemuMonitorGetBlockJobInfo(qemuMonitorPtr mon,
 
     VIR_DEBUG("alias=%s, info=%p", alias, info);
 
-    if (!(all = qemuMonitorGetAllBlockJobInfo(mon, false)))
+    if (!(all = qemuMonitorGetAllBlockJobInfo(mon, true)))
         return -1;
 
     if ((data = virHashLookup(all, alias))) {
