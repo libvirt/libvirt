@@ -64,6 +64,7 @@
 #include "virinterfaceobj.h"
 #include "virhostcpu.h"
 #include "virdomainsnapshotobjlist.h"
+#include "virkeycode.h"
 
 #define VIR_FROM_THIS VIR_FROM_TEST
 
@@ -6004,6 +6005,45 @@ testDomainScreenshot(virDomainPtr dom ATTRIBUTE_UNUSED,
     return ret;
 }
 
+
+static int
+testDomainSendKey(virDomainPtr domain,
+                  unsigned int codeset,
+                  unsigned int holdtime ATTRIBUTE_UNUSED,
+                  unsigned int *keycodes,
+                  int nkeycodes,
+                  unsigned int flags)
+{
+    int ret = -1;
+    size_t i;
+    virDomainObjPtr vm = NULL;
+
+    virCheckFlags(0, -1);
+
+    if (!(vm = testDomObjFromDomain(domain)))
+        goto cleanup;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto cleanup;
+
+    for (i = 0; i < nkeycodes; i++) {
+        if (virKeycodeValueTranslate(codeset, codeset, keycodes[i]) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("invalid keycode %u of %s codeset"),
+                           keycodes[i],
+                           virKeycodeSetTypeToString(codeset));
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
 static int
 testConnectGetCPUModelNames(virConnectPtr conn ATTRIBUTE_UNUSED,
                             const char *archName,
@@ -7025,6 +7065,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .nodeGetCPUMap = testNodeGetCPUMap, /* 1.0.0 */
     .domainRename = testDomainRename, /* 4.1.0 */
     .domainScreenshot = testDomainScreenshot, /* 1.0.5 */
+    .domainSendKey = testDomainSendKey, /* 5.5.0 */
     .domainGetMetadata = testDomainGetMetadata, /* 1.1.3 */
     .domainSetMetadata = testDomainSetMetadata, /* 1.1.3 */
     .connectGetCPUModelNames = testConnectGetCPUModelNames, /* 1.1.3 */
