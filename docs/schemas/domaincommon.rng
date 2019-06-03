@@ -1610,6 +1610,7 @@
       <ref name="diskSourceDir"/>
       <ref name="diskSourceNetwork"/>
       <ref name="diskSourceVolume"/>
+      <ref name="diskSourceNvme"/>
     </choice>
   </define>
 
@@ -1921,6 +1922,37 @@
         <zeroOrMore>
           <ref name='devSeclabel'/>
         </zeroOrMore>
+      </element>
+    </optional>
+  </define>
+
+  <define name="diskSourceNvme">
+    <attribute name="type">
+      <value>nvme</value>
+    </attribute>
+    <optional>
+      <element name="source">
+        <attribute name="type">
+          <value>pci</value>
+        </attribute>
+        <attribute name="namespace">
+          <ref name="uint32"/>
+        </attribute>
+        <optional>
+          <attribute name="managed">
+            <ref name="virYesNo"/>
+          </attribute>
+        </optional>
+        <element name="address">
+          <ref name="pciaddress"/>
+        </element>
+        <ref name="diskSourceCommon"/>
+        <optional>
+          <ref name="storageStartupPolicy"/>
+        </optional>
+        <optional>
+          <ref name="encryption"/>
+        </optional>
       </element>
     </optional>
   </define>

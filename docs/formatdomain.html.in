@@ -2948,6 +2948,13 @@
     &lt;/backingStore&gt;
     &lt;target dev='vdd' bus='virtio'/&gt;
   &lt;/disk&gt;
+  &lt;disk type='nvme' device='disk'&gt;
+    &lt;driver name='qemu' type='raw'/&gt;
+    &lt;source type='pci' managed='yes' namespace='1'&gt;
+      &lt;address domain='0x0000' bus='0x01' slot='0x00' function='0x0'/&gt;
+    &lt;/source&gt;
+    &lt;target dev='vde' bus='virtio'/&gt;
+  &lt;/disk&gt;
 &lt;/devices&gt;
 ...</pre>
 
@@ -2961,7 +2968,8 @@
             Valid values are "file", "block",
             "dir" (<span class="since">since 0.7.5</span>),
             "network" (<span class="since">since 0.8.7</span>), or
-            "volume" (<span class="since">since 1.0.5</span>)
+            "volume" (<span class="since">since 1.0.5</span>), or
+            "nvme" (<span class="since">since 6.0.0</span>)
             and refer to the underlying source for the disk.
             <span class="since">Since 0.0.3</span>
             </dd>
@@ -3144,6 +3152,43 @@
               <span class="since">Since 1.0.5</span>
               </p>
               </dd>
+            <dt><code>nvme</code></dt>
+              <dd>
+              To specify disk source for NVMe disk the <code>source</code>
+              element has the following attributes:
+              <dl>
+                <dt><code>type</code></dt>
+                <dd>The type of address specified in <code>address</code>
+                sub-element. Currently, only <code>pci</code> value is
+                accepted.
+                </dd>
+
+                <dt><code>managed</code></dt>
+                <dd>This attribute instructs libvirt to detach NVMe
+                controller automatically on domain startup (<code>yes</code>)
+                or expect the controller to be detached by system
+                administrator (<code>no</code>).
+                </dd>
+
+                <dt><code>namespace</code></dt>
+                <dd>The namespace ID which should be assigned to the domain.
+                According to NVMe standard, namespace numbers start from 1,
+                including.
+                </dd>
+              </dl>
+
+              The difference between <code>&lt;disk type='nvme'&gt;</code>
+              and <code>&lt;hostdev/&gt;</code> is that the latter is plain
+              host device assignment with all its limitations (e.g. no live
+              migration), while the former makes hypervisor to run the NVMe
+              disk through hypervisor's block layer thus enabling all
+              features provided by the layer (e.g. snapshots, domain
+              migration, etc.). Moreover, since the NVMe disk is unbinded
+              from its PCI driver, the host kernel storage stack is not
+              involved (compared to passing say <code>/dev/nvme0n1</code> via
+              <code>&lt;disk type='block'&gt;</code> and therefore lower
+              latencies can be achieved.
+              </dd>
           </dl>
         With "file", "block", and "volume", one or more optional
         sub-elements <code>seclabel</code>, <a href="#seclabel">described
@@ -3305,6 +3350,12 @@
             If present, the <code>initiator</code> element provides the
             initiator IQN needed to access the source via mandatory
             attribute <code>name</code>.
+          </dd>
+          <dt><code>address</code></dt>
+          <dd>For disk of type <code>nvme</code> this element
+            specifies the PCI address of the host NVMe
+            controller.
+            <span class="since">Since 6.0.0</span>
           </dd>
         </dl>
 
