@@ -3695,7 +3695,7 @@ remoteDispatchAuthSaslInit(virNetServer *server G_GNUC_UNUSED,
     else
         /* Plain TCP, better get an SSF layer */
         virNetSASLSessionSecProps(sasl,
-                                  56,  /* Good enough to require kerberos */
+                                  virNetSASLContextGetTCPMinSSF(saslCtxt),
                                   100000,  /* Arbitrary big number */
                                   false); /* No anonymous */
 

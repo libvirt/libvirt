@@ -405,7 +405,8 @@ daemonSetupNetworking(virNetServer *srv,
 #if WITH_SASL
     if (virNetServerNeedsAuth(srv, REMOTE_AUTH_SASL) &&
         !(saslCtxt = virNetSASLContextNewServer(
-              (const char *const*)config->sasl_allowed_username_list)))
+              (const char *const*)config->sasl_allowed_username_list,
+              56)))
         return -1;
 #endif
 

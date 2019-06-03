@@ -37,6 +37,7 @@ struct _virNetSASLContext {
     virObjectLockable parent;
 
     const char *const *usernameACL;
+    unsigned int tcpMinSSF;
 };
 
 struct _virNetSASLSession {
@@ -121,7 +122,8 @@ virNetSASLContext *virNetSASLContextNewClient(void)
     return ctxt;
 }
 
-virNetSASLContext *virNetSASLContextNewServer(const char *const *usernameACL)
+virNetSASLContext *virNetSASLContextNewServer(const char *const *usernameACL,
+                                              unsigned int tcpMinSSF)
 {
     virNetSASLContext *ctxt;
 
@@ -133,6 +135,7 @@ virNetSASLContext *virNetSASLContextNewServer(const char *const *usernameACL)
         return NULL;
 
     ctxt->usernameACL = usernameACL;
+    ctxt->tcpMinSSF = tcpMinSSF;
 
     return ctxt;
 }
@@ -172,6 +175,12 @@ int virNetSASLContextCheckIdentity(virNetSASLContext *ctxt,
  cleanup:
     virObjectUnlock(ctxt);
     return ret;
+}
+
+
+unsigned int virNetSASLContextGetTCPMinSSF(virNetSASLContext *ctxt)
+{
+    return ctxt->tcpMinSSF;
 }
 
 

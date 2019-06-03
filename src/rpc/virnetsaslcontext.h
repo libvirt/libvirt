@@ -36,10 +36,13 @@ enum {
 };
 
 virNetSASLContext *virNetSASLContextNewClient(void);
-virNetSASLContext *virNetSASLContextNewServer(const char *const *usernameACL);
+virNetSASLContext *virNetSASLContextNewServer(const char *const *usernameACL,
+                                              unsigned int min_ssf);
 
 int virNetSASLContextCheckIdentity(virNetSASLContext *ctxt,
                                    const char *identity);
+
+unsigned int virNetSASLContextGetTCPMinSSF(virNetSASLContext *ctxt);
 
 virNetSASLSession *virNetSASLSessionNewClient(virNetSASLContext *ctxt,
                                                 const char *service,
