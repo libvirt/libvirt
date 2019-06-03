@@ -56,6 +56,7 @@ VIR_ENUM_IMPL(virStorage,
               "dir",
               "network",
               "volume",
+              "nvme",
 );
 
 VIR_ENUM_IMPL(virStorageFileFormat,
@@ -2092,6 +2093,49 @@ virStoragePRDefCopy(virStoragePRDefPtr src)
 }
 
 
+static virStorageSourceNVMeDefPtr
+virStorageSourceNVMeDefCopy(const virStorageSourceNVMeDef *src)
+{
+    virStorageSourceNVMeDefPtr ret = NULL;
+
+    ret = g_new0(virStorageSourceNVMeDef, 1);
+
+    ret->namespace = src->namespace;
+    ret->managed = src->managed;
+    virPCIDeviceAddressCopy(&ret->pciAddr, &src->pciAddr);
+    return ret;
+}
+
+
+static bool
+virStorageSourceNVMeDefIsEqual(const virStorageSourceNVMeDef *a,
+                               const virStorageSourceNVMeDef *b)
+{
+    if (!a && !b)
+        return true;
+
+    if (!a || !b)
+        return false;
+
+    if (a->namespace != b->namespace ||
+        a->managed != b->managed ||
+        !virPCIDeviceAddressEqual(&a->pciAddr, &b->pciAddr))
+        return false;
+
+    return true;
+}
+
+
+void
+virStorageSourceNVMeDefFree(virStorageSourceNVMeDefPtr def)
+{
+    if (!def)
+        return;
+
+    VIR_FREE(def);
+}
+
+
 virSecurityDeviceLabelDefPtr
 virStorageSourceGetSecurityLabelDef(virStorageSourcePtr src,
                                     const char *model)
@@ -2290,6 +2334,9 @@ virStorageSourceCopy(const virStorageSource *src,
         !(def->pr = virStoragePRDefCopy(src->pr)))
         return NULL;
 
+    if (src->nvme)
+        def->nvme = virStorageSourceNVMeDefCopy(src->nvme);
+
     if (virStorageSourceInitiatorCopy(&def->initiator, &src->initiator) < 0)
         return NULL;
 
@@ -2347,6 +2394,10 @@ virStorageSourceIsSameLocation(virStorageSourcePtr a,
                 return false;
         }
     }
+
+    if (a->type == VIR_STORAGE_TYPE_NVME &&
+        !virStorageSourceNVMeDefIsEqual(a->nvme, b->nvme))
+        return false;
 
     return true;
 }
@@ -2430,6 +2481,9 @@ virStorageSourceIsLocalStorage(const virStorageSource *src)
 
     case VIR_STORAGE_TYPE_NETWORK:
     case VIR_STORAGE_TYPE_VOLUME:
+        /* While NVMe disks are local, they are not accessible via src->path.
+         * Therefore, we have to return false here. */
+    case VIR_STORAGE_TYPE_NVME:
     case VIR_STORAGE_TYPE_LAST:
     case VIR_STORAGE_TYPE_NONE:
         return false;
@@ -2515,6 +2569,7 @@ virStorageSourceClear(virStorageSourcePtr def)
     VIR_FREE(def->compat);
     virStorageEncryptionFree(def->encryption);
     virStoragePRDefFree(def->pr);
+    virStorageSourceNVMeDefFree(def->nvme);
     virStorageSourceSeclabelsClear(def);
     virStoragePermsFree(def->perms);
     VIR_FREE(def->timestamps);
@@ -3770,6 +3825,7 @@ virStorageSourceUpdatePhysicalSize(virStorageSourcePtr src,
 
     /* We shouldn't get VOLUME, but the switch requires all cases */
     case VIR_STORAGE_TYPE_VOLUME:
+    case VIR_STORAGE_TYPE_NVME:
     case VIR_STORAGE_TYPE_NONE:
     case VIR_STORAGE_TYPE_LAST:
         return -1;
@@ -4226,6 +4282,7 @@ virStorageSourceIsRelative(virStorageSourcePtr src)
 
     case VIR_STORAGE_TYPE_NETWORK:
     case VIR_STORAGE_TYPE_VOLUME:
+    case VIR_STORAGE_TYPE_NVME:
     case VIR_STORAGE_TYPE_NONE:
     case VIR_STORAGE_TYPE_LAST:
         return false;

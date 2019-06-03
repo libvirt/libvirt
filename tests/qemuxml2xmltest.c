@@ -330,6 +330,7 @@ mymain(void)
     DO_TEST("disk-network-sheepdog", NONE);
     DO_TEST("disk-network-vxhs", NONE);
     DO_TEST("disk-network-tlsx509", NONE);
+    DO_TEST("disk-nvme", QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_QCOW2_LUKS);
     DO_TEST("disk-scsi", QEMU_CAPS_SCSI_LSI, QEMU_CAPS_SCSI_MEGASAS,
             QEMU_CAPS_SCSI_MPTSAS1068, QEMU_CAPS_SCSI_DISK_WWN);
     DO_TEST("disk-virtio-scsi-reservations",

@@ -30,6 +30,7 @@
 #include "virutil.h"
 #include "virsecret.h"
 #include "virenum.h"
+#include "virpci.h"
 
 /* Minimum header size required to probe all known formats with
  * virStorageFileProbeFormat, or obtain metadata from a known format.
@@ -51,6 +52,7 @@ typedef enum {
     VIR_STORAGE_TYPE_DIR,
     VIR_STORAGE_TYPE_NETWORK,
     VIR_STORAGE_TYPE_VOLUME,
+    VIR_STORAGE_TYPE_NVME,
 
     VIR_STORAGE_TYPE_LAST
 } virStorageType;
@@ -230,6 +232,16 @@ struct _virStorageSourceInitiatorDef {
     char *iqn; /* Initiator IQN */
 };
 
+typedef struct _virStorageSourceNVMeDef virStorageSourceNVMeDef;
+typedef virStorageSourceNVMeDef *virStorageSourceNVMeDefPtr;
+struct _virStorageSourceNVMeDef {
+    unsigned long long namespace;
+    int managed; /* enum virTristateBool */
+    virPCIDeviceAddress pciAddr;
+
+    /* Don't forget to update virStorageSourceNVMeDefCopy */
+};
+
 typedef struct _virStorageDriverData virStorageDriverData;
 typedef virStorageDriverData *virStorageDriverDataPtr;
 
@@ -260,6 +272,8 @@ struct _virStorageSource {
     virStorageEncryptionPtr encryption;
     bool encryptionInherited;
     virStoragePRDefPtr pr;
+
+    virStorageSourceNVMeDefPtr nvme; /* type == VIR_STORAGE_TYPE_NVME */
 
     virStorageSourceInitiatorDef initiator;
 
@@ -415,6 +429,9 @@ bool virStoragePRDefIsManaged(virStoragePRDefPtr prd);
 
 bool
 virStorageSourceChainHasManagedPR(virStorageSourcePtr src);
+
+void virStorageSourceNVMeDefFree(virStorageSourceNVMeDefPtr def);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virStorageSourceNVMeDef, virStorageSourceNVMeDefFree);
 
 virSecurityDeviceLabelDefPtr
 virStorageSourceGetSecurityLabelDef(virStorageSourcePtr src,

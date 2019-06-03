@@ -1642,6 +1642,7 @@ xenFormatXLDiskSrc(virStorageSourcePtr src, char **srcstr)
         break;
 
     case VIR_STORAGE_TYPE_VOLUME:
+    case VIR_STORAGE_TYPE_NVME:
     case VIR_STORAGE_TYPE_NONE:
     case VIR_STORAGE_TYPE_LAST:
         break;
