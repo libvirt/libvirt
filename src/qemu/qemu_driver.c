@@ -15301,7 +15301,7 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
 
  error:
     if (ret < 0) {
-        orig_err = virSaveLastError();
+        virErrorPreserveLast(&orig_err);
         for (i = 0; i < snapdef->ndisks; i++) {
             if (!diskdata[i].src)
                 continue;
@@ -15341,11 +15341,7 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
 
  cleanup:
     qemuDomainSnapshotDiskDataFree(diskdata, snapdef->ndisks, driver, vm);
-
-    if (orig_err) {
-        virSetError(orig_err);
-        virFreeError(orig_err);
-    }
+    virErrorRestore(&orig_err);
 
     return ret;
 }
