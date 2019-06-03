@@ -15358,14 +15358,14 @@ qemuDomainSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
     bool resume = false;
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    char *xml = NULL;
+    VIR_AUTOFREE(char *) xml = NULL;
     virDomainSnapshotDefPtr snapdef = virDomainSnapshotObjGetDef(snap);
     bool memory = snapdef->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
     bool memory_unlink = false;
     int thaw = 0; /* 1 if freeze succeeded, -1 if freeze failed */
     bool pmsuspended = false;
     int compressed;
-    char *compressedpath = NULL;
+    VIR_AUTOFREE(char *) compressedpath = NULL;
     virQEMUSaveDataPtr data = NULL;
 
     /* If quiesce was requested, then issue a freeze command, and a
@@ -15521,8 +15521,6 @@ qemuDomainSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
     }
 
     virQEMUSaveDataFree(data);
-    VIR_FREE(xml);
-    VIR_FREE(compressedpath);
     if (memory_unlink && ret < 0)
         unlink(snapdef->file);
 
