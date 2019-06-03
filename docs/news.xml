@@ -56,8 +56,6 @@
     </section>
   </release>
   <release version="v5.4.0" date="2019-06-03">
-    <section title="New features">
-    </section>
     <section title="Security">
       <change>
         <summary>
