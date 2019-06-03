@@ -15231,6 +15231,7 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
                                    virDomainMomentObjPtr snap,
                                    unsigned int flags,
+                                   virQEMUDriverConfigPtr cfg,
                                    qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -15240,7 +15241,6 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
     size_t i;
     bool persist = false;
     bool reuse = (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT) != 0;
-    virQEMUDriverConfigPtr cfg = NULL;
     qemuDomainSnapshotDiskDataPtr diskdata = NULL;
     virErrorPtr orig_err = NULL;
     virDomainSnapshotDefPtr snapdef = virDomainSnapshotObjGetDef(snap);
@@ -15255,8 +15255,6 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
      * have to roll back later */
     if (!(diskdata = qemuDomainSnapshotDiskDataCollect(driver, vm, snap, reuse)))
         goto cleanup;
-
-    cfg = virQEMUDriverGetConfig(driver);
 
      /* Based on earlier qemuDomainSnapshotPrepare, all disks in this list are
       * now either VIR_DOMAIN_SNAPSHOT_LOCATION_NONE, or
@@ -15344,7 +15342,6 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
  cleanup:
     qemuDomainSnapshotDiskDataFree(diskdata, snapdef->ndisks, driver, vm);
     virJSONValueFree(actions);
-    virObjectUnref(cfg);
 
     if (orig_err) {
         virSetError(orig_err);
@@ -15359,6 +15356,7 @@ static int
 qemuDomainSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
                                        virDomainObjPtr vm,
                                        virDomainMomentObjPtr snap,
+                                       virQEMUDriverConfigPtr cfg,
                                        unsigned int flags)
 {
     virObjectEventPtr event;
@@ -15371,7 +15369,6 @@ qemuDomainSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
     bool memory_unlink = false;
     int thaw = 0; /* 1 if freeze succeeded, -1 if freeze failed */
     bool pmsuspended = false;
-    virQEMUDriverConfigPtr cfg = NULL;
     int compressed;
     char *compressedpath = NULL;
     virQEMUSaveDataPtr data = NULL;
@@ -15442,7 +15439,6 @@ qemuDomainSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
                                           JOB_MASK(QEMU_JOB_SUSPEND) |
                                           JOB_MASK(QEMU_JOB_MIGRATION_OP)));
 
-        cfg = virQEMUDriverGetConfig(driver);
         if ((compressed = qemuGetCompressionProgram(cfg->snapshotImageFormat,
                                                     &compressedpath,
                                                     "snapshot", false)) < 0)
@@ -15473,7 +15469,7 @@ qemuDomainSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
 
     /* the domain is now paused if a memory snapshot was requested */
 
-    if ((ret = qemuDomainSnapshotCreateDiskActive(driver, vm, snap, flags,
+    if ((ret = qemuDomainSnapshotCreateDiskActive(driver, vm, snap, flags, cfg,
                                                   QEMU_ASYNC_JOB_SNAPSHOT)) < 0)
         goto cleanup;
 
@@ -15532,7 +15528,6 @@ qemuDomainSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
     virQEMUSaveDataFree(data);
     VIR_FREE(xml);
     VIR_FREE(compressedpath);
-    virObjectUnref(cfg);
     if (memory_unlink && ret < 0)
         unlink(snapdef->file);
 
@@ -15771,7 +15766,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
             virDomainSnapshotObjGetDef(snap)->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
             /* external full system or disk snapshot */
             if (qemuDomainSnapshotCreateActiveExternal(driver,
-                                                       vm, snap, flags) < 0)
+                                                       vm, snap, cfg, flags) < 0)
                 goto endjob;
         } else {
             /* internal full system */
