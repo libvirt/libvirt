@@ -15235,7 +15235,7 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
                                    qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virJSONValuePtr actions = NULL;
+    VIR_AUTOPTR(virJSONValue) actions = NULL;
     bool do_transaction = false;
     int ret = 0;
     size_t i;
@@ -15341,7 +15341,6 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
 
  cleanup:
     qemuDomainSnapshotDiskDataFree(diskdata, snapdef->ndisks, driver, vm);
-    virJSONValueFree(actions);
 
     if (orig_err) {
         virSetError(orig_err);
