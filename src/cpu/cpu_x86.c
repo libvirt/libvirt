@@ -2707,8 +2707,6 @@ cpuidSet(uint32_t base, virCPUDataPtr data)
 }
 
 
-
-
 static int
 virCPUx86GetHost(virCPUDefPtr cpu,
                  virDomainCapsCPUModelsPtr models)
