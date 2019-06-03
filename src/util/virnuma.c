@@ -66,10 +66,12 @@ virNumaGetAutoPlacementAdvice(unsigned short vcpus,
 
     virCommandSetOutputBuffer(cmd, &output);
 
-    if (virCommandRun(cmd, NULL) < 0)
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+    if (virCommandRun(cmd, NULL) < 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("Failed to query numad for the "
                          "advisory nodeset"));
+        VIR_FREE(output);
+    }
 
     return output;
 }
