@@ -881,12 +881,10 @@ virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
 
 
 virCPUDefPtr
-virQEMUCapsProbeHostCPUForEmulator(virArch hostArch,
-                                   virQEMUCapsPtr qemuCaps,
-                                   virDomainVirtType type)
+virQEMUCapsProbeHostCPU(virArch hostArch,
+                        virDomainCapsCPUModelsPtr models)
 {
-    return virCPUGetHost(hostArch, VIR_CPU_TYPE_GUEST, NULL,
-                         virQEMUCapsGetCPUDefinitions(qemuCaps, type));
+    return virCPUGetHost(hostArch, VIR_CPU_TYPE_GUEST, NULL, models);
 }
 
 
@@ -3057,7 +3055,8 @@ virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
     } else if (rc == 1) {
         VIR_DEBUG("No host CPU model info from QEMU; probing host CPU directly");
 
-        hostCPU = virQEMUCapsProbeHostCPUForEmulator(hostArch, qemuCaps, type);
+        hostCPU = virQEMUCapsProbeHostCPU(hostArch,
+                                          virQEMUCapsGetCPUDefinitions(qemuCaps, type));
         if (!hostCPU ||
             virCPUDefCopyModelFilter(cpu, hostCPU, true,
                                      virQEMUCapsCPUFilterFeatures,
@@ -3070,8 +3069,7 @@ virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
         goto error;
     } else if (type == VIR_DOMAIN_VIRT_KVM &&
                virCPUGetHostIsSupported(qemuCaps->arch)) {
-        if (!(fullCPU = virCPUGetHost(qemuCaps->arch, VIR_CPU_TYPE_GUEST,
-                                      NULL, NULL)))
+        if (!(fullCPU = virQEMUCapsProbeHostCPU(qemuCaps->arch, NULL)))
             goto error;
 
         if (!(cpuExpanded = virCPUDefCopy(cpu)) ||
