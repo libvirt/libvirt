@@ -918,7 +918,7 @@ testQemuCapsIterate(const char *suffix,
     if (virDirOpen(&dir, TEST_QEMU_CAPS_PATH) < 0)
         goto cleanup;
 
-    while ((rc = virDirRead(dir, &ent, TEST_QEMU_CAPS_PATH) > 0)) {
+    while ((rc = virDirRead(dir, &ent, TEST_QEMU_CAPS_PATH)) > 0) {
         char *tmp = ent->d_name;
         char *base = NULL;
         char *archName = NULL;
