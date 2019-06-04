@@ -19,6 +19,7 @@ module Test_@DAEMON_NAME@ =
 @CUT_ENABLE_IP@
         { "auth_tcp" = "sasl" }
         { "auth_tls" = "none" }
+        { "tcp_min_ssf" = "112" }
 @END@
         { "access_drivers"
              { "1" = "polkit" }

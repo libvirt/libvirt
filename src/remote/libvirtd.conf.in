@@ -197,6 +197,14 @@
 # It is possible to make use of any SASL authentication
 # mechanism as well, by using 'sasl' for this option
 #auth_tls = "none"
+
+# Enforce a minimum SSF value for TCP sockets
+#
+# The default minimum is currently 56 (single-DES) which will
+# be raised to 112 in the future.
+#
+# This option can be used to set values higher than 112
+#tcp_min_ssf = 112
 @END@
 
 

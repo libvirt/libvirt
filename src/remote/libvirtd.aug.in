@@ -43,6 +43,7 @@ module @DAEMON_NAME_UC@ =
 @CUT_ENABLE_IP@
                             | str_entry "auth_tcp"
                             | str_entry "auth_tls"
+                            | int_entry "tcp_min_ssf"
 
    let certificate_entry = str_entry "key_file"
                          | str_entry "cert_file"

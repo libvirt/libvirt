@@ -210,6 +210,9 @@ daemonSetupNetworking(virNetServer *srv,
     int unix_sock_ro_mask = 0;
     int unix_sock_rw_mask = 0;
     int unix_sock_adm_mask = 0;
+#if WITH_SASL
+    unsigned int tcp_min_ssf = 0;
+#endif /* !WITH_SASL */
     g_autoptr(virSystemdActivation) act = NULL;
     virSystemdActivationMap actmap[] = {
         { .name = DAEMON_NAME ".socket", .family = AF_UNIX, .path = sock_path },
@@ -403,10 +406,13 @@ daemonSetupNetworking(virNetServer *srv,
         return -1;
 
 #if WITH_SASL
+# if WITH_IP
+    tcp_min_ssf = config->tcp_min_ssf;
+# endif
     if (virNetServerNeedsAuth(srv, REMOTE_AUTH_SASL) &&
         !(saslCtxt = virNetSASLContextNewServer(
               (const char *const*)config->sasl_allowed_username_list,
-              56)))
+              tcp_min_ssf)))
         return -1;
 #endif
 

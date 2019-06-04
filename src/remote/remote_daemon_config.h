@@ -56,6 +56,7 @@ struct daemonConfig {
     bool tls_no_sanity_certificate;
     char **tls_allowed_dn_list;
     char *tls_priority;
+    unsigned int tcp_min_ssf;
 
     char *key_file;
     char *cert_file;

@@ -134,6 +134,10 @@ daemonConfigNew(bool privileged G_GNUC_UNUSED)
     data->auth_tls = REMOTE_AUTH_NONE;
 #endif /* ! WITH_IP */
 
+#if WITH_IP
+    data->tcp_min_ssf = 56; /* good enough for kerberos */
+#endif
+
     data->min_workers = 5;
     data->max_workers = 20;
     data->max_clients = 5000;
@@ -298,6 +302,17 @@ daemonConfigLoadOptions(struct daemonConfig *data,
 
     if (virConfGetValueString(conf, "tls_priority", &data->tls_priority) < 0)
         return -1;
+
+    if (virConfGetValueUInt(conf, "tcp_min_ssf", &data->tcp_min_ssf) < 0)
+        return -1;
+
+    if (data->tcp_min_ssf < SSF_WARNING_LEVEL) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("minimum SSF levels lower than %d are not supported"),
+                       SSF_WARNING_LEVEL);
+        return -1;
+    }
+
 #endif /* ! WITH_IP */
 
     if (virConfGetValueStringList(conf, "sasl_allowed_username_list", false,
