@@ -2954,6 +2954,40 @@ static int testDomainSetMetadata(virDomainPtr dom,
     return ret;
 }
 
+static int
+testDomainSendProcessSignal(virDomainPtr dom,
+                            long long pid_value,
+                            unsigned int signum,
+                            unsigned int flags)
+{
+    int ret = -1;
+    virDomainObjPtr vm = NULL;
+
+    virCheckFlags(0, -1);
+
+    if (pid_value != 1) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("only sending a signal to pid 1 is supported"));
+        return -1;
+    }
+
+    if (signum >= VIR_DOMAIN_PROCESS_SIGNAL_LAST) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("signum value %d is out of range"),
+                       signum);
+        return -1;
+    }
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        goto cleanup;
+
+    /* do nothing */
+    ret = 0;
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
 
 static int testNodeGetCellsFreeMemory(virConnectPtr conn,
                                       unsigned long long *freemems,
@@ -7199,6 +7233,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainSendKey = testDomainSendKey, /* 5.5.0 */
     .domainGetMetadata = testDomainGetMetadata, /* 1.1.3 */
     .domainSetMetadata = testDomainSetMetadata, /* 1.1.3 */
+    .domainSendProcessSignal = testDomainSendProcessSignal, /* 5.5.0 */
     .connectGetCPUModelNames = testConnectGetCPUModelNames, /* 1.1.3 */
     .domainManagedSave = testDomainManagedSave, /* 1.1.4 */
     .domainHasManagedSaveImage = testDomainHasManagedSaveImage, /* 1.1.4 */
