@@ -233,8 +233,8 @@ bool virPCIDeviceAddressIsValid(virPCIDeviceAddressPtr addr,
                                 bool report);
 bool virPCIDeviceAddressIsEmpty(const virPCIDeviceAddress *addr);
 
-bool virPCIDeviceAddressEqual(virPCIDeviceAddress *addr1,
-                              virPCIDeviceAddress *addr2);
+bool virPCIDeviceAddressEqual(const virPCIDeviceAddress *addr1,
+                              const virPCIDeviceAddress *addr2);
 
 char *virPCIDeviceAddressAsString(virPCIDeviceAddressPtr addr)
       ATTRIBUTE_NONNULL(1);

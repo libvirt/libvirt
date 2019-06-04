@@ -1731,8 +1731,8 @@ virPCIDeviceAddressIsEmpty(const virPCIDeviceAddress *addr)
 }
 
 bool
-virPCIDeviceAddressEqual(virPCIDeviceAddress *addr1,
-                         virPCIDeviceAddress *addr2)
+virPCIDeviceAddressEqual(const virPCIDeviceAddress *addr1,
+                         const virPCIDeviceAddress *addr2)
 {
     if (addr1->domain == addr2->domain &&
         addr1->bus == addr2->bus &&
