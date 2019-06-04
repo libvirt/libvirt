@@ -2463,7 +2463,6 @@ qemuProcessGetAllCpuAffinity(virBitmapPtr *cpumapRet)
 static int
 qemuProcessInitCpuAffinity(virDomainObjPtr vm)
 {
-    int ret = -1;
     VIR_AUTOPTR(virBitmap) cpumapToSet = NULL;
     virDomainNumatuneMemMode mem_mode;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -2494,25 +2493,24 @@ qemuProcessInitCpuAffinity(virDomainObjPtr vm)
                                              priv->autoNodeset,
                                              &nodeset,
                                              -1) < 0)
-            goto cleanup;
+            return -1;
 
         if (virNumaNodesetToCPUset(nodeset, &cpumapToSet) < 0)
-            goto cleanup;
+            return -1;
     } else if (vm->def->cputune.emulatorpin) {
         if (virBitmapCopy(cpumapToSet, vm->def->cputune.emulatorpin) < 0)
-            goto cleanup;
+            return -1;
     } else {
         if (qemuProcessGetAllCpuAffinity(&cpumapToSet) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (cpumapToSet &&
-        virProcessSetAffinity(vm->pid, cpumapToSet) < 0)
-        goto cleanup;
+        virProcessSetAffinity(vm->pid, cpumapToSet) < 0) {
+        return -1;
+    }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 #else /* !defined(HAVE_SCHED_GETAFFINITY) && !defined(HAVE_BSD_CPU_AFFINITY) */
 static int
