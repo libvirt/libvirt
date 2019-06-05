@@ -3627,7 +3627,7 @@ static const vshCmdOptDef opts_undefine[] = {
     },
     {.name = "snapshots-metadata",
      .type = VSH_OT_BOOL,
-     .help = N_("remove all domain snapshot metadata, if inactive")
+     .help = N_("remove all domain snapshot metadata (vm must be inactive)")
     },
     {.name = "nvram",
      .type = VSH_OT_BOOL,
