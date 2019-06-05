@@ -181,8 +181,6 @@ struct _virDomainDeviceInfo {
     bool isolationGroupLocked;
 };
 
-int virDomainDeviceInfoCopy(virDomainDeviceInfoPtr dst,
-                            virDomainDeviceInfoPtr src);
 void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info);
 void virDomainDeviceInfoFree(virDomainDeviceInfoPtr info);
 
