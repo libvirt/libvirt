@@ -2936,7 +2936,9 @@ The I<--delete-storage-volume-snapshots> (previously I<--delete-snapshots>)
 flag specifies that any snapshots associated with
 the storage volume should be deleted as well. Requires the
 I<--remove-all-storage> flag to be provided. Not all storage drivers
-support this option, presently only rbd.
+support this option, presently only rbd. Using this when also removing volumes
+handled by a storage driver which does not support the flag will result in
+failure.
 
 The flag I<--wipe-storage> specifies that the storage volumes should be
 wiped before removal.
