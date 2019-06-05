@@ -592,8 +592,6 @@ qemuFirmwareFeatureParse(const char *path,
     if (VIR_ALLOC_N(features, nfeatures) < 0)
         return -1;
 
-    fw->nfeatures = nfeatures;
-
     for (i = 0; i < nfeatures; i++) {
         virJSONValuePtr item = virJSONValueArrayGet(featuresJSON, i);
         const char *tmpStr = virJSONValueGetString(item);
