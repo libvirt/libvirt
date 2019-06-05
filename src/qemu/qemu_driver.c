@@ -15267,7 +15267,7 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
         if (qemuDomainSnapshotCreateSingleDiskActive(driver, vm,
                                                      &diskdata[i],
                                                      actions, reuse) < 0)
-            goto error;
+            goto cleanup;
 
         do_transaction = true;
     }
@@ -15291,12 +15291,12 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
         }
 
         if (rc < 0)
-            goto error;
+            goto cleanup;
     }
 
     ret = 0;
 
- error:
+ cleanup:
     if (ret < 0) {
         virErrorPreserveLast(&orig_err);
     } else {
@@ -15320,7 +15320,6 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
                                            vm->newDef) < 0))
         ret = -1;
 
- cleanup:
     qemuDomainSnapshotDiskDataCleanup(diskdata, ndiskdata, driver, vm);
     virErrorRestore(&orig_err);
 
