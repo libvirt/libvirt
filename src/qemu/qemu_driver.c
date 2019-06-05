@@ -15239,7 +15239,8 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     VIR_AUTOPTR(virJSONValue) actions = NULL;
     bool do_transaction = false;
-    int ret = 0;
+    int rc;
+    int ret = -1;
     size_t i;
     bool reuse = (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT) != 0;
     qemuDomainSnapshotDiskDataPtr diskdata = NULL;
@@ -15263,11 +15264,9 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
       * VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL with a valid file name and
       * qcow2 format.  */
     for (i = 0; i < ndiskdata; i++) {
-        ret = qemuDomainSnapshotCreateSingleDiskActive(driver, vm,
-                                                       &diskdata[i],
-                                                       actions, reuse);
-
-        if (ret < 0)
+        if (qemuDomainSnapshotCreateSingleDiskActive(driver, vm,
+                                                     &diskdata[i],
+                                                     actions, reuse) < 0)
             goto error;
 
         do_transaction = true;
@@ -15277,23 +15276,25 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
         if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
             goto cleanup;
 
-        ret = qemuMonitorTransaction(priv->mon, &actions);
+        rc = qemuMonitorTransaction(priv->mon, &actions);
 
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            ret = -1;
+            rc = -1;
 
         for (i = 0; i < ndiskdata; i++) {
             qemuDomainSnapshotDiskDataPtr dd = &diskdata[i];
 
-            virDomainAuditDisk(vm, dd->disk->src, dd->src, "snapshot", ret >= 0);
+            virDomainAuditDisk(vm, dd->disk->src, dd->src, "snapshot", rc >= 0);
 
-            if (ret == 0)
+            if (rc == 0)
                 qemuDomainSnapshotUpdateDiskSources(dd);
         }
 
-        if (ret < 0)
+        if (rc < 0)
             goto error;
     }
+
+    ret = 0;
 
  error:
     if (ret < 0) {
