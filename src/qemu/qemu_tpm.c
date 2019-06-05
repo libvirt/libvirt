@@ -745,7 +745,7 @@ qemuExtTPMCleanupHost(virDomainDefPtr def)
  * qemuExtTPMStartEmulator:
  *
  * @driver: QEMU driver
- * @def: domain definition
+ * @vm: the domain object
  * @logCtxt: log context
  *
  * Start the external TPM Emulator:
