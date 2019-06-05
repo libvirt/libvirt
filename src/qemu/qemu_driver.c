@@ -15238,7 +15238,6 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     VIR_AUTOPTR(virJSONValue) actions = NULL;
-    bool do_transaction = false;
     int rc;
     int ret = -1;
     size_t i;
@@ -15274,31 +15273,27 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
                                                      &diskdata[i],
                                                      actions, reuse) < 0)
             goto cleanup;
-
-        do_transaction = true;
     }
 
-    if (do_transaction) {
-        if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
-            goto cleanup;
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        goto cleanup;
 
-        rc = qemuMonitorTransaction(priv->mon, &actions);
+    rc = qemuMonitorTransaction(priv->mon, &actions);
 
-        if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            rc = -1;
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        rc = -1;
 
-        for (i = 0; i < ndiskdata; i++) {
-            qemuDomainSnapshotDiskDataPtr dd = &diskdata[i];
+    for (i = 0; i < ndiskdata; i++) {
+        qemuDomainSnapshotDiskDataPtr dd = &diskdata[i];
 
-            virDomainAuditDisk(vm, dd->disk->src, dd->src, "snapshot", rc >= 0);
+        virDomainAuditDisk(vm, dd->disk->src, dd->src, "snapshot", rc >= 0);
 
-            if (rc == 0)
-                qemuDomainSnapshotUpdateDiskSources(dd);
-        }
-
-        if (rc < 0)
-            goto cleanup;
+        if (rc == 0)
+            qemuDomainSnapshotUpdateDiskSources(dd);
     }
+
+    if (rc < 0)
+        goto cleanup;
 
     ret = 0;
 
