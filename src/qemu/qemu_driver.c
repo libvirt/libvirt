@@ -15071,37 +15071,42 @@ qemuDomainSnapshotDiskDataFree(qemuDomainSnapshotDiskDataPtr data,
  * Collects and prepares a list of structures that hold information about disks
  * that are selected for the snapshot.
  */
-static qemuDomainSnapshotDiskDataPtr
+static int
 qemuDomainSnapshotDiskDataCollect(virQEMUDriverPtr driver,
                                   virDomainObjPtr vm,
                                   virDomainMomentObjPtr snap,
-                                  bool reuse)
+                                  bool reuse,
+                                  qemuDomainSnapshotDiskDataPtr *rdata,
+                                  size_t *rndata)
 {
     size_t i;
-    qemuDomainSnapshotDiskDataPtr ret;
+    qemuDomainSnapshotDiskDataPtr data;
+    size_t ndata = 0;
     qemuDomainSnapshotDiskDataPtr dd;
     char *backingStoreStr;
     virDomainSnapshotDefPtr snapdef = virDomainSnapshotObjGetDef(snap);
+    int ret = -1;
 
-    if (VIR_ALLOC_N(ret, snapdef->ndisks) < 0)
-        return NULL;
+    if (VIR_ALLOC_N(data, snapdef->ndisks) < 0)
+        return -1;
 
     for (i = 0; i < snapdef->ndisks; i++) {
         if (snapdef->disks[i].snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE)
             continue;
 
-        dd = ret + i;
+        ndata++;
+        dd = data + ndata;
 
         dd->disk = vm->def->disks[i];
 
         if (!(dd->src = virStorageSourceCopy(snapdef->disks[i].src, false)))
-            goto error;
+            goto cleanup;
 
         if (virStorageSourceInitChainElement(dd->src, dd->disk->src, false) < 0)
-            goto error;
+            goto cleanup;
 
         if (qemuDomainStorageFileInit(driver, vm, dd->src, NULL) < 0)
-            goto error;
+            goto cleanup;
 
         dd->initialized = true;
 
@@ -15109,7 +15114,7 @@ qemuDomainSnapshotDiskDataCollect(virQEMUDriverPtr driver,
          * block commit still works */
         if (reuse) {
             if (virStorageFileGetBackingStoreStr(dd->src, &backingStoreStr) < 0)
-                goto error;
+                goto cleanup;
             if (backingStoreStr != NULL) {
                 if (virStorageIsRelative(backingStoreStr))
                     VIR_STEAL_PTR(dd->relPath, backingStoreStr);
@@ -15127,19 +15132,21 @@ qemuDomainSnapshotDiskDataCollect(virQEMUDriverPtr driver,
                                                    false))) {
 
             if (!(dd->persistsrc = virStorageSourceCopy(dd->src, false)))
-                goto error;
+                goto cleanup;
 
             if (virStorageSourceInitChainElement(dd->persistsrc,
                                                  dd->persistdisk->src, false) < 0)
-                goto error;
+                goto cleanup;
         }
     }
 
-    return ret;
+    VIR_STEAL_PTR(*rdata, data);
+    *rndata = ndata;
+    ret = 0;
 
- error:
-    qemuDomainSnapshotDiskDataFree(ret, snapdef->ndisks, driver, vm);
-    return NULL;
+ cleanup:
+    qemuDomainSnapshotDiskDataFree(data, ndata, driver, vm);
+    return ret;
 }
 
 
@@ -15163,9 +15170,6 @@ qemuDomainSnapshotUpdateDiskSourcesRenumber(virStorageSourcePtr src)
 static void
 qemuDomainSnapshotUpdateDiskSources(qemuDomainSnapshotDiskDataPtr dd)
 {
-    if (!dd->src)
-        return;
-
     /* storage driver access won'd be needed */
     if (dd->initialized)
         virStorageFileDeinit(dd->src);
@@ -15233,8 +15237,8 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
     size_t i;
     bool reuse = (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT) != 0;
     qemuDomainSnapshotDiskDataPtr diskdata = NULL;
+    size_t ndiskdata = 0;
     virErrorPtr orig_err = NULL;
-    virDomainSnapshotDefPtr snapdef = virDomainSnapshotObjGetDef(snap);
 
     if (virDomainObjCheckActive(vm) < 0)
         return -1;
@@ -15244,17 +15248,15 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
 
     /* prepare a list of objects to use in the vm definition so that we don't
      * have to roll back later */
-    if (!(diskdata = qemuDomainSnapshotDiskDataCollect(driver, vm, snap, reuse)))
+    if (qemuDomainSnapshotDiskDataCollect(driver, vm, snap, reuse,
+                                          &diskdata, &ndiskdata) < 0)
         goto cleanup;
 
      /* Based on earlier qemuDomainSnapshotPrepare, all disks in this list are
       * now either VIR_DOMAIN_SNAPSHOT_LOCATION_NONE, or
       * VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL with a valid file name and
       * qcow2 format.  */
-    for (i = 0; i < snapdef->ndisks; i++) {
-        if (!diskdata[i].src)
-            continue;
-
+    for (i = 0; i < ndiskdata; i++) {
         ret = qemuDomainSnapshotCreateSingleDiskActive(driver, vm,
                                                        &diskdata[i],
                                                        actions, reuse);
@@ -15274,11 +15276,8 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
             ret = -1;
 
-        for (i = 0; i < snapdef->ndisks; i++) {
+        for (i = 0; i < ndiskdata; i++) {
             qemuDomainSnapshotDiskDataPtr dd = &diskdata[i];
-
-            if (!dd->src)
-                continue;
 
             virDomainAuditDisk(vm, dd->disk->src, dd->src, "snapshot", ret >= 0);
 
@@ -15293,10 +15292,7 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
  error:
     if (ret < 0) {
         virErrorPreserveLast(&orig_err);
-        for (i = 0; i < snapdef->ndisks; i++) {
-            if (!diskdata[i].src)
-                continue;
-
+        for (i = 0; i < ndiskdata; i++) {
             if (diskdata[i].prepared)
                 qemuDomainStorageSourceAccessRevoke(driver, vm, diskdata[i].src);
 
@@ -15310,10 +15306,7 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
          * stopped using them*/
         bool paused = virDomainObjGetState(vm, NULL) != VIR_DOMAIN_RUNNING;
 
-        for (i = 0; i < snapdef->ndisks; i++) {
-            if (!diskdata[i].disk)
-                continue;
-
+        for (i = 0; i < ndiskdata; i++) {
             if (paused)
                 virDomainLockImageDetach(driver->lockManager, vm,
                                          diskdata[i].disk->src);
@@ -15329,7 +15322,7 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
         ret = -1;
 
  cleanup:
-    qemuDomainSnapshotDiskDataFree(diskdata, snapdef->ndisks, driver, vm);
+    qemuDomainSnapshotDiskDataFree(diskdata, ndiskdata, driver, vm);
     virErrorRestore(&orig_err);
 
     return ret;
