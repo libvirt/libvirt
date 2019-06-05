@@ -1,0 +1,25 @@
+# Silly mistakes, mostly found in S-o-b or R-b tags.
+
+"jdenemar redhat com" jdenemar@redhat.com
+"pkrempa@redhat st.com" pkrempa@redhat.com
+jyang@redhat jyang@redhat.com
+wangjie88.huawei.com wangjie88@huawei.com
+
+# This is information that's already present in .mailmap, and having to
+# duplicate it is annoying. Unfortunately gitdm doesn't parse .mailmap
+# and the format is different, so we can't just point it to the file
+# either.
+
+cedric.bosdonnat@free.fr cbosdonnat@suse.com
+dan@berrange.com berrange@redhat.com
+fabiano@fidencio.org fidencio@redhat.com
+intrigeri+libvirt@boum.org intrigeri@boum.org
+jim@meyering.net meyering@redhat.com
+laine@laine.org laine@redhat.com
+redhat@adrb.pl adrian.brzezinski@eo.pl
+shilei.massclouds@gmx.com shi_lei@massclouds.com
+
+# This deviates from what's found in .mailmap, but it makes more sense as
+# far as gitdm is concerned since Jim was employed by Novell at the time.
+
+jfehlig@linux-ypgk.site jfehlig@novell.com

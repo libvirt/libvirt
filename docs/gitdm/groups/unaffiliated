@@ -1,0 +1,83 @@
+# These are all domains you can get a personal email address from, so it's
+# fair to assume people using such addresses are contributing in their spare
+# time rather than on behalf of their respective employers.
+
+126.com
+gmail.com
+gmx.com
+googlemail.com
+hotmail.com
+mail.ru
+pobox.com
+riseup.net
+web.de
+yahoo.com
+
+# Same as the above, but for domains that don't generally allow random
+# people to sign up for an email address. In this case we list the email
+# addresses directly rather than just the domain, because we can't really
+# consider the domain itself one way or the other.
+
+adam@pandorasboxen.com
+agx@sigxcpu.org
+alexander.nusov@nfvexpress.com
+andres@lagarcavilla.org
+asad.saeed@acidseed.com
+atler@pld-linux.org
+benoar@dolka.fr
+beorn@binaries.fr
+bigon@bigon.be
+bugzilla.redhat.simon@arlott.org
+cardoe@cardoe.com
+charles@dyfis.net
+d.herrendoerfer@herrendoerfer.name
+dan@danny.cz
+debfx@fobos.de
+eike@sf-mail.de
+exo@tty.sk
+fritz@fritz-elfert.de
+gene@czarc.net
+gordon@dragonsdawn.net
+heathpetersen@kandre.com
+ibaldo@adinet.com.uy
+igor47@moomers.org
+infos@nafets.de
+intrigeri@boum.org
+james410@cowgill.org.uk
+james@shubin.ca
+jasper@humppa.nl
+jeremy@goop.org
+jk@ozlabs.org
+jwm@horde.net
+klaus@ethgen.de
+lacos@caesar.elte.hu
+lenaic@lhuard.fr.eu.org
+libvirt@dunquino.com
+lists@egidy.de
+marti@juffo.org
+max@rfc2324.org
+michael@ellerman.id.au
+mike@very.puzzling.org
+n0ano@n0ano.com
+neil@aldur.co.uk
+nobody@nowhere.ws
+peter@kieser.ca
+pieter@hollants.com
+raimue@codingfarm.de
+richard@nod.at
+rmy@tigress.co.uk
+ruben@rubenkerkhof.com
+rufo@rufoa.com
+slawek@kaplonski.pl
+soulxu@soulxu-thinkpad-t410.(none)
+stybla@turnovfree.net
+tai@rakugaki.org
+thomas@scripty.at
+v.tolstov@selfip.ru
+ville.skytta@iki.fi
+vincent@bernat.im
+wido@widodh.nl
+wiedi@frubar.net
+wongc-redhat@hoku.net
+xschen@tnsoft.com.cn
+yurchor@ukr.net

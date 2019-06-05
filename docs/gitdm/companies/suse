@@ -1,0 +1,7 @@
+suse.com
+suse.de
+
+# These SUSE employees used their personal email address when contributing
+# to libvirt and we don't have the corresponding @suse.com address on file.
+
+olaf@aepfle.de

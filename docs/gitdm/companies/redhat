@@ -1,0 +1,6 @@
+redhat.com
+
+# These Red Hat employees used their personal email address when contributing
+# to libvirt and we don't have the corresponding @redhat.com address on file.
+
+lkundrak@v3.sk
