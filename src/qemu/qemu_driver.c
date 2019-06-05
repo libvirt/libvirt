@@ -15049,6 +15049,12 @@ qemuDomainSnapshotDiskDataCleanup(qemuDomainSnapshotDiskDataPtr data,
         /* on success of the snapshot the 'src' and 'persistsrc' properties will
          * be set to NULL by qemuDomainSnapshotUpdateDiskSources */
         if (data[i].src) {
+            if (data[i].created &&
+                virStorageFileUnlink(data[i].src) < 0) {
+                VIR_WARN("Unable to remove just-created %s",
+                         NULLSTR(data[i].src->path));
+            }
+
             if (data[i].initialized)
                 virStorageFileDeinit(data[i].src);
 
@@ -15292,14 +15298,6 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
  error:
     if (ret < 0) {
         virErrorPreserveLast(&orig_err);
-        for (i = 0; i < ndiskdata; i++) {
-            if (diskdata[i].prepared)
-                qemuDomainStorageSourceAccessRevoke(driver, vm, diskdata[i].src);
-
-            if (diskdata[i].created &&
-                virStorageFileUnlink(diskdata[i].src) < 0)
-                VIR_WARN("Unable to remove just-created %s", diskdata[i].src->path);
-        }
     } else {
         /* on successful snapshot we need to remove locks from the now-old
          * disks and if the VM is paused release locks on the images since qemu
