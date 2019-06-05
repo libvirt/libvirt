@@ -171,6 +171,7 @@
   <flag name='bochs-display'/>
   <flag name='migration-file-drop-cache'/>
   <flag name='machine.pseries.cap-ccf-assist'/>
+  <flag name='drive-nvme'/>
   <version>4000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900240</microcodeVersion>

@@ -154,6 +154,7 @@
   <flag name='iothread.poll-max-ns'/>
   <flag name='memory-backend-file.align'/>
   <flag name='arm-max-cpu'/>
+  <flag name='drive-nvme'/>
   <version>2012000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>61700289</microcodeVersion>

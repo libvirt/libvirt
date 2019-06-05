@@ -126,6 +126,7 @@
   <flag name='query-cpu-model-baseline'/>
   <flag name='query-cpu-model-comparison'/>
   <flag name='ramfb'/>
+  <flag name='drive-nvme'/>
   <version>3000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>39100239</microcodeVersion>

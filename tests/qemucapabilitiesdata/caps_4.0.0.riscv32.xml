@@ -168,6 +168,7 @@
   <flag name='nbd-bitmap'/>
   <flag name='bochs-display'/>
   <flag name='migration-file-drop-cache'/>
+  <flag name='drive-nvme'/>
   <version>4000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>0</microcodeVersion>

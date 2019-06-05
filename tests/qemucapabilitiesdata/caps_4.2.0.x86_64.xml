@@ -216,6 +216,7 @@
   <flag name='ramfb'/>
   <flag name='blockdev-file-dynamic-auto-read-only'/>
   <flag name='savevm-monitor-nodes'/>
+  <flag name='drive-nvme'/>
   <version>4001092</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100242</microcodeVersion>

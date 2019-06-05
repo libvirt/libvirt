@@ -552,6 +552,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "arm-max-cpu",
               "blockdev-file-dynamic-auto-read-only",
               "savevm-monitor-nodes",
+              "drive-nvme",
     );
 
 
@@ -1399,6 +1400,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "blockdev-add/arg-type/+file/drop-cache", QEMU_CAPS_MIGRATION_FILE_DROP_CACHE },
     { "blockdev-add/arg-type/+file/$dynamic-auto-read-only", QEMU_CAPS_BLOCK_FILE_AUTO_READONLY_DYNAMIC },
     { "human-monitor-command/$savevm-monitor-nodes", QEMU_CAPS_SAVEVM_MONITOR_NODES },
+    { "blockdev-add/arg-type/+nvme", QEMU_CAPS_DRIVE_NVME },
 };
 
 typedef struct _virQEMUCapsObjectTypeProps virQEMUCapsObjectTypeProps;

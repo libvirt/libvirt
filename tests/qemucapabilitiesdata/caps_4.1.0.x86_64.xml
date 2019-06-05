@@ -213,6 +213,7 @@
   <flag name='vhost-user-vga'/>
   <flag name='ramfb'/>
   <flag name='blockdev-file-dynamic-auto-read-only'/>
+  <flag name='drive-nvme'/>
   <version>4001000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100241</microcodeVersion>

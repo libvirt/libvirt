@@ -208,6 +208,7 @@
   <flag name='bochs-display'/>
   <flag name='migration-file-drop-cache'/>
   <flag name='ramfb'/>
+  <flag name='drive-nvme'/>
   <version>4000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100240</microcodeVersion>
