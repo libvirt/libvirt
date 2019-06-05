@@ -3617,6 +3617,10 @@ static const vshCmdOptDef opts_undefine[] = {
      .help = N_("remove all associated storage volumes (use with caution)")
     },
     {.name = "delete-snapshots",
+     .type = VSH_OT_ALIAS,
+     .help = "delete-storage-volume-snapshots"
+    },
+    {.name = "delete-storage-volume-snapshots",
      .type = VSH_OT_BOOL,
      .help = N_("delete snapshots associated with volume(s), requires "
                 "--remove-all-storage (must be supported by storage driver)")
