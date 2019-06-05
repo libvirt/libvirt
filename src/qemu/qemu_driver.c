@@ -15259,6 +15259,12 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
                                           &diskdata, &ndiskdata) < 0)
         goto cleanup;
 
+    /* check whether there's anything to do */
+    if (ndiskdata == 0) {
+        ret = 0;
+        goto cleanup;
+    }
+
      /* Based on earlier qemuDomainSnapshotPrepare, all disks in this list are
       * now either VIR_DOMAIN_SNAPSHOT_LOCATION_NONE, or
       * VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL with a valid file name and
