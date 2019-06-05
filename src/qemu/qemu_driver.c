@@ -15157,13 +15157,11 @@ qemuDomainSnapshotUpdateDiskSourcesRenumber(virStorageSourcePtr src)
 /**
  * qemuDomainSnapshotUpdateDiskSources:
  * @dd: snapshot disk data object
- * @persist: set to true if persistent config of the VM was changed
  *
  * Updates disk definition after a successful snapshot.
  */
 static void
-qemuDomainSnapshotUpdateDiskSources(qemuDomainSnapshotDiskDataPtr dd,
-                                    bool *persist)
+qemuDomainSnapshotUpdateDiskSources(qemuDomainSnapshotDiskDataPtr dd)
 {
     if (!dd->src)
         return;
@@ -15185,7 +15183,6 @@ qemuDomainSnapshotUpdateDiskSources(qemuDomainSnapshotDiskDataPtr dd,
     if (dd->persistdisk) {
         VIR_STEAL_PTR(dd->persistsrc->backingStore, dd->persistdisk->src);
         VIR_STEAL_PTR(dd->persistdisk->src, dd->persistsrc);
-        *persist = true;
     }
 }
 
@@ -15234,7 +15231,6 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
     bool do_transaction = false;
     int ret = 0;
     size_t i;
-    bool persist = false;
     bool reuse = (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT) != 0;
     qemuDomainSnapshotDiskDataPtr diskdata = NULL;
     virErrorPtr orig_err = NULL;
@@ -15287,7 +15283,7 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
             virDomainAuditDisk(vm, dd->disk->src, dd->src, "snapshot", ret >= 0);
 
             if (ret == 0)
-                qemuDomainSnapshotUpdateDiskSources(dd, &persist);
+                qemuDomainSnapshotUpdateDiskSources(dd);
         }
 
         if (ret < 0)
@@ -15328,8 +15324,8 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
     }
 
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0 ||
-        (persist && virDomainSaveConfig(cfg->configDir, driver->caps,
-                                        vm->newDef) < 0))
+        (vm->newDef && virDomainSaveConfig(cfg->configDir, driver->caps,
+                                           vm->newDef) < 0))
         ret = -1;
 
  cleanup:
