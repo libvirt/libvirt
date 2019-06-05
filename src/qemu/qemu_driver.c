@@ -15197,31 +15197,26 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
                                          virJSONValuePtr actions,
                                          bool reuse)
 {
-    int ret = -1;
-
     if (qemuBlockSnapshotAddLegacy(actions, dd->disk, dd->src, reuse) < 0)
-        goto cleanup;
+        return -1;
 
     /* pre-create the image file so that we can label it before handing it to qemu */
     if (!reuse && dd->src->type != VIR_STORAGE_TYPE_BLOCK) {
         if (virStorageFileCreate(dd->src) < 0) {
             virReportSystemError(errno, _("failed to create image file '%s'"),
                                  NULLSTR(dd->src->path));
-            goto cleanup;
+            return -1;
         }
         dd->created = true;
     }
 
     /* set correct security, cgroup and locking options on the new image */
     if (qemuDomainStorageSourceAccessAllow(driver, vm, dd->src, false, true) < 0)
-        goto cleanup;
+        return -1;
 
     dd->prepared = true;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
