@@ -417,8 +417,8 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
             if (VIR_ALLOC(tsc) < 0)
                 goto cleanup;
 
-            if (virXPathULongLong("./counter[@name='tsc']/@frequency", ctxt,
-                                  &tsc->frequency) < 0) {
+            if (virXPathULongLong("string(./counter[@name='tsc']/@frequency)",
+                                  ctxt, &tsc->frequency) < 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("Invalid TSC frequency"));
                 goto cleanup;
