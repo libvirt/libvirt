@@ -4488,3 +4488,54 @@ qemuMonitorGetCurrentMachineInfo(qemuMonitorPtr mon,
 
     return qemuMonitorJSONGetCurrentMachineInfo(mon, info);
 }
+
+
+int
+qemuMonitorAddBitmap(qemuMonitorPtr mon,
+                     const char *node,
+                     const char *bitmap,
+                     bool persistent)
+{
+    VIR_DEBUG("node=%s bitmap=%s persistent=%d", node, bitmap, persistent);
+
+    QEMU_CHECK_MONITOR(mon);
+
+    return qemuMonitorJSONAddBitmap(mon, node, bitmap, persistent);
+}
+
+int
+qemuMonitorEnableBitmap(qemuMonitorPtr mon,
+                        const char *node,
+                        const char *bitmap)
+{
+    VIR_DEBUG("node=%s bitmap=%s", node, bitmap);
+
+    QEMU_CHECK_MONITOR(mon);
+
+    return qemuMonitorJSONEnableBitmap(mon, node, bitmap);
+}
+
+int
+qemuMonitorMergeBitmaps(qemuMonitorPtr mon,
+                        const char *node,
+                        const char *dst,
+                        virJSONValuePtr *src)
+{
+    VIR_DEBUG("node=%s dst=%s", node, dst);
+
+    QEMU_CHECK_MONITOR(mon);
+
+    return qemuMonitorJSONMergeBitmaps(mon, node, dst, src);
+}
+
+int
+qemuMonitorDeleteBitmap(qemuMonitorPtr mon,
+                        const char *node,
+                        const char *bitmap)
+{
+    VIR_DEBUG("node=%s bitmap=%s", node, bitmap);
+
+    QEMU_CHECK_MONITOR(mon);
+
+    return qemuMonitorJSONDeleteBitmap(mon, node, bitmap);
+}

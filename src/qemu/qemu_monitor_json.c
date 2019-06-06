@@ -8510,3 +8510,122 @@ qemuMonitorJSONGetCurrentMachineInfo(qemuMonitorPtr mon,
     virJSONValueFree(reply);
     return ret;
 }
+
+
+int
+qemuMonitorJSONAddBitmap(qemuMonitorPtr mon,
+                         const char *node,
+                         const char *bitmap,
+                         bool persistent)
+{
+    int ret = -1;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("block-dirty-bitmap-add",
+                                           "s:node", node,
+                                           "s:name", bitmap,
+                                           "b:persistent", persistent,
+                                           NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+int
+qemuMonitorJSONEnableBitmap(qemuMonitorPtr mon,
+                            const char *node,
+                            const char *bitmap)
+{
+    int ret = -1;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("block-dirty-bitmap-enable",
+                                           "s:node", node,
+                                           "s:name", bitmap,
+                                           NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+int
+qemuMonitorJSONMergeBitmaps(qemuMonitorPtr mon,
+                            const char *node,
+                            const char *dst,
+                            virJSONValuePtr *src)
+{
+    int ret = -1;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("block-dirty-bitmap-merge",
+                                           "s:node", node,
+                                           "s:target", dst,
+                                           "a:bitmaps", src,
+                                           NULL)))
+        goto cleanup;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virJSONValueFree(*src);
+    *src = NULL;
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
+
+int
+qemuMonitorJSONDeleteBitmap(qemuMonitorPtr mon,
+                            const char *node,
+                            const char *bitmap)
+{
+    int ret = -1;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("block-dirty-bitmap-remove",
+                                           "s:node", node,
+                                           "s:name", bitmap,
+                                           NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}
