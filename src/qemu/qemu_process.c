@@ -2498,7 +2498,7 @@ qemuProcessInitCpuAffinity(virDomainObjPtr vm)
         if (virNumaNodesetToCPUset(nodeset, &cpumapToSet) < 0)
             return -1;
     } else if (vm->def->cputune.emulatorpin) {
-        if (virBitmapCopy(cpumapToSet, vm->def->cputune.emulatorpin) < 0)
+        if (!(cpumapToSet = virBitmapNewCopy(vm->def->cputune.emulatorpin)))
             return -1;
     } else {
         if (qemuProcessGetAllCpuAffinity(&cpumapToSet) < 0)
