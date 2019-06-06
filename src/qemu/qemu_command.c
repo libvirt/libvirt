@@ -7106,9 +7106,6 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
         virBufferAsprintf(buf, ",vendor=%s", cpu->vendor_id);
 
     for (i = 0; i < cpu->nfeatures; i++) {
-        if (!virQEMUCapsCPUFilterFeatures(cpu->features[i].name,
-                                          (virArch *)&def->os.arch))
-            continue;
         switch ((virCPUFeaturePolicy) cpu->features[i].policy) {
         case VIR_CPU_FEATURE_FORCE:
         case VIR_CPU_FEATURE_REQUIRE:

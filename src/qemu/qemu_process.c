@@ -5928,26 +5928,30 @@ qemuProcessUpdateGuestCPU(virDomainDefPtr def,
         return -1;
 
     /* nothing to update for host-passthrough */
-    if (def->cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH)
-        return 0;
+    if (def->cpu->mode != VIR_CPU_MODE_HOST_PASSTHROUGH) {
+        if (def->cpu->check == VIR_CPU_CHECK_PARTIAL &&
+            virCPUCompare(caps->host.arch,
+                          virQEMUCapsGetHostModel(qemuCaps, def->virtType,
+                                                  VIR_QEMU_CAPS_HOST_CPU_FULL),
+                          def->cpu, true) < 0)
+            return -1;
 
-    if (def->cpu->check == VIR_CPU_CHECK_PARTIAL &&
-        virCPUCompare(caps->host.arch,
-                      virQEMUCapsGetHostModel(qemuCaps, def->virtType,
-                                              VIR_QEMU_CAPS_HOST_CPU_FULL),
-                      def->cpu, true) < 0)
+        if (virCPUUpdate(def->os.arch, def->cpu,
+                         virQEMUCapsGetHostModel(qemuCaps, def->virtType,
+                                                 VIR_QEMU_CAPS_HOST_CPU_MIGRATABLE)) < 0)
+            return -1;
+
+        if (virCPUTranslate(def->os.arch, def->cpu,
+                            virQEMUCapsGetCPUDefinitions(qemuCaps, def->virtType)) < 0)
+            return -1;
+
+        def->cpu->fallback = VIR_CPU_FALLBACK_FORBID;
+    }
+
+    if (virCPUDefFilterFeatures(def->cpu, virQEMUCapsCPUFilterFeatures,
+                                &def->os.arch) < 0)
         return -1;
 
-    if (virCPUUpdate(def->os.arch, def->cpu,
-                     virQEMUCapsGetHostModel(qemuCaps, def->virtType,
-                                             VIR_QEMU_CAPS_HOST_CPU_MIGRATABLE)) < 0)
-        return -1;
-
-    if (virCPUTranslate(def->os.arch, def->cpu,
-                        virQEMUCapsGetCPUDefinitions(qemuCaps, def->virtType)) < 0)
-        return -1;
-
-    def->cpu->fallback = VIR_CPU_FALLBACK_FORBID;
     return 0;
 }
 
