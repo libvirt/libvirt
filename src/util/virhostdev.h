@@ -29,6 +29,7 @@
 #include "virscsivhost.h"
 #include "conf/domain_conf.h"
 #include "virmdev.h"
+#include "virnvme.h"
 
 typedef enum {
     VIR_HOSTDEV_STRICT_ACS_CHECK     = (1 << 0), /* strict acs check */
@@ -53,6 +54,9 @@ struct _virHostdevManager {
     virSCSIDeviceListPtr activeSCSIHostdevs;
     virSCSIVHostDeviceListPtr activeSCSIVHostHostdevs;
     virMediatedDeviceListPtr activeMediatedHostdevs;
+    /* NVMe devices are PCI devices really, but one NVMe disk can
+     * have multiple namespaces. */
+    virNVMeDeviceListPtr activeNVMeHostdevs;
 };
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virHostdevManager, virObjectUnref);
@@ -207,3 +211,36 @@ int virHostdevPCINodeDeviceReAttach(virHostdevManagerPtr mgr,
 int virHostdevPCINodeDeviceReset(virHostdevManagerPtr mgr,
                                  virPCIDevicePtr pci)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+int
+virHostdevPrepareOneNVMeDevice(virHostdevManagerPtr hostdev_mgr,
+                               const char *drv_name,
+                               const char *dom_name,
+                               virStorageSourcePtr src);
+
+int
+virHostdevPrepareNVMeDevices(virHostdevManagerPtr hostdev_mgr,
+                             const char *drv_name,
+                             const char *dom_name,
+                             virDomainDiskDefPtr *disks,
+                             size_t ndisks);
+
+int
+virHostdevReAttachOneNVMeDevice(virHostdevManagerPtr hostdev_mgr,
+                                const char *drv_name,
+                                const char *dom_name,
+                                virStorageSourcePtr src);
+
+int
+virHostdevReAttachNVMeDevices(virHostdevManagerPtr hostdev_mgr,
+                              const char *drv_name,
+                              const char *dom_name,
+                              virDomainDiskDefPtr *disks,
+                              size_t ndisks);
+
+int
+virHostdevUpdateActiveNVMeDevices(virHostdevManagerPtr hostdev_mgr,
+                                  const char *drv_name,
+                                  const char *dom_name,
+                                  virDomainDiskDefPtr *disks,
+                                  size_t ndisks);

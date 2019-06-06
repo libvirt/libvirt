@@ -31,6 +31,8 @@ typedef virNVMeDevice *virNVMeDevicePtr;
 typedef struct _virNVMeDeviceList virNVMeDeviceList;
 typedef virNVMeDeviceList *virNVMeDeviceListPtr;
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNVMeDeviceList, virObjectUnref);
+
 virNVMeDevicePtr
 virNVMeDeviceNew(const virPCIDeviceAddress *address,
                  unsigned long namespace,

@@ -135,6 +135,7 @@ virHostdevManagerDispose(void *obj)
     virObjectUnref(hostdevMgr->activeSCSIHostdevs);
     virObjectUnref(hostdevMgr->activeSCSIVHostHostdevs);
     virObjectUnref(hostdevMgr->activeMediatedHostdevs);
+    virObjectUnref(hostdevMgr->activeNVMeHostdevs);
     VIR_FREE(hostdevMgr->stateDir);
 }
 
@@ -163,6 +164,9 @@ virHostdevManagerNew(void)
         return NULL;
 
     if (!(hostdevMgr->activeMediatedHostdevs = virMediatedDeviceListNew()))
+        return NULL;
+
+    if (!(hostdevMgr->activeNVMeHostdevs = virNVMeDeviceListNew()))
         return NULL;
 
     if (privileged) {
@@ -2234,4 +2238,331 @@ virHostdevUpdateActiveDomainDevices(virHostdevManagerPtr mgr,
     }
 
     return 0;
+}
+
+
+static int
+virHostdevGetNVMeDeviceList(virNVMeDeviceListPtr nvmeDevices,
+                            virStorageSourcePtr src,
+                            const char *drv_name,
+                            const char *dom_name)
+{
+    virStorageSourcePtr n;
+
+    for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
+        g_autoptr(virNVMeDevice) dev = NULL;
+        const virStorageSourceNVMeDef *srcNVMe = n->nvme;
+
+        if (n->type != VIR_STORAGE_TYPE_NVME)
+            continue;
+
+        if (!(dev = virNVMeDeviceNew(&srcNVMe->pciAddr,
+                                     srcNVMe->namespace,
+                                     srcNVMe->managed)))
+            return -1;
+
+        virNVMeDeviceUsedBySet(dev, drv_name, dom_name);
+
+        if (virNVMeDeviceListAdd(nvmeDevices, dev) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+int
+virHostdevPrepareOneNVMeDevice(virHostdevManagerPtr hostdev_mgr,
+                               const char *drv_name,
+                               const char *dom_name,
+                               virStorageSourcePtr src)
+{
+    g_autoptr(virNVMeDeviceList) nvmeDevices = NULL;
+    g_autoptr(virPCIDeviceList) pciDevices = NULL;
+    const unsigned int pciFlags = 0;
+    virNVMeDevicePtr temp = NULL;
+    size_t i;
+    ssize_t lastGoodNVMeIdx = -1;
+    int ret = -1;
+
+    if (!(nvmeDevices = virNVMeDeviceListNew()))
+        return -1;
+
+    if (virHostdevGetNVMeDeviceList(nvmeDevices, src, drv_name, dom_name) < 0)
+        return -1;
+
+    if (virNVMeDeviceListCount(nvmeDevices) == 0)
+        return 0;
+
+    virObjectLock(hostdev_mgr->activeNVMeHostdevs);
+
+    /* Firstly, let's check if all devices are free */
+    for (i = 0; i < virNVMeDeviceListCount(nvmeDevices); i++) {
+        const virNVMeDevice *dev = virNVMeDeviceListGet(nvmeDevices, i);
+        const virPCIDeviceAddress *addr = NULL;
+        g_autofree char *addrStr = NULL;
+        const char *actual_drvname = NULL;
+        const char *actual_domname = NULL;
+
+        temp = virNVMeDeviceListLookup(hostdev_mgr->activeNVMeHostdevs, dev);
+
+        /* Not on the list means not used */
+        if (!temp)
+            continue;
+
+        virNVMeDeviceUsedByGet(temp, &actual_drvname, &actual_domname);
+        addr = virNVMeDeviceAddressGet(dev);
+        addrStr = virPCIDeviceAddressAsString(addr);
+
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("NVMe device %s already in use by driver %s domain %s"),
+                       NULLSTR(addrStr), actual_drvname, actual_domname);
+        goto cleanup;
+    }
+
+    if (!(pciDevices = virNVMeDeviceListCreateDetachList(hostdev_mgr->activeNVMeHostdevs,
+                                                         nvmeDevices)))
+        goto cleanup;
+
+    /* Let's check if all PCI devices are NVMe disks. */
+    for (i = 0; i < virPCIDeviceListCount(pciDevices); i++) {
+        virPCIDevicePtr pci = virPCIDeviceListGet(pciDevices, i);
+        g_autofree char *drvPath = NULL;
+        g_autofree char *drvName = NULL;
+        int stub = VIR_PCI_STUB_DRIVER_NONE;
+
+        if (virPCIDeviceGetDriverPathAndName(pci, &drvPath, &drvName) < 0)
+            goto cleanup;
+
+        if (drvName)
+            stub = virPCIStubDriverTypeFromString(drvName);
+
+        if (stub == VIR_PCI_STUB_DRIVER_VFIO ||
+            STREQ_NULLABLE(drvName, "nvme"))
+            continue;
+
+        VIR_WARN("Suspicious NVMe disk assignment. PCI device "
+                 "%s is not an NVMe disk, it has %s driver",
+                 virPCIDeviceGetName(pci), NULLSTR(drvName));
+    }
+
+    /* This looks like a good opportunity to merge inactive NVMe devices onto
+     * the active list. This, however, means that if something goes wrong we
+     * have to perform a rollback before returning. */
+    for (i = 0; i < virNVMeDeviceListCount(nvmeDevices); i++) {
+        temp = virNVMeDeviceListGet(nvmeDevices, i);
+
+        if (virNVMeDeviceListAdd(hostdev_mgr->activeNVMeHostdevs, temp) < 0)
+            goto rollback;
+
+        lastGoodNVMeIdx = i;
+    }
+
+    if (virHostdevPreparePCIDevicesImpl(hostdev_mgr,
+                                        drv_name, dom_name, NULL,
+                                        pciDevices, NULL, 0, pciFlags) < 0)
+        goto rollback;
+
+    ret = 0;
+ cleanup:
+    virObjectUnlock(hostdev_mgr->activeNVMeHostdevs);
+    return ret;
+
+ rollback:
+    while (lastGoodNVMeIdx >= 0) {
+        temp = virNVMeDeviceListGet(nvmeDevices, lastGoodNVMeIdx);
+
+        virNVMeDeviceListDel(hostdev_mgr->activeNVMeHostdevs, temp);
+
+        lastGoodNVMeIdx--;
+    }
+    goto cleanup;
+}
+
+
+int
+virHostdevPrepareNVMeDevices(virHostdevManagerPtr hostdev_mgr,
+                             const char *drv_name,
+                             const char *dom_name,
+                             virDomainDiskDefPtr *disks,
+                             size_t ndisks)
+{
+    size_t i;
+    ssize_t lastGoodDiskIdx = -1;
+
+    for (i = 0; i < ndisks; i++) {
+        if (virHostdevPrepareOneNVMeDevice(hostdev_mgr, drv_name,
+                                           dom_name, disks[i]->src) < 0)
+            goto rollback;
+
+        lastGoodDiskIdx = i;
+    }
+
+    return 0;
+
+ rollback:
+    while (lastGoodDiskIdx >= 0) {
+        if (virHostdevReAttachOneNVMeDevice(hostdev_mgr, drv_name, dom_name,
+                                            disks[lastGoodDiskIdx]->src) < 0) {
+            VIR_ERROR(_("Failed to reattach NVMe for disk target: %s"),
+                      disks[lastGoodDiskIdx]->dst);
+        }
+
+        lastGoodDiskIdx--;
+    }
+
+    return -1;
+}
+
+
+int
+virHostdevReAttachOneNVMeDevice(virHostdevManagerPtr hostdev_mgr,
+                                const char *drv_name,
+                                const char *dom_name,
+                                virStorageSourcePtr src)
+{
+    g_autoptr(virNVMeDeviceList) nvmeDevices = NULL;
+    g_autoptr(virPCIDeviceList) pciDevices = NULL;
+    size_t i;
+    int ret = -1;
+
+    if (!(nvmeDevices = virNVMeDeviceListNew()))
+        return -1;
+
+    if (virHostdevGetNVMeDeviceList(nvmeDevices, src, drv_name, dom_name) < 0)
+        return -1;
+
+    if (virNVMeDeviceListCount(nvmeDevices) == 0)
+        return 0;
+
+    virObjectLock(hostdev_mgr->activeNVMeHostdevs);
+
+    if (!(pciDevices = virNVMeDeviceListCreateReAttachList(hostdev_mgr->activeNVMeHostdevs,
+                                                           nvmeDevices)))
+        goto cleanup;
+
+    virHostdevReAttachPCIDevicesImpl(hostdev_mgr,
+                                     drv_name, dom_name, pciDevices,
+                                     NULL, 0, NULL);
+
+    for (i = 0; i < virNVMeDeviceListCount(nvmeDevices); i++) {
+        virNVMeDevicePtr temp = virNVMeDeviceListGet(nvmeDevices, i);
+
+        if (virNVMeDeviceListDel(hostdev_mgr->activeNVMeHostdevs, temp) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    virObjectUnlock(hostdev_mgr->activeNVMeHostdevs);
+    return ret;
+}
+
+
+int
+virHostdevReAttachNVMeDevices(virHostdevManagerPtr hostdev_mgr,
+                              const char *drv_name,
+                              const char *dom_name,
+                              virDomainDiskDefPtr *disks,
+                              size_t ndisks)
+{
+    size_t i;
+    int ret = 0;
+
+    /* Contrary to virHostdevPrepareNVMeDevices, this is a best
+     * effort approach. Just iterate over all disks and try to
+     * reattach them. Don't stop at the first failure. */
+    for (i = 0; i < ndisks; i++) {
+        if (virHostdevReAttachOneNVMeDevice(hostdev_mgr, drv_name,
+                                            dom_name, disks[i]->src) < 0) {
+            VIR_ERROR(_("Failed to reattach NVMe for disk target: %s"),
+                      disks[i]->dst);
+            ret = -1;
+        }
+    }
+
+    return ret;
+}
+
+
+int
+virHostdevUpdateActiveNVMeDevices(virHostdevManagerPtr hostdev_mgr,
+                                  const char *drv_name,
+                                  const char *dom_name,
+                                  virDomainDiskDefPtr *disks,
+                                  size_t ndisks)
+{
+    g_autoptr(virNVMeDeviceList) nvmeDevices = NULL;
+    g_autoptr(virPCIDeviceList) pciDevices = NULL;
+    virNVMeDevicePtr temp = NULL;
+    size_t i;
+    ssize_t lastGoodNVMeIdx = -1;
+    ssize_t lastGoodPCIIdx = -1;
+    int ret = -1;
+
+    if (!(nvmeDevices = virNVMeDeviceListNew()))
+        return -1;
+
+    for (i = 0; i < ndisks; i++) {
+        if (virHostdevGetNVMeDeviceList(nvmeDevices, disks[i]->src, drv_name, dom_name) < 0)
+            return -1;
+    }
+
+    if (virNVMeDeviceListCount(nvmeDevices) == 0)
+        return 0;
+
+    virObjectLock(hostdev_mgr->activeNVMeHostdevs);
+    virObjectLock(hostdev_mgr->activePCIHostdevs);
+    virObjectLock(hostdev_mgr->inactivePCIHostdevs);
+
+    if (!(pciDevices = virNVMeDeviceListCreateDetachList(hostdev_mgr->activeNVMeHostdevs,
+                                                         nvmeDevices)))
+        goto cleanup;
+
+    for (i = 0; i < virNVMeDeviceListCount(nvmeDevices); i++) {
+        temp = virNVMeDeviceListGet(nvmeDevices, i);
+
+        if (virNVMeDeviceListAdd(hostdev_mgr->activeNVMeHostdevs, temp) < 0)
+            goto rollback;
+
+        lastGoodNVMeIdx = i;
+    }
+
+    for (i = 0; i < virPCIDeviceListCount(pciDevices); i++) {
+        virPCIDevicePtr actual = virPCIDeviceListGet(pciDevices, i);
+
+        /* We must restore some attributes that were lost on daemon restart. */
+        virPCIDeviceSetUnbindFromStub(actual, true);
+        if (virPCIDeviceSetUsedBy(actual, drv_name, dom_name) < 0)
+            goto rollback;
+
+        if (virPCIDeviceListAddCopy(hostdev_mgr->activePCIHostdevs, actual) < 0)
+            goto rollback;
+
+        lastGoodPCIIdx = i;
+    }
+
+    ret = 0;
+ cleanup:
+    virObjectUnlock(hostdev_mgr->inactivePCIHostdevs);
+    virObjectUnlock(hostdev_mgr->activePCIHostdevs);
+    virObjectUnlock(hostdev_mgr->activeNVMeHostdevs);
+    return ret;
+
+ rollback:
+    while (lastGoodNVMeIdx >= 0) {
+        temp = virNVMeDeviceListGet(nvmeDevices, lastGoodNVMeIdx);
+
+        virNVMeDeviceListDel(hostdev_mgr->activeNVMeHostdevs, temp);
+
+        lastGoodNVMeIdx--;
+    }
+    while (lastGoodPCIIdx >= 0) {
+        virPCIDevicePtr actual = virPCIDeviceListGet(pciDevices, i);
+
+        virPCIDeviceListDel(hostdev_mgr->activePCIHostdevs, actual);
+
+        lastGoodPCIIdx--;
+    }
+    goto cleanup;
 }
