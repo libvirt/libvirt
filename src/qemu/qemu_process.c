@@ -5893,8 +5893,6 @@ qemuProcessUpdateGuestCPU(virDomainDefPtr def,
                           virCapsPtr caps,
                           unsigned int flags)
 {
-    int ret = -1;
-
     if (!def->cpu)
         return 0;
 
@@ -5943,17 +5941,14 @@ qemuProcessUpdateGuestCPU(virDomainDefPtr def,
     if (virCPUUpdate(def->os.arch, def->cpu,
                      virQEMUCapsGetHostModel(qemuCaps, def->virtType,
                                              VIR_QEMU_CAPS_HOST_CPU_MIGRATABLE)) < 0)
-        goto cleanup;
+        return -1;
 
     if (virCPUTranslate(def->os.arch, def->cpu,
                         virQEMUCapsGetCPUDefinitions(qemuCaps, def->virtType)) < 0)
-        goto cleanup;
+        return -1;
 
     def->cpu->fallback = VIR_CPU_FALLBACK_FORBID;
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
