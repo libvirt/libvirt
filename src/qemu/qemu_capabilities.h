@@ -645,6 +645,14 @@ bool virQEMUCapsGuestIsNative(virArch host,
 bool virQEMUCapsCPUFilterFeatures(const char *name,
                                   void *opaque);
 
+const char *
+virQEMUCapsCPUFeatureToQEMU(virQEMUCapsPtr qemuCaps,
+                            const char *feature);
+
+const char *
+virQEMUCapsCPUFeatureFromQEMU(virQEMUCapsPtr qemuCaps,
+                              const char *feature);
+
 virSEVCapabilityPtr
 virQEMUCapsGetSEVCapabilities(virQEMUCapsPtr qemuCaps);
 

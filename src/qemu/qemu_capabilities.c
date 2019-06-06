@@ -2848,6 +2848,70 @@ virQEMUCapsCPUFilterFeatures(const char *name,
 }
 
 
+typedef struct _virQEMUCapsCPUFeatureTranslationTable virQEMUCapsCPUFeatureTranslationTable;
+typedef virQEMUCapsCPUFeatureTranslationTable *virQEMUCapsCPUFeatureTranslationTablePtr;
+struct _virQEMUCapsCPUFeatureTranslationTable {
+    const char *libvirt;
+    const char *qemu;
+};
+
+virQEMUCapsCPUFeatureTranslationTable virQEMUCapsCPUFeaturesX86[] = {
+    {"cmp_legacy", "cmp-legacy"},
+    {"ds_cpl", "ds-cpl"},
+    {"fxsr_opt", "fxsr-opt"},
+    {"kvm_pv_eoi", "kvm-pv-eoi"},
+    {"kvm_pv_unhalt", "kvm-pv-unhalt"},
+    {"lahf_lm", "lahf-lm"},
+    {"nodeid_msr", "nodeid-msr"},
+    {"pclmuldq", "pclmulqdq"},
+    {"perfctr_core", "perfctr-core"},
+    {"perfctr_nb", "perfctr-nb"},
+    {"tsc_adjust", "tsc-adjust"},
+    {NULL, NULL}
+};
+
+
+static const char *
+virQEMUCapsCPUFeatureTranslate(virQEMUCapsPtr qemuCaps,
+                               const char *feature,
+                               bool reversed)
+{
+    virQEMUCapsCPUFeatureTranslationTablePtr table = NULL;
+    virQEMUCapsCPUFeatureTranslationTablePtr entry;
+
+    if (ARCH_IS_X86(qemuCaps->arch))
+        table = virQEMUCapsCPUFeaturesX86;
+
+    if (!table || !feature)
+        return feature;
+
+    for (entry = table; entry->libvirt; entry++) {
+        const char *key = reversed ? entry->qemu : entry->libvirt;
+
+        if (STREQ(feature, key))
+            return reversed ? entry->libvirt : entry->qemu;
+    }
+
+    return feature;
+}
+
+
+const char *
+virQEMUCapsCPUFeatureToQEMU(virQEMUCapsPtr qemuCaps,
+                            const char *feature)
+{
+    return virQEMUCapsCPUFeatureTranslate(qemuCaps, feature, false);
+}
+
+
+const char *
+virQEMUCapsCPUFeatureFromQEMU(virQEMUCapsPtr qemuCaps,
+                              const char *feature)
+{
+    return virQEMUCapsCPUFeatureTranslate(qemuCaps, feature, true);
+}
+
+
 /**
  * Returns  0 when host CPU model provided by QEMU was filled in qemuCaps,
  *          1 when the caller should fall back to using virCapsPtr->host.cpu,
