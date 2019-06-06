@@ -150,6 +150,8 @@ UTIL_SOURCES = \
 	util/virnetlink.h \
 	util/virnodesuspend.c \
 	util/virnodesuspend.h \
+	util/virnvme.c \
+	util/virnvme.h \
 	util/virkmod.c \
 	util/virkmod.h \
 	util/virnuma.c \

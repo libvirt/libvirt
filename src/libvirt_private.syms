@@ -2681,6 +2681,24 @@ virNumaSetPagePoolSize;
 virNumaSetupMemoryPolicy;
 
 
+# util/virnvme.h
+virNVMeDeviceAddressGet;
+virNVMeDeviceCopy;
+virNVMeDeviceFree;
+virNVMeDeviceListAdd;
+virNVMeDeviceListCount;
+virNVMeDeviceListCreateDetachList;
+virNVMeDeviceListDel;
+virNVMeDeviceListGet;
+virNVMeDeviceListLookup;
+virNVMeDeviceListLookupIndex;
+virNVMeDeviceListNew;
+virNVMeDeviceNew;
+virNVMeDeviceUsedByClear;
+virNVMeDeviceUsedByGet;
+virNVMeDeviceUsedBySet;
+
+
 # util/virobject.h
 virClassForObject;
 virClassForObjectLockable;

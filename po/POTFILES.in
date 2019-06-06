@@ -279,6 +279,7 @@
 @SRCDIR@/src/util/virnetlink.c
 @SRCDIR@/src/util/virnodesuspend.c
 @SRCDIR@/src/util/virnuma.c
+@SRCDIR@/src/util/virnvme.c
 @SRCDIR@/src/util/virobject.c
 @SRCDIR@/src/util/virpci.c
 @SRCDIR@/src/util/virperf.c
