@@ -166,6 +166,8 @@
   <flag name='virtio-pci-non-transitional'/>
   <flag name='overcommit'/>
   <flag name='query-current-machine'/>
+  <flag name='bitmap-merge'/>
+  <flag name='nbd-bitmap'/>
   <version>4000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900758</microcodeVersion>
