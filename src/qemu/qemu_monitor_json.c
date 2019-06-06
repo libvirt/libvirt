@@ -6736,15 +6736,20 @@ qemuMonitorJSONNBDServerStart(qemuMonitorPtr mon,
 int
 qemuMonitorJSONNBDServerAdd(qemuMonitorPtr mon,
                             const char *deviceID,
-                            bool writable)
+                            const char *export,
+                            bool writable,
+                            const char *bitmap)
 {
     int ret = -1;
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
 
+    /* Note: bitmap must be NULL if QEMU_CAPS_NBD_BITMAP is lacking */
     if (!(cmd = qemuMonitorJSONMakeCommand("nbd-server-add",
                                            "s:device", deviceID,
+                                           "S:name", export,
                                            "b:writable", writable,
+                                           "S:bitmap", bitmap,
                                            NULL)))
         return ret;
 

@@ -424,7 +424,7 @@ qemuMigrationDstStartNBDServer(virQEMUDriverPtr driver,
                 goto exit_monitor;
         }
 
-        if (qemuMonitorNBDServerAdd(priv->mon, diskAlias, true) < 0)
+        if (qemuMonitorNBDServerAdd(priv->mon, diskAlias, NULL, true, NULL) < 0)
             goto exit_monitor;
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
             goto cleanup;

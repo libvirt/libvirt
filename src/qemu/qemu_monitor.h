@@ -1118,7 +1118,9 @@ int qemuMonitorNBDServerStart(qemuMonitorPtr mon,
     ATTRIBUTE_NONNULL(2);
 int qemuMonitorNBDServerAdd(qemuMonitorPtr mon,
                             const char *deviceID,
-                            bool writable);
+                            const char *export,
+                            bool writable,
+                            const char *bitmap);
 int qemuMonitorNBDServerStop(qemuMonitorPtr);
 int qemuMonitorGetTPMModels(qemuMonitorPtr mon,
                             char ***tpmmodels);

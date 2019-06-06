@@ -1331,7 +1331,7 @@ GEN_TEST_FUNC(qemuMonitorJSONBlockCommit, "vdb", "/foo/bar1", "/foo/bar2", "back
 GEN_TEST_FUNC(qemuMonitorJSONDrivePivot, "vdb")
 GEN_TEST_FUNC(qemuMonitorJSONScreendump, "devicename", 1, "/foo/bar")
 GEN_TEST_FUNC(qemuMonitorJSONOpenGraphics, "spice", "spicefd", false)
-GEN_TEST_FUNC(qemuMonitorJSONNBDServerAdd, "vda", true)
+GEN_TEST_FUNC(qemuMonitorJSONNBDServerAdd, "vda", "export", true, "bitmap")
 GEN_TEST_FUNC(qemuMonitorJSONDetachCharDev, "serial1")
 GEN_TEST_FUNC(qemuMonitorJSONBlockdevTrayOpen, "foodev", true)
 GEN_TEST_FUNC(qemuMonitorJSONBlockdevTrayClose, "foodev")
