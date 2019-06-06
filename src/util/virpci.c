@@ -1744,7 +1744,7 @@ virPCIDeviceAddressEqual(const virPCIDeviceAddress *addr1,
 }
 
 char *
-virPCIDeviceAddressAsString(virPCIDeviceAddressPtr addr)
+virPCIDeviceAddressAsString(const virPCIDeviceAddress *addr)
 {
     char *str;
 
