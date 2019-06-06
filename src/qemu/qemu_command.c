@@ -7038,27 +7038,6 @@ qemuBuildGlobalControllerCommandLine(virCommandPtr cmd,
     return 0;
 }
 
-/**
- * qemuFeatureNoEffect:
- * @feature: CPU Feature
- *
- * Returns true, if the feature is known to have (never had) an effect on QEMU.
- * Those features might be dropped in qemu without a longer deprecation cycle
- * and must therefore be known e.g. to no more define them on command line.
- */
-static bool
-qemuFeatureNoEffect(virCPUFeatureDefPtr feature)
-{
-    if (!feature->name)
-        return false;
-
-    if (STREQ(feature->name, "osxsave"))
-        return true;
-    if (STREQ(feature->name, "ospke"))
-        return true;
-
-    return false;
-}
 
 static int
 qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
@@ -7127,7 +7106,8 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
         virBufferAsprintf(buf, ",vendor=%s", cpu->vendor_id);
 
     for (i = 0; i < cpu->nfeatures; i++) {
-        if (qemuFeatureNoEffect(&(cpu->features[i])))
+        if (!virQEMUCapsCPUFilterFeatures(cpu->features[i].name,
+                                          (virArch *)&def->os.arch))
             continue;
         switch ((virCPUFeaturePolicy) cpu->features[i].policy) {
         case VIR_CPU_FEATURE_FORCE:
