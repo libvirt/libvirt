@@ -17,12 +17,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_STORAGE_ADAPTER_CONF_H
-# define LIBVIRT_STORAGE_ADAPTER_CONF_H
+#pragma once
 
-# include "virpci.h"
-# include "virxml.h"
-# include "virenum.h"
+#include "virpci.h"
+#include "virxml.h"
+#include "virenum.h"
 
 
 typedef enum {
@@ -81,5 +80,3 @@ virStorageAdapterValidate(virStorageAdapterPtr adapter);
 void
 virStorageAdapterFormat(virBufferPtr buf,
                         virStorageAdapterPtr adapter);
-
-#endif /* LIBVIRT_STORAGE_ADAPTER_CONF_H */

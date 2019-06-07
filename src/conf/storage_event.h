@@ -20,12 +20,11 @@
  * <http://www.gnu.org/licenses/>.
 */
 
-#ifndef LIBVIRT_STORAGE_EVENT_H
-# define LIBVIRT_STORAGE_EVENT_H
+#pragma once
 
-# include "internal.h"
-# include "object_event.h"
-# include "object_event_private.h"
+#include "internal.h"
+#include "object_event.h"
+#include "object_event_private.h"
 
 int
 virStoragePoolEventStateRegisterID(virConnectPtr conn,
@@ -60,5 +59,3 @@ virStoragePoolEventLifecycleNew(const char *name,
 virObjectEventPtr
 virStoragePoolEventRefreshNew(const char *name,
                               const unsigned char *uuid);
-
-#endif /* LIBVIRT_STORAGE_EVENT_H */

@@ -17,14 +17,13 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRSTORAGEOBJ_H
-# define LIBVIRT_VIRSTORAGEOBJ_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
-# include "storage_conf.h"
+#include "storage_conf.h"
 
-# include "capabilities.h"
+#include "capabilities.h"
 
 typedef struct _virStoragePoolObj virStoragePoolObj;
 typedef virStoragePoolObj *virStoragePoolObjPtr;
@@ -256,5 +255,3 @@ virStoragePoolObjListExport(virConnectPtr conn,
                             virStoragePoolPtr **pools,
                             virStoragePoolObjListFilter filter,
                             unsigned int flags);
-
-#endif /* LIBVIRT_VIRSTORAGEOBJ_H */

@@ -19,21 +19,20 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_STORAGE_CONF_H
-# define LIBVIRT_STORAGE_CONF_H
+#pragma once
 
-# include "internal.h"
-# include "virstorageencryption.h"
-# include "virstoragefile.h"
-# include "virbitmap.h"
-# include "virthread.h"
-# include "device_conf.h"
-# include "object_event.h"
-# include "storage_adapter_conf.h"
-# include "virautoclean.h"
-# include "virenum.h"
+#include "internal.h"
+#include "virstorageencryption.h"
+#include "virstoragefile.h"
+#include "virbitmap.h"
+#include "virthread.h"
+#include "device_conf.h"
+#include "object_event.h"
+#include "storage_adapter_conf.h"
+#include "virautoclean.h"
+#include "virenum.h"
 
-# include <libxml/tree.h>
+#include <libxml/tree.h>
 
 /* Various callbacks needed to parse/create Storage Pool XML's using
  * a private namespace */
@@ -460,19 +459,19 @@ typedef enum {
 } virStoragePartedFsType;
 VIR_ENUM_DECL(virStoragePartedFs);
 
-# define VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ACTIVE \
+#define VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ACTIVE \
                 (VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE | \
                  VIR_CONNECT_LIST_STORAGE_POOLS_INACTIVE)
 
-# define VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_PERSISTENT \
+#define VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_PERSISTENT \
                 (VIR_CONNECT_LIST_STORAGE_POOLS_PERSISTENT | \
                  VIR_CONNECT_LIST_STORAGE_POOLS_TRANSIENT)
 
-# define VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_AUTOSTART \
+#define VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_AUTOSTART \
                 (VIR_CONNECT_LIST_STORAGE_POOLS_AUTOSTART | \
                  VIR_CONNECT_LIST_STORAGE_POOLS_NO_AUTOSTART)
 
-# define VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_POOL_TYPE \
+#define VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_POOL_TYPE \
                 (VIR_CONNECT_LIST_STORAGE_POOLS_DIR      | \
                  VIR_CONNECT_LIST_STORAGE_POOLS_FS       | \
                  VIR_CONNECT_LIST_STORAGE_POOLS_NETFS    | \
@@ -487,7 +486,7 @@ VIR_ENUM_DECL(virStoragePartedFs);
                  VIR_CONNECT_LIST_STORAGE_POOLS_ZFS      | \
                  VIR_CONNECT_LIST_STORAGE_POOLS_VSTORAGE)
 
-# define VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ALL \
+#define VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ALL \
                 (VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ACTIVE     | \
                  VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_PERSISTENT | \
                  VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_AUTOSTART  | \
@@ -496,5 +495,3 @@ VIR_ENUM_DECL(virStoragePartedFs);
 VIR_DEFINE_AUTOPTR_FUNC(virStoragePoolSource, virStoragePoolSourceFree);
 VIR_DEFINE_AUTOPTR_FUNC(virStoragePoolDef, virStoragePoolDefFree);
 VIR_DEFINE_AUTOPTR_FUNC(virStorageVolDef, virStorageVolDefFree);
-
-#endif /* LIBVIRT_STORAGE_CONF_H */

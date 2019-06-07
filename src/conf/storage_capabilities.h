@@ -18,10 +18,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_STORAGE_CAPABILITIES_H
-# define LIBVIRT_STORAGE_CAPABILITIES_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
 typedef struct _virStoragePoolCaps virStoragePoolCaps;
 typedef virStoragePoolCaps *virStoragePoolCapsPtr;
@@ -36,6 +35,3 @@ virStoragePoolCapsNew(virCapsPtr driverCaps);
 
 char *
 virStoragePoolCapsFormat(virStoragePoolCapsPtr const caps);
-
-
-#endif /* LIBVIRT_STORAGE_CAPABILITIES_H */
