@@ -639,11 +639,11 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr mgr,
     if (!nhostdevs)
         return 0;
 
+    if (!(pcidevs = virHostdevGetPCIHostDeviceList(hostdevs, nhostdevs)))
+        return -1;
+
     virObjectLock(mgr->activePCIHostdevs);
     virObjectLock(mgr->inactivePCIHostdevs);
-
-    if (!(pcidevs = virHostdevGetPCIHostDeviceList(hostdevs, nhostdevs)))
-        goto cleanup;
 
     /* Detaching devices from the host involves several steps; each
      * of them is described at length below.
@@ -912,9 +912,9 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr mgr,
     }
 
  cleanup:
-    virObjectUnref(pcidevs);
     virObjectUnlock(mgr->activePCIHostdevs);
     virObjectUnlock(mgr->inactivePCIHostdevs);
+    virObjectUnref(pcidevs);
 
     return ret;
 }
