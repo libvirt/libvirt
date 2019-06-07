@@ -19,28 +19,27 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_NETWORK_CONF_H
-# define LIBVIRT_NETWORK_CONF_H
+#pragma once
 
-# define DNS_RECORD_LENGTH_SRV  (512 - 30)  /* Limit minus overhead as mentioned in RFC-2782 */
+#define DNS_RECORD_LENGTH_SRV  (512 - 30)  /* Limit minus overhead as mentioned in RFC-2782 */
 
-# include <libxml/parser.h>
-# include <libxml/tree.h>
-# include <libxml/xpath.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
 
-# include "internal.h"
-# include "virthread.h"
-# include "virsocketaddr.h"
-# include "virnetdevbandwidth.h"
-# include "virnetdevvportprofile.h"
-# include "virnetdevvlan.h"
-# include "virmacaddr.h"
-# include "device_conf.h"
-# include "virbitmap.h"
-# include "networkcommon_conf.h"
-# include "virobject.h"
-# include "virmacmap.h"
-# include "virenum.h"
+#include "internal.h"
+#include "virthread.h"
+#include "virsocketaddr.h"
+#include "virnetdevbandwidth.h"
+#include "virnetdevvportprofile.h"
+#include "virnetdevvlan.h"
+#include "virmacaddr.h"
+#include "device_conf.h"
+#include "virbitmap.h"
+#include "networkcommon_conf.h"
+#include "virobject.h"
+#include "virmacmap.h"
+#include "virenum.h"
 
 typedef enum {
     VIR_NETWORK_FORWARD_NONE   = 0,
@@ -358,19 +357,19 @@ virNetworkSetBridgeMacAddr(virNetworkDefPtr def);
 
 VIR_ENUM_DECL(virNetworkForward);
 
-# define VIR_CONNECT_LIST_NETWORKS_FILTERS_ACTIVE \
+#define VIR_CONNECT_LIST_NETWORKS_FILTERS_ACTIVE \
                 (VIR_CONNECT_LIST_NETWORKS_ACTIVE | \
                  VIR_CONNECT_LIST_NETWORKS_INACTIVE)
 
-# define VIR_CONNECT_LIST_NETWORKS_FILTERS_PERSISTENT \
+#define VIR_CONNECT_LIST_NETWORKS_FILTERS_PERSISTENT \
                 (VIR_CONNECT_LIST_NETWORKS_PERSISTENT | \
                  VIR_CONNECT_LIST_NETWORKS_TRANSIENT)
 
-# define VIR_CONNECT_LIST_NETWORKS_FILTERS_AUTOSTART \
+#define VIR_CONNECT_LIST_NETWORKS_FILTERS_AUTOSTART \
                 (VIR_CONNECT_LIST_NETWORKS_AUTOSTART | \
                  VIR_CONNECT_LIST_NETWORKS_NO_AUTOSTART)
 
-# define VIR_CONNECT_LIST_NETWORKS_FILTERS_ALL \
+#define VIR_CONNECT_LIST_NETWORKS_FILTERS_ALL \
                 (VIR_CONNECT_LIST_NETWORKS_FILTERS_ACTIVE     | \
                  VIR_CONNECT_LIST_NETWORKS_FILTERS_PERSISTENT | \
                  VIR_CONNECT_LIST_NETWORKS_FILTERS_AUTOSTART)
@@ -385,4 +384,3 @@ virNetworkDefUpdateSection(virNetworkDefPtr def,
                            unsigned int flags);  /* virNetworkUpdateFlags */
 
 VIR_ENUM_DECL(virNetworkTaint);
-#endif /* LIBVIRT_NETWORK_CONF_H */

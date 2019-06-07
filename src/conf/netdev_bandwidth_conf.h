@@ -16,14 +16,13 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_NETDEV_BANDWIDTH_CONF_H
-# define LIBVIRT_NETDEV_BANDWIDTH_CONF_H
+#pragma once
 
-# include "internal.h"
-# include "virnetdevbandwidth.h"
-# include "virbuffer.h"
-# include "virxml.h"
-# include "domain_conf.h"
+#include "internal.h"
+#include "virnetdevbandwidth.h"
+#include "virbuffer.h"
+#include "virxml.h"
+#include "domain_conf.h"
 
 int virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
                             xmlNodePtr node,
@@ -56,5 +55,3 @@ static inline bool virNetDevSupportBandwidth(virDomainNetType type)
     }
     return false;
 }
-
-#endif /* LIBVIRT_NETDEV_BANDWIDTH_CONF_H */

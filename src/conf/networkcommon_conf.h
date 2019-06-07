@@ -20,16 +20,15 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_NETWORKCOMMON_CONF_H
-# define LIBVIRT_NETWORKCOMMON_CONF_H
+#pragma once
 
-# include <libxml/tree.h>
-# include <libxml/xpath.h>
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
 
-# include "internal.h"
-# include "virbuffer.h"
-# include "virsocketaddr.h"
-# include "virnetdevip.h"
+#include "internal.h"
+#include "virbuffer.h"
+#include "virsocketaddr.h"
+#include "virnetdevip.h"
 
 virNetDevIPRoutePtr
 virNetDevIPRouteCreate(const char *networkName,
@@ -49,5 +48,3 @@ virNetDevIPRouteParseXML(const char *networkName,
 int
 virNetDevIPRouteFormat(virBufferPtr buf,
                        const virNetDevIPRoute *def);
-
-#endif /* LIBVIRT_NETWORKCOMMON_CONF_H */
