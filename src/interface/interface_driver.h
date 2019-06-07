@@ -18,12 +18,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_INTERFACE_DRIVER_H
-# define LIBVIRT_INTERFACE_DRIVER_H
+#pragma once
 
 int interfaceRegister(void);
 
 int netcfIfaceRegister(void);
 int udevIfaceRegister(void);
-
-#endif /* LIBVIRT_INTERFACE_DRIVER_H */
