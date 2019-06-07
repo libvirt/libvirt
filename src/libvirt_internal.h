@@ -22,10 +22,9 @@
  * include/libvirt/libvirt.h apply. ie this file is *append* only
  */
 
-#ifndef LIBVIRT_LIBVIRT_INTERNAL_H
-# define LIBVIRT_LIBVIRT_INTERNAL_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
 typedef void (*virStateInhibitCallback)(bool inhibit,
                                         void *opaque);
@@ -297,5 +296,3 @@ virTypedParameterValidateSet(virConnectPtr conn,
 int virStreamInData(virStreamPtr stream,
                     int *data,
                     long long *length);
-
-#endif /* LIBVIRT_LIBVIRT_INTERNAL_H */
