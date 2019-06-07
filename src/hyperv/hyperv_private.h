@@ -20,13 +20,12 @@
  *
  */
 
-#ifndef LIBVIRT_HYPERV_PRIVATE_H
-# define LIBVIRT_HYPERV_PRIVATE_H
+#pragma once
 
-# include "internal.h"
-# include "virerror.h"
-# include "hyperv_util.h"
-# include "openwsman.h"
+#include "internal.h"
+#include "virerror.h"
+#include "hyperv_util.h"
+#include "openwsman.h"
 
 typedef enum _hypervWmiVersion hypervWmiVersion;
 enum _hypervWmiVersion {
@@ -40,5 +39,3 @@ struct _hypervPrivate {
     WsManClient *client;
     hypervWmiVersion wmiVersion;
 };
-
-#endif /* LIBVIRT_HYPERV_PRIVATE_H */

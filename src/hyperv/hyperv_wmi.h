@@ -21,21 +21,20 @@
  *
  */
 
-#ifndef LIBVIRT_HYPERV_WMI_H
-# define LIBVIRT_HYPERV_WMI_H
+#pragma once
 
-# include "virbuffer.h"
-# include "hyperv_private.h"
-# include "hyperv_wmi_classes.h"
-# include "openwsman.h"
-# include "virhash.h"
+#include "virbuffer.h"
+#include "hyperv_private.h"
+#include "hyperv_wmi_classes.h"
+#include "openwsman.h"
+#include "virhash.h"
 
 
-# define HYPERV_WQL_QUERY_INITIALIZER { NULL, NULL }
+#define HYPERV_WQL_QUERY_INITIALIZER { NULL, NULL }
 
-# define HYPERV_DEFAULT_PARAM_COUNT 5
+#define HYPERV_DEFAULT_PARAM_COUNT 5
 
-# define MSVM_VIRTUALSYSTEMMANAGEMENTSERVICE_SELECTOR \
+#define MSVM_VIRTUALSYSTEMMANAGEMENTSERVICE_SELECTOR \
     "CreationClassName=Msvm_VirtualSystemManagementService"
 
 int hypervVerifyResponse(WsManClient *client, WsXmlDocH response,
@@ -252,5 +251,3 @@ int hypervMsvmComputerSystemToDomain(virConnectPtr conn,
 
 int hypervMsvmComputerSystemFromDomain(virDomainPtr domain,
                                        Msvm_ComputerSystem **computerSystem);
-
-#endif /* LIBVIRT_HYPERV_WMI_H */

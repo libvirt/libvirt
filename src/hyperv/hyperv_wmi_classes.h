@@ -21,21 +21,20 @@
  *
  */
 
-#ifndef LIBVIRT_HYPERV_WMI_CLASSES_H
-# define LIBVIRT_HYPERV_WMI_CLASSES_H
+#pragma once
 
-# include "internal.h"
-# include "openwsman.h"
+#include "internal.h"
+#include "openwsman.h"
 
-# include "hyperv_wmi_classes.generated.typedef"
+#include "hyperv_wmi_classes.generated.typedef"
 
-# define ROOT_CIMV2 \
+#define ROOT_CIMV2 \
     "http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/*"
 
-# define ROOT_VIRTUALIZATION \
+#define ROOT_VIRTUALIZATION \
     "http://schemas.microsoft.com/wbem/wsman/1/wmi/root/virtualization/*"
 
-# define ROOT_VIRTUALIZATION_V2 \
+#define ROOT_VIRTUALIZATION_V2 \
     "http://schemas.microsoft.com/wbem/wsman/1/wmi/root/virtualization/v2/*"
 
 
@@ -44,16 +43,16 @@
  * Msvm_ComputerSystem
  */
 
-# define MSVM_COMPUTERSYSTEM_WQL_VIRTUAL \
+#define MSVM_COMPUTERSYSTEM_WQL_VIRTUAL \
     "Description = \"Microsoft Virtual Machine\" "
 
-# define MSVM_COMPUTERSYSTEM_WQL_PHYSICAL \
+#define MSVM_COMPUTERSYSTEM_WQL_PHYSICAL \
     "Description = \"Microsoft Hosting Computer System\" "
 
-# define MSVM_COMPUTERSYSTEM_WQL_ACTIVE \
+#define MSVM_COMPUTERSYSTEM_WQL_ACTIVE \
     "(EnabledState != 0 and EnabledState != 3 and EnabledState != 32769) "
 
-# define MSVM_COMPUTERSYSTEM_WQL_INACTIVE \
+#define MSVM_COMPUTERSYSTEM_WQL_INACTIVE \
     "(EnabledState = 0 or EnabledState = 3 or EnabledState = 32769) "
 
 enum _Msvm_ComputerSystem_EnabledState {
@@ -138,6 +137,4 @@ struct _hypervWmiClassInfoList {
     hypervWmiClassInfoPtr *objs;
 };
 
-# include "hyperv_wmi_classes.generated.h"
-
-#endif /* LIBVIRT_HYPERV_WMI_CLASSES_H */
+#include "hyperv_wmi_classes.generated.h"
