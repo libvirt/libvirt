@@ -18,18 +18,17 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_INTERFACE_CONF_H
-# define LIBVIRT_INTERFACE_CONF_H
+#pragma once
 
-# include <libxml/parser.h>
-# include <libxml/tree.h>
-# include <libxml/xpath.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
 
-# include "internal.h"
-# include "virutil.h"
-# include "virthread.h"
-# include "device_conf.h"
-# include "virenum.h"
+#include "internal.h"
+#include "virutil.h"
+#include "virthread.h"
+#include "device_conf.h"
+#include "virenum.h"
 
 /* There is currently 3 types of interfaces */
 
@@ -175,8 +174,6 @@ virInterfaceDefParseNode(xmlDocPtr xml,
 char *
 virInterfaceDefFormat(const virInterfaceDef *def);
 
-# define VIR_CONNECT_LIST_INTERFACES_FILTERS_ACTIVE \
+#define VIR_CONNECT_LIST_INTERFACES_FILTERS_ACTIVE \
                 (VIR_CONNECT_LIST_INTERFACES_ACTIVE | \
                  VIR_CONNECT_LIST_INTERFACES_INACTIVE)
-
-#endif /* LIBVIRT_INTERFACE_CONF_H */

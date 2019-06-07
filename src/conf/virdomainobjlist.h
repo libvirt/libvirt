@@ -20,10 +20,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRDOMAINOBJLIST_H
-# define LIBVIRT_VIRDOMAINOBJLIST_H
+#pragma once
 
-# include "domain_conf.h"
+#include "domain_conf.h"
 
 typedef struct _virDomainObjList virDomainObjList;
 typedef virDomainObjList *virDomainObjListPtr;
@@ -95,33 +94,33 @@ int virDomainObjListForEach(virDomainObjListPtr doms,
                             virDomainObjListIterator callback,
                             void *opaque);
 
-# define VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE \
+#define VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE \
                 (VIR_CONNECT_LIST_DOMAINS_ACTIVE | \
                  VIR_CONNECT_LIST_DOMAINS_INACTIVE)
 
-# define VIR_CONNECT_LIST_DOMAINS_FILTERS_PERSISTENT \
+#define VIR_CONNECT_LIST_DOMAINS_FILTERS_PERSISTENT \
                 (VIR_CONNECT_LIST_DOMAINS_PERSISTENT | \
                  VIR_CONNECT_LIST_DOMAINS_TRANSIENT)
 
-# define VIR_CONNECT_LIST_DOMAINS_FILTERS_STATE \
+#define VIR_CONNECT_LIST_DOMAINS_FILTERS_STATE \
                 (VIR_CONNECT_LIST_DOMAINS_RUNNING | \
                  VIR_CONNECT_LIST_DOMAINS_PAUSED  | \
                  VIR_CONNECT_LIST_DOMAINS_SHUTOFF | \
                  VIR_CONNECT_LIST_DOMAINS_OTHER)
 
-# define VIR_CONNECT_LIST_DOMAINS_FILTERS_MANAGEDSAVE \
+#define VIR_CONNECT_LIST_DOMAINS_FILTERS_MANAGEDSAVE \
                 (VIR_CONNECT_LIST_DOMAINS_MANAGEDSAVE | \
                  VIR_CONNECT_LIST_DOMAINS_NO_MANAGEDSAVE)
 
-# define VIR_CONNECT_LIST_DOMAINS_FILTERS_AUTOSTART \
+#define VIR_CONNECT_LIST_DOMAINS_FILTERS_AUTOSTART \
                 (VIR_CONNECT_LIST_DOMAINS_AUTOSTART | \
                  VIR_CONNECT_LIST_DOMAINS_NO_AUTOSTART)
 
-# define VIR_CONNECT_LIST_DOMAINS_FILTERS_SNAPSHOT \
+#define VIR_CONNECT_LIST_DOMAINS_FILTERS_SNAPSHOT \
                 (VIR_CONNECT_LIST_DOMAINS_HAS_SNAPSHOT | \
                  VIR_CONNECT_LIST_DOMAINS_NO_SNAPSHOT)
 
-# define VIR_CONNECT_LIST_DOMAINS_FILTERS_ALL \
+#define VIR_CONNECT_LIST_DOMAINS_FILTERS_ALL \
                 (VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE      | \
                  VIR_CONNECT_LIST_DOMAINS_FILTERS_PERSISTENT  | \
                  VIR_CONNECT_LIST_DOMAINS_FILTERS_STATE       | \
@@ -149,5 +148,3 @@ int virDomainObjListConvert(virDomainObjListPtr domlist,
                             virDomainObjListACLFilter filter,
                             unsigned int flags,
                             bool skip_missing);
-
-#endif /* LIBVIRT_VIRDOMAINOBJLIST_H */

@@ -20,12 +20,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRDOMAINMOMENTOBJLIST_H
-# define LIBVIRT_VIRDOMAINMOMENTOBJLIST_H
+#pragma once
 
-# include "internal.h"
-# include "virconftypes.h"
-# include "virhash.h"
+#include "internal.h"
+#include "virconftypes.h"
+#include "virhash.h"
 
 /* Filter that returns true if a given moment matches the filter flags */
 typedef bool (*virDomainMomentObjListFilter)(virDomainMomentObjPtr obj,
@@ -83,15 +82,15 @@ typedef enum {
     VIR_DOMAIN_MOMENT_LIST_NO_METADATA = (1 << 5),
 } virDomainMomentFilters;
 
-# define VIR_DOMAIN_MOMENT_FILTERS_METADATA \
+#define VIR_DOMAIN_MOMENT_FILTERS_METADATA \
                (VIR_DOMAIN_MOMENT_LIST_METADATA | \
                 VIR_DOMAIN_MOMENT_LIST_NO_METADATA)
 
-# define VIR_DOMAIN_MOMENT_FILTERS_LEAVES \
+#define VIR_DOMAIN_MOMENT_FILTERS_LEAVES \
                (VIR_DOMAIN_MOMENT_LIST_LEAVES | \
                 VIR_DOMAIN_MOMENT_LIST_NO_LEAVES)
 
-# define VIR_DOMAIN_MOMENT_FILTERS_ALL \
+#define VIR_DOMAIN_MOMENT_FILTERS_ALL \
                (VIR_DOMAIN_MOMENT_LIST_ROOTS | \
                 VIR_DOMAIN_MOMENT_LIST_TOPOLOGICAL | \
                 VIR_DOMAIN_MOMENT_FILTERS_METADATA | \
@@ -118,5 +117,3 @@ int virDomainMomentForEach(virDomainMomentObjListPtr moments,
                            virHashIterator iter,
                            void *data);
 int virDomainMomentUpdateRelations(virDomainMomentObjListPtr moments);
-
-#endif /* LIBVIRT_VIRDOMAINMOMENTOBJLIST_H */

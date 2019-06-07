@@ -18,13 +18,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRSECRETOBJ_H
-# define LIBVIRT_VIRSECRETOBJ_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
-# include "secret_conf.h"
-# include "virobject.h"
+#include "secret_conf.h"
+#include "virobject.h"
 
 typedef struct _virSecretObj virSecretObj;
 typedef virSecretObj *virSecretObjPtr;
@@ -117,5 +116,3 @@ virSecretObjSetValueSize(virSecretObjPtr obj,
 int
 virSecretLoadAllConfigs(virSecretObjListPtr secrets,
                         const char *configDir);
-
-#endif /* LIBVIRT_VIRSECRETOBJ_H */

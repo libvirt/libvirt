@@ -18,19 +18,18 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_CPU_CONF_H
-# define LIBVIRT_CPU_CONF_H
+#pragma once
 
-# include "virutil.h"
-# include "virbuffer.h"
-# include "virxml.h"
-# include "virbitmap.h"
-# include "virarch.h"
-# include "numa_conf.h"
-# include "virenum.h"
-# include "virhostcpu.h"
+#include "virutil.h"
+#include "virbuffer.h"
+#include "virxml.h"
+#include "virbitmap.h"
+#include "virarch.h"
+#include "numa_conf.h"
+#include "virenum.h"
+#include "virhostcpu.h"
 
-# define VIR_CPU_VENDOR_ID_LENGTH 12
+#define VIR_CPU_VENDOR_ID_LENGTH 12
 
 typedef enum {
     VIR_CPU_TYPE_HOST,
@@ -226,5 +225,3 @@ virCPUDefListParse(const char **xmlCPUs,
                    virCPUType cpuType);
 void
 virCPUDefListFree(virCPUDefPtr *cpus);
-
-#endif /* LIBVIRT_CPU_CONF_H */

@@ -20,12 +20,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_OBJECT_EVENT_H
-# define LIBVIRT_OBJECT_EVENT_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
-# include "virobject.h"
+#include "virobject.h"
 
 /**
  * Dispatching domain events that come in while
@@ -54,7 +53,7 @@ typedef void (*virConnectObjectEventGenericCallback)(virConnectPtr conn,
                                                      void *obj,
                                                      void *opaque);
 
-# define VIR_OBJECT_EVENT_CALLBACK(cb) \
+#define VIR_OBJECT_EVENT_CALLBACK(cb) \
     ((virConnectObjectEventGenericCallback)(cb))
 
 void
@@ -88,5 +87,3 @@ virObjectEventStateSetRemote(virConnectPtr conn,
                              int callbackID,
                              int remoteID)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-
-#endif /* LIBVIRT_OBJECT_EVENT_H */

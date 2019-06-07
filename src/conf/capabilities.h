@@ -19,19 +19,18 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_CAPABILITIES_H
-# define LIBVIRT_CAPABILITIES_H
+#pragma once
 
-# include "internal.h"
-# include "virconftypes.h"
-# include "virbuffer.h"
-# include "cpu_conf.h"
-# include "virarch.h"
-# include "virmacaddr.h"
-# include "virobject.h"
-# include "virresctrl.h"
+#include "internal.h"
+#include "virconftypes.h"
+#include "virbuffer.h"
+#include "cpu_conf.h"
+#include "virarch.h"
+#include "virmacaddr.h"
+#include "virobject.h"
+#include "virresctrl.h"
 
-# include <libxml/xpath.h>
+#include <libxml/xpath.h>
 
 struct _virCapsGuestFeature {
     char *name;
@@ -328,5 +327,3 @@ void virCapsHostCacheBankFree(virCapsHostCacheBankPtr ptr);
 int virCapabilitiesInitCaches(virCapsPtr caps);
 
 void virCapabilitiesHostInitIOMMU(virCapsPtr caps);
-
-#endif /* LIBVIRT_CAPABILITIES_H */

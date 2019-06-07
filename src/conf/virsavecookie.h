@@ -18,14 +18,13 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRSAVECOOKIE_H
-# define LIBVIRT_VIRSAVECOOKIE_H
+#pragma once
 
-# include <libxml/xpath.h>
+#include <libxml/xpath.h>
 
-# include "internal.h"
-# include "virobject.h"
-# include "virbuffer.h"
+#include "internal.h"
+#include "virobject.h"
+#include "virbuffer.h"
 
 
 typedef int (*virSaveCookieParseFunc)(xmlXPathContextPtr ctxt,
@@ -59,5 +58,3 @@ virSaveCookieFormatBuf(virBufferPtr buf,
 char *
 virSaveCookieFormat(virObjectPtr obj,
                     virSaveCookieCallbacksPtr saveCookie);
-
-#endif /* LIBVIRT_VIRSAVECOOKIE_H */

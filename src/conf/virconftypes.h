@@ -20,8 +20,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRCONFTYPES_H
-# define LIBVIRT_VIRCONFTYPES_H
+#pragma once
 
 /* forward declarations of various types required in src/conf */
 
@@ -345,5 +344,3 @@ typedef virDomainXMLPrivateDataCallbacks *virDomainXMLPrivateDataCallbacksPtr;
 
 typedef struct _virDomainXenbusControllerOpts virDomainXenbusControllerOpts;
 typedef virDomainXenbusControllerOpts *virDomainXenbusControllerOptsPtr;
-
-#endif /* LIBVIRT_VIRCONFTYPES_H */

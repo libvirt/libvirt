@@ -20,12 +20,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_SECRET_EVENT_H
-# define LIBVIRT_SECRET_EVENT_H
+#pragma once
 
-# include "internal.h"
-# include "object_event.h"
-# include "object_event_private.h"
+#include "internal.h"
+#include "object_event.h"
+#include "object_event_private.h"
 
 int
 virSecretEventStateRegisterID(virConnectPtr conn,
@@ -61,5 +60,3 @@ virObjectEventPtr
 virSecretEventValueChangedNew(const unsigned char *uuid,
                               int usage_type,
                               const char *usage_id);
-
-#endif /* LIBVIRT_SECRET_EVENT_H */

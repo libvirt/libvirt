@@ -19,13 +19,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_SNAPSHOT_CONF_H
-# define LIBVIRT_SNAPSHOT_CONF_H
+#pragma once
 
-# include "internal.h"
-# include "domain_conf.h"
-# include "moment_conf.h"
-# include "virenum.h"
+#include "internal.h"
+#include "domain_conf.h"
+#include "moment_conf.h"
+#include "virenum.h"
 
 /* Items related to snapshot state */
 
@@ -143,5 +142,3 @@ int virDomainSnapshotRedefineValidate(virDomainSnapshotDefPtr def,
 
 VIR_ENUM_DECL(virDomainSnapshotLocation);
 VIR_ENUM_DECL(virDomainSnapshotState);
-
-#endif /* LIBVIRT_SNAPSHOT_CONF_H */

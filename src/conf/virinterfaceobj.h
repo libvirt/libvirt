@@ -17,10 +17,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRINTERFACEOBJ_H
-# define LIBVIRT_VIRINTERFACEOBJ_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
 typedef struct _virInterfaceObj virInterfaceObj;
 typedef virInterfaceObj *virInterfaceObjPtr;
@@ -88,5 +87,3 @@ virInterfaceObjListExport(virConnectPtr conn,
                           virInterfacePtr **ifaces,
                           virInterfaceObjListFilter filter,
                           unsigned int flags);
-
-#endif /* LIBVIRT_VIRINTERFACEOBJ_H */

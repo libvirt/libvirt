@@ -20,12 +20,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_MOMENT_CONF_H
-# define LIBVIRT_MOMENT_CONF_H
+#pragma once
 
-# include "internal.h"
-# include "virconftypes.h"
-# include "virobject.h"
+#include "internal.h"
+#include "virconftypes.h"
+#include "virobject.h"
 
 /* Base class for a domain moment */
 struct _virDomainMomentDef {
@@ -43,5 +42,3 @@ struct _virDomainMomentDef {
 virClassPtr virClassForDomainMomentDef(void);
 
 int virDomainMomentDefPostParse(virDomainMomentDefPtr def);
-
-#endif /* LIBVIRT_MOMENT_CONF_H */

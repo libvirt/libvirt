@@ -20,12 +20,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRDOMAINSNAPSHOTOBJLIST_H
-# define LIBVIRT_VIRDOMAINSNAPSHOTOBJLIST_H
+#pragma once
 
-# include "internal.h"
-# include "virdomainmomentobjlist.h"
-# include "virbuffer.h"
+#include "internal.h"
+#include "virdomainmomentobjlist.h"
+#include "virbuffer.h"
 
 virDomainSnapshotObjListPtr virDomainSnapshotObjListNew(void);
 void virDomainSnapshotObjListFree(virDomainSnapshotObjListPtr snapshots);
@@ -54,24 +53,24 @@ int virDomainSnapshotForEach(virDomainSnapshotObjListPtr snapshots,
                              void *data);
 int virDomainSnapshotUpdateRelations(virDomainSnapshotObjListPtr snapshots);
 
-# define VIR_DOMAIN_SNAPSHOT_FILTERS_METADATA \
+#define VIR_DOMAIN_SNAPSHOT_FILTERS_METADATA \
                (VIR_DOMAIN_SNAPSHOT_LIST_METADATA     | \
                 VIR_DOMAIN_SNAPSHOT_LIST_NO_METADATA)
 
-# define VIR_DOMAIN_SNAPSHOT_FILTERS_LEAVES \
+#define VIR_DOMAIN_SNAPSHOT_FILTERS_LEAVES \
                (VIR_DOMAIN_SNAPSHOT_LIST_LEAVES       | \
                 VIR_DOMAIN_SNAPSHOT_LIST_NO_LEAVES)
 
-# define VIR_DOMAIN_SNAPSHOT_FILTERS_STATUS \
+#define VIR_DOMAIN_SNAPSHOT_FILTERS_STATUS \
                (VIR_DOMAIN_SNAPSHOT_LIST_INACTIVE     | \
                 VIR_DOMAIN_SNAPSHOT_LIST_ACTIVE       | \
                 VIR_DOMAIN_SNAPSHOT_LIST_DISK_ONLY)
 
-# define VIR_DOMAIN_SNAPSHOT_FILTERS_LOCATION \
+#define VIR_DOMAIN_SNAPSHOT_FILTERS_LOCATION \
                (VIR_DOMAIN_SNAPSHOT_LIST_INTERNAL     | \
                 VIR_DOMAIN_SNAPSHOT_LIST_EXTERNAL)
 
-# define VIR_DOMAIN_SNAPSHOT_FILTERS_ALL \
+#define VIR_DOMAIN_SNAPSHOT_FILTERS_ALL \
                (VIR_DOMAIN_SNAPSHOT_FILTERS_METADATA  | \
                 VIR_DOMAIN_SNAPSHOT_FILTERS_LEAVES    | \
                 VIR_DOMAIN_SNAPSHOT_FILTERS_STATUS    | \
@@ -89,5 +88,3 @@ virDomainSnapshotObjGetDef(virDomainMomentObjPtr obj)
 {
     return (virDomainSnapshotDefPtr) obj->def;
 }
-
-#endif /* LIBVIRT_VIRDOMAINSNAPSHOTOBJLIST_H */

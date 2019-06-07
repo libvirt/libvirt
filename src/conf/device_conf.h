@@ -18,20 +18,19 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_DEVICE_CONF_H
-# define LIBVIRT_DEVICE_CONF_H
+#pragma once
 
-# include <libxml/parser.h>
-# include <libxml/tree.h>
-# include <libxml/xpath.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
 
-# include "internal.h"
-# include "virutil.h"
-# include "virthread.h"
-# include "virbuffer.h"
-# include "virpci.h"
-# include "virnetdev.h"
-# include "virenum.h"
+#include "internal.h"
+#include "virutil.h"
+#include "virthread.h"
+#include "virbuffer.h"
+#include "virpci.h"
+#include "virnetdev.h"
+#include "virenum.h"
 
 typedef enum {
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE,
@@ -69,9 +68,9 @@ struct _virDomainDeviceVirtioSerialAddress {
     unsigned int port;
 };
 
-# define VIR_DOMAIN_DEVICE_CCW_MAX_CSSID    254
-# define VIR_DOMAIN_DEVICE_CCW_MAX_SSID       3
-# define VIR_DOMAIN_DEVICE_CCW_MAX_DEVNO  65535
+#define VIR_DOMAIN_DEVICE_CCW_MAX_CSSID    254
+#define VIR_DOMAIN_DEVICE_CCW_MAX_SSID       3
+#define VIR_DOMAIN_DEVICE_CCW_MAX_DEVNO  65535
 
 typedef struct _virDomainDeviceCCWAddress virDomainDeviceCCWAddress;
 typedef virDomainDeviceCCWAddress *virDomainDeviceCCWAddressPtr;
@@ -89,7 +88,7 @@ struct _virDomainDeviceCcidAddress {
     unsigned int slot;
 };
 
-# define VIR_DOMAIN_DEVICE_USB_MAX_PORT_DEPTH 4
+#define VIR_DOMAIN_DEVICE_USB_MAX_PORT_DEPTH 4
 
 typedef struct _virDomainDeviceUSBAddress virDomainDeviceUSBAddress;
 typedef virDomainDeviceUSBAddress *virDomainDeviceUSBAddressPtr;
@@ -231,5 +230,3 @@ int virInterfaceLinkParseXML(xmlNodePtr node,
 
 int virInterfaceLinkFormat(virBufferPtr buf,
                            const virNetDevIfLink *lnk);
-
-#endif /* LIBVIRT_DEVICE_CONF_H */
