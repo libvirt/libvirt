@@ -17,13 +17,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRNWFILTEROBJ_H
-# define LIBVIRT_VIRNWFILTEROBJ_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
-# include "nwfilter_conf.h"
-# include "virnwfilterbindingobjlist.h"
+#include "nwfilter_conf.h"
+#include "virnwfilterbindingobjlist.h"
 
 typedef struct _virNWFilterObj virNWFilterObj;
 typedef virNWFilterObj *virNWFilterObjPtr;
@@ -114,5 +113,3 @@ virNWFilterObjLock(virNWFilterObjPtr obj);
 
 void
 virNWFilterObjUnlock(virNWFilterObjPtr obj);
-
-#endif /* LIBVIRT_VIRNWFILTEROBJ_H */

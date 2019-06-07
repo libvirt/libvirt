@@ -18,10 +18,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRNWFILTERBINDINGOBJLIST_H
-# define LIBVIRT_VIRNWFILTERBINDINGOBJLIST_H
+#pragma once
 
-# include "virnwfilterbindingobj.h"
+#include "virnwfilterbindingobj.h"
 
 typedef struct _virNWFilterBindingObjList virNWFilterBindingObjList;
 typedef virNWFilterBindingObjList *virNWFilterBindingObjListPtr;
@@ -62,6 +61,3 @@ virNWFilterBindingObjListExport(virNWFilterBindingObjListPtr bindings,
                                 virConnectPtr conn,
                                 virNWFilterBindingPtr **bindinglist,
                                 virNWFilterBindingObjListACLFilter filter);
-
-
-#endif /* LIBVIRT_VIRNWFILTERBINDINGOBJLIST_H */

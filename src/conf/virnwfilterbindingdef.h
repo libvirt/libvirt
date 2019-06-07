@@ -19,13 +19,12 @@
  *
  */
 
-#ifndef LIBVIRT_VIRNWFILTERBINDINGDEF_H
-# define LIBVIRT_VIRNWFILTERBINDINGDEF_H
+#pragma once
 
-# include "internal.h"
-# include "virmacaddr.h"
-# include "virhash.h"
-# include "virbuffer.h"
+#include "internal.h"
+#include "virmacaddr.h"
+#include "virhash.h"
+#include "virbuffer.h"
 
 typedef struct _virNWFilterBindingDef virNWFilterBindingDef;
 typedef virNWFilterBindingDef *virNWFilterBindingDefPtr;
@@ -62,5 +61,3 @@ virNWFilterBindingDefFormat(const virNWFilterBindingDef *def);
 int
 virNWFilterBindingDefFormatBuf(virBufferPtr buf,
                                const virNWFilterBindingDef *def);
-
-#endif /* LIBVIRT_VIRNWFILTERBINDINGDEF_H */

@@ -19,12 +19,11 @@
  *
  */
 
-#ifndef LIBVIRT_VIRNWFILTERBINDINGOBJ_H
-# define LIBVIRT_VIRNWFILTERBINDINGOBJ_H
+#pragma once
 
-# include "internal.h"
-# include "virnwfilterbindingdef.h"
-# include "virobject.h"
+#include "internal.h"
+#include "virnwfilterbindingdef.h"
+#include "virobject.h"
 
 typedef struct _virNWFilterBindingObj virNWFilterBindingObj;
 typedef virNWFilterBindingObj *virNWFilterBindingObjPtr;
@@ -69,5 +68,3 @@ virNWFilterBindingObjParseFile(const char *filename);
 
 char *
 virNWFilterBindingObjFormat(const virNWFilterBindingObj *obj);
-
-#endif /* LIBVIRT_VIRNWFILTERBINDINGOBJ_H */

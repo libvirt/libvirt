@@ -22,18 +22,17 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_NWFILTER_CONF_H
-# define LIBVIRT_NWFILTER_CONF_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
-# include "virhash.h"
-# include "virxml.h"
-# include "virbuffer.h"
-# include "virsocketaddr.h"
-# include "virmacaddr.h"
-# include "virdomainobjlist.h"
-# include "virenum.h"
+#include "virhash.h"
+#include "virxml.h"
+#include "virbuffer.h"
+#include "virsocketaddr.h"
+#include "virmacaddr.h"
+#include "virdomainobjlist.h"
+#include "virenum.h"
 
 /* XXX
  * The config parser/structs should not be using platform specific
@@ -41,21 +40,21 @@
  * so temporarily define them until this can be re-written to use
  * locally defined enums for all constants
  */
-# ifndef ETHERTYPE_IP
-#  define ETHERTYPE_IP            0x0800
-# endif
-# ifndef ETHERTYPE_ARP
-#  define ETHERTYPE_ARP           0x0806
-# endif
-# ifndef ETHERTYPE_REVARP
-#  define ETHERTYPE_REVARP        0x8035
-# endif
-# ifndef ETHERTYPE_IPV6
-#  define ETHERTYPE_IPV6          0x86dd
-# endif
-# ifndef ETHERTYPE_VLAN
-#  define ETHERTYPE_VLAN          0x8100
-# endif
+#ifndef ETHERTYPE_IP
+# define ETHERTYPE_IP            0x0800
+#endif
+#ifndef ETHERTYPE_ARP
+# define ETHERTYPE_ARP           0x0806
+#endif
+#ifndef ETHERTYPE_REVARP
+# define ETHERTYPE_REVARP        0x8035
+#endif
+#ifndef ETHERTYPE_IPV6
+# define ETHERTYPE_IPV6          0x86dd
+#endif
+#ifndef ETHERTYPE_VLAN
+# define ETHERTYPE_VLAN          0x8100
+#endif
 
 /**
  * Chain suffix size is:
@@ -66,7 +65,7 @@
  *   terminating '0' =
  * 32-3-15-1-1 = 12
  */
-# define MAX_CHAIN_SUFFIX_SIZE  12
+#define MAX_CHAIN_SUFFIX_SIZE  12
 
 
 typedef enum {
@@ -76,13 +75,13 @@ typedef enum {
 } virNWFilterEntryItemFlags;
 
 
-# define MAX_COMMENT_LENGTH  256
-# define MAX_IPSET_NAME_LENGTH 32 /* incl. terminating '\0' */
+#define MAX_COMMENT_LENGTH  256
+#define MAX_IPSET_NAME_LENGTH 32 /* incl. terminating '\0' */
 
-# define HAS_ENTRY_ITEM(data) \
+#define HAS_ENTRY_ITEM(data) \
   (((data)->flags) & NWFILTER_ENTRY_ITEM_FLAG_EXISTS)
 
-# define ENTRY_WANT_NEG_SIGN(data) \
+#define ENTRY_WANT_NEG_SIGN(data) \
   (((data)->flags) & NWFILTER_ENTRY_ITEM_FLAG_IS_NEG)
 
 /* datatypes appearing in rule attributes */
@@ -108,7 +107,7 @@ typedef enum attrDatatype {
     DATATYPE_LAST             = (1 << 17),
 } virNWFilterAttrDataType;
 
-# define NWFILTER_MAC_BGA "01:80:c2:00:00:00"
+#define NWFILTER_MAC_BGA "01:80:c2:00:00:00"
 
 
 typedef struct _nwItemDesc nwItemDesc;
@@ -138,7 +137,7 @@ struct _nwItemDesc {
     } u;
 };
 
-# define VALID_IPSETNAME \
+#define VALID_IPSETNAME \
   "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.:-+ "
 
 typedef struct _ethHdrDataDef ethHdrDataDef;
@@ -426,20 +425,20 @@ typedef enum {
 } virNWFilterEbtablesTableType;
 
 
-# define MIN_RULE_PRIORITY  -1000
-# define MAX_RULE_PRIORITY  1000
+#define MIN_RULE_PRIORITY  -1000
+#define MAX_RULE_PRIORITY  1000
 
-# define NWFILTER_MIN_FILTER_PRIORITY -1000
-# define NWFILTER_MAX_FILTER_PRIORITY MAX_RULE_PRIORITY
+#define NWFILTER_MIN_FILTER_PRIORITY -1000
+#define NWFILTER_MAX_FILTER_PRIORITY MAX_RULE_PRIORITY
 
-# define NWFILTER_ROOT_FILTER_PRI 0
-# define NWFILTER_STP_FILTER_PRI  -810
-# define NWFILTER_MAC_FILTER_PRI  -800
-# define NWFILTER_VLAN_FILTER_PRI -750
-# define NWFILTER_IPV4_FILTER_PRI -700
-# define NWFILTER_IPV6_FILTER_PRI -600
-# define NWFILTER_ARP_FILTER_PRI  -500
-# define NWFILTER_RARP_FILTER_PRI -400
+#define NWFILTER_ROOT_FILTER_PRI 0
+#define NWFILTER_STP_FILTER_PRI  -810
+#define NWFILTER_MAC_FILTER_PRI  -800
+#define NWFILTER_VLAN_FILTER_PRI -750
+#define NWFILTER_IPV4_FILTER_PRI -700
+#define NWFILTER_IPV6_FILTER_PRI -600
+#define NWFILTER_ARP_FILTER_PRI  -500
+#define NWFILTER_RARP_FILTER_PRI -400
 
 typedef enum {
     RULE_FLAG_NO_STATEMATCH      = (1 << 0),
@@ -451,7 +450,7 @@ typedef enum {
 } virNWFilterRuleFlags;
 
 
-# define IPTABLES_STATE_FLAGS \
+#define IPTABLES_STATE_FLAGS \
   (RULE_FLAG_STATE_NEW | \
    RULE_FLAG_STATE_ESTABLISHED | \
    RULE_FLAG_STATE_RELATED | \
@@ -525,7 +524,7 @@ typedef enum {
     VIR_NWFILTER_CHAINSUFFIX_LAST,
 } virNWFilterChainSuffixType;
 
-# define VALID_CHAINNAME \
+#define VALID_CHAINNAME \
   "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.:-"
 
 typedef int32_t virNWFilterChainPriority;
@@ -615,5 +614,3 @@ VIR_ENUM_DECL(virNWFilterJumpTarget);
 VIR_ENUM_DECL(virNWFilterChainPolicy);
 VIR_ENUM_DECL(virNWFilterEbtablesTable);
 VIR_ENUM_DECL(virNWFilterChainSuffix);
-
-#endif /* LIBVIRT_NWFILTER_CONF_H */

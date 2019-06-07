@@ -20,8 +20,7 @@
  *
  */
 
-#ifndef LIBVIRT_NWFILTER_IPADDRMAP_H
-# define LIBVIRT_NWFILTER_IPADDRMAP_H
+#pragma once
 
 int virNWFilterIPAddrMapInit(void);
 void virNWFilterIPAddrMapShutdown(void);
@@ -30,5 +29,3 @@ int virNWFilterIPAddrMapAddIPAddr(const char *ifname, char *addr);
 int virNWFilterIPAddrMapDelIPAddr(const char *ifname,
                                   const char *ipaddr);
 virNWFilterVarValuePtr virNWFilterIPAddrMapGetIPAddr(const char *ifname);
-
-#endif /* LIBVIRT_NWFILTER_IPADDRMAP_H */

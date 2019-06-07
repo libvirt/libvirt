@@ -19,13 +19,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_NWFILTER_PARAMS_H
-# define LIBVIRT_NWFILTER_PARAMS_H
+#pragma once
 
-# include "virhash.h"
-# include "virbuffer.h"
-# include "virmacaddr.h"
-# include "virxml.h"
+#include "virhash.h"
+#include "virbuffer.h"
+#include "virmacaddr.h"
+#include "virxml.h"
 
 typedef enum {
     NWFILTER_VALUE_TYPE_SIMPLE,
@@ -74,16 +73,16 @@ int virNWFilterHashTablePutAll(virHashTablePtr src,
 bool virNWFilterHashTableEqual(virHashTablePtr a,
                                virHashTablePtr b);
 
-# define VALID_VARNAME \
+#define VALID_VARNAME \
   "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"
 
-# define VALID_VARVALUE \
+#define VALID_VARVALUE \
   "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.:"
 
-# define NWFILTER_VARNAME_IP "IP"
-# define NWFILTER_VARNAME_MAC "MAC"
-# define NWFILTER_VARNAME_CTRL_IP_LEARNING "CTRL_IP_LEARNING"
-# define NWFILTER_VARNAME_DHCPSERVER "DHCPSERVER"
+#define NWFILTER_VARNAME_IP "IP"
+#define NWFILTER_VARNAME_MAC "MAC"
+#define NWFILTER_VARNAME_CTRL_IP_LEARNING "CTRL_IP_LEARNING"
+#define NWFILTER_VARNAME_DHCPSERVER "DHCPSERVER"
 
 typedef enum {
     VIR_NWFILTER_VAR_ACCESS_ELEMENT = 0,
@@ -106,7 +105,7 @@ struct  _virNWFilterVarAccess {
     char *varName;
 };
 
-# define VIR_NWFILTER_MAX_ITERID   1000
+#define VIR_NWFILTER_MAX_ITERID   1000
 
 void virNWFilterVarAccessFree(virNWFilterVarAccessPtr varAccess);
 bool virNWFilterVarAccessEqual(const virNWFilterVarAccess *a,
@@ -150,6 +149,3 @@ virNWFilterVarCombIterPtr virNWFilterVarCombIterNext(
                                 virNWFilterVarCombIterPtr ci);
 const char *virNWFilterVarCombIterGetVarValue(virNWFilterVarCombIterPtr ci,
                                               const virNWFilterVarAccess *);
-
-
-#endif /* LIBVIRT_NWFILTER_PARAMS_H */
