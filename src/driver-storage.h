@@ -18,12 +18,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_DRIVER_STORAGE_H
-# define LIBVIRT_DRIVER_STORAGE_H
+#pragma once
 
-# ifndef __VIR_DRIVER_H_INCLUDES___
-#  error "Don't include this file directly, only use driver.h"
-# endif
+#ifndef __VIR_DRIVER_H_INCLUDES___
+# error "Don't include this file directly, only use driver.h"
+#endif
 
 typedef int
 (*virDrvConnectNumOfStoragePools)(virConnectPtr conn);
@@ -279,6 +278,3 @@ struct _virStorageDriver {
     virDrvStoragePoolIsActive storagePoolIsActive;
     virDrvStoragePoolIsPersistent storagePoolIsPersistent;
 };
-
-
-#endif /* LIBVIRT_DRIVER_STORAGE_H */

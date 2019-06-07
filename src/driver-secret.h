@@ -18,12 +18,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_DRIVER_SECRET_H
-# define LIBVIRT_DRIVER_SECRET_H
+#pragma once
 
-# ifndef __VIR_DRIVER_H_INCLUDES___
-#  error "Don't include this file directly, only use driver.h"
-# endif
+#ifndef __VIR_DRIVER_H_INCLUDES___
+# error "Don't include this file directly, only use driver.h"
+#endif
 
 enum {
     /* This getValue call is inside libvirt, override the "private" flag.
@@ -113,6 +112,3 @@ struct _virSecretDriver {
     virDrvConnectSecretEventRegisterAny connectSecretEventRegisterAny;
     virDrvConnectSecretEventDeregisterAny connectSecretEventDeregisterAny;
 };
-
-
-#endif /* LIBVIRT_DRIVER_SECRET_H */

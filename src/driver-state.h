@@ -18,12 +18,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_DRIVER_STATE_H
-# define LIBVIRT_DRIVER_STATE_H
+#pragma once
 
-# ifndef __VIR_DRIVER_H_INCLUDES___
-#  error "Don't include this file directly, only use driver.h"
-# endif
+#ifndef __VIR_DRIVER_H_INCLUDES___
+# error "Don't include this file directly, only use driver.h"
+#endif
 
 typedef int
 (*virDrvStateInitialize)(bool privileged,
@@ -49,6 +48,3 @@ struct _virStateDriver {
     virDrvStateReload stateReload;
     virDrvStateStop stateStop;
 };
-
-
-#endif /* LIBVIRT_DRIVER_STATE_H */
