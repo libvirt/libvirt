@@ -19,10 +19,9 @@
  *
  */
 
-#ifndef LIBVIRT_ESX_VI_TYPES_H
-# define LIBVIRT_ESX_VI_TYPES_H
+#pragma once
 
-# include "virbuffer.h"
+#include "virbuffer.h"
 
 typedef enum _esxVI_Type esxVI_Type;
 typedef struct _esxVI_Object esxVI_Object;
@@ -60,7 +59,7 @@ typedef struct _esxVI_MethodFault esxVI_MethodFault;
 typedef struct _esxVI_ManagedObjectReference esxVI_ManagedObjectReference;
 typedef struct _esxVI_Event esxVI_Event;
 
-# include "esx_vi_types.generated.typedef"
+#include "esx_vi_types.generated.typedef"
 
 
 
@@ -83,7 +82,7 @@ enum _esxVI_Type {
     esxVI_Type_ManagedObjectReference,
     esxVI_Type_Event,
 
-# include "esx_vi_types.generated.typeenum"
+#include "esx_vi_types.generated.typeenum"
 
     esxVI_Type_Other,
 };
@@ -409,7 +408,7 @@ int esxVI_Event_DeserializeList(xmlNodePtr node, esxVI_Event **list);
 
 
 
-# include "esx_vi_types.generated.h"
+#include "esx_vi_types.generated.h"
 
 
 
@@ -419,5 +418,3 @@ int esxVI_Event_DeserializeList(xmlNodePtr node, esxVI_Event **list);
 
 int esxVI_VirtualMachinePowerState_ConvertToLibvirt
       (esxVI_VirtualMachinePowerState powerState);
-
-#endif /* LIBVIRT_ESX_VI_TYPES_H */

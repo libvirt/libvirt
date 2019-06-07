@@ -20,11 +20,8 @@
  *
  */
 
-#ifndef LIBVIRT_ESX_INTERFACE_DRIVER_H
-# define LIBVIRT_ESX_INTERFACE_DRIVER_H
+#pragma once
 
-# include "driver.h"
+#include "driver.h"
 
 extern virInterfaceDriver esxInterfaceDriver;
-
-#endif /* LIBVIRT_ESX_INTERFACE_DRIVER_H */

@@ -20,9 +20,6 @@
  *
  */
 
-#ifndef LIBVIRT_ESX_DRIVER_H
-# define LIBVIRT_ESX_DRIVER_H
+#pragma once
 
 int esxRegister(void);
-
-#endif /* LIBVIRT_ESX_DRIVER_H */

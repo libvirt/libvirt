@@ -19,14 +19,13 @@
  *
  */
 
-#ifndef LIBVIRT_ESX_PRIVATE_H
-# define LIBVIRT_ESX_PRIVATE_H
+#pragma once
 
-# include "internal.h"
-# include "virerror.h"
-# include "capabilities.h"
-# include "domain_conf.h"
-# include "esx_vi.h"
+#include "internal.h"
+#include "virerror.h"
+#include "capabilities.h"
+#include "domain_conf.h"
+#include "esx_vi.h"
 
 typedef struct _esxPrivate {
     esxVI_Context *primary; /* points to host or vCenter */
@@ -41,5 +40,3 @@ typedef struct _esxPrivate {
     esxVI_Boolean supportsScreenshot;
     int32_t usedCpuTimeCounterId;
 } esxPrivate;
-
-#endif /* LIBVIRT_ESX_PRIVATE_H */

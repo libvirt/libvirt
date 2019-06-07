@@ -19,14 +19,11 @@
  *
  */
 
-#ifndef LIBVIRT_ESX_STREAM_H
-# define LIBVIRT_ESX_STREAM_H
+#pragma once
 
-# include "internal.h"
-# include "esx_private.h"
+#include "internal.h"
+#include "esx_private.h"
 
 int esxStreamOpenUpload(virStreamPtr stream, esxPrivate *priv, const char *url);
 int esxStreamOpenDownload(virStreamPtr stream, esxPrivate *priv, const char *url,
                           unsigned long long offset, unsigned long long length);
-
-#endif /* LIBVIRT_ESX_STREAM_H */

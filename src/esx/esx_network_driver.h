@@ -20,11 +20,8 @@
  *
  */
 
-#ifndef LIBVIRT_ESX_NETWORK_DRIVER_H
-# define LIBVIRT_ESX_NETWORK_DRIVER_H
+#pragma once
 
-# include "driver.h"
+#include "driver.h"
 
 extern virNetworkDriver esxNetworkDriver;
-
-#endif /* LIBVIRT_ESX_NETWORK_DRIVER_H */

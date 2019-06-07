@@ -20,25 +20,24 @@
  *
  */
 
-#ifndef LIBVIRT_ESX_VI_H
-# define LIBVIRT_ESX_VI_H
+#pragma once
 
-# include <libxml/tree.h>
-# include <libxml/xpath.h>
-# include <curl/curl.h>
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
+#include <curl/curl.h>
 
-# include "internal.h"
-# include "virerror.h"
-# include "datatypes.h"
-# include "esx_vi_types.h"
-# include "esx_util.h"
+#include "internal.h"
+#include "virerror.h"
+#include "datatypes.h"
+#include "esx_vi_types.h"
+#include "esx_util.h"
 
 /* curl_multi_wait was added in libcurl 7.28.0, emulate it on older versions */
-# define ESX_EMULATE_CURL_MULTI_WAIT (LIBCURL_VERSION_NUM < 0x071C00)
+#define ESX_EMULATE_CURL_MULTI_WAIT (LIBCURL_VERSION_NUM < 0x071C00)
 
 
 
-# define ESX_VI__SOAP__REQUEST_HEADER \
+#define ESX_VI__SOAP__REQUEST_HEADER \
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" \
     "<soapenv:Envelope\n" \
     " xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"\n" \
@@ -49,13 +48,13 @@
 
 
 
-# define ESX_VI__SOAP__REQUEST_FOOTER \
+#define ESX_VI__SOAP__REQUEST_FOOTER \
     "</soapenv:Body>\n" \
     "</soapenv:Envelope>"
 
 
 
-# define ESV_VI__XML_TAG__OPEN(_buffer, _element, _type) \
+#define ESV_VI__XML_TAG__OPEN(_buffer, _element, _type) \
     do { \
         virBufferAddLit(_buffer, "<"); \
         virBufferAdd(_buffer, _element, -1); \
@@ -66,7 +65,7 @@
 
 
 
-# define ESV_VI__XML_TAG__CLOSE(_buffer, _element) \
+#define ESV_VI__XML_TAG__CLOSE(_buffer, _element) \
     do { \
         virBufferAddLit(_buffer, "</"); \
         virBufferAdd(_buffer, _element, -1); \
@@ -160,11 +159,11 @@ int esxVI_SharedCURL_Remove(esxVI_SharedCURL *shared, esxVI_CURL *curl);
 struct _esxVI_MultiCURL {
     CURLM *handle;
     size_t count; /* number of added easy handle */
-# if ESX_EMULATE_CURL_MULTI_WAIT
+#if ESX_EMULATE_CURL_MULTI_WAIT
     struct pollfd *pollfds;
     size_t npollfds;
     bool timeoutPending;
-# endif
+#endif
 };
 
 int esxVI_MultiCURL_Alloc(esxVI_MultiCURL **multi);
@@ -530,6 +529,4 @@ int esxVI_LookupHostScsiTopologyLunListByTargetName
 int esxVI_LookupStoragePoolNameByScsiLunKey(esxVI_Context *ctx, const char *key,
                                             char **poolName);
 
-# include "esx_vi.generated.h"
-
-#endif /* LIBVIRT_ESX_VI_H */
+#include "esx_vi.generated.h"

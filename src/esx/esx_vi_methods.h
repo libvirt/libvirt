@@ -19,11 +19,10 @@
  *
  */
 
-#ifndef LIBVIRT_ESX_VI_METHODS_H
-# define LIBVIRT_ESX_VI_METHODS_H
+#pragma once
 
-# include "esx_vi.h"
-# include "esx_vi_types.h"
+#include "esx_vi.h"
+#include "esx_vi_types.h"
 
 
 
@@ -44,6 +43,4 @@ int esxVI_ValidateMigration
        esxVI_ManagedObjectReference *host,                 /* optional */
        esxVI_Event **output);                              /* optional, list */
 
-# include "esx_vi_methods.generated.h"
-
-#endif /* LIBVIRT_ESX_VI_METHODS_H */
+#include "esx_vi_methods.generated.h"

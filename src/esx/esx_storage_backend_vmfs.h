@@ -20,11 +20,8 @@
  *
  */
 
-#ifndef LIBVIRT_ESX_STORAGE_BACKEND_VMFS_H
-# define LIBVIRT_ESX_STORAGE_BACKEND_VMFS_H
+#pragma once
 
-# include "driver.h"
+#include "driver.h"
 
 extern virStorageDriver esxStorageBackendVMFS;
-
-#endif /* LIBVIRT_ESX_STORAGE_BACKEND_VMFS_H */

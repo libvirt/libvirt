@@ -19,11 +19,8 @@
  *
  */
 
-#ifndef LIBVIRT_ESX_STORAGE_BACKEND_ISCSI_H
-# define LIBVIRT_ESX_STORAGE_BACKEND_ISCSI_H
+#pragma once
 
-# include "driver.h"
+#include "driver.h"
 
 extern virStorageDriver esxStorageBackendISCSI;
-
-#endif /* LIBVIRT_ESX_STORAGE_BACKEND_ISCSI_H */
