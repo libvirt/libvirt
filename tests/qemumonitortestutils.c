@@ -690,14 +690,30 @@ qemuMonitorTestProcessCommandVerbatim(qemuMonitorTestPtr test,
     struct qemuMonitorTestHandlerData *data = item->opaque;
     VIR_AUTOFREE(char *) reformatted = NULL;
     VIR_AUTOFREE(char *) errmsg = NULL;
+    VIR_AUTOPTR(virJSONValue) json = NULL;
+    virJSONValuePtr cmdargs;
+    const char *cmdname;
     int ret = -1;
+    int rc;
 
     /* JSON strings will be reformatted to simplify checking */
     if (test->json || test->agent) {
-        if (!(reformatted = virJSONStringReformat(cmdstr, false)))
+        if (!(json = virJSONValueFromString(cmdstr)) ||
+            !(reformatted = virJSONValueToString(json, false)))
             return -1;
 
         cmdstr = reformatted;
+
+        /* in this case we do a best-effort schema check if we can find the command */
+        if ((cmdname = virJSONValueObjectGetString(json, "execute"))) {
+            cmdargs = virJSONValueObjectGet(json, "arguments");
+
+            if ((rc = qemuMonitorTestProcessCommandDefaultValidate(test, cmdname, cmdargs)) < 0)
+                return -1;
+
+            if (rc == 1)
+                return 0;
+        }
     }
 
     if (STREQ(data->command_name, cmdstr)) {
