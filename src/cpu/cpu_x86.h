@@ -18,11 +18,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_CPU_X86_H
-# define LIBVIRT_CPU_X86_H
+#pragma once
 
-# include "cpu.h"
-# include "cpu_x86_data.h"
+#include "cpu.h"
+#include "cpu_x86_data.h"
 
 extern struct cpuArchDriver cpuDriverX86;
 
@@ -44,5 +43,3 @@ int virCPUx86DataSetVendor(virCPUDataPtr cpuData,
 
 int virCPUx86DataAddFeature(virCPUDataPtr cpuData,
                             const char *name);
-
-#endif /* LIBVIRT_CPU_X86_H */

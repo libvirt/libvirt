@@ -18,16 +18,15 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_CPU_H
-# define LIBVIRT_CPU_H
+#pragma once
 
-# include "virerror.h"
-# include "datatypes.h"
-# include "virarch.h"
-# include "domain_capabilities.h"
-# include "cpu_conf.h"
-# include "cpu_x86_data.h"
-# include "cpu_ppc64_data.h"
+#include "virerror.h"
+#include "datatypes.h"
+#include "virarch.h"
+#include "domain_capabilities.h"
+#include "cpu_conf.h"
+#include "cpu_x86_data.h"
+#include "cpu_ppc64_data.h"
 
 
 typedef struct _virCPUData virCPUData;
@@ -264,5 +263,3 @@ char *virCPUDataFormat(const virCPUData *data)
     ATTRIBUTE_NONNULL(1);
 virCPUDataPtr virCPUDataParse(const char *xmlStr)
     ATTRIBUTE_NONNULL(1);
-
-#endif /* LIBVIRT_CPU_H */

@@ -18,10 +18,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_CPU_MAP_H
-# define LIBVIRT_CPU_MAP_H
+#pragma once
 
-# include "virxml.h"
+#include "virxml.h"
 
 typedef int
 (*cpuMapLoadCallback)  (xmlXPathContextPtr ctxt,
@@ -34,5 +33,3 @@ cpuMapLoad(const char *arch,
            cpuMapLoadCallback featureCB,
            cpuMapLoadCallback modelCB,
            void *data);
-
-#endif /* LIBVIRT_CPU_MAP_H */

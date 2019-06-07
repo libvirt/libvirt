@@ -18,11 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_CPU_S390_H
-# define LIBVIRT_CPU_S390_H
+#pragma once
 
-# include "cpu.h"
+#include "cpu.h"
 
 extern struct cpuArchDriver cpuDriverS390;
-
-#endif /* LIBVIRT_CPU_S390_H */

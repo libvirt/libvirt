@@ -18,9 +18,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_CPU_PPC64_DATA_H
-# define LIBVIRT_CPU_PPC64_DATA_H
-
+#pragma once
 
 typedef struct _virCPUppc64PVR virCPUppc64PVR;
 struct _virCPUppc64PVR {
@@ -28,12 +26,10 @@ struct _virCPUppc64PVR {
     uint32_t mask;
 };
 
-# define VIR_CPU_PPC64_DATA_INIT { 0 }
+#define VIR_CPU_PPC64_DATA_INIT { 0 }
 
 typedef struct _virCPUppc64Data virCPUppc64Data;
 struct _virCPUppc64Data {
     size_t len;
     virCPUppc64PVR *pvr;
 };
-
-#endif /* LIBVIRT_CPU_PPC64_DATA_H */

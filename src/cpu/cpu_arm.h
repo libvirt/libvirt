@@ -18,11 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_CPU_ARM_H
-# define LIBVIRT_CPU_ARM_H
+#pragma once
 
-# include "cpu.h"
+#include "cpu.h"
 
 extern struct cpuArchDriver cpuDriverArm;
-
-#endif /* LIBVIRT_CPU_ARM_H */
