@@ -17,14 +17,13 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRNODEDEVICEOBJ_H
-# define LIBVIRT_VIRNODEDEVICEOBJ_H
+#pragma once
 
-# include "internal.h"
-# include "virthread.h"
+#include "internal.h"
+#include "virthread.h"
 
-# include "node_device_conf.h"
-# include "object_event.h"
+#include "node_device_conf.h"
+#include "object_event.h"
 
 
 typedef struct _virNodeDeviceObj virNodeDeviceObj;
@@ -112,5 +111,3 @@ virNodeDeviceObjListExport(virConnectPtr conn,
 void
 virNodeDeviceObjSetSkipUpdateCaps(virNodeDeviceObjPtr obj,
                                   bool skipUpdateCaps);
-
-#endif /* LIBVIRT_VIRNODEDEVICEOBJ_H */

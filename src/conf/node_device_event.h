@@ -20,12 +20,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_NODE_DEVICE_EVENT_H
-# define LIBVIRT_NODE_DEVICE_EVENT_H
+#pragma once
 
-# include "internal.h"
-# include "object_event.h"
-# include "object_event_private.h"
+#include "internal.h"
+#include "object_event.h"
+#include "object_event_private.h"
 
 int
 virNodeDeviceEventStateRegisterID(virConnectPtr conn,
@@ -58,5 +57,3 @@ virNodeDeviceEventLifecycleNew(const char *name,
 
 virObjectEventPtr
 virNodeDeviceEventUpdateNew(const char *name);
-
-#endif /* LIBVIRT_NODE_DEVICE_EVENT_H */

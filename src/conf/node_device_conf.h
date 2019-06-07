@@ -20,23 +20,22 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_NODE_DEVICE_CONF_H
-# define LIBVIRT_NODE_DEVICE_CONF_H
+#pragma once
 
-# include "internal.h"
-# include "virbitmap.h"
-# include "virutil.h"
-# include "virscsihost.h"
-# include "virpci.h"
-# include "virvhba.h"
-# include "device_conf.h"
-# include "storage_adapter_conf.h"
-# include "virenum.h"
+#include "internal.h"
+#include "virbitmap.h"
+#include "virutil.h"
+#include "virscsihost.h"
+#include "virpci.h"
+#include "virvhba.h"
+#include "device_conf.h"
+#include "storage_adapter_conf.h"
+#include "virenum.h"
 
-# include <libxml/tree.h>
+#include <libxml/tree.h>
 
-# define CREATE_DEVICE 1
-# define EXISTING_DEVICE 0
+#define CREATE_DEVICE 1
+#define EXISTING_DEVICE 0
 
 typedef enum {
     /* Keep in sync with VIR_ENUM_IMPL in node_device_conf.c */
@@ -348,7 +347,7 @@ virNodeDeviceDefFree(virNodeDeviceDefPtr def);
 void
 virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps);
 
-# define VIR_CONNECT_LIST_NODE_DEVICES_FILTERS_CAP \
+#define VIR_CONNECT_LIST_NODE_DEVICES_FILTERS_CAP \
                 (VIR_CONNECT_LIST_NODE_DEVICES_CAP_SYSTEM        | \
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_PCI_DEV       | \
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_USB_DEV       | \
@@ -383,5 +382,3 @@ virNodeDeviceUpdateCaps(virNodeDeviceDefPtr def);
 int
 virNodeDeviceCapsListExport(virNodeDeviceDefPtr def,
                             virNodeDevCapType **list);
-
-#endif /* LIBVIRT_NODE_DEVICE_CONF_H */
