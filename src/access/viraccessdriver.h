@@ -18,11 +18,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRACCESSDRIVER_H
-# define LIBVIRT_VIRACCESSDRIVER_H
+#pragma once
 
-# include "conf/domain_conf.h"
-# include "access/viraccessmanager.h"
+#include "conf/domain_conf.h"
+#include "access/viraccessmanager.h"
 
 typedef int (*virAccessDriverCheckConnectDrv)(virAccessManagerPtr manager,
                                               const char *driverName,
@@ -89,6 +88,3 @@ struct _virAccessDriver {
     virAccessDriverCheckStoragePoolDrv checkStoragePool;
     virAccessDriverCheckStorageVolDrv checkStorageVol;
 };
-
-
-#endif /* LIBVIRT_VIRACCESSDRIVER_H */

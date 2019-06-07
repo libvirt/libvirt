@@ -18,12 +18,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRACCESSPERM_H
-# define LIBVIRT_VIRACCESSPERM_H
+#pragma once
 
-# include "internal.h"
-# include "virutil.h"
-# include "virenum.h"
+#include "internal.h"
+#include "virutil.h"
+#include "virenum.h"
 
 typedef enum {
     /**
@@ -699,5 +698,3 @@ VIR_ENUM_DECL(virAccessPermNWFilterBinding);
 VIR_ENUM_DECL(virAccessPermSecret);
 VIR_ENUM_DECL(virAccessPermStoragePool);
 VIR_ENUM_DECL(virAccessPermStorageVol);
-
-#endif /* LIBVIRT_VIRACCESSPERM_H */
