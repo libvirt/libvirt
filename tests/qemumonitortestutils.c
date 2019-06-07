@@ -688,8 +688,8 @@ qemuMonitorTestProcessCommandVerbatim(qemuMonitorTestPtr test,
                                       const char *cmdstr)
 {
     struct qemuMonitorTestHandlerData *data = item->opaque;
-    char *reformatted = NULL;
-    char *errmsg = NULL;
+    VIR_AUTOFREE(char *) reformatted = NULL;
+    VIR_AUTOFREE(char *) errmsg = NULL;
     int ret = -1;
 
     /* JSON strings will be reformatted to simplify checking */
@@ -705,7 +705,7 @@ qemuMonitorTestProcessCommandVerbatim(qemuMonitorTestPtr test,
     } else {
         if (data->cmderr) {
             if (virAsprintf(&errmsg, "%s: %s", data->cmderr, cmdstr) < 0)
-                goto cleanup;
+                return -1;
 
             ret = qemuMonitorTestAddErrorResponse(test, errmsg);
         } else {
@@ -715,9 +715,6 @@ qemuMonitorTestProcessCommandVerbatim(qemuMonitorTestPtr test,
         }
     }
 
- cleanup:
-    VIR_FREE(errmsg);
-    VIR_FREE(reformatted);
     return ret;
 }
 
