@@ -18,12 +18,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_LOG_DAEMON_DISPATCH_H
-# define LIBVIRT_LOG_DAEMON_DISPATCH_H
+#pragma once
 
-# include "rpc/virnetserverprogram.h"
+#include "rpc/virnetserverprogram.h"
 
 extern virNetServerProgramProc virLogManagerProtocolProcs[];
 extern size_t virLogManagerProtocolNProcs;
-
-#endif /* LIBVIRT_LOG_DAEMON_DISPATCH_H */

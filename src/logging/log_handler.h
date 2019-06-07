@@ -18,11 +18,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_LOG_HANDLER_H
-# define LIBVIRT_LOG_HANDLER_H
+#pragma once
 
-# include "internal.h"
-# include "virjson.h"
+#include "internal.h"
+#include "virjson.h"
 
 typedef struct _virLogHandler virLogHandler;
 typedef virLogHandler *virLogHandlerPtr;
@@ -76,5 +75,3 @@ int virLogHandlerDomainAppendLogFile(virLogHandlerPtr handler,
                                      unsigned int flags);
 
 virJSONValuePtr virLogHandlerPreExecRestart(virLogHandlerPtr handler);
-
-#endif /* LIBVIRT_LOG_HANDLER_H */

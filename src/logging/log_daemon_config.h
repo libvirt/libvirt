@@ -19,10 +19,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_LOG_DAEMON_CONFIG_H
-# define LIBVIRT_LOG_DAEMON_CONFIG_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
 typedef struct _virLogDaemonConfig virLogDaemonConfig;
 typedef virLogDaemonConfig *virLogDaemonConfigPtr;
@@ -45,5 +44,3 @@ void virLogDaemonConfigFree(virLogDaemonConfigPtr data);
 int virLogDaemonConfigLoadFile(virLogDaemonConfigPtr data,
                                const char *filename,
                                bool allow_missing);
-
-#endif /* LIBVIRT_LOG_DAEMON_CONFIG_H */

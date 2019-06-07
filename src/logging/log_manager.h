@@ -18,12 +18,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_LOG_MANAGER_H
-# define LIBVIRT_LOG_MANAGER_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
-# include "logging/log_protocol.h"
+#include "logging/log_protocol.h"
 
 typedef struct _virLogManager virLogManager;
 typedef virLogManager *virLogManagerPtr;
@@ -61,5 +60,3 @@ int virLogManagerDomainAppendMessage(virLogManagerPtr mgr,
                                      const char *path,
                                      const char *message,
                                      unsigned int flags);
-
-#endif /* LIBVIRT_LOG_MANAGER_H */
