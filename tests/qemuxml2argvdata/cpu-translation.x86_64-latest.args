@@ -13,9 +13,9 @@ QEMU_AUDIO_DRV=none \
 -object secret,id=masterKey0,format=raw,\
 file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -machine pc,accel=tcg,usb=off,dump-guest-core=off \
--cpu Haswell,pclmuldq=on,ds_cpl=on,tsc_adjust=on,fxsr_opt=on,lahf_lm=on,\
-cmp_legacy=on,nodeid_msr=on,perfctr_core=on,perfctr_nb=on,kvm_pv_eoi=on,\
-kvm_pv_unhalt=on \
+-cpu Haswell,pclmulqdq=on,ds-cpl=on,tsc-adjust=on,fxsr-opt=on,lahf-lm=on,\
+cmp-legacy=on,nodeid-msr=on,perfctr-core=on,perfctr-nb=on,kvm-pv-eoi=on,\
+kvm-pv-unhalt=on \
 -m 214 \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \

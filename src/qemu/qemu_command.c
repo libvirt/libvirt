@@ -7045,6 +7045,8 @@ qemuBuildCpuFeature(virQEMUCapsPtr qemuCaps,
                     const char *name,
                     bool state)
 {
+    name = virQEMUCapsCPUFeatureToQEMU(qemuCaps, name);
+
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION))
         virBufferAsprintf(buf, ",%s=%s", name, state ? "on" : "off");
     else

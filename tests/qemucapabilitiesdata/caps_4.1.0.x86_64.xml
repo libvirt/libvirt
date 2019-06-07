@@ -206,6 +206,7 @@
   <flag name='nbd-bitmap'/>
   <flag name='x86-max-cpu'/>
   <flag name='cpu-unavailable-features'/>
+  <flag name='canonical-cpu-features'/>
   <version>4000050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100759</microcodeVersion>

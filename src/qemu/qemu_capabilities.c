@@ -532,6 +532,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "nbd-bitmap",
               "x86-max-cpu",
               "cpu-unavailable-features",
+              "canonical-cpu-features",
     );
 
 
@@ -2892,7 +2893,9 @@ virQEMUCapsCPUFeatureTranslate(virQEMUCapsPtr qemuCaps,
     if (ARCH_IS_X86(qemuCaps->arch))
         table = virQEMUCapsCPUFeaturesX86;
 
-    if (!table || !feature)
+    if (!table ||
+        !feature ||
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_CANONICAL_CPU_FEATURES))
         return feature;
 
     for (entry = table; entry->libvirt; entry++) {
@@ -4398,6 +4401,9 @@ virQEMUCapsInitProcessCaps(virQEMUCapsPtr qemuCaps)
      * we are able to pass the custom 'device_id' for SCSI disks and cdroms. */
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_DISK_DEVICE_ID))
         virQEMUCapsClear(qemuCaps, QEMU_CAPS_BLOCKDEV);
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_UNAVAILABLE_FEATURES))
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_CANONICAL_CPU_FEATURES);
 }
 
 

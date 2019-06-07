@@ -13,7 +13,7 @@ QEMU_AUDIO_DRV=none \
 -object secret,id=masterKey0,format=raw,\
 file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -machine pc,accel=tcg,usb=off,dump-guest-core=off \
--cpu qemu32,kvm_pv_unhalt=off \
+-cpu qemu32,kvm-pv-unhalt=off \
 -m 214 \
 -overcommit mem-lock=off \
 -smp 6,sockets=6,cores=1,threads=1 \
