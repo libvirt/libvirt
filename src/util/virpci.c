@@ -1340,6 +1340,20 @@ virPCIDeviceAddressEqual(const virPCIDeviceAddress *addr1,
     return false;
 }
 
+/**
+ * virPCIDeviceAddressCopy:
+ * @dst: where to store address
+ * @src: source address to copy
+ *
+ * Creates a deep copy of given @src address and stores it into
+ * @dst which has to be pre-allocated by caller.
+ */
+void virPCIDeviceAddressCopy(virPCIDeviceAddressPtr dst,
+                             const virPCIDeviceAddress *src)
+{
+    memcpy(dst, src, sizeof(*src));
+}
+
 char *
 virPCIDeviceAddressAsString(const virPCIDeviceAddress *addr)
 {

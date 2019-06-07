@@ -44,6 +44,7 @@ typedef virZPCIDeviceAddress *virZPCIDeviceAddressPtr;
 struct _virZPCIDeviceAddress {
     unsigned int uid; /* exempt from syntax-check */
     unsigned int fid;
+    /* Don't forget to update virPCIDeviceAddressCopy if needed. */
 };
 
 #define VIR_PCI_DEVICE_ADDRESS_FMT "%04x:%02x:%02x.%d"
@@ -56,6 +57,7 @@ struct _virPCIDeviceAddress {
     int multi; /* virTristateSwitch */
     int extFlags; /* enum virPCIDeviceAddressExtensionFlags */
     virZPCIDeviceAddress zpci;
+    /* Don't forget to update virPCIDeviceAddressCopy if needed. */
 };
 
 typedef enum {
@@ -236,6 +238,8 @@ bool virPCIDeviceAddressIsEmpty(const virPCIDeviceAddress *addr);
 
 bool virPCIDeviceAddressEqual(const virPCIDeviceAddress *addr1,
                               const virPCIDeviceAddress *addr2);
+void virPCIDeviceAddressCopy(virPCIDeviceAddressPtr dst,
+                             const virPCIDeviceAddress *src);
 
 char *virPCIDeviceAddressAsString(const virPCIDeviceAddress *addr)
       ATTRIBUTE_NONNULL(1);
