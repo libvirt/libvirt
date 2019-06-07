@@ -18,11 +18,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_ADMIN_SERVER_H
-# define LIBVIRT_ADMIN_SERVER_H
+#pragma once
 
-# include "rpc/virnetdaemon.h"
-# include "rpc/virnetserver.h"
+#include "rpc/virnetdaemon.h"
+#include "rpc/virnetserver.h"
 
 int adminConnectListServers(virNetDaemonPtr dmn,
                             virNetServerPtr **servers,
@@ -68,5 +67,3 @@ int adminServerSetClientLimits(virNetServerPtr srv,
                                virTypedParameterPtr params,
                                int nparams,
                                unsigned int flags);
-
-#endif /* LIBVIRT_ADMIN_SERVER_H */
