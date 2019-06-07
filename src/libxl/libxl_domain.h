@@ -18,18 +18,17 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_LIBXL_DOMAIN_H
-# define LIBVIRT_LIBXL_DOMAIN_H
+#pragma once
 
-# include <libxl.h>
+#include <libxl.h>
 
-# include "domain_conf.h"
-# include "libxl_conf.h"
-# include "virchrdev.h"
-# include "virenum.h"
+#include "domain_conf.h"
+#include "libxl_conf.h"
+#include "virchrdev.h"
+#include "virenum.h"
 
-# define JOB_MASK(job)                  (job == 0 ? 0 : 1 << (job - 1))
-# define DEFAULT_JOB_MASK \
+#define JOB_MASK(job)                  (job == 0 ? 0 : 1 << (job - 1))
+#define DEFAULT_JOB_MASK \
     (JOB_MASK(LIBXL_JOB_DESTROY) | \
      JOB_MASK(LIBXL_JOB_ABORT))
 
@@ -122,11 +121,11 @@ libxlDomainCleanup(libxlDriverPrivatePtr driver,
  * Detect which signature to use based on
  * LIBXL_HAVE_NONCONST_EVENT_OCCURS_EVENT_ARG.
  */
-# ifdef LIBXL_HAVE_NONCONST_EVENT_OCCURS_EVENT_ARG
-#  define VIR_LIBXL_EVENT_CONST /* empty */
-# else
-#  define VIR_LIBXL_EVENT_CONST const
-# endif
+#ifdef LIBXL_HAVE_NONCONST_EVENT_OCCURS_EVENT_ARG
+# define VIR_LIBXL_EVENT_CONST /* empty */
+#else
+# define VIR_LIBXL_EVENT_CONST const
+#endif
 
 void
 libxlDomainEventHandler(void *data,
@@ -156,5 +155,3 @@ bool
 libxlDomainDefCheckABIStability(libxlDriverPrivatePtr driver,
                                 virDomainDefPtr src,
                                 virDomainDefPtr dst);
-
-#endif /* LIBVIRT_LIBXL_DOMAIN_H */

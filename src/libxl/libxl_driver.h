@@ -18,9 +18,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_LIBXL_DRIVER_H
-# define LIBVIRT_LIBXL_DRIVER_H
+#pragma once
 
 int libxlRegister(void);
-
-#endif /* LIBVIRT_LIBXL_DRIVER_H */
