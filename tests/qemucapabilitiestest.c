@@ -82,7 +82,8 @@ testQemuCaps(const void *opaque)
                     data->dataDir, data->base, data->archName) < 0)
         goto cleanup;
 
-    if (!(mon = qemuMonitorTestNewFromFileFull(repliesFile, &data->driver, NULL)))
+    if (!(mon = qemuMonitorTestNewFromFileFull(repliesFile, &data->driver, NULL,
+                                               NULL)))
         goto cleanup;
 
     if (qemuProcessQMPInitMonitor(qemuMonitorTestGetMonitor(mon)) < 0)

@@ -435,7 +435,7 @@ testQemuHotplugCpuPrepare(const char *test,
         virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS);
 
     if (!(data->mon = qemuMonitorTestNewFromFileFull(data->file_json_monitor,
-                                                     &driver, data->vm)))
+                                                     &driver, data->vm, NULL)))
         goto error;
 
     priv->mon = qemuMonitorTestGetMonitor(data->mon);

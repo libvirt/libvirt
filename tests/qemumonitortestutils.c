@@ -1396,6 +1396,7 @@ qemuMonitorTestFullAddItem(qemuMonitorTestPtr test,
  * @fileName: File name to load monitor replies from
  * @driver: qemu driver object
  * @vm: domain object (may be null if it's not needed by the test)
+ * @qmpschema: QMP schema data hash table if QMP checking is required
  *
  * Create a JSON test monitor simulator object and fill it with expected command
  * sequence and replies specified in @fileName.
@@ -1409,7 +1410,8 @@ qemuMonitorTestFullAddItem(qemuMonitorTestPtr test,
 qemuMonitorTestPtr
 qemuMonitorTestNewFromFileFull(const char *fileName,
                                virQEMUDriverPtr driver,
-                               virDomainObjPtr vm)
+                               virDomainObjPtr vm,
+                               virHashTablePtr qmpschema)
 {
     qemuMonitorTestPtr ret = NULL;
     char *jsonstr = NULL;
@@ -1423,7 +1425,8 @@ qemuMonitorTestNewFromFileFull(const char *fileName,
     if (virTestLoadFile(fileName, &jsonstr) < 0)
         return NULL;
 
-    if (!(ret = qemuMonitorTestNew(true, driver->xmlopt, vm, driver, NULL, NULL)))
+    if (!(ret = qemuMonitorTestNew(true, driver->xmlopt, vm, driver, NULL,
+                                   qmpschema)))
         goto cleanup;
 
     tmp = jsonstr;

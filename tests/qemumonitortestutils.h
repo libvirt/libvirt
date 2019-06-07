@@ -90,7 +90,8 @@ qemuMonitorTestPtr qemuMonitorTestNewFromFile(const char *fileName,
                                               bool simple);
 qemuMonitorTestPtr qemuMonitorTestNewFromFileFull(const char *fileName,
                                                   virQEMUDriverPtr driver,
-                                                  virDomainObjPtr vm);
+                                                  virDomainObjPtr vm,
+                                                  virHashTablePtr qmpschema);
 
 qemuMonitorTestPtr qemuMonitorTestNewAgent(virDomainXMLOptionPtr xmlopt);
 
