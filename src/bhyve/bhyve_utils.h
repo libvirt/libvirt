@@ -19,21 +19,20 @@
  *
  */
 
-#ifndef LIBVIRT_BHYVE_UTILS_H
-# define LIBVIRT_BHYVE_UTILS_H
+#pragma once
 
-# include "driver.h"
-# include "domain_event.h"
-# include "configmake.h"
-# include "virdomainobjlist.h"
-# include "virthread.h"
-# include "virclosecallbacks.h"
-# include "virportallocator.h"
+#include "driver.h"
+#include "domain_event.h"
+#include "configmake.h"
+#include "virdomainobjlist.h"
+#include "virthread.h"
+#include "virclosecallbacks.h"
+#include "virportallocator.h"
 
-# define BHYVE_AUTOSTART_DIR    SYSCONFDIR "/libvirt/bhyve/autostart"
-# define BHYVE_CONFIG_DIR       SYSCONFDIR "/libvirt/bhyve"
-# define BHYVE_STATE_DIR        LOCALSTATEDIR "/run/libvirt/bhyve"
-# define BHYVE_LOG_DIR          LOCALSTATEDIR "/log/libvirt/bhyve"
+#define BHYVE_AUTOSTART_DIR    SYSCONFDIR "/libvirt/bhyve/autostart"
+#define BHYVE_CONFIG_DIR       SYSCONFDIR "/libvirt/bhyve"
+#define BHYVE_STATE_DIR        LOCALSTATEDIR "/run/libvirt/bhyve"
+#define BHYVE_LOG_DIR          LOCALSTATEDIR "/log/libvirt/bhyve"
 
 typedef struct _virBhyveDriverConfig virBhyveDriverConfig;
 typedef struct _virBhyveDriverConfig *virBhyveDriverConfigPtr;
@@ -75,5 +74,3 @@ struct bhyveAutostartData {
 
 void bhyveDriverLock(bhyveConnPtr driver);
 void bhyveDriverUnlock(bhyveConnPtr driver);
-
-#endif /* LIBVIRT_BHYVE_UTILS_H */

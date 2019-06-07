@@ -18,17 +18,14 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_BHYVE_MONITOR_H
-# define LIBVIRT_BHYVE_MONITOR_H
+#pragma once
 
-# include "internal.h"
-# include "domain_conf.h"
-# include "bhyve_utils.h"
+#include "internal.h"
+#include "domain_conf.h"
+#include "bhyve_utils.h"
 
 typedef struct _bhyveMonitor bhyveMonitor;
 typedef bhyveMonitor *bhyveMonitorPtr;
 
 bhyveMonitorPtr bhyveMonitorOpen(virDomainObjPtr vm, bhyveConnPtr driver);
 void bhyveMonitorClose(bhyveMonitorPtr mon);
-
-#endif /* LIBVIRT_BHYVE_MONITOR_H */

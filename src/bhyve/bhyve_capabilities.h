@@ -19,13 +19,12 @@
  *
  */
 
-#ifndef LIBVIRT_BHYVE_CAPABILITIES_H
-# define LIBVIRT_BHYVE_CAPABILITIES_H
+#pragma once
 
-# include "capabilities.h"
-# include "conf/domain_capabilities.h"
+#include "capabilities.h"
+#include "conf/domain_capabilities.h"
 
-# include "bhyve_utils.h"
+#include "bhyve_utils.h"
 
 virCapsPtr virBhyveCapsBuild(void);
 int virBhyveDomainCapsFill(virDomainCapsPtr caps,
@@ -54,5 +53,3 @@ typedef enum {
 
 int virBhyveProbeGrubCaps(virBhyveGrubCapsFlags *caps);
 int virBhyveProbeCaps(unsigned int *caps);
-
-#endif /* LIBVIRT_BHYVE_CAPABILITIES_H */

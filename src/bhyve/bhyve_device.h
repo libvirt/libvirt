@@ -18,12 +18,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_BHYVE_DEVICE_H
-# define LIBVIRT_BHYVE_DEVICE_H
+#pragma once
 
-# include "domain_conf.h"
-# include "virpci.h"
-# include "bhyve_domain.h"
+#include "domain_conf.h"
+#include "virpci.h"
+#include "bhyve_domain.h"
 
 int bhyveDomainAssignPCIAddresses(virDomainDefPtr def, virDomainObjPtr obj);
 
@@ -32,5 +31,3 @@ virDomainPCIAddressSetPtr bhyveDomainPCIAddressSetCreate(virDomainDefPtr def,
 
 int bhyveDomainAssignAddresses(virDomainDefPtr def, virDomainObjPtr obj)
     ATTRIBUTE_NONNULL(1);
-
-#endif /* LIBVIRT_BHYVE_DEVICE_H */

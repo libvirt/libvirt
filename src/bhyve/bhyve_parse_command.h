@@ -18,11 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_BHYVE_PARSE_COMMAND_H
-# define LIBVIRT_BHYVE_PARSE_COMMAND_H
+#pragma once
 
 virDomainDefPtr bhyveParseCommandLineString(const char* nativeConfig,
                                             unsigned caps,
                                             virDomainXMLOptionPtr xmlopt);
-
-#endif /* LIBVIRT_BHYVE_PARSE_COMMAND_H */
