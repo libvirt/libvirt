@@ -19,13 +19,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_DOMAIN_ADDR_H
-# define LIBVIRT_DOMAIN_ADDR_H
+#pragma once
 
-# include "domain_conf.h"
+#include "domain_conf.h"
 
-# define VIR_PCI_ADDRESS_SLOT_LAST 31
-# define VIR_PCI_ADDRESS_FUNCTION_LAST 7
+#define VIR_PCI_ADDRESS_SLOT_LAST 31
+#define VIR_PCI_ADDRESS_FUNCTION_LAST 7
 
 typedef enum {
     VIR_PCI_ADDRESS_EXTENSION_NONE = 0, /* no extension */
@@ -58,7 +57,7 @@ typedef enum {
 /* a combination of all bits that describe the type of connections
  * allowed, e.g. PCI, PCIe, switch
  */
-# define VIR_PCI_CONNECT_TYPES_MASK \
+#define VIR_PCI_CONNECT_TYPES_MASK \
    (VIR_PCI_CONNECT_TYPE_PCI_DEVICE | VIR_PCI_CONNECT_TYPE_PCIE_DEVICE | \
     VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_UPSTREAM_PORT | \
     VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_DOWNSTREAM_PORT | \
@@ -74,7 +73,7 @@ typedef enum {
  * upstream and downstream switch port, or a PCIe root port and a PCIe
  * port)
  */
-# define VIR_PCI_CONNECT_TYPES_ENDPOINT \
+#define VIR_PCI_CONNECT_TYPES_ENDPOINT \
    (VIR_PCI_CONNECT_TYPE_PCI_DEVICE | VIR_PCI_CONNECT_TYPE_PCIE_DEVICE)
 
 virDomainPCIConnectFlags
@@ -255,7 +254,7 @@ virDomainUSBAddressPortFormatBuf(virBufferPtr buf,
                                  unsigned int *port)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-# define VIR_DOMAIN_USB_HUB_PORTS 8
+#define VIR_DOMAIN_USB_HUB_PORTS 8
 
 typedef struct _virDomainUSBAddressHub virDomainUSBAddressHub;
 typedef virDomainUSBAddressHub *virDomainUSBAddressHubPtr;
@@ -312,4 +311,3 @@ int
 virDomainUSBAddressRelease(virDomainUSBAddressSetPtr addrs,
                            virDomainDeviceInfoPtr info)
     ATTRIBUTE_NONNULL(2);
-#endif /* LIBVIRT_DOMAIN_ADDR_H */

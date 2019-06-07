@@ -19,11 +19,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_DOMAIN_AUDIT_H
-# define LIBVIRT_DOMAIN_AUDIT_H
+#pragma once
 
-# include "domain_conf.h"
-# include "vircgroup.h"
+#include "domain_conf.h"
+#include "vircgroup.h"
 
 void virDomainAuditStart(virDomainObjPtr vm,
                          const char *reason,
@@ -136,6 +135,3 @@ void virDomainAuditInput(virDomainObjPtr vm,
                          const char *reason,
                          bool success)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
-
-
-#endif /* LIBVIRT_DOMAIN_AUDIT_H */

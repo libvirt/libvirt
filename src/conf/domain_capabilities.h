@@ -18,13 +18,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_DOMAIN_CAPABILITIES_H
-# define LIBVIRT_DOMAIN_CAPABILITIES_H
+#pragma once
 
-# include "internal.h"
-# include "domain_conf.h"
-# include "virautoclean.h"
-# include "virenum.h"
+#include "internal.h"
+#include "domain_conf.h"
+#include "virautoclean.h"
+#include "virenum.h"
 
 typedef const char * (*virDomainCapsValToStr)(int value);
 
@@ -201,7 +200,7 @@ virDomainCapsCPUModelsGet(virDomainCapsCPUModelsPtr cpuModels,
                           const char *name);
 
 
-# define VIR_DOMAIN_CAPS_ENUM_SET(capsEnum, ...) \
+#define VIR_DOMAIN_CAPS_ENUM_SET(capsEnum, ...) \
     do { \
         unsigned int __values[] = {__VA_ARGS__}; \
         size_t __nvalues = ARRAY_CARDINALITY(__values); \
@@ -221,5 +220,3 @@ void
 virSEVCapabilitiesFree(virSEVCapability *capabilities);
 
 VIR_DEFINE_AUTOPTR_FUNC(virSEVCapability, virSEVCapabilitiesFree);
-
-#endif /* LIBVIRT_DOMAIN_CAPABILITIES_H */

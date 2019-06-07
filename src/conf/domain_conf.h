@@ -20,43 +20,42 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_DOMAIN_CONF_H
-# define LIBVIRT_DOMAIN_CONF_H
+#pragma once
 
-# include <libxml/parser.h>
-# include <libxml/tree.h>
-# include <libxml/xpath.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
 
-# include "internal.h"
-# include "virconftypes.h"
-# include "capabilities.h"
-# include "virstorageencryption.h"
-# include "cpu_conf.h"
-# include "virthread.h"
-# include "virhash.h"
-# include "virsocketaddr.h"
-# include "networkcommon_conf.h"
-# include "nwfilter_params.h"
-# include "numa_conf.h"
-# include "virnetdevmacvlan.h"
-# include "virsysinfo.h"
-# include "virnetdev.h"
-# include "virnetdevip.h"
-# include "virnetdevvportprofile.h"
-# include "virnetdevbandwidth.h"
-# include "virnetdevvlan.h"
-# include "virobject.h"
-# include "device_conf.h"
-# include "virbitmap.h"
-# include "virstoragefile.h"
-# include "virseclabel.h"
-# include "virprocess.h"
-# include "virgic.h"
-# include "virperf.h"
-# include "virtypedparam.h"
-# include "virsavecookie.h"
-# include "virresctrl.h"
-# include "virenum.h"
+#include "internal.h"
+#include "virconftypes.h"
+#include "capabilities.h"
+#include "virstorageencryption.h"
+#include "cpu_conf.h"
+#include "virthread.h"
+#include "virhash.h"
+#include "virsocketaddr.h"
+#include "networkcommon_conf.h"
+#include "nwfilter_params.h"
+#include "numa_conf.h"
+#include "virnetdevmacvlan.h"
+#include "virsysinfo.h"
+#include "virnetdev.h"
+#include "virnetdevip.h"
+#include "virnetdevvportprofile.h"
+#include "virnetdevbandwidth.h"
+#include "virnetdevvlan.h"
+#include "virobject.h"
+#include "device_conf.h"
+#include "virbitmap.h"
+#include "virstoragefile.h"
+#include "virseclabel.h"
+#include "virprocess.h"
+#include "virgic.h"
+#include "virperf.h"
+#include "virtypedparam.h"
+#include "virsavecookie.h"
+#include "virresctrl.h"
+#include "virenum.h"
 
 /* Flags for the 'type' field in virDomainDeviceDef */
 typedef enum {
@@ -680,7 +679,7 @@ typedef enum {
     VIR_DOMAIN_CONTROLLER_MODEL_VIRTIO_SERIAL_LAST
 } virDomainControllerModelVirtioSerial;
 
-# define IS_USB2_CONTROLLER(ctrl) \
+#define IS_USB2_CONTROLLER(ctrl) \
     (((ctrl)->type == VIR_DOMAIN_CONTROLLER_TYPE_USB) && \
      ((ctrl)->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_EHCI1 || \
       (ctrl)->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI1 || \
@@ -1208,8 +1207,8 @@ typedef enum {
     VIR_DOMAIN_SMARTCARD_TYPE_LAST
 } virDomainSmartcardType;
 
-# define VIR_DOMAIN_SMARTCARD_NUM_CERTIFICATES 3
-# define VIR_DOMAIN_SMARTCARD_DEFAULT_DATABASE "/etc/pki/nssdb"
+#define VIR_DOMAIN_SMARTCARD_NUM_CERTIFICATES 3
+#define VIR_DOMAIN_SMARTCARD_DEFAULT_DATABASE "/etc/pki/nssdb"
 
 struct _virDomainSmartcardDef {
     int type; /* virDomainSmartcardType */
@@ -1252,7 +1251,7 @@ typedef enum {
     VIR_DOMAIN_TPM_VERSION_LAST
 } virDomainTPMVersion;
 
-# define VIR_DOMAIN_TPM_DEFAULT_DEVICE "/dev/tpm0"
+#define VIR_DOMAIN_TPM_DEFAULT_DEVICE "/dev/tpm0"
 
 struct _virDomainTPMDef {
     int type; /* virDomainTPMBackendType */
@@ -1701,7 +1700,7 @@ typedef enum {
 } virDomainSmbiosMode;
 
 
-# define VIR_DOMAIN_MAX_BOOT_DEVS 4
+#define VIR_DOMAIN_MAX_BOOT_DEVS 4
 
 typedef enum {
     VIR_DOMAIN_BOOT_FLOPPY,
@@ -1737,7 +1736,7 @@ typedef enum {
     VIR_DOMAIN_FEATURE_LAST
 } virDomainFeature;
 
-# define VIR_DOMAIN_HYPERV_VENDOR_ID_MAX 12
+#define VIR_DOMAIN_HYPERV_VENDOR_ID_MAX 12
 
 typedef enum {
     VIR_DOMAIN_HYPERV_RELAXED = 0,
@@ -2167,7 +2166,7 @@ struct _virDomainHugePage {
     unsigned long long size;    /* hugepage size in KiB */
 };
 
-# define VIR_DOMAIN_CPUMASK_LEN 1024
+#define VIR_DOMAIN_CPUMASK_LEN 1024
 
 struct _virDomainIOThreadIDDef {
     bool autofill;
@@ -3042,7 +3041,7 @@ void virDomainIOThreadIDDel(virDomainDefPtr def, unsigned int iothread_id);
  * server omits the requested output, but a new flag to suppress
  * information could result in a security hole when older libvirt
  * supplies the sensitive information in spite of the flag. */
-# define VIR_DOMAIN_XML_COMMON_FLAGS \
+#define VIR_DOMAIN_XML_COMMON_FLAGS \
     (VIR_DOMAIN_XML_SECURE | VIR_DOMAIN_XML_INACTIVE | \
      VIR_DOMAIN_XML_MIGRATABLE)
 unsigned int virDomainDefFormatConvertXMLFlags(unsigned int flags);
@@ -3637,5 +3636,3 @@ virDomainGraphicsGetRenderNode(const virDomainGraphicsDef *graphics);
 
 bool
 virDomainGraphicsNeedsAutoRenderNode(const virDomainGraphicsDef *graphics);
-
-#endif /* LIBVIRT_DOMAIN_CONF_H */
