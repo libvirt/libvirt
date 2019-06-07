@@ -4414,7 +4414,7 @@
       subelement <code>&lt;model&gt;</code> with an attribute
       <code>name</code>. The name attribute holds the name of the
       specific device that qemu is emulating (e.g. "i82801b11-bridge")
-      rather than simply the class of device ("dmi-to-pci-bridge",
+      rather than simply the class of device ("pcie-to-pci-bridge",
       "pci-bridge"), which is set in the controller element's
       model <b>attribute</b>.  In almost all cases, you should not
       manually add a <code>&lt;model&gt;</code> subelement to a
@@ -4603,11 +4603,11 @@
 ...
 &lt;devices&gt;
   &lt;controller type='pci' index='0' model='pcie-root'/&gt;
-  &lt;controller type='pci' index='1' model='dmi-to-pci-bridge'&gt;
-    &lt;address type='pci' domain='0' bus='0' slot='0xe' function='0'/&gt;
+  &lt;controller type='pci' index='1' model='pcie-root-port'&gt;
+    &lt;address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/&gt;
   &lt;/controller&gt;
-  &lt;controller type='pci' index='2' model='pci-bridge'&gt;
-    &lt;address type='pci' domain='0' bus='1' slot='1' function='0'/&gt;
+  &lt;controller type='pci' index='2' model='pcie-to-pci-bridge'&gt;
+    &lt;address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/&gt;
   &lt;/controller&gt;
 &lt;/devices&gt;
 ...</pre>

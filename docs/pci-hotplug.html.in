@@ -99,13 +99,12 @@
     </p>
 
 <pre>
-&lt;controller type='pci' model='dmi-to-pci-bridge'/&gt;
-&lt;controller type='pci' model='pci-bridge'/&gt;</pre>
+&lt;controller type='pci' model='pcie-to-pci-bridge'/&gt;</pre>
 
     <p>
       and you'll be able to hotplug up to 31 legacy PCI devices,
       either emulated or assigned from the host, in the slots
-      from 0x01 to 0x1f of the <code>pci-bridge</code> controller.
+      from 0x01 to 0x1f of the <code>pcie-to-pci-bridge</code> controller.
     </p>
 
     <h3><a id="x86_64-i440fx">i440fx (pc) machine type</a></h3>
