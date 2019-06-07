@@ -908,6 +908,28 @@ virCPUDefFindFeature(virCPUDefPtr def,
 }
 
 
+int
+virCPUDefFilterFeatures(virCPUDefPtr cpu,
+                        virCPUDefFeatureFilter filter,
+                        void *opaque)
+{
+    size_t i = 0;
+
+    while (i < cpu->nfeatures) {
+        if (filter(cpu->features[i].name, opaque)) {
+            i++;
+            continue;
+        }
+
+        VIR_FREE(cpu->features[i].name);
+        if (VIR_DELETE_ELEMENT_INPLACE(cpu->features, i, cpu->nfeatures) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
 bool
 virCPUDefIsEqual(virCPUDefPtr src,
                  virCPUDefPtr dst,
