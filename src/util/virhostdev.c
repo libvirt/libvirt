@@ -963,15 +963,15 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr mgr,
     if (!nhostdevs)
         return;
 
-    virObjectLock(mgr->activePCIHostdevs);
-    virObjectLock(mgr->inactivePCIHostdevs);
-
     if (!(pcidevs = virHostdevGetPCIHostDeviceList(hostdevs, nhostdevs))) {
         VIR_ERROR(_("Failed to allocate PCI device list: %s"),
                   virGetLastErrorMessage());
         virResetLastError();
-        goto cleanup;
+        return;
     }
+
+    virObjectLock(mgr->activePCIHostdevs);
+    virObjectLock(mgr->inactivePCIHostdevs);
 
     /* Reattaching devices to the host involves several steps; each
      * of them is described at length below */
@@ -1088,10 +1088,9 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr mgr,
                       virPCIDeviceGetName(actual));
     }
 
- cleanup:
-    virObjectUnref(pcidevs);
     virObjectUnlock(mgr->activePCIHostdevs);
     virObjectUnlock(mgr->inactivePCIHostdevs);
+    virObjectUnref(pcidevs);
 }
 
 int
