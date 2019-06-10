@@ -2255,6 +2255,42 @@ testDomainRestore(virConnectPtr conn,
     return testDomainRestoreFlags(conn, path, NULL, 0);
 }
 
+
+static int
+testDomainSaveImageDefineXML(virConnectPtr conn,
+                             const char *path,
+                             const char *dxml,
+                             unsigned int flags)
+{
+    int ret = -1;
+    int fd = -1;
+    virDomainDefPtr def = NULL;
+    virDomainDefPtr newdef = NULL;
+    testDriverPtr privconn = conn->privateData;
+
+    virCheckFlags(VIR_DOMAIN_SAVE_RUNNING |
+                  VIR_DOMAIN_SAVE_PAUSED, -1);
+
+    if ((fd = testDomainSaveImageOpen(privconn, path, &def)) < 0)
+        goto cleanup;
+    VIR_FORCE_CLOSE(fd);
+
+    if ((newdef = virDomainDefParseString(dxml, privconn->caps, privconn->xmlopt, NULL,
+                                          VIR_DOMAIN_DEF_PARSE_INACTIVE)) == NULL)
+        goto cleanup;
+
+    if (!testDomainSaveImageWrite(privconn, path, newdef))
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virDomainDefFree(def);
+    virDomainDefFree(newdef);
+    return ret;
+}
+
+
 static int testDomainCoreDumpWithFormat(virDomainPtr domain,
                                         const char *to,
                                         unsigned int dumpformat,
@@ -7077,6 +7113,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainSaveFlags = testDomainSaveFlags, /* 0.9.4 */
     .domainRestore = testDomainRestore, /* 0.3.2 */
     .domainRestoreFlags = testDomainRestoreFlags, /* 0.9.4 */
+    .domainSaveImageDefineXML = testDomainSaveImageDefineXML, /* 5.5.0 */
     .domainCoreDump = testDomainCoreDump, /* 0.3.2 */
     .domainCoreDumpWithFormat = testDomainCoreDumpWithFormat, /* 1.2.3 */
     .domainSetVcpus = testDomainSetVcpus, /* 0.1.4 */
