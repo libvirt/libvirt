@@ -15035,10 +15035,10 @@ typedef qemuDomainSnapshotDiskData *qemuDomainSnapshotDiskDataPtr;
 
 
 static void
-qemuDomainSnapshotDiskDataFree(qemuDomainSnapshotDiskDataPtr data,
-                               size_t ndata,
-                               virQEMUDriverPtr driver,
-                               virDomainObjPtr vm)
+qemuDomainSnapshotDiskDataCleanup(qemuDomainSnapshotDiskDataPtr data,
+                                  size_t ndata,
+                                  virQEMUDriverPtr driver,
+                                  virDomainObjPtr vm)
 {
     size_t i;
 
@@ -15145,7 +15145,7 @@ qemuDomainSnapshotDiskDataCollect(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    qemuDomainSnapshotDiskDataFree(data, ndata, driver, vm);
+    qemuDomainSnapshotDiskDataCleanup(data, ndata, driver, vm);
     return ret;
 }
 
@@ -15322,7 +15322,7 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
         ret = -1;
 
  cleanup:
-    qemuDomainSnapshotDiskDataFree(diskdata, ndiskdata, driver, vm);
+    qemuDomainSnapshotDiskDataCleanup(diskdata, ndiskdata, driver, vm);
     virErrorRestore(&orig_err);
 
     return ret;
