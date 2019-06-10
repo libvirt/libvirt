@@ -2075,6 +2075,78 @@ testDomainSaveImageWrite(testDriverPtr driver,
 }
 
 
+/**
+ * testDomainSaveImageOpen:
+ * @driver: test driver data
+ * @path: path of the saved image
+ * @ret_def: returns domain definition created from the XML stored in the image
+ *
+ * Returns the opened fd of the save image file and fills ret_def on success.
+ * Returns -1, on error.
+ */
+static int ATTRIBUTE_NONNULL(3)
+testDomainSaveImageOpen(testDriverPtr driver,
+                        const char *path,
+                        virDomainDefPtr *ret_def)
+{
+    char magic[15];
+    int fd = -1;
+    int len;
+    virDomainDefPtr def = NULL;
+    VIR_AUTOFREE(char *) xml = NULL;
+
+    if ((fd = open(path, O_RDONLY)) < 0) {
+        virReportSystemError(errno, _("cannot read domain image '%s'"), path);
+        goto error;
+    }
+
+    if (saferead(fd, magic, sizeof(magic)) != sizeof(magic)) {
+        virReportSystemError(errno, _("incomplete save header in '%s'"), path);
+        goto error;
+    }
+
+    if (memcmp(magic, TEST_SAVE_MAGIC, sizeof(magic))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("mismatched header magic"));
+        goto error;
+    }
+
+    if (saferead(fd, (char*)&len, sizeof(len)) != sizeof(len)) {
+        virReportSystemError(errno,
+                             _("failed to read metadata length in '%s'"),
+                             path);
+        goto error;
+    }
+
+    if (len < 1 || len > 8192) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("length of metadata out of range"));
+        goto error;
+    }
+
+    if (VIR_ALLOC_N(xml, len+1) < 0)
+        goto error;
+
+    if (saferead(fd, xml, len) != len) {
+        virReportSystemError(errno, _("incomplete metadata in '%s'"), path);
+        goto error;
+    }
+    xml[len] = '\0';
+
+    if (!(def = virDomainDefParseString(xml, driver->caps, driver->xmlopt, NULL,
+                                        VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                        VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
+        goto error;
+
+    VIR_STEAL_PTR(*ret_def, def);
+    return fd;
+
+ error:
+    virDomainDefFree(def);
+    VIR_FORCE_CLOSE(fd);
+    return -1;
+}
+
+
 static int
 testDomainSaveFlags(virDomainPtr domain, const char *path,
                     const char *dxml, unsigned int flags)
@@ -2130,14 +2202,11 @@ testDomainRestoreFlags(virConnectPtr conn,
                        unsigned int flags)
 {
     testDriverPtr privconn = conn->privateData;
-    char magic[15];
     int fd = -1;
-    int len;
     virDomainDefPtr def = NULL;
     virDomainObjPtr dom = NULL;
     virObjectEventPtr event = NULL;
     int ret = -1;
-    VIR_AUTOFREE(char *) xml = NULL;
 
     virCheckFlags(0, -1);
     if (dxml) {
@@ -2146,46 +2215,7 @@ testDomainRestoreFlags(virConnectPtr conn,
         return -1;
     }
 
-    if ((fd = open(path, O_RDONLY)) < 0) {
-        virReportSystemError(errno,
-                             _("cannot read domain image '%s'"),
-                             path);
-        goto cleanup;
-    }
-    if (saferead(fd, magic, sizeof(magic)) != sizeof(magic)) {
-        virReportSystemError(errno,
-                             _("incomplete save header in '%s'"),
-                             path);
-        goto cleanup;
-    }
-    if (memcmp(magic, TEST_SAVE_MAGIC, sizeof(magic))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("mismatched header magic"));
-        goto cleanup;
-    }
-    if (saferead(fd, (char*)&len, sizeof(len)) != sizeof(len)) {
-        virReportSystemError(errno,
-                             _("failed to read metadata length in '%s'"),
-                             path);
-        goto cleanup;
-    }
-    if (len < 1 || len > 8192) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("length of metadata out of range"));
-        goto cleanup;
-    }
-    if (VIR_ALLOC_N(xml, len+1) < 0)
-        goto cleanup;
-    if (saferead(fd, xml, len) != len) {
-        virReportSystemError(errno,
-                             _("incomplete metadata in '%s'"), path);
-        goto cleanup;
-    }
-    xml[len] = '\0';
-
-    def = virDomainDefParseString(xml, privconn->caps, privconn->xmlopt,
-                                  NULL, VIR_DOMAIN_DEF_PARSE_INACTIVE);
-    if (!def)
+    if ((fd = testDomainSaveImageOpen(privconn, path, &def)) < 0)
         goto cleanup;
 
     if (testDomainGenerateIfnames(def) < 0)
