@@ -1999,25 +1999,98 @@ testDomainGetTime(virDomainPtr dom ATTRIBUTE_UNUSED,
 
 #define TEST_SAVE_MAGIC "TestGuestMagic"
 
+
+/**
+ * testDomainSaveImageWrite:
+ * @driver: test driver data
+ * @def: domain definition whose XML will be stored in the image
+ * @path: path to the saved image
+ *
+ * Returns true on success, else false.
+ */
+static bool
+testDomainSaveImageWrite(testDriverPtr driver,
+                         const char *path,
+                         virDomainDefPtr def)
+{
+    int len;
+    int fd = -1;
+    VIR_AUTOFREE(char *) xml = NULL;
+
+    xml = virDomainDefFormat(def, driver->caps, VIR_DOMAIN_DEF_FORMAT_SECURE);
+
+    if (xml == NULL) {
+        virReportSystemError(errno,
+                             _("saving domain '%s' failed to allocate space for metadata"),
+                             def->name);
+        goto error;
+    }
+
+    if ((fd = open(path, O_CREAT|O_TRUNC|O_WRONLY, S_IRUSR|S_IWUSR)) < 0) {
+        virReportSystemError(errno,
+                             _("saving domain '%s' to '%s': open failed"),
+                             def->name, path);
+        goto error;
+    }
+
+    if (safewrite(fd, TEST_SAVE_MAGIC, sizeof(TEST_SAVE_MAGIC)) < 0) {
+        virReportSystemError(errno,
+                             _("saving domain '%s' to '%s': write failed"),
+                             def->name, path);
+        goto error;
+    }
+
+    len = strlen(xml);
+    if (safewrite(fd, (char*)&len, sizeof(len)) < 0) {
+        virReportSystemError(errno,
+                             _("saving domain '%s' to '%s': write failed"),
+                             def->name, path);
+        goto error;
+    }
+
+    if (safewrite(fd, xml, len) < 0) {
+        virReportSystemError(errno,
+                             _("saving domain '%s' to '%s': write failed"),
+                             def->name, path);
+        goto error;
+    }
+
+    if (VIR_CLOSE(fd) < 0) {
+        virReportSystemError(errno,
+                             _("saving domain '%s' to '%s': write failed"),
+                             def->name, path);
+        goto error;
+    }
+
+    return true;
+
+ error:
+    /* Don't report failure in close or unlink, because
+     * in either case we're already in a failure scenario
+     * and have reported an earlier error */
+    VIR_FORCE_CLOSE(fd);
+    unlink(path);
+
+    return false;
+}
+
+
 static int
 testDomainSaveFlags(virDomainPtr domain, const char *path,
                     const char *dxml, unsigned int flags)
 {
     testDriverPtr privconn = domain->conn->privateData;
-    int fd = -1;
-    int len;
     virDomainObjPtr privdom;
     virObjectEventPtr event = NULL;
     int ret = -1;
-    VIR_AUTOFREE(char *) xml = NULL;
 
     virCheckFlags(0, -1);
+
     if (dxml) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("xml modification unsupported"));
         return -1;
     }
-
 
     if (!(privdom = testDomObjFromDomain(domain)))
         goto cleanup;
@@ -2025,49 +2098,8 @@ testDomainSaveFlags(virDomainPtr domain, const char *path,
     if (virDomainObjCheckActive(privdom) < 0)
         goto cleanup;
 
-    xml = virDomainDefFormat(privdom->def, privconn->caps,
-                             VIR_DOMAIN_DEF_FORMAT_SECURE);
-
-    if (xml == NULL) {
-        virReportSystemError(errno,
-                             _("saving domain '%s' failed to allocate space for metadata"),
-                             domain->name);
+    if (!testDomainSaveImageWrite(privconn, path, privdom->def))
         goto cleanup;
-    }
-
-    if ((fd = open(path, O_CREAT|O_TRUNC|O_WRONLY, S_IRUSR|S_IWUSR)) < 0) {
-        virReportSystemError(errno,
-                             _("saving domain '%s' to '%s': open failed"),
-                             domain->name, path);
-        goto cleanup;
-    }
-    len = strlen(xml);
-    if (safewrite(fd, TEST_SAVE_MAGIC, sizeof(TEST_SAVE_MAGIC)) < 0) {
-        virReportSystemError(errno,
-                             _("saving domain '%s' to '%s': write failed"),
-                             domain->name, path);
-        goto cleanup;
-    }
-    if (safewrite(fd, (char*)&len, sizeof(len)) < 0) {
-        virReportSystemError(errno,
-                             _("saving domain '%s' to '%s': write failed"),
-                             domain->name, path);
-        goto cleanup;
-    }
-    if (safewrite(fd, xml, len) < 0) {
-        virReportSystemError(errno,
-                             _("saving domain '%s' to '%s': write failed"),
-                             domain->name, path);
-        goto cleanup;
-    }
-
-    if (VIR_CLOSE(fd) < 0) {
-        virReportSystemError(errno,
-                             _("saving domain '%s' to '%s': write failed"),
-                             domain->name, path);
-        goto cleanup;
-    }
-    fd = -1;
 
     testDomainShutdownState(domain, privdom, VIR_DOMAIN_SHUTOFF_SAVED);
     event = virDomainEventLifecycleNewFromObj(privdom,
@@ -2079,13 +2111,6 @@ testDomainSaveFlags(virDomainPtr domain, const char *path,
 
     ret = 0;
  cleanup:
-    /* Don't report failure in close or unlink, because
-     * in either case we're already in a failure scenario
-     * and have reported an earlier error */
-    if (ret != 0) {
-        VIR_FORCE_CLOSE(fd);
-        unlink(path);
-    }
     virDomainObjEndAPI(&privdom);
     virObjectEventStateQueue(privconn->eventState, event);
     return ret;
