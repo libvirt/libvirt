@@ -204,6 +204,7 @@
   <flag name='query-current-machine'/>
   <flag name='bitmap-merge'/>
   <flag name='nbd-bitmap'/>
+  <flag name='x86-max-cpu'/>
   <version>4000050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100759</microcodeVersion>

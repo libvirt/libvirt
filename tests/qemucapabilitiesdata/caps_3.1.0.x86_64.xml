@@ -200,6 +200,7 @@
   <flag name='memory-backend-file.pmem'/>
   <flag name='nvdimm.unarmed'/>
   <flag name='overcommit'/>
+  <flag name='x86-max-cpu'/>
   <version>3000092</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100758</microcodeVersion>

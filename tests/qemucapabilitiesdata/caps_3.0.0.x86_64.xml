@@ -197,6 +197,7 @@
   <flag name='iothread.poll-max-ns'/>
   <flag name='memory-backend-file.align'/>
   <flag name='nvdimm.unarmed'/>
+  <flag name='x86-max-cpu'/>
   <version>3000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100757</microcodeVersion>

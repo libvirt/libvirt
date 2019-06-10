@@ -180,6 +180,7 @@
   <flag name='mch'/>
   <flag name='egl-headless'/>
   <flag name='iothread.poll-max-ns'/>
+  <flag name='x86-max-cpu'/>
   <version>2010000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100805</microcodeVersion>

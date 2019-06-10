@@ -186,6 +186,7 @@
   <flag name='mch.extended-tseg-mbytes'/>
   <flag name='egl-headless'/>
   <flag name='iothread.poll-max-ns'/>
+  <flag name='x86-max-cpu'/>
   <version>2011000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100806</microcodeVersion>

@@ -194,6 +194,7 @@
   <flag name='memory-backend-memfd.hugetlb'/>
   <flag name='iothread.poll-max-ns'/>
   <flag name='memory-backend-file.align'/>
+  <flag name='x86-max-cpu'/>
   <version>2011090</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100807</microcodeVersion>

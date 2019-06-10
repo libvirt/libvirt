@@ -530,6 +530,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 330 */
               "bitmap-merge",
               "nbd-bitmap",
+              "x86-max-cpu",
     );
 
 
@@ -1117,6 +1118,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "virtio-scsi-pci-non-transitional", QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL },
     { "virtio-serial-pci-transitional", QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL },
     { "virtio-serial-pci-non-transitional", QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL },
+    { "max-x86_64-cpu", QEMU_CAPS_X86_MAX_CPU },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVirtioBalloon[] = {
