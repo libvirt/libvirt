@@ -182,3 +182,17 @@ int
 qemuBlockStorageSourceCreateGetStorageProps(virStorageSourcePtr src,
                                             virJSONValuePtr *props)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+
+int
+qemuBlockStorageSourceCreate(virDomainObjPtr vm,
+                             virStorageSourcePtr src,
+                             virStorageSourcePtr backingStore,
+                             virStorageSourcePtr chain,
+                             qemuBlockStorageSourceAttachDataPtr data,
+                             qemuDomainAsyncJob asyncJob);
+
+int
+qemuBlockStorageSourceCreateDetectSize(virDomainObjPtr vm,
+                                       virStorageSourcePtr src,
+                                       virStorageSourcePtr templ,
+                                       qemuDomainAsyncJob asyncJob);

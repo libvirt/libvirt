@@ -65,7 +65,8 @@ VIR_ENUM_IMPL(qemuBlockjob,
               "copy",
               "commit",
               "active-commit",
-              "");
+              "",
+              "create");
 
 static virClassPtr qemuBlockJobDataClass;
 
@@ -77,6 +78,9 @@ qemuBlockJobDataDispose(void *obj)
 
     virObjectUnref(job->chain);
     virObjectUnref(job->mirrorChain);
+
+    if (job->type == QEMU_BLOCKJOB_TYPE_CREATE)
+        virObjectUnref(job->data.create.src);
 
     VIR_FREE(job->name);
     VIR_FREE(job->errmsg);
@@ -268,6 +272,37 @@ qemuBlockJobDiskNewCommit(virDomainObjPtr vm,
     job->data.commit.base = base;
 
     if (qemuBlockJobRegister(job, vm, disk, true) < 0)
+        return NULL;
+
+    VIR_RETURN_PTR(job);
+}
+
+
+qemuBlockJobDataPtr
+qemuBlockJobNewCreate(virDomainObjPtr vm,
+                      virStorageSourcePtr src,
+                      virStorageSourcePtr chain,
+                      bool storage)
+{
+    VIR_AUTOUNREF(qemuBlockJobDataPtr) job = NULL;
+    VIR_AUTOFREE(char *) jobname = NULL;
+    const char *nodename = src->nodeformat;
+
+    if (storage)
+        nodename = src->nodestorage;
+
+    if (virAsprintf(&jobname, "create-%s", nodename) < 0)
+        return NULL;
+
+    if (!(job = qemuBlockJobDataNew(QEMU_BLOCKJOB_TYPE_CREATE, jobname)))
+        return NULL;
+
+    if (virStorageSourceIsBacking(chain))
+        job->chain = virObjectRef(chain);
+
+     job->data.create.src = virObjectRef(src);
+
+    if (qemuBlockJobRegister(job, vm, NULL, true) < 0)
         return NULL;
 
     VIR_RETURN_PTR(job);
@@ -1007,6 +1042,49 @@ qemuBlockJobProcessEventCompletedActiveCommit(virQEMUDriverPtr driver,
     job->disk->mirror = NULL;
 }
 
+
+static void
+qemuBlockJobProcessEventConcludedCreate(virQEMUDriverPtr driver,
+                                        virDomainObjPtr vm,
+                                        qemuBlockJobDataPtr job,
+                                        qemuDomainAsyncJob asyncJob)
+{
+    VIR_AUTOPTR(qemuBlockStorageSourceAttachData) backend = NULL;
+
+    /* if there is a synchronous client waiting for this job that means that
+     * it will handle further hotplug of the created volume and also that
+     * the 'chain' which was registered is under their control */
+    if (job->synchronous) {
+        virObjectUnref(job->chain);
+        job->chain = NULL;
+        return;
+    }
+
+    if (!job->data.create.src)
+        return;
+
+    if (!(backend = qemuBlockStorageSourceDetachPrepare(job->data.create.src, NULL)))
+        return;
+
+    /* the format node part was not attached yet, so we don't need to detach it */
+    backend->formatAttached = false;
+    if (job->data.create.storage) {
+        backend->storageAttached = false;
+        VIR_FREE(backend->encryptsecretAlias);
+    }
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return;
+
+    qemuBlockStorageSourceAttachRollback(qemuDomainGetMonitor(vm), backend);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        return;
+
+    qemuDomainStorageSourceAccessRevoke(driver, vm, job->data.create.src);
+}
+
+
 static void
 qemuBlockJobEventProcessConcludedTransition(qemuBlockJobDataPtr job,
                                             virQEMUDriverPtr driver,
@@ -1026,6 +1104,10 @@ qemuBlockJobEventProcessConcludedTransition(qemuBlockJobDataPtr job,
 
         case QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT:
             qemuBlockJobProcessEventCompletedActiveCommit(driver, vm, job, asyncJob);
+            break;
+
+        case QEMU_BLOCKJOB_TYPE_CREATE:
+            qemuBlockJobProcessEventConcludedCreate(driver, vm, job, asyncJob);
             break;
 
         case QEMU_BLOCKJOB_TYPE_COPY:
@@ -1049,6 +1131,10 @@ qemuBlockJobEventProcessConcludedTransition(qemuBlockJobDataPtr job,
                 virObjectUnref(job->disk->mirror);
                 job->disk->mirror = NULL;
             }
+            break;
+
+        case QEMU_BLOCKJOB_TYPE_CREATE:
+            qemuBlockJobProcessEventConcludedCreate(driver, vm, job, asyncJob);
             break;
 
         case QEMU_BLOCKJOB_TYPE_COPY:

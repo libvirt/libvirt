@@ -2412,6 +2412,19 @@ qemuDomainObjPrivateXMLFormatBlockjobIterator(void *payload,
                 virBufferAsprintf(&childBuf, "<topparent node='%s'/>\n", job->data.commit.topparent->nodeformat);
             break;
 
+        case QEMU_BLOCKJOB_TYPE_CREATE:
+            if (job->data.create.storage)
+                virBufferAddLit(&childBuf, "<create mode='storage'/>\n");
+
+            if (job->data.create.src &&
+                qemuDomainObjPrivateXMLFormatBlockjobFormatSource(&childBuf,
+                                                                  "src",
+                                                                  job->data.create.src,
+                                                                  data->xmlopt,
+                                                                  false) < 0)
+                return -1;
+            break;
+
         case QEMU_BLOCKJOB_TYPE_COPY:
         case QEMU_BLOCKJOB_TYPE_NONE:
         case QEMU_BLOCKJOB_TYPE_INTERNAL:
@@ -2856,8 +2869,12 @@ qemuDomainObjPrivateXMLParseBlockjobNodename(qemuBlockJobDataPtr job,
 
 static void
 qemuDomainObjPrivateXMLParseBlockjobDataSpecific(qemuBlockJobDataPtr job,
-                                                 xmlXPathContextPtr ctxt)
+                                                 xmlXPathContextPtr ctxt,
+                                                 virDomainXMLOptionPtr xmlopt)
 {
+    VIR_AUTOFREE(char *) createmode = NULL;
+    xmlNodePtr tmp;
+
     switch ((qemuBlockJobType) job->type) {
         case QEMU_BLOCKJOB_TYPE_PULL:
             qemuDomainObjPrivateXMLParseBlockjobNodename(job,
@@ -2889,6 +2906,19 @@ qemuDomainObjPrivateXMLParseBlockjobDataSpecific(qemuBlockJobDataPtr job,
             if (!job->data.commit.top ||
                 !job->data.commit.base)
                 goto broken;
+            break;
+
+        case QEMU_BLOCKJOB_TYPE_CREATE:
+            if (!(tmp = virXPathNode("./src", ctxt)) ||
+                !(job->data.create.src = qemuDomainObjPrivateXMLParseBlockjobChain(tmp, ctxt, xmlopt)))
+                goto broken;
+
+            if ((createmode = virXPathString("string(./create/@mode)", ctxt))) {
+                if (STRNEQ(createmode, "storage"))
+                    goto broken;
+
+                job->data.create.storage = true;
+            }
             break;
 
         case QEMU_BLOCKJOB_TYPE_COPY:
@@ -2980,7 +3010,7 @@ qemuDomainObjPrivateXMLParseBlockjobData(virDomainObjPtr vm,
     if (mirror)
         job->mirrorChain = virObjectRef(job->disk->mirror);
 
-    qemuDomainObjPrivateXMLParseBlockjobDataSpecific(job, ctxt);
+    qemuDomainObjPrivateXMLParseBlockjobDataSpecific(job, ctxt, xmlopt);
 
     if (qemuBlockJobRegister(job, vm, disk, false) < 0)
         return -1;

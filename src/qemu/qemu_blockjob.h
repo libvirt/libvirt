@@ -62,6 +62,7 @@ typedef enum {
     QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT = VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT,
     /* Additional enum values local to qemu */
     QEMU_BLOCKJOB_TYPE_INTERNAL,
+    QEMU_BLOCKJOB_TYPE_CREATE,
     QEMU_BLOCKJOB_TYPE_LAST
 } qemuBlockJobType;
 verify((int)QEMU_BLOCKJOB_TYPE_INTERNAL == VIR_DOMAIN_BLOCK_JOB_TYPE_LAST);
@@ -87,6 +88,15 @@ struct _qemuBlockJobCommitData {
 };
 
 
+typedef struct _qemuBlockJobCreateData qemuBlockJobCreateData;
+typedef qemuBlockJobCreateData *qemuBlockJobDataCreatePtr;
+
+struct _qemuBlockJobCreateData {
+    bool storage;
+    virStorageSourcePtr src;
+};
+
+
 typedef struct _qemuBlockJobData qemuBlockJobData;
 typedef qemuBlockJobData *qemuBlockJobDataPtr;
 
@@ -102,6 +112,7 @@ struct _qemuBlockJobData {
     union {
         qemuBlockJobPullData pull;
         qemuBlockJobCommitData commit;
+        qemuBlockJobCreateData create;
     } data;
 
     int type; /* qemuBlockJobType */
@@ -145,6 +156,12 @@ qemuBlockJobDiskNewCommit(virDomainObjPtr vm,
                           virStorageSourcePtr topparent,
                           virStorageSourcePtr top,
                           virStorageSourcePtr base);
+
+qemuBlockJobDataPtr
+qemuBlockJobNewCreate(virDomainObjPtr vm,
+                      virStorageSourcePtr src,
+                      virStorageSourcePtr chain,
+                      bool storage);
 
 qemuBlockJobDataPtr
 qemuBlockJobDiskGetJob(virDomainDiskDefPtr disk)

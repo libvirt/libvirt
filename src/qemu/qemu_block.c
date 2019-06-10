@@ -2379,3 +2379,258 @@ qemuBlockStorageSourceCreateGetStorageProps(virStorageSourcePtr src,
 
     return 0;
 }
+
+
+static int
+qemuBlockStorageSourceCreateGeneric(virDomainObjPtr vm,
+                                    virJSONValuePtr createProps,
+                                    virStorageSourcePtr src,
+                                    virStorageSourcePtr chain,
+                                    bool storageCreate,
+                                    qemuDomainAsyncJob asyncJob)
+{
+    VIR_AUTOPTR(virJSONValue) props = createProps;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuBlockJobDataPtr job = NULL;
+    int ret = -1;
+    int rc;
+
+    if (!(job = qemuBlockJobNewCreate(vm, src, chain, storageCreate)))
+        return -1;
+
+    qemuBlockJobSyncBegin(job);
+
+    if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
+        goto cleanup;
+
+    rc = qemuMonitorBlockdevCreate(priv->mon, job->name, props);
+    props = NULL;
+
+    if (qemuDomainObjExitMonitor(priv->driver, vm) < 0 || rc < 0)
+        goto cleanup;
+
+    qemuBlockJobStarted(job, vm);
+
+    qemuBlockJobUpdate(vm, job, QEMU_ASYNC_JOB_NONE);
+    while (qemuBlockJobIsRunning(job))  {
+        if (virDomainObjWait(vm) < 0)
+            goto cleanup;
+        qemuBlockJobUpdate(vm, job, QEMU_ASYNC_JOB_NONE);
+    }
+
+    if (job->state == QEMU_BLOCKJOB_STATE_FAILED ||
+        job->state == QEMU_BLOCKJOB_STATE_CANCELLED) {
+        if (job->state == QEMU_BLOCKJOB_STATE_CANCELLED && !job->errmsg) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("blockdev-create job was cancelled"));
+        } else {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("failed to format image: '%s'"), NULLSTR(job->errmsg));
+        }
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    qemuBlockJobStartupFinalize(vm, job);
+    return ret;
+}
+
+
+static int
+qemuBlockStorageSourceCreateStorage(virDomainObjPtr vm,
+                                    virStorageSourcePtr src,
+                                    virStorageSourcePtr chain,
+                                    qemuDomainAsyncJob asyncJob)
+{
+    int actualType = virStorageSourceGetActualType(src);
+    VIR_AUTOPTR(virJSONValue) createstorageprops = NULL;
+    int ret;
+
+    /* We create local files directly to be able to apply security labels
+     * properly. This is enough for formats which store the capacity of the image
+     * in the metadata as they will grow. We must create a correctly sized
+     * image for 'raw' and 'luks' though as the image size influences the
+     * capacity.
+     */
+    if (actualType != VIR_STORAGE_TYPE_NETWORK &&
+        !(actualType == VIR_STORAGE_TYPE_FILE && src->format == VIR_STORAGE_FILE_RAW))
+        return 0;
+
+    if (qemuBlockStorageSourceCreateGetStorageProps(src, &createstorageprops) < 0)
+        return -1;
+
+    if (!createstorageprops) {
+        /* we can always try opening it to see whether it was existing */
+        return 0;
+    }
+
+    ret = qemuBlockStorageSourceCreateGeneric(vm, createstorageprops, src, chain,
+                                              true, asyncJob);
+    createstorageprops = NULL;
+
+    return ret;
+}
+
+
+static int
+qemuBlockStorageSourceCreateFormat(virDomainObjPtr vm,
+                                   virStorageSourcePtr src,
+                                   virStorageSourcePtr backingStore,
+                                   virStorageSourcePtr chain,
+                                   qemuDomainAsyncJob asyncJob)
+{
+    VIR_AUTOPTR(virJSONValue) createformatprops = NULL;
+    int ret;
+
+    if (src->format == VIR_STORAGE_FILE_RAW)
+        return 0;
+
+    if (qemuBlockStorageSourceCreateGetFormatProps(src, backingStore,
+                                                   &createformatprops) < 0)
+        return -1;
+
+    if (!createformatprops) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("can't create storage format '%s'"),
+                       virStorageFileFormatTypeToString(src->format));
+        return -1;
+    }
+
+    ret = qemuBlockStorageSourceCreateGeneric(vm, createformatprops, src, chain,
+                                              false, asyncJob);
+    createformatprops = NULL;
+
+    return ret;
+}
+
+
+/**
+ * qemuBlockStorageSourceCreate:
+ * @vm: domain object
+ * @src: storage source definition to create
+ * @backingStore: backingStore of the new image (used only in image metadata)
+ * @chain: backing chain to unplug in case of a long-running job failure
+ * @data: qemuBlockStorageSourceAttachData for @src so that it can be attached
+ * @asyncJob: qemu asynchronous job type
+ *
+ * Creates and formats a storage volume according to @src and attaches it to @vm.
+ * @data must provide attachment data as if @src was existing. @src is attached
+ * after successful return of this function. If libvirtd is restarted during
+ * the create job @chain is unplugged, otherwise it's left for the caller.
+ * If @backingStore is provided, the new image will refer to it as its backing
+ * store.
+ */
+int
+qemuBlockStorageSourceCreate(virDomainObjPtr vm,
+                             virStorageSourcePtr src,
+                             virStorageSourcePtr backingStore,
+                             virStorageSourcePtr chain,
+                             qemuBlockStorageSourceAttachDataPtr data,
+                             qemuDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int ret = -1;
+    int rc;
+
+    if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
+        goto cleanup;
+
+    rc = qemuBlockStorageSourceAttachApplyStorageDeps(priv->mon, data);
+
+    if (qemuDomainObjExitMonitor(priv->driver, vm) < 0 || rc < 0)
+        goto cleanup;
+
+    if (qemuBlockStorageSourceCreateStorage(vm, src, chain, asyncJob) < 0)
+        goto cleanup;
+
+    if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
+        goto cleanup;
+
+    rc = qemuBlockStorageSourceAttachApplyStorage(priv->mon, data);
+
+    if (rc == 0)
+        rc = qemuBlockStorageSourceAttachApplyFormatDeps(priv->mon, data);
+
+    if (qemuDomainObjExitMonitor(priv->driver, vm) < 0 || rc < 0)
+        goto cleanup;
+
+    if (qemuBlockStorageSourceCreateFormat(vm, src, backingStore, chain,
+                                           asyncJob) < 0)
+        goto cleanup;
+
+    if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
+        goto cleanup;
+
+    rc = qemuBlockStorageSourceAttachApplyFormat(priv->mon, data);
+
+    if (qemuDomainObjExitMonitor(priv->driver, vm) < 0 || rc < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    if (ret < 0 &&
+        virDomainObjIsActive(vm) &&
+        qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) == 0) {
+
+        qemuBlockStorageSourceAttachRollback(priv->mon, data);
+        ignore_value(qemuDomainObjExitMonitor(priv->driver, vm));
+    }
+
+    return ret;
+}
+
+
+/**
+ * qemuBlockStorageSourceCreateDetectSize:
+ * @vm: domain object
+ * @src: storage source to update size/capacity on
+ * @templ: storage source template
+ * @asyncJob: qemu asynchronous job type
+ *
+ * When creating a storage source via blockdev-create we need to know the size
+ * and capacity of the original volume (e.g. when creating a snapshot or copy).
+ * This function updates @src's 'capacity' and 'physical' attributes according
+ * to the detected sizes from @templ.
+ */
+int
+qemuBlockStorageSourceCreateDetectSize(virDomainObjPtr vm,
+                                       virStorageSourcePtr src,
+                                       virStorageSourcePtr templ,
+                                       qemuDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    VIR_AUTOPTR(virHashTable) stats = NULL;
+    qemuBlockStatsPtr entry;
+    int rc;
+
+    if (!(stats = virHashCreate(10, virHashValueFree)))
+        return -1;
+
+    if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
+        return -1;
+
+    rc = qemuMonitorBlockStatsUpdateCapacityBlockdev(priv->mon, stats);
+
+    if (qemuDomainObjExitMonitor(priv->driver, vm) < 0 || rc < 0)
+        return -1;
+
+    if (!(entry = virHashLookup(stats, templ->nodeformat))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to update capacity data for block node '%s'"),
+                       templ->nodeformat);
+        return -1;
+    }
+
+    if (src->format == VIR_STORAGE_FILE_RAW) {
+        src->physical = entry->capacity;
+    } else {
+        src->physical = entry->physical;
+    }
+
+    src->capacity = entry->capacity;
+
+    return 0;
+}
