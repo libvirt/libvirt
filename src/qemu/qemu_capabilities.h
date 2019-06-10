@@ -512,6 +512,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_BITMAP_MERGE, /* block-dirty-bitmap-merge */
     QEMU_CAPS_NBD_BITMAP, /* nbd-server-add supports bitmap */
     QEMU_CAPS_X86_MAX_CPU, /* max-x86_64-cpu type exists */
+    QEMU_CAPS_CPU_UNAVAILABLE_FEATURES, /* "unavailable-features" CPU property */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

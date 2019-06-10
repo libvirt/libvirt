@@ -4762,8 +4762,1038 @@
 }
 
 {
-  "execute": "query-machines",
+  "execute": "qom-list-properties",
+  "arguments": {
+    "typename": "max-x86_64-cpu"
+  },
   "id": "libvirt-37"
+}
+
+{
+  "return": [
+    {
+      "name": "min-xlevel2",
+      "type": "uint32"
+    },
+    {
+      "name": "vendor",
+      "type": "string"
+    },
+    {
+      "name": "gfni",
+      "type": "bool"
+    },
+    {
+      "name": "clwb",
+      "type": "bool"
+    },
+    {
+      "name": "nx",
+      "type": "bool"
+    },
+    {
+      "name": "x2apic",
+      "type": "bool"
+    },
+    {
+      "name": "kvmclock-stable-bit",
+      "type": "bool"
+    },
+    {
+      "name": "vmcb_clean",
+      "type": "bool"
+    },
+    {
+      "name": "min-level",
+      "type": "uint32"
+    },
+    {
+      "name": "fxsr-opt",
+      "type": "bool"
+    },
+    {
+      "name": "skinit",
+      "type": "bool"
+    },
+    {
+      "name": "avx",
+      "type": "bool"
+    },
+    {
+      "name": "3dnowext",
+      "type": "bool"
+    },
+    {
+      "name": "hv-crash",
+      "type": "bool"
+    },
+    {
+      "name": "nodeid_msr",
+      "type": "bool"
+    },
+    {
+      "name": "hypervisor",
+      "type": "bool"
+    },
+    {
+      "name": "enforce",
+      "type": "bool"
+    },
+    {
+      "name": "stepping",
+      "type": "int"
+    },
+    {
+      "name": "sse4_2",
+      "type": "bool"
+    },
+    {
+      "name": "sse4_1",
+      "type": "bool"
+    },
+    {
+      "name": "x-hv-max-vps",
+      "type": "int32"
+    },
+    {
+      "name": "hv-frequencies",
+      "type": "bool"
+    },
+    {
+      "name": "kvm-hint-dedicated",
+      "type": "bool"
+    },
+    {
+      "name": "cmp_legacy",
+      "type": "bool"
+    },
+    {
+      "name": "tm2",
+      "type": "bool"
+    },
+    {
+      "name": "smx",
+      "type": "bool"
+    },
+    {
+      "name": "host-cache-info",
+      "type": "bool"
+    },
+    {
+      "name": "hv-vendor-id",
+      "type": "str"
+    },
+    {
+      "name": "movbe",
+      "type": "bool"
+    },
+    {
+      "name": "3dnowprefetch",
+      "type": "bool"
+    },
+    {
+      "name": "mtrr",
+      "type": "bool"
+    },
+    {
+      "name": "wdt",
+      "type": "bool"
+    },
+    {
+      "name": "thread-id",
+      "type": "int32"
+    },
+    {
+      "name": "aes",
+      "type": "bool"
+    },
+    {
+      "name": "apic-id",
+      "type": "uint32"
+    },
+    {
+      "name": "lm",
+      "type": "bool"
+    },
+    {
+      "name": "family",
+      "type": "int"
+    },
+    {
+      "name": "tsc-adjust",
+      "type": "bool"
+    },
+    {
+      "name": "pfthreshold",
+      "type": "bool"
+    },
+    {
+      "name": "ospke",
+      "type": "bool"
+    },
+    {
+      "name": "kvm-no-smi-migration",
+      "type": "bool"
+    },
+    {
+      "name": "pse",
+      "type": "bool"
+    },
+    {
+      "name": "filtered-features",
+      "type": "X86CPUFeatureWordInfo"
+    },
+    {
+      "name": "hv-vpindex",
+      "type": "bool"
+    },
+    {
+      "name": "adx",
+      "type": "bool"
+    },
+    {
+      "name": "avx512bitalg",
+      "type": "bool"
+    },
+    {
+      "name": "i64",
+      "type": "bool"
+    },
+    {
+      "name": "vaes",
+      "type": "bool"
+    },
+    {
+      "name": "ia64",
+      "type": "bool"
+    },
+    {
+      "name": "nodeid-msr",
+      "type": "bool"
+    },
+    {
+      "name": "ibpb",
+      "type": "bool"
+    },
+    {
+      "name": "hv-synic",
+      "type": "bool"
+    },
+    {
+      "name": "ibs",
+      "type": "bool"
+    },
+    {
+      "name": "kvm_mmu",
+      "type": "bool"
+    },
+    {
+      "name": "tcg-cpuid",
+      "type": "bool"
+    },
+    {
+      "name": "nrip_save",
+      "type": "bool"
+    },
+    {
+      "name": "kvm_nopiodelay",
+      "type": "bool"
+    },
+    {
+      "name": "lbrv",
+      "type": "bool"
+    },
+    {
+      "name": "rdtscp",
+      "type": "bool"
+    },
+    {
+      "name": "memory",
+      "type": "link<qemu:memory-region>"
+    },
+    {
+      "name": "avx512vbmi2",
+      "type": "bool"
+    },
+    {
+      "name": "ace2-en",
+      "type": "bool"
+    },
+    {
+      "name": "invtsc",
+      "type": "bool"
+    },
+    {
+      "name": "sse4.2",
+      "type": "bool"
+    },
+    {
+      "name": "sse4.1",
+      "type": "bool"
+    },
+    {
+      "name": "pbe",
+      "type": "bool"
+    },
+    {
+      "name": "rdrand",
+      "type": "bool"
+    },
+    {
+      "name": "socket-id",
+      "type": "int32"
+    },
+    {
+      "name": "hotpluggable",
+      "type": "bool"
+    },
+    {
+      "name": "kvm-steal-time",
+      "type": "bool"
+    },
+    {
+      "name": "l3-cache",
+      "type": "bool"
+    },
+    {
+      "name": "vmware-cpuid-freq",
+      "type": "bool"
+    },
+    {
+      "name": "xop",
+      "type": "bool"
+    },
+    {
+      "name": "tsc-frequency",
+      "type": "int"
+    },
+    {
+      "name": "fill-mtrr-mask",
+      "type": "bool"
+    },
+    {
+      "name": "core-id",
+      "type": "int32"
+    },
+    {
+      "name": "intel-pt",
+      "type": "bool"
+    },
+    {
+      "name": "pat",
+      "type": "bool"
+    },
+    {
+      "name": "pcid",
+      "type": "bool"
+    },
+    {
+      "name": "pclmulqdq",
+      "type": "bool"
+    },
+    {
+      "name": "sse4-2",
+      "type": "bool"
+    },
+    {
+      "name": "sse4-1",
+      "type": "bool"
+    },
+    {
+      "name": "sha-ni",
+      "type": "bool"
+    },
+    {
+      "name": "cmov",
+      "type": "bool"
+    },
+    {
+      "name": "pae",
+      "type": "bool"
+    },
+    {
+      "name": "smep",
+      "type": "bool"
+    },
+    {
+      "name": "abm",
+      "type": "bool"
+    },
+    {
+      "name": "xstore",
+      "type": "bool"
+    },
+    {
+      "name": "tsc_adjust",
+      "type": "bool"
+    },
+    {
+      "name": "type",
+      "type": "string"
+    },
+    {
+      "name": "kvm-asyncpf",
+      "type": "bool"
+    },
+    {
+      "name": "min-xlevel",
+      "type": "uint32"
+    },
+    {
+      "name": "pdpe1gb",
+      "type": "bool"
+    },
+    {
+      "name": "kvm-mmu",
+      "type": "bool"
+    },
+    {
+      "name": "kvm-pv-unhalt",
+      "type": "bool"
+    },
+    {
+      "name": "avx512f",
+      "type": "bool"
+    },
+    {
+      "name": "avx512vbmi",
+      "type": "bool"
+    },
+    {
+      "name": "avx512-4vnniw",
+      "type": "bool"
+    },
+    {
+      "name": "xd",
+      "type": "bool"
+    },
+    {
+      "name": "mmxext",
+      "type": "bool"
+    },
+    {
+      "name": "decodeassists",
+      "type": "bool"
+    },
+    {
+      "name": "ht",
+      "type": "bool"
+    },
+    {
+      "name": "xsave",
+      "type": "bool"
+    },
+    {
+      "name": "perfctr_core",
+      "type": "bool"
+    },
+    {
+      "name": "feature-words",
+      "type": "X86CPUFeatureWordInfo"
+    },
+    {
+      "name": "migratable",
+      "type": "bool"
+    },
+    {
+      "name": "3dnow",
+      "type": "bool"
+    },
+    {
+      "name": "spec-ctrl",
+      "type": "bool"
+    },
+    {
+      "name": "model",
+      "type": "int"
+    },
+    {
+      "name": "nrip-save",
+      "type": "bool"
+    },
+    {
+      "name": "lwp",
+      "type": "bool"
+    },
+    {
+      "name": "xstore-en",
+      "type": "bool"
+    },
+    {
+      "name": "avx512vl",
+      "type": "bool"
+    },
+    {
+      "name": "kvm_pv_unhalt",
+      "type": "bool"
+    },
+    {
+      "name": "bmi2",
+      "type": "bool"
+    },
+    {
+      "name": "bmi1",
+      "type": "bool"
+    },
+    {
+      "name": "la57",
+      "type": "bool"
+    },
+    {
+      "name": "ffxsr",
+      "type": "bool"
+    },
+    {
+      "name": "vmcb-clean",
+      "type": "bool"
+    },
+    {
+      "name": "pause-filter",
+      "type": "bool"
+    },
+    {
+      "name": "pni",
+      "type": "bool"
+    },
+    {
+      "name": "kvm_steal_time",
+      "type": "bool"
+    },
+    {
+      "name": "svm_lock",
+      "type": "bool"
+    },
+    {
+      "name": "pse36",
+      "type": "bool"
+    },
+    {
+      "name": "hv-stimer",
+      "type": "bool"
+    },
+    {
+      "name": "host-phys-bits",
+      "type": "bool"
+    },
+    {
+      "name": "extapic",
+      "type": "bool"
+    },
+    {
+      "name": "hv-spinlocks",
+      "type": "int"
+    },
+    {
+      "name": "pmu",
+      "type": "bool"
+    },
+    {
+      "name": "pmm",
+      "type": "bool"
+    },
+    {
+      "name": "vpclmulqdq",
+      "type": "bool"
+    },
+    {
+      "name": "avx512-vpopcntdq",
+      "type": "bool"
+    },
+    {
+      "name": "avx512er",
+      "type": "bool"
+    },
+    {
+      "name": "pdcm",
+      "type": "bool"
+    },
+    {
+      "name": "svm",
+      "type": "bool"
+    },
+    {
+      "name": "apic",
+      "type": "bool"
+    },
+    {
+      "name": "xcrypt-en",
+      "type": "bool"
+    },
+    {
+      "name": "cr8legacy",
+      "type": "bool"
+    },
+    {
+      "name": "fma4",
+      "type": "bool"
+    },
+    {
+      "name": "erms",
+      "type": "bool"
+    },
+    {
+      "name": "msr",
+      "type": "bool"
+    },
+    {
+      "name": "ds_cpl",
+      "type": "bool"
+    },
+    {
+      "name": "xlevel",
+      "type": "uint32"
+    },
+    {
+      "name": "hotplugged",
+      "type": "bool"
+    },
+    {
+      "name": "hv-relaxed",
+      "type": "bool"
+    },
+    {
+      "name": "perfctr-core",
+      "type": "bool"
+    },
+    {
+      "name": "sep",
+      "type": "bool"
+    },
+    {
+      "name": "smap",
+      "type": "bool"
+    },
+    {
+      "name": "sse3",
+      "type": "bool"
+    },
+    {
+      "name": "avx512dq",
+      "type": "bool"
+    },
+    {
+      "name": "ssse3",
+      "type": "bool"
+    },
+    {
+      "name": "pmm-en",
+      "type": "bool"
+    },
+    {
+      "name": "npt",
+      "type": "bool"
+    },
+    {
+      "name": "kvm-pv-tlb-flush",
+      "type": "bool"
+    },
+    {
+      "name": "tsc",
+      "type": "bool"
+    },
+    {
+      "name": "monitor",
+      "type": "bool"
+    },
+    {
+      "name": "f16c",
+      "type": "bool"
+    },
+    {
+      "name": "sse2",
+      "type": "bool"
+    },
+    {
+      "name": "rdpid",
+      "type": "bool"
+    },
+    {
+      "name": "mce",
+      "type": "bool"
+    },
+    {
+      "name": "full-cpuid-auto-level",
+      "type": "bool"
+    },
+    {
+      "name": "xtpr",
+      "type": "bool"
+    },
+    {
+      "name": "mca",
+      "type": "bool"
+    },
+    {
+      "name": "cid",
+      "type": "bool"
+    },
+    {
+      "name": "tm",
+      "type": "bool"
+    },
+    {
+      "name": "pku",
+      "type": "bool"
+    },
+    {
+      "name": "avx512vnni",
+      "type": "bool"
+    },
+    {
+      "name": "tce",
+      "type": "bool"
+    },
+    {
+      "name": "kvmclock",
+      "type": "bool"
+    },
+    {
+      "name": "sse4a",
+      "type": "bool"
+    },
+    {
+      "name": "ds",
+      "type": "bool"
+    },
+    {
+      "name": "lahf-lm",
+      "type": "bool"
+    },
+    {
+      "name": "xsaves",
+      "type": "bool"
+    },
+    {
+      "name": "clflushopt",
+      "type": "bool"
+    },
+    {
+      "name": "kvm",
+      "type": "bool"
+    },
+    {
+      "name": "ss",
+      "type": "bool"
+    },
+    {
+      "name": "flushbyasid",
+      "type": "bool"
+    },
+    {
+      "name": "pause_filter",
+      "type": "bool"
+    },
+    {
+      "name": "de",
+      "type": "bool"
+    },
+    {
+      "name": "est",
+      "type": "bool"
+    },
+    {
+      "name": "check",
+      "type": "bool"
+    },
+    {
+      "name": "lahf_lm",
+      "type": "bool"
+    },
+    {
+      "name": "dtes64",
+      "type": "bool"
+    },
+    {
+      "name": "vmx",
+      "type": "bool"
+    },
+    {
+      "name": "xsavec",
+      "type": "bool"
+    },
+    {
+      "name": "svm-lock",
+      "type": "bool"
+    },
+    {
+      "name": "avx512ifma",
+      "type": "bool"
+    },
+    {
+      "name": "clflush",
+      "type": "bool"
+    },
+    {
+      "name": "rdseed",
+      "type": "bool"
+    },
+    {
+      "name": "avx512cd",
+      "type": "bool"
+    },
+    {
+      "name": "xsaveopt",
+      "type": "bool"
+    },
+    {
+      "name": "tbm",
+      "type": "bool"
+    },
+    {
+      "name": "ace2",
+      "type": "bool"
+    },
+    {
+      "name": "vme",
+      "type": "bool"
+    },
+    {
+      "name": "kvm_asyncpf",
+      "type": "bool"
+    },
+    {
+      "name": "hv-vapic",
+      "type": "bool"
+    },
+    {
+      "name": "parent_bus",
+      "type": "link<bus>"
+    },
+    {
+      "name": "lmce",
+      "type": "bool"
+    },
+    {
+      "name": "hv-reset",
+      "type": "bool"
+    },
+    {
+      "name": "hv-runtime",
+      "type": "bool"
+    },
+    {
+      "name": "avx512bw",
+      "type": "bool"
+    },
+    {
+      "name": "xcrypt",
+      "type": "bool"
+    },
+    {
+      "name": "fpu",
+      "type": "bool"
+    },
+    {
+      "name": "fxsr",
+      "type": "bool"
+    },
+    {
+      "name": "ds-cpl",
+      "type": "bool"
+    },
+    {
+      "name": "kvm-pv-eoi",
+      "type": "bool"
+    },
+    {
+      "name": "hle",
+      "type": "bool"
+    },
+    {
+      "name": "cx8",
+      "type": "bool"
+    },
+    {
+      "name": "mpx",
+      "type": "bool"
+    },
+    {
+      "name": "invpcid",
+      "type": "bool"
+    },
+    {
+      "name": "pcommit",
+      "type": "bool"
+    },
+    {
+      "name": "arat",
+      "type": "bool"
+    },
+    {
+      "name": "sse",
+      "type": "bool"
+    },
+    {
+      "name": "syscall",
+      "type": "bool"
+    },
+    {
+      "name": "tsc_scale",
+      "type": "bool"
+    },
+    {
+      "name": "xlevel2",
+      "type": "uint32"
+    },
+    {
+      "name": "hv-time",
+      "type": "bool"
+    },
+    {
+      "name": "kvm_pv_eoi",
+      "type": "bool"
+    },
+    {
+      "name": "osvw",
+      "type": "bool"
+    },
+    {
+      "name": "perfctr-nb",
+      "type": "bool"
+    },
+    {
+      "name": "rtm",
+      "type": "bool"
+    },
+    {
+      "name": "avx512-4fmaps",
+      "type": "bool"
+    },
+    {
+      "name": "avx2",
+      "type": "bool"
+    },
+    {
+      "name": "perfctr_nb",
+      "type": "bool"
+    },
+    {
+      "name": "kvm-nopiodelay",
+      "type": "bool"
+    },
+    {
+      "name": "phys-bits",
+      "type": "uint32"
+    },
+    {
+      "name": "avx512pf",
+      "type": "bool"
+    },
+    {
+      "name": "level",
+      "type": "uint32"
+    },
+    {
+      "name": "osxsave",
+      "type": "bool"
+    },
+    {
+      "name": "cpuid-0xb",
+      "type": "bool"
+    },
+    {
+      "name": "tsc-deadline",
+      "type": "bool"
+    },
+    {
+      "name": "xgetbv1",
+      "type": "bool"
+    },
+    {
+      "name": "fxsr_opt",
+      "type": "bool"
+    },
+    {
+      "name": "popcnt",
+      "type": "bool"
+    },
+    {
+      "name": "umip",
+      "type": "bool"
+    },
+    {
+      "name": "realized",
+      "type": "bool"
+    },
+    {
+      "name": "phe",
+      "type": "bool"
+    },
+    {
+      "name": "cmp-legacy",
+      "type": "bool"
+    },
+    {
+      "name": "dca",
+      "type": "bool"
+    },
+    {
+      "name": "acpi",
+      "type": "bool"
+    },
+    {
+      "name": "pn",
+      "type": "bool"
+    },
+    {
+      "name": "model-id",
+      "type": "string"
+    },
+    {
+      "name": "crash-information",
+      "type": "GuestPanicInformation"
+    },
+    {
+      "name": "tsc-scale",
+      "type": "bool"
+    },
+    {
+      "name": "node-id",
+      "type": "int32"
+    },
+    {
+      "name": "cx16",
+      "type": "bool"
+    },
+    {
+      "name": "mmx",
+      "type": "bool"
+    },
+    {
+      "name": "topoext",
+      "type": "bool"
+    },
+    {
+      "name": "pge",
+      "type": "bool"
+    },
+    {
+      "name": "fsgsbase",
+      "type": "bool"
+    },
+    {
+      "name": "pclmuldq",
+      "type": "bool"
+    },
+    {
+      "name": "misalignsse",
+      "type": "bool"
+    },
+    {
+      "name": "phe-en",
+      "type": "bool"
+    },
+    {
+      "name": "fma",
+      "type": "bool"
+    }
+  ],
+  "id": "libvirt-37"
+}
+
+{
+  "execute": "query-machines",
+  "id": "libvirt-38"
 }
 
 {
@@ -4962,12 +5992,12 @@
       "cpu-max": 255
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
@@ -5481,12 +6511,12 @@
       "migration-safe": true
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -5494,12 +6524,12 @@
     "tpm-crb",
     "tpm-tis"
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -5507,12 +6537,12 @@
     "passthrough",
     "emulator"
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
@@ -6799,12 +7829,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
@@ -6866,12 +7896,12 @@
       "capability": "dirty-bitmaps"
     }
   ],
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
   "execute": "query-qmp-schema",
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
@@ -18239,7 +19269,7 @@
       "meta-type": "object"
     }
   ],
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
@@ -18250,7 +19280,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
@@ -18440,7 +19470,7 @@
       }
     }
   },
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
@@ -18632,7 +19662,7 @@
       }
     }
   },
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }
 
 {
@@ -18887,7 +19917,7 @@
       }
     }
   },
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }
 
 {
@@ -18901,7 +19931,7 @@
       }
     }
   },
-  "id": "libvirt-46"
+  "id": "libvirt-47"
 }
 
 {
@@ -19091,7 +20121,7 @@
       }
     }
   },
-  "id": "libvirt-46"
+  "id": "libvirt-47"
 }
 
 {
@@ -19283,7 +20313,7 @@
       }
     }
   },
-  "id": "libvirt-47"
+  "id": "libvirt-48"
 }
 
 {
@@ -19538,12 +20568,12 @@
       }
     }
   },
-  "id": "libvirt-47"
+  "id": "libvirt-48"
 }
 
 {
   "execute": "query-sev-capabilities",
-  "id": "libvirt-48"
+  "id": "libvirt-49"
 }
 
 {
@@ -19553,7 +20583,7 @@
     "cert-chain": "AQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAA",
     "pdh": "AQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAA"
   },
-  "id": "libvirt-48"
+  "id": "libvirt-49"
 }
 
 {
