@@ -962,11 +962,13 @@ interfacexml2xmltest_LDADD = $(LDADDS)
 cputest_SOURCES = \
 	cputest.c \
 	testutils.c testutils.h
-cputest_LDADD = $(LDADDS) $(LIBXML_LIBS)
+cputest_LDADD = $(LIBXML_LIBS)
 if WITH_QEMU
 cputest_SOURCES += testutilsqemu.c testutilsqemu.h
-cputest_LDADD += libqemumonitortestutils.la $(qemu_LDADDS) $(GNULIB_LIBS)
-endif WITH_QEMU
+cputest_LDADD += libqemumonitortestutils.la $(qemu_LDADDS) $(LDADDS)
+else ! WITH_QEMU
+cputest_LDADD += $(LDADDS)
+endif ! WITH_QEMU
 
 metadatatest_SOURCES = \
 	metadatatest.c \
