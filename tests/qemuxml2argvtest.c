@@ -874,14 +874,19 @@ mymain(void)
             QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST_CAPS_VER("eoi-disabled", "2.7.0");
+    DO_TEST_CAPS_VER("eoi-disabled", "4.0.0");
     DO_TEST_CAPS_LATEST("eoi-disabled");
     DO_TEST_CAPS_VER("eoi-enabled", "2.7.0");
+    DO_TEST_CAPS_VER("eoi-enabled", "4.0.0");
     DO_TEST_CAPS_LATEST("eoi-enabled");
     DO_TEST_CAPS_VER("pv-spinlock-disabled", "2.7.0");
+    DO_TEST_CAPS_VER("pv-spinlock-disabled", "4.0.0");
     DO_TEST_CAPS_LATEST("pv-spinlock-disabled");
     DO_TEST_CAPS_VER("pv-spinlock-enabled", "2.7.0");
+    DO_TEST_CAPS_VER("pv-spinlock-enabled", "4.0.0");
     DO_TEST_CAPS_LATEST("pv-spinlock-enabled");
     DO_TEST_CAPS_VER("kvmclock+eoi-disabled", "2.7.0");
+    DO_TEST_CAPS_VER("kvmclock+eoi-disabled", "4.0.0");
     DO_TEST_CAPS_LATEST("kvmclock+eoi-disabled");
 
     DO_TEST("hyperv", NONE);
