@@ -1461,3 +1461,41 @@ bool virLastErrorIsSystemErrno(int errnum)
         return false;
     return true;
 }
+
+
+/**
+ * virLastErrorPrefixMessage:
+ * @fmt: printf-style formatting string
+ * @...: Arguments for @fmt
+ *
+ * Prefixes last error reported with message formatted from @fmt. This is useful
+ * if the low level error message does not convey enough information to describe
+ * the problem.
+ */
+void
+virLastErrorPrefixMessage(const char *fmt, ...)
+{
+    int save_errno = errno;
+    virErrorPtr err = virGetLastError();
+    VIR_AUTOFREE(char *) fmtmsg = NULL;
+    VIR_AUTOFREE(char *) newmsg = NULL;
+    va_list args;
+
+    if (!err)
+        return;
+
+    va_start(args, fmt);
+
+    if (virVasprintfQuiet(&fmtmsg, fmt, args) < 0)
+        goto cleanup;
+
+    if (virAsprintfQuiet(&newmsg, "%s: %s", fmtmsg, err->message) < 0)
+        goto cleanup;
+
+    VIR_FREE(err->message);
+    VIR_STEAL_PTR(err->message, newmsg);
+
+ cleanup:
+    va_end(args);
+    errno = save_errno;
+}

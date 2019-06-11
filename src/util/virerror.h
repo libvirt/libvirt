@@ -205,4 +205,7 @@ bool virLastErrorIsSystemErrno(int errnum);
 void virErrorPreserveLast(virErrorPtr *saveerr);
 void virErrorRestore(virErrorPtr *savederr);
 
+void virLastErrorPrefixMessage(const char *fmt, ...)
+    ATTRIBUTE_FMT_PRINTF(1, 2);
+
 VIR_DEFINE_AUTOPTR_FUNC(virError, virFreeError);
