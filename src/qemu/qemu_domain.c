@@ -9491,10 +9491,10 @@ qemuDomainStorageSourceAccessAllow(virQEMUDriverPtr driver,
     qemuDomainStorageSourceAccessFlags flags = QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_SKIP_REVOKE;
 
     if (readonly)
-        flags &= QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_READ_ONLY;
+        flags |= QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_READ_ONLY;
 
     if (!newSource)
-        flags &= QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_MODIFY_ACCESS;
+        flags |= QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_MODIFY_ACCESS;
 
     return qemuDomainStorageSourceAccessModify(driver, vm, elem, flags);
 }
