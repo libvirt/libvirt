@@ -19374,40 +19374,38 @@ virDomainCachetuneDefParse(virDomainDefPtr def,
     ctxt->node = node;
 
     if (virDomainResctrlParseVcpus(def, node, &vcpus) < 0)
-        goto cleanup;
+        return -1;
 
-    if (virBitmapIsAllClear(vcpus)) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (virBitmapIsAllClear(vcpus))
+        return 0;
 
     if ((n = virXPathNodeSet("./cache", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot extract cache nodes under cachetune"));
-        goto cleanup;
+        return -1;
     }
 
     if (virDomainResctrlVcpuMatch(def, vcpus, &alloc) < 0)
-        goto cleanup;
+        return -1;
 
     if (!alloc) {
         alloc = virResctrlAllocNew();
         if (!alloc)
-            goto cleanup;
+            return -1;
     } else {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Identical vcpus in cachetunes found"));
-        goto cleanup;
+        return -1;
     }
 
     for (i = 0; i < n; i++) {
         if (virDomainCachetuneDefParseCache(ctxt, nodes[i], alloc) < 0)
-            goto cleanup;
+            return -1;
     }
 
     resctrl = virDomainResctrlNew(node, alloc, vcpus, flags);
     if (!resctrl)
-        goto cleanup;
+        return -1;
 
     if (virDomainResctrlMonDefParse(def, ctxt, node,
                                     VIR_RESCTRL_MONITOR_TYPE_CACHE,
@@ -19580,37 +19578,35 @@ virDomainMemorytuneDefParse(virDomainDefPtr def,
     ctxt->node = node;
 
     if (virDomainResctrlParseVcpus(def, node, &vcpus) < 0)
-        goto cleanup;
+        return -1;
 
-    if (virBitmapIsAllClear(vcpus)) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (virBitmapIsAllClear(vcpus))
+        return 0;
 
     if ((n = virXPathNodeSet("./node", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot extract memory nodes under memorytune"));
-        goto cleanup;
+        return -1;
     }
 
     if (virDomainResctrlVcpuMatch(def, vcpus, &alloc) < 0)
-        goto cleanup;
+        return -1;
 
     if (!alloc) {
         alloc = virResctrlAllocNew();
         if (!alloc)
-            goto cleanup;
+            return -1;
         new_alloc = true;
     }
 
     for (i = 0; i < n; i++) {
         if (virDomainMemorytuneDefParseMemory(ctxt, nodes[i], alloc) < 0)
-            goto cleanup;
+            return -1;
     }
-    if (virResctrlAllocIsEmpty(alloc)) {
-        ret = 0;
-        goto cleanup;
-    }
+
+    if (virResctrlAllocIsEmpty(alloc))
+        return 0;
+
     /*
      * If this is a new allocation, format ID and append to resctrl, otherwise
      * just update the existing alloc information, which is done in above
@@ -19618,7 +19614,7 @@ virDomainMemorytuneDefParse(virDomainDefPtr def,
     if (new_alloc) {
         resctrl = virDomainResctrlNew(node, alloc, vcpus, flags);
         if (!resctrl)
-            goto cleanup;
+            return -1;
 
         if (VIR_APPEND_ELEMENT(def->resctrls, def->nresctrls, resctrl) < 0)
             goto cleanup;
