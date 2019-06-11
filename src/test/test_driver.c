@@ -2399,6 +2399,19 @@ testDomainGetOSType(virDomainPtr dom ATTRIBUTE_UNUSED)
 }
 
 
+static int
+testDomainGetLaunchSecurityInfo(virDomainPtr domain ATTRIBUTE_UNUSED,
+                                virTypedParameterPtr *params ATTRIBUTE_UNUSED,
+                                int *nparams,
+                                unsigned int flags)
+{
+    virCheckFlags(0, -1);
+
+    *nparams = 0;
+    return 0;
+}
+
+
 static unsigned long long
 testDomainGetMaxMemory(virDomainPtr domain)
 {
@@ -7126,6 +7139,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainDestroy = testDomainDestroy, /* 0.1.1 */
     .domainDestroyFlags = testDomainDestroyFlags, /* 4.2.0 */
     .domainGetOSType = testDomainGetOSType, /* 0.1.9 */
+    .domainGetLaunchSecurityInfo = testDomainGetLaunchSecurityInfo, /* 5.5.0 */
     .domainGetMaxMemory = testDomainGetMaxMemory, /* 0.1.4 */
     .domainSetMaxMemory = testDomainSetMaxMemory, /* 0.1.1 */
     .domainSetMemory = testDomainSetMemory, /* 0.1.4 */
