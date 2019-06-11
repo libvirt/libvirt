@@ -5781,7 +5781,8 @@ qemuProcessSetupVcpu(virDomainObjPtr vm,
             for (j = 0; j < ct->nmonitors; j++) {
                 mon = ct->monitors[j];
 
-                if (virBitmapEqual(ct->vcpus, mon->vcpus))
+                if (virBitmapEqual(ct->vcpus, mon->vcpus) &&
+                    !virResctrlAllocIsEmpty(ct->alloc))
                     continue;
 
                 if (virBitmapIsBitSet(mon->vcpus, vcpuid)) {

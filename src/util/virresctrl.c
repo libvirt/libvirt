@@ -2560,7 +2560,8 @@ virResctrlMonitorDeterminePath(virResctrlMonitorPtr monitor,
         return -1;
     }
 
-    if (STREQ_NULLABLE(monitor->id, monitor->alloc->id)) {
+    if (!virResctrlAllocIsEmpty(monitor->alloc) &&
+        STREQ_NULLABLE(monitor->id, monitor->alloc->id)) {
         if (VIR_STRDUP(monitor->path, monitor->alloc->path) < 0)
             return -1;
         return 0;
