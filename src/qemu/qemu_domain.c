@@ -9305,12 +9305,14 @@ typedef enum {
     QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_REVOKE = 1 << 0,
     /* operate on full backing chain rather than single image */
     QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_CHAIN = 1 << 1,
-    /* force permissions to read-only when allowing */
-    QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_READ_ONLY = 1 << 2,
+    /* force permissions to read-only/read-write when allowing */
+    /* currently does not properly work with QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_CHAIN */
+    QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_FORCE_READ_ONLY = 1 << 2,
+    QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_FORCE_READ_WRITE = 1 << 3,
     /* don't revoke permissions when modification has failed */
-    QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_SKIP_REVOKE = 1 << 3,
+    QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_SKIP_REVOKE = 1 << 4,
     /* VM already has access to the source and we are just modifying it */
-    QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_MODIFY_ACCESS = 1 << 4,
+    QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_MODIFY_ACCESS = 1 << 5,
 } qemuDomainStorageSourceAccessFlags;
 
 
@@ -9344,8 +9346,11 @@ qemuDomainStorageSourceAccessModify(virQEMUDriverPtr driver,
     bool revoke_namespace = false;
     bool revoke_lockspace = false;
 
-    if (flags & QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_READ_ONLY)
+    if (flags & QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_FORCE_READ_ONLY)
         src->readonly = true;
+
+    if (flags & QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_FORCE_READ_WRITE)
+        src->readonly = false;
 
     /* just tear down the disk access */
     if (flags & QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_REVOKE) {
@@ -9491,7 +9496,9 @@ qemuDomainStorageSourceAccessAllow(virQEMUDriverPtr driver,
     qemuDomainStorageSourceAccessFlags flags = QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_SKIP_REVOKE;
 
     if (readonly)
-        flags |= QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_READ_ONLY;
+        flags |= QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_FORCE_READ_ONLY;
+    else
+        flags |= QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_FORCE_READ_WRITE;
 
     if (!newSource)
         flags |= QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_MODIFY_ACCESS;
