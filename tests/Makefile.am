@@ -554,10 +554,11 @@ endif WITH_STORAGE
 if WITH_DTRACE_PROBES
 qemu_LDADDS += ../src/libvirt_qemu_probes.lo
 endif WITH_DTRACE_PROBES
+qemu_LDADDS += $(LDADDS)
 
 libqemutestdriver_la_SOURCES =
 libqemutestdriver_la_LDFLAGS = $(DRIVERLIB_LDFLAGS)
-libqemutestdriver_la_LIBADD = $(qemu_LDADDS) $(LDADDS)
+libqemutestdriver_la_LIBADD = $(qemu_LDADDS)
 
 qemucpumock_la_SOURCES = \
 	qemucpumock.c testutilshostcpus.h
@@ -580,7 +581,7 @@ qemuxml2argvmock_la_LIBADD = $(MOCKLIBS_LIBS)
 qemuxml2xmltest_SOURCES = \
 	qemuxml2xmltest.c testutilsqemu.c testutilsqemu.h \
 	testutils.c testutils.h
-qemuxml2xmltest_LDADD = $(qemu_LDADDS) $(LDADDS)
+qemuxml2xmltest_LDADD = $(qemu_LDADDS)
 
 qemuargv2xmltest_SOURCES = \
 	qemuargv2xmltest.c testutilsqemu.c testutilsqemu.h \
@@ -594,7 +595,7 @@ qemumonitorjsontest_SOURCES = \
 	testutilsqemu.c testutilsqemu.h \
 	$(NULL)
 qemumonitorjsontest_LDADD = libqemumonitortestutils.la \
-	$(qemu_LDADDS) $(LDADDS)
+	$(qemu_LDADDS)
 
 qemucapabilitiestest_SOURCES = \
 	qemucapabilitiestest.c \
@@ -602,7 +603,7 @@ qemucapabilitiestest_SOURCES = \
 	testutilsqemu.c testutilsqemu.h \
 	$(NULL)
 qemucapabilitiestest_LDADD = libqemumonitortestutils.la \
-	$(qemu_LDADDS) $(LDADDS)
+	$(qemu_LDADDS)
 
 qemucapsprobe_SOURCES = \
 	qemucapsprobe.c
@@ -620,14 +621,14 @@ qemucommandutiltest_SOURCES = \
 	testutilsqemu.c testutilsqemu.h \
 	$(NULL)
 qemucommandutiltest_LDADD = libqemumonitortestutils.la \
-	$(qemu_LDADDS) $(LDADDS)
+	$(qemu_LDADDS)
 
 qemucaps2xmltest_SOURCES = \
 	qemucaps2xmltest.c \
 	testutils.c testutils.h \
 	testutilsqemu.c testutilsqemu.h \
 	$(NULL)
-qemucaps2xmltest_LDADD = $(qemu_LDADDS) $(LDADDS)
+qemucaps2xmltest_LDADD = $(qemu_LDADDS)
 
 qemucaps2xmlmock_la_SOURCES = \
 	qemucaps2xmlmock.c
@@ -639,14 +640,14 @@ qemuagenttest_SOURCES = \
 	testutils.c testutils.h \
 	testutilsqemu.c testutilsqemu.h \
 	$(NULL)
-qemuagenttest_LDADD = libqemumonitortestutils.la $(qemu_LDADDS) $(LDADDS)
+qemuagenttest_LDADD = libqemumonitortestutils.la $(qemu_LDADDS)
 
 qemuhotplugtest_SOURCES = \
 	qemuhotplugtest.c \
 	testutils.c testutils.h \
 	testutilsqemu.c testutilsqemu.h \
 	$(NULL)
-qemuhotplugtest_LDADD = libqemumonitortestutils.la $(qemu_LDADDS) $(LDADDS)
+qemuhotplugtest_LDADD = libqemumonitortestutils.la $(qemu_LDADDS)
 
 qemublocktest_SOURCES = \
 	qemublocktest.c \
@@ -658,19 +659,18 @@ qemublocktest_LDADD = \
 	../src/libvirt_conf.la \
 	../src/libvirt_util.la \
 	$(qemu_LDADDS) \
-	$(LDADDS) \
 	$(NULL)
 
 domainsnapshotxml2xmltest_SOURCES = \
 	domainsnapshotxml2xmltest.c testutilsqemu.c testutilsqemu.h \
 	testutils.c testutils.h
-domainsnapshotxml2xmltest_LDADD = $(qemu_LDADDS) $(LDADDS)
+domainsnapshotxml2xmltest_LDADD = $(qemu_LDADDS)
 
 qemumemlocktest_SOURCES = \
 	qemumemlocktest.c \
 	testutilsqemu.c testutilsqemu.h \
 	testutils.c testutils.h
-qemumemlocktest_LDADD = $(qemu_LDADDS) $(LDADDS)
+qemumemlocktest_LDADD = $(qemu_LDADDS)
 
 qemumigparamstest_SOURCES = \
 	qemumigparamstest.c \
@@ -678,21 +678,21 @@ qemumigparamstest_SOURCES = \
 	testutilsqemu.c testutilsqemu.h \
 	$(NULL)
 qemumigparamstest_LDADD = libqemumonitortestutils.la \
-	$(qemu_LDADDS) $(LDADDS)
+	$(qemu_LDADDS)
 
 qemusecuritytest_SOURCES = \
 	qemusecuritytest.c qemusecuritytest.h \
 	qemusecuritymock.c \
 	testutils.h testutils.c \
 	testutilsqemu.h testutilsqemu.c
-qemusecuritytest_LDADD = $(qemu_LDADDS) $(LDADDS)
+qemusecuritytest_LDADD = $(qemu_LDADDS)
 
 qemufirmwaretest_SOURCES = \
 	qemufirmwaretest.c \
 	testutils.h testutils.c \
 	virfilewrapper.c virfilewrapper.h \
 	$(NULL)
-qemufirmwaretest_LDADD = $(qemu_LDADDS) $(LDADDS)
+qemufirmwaretest_LDADD = $(qemu_LDADDS)
 
 else ! WITH_QEMU
 EXTRA_DIST += qemuxml2argvtest.c qemuxml2xmltest.c qemuargv2xmltest.c \
@@ -965,7 +965,7 @@ cputest_SOURCES = \
 cputest_LDADD = $(LIBXML_LIBS)
 if WITH_QEMU
 cputest_SOURCES += testutilsqemu.c testutilsqemu.h
-cputest_LDADD += libqemumonitortestutils.la $(qemu_LDADDS) $(LDADDS)
+cputest_LDADD += libqemumonitortestutils.la $(qemu_LDADDS)
 else ! WITH_QEMU
 cputest_LDADD += $(LDADDS)
 endif ! WITH_QEMU
@@ -1030,7 +1030,7 @@ if WITH_QEMU
 vircapstest_SOURCES += testutilsqemu.c testutilsqemu.h
 endif WITH_QEMU
 if WITH_QEMU
-vircapstest_LDADD = $(qemu_LDADDS) $(LDADDS)
+vircapstest_LDADD = $(qemu_LDADDS)
 else ! WITH_QEMU
 vircapstest_LDADD = $(LDADDS)
 endif ! WITH_QEMU
@@ -1404,7 +1404,7 @@ if WITH_QEMU
 securityselinuxlabeltest_SOURCES = \
 	securityselinuxlabeltest.c testutils.h testutils.c \
         testutilsqemu.h testutilsqemu.c
-securityselinuxlabeltest_LDADD = $(qemu_LDADDS) $(LDADDS) $(SELINUX_LIBS)
+securityselinuxlabeltest_LDADD = $(qemu_LDADDS) $(SELINUX_LIBS)
 securityselinuxlabeltest_DEPENDENCIES = libsecurityselinuxhelper.la \
 	../src/libvirt.la
 endif WITH_QEMU
