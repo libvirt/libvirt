@@ -1268,26 +1268,22 @@ testQemuMonitorJSONSimpleFunc(const void *opaque)
     testQemuMonitorJSONSimpleFuncDataPtr data =
         (testQemuMonitorJSONSimpleFuncDataPtr) opaque;
     virDomainXMLOptionPtr xmlopt = data->xmlopt;
-    qemuMonitorTestPtr test = qemuMonitorTestNewSchema(xmlopt, data->schema);
     const char *reply = data->reply;
-    int ret = -1;
+    VIR_AUTOPTR(qemuMonitorTest) test = NULL;
 
-    if (!test)
+    if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
         return -1;
 
     if (!reply)
         reply = "{\"return\":{}}";
 
     if (qemuMonitorTestAddItem(test, data->cmd, reply) < 0)
-        goto cleanup;
+        return -1;
 
     if (data->func(qemuMonitorTestGetMonitor(test)) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    qemuMonitorTestFree(test);
-    return ret;
+    return 0;
 }
 
 #define GEN_TEST_FUNC(funcName, ...) \
@@ -1296,26 +1292,22 @@ testQemuMonitorJSON ## funcName(const void *opaque) \
 { \
     const testQemuMonitorJSONSimpleFuncData *data = opaque; \
     virDomainXMLOptionPtr xmlopt = data->xmlopt; \
-    qemuMonitorTestPtr test = qemuMonitorTestNewSchema(xmlopt, data->schema); \
     const char *reply = data->reply; \
-    int ret = -1; \
+    VIR_AUTOPTR(qemuMonitorTest) test = NULL; \
  \
-    if (!test) \
+    if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema))) \
         return -1; \
  \
     if (!reply) \
         reply = "{\"return\":{}}"; \
  \
     if (qemuMonitorTestAddItem(test, data->cmd, reply) < 0) \
-        goto cleanup; \
+        return -1; \
  \
     if (funcName(qemuMonitorTestGetMonitor(test), __VA_ARGS__) < 0) \
-        goto cleanup; \
+        return -1; \
  \
-    ret = 0; \
-cleanup: \
-    qemuMonitorTestFree(test); \
-    return ret; \
+    return 0; \
 }
 
 GEN_TEST_FUNC(qemuMonitorJSONSetLink, "vnet0", VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DOWN)
