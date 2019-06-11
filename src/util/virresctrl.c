@@ -2790,30 +2790,3 @@ virResctrlMonitorStatsFree(virResctrlMonitorStatsPtr stat)
     VIR_FREE(stat->vals);
     VIR_FREE(stat);
 }
-
-
-/*
- * virResctrlMonitorGetCacheOccupancy
- *
- * @monitor: The monitor that the statistic data will be retrieved from.
- * @stats: Array of virResctrlMonitorStatsPtr for receiving cache occupancy
- * data. Caller is responsible to free this array.
- * @nstats: A size_t pointer to hold the returned array length of @caches
- *
- * Get cache or memory bandwidth utilization information.
- *
- * Returns 0 on success, -1 on error.
- */
-
-int
-virResctrlMonitorGetCacheOccupancy(virResctrlMonitorPtr monitor,
-                                   virResctrlMonitorStatsPtr **stats,
-                                   size_t *nstats)
-{
-    int ret = -1;
-    const char *features[2] = {"llc_occupancy", NULL};
-
-    ret = virResctrlMonitorGetStats(monitor, features, stats, nstats);
-
-    return ret;
-}

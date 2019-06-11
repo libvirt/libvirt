@@ -2833,7 +2833,6 @@ virResctrlInfoNew;
 virResctrlMonitorAddPID;
 virResctrlMonitorCreate;
 virResctrlMonitorDeterminePath;
-virResctrlMonitorGetCacheOccupancy;
 virResctrlMonitorGetID;
 virResctrlMonitorGetStats;
 virResctrlMonitorNew;

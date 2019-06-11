@@ -240,10 +240,5 @@ virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
                           virResctrlMonitorStatsPtr **stats,
                           size_t *nstats);
 
-int
-virResctrlMonitorGetCacheOccupancy(virResctrlMonitorPtr monitor,
-                                   virResctrlMonitorStatsPtr **stats,
-                                   size_t *nstats);
-
 void
 virResctrlMonitorStatsFree(virResctrlMonitorStatsPtr stats);
