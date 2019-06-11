@@ -19572,7 +19572,6 @@ virDomainMemorytuneDefParse(virDomainDefPtr def,
     VIR_AUTOPTR(virBitmap) vcpus = NULL;
     VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
     VIR_AUTOUNREF(virResctrlAllocPtr) alloc = NULL;
-
     ssize_t i = 0;
     int n;
     int ret = -1;
@@ -27470,7 +27469,7 @@ virDomainCachetuneDefFormat(virBufferPtr buf,
                                     &childrenBuf) < 0)
         goto cleanup;
 
-    for (i = 0; i < resctrl->nmonitors; i ++) {
+    for (i = 0; i < resctrl->nmonitors; i++) {
         if (virDomainResctrlMonDefFormatHelper(resctrl->monitors[i],
                                                VIR_RESCTRL_MONITOR_TYPE_CACHE,
                                                &childrenBuf) < 0)
