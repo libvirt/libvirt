@@ -235,6 +235,12 @@ int
 virResctrlMonitorRemove(virResctrlMonitorPtr monitor);
 
 int
+virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
+                          const char **resources,
+                          virResctrlMonitorStatsPtr **stats,
+                          size_t *nstats);
+
+int
 virResctrlMonitorGetCacheOccupancy(virResctrlMonitorPtr monitor,
                                    virResctrlMonitorStatsPtr **stats,
                                    size_t *nstats);

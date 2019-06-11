@@ -2669,8 +2669,7 @@ virResctrlMonitorStatsSorter(const void *a,
  * virResctrlMonitorGetStats
  *
  * @monitor: The monitor that the statistic data will be retrieved from.
- * @resource: The name for resource name. 'llc_occupancy' for cache resource.
- * "mbm_total_bytes" and "mbm_local_bytes" for memory bandwidth resource.
+ * @resources: A string list for the monitor feature names.
  * @stats: Pointer of of virResctrlMonitorStatsPtr array for holding cache or
  * memory bandwidth usage data.
  * @nstats: A size_t pointer to hold the returned array length of @stats
@@ -2679,14 +2678,15 @@ virResctrlMonitorStatsSorter(const void *a,
  *
  * Returns 0 on success, -1 on error.
  */
-static int
+int
 virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
-                          const char *resource,
+                          const char **resources,
                           virResctrlMonitorStatsPtr **stats,
                           size_t *nstats)
 {
     int rv = -1;
     int ret = -1;
+    size_t i = 0;
     unsigned int val = 0;
     DIR *dirp = NULL;
     char *datapath = NULL;
@@ -2744,21 +2744,23 @@ virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
         if (virStrToLong_uip(node_id, NULL, 0, &stat->id) < 0)
             goto cleanup;
 
-        rv = virFileReadValueUint(&val, "%s/%s/%s", datapath,
-                                  ent->d_name, resource);
-        if (rv == -2) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("File '%s/%s/%s' does not exist."),
-                           datapath, ent->d_name, resource);
+        for (i = 0; resources[i]; i++) {
+            rv = virFileReadValueUint(&val, "%s/%s/%s", datapath,
+                                      ent->d_name, resources[i]);
+            if (rv == -2) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("File '%s/%s/%s' does not exist."),
+                               datapath, ent->d_name, resources[i]);
+            }
+            if (rv < 0)
+                goto cleanup;
+
+            if (VIR_APPEND_ELEMENT(stat->vals, stat->nvals, val) < 0)
+                goto cleanup;
+
+            if (virStringListAdd(&stat->features, resources[i]) < 0)
+                goto cleanup;
         }
-        if (rv < 0)
-            goto cleanup;
-
-        if (VIR_APPEND_ELEMENT(stat->vals, stat->nvals, val) < 0)
-            goto cleanup;
-
-        if (virStringListAdd(&stat->features, resource) < 0)
-            goto cleanup;
 
         if (VIR_APPEND_ELEMENT(*stats, *nstats, stat) < 0)
             goto cleanup;
@@ -2808,6 +2810,10 @@ virResctrlMonitorGetCacheOccupancy(virResctrlMonitorPtr monitor,
                                    virResctrlMonitorStatsPtr **stats,
                                    size_t *nstats)
 {
-    return virResctrlMonitorGetStats(monitor, "llc_occupancy",
-                                     stats, nstats);
+    int ret = -1;
+    const char *features[2] = {"llc_occupancy", NULL};
+
+    ret = virResctrlMonitorGetStats(monitor, features, stats, nstats);
+
+    return ret;
 }

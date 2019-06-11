@@ -20710,6 +20710,7 @@ qemuDomainFreeResctrlMonData(virQEMUResctrlMonDataPtr resdata)
 /**
  * qemuDomainGetResctrlMonData:
  * @dom: Pointer for the domain that the resctrl monitors reside in
+ * @driver: Pointer to qemu driver
  * @resdata: Pointer of virQEMUResctrlMonDataPtr pointer for receiving the
  *            virQEMUResctrlMonDataPtr array. Caller is responsible for
  *            freeing the array.
@@ -20727,15 +20728,31 @@ qemuDomainFreeResctrlMonData(virQEMUResctrlMonDataPtr resdata)
  * Returns -1 on failure, or 0 on success.
  */
 static int
-qemuDomainGetResctrlMonData(virDomainObjPtr dom,
+qemuDomainGetResctrlMonData(virQEMUDriverPtr driver,
+                            virDomainObjPtr dom,
                             virQEMUResctrlMonDataPtr **resdata,
                             size_t *nresdata,
                             virResctrlMonitorType tag)
 {
     virDomainResctrlDefPtr resctrl = NULL;
     virQEMUResctrlMonDataPtr res = NULL;
+    char **features = NULL;
+    virCapsPtr caps = NULL;
     size_t i = 0;
     size_t j = 0;
+
+    caps = virQEMUDriverGetCapabilities(driver, false);
+
+    if (tag == VIR_RESCTRL_MONITOR_TYPE_CACHE) {
+        features = caps->host.cache.monitor->features;
+    } else {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("Unsupported resctrl monitor type"));
+        return -1;
+    }
+
+    if (virStringListLength((const char * const *)features) == 0)
+        return 0;
 
     for (i = 0; i < dom->def->nresctrls; i++) {
         resctrl = dom->def->resctrls[i];
@@ -20763,9 +20780,8 @@ qemuDomainGetResctrlMonData(virDomainObjPtr dom,
             if (VIR_STRDUP(res->name, virResctrlMonitorGetID(monitor)) < 0)
                 goto error;
 
-            if (virResctrlMonitorGetCacheOccupancy(monitor,
-                                                   &res->stats,
-                                                   &res->nstats) < 0)
+            if (virResctrlMonitorGetStats(monitor, (const char **)features,
+                                          &res->stats, &res->nstats) < 0)
                 goto error;
 
             if (VIR_APPEND_ELEMENT(*resdata, *nresdata, res) < 0)
@@ -20782,7 +20798,8 @@ qemuDomainGetResctrlMonData(virDomainObjPtr dom,
 
 
 static int
-qemuDomainGetStatsCpuCache(virDomainObjPtr dom,
+qemuDomainGetStatsCpuCache(virQEMUDriverPtr driver,
+                           virDomainObjPtr dom,
                            virDomainStatsRecordPtr record,
                            int *maxparams)
 {
@@ -20796,7 +20813,7 @@ qemuDomainGetStatsCpuCache(virDomainObjPtr dom,
     if (!virDomainObjIsActive(dom))
         return 0;
 
-    if (qemuDomainGetResctrlMonData(dom, &resdata, &nresdata,
+    if (qemuDomainGetResctrlMonData(driver, dom, &resdata, &nresdata,
                                     VIR_RESCTRL_MONITOR_TYPE_CACHE) < 0)
         goto cleanup;
 
@@ -20897,7 +20914,7 @@ qemuDomainGetStatsCpuCgroup(virDomainObjPtr dom,
 
 
 static int
-qemuDomainGetStatsCpu(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+qemuDomainGetStatsCpu(virQEMUDriverPtr driver,
                       virDomainObjPtr dom,
                       virDomainStatsRecordPtr record,
                       int *maxparams,
@@ -20906,7 +20923,7 @@ qemuDomainGetStatsCpu(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
     if (qemuDomainGetStatsCpuCgroup(dom, record, maxparams) < 0)
         return -1;
 
-    if (qemuDomainGetStatsCpuCache(dom, record, maxparams) < 0)
+    if (qemuDomainGetStatsCpuCache(driver, dom, record, maxparams) < 0)
         return -1;
 
     return 0;
