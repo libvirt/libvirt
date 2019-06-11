@@ -7039,6 +7039,19 @@ qemuBuildGlobalControllerCommandLine(virCommandPtr cmd,
 }
 
 
+static void
+qemuBuildCpuFeature(virQEMUCapsPtr qemuCaps,
+                    virBufferPtr buf,
+                    const char *name,
+                    bool state)
+{
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION))
+        virBufferAsprintf(buf, ",%s=%s", name, state ? "on" : "off");
+    else
+        virBufferAsprintf(buf, ",%c%s", state ? '+' : '-', name);
+}
+
+
 static int
 qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
                         const virDomainDef *def,
@@ -7109,18 +7122,12 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
         switch ((virCPUFeaturePolicy) cpu->features[i].policy) {
         case VIR_CPU_FEATURE_FORCE:
         case VIR_CPU_FEATURE_REQUIRE:
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION))
-                virBufferAsprintf(buf, ",%s=on", cpu->features[i].name);
-            else
-                virBufferAsprintf(buf, ",+%s", cpu->features[i].name);
+            qemuBuildCpuFeature(qemuCaps, buf, cpu->features[i].name, true);
             break;
 
         case VIR_CPU_FEATURE_DISABLE:
         case VIR_CPU_FEATURE_FORBID:
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION))
-                virBufferAsprintf(buf, ",%s=off", cpu->features[i].name);
-            else
-                virBufferAsprintf(buf, ",-%s", cpu->features[i].name);
+            qemuBuildCpuFeature(qemuCaps, buf, cpu->features[i].name, false);
             break;
 
         case VIR_CPU_FEATURE_OPTIONAL:
@@ -7179,8 +7186,8 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
 
         if (timer->name == VIR_DOMAIN_TIMER_NAME_KVMCLOCK &&
             timer->present != -1) {
-            virBufferAsprintf(&buf, ",%ckvmclock",
-                              timer->present ? '+' : '-');
+            qemuBuildCpuFeature(qemuCaps, &buf, "kvmclock",
+                                !!timer->present);
         } else if (timer->name == VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK &&
                    timer->present == 1) {
             virBufferAddLit(&buf, ",hv_time");
@@ -7191,24 +7198,13 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
     }
 
     if (def->apic_eoi) {
-        char sign;
-        if (def->apic_eoi == VIR_TRISTATE_SWITCH_ON)
-            sign = '+';
-        else
-            sign = '-';
-
-        virBufferAsprintf(&buf, ",%ckvm_pv_eoi", sign);
+        qemuBuildCpuFeature(qemuCaps, &buf, "kvm_pv_eoi",
+                            def->apic_eoi == VIR_TRISTATE_SWITCH_ON);
     }
 
     if (def->features[VIR_DOMAIN_FEATURE_PVSPINLOCK]) {
-        char sign;
-        if (def->features[VIR_DOMAIN_FEATURE_PVSPINLOCK] ==
-            VIR_TRISTATE_SWITCH_ON)
-            sign = '+';
-        else
-            sign = '-';
-
-        virBufferAsprintf(&buf, ",%ckvm_pv_unhalt", sign);
+        qemuBuildCpuFeature(qemuCaps, &buf, "kvm_pv_unhalt",
+                            def->features[VIR_DOMAIN_FEATURE_PVSPINLOCK] == VIR_TRISTATE_SWITCH_ON);
     }
 
     if (def->features[VIR_DOMAIN_FEATURE_HYPERV] == VIR_TRISTATE_SWITCH_ON) {
