@@ -152,7 +152,6 @@ testQemuMonitorJSONGetStatus(const void *opaque)
 {
     const testGenericData *data = opaque;
     virDomainXMLOptionPtr xmlopt = data->xmlopt;
-    int ret = -1;
     bool running = false;
     virDomainPausedReason reason = 0;
     VIR_AUTOPTR(qemuMonitorTest) test = NULL;
@@ -168,7 +167,7 @@ testQemuMonitorJSONGetStatus(const void *opaque)
                                "        \"running\": true "
                                "    } "
                                "}") < 0)
-        goto cleanup;
+        return -1;
     if (qemuMonitorTestAddItem(test, "query-status",
                                "{ "
                                "    \"return\": { "
@@ -176,7 +175,7 @@ testQemuMonitorJSONGetStatus(const void *opaque)
                                "        \"running\": false "
                                "    } "
                                "}") < 0)
-        goto cleanup;
+        return -1;
     if (qemuMonitorTestAddItem(test, "query-status",
                                "{ "
                                "    \"return\": { "
@@ -185,60 +184,57 @@ testQemuMonitorJSONGetStatus(const void *opaque)
                                "        \"running\": false "
                                "    } "
                                "}") < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorGetStatus(qemuMonitorTestGetMonitor(test),
                              &running, &reason) < 0)
-        goto cleanup;
+        return -1;
 
     if (!running) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "Running was not true");
-        goto cleanup;
+        return -1;
     }
 
     if (reason != VIR_DOMAIN_PAUSED_UNKNOWN) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "Reason was unexpectedly set to %d", reason);
-        goto cleanup;
+        return -1;
     }
 
     if (qemuMonitorGetStatus(qemuMonitorTestGetMonitor(test),
                              &running, &reason) < 0)
-        goto cleanup;
+        return -1;
 
     if (running) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "Running was not false");
-        goto cleanup;
+        return -1;
     }
 
     if (reason != VIR_DOMAIN_PAUSED_UNKNOWN) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "Reason was unexpectedly set to %d", reason);
-        goto cleanup;
+        return -1;
     }
 
     if (qemuMonitorGetStatus(qemuMonitorTestGetMonitor(test),
                              &running, &reason) < 0)
-        goto cleanup;
+        return -1;
 
     if (running) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "Running was not false");
-        goto cleanup;
+        return -1;
     }
 
     if (reason != VIR_DOMAIN_PAUSED_MIGRATION) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "Reason was unexpectedly set to %d", reason);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
@@ -951,23 +947,19 @@ testQemuMonitorJSONDetachChardev(const void *opaque)
 {
     const testGenericData *data = opaque;
     virDomainXMLOptionPtr xmlopt = data->xmlopt;
-    int ret = -1;
     VIR_AUTOPTR(qemuMonitorTest) test = NULL;
 
     if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
-        return ret;
+        return -1;
 
     if (qemuMonitorTestAddItem(test, "chardev-remove", "{\"return\": {}}") < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorDetachCharDev(qemuMonitorTestGetMonitor(test),
                                  "dummy_chrID") < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 /*
@@ -1062,7 +1054,6 @@ testQemuMonitorJSONGetObjectProperty(const void *opaque)
 {
     const testGenericData *data = opaque;
     virDomainXMLOptionPtr xmlopt = data->xmlopt;
-    int ret = -1;
     qemuMonitorJSONObjectProperty prop;
     VIR_AUTOPTR(qemuMonitorTest) test = NULL;
 
@@ -1071,7 +1062,7 @@ testQemuMonitorJSONGetObjectProperty(const void *opaque)
 
     if (qemuMonitorTestAddItem(test, "qom-get",
                                "{ \"return\": true }") < 0)
-        goto cleanup;
+        return -1;
 
     /* Present with path and property */
     memset(&prop, 0, sizeof(qemuMonitorJSONObjectProperty));
@@ -1080,17 +1071,15 @@ testQemuMonitorJSONGetObjectProperty(const void *opaque)
                                          "/machine/i440fx",
                                          "realized",
                                          &prop) < 0)
-        goto cleanup;
+        return -1;
 
     if (!prop.val.b) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "expected true, but false returned");
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -1105,7 +1094,6 @@ testQemuMonitorJSONSetObjectProperty(const void *opaque)
 {
     const testGenericData *data = opaque;
     virDomainXMLOptionPtr xmlopt = data->xmlopt;
-    int ret = -1;
     qemuMonitorJSONObjectProperty prop;
     VIR_AUTOPTR(qemuMonitorTest) test = NULL;
 
@@ -1114,10 +1102,10 @@ testQemuMonitorJSONSetObjectProperty(const void *opaque)
 
     if (qemuMonitorTestAddItem(test, "qom-set",
                                "{ \"return\": {} }") < 0)
-        goto cleanup;
+        return -1;
     if (qemuMonitorTestAddItem(test, "qom-get",
                                "{ \"return\": true }") < 0)
-        goto cleanup;
+        return -1;
 
     /* Let's attempt the setting */
     memset(&prop, 0, sizeof(qemuMonitorJSONObjectProperty));
@@ -1127,7 +1115,7 @@ testQemuMonitorJSONSetObjectProperty(const void *opaque)
                                          "/machine/i440fx",
                                          "realized",
                                          &prop) < 0)
-        goto cleanup;
+        return -1;
 
     /* To make sure it worked, fetch the property - if this succeeds then
      * we didn't hose things
@@ -1138,17 +1126,15 @@ testQemuMonitorJSONSetObjectProperty(const void *opaque)
                                          "/machine/i440fx",
                                          "realized",
                                          &prop) < 0)
-        goto cleanup;
+        return -1;
 
     if (!prop.val.b) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "expected true, but false returned");
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -1217,7 +1203,6 @@ testQemuMonitorJSONCPU(const void *opaque)
 {
     const testGenericData *data = opaque;
     virDomainXMLOptionPtr xmlopt = data->xmlopt;
-    int ret = -1;
     bool running = false;
     virDomainPausedReason reason = 0;
     VIR_AUTOPTR(qemuMonitorTest) test = NULL;
@@ -1237,38 +1222,35 @@ testQemuMonitorJSONCPU(const void *opaque)
                                "    \"status\": \"running\","
                                "    \"singlestep\": false,"
                                "    \"running\": true}}") < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorJSONStopCPUs(qemuMonitorTestGetMonitor(test)) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorGetStatus(qemuMonitorTestGetMonitor(test),
                              &running, &reason) < 0)
-        goto cleanup;
+        return -1;
 
     if (running) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "Running was not false");
-        goto cleanup;
+        return -1;
     }
 
     if (qemuMonitorJSONStartCPUs(qemuMonitorTestGetMonitor(test)) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorGetStatus(qemuMonitorTestGetMonitor(test),
                              &running, &reason) < 0)
-        goto cleanup;
+        return -1;
 
     if (!running) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "Running was not true");
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
@@ -1412,7 +1394,6 @@ testQemuMonitorJSONqemuMonitorJSONQueryCPUs(const void *opaque)
 {
     const testGenericData *data = opaque;
     virDomainXMLOptionPtr xmlopt = data->xmlopt;
-    int ret = -1;
     struct qemuMonitorQueryCpusEntry expect_slow[] = {
             {0, 17622, (char *) "/machine/unattached/device[0]", true},
             {1, 17624, (char *) "/machine/unattached/device[1]", true},
@@ -1465,7 +1446,7 @@ testQemuMonitorJSONqemuMonitorJSONQueryCPUs(const void *opaque)
                                "    ],"
                                "    \"id\": \"libvirt-7\""
                                "}") < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddItem(test, "query-cpus-fast",
                                "{"
@@ -1483,22 +1464,19 @@ testQemuMonitorJSONqemuMonitorJSONQueryCPUs(const void *opaque)
                                "    ],"
                                "    \"id\": \"libvirt-8\""
                                "}") < 0)
-        goto cleanup;
+        return -1;
 
     /* query-cpus */
     if (testQEMUMonitorJSONqemuMonitorJSONQueryCPUsHelper(test, expect_slow,
                                                           false, 4))
-        goto cleanup;
+        return -1;
 
     /* query-cpus-fast */
     if (testQEMUMonitorJSONqemuMonitorJSONQueryCPUsHelper(test, expect_fast,
                                                           true, 2))
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
@@ -1506,7 +1484,6 @@ testQemuMonitorJSONqemuMonitorJSONGetBalloonInfo(const void *opaque)
 {
     const testGenericData *data = opaque;
     virDomainXMLOptionPtr xmlopt = data->xmlopt;
-    int ret = -1;
     unsigned long long currmem;
     VIR_AUTOPTR(qemuMonitorTest) test = NULL;
 
@@ -1520,21 +1497,18 @@ testQemuMonitorJSONqemuMonitorJSONGetBalloonInfo(const void *opaque)
                                "    },"
                                "    \"id\": \"libvirt-9\""
                                "}") < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorJSONGetBalloonInfo(qemuMonitorTestGetMonitor(test), &currmem) < 0)
-        goto cleanup;
+        return -1;
 
     if (currmem != (18446744073709551615ULL/1024)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "Unexpected currmem value: %llu", currmem);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
@@ -1542,7 +1516,6 @@ testQemuMonitorJSONqemuMonitorJSONGetVirtType(const void *opaque)
 {
     const testGenericData *data = opaque;
     virDomainXMLOptionPtr xmlopt = data->xmlopt;
-    int ret = -1;
     virDomainVirtType virtType;
     VIR_AUTOPTR(qemuMonitorTest) test = NULL;
 
@@ -1565,28 +1538,27 @@ testQemuMonitorJSONqemuMonitorJSONGetVirtType(const void *opaque)
                                "    },"
                                "    \"id\": \"libvirt-7\""
                                "}") < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorJSONGetVirtType(qemuMonitorTestGetMonitor(test), &virtType) < 0)
-        goto cleanup;
+        return -1;
 
     if (virtType != VIR_DOMAIN_VIRT_KVM) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "Unexpected virt type: %d, expecting %d", virtType, VIR_DOMAIN_VIRT_KVM);
-        goto cleanup;
+        return -1;
     }
 
     if (qemuMonitorJSONGetVirtType(qemuMonitorTestGetMonitor(test), &virtType) < 0)
-        goto cleanup;
+        return -1;
 
     if (virtType != VIR_DOMAIN_VIRT_QEMU) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "Unexpected virt type: %d, expecting %d", virtType, VIR_DOMAIN_VIRT_QEMU);
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -1860,7 +1832,6 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationCacheSize(const void *opaque)
 {
     const testGenericData *data = opaque;
     virDomainXMLOptionPtr xmlopt = data->xmlopt;
-    int ret = -1;
     unsigned long long cacheSize;
     VIR_AUTOPTR(qemuMonitorTest) test = NULL;
 
@@ -1872,23 +1843,20 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationCacheSize(const void *opaque)
                                "    \"return\": 67108864,"
                                "    \"id\": \"libvirt-12\""
                                "}") < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorJSONGetMigrationCacheSize(qemuMonitorTestGetMonitor(test),
                                              &cacheSize) < 0)
-        goto cleanup;
+        return -1;
 
     if (cacheSize != 67108864) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "Invalid cacheSize: %llu, expected 67108864",
                        cacheSize);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
@@ -2264,7 +2232,6 @@ testQemuMonitorJSONqemuMonitorJSONSendKey(const void *opaque)
 {
     const testGenericData *data = opaque;
     virDomainXMLOptionPtr xmlopt = data->xmlopt;
-    int ret = -1;
     unsigned int keycodes[] = {43, 26, 46, 32};
     VIR_AUTOPTR(qemuMonitorTest) test = NULL;
 
@@ -2273,15 +2240,13 @@ testQemuMonitorJSONqemuMonitorJSONSendKey(const void *opaque)
 
     if (qemuMonitorTestAddItem(test, "send-key",
                                "{\"return\": {}, \"id\": \"libvirt-16\"}") < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorJSONSendKey(qemuMonitorTestGetMonitor(test),
                                0, keycodes, ARRAY_CARDINALITY(keycodes)) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
@@ -2289,7 +2254,6 @@ testQemuMonitorJSONqemuMonitorJSONSendKeyHoldtime(const void *opaque)
 {
     const testGenericData *data = opaque;
     virDomainXMLOptionPtr xmlopt = data->xmlopt;
-    int ret = -1;
     unsigned int keycodes[] = {43, 26, 46, 32};
     VIR_AUTOPTR(qemuMonitorTest) test = NULL;
 
@@ -2304,16 +2268,14 @@ testQemuMonitorJSONqemuMonitorJSONSendKeyHoldtime(const void *opaque)
                                               "{\"type\":\"number\",\"data\":46},"
                                               "{\"type\":\"number\",\"data\":32}]",
                                      NULL, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorJSONSendKey(qemuMonitorTestGetMonitor(test),
                                31337, keycodes,
                                ARRAY_CARDINALITY(keycodes)) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
@@ -2321,7 +2283,6 @@ testQemuMonitorJSONqemuMonitorSupportsActiveCommit(const void *opaque)
 {
     const testGenericData *data = opaque;
     virDomainXMLOptionPtr xmlopt = data->xmlopt;
-    int ret = -1;
     const char *error1 =
         "{"
         "  \"error\": {"
@@ -2344,22 +2305,20 @@ testQemuMonitorJSONqemuMonitorSupportsActiveCommit(const void *opaque)
     if (qemuMonitorTestAddItemParams(test, "block-commit", error1,
                                      "device", "\"bogus\"",
                                      NULL, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (!qemuMonitorSupportsActiveCommit(qemuMonitorTestGetMonitor(test)))
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddItemParams(test, "block-commit", error2,
                                      "device", "\"bogus\"",
                                      NULL, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorSupportsActiveCommit(qemuMonitorTestGetMonitor(test)))
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
@@ -2367,7 +2326,6 @@ testQemuMonitorJSONqemuMonitorJSONGetDumpGuestMemoryCapability(const void *opaqu
 {
     const testGenericData *data = opaque;
     virDomainXMLOptionPtr xmlopt = data->xmlopt;
-    int ret = -1;
     int cap;
     const char *reply =
         "{"
@@ -2388,7 +2346,7 @@ testQemuMonitorJSONqemuMonitorJSONGetDumpGuestMemoryCapability(const void *opaqu
 
     if (qemuMonitorTestAddItem(test, "query-dump-guest-memory-capability",
                                reply) < 0)
-        goto cleanup;
+        return -1;
 
     cap = qemuMonitorJSONGetDumpGuestMemoryCapability(
                                     qemuMonitorTestGetMonitor(test), "elf");
@@ -2397,12 +2355,10 @@ testQemuMonitorJSONqemuMonitorJSONGetDumpGuestMemoryCapability(const void *opaqu
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "Unexpected capability: %d, expecting 1",
                        cap);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 struct testCPUData {
