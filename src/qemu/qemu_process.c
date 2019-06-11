@@ -8011,7 +8011,7 @@ qemuProcessRefreshLegacyBlockjobs(virQEMUDriverPtr driver,
     int ret = -1;
 
     qemuDomainObjEnterMonitor(driver, vm);
-    blockJobs = qemuMonitorGetAllBlockJobInfo(qemuDomainGetMonitor(vm));
+    blockJobs = qemuMonitorGetAllBlockJobInfo(qemuDomainGetMonitor(vm), true);
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || !blockJobs)
         goto cleanup;
 

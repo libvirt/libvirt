@@ -3442,10 +3442,11 @@ qemuMonitorBlockJobSetSpeed(qemuMonitorPtr mon,
 
 
 virHashTablePtr
-qemuMonitorGetAllBlockJobInfo(qemuMonitorPtr mon)
+qemuMonitorGetAllBlockJobInfo(qemuMonitorPtr mon,
+                              bool rawjobname)
 {
     QEMU_CHECK_MONITOR_NULL(mon);
-    return qemuMonitorJSONGetAllBlockJobInfo(mon);
+    return qemuMonitorJSONGetAllBlockJobInfo(mon, rawjobname);
 }
 
 
@@ -3465,7 +3466,7 @@ qemuMonitorGetBlockJobInfo(qemuMonitorPtr mon,
 
     VIR_DEBUG("alias=%s, info=%p", alias, info);
 
-    if (!(all = qemuMonitorGetAllBlockJobInfo(mon)))
+    if (!(all = qemuMonitorGetAllBlockJobInfo(mon, false)))
         return -1;
 
     if ((data = virHashLookup(all, alias))) {

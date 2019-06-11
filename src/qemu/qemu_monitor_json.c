@@ -4662,7 +4662,8 @@ int qemuMonitorJSONScreendump(qemuMonitorPtr mon,
 
 static int
 qemuMonitorJSONParseBlockJobInfo(virHashTablePtr blockJobs,
-                                 virJSONValuePtr entry)
+                                 virJSONValuePtr entry,
+                                 bool rawjobname)
 {
     qemuMonitorBlockJobInfoPtr info = NULL;
     const char *device;
@@ -4674,7 +4675,9 @@ qemuMonitorJSONParseBlockJobInfo(virHashTablePtr blockJobs,
                        _("entry was missing 'device'"));
         return -1;
     }
-    device = qemuAliasDiskDriveSkipPrefix(device);
+
+    if (!rawjobname)
+        device = qemuAliasDiskDriveSkipPrefix(device);
 
     if (VIR_ALLOC(info) < 0 ||
         virHashAddEntry(blockJobs, device, info) < 0) {
@@ -4724,7 +4727,8 @@ qemuMonitorJSONParseBlockJobInfo(virHashTablePtr blockJobs,
 }
 
 virHashTablePtr
-qemuMonitorJSONGetAllBlockJobInfo(qemuMonitorPtr mon)
+qemuMonitorJSONGetAllBlockJobInfo(qemuMonitorPtr mon,
+                                  bool rawjobname)
 {
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
@@ -4756,7 +4760,7 @@ qemuMonitorJSONGetAllBlockJobInfo(qemuMonitorPtr mon)
                            _("missing array element"));
             goto error;
         }
-        if (qemuMonitorJSONParseBlockJobInfo(blockJobs, entry) < 0)
+        if (qemuMonitorJSONParseBlockJobInfo(blockJobs, entry, rawjobname) < 0)
             goto error;
     }
 

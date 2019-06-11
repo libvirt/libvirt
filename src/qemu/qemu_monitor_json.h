@@ -317,7 +317,8 @@ int qemuMonitorJSONBlockJobSetSpeed(qemuMonitorPtr mon,
                                     unsigned long long speed)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-virHashTablePtr qemuMonitorJSONGetAllBlockJobInfo(qemuMonitorPtr mon)
+virHashTablePtr qemuMonitorJSONGetAllBlockJobInfo(qemuMonitorPtr mon,
+                                                  bool rawjobname)
     ATTRIBUTE_NONNULL(1);
 
 int qemuMonitorJSONSetLink(qemuMonitorPtr mon,

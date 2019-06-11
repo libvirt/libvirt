@@ -975,7 +975,8 @@ struct _qemuMonitorBlockJobInfo {
     int ready; /* -1 if unknown, 0 if not ready, 1 if ready */
 };
 
-virHashTablePtr qemuMonitorGetAllBlockJobInfo(qemuMonitorPtr mon);
+virHashTablePtr qemuMonitorGetAllBlockJobInfo(qemuMonitorPtr mon,
+                                              bool rawjobname);
 int qemuMonitorGetBlockJobInfo(qemuMonitorPtr mon,
                                const char *device,
                                qemuMonitorBlockJobInfoPtr info)

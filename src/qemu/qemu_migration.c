@@ -5550,7 +5550,7 @@ qemuMigrationSrcFetchMirrorStats(virQEMUDriverPtr driver,
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
 
-    blockinfo = qemuMonitorGetAllBlockJobInfo(priv->mon);
+    blockinfo = qemuMonitorGetAllBlockJobInfo(priv->mon, false);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || !blockinfo)
         return -1;
