@@ -19389,8 +19389,7 @@ virDomainCachetuneDefParse(virDomainDefPtr def,
         return -1;
 
     if (!alloc) {
-        alloc = virResctrlAllocNew();
-        if (!alloc)
+        if (!(alloc = virResctrlAllocNew()))
             return -1;
     } else {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -19403,8 +19402,7 @@ virDomainCachetuneDefParse(virDomainDefPtr def,
             return -1;
     }
 
-    resctrl = virDomainResctrlNew(node, alloc, vcpus, flags);
-    if (!resctrl)
+    if (!(resctrl = virDomainResctrlNew(node, alloc, vcpus, flags)))
         return -1;
 
     if (virDomainResctrlMonDefParse(def, ctxt, node,
@@ -19593,8 +19591,7 @@ virDomainMemorytuneDefParse(virDomainDefPtr def,
         return -1;
 
     if (!alloc) {
-        alloc = virResctrlAllocNew();
-        if (!alloc)
+        if (!(alloc = virResctrlAllocNew()))
             return -1;
         new_alloc = true;
     }
@@ -19612,8 +19609,7 @@ virDomainMemorytuneDefParse(virDomainDefPtr def,
      * just update the existing alloc information, which is done in above
      * virDomainMemorytuneDefParseMemory */
     if (new_alloc) {
-        resctrl = virDomainResctrlNew(node, alloc, vcpus, flags);
-        if (!resctrl)
+        if (!(resctrl = virDomainResctrlNew(node, alloc, vcpus, flags)))
             return -1;
 
         if (VIR_APPEND_ELEMENT(def->resctrls, def->nresctrls, resctrl) < 0)
