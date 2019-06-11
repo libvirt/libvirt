@@ -227,14 +227,14 @@ virNodeDeviceCapPCIDefFormat(virBufferPtr buf,
         virBufferEscapeString(buf, ">%s</product>\n",
                               data->pci_dev.product_name);
     else
-        virBufferAddLit(buf, " />\n");
+        virBufferAddLit(buf, "/>\n");
     virBufferAsprintf(buf, "<vendor id='0x%04x'",
                       data->pci_dev.vendor);
     if (data->pci_dev.vendor_name)
         virBufferEscapeString(buf, ">%s</vendor>\n",
                               data->pci_dev.vendor_name);
     else
-        virBufferAddLit(buf, " />\n");
+        virBufferAddLit(buf, "/>\n");
     if (data->pci_dev.flags & VIR_NODE_DEV_CAP_FLAG_PCI_PHYSICAL_FUNCTION) {
         virBufferAddLit(buf, "<capability type='phys_function'>\n");
         virBufferAdjustIndent(buf, 2);
