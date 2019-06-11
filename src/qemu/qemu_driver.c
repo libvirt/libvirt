@@ -20696,9 +20696,13 @@ struct _virQEMUResctrlMonData {
 static void
 qemuDomainFreeResctrlMonData(virQEMUResctrlMonDataPtr resdata)
 {
+    size_t i = 0;
+
     VIR_FREE(resdata->name);
     VIR_FREE(resdata->vcpus);
-    virResctrlMonitorFreeStats(resdata->stats, resdata->nstats);
+    for (i = 0; i < resdata->nstats; i++)
+        virResctrlMonitorStatsFree(resdata->stats[i]);
+    VIR_FREE(resdata->stats);
     VIR_FREE(resdata);
 }
 
