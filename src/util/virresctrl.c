@@ -2687,6 +2687,7 @@ virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
 {
     int rv = -1;
     int ret = -1;
+    unsigned int val = 0;
     DIR *dirp = NULL;
     char *datapath = NULL;
     char *filepath = NULL;
@@ -2743,7 +2744,7 @@ virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
         if (virStrToLong_uip(node_id, NULL, 0, &stat->id) < 0)
             goto cleanup;
 
-        rv = virFileReadValueUint(&stat->val, "%s/%s/%s", datapath,
+        rv = virFileReadValueUint(&val, "%s/%s/%s", datapath,
                                   ent->d_name, resource);
         if (rv == -2) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2751,6 +2752,12 @@ virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
                            datapath, ent->d_name, resource);
         }
         if (rv < 0)
+            goto cleanup;
+
+        if (VIR_APPEND_ELEMENT(stat->vals, stat->nvals, val) < 0)
+            goto cleanup;
+
+        if (virStringListAdd(&stat->features, resource) < 0)
             goto cleanup;
 
         if (VIR_APPEND_ELEMENT(*stats, *nstats, stat) < 0)
@@ -2777,6 +2784,8 @@ virResctrlMonitorStatsFree(virResctrlMonitorStatsPtr stat)
     if (!stat)
         return;
 
+    virStringListFree(stat->features);
+    VIR_FREE(stat->vals);
     VIR_FREE(stat);
 }
 

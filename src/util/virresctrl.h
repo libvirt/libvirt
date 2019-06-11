@@ -193,8 +193,16 @@ typedef virResctrlMonitor *virResctrlMonitorPtr;
 typedef struct _virResctrlMonitorStats virResctrlMonitorStats;
 typedef virResctrlMonitorStats *virResctrlMonitorStatsPtr;
 struct _virResctrlMonitorStats {
-    unsigned int id;
-    unsigned int val;
+    /* The system assigned cache ID associated with statistical record */
+     unsigned int id;
+    /* @features is a NULL terminal string list tracking the statistical record
+     * name.*/
+    char **features;
+    /* @vals store the statistical record values and @val[0] is the value for
+     * @features[0], @val[1] for@features[1] ... respectively */
+    unsigned int *vals;
+    /* The length of @vals array */
+    size_t nvals;
 };
 
 virResctrlMonitorPtr
