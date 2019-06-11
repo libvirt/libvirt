@@ -19138,29 +19138,32 @@ virDomainCachetuneDefParseCache(xmlXPathContextPtr ctxt,
 }
 
 
-/* Checking if the monitor's vcpus is conflicted with existing allocation
- * and monitors.
+/* Checking if the monitor's vcpus and tag is conflicted with existing
+ * allocation and monitors.
  *
- * Returns 1 if @vcpus equals to @resctrl->vcpus, then the monitor will
- * share the underlying resctrl group with @resctrl->alloc. Returns - 1
- * if any conflict found. Returns 0 if no conflict and @vcpus is not equal
- * to @resctrl->vcpus.
+ * Returns 1 if @monitor->vcpus equals to @resctrl->vcpus, then the monitor
+ * will share the underlying resctrl group with @resctrl->alloc. Returns -1
+ * if any conflict found. Returns 0 if no conflict and @monitor->vcpus is
+ * not equal  to @resctrl->vcpus.
  */
 static int
-virDomainResctrlMonValidateVcpus(virDomainResctrlDefPtr resctrl,
-                                virBitmapPtr vcpus)
+virDomainResctrlValidateMonitor(virDomainResctrlDefPtr resctrl,
+                                virDomainResctrlMonDefPtr monitor)
 {
     size_t i = 0;
     int vcpu = -1;
-    size_t mons_same_alloc_vcpus = 0;
+    bool vcpus_overlap_any = false;
+    bool vcpus_equal_to_resctrl = false;
+    bool vcpus_overlap_no_resctrl = false;
+    bool default_alloc_monitor = virResctrlAllocIsEmpty(resctrl->alloc);
 
-    if (virBitmapIsAllClear(vcpus)) {
+    if (virBitmapIsAllClear(monitor->vcpus)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("vcpus is empty"));
         return -1;
     }
 
-    while ((vcpu = virBitmapNextSetBit(vcpus, vcpu)) >= 0) {
+    while ((vcpu = virBitmapNextSetBit(monitor->vcpus, vcpu)) >= 0) {
         if (!virBitmapIsBitSet(resctrl->vcpus, vcpu)) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
                            _("Monitor vcpus conflicts with allocation"));
@@ -19168,28 +19171,39 @@ virDomainResctrlMonValidateVcpus(virDomainResctrlDefPtr resctrl,
         }
     }
 
-    if (virBitmapEqual(vcpus, resctrl->vcpus))
-        return 1;
+    vcpus_equal_to_resctrl = virBitmapEqual(monitor->vcpus, resctrl->vcpus);
 
     for (i = 0; i < resctrl->nmonitors; i++) {
-        if (virBitmapEqual(resctrl->vcpus, resctrl->monitors[i]->vcpus)) {
-            mons_same_alloc_vcpus++;
+        if (virBitmapEqual(monitor->vcpus, resctrl->monitors[i]->vcpus)) {
+            if (monitor->tag != resctrl->monitors[i]->tag) {
+                continue;
+            } else {
+                virReportError(VIR_ERR_INVALID_ARG, "%s",
+                               _("Identical vcpus found in same type monitors"));
+                return -1;
+            }
+        }
+
+        if (virBitmapOverlaps(monitor->vcpus, resctrl->monitors[i]->vcpus))
+            vcpus_overlap_any = true;
+
+        if (vcpus_equal_to_resctrl ||
+            virBitmapEqual(resctrl->monitors[i]->vcpus, resctrl->vcpus))
             continue;
-        }
 
-        if (virBitmapOverlaps(vcpus, resctrl->monitors[i]->vcpus)) {
-            virReportError(VIR_ERR_INVALID_ARG, "%s",
-                           _("Monitor vcpus conflicts with monitors"));
-
-            return -1;
-        }
+        if (virBitmapOverlaps(monitor->vcpus, resctrl->monitors[i]->vcpus))
+            vcpus_overlap_no_resctrl = true;
     }
 
-    if (mons_same_alloc_vcpus > 1) {
+    if (vcpus_overlap_no_resctrl ||
+        (default_alloc_monitor && vcpus_overlap_any)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("Too many monitors have the same vcpu as allocation"));
+                       _("vcpus overlaps in resctrl groups"));
         return -1;
     }
+
+    if (vcpus_equal_to_resctrl && !default_alloc_monitor)
+        return 1;
 
     return 0;
 }
@@ -19264,7 +19278,7 @@ virDomainResctrlMonDefParse(virDomainDefPtr def,
         if (virDomainResctrlParseVcpus(def, nodes[i], &domresmon->vcpus) < 0)
             goto cleanup;
 
-        rv = virDomainResctrlMonValidateVcpus(resctrl, domresmon->vcpus);
+        rv = virDomainResctrlValidateMonitor(resctrl, domresmon);
         if (rv < 0)
             goto cleanup;
 
