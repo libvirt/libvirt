@@ -9339,6 +9339,9 @@ qemuDomainStorageSourceAccessModify(virQEMUDriverPtr driver,
     int ret = -1;
     virErrorPtr orig_err = NULL;
     bool chain = flags & QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_CHAIN;
+    bool force_ro = flags & QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_FORCE_READ_ONLY;
+    bool force_rw = flags & QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_FORCE_READ_WRITE;
+    bool revoke = flags & QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_REVOKE;
     int rc;
     bool was_readonly = src->readonly;
     bool revoke_cgroup = false;
@@ -9346,14 +9349,17 @@ qemuDomainStorageSourceAccessModify(virQEMUDriverPtr driver,
     bool revoke_namespace = false;
     bool revoke_lockspace = false;
 
-    if (flags & QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_FORCE_READ_ONLY)
+    VIR_DEBUG("src='%s' readonly=%d force_ro=%d force_rw=%d revoke=%d chain=%d",
+              NULLSTR(src->path), src->readonly, force_ro, force_rw, revoke, chain);
+
+    if (force_ro)
         src->readonly = true;
 
-    if (flags & QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_FORCE_READ_WRITE)
+    if (force_rw)
         src->readonly = false;
 
     /* just tear down the disk access */
-    if (flags & QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_REVOKE) {
+    if (revoke) {
         virErrorPreserveLast(&orig_err);
         revoke_cgroup = true;
         revoke_label = true;
