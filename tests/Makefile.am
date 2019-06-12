@@ -1029,7 +1029,11 @@ endif WITH_LXC
 if WITH_QEMU
 vircapstest_SOURCES += testutilsqemu.c testutilsqemu.h
 endif WITH_QEMU
+if WITH_QEMU
 vircapstest_LDADD = $(qemu_LDADDS) $(LDADDS)
+else ! WITH_QEMU
+vircapstest_LDADD = $(LDADDS)
+endif ! WITH_QEMU
 
 domaincapsmock_la_SOURCES = domaincapsmock.c
 domaincapsmock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
