@@ -1406,7 +1406,7 @@ testQemuMonitorJSONqemuMonitorJSONMergeBitmaps(const void *opaque)
         return -1;
 
     if (arr) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "arr should have been cleared");
+        VIR_TEST_VERBOSE("arr should have been cleared");
         return -1;
     }
 
