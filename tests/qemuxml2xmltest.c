@@ -1297,6 +1297,22 @@ mymain(void)
     DO_TEST_CAPS_LATEST("virtio-transitional");
     DO_TEST_CAPS_LATEST("virtio-non-transitional");
 
+    /* Simple headless guests for various architectures */
+    DO_TEST_CAPS_ARCH_LATEST("aarch64-virt-headless", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("ppc64-pseries-headless", "ppc64");
+    DO_TEST_CAPS_ARCH_LATEST("riscv64-virt-headless", "riscv64");
+    DO_TEST_CAPS_ARCH_LATEST("s390x-ccw-headless", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("x86_64-pc-headless", "x86_64");
+    DO_TEST_CAPS_ARCH_LATEST("x86_64-q35-headless", "x86_64");
+
+    /* Simple guests with graphics for various architectures */
+    DO_TEST_CAPS_ARCH_LATEST("aarch64-virt-graphics", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("ppc64-pseries-graphics", "ppc64");
+    DO_TEST_CAPS_ARCH_LATEST("riscv64-virt-graphics", "riscv64");
+    DO_TEST_CAPS_ARCH_LATEST("s390x-ccw-graphics", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("x86_64-pc-graphics", "x86_64");
+    DO_TEST_CAPS_ARCH_LATEST("x86_64-q35-graphics", "x86_64");
+
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
 
