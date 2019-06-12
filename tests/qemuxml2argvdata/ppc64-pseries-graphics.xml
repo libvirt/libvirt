@@ -1,44 +1,44 @@
-<domain type="qemu">
+<domain type='qemu'>
   <name>guest</name>
   <uuid>b35969f7-e7cf-4d90-a9a0-4dd9000f9824</uuid>
   <metadata>
-    <libosinfo:libosinfo xmlns:libosinfo="http://libosinfo.org/xmlns/libvirt/domain/1.0">
-      <libosinfo:os id="http://fedoraproject.org/fedora/29"/>
+    <libosinfo:libosinfo xmlns:libosinfo='http://libosinfo.org/xmlns/libvirt/domain/1.0'>
+      <libosinfo:os id='http://fedoraproject.org/fedora/29'/>
     </libosinfo:libosinfo>
   </metadata>
   <memory>4194304</memory>
   <currentMemory>4194304</currentMemory>
   <vcpu>4</vcpu>
   <os>
-    <type arch="ppc64le" machine="pseries">hvm</type>
-    <boot dev="hd"/>
+    <type arch='ppc64le' machine='pseries'>hvm</type>
+    <boot dev='hd'/>
   </os>
-  <clock offset="utc"/>
+  <clock offset='utc'/>
   <devices>
     <emulator>/usr/bin/qemu-system-ppc64</emulator>
-    <disk type="file" device="disk">
-      <driver name="qemu" type="qcow2"/>
-      <source file="/var/lib/libvirt/images/guest.qcow2"/>
-      <target dev="vda" bus="virtio"/>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source file='/var/lib/libvirt/images/guest.qcow2'/>
+      <target dev='vda' bus='virtio'/>
     </disk>
-    <controller type="usb" index="0" model="qemu-xhci" ports="15"/>
-    <interface type="user">
-      <mac address="52:54:00:a2:44:92"/>
-      <model type="virtio"/>
+    <controller type='usb' index='0' model='qemu-xhci' ports='15'/>
+    <interface type='user'>
+      <mac address='52:54:00:a2:44:92'/>
+      <model type='virtio'/>
     </interface>
-    <console type="pty"/>
-    <channel type="unix">
-      <source mode="bind"/>
-      <target type="virtio" name="org.qemu.guest_agent.0"/>
+    <console type='pty'/>
+    <channel type='unix'>
+      <source mode='bind'/>
+      <target type='virtio' name='org.qemu.guest_agent.0'/>
     </channel>
-    <input type="tablet" bus="usb"/>
-    <input type="keyboard" bus="usb"/>
-    <graphics type="vnc" port="-1"/>
+    <input type='tablet' bus='usb'/>
+    <input type='keyboard' bus='usb'/>
+    <graphics type='vnc' port='-1'/>
     <video>
-      <model type="vga"/>
+      <model type='vga'/>
     </video>
-    <rng model="virtio">
-      <backend model="random">/dev/urandom</backend>
+    <rng model='virtio'>
+      <backend model='random'>/dev/urandom</backend>
     </rng>
   </devices>
 </domain>
