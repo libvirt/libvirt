@@ -6194,8 +6194,34 @@ qemuDomainDeviceDefValidateAddress(const virDomainDeviceDef *dev,
     if (!(info = virDomainDeviceGetInfo((virDomainDeviceDef *)dev)))
         return 0;
 
-    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)
+    switch ((virDomainDeviceAddressType) info->type) {
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
         return qemuDomainDeviceDefValidateZPCIAddress(info, qemuCaps);
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE:
+        /* Address validation might happen before we have had a chance to
+         * automatically assign addresses to devices for which the user
+         * didn't specify one themselves */
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM:
+        /* No validation for these address types yet */
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST:
+    default:
+        virReportEnumRangeError(virDomainDeviceAddressType, info->type);
+        return -1;
+    }
 
     return 0;
 }
