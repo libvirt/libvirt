@@ -2494,10 +2494,13 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCapsPtr qemuCaps,
 
     /* Some x86_64 features defined in cpu_map.xml use spelling which differ
      * from the one preferred by QEMU. Static expansion would give us only the
-     * preferred spelling, thus we need to do a full expansion on the result of
-     * the initial static expansion to get all variants of all features.
+     * preferred spelling. With new QEMU we always use the QEMU's canonical
+     * names of all features and translate between them and our names. But for
+     * older version of QEMU we need to do a full expansion on the result of
+     * the initial static expansion to get all variants of feature names.
      */
-    if (ARCH_IS_X86(qemuCaps->arch))
+    if (ARCH_IS_X86(qemuCaps->arch) &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_CANONICAL_CPU_FEATURES))
         type = QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC_FULL;
     else
         type = QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC;
