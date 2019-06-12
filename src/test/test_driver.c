@@ -7241,9 +7241,9 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
 }
 
 
-typedef struct _testSnapRemoveData testSnapRemoveData;
-typedef testSnapRemoveData *testSnapRemoveDataPtr;
-struct _testSnapRemoveData {
+typedef struct _testMomentRemoveData testMomentRemoveData;
+typedef testMomentRemoveData *testMomentRemoveDataPtr;
+struct _testMomentRemoveData {
     virDomainObjPtr vm;
     bool current;
 };
@@ -7254,35 +7254,35 @@ testDomainSnapshotDiscardAll(void *payload,
                              void *data)
 {
     virDomainMomentObjPtr snap = payload;
-    testSnapRemoveDataPtr curr = data;
+    testMomentRemoveDataPtr curr = data;
 
     curr->current |= virDomainSnapshotObjListRemove(curr->vm->snapshots, snap);
     return 0;
 }
 
-typedef struct _testSnapReparentData testSnapReparentData;
-typedef testSnapReparentData *testSnapReparentDataPtr;
-struct _testSnapReparentData {
+typedef struct _testMomentReparentData testMomentReparentData;
+typedef testMomentReparentData *testMomentReparentDataPtr;
+struct _testMomentReparentData {
     virDomainMomentObjPtr parent;
     virDomainObjPtr vm;
     int err;
 };
 
 static int
-testDomainSnapshotReparentChildren(void *payload,
-                                   const void *name ATTRIBUTE_UNUSED,
-                                   void *data)
+testDomainMomentReparentChildren(void *payload,
+                                 const void *name ATTRIBUTE_UNUSED,
+                                 void *data)
 {
-    virDomainMomentObjPtr snap = payload;
-    testSnapReparentDataPtr rep = data;
+    virDomainMomentObjPtr moment = payload;
+    testMomentReparentDataPtr rep = data;
 
     if (rep->err < 0)
         return 0;
 
-    VIR_FREE(snap->def->parent_name);
+    VIR_FREE(moment->def->parent_name);
 
     if (rep->parent->def &&
-        VIR_STRDUP(snap->def->parent_name, rep->parent->def->name) < 0) {
+        VIR_STRDUP(moment->def->parent_name, rep->parent->def->name) < 0) {
         rep->err = -1;
         return 0;
     }
@@ -7310,7 +7310,7 @@ testDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
 
     if (flags & (VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN |
                  VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY)) {
-        testSnapRemoveData rem;
+        testMomentRemoveData rem;
         rem.vm = vm;
         rem.current = false;
         virDomainMomentForEachDescendant(snap,
@@ -7319,12 +7319,12 @@ testDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
         if (rem.current)
             virDomainSnapshotSetCurrent(vm->snapshots, snap);
     } else if (snap->nchildren) {
-        testSnapReparentData rep;
+        testMomentReparentData rep;
         rep.parent = snap->parent;
         rep.vm = vm;
         rep.err = 0;
         virDomainMomentForEachChild(snap,
-                                    testDomainSnapshotReparentChildren,
+                                    testDomainMomentReparentChildren,
                                     &rep);
         if (rep.err < 0)
             goto cleanup;
