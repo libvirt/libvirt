@@ -1,11 +1,31 @@
 <domain type='qemu'>
   <name>guest</name>
   <uuid>1ccfd97d-5eb4-478a-bbe6-88d254c16db7</uuid>
-  <memory unit='KiB'>1048576</memory>
-  <vcpu placement='static'>1</vcpu>
+  <metadata>
+    <libosinfo:libosinfo xmlns:libosinfo='http://libosinfo.org/xmlns/libvirt/domain/1.0'>
+      <libosinfo:os id='http://fedoraproject.org/fedora/29'/>
+    </libosinfo:libosinfo>
+  </metadata>
+  <memory>4194304</memory>
+  <currentMemory>4194304</currentMemory>
+  <vcpu>4</vcpu>
   <os>
     <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='hd'/>
   </os>
+  <features>
+    <acpi/>
+    <apic/>
+  </features>
+  <clock offset='utc'>
+    <timer name='rtc' tickpolicy='catchup'/>
+    <timer name='pit' tickpolicy='delay'/>
+    <timer name='hpet' present='no'/>
+  </clock>
+  <pm>
+    <suspend-to-mem enabled='no'/>
+    <suspend-to-disk enabled='no'/>
+  </pm>
   <devices>
     <emulator>/usr/bin/qemu-system-x86_64</emulator>
     <disk type='file' device='disk'>
@@ -13,17 +33,19 @@
       <source file='/var/lib/libvirt/images/guest.qcow2'/>
       <target dev='vda' bus='virtio'/>
     </disk>
+    <controller type='usb' index='0' model='qemu-xhci' ports='15'/>
     <interface type='user'>
       <mac address='52:54:00:09:a4:37'/>
       <model type='virtio'/>
     </interface>
-    <serial type='pty'/>
+    <console type='pty'/>
     <channel type='unix'>
+      <source mode='bind'/>
       <target type='virtio' name='org.qemu.guest_agent.0'/>
     </channel>
     <memballoon model='virtio'/>
     <rng model='virtio'>
-      <backend model='random'/>
+      <backend model='random'>/dev/urandom</backend>
     </rng>
   </devices>
 </domain>

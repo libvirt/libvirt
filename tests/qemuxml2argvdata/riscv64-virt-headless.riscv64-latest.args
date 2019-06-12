@@ -13,9 +13,9 @@ QEMU_AUDIO_DRV=none \
 -object secret,id=masterKey0,format=raw,\
 file=/tmp/lib/domain--1-guest/master-key.aes \
 -machine virt,accel=tcg,usb=off,dump-guest-core=off \
--m 1024 \
+-m 4096 \
 -overcommit mem-lock=off \
--smp 1,sockets=1,cores=1,threads=1 \
+-smp 4,sockets=4,cores=1,threads=1 \
 -uuid 1ccfd97d-5eb4-478a-bbe6-88d254c16db7 \
 -display none \
 -no-user-config \
@@ -32,10 +32,12 @@ addr=0x1 \
 -device pcie-root-port,port=0xb,chassis=4,id=pci.4,bus=pcie.0,addr=0x1.0x3 \
 -device pcie-root-port,port=0xc,chassis=5,id=pci.5,bus=pcie.0,addr=0x1.0x4 \
 -device pcie-root-port,port=0xd,chassis=6,id=pci.6,bus=pcie.0,addr=0x1.0x5 \
--device virtio-serial-pci,id=virtio-serial0,bus=pci.2,addr=0x0 \
+-device pcie-root-port,port=0xe,chassis=7,id=pci.7,bus=pcie.0,addr=0x1.0x6 \
+-device qemu-xhci,p2=15,p3=15,id=usb,bus=pci.2,addr=0x0 \
+-device virtio-serial-pci,id=virtio-serial0,bus=pci.3,addr=0x0 \
 -drive file=/var/lib/libvirt/images/guest.qcow2,format=qcow2,if=none,\
 id=drive-virtio-disk0 \
--device virtio-blk-pci,scsi=off,bus=pci.3,addr=0x0,drive=drive-virtio-disk0,\
+-device virtio-blk-pci,scsi=off,bus=pci.4,addr=0x0,drive=drive-virtio-disk0,\
 id=virtio-disk0,bootindex=1 \
 -netdev user,id=hostnet0 \
 -device virtio-net-pci,netdev=hostnet0,id=net0,mac=52:54:00:09:a4:37,bus=pci.1,\
@@ -45,9 +47,9 @@ addr=0x0 \
 -chardev socket,id=charchannel0,fd=1729,server,nowait \
 -device virtserialport,bus=virtio-serial0.0,nr=1,chardev=charchannel0,\
 id=channel0,name=org.qemu.guest_agent.0 \
--device virtio-balloon-pci,id=balloon0,bus=pci.4,addr=0x0 \
--object rng-random,id=objrng0,filename=/dev/random \
--device virtio-rng-pci,rng=objrng0,id=rng0,bus=pci.5,addr=0x0 \
+-device virtio-balloon-pci,id=balloon0,bus=pci.5,addr=0x0 \
+-object rng-random,id=objrng0,filename=/dev/urandom \
+-device virtio-rng-pci,rng=objrng0,id=rng0,bus=pci.6,addr=0x0 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
 resourcecontrol=deny \
 -msg timestamp=on

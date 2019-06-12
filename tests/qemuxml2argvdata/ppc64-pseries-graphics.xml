@@ -10,7 +10,7 @@
   <currentMemory>4194304</currentMemory>
   <vcpu>4</vcpu>
   <os>
-    <type arch='ppc64le' machine='pseries'>hvm</type>
+    <type arch='ppc64' machine='pseries'>hvm</type>
     <boot dev='hd'/>
   </os>
   <clock offset='utc'/>
@@ -37,6 +37,7 @@
     <video>
       <model type='vga'/>
     </video>
+    <memballoon model='virtio'/>
     <rng model='virtio'>
       <backend model='random'>/dev/urandom</backend>
     </rng>
