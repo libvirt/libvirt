@@ -2964,6 +2964,7 @@ mymain(void)
     /* Simple guests with graphics for various architectures */
     DO_TEST_CAPS_ARCH_LATEST("aarch64-virt-graphics", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST("ppc64-pseries-graphics", "ppc64");
+    DO_TEST_CAPS_ARCH_LATEST("riscv64-virt-graphics", "riscv64");
     DO_TEST_CAPS_ARCH_LATEST("s390x-ccw-graphics", "s390x");
     DO_TEST_CAPS_ARCH_LATEST("x86_64-pc-graphics", "x86_64");
     DO_TEST_CAPS_ARCH_LATEST("x86_64-q35-graphics", "x86_64");

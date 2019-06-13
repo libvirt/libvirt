@@ -1,0 +1,45 @@
+<domain type='qemu'>
+  <name>guest</name>
+  <uuid>96bc2754-8842-4714-a45f-3f69e7a9a852</uuid>
+  <metadata>
+    <libosinfo:libosinfo xmlns:libosinfo='http://libosinfo.org/xmlns/libvirt/domain/1.0'>
+      <libosinfo:os id='http://fedoraproject.org/fedora/29'/>
+    </libosinfo:libosinfo>
+  </metadata>
+  <memory>4194304</memory>
+  <currentMemory>4194304</currentMemory>
+  <vcpu>4</vcpu>
+  <os>
+    <type arch='riscv64' machine='virt'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <devices>
+    <emulator>/usr/bin/qemu-system-riscv64</emulator>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source file='/var/lib/libvirt/images/guest.qcow2'/>
+      <target dev='vda' bus='virtio'/>
+    </disk>
+    <controller type='usb' index='0' model='qemu-xhci' ports='15'/>
+    <interface type='user'>
+      <mac address='52:54:00:09:a4:37'/>
+      <model type='virtio'/>
+    </interface>
+    <console type='pty'/>
+    <channel type='unix'>
+      <source mode='bind'/>
+      <target type='virtio' name='org.qemu.guest_agent.0'/>
+    </channel>
+    <input type='tablet' bus='usb'/>
+    <input type='keyboard' bus='usb'/>
+    <graphics type='vnc' port='-1'/>
+    <video>
+      <model type='virtio'/>
+    </video>
+    <memballoon model='virtio'/>
+    <rng model='virtio'>
+      <backend model='random'>/dev/urandom</backend>
+    </rng>
+  </devices>
+</domain>
