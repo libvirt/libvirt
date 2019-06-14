@@ -574,8 +574,11 @@ mymain(void)
             ret = -1; \
     } while (0)
 
-    if (myInit() < 0)
+    if (myInit() < 0) {
         fprintf(stderr, "Init data structures failed.");
+        virFileDeleteTree(fakerootdir);
+        return EXIT_FAILURE;
+    }
 
     DO_TEST(testVirHostdevRoundtripNoGuest);
     DO_TEST(testVirHostdevRoundtripUnmanaged);
