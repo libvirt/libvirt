@@ -1205,7 +1205,7 @@ qemuMonitorUpdateVideoMemorySize(qemuMonitorPtr mon,
                                  const char *videoName)
 {
     int ret = -1;
-    char *path = NULL;
+    VIR_AUTOFREE(char *) path = NULL;
 
     QEMU_CHECK_MONITOR(mon);
 
@@ -1219,9 +1219,7 @@ qemuMonitorUpdateVideoMemorySize(qemuMonitorPtr mon,
         return -1;
     }
 
-    ret = qemuMonitorJSONUpdateVideoMemorySize(mon, video, path);
-    VIR_FREE(path);
-    return ret;
+    return qemuMonitorJSONUpdateVideoMemorySize(mon, video, path);
 }
 
 
@@ -1237,7 +1235,7 @@ qemuMonitorUpdateVideoVram64Size(qemuMonitorPtr mon,
                                  const char *videoName)
 {
     int ret = -1;
-    char *path = NULL;
+    VIR_AUTOFREE(char *) path = NULL;
 
     QEMU_CHECK_MONITOR(mon);
 
@@ -1251,9 +1249,7 @@ qemuMonitorUpdateVideoVram64Size(qemuMonitorPtr mon,
         return -1;
     }
 
-    ret = qemuMonitorJSONUpdateVideoVram64Size(mon, video, path);
-    VIR_FREE(path);
-    return ret;
+    return qemuMonitorJSONUpdateVideoVram64Size(mon, video, path);
 }
 
 
