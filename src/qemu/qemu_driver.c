@@ -43,7 +43,6 @@
 #include "qemu_conf.h"
 #include "qemu_capabilities.h"
 #include "qemu_command.h"
-#include "qemu_parse_command.h"
 #include "qemu_cgroup.h"
 #include "qemu_hostdev.h"
 #include "qemu_hotplug.h"
@@ -7318,45 +7317,20 @@ static char
 }
 
 
-static char *qemuConnectDomainXMLFromNative(virConnectPtr conn,
-                                            const char *format,
-                                            const char *config,
-                                            unsigned int flags)
+static char *
+qemuConnectDomainXMLFromNative(virConnectPtr conn,
+                               const char *format ATTRIBUTE_UNUSED,
+                               const char *config ATTRIBUTE_UNUSED,
+                               unsigned int flags)
 {
-    virQEMUDriverPtr driver = conn->privateData;
-    virDomainDefPtr def = NULL;
-    char *xml = NULL;
-    virCapsPtr caps = NULL;
-
     virCheckFlags(0, NULL);
 
     if (virConnectDomainXMLFromNativeEnsureACL(conn) < 0)
-        goto cleanup;
+        return NULL;
 
-    if (STRNEQ(format, QEMU_CONFIG_FORMAT_ARGV)) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("unsupported config type %s"), format);
-        goto cleanup;
-    }
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
-
-    def = qemuParseCommandLineString(driver->qemuCapsCache,
-                                     caps, driver->xmlopt, config,
-                                     NULL, NULL, NULL);
-    if (!def)
-        goto cleanup;
-
-    if (!def->name && VIR_STRDUP(def->name, "unnamed") < 0)
-        goto cleanup;
-
-    xml = qemuDomainDefFormatXML(driver, def, VIR_DOMAIN_XML_INACTIVE);
-
- cleanup:
-    virDomainDefFree(def);
-    virObjectUnref(caps);
-    return xml;
+    virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                   _("converting arbitrary QEMU command lines to libvirt domain XML is no longer supported"));
+    return NULL;
 }
 
 static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
@@ -22298,7 +22272,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainGetSecurityLabelList = qemuDomainGetSecurityLabelList, /* 0.10.0 */
     .nodeGetSecurityModel = qemuNodeGetSecurityModel, /* 0.6.1 */
     .domainGetXMLDesc = qemuDomainGetXMLDesc, /* 0.2.0 */
-    .connectDomainXMLFromNative = qemuConnectDomainXMLFromNative, /* 0.6.4 */
+    .connectDomainXMLFromNative = qemuConnectDomainXMLFromNative, /* 0.6.4 (deprecated: 5.5.0) */
     .connectDomainXMLToNative = qemuConnectDomainXMLToNative, /* 0.6.4 */
     .connectListDefinedDomains = qemuConnectListDefinedDomains, /* 0.2.0 */
     .connectNumOfDefinedDomains = qemuConnectNumOfDefinedDomains, /* 0.2.0 */
