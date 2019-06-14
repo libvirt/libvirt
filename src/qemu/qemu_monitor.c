@@ -1197,7 +1197,7 @@ qemuMonitorInitBalloonObjectPath(qemuMonitorPtr mon,
 
 /**
  * To update video memory size in status XML we need to load correct values from
- * QEMU.  This is supported only with JSON monitor.
+ * QEMU.
  *
  * Returns 0 on success, -1 on failure and sets proper error message.
  */
@@ -1211,29 +1211,25 @@ qemuMonitorUpdateVideoMemorySize(qemuMonitorPtr mon,
 
     QEMU_CHECK_MONITOR(mon);
 
-    if (mon->json) {
-        ret = qemuMonitorJSONFindLinkPath(mon, videoName,
-                                          video->info.alias, &path);
-        if (ret < 0) {
-            if (ret == -2)
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Failed to find QOM Object path for "
-                                 "device '%s'"), videoName);
-            return -1;
-        }
-
-        ret = qemuMonitorJSONUpdateVideoMemorySize(mon, video, path);
-        VIR_FREE(path);
-        return ret;
+    ret = qemuMonitorJSONFindLinkPath(mon, videoName,
+                                      video->info.alias, &path);
+    if (ret < 0) {
+        if (ret == -2)
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to find QOM Object path for "
+                             "device '%s'"), videoName);
+        return -1;
     }
 
-    return 0;
+    ret = qemuMonitorJSONUpdateVideoMemorySize(mon, video, path);
+    VIR_FREE(path);
+    return ret;
 }
 
 
 /**
  * To update video vram64 size in status XML we need to load correct value from
- * QEMU.  This is supported only with JSON monitor.
+ * QEMU.
  *
  * Returns 0 on success, -1 on failure and sets proper error message.
  */
@@ -1247,23 +1243,19 @@ qemuMonitorUpdateVideoVram64Size(qemuMonitorPtr mon,
 
     QEMU_CHECK_MONITOR(mon);
 
-    if (mon->json) {
-        ret = qemuMonitorJSONFindLinkPath(mon, videoName,
-                                          video->info.alias, &path);
-        if (ret < 0) {
-            if (ret == -2)
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Failed to find QOM Object path for "
-                                 "device '%s'"), videoName);
-            return -1;
-        }
-
-        ret = qemuMonitorJSONUpdateVideoVram64Size(mon, video, path);
-        VIR_FREE(path);
-        return ret;
+    ret = qemuMonitorJSONFindLinkPath(mon, videoName,
+                                      video->info.alias, &path);
+    if (ret < 0) {
+        if (ret == -2)
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to find QOM Object path for "
+                             "device '%s'"), videoName);
+        return -1;
     }
 
-    return 0;
+    ret = qemuMonitorJSONUpdateVideoVram64Size(mon, video, path);
+    VIR_FREE(path);
+    return ret;
 }
 
 
@@ -1700,9 +1692,6 @@ qemuMonitorSetCapabilities(qemuMonitorPtr mon)
 {
     QEMU_CHECK_MONITOR(mon);
 
-    if (!mon->json)
-        return 0;
-
     return qemuMonitorJSONSetCapabilities(mon);
 }
 
@@ -2015,9 +2004,6 @@ qemuMonitorGetCPUInfo(qemuMonitorPtr mon,
     if (VIR_ALLOC_N(info, maxvcpus) < 0)
         return -1;
 
-    if (!mon->json)
-        hotplug = false;
-
     /* initialize a few non-zero defaults */
     qemuMonitorCPUInfoClear(info, maxvcpus);
 
@@ -2166,9 +2152,6 @@ qemuMonitorSetMemoryStatsPeriod(qemuMonitorPtr mon,
     VIR_DEBUG("mon=%p period=%d", mon, period);
 
     if (!mon)
-        return -1;
-
-    if (!mon->json)
         return -1;
 
     if (period < 0)
@@ -2695,10 +2678,6 @@ qemuMonitorGetDumpGuestMemoryCapability(qemuMonitorPtr mon,
     VIR_DEBUG("capability=%s", capability);
 
     QEMU_CHECK_MONITOR(mon);
-
-    /* No capability is supported without JSON monitor */
-    if (!mon->json)
-        return 0;
 
     return qemuMonitorJSONGetDumpGuestMemoryCapability(mon, capability);
 }
@@ -3303,7 +3282,7 @@ qemuMonitorBlockCommit(qemuMonitorPtr mon, const char *device,
 bool
 qemuMonitorSupportsActiveCommit(qemuMonitorPtr mon)
 {
-    if (!mon || !mon->json)
+    if (!mon)
         return false;
 
     return qemuMonitorJSONSupportsActiveCommit(mon);
@@ -3854,10 +3833,6 @@ qemuMonitorGetMigrationCapabilities(qemuMonitorPtr mon,
 {
     QEMU_CHECK_MONITOR(mon);
 
-    /* No capability is supported without JSON monitor */
-    if (!mon->json)
-        return 0;
-
     return qemuMonitorJSONGetMigrationCapabilities(mon, capabilities);
 }
 
@@ -4172,12 +4147,6 @@ qemuMonitorGetIOThreads(qemuMonitorPtr mon,
 
     QEMU_CHECK_MONITOR(mon);
 
-    /* Requires JSON to make the query */
-    if (!mon->json) {
-        *iothreads = NULL;
-        return 0;
-    }
-
     return qemuMonitorJSONGetIOThreads(mon, iothreads);
 }
 
@@ -4223,9 +4192,6 @@ qemuMonitorGetMemoryDeviceInfo(qemuMonitorPtr mon,
     *info = NULL;
 
     QEMU_CHECK_MONITOR(mon);
-
-    if (!mon->json)
-        return -2;
 
     if (!(*info = virHashCreate(10, virHashValueFree)))
         return -1;
