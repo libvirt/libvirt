@@ -2474,7 +2474,6 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf,
         }
 
         virBufferEscapeString(buf, "<monitor path='%s'", monitorpath);
-        virBufferAddLit(buf, " json='1'");
         virBufferAsprintf(buf, " type='%s'/>\n",
                           virDomainChrTypeToString(priv->monConfig->type));
     }

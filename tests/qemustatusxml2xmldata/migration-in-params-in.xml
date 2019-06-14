@@ -1,7 +1,7 @@
 <domstatus state='paused' reason='migration' pid='2296'>
   <taint flag='high-privileges'/>
   <taint flag='host-cpu'/>
-  <monitor path='/var/lib/libvirt/qemu/domain-1-nest/monitor.sock' json='1' type='unix'/>
+  <monitor path='/var/lib/libvirt/qemu/domain-1-nest/monitor.sock' type='unix'/>
   <namespaces>
     <mount/>
   </namespaces>

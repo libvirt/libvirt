@@ -1,6 +1,6 @@
 <domstatus state='running' reason='booted' pid='195139'>
   <taint flag='high-privileges'/>
-  <monitor path='/var/lib/libvirt/qemu/domain-1-upstream/monitor.sock' json='1' type='unix'/>
+  <monitor path='/var/lib/libvirt/qemu/domain-1-upstream/monitor.sock' type='unix'/>
   <namespaces>
     <mount/>
   </namespaces>

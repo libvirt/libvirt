@@ -1,6 +1,6 @@
 <domstatus state='running' reason='booted' pid='3803518'>
   <taint flag='high-privileges'/>
-  <monitor path='/var/lib/libvirt/qemu/test.monitor' json='1' type='unix'/>
+  <monitor path='/var/lib/libvirt/qemu/test.monitor' type='unix'/>
   <vcpus>
     <vcpu id='0' pid='3803519'/>
   </vcpus>
