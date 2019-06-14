@@ -1241,11 +1241,8 @@ qemuMonitorCommonTestInit(qemuMonitorTestPtr test)
                             "}"
 /* We skip the normal handshake reply of "{\"execute\":\"qmp_capabilities\"}" */
 
-#define QEMU_TEXT_GREETING "QEMU 1.0,1 monitor - type 'help' for more information"
-
 qemuMonitorTestPtr
-qemuMonitorTestNew(bool json,
-                   virDomainXMLOptionPtr xmlopt,
+qemuMonitorTestNew(virDomainXMLOptionPtr xmlopt,
                    virDomainObjPtr vm,
                    virQEMUDriverPtr driver,
                    const char *greeting,
@@ -1259,11 +1256,11 @@ qemuMonitorTestNew(bool json,
     if (!(test = qemuMonitorCommonTestNew(xmlopt, vm, &src)))
         goto error;
 
-    test->json = json;
+    test->json = true;
     test->qapischema = schema;
     if (!(test->mon = qemuMonitorOpen(test->vm,
                                       &src,
-                                      json,
+                                      true,
                                       true,
                                       0,
                                       &qemuMonitorTestCallbacks,
@@ -1273,7 +1270,7 @@ qemuMonitorTestNew(bool json,
     virObjectLock(test->mon);
 
     if (!greeting)
-        greeting = json ? QEMU_JSON_GREETING : QEMU_TEXT_GREETING;
+        greeting = QEMU_JSON_GREETING;
 
     if (qemuMonitorTestAddResponse(test, greeting) < 0)
         goto error;
@@ -1340,7 +1337,7 @@ qemuMonitorTestNewFromFile(const char *fileName,
                     goto error;
             } else {
                 /* Create new mocked monitor with our greeting */
-                if (!(test = qemuMonitorTestNew(true, xmlopt, NULL, NULL,
+                if (!(test = qemuMonitorTestNew(xmlopt, NULL, NULL,
                                                 singleReply, NULL)))
                     goto error;
             }
@@ -1425,7 +1422,7 @@ qemuMonitorTestNewFromFileFull(const char *fileName,
     if (virTestLoadFile(fileName, &jsonstr) < 0)
         return NULL;
 
-    if (!(ret = qemuMonitorTestNew(true, driver->xmlopt, vm, driver, NULL,
+    if (!(ret = qemuMonitorTestNew(driver->xmlopt, vm, driver, NULL,
                                    qmpschema)))
         goto cleanup;
 

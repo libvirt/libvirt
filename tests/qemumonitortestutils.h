@@ -75,12 +75,11 @@ int qemuMonitorTestAddItemExpect(qemuMonitorTestPtr test,
                                  const char *response);
 
 # define qemuMonitorTestNewSimple(xmlopt) \
-    qemuMonitorTestNew(true, xmlopt, NULL, NULL, NULL, NULL)
+    qemuMonitorTestNew(xmlopt, NULL, NULL, NULL, NULL)
 # define qemuMonitorTestNewSchema(xmlopt, schema) \
-    qemuMonitorTestNew(true, xmlopt, NULL, NULL, NULL, schema)
+    qemuMonitorTestNew(xmlopt, NULL, NULL, NULL, schema)
 
-qemuMonitorTestPtr qemuMonitorTestNew(bool json,
-                                      virDomainXMLOptionPtr xmlopt,
+qemuMonitorTestPtr qemuMonitorTestNew(virDomainXMLOptionPtr xmlopt,
                                       virDomainObjPtr vm,
                                       virQEMUDriverPtr driver,
                                       const char *greeting,
