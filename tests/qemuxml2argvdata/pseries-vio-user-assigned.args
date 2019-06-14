@@ -23,7 +23,7 @@ server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--device spapr-vscsi,id=scsi0,reg=0x2000 \
+-device spapr-vscsi,id=scsi0,reg=0x00002000 \
 -device spapr-vscsi,id=scsi1,reg=0x30000000 \
 -usb \
 -drive file=/tmp/scsidisk.img,format=raw,if=none,id=drive-scsi1-0-0-0 \

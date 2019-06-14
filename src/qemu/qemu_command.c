@@ -395,7 +395,7 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
         }
     } else if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO) {
         if (info->addr.spaprvio.has_reg)
-            virBufferAsprintf(buf, ",reg=0x%llx", info->addr.spaprvio.reg);
+            virBufferAsprintf(buf, ",reg=0x%08llx", info->addr.spaprvio.reg);
     } else if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
         if (info->addr.ccw.assigned)
             virBufferAsprintf(buf, ",devno=%x.%x.%04x",
