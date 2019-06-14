@@ -109,7 +109,6 @@ EXTRA_DIST = \
 	nwfilterxml2xmlout \
 	oomtrace.pl \
 	qemuagentdata \
-	qemuargv2xmldata \
 	qemublocktestdata \
 	qemucapabilitiesdata \
 	qemucaps2xmloutdata \
@@ -276,7 +275,7 @@ endif WITH_LIBXL
 
 if WITH_QEMU
 test_programs += qemuxml2argvtest qemuxml2xmltest \
-	qemuargv2xmltest domainsnapshotxml2xmltest \
+	domainsnapshotxml2xmltest \
 	qemumonitorjsontest qemuhotplugtest \
 	qemuagenttest qemucapabilitiestest qemucaps2xmltest \
 	qemumemlocktest \
@@ -585,12 +584,6 @@ qemuxml2xmltest_SOURCES = \
 	testutils.c testutils.h
 qemuxml2xmltest_LDADD = $(qemu_LDADDS)
 
-qemuargv2xmltest_SOURCES = \
-	qemuargv2xmltest.c testutilsqemu.c testutilsqemu.h \
-	testutils.c testutils.h
-qemuargv2xmltest_LDADD = libqemutestdriver.la \
-	$(LDADDS)
-
 qemumonitorjsontest_SOURCES = \
 	qemumonitorjsontest.c \
 	testutils.c testutils.h \
@@ -697,7 +690,7 @@ qemufirmwaretest_SOURCES = \
 qemufirmwaretest_LDADD = $(qemu_LDADDS)
 
 else ! WITH_QEMU
-EXTRA_DIST += qemuxml2argvtest.c qemuxml2xmltest.c qemuargv2xmltest.c \
+EXTRA_DIST += qemuxml2argvtest.c qemuxml2xmltest.c \
 	domainsnapshotxml2xmltest.c \
 	testutilsqemu.c testutilsqemu.h \
 	testutilsqemuschema.c testutilsqemuschema.h \
