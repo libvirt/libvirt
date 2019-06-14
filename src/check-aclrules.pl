@@ -61,6 +61,7 @@ my %whitelist = (
     "interfaceClose" => 1,
     "connectURIProbe" => 1,
     "localOnly" => 1,
+    "domainQemuAttach" => 1,
     );
 
 # XXX this vzDomainMigrateConfirm3Params looks
