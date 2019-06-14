@@ -288,9 +288,9 @@ struct _virQEMUDriver {
     virHashAtomicPtr migrationErrors;
 };
 
-typedef struct _qemuDomainCmdlineDef qemuDomainCmdlineDef;
-typedef qemuDomainCmdlineDef *qemuDomainCmdlineDefPtr;
-struct _qemuDomainCmdlineDef {
+typedef struct _qemuDomainXmlNsDef qemuDomainXmlNsDef;
+typedef qemuDomainXmlNsDef *qemuDomainXmlNsDefPtr;
+struct _qemuDomainXmlNsDef {
     size_t num_args;
     char **args;
 
@@ -301,7 +301,7 @@ struct _qemuDomainCmdlineDef {
 
 
 
-void qemuDomainCmdlineDefFree(qemuDomainCmdlineDefPtr def);
+void qemuDomainXmlNsDefFree(qemuDomainXmlNsDefPtr def);
 
 virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged);
 

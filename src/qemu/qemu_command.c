@@ -10854,14 +10854,14 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
         virCommandAddArgList(cmd, "-loadvm", snapshot->def->name, NULL);
 
     if (def->namespaceData) {
-        qemuDomainCmdlineDefPtr qemucmd;
+        qemuDomainXmlNsDefPtr qemuxmlns;
 
-        qemucmd = def->namespaceData;
-        for (i = 0; i < qemucmd->num_args; i++)
-            virCommandAddArg(cmd, qemucmd->args[i]);
-        for (i = 0; i < qemucmd->num_env; i++)
-            virCommandAddEnvPair(cmd, qemucmd->env_name[i],
-                                 NULLSTR_EMPTY(qemucmd->env_value[i]));
+        qemuxmlns = def->namespaceData;
+        for (i = 0; i < qemuxmlns->num_args; i++)
+            virCommandAddArg(cmd, qemuxmlns->args[i]);
+        for (i = 0; i < qemuxmlns->num_env; i++)
+            virCommandAddEnvPair(cmd, qemuxmlns->env_name[i],
+                                 NULLSTR_EMPTY(qemuxmlns->env_value[i]));
     }
 
     if (qemuBuildSeccompSandboxCommandLine(cmd, cfg, qemuCaps) < 0)

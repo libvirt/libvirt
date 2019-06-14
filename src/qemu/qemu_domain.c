@@ -3090,9 +3090,9 @@ virDomainXMLPrivateDataCallbacks virQEMUDriverPrivateDataCallbacks = {
 static void
 qemuDomainDefNamespaceFree(void *nsdata)
 {
-    qemuDomainCmdlineDefPtr cmd = nsdata;
+    qemuDomainXmlNsDefPtr cmd = nsdata;
 
-    qemuDomainCmdlineDefFree(cmd);
+    qemuDomainXmlNsDefFree(cmd);
 }
 
 static int
@@ -3101,7 +3101,7 @@ qemuDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
                             xmlXPathContextPtr ctxt,
                             void **data)
 {
-    qemuDomainCmdlineDefPtr cmd = NULL;
+    qemuDomainXmlNsDefPtr cmd = NULL;
     bool uses_qemu_ns = false;
     xmlNodePtr *nodes = NULL;
     int n;
@@ -3201,7 +3201,7 @@ static int
 qemuDomainDefNamespaceFormatXML(virBufferPtr buf,
                                 void *nsdata)
 {
-    qemuDomainCmdlineDefPtr cmd = nsdata;
+    qemuDomainXmlNsDefPtr cmd = nsdata;
     size_t i;
 
     if (!cmd->num_args && !cmd->num_env)
@@ -8217,8 +8217,8 @@ void qemuDomainObjCheckTaint(virQEMUDriverPtr driver,
         qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HOOK, logCtxt);
 
     if (obj->def->namespaceData) {
-        qemuDomainCmdlineDefPtr qemucmd = obj->def->namespaceData;
-        if (qemucmd->num_args || qemucmd->num_env)
+        qemuDomainXmlNsDefPtr qemuxmlns = obj->def->namespaceData;
+        if (qemuxmlns->num_args || qemuxmlns->num_env)
             qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_CUSTOM_ARGV, logCtxt);
     }
 

@@ -94,7 +94,7 @@ qemuDriverUnlock(virQEMUDriverPtr driver)
     virMutexUnlock(&driver->lock);
 }
 
-void qemuDomainCmdlineDefFree(qemuDomainCmdlineDefPtr def)
+void qemuDomainXmlNsDefFree(qemuDomainXmlNsDefPtr def)
 {
     size_t i;
 
