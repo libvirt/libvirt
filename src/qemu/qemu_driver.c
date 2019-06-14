@@ -7084,7 +7084,7 @@ qemuDomainSaveImageGetXMLDesc(virConnectPtr conn, const char *path,
     if (fd < 0)
         goto cleanup;
 
-    if (virDomainSaveImageGetXMLDescEnsureACL(conn, def, flags) < 0)
+    if (virDomainSaveImageGetXMLDescEnsureACL(conn, def) < 0)
         goto cleanup;
 
     ret = qemuDomainDefFormatXML(driver, def, flags);
