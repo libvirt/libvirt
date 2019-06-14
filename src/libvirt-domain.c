@@ -1073,8 +1073,7 @@ virDomainRestoreFlags(virConnectPtr conn, const char *from, const char *dxml,
  * previously by virDomainSave() or virDomainSaveFlags().
  *
  * No security-sensitive data will be included unless @flags contains
- * VIR_DOMAIN_SAVE_IMAGE_XML_SECURE; this flag is rejected on read-only
- * connections.
+ * VIR_DOMAIN_SAVE_IMAGE_XML_SECURE.
  *
  * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of
  * error.  The caller must free() the returned value.
@@ -1090,13 +1089,7 @@ virDomainSaveImageGetXMLDesc(virConnectPtr conn, const char *file,
 
     virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(file, error);
-
-    if ((conn->flags & VIR_CONNECT_RO) &&
-        (flags & VIR_DOMAIN_SAVE_IMAGE_XML_SECURE)) {
-        virReportError(VIR_ERR_OPERATION_DENIED, "%s",
-                       _("virDomainSaveImageGetXMLDesc with secure flag"));
-        goto error;
-    }
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->driver->domainSaveImageGetXMLDesc) {
         char *ret;
