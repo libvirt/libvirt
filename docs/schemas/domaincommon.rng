@@ -6391,7 +6391,7 @@
   </define>
   <define name="spaprvioReg">
     <data type="string">
-      <param name="pattern">(0x)?[0-9a-fA-F]{1,16}</param>
+      <param name="pattern">(0x)?[0-9a-fA-F]{1,8}</param>
     </data>
   </define>
   <define name='aliasName'>
