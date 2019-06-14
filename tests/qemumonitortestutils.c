@@ -296,7 +296,7 @@ qemuMonitorTestIO(virNetSocketPtr sock,
          */
         t1 = test->incoming;
         while ((t2 = strstr(t1, "\n")) ||
-                (!test->json && (t2 = strstr(t1, "\r")))) {
+                (test->agent && (t2 = strstr(t1, "\r")))) {
             *t2 = '\0';
 
             if (qemuMonitorTestProcessCommand(test, t1) < 0) {
