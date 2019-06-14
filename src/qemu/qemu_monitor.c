@@ -1204,15 +1204,15 @@ qemuMonitorUpdateVideoMemorySize(qemuMonitorPtr mon,
                                  virDomainVideoDefPtr video,
                                  const char *videoName)
 {
-    int ret = -1;
+    int rc = -1;
     VIR_AUTOFREE(char *) path = NULL;
 
     QEMU_CHECK_MONITOR(mon);
 
-    ret = qemuMonitorJSONFindLinkPath(mon, videoName,
-                                      video->info.alias, &path);
-    if (ret < 0) {
-        if (ret == -2)
+    rc = qemuMonitorJSONFindLinkPath(mon, videoName,
+                                     video->info.alias, &path);
+    if (rc < 0) {
+        if (rc == -2)
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to find QOM Object path for "
                              "device '%s'"), videoName);
@@ -1234,15 +1234,15 @@ qemuMonitorUpdateVideoVram64Size(qemuMonitorPtr mon,
                                  virDomainVideoDefPtr video,
                                  const char *videoName)
 {
-    int ret = -1;
+    int rc = -1;
     VIR_AUTOFREE(char *) path = NULL;
 
     QEMU_CHECK_MONITOR(mon);
 
-    ret = qemuMonitorJSONFindLinkPath(mon, videoName,
-                                      video->info.alias, &path);
-    if (ret < 0) {
-        if (ret == -2)
+    rc = qemuMonitorJSONFindLinkPath(mon, videoName,
+                                     video->info.alias, &path);
+    if (rc < 0) {
+        if (rc == -2)
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to find QOM Object path for "
                              "device '%s'"), videoName);
