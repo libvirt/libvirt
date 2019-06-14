@@ -809,7 +809,6 @@ static qemuMonitorPtr
 qemuMonitorOpenInternal(virDomainObjPtr vm,
                         int fd,
                         bool hasSendFD,
-                        bool json,
                         qemuMonitorCallbacksPtr cb,
                         void *opaque)
 {
@@ -840,9 +839,8 @@ qemuMonitorOpenInternal(virDomainObjPtr vm,
     mon->fd = fd;
     mon->hasSendFD = hasSendFD;
     mon->vm = virObjectRef(vm);
-    mon->json = json;
-    if (json)
-        mon->waitGreeting = true;
+    mon->json = true;
+    mon->waitGreeting = true;
     mon->cb = cb;
     mon->callbackOpaque = opaque;
 
@@ -893,7 +891,6 @@ qemuMonitorOpenInternal(virDomainObjPtr vm,
  * qemuMonitorOpen:
  * @vm: domain object
  * @config: monitor configuration
- * @json: enable JSON on the monitor
  * @timeout: number of seconds to add to default timeout
  * @cb: monitor event handles
  * @opaque: opaque data for @cb
@@ -909,7 +906,6 @@ qemuMonitorOpenInternal(virDomainObjPtr vm,
 qemuMonitorPtr
 qemuMonitorOpen(virDomainObjPtr vm,
                 virDomainChrSourceDefPtr config,
-                bool json,
                 bool retry,
                 unsigned long long timeout,
                 qemuMonitorCallbacksPtr cb,
@@ -941,7 +937,7 @@ qemuMonitorOpen(virDomainObjPtr vm,
         return NULL;
     }
 
-    ret = qemuMonitorOpenInternal(vm, fd, hasSendFD, json, cb, opaque);
+    ret = qemuMonitorOpenInternal(vm, fd, hasSendFD, cb, opaque);
     if (!ret)
         VIR_FORCE_CLOSE(fd);
     return ret;
@@ -951,11 +947,10 @@ qemuMonitorOpen(virDomainObjPtr vm,
 qemuMonitorPtr
 qemuMonitorOpenFD(virDomainObjPtr vm,
                   int sockfd,
-                  bool json,
                   qemuMonitorCallbacksPtr cb,
                   void *opaque)
 {
-    return qemuMonitorOpenInternal(vm, sockfd, true, json, cb, opaque);
+    return qemuMonitorOpenInternal(vm, sockfd, true, cb, opaque);
 }
 
 

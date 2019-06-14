@@ -1192,7 +1192,6 @@ qemuMonitorTestNew(virDomainXMLOptionPtr xmlopt,
     if (!(test->mon = qemuMonitorOpen(test->vm,
                                       &src,
                                       true,
-                                      true,
                                       0,
                                       &qemuMonitorTestCallbacks,
                                       driver)))

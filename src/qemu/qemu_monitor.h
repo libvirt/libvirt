@@ -339,7 +339,6 @@ char *qemuMonitorUnescapeArg(const char *in);
 
 qemuMonitorPtr qemuMonitorOpen(virDomainObjPtr vm,
                                virDomainChrSourceDefPtr config,
-                               bool json,
                                bool retry,
                                unsigned long long timeout,
                                qemuMonitorCallbacksPtr cb,
@@ -347,7 +346,6 @@ qemuMonitorPtr qemuMonitorOpen(virDomainObjPtr vm,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(6);
 qemuMonitorPtr qemuMonitorOpenFD(virDomainObjPtr vm,
                                  int sockfd,
-                                 bool json,
                                  qemuMonitorCallbacksPtr cb,
                                  void *opaque)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
