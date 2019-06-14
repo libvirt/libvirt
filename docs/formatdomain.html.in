@@ -4076,9 +4076,9 @@
       </dd>
       <dt><code>spapr-vio</code></dt>
       <dd>On PowerPC pseries guests, devices can be assigned to the
-        SPAPR-VIO bus.  It has a flat 64-bit address space; by
+        SPAPR-VIO bus.  It has a flat 32-bit address space; by
         convention, devices are generally assigned at a non-zero
-        multiple of 0x1000, but other addresses are valid and
+        multiple of 0x00001000, but other addresses are valid and
         permitted by libvirt.  Each address has the following
         additional attribute: <code>reg</code> (the hex value address
         of the starting register).  <span class="since">Since
@@ -8299,7 +8299,7 @@ qemu-kvm -net nic,model=? /dev/null
 ...
 &lt;devices&gt;
   &lt;nvram&gt;
-    &lt;address type='spapr-vio' reg='0x3000'/&gt;
+    &lt;address type='spapr-vio' reg='0x00003000'/&gt;
   &lt;/nvram&gt;
 &lt;/devices&gt;
 ...
