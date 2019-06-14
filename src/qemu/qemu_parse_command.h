@@ -36,13 +36,6 @@ virDomainDefPtr qemuParseCommandLineString(virFileCachePtr capsCache,
                                            char **pidfile,
                                            virDomainChrSourceDefPtr *monConfig,
                                            bool *monJSON);
-virDomainDefPtr qemuParseCommandLinePid(virFileCachePtr capsCache,
-                                        virCapsPtr caps,
-                                        virDomainXMLOptionPtr xmlopt,
-                                        pid_t pid,
-                                        char **pidfile,
-                                        virDomainChrSourceDefPtr *monConfig,
-                                        bool *monJSON);
 
 void
 qemuParseKeywordsFree(int nkeywords,
