@@ -5226,8 +5226,7 @@ enum remote_procedure {
     /**
      * @generate: both
      * @priority: high
-     * @acl: domain:read
-     * @acl: domain:read_secure:VIR_DOMAIN_XML_SECURE
+     * @acl: domain:write
      */
     REMOTE_PROC_DOMAIN_SAVE_IMAGE_GET_XML_DESC = 235,
 
