@@ -23,7 +23,7 @@
     </controller>
     <memballoon model='none'/>
     <nvram>
-      <address type='spapr-vio' reg='0x4000'/>
+      <address type='spapr-vio' reg='0x00004000'/>
     </nvram>
     <panic model='pseries'/>
   </devices>
