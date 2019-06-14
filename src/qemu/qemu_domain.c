@@ -6204,11 +6204,24 @@ qemuDomainDeviceDefValidateAddress(const virDomainDeviceDef *dev,
          * didn't specify one themselves */
         break;
 
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO: {
+        virDomainDeviceSpaprVioAddressPtr addr = &(info->addr.spaprvio);
+
+        if (addr->has_reg && addr->reg > 0xffffffff) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("spapr-vio reg='0x%llx' exceeds maximum "
+                             "possible value (0xffffffff)"),
+                           addr->reg);
+            return -1;
+        }
+
+        break;
+        }
+
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB:
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO:
