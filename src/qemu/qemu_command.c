@@ -5911,9 +5911,7 @@ qemuBuildMonitorCommandLine(virLogManagerPtr logManager,
     VIR_FREE(chrdev);
 
     virCommandAddArg(cmd, "-mon");
-    virCommandAddArgFormat(cmd,
-                           "chardev=charmonitor,id=monitor,mode=%s",
-                           priv->monJSON ? "control" : "readline");
+    virCommandAddArg(cmd, "chardev=charmonitor,id=monitor,mode=control");
 
     return 0;
 }
@@ -10643,9 +10641,9 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     virQEMUCapsPtr qemuCaps = priv->qemuCaps;
     bool chardevStdioLogd = priv->chardevStdioLogd;
 
-    VIR_DEBUG("driver=%p def=%p mon=%p json=%d "
+    VIR_DEBUG("driver=%p def=%p mon=%p "
               "qemuCaps=%p migrateURI=%s snapshot=%p vmop=%d",
-              driver, def, priv->monConfig, priv->monJSON,
+              driver, def, priv->monConfig,
               qemuCaps, migrateURI, snapshot, vmop);
 
     if (qemuBuildCommandLineValidate(driver, def) < 0)

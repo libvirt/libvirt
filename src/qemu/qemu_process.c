@@ -1895,7 +1895,7 @@ qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int asyncJob,
 
     mon = qemuMonitorOpen(vm,
                           monConfig,
-                          priv->monJSON,
+                          true,
                           retry,
                           timeout,
                           &monitorCallbacks,

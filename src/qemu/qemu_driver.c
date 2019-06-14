@@ -4728,8 +4728,7 @@ processMonitorEOFEvent(virQEMUDriverPtr driver,
         goto endjob;
     }
 
-    if (priv->monJSON &&
-        virDomainObjGetState(vm, NULL) != VIR_DOMAIN_SHUTDOWN) {
+    if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_SHUTDOWN) {
         VIR_DEBUG("Monitor connection to '%s' closed without SHUTDOWN event; "
                   "assuming the domain crashed", vm->def->name);
         eventReason = VIR_DOMAIN_EVENT_STOPPED_FAILED;

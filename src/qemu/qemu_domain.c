@@ -2482,8 +2482,7 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf,
         }
 
         virBufferEscapeString(buf, "<monitor path='%s'", monitorpath);
-        if (priv->monJSON)
-            virBufferAddLit(buf, " json='1'");
+        virBufferAddLit(buf, " json='1'");
         virBufferAsprintf(buf, " type='%s'/>\n",
                           virDomainChrTypeToString(priv->monConfig->type));
     }
@@ -14289,9 +14288,8 @@ qemuDomainRunningReasonToResumeEvent(virDomainRunningReason reason)
 /* qemuDomainIsUsingNoShutdown:
  * @priv: Domain private data
  *
- * If JSON monitor is enabled, we can receive an event when QEMU stops. If
- * we use no-shutdown, then we can watch for this event and do a soft/warm
- * reboot.
+ * We can receive an event when QEMU stops. If we use no-shutdown, then
+ * we can watch for this event and do a soft/warm reboot.
  *
  * Returns: @true when -no-shutdown either should be or was added to the
  * command line.
@@ -14299,7 +14297,7 @@ qemuDomainRunningReasonToResumeEvent(virDomainRunningReason reason)
 bool
 qemuDomainIsUsingNoShutdown(qemuDomainObjPrivatePtr priv)
 {
-    return priv->monJSON && priv->allowReboot == VIR_TRISTATE_BOOL_YES;
+    return priv->allowReboot == VIR_TRISTATE_BOOL_YES;
 }
 
 

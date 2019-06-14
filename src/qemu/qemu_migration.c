@@ -3604,21 +3604,14 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
     }
 
     /* When migration completed, QEMU will have paused the CPUs for us.
-     * Wait for the STOP event to be processed or explicitly stop CPUs
-     * (for old QEMU which does not send events) to release the lock state.
+     * Wait for the STOP event to be processed to release the lock state.
      */
-    if (priv->monJSON) {
-        while (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
-            priv->signalStop = true;
-            rc = virDomainObjWait(vm);
-            priv->signalStop = false;
-            if (rc < 0)
-                goto error;
-        }
-    } else if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING &&
-               qemuProcessStopCPUs(driver, vm, VIR_DOMAIN_PAUSED_MIGRATION,
-                                   QEMU_ASYNC_JOB_MIGRATION_OUT) < 0) {
-        goto error;
+    while (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
+        priv->signalStop = true;
+        rc = virDomainObjWait(vm);
+        priv->signalStop = false;
+        if (rc < 0)
+            goto error;
     }
 
     if (mig->nbd &&
