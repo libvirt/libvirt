@@ -298,7 +298,6 @@ testQemuHotplug(const void *data)
 
     priv = vm->privateData;
     priv->mon = qemuMonitorTestGetMonitor(test_mon);
-    priv->monJSON = true;
 
     /* XXX We need to unlock the monitor here, as
      * qemuDomainObjEnterMonitorInternal (called from qemuDomainChangeGraphics)
@@ -441,7 +440,6 @@ testQemuHotplugCpuPrepare(const char *test,
         goto error;
 
     priv->mon = qemuMonitorTestGetMonitor(data->mon);
-    priv->monJSON = true;
     virObjectUnlock(priv->mon);
 
     if (qemuDomainRefreshVcpuInfo(&driver, data->vm, 0, false) < 0)

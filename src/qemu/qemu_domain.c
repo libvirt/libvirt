@@ -2903,9 +2903,6 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
         priv->monConfig->type = VIR_DOMAIN_CHR_TYPE_PTY;
     VIR_FREE(tmp);
 
-    priv->monJSON = virXPathBoolean("count(./monitor[@json = '1']) > 0",
-                                    ctxt) > 0;
-
     switch (priv->monConfig->type) {
     case VIR_DOMAIN_CHR_TYPE_PTY:
         priv->monConfig->data.file.path = monitorpath;

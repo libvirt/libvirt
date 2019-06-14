@@ -6195,7 +6195,6 @@ qemuProcessPrepareDomain(virQEMUDriverPtr driver,
     if (qemuProcessPrepareMonitorChr(priv->monConfig, priv->libDir) < 0)
         goto cleanup;
 
-    priv->monJSON = true;
     priv->monError = false;
     priv->monStart = 0;
     priv->runningReason = VIR_DOMAIN_RUNNING_UNKNOWN;
