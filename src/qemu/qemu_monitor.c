@@ -101,7 +101,6 @@ struct _qemuMonitor {
 
     int nextSerial;
 
-    bool json;
     bool waitGreeting;
 
     /* cache of query-command-line-options results */
@@ -833,7 +832,6 @@ qemuMonitorOpenInternal(virDomainObjPtr vm,
     mon->fd = fd;
     mon->hasSendFD = hasSendFD;
     mon->vm = virObjectRef(vm);
-    mon->json = true;
     mon->waitGreeting = true;
     mon->cb = cb;
     mon->callbackOpaque = opaque;
