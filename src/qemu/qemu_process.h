@@ -153,14 +153,6 @@ void qemuProcessStop(virQEMUDriverPtr driver,
                      qemuDomainAsyncJob asyncJob,
                      unsigned int flags);
 
-int qemuProcessAttach(virConnectPtr conn,
-                      virQEMUDriverPtr driver,
-                      virDomainObjPtr vm,
-                      pid_t pid,
-                      const char *pidfile,
-                      virDomainChrSourceDefPtr monConfig,
-                      bool monJSON);
-
 typedef enum {
    VIR_QEMU_PROCESS_KILL_FORCE  = 1 << 0,
    VIR_QEMU_PROCESS_KILL_NOWAIT = 1 << 1,
