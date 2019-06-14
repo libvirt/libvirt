@@ -74,8 +74,8 @@ int qemuMonitorTestAddItemExpect(qemuMonitorTestPtr test,
                                  bool apostrophe,
                                  const char *response);
 
-# define qemuMonitorTestNewSimple(json, xmlopt) \
-    qemuMonitorTestNew(json, xmlopt, NULL, NULL, NULL, NULL)
+# define qemuMonitorTestNewSimple(xmlopt) \
+    qemuMonitorTestNew(true, xmlopt, NULL, NULL, NULL, NULL)
 # define qemuMonitorTestNewSchema(xmlopt, schema) \
     qemuMonitorTestNew(true, xmlopt, NULL, NULL, NULL, schema)
 

@@ -1318,7 +1318,7 @@ qemuMonitorTestNewFromFile(const char *fileName,
     if (virTestLoadFile(fileName, &json) < 0)
         goto cleanup;
 
-    if (simple && !(test = qemuMonitorTestNewSimple(true, xmlopt)))
+    if (simple && !(test = qemuMonitorTestNewSimple(xmlopt)))
         goto cleanup;
 
     /* Our JSON parser expects replies to be separated by a newline character.
