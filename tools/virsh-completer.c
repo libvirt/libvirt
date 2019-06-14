@@ -34,6 +34,7 @@
 #include "virmacaddr.h"
 #include "virstring.h"
 #include "virxml.h"
+#include "conf/node_device_conf.h"
 
 
 /**
@@ -972,6 +973,32 @@ virshNodedevEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
 
     VIR_STEAL_PTR(ret, tmp);
     return ret;
+}
+
+
+char **
+virshNodedevCapabilityNameCompleter(vshControl *ctl,
+                                    const vshCmd *cmd,
+                                    unsigned int flags)
+{
+    VIR_AUTOSTRINGLIST tmp = NULL;
+    const char *cap_str = NULL;
+    size_t i = 0;
+
+    virCheckFlags(0, NULL);
+
+    if (vshCommandOptStringQuiet(ctl, cmd, "cap", &cap_str) < 0)
+        return NULL;
+
+    if (VIR_ALLOC_N(tmp, VIR_NODE_DEV_CAP_LAST + 1) < 0)
+        return NULL;
+
+    for (i = 0; i < VIR_NODE_DEV_CAP_LAST; i++) {
+        if (VIR_STRDUP(tmp[i], virNodeDevCapTypeToString(i)) < 0)
+            return NULL;
+    }
+
+    return virshCommaStringListComplete(cap_str, (const char **)tmp);
 }
 
 
