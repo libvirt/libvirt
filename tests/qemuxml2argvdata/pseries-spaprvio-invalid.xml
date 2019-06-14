@@ -1,0 +1,17 @@
+<domain type='qemu'>
+  <name>guest</name>
+  <uuid>b35969f7-e7cf-4d90-a9a0-4dd9000f9824</uuid>
+  <memory unit='KiB'>4194304</memory>
+  <vcpu placement='static'>4</vcpu>
+  <os>
+    <type arch='ppc64le' machine='pseries'>hvm</type>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-ppc64</emulator>
+    <serial type='pty'>
+      <!-- spapr-vio addresses are 32-bit, so they can go up to 0xffffffff:
+           the value below is too big and should be rejected -->
+      <address type='spapr-vio' reg='0x0000000100000000'/>
+    </serial>
+  </devices>
+</domain>

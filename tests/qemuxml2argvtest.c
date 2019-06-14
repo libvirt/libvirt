@@ -1910,6 +1910,7 @@ mymain(void)
     DO_TEST("pseries-console-virtio",
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
     DO_TEST_PARSE_ERROR("pseries-serial-invalid-machine", NONE);
+    DO_TEST_PARSE_ERROR("pseries-spaprvio-invalid", "ppc64");
 
     DO_TEST("mach-virt-serial-native",
             QEMU_CAPS_DEVICE_PL011);
