@@ -1041,6 +1041,7 @@ virConnectCompareHypervisorCPU(virConnectPtr conn,
 
     virCheckConnectReturn(conn, VIR_CPU_COMPARE_ERROR);
     virCheckNonNullArgGoto(xmlCPU, error);
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->driver->connectCompareHypervisorCPU) {
         int ret;
@@ -1234,6 +1235,7 @@ virConnectBaselineHypervisorCPU(virConnectPtr conn,
 
     virCheckConnectReturn(conn, NULL);
     virCheckNonNullArgGoto(xmlCPUs, error);
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->driver->connectBaselineHypervisorCPU) {
         char *cpu;
