@@ -133,13 +133,7 @@ struct _qemuMonitor {
                            _("monitor must not be NULL")); \
             exit; \
         } \
-        VIR_DEBUG("mon:%p vm:%p json:%d fd:%d", \
-                  mon, mon->vm, mon->json, mon->fd); \
-        if (!mon->json) { \
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s", \
-                           _("JSON monitor is required")); \
-            exit; \
-        } \
+        VIR_DEBUG("mon:%p vm:%p fd:%d", mon, mon->vm, mon->fd); \
     } while (0)
 
 /* Check monitor and return NULL on error */
