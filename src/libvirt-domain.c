@@ -9482,6 +9482,7 @@ virDomainManagedSaveDefineXML(virDomainPtr domain, const char *dxml,
 
     virCheckDomainReturn(domain, -1);
     conn = domain->conn;
+    virCheckReadOnlyGoto(conn->flags, error);
 
     if (conn->driver->domainManagedSaveDefineXML) {
         int ret;
