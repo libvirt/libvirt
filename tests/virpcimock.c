@@ -980,6 +980,7 @@ init_env(void)
     MAKE_PCI_DRIVER("iwlwifi", 0x8086, 0x0044);
     MAKE_PCI_DRIVER("i915", 0x8086, 0x0046, 0x8086, 0x0047);
     MAKE_PCI_DRIVER("vfio-pci", -1, -1);
+    MAKE_PCI_DRIVER("nvme", 0x1cc1, 0x8201);
 
 # define MAKE_PCI_DEVICE(Id, Vendor, Device, IommuGroup, ...) \
     do { \
@@ -1015,6 +1016,8 @@ init_env(void)
     MAKE_PCI_DEVICE("0021:de:1f.1", 0x8086, 0x0047, 13,
                     .physfn = "0021:de:1f.0"); /* Virtual Function */
 
+    MAKE_PCI_DEVICE("0000:01:00.0", 0x1cc1, 0x8201, 14, .klass = 0x010802);
+    MAKE_PCI_DEVICE("0000:02:00.0", 0x1cc1, 0x8201, 15, .klass = 0x010802);
 }
 
 
