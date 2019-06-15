@@ -197,8 +197,8 @@ qemuMonitorReportError(qemuMonitorTestPtr test, const char *errmsg, ...)
 {
     va_list msgargs;
     VIR_AUTOFREE(char *) tmp = NULL;
-    char *msg = NULL;
-    char *jsonmsg = NULL;
+    VIR_AUTOFREE(char *) msg = NULL;
+    VIR_AUTOFREE(char *) jsonmsg = NULL;
     int ret = -1;
 
     va_start(msgargs, errmsg);
@@ -219,8 +219,6 @@ qemuMonitorReportError(qemuMonitorTestPtr test, const char *errmsg, ...)
 
  cleanup:
     va_end(msgargs);
-    VIR_FREE(msg);
-    VIR_FREE(jsonmsg);
     return ret;
 }
 
