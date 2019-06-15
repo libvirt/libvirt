@@ -524,11 +524,10 @@ qemuMonitorTestProcessCommandDefaultValidate(qemuMonitorTestPtr test,
                                              const char *cmdname,
                                              virJSONValuePtr args)
 {
-    virBuffer debug = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) debug = VIR_BUFFER_INITIALIZER;
     virJSONValuePtr schemaroot;
-    virJSONValuePtr emptyargs = NULL;
-    char *schemapath = NULL;
-    int ret = -1;
+    VIR_AUTOPTR(virJSONValue) emptyargs = NULL;
+    VIR_AUTOFREE(char *) schemapath = NULL;
 
     if (!test->qapischema || !test->json || test->agent)
         return 0;
@@ -538,43 +537,34 @@ qemuMonitorTestProcessCommandDefaultValidate(qemuMonitorTestPtr test,
         return 0;
 
     if (virAsprintf(&schemapath, "%s/arg-type", cmdname) < 0)
-        goto cleanup;
+        return -1;
 
     if (virQEMUQAPISchemaPathGet(schemapath, test->qapischema, &schemaroot) < 0 ||
         !schemaroot) {
         if (qemuMonitorReportError(test,
                                    "command '%s' not found in QAPI schema",
                                    cmdname) == 0)
-            ret = 1;
-        goto cleanup;
+            return 1;
+        return -1;
     }
 
     if (!args) {
         if (!(emptyargs = virJSONValueNewObject()))
-            goto cleanup;
+            return -1;
 
         args = emptyargs;
     }
 
     if (testQEMUSchemaValidate(args, schemaroot, test->qapischema, &debug) < 0) {
-        char *debugmsg = virBufferContentAndReset(&debug);
         if (qemuMonitorReportError(test,
                                    "failed to validate arguments of '%s' "
                                    "against QAPI schema: %s",
-                                   cmdname, debugmsg) == 0)
-            ret = 1;
-
-        VIR_FREE(debugmsg);
-        goto cleanup;
+                                   cmdname, virBufferCurrentContent(&debug)) == 0)
+            return 1;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    virBufferFreeAndReset(&debug);
-    virJSONValueFree(emptyargs);
-    VIR_FREE(schemapath);
-    return ret;
+    return 0;
 }
 
 
