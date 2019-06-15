@@ -1400,15 +1400,9 @@ virHostdevFindUSBDevice(virDomainHostdevDefPtr hostdev,
         VIR_AUTOUNREF(virUSBDeviceListPtr) devs = NULL;
 
         rc = virUSBDeviceFindByVendor(vendor, product, NULL, mandatory, &devs);
-        if (rc < 0)
+        if (rc < 0) {
             return -1;
-
-        if (rc == 1) {
-            *usb = virUSBDeviceListGet(devs, 0);
-            virUSBDeviceListSteal(devs, *usb);
-        }
-
-        if (rc == 0) {
+        } else if (rc == 0) {
             goto out;
         } else if (rc > 1) {
             if (autoAddress) {
@@ -1424,6 +1418,9 @@ virHostdevFindUSBDevice(virDomainHostdevDefPtr hostdev,
             }
             return -1;
         }
+
+        *usb = virUSBDeviceListGet(devs, 0);
+        virUSBDeviceListSteal(devs, *usb);
 
         usbsrc->bus = virUSBDeviceGetBus(*usb);
         usbsrc->device = virUSBDeviceGetDevno(*usb);
