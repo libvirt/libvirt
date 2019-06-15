@@ -521,8 +521,15 @@ qemuMonitorTestProcessCommandDefaultValidate(qemuMonitorTestPtr test,
     VIR_AUTOPTR(virJSONValue) emptyargs = NULL;
     VIR_AUTOFREE(char *) schemapath = NULL;
 
-    if (!test->qapischema || !test->json || test->agent)
+    if (!test->qapischema)
         return 0;
+
+    if (test->agent) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Command validation testing is not "
+                       "implemented for the guest agent");
+        return -1;
+    }
 
     /* 'device_add' needs to be skipped as it does not have fully defined schema */
     if (STREQ(cmdname, "device_add"))
