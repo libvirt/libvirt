@@ -1645,10 +1645,9 @@ virHostdevPrepareSCSIVHostDevices(virHostdevManagerPtr mgr,
                                   virDomainHostdevDefPtr *hostdevs,
                                   int nhostdevs)
 {
-    size_t i, j;
-    int count;
     VIR_AUTOUNREF(virSCSIVHostDeviceListPtr) list = NULL;
-    virSCSIVHostDevicePtr host, tmp;
+    virSCSIVHostDevicePtr tmp;
+    size_t i, j;
 
     if (!nhostdevs)
         return 0;
@@ -1665,6 +1664,7 @@ virHostdevPrepareSCSIVHostDevices(virHostdevManagerPtr mgr,
     for (i = 0; i < nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = hostdevs[i];
         virDomainHostdevSubsysSCSIVHostPtr hostsrc = &hostdev->source.subsys.u.scsi_host;
+        VIR_AUTOPTR(virSCSIVHostDevice) host = NULL;
 
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
             hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST)
@@ -1676,10 +1676,12 @@ virHostdevPrepareSCSIVHostDevices(virHostdevManagerPtr mgr,
         if (!(host = virSCSIVHostDeviceNew(hostsrc->wwpn)))
             return -1;
 
-        if (virSCSIVHostDeviceListAdd(list, host) < 0) {
-            virSCSIVHostDeviceFree(host);
+        if (virSCSIVHostDeviceSetUsedBy(host, drv_name, dom_name) < 0)
             return -1;
-        }
+
+        if (virSCSIVHostDeviceListAdd(list, host) < 0)
+            return -1;
+        host = NULL;
     }
 
     /* Loop 2: Mark devices in temporary list as used by @name
@@ -1687,27 +1689,15 @@ virHostdevPrepareSCSIVHostDevices(virHostdevManagerPtr mgr,
      * wrong, perform rollback.
      */
     virObjectLock(mgr->activeSCSIVHostHostdevs);
-    count = virSCSIVHostDeviceListCount(list);
 
-    for (i = 0; i < count; i++) {
-        host = virSCSIVHostDeviceListGet(list, i);
-        if ((tmp = virSCSIVHostDeviceListFind(mgr->activeSCSIVHostHostdevs,
-                                              host))) {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("SCSI_host device %s is already in use by "
-                             "another domain"),
-                           virSCSIVHostDeviceGetName(tmp));
-            goto error;
-        } else {
-            if (virSCSIVHostDeviceSetUsedBy(host, drv_name, dom_name) < 0)
-                goto error;
+    for (i = 0; i < virSCSIVHostDeviceListCount(list); i++) {
+        tmp = virSCSIVHostDeviceListGet(list, i);
 
-            VIR_DEBUG("Adding %s to activeSCSIVHostHostdevs",
-                      virSCSIVHostDeviceGetName(host));
+        VIR_DEBUG("Adding %s to activeSCSIVHostHostdevs",
+                  virSCSIVHostDeviceGetName(tmp));
 
-            if (virSCSIVHostDeviceListAdd(mgr->activeSCSIVHostHostdevs, host) < 0)
-                goto error;
-        }
+        if (virSCSIVHostDeviceListAdd(mgr->activeSCSIVHostHostdevs, tmp) < 0)
+            goto rollback;
     }
 
     virObjectUnlock(mgr->activeSCSIVHostHostdevs);
@@ -1722,7 +1712,8 @@ virHostdevPrepareSCSIVHostDevices(virHostdevManagerPtr mgr,
     }
 
     return 0;
- error:
+
+ rollback:
     for (j = 0; j < i; j++) {
         tmp = virSCSIVHostDeviceListGet(list, i);
         virSCSIVHostDeviceListSteal(mgr->activeSCSIVHostHostdevs, tmp);
