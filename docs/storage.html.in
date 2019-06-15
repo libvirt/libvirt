@@ -359,7 +359,16 @@
       The formats <code>dos</code> ("msdos" in parted terminology,
       good for BIOS systems) or <code>gpt</code> (good for UEFI
       systems) are recommended for best portability - the latter is
-      needed for disks larger than 2TB.
+      needed for disks larger than 2TB. Note that the <code>lvm2</code>
+      format refers to the physical volume format (i.e. the whole
+      disk is a physical volume - not the usual usage of LVM where
+      physical volumes are partitions). This is not really
+      a partition table and such pool cannot be built by libvirt,
+      only detected.
+    </p>
+    <p>
+      Building a pool of a certain format depends on its availability
+      in <code>parted</code>.
     </p>
 
     <h3>Valid volume format types</h3>
