@@ -126,40 +126,33 @@ qemuMonitorTestAddErrorResponse(qemuMonitorTestPtr test,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     VIR_AUTOFREE(char *) escapemsg = NULL;
     VIR_AUTOFREE(char *) jsonmsg = NULL;
-    const char *monmsg = NULL;
     char *tmp;
 
     if (!usermsg)
         usermsg = "unexpected command";
 
-    if (test->json || test->agent) {
-        virBufferEscape(&buf, '\\', "\"", "%s", usermsg);
-        if (virBufferCheckError(&buf) < 0)
-            return -1;
-        escapemsg = virBufferContentAndReset(&buf);
+    virBufferEscape(&buf, '\\', "\"", "%s", usermsg);
+    if (virBufferCheckError(&buf) < 0)
+        return -1;
+    escapemsg = virBufferContentAndReset(&buf);
 
-        /* replace newline/carriage return with space */
-        tmp = escapemsg;
-        while (*tmp) {
-            if (*tmp == '\r' || *tmp == '\n')
-                *tmp = ' ';
+    /* replace newline/carriage return with space */
+    tmp = escapemsg;
+    while (*tmp) {
+        if (*tmp == '\r' || *tmp == '\n')
+            *tmp = ' ';
 
-            tmp++;
-        }
-
-        /* format the JSON error message */
-        if (virAsprintf(&jsonmsg, "{ \"error\": "
-                                  " { \"desc\": \"%s\", "
-                                  "   \"class\": \"UnexpectedCommand\" } }",
-                                  escapemsg) < 0)
-            return -1;
-
-        monmsg = jsonmsg;
-    } else {
-        monmsg = usermsg;
+        tmp++;
     }
 
-    return qemuMonitorTestAddResponse(test, monmsg);
+    /* format the JSON error message */
+    if (virAsprintf(&jsonmsg, "{ \"error\": "
+                    " { \"desc\": \"%s\", "
+                    "   \"class\": \"UnexpectedCommand\" } }",
+                    escapemsg) < 0)
+        return -1;
+
+    return qemuMonitorTestAddResponse(test, jsonmsg);
 }
 
 
@@ -203,6 +196,7 @@ int ATTRIBUTE_FMT_PRINTF(2, 3)
 qemuMonitorReportError(qemuMonitorTestPtr test, const char *errmsg, ...)
 {
     va_list msgargs;
+    VIR_AUTOFREE(char *) tmp = NULL;
     char *msg = NULL;
     char *jsonmsg = NULL;
     int ret = -1;
@@ -212,20 +206,14 @@ qemuMonitorReportError(qemuMonitorTestPtr test, const char *errmsg, ...)
     if (virVasprintf(&msg, errmsg, msgargs) < 0)
         goto cleanup;
 
-    if (test->agent || test->json) {
-        VIR_AUTOFREE(char *) tmp = NULL;
-        if (!(tmp = qemuMonitorEscapeArg(msg)))
-            goto cleanup;
+    if (!(tmp = qemuMonitorEscapeArg(msg)))
+        goto cleanup;
 
-        if (virAsprintf(&jsonmsg, "{ \"error\": "
-                                  " { \"desc\": \"%s\", "
-                                  "   \"class\": \"UnexpectedCommand\" } }",
-                                  tmp) < 0)
-            goto cleanup;
-    } else {
-        if (virAsprintf(&jsonmsg, "error: '%s'", msg) < 0)
-            goto cleanup;
-    }
+    if (virAsprintf(&jsonmsg, "{ \"error\": "
+                    " { \"desc\": \"%s\", "
+                    "   \"class\": \"UnexpectedCommand\" } }",
+                    tmp) < 0)
+        goto cleanup;
 
     ret = qemuMonitorTestAddResponse(test, jsonmsg);
 
@@ -600,37 +588,19 @@ qemuMonitorTestProcessCommandDefault(qemuMonitorTestPtr test,
     struct qemuMonitorTestHandlerData *data = item->opaque;
     virJSONValuePtr val = NULL;
     virJSONValuePtr cmdargs = NULL;
-    char *cmdcopy = NULL;
     const char *cmdname;
-    char *tmp;
     int ret = -1;
     int rc;
 
-    if (test->agent || test->json) {
-        if (!(val = virJSONValueFromString(cmdstr)))
-            return -1;
+    if (!(val = virJSONValueFromString(cmdstr)))
+        return -1;
 
-        if (!(cmdname = virJSONValueObjectGetString(val, "execute"))) {
-            ret = qemuMonitorReportError(test, "Missing command name in %s", cmdstr);
-            goto cleanup;
-        }
-
-        cmdargs = virJSONValueObjectGet(val, "arguments");
-    } else {
-        if (VIR_STRDUP(cmdcopy, cmdstr) < 0)
-            return -1;
-
-        cmdname = cmdcopy;
-
-        if (!(tmp = strchr(cmdcopy, ' '))) {
-            ret = qemuMonitorReportError(test,
-                                         "Cannot find command name in '%s'",
-                                         cmdstr);
-            goto cleanup;
-        }
-        *tmp = '\0';
+    if (!(cmdname = virJSONValueObjectGetString(val, "execute"))) {
+        ret = qemuMonitorReportError(test, "Missing command name in %s", cmdstr);
+        goto cleanup;
     }
 
+    cmdargs = virJSONValueObjectGet(val, "arguments");
     if ((rc = qemuMonitorTestProcessCommandDefaultValidate(test, cmdname, cmdargs)) < 0)
         goto cleanup;
 
@@ -646,7 +616,6 @@ qemuMonitorTestProcessCommandDefault(qemuMonitorTestPtr test,
         ret = qemuMonitorTestAddResponse(test, data->response);
 
  cleanup:
-    VIR_FREE(cmdcopy);
     virJSONValueFree(val);
     return ret;
 }
@@ -689,23 +658,21 @@ qemuMonitorTestProcessCommandVerbatim(qemuMonitorTestPtr test,
     int rc;
 
     /* JSON strings will be reformatted to simplify checking */
-    if (test->json || test->agent) {
-        if (!(json = virJSONValueFromString(cmdstr)) ||
-            !(reformatted = virJSONValueToString(json, false)))
+    if (!(json = virJSONValueFromString(cmdstr)) ||
+        !(reformatted = virJSONValueToString(json, false)))
+        return -1;
+
+    cmdstr = reformatted;
+
+    /* in this case we do a best-effort schema check if we can find the command */
+    if ((cmdname = virJSONValueObjectGetString(json, "execute"))) {
+        cmdargs = virJSONValueObjectGet(json, "arguments");
+
+        if ((rc = qemuMonitorTestProcessCommandDefaultValidate(test, cmdname, cmdargs)) < 0)
             return -1;
 
-        cmdstr = reformatted;
-
-        /* in this case we do a best-effort schema check if we can find the command */
-        if ((cmdname = virJSONValueObjectGetString(json, "execute"))) {
-            cmdargs = virJSONValueObjectGet(json, "arguments");
-
-            if ((rc = qemuMonitorTestProcessCommandDefaultValidate(test, cmdname, cmdargs)) < 0)
-                return -1;
-
-            if (rc == 1)
-                return 0;
-        }
+        if (rc == 1)
+            return 0;
     }
 
     if (STREQ(data->command_name, cmdstr)) {
@@ -756,11 +723,7 @@ qemuMonitorTestAddItemVerbatim(qemuMonitorTestPtr test,
         VIR_STRDUP(data->cmderr, cmderr) < 0)
         goto error;
 
-    if (test->json || test->agent)
-        data->command_name = virJSONStringReformat(command, false);
-    else
-        ignore_value(VIR_STRDUP(data->command_name, command));
-
+    data->command_name = virJSONStringReformat(command, false);
     if (!data->command_name)
         goto error;
 
