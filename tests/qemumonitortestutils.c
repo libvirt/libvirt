@@ -174,17 +174,13 @@ qemuMonitorTestAddInvalidCommandResponse(qemuMonitorTestPtr test,
                                          const char *expectedcommand,
                                          const char *actualcommand)
 {
-    char *msg;
-    int ret;
+    VIR_AUTOFREE(char *) msg = NULL;
 
     if (virAsprintf(&msg, "expected command '%s' got '%s'",
                     expectedcommand, actualcommand) < 0)
         return -1;
 
-    ret = qemuMonitorTestAddErrorResponse(test, msg);
-
-    VIR_FREE(msg);
-    return ret;
+    return qemuMonitorTestAddErrorResponse(test, msg);
 }
 
 
