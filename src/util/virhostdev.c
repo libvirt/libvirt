@@ -240,11 +240,6 @@ virHostdevGetPCIHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
             virObjectUnref(pcidevs);
             return NULL;
         }
-        if (virPCIDeviceListAdd(pcidevs, pci) < 0) {
-            virPCIDeviceFree(pci);
-            virObjectUnref(pcidevs);
-            return NULL;
-        }
 
         virPCIDeviceSetManaged(pci, hostdev->managed);
 
@@ -254,6 +249,12 @@ virHostdevGetPCIHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
             virPCIDeviceSetStubDriver(pci, VIR_PCI_STUB_DRIVER_XEN);
         else
             virPCIDeviceSetStubDriver(pci, VIR_PCI_STUB_DRIVER_KVM);
+
+        if (virPCIDeviceListAdd(pcidevs, pci) < 0) {
+            virPCIDeviceFree(pci);
+            virObjectUnref(pcidevs);
+            return NULL;
+        }
     }
 
     return pcidevs;
