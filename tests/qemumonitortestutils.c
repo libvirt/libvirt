@@ -213,16 +213,14 @@ qemuMonitorReportError(qemuMonitorTestPtr test, const char *errmsg, ...)
         goto cleanup;
 
     if (test->agent || test->json) {
-        char *tmp = msg;
-        msg = qemuMonitorEscapeArg(tmp);
-        VIR_FREE(tmp);
-        if (!msg)
+        VIR_AUTOFREE(char *) tmp = NULL;
+        if (!(tmp = qemuMonitorEscapeArg(msg)))
             goto cleanup;
 
         if (virAsprintf(&jsonmsg, "{ \"error\": "
                                   " { \"desc\": \"%s\", "
                                   "   \"class\": \"UnexpectedCommand\" } }",
-                                  msg) < 0)
+                                  tmp) < 0)
             goto cleanup;
     } else {
         if (virAsprintf(&jsonmsg, "error: '%s'", msg) < 0)
