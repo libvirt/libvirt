@@ -227,7 +227,7 @@ virHostdevGetPCIHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
     for (i = 0; i < nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = hostdevs[i];
         virDomainHostdevSubsysPCIPtr pcisrc = &hostdev->source.subsys.u.pci;
-        virPCIDevicePtr pci;
+        VIR_AUTOPTR(virPCIDevice) pci = NULL;
 
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
             continue;
@@ -251,10 +251,10 @@ virHostdevGetPCIHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
             virPCIDeviceSetStubDriver(pci, VIR_PCI_STUB_DRIVER_KVM);
 
         if (virPCIDeviceListAdd(pcidevs, pci) < 0) {
-            virPCIDeviceFree(pci);
             virObjectUnref(pcidevs);
             return NULL;
         }
+        pci = NULL;
     }
 
     return pcidevs;
