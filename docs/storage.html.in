@@ -308,7 +308,7 @@
       by adding partitions to the disk. Disk pools have constraints
       on the size and placement of volumes. The 'free extents'
       information will detail the regions which are available for creating
-      new volumes. A volume cannot span across 2 different free extents.
+      new volumes. A volume cannot span across two different free extents.
       It will default to using <code>dos</code> as the pool source format.
     </p>
 
