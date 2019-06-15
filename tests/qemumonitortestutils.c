@@ -584,38 +584,29 @@ qemuMonitorTestProcessCommandDefault(qemuMonitorTestPtr test,
                                      const char *cmdstr)
 {
     struct qemuMonitorTestHandlerData *data = item->opaque;
-    virJSONValuePtr val = NULL;
+    VIR_AUTOPTR(virJSONValue) val = NULL;
     virJSONValuePtr cmdargs = NULL;
     const char *cmdname;
-    int ret = -1;
     int rc;
 
     if (!(val = virJSONValueFromString(cmdstr)))
         return -1;
 
-    if (!(cmdname = virJSONValueObjectGetString(val, "execute"))) {
-        ret = qemuMonitorReportError(test, "Missing command name in %s", cmdstr);
-        goto cleanup;
-    }
+    if (!(cmdname = virJSONValueObjectGetString(val, "execute")))
+        return qemuMonitorReportError(test, "Missing command name in %s", cmdstr);
 
     cmdargs = virJSONValueObjectGet(val, "arguments");
     if ((rc = qemuMonitorTestProcessCommandDefaultValidate(test, cmdname, cmdargs)) < 0)
-        goto cleanup;
+        return -1;
+    if (rc == 1)
+        return 0;
 
-    if (rc == 1) {
-        ret = 0;
-        goto cleanup;
+    if (data->command_name && STRNEQ(data->command_name, cmdname)) {
+        return qemuMonitorTestAddInvalidCommandResponse(test, data->command_name,
+                                                        cmdname);
+    } else {
+        return qemuMonitorTestAddResponse(test, data->response);
     }
-
-    if (data->command_name && STRNEQ(data->command_name, cmdname))
-        ret = qemuMonitorTestAddInvalidCommandResponse(test, data->command_name,
-                                                       cmdname);
-    else
-        ret = qemuMonitorTestAddResponse(test, data->response);
-
- cleanup:
-    virJSONValueFree(val);
-    return ret;
 }
 
 
