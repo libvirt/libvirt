@@ -90,10 +90,10 @@
       A pool with a type of <code>dir</code> provides the means to manage
       files within a directory. The files can be fully allocated raw files,
       sparsely allocated raw files, or one of the special disk formats
-      such as <code>qcow</code>,<code>qcow2</code>,<code>vmdk</code>,
-      <code>cow</code>, etc as supported  by the <code>qemu-img</code>
-      program. If the directory does not exist at the time the pool is
-      defined, the <code>build</code> operation can be used to create it.
+      such as <code>qcow2</code>, <code>vmdk</code>, etc as supported
+      by the <code>qemu-img</code> program. If the directory does not exist
+      at the time the pool is defined, the <code>build</code>
+      operation can be used to create it.
     </p>
 
     <h3>Example pool input definition</h3>
@@ -132,9 +132,8 @@
       natively. When creating new volumes, only a subset may be
       available. The <code>raw</code> type is guaranteed always
       available. The <code>qcow2</code> type can be created if
-      either <code>qemu-img</code> or <code>qcow-create</code> tools
-      are present. The others are dependent on support of the
-      <code>qemu-img</code> tool.
+      the <code>qemu-img</code> tool is present. The others are
+      dependent on support of the <code>qemu-img</code> tool.
 
     </p>
 
