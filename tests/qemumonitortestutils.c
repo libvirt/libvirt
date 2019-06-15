@@ -124,11 +124,10 @@ qemuMonitorTestAddErrorResponse(qemuMonitorTestPtr test,
                                 const char *usermsg)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    char *escapemsg = NULL;
-    char *jsonmsg = NULL;
+    VIR_AUTOFREE(char *) escapemsg = NULL;
+    VIR_AUTOFREE(char *) jsonmsg = NULL;
     const char *monmsg = NULL;
     char *tmp;
-    int ret = -1;
 
     if (!usermsg)
         usermsg = "unexpected command";
@@ -136,7 +135,7 @@ qemuMonitorTestAddErrorResponse(qemuMonitorTestPtr test,
     if (test->json || test->agent) {
         virBufferEscape(&buf, '\\', "\"", "%s", usermsg);
         if (virBufferCheckError(&buf) < 0)
-            goto error;
+            return -1;
         escapemsg = virBufferContentAndReset(&buf);
 
         /* replace newline/carriage return with space */
@@ -153,19 +152,14 @@ qemuMonitorTestAddErrorResponse(qemuMonitorTestPtr test,
                                   " { \"desc\": \"%s\", "
                                   "   \"class\": \"UnexpectedCommand\" } }",
                                   escapemsg) < 0)
-            goto error;
+            return -1;
 
         monmsg = jsonmsg;
     } else {
         monmsg = usermsg;
     }
 
-    ret = qemuMonitorTestAddResponse(test, monmsg);
-
- error:
-    VIR_FREE(escapemsg);
-    VIR_FREE(jsonmsg);
-    return ret;
+    return qemuMonitorTestAddResponse(test, monmsg);
 }
 
 
