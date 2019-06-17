@@ -50,6 +50,19 @@
         </description>
       </change>
     </section>
+    <section title="Removed features">
+      <change>
+        <summary>
+          qemu: Remove support for virDomainQemuAttach and virConnectDomainXMLFromNative APIs
+        </summary>
+        <description>
+          The qemu implementations for the APIs mentioned above were removed
+          and the APIs now return an error. The implementation was stale for a
+          long time and did not work with modern QEMU command lines, generated
+          from libvirt or otherwise.
+        </description>
+      </change>
+    </section>
     <section title="Improvements">
     </section>
     <section title="Bug fixes">
