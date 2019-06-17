@@ -1145,6 +1145,11 @@ ifneq ($(_gl-Makefile),)
 syntax-check: spacing-check test-wrap-argv \
 	prohibit-duplicate-header mock-noinline group-qemu-caps \
         header-ifdef
+	@if ! cppi --version >/dev/null 2>&1; then \
+		echo "*****************************************************" >&2; \
+		echo "* cppi not installed, some checks have been skipped *" >&2; \
+		echo "*****************************************************" >&2; \
+	fi
 endif
 
 # Don't include duplicate header in the source (either *.c or *.h)
