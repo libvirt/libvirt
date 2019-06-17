@@ -3096,6 +3096,8 @@ qemuDomainXmlNsDefFree(qemuDomainXmlNsDefPtr def)
     virStringListFreeCount(def->args, def->num_args);
     virStringListFreeCount(def->env_name, def->num_env);
     virStringListFreeCount(def->env_value, def->num_env);
+    virStringListFreeCount(def->capsadd, def->ncapsadd);
+    virStringListFreeCount(def->capsdel, def->ncapsdel);
 
     VIR_FREE(def);
 }
@@ -3196,6 +3198,50 @@ qemuDomainDefNamespaceParseCommandlineEnv(qemuDomainXmlNsDefPtr nsdef,
 
 
 static int
+qemuDomainDefNamespaceParseCaps(qemuDomainXmlNsDefPtr nsdef,
+                                xmlXPathContextPtr ctxt)
+{
+    VIR_AUTOFREE(xmlNodePtr *) nodesadd = NULL;
+    ssize_t nnodesadd;
+    VIR_AUTOFREE(xmlNodePtr *) nodesdel = NULL;
+    ssize_t nnodesdel;
+    size_t i;
+
+    if ((nnodesadd = virXPathNodeSet("./qemu:capabilities/qemu:add", ctxt, &nodesadd)) < 0 ||
+        (nnodesdel = virXPathNodeSet("./qemu:capabilities/qemu:del", ctxt, &nodesdel)) < 0)
+        return -1;
+
+    if (nnodesadd > 0) {
+        if (VIR_ALLOC_N(nsdef->capsadd, nnodesadd) < 0)
+            return -1;
+
+        for (i = 0; i < nnodesadd; i++) {
+            if (!(nsdef->capsadd[nsdef->ncapsadd++] = virXMLPropString(nodesadd[i], "capability"))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("missing capability name"));
+                return -1;
+            }
+        }
+    }
+
+    if (nnodesdel > 0) {
+        if (VIR_ALLOC_N(nsdef->capsdel, nnodesdel) < 0)
+            return -1;
+
+        for (i = 0; i < nnodesdel; i++) {
+            if (!(nsdef->capsdel[nsdef->ncapsdel++] = virXMLPropString(nodesdel[i], "capability"))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("missing capability name"));
+                return -1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
                             xmlNodePtr root ATTRIBUTE_UNUSED,
                             xmlXPathContextPtr ctxt,
@@ -3215,10 +3261,12 @@ qemuDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
         return -1;
 
     if (qemuDomainDefNamespaceParseCommandlineArgs(nsdata, ctxt) < 0 ||
-        qemuDomainDefNamespaceParseCommandlineEnv(nsdata, ctxt) < 0)
+        qemuDomainDefNamespaceParseCommandlineEnv(nsdata, ctxt) < 0 ||
+        qemuDomainDefNamespaceParseCaps(nsdata, ctxt) < 0)
         goto cleanup;
 
-    if (nsdata->num_args > 0 || nsdata->num_env > 0)
+    if (nsdata->num_args > 0 || nsdata->num_env > 0 ||
+        nsdata->ncapsadd > 0 || nsdata->ncapsdel > 0)
         VIR_STEAL_PTR(*data, nsdata);
 
     ret = 0;
@@ -3256,6 +3304,29 @@ qemuDomainDefNamespaceFormatXMLCommandline(virBufferPtr buf,
 }
 
 
+static void
+qemuDomainDefNamespaceFormatXMLCaps(virBufferPtr buf,
+                                    qemuDomainXmlNsDefPtr xmlns)
+{
+    size_t i;
+
+    if (!xmlns->ncapsadd && !xmlns->ncapsdel)
+        return;
+
+    virBufferAddLit(buf, "<qemu:capabilities>\n");
+    virBufferAdjustIndent(buf, 2);
+
+    for (i = 0; i < xmlns->ncapsadd; i++)
+        virBufferEscapeString(buf, "<qemu:add capability='%s'/>\n", xmlns->capsadd[i]);
+
+    for (i = 0; i < xmlns->ncapsdel; i++)
+        virBufferEscapeString(buf, "<qemu:del capability='%s'/>\n", xmlns->capsdel[i]);
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</qemu:capabilities>\n");
+}
+
+
 static int
 qemuDomainDefNamespaceFormatXML(virBufferPtr buf,
                                 void *nsdata)
@@ -3263,6 +3334,7 @@ qemuDomainDefNamespaceFormatXML(virBufferPtr buf,
     qemuDomainXmlNsDefPtr cmd = nsdata;
 
     qemuDomainDefNamespaceFormatXMLCommandline(buf, cmd);
+    qemuDomainDefNamespaceFormatXMLCaps(buf, cmd);
 
     return 0;
 }

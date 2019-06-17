@@ -73,6 +73,9 @@
           <ref name='qemucmdline'/>
         </optional>
         <optional>
+          <ref name='qemucapabilities'/>
+        </optional>
+        <optional>
           <ref name='lxcsharens'/>
         </optional>
         <optional>
@@ -6196,6 +6199,22 @@
       </zeroOrMore>
     </element>
   </define>
+
+  <define name="qemucapabilities">
+    <element name="capabilities" ns="http://libvirt.org/schemas/domain/qemu/1.0">
+      <zeroOrMore>
+        <element name="add">
+          <attribute name="capability"/>
+        </element>
+      </zeroOrMore>
+      <zeroOrMore>
+        <element name="del">
+          <attribute name="capability"/>
+        </element>
+      </zeroOrMore>
+    </element>
+  </define>
+
 
   <!--
        Optional hypervisor extensions in their own namespace:

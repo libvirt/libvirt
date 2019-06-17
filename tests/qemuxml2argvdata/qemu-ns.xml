@@ -27,4 +27,9 @@
     <qemu:env name='NS' value='ns'/>
     <qemu:env name='BAR'/>
   </qemu:commandline>
+  <qemu:capabilities>
+    <qemu:add capability="vnc-colon"/>
+    <qemu:add capability="drive"/>
+    <qemu:del capability="name"/>
+  </qemu:capabilities>
 </domain>

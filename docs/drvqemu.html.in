@@ -521,6 +521,36 @@ mount -t cgroup none /dev/cgroup -o devices
 &lt;/domain&gt;
 </pre>
 
+    <h2><a id="xmlnsfeatures">QEMU feature configuration for testing</a></h2>
+
+      <p>
+        In some cases e.g. when developing a new feature or for testing it may
+        be required to control a given qemu feature (or qemu capability) to test
+        it before it's complete or disable it for debugging purposes.
+        <span class="since">Since 5.5.0</span> it's possible to use the same
+        special qemu namespace as above
+        (<code>http://libvirt.org/schemas/domain/qemu/1.0</code>) and use
+        <code>&lt;qemu:capabilities&gt;</code> element to add
+        (<code>&lt;qemu:add capability="capname"/&gt;</code>) or remove
+        (<code>&lt;qemu:del capability="capname"/&gt;</code>) capability bits.
+        The naming of the feature bits is the same libvirt uses in the status
+        XML. Note that this feature is meant for experiments only and should
+        _not_ be used in production.
+      </p>
+
+      <p>Example:</p><pre>
+&lt;domain type='qemu' xmlns:qemu='http://libvirt.org/schemas/domain/qemu/1.0'&gt;
+  &lt;name&gt;testvm&lt;/name&gt;
+
+   [...]
+
+  &lt;qemu:capabilities&gt;
+    &lt;qemu:add capability='blockdev'/&gt;
+    &lt;qemu:del capability='drive'/&gt;
+  &lt;/qemu:capabilities&gt;
+&lt;/domain&gt;
+</pre>
+
     <h2><a id="xmlconfig">Example domain XML config</a></h2>
 
     <h3>QEMU emulated guest on x86_64</h3>

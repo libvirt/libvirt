@@ -539,6 +539,12 @@ struct _qemuDomainXmlNsDef {
     unsigned int num_env;
     char **env_name;
     char **env_value;
+
+    size_t ncapsadd;
+    char **capsadd;
+
+    size_t ncapsdel;
+    char **capsdel;
 };
 
 
