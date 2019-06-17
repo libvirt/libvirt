@@ -6206,11 +6206,13 @@ int qemuMonitorJSONSetObjectProperty(qemuMonitorPtr mon,
 static int
 qemuMonitorJSONParsePropsList(virJSONValuePtr cmd,
                               virJSONValuePtr reply,
+                              const char *type,
                               char ***props)
 {
     virJSONValuePtr data;
     char **proplist = NULL;
     size_t n = 0;
+    size_t count = 0;
     size_t i;
     int ret = -1;
 
@@ -6228,17 +6230,21 @@ qemuMonitorJSONParsePropsList(virJSONValuePtr cmd,
         virJSONValuePtr child = virJSONValueArrayGet(data, i);
         const char *tmp;
 
+        if (type &&
+            STRNEQ_NULLABLE(virJSONValueObjectGetString(child, "type"), type))
+            continue;
+
         if (!(tmp = virJSONValueObjectGetString(child, "name"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("reply data was missing 'name'"));
             goto cleanup;
         }
 
-        if (VIR_STRDUP(proplist[i], tmp) < 0)
+        if (VIR_STRDUP(proplist[count++], tmp) < 0)
             goto cleanup;
     }
 
-    ret = n;
+    ret = count;
     *props = proplist;
     proplist = NULL;
 
@@ -6271,7 +6277,7 @@ int qemuMonitorJSONGetDeviceProps(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    ret = qemuMonitorJSONParsePropsList(cmd, reply, props);
+    ret = qemuMonitorJSONParsePropsList(cmd, reply, NULL, props);
  cleanup:
     virJSONValueFree(reply);
     virJSONValueFree(cmd);
@@ -6303,7 +6309,7 @@ qemuMonitorJSONGetObjectProps(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    ret = qemuMonitorJSONParsePropsList(cmd, reply, props);
+    ret = qemuMonitorJSONParsePropsList(cmd, reply, NULL, props);
  cleanup:
     virJSONValueFree(reply);
     virJSONValueFree(cmd);
