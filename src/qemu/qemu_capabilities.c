@@ -2961,11 +2961,12 @@ virQEMUCapsInitCPUModelS390(virQEMUCapsPtr qemuCaps,
     for (i = 0; i < modelInfo->nprops; i++) {
         virCPUFeatureDefPtr feature = cpu->features + cpu->nfeatures;
         qemuMonitorCPUPropertyPtr prop = modelInfo->props + i;
+        const char *name = virQEMUCapsCPUFeatureFromQEMU(qemuCaps, prop->name);
 
         if (prop->type != QEMU_MONITOR_CPU_PROPERTY_BOOLEAN)
             continue;
 
-        if (VIR_STRDUP(feature->name, prop->name) < 0)
+        if (VIR_STRDUP(feature->name, name) < 0)
             return -1;
 
         if (!prop->value.boolean ||
@@ -2981,7 +2982,8 @@ virQEMUCapsInitCPUModelS390(virQEMUCapsPtr qemuCaps,
 
 
 virCPUDataPtr
-virQEMUCapsGetCPUModelX86Data(qemuMonitorCPUModelInfoPtr model,
+virQEMUCapsGetCPUModelX86Data(virQEMUCapsPtr qemuCaps,
+                              qemuMonitorCPUModelInfoPtr model,
                               bool migratable)
 {
     unsigned long long sigFamily = 0;
@@ -2996,6 +2998,7 @@ virQEMUCapsGetCPUModelX86Data(qemuMonitorCPUModelInfoPtr model,
 
     for (i = 0; i < model->nprops; i++) {
         qemuMonitorCPUPropertyPtr prop = model->props + i;
+        const char *name = virQEMUCapsCPUFeatureFromQEMU(qemuCaps, prop->name);
 
         switch (prop->type) {
         case QEMU_MONITOR_CPU_PROPERTY_BOOLEAN:
@@ -3003,23 +3006,23 @@ virQEMUCapsGetCPUModelX86Data(qemuMonitorCPUModelInfoPtr model,
                 (migratable && prop->migratable == VIR_TRISTATE_BOOL_NO))
                 continue;
 
-            if (virCPUx86DataAddFeature(data, prop->name) < 0)
+            if (virCPUx86DataAddFeature(data, name) < 0)
                 goto cleanup;
 
             break;
 
         case QEMU_MONITOR_CPU_PROPERTY_STRING:
-            if (STREQ(prop->name, "vendor") &&
+            if (STREQ(name, "vendor") &&
                 virCPUx86DataSetVendor(data, prop->value.string) < 0)
                 goto cleanup;
             break;
 
         case QEMU_MONITOR_CPU_PROPERTY_NUMBER:
-            if (STREQ(prop->name, "family"))
+            if (STREQ(name, "family"))
                 sigFamily = prop->value.number;
-            else if (STREQ(prop->name, "model"))
+            else if (STREQ(name, "model"))
                 sigModel = prop->value.number;
-            else if (STREQ(prop->name, "stepping"))
+            else if (STREQ(name, "stepping"))
                 sigStepping = prop->value.number;
             break;
 
@@ -3057,7 +3060,7 @@ virQEMUCapsInitCPUModelX86(virQEMUCapsPtr qemuCaps,
     if (!model)
         return 1;
 
-    if (!(data = virQEMUCapsGetCPUModelX86Data(model, migratable)))
+    if (!(data = virQEMUCapsGetCPUModelX86Data(qemuCaps, model, migratable)))
         goto cleanup;
 
     if (cpuDecode(cpu, data, virQEMUCapsGetCPUDefinitions(qemuCaps, type)) < 0)

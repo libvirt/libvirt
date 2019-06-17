@@ -935,7 +935,7 @@ cpuTestJSONSignature(const void *arg)
         goto cleanup;
 
     modelInfo = virQEMUCapsGetCPUModelInfo(qemuCaps, VIR_DOMAIN_VIRT_KVM);
-    if (!(hostData = virQEMUCapsGetCPUModelX86Data(modelInfo, false)))
+    if (!(hostData = virQEMUCapsGetCPUModelX86Data(qemuCaps, modelInfo, false)))
         goto cleanup;
 
     ret = cpuTestCompareSignature(data, hostData);

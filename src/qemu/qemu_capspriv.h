@@ -77,7 +77,8 @@ virQEMUCapsSetCPUModelInfo(virQEMUCapsPtr qemuCaps,
                            qemuMonitorCPUModelInfoPtr modelInfo);
 
 virCPUDataPtr
-virQEMUCapsGetCPUModelX86Data(qemuMonitorCPUModelInfoPtr model,
+virQEMUCapsGetCPUModelX86Data(virQEMUCapsPtr qemuCaps,
+                              qemuMonitorCPUModelInfoPtr model,
                               bool migratable);
 
 virCPUDefPtr
