@@ -13,8 +13,6 @@ QEMU_DRIVER_SOURCES = \
 	qemu/qemu_capabilities.h \
 	qemu/qemu_command.c \
 	qemu/qemu_command.h \
-	qemu/qemu_parse_command.c \
-	qemu/qemu_parse_command.h \
 	qemu/qemu_domain.c \
 	qemu/qemu_domain.h \
 	qemu/qemu_domain_address.c \

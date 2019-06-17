@@ -31,7 +31,6 @@
 #include "qemu_monitor_text.h"
 #include "qemu_monitor_json.h"
 #include "qemu_alias.h"
-#include "qemu_parse_command.h"
 #include "qemu_capabilities.h"
 #include "viralloc.h"
 #include "virlog.h"
@@ -555,6 +554,123 @@ qemuMonitorJSONMakeCommand(const char *cmdname,
 }
 
 
+static void
+qemuMonitorJSONParseKeywordsFree(int nkeywords,
+                                 char **keywords,
+                                 char **values)
+{
+    size_t i;
+    for (i = 0; i < nkeywords; i++) {
+        VIR_FREE(keywords[i]);
+        VIR_FREE(values[i]);
+    }
+    VIR_FREE(keywords);
+    VIR_FREE(values);
+}
+
+
+/*
+ * Takes a string containing a set of key=value,key=value,key...
+ * parameters and splits them up, returning two arrays with
+ * the individual keys and values. If allowEmptyValue is nonzero,
+ * the "=value" part is optional and if a key with no value is found,
+ * NULL is be placed into corresponding place in retvalues.
+ */
+static int
+qemuMonitorJSONParseKeywords(const char *str,
+                             char ***retkeywords,
+                             char ***retvalues,
+                             int *retnkeywords,
+                             int allowEmptyValue)
+{
+    int keywordCount = 0;
+    int keywordAlloc = 0;
+    char **keywords = NULL;
+    char **values = NULL;
+    const char *start = str;
+    const char *end;
+
+    *retkeywords = NULL;
+    *retvalues = NULL;
+    *retnkeywords = 0;
+    end = start + strlen(str);
+
+    while (start) {
+        const char *separator;
+        const char *endmark;
+        char *keyword;
+        char *value = NULL;
+
+        endmark = start;
+        do {
+            /* QEMU accepts ',,' as an escape for a literal comma;
+             * skip past those here while searching for the end of the
+             * value, then strip them down below */
+            endmark = strchr(endmark, ',');
+        } while (endmark && endmark[1] == ',' && (endmark += 2));
+        if (!endmark)
+            endmark = end;
+        if (!(separator = strchr(start, '=')))
+            separator = end;
+
+        if (separator >= endmark) {
+            if (!allowEmptyValue) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("malformed keyword arguments in '%s'"), str);
+                goto error;
+            }
+            separator = endmark;
+        }
+
+        if (VIR_STRNDUP(keyword, start, separator - start) < 0)
+            goto error;
+
+        if (separator < endmark) {
+            separator++;
+            if (VIR_STRNDUP(value, separator, endmark - separator) < 0) {
+                VIR_FREE(keyword);
+                goto error;
+            }
+            if (strchr(value, ',')) {
+                char *p = strchr(value, ',') + 1;
+                char *q = p + 1;
+                while (*q) {
+                    if (*q == ',')
+                        q++;
+                    *p++ = *q++;
+                }
+                *p = '\0';
+            }
+        }
+
+        if (keywordAlloc == keywordCount) {
+            if (VIR_REALLOC_N(keywords, keywordAlloc + 10) < 0 ||
+                VIR_REALLOC_N(values, keywordAlloc + 10) < 0) {
+                VIR_FREE(keyword);
+                VIR_FREE(value);
+                goto error;
+            }
+            keywordAlloc += 10;
+        }
+
+        keywords[keywordCount] = keyword;
+        values[keywordCount] = value;
+        keywordCount++;
+
+        start = endmark < end ? endmark + 1 : NULL;
+    }
+
+    *retkeywords = keywords;
+    *retvalues = values;
+    *retnkeywords = keywordCount;
+    return 0;
+
+ error:
+    qemuMonitorJSONParseKeywordsFree(keywordCount, keywords, values);
+    return -1;
+}
+
+
 static virJSONValuePtr
 qemuMonitorJSONKeywordStringToJSON(const char *str, const char *firstkeyword)
 {
@@ -567,7 +683,7 @@ qemuMonitorJSONKeywordStringToJSON(const char *str, const char *firstkeyword)
     if (!(ret = virJSONValueNewObject()))
         return NULL;
 
-    if (qemuParseKeywords(str, &keywords, &values, &nkeywords, 1) < 0)
+    if (qemuMonitorJSONParseKeywords(str, &keywords, &values, &nkeywords, 1) < 0)
         goto error;
 
     for (i = 0; i < nkeywords; i++) {
@@ -588,11 +704,11 @@ qemuMonitorJSONKeywordStringToJSON(const char *str, const char *firstkeyword)
         }
     }
 
-    qemuParseKeywordsFree(nkeywords, keywords, values);
+    qemuMonitorJSONParseKeywordsFree(nkeywords, keywords, values);
     return ret;
 
  error:
-    qemuParseKeywordsFree(nkeywords, keywords, values);
+    qemuMonitorJSONParseKeywordsFree(nkeywords, keywords, values);
     virJSONValueFree(ret);
     return NULL;
 }
