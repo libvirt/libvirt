@@ -696,6 +696,7 @@ pci_driver_handle_unbind(const char *path)
  cleanup:
     return ret;
 }
+
 static int
 pci_driver_handle_new_id(const char *path)
 {
