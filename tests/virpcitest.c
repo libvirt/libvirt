@@ -257,36 +257,6 @@ testVirPCIDeviceDetachSingle(const void *opaque)
 }
 
 static int
-testVirPCIDeviceDetachFail(const void *opaque)
-{
-    const struct testPCIDevData *data = opaque;
-    int ret = -1;
-    virPCIDevicePtr dev;
-
-    dev = virPCIDeviceNew(data->domain, data->bus, data->slot, data->function);
-    if (!dev)
-        goto cleanup;
-
-    virPCIDeviceSetStubDriver(dev, VIR_PCI_STUB_DRIVER_VFIO);
-
-    if (virPCIDeviceDetach(dev, NULL, NULL) < 0) {
-        if (virTestGetVerbose() || virTestGetDebug())
-            virDispatchError(NULL);
-        virResetLastError();
-        ret = 0;
-    } else {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "Attaching device %s to %s should have failed",
-                       virPCIDeviceGetName(dev),
-                       virPCIStubDriverTypeToString(VIR_PCI_STUB_DRIVER_VFIO));
-    }
-
- cleanup:
-    virPCIDeviceFree(dev);
-    return ret;
-}
-
-static int
 testVirPCIDeviceReattachSingle(const void *opaque)
 {
     const struct testPCIDevData *data = opaque;
@@ -420,8 +390,6 @@ mymain(void)
     DO_TEST(testVirPCIDeviceReattach);
     DO_TEST_PCI(testVirPCIDeviceIsAssignable, 5, 0x90, 1, 0);
     DO_TEST_PCI(testVirPCIDeviceIsAssignable, 1, 1, 0, 0);
-
-    DO_TEST_PCI(testVirPCIDeviceDetachFail, 0, 0x0a, 1, 0);
 
     /* Reattach a device already bound to non-stub a driver */
     DO_TEST_PCI_DRIVER(0, 0x0a, 1, 0, "i915");
