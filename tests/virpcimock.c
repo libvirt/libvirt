@@ -88,6 +88,11 @@ char *fakesysfspcidir;
  *   Probe for a driver that handles the specified device.
  *   Data in format "DDDD:BB:DD.F" (Domain:Bus:Device.Function).
  *
+ * /sys/bus/pci/devices/<device>/driver_override
+ *   Name of a driver that overrides preferred driver can be written
+ *   here. The device will be attached to it on drivers_probe event.
+ *   Writing an empty string (or "\n") clears the override.
+ *
  * As a little hack, we are not mocking write to these files, but close()
  * instead. The advantage is we don't need any self growing array to hold the
  * partial writes and construct them back. We can let all the writes finish,
@@ -148,6 +153,7 @@ static struct pciDevice *pci_device_find_by_content(const char *path);
 static void pci_driver_new(const char *name, int fail, ...);
 static struct pciDriver *pci_driver_find_by_dev(struct pciDevice *dev);
 static struct pciDriver *pci_driver_find_by_path(const char *path);
+static struct pciDriver *pci_driver_find_by_driver_override(struct pciDevice *dev);
 static int pci_driver_bind(struct pciDriver *driver, struct pciDevice *dev);
 static int pci_driver_unbind(struct pciDriver *driver, struct pciDevice *dev);
 static int pci_driver_handle_change(int fd, const char *path);
@@ -203,7 +209,8 @@ make_symlink(const char *path,
 static int
 pci_read_file(const char *path,
               char *buf,
-              size_t buf_size)
+              size_t buf_size,
+              bool truncate)
 {
     int ret = -1;
     int fd = -1;
@@ -225,7 +232,8 @@ pci_read_file(const char *path,
         goto cleanup;
     }
 
-    if (ftruncate(fd, 0) < 0)
+    if (truncate &&
+        ftruncate(fd, 0) < 0)
         goto cleanup;
 
     ret = 0;
@@ -399,6 +407,8 @@ pci_device_new_from_stub(const struct pciDevice *data)
         ABORT("@tmp overflow");
     make_file(devpath, "class", tmp, -1);
 
+    make_file(devpath, "driver_override", NULL, -1);
+
     if (snprintf(tmp, sizeof(tmp),
                  "%s/../../../kernel/iommu_groups/%d",
                  devpath, dev->iommuGroup) < 0) {
@@ -442,7 +452,7 @@ pci_device_find_by_content(const char *path)
 {
     char tmp[32];
 
-    if (pci_read_file(path, tmp, sizeof(tmp)) < 0)
+    if (pci_read_file(path, tmp, sizeof(tmp), true) < 0)
         return NULL;
 
     return pci_device_find_by_id(tmp);
@@ -451,7 +461,10 @@ pci_device_find_by_content(const char *path)
 static int
 pci_device_autobind(struct pciDevice *dev)
 {
-    struct pciDriver *driver = pci_driver_find_by_dev(dev);
+    struct pciDriver *driver = pci_driver_find_by_driver_override(dev);
+
+    if (!driver)
+        driver = pci_driver_find_by_dev(dev);
 
     if (!driver) {
         /* No driver found. Nothing to do */
@@ -539,6 +552,31 @@ pci_driver_find_by_path(const char *path)
         struct pciDriver *driver = pciDrivers[i];
 
         if (strstr(path, driver->name))
+            return driver;
+    }
+
+    return NULL;
+}
+
+static struct pciDriver *
+pci_driver_find_by_driver_override(struct pciDevice *dev)
+{
+    VIR_AUTOFREE(char *) path = NULL;
+    char tmp[32];
+    size_t i;
+
+    if (virAsprintfQuiet(&path,
+                         SYSFS_PCI_PREFIX "devices/%s/driver_override",
+                         dev->id) < 0)
+        return NULL;
+
+    if (pci_read_file(path, tmp, sizeof(tmp), false) < 0)
+        return NULL;
+
+    for (i = 0; i < nPCIDrivers; i++) {
+        struct pciDriver *driver = pciDrivers[i];
+
+        if (STREQ(tmp, driver->name))
             return driver;
     }
 
@@ -658,6 +696,8 @@ pci_driver_handle_change(int fd ATTRIBUTE_UNUSED, const char *path)
         ret = pci_driver_handle_remove_id(path);
     else if (STREQ(file, "drivers_probe"))
         ret = pci_driver_handle_drivers_probe(path);
+    else if (STREQ(file, "driver_override"))
+        ret = 0; /* nada */
     else
         ABORT("Not handled write to: %s", path);
     return ret;
@@ -712,7 +752,7 @@ pci_driver_handle_new_id(const char *path)
         goto cleanup;
     }
 
-    if (pci_read_file(path, buf, sizeof(buf)) < 0)
+    if (pci_read_file(path, buf, sizeof(buf), true) < 0)
         goto cleanup;
 
     if (sscanf(buf, "%x %x", &vendor, &device) < 2) {
@@ -767,7 +807,7 @@ pci_driver_handle_remove_id(const char *path)
         goto cleanup;
     }
 
-    if (pci_read_file(path, buf, sizeof(buf)) < 0)
+    if (pci_read_file(path, buf, sizeof(buf), true) < 0)
         goto cleanup;
 
     if (sscanf(buf, "%x %x", &vendor, &device) < 2) {
