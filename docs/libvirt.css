@@ -581,3 +581,7 @@ td.enumvalue {
 #advancedsearch label {
     display: inline;
 }
+
+.deprecatedhv {
+    color: darkred;
+}
