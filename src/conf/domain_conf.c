@@ -107,6 +107,7 @@ VIR_ENUM_IMPL(virDomainTaint,
               "cdrom-passthrough",
               "custom-dtb",
               "custom-ga-command",
+              "custom-hypervisor-feature",
 );
 
 VIR_ENUM_IMPL(virDomainVirt,
