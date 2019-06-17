@@ -7319,9 +7319,8 @@ qemuMonitorJSONCheckCPUx86(qemuMonitorPtr mon)
 
 
 /**
- * qemuMonitorJSONGetGuestCPU:
+ * qemuMonitorJSONGetGuestCPUx86:
  * @mon: Pointer to the monitor
- * @arch: arch of the guest
  * @data: returns the cpu data of the guest
  * @disabled: returns the CPU data for features which were disabled by QEMU
  *
@@ -7331,40 +7330,32 @@ qemuMonitorJSONCheckCPUx86(qemuMonitorPtr mon)
  * -1 on other errors.
  */
 int
-qemuMonitorJSONGetGuestCPU(qemuMonitorPtr mon,
-                           virArch arch,
-                           virCPUDataPtr *data,
-                           virCPUDataPtr *disabled)
+qemuMonitorJSONGetGuestCPUx86(qemuMonitorPtr mon,
+                              virCPUDataPtr *data,
+                              virCPUDataPtr *disabled)
 {
     virCPUDataPtr cpuEnabled = NULL;
     virCPUDataPtr cpuDisabled = NULL;
     int rc;
 
-    if (ARCH_IS_X86(arch)) {
-        if ((rc = qemuMonitorJSONCheckCPUx86(mon)) < 0)
-            return -1;
-        else if (!rc)
-            return -2;
+    if ((rc = qemuMonitorJSONCheckCPUx86(mon)) < 0)
+        return -1;
+    else if (!rc)
+        return -2;
 
-        if (qemuMonitorJSONGetCPUx86Data(mon, "feature-words",
-                                         &cpuEnabled) < 0)
-            goto error;
+    if (qemuMonitorJSONGetCPUx86Data(mon, "feature-words",
+                                     &cpuEnabled) < 0)
+        goto error;
 
-        if (disabled &&
-            qemuMonitorJSONGetCPUx86Data(mon, "filtered-features",
-                                         &cpuDisabled) < 0)
-            goto error;
+    if (disabled &&
+        qemuMonitorJSONGetCPUx86Data(mon, "filtered-features",
+                                     &cpuDisabled) < 0)
+        goto error;
 
-        *data = cpuEnabled;
-        if (disabled)
-            *disabled = cpuDisabled;
-        return 0;
-    }
-
-    virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("CPU definition retrieval isn't supported for '%s'"),
-                   virArchToString(arch));
-    return -1;
+    *data = cpuEnabled;
+    if (disabled)
+        *disabled = cpuDisabled;
+    return 0;
 
  error:
     virCPUDataFree(cpuEnabled);

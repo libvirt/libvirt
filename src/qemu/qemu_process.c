@@ -4149,8 +4149,7 @@ qemuProcessFetchGuestCPU(virQEMUDriverPtr driver,
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         goto error;
 
-    rc = qemuMonitorGetGuestCPU(priv->mon, vm->def->os.arch,
-                                &dataEnabled, &dataDisabled);
+    rc = qemuMonitorGetGuestCPUx86(priv->mon, &dataEnabled, &dataDisabled);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto error;

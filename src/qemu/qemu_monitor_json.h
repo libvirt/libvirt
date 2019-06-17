@@ -488,10 +488,9 @@ int qemuMonitorJSONGetCPUx86Data(qemuMonitorPtr mon,
                                  const char *property,
                                  virCPUDataPtr *cpudata);
 
-int qemuMonitorJSONGetGuestCPU(qemuMonitorPtr mon,
-                               virArch arch,
-                               virCPUDataPtr *data,
-                               virCPUDataPtr *disabled);
+int qemuMonitorJSONGetGuestCPUx86(qemuMonitorPtr mon,
+                                  virCPUDataPtr *data,
+                                  virCPUDataPtr *disabled);
 
 int qemuMonitorJSONRTCResetReinjection(qemuMonitorPtr mon);
 
