@@ -4504,14 +4504,18 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
         return -1;
     if (virQEMUCapsProbeQMPSchemaCapabilities(qemuCaps, mon) < 0)
         return -1;
-    if (virQEMUCapsProbeQMPHostCPU(qemuCaps, mon, false) < 0)
-        return -1;
     if (virQEMUCapsProbeQMPGICCapabilities(qemuCaps, mon) < 0)
         return -1;
     if (virQEMUCapsProbeQMPSEVCapabilities(qemuCaps, mon) < 0)
         return -1;
 
     virQEMUCapsInitProcessCaps(qemuCaps);
+
+    /* The following probes rely on other previously probed capabilities.
+     * No capabilities bits should be set below this point. */
+
+    if (virQEMUCapsProbeQMPHostCPU(qemuCaps, mon, false) < 0)
+        return -1;
 
     return 0;
 }

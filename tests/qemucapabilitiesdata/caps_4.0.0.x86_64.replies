@@ -20923,6 +20923,19 @@
 }
 
 {
+  "execute": "query-sev-capabilities",
+  "id": "libvirt-45"
+}
+
+{
+  "id": "libvirt-45",
+  "error": {
+    "class": "GenericError",
+    "desc": "SEV feature is not available"
+  }
+}
+
+{
   "execute": "query-cpu-model-expansion",
   "arguments": {
     "type": "static",
@@ -20930,7 +20943,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }
 
 {
@@ -21134,7 +21147,7 @@
       }
     }
   },
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }
 
 {
@@ -21340,7 +21353,7 @@
       }
     }
   },
-  "id": "libvirt-46"
+  "id": "libvirt-47"
 }
 
 {
@@ -21619,7 +21632,7 @@
       }
     }
   },
-  "id": "libvirt-46"
+  "id": "libvirt-47"
 }
 
 {
@@ -21633,7 +21646,7 @@
       }
     }
   },
-  "id": "libvirt-47"
+  "id": "libvirt-48"
 }
 
 {
@@ -21837,7 +21850,7 @@
       }
     }
   },
-  "id": "libvirt-47"
+  "id": "libvirt-48"
 }
 
 {
@@ -22043,7 +22056,7 @@
       }
     }
   },
-  "id": "libvirt-48"
+  "id": "libvirt-49"
 }
 
 {
@@ -22322,20 +22335,7 @@
       }
     }
   },
-  "id": "libvirt-48"
-}
-
-{
-  "execute": "query-sev-capabilities",
   "id": "libvirt-49"
-}
-
-{
-  "id": "libvirt-49",
-  "error": {
-    "class": "GenericError",
-    "desc": "SEV feature is not available"
-  }
 }
 
 {

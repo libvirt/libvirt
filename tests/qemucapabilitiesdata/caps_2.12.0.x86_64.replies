@@ -19273,6 +19273,21 @@
 }
 
 {
+  "execute": "query-sev-capabilities",
+  "id": "libvirt-45"
+}
+
+{
+  "return": {
+    "reduced-phys-bits": 1,
+    "cbitpos": 47,
+    "cert-chain": "AQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAA",
+    "pdh": "AQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAA"
+  },
+  "id": "libvirt-45"
+}
+
+{
   "execute": "query-cpu-model-expansion",
   "arguments": {
     "type": "static",
@@ -19280,7 +19295,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }
 
 {
@@ -19470,7 +19485,7 @@
       }
     }
   },
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }
 
 {
@@ -19662,7 +19677,7 @@
       }
     }
   },
-  "id": "libvirt-46"
+  "id": "libvirt-47"
 }
 
 {
@@ -19917,7 +19932,7 @@
       }
     }
   },
-  "id": "libvirt-46"
+  "id": "libvirt-47"
 }
 
 {
@@ -19931,7 +19946,7 @@
       }
     }
   },
-  "id": "libvirt-47"
+  "id": "libvirt-48"
 }
 
 {
@@ -20121,7 +20136,7 @@
       }
     }
   },
-  "id": "libvirt-47"
+  "id": "libvirt-48"
 }
 
 {
@@ -20313,7 +20328,7 @@
       }
     }
   },
-  "id": "libvirt-48"
+  "id": "libvirt-49"
 }
 
 {
@@ -20567,21 +20582,6 @@
         "xstore-en": false
       }
     }
-  },
-  "id": "libvirt-48"
-}
-
-{
-  "execute": "query-sev-capabilities",
-  "id": "libvirt-49"
-}
-
-{
-  "return": {
-    "reduced-phys-bits": 1,
-    "cbitpos": 47,
-    "cert-chain": "AQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAA",
-    "pdh": "AQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAAAQAAAAAOAAA"
   },
   "id": "libvirt-49"
 }
