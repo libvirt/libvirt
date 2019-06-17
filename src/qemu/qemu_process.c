@@ -4128,6 +4128,16 @@ qemuProcessVerifyCPUFeatures(virDomainDefPtr def,
 }
 
 
+static const char *
+qemuProcessTranslateCPUFeatures(const char *name,
+                                void *opaque)
+{
+    virQEMUCapsPtr qemuCaps = opaque;
+
+    return virQEMUCapsCPUFeatureFromQEMU(qemuCaps, name);
+}
+
+
 static int
 qemuProcessFetchGuestCPU(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
@@ -4138,18 +4148,28 @@ qemuProcessFetchGuestCPU(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virCPUDataPtr dataEnabled = NULL;
     virCPUDataPtr dataDisabled = NULL;
+    bool generic;
     int rc;
 
     *enabled = NULL;
     *disabled = NULL;
 
-    if (!ARCH_IS_X86(vm->def->os.arch))
+    generic = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_CPU_UNAVAILABLE_FEATURES);
+
+    if (!generic && !ARCH_IS_X86(vm->def->os.arch))
         return 0;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         goto error;
 
-    rc = qemuMonitorGetGuestCPUx86(priv->mon, &dataEnabled, &dataDisabled);
+    if (generic) {
+        rc = qemuMonitorGetGuestCPU(priv->mon,
+                                    vm->def->os.arch,
+                                    qemuProcessTranslateCPUFeatures, priv->qemuCaps,
+                                    &dataEnabled, &dataDisabled);
+    } else {
+        rc = qemuMonitorGetGuestCPUx86(priv->mon, &dataEnabled, &dataDisabled);
+    }
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto error;
