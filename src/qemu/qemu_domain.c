@@ -3140,6 +3140,62 @@ qemuDomainDefNamespaceParseCommandlineArgs(qemuDomainXmlNsDefPtr nsdef,
 
 
 static int
+qemuDomainDefNamespaceParseCommandlineEnvNameValidate(const char *envname)
+{
+    if (!c_isalpha(envname[0]) && envname[0] != '_') {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Invalid environment name, it must begin with a letter or underscore"));
+        return -1;
+    }
+
+    if (strspn(envname, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_") != strlen(envname)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Invalid environment name, it must contain only alphanumerics and underscore"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+qemuDomainDefNamespaceParseCommandlineEnv(qemuDomainXmlNsDefPtr nsdef,
+                                          xmlXPathContextPtr ctxt)
+{
+    VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
+    ssize_t nnodes;
+    size_t i;
+
+    if ((nnodes = virXPathNodeSet("./qemu:commandline/qemu:env", ctxt, &nodes)) < 0)
+        return -1;
+
+    if (nnodes == 0)
+        return 0;
+
+    if (VIR_ALLOC_N(nsdef->env_name, nnodes) < 0 ||
+        VIR_ALLOC_N(nsdef->env_value, nnodes) < 0)
+        return -1;
+
+    for (i = 0; i < nnodes; i++) {
+        if (!(nsdef->env_name[nsdef->num_env] = virXMLPropString(nodes[i], "name"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("No qemu environment name specified"));
+            return -1;
+        }
+
+        if (qemuDomainDefNamespaceParseCommandlineEnvNameValidate(nsdef->env_name[nsdef->num_env]) < 0)
+            return -1;
+
+        nsdef->env_value[nsdef->num_env] = virXMLPropString(nodes[i], "value");
+        /* a NULL value for command is allowed, since it might be empty */
+        nsdef->num_env++;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
                             xmlNodePtr root ATTRIBUTE_UNUSED,
                             xmlXPathContextPtr ctxt,
@@ -3147,9 +3203,6 @@ qemuDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
 {
     qemuDomainXmlNsDefPtr cmd = NULL;
     bool uses_qemu_ns = false;
-    xmlNodePtr *nodes = NULL;
-    int n;
-    size_t i;
 
     if (xmlXPathRegisterNs(ctxt, BAD_CAST "qemu", BAD_CAST QEMU_NAMESPACE_HREF) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -3161,57 +3214,12 @@ qemuDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
     if (VIR_ALLOC(cmd) < 0)
         return -1;
 
-    if (qemuDomainDefNamespaceParseCommandlineArgs(cmd, ctxt) < 0)
+    if (qemuDomainDefNamespaceParseCommandlineArgs(cmd, ctxt) < 0 ||
+        qemuDomainDefNamespaceParseCommandlineEnv(cmd, ctxt) < 0)
         goto error;
 
-    if (cmd->num_args > 0)
+    if (cmd->num_args > 0 || cmd->num_env > 0)
         uses_qemu_ns = true;
-
-    /* now handle the extra environment variables */
-    n = virXPathNodeSet("./qemu:commandline/qemu:env", ctxt, &nodes);
-    if (n < 0)
-        goto error;
-    uses_qemu_ns |= n > 0;
-
-    if (n && VIR_ALLOC_N(cmd->env_name, n) < 0)
-        goto error;
-
-    if (n && VIR_ALLOC_N(cmd->env_value, n) < 0)
-        goto error;
-
-    for (i = 0; i < n; i++) {
-        char *tmp;
-
-        tmp = virXMLPropString(nodes[i], "name");
-        if (tmp == NULL) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("No qemu environment name specified"));
-            goto error;
-        }
-        if (tmp[0] == '\0') {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("Empty qemu environment name specified"));
-            goto error;
-        }
-        if (!c_isalpha(tmp[0]) && tmp[0] != '_') {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("Invalid environment name, it must begin with a letter or underscore"));
-            goto error;
-        }
-        if (strspn(tmp, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_") != strlen(tmp)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("Invalid environment name, it must contain only alphanumerics and underscore"));
-            goto error;
-        }
-
-        cmd->env_name[cmd->num_env] = tmp;
-
-        cmd->env_value[cmd->num_env] = virXMLPropString(nodes[i], "value");
-        /* a NULL value for command is allowed, since it might be empty */
-        cmd->num_env++;
-    }
-
-    VIR_FREE(nodes);
 
     if (uses_qemu_ns)
         *data = cmd;
@@ -3221,7 +3229,6 @@ qemuDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
     return 0;
 
  error:
-    VIR_FREE(nodes);
     qemuDomainDefNamespaceFree(cmd);
     return -1;
 }
