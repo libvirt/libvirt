@@ -9,8 +9,8 @@
 
     <p>
       This page provides an introduction to the network port XML format.
-      This stores information about the connection between an virtual
-      interface on a virtual domain's, and the virtual network it is
+      This stores information about the connection between a virtual
+      interface of a virtual domain, and the virtual network it is
       attached to.
     </p>
 
@@ -73,7 +73,7 @@
     <h3><a id="elementsCommon">Common elements</a></h3>
 
     <p>
-      The following elements are common to one of more of the plug
+      The following elements are common to one or more of the plug
       types listed later
     </p>
 
@@ -96,7 +96,7 @@
         The <code>bandwidth</code> element and its child elements are described
         in the <a href="formatnetwork.html#elementQoS">QoS</a> section of
         the Network XML. In addition the <code>classID</code> attribute may
-        exist provide the ID of the traffic shaping class that is active.
+        exist to provide the ID of the traffic shaping class that is active.
       </dd>
       <dt><code>rxfilters</code></dt>
       <dd>The <code>rxfilters</code> element property
@@ -136,7 +136,7 @@
 
     <pre>
   ...
-  &lt;plug type='network' bridge='virbr0'&gt;
+  &lt;plug type='network' bridge='virbr0'/&gt;
   ...</pre>
 
     <p>
@@ -154,7 +154,7 @@
 
     <pre>
   ...
-  &lt;plug type='bridge' bridge='br2'&gt;
+  &lt;plug type='bridge' bridge='br2'/&gt;
   ...</pre>
 
     <p>

@@ -5310,12 +5310,12 @@
       connections. <span class="since">Since 0.9.4</span>.
     </p>
     <p>
-      When a guest is running and interface of type <code>network</code>
+      When a guest is running an interface of type <code>network</code>
       may include a <code>portid</code> attribute. This provides the UUID
       of an associated virNetworkPortPtr object that records the association
       between the domain interface and the network. This attribute is
       read-only since port objects are create and deleted automatically
-      during startup and shutdown. <span class="since">Since 5.1.0</span>/
+      during startup and shutdown. <span class="since">Since 5.1.0</span>
     </p>
     <p>
       Also, similar to <code>direct</code> network connections
