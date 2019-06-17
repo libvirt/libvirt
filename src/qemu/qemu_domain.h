@@ -529,6 +529,19 @@ struct _qemuDomainSaveCookie {
     virCPUDefPtr cpu;
 };
 
+
+typedef struct _qemuDomainXmlNsDef qemuDomainXmlNsDef;
+typedef qemuDomainXmlNsDef *qemuDomainXmlNsDefPtr;
+struct _qemuDomainXmlNsDef {
+    size_t num_args;
+    char **args;
+
+    unsigned int num_env;
+    char **env_name;
+    char **env_value;
+};
+
+
 qemuDomainSaveCookiePtr qemuDomainSaveCookieNew(virDomainObjPtr vm);
 
 const char *qemuDomainAsyncJobPhaseToString(qemuDomainAsyncJob job,

@@ -94,26 +94,6 @@ qemuDriverUnlock(virQEMUDriverPtr driver)
     virMutexUnlock(&driver->lock);
 }
 
-void qemuDomainXmlNsDefFree(qemuDomainXmlNsDefPtr def)
-{
-    size_t i;
-
-    if (!def)
-        return;
-
-    for (i = 0; i < def->num_args; i++)
-        VIR_FREE(def->args[i]);
-    for (i = 0; i < def->num_env; i++) {
-        VIR_FREE(def->env_name[i]);
-        VIR_FREE(def->env_value[i]);
-    }
-    VIR_FREE(def->args);
-    VIR_FREE(def->env_name);
-    VIR_FREE(def->env_value);
-    VIR_FREE(def);
-}
-
-
 #ifndef DEFAULT_LOADER_NVRAM
 # define DEFAULT_LOADER_NVRAM \
     "/usr/share/OVMF/OVMF_CODE.fd:/usr/share/OVMF/OVMF_VARS.fd:" \

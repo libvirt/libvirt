@@ -288,21 +288,6 @@ struct _virQEMUDriver {
     virHashAtomicPtr migrationErrors;
 };
 
-typedef struct _qemuDomainXmlNsDef qemuDomainXmlNsDef;
-typedef qemuDomainXmlNsDef *qemuDomainXmlNsDefPtr;
-struct _qemuDomainXmlNsDef {
-    size_t num_args;
-    char **args;
-
-    unsigned int num_env;
-    char **env_name;
-    char **env_value;
-};
-
-
-
-void qemuDomainXmlNsDefFree(qemuDomainXmlNsDefPtr def);
-
 virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged);
 
 int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
