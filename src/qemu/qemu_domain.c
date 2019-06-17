@@ -3228,15 +3228,15 @@ qemuDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
     return ret;
 }
 
-static int
-qemuDomainDefNamespaceFormatXML(virBufferPtr buf,
-                                void *nsdata)
+
+static void
+qemuDomainDefNamespaceFormatXMLCommandline(virBufferPtr buf,
+                                           qemuDomainXmlNsDefPtr cmd)
 {
-    qemuDomainXmlNsDefPtr cmd = nsdata;
     size_t i;
 
     if (!cmd->num_args && !cmd->num_env)
-        return 0;
+        return;
 
     virBufferAddLit(buf, "<qemu:commandline>\n");
     virBufferAdjustIndent(buf, 2);
@@ -3253,6 +3253,17 @@ qemuDomainDefNamespaceFormatXML(virBufferPtr buf,
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</qemu:commandline>\n");
+}
+
+
+static int
+qemuDomainDefNamespaceFormatXML(virBufferPtr buf,
+                                void *nsdata)
+{
+    qemuDomainXmlNsDefPtr cmd = nsdata;
+
+    qemuDomainDefNamespaceFormatXMLCommandline(buf, cmd);
+
     return 0;
 }
 
