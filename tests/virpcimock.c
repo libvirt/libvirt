@@ -552,8 +552,8 @@ pci_driver_bind(struct pciDriver *driver,
     int ret = -1;
     char *devpath = NULL, *driverpath = NULL;
 
-    if (dev->driver || PCI_ACTION_BIND & driver->fail) {
-        /* Device already bound or failing driver requested */
+    if (dev->driver) {
+        /* Device already bound */
         errno = ENODEV;
         return ret;
     }
@@ -599,8 +599,8 @@ pci_driver_unbind(struct pciDriver *driver,
     int ret = -1;
     char *devpath = NULL, *driverpath = NULL;
 
-    if (dev->driver != driver || PCI_ACTION_UNBIND & driver->fail) {
-        /* Device not bound to the @driver or failing driver used */
+    if (dev->driver != driver) {
+        /* Device not bound to the @driver */
         errno = ENODEV;
         return ret;
     }
@@ -670,8 +670,8 @@ pci_driver_handle_bind(const char *path)
     struct pciDevice *dev = pci_device_find_by_content(path);
     struct pciDriver *driver = pci_driver_find_by_path(path);
 
-    if (!driver || !dev) {
-        /* This should never happen (TM) */
+    if (!driver || !dev || PCI_ACTION_BIND & driver->fail) {
+        /* No driver, no device or failing driver requested */
         errno = ENODEV;
         goto cleanup;
     }
@@ -687,8 +687,8 @@ pci_driver_handle_unbind(const char *path)
     int ret = -1;
     struct pciDevice *dev = pci_device_find_by_content(path);
 
-    if (!dev || !dev->driver) {
-        /* This should never happen (TM) */
+    if (!dev || !dev->driver || PCI_ACTION_UNBIND & dev->driver->fail) {
+        /* No device, device not binded or failing driver requested */
         errno = ENODEV;
         goto cleanup;
     }
