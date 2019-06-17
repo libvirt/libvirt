@@ -3109,6 +3109,36 @@ qemuDomainDefNamespaceFree(void *nsdata)
     qemuDomainXmlNsDefFree(cmd);
 }
 
+
+static int
+qemuDomainDefNamespaceParseCommandlineArgs(qemuDomainXmlNsDefPtr nsdef,
+                                           xmlXPathContextPtr ctxt)
+{
+    VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
+    ssize_t nnodes;
+    size_t i;
+
+    if ((nnodes = virXPathNodeSet("./qemu:commandline/qemu:arg", ctxt, &nodes)) < 0)
+        return -1;
+
+    if (nnodes == 0)
+        return 0;
+
+    if (VIR_ALLOC_N(nsdef->args, nnodes) < 0)
+        return -1;
+
+    for (i = 0; i < nnodes; i++) {
+        if (!(nsdef->args[nsdef->num_args++] = virXMLPropString(nodes[i], "value"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("No qemu command-line argument specified"));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 static int
 qemuDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
                             xmlNodePtr root ATTRIBUTE_UNUSED,
@@ -3131,26 +3161,11 @@ qemuDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
     if (VIR_ALLOC(cmd) < 0)
         return -1;
 
-    /* first handle the extra command-line arguments */
-    n = virXPathNodeSet("./qemu:commandline/qemu:arg", ctxt, &nodes);
-    if (n < 0)
-        goto error;
-    uses_qemu_ns |= n > 0;
-
-    if (n && VIR_ALLOC_N(cmd->args, n) < 0)
+    if (qemuDomainDefNamespaceParseCommandlineArgs(cmd, ctxt) < 0)
         goto error;
 
-    for (i = 0; i < n; i++) {
-        cmd->args[cmd->num_args] = virXMLPropString(nodes[i], "value");
-        if (cmd->args[cmd->num_args] == NULL) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("No qemu command-line argument specified"));
-            goto error;
-        }
-        cmd->num_args++;
-    }
-
-    VIR_FREE(nodes);
+    if (cmd->num_args > 0)
+        uses_qemu_ns = true;
 
     /* now handle the extra environment variables */
     n = virXPathNodeSet("./qemu:commandline/qemu:env", ctxt, &nodes);
