@@ -4108,6 +4108,42 @@ qemuMonitorGetGuestCPUx86(qemuMonitorPtr mon,
 
 
 /**
+ * qemuMonitorGetGuestCPU:
+ * @mon: Pointer to the monitor
+ * @arch: CPU architecture
+ * @translate: callback for translating CPU feature names from QEMU to libvirt
+ * @opaque: data for @translate callback
+ * @enabled: returns the CPU data for all enabled features
+ * @disabled: returns the CPU data for features which we asked for
+ *      (either explicitly or via a named CPU model) but QEMU disabled them
+ *
+ * Retrieve the definition of the guest CPU from a running QEMU instance.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+int
+qemuMonitorGetGuestCPU(qemuMonitorPtr mon,
+                       virArch arch,
+                       qemuMonitorCPUFeatureTranslationCallback translate,
+                       void *opaque,
+                       virCPUDataPtr *enabled,
+                       virCPUDataPtr *disabled)
+{
+    VIR_DEBUG("arch=%s translate=%p opaque=%p enabled=%p disabled=%p",
+              virArchToString(arch), translate, opaque, enabled, disabled);
+
+    QEMU_CHECK_MONITOR(mon);
+
+    *enabled = NULL;
+    if (disabled)
+        *disabled = NULL;
+
+    return qemuMonitorJSONGetGuestCPU(mon, arch, translate, opaque,
+                                      enabled, disabled);
+}
+
+
+/**
  * qemuMonitorRTCResetReinjection:
  * @mon: Pointer to the monitor
  *

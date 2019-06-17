@@ -6137,6 +6137,57 @@ int qemuMonitorJSONGetObjectProperty(qemuMonitorPtr mon,
 }
 
 
+static int
+qemuMonitorJSONGetStringListProperty(qemuMonitorPtr mon,
+                                     const char *path,
+                                     const char *property,
+                                     char ***strList)
+{
+    VIR_AUTOPTR(virJSONValue) cmd = NULL;
+    VIR_AUTOPTR(virJSONValue) reply = NULL;
+    VIR_AUTOSTRINGLIST list = NULL;
+    virJSONValuePtr data;
+    size_t n;
+    size_t i;
+
+    *strList = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("qom-get",
+                                           "s:path", path,
+                                           "s:property", property,
+                                           NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return -1;
+
+    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_ARRAY) < 0)
+        return -1;
+
+    data = virJSONValueObjectGetArray(reply, "return");
+    n = virJSONValueArraySize(data);
+
+    if (VIR_ALLOC_N(list, n + 1) < 0)
+        return -1;
+
+    for (i = 0; i < n; i++) {
+        virJSONValuePtr item = virJSONValueArrayGet(data, i);
+
+        if (virJSONValueGetType(item) != VIR_JSON_TYPE_STRING) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unexpected value in %s array"), property);
+            return -1;
+        }
+
+        if (VIR_STRDUP(list[i], virJSONValueGetString(item)) < 0)
+            return -1;
+    }
+
+    VIR_STEAL_PTR(*strList, list);
+    return n;
+}
+
+
 #define MAKE_SET_CMD(STRING, VALUE) \
     cmd = qemuMonitorJSONMakeCommand("qom-set", \
                                       "s:path", path, \
@@ -7368,6 +7419,141 @@ qemuMonitorJSONGetGuestCPUx86(qemuMonitorPtr mon,
     virCPUDataFree(cpuDisabled);
     return -1;
 }
+
+
+static int
+qemuMonitorJSONGetCPUProperties(qemuMonitorPtr mon,
+                                char ***props)
+{
+    VIR_AUTOPTR(virJSONValue) cmd = NULL;
+    VIR_AUTOPTR(virJSONValue) reply = NULL;
+
+    *props = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("qom-list",
+                                           "s:path", QOM_CPU_PATH,
+                                           NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return -1;
+
+    if (qemuMonitorJSONHasError(reply, "DeviceNotFound"))
+        return 0;
+
+    return qemuMonitorJSONParsePropsList(cmd, reply, "bool", props);
+}
+
+
+static int
+qemuMonitorJSONGetCPUData(qemuMonitorPtr mon,
+                          qemuMonitorCPUFeatureTranslationCallback translate,
+                          void *opaque,
+                          virCPUDataPtr data)
+{
+    qemuMonitorJSONObjectProperty prop = { .type = QEMU_MONITOR_OBJECT_PROPERTY_BOOLEAN };
+    VIR_AUTOSTRINGLIST props = NULL;
+    char **p;
+
+    if (qemuMonitorJSONGetCPUProperties(mon, &props) < 0)
+        return -1;
+
+    for (p = props; p && *p; p++) {
+        const char *name = *p;
+
+        if (qemuMonitorJSONGetObjectProperty(mon, QOM_CPU_PATH, name, &prop) < 0)
+            return -1;
+
+        if (!prop.val.b)
+            continue;
+
+        if (translate)
+            name = translate(name, opaque);
+
+        if (virCPUDataAddFeature(data, name) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+qemuMonitorJSONGetCPUDataDisabled(qemuMonitorPtr mon,
+                                  qemuMonitorCPUFeatureTranslationCallback translate,
+                                  void *opaque,
+                                  virCPUDataPtr data)
+{
+    VIR_AUTOSTRINGLIST props = NULL;
+    char **p;
+
+    if (qemuMonitorJSONGetStringListProperty(mon, QOM_CPU_PATH,
+                                             "unavailable-features", &props) < 0)
+        return -1;
+
+    for (p = props; p && *p; p++) {
+        const char *name = *p;
+
+        if (translate)
+            name = translate(name, opaque);
+
+        if (virCPUDataAddFeature(data, name) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+/**
+ * qemuMonitorJSONGetGuestCPU:
+ * @mon: Pointer to the monitor
+ * @arch: CPU architecture
+ * @translate: callback for translating CPU feature names from QEMU to libvirt
+ * @opaque: data for @translate callback
+ * @enabled: returns the CPU data for all enabled features
+ * @disabled: returns the CPU data for features which we asked for
+ *      (either explicitly or via a named CPU model) but QEMU disabled them
+ *
+ * Retrieve the definition of the guest CPU from a running QEMU instance.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+int
+qemuMonitorJSONGetGuestCPU(qemuMonitorPtr mon,
+                           virArch arch,
+                           qemuMonitorCPUFeatureTranslationCallback translate,
+                           void *opaque,
+                           virCPUDataPtr *enabled,
+                           virCPUDataPtr *disabled)
+{
+    virCPUDataPtr cpuEnabled = NULL;
+    virCPUDataPtr cpuDisabled = NULL;
+    int ret = -1;
+
+    if (!(cpuEnabled = virCPUDataNew(arch)) ||
+        !(cpuDisabled = virCPUDataNew(arch)))
+        goto cleanup;
+
+    if (qemuMonitorJSONGetCPUData(mon, translate, opaque, cpuEnabled) < 0)
+        goto cleanup;
+
+    if (disabled &&
+        qemuMonitorJSONGetCPUDataDisabled(mon, translate, opaque, cpuDisabled) < 0)
+        goto cleanup;
+
+    VIR_STEAL_PTR(*enabled, cpuEnabled);
+    if (disabled)
+        VIR_STEAL_PTR(*disabled, cpuDisabled);
+
+    ret = 0;
+
+ cleanup:
+    virCPUDataFree(cpuEnabled);
+    virCPUDataFree(cpuDisabled);
+    return ret;
+}
+
 
 int
 qemuMonitorJSONRTCResetReinjection(qemuMonitorPtr mon)

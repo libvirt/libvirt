@@ -492,6 +492,13 @@ int qemuMonitorJSONGetGuestCPUx86(qemuMonitorPtr mon,
                                   virCPUDataPtr *data,
                                   virCPUDataPtr *disabled);
 
+int qemuMonitorJSONGetGuestCPU(qemuMonitorPtr mon,
+                               virArch arch,
+                               qemuMonitorCPUFeatureTranslationCallback translate,
+                               void *opaque,
+                               virCPUDataPtr *enabled,
+                               virCPUDataPtr *disabled);
+
 int qemuMonitorJSONRTCResetReinjection(qemuMonitorPtr mon);
 
 int qemuMonitorJSONGetIOThreads(qemuMonitorPtr mon,

@@ -1153,6 +1153,16 @@ int qemuMonitorGetGuestCPUx86(qemuMonitorPtr mon,
                               virCPUDataPtr *data,
                               virCPUDataPtr *disabled);
 
+typedef const char *(*qemuMonitorCPUFeatureTranslationCallback)(const char *name,
+                                                                void *opaque);
+
+int qemuMonitorGetGuestCPU(qemuMonitorPtr mon,
+                           virArch arch,
+                           qemuMonitorCPUFeatureTranslationCallback translate,
+                           void *opaque,
+                           virCPUDataPtr *enabled,
+                           virCPUDataPtr *disabled);
+
 int qemuMonitorRTCResetReinjection(qemuMonitorPtr mon);
 
 typedef struct _qemuMonitorIOThreadInfo qemuMonitorIOThreadInfo;
