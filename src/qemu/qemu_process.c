@@ -5448,6 +5448,42 @@ qemuProcessStartValidate(virQEMUDriverPtr driver,
 }
 
 
+static int
+qemuProcessStartUpdateCustomCaps(virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainXmlNsDefPtr nsdef = vm->def->namespaceData;
+    int tmp;
+    size_t i;
+
+    if (nsdef) {
+        for (i = 0; i < nsdef->ncapsadd; i++) {
+            if ((tmp = virQEMUCapsTypeFromString(nsdef->capsadd[i])) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("invalid qemu namespace capability '%s'"),
+                               nsdef->capsadd[i]);
+                return -1;
+            }
+
+            virQEMUCapsSet(priv->qemuCaps, tmp);
+        }
+
+        for (i = 0; i < nsdef->ncapsdel; i++) {
+            if ((tmp = virQEMUCapsTypeFromString(nsdef->capsdel[i])) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("invalid qemu namespace capability '%s'"),
+                               nsdef->capsdel[i]);
+                return -1;
+            }
+
+            virQEMUCapsClear(priv->qemuCaps, tmp);
+        }
+    }
+
+    return 0;
+}
+
+
 /**
  * qemuProcessInit:
  *
@@ -5516,6 +5552,10 @@ qemuProcessInit(virQEMUDriverPtr driver,
      */
     VIR_DEBUG("Setting current domain def as transient");
     if (virDomainObjSetDefTransient(caps, driver->xmlopt, vm) < 0)
+        goto cleanup;
+
+    /* Update qemu capabilities according to lists passed in via namespace */
+    if (qemuProcessStartUpdateCustomCaps(vm) < 0)
         goto cleanup;
 
     if (flags & VIR_QEMU_PROCESS_START_PRETEND) {

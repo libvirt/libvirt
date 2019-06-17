@@ -8320,6 +8320,7 @@ void qemuDomainObjCheckTaint(virQEMUDriverPtr driver,
     size_t i;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivatePtr priv = obj->privateData;
+    bool custom_hypervisor_feat = false;
 
     if (virQEMUDriverIsPrivileged(driver) &&
         (!cfg->clearEmulatorCapabilities ||
@@ -8334,6 +8335,13 @@ void qemuDomainObjCheckTaint(virQEMUDriverPtr driver,
         qemuDomainXmlNsDefPtr qemuxmlns = obj->def->namespaceData;
         if (qemuxmlns->num_args || qemuxmlns->num_env)
             qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_CUSTOM_ARGV, logCtxt);
+        if (qemuxmlns->ncapsadd > 0 || qemuxmlns->ncapsdel > 0)
+            custom_hypervisor_feat = true;
+    }
+
+    if (custom_hypervisor_feat) {
+        qemuDomainObjTaint(driver, obj,
+                           VIR_DOMAIN_TAINT_CUSTOM_HYPERVISOR_FEATURE, logCtxt);
     }
 
     if (obj->def->cpu && obj->def->cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH)
