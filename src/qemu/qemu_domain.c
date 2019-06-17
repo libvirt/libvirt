@@ -3201,8 +3201,8 @@ qemuDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
                             xmlXPathContextPtr ctxt,
                             void **data)
 {
-    qemuDomainXmlNsDefPtr cmd = NULL;
-    bool uses_qemu_ns = false;
+    qemuDomainXmlNsDefPtr nsdata = NULL;
+    int ret = -1;
 
     if (xmlXPathRegisterNs(ctxt, BAD_CAST "qemu", BAD_CAST QEMU_NAMESPACE_HREF) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -3211,26 +3211,21 @@ qemuDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
         return -1;
     }
 
-    if (VIR_ALLOC(cmd) < 0)
+    if (VIR_ALLOC(nsdata) < 0)
         return -1;
 
-    if (qemuDomainDefNamespaceParseCommandlineArgs(cmd, ctxt) < 0 ||
-        qemuDomainDefNamespaceParseCommandlineEnv(cmd, ctxt) < 0)
-        goto error;
+    if (qemuDomainDefNamespaceParseCommandlineArgs(nsdata, ctxt) < 0 ||
+        qemuDomainDefNamespaceParseCommandlineEnv(nsdata, ctxt) < 0)
+        goto cleanup;
 
-    if (cmd->num_args > 0 || cmd->num_env > 0)
-        uses_qemu_ns = true;
+    if (nsdata->num_args > 0 || nsdata->num_env > 0)
+        VIR_STEAL_PTR(*data, nsdata);
 
-    if (uses_qemu_ns)
-        *data = cmd;
-    else
-        VIR_FREE(cmd);
+    ret = 0;
 
-    return 0;
-
- error:
-    qemuDomainDefNamespaceFree(cmd);
-    return -1;
+ cleanup:
+    qemuDomainDefNamespaceFree(nsdata);
+    return ret;
 }
 
 static int
