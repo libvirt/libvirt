@@ -27,7 +27,6 @@
 #include "qemu_cgroup.h"
 #include "qemu_command.h"
 #include "qemu_process.h"
-#include "qemu_parse_command.h"
 #include "qemu_capabilities.h"
 #include "qemu_migration.h"
 #include "qemu_migration_params.h"
@@ -73,6 +72,8 @@
 
 #include <libxml/xpathInternals.h>
 #include "dosname.h"
+
+#define QEMU_QXL_VGAMEM_DEFAULT 16 * 1024
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 

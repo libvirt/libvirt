@@ -21,8 +21,6 @@
 
 #pragma once
 
-#define QEMU_QXL_VGAMEM_DEFAULT 16 * 1024
-
 void
 qemuParseKeywordsFree(int nkeywords,
                      char **keywords,
