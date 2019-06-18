@@ -478,7 +478,10 @@ $ virsh domxml-from-native qemu-argv demo.args
     <p>
       The <code>virsh domxml-to-native</code> provides a way to convert a
       guest description using libvirt Domain XML, into a set of QEMU args
-      that can be run manually.
+      that can be run manually. Note that currently the command line formatted
+      by libvirt is no longer suited for manually running qemu as the
+      configuration expects various resources and open file descriptors passed
+      to the process which are usually prepared by libvirtd.
     </p>
 
     <pre>$ cat &gt; demo.xml &lt;&lt;EOF
