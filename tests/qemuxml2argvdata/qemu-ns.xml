@@ -29,7 +29,7 @@
   </qemu:commandline>
   <qemu:capabilities>
     <qemu:add capability="vnc-colon"/>
-    <qemu:add capability="drive"/>
+    <qemu:add capability="blockdev"/>
     <qemu:del capability="name"/>
   </qemu:capabilities>
 </domain>
