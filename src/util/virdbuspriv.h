@@ -23,12 +23,11 @@
 # error "virdbuspriv.h may only be included by virdbus.c or test suites"
 #endif /* LIBVIRT_VIRDBUSPRIV_H_ALLOW */
 
-#ifndef LIBVIRT_VIRDBUSPRIV_H
-# define LIBVIRT_VIRDBUSPRIV_H
+#pragma once
 
-# include "virdbus.h"
+#include "virdbus.h"
 
-# if defined(WITH_DBUS) && !HAVE_DBUSBASICVALUE
+#if defined(WITH_DBUS) && !HAVE_DBUSBASICVALUE
 /* Copied (and simplified) from dbus 1.6.12, for use with older dbus headers */
 typedef union
 {
@@ -42,7 +41,7 @@ typedef union
   double dbl;          /**< as double */
   unsigned char byt;   /**< as byte */
 } DBusBasicValue;
-# endif
+#endif
 
 int virDBusMessageEncodeArgs(DBusMessage* msg,
                              const char *types,
@@ -55,5 +54,3 @@ int virDBusMessageDecodeArgs(DBusMessage* msg,
 int virDBusMessageEncode(DBusMessage* msg,
                          const char *types,
                          ...);
-
-#endif /* LIBVIRT_VIRDBUSPRIV_H */
