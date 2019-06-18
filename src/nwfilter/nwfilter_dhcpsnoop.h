@@ -20,10 +20,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_NWFILTER_DHCPSNOOP_H
-# define LIBVIRT_NWFILTER_DHCPSNOOP_H
+#pragma once
 
-# include "nwfilter_tech_driver.h"
+#include "nwfilter_tech_driver.h"
 
 int virNWFilterDHCPSnoopInit(void);
 void virNWFilterDHCPSnoopShutdown(void);
@@ -31,4 +30,3 @@ int virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver,
                             virNWFilterBindingDefPtr binding,
                             virNWFilterDriverStatePtr driver);
 void virNWFilterDHCPSnoopEnd(const char *ifname);
-#endif /* LIBVIRT_NWFILTER_DHCPSNOOP_H */

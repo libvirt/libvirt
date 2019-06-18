@@ -21,13 +21,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_NWFILTER_LEARNIPADDR_H
-# define LIBVIRT_NWFILTER_LEARNIPADDR_H
+#pragma once
 
-# include "conf/nwfilter_params.h"
-# include "nwfilter_tech_driver.h"
-# include "virnwfilterbindingdef.h"
-# include <net/if.h>
+#include "conf/nwfilter_params.h"
+#include "nwfilter_tech_driver.h"
+#include "virnwfilterbindingdef.h"
+#include <net/if.h>
 
 enum howDetect {
   DETECT_DHCP = 1,
@@ -49,5 +48,3 @@ void virNWFilterUnlockIface(const char *ifname);
 int virNWFilterLearnInit(void);
 void virNWFilterLearnShutdown(void);
 void virNWFilterLearnThreadsTerminate(bool allowNewThreads);
-
-#endif /* LIBVIRT_NWFILTER_LEARNIPADDR_H */

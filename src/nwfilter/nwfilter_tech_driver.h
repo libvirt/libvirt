@@ -21,10 +21,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_NWFILTER_TECH_DRIVER_H
-# define LIBVIRT_NWFILTER_TECH_DRIVER_H
+#pragma once
 
-# include "virnwfilterobj.h"
+#include "virnwfilterobj.h"
 
 typedef struct _virNWFilterTechDriver virNWFilterTechDriver;
 typedef virNWFilterTechDriver *virNWFilterTechDriverPtr;
@@ -90,5 +89,3 @@ struct _virNWFilterTechDriver {
     virNWFilterDropAllRules applyDropAllRules;
     virNWFilterRemoveBasicRules removeBasicRules;
 };
-
-#endif /* LIBVIRT_NWFILTER_TECH_DRIVER_H */

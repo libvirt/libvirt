@@ -20,12 +20,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_NWFILTER_GENTECH_DRIVER_H
-# define LIBVIRT_NWFILTER_GENTECH_DRIVER_H
+#pragma once
 
-# include "virnwfilterobj.h"
-# include "virnwfilterbindingdef.h"
-# include "nwfilter_tech_driver.h"
+#include "virnwfilterobj.h"
+#include "virnwfilterbindingdef.h"
+#include "nwfilter_tech_driver.h"
 
 virNWFilterTechDriverPtr virNWFilterTechDriverForName(const char *name);
 
@@ -55,5 +54,3 @@ virHashTablePtr virNWFilterCreateVarHashmap(const char *macaddr,
 
 int virNWFilterBuildAll(virNWFilterDriverStatePtr driver,
                         bool newFilters);
-
-#endif /* LIBVIRT_NWFILTER_GENTECH_DRIVER_H */
