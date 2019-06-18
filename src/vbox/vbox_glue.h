@@ -19,13 +19,10 @@
  *
  */
 
-#ifndef LIBVIRT_VBOX_GLUE_H
-# define LIBVIRT_VBOX_GLUE_H
+#pragma once
 
-# ifdef WIN32
-#  include "vbox_MSCOMGlue.h"
-# else
-#  include "vbox_XPCOMCGlue.h"
-# endif
-
-#endif /* LIBVIRT_VBOX_GLUE_H */
+#ifdef WIN32
+# include "vbox_MSCOMGlue.h"
+#else
+# include "vbox_XPCOMCGlue.h"
+#endif

@@ -16,13 +16,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VBOX_GET_DRIVER_H
-# define LIBVIRT_VBOX_GET_DRIVER_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
 virHypervisorDriverPtr vboxGetHypervisorDriver(uint32_t uVersion);
 virNetworkDriverPtr vboxGetNetworkDriver(uint32_t uVersion);
 virStorageDriverPtr vboxGetStorageDriver(uint32_t uVersion);
-
-#endif /* LIBVIRT_VBOX_GET_DRIVER_H */

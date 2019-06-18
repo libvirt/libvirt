@@ -22,21 +22,18 @@
  * additional information or have any questions.
  */
 
-#ifndef LIBVIRT_VBOX_DRIVER_H
-# define LIBVIRT_VBOX_DRIVER_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
-# if defined(VBOX_NETWORK_DRIVER)
+#if defined(VBOX_NETWORK_DRIVER)
 int vboxNetworkRegister(void);
-# endif
+#endif
 
-# if defined(VBOX_STORAGE_DRIVER)
+#if defined(VBOX_STORAGE_DRIVER)
 int vboxStorageRegister(void);
-# endif
+#endif
 
-# if defined(VBOX_DRIVER)
+#if defined(VBOX_DRIVER)
 int vboxRegister(void);
-# endif
-
-#endif /* LIBVIRT_VBOX_DRIVER_H */
+#endif

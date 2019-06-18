@@ -19,10 +19,9 @@
  *
  */
 
-#ifndef LIBVIRT_VBOX_MSCOMGLUE_H
-# define LIBVIRT_VBOX_MSCOMGLUE_H
+#pragma once
 
-# include "vbox_CAPI_v3_2.h"
+#include "vbox_CAPI_v3_2.h"
 
 extern PFNVBOXGETXPCOMCFUNCTIONS g_pfnGetFunctions;
 
@@ -37,12 +36,10 @@ struct _vboxArray {
     void *handle;
 };
 
-# define VBOX_ARRAY_INITIALIZER { NULL, 0, NULL }
+#define VBOX_ARRAY_INITIALIZER { NULL, 0, NULL }
 
 nsresult vboxArrayGet(vboxArray *array, void *self, void *getter);
 nsresult vboxArrayGetWithPtrArg(vboxArray *array, void *self, void *getter, void *arg);
 nsresult vboxArrayGetWithUintArg(vboxArray *array, void *self, void *getter, PRUint32 arg);
 void vboxArrayRelease(vboxArray *array);
-# define vboxArrayUnalloc vboxArrayRelease
-
-#endif /* LIBVIRT_VBOX_MSCOMGLUE_H */
+#define vboxArrayUnalloc vboxArrayRelease

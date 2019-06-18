@@ -16,12 +16,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VBOX_SNAPSHOT_CONF_H
-# define LIBVIRT_VBOX_SNAPSHOT_CONF_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
-# define VBOX_UUID_REGEX "([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})"
+#define VBOX_UUID_REGEX "([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})"
 
 /*Stores VirtualBox xml hard disk information
 A hard disk can have a parent and children*/
@@ -137,5 +136,3 @@ virVBoxSnapshotConfHardDiskPtrByLocation(virVBoxSnapshotConfMachinePtr machine,
 virVBoxSnapshotConfSnapshotPtr
 virVBoxSnapshotConfSnapshotByName(virVBoxSnapshotConfSnapshotPtr snapshot,
                                   const char *snapshotName);
-
-#endif /* LIBVIRT_VBOX_SNAPSHOT_CONF_H */

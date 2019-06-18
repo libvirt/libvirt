@@ -16,10 +16,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VBOX_UNIFORMED_API_H
-# define LIBVIRT_VBOX_UNIFORMED_API_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
 /* This file may be used in three place. That is vbox_tmpl.c,
  * vbox_common.c and vbox_driver.c. The vboxUniformedAPI and some
@@ -85,9 +84,9 @@ struct _vboxDriver {
     PCVBOXXPCOM pFuncs;
     IVirtualBox *vboxObj;
     ISession *vboxSession;
-# ifdef VBOX_API_VERSION
+#ifdef VBOX_API_VERSION
     IVirtualBoxClient *vboxClient;
-# endif
+#endif
 
     unsigned long version;
 
@@ -559,5 +558,3 @@ virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn,
 void vbox50InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
 void vbox51InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
 void vbox52InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
-
-#endif /* LIBVIRT_VBOX_UNIFORMED_API_H */
