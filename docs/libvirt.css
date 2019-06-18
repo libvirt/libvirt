@@ -274,6 +274,12 @@ span.since {
     font-weight: bold;
 }
 
+span.deprecated {
+    color: darkred;
+    font-style: italic;
+    font-weight: bold;
+}
+
 img.diagram {
     background: rgb(230,230,230);
     border: 2px dotted rgb(178,178,178);
