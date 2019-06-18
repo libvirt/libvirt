@@ -1181,12 +1181,16 @@ virCgroupV1GetBlkioDeviceWeight(virCgroupPtr group,
                                 unsigned int *weight)
 {
     VIR_AUTOFREE(char *) str = NULL;
+    VIR_AUTOFREE(char *) value = NULL;
 
-    if (virCgroupGetValueForBlkDev(group,
-                                   VIR_CGROUP_CONTROLLER_BLKIO,
-                                   "blkio.weight_device",
-                                   path,
-                                   &str) < 0)
+    if (virCgroupGetValueStr(group,
+                             VIR_CGROUP_CONTROLLER_BLKIO,
+                             "blkio.weight_device",
+                             &value) < 0) {
+        return -1;
+    }
+
+    if (virCgroupGetValueForBlkDev(value, path, &str) < 0)
         return -1;
 
     if (!str) {
@@ -1229,12 +1233,16 @@ virCgroupV1GetBlkioDeviceReadIops(virCgroupPtr group,
                                   unsigned int *riops)
 {
     VIR_AUTOFREE(char *) str = NULL;
+    VIR_AUTOFREE(char *) value = NULL;
 
-    if (virCgroupGetValueForBlkDev(group,
-                                   VIR_CGROUP_CONTROLLER_BLKIO,
-                                   "blkio.throttle.read_iops_device",
-                                   path,
-                                   &str) < 0)
+    if (virCgroupGetValueStr(group,
+                             VIR_CGROUP_CONTROLLER_BLKIO,
+                             "blkio.throttle.read_iops_device",
+                             &value) < 0) {
+        return -1;
+    }
+
+    if (virCgroupGetValueForBlkDev(value, path, &str) < 0)
         return -1;
 
     if (!str) {
@@ -1277,12 +1285,16 @@ virCgroupV1GetBlkioDeviceWriteIops(virCgroupPtr group,
                                    unsigned int *wiops)
 {
     VIR_AUTOFREE(char *) str = NULL;
+    VIR_AUTOFREE(char *) value = NULL;
 
-    if (virCgroupGetValueForBlkDev(group,
-                                   VIR_CGROUP_CONTROLLER_BLKIO,
-                                   "blkio.throttle.write_iops_device",
-                                   path,
-                                   &str) < 0)
+    if (virCgroupGetValueStr(group,
+                             VIR_CGROUP_CONTROLLER_BLKIO,
+                             "blkio.throttle.write_iops_device",
+                             &value) < 0) {
+        return -1;
+    }
+
+    if (virCgroupGetValueForBlkDev(value, path, &str) < 0)
         return -1;
 
     if (!str) {
@@ -1325,12 +1337,16 @@ virCgroupV1GetBlkioDeviceReadBps(virCgroupPtr group,
                                  unsigned long long *rbps)
 {
     VIR_AUTOFREE(char *) str = NULL;
+    VIR_AUTOFREE(char *) value = NULL;
 
-    if (virCgroupGetValueForBlkDev(group,
-                                   VIR_CGROUP_CONTROLLER_BLKIO,
-                                   "blkio.throttle.read_bps_device",
-                                   path,
-                                   &str) < 0)
+    if (virCgroupGetValueStr(group,
+                             VIR_CGROUP_CONTROLLER_BLKIO,
+                             "blkio.throttle.read_bps_device",
+                             &value) < 0) {
+        return -1;
+    }
+
+    if (virCgroupGetValueForBlkDev(value, path, &str) < 0)
         return -1;
 
     if (!str) {
@@ -1373,12 +1389,16 @@ virCgroupV1GetBlkioDeviceWriteBps(virCgroupPtr group,
                                   unsigned long long *wbps)
 {
     VIR_AUTOFREE(char *) str = NULL;
+    VIR_AUTOFREE(char *) value = NULL;
 
-    if (virCgroupGetValueForBlkDev(group,
-                                   VIR_CGROUP_CONTROLLER_BLKIO,
-                                   "blkio.throttle.write_bps_device",
-                                   path,
-                                   &str) < 0)
+    if (virCgroupGetValueStr(group,
+                             VIR_CGROUP_CONTROLLER_BLKIO,
+                             "blkio.throttle.write_bps_device",
+                             &value) < 0) {
+        return -1;
+    }
+
+    if (virCgroupGetValueForBlkDev(value, path, &str) < 0)
         return -1;
 
     if (!str) {

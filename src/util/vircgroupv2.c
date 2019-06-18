@@ -750,14 +750,17 @@ virCgroupV2GetBlkioDeviceWeight(virCgroupPtr group,
                                 unsigned int *weight)
 {
     VIR_AUTOFREE(char *) str = NULL;
+    VIR_AUTOFREE(char *) value = NULL;
 
-    if (virCgroupGetValueForBlkDev(group,
-                                   VIR_CGROUP_CONTROLLER_BLKIO,
-                                   "io.weight",
-                                   path,
-                                   &str) < 0) {
+    if (virCgroupGetValueStr(group,
+                             VIR_CGROUP_CONTROLLER_BLKIO,
+                             "io.weight",
+                             &value) < 0) {
         return -1;
     }
+
+    if (virCgroupGetValueForBlkDev(value, path, &str) < 0)
+        return -1;
 
     if (!str) {
         *weight = 0;
@@ -804,16 +807,19 @@ virCgroupV2GetBlkioDeviceReadIops(virCgroupPtr group,
                                   unsigned int *riops)
 {
     VIR_AUTOFREE(char *) str = NULL;
+    VIR_AUTOFREE(char *) value = NULL;
     const char *name = "riops=";
     char *tmp;
 
-    if (virCgroupGetValueForBlkDev(group,
-                                   VIR_CGROUP_CONTROLLER_BLKIO,
-                                   "io.max",
-                                   path,
-                                   &str) < 0) {
+    if (virCgroupGetValueStr(group,
+                             VIR_CGROUP_CONTROLLER_BLKIO,
+                             "io.max",
+                             &value) < 0) {
         return -1;
     }
+
+    if (virCgroupGetValueForBlkDev(value, path, &str) < 0)
+        return -1;
 
     if (!str) {
         *riops = 0;
@@ -872,16 +878,19 @@ virCgroupV2GetBlkioDeviceWriteIops(virCgroupPtr group,
                                    unsigned int *wiops)
 {
     VIR_AUTOFREE(char *) str = NULL;
+    VIR_AUTOFREE(char *) value = NULL;
     const char *name = "wiops=";
     char *tmp;
 
-    if (virCgroupGetValueForBlkDev(group,
-                                   VIR_CGROUP_CONTROLLER_BLKIO,
-                                   "io.max",
-                                   path,
-                                   &str) < 0) {
+    if (virCgroupGetValueStr(group,
+                             VIR_CGROUP_CONTROLLER_BLKIO,
+                             "io.max",
+                             &value) < 0) {
         return -1;
     }
+
+    if (virCgroupGetValueForBlkDev(value, path, &str) < 0)
+        return -1;
 
     if (!str) {
         *wiops = 0;
@@ -940,16 +949,19 @@ virCgroupV2GetBlkioDeviceReadBps(virCgroupPtr group,
                                  unsigned long long *rbps)
 {
     VIR_AUTOFREE(char *) str = NULL;
+    VIR_AUTOFREE(char *) value = NULL;
     const char *name = "rbps=";
     char *tmp;
 
-    if (virCgroupGetValueForBlkDev(group,
-                                   VIR_CGROUP_CONTROLLER_BLKIO,
-                                   "io.max",
-                                   path,
-                                   &str) < 0) {
+    if (virCgroupGetValueStr(group,
+                             VIR_CGROUP_CONTROLLER_BLKIO,
+                             "io.max",
+                             &value) < 0) {
         return -1;
     }
+
+    if (virCgroupGetValueForBlkDev(value, path, &str) < 0)
+        return -1;
 
     if (!str) {
         *rbps = 0;
@@ -1008,16 +1020,19 @@ virCgroupV2GetBlkioDeviceWriteBps(virCgroupPtr group,
                                   unsigned long long *wbps)
 {
     VIR_AUTOFREE(char *) str = NULL;
+    VIR_AUTOFREE(char *) value = NULL;
     const char *name = "wbps=";
     char *tmp;
 
-    if (virCgroupGetValueForBlkDev(group,
-                                   VIR_CGROUP_CONTROLLER_BLKIO,
-                                   "io.max",
-                                   path,
-                                   &str) < 0) {
+    if (virCgroupGetValueStr(group,
+                             VIR_CGROUP_CONTROLLER_BLKIO,
+                             "io.max",
+                             &value) < 0) {
         return -1;
     }
+
+    if (virCgroupGetValueForBlkDev(value, path, &str) < 0)
+        return -1;
 
     if (!str) {
         *wbps = 0;

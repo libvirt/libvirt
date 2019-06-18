@@ -533,19 +533,13 @@ virCgroupGetValueStr(virCgroupPtr group,
 
 
 int
-virCgroupGetValueForBlkDev(virCgroupPtr group,
-                           int controller,
-                           const char *key,
+virCgroupGetValueForBlkDev(const char *str,
                            const char *path,
                            char **value)
 {
     VIR_AUTOFREE(char *) prefix = NULL;
-    VIR_AUTOFREE(char *) str = NULL;
     char **lines = NULL;
     int ret = -1;
-
-    if (virCgroupGetValueStr(group, controller, key, &str) < 0)
-        goto error;
 
     if (!(prefix = virCgroupGetBlockDevString(path)))
         goto error;
