@@ -18,12 +18,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_SECURITY_MANAGER_H
-# define LIBVIRT_SECURITY_MANAGER_H
+#pragma once
 
-# include "domain_conf.h"
-# include "vircommand.h"
-# include "virstoragefile.h"
+#include "domain_conf.h"
+#include "vircommand.h"
+#include "virstoragefile.h"
 
 typedef struct _virSecurityManager virSecurityManager;
 typedef virSecurityManager *virSecurityManagerPtr;
@@ -36,7 +35,7 @@ typedef enum {
     VIR_SECURITY_MANAGER_MOUNT_NAMESPACE    = 1 << 5,
 } virSecurityManagerNewFlags;
 
-# define VIR_SECURITY_MANAGER_NEW_MASK \
+#define VIR_SECURITY_MANAGER_NEW_MASK \
     (VIR_SECURITY_MANAGER_DEFAULT_CONFINED  | \
      VIR_SECURITY_MANAGER_REQUIRE_CONFINED  | \
      VIR_SECURITY_MANAGER_PRIVILEGED)
@@ -207,5 +206,3 @@ virSecurityManagerMetadataLock(virSecurityManagerPtr mgr,
 void
 virSecurityManagerMetadataUnlock(virSecurityManagerPtr mgr,
                                  virSecurityManagerMetadataLockStatePtr *state);
-
-#endif /* LIBVIRT_SECURITY_MANAGER_H */

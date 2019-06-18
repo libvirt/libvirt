@@ -17,11 +17,8 @@
  *
  */
 
-#ifndef LIBVIRT_SECURITY_NOP_H
-# define LIBVIRT_SECURITY_NOP_H
+#pragma once
 
-# include "security_driver.h"
+#include "security_driver.h"
 
 extern virSecurityDriver virSecurityDriverNop;
-
-#endif /* LIBVIRT_SECURITY_NOP_H */

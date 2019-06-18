@@ -16,9 +16,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_SECURITY_SELINUX_H
-# define LIBVIRT_SECURITY_SELINUX_H
+#pragma once
 
 extern virSecurityDriver virSecurityDriverSELinux;
-
-#endif /* LIBVIRT_SECURITY_SELINUX_H */

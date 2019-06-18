@@ -16,8 +16,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_SECURITY_UTIL_H
-# define LIBVIRT_SECURITY_UTIL_H
+#pragma once
 
 int
 virSecurityGetRememberedLabel(const char *name,
@@ -28,5 +27,3 @@ int
 virSecuritySetRememberedLabel(const char *name,
                               const char *path,
                               const char *label);
-
-#endif /* LIBVIRT_SECURITY_UTIL_H */
