@@ -58,6 +58,12 @@ struct _virCgroup {
     virCgroupV2Controller unified;
 };
 
+int virCgroupSetValueRaw(const char *path,
+                         const char *value);
+
+int virCgroupGetValueRaw(const char *path,
+                         char **value);
+
 int virCgroupSetValueStr(virCgroupPtr group,
                          int controller,
                          const char *key,

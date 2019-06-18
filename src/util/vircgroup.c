@@ -455,32 +455,65 @@ virCgroupGetBlockDevString(const char *path)
 
 
 int
-virCgroupSetValueStr(virCgroupPtr group,
-                     int controller,
-                     const char *key,
+virCgroupSetValueRaw(const char *path,
                      const char *value)
 {
-    VIR_AUTOFREE(char *) keypath = NULL;
-    char *tmp = NULL;
+    char *tmp;
 
-    if (virCgroupPathOfController(group, controller, key, &keypath) < 0)
-        return -1;
-
-    VIR_DEBUG("Set value '%s' to '%s'", keypath, value);
-    if (virFileWriteStr(keypath, value, 0) < 0) {
+    VIR_DEBUG("Set value '%s' to '%s'", path, value);
+    if (virFileWriteStr(path, value, 0) < 0) {
         if (errno == EINVAL &&
-            (tmp = strrchr(keypath, '/'))) {
+            (tmp = strrchr(path, '/'))) {
             virReportSystemError(errno,
                                  _("Invalid value '%s' for '%s'"),
                                  value, tmp + 1);
             return -1;
         }
         virReportSystemError(errno,
-                             _("Unable to write to '%s'"), keypath);
+                             _("Unable to write to '%s'"), path);
         return -1;
     }
 
     return 0;
+}
+
+
+int
+virCgroupGetValueRaw(const char *path,
+                     char **value)
+{
+    int rc;
+
+    *value = NULL;
+
+    VIR_DEBUG("Get value %s", path);
+
+    if ((rc = virFileReadAll(path, 1024*1024, value)) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to read from '%s'"), path);
+        return -1;
+    }
+
+    /* Terminated with '\n' has sometimes harmful effects to the caller */
+    if (rc > 0 && (*value)[rc - 1] == '\n')
+        (*value)[rc - 1] = '\0';
+
+    return 0;
+}
+
+
+int
+virCgroupSetValueStr(virCgroupPtr group,
+                     int controller,
+                     const char *key,
+                     const char *value)
+{
+    VIR_AUTOFREE(char *) keypath = NULL;
+
+    if (virCgroupPathOfController(group, controller, key, &keypath) < 0)
+        return -1;
+
+    return virCgroupSetValueRaw(keypath, value);
 }
 
 
@@ -491,26 +524,11 @@ virCgroupGetValueStr(virCgroupPtr group,
                      char **value)
 {
     VIR_AUTOFREE(char *) keypath = NULL;
-    int rc;
-
-    *value = NULL;
 
     if (virCgroupPathOfController(group, controller, key, &keypath) < 0)
         return -1;
 
-    VIR_DEBUG("Get value %s", keypath);
-
-    if ((rc = virFileReadAll(keypath, 1024*1024, value)) < 0) {
-        virReportSystemError(errno,
-                             _("Unable to read from '%s'"), keypath);
-        return -1;
-    }
-
-    /* Terminated with '\n' has sometimes harmful effects to the caller */
-    if (rc > 0 && (*value)[rc - 1] == '\n')
-        (*value)[rc - 1] = '\0';
-
-    return 0;
+    return virCgroupGetValueRaw(keypath, value);
 }
 
 
