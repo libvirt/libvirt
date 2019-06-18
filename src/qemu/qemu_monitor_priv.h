@@ -20,12 +20,9 @@
 # error "qemu_monitor_priv.h may only be included by qemu_monitor.c or test suites"
 #endif /* LIBVIRT_QEMU_MONITOR_PRIV_H_ALLOW */
 
-#ifndef LIBVIRT_QEMU_MONITOR_PRIV_H
-# define LIBVIRT_QEMU_MONITOR_PRIV_H
+#pragma once
 
-# include "qemu_monitor.h"
+#include "qemu_monitor.h"
 
 void
 qemuMonitorResetCommandID(qemuMonitorPtr mon);
-
-#endif /* LIBVIRT_QEMU_MONITOR_PRIV_H */

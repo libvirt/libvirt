@@ -19,13 +19,12 @@
  *
  */
 
-#ifndef LIBVIRT_QEMU_MIGRATION_H
-# define LIBVIRT_QEMU_MIGRATION_H
+#pragma once
 
-# include "qemu_conf.h"
-# include "qemu_domain.h"
-# include "qemu_migration_params.h"
-# include "virenum.h"
+#include "qemu_conf.h"
+#include "qemu_domain.h"
+#include "qemu_migration_params.h"
+#include "virenum.h"
 
 /*
  * General function naming conventions:
@@ -41,7 +40,7 @@
  */
 
 /* All supported qemu migration flags.  */
-# define QEMU_MIGRATION_FLAGS \
+#define QEMU_MIGRATION_FLAGS \
     (VIR_MIGRATE_LIVE | \
      VIR_MIGRATE_PEER2PEER | \
      VIR_MIGRATE_TUNNELLED | \
@@ -63,7 +62,7 @@
      0)
 
 /* All supported migration parameters and their types. */
-# define QEMU_MIGRATION_PARAMETERS \
+#define QEMU_MIGRATION_PARAMETERS \
     VIR_MIGRATE_PARAM_URI,              VIR_TYPED_PARAM_STRING, \
     VIR_MIGRATE_PARAM_DEST_NAME,        VIR_TYPED_PARAM_STRING, \
     VIR_MIGRATE_PARAM_DEST_XML,         VIR_TYPED_PARAM_STRING, \
@@ -254,5 +253,3 @@ qemuMigrationSrcFetchMirrorStats(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm,
                                  qemuDomainAsyncJob asyncJob,
                                  qemuDomainJobInfoPtr jobInfo);
-
-#endif /* LIBVIRT_QEMU_MIGRATION_H */

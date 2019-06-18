@@ -19,12 +19,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_QEMU_HOTPLUG_H
-# define LIBVIRT_QEMU_HOTPLUG_H
+#pragma once
 
-# include "qemu_conf.h"
-# include "qemu_domain.h"
-# include "domain_conf.h"
+#include "qemu_conf.h"
+#include "qemu_domain.h"
+#include "domain_conf.h"
 
 int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
@@ -151,5 +150,3 @@ int qemuDomainSetVcpuInternal(virQEMUDriverPtr driver,
                               virDomainDefPtr persistentDef,
                               virBitmapPtr vcpus,
                               bool state);
-
-#endif /* LIBVIRT_QEMU_HOTPLUG_H */

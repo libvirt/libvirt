@@ -19,14 +19,13 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_QEMU_ALIAS_H
-# define LIBVIRT_QEMU_ALIAS_H
+#pragma once
 
-# include "domain_conf.h"
+#include "domain_conf.h"
 
-# include "qemu_capabilities.h"
-# include "qemu_domain.h"
-# include "qemu_domain_address.h"
+#include "qemu_capabilities.h"
+#include "qemu_domain.h"
+#include "qemu_domain_address.h"
 
 int qemuAssignDeviceChrAlias(virDomainDefPtr def,
                              virDomainChrDefPtr chr,
@@ -96,5 +95,3 @@ char *qemuAliasChardevFromDevAlias(const char *devAlias)
 const char *qemuDomainGetManagedPRAlias(void);
 
 char *qemuDomainGetUnmanagedPRAlias(const char *parentalias);
-
-#endif /* LIBVIRT_QEMU_ALIAS_H */

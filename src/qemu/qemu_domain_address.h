@@ -19,13 +19,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_QEMU_DOMAIN_ADDRESS_H
-# define LIBVIRT_QEMU_DOMAIN_ADDRESS_H
+#pragma once
 
-# include "domain_addr.h"
-# include "domain_conf.h"
-# include "qemu_conf.h"
-# include "qemu_capabilities.h"
+#include "domain_addr.h"
+#include "domain_conf.h"
+#include "qemu_conf.h"
+#include "qemu_capabilities.h"
 
 int qemuDomainGetSCSIControllerModel(const virDomainDef *def,
                                      const virDomainControllerDef *cont,
@@ -64,5 +63,3 @@ int qemuDomainEnsureVirtioAddress(bool *releaseAddr,
                                   virDomainObjPtr vm,
                                   virDomainDeviceDefPtr dev,
                                   const char *devicename);
-
-#endif /* LIBVIRT_QEMU_DOMAIN_ADDRESS_H */

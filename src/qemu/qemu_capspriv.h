@@ -23,8 +23,7 @@
 # error "qemu_capspriv.h may only be included by qemu_capabilities.c or test suites"
 #endif /* LIBVIRT_QEMU_CAPSPRIV_H_ALLOW */
 
-#ifndef LIBVIRT_QEMU_CAPSPRIV_H
-# define LIBVIRT_QEMU_CAPSPRIV_H
+#pragma once
 
 virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps);
 
@@ -105,5 +104,3 @@ virQEMUCapsSetMicrocodeVersion(virQEMUCapsPtr qemuCaps,
 
 void
 virQEMUCapsStripMachineAliases(virQEMUCapsPtr qemuCaps);
-
-#endif /* LIBVIRT_QEMU_CAPSPRIV_H */

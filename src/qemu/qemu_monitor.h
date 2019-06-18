@@ -19,20 +19,19 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_QEMU_MONITOR_H
-# define LIBVIRT_QEMU_MONITOR_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
-# include "domain_conf.h"
-# include "virbitmap.h"
-# include "virhash.h"
-# include "virjson.h"
-# include "virnetdev.h"
-# include "device_conf.h"
-# include "cpu/cpu.h"
-# include "util/virgic.h"
-# include "virenum.h"
+#include "domain_conf.h"
+#include "virbitmap.h"
+#include "virhash.h"
+#include "virjson.h"
+#include "virnetdev.h"
+#include "device_conf.h"
+#include "cpu/cpu.h"
+#include "util/virgic.h"
+#include "virenum.h"
 
 typedef struct _qemuMonitor qemuMonitor;
 typedef qemuMonitor *qemuMonitorPtr;
@@ -388,7 +387,7 @@ int qemuMonitorHMPCommandWithFd(qemuMonitorPtr mon,
                                 const char *cmd,
                                 int scm_fd,
                                 char **reply);
-# define qemuMonitorHMPCommand(mon, cmd, reply) \
+#define qemuMonitorHMPCommand(mon, cmd, reply) \
     qemuMonitorHMPCommandWithFd(mon, cmd, -1, reply)
 
 int qemuMonitorEmitEvent(qemuMonitorPtr mon, const char *event,
@@ -1252,5 +1251,3 @@ struct _qemuMonitorCurrentMachineInfo {
 
 int qemuMonitorGetCurrentMachineInfo(qemuMonitorPtr mon,
                                      qemuMonitorCurrentMachineInfoPtr info);
-
-#endif /* LIBVIRT_QEMU_MONITOR_H */

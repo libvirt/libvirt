@@ -19,11 +19,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_QEMU_HOSTDEV_H
-# define LIBVIRT_QEMU_HOSTDEV_H
+#pragma once
 
-# include "qemu_conf.h"
-# include "domain_conf.h"
+#include "qemu_conf.h"
+#include "domain_conf.h"
 
 bool qemuHostdevHostSupportsPassthroughLegacy(void);
 bool qemuHostdevHostSupportsPassthroughVFIO(void);
@@ -90,5 +89,3 @@ void qemuHostdevReAttachMediatedDevices(virQEMUDriverPtr driver,
                                         int nhostdevs);
 void qemuHostdevReAttachDomainDevices(virQEMUDriverPtr driver,
                                       virDomainDefPtr def);
-
-#endif /* LIBVIRT_QEMU_HOSTDEV_H */

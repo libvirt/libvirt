@@ -19,9 +19,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_QEMU_DRIVER_H
-# define LIBVIRT_QEMU_DRIVER_H
+#pragma once
 
 int qemuRegister(void);
-
-#endif /* LIBVIRT_QEMU_DRIVER_H */

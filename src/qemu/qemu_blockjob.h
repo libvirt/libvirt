@@ -19,11 +19,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_QEMU_BLOCKJOB_H
-# define LIBVIRT_QEMU_BLOCKJOB_H
+#pragma once
 
-# include "internal.h"
-# include "qemu_conf.h"
+#include "internal.h"
+#include "qemu_conf.h"
 
 /**
  * This enum has to map all known block job states from enum virDomainBlockJobType
@@ -113,5 +112,3 @@ void qemuBlockJobSyncEnd(virDomainObjPtr vm,
 qemuBlockJobDataPtr
 qemuBlockJobGetByDisk(virDomainDiskDefPtr disk)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
-
-#endif /* LIBVIRT_QEMU_BLOCKJOB_H */

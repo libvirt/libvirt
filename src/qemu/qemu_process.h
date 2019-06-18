@@ -19,12 +19,11 @@
  *
  */
 
-#ifndef LIBVIRT_QEMU_PROCESS_H
-# define LIBVIRT_QEMU_PROCESS_H
+#pragma once
 
-# include "qemu_conf.h"
-# include "qemu_domain.h"
-# include "virstoragefile.h"
+#include "qemu_conf.h"
+#include "qemu_domain.h"
+#include "virstoragefile.h"
 
 int qemuProcessPrepareMonitorChr(virDomainChrSourceDefPtr monConfig,
                                  const char *domainDir);
@@ -242,5 +241,3 @@ qemuProcessQMPPtr qemuProcessQMPNew(const char *binary,
 void qemuProcessQMPFree(qemuProcessQMPPtr proc);
 
 int qemuProcessQMPStart(qemuProcessQMPPtr proc);
-
-#endif /* LIBVIRT_QEMU_PROCESS_H */

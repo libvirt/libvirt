@@ -19,17 +19,16 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_QEMU_CAPABILITIES_H
-# define LIBVIRT_QEMU_CAPABILITIES_H
+#pragma once
 
-# include "virobject.h"
-# include "capabilities.h"
-# include "vircommand.h"
-# include "qemu_monitor.h"
-# include "domain_capabilities.h"
-# include "virfirmware.h"
-# include "virfilecache.h"
-# include "virenum.h"
+#include "virobject.h"
+#include "capabilities.h"
+#include "vircommand.h"
+#include "qemu_monitor.h"
+#include "domain_capabilities.h"
+#include "virfirmware.h"
+#include "virfilecache.h"
+#include "virenum.h"
 
 /*
  * Internal flags to keep track of qemu command line capabilities
@@ -651,5 +650,3 @@ virQEMUCapsGetSEVCapabilities(virQEMUCapsPtr qemuCaps);
 
 virArch virQEMUCapsArchFromString(const char *arch);
 const char *virQEMUCapsArchToString(virArch arch);
-
-#endif /* LIBVIRT_QEMU_CAPABILITIES_H */

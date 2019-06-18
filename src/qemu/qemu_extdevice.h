@@ -18,11 +18,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_QEMU_EXTDEVICE_H
-# define LIBVIRT_QEMU_EXTDEVICE_H
+#pragma once
 
-# include "qemu_conf.h"
-# include "qemu_domain.h"
+#include "qemu_conf.h"
+#include "qemu_domain.h"
 
 int qemuExtDeviceLogCommand(qemuDomainLogContextPtr logCtxt,
                             virCommandPtr cmd,
@@ -54,5 +53,3 @@ bool qemuExtDevicesHasDevice(virDomainDefPtr def);
 int qemuExtDevicesSetupCgroup(virQEMUDriverPtr driver,
                               virDomainDefPtr def,
                               virCgroupPtr cgroup);
-
-#endif /* LIBVIRT_QEMU_EXTDEVICE_H */

@@ -23,13 +23,10 @@
 # error "qemu_hotplugpriv.h may only be included by qemu_hotplug.c or test suites"
 #endif /* LIBVIRT_QEMU_HOTPLUGPRIV_H_ALLOW */
 
-#ifndef LIBVIRT_QEMU_HOTPLUGPRIV_H
-# define LIBVIRT_QEMU_HOTPLUGPRIV_H
+#pragma once
 
 /*
  * This header file should never be used outside unit tests.
  */
 
 extern unsigned long long qemuDomainRemoveDeviceWaitTime;
-
-#endif /* LIBVIRT_QEMU_HOTPLUGPRIV_H */

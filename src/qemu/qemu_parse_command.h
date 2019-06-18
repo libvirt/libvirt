@@ -19,12 +19,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_QEMU_PARSE_COMMAND_H
-# define LIBVIRT_QEMU_PARSE_COMMAND_H
+#pragma once
 
-# include "virfilecache.h"
+#include "virfilecache.h"
 
-# define QEMU_QXL_VGAMEM_DEFAULT 16 * 1024
+#define QEMU_QXL_VGAMEM_DEFAULT 16 * 1024
 
 /*
  * NB: def->name can be NULL upon return and the caller
@@ -56,5 +55,3 @@ qemuParseKeywords(const char *str,
                   char ***retvalues,
                   int *retnkeywords,
                   int allowEmptyValue);
-
-#endif /* LIBVIRT_QEMU_PARSE_COMMAND_H */

@@ -19,15 +19,14 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_QEMU_MONITOR_JSON_H
-# define LIBVIRT_QEMU_MONITOR_JSON_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
-# include "qemu_monitor.h"
-# include "virbitmap.h"
-# include "cpu/cpu.h"
-# include "util/virgic.h"
+#include "qemu_monitor.h"
+#include "virbitmap.h"
+#include "cpu/cpu.h"
+#include "util/virgic.h"
 
 int qemuMonitorJSONTransactionAdd(virJSONValuePtr actions,
                                   const char *cmdname,
@@ -600,5 +599,3 @@ int qemuMonitorJSONMergeBitmaps(qemuMonitorPtr mon,
 int qemuMonitorJSONDeleteBitmap(qemuMonitorPtr mon,
                                 const char *node,
                                 const char *bitmap);
-
-#endif /* LIBVIRT_QEMU_MONITOR_JSON_H */

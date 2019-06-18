@@ -19,27 +19,26 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_QEMU_COMMAND_H
-# define LIBVIRT_QEMU_COMMAND_H
+#pragma once
 
-# include "domain_addr.h"
-# include "domain_conf.h"
-# include "vircommand.h"
-# include "virenum.h"
-# include "capabilities.h"
-# include "qemu_block.h"
-# include "qemu_conf.h"
-# include "qemu_domain.h"
-# include "qemu_domain_address.h"
-# include "qemu_capabilities.h"
-# include "logging/log_manager.h"
+#include "domain_addr.h"
+#include "domain_conf.h"
+#include "vircommand.h"
+#include "virenum.h"
+#include "capabilities.h"
+#include "qemu_block.h"
+#include "qemu_conf.h"
+#include "qemu_domain.h"
+#include "qemu_domain_address.h"
+#include "qemu_capabilities.h"
+#include "logging/log_manager.h"
 
 /* Config type for XML import/export conversions */
-# define QEMU_CONFIG_FORMAT_ARGV "qemu-argv"
+#define QEMU_CONFIG_FORMAT_ARGV "qemu-argv"
 
-# define QEMU_FSDEV_HOST_PREFIX "fsdev-"
+#define QEMU_FSDEV_HOST_PREFIX "fsdev-"
 
-# define QEMU_BLOCK_IOTUNE_MAX 1000000000000000LL
+#define QEMU_BLOCK_IOTUNE_MAX 1000000000000000LL
 
 VIR_ENUM_DECL(qemuVideo);
 
@@ -227,5 +226,3 @@ qemuBuildTPMOpenBackendFDs(const char *tpmdev,
                            int *cancelfd)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_NONNULL(4);
-
-#endif /* LIBVIRT_QEMU_COMMAND_H */

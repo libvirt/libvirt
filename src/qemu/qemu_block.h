@@ -16,17 +16,16 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_QEMU_BLOCK_H
-# define LIBVIRT_QEMU_BLOCK_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
-# include "qemu_conf.h"
-# include "qemu_domain.h"
+#include "qemu_conf.h"
+#include "qemu_domain.h"
 
-# include "virhash.h"
-# include "virjson.h"
-# include "viruri.h"
+#include "virhash.h"
+#include "virjson.h"
+#include "viruri.h"
 
 typedef struct qemuBlockNodeNameBackingChainData qemuBlockNodeNameBackingChainData;
 typedef qemuBlockNodeNameBackingChainData *qemuBlockNodeNameBackingChainDataPtr;
@@ -127,5 +126,3 @@ qemuBlockSnapshotAddLegacy(virJSONValuePtr actions,
                            virDomainDiskDefPtr disk,
                            virStorageSourcePtr newsrc,
                            bool reuse);
-
-#endif /* LIBVIRT_QEMU_BLOCK_H */

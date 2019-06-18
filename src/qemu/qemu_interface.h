@@ -19,12 +19,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_QEMU_INTERFACE_H
-# define LIBVIRT_QEMU_INTERFACE_H
+#pragma once
 
-# include "domain_conf.h"
-# include "qemu_conf.h"
-# include "qemu_domain.h"
+#include "domain_conf.h"
+#include "qemu_conf.h"
+#include "qemu_domain.h"
 
 int qemuInterfaceStartDevice(virDomainNetDefPtr net);
 int qemuInterfaceStartDevices(virDomainDefPtr def);
@@ -55,4 +54,3 @@ int qemuInterfaceOpenVhostNet(virDomainDefPtr def,
                               virDomainNetDefPtr net,
                               int *vhostfd,
                               size_t *vhostfdSize);
-#endif /* LIBVIRT_QEMU_INTERFACE_H */

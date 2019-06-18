@@ -23,11 +23,10 @@
 # error "qemu_process_priv.h may only be included by qemu_process.c or test suites"
 #endif /* LIBVIRT_QEMU_PROCESSPRIV_H_ALLOW */
 
-#ifndef LIBVIRT_QEMU_PROCESSPRIV_H
-# define LIBVIRT_QEMU_PROCESSPRIV_H
+#pragma once
 
-# include "domain_conf.h"
-# include "qemu_monitor.h"
+#include "domain_conf.h"
+#include "qemu_monitor.h"
 
 /*
  * This header file should never be used outside unit tests.
@@ -39,5 +38,3 @@ int qemuProcessHandleDeviceDeleted(qemuMonitorPtr mon,
                                    void *opaque);
 
 int qemuProcessQMPInitMonitor(qemuMonitorPtr mon);
-
-#endif /* LIBVIRT_QEMU_PROCESSPRIV_H */

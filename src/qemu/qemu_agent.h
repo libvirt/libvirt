@@ -19,11 +19,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_QEMU_AGENT_H
-# define LIBVIRT_QEMU_AGENT_H
+#pragma once
 
-# include "internal.h"
-# include "domain_conf.h"
+#include "internal.h"
+#include "domain_conf.h"
 
 typedef struct _qemuAgent qemuAgent;
 typedef qemuAgent *qemuAgentPtr;
@@ -121,4 +120,3 @@ int qemuAgentSetUserPassword(qemuAgentPtr mon,
                              const char *user,
                              const char *password,
                              bool crypted);
-#endif /* LIBVIRT_QEMU_AGENT_H */

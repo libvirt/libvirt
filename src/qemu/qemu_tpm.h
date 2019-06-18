@@ -18,10 +18,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_QEMU_TPM_H
-# define LIBVIRT_QEMU_TPM_H
+#pragma once
 
-# include "vircommand.h"
+#include "vircommand.h"
 
 int qemuExtTPMInitPaths(virQEMUDriverPtr driver,
                         virDomainDefPtr def)
@@ -51,5 +50,3 @@ int qemuExtTPMSetupCgroup(virQEMUDriverPtr driver,
                           virCgroupPtr cgroup)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_RETURN_CHECK;
-
-#endif /* LIBVIRT_QEMU_TPM_H */
