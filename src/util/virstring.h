@@ -16,12 +16,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRSTRING_H
-# define LIBVIRT_VIRSTRING_H
+#pragma once
 
-# include <stdarg.h>
+#include <stdarg.h>
 
-# include "internal.h"
+#include "internal.h"
 
 char **virStringSplitCount(const char *string,
                            const char *delim,
@@ -126,7 +125,7 @@ int virStrncpy(char *dest, const char *src, size_t n, size_t destbytes)
     ATTRIBUTE_RETURN_CHECK;
 int virStrcpy(char *dest, const char *src, size_t destbytes)
     ATTRIBUTE_RETURN_CHECK;
-# define virStrcpyStatic(dest, src) virStrcpy((dest), (src), sizeof(dest))
+#define virStrcpyStatic(dest, src) virStrcpy((dest), (src), sizeof(dest))
 
 /* Don't call these directly - use the macros below */
 int virStrdup(char **dest, const char *src, bool report, int domcode,
@@ -159,8 +158,8 @@ int virVasprintfInternal(bool report, int domcode, const char *filename,
  * Returns -1 on failure (with OOM error reported), 0 if @src was NULL,
  * 1 if @src was copied
  */
-# define VIR_STRDUP(dst, src) virStrdup(&(dst), src, true, VIR_FROM_THIS, \
-                                        __FILE__, __FUNCTION__, __LINE__)
+#define VIR_STRDUP(dst, src) virStrdup(&(dst), src, true, VIR_FROM_THIS, \
+                                       __FILE__, __FUNCTION__, __LINE__)
 
 /**
  * VIR_STRDUP_QUIET:
@@ -173,7 +172,7 @@ int virVasprintfInternal(bool report, int domcode, const char *filename,
  *
  * Returns -1 on failure, 0 if @src was NULL, 1 if @src was copied
  */
-# define VIR_STRDUP_QUIET(dst, src) virStrdup(&(dst), src, false, 0, NULL, NULL, 0)
+#define VIR_STRDUP_QUIET(dst, src) virStrdup(&(dst), src, false, 0, NULL, NULL, 0)
 
 /**
  * VIR_STRNDUP:
@@ -191,9 +190,9 @@ int virVasprintfInternal(bool report, int domcode, const char *filename,
  * Returns -1 on failure (with OOM error reported), 0 if @src was NULL,
  * 1 if @src was copied
  */
-# define VIR_STRNDUP(dst, src, n) virStrndup(&(dst), src, n, true, \
-                                             VIR_FROM_THIS, __FILE__, \
-                                             __FUNCTION__, __LINE__)
+#define VIR_STRNDUP(dst, src, n) virStrndup(&(dst), src, n, true, \
+                                            VIR_FROM_THIS, __FILE__, \
+                                            __FUNCTION__, __LINE__)
 
 /**
  * VIR_STRNDUP_QUIET:
@@ -211,8 +210,8 @@ int virVasprintfInternal(bool report, int domcode, const char *filename,
  *
  * Returns -1 on failure, 0 if @src was NULL, 1 if @src was copied
  */
-# define VIR_STRNDUP_QUIET(dst, src, n) virStrndup(&(dst), src, n, false, \
-                                                   0, NULL, NULL, 0)
+#define VIR_STRNDUP_QUIET(dst, src, n) virStrndup(&(dst), src, n, false, \
+                                                  0, NULL, NULL, 0)
 
 size_t virStringListLength(const char * const *strings);
 
@@ -225,7 +224,7 @@ size_t virStringListLength(const char * const *strings);
  * Returns -1 on failure (with OOM error reported), number of bytes printed
  * on success.
  */
-# define virVasprintf(strp, fmt, list) \
+#define virVasprintf(strp, fmt, list) \
     virVasprintfInternal(true, VIR_FROM_THIS, __FILE__, __FUNCTION__, \
                          __LINE__, strp, fmt, list)
 
@@ -236,7 +235,7 @@ size_t virStringListLength(const char * const *strings);
  *
  * Returns -1 on failure, number of bytes printed on success.
  */
-# define virVasprintfQuiet(strp, fmt, list) \
+#define virVasprintfQuiet(strp, fmt, list) \
     virVasprintfInternal(false, 0, NULL, NULL, 0, strp, fmt, list)
 
 /**
@@ -251,7 +250,7 @@ size_t virStringListLength(const char * const *strings);
  * on success.
  */
 
-# define virAsprintf(strp, ...) \
+#define virAsprintf(strp, ...) \
     virAsprintfInternal(true, VIR_FROM_THIS, __FILE__, __FUNCTION__, __LINE__, \
                         strp, __VA_ARGS__)
 
@@ -265,7 +264,7 @@ size_t virStringListLength(const char * const *strings);
  * Returns -1 on failure, number of bytes printed on success.
  */
 
-# define virAsprintfQuiet(strp, ...) \
+#define virAsprintfQuiet(strp, ...) \
     virAsprintfInternal(false, 0, NULL, NULL, 0, \
                         strp, __VA_ARGS__)
 
@@ -324,7 +323,5 @@ int virStringParseYesNo(const char *str,
  * Declares a NULL-terminated list of strings which will be automatically freed
  * when the pointer goes out of scope.
  */
-# define VIR_AUTOSTRINGLIST \
+#define VIR_AUTOSTRINGLIST \
         __attribute__((cleanup(virStringListAutoFree))) char **
-
-#endif /* LIBVIRT_VIRSTRING_H */
