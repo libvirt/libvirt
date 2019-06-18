@@ -17,9 +17,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_XENAPI_DRIVER_H
-# define LIBVIRT_XENAPI_DRIVER_H
+#pragma once
 
 int xenapiRegister(void);
-
-#endif /* LIBVIRT_XENAPI_DRIVER_H */

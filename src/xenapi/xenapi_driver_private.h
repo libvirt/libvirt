@@ -17,17 +17,16 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_XENAPI_DRIVER_PRIVATE_H
-# define LIBVIRT_XENAPI_DRIVER_PRIVATE_H
+#pragma once
 
-# include <libxml/tree.h>
-# include <xen/api/xen_common.h>
-# include "virerror.h"
+#include <libxml/tree.h>
+#include <xen/api/xen_common.h>
+#include "virerror.h"
 
 /*# define PRINT_XML*/
-# define VIR_FROM_THIS VIR_FROM_XENAPI
-# define LIBVIRT_MODELNAME_LEN  (32)
-# define xenapiSessionErrorHandler(conn, errNum, buf) \
+#define VIR_FROM_THIS VIR_FROM_XENAPI
+#define LIBVIRT_MODELNAME_LEN  (32)
+#define xenapiSessionErrorHandler(conn, errNum, buf) \
     xenapiSessionErrorHandle(conn, errNum, buf, \
                              __FILE__, __FUNCTION__, __LINE__)
 
@@ -57,5 +56,3 @@ struct _xenapiPrivate {
     virCapsPtr caps;
     virDomainXMLOptionPtr xmlopt;
 };
-
-#endif /* LIBVIRT_XENAPI_DRIVER_PRIVATE_H */

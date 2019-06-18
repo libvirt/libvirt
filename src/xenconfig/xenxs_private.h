@@ -19,28 +19,25 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_XENXS_PRIVATE_H
-# define LIBVIRT_XENXS_PRIVATE_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
-# include <xen/xen.h>
-# include "xen_sxpr.h"
+#include <xen/xen.h>
+#include "xen_sxpr.h"
 
 /* xen-unstable changeset 19788 removed MAX_VIRT_CPUS from public
  * headers.  Its semantic was retained with XEN_LEGACY_MAX_VCPUS.
  * Ensure MAX_VIRT_CPUS is defined accordingly.
  */
-# if !defined(MAX_VIRT_CPUS) && defined(XEN_LEGACY_MAX_VCPUS)
-#  define MAX_VIRT_CPUS XEN_LEGACY_MAX_VCPUS
-# endif
+#if !defined(MAX_VIRT_CPUS) && defined(XEN_LEGACY_MAX_VCPUS)
+# define MAX_VIRT_CPUS XEN_LEGACY_MAX_VCPUS
+#endif
 
-# define MIN_XEN_GUEST_SIZE 64  /* 64 megabytes */
+#define MIN_XEN_GUEST_SIZE 64  /* 64 megabytes */
 
-# ifdef __sun
-#  define DEFAULT_VIF_SCRIPT "vif-vnic"
-# else
-#  define DEFAULT_VIF_SCRIPT "vif-bridge"
-# endif
-
-#endif /* LIBVIRT_XENXS_PRIVATE_H */
+#ifdef __sun
+# define DEFAULT_VIF_SCRIPT "vif-vnic"
+#else
+# define DEFAULT_VIF_SCRIPT "vif-bridge"
+#endif

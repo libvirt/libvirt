@@ -18,15 +18,14 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_XENAPI_UTILS_H
-# define LIBVIRT_XENAPI_UTILS_H
+#pragma once
 
-# include <xen/api/xen_all.h>
-# include "internal.h"
-# include "viruri.h"
-# include "domain_conf.h"
+#include <xen/api/xen_all.h>
+#include "internal.h"
+#include "viruri.h"
+#include "domain_conf.h"
 
-# define NETWORK_DEVID_SIZE  (12)
+#define NETWORK_DEVID_SIZE  (12)
 
 typedef uint64_t cpumap_t;
 
@@ -75,5 +74,3 @@ createVMRecordFromXml (virConnectPtr conn, virDomainDefPtr defPtr,
 
 int
 allocStringMap (xen_string_string_map **strings, char *key, char *val);
-
-#endif /* LIBVIRT_XENAPI_UTILS_H */

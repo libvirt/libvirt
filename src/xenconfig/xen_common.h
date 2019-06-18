@@ -18,16 +18,15 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_XEN_COMMON_H
-# define LIBVIRT_XEN_COMMON_H
+#pragma once
 
-# include "internal.h"
-# include "virconf.h"
-# include "domain_conf.h"
+#include "internal.h"
+#include "virconf.h"
+#include "domain_conf.h"
 
-# define XEN_CONFIG_FORMAT_XL    "xen-xl"
-# define XEN_CONFIG_FORMAT_XM    "xen-xm"
-# define XEN_CONFIG_FORMAT_SEXPR "xen-sxpr"
+#define XEN_CONFIG_FORMAT_XL    "xen-xl"
+#define XEN_CONFIG_FORMAT_XM    "xen-xm"
+#define XEN_CONFIG_FORMAT_SEXPR "xen-sxpr"
 
 int xenConfigGetString(virConfPtr conf,
                        const char *name,
@@ -68,5 +67,3 @@ int xenFormatConfigCommon(virConfPtr conf,
 char *xenMakeIPList(virNetDevIPInfoPtr guestIP);
 
 int xenDomainDefAddImplicitInputDevice(virDomainDefPtr def);
-
-#endif /* LIBVIRT_XEN_COMMON_H */

@@ -20,12 +20,11 @@
  *
  */
 
-#ifndef LIBVIRT_XEN_XL_H
-# define LIBVIRT_XEN_XL_H
+#pragma once
 
-# include "virconf.h"
-# include "domain_conf.h"
-# include "xen_common.h"
+#include "virconf.h"
+#include "domain_conf.h"
+#include "xen_common.h"
 
 virDomainDefPtr xenParseXL(virConfPtr conn,
                            virCapsPtr caps,
@@ -34,5 +33,3 @@ virDomainDefPtr xenParseXL(virConfPtr conn,
 virConfPtr xenFormatXL(virDomainDefPtr def, virConnectPtr);
 
 const char *xenTranslateCPUFeature(const char *feature_name, bool from_libxl);
-
-#endif /* LIBVIRT_XEN_XL_H */

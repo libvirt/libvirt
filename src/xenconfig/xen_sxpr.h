@@ -20,13 +20,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_XEN_SXPR_H
-# define LIBVIRT_XEN_SXPR_H
+#pragma once
 
-# include "internal.h"
-# include "virconf.h"
-# include "domain_conf.h"
-# include "virsexpr.h"
+#include "internal.h"
+#include "virconf.h"
+#include "domain_conf.h"
+#include "virsexpr.h"
 
 /* helper functions to get the dom id from a sexpr */
 int xenGetDomIdFromSxprString(const char *sexpr, int *id);
@@ -65,5 +64,3 @@ int xenFormatSxprChr(virDomainChrDefPtr def, virBufferPtr buf);
 int xenFormatSxprSound(virDomainDefPtr def, virBufferPtr buf);
 
 char * xenFormatSxpr(virConnectPtr conn, virDomainDefPtr def);
-
-#endif /* LIBVIRT_XEN_SXPR_H */
