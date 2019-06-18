@@ -1690,3 +1690,35 @@ virNetworkPortFree(virNetworkPortPtr port)
     virObjectUnref(port);
     return 0;
 }
+
+
+/**
+ * virNetworkPortRef:
+ * @port: a network port object
+ *
+ * Increment the reference count on the network port. For each
+ * additional call to this method, there shall be a corresponding
+ * call to virNetworkPortFree to release the reference count, once
+ * the caller no longer needs the reference to this object.
+ *
+ * This method is typically useful for applications where multiple
+ * threads are using a network port, and it is required that the
+ * port remain resident until all threads have finished using
+ * it. ie, each new thread using a network port would increment
+ * the reference count.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+int
+virNetworkPortRef(virNetworkPortPtr port)
+{
+    VIR_DEBUG("port=%p refs=%d", port,
+              port ? port->parent.u.s.refs : 0);
+
+    virResetLastError();
+
+    virCheckNetworkPortReturn(port, -1);
+
+    virObjectRef(port);
+    return 0;
+}

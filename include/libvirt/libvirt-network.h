@@ -455,4 +455,7 @@ virNetworkListAllPorts(virNetworkPtr network,
 int
 virNetworkPortFree(virNetworkPortPtr port);
 
+int
+virNetworkPortRef(virNetworkPortPtr port);
+
 #endif /* LIBVIRT_NETWORK_H */
