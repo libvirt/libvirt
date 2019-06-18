@@ -19,11 +19,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_LXC_HOSTDEV_H
-# define LIBVIRT_LXC_HOSTDEV_H
+#pragma once
 
-# include "lxc_conf.h"
-# include "domain_conf.h"
+#include "lxc_conf.h"
+#include "domain_conf.h"
 
 int virLXCUpdateActiveUSBHostdevs(virLXCDriverPtr driver,
                                   virDomainDefPtr def);
@@ -37,5 +36,3 @@ int virLXCPrepareHostDevices(virLXCDriverPtr driver,
                              virDomainDefPtr def);
 void virLXCDomainReAttachHostDevices(virLXCDriverPtr driver,
                                      virDomainDefPtr def);
-
-#endif /* LIBVIRT_LXC_HOSTDEV_H */

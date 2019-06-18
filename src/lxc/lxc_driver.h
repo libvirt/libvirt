@@ -18,10 +18,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_LXC_DRIVER_H
-# define LIBVIRT_LXC_DRIVER_H
+#pragma once
 
 /* Function declarations */
 int lxcRegister(void);
-
-#endif /* LIBVIRT_LXC_DRIVER_H */

@@ -19,29 +19,28 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_LXC_CONF_H
-# define LIBVIRT_LXC_CONF_H
+#pragma once
 
-# include "internal.h"
-# include "libvirt_internal.h"
-# include "domain_conf.h"
-# include "domain_event.h"
-# include "capabilities.h"
-# include "virthread.h"
-# include "security/security_manager.h"
-# include "configmake.h"
-# include "vircgroup.h"
-# include "virsysinfo.h"
-# include "virusb.h"
-# include "virclosecallbacks.h"
-# include "virhostdev.h"
+#include "internal.h"
+#include "libvirt_internal.h"
+#include "domain_conf.h"
+#include "domain_event.h"
+#include "capabilities.h"
+#include "virthread.h"
+#include "security/security_manager.h"
+#include "configmake.h"
+#include "vircgroup.h"
+#include "virsysinfo.h"
+#include "virusb.h"
+#include "virclosecallbacks.h"
+#include "virhostdev.h"
 
-# define LXC_DRIVER_NAME "LXC"
+#define LXC_DRIVER_NAME "LXC"
 
-# define LXC_CONFIG_DIR SYSCONFDIR "/libvirt/lxc"
-# define LXC_STATE_DIR LOCALSTATEDIR "/run/libvirt/lxc"
-# define LXC_LOG_DIR LOCALSTATEDIR "/log/libvirt/lxc"
-# define LXC_AUTOSTART_DIR LXC_CONFIG_DIR "/autostart"
+#define LXC_CONFIG_DIR SYSCONFDIR "/libvirt/lxc"
+#define LXC_STATE_DIR LOCALSTATEDIR "/run/libvirt/lxc"
+#define LXC_LOG_DIR LOCALSTATEDIR "/log/libvirt/lxc"
+#define LXC_AUTOSTART_DIR LXC_CONFIG_DIR "/autostart"
 
 typedef struct _virLXCDriver virLXCDriver;
 typedef virLXCDriver *virLXCDriverPtr;
@@ -120,5 +119,3 @@ static inline void lxcDriverUnlock(virLXCDriverPtr driver)
 {
     virMutexUnlock(&driver->lock);
 }
-
-#endif /* LIBVIRT_LXC_CONF_H */

@@ -19,10 +19,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_LXC_PROCESS_H
-# define LIBVIRT_LXC_PROCESS_H
+#pragma once
 
-# include "lxc_conf.h"
+#include "lxc_conf.h"
 
 int virLXCProcessStart(virConnectPtr conn,
                        virLXCDriverPtr  driver,
@@ -54,5 +53,3 @@ char *virLXCProcessSetupInterfaceTap(virDomainDefPtr vm,
 char *virLXCProcessSetupInterfaceDirect(virConnectPtr conn,
                                         virDomainDefPtr def,
                                         virDomainNetDefPtr net);
-
-#endif /* LIBVIRT_LXC_PROCESS_H */

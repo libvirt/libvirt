@@ -18,13 +18,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_LXC_NATIVE_H
-# define LIBVIRT_LXC_NATIVE_H
+#pragma once
 
-# include "domain_conf.h"
-# include "virenum.h"
+#include "domain_conf.h"
+#include "virenum.h"
 
-# define LXC_CONFIG_FORMAT "lxc-tools"
+#define LXC_CONFIG_FORMAT "lxc-tools"
 
 typedef enum {
     VIR_LXC_NETWORK_CONFIG_NAME,
@@ -46,5 +45,3 @@ VIR_ENUM_DECL(virLXCNetworkConfigEntry);
 virDomainDefPtr lxcParseConfigString(const char *config,
                                      virCapsPtr caps,
                                      virDomainXMLOptionPtr xmlopt);
-
-#endif /* LIBVIRT_LXC_NATIVE_H */
