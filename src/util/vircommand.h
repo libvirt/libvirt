@@ -19,12 +19,11 @@
  *
  */
 
-#ifndef LIBVIRT_VIRCOMMAND_H
-# define LIBVIRT_VIRCOMMAND_H
+#pragma once
 
-# include "internal.h"
-# include "virbuffer.h"
-# include "virautoclean.h"
+#include "internal.h"
+#include "virbuffer.h"
+#include "virautoclean.h"
 
 typedef struct _virCommand virCommand;
 typedef virCommand *virCommandPtr;
@@ -222,5 +221,3 @@ int virCommandRunNul(virCommandPtr cmd,
                      void *data);
 
 VIR_DEFINE_AUTOPTR_FUNC(virCommand, virCommandFree);
-
-#endif /* LIBVIRT_VIRCOMMAND_H */

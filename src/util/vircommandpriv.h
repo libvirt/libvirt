@@ -23,10 +23,9 @@
 # error "vircommandpriv.h may only be included by vircommand.c or test suites"
 #endif /* LIBVIRT_VIRCOMMANDPRIV_H_ALLOW */
 
-#ifndef LIBVIRT_VIRCOMMANDPRIV_H
-# define LIBVIRT_VIRCOMMANDPRIV_H
+#pragma once
 
-# include "vircommand.h"
+#include "vircommand.h"
 
 typedef void (*virCommandDryRunCallback)(const char *const*args,
                                          const char *const*env,
@@ -39,5 +38,3 @@ typedef void (*virCommandDryRunCallback)(const char *const*args,
 void virCommandSetDryRun(virBufferPtr buf,
                          virCommandDryRunCallback cb,
                          void *opaque);
-
-#endif /* LIBVIRT_VIRCOMMANDPRIV_H */
