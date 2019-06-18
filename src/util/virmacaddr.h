@@ -18,16 +18,15 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRMACADDR_H
-# define LIBVIRT_VIRMACADDR_H
+#pragma once
 
-# include "internal.h"
-# include "virautoclean.h"
+#include "internal.h"
+#include "virautoclean.h"
 
-# define VIR_MAC_BUFLEN 6
-# define VIR_MAC_HEXLEN (VIR_MAC_BUFLEN * 2)
-# define VIR_MAC_PREFIX_BUFLEN 3
-# define VIR_MAC_STRING_BUFLEN (VIR_MAC_BUFLEN * 3)
+#define VIR_MAC_BUFLEN 6
+#define VIR_MAC_HEXLEN (VIR_MAC_BUFLEN * 2)
+#define VIR_MAC_PREFIX_BUFLEN 3
+#define VIR_MAC_STRING_BUFLEN (VIR_MAC_BUFLEN * 3)
 
 typedef struct _virMacAddr virMacAddr;
 typedef virMacAddr *virMacAddrPtr;
@@ -65,5 +64,3 @@ bool virMacAddrIsBroadcastRaw(const unsigned char s[VIR_MAC_BUFLEN]);
 void virMacAddrFree(virMacAddrPtr addr);
 
 VIR_DEFINE_AUTOPTR_FUNC(virMacAddr, virMacAddrFree);
-
-#endif /* LIBVIRT_VIRMACADDR_H */
