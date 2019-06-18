@@ -8339,7 +8339,8 @@ void qemuDomainObjCheckTaint(virQEMUDriverPtr driver,
             custom_hypervisor_feat = true;
     }
 
-    if (custom_hypervisor_feat) {
+    if (custom_hypervisor_feat ||
+        (cfg->capabilityfilters && *cfg->capabilityfilters)) {
         qemuDomainObjTaint(driver, obj,
                            VIR_DOMAIN_TAINT_CUSTOM_HYPERVISOR_FEATURE, logCtxt);
     }
