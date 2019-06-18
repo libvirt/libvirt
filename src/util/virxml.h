@@ -18,18 +18,17 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRXML_H
-# define LIBVIRT_VIRXML_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
-# include <libxml/parser.h>
-# include <libxml/tree.h>
-# include <libxml/xpath.h>
-# include <libxml/relaxng.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
+#include <libxml/relaxng.h>
 
-# include "virbuffer.h"
-# include "virautoclean.h"
+#include "virbuffer.h"
+#include "virautoclean.h"
 
 int              virXPathBoolean(const char *xpath,
                                  xmlXPathContextPtr ctxt);
@@ -96,7 +95,7 @@ const char *virXMLPickShellSafeComment(const char *str1, const char *str2);
  *
  * Return the parsed document object, or NULL on failure.
  */
-# define virXMLParse(filename, xmlStr, url) \
+#define virXMLParse(filename, xmlStr, url) \
     virXMLParseHelper(VIR_FROM_THIS, filename, xmlStr, url, NULL)
 
 /**
@@ -108,7 +107,7 @@ const char *virXMLPickShellSafeComment(const char *str1, const char *str2);
  *
  * Return the parsed document object, or NULL on failure.
  */
-# define virXMLParseString(xmlStr, url) \
+#define virXMLParseString(xmlStr, url) \
     virXMLParseHelper(VIR_FROM_THIS, NULL, xmlStr, url, NULL)
 
 /**
@@ -119,7 +118,7 @@ const char *virXMLPickShellSafeComment(const char *str1, const char *str2);
  *
  * Return the parsed document object, or NULL on failure.
  */
-# define virXMLParseFile(filename) \
+#define virXMLParseFile(filename) \
     virXMLParseHelper(VIR_FROM_THIS, filename, NULL, NULL, NULL)
 
 /**
@@ -134,7 +133,7 @@ const char *virXMLPickShellSafeComment(const char *str1, const char *str2);
  *
  * Return the parsed document object, or NULL on failure.
  */
-# define virXMLParseCtxt(filename, xmlStr, url, pctxt) \
+#define virXMLParseCtxt(filename, xmlStr, url, pctxt) \
     virXMLParseHelper(VIR_FROM_THIS, filename, xmlStr, url, pctxt)
 
 /**
@@ -148,7 +147,7 @@ const char *virXMLPickShellSafeComment(const char *str1, const char *str2);
  *
  * Return the parsed document object, or NULL on failure.
  */
-# define virXMLParseStringCtxt(xmlStr, url, pctxt) \
+#define virXMLParseStringCtxt(xmlStr, url, pctxt) \
     virXMLParseHelper(VIR_FROM_THIS, NULL, xmlStr, url, pctxt)
 
 /**
@@ -161,7 +160,7 @@ const char *virXMLPickShellSafeComment(const char *str1, const char *str2);
  *
  * Return the parsed document object, or NULL on failure.
  */
-# define virXMLParseFileCtxt(filename, pctxt) \
+#define virXMLParseFileCtxt(filename, pctxt) \
     virXMLParseHelper(VIR_FROM_THIS, filename, NULL, NULL, pctxt)
 
 int virXMLSaveFile(const char *path,
@@ -240,12 +239,10 @@ VIR_DEFINE_AUTOCLEAN_FUNC(virXPathContextNodeSave, virXPathContextNodeRestore);
  * This macro ensures that when the scope where it's used ends, @ctxt's current
  * node pointer is reset to the original value when this macro was used.
  */
-# define VIR_XPATH_NODE_AUTORESTORE(_ctxt) \
+#define VIR_XPATH_NODE_AUTORESTORE(_ctxt) \
     VIR_AUTOCLEAN(virXPathContextNodeSave) _ctxt ## CtxtSave = { .ctxt = _ctxt,\
                                                                  .node = _ctxt->node}; \
     ignore_value(&_ctxt ## CtxtSave)
 
 VIR_DEFINE_AUTOPTR_FUNC(xmlDoc, xmlFreeDoc);
 VIR_DEFINE_AUTOPTR_FUNC(xmlXPathContext, xmlXPathFreeContext);
-
-#endif /* LIBVIRT_VIRXML_H */
