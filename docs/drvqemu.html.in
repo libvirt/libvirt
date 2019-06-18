@@ -427,6 +427,10 @@ mount -t cgroup none /dev/cgroup -o devices
     <h3><a id="xmlimport">Converting from QEMU args to domain XML</a></h3>
 
     <p>
+      <b>Note:</b> this operation is <span class="deprecated"> deprecated as of
+        5.5.0</span> and will return an error.
+    </p>
+    <p>
       The <code>virsh domxml-from-native</code> provides a way to
       convert an existing set of QEMU args into a guest description
       using libvirt Domain XML that can then be used by libvirt.
