@@ -18,14 +18,13 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRNETCLIENTPROGRAM_H
-# define LIBVIRT_VIRNETCLIENTPROGRAM_H
+#pragma once
 
-# include <rpc/types.h>
-# include <rpc/xdr.h>
+#include <rpc/types.h>
+#include <rpc/xdr.h>
 
-# include "virnetmessage.h"
-# include "virobject.h"
+#include "virnetmessage.h"
+#include "virobject.h"
 
 typedef struct _virNetClient virNetClient;
 typedef virNetClient *virNetClientPtr;
@@ -78,7 +77,3 @@ int virNetClientProgramCall(virNetClientProgramPtr prog,
                             int **infds,
                             xdrproc_t args_filter, void *args,
                             xdrproc_t ret_filter, void *ret);
-
-
-
-#endif /* LIBVIRT_VIRNETCLIENTPROGRAM_H */

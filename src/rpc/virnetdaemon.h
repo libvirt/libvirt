@@ -18,18 +18,17 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRNETDAEMON_H
-# define LIBVIRT_VIRNETDAEMON_H
+#pragma once
 
-# include <signal.h>
+#include <signal.h>
 
-# include "virnettlscontext.h"
-# include "virobject.h"
-# include "virjson.h"
-# include "virnetserverprogram.h"
-# include "virnetserverclient.h"
-# include "virnetserverservice.h"
-# include "virnetserver.h"
+#include "virnettlscontext.h"
+#include "virobject.h"
+#include "virjson.h"
+#include "virnetserverprogram.h"
+#include "virnetserverclient.h"
+#include "virnetserverservice.h"
+#include "virnetserver.h"
 
 virNetDaemonPtr virNetDaemonNew(void);
 
@@ -81,5 +80,3 @@ virNetServerPtr virNetDaemonGetServer(virNetDaemonPtr dmn,
 ssize_t virNetDaemonGetServers(virNetDaemonPtr dmn, virNetServerPtr **servers);
 bool virNetDaemonHasServer(virNetDaemonPtr dmn,
                            const char *serverName);
-
-#endif /* LIBVIRT_VIRNETDAEMON_H */

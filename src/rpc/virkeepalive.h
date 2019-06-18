@@ -18,11 +18,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRKEEPALIVE_H
-# define LIBVIRT_VIRKEEPALIVE_H
+#pragma once
 
-# include "virnetmessage.h"
-# include "virobject.h"
+#include "virnetmessage.h"
+#include "virobject.h"
 
 typedef int (*virKeepAliveSendFunc)(void *client, virNetMessagePtr msg);
 typedef void (*virKeepAliveDeadFunc)(void *client);
@@ -52,5 +51,3 @@ bool virKeepAliveTrigger(virKeepAlivePtr ka,
 bool virKeepAliveCheckMessage(virKeepAlivePtr ka,
                               virNetMessagePtr msg,
                               virNetMessagePtr *response);
-
-#endif /* LIBVIRT_VIRKEEPALIVE_H */

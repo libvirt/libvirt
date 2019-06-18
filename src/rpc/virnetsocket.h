@@ -19,20 +19,19 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRNETSOCKET_H
-# define LIBVIRT_VIRNETSOCKET_H
+#pragma once
 
-# include "virsocketaddr.h"
-# include "vircommand.h"
-# ifdef WITH_GNUTLS
-#  include "virnettlscontext.h"
-# endif
-# include "virobject.h"
-# ifdef WITH_SASL
-#  include "virnetsaslcontext.h"
-# endif
-# include "virjson.h"
-# include "viruri.h"
+#include "virsocketaddr.h"
+#include "vircommand.h"
+#ifdef WITH_GNUTLS
+# include "virnettlscontext.h"
+#endif
+#include "virobject.h"
+#ifdef WITH_SASL
+# include "virnetsaslcontext.h"
+#endif
+#include "virjson.h"
+#include "viruri.h"
 
 typedef struct _virNetSocket virNetSocket;
 typedef virNetSocket *virNetSocketPtr;
@@ -151,15 +150,15 @@ ssize_t virNetSocketWrite(virNetSocketPtr sock, const char *buf, size_t len);
 int virNetSocketSendFD(virNetSocketPtr sock, int fd);
 int virNetSocketRecvFD(virNetSocketPtr sock, int *fd);
 
-# ifdef WITH_GNUTLS
+#ifdef WITH_GNUTLS
 void virNetSocketSetTLSSession(virNetSocketPtr sock,
                                virNetTLSSessionPtr sess);
-# endif
+#endif
 
-# ifdef WITH_SASL
+#ifdef WITH_SASL
 void virNetSocketSetSASLSession(virNetSocketPtr sock,
                                 virNetSASLSessionPtr sess);
-# endif
+#endif
 bool virNetSocketHasCachedData(virNetSocketPtr sock);
 bool virNetSocketHasPendingData(virNetSocketPtr sock);
 
@@ -183,6 +182,3 @@ void virNetSocketUpdateIOCallback(virNetSocketPtr sock,
 void virNetSocketRemoveIOCallback(virNetSocketPtr sock);
 
 void virNetSocketClose(virNetSocketPtr sock);
-
-
-#endif /* LIBVIRT_VIRNETSOCKET_H */

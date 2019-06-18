@@ -21,10 +21,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRNETSERVERMDNS_H
-# define LIBVIRT_VIRNETSERVERMDNS_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
 typedef struct _virNetServerMDNS virNetServerMDNS;
 typedef virNetServerMDNS *virNetServerMDNSPtr;
@@ -103,5 +102,3 @@ void virNetServerMDNSRemoveEntry(virNetServerMDNSGroupPtr group,
 void virNetServerMDNSFree(virNetServerMDNSPtr ptr);
 void virNetServerMDNSGroupFree(virNetServerMDNSGroupPtr ptr);
 void virNetServerMDNSEntryFree(virNetServerMDNSEntryPtr ptr);
-
-#endif /* LIBVIRT_VIRNETSERVERMDNS_H */

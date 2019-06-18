@@ -18,11 +18,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRNETCLIENTSTREAM_H
-# define LIBVIRT_VIRNETCLIENTSTREAM_H
+#pragma once
 
-# include "virnetclientprogram.h"
-# include "virobject.h"
+#include "virnetclientprogram.h"
+#include "virobject.h"
 
 typedef struct _virNetClientStream virNetClientStream;
 typedef virNetClientStream *virNetClientStreamPtr;
@@ -92,5 +91,3 @@ int virNetClientStreamEventRemoveCallback(virNetClientStreamPtr st);
 
 bool virNetClientStreamEOF(virNetClientStreamPtr st)
     ATTRIBUTE_NONNULL(1);
-
-#endif /* LIBVIRT_VIRNETCLIENTSTREAM_H */

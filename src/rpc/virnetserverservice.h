@@ -19,11 +19,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRNETSERVERSERVICE_H
-# define LIBVIRT_VIRNETSERVERSERVICE_H
+#pragma once
 
-# include "virnetserverprogram.h"
-# include "virobject.h"
+#include "virnetserverprogram.h"
+#include "virobject.h"
 
 typedef enum {
     VIR_NET_SERVER_SERVICE_AUTH_NONE = 0,
@@ -87,5 +86,3 @@ void virNetServerServiceToggle(virNetServerServicePtr svc,
                                bool enabled);
 
 void virNetServerServiceClose(virNetServerServicePtr svc);
-
-#endif /* LIBVIRT_VIRNETSERVERSERVICE_H */

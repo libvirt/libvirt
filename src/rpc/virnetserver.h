@@ -19,15 +19,14 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRNETSERVER_H
-# define LIBVIRT_VIRNETSERVER_H
+#pragma once
 
-# include "virnettlscontext.h"
-# include "virnetserverprogram.h"
-# include "virnetserverclient.h"
-# include "virnetserverservice.h"
-# include "virobject.h"
-# include "virjson.h"
+#include "virnettlscontext.h"
+#include "virnetserverprogram.h"
+#include "virnetserverclient.h"
+#include "virnetserverservice.h"
+#include "virobject.h"
+#include "virjson.h"
 
 
 virNetServerPtr virNetServerNew(const char *name,
@@ -112,5 +111,3 @@ size_t virNetServerGetCurrentUnauthClients(virNetServerPtr srv);
 int virNetServerSetClientLimits(virNetServerPtr srv,
                                 long long int maxClients,
                                 long long int maxClientsUnauth);
-
-#endif /* LIBVIRT_VIRNETSERVER_H */

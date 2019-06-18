@@ -18,11 +18,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRNETTLSCONTEXT_H
-# define LIBVIRT_VIRNETTLSCONTEXT_H
+#pragma once
 
-# include "internal.h"
-# include "virobject.h"
+#include "internal.h"
+#include "virobject.h"
 
 typedef struct _virNetTLSContext virNetTLSContext;
 typedef virNetTLSContext *virNetTLSContextPtr;
@@ -99,5 +98,3 @@ virNetTLSSessionGetHandshakeStatus(virNetTLSSessionPtr sess);
 int virNetTLSSessionGetKeySize(virNetTLSSessionPtr sess);
 
 const char *virNetTLSSessionGetX509DName(virNetTLSSessionPtr sess);
-
-#endif /* LIBVIRT_VIRNETTLSCONTEXT_H */

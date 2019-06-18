@@ -18,20 +18,19 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRNETCLIENT_H
-# define LIBVIRT_VIRNETCLIENT_H
+#pragma once
 
-# ifdef WITH_GNUTLS
-#  include "virnettlscontext.h"
-# endif
-# include "virnetmessage.h"
-# ifdef WITH_SASL
-#  include "virnetsaslcontext.h"
-# endif
-# include "virnetclientprogram.h"
-# include "virnetclientstream.h"
-# include "virobject.h"
-# include "viruri.h"
+#ifdef WITH_GNUTLS
+# include "virnettlscontext.h"
+#endif
+#include "virnetmessage.h"
+#ifdef WITH_SASL
+# include "virnetsaslcontext.h"
+#endif
+#include "virnetclientprogram.h"
+#include "virnetclientstream.h"
+#include "virobject.h"
+#include "viruri.h"
 
 
 virNetClientPtr virNetClientNewUNIX(const char *path,
@@ -116,15 +115,15 @@ int virNetClientSendStream(virNetClientPtr client,
                            virNetMessagePtr msg,
                            virNetClientStreamPtr st);
 
-# ifdef WITH_SASL
+#ifdef WITH_SASL
 void virNetClientSetSASLSession(virNetClientPtr client,
                                 virNetSASLSessionPtr sasl);
-# endif
+#endif
 
-# ifdef WITH_GNUTLS
+#ifdef WITH_GNUTLS
 int virNetClientSetTLSSession(virNetClientPtr client,
                               virNetTLSContextPtr tls);
-# endif
+#endif
 
 bool virNetClientIsEncrypted(virNetClientPtr client);
 bool virNetClientIsOpen(virNetClientPtr client);
@@ -132,9 +131,9 @@ bool virNetClientIsOpen(virNetClientPtr client);
 const char *virNetClientLocalAddrStringSASL(virNetClientPtr client);
 const char *virNetClientRemoteAddrStringSASL(virNetClientPtr client);
 
-# ifdef WITH_GNUTLS
+#ifdef WITH_GNUTLS
 int virNetClientGetTLSKeySize(virNetClientPtr client);
-# endif
+#endif
 
 void virNetClientClose(virNetClientPtr client);
 
@@ -144,5 +143,3 @@ int virNetClientKeepAliveStart(virNetClientPtr client,
                                unsigned int count);
 
 void virNetClientKeepAliveStop(virNetClientPtr client);
-
-#endif /* LIBVIRT_VIRNETCLIENT_H */

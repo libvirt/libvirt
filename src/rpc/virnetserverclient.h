@@ -19,14 +19,13 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRNETSERVERCLIENT_H
-# define LIBVIRT_VIRNETSERVERCLIENT_H
+#pragma once
 
-# include "viridentity.h"
-# include "virnetsocket.h"
-# include "virnetmessage.h"
-# include "virobject.h"
-# include "virjson.h"
+#include "viridentity.h"
+#include "virnetsocket.h"
+#include "virnetmessage.h"
+#include "virobject.h"
+#include "virjson.h"
 
 typedef struct _virNetServer virNetServer;
 typedef virNetServer *virNetServerPtr;
@@ -103,12 +102,12 @@ bool virNetServerClientHasTLSSession(virNetServerClientPtr client);
 virNetTLSSessionPtr virNetServerClientGetTLSSession(virNetServerClientPtr client);
 int virNetServerClientGetTLSKeySize(virNetServerClientPtr client);
 
-# ifdef WITH_SASL
+#ifdef WITH_SASL
 bool virNetServerClientHasSASLSession(virNetServerClientPtr client);
 void virNetServerClientSetSASLSession(virNetServerClientPtr client,
                                       virNetSASLSessionPtr sasl);
 virNetSASLSessionPtr virNetServerClientGetSASLSession(virNetServerClientPtr client);
-# endif
+#endif
 
 int virNetServerClientGetFD(virNetServerClientPtr client);
 
@@ -169,5 +168,3 @@ int virNetServerClientGetInfo(virNetServerClientPtr client,
                               virIdentityPtr *identity);
 
 void virNetServerClientSetQuietEOF(virNetServerClientPtr client);
-
-#endif /* LIBVIRT_VIRNETSERVERCLIENT_H */

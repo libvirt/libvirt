@@ -19,12 +19,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRNETSERVERPROGRAM_H
-# define LIBVIRT_VIRNETSERVERPROGRAM_H
+#pragma once
 
-# include "virnetmessage.h"
-# include "virnetserverclient.h"
-# include "virobject.h"
+#include "virnetmessage.h"
+#include "virnetserverclient.h"
+#include "virobject.h"
 
 typedef struct _virNetDaemon virNetDaemon;
 typedef virNetDaemon *virNetDaemonPtr;
@@ -106,5 +105,3 @@ int virNetServerProgramSendStreamHole(virNetServerProgramPtr prog,
                                       unsigned int serial,
                                       long long length,
                                       unsigned int flags);
-
-#endif /* LIBVIRT_VIRNETSERVERPROGRAM_H */

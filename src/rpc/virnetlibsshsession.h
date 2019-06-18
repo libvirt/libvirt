@@ -18,11 +18,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRNETLIBSSHSESSION_H
-# define LIBVIRT_VIRNETLIBSSHSESSION_H
+#pragma once
 
-# include "internal.h"
-# include "viruri.h"
+#include "internal.h"
+#include "viruri.h"
 
 typedef struct _virNetLibsshSession virNetLibsshSession;
 typedef virNetLibsshSession *virNetLibsshSessionPtr;
@@ -72,5 +71,3 @@ ssize_t virNetLibsshChannelWrite(virNetLibsshSessionPtr sess,
                                  size_t len);
 
 bool virNetLibsshSessionHasCachedData(virNetLibsshSessionPtr sess);
-
-#endif /* LIBVIRT_VIRNETLIBSSHSESSION_H */
