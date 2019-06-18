@@ -19,9 +19,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_PHYP_DRIVER_H
-# define LIBVIRT_PHYP_DRIVER_H
+#pragma once
 
 int phypRegister(void);
-
-#endif /* LIBVIRT_PHYP_DRIVER_H */
