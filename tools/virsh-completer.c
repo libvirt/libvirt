@@ -69,6 +69,79 @@
  */
 
 
+/**
+ * virshCommaStringListComplete:
+ * @input: user input so far
+ * @options: ALL options available for argument
+ *
+ * Some arguments to our commands accept the following form:
+ *
+ *   virsh command --arg str1,str2,str3
+ *
+ * This does not play nicely with our completer funtions, because
+ * they have to return strings prepended with user's input. For
+ * instance:
+ *
+ *   str1,str2,str3,strA
+ *   str1,str2,str3,strB
+ *   str1,str2,str3,strC
+ *
+ * This helper function takes care of that. In this specific case
+ * it would be called as follows:
+ *
+ *   virshCommaStringListComplete("str1,str2,str3",
+ *                                {"strA", "strB", "strC", NULL});
+ *
+ * Returns: string list of completions on success,
+ *          NULL otherwise.
+ */
+static char **
+virshCommaStringListComplete(const char *input,
+                             const char **options)
+{
+    const size_t optionsLen = virStringListLength(options);
+    VIR_AUTOFREE(char *) inputCopy = NULL;
+    VIR_AUTOSTRINGLIST inputList = NULL;
+    VIR_AUTOSTRINGLIST ret = NULL;
+    size_t nret = 0;
+    size_t i;
+
+    if (STREQ_NULLABLE(input, " "))
+        input = NULL;
+
+    if (input) {
+        char *comma = NULL;
+
+        if (VIR_STRDUP(inputCopy, input) < 0)
+            return NULL;
+
+        if ((comma = strrchr(inputCopy, ',')))
+            *comma = '\0';
+        else
+            VIR_FREE(inputCopy);
+    }
+
+    if (inputCopy && !(inputList = virStringSplit(inputCopy, ",", 0)))
+        return NULL;
+
+    if (VIR_ALLOC_N(ret, optionsLen + 1) < 0)
+        return NULL;
+
+    for (i = 0; i < optionsLen; i++) {
+        if (virStringListHasString((const char **)inputList, options[i]))
+            continue;
+
+        if ((inputCopy && virAsprintf(&ret[nret], "%s,%s", inputCopy, options[i]) < 0) ||
+            (!inputCopy && VIR_STRDUP(ret[nret], options[i]) < 0))
+            return NULL;
+
+        nret++;
+    }
+
+    VIR_RETURN_PTR(ret);
+}
+
+
 char **
 virshDomainNameCompleter(vshControl *ctl,
                          const vshCmd *cmd ATTRIBUTE_UNUSED,
@@ -993,52 +1066,13 @@ virshDomainShutdownModeCompleter(vshControl *ctl,
                                  const vshCmd *cmd,
                                  unsigned int flags)
 {
-    const char *modes[] = {"acpi", "agent", "initctl", "signal", "paravirt"};
-    size_t i;
-    char **ret = NULL;
-    size_t ntmp = 0;
-    VIR_AUTOSTRINGLIST tmp = NULL;
-    const char *modeConst = NULL;
-    VIR_AUTOFREE(char *) mode = NULL;
-    VIR_AUTOSTRINGLIST modesSpecified = NULL;
+    const char *modes[] = {"acpi", "agent", "initctl", "signal", "paravirt", NULL};
+    const char *mode = NULL;
 
     virCheckFlags(0, NULL);
 
-    if (vshCommandOptStringQuiet(ctl, cmd, "mode", &modeConst) < 0)
+    if (vshCommandOptStringQuiet(ctl, cmd, "mode", &mode) < 0)
         return NULL;
 
-    if (STREQ_NULLABLE(modeConst, " "))
-        modeConst = NULL;
-
-    if (modeConst) {
-        char *modeTmp = NULL;
-
-        if (VIR_STRDUP(mode, modeConst) < 0)
-            return NULL;
-
-        if ((modeTmp = strrchr(mode, ',')))
-            *modeTmp = '\0';
-        else
-            VIR_FREE(mode);
-    }
-
-    if (mode && !(modesSpecified = virStringSplit(mode, ",", 0)))
-        return NULL;
-
-    if (VIR_ALLOC_N(tmp, ARRAY_CARDINALITY(modes) + 1) < 0)
-        return NULL;
-
-    for (i = 0; i < ARRAY_CARDINALITY(modes); i++) {
-        if (virStringListHasString((const char **)modesSpecified, modes[i]))
-            continue;
-
-        if ((mode && virAsprintf(&tmp[ntmp], "%s,%s", mode, modes[i]) < 0) ||
-            (!mode && VIR_STRDUP(tmp[ntmp], modes[i]) < 0))
-            return NULL;
-
-        ntmp++;
-    }
-
-    VIR_STEAL_PTR(ret, tmp);
-    return ret;
+    return virshCommaStringListComplete(mode, modes);
 }
