@@ -19,13 +19,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRSYSINFO_H
-# define LIBVIRT_VIRSYSINFO_H
+#pragma once
 
-# include "internal.h"
-# include "virutil.h"
-# include "virbuffer.h"
-# include "virenum.h"
+#include "internal.h"
+#include "virutil.h"
+#include "virbuffer.h"
+#include "virenum.h"
 
 typedef enum {
     VIR_SYSINFO_SMBIOS,
@@ -152,5 +151,3 @@ bool virSysinfoIsEqual(virSysinfoDefPtr src,
                        virSysinfoDefPtr dst);
 
 VIR_ENUM_DECL(virSysinfo);
-
-#endif /* LIBVIRT_VIRSYSINFO_H */
