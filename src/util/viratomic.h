@@ -23,16 +23,15 @@
  *
  */
 
-#ifndef LIBVIRT_VIRATOMIC_H
-# define LIBVIRT_VIRATOMIC_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
-# ifdef VIR_ATOMIC_OPS_GCC
-#  define VIR_STATIC /* Nothing; we just never define the functions */
-# else
-#  define VIR_STATIC static
-# endif
+#ifdef VIR_ATOMIC_OPS_GCC
+# define VIR_STATIC /* Nothing; we just never define the functions */
+#else
+# define VIR_STATIC static
+#endif
 
 /**
  * virAtomicIntGet:
@@ -152,62 +151,62 @@ VIR_STATIC unsigned int virAtomicIntXor(volatile unsigned int *atomic,
                                         unsigned int val)
     ATTRIBUTE_NONNULL(1);
 
-# undef VIR_STATIC
+#undef VIR_STATIC
 
-# ifdef VIR_ATOMIC_OPS_GCC
+#ifdef VIR_ATOMIC_OPS_GCC
 
-#  define virAtomicIntGet(atomic) \
+# define virAtomicIntGet(atomic) \
     (__extension__ ({ \
             (void)verify_true(sizeof(*(atomic)) == sizeof(int)); \
             (void)(0 ? *(atomic) ^ *(atomic) : 0); \
             __sync_synchronize(); \
             (int)*(atomic); \
         }))
-#  define virAtomicIntSet(atomic, newval) \
+# define virAtomicIntSet(atomic, newval) \
     (__extension__ ({ \
             (void)verify_true(sizeof(*(atomic)) == sizeof(int)); \
             (void)(0 ? *(atomic) ^ (newval) : 0); \
             *(atomic) = (newval); \
             __sync_synchronize(); \
         }))
-#  define virAtomicIntInc(atomic) \
+# define virAtomicIntInc(atomic) \
     (__extension__ ({ \
             (void)verify_true(sizeof(*(atomic)) == sizeof(int)); \
             (void)(0 ? *(atomic) ^ *(atomic) : 0); \
             __sync_add_and_fetch((atomic), 1); \
         }))
-#  define virAtomicIntDecAndTest(atomic) \
+# define virAtomicIntDecAndTest(atomic) \
     (__extension__ ({ \
             (void)verify_true(sizeof(*(atomic)) == sizeof(int)); \
             (void)(0 ? *(atomic) ^ *(atomic) : 0); \
             __sync_fetch_and_sub((atomic), 1) == 1; \
         }))
-#  define virAtomicIntCompareExchange(atomic, oldval, newval) \
+# define virAtomicIntCompareExchange(atomic, oldval, newval) \
     (__extension__ ({ \
             (void)verify_true(sizeof(*(atomic)) == sizeof(int)); \
             (void)(0 ? *(atomic) ^ (newval) ^ (oldval) : 0); \
             (bool)__sync_bool_compare_and_swap((atomic), \
                                                (oldval), (newval)); \
         }))
-#  define virAtomicIntAdd(atomic, val) \
+# define virAtomicIntAdd(atomic, val) \
     (__extension__ ({ \
             (void)verify_true(sizeof(*(atomic)) == sizeof(int)); \
             (void)(0 ? *(atomic) ^ (val) : 0); \
             (int) __sync_fetch_and_add((atomic), (val)); \
         }))
-#  define virAtomicIntAnd(atomic, val) \
+# define virAtomicIntAnd(atomic, val) \
     (__extension__ ({ \
             (void)verify_true(sizeof(*(atomic)) == sizeof(int)); \
             (void) (0 ? *(atomic) ^ (val) : 0); \
             (unsigned int) __sync_fetch_and_and((atomic), (val)); \
         }))
-#  define virAtomicIntOr(atomic, val) \
+# define virAtomicIntOr(atomic, val) \
     (__extension__ ({ \
             (void)verify_true(sizeof(*(atomic)) == sizeof(int)); \
             (void) (0 ? *(atomic) ^ (val) : 0); \
             (unsigned int) __sync_fetch_and_or((atomic), (val)); \
         }))
-#  define virAtomicIntXor(atomic, val) \
+# define virAtomicIntXor(atomic, val) \
     (__extension__ ({ \
             (void)verify_true(sizeof(*(atomic)) == sizeof(int)); \
             (void) (0 ? *(atomic) ^ (val) : 0); \
@@ -215,18 +214,18 @@ VIR_STATIC unsigned int virAtomicIntXor(volatile unsigned int *atomic,
         }))
 
 
-# else
+#else
 
-#  ifdef VIR_ATOMIC_OPS_WIN32
+# ifdef VIR_ATOMIC_OPS_WIN32
 
-#   include <winsock2.h>
-#   include <windows.h>
-#   include <intrin.h>
-#   if !defined(_M_AMD64) && !defined (_M_IA64) && !defined(_M_X64)
-#    define InterlockedAnd _InterlockedAnd
-#    define InterlockedOr _InterlockedOr
-#    define InterlockedXor _InterlockedXor
-#   endif
+#  include <winsock2.h>
+#  include <windows.h>
+#  include <intrin.h>
+#  if !defined(_M_AMD64) && !defined (_M_IA64) && !defined(_M_X64)
+#   define InterlockedAnd _InterlockedAnd
+#   define InterlockedOr _InterlockedOr
+#   define InterlockedXor _InterlockedXor
+#  endif
 
 /*
  * http://msdn.microsoft.com/en-us/library/ms684122(v=vs.85).aspx
@@ -295,9 +294,9 @@ virAtomicIntXor(volatile unsigned int *atomic,
 }
 
 
-#  else
-#   ifdef VIR_ATOMIC_OPS_PTHREAD
-#    include <pthread.h>
+# else
+#  ifdef VIR_ATOMIC_OPS_PTHREAD
+#   include <pthread.h>
 
 extern pthread_mutex_t virAtomicLock;
 
@@ -420,35 +419,33 @@ virAtomicIntXor(volatile unsigned int *atomic,
 }
 
 
-#   else
-#    error "No atomic integer impl for this platform"
-#   endif
+#  else
+#   error "No atomic integer impl for this platform"
 #  endif
+# endif
 
 /* The int/unsigned int casts here ensure that you can
  * pass either an int or unsigned int to all atomic op
  * functions, in the same way that we can with GCC
  * atomic op helpers.
  */
-#  define virAtomicIntGet(atomic) \
+# define virAtomicIntGet(atomic) \
     virAtomicIntGet((int *)atomic)
-#  define virAtomicIntSet(atomic, val) \
+# define virAtomicIntSet(atomic, val) \
     virAtomicIntSet((int *)atomic, val)
-#  define virAtomicIntInc(atomic) \
+# define virAtomicIntInc(atomic) \
     virAtomicIntInc((int *)atomic)
-#  define virAtomicIntDecAndTest(atomic) \
+# define virAtomicIntDecAndTest(atomic) \
     virAtomicIntDecAndTest((int *)atomic)
-#  define virAtomicIntCompareExchange(atomic, oldval, newval) \
+# define virAtomicIntCompareExchange(atomic, oldval, newval) \
     virAtomicIntCompareExchange((int *)atomic, oldval, newval)
-#  define virAtomicIntAdd(atomic, val) \
+# define virAtomicIntAdd(atomic, val) \
     virAtomicIntAdd((int *)atomic, val)
-#  define virAtomicIntAnd(atomic, val) \
+# define virAtomicIntAnd(atomic, val) \
     virAtomicIntAnd((unsigned int *)atomic, val)
-#  define virAtomicIntOr(atomic, val) \
+# define virAtomicIntOr(atomic, val) \
     virAtomicIntOr((unsigned int *)atomic, val)
-#  define virAtomicIntXor(atomic, val) \
+# define virAtomicIntXor(atomic, val) \
     virAtomicIntXor((unsigned int *)atomic, val)
 
-# endif
-
-#endif /* LIBVIRT_VIRATOMIC_H */
+#endif
