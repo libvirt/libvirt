@@ -7,11 +7,9 @@
  * Copyright (C) 2000 Bjorn Reese and Daniel Veillard.
  */
 
-#ifndef LIBVIRT_VIRHASH_H
-# define LIBVIRT_VIRHASH_H
+#pragma once
 
-
-# include "virautoclean.h"
+#include "virautoclean.h"
 
 /*
  * The hash table.
@@ -198,5 +196,3 @@ void *virHashSearch(const virHashTable *table, virHashSearcher iter,
 void virHashValueFree(void *value, const void *name);
 
 VIR_DEFINE_AUTOPTR_FUNC(virHashTable, virHashFree);
-
-#endif /* LIBVIRT_VIRHASH_H */

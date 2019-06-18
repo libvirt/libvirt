@@ -25,12 +25,9 @@
  * clients can be both 64 or 32 bit at the same time.
  */
 
-#ifndef LIBVIRT_VIRHASHCODE_H
-# define LIBVIRT_VIRHASHCODE_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
 uint32_t virHashCodeGen(const void *key, size_t len, uint32_t seed)
     ATTRIBUTE_NOINLINE;
-
-#endif /* LIBVIRT_VIRHASHCODE_H */
