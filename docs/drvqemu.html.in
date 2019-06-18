@@ -484,40 +484,6 @@ $ virsh domxml-from-native qemu-argv demo.args
       to the process which are usually prepared by libvirtd.
     </p>
 
-    <pre>$ cat &gt; demo.xml &lt;&lt;EOF
-&lt;domain type='qemu'&gt;
-  &lt;name&gt;QEMUGuest1&lt;/name&gt;
-  &lt;uuid&gt;c7a5fdbd-edaf-9455-926a-d65c16db1809&lt;/uuid&gt;
-  &lt;memory&gt;219200&lt;/memory&gt;
-  &lt;currentMemory&gt;219200&lt;/currentMemory&gt;
-  &lt;vcpu&gt;1&lt;/vcpu&gt;
-  &lt;os&gt;
-    &lt;type arch='i686' machine='pc'&gt;hvm&lt;/type&gt;
-    &lt;boot dev='hd'/&gt;
-  &lt;/os&gt;
-  &lt;clock offset='utc'/&gt;
-  &lt;on_poweroff&gt;destroy&lt;/on_poweroff&gt;
-  &lt;on_reboot&gt;restart&lt;/on_reboot&gt;
-  &lt;on_crash&gt;destroy&lt;/on_crash&gt;
-  &lt;devices&gt;
-    &lt;emulator&gt;/usr/bin/qemu&lt;/emulator&gt;
-    &lt;disk type='block' device='disk'&gt;
-      &lt;source dev='/dev/HostVG/QEMUGuest1'/&gt;
-      &lt;target dev='hda' bus='ide'/&gt;
-    &lt;/disk&gt;
-  &lt;/devices&gt;
-&lt;/domain&gt;
-EOF
-
-$ virsh domxml-to-native qemu-argv demo.xml
-  LC_ALL=C PATH=/usr/bin:/bin HOME=/home/test \
-  USER=test LOGNAME=test /usr/bin/qemu -S -M pc \
-  -no-kqemu -m 214 -smp 1 -name QEMUGuest1 -nographic \
-  -monitor pty -no-acpi -boot c -drive \
-  file=/dev/HostVG/QEMUGuest1,if=ide,index=0 -net none \
-  -serial none -parallel none -usb
-</pre>
-
     <h2><a id="qemucommand">Pass-through of arbitrary qemu
     commands</a></h2>
 
