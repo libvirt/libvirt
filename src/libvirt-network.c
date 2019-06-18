@@ -1156,8 +1156,7 @@ virConnectNetworkEventDeregisterAny(virConnectPtr conn,
  * lease info about a specific guest interface with @mac. There can be
  * multiple leases for a single @mac because this API supports DHCPv6 too.
  *
- * Returns the number of leases found or -1 and sets @leases to NULL in
- * case of error. On success, the array stored into @leases is guaranteed to
+ * On success, the array stored into @leases is guaranteed to
  * have an extra allocated element set to NULL but not included in the return
  * count, to make iteration easier. The caller is responsible for calling
  * virNetworkDHCPLeaseFree() on each array element, then calling free() on @leases.
@@ -1167,30 +1166,33 @@ virConnectNetworkEventDeregisterAny(virConnectPtr conn,
  *
  * Example of usage:
  *
- * virNetworkDHCPLeasePtr *leases = NULL;
- * virNetworkPtr network = ... obtain a network pointer here ...;
- * size_t i;
- * int nleases;
- * unsigned int flags = 0;
+ *   virNetworkDHCPLeasePtr *leases = NULL;
+ *   virNetworkPtr network = ... obtain a network pointer here ...;
+ *   size_t i;
+ *   int nleases;
+ *   unsigned int flags = 0;
  *
- * nleases = virNetworkGetDHCPLeases(network, NULL, &leases, flags);
- * if (nleases < 0)
- *     error();
+ *   nleases = virNetworkGetDHCPLeases(network, NULL, &leases, flags);
+ *   if (nleases < 0)
+ *       error();
  *
- * ... do something with returned values, for example:
+ *   ... do something with returned values, for example:
  *
- * for (i = 0; i < nleases; i++) {
- *     virNetworkDHCPLeasePtr lease = leases[i];
+ *   for (i = 0; i < nleases; i++) {
+ *       virNetworkDHCPLeasePtr lease = leases[i];
  *
- *     printf("Time(epoch): %lu, MAC address: %s, "
- *            "IP address: %s, Hostname: %s, ClientID: %s\n",
- *            lease->expirytime, lease->mac, lease->ipaddr,
- *            lease->hostname, lease->clientid);
+ *       printf("Time(epoch): %lu, MAC address: %s, "
+ *              "IP address: %s, Hostname: %s, ClientID: %s\n",
+ *              lease->expirytime, lease->mac, lease->ipaddr,
+ *              lease->hostname, lease->clientid);
  *
- *            virNetworkDHCPLeaseFree(leases[i]);
- * }
+ *              virNetworkDHCPLeaseFree(leases[i]);
+ *   }
  *
- * free(leases);
+ *   free(leases);
+ *
+ * Returns the number of leases found or -1 and sets @leases to NULL in
+ * case of error.
  *
  */
 int
