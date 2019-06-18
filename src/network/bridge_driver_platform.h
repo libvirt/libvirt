@@ -19,14 +19,13 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_BRIDGE_DRIVER_PLATFORM_H
-# define LIBVIRT_BRIDGE_DRIVER_PLATFORM_H
+#pragma once
 
-# include "internal.h"
-# include "virthread.h"
-# include "virdnsmasq.h"
-# include "virnetworkobj.h"
-# include "object_event.h"
+#include "internal.h"
+#include "virthread.h"
+#include "virdnsmasq.h"
+#include "virnetworkobj.h"
+#include "object_event.h"
 
 /* Main driver state */
 struct _virNetworkDriverState {
@@ -66,5 +65,3 @@ int networkCheckRouteCollision(virNetworkDefPtr def);
 int networkAddFirewallRules(virNetworkDefPtr def);
 
 void networkRemoveFirewallRules(virNetworkDefPtr def);
-
-#endif /* LIBVIRT_BRIDGE_DRIVER_PLATFORM_H */

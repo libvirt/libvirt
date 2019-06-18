@@ -19,14 +19,13 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_BRIDGE_DRIVER_H
-# define LIBVIRT_BRIDGE_DRIVER_H
+#pragma once
 
-# include "internal.h"
-# include "domain_conf.h"
-# include "vircommand.h"
-# include "virdnsmasq.h"
-# include "virnetworkobj.h"
+#include "internal.h"
+#include "domain_conf.h"
+#include "vircommand.h"
+#include "virdnsmasq.h"
+#include "virnetworkobj.h"
 
 int
 networkRegister(void);
@@ -37,5 +36,3 @@ networkDnsmasqConfContents(virNetworkObjPtr obj,
                            char **configstr,
                            dnsmasqContext *dctx,
                            dnsmasqCapsPtr caps);
-
-#endif /* LIBVIRT_BRIDGE_DRIVER_H */
