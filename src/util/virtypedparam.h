@@ -19,12 +19,11 @@
  *
  */
 
-#ifndef LIBVIRT_VIRTYPEDPARAM_H
-# define LIBVIRT_VIRTYPEDPARAM_H
+#pragma once
 
-# include "internal.h"
-# include "virutil.h"
-# include "virenum.h"
+#include "internal.h"
+#include "virutil.h"
+#include "virenum.h"
 
 /**
  * VIR_TYPED_PARAM_MULTIPLE:
@@ -32,7 +31,7 @@
  * Flag indicating that the params has multiple occurrences of the parameter.
  * Only used as a flag for @type argument of the virTypedParamsValidate.
  */
-# define VIR_TYPED_PARAM_MULTIPLE (1U << 31)
+#define VIR_TYPED_PARAM_MULTIPLE (1U << 31)
 
 verify(!(VIR_TYPED_PARAM_LAST & VIR_TYPED_PARAM_MULTIPLE));
 
@@ -120,7 +119,7 @@ int virTypedParamsSerialize(virTypedParameterPtr params,
 
 VIR_ENUM_DECL(virTypedParameter);
 
-# define VIR_TYPED_PARAMS_DEBUG(params, nparams) \
+#define VIR_TYPED_PARAMS_DEBUG(params, nparams) \
     do { \
         int _i; \
         if (!params) \
@@ -134,5 +133,3 @@ VIR_ENUM_DECL(virTypedParameter);
             VIR_FREE(_value); \
         } \
     } while (0)
-
-#endif /* LIBVIRT_VIRTYPEDPARAM_H */

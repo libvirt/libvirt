@@ -19,13 +19,12 @@
  *
  */
 
-#ifndef LIBVIRT_VIRPOLKIT_H
-# define LIBVIRT_VIRPOLKIT_H
+#pragma once
 
-# include "internal.h"
-# include "vircommand.h"
+#include "internal.h"
+#include "vircommand.h"
 
-# define PKTTYAGENT "/usr/bin/pkttyagent"
+#define PKTTYAGENT "/usr/bin/pkttyagent"
 
 int virPolkitCheckAuth(const char *actionid,
                        pid_t pid,
@@ -39,5 +38,3 @@ typedef virPolkitAgent *virPolkitAgentPtr;
 
 void virPolkitAgentDestroy(virPolkitAgentPtr cmd);
 virPolkitAgentPtr virPolkitAgentCreate(void);
-
-#endif /* LIBVIRT_VIRPOLKIT_H */

@@ -18,14 +18,13 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRUSB_H
-# define LIBVIRT_VIRUSB_H
+#pragma once
 
-# include "internal.h"
-# include "virobject.h"
-# include "virautoclean.h"
+#include "internal.h"
+#include "virobject.h"
+#include "virautoclean.h"
 
-# define USB_DEVFS "/dev/bus/usb/"
+#define USB_DEVFS "/dev/bus/usb/"
 
 typedef struct _virUSBDevice virUSBDevice;
 typedef virUSBDevice *virUSBDevicePtr;
@@ -97,5 +96,3 @@ virUSBDevicePtr virUSBDeviceListFind(virUSBDeviceListPtr list,
                                      virUSBDevicePtr dev);
 
 VIR_DEFINE_AUTOPTR_FUNC(virUSBDevice, virUSBDeviceFree);
-
-#endif /* LIBVIRT_VIRUSB_H */

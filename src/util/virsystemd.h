@@ -19,10 +19,9 @@
  *
  */
 
-#ifndef LIBVIRT_VIRSYSTEMD_H
-# define LIBVIRT_VIRSYSTEMD_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
 char *virSystemdMakeScopeName(const char *name,
                               const char *drivername,
@@ -50,5 +49,3 @@ int virSystemdCanHibernate(bool *result);
 int virSystemdCanHybridSleep(bool *result);
 
 char *virSystemdGetMachineNameByPID(pid_t pid);
-
-#endif /* LIBVIRT_VIRSYSTEMD_H */

@@ -18,8 +18,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRINITCTL_H
-# define LIBVIRT_VIRINITCTL_H
+#pragma once
 
 typedef enum {
     VIR_INITCTL_RUNLEVEL_POWEROFF = 0,
@@ -38,5 +37,3 @@ extern const char *virInitctlFifos[];
 
 int virInitctlSetRunLevel(const char *fifo,
                           virInitctlRunLevel level);
-
-#endif /* LIBVIRT_VIRINITCTL_H */

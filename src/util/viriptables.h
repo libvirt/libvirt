@@ -18,11 +18,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRIPTABLES_H
-# define LIBVIRT_VIRIPTABLES_H
+#pragma once
 
-# include "virsocketaddr.h"
-# include "virfirewall.h"
+#include "virsocketaddr.h"
+#include "virfirewall.h"
 
 int              iptablesSetupPrivateChains      (virFirewallLayer layer);
 
@@ -148,5 +147,3 @@ void             iptablesAddOutputFixUdpChecksum (virFirewallPtr fw,
 void             iptablesRemoveOutputFixUdpChecksum (virFirewallPtr fw,
                                                      const char *iface,
                                                      int port);
-
-#endif /* LIBVIRT_VIRIPTABLES_H */

@@ -19,12 +19,11 @@
  *
  */
 
-#ifndef LIBVIRT_VIRNUMA_H
-# define LIBVIRT_VIRNUMA_H
+#pragma once
 
-# include "internal.h"
-# include "virbitmap.h"
-# include "virutil.h"
+#include "internal.h"
+#include "virbitmap.h"
+#include "virutil.h"
 
 
 char *virNumaGetAutoPlacementAdvice(unsigned short vcpus,
@@ -66,4 +65,3 @@ int virNumaSetPagePoolSize(int node,
                            unsigned int page_size,
                            unsigned long long page_count,
                            bool add);
-#endif /* LIBVIRT_VIRNUMA_H */

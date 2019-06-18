@@ -18,11 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRDEVMAPPER_H
-# define LIBVIRT_VIRDEVMAPPER_H
+#pragma once
 
 int
 virDevMapperGetTargets(const char *path,
                        char ***devPaths);
-
-#endif /* LIBVIRT_VIRDEVMAPPER_H */

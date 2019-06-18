@@ -18,13 +18,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRBUFFER_H
-# define LIBVIRT_VIRBUFFER_H
+#pragma once
 
-# include <stdarg.h>
+#include <stdarg.h>
 
-# include "internal.h"
-# include "virautoclean.h"
+#include "internal.h"
+#include "virautoclean.h"
 
 
 /**
@@ -35,7 +34,7 @@
 typedef struct _virBuffer virBuffer;
 typedef virBuffer *virBufferPtr;
 
-# define VIR_BUFFER_INITIALIZER { 0, 0, 0, 0, NULL }
+#define VIR_BUFFER_INITIALIZER { 0, 0, 0, 0, NULL }
 
 struct _virBuffer {
     size_t size;
@@ -66,7 +65,7 @@ VIR_DEFINE_AUTOCLEAN_FUNC(virBuffer, virBufferFreeAndReset);
  * Returns 0 if no error has occurred, otherwise an error is reported
  * and -1 is returned.
  */
-# define virBufferCheckError(buf) \
+#define virBufferCheckError(buf) \
     virBufferCheckErrorInternal(buf, VIR_FROM_THIS, __FILE__, __FUNCTION__, \
     __LINE__)
 size_t virBufferUse(const virBuffer *buf);
@@ -96,7 +95,7 @@ void virBufferEscapeSQL(virBufferPtr buf,
 void virBufferEscapeShell(virBufferPtr buf, const char *str);
 void virBufferURIEncodeString(virBufferPtr buf, const char *str);
 
-# define virBufferAddLit(buf_, literal_string_) \
+#define virBufferAddLit(buf_, literal_string_) \
     virBufferAdd(buf_, "" literal_string_ "", sizeof(literal_string_) - 1)
 
 void virBufferAdjustIndent(virBufferPtr buf, int indent);
@@ -108,12 +107,10 @@ void virBufferSetIndent(virBufferPtr, int indent);
  * Gets the parent indentation, increments it by 2 and sets it to
  * child buffer.
  */
-# define virBufferSetChildIndent(childBuf_, parentBuf_) \
+#define virBufferSetChildIndent(childBuf_, parentBuf_) \
     virBufferSetIndent(childBuf_, virBufferGetIndent(parentBuf_, false) + 2)
 
 int virBufferGetIndent(const virBuffer *buf, bool dynamic);
 
 void virBufferTrim(virBufferPtr buf, const char *trim, int len);
 void virBufferAddStr(virBufferPtr buf, const char *str);
-
-#endif /* LIBVIRT_VIRBUFFER_H */

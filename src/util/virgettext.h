@@ -18,9 +18,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRGETTEXT_H
-# define LIBVIRT_VIRGETTEXT_H
+#pragma once
 
 int virGettextInitialize(void);
-
-#endif /* LIBVIRT_VIRGETTEXT_H */

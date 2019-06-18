@@ -16,12 +16,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRPERF_H
-# define LIBVIRT_VIRPERF_H
+#pragma once
 
-# include "virutil.h"
-# include "virautoclean.h"
-# include "virenum.h"
+#include "virutil.h"
+#include "virautoclean.h"
+#include "virenum.h"
 
 /* Some Intel processor families introduced some RDT (Resource Director
  * Technology) features to monitor or control shared resource based on
@@ -84,5 +83,3 @@ int virPerfReadEvent(virPerfPtr perf,
                      uint64_t *value);
 
 VIR_DEFINE_AUTOPTR_FUNC(virPerf, virPerfFree);
-
-#endif /* LIBVIRT_VIRPERF_H */

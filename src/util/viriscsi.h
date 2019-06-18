@@ -19,10 +19,9 @@
  *
  */
 
-#ifndef LIBVIRT_VIRISCSI_H
-# define LIBVIRT_VIRISCSI_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
 char *
 virISCSIGetSession(const char *devpath,
@@ -68,5 +67,3 @@ virISCSINodeUpdate(const char *portal,
                    const char *value)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
-
-#endif /* LIBVIRT_VIRISCSI_H */

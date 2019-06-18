@@ -18,10 +18,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRFIRMWARE_H
-# define LIBVIRT_VIRFIRMWARE_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
 typedef struct _virFirmware virFirmware;
 typedef virFirmware *virFirmwarePtr;
@@ -44,6 +43,3 @@ virFirmwareParseList(const char *list,
                      virFirmwarePtr **firmwares,
                      size_t *nfirmwares)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
-
-
-#endif /* LIBVIRT_VIRFIRMWARE_H */

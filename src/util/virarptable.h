@@ -18,10 +18,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRARPTABLE_H
-# define LIBVIRT_VIRARPTABLE_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
 typedef struct _virArpTableEntry virArpTableEntry;
 typedef virArpTableEntry *virArpTableEntryPtr;
@@ -40,5 +39,3 @@ struct _virArpTable {
 
 virArpTablePtr virArpTableGet(void);
 void virArpTableFree(virArpTablePtr table);
-
-#endif /* LIBVIRT_VIRARPTABLE_H */

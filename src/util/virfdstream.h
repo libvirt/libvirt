@@ -19,10 +19,9 @@
  *
  */
 
-#ifndef LIBVIRT_VIRFDSTREAM_H
-# define LIBVIRT_VIRFDSTREAM_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
 /* internal callback, the generic one is used up by daemon stream driver */
 /* the close callback is called with fdstream private data locked */
@@ -65,4 +64,3 @@ int virFDStreamSetInternalCloseCb(virStreamPtr st,
                                   virFDStreamInternalCloseCb cb,
                                   void *opaque,
                                   virFDStreamInternalCloseCbFreeOpaque fcb);
-#endif /* LIBVIRT_VIRFDSTREAM_H */

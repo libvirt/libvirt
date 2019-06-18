@@ -18,8 +18,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRFCP_H
-# define LIBVIRT_VIRFCP_H
+#pragma once
 
 bool
 virFCIsCapableRport(const char *rport);
@@ -28,5 +27,3 @@ int
 virFCReadRportValue(const char *rport,
                     const char *entry,
                     char **result);
-
-#endif /* LIBVIRT_VIRFCP_H */

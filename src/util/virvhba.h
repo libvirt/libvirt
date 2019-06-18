@@ -16,10 +16,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRVHBA_H
-# define LIBVIRT_VIRVHBA_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
 enum {
     VPORT_CREATE,
@@ -58,5 +57,3 @@ char *
 virVHBAGetHostByFabricWWN(const char *sysfs_prefix,
                           const char *fabric_wwn)
     ATTRIBUTE_NONNULL(2);
-
-#endif /* LIBVIRT_VIRVHBA_H */

@@ -19,10 +19,9 @@
  *
  */
 
-#ifndef LIBVIRT_VIRKMOD_H
-# define LIBVIRT_VIRKMOD_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
 char *virKModConfig(void);
 char *virKModLoad(const char *, bool)
@@ -31,4 +30,3 @@ char *virKModUnload(const char *)
     ATTRIBUTE_NONNULL(1);
 bool virKModIsBlacklisted(const char *)
     ATTRIBUTE_NONNULL(1);
-#endif /* LIBVIRT_VIRKMOD_H */

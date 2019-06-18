@@ -19,11 +19,10 @@
  *
  */
 
-#ifndef LIBVIRT_VIRPORTALLOCATOR_H
-# define LIBVIRT_VIRPORTALLOCATOR_H
+#pragma once
 
-# include "internal.h"
-# include "virobject.h"
+#include "internal.h"
+#include "virobject.h"
 
 typedef struct _virPortAllocatorRange virPortAllocatorRange;
 typedef virPortAllocatorRange *virPortAllocatorRangePtr;
@@ -41,5 +40,3 @@ int virPortAllocatorAcquire(const virPortAllocatorRange *range,
 int virPortAllocatorRelease(unsigned short port);
 
 int virPortAllocatorSetUsed(unsigned short port);
-
-#endif /* LIBVIRT_VIRPORTALLOCATOR_H */

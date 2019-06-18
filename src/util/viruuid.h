@@ -18,10 +18,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRUUID_H
-# define LIBVIRT_VIRUUID_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
 
 /**
@@ -29,7 +28,7 @@
  * @conn: connection
  * @uuid: possibly null UUID array
  */
-# define VIR_UUID_DEBUG(conn, uuid) \
+#define VIR_UUID_DEBUG(conn, uuid) \
     do { \
         if (uuid) { \
             char _uuidstr[VIR_UUID_STRING_BUFLEN]; \
@@ -54,5 +53,3 @@ int virUUIDParse(const char *uuidstr,
 
 const char *virUUIDFormat(const unsigned char *uuid,
                           char *uuidstr) ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-
-#endif /* LIBVIRT_VIRUUID_H */

@@ -20,10 +20,9 @@
  *
  */
 
-#ifndef LIBVIRT_VIRLEASE_H
-# define LIBVIRT_VIRLEASE_H
+#pragma once
 
-# include "virjson.h"
+#include "virjson.h"
 
 int virLeaseReadCustomLeaseFile(virJSONValuePtr leases_array_new,
                                 const char *custom_lease_file,
@@ -41,5 +40,3 @@ int virLeaseNew(virJSONValuePtr *lease_ret,
                 const char *hostname,
                 const char *iaid,
                 const char *server_duid);
-
-#endif /* LIBVIRT_VIRLEASE_H */

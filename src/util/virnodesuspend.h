@@ -19,15 +19,12 @@
  *
  */
 
-#ifndef LIBVIRT_VIRNODESUSPEND_H
-# define LIBVIRT_VIRNODESUSPEND_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
 int virNodeSuspend(unsigned int target,
                    unsigned long long duration,
                    unsigned int flags);
 
 int virNodeSuspendGetTargetMask(unsigned int *bitmask);
-
-#endif /* LIBVIRT_VIRNODESUSPEND_H */

@@ -18,11 +18,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRCONF_H
-# define LIBVIRT_VIRCONF_H
+#pragma once
 
-# include "virutil.h"
-# include "virenum.h"
+#include "virutil.h"
+#include "virenum.h"
 
 /**
  * virConfType:
@@ -128,5 +127,3 @@ int virConfWriteMem(char *memory,
                     int *len,
                     virConfPtr conf);
 int virConfLoadConfig(virConfPtr *conf, const char *name);
-
-#endif /* LIBVIRT_VIRCONF_H */

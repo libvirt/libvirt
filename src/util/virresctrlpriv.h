@@ -20,12 +20,9 @@
 # error "virresctrlpriv.h may only be included by virresctrl.c or test suites"
 #endif /* LIBVIRT_VIRRESCTRLPRIV_H_ALLOW */
 
-#ifndef LIBVIRT_VIRRESCTRLPRIV_H
-# define LIBVIRT_VIRRESCTRLPRIV_H
+#pragma once
 
-# include "virresctrl.h"
+#include "virresctrl.h"
 
 virResctrlAllocPtr
 virResctrlAllocGetUnused(virResctrlInfoPtr resctrl);
-
-#endif /* LIBVIRT_VIRRESCTRLPRIV_H */

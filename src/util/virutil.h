@@ -20,19 +20,18 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRUTIL_H
-# define LIBVIRT_VIRUTIL_H
+#pragma once
 
-# include "internal.h"
-# include <unistd.h>
-# include <sys/types.h>
+#include "internal.h"
+#include <unistd.h>
+#include <sys/types.h>
 
-# ifndef MIN
-#  define MIN(a, b) ((a) < (b) ? (a) : (b))
-# endif
-# ifndef MAX
-#  define MAX(a, b) ((a) > (b) ? (a) : (b))
-# endif
+#ifndef MIN
+# define MIN(a, b) ((a) < (b) ? (a) : (b))
+#endif
+#ifndef MAX
+# define MAX(a, b) ((a) > (b) ? (a) : (b))
+#endif
 
 
 int virSetBlocking(int fd, bool blocking) ATTRIBUTE_RETURN_CHECK;
@@ -69,28 +68,28 @@ int virDiskNameToIndex(const char* str);
 char *virIndexToDiskName(int idx, const char *prefix);
 
 /* No-op workarounds for functionality missing in mingw.  */
-# ifndef HAVE_GETUID
+#ifndef HAVE_GETUID
 static inline int getuid(void)
 { return 0; }
-# endif
+#endif
 
-# ifndef HAVE_GETEUID
+#ifndef HAVE_GETEUID
 static inline int geteuid(void)
 { return 0; }
-# endif
+#endif
 
-# ifndef HAVE_GETGID
+#ifndef HAVE_GETGID
 static inline int getgid(void)
 { return 0; }
-# endif
+#endif
 
-# ifndef HAVE_GETEGID
+#ifndef HAVE_GETEGID
 static inline int getegid(void)
 { return 0; }
-# endif
+#endif
 
-# ifdef FUNC_PTHREAD_SIGMASK_BROKEN
-#  undef pthread_sigmask
+#ifdef FUNC_PTHREAD_SIGMASK_BROKEN
+# undef pthread_sigmask
 static inline int pthread_sigmask(int how,
                                   const void *set,
                                   void *old)
@@ -100,7 +99,7 @@ static inline int pthread_sigmask(int how,
     (void) old;
     return 0;
 }
-# endif
+#endif
 
 char *virGetHostname(void);
 char *virGetHostnameQuiet(void);
@@ -172,7 +171,5 @@ char *virHostGetDRMRenderNode(void) ATTRIBUTE_NOINLINE;
  * This macro assigns @lvalue to @rvalue and evaluates as true if the value of
  * @rvalue did not fit into the @lvalue.
  */
-# define VIR_ASSIGN_IS_OVERFLOW(lvalue, rvalue) \
+#define VIR_ASSIGN_IS_OVERFLOW(lvalue, rvalue) \
     (((lvalue) = (rvalue)) != (rvalue))
-
-#endif /* LIBVIRT_VIRUTIL_H */

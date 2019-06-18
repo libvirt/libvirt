@@ -18,14 +18,13 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRURI_H
-# define LIBVIRT_VIRURI_H
+#pragma once
 
-# include <libxml/uri.h>
+#include <libxml/uri.h>
 
-# include "internal.h"
-# include "virconf.h"
-# include "virautoclean.h"
+#include "internal.h"
+#include "virconf.h"
+#include "virautoclean.h"
 
 typedef struct _virURI virURI;
 typedef virURI *virURIPtr;
@@ -64,6 +63,4 @@ void virURIFree(virURIPtr uri);
 VIR_DEFINE_AUTOPTR_FUNC(virURI, virURIFree);
 int virURIResolveAlias(virConfPtr conf, const char *alias, char **uri);
 
-# define VIR_URI_SERVER(uri) ((uri) && (uri)->server ? (uri)->server : "localhost")
-
-#endif /* LIBVIRT_VIRURI_H */
+#define VIR_URI_SERVER(uri) ((uri) && (uri)->server ? (uri)->server : "localhost")

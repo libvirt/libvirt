@@ -19,11 +19,10 @@
  *
  */
 
-#ifndef LIBVIRT_VIRLOCKSPACE_H
-# define LIBVIRT_VIRLOCKSPACE_H
+#pragma once
 
-# include "internal.h"
-# include "virjson.h"
+#include "internal.h"
+#include "virjson.h"
 
 typedef struct _virLockSpace virLockSpace;
 typedef virLockSpace *virLockSpacePtr;
@@ -58,5 +57,3 @@ int virLockSpaceReleaseResource(virLockSpacePtr lockspace,
 
 int virLockSpaceReleaseResourcesForOwner(virLockSpacePtr lockspace,
                                          pid_t owner);
-
-#endif /* LIBVIRT_VIRLOCKSPACE_H */

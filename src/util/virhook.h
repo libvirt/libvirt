@@ -19,10 +19,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRHOOK_H
-# define LIBVIRT_VIRHOOK_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
 typedef enum {
     VIR_HOOK_DRIVER_DAEMON = 0,        /* Daemon related events */
@@ -104,5 +103,3 @@ int virHookPresent(int driver);
 
 int virHookCall(int driver, const char *id, int op, int sub_op,
                 const char *extra, const char *input, char **output);
-
-#endif /* LIBVIRT_VIRHOOK_H */

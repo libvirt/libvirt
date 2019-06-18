@@ -19,11 +19,8 @@
  *
  */
 
-#ifndef LIBVIRT_VIRMODULE_H
-# define LIBVIRT_VIRMODULE_H
+#pragma once
 
 int virModuleLoad(const char *path,
                   const char *regfunc,
                   bool required);
-
-#endif /* LIBVIRT_VIRMODULE_H */

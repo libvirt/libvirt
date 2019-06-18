@@ -19,13 +19,12 @@
  *
  */
 
-#ifndef LIBVIRT_VIRFILECACHE_H
-# define LIBVIRT_VIRFILECACHE_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
-# include "virobject.h"
-# include "virhash.h"
+#include "virobject.h"
+#include "virhash.h"
 
 typedef struct _virFileCache virFileCache;
 typedef virFileCache *virFileCachePtr;
@@ -133,5 +132,3 @@ int
 virFileCacheInsertData(virFileCachePtr cache,
                        const char *name,
                        void *data);
-
-#endif /* LIBVIRT_VIRFILECACHE_H */

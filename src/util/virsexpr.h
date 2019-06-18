@@ -20,11 +20,10 @@
  *
  */
 
-#ifndef LIBVIRT_VIRSEXPR_H
-# define LIBVIRT_VIRSEXPR_H
+#pragma once
 
-# include "internal.h"
-# include "virbuffer.h"
+#include "internal.h"
+#include "virbuffer.h"
 
 enum sexpr_type {
     SEXPR_NIL,
@@ -65,5 +64,3 @@ int sexpr_has(const struct sexpr *sexpr, const char *node);
 int sexpr_int(const struct sexpr *sexpr, const char *name);
 double sexpr_float(const struct sexpr *sexpr, const char *name);
 uint64_t sexpr_u64(const struct sexpr *sexpr, const char *name);
-
-#endif /* LIBVIRT_VIRSEXPR_H */

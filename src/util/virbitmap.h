@@ -19,13 +19,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRBITMAP_H
-# define LIBVIRT_VIRBITMAP_H
+#pragma once
 
-# include "internal.h"
-# include "virautoclean.h"
+#include "internal.h"
+#include "virautoclean.h"
 
-# include <sys/types.h>
+#include <sys/types.h>
 
 
 typedef struct _virBitmap virBitmap;
@@ -159,5 +158,3 @@ void virBitmapSubtract(virBitmapPtr a, virBitmapPtr b)
 void virBitmapShrink(virBitmapPtr map, size_t b);
 
 VIR_DEFINE_AUTOPTR_FUNC(virBitmap, virBitmapFree);
-
-#endif /* LIBVIRT_VIRBITMAP_H */

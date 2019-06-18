@@ -19,16 +19,13 @@
  *
  */
 
-#ifndef LIBVIRT_VIRKEYCODE_H
-# define LIBVIRT_VIRKEYCODE_H
+#pragma once
 
-# include "virutil.h"
-# include "virenum.h"
+#include "virutil.h"
+#include "virenum.h"
 
 VIR_ENUM_DECL(virKeycodeSet);
 int virKeycodeValueFromString(virKeycodeSet codeset, const char *keyname);
 int virKeycodeValueTranslate(virKeycodeSet from_codeset,
                         virKeycodeSet to_offset,
                         int key_value);
-
-#endif /* LIBVIRT_VIRKEYCODE_H */

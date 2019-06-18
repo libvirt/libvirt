@@ -19,10 +19,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIREVENTPOLL_H
-# define LIBVIRT_VIREVENTPOLL_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
 /**
  * virEventPollAddHandle: register a callback for monitoring file handle events
@@ -125,6 +124,3 @@ int virEventPollToNativeEvents(int events);
  * return -1 if wakeup failed
  */
 int virEventPollInterrupt(void);
-
-
-#endif /* LIBVIRT_VIREVENTPOLL_H */

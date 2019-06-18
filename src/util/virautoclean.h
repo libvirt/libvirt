@@ -18,10 +18,9 @@
  *
  */
 
-#ifndef LIBVIRT_VIRAUTOCLEAN_H
-# define LIBVIRT_VIRAUTOCLEAN_H
+#pragma once
 
-# define VIR_AUTOPTR_FUNC_NAME(type) type##AutoPtrFree
+#define VIR_AUTOPTR_FUNC_NAME(type) type##AutoPtrFree
 
 /**
  * VIR_DEFINE_AUTOPTR_FUNC:
@@ -32,7 +31,7 @@
  * resources allocated to a variable of type @type. This newly
  * defined function works as a necessary wrapper around @func.
  */
-# define VIR_DEFINE_AUTOPTR_FUNC(type, func) \
+#define VIR_DEFINE_AUTOPTR_FUNC(type, func) \
     static inline void VIR_AUTOPTR_FUNC_NAME(type)(type **_ptr) \
     { \
         if (*_ptr) \
@@ -40,7 +39,7 @@
         *_ptr = NULL; \
     }
 
-# define VIR_AUTOCLEAN_FUNC_NAME(type) type##AutoClean
+#define VIR_AUTOCLEAN_FUNC_NAME(type) type##AutoClean
 
 /**
  * VIR_DEFINE_AUTOCLEAN_FUNC:
@@ -51,7 +50,7 @@
  * resources in a stack'd variable of type @type. Note that @func must
  * take pointer to @type.
  */
-# define VIR_DEFINE_AUTOCLEAN_FUNC(type, func) \
+#define VIR_DEFINE_AUTOCLEAN_FUNC(type, func) \
     static inline void VIR_AUTOCLEAN_FUNC_NAME(type)(type *_ptr) \
     { \
         (func)(_ptr); \
@@ -69,7 +68,7 @@
  * Note that this macro must NOT be used with vectors! The freeing function
  * will not free any elements beyond the first.
  */
-# define VIR_AUTOPTR(type) \
+#define VIR_AUTOPTR(type) \
     __attribute__((cleanup(VIR_AUTOPTR_FUNC_NAME(type)))) type *
 
 /**
@@ -84,7 +83,5 @@
  * Note that this macro must NOT be used with vectors! The cleaning function
  * will not clean any elements beyond the first.
  */
-# define VIR_AUTOCLEAN(type) \
+#define VIR_AUTOCLEAN(type) \
     __attribute__((cleanup(VIR_AUTOCLEAN_FUNC_NAME(type)))) type
-
-#endif /* LIBVIRT_VIRAUTOCLEAN_H */

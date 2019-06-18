@@ -19,15 +19,14 @@
  *
  */
 
-#ifndef LIBVIRT_VIRPROCESS_H
-# define LIBVIRT_VIRPROCESS_H
+#pragma once
 
-# include <sys/types.h>
+#include <sys/types.h>
 
-# include "internal.h"
-# include "virbitmap.h"
-# include "virutil.h"
-# include "virenum.h"
+#include "internal.h"
+#include "virbitmap.h"
+#include "virutil.h"
+#include "virenum.h"
 
 typedef enum {
     VIR_PROC_POLICY_NONE = 0,
@@ -125,5 +124,3 @@ typedef enum {
 } virProcessNamespaceFlags;
 
 int virProcessNamespaceAvailable(unsigned int ns);
-
-#endif /* LIBVIRT_VIRPROCESS_H */

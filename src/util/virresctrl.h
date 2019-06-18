@@ -16,14 +16,13 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRRESCTRL_H
-# define LIBVIRT_VIRRESCTRL_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
-# include "virbitmap.h"
-# include "virutil.h"
-# include "virenum.h"
+#include "virbitmap.h"
+#include "virutil.h"
+#include "virenum.h"
 
 typedef enum {
     VIR_CACHE_TYPE_BOTH,
@@ -235,4 +234,3 @@ virResctrlMonitorGetCacheOccupancy(virResctrlMonitorPtr monitor,
 void
 virResctrlMonitorFreeStats(virResctrlMonitorStatsPtr *stats,
                            size_t nstats);
-#endif /* LIBVIRT_VIRRESCTRL_H */

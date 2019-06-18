@@ -16,14 +16,13 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRMDEV_H
-# define LIBVIRT_VIRMDEV_H
+#pragma once
 
-# include "internal.h"
-# include "virobject.h"
-# include "virutil.h"
-# include "virautoclean.h"
-# include "virenum.h"
+#include "internal.h"
+#include "virobject.h"
+#include "virutil.h"
+#include "virautoclean.h"
+#include "virenum.h"
 
 typedef enum {
     VIR_MDEV_MODEL_TYPE_VFIO_PCI = 0,
@@ -140,5 +139,3 @@ virMediatedDeviceTypeReadAttrs(const char *sysfspath,
 
 VIR_DEFINE_AUTOPTR_FUNC(virMediatedDevice, virMediatedDeviceFree);
 VIR_DEFINE_AUTOPTR_FUNC(virMediatedDeviceType, virMediatedDeviceTypeFree);
-
-#endif /* LIBVIRT_VIRMDEV_H */

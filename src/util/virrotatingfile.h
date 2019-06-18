@@ -19,10 +19,9 @@
  *
  */
 
-#ifndef LIBVIRT_VIRROTATINGFILE_H
-# define LIBVIRT_VIRROTATINGFILE_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
 typedef struct virRotatingFileWriter virRotatingFileWriter;
 typedef virRotatingFileWriter *virRotatingFileWriterPtr;
@@ -58,5 +57,3 @@ ssize_t virRotatingFileReaderConsume(virRotatingFileReaderPtr file,
 
 void virRotatingFileWriterFree(virRotatingFileWriterPtr file);
 void virRotatingFileReaderFree(virRotatingFileReaderPtr file);
-
-#endif /* LIBVIRT_VIRROTATINGFILE_H */

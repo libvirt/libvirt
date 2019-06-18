@@ -19,10 +19,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIREBTABLES_H
-# define LIBVIRT_VIREBTABLES_H
+#pragma once
 
-# include "virmacaddr.h"
+#include "virmacaddr.h"
 
 typedef struct _ebtablesContext ebtablesContext;
 
@@ -37,5 +36,3 @@ int              ebtablesRemoveForwardAllowIn    (ebtablesContext *ctx,
                                                   const virMacAddr *mac);
 
 int              ebtablesAddForwardPolicyReject(ebtablesContext *ctx);
-
-#endif /* LIBVIRT_VIREBTABLES_H */

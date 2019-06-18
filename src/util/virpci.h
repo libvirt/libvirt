@@ -18,15 +18,14 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRPCI_H
-# define LIBVIRT_VIRPCI_H
+#pragma once
 
-# include "internal.h"
-# include "virmdev.h"
-# include "virobject.h"
-# include "virutil.h"
-# include "virautoclean.h"
-# include "virenum.h"
+#include "internal.h"
+#include "virmdev.h"
+#include "virobject.h"
+#include "virutil.h"
+#include "virautoclean.h"
+#include "virenum.h"
 
 typedef struct _virPCIDevice virPCIDevice;
 typedef virPCIDevice *virPCIDevicePtr;
@@ -35,8 +34,8 @@ typedef virPCIDeviceAddress *virPCIDeviceAddressPtr;
 typedef struct _virPCIDeviceList virPCIDeviceList;
 typedef virPCIDeviceList *virPCIDeviceListPtr;
 
-# define VIR_DOMAIN_DEVICE_ZPCI_MAX_UID UINT16_MAX
-# define VIR_DOMAIN_DEVICE_ZPCI_MAX_FID UINT32_MAX
+#define VIR_DOMAIN_DEVICE_ZPCI_MAX_UID UINT16_MAX
+#define VIR_DOMAIN_DEVICE_ZPCI_MAX_FID UINT32_MAX
 
 typedef struct _virZPCIDeviceAddress virZPCIDeviceAddress;
 typedef virZPCIDeviceAddress *virZPCIDeviceAddressPtr;
@@ -275,5 +274,3 @@ void virPCIDeviceAddressFree(virPCIDeviceAddressPtr address);
 VIR_DEFINE_AUTOPTR_FUNC(virPCIDevice, virPCIDeviceFree);
 VIR_DEFINE_AUTOPTR_FUNC(virPCIDeviceAddress, virPCIDeviceAddressFree);
 VIR_DEFINE_AUTOPTR_FUNC(virPCIEDeviceInfo, virPCIEDeviceInfoFree);
-
-#endif /* LIBVIRT_VIRPCI_H */

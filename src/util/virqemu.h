@@ -20,13 +20,12 @@
  *
  */
 
-#ifndef LIBVIRT_VIRQEMU_H
-# define LIBVIRT_VIRQEMU_H
+#pragma once
 
-# include "internal.h"
-# include "virbuffer.h"
-# include "virjson.h"
-# include "virstorageencryption.h"
+#include "internal.h"
+#include "virbuffer.h"
+#include "virjson.h"
+#include "virstorageencryption.h"
 
 typedef int (*virQEMUBuildCommandLineJSONArrayFormatFunc)(const char *key,
                                                           virJSONValuePtr array,
@@ -52,5 +51,3 @@ void virQEMUBuildQemuImgKeySecretOpts(virBufferPtr buf,
                                       virStorageEncryptionInfoDefPtr enc,
                                       const char *alias)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
-
-#endif /* LIBVIRT_VIRQEMU_H */

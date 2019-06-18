@@ -20,15 +20,14 @@
  *
  */
 
-#ifndef LIBVIRT_VIRJSON_H
-# define LIBVIRT_VIRJSON_H
+#pragma once
 
-# include "internal.h"
-# include "virbitmap.h"
-# include "virbuffer.h"
-# include "virautoclean.h"
+#include "internal.h"
+#include "virbitmap.h"
+#include "virbuffer.h"
+#include "virautoclean.h"
 
-# include <stdarg.h>
+#include <stdarg.h>
 
 
 typedef enum {
@@ -164,5 +163,3 @@ char *virJSONStringReformat(const char *jsonstr, bool pretty);
 virJSONValuePtr virJSONValueObjectDeflatten(virJSONValuePtr json);
 
 VIR_DEFINE_AUTOPTR_FUNC(virJSONValue, virJSONValueFree);
-
-#endif /* LIBVIRT_VIRJSON_H */

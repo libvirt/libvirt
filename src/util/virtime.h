@@ -18,12 +18,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRTIME_H
-# define LIBVIRT_VIRTIME_H
+#pragma once
 
-# include <time.h>
+#include <time.h>
 
-# include "internal.h"
+#include "internal.h"
 
 /* The format string we intend to use is:
  *
@@ -31,7 +30,7 @@
  * %4d-%02d-%02d %02d:%02d:%02d.%03d+0000
  *
  */
-# define VIR_TIME_STRING_BUFLEN \
+#define VIR_TIME_STRING_BUFLEN \
     (4 + 1 + 2 + 1 + 2 + 1 + 2 + 1 + 2 + 1 + 2 + 1 + 3 + 5 + 1)
 /*   Yr      Mon     Day     Hour    Min     Sec     Ms  TZ  NULL */
 
@@ -72,5 +71,3 @@ int virTimeBackOffStart(virTimeBackOffVar *var,
                         unsigned long long first, unsigned long long timeout);
 
 bool virTimeBackOffWait(virTimeBackOffVar *var);
-
-#endif /* LIBVIRT_VIRTIME_H */

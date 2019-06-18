@@ -18,10 +18,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRCLOSECALLBACKS_H
-# define LIBVIRT_VIRCLOSECALLBACKS_H
+#pragma once
 
-# include "conf/virdomainobjlist.h"
+#include "conf/virdomainobjlist.h"
 
 typedef struct _virCloseCallbacks virCloseCallbacks;
 typedef virCloseCallbacks *virCloseCallbacksPtr;
@@ -49,4 +48,3 @@ virCloseCallbacksRun(virCloseCallbacksPtr closeCallbacks,
                      virConnectPtr conn,
                      virDomainObjListPtr domains,
                      void *opaque);
-#endif /* LIBVIRT_VIRCLOSECALLBACKS_H */

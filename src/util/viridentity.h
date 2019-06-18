@@ -19,10 +19,9 @@
  *
  */
 
-#ifndef LIBVIRT_VIRIDENTITY_H
-# define LIBVIRT_VIRIDENTITY_H
+#pragma once
 
-# include "virobject.h"
+#include "virobject.h"
 
 typedef struct _virIdentity virIdentity;
 typedef virIdentity *virIdentityPtr;
@@ -103,6 +102,3 @@ int virIdentitySetX509DName(virIdentityPtr ident,
                             const char *dname);
 int virIdentitySetSELinuxContext(virIdentityPtr ident,
                                  const char *context);
-
-
-#endif /* LIBVIRT_VIRIDENTITY_H */

@@ -23,11 +23,8 @@
 # error "virsystemdpriv.h may only be included by virsystemd.c or test suites"
 #endif /* LIBVIRT_VIRSYSTEMDPRIV_H_ALLOW */
 
-#ifndef LIBVIRT_VIRSYSTEMDPRIV_H
-# define LIBVIRT_VIRSYSTEMDPRIV_H
+#pragma once
 
-# include "virsystemd.h"
+#include "virsystemd.h"
 
 void virSystemdHasMachinedResetCachedValue(void);
-
-#endif /* LIBVIRT_VIRSYSTEMDPRIV_H */

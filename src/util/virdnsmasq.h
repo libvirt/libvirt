@@ -21,11 +21,10 @@
  * based on iptables.h
  */
 
-#ifndef LIBVIRT_VIRDNSMASQ_H
-# define LIBVIRT_VIRDNSMASQ_H
+#pragma once
 
-# include "virobject.h"
-# include "virsocketaddr.h"
+#include "virobject.h"
+#include "virsocketaddr.h"
 
 typedef struct
 {
@@ -106,17 +105,16 @@ bool dnsmasqCapsGet(dnsmasqCapsPtr caps, dnsmasqCapsFlags flag);
 const char *dnsmasqCapsGetBinaryPath(dnsmasqCapsPtr caps);
 unsigned long dnsmasqCapsGetVersion(dnsmasqCapsPtr caps);
 
-# define DNSMASQ_DHCPv6_MAJOR_REQD 2
-# define DNSMASQ_DHCPv6_MINOR_REQD 64
-# define DNSMASQ_RA_MAJOR_REQD 2
-# define DNSMASQ_RA_MINOR_REQD 64
+#define DNSMASQ_DHCPv6_MAJOR_REQD 2
+#define DNSMASQ_DHCPv6_MINOR_REQD 64
+#define DNSMASQ_RA_MAJOR_REQD 2
+#define DNSMASQ_RA_MINOR_REQD 64
 
-# define DNSMASQ_DHCPv6_SUPPORT(CAPS) \
+#define DNSMASQ_DHCPv6_SUPPORT(CAPS) \
     (dnsmasqCapsGetVersion(CAPS) >= \
      (DNSMASQ_DHCPv6_MAJOR_REQD * 1000000) + \
      (DNSMASQ_DHCPv6_MINOR_REQD * 1000))
-# define DNSMASQ_RA_SUPPORT(CAPS) \
+#define DNSMASQ_RA_SUPPORT(CAPS) \
     (dnsmasqCapsGetVersion(CAPS) >= \
      (DNSMASQ_RA_MAJOR_REQD * 1000000) + \
      (DNSMASQ_RA_MINOR_REQD * 1000))
-#endif /* LIBVIRT_VIRDNSMASQ_H */

@@ -18,10 +18,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRKEYFILE_H
-# define LIBVIRT_VIRKEYFILE_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
 /**
  * virKeyFilePtr:
@@ -57,5 +56,3 @@ const char *virKeyFileGetValueString(virKeyFilePtr conf,
                                      const char *groupname,
                                      const char *valuename)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
-
-#endif /* LIBVIRT_VIRKEYFILE_H */
