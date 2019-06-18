@@ -20,9 +20,6 @@
  *
  */
 
-#ifndef LIBVIRT_VZ_DRIVER_H
-# define LIBVIRT_VZ_DRIVER_H
+#pragma once
 
 int vzRegister(void);
-
-#endif /* LIBVIRT_VZ_DRIVER_H */
