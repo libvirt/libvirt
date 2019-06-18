@@ -1632,7 +1632,8 @@ mymain(void)
                  QEMU_CAPS_NUMA,
                  QEMU_CAPS_OBJECT_MEMORY_RAM);
 
-    DO_TEST("qemu-ns", NONE);
+    DO_TEST_CAPS_VER("qemu-ns", "4.0.0");
+    DO_TEST_CAPS_LATEST("qemu-ns");
     DO_TEST("qemu-ns-no-env", NONE);
     DO_TEST("qemu-ns-alt", NONE);
 
