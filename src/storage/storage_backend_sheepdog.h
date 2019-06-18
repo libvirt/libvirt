@@ -20,9 +20,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_STORAGE_BACKEND_SHEEPDOG_H
-# define LIBVIRT_STORAGE_BACKEND_SHEEPDOG_H
+#pragma once
 
 int virStorageBackendSheepdogRegister(void);
-
-#endif /* LIBVIRT_STORAGE_BACKEND_SHEEPDOG_H */

@@ -19,13 +19,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_STORAGE_DRIVER_H
-# define LIBVIRT_STORAGE_DRIVER_H
+#pragma once
 
-# include <sys/stat.h>
+#include <sys/stat.h>
 
-# include "domain_conf.h"
-# include "virstorageobj.h"
+#include "domain_conf.h"
+#include "virstorageobj.h"
 
 virStoragePoolObjPtr virStoragePoolObjFindPoolByUUID(const unsigned char *uuid)
     ATTRIBUTE_NONNULL(1);
@@ -41,5 +40,3 @@ char *virStoragePoolObjBuildTempFilePath(virStoragePoolObjPtr obj,
 
 int storageRegister(void);
 int storageRegisterAll(void);
-
-#endif /* LIBVIRT_STORAGE_DRIVER_H */

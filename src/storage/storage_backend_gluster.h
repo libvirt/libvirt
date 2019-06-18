@@ -19,9 +19,6 @@
  *
  */
 
-#ifndef LIBVIRT_STORAGE_BACKEND_GLUSTER_H
-# define LIBVIRT_STORAGE_BACKEND_GLUSTER_H
+#pragma once
 
 int virStorageBackendGlusterRegister(void);
-
-#endif /* LIBVIRT_STORAGE_BACKEND_GLUSTER_H */

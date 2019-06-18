@@ -14,9 +14,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_STORAGE_BACKEND_ISCSI_DIRECT_H
-# define LIBVIRT_STORAGE_BACKEND_ISCSI_DIRECT_H
+#pragma once
 
 int virStorageBackendISCSIDirectRegister(void);
-
-#endif /* LIBVIRT_STORAGE_BACKEND_ISCSI_DIRECT_H */

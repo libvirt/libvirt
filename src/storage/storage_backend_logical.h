@@ -19,9 +19,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_STORAGE_BACKEND_LOGICAL_H
-# define LIBVIRT_STORAGE_BACKEND_LOGICAL_H
+#pragma once
 
 int virStorageBackendLogicalRegister(void);
-
-#endif /* LIBVIRT_STORAGE_BACKEND_LOGICAL_H */

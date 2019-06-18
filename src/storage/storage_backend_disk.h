@@ -19,9 +19,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_STORAGE_BACKEND_DISK_H
-# define LIBVIRT_STORAGE_BACKEND_DISK_H
+#pragma once
 
 int virStorageBackendDiskRegister(void);
-
-#endif /* LIBVIRT_STORAGE_BACKEND_DISK_H */

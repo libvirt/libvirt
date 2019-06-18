@@ -16,15 +16,14 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_STORAGE_UTIL_H
-# define LIBVIRT_STORAGE_UTIL_H
+#pragma once
 
-# include <sys/stat.h>
+#include <sys/stat.h>
 
-# include "internal.h"
-# include "vircommand.h"
-# include "storage_driver.h"
-# include "storage_backend.h"
+#include "internal.h"
+#include "vircommand.h"
+#include "storage_driver.h"
+#include "storage_backend.h"
 
 /* Storage Pool Namespace options to share w/ storage_backend_fs.c and
  * the virStorageBackendFileSystemMountCmd method */
@@ -138,21 +137,21 @@ enum {
     VIR_STORAGE_VOL_READ_NOERROR    = 1 << 0, /* ignore *read errors */
 };
 
-# define VIR_STORAGE_VOL_OPEN_DEFAULT (VIR_STORAGE_VOL_OPEN_REG      |\
-                                       VIR_STORAGE_VOL_OPEN_BLOCK)
+#define VIR_STORAGE_VOL_OPEN_DEFAULT (VIR_STORAGE_VOL_OPEN_REG      |\
+                                      VIR_STORAGE_VOL_OPEN_BLOCK)
 
-# define VIR_STORAGE_VOL_FS_OPEN_FLAGS    (VIR_STORAGE_VOL_OPEN_DEFAULT | \
-                                           VIR_STORAGE_VOL_OPEN_DIR)
-# define VIR_STORAGE_VOL_FS_PROBE_FLAGS   (VIR_STORAGE_VOL_FS_OPEN_FLAGS | \
-                                           VIR_STORAGE_VOL_OPEN_NOERROR)
+#define VIR_STORAGE_VOL_FS_OPEN_FLAGS    (VIR_STORAGE_VOL_OPEN_DEFAULT | \
+                                          VIR_STORAGE_VOL_OPEN_DIR)
+#define VIR_STORAGE_VOL_FS_PROBE_FLAGS   (VIR_STORAGE_VOL_FS_OPEN_FLAGS | \
+                                          VIR_STORAGE_VOL_OPEN_NOERROR)
 
 int virStorageBackendVolOpen(const char *path, struct stat *sb,
                              unsigned int flags)
     ATTRIBUTE_RETURN_CHECK
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-# define VIR_STORAGE_DEFAULT_POOL_PERM_MODE 0711
-# define VIR_STORAGE_DEFAULT_VOL_PERM_MODE  0600
+#define VIR_STORAGE_DEFAULT_POOL_PERM_MODE 0711
+#define VIR_STORAGE_DEFAULT_VOL_PERM_MODE  0600
 
 int virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
                                    bool withBlockVolFormat,
@@ -203,5 +202,3 @@ virCommandPtr
 virStorageBackendLogicalChangeCmd(const char *cmdstr,
                                   virStoragePoolDefPtr def,
                                   bool on);
-
-#endif /* LIBVIRT_STORAGE_UTIL_H */

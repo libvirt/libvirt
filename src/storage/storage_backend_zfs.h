@@ -19,9 +19,6 @@
  *
  */
 
-#ifndef LIBVIRT_STORAGE_BACKEND_ZFS_H
-# define LIBVIRT_STORAGE_BACKEND_ZFS_H
+#pragma once
 
 int virStorageBackendZFSRegister(void);
-
-#endif /* LIBVIRT_STORAGE_BACKEND_ZFS_H */

@@ -18,9 +18,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_STORAGE_FILE_FS_H
-# define LIBVIRT_STORAGE_FILE_FS_H
+#pragma once
 
 int virStorageFileFsRegister(void);
-
-#endif /* LIBVIRT_STORAGE_FILE_FS_H */

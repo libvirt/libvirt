@@ -18,9 +18,6 @@
  *
  */
 
-#ifndef LIBVIRT_STORAGE_BACKEND_VSTORAGE_H
-# define LIBVIRT_STORAGE_BACKEND_VSTORAGE_H
+#pragma once
 
 int virStorageBackendVstorageRegister(void);
-
-#endif /* LIBVIRT_STORAGE_BACKEND_VSTORAGE_H */

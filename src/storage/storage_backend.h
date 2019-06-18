@@ -16,14 +16,13 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_STORAGE_BACKEND_H
-# define LIBVIRT_STORAGE_BACKEND_H
+#pragma once
 
-# include <sys/stat.h>
+#include <sys/stat.h>
 
-# include "internal.h"
-# include "virstorageobj.h"
-# include "storage_driver.h"
+#include "internal.h"
+#include "virstorageobj.h"
+#include "storage_driver.h"
 
 typedef char * (*virStorageBackendFindPoolSources)(const char *srcSpec,
                                                    unsigned int flags);
@@ -128,5 +127,3 @@ int virStorageBackendRegister(virStorageBackendPtr backend);
 
 virCapsPtr
 virStorageBackendGetCapabilities(void);
-
-#endif /* LIBVIRT_STORAGE_BACKEND_H */

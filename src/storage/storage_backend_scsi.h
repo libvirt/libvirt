@@ -19,9 +19,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_STORAGE_BACKEND_SCSI_H
-# define LIBVIRT_STORAGE_BACKEND_SCSI_H
+#pragma once
 
 int virStorageBackendSCSIRegister(void);
-
-#endif /* LIBVIRT_STORAGE_BACKEND_SCSI_H */

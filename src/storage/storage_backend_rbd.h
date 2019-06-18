@@ -18,9 +18,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_STORAGE_BACKEND_RBD_H
-# define LIBVIRT_STORAGE_BACKEND_RBD_H
+#pragma once
 
 int virStorageBackendRBDRegister(void);
-
-#endif /* LIBVIRT_STORAGE_BACKEND_RBD_H */
