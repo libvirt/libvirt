@@ -694,7 +694,9 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -2;
-    if (qemuHotplugRemoveManagedPR(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)
+
+    if (virStorageSourceChainHasManagedPR(disk->src) &&
+        qemuHotplugRemoveManagedPR(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)
         ret = -2;
 
     virDomainAuditDisk(vm, NULL, disk->src, "attach", false);
@@ -4266,7 +4268,8 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     dev.data.disk = disk;
     ignore_value(qemuRemoveSharedDevice(driver, &dev, vm->def->name));
 
-    if (qemuHotplugRemoveManagedPR(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)
+    if (virStorageSourceChainHasManagedPR(disk->src) &&
+        qemuHotplugRemoveManagedPR(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)
         goto cleanup;
 
     ret = 0;
