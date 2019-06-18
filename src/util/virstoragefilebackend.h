@@ -18,12 +18,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRSTORAGEFILEBACKEND_H
-# define LIBVIRT_VIRSTORAGEFILEBACKEND_H
+#pragma once
 
-# include <sys/stat.h>
+#include <sys/stat.h>
 
-# include "virstoragefile.h"
+#include "virstoragefile.h"
 
 /* ------- virStorageFile backends ------------ */
 typedef struct _virStorageFileBackend virStorageFileBackend;
@@ -99,5 +98,3 @@ struct _virStorageFileBackend {
 };
 
 int virStorageFileBackendRegister(virStorageFileBackendPtr backend);
-
-#endif /* LIBVIRT_VIRSTORAGEFILEBACKEND_H */

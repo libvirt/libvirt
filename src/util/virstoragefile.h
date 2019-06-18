@@ -19,19 +19,18 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRSTORAGEFILE_H
-# define LIBVIRT_VIRSTORAGEFILE_H
+#pragma once
 
-# include <sys/stat.h>
+#include <sys/stat.h>
 
-# include "virbitmap.h"
-# include "virobject.h"
-# include "virseclabel.h"
-# include "virstorageencryption.h"
-# include "virutil.h"
-# include "virsecret.h"
-# include "virautoclean.h"
-# include "virenum.h"
+#include "virbitmap.h"
+#include "virobject.h"
+#include "virseclabel.h"
+#include "virstorageencryption.h"
+#include "virutil.h"
+#include "virsecret.h"
+#include "virautoclean.h"
+#include "virenum.h"
 
 /* Minimum header size required to probe all known formats with
  * virStorageFileProbeFormat, or obtain metadata from a known format.
@@ -39,7 +38,7 @@
  * 32769).  Some formats can be probed with fewer bytes.  Although
  * some formats theoretically permit metadata that can rely on offsets
  * beyond this size, in practice that doesn't matter.  */
-# define VIR_STORAGE_MAX_HEADER 0x8200
+#define VIR_STORAGE_MAX_HEADER 0x8200
 
 
 /* Types of disk backends (host resource).  Comparable to the public
@@ -341,9 +340,9 @@ struct _virStorageSource {
 };
 
 
-# ifndef DEV_BSIZE
-#  define DEV_BSIZE 512
-# endif
+#ifndef DEV_BSIZE
+# define DEV_BSIZE 512
+#endif
 
 int virStorageFileProbeFormat(const char *path, uid_t uid, gid_t gid);
 
@@ -548,5 +547,3 @@ void virStorageFileReportBrokenChain(int errcode,
                                      virStorageSourcePtr parent);
 
 VIR_DEFINE_AUTOPTR_FUNC(virStorageAuthDef, virStorageAuthDefFree);
-
-#endif /* LIBVIRT_VIRSTORAGEFILE_H */

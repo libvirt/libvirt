@@ -18,16 +18,15 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRSTORAGEENCRYPTION_H
-# define LIBVIRT_VIRSTORAGEENCRYPTION_H
+#pragma once
 
-# include "internal.h"
-# include "virbuffer.h"
-# include "virsecret.h"
-# include "virutil.h"
-# include "virenum.h"
+#include "internal.h"
+#include "virbuffer.h"
+#include "virsecret.h"
+#include "virutil.h"
+#include "virenum.h"
 
-# include <libxml/tree.h>
+#include <libxml/tree.h>
 
 typedef enum {
     VIR_STORAGE_ENCRYPTION_SECRET_TYPE_PASSPHRASE = 0,
@@ -93,5 +92,3 @@ enum {
 };
 
 int virStorageGenerateQcowPassphrase(unsigned char *dest);
-
-#endif /* LIBVIRT_VIRSTORAGEENCRYPTION_H */
