@@ -19,10 +19,7 @@
  *
  */
 
-#ifndef LIBVIRT_OPENVZ_UTIL_H
-# define LIBVIRT_OPENVZ_UTIL_H
+#pragma once
 
 long openvzKBPerPages(void);
 char *openvzVEGetStringParam(virDomainPtr dom, const char *param);
-
-#endif /* LIBVIRT_OPENVZ_UTIL_H */
