@@ -18,13 +18,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRSCSIVHOST_H
-# define LIBVIRT_VIRSCSIVHOST_H
+#pragma once
 
-# include "internal.h"
-# include "virobject.h"
-# include "virutil.h"
-# include "virautoclean.h"
+#include "internal.h"
+#include "virobject.h"
+#include "virutil.h"
+#include "virautoclean.h"
 
 typedef struct _virSCSIVHostDevice virSCSIVHostDevice;
 typedef virSCSIVHostDevice *virSCSIVHostDevicePtr;
@@ -62,5 +61,3 @@ void virSCSIVHostDeviceFree(virSCSIVHostDevicePtr dev);
 int virSCSIVHostOpenVhostSCSI(int *vhostfd) ATTRIBUTE_NOINLINE;
 
 VIR_DEFINE_AUTOPTR_FUNC(virSCSIVHostDevice, virSCSIVHostDeviceFree);
-
-#endif /* LIBVIRT_VIRSCSIVHOST_H */

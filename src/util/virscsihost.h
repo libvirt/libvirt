@@ -16,10 +16,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRSCSIHOST_H
-# define LIBVIRT_VIRSCSIHOST_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
 int virSCSIHostGetUniqueId(const char *sysfs_prefix, int host);
 
@@ -36,5 +35,3 @@ char *virSCSIHostGetNameByParentaddr(unsigned int domain,
                                      unsigned int slot,
                                      unsigned int function,
                                      unsigned int unique_id);
-
-#endif /* LIBVIRT_VIRSCSIHOST_H */

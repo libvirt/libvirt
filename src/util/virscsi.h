@@ -18,12 +18,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRSCSI_H
-# define LIBVIRT_VIRSCSI_H
+#pragma once
 
-# include "internal.h"
-# include "virobject.h"
-# include "virautoclean.h"
+#include "internal.h"
+#include "virobject.h"
+#include "virautoclean.h"
 
 typedef struct _virSCSIDevice virSCSIDevice;
 typedef virSCSIDevice *virSCSIDevicePtr;
@@ -94,5 +93,3 @@ virSCSIDevicePtr virSCSIDeviceListFind(virSCSIDeviceListPtr list,
                                        virSCSIDevicePtr dev);
 
 VIR_DEFINE_AUTOPTR_FUNC(virSCSIDevice, virSCSIDeviceFree);
-
-#endif /* LIBVIRT_VIRSCSI_H */
