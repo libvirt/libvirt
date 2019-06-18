@@ -554,15 +554,35 @@ static int
 virCgroupV2SetBlkioWeight(virCgroupPtr group,
                           unsigned int weight)
 {
+    VIR_AUTOFREE(char *) path = NULL;
     VIR_AUTOFREE(char *) value = NULL;
+    const char *format = "%u";
 
-    if (virAsprintf(&value, "default %u", weight) < 0)
+    if (virCgroupV2PathOfController(group, VIR_CGROUP_CONTROLLER_BLKIO,
+                                    "io.bfq.weight", &path) < 0) {
+        return -1;
+    }
+
+    if (!virFileExists(path)) {
+        VIR_FREE(path);
+        format = "default %u";
+
+        if (virCgroupV2PathOfController(group, VIR_CGROUP_CONTROLLER_BLKIO,
+                                        "io.weight", &path) < 0) {
+            return -1;
+        }
+    }
+
+    if (!virFileExists(path)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("blkio weight is valid only for bfq or cfq scheduler"));
+        return -1;
+    }
+
+    if (virAsprintf(&value, format, weight) < 0)
         return -1;
 
-    return virCgroupSetValueStr(group,
-                                VIR_CGROUP_CONTROLLER_BLKIO,
-                                "io.weight",
-                                value);
+    return virCgroupSetValueRaw(path, value);
 }
 
 
@@ -570,20 +590,38 @@ static int
 virCgroupV2GetBlkioWeight(virCgroupPtr group,
                           unsigned int *weight)
 {
+    VIR_AUTOFREE(char *) path = NULL;
     VIR_AUTOFREE(char *) value = NULL;
     char *tmp;
 
-    if (virCgroupGetValueStr(group, VIR_CGROUP_CONTROLLER_BLKIO,
-                             "io.weight", &value) < 0) {
+    if (virCgroupV2PathOfController(group, VIR_CGROUP_CONTROLLER_BLKIO,
+                                    "io.bfq.weight", &path) < 0) {
         return -1;
     }
 
-    if (!(tmp = strstr(value, "default "))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot find default io weight."));
+    if (!virFileExists(path)) {
+        VIR_FREE(path);
+
+        if (virCgroupV2PathOfController(group, VIR_CGROUP_CONTROLLER_BLKIO,
+                                        "io.weight", &path) < 0) {
+            return -1;
+        }
+    }
+
+    if (!virFileExists(path)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("blkio weight is valid only for bfq or cfq scheduler"));
         return -1;
     }
-    tmp += strlen("default ");
+
+    if (virCgroupGetValueRaw(path, &value) < 0)
+        return -1;
+
+    if ((tmp = strstr(value, "default "))) {
+        tmp += strlen("default ");
+    } else {
+        tmp = value;
+    }
 
     if (virStrToLong_ui(tmp, NULL, 10, weight) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -725,41 +763,58 @@ virCgroupV2GetBlkioIoDeviceServiced(virCgroupPtr group,
 
 static int
 virCgroupV2SetBlkioDeviceWeight(virCgroupPtr group,
-                                const char *path,
+                                const char *devPath,
                                 unsigned int weight)
 {
+    VIR_AUTOFREE(char *) path = NULL;
     VIR_AUTOFREE(char *) str = NULL;
     VIR_AUTOFREE(char *) blkstr = NULL;
 
-    if (!(blkstr = virCgroupGetBlockDevString(path)))
+    if (!(blkstr = virCgroupGetBlockDevString(devPath)))
         return -1;
 
     if (virAsprintf(&str, "%s%d", blkstr, weight) < 0)
         return -1;
 
-    return virCgroupSetValueStr(group,
-                                VIR_CGROUP_CONTROLLER_BLKIO,
-                                "io.weight",
-                                str);
+    if (virCgroupV2PathOfController(group, VIR_CGROUP_CONTROLLER_BLKIO,
+                                    "io.weight", &path) < 0) {
+        return -1;
+    }
+
+    if (!virFileExists(path)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("blkio device weight is valid only for cfq scheduler"));
+        return -1;
+    }
+
+    return virCgroupSetValueRaw(path, str);
 }
 
 
 static int
 virCgroupV2GetBlkioDeviceWeight(virCgroupPtr group,
-                                const char *path,
+                                const char *devPath,
                                 unsigned int *weight)
 {
+    VIR_AUTOFREE(char *) path = NULL;
     VIR_AUTOFREE(char *) str = NULL;
     VIR_AUTOFREE(char *) value = NULL;
 
-    if (virCgroupGetValueStr(group,
-                             VIR_CGROUP_CONTROLLER_BLKIO,
-                             "io.weight",
-                             &value) < 0) {
+    if (virCgroupV2PathOfController(group, VIR_CGROUP_CONTROLLER_BLKIO,
+                                    "io.weight", &path) < 0) {
         return -1;
     }
 
-    if (virCgroupGetValueForBlkDev(value, path, &str) < 0)
+    if (!virFileExists(path)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("blkio device weight is valid only for cfq scheduler"));
+        return -1;
+    }
+
+    if (virCgroupGetValueRaw(path, &value) < 0)
+        return -1;
+
+    if (virCgroupGetValueForBlkDev(value, devPath, &str) < 0)
         return -1;
 
     if (!str) {
