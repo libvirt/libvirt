@@ -18,10 +18,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRCGROUPV2_H
-# define LIBVIRT_VIRCGROUPV2_H
+#pragma once
 
 void
 virCgroupV2Register(void);
-
-#endif /* LIBVIRT_VIRCGROUPV2_H */
