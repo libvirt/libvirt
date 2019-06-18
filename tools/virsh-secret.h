@@ -18,10 +18,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRSH_SECRET_H
-# define LIBVIRT_VIRSH_SECRET_H
+#pragma once
 
-# include "virsh.h"
+#include "virsh.h"
 
 struct virshSecretEventCallback {
     const char *name;
@@ -32,5 +31,3 @@ typedef struct virshSecretEventCallback virshSecretEventCallback;
 extern virshSecretEventCallback virshSecretEventCallbacks[];
 
 extern const vshCmdDef secretCmds[];
-
-#endif /* LIBVIRT_VIRSH_SECRET_H */

@@ -19,9 +19,6 @@
  *
  */
 
-#ifndef LIBVIRT_VIRT_HOST_VALIDATE_BHYVE_H
-# define LIBVIRT_VIRT_HOST_VALIDATE_BHYVE_H
+#pragma once
 
 int virHostValidateBhyve(void);
-
-#endif /* LIBVIRT_VIRT_HOST_VALIDATE_BHYVE_H */

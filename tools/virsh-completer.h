@@ -18,10 +18,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRSH_COMPLETER_H
-# define LIBVIRT_VIRSH_COMPLETER_H
+#pragma once
 
-# include "vsh.h"
+#include "vsh.h"
 
 char ** virshDomainNameCompleter(vshControl *ctl,
                                  const vshCmd *cmd,
@@ -118,4 +117,3 @@ char ** virshCellnoCompleter(vshControl *ctl,
 char ** virshDomainShutdownModeCompleter(vshControl *ctl,
                                          const vshCmd *cmd,
                                          unsigned int flags);
-#endif /* LIBVIRT_VIRSH_COMPLETER_H */

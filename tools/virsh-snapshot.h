@@ -18,11 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRSH_SNAPSHOT_H
-# define LIBVIRT_VIRSH_SNAPSHOT_H
+#pragma once
 
-# include "virsh.h"
+#include "virsh.h"
 
 extern const vshCmdDef snapshotCmds[];
-
-#endif /* LIBVIRT_VIRSH_SNAPSHOT_H */

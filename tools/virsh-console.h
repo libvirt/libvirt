@@ -18,18 +18,15 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRSH_CONSOLE_H
-# define LIBVIRT_VIRSH_CONSOLE_H
+#pragma once
 
-# ifndef WIN32
+#ifndef WIN32
 
-#  include <virsh.h>
+# include <virsh.h>
 
 int virshRunConsole(vshControl *ctl,
                     virDomainPtr dom,
                     const char *dev_name,
                     unsigned int flags);
 
-# endif /* !WIN32 */
-
-#endif /* LIBVIRT_VIRSH_CONSOLE_H */
+#endif /* !WIN32 */

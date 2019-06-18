@@ -18,10 +18,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRSH_DOMAIN_H
-# define LIBVIRT_VIRSH_DOMAIN_H
+#pragma once
 
-# include "virsh.h"
+#include "virsh.h"
 
 struct virshDomainEventCallback {
     const char *name;
@@ -32,5 +31,3 @@ typedef struct virshDomainEventCallback virshDomainEventCallback;
 extern virshDomainEventCallback virshDomainEventCallbacks[];
 
 extern const vshCmdDef domManagementCmds[];
-
-#endif /* LIBVIRT_VIRSH_DOMAIN_H */

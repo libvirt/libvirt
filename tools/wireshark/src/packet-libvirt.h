@@ -17,10 +17,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_PACKET_LIBVIRT_H
-# define LIBVIRT_PACKET_LIBVIRT_H
+#pragma once
 
 void proto_register_libvirt(void);
 void proto_reg_handoff_libvirt(void);
-
-#endif /* LIBVIRT_PACKET_LIBVIRT_H */

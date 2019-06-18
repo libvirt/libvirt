@@ -16,13 +16,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRSH_UTIL_H
-# define LIBVIRT_VIRSH_UTIL_H
+#pragma once
 
-# include "virsh.h"
+#include "virsh.h"
 
-# include <libxml/parser.h>
-# include <libxml/xpath.h>
+#include <libxml/parser.h>
+#include <libxml/xpath.h>
 
 virDomainPtr
 virshLookupDomainBy(vshControl *ctl,
@@ -103,5 +102,3 @@ virshDomainGetXML(vshControl *ctl,
                   xmlXPathContextPtr *ctxt)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4)
     ATTRIBUTE_NONNULL(5) ATTRIBUTE_RETURN_CHECK;
-
-#endif /* LIBVIRT_VIRSH_UTIL_H */

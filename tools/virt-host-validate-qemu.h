@@ -19,9 +19,6 @@
  *
  */
 
-#ifndef LIBVIRT_VIRT_HOST_VALIDATE_QEMU_H
-# define LIBVIRT_VIRT_HOST_VALIDATE_QEMU_H
+#pragma once
 
 int virHostValidateQEMU(void);
-
-#endif /* LIBVIRT_VIRT_HOST_VALIDATE_QEMU_H */

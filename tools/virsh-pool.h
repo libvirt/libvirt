@@ -18,17 +18,16 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRSH_POOL_H
-# define LIBVIRT_VIRSH_POOL_H
+#pragma once
 
-# include "virsh.h"
+#include "virsh.h"
 
 virStoragePoolPtr
 virshCommandOptPoolBy(vshControl *ctl, const vshCmd *cmd, const char *optname,
                       const char **name, unsigned int flags);
 
 /* default is lookup by Name and UUID */
-# define virshCommandOptPool(_ctl, _cmd, _optname, _name) \
+#define virshCommandOptPool(_ctl, _cmd, _optname, _name) \
     virshCommandOptPoolBy(_ctl, _cmd, _optname, _name, \
                           VIRSH_BYUUID | VIRSH_BYNAME)
 
@@ -41,5 +40,3 @@ typedef struct virshPoolEventCallback virshPoolEventCallback;
 extern virshPoolEventCallback virshPoolEventCallbacks[];
 
 extern const vshCmdDef storagePoolCmds[];
-
-#endif /* LIBVIRT_VIRSH_POOL_H */

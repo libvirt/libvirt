@@ -18,15 +18,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRSH_DOMAIN_MONITOR_H
-# define LIBVIRT_VIRSH_DOMAIN_MONITOR_H
+#pragma once
 
-# include "virsh.h"
+#include "virsh.h"
 
 char *virshGetDomainDescription(vshControl *ctl, virDomainPtr dom,
                                 bool title, unsigned int flags)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 extern const vshCmdDef domMonitoringCmds[];
-
-#endif /* LIBVIRT_VIRSH_DOMAIN_MONITOR_H */

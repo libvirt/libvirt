@@ -18,11 +18,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRSH_HOST_H
-# define LIBVIRT_VIRSH_HOST_H
+#pragma once
 
-# include "virsh.h"
+#include "virsh.h"
 
 extern const vshCmdDef hostAndHypervisorCmds[];
-
-#endif /* LIBVIRT_VIRSH_HOST_H */

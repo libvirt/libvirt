@@ -18,10 +18,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRSH_NETWORK_H
-# define LIBVIRT_VIRSH_NETWORK_H
+#pragma once
 
-# include "virsh.h"
+#include "virsh.h"
 
 virNetworkPtr
 virshCommandOptNetworkBy(vshControl *ctl, const vshCmd *cmd,
@@ -33,7 +32,7 @@ virshCommandOptNetworkPort(vshControl *ctl, const vshCmd *cmd,
                            const char **name);
 
 /* default is lookup by Name and UUID */
-# define virshCommandOptNetwork(_ctl, _cmd, _name) \
+#define virshCommandOptNetwork(_ctl, _cmd, _name) \
     virshCommandOptNetworkBy(_ctl, _cmd, _name, \
                              VIRSH_BYUUID | VIRSH_BYNAME)
 
@@ -46,5 +45,3 @@ typedef struct virshNetworkEventCallback virshNetworkEventCallback;
 extern virshNetworkEventCallback virshNetworkEventCallbacks[];
 
 extern const vshCmdDef networkCmds[];
-
-#endif /* LIBVIRT_VIRSH_NETWORK_H */

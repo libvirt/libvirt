@@ -18,13 +18,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRT_ADMIN_COMPLETER_H
-# define LIBVIRT_VIRT_ADMIN_COMPLETER_H
+#pragma once
 
-# include "vsh.h"
+#include "vsh.h"
 
 char **
 vshAdmServerCompleter(vshControl *ctl,
                       const vshCmd *cmd,
                       unsigned int flags);
-#endif /* LIBVIRT_VIRT_ADMIN_COMPLETER_H */
