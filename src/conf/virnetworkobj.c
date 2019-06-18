@@ -1810,10 +1810,12 @@ virNetworkObjPortListExport(virNetworkPtr net,
     };
     int ret = -1;
 
-    *ports = NULL;
+    if (ports) {
+        *ports = NULL;
 
-    if (ports && VIR_ALLOC_N(data.ports, virHashSize(obj->ports) + 1) < 0)
-        goto cleanup;
+        if (VIR_ALLOC_N(data.ports, virHashSize(obj->ports) + 1) < 0)
+            goto cleanup;
+    }
 
     virHashForEach(obj->ports, virNetworkObjPortListExportCallback, &data);
 
