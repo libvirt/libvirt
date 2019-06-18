@@ -104,3 +104,6 @@ module Test_libvirtd_qemu =
 { "pr_helper" = "/usr/bin/qemu-pr-helper" }
 { "swtpm_user" = "tss" }
 { "swtpm_group" = "tss" }
+{ "capability_filters"
+    { "1" = "capname" }
+}

@@ -381,6 +381,8 @@ static void virQEMUDriverConfigDispose(void *obj)
 
     VIR_FREE(cfg->memoryBackingDir);
     VIR_FREE(cfg->swtpmStorageDir);
+
+    virStringListFree(cfg->capabilityfilters);
 }
 
 
@@ -984,6 +986,18 @@ virQEMUDriverConfigLoadSWTPMEntry(virQEMUDriverConfigPtr cfg,
 }
 
 
+static int
+virQEMUDriverConfigLoadCapsFiltersEntry(virQEMUDriverConfigPtr cfg,
+                                        virConfPtr conf)
+{
+    if (virConfGetValueStringList(conf, "capability_filters", false,
+                                  &cfg->capabilityfilters) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
                                 const char *filename,
                                 bool privileged)
@@ -1051,6 +1065,9 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         goto cleanup;
 
     if (virQEMUDriverConfigLoadSWTPMEntry(cfg, conf) < 0)
+        goto cleanup;
+
+    if (virQEMUDriverConfigLoadCapsFiltersEntry(cfg, conf) < 0)
         goto cleanup;
 
     ret = 0;
