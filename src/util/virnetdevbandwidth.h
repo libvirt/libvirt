@@ -16,11 +16,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRNETDEVBANDWIDTH_H
-# define LIBVIRT_VIRNETDEVBANDWIDTH_H
+#pragma once
 
-# include "internal.h"
-# include "virmacaddr.h"
+#include "internal.h"
+#include "virmacaddr.h"
 
 typedef struct _virNetDevBandwidthRate virNetDevBandwidthRate;
 typedef virNetDevBandwidthRate *virNetDevBandwidthRatePtr;
@@ -74,4 +73,3 @@ int virNetDevBandwidthUpdateFilter(const char *ifname,
                                    unsigned int id)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
     ATTRIBUTE_RETURN_CHECK;
-#endif /* LIBVIRT_VIRNETDEVBANDWIDTH_H */

@@ -17,15 +17,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRNETDEVVETH_H
-# define LIBVIRT_VIRNETDEVVETH_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
 /* Function declarations */
 int virNetDevVethCreate(char **veth1, char **veth2)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 int virNetDevVethDelete(const char *veth)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
-
-#endif /* LIBVIRT_VIRNETDEVVETH_H */

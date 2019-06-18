@@ -16,11 +16,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRNETDEVIP_H
-# define LIBVIRT_VIRNETDEVIP_H
+#pragma once
 
-# include "virsocketaddr.h"
-# include "virautoclean.h"
+#include "virsocketaddr.h"
+#include "virautoclean.h"
 
 typedef struct _virNetDevIPAddr virNetDevIPAddr;
 typedef virNetDevIPAddr *virNetDevIPAddrPtr;
@@ -97,5 +96,3 @@ int virNetDevIPInfoAddToDev(const char *ifname,
 
 VIR_DEFINE_AUTOPTR_FUNC(virNetDevIPAddr, virNetDevIPAddrFree);
 VIR_DEFINE_AUTOPTR_FUNC(virNetDevIPRoute, virNetDevIPRouteFree);
-
-#endif /* LIBVIRT_VIRNETDEVIP_H */

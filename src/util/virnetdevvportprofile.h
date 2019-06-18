@@ -16,16 +16,15 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRNETDEVVPORTPROFILE_H
-# define LIBVIRT_VIRNETDEVVPORTPROFILE_H
+#pragma once
 
-# include "internal.h"
-# include "viruuid.h"
-# include "virutil.h"
-# include "virmacaddr.h"
-# include "virenum.h"
+#include "internal.h"
+#include "viruuid.h"
+#include "virutil.h"
+#include "virmacaddr.h"
+#include "virenum.h"
 
-# define LIBVIRT_IFLA_VF_PORT_PROFILE_MAX 40
+#define LIBVIRT_IFLA_VF_PORT_PROFILE_MAX 40
 
 typedef enum virNetDevVPortProfile {
     VIR_NETDEV_VPORT_PROFILE_NONE,
@@ -109,6 +108,3 @@ int virNetDevVPortProfileDisassociate(const char *ifname,
                                       int vf,
                                       virNetDevVPortProfileOp vmOp)
     ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
-
-
-#endif /* LIBVIRT_VIRNETDEVVPORTPROFILE_H */

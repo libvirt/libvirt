@@ -16,29 +16,28 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRNETDEV_H
-# define LIBVIRT_VIRNETDEV_H
+#pragma once
 
-# include <net/if.h>
+#include <net/if.h>
 
-# include "virbitmap.h"
-# include "virsocketaddr.h"
-# include "virmacaddr.h"
-# include "virpci.h"
-# include "virnetdevvlan.h"
-# include "virautoclean.h"
-# include "virenum.h"
+#include "virbitmap.h"
+#include "virsocketaddr.h"
+#include "virmacaddr.h"
+#include "virpci.h"
+#include "virnetdevvlan.h"
+#include "virautoclean.h"
+#include "virenum.h"
 
-# ifdef HAVE_STRUCT_IFREQ
+#ifdef HAVE_STRUCT_IFREQ
 typedef struct ifreq virIfreq;
-# else
+#else
 typedef void virIfreq;
-# endif
+#endif
 
 /* Used for prefix of ifname of any tap device name generated
  * dynamically by libvirt, cannot be used for a persistent network name.
  */
-# define VIR_NET_GENERATED_TAP_PREFIX "vnet"
+#define VIR_NET_GENERATED_TAP_PREFIX "vnet"
 
 typedef enum {
    VIR_NETDEV_RX_FILTER_MODE_NONE = 0,
@@ -301,8 +300,8 @@ int virNetDevSetRcvAllMulti(const char *ifname, bool receive)
 int virNetDevGetRcvAllMulti(const char *ifname, bool *receive)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
-# define SYSFS_NET_DIR "/sys/class/net/"
-# define SYSFS_INFINIBAND_DIR "/sys/class/infiniband/"
+#define SYSFS_NET_DIR "/sys/class/net/"
+#define SYSFS_INFINIBAND_DIR "/sys/class/infiniband/"
 int virNetDevSysfsFile(char **pf_sysfs_device_link,
                        const char *ifname,
                        const char *file)
@@ -313,5 +312,3 @@ int virNetDevRunEthernetScript(const char *ifname, const char *script)
     ATTRIBUTE_NOINLINE;
 
 VIR_DEFINE_AUTOPTR_FUNC(virNetDevRxFilter, virNetDevRxFilterFree);
-
-#endif /* LIBVIRT_VIRNETDEV_H */

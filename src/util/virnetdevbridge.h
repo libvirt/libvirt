@@ -16,11 +16,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRNETDEVBRIDGE_H
-# define LIBVIRT_VIRNETDEVBRIDGE_H
+#pragma once
 
-# include "internal.h"
-# include "virmacaddr.h"
+#include "internal.h"
+#include "virmacaddr.h"
 
 int virNetDevBridgeCreate(const char *brname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
@@ -89,4 +88,3 @@ int virNetDevBridgeFDBAdd(const virMacAddr *mac, const char *ifname,
 int virNetDevBridgeFDBDel(const virMacAddr *mac, const char *ifname,
                           unsigned int flags)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
-#endif /* LIBVIRT_VIRNETDEVBRIDGE_H */

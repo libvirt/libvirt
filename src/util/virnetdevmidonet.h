@@ -16,11 +16,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRNETDEVMIDONET_H
-# define LIBVIRT_VIRNETDEVMIDONET_H
+#pragma once
 
-# include "internal.h"
-# include "virnetdevvportprofile.h"
+#include "internal.h"
+#include "virnetdevvportprofile.h"
 
 
 int virNetDevMidonetBindPort(const char *ifname,
@@ -29,5 +28,3 @@ int virNetDevMidonetBindPort(const char *ifname,
 
 int virNetDevMidonetUnbindPort(virNetDevVPortProfilePtr virtualport)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
-
-#endif /* LIBVIRT_VIRNETDEVMIDONET_H */

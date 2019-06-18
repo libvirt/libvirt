@@ -16,13 +16,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRNETDEVVLAN_H
-# define LIBVIRT_VIRNETDEVVLAN_H
+#pragma once
 
-# include <virutil.h>
+#include <virutil.h>
 
-# include "virautoclean.h"
-# include "virenum.h"
+#include "virautoclean.h"
+#include "virenum.h"
 
 typedef enum {
     VIR_NATIVE_VLAN_MODE_DEFAULT = 0,
@@ -50,5 +49,3 @@ int virNetDevVlanEqual(const virNetDevVlan *a, const virNetDevVlan *b);
 int virNetDevVlanCopy(virNetDevVlanPtr dst, const virNetDevVlan *src);
 
 VIR_DEFINE_AUTOPTR_FUNC(virNetDevVlan, virNetDevVlanFree);
-
-#endif /* LIBVIRT_VIRNETDEVVLAN_H */
