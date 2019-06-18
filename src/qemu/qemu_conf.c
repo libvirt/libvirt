@@ -990,7 +990,6 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
 {
     virConfPtr conf = NULL;
     int ret = -1;
-    char *corestr = NULL;
 
     /* Just check the file is readable before opening it, otherwise
      * libvirt emits an error.
@@ -1057,7 +1056,6 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     ret = 0;
 
  cleanup:
-    VIR_FREE(corestr);
     virConfFree(conf);
     return ret;
 }
