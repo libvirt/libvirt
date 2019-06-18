@@ -1718,7 +1718,7 @@ virNetworkObjDeleteAllPorts(virNetworkObjPtr net,
                             const char *stateDir)
 {
     char *dir;
-    DIR *dh;
+    DIR *dh = NULL;
     struct dirent *de;
     int rc;
     int ret = -1;
@@ -1750,6 +1750,7 @@ virNetworkObjDeleteAllPorts(virNetworkObjPtr net,
 
     ret = 0;
  cleanup:
+    VIR_DIR_CLOSE(dh);
     return ret;
 }
 
