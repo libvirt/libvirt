@@ -19,12 +19,8 @@
  *
  */
 
-#ifndef LIBVIRT_LOCK_DRIVER_NOP_H
-# define LIBVIRT_LOCK_DRIVER_NOP_H
+#pragma once
 
-# include "lock_driver.h"
+#include "lock_driver.h"
 
 extern virLockDriver virLockDriverNop;
-
-
-#endif /* LIBVIRT_LOCK_DRIVER_NOP_H */

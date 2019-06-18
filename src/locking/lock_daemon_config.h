@@ -19,10 +19,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_LOCK_DAEMON_CONFIG_H
-# define LIBVIRT_LOCK_DAEMON_CONFIG_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
 typedef struct _virLockDaemonConfig virLockDaemonConfig;
 typedef virLockDaemonConfig *virLockDaemonConfigPtr;
@@ -42,5 +41,3 @@ void virLockDaemonConfigFree(virLockDaemonConfigPtr data);
 int virLockDaemonConfigLoadFile(virLockDaemonConfigPtr data,
                                 const char *filename,
                                 bool allow_missing);
-
-#endif /* LIBVIRT_LOCK_DAEMON_CONFIG_H */

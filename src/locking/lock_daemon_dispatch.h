@@ -18,12 +18,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_LOCK_DAEMON_DISPATCH_H
-# define LIBVIRT_LOCK_DAEMON_DISPATCH_H
+#pragma once
 
-# include "rpc/virnetserverprogram.h"
+#include "rpc/virnetserverprogram.h"
 
 extern virNetServerProgramProc virLockSpaceProtocolProcs[];
 extern size_t virLockSpaceProtocolNProcs;
-
-#endif /* LIBVIRT_LOCK_DAEMON_DISPATCH_H */

@@ -18,11 +18,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_LOCK_DAEMON_H
-# define LIBVIRT_LOCK_DAEMON_H
+#pragma once
 
-# include "virlockspace.h"
-# include "virthread.h"
+#include "virlockspace.h"
+#include "virthread.h"
 
 typedef struct _virLockDaemon virLockDaemon;
 typedef virLockDaemon *virLockDaemonPtr;
@@ -50,5 +49,3 @@ int virLockDaemonAddLockSpace(virLockDaemonPtr lockd,
 
 virLockSpacePtr virLockDaemonFindLockSpace(virLockDaemonPtr lockd,
                                            const char *path);
-
-#endif /* LIBVIRT_LOCK_DAEMON_H */

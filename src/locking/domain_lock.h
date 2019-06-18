@@ -19,12 +19,11 @@
  *
  */
 
-#ifndef LIBVIRT_DOMAIN_LOCK_H
-# define LIBVIRT_DOMAIN_LOCK_H
+#pragma once
 
-# include "internal.h"
-# include "domain_conf.h"
-# include "lock_manager.h"
+#include "internal.h"
+#include "domain_conf.h"
+#include "lock_manager.h"
 
 int virDomainLockProcessStart(virLockManagerPluginPtr plugin,
                               const char *uri,
@@ -57,5 +56,3 @@ int virDomainLockLeaseAttach(virLockManagerPluginPtr plugin,
 int virDomainLockLeaseDetach(virLockManagerPluginPtr plugin,
                              virDomainObjPtr dom,
                              virDomainLeaseDefPtr lease);
-
-#endif /* LIBVIRT_DOMAIN_LOCK_H */

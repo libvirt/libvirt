@@ -19,11 +19,10 @@
  *
  */
 
-#ifndef LIBVIRT_LOCK_MANAGER_H
-# define LIBVIRT_LOCK_MANAGER_H
+#pragma once
 
-# include "internal.h"
-# include "lock_driver.h"
+#include "internal.h"
+#include "lock_driver.h"
 
 typedef struct _virLockManagerPlugin virLockManagerPlugin;
 typedef virLockManagerPlugin *virLockManagerPluginPtr;
@@ -66,5 +65,3 @@ int virLockManagerInquire(virLockManagerPtr manager,
                           unsigned int flags);
 
 int virLockManagerFree(virLockManagerPtr manager);
-
-#endif /* LIBVIRT_LOCK_MANAGER_H */
