@@ -19,11 +19,10 @@
  *
  */
 
-#ifndef LIBVIRT_VIROBJECT_H
-# define LIBVIRT_VIROBJECT_H
+#pragma once
 
-# include "internal.h"
-# include "virthread.h"
+#include "internal.h"
+#include "virthread.h"
 
 typedef struct _virClass virClass;
 typedef virClass *virClassPtr;
@@ -71,16 +70,16 @@ virClassPtr virClassForObject(void);
 virClassPtr virClassForObjectLockable(void);
 virClassPtr virClassForObjectRWLockable(void);
 
-# ifndef VIR_PARENT_REQUIRED
-#  define VIR_PARENT_REQUIRED ATTRIBUTE_NONNULL(1)
-# endif
+#ifndef VIR_PARENT_REQUIRED
+# define VIR_PARENT_REQUIRED ATTRIBUTE_NONNULL(1)
+#endif
 
 /* Assign the class description nameClass to represent struct @name
  * (which must have an object-based 'parent' member at offset 0), and
  * with parent class @prnt. nameDispose must exist as either a
  * function or as a macro defined to NULL.
  */
-# define VIR_CLASS_NEW(name, prnt) \
+#define VIR_CLASS_NEW(name, prnt) \
     verify_expr(offsetof(name, parent) == 0, \
       (name##Class = virClassNew(prnt, #name, sizeof(name), \
                                  sizeof(((name *)NULL)->parent), \
@@ -120,7 +119,7 @@ virObjectAutoUnref(void *objptr);
  * Declares a variable of @type which will be automatically unref'd when
  * control goes out of the scope.
  */
-# define VIR_AUTOUNREF(type) \
+#define VIR_AUTOUNREF(type) \
     __attribute__((cleanup(virObjectAutoUnref))) type
 
 void *
@@ -172,5 +171,3 @@ virObjectListFree(void *list);
 void
 virObjectListFreeCount(void *list,
                        size_t count);
-
-#endif /* LIBVIRT_VIROBJECT_H */
