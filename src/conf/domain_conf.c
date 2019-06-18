@@ -30415,7 +30415,11 @@ virDomainNetDefToNetworkPort(virDomainDefPtr dom,
     if (VIR_ALLOC(port) < 0)
         return NULL;
 
-    virUUIDGenerate(port->uuid);
+    if (virUUIDGenerate(port->uuid) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("Failed to generate UUID"));
+        goto error;
+    }
 
     memcpy(port->owneruuid, dom->uuid, VIR_UUID_BUFLEN);
     if (VIR_STRDUP(port->ownername, dom->name) < 0)
@@ -30576,7 +30580,11 @@ virDomainNetDefActualToNetworkPort(virDomainDefPtr dom,
         return NULL;
 
     /* Bad - we need to preserve original port uuid */
-    virUUIDGenerate(port->uuid);
+    if (virUUIDGenerate(port->uuid) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("Failed to generate UUID"));
+        goto error;
+    }
 
     memcpy(port->owneruuid, dom->uuid, VIR_UUID_BUFLEN);
     if (VIR_STRDUP(port->ownername, dom->name) < 0)
