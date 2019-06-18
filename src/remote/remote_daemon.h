@@ -19,22 +19,21 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_REMOTE_DAEMON_H
-# define LIBVIRT_REMOTE_DAEMON_H
+#pragma once
 
-# define VIR_ENUM_SENTINELS
+#define VIR_ENUM_SENTINELS
 
-# include <rpc/types.h>
-# include <rpc/xdr.h>
-# include "remote_protocol.h"
-# include "lxc_protocol.h"
-# include "qemu_protocol.h"
-# include "virthread.h"
+#include <rpc/types.h>
+#include <rpc/xdr.h>
+#include "remote_protocol.h"
+#include "lxc_protocol.h"
+#include "qemu_protocol.h"
+#include "virthread.h"
 
-# if WITH_SASL
-#  include "virnetsaslcontext.h"
-# endif
-# include "virnetserverprogram.h"
+#if WITH_SASL
+# include "virnetsaslcontext.h"
+#endif
+#include "virnetserverprogram.h"
 
 typedef struct daemonClientStream daemonClientStream;
 typedef daemonClientStream *daemonClientStreamPtr;
@@ -62,9 +61,9 @@ struct daemonClientPrivate {
     size_t nsecretEventCallbacks;
     bool closeRegistered;
 
-# if WITH_SASL
+#if WITH_SASL
     virNetSASLSessionPtr sasl;
-# endif
+#endif
 
     /* This is only valid if a remote open call has been made on this
      * connection, otherwise it will be NULL.  Also if remote close is
@@ -82,10 +81,8 @@ struct daemonClientPrivate {
 };
 
 
-# if WITH_SASL
+#if WITH_SASL
 extern virNetSASLContextPtr saslCtxt;
-# endif
+#endif
 extern virNetServerProgramPtr remoteProgram;
 extern virNetServerProgramPtr qemuProgram;
-
-#endif /* LIBVIRT_REMOTE_DAEMON_H */

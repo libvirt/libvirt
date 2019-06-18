@@ -19,10 +19,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_REMOTE_DAEMON_CONFIG_H
-# define LIBVIRT_REMOTE_DAEMON_CONFIG_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
 struct daemonConfig {
     char *host_uuid;
@@ -103,5 +102,3 @@ int daemonConfigLoadFile(struct daemonConfig *data,
 int daemonConfigLoadData(struct daemonConfig *data,
                          const char *filename,
                          const char *filedata);
-
-#endif /* LIBVIRT_REMOTE_DAEMON_CONFIG_H */
