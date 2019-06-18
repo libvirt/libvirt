@@ -22,9 +22,6 @@
 # error "virfirewalldpriv.h may only be included by virfirewalld.c or test suites"
 #endif /* LIBVIRT_VIRFIREWALLDPRIV_H_ALLOW */
 
-#ifndef LIBVIRT_VIRFIREWALLDPRIV_H
-# define LIBVIRT_VIRFIREWALLDPRIV_H
+#pragma once
 
-# define VIR_FIREWALL_FIREWALLD_SERVICE "org.fedoraproject.FirewallD1"
-
-#endif /* LIBVIRT_VIRFIREWALLDPRIV_H */
+#define VIR_FIREWALL_FIREWALLD_SERVICE "org.fedoraproject.FirewallD1"

@@ -18,11 +18,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRFIREWALL_H
-# define LIBVIRT_VIRFIREWALL_H
+#pragma once
 
-# include "internal.h"
-# include "virautoclean.h"
+#include "internal.h"
+#include "virautoclean.h"
 
 typedef struct _virFirewall virFirewall;
 typedef virFirewall *virFirewallPtr;
@@ -52,7 +51,7 @@ void virFirewallFree(virFirewallPtr firewall);
  *
  * Returns the new rule
  */
-# define virFirewallAddRule(firewall, layer, ...) \
+#define virFirewallAddRule(firewall, layer, ...) \
          virFirewallAddRuleFull(firewall, layer, false, NULL, NULL, __VA_ARGS__)
 
 typedef int (*virFirewallQueryCallback)(virFirewallPtr firewall,
@@ -116,5 +115,3 @@ int virFirewallApply(virFirewallPtr firewall);
 void virFirewallSetLockOverride(bool avoid);
 
 VIR_DEFINE_AUTOPTR_FUNC(virFirewall, virFirewallFree);
-
-#endif /* LIBVIRT_VIRFIREWALL_H */

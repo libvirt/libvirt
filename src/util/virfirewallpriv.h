@@ -22,10 +22,9 @@
 # error "virfirewallpriv.h may only be included by virfirewall.c or test suites"
 #endif /* LIBVIRT_VIRFIREWALLPRIV_H_ALLOW */
 
-#ifndef LIBVIRT_VIRFIREWALLPRIV_H
-# define LIBVIRT_VIRFIREWALLPRIV_H
+#pragma once
 
-# include "virfirewall.h"
+#include "virfirewall.h"
 
 typedef enum {
     VIR_FIREWALL_BACKEND_AUTOMATIC,
@@ -36,5 +35,3 @@ typedef enum {
 } virFirewallBackend;
 
 int virFirewallSetBackend(virFirewallBackend backend);
-
-#endif /* LIBVIRT_VIRFIREWALLPRIV_H */

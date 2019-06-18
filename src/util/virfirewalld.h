@@ -18,10 +18,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRFIREWALLD_H
-# define LIBVIRT_VIRFIREWALLD_H
+#pragma once
 
-# define VIR_FIREWALL_FIREWALLD_SERVICE "org.fedoraproject.FirewallD1"
+#define VIR_FIREWALL_FIREWALLD_SERVICE "org.fedoraproject.FirewallD1"
 
 typedef enum {
     VIR_FIREWALLD_BACKEND_NONE,
@@ -42,5 +41,3 @@ int virFirewallDApplyRule(virFirewallLayer layer,
 
 int virFirewallDInterfaceSetZone(const char *iface,
                                  const char *zone);
-
-#endif /* LIBVIRT_VIRFIREWALLD_H */
