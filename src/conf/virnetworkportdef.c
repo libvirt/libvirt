@@ -76,19 +76,19 @@ static virNetworkPortDefPtr
 virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
 {
     virNetworkPortDefPtr def;
-    char *uuid = NULL;
+    VIR_AUTOFREE(char *) uuid = NULL;
     xmlNodePtr virtPortNode;
     xmlNodePtr vlanNode;
     xmlNodePtr bandwidthNode;
     xmlNodePtr addressNode;
-    char *trustGuestRxFilters = NULL;
-    char *mac = NULL;
-    char *macmgr = NULL;
-    char *mode = NULL;
-    char *plugtype = NULL;
-    char *managed = NULL;
-    char *driver = NULL;
-    char *class_id = NULL;
+    VIR_AUTOFREE(char *) trustGuestRxFilters = NULL;
+    VIR_AUTOFREE(char *) mac = NULL;
+    VIR_AUTOFREE(char *) macmgr = NULL;
+    VIR_AUTOFREE(char *) mode = NULL;
+    VIR_AUTOFREE(char *) plugtype = NULL;
+    VIR_AUTOFREE(char *) managed = NULL;
+    VIR_AUTOFREE(char *) driver = NULL;
+    VIR_AUTOFREE(char *) class_id = NULL;
 
     if (VIR_ALLOC(def) < 0)
         return NULL;
@@ -255,14 +255,6 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
     }
 
  cleanup:
-    VIR_FREE(class_id);
-    VIR_FREE(uuid);
-    VIR_FREE(plugtype);
-    VIR_FREE(mac);
-    VIR_FREE(mode);
-    VIR_FREE(macmgr);
-    VIR_FREE(driver);
-    VIR_FREE(managed);
     return def;
 
  error:
