@@ -18,31 +18,30 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_TESTUTILS_H
-# define LIBVIRT_TESTUTILS_H
+#pragma once
 
-# include "viralloc.h"
-# include "virfile.h"
-# include "virstring.h"
-# include "virjson.h"
-# include "capabilities.h"
-# include "domain_conf.h"
+#include "viralloc.h"
+#include "virfile.h"
+#include "virstring.h"
+#include "virjson.h"
+#include "capabilities.h"
+#include "domain_conf.h"
 
-# define EXIT_AM_SKIP 77 /* tell Automake we're skipping a test */
-# define EXIT_AM_HARDFAIL 99 /* tell Automake that the framework is broken */
+#define EXIT_AM_SKIP 77 /* tell Automake we're skipping a test */
+#define EXIT_AM_HARDFAIL 99 /* tell Automake that the framework is broken */
 
 /* Work around lack of gnulib support for fprintf %z */
-# ifndef NO_LIBVIRT
-#  undef fprintf
-#  define fprintf virFilePrintf
-# endif
+#ifndef NO_LIBVIRT
+# undef fprintf
+# define fprintf virFilePrintf
+#endif
 
 extern char *progname;
 
 /* Makefile.am provides these two definitions */
-# if !defined(abs_srcdir) || !defined(abs_builddir)
-#  error Fix Makefile.am
-# endif
+#if !defined(abs_srcdir) || !defined(abs_builddir)
+# error Fix Makefile.am
+#endif
 
 bool virTestOOMActive(void);
 
@@ -88,13 +87,13 @@ unsigned int virTestGetVerbose(void);
 unsigned int virTestGetExpensive(void);
 unsigned int virTestGetRegenerate(void);
 
-# define VIR_TEST_DEBUG(...) \
+#define VIR_TEST_DEBUG(...) \
     do { \
         if (virTestGetDebug()) \
             fprintf(stderr, __VA_ARGS__); \
     } while (0)
 
-# define VIR_TEST_VERBOSE(...) \
+#define VIR_TEST_VERBOSE(...) \
     do { \
         if (virTestGetVerbose()) \
             fprintf(stderr, __VA_ARGS__); \
@@ -113,12 +112,12 @@ int virTestMain(int argc,
                 ...);
 
 /* Setup, then call func() */
-# define VIR_TEST_MAIN(func) \
+#define VIR_TEST_MAIN(func) \
     int main(int argc, char **argv) { \
         return virTestMain(argc, argv, func, NULL); \
     }
 
-# define VIR_TEST_PRELOAD(lib) \
+#define VIR_TEST_PRELOAD(lib) \
     do { \
         const char *preload = getenv("LD_PRELOAD"); \
         if (preload == NULL || strstr(preload, lib) == NULL) { \
@@ -138,7 +137,7 @@ int virTestMain(int argc,
         } \
     } while (0)
 
-# define VIR_TEST_MAIN_PRELOAD(func, ...) \
+#define VIR_TEST_MAIN_PRELOAD(func, ...) \
     int main(int argc, char **argv) { \
         return virTestMain(argc, argv, func, __VA_ARGS__, NULL); \
     }
@@ -163,5 +162,3 @@ int testCompareDomXML2XMLFiles(virCapsPtr caps,
                                bool live,
                                unsigned int parseFlags,
                                testCompareDomXML2XMLResult expectResult);
-
-#endif /* LIBVIRT_TESTUTILS_H */

@@ -14,12 +14,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_TESTUTILSHOSTCPUS_H
-# define LIBVIRT_TESTUTILSHOSTCPUS_H
+#pragma once
 
-# include "conf/cpu_conf.h"
-# include "internal.h"
-# include "util/virarch.h"
+#include "conf/cpu_conf.h"
+#include "internal.h"
+#include "util/virarch.h"
 
 static virCPUFeatureDef cpuDefaultFeatures[] = {
     { (char *) "ds",        -1 },
@@ -165,5 +164,3 @@ testUtilsHostCpusGetDefForArch(virArch arch)
 
     return NULL;
 }
-
-#endif /* LIBVIRT_TESTUTILSHOSTCPUS_H */

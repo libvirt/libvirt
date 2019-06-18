@@ -19,60 +19,59 @@
  *
  */
 
-#ifndef LIBVIRT_VIRMOCK_H
-# define LIBVIRT_VIRMOCK_H
+#pragma once
 
-# if HAVE_DLFCN_H
-#  include <dlfcn.h>
-# endif
+#if HAVE_DLFCN_H
+# include <dlfcn.h>
+#endif
 
-# include "internal.h"
+#include "internal.h"
 
-# define VIR_MOCK_COUNT_ARGS(...) VIR_MOCK_ARG21(__VA_ARGS__, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
-# define VIR_MOCK_ARG21(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, ...) _21
-# define VIR_MOCK_ARG_PASTE(a, b, ...) a##b(__VA_ARGS__)
+#define VIR_MOCK_COUNT_ARGS(...) VIR_MOCK_ARG21(__VA_ARGS__, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
+#define VIR_MOCK_ARG21(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, ...) _21
+#define VIR_MOCK_ARG_PASTE(a, b, ...) a##b(__VA_ARGS__)
 
-# define VIR_MOCK_ARGNAME(a, b) b
-# define VIR_MOCK_ARGTYPE(a, b) a
-# define VIR_MOCK_ARGTYPENAME(a, b) a b
-# define VIR_MOCK_ARGTYPENAME_UNUSED(a, b) a b ATTRIBUTE_UNUSED
+#define VIR_MOCK_ARGNAME(a, b) b
+#define VIR_MOCK_ARGTYPE(a, b) a
+#define VIR_MOCK_ARGTYPENAME(a, b) a b
+#define VIR_MOCK_ARGTYPENAME_UNUSED(a, b) a b ATTRIBUTE_UNUSED
 
-# define VIR_MOCK_GET_ARG2(z, a, b) z(a, b)
-# define VIR_MOCK_GET_ARG3(z, a, b, c) z(a, b)
-# define VIR_MOCK_GET_ARG4(z, a, b, c, d) z(a, b),  z(c, d)
-# define VIR_MOCK_GET_ARG5(z, a, b, c, d, e) z(a, b),  z(c, d)
-# define VIR_MOCK_GET_ARG6(z, a, b, c, d, e, f) z(a, b),  z(c, d), z(e, f)
-# define VIR_MOCK_GET_ARG7(z, a, b, c, d, e, f, g) z(a, b),  z(c, d), z(e, f)
-# define VIR_MOCK_GET_ARG8(z, a, b, c, d, e, f, g, h) z(a, b),  z(c, d), z(e, f), z(g, h)
-# define VIR_MOCK_GET_ARG9(z, a, b, c, d, e, f, g, h, i) z(a, b),  z(c, d), z(e, f), z(g, h)
-# define VIR_MOCK_GET_ARG10(z, a, b, c, d, e, f, g, h, i, j) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j)
-# define VIR_MOCK_GET_ARG11(z, a, b, c, d, e, f, g, h, i, j, k) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j)
-# define VIR_MOCK_GET_ARG12(z, a, b, c, d, e, f, g, h, i, j, k, l) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j), z(k, l)
-# define VIR_MOCK_GET_ARG13(z, a, b, c, d, e, f, g, h, i, j, k, l, m) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j), z(k, l)
-# define VIR_MOCK_GET_ARG14(z, a, b, c, d, e, f, g, h, i, j, k, l, m, n) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j), z(k, l), z(m, n)
-# define VIR_MOCK_GET_ARG15(z, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j), z(k, l), z(m, n)
-# define VIR_MOCK_GET_ARG16(z, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j), z(k, l), z(m, n), z(o, p)
-# define VIR_MOCK_GET_ARG17(z, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j), z(k, l), z(m, n), z(o, p)
-# define VIR_MOCK_GET_ARG18(z, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j), z(k, l), z(m, n), z(o, p), z(q, r)
-# define VIR_MOCK_GET_ARG19(z, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j), z(k, l), z(m, n), z(o, p), z(q, r)
-# define VIR_MOCK_GET_ARG20(z, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j), z(k, l), z(m, n), z(o, p), z(q, r), z(s, t)
-# define VIR_MOCK_GET_ARG21(z, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j), z(k, l), z(m, n), z(o, p), z(q, r), z(s, t)
+#define VIR_MOCK_GET_ARG2(z, a, b) z(a, b)
+#define VIR_MOCK_GET_ARG3(z, a, b, c) z(a, b)
+#define VIR_MOCK_GET_ARG4(z, a, b, c, d) z(a, b),  z(c, d)
+#define VIR_MOCK_GET_ARG5(z, a, b, c, d, e) z(a, b),  z(c, d)
+#define VIR_MOCK_GET_ARG6(z, a, b, c, d, e, f) z(a, b),  z(c, d), z(e, f)
+#define VIR_MOCK_GET_ARG7(z, a, b, c, d, e, f, g) z(a, b),  z(c, d), z(e, f)
+#define VIR_MOCK_GET_ARG8(z, a, b, c, d, e, f, g, h) z(a, b),  z(c, d), z(e, f), z(g, h)
+#define VIR_MOCK_GET_ARG9(z, a, b, c, d, e, f, g, h, i) z(a, b),  z(c, d), z(e, f), z(g, h)
+#define VIR_MOCK_GET_ARG10(z, a, b, c, d, e, f, g, h, i, j) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j)
+#define VIR_MOCK_GET_ARG11(z, a, b, c, d, e, f, g, h, i, j, k) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j)
+#define VIR_MOCK_GET_ARG12(z, a, b, c, d, e, f, g, h, i, j, k, l) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j), z(k, l)
+#define VIR_MOCK_GET_ARG13(z, a, b, c, d, e, f, g, h, i, j, k, l, m) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j), z(k, l)
+#define VIR_MOCK_GET_ARG14(z, a, b, c, d, e, f, g, h, i, j, k, l, m, n) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j), z(k, l), z(m, n)
+#define VIR_MOCK_GET_ARG15(z, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j), z(k, l), z(m, n)
+#define VIR_MOCK_GET_ARG16(z, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j), z(k, l), z(m, n), z(o, p)
+#define VIR_MOCK_GET_ARG17(z, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j), z(k, l), z(m, n), z(o, p)
+#define VIR_MOCK_GET_ARG18(z, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j), z(k, l), z(m, n), z(o, p), z(q, r)
+#define VIR_MOCK_GET_ARG19(z, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j), z(k, l), z(m, n), z(o, p), z(q, r)
+#define VIR_MOCK_GET_ARG20(z, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j), z(k, l), z(m, n), z(o, p), z(q, r), z(s, t)
+#define VIR_MOCK_GET_ARG21(z, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u) z(a, b),  z(c, d), z(e, f), z(g, h), z(i, j), z(k, l), z(m, n), z(o, p), z(q, r), z(s, t)
 
 
-# define VIR_MOCK_ARGNAMES_EXPAND(a, b, ...) VIR_MOCK_ARG_PASTE(a, b, __VA_ARGS__)
-# define VIR_MOCK_ARGNAMES(...) \
+#define VIR_MOCK_ARGNAMES_EXPAND(a, b, ...) VIR_MOCK_ARG_PASTE(a, b, __VA_ARGS__)
+#define VIR_MOCK_ARGNAMES(...) \
     VIR_MOCK_ARGNAMES_EXPAND(VIR_MOCK_GET_ARG, VIR_MOCK_COUNT_ARGS(__VA_ARGS__), VIR_MOCK_ARGNAME, __VA_ARGS__)
 
-# define VIR_MOCK_ARGTYPES_EXPAND(a, b, ...) VIR_MOCK_ARG_PASTE(a, b, __VA_ARGS__)
-# define VIR_MOCK_ARGTYPES(...) \
+#define VIR_MOCK_ARGTYPES_EXPAND(a, b, ...) VIR_MOCK_ARG_PASTE(a, b, __VA_ARGS__)
+#define VIR_MOCK_ARGTYPES(...) \
     VIR_MOCK_ARGTYPES_EXPAND(VIR_MOCK_GET_ARG, VIR_MOCK_COUNT_ARGS(__VA_ARGS__), VIR_MOCK_ARGTYPE, __VA_ARGS__)
 
-# define VIR_MOCK_ARGTYPENAMES_EXPAND(a, b, ...) VIR_MOCK_ARG_PASTE(a, b, __VA_ARGS__)
-# define VIR_MOCK_ARGTYPENAMES(...) \
+#define VIR_MOCK_ARGTYPENAMES_EXPAND(a, b, ...) VIR_MOCK_ARG_PASTE(a, b, __VA_ARGS__)
+#define VIR_MOCK_ARGTYPENAMES(...) \
     VIR_MOCK_ARGTYPENAMES_EXPAND(VIR_MOCK_GET_ARG, VIR_MOCK_COUNT_ARGS(__VA_ARGS__), VIR_MOCK_ARGTYPENAME, __VA_ARGS__)
 
-# define VIR_MOCK_ARGTYPENAMES_UNUSED_EXPAND(a, b, ...) VIR_MOCK_ARG_PASTE(a, b, __VA_ARGS__)
-# define VIR_MOCK_ARGTYPENAMES_UNUSED(...) \
+#define VIR_MOCK_ARGTYPENAMES_UNUSED_EXPAND(a, b, ...) VIR_MOCK_ARG_PASTE(a, b, __VA_ARGS__)
+#define VIR_MOCK_ARGTYPENAMES_UNUSED(...) \
     VIR_MOCK_ARGTYPENAMES_UNUSED_EXPAND(VIR_MOCK_GET_ARG, VIR_MOCK_COUNT_ARGS(__VA_ARGS__), VIR_MOCK_ARGTYPENAME_UNUSED, __VA_ARGS__)
 
 
@@ -98,7 +97,7 @@
  * Define a replacement for @name which invokes wrap_@name
  * forwarding on all args, and passing back the return value.
  */
-# define VIR_MOCK_LINK_RET_ARGS(name, rettype, ...) \
+#define VIR_MOCK_LINK_RET_ARGS(name, rettype, ...) \
     rettype name(VIR_MOCK_ARGTYPENAMES(__VA_ARGS__)) \
     { \
         static rettype (*wrap_##name)(VIR_MOCK_ARGTYPES(__VA_ARGS__)); \
@@ -120,7 +119,7 @@
  * Define a replacement for @name which invokes wrap_@name
  * with no arguments, and passing back the return value.
  */
-# define VIR_MOCK_LINK_RET_VOID(name, rettype) \
+#define VIR_MOCK_LINK_RET_VOID(name, rettype) \
     rettype name(void) \
     { \
         static rettype (*wrap_##name)(void); \
@@ -142,7 +141,7 @@
  * Define a replacement for @name which invokes wrap_@name
  * forwarding on all args, but with no return value.
  */
-# define VIR_MOCK_LINK_VOID_ARGS(name, ...) \
+#define VIR_MOCK_LINK_VOID_ARGS(name, ...) \
     void name(VIR_MOCK_ARGTYPENAMES(__VA_ARGS__)) \
     { \
         static void (*wrap_##name)(VIR_MOCK_ARGTYPES(__VA_ARGS__)); \
@@ -176,7 +175,7 @@
  * Define a replacement for @name which doesn't invoke anything, just
  * returns @retval.
  */
-# define VIR_MOCK_STUB_RET_ARGS(name, rettype, retval, ...) \
+#define VIR_MOCK_STUB_RET_ARGS(name, rettype, retval, ...) \
     rettype name(VIR_MOCK_ARGTYPENAMES_UNUSED(__VA_ARGS__)) \
     { \
         return retval; \
@@ -191,7 +190,7 @@
  * Define a replacement for @name which doesn't invoke anything, just
  * returns @retval.
  */
-# define VIR_MOCK_STUB_RET_VOID(name, rettype, retval) \
+#define VIR_MOCK_STUB_RET_VOID(name, rettype, retval) \
     rettype name(void) \
     { \
         return retval; \
@@ -205,7 +204,7 @@
  * Define a replacement for @name which doesn't invoke or return
  * anything.
  */
-# define VIR_MOCK_STUB_VOID_ARGS(name, ...) \
+#define VIR_MOCK_STUB_VOID_ARGS(name, ...) \
     void name(VIR_MOCK_ARGTYPENAMES_UNUSED(__VA_ARGS__)) \
     { \
     }
@@ -219,7 +218,7 @@
  * Define a replacement for @name which doesn't invoke or return
  * anything.
  */
-# define VIR_MOCK_STUB_VOID_VOID(name) \
+#define VIR_MOCK_STUB_VOID_VOID(name) \
     void name(void) \
     { \
     }
@@ -232,22 +231,22 @@
  * as the body of the method.
  */
 
-# define VIR_MOCK_IMPL_RET_ARGS(name, rettype, ...) \
+#define VIR_MOCK_IMPL_RET_ARGS(name, rettype, ...) \
     rettype name(VIR_MOCK_ARGTYPENAMES(__VA_ARGS__)); \
     static rettype (*real_##name)(VIR_MOCK_ARGTYPES(__VA_ARGS__)); \
     rettype name(VIR_MOCK_ARGTYPENAMES_UNUSED(__VA_ARGS__))
 
-# define VIR_MOCK_IMPL_RET_VOID(name, rettype) \
+#define VIR_MOCK_IMPL_RET_VOID(name, rettype) \
     rettype name(void); \
     static rettype (*real_##name)(void); \
     rettype name(void)
 
-# define VIR_MOCK_IMPL_VOID_ARGS(name, ...) \
+#define VIR_MOCK_IMPL_VOID_ARGS(name, ...) \
     void name(VIR_MOCK_ARGTYPENAMES(__VA_ARGS__)); \
     static void (*real_##name)(VIR_MOCK_ARGTYPES(__VA_ARGS__)); \
     void name(VIR_MOCK_ARGTYPENAMES_UNUSED(__VA_ARGS__))
 
-# define VIR_MOCK_IMPL_VOID_VOID(name) \
+#define VIR_MOCK_IMPL_VOID_VOID(name) \
     void name(void); \
     static void (*real_##name)(void); \
     void name(void)
@@ -259,28 +258,28 @@
  * as the body of the method.
  */
 
-# define VIR_MOCK_WRAP_RET_ARGS(name, rettype, ...) \
+#define VIR_MOCK_WRAP_RET_ARGS(name, rettype, ...) \
     rettype wrap_##name(VIR_MOCK_ARGTYPENAMES(__VA_ARGS__)); \
     static rettype (*real_##name)(VIR_MOCK_ARGTYPES(__VA_ARGS__)); \
     rettype wrap_##name(VIR_MOCK_ARGTYPENAMES_UNUSED(__VA_ARGS__))
 
-# define VIR_MOCK_WRAP_RET_VOID(name, rettype) \
+#define VIR_MOCK_WRAP_RET_VOID(name, rettype) \
     rettype wrap_##name(void); \
     static rettype (*real_##name)(void); \
     rettype wrap_##name(void)
 
-# define VIR_MOCK_WRAP_VOID_ARGS(name, ...) \
+#define VIR_MOCK_WRAP_VOID_ARGS(name, ...) \
     void wrap_##name(VIR_MOCK_ARGTYPENAMES(__VA_ARGS__)); \
     static void (*real_##name)(VIR_MOCK_ARGTYPES(__VA_ARGS__)); \
     void wrap_##name(VIR_MOCK_ARGTYPENAMES_UNUSED(__VA_ARGS__))
 
-# define VIR_MOCK_WRAP_VOID_VOID(name) \
+#define VIR_MOCK_WRAP_VOID_VOID(name) \
     void wrap_##name(void); \
     static void (*real_##name)(void); \
     void wrap_##name(void)
 
 
-# define VIR_MOCK_REAL_INIT(name) \
+#define VIR_MOCK_REAL_INIT(name) \
     do { \
         if (real_##name == NULL && \
             !(real_##name = dlsym(RTLD_NEXT, \
@@ -289,5 +288,3 @@
             abort(); \
         } \
     } while (0)
-
-#endif /* LIBVIRT_VIRMOCK_H */

@@ -14,14 +14,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_TESTUTILSXEN_H
-# define LIBVIRT_TESTUTILSXEN_H
+#pragma once
 
-# include "capabilities.h"
-# ifdef WITH_LIBXL
-#  include "libxl/libxl_capabilities.h"
-# endif
+#include "capabilities.h"
+#ifdef WITH_LIBXL
+# include "libxl/libxl_capabilities.h"
+#endif
 
 virCapsPtr testXLInitCaps(void);
-
-#endif /* LIBVIRT_TESTUTILSXEN_H */

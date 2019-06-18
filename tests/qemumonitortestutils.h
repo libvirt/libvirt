@@ -17,14 +17,13 @@
  *
  */
 
-#ifndef LIBVIRT_QEMUMONITORTESTUTILS_H
-# define LIBVIRT_QEMUMONITORTESTUTILS_H
+#pragma once
 
-# include "domain_conf.h"
-# include "qemu/qemu_conf.h"
-# include "qemu/qemu_monitor.h"
-# include "qemu/qemu_agent.h"
-# include "virautoclean.h"
+#include "domain_conf.h"
+#include "qemu/qemu_conf.h"
+#include "qemu/qemu_monitor.h"
+#include "qemu/qemu_agent.h"
+#include "virautoclean.h"
 
 typedef struct _qemuMonitorTest qemuMonitorTest;
 typedef qemuMonitorTest *qemuMonitorTestPtr;
@@ -74,9 +73,9 @@ int qemuMonitorTestAddItemExpect(qemuMonitorTestPtr test,
                                  bool apostrophe,
                                  const char *response);
 
-# define qemuMonitorTestNewSimple(xmlopt) \
+#define qemuMonitorTestNewSimple(xmlopt) \
     qemuMonitorTestNew(xmlopt, NULL, NULL, NULL, NULL)
-# define qemuMonitorTestNewSchema(xmlopt, schema) \
+#define qemuMonitorTestNewSchema(xmlopt, schema) \
     qemuMonitorTestNew(xmlopt, NULL, NULL, NULL, schema)
 
 qemuMonitorTestPtr qemuMonitorTestNew(virDomainXMLOptionPtr xmlopt,
@@ -103,5 +102,3 @@ qemuAgentPtr qemuMonitorTestGetAgent(qemuMonitorTestPtr test);
 virDomainObjPtr qemuMonitorTestGetDomainObj(qemuMonitorTestPtr test);
 
 VIR_DEFINE_AUTOPTR_FUNC(qemuMonitorTest, qemuMonitorTestFree);
-
-#endif /* LIBVIRT_QEMUMONITORTESTUTILS_H */

@@ -14,18 +14,17 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_TESTUTILSQEMU_H
-# define LIBVIRT_TESTUTILSQEMU_H
+#pragma once
 
-# ifdef WITH_QEMU
+#ifdef WITH_QEMU
 
-#  include "capabilities.h"
-#  include "virfilecache.h"
-#  include "domain_conf.h"
-#  include "qemu/qemu_capabilities.h"
-#  include "qemu/qemu_conf.h"
+# include "capabilities.h"
+# include "virfilecache.h"
+# include "domain_conf.h"
+# include "qemu/qemu_capabilities.h"
+# include "qemu/qemu_conf.h"
 
-#  define TEST_QEMU_CAPS_PATH abs_srcdir "/qemucapabilitiesdata"
+# define TEST_QEMU_CAPS_PATH abs_srcdir "/qemucapabilitiesdata"
 
 enum {
     GIC_NONE = 0,
@@ -107,6 +106,4 @@ int testQemuInfoSetArgs(struct testQemuInfo *info,
                         virHashTablePtr capslatest, ...);
 void testQemuInfoClear(struct testQemuInfo *info);
 
-# endif
-
-#endif /* LIBVIRT_TESTUTILSQEMU_H */
+#endif

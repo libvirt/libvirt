@@ -14,14 +14,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_TESTUTILSLXC_H
-# define LIBVIRT_TESTUTILSLXC_H
+#pragma once
 
-# include "capabilities.h"
+#include "capabilities.h"
 
-# define FAKEDEVDIR0 "/fakedevdir0/bla/fasl"
-# define FAKEDEVDIR1 "/fakedevdir1/bla/fasl"
+#define FAKEDEVDIR0 "/fakedevdir0/bla/fasl"
+#define FAKEDEVDIR1 "/fakedevdir1/bla/fasl"
 
 virCapsPtr testLXCCapsInit(void);
-
-#endif /* LIBVIRT_TESTUTILSLXC_H */

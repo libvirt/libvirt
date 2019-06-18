@@ -16,11 +16,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_QEMUSECURITYTEST_H
-# define LIBVIRT_QEMUSECURITYTEST_H
+#pragma once
 
-# define ENVVAR "LIBVIRT_QEMU_SECURITY_TEST"
+#define ENVVAR "LIBVIRT_QEMU_SECURITY_TEST"
 
 extern int checkPaths(void);
-
-#endif /* LIBVIRT_QEMUSECURITYTEST_H */

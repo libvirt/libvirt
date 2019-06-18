@@ -14,8 +14,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRHASHDATA_H
-# define LIBVIRT_VIRHASHDATA_H
+#pragma once
 
 const char *uuids[] = {
 /* [  2] */ "a9b02f96-e430-4f7c-a7ff-a647d080447a",
@@ -283,5 +282,3 @@ const char *uuids_new[] = {
     "5920cc9d-62a3-4772-9e73-eb97f0bc483c",
     "53c215dd-bdba-4fdc-887a-86ab6f860df4",
 };
-
-#endif /* LIBVIRT_VIRHASHDATA_H */

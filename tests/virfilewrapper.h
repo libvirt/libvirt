@@ -16,8 +16,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRFILEWRAPPER_H
-# define LIBVIRT_VIRFILEWRAPPER_H
+#pragma once
 
 void
 virFileWrapperAddPrefix(const char *prefix,
@@ -28,5 +27,3 @@ virFileWrapperRemovePrefix(const char *prefix);
 
 void
 virFileWrapperClearPrefixes(void);
-
-#endif /* LIBVIRT_VIRFILEWRAPPER_H */
