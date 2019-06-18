@@ -443,40 +443,6 @@ mount -t cgroup none /dev/cgroup -o devices
       examples) or by manually crafting XML to pass to virsh.
     </p>
 
-    <pre>$ cat &gt; demo.args &lt;&lt;EOF
-LC_ALL=C PATH=/bin HOME=/home/test USER=test \
-LOGNAME=test /usr/bin/qemu -S -M pc -m 214 -smp 1 \
--nographic -monitor pty -no-acpi -boot c -hda \
-/dev/HostVG/QEMUGuest1 -net none -serial none \
--parallel none -usb
-EOF
-
-$ virsh domxml-from-native qemu-argv demo.args
-&lt;domain type='qemu'&gt;
-  &lt;uuid&gt;00000000-0000-0000-0000-000000000000&lt;/uuid&gt;
-  &lt;memory&gt;219136&lt;/memory&gt;
-  &lt;currentMemory&gt;219136&lt;/currentMemory&gt;
-  &lt;vcpu&gt;1&lt;/vcpu&gt;
-  &lt;os&gt;
-    &lt;type arch='i686' machine='pc'&gt;hvm&lt;/type&gt;
-    &lt;boot dev='hd'/&gt;
-  &lt;/os&gt;
-  &lt;clock offset='utc'/&gt;
-  &lt;on_poweroff&gt;destroy&lt;/on_poweroff&gt;
-  &lt;on_reboot&gt;restart&lt;/on_reboot&gt;
-  &lt;on_crash&gt;destroy&lt;/on_crash&gt;
-  &lt;devices&gt;
-    &lt;emulator&gt;/usr/bin/qemu&lt;/emulator&gt;
-    &lt;disk type='block' device='disk'&gt;
-      &lt;source dev='/dev/HostVG/QEMUGuest1'/&gt;
-      &lt;target dev='hda' bus='ide'/&gt;
-    &lt;/disk&gt;
-  &lt;/devices&gt;
-&lt;/domain&gt;
-</pre>
-
-    <p>NB, don't include the literal \ in the args, put everything on one line</p>
-
     <h3><a id="xmlexport">Converting from domain XML to QEMU args</a></h3>
 
     <p>
