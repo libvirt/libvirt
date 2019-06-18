@@ -117,6 +117,10 @@ typedef virCPUDefPtr
 typedef int
 (*virCPUArchValidateFeatures)(virCPUDefPtr cpu);
 
+typedef int
+(*virCPUArchDataAddFeature)(virCPUDataPtr cpuData,
+                            const char *name);
+
 struct cpuArchDriver {
     const char *name;
     const virArch *arch;
@@ -139,6 +143,7 @@ struct cpuArchDriver {
     virCPUArchExpandFeatures expandFeatures;
     virCPUArchCopyMigratable copyMigratable;
     virCPUArchValidateFeatures validateFeatures;
+    virCPUArchDataAddFeature dataAddFeature;
 };
 
 
@@ -255,6 +260,10 @@ int
 virCPUValidateFeatures(virArch arch,
                        virCPUDefPtr cpu)
     ATTRIBUTE_NONNULL(2);
+
+int
+virCPUDataAddFeature(virCPUDataPtr cpuData,
+                     const char *name);
 
 /* virCPUDataFormat and virCPUDataParse are implemented for unit tests only and
  * have no real-life usage

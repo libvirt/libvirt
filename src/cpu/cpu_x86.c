@@ -3326,7 +3326,7 @@ virCPUx86DataSetVendor(virCPUDataPtr cpuData,
 }
 
 
-int
+static int
 virCPUx86DataAddFeature(virCPUDataPtr cpuData,
                         const char *name)
 {
@@ -3371,4 +3371,5 @@ struct cpuArchDriver cpuDriverX86 = {
     .expandFeatures = virCPUx86ExpandFeatures,
     .copyMigratable = virCPUx86CopyMigratable,
     .validateFeatures = virCPUx86ValidateFeatures,
+    .dataAddFeature = virCPUx86DataAddFeature,
 };

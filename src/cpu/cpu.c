@@ -1075,3 +1075,36 @@ virCPUValidateFeatures(virArch arch,
     else
         return 0;
 }
+
+
+/**
+ * virCPUDataAddFeature:
+ *
+ * @cpuData: CPU data
+ * @name: feature to be added to @cpuData
+ *
+ * Adds a feature called @name to @cpuData.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+int
+virCPUDataAddFeature(virCPUDataPtr cpuData,
+                     const char *name)
+{
+    struct cpuArchDriver *driver;
+
+    VIR_DEBUG("arch=%s, cpuData=%p, name=%s",
+              virArchToString(cpuData->arch), cpuData, name);
+
+    if (!(driver = cpuGetSubDriver(cpuData->arch)))
+        return -1;
+
+    if (!driver->dataAddFeature) {
+        virReportError(VIR_ERR_NO_SUPPORT,
+                       _("cannot add guest CPU feature for %s architecture"),
+                       virArchToString(cpuData->arch));
+        return -1;
+    }
+
+    return driver->dataAddFeature(cpuData, name);
+}

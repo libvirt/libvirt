@@ -3009,7 +3009,7 @@ virQEMUCapsGetCPUModelX86Data(virQEMUCapsPtr qemuCaps,
                 (migratable && prop->migratable == VIR_TRISTATE_BOOL_NO))
                 continue;
 
-            if (virCPUx86DataAddFeature(data, name) < 0)
+            if (virCPUDataAddFeature(data, name) < 0)
                 goto cleanup;
 
             break;
