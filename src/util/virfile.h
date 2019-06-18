@@ -22,15 +22,14 @@
  *
  */
 
-#ifndef LIBVIRT_VIRFILE_H
-# define LIBVIRT_VIRFILE_H
+#pragma once
 
-# include <dirent.h>
+#include <dirent.h>
 
-# include "internal.h"
-# include "virbitmap.h"
-# include "virstoragefile.h"
-# include "virautoclean.h"
+#include "internal.h"
+#include "virbitmap.h"
+#include "virstoragefile.h"
+#include "virautoclean.h"
 
 typedef enum {
     VIR_FILE_CLOSE_PRESERVE_ERRNO = 1 << 0,
@@ -59,25 +58,25 @@ static inline void virForceCloseHelper(int *fd)
 
 /* For use on normal paths; caller must check return value,
    and failure sets errno per close. */
-# define VIR_CLOSE(FD) virFileClose(&(FD), 0)
-# define VIR_FCLOSE(FILE) virFileFclose(&(FILE), false)
+#define VIR_CLOSE(FD) virFileClose(&(FD), 0)
+#define VIR_FCLOSE(FILE) virFileFclose(&(FILE), false)
 
 /* Wrapper around fdopen that consumes fd on success. */
-# define VIR_FDOPEN(FD, MODE) virFileFdopen(&(FD), MODE)
+#define VIR_FDOPEN(FD, MODE) virFileFdopen(&(FD), MODE)
 
 /* For use on cleanup paths; errno is unaffected by close,
    and no return value to worry about. */
-# define VIR_FORCE_CLOSE(FD) virForceCloseHelper(&(FD))
-# define VIR_FORCE_FCLOSE(FILE) ignore_value(virFileFclose(&(FILE), true))
+#define VIR_FORCE_CLOSE(FD) virForceCloseHelper(&(FD))
+#define VIR_FORCE_FCLOSE(FILE) ignore_value(virFileFclose(&(FILE), true))
 
 /* Similar VIR_FORCE_CLOSE() but ignores EBADF errors since they are expected
  * during mass close after fork(). */
-# define VIR_MASS_CLOSE(FD) \
+#define VIR_MASS_CLOSE(FD) \
     ignore_value(virFileClose(&(FD), \
                  VIR_FILE_CLOSE_PRESERVE_ERRNO | \
                  VIR_FILE_CLOSE_IGNORE_EBADF))
 
-# define VIR_LOG_CLOSE(FD) \
+#define VIR_LOG_CLOSE(FD) \
     ignore_value(virFileClose(&(FD), \
                  VIR_FILE_CLOSE_PRESERVE_ERRNO | \
                  VIR_FILE_CLOSE_DONT_LOG))
@@ -89,7 +88,7 @@ static inline void virForceCloseHelper(int *fd)
  * when the fd goes out of scope. It's used to eliminate VIR_FORCE_CLOSE
  * in cleanup sections.
  */
-# define VIR_AUTOCLOSE __attribute__((cleanup(virForceCloseHelper))) int
+#define VIR_AUTOCLOSE __attribute__((cleanup(virForceCloseHelper))) int
 
 
 /* Opaque type for managing a wrapper around a fd.  */
@@ -268,7 +267,7 @@ int virDirRead(DIR *dirp, struct dirent **ent, const char *dirname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 void virDirClose(DIR **dirp)
     ATTRIBUTE_NONNULL(1);
-# define VIR_DIR_CLOSE(dir)  virDirClose(&(dir))
+#define VIR_DIR_CLOSE(dir)  virDirClose(&(dir))
 
 int virFileMakePath(const char *path) ATTRIBUTE_RETURN_CHECK;
 int virFileMakePathWithMode(const char *path,
@@ -280,26 +279,26 @@ char *virFileBuildPath(const char *dir,
                        const char *ext) ATTRIBUTE_RETURN_CHECK;
 
 
-# ifdef WIN32
+#ifdef WIN32
 /* On Win32, the canonical directory separator is the backslash, and
  * the search path separator is the semicolon. Note that also the
  * (forward) slash works as directory separator.
  */
-#  define VIR_FILE_DIR_SEPARATOR '\\'
-#  define VIR_FILE_DIR_SEPARATOR_S "\\"
-#  define VIR_FILE_IS_DIR_SEPARATOR(c) ((c) == VIR_FILE_DIR_SEPARATOR || (c) == '/')
-#  define VIR_FILE_PATH_SEPARATOR ';'
-#  define VIR_FILE_PATH_SEPARATOR_S ";"
+# define VIR_FILE_DIR_SEPARATOR '\\'
+# define VIR_FILE_DIR_SEPARATOR_S "\\"
+# define VIR_FILE_IS_DIR_SEPARATOR(c) ((c) == VIR_FILE_DIR_SEPARATOR || (c) == '/')
+# define VIR_FILE_PATH_SEPARATOR ';'
+# define VIR_FILE_PATH_SEPARATOR_S ";"
 
-# else  /* !WIN32 */
+#else  /* !WIN32 */
 
-#  define VIR_FILE_DIR_SEPARATOR '/'
-#  define VIR_FILE_DIR_SEPARATOR_S "/"
-#  define VIR_FILE_IS_DIR_SEPARATOR(c) ((c) == VIR_FILE_DIR_SEPARATOR)
-#  define VIR_FILE_PATH_SEPARATOR ':'
-#  define VIR_FILE_PATH_SEPARATOR_S ":"
+# define VIR_FILE_DIR_SEPARATOR '/'
+# define VIR_FILE_DIR_SEPARATOR_S "/"
+# define VIR_FILE_IS_DIR_SEPARATOR(c) ((c) == VIR_FILE_DIR_SEPARATOR)
+# define VIR_FILE_PATH_SEPARATOR ':'
+# define VIR_FILE_PATH_SEPARATOR_S ":"
 
-# endif /* !WIN32 */
+#endif /* !WIN32 */
 
 bool virFileIsAbsPath(const char *path);
 int virFileAbsPath(const char *path,
@@ -314,7 +313,7 @@ int virFileOpenTty(int *ttymaster,
 char *virFileFindMountPoint(const char *type);
 
 /* NB: this should be combined with virFileBuildPath */
-# define virBuildPath(path, ...) \
+#define virBuildPath(path, ...) \
     virBuildPathInternal(path, __VA_ARGS__, NULL)
 int virBuildPathInternal(char **path, ...) ATTRIBUTE_SENTINEL;
 
@@ -392,5 +391,3 @@ int virFileSetXAttr(const char *path,
 int virFileRemoveXAttr(const char *path,
                        const char *name)
     ATTRIBUTE_NOINLINE;
-
-#endif /* LIBVIRT_VIRFILE_H */
