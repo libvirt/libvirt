@@ -19,13 +19,12 @@
  *
  */
 
-#ifndef LIBVIRT_VIRTHREAD_H
-# define LIBVIRT_VIRTHREAD_H
+#pragma once
 
-# include "internal.h"
-# include "virerror.h"
+#include "internal.h"
+#include "virerror.h"
 
-# include <pthread.h>
+#include <pthread.h>
 
 typedef struct virMutex virMutex;
 typedef virMutex *virMutexPtr;
@@ -71,12 +70,12 @@ struct virOnceControl {
 };
 
 
-# define VIR_MUTEX_INITIALIZER \
+#define VIR_MUTEX_INITIALIZER \
     { \
         .lock = PTHREAD_MUTEX_INITIALIZER \
     }
 
-# define VIR_ONCE_CONTROL_INITIALIZER \
+#define VIR_ONCE_CONTROL_INITIALIZER \
     { \
         .once = PTHREAD_ONCE_INIT \
     }
@@ -88,7 +87,7 @@ void virThreadOnExit(void);
 
 typedef void (*virThreadFunc)(void *opaque);
 
-# define virThreadCreate(thread, joinable, func, opaque) \
+#define virThreadCreate(thread, joinable, func, opaque) \
     virThreadCreateFull(thread, joinable, func, #func, false, opaque)
 
 int virThreadCreateFull(virThreadPtr thread,
@@ -190,7 +189,7 @@ int virThreadLocalSet(virThreadLocalPtr l, void*) ATTRIBUTE_RETURN_CHECK;
  * Which will ensure that 'virMyObjectOnceInit' is
  * guaranteed to be invoked exactly once.
  */
-# define VIR_ONCE_GLOBAL_INIT(classname) \
+#define VIR_ONCE_GLOBAL_INIT(classname) \
     static virOnceControl classname ## OnceControl = VIR_ONCE_CONTROL_INITIALIZER; \
     static virErrorPtr classname ## OnceError; \
  \
@@ -213,5 +212,3 @@ int virThreadLocalSet(virThreadLocalPtr l, void*) ATTRIBUTE_RETURN_CHECK;
         return 0; \
     } \
     struct classname ## EatSemicolon
-
-#endif /* LIBVIRT_VIRTHREAD_H */

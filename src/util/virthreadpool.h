@@ -19,17 +19,16 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRTHREADPOOL_H
-# define LIBVIRT_VIRTHREADPOOL_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
 typedef struct _virThreadPool virThreadPool;
 typedef virThreadPool *virThreadPoolPtr;
 
 typedef void (*virThreadPoolJobFunc)(void *jobdata, void *opaque);
 
-# define virThreadPoolNew(min, max, prio, func, opaque) \
+#define virThreadPoolNew(min, max, prio, func, opaque) \
     virThreadPoolNewFull(min, max, prio, func, #func, opaque)
 
 virThreadPoolPtr virThreadPoolNewFull(size_t minWorkers,
@@ -57,5 +56,3 @@ int virThreadPoolSetParameters(virThreadPoolPtr pool,
                                long long int minWorkers,
                                long long int maxWorkers,
                                long long int prioWorkers);
-
-#endif /* LIBVIRT_VIRTHREADPOOL_H */

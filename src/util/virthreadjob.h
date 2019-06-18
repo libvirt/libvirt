@@ -18,14 +18,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRTHREADJOB_H
-# define LIBVIRT_VIRTHREADJOB_H
-
+#pragma once
 
 const char *virThreadJobGet(void);
 
 void virThreadJobSetWorker(const char *caller);
 void virThreadJobSet(const char *caller);
 void virThreadJobClear(int rv);
-
-#endif /* LIBVIRT_VIRTHREADJOB_H */
