@@ -19,10 +19,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRHOSTMEM_H
-# define LIBVIRT_VIRHOSTMEM_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
 int virHostMemGetStats(int cellNum,
                        virNodeMemoryStatsPtr params,
@@ -54,5 +53,3 @@ int virHostMemAllocPages(unsigned int npages,
                          int startCell,
                          unsigned int cellCount,
                          bool add);
-
-#endif /* LIBVIRT_VIRHOSTMEM_H */

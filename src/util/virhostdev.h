@@ -19,17 +19,16 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRHOSTDEV_H
-# define LIBVIRT_VIRHOSTDEV_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
-# include "virpci.h"
-# include "virusb.h"
-# include "virscsi.h"
-# include "virscsivhost.h"
-# include "conf/domain_conf.h"
-# include "virmdev.h"
+#include "virpci.h"
+#include "virusb.h"
+#include "virscsi.h"
+#include "virscsivhost.h"
+#include "conf/domain_conf.h"
+#include "virmdev.h"
 
 typedef enum {
     VIR_HOSTDEV_STRICT_ACS_CHECK     = (1 << 0), /* strict acs check */
@@ -202,5 +201,3 @@ int virHostdevPCINodeDeviceReAttach(virHostdevManagerPtr mgr,
 int virHostdevPCINodeDeviceReset(virHostdevManagerPtr mgr,
                                  virPCIDevicePtr pci)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-
-#endif /* LIBVIRT_VIRHOSTDEV_H */

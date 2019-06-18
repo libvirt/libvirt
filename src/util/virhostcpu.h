@@ -19,13 +19,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_VIRHOSTCPU_H
-# define LIBVIRT_VIRHOSTCPU_H
+#pragma once
 
-# include "internal.h"
-# include "virarch.h"
-# include "virbitmap.h"
-# include "virenum.h"
+#include "internal.h"
+#include "virarch.h"
+#include "virbitmap.h"
+#include "virenum.h"
 
 
 typedef struct _virHostCPUTscInfo virHostCPUTscInfo;
@@ -64,12 +63,12 @@ int virHostCPUStatsAssign(virNodeCPUStatsPtr param,
                           const char *name,
                           unsigned long long value);
 
-# ifdef __linux__
+#ifdef __linux__
 int virHostCPUGetSocket(unsigned int cpu, unsigned int *socket);
 int virHostCPUGetCore(unsigned int cpu, unsigned int *core);
 
 virBitmapPtr virHostCPUGetSiblingsList(unsigned int cpu);
-# endif
+#endif
 
 int virHostCPUGetOnline(unsigned int cpu, bool *online);
 
@@ -79,5 +78,3 @@ int virHostCPUGetMSR(unsigned long index,
                      uint64_t *msr);
 
 virHostCPUTscInfoPtr virHostCPUGetTscInfo(void);
-
-#endif /* LIBVIRT_VIRHOSTCPU_H */

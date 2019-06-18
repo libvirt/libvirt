@@ -23,12 +23,11 @@
 # error "virhostcpupriv.h may only be included by virhostcpu.c or test suites"
 #endif /* LIBVIRT_VIRHOSTCPUPRIV_H_ALLOW */
 
-#ifndef LIBVIRT_VIRHOSTCPUPRIV_H
-# define LIBVIRT_VIRHOSTCPUPRIV_H
+#pragma once
 
-# include "virhostcpu.h"
+#include "virhostcpu.h"
 
-# ifdef __linux__
+#ifdef __linux__
 int virHostCPUGetInfoPopulateLinux(FILE *cpuinfo,
                                    virArch arch,
                                    unsigned int *cpus,
@@ -42,6 +41,4 @@ int virHostCPUGetStatsLinux(FILE *procstat,
                             int cpuNum,
                             virNodeCPUStatsPtr params,
                             int *nparams);
-# endif
-
-#endif /* LIBVIRT_VIRHOSTCPUPRIV_H */
+#endif
