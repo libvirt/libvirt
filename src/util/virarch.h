@@ -19,10 +19,9 @@
  *
  */
 
-#ifndef LIBVIRT_VIRARCH_H
-# define LIBVIRT_VIRARCH_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
 typedef enum {
     VIR_ARCH_NONE,
@@ -73,28 +72,28 @@ typedef enum {
     VIR_ARCH_LAST,
 } virArch;
 
-# define ARCH_IS_X86(arch)  ((arch) == VIR_ARCH_X86_64 ||\
-                             (arch) == VIR_ARCH_I686)
+#define ARCH_IS_X86(arch)  ((arch) == VIR_ARCH_X86_64 ||\
+                            (arch) == VIR_ARCH_I686)
 
-# define ARCH_IS_PPC(arch)  ((arch) == VIR_ARCH_PPC ||\
-                             (arch) == VIR_ARCH_PPCLE ||\
-                             (arch) == VIR_ARCH_PPC64 ||\
-                             (arch) == VIR_ARCH_PPC64LE ||\
-                             (arch) == VIR_ARCH_PPCEMB)
+#define ARCH_IS_PPC(arch)  ((arch) == VIR_ARCH_PPC ||\
+                            (arch) == VIR_ARCH_PPCLE ||\
+                            (arch) == VIR_ARCH_PPC64 ||\
+                            (arch) == VIR_ARCH_PPC64LE ||\
+                            (arch) == VIR_ARCH_PPCEMB)
 
-# define ARCH_IS_PPC64(arch)  ((arch) == VIR_ARCH_PPC64 ||\
-                               (arch) == VIR_ARCH_PPC64LE)
+#define ARCH_IS_PPC64(arch)  ((arch) == VIR_ARCH_PPC64 ||\
+                              (arch) == VIR_ARCH_PPC64LE)
 
-# define ARCH_IS_ARM(arch)  ((arch) == VIR_ARCH_ARMV6L ||\
-                             (arch) == VIR_ARCH_ARMV7L ||\
-                             (arch) == VIR_ARCH_ARMV7B ||\
-                             (arch) == VIR_ARCH_AARCH64)
+#define ARCH_IS_ARM(arch)  ((arch) == VIR_ARCH_ARMV6L ||\
+                            (arch) == VIR_ARCH_ARMV7L ||\
+                            (arch) == VIR_ARCH_ARMV7B ||\
+                            (arch) == VIR_ARCH_AARCH64)
 
-# define ARCH_IS_RISCV(arch) ((arch) == VIR_ARCH_RISCV32 ||\
-                              (arch) == VIR_ARCH_RISCV64)
+#define ARCH_IS_RISCV(arch) ((arch) == VIR_ARCH_RISCV32 ||\
+                             (arch) == VIR_ARCH_RISCV64)
 
-# define ARCH_IS_S390(arch) ((arch) == VIR_ARCH_S390 ||\
-                             (arch) == VIR_ARCH_S390X)
+#define ARCH_IS_S390(arch) ((arch) == VIR_ARCH_S390 ||\
+                            (arch) == VIR_ARCH_S390X)
 
 typedef enum {
     VIR_ARCH_LITTLE_ENDIAN,
@@ -107,5 +106,3 @@ const char *virArchToString(virArch arch);
 virArch virArchFromString(const char *name);
 
 virArch virArchFromHost(void);
-
-#endif /* LIBVIRT_VIRARCH_H */
