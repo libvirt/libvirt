@@ -19,11 +19,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBVIRT_TEST_DRIVER_H
-# define LIBVIRT_TEST_DRIVER_H
+#pragma once
 
-# include "internal.h"
+#include "internal.h"
 
 int testRegister(void);
-
-#endif /* LIBVIRT_TEST_DRIVER_H */
