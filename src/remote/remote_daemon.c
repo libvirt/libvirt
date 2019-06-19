@@ -845,79 +845,6 @@ static int daemonStateInit(virNetDaemonPtr dmn)
     return 0;
 }
 
-static int migrateProfile(void)
-{
-    char *old_base = NULL;
-    char *updated = NULL;
-    char *home = NULL;
-    char *xdg_dir = NULL;
-    char *config_dir = NULL;
-    const char *config_home;
-    int ret = -1;
-    mode_t old_umask;
-
-    VIR_DEBUG("Checking if user profile needs migrating");
-
-    if (!(home = virGetUserDirectory()))
-        goto cleanup;
-
-    if (virAsprintf(&old_base, "%s/.libvirt", home) < 0)
-        goto cleanup;
-
-    /* if the new directory is there or the old one is not: do nothing */
-    if (!(config_dir = virGetUserConfigDirectory()))
-        goto cleanup;
-
-    if (!virFileIsDir(old_base) || virFileExists(config_dir)) {
-        VIR_DEBUG("No old profile in '%s' / "
-                  "new profile directory already present '%s'",
-                  old_base, config_dir);
-        ret = 0;
-        goto cleanup;
-    }
-
-    /* test if we already attempted to migrate first */
-    if (virAsprintf(&updated, "%s/DEPRECATED-DIRECTORY", old_base) < 0)
-        goto cleanup;
-    if (virFileExists(updated))
-        goto cleanup;
-
-    config_home = virGetEnvBlockSUID("XDG_CONFIG_HOME");
-    if (config_home && config_home[0] != '\0') {
-        if (VIR_STRDUP(xdg_dir, config_home) < 0)
-            goto cleanup;
-    } else {
-        if (virAsprintf(&xdg_dir, "%s/.config", home) < 0)
-            goto cleanup;
-    }
-
-    old_umask = umask(077);
-    if (virFileMakePath(xdg_dir) < 0) {
-        umask(old_umask);
-        goto cleanup;
-    }
-    umask(old_umask);
-
-    if (rename(old_base, config_dir) < 0) {
-        int fd = creat(updated, 0600);
-        VIR_FORCE_CLOSE(fd);
-        VIR_ERROR(_("Unable to migrate %s to %s"), old_base, config_dir);
-        goto cleanup;
-    }
-
-    VIR_DEBUG("Profile migrated from %s to %s", old_base, config_dir);
-    ret = 0;
-
- cleanup:
-    VIR_FREE(home);
-    VIR_FREE(old_base);
-    VIR_FREE(xdg_dir);
-    VIR_FREE(config_dir);
-    VIR_FREE(updated);
-
-    return ret;
-}
-
 static int
 daemonSetupHostUUID(const struct daemonConfig *config)
 {
@@ -1159,12 +1086,6 @@ int main(int argc, char **argv) {
         daemonConfigLoadFile(config, remote_config_file, implicit_conf) < 0) {
         VIR_ERROR(_("Can't load config file: %s: %s"),
                   virGetLastErrorMessage(), remote_config_file);
-        exit(EXIT_FAILURE);
-    }
-
-    if (!privileged &&
-        migrateProfile() < 0) {
-        VIR_ERROR(_("Exiting due to failure to migrate profile"));
         exit(EXIT_FAILURE);
     }
 
