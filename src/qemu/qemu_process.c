@@ -59,6 +59,7 @@
 #include "qemu_firmware.h"
 
 #include "cpu/cpu.h"
+#include "cpu/cpu_x86.h"
 #include "datatypes.h"
 #include "virlog.h"
 #include "virerror.h"
@@ -5406,9 +5407,32 @@ qemuProcessStartValidate(virQEMUDriverPtr driver,
     if (qemuProcessStartValidateShmem(vm) < 0)
         return -1;
 
-    if (vm->def->cpu &&
-        virCPUValidateFeatures(vm->def->os.arch, vm->def->cpu) < 0)
-        return -1;
+    if (vm->def->cpu) {
+        if (virCPUValidateFeatures(vm->def->os.arch, vm->def->cpu) < 0)
+            return -1;
+
+        if (ARCH_IS_X86(vm->def->os.arch) &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_UNAVAILABLE_FEATURES)) {
+            VIR_AUTOSTRINGLIST features = NULL;
+            int n;
+
+            if ((n = virCPUDefCheckFeatures(vm->def->cpu,
+                                            virCPUx86FeatureFilterSelectMSR,
+                                            NULL,
+                                            &features)) < 0)
+                return -1;
+
+            if (n > 0) {
+                VIR_AUTOFREE(char *) str = NULL;
+
+                str = virStringListJoin((const char **)features, ", ");
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Some features cannot be reliably used "
+                                 "with this QEMU: %s"), str);
+                return -1;
+            }
+        }
+    }
 
     if (qemuProcessStartValidateDisks(vm, qemuCaps) < 0)
         return -1;
