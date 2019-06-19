@@ -88,7 +88,6 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
     VIR_AUTOFREE(char *) plugtype = NULL;
     VIR_AUTOFREE(char *) managed = NULL;
     VIR_AUTOFREE(char *) driver = NULL;
-    VIR_AUTOFREE(char *) class_id = NULL;
 
     if (VIR_ALLOC(def) < 0)
         return NULL;
