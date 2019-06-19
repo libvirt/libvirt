@@ -189,8 +189,13 @@ struct _virCPUx86DataIterator {
 };
 
 
-#define virCPUx86DataIteratorInit(data) \
-    { data, -1 }
+static void
+virCPUx86DataIteratorInit(virCPUx86DataIteratorPtr iterator,
+                          const virCPUx86Data *data)
+{
+    virCPUx86DataIterator iter = { data, -1 };
+    *iterator = iter;
+}
 
 
 static bool
@@ -540,9 +545,10 @@ static int
 x86DataAdd(virCPUx86Data *data1,
            const virCPUx86Data *data2)
 {
-    virCPUx86DataIterator iter = virCPUx86DataIteratorInit(data2);
+    virCPUx86DataIterator iter;
     virCPUx86DataItemPtr item;
 
+    virCPUx86DataIteratorInit(&iter, data2);
     while ((item = virCPUx86DataNext(&iter))) {
         if (virCPUx86DataAddItem(data1, item) < 0)
             return -1;
@@ -556,10 +562,11 @@ static void
 x86DataSubtract(virCPUx86Data *data1,
                 const virCPUx86Data *data2)
 {
-    virCPUx86DataIterator iter = virCPUx86DataIteratorInit(data1);
+    virCPUx86DataIterator iter;
     virCPUx86DataItemPtr item1;
     virCPUx86DataItemPtr item2;
 
+    virCPUx86DataIteratorInit(&iter, data1);
     while ((item1 = virCPUx86DataNext(&iter))) {
         item2 = virCPUx86DataGet(data2, item1);
         virCPUx86DataItemClearBits(item1, item2);
@@ -571,10 +578,11 @@ static void
 x86DataIntersect(virCPUx86Data *data1,
                  const virCPUx86Data *data2)
 {
-    virCPUx86DataIterator iter = virCPUx86DataIteratorInit(data1);
+    virCPUx86DataIterator iter;
     virCPUx86DataItemPtr item1;
     virCPUx86DataItemPtr item2;
 
+    virCPUx86DataIteratorInit(&iter, data1);
     while ((item1 = virCPUx86DataNext(&iter))) {
         item2 = virCPUx86DataGet(data2, item1);
         if (item2)
@@ -588,8 +596,9 @@ x86DataIntersect(virCPUx86Data *data1,
 static bool
 x86DataIsEmpty(virCPUx86Data *data)
 {
-    virCPUx86DataIterator iter = virCPUx86DataIteratorInit(data);
+    virCPUx86DataIterator iter;
 
+    virCPUx86DataIteratorInit(&iter, data);
     return !virCPUx86DataNext(&iter);
 }
 
@@ -598,10 +607,11 @@ static bool
 x86DataIsSubset(const virCPUx86Data *data,
                 const virCPUx86Data *subset)
 {
-    virCPUx86DataIterator iter = virCPUx86DataIteratorInit((virCPUx86Data *)subset);
+    virCPUx86DataIterator iter;
     const virCPUx86DataItem *item;
     const virCPUx86DataItem *itemSubset;
 
+    virCPUx86DataIteratorInit(&iter, subset);
     while ((itemSubset = virCPUx86DataNext(&iter))) {
         if (!(item = virCPUx86DataGet(data, itemSubset)) ||
             !virCPUx86DataItemMatchMasked(item, itemSubset))
@@ -1314,11 +1324,13 @@ x86ModelCompare(virCPUx86ModelPtr model1,
                 virCPUx86ModelPtr model2)
 {
     virCPUx86CompareResult result = EQUAL;
-    virCPUx86DataIterator iter1 = virCPUx86DataIteratorInit(&model1->data);
-    virCPUx86DataIterator iter2 = virCPUx86DataIteratorInit(&model2->data);
+    virCPUx86DataIterator iter1;
+    virCPUx86DataIterator iter2;
     virCPUx86DataItemPtr item1;
     virCPUx86DataItemPtr item2;
 
+    virCPUx86DataIteratorInit(&iter1, &model1->data);
+    virCPUx86DataIteratorInit(&iter2, &model2->data);
     while ((item1 = virCPUx86DataNext(&iter1))) {
         virCPUx86CompareResult match = SUPERSET;
 
@@ -1624,9 +1636,11 @@ virCPUx86GetMap(void)
 static char *
 virCPUx86DataFormat(const virCPUData *data)
 {
-    virCPUx86DataIterator iter = virCPUx86DataIteratorInit(&data->data.x86);
+    virCPUx86DataIterator iter;
     virCPUx86DataItemPtr item;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    virCPUx86DataIteratorInit(&iter, &data->data.x86);
 
     virBufferAddLit(&buf, "<cpudata arch='x86'>\n");
     while ((item = virCPUx86DataNext(&iter))) {
