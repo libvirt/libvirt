@@ -570,6 +570,7 @@ static const unsigned long long defaultPoolAlloc;
 
 static int testStoragePoolObjSetDefaults(virStoragePoolObjPtr obj);
 static int testNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info);
+static virNetworkObjPtr testNetworkObjFindByName(testDriverPtr privconn, const char *name);
 
 static virDomainObjPtr
 testDomObjFromDomain(virDomainPtr domain)
@@ -3429,6 +3430,51 @@ static int testDomainBlockStats(virDomainPtr domain,
     return ret;
 }
 
+
+static int
+testDomainInterfaceAddressFromNet(testDriverPtr driver,
+                                  const virDomainNetDef *net,
+                                  size_t addr_offset,
+                                  virDomainInterfacePtr iface)
+{
+    virSocketAddr addr;
+    virNetworkObjPtr net_obj = NULL;
+    virNetworkDefPtr net_def = NULL;
+    int ret = -1;
+
+    if (!(net_obj = testNetworkObjFindByName(driver, net->data.network.name)))
+        return -1;
+
+    net_def = virNetworkObjGetDef(net_obj);
+
+    iface->addrs[0].prefix = virSocketAddrGetIPPrefix(&net_def->ips->address,
+                                                      &net_def->ips->netmask,
+                                                      net_def->ips->prefix);
+
+    if (net_def->ips->nranges > 0)
+        addr = net_def->ips->ranges[0].start;
+    else
+        addr = net_def->ips->address;
+
+    if (net_def->ips->family && STREQ(net_def->ips->family, "ipv6")) {
+        iface->addrs[0].type = VIR_IP_ADDR_TYPE_IPV6;
+        addr.data.inet6.sin6_addr.s6_addr[15] += addr_offset;
+    } else {
+        iface->addrs[0].type = VIR_IP_ADDR_TYPE_IPV4;
+        addr.data.inet4.sin_addr.s_addr = \
+            htonl(ntohl(addr.data.inet4.sin_addr.s_addr) + addr_offset);
+    }
+
+    if (!(iface->addrs[0].addr = virSocketAddrFormat(&addr)))
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virNetworkObjEndAPI(&net_obj);
+    return ret;
+}
+
+
 static int
 testDomainInterfaceAddresses(virDomainPtr dom,
                              virDomainInterfacePtr **ifaces,
@@ -3462,25 +3508,36 @@ testDomainInterfaceAddresses(virDomainPtr dom,
         goto cleanup;
 
     for (i = 0; i < vm->def->nnets; i++) {
+        const virDomainNetDef *net = vm->def->nets[i];
+
         if (VIR_ALLOC(iface) < 0)
             goto cleanup;
 
-        if (VIR_STRDUP(iface->name, vm->def->nets[i]->ifname) < 0)
+        if (VIR_STRDUP(iface->name, net->ifname) < 0)
             goto cleanup;
 
-        virMacAddrFormat(&(vm->def->nets[i]->mac), macaddr);
+        virMacAddrFormat(&net->mac, macaddr);
         if (VIR_STRDUP(iface->hwaddr, macaddr) < 0)
             goto cleanup;
 
         if (VIR_ALLOC(iface->addrs) < 0)
             goto cleanup;
-
-        iface->addrs[0].type = VIR_IP_ADDR_TYPE_IPV4;
-        iface->addrs[0].prefix = 24;
-        if (virAsprintf(&iface->addrs[0].addr, "192.168.0.%zu", 1 + i) < 0)
-            goto cleanup;
-
         iface->naddrs = 1;
+
+        if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+            /* try using different addresses per different inf and domain */
+            const size_t addr_offset = 20 * (vm->def->id - 1) + i + 1;
+
+            if (testDomainInterfaceAddressFromNet(dom->conn->privateData,
+                                                  net, addr_offset, iface) < 0)
+                goto cleanup;
+        } else {
+            iface->addrs[0].type = VIR_IP_ADDR_TYPE_IPV4;
+            iface->addrs[0].prefix = 24;
+            if (virAsprintf(&iface->addrs[0].addr, "192.168.0.%zu", 1 + i) < 0)
+                goto cleanup;
+
+        }
 
         VIR_APPEND_ELEMENT_INPLACE(ifaces_ret, ifaces_count, iface);
     }
