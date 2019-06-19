@@ -208,6 +208,7 @@
   /sys/firmware/devicetree/** r,
 
   # allow connect with openGraphicsFD to work
+  unix (send, receive) type=stream addr=none peer=(label=libvirtd),
   unix (send, receive) type=stream addr=none peer=(label=/usr/sbin/libvirtd),
 
   # for gathering information about available host resources
