@@ -1268,7 +1268,8 @@ virCPUx86DataAdd;
 virCPUx86DataGetSignature;
 virCPUx86DataSetSignature;
 virCPUx86DataSetVendor;
-
+virCPUx86FeatureFilterDropMSR;
+virCPUx86FeatureFilterSelectMSR;
 
 # datatypes.h
 virConnectClass;
