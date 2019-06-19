@@ -49,14 +49,6 @@
 # include "virfilecache.h"
 # include "virfirmware.h"
 
-# ifdef CPU_SETSIZE /* Linux */
-#  define QEMUD_CPUMASK_LEN CPU_SETSIZE
-# elif defined(_SC_NPROCESSORS_CONF) /* Cygwin */
-#  define QEMUD_CPUMASK_LEN (sysconf(_SC_NPROCESSORS_CONF))
-# else
-#  error "Port me"
-# endif
-
 # define QEMU_DRIVER_NAME "QEMU"
 
 typedef struct _virQEMUDriver virQEMUDriver;
