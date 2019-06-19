@@ -28,7 +28,7 @@ function pageload() {
     advancedSearch.className = "advancedsearch"
 
     simpleSearch = document.getElementById("simplesearch")
-    simplesearch.addEventListener("submit", advancedsearch)
+    simpleSearch.addEventListener("submit", advancedsearch)
 }
 
 function advancedsearch(e) {
