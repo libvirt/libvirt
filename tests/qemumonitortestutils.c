@@ -51,7 +51,6 @@ struct _qemuMonitorTest {
     virMutex lock;
     virThread thread;
 
-    bool json;
     bool quit;
     bool running;
     bool started;
@@ -1189,7 +1188,6 @@ qemuMonitorTestNew(virDomainXMLOptionPtr xmlopt,
     if (!(test = qemuMonitorCommonTestNew(xmlopt, vm, &src)))
         goto error;
 
-    test->json = true;
     test->qapischema = schema;
     if (!(test->mon = qemuMonitorOpen(test->vm,
                                       &src,
