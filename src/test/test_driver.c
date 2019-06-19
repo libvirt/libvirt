@@ -3417,7 +3417,7 @@ static int testDomainBlockStats(virDomainPtr domain,
 static int
 testDomainInterfaceAddresses(virDomainPtr dom,
                              virDomainInterfacePtr **ifaces,
-                             unsigned int source ATTRIBUTE_UNUSED,
+                             unsigned int source,
                              unsigned int flags)
 {
     size_t i;
@@ -3429,6 +3429,13 @@ testDomainInterfaceAddresses(virDomainPtr dom,
     virDomainInterfacePtr *ifaces_ret = NULL;
 
     virCheckFlags(0, -1);
+
+    if (source >= VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LAST) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+                       _("Unknown IP address data source %d"),
+                       source);
+        return -1;
+    }
 
     if (!(vm = testDomObjFromDomain(dom)))
         goto cleanup;
