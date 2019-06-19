@@ -182,7 +182,6 @@
 <pre>
 ./configure \
   --without-sasl \
-  --without-avahi \
   --without-polkit \
   --without-python \
   --without-libxl \

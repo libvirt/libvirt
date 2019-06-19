@@ -429,14 +429,11 @@ daemonSetupNetworking(virNetServerPtr srv,
             goto cleanup;
     }
 
-    if (virNetServerAddService(srv, svc,
-                               config->mdns_adv && !ipsock ?
-                               "_libvirt._tcp" :
-                               NULL) < 0)
+    if (virNetServerAddService(srv, svc) < 0)
         goto cleanup;
 
     if (svcRO &&
-        virNetServerAddService(srv, svcRO, NULL) < 0)
+        virNetServerAddService(srv, svcRO) < 0)
         goto cleanup;
 
     if (sock_path_adm) {
@@ -451,7 +448,7 @@ daemonSetupNetworking(virNetServerPtr srv,
                                                   config->admin_max_client_requests)))
             goto cleanup;
 
-        if (virNetServerAddService(srvAdm, svcAdm, NULL) < 0)
+        if (virNetServerAddService(srvAdm, svcAdm) < 0)
             goto cleanup;
     }
 
@@ -469,8 +466,7 @@ daemonSetupNetworking(virNetServerPtr srv,
                                                      config->max_client_requests)))
                 goto cleanup;
 
-            if (virNetServerAddService(srv, svcTCP,
-                                       config->mdns_adv ? "_libvirt._tcp" : NULL) < 0)
+            if (virNetServerAddService(srv, svcTCP) < 0)
                 goto cleanup;
         }
 
@@ -530,9 +526,7 @@ daemonSetupNetworking(virNetServerPtr srv,
                 virObjectUnref(ctxt);
                 goto cleanup;
             }
-            if (virNetServerAddService(srv, svcTLS,
-                                       config->mdns_adv &&
-                                       !config->listen_tcp ? "_libvirt._tcp" : NULL) < 0)
+            if (virNetServerAddService(srv, svcTLS) < 0)
                 goto cleanup;
 
             virObjectUnref(ctxt);
@@ -1197,7 +1191,6 @@ int main(int argc, char **argv) {
                                 config->max_anonymous_clients,
                                 config->keepalive_interval,
                                 config->keepalive_count,
-                                config->mdns_adv ? config->mdns_name : NULL,
                                 remoteClientNew,
                                 NULL,
                                 remoteClientFree,
@@ -1265,7 +1258,6 @@ int main(int argc, char **argv) {
                                    0,
                                    config->admin_keepalive_interval,
                                    config->admin_keepalive_count,
-                                   NULL,
                                    remoteAdmClientNew,
                                    NULL,
                                    remoteAdmClientFree,

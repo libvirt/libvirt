@@ -133,7 +133,6 @@ virNetServerSetClientAuthenticated;
 virNetServerSetClientLimits;
 virNetServerSetThreadPoolParameters;
 virNetServerSetTLSContext;
-virNetServerStart;
 virNetServerUpdateServices;
 
 
@@ -180,19 +179,6 @@ virNetServerClientSetQuietEOF;
 virNetServerClientSetReadonly;
 virNetServerClientStartKeepAlive;
 virNetServerClientWantCloseLocked;
-
-
-# rpc/virnetservermdns.h
-virNetServerMDNSAddEntry;
-virNetServerMDNSAddGroup;
-virNetServerMDNSEntryFree;
-virNetServerMDNSFree;
-virNetServerMDNSGroupFree;
-virNetServerMDNSNew;
-virNetServerMDNSRemoveEntry;
-virNetServerMDNSRemoveGroup;
-virNetServerMDNSStart;
-virNetServerMDNSStop;
 
 
 # rpc/virnetserverprogram.h

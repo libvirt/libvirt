@@ -87,13 +87,6 @@ testCreateServer(const char *server_name, const char *host, int family)
     virNetServerClientPtr cln1 = NULL, cln2 = NULL;
     virNetSocketPtr sk1 = NULL, sk2 = NULL;
     int fdclient[2];
-    const char *mdns_entry = NULL;
-    const char *mdns_group = NULL;
-
-# ifdef WITH_AVAHI
-    mdns_entry = "libvirt-ro";
-    mdns_group = "libvirtTest";
-# endif
 
     if (socketpair(PF_UNIX, SOCK_STREAM, 0, fdclient) < 0) {
         virReportSystemError(errno, "%s",
@@ -104,7 +97,6 @@ testCreateServer(const char *server_name, const char *host, int family)
     if (!(srv = virNetServerNew(server_name, 1,
                                 10, 50, 5, 100, 10,
                                 120, 5,
-                                mdns_group,
                                 testClientNew,
                                 testClientPreExec,
                                 testClientFree,
@@ -131,9 +123,9 @@ testCreateServer(const char *server_name, const char *host, int family)
                                            5)))
         goto error;
 
-    if (virNetServerAddService(srv, svc1, mdns_entry) < 0)
+    if (virNetServerAddService(srv, svc1) < 0)
         goto error;
-    if (virNetServerAddService(srv, svc2, mdns_entry) < 0)
+    if (virNetServerAddService(srv, svc2) < 0)
         goto error;
 
     if (virNetSocketNewConnectSockFD(fdclient[0], &sk1) < 0)
@@ -408,12 +400,9 @@ mymain(void)
 # define EXEC_RESTART_TEST_FAIL(file, N) EXEC_RESTART_TEST_FULL(file, N, false)
 
 
-# ifdef WITH_AVAHI
     EXEC_RESTART_TEST("initial", 1);
-# endif
-    EXEC_RESTART_TEST("initial-nomdns", 1);
     EXEC_RESTART_TEST("anon-clients", 1);
-    EXEC_RESTART_TEST("admin-nomdns", 2);
+    EXEC_RESTART_TEST("admin", 2);
     EXEC_RESTART_TEST("admin-server-names", 2);
     EXEC_RESTART_TEST("no-keepalive-required", 2);
     EXEC_RESTART_TEST("client-ids", 1);

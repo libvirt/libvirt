@@ -32,7 +32,6 @@
 #include "virutil.h"
 #include "virfile.h"
 #include "virnetserver.h"
-#include "virnetservermdns.h"
 #include "virdbus.h"
 #include "virhash.h"
 #include "virstring.h"
@@ -768,16 +767,6 @@ virNetDaemonUpdateServices(virNetDaemonPtr dmn,
 }
 
 static int
-daemonServerRun(void *payload,
-                const void *key ATTRIBUTE_UNUSED,
-                void *opaque ATTRIBUTE_UNUSED)
-{
-    virNetServerPtr srv = payload;
-
-    return virNetServerStart(srv);
-};
-
-static int
 daemonServerProcessClients(void *payload,
                            const void *key ATTRIBUTE_UNUSED,
                            void *opaque ATTRIBUTE_UNUSED)
@@ -801,9 +790,6 @@ virNetDaemonRun(virNetDaemonPtr dmn)
                        _("Not all servers restored, cannot run server"));
         goto cleanup;
     }
-
-    if (virHashForEach(dmn->servers, daemonServerRun, NULL) < 0)
-        goto cleanup;
 
     dmn->quit = false;
 

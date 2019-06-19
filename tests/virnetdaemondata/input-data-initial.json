@@ -6,7 +6,6 @@
     "keepaliveInterval": 120,
     "keepaliveCount": 5,
     "keepaliveRequired": true,
-    "mdnsGroupName": "libvirtTest",
     "services": [
         {
             "auth": 0,

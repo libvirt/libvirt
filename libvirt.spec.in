@@ -297,7 +297,6 @@ BuildRequires: sanlock-devel >= 2.4
 %endif
 BuildRequires: libpcap-devel
 BuildRequires: libnl3-devel
-BuildRequires: avahi-devel
 BuildRequires: libselinux-devel
 BuildRequires: dnsmasq >= 2.41
 BuildRequires: iptables
@@ -436,7 +435,6 @@ Requires: iproute
 Requires: iproute-tc
 %endif
 
-Requires: avahi-libs
 Requires: polkit >= 0.112
 %ifarch %{ix86} x86_64 ia64
 # For virConnectGetSysinfo
@@ -1163,7 +1161,6 @@ rm -f po/stamp-po
            %{?arg_vbox} \
            %{?arg_libxl} \
            --with-sasl \
-           --with-avahi \
            --with-polkit \
            --with-libvirtd \
            %{?arg_phyp} \

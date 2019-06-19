@@ -167,7 +167,6 @@ autoreconf -if
   --without-vbox \
   %{?_without_xenapi} \
   --without-sasl \
-  --without-avahi \
   --without-polkit \
   --without-libvirtd \
   %{?_without_phyp} \

@@ -46,9 +46,6 @@ struct daemonConfig {
 
     char **access_drivers;
 
-    bool mdns_adv;
-    char *mdns_name;
-
     bool tls_no_verify_certificate;
     bool tls_no_sanity_certificate;
     char **tls_allowed_dn_list;

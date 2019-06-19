@@ -38,7 +38,6 @@ virNetServerPtr virNetServerNew(const char *name,
                                 size_t max_anonymous_clients,
                                 int keepaliveInterval,
                                 unsigned int keepaliveCount,
-                                const char *mdnsGroupName,
                                 virNetServerClientPrivNew clientPrivNew,
                                 virNetServerClientPrivPreExecRestart clientPrivPreExecRestart,
                                 virFreeCallback clientPrivFree,
@@ -60,8 +59,7 @@ void virNetServerClose(virNetServerPtr srv);
 virJSONValuePtr virNetServerPreExecRestart(virNetServerPtr srv);
 
 int virNetServerAddService(virNetServerPtr srv,
-                           virNetServerServicePtr svc,
-                           const char *mdnsEntryName);
+                           virNetServerServicePtr svc);
 
 int virNetServerAddProgram(virNetServerPtr srv,
                            virNetServerProgramPtr prog);
@@ -77,8 +75,6 @@ void virNetServerProcessClients(virNetServerPtr srv);
 void virNetServerSetClientAuthenticated(virNetServerPtr srv, virNetServerClientPtr client);
 
 void virNetServerUpdateServices(virNetServerPtr srv, bool enabled);
-
-int virNetServerStart(virNetServerPtr srv);
 
 const char *virNetServerGetName(virNetServerPtr srv);
 

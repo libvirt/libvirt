@@ -29,8 +29,6 @@ module Libvirtd =
                      | str_entry "tls_port"
                      | str_entry "tcp_port"
                      | str_entry "listen_addr"
-                     | bool_entry "mdns_adv"
-                     | str_entry "mdns_name"
 
    let sock_acl_entry = str_entry "unix_sock_group"
                       | str_entry "unix_sock_ro_perms"

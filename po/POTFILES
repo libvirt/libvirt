@@ -160,7 +160,6 @@ src/rpc/virnetmessage.c
 src/rpc/virnetsaslcontext.c
 src/rpc/virnetserver.c
 src/rpc/virnetserverclient.c
-src/rpc/virnetservermdns.c
 src/rpc/virnetserverprogram.c
 src/rpc/virnetserverservice.c
 src/rpc/virnetsocket.c

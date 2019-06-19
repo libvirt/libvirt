@@ -167,7 +167,6 @@ virLockDaemonNew(virLockDaemonConfigPtr config, bool privileged)
     if (!(srv = virNetServerNew("virtlockd", 1,
                                 0, 0, 0, config->max_clients,
                                 config->max_clients, -1, 0,
-                                NULL,
                                 virLockDaemonClientNew,
                                 virLockDaemonClientPreExecRestart,
                                 virLockDaemonClientFree,
@@ -182,7 +181,6 @@ virLockDaemonNew(virLockDaemonConfigPtr config, bool privileged)
     if (!(srv = virNetServerNew("admin", 1,
                                 0, 0, 0, config->admin_max_clients,
                                 config->admin_max_clients, -1, 0,
-                                NULL,
                                 remoteAdmClientNew,
                                 remoteAdmClientPreExecRestart,
                                 remoteAdmClientFree,
@@ -623,7 +621,7 @@ virLockDaemonSetupNetworkingSystemD(virNetServerPtr lockSrv, virNetServerPtr adm
                                              false, 0, 1)))
             return -1;
 
-        if (virNetServerAddService(srv, svc, NULL) < 0) {
+        if (virNetServerAddService(srv, svc) < 0) {
             virObjectUnref(svc);
             return -1;
         }
@@ -644,7 +642,7 @@ virLockDaemonSetupNetworkingNative(virNetServerPtr srv, const char *sock_path)
                                            false, 0, 1)))
         return -1;
 
-    if (virNetServerAddService(srv, svc, NULL) < 0) {
+    if (virNetServerAddService(srv, svc) < 0) {
         virObjectUnref(svc);
         return -1;
     }

@@ -539,13 +539,6 @@ C &lt;--  |32| 8 | 1 | 3 | 1 | 1 | 0 | .o.oOo |  &lt;-- S  (reply)
         be part of the underlying server.
       </dd>
 
-      <dt><code>virNetServerMDNSPtr</code> (virnetservermdns.h)</dt>
-      <dd>The virNetServerMDNS APIs are used to advertise a server
-        across the local network, enabling clients to automatically
-        detect the existence of remote services. This is done by
-        interfacing with the Avahi mDNS advertisement service.
-      </dd>
-
       <dt><code>virNetServerClientPtr</code> (virnetserverclient.h)</dt>
       <dd>The virNetServerClient APIs are used to manage I/O related
         to a single client network connection. It handles initial

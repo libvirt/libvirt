@@ -103,22 +103,18 @@ libvirt_net_rpc_server_la_SOURCES = \
 	rpc/virnetserverservice.c \
 	rpc/virnetserverclient.h \
 	rpc/virnetserverclient.c \
-	rpc/virnetservermdns.h \
-	rpc/virnetservermdns.c \
 	rpc/virnetdaemon.h \
 	rpc/virnetdaemon.c \
 	rpc/virnetserver.h \
 	rpc/virnetserver.c \
 	$(NULL)
 libvirt_net_rpc_server_la_CFLAGS = \
-	$(AVAHI_CFLAGS) \
 	$(DBUS_CFLAGS) \
 	$(XDR_CFLAGS) \
 	$(AM_CFLAGS) \
 	$(NULL)
 libvirt_net_rpc_server_la_LDFLAGS = \
 	$(AM_LDFLAGS) \
-	$(AVAHI_LIBS) \
 	$(DBUS_LIBS) \
 	$(NULL)
 libvirt_net_rpc_server_la_LIBADD = $(CYGWIN_EXTRA_LIBADD)

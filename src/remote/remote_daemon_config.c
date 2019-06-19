@@ -102,8 +102,6 @@ struct daemonConfig*
 daemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
 {
     struct daemonConfig *data;
-    char *localhost;
-    int ret;
 
     if (VIR_ALLOC(data) < 0)
         return NULL;
@@ -141,8 +139,6 @@ daemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
 #endif
     data->auth_tls = REMOTE_AUTH_NONE;
 
-    data->mdns_adv = 0;
-
     data->min_workers = 5;
     data->max_workers = 20;
     data->max_clients = 5000;
@@ -169,25 +165,6 @@ daemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
     data->admin_keepalive_count = 5;
 
     data->ovs_timeout = VIR_NETDEV_OVS_DEFAULT_TIMEOUT;
-
-    localhost = virGetHostname();
-    if (localhost == NULL) {
-        /* we couldn't resolve the hostname; assume that we are
-         * running in disconnected operation, and report a less
-         * useful Avahi string
-         */
-        ret = VIR_STRDUP(data->mdns_name, "Virtualization Host");
-    } else {
-        char *tmp;
-        /* Extract the host part of the potentially FQDN */
-        if ((tmp = strchr(localhost, '.')))
-            *tmp = '\0';
-        ret = virAsprintf(&data->mdns_name, "Virtualization Host %s",
-                          localhost);
-    }
-    VIR_FREE(localhost);
-    if (ret < 0)
-        goto error;
 
     return data;
 
@@ -219,7 +196,6 @@ daemonConfigFree(struct daemonConfig *data)
     VIR_FREE(data->unix_sock_rw_perms);
     VIR_FREE(data->unix_sock_group);
     VIR_FREE(data->unix_sock_dir);
-    VIR_FREE(data->mdns_name);
 
     tmp = data->tls_allowed_dn_list;
     while (tmp && *tmp) {
@@ -298,11 +274,6 @@ daemonConfigLoadOptions(struct daemonConfig *data,
         goto error;
 
     if (virConfGetValueString(conf, "unix_sock_dir", &data->unix_sock_dir) < 0)
-        goto error;
-
-    if (virConfGetValueBool(conf, "mdns_adv", &data->mdns_adv) < 0)
-        goto error;
-    if (virConfGetValueString(conf, "mdns_name", &data->mdns_name) < 0)
         goto error;
 
     if (virConfGetValueBool(conf, "tls_no_sanity_certificate", &data->tls_no_sanity_certificate) < 0)

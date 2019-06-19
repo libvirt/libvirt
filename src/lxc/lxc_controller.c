@@ -953,7 +953,6 @@ static int virLXCControllerSetupServer(virLXCControllerPtr ctrl)
     if (!(srv = virNetServerNew("LXC", 1,
                                 0, 0, 0, 1,
                                 0, -1, 0,
-                                NULL,
                                 virLXCControllerClientPrivateNew,
                                 NULL,
                                 virLXCControllerClientPrivateFree,
@@ -976,7 +975,7 @@ static int virLXCControllerSetupServer(virLXCControllerPtr ctrl)
     if (virSecurityManagerClearSocketLabel(ctrl->securityManager, ctrl->def) < 0)
         goto error;
 
-    if (virNetServerAddService(srv, svc, NULL) < 0)
+    if (virNetServerAddService(srv, svc) < 0)
         goto error;
     virObjectUnref(svc);
     svc = NULL;

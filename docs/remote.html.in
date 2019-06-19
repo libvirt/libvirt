@@ -824,23 +824,6 @@ Blank lines and comments beginning with <code>#</code> are ignored.
 </td>
       </tr>
       <tr>
-        <td> mdns_adv <i>[0|1]</i> </td>
-        <td> 0 (advertise with mDNS) </td>
-        <td>
-  If set to 1 then the virtualization service will be advertised over
-  mDNS to hosts on the local LAN segment.
-</td>
-      </tr>
-      <tr>
-        <td> mdns_name <i>"name"</i> </td>
-        <td> "Virtualization Host HOSTNAME" </td>
-        <td>
-  The name to advertise for this host with Avahi mDNS. The default
-  includes the machine's short hostname. This must be unique to the
-  local LAN segment.
-</td>
-      </tr>
-      <tr>
         <td> unix_sock_group <i>"groupname"</i> </td>
         <td> "root" </td>
         <td>

@@ -9,7 +9,6 @@
       "keepaliveInterval": 120,
       "keepaliveCount": 5,
       "next_client_id": 3,
-      "mdnsGroupName": "libvirtTest",
       "services": [
         {
           "auth": 0,
