@@ -73,6 +73,7 @@ virCapabilitiesSetNetPrefix;
 virCPUCacheModeTypeFromString;
 virCPUCacheModeTypeToString;
 virCPUDefAddFeature;
+virCPUDefCheckFeatures;
 virCPUDefCopy;
 virCPUDefCopyModel;
 virCPUDefCopyModelFilter;

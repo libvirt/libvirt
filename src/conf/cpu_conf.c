@@ -930,6 +930,39 @@ virCPUDefFilterFeatures(virCPUDefPtr cpu,
 }
 
 
+/**
+ * virCPUDefCheckFeatures:
+ *
+ * Check CPU features for which @filter reports true and store them in a NULL
+ * terminated list returned via @features.
+ *
+ * Returns the number of features matching @filter or -1 on error.
+ */
+int
+virCPUDefCheckFeatures(virCPUDefPtr cpu,
+                       virCPUDefFeatureFilter filter,
+                       void *opaque,
+                       char ***features)
+{
+    VIR_AUTOSTRINGLIST list = NULL;
+    size_t n = 0;
+    size_t i;
+
+    *features = NULL;
+
+    for (i = 0; i < cpu->nfeatures; i++) {
+        if (filter(cpu->features[i].name, opaque)) {
+            if (virStringListAdd(&list, cpu->features[i].name) < 0)
+                return -1;
+            n++;
+        }
+    }
+
+    VIR_STEAL_PTR(*features, list);
+    return n;
+}
+
+
 bool
 virCPUDefIsEqual(virCPUDefPtr src,
                  virCPUDefPtr dst,
