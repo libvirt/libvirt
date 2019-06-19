@@ -67,10 +67,7 @@ css = \
 
 javascript = \
   js/main.js \
-  js/jquery-3.1.1.min.js \
-  js/jquery.rss.min.js \
-  js/moment.min.js
-
+  $(NULL)
 
 fonts = \
   fonts/LICENSE.md \
