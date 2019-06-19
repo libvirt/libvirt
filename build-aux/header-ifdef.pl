@@ -6,18 +6,26 @@
 #  ...copyright header...
 #  */
 # <one blank line>
-# #ifndef SYMBOL
-# # define SYMBOL
+# #pragma once
 # ....content....
-# #endif /* SYMBOL */
 #
-# For any file ending priv.h, before the #ifndef
+#---
+#
+# For any file ending priv.h, before the #pragma once
 # We will have a further section
 #
 # #ifndef SYMBOL_ALLOW
 # # error ....
 # #endif /* SYMBOL_ALLOW */
 # <one blank line>
+#
+#---
+#
+# For public headers (files in include/), use the standard header guard instead of #pragma once:
+# #ifndef SYMBOL
+# # define SYMBOL
+# ....content....
+# #endif /* SYMBOL */
 
 use strict;
 use warnings;
@@ -38,6 +46,7 @@ my $file = " ";
 my $ret = 0;
 my $ifdef = "";
 my $ifdefpriv = "";
+my $publicheader = 0;
 
 my $state = $STATE_EOF;
 my $mistake = 0;
@@ -64,7 +73,11 @@ while (<>) {
         } elsif ($state == $STATE_PRIV_BLANK) {
             &mistake("$file: missing blank line after priv header check");
         } elsif ($state == $STATE_GUARD_START) {
-            &mistake("$file: missing '#ifndef $ifdef'");
+            if ($publicheader) {
+                &mistake("$file: missing '#ifndef $ifdef'");
+            } else {
+                &mistake("$file: missing '#pragma once' header guard");
+            }
         } elsif ($state == $STATE_GUARD_DEFINE) {
             &mistake("$file: missing '# define $ifdef'");
         } elsif ($state == $STATE_GUARD_END) {
@@ -83,6 +96,7 @@ while (<>) {
         $file = $ARGV;
         $state = $STATE_COPYRIGHT_COMMENT;
         $mistake = 0;
+        $publicheader = ($ARGV =~ /include\//);
     }
 
     if ($mistake ||
@@ -133,12 +147,19 @@ while (<>) {
     } elsif ($state == $STATE_GUARD_START) {
         if (/^$/) {
             &mistake("$file: too many blank lines after copyright header");
-        } elsif(/#pragma once/) {
-            $state = $STATE_PRAGMA;
-        } elsif (/#ifndef $ifdef$/) {
-            $state = $STATE_GUARD_DEFINE;
+        }
+        if ($publicheader) {
+            if (/#ifndef $ifdef$/) {
+                $state = $STATE_GUARD_DEFINE;
+            } else {
+                &mistake("$file: missing '#ifndef $ifdef'");
+            }
         } else {
-            &mistake("$file: missing '#ifndef $ifdef'");
+            if (/#pragma once/) {
+                $state = $STATE_PRAGMA;
+            } else {
+                &mistake("$file: missing '#pragma once' header guard");
+            }
         }
     } elsif ($state == $STATE_GUARD_DEFINE) {
         if (/# define $ifdef$/) {
