@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <body>
+    <h1>Launch security with AMD SEV</h1>
+
+    <ul id="toc"></ul>
+
+    <p>
+        Storage encryption in modern public cloud computing is a common practice.
+        However, from the point of view of a user of these cloud workloads, a
+        significant amount of trust needs to be put in the cloud platform security as
+        well as integrity (was the hypervisor tampered?). For this reason there's ever
+        rising demand for securing data in use, i.e. memory encryption.
+        One of the solutions addressing this matter is AMD SEV.
+    </p>
+
+    <h2>AMD SEV</h2>
+    <p>
+        SEV (Secure Encrypted Virtualization) is a feature extension of AMD's SME (Secure
+        Memory Encryption) intended for KVM virtual machines which is supported
+        primarily on AMD's EPYC CPU line. In contrast to SME, SEV uses a unique memory encryption
+        key for each VM. The whole encryption of memory pages is completely transparent
+        to the hypervisor and happens inside dedicated hardware in the on-die memory controller.
+        Each controller includes a high-performance Advanced Encryption Standard
+        (AES) engine that encrypts data when it is written to DRAM and decrypts it
+        when read.
+
+        For more details about the technology itself, you can visit
+      <a href="https://developer.amd.com/sev/">AMD's developer portal</a>.
+    </p>
+
+    <h2><a id="Host">Enabling SEV on the host</a></h2>
+      <p>
+          Before VMs can make use of the SEV feature you need to make sure your
+          AMD CPU does support SEV. You can check whether SEV is among the CPU
+          flags with:
+      </p>
+
+      <pre>
+$ cat /proc/cpuinfo | grep sev
+...
+sme ssbd sev ibpb</pre>
+
+      <p>
+          Next step is to enable SEV in the kernel, because it is disabled by default.
+          This is done by putting the following onto the kernel command line:
+      </p>
+
+      <pre>
+mem_encrypt=on kvm_amd.sev=1
+      </pre>
+
+      <p>
+          To make the changes persistent, append the above to the variable holding
+          parameters of the kernel command line in
+          <code>/etc/default/grub</code> to preserve SEV settings across reboots
+      </p>
+
+      <pre>
+$ cat /etc/default/grub
+...
+GRUB_CMDLINE_LINUX="... mem_encrypt=on kvm_amd.sev=1"
+$ grub2-mkconfig -o /boot/efi/EFI/&lt;distro&gt;/grub.cfg</pre>
+
+      <p>
+        <code>mem_encrypt=on</code> turns on the SME memory encryption feature on
+        the host which protects against the physical attack on the hypervisor
+        memory. The <code>kvm_amd.sev</code> parameter actually enables SEV in
+        the kvm module. It can be set on the command line alongside
+        <code>mem_encrypt</code> like shown above, or it can be put into a
+        module config under <code>/etc/modprobe.d/</code>
+      </p>
+
+      <pre>
+$ cat /etc/modprobe.d/sev.conf
+options kvm_amd sev=1
+      </pre>
+
+      <p>
+          After rebooting the host, you should see SEV being enabled in the kernel:
+      </p>
+
+      <pre>
+$ cat /sys/module/kvm_amd/parameters/sev
+1
+      </pre>
+
+      <h2><a id="Virt">Checking SEV support in the virt stack</a></h2>
+      <p>
+        <b>Note: All of the commands bellow need to be run with root privileges.</b>
+      </p>
+
+      <p>
+          First make sure you have the following packages in the specified versions:
+      </p>
+
+      <ul>
+        <li>
+            libvirt >= 4.5.0 (>5.1.0 recommended due to additional SEV bugfixes)
+        </li>
+        <li>
+            QEMU >= 2.12.0
+        </li>
+      </ul>
+      <p>
+          To confirm that the virtualization stack supports SEV, run the following:
+      </p>
+
+      <pre>
+# virsh domcapabilities
+&lt;domainCapabilities&gt;
+...
+  &lt;features&gt;
+    ...
+    &lt;sev supported='yes'&gt;
+      &lt;cbitpos&gt;47&lt;/cbitpos&gt;
+      &lt;reducedPhysBits&gt;1&lt;/reducedPhysBits&gt;
+    &lt;/sev&gt;
+    ...
+  &lt;/features&gt;
+&lt;/domainCapabilities&gt;</pre>
+      <p>
+          Note that if libvirt was already installed and libvirtd running before enabling SEV in the kernel followed by the host reboot you need to force libvirtd
+          to re-probe both the host and QEMU capabilities. First stop libvirtd:
+      </p>
+
+      <pre>
+# systemctl stop libvirtd.service
+      </pre>
+
+      <p>
+          Now you need to clean the capabilities cache:
+      </p>
+
+      <pre>
+# rm -f /var/cache/libvirt/qemu/capabilities/*
+      </pre>
+
+      <p>
+          If you now restart libvirtd, it will re-probe the capabilities and if
+          you now run:
+      </p>
+
+      <pre>
+# virsh domcapabilities
+      </pre>
+
+      <p>
+          SEV should be listed as supported. If you still see:
+      </p>
+
+      <pre>
+&lt;sev supported='no'/&gt;
+      </pre>
+
+      <p>
+          it means one of two things:
+        <ol>
+          <li>
+              libvirt does support SEV, but either QEMU or the host does not
+          </li>
+          <li>
+            you have libvirt &lt;=5.1.0 which suffered from getting a
+            <code>'Permission denied'</code> on <code>/dev/sev</code> because
+            of the default permissions on the character device which prevented
+            QEMU from opening it during capabilities probing - you can either
+            manually tweak the permissions so that QEMU has access to it or
+            preferably install libvirt 5.1.0 or higher
+          </li>
+        </ol>
+      </p>
+
+    <h2><a id="Configuration">VM Configuration</a></h2>
+    <p>
+        SEV is enabled in the XML by specifying the
+      <a href="https://libvirt.org/formatdomain.html#launchSecurity">&lt;launchSecurity&gt; </a> element. However, specifying <code>launchSecurity</code> isn't
+        enough to boot an SEV VM. Further configuration requirements are discussed
+          below.
+      </p>
+
+      <h3><a id="Machine">Machine type</a></h3>
+      <p>
+          Even though both Q35 and legacy PC machine types (for PC see also
+          "virtio") can be used with SEV, usage of the legacy PC machine type is
+          strongly discouraged, since depending on how your OVMF package was
+          built (e.g. including features like SecureBoot or SMM) Q35 may even be
+          required.
+      </p>
+
+      <h5>Q35</h5>
+<pre>
+...
+&lt;os&gt;
+  &lt;type arch='x86_64' machine='pc-q35-3.0'&gt;hvm&lt;/type&gt;
+  ...
+&lt;/os&gt;
+...</pre>
+
+      <h5>i440fx (discouraged)</h5>
+      <pre>
+...
+&lt;os&gt;
+  &lt;type arch='x86_64' machine='pc-i440fx-3.0'&gt;hvm&lt;/type&gt;
+  ...
+&lt;/os&gt;
+...
+      </pre>
+
+      <h3><a id="Boot">Boot loader</a></h3>
+      <p>
+          SEV is only going to work with OVMF (UEFI), so you'll need to point libvirt to
+          the correct OVMF binary.
+      </p>
+      <pre>
+...
+&lt;os&gt;
+  &lt;type arch='x86_64' machine='pc-q35-3.0'&gt;hvm&lt;/type&gt;
+  &lt;loader readonly='yes' type='pflash'&gt;/usr/share/edk2/ovmf/OVMF_CODE.fd&lt;/loader&gt;
+&lt;/os&gt;
+...</pre>
+
+      <h3><a id="Memory">Memory</a></h3>
+      <p>
+          Internally, SEV expects that the encrypted memory pages won't be swapped out or move
+          around so the VM memory needs to be pinned in physical RAM which will be
+          handled by QEMU. Apart from that, certain memory regions allocated by QEMU
+          itself (UEFI pflash, device ROMs, video RAM, etc.) have to be encrypted as
+          well. This causes a conflict in how libvirt tries to protect the host.
+          By default, libvirt enforces a memory hard limit on each VM's cgroup in order
+          to protect the host from malicious QEMU to allocate and lock all the available
+          memory. This limit corresponds to the total memory allocation for the VM given
+          by <code>&lt;currentMemory&gt;</code> element. However, trying to account for the additional
+          memory regions QEMU allocates when calculating the limit in an automated manner
+          is non-deterministic. One way to resolve this is to set the hard limit manually.
+
+        <p>
+          Note: Figuring out the right number so that your guest boots and isn't killed is
+          challenging, but 256MiB extra memory over the total guest RAM should suffice for
+          most workloads and may serve as a good starting point.
+
+          For example, a domain with 4GB memory with a 256MiB extra hard limit would look
+          like this:
+        </p>
+      </p>
+
+      <pre>
+# virsh edit &lt;domain&gt;
+&lt;domain&gt;
+  ...
+  &lt;currentMemory unit='KiB'&gt;4194304&lt;/currentMemory&gt;
+  &lt;memtune&gt;
+    &lt;hard_limit unit='KiB'&gt;4456448&lt;/hard_limit&gt;
+  &lt;/memtune&gt;
+  ...
+&lt;/domain&gt;</pre>
+      <p>
+          There's another, preferred method of taking care of the limits by
+          using the<code>&lt;memoryBacking&gt;</code> element along with the
+          <code>&lt;locked/&gt;</code> subelement:
+        </p>
+
+      <pre>
+&lt;domain&gt;
+  ...
+  &lt;memoryBacking&gt;
+    &lt;locked/&gt;
+  &lt;/memoryBacking&gt;
+  ...
+&lt;/domain&gt;</pre>
+
+      <p>
+          What that does is that it tells libvirt not to force any hard limit (well,
+          unlimited) upon the VM cgroup. The obvious advantage is that one doesn't need
+          to determine the hard limit for every single SEV-enabled VM. However, there is
+          a significant security-related drawback to this approach. Since no hard limit
+          is applied, a malicious QEMU could perform a DoS attack by locking all of the
+          host's available memory. The way to avoid this issue and to protect the host is
+          to enforce a bigger hard limit on the master cgroup containing all of the VMs
+          - on systemd this is <code>machine.slice</code>.
+      </p>
+
+      <pre>
+# systemctl set-property machine.slice MemoryHigh=&lt;value&gt;</pre>
+
+      <p>
+          To put even stricter measures in place which would involve the OOM killer, use
+        <pre>
+# systemctl set-property machine.slice MemoryMax=&lt;value&gt;</pre>
+          instead. Alternatively, you can create a systemd config (don't forget
+          to reload systemd configuration in this case):
+        <pre>
+# cat &lt;&lt; EOF &gt; /etc/systemd/system.control/machine.slice.d/90-MemoryMax.conf
+MemoryMax=&lt;value&gt;
+EOF</pre>
+          The trade-off to keep in mind with the second approach is that the VMs
+          can still perform DoS on each other.
+      </p>
+
+      <h3><a id="Virtio">Virtio</a></h3>
+      <p>
+          In order to make virtio devices work, we need to enable emulated IOMMU
+          on the devices so that virtual DMA can work.
+      </p>
+
+      <pre>
+# virsh edit &lt;domain&gt;
+&lt;domain&gt;
+  ...
+  &lt;controller type='virtio-serial' index='0'&gt;
+    &lt;driver iommu='on'/&gt;
+  &lt;/controller&gt;
+  &lt;controller type='scsi' index='0' model='virtio-scsi'&gt;
+    &lt;driver iommu='on'/&gt;
+  &lt;/controller&gt;
+  ...
+  &lt;memballoon model='virtio'&gt;
+    &lt;driver iommu='on'/&gt;
+  &lt;/memballoon&gt;
+  &lt;rng model='virtio'&gt;
+    &lt;backend model='random'&gt;/dev/urandom&lt;/backend&gt;
+    &lt;driver iommu='on'/&gt;
+  &lt;/rng&gt;
+  ...
+&lt;domain&gt;</pre>
+
+    <p>
+        If you for some reason want to use the legacy PC machine type, further changes
+        to the virtio
+        configuration is required, because SEV will not work with Virtio &lt;1.0. In
+        libvirt, this is handled by using the virtio-non-transitional device model
+        (libvirt &gt;= 5.2.0 required).
+
+      <p>
+        Note: some devices like video devices don't
+          support non-transitional model, which means that virtio GPU cannot be used.
+      </p>
+    </p>
+
+    <pre>
+&lt;domain&gt;
+  ...
+  &lt;devices&gt;
+    ...
+    &lt;memballoon model='virtio-non-transitional'&gt;
+      &lt;driver iommu='on'/&gt;
+    &lt;/memballoon&gt;
+  &lt;/devices&gt;
+  ...
+&lt;/domain&gt;</pre>
+
+    <h2><a id="Limitations">Limitations</a></h2>
+    <p>
+        Currently, the boot disk cannot be of type virtio-blk, instead, virtio-scsi
+        needs to be used if virtio is desired. This limitation is expected to be lifted
+        with future releases of kernel (the kernel used at the time of writing the
+        article is 5.0.14).
+        If you still cannot start an SEV VM, it could be because of wrong SELinux label on the <code>/dev/sev</code> device with selinux-policy &lt;3.14.2.40 which prevents QEMU from touching the device. This can be resolved by upgrading the package, tuning the selinux policy rules manually to allow svirt_t to access the device (see <code>audit2allow</code> on how to do that) or putting SELinux into permissive mode (discouraged).
+    </p>
+
+    <h2><a id="Examples">Full domain XML examples</a></h2>
+
+    <h5>Q35 machine</h5>
+    <pre>
+&lt;domain type='kvm'&gt;
+  &lt;name&gt;sev-dummy&lt;/name&gt;
+  &lt;memory unit='KiB'&gt;4194304&lt;/memory&gt;
+  &lt;currentMemory unit='KiB'&gt;4194304&lt;/currentMemory&gt;
+  &lt;memoryBacking&gt;
+    &lt;locked/&gt;
+  &lt;/memoryBacking&gt;
+  &lt;vcpu placement='static'&gt;4&lt;/vcpu&gt;
+  &lt;os&gt;
+    &lt;type arch='x86_64' machine='pc-q35-3.0'&gt;hvm&lt;/type&gt;
+    &lt;loader readonly='yes' type='pflash'&gt;/usr/share/edk2/ovmf/OVMF_CODE.fd&lt;/loader&gt;
+    &lt;nvram&gt;/var/lib/libvirt/qemu/nvram/sev-dummy_VARS.fd&lt;/nvram&gt;
+  &lt;/os&gt;
+  &lt;features&gt;
+    &lt;acpi/&gt;
+    &lt;apic/&gt;
+    &lt;vmport state='off'/&gt;
+  &lt;/features&gt;
+  &lt;cpu mode='host-model' check='partial'&gt;
+    &lt;model fallback='allow'/&gt;
+  &lt;/cpu&gt;
+  &lt;clock offset='utc'&gt;
+    &lt;timer name='rtc' tickpolicy='catchup'/&gt;
+    &lt;timer name='pit' tickpolicy='delay'/&gt;
+    &lt;timer name='hpet' present='no'/&gt;
+  &lt;/clock&gt;
+  &lt;on_poweroff&gt;destroy&lt;/on_poweroff&gt;
+  &lt;on_reboot&gt;restart&lt;/on_reboot&gt;
+  &lt;on_crash&gt;destroy&lt;/on_crash&gt;
+  &lt;pm&gt;
+    &lt;suspend-to-mem enabled='no'/&gt;
+    &lt;suspend-to-disk enabled='no'/&gt;
+  &lt;/pm&gt;
+  &lt;devices&gt;
+    &lt;emulator&gt;/usr/bin/qemu-kvm&lt;/emulator&gt;
+    &lt;disk type='file' device='disk'&gt;
+      &lt;driver name='qemu' type='qcow2'/&gt;
+      &lt;source file='/var/lib/libvirt/images/sev-dummy.qcow2'/&gt;
+      &lt;target dev='sda' bus='scsi'/&gt;
+      &lt;boot order='1'/&gt;
+    &lt;/disk&gt;
+    &lt;controller type='virtio-serial' index='0'&gt;
+      &lt;driver iommu='on'/&gt;
+    &lt;/controller&gt;
+    &lt;controller type='scsi' index='0' model='virtio-scsi'&gt;
+      &lt;driver iommu='on'/&gt;
+    &lt;/controller&gt;
+    &lt;interface type='network'&gt;
+      &lt;mac address='52:54:00:cc:56:90'/&gt;
+      &lt;source network='default'/&gt;
+      &lt;model type='virtio'/&gt;
+      &lt;driver iommu='on'/&gt;
+    &lt;/interface&gt;
+    &lt;graphics type='spice' autoport='yes'&gt;
+      &lt;listen type='address'/&gt;
+      &lt;gl enable='no'/&gt;
+    &lt;/graphics&gt;
+    &lt;video&gt;
+      &lt;model type='qxl'/&gt;
+    &lt;/video&gt;
+    &lt;memballoon model='virtio'&gt;
+      &lt;driver iommu='on'/&gt;
+    &lt;/memballoon&gt;
+    &lt;rng model='virtio'&gt;
+      &lt;driver iommu='on'/&gt;
+    &lt;/rng&gt;
+  &lt;/devices&gt;
+  &lt;launchSecurity type='sev'&gt;
+    &lt;cbitpos&gt;47&lt;/cbitpos&gt;
+    &lt;reducedPhysBits&gt;1&lt;/reducedPhysBits&gt;
+    &lt;policy&gt;0x0003&lt;/policy&gt;
+  &lt;/launchSecurity&gt;
+&lt;/domain&gt;</pre>
+
+    <h5>PC-i440fx machine:</h5>
+    <pre>
+&lt;domain type='kvm'&gt;
+  &lt;name&gt;sev-dummy-legacy&lt;/name&gt;
+  &lt;memory unit='KiB'&gt;4194304&lt;/memory&gt;
+  &lt;currentMemory unit='KiB'&gt;4194304&lt;/currentMemory&gt;
+  &lt;memtune&gt;
+    &lt;hard_limit unit='KiB'&gt;5242880&lt;/hard_limit&gt;
+  &lt;/memtune&gt;
+  &lt;vcpu placement='static'&gt;4&lt;/vcpu&gt;
+  &lt;os&gt;
+    &lt;type arch='x86_64' machine='pc-i440fx-3.0'&gt;hvm&lt;/type&gt;
+    &lt;loader readonly='yes' type='pflash'&gt;/usr/share/edk2/ovmf/OVMF_CODE.fd&lt;/loader&gt;
+    &lt;nvram&gt;/var/lib/libvirt/qemu/nvram/sev-dummy_VARS.fd&lt;/nvram&gt;
+    &lt;boot dev='hd'/&gt;
+  &lt;/os&gt;
+  &lt;features&gt;
+  &lt;acpi/&gt;
+  &lt;apic/&gt;
+  &lt;vmport state='off'/&gt;
+  &lt;/features&gt;
+  &lt;cpu mode='host-model' check='partial'&gt;
+    &lt;model fallback='allow'/&gt;
+  &lt;/cpu&gt;
+  &lt;clock offset='utc'&gt;
+    &lt;timer name='rtc' tickpolicy='catchup'/&gt;
+    &lt;timer name='pit' tickpolicy='delay'/&gt;
+    &lt;timer name='hpet' present='no'/&gt;
+  &lt;/clock&gt;
+  &lt;on_poweroff&gt;destroy&lt;/on_poweroff&gt;
+  &lt;on_reboot&gt;restart&lt;/on_reboot&gt;
+  &lt;on_crash&gt;destroy&lt;/on_crash&gt;
+  &lt;pm&gt;
+    &lt;suspend-to-mem enabled='no'/&gt;
+    &lt;suspend-to-disk enabled='no'/&gt;
+  &lt;/pm&gt;
+  &lt;devices&gt;
+    &lt;emulator&gt;/usr/bin/qemu-kvm&lt;/emulator&gt;
+    &lt;disk type='file' device='disk'&gt;
+      &lt;driver name='qemu' type='qcow2'/&gt;
+      &lt;source file='/var/lib/libvirt/images/sev-dummy-seabios.qcow2'/&gt;
+      &lt;target dev='sda' bus='sata'/&gt;
+    &lt;/disk&gt;
+    &lt;interface type='network'&gt;
+      &lt;mac address='52:54:00:d8:96:c8'/&gt;
+      &lt;source network='default'/&gt;
+      &lt;model type='virtio-non-transitional'/&gt;
+    &lt;/interface&gt;
+    &lt;serial type='pty'&gt;
+      &lt;target type='isa-serial' port='0'&gt;
+        &lt;model name='isa-serial'/&gt;
+      &lt;/target&gt;
+    &lt;/serial&gt;
+    &lt;console type='pty'&gt;
+      &lt;target type='serial' port='0'/&gt;
+    &lt;/console&gt;
+    &lt;input type='tablet' bus='usb'&gt;
+      &lt;address type='usb' bus='0' port='1'/&gt;
+    &lt;/input&gt;
+    &lt;input type='mouse' bus='ps2'/&gt;
+    &lt;input type='keyboard' bus='ps2'/&gt;
+    &lt;graphics type='spice' autoport='yes'&gt;
+      &lt;listen type='address'/&gt;
+      &lt;gl enable='no'/&gt;
+    &lt;/graphics&gt;
+    &lt;video&gt;
+      &lt;model type='qxl' ram='65536' vram='65536' vgamem='16384' heads='1' primary='yes'/&gt;
+    &lt;/video&gt;
+    &lt;memballoon model='virtio-non-transitional'&gt;
+      &lt;driver iommu='on'/&gt;
+    &lt;/memballoon&gt;
+      &lt;rng model='virtio-non-transitional'&gt;
+    &lt;driver iommu='on'/&gt;
+    &lt;/rng&gt;
+  &lt;/devices&gt;
+  &lt;launchSecurity type='sev'&gt;
+    &lt;cbitpos&gt;47&lt;/cbitpos&gt;
+    &lt;reducedPhysBits&gt;1&lt;/reducedPhysBits&gt;
+    &lt;policy&gt;0x0003&lt;/policy&gt;
+  &lt;/launchSecurity&gt;
+&lt;/domain&gt;</pre>
+  </body>
+</html>
