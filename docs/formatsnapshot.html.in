@@ -140,8 +140,8 @@
           <dd>This sub-element describes the snapshot properties of a
             specific disk.  The attribute <code>name</code> is
             mandatory, and must match either the <code>&lt;target
-            dev='name'/&gt;</code> or an unambiguous <code>&lt;source
-            file='name'/&gt;</code> of one of
+            dev='name'/&gt;</code> (recommended) or an unambiguous
+            <code>&lt;source file='name'/&gt;</code> of one of
             the <a href="formatdomain.html#elementsDisks">disk
             devices</a> specified for the domain at the time of the
             snapshot.  The attribute <code>snapshot</code> is
@@ -255,7 +255,7 @@
 &lt;domainsnapshot&gt;
   &lt;description&gt;Snapshot of OS install and updates&lt;/description&gt;
   &lt;disks&gt;
-    &lt;disk name='/path/to/old'&gt;
+    &lt;disk name='vda'&gt;
       &lt;source file='/path/to/new'/&gt;
     &lt;/disk&gt;
     &lt;disk name='vdb' snapshot='no'/&gt;
