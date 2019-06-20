@@ -4653,7 +4653,7 @@ metadata is silently lost when the domain quits running (whether
 by command such as B<destroy> or by internal guest action).
 
 =item B<snapshot-create-as> I<domain> {[I<--print-xml>]
-| [I<--no-metadata>] [I<--halt>] [I<--reuse-external>]} [I<name>]
+[I<--no-metadata>] [I<--halt>] [I<--reuse-external>]} [I<name>]
 [I<description>] [I<--disk-only> [I<--quiesce>]] [I<--atomic>]
 [[I<--live>] [I<--memspec> B<memspec>]] [I<--diskspec>] B<diskspec>]...
 
@@ -4703,7 +4703,7 @@ If I<--no-metadata> is specified, then the snapshot data is created,
 but any metadata is immediately discarded (that is, libvirt does not
 treat the snapshot as current, and cannot revert to the snapshot
 unless B<snapshot-create> is later used to teach libvirt about the
-metadata again).  This flag is incompatible with I<--print-xml>.
+metadata again).
 
 If I<--atomic> is specified, libvirt will guarantee that the snapshot
 either succeeds, or fails with no changes; not all hypervisors support

@@ -369,14 +369,8 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
     unsigned int flags = 0;
     const vshCmdOpt *opt = NULL;
 
-    if (vshCommandOptBool(cmd, "no-metadata")) {
-        if (vshCommandOptBool(cmd, "print-xml")) {
-            vshError(ctl, "%s",
-                     _("--print-xml is incompatible with --no-metadata"));
-            return false;
-        }
+    if (vshCommandOptBool(cmd, "no-metadata"))
         flags |= VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA;
-    }
     if (vshCommandOptBool(cmd, "halt"))
         flags |= VIR_DOMAIN_SNAPSHOT_CREATE_HALT;
     if (vshCommandOptBool(cmd, "disk-only"))
