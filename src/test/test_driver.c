@@ -1856,13 +1856,19 @@ static int testDomainShutdown(virDomainPtr domain)
 
 /* Similar behaviour as shutdown */
 static int testDomainReboot(virDomainPtr domain,
-                            unsigned int action ATTRIBUTE_UNUSED)
+                            unsigned int flags)
 {
     testDriverPtr privconn = domain->conn->privateData;
     virDomainObjPtr privdom;
     virObjectEventPtr event = NULL;
     int ret = -1;
 
+    virCheckFlags(VIR_DOMAIN_REBOOT_DEFAULT |
+                  VIR_DOMAIN_REBOOT_ACPI_POWER_BTN |
+                  VIR_DOMAIN_REBOOT_GUEST_AGENT |
+                  VIR_DOMAIN_REBOOT_INITCTL |
+                  VIR_DOMAIN_REBOOT_SIGNAL |
+                  VIR_DOMAIN_REBOOT_PARAVIRT, -1);
 
     if (!(privdom = testDomObjFromDomain(domain)))
         goto cleanup;
