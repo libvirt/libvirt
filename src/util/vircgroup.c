@@ -381,22 +381,6 @@ virCgroupDetect(virCgroupPtr group,
             return -1;
     }
 
-    for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
-        if (group->backends[i]) {
-            int rc = group->backends[i]->detectControllers(group, controllers, parent);
-            if (rc < 0)
-                return -1;
-            controllersAvailable |= rc;
-        }
-    }
-
-    /* Check that at least 1 controller is available */
-    if (controllersAvailable == 0) {
-        virReportSystemError(ENXIO, "%s",
-                             _("At least one cgroup controller is required"));
-        return -1;
-    }
-
     /* In some cases we can copy part of the placement info
      * based on the parent cgroup...
      */
@@ -419,6 +403,22 @@ virCgroupDetect(virCgroupPtr group,
             group->backends[i]->validatePlacement(group, pid) < 0) {
             return -1;
         }
+    }
+
+    for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
+        if (group->backends[i]) {
+            int rc = group->backends[i]->detectControllers(group, controllers, parent);
+            if (rc < 0)
+                return -1;
+            controllersAvailable |= rc;
+        }
+    }
+
+    /* Check that at least 1 controller is available */
+    if (controllersAvailable == 0) {
+        virReportSystemError(ENXIO, "%s",
+                             _("At least one cgroup controller is required"));
+        return -1;
     }
 
     return 0;

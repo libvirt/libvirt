@@ -250,8 +250,9 @@ virCgroupV2ParseControllersFile(virCgroupPtr group)
     char **contList = NULL;
     char **tmp;
 
-    if (virAsprintf(&contFile, "%s/cgroup.controllers",
-                    group->unified.mountPoint) < 0)
+    if (virAsprintf(&contFile, "%s%s/cgroup.controllers",
+                    group->unified.mountPoint,
+                    NULLSTR_EMPTY(group->unified.placement)) < 0)
         return -1;
 
     rc = virFileReadAll(contFile, 1024 * 1024, &contStr);

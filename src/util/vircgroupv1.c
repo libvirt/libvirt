@@ -464,6 +464,7 @@ virCgroupV1DetectControllers(virCgroupPtr group,
                     }
                 }
                 VIR_FREE(group->legacy[i].mountPoint);
+                VIR_FREE(group->legacy[i].placement);
             }
         }
     } else {
