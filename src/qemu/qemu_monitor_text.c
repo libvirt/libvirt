@@ -32,36 +32,6 @@
 
 VIR_LOG_INIT("qemu.qemu_monitor_text");
 
-int qemuMonitorTextSetCPU(qemuMonitorPtr mon, int cpu, bool online)
-{
-    char *cmd;
-    char *reply = NULL;
-    int ret = -1;
-
-    if (virAsprintf(&cmd, "cpu_set %d %s", cpu, online ? "online" : "offline") < 0)
-        return -1;
-
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
-        goto cleanup;
-
-    /* If the command failed qemu prints: 'unknown command'
-     * No message is printed on success it seems */
-    if (strstr(reply, "unknown command:")) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("cannot change vcpu count of this domain"));
-        goto cleanup;
-    }
-
-    ret = 0;
-
- cleanup:
-    VIR_FREE(reply);
-    VIR_FREE(cmd);
-
-    return ret;
-}
-
-
 int qemuMonitorTextAddDrive(qemuMonitorPtr mon,
                             const char *drivestr)
 {

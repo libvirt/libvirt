@@ -25,8 +25,6 @@
 
 #include "qemu_monitor.h"
 
-int qemuMonitorTextSetCPU(qemuMonitorPtr mon, int cpu, bool online);
-
 int qemuMonitorTextAddDrive(qemuMonitorPtr mon,
                              const char *drivestr);
 
