@@ -285,16 +285,21 @@ virCgroupV2ParseControllersFile(virCgroupPtr group)
 
 static int
 virCgroupV2DetectControllers(virCgroupPtr group,
-                             int controllers)
+                             int controllers,
+                             virCgroupPtr parent)
 {
     size_t i;
 
-    if (virCgroupV2ParseControllersFile(group) < 0)
-        return -1;
+    if (parent) {
+        group->unified.controllers = parent->unified.controllers;
+    } else {
+        if (virCgroupV2ParseControllersFile(group) < 0)
+            return -1;
 
-    /* In cgroup v2 there is no cpuacct controller, the cpu.stat file always
-     * exists with usage stats. */
-    group->unified.controllers |= 1 << VIR_CGROUP_CONTROLLER_CPUACCT;
+        /* In cgroup v2 there is no cpuacct controller, the cpu.stat file always
+         * exists with usage stats. */
+        group->unified.controllers |= 1 << VIR_CGROUP_CONTROLLER_CPUACCT;
+    }
 
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++)
         VIR_DEBUG("Controller '%s' present=%s",
