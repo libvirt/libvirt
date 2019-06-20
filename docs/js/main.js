@@ -116,10 +116,10 @@ function fetchRSS() {
             var name = e.querySelector("author > name").textContent;
             var title = e.querySelector("title").textContent;
             var updated = e.querySelector("updated").textContent;
-            var uri = e.querySelector("author > uri").textContent;
+            var link = e.querySelector("link").attributes.href.textContent;
 
             var a = document.createElement("a");
-            a.href = uri;
+            a.href = link;
             a.innerText = title;
 
             var dt = document.createElement("dt");
