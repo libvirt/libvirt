@@ -404,7 +404,8 @@ virCgroupV2MakeGroup(virCgroupPtr parent ATTRIBUTE_UNUSED,
                 return -1;
             }
 
-            if (virCgroupV2EnableController(parent,
+            if (virCgroupV2HasController(parent, VIR_CGROUP_CONTROLLER_CPU) &&
+                virCgroupV2EnableController(parent,
                                             VIR_CGROUP_CONTROLLER_CPU) < 0) {
                 return -1;
             }
