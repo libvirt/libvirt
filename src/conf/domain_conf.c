@@ -21375,7 +21375,7 @@ virDomainObjParseXML(xmlDocPtr xml,
     if (virDomainDefPostParse(obj->def, caps, flags, xmlopt, parseOpaque) < 0)
         goto error;
 
-    /* valdiate configuration */
+    /* validate configuration */
     if (virDomainDefValidate(obj->def, caps, flags, xmlopt) < 0)
         goto error;
 
@@ -21465,7 +21465,7 @@ virDomainDefParseNode(xmlDocPtr xml,
     if (virDomainDefPostParse(def, caps, flags, xmlopt, parseOpaque) < 0)
         goto cleanup;
 
-    /* valdiate configuration */
+    /* validate configuration */
     if (virDomainDefValidate(def, caps, flags, xmlopt) < 0)
         goto cleanup;
 
