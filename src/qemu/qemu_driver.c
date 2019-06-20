@@ -15073,8 +15073,8 @@ qemuDomainSnapshotDiskDataCollect(virQEMUDriverPtr driver,
         if (snapdef->disks[i].snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE)
             continue;
 
-        ndata++;
         dd = data + ndata;
+        ndata++;
 
         dd->disk = vm->def->disks[i];
 
