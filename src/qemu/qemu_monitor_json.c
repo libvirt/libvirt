@@ -2979,8 +2979,9 @@ int qemuMonitorJSONSetCPU(qemuMonitorPtr mon,
                                          "i:id", cpu,
                                          NULL);
     } else {
-        /* offlining is not yet implemented in qmp */
-        goto fallback;
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("vCPU unplug is not supported by this QEMU"));
+        goto cleanup;
     }
     if (!cmd)
         goto cleanup;
@@ -2988,20 +2989,12 @@ int qemuMonitorJSONSetCPU(qemuMonitorPtr mon,
     if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
         goto cleanup;
 
-    if (qemuMonitorJSONHasError(reply, "CommandNotFound"))
-        goto fallback;
-    else
-        ret = qemuMonitorJSONCheckError(cmd, reply);
+    ret = qemuMonitorJSONCheckError(cmd, reply);
 
  cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
-
- fallback:
-    VIR_DEBUG("no QMP support for cpu_set, trying HMP");
-    ret = qemuMonitorTextSetCPU(mon, cpu, online);
-    goto cleanup;
 }
 
 
