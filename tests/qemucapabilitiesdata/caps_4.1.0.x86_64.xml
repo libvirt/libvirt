@@ -210,7 +210,7 @@
   <version>4000050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100759</microcodeVersion>
-  <package>v4.0.0-1173-g9c70209b63</package>
+  <package>v4.0.0-1481-g33d6099906</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='cmov' type='boolean' value='true' migratable='yes'/>
@@ -253,7 +253,7 @@
     <property name='3dnowprefetch' type='boolean' value='true' migratable='yes'/>
     <property name='avx512vbmi2' type='boolean' value='false'/>
     <property name='cr8legacy' type='boolean' value='false'/>
-    <property name='stibp' type='boolean' value='false'/>
+    <property name='stibp' type='boolean' value='true' migratable='yes'/>
     <property name='xcrypt-en' type='boolean' value='false'/>
     <property name='pn' type='boolean' value='false'/>
     <property name='rsba' type='boolean' value='false'/>
@@ -297,9 +297,9 @@
     <property name='syscall' type='boolean' value='true' migratable='yes'/>
     <property name='avx512dq' type='boolean' value='false'/>
     <property name='svm' type='boolean' value='false'/>
-    <property name='invtsc' type='boolean' value='false'/>
+    <property name='invtsc' type='boolean' value='true' migratable='no'/>
     <property name='sse2' type='boolean' value='true' migratable='yes'/>
-    <property name='ssbd' type='boolean' value='false'/>
+    <property name='ssbd' type='boolean' value='true' migratable='yes'/>
     <property name='est' type='boolean' value='false'/>
     <property name='avx512ifma' type='boolean' value='false'/>
     <property name='tm2' type='boolean' value='false'/>
@@ -338,7 +338,7 @@
     <property name='osvw' type='boolean' value='false'/>
     <property name='apic' type='boolean' value='true' migratable='yes'/>
     <property name='pmm' type='boolean' value='false'/>
-    <property name='spec-ctrl' type='boolean' value='false'/>
+    <property name='spec-ctrl' type='boolean' value='true' migratable='yes'/>
     <property name='tsc-adjust' type='boolean' value='true' migratable='yes'/>
     <property name='kvm-steal-time' type='boolean' value='true' migratable='yes'/>
     <property name='kvmclock' type='boolean' value='true' migratable='yes'/>
@@ -367,7 +367,7 @@
     <property name='sep' type='boolean' value='true' migratable='yes'/>
     <property name='virt-ssbd' type='boolean' value='false'/>
     <property name='nodeid-msr' type='boolean' value='false'/>
-    <property name='md-clear' type='boolean' value='false'/>
+    <property name='md-clear' type='boolean' value='true' migratable='yes'/>
     <property name='misalignsse' type='boolean' value='false'/>
     <property name='min-xlevel' type='number' value='2147483656'/>
     <property name='bmi1' type='boolean' value='true' migratable='yes'/>
@@ -632,9 +632,7 @@
     <blocker name='3dnowext'/>
     <blocker name='3dnow'/>
   </cpu>
-  <cpu type='kvm' name='Westmere-IBRS' usable='no'>
-    <blocker name='spec-ctrl'/>
-  </cpu>
+  <cpu type='kvm' name='Westmere-IBRS' usable='yes'/>
   <cpu type='kvm' name='Westmere' usable='yes'/>
   <cpu type='kvm' name='Skylake-Server-IBRS' usable='no'>
     <blocker name='avx512f'/>
@@ -644,7 +642,6 @@
     <blocker name='avx512bw'/>
     <blocker name='avx512vl'/>
     <blocker name='pku'/>
-    <blocker name='spec-ctrl'/>
     <blocker name='avx512f'/>
     <blocker name='avx512f'/>
     <blocker name='avx512f'/>
@@ -663,13 +660,9 @@
     <blocker name='avx512f'/>
     <blocker name='pku'/>
   </cpu>
-  <cpu type='kvm' name='Skylake-Client-IBRS' usable='no'>
-    <blocker name='spec-ctrl'/>
-  </cpu>
+  <cpu type='kvm' name='Skylake-Client-IBRS' usable='yes'/>
   <cpu type='kvm' name='Skylake-Client' usable='yes'/>
-  <cpu type='kvm' name='SandyBridge-IBRS' usable='no'>
-    <blocker name='spec-ctrl'/>
-  </cpu>
+  <cpu type='kvm' name='SandyBridge-IBRS' usable='yes'/>
   <cpu type='kvm' name='SandyBridge' usable='yes'/>
   <cpu type='kvm' name='Penryn' usable='yes'/>
   <cpu type='kvm' name='Opteron_G5' usable='no'>
@@ -695,9 +688,7 @@
   </cpu>
   <cpu type='kvm' name='Opteron_G2' usable='yes'/>
   <cpu type='kvm' name='Opteron_G1' usable='yes'/>
-  <cpu type='kvm' name='Nehalem-IBRS' usable='no'>
-    <blocker name='spec-ctrl'/>
-  </cpu>
+  <cpu type='kvm' name='Nehalem-IBRS' usable='yes'/>
   <cpu type='kvm' name='Nehalem' usable='yes'/>
   <cpu type='kvm' name='KnightsMill' usable='no'>
     <blocker name='avx512f'/>
@@ -711,9 +702,7 @@
     <blocker name='avx512f'/>
     <blocker name='avx512f'/>
   </cpu>
-  <cpu type='kvm' name='IvyBridge-IBRS' usable='no'>
-    <blocker name='spec-ctrl'/>
-  </cpu>
+  <cpu type='kvm' name='IvyBridge-IBRS' usable='yes'/>
   <cpu type='kvm' name='IvyBridge' usable='yes'/>
   <cpu type='kvm' name='Icelake-Server' usable='no'>
     <blocker name='avx512f'/>
@@ -732,8 +721,6 @@
     <blocker name='avx512bitalg'/>
     <blocker name='avx512-vpopcntdq'/>
     <blocker name='la57'/>
-    <blocker name='spec-ctrl'/>
-    <blocker name='ssbd'/>
     <blocker name='wbnoinvd'/>
     <blocker name='avx512f'/>
     <blocker name='avx512f'/>
@@ -750,18 +737,12 @@
     <blocker name='avx512vnni'/>
     <blocker name='avx512bitalg'/>
     <blocker name='avx512-vpopcntdq'/>
-    <blocker name='spec-ctrl'/>
-    <blocker name='ssbd'/>
     <blocker name='wbnoinvd'/>
     <blocker name='pku'/>
   </cpu>
-  <cpu type='kvm' name='Haswell-noTSX-IBRS' usable='no'>
-    <blocker name='spec-ctrl'/>
-  </cpu>
+  <cpu type='kvm' name='Haswell-noTSX-IBRS' usable='yes'/>
   <cpu type='kvm' name='Haswell-noTSX' usable='yes'/>
-  <cpu type='kvm' name='Haswell-IBRS' usable='no'>
-    <blocker name='spec-ctrl'/>
-  </cpu>
+  <cpu type='kvm' name='Haswell-IBRS' usable='yes'/>
   <cpu type='kvm' name='Haswell' usable='yes'/>
   <cpu type='kvm' name='EPYC-IBPB' usable='no'>
     <blocker name='sha-ni'/>
@@ -807,20 +788,14 @@
     <blocker name='avx512vl'/>
     <blocker name='pku'/>
     <blocker name='avx512vnni'/>
-    <blocker name='spec-ctrl'/>
-    <blocker name='ssbd'/>
     <blocker name='avx512f'/>
     <blocker name='avx512f'/>
     <blocker name='avx512f'/>
     <blocker name='pku'/>
   </cpu>
-  <cpu type='kvm' name='Broadwell-noTSX-IBRS' usable='no'>
-    <blocker name='spec-ctrl'/>
-  </cpu>
+  <cpu type='kvm' name='Broadwell-noTSX-IBRS' usable='yes'/>
   <cpu type='kvm' name='Broadwell-noTSX' usable='yes'/>
-  <cpu type='kvm' name='Broadwell-IBRS' usable='no'>
-    <blocker name='spec-ctrl'/>
-  </cpu>
+  <cpu type='kvm' name='Broadwell-IBRS' usable='yes'/>
   <cpu type='kvm' name='Broadwell' usable='yes'/>
   <cpu type='kvm' name='486' usable='yes'/>
   <cpu type='tcg' name='max' usable='yes'/>
@@ -1219,49 +1194,47 @@
   </cpu>
   <cpu type='tcg' name='486' usable='yes'/>
   <machine name='pc-i440fx-4.1' alias='pc' hotplugCpus='yes' maxCpus='255' default='yes'/>
-  <machine name='isapc' hotplugCpus='yes' maxCpus='1'/>
-  <machine name='pc-1.1' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='pc-1.2' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='pc-1.3' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='pc-i440fx-2.8' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='pc-1.0' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='pc-i440fx-2.9' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='pc-i440fx-2.6' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='pc-i440fx-2.7' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='xenfv' hotplugCpus='yes' maxCpus='128'/>
-  <machine name='pc-i440fx-2.3' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='pc-i440fx-2.4' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='pc-i440fx-2.5' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='pc-i440fx-4.0' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='pc-i440fx-2.1' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='pc-i440fx-2.2' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='pc-q35-3.1' hotplugCpus='yes' maxCpus='288'/>
-  <machine name='pc-i440fx-2.0' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='pc-q35-2.11' hotplugCpus='yes' maxCpus='288'/>
-  <machine name='pc-q35-2.12' hotplugCpus='yes' maxCpus='288'/>
-  <machine name='pc-q35-3.0' hotplugCpus='yes' maxCpus='288'/>
-  <machine name='xenpv' maxCpus='1'/>
-  <machine name='pc-q35-2.10' hotplugCpus='yes' maxCpus='288'/>
-  <machine name='pc-q35-4.0.1' hotplugCpus='yes' maxCpus='288'/>
-  <machine name='pc-i440fx-1.7' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='pc-q35-2.9' hotplugCpus='yes' maxCpus='288'/>
   <machine name='pc-0.15' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-i440fx-2.12' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-i440fx-2.0' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-i440fx-2.5' hotplugCpus='yes' maxCpus='255'/>
   <machine name='pc-i440fx-1.5' hotplugCpus='yes' maxCpus='255'/>
   <machine name='pc-q35-2.7' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='pc-i440fx-1.6' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='pc-i440fx-2.11' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='pc-q35-2.8' hotplugCpus='yes' maxCpus='288'/>
-  <machine name='pc-0.13' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='pc-i440fx-2.12' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='pc-0.14' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='pc-i440fx-3.0' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='pc-i440fx-3.1' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='pc-q35-2.4' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='pc-q35-2.5' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='pc-q35-2.6' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='pc-i440fx-1.4' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='pc-i440fx-2.10' hotplugCpus='yes' maxCpus='255'/>
   <machine name='pc-0.12' hotplugCpus='yes' maxCpus='255'/>
-  <machine name='pc-q35-4.0' hotplugCpus='yes' maxCpus='288'/>
+  <machine name='pc-i440fx-2.2' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-1.1' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-i440fx-2.7' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-q35-2.4' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-q35-2.10' hotplugCpus='yes' maxCpus='288'/>
+  <machine name='pc-i440fx-1.7' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-0.14' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-q35-2.9' hotplugCpus='yes' maxCpus='288'/>
+  <machine name='pc-i440fx-2.11' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-q35-3.1' hotplugCpus='yes' maxCpus='288'/>
   <machine name='pc-q35-4.1' alias='q35' hotplugCpus='yes' maxCpus='288'/>
+  <machine name='pc-i440fx-2.4' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-1.3' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-i440fx-2.9' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='isapc' hotplugCpus='yes' maxCpus='1'/>
+  <machine name='pc-i440fx-1.4' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-q35-2.6' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-i440fx-3.1' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-q35-2.12' hotplugCpus='yes' maxCpus='288'/>
+  <machine name='pc-i440fx-2.1' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-1.0' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-i440fx-2.6' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-q35-4.0.1' hotplugCpus='yes' maxCpus='288'/>
+  <machine name='pc-i440fx-1.6' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-0.13' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-q35-2.8' hotplugCpus='yes' maxCpus='288'/>
+  <machine name='pc-i440fx-2.10' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-q35-3.0' hotplugCpus='yes' maxCpus='288'/>
+  <machine name='pc-q35-4.0' hotplugCpus='yes' maxCpus='288'/>
+  <machine name='pc-i440fx-2.3' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-1.2' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-i440fx-4.0' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-i440fx-2.8' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-q35-2.5' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-i440fx-3.0' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-q35-2.11' hotplugCpus='yes' maxCpus='288'/>
 </qemuCaps>
