@@ -1,50 +1,52 @@
+"use strict";
+
 function pageload() {
-    window.addEventListener('scroll', function(e){
-        var distanceY = window.pageYOffset || document.documentElement.scrollTop
-        var shrinkOn = 94
-        home = document.getElementById("home");
-        links = document.getElementById("jumplinks");
-        search = document.getElementById("search");
-        body = document.getElementById("body");
+    window.addEventListener("scroll", function(e){
+        var distanceY = window.pageYOffset || document.documentElement.scrollTop;
+        var shrinkOn = 94;
+        var home = document.getElementById("home");
+        var links = document.getElementById("jumplinks");
+        var search = document.getElementById("search");
+        var body = document.getElementById("body");
         if (distanceY > shrinkOn) {
             if (home.className != "navhide") {
-                body.className = "navhide"
-                home.className = "navhide"
-                links.className = "navhide"
-                search.className = "navhide"
+                body.className = "navhide";
+                home.className = "navhide";
+                links.className = "navhide";
+                search.className = "navhide";
             }
         } else {
             if (home.className == "navhide") {
-                body.className = ""
-                home.className = ""
-                links.className = ""
-                search.className = ""
+                body.className = "";
+                home.className = "";
+                links.className = "";
+                search.className = "";
             }
         }
     });
 
     /* Setting this class makes the advanced search options visible */
-    advancedSearch = document.getElementById("advancedsearch")
-    advancedSearch.className = "advancedsearch"
+    var advancedSearch = document.getElementById("advancedsearch");
+    advancedSearch.className = "advancedsearch";
 
-    simpleSearch = document.getElementById("simplesearch")
-    simpleSearch.addEventListener("submit", advancedsearch)
+    var simpleSearch = document.getElementById("simplesearch");
+    simpleSearch.addEventListener("submit", advancedsearch);
 }
 
 function advancedsearch(e) {
     e.preventDefault();
     e.stopPropagation();
 
-    form = document.createElement("form");
+    var form = document.createElement("form");
     form.setAttribute("method", "get");
 
-    newq = document.createElement("input");
+    var newq = document.createElement("input");
     newq.setAttribute("type", "hidden");
     form.appendChild(newq);
 
-    q = document.getElementById("searchq");
-    whats = document.getElementsByName("what");
-    what = "website";
+    var q = document.getElementById("searchq");
+    var whats = document.getElementsByName("what");
+    var what = "website";
     for (var i = 0; i < whats.length; i++) {
         if (whats[i].checked) {
             what = whats[i].value;
