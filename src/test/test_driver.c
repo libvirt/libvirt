@@ -1984,17 +1984,32 @@ testDomainGetState(virDomainPtr domain,
 }
 
 static int
-testDomainGetTime(virDomainPtr dom ATTRIBUTE_UNUSED,
+testDomainGetTime(virDomainPtr dom,
                   long long *seconds,
                   unsigned int *nseconds,
                   unsigned int flags)
 {
+    virDomainObjPtr vm = NULL;
+    int ret = -1;
+
     virCheckFlags(0, -1);
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        return -1;
+
+    if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_RUNNING) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("domain is not running"));
+        goto cleanup;
+    }
 
     *seconds = 627319920;
     *nseconds = 0;
 
-    return 0;
+    ret = 0;
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
 }
 
 #define TEST_SAVE_MAGIC "TestGuestMagic"
