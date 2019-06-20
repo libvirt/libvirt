@@ -399,7 +399,7 @@ virCgroupV2MakeGroup(virCgroupPtr parent ATTRIBUTE_UNUSED,
 
     if (create) {
         if (flags & VIR_CGROUP_THREAD) {
-            if (virCgroupSetValueStr(group, VIR_CGROUP_CONTROLLER_CPU,
+            if (virCgroupSetValueStr(group, controller,
                                      "cgroup.type", "threaded") < 0) {
                 return -1;
             }
