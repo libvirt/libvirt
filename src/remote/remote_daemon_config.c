@@ -107,12 +107,14 @@ daemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
     if (VIR_ALLOC(data) < 0)
         return NULL;
 
+#ifdef WITH_IP
     data->listen_tls = 1;
     data->listen_tcp = 0;
 
     if (VIR_STRDUP(data->tls_port, LIBVIRTD_TLS_PORT) < 0 ||
         VIR_STRDUP(data->tcp_port, LIBVIRTD_TCP_PORT) < 0)
         goto error;
+#endif /* !WITH_IP */
 
     /* Only default to PolicyKit if running as root */
 #if WITH_POLKIT
@@ -133,12 +135,14 @@ daemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
         VIR_STRDUP(data->unix_sock_admin_perms, "0700") < 0)
         goto error;
 
-#if WITH_SASL
+#ifdef WITH_IP
+# if WITH_SASL
     data->auth_tcp = REMOTE_AUTH_SASL;
-#else
+# else
     data->auth_tcp = REMOTE_AUTH_NONE;
-#endif
+# endif
     data->auth_tls = REMOTE_AUTH_NONE;
+#endif /* ! WITH_IP */
 
     data->min_workers = 5;
     data->max_workers = 20;
@@ -182,9 +186,12 @@ daemonConfigFree(struct daemonConfig *data)
     if (!data)
         return;
 
+#ifdef WITH_IP
     VIR_FREE(data->listen_addr);
     VIR_FREE(data->tls_port);
     VIR_FREE(data->tcp_port);
+#endif /* ! WITH_IP */
+
     tmp = data->access_drivers;
     while (tmp && *tmp) {
         VIR_FREE(*tmp);
@@ -198,6 +205,14 @@ daemonConfigFree(struct daemonConfig *data)
     VIR_FREE(data->unix_sock_group);
     VIR_FREE(data->unix_sock_dir);
 
+    tmp = data->sasl_allowed_username_list;
+    while (tmp && *tmp) {
+        VIR_FREE(*tmp);
+        tmp++;
+    }
+    VIR_FREE(data->sasl_allowed_username_list);
+
+#ifdef WITH_IP
     tmp = data->tls_allowed_dn_list;
     while (tmp && *tmp) {
         VIR_FREE(*tmp);
@@ -205,18 +220,13 @@ daemonConfigFree(struct daemonConfig *data)
     }
     VIR_FREE(data->tls_allowed_dn_list);
 
-    tmp = data->sasl_allowed_username_list;
-    while (tmp && *tmp) {
-        VIR_FREE(*tmp);
-        tmp++;
-    }
-    VIR_FREE(data->sasl_allowed_username_list);
     VIR_FREE(data->tls_priority);
 
     VIR_FREE(data->key_file);
     VIR_FREE(data->ca_file);
     VIR_FREE(data->cert_file);
     VIR_FREE(data->crl_file);
+#endif /* ! WITH_IP */
 
     VIR_FREE(data->host_uuid);
     VIR_FREE(data->host_uuid_source);
@@ -231,6 +241,7 @@ daemonConfigLoadOptions(struct daemonConfig *data,
                         const char *filename,
                         virConfPtr conf)
 {
+#ifdef WITH_IP
     if (virConfGetValueBool(conf, "listen_tcp", &data->listen_tcp) < 0)
         goto error;
     if (virConfGetValueBool(conf, "listen_tls", &data->listen_tls) < 0)
@@ -241,6 +252,7 @@ daemonConfigLoadOptions(struct daemonConfig *data,
         goto error;
     if (virConfGetValueString(conf, "listen_addr", &data->listen_addr) < 0)
         goto error;
+#endif /* !WITH_IP */
 
     if (remoteConfigGetAuth(conf, filename, "auth_unix_rw", &data->auth_unix_rw) < 0)
         goto error;
@@ -256,10 +268,13 @@ daemonConfigLoadOptions(struct daemonConfig *data,
 #endif
     if (remoteConfigGetAuth(conf, filename, "auth_unix_ro", &data->auth_unix_ro) < 0)
         goto error;
+
+#ifdef WITH_IP
     if (remoteConfigGetAuth(conf, filename, "auth_tcp", &data->auth_tcp) < 0)
         goto error;
     if (remoteConfigGetAuth(conf, filename, "auth_tls", &data->auth_tls) < 0)
         goto error;
+#endif /* ! WITH_IP */
 
     if (virConfGetValueStringList(conf, "access_drivers", false,
                                   &data->access_drivers) < 0)
@@ -277,6 +292,7 @@ daemonConfigLoadOptions(struct daemonConfig *data,
     if (virConfGetValueString(conf, "unix_sock_dir", &data->unix_sock_dir) < 0)
         goto error;
 
+#ifdef WITH_IP
     if (virConfGetValueBool(conf, "tls_no_sanity_certificate", &data->tls_no_sanity_certificate) < 0)
         goto error;
     if (virConfGetValueBool(conf, "tls_no_verify_certificate", &data->tls_no_verify_certificate) < 0)
@@ -295,12 +311,12 @@ daemonConfigLoadOptions(struct daemonConfig *data,
                                   &data->tls_allowed_dn_list) < 0)
         goto error;
 
+    if (virConfGetValueString(conf, "tls_priority", &data->tls_priority) < 0)
+        goto error;
+#endif /* ! WITH_IP */
 
     if (virConfGetValueStringList(conf, "sasl_allowed_username_list", false,
                                   &data->sasl_allowed_username_list) < 0)
-        goto error;
-
-    if (virConfGetValueString(conf, "tls_priority", &data->tls_priority) < 0)
         goto error;
 
     if (virConfGetValueUInt(conf, "min_workers", &data->min_workers) < 0)
