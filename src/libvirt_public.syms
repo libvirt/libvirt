@@ -820,6 +820,7 @@ LIBVIRT_5.2.0 {
 } LIBVIRT_4.10.0;
 
 LIBVIRT_5.5.0 {
+    global:
         virNetworkListAllPorts;
         virNetworkPortLookupByUUID;
         virNetworkPortLookupByUUIDString;
