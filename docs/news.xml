@@ -64,6 +64,16 @@
       </change>
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          Add error code for deprecated operations
+        </summary>
+        <description>
+          The new error code VIR_ERR_DEPRECATED allows for more reliable checks
+          of scenarios where libvirt deprecated a certain operation or
+          configuration.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
