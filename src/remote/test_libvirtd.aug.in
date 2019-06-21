@@ -1,12 +1,14 @@
-module Test_libvirtd =
+module Test_@DAEMON_NAME@ =
    @CONFIG@
 
-   test Libvirtd.lns get conf =
+   test @DAEMON_NAME_UC@.lns get conf =
+@CUT_ENABLE_IP@
         { "listen_tls" = "0" }
         { "listen_tcp" = "1" }
         { "tls_port" = "16514" }
         { "tcp_port" = "16509" }
         { "listen_addr" = "192.168.0.1" }
+@END@
         { "unix_sock_group" = "libvirt" }
         { "unix_sock_ro_perms" = "0777" }
         { "unix_sock_rw_perms" = "0770" }
@@ -14,11 +16,14 @@ module Test_libvirtd =
         { "unix_sock_dir" = "/var/run/libvirt" }
         { "auth_unix_ro" = "none" }
         { "auth_unix_rw" = "none" }
+@CUT_ENABLE_IP@
         { "auth_tcp" = "sasl" }
         { "auth_tls" = "none" }
+@END@
         { "access_drivers"
              { "1" = "polkit" }
         }
+@CUT_ENABLE_IP@
         { "key_file" = "/etc/pki/libvirt/private/serverkey.pem" }
         { "cert_file" = "/etc/pki/libvirt/servercert.pem" }
         { "ca_file" = "/etc/pki/CA/cacert.pem" }
@@ -30,6 +35,7 @@ module Test_libvirtd =
              { "2" = "DN2"}
         }
         { "tls_priority" = "NORMAL" }
+@END@
         { "sasl_allowed_username_list"
              { "1" = "joe@EXAMPLE.COM" }
              { "2" = "fred@EXAMPLE.COM" }
@@ -48,7 +54,7 @@ module Test_libvirtd =
         { "admin_max_client_requests" = "5" }
         { "log_level" = "3" }
         { "log_filters" = "1:qemu 1:libvirt 4:object 4:json 4:event 1:util" }
-        { "log_outputs" = "3:syslog:libvirtd" }
+        { "log_outputs" = "3:syslog:@DAEMON_NAME@" }
         { "audit_level" = "2" }
         { "audit_logging" = "1" }
         { "host_uuid" = "00000000-0000-0000-0000-000000000000" }

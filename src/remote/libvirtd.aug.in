@@ -1,6 +1,6 @@
-(* /etc/libvirt/libvirtd.conf *)
+(* /etc/libvirt/@DAEMON_NAME@.conf *)
 
-module Libvirtd =
+module @DAEMON_NAME_UC@ =
    autoload xfm
 
    let eol   = del /[ \t]*\n/ "\n"
@@ -24,11 +24,13 @@ module Libvirtd =
 
 
    (* Config entry grouped by function - same order as example config *)
+@CUT_ENABLE_IP@
    let network_entry = bool_entry "listen_tls"
                      | bool_entry "listen_tcp"
                      | str_entry "tls_port"
                      | str_entry "tcp_port"
                      | str_entry "listen_addr"
+@END@
 
    let sock_acl_entry = str_entry "unix_sock_group"
                       | str_entry "unix_sock_ro_perms"
@@ -38,6 +40,7 @@ module Libvirtd =
 
    let authentication_entry = str_entry "auth_unix_ro"
                             | str_entry "auth_unix_rw"
+@CUT_ENABLE_IP@
                             | str_entry "auth_tcp"
                             | str_entry "auth_tls"
 
@@ -46,12 +49,14 @@ module Libvirtd =
                          | str_entry "ca_file"
                          | str_entry "crl_file"
 
-   let authorization_entry = bool_entry "tls_no_verify_certificate"
+   let tls_authorization_entry = bool_entry "tls_no_verify_certificate"
                            | bool_entry "tls_no_sanity_certificate"
                            | str_array_entry "tls_allowed_dn_list"
-                           | str_array_entry "sasl_allowed_username_list"
-                           | str_array_entry "access_drivers"
                            | str_entry "tls_priority"
+@END@
+
+   let misc_authorization_entry = str_array_entry "sasl_allowed_username_list"
+                           | str_array_entry "access_drivers"
 
    let processing_entry = int_entry "min_workers"
                         | int_entry "max_workers"
@@ -87,11 +92,14 @@ module Libvirtd =
                   | int_entry "ovs_timeout"
 
    (* Each enty in the config is one of the following three ... *)
-   let entry = network_entry
-             | sock_acl_entry
+   let entry = sock_acl_entry
              | authentication_entry
+@CUT_ENABLE_IP@
+             | network_entry
              | certificate_entry
-             | authorization_entry
+             | tls_authorization_entry
+@END@
+             | misc_authorization_entry
              | processing_entry
              | admin_processing_entry
              | logging_entry
@@ -106,7 +114,7 @@ module Libvirtd =
 
    let lns = ( record | comment | empty ) *
 
-   let filter = incl "/etc/libvirt/libvirtd.conf"
+   let filter = incl "/etc/libvirt/@DAEMON_NAME@.conf"
               . Util.stdexcl
 
    let xfm = transform lns filter
