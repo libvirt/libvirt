@@ -2083,7 +2083,7 @@ virStorageSourceChainHasManagedPR(virStorageSourcePtr src)
     virStorageSourcePtr n;
 
     for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
-        if (virStoragePRDefIsManaged(src->pr))
+        if (virStoragePRDefIsManaged(n->pr))
             return true;
     }
 
