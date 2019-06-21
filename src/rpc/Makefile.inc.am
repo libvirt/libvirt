@@ -111,6 +111,7 @@ libvirt_net_rpc_server_la_SOURCES = \
 libvirt_net_rpc_server_la_CFLAGS = \
 	$(DBUS_CFLAGS) \
 	$(XDR_CFLAGS) \
+	$(SASL_CFLAGS) \
 	$(AM_CFLAGS) \
 	$(NULL)
 libvirt_net_rpc_server_la_LDFLAGS = \
