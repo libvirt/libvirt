@@ -5309,6 +5309,13 @@ qemuProcessStartValidateDisks(virDomainObjPtr vm,
                            _("PowerPC pseries machines do not support floppy device"));
             return -1;
         }
+
+        if (src->type == VIR_STORAGE_TYPE_NVME &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_NVME)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("NVMe disks are not supported with this QEMU binary"));
+            return -1;
+        }
     }
 
     return 0;
