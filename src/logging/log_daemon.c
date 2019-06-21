@@ -467,7 +467,7 @@ virLogDaemonSetupLogging(virLogDaemonConfigPtr config,
     /* Define the default output. This is only applied if there was no setting
      * from either the config or the environment.
      */
-    if (virLogSetDefaultOutput("virtlogd.log", godaemon, privileged) < 0)
+    if (virLogSetDefaultOutput("virtlogd", godaemon, privileged) < 0)
         return -1;
 
     if (virLogGetNbOutputs() == 0)

@@ -532,7 +532,7 @@ virLockDaemonSetupLogging(virLockDaemonConfigPtr config,
     /* Define the default output. This is only applied if there was no setting
      * from either the config or the environment.
      */
-    if (virLogSetDefaultOutput("virtlockd.log", godaemon, privileged) < 0)
+    if (virLogSetDefaultOutput("virtlockd", godaemon, privileged) < 0)
         return -1;
 
     if (virLogGetNbOutputs() == 0)

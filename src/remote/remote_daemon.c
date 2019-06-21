@@ -597,7 +597,7 @@ daemonSetupLogging(struct daemonConfig *config,
     /* Define the default output. This is only applied if there was no setting
      * from either the config or the environment.
      */
-    if (virLogSetDefaultOutput("libvirtd.log", godaemon, privileged) < 0)
+    if (virLogSetDefaultOutput("libvirtd", godaemon, privileged) < 0)
         return -1;
 
     if (virLogGetNbOutputs() == 0)

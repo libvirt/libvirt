@@ -175,7 +175,7 @@ virLogSetDefaultOutputToJournald(void)
 
 
 static int
-virLogSetDefaultOutputToFile(const char *filename, bool privileged)
+virLogSetDefaultOutputToFile(const char *binary, bool privileged)
 {
     int ret = -1;
     char *logdir = NULL;
@@ -183,8 +183,8 @@ virLogSetDefaultOutputToFile(const char *filename, bool privileged)
 
     if (privileged) {
         if (virAsprintf(&virLogDefaultOutput,
-                        "%d:file:%s/log/libvirt/%s", virLogDefaultPriority,
-                        LOCALSTATEDIR, filename) < 0)
+                        "%d:file:%s/log/libvirt/%s.log", virLogDefaultPriority,
+                        LOCALSTATEDIR, binary) < 0)
             goto cleanup;
     } else {
         if (!(logdir = virGetUserCacheDirectory()))
@@ -197,8 +197,8 @@ virLogSetDefaultOutputToFile(const char *filename, bool privileged)
         }
         umask(old_umask);
 
-        if (virAsprintf(&virLogDefaultOutput, "%d:file:%s/%s",
-                        virLogDefaultPriority, logdir, filename) < 0)
+        if (virAsprintf(&virLogDefaultOutput, "%d:file:%s/%s.log",
+                        virLogDefaultPriority, logdir, binary) < 0)
             goto cleanup;
     }
 
@@ -211,19 +211,19 @@ virLogSetDefaultOutputToFile(const char *filename, bool privileged)
 
 /*
  * virLogSetDefaultOutput:
- * @filename: the file that the output should be redirected to (only needed
- *            when @godaemon equals true
+ * @binary: the binary for which logging is performed. The log file name
+ *          will be derived from the binary name, with ".log" appended.
  * @godaemon: whether we're running daemonized
  * @privileged: whether we're running with root privileges or not (session)
  *
  * Decides on what the default output (journald, file, stderr) should be
- * according to @filename, @godaemon, @privileged. This function should be run
+ * according to @binary, @godaemon, @privileged. This function should be run
  * exactly once at daemon startup, so no locks are used.
  *
  * Returns 0 on success, -1 in case of a failure.
  */
 int
-virLogSetDefaultOutput(const char *filename, bool godaemon, bool privileged)
+virLogSetDefaultOutput(const char *binary, bool godaemon, bool privileged)
 {
     bool have_journald = access("/run/systemd/journal/socket", W_OK) >= 0;
 
@@ -237,7 +237,7 @@ virLogSetDefaultOutput(const char *filename, bool godaemon, bool privileged)
         return virLogSetDefaultOutputToStderr();
     }
 
-    return virLogSetDefaultOutputToFile(filename, privileged);
+    return virLogSetDefaultOutputToFile(binary, privileged);
 }
 
 
