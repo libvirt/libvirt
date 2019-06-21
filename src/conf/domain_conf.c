@@ -31480,6 +31480,20 @@ virDomainDefHasManagedPR(const virDomainDef *def)
 
 
 bool
+virDomainDefHasNVMeDisk(const virDomainDef *def)
+{
+    size_t i;
+
+    for (i = 0; i < def->ndisks; i++) {
+        if (virStorageSourceChainHasNVMe(def->disks[i]->src))
+            return true;
+    }
+
+    return false;
+}
+
+
+bool
 virDomainDefHasVFIOHostdev(const virDomainDef *def)
 {
     size_t i;

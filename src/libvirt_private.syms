@@ -310,6 +310,7 @@ virDomainDefHasManagedPR;
 virDomainDefHasMdevHostdev;
 virDomainDefHasMemballoon;
 virDomainDefHasMemoryHotplug;
+virDomainDefHasNVMeDisk;
 virDomainDefHasUSB;
 virDomainDefHasVcpusOffline;
 virDomainDefHasVFIOHostdev;
