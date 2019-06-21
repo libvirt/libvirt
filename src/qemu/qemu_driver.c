@@ -7327,7 +7327,7 @@ qemuConnectDomainXMLFromNative(virConnectPtr conn,
     if (virConnectDomainXMLFromNativeEnsureACL(conn) < 0)
         return NULL;
 
-    virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+    virReportError(VIR_ERR_DEPRECATED, "%s",
                    _("converting arbitrary QEMU command lines to libvirt domain XML is no longer supported"));
     return NULL;
 }
@@ -16779,7 +16779,7 @@ qemuDomainQemuAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
 {
     virCheckFlags(0, NULL);
 
-    virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+    virReportError(VIR_ERR_DEPRECATED, "%s",
                    _("attaching to a QEMU process started outside of libvirt is no longer supported"));
     return NULL;
 }
