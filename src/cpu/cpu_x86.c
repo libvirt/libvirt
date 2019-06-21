@@ -822,7 +822,8 @@ x86DataToCPU(const virCPUx86Data *data,
         for (blocker = hvModel->blockers; *blocker; blocker++) {
             if ((feature = x86FeatureFind(map, *blocker)) &&
                 !x86DataIsSubset(&copy, &feature->data))
-                x86DataAdd(&modelData, &feature->data);
+                if (x86DataAdd(&modelData, &feature->data) < 0)
+                    goto error;
         }
     }
 
