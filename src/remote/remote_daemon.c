@@ -311,60 +311,67 @@ static int daemonErrorLogFilter(virErrorPtr err, int priority)
 
 static int daemonInitialize(void)
 {
-    /*
+#ifdef MODULE_NAME
+    /* This a dedicated per-driver daemon build */
+    if (virDriverLoadModule(MODULE_NAME, MODULE_NAME "Register", true) < 0)
+        return -1;
+#else
+    /* This is the legacy monolithic libvirtd built with all drivers
+     *
      * Note that the order is important: the first ones have a higher
      * priority when calling virStateInitialize. We must register the
      * network, storage and nodedev drivers before any stateful domain
      * driver, since their resources must be auto-started before any
      * domains can be auto-started.
      */
-#ifdef WITH_NETWORK
+# ifdef WITH_NETWORK
     if (virDriverLoadModule("network", "networkRegister", false) < 0)
         return -1;
-#endif
-#ifdef WITH_INTERFACE
+# endif
+# ifdef WITH_INTERFACE
     if (virDriverLoadModule("interface", "interfaceRegister", false) < 0)
         return -1;
-#endif
-#ifdef WITH_SECRETS
+# endif
+# ifdef WITH_SECRETS
     if (virDriverLoadModule("secret", "secretRegister", false) < 0)
         return -1;
-#endif
-#ifdef WITH_STORAGE
+# endif
+# ifdef WITH_STORAGE
     if (virDriverLoadModule("storage", "storageRegister", false) < 0)
         return -1;
-#endif
-#ifdef WITH_NODE_DEVICES
+# endif
+# ifdef WITH_NODE_DEVICES
     if (virDriverLoadModule("nodedev", "nodedevRegister", false) < 0)
         return -1;
-#endif
-#ifdef WITH_NWFILTER
+# endif
+# ifdef WITH_NWFILTER
     if (virDriverLoadModule("nwfilter", "nwfilterRegister", false) < 0)
         return -1;
-#endif
-#ifdef WITH_LIBXL
+# endif
+# ifdef WITH_LIBXL
     if (virDriverLoadModule("libxl", "libxlRegister", false) < 0)
         return -1;
-#endif
-#ifdef WITH_QEMU
+# endif
+# ifdef WITH_QEMU
     if (virDriverLoadModule("qemu", "qemuRegister", false) < 0)
         return -1;
-#endif
-#ifdef WITH_LXC
+# endif
+# ifdef WITH_LXC
     if (virDriverLoadModule("lxc", "lxcRegister", false) < 0)
         return -1;
-#endif
-#ifdef WITH_VBOX
+# endif
+# ifdef WITH_VBOX
     if (virDriverLoadModule("vbox", "vboxRegister", false) < 0)
         return -1;
-#endif
-#ifdef WITH_BHYVE
+# endif
+# ifdef WITH_BHYVE
     if (virDriverLoadModule("bhyve", "bhyveRegister", false) < 0)
         return -1;
-#endif
-#ifdef WITH_VZ
+# endif
+# ifdef WITH_VZ
     if (virDriverLoadModule("vz", "vzRegister", false) < 0)
         return -1;
+# endif
 #endif
     return 0;
 }
