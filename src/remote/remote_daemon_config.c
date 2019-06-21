@@ -77,7 +77,8 @@ int
 daemonConfigFilePath(bool privileged, char **configfile)
 {
     if (privileged) {
-        if (VIR_STRDUP(*configfile, SYSCONFDIR "/libvirt/libvirtd.conf") < 0)
+        if (VIR_STRDUP(*configfile,
+                       SYSCONFDIR "/libvirt/" DAEMON_NAME ".conf") < 0)
             goto error;
     } else {
         char *configdir = NULL;
@@ -85,7 +86,7 @@ daemonConfigFilePath(bool privileged, char **configfile)
         if (!(configdir = virGetUserConfigDirectory()))
             goto error;
 
-        if (virAsprintf(configfile, "%s/libvirtd.conf", configdir) < 0) {
+        if (virAsprintf(configfile, "%s/%s.conf", configdir, DAEMON_NAME) < 0) {
             VIR_FREE(configdir);
             goto error;
         }

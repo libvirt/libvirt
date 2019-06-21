@@ -147,6 +147,7 @@ libvirtd_CFLAGS = \
 	-I$(srcdir)/conf \
 	-I$(srcdir)/rpc \
 	-DSOCK_PREFIX="\"libvirt\"" \
+	-DDAEMON_NAME="\"libvirtd\"" \
 	$(NULL)
 
 libvirtd_LDFLAGS = \
