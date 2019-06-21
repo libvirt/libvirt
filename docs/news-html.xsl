@@ -58,7 +58,7 @@
         <xsl:value-of select="@title"/>
       </strong>
       <xsl:if test="*">
-        <ul>
+        <ul class="news-section-content">
           <xsl:apply-templates select="change"/>
         </ul>
       </xsl:if>
@@ -68,8 +68,14 @@
   <!-- Change -->
   <xsl:template match="change">
     <li>
-      <xsl:apply-templates select="summary"/>
-      <xsl:apply-templates select="description"/>
+      <dl>
+        <dt>
+          <xsl:apply-templates select="summary"/>
+        </dt>
+        <dd>
+          <xsl:apply-templates select="description"/>
+        </dd>
+      </dl>
     </li>
   </xsl:template>
 
@@ -80,7 +86,6 @@
 
   <!-- Change description -->
   <xsl:template match="description">
-    <br/>
     <xsl:apply-templates/>
   </xsl:template>
 
