@@ -2136,6 +2136,20 @@ virStorageSourceNVMeDefFree(virStorageSourceNVMeDefPtr def)
 }
 
 
+bool
+virStorageSourceChainHasNVMe(const virStorageSource *src)
+{
+    const virStorageSource *n;
+
+    for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
+        if (n->type == VIR_STORAGE_TYPE_NVME)
+            return true;
+    }
+
+    return false;
+}
+
+
 virSecurityDeviceLabelDefPtr
 virStorageSourceGetSecurityLabelDef(virStorageSourcePtr src,
                                     const char *model)
