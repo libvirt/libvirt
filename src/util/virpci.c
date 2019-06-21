@@ -3239,7 +3239,8 @@ int virPCIGetHeaderType(virPCIDevicePtr dev, int *hdrType)
     type &= PCI_HEADER_TYPE_MASK;
     if (type >= VIR_PCI_HEADER_LAST) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown PCI header type '%d'"), type);
+                       _("Unknown PCI header type '%d' for device '%s'"),
+                       type, dev->name);
         return -1;
     }
 
