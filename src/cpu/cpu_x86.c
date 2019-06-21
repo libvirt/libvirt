@@ -2791,7 +2791,7 @@ virCPUx86GetHost(virCPUDefPtr cpu,
             };
 
             if (virCPUx86DataAdd(cpuData, &item) < 0)
-                return -1;
+                goto cleanup;
         }
     }
 
