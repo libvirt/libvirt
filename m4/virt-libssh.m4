@@ -33,6 +33,14 @@ AC_DEFUN([LIBVIRT_CHECK_LIBSSH],[
       [],
       [AC_DEFINE_UNQUOTED([ssh_get_server_publickey], [ssh_get_publickey],
             [ssh_get_publickey is deprecated and replaced by ssh_get_server_publickey.])])
+    AC_CHECK_FUNC([ssh_session_is_known_server],
+      [],
+      [AC_DEFINE_UNQUOTED([ssh_session_is_known_server], [ssh_is_server_known],
+            [ssh_is_server_known is deprecated and replaced by ssh_session_is_known_server.])])
+    AC_CHECK_FUNC([ssh_session_update_known_hosts],
+      [],
+      [AC_DEFINE_UNQUOTED([ssh_session_update_known_hosts], [ssh_write_knownhost],
+            [ssh_write_knownhost is deprecated and replaced by ssh_session_update_known_hosts.])])
     CFLAGS="$old_CFLAGS"
     LIBS="$old_LIBS"
   fi

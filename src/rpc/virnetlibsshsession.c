@@ -284,7 +284,7 @@ virNetLibsshCheckHostKey(virNetLibsshSessionPtr sess)
     if (sess->hostKeyVerify == VIR_NET_LIBSSH_HOSTKEY_VERIFY_IGNORE)
         return 0;
 
-    state = ssh_is_server_known(sess->session);
+    state = ssh_session_is_known_server(sess->session);
 
     switch (state) {
     case SSH_SERVER_KNOWN_OK:
@@ -378,7 +378,7 @@ virNetLibsshCheckHostKey(virNetLibsshSessionPtr sess)
 
         /* write the host key file, if specified */
         if (sess->knownHostsFile) {
-            if (ssh_write_knownhost(sess->session) < 0) {
+            if (ssh_session_update_known_hosts(sess->session) < 0) {
                 errmsg = ssh_get_error(sess->session);
                 virReportError(VIR_ERR_LIBSSH,
                                _("failed to write known_host file '%s': %s"),
