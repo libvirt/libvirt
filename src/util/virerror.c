@@ -1235,6 +1235,10 @@ const virErrorMsgTuple virErrorMsgStrings[VIR_ERR_NUMBER_LAST] = {
     [VIR_ERR_NO_NETWORK_PORT] = {
         N_("network port not found"),
         N_("network port not found: %s") },
+    [VIR_ERR_DEPRECATED] = {
+        N_("operation or configuration no longer supported"),
+        "%s",
+    },
 };
 
 
