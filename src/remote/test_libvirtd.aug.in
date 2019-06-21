@@ -29,11 +29,11 @@ module Test_libvirtd =
              { "1" = "DN1"}
              { "2" = "DN2"}
         }
+        { "tls_priority" = "NORMAL" }
         { "sasl_allowed_username_list"
              { "1" = "joe@EXAMPLE.COM" }
              { "2" = "fred@EXAMPLE.COM" }
         }
-        { "tls_priority" = "NORMAL" }
         { "max_clients" = "5000" }
         { "max_queued_clients" = "1000" }
         { "max_anonymous_clients" = "20" }

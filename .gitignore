@@ -158,6 +158,7 @@
 /src/remote/*_client_bodies.h
 /src/remote/*_protocol.[ch]
 /src/remote/*_stubs.h
+/src/remote/libvirtd.conf
 /src/remote/test_libvirtd.aug
 /src/rpc/virkeepaliveprotocol.[ch]
 /src/rpc/virnetprotocol.[ch]

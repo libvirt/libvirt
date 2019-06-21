@@ -1,13 +1,14 @@
 # Master libvirt daemon configuration file
 #
 
+@CUT_ENABLE_IP@
 #################################################################
 #
 # Network connectivity controls
 #
 
 # Flag listening for secure TLS connections on the public TCP/IP port.
-# NB, must pass the --listen flag to the libvirtd process for this to
+# NB, must pass the --listen flag to the @DAEMON_NAME@ process for this to
 # have any effect.
 #
 # This setting is not required or honoured if using systemd socket
@@ -20,7 +21,7 @@
 #listen_tls = 0
 
 # Listen for unencrypted TCP connections on the public TCP/IP port.
-# NB, must pass the --listen flag to the libvirtd process for this to
+# NB, must pass the --listen flag to the @DAEMON_NAME@ process for this to
 # have any effect.
 #
 # This setting is not required or honoured if using systemd socket
@@ -58,13 +59,14 @@
 # This setting is not required or honoured if using systemd socket
 # activation.
 #
-# If the libvirtd service is started in parallel with network
+# If the @DAEMON_NAME@ service is started in parallel with network
 # startup (e.g. with systemd), binding to addresses other than
 # the wildcards (0.0.0.0/::) might not be available yet.
 #
 #listen_addr = "192.168.0.1"
 
 
+@END@
 #################################################################
 #
 # UNIX socket access controls
@@ -157,6 +159,7 @@
 # If the unix_sock_rw_perms are changed you may wish to enable
 # an authentication mechanism here
 #auth_unix_rw = "none"
+@CUT_ENABLE_IP@
 
 # Change the authentication scheme for TCP sockets.
 #
@@ -174,6 +177,7 @@
 # It is possible to make use of any SASL authentication
 # mechanism as well, by using 'sasl' for this option
 #auth_tls = "none"
+@END@
 
 
 # Change the API access control scheme
@@ -182,10 +186,11 @@
 # to all APIs. Access drivers can place restrictions
 # on this. By default the 'nop' driver is enabled,
 # meaning no access control checks are done once a
-# client has authenticated with libvirtd
+# client has authenticated with @DAEMON_NAME@
 #
 #access_drivers = [ "polkit" ]
 
+@CUT_ENABLE_IP@
 #################################################################
 #
 # TLS x509 certificate configuration
@@ -225,15 +230,17 @@
 
 
 
+@END@
 #################################################################
 #
 # Authorization controls
 #
 
 
+@CUT_ENABLE_IP@
 # Flag to disable verification of our own server certificates
 #
-# When libvirtd starts it performs some sanity checks against
+# When @DAEMON_NAME@ starts it performs some sanity checks against
 # its own certificates.
 #
 # Default is to always run sanity checks. Uncommenting this
@@ -265,6 +272,15 @@
 #tls_allowed_dn_list = ["DN1", "DN2"]
 
 
+# Override the compile time default TLS priority string. The
+# default is usually "NORMAL" unless overridden at build time.
+# Only set this is it is desired for libvirt to deviate from
+# the global default settings.
+#
+#tls_priority="NORMAL"
+
+
+@END@
 # A whitelist of allowed SASL usernames. The format for username
 # depends on the SASL authentication mechanism. Kerberos usernames
 # look like username@REALM
@@ -280,14 +296,6 @@
 #
 # By default, no Username's are checked
 #sasl_allowed_username_list = ["joe@EXAMPLE.COM", "fred@EXAMPLE.COM" ]
-
-
-# Override the compile time default TLS priority string. The
-# default is usually "NORMAL" unless overridden at build time.
-# Only set this is it is desired for libvirt to deviate from
-# the global default settings.
-#
-#tls_priority="NORMAL"
 
 
 #################################################################
@@ -417,8 +425,8 @@
 #    4: ERROR
 #
 # Multiple outputs can be defined, they just need to be separated by spaces.
-# e.g. to log all warnings and errors to syslog under the libvirtd ident:
-#log_outputs="3:syslog:libvirtd"
+# e.g. to log all warnings and errors to syslog under the @DAEMON_NAME@ ident:
+#log_outputs="3:syslog:@DAEMON_NAME@"
 
 
 ##################################################################
@@ -461,7 +469,7 @@
 
 ###################################################################
 # Keepalive protocol:
-# This allows libvirtd to detect broken client connections or even
+# This allows @DAEMON_NAME@ to detect broken client connections or even
 # dead clients.  A keepalive message is sent to a client after
 # keepalive_interval seconds of inactivity to check if the client is
 # still responding; keepalive_count is a maximum number of keepalive
@@ -470,7 +478,7 @@
 # words, the connection is automatically closed approximately after
 # keepalive_interval * (keepalive_count + 1) seconds since the last
 # message received from the client.  If keepalive_interval is set to
-# -1, libvirtd will never send keepalive requests; however clients
+# -1, @DAEMON_NAME@ will never send keepalive requests; however clients
 # can still send them and the daemon will send responses.  When
 # keepalive_count is set to 0, connections will be automatically
 # closed after keepalive_interval seconds of inactivity without

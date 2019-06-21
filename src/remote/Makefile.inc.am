@@ -76,7 +76,7 @@ EXTRA_DIST += \
 	$(LIBVIRTD_SOURCES) \
 	remote/test_libvirtd.aug.in \
 	remote/libvirtd.aug \
-	remote/libvirtd.conf \
+	remote/libvirtd.conf.in \
 	remote/libvirtd.policy \
 	remote/libvirtd.rules \
 	remote/libvirtd.sasl \
@@ -92,6 +92,9 @@ BUILT_SOURCES += \
 MAINTAINERCLEANFILES += \
 	$(REMOTE_DRIVER_GENERATED) \
 	$(LIBVIRTD_GENERATED) \
+	$(NULL)
+CLEANFILES += \
+	remote/libvirtd.conf \
 	$(NULL)
 
 if WITH_REMOTE
@@ -128,7 +131,7 @@ augeas_DATA += remote/libvirtd.aug
 
 augeastest_DATA += remote/test_libvirtd.aug
 
-conf_DATA += remote/libvirtd.conf
+nodist_conf_DATA += remote/libvirtd.conf
 
 man8_MANS += libvirtd.8
 
@@ -179,6 +182,13 @@ libvirtd_LDADD += \
 	$(LIBSOCKET) \
 	$(NULL)
 
+remote/libvirtd.conf: remote/libvirtd.conf.in
+	$(AM_V_GEN)$(SED) \
+		-e '/[@]CUT_ENABLE_IP[@]/d' \
+		-e '/[@]END[@]/d' \
+		-e 's|[@]DAEMON_NAME[@]|libvirtd|' \
+		$< > $@
+
 INSTALL_DATA_DIRS += remote
 
 install-data-remote:
@@ -189,7 +199,7 @@ uninstall-data-remote:
 
 remote/test_libvirtd.aug: remote/test_libvirtd.aug.in \
 		remote/libvirtd.conf $(AUG_GENTEST)
-	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/remote/libvirtd.conf $< > $@
+	$(AM_V_GEN)$(AUG_GENTEST) remote/libvirtd.conf $< > $@
 
 if WITH_SYSCTL
 # Use $(prefix)/lib rather than $(libdir), since man sysctl.d insists on
