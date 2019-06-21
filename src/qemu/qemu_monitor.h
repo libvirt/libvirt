@@ -343,7 +343,7 @@ qemuMonitorPtr qemuMonitorOpen(virDomainObjPtr vm,
                                unsigned long long timeout,
                                qemuMonitorCallbacksPtr cb,
                                void *opaque)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(6);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5);
 qemuMonitorPtr qemuMonitorOpenFD(virDomainObjPtr vm,
                                  int sockfd,
                                  qemuMonitorCallbacksPtr cb,
