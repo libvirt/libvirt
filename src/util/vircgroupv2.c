@@ -302,15 +302,15 @@ virCgroupV2DetectControllers(virCgroupPtr group,
         group->unified.controllers |= 1 << VIR_CGROUP_CONTROLLER_CPUACCT;
     }
 
+    if (controllers >= 0)
+        group->unified.controllers &= controllers;
+
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++)
         VIR_DEBUG("Controller '%s' present=%s",
                   virCgroupV2ControllerTypeToString(i),
                   (group->unified.controllers & 1 << i) ? "yes" : "no");
 
-    if (controllers >= 0)
-        return controllers & group->unified.controllers;
-    else
-        return group->unified.controllers;
+    return group->unified.controllers;
 }
 
 
