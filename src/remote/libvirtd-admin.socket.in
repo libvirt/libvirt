@@ -5,6 +5,8 @@ BindsTo=libvirtd.socket
 After=libvirtd.socket
 
 [Socket]
+# The directory must match the /etc/libvirt/libvirtd.conf unix_sock_dir setting
+# when using systemd version < 227
 ListenStream=@localstatedir@/run/libvirt/libvirt-admin-sock
 Service=libvirtd.service
 SocketMode=0600

@@ -1,6 +1,7 @@
 # Customizations for the libvirtd.service systemd unit
 
-# Listen for TCP/IP connections
+# Listen for TCP/IP connections. This is not required if using systemd
+# socket activation.
 # NB. must setup TLS/SSL keys prior to using this
 #LIBVIRTD_ARGS="--listen"
 
