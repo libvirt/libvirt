@@ -230,6 +230,7 @@
 @SRCDIR@/src/util/vircgroupbackend.h
 @SRCDIR@/src/util/vircgroupv1.c
 @SRCDIR@/src/util/vircgroupv2.c
+@SRCDIR@/src/util/vircgroupv2devices.c
 @SRCDIR@/src/util/virclosecallbacks.c
 @SRCDIR@/src/util/vircommand.c
 @SRCDIR@/src/util/virconf.c

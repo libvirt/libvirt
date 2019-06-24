@@ -22,3 +22,8 @@
 
 bool
 virCgroupV2DevicesAvailable(virCgroupPtr group);
+
+int
+virCgroupV2DevicesAttachProg(virCgroupPtr group,
+                             int mapfd,
+                             size_t max);

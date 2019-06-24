@@ -41,10 +41,20 @@ struct _virCgroupV1Controller {
 typedef struct _virCgroupV1Controller virCgroupV1Controller;
 typedef virCgroupV1Controller *virCgroupV1ControllerPtr;
 
+struct _virCgroupV2Devices {
+    int mapfd;
+    int progfd;
+    ssize_t count;
+    ssize_t max;
+};
+typedef struct _virCgroupV2Devices virCgroupV2Devices;
+typedef virCgroupV2Devices *virCgroupV2DevicesPtr;
+
 struct _virCgroupV2Controller {
     int controllers;
     char *mountPoint;
     char *placement;
+    virCgroupV2Devices devices;
 };
 typedef struct _virCgroupV2Controller virCgroupV2Controller;
 typedef virCgroupV2Controller *virCgroupV2ControllerPtr;
