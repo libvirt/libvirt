@@ -647,3 +647,11 @@ virCgroupV2DevicesGetPerms(int perms G_GNUC_UNUSED,
     return 0;
 }
 #endif /* !HAVE_DECL_BPF_CGROUP_DEVICE */
+
+
+uint64_t
+virCgroupV2DevicesGetKey(int major,
+                         int minor)
+{
+    return (uint64_t)major << 32 | ((uint64_t)minor & 0x00000000ffffffff);
+}

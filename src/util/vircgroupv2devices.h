@@ -45,3 +45,7 @@ virCgroupV2DevicesRemoveProg(virCgroupPtr group);
 uint32_t
 virCgroupV2DevicesGetPerms(int perms,
                            char type);
+
+uint64_t
+virCgroupV2DevicesGetKey(int major,
+                         int minor);
