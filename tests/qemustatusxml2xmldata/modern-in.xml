@@ -311,6 +311,9 @@
         <backingStore type='file' index='1'>
           <format type='qcow2'/>
           <source file='/var/lib/libvirt/images/base.qcow2'>
+            <seclabel model='dac' relabel='yes'>
+              <label>qemu:qemu</label>
+            </seclabel>
             <reservations managed='yes'>
               <source type='unix' path='/somepath/ux.sck' mode='client'/>
             </reservations>
