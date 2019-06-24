@@ -27,3 +27,6 @@ int
 virCgroupV2DevicesAttachProg(virCgroupPtr group,
                              int mapfd,
                              size_t max);
+
+int
+virCgroupV2DevicesDetectProg(virCgroupPtr group);
