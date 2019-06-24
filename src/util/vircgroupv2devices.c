@@ -426,6 +426,46 @@ virCgroupV2DevicesDetectProg(virCgroupPtr group)
 
     return 0;
 }
+
+
+# define VIR_CGROUP_V2_INITIAL_BPF_MAP_SIZE 64
+
+static int
+virCgroupV2DevicesCreateMap(size_t size)
+{
+    int mapfd = virBPFCreateMap(BPF_MAP_TYPE_HASH, sizeof(uint64_t),
+                                sizeof(uint32_t), size);
+
+    if (mapfd < 0) {
+        virReportSystemError(errno, "%s",
+                             _("failed to initialize device BPF map"));
+        return -1;
+    }
+
+    return mapfd;
+}
+
+
+int
+virCgroupV2DevicesCreateProg(virCgroupPtr group)
+{
+    VIR_AUTOCLOSE mapfd = -1;
+
+    if (group->unified.devices.progfd > 0 && group->unified.devices.mapfd > 0)
+        return 0;
+
+    mapfd = virCgroupV2DevicesCreateMap(VIR_CGROUP_V2_INITIAL_BPF_MAP_SIZE);
+    if (mapfd < 0)
+        return -1;
+
+    if (virCgroupV2DevicesAttachProg(group, mapfd,
+                                     VIR_CGROUP_V2_INITIAL_BPF_MAP_SIZE) < 0) {
+        return -1;
+    }
+
+    mapfd = -1;
+    return 0;
+}
 #else /* !HAVE_DECL_BPF_CGROUP_DEVICE */
 bool
 virCgroupV2DevicesAvailable(virCgroupPtr group G_GNUC_UNUSED)
@@ -448,6 +488,16 @@ virCgroupV2DevicesAttachProg(virCgroupPtr group G_GNUC_UNUSED,
 
 int
 virCgroupV2DevicesDetectProg(virCgroupPtr group G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("cgroups v2 BPF devices not supported "
+                           "with this kernel"));
+    return -1;
+}
+
+
+int
+virCgroupV2DevicesCreateProg(virCgroupPtr group G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("cgroups v2 BPF devices not supported "
