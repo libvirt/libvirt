@@ -2903,6 +2903,7 @@ virSocketAddrParseIPv4;
 virSocketAddrParseIPv6;
 virSocketAddrPrefixToNetmask;
 virSocketAddrPTRDomain;
+virSocketAddrResolveService;
 virSocketAddrSetIPv4Addr;
 virSocketAddrSetIPv4AddrNetOrder;
 virSocketAddrSetIPv6Addr;

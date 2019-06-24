@@ -235,6 +235,57 @@ virSocketAddrParseIPv6(virSocketAddrPtr addr, const char *val)
     return virSocketAddrParse(addr, val, AF_INET6);
 }
 
+/**
+ * virSocketAddrResolveService:
+ * @service: a service name or port number
+ *
+ * Resolve a service, which might be a plain port or service name,
+ * into a port number for IPv4/IPv6 usage
+ *
+ * Returns a numeric port number, or -1 on error
+ */
+int virSocketAddrResolveService(const char *service)
+{
+    struct addrinfo *res, *tmp;
+    struct addrinfo hints;
+    int err;
+    int port = -1;
+
+    memset(&hints, 0, sizeof(hints));
+
+    if ((err = getaddrinfo(NULL, service, &hints, &res)) != 0) {
+        virReportError(VIR_ERR_SYSTEM_ERROR,
+                       _("Cannot parse socket service '%s': %s"),
+                       service, gai_strerror(err));
+        return -1;
+    }
+
+    tmp = res;
+    while (tmp) {
+        if (tmp->ai_family == AF_INET) {
+            struct sockaddr_in in;
+            memcpy(&in, tmp->ai_addr, sizeof(in));
+            port = in.sin_port;
+            goto cleanup;
+        } else if (tmp->ai_family == AF_INET6) {
+            struct sockaddr_in6 in;
+            memcpy(&in, tmp->ai_addr, sizeof(in));
+            port = in.sin6_port;
+            goto cleanup;
+        }
+        tmp++;
+    }
+
+    virReportError(VIR_ERR_SYSTEM_ERROR,
+                   _("No matches for socket service '%s': %s"),
+                   service, gai_strerror(err));
+
+ cleanup:
+    freeaddrinfo(res);
+
+    return port;
+}
+
 /*
  * virSocketAddrSetIPv4AddrNetOrder:
  * @addr: the location to store the result
