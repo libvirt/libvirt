@@ -88,52 +88,6 @@ static void virNetServerServiceAccept(virNetSocketPtr sock,
 }
 
 
-virNetServerServicePtr
-virNetServerServiceNewFDOrUNIX(const char *path,
-                               mode_t mask,
-                               gid_t grp,
-                               int auth,
-                               virNetTLSContextPtr tls,
-                               bool readonly,
-                               size_t max_queued_clients,
-                               size_t nrequests_client_max,
-                               unsigned int nfds,
-                               unsigned int *cur_fd)
-{
-    if (*cur_fd - STDERR_FILENO > nfds) {
-        /*
-         * There are no more file descriptors to use, so we have to
-         * fallback to UNIX socket.
-         */
-        return virNetServerServiceNewUNIX(path,
-                                          mask,
-                                          grp,
-                                          auth,
-                                          tls,
-                                          readonly,
-                                          max_queued_clients,
-                                          nrequests_client_max);
-
-    } else {
-        int fds[] = {(*cur_fd)++};
-        /*
-         * There's still enough file descriptors.  In this case we'll
-         * use the current one and increment it afterwards. Take care
-         * with order of operation for pointer arithmetic and auto
-         * increment on cur_fd - the parentheses are necessary.
-         */
-        return virNetServerServiceNewFDs(fds,
-                                         ARRAY_CARDINALITY(fds),
-                                         false,
-                                         auth,
-                                         tls,
-                                         readonly,
-                                         max_queued_clients,
-                                         nrequests_client_max);
-    }
-}
-
-
 static virNetServerServicePtr
 virNetServerServiceNewSocket(virNetSocketPtr *socks,
                              size_t nsocks,

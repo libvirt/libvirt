@@ -34,16 +34,6 @@ typedef int (*virNetServerServiceDispatchFunc)(virNetServerServicePtr svc,
                                                virNetSocketPtr sock,
                                                void *opaque);
 
-virNetServerServicePtr virNetServerServiceNewFDOrUNIX(const char *path,
-                                                      mode_t mask,
-                                                      gid_t grp,
-                                                      int auth,
-                                                      virNetTLSContextPtr tls,
-                                                      bool readonly,
-                                                      size_t max_queued_clients,
-                                                      size_t nrequests_client_max,
-                                                      unsigned int nfds,
-                                                      unsigned int *cur_fd);
 virNetServerServicePtr virNetServerServiceNewTCP(const char *nodename,
                                                  const char *service,
                                                  int family,
