@@ -538,6 +538,25 @@ virCgroupV2DevicesPrepareProg(virCgroupPtr group)
 
     return 0;
 }
+
+
+int
+virCgroupV2DevicesRemoveProg(virCgroupPtr group)
+{
+    if (virCgroupV2DevicesDetectProg(group) < 0)
+        return -1;
+
+    if (group->unified.devices.progfd <= 0 && group->unified.devices.mapfd <= 0)
+        return 0;
+
+    if (group->unified.devices.mapfd >= 0)
+        VIR_FORCE_CLOSE(group->unified.devices.mapfd);
+
+    if (group->unified.devices.progfd >= 0)
+        VIR_FORCE_CLOSE(group->unified.devices.progfd);
+
+    return 0;
+}
 #else /* !HAVE_DECL_BPF_CGROUP_DEVICE */
 bool
 virCgroupV2DevicesAvailable(virCgroupPtr group G_GNUC_UNUSED)
@@ -585,5 +604,12 @@ virCgroupV2DevicesPrepareProg(virCgroupPtr group G_GNUC_UNUSED)
                          _("cgroups v2 BPF devices not supported "
                            "with this kernel"));
     return -1;
+}
+
+
+int
+virCgroupV2DevicesRemoveProg(virCgroupPtr group G_GNUC_UNUSED)
+{
+    return 0;
 }
 #endif /* !HAVE_DECL_BPF_CGROUP_DEVICE */
