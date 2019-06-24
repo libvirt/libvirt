@@ -2559,10 +2559,13 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCapsPtr qemuCaps,
      * the initial static expansion to get all variants of feature names.
      */
     if (ARCH_IS_X86(qemuCaps->arch) &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_CANONICAL_CPU_FEATURES))
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_CANONICAL_CPU_FEATURES)) {
         type = QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC_FULL;
-    else
+    } else if (ARCH_IS_ARM(qemuCaps->arch)) {
+        type = QEMU_MONITOR_CPU_MODEL_EXPANSION_FULL;
+    } else {
         type = QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC;
+    }
 
     /* Older s390 models do not report a feature set */
     if (ARCH_IS_S390(qemuCaps->arch))
