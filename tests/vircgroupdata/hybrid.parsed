@@ -2,7 +2,7 @@ cpu          <null>
 cpuacct      <null>
 cpuset       /not/really/sys/fs/cgroup/cpuset
 memory       <null>
-devices      /not/really/sys/fs/cgroup/devices
+devices      <null>
 freezer      /not/really/sys/fs/cgroup/freezer
 blkio        <null>
 net_cls      /not/really/sys/fs/cgroup/net_cls
