@@ -118,10 +118,29 @@ qemuSetupImageCgroupInternal(virDomainObjPtr vm,
                              virStorageSourcePtr src,
                              bool forceReadonly)
 {
-    if (!src->path || !virStorageSourceIsLocalStorage(src)) {
-        VIR_DEBUG("Not updating cgroups for disk path '%s', type: %s",
-                  NULLSTR(src->path), virStorageTypeToString(src->type));
-        return 0;
+    g_autofree char *path = NULL;
+    bool readonly = src->readonly || forceReadonly;
+
+    if (src->type == VIR_STORAGE_TYPE_NVME) {
+        /* Even though disk is R/O we can't make it so in
+         * CGroups. QEMU will try to do some ioctl()-s over the
+         * device and such operations are considered R/W by the
+         * kernel */
+        readonly = false;
+
+        if (!(path = virPCIDeviceAddressGetIOMMUGroupDev(&src->nvme->pciAddr)))
+            return -1;
+
+        if (qemuSetupImagePathCgroup(vm, QEMU_DEV_VFIO, false) < 0)
+            return -1;
+    } else {
+        if (!src->path || !virStorageSourceIsLocalStorage(src)) {
+            VIR_DEBUG("Not updating cgroups for disk path '%s', type: %s",
+                      NULLSTR(src->path), virStorageTypeToString(src->type));
+            return 0;
+        }
+
+        path = g_strdup(src->path);
     }
 
     if (virStoragePRDefIsManaged(src->pr) &&
@@ -129,7 +148,7 @@ qemuSetupImageCgroupInternal(virDomainObjPtr vm,
         qemuSetupImagePathCgroup(vm, QEMU_DEVICE_MAPPER_CONTROL_PATH, false) < 0)
         return -1;
 
-    return qemuSetupImagePathCgroup(vm, src->path, src->readonly || forceReadonly);
+    return qemuSetupImagePathCgroup(vm, path, readonly);
 }
 
 
@@ -146,7 +165,10 @@ qemuTeardownImageCgroup(virDomainObjPtr vm,
                         virStorageSourcePtr src)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    g_autofree char *path = NULL;
     int perms = VIR_CGROUP_DEVICE_RWM;
+    bool hasPR = false;
+    bool hasNVMe = false;
     size_t i;
     int ret;
 
@@ -154,41 +176,60 @@ qemuTeardownImageCgroup(virDomainObjPtr vm,
                                 VIR_CGROUP_CONTROLLER_DEVICES))
         return 0;
 
-    if (!src->path || !virStorageSourceIsLocalStorage(src)) {
-        VIR_DEBUG("Not updating cgroups for disk path '%s', type: %s",
-                  NULLSTR(src->path), virStorageTypeToString(src->type));
-        return 0;
+    for (i = 0; i < vm->def->ndisks; i++) {
+        virStorageSourcePtr diskSrc = vm->def->disks[i]->src;
+
+        if (src == diskSrc)
+            continue;
+
+        if (virStoragePRDefIsManaged(diskSrc->pr))
+            hasPR = true;
+
+        if (virStorageSourceChainHasNVMe(diskSrc))
+            hasNVMe = true;
     }
 
-    if (virFileExists(QEMU_DEVICE_MAPPER_CONTROL_PATH)) {
-        for (i = 0; i < vm->def->ndisks; i++) {
-            virStorageSourcePtr diskSrc = vm->def->disks[i]->src;
+    if (src->type == VIR_STORAGE_TYPE_NVME) {
+        if (!(path = virPCIDeviceAddressGetIOMMUGroupDev(&src->nvme->pciAddr)))
+            return -1;
 
-            if (src == diskSrc)
-                continue;
-
-            if (virStoragePRDefIsManaged(diskSrc->pr))
-                break;
-        }
-
-        if (i == vm->def->ndisks) {
-            VIR_DEBUG("Disabling device mapper control");
-            ret = virCgroupDenyDevicePath(priv->cgroup,
-                                          QEMU_DEVICE_MAPPER_CONTROL_PATH,
-                                          perms, true);
+        if (!hasNVMe &&
+            !qemuDomainNeedsVFIO(vm->def)) {
+            ret = virCgroupDenyDevicePath(priv->cgroup, QEMU_DEV_VFIO, perms, true);
             virDomainAuditCgroupPath(vm, priv->cgroup, "deny",
-                                     QEMU_DEVICE_MAPPER_CONTROL_PATH,
+                                     QEMU_DEV_VFIO,
                                      virCgroupGetDevicePermsString(perms), ret);
             if (ret < 0)
-                return ret;
+                return -1;
         }
+    } else {
+        if (!src->path || !virStorageSourceIsLocalStorage(src)) {
+            VIR_DEBUG("Not updating cgroups for disk path '%s', type: %s",
+                      NULLSTR(src->path), virStorageTypeToString(src->type));
+            return 0;
+        }
+
+        path = g_strdup(src->path);
     }
 
-    VIR_DEBUG("Deny path %s", src->path);
+    if (!hasPR &&
+        virFileExists(QEMU_DEVICE_MAPPER_CONTROL_PATH)) {
+        VIR_DEBUG("Disabling device mapper control");
+        ret = virCgroupDenyDevicePath(priv->cgroup,
+                                      QEMU_DEVICE_MAPPER_CONTROL_PATH,
+                                      perms, true);
+        virDomainAuditCgroupPath(vm, priv->cgroup, "deny",
+                                 QEMU_DEVICE_MAPPER_CONTROL_PATH,
+                                 virCgroupGetDevicePermsString(perms), ret);
+        if (ret < 0)
+            return ret;
+    }
 
-    ret = virCgroupDenyDevicePath(priv->cgroup, src->path, perms, true);
+    VIR_DEBUG("Deny path %s", path);
 
-    virDomainAuditCgroupPath(vm, priv->cgroup, "deny", src->path,
+    ret = virCgroupDenyDevicePath(priv->cgroup, path, perms, true);
+
+    virDomainAuditCgroupPath(vm, priv->cgroup, "deny", path,
                              virCgroupGetDevicePermsString(perms), ret);
 
     /* If you're looking for a counter part to
