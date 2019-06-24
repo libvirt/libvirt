@@ -31346,6 +31346,23 @@ virDomainDefHasManagedPR(const virDomainDef *def)
 }
 
 
+bool
+virDomainDefHasVFIOHostdev(const virDomainDef *def)
+{
+    size_t i;
+
+    for (i = 0; i < def->nhostdevs; i++) {
+        const virDomainHostdevDef *tmp = def->hostdevs[i];
+        if (tmp->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+            tmp->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
+            tmp->source.subsys.u.pci.backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO)
+            return true;
+    }
+
+    return false;
+}
+
+
 /**
  * virDomainGraphicsDefHasOpenGL:
  * @def: domain definition

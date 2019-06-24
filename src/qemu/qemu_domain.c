@@ -12359,7 +12359,7 @@ qemuDomainGetHostdevPath(virDomainDefPtr def,
     bool includeVFIO = false;
     char **tmpPaths = NULL;
     int *tmpPerms = NULL;
-    size_t i, tmpNpaths = 0;
+    size_t tmpNpaths = 0;
     int perm = 0;
 
     *npaths = 0;
@@ -12382,16 +12382,7 @@ qemuDomainGetHostdevPath(virDomainDefPtr def,
 
                 perm = VIR_CGROUP_DEVICE_RW;
                 if (teardown) {
-                    size_t nvfios = 0;
-                    for (i = 0; i < def->nhostdevs; i++) {
-                        virDomainHostdevDefPtr tmp = def->hostdevs[i];
-                        if (tmp->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-                            tmp->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
-                            tmp->source.subsys.u.pci.backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO)
-                            nvfios++;
-                    }
-
-                    if (nvfios == 0)
+                    if (!virDomainDefHasVFIOHostdev(def))
                         includeVFIO = true;
                 } else {
                     includeVFIO = true;
