@@ -446,6 +446,51 @@ virCgroupV2DevicesCreateMap(size_t size)
 }
 
 
+static int
+virCgroupV2DevicesReallocMap(int mapfd,
+                             size_t size)
+{
+    uint64_t key = 0;
+    uint64_t prevKey = 0;
+    int rc;
+    int ret = -1;
+    VIR_AUTOCLOSE newmapfd = virCgroupV2DevicesCreateMap(size);
+
+    VIR_DEBUG("realloc devices map mapfd:%d, size:%lu", mapfd, size);
+
+    if (newmapfd < 0)
+        return -1;
+
+    while ((rc = virBPFGetNextElem(mapfd, &prevKey, &key)) == 0) {
+        uint32_t val = 0;
+
+        if (virBPFLookupElem(mapfd, &key, &val) < 0) {
+            virReportSystemError(errno, "%s",
+                                 _("failed to lookup device in old map"));
+            return -1;
+        }
+
+        if (virBPFUpdateElem(newmapfd, &key, &val) < 0) {
+            virReportSystemError(errno, "%s",
+                                 _("failed to add device into new map"));
+            return -1;
+        }
+
+        prevKey = key;
+    }
+
+    if (rc < 0 && errno != ENOENT) {
+        virReportSystemError(errno, "%s",
+                             _("failed to copy all device rules"));
+        return -1;
+    }
+
+    ret = newmapfd;
+    newmapfd = -1;
+    return ret;
+}
+
+
 int
 virCgroupV2DevicesCreateProg(virCgroupPtr group)
 {
@@ -464,6 +509,33 @@ virCgroupV2DevicesCreateProg(virCgroupPtr group)
     }
 
     mapfd = -1;
+    return 0;
+}
+
+
+int
+virCgroupV2DevicesPrepareProg(virCgroupPtr group)
+{
+    if (virCgroupV2DevicesDetectProg(group) < 0)
+        return -1;
+
+    if (virCgroupV2DevicesCreateProg(group) < 0)
+        return -1;
+
+    if (group->unified.devices.count >= group->unified.devices.max) {
+        size_t max = group->unified.devices.max * 2;
+        int newmapfd = virCgroupV2DevicesReallocMap(group->unified.devices.mapfd,
+                                                    max);
+
+        if (newmapfd < 0)
+            return -1;
+
+        if (virCgroupV2DevicesAttachProg(group, newmapfd, max) < 0) {
+            VIR_FORCE_CLOSE(newmapfd);
+            return -1;
+        }
+    }
+
     return 0;
 }
 #else /* !HAVE_DECL_BPF_CGROUP_DEVICE */
@@ -498,6 +570,16 @@ virCgroupV2DevicesDetectProg(virCgroupPtr group G_GNUC_UNUSED)
 
 int
 virCgroupV2DevicesCreateProg(virCgroupPtr group G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("cgroups v2 BPF devices not supported "
+                           "with this kernel"));
+    return -1;
+}
+
+
+int
+virCgroupV2DevicesPrepareProg(virCgroupPtr group G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("cgroups v2 BPF devices not supported "

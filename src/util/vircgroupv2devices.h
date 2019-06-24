@@ -33,3 +33,6 @@ virCgroupV2DevicesDetectProg(virCgroupPtr group);
 
 int
 virCgroupV2DevicesCreateProg(virCgroupPtr group);
+
+int
+virCgroupV2DevicesPrepareProg(virCgroupPtr group);
