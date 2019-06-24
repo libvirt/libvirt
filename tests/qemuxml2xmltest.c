@@ -1142,6 +1142,9 @@ mymain(void)
                  ARG_GIC, GIC_BOTH,
                  ARG_QEMU_CAPS, NONE);
 
+    /* SVE aarch64 CPU features work on modern QEMU */
+    DO_TEST_CAPS_ARCH_LATEST("aarch64-features-sve", "aarch64");
+
     DO_TEST("memory-hotplug", NONE);
     DO_TEST("memory-hotplug-nonuma", NONE);
     DO_TEST("memory-hotplug-dimm", NONE);
