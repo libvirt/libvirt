@@ -2887,6 +2887,7 @@ virSocketAddrFormat;
 virSocketAddrFormatFull;
 virSocketAddrGetIPPrefix;
 virSocketAddrGetNumNetmaskBits;
+virSocketAddrGetPath;
 virSocketAddrGetPort;
 virSocketAddrGetRange;
 virSocketAddrIsNetmask;

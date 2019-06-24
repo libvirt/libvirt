@@ -522,6 +522,47 @@ virSocketAddrGetPort(virSocketAddrPtr addr)
     return -1;
 }
 
+
+/*
+ * virSocketGetPath:
+ * @addr: an initialized virSocketAddrPtr
+ *
+ * Returns the UNIX socket path of the given virtSocketAddr
+ *
+ * Returns -1 if @addr is invalid or does not refer to an
+ * address of type AF_UNIX;
+ */
+char *
+virSocketAddrGetPath(virSocketAddrPtr addr ATTRIBUTE_UNUSED)
+{
+#ifndef WIN32
+    char *path = NULL;
+    if (addr == NULL) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("No socket address provided"));
+        return NULL;
+    }
+
+    if (addr->data.sa.sa_family != AF_UNIX) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("UNIX socket address is required"));
+        return NULL;
+    }
+
+    if (VIR_STRNDUP(path,
+                    addr->data.un.sun_path,
+                    sizeof(addr->data.un.sun_path)) < 0)
+        return NULL;
+
+    return path;
+#else
+    virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                   _("UNIX sockets not supported on this platform"));
+    return NULL;
+#endif
+}
+
+
 /**
  * virSocketAddrIsNetmask:
  * @netmask: the netmask address

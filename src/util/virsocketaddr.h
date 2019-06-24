@@ -108,6 +108,8 @@ char *virSocketAddrFormatFull(const virSocketAddr *addr,
                               bool withService,
                               const char *separator);
 
+char *virSocketAddrGetPath(virSocketAddrPtr addr);
+
 int virSocketAddrSetPort(virSocketAddrPtr addr, int port);
 
 int virSocketAddrGetPort(virSocketAddrPtr addr);
