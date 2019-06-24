@@ -18,6 +18,8 @@
 
 #pragma once
 
+#include <sys/types.h>
+
 #include "vircgroup.h"
 
 bool
@@ -39,3 +41,7 @@ virCgroupV2DevicesPrepareProg(virCgroupPtr group);
 
 int
 virCgroupV2DevicesRemoveProg(virCgroupPtr group);
+
+uint32_t
+virCgroupV2DevicesGetPerms(int perms,
+                           char type);
