@@ -219,6 +219,7 @@ virNetSocketCheckProtocols;
 virNetSocketClose;
 virNetSocketDupFD;
 virNetSocketGetFD;
+virNetSocketGetPath;
 virNetSocketGetPort;
 virNetSocketGetSELinuxContext;
 virNetSocketGetUNIXIdentity;

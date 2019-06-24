@@ -1408,6 +1408,14 @@ bool virNetSocketHasPassFD(virNetSocketPtr sock)
     return hasPassFD;
 }
 
+char *virNetSocketGetPath(virNetSocketPtr sock)
+{
+    char *path = NULL;
+    virObjectLock(sock);
+    path = virSocketAddrGetPath(&sock->localAddr);
+    virObjectUnlock(sock);
+    return path;
+}
 
 int virNetSocketGetPort(virNetSocketPtr sock)
 {

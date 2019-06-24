@@ -127,6 +127,7 @@ bool virNetSocketIsLocal(virNetSocketPtr sock);
 
 bool virNetSocketHasPassFD(virNetSocketPtr sock);
 
+char *virNetSocketGetPath(virNetSocketPtr sock);
 int virNetSocketGetPort(virNetSocketPtr sock);
 
 int virNetSocketGetUNIXIdentity(virNetSocketPtr sock,
