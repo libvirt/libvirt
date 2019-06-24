@@ -2560,8 +2560,8 @@ qemuBuildDiskSourceCommandLine(virCommandPtr cmd,
                                virQEMUCapsPtr qemuCaps)
 {
     VIR_AUTOPTR(qemuBlockStorageSourceChainData) data = NULL;
-    virJSONValuePtr copyOnReadProps = NULL;
-    char *str = NULL;
+    VIR_AUTOPTR(virJSONValue) copyOnReadProps = NULL;
+    VIR_AUTOFREE(char *) copyOnReadPropsStr = NULL;
     size_t i;
     int ret = -1;
 
@@ -2590,18 +2590,15 @@ qemuBuildDiskSourceCommandLine(virCommandPtr cmd,
     }
 
     if (copyOnReadProps) {
-        if (!(str = virJSONValueToString(copyOnReadProps, false)))
+        if (!(copyOnReadPropsStr = virJSONValueToString(copyOnReadProps, false)))
             goto cleanup;
 
-        virCommandAddArgList(cmd, "-blockdev", str, NULL);
-        VIR_FREE(str);
+        virCommandAddArgList(cmd, "-blockdev", copyOnReadPropsStr, NULL);
     }
 
     ret = 0;
 
  cleanup:
-    virJSONValueFree(copyOnReadProps);
-    VIR_FREE(str);
     return ret;
 }
 
