@@ -25,6 +25,7 @@
 #include <sys/ioctl.h>
 
 #include "qemu_hostdev.h"
+#include "qemu_domain.h"
 #include "virlog.h"
 #include "virerror.h"
 #include "viralloc.h"
@@ -125,7 +126,7 @@ qemuHostdevHostSupportsPassthroughVFIO(void)
         return false;
 
     /* condition 2 - /dev/vfio/vfio exists */
-    if (!virFileExists("/dev/vfio/vfio"))
+    if (!virFileExists(QEMU_DEV_VFIO))
         return false;
 
     return true;
@@ -317,7 +318,7 @@ qemuHostdevPrepareMediatedDevices(virQEMUDriverPtr driver,
     /* Checking for VFIO only is fine with mdev, as IOMMU isolation is achieved
      * by the physical parent device.
      */
-    supportsVFIO = virFileExists("/dev/vfio/vfio");
+    supportsVFIO = virFileExists(QEMU_DEV_VFIO);
 
     for (i = 0; i < nhostdevs; i++) {
         if (virHostdevIsMdevDevice(hostdevs[i])) {

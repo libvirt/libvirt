@@ -223,6 +223,13 @@ struct _qemuDomainUnpluggingDevice {
 };
 
 
+#define QEMU_PROC_MOUNTS "/proc/mounts"
+#define QEMU_DEVPREFIX "/dev/"
+#define QEMU_DEV_VFIO "/dev/vfio/vfio"
+#define QEMU_DEV_SEV "/dev/sev"
+#define QEMU_DEVICE_MAPPER_CONTROL_PATH "/dev/mapper/control"
+
+
 typedef enum {
     QEMU_DOMAIN_NS_MOUNT = 0,
     QEMU_DOMAIN_NS_LAST

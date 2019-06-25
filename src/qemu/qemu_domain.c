@@ -117,14 +117,6 @@ VIR_ENUM_IMPL(qemuDomainNamespace,
               "mount",
 );
 
-
-#define PROC_MOUNTS "/proc/mounts"
-#define DEVPREFIX "/dev/"
-#define DEV_VFIO "/dev/vfio/vfio"
-#define DEVICE_MAPPER_CONTROL_PATH "/dev/mapper/control"
-#define DEV_SEV "/dev/sev"
-
-
 struct _qemuDomainLogContext {
     virObject parent;
 
@@ -11882,7 +11874,7 @@ qemuDomainGetHostdevPath(virDomainDefPtr def,
         tmpPerms[0] = perm;
 
         if (includeVFIO) {
-            if (VIR_STRDUP(tmpPaths[1], DEV_VFIO) < 0)
+            if (VIR_STRDUP(tmpPaths[1], QEMU_DEV_VFIO) < 0)
                 goto cleanup;
             tmpPerms[1] = VIR_CGROUP_DEVICE_RW;
         }
@@ -11929,7 +11921,7 @@ qemuDomainGetPreservedMountPath(virQEMUDriverConfigPtr cfg,
 {
     char *path = NULL;
     char *tmp;
-    const char *suffix = mountpoint + strlen(DEVPREFIX);
+    const char *suffix = mountpoint + strlen(QEMU_DEVPREFIX);
     char *domname = virDomainDefGetShortName(vm->def);
     size_t off;
 
@@ -11984,7 +11976,7 @@ qemuDomainGetPreservedMounts(virQEMUDriverConfigPtr cfg,
     char **paths = NULL, **mounts = NULL;
     size_t i, j, nmounts;
 
-    if (virFileGetMountSubtree(PROC_MOUNTS, "/dev",
+    if (virFileGetMountSubtree(QEMU_PROC_MOUNTS, "/dev",
                                &mounts, &nmounts) < 0)
         goto error;
 
@@ -12109,7 +12101,7 @@ qemuDomainCreateDeviceRecursive(const char *device,
      * Otherwise we might get fooled with `/dev/../var/my_image'.
      * For now, lets hope callers play nice.
      */
-    if (STRPREFIX(device, DEVPREFIX)) {
+    if (STRPREFIX(device, QEMU_DEVPREFIX)) {
         size_t i;
 
         for (i = 0; i < data->ndevMountsPath; i++) {
@@ -12123,7 +12115,7 @@ qemuDomainCreateDeviceRecursive(const char *device,
             /* Okay, @device is in /dev but not in any mount point under /dev.
              * Create it. */
             if (virAsprintf(&devicePath, "%s/%s",
-                            data->path, device + strlen(DEVPREFIX)) < 0)
+                            data->path, device + strlen(QEMU_DEVPREFIX)) < 0)
                 goto cleanup;
 
             if (virFileMakeParentPath(devicePath) < 0) {
@@ -12385,7 +12377,7 @@ qemuDomainSetupDisk(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
 
     /* qemu-pr-helper might require access to /dev/mapper/control. */
     if (disk->src->pr &&
-        qemuDomainCreateDevice(DEVICE_MAPPER_CONTROL_PATH, data, true) < 0)
+        qemuDomainCreateDevice(QEMU_DEVICE_MAPPER_CONTROL_PATH, data, true) < 0)
         goto cleanup;
 
     ret = 0;
@@ -12717,7 +12709,7 @@ qemuDomainSetupLaunchSecurity(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
 
     VIR_DEBUG("Setting up launch security");
 
-    if (qemuDomainCreateDevice(DEV_SEV, data, false) < 0)
+    if (qemuDomainCreateDevice(QEMU_DEV_SEV, data, false) < 0)
         return -1;
 
     VIR_DEBUG("Set up launch security");
@@ -13132,7 +13124,7 @@ qemuDomainAttachDeviceMknodRecursive(virQEMUDriverPtr driver,
     isReg = S_ISREG(data.sb.st_mode) || S_ISFIFO(data.sb.st_mode) || S_ISSOCK(data.sb.st_mode);
     isDir = S_ISDIR(data.sb.st_mode);
 
-    if ((isReg || isDir) && STRPREFIX(file, DEVPREFIX)) {
+    if ((isReg || isDir) && STRPREFIX(file, QEMU_DEVPREFIX)) {
         cfg = virQEMUDriverGetConfig(driver);
         if (!(target = qemuDomainGetPreservedMountPath(cfg, vm, file)))
             goto cleanup;
@@ -13188,7 +13180,7 @@ qemuDomainAttachDeviceMknodRecursive(virQEMUDriverPtr driver,
     }
 # endif
 
-    if (STRPREFIX(file, DEVPREFIX)) {
+    if (STRPREFIX(file, QEMU_DEVPREFIX)) {
         size_t i;
 
         for (i = 0; i < ndevMountsPath; i++) {
@@ -13297,7 +13289,7 @@ qemuDomainDetachDeviceUnlink(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
     int ret = -1;
     size_t i;
 
-    if (STRPREFIX(file, DEVPREFIX)) {
+    if (STRPREFIX(file, QEMU_DEVPREFIX)) {
         for (i = 0; i < ndevMountsPath; i++) {
             if (STREQ(devMountsPath[i], "/dev"))
                 continue;
@@ -13439,7 +13431,7 @@ qemuDomainNamespaceSetupDisk(virDomainObjPtr vm,
 
     /* qemu-pr-helper might require access to /dev/mapper/control. */
     if (src->pr &&
-        (VIR_STRDUP(dmPath, DEVICE_MAPPER_CONTROL_PATH) < 0 ||
+        (VIR_STRDUP(dmPath, QEMU_DEVICE_MAPPER_CONTROL_PATH) < 0 ||
          VIR_APPEND_ELEMENT_COPY(paths, npaths, dmPath) < 0))
         goto cleanup;
 
