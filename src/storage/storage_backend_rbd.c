@@ -272,10 +272,10 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
             const char *incFormat;
             if (virSocketAddrNumericFamily(source->hosts[i].name) == AF_INET6) {
                 /* IPv6 address must be escaped in brackets on the cmd line */
-                incFormat = "[%s]:%d";
+                incFormat = "[%s]:%d,";
             } else {
                 /* listenAddress is a hostname or IPv4 */
-                incFormat = "%s:%d";
+                incFormat = "%s:%d,";
             }
             virBufferAsprintf(&mon_host, incFormat,
                               source->hosts[i].name,
