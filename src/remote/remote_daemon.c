@@ -56,6 +56,7 @@
 #include "virutil.h"
 #include "virgettext.h"
 #include "util/virnetdevopenvswitch.h"
+#include "virsystemd.h"
 
 #include "driver.h"
 
@@ -367,28 +368,32 @@ daemonSetupNetworking(virNetServerPtr srv,
                       bool ipsock,
                       bool privileged)
 {
-    virNetServerServicePtr svc = NULL;
-    virNetServerServicePtr svcAdm = NULL;
-    virNetServerServicePtr svcRO = NULL;
-    virNetServerServicePtr svcTCP = NULL;
-    virNetServerServicePtr svcTLS = NULL;
     gid_t unix_sock_gid = 0;
     int unix_sock_ro_mask = 0;
     int unix_sock_rw_mask = 0;
     int unix_sock_adm_mask = 0;
     int ret = -1;
+    VIR_AUTOPTR(virSystemdActivation) act = NULL;
+    virSystemdActivationMap actmap[] = {
+        { .name = "libvirtd.socket", .family = AF_UNIX, .path = sock_path },
+        { .name = "libvirtd-ro.socket", .family = AF_UNIX, .path = sock_path_ro },
+        { .name = "libvirtd-admin.socket", .family = AF_UNIX, .path = sock_path_adm },
+        { .name = "libvirtd-tcp.socket", .family = AF_INET },
+        { .name = "libvirtd-tls.socket", .family = AF_INET },
+    };
 
-    unsigned int cur_fd = STDERR_FILENO + 1;
-    unsigned int nfds = virGetListenFDs();
+    if ((actmap[3].port = virSocketAddrResolveService(config->tcp_port)) < 0)
+        return -1;
+
+    if ((actmap[4].port = virSocketAddrResolveService(config->tls_port)) < 0)
+        return -1;
+
+    if (virSystemdGetActivation(actmap, ARRAY_CARDINALITY(actmap), &act) < 0)
+        return -1;
 
     if (config->unix_sock_group) {
         if (virGetGroupID(config->unix_sock_group, &unix_sock_gid) < 0)
             return ret;
-    }
-
-    if (nfds > (sock_path_ro ? 2 : 1)) {
-        VIR_ERROR(_("Too many (%u) FDs passed from caller"), nfds);
-        return ret;
     }
 
     if (virStrToLong_i(config->unix_sock_ro_perms, NULL, 8, &unix_sock_ro_mask) != 0) {
@@ -406,148 +411,135 @@ daemonSetupNetworking(virNetServerPtr srv,
         goto cleanup;
     }
 
-    if (!(svc = virNetServerServiceNewFDOrUNIX(sock_path,
-                                               unix_sock_rw_mask,
-                                               unix_sock_gid,
-                                               config->auth_unix_rw,
-                                               NULL,
-                                               false,
-                                               config->max_queued_clients,
-                                               config->max_client_requests,
-                                               nfds, &cur_fd)))
+    if (virNetServerAddServiceUNIX(srv,
+                                   act,
+                                   "libvirtd.socket",
+                                   sock_path,
+                                   unix_sock_rw_mask,
+                                   unix_sock_gid,
+                                   config->auth_unix_rw,
+                                   NULL,
+                                   false,
+                                   config->max_queued_clients,
+                                   config->max_client_requests) < 0)
         goto cleanup;
-    if (sock_path_ro) {
-        if (!(svcRO = virNetServerServiceNewFDOrUNIX(sock_path_ro,
-                                                     unix_sock_ro_mask,
-                                                     unix_sock_gid,
-                                                     config->auth_unix_ro,
-                                                     NULL,
-                                                     true,
-                                                     config->max_queued_clients,
-                                                     config->max_client_requests,
-                                                     nfds, &cur_fd)))
-            goto cleanup;
-    }
-
-    if (virNetServerAddService(srv, svc) < 0)
-        goto cleanup;
-
-    if (svcRO &&
-        virNetServerAddService(srv, svcRO) < 0)
+    if (sock_path_ro &&
+        virNetServerAddServiceUNIX(srv,
+                                   act,
+                                   "libvirtd-ro.socket",
+                                   sock_path_ro,
+                                   unix_sock_ro_mask,
+                                   unix_sock_gid,
+                                   config->auth_unix_ro,
+                                   NULL,
+                                   true,
+                                   config->max_queued_clients,
+                                   config->max_client_requests) < 0)
         goto cleanup;
 
-    if (sock_path_adm) {
-        VIR_DEBUG("Registering unix socket %s", sock_path_adm);
-        if (!(svcAdm = virNetServerServiceNewUNIX(sock_path_adm,
-                                                  unix_sock_adm_mask,
-                                                  unix_sock_gid,
-                                                  REMOTE_AUTH_NONE,
-                                                  NULL,
-                                                  false,
-                                                  config->admin_max_queued_clients,
-                                                  config->admin_max_client_requests)))
-            goto cleanup;
+    if (sock_path_adm &&
+        virNetServerAddServiceUNIX(srvAdm,
+                                   act,
+                                   "libvirtd-admin.socket",
+                                   sock_path_adm,
+                                   unix_sock_adm_mask,
+                                   unix_sock_gid,
+                                   REMOTE_AUTH_NONE,
+                                   NULL,
+                                   false,
+                                   config->admin_max_queued_clients,
+                                   config->admin_max_client_requests) < 0)
+        goto cleanup;
 
-        if (virNetServerAddService(srvAdm, svcAdm) < 0)
-            goto cleanup;
-    }
+    if (((ipsock && config->listen_tcp) || act) &&
+        virNetServerAddServiceTCP(srv,
+                                  act,
+                                  "libvirtd-tcp.socket",
+                                  config->listen_addr,
+                                  config->tcp_port,
+                                  AF_UNSPEC,
+                                  config->auth_tcp,
+                                  NULL,
+                                  false,
+                                  config->max_queued_clients,
+                                  config->max_client_requests) < 0)
+        goto cleanup;
 
-    if (ipsock) {
-        if (config->listen_tcp) {
-            VIR_DEBUG("Registering TCP socket %s:%s",
-                      config->listen_addr, config->tcp_port);
-            if (!(svcTCP = virNetServerServiceNewTCP(config->listen_addr,
-                                                     config->tcp_port,
-                                                     AF_UNSPEC,
-                                                     config->auth_tcp,
-                                                     NULL,
-                                                     false,
-                                                     config->max_queued_clients,
-                                                     config->max_client_requests)))
+    if (((ipsock && config->listen_tls) || (act && virSystemdActivationHasName(act, "ip-tls")))) {
+        virNetTLSContextPtr ctxt = NULL;
+
+        if (config->ca_file ||
+            config->cert_file ||
+            config->key_file) {
+            if (!config->ca_file) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("No CA certificate path set to match server key/cert"));
                 goto cleanup;
-
-            if (virNetServerAddService(srv, svcTCP) < 0)
+            }
+            if (!config->cert_file) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("No server certificate path set to match server key"));
                 goto cleanup;
-        }
-
-        if (config->listen_tls) {
-            virNetTLSContextPtr ctxt = NULL;
-
-            if (config->ca_file ||
-                config->cert_file ||
-                config->key_file) {
-                if (!config->ca_file) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("No CA certificate path set to match server key/cert"));
-                    goto cleanup;
-                }
-                if (!config->cert_file) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("No server certificate path set to match server key"));
-                    goto cleanup;
-                }
-                if (!config->key_file) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("No server key path set to match server cert"));
-                    goto cleanup;
-                }
-                VIR_DEBUG("Using CA='%s' cert='%s' key='%s'",
-                          config->ca_file, config->cert_file, config->key_file);
-                if (!(ctxt = virNetTLSContextNewServer(config->ca_file,
-                                                       config->crl_file,
-                                                       config->cert_file,
-                                                       config->key_file,
+            }
+            if (!config->key_file) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("No server key path set to match server cert"));
+                goto cleanup;
+            }
+            VIR_DEBUG("Using CA='%s' cert='%s' key='%s'",
+                      config->ca_file, config->cert_file, config->key_file);
+            if (!(ctxt = virNetTLSContextNewServer(config->ca_file,
+                                                   config->crl_file,
+                                                   config->cert_file,
+                                                   config->key_file,
+                                                   (const char *const*)config->tls_allowed_dn_list,
+                                                   config->tls_priority,
+                                                   config->tls_no_sanity_certificate ? false : true,
+                                                   config->tls_no_verify_certificate ? false : true)))
+                goto cleanup;
+        } else {
+            if (!(ctxt = virNetTLSContextNewServerPath(NULL,
+                                                       !privileged,
                                                        (const char *const*)config->tls_allowed_dn_list,
                                                        config->tls_priority,
                                                        config->tls_no_sanity_certificate ? false : true,
                                                        config->tls_no_verify_certificate ? false : true)))
-                    goto cleanup;
-            } else {
-                if (!(ctxt = virNetTLSContextNewServerPath(NULL,
-                                                           !privileged,
-                                                           (const char *const*)config->tls_allowed_dn_list,
-                                                           config->tls_priority,
-                                                           config->tls_no_sanity_certificate ? false : true,
-                                                           config->tls_no_verify_certificate ? false : true)))
-                    goto cleanup;
-            }
-
-            VIR_DEBUG("Registering TLS socket %s:%s",
-                      config->listen_addr, config->tls_port);
-            if (!(svcTLS =
-                  virNetServerServiceNewTCP(config->listen_addr,
-                                            config->tls_port,
-                                            AF_UNSPEC,
-                                            config->auth_tls,
-                                            ctxt,
-                                            false,
-                                            config->max_queued_clients,
-                                            config->max_client_requests))) {
-                virObjectUnref(ctxt);
                 goto cleanup;
-            }
-            if (virNetServerAddService(srv, svcTLS) < 0)
-                goto cleanup;
-
-            virObjectUnref(ctxt);
         }
+
+        VIR_DEBUG("Registering TLS socket %s:%s",
+                  config->listen_addr, config->tls_port);
+        if (virNetServerAddServiceTCP(srv,
+                                      act,
+                                      "libvirtd-tls.socket",
+                                      config->listen_addr,
+                                      config->tls_port,
+                                      AF_UNSPEC,
+                                      config->auth_tls,
+                                      ctxt,
+                                      false,
+                                      config->max_queued_clients,
+                                      config->max_client_requests) < 0) {
+            virObjectUnref(ctxt);
+            goto cleanup;
+        }
+        virObjectUnref(ctxt);
     }
+
+    if (act &&
+        virSystemdActivationComplete(act) < 0)
+        goto cleanup;
 
 #if WITH_SASL
     if (virNetServerNeedsAuth(srv, REMOTE_AUTH_SASL) &&
         !(saslCtxt = virNetSASLContextNewServer(
               (const char *const*)config->sasl_allowed_username_list)))
-            goto cleanup;
+        goto cleanup;
 #endif
 
     ret = 0;
 
  cleanup:
-    virObjectUnref(svcTLS);
-    virObjectUnref(svcTCP);
-    virObjectUnref(svcRO);
-    virObjectUnref(svcAdm);
-    virObjectUnref(svc);
     return ret;
 }
 

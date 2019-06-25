@@ -28,8 +28,11 @@
 #include "viralloc.h"
 #include "virerror.h"
 #include "virthread.h"
+#include "virlog.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
+
+VIR_LOG_INIT("rpc.netserverservice");
 
 struct _virNetServerService {
     virObject parent;
@@ -201,6 +204,8 @@ virNetServerServicePtr virNetServerServiceNewTCP(const char *nodename,
     virNetSocketPtr *socks;
     size_t nsocks;
 
+    VIR_DEBUG("Creating new TCP server nodename='%s' service='%s'",
+              NULLSTR(nodename), NULLSTR(service));
     if (virNetSocketNewListenTCP(nodename,
                                  service,
                                  family,
@@ -236,6 +241,8 @@ virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
     virNetServerServicePtr svc;
     virNetSocketPtr sock;
 
+    VIR_DEBUG("Creating new UNIX server path='%s' mask=%o gid=%u",
+              path, mask, grp);
     if (virNetSocketNewListenUNIX(path,
                                   mask,
                                   -1,
