@@ -112,18 +112,20 @@ virNetServerServiceNewFDOrUNIX(const char *path,
                                           nrequests_client_max);
 
     } else {
+        int fds[] = {(*cur_fd)++};
         /*
          * There's still enough file descriptors.  In this case we'll
          * use the current one and increment it afterwards. Take care
          * with order of operation for pointer arithmetic and auto
          * increment on cur_fd - the parentheses are necessary.
          */
-        return virNetServerServiceNewFD((*cur_fd)++,
-                                        auth,
-                                        tls,
-                                        readonly,
-                                        max_queued_clients,
-                                        nrequests_client_max);
+        return virNetServerServiceNewFDs(fds,
+                                         ARRAY_CARDINALITY(fds),
+                                         auth,
+                                         tls,
+                                         readonly,
+                                         max_queued_clients,
+                                         nrequests_client_max);
     }
 }
 
@@ -253,30 +255,39 @@ virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
     return svc;
 }
 
-virNetServerServicePtr virNetServerServiceNewFD(int fd,
-                                                int auth,
-                                                virNetTLSContextPtr tls,
-                                                bool readonly,
-                                                size_t max_queued_clients,
-                                                size_t nrequests_client_max)
+virNetServerServicePtr virNetServerServiceNewFDs(int *fds,
+                                                 size_t nfds,
+                                                 int auth,
+                                                 virNetTLSContextPtr tls,
+                                                 bool readonly,
+                                                 size_t max_queued_clients,
+                                                 size_t nrequests_client_max)
 {
-    virNetServerServicePtr svc;
-    virNetSocketPtr sock;
+    virNetServerServicePtr svc = NULL;
+    virNetSocketPtr *socks;
+    size_t i;
 
-    if (virNetSocketNewListenFD(fd,
-                                &sock) < 0)
-        return NULL;
+    if (VIR_ALLOC_N(socks, nfds) < 0)
+        goto cleanup;
 
-    svc = virNetServerServiceNewSocket(&sock,
-                                       1,
+    for (i = 0; i < nfds; i++) {
+        if (virNetSocketNewListenFD(fds[i],
+                                    &socks[i]) < 0)
+            goto cleanup;
+    }
+
+    svc = virNetServerServiceNewSocket(socks,
+                                       nfds,
                                        auth,
                                        tls,
                                        readonly,
                                        max_queued_clients,
                                        nrequests_client_max);
 
-    virObjectUnref(sock);
-
+ cleanup:
+    for (i = 0; i < nfds && socks; i++)
+        virObjectUnref(socks[i]);
+    VIR_FREE(socks);
     return svc;
 }
 

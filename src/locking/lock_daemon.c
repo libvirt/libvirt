@@ -597,6 +597,7 @@ virLockDaemonSetupNetworkingSystemD(virNetServerPtr lockSrv, virNetServerPtr adm
         virNetServerServicePtr svc;
         char *path = virGetUNIXSocketPath(3 + i);
         virNetServerPtr srv;
+        int fds[] = { 3 + i };
 
         if (!path)
             return -1;
@@ -616,9 +617,11 @@ virLockDaemonSetupNetworkingSystemD(virNetServerPtr lockSrv, virNetServerPtr adm
 
         /* Systemd passes FDs, starting immediately after stderr,
          * so the first FD we'll get is '3'. */
-        if (!(svc = virNetServerServiceNewFD(3 + i, 0,
-                                             NULL,
-                                             false, 0, 1)))
+        if (!(svc = virNetServerServiceNewFDs(fds,
+                                              ARRAY_CARDINALITY(fds),
+                                              0,
+                                              NULL,
+                                              false, 0, 1)))
             return -1;
 
         if (virNetServerAddService(srv, svc) < 0) {

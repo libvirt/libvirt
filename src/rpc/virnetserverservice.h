@@ -60,12 +60,13 @@ virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
                                                   bool readonly,
                                                   size_t max_queued_clients,
                                                   size_t nrequests_client_max);
-virNetServerServicePtr virNetServerServiceNewFD(int fd,
-                                                int auth,
-                                                virNetTLSContextPtr tls,
-                                                bool readonly,
-                                                size_t max_queued_clients,
-                                                size_t nrequests_client_max);
+virNetServerServicePtr virNetServerServiceNewFDs(int *fd,
+                                                 size_t nfds,
+                                                 int auth,
+                                                 virNetTLSContextPtr tls,
+                                                 bool readonly,
+                                                 size_t max_queued_clients,
+                                                 size_t nrequests_client_max);
 
 virNetServerServicePtr virNetServerServiceNewPostExecRestart(virJSONValuePtr object);
 
