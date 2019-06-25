@@ -668,6 +668,151 @@ int virNetServerAddService(virNetServerPtr srv,
     return -1;
 }
 
+
+static int
+virNetServerAddServiceActivation(virNetServerPtr srv,
+                                 virSystemdActivationPtr act,
+                                 const char *actname,
+                                 int auth,
+                                 virNetTLSContextPtr tls,
+                                 bool readonly,
+                                 size_t max_queued_clients,
+                                 size_t nrequests_client_max)
+{
+    int *fds;
+    size_t nfds;
+
+    if (act == NULL)
+        return 0;
+
+    virSystemdActivationClaimFDs(act, actname, &fds, &nfds);
+
+    if (nfds) {
+        virNetServerServicePtr svc;
+
+        svc = virNetServerServiceNewFDs(fds,
+                                        nfds,
+                                        false,
+                                        auth,
+                                        tls,
+                                        readonly,
+                                        max_queued_clients,
+                                        nrequests_client_max);
+        if (!svc)
+            return -1;
+
+        if (virNetServerAddService(srv, svc) < 0) {
+            virObjectUnref(svc);
+            return -1;
+        }
+    }
+
+    /* Intentionally return 1 any time activation is present,
+     * even if we didn't find any sockets with the matching
+     * name. The user needs to be free to disable some of the
+     * services via unit files without causing us to fallback
+     * to creating the service manually.
+     */
+    return 1;
+}
+
+
+int virNetServerAddServiceTCP(virNetServerPtr srv,
+                              virSystemdActivationPtr act,
+                              const char *actname,
+                              const char *nodename,
+                              const char *service,
+                              int family,
+                              int auth,
+                              virNetTLSContextPtr tls,
+                              bool readonly,
+                              size_t max_queued_clients,
+                              size_t nrequests_client_max)
+{
+    virNetServerServicePtr svc = NULL;
+    int ret;
+
+    ret = virNetServerAddServiceActivation(srv, act, actname,
+                                           auth,
+                                           tls,
+                                           readonly,
+                                           max_queued_clients,
+                                           nrequests_client_max);
+    if (ret < 0)
+        return -1;
+
+    if (ret == 1)
+        return 0;
+
+    if (!(svc = virNetServerServiceNewTCP(nodename,
+                                          service,
+                                          family,
+                                          auth,
+                                          tls,
+                                          readonly,
+                                          max_queued_clients,
+                                          nrequests_client_max)))
+        return -1;
+
+    if (virNetServerAddService(srv, svc) < 0) {
+        virObjectUnref(svc);
+        return -1;
+    }
+
+    virObjectUnref(svc);
+
+    return 0;
+}
+
+
+int virNetServerAddServiceUNIX(virNetServerPtr srv,
+                               virSystemdActivationPtr act,
+                               const char *actname,
+                               const char *path,
+                               mode_t mask,
+                               gid_t grp,
+                               int auth,
+                               virNetTLSContextPtr tls,
+                               bool readonly,
+                               size_t max_queued_clients,
+                               size_t nrequests_client_max)
+{
+    virNetServerServicePtr svc = NULL;
+    int ret;
+
+    ret = virNetServerAddServiceActivation(srv, act, actname,
+                                           auth,
+                                           tls,
+                                           readonly,
+                                           max_queued_clients,
+                                           nrequests_client_max);
+    if (ret < 0)
+        return -1;
+
+    if (ret == 1)
+        return 0;
+
+    if (!(svc = virNetServerServiceNewUNIX(path,
+                                           mask,
+                                           grp,
+                                           auth,
+                                           tls,
+                                           readonly,
+                                           max_queued_clients,
+                                           nrequests_client_max)))
+        return -1;
+
+    if (virNetServerAddService(srv, svc) < 0) {
+        virObjectUnref(svc);
+        return -1;
+    }
+
+    virObjectUnref(svc);
+
+    return 0;
+}
+
+
 int virNetServerAddProgram(virNetServerPtr srv,
                            virNetServerProgramPtr prog)
 {

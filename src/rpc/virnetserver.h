@@ -27,6 +27,7 @@
 #include "virnetserverservice.h"
 #include "virobject.h"
 #include "virjson.h"
+#include "virsystemd.h"
 
 
 virNetServerPtr virNetServerNew(const char *name,
@@ -60,6 +61,28 @@ virJSONValuePtr virNetServerPreExecRestart(virNetServerPtr srv);
 
 int virNetServerAddService(virNetServerPtr srv,
                            virNetServerServicePtr svc);
+int virNetServerAddServiceTCP(virNetServerPtr srv,
+                              virSystemdActivationPtr act,
+                              const char *actname,
+                              const char *nodename,
+                              const char *service,
+                              int family,
+                              int auth,
+                              virNetTLSContextPtr tls,
+                              bool readonly,
+                              size_t max_queued_clients,
+                              size_t nrequests_client_max);
+int virNetServerAddServiceUNIX(virNetServerPtr srv,
+                               virSystemdActivationPtr act,
+                               const char *actname,
+                               const char *path,
+                               mode_t mask,
+                               gid_t grp,
+                               int auth,
+                               virNetTLSContextPtr tls,
+                               bool readonly,
+                               size_t max_queued_clients,
+                               size_t nrequests_client_max);
 
 int virNetServerAddProgram(virNetServerPtr srv,
                            virNetServerProgramPtr prog);

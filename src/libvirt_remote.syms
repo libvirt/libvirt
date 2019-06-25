@@ -114,6 +114,8 @@ virNetMessageSaveError;
 virNetServerAddClient;
 virNetServerAddProgram;
 virNetServerAddService;
+virNetServerAddServiceTCP;
+virNetServerAddServiceUNIX;
 virNetServerClose;
 virNetServerGetClient;
 virNetServerGetClients;
