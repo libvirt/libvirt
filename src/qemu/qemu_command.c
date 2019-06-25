@@ -1730,7 +1730,7 @@ qemuBuildDriveSourceStr(virDomainDiskDefPtr disk,
     }
 
     if (disk->src->format > 0 &&
-        disk->src->type != VIR_STORAGE_TYPE_DIR) {
+        actualType != VIR_STORAGE_TYPE_DIR) {
         const char *qemuformat = virStorageFileFormatTypeToString(disk->src->format);
         if (rawluks)
             qemuformat = "luks";
