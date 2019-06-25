@@ -1785,50 +1785,6 @@ void virUpdateSelfLastChanged(const char *path)
 }
 
 
-#ifdef HAVE_SYS_UN_H
-char *virGetUNIXSocketPath(int fd)
-{
-    union {
-        struct sockaddr sa;
-        struct sockaddr_storage ss;
-        struct sockaddr_un un;
-    } addr = { .ss = { 0 } };
-    socklen_t len = sizeof(addr.ss);
-    char *path;
-
-    if (getsockname(fd, &addr.sa, &len) < 0) {
-        virReportSystemError(errno, _("Unable to get address of FD %d"), fd);
-        return NULL;
-    }
-
-    if (addr.ss.ss_family != AF_UNIX) {
-        virReportSystemError(EINVAL, _("FD %d is not a UNIX socket, has af=%d"),
-                             fd, addr.ss.ss_family);
-        return NULL;
-    }
-
-    if (addr.un.sun_path[0] == '\0')
-        addr.un.sun_path[0] = '@';
-
-    if (VIR_ALLOC_N(path, sizeof(addr.un.sun_path) + 1) < 0)
-        return NULL;
-
-    memcpy(path, addr.un.sun_path, sizeof(addr.un.sun_path));
-    path[sizeof(addr.un.sun_path)] = '\0';
-    return path;
-}
-
-#else /* HAVE_SYS_UN_H */
-
-char *virGetUNIXSocketPath(int fd ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s",
-                         _("UNIX sockets not supported on this platform"));
-    return NULL;
-}
-
-#endif /* HAVE_SYS_UN_H */
-
 #ifndef WIN32
 long virGetSystemPageSize(void)
 {
