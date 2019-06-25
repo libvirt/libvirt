@@ -149,7 +149,6 @@ bool virIsSUID(void);
 time_t virGetSelfLastChanged(void);
 void virUpdateSelfLastChanged(const char *path);
 
-unsigned int virGetListenFDs(void);
 char *virGetUNIXSocketPath(int fd);
 
 long virGetSystemPageSize(void) ATTRIBUTE_NOINLINE;

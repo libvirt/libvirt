@@ -3231,7 +3231,6 @@ virGetGroupList;
 virGetGroupName;
 virGetHostname;
 virGetHostnameQuiet;
-virGetListenFDs;
 virGetSelfLastChanged;
 virGetSystemPageSize;
 virGetSystemPageSizeKB;
