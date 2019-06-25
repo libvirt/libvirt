@@ -19,7 +19,8 @@
               "fd": 100,
               "errfd": -1,
               "pid": 0,
-              "isClient": false
+              "isClient": false,
+              "unlinkUNIX": true
             }
           ]
         },
@@ -32,7 +33,8 @@
               "fd": 101,
               "errfd": -1,
               "pid": 0,
-              "isClient": false
+              "isClient": false,
+              "unlinkUNIX": true
             }
           ]
         }
@@ -48,7 +50,8 @@
             "fd": 102,
             "errfd": -1,
             "pid": -1,
-            "isClient": true
+            "isClient": true,
+            "unlinkUNIX": false
           },
           "privateData": 1729
         },
@@ -62,7 +65,8 @@
             "fd": 103,
             "errfd": -1,
             "pid": -1,
-            "isClient": true
+            "isClient": true,
+            "unlinkUNIX": false
           },
           "privateData": 1729
         }

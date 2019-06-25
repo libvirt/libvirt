@@ -58,6 +58,7 @@ int virNetSocketNewListenUNIX(const char *path,
                               virNetSocketPtr *addr);
 
 int virNetSocketNewListenFD(int fd,
+                            bool unlinkUNIX,
                             virNetSocketPtr *addr);
 
 int virNetSocketNewConnectTCP(const char *nodename,

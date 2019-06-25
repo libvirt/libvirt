@@ -62,6 +62,7 @@ virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
                                                   size_t nrequests_client_max);
 virNetServerServicePtr virNetServerServiceNewFDs(int *fd,
                                                  size_t nfds,
+                                                 bool unlinkUNIX,
                                                  int auth,
                                                  virNetTLSContextPtr tls,
                                                  bool readonly,

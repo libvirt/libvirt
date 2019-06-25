@@ -121,6 +121,7 @@ virNetServerServiceNewFDOrUNIX(const char *path,
          */
         return virNetServerServiceNewFDs(fds,
                                          ARRAY_CARDINALITY(fds),
+                                         false,
                                          auth,
                                          tls,
                                          readonly,
@@ -257,6 +258,7 @@ virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
 
 virNetServerServicePtr virNetServerServiceNewFDs(int *fds,
                                                  size_t nfds,
+                                                 bool unlinkUNIX,
                                                  int auth,
                                                  virNetTLSContextPtr tls,
                                                  bool readonly,
@@ -272,6 +274,7 @@ virNetServerServicePtr virNetServerServiceNewFDs(int *fds,
 
     for (i = 0; i < nfds; i++) {
         if (virNetSocketNewListenFD(fds[i],
+                                    unlinkUNIX,
                                     &socks[i]) < 0)
             goto cleanup;
     }

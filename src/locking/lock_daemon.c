@@ -619,6 +619,7 @@ virLockDaemonSetupNetworkingSystemD(virNetServerPtr lockSrv, virNetServerPtr adm
          * so the first FD we'll get is '3'. */
         if (!(svc = virNetServerServiceNewFDs(fds,
                                               ARRAY_CARDINALITY(fds),
+                                              false,
                                               0,
                                               NULL,
                                               false, 0, 1)))

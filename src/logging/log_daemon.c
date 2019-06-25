@@ -554,6 +554,7 @@ virLogDaemonSetupNetworkingSystemD(virNetServerPtr logSrv, virNetServerPtr admin
          * so the first FD we'll get is '3'. */
         if (!(svc = virNetServerServiceNewFDs(fds,
                                               ARRAY_CARDINALITY(fds),
+                                              false,
                                               0,
                                               NULL,
                                               false, 0, 1)))

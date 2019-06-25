@@ -78,9 +78,10 @@ struct _virNetSocket {
     int watch;
     pid_t pid;
     int errfd;
-    bool client;
+    bool isClient;
     bool ownsFd;
     bool quietEOF;
+    bool unlinkUNIX;
 
     /* Event callback fields */
     virNetSocketIOFunc func;
@@ -216,10 +217,14 @@ int virNetSocketCheckProtocols(bool *hasIPv4,
 }
 
 
-static virNetSocketPtr virNetSocketNew(virSocketAddrPtr localAddr,
-                                       virSocketAddrPtr remoteAddr,
-                                       bool isClient,
-                                       int fd, int errfd, pid_t pid)
+static virNetSocketPtr
+virNetSocketNew(virSocketAddrPtr localAddr,
+                virSocketAddrPtr remoteAddr,
+                bool isClient,
+                int fd,
+                int errfd,
+                pid_t pid,
+                bool unlinkUNIX)
 {
     virNetSocketPtr sock;
     int no_slow_start = 1;
@@ -254,6 +259,8 @@ static virNetSocketPtr virNetSocketNew(virSocketAddrPtr localAddr,
     sock->pid = pid;
     sock->watch = -1;
     sock->ownsFd = true;
+    sock->isClient = isClient;
+    sock->unlinkUNIX = unlinkUNIX;
 
     /* Disable nagle for TCP sockets */
     if (sock->localAddr.data.sa.sa_family == AF_INET ||
@@ -279,8 +286,6 @@ static virNetSocketPtr virNetSocketNew(virSocketAddrPtr localAddr,
     if (remoteAddr &&
         !(sock->remoteAddrStrURI = virSocketAddrFormatFull(remoteAddr, true, NULL)))
         goto error;
-
-    sock->client = isClient;
 
     PROBE(RPC_SOCKET_NEW,
           "sock=%p fd=%d errfd=%d pid=%lld localAddr=%s, remoteAddr=%s",
@@ -427,7 +432,7 @@ int virNetSocketNewListenTCP(const char *nodename,
         if (VIR_EXPAND_N(socks, nsocks, 1) < 0)
             goto error;
 
-        if (!(socks[nsocks-1] = virNetSocketNew(&addr, NULL, false, fd, -1, 0)))
+        if (!(socks[nsocks-1] = virNetSocketNew(&addr, NULL, false, fd, -1, 0, false)))
             goto error;
         runp = runp->ai_next;
         fd = -1;
@@ -513,7 +518,7 @@ int virNetSocketNewListenUNIX(const char *path,
         goto error;
     }
 
-    if (!(*retsock = virNetSocketNew(&addr, NULL, false, fd, -1, 0)))
+    if (!(*retsock = virNetSocketNew(&addr, NULL, false, fd, -1, 0, true)))
         goto error;
 
     return 0;
@@ -538,6 +543,7 @@ int virNetSocketNewListenUNIX(const char *path ATTRIBUTE_UNUSED,
 #endif
 
 int virNetSocketNewListenFD(int fd,
+                            bool unlinkUNIX,
                             virNetSocketPtr *retsock)
 {
     virSocketAddr addr;
@@ -551,7 +557,7 @@ int virNetSocketNewListenFD(int fd,
         return -1;
     }
 
-    if (!(*retsock = virNetSocketNew(&addr, NULL, false, fd, -1, 0)))
+    if (!(*retsock = virNetSocketNew(&addr, NULL, false, fd, -1, 0, unlinkUNIX)))
         return -1;
 
     return 0;
@@ -627,7 +633,7 @@ int virNetSocketNewConnectTCP(const char *nodename,
         goto error;
     }
 
-    if (!(*retsock = virNetSocketNew(&localAddr, &remoteAddr, true, fd, -1, 0)))
+    if (!(*retsock = virNetSocketNew(&localAddr, &remoteAddr, true, fd, -1, 0, false)))
         goto error;
 
     freeaddrinfo(ai);
@@ -752,7 +758,7 @@ int virNetSocketNewConnectUNIX(const char *path,
         goto cleanup;
     }
 
-    if (!(*retsock = virNetSocketNew(&localAddr, &remoteAddr, true, fd, -1, 0)))
+    if (!(*retsock = virNetSocketNew(&localAddr, &remoteAddr, true, fd, -1, 0, false)))
         goto cleanup;
 
     ret = 0;
@@ -820,7 +826,7 @@ int virNetSocketNewConnectCommand(virCommandPtr cmd,
     VIR_FORCE_CLOSE(sv[1]);
     VIR_FORCE_CLOSE(errfd[1]);
 
-    if (!(*retsock = virNetSocketNew(NULL, NULL, true, sv[0], errfd[0], pid)))
+    if (!(*retsock = virNetSocketNew(NULL, NULL, true, sv[0], errfd[0], pid, false)))
         goto error;
 
     virCommandFree(cmd);
@@ -1219,7 +1225,7 @@ int virNetSocketNewConnectSockFD(int sockfd,
         return -1;
     }
 
-    if (!(*retsock = virNetSocketNew(&localAddr, NULL, true, sockfd, -1, -1)))
+    if (!(*retsock = virNetSocketNew(&localAddr, NULL, true, sockfd, -1, -1, false)))
         return -1;
 
     return 0;
@@ -1232,6 +1238,7 @@ virNetSocketPtr virNetSocketNewPostExecRestart(virJSONValuePtr object)
     virSocketAddr remoteAddr;
     int fd, thepid, errfd;
     bool isClient;
+    bool unlinkUNIX;
 
     if (virJSONValueObjectGetNumberInt(object, "fd", &fd) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1250,11 +1257,15 @@ virNetSocketPtr virNetSocketNewPostExecRestart(virJSONValuePtr object)
                        _("Missing errfd data in JSON document"));
         return NULL;
     }
+
     if (virJSONValueObjectGetBoolean(object, "isClient", &isClient) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Missing isClient data in JSON document"));
         return NULL;
     }
+
+    if (virJSONValueObjectGetBoolean(object, "unlinkUNIX", &unlinkUNIX) < 0)
+        unlinkUNIX = !isClient;
 
     memset(&localAddr, 0, sizeof(localAddr));
     memset(&remoteAddr, 0, sizeof(remoteAddr));
@@ -1271,8 +1282,8 @@ virNetSocketPtr virNetSocketNewPostExecRestart(virJSONValuePtr object)
         return NULL;
     }
 
-    return virNetSocketNew(&localAddr, &remoteAddr,
-                           isClient, fd, errfd, thepid);
+    return virNetSocketNew(&localAddr, &remoteAddr, isClient,
+                           fd, errfd, thepid, unlinkUNIX);
 }
 
 
@@ -1309,7 +1320,10 @@ virJSONValuePtr virNetSocketPreExecRestart(virNetSocketPtr sock)
     if (virJSONValueObjectAppendNumberInt(object, "pid", sock->pid) < 0)
         goto error;
 
-    if (virJSONValueObjectAppendBoolean(object, "isClient", sock->client) < 0)
+    if (virJSONValueObjectAppendBoolean(object, "isClient", sock->isClient) < 0)
+        goto error;
+
+    if (virJSONValueObjectAppendBoolean(object, "unlinkUNIX", sock->unlinkUNIX) < 0)
         goto error;
 
     if (virSetInherit(sock->fd, true) < 0) {
@@ -1350,7 +1364,7 @@ void virNetSocketDispose(void *obj)
 
 #ifdef HAVE_SYS_UN_H
     /* If a server socket, then unlink UNIX path */
-    if (!sock->client &&
+    if (sock->unlinkUNIX &&
         sock->localAddr.data.sa.sa_family == AF_UNIX &&
         sock->localAddr.data.un.sun_path[0] != '\0')
         unlink(sock->localAddr.data.un.sun_path);
@@ -2141,7 +2155,8 @@ int virNetSocketAccept(virNetSocketPtr sock, virNetSocketPtr *clientsock)
     if (!(*clientsock = virNetSocketNew(&localAddr,
                                         &remoteAddr,
                                         true,
-                                        fd, -1, 0)))
+                                        fd, -1, 0,
+                                        false)))
         goto cleanup;
 
     fd = -1;
@@ -2272,7 +2287,7 @@ void virNetSocketClose(virNetSocketPtr sock)
 
 #ifdef HAVE_SYS_UN_H
     /* If a server socket, then unlink UNIX path */
-    if (!sock->client &&
+    if (sock->unlinkUNIX &&
         sock->localAddr.data.sa.sa_family == AF_UNIX &&
         sock->localAddr.data.un.sun_path[0] != '\0') {
         if (unlink(sock->localAddr.data.un.sun_path) == 0)
