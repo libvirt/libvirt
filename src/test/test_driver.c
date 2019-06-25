@@ -3298,6 +3298,74 @@ static int testDomainGetDiskErrors(virDomainPtr dom,
     return ret;
 }
 
+
+
+static int
+testDomainGetFSInfo(virDomainPtr dom,
+                    virDomainFSInfoPtr **info,
+                    unsigned int flags)
+{
+    size_t i;
+    virDomainObjPtr vm;
+    virDomainFSInfoPtr *info_ret = NULL;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        return -1;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto cleanup;
+
+    *info = NULL;
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        if (vm->def->disks[i]->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
+            char *name = vm->def->disks[i]->dst;
+
+            if (VIR_ALLOC_N(info_ret, 2) < 0)
+                goto cleanup;
+
+            if (VIR_ALLOC(info_ret[0]) < 0 ||
+                VIR_ALLOC(info_ret[0]->devAlias) < 0 ||
+                VIR_STRDUP(info_ret[0]->mountpoint, "/") < 0 ||
+                VIR_STRDUP(info_ret[0]->fstype, "ext4") < 0 ||
+                VIR_STRDUP(info_ret[0]->devAlias[0], name) < 0 ||
+                virAsprintf(&info_ret[0]->name, "%s1", name) < 0)
+                goto cleanup;
+
+            if (VIR_ALLOC(info_ret[1]) < 0 ||
+                VIR_ALLOC(info_ret[1]->devAlias) < 0 ||
+                VIR_STRDUP(info_ret[1]->mountpoint, "/boot") < 0 ||
+                VIR_STRDUP(info_ret[1]->fstype, "ext4") < 0 ||
+                VIR_STRDUP(info_ret[1]->devAlias[0], name) < 0 ||
+                virAsprintf(&info_ret[1]->name, "%s2", name) < 0)
+                goto cleanup;
+
+            info_ret[0]->ndevAlias = info_ret[1]->ndevAlias = 1;
+
+            VIR_STEAL_PTR(*info, info_ret);
+
+            ret = 2;
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
+    if (info_ret) {
+        virDomainFSInfoFree(info_ret[0]);
+        virDomainFSInfoFree(info_ret[1]);
+        VIR_FREE(info_ret);
+    }
+
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
 static char *testDomainGetSchedulerType(virDomainPtr domain ATTRIBUTE_UNUSED,
                                         int *nparams)
 {
@@ -7292,6 +7360,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainGetAutostart = testDomainGetAutostart, /* 0.3.2 */
     .domainSetAutostart = testDomainSetAutostart, /* 0.3.2 */
     .domainGetDiskErrors = testDomainGetDiskErrors, /* 5.4.0 */
+    .domainGetFSInfo = testDomainGetFSInfo, /* 5.6.0 */
     .domainGetSchedulerType = testDomainGetSchedulerType, /* 0.3.2 */
     .domainGetSchedulerParameters = testDomainGetSchedulerParameters, /* 0.3.2 */
     .domainGetSchedulerParametersFlags = testDomainGetSchedulerParametersFlags, /* 0.9.2 */
