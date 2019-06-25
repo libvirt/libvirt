@@ -119,6 +119,9 @@ unsigned long long virNetServerNextClientID(virNetServerPtr srv);
 virNetServerClientPtr virNetServerGetClient(virNetServerPtr srv,
                                             unsigned long long id);
 
+bool virNetServerNeedsAuth(virNetServerPtr srv,
+                           int auth);
+
 int virNetServerGetClients(virNetServerPtr srv,
                            virNetServerClientPtr **clients);
 

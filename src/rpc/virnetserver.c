@@ -1098,6 +1098,23 @@ virNetServerGetCurrentUnauthClients(virNetServerPtr srv)
     return ret;
 }
 
+
+bool virNetServerNeedsAuth(virNetServerPtr srv,
+                           int auth)
+{
+    bool ret = false;
+    size_t i;
+
+    virObjectLock(srv);
+    for (i = 0; i < srv->nservices; i++) {
+        if (virNetServerServiceGetAuth(srv->services[i]) == auth)
+            ret = true;
+    }
+    virObjectUnlock(srv);
+
+    return ret;
+}
+
 int
 virNetServerGetClients(virNetServerPtr srv,
                        virNetServerClientPtr **clts)
