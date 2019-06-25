@@ -2430,10 +2430,20 @@ virStorageSourcePoolDefFree(virStorageSourcePoolDefPtr def)
 }
 
 
+/**
+ * virStorageSourceGetActualType:
+ * @def: storage source definition
+ *
+ * Returns type of @def. In case when the type is VIR_STORAGE_TYPE_VOLUME
+ * and virDomainDiskTranslateSourcePool was called on @def the actual type
+ * of the storage volume is returned rather than VIR_STORAGE_TYPE_VOLUME.
+ */
 int
 virStorageSourceGetActualType(const virStorageSource *def)
 {
-    if (def->type == VIR_STORAGE_TYPE_VOLUME && def->srcpool)
+    if (def->type == VIR_STORAGE_TYPE_VOLUME &&
+        def->srcpool &&
+        def->srcpool->actualtype != VIR_STORAGE_TYPE_NONE)
         return def->srcpool->actualtype;
 
     return def->type;
