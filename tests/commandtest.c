@@ -1003,63 +1003,6 @@ test23(const void *unused ATTRIBUTE_UNUSED)
     return ret;
 }
 
-static int test24(const void *unused ATTRIBUTE_UNUSED)
-{
-    char *pidfile = virPidFileBuildPath(abs_builddir, "commandhelper");
-    char *prefix = NULL;
-    int newfd1 = dup(STDERR_FILENO);
-    int newfd2 = dup(STDERR_FILENO);
-    int newfd3 = dup(STDERR_FILENO);
-    int ret = -1;
-    pid_t pid;
-    virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
-
-    if (!pidfile)
-        goto cleanup;
-
-    if (VIR_CLOSE(newfd1) < 0)
-        printf("Cannot close fd %d\n", newfd1);
-
-    virCommandSetPidFile(cmd, pidfile);
-    virCommandDaemonize(cmd);
-    virCommandPassFD(cmd, newfd2, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
-    virCommandPassFD(cmd, newfd3, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
-    newfd2 = newfd3 = -1;
-    virCommandPassListenFDs(cmd);
-
-    if (virCommandRun(cmd, NULL) < 0) {
-        printf("Cannot run child %s\n", virGetLastErrorMessage());
-        goto cleanup;
-    }
-
-    if (virPidFileRead(abs_builddir, "commandhelper", &pid) < 0) {
-        printf("cannot read pidfile\n");
-        goto cleanup;
-    }
-
-    if (virAsprintf(&prefix,
-                    "ENV:LISTEN_FDS=2\nENV:LISTEN_PID=%u\n",
-                    pid) < 0)
-        goto cleanup;
-
-    while (kill(pid, 0) != -1)
-        usleep(100*1000);
-
-    ret = checkoutput("test24", prefix);
-
- cleanup:
-    if (pidfile)
-        unlink(pidfile);
-    VIR_FREE(pidfile);
-    VIR_FREE(prefix);
-    virCommandFree(cmd);
-    VIR_FORCE_CLOSE(newfd1);
-    VIR_FORCE_CLOSE(newfd2);
-    VIR_FORCE_CLOSE(newfd3);
-    return ret;
-}
-
-
 static int test25(const void *unused ATTRIBUTE_UNUSED)
 {
     int ret = -1;
@@ -1347,7 +1290,6 @@ mymain(void)
     DO_TEST(test21);
     DO_TEST(test22);
     DO_TEST(test23);
-    DO_TEST(test24);
     DO_TEST(test25);
     DO_TEST(test26);
 

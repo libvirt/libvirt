@@ -1700,7 +1700,6 @@ virCommandNewVAList;
 virCommandNonblockingFDs;
 virCommandPassFD;
 virCommandPassFDGetFDIndex;
-virCommandPassListenFDs;
 virCommandRawStatus;
 virCommandRequireHandshake;
 virCommandRun;

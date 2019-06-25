@@ -66,7 +66,6 @@ enum {
     VIR_EXEC_CLEAR_CAPS = (1 << 2),
     VIR_EXEC_RUN_SYNC   = (1 << 3),
     VIR_EXEC_ASYNC_IO   = (1 << 4),
-    VIR_EXEC_LISTEN_FDS = (1 << 5),
 };
 
 typedef struct _virCommandFD virCommandFD;
@@ -204,78 +203,6 @@ virCommandFDSet(virCommandPtr cmd,
 }
 
 #ifndef WIN32
-
-static void
-virCommandReorderFDs(virCommandPtr cmd)
-{
-    int maxfd = 0;
-    int openmax = 0;
-    size_t i = 0;
-
-    if (!cmd || cmd->has_error || !cmd->npassfd)
-        return;
-
-    for (i = 0; i < cmd->npassfd; i++)
-        maxfd = MAX(cmd->passfd[i].fd, maxfd);
-
-    openmax = sysconf(_SC_OPEN_MAX);
-    if (openmax < 0 ||
-        maxfd + cmd->npassfd > openmax)
-        goto error;
-
-    /*
-     * Simple two-pass sort, nothing fancy.  This is not designed for
-     * anything else than passing around 2 FDs into the child.
-     *
-     * So first dup2() them somewhere else.
-     */
-    for (i = 0; i < cmd->npassfd; i++) {
-        int newfd = maxfd + i + 1;
-        int oldfd = cmd->passfd[i].fd;
-        if (dup2(oldfd, newfd) != newfd) {
-            virReportSystemError(errno,
-                                 _("Cannot dup2() fd %d before "
-                                   "passing it to the child"),
-                                 oldfd);
-            goto error;
-        }
-        VIR_FORCE_CLOSE(cmd->passfd[i].fd);
-    }
-
-    VIR_DEBUG("First reorder pass done");
-
-    /*
-     * And then dup2() them in orderly manner.
-     */
-    for (i = 0; i < cmd->npassfd; i++) {
-        int newfd = STDERR_FILENO + i + 1;
-        int oldfd = maxfd + i + 1;
-        if (dup2(oldfd, newfd) != newfd) {
-            virReportSystemError(errno,
-                                 _("Cannot dup2() fd %d before "
-                                   "passing it to the child"),
-                                 oldfd);
-            goto error;
-        }
-        if (virSetInherit(newfd, true) < 0) {
-            virReportSystemError(errno,
-                                 _("Cannot set O_CLOEXEC on fd %d before "
-                                   "passing it to the child"),
-                                 newfd);
-            goto error;
-        }
-        VIR_FORCE_CLOSE(oldfd);
-        cmd->passfd[i].fd = newfd;
-    }
-
-    VIR_DEBUG("Second reorder pass done");
-
-    return;
-
- error:
-    cmd->has_error = -1;
-    return;
-}
 
 /**
  * virFork:
@@ -763,15 +690,6 @@ virExec(virCommandPtr cmd)
         goto fork_error;
     }
 
-    if (cmd->flags & VIR_EXEC_LISTEN_FDS) {
-        virCommandReorderFDs(cmd);
-        virCommandAddEnvFormat(cmd, "LISTEN_PID=%u", getpid());
-        virCommandAddEnvFormat(cmd, "LISTEN_FDS=%zu", cmd->npassfd);
-
-        if (cmd->has_error)
-            goto fork_error;
-    }
-
     /* Close logging again to ensure no FDs leak to child */
     virLogReset();
 
@@ -1000,23 +918,6 @@ virCommandPassFD(virCommandPtr cmd, int fd, unsigned int flags)
         VIR_COMMAND_MAYBE_CLOSE_FD(fd, flags);
         return;
     }
-}
-
-/**
- * virCommandPassListenFDs:
- * @cmd: the command to modify
- *
- * Pass LISTEN_FDS and LISTEN_PID environment variables into the
- * child.  LISTEN_PID has the value of the child's PID and LISTEN_FDS
- * is a number of passed file descriptors starting from 3.
- */
-void
-virCommandPassListenFDs(virCommandPtr cmd)
-{
-    if (!cmd || cmd->has_error)
-        return;
-
-    cmd->flags |= VIR_EXEC_LISTEN_FDS;
 }
 
 /*

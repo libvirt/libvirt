@@ -60,8 +60,6 @@ void virCommandPassFD(virCommandPtr cmd,
                       int fd,
                       unsigned int flags) ATTRIBUTE_NOINLINE;
 
-void virCommandPassListenFDs(virCommandPtr cmd);
-
 int virCommandPassFDGetFDIndex(virCommandPtr cmd,
                                int fd);
 
