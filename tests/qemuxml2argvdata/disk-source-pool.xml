@@ -43,6 +43,12 @@
       <target dev='vda' bus='virtio'/>
       <readonly/>
     </disk>
+    <disk type='volume' device='disk'>
+      <driver name='qemu'/>
+      <source pool='pool-disk' volume='dir+vol2'/>
+      <target dev='vdb' bus='virtio'/>
+      <readonly/>
+    </disk>
     <controller type='usb' index='0'/>
     <controller type='ide' index='0'/>
     <controller type='pci' index='0' model='pci-root'/>

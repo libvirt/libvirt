@@ -44,6 +44,13 @@
       <readonly/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
     </disk>
+    <disk type='volume' device='disk'>
+      <driver name='qemu'/>
+      <source pool='pool-disk' volume='dir+vol2'/>
+      <target dev='vdb' bus='virtio'/>
+      <readonly/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+    </disk>
     <controller type='usb' index='0'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
     </controller>
