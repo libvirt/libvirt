@@ -5078,6 +5078,7 @@ qemuDomainValidateStorageSource(virStorageSourcePtr src,
     }
 
     if (src->format == VIR_STORAGE_FILE_FAT &&
+        actualType != VIR_STORAGE_TYPE_VOLUME &&
         actualType != VIR_STORAGE_TYPE_DIR) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("storage format 'fat' is supported only with 'dir' "

@@ -32,4 +32,8 @@ readonly=on \
 -device ide-cd,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0 \
 -drive file=/tmp/idedisk.img,format=raw,if=none,id=drive-ide0-0-2 \
 -device ide-hd,bus=ide.0,unit=2,drive=drive-ide0-0-2,id=ide0-0-2,bootindex=1 \
+-drive file=fat:/some/dir/device/vol1,if=none,id=drive-virtio-disk0,\
+readonly=on \
+-device virtio-blk-pci,bus=pci.0,addr=0x4,drive=drive-virtio-disk0,\
+id=virtio-disk0 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

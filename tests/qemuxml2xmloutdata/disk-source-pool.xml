@@ -37,6 +37,13 @@
       <target dev='hdd' bus='ide'/>
       <address type='drive' controller='0' bus='0' target='0' unit='2'/>
     </disk>
+    <disk type='volume' device='disk'>
+      <driver name='qemu' type='fat'/>
+      <source pool='pool-disk' volume='dir+vol1'/>
+      <target dev='vda' bus='virtio'/>
+      <readonly/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+    </disk>
     <controller type='usb' index='0'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
     </controller>
