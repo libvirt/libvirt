@@ -582,78 +582,6 @@ virLockDaemonSetupSignals(virNetDaemonPtr dmn)
 }
 
 
-static int
-virLockDaemonSetupNetworkingSystemD(virNetServerPtr lockSrv, virNetServerPtr adminSrv)
-{
-    unsigned int nfds;
-    size_t i;
-
-    if ((nfds = virGetListenFDs()) == 0)
-        return 0;
-    if (nfds > 2)
-        VIR_DEBUG("Too many (%d) file descriptors from systemd", nfds);
-
-    for (i = 0; i < nfds && i < 2; i++) {
-        virNetServerServicePtr svc;
-        char *path = virGetUNIXSocketPath(3 + i);
-        virNetServerPtr srv;
-        int fds[] = { 3 + i };
-
-        if (!path)
-            return -1;
-
-        if (strstr(path, "virtlockd-admin-sock")) {
-            srv = adminSrv;
-        } else if (strstr(path, "virtlockd-sock")) {
-            srv = lockSrv;
-        } else {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unknown UNIX socket %s passed in"),
-                           path);
-            VIR_FREE(path);
-            return -1;
-        }
-        VIR_FREE(path);
-
-        /* Systemd passes FDs, starting immediately after stderr,
-         * so the first FD we'll get is '3'. */
-        if (!(svc = virNetServerServiceNewFDs(fds,
-                                              ARRAY_CARDINALITY(fds),
-                                              false,
-                                              0,
-                                              NULL,
-                                              false, 0, 1)))
-            return -1;
-
-        if (virNetServerAddService(srv, svc) < 0) {
-            virObjectUnref(svc);
-            return -1;
-        }
-    }
-    return 1;
-}
-
-
-static int
-virLockDaemonSetupNetworkingNative(virNetServerPtr srv, const char *sock_path)
-{
-    virNetServerServicePtr svc;
-
-    VIR_DEBUG("Setting up networking natively");
-
-    if (!(svc = virNetServerServiceNewUNIX(sock_path, 0700, 0, 0,
-                                           NULL,
-                                           false, 0, 1)))
-        return -1;
-
-    if (virNetServerAddService(srv, svc) < 0) {
-        virObjectUnref(svc);
-        return -1;
-    }
-    return 0;
-}
-
-
 struct virLockDaemonClientReleaseData {
     virLockDaemonClientPtr client;
     bool hadSomeLeases;
@@ -1356,6 +1284,12 @@ int main(int argc, char **argv) {
      * (but still need to add @lockProgram into @srv). rv == 0 means that no
      * saved state is present, therefore initialize from scratch here. */
     if (rv == 0) {
+        VIR_AUTOPTR(virSystemdActivation) act = NULL;
+        virSystemdActivationMap actmap[] = {
+            { .name = "virtlockd.socket", .family = AF_UNIX, .path = sock_file },
+            { .name = "virtlockd-admin.socket", .family = AF_UNIX, .path = admin_sock_file },
+        };
+
         if (godaemon) {
             char ebuf[1024];
 
@@ -1383,30 +1317,45 @@ int main(int argc, char **argv) {
             goto cleanup;
         }
 
-        lockSrv = virNetDaemonGetServer(lockDaemon->dmn, "virtlockd");
-        adminSrv = virNetDaemonGetServer(lockDaemon->dmn, "admin");
-        if ((rv = virLockDaemonSetupNetworkingSystemD(lockSrv, adminSrv)) < 0) {
+        if (virSystemdGetActivation(actmap,
+                                    ARRAY_CARDINALITY(actmap),
+                                    &act) < 0) {
             ret = VIR_LOCK_DAEMON_ERR_NETWORK;
             goto cleanup;
         }
 
-        /* Only do this, if systemd did not pass a FD */
-        if (rv == 0) {
-            if (virLockDaemonSetupNetworkingNative(lockSrv, sock_file) < 0 ||
-                virLockDaemonSetupNetworkingNative(adminSrv, admin_sock_file) < 0) {
-                ret = VIR_LOCK_DAEMON_ERR_NETWORK;
-                goto cleanup;
-            }
-        }
-        virObjectUnref(lockSrv);
-        virObjectUnref(adminSrv);
-    }
-
-    lockSrv = virNetDaemonGetServer(lockDaemon->dmn, "virtlockd");
-    /* If exec-restarting from old virtlockd, we won't have an
-     * admin server present */
-    if (virNetDaemonHasServer(lockDaemon->dmn, "admin"))
+        lockSrv = virNetDaemonGetServer(lockDaemon->dmn, "virtlockd");
         adminSrv = virNetDaemonGetServer(lockDaemon->dmn, "admin");
+
+        if (virNetServerAddServiceUNIX(lockSrv,
+                                       act, "virtlockd.socket",
+                                       sock_file, 0700, 0, 0,
+                                       NULL,
+                                       false, 0, 1) < 0) {
+            ret = VIR_LOCK_DAEMON_ERR_NETWORK;
+            goto cleanup;
+        }
+        if (virNetServerAddServiceUNIX(adminSrv,
+                                       act, "virtlockd-admin.socket",
+                                       admin_sock_file, 0700, 0, 0,
+                                       NULL,
+                                       false, 0, 1) < 0) {
+            ret = VIR_LOCK_DAEMON_ERR_NETWORK;
+            goto cleanup;
+        }
+
+        if (act &&
+            virSystemdActivationComplete(act) < 0) {
+            ret = VIR_LOCK_DAEMON_ERR_NETWORK;
+            goto cleanup;
+        }
+    } else {
+        lockSrv = virNetDaemonGetServer(lockDaemon->dmn, "virtlockd");
+        /* If exec-restarting from old virtlockd, we won't have an
+         * admin server present */
+        if (virNetDaemonHasServer(lockDaemon->dmn, "admin"))
+            adminSrv = virNetDaemonGetServer(lockDaemon->dmn, "admin");
+    }
 
     if (timeout != -1) {
         VIR_DEBUG("Registering shutdown timeout %d", timeout);
