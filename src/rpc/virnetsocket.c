@@ -311,6 +311,7 @@ int virNetSocketNewListenTCP(const char *nodename,
     int socketErrno = 0;
     int bindErrno = 0;
     virSocketAddr tmp_addr;
+    int port = 0;
 
     *retsocks = NULL;
     *nretsocks = 0;
@@ -379,7 +380,24 @@ int virNetSocketNewListenTCP(const char *nodename,
         }
 #endif
 
-        if (bind(fd, runp->ai_addr, runp->ai_addrlen) < 0) {
+        addr.len = runp->ai_addrlen;
+        memcpy(&addr.data.sa, runp->ai_addr, runp->ai_addrlen);
+
+        /* When service is NULL, we let the kernel auto-select the
+         * port. Once we've selected a port for one IP protocol
+         * though, we want to ensure we pick the same port for the
+         * other IP protocol
+         */
+        if (port != 0 && service == NULL) {
+            if (addr.data.sa.sa_family == AF_INET) {
+                addr.data.inet4.sin_port = port;
+            } else if (addr.data.sa.sa_family == AF_INET6) {
+                addr.data.inet6.sin6_port = port;
+            }
+            VIR_DEBUG("Used saved port %d", port);
+        }
+
+        if (bind(fd, &addr.data.sa, addr.len) < 0) {
             if (errno != EADDRINUSE && errno != EADDRNOTAVAIL) {
                 virReportSystemError(errno, "%s", _("Unable to bind to port"));
                 goto error;
@@ -394,6 +412,14 @@ int virNetSocketNewListenTCP(const char *nodename,
         if (getsockname(fd, &addr.data.sa, &addr.len) < 0) {
             virReportSystemError(errno, "%s", _("Unable to get local socket name"));
             goto error;
+        }
+
+        if (port == 0 && service == NULL) {
+            if (addr.data.sa.sa_family == AF_INET)
+                port = addr.data.inet4.sin_port;
+            else if (addr.data.sa.sa_family == AF_INET6)
+                port = addr.data.inet6.sin6_port;
+            VIR_DEBUG("Saved port %d", port);
         }
 
         VIR_DEBUG("%p f=%d f=%d", &addr, runp->ai_family, addr.data.sa.sa_family);
