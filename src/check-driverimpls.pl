@@ -37,6 +37,7 @@ while (<>) {
 
             next if $api eq "no";
             next if $api eq "name";
+            next if $impl eq "NULL";
 
             my $suffix = $impl;
             my $prefix = $impl;

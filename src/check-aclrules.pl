@@ -212,6 +212,8 @@ while (<>) {
             my $api = $1;
             my $impl = $2;
 
+            next if $impl eq "NULL";
+
             if ($api ne "no" &&
                 $api ne "name" &&
                 $table ne "virStateDriver" &&

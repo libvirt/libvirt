@@ -7316,22 +7316,6 @@ static char
 }
 
 
-static char *
-qemuConnectDomainXMLFromNative(virConnectPtr conn,
-                               const char *format ATTRIBUTE_UNUSED,
-                               const char *config ATTRIBUTE_UNUSED,
-                               unsigned int flags)
-{
-    virCheckFlags(0, NULL);
-
-    if (virConnectDomainXMLFromNativeEnsureACL(conn) < 0)
-        return NULL;
-
-    virReportError(VIR_ERR_DEPRECATED, "%s",
-                   _("converting arbitrary QEMU command lines to libvirt domain XML is no longer supported"));
-    return NULL;
-}
-
 static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
                                           const char *format,
                                           const char *xmlData,
@@ -16772,19 +16756,6 @@ static int qemuDomainQemuMonitorCommand(virDomainPtr domain, const char *cmd,
 }
 
 
-static virDomainPtr
-qemuDomainQemuAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
-                     unsigned int pid_value ATTRIBUTE_UNUSED,
-                     unsigned int flags)
-{
-    virCheckFlags(0, NULL);
-
-    virReportError(VIR_ERR_DEPRECATED, "%s",
-                   _("attaching to a QEMU process started outside of libvirt is no longer supported"));
-    return NULL;
-}
-
-
 static int
 qemuDomainOpenConsole(virDomainPtr dom,
                       const char *dev_name,
@@ -22271,7 +22242,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainGetSecurityLabelList = qemuDomainGetSecurityLabelList, /* 0.10.0 */
     .nodeGetSecurityModel = qemuNodeGetSecurityModel, /* 0.6.1 */
     .domainGetXMLDesc = qemuDomainGetXMLDesc, /* 0.2.0 */
-    .connectDomainXMLFromNative = qemuConnectDomainXMLFromNative, /* 0.6.4 (deprecated: 5.5.0) */
+    .connectDomainXMLFromNative = NULL, /* 0.6.4 - 5.5.0 */
     .connectDomainXMLToNative = qemuConnectDomainXMLToNative, /* 0.6.4 */
     .connectListDefinedDomains = qemuConnectListDefinedDomains, /* 0.2.0 */
     .connectNumOfDefinedDomains = qemuConnectNumOfDefinedDomains, /* 0.2.0 */
@@ -22356,7 +22327,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainRevertToSnapshot = qemuDomainRevertToSnapshot, /* 0.8.0 */
     .domainSnapshotDelete = qemuDomainSnapshotDelete, /* 0.8.0 */
     .domainQemuMonitorCommand = qemuDomainQemuMonitorCommand, /* 0.8.3 */
-    .domainQemuAttach = qemuDomainQemuAttach, /* 0.9.4 (deprecated: 5.5.0) */
+    .domainQemuAttach = NULL, /* 0.9.4 - 5.5.0 */
     .domainQemuAgentCommand = qemuDomainQemuAgentCommand, /* 0.10.0 */
     .connectDomainQemuMonitorEventRegister = qemuConnectDomainQemuMonitorEventRegister, /* 1.2.3 */
     .connectDomainQemuMonitorEventDeregister = qemuConnectDomainQemuMonitorEventDeregister, /* 1.2.3 */

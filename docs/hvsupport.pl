@@ -234,17 +234,22 @@ foreach my $src (@srcs) {
             }
 
         } else {
-            if ($line =~ m!\s*\.(\w+)\s*=\s*(\w+)\s*,?\s*(?:/\*\s*(\d+\.\d+\.\d+)\s*(?:\(deprecated:\s*(\d+\.\d+\.\d+)\))?\s*\*/\s*)?$!) {
+            if ($line =~ m!\s*\.(\w+)\s*=\s*(\w+)\s*,?\s*(?:/\*\s*(\d+\.\d+\.\d+)\s*(?:-\s*(\d+\.\d+\.\d+))?\s*\*/\s*)?$!) {
                 my $api = $1;
                 my $meth = $2;
                 my $vers = $3;
-                my $depre = $4;
+                my $deleted = $4;
 
                 next if $api eq "no" || $api eq "name";
 
-                die "Method $meth in $src is missing version" unless defined $vers || $api eq "connectURIProbe";
+                if ($meth eq "NULL" && !defined $deleted) {
+                    die "Method impl for $api is NULL, but no deleted version is provided";
+                }
+                if ($meth ne "NULL" && defined $deleted) {
+                    die "Method impl for $api is non-NULL, but deleted version is provided";
+                }
 
-                die "Driver method for $api is NULL in $src" if $meth eq "NULL";
+                die "Method $meth in $src is missing version" unless defined $vers || $api eq "connectURIProbe";
 
                 if (!exists($groups{$ingrp}->{apis}->{$api})) {
                     next if $api =~ /\w(Open|Close|URIProbe)/;
@@ -254,7 +259,7 @@ foreach my $src (@srcs) {
 
                 $groups{$ingrp}->{drivers}->{$impl}->{$api} = {};
                 $groups{$ingrp}->{drivers}->{$impl}->{$api}->{vers} = $vers;
-                $groups{$ingrp}->{drivers}->{$impl}->{$api}->{depre}  = $depre;
+                $groups{$ingrp}->{drivers}->{$impl}->{$api}->{deleted}  = $deleted;
                 if ($api eq "domainMigratePrepare" ||
                     $api eq "domainMigratePrepare2" ||
                     $api eq "domainMigratePrepare3") {
@@ -351,9 +356,9 @@ print <<EOF;
 <p>
 This page documents which <a href="html/">libvirt calls</a> work on
 which libvirt drivers / hypervisors, and which version the API appeared
-in. If a hypervisor driver deprecated the API, the version when it
-was removed is also mentioned (highlighted in
-<span class="deprecatedhv">dark red</span>).
+in. If a hypervisor driver later dropped support for the API, the version
+when it was removed is also mentioned (highlighted in
+<span class="removedhv">dark red</span>).
 </p>
 
 EOF
@@ -411,8 +416,8 @@ EOF
                 if ($groups{$grp}->{drivers}->{$drv}->{$field}->{vers}) {
                     print $groups{$grp}->{drivers}->{$drv}->{$field}->{vers};
                 }
-                if ($groups{$grp}->{drivers}->{$drv}->{$field}->{depre}) {
-                    print " - <span class=\"deprecatedhv\">", $groups{$grp}->{drivers}->{$drv}->{$field}->{depre}, "</span>";
+                if ($groups{$grp}->{drivers}->{$drv}->{$field}->{deleted}) {
+                    print " - <span class=\"removedhv\">", $groups{$grp}->{drivers}->{$drv}->{$field}->{deleted}, "</span>";
                 }
             }
             print "</td>\n";
