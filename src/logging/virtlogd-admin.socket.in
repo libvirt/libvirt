@@ -1,6 +1,8 @@
 [Unit]
 Description=Virtual machine log manager socket
 Before=libvirtd.service
+BindsTo=virtlogd.socket
+After=virtlogd.socket
 
 [Socket]
 ListenStream=@localstatedir@/run/libvirt/virtlogd-admin-sock
