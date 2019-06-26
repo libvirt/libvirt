@@ -33,7 +33,7 @@
 #include <sys/wait.h>
 #include <sys/ioctl.h>
 #include <net/if.h>
-#if HAVE_SYS_SYSCTL_H
+#ifdef HAVE_SYSCTLBYNAME
 # include <sys/sysctl.h>
 #endif
 
