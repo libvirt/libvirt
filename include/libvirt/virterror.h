@@ -329,7 +329,6 @@ typedef enum {
     VIR_ERR_INVALID_NETWORK_PORT = 105, /* invalid network port object */
     VIR_ERR_NETWORK_PORT_EXIST = 106,   /* the network port already exist */
     VIR_ERR_NO_NETWORK_PORT = 107,      /* network port not found */
-    VIR_ERR_DEPRECATED = 108,           /* configuration or operation is no longer supported */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_ERR_NUMBER_LAST
