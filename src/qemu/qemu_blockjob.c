@@ -315,7 +315,7 @@ qemuBlockJobEventProcessLegacy(virQEMUDriverPtr driver,
                                qemuBlockJobDataPtr job,
                                int asyncJob)
 {
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
     virDomainDiskDefPtr disk = job->disk;
 
     VIR_DEBUG("disk=%s, mirrorState=%s, type=%d, state=%d, newstate=%d",
@@ -368,8 +368,6 @@ qemuBlockJobEventProcessLegacy(virQEMUDriverPtr driver,
             VIR_WARN("Unable to update persistent definition on vm %s "
                      "after block job", vm->def->name);
     }
-
-    virObjectUnref(cfg);
 }
 
 
