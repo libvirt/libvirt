@@ -73,8 +73,7 @@ static qemuBlockJobDataPtr
 qemuBlockJobDataNew(qemuBlockJobType type,
                     const char *name)
 {
-    qemuBlockJobDataPtr job = NULL;
-    qemuBlockJobDataPtr ret = NULL;
+    VIR_AUTOUNREF(qemuBlockJobDataPtr) job = NULL;
 
     if (qemuBlockJobDataInitialize() < 0)
         return NULL;
@@ -83,17 +82,13 @@ qemuBlockJobDataNew(qemuBlockJobType type,
         return NULL;
 
     if (VIR_STRDUP(job->name, name) < 0)
-        goto cleanup;
+        return NULL;
 
     job->state = QEMU_BLOCKJOB_STATE_NEW;
     job->newstate = -1;
     job->type = type;
 
-    VIR_STEAL_PTR(ret, job);
-
- cleanup:
-    virObjectUnref(job);
-    return ret;
+    VIR_RETURN_PTR(job);
 }
 
 
