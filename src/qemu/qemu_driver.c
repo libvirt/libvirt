@@ -8066,6 +8066,21 @@ qemuDomainUpdateDeviceLive(virDomainObjPtr vm,
     return ret;
 }
 
+
+static int
+qemuCheckDiskConfigAgainstDomain(const virDomainDef *def,
+                                 const virDomainDiskDef *disk)
+{
+    if (virDomainSCSIDriveAddressIsUsed(def, &disk->info.addr.drive)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Domain already contains a disk with that address"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
 static int
 qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
                              virDomainDeviceDefPtr dev,
@@ -8093,6 +8108,8 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
         if (virDomainDiskTranslateSourcePool(disk) < 0)
             return -1;
         if (qemuCheckDiskConfig(disk, NULL) < 0)
+            return -1;
+        if (qemuCheckDiskConfigAgainstDomain(vmdef, disk) < 0)
             return -1;
         if (virDomainDiskInsert(vmdef, disk) < 0)
             return -1;
