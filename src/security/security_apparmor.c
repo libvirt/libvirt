@@ -779,9 +779,8 @@ AppArmorSetSecurityImageLabel(virSecurityManagerPtr mgr,
                               virSecurityDomainImageLabelFlags flags G_GNUC_UNUSED)
 {
     virSecurityLabelDefPtr secdef;
-
-    if (!src->path || !virStorageSourceIsLocalStorage(src))
-        return 0;
+    g_autofree char *vfioGroupDev = NULL;
+    const char *path;
 
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_APPARMOR_NAME);
     if (!secdef || !secdef->relabel)
@@ -790,15 +789,29 @@ AppArmorSetSecurityImageLabel(virSecurityManagerPtr mgr,
     if (!secdef->imagelabel)
         return 0;
 
+    if (src->type == VIR_STORAGE_TYPE_NVME) {
+        const virStorageSourceNVMeDef *nvme = src->nvme;
+
+        if (!(vfioGroupDev = virPCIDeviceAddressGetIOMMUGroupDev(&nvme->pciAddr)))
+            return -1;
+
+        path = vfioGroupDev;
+    } else {
+        if (!src->path || !virStorageSourceIsLocalStorage(src))
+            return 0;
+
+        path = src->path;
+    }
+
     /* if the device doesn't exist, error out */
-    if (!virFileExists(src->path)) {
+    if (!virFileExists(path)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("\'%s\' does not exist"),
-                       src->path);
+                       path);
         return -1;
     }
 
-    return reload_profile(mgr, def, src->path, true);
+    return reload_profile(mgr, def, path, true);
 }
 
 static int

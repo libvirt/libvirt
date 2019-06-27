@@ -1707,9 +1707,8 @@ virSecuritySELinuxRestoreImageLabelSingle(virSecurityManagerPtr mgr,
 {
     virSecurityLabelDefPtr seclabel;
     virSecurityDeviceLabelDefPtr disk_seclabel;
-
-    if (!src->path || !virStorageSourceIsLocalStorage(src))
-        return 0;
+    g_autofree char *vfioGroupDev = NULL;
+    const char *path = src->path;
 
     seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
     if (seclabel == NULL)
@@ -1741,9 +1740,16 @@ virSecuritySELinuxRestoreImageLabelSingle(virSecurityManagerPtr mgr,
      * ownership, because that kills access on the destination host which is
      * sub-optimal for the guest VM's I/O attempts :-) */
     if (migrated) {
-        int rc = virFileIsSharedFS(src->path);
-        if (rc < 0)
-            return -1;
+        int rc = 1;
+
+        if (virStorageSourceIsLocalStorage(src)) {
+            if (!src->path)
+                return 0;
+
+            if ((rc = virFileIsSharedFS(src->path)) < 0)
+                return -1;
+        }
+
         if (rc == 1) {
             VIR_DEBUG("Skipping image label restore on %s because FS is shared",
                       src->path);
@@ -1751,7 +1757,22 @@ virSecuritySELinuxRestoreImageLabelSingle(virSecurityManagerPtr mgr,
         }
     }
 
-    return virSecuritySELinuxRestoreFileLabel(mgr, src->path, true);
+    /* This is not very clean. But so far we don't have NVMe
+     * storage pool backend so that its chownCallback would be
+     * called. And this place looks least offensive. */
+    if (src->type == VIR_STORAGE_TYPE_NVME) {
+        const virStorageSourceNVMeDef *nvme = src->nvme;
+
+        if (!(vfioGroupDev = virPCIDeviceAddressGetIOMMUGroupDev(&nvme->pciAddr)))
+            return -1;
+
+        /* Ideally, we would check if there is not another PCI
+         * device within domain def that is in the same IOMMU
+         * group. But we're not doing that for hostdevs yet. */
+        path = vfioGroupDev;
+    }
+
+    return virSecuritySELinuxRestoreFileLabel(mgr, path, true);
 }
 
 
@@ -1798,6 +1819,8 @@ virSecuritySELinuxSetImageLabelInternal(virSecurityManagerPtr mgr,
     char *use_label = NULL;
     bool remember;
     bool is_toplevel = parent == src || parent->externalDataStore == src;
+    g_autofree char *vfioGroupDev = NULL;
+    const char *path = src->path;
     int ret;
 
     if (!src->path || !virStorageSourceIsLocalStorage(src))
@@ -1850,7 +1873,19 @@ virSecuritySELinuxSetImageLabelInternal(virSecurityManagerPtr mgr,
         use_label = data->content_context;
     }
 
-    ret = virSecuritySELinuxSetFilecon(mgr, src->path, use_label, remember);
+    /* This is not very clean. But so far we don't have NVMe
+     * storage pool backend so that its chownCallback would be
+     * called. And this place looks least offensive. */
+    if (src->type == VIR_STORAGE_TYPE_NVME) {
+        const virStorageSourceNVMeDef *nvme = src->nvme;
+
+        if (!(vfioGroupDev = virPCIDeviceAddressGetIOMMUGroupDev(&nvme->pciAddr)))
+            return -1;
+
+        path = vfioGroupDev;
+    }
+
+    ret = virSecuritySELinuxSetFilecon(mgr, path, use_label, remember);
 
     if (ret == 1 && !disk_seclabel) {
         /* If we failed to set a label, but virt_use_nfs let us
