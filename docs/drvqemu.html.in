@@ -427,7 +427,7 @@ mount -t cgroup none /dev/cgroup -o devices
     <h3><a id="xmlimport">Converting from QEMU args to domain XML</a></h3>
 
     <p>
-      <b>Note:</b> this operation is <span class="deprecated"> deprecated as of
+      <b>Note:</b> this operation is <span class="removed"> deleted as of
         5.5.0</span> and will return an error.
     </p>
     <p>

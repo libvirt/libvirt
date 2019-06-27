@@ -274,7 +274,7 @@ span.since {
     font-weight: bold;
 }
 
-span.deprecated {
+span.removed {
     color: darkred;
     font-style: italic;
     font-weight: bold;
