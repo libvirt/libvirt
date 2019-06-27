@@ -22,7 +22,8 @@ use warnings;
 
 my @objects = (
     "CONNECT", "DOMAIN", "INTERFACE",
-    "NETWORK","NODE_DEVICE", "NWFILTER",
+    "NETWORK_PORT", "NETWORK", "NODE_DEVICE",
+    "NWFILTER_BINDING", "NWFILTER",
      "SECRET", "STORAGE_POOL", "STORAGE_VOL",
     );
 
