@@ -95,8 +95,7 @@ typedef char *
 
 typedef int
 (*virCgroupDetectControllersCB)(virCgroupPtr group,
-                                int controllers,
-                                virCgroupPtr parent);
+                                int controllers);
 
 typedef bool
 (*virCgroupHasControllerCB)(virCgroupPtr cgroup,
