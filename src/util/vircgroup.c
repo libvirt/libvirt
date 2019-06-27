@@ -1082,7 +1082,7 @@ virCgroupEnableMissingControllers(char *path,
                          &tmp) < 0)
             goto cleanup;
 
-        if (virCgroupMakeGroup(parent, tmp, true, VIR_CGROUP_NONE) < 0) {
+        if (virCgroupMakeGroup(parent, tmp, true, VIR_CGROUP_SYSTEMD) < 0) {
             virCgroupFree(&tmp);
             goto cleanup;
         }

@@ -34,6 +34,9 @@ typedef enum {
                                        * attaching tasks
                                        */
     VIR_CGROUP_THREAD = 1 << 1, /* cgroup v2 handles threads differently */
+    VIR_CGROUP_SYSTEMD = 1 << 2, /* with systemd and cgroups v2 we cannot
+                                  * manually enable controllers that systemd
+                                  * doesn't know how to delegate */
 } virCgroupBackendFlags;
 
 typedef enum {

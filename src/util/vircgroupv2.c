@@ -395,6 +395,11 @@ virCgroupV2MakeGroup(virCgroupPtr parent ATTRIBUTE_UNUSED,
     VIR_AUTOFREE(char *) path = NULL;
     int controller;
 
+    if (flags & VIR_CGROUP_SYSTEMD) {
+        VIR_DEBUG("Running with systemd so we should not create cgroups ourselves.");
+        return 0;
+    }
+
     VIR_DEBUG("Make group %s", group->path);
 
     controller = virCgroupV2GetAnyController(group);
