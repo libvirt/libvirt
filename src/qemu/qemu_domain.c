@@ -7238,7 +7238,8 @@ virDomainDefParserConfig virQEMUDriverDomainDefParserConfig = {
 
 
 static void
-qemuDomainObjSaveJob(virQEMUDriverPtr driver, virDomainObjPtr obj)
+qemuDomainObjSaveStatus(virQEMUDriverPtr driver,
+                        virDomainObjPtr obj)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
@@ -7249,6 +7250,14 @@ qemuDomainObjSaveJob(virQEMUDriverPtr driver, virDomainObjPtr obj)
 
     virObjectUnref(cfg);
 }
+
+
+void
+qemuDomainSaveStatus(virDomainObjPtr obj)
+{
+    qemuDomainObjSaveStatus(QEMU_DOMAIN_PRIVATE(obj)->driver, obj);
+}
+
 
 void
 qemuDomainObjSetJobPhase(virQEMUDriverPtr driver,
@@ -7273,7 +7282,7 @@ qemuDomainObjSetJobPhase(virQEMUDriverPtr driver,
 
     priv->job.phase = phase;
     priv->job.asyncOwner = me;
-    qemuDomainObjSaveJob(driver, obj);
+    qemuDomainObjSaveStatus(driver, obj);
 }
 
 void
@@ -7296,7 +7305,7 @@ qemuDomainObjDiscardAsyncJob(virQEMUDriverPtr driver, virDomainObjPtr obj)
     if (priv->job.active == QEMU_JOB_ASYNC_NESTED)
         qemuDomainObjResetJob(priv);
     qemuDomainObjResetAsyncJob(priv);
-    qemuDomainObjSaveJob(driver, obj);
+    qemuDomainObjSaveStatus(driver, obj);
 }
 
 void
@@ -7479,7 +7488,7 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
     }
 
     if (qemuDomainTrackJob(job))
-        qemuDomainObjSaveJob(driver, obj);
+        qemuDomainObjSaveStatus(driver, obj);
 
     virObjectUnref(cfg);
     return 0;
@@ -7723,7 +7732,7 @@ qemuDomainObjEndJob(virQEMUDriverPtr driver, virDomainObjPtr obj)
 
     qemuDomainObjResetJob(priv);
     if (qemuDomainTrackJob(job))
-        qemuDomainObjSaveJob(driver, obj);
+        qemuDomainObjSaveStatus(driver, obj);
     /* We indeed need to wake up ALL threads waiting because
      * grabbing a job requires checking more variables. */
     virCondBroadcast(&priv->job.cond);
@@ -7767,7 +7776,7 @@ qemuDomainObjEndJobWithAgent(virQEMUDriverPtr driver,
     qemuDomainObjResetJob(priv);
     qemuDomainObjResetAgentJob(priv);
     if (qemuDomainTrackJob(job))
-        qemuDomainObjSaveJob(driver, obj);
+        qemuDomainObjSaveStatus(driver, obj);
     /* We indeed need to wake up ALL threads waiting because
      * grabbing a job requires checking more variables. */
     virCondBroadcast(&priv->job.cond);
@@ -7785,7 +7794,7 @@ qemuDomainObjEndAsyncJob(virQEMUDriverPtr driver, virDomainObjPtr obj)
               obj, obj->def->name);
 
     qemuDomainObjResetAsyncJob(priv);
-    qemuDomainObjSaveJob(driver, obj);
+    qemuDomainObjSaveStatus(driver, obj);
     virCondBroadcast(&priv->job.asyncCond);
 }
 

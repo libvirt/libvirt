@@ -206,6 +206,8 @@ typedef void (*qemuDomainCleanupCallback)(virQEMUDriverPtr driver,
 
 #define QEMU_DOMAIN_MASTER_KEY_LEN 32  /* 32 bytes for 256 bit random key */
 
+void qemuDomainSaveStatus(virDomainObjPtr obj);
+
 
 /* helper data types for async device unplug */
 typedef enum {
