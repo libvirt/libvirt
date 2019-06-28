@@ -40,6 +40,18 @@
 
 <libvirt>
   <release version="v5.5.0" date="unreleased">
+    <section title="Security">
+      <change>
+        <summary>
+          api: Prevent access to several APIs over read-only connections
+        </summary>
+        <description>
+          Certain APIs give root-equivalent access to the host, and as such
+          should be limited to privileged users. CVE-2019-10161,
+          CVE-2019-10166, CVE-2019-10167, CVE-2019-10168.
+        </description>
+      </change>
+    </section>
     <section title="New features">
       <change>
         <summary>
@@ -47,6 +59,16 @@
         </summary>
         <description>
           SMMUv3 is an IOMMU implementation for ARM virt guests.
+        </description>
+      </change>
+      <change>
+        <summary>
+          network: Introduce the network port API
+        </summary>
+        <description>
+          This new public API can be used by virtualization drivers to
+          manage network resources associated with guests, and is a further
+          step towards splitting libvirtd into multiple daemons.
         </description>
       </change>
     </section>
@@ -62,10 +84,72 @@
           from libvirt or otherwise.
         </description>
       </change>
+      <change>
+        <summary>
+          Stop supporting migration of config files from pre-XDG layout
+        </summary>
+        <description>
+          The new layout was introduced with libvirt 0.9.13 (Jul 2012).
+        </description>
+      </change>
+      <change>
+        <summary>
+          Remove Avahi mDNS support
+        </summary>
+        <description>
+          This feature was never used outside of virt-manager, which has
+          itself stopped using it a while ago.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          sysinfo: Report SMBIOS information on aarch64
+        </summary>
+        <description>
+          While SMBIOS support has historically been limited to x86_64, modern
+          aarch64 machines often offer access to the same information as well,
+          and libvirt now exposes it to the user when that's the case.
+        </description>
+      </change>
+      <change>
+        <summary>
+          test driver: Expand API coverage
+        </summary>
+        <description>
+          Even more APIs that were missing from the test driver have now been
+          implemented.
+        </description>
+      </change>
+      <change>
+        <summary>
+          virt-xml-validate: Allow input to be read from stdin
+        </summary>
+      </change>
+      <change>
+        <summary>
+          qemu: Validate spapr-vio addresses as 32-bit
+        </summary>
+        <description>
+          libvirt has always considered these addresses (used for pSeries
+          guests) as 64-bit, but the sPAPR specification says that they're
+          32-bit instead.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
+      <change>
+        <summary>
+          qemu: Set process affinity correctly when using &lt;numatune&gt;
+        </summary>
+        <description>
+          libvirt would mistakenly interpret the <code>nodeset</code>
+          attribute as a list of CPUs instead of as a list of NUMA node, and
+          the process affinity would be set incorrectly as a result; this has
+          now been fixed.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v5.4.0" date="2019-06-03">
