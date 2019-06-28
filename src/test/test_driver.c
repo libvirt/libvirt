@@ -3372,6 +3372,49 @@ testDomainGetFSInfo(virDomainPtr dom,
 }
 
 
+static int
+testDomainGetPerfEvents(virDomainPtr dom,
+                        virTypedParameterPtr *params,
+                        int *nparams,
+                        unsigned int flags)
+{
+    virDomainObjPtr vm = NULL;
+    virDomainDefPtr def = NULL;
+    virTypedParameterPtr par = NULL;
+    size_t i;
+    int maxpar = 0;
+    int npar = 0;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG |
+                  VIR_TYPED_PARAM_STRING_OKAY, -1);
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (!(def = virDomainObjGetOneDef(vm, flags)))
+        goto cleanup;
+
+    for (i = 0; i < VIR_PERF_EVENT_LAST; i++) {
+        if (virTypedParamsAddBoolean(&par, &npar, &maxpar,
+                                     virPerfEventTypeToString(i),
+                                     def->perf.events[i] == VIR_TRISTATE_BOOL_YES) < 0)
+            goto cleanup;
+    }
+
+    VIR_STEAL_PTR(*params, par);
+    *nparams = npar;
+    npar = 0;
+
+    ret = 0;
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    virTypedParamsFree(par, npar);
+    return ret;
+}
+
+
 static char *testDomainGetSchedulerType(virDomainPtr domain ATTRIBUTE_UNUSED,
                                         int *nparams)
 {
@@ -7367,6 +7410,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainSetAutostart = testDomainSetAutostart, /* 0.3.2 */
     .domainGetDiskErrors = testDomainGetDiskErrors, /* 5.4.0 */
     .domainGetFSInfo = testDomainGetFSInfo, /* 5.6.0 */
+    .domainGetPerfEvents = testDomainGetPerfEvents, /* 5.6.0 */
     .domainGetSchedulerType = testDomainGetSchedulerType, /* 0.3.2 */
     .domainGetSchedulerParameters = testDomainGetSchedulerParameters, /* 0.3.2 */
     .domainGetSchedulerParametersFlags = testDomainGetSchedulerParametersFlags, /* 0.9.2 */
