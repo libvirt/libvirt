@@ -9730,7 +9730,7 @@ virDomainOpenChannel(virDomainPtr dom,
  * @domain: a domain object
  * @params: where to store perf events setting
  * @nparams: number of items in @params
- * @flags: bitwise-OR of virDomainModificationImpact
+ * @flags: bitwise-OR of virDomainModificationImpact and virTypedParameterFlags
  *
  * Get all Linux perf events setting. Possible fields returned in
  * @params are defined by VIR_PERF_EVENT_* macros and new fields
