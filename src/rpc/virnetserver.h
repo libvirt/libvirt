@@ -42,7 +42,7 @@ virNetServerPtr virNetServerNew(const char *name,
                                 virNetServerClientPrivPreExecRestart clientPrivPreExecRestart,
                                 virFreeCallback clientPrivFree,
                                 void *clientPrivOpaque)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(11) ATTRIBUTE_NONNULL(13);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(10) ATTRIBUTE_NONNULL(12);
 
 virNetServerPtr virNetServerNewPostExecRestart(virJSONValuePtr object,
                                                const char *name,
