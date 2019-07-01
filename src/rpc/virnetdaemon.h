@@ -47,8 +47,6 @@ virNetDaemonPtr virNetDaemonNewPostExecRestart(virJSONValuePtr object,
 
 virJSONValuePtr virNetDaemonPreExecRestart(virNetDaemonPtr dmn);
 
-typedef int (*virNetDaemonAutoShutdownFunc)(virNetDaemonPtr dmn, void *opaque);
-
 bool virNetDaemonIsPrivileged(virNetDaemonPtr dmn);
 
 void virNetDaemonAutoShutdown(virNetDaemonPtr dmn,
