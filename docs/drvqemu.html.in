@@ -478,7 +478,8 @@ mount -t cgroup none /dev/cgroup -o devices
       qemu guest (<span class="since">Since 0.8.3</span>),
       and <code>virDomainQemuAttach</code>, for registering a qemu
       domain that was manually started so that it can then be managed
-      by libvirtd (<span class="since">Since 0.9.4</span>).
+      by libvirtd (<span class="since">Since 0.9.4</span>,
+      <span class="removed">removed as of 5.5.0</span>).
     </p>
     <p>Additionally, the following XML additions allow fine-tuning of
       the command line given to qemu when starting a domain
