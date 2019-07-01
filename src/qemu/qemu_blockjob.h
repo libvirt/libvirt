@@ -82,6 +82,16 @@ struct _qemuBlockJobData {
     int newstate; /* qemuBlockjobState, subset of events emitted by qemu */
 };
 
+int
+qemuBlockJobRegister(qemuBlockJobDataPtr job,
+                     virDomainObjPtr vm,
+                     virDomainDiskDefPtr disk)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+qemuBlockJobDataPtr
+qemuBlockJobDataNew(qemuBlockJobType type,
+                    const char *name)
+    ATTRIBUTE_NONNULL(2);
 
 qemuBlockJobDataPtr
 qemuBlockJobDiskNew(virDomainObjPtr vm,
