@@ -10339,9 +10339,6 @@ qemuDomainGetPerfEvents(virDomainPtr dom,
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
         goto cleanup;
 
-    if (virDomainObjUpdateModificationImpact(vm, &flags) < 0)
-        goto endjob;
-
     if (!(def = virDomainObjGetOneDef(vm, flags)))
         goto endjob;
 
