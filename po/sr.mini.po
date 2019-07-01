@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"POT-Creation-Date: 2019-07-01 18:50+0100\n"
 "PO-Revision-Date: 2015-03-03 07:52+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Serbian (http://www.transifex.com/projects/p/fedora/language/"
@@ -1968,10 +1968,6 @@ msgstr "непозната врста %d диска за складиштење"
 #, c-format
 msgid "unknown type '%s'"
 msgstr "непозната врста „%s“"
-
-#, c-format
-msgid "unknown virt type in domain definition '%d'"
-msgstr "непозната врста виртуализације у дефиницији домена „%d“"
 
 #, c-format
 msgid "unsupported authentication type %d"

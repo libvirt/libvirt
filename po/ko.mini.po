@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"POT-Creation-Date: 2019-07-01 18:50+0100\n"
 "PO-Revision-Date: 2015-02-27 07:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Korean (http://www.transifex.com/projects/p/libvirt/language/"
@@ -363,9 +363,6 @@ msgstr "--%s 또는 --current가 필요함 "
 msgid "--descendants requires either --from or --current"
 msgstr "--descendants에는 --from 또는 --current가 필요합니다"
 
-msgid "--print-xml is incompatible with --no-metadata"
-msgstr "--print-xml이 --no-metadata와 호환되지 않습니다 "
-
 #, c-format
 msgid "<%s>"
 msgstr "<%s>"
@@ -548,9 +545,6 @@ msgstr "버스 %s가 목적지로는 너무 큼"
 
 msgid "Busy"
 msgstr "약속 있음"
-
-msgid "CEPH_ARGS was set without an rbd disk"
-msgstr "CEPH_ARGS는 rbd 디스크없이 설정되었습니다"
 
 msgid "CPU Affinity:"
 msgstr "CPU 동질관계:"
@@ -740,10 +734,6 @@ msgstr "멀티 핸들에 CURL 핸들을 두 번 추가할 수 없습니다 "
 
 msgid "Cannot add uninitialized CURL handle to a multi handle"
 msgstr "멀티 핸들에 초기화되지 않은 CURL 핸들을 추가할 수 없습니다 "
-
-#, c-format
-msgid "Cannot assign address for device name '%s'"
-msgstr "'%s' 장치 이름의 주소를 할당할 수 없음"
 
 #, c-format
 msgid "Cannot check QEMU binary %s"
@@ -960,10 +950,6 @@ msgid "Cannot set autostart for transient domain"
 msgstr "임시 도메인의 autostart를 설정할 수 없음"
 
 #, c-format
-msgid "Cannot set bandwidth on interface '%s' of type %d"
-msgstr "인터페이스 '%s'에서 (유형 %d) 대역폭을 설정할 수 없음"
-
-#, c-format
 msgid "Cannot set context %s"
 msgstr "문맥 %s을 설정할 수 없음"
 
@@ -984,9 +970,6 @@ msgstr "JSON 문서에서 max_clients 데이터를 설정할 수 없음"
 
 msgid "Cannot set max_workers data in JSON document"
 msgstr "JSON 문서에서 max_workers 데이터를 설정할 수 없음"
-
-msgid "Cannot set mdnsGroupName data in JSON document"
-msgstr "JSON 문서에서 mdnsGroupName 데이터를 설정할 수 없음"
 
 msgid "Cannot set memory higher than max memory"
 msgstr "최대 메모리보다 더 높게 메모리를 설정할 수 없음"
@@ -1144,12 +1127,6 @@ msgstr "소켓당 코어:"
 #, c-format
 msgid "Could find volume with name: %s"
 msgstr "다음 이름으로된 볼륨을 찾을 수 없습니다: %s"
-
-msgid "Could not add variable 'IP' to hashmap"
-msgstr "해시맵에 'IP' 변수를 추가할 수 없음 "
-
-msgid "Could not add variable 'MAC' to hashmap"
-msgstr "해시맵에 'MAC' 변수를 추가할 수 없음 "
 
 #, c-format
 msgid "Could not assign address to disk '%s'"
@@ -2082,9 +2059,6 @@ msgstr "이름이 지정된 스냅샷의 도메인 스냅샷 XML 편집 "
 msgid "Eject the media"
 msgstr "미디어 꺼내기"
 
-msgid "Empty qemu environment name specified"
-msgstr "빈 qemu 환경 이름이 지정되어 있음 "
-
 #, c-format
 msgid "Empty response during %s"
 msgstr "%s 도중 빈 응답 "
@@ -2149,9 +2123,6 @@ msgstr "iface 한계 %d를 넘어감"
 #, c-format
 msgid "Existing device %s is already a bridge"
 msgstr "기존 장치 %s는 이미 브리지입니다"
-
-msgid "Exiting due to failure to migrate profile"
-msgstr "프로파일 마이그레이션 실패로 인해 종료 중 "
 
 #, c-format
 msgid "Expecting VI API type 'HostAgent' or 'VirtualCenter' but found '%s'"
@@ -3573,9 +3544,6 @@ msgstr "잘못된 않은 보안 레이블 %s"
 msgid "Invalid security label '%s'"
 msgstr "잘못된 않은 보안 레이블 '%s'"
 
-msgid "Invalid snapshot"
-msgstr "잘못된 스냅샷"
-
 #, c-format
 msgid ""
 "Invalid specification for virtio ccw address: cssid='%s' ssid='%s' devno='%s'"
@@ -4309,9 +4277,6 @@ msgstr "XML 덤프로서의 볼륨 정보를 표준 출력으로 출력."
 
 msgid "PASS"
 msgstr "통과 "
-
-msgid "PCI address Formatting failed"
-msgstr "PCI 주소 포맷 설정 실패"
 
 msgid "PCI bus 0 slot 1 is reserved for the implicit LPC PCI-ISA bridge"
 msgstr "PCI 버스 0 슬롯 1은 암시적 LPC PCI-ISA 브릿지에 예약되어 있습니다"
@@ -5556,10 +5521,6 @@ msgstr "뮤텍스를 초기화할 수 없음 "
 msgid "Unable to load certificate"
 msgstr "인증서를 불러올 수 없음"
 
-#, c-format
-msgid "Unable to migrate %s to %s"
-msgstr "%s을 %s로 마이그레이션할 수 없습니다"
-
 msgid "Unable to obtain hostInternetScsiHba"
 msgstr "hostInternetScsiHba를 가져올 수 없습니다 "
 
@@ -5797,9 +5758,6 @@ msgstr "알 수 없는 모드가 지정되었습니다"
 msgid "Unknown model type '%s'"
 msgstr "알 수 없는 모델 유형 '%s'"
 
-msgid "Unknown poll response."
-msgstr "알려지지 않은 풀링 응답."
-
 #, c-format
 msgid "Unknown pool adapter type '%s'"
 msgstr "알 수 없는 풀 어댑터 유형 '%s'"
@@ -5955,20 +5913,6 @@ msgstr "값 '%s'을 %s로 표시할 수 없습니다 "
 #, c-format
 msgid "Value '%s' is out of %s range"
 msgstr "값 '%s'이 %s 범위를 벗어남 "
-
-msgid "Value of cputune emulator_period must be in range [1000, 1000000]"
-msgstr "cputune emulator_period 값은 [1000, 1000000] 범위에 있어야 합니다"
-
-msgid ""
-"Value of cputune emulator_quota must be in range [1000, 18446744073709551]"
-msgstr ""
-"cputune emulator_quota 값은 [1000, 18446744073709551] 범위에 있어야 합니다"
-
-msgid "Value of cputune period must be in range [1000, 1000000]"
-msgstr "cputune 기간 값은 [1000, 1000000] 범위에 있어야 합니다"
-
-msgid "Value of cputune quota must be in range [1000, 18446744073709551]"
-msgstr "cputune 쿼터 값은 [1000, 18446744073709551] 범위에 있어야 합니다"
 
 msgid "Variable value contains invalid character"
 msgstr "변수 값에 잘못된 문자가 들어 있습니다 "
@@ -6230,14 +6174,6 @@ msgstr "부팅됨"
 msgid "bridge '%s' has an invalid netmask or IP address"
 msgstr "브리지 '%s'에 잘못된 넷마스크 또는 IP 주소가 있음 "
 
-#, c-format
-msgid ""
-"bridge delay/stp options only allowed in route, nat, and isolated mode, not "
-"in %s (network '%s')"
-msgstr ""
-"브리지의 delay/stp 옵션은 route, nat, isolated 모드에서만 허용됩니다. %s (네"
-"트워크 '%s')에서 허용되지 않습니다 "
-
 msgid "bridge interface misses the bridge element"
 msgstr "브리지 인터페이스에 bridge 요소가 빠졌습니다"
 
@@ -6314,9 +6250,6 @@ msgstr "기존 비밀정보의 개인용 플래그를 변경할 수 없음"
 #, c-format
 msgid "cannot change to root directory: %s"
 msgstr "루트 디렉터리로 cd하기 실패: %s"
-
-msgid "cannot change vcpu count of this domain"
-msgstr "이 도메인의 vcpu 갯수를 변경할 수 없음"
 
 #, c-format
 msgid "cannot chown %s to (%u, %u)"
@@ -6415,34 +6348,6 @@ msgstr "바이너리 %s를 실행할 수 없음"
 msgid "cannot extend file '%s'"
 msgstr "파일 '%s'를 확장할 수 없음"
 
-#, c-format
-msgid "cannot extract PCI device bus '%s'"
-msgstr "PCI 장치 버스 '%s'를 추출할 수 없음"
-
-#, c-format
-msgid "cannot extract PCI device function '%s'"
-msgstr "PCI 장치 기능 '%s'를 추출할 수 없음"
-
-#, c-format
-msgid "cannot extract PCI device slot '%s'"
-msgstr "PCI 장치 슬롯 '%s'를 추출할 수 없음"
-
-#, c-format
-msgid "cannot extract USB device address '%s'"
-msgstr "USB 장치 주소 '%s'를 추출할 수 없음"
-
-#, c-format
-msgid "cannot extract USB device bus '%s'"
-msgstr "USB 장치 버스 '%s'를 추출할 수 없음"
-
-#, c-format
-msgid "cannot extract USB device product '%s'"
-msgstr "USB 장치 제품 '%s'를 추출할 수 없음"
-
-#, c-format
-msgid "cannot extract USB device vendor '%s'"
-msgstr "USB 장치 벤더'%s'를 추출할 수 없음"
-
 msgid "cannot extract blkiotune nodes"
 msgstr "blkiotune 노드를 추출할 수 없음"
 
@@ -6470,16 +6375,8 @@ msgid "cannot find CPU map for %s architecture"
 msgstr "%s 아키텍쳐에 대한 CPU 맵을 찾을 수 없음"
 
 #, c-format
-msgid "cannot find NIC definition for vlan %d"
-msgstr "vlan %d에 대해 NIC 정의를 찾을 수 없음"
-
-#, c-format
 msgid "cannot find newly created volume '%s'"
 msgstr "새로 생성된 볼륨 '%s'를 찾을 수 없습니다"
-
-#, c-format
-msgid "cannot find port number in character device %s"
-msgstr "문자 디바이스 %s에서 포트 번호를 찾을 수 없음"
 
 #, c-format
 msgid "cannot find statistics for device '%s'"
@@ -6567,18 +6464,6 @@ msgid "cannot open volume '%s'"
 msgstr "볼륨 '%s'를 열 수 없음"
 
 #, c-format
-msgid "cannot parse CPU topology '%s'"
-msgstr "CPU 토플로지 '%s'를 구문분석 할 수 없음"
-
-#, c-format
-msgid "cannot parse NIC definition '%s'"
-msgstr "NIC 정의 '%s'를 구문분석할 수 없음"
-
-#, c-format
-msgid "cannot parse NIC vlan in '%s'"
-msgstr "'%s'에서 NIC vlan을 구문 분석할 수 없음"
-
-#, c-format
 msgid "cannot parse PCI bus '%s'"
 msgstr "PCI 버스 '%s'를 구문분석 할 수 없음"
 
@@ -6593,14 +6478,6 @@ msgstr "PCI 기능 '%s'를 구문분석 할 수 없음"
 #, c-format
 msgid "cannot parse PCI slot '%s'"
 msgstr "PCI 슬롯 '%s'를 구문분석 할 수 없음"
-
-#, c-format
-msgid "cannot parse UUID '%s'"
-msgstr "UUID'%s'를 구문분석 할 수 없음"
-
-#, c-format
-msgid "cannot parse VNC port '%s'"
-msgstr "VNC 포트 '%s'를 구문분석 할 수 없음"
 
 #, c-format
 msgid "cannot parse bus %s"
@@ -6620,27 +6497,11 @@ msgstr "장치 끝 위치를 구문분석할 수 없음"
 msgid "cannot parse device start location"
 msgstr "장치 시작 위치를 구문분석할 수 없음"
 
-#, c-format
-msgid "cannot parse drive bus '%s'"
-msgstr "드라이브 버스 '%s'를 구문분석 할 수 없음"
-
-#, c-format
-msgid "cannot parse drive index '%s'"
-msgstr "드라이브 인덱스 '%s'를 구문분석 할 수 없음"
-
-#, c-format
-msgid "cannot parse drive unit '%s'"
-msgstr "드라이브 유니트 '%s'를 구문분석 할 수 없음"
-
 msgid "cannot parse instanceid parameter as a uuid"
 msgstr "uuid로 인스턴스 ID 매개 변수를 구문 분석할 수 없음"
 
 msgid "cannot parse interfaceid parameter as a uuid"
 msgstr "uuid로 인터페이스 ID 매개 변수를 구문 분석할 수 없음"
-
-#, c-format
-msgid "cannot parse io mode '%s'"
-msgstr "io 모드 '%s'를 구문 분석할 수 없음 "
 
 #, c-format
 msgid "cannot parse json %s: %s"
@@ -6662,10 +6523,6 @@ msgstr "제품 %s를 구문분석할 수 없습니다"
 #, c-format
 msgid "cannot parse rdp port %s"
 msgstr "rdp 포트 %s를 구문분석할 수 없음 "
-
-#, c-format
-msgid "cannot parse sndbuf size in '%s'"
-msgstr "'%s'의 sndbuf 크기를 구문 분석할 수 없음 "
 
 #, c-format
 msgid "cannot parse spice port %s"
@@ -6713,10 +6570,6 @@ msgstr "비디오 헤드 '%s'를 구문분석 할 수 없음"
 #, c-format
 msgid "cannot parse video ram '%s'"
 msgstr "비디오 램 '%s'을 구문 분석할 수 없음"
-
-#, c-format
-msgid "cannot parse vlan in '%s'"
-msgstr "'%s'에서 vlan을 구문분석 할 수 없음"
 
 #, c-format
 msgid "cannot parse vnc WebSocket port %s"
@@ -7096,10 +6949,6 @@ msgid "could not open input path '%s'"
 msgstr "입력 경로 '%s'를 열 수 없음"
 
 #, c-format
-msgid "could not parse CEPH_ARGS '%s'"
-msgstr "CEPH_ARGS '%s'를 구문 분석할 수 없음 "
-
-#, c-format
 msgid "could not parse weight %s"
 msgstr "중량 %s을 구문 분석할 수 없음 "
 
@@ -7316,9 +7165,6 @@ msgstr "네트워크 인터페이스 분리"
 #, c-format
 msgid "device %s is not a PCI device"
 msgstr "장치 %s는 PCI 장치가 아닙니다"
-
-msgid "device cannot be detached without a device alias"
-msgstr "장치는 장치 별칭 없이 탈착할 수 없습니다"
 
 msgid "device key"
 msgstr "장치 키"
@@ -7959,14 +7805,6 @@ msgstr "볼륨 '%s/%s'을 제거하는데 실패"
 msgid "failed to resume domain"
 msgstr "도메인을 재개하는 것에 실패"
 
-#, c-format
-msgid "failed to run '%s --help': %s"
-msgstr "'%s --help' 실행 실패: %s"
-
-#, c-format
-msgid "failed to run '%s --version': %s"
-msgstr "'%s --version' 실행 실패: %s"
-
 msgid "failed to run apparmor_parser"
 msgstr "apparmor_parser 실행 실패"
 
@@ -8096,12 +7934,6 @@ msgstr "사용가능한 저장소 풀 소스를 찾습니다"
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"
 msgstr ""
 "플래그 매개변수는 VIR_MEMORY_VIRTUAL이거나 VIR_MEMORY_PHYSICAL이어야 합니다"
-
-msgid "floor attribute is supported only for interfaces of type network"
-msgstr "floor 속성은 유형 네트워크의 인터페이스에서만 지원됨 "
-
-msgid "floor attribute isn't supported for network's bandwidth yet"
-msgstr "floor 속성은 네트워크의 대역폭에 아직 지원되지 않음 "
 
 #, c-format
 msgid "for Linux >= %d.%d.%d"
@@ -8477,10 +8309,6 @@ msgstr "잘못된 연결 포인터"
 msgid "invalid connection pointer in %s"
 msgstr "%s에 있는 잘못된 연결 포인터"
 
-#, c-format
-msgid "invalid device name '%s'"
-msgstr "잘못된 장치 이름 '%s'"
-
 msgid "invalid domain pointer in"
 msgstr "잘못된 도메인 포인터"
 
@@ -8552,10 +8380,6 @@ msgstr "잘못된 논리 블록 크기 '%s'"
 
 msgid "invalid mode"
 msgstr "잘못된 모드 "
-
-#, c-format
-msgid "invalid name '%s' for iSCSI disk"
-msgstr "iSCSI 디스크의 잘못된 이름 '%s'"
 
 #, c-format
 msgid "invalid netfs path (ends in /): %s"
@@ -8690,14 +8514,6 @@ msgstr "잘못된 uuid %s"
 #, c-format
 msgid "invalid value %d"
 msgstr "잘못된 값 %d"
-
-#, c-format
-msgid "invalid value for disable_s3 parameter: '%s'"
-msgstr "disable_s3 매개 변수에 대해 잘못된 값: '%s'"
-
-#, c-format
-msgid "invalid value for disable_s4 parameter: '%s'"
-msgstr "disable_s4 매개 변수의 잘못된 값: '%s'"
 
 msgid "invalid value for rebootTimeout, must be in range [-1,65535]"
 msgstr "rebootTimeout의 잘못된 값, [-1,65535] 범위에 있어야 합니다"
@@ -8993,9 +8809,6 @@ msgstr "RAM 파일 시스템의 'usage' 속성 누락 "
 msgid "missing EGD backend type"
 msgstr "EGD 백엔드 유형이 누락되어 있음"
 
-msgid "missing HyperV spinlock retry count"
-msgstr "HyperV spinlock 재시도 수가 누락되어 있음"
-
 msgid "missing PCI bus"
 msgstr "PCI 버스 빠짐"
 
@@ -9076,10 +8889,6 @@ msgstr "도메인 상태 빠짐"
 msgid "missing domain type attribute"
 msgstr "도메인 유형 속성이 누락되어 있음"
 
-#, c-format
-msgid "missing file parameter in drive '%s'"
-msgstr "드라이브 '%s'에 파일 매개변수가 빠짐"
-
 msgid "missing filter parameter table"
 msgstr "필터 매개 변수 표가 누락되어 있음 "
 
@@ -9088,10 +8897,6 @@ msgstr "그래픽 장치 유형 부재   "
 
 msgid "missing hub device type"
 msgstr "hub 장치 유형이 누락되어 있음"
-
-#, c-format
-msgid "missing index/unit/bus parameter in drive '%s'"
-msgstr "드라이브 '%s'에 index/unit/bus 매개변수가 빠짐"
 
 msgid "missing input device type"
 msgstr "입력 장치 타입 빠짐"
@@ -9243,10 +9048,6 @@ msgstr "인증을 위한 사용자 이름이 누락되어 있음"
 msgid "missing uuid element in migration data"
 msgstr "마이그레이션 데이터에 uuid 요소가 누락되어 있음"
 
-#, c-format
-msgid "missing value for %s argument"
-msgstr "%s 인자에 대해 빠진 값"
-
 msgid "missing vendor"
 msgstr "벤더 빠짐"
 
@@ -9255,9 +9056,6 @@ msgstr "비디오 모델이 빠져있으며, 기본 모델명을 결정할 수 �
 
 msgid "missing vlan tag data"
 msgstr "vlan 태그 데이터 누락되어 있음"
-
-msgid "missing vnc sharing policy"
-msgstr "vnc 공유 정책이 누락되어 있음"
 
 msgid "missing volume name element"
 msgstr "볼륨 이름 요소가 빠짐"
@@ -9585,9 +9383,6 @@ msgstr "uuid가 '%s'와 일치하는 도메인이 없음"
 msgid "no domain with matching uuid '%s' (%s)"
 msgstr "'%s' UUID와 일치하는 도메인이 없음 (%s)"
 
-msgid "no emulator path found"
-msgstr "에뮬레이터 경로를 찾을 수 없음"
-
 msgid "no error"
 msgstr "오류 없음"
 
@@ -9863,9 +9658,6 @@ msgstr "pid"
 #, c-format
 msgid "pid_value in %s is too large"
 msgstr "%s에 있는 pid_value가 너무 큽니다 "
-
-msgid "poll error"
-msgstr "풀링 오류"
 
 msgid "poll on socket failed"
 msgstr "소켓 폴링이 실패했습니다"
@@ -10629,10 +10421,6 @@ msgstr "찾아야 할 저장소 풀 소스 유형"
 msgid "type of the pool"
 msgstr "풀의 유형"
 
-#, c-format
-msgid "udev scan devices returned %d"
-msgstr "udev 스캔 장치가 %d를 반환함 "
-
 msgid "uid and gid should be mapped both"
 msgstr "uid와 gid 모두 매핑해야 합니다"
 
@@ -10953,10 +10741,6 @@ msgid "unexpected domain %s already exists"
 msgstr "예기치 못한 도메인 %s가 이미 존재함"
 
 #, c-format
-msgid "unexpected domain snapshot %s already exists"
-msgstr "예기치 못한 도메인 스냅샷 %s이 이미 존재함 "
-
-#, c-format
 msgid "unexpected domain type %d"
 msgstr "예기치 못한 도메인 유형 %d"
 
@@ -10968,10 +10752,6 @@ msgstr ""
 
 msgid "unexpected encryption format"
 msgstr "예기치 못한 암호화 형식"
-
-#, c-format
-msgid "unexpected feature %zu"
-msgstr "예상치 못한 기능 %zu"
 
 #, c-format
 msgid "unexpected filesystem type %d"
@@ -11153,20 +10933,12 @@ msgstr "알 수 없음"
 msgid "unknown %s action: %s"
 msgstr "알 수 없는 %s 동작: %s"
 
-#, c-format
-msgid "unknown CPU syntax '%s'"
-msgstr "알려져 있지 않은 CPU 문법 '%s'"
-
 msgid "unknown OS type"
 msgstr "알려지지 않은 OS 유형"
 
 #, c-format
 msgid "unknown OS type %s"
 msgstr "알려지지 않은 OS 유형 %s"
-
-#, c-format
-msgid "unknown PCI device syntax '%s'"
-msgstr "알려져 있지 않은 PCI 장치 문법 '%s'"
 
 #, c-format
 msgid "unknown PM state value %s"
@@ -11183,10 +10955,6 @@ msgstr "알 수 없는 RNG 모델 '%s'"
 #, c-format
 msgid "unknown SCSI host capability type '%s' for '%s'"
 msgstr "SCSI 호스트 기능 유형 '%s'가('%s'에 대한) 알려져 있지 않음"
-
-#, c-format
-msgid "unknown USB device syntax '%s'"
-msgstr "알려져 있지 않은 USB 장치 문법 '%s'"
 
 #, c-format
 msgid "unknown accessmode '%s'"
@@ -11235,10 +11003,6 @@ msgstr "기능 유형 '%d'가('%s'에 대해) 알려져 있지 않음"
 #, c-format
 msgid "unknown capability type '%s'"
 msgstr "알려지지 않은 기능 유형 '%s'"
-
-#, c-format
-msgid "unknown character device syntax %s"
-msgstr "알려져 있지 않은 문자 장치 문법 %s"
 
 #, c-format
 msgid "unknown character device type: %s"
@@ -11490,10 +11254,6 @@ msgid "unknown mii bonding carrier %s"
 msgstr "알려지지 않은 mii 본딩 캐리어 %s"
 
 #, c-format
-msgid "unknown mirror format value '%s'"
-msgstr "알 수 없는 미러 유형 값 '%s'"
-
-#, c-format
 msgid "unknown mouse mode value '%s'"
 msgstr "알 수 없는 마우스 모드 값 '%s'"
 
@@ -11677,16 +11437,8 @@ msgid "unknown usb source type '%s'"
 msgstr "알려지지 않은 usb 소스 유형 '%s'  "
 
 #, c-format
-msgid "unknown video adapter type '%s'"
-msgstr "알려져 있지 않은 비디오 아답터 유형 '%s'"
-
-#, c-format
 msgid "unknown video model '%s'"
 msgstr "알려지지 않은 비디오 모델: '%s'  "
-
-#, c-format
-msgid "unknown virt type in domain definition '%d'"
-msgstr "도메인 정의 '%d'에 알려져 있지 않은 virt 유형"
 
 #, c-format
 msgid "unknown virtualport type %s"
@@ -12011,9 +11763,6 @@ msgstr "vhost-net은 virtio 네트워크 인터페이스에 대해서만 지원�
 
 msgid "virDomainGetXMLDesc with secure flag"
 msgstr "보안 플래그와 함께 virDomainGetXMLDesc"
-
-msgid "virDomainSaveImageGetXMLDesc with secure flag"
-msgstr "보안 플래그와 함께 virDomainSaveImageGetXMLDesc "
 
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "보안 플래그와 함께 virDomainSnapshotGetXMLDesc "

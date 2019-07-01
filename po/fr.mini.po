@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"POT-Creation-Date: 2019-07-01 18:50+0100\n"
 "PO-Revision-Date: 2015-02-26 09:47+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: French <trans-fr@lists.fedoraproject.org>\n"
@@ -661,9 +661,6 @@ msgstr "Le titre du domaine ne peut pas contenir de newlines"
 
 msgid "Driver state initialization failed"
 msgstr "L'initialisation de l'état du pilote a échouée"
-
-msgid "Exiting due to failure to migrate profile"
-msgstr "Fin du programme suite à l'échec de migration du profil"
 
 msgid "FAIL"
 msgstr "FAIL"
@@ -1353,9 +1350,6 @@ msgstr "Afficher les informations du volume comme flux XML vers stdout."
 msgid "PASS"
 msgstr "PASS"
 
-msgid "PCI address Formatting failed"
-msgstr "Échec du formatage de l'adresse PCI "
-
 msgid "PCI host devices must use 'pci' address type"
 msgstr "Les périphériques hôte PCI doivent utiliser le type d'adresse « pci »"
 
@@ -1878,10 +1872,6 @@ msgstr "Impossible d'initialiser le mutex"
 msgid "Unable to load certificate"
 msgstr "Impossible de charger le certificat"
 
-#, c-format
-msgid "Unable to migrate %s to %s"
-msgstr "Impossible de migrer %s vers %s"
-
 msgid "Unable to obtain host UUID"
 msgstr "Impossible d'obtenir l'UUID de l'hôte"
 
@@ -2172,10 +2162,6 @@ msgstr "impossible d'initialiser le mutex"
 #, c-format
 msgid "cannot list SASL mechanisms %d (%s)"
 msgstr "Impossible de lister les mécanismes SASL %d (%s)"
-
-#, c-format
-msgid "cannot parse UUID '%s'"
-msgstr "impossible d'analyser l'UUID '%s'"
 
 #, c-format
 msgid "cannot parse bus %s"
@@ -3920,10 +3906,6 @@ msgstr "type d'interface '%s' inconnu"
 #, c-format
 msgid "unknown memory balloon model '%s'"
 msgstr "modèle de mémoire ballon « %s » inconnue"
-
-#, c-format
-msgid "unknown mirror format value '%s'"
-msgstr "valeur du format du miroir « %s » inconnue"
 
 #, c-format
 msgid "unknown mouse mode value '%s'"

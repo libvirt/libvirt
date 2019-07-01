@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"POT-Creation-Date: 2019-07-01 18:50+0100\n"
 "PO-Revision-Date: 2015-02-27 05:14+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Italian (http://www.transifex.com/projects/p/libvirt/language/"
@@ -207,9 +207,6 @@ msgstr "Il buffer è troppo piccolo per uint8"
 
 msgid "Build a given pool."
 msgstr "Creare un determinato pool."
-
-msgid "CEPH_ARGS was set without an rbd disk"
-msgstr "CEPH_ARGS è stato impostato senza un disco rbd"
 
 msgid "CPU Affinity:"
 msgstr "Affinità CPU:"
@@ -423,12 +420,6 @@ msgstr "Eseguire il core dump di un dominio."
 
 msgid "Core(s) per socket:"
 msgstr "Core per socket:"
-
-msgid "Could not add variable 'IP' to hashmap"
-msgstr "Impossibile aggiungere la variabile 'IP' alla mappa di hash"
-
-msgid "Could not add variable 'MAC' to hashmap"
-msgstr "Impossibile aggiungere la variabile 'MAC' sulla mappa di hash"
 
 msgid "Could not build CURL header list"
 msgstr "Impossibile creare la lista di header per CURL"
@@ -965,9 +956,6 @@ msgstr "Previsto tipo '%s', trovato '%s'"
 #, c-format
 msgid "Expecting type to begin with 'ArrayOf' but found '%s'"
 msgstr "La tipologia deve iniziare con 'ArrayOf' ma trovato '%s'"
-
-msgid "Expiry of passwords is not supported"
-msgstr "Scandenza della password non supportata"
 
 msgid "FAIL"
 msgstr "FAIL"
@@ -2578,9 +2566,6 @@ msgstr "L'interfaccia specificata <driver name='%s'> è sconosciuta"
 msgid "Unknown model type '%s'"
 msgstr "Tipo modello '%s' sconosciuto"
 
-msgid "Unknown poll response."
-msgstr "Risposta poll sconosciuta."
-
 #, c-format
 msgid "Unknown protocol '%s'"
 msgstr "Protocollo '%s' sconosciuto"
@@ -2917,34 +2902,6 @@ msgid "cannot extend file '%s'"
 msgstr "impossibile estendere il file '%s'"
 
 #, c-format
-msgid "cannot extract PCI device bus '%s'"
-msgstr "impossibile estrarre il bus del dispositivo PCI '%s'"
-
-#, c-format
-msgid "cannot extract PCI device function '%s'"
-msgstr "impossibile estrarre la funzione del dispositivo PCI '%s'"
-
-#, c-format
-msgid "cannot extract PCI device slot '%s'"
-msgstr "impossibile estrarre lo slot '%s' del dispositivo PCI"
-
-#, c-format
-msgid "cannot extract USB device address '%s'"
-msgstr "impossibile estrarre l'indirizzo del dispositivo USB '%s'"
-
-#, c-format
-msgid "cannot extract USB device bus '%s'"
-msgstr "impossibile estrarre il bus del dispositivo USB '%s'"
-
-#, c-format
-msgid "cannot extract USB device product '%s'"
-msgstr "impossibile estrarre il prodotto del dispositivo USB '%s'"
-
-#, c-format
-msgid "cannot extract USB device vendor '%s'"
-msgstr "impossibile estrarre il rivenditore del dispositivo USB '%s'"
-
-#, c-format
 msgid "cannot fill file '%s'"
 msgstr "impossibile riempire il file '%s'"
 
@@ -2953,21 +2910,12 @@ msgid "cannot find CPU map for %s architecture"
 msgstr "impossibile trovare la CPU map per l'architettura %s"
 
 #, c-format
-msgid "cannot find NIC definition for vlan %d"
-msgstr "impossibile trovare la definizione del NIC per vlan %d"
-
-#, c-format
 msgid "cannot find character device %s"
 msgstr "impossibile trovare il dispositivo a caratteri %s"
 
 #, c-format
 msgid "cannot find newly created volume '%s'"
 msgstr "impossibile trovare il volume appena creato '%s'"
-
-#, c-format
-msgid "cannot find port number in character device %s"
-msgstr ""
-"impossibile trovare il numero della porta nel dispositivo a caratteri %s"
 
 #, c-format
 msgid "cannot find statistics for device '%s'"
@@ -3028,26 +2976,6 @@ msgid "cannot open volume '%s'"
 msgstr "impossibile aprire il volume '%s'"
 
 #, c-format
-msgid "cannot parse CPU topology '%s'"
-msgstr "impossibile analizzare la tipologia della CPU '%s'"
-
-#, c-format
-msgid "cannot parse NIC definition '%s'"
-msgstr "impossibile analizzare la definizione del NIC '%s'"
-
-#, c-format
-msgid "cannot parse NIC vlan in '%s'"
-msgstr "impossibile analizzare NIC vlan in '%s'"
-
-#, c-format
-msgid "cannot parse UUID '%s'"
-msgstr "impossibile analizzare UUID '%s'"
-
-#, c-format
-msgid "cannot parse VNC port '%s'"
-msgstr "impossibile analizzare la porta '%s' VNC"
-
-#, c-format
 msgid "cannot parse bus %s"
 msgstr "impossibile analizzare il bus %s"
 
@@ -3061,28 +2989,8 @@ msgstr "impossibile determinare la locazione finale del dispositivo"
 msgid "cannot parse device start location"
 msgstr "impossibile determinare la locazione d'inizio del dispositivo"
 
-#, c-format
-msgid "cannot parse drive bus '%s'"
-msgstr "impossibile analizzare il bus del drive '%s'"
-
-#, c-format
-msgid "cannot parse drive index '%s'"
-msgstr "impossibile analizzare l'indice del drive '%s'"
-
-#, c-format
-msgid "cannot parse drive unit '%s'"
-msgstr "impossibile analizzare l'unità drive '%s'"
-
 msgid "cannot parse instanceid parameter as a uuid"
 msgstr "errore nel parsing del valore del parametro instanceid"
-
-#, c-format
-msgid "cannot parse io mode '%s'"
-msgstr "impossibile analizzare la modalità io '%s'"
-
-#, c-format
-msgid "cannot parse nbd filename '%s'"
-msgstr "impossibile analizzare il nome del file nbd '%s'"
 
 #, c-format
 msgid "cannot parse partition number from target '%s'"
@@ -3101,14 +3009,6 @@ msgstr "impossibile analizzare il prodotto %s"
 #, c-format
 msgid "cannot parse rdp port %s"
 msgstr "impossibile analizzare la porta rdp %s"
-
-#, c-format
-msgid "cannot parse sheepdog filename '%s'"
-msgstr "impossibile analizzare il nome del file sheepdog '%s'"
-
-#, c-format
-msgid "cannot parse sndbuf size in '%s'"
-msgstr "impossibile analizzare la dimensione di sndbuf in '%s'"
 
 #, c-format
 msgid "cannot parse spice port %s"
@@ -3144,10 +3044,6 @@ msgstr "impossibile analizzare le testine video '%s'"
 #, c-format
 msgid "cannot parse video ram '%s'"
 msgstr "impossibile analizzare video ram '%s'"
-
-#, c-format
-msgid "cannot parse vlan in '%s'"
-msgstr "impossibile analizzare vlan in '%s'"
 
 #, c-format
 msgid "cannot parse vnc port %s"
@@ -3398,10 +3294,6 @@ msgstr "impossibile determinare le vcpu massime per il dominio"
 msgid "could not get MAC address of interface %s"
 msgstr "impossibile determinare l'indirizzo MAC per l'interfaccia %s"
 
-#, c-format
-msgid "could not parse CEPH_ARGS '%s'"
-msgstr "impossibile analizzare CEPH_ARGS '%s'"
-
 msgid "could not use Xen hypervisor entry"
 msgstr "impossibile usare la voce di hypervisor Xen"
 
@@ -3501,9 +3393,6 @@ msgstr "scollegare una interfaccia di rete"
 #, c-format
 msgid "device %s is not a PCI device"
 msgstr "il dispositivo %s non è un dispositivo PCI"
-
-msgid "device cannot be detached without a device alias"
-msgstr "impossibile scollegare il dispositivo senza un alias del dispositivo"
 
 msgid "device key"
 msgstr "chiave dispositivo"
@@ -3924,10 +3813,6 @@ msgstr "per Linux >= %d.%d.%d"
 msgid "formatter for %s %s reported error"
 msgstr "il formattatore per  %s %s ha riportato un errore"
 
-#, c-format
-msgid "found no rbd hosts in CEPH_ARGS '%s'"
-msgstr "non è stato trovato alcun host rbd in CEPH_ARGS '%s'"
-
 msgid "get device block stats for a domain"
 msgstr "ottieni statistiche dei blocchi del dispositivo per un dominio"
 
@@ -4139,10 +4024,6 @@ msgstr "puntatore di collegamento non valido in"
 #, c-format
 msgid "invalid connection pointer in %s"
 msgstr "puntatore di collegamento non valido in %s"
-
-#, c-format
-msgid "invalid device name '%s'"
-msgstr "nome del dispositivo '%s' non valido"
 
 msgid "invalid domain pointer in"
 msgstr "puntatore di dominio non valido in"
@@ -4427,16 +4308,8 @@ msgstr "stato del dominio mancante"
 msgid "missing domain type attribute"
 msgstr "attributo del tipo di dominio mancante"
 
-#, c-format
-msgid "missing file parameter in drive '%s'"
-msgstr "parametro del file mancante nel drive '%s'"
-
 msgid "missing graphics device type"
 msgstr "tipo di dispositivo grafico mancante"
-
-#, c-format
-msgid "missing index/unit/bus parameter in drive '%s'"
-msgstr "parametro indice/unità/bus mancante nel drive '%s'"
 
 msgid "missing input device type"
 msgstr "tipo di dispositivo di input mancante"
@@ -4523,10 +4396,6 @@ msgstr "informazioni target mancanti per il dispositivo %s"
 
 msgid "missing timer name"
 msgstr "nome timer mancante"
-
-#, c-format
-msgid "missing value for %s argument"
-msgstr "valore mancante per l'argomento %s"
 
 msgid "missing vendor"
 msgstr "produttore mancante"
@@ -4745,9 +4614,6 @@ msgstr "non ci sono domini con uuid corrispondente"
 msgid "no domain with matching uuid '%s'"
 msgstr "non ci sono domini con uuid corrispondente a '%s'"
 
-msgid "no emulator path found"
-msgstr "non è stato trovato alcun percorso dell'emulatore "
-
 msgid "no error"
 msgstr "nessun errore"
 
@@ -4910,9 +4776,6 @@ msgid "per-device boot elements cannot be used together with os/boot elements"
 msgstr ""
 "gli elementi boot per-dispositivo non possono essere usati insieme agli "
 "elementi os/boot"
-
-msgid "poll error"
-msgstr "errore di poll"
 
 msgid "poll on socket failed"
 msgstr "poll sul socket fallito"
@@ -5276,10 +5139,6 @@ msgstr "tipo di sorgenti di pool di storage da trovare"
 msgid "type of the pool"
 msgstr "tipo di pool"
 
-#, c-format
-msgid "udev scan devices returned %d"
-msgstr "i dispositivi di scansione udev hanno restituito %d"
-
 msgid "udev_monitor_new_from_netlink returned NULL"
 msgstr "udev_monitor_new_from_netlink ha ritornato NULL"
 
@@ -5414,10 +5273,6 @@ msgid "unexpected domain %s already exists"
 msgstr "il dominio %s non previsto è già esistente"
 
 #, c-format
-msgid "unexpected domain snapshot %s already exists"
-msgstr "l'istantanea del dominio %s non prevista è già esistente"
-
-#, c-format
 msgid "unexpected domain type %d"
 msgstr "tipo di dominio %d inaspettato"
 
@@ -5545,10 +5400,6 @@ msgstr "modello watchdog %d non atteso"
 msgid "unexpectedly failed"
 msgstr "fallito inaspettatamente"
 
-#, c-format
-msgid "unknown CPU syntax '%s'"
-msgstr "sintassi della CPU sconosciuta '%s'"
-
 msgid "unknown OS type"
 msgstr "Tipo di OS sconosciuto"
 
@@ -5557,16 +5408,8 @@ msgid "unknown OS type %s"
 msgstr "Tipo di OS sconosciuto %s"
 
 #, c-format
-msgid "unknown PCI device syntax '%s'"
-msgstr "sintassi del dispositivo PCI sconosciuta '%s'"
-
-#, c-format
 msgid "unknown SCSI host capability type '%s' for '%s'"
 msgstr "tipo di host capability SCSI '%s' sconosciuto per '%s'"
-
-#, c-format
-msgid "unknown USB device syntax '%s'"
-msgstr "sintassi del dispositivo USB '%s' sconosciuta "
 
 #, c-format
 msgid "unknown accessmode '%s'"
@@ -5603,10 +5446,6 @@ msgstr "tipo di potenzialità sconosciuta '%d' per '%s'"
 #, c-format
 msgid "unknown capability type '%s'"
 msgstr "tipo di potenzialità sconosciuta '%s'"
-
-#, c-format
-msgid "unknown character device syntax %s"
-msgstr "sintassi del dispositivo a caratteri %s sconosciuta"
 
 #, c-format
 msgid "unknown character device type: %s"
@@ -5833,16 +5672,8 @@ msgid "unknown usb source type '%s'"
 msgstr "tipo di sorgente usb sconosciuta '%s'"
 
 #, c-format
-msgid "unknown video adapter type '%s'"
-msgstr "tipo di adattatore video '%s' sconosciuto"
-
-#, c-format
 msgid "unknown video model '%s'"
 msgstr "modello video sconosciuto '%s'"
-
-#, c-format
-msgid "unknown virt type in domain definition '%d'"
-msgstr "tipo di virt sconosciuto nella definizione del dominio '%d'"
 
 msgid "unknown volume encryption format"
 msgstr "formato di cifratura del volume sconosciuto"

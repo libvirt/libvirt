@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"POT-Creation-Date: 2019-07-01 18:50+0100\n"
 "PO-Revision-Date: 2015-02-26 07:10+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Bengali (India) (http://www.transifex.com/projects/p/libvirt/"
@@ -1198,9 +1198,6 @@ msgstr "SSH সেশান খুলতে ত্রুটি।"
 #, c-format
 msgid "Exceeded max iface limit %d"
 msgstr "সর্বাধিক iface সীমা %d অতিক্রান্ত হয়েছে"
-
-msgid "Exiting due to failure to migrate profile"
-msgstr "প্রোফাইল মাইগ্রেট না করতে পারায় প্রস্থান করছে"
 
 msgid "Failed"
 msgstr "বিফল"
@@ -2657,9 +2654,6 @@ msgstr "XML ডাম্প রূপে stdout-র মধ্যে পুল �
 msgid "Output the vol information as an XML dump to stdout."
 msgstr "XML ডাম্প রূপে stdout-র মধ্যে ভলিউম সংক্রান্ত তথ্য প্রদর্শন করা হবে।"
 
-msgid "PCI address Formatting failed"
-msgstr "PCI ঠিকানা ফর্ম্যাটিং ব্যর্থ হয়েছে"
-
 msgid "PCI host devices must use 'pci' address type"
 msgstr "PCI হোস্ট ডিভাইসের ক্ষেত্রে 'pci' ধরনের ঠিকানা ব্যবহার করা আবশ্যক"
 
@@ -3518,10 +3512,6 @@ msgid "Unable to init device stream mutex"
 msgstr "ডিভাইস স্ট্রীম mutex init করতে ব্যর্থ"
 
 #, c-format
-msgid "Unable to migrate %s to %s"
-msgstr "%s %s এ মাইগ্রেট করতে ব্যর্থ"
-
-#, c-format
 msgid "Unable to open %s"
 msgstr "%s খুলতে ব্যর্থ"
 
@@ -3656,9 +3646,6 @@ msgstr "অজানা মোড নির্দিষ্ট করা হয�
 msgid "Unknown model type '%s'"
 msgstr "অজানা মডেল ধরন '%s'"
 
-msgid "Unknown poll response."
-msgstr "পোল থেকে অজানা প্রতিক্রিয়া।"
-
 #, c-format
 msgid "Unknown pool adapter type '%s'"
 msgstr "অজানা পুল অ্যাডাপ্টার ধরন '%s'"
@@ -3752,22 +3739,6 @@ msgstr "VM বর্তমানে সক্রিয়"
 
 msgid "VNC supports connected='keep' only"
 msgstr "VNC শুধুমাত্র connected='keep' সমর্থন করে"
-
-msgid "Value of cputune emulator_period must be in range [1000, 1000000]"
-msgstr ""
-"cputune emulator_period এর মান অবশ্যই [1000, 1000000] রেঞ্জের ম‍ধ্যে থাকতে হবে"
-
-msgid ""
-"Value of cputune emulator_quota must be in range [1000, 18446744073709551]"
-msgstr ""
-"cputune emulator_quota এর মান অবশ্যই [1000, 18446744073709551] রেঞ্জের ম‍ধ্যে "
-"হতে হবে"
-
-msgid "Value of cputune period must be in range [1000, 1000000]"
-msgstr "cputune সময়পর্বের মান অবশ্যই [1000, 1000000] রেঞ্জের ম‍ধ্যে থাকতে হবে"
-
-msgid "Value of cputune quota must be in range [1000, 18446744073709551]"
-msgstr "cputune কোটার মান অবশ্যই [1000, 18446744073709551] রেঞ্জের ম‍ধ্যে হতে হবে"
 
 msgid "Variable value contains invalid character"
 msgstr "পরিবর্তনশীল মানে অবৈধ অক্ষর রয়েছে"
@@ -3965,14 +3936,6 @@ msgstr "bond ইন্টারফেসের মধ্যে bond স্বত
 msgid "boot order '%s' used for more than one device"
 msgstr "বুট ক্রম '%s' একের বেশি ডিভাইসের জন্য ব্যবহৃত"
 
-#, c-format
-msgid ""
-"bridge delay/stp options only allowed in route, nat, and isolated mode, not "
-"in %s (network '%s')"
-msgstr ""
-"ব্রিজ delay/stp বিকল্প শুধুমাত্র route, nat, এবং isolated মোডে অনুমোদিত, %s এ নয় "
-"(নেটওয়ার্ক '%s')"
-
 msgid "bridge interface misses the bridge element"
 msgstr "ব্রিজ ইন্টারফেসের মধ্যে bridge স্বত্বা অনুপস্থিত"
 
@@ -4038,9 +4001,6 @@ msgstr "উপস্থিত গোপনীয় বস্তুর ক্ষে
 #, c-format
 msgid "cannot change to root directory: %s"
 msgstr "root ডিরেক্টরিতেনপরিবর্তনকরতে ব্যর্থ : %s"
-
-msgid "cannot change vcpu count of this domain"
-msgstr "এই ডোমেইনের vcpu-র সংখ্যা পরিবর্তন করতে ব্যর্থ"
 
 #, c-format
 msgid "cannot chown %s to (%u, %u)"
@@ -4124,34 +4084,6 @@ msgstr "বাইনারি %s সঞ্চালন করতে ব্যর
 msgid "cannot extend file '%s'"
 msgstr "ফাইল '%s' প্রসারণ করতে ব্যর্থ"
 
-#, c-format
-msgid "cannot extract PCI device bus '%s'"
-msgstr "PCI ডিভাইস বাস '%s' উদ্ধার করতে ব্যর্থ"
-
-#, c-format
-msgid "cannot extract PCI device function '%s'"
-msgstr "PCI ডিভাইস ফাংশান '%s' উদ্ধার করতে ব্যর্থ"
-
-#, c-format
-msgid "cannot extract PCI device slot '%s'"
-msgstr "PCI ডিভাইস স্লট '%s' উদ্ধার করতে ব্যর্থ"
-
-#, c-format
-msgid "cannot extract USB device address '%s'"
-msgstr "USB ডিভাইস ঠিকানা '%s' উদ্ধার করতে ব্যর্থ"
-
-#, c-format
-msgid "cannot extract USB device bus '%s'"
-msgstr "USB ডিভাইস বাস '%s' উদ্ধার করতে ব্যর্থ"
-
-#, c-format
-msgid "cannot extract USB device product '%s'"
-msgstr "USB ডিভাইস উৎপাদন '%s' উদ্ধার করতে ব্যর্থ"
-
-#, c-format
-msgid "cannot extract USB device vendor '%s'"
-msgstr "USB ডিভাইস বিক্রেতার তথ্য '%s' উদ্ধার করতে ব্যর্থ"
-
 msgid "cannot extract blkiotune nodes"
 msgstr "blkiotune নোড অানয়ন করা যাবে না"
 
@@ -4179,16 +4111,8 @@ msgid "cannot find CPU map for %s architecture"
 msgstr "%s আর্কিটেকচারের জন্য CPU ম্যাপ পাওয়া যায়নি"
 
 #, c-format
-msgid "cannot find NIC definition for vlan %d"
-msgstr "vlan %d-র জন্য NIC ব্যাখ্যা অনুসন্ধান করতে ব্যর্থ"
-
-#, c-format
 msgid "cannot find newly created volume '%s'"
 msgstr "নবনীর্মিত ভলিউম '%s' পাওয়া যায়নি"
-
-#, c-format
-msgid "cannot find port number in character device %s"
-msgstr "%s ক্যারেক্টার ডিভাইসের মধ্যে পোর্ট সংখ্যা পাওয়া সম্ভব নয়"
 
 #, c-format
 msgid "cannot find statistics for device '%s'"
@@ -4270,18 +4194,6 @@ msgid "cannot open volume '%s'"
 msgstr "ভলিউম '%s' খুলতে ব্যর্থ"
 
 #, c-format
-msgid "cannot parse CPU topology '%s'"
-msgstr "CPU-র টোপোলজি '%s' পার্স করতে ব্যর্থ"
-
-#, c-format
-msgid "cannot parse NIC definition '%s'"
-msgstr "NIC-র ব্যাখ্যা '%s' পার্স করতে ব্যর্থ"
-
-#, c-format
-msgid "cannot parse NIC vlan in '%s'"
-msgstr "'%s'-র মধ্যে NIC vlan পার্স করতে ব্যর্থ"
-
-#, c-format
 msgid "cannot parse PCI bus '%s'"
 msgstr "PCI বাস '%s' পার্স করা সম্ভব নয়"
 
@@ -4296,14 +4208,6 @@ msgstr "PCI func '%s' পার্স করা সম্ভব নয়"
 #, c-format
 msgid "cannot parse PCI slot '%s'"
 msgstr "PCI স্লট '%s' পার্স করা সম্ভব নয়"
-
-#, c-format
-msgid "cannot parse UUID '%s'"
-msgstr "UUID '%s' পার্স করতে ব্যর্থ"
-
-#, c-format
-msgid "cannot parse VNC port '%s'"
-msgstr "VNC পোর্ট '%s' পার্স করতে ব্যর্থ"
 
 #, c-format
 msgid "cannot parse bus %s"
@@ -4322,18 +4226,6 @@ msgstr "ডিভাইস সমাপ্তির স্থান পার্
 
 msgid "cannot parse device start location"
 msgstr "ডিভাইস প্রারম্ভের স্থান পার্স করা সম্ভব নয়"
-
-#, c-format
-msgid "cannot parse drive bus '%s'"
-msgstr "ড্রাইভ বাস '%s' পার্স করতে ব্যর্থ"
-
-#, c-format
-msgid "cannot parse drive index '%s'"
-msgstr "ড্রাইভ ইন্ডেক্স '%s' পার্স করতে ব্যর্থ"
-
-#, c-format
-msgid "cannot parse drive unit '%s'"
-msgstr "ড্রাইভ ইউনিট '%s' পার্স করতে ব্যর্থ"
 
 msgid "cannot parse instanceid parameter as a uuid"
 msgstr "instanceid প্যারামিটার uuid হিসাবে পার্জ করা যাবে না"
@@ -4407,10 +4299,6 @@ msgstr "ভিডিও হেড '%s' পার্স করতে ব্যর
 #, c-format
 msgid "cannot parse video ram '%s'"
 msgstr "ভিডিও ram '%s' পার্স করতে ব্যর্থ"
-
-#, c-format
-msgid "cannot parse vlan in '%s'"
-msgstr "'%s'-র মধ্যে vlan পার্স করতে ব্যর্থ"
 
 #, c-format
 msgid "cannot parse vnc WebSocket port %s"
@@ -4894,9 +4782,6 @@ msgstr "নেটওয়ার্ক ইন্টারফেস বিচ্ছ�
 #, c-format
 msgid "device %s is not a PCI device"
 msgstr "%s ডিভাইসটি PCI ডিভাইস নয়"
-
-msgid "device cannot be detached without a device alias"
-msgstr "ডিভাইসের অ্যালায়েস বিনা ডিভাইস বিচ্ছিন্ন করা সম্ভব নয়"
 
 msgid "device key"
 msgstr "ডিভাইস-কি"
@@ -5424,12 +5309,6 @@ msgstr "সংগ্রহের পুলের সম্ভাব্য সো
 
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"
 msgstr "ফ্ল্যাগের পরামিতি VIR_MEMORY_VIRTUAL অথবা VIR_MEMORY_PHYSICAL হওয়া আবশ্যক"
-
-msgid "floor attribute is supported only for interfaces of type network"
-msgstr "ফ্লোর অ্যাট্রিবিউট শুধুমাত্র ধরন নেটওয়ার্কের ইন্টারফেসের ক্ষেত্রে সমর্থিত"
-
-msgid "floor attribute isn't supported for network's bandwidth yet"
-msgstr "ফ্লোর অ্যাট্রিবিউট এখনও পর্যন্ত নেটওয়ার্কের ব্যান্ডউইথের জন্য সমর্থিত নয়"
 
 msgid "forbidden characters in 'compat' attribute"
 msgstr "'compat' অ্যাট্রিবিউটে উপেক্ষিত অক্ষর"
@@ -6193,10 +6072,6 @@ msgstr "ডোমেইনের অবস্থা অনুপস্থিত"
 msgid "missing domain type attribute"
 msgstr "ডোমেইনের নাম সংক্রান্ত বৈশিষ্ট্য অনুপস্থিত"
 
-#, c-format
-msgid "missing file parameter in drive '%s'"
-msgstr "ড্রাইভ '%s'-র মধ্যে ফাইল পরামিতি অনুপস্থিত"
-
 msgid "missing filter parameter table"
 msgstr "ফিল্টার প্যারামিটার সারণী অনুপস্থিত"
 
@@ -6205,10 +6080,6 @@ msgstr "গ্রাফিক্স ডিভাইসের প্রকৃত�
 
 msgid "missing hub device type"
 msgstr "হাব ডিভাইসের প্রকৃতি অনুপস্থিত"
-
-#, c-format
-msgid "missing index/unit/bus parameter in drive '%s'"
-msgstr "ড্রাইভ '%s'-র মধ্যে ইন্ডেক্স/ইউনিট/বাস পরামিতি অনুপস্থিত"
 
 msgid "missing input device type"
 msgstr "ইনপুট ডিভাইসের প্রকৃতি অনুপস্থিত"
@@ -6356,10 +6227,6 @@ msgstr "redirdev এ ধরন অনুপস্থিত"
 
 msgid "missing username for auth"
 msgstr "প্রমাণীকরণের জন্য ব্যবহারকারী নাম অনুপস্থিত"
-
-#, c-format
-msgid "missing value for %s argument"
-msgstr "%s আর্গুমেন্টের মান অনুপস্থিত"
 
 msgid "missing vendor"
 msgstr "অনুপস্থিত বিক্রেতা"
@@ -6633,9 +6500,6 @@ msgstr "uuid-র সাথে সুসংগত কোনো ডোমেইন
 msgid "no domain with matching uuid '%s'"
 msgstr "uuid '%s'-র সাথে সুসংগত ডোমেইন অনুপস্থিত"
 
-msgid "no emulator path found"
-msgstr "কোনো এমুলেটরের পাথ পাওয়া যায়নি"
-
 msgid "no extended partition found and no primary partition available"
 msgstr "কোনো এক্সটেন্ডেড পার্টিশন পাওয়া যায়নি ও কোনো প্রধান পার্টিশন উপস্থিত নেই"
 
@@ -6836,9 +6700,6 @@ msgstr "সমর্থিত হলে লাইভ কোর ডাম্প �
 
 msgid "persist VM on destination"
 msgstr "গন্তব্যস্থলে ভার্চুয়াল মেশিন স্থায়ী হবে"
-
-msgid "poll error"
-msgstr "পোল সংক্রান্ত ত্রুটি"
 
 msgid "poll on socket failed"
 msgstr "সকেটের পোল করতে ব্যর্থ"
@@ -7577,10 +7438,6 @@ msgid "unexpected domain %s already exists"
 msgstr "অপ্রত্যাশিত ডোমেইন %s বর্তমানে উপস্থিত রয়েছে"
 
 #, c-format
-msgid "unexpected domain snapshot %s already exists"
-msgstr "অপ্রত্যাশিত ডোমেন স্ন্যাপশট %s ইতিমধ্যেই উপস্থিত"
-
-#, c-format
 msgid "unexpected domain type %d"
 msgstr "অপ্রত্যাশিত প্রকৃতির ডোমেইন %d"
 
@@ -7590,10 +7447,6 @@ msgstr "অপ্রত্যাশিত উপাদান <%s>, প্রত�
 
 msgid "unexpected encryption format"
 msgstr "অপ্রত্যাশিত এনক্রিপশনের বিন্যাস"
-
-#, c-format
-msgid "unexpected feature %zu"
-msgstr "অপ্রত্যাশিত বৈশিষ্ট্য %zu"
 
 #, c-format
 msgid "unexpected filesystem type %d"
@@ -7764,20 +7617,12 @@ msgstr "অজানা"
 msgid "unknown %s action: %s"
 msgstr "অজানা %s কাজ: %s"
 
-#, c-format
-msgid "unknown CPU syntax '%s'"
-msgstr "CPU-র অজানা সিন্টেক্স '%s'"
-
 msgid "unknown OS type"
 msgstr "অজানা OS-র প্রকৃতি"
 
 #, c-format
 msgid "unknown OS type %s"
 msgstr "অজানা OS প্রকৃতি %s"
-
-#, c-format
-msgid "unknown PCI device syntax '%s'"
-msgstr "PCI ডিভাইসের অজানা সিন্টেক্স '%s'"
 
 #, c-format
 msgid "unknown PM state value %s"
@@ -7794,10 +7639,6 @@ msgstr "অজানা RNG মডেল '%s'"
 #, c-format
 msgid "unknown SCSI host capability type '%s' for '%s'"
 msgstr "SCSI হোস্টের অজানা ক্ষমতার ধরন '%s', '%s'-র জন্য উল্লিখিত হয়েছে"
-
-#, c-format
-msgid "unknown USB device syntax '%s'"
-msgstr "USB ডিভাইসের অজানা সিন্টেক্স '%s'"
 
 #, c-format
 msgid "unknown accessmode '%s'"
@@ -7842,10 +7683,6 @@ msgstr "ক্ষমতার অজানা ধরন '%d', '%s'-র জন্
 #, c-format
 msgid "unknown capability type '%s'"
 msgstr "অজানা ধরনের ক্ষমতা '%s'"
-
-#, c-format
-msgid "unknown character device syntax %s"
-msgstr "ক্যারেক্টার ডিভাইসের অজানা সিন্টেক্স %s"
 
 #, c-format
 msgid "unknown character device type: %s"
@@ -8074,10 +7911,6 @@ msgid "unknown mii bonding carrier %s"
 msgstr "অজানা mii bonding পরিবহনকারী %s"
 
 #, c-format
-msgid "unknown mirror format value '%s'"
-msgstr "অজানা মিরর ফর্ম্যাট মান '%s'"
-
-#, c-format
 msgid "unknown mouse mode value '%s'"
 msgstr "অজানা মাউস মোড মান '%s'"
 
@@ -8251,16 +8084,8 @@ msgid "unknown usb source type '%s'"
 msgstr "অজানা ধরনের usb সোর্স '%s'"
 
 #, c-format
-msgid "unknown video adapter type '%s'"
-msgstr "অজানা ধরনের ভিডিও অ্যাডাপ্টার '%s'"
-
-#, c-format
 msgid "unknown video model '%s'"
 msgstr "অজানা ধরনের ভিডিও মডেল '%s'"
-
-#, c-format
-msgid "unknown virt type in domain definition '%d'"
-msgstr "'%d' ডোমেইন ব্যাখ্যাকালে অজানা virt type উল্লিখিত"
 
 #, c-format
 msgid "unknown virtualport type %s"

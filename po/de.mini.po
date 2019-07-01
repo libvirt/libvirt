@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"POT-Creation-Date: 2019-07-01 18:50+0100\n"
 "PO-Revision-Date: 2016-04-01 11:32+0000\n"
 "Last-Translator: Florian H. <postfuerflo@gmail.com>\n"
 "Language-Team: German (http://www.transifex.com/projects/p/libvirt/language/"
@@ -658,9 +658,6 @@ msgstr "--%s oder --current ist erforderlich"
 msgid "--descendants requires either --from or --current"
 msgstr "--descendants erfordert entweder --from oder --current"
 
-msgid "--print-xml is incompatible with --no-metadata"
-msgstr "--print-xml ist nicht kompatibel mit --no-metadata"
-
 msgid "/proc/net/dev: Interface not found"
 msgstr "/proc/net/dev: Schnittstelle nicht gefunden"
 
@@ -810,11 +807,6 @@ msgstr "Zuordnung"
 
 msgid "Allocation:"
 msgstr "Zuordnung:"
-
-msgid "Allows to show or modify description or title of a domain."
-msgstr ""
-"Ermöglicht Beschreibung oder Titel einer Domäne zu zeigen oder zu "
-"modifizieren."
 
 msgid "An error occurred, but the cause is unknown"
 msgstr "Ein Fehler ist aufgetreten, aber die Ursache ist unbekannt"
@@ -1039,9 +1031,6 @@ msgstr "Bus 0 muss PCI sein für integrierte PIIX3 USB oder IDE-Controller"
 
 msgid "Busy"
 msgstr "Beschäftigt"
-
-msgid "CEPH_ARGS was set without an rbd disk"
-msgstr "CEPH_ARGS wurde ohne RBD Disk festgelegt"
 
 msgid "CPU Affinity"
 msgstr "CPU-Affinität"
@@ -1292,10 +1281,6 @@ msgstr ""
 msgid "Cannot append basic type %s"
 msgstr "Kann Basistyp %s nicht anhängen"
 
-#, c-format
-msgid "Cannot assign address for device name '%s'"
-msgstr "Kann Adresse für Einheiten-Name '%s' nicht zuordnen"
-
 msgid "Cannot attach disk until init PID is known"
 msgstr "Kann Disk nicht anschliessen bis init PID bekannt ist"
 
@@ -1319,11 +1304,6 @@ msgstr "Kann Container Iterator nicht schließen"
 
 msgid "Cannot complete within timeout period"
 msgstr "Kann nicht innerhalb der Zeitbeschränkung fertigstellen"
-
-#, c-format
-msgid "Cannot connect to monitor connection of type '%s' for pid %u"
-msgstr ""
-"Kann keine Verbindung zum Monitor-Anschluss des Typs '%s' für pid %u erhalten"
 
 #, c-format
 msgid "Cannot convert socket address to string: %s"
@@ -1577,22 +1557,6 @@ msgid "Cannot parse start time %s in %s"
 msgstr "Start-Zeit %s in %s kann nicht analysiert werden"
 
 #, c-format
-msgid ""
-"Cannot plug '%s' interface into '%s' because it would overcommit 'average' "
-"on network '%s'"
-msgstr ""
-"Kann '%s' Schnittstelle nicht in '%s' anschließen, weil es den 'average' im "
-"Netzwerk '%s' überlasten würde"
-
-#, c-format
-msgid ""
-"Cannot plug '%s' interface into '%s' because it would overcommit 'peak' on "
-"network '%s'"
-msgstr ""
-"Kann nicht '%s' Schnittstelle in '%s' anschließen, weil es den 'peakl' im "
-"Netzwerk '%s' überlasten würde"
-
-#, c-format
 msgid "Cannot read %s '%s'"
 msgstr "Kann %s '%s' nicht lesen"
 
@@ -1638,10 +1602,6 @@ msgid "Cannot set autostart for transient domain"
 msgstr "Kann Autostart für Übergangs-Domain nicht setzen"
 
 #, c-format
-msgid "Cannot set bandwidth on interface '%s' of type %d"
-msgstr "Kann Bandbreite auf Schnittstelle '%s' der Type %d nicht erstellen "
-
-#, c-format
 msgid "Cannot set close-on-exec %d"
 msgstr "Kann close-on-exec %d nicht setzen"
 
@@ -1675,9 +1635,6 @@ msgstr "Kann min_clients Daten in JSON Dokument nicht setzen"
 
 msgid "Cannot set max_workers data in JSON document"
 msgstr "Kann max_workers Daten in JSON Dokument nicht setzen"
-
-msgid "Cannot set mdnsGroupName data in JSON document"
-msgstr "Kann mdnsGroupName Daten in JSON Dokument nicht setzen"
 
 msgid "Cannot set memory higher than max memory"
 msgstr "Speicher kann nicht höher als maximaler Speicher festgesetzt werden"
@@ -2052,12 +2009,6 @@ msgstr "Kern(e) pro Socket:"
 #, c-format
 msgid "Could find volume with name: %s"
 msgstr "Datenträger mit Namen %s konnte nicht gefunden werden"
-
-msgid "Could not add variable 'IP' to hashmap"
-msgstr "Variable »IP« konnte nicht zu Hashmap hinzugefügt werden"
-
-msgid "Could not add variable 'MAC' to hashmap"
-msgstr "Variable »MAC« konnte nicht zu Hashmap hinzugefügt werden"
 
 #, c-format
 msgid "Could not assign address to disk '%s'"
@@ -3417,9 +3368,6 @@ msgstr "Medien auswerfen"
 msgid "Empty cpu list for pinning"
 msgstr "Leere CPU-Liste zum Anstecken"
 
-msgid "Empty qemu environment name specified"
-msgstr "Leerer QEMU Umwelt-Name angegeben"
-
 #, c-format
 msgid "Empty response during %s"
 msgstr "Leere Antwort während %s"
@@ -3536,9 +3484,6 @@ msgstr "Bestehende Einheit %s hat keinen Typ"
 msgid "Existing device %s is already a bridge"
 msgstr "Bestehende Einheit %s ist bereits eine Bridge"
 
-msgid "Exiting due to failure to migrate profile"
-msgstr "Beenden wegen scheitern der Profil-Migration"
-
 msgid "Expected at least one file descriptor"
 msgstr "Erwartete zumindest einen Datei-Descriptor"
 
@@ -3634,14 +3579,6 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Expecting VMX entry 'sched.cpu.affinity' to contain at least as many values "
-"as 'numvcpus' (%lld) but found only %d value(s)"
-msgstr ""
-"Erwartete VMX Eintragung 'sched.cpu.affinity' mindestens so viele Werte wie "
-"'numvcpus' (%lld) zu enthalten, fand aber nur %d Wert(e)"
-
-#, c-format
-msgid ""
 "Expecting VMX entry 'sched.cpu.shares' to be an unsigned integer or 'low', "
 "'normal' or 'high' but found '%s'"
 msgstr ""
@@ -3719,9 +3656,6 @@ msgstr "Erwartete Typ mit 'ArrayOf' zu beginnen aber '%s' gefunden"
 msgid "Expecting virt type to be '%s' but found '%s'"
 msgstr "Erwartete virt Typ '%s' zu sein, fand aber '%s'"
 
-msgid "Expiry of passwords is not supported"
-msgstr "Passwortablauf wird nicht unterstützt"
-
 msgid "Extract the snapshot's parent, if any"
 msgstr "Extrahieren den Übergeordneten des Snapshots, wenn vorhanden"
 
@@ -3777,14 +3711,6 @@ msgstr " Hinzufügen von Signal Handle Überwachung fehlgeschlagen"
 #, c-format
 msgid "Failed to add slot for PCI device '%s' to %s"
 msgstr "Hinzufügen von Slot für PCI-Gerät '%s' zu %s fehlgeschlagen"
-
-#, c-format
-msgid "Failed to add timer with timeout %lld"
-msgstr "Fehler beim hinzufügen Zeitschalter mit Zeitlimit %lld"
-
-#, c-format
-msgid "Failed to add watch for fd %d events %d"
-msgstr "Hinzufügen von Überwachung für fd %d Ereignisse %d"
 
 #, c-format
 msgid "Failed to allocate PCI device list: %s"
@@ -4038,10 +3964,6 @@ msgid "Failed to create interface node under bridge node in xml document"
 msgstr ""
 "Erstellen des Schnittstellen-Knotens unter dem Bridge-Knoten im XML-Dokument "
 "fehlgeschlagen"
-
-#, c-format
-msgid "Failed to create mDNS client: %s"
-msgstr "Erstellung des mDNS Clients fehlgeschlagen: %s"
 
 #, c-format
 msgid "Failed to create network from %s"
@@ -4539,10 +4461,6 @@ msgstr ""
 msgid "Failed to make domain persistent after migration: %s"
 msgstr ""
 "Deklaration der Domain als persistent nach der Migration fehlgeschlagen: %s"
-
-#, c-format
-msgid "Failed to make filesystem of type '%s' on device '%s'"
-msgstr "Anlegen vom Datei-System vom Typ '%s' auf Einheit '%s' fehlgeschlagen"
 
 #, c-format
 msgid "Failed to make new root %s readonly"
@@ -5465,9 +5383,6 @@ msgstr ""
 msgid "Got invalid memory size %d"
 msgstr "Ungültige Speichergröße %d erhalten"
 
-msgid "Graphics password only supported for VNC"
-msgstr "Graphics Passwort nur für VNC unterstützt"
-
 msgid ""
 "Grouped commands:\n"
 "\n"
@@ -5586,10 +5501,6 @@ msgstr "Menschlicher-Monitor Befehl ist nicht verfügbar für Ausführung von %s
 
 msgid "Hybrid-Suspend"
 msgstr "Hybrid-Suspend"
-
-#, c-format
-msgid "HyperV feature '%s' should not have a value"
-msgstr "HyperV Funktion '%s' sollte keinen Wert haben"
 
 msgid "HyperV spinlock retry count must be at least 4095"
 msgstr "HyperV spinlock Anzahl der Wiederholversuche muss mindestens 4095 sein"
@@ -5780,10 +5691,6 @@ msgstr "Unterbrochen durch ein Signal"
 #, c-format
 msgid "Invalid \"nativeMode='%s'\" in vlan <tag> element"
 msgstr "Ungültiger \"native mode = '% s'\" im vlan <tag> Element"
-
-#, c-format
-msgid "Invalid %s transport type '%s'"
-msgstr "Ungültiger %s Transport Typ '%s'"
 
 msgid "Invalid BIOS 'date' format"
 msgstr "Ungültiges BIOS 'date' Format"
@@ -6149,10 +6056,6 @@ msgstr "Ungültiger vorhergehender Regulärer Ausdruck"
 msgid "Invalid prefix or netmask for '%s'"
 msgstr "Ungültiges Präfix oder Netzmaske für »%s«"
 
-#, c-format
-msgid "Invalid query parameter '%s'"
-msgstr "Ungültiger Abfrage Parameter '%s'"
-
 msgid "Invalid range end"
 msgstr "Ungültiges Bereichs-Ende"
 
@@ -6177,13 +6080,6 @@ msgstr "Ungültiges Sicherheits-Label %s"
 #, c-format
 msgid "Invalid security label '%s'"
 msgstr "Ungültiges Sicherheitslabel '%s'"
-
-msgid "Invalid snapshot"
-msgstr "Ungültiger Snapshot"
-
-#, c-format
-msgid "Invalid snapshot: %s"
-msgstr "Ungültiger Snapshot: %s"
 
 #, c-format
 msgid ""
@@ -6225,10 +6121,6 @@ msgid ""
 msgstr ""
 "Unzulässige Angabe einer MAC-Adsesse '%s' in der Netzwerk '%s' IPv6 "
 "statischen Host Definition "
-
-#, c-format
-msgid "Invalid transport/scheme '%s'"
-msgstr "Transport/Schema %s ungültig"
 
 #, c-format
 msgid "Invalid type '%s' requested for parameter '%s', actual type is '%s'"
@@ -6306,9 +6198,6 @@ msgstr "Aufrufen fstrim auf den angeschlossenen Dateisystemen der Domäne."
 #, c-format
 msgid "Iterator ID exceeds maximum ID of %u"
 msgstr "Iterator ID überschreitet die maximale ID von %u"
-
-msgid "JSON monitor is required"
-msgstr "JSON-Monitor wird benötigt"
 
 #, c-format
 msgid "Job submission failed on interface '%s'"
@@ -6479,9 +6368,6 @@ msgstr "Fehlerhafter Einheiten-Wert %s"
 #, c-format
 msgid "Malformed lease target offset %s"
 msgstr "Fehlerhafter Lease Ziel-Abstand %s"
-
-msgid "Malformed mdnsGroupName data in JSON document"
-msgstr "Fehlerhafte mdnsGroupName Daten in JSON Dokument"
 
 #, c-format
 msgid "Malformed nbd port '%s'"
@@ -7325,10 +7211,6 @@ msgstr "Kein Master USB-Controller angegeben"
 msgid "No match"
 msgstr "Keine Übereinstimmung"
 
-#, c-format
-msgid "No monitor connection for pid %u"
-msgstr "Keine Monitor-Verbindung für pid %u"
-
 msgid "No more available PCI slots"
 msgstr "Keine weiteren PCI-Slots verfügbar"
 
@@ -7680,9 +7562,6 @@ msgstr "PCI-Adresse 0:0:1.0 wird verwendet, QEMU benötigt sie für Primärvideo
 
 msgid "PCI address 0:0:2.0 is in use, QEMU needs it for primary video"
 msgstr "PCI-Adresse 0:0:2.0 wird verwendet, QEMU benötigt sie für Primärvideo"
-
-msgid "PCI address Formatting failed"
-msgstr "PCI Adressen Formattierung fehlgeschlagen"
 
 #, c-format
 msgid ""
@@ -10307,10 +10186,6 @@ msgstr "Kann keine Pipe erstellen"
 msgid "Unable to mark loop device as autoclear"
 msgstr "Kann Loop Einheit nicht als Autoclear markieren"
 
-#, c-format
-msgid "Unable to migrate %s to %s"
-msgstr "Kann nicht %s auf %s migrieren"
-
 msgid "Unable to modify live devices"
 msgstr "Kann Live-Einheiten nicht ändern"
 
@@ -10528,10 +10403,6 @@ msgstr "Anfrage auf Persönlichkeit für %s auf %s kann nicht erfolgen "
 #, c-format
 msgid "Unable to reset PCI device %s: %s"
 msgstr "PCI-Gerät %s kann nicht zurückgesetzt werden: %s"
-
-#, c-format
-msgid "Unable to resolve %s for pid %u"
-msgstr "Kann %s für pid %u nicht auflösen"
 
 #, c-format
 msgid "Unable to resolve address '%s' service '%s': %s"
@@ -11004,9 +10875,6 @@ msgstr "Unbekannter Modus wurde spezifiziert"
 msgid "Unknown model type '%s'"
 msgstr "Unbekannter Modelltyp »%s«"
 
-msgid "Unknown poll response."
-msgstr "Unbekannte Abfrage-Antwort."
-
 #, c-format
 msgid "Unknown pool adapter type '%s'"
 msgstr "Unbekannter Pool-Adapter-Typ '%s'"
@@ -11324,21 +11192,6 @@ msgstr "Wert '%s' ist nicht darstellbar als %s"
 #, c-format
 msgid "Value '%s' is out of %s range"
 msgstr "Wert von »%s« liegt ausserhalb des %s Bereichs"
-
-msgid "Value of cputune emulator_period must be in range [1000, 1000000]"
-msgstr "Wert von cputune emulator_period muss im Bereich [1000, 1000000] sein"
-
-msgid ""
-"Value of cputune emulator_quota must be in range [1000, 18446744073709551]"
-msgstr ""
-"Wert von cputune emulator_quota muss im Bereich [1000, 18446744073709551] "
-"sein"
-
-msgid "Value of cputune period must be in range [1000, 1000000]"
-msgstr "Wert von cputune period muss im Bereich [1000, 1000000] sein"
-
-msgid "Value of cputune quota must be in range [1000, 18446744073709551]"
-msgstr "Wert von cputune quota muss im Bereich [1000, 18446744073709551] sein"
 
 msgid "Variable value contains invalid character"
 msgstr "Variablen-Wert enthält ungültiges Zeichen"
@@ -11673,14 +11526,6 @@ msgstr ""
 "eine Schnittstellen-Verbindung mit Netzwerk '%s' verlangt ein vlan Tag, aber "
 "das ist nicht für diese Art von Netzwerk unterstützt"
 
-#, c-format
-msgid ""
-"an interface of type '%s' is requesting a vlan tag, but that is not "
-"supported for this type of connection"
-msgstr ""
-"eine Schnittstelle vom Typ '%s' verlangt ein vlan Tag, aber das ist nicht "
-"für diese Art von Verbindung unterstützt"
-
 msgid "apparmor_parser exited with error"
 msgstr "apparmor_parser beendete mit Fehler"
 
@@ -11814,9 +11659,6 @@ msgstr "Ein Netzwerk automatisch starten"
 msgid "autostart a pool"
 msgstr "Automatischer Start eines Pools"
 
-msgid "avahi not available at build time"
-msgstr "avahl war beim Compilieren nicht verfügbar"
-
 msgid "avoid file system cache when dumping"
 msgstr "Vermeide Datei-System Cache beim Dump"
 
@@ -11864,9 +11706,6 @@ msgstr "blkio Cgroup ist nicht angeschlossen"
 msgid "block"
 msgstr "Block"
 
-msgid "block copy is not supported with this QEMU binary"
-msgstr "Block-Copy wird von dieser QEMU-Programmdatei nicht unterstützt"
-
 msgid "block copy still active"
 msgstr "Block Kopieren ist immer noch aktiv"
 
@@ -11876,9 +11715,6 @@ msgstr "Block Kopieren ist immer noch aktiv: %s"
 
 msgid "block device"
 msgstr "Blockeinheit"
-
-msgid "block jobs not supported with this QEMU binary"
-msgstr "block jobs wird von dieser QEMU-Programmdatei nicht unterstützt"
 
 #, c-format
 msgid "block peek request too large for remote protocol, %zi > %d"
@@ -11953,14 +11789,6 @@ msgstr "Bridge '%s hat ein ungültiges Prefix"
 
 msgid "bridge an existing network device"
 msgstr "überbrücken einer bestehenden Netzwerk-Einheit"
-
-#, c-format
-msgid ""
-"bridge delay/stp options only allowed in route, nat, and isolated mode, not "
-"in %s (network '%s')"
-msgstr ""
-"Bridge delay/stp Optionen nur im Route, NAT und isolierten Modus erlaubt, "
-"nicht in %s (Netzwerk '%s')"
 
 msgid "bridge interface misses the bridge element"
 msgstr "Bridge-Schnittstelle fehlt das Bridge-Element"
@@ -12081,13 +11909,6 @@ msgid "cannot block signals"
 msgstr "Kann Signale nicht blockieren"
 
 #, c-format
-msgid ""
-"cannot change between disk snapshot and system checkpoint in snapshot %s"
-msgstr ""
-"Kann nicht zwischen Disk-Snapshot und System Kontrollpunkt in Snapshot %s "
-"wechseln"
-
-#, c-format
 msgid "cannot change between online and offline snapshot state in snapshot %s"
 msgstr ""
 "Kann nicht zwischen Online- und Offline-Snapshot Status in Snapshot %s "
@@ -12146,9 +11967,6 @@ msgstr "Kann nicht in das Root-Verzeichnis wechseln: %s"
 #, c-format
 msgid "cannot change to uid to '%u'"
 msgstr "Kann nicht UID auf '%u' wechseln"
-
-msgid "cannot change vcpu count of this domain"
-msgstr "Kann vcpu-Zahl dieser Domain nicht ändern"
 
 #, c-format
 msgid "cannot chmod '%s' to 0660"
@@ -12305,34 +12123,6 @@ msgstr "Kann Binärdatei %s nicht ausführen"
 msgid "cannot extend file '%s'"
 msgstr "Kann Datei '%s' nicht erweitern"
 
-#, c-format
-msgid "cannot extract PCI device bus '%s'"
-msgstr "PCI-Gerätebus '%s' kann nicht ermittelt werden"
-
-#, c-format
-msgid "cannot extract PCI device function '%s'"
-msgstr "Kann PCI-Gerätefunktion '%s' nicht extrahieren"
-
-#, c-format
-msgid "cannot extract PCI device slot '%s'"
-msgstr "PCI-Geräte-Slot '%s' kann nicht ermittelt werden"
-
-#, c-format
-msgid "cannot extract USB device address '%s'"
-msgstr "Kann USB-Geräteadresse '%s' nicht extrahieren"
-
-#, c-format
-msgid "cannot extract USB device bus '%s'"
-msgstr "Kann USB-Geräte-Bus '%s' nicht extrahieren"
-
-#, c-format
-msgid "cannot extract USB device product '%s'"
-msgstr "Kann USB-Geräteprodukt '%s' nicht extrahieren"
-
-#, c-format
-msgid "cannot extract USB device vendor '%s'"
-msgstr "Kann USB-Gerätehersteller '%s' nicht extrahieren"
-
 msgid "cannot extract blkiotune nodes"
 msgstr "kann blkiotune Knoten nicht extrahieren"
 
@@ -12360,10 +12150,6 @@ msgid "cannot find CPU map for %s architecture"
 msgstr "CPU-Map für %s-Architektur nicht gefunden"
 
 #, c-format
-msgid "cannot find NIC definition for vlan %d"
-msgstr "NIC definition für vlan %d kann nicht gefunden werden"
-
-#, c-format
 msgid "cannot find channel %s"
 msgstr "Kann Kanal %s nicht finden"
 
@@ -12385,10 +12171,6 @@ msgstr "Kann neu erstellten Datenträger '%s' nicht finden"
 
 msgid "cannot find pid in vmware log file"
 msgstr "Kann PID nicht in vmware Log Datei finden"
-
-#, c-format
-msgid "cannot find port number in character device %s"
-msgstr "Kann Port-Nummer nicht in Charakter-Gerät %s finden"
 
 #, c-format
 msgid "cannot find statistics for device '%s'"
@@ -12467,12 +12249,6 @@ msgid "cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"
 msgstr ""
 "Kann nicht eine Multifunktionale PCI-Einheit bei laufendem Betrieb abhängen: "
 "%.4x:%.2x:%.2x.%.1x"
-
-#, c-format
-msgid "cannot hot unplug multifunction PCI device: %s"
-msgstr ""
-"Kann nicht eine Multifunktionale PCI-Einheit bei laufendem Betrieb abhängen: "
-"%s"
 
 #, c-format
 msgid "cannot initialize cert object: %s"
@@ -12608,22 +12384,6 @@ msgid "cannot parse %s version number in '%.*s'"
 msgstr "Kann nicht %s Versions-Number in '%.*s' analysieren"
 
 #, c-format
-msgid "cannot parse CPU topology '%s'"
-msgstr "Kann CPU-Topologie '%s' nicht parsen"
-
-msgid "cannot parse HyperV spinlock retry count"
-msgstr ""
-"HyperV spinlock Anzahl der Wiederholversuche kann nicht analysiert werden"
-
-#, c-format
-msgid "cannot parse NIC definition '%s'"
-msgstr "NIC-Definition '%s' kann nicht geparst werden"
-
-#, c-format
-msgid "cannot parse NIC vlan in '%s'"
-msgstr "NIC vlan in '%s' kann nicht geparst werden"
-
-#, c-format
 msgid "cannot parse PCI bus '%s'"
 msgstr "Kann PCI-Bus '%s' nicht parsen"
 
@@ -12640,28 +12400,12 @@ msgid "cannot parse PCI slot '%s'"
 msgstr "Kann PCI-Slot '%s' nicht parsen"
 
 #, c-format
-msgid "cannot parse UUID '%s'"
-msgstr "Kann UUID '%s' nicht parsen"
-
-#, c-format
-msgid "cannot parse VNC WebSocket port '%s'"
-msgstr "VNC WebSocket-Port %s kann nicht verarbeitet werden"
-
-#, c-format
-msgid "cannot parse VNC port '%s'"
-msgstr "Kann VNC-Port '%s' nicht parsen"
-
-#, c-format
 msgid "cannot parse bus %s"
 msgstr "Bus %s kann nicht geparst werden"
 
 #, c-format
 msgid "cannot parse bus '%s'"
 msgstr "Bus '%s' kann nicht verarbeitet werden"
-
-#, c-format
-msgid "cannot parse cylinders value'%s'"
-msgstr "Zylinder-Wert %s kann nicht verarbeitet werden"
 
 #, c-format
 msgid "cannot parse device %s"
@@ -12673,22 +12417,6 @@ msgstr "Kann Geräte-End-Position nicht parsen"
 msgid "cannot parse device start location"
 msgstr "Kann Geräte-Start-Position nicht parsen"
 
-#, c-format
-msgid "cannot parse drive bus '%s'"
-msgstr "Laufwerks-Bus '%s' kann nicht geparst werden"
-
-#, c-format
-msgid "cannot parse drive index '%s'"
-msgstr "Laufwerkindex '%s' kann nicht geparst werden"
-
-#, c-format
-msgid "cannot parse drive unit '%s'"
-msgstr "Laufwerkseinheit '%s' kann nicht geparst werden"
-
-#, c-format
-msgid "cannot parse heads value'%s'"
-msgstr "Köpfe-Wert %s kann nicht verarbeitet werden"
-
 msgid "cannot parse instanceid parameter as a uuid"
 msgstr "»instanceid«-Parameter kann nicht als UUID verarbeitet werden"
 
@@ -12696,20 +12424,8 @@ msgid "cannot parse interfaceid parameter as a uuid"
 msgstr "kann interfaceid Parameter nicht als ein uuid analysieren"
 
 #, c-format
-msgid "cannot parse io mode '%s'"
-msgstr "E/A-Modus »%s« kann nicht verarbeitet werden"
-
-#, c-format
 msgid "cannot parse json %s: %s"
 msgstr "Kann json %s: %s nicht parsen"
-
-#, c-format
-msgid "cannot parse nbd filename '%s'"
-msgstr "NBD-Dateiname »%s« kann nicht verarbeitet werden"
-
-#, c-format
-msgid "cannot parse nvram's address '%s'"
-msgstr "nvram's Adresse '%s' kann nicht analysiert werden"
 
 #, c-format
 msgid "cannot parse partition number from target '%s'"
@@ -12731,21 +12447,6 @@ msgstr "Produkt %s kann nicht geparst werden"
 #, c-format
 msgid "cannot parse rdp port %s"
 msgstr "rdp-Port %s kann nicht geparst werden"
-
-msgid "cannot parse reboot-timeout value"
-msgstr "Wert des Neustart Zeitlimits kann nicht analysiert werden"
-
-#, c-format
-msgid "cannot parse sectors value'%s'"
-msgstr "Sektoren-Wert %s kann nicht verarbeitet werden"
-
-#, c-format
-msgid "cannot parse sheepdog filename '%s'"
-msgstr "Sheepdog-Dateiname »%s« kann nicht verarbeitet werden"
-
-#, c-format
-msgid "cannot parse sndbuf size in '%s'"
-msgstr "kann sndbuf Größe in '%s' nicht analysieren"
 
 #, c-format
 msgid "cannot parse spice port %s"
@@ -12793,10 +12494,6 @@ msgstr "Video-Köpfe '%s' können nicht geparst werden"
 #, c-format
 msgid "cannot parse video ram '%s'"
 msgstr "Video-RAM '%s' kann nicht geparst werden"
-
-#, c-format
-msgid "cannot parse vlan in '%s'"
-msgstr "vlan in '%s' kann nicht geparst werden"
 
 #, c-format
 msgid "cannot parse vnc WebSocket port %s"
@@ -13281,9 +12978,6 @@ msgstr "Syntaxfehler in der Konfigurationsdatei"
 msgid "configuration file syntax error: %s"
 msgstr "Syntaxfehler in der Konfigurationsdatei: %s"
 
-msgid "conflicting occurrences of kvmclock feature"
-msgstr "widersprüchliches Vorkommen der kvmclock Funktion"
-
 msgid "connect to the guest console"
 msgstr "Verbindung mit der Gast-Konsole"
 
@@ -13544,10 +13238,6 @@ msgstr "konnte keine VirtualBox Sitzung mit Domain %s eröffnen"
 #, c-format
 msgid "could not open input path '%s'"
 msgstr "Kann Eingabepfad '%s' nicht öffnen"
-
-#, c-format
-msgid "could not parse CEPH_ARGS '%s'"
-msgstr "CEPH_ARGS '%s' konnte nicht analysiert werden"
 
 msgid "could not parse XML"
 msgstr "XML konnte nicht verarbeitet werden"
@@ -13950,9 +13640,6 @@ msgid "device alias not found: cannot set link state to down"
 msgstr ""
 "Einheiten-Alias ​​nicht gefunden: Link Status kann nicht auf unerreichbar "
 "eingestellt werden"
-
-msgid "device cannot be detached without a device alias"
-msgstr "Gerät kann ohne Geräte-Alias nicht abgehängt werden"
 
 msgid "device cannot be detached: device is busy"
 msgstr "Einheit kann nicht abgehängt werden: Einheit ist beschäftigt"
@@ -15033,14 +14720,6 @@ msgstr ""
 msgid "failed to rollback transaction: %s%s%s"
 msgstr "Zurückrollen der Transaktion gescheitert: %s%s%s"
 
-#, c-format
-msgid "failed to run '%s --help': %s"
-msgstr "'%s --help' konnte nicht ausgeführt werden: %s"
-
-#, c-format
-msgid "failed to run '%s --version': %s"
-msgstr "'%s --version' konnte nicht ausgeführt werden: %s"
-
 msgid "failed to run apparmor_parser"
 msgstr "Ausführen von apparmor_parser fehlgeschlagen"
 
@@ -15228,9 +14907,6 @@ msgstr "filtern von externen Snapshots"
 msgid "filter by internal snapshots"
 msgstr "filtern von internen Snapshots"
 
-msgid "filter by snapshots taken while active (system checkpoints)"
-msgstr "filtern von während aktiv gemachten Snapshots (System-Kontrollpunkte)"
-
 msgid "filter by snapshots taken while inactive"
 msgstr "filtern von während inaktiv gemachten Snapshots"
 
@@ -15261,16 +14937,6 @@ msgstr "Potentielle Speicher-Pool-Quellen finden"
 
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"
 msgstr "Flag-Parameter muss VIR_MEMORY_VIRTUAL oder VIR_MEMORY_PHYSICAL sein."
-
-msgid "floor attribute is supported only for interfaces of type network"
-msgstr ""
-"Untergrenzen-Attribut wird nur für Schnittstellen vom Typ Netzwerk "
-"unterstützt"
-
-msgid "floor attribute isn't supported for network's bandwidth yet"
-msgstr ""
-"Untergrenzen-Attribut wird noch nicht für die Bandbreite des Netzwerks "
-"unterstützt"
 
 #, c-format
 msgid "for Linux >= %d.%d.%d"
@@ -15316,10 +14982,6 @@ msgid "forward interface entries cannot be modified, only added or deleted"
 msgstr ""
 "Vorwärts Schnittstellen-Einträge können nicht geändert werden, nur "
 "hinzugefügt oder gelöscht"
-
-#, c-format
-msgid "found no rbd hosts in CEPH_ARGS '%s'"
-msgstr "keine RBD Hosts in CEPH_ARGS '%s' gefunden"
 
 msgid "from snapshot"
 msgstr "von Snapshot"
@@ -15847,10 +15509,6 @@ msgstr "ungültiger Verbindungszeiger in"
 msgid "invalid connection pointer in %s"
 msgstr "ungültiger Verbindungszeiger in %s"
 
-#, c-format
-msgid "invalid device name '%s'"
-msgstr "Ungültiger Gerätename »%s«"
-
 msgid "invalid domain pointer in"
 msgstr "ungültiger Domain-Zeiger in"
 
@@ -15934,10 +15592,6 @@ msgstr "Ungültige logische Blockgrösse »%s«"
 
 msgid "invalid mode"
 msgstr "Ungültiger Modus"
-
-#, c-format
-msgid "invalid name '%s' for iSCSI disk"
-msgstr "Ungültiger Name '%s' für ISCSI Disk"
 
 #, c-format
 msgid "invalid netfs path (ends in /): %s"
@@ -16097,14 +15751,6 @@ msgstr "Ungültige UUID %s"
 #, c-format
 msgid "invalid value %d"
 msgstr "Ungültiger Wert %d"
-
-#, c-format
-msgid "invalid value for disable_s3 parameter: '%s'"
-msgstr "Ungültiger Wert für disable_s3-Parameter: »%s«"
-
-#, c-format
-msgid "invalid value for disable_s4 parameter: '%s'"
-msgstr "Ungültiger Wert für disable_s4-Parameter: »%s«"
 
 msgid "invalid value for rebootTimeout, must be in range [-1,65535]"
 msgstr "ungültiger Wert für rebootTimeout, muss im Bereich [-1,65535] liegen"
@@ -16457,16 +16103,8 @@ msgstr "Direktes anhängen von Device '%s' wird nicht unterstützt"
 msgid "live detach of device '%s' is not supported"
 msgstr "Direktes abhängen der Einheit '%s' wird nicht unterstützt"
 
-msgid "live disk snapshot not supported with this QEMU binary"
-msgstr ""
-"Live Disk Snapshot wird von dieser QEMU-Programmdatei nicht unterstützt"
-
 msgid "live migration"
 msgstr "Live-Migration"
-
-msgid "live snapshot creation is supported only with external checkpoints"
-msgstr ""
-"Live-Snapshot-Erstellung ist nur mit externen Kontrollpunkten unterstützt"
 
 #, c-format
 msgid "live update of device '%s' is not supported"
@@ -16654,9 +16292,6 @@ msgstr "Speicher Attribute: [file=]Name[,snapshot=Typ]"
 msgid "memory filename '%s' requires external snapshot"
 msgstr "Speicher Dateiname '%s' erfordert die Verwendung von externem Snapshot"
 
-msgid "memory locking not supported by QEMU binary"
-msgstr "Speicher-Sperre wird von dieser QEMU-Programmdatei nicht unterstützt"
-
 #, c-format
 msgid "memory peek request too large for remote protocol, %zi > %d"
 msgstr "Speicher-Peek-Anfrage zu groß für Remote-Protokoll, %zi > %d"
@@ -16785,9 +16420,6 @@ msgstr "Fehlendes 'usage' Attribut für RAM Datei-System"
 msgid "missing EGD backend type"
 msgstr "Fehlender EGD Backend Typ"
 
-msgid "missing HyperV spinlock retry count"
-msgstr "fehlende HyperV spinlock Anzahl der Wiederholversuche"
-
 msgid "missing IFLA_VF_INFO in netlink response"
 msgstr "fehlendes IFLA_VF_INFO in netlink Antwort"
 
@@ -16818,10 +16450,6 @@ msgstr "fehlendes TPM-Einheit Backend"
 
 msgid "missing TPM device backend type"
 msgstr "fehlender TPM-Einheit Backend Typ"
-
-#, c-format
-msgid "missing VNC port number in '%s'"
-msgstr "Fehlende VNC Port Nummer in '%s'"
 
 #, c-format
 msgid "missing address type in network %s"
@@ -16892,10 +16520,6 @@ msgstr "Fehlende existierende Datei für Disk %s: %s"
 msgid "missing feature name"
 msgstr "Fehlender Feature-Name"
 
-#, c-format
-msgid "missing file parameter in drive '%s'"
-msgstr "Fehlender Dateiparameter in Laufwerk '%s'"
-
 msgid "missing filter parameter table"
 msgstr "Fehlende Filter Parameter Tabelle"
 
@@ -16914,10 +16538,6 @@ msgstr "Fehlendes hostuuid Element in Migrations-Daten"
 
 msgid "missing hub device type"
 msgstr "Fehlender Hub Einheit Typ"
-
-#, c-format
-msgid "missing index/unit/bus parameter in drive '%s'"
-msgstr "Fehlender Index-/Unit-/Bus-Parameter in Laufwerk '%s'"
 
 msgid "missing input device type"
 msgstr "Fehlender Eingabegerätetyp"
@@ -17106,10 +16726,6 @@ msgstr "Fehlender Benutzername für Auth"
 msgid "missing uuid element in migration data"
 msgstr "Fehlendes UUID Attribut in Migrations-Daten"
 
-#, c-format
-msgid "missing value for %s argument"
-msgstr "Fehlender Wert für %s-Argument"
-
 msgid "missing vendor"
 msgstr "Fehlender Hersteller"
 
@@ -17118,9 +16734,6 @@ msgstr "Video-Modell fehlt und Standard kann nicht festgestellt werden"
 
 msgid "missing vlan tag data"
 msgstr "Fehlende vlan Tag Daten"
-
-msgid "missing vnc sharing policy"
-msgstr "fehlende vnc Aufteilungs-Richtilinie"
 
 msgid "missing volume name element"
 msgstr "Fehlendes Namenelement für Datenträger"
@@ -17300,20 +16913,6 @@ msgid "network '%s' already exists with uuid %s"
 msgstr "Netzwerk »%s« existiert bereits mit UUID %s"
 
 #, c-format
-msgid "network '%s' claims dev='%s' is already in use by a different domain"
-msgstr ""
-"Netzwerk '%s' behauptet dev='%s' wird bereits von einer anderen Domäne "
-"verwendet"
-
-#, c-format
-msgid ""
-"network '%s' claims the PCI device at domain=%d bus=%d slot=%d function=%d "
-"is already in use by a different domain"
-msgstr ""
-"Netzwerk '%s' behauptet dass die PCI Einheit auf Domain=%d Bus=%d Slot=%d "
-"Funktion=%d wird bereits von einer anderen Domäne verwendet"
-
-#, c-format
 msgid "network '%s' does not have a bridge name."
 msgstr "Netzwerk '%s' hat keinen Bridge-Namen."
 
@@ -17363,22 +16962,6 @@ msgid ""
 msgstr ""
 "Netzwerk '%s' verwendet einen Direkt-Modus, hat aber keine vorwärts dev und "
 "keinen Schnittstellen-Pool."
-
-#, c-format
-msgid ""
-"network '%s' uses a direct or hostdev mode, but has no forward dev and no "
-"interface pool"
-msgstr ""
-"Netzwerk '%s' verwendet einen direct oder hostdev Modus, hat aber keine "
-"vorwärts dev und keinen Schnittstellen-Pool"
-
-#, c-format
-msgid ""
-"network '%s' uses a direct/hostdev mode, but has no forward dev and no "
-"interface pool"
-msgstr ""
-"Netzwerk '%s' verwendet einen direct/hostdev Modus, hat aber keine vorwärts "
-"dev und keinen Schnittstellen-Pool"
 
 #, c-format
 msgid "network filter config filename '%s' does not match name '%s'"
@@ -17622,9 +17205,6 @@ msgstr "Keine Domain mit übereinstimmender UUID '%s'"
 #, c-format
 msgid "no domain with matching uuid '%s' (%s)"
 msgstr "Keine Domain mit übereinstimmender UUID '%s' (%s)"
-
-msgid "no emulator path found"
-msgstr "Emulator-Pfad nicht gefunden"
 
 msgid "no error"
 msgstr "kein Fehler"
@@ -17880,10 +17460,6 @@ msgstr "nvram Einheit ist nur für PPC64 unterstützt"
 msgid "nwfilter is in use"
 msgstr "nwfilter ist in Gebrauch"
 
-#, c-format
-msgid "object size %zu of %s is smaller than parent class %zu"
-msgstr "Objektgröße %zu von %s ist kleiner als übergeordnete Klasse %zu"
-
 msgid "occupied"
 msgstr "beschäftigt"
 
@@ -17908,9 +17484,6 @@ msgstr ""
 
 msgid "ok"
 msgstr "ok"
-
-msgid "online commit not supported with this QEMU binary"
-msgstr "Online Übergabe wird von dieser QEMU-Programmdatei nicht unterstützt"
 
 msgid "only a single TPM device is supported"
 msgstr "Nur eine einzelne TPM-Einheit ist unterstützt"
@@ -18192,9 +17765,6 @@ msgstr "Pivot der Disk '%s' erfordert einen aktiven Kopier Job"
 
 msgid "pmsuspended"
 msgstr "pmsuspended"
-
-msgid "poll error"
-msgstr "Fehler bei der Abfrage"
 
 msgid "poll failed in migration tunnel"
 msgstr "Abstimmung scheiterte im Migration Tunnel"
@@ -18509,9 +18079,6 @@ msgstr ""
 msgid "remove all associated storage volumes (use with caution)"
 msgstr ""
 "entfernen aller zugehörigen Speicher-Datenträger (mit Vorsicht verwenden)"
-
-msgid "remove all domain snapshot metadata, if inactive"
-msgstr "entfernen alle Domain Snapshot Metadaten, wenn inaktiv"
 
 msgid ""
 "remove associated storage volumes (comma separated list of targets or source "
@@ -19279,13 +18846,6 @@ msgstr "der Standard Sperrbereich existiert bereits"
 msgid "the domain does not have a current snapshot"
 msgstr "Die Domain hat keinen aktuellen Snapshot"
 
-msgid "the interface uses a direct mode, but has no source dev"
-msgstr ""
-"Die Schnittstelle verwendet einen Direkt-Modus, hat aber keine vorwärts dev"
-
-msgid "the interface uses a hostdev mode, but has no hostdev"
-msgstr "Die Schnittstelle verwendet einen hostdev Modus, hat aber kein hostdev"
-
 msgid "the key code"
 msgstr "Der Schlüssel-Code"
 
@@ -19535,10 +19095,6 @@ msgstr "Typ des Pools"
 
 msgid "type of update (add-first, add-last (add), delete, or modify)"
 msgstr "Aktualisierungs-Typ (add-first, add-last (add), delete, oder modify)"
-
-#, c-format
-msgid "udev scan devices returned %d"
-msgstr "udev scan Einheiten gaben %d zurück"
 
 msgid "udev_monitor_new_from_netlink returned NULL"
 msgstr "udev_monitor_new_from_netlink gab NULL zurück"
@@ -19942,10 +19498,6 @@ msgid "unexpected domain %s already exists"
 msgstr "Unerwartete Domain %s bereits vorhanden"
 
 #, c-format
-msgid "unexpected domain snapshot %s already exists"
-msgstr "Unerwarteter Domain-Snapshot %s existiert bereits"
-
-#, c-format
 msgid "unexpected domain type %d"
 msgstr "Unerwarteter Domain-Typ %d"
 
@@ -19961,10 +19513,6 @@ msgstr "Unerwartetes leeres Keyword in %s"
 
 msgid "unexpected encryption format"
 msgstr "Unerwartetes Verschlüsselungsformat"
-
-#, c-format
-msgid "unexpected feature %zu"
-msgstr "Unerwartete Funktion %zu"
 
 #, c-format
 msgid "unexpected filesystem type %d"
@@ -20187,20 +19735,12 @@ msgstr "unbekannt"
 msgid "unknown %s action: %s"
 msgstr "Unbekannte %s Aktion: %s"
 
-#, c-format
-msgid "unknown CPU syntax '%s'"
-msgstr "Unbekannte CPU-Syntax '%s'"
-
 msgid "unknown OS type"
 msgstr "unbekannter OS-Typ"
 
 #, c-format
 msgid "unknown OS type %s"
 msgstr "unbekannter OS-Typ %s"
-
-#, c-format
-msgid "unknown PCI device syntax '%s'"
-msgstr "Unbekannte PCI-Gerätesyntax '%s'"
 
 #, c-format
 msgid "unknown PM state value %s"
@@ -20217,10 +19757,6 @@ msgstr "Unbekanntes RNG Modell '%s'"
 #, c-format
 msgid "unknown SCSI host capability type '%s' for '%s'"
 msgstr "Unbekannter SCSI-Host-Fähigkeitentyp '%s' für '%s'"
-
-#, c-format
-msgid "unknown USB device syntax '%s'"
-msgstr "Unbekannte USB-Gerätesyntax '%s'"
 
 #, c-format
 msgid "unknown accessmode '%s'"
@@ -20269,10 +19805,6 @@ msgstr "Unbekannter Fähigkeitentyp '%d' für '%s'"
 #, c-format
 msgid "unknown capability type '%s'"
 msgstr "Unbekannter Fähigkeitentyp '%s'"
-
-#, c-format
-msgid "unknown character device syntax %s"
-msgstr "Unbekannte Charakter-Gerät-Syntax %s"
 
 #, c-format
 msgid "unknown character device type: %s"
@@ -20527,10 +20059,6 @@ msgid "unknown mii bonding carrier %s"
 msgstr "Unbekannter mii-Bonding-Carrier %s"
 
 #, c-format
-msgid "unknown mirror format value '%s'"
-msgstr "Unbekannter Spiegel-Format Wert '%s'"
-
-#, c-format
 msgid "unknown mouse mode value '%s'"
 msgstr "Unbekannter Maus-Modus Wert '%s'"
 
@@ -20722,16 +20250,8 @@ msgid "unknown usb source type '%s'"
 msgstr "Unbekannter USB-Quelltyp '%s'"
 
 #, c-format
-msgid "unknown video adapter type '%s'"
-msgstr "Unbekannter Video-Adapter-Typ '%s'"
-
-#, c-format
 msgid "unknown video model '%s'"
 msgstr "Unbekanntes Video-Modell '%s'"
-
-#, c-format
-msgid "unknown virt type in domain definition '%d'"
-msgstr "Unbekannter Virt-Typ in der Domain-Definition '%d'"
 
 #, c-format
 msgid "unknown virtualport type %s"
@@ -20794,10 +20314,6 @@ msgid "unrecognized command name '%s'"
 msgstr "Unbekannter Befehls-Name '%s'"
 
 #, c-format
-msgid "unrecognized driver name value %d  in network '%s'"
-msgstr "Unbekannter Treiber-Namens-Wert %d in Netzwerk '%s'"
-
-#, c-format
 msgid "unrecognized network update command code %d"
 msgstr "unbekannter Netzwerk Aktualisierung Befehls-Code %d"
 
@@ -20807,10 +20323,6 @@ msgstr "Unbekannter Abschnitts-Name '%s'"
 
 msgid "unspecified error"
 msgstr "unspezifizierter Fehler"
-
-#, c-format
-msgid "unsupported HyperV Enlightenment feature '%s'"
-msgstr "nicht unterstützte HyperV Erleuchtungs-Funktion '%s'"
 
 #, c-format
 msgid "unsupported HyperV Enlightenment feature: %s"
@@ -21128,9 +20640,6 @@ msgstr "virDirCreate ist nicht implementiert für Win32"
 
 msgid "virDomainGetXMLDesc with secure flag"
 msgstr "virDomainGetXMLDesc mit sicherem Flag"
-
-msgid "virDomainSaveImageGetXMLDesc with secure flag"
-msgstr "virDomainSaveImageGetXMLDesc mit sicherer Flag"
 
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "virDomainSnapshotGetXMLDesc mit sicherer Flag"

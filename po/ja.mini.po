@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"POT-Creation-Date: 2019-07-01 18:50+0100\n"
 "PO-Revision-Date: 2015-02-23 06:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/libvirt/"
@@ -404,10 +404,6 @@ msgid "%s object is missing the required '%s' property"
 msgstr "%s オブジェクトは必要な '%s' プロパティがありません"
 
 #, c-format
-msgid "%s platform doesn't support CPU features'"
-msgstr "%s プラットフォームは CPU 機能をサポートしません"
-
-#, c-format
 msgid "%s takes no options"
 msgstr "%s はオプションをとりません"
 
@@ -728,9 +724,6 @@ msgstr "--%s または --current が必要です"
 msgid "--descendants requires either --from or --current"
 msgstr "--descendants は --from または --current のどちらかが必要です"
 
-msgid "--print-xml is incompatible with --no-metadata"
-msgstr "--print-xml は --no-metadata と互換性がありません"
-
 msgid "/proc/net/dev: Interface not found"
 msgstr "/proc/net/dev: インターフェースが見つかりません"
 
@@ -873,9 +866,6 @@ msgstr "割り当て"
 
 msgid "Allocation:"
 msgstr "割り当て:"
-
-msgid "Allows to show or modify description or title of a domain."
-msgstr "ドメインの説明またはタイトルの表示または変更を許可します。"
 
 msgid "An error occurred, but the cause is unknown"
 msgstr "エラーが発生しましたが、原因がわかりません"
@@ -1103,9 +1093,6 @@ msgstr ""
 
 msgid "Busy"
 msgstr "ビジー"
-
-msgid "CEPH_ARGS was set without an rbd disk"
-msgstr "CEPH_ARGS が rbd ディスクなしで設定されました"
 
 msgid "CPU Affinity"
 msgstr "CPU アフィニティー"
@@ -1351,10 +1338,6 @@ msgstr "複数のハンドルに初期化されていない CURL ハンドルを
 msgid "Cannot append basic type %s"
 msgstr "ベーシックタイプ %s を追加できません"
 
-#, c-format
-msgid "Cannot assign address for device name '%s'"
-msgstr "デバイス名 '%s' のアドレスを割り当てられません"
-
 msgid "Cannot attach disk until init PID is known"
 msgstr "init PID が確認できるまでディスクを接続できません"
 
@@ -1378,10 +1361,6 @@ msgstr "コンテナーのイテレーターを閉じられません"
 
 msgid "Cannot complete within timeout period"
 msgstr "タイムアウト時間内に完了できません"
-
-#, c-format
-msgid "Cannot connect to monitor connection of type '%s' for pid %u"
-msgstr "'%s' 形式のモニター接続 (PID %u) に接続できません"
 
 #, c-format
 msgid "Cannot convert socket address to string: %s"
@@ -1635,22 +1614,6 @@ msgid "Cannot parse start time %s in %s"
 msgstr "開始時間 %s (%s) を構文解析できません"
 
 #, c-format
-msgid ""
-"Cannot plug '%s' interface into '%s' because it would overcommit 'average' "
-"on network '%s'"
-msgstr ""
-"'%s' インターフェースを '%s' に挿入できません、ネットワーク '%s' において "
-"'average' がオーバーコミットになるためです"
-
-#, c-format
-msgid ""
-"Cannot plug '%s' interface into '%s' because it would overcommit 'peak' on "
-"network '%s'"
-msgstr ""
-"'%s' インターフェースを '%s' に挿入できません、ネットワーク '%s' において "
-"'peak' がオーバーコミットになるためです"
-
-#, c-format
 msgid "Cannot read %s '%s'"
 msgstr "%s '%s' を読み込めません"
 
@@ -1694,10 +1657,6 @@ msgid "Cannot set autostart for transient domain"
 msgstr "一時ドメインに対して自動起動を設定できません"
 
 #, c-format
-msgid "Cannot set bandwidth on interface '%s' of type %d"
-msgstr "インターフェース '%s' (形式 %d) において帯域を設定できません"
-
-#, c-format
 msgid "Cannot set close-on-exec %d"
 msgstr "close-on-exec %d の設定に失敗しました"
 
@@ -1731,9 +1690,6 @@ msgstr "JSON ドキュメントに max_clients データを設定できません
 
 msgid "Cannot set max_workers data in JSON document"
 msgstr "JSON ドキュメントに max_workers データを設定できません"
-
-msgid "Cannot set mdnsGroupName data in JSON document"
-msgstr "JSON ドキュメントに mdnsGroupName データを設定できません"
 
 msgid "Cannot set memory higher than max memory"
 msgstr "メモリーを最大メモリーよりも大きく設定できません"
@@ -2092,12 +2048,6 @@ msgstr "ソケットあたりのコア数:"
 #, c-format
 msgid "Could find volume with name: %s"
 msgstr "次の名前を持つボリュームを見つけられませんでした: %s"
-
-msgid "Could not add variable 'IP' to hashmap"
-msgstr "変数 'IP' をハッシュマップに追加できませんでした"
-
-msgid "Could not add variable 'MAC' to hashmap"
-msgstr "変数 'MAC' をハッシュマップに追加できませんでした"
 
 #, c-format
 msgid "Could not assign address to disk '%s'"
@@ -3422,9 +3372,6 @@ msgstr "メディアの取り出し"
 msgid "Empty cpu list for pinning"
 msgstr "ピニングの CPU 一覧が空です"
 
-msgid "Empty qemu environment name specified"
-msgstr "空の QEMU 環境名が指定されています"
-
 #, c-format
 msgid "Empty response during %s"
 msgstr "%s 中に応答がありませんでした"
@@ -3541,9 +3488,6 @@ msgstr "既存のデバイス %s は形式がありません"
 msgid "Existing device %s is already a bridge"
 msgstr "既存のデバイス %s はすでにブリッジです"
 
-msgid "Exiting due to failure to migrate profile"
-msgstr "プロファイルのマイグレーションに失敗したため終了します"
-
 msgid "Expected at least one file descriptor"
 msgstr "少なくとも一つのファイル記述子が期待されます"
 
@@ -3640,14 +3584,6 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Expecting VMX entry 'sched.cpu.affinity' to contain at least as many values "
-"as 'numvcpus' (%lld) but found only %d value(s)"
-msgstr ""
-"VMX 項目 'sched.cpu.affinity' は少なくとも 'numvcpus' (%lld) と同じだけ含むこ"
-"とが期待されますが、 %d 個のみが見つかりました"
-
-#, c-format
-msgid ""
 "Expecting VMX entry 'sched.cpu.shares' to be an unsigned integer or 'low', "
 "'normal' or 'high' but found '%s'"
 msgstr ""
@@ -3725,9 +3661,6 @@ msgstr "期待する形式は 'ArrayOf' で始まるものですが、'%s' が�
 msgid "Expecting virt type to be '%s' but found '%s'"
 msgstr "仮想化の種類は '%s' が期待されますが '%s' が見つかりました"
 
-msgid "Expiry of passwords is not supported"
-msgstr "パスワードの期限切れはサポートされません"
-
 msgid "Extract the snapshot's parent, if any"
 msgstr "スナップショットの親があれば、それを抽出します。"
 
@@ -3787,14 +3720,6 @@ msgstr "シグナルハンドルウォッチの追加に失敗しました"
 #, c-format
 msgid "Failed to add slot for PCI device '%s' to %s"
 msgstr "PCI デバイス '%s' 用のスロットを %s  へ追加するのに失敗"
-
-#, c-format
-msgid "Failed to add timer with timeout %lld"
-msgstr "タイムアウト値 %lld を持つタイマーの追加に失敗しました"
-
-#, c-format
-msgid "Failed to add watch for fd %d events %d"
-msgstr "ファイル記述子 %d イベント %d に対するウォッチの追加に失敗しました"
 
 #, c-format
 msgid "Failed to allocate PCI device list: %s"
@@ -4055,10 +3980,6 @@ msgid "Failed to create interface node under bridge node in xml document"
 msgstr ""
 "XML ドキュメントにおいてブリッジノード化にインターフェースを作成できませんで"
 "した"
-
-#, c-format
-msgid "Failed to create mDNS client: %s"
-msgstr "mDNS クライアントの作成に失敗しました: %s"
 
 #, c-format
 msgid "Failed to create network from %s"
@@ -4574,10 +4495,6 @@ msgstr "マイグレーション後にドメインの永続化に失敗しまし
 #, c-format
 msgid "Failed to make domain persistent after migration: %s"
 msgstr "マイグレーション後にドメインの永続化に失敗しました: %s"
-
-#, c-format
-msgid "Failed to make filesystem of type '%s' on device '%s'"
-msgstr "'%s' 形式のファイルシステムをデバイス '%s' において作成に失敗しました"
 
 #, c-format
 msgid "Failed to make mount %s readonly"
@@ -5518,9 +5435,6 @@ msgstr ""
 msgid "Got invalid memory size %d"
 msgstr "無効なメモリー容量 %d が与えられました"
 
-msgid "Graphics password only supported for VNC"
-msgstr "グラフィックスパスワードは VNC に対してのみサポートされます"
-
 msgid ""
 "Grouped commands:\n"
 "\n"
@@ -5640,10 +5554,6 @@ msgstr "ヒューマンモニターコマンドが %s を実行するために�
 
 msgid "Hybrid-Suspend"
 msgstr "ハイブリッドサスペンド"
-
-#, c-format
-msgid "HyperV feature '%s' should not have a value"
-msgstr "HyperV の機能 '%s' には値を持たせないでください"
 
 msgid "HyperV spinlock retry count must be at least 4095"
 msgstr "HyperV spinlock retry count は 4095 以内である必要があります"
@@ -5831,10 +5741,6 @@ msgstr "シグナルにより割り込まれました"
 #, c-format
 msgid "Invalid \"nativeMode='%s'\" in vlan <tag> element"
 msgstr "VLAN <tag> 要素に \"nativeMode='%s'\" がありません"
-
-#, c-format
-msgid "Invalid %s transport type '%s'"
-msgstr "無効な %s 転送形式 '%s'"
 
 msgid "Invalid BIOS 'date' format"
 msgstr "無効な BIOS 'date' 形式"
@@ -6197,10 +6103,6 @@ msgstr "先行の無効な正規表現"
 msgid "Invalid prefix or netmask for '%s'"
 msgstr "'%s' に対する無効なプレフィックスまたはネットマスク"
 
-#, c-format
-msgid "Invalid query parameter '%s'"
-msgstr "無効な問い合わせパラメーター '%s'"
-
 msgid "Invalid range end"
 msgstr "範囲の終了が無効です"
 
@@ -6225,13 +6127,6 @@ msgstr "無効なセキュリティレベル %s"
 #, c-format
 msgid "Invalid security label '%s'"
 msgstr "無効なセキュリティラベル '%s'"
-
-msgid "Invalid snapshot"
-msgstr "無効なスナップショット"
-
-#, c-format
-msgid "Invalid snapshot: %s"
-msgstr "無効なスナップショット: %s"
 
 #, c-format
 msgid ""
@@ -6271,10 +6166,6 @@ msgid ""
 msgstr ""
 "MAC アドレス '%s' をネットワーク '%s' の静的な IPv6 ホスト定義において指定す"
 "ることは無効です"
-
-#, c-format
-msgid "Invalid transport/scheme '%s'"
-msgstr "無効な転送/スキーマ '%s'"
 
 #, c-format
 msgid "Invalid type '%s' requested for parameter '%s', actual type is '%s'"
@@ -6352,9 +6243,6 @@ msgstr "ドメインのマウント済みファイルシステムにおける fs
 #, c-format
 msgid "Iterator ID exceeds maximum ID of %u"
 msgstr "反復子 ID が最大 ID %u を超えています"
-
-msgid "JSON monitor is required"
-msgstr "JSON モニターが必要です"
 
 #, c-format
 msgid "Job submission failed on interface '%s'"
@@ -6518,9 +6406,6 @@ msgstr "不正な形式のデバイス値 '%s'"
 #, c-format
 msgid "Malformed lease target offset %s"
 msgstr "不正な形式のターゲットオフセット %s"
-
-msgid "Malformed mdnsGroupName data in JSON document"
-msgstr "JSON ドキュメントに不正な形式の mdnsGroupName データがあります"
 
 #, c-format
 msgid "Malformed nbd port '%s'"
@@ -7391,10 +7276,6 @@ msgstr "マスター USB コントローラーが指定されていません"
 msgid "No match"
 msgstr "一致しません"
 
-#, c-format
-msgid "No monitor connection for pid %u"
-msgstr "PID %u のモニター接続がありません"
-
 msgid "No more available PCI slots"
 msgstr "利用可能な PCI スロットがありません"
 
@@ -7745,9 +7626,6 @@ msgid "PCI address 0:0:2.0 is in use, QEMU needs it for primary video"
 msgstr ""
 "PCI アドレス 0:0:2.0 が使用中です、QEMU はプライマリービデオのためにそれが必"
 "要です"
-
-msgid "PCI address Formatting failed"
-msgstr "PCI アドレスの初期化に失敗しました"
 
 #, c-format
 msgid ""
@@ -10360,10 +10238,6 @@ msgstr "パイプを作成できません"
 msgid "Unable to mark loop device as autoclear"
 msgstr "loop デバイスを自動削除として印をつけられません"
 
-#, c-format
-msgid "Unable to migrate %s to %s"
-msgstr "%s を %s にマイグレーションできません"
-
 msgid "Unable to modify live devices"
 msgstr "稼働中のデバイスを変更できません"
 
@@ -10583,10 +10457,6 @@ msgstr "%s に対して %s においてパーソナリティーを要求でき�
 #, c-format
 msgid "Unable to reset PCI device %s: %s"
 msgstr "PCI デバイス %s をリセットできません: %s"
-
-#, c-format
-msgid "Unable to resolve %s for pid %u"
-msgstr "%s を PID %u に対して解決できません"
 
 #, c-format
 msgid "Unable to resolve address '%s' service '%s': %s"
@@ -11059,9 +10929,6 @@ msgstr "不明なモードが指定されました"
 msgid "Unknown model type '%s'"
 msgstr "不明なモデルの種類 '%s'"
 
-msgid "Unknown poll response."
-msgstr "不明な投票反応"
-
 #, c-format
 msgid "Unknown pool adapter type '%s'"
 msgstr "不明なプールアダプター形式 '%s'"
@@ -11382,23 +11249,6 @@ msgstr "値 '%s' は %s として表現できません"
 #, c-format
 msgid "Value '%s' is out of %s range"
 msgstr "値 '%s' が %s の範囲外にあります"
-
-msgid "Value of cputune emulator_period must be in range [1000, 1000000]"
-msgstr ""
-"cputune emulator_period の値は [1000, 1000000] の範囲にある必要があります"
-
-msgid ""
-"Value of cputune emulator_quota must be in range [1000, 18446744073709551]"
-msgstr ""
-"cputune emulator_quota の値は [1000, 18446744073709551] の範囲にある必要があ"
-"ります"
-
-msgid "Value of cputune period must be in range [1000, 1000000]"
-msgstr "cputune period の値は [1000, 1000000] の範囲にある必要があります"
-
-msgid "Value of cputune quota must be in range [1000, 18446744073709551]"
-msgstr ""
-"cputune quota の値は [1000, 18446744073709551] の範囲にある必要があります"
 
 msgid "Variable value contains invalid character"
 msgstr "変数の値が無効な文字を含みます"
@@ -11726,14 +11576,6 @@ msgstr ""
 "ネットワーク '%s' に接続しているインターフェースは VLAN タグが必要です。しか"
 "し、この形式のネットワークに対してサポートされません。"
 
-#, c-format
-msgid ""
-"an interface of type '%s' is requesting a vlan tag, but that is not "
-"supported for this type of connection"
-msgstr ""
-"'%s' 形式のインターフェースは VLAN タグが必要です。しかし、この形式のネット"
-"ワークに対してサポートされません。"
-
 msgid "apparmor_parser exited with error"
 msgstr "apparmor_parser がエラー終了しました"
 
@@ -11864,9 +11706,6 @@ msgstr "ネットワークの自動起動"
 msgid "autostart a pool"
 msgstr "プールの自動起動"
 
-msgid "avahi not available at build time"
-msgstr "avahi はビルド時に利用可能ではありません"
-
 msgid "avoid file system cache when dumping"
 msgstr "ダンプ中のファイルシステムキャッシュの回避"
 
@@ -11914,9 +11753,6 @@ msgstr "blkio cgroup がマウントされていません"
 msgid "block"
 msgstr "ブロック"
 
-msgid "block copy is not supported with this QEMU binary"
-msgstr "ブロックコピーはこの QEMU バイナリーでサポートされていません"
-
 msgid "block copy still active"
 msgstr "ブロックコピーがまだ動作中です"
 
@@ -11926,9 +11762,6 @@ msgstr "ブロックコピーがまだ動作中です: %s"
 
 msgid "block device"
 msgstr "ブロックデバイス"
-
-msgid "block jobs not supported with this QEMU binary"
-msgstr "ブロックジョブはこの QEMU バイナリーでサポートされません"
 
 #, c-format
 msgid "block peek request too large for remote protocol, %zi > %d"
@@ -12001,14 +11834,6 @@ msgstr "ブリッジが '%s' 無効なプレフィックスを持ちます"
 
 msgid "bridge an existing network device"
 msgstr "既存のネットワークデバイスをブリッジします。"
-
-#, c-format
-msgid ""
-"bridge delay/stp options only allowed in route, nat, and isolated mode, not "
-"in %s (network '%s')"
-msgstr ""
-"ブリッジの delay/stp オプションのみが、route, nat, および isolated モードにお"
-"いて許可されます、 %s (ネットワーク '%s') において許可されません"
 
 msgid "bridge interface misses the bridge element"
 msgstr "bridge インターフェイスに bridge 要素がありません"
@@ -12131,13 +11956,6 @@ msgid "cannot block signals"
 msgstr "信号をブロックできません"
 
 #, c-format
-msgid ""
-"cannot change between disk snapshot and system checkpoint in snapshot %s"
-msgstr ""
-"スナップショット %s においてディスクスナップショットとシステムチェックポイン"
-"トの間で変更できません"
-
-#, c-format
 msgid "cannot change between online and offline snapshot state in snapshot %s"
 msgstr ""
 "スナップショット %s においてスナップショットのオンライン状態とオフライン状態"
@@ -12195,9 +12013,6 @@ msgstr "ルートディレクトリーに変更できません: %s"
 #, c-format
 msgid "cannot change to uid to '%u'"
 msgstr "UID を '%u' に変更できません"
-
-msgid "cannot change vcpu count of this domain"
-msgstr "このドメインの仮想 CPU 数を変更できません"
 
 #, c-format
 msgid "cannot chmod '%s' to 0660"
@@ -12360,34 +12175,6 @@ msgstr "バイナリー %s を実行できません"
 msgid "cannot extend file '%s'"
 msgstr "ファイル '%s' を拡張できません"
 
-#, c-format
-msgid "cannot extract PCI device bus '%s'"
-msgstr "PCI デバイスのバス '%s' を抽出できません"
-
-#, c-format
-msgid "cannot extract PCI device function '%s'"
-msgstr "PCI デバイスのファンクション '%s' を抽出できません"
-
-#, c-format
-msgid "cannot extract PCI device slot '%s'"
-msgstr "PCI デバイスのスロット '%s' を抽出できません"
-
-#, c-format
-msgid "cannot extract USB device address '%s'"
-msgstr "USB デバイスのアドレス '%s' を抽出できません"
-
-#, c-format
-msgid "cannot extract USB device bus '%s'"
-msgstr "USB デバイスのバス '%s' を抽出できません"
-
-#, c-format
-msgid "cannot extract USB device product '%s'"
-msgstr "USB デバイスのプロダクト '%s' を抽出できません"
-
-#, c-format
-msgid "cannot extract USB device vendor '%s'"
-msgstr "USB デバイスのベンダー '%s' を抽出できません"
-
 msgid "cannot extract blkiotune nodes"
 msgstr "blkiotune ノードを抽出できません"
 
@@ -12413,10 +12200,6 @@ msgstr "ファイル '%s' を充填できません"
 #, c-format
 msgid "cannot find CPU map for %s architecture"
 msgstr "%s アーキテクチャーの CPU マップを見つけられません"
-
-#, c-format
-msgid "cannot find NIC definition for vlan %d"
-msgstr "vlan %d 用の NIC 定義が見付かりません"
 
 #, c-format
 msgid "cannot find architecture %s"
@@ -12445,10 +12228,6 @@ msgstr "新しく作成されたボリューム '%s' を見つけられません
 
 msgid "cannot find pid in vmware log file"
 msgstr "VMware ログファイルにプロセス ID を見つけられません"
-
-#, c-format
-msgid "cannot find port number in character device %s"
-msgstr "キャラクターデバイス %s にポート番号が見つかりません"
 
 #, c-format
 msgid "cannot find statistics for device '%s'"
@@ -12526,10 +12305,6 @@ msgstr "一時ドメインのスナップショット後に停止できません
 msgid "cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"
 msgstr ""
 "マルチファンクション PCI デバイスを活性抜線できません: %.4x:%.2x:%.2x.%.1x"
-
-#, c-format
-msgid "cannot hot unplug multifunction PCI device: %s"
-msgstr "マルチファンクション PCI デバイスを活性抜線できません: %s"
 
 #, c-format
 msgid "cannot initialize cert object: %s"
@@ -12671,21 +12446,6 @@ msgid "cannot parse CPU data"
 msgstr "CPU データを構文解析できません"
 
 #, c-format
-msgid "cannot parse CPU topology '%s'"
-msgstr "CPU topology '%s' を構文解析できません"
-
-msgid "cannot parse HyperV spinlock retry count"
-msgstr "HyperV spinlock retry count を構文解析できません"
-
-#, c-format
-msgid "cannot parse NIC definition '%s'"
-msgstr "NIC 定義 '%s' を構文解析できません"
-
-#, c-format
-msgid "cannot parse NIC vlan in '%s'"
-msgstr "'%s' において NIC vlan を構文解析できません"
-
-#, c-format
 msgid "cannot parse PCI bus '%s'"
 msgstr "PCI bus '%s' を構文解析できません"
 
@@ -12702,28 +12462,12 @@ msgid "cannot parse PCI slot '%s'"
 msgstr "PCI slot '%s' を構文解析できません"
 
 #, c-format
-msgid "cannot parse UUID '%s'"
-msgstr "UUID '%s' を構文解析できません"
-
-#, c-format
-msgid "cannot parse VNC WebSocket port '%s'"
-msgstr "VNC WebSocket ポート '%s' を構文解析できません"
-
-#, c-format
-msgid "cannot parse VNC port '%s'"
-msgstr "VNC port '%s' を構文解析できません"
-
-#, c-format
 msgid "cannot parse bus %s"
 msgstr "bus %s を構文解析できません"
 
 #, c-format
 msgid "cannot parse bus '%s'"
 msgstr "バス '%s' を構文解析できません"
-
-#, c-format
-msgid "cannot parse cylinders value'%s'"
-msgstr "シリンダー値 '%s' を構文解析できません"
 
 #, c-format
 msgid "cannot parse device %s"
@@ -12735,31 +12479,11 @@ msgstr "デバイス終了の場所を構文解析できません"
 msgid "cannot parse device start location"
 msgstr "デバイス開始の場所を構文解析できません"
 
-#, c-format
-msgid "cannot parse drive bus '%s'"
-msgstr "drive bus '%s' を構文解析できません"
-
-#, c-format
-msgid "cannot parse drive index '%s'"
-msgstr "drive index '%s' を構文解析できません"
-
-#, c-format
-msgid "cannot parse drive unit '%s'"
-msgstr "drive unit '%s' を構文解析できません"
-
-#, c-format
-msgid "cannot parse heads value'%s'"
-msgstr "ヘッド値 '%s' を構文解析できません"
-
 msgid "cannot parse instanceid parameter as a uuid"
 msgstr "UUID として instanceid パラメーターを構文解析できません"
 
 msgid "cannot parse interfaceid parameter as a uuid"
 msgstr "interfaceid パラメーターを UUID として構文解析できません"
-
-#, c-format
-msgid "cannot parse io mode '%s'"
-msgstr "io mode '%s' を構文解析できません"
 
 #, c-format
 msgid "cannot parse json %s: %s"
@@ -12768,14 +12492,6 @@ msgstr "JSON %s を構文解析できません: %s"
 #, c-format
 msgid "cannot parse json %s: unterminated string/map/array"
 msgstr "JSON %s を構文解析できません: 未終了の string/map/array"
-
-#, c-format
-msgid "cannot parse nbd filename '%s'"
-msgstr "nbd filename '%s' を構文解析できません"
-
-#, c-format
-msgid "cannot parse nvram's address '%s'"
-msgstr "nvram のアドレス '%s' を構文解析できません"
 
 #, c-format
 msgid "cannot parse partition number from target '%s'"
@@ -12797,21 +12513,6 @@ msgstr "product %s を構文解析できません"
 #, c-format
 msgid "cannot parse rdp port %s"
 msgstr "rdp port %s を構文解析できません"
-
-msgid "cannot parse reboot-timeout value"
-msgstr "reboot-timeout 値を構文解析できません"
-
-#, c-format
-msgid "cannot parse sectors value'%s'"
-msgstr "セクター値 '%s' を構文解析できません"
-
-#, c-format
-msgid "cannot parse sheepdog filename '%s'"
-msgstr "sheepdog filename '%s' を構文解析できません"
-
-#, c-format
-msgid "cannot parse sndbuf size in '%s'"
-msgstr "'%s' において sndbuf size を構文解析できません"
 
 #, c-format
 msgid "cannot parse spice port %s"
@@ -12859,10 +12560,6 @@ msgstr "video heads '%s' を構文解析できません"
 #, c-format
 msgid "cannot parse video ram '%s'"
 msgstr "video ram '%s' を構文解析できません"
-
-#, c-format
-msgid "cannot parse vlan in '%s'"
-msgstr "'%s' において vlan を構文解析できません"
 
 #, c-format
 msgid "cannot parse vnc WebSocket port %s"
@@ -13338,9 +13035,6 @@ msgstr "設定ファイルの構文エラー"
 msgid "configuration file syntax error: %s"
 msgstr "設定ファイルの構文エラー: %s"
 
-msgid "conflicting occurrences of kvmclock feature"
-msgstr "kvmclock 機能の発生が競合しています"
-
 msgid "connect to the guest console"
 msgstr "ゲストのコンソールへの接続"
 
@@ -13597,10 +13291,6 @@ msgstr "ドメイン %s の VirtualBox セッションを開けませんでし�
 #, c-format
 msgid "could not open input path '%s'"
 msgstr "入力パス '%s' を開けませんでした"
-
-#, c-format
-msgid "could not parse CEPH_ARGS '%s'"
-msgstr "CEPH_ARGS '%s' を構文解析できません"
 
 msgid "could not parse XML"
 msgstr "XML を構文解析できませんでした"
@@ -13989,9 +13679,6 @@ msgid "device alias not found: cannot set link state to down"
 msgstr ""
 "デバイスのエイリアスが見つかりません: リンクステートをダウンに設定できません"
 
-msgid "device cannot be detached without a device alias"
-msgstr "デバイスエイリアスのないデバイスを切断できません"
-
 msgid "device cannot be detached: device is busy"
 msgstr "デバイスを切断できませんでした: デバイスがビジーです"
 
@@ -14026,14 +13713,6 @@ msgstr "デバイス形式 '%s' は更新できません"
 #, c-format
 msgid "device type '%s' cannot hot unplugged"
 msgstr "ディスク形式 '%s' は活性抜線できません。"
-
-#, c-format
-msgid "device with '%s' address cannot be detached"
-msgstr "'%s' アドレスを持つデバイスは切断できません"
-
-#, c-format
-msgid "device with invalid '%s' address cannot be detached"
-msgstr "無効な '%s' アドレスを持つデバイスは切断できません"
 
 msgid "devices cgroup isn't mounted"
 msgstr "デバイス cgroup がマウントされていません"
@@ -15144,14 +14823,6 @@ msgstr "秘密鍵のパスフレーズの取得に失敗しました: コール�
 msgid "failed to rollback transaction: %s%s%s"
 msgstr "トランザクションのロールバックを失敗しました: %s%s%s"
 
-#, c-format
-msgid "failed to run '%s --help': %s"
-msgstr "'%s --help' の実行に失敗しました: %s"
-
-#, c-format
-msgid "failed to run '%s --version': %s"
-msgstr "'%s --version' の実行に失敗しました: %s"
-
 msgid "failed to run apparmor_parser"
 msgstr "apparmor_parser の実行に失敗しました"
 
@@ -15341,10 +15012,6 @@ msgstr "外部スナップショットによるフィルター"
 msgid "filter by internal snapshots"
 msgstr "内部スナップショットによるフィルター"
 
-msgid "filter by snapshots taken while active (system checkpoints)"
-msgstr ""
-"稼働中に撮られたスナップショットによるフィルター (システム・チェックポイント)"
-
 msgid "filter by snapshots taken while inactive"
 msgstr "休止状態で撮られたスナップショットによるフィルター"
 
@@ -15375,13 +15042,6 @@ msgid "flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"
 msgstr ""
 "flags パラメーターは VIR_MEMORY_VIRTUAL または VIR_MEMORY_PHYSICAL でなければ"
 "いけません"
-
-msgid "floor attribute is supported only for interfaces of type network"
-msgstr ""
-"floor 属性はネットワーク形式のインターフェースに対してのみサポートされます"
-
-msgid "floor attribute isn't supported for network's bandwidth yet"
-msgstr "floor 属性はまだネットワークの帯域に対して実装されていません"
 
 #, c-format
 msgid "for Linux >= %d.%d.%d"
@@ -15424,10 +15084,6 @@ msgstr "%s %s のフォーマッターがエラーを報告しました"
 
 msgid "forward interface entries cannot be modified, only added or deleted"
 msgstr "転送インターフェース項目は変更できません、追加または削除のみできます"
-
-#, c-format
-msgid "found no rbd hosts in CEPH_ARGS '%s'"
-msgstr "CEPH_ARGS '%s' に rbd ホストがありません"
 
 msgid "from snapshot"
 msgstr "スナップショットから"
@@ -15987,10 +15643,6 @@ msgstr "無効な接続ポインター"
 msgid "invalid connection pointer in %s"
 msgstr "%s で無効な接続ポインターです"
 
-#, c-format
-msgid "invalid device name '%s'"
-msgstr "無効なデバイス名 '%s'"
-
 msgid "invalid domain pointer in"
 msgstr "無効なドメインポインター"
 
@@ -16077,10 +15729,6 @@ msgstr "無効な論理ブロック容量 '%s'"
 
 msgid "invalid mode"
 msgstr "無効なモード"
-
-#, c-format
-msgid "invalid name '%s' for iSCSI disk"
-msgstr "iSCSI ディスクの無効な名前 '%s'"
 
 #, c-format
 msgid "invalid netfs path (ends in /): %s"
@@ -16247,14 +15895,6 @@ msgstr "無効な UUID %s"
 #, c-format
 msgid "invalid value %d"
 msgstr "無効な値 %d"
-
-#, c-format
-msgid "invalid value for disable_s3 parameter: '%s'"
-msgstr "無効な disable_s3 パラメーターの値: '%s'"
-
-#, c-format
-msgid "invalid value for disable_s4 parameter: '%s'"
-msgstr "無効な disable_s4 パラメーターの値: '%s'"
 
 msgid "invalid value for rebootTimeout, must be in range [-1,65535]"
 msgstr ""
@@ -16614,16 +16254,8 @@ msgstr "デバイス '%s' の動的接続はサポートされません"
 msgid "live detach of device '%s' is not supported"
 msgstr "デバイス '%s' の動的切断はサポートされません"
 
-msgid "live disk snapshot not supported with this QEMU binary"
-msgstr ""
-"ライブディスクスナップショットはこの QEMU バイナリーでサポートされません"
-
 msgid "live migration"
 msgstr "ライブマイグレーション"
-
-msgid "live snapshot creation is supported only with external checkpoints"
-msgstr ""
-"ライブスナップショットの作成は外部チェックポイントのみでサポートされます"
 
 #, c-format
 msgid "live update of device '%s' is not supported"
@@ -16809,9 +16441,6 @@ msgstr "memory 属性: [file=]name[,snapshot=type]"
 msgid "memory filename '%s' requires external snapshot"
 msgstr "メモリーのファイル名 '%s' は外部スナップショットが必要です"
 
-msgid "memory locking not supported by QEMU binary"
-msgstr "メモリーロックはこの QEMU バイナリーによりサポートされません"
-
 #, c-format
 msgid "memory peek request too large for remote protocol, %zi > %d"
 msgstr "memory peek 要求はリモートプロトコルには大きすぎます %zi > %d"
@@ -16943,9 +16572,6 @@ msgstr "RAM ファイルシステムに対して 'usage' 属性がありませ�
 msgid "missing EGD backend type"
 msgstr "EGD バックエンド形式がありません"
 
-msgid "missing HyperV spinlock retry count"
-msgstr "HyperV spinlock 再試行回数がありません"
-
 msgid "missing IFLA_VF_INFO in netlink response"
 msgstr "netlink 応答に IFLA_VF_INFO がありません"
 
@@ -16976,10 +16602,6 @@ msgstr "TPM デバイスのバックエンドがありません"
 
 msgid "missing TPM device backend type"
 msgstr "TPM デバイスのバックエンド形式がありません"
-
-#, c-format
-msgid "missing VNC port number in '%s'"
-msgstr "'%s' に VNC ポート番号がありません"
 
 #, c-format
 msgid "missing address type in network %s"
@@ -17053,10 +16675,6 @@ msgstr "ディスク %s に対して既存のファイルがありません: %s"
 msgid "missing feature name"
 msgstr "機能名がありません"
 
-#, c-format
-msgid "missing file parameter in drive '%s'"
-msgstr "ドライブ '%s' にファイルパラメーターがありません"
-
 msgid "missing filter parameter table"
 msgstr "フィルターパラメーター表がありません"
 
@@ -17075,10 +16693,6 @@ msgstr "マイグレーションデータに hostuuid 要素がありません"
 
 msgid "missing hub device type"
 msgstr "ハブデバイスの形式がありません"
-
-#, c-format
-msgid "missing index/unit/bus parameter in drive '%s'"
-msgstr "ドライブ '%s' においてインデックス/ユニット/バスがありません"
 
 msgid "missing input device type"
 msgstr "入力デバイスタイプがありません"
@@ -17277,10 +16891,6 @@ msgstr "/node/auth/user 項目にユーザー名がありません"
 msgid "missing uuid element in migration data"
 msgstr "マイグレーションのデータに uuid 要素がありません"
 
-#, c-format
-msgid "missing value for %s argument"
-msgstr "%s 引数の値がありません"
-
 msgid "missing vendor"
 msgstr "ベンダーがありません"
 
@@ -17289,9 +16899,6 @@ msgstr "ビデオモデルが無いためデフォルトを決定できません
 
 msgid "missing vlan tag data"
 msgstr "VLAN タグデータがありません"
-
-msgid "missing vnc sharing policy"
-msgstr "VNC 共有ポリシーがありません"
 
 msgid "missing volume name element"
 msgstr "ボリュームの name 要素がありません"
@@ -17479,20 +17086,6 @@ msgid "network '%s' already exists with uuid %s"
 msgstr "ネットワーク '%s' はすでに UUID %s を用いて存在します"
 
 #, c-format
-msgid "network '%s' claims dev='%s' is already in use by a different domain"
-msgstr ""
-"ネットワーク '%s' は dev='%s' がすでに他のドメインにより使用中であると宣言さ"
-"れました"
-
-#, c-format
-msgid ""
-"network '%s' claims the PCI device at domain=%d bus=%d slot=%d function=%d "
-"is already in use by a different domain"
-msgstr ""
-"ネットワーク '%s' が ドメイン=%d バス=%d スロット=%d ファンクション=%d を要求"
-"していますが、すでに他のドメインにより使用されています"
-
-#, c-format
 msgid "network '%s' does not have a bridge name."
 msgstr "ネットワーク '%s' に bridge 名がありません"
 
@@ -17542,22 +17135,6 @@ msgid ""
 msgstr ""
 "ネットワーク '%s' が直接モードを使用していますが、転送デバイスおよびインター"
 "フェースプールがありません"
-
-#, c-format
-msgid ""
-"network '%s' uses a direct or hostdev mode, but has no forward dev and no "
-"interface pool"
-msgstr ""
-"ネットワーク '%s' が direct または hostdev モードを使用していますが、転送デバ"
-"イスおよびインターフェースプールがありません"
-
-#, c-format
-msgid ""
-"network '%s' uses a direct/hostdev mode, but has no forward dev and no "
-"interface pool"
-msgstr ""
-"ネットワーク '%s' が direct または hostdev モードを使用していますが、転送デバ"
-"イスおよびインターフェースプールがありません"
 
 #, c-format
 msgid "network filter config filename '%s' does not match name '%s'"
@@ -17800,9 +17377,6 @@ msgstr "UUID '%s' に一致するドメインがありません"
 #, c-format
 msgid "no domain with matching uuid '%s' (%s)"
 msgstr "UUID '%s' (%s) と一致するドメインが"
-
-msgid "no emulator path found"
-msgstr "エミュレーターのパスが見つかりません"
 
 msgid "no error"
 msgstr "エラーがありません"
@@ -18059,10 +17633,6 @@ msgstr "PPC64 では一つの nvram デバイスのみがサポートされま�
 msgid "nwfilter is in use"
 msgstr "ネットワークフィルターは使用中です"
 
-#, c-format
-msgid "object size %zu of %s is smaller than parent class %zu"
-msgstr "オブジェクト容量 %zu (%s) は親クラス %zu より小さい必要があります"
-
 msgid "occupied"
 msgstr "占有済み"
 
@@ -18086,9 +17656,6 @@ msgstr "オフラインマイグレーションが永続フラグの設定を指
 
 msgid "ok"
 msgstr "ok"
-
-msgid "online commit not supported with this QEMU binary"
-msgstr "オンラインコミットはこの QEMU バイナリーでサポートされません"
 
 msgid "only a single TPM device is supported"
 msgstr "一つの TPM デバイスのみがサポートされます"
@@ -18364,9 +17931,6 @@ msgstr "ディスク '%s' をピボットするには稼働中のコピージョ
 
 msgid "pmsuspended"
 msgstr "サスペンドしました"
-
-msgid "poll error"
-msgstr "ポーリングエラー"
 
 msgid "poll failed in migration tunnel"
 msgstr "マイグレーショントンネルにおいてポーリングが失敗しました"
@@ -18667,9 +18231,6 @@ msgstr "USB ディスクのみがリムーバブルをサポートします"
 
 msgid "remove all associated storage volumes (use with caution)"
 msgstr "すべての関連するストレージボリュームの削除（使用注意）"
-
-msgid "remove all domain snapshot metadata, if inactive"
-msgstr "休止状態なら、ドメインのスナップショットの管理情報をすべて削除"
 
 msgid ""
 "remove associated storage volumes (comma separated list of targets or source "
@@ -19429,15 +18990,6 @@ msgstr "標準のロック空間がすでに存在します"
 msgid "the domain does not have a current snapshot"
 msgstr "ドメインはカレントスナップショットを持ちません"
 
-msgid "the interface uses a direct mode, but has no source dev"
-msgstr ""
-"インターフェースが直接モードを使用していますが、ソースデバイスがありません"
-
-msgid "the interface uses a hostdev mode, but has no hostdev"
-msgstr ""
-"インターフェースがホストデバイスモードを使用していますが、ホストデバイスがあ"
-"りません"
-
 msgid "the key code"
 msgstr "キーコード"
 
@@ -19686,10 +19238,6 @@ msgstr "プールのタイプ"
 
 msgid "type of update (add-first, add-last (add), delete, or modify)"
 msgstr "更新の種類 (add-first, add-last (add), delete, または modify)"
-
-#, c-format
-msgid "udev scan devices returned %d"
-msgstr "udev のデバイススキャンが %d を返しました"
 
 msgid "udev_monitor_new_from_netlink returned NULL"
 msgstr "udev_monitor_new_from_netlink が NULL を返しました"
@@ -20107,10 +19655,6 @@ msgid "unexpected domain %s already exists"
 msgstr "予期しないドメイン %s がすでに存在します"
 
 #, c-format
-msgid "unexpected domain snapshot %s already exists"
-msgstr "予期しないドメインスナップショット %s がすでに存在します"
-
-#, c-format
 msgid "unexpected domain type %d"
 msgstr "予期しないドメイン形式 %d"
 
@@ -20126,10 +19670,6 @@ msgstr "%s に予期しない空のキーワード"
 
 msgid "unexpected encryption format"
 msgstr "予期しない暗号化フォーマット"
-
-#, c-format
-msgid "unexpected feature %zu"
-msgstr "予期しない機能 %zu"
 
 #, c-format
 msgid "unexpected feature '%s'"
@@ -20360,20 +19900,12 @@ msgstr "不明な %s アクション: %s"
 msgid "unknown CPU register '%s'"
 msgstr "不明な CPU レジスター '%s'"
 
-#, c-format
-msgid "unknown CPU syntax '%s'"
-msgstr "不明な CPU 構文 '%s'"
-
 msgid "unknown OS type"
 msgstr "不明な OS タイプ"
 
 #, c-format
 msgid "unknown OS type %s"
 msgstr "不明な OS タイプ %s"
-
-#, c-format
-msgid "unknown PCI device syntax '%s'"
-msgstr "不明な PCI デバイス構文 '%s'"
 
 #, c-format
 msgid "unknown PM state value %s"
@@ -20390,10 +19922,6 @@ msgstr "不明な RNG モデル '%s'"
 #, c-format
 msgid "unknown SCSI host capability type '%s' for '%s'"
 msgstr "不明な SCSI ホストケイパビリティ形式 '%s' が '%s' に対してあります"
-
-#, c-format
-msgid "unknown USB device syntax '%s'"
-msgstr "不明な USB デバイス構文 '%s'"
 
 #, c-format
 msgid "unknown accessmode '%s'"
@@ -20442,10 +19970,6 @@ msgstr "不明なケイパビリティ形式 '%d' が %s に対してありま�
 #, c-format
 msgid "unknown capability type '%s'"
 msgstr "不明なケイパビリティ形式 %s"
-
-#, c-format
-msgid "unknown character device syntax %s"
-msgstr "不明なキャラクターデバイスの構文 %s"
 
 #, c-format
 msgid "unknown character device type: %s"
@@ -20708,10 +20232,6 @@ msgid "unknown mii bonding carrier %s"
 msgstr "不明な MII ボンディングキャリアー %s"
 
 #, c-format
-msgid "unknown mirror format value '%s'"
-msgstr "不明なミラー形式値 '%s'"
-
-#, c-format
 msgid "unknown mouse mode value '%s'"
 msgstr "不明な mouse mode 値 '%s'"
 
@@ -20907,16 +20427,8 @@ msgid "unknown usb source type '%s'"
 msgstr "不明な USB ソース形式 '%s'"
 
 #, c-format
-msgid "unknown video adapter type '%s'"
-msgstr "不明なビデオアダプター形式 '%s' "
-
-#, c-format
 msgid "unknown video model '%s'"
 msgstr "不明なビデオモデル '%s'"
-
-#, c-format
-msgid "unknown virt type in domain definition '%d'"
-msgstr "ドメイン定義 '%d' に不明な仮想化形式があります"
 
 #, c-format
 msgid "unknown virtualport type %s"
@@ -20984,10 +20496,6 @@ msgid "unrecognized command name '%s'"
 msgstr "認識できないコマンド名 '%s'"
 
 #, c-format
-msgid "unrecognized driver name value %d  in network '%s'"
-msgstr "認識されないドライバー名の値 %d がネットワーク '%s' にあります"
-
-#, c-format
 msgid "unrecognized network update command code %d"
 msgstr "認識できないネットワーク更新コマンドコード %d"
 
@@ -20997,10 +20505,6 @@ msgstr "認識できないセクション名 '%s'"
 
 msgid "unspecified error"
 msgstr "原因不明のエラー"
-
-#, c-format
-msgid "unsupported HyperV Enlightenment feature '%s'"
-msgstr "サポートされない Hyper-V エンライト機能 '%s'"
 
 #, c-format
 msgid "unsupported HyperV Enlightenment feature: %s"
@@ -21313,9 +20817,6 @@ msgstr "virDirCreate は WIN32 に対して実装されません"
 
 msgid "virDomainGetXMLDesc with secure flag"
 msgstr "セキュアフラグのある virDomainGetXMLDesc"
-
-msgid "virDomainSaveImageGetXMLDesc with secure flag"
-msgstr "secure フラグを持つ virDomainSaveImageGetXMLDesc"
 
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "secure フラグのある virDomainSnapshotGetXMLDesc"

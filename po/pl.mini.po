@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"POT-Creation-Date: 2019-07-01 18:50+0100\n"
 "PO-Revision-Date: 2016-09-16 11:27+0000\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish (http://www.transifex.com/projects/p/fedora/language/"
@@ -325,9 +325,6 @@ msgstr "Buduje podaną pulę."
 msgid "Bus %s too big for destination"
 msgstr "Magistrala %s jest za duża dla celu"
 
-msgid "CEPH_ARGS was set without an rbd disk"
-msgstr "ustawiono CEPH_ARGS bez dysku rbd"
-
 msgid "CPU Affinity:"
 msgstr "Pokrewieństwo procesorów:"
 
@@ -610,12 +607,6 @@ msgstr "Zrzuca core domeny."
 
 msgid "Core(s) per socket:"
 msgstr "Rdzeni na gniazdo:"
-
-msgid "Could not add variable 'IP' to hashmap"
-msgstr "Nie można dodać zmiennej „IP” do mapy skrótów"
-
-msgid "Could not add variable 'MAC' to hashmap"
-msgstr "Nie można dodać zmiennej „MAC” do mapy skrótów"
 
 #, c-format
 msgid "Could not assign address to disk '%s'"
@@ -1360,9 +1351,6 @@ msgstr "Modyfikuje konfigurację XML dla fizycznego interfejsu gospodarza."
 msgid "Edit the XML configuration for a storage pool."
 msgstr "Modyfikuje konfigurację XML dla puli pamięci masowej."
 
-msgid "Empty qemu environment name specified"
-msgstr "Podano pustą nazwę środowiska QEMU"
-
 msgid "Enabled"
 msgstr "Włączone"
 
@@ -1514,14 +1502,6 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Expecting VMX entry 'sched.cpu.affinity' to contain at least as many values "
-"as 'numvcpus' (%lld) but found only %d value(s)"
-msgstr ""
-"Oczekiwano, że wpis „sched.cpu.affinity” VMX zawiera co najmniej tak wiele "
-"wartości co „numvcpus” (%lld), ale odnaleziono tylko %d wartości"
-
-#, c-format
-msgid ""
 "Expecting domain XML attribute 'arch' of entry 'os/type' to be 'i686' or "
 "'x86_64' but found '%s'"
 msgstr ""
@@ -1589,9 +1569,6 @@ msgstr "Oczekiwano, że typ rozpoczyna się od „ArrayOf”, ale odnaleziono �
 #, c-format
 msgid "Expecting virt type to be '%s' but found '%s'"
 msgstr "Oczekiwano, że typ wirtualizacji to „%s”, ale odnaleziono „%s”"
-
-msgid "Expiry of passwords is not supported"
-msgstr "Wygasanie haseł jest nieobsługiwane"
 
 #, c-format
 msgid "FDC bus index %d out of [0] range"
@@ -2479,9 +2456,6 @@ msgstr ""
 msgid "Got invalid memory size %d"
 msgstr "Otrzymano nieprawidłowy rozmiar pamięci %d"
 
-msgid "Graphics password only supported for VNC"
-msgstr "Hasło grafiki jest obsługiwane tylko dla VNC"
-
 msgid ""
 "Grouped commands:\n"
 "\n"
@@ -2803,13 +2777,6 @@ msgstr "Nieprawidłowa etykieta bezpieczeństwa %s"
 #, c-format
 msgid "Invalid security label '%s'"
 msgstr "Nieprawidłowa etykieta bezpieczeństwa „%s”"
-
-msgid "Invalid snapshot"
-msgstr "Nieprawidłowa migawka"
-
-#, c-format
-msgid "Invalid snapshot: %s"
-msgstr "Nieprawidłowa migawka: %s"
 
 #, c-format
 msgid "Invalid state '%s' in domain snapshot XML"
@@ -4296,9 +4263,6 @@ msgstr "Podano nieznany interfejs <driver txmode='%s'>"
 msgid "Unknown model type '%s'"
 msgstr "Nieznany typ modelu „%s”"
 
-msgid "Unknown poll response."
-msgstr "Nieznana odpowiedź sondażu."
-
 #, c-format
 msgid "Unknown protocol '%s'"
 msgstr "Nieznany protokół „%s”"
@@ -4787,9 +4751,6 @@ msgstr "nie można zmienić na katalog roota"
 msgid "cannot change to root directory: %s"
 msgstr "nie można zmienić na katalog roota: %s"
 
-msgid "cannot change vcpu count of this domain"
-msgstr "nie można zmienić liczby wirtualnych procesorów tej domeny"
-
 #, c-format
 msgid "cannot chown %s to (%u, %u)"
 msgstr "nie można zmienić właściciela %s na (%u, %u)"
@@ -4909,44 +4870,12 @@ msgid "cannot extend file '%s'"
 msgstr "nie można rozszerzyć pliku „%s”"
 
 #, c-format
-msgid "cannot extract PCI device bus '%s'"
-msgstr "nie można wydobyć magistrali urządzenia PCI „%s”"
-
-#, c-format
-msgid "cannot extract PCI device function '%s'"
-msgstr "nie można wydobyć funkcji urządzenia PCI „%s”"
-
-#, c-format
-msgid "cannot extract PCI device slot '%s'"
-msgstr "nie można wydobyć gniazda urządzenia PCI „%s”"
-
-#, c-format
-msgid "cannot extract USB device address '%s'"
-msgstr "nie można wydobyć adresu urządzenia USB „%s”"
-
-#, c-format
-msgid "cannot extract USB device bus '%s'"
-msgstr "nie można wydobyć magistrali urządzenia USB „%s”"
-
-#, c-format
-msgid "cannot extract USB device product '%s'"
-msgstr "nie można wydobyć produktu urządzenia USB „%s”"
-
-#, c-format
-msgid "cannot extract USB device vendor '%s'"
-msgstr "nie można wydobyć producenta urządzenia USB „%s”"
-
-#, c-format
 msgid "cannot fill file '%s'"
 msgstr "nie można wypełnić pliku „%s”"
 
 #, c-format
 msgid "cannot find CPU map for %s architecture"
 msgstr "nie można odnaleźć mapy procesora dla architektury %s"
-
-#, c-format
-msgid "cannot find NIC definition for vlan %d"
-msgstr "nie można odnaleźć definicji NIC dla VLAN %d"
 
 #, c-format
 msgid "cannot find character device %s"
@@ -4958,10 +4887,6 @@ msgstr "nie można odnaleźć nowo utworzonego woluminu „%s”"
 
 msgid "cannot find pid in vmware log file"
 msgstr "nie można odnaleźć PID w pliku dziennika vmware"
-
-#, c-format
-msgid "cannot find port number in character device %s"
-msgstr "nie można odnaleźć numeru portu w urządzeniu znakowym %s"
 
 #, c-format
 msgid "cannot find statistics for device '%s'"
@@ -5059,18 +4984,6 @@ msgid "cannot open volume '%s'"
 msgstr "nie można otworzyć woluminu „%s”"
 
 #, c-format
-msgid "cannot parse CPU topology '%s'"
-msgstr "nie można przetworzyć topologii procesora „%s”"
-
-#, c-format
-msgid "cannot parse NIC definition '%s'"
-msgstr "nie można przetworzyć funkcji NIC „%s”"
-
-#, c-format
-msgid "cannot parse NIC vlan in '%s'"
-msgstr "nie można przetworzyć VLAN NIC w „%s”"
-
-#, c-format
 msgid "cannot parse PCI bus '%s'"
 msgstr "nie można przetworzyć magistrali PCI „%s”"
 
@@ -5087,14 +5000,6 @@ msgid "cannot parse PCI slot '%s'"
 msgstr "nie można przetworzyć gniazda PCI „%s”"
 
 #, c-format
-msgid "cannot parse UUID '%s'"
-msgstr "nie można przetworzyć UUID „%s”"
-
-#, c-format
-msgid "cannot parse VNC port '%s'"
-msgstr "nie można przetworzyć portu VNC „%s”"
-
-#, c-format
 msgid "cannot parse bus %s"
 msgstr "nie można przetworzyć magistrali %s"
 
@@ -5108,32 +5013,12 @@ msgstr "nie można przetworzyć położenia końcowego urządzenia"
 msgid "cannot parse device start location"
 msgstr "nie można przetworzyć położenia początkowego urządzenia"
 
-#, c-format
-msgid "cannot parse drive bus '%s'"
-msgstr "nie można przetworzyć magistrali napędu „%s”"
-
-#, c-format
-msgid "cannot parse drive index '%s'"
-msgstr "nie można przetworzyć indeksu napędu „%s”"
-
-#, c-format
-msgid "cannot parse drive unit '%s'"
-msgstr "nie można przetworzyć jednostki napędu „%s”"
-
 msgid "cannot parse instanceid parameter as a uuid"
 msgstr "nie można przetworzyć parametru instanceid jako UUID"
 
 #, c-format
-msgid "cannot parse io mode '%s'"
-msgstr "nie można przetworzyć trybu wejścia/wyjścia „%s”"
-
-#, c-format
 msgid "cannot parse json %s: %s"
 msgstr "nie można przetworzyć JSON %s: %s"
-
-#, c-format
-msgid "cannot parse nbd filename '%s'"
-msgstr "nie można przetworzyć nazwy pliku nbd „%s”"
 
 #, c-format
 msgid "cannot parse partition number from target '%s'"
@@ -5155,14 +5040,6 @@ msgstr "nie można przetworzyć produktu %s"
 #, c-format
 msgid "cannot parse rdp port %s"
 msgstr "nie można przetworzyć portu RDP %s"
-
-#, c-format
-msgid "cannot parse sheepdog filename '%s'"
-msgstr "nie można przetworzyć nazwy pliku sheepdoga „%s”"
-
-#, c-format
-msgid "cannot parse sndbuf size in '%s'"
-msgstr "nie można przetworzyć rozmiaru sndbuf w „%s”"
 
 #, c-format
 msgid "cannot parse spice port %s"
@@ -5198,10 +5075,6 @@ msgstr "nie można przetworzyć głowic graficznych „%s”"
 #, c-format
 msgid "cannot parse video ram '%s'"
 msgstr "nie można przetworzyć graficznej pamięci RAM „%s”"
-
-#, c-format
-msgid "cannot parse vlan in '%s'"
-msgstr "nie można przetworzyć VLAN w „%s”"
 
 #, c-format
 msgid "cannot parse vnc port %s"
@@ -5707,10 +5580,6 @@ msgstr "nie można otworzyć sesji programu VirtualBox za pomocą domeny %s"
 msgid "could not open input path '%s'"
 msgstr "nie można otworzyć ścieżki wejścia „%s”"
 
-#, c-format
-msgid "could not parse CEPH_ARGS '%s'"
-msgstr "nie można przetworzyć CEPH_ARGS „%s”"
-
 msgid "could not parse XML"
 msgstr "nie można przetworzyć XML"
 
@@ -5895,9 +5764,6 @@ msgstr "szczegółowe informacje o wirtualnych procesorach domeny"
 #, c-format
 msgid "device %s is not a PCI device"
 msgstr "urządzenie %s nie jest urządzeniem PCI"
-
-msgid "device cannot be detached without a device alias"
-msgstr "nie można odłączyć urządzenia bez jego aliasu"
 
 msgid "device cannot be detached: device is busy"
 msgstr "nie można odłączyć urządzenia: urządzenie jest zajęte"
@@ -6577,10 +6443,6 @@ msgstr "format woluminu zapasowego, jeśli wykonywana jest migawka"
 msgid "formatter for %s %s reported error"
 msgstr "formatowanie dla %s %s zgłosiło błąd"
 
-#, c-format
-msgid "found no rbd hosts in CEPH_ARGS '%s'"
-msgstr "nie odnaleziono gospodarzy rbd w CEPH_ARGS „%s”"
-
 msgid "get device block stats for a domain"
 msgstr "uzyskuje statystyki urządzenia blokowego domeny"
 
@@ -6851,10 +6713,6 @@ msgstr "nieprawidłowy wskaźnik połączenia w"
 #, c-format
 msgid "invalid connection pointer in %s"
 msgstr "nieprawidłowy wskaźnik połączenia w %s"
-
-#, c-format
-msgid "invalid device name '%s'"
-msgstr "nieprawidłowa nazwa urządzenia „%s”"
 
 msgid "invalid domain pointer in"
 msgstr "nieprawidłowy wskaźnik domeny w"
@@ -7316,16 +7174,8 @@ msgstr "brak stanu domeny"
 msgid "missing domain type attribute"
 msgstr "brak atrybutu typu domeny"
 
-#, c-format
-msgid "missing file parameter in drive '%s'"
-msgstr "brak parametru pliku w napędzie „%s”"
-
 msgid "missing graphics device type"
 msgstr "brak typu urządzenia graficznego"
-
-#, c-format
-msgid "missing index/unit/bus parameter in drive '%s'"
-msgstr "brak parametru indeksu/jednostki/magistrali w napędzie „%s”"
 
 msgid "missing input device type"
 msgstr "brak typu urządzenia wejściowego"
@@ -7412,10 +7262,6 @@ msgstr "brak informacji docelowej dla urządzenia %s"
 
 msgid "missing timer name"
 msgstr "brak nazwy stopera"
-
-#, c-format
-msgid "missing value for %s argument"
-msgstr "brak wartości dla parametru %s"
 
 msgid "missing vendor"
 msgstr "brak producenta"
@@ -7680,9 +7526,6 @@ msgstr "brak domeny pasującej do UUID"
 msgid "no domain with matching uuid '%s'"
 msgstr "brak domeny pasującej do UUID „%s”"
 
-msgid "no emulator path found"
-msgstr "nie odnaleziono ścieżki do emulatora"
-
 msgid "no error"
 msgstr "brak błędu"
 
@@ -7928,9 +7771,6 @@ msgstr "wykonuje zrzut core na żywo, jeśli jest obsługiwane"
 
 msgid "persist VM on destination"
 msgstr "ustawia trwałość maszyny wirtualnej na celu"
-
-msgid "poll error"
-msgstr "błąd sondażu"
 
 msgid "poll on socket failed"
 msgstr "sondaż na gnieździe się nie powiódł"
@@ -8502,10 +8342,6 @@ msgstr "typ źródeł puli pamięci masowej do wyszukania"
 msgid "type of the pool"
 msgstr "typ puli"
 
-#, c-format
-msgid "udev scan devices returned %d"
-msgstr "skanowanie urządzeń udev zwróciło %d"
-
 msgid "udev_monitor_new_from_netlink returned NULL"
 msgstr "udev_monitor_new_from_netlink zwróciło NULL"
 
@@ -8725,10 +8561,6 @@ msgid "unexpected domain %s already exists"
 msgstr "nieoczekiwana domena %s już istnieje"
 
 #, c-format
-msgid "unexpected domain snapshot %s already exists"
-msgstr "nieoczekiwana migawka domeny %s już istnieje"
-
-#, c-format
 msgid "unexpected domain type %d"
 msgstr "nieoczekiwany typ domeny %d"
 
@@ -8875,10 +8707,6 @@ msgstr "nieoczekiwanie się nie powiodło"
 msgid "unknown"
 msgstr "nieznane"
 
-#, c-format
-msgid "unknown CPU syntax '%s'"
-msgstr "nieznana składnia procesora „%s”"
-
 msgid "unknown OS type"
 msgstr "nieznany typ systemu operacyjnego"
 
@@ -8887,16 +8715,8 @@ msgid "unknown OS type %s"
 msgstr "nieznany typ systemu operacyjnego %s"
 
 #, c-format
-msgid "unknown PCI device syntax '%s'"
-msgstr "nieznana składnia urządzenia PCI „%s”"
-
-#, c-format
 msgid "unknown SCSI host capability type '%s' for '%s'"
 msgstr "nieznany typ możliwości gospodarza SCSI „%s” dla „%s”"
-
-#, c-format
-msgid "unknown USB device syntax '%s'"
-msgstr "nieznana składnia urządzenia USB „%s”"
 
 #, c-format
 msgid "unknown accessmode '%s'"
@@ -8933,10 +8753,6 @@ msgstr "nieznany typ możliwości „%d” dla „%s”"
 #, c-format
 msgid "unknown capability type '%s'"
 msgstr "nieznany typ możliwości „%s”"
-
-#, c-format
-msgid "unknown character device syntax %s"
-msgstr "nieznana składnia urządzenia znakowego %s"
 
 #, c-format
 msgid "unknown character device type: %s"
@@ -9185,16 +9001,8 @@ msgid "unknown usb source type '%s'"
 msgstr "nieznany typ źródła USB „%s”"
 
 #, c-format
-msgid "unknown video adapter type '%s'"
-msgstr "nieznany typ adaptera graficznego „%s”"
-
-#, c-format
 msgid "unknown video model '%s'"
 msgstr "nieznany model grafiki „%s”"
-
-#, c-format
-msgid "unknown virt type in domain definition '%d'"
-msgstr "nieznany typ wirtualizacji w definicji domeny „%d”"
 
 msgid "unknown volume encryption format"
 msgstr "nieznany format szyfrowania woluminu"

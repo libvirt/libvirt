@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"POT-Creation-Date: 2019-07-01 18:50+0100\n"
 "PO-Revision-Date: 2017-02-26 05:02+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1216,10 +1216,6 @@ msgid "Unable to load certificate"
 msgstr "Kan inte ladda certfikat"
 
 #, c-format
-msgid "Unable to migrate %s to %s"
-msgstr "Kan inte migrera %s till %s"
-
-#, c-format
 msgid "Unable to open monitor path %s"
 msgstr "Ken inte öppna övervakningssökvägen %s"
 
@@ -1275,9 +1271,6 @@ msgstr "Okänt gränssnitt <driver txmode='%s'> har specificerats"
 #, c-format
 msgid "Unknown model type '%s'"
 msgstr "Okänd modelltyp ”%s”"
-
-msgid "Unknown poll response."
-msgstr "Okänt pollsvar."
 
 #, c-format
 msgid "Unknown protocol '%s'"
@@ -2098,9 +2091,6 @@ msgstr "paus"
 
 msgid "paused"
 msgstr "stannad"
-
-msgid "poll error"
-msgstr "pollfel"
 
 msgid "pool has no config file"
 msgstr "poolen har ingen konfigurationsfil"

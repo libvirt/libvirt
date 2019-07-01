@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"POT-Creation-Date: 2019-07-01 18:50+0100\n"
 "PO-Revision-Date: 2015-02-26 09:23+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/fedora/language/"
@@ -298,9 +298,6 @@ msgstr "Bouw een bepaalde pool."
 msgid "Bus %s too big for destination"
 msgstr "Bus %s is te groot voor bestemming"
 
-msgid "CEPH_ARGS was set without an rbd disk"
-msgstr "CEPH_ARGS was ingesteld zonder een rbd schijf"
-
 msgid "CPU Affinity:"
 msgstr "CPU affiniteit:"
 
@@ -583,12 +580,6 @@ msgstr "Core dump een domein."
 
 msgid "Core(s) per socket:"
 msgstr "Kern(en) per socket:"
-
-msgid "Could not add variable 'IP' to hashmap"
-msgstr "Kon variabele 'IP' niet toevoegen aan hashkaart"
-
-msgid "Could not add variable 'MAC' to hashmap"
-msgstr "Kon variabele 'MAC' niet toevoegen aan hashkaart"
 
 #, c-format
 msgid "Could not assign address to disk '%s'"
@@ -1326,9 +1317,6 @@ msgstr "Bewerk de XML configuratie voor een fysieke host interface."
 msgid "Edit the XML configuration for a storage pool."
 msgstr "Bewerk de XML configuratie voor een opslag pool."
 
-msgid "Empty qemu environment name specified"
-msgstr "Lege qemu omgeving naam opgegeven"
-
 msgid "Enabled"
 msgstr "Aangezet"
 
@@ -1471,14 +1459,6 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Expecting VMX entry 'sched.cpu.affinity' to contain at least as many values "
-"as 'numvcpus' (%lld) but found only %d value(s)"
-msgstr ""
-"Verwacht dat VMX ingang 'sched.cpu.affinity' tenminste evenveel waardes "
-"bevat als 'numvcpus' (%lld) maar vond slechts %d waarde(s)"
-
-#, c-format
-msgid ""
 "Expecting domain XML attribute 'arch' of entry 'os/type' to be 'i686' or "
 "'x86_64' but found '%s'"
 msgstr ""
@@ -1545,9 +1525,6 @@ msgstr "Verwacht dat type begint met 'ArrayOf' maar vond '%s'"
 #, c-format
 msgid "Expecting virt type to be '%s' but found '%s'"
 msgstr "Verwacht dat virt type '%s' is maar vond '%s'"
-
-msgid "Expiry of passwords is not supported"
-msgstr "Verlopen van wachtwoorden wordt niet ondersteund"
 
 #, c-format
 msgid "FDC bus index %d out of [0] range"
@@ -2387,9 +2364,6 @@ msgstr ""
 msgid "Got invalid memory size %d"
 msgstr "Kreeg ongeldige geheugen grootte %d"
 
-msgid "Graphics password only supported for VNC"
-msgstr "Beeldwachtwoord alleen ondersteund door VNC"
-
 msgid ""
 "Grouped commands:\n"
 "\n"
@@ -2708,13 +2682,6 @@ msgstr "Ongeldig beveiliging label %s"
 #, c-format
 msgid "Invalid security label '%s'"
 msgstr "Ongeldig beveiliging label '%s'"
-
-msgid "Invalid snapshot"
-msgstr "Ongeldig snapshot"
-
-#, c-format
-msgid "Invalid snapshot: %s"
-msgstr "Ongeldig snapshot: %s"
 
 #, c-format
 msgid "Invalid state '%s' in domain snapshot XML"
@@ -4104,9 +4071,6 @@ msgstr "Onbekende interface <driver txmode='%s'> gespecificeerd"
 msgid "Unknown model type '%s'"
 msgstr "Onbekend model type '%s'"
 
-msgid "Unknown poll response."
-msgstr "Onbekend poll antwoord."
-
 #, c-format
 msgid "Unknown protocol '%s'"
 msgstr "Onbekend protocol '%s'"
@@ -4572,9 +4536,6 @@ msgstr "kan niet veranderen naar root map"
 msgid "cannot change to root directory: %s"
 msgstr "kan niet naar root map gaan: %s"
 
-msgid "cannot change vcpu count of this domain"
-msgstr "kan aantal vcpu's van dit domein niet veranderen "
-
 #, c-format
 msgid "cannot chown %s to (%u, %u)"
 msgstr "kan niet chown %s naar (%u, %u)"
@@ -4672,44 +4633,12 @@ msgid "cannot extend file '%s'"
 msgstr "kan bestand %s niet uitbreiden"
 
 #, c-format
-msgid "cannot extract PCI device bus '%s'"
-msgstr "kan PCI apparaat bus '%s' niet extraheren"
-
-#, c-format
-msgid "cannot extract PCI device function '%s'"
-msgstr "kan PCI apparaat functie '%s' niet extraheren"
-
-#, c-format
-msgid "cannot extract PCI device slot '%s'"
-msgstr "kan PCI apparaat sleuf '%s' niet extraheren"
-
-#, c-format
-msgid "cannot extract USB device address '%s'"
-msgstr "kan USB apparaat adres '%s' niet extraheren"
-
-#, c-format
-msgid "cannot extract USB device bus '%s'"
-msgstr "kan USB apparaat bus '%s' niet extraheren"
-
-#, c-format
-msgid "cannot extract USB device product '%s'"
-msgstr "kan USB apparaat product '%s' niet extraheren"
-
-#, c-format
-msgid "cannot extract USB device vendor '%s'"
-msgstr "kan USB apparaat leverancier '%s' niet extraheren"
-
-#, c-format
 msgid "cannot fill file '%s'"
 msgstr "kan bestand '%s' niet vullen"
 
 #, c-format
 msgid "cannot find CPU map for %s architecture"
 msgstr "kan CPU kaart voor %s architectuur niet vinden"
-
-#, c-format
-msgid "cannot find NIC definition for vlan %d"
-msgstr "kan NIC definitie voor vlan %d niet vinden"
 
 #, c-format
 msgid "cannot find character device %s"
@@ -4721,10 +4650,6 @@ msgstr "kan nieuw aangemaakt volume '%s' niet vinden"
 
 msgid "cannot find pid in vmware log file"
 msgstr "kan pid niet vinden in vmware logbestand"
-
-#, c-format
-msgid "cannot find port number in character device %s"
-msgstr "kan poort nummer in karakter apparaat %s niet vinden"
 
 #, c-format
 msgid "cannot find statistics for device '%s'"
@@ -4814,18 +4739,6 @@ msgid "cannot open volume '%s'"
 msgstr "kan volume '%s' niet openen"
 
 #, c-format
-msgid "cannot parse CPU topology '%s'"
-msgstr "kan CPU topologie '%s' niet ontleden"
-
-#, c-format
-msgid "cannot parse NIC definition '%s'"
-msgstr "kan NIC definitie in '%s' niet ontleden"
-
-#, c-format
-msgid "cannot parse NIC vlan in '%s'"
-msgstr "kan NIC vlan in '%s' niet ontleden"
-
-#, c-format
 msgid "cannot parse PCI bus '%s'"
 msgstr "kan PCI bus '%s' niet ontleden"
 
@@ -4842,14 +4755,6 @@ msgid "cannot parse PCI slot '%s'"
 msgstr "kan PCI sleuf '%s' niet ontleden"
 
 #, c-format
-msgid "cannot parse UUID '%s'"
-msgstr "kan UUID '%s' niet ontleden"
-
-#, c-format
-msgid "cannot parse VNC port '%s'"
-msgstr "kan VNC poort '%s' niet ontleden"
-
-#, c-format
 msgid "cannot parse bus %s"
 msgstr "kan bus %s niet ontleden"
 
@@ -4863,32 +4768,12 @@ msgstr "kan apparaat eind locatie niet ontleden"
 msgid "cannot parse device start location"
 msgstr "kan apparaat start locatie niet ontleden"
 
-#, c-format
-msgid "cannot parse drive bus '%s'"
-msgstr "kan station bus '%s' niet ontleden"
-
-#, c-format
-msgid "cannot parse drive index '%s'"
-msgstr "kan station index '%s' niet ontleden"
-
-#, c-format
-msgid "cannot parse drive unit '%s'"
-msgstr "kan station unit '%s' niet ontleden"
-
 msgid "cannot parse instanceid parameter as a uuid"
 msgstr "kan instanceid parameter niet ontleden als een uuid"
 
 #, c-format
-msgid "cannot parse io mode '%s'"
-msgstr "kan parse io mode '%s' niet ontleden"
-
-#, c-format
 msgid "cannot parse json %s: %s"
 msgstr "kan json %s niet ontleden: %s"
-
-#, c-format
-msgid "cannot parse nbd filename '%s'"
-msgstr "kan nbd bestandsnaam '%s' niet ontleden"
 
 #, c-format
 msgid "cannot parse partition number from target '%s'"
@@ -4910,14 +4795,6 @@ msgstr "kan product %s niet ontleden"
 #, c-format
 msgid "cannot parse rdp port %s"
 msgstr "kan rdp poort %s niet ontleden"
-
-#, c-format
-msgid "cannot parse sheepdog filename '%s'"
-msgstr "kan herdershond bestandsnaam '%s' niet ontleden"
-
-#, c-format
-msgid "cannot parse sndbuf size in '%s'"
-msgstr "kan sndbuf grootte in '%s' niet ontleden"
 
 #, c-format
 msgid "cannot parse spice port %s"
@@ -4953,10 +4830,6 @@ msgstr "kan video hoofden '%s' niet ontleden"
 #, c-format
 msgid "cannot parse video ram '%s'"
 msgstr "kan video ram '%s' niet ontleden"
-
-#, c-format
-msgid "cannot parse vlan in '%s'"
-msgstr "kan vlan in '%s' niet ontleden"
 
 #, c-format
 msgid "cannot parse vnc port %s"
@@ -5445,10 +5318,6 @@ msgstr "kon VirtualBox sessie met domein %s niet openen"
 msgid "could not open input path '%s'"
 msgstr "kom input pad '%s' niet openen"
 
-#, c-format
-msgid "could not parse CEPH_ARGS '%s'"
-msgstr "Kon CEPH_ARGS '%s' niet ontleden"
-
 msgid "could not parse XML"
 msgstr "kon XML niet ontleden"
 
@@ -5634,9 +5503,6 @@ msgstr "gedetailleerde domein vcpu informatie"
 #, c-format
 msgid "device %s is not a PCI device"
 msgstr "apparaat %s is geen PCI apparaat"
-
-msgid "device cannot be detached without a device alias"
-msgstr "apparaat kan niet losgekoppeld worden zonder apparaat alias"
 
 msgid "device cannot be detached: device is busy"
 msgstr "apparaat kan niet worden ontkoppeld het apparaat is bezet"
@@ -6293,10 +6159,6 @@ msgstr "formaat van back-up volume als een snapshot genomen wordt"
 msgid "formatter for %s %s reported error"
 msgstr "formatter voor %s %s rapporteerde fout"
 
-#, c-format
-msgid "found no rbd hosts in CEPH_ARGS '%s'"
-msgstr "geen rbd hosts gevonden in CEPH_ARGS '%s'"
-
 msgid "get device block stats for a domain"
 msgstr "apparaat blok stats verkrijgen voor een domein"
 
@@ -6559,10 +6421,6 @@ msgstr "ongeldige verbinding aanwijzer in"
 #, c-format
 msgid "invalid connection pointer in %s"
 msgstr "ongeldige verbinding aanwijzer in %s"
-
-#, c-format
-msgid "invalid device name '%s'"
-msgstr "ongeldige apparaat naam '%s'"
 
 msgid "invalid domain pointer in"
 msgstr "ongeldige domein aanwijzer in"
@@ -6993,16 +6851,8 @@ msgstr "domein toestand ontbreekt"
 msgid "missing domain type attribute"
 msgstr "ontbrekend domein type attribuut"
 
-#, c-format
-msgid "missing file parameter in drive '%s'"
-msgstr "ontbrekende bestand parameter in station '%s'"
-
 msgid "missing graphics device type"
 msgstr "ontbrekend grafisch apparaat type"
-
-#, c-format
-msgid "missing index/unit/bus parameter in drive '%s'"
-msgstr "ontbrekende index/unit/bus parameter in station '%s'"
 
 msgid "missing input device type"
 msgstr "ontbrekend invoer apparaat type"
@@ -7089,10 +6939,6 @@ msgstr "ontbrekende doel informatie voor apparaat %s"
 
 msgid "missing timer name"
 msgstr "timer naam ontbreekt"
-
-#, c-format
-msgid "missing value for %s argument"
-msgstr "ontbrekende waarde voor argument %s"
 
 msgid "missing vendor"
 msgstr "ontbrekende leverancier"
@@ -7346,9 +7192,6 @@ msgstr "geen domein met overeenkomend uuid"
 msgid "no domain with matching uuid '%s'"
 msgstr "geen domein met overeenkomend uuid '%s'"
 
-msgid "no emulator path found"
-msgstr "geen emulator pad gevonden"
-
 msgid "no extended partition found and no primary partition available"
 msgstr "geen extended partitie gevonden en geen primaire partitie beschikbaar"
 
@@ -7566,9 +7409,6 @@ msgstr "Voer een live core dump uit als dit ondersteund wordt"
 
 msgid "persist VM on destination"
 msgstr "permanente VM op bestemming"
-
-msgid "poll error"
-msgstr "poll fout"
 
 msgid "poll on socket failed"
 msgstr "poll op socket mislukte"
@@ -8132,10 +7972,6 @@ msgstr "type opslag pool bronnen te vinden"
 msgid "type of the pool"
 msgstr "type van de pool"
 
-#, c-format
-msgid "udev scan devices returned %d"
-msgstr "udev scan van apparaten gaf %d terug"
-
 msgid "udev_monitor_new_from_netlink returned NULL"
 msgstr "udev_monitor_new_from_netlink gaf NULL terug"
 
@@ -8349,10 +8185,6 @@ msgid "unexpected domain %s already exists"
 msgstr "onverwacht domein %s bestaat reeds"
 
 #, c-format
-msgid "unexpected domain snapshot %s already exists"
-msgstr "onverwachte domein snapshot %s bestaat al"
-
-#, c-format
 msgid "unexpected domain type %d"
 msgstr "onverwacht domein type %d"
 
@@ -8499,10 +8331,6 @@ msgstr "onverwacht mislukt"
 msgid "unknown"
 msgstr "onbekend"
 
-#, c-format
-msgid "unknown CPU syntax '%s'"
-msgstr "onbekende CPU syntax '%s'"
-
 msgid "unknown OS type"
 msgstr "Onbekend OS type"
 
@@ -8511,16 +8339,8 @@ msgid "unknown OS type %s"
 msgstr "Onbekend OS type %s"
 
 #, c-format
-msgid "unknown PCI device syntax '%s'"
-msgstr "onbekende PCI apparaat syntax '%s'"
-
-#, c-format
 msgid "unknown SCSI host capability type '%s' for '%s'"
 msgstr "onbekende SCSI host mogelijkheden type '%s' voor '%s'"
-
-#, c-format
-msgid "unknown USB device syntax '%s'"
-msgstr "onbekende USB apparaat syntax '%s'"
 
 #, c-format
 msgid "unknown accessmode '%s'"
@@ -8557,10 +8377,6 @@ msgstr "onbekend mogelijkheid type '%d' voor '%s'"
 #, c-format
 msgid "unknown capability type '%s'"
 msgstr "onbekend mogelijkheid type '%s'"
-
-#, c-format
-msgid "unknown character device syntax %s"
-msgstr "onbekende karakter apparaat syntax %s"
 
 #, c-format
 msgid "unknown character device type: %s"
@@ -8817,16 +8633,8 @@ msgid "unknown usb source type '%s'"
 msgstr "onbekend usb bron type '%s'"
 
 #, c-format
-msgid "unknown video adapter type '%s'"
-msgstr "onbekende video adapter type '%s'"
-
-#, c-format
 msgid "unknown video model '%s'"
 msgstr "onbekend video model '%s'"
-
-#, c-format
-msgid "unknown virt type in domain definition '%d'"
-msgstr "onbekend virt type in domein definitie '%d'"
 
 msgid "unknown volume encryption format"
 msgstr "onbekend volume encryptie formaat"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"POT-Creation-Date: 2019-07-01 18:50+0100\n"
 "PO-Revision-Date: 2015-03-05 01:32+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/projects/p/fedora/"
@@ -487,12 +487,6 @@ msgstr "Dump nhân một miền."
 
 msgid "Core(s) per socket:"
 msgstr "Nhân mỗi socket:"
-
-msgid "Could not add variable 'IP' to hashmap"
-msgstr "Không thể thêm tham số 'IP' vào sơ đồ băm"
-
-msgid "Could not add variable 'MAC' to hashmap"
-msgstr "Không thể thêm tham số 'MAC' vào sơ đồ băm"
 
 #, c-format
 msgid "Could not assign address to disk '%s'"
@@ -1089,9 +1083,6 @@ msgstr "Chỉnh sửa cấu hình XML cho một giao diện máy chủ vật lý
 msgid "Edit the XML configuration for a storage pool."
 msgstr "Chỉnh sửa cấu hình XML cho một pool lưu trữ."
 
-msgid "Empty qemu environment name specified"
-msgstr "Tên môi trường qemu rỗng được chỉ định"
-
 msgid "Enabled"
 msgstr "Đã bật"
 
@@ -1232,14 +1223,6 @@ msgid ""
 msgstr ""
 "Mong đợi mục VMX 'sched.cpu.affinity' là một danh sách phân cách bởi dấu "
 "phẩy của các số nguyên unsigned nhưng lại thấy '%s'"
-
-#, c-format
-msgid ""
-"Expecting VMX entry 'sched.cpu.affinity' to contain at least as many values "
-"as 'numvcpus' (%lld) but found only %d value(s)"
-msgstr ""
-"Mong chờ mục VMX 'sched.cpu.affinity' chứa ít nhất cùng số giá trị như "
-"'numvcpus' (%lld) nhưng lại thấy chỉ %d giá trị"
 
 #, c-format
 msgid ""
@@ -2380,13 +2363,6 @@ msgstr "Nhãn bảo mật %s không hợp lệ"
 #, c-format
 msgid "Invalid security label '%s'"
 msgstr "Nhãn bảo mật không hợp lệ '%s'"
-
-msgid "Invalid snapshot"
-msgstr "Ảnh chụp không hợp lệ"
-
-#, c-format
-msgid "Invalid snapshot: %s"
-msgstr "Ảnh chụp không hợp lệ: %s"
 
 #, c-format
 msgid "Invalid state '%s' in domain snapshot XML"
@@ -3643,9 +3619,6 @@ msgstr "Tên trình điều khiển không rõ '%s'"
 msgid "Unknown model type '%s'"
 msgstr "Kiểu mẫu không rõ '%s'"
 
-msgid "Unknown poll response."
-msgstr "Phản hồi poll không rõ."
-
 #, c-format
 msgid "Unknown protocol '%s'"
 msgstr "Giao thức không rõ '%s'"
@@ -4033,9 +4006,6 @@ msgstr "không thể thay đổi cờ riêng trên bí mật đang có"
 msgid "cannot change to root directory: %s"
 msgstr "không thể thay đổi sang thư mục gốc: %s"
 
-msgid "cannot change vcpu count of this domain"
-msgstr "không thể thay đổi số vcpu của miền này"
-
 #, c-format
 msgid "cannot chown %s to (%u, %u)"
 msgstr "không thể chown %s sang (%u, %u)"
@@ -4133,34 +4103,6 @@ msgid "cannot extend file '%s'"
 msgstr "không thể mở rộng tập tin '%s'"
 
 #, c-format
-msgid "cannot extract PCI device bus '%s'"
-msgstr "không thể trích xuất tuyến thiết bị PCI '%s'"
-
-#, c-format
-msgid "cannot extract PCI device function '%s'"
-msgstr "không thể trích xuất chức năng thiết bị PCI '%s'"
-
-#, c-format
-msgid "cannot extract PCI device slot '%s'"
-msgstr "không thể trích xuất khe thiết bị PCI '%s'"
-
-#, c-format
-msgid "cannot extract USB device address '%s'"
-msgstr "không thể trích xuất địa chỉ thiết bị PCI '%s'"
-
-#, c-format
-msgid "cannot extract USB device bus '%s'"
-msgstr "không thể trích xuất tuyến thiết bị USB '%s'"
-
-#, c-format
-msgid "cannot extract USB device product '%s'"
-msgstr "không thể trích xuất sản phẩm thiết bị PCI '%s'"
-
-#, c-format
-msgid "cannot extract USB device vendor '%s'"
-msgstr "không thể trích xuất nhà cung cấp thiết bị PCI '%s'"
-
-#, c-format
 msgid "cannot fill file '%s'"
 msgstr "không thể điền tập tin '%s'"
 
@@ -4169,16 +4111,8 @@ msgid "cannot find CPU map for %s architecture"
 msgstr "không thể tìm bản đồ CPU cho kiến trúc %s"
 
 #, c-format
-msgid "cannot find NIC definition for vlan %d"
-msgstr "không thể tìm định nghĩa NIC cho vlan %d"
-
-#, c-format
 msgid "cannot find newly created volume '%s'"
 msgstr "không thể tìm ổ mới tạo '%s'"
-
-#, c-format
-msgid "cannot find port number in character device %s"
-msgstr "không thể tìm số cổng trong thiết bị ký tự %s"
 
 #, c-format
 msgid "cannot find statistics for device '%s'"
@@ -4256,18 +4190,6 @@ msgid "cannot open volume '%s'"
 msgstr "không thể mở ổ '%s'"
 
 #, c-format
-msgid "cannot parse CPU topology '%s'"
-msgstr "không thể phân tích tôpô CPU '%s'"
-
-#, c-format
-msgid "cannot parse NIC definition '%s'"
-msgstr "không thể phân tích định nghĩa NIC '%s'"
-
-#, c-format
-msgid "cannot parse NIC vlan in '%s'"
-msgstr "không thể phân tích NIC vlan trong '%s'"
-
-#, c-format
 msgid "cannot parse PCI bus '%s'"
 msgstr "không thể phân tích tuyến PCI '%s'"
 
@@ -4284,14 +4206,6 @@ msgid "cannot parse PCI slot '%s'"
 msgstr "không thể phân tích khe PCI '%s'"
 
 #, c-format
-msgid "cannot parse UUID '%s'"
-msgstr "không thể phân tích UUID '%s'"
-
-#, c-format
-msgid "cannot parse VNC port '%s'"
-msgstr "không thể phân tích cổng VNC '%s'"
-
-#, c-format
 msgid "cannot parse bus %s"
 msgstr "không thể phân tích tuyến %s"
 
@@ -4304,18 +4218,6 @@ msgstr "không thể phân tích vị trí kết thúc thiết bị"
 
 msgid "cannot parse device start location"
 msgstr "không thể phân tích vị trí bắt đầu thiết bị"
-
-#, c-format
-msgid "cannot parse drive bus '%s'"
-msgstr "không thể phân tích tuyến drive '%s'"
-
-#, c-format
-msgid "cannot parse drive index '%s'"
-msgstr "không thể phân tích chỉ mục drive '%s'"
-
-#, c-format
-msgid "cannot parse drive unit '%s'"
-msgstr "không thể phân tích đơn vị drive '%s'"
 
 msgid "cannot parse instanceid parameter as a uuid"
 msgstr "không thể phân tích thông số instanceid như một uuid"
@@ -4362,10 +4264,6 @@ msgstr "không thể phân tích đầu video '%s'"
 #, c-format
 msgid "cannot parse video ram '%s'"
 msgstr "không thể phân tích video ram '%s'"
-
-#, c-format
-msgid "cannot parse vlan in '%s'"
-msgstr "không thể phân tích vlan trong '%s'"
 
 #, c-format
 msgid "cannot parse vnc port %s"
@@ -4926,9 +4824,6 @@ msgstr "thông tin vcpu miền chi tiết"
 #, c-format
 msgid "device %s is not a PCI device"
 msgstr "thiết bị %s không phải thiết bị PCI"
-
-msgid "device cannot be detached without a device alias"
-msgstr "thiết bị không thể được tháo mà không có tên hiệu thiết bị"
 
 msgid "device key"
 msgstr "khóa thiết bị"
@@ -5749,10 +5644,6 @@ msgstr "con trỏ kết nối không hợp lệ trong"
 msgid "invalid connection pointer in %s"
 msgstr "con trỏ kết nối không hợp lệ trong %s"
 
-#, c-format
-msgid "invalid device name '%s'"
-msgstr "tên thiết bị không hợp lệ '%s'"
-
 msgid "invalid domain pointer in"
 msgstr "con trỏ miền không hợp lệ trong"
 
@@ -6132,16 +6023,8 @@ msgstr "thiếu trạng thái miền"
 msgid "missing domain type attribute"
 msgstr "thiếu thuộc tính kiểu miền"
 
-#, c-format
-msgid "missing file parameter in drive '%s'"
-msgstr "thiếu tham số tập tin trong drive '%s'"
-
 msgid "missing graphics device type"
 msgstr "thiếu kiểu thiết bị đồ họa"
-
-#, c-format
-msgid "missing index/unit/bus parameter in drive '%s'"
-msgstr "thiếu tham số chỉ mục/đơn vị/tuyến trong drive '%s'"
 
 msgid "missing input device type"
 msgstr "thiếu kiểu thiết bị nhập"
@@ -6219,10 +6102,6 @@ msgstr "thiếu thông tin đích cho thiết bị %s"
 
 msgid "missing timer name"
 msgstr "thiếu tên bộ đếm giờ"
-
-#, c-format
-msgid "missing value for %s argument"
-msgstr "thiếu giá trị cho tham số %s"
 
 msgid "missing vendor"
 msgstr "thiếu nhà cung cấp"
@@ -6465,9 +6344,6 @@ msgstr "không có miền khớp uuid"
 msgid "no domain with matching uuid '%s'"
 msgstr "không có miền khớp uuid '%s'"
 
-msgid "no emulator path found"
-msgstr "không thấy đường dẫn trình giả lập"
-
 msgid "no extended partition found and no primary partition available"
 msgstr ""
 "không có phân vùng mở rộng tìm thấy hoặc không có phân vùng chính có sẵn"
@@ -6646,9 +6522,6 @@ msgstr "thực hiện một dump nhân trực tiếp nếu được hỗ trợ"
 
 msgid "persist VM on destination"
 msgstr "cố định may áo trên chỗ ghi"
-
-msgid "poll error"
-msgstr "lỗi poll"
 
 msgid "poll on socket failed"
 msgstr "poll trên socket thất bại"
@@ -7141,10 +7014,6 @@ msgstr "kiểu nguồn pool lưu trữ để tìm"
 msgid "type of the pool"
 msgstr "kiểu pool"
 
-#, c-format
-msgid "udev scan devices returned %d"
-msgstr "udev quét thiết bị trả lại %d"
-
 msgid "udev_monitor_new_from_netlink returned NULL"
 msgstr "udev_monitor_new_from_netlink trả lại NULL"
 
@@ -7333,10 +7202,6 @@ msgid "unexpected domain %s already exists"
 msgstr "miền %s không mong đợi đã tồn tại"
 
 #, c-format
-msgid "unexpected domain snapshot %s already exists"
-msgstr "ảnh chụp miền %s không mong đợi đã tồn tại"
-
-#, c-format
 msgid "unexpected domain type %d"
 msgstr "kiểu miền không mong đợi %d"
 
@@ -7468,10 +7333,6 @@ msgstr "mẫu watchdog không mong đợi %d"
 msgid "unknown"
 msgstr "không rõ"
 
-#, c-format
-msgid "unknown CPU syntax '%s'"
-msgstr "cú pháp CPU '%s' không rõ"
-
 msgid "unknown OS type"
 msgstr "kiểu OS không rõ"
 
@@ -7480,16 +7341,8 @@ msgid "unknown OS type %s"
 msgstr "kiểu OS không rõ %s"
 
 #, c-format
-msgid "unknown PCI device syntax '%s'"
-msgstr "cú pháp thiết bị PCI '%s' không rõ"
-
-#, c-format
 msgid "unknown SCSI host capability type '%s' for '%s'"
 msgstr "kiểu khả năng máy chủ SCSI không rõ '%s' cho '%s'"
-
-#, c-format
-msgid "unknown USB device syntax '%s'"
-msgstr "cú pháp thiết bị USB '%s' không rõ"
 
 #, c-format
 msgid "unknown accessmode '%s'"
@@ -7526,10 +7379,6 @@ msgstr "kiểu khả năng không rõ '%d' cho '%s'"
 #, c-format
 msgid "unknown capability type '%s'"
 msgstr "kiểu khả năng không rõ '%s'"
-
-#, c-format
-msgid "unknown character device syntax %s"
-msgstr "cú pháp thiết bị ký tự %s không rõ"
 
 #, c-format
 msgid "unknown character device type: %s"
@@ -7728,16 +7577,8 @@ msgid "unknown usb source type '%s'"
 msgstr "kiểu nguồn usb không rõ '%s'"
 
 #, c-format
-msgid "unknown video adapter type '%s'"
-msgstr "kiểu bộ tiếp hợp video '%s' không rõ"
-
-#, c-format
 msgid "unknown video model '%s'"
 msgstr "mẫu video không rõ '%s'"
-
-#, c-format
-msgid "unknown virt type in domain definition '%d'"
-msgstr "kiểu virt không rõ trong định nghĩa miền '%d'"
 
 msgid "unknown volume encryption format"
 msgstr "định dạng mã hóa ổ không rõ"

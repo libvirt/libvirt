@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"POT-Creation-Date: 2019-07-01 18:50+0100\n"
 "PO-Revision-Date: 2015-02-26 06:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Assamese (http://www.transifex.com/projects/p/libvirt/"
@@ -396,10 +396,6 @@ msgid "%s object is missing the required '%s' property"
 msgstr "%s অবজেক্টত প্ৰয়োজনীয় '%s' বৈশিষ্ট্য সন্ধানহীন"
 
 #, c-format
-msgid "%s platform doesn't support CPU features'"
-msgstr "%s প্লেটফৰ্মে CPU বৈশিষ্ট্যসমূহ সমৰ্থন নকৰে"
-
-#, c-format
 msgid ""
 "%s rule with port specification requires protocol specification with "
 "protocol to be either one of tcp(6), udp(17), dccp(33), or sctp(132)"
@@ -709,9 +705,6 @@ msgstr "--%s অথবা --current প্ৰয়োজনীয়"
 msgid "--descendants requires either --from or --current"
 msgstr "--descendants ৰ --from অথবা --current ৰ প্ৰয়োজন"
 
-msgid "--print-xml is incompatible with --no-metadata"
-msgstr "--print-xml --no-metadata ৰ সৈতে অসংগত"
-
 msgid "/proc/net/dev: Interface not found"
 msgstr "/proc/net/dev: আন্তঃপষ্ঠ পোৱা নগল"
 
@@ -856,9 +849,6 @@ msgstr "আবণ্টন"
 
 msgid "Allocation:"
 msgstr "বিতৰণ কৰা:"
-
-msgid "Allows to show or modify description or title of a domain."
-msgstr "এটা ডমেইনৰ বিৱৰণ অথবা শীৰ্ষক প্ৰদৰ্শন কৰাৰ অথবা পৰিবৰ্তন কৰাৰ অনুমতি দিয়ে।"
 
 msgid "An error occurred, but the cause is unknown"
 msgstr "এটা ত্ৰুটি দেখা দিলে, কিন্তু কাৰণ অজ্ঞাত"
@@ -1083,9 +1073,6 @@ msgstr "বাচ 0 অনুকুলিত PIIX3 USB অথবা IDE নি�
 
 msgid "Busy"
 msgstr "ব্যস্ত"
-
-msgid "CEPH_ARGS was set without an rbd disk"
-msgstr "CEPH_ARGS ক এটা rbd ডিস্ক নহোৱাকৈ সংহতি কৰা হৈছিল"
 
 msgid "CPU Affinity"
 msgstr "CPU প্ৰবনতা"
@@ -1330,10 +1317,6 @@ msgstr "আৰম্ভ নকৰা CURL হেণ্ডেলক এটা ম
 msgid "Cannot append basic type %s"
 msgstr "মৌলিক ধৰণ %s সংযোজন কৰিব নোৱাৰি"
 
-#, c-format
-msgid "Cannot assign address for device name '%s'"
-msgstr "ডিভাইচ নাম '%s' ৰ বাবে ঠিকনা ধাৰ্য্য কৰিব নোৱাৰি"
-
 msgid "Cannot attach disk until init PID is known"
 msgstr "যেতিয়ালৈকে init PID জ্ঞাত নহয় ডিস্ক সংলগ্ন কৰিব নোৱাৰি"
 
@@ -1357,10 +1340,6 @@ msgstr "বৈয়াম ইটিৰেটৰ বন্ধ কৰিব নো�
 
 msgid "Cannot complete within timeout period"
 msgstr "সময়অন্ত অৱধিৰ ভিতৰত সম্পূৰ্ণ কৰিব নোৱাৰি"
-
-#, c-format
-msgid "Cannot connect to monitor connection of type '%s' for pid %u"
-msgstr "ধৰণ '%s' ৰ সংযোগ পৰ্যবেক্ষন কৰিবলে সংযোগ কৰিব নোৱাৰি pid %u"
 
 #, c-format
 msgid "Cannot convert socket address to string: %s"
@@ -1621,22 +1600,6 @@ msgid "Cannot parse start time %s in %s"
 msgstr "%s ত আৰম্ভণি সময় %s বিশ্লেষণ কৰিব নোৱাৰি"
 
 #, c-format
-msgid ""
-"Cannot plug '%s' interface into '%s' because it would overcommit 'average' "
-"on network '%s'"
-msgstr ""
-"'%s' আন্তঃপৃষ্ঠক '%s' ত প্লাগ কৰিব নোৱাৰি কাৰণ ই নেটৱৰ্ক '%s' ত 'average' ক "
-"অভাৰকমিট কৰিব"
-
-#, c-format
-msgid ""
-"Cannot plug '%s' interface into '%s' because it would overcommit 'peak' on "
-"network '%s'"
-msgstr ""
-"'%s' আন্তঃপৃষ্ঠক '%s' ত প্লাগ কৰিব নোৱাৰি কাৰণ ই নেটৱৰ্ক '%s' ত 'peak' ক অভাৰকমিট "
-"কৰিব"
-
-#, c-format
 msgid "Cannot read %s '%s'"
 msgstr "%s '%s' পঢ়িব নোৱাৰি"
 
@@ -1685,10 +1648,6 @@ msgstr ""
 "স্বল্পকাল স্থায়ী ডোমেইনৰ বাবে স্বয়ংক্ৰিয় আৰম্ভৰ ব্যৱস্থা নিৰ্ধাৰণ কৰা সম্ভৱ নহয়াযাব"
 
 #, c-format
-msgid "Cannot set bandwidth on interface '%s' of type %d"
-msgstr "আন্তপৃষ্ঠ '%s' ত বেণ্ডৱাইড্ত সংহতি কৰিব নোৱাৰি ধৰণ %d"
-
-#, c-format
 msgid "Cannot set close-on-exec %d"
 msgstr "close-on-exec %d সংহতি কৰিব নোৱাৰি"
 
@@ -1722,9 +1681,6 @@ msgstr "JSON দস্তাবেজত max_clients তথ্য সংহত�
 
 msgid "Cannot set max_workers data in JSON document"
 msgstr "JSON দস্তাবেজত max_workers তথ্য সংহতি কৰিব নোৱাৰি"
-
-msgid "Cannot set mdnsGroupName data in JSON document"
-msgstr "JSON দস্তাবেজত mdnsGroupName তথ্য সংহতি কৰিব নোৱাৰি"
 
 msgid "Cannot set memory higher than max memory"
 msgstr ""
@@ -2085,12 +2041,6 @@ msgstr "প্ৰতি ছকেটে কোৰ সংখ্যা:"
 #, c-format
 msgid "Could find volume with name: %s"
 msgstr "নাম: %s ৰ সৈতে ভলিউম পোৱা নগল"
-
-msgid "Could not add variable 'IP' to hashmap"
-msgstr "চলক 'IP' ক hashmap লে যোগ কৰিব নোৱাৰি"
-
-msgid "Could not add variable 'MAC' to hashmap"
-msgstr "চলক 'MAC' ক hashmap লে যোগ কৰিব নোৱাৰি"
 
 #, c-format
 msgid "Could not assign address to disk '%s'"
@@ -3431,9 +3381,6 @@ msgstr "উপাদান 'memnode' কোনো অতিথি NUMA কোষ
 msgid "Empty cpu list for pinning"
 msgstr "পিনিংৰ বাবে ৰিক্ত cpu তালিকা"
 
-msgid "Empty qemu environment name specified"
-msgstr "ৰিক্ত পৰিৱেশ নাম ধাৰ্য্য কৰা হৈছে"
-
 #, c-format
 msgid "Empty response during %s"
 msgstr "%s ৰ সময়ত ৰিক্ত প্ৰতিক্ৰিয়া"
@@ -3556,9 +3503,6 @@ msgstr "স্থায়ী ডিভাইচ %s ৰ কোনো ধৰণ ন�
 msgid "Existing device %s is already a bridge"
 msgstr "স্থায়ী ডিভাইচ %s ইতিমধ্যে এটা ব্ৰিজ"
 
-msgid "Exiting due to failure to migrate profile"
-msgstr "আলেখ্য প্ৰব্ৰজন কৰাৰ ব্যৰ্থতাৰ বাবে প্ৰস্থান কৰা হৈছে"
-
 msgid "Expected at least one file descriptor"
 msgstr "অন্তত এটা ফাইল বিৱৰক আশা কৰা হৈছে"
 
@@ -3650,14 +3594,6 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Expecting VMX entry 'sched.cpu.affinity' to contain at least as many values "
-"as 'numvcpus' (%lld) but found only %d value(s)"
-msgstr ""
-"VMX প্ৰৱিষ্টি 'sched.cpu.affinity' ক অন্তত 'numvcpus' (%lld) ৰ সমান মান অন্তৰ্ভুক্ত "
-"কৰিবলে আশা কৰা হৈছিল কিন্তু প্ৰাপ্ত হল কেৱল %d মান(সমূহ)"
-
-#, c-format
-msgid ""
 "Expecting VMX entry 'sched.cpu.shares' to be an unsigned integer or 'low', "
 "'normal' or 'high' but found '%s'"
 msgstr ""
@@ -3732,9 +3668,6 @@ msgstr "ধৰণক 'ArrayOf' ৰ সৈতে আৰম্ভ হোৱাৰ 
 msgid "Expecting virt type to be '%s' but found '%s'"
 msgstr "virt ধৰণক '%s' হবলে আশা কৰা হৈছিল কিন্তু প্ৰাপ্ত হল '%s'"
 
-msgid "Expiry of passwords is not supported"
-msgstr "পাছৱৰ্ডসমূহৰ অৱসান সমৰ্থিত নহয়"
-
 msgid "Extract the snapshot's parent, if any"
 msgstr "স্নেপশ্বটৰ উপধায়কক নিষ্কাষণ কৰক, যদি উপলব্ধ"
 
@@ -3788,14 +3721,6 @@ msgstr "সংকেত হেণ্ডেল চুইচ যোগ কৰি�
 #, c-format
 msgid "Failed to add slot for PCI device '%s' to %s"
 msgstr "PCI ডিভাইচ '%s' ৰ কাৰণে %s ত slot যোগ কৰিবলৈ বিফল"
-
-#, c-format
-msgid "Failed to add timer with timeout %lld"
-msgstr "সময়অন্ত %lld ৰ সৈতে টাইমাৰ যোগ কৰিবলে ব্যৰ্থ"
-
-#, c-format
-msgid "Failed to add watch for fd %d events %d"
-msgstr "fd %d ঘটনাসমূহ %d ৰ বাবে ৱাচ যোগ কৰিবলে ব্যৰ্থ"
 
 #, c-format
 msgid "Failed to allocate PCI device list: %s"
@@ -4050,10 +3975,6 @@ msgstr "ডিভাইচ %s ৰ বাবে ফাইলচিস্টেম
 
 msgid "Failed to create interface node under bridge node in xml document"
 msgstr "xml দস্তাবেজত ব্ৰিজ ন'ডৰ অন্তৰ্গত আন্তঃপৃষ্ঠ ন'ড সৃষ্টি কৰিবলে ব্যৰ্থ"
-
-#, c-format
-msgid "Failed to create mDNS client: %s"
-msgstr "mDNS ক্লাএণ্ট সৃষ্টি কৰিবলে ব্যৰ্থ: %s"
 
 #, c-format
 msgid "Failed to create network from %s"
@@ -4547,10 +4468,6 @@ msgstr "প্ৰব্ৰজনৰ পিছত ডোমেইনটি স্
 #, c-format
 msgid "Failed to make domain persistent after migration: %s"
 msgstr "প্ৰব্ৰজনৰ পিছত ডোমেইনটি স্থায়ী কৰিবলৈ ব্যৰ্থ: %s"
-
-#, c-format
-msgid "Failed to make filesystem of type '%s' on device '%s'"
-msgstr "ডিভাইচ '%s' ত ধৰণ '%s' ৰ ফাইলচিস্টেম নিৰ্মাণ কৰিবলে ব্যৰ্থ"
 
 #, c-format
 msgid "Failed to make mount %s readonly"
@@ -5454,9 +5371,6 @@ msgstr ""
 msgid "Got invalid memory size %d"
 msgstr "অবৈধ মেমৰি আকাৰ %d প্ৰাপ্ত হৈছে"
 
-msgid "Graphics password only supported for VNC"
-msgstr "গ্ৰাফিক্স পাছৱৰ্ড কেৱল VNC ৰ বাবে সমৰ্থিত"
-
 msgid ""
 "Grouped commands:\n"
 "\n"
@@ -5569,10 +5483,6 @@ msgstr "%s চলাবলে Human monitor কমান্ড উপলব্�
 
 msgid "Hybrid-Suspend"
 msgstr "Hybrid-Suspend"
-
-#, c-format
-msgid "HyperV feature '%s' should not have a value"
-msgstr "HyperV বৈশিষ্ট্য '%s' ত এটা মান থাকিব নালাগিব"
 
 #, c-format
 msgid "HyperV spinlock retry count differs: source: '%u', destination: '%u'"
@@ -5764,10 +5674,6 @@ msgstr "সংকেত দ্বাৰা বিঘ্নিত"
 #, c-format
 msgid "Invalid \"nativeMode='%s'\" in vlan <tag> element"
 msgstr "vlan <tag> উপাদানত অবৈধ \"nativeMode='%s'\""
-
-#, c-format
-msgid "Invalid %s transport type '%s'"
-msgstr "অবৈধ %s পৰিবহন ধৰণ '%s'"
 
 #, c-format
 msgid "Invalid 'memAccess' attribute value '%s'"
@@ -6162,10 +6068,6 @@ msgstr "অবৈধ আগবঢ়া সাধাৰণ অভিব্যক্
 msgid "Invalid prefix or netmask for '%s'"
 msgstr "'%s' ৰ বাবে অবৈধ উপসৰ্গ অথবা নেটমাস্ক"
 
-#, c-format
-msgid "Invalid query parameter '%s'"
-msgstr "অবৈধ প্ৰশ্ন প্ৰাচল '%s'"
-
 msgid "Invalid range end"
 msgstr "অবৈধ বিস্তাৰ অন্ত"
 
@@ -6190,13 +6092,6 @@ msgstr "অবৈধ সুৰক্ষাৰ লেবেল %s"
 #, c-format
 msgid "Invalid security label '%s'"
 msgstr "নিৰাপত্তাৰ লেবেল '%s' বৈধ নহয়"
-
-msgid "Invalid snapshot"
-msgstr "অবৈধ স্নেপশ্বট"
-
-#, c-format
-msgid "Invalid snapshot: %s"
-msgstr "অবৈধ স্নেপশ্বট: %s"
 
 #, c-format
 msgid ""
@@ -6234,10 +6129,6 @@ msgid ""
 "Invalid to specify MAC address '%s' in network '%s' IPv6 static host "
 "definition"
 msgstr "নেটৱৰ্ক '%s' IPv6 স্থিৰ হস্ট বিৱৰণত MAC ঠিকনা '%s' ধাৰ্য্য কৰাটো অবৈধ"
-
-#, c-format
-msgid "Invalid transport/scheme '%s'"
-msgstr "অবৈধ পৰিবহন/আঁচনি '%s'"
 
 #, c-format
 msgid "Invalid type '%s' requested for parameter '%s', actual type is '%s'"
@@ -6313,9 +6204,6 @@ msgstr "ডমেইনৰ মাউণ্ট কৰা ফাইলচিস্
 #, c-format
 msgid "Iterator ID exceeds maximum ID of %u"
 msgstr "ইটিৰেটৰ ID এ %u ৰ সৰ্বাধিক ID অতিক্ৰম কৰে"
-
-msgid "JSON monitor is required"
-msgstr "JSON মনিটৰৰ প্ৰয়োজন নাই"
 
 #, c-format
 msgid "Job submission failed on interface '%s'"
@@ -6479,9 +6367,6 @@ msgstr "ক্ষতিগ্ৰস্থ ডিভাইচৰ মান '%s'"
 #, c-format
 msgid "Malformed lease target offset %s"
 msgstr "স্খলিত ইজাৰ লক্ষ্য অফচেট %s "
-
-msgid "Malformed mdnsGroupName data in JSON document"
-msgstr "JSON দস্তাবেজত ক্ষতিগ্ৰস্থ mdnsGroupName তথ্য"
 
 #, c-format
 msgid "Malformed nbd port '%s'"
@@ -7358,10 +7243,6 @@ msgstr "কোনো মাস্টাৰ USB নিয়ন্ত্ৰক ধ�
 msgid "No match"
 msgstr "কোনো মিল নাই"
 
-#, c-format
-msgid "No monitor connection for pid %u"
-msgstr "pid %u ৰ বাবে কোনো মনিটৰ সংযোগ নাই"
-
 msgid "No more available PCI slots"
 msgstr "আৰু উপলব্ধ PCI স্লট নাই"
 
@@ -7708,9 +7589,6 @@ msgstr "PCI ঠিকনা 0:0:1.0 ব্যৱহৃত, QEMU ৰ ইয়াক
 
 msgid "PCI address 0:0:2.0 is in use, QEMU needs it for primary video"
 msgstr "PCI ঠিকনা 0:0:2.0 ব্যৱহৃত, QEMU ৰ ইয়াক প্ৰাথমিক ভিডিঅ'ৰ বাবে প্ৰয়োজন"
-
-msgid "PCI address Formatting failed"
-msgstr "PCI ঠিকনা ফৰমেটিং ব্যৰ্থ হল"
 
 msgid "PCI bus 0 slot 1 is reserved for the implicit LPC PCI-ISA bridge"
 msgstr "PCI বাচ 0 স্লট 1 ইমপ্লিচিট LPC PCI-ISA ব্ৰিজৰ বাবে সংৰক্ষিত"
@@ -10337,10 +10215,6 @@ msgstr "pipe বনাবলে অক্ষম"
 msgid "Unable to mark loop device as autoclear"
 msgstr "loop ডিভাইচক autoclear হিচাপে চিহ্নিত কৰিবলে অক্ষম"
 
-#, c-format
-msgid "Unable to migrate %s to %s"
-msgstr "%s ক %s লে প্ৰব্ৰজন কৰিবলে অক্ষম"
-
 msgid "Unable to modify live devices"
 msgstr "জীৱন্ত ডিভাইচসমূহ পৰিবৰ্তন কৰিবলে অক্ষম"
 
@@ -10568,10 +10442,6 @@ msgstr "%s ত %s ৰ বাবে ব্যক্তিত্ব অনুৰ�
 #, c-format
 msgid "Unable to reset PCI device %s: %s"
 msgstr "%s PCI ডিভাইচ পুনৰায় নিৰ্ধাৰণ কৰিবলৈ ব্যৰ্থ: %s"
-
-#, c-format
-msgid "Unable to resolve %s for pid %u"
-msgstr "%s সমাধান কৰিবলে অক্ষম pid %u"
 
 #, c-format
 msgid "Unable to resolve address '%s' service '%s': %s"
@@ -11051,9 +10921,6 @@ msgstr "অজ্ঞাত অৱস্থা ধাৰ্য্য কৰা �
 msgid "Unknown model type '%s'"
 msgstr "অজ্ঞাত আৰ্হি ধৰণ '%s'"
 
-msgid "Unknown poll response."
-msgstr "অজ্ঞাত poll উত্তৰ।"
-
 #, c-format
 msgid "Unknown pool adapter type '%s'"
 msgstr "অজ্ঞাত পুল এডাপ্টাৰ ধৰণ '%s'"
@@ -11382,20 +11249,6 @@ msgstr "মান '%s' ক %s হিচাপে উপস্থাপন কৰ
 #, c-format
 msgid "Value '%s' is out of %s range"
 msgstr "মান '%s' বিস্তাৰ %s ৰ বাহিৰ"
-
-msgid "Value of cputune emulator_period must be in range [1000, 1000000]"
-msgstr "cputune emulator_period ৰ মান বিস্তাৰ [1000, 1000000] ত থাকিব লাগিব"
-
-msgid ""
-"Value of cputune emulator_quota must be in range [1000, 18446744073709551]"
-msgstr ""
-"cputune emulator_quota ৰ মান বিস্তাৰ [1000, 18446744073709551] ত থাকিব লাগিব"
-
-msgid "Value of cputune period must be in range [1000, 1000000]"
-msgstr "cputune ক্ৰমৰ মান বিস্তাৰ [1000, 1000000] ত থাকিব লাগিব"
-
-msgid "Value of cputune quota must be in range [1000, 18446744073709551]"
-msgstr "cputune কুটাৰ মান বিস্তাৰ [1000, 18446744073709551] ত থাকিব লাগিব"
 
 msgid "Variable value contains invalid character"
 msgstr "চলকৰ মানে অবৈধ আখৰ অন্তৰ্ভুক্ত কৰে"
@@ -11731,14 +11584,6 @@ msgstr ""
 "নেটৱৰ্ক '%s' লে সংযোগ কৰা এটা আন্তঃপৃষ্ঠয় এটা vlan টেগ অনুৰোধ কৰি আছে, কিন্তু সেইটো "
 "এই ধৰণৰ নেটৱৰ্কৰ বাবে সমৰ্থিত নহয়"
 
-#, c-format
-msgid ""
-"an interface of type '%s' is requesting a vlan tag, but that is not "
-"supported for this type of connection"
-msgstr ""
-"ধৰণ '%s' ৰ এটা আন্তঃপৃষ্ঠয় এটা vlan টেগ অনুৰোধ কৰি আছে, কিন্তু এই ধৰণৰ সংযোগৰ বাবে "
-"ই সমৰ্থিত নহয়"
-
 msgid "apparmor_parser exited with error"
 msgstr "apparmor_parser ত্ৰুটিৰ সৈতে প্ৰস্থান কৰিছে"
 
@@ -11861,9 +11706,6 @@ msgstr "নে'টৱৰ্ক স্বয়ংক্ৰিয় আৰম্ভ �
 msgid "autostart a pool"
 msgstr "এটা পুল স্বয়ংক্ৰিয়ভাবে আৰম্ভ কৰক"
 
-msgid "avahi not available at build time"
-msgstr "avahi নিৰ্মাণ সময়ত উপলব্ধ নহয়"
-
 msgid "avoid file system cache when dumping"
 msgstr "ডাম্প কৰোতে ফাইল চিস্টেম ক্যাশ বাদ দিয়ক"
 
@@ -11914,9 +11756,6 @@ msgstr "blkio cgroup মাউণ্ট কৰা নহয়"
 msgid "block"
 msgstr "ৰোধ কৰক"
 
-msgid "block copy is not supported with this QEMU binary"
-msgstr "খণ্ড কপি এই QEMU বাইনাৰিৰ সৈতে সমৰ্থিত নহয়"
-
 msgid "block copy still active"
 msgstr "খণ্ড কপি এতিয়াও সক্ৰিয়"
 
@@ -11926,9 +11765,6 @@ msgstr "খণ্ড কপি এতিয়াও সক্ৰিয়: %s"
 
 msgid "block device"
 msgstr "ব্লক ডিভাইচ"
-
-msgid "block jobs not supported with this QEMU binary"
-msgstr "এই QEMU বাইনাৰিৰ সৈতে খণ্ড কাৰ্য্যসমূহ সমৰ্থিত নহয়"
 
 #, c-format
 msgid "block peek request too large for remote protocol, %zi > %d"
@@ -12000,14 +11836,6 @@ msgstr "ব্ৰিজ '%s' ৰ এটা অবৈধ উপসৰ্গ আ�
 
 msgid "bridge an existing network device"
 msgstr "এটা স্থায়ী নেটৱৰ্ক ডিভাইচ ব্ৰিজ কৰক"
-
-#, c-format
-msgid ""
-"bridge delay/stp options only allowed in route, nat, and isolated mode, not "
-"in %s (network '%s')"
-msgstr ""
-"ব্ৰিজ বিলম্ব/stp বিকল্পসমূহ কেৱল ৰুট, নেট, আৰু সূকীয়া অৱস্থাত অনুমোদিত, %s (নেটৱৰ্ক "
-"'%s') ত নহয়"
 
 msgid "bridge interface misses the bridge element"
 msgstr "ব্ৰিজ সংযোগমাধ্যমত bridge স্বত্বা অনুপস্থিত"
@@ -12129,11 +11957,6 @@ msgid "cannot block signals"
 msgstr "চিগ্নেল ৰোধ কৰিব নোৱাৰি"
 
 #, c-format
-msgid ""
-"cannot change between disk snapshot and system checkpoint in snapshot %s"
-msgstr "স্নেপশ্বট %s ত ডিস্ক স্নেপশ্বট আৰু চিস্টেম চেকপইণ্টৰ মাজত পৰিবৰ্তন কৰিব নোৱাৰি"
-
-#, c-format
 msgid "cannot change between online and offline snapshot state in snapshot %s"
 msgstr "স্নেপশ্বট %s ত অনলাইন আৰু অফলাইন স্নেপশ্বট অৱস্থা পৰিবৰ্তন কৰিব নোৱাৰি"
 
@@ -12188,9 +12011,6 @@ msgstr "ৰূট পঞ্জিকালৈ সলনি কৰিব নো�
 #, c-format
 msgid "cannot change to uid to '%u'"
 msgstr "uid ক '%u' লে পৰিবৰ্তন কৰিব নোৱাৰি"
-
-msgid "cannot change vcpu count of this domain"
-msgstr "এই ডোমেইনৰ vcpu ৰ সংখ্যা পৰিবৰ্তন কৰিবলৈ ব্যৰ্থ"
 
 #, c-format
 msgid "cannot chmod '%s' to 0660"
@@ -12353,34 +12173,6 @@ msgstr "affinity নিৰ্ধাৰণ কৰিব নোৱাৰি: %s"
 msgid "cannot extend file '%s'"
 msgstr "ফাইল '%s' ৰ সম্প্ৰসাৰণ  কৰিব নোৱাৰি"
 
-#, c-format
-msgid "cannot extract PCI device bus '%s'"
-msgstr "PCI device bus '%s' উদ্ঘাটন কৰিব নোৱাৰি"
-
-#, c-format
-msgid "cannot extract PCI device function '%s'"
-msgstr "PCI device function '%s' উদ্ঘাটন কৰিব নোৱাৰি"
-
-#, c-format
-msgid "cannot extract PCI device slot '%s'"
-msgstr "PCI device slot '%s' উদ্ঘাটন কৰিব নোৱাৰি"
-
-#, c-format
-msgid "cannot extract USB device address '%s'"
-msgstr "USB ডিভাইচ ঠিকনা '%s' উদ্ধাৰ কৰিবলৈ ব্যৰ্থ"
-
-#, c-format
-msgid "cannot extract USB device bus '%s'"
-msgstr "USB ডিভাইচ বাচ '%s' উদ্ধাৰ কৰিবলৈ ব্যৰ্থ"
-
-#, c-format
-msgid "cannot extract USB device product '%s'"
-msgstr "USB ডিভাইচ উৎপাদন '%s' উদ্ধাৰ কৰিবলৈ ব্যৰ্থ"
-
-#, c-format
-msgid "cannot extract USB device vendor '%s'"
-msgstr "USB device vendor '%s' উদ্ঘাটন কৰিব নোৱাৰি"
-
 msgid "cannot extract blkiotune nodes"
 msgstr "blkiotune ন'ডসমূহ নিষ্কাশণ কৰিব নোৱাৰি"
 
@@ -12414,10 +12206,6 @@ msgid "cannot find CPU map for %s architecture"
 msgstr "%s স্থাপত্যৰ বাবে CPU মেপ পোৱা নাযায়"
 
 #, c-format
-msgid "cannot find NIC definition for vlan %d"
-msgstr "vlan %d ৰ  কাৰণে NIC সংজ্ঞা পোৱা নাযায়"
-
-#, c-format
 msgid "cannot find architecture %s"
 msgstr "স্থাপত্য %s পোৱা নাযায়"
 
@@ -12443,10 +12231,6 @@ msgstr "নতুনকৈ সৃষ্টি কৰা ভলিউম '%s' ব
 
 msgid "cannot find pid in vmware log file"
 msgstr "vmware লগ ফাইলত pid বিচাৰি পোৱা নাযায়"
-
-#, c-format
-msgid "cannot find port number in character device %s"
-msgstr "কেৰেক্টাৰ ডিভাইচ '%s' ত প'ৰ্ট সংখ্যা বিচাৰিবলৈ ব্যৰ্থ"
 
 #, c-format
 msgid "cannot find statistics for device '%s'"
@@ -12526,10 +12310,6 @@ msgstr "পৰিবৰ্তনশীল ডমেইন স্নেপশ্�
 #, c-format
 msgid "cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"
 msgstr "বহুকাৰ্য্য PCI ডিভাইচক হট আনপ্লাগ কৰিব নোৱাৰি: %.4x:%.2x:%.2x.%.1x"
-
-#, c-format
-msgid "cannot hot unplug multifunction PCI device: %s"
-msgstr "বহুকাৰ্য্য PCI ডিভাইচক হট আনপ্লাগ কৰিব নোৱাৰি: %s"
 
 #, c-format
 msgid "cannot initialize cert object: %s"
@@ -12671,21 +12451,6 @@ msgid "cannot parse %s version number in '%.*s'"
 msgstr "%s সংস্কৰণ সংখ্যা বিশ্লেষণ কৰিব নোৱাৰি '%.*s'"
 
 #, c-format
-msgid "cannot parse CPU topology '%s'"
-msgstr "CPU ৰ টোপোলজি '%s' বিশ্লেষণ কৰিবলৈ ব্যৰ্থ"
-
-msgid "cannot parse HyperV spinlock retry count"
-msgstr "HyperV spinlock পুনৰচেষ্টা গণনা বিশ্লেষণ কৰিব নোৱাৰি"
-
-#, c-format
-msgid "cannot parse NIC definition '%s'"
-msgstr "'%s' ৰ  কাৰণে NIC সংজ্ঞা পোৱা নাযায়"
-
-#, c-format
-msgid "cannot parse NIC vlan in '%s'"
-msgstr "'%s' ত NIC vlan বিশ্লেষণ কৰিব নোৱাৰি"
-
-#, c-format
 msgid "cannot parse PCI bus '%s'"
 msgstr "PCI bus '%s' বিশ্লেষণ কৰিব নোৱাৰি"
 
@@ -12702,28 +12467,12 @@ msgid "cannot parse PCI slot '%s'"
 msgstr "PCI slot '%s' বিশ্লেষণ কৰিব নোৱাৰি"
 
 #, c-format
-msgid "cannot parse UUID '%s'"
-msgstr "UUID '%s' বিশ্লেষণ কৰিব নোৱাৰি"
-
-#, c-format
-msgid "cannot parse VNC WebSocket port '%s'"
-msgstr "VNC WebSocket পোৰ্ট '%s' বিশ্লেষণ কৰিব নোৱাৰি"
-
-#, c-format
-msgid "cannot parse VNC port '%s'"
-msgstr "VNC port '%s' বিশ্লেষণ কৰিব নোৱাৰি"
-
-#, c-format
 msgid "cannot parse bus %s"
 msgstr "bus %s বিশ্লেষণ কৰিব নোৱাৰি"
 
 #, c-format
 msgid "cannot parse bus '%s'"
 msgstr "বাচ '%s' বিশ্লেষণ কৰিব নোৱাৰি"
-
-#, c-format
-msgid "cannot parse cylinders value'%s'"
-msgstr "চিলিণ্ডাৰসমূহ মান '%s' বিশ্লেষণ কৰিব নোৱাৰি"
 
 #, c-format
 msgid "cannot parse device %s"
@@ -12735,22 +12484,6 @@ msgstr "ডিভাইচৰ শেষৰ স্থান বিশ্লেষ
 msgid "cannot parse device start location"
 msgstr "ডিভাইচৰ আৰম্ভৰ স্থান বিশ্লেষণ কৰিব নোৱাৰি"
 
-#, c-format
-msgid "cannot parse drive bus '%s'"
-msgstr "ড্ৰাইভ বাচ '%s' বিশ্লেষণ কৰিবলৈ ব্যৰ্থ"
-
-#, c-format
-msgid "cannot parse drive index '%s'"
-msgstr "ড্ৰাইভ সূচী '%s' বিশ্লেষণ কৰিব নোৱাৰি"
-
-#, c-format
-msgid "cannot parse drive unit '%s'"
-msgstr "ড্ৰাইভ ইউনিট '%s' বিশ্লেষণ কৰিবলৈ ব্যৰ্থ"
-
-#, c-format
-msgid "cannot parse heads value'%s'"
-msgstr "হেডসমূহ মান '%s' বিশ্লেষণ কৰিব নোৱাৰি"
-
 msgid "cannot parse instanceid parameter as a uuid"
 msgstr "instanceid প্ৰাচলক uuid হিচাপে বিশ্লেষণ কৰিব নোৱাৰি"
 
@@ -12758,20 +12491,8 @@ msgid "cannot parse interfaceid parameter as a uuid"
 msgstr "interfaceid প্ৰাচলক uuid হিচাপে বিশ্লেষণ কৰিব নোৱাৰি"
 
 #, c-format
-msgid "cannot parse io mode '%s'"
-msgstr "io অৱস্থা '%s' বিশ্লেষণ কৰিব নোৱাৰি"
-
-#, c-format
 msgid "cannot parse json %s: %s"
 msgstr "json %s বিশ্লেষণ কৰা সম্ভৱ নহয়: %s"
-
-#, c-format
-msgid "cannot parse nbd filename '%s'"
-msgstr "nbd ফাইলনাম '%s' বিশ্লেষণ কৰিব নোৱাৰি"
-
-#, c-format
-msgid "cannot parse nvram's address '%s'"
-msgstr "nvram ৰ ঠিকনা '%s' বিশ্লেষণ কৰিব নোৱাৰি"
 
 #, c-format
 msgid "cannot parse partition number from target '%s'"
@@ -12792,21 +12513,6 @@ msgstr "উৎপাদন %s বিশ্লেষণ কৰিব নোৱা
 #, c-format
 msgid "cannot parse rdp port %s"
 msgstr "rdp প'ৰ্ট %s বিশ্লেষণ কৰিব নোৱাৰি"
-
-msgid "cannot parse reboot-timeout value"
-msgstr "reboot-timeout man বিশ্লেষণ কৰিব নোৱাৰি"
-
-#, c-format
-msgid "cannot parse sectors value'%s'"
-msgstr "অংশসমূহ মান '%s' বিশ্লেষণ কৰিব নোৱাৰি"
-
-#, c-format
-msgid "cannot parse sheepdog filename '%s'"
-msgstr "sheepdog ফাইলনাম '%s' বিশ্লেষণ কৰিব নোৱাৰি"
-
-#, c-format
-msgid "cannot parse sndbuf size in '%s'"
-msgstr "'%s' f sndbuf আকাৰ বিশ্লেষণ কৰিব নোৱাৰি"
 
 #, c-format
 msgid "cannot parse spice port %s"
@@ -12854,10 +12560,6 @@ msgstr "ভিডিও হেড '%s' বিশ্লেষণ কৰিবল�
 #, c-format
 msgid "cannot parse video ram '%s'"
 msgstr "ভিডিও ram '%s' বিশ্লেষণ কৰিবলৈ ব্যৰ্থ"
-
-#, c-format
-msgid "cannot parse vlan in '%s'"
-msgstr "'%s' ত vlan বিশ্লেষণ কৰিব নোৱাৰি"
 
 #, c-format
 msgid "cannot parse vnc WebSocket port %s"
@@ -13336,9 +13038,6 @@ msgstr "বিনেস ফাইলৰ শব্দবিনেসত ভুল
 msgid "configuration file syntax error: %s"
 msgstr "বিনেস ফাইলৰ শব্দবিনেসত ভুল: %s"
 
-msgid "conflicting occurrences of kvmclock feature"
-msgstr "kvmclock বৈশিষ্ট্যৰ দ্বন্দপূৰ্ণ উপস্থিতি"
-
 msgid "connect to the guest console"
 msgstr "অতিথি কনসোলৰ সৈতে সংযোগ স্থাপন কৰক"
 
@@ -13599,10 +13298,6 @@ msgstr "ডমেইন %s ৰ সৈতে VirtualBox অধিবেশন খ
 #, c-format
 msgid "could not open input path '%s'"
 msgstr "নিবেশ পথ '%s' খোলোঁতে ব্যৰ্থ"
-
-#, c-format
-msgid "could not parse CEPH_ARGS '%s'"
-msgstr "CEPH_ARGS '%s' বিশ্লেষণ কৰিব পৰা নগল"
 
 msgid "could not parse XML"
 msgstr "XML বিশ্লেষণ কৰিব পৰা নগল"
@@ -14006,9 +13701,6 @@ msgstr "ডিভাইচ %s এটা PCI ডিভাইচ নহয়"
 
 msgid "device alias not found: cannot set link state to down"
 msgstr "ডিভাইচৰ এলিয়াচ পোৱা নগল: সংযোগ অৱস্থাক down লে সংহতি কৰিব নোৱাৰি"
-
-msgid "device cannot be detached without a device alias"
-msgstr "ডিভাইচৰ এলায়েচ নোহোৱা ডিভাইচ বিচ্ছিন্ন কৰা সম্ভৱ নহয়"
 
 msgid "device cannot be detached: device is busy"
 msgstr "ডিভাইচ অসংলগ্ন কৰিব নোৱাৰি: ডিভাইচ ব্যস্ত"
@@ -15139,14 +14831,6 @@ msgstr "ব্যক্তিগত কি' পাচফ্ৰেইছ উদ�
 msgid "failed to rollback transaction: %s%s%s"
 msgstr "লেন দেন ৰলবেক কৰিবলে ব্যৰ্থ: %s%s%s"
 
-#, c-format
-msgid "failed to run '%s --help': %s"
-msgstr "'%s --help' চলাবলে ব্যৰ্থ: %s"
-
-#, c-format
-msgid "failed to run '%s --version': %s"
-msgstr "'%s --version' চলাবলে ব্যৰ্থ: %s"
-
 msgid "failed to run apparmor_parser"
 msgstr "apparmor_parser চলাবলে ব্যৰ্থ"
 
@@ -15337,9 +15021,6 @@ msgstr "বহিৰ্তম স্নেপশ্বটসমূহৰ সহ�
 msgid "filter by internal snapshots"
 msgstr "অভ্যন্তৰীণ স্নেপশ্বটসমূহৰ সহায়ত ফিল্টাৰ কৰক"
 
-msgid "filter by snapshots taken while active (system checkpoints)"
-msgstr "সক্ৰিয় অৱস্থাত লোৱা স্নেপশ্বটৰ সহায়ত ফিল্টাৰ কৰক (চিস্টেম চেকপইণ্টসমূহ)"
-
 msgid "filter by snapshots taken while inactive"
 msgstr "নিষ্ক্ৰিয় অৱস্থাত লোৱা ফিল্টাৰৰ সহায়ত ফিল্টাৰ কৰক"
 
@@ -15368,12 +15049,6 @@ msgstr "পুল ভিতৰ"
 
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"
 msgstr "ফ্লেগৰ স্থিতিমাপ VIR_MEMORY_VIRTUAL বা VIR_MEMORY_PHYSICAL হোৱা আৱশ্যক"
-
-msgid "floor attribute is supported only for interfaces of type network"
-msgstr "floor বৈশিষ্ট্য কেৱল নেটৱৰ্ক ধৰণ আন্তঃপৃষ্ঠসমূহৰ বাবে সমৰ্থিত"
-
-msgid "floor attribute isn't supported for network's bandwidth yet"
-msgstr "নেটৱৰ্কৰ বেণ্ডৱাইড্তৰ বাবে floor বৈশিষ্ট্য এতিয়াও সমৰ্থিত নহয়"
 
 #, c-format
 msgid "for Linux >= %d.%d.%d"
@@ -15416,10 +15091,6 @@ msgstr "%s %s ৰ বাবে ফৰমেটাৰে ত্ৰুটিৰ �
 msgid "forward interface entries cannot be modified, only added or deleted"
 msgstr ""
 "ফৰৱাৰ্ড আন্তঃপৃষ্ঠ প্ৰৱিষ্টিসমূহ পৰিবৰ্তন কৰিব নোৱাৰি, কেৱল যোগ কৰিব অথবা মচিব পাৰি"
-
-#, c-format
-msgid "found no rbd hosts in CEPH_ARGS '%s'"
-msgstr "CEPH_ARGS '%s' ত কোনো rbd হস্ট পোৱা নগল"
 
 msgid "from snapshot"
 msgstr "স্নেপশ্বটৰ পৰা"
@@ -15991,10 +15662,6 @@ msgstr "অবৈধ সংযোগ নিৰ্দেশক ডিভাইচ
 msgid "invalid connection pointer in %s"
 msgstr "%s ত অবৈধ সংযোগ নিৰ্দেশক ডিভাইচ"
 
-#, c-format
-msgid "invalid device name '%s'"
-msgstr "অবৈধ ডিভাইচ নাম '%s'"
-
 msgid "invalid domain pointer in"
 msgstr "অবৈধ ডোমেইন নিৰ্দেশক ডিভাইচ"
 
@@ -16088,10 +15755,6 @@ msgstr "অবৈধ যৌক্তিক খণ্ড আকাৰ '%s'"
 
 msgid "invalid mode"
 msgstr "অবৈধ অৱস্থা"
-
-#, c-format
-msgid "invalid name '%s' for iSCSI disk"
-msgstr "iSCSI ডিস্কৰ বাবে অবৈধ নাম '%s'"
 
 #, c-format
 msgid "invalid netfs path (ends in /): %s"
@@ -16269,14 +15932,6 @@ msgstr "অবৈধ মান %d"
 
 msgid "invalid value for boot menu timeout, must be in range [0,65535]"
 msgstr "বুট মেনু সময়অন্তৰ বাবে অবৈধ মান, বিস্তাৰ [0,65535] ত হব লাগিব"
-
-#, c-format
-msgid "invalid value for disable_s3 parameter: '%s'"
-msgstr "disable_s3 প্ৰাচলৰ বাবে অবৈধ মান: '%s'"
-
-#, c-format
-msgid "invalid value for disable_s4 parameter: '%s'"
-msgstr "disable_s4 প্ৰাচলৰ বাবে অবৈধ মান: '%s'"
 
 msgid "invalid value for rebootTimeout, must be in range [-1,65535]"
 msgstr "rebootTimeout ৰ বাবে অবৈধ মান, বিস্তাৰ [-1,65535] ত হব লাগিব"
@@ -16634,14 +16289,8 @@ msgstr "ডিভাইচ '%s' ৰ জীৱন্ত সংলগ্ন সম
 msgid "live detach of device '%s' is not supported"
 msgstr "ডিভাইচ '%s' ৰ জীৱন্ত অসংলগ্ন সমৰ্থিত নহয়"
 
-msgid "live disk snapshot not supported with this QEMU binary"
-msgstr "জীৱন্ত ডিস্ক স্নেপশ্বট এই QEMU বাইনাৰিৰ সৈতে সমৰ্থিত নহয়"
-
 msgid "live migration"
 msgstr "লাইভ প্ৰব্ৰজন"
-
-msgid "live snapshot creation is supported only with external checkpoints"
-msgstr "জীৱন্ত স্নেপশ্বট সৃষ্টি কেৱল বহিৰ্তম চেকপইণ্টসমূহৰ সৈতে সমৰ্থিত"
 
 #, c-format
 msgid "live update of device '%s' is not supported"
@@ -16838,9 +16487,6 @@ msgstr "মেমৰি বৈশিষ্ট্যসমূহ: [file=]name[,sn
 msgid "memory filename '%s' requires external snapshot"
 msgstr "মেমৰি ফাইলনাম '%s' ৰ বহিৰ্তম স্নেপশ্বটৰ প্ৰয়োজন"
 
-msgid "memory locking not supported by QEMU binary"
-msgstr "QEMU বাইনাৰি দ্বাৰা মেমৰি লকিং সমৰ্থিত নহয়"
-
 #, c-format
 msgid "memory peek request too large for remote protocol, %zi > %d"
 msgstr "memory peek অনুৰোধ দূৰৰ আচাৰ বিধিৰ কাৰণে বৰ ডাঙৰ, %zi > %d"
@@ -16977,9 +16623,6 @@ msgstr "RAM ফাইলচিস্টেমৰ বাবে সন্ধান
 msgid "missing EGD backend type"
 msgstr "সন্ধানহীন EGD বেকএণ্ড ধৰণ"
 
-msgid "missing HyperV spinlock retry count"
-msgstr "সন্ধানহীন HyperV spinlock পুনৰচেষ্টা গণনা"
-
 msgid "missing IFLA_VF_INFO in netlink response"
 msgstr "নেটলিঙ্ক প্ৰতিক্ৰিয়াত IFLA_VF_INFO সন্ধানহীন"
 
@@ -17010,10 +16653,6 @@ msgstr "সন্ধানহীন TPM ডিভাইচ বেকএণ্ড
 
 msgid "missing TPM device backend type"
 msgstr "সন্ধানহীন TPM ডিভাইচ বেকএণ্ড ধৰণ"
-
-#, c-format
-msgid "missing VNC port number in '%s'"
-msgstr "'%s' f সন্ধানহীন VNC পোৰ্ট সংখ্যা"
 
 #, c-format
 msgid "missing address type in network %s"
@@ -17096,10 +16735,6 @@ msgstr "ডিস্ক %s ৰ বাবে স্থায়ী ফাইল স�
 msgid "missing feature name"
 msgstr "সন্ধানহীন বৈশিষ্ট্য নাম"
 
-#, c-format
-msgid "missing file parameter in drive '%s'"
-msgstr "'%s' ড্ৰাইভত হৰুৱা ফাইলৰ স্থিতিমাপ"
-
 msgid "missing filter parameter table"
 msgstr "ফিল্টাৰ প্ৰাচল টেবুল সন্ধানহীন"
 
@@ -17121,10 +16756,6 @@ msgstr "সন্ধানহীন হাব ডিভাইচ ধৰণ"
 
 msgid "missing iSCSI hostdev source path name"
 msgstr "iSCSI hostdev উৎস পথ নাম সন্ধানহীন"
-
-#, c-format
-msgid "missing index/unit/bus parameter in drive '%s'"
-msgstr "ড্ৰাইভ '%s' ত ইন্ডেক্স/ইউনিট/বাচ স্থিতিমাপ অনুপস্থিত"
 
 msgid "missing input device type"
 msgstr "নিবেশ ডিভাইচৰ প্ৰকৃতি অনুপস্থিত"
@@ -17325,10 +16956,6 @@ msgstr "auth ৰ বাবে সন্ধানহীন ব্যৱহাৰ�
 msgid "missing uuid element in migration data"
 msgstr "প্ৰব্ৰজন তথ্যত সন্ধানহীন uuid উপাদান"
 
-#, c-format
-msgid "missing value for %s argument"
-msgstr "%s তৰ্কৰ পৰা হৰুৱা মান"
-
 msgid "missing vendor"
 msgstr "অনুপস্থিত vendor"
 
@@ -17337,9 +16964,6 @@ msgstr "ভিডিও মডেল অনুপস্থিত আৰু ড�
 
 msgid "missing vlan tag data"
 msgstr "সন্ধানহীন vlan টেগ তথ্য"
-
-msgid "missing vnc sharing policy"
-msgstr "সন্ধানহীন vnc অংশীদাৰী নীতি"
 
 msgid "missing volume name element"
 msgstr "হৰুৱা নামৰ অংশ"
@@ -17523,18 +17147,6 @@ msgid "network '%s' already exists with uuid %s"
 msgstr "নেটৱৰ্ক '%s' ইতিমধ্যে uuid %s ৰ সৈতে অস্তিত্ববান"
 
 #, c-format
-msgid "network '%s' claims dev='%s' is already in use by a different domain"
-msgstr "নেটৱৰ্ক '%s' এ dev='%s' ইতিমধ্যে এটা ভিন্ন ডমেইন দ্বাৰা ব্যৱহৃত বুলি দাবী কৰে"
-
-#, c-format
-msgid ""
-"network '%s' claims the PCI device at domain=%d bus=%d slot=%d function=%d "
-"is already in use by a different domain"
-msgstr ""
-"নেটৱৰ্ক '%s' এ দাবী কৰে যে domain=%d bus=%d slot=%d function=%d ত থকা PCI "
-"ডিভাইচ ইতিমধ্যে এটা ভিন্ন ডমেইন দ্বাৰা ব্যৱহাৰ কৰা হয়"
-
-#, c-format
 msgid "network '%s' does not have a bridge name."
 msgstr "নে'টৱৰ্ক '%s' ৰ এটা bridge নাম নাই।"
 
@@ -17581,22 +17193,6 @@ msgid ""
 msgstr ""
 "নেটৱৰ্ক '%s' এটা প্ৰত্যক্ষ অৱস্থা ব্যৱহাৰ কৰে, কিন্তু কোনো ফৰৱাৰ্ড dev আৰু কোনো "
 "আন্তঃপৃষ্ঠ পুল নাই"
-
-#, c-format
-msgid ""
-"network '%s' uses a direct or hostdev mode, but has no forward dev and no "
-"interface pool"
-msgstr ""
-"নেটৱৰ্ক '%s' এটা প্ৰত্যক্ষ অথবা hostdev অৱস্থা ব্যৱহাৰ কৰে, কিন্তু ফৰৱাৰ্ড dev আৰু "
-"আন্তঃপৃষ্ঠ পুল নাই"
-
-#, c-format
-msgid ""
-"network '%s' uses a direct/hostdev mode, but has no forward dev and no "
-"interface pool"
-msgstr ""
-"নেটৱৰ্ক '%s' এটা প্ৰত্যক্ষ/hostdev অৱস্থা ব্যৱহাৰ কৰে, কিন্তু ফৰৱাৰ্ড dev আৰু আন্তঃপৃষ্ঠ "
-"পুল নাই"
 
 #, c-format
 msgid "network event callback %d not registered"
@@ -17844,9 +17440,6 @@ msgstr "uuid '%s' ৰ সৈতে সুসংগত ডোমেইন অন�
 #, c-format
 msgid "no domain with matching uuid '%s' (%s)"
 msgstr "মিল থকা uuid '%s' (%s) ৰ সৈতে কোনো ডমেইন নাই"
-
-msgid "no emulator path found"
-msgstr "emulator ৰ পথ পোৱা ন'গ'ল"
 
 msgid "no error"
 msgstr "কোনো ত্ৰুটি নাই"
@@ -18097,10 +17690,6 @@ msgstr "nvram ডিভাইচ কেৱল PPC64 ৰ বাবে সমৰ�
 msgid "nwfilter is in use"
 msgstr "nwfilter ব্যৱহৃত"
 
-#, c-format
-msgid "object size %zu of %s is smaller than parent class %zu"
-msgstr "অবজেক্ট আকাৰ %zu, %s ৰ  উপধায়ক ক্লাচকে সৰু %zu"
-
 msgid "occupied"
 msgstr "ব্যস্ত"
 
@@ -18124,9 +17713,6 @@ msgstr "অফলাইন প্ৰব্ৰজন স্থায়ী ফ্ল
 
 msgid "ok"
 msgstr "ঠিক আছে"
-
-msgid "online commit not supported with this QEMU binary"
-msgstr "এই QEMU বাইনাৰিৰ সৈতে অনলাইন commit সমৰ্থিত নহয়"
 
 msgid "only a single TPM device is supported"
 msgstr "কেৱল এটা TPM ডিভাইচ সমৰ্থিত"
@@ -18409,9 +17995,6 @@ msgstr "ডিস্ক '%s' ৰ pivot ৰ এটা সক্ৰিয় কপ�
 
 msgid "pmsuspended"
 msgstr "pmsuspended"
-
-msgid "poll error"
-msgstr "ভুল"
 
 msgid "poll failed in migration tunnel"
 msgstr "প্ৰব্ৰজন টানেলত পল ব্যৰ্থ হল"
@@ -18723,9 +18306,6 @@ msgstr "আতৰাব পৰা কেৱল usb ডিস্কসমূহ�
 
 msgid "remove all associated storage volumes (use with caution)"
 msgstr "সকলো সংযুক্ত সংৰক্ষণ ভলিউমসমূহ আতৰাওক (সাবধানতাৰ সৈতে ব্যৱহাৰ কৰক)"
-
-msgid "remove all domain snapshot metadata, if inactive"
-msgstr "সকলো ডমেইন স্নেপশ্বট মেটাডাটা আতৰাওক, যদি নিষ্ক্ৰিয়"
 
 msgid ""
 "remove associated storage volumes (comma separated list of targets or source "
@@ -19487,12 +19067,6 @@ msgstr "অবিকল্পিত lockspace ইতিমধ্যে অস্
 msgid "the domain does not have a current snapshot"
 msgstr "ডমেইনৰ এটা বৰ্তমান স্নেপশ্বট নাই"
 
-msgid "the interface uses a direct mode, but has no source dev"
-msgstr "আন্তঃপৃষ্ঠয় এটা প্ৰত্যক্ষ অৱস্থা ব্যৱহাৰ কৰে, কিন্তু কোনো উৎস dev নাই"
-
-msgid "the interface uses a hostdev mode, but has no hostdev"
-msgstr "আন্তঃপৃষ্ঠয় এটা hostdev অৱস্থা ব্যৱহাৰ কৰে, কিন্তু কোনো hostdev নাই"
-
 msgid "the key code"
 msgstr "কি' ক'ড"
 
@@ -19754,10 +19328,6 @@ msgstr "পুলৰ ধৰণ "
 
 msgid "type of update (add-first, add-last (add), delete, or modify)"
 msgstr "আপডেইটৰ ধৰণ (add-first, add-last (add), delete, অথবা modify)"
-
-#, c-format
-msgid "udev scan devices returned %d"
-msgstr "udev স্কেন ডিভাইচসমূহে %d ঘুৰাই দিলে"
 
 msgid "udev_monitor_new_from_netlink returned NULL"
 msgstr "udev_monitor_new_from_netlink এ NULL ঘুৰাই দিলে"
@@ -20187,10 +19757,6 @@ msgid "unexpected domain %s already exists"
 msgstr "অপ্ৰত্যাশিত ডোমেইন %s বৰ্তমানে আছে"
 
 #, c-format
-msgid "unexpected domain snapshot %s already exists"
-msgstr "অপ্ৰত্যাশিত ডমেইন স্নেপশ্বট %s ইতিমধ্যে অস্তিত্ববান"
-
-#, c-format
 msgid "unexpected domain type %d"
 msgstr "অপ্ৰত্যাশিত ডোমেইনৰ প্ৰকৃতি %d"
 
@@ -20204,10 +19770,6 @@ msgstr "%s ত অপ্ৰত্যাশিত ৰিক্ত কিৱাৰ
 
 msgid "unexpected encryption format"
 msgstr "অপ্ৰত্যাশিত এনক্ৰিপশনৰ বিন্যাসয %d"
-
-#, c-format
-msgid "unexpected feature %zu"
-msgstr "অপ্ৰত্যাশিত বৈশিষ্ট্য %zu"
 
 #, c-format
 msgid "unexpected feature '%s'"
@@ -20433,20 +19995,12 @@ msgstr "অজ্ঞাত"
 msgid "unknown %s action: %s"
 msgstr "অজ্ঞাত %s কাৰ্য্য: %s"
 
-#, c-format
-msgid "unknown CPU syntax '%s'"
-msgstr "CPU ৰ অজ্ঞাত শব্দবিন্যাস '%s'"
-
 msgid "unknown OS type"
 msgstr "অজ্ঞাত OS ৰ ধৰণ"
 
 #, c-format
 msgid "unknown OS type %s"
 msgstr "অজ্ঞাত OS ৰ ধৰণ %s"
-
-#, c-format
-msgid "unknown PCI device syntax '%s'"
-msgstr "অজ্ঞাত PCI device syntax '%s'"
 
 #, c-format
 msgid "unknown PM state value %s"
@@ -20463,10 +20017,6 @@ msgstr "অজ্ঞাত RNG আৰ্হি '%s'"
 #, c-format
 msgid "unknown SCSI host capability type '%s' for '%s'"
 msgstr "SCSI হোস্টৰ অজ্ঞাত ক্ষমতাৰ ধৰণ '%s', '%s' ৰ বাবে উল্লিখিত হৈছে"
-
-#, c-format
-msgid "unknown USB device syntax '%s'"
-msgstr "USB ডিভাইচৰ অজ্ঞাত শব্দবিন্যাস '%s'"
 
 #, c-format
 msgid "unknown accessmode '%s'"
@@ -20515,10 +20065,6 @@ msgstr "অজ্ঞাত '%d' ক্ষমতাৰ ধৰণ '%s' ৰ কা�
 #, c-format
 msgid "unknown capability type '%s'"
 msgstr "অজ্ঞাত auth ধৰণ '%s'"
-
-#, c-format
-msgid "unknown character device syntax %s"
-msgstr "অজ্ঞাত character device syntax %s"
 
 #, c-format
 msgid "unknown character device type: %s"
@@ -20574,14 +20120,6 @@ msgstr "অজ্ঞাত ডিভাইচ ধৰণ '%s'"
 #, c-format
 msgid "unknown dhcp peerdns value %s"
 msgstr "অজ্ঞাত dhcp peerdns মান %s"
-
-#, c-format
-msgid "unknown disk backing store format '%s'"
-msgstr "অজ্ঞাত ডিস্ক বেকিং সংৰক্ষণ বিন্যাস '%s'"
-
-#, c-format
-msgid "unknown disk backing store type '%s'"
-msgstr "অজ্ঞাত ডিস্ক বেকিং সংৰক্ষণ ধৰণ '%s'"
 
 #, c-format
 msgid "unknown disk bus type '%s'"
@@ -20845,14 +20383,6 @@ msgid "unknown mii bonding carrier %s"
 msgstr "অজ্ঞাত mii bonding পৰিবহনকৰ্তা %s"
 
 #, c-format
-msgid "unknown mirror backing store type '%s'"
-msgstr "অজ্ঞাত মিৰৰ বেকিং সংৰক্ষণ ধৰণ '%s'"
-
-#, c-format
-msgid "unknown mirror format value '%s'"
-msgstr "অজ্ঞাত মিৰৰ বিন্যাস মান '%s'"
-
-#, c-format
 msgid "unknown mirror job type '%s'"
 msgstr "অজ্ঞাত মিৰৰ কাৰ্য্য ধৰণ '%s'"
 
@@ -21072,16 +20602,8 @@ msgid "unknown value for attribute eoi: '%s'"
 msgstr "বৈশিষ্ট্য eoi ৰ বাবে অজ্ঞাত মান: '%s'"
 
 #, c-format
-msgid "unknown video adapter type '%s'"
-msgstr "অজ্ঞাত ধৰণৰ ভিডিও এডাপ্টাৰ '%s'"
-
-#, c-format
 msgid "unknown video model '%s'"
 msgstr "অজ্ঞাত ধৰণৰ ভিডিও মডেল '%s'"
-
-#, c-format
-msgid "unknown virt type in domain definition '%d'"
-msgstr "'%d' ডোমেইন সংজ্ঞাত অজ্ঞাত virt type উল্লেখিত"
 
 #, c-format
 msgid "unknown virtualport type %s"
@@ -21143,10 +20665,6 @@ msgid "unrecognized command name '%s'"
 msgstr "অপৰিচিত কমান্ড নাম '%s'"
 
 #, c-format
-msgid "unrecognized driver name value %d  in network '%s'"
-msgstr "অপৰিচিত ড্ৰাইভাৰ নাম মান %d নেটৱৰ্ক '%s'"
-
-#, c-format
 msgid "unrecognized network update command code %d"
 msgstr "অপৰিচিত নেটৱৰ্ক আপডেইট কমান্ড ক'ড %d"
 
@@ -21156,10 +20674,6 @@ msgstr "অপৰিচিত অংশৰ নাম '%s'"
 
 msgid "unspecified error"
 msgstr "অধাৰ্য্যত ত্ৰুটি"
-
-#, c-format
-msgid "unsupported HyperV Enlightenment feature '%s'"
-msgstr "অসমৰ্থিত HyperV উদ্বোধ বৈশিষ্ট্য '%s'"
 
 #, c-format
 msgid "unsupported HyperV Enlightenment feature: %s"
@@ -21490,9 +21004,6 @@ msgstr "virDirCreate ক WIN32 ৰ বাবে প্ৰণয়ন কৰা হ
 
 msgid "virDomainGetXMLDesc with secure flag"
 msgstr "virDomainGetXMLDesc secure flag ৰ লগত"
-
-msgid "virDomainSaveImageGetXMLDesc with secure flag"
-msgstr "virDomainSaveImageGetXMLDesc সুৰক্ষিত ফ্লেগৰ সৈতে"
 
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "সুৰক্ষিত ফ্লেগৰ সৈতে virDomainSnapshotGetXMLDesc"

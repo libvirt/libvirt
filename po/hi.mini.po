@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"POT-Creation-Date: 2019-07-01 18:50+0100\n"
 "PO-Revision-Date: 2015-02-23 12:39+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Hindi (http://www.transifex.com/projects/p/fedora/language/"
@@ -634,9 +634,6 @@ msgstr "बस %s गंतव्य के लिए काफी बड़ा 
 msgid "Busy"
 msgstr "व्यस्त"
 
-msgid "CEPH_ARGS was set without an rbd disk"
-msgstr "rbd डिस्क के बिना CEPH_ARGS सेट किया था"
-
 msgid "CPU Affinity"
 msgstr "CPU जुड़ाव"
 
@@ -810,10 +807,6 @@ msgstr "आरंभिक पीआईडी ​​जाना जाता �
 
 msgid "Cannot complete within timeout period"
 msgstr "समयबाह्य अवधि के भीतर पूरा नहीं कर सकता"
-
-#, c-format
-msgid "Cannot connect to monitor connection of type '%s' for pid %u"
-msgstr "कनेक्शन प्रकार '%s' की निगरानी के लिए कनेक्ट नहीं कर सकते %u pid के लिए "
 
 #, c-format
 msgid "Cannot create %s"
@@ -1167,12 +1160,6 @@ msgstr "प्रति सॉकेट कोर:"
 #, c-format
 msgid "Could find volume with name: %s"
 msgstr "नाम के साथ मात्रा मिल सकता है: %s"
-
-msgid "Could not add variable 'IP' to hashmap"
-msgstr "hashmap में परिवर्तनीय 'IP' को जोड़ नहीं सका"
-
-msgid "Could not add variable 'MAC' to hashmap"
-msgstr " hashmap में परिवर्तनीय 'MAC' को जोड़ नहीं सका"
 
 msgid "Could not build CURL header list"
 msgstr "CURL शीर्षिका सूची बना नहीं सका"
@@ -2089,9 +2076,6 @@ msgstr "XML विन्यास को भंडारण पुल के ल
 msgid "Eject the media"
 msgstr "मीडिया को बाहर निकालें"
 
-msgid "Empty qemu environment name specified"
-msgstr "खाली qemu वातावरण नाम निर्दिष्ट"
-
 #, c-format
 msgid "Empty response during %s"
 msgstr " रिक्त अनुक्रिया %s के दौरान"
@@ -2163,9 +2147,6 @@ msgstr "Escape वर्ण %s है\n"
 msgid "Exceeded max iface limit %d"
 msgstr "अधिकतम iface सीमा %d से बढ़ गया"
 
-msgid "Exiting due to failure to migrate profile"
-msgstr "प्रोफ़ाइल प्रवासित करने में विफलता के चलते बाहर"
-
 #, c-format
 msgid "Expecting VI API type 'HostAgent' or 'VirtualCenter' but found '%s'"
 msgstr "VI API प्रकार 'HostAgent' or 'VirtualCenter' की आशा लेकिन '%s' पाया गया"
@@ -2187,9 +2168,6 @@ msgstr "प्रकार '%s' की आशा लेकिन '%s' पाय�
 #, c-format
 msgid "Expecting type to begin with 'ArrayOf' but found '%s'"
 msgstr "प्रकार 'ArrayOf' शुरू करने की आशा लेकिन '%s' पाया गया"
-
-msgid "Expiry of passwords is not supported"
-msgstr "पासवर्ड की समाप्ति समर्थित नहीं है"
 
 msgid "FAIL"
 msgstr "FAIL"
@@ -3156,9 +3134,6 @@ msgstr "प्राप्त परसिस्टेंट कॉन्फि�
 #, c-format
 msgid "Got invalid memory size %d"
 msgstr "अमान्य स्मृति आकार %d मिला "
-
-msgid "Graphics password only supported for VNC"
-msgstr "VNC के लिए केवल समर्थित ग्राफिक्स कूटशब्द "
 
 #, c-format
 msgid "HTTP response code %d for call to '%s'"
@@ -4269,10 +4244,6 @@ msgstr "कोई मास्टर USB नियंत्रक निर्�
 msgid "No match"
 msgstr "बेमेल"
 
-#, c-format
-msgid "No monitor connection for pid %u"
-msgstr "pid %u के लिए कोई मॉनिटर कनेक्शन नहीं "
-
 msgid "No previous regular expression"
 msgstr "कोई पिछली नियमित अभिव्यक्ति नहीं"
 
@@ -4440,9 +4411,6 @@ msgstr "एक XML डंप को stdout में आयतन सूचन�
 
 msgid "PASS"
 msgstr "पास"
-
-msgid "PCI address Formatting failed"
-msgstr "PCI पता प्रारूपण विफल"
 
 #, c-format
 msgid "PCI device %s is not assignable"
@@ -5874,10 +5842,6 @@ msgstr "पाइप बनाने में असमर्थ"
 msgid "Unable to mark loop device as autoclear"
 msgstr "लूप युक्ति को autoclear के रूप में चिह्नित करने में असमर्थ"
 
-#, c-format
-msgid "Unable to migrate %s to %s"
-msgstr "%s को %s में उत्प्रसावन में असमर्थ"
-
 msgid "Unable to obtain host UUID"
 msgstr "होस्ट UUID प्राप्त करने में अक्षम"
 
@@ -5967,10 +5931,6 @@ msgstr "%s पर %s के लिए व्यक्तित्व का अ�
 #, c-format
 msgid "Unable to reset PCI device %s: %s"
 msgstr "PCI युक्ति %s को फिर सेट करने में असमर्थ: %s"
-
-#, c-format
-msgid "Unable to resolve %s for pid %u"
-msgstr "%s का समाधान करने में असमर्थ pid %u के लिए "
 
 msgid "Unable to restart self"
 msgstr "स्वयं को पुनः प्रारंभ करने में असमर्थ"
@@ -6250,9 +6210,6 @@ msgstr "अज्ञात मोड निर्दिष्ट किया �
 msgid "Unknown model type '%s'"
 msgstr "अज्ञात माडल प्रकार '%s'"
 
-msgid "Unknown poll response."
-msgstr "अज्ञात पोल अनुक्रिया."
-
 #, c-format
 msgid "Unknown protocol '%s'"
 msgstr "अज्ञात प्रोटोकॉल '%s'"
@@ -6436,20 +6393,6 @@ msgstr "मान '%s' के रूप में %s representable नहीं 
 #, c-format
 msgid "Value '%s' is out of %s range"
 msgstr "मान '%s' %s सीमा के बाहर है "
-
-msgid "Value of cputune emulator_period must be in range [1000, 1000000]"
-msgstr "Cputune emulator_period की मूल्य सीमा [1000, 1000000] में होना चाहिए"
-
-msgid ""
-"Value of cputune emulator_quota must be in range [1000, 18446744073709551]"
-msgstr ""
-"Cputune emulator_quota की मूल्य सीमा [1000, 18446744073709551] में होना चाहिए"
-
-msgid "Value of cputune period must be in range [1000, 1000000]"
-msgstr "Cputune अवधि की मूल्य सीमा [1000, 1000000] में होना चाहिए"
-
-msgid "Value of cputune quota must be in range [1000, 18446744073709551]"
-msgstr "Cputune कोटा की मूल्य सीमा [1000, 18446744073709551] में होना चाहिए"
 
 msgid "Variable value contains invalid character"
 msgstr "परिवर्तनीय मान में अवैध अक्षर है"
@@ -6641,14 +6584,6 @@ msgstr ""
 "एक संजाल '% s' को एक VLAN टैग अनुरोध किया है को जोड़ने इंटरफेस है, लेकिन लगता है कि "
 "नेटवर्क के इस प्रकार के लिए समर्थित नहीं है"
 
-#, c-format
-msgid ""
-"an interface of type '%s' is requesting a vlan tag, but that is not "
-"supported for this type of connection"
-msgstr ""
-"प्रकार '%s' के एक इंटरफेस एक VLAN टैग अनुरोध कर रहा है, लेकिन यह है कि कनेक्शन के इस "
-"प्रकार के लिए समर्थित नहीं है"
-
 msgid "apparmor_parser exited with error"
 msgstr "apparmor_parser त्रुटि के साथ बाहर निकल गया"
 
@@ -6719,14 +6654,8 @@ msgstr "blkio cgroup आरोहित नही है "
 msgid "block"
 msgstr "ब्लॉक"
 
-msgid "block copy is not supported with this QEMU binary"
-msgstr "इस QEMU द्विपदीय के साथ ब्लॉक कॉपी समर्थित नहीं है"
-
 msgid "block device"
 msgstr "ब्लॉक युक्ति"
-
-msgid "block jobs not supported with this QEMU binary"
-msgstr "जॉब इस QEMU द्विपदीय के साथ समर्थित नहीं है"
 
 #, c-format
 msgid "block peek request too large for remote protocol, %zi > %d"
@@ -6777,14 +6706,6 @@ msgstr "ब्रिज '%s' एक अवैध netmask या आईपी प
 #, c-format
 msgid "bridge '%s' has an invalid prefix"
 msgstr "ब्रिज '%s' एक अवैध उपसर्ग है"
-
-#, c-format
-msgid ""
-"bridge delay/stp options only allowed in route, nat, and isolated mode, not "
-"in %s (network '%s')"
-msgstr ""
-"ब्रिज delay/stp विकल्पों केवल मार्ग, nat और पृथक मोड में स्वीकार्य है ,कोई %s (संजाल "
-"'%s') में नहीं "
 
 msgid "bridge interface misses the bridge element"
 msgstr "अंतरफलक टैग विशेषता को अनुपस्थित करता है"
@@ -6872,11 +6793,6 @@ msgid "cannot block signals"
 msgstr "संकेत रोक नहीं सकता है"
 
 #, c-format
-msgid ""
-"cannot change between disk snapshot and system checkpoint in snapshot %s"
-msgstr "स्नैपशॉट %s में डिस्क स्नैपशॉट और सिस्टम चेकपॉइंट के बीच परिवर्तित नहीं कर सकता"
-
-#, c-format
 msgid "cannot change between online and offline snapshot state in snapshot %s"
 msgstr "स्नैपशॉट %s में ऑनलाइन और ऑफलाइन स्नैपशॉट स्थिति के बीच परिवर्तित नहीं कर सकता"
 
@@ -6908,9 +6824,6 @@ msgstr "किसी मौजूदा गुप्त पर कोई नि�
 #, c-format
 msgid "cannot change to root directory: %s"
 msgstr "रूट निर्देशिका में नहीं बदल सकता है: %s"
-
-msgid "cannot change vcpu count of this domain"
-msgstr "इस डोमेन का vcpu गणना बदल नहीं सकता है"
 
 #, c-format
 msgid "cannot chmod '%s' to 0660"
@@ -7033,34 +6946,6 @@ msgstr "द्विपदीय %s निस्पादित सेट नह
 msgid "cannot extend file '%s'"
 msgstr "फाइल '%s' फैला नहीं सकता है"
 
-#, c-format
-msgid "cannot extract PCI device bus '%s'"
-msgstr "PCI युक्ति बस '%s' को निकाल नहीं सकता है"
-
-#, c-format
-msgid "cannot extract PCI device function '%s'"
-msgstr "PCI युक्ति प्रकार्य को '%s' के लिए निकाल नहीं सकता है"
-
-#, c-format
-msgid "cannot extract PCI device slot '%s'"
-msgstr "PCI युक्ति स्लॉट '%s' को निकाल नहीं सकता है"
-
-#, c-format
-msgid "cannot extract USB device address '%s'"
-msgstr "USB युक्ति पता '%s' निकाल नहीं सकता है"
-
-#, c-format
-msgid "cannot extract USB device bus '%s'"
-msgstr "USB युक्ति बस '%s' को निकाल नहीं सकता है"
-
-#, c-format
-msgid "cannot extract USB device product '%s'"
-msgstr "USB युक्ति उत्पाद '%s' निकाल नहीं सकता है"
-
-#, c-format
-msgid "cannot extract USB device vendor '%s'"
-msgstr "USB युक्ति विक्रेता '%s' निकाल नहीं सकता है"
-
 msgid "cannot extract blkiotune nodes"
 msgstr "blkiotune नोड को निकाल नहीं सकता है"
 
@@ -7088,10 +6973,6 @@ msgid "cannot find CPU map for %s architecture"
 msgstr "CPU मैप को %s आर्किटेक्चर के लिए ढूँढ़ नहीं सकता है"
 
 #, c-format
-msgid "cannot find NIC definition for vlan %d"
-msgstr "NIC परिभाषा को vlan %d के लिए नहीं ढूँढ़ सकता है"
-
-#, c-format
 msgid "cannot find character device %s"
 msgstr "वर्ण युक्ति %s नहीं मिल सकता है"
 
@@ -7106,10 +6987,6 @@ msgstr "कंटेनर रूट के सापेक्ष init पथ '%
 #, c-format
 msgid "cannot find newly created volume '%s'"
 msgstr "नवनिर्मित आयतन '%s' नहीं पता कर सकता है"
-
-#, c-format
-msgid "cannot find port number in character device %s"
-msgstr "वर्ण युक्ति %s में पोर्ट संख्या नहीं ढूंढ़ सकता है"
 
 #, c-format
 msgid "cannot find statistics for device '%s'"
@@ -7168,10 +7045,6 @@ msgstr "अस्थायी डोमेन स्नैपशॉट को �
 #, c-format
 msgid "cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"
 msgstr "गर्म multifunction PCI डिवाइस अनप्लग नहीं कर सकते है: %.4x:%.2x:%.2x.%.1x"
-
-#, c-format
-msgid "cannot hot unplug multifunction PCI device: %s"
-msgstr "गर्म multifunction PCI डिवाइस अनप्लग नहीं कर सकते है: %s"
 
 #, c-format
 msgid "cannot initialize cert object: %s"
@@ -7250,18 +7123,6 @@ msgid "cannot parse %s version number in '%.*s'"
 msgstr "%s संस्करण संख्या का विश्लेषण नहीं कर सकता है '%.*s' में "
 
 #, c-format
-msgid "cannot parse CPU topology '%s'"
-msgstr "CPU टोपोलॉजी '%s' का विश्लेषण नहीं कर सकता है"
-
-#, c-format
-msgid "cannot parse NIC definition '%s'"
-msgstr "NIC परिभाषा '%s' विश्लेषित नहीं कर सकता है"
-
-#, c-format
-msgid "cannot parse NIC vlan in '%s'"
-msgstr "NIC vlan को '%s' में विश्लेषित नहीं कर सकता है"
-
-#, c-format
 msgid "cannot parse PCI bus '%s'"
 msgstr "PCI बस '%s' का विश्लेषण नहीं कर सकता है"
 
@@ -7276,14 +7137,6 @@ msgstr "PCI प्रकार्य '%s' का विश्लेषण नह
 #, c-format
 msgid "cannot parse PCI slot '%s'"
 msgstr "PCI स्लॉट '%s' का विश्लेषण नहीं कर सकता है"
-
-#, c-format
-msgid "cannot parse UUID '%s'"
-msgstr "UUID '%s' का विश्लेषण नहीं कर सकता है"
-
-#, c-format
-msgid "cannot parse VNC port '%s'"
-msgstr "VNC पोर्ट '%s' का विश्लेषण नहीं कर सकता है"
 
 #, c-format
 msgid "cannot parse bus %s"
@@ -7303,18 +7156,6 @@ msgstr "युक्ति अंत स्थान का विश्ले�
 msgid "cannot parse device start location"
 msgstr "युक्ति आरंभ स्थान का विश्लेषण नहीं कर सकता है"
 
-#, c-format
-msgid "cannot parse drive bus '%s'"
-msgstr "'%s' ड्राइव बस का विश्लेषण नहीं कर सकता है"
-
-#, c-format
-msgid "cannot parse drive index '%s'"
-msgstr "'%s' ड्राइव सूची का विश्लेषण नहीं कर सकता है"
-
-#, c-format
-msgid "cannot parse drive unit '%s'"
-msgstr "'%s' ड्राइव इकाई का विश्लेषण नहीं कर सकता है"
-
 msgid "cannot parse instanceid parameter as a uuid"
 msgstr "uuid के रूप में instanceid पैरामीटर का विश्लेषण नहीं कर सकता है"
 
@@ -7322,16 +7163,8 @@ msgid "cannot parse interfaceid parameter as a uuid"
 msgstr "uuid के रूप में इंटरफेस आईडी पैरामीटर का विश्लेषण नहीं कर सकता है"
 
 #, c-format
-msgid "cannot parse io mode '%s'"
-msgstr "IO मोड '%s' को विश्लेषित नहीं कर सकते"
-
-#, c-format
 msgid "cannot parse json %s: %s"
 msgstr "json %s विश्लेषित नहीं कर सकता है: %s"
-
-#, c-format
-msgid "cannot parse nbd filename '%s'"
-msgstr "nbd फ़ाइलनाम '%s' को विश्लेषित नहीं कर सकता है"
 
 #, c-format
 msgid "cannot parse partition number from target '%s'"
@@ -7349,14 +7182,6 @@ msgstr "%s उत्पाद को विश्लेषित नहीं �
 #, c-format
 msgid "cannot parse rdp port %s"
 msgstr "rdp पोर्ट %s का विश्लेषण नहीं कर सकता है"
-
-#, c-format
-msgid "cannot parse sheepdog filename '%s'"
-msgstr "शीपडॉग फ़ाइल नाम '%s' को विश्लेषित नहीं कर सकता है"
-
-#, c-format
-msgid "cannot parse sndbuf size in '%s'"
-msgstr "'%s' में sndbuf आकार को विश्लेषित नहीं कर सकता है"
 
 #, c-format
 msgid "cannot parse spice port %s"
@@ -7404,10 +7229,6 @@ msgstr "वीडियो हेड '%s' विश्लेषित नही�
 #, c-format
 msgid "cannot parse video ram '%s'"
 msgstr "वीडियो रैम '%s' विश्लेषित नहीं कर सकता है"
-
-#, c-format
-msgid "cannot parse vlan in '%s'"
-msgstr "vlan को '%s' में विश्लेषित नहीं कर सकता है"
 
 #, c-format
 msgid "cannot parse vnc WebSocket port %s"
@@ -7749,9 +7570,6 @@ msgstr "विन्यास फाइल वाक्य रचना त्�
 msgid "configuration file syntax error: %s"
 msgstr "फाइल वाक्य रचना त्रुटि विन्यस्त कर रहा है: %s"
 
-msgid "conflicting occurrences of kvmclock feature"
-msgstr "kvmclock सुविधा के विरोधाभासी आवृत्तियाँ"
-
 msgid "connect to the guest console"
 msgstr "अतिथि कंसोल में जुड़ें"
 
@@ -7870,10 +7688,6 @@ msgstr "डोमेन घटना टाइमर आरंभ नहीं �
 #, c-format
 msgid "could not open input path '%s'"
 msgstr "इनपुट पथ '%s' खोल नहीं सका"
-
-#, c-format
-msgid "could not parse CEPH_ARGS '%s'"
-msgstr "CEPH_ARGS '%s' विश्लेषण नहीं कर सका"
 
 msgid "could not parse XML"
 msgstr "XML पार्स नहीं कर सका"
@@ -8111,9 +7925,6 @@ msgstr "%s युक्ति कोई PCI युक्ति नहीं ह�
 
 msgid "device alias not found: cannot set link state to down"
 msgstr "युक्ति उर्फ नहीं मिला: लिंक अवस्था डाउन करने के लिए सेट नहीं कर सकता"
-
-msgid "device cannot be detached without a device alias"
-msgstr "बिना युक्ति उपनाम के युक्ति को अलग नहीं किया जा सकता है"
 
 msgid "device cannot be detached: device is busy"
 msgstr "युक्ति को अलग नहीं किया जा सकता है: युक्ति व्यस्त है"
@@ -8959,12 +8770,6 @@ msgid "flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"
 msgstr ""
 "फ्लैग पैरामीटर को VIR_MEMORY_VIRTUAL या VIR_MEMORY_PHYSICAL जरूर होना चाहिए"
 
-msgid "floor attribute is supported only for interfaces of type network"
-msgstr "मंजिल विशेषता ही प्रकार के नेटवर्क के इंटरफेस के लिए समर्थित है"
-
-msgid "floor attribute isn't supported for network's bandwidth yet"
-msgstr "मंजिल विशेषता अभी तक इस नेटवर्क के बैंडविड्थ के लिए समर्थित नहीं है"
-
 msgid "forbidden characters in 'compat' attribute"
 msgstr "'compat' विशेषता में निषिद्ध वर्ण"
 
@@ -8974,10 +8779,6 @@ msgstr "%s %s रिपोर्ट की गयी त्रुटि के �
 
 msgid "forward interface entries cannot be modified, only added or deleted"
 msgstr "आगे अंतरफलक प्रविष्टियों, संशोधित नहीं किया जा सकता है केवल जोड़ा या हटाया गया"
-
-#, c-format
-msgid "found no rbd hosts in CEPH_ARGS '%s'"
-msgstr "CEPH_ARGS '%s' में कोई rbd होस्ट नहीं मिला "
 
 msgid "fseek failed"
 msgstr "fseek विफल रहा"
@@ -9368,10 +9169,6 @@ msgstr "इसमें अवैध कनेक्शन संकेतक"
 #, c-format
 msgid "invalid connection pointer in %s"
 msgstr "%s में अवैध कनेक्शन संकेतक"
-
-#, c-format
-msgid "invalid device name '%s'"
-msgstr "अवैध युक्ति नाम '%s'"
 
 msgid "invalid domain pointer in"
 msgstr "इसमें अवैध डोमेन संकेतक"
@@ -9895,10 +9692,6 @@ msgid "missing TPM device backend type"
 msgstr "लापता TPM युक्ति बैकएंड प्रकार"
 
 #, c-format
-msgid "missing VNC port number in '%s'"
-msgstr " VNC पोर्ट संख्या गुम '%s' में"
-
-#, c-format
 msgid "missing address type in network %s"
 msgstr "संजाल %s में पता प्रकार लापता"
 
@@ -9956,10 +9749,6 @@ msgstr "गुम डोमेन प्रकार गुण"
 msgid "missing feature name"
 msgstr "गुम विशेषता नाम"
 
-#, c-format
-msgid "missing file parameter in drive '%s'"
-msgstr "'%s' ड्राइव में गुम फाइल पैरामीटर"
-
 msgid "missing filter parameter table"
 msgstr "गुम फिल्टर पैरामीटर सारणी "
 
@@ -9974,10 +9763,6 @@ msgstr "\tप्रवास डाटा में लापता hostuuid त
 
 msgid "missing hub device type"
 msgstr "गायब हब युक्ति प्रकार"
-
-#, c-format
-msgid "missing index/unit/bus parameter in drive '%s'"
-msgstr "'%s' ड्राइव में गुम index/unit/bus पैरामीटर"
 
 msgid "missing input device type"
 msgstr "गुम इनपुट युक्ति प्रकार"
@@ -10136,10 +9921,6 @@ msgstr "गायब उपयोक्तानाम सत्यापन क
 msgid "missing uuid element in migration data"
 msgstr "\tप्रवास डाटा में लापता uuid तत्व"
 
-#, c-format
-msgid "missing value for %s argument"
-msgstr "%s तर्क के लिए गुम मान"
-
 msgid "missing vendor"
 msgstr "गुम विक्रेता"
 
@@ -10251,10 +10032,6 @@ msgid "network '%s' already exists with uuid %s"
 msgstr "संजाल '%s' पहले से uuid %s के साथ मौजूद है"
 
 #, c-format
-msgid "network '%s' claims dev='%s' is already in use by a different domain"
-msgstr "संजाल '%s' का दावा है कि dev='%s' पहले से ही एक अलग डोमेन द्वारा उपयोग में है"
-
-#, c-format
 msgid "network '%s' does not have a bridge name."
 msgstr "संजाल '%s' के पास एक ब्रिज नाम नहीं है"
 
@@ -10288,14 +10065,6 @@ msgid ""
 "network '%s' uses a direct mode, but has no forward dev and no interface pool"
 msgstr ""
 "नेटवर्क '%s' सीधा मोड का उपयोग करता है, लेकिन कोई अग्रेषित dev और अंतराफलक पूल नहीं "
-
-#, c-format
-msgid ""
-"network '%s' uses a direct or hostdev mode, but has no forward dev and no "
-"interface pool"
-msgstr ""
-"संजाल '%s' एक प्रत्यक्ष या hostdev मोड का उपयोग करता है, लेकिन आगे dev और कोई "
-"अंतरफलक पूल नहीं है"
 
 #, c-format
 msgid "network filter config filename '%s' does not match name '%s'"
@@ -10493,9 +10262,6 @@ msgstr "मेल खाते uuid के साथ कोई डोमेन �
 msgid "no domain with matching uuid '%s'"
 msgstr "मेल खाते uuid '%s' के साथ कोई डोमेन नहीं"
 
-msgid "no emulator path found"
-msgstr "कोई एमुलेटर पथ नहीं मिला"
-
 msgid "no error"
 msgstr "कोई त्रुटि नहीं"
 
@@ -10661,9 +10427,6 @@ msgstr "ऑफ़लाइन प्रवास स्रोत होस्ट
 msgid "ok"
 msgstr "ठीक"
 
-msgid "online commit not supported with this QEMU binary"
-msgstr "इस QEMU द्विपदीय के साथ ऑनलाइन कमिट समर्थित नहीं है"
-
 msgid "only a single TPM device is supported"
 msgstr "केवल एक TPM युक्ति समर्थित है"
 
@@ -10812,9 +10575,6 @@ msgstr "पीआईडी"
 #, c-format
 msgid "pid_value in %s is too large"
 msgstr "%s में pid_value बहुत बड़ा है"
-
-msgid "poll error"
-msgstr "पोल त्रुटि"
 
 msgid "poll on socket failed"
 msgstr "सॉकेट पर पोल विफल"
@@ -11439,12 +11199,6 @@ msgstr "डिफ़ॉल्ट lockspace पहले से मौजूद �
 msgid "the domain does not have a current snapshot"
 msgstr "डोमेन में कोई मौजूदा स्नैपशॉट नहीं है "
 
-msgid "the interface uses a direct mode, but has no source dev"
-msgstr "नेटवर्क सीधा मोड का उपयोग करता है, लेकिन कोई dev स्रोत नहीं"
-
-msgid "the interface uses a hostdev mode, but has no hostdev"
-msgstr "अंतरफलक एक hostdev मोड का उपयोग करता है, लेकिन कोई hostdev नहीं है"
-
 #, c-format
 msgid "the snapshot '%s' does not exist, and was not loaded"
 msgstr "स्नैपशॉट '%s' मौजूद नहीं है, और लोड नहीं किया गया था"
@@ -11608,10 +11362,6 @@ msgstr "ढूंढ़ने के लिए भंडार पूल स्�
 
 msgid "type of the pool"
 msgstr "पुल का प्रकार"
-
-#, c-format
-msgid "udev scan devices returned %d"
-msgstr "udev स्कैन उपकरणों में %d लौटा"
 
 msgid "udev_monitor_new_from_netlink returned NULL"
 msgstr "udev_monitor_new_from_netlink नल लौटाया"
@@ -11865,10 +11615,6 @@ msgid "unexpected domain %s already exists"
 msgstr "अप्रत्याशित डोमेन %s पहले से मौजूद है"
 
 #, c-format
-msgid "unexpected domain snapshot %s already exists"
-msgstr "अप्रत्याशित डोमेन स्नैपशॉट %s पहले से ही अस्तित्व में है"
-
-#, c-format
 msgid "unexpected domain type %d"
 msgstr "अप्रत्याशित डोमेन प्रकार %d"
 
@@ -11882,10 +11628,6 @@ msgstr "अप्रत्याशित खाली कीवर्ड %s म
 
 msgid "unexpected encryption format"
 msgstr "अप्रत्याशित गोपन प्रकार"
-
-#, c-format
-msgid "unexpected feature %zu"
-msgstr "अप्रत्याशित फीचर %zu"
 
 #, c-format
 msgid "unexpected filesystem type %d"
@@ -12062,20 +11804,12 @@ msgstr "अज्ञात"
 msgid "unknown %s action: %s"
 msgstr "ज्ञात %s क्रिया: %s"
 
-#, c-format
-msgid "unknown CPU syntax '%s'"
-msgstr "अज्ञात CPU युक्ति वाक्य रचना '%s'"
-
 msgid "unknown OS type"
 msgstr "अज्ञात OS प्रकार"
 
 #, c-format
 msgid "unknown OS type %s"
 msgstr "अज्ञात OS प्रकार %s"
-
-#, c-format
-msgid "unknown PCI device syntax '%s'"
-msgstr "अज्ञात PCI युक्ति वाक्य रचना '%s'"
 
 #, c-format
 msgid "unknown PM state value %s"
@@ -12092,10 +11826,6 @@ msgstr "अज्ञात RNG मॉडल '%s'"
 #, c-format
 msgid "unknown SCSI host capability type '%s' for '%s'"
 msgstr "अज्ञात SCSI मेजबान क्षमता प्रकार '%s' '%s' के लिए"
-
-#, c-format
-msgid "unknown USB device syntax '%s'"
-msgstr "अज्ञात USB युक्ति वाक्य रचना '%s'"
 
 #, c-format
 msgid "unknown accessmode '%s'"
@@ -12144,10 +11874,6 @@ msgstr "अज्ञात क्षमता प्रकार '%d' '%s' क�
 #, c-format
 msgid "unknown capability type '%s'"
 msgstr "अज्ञात क्षमता प्रकार '%s'"
-
-#, c-format
-msgid "unknown character device syntax %s"
-msgstr "अज्ञात वर्ण युक्ति वाक्य रचना %s"
 
 #, c-format
 msgid "unknown character device type: %s"
@@ -12383,10 +12109,6 @@ msgid "unknown mii bonding carrier %s"
 msgstr "अज्ञात mii बोंडिग कैरियर %s"
 
 #, c-format
-msgid "unknown mirror format value '%s'"
-msgstr "अज्ञात दर्पण स्वरूप मान '%s'"
-
-#, c-format
 msgid "unknown mouse mode value '%s'"
 msgstr "अज्ञात माउस अवस्था मान '%s'"
 
@@ -12567,16 +12289,8 @@ msgid "unknown usb source type '%s'"
 msgstr "अज्ञात usb स्रोत प्रकार '%s'"
 
 #, c-format
-msgid "unknown video adapter type '%s'"
-msgstr "अज्ञात वीडियो एडाप्टर प्रकार '%s'"
-
-#, c-format
 msgid "unknown video model '%s'"
 msgstr "अज्ञात वीडियो मॉडल '%s'"
-
-#, c-format
-msgid "unknown virt type in domain definition '%d'"
-msgstr "डोमेन परिभाषा '%d' में अज्ञात virt प्रकार"
 
 #, c-format
 msgid "unknown virtualport type %s"
@@ -12867,9 +12581,6 @@ msgstr "vhost-net के लिए एक अंतराफलक का अन
 
 msgid "virDomainGetXMLDesc with secure flag"
 msgstr "virDomainGetXMLDesc सुरक्षित फ्लैग के साथ"
-
-msgid "virDomainSaveImageGetXMLDesc with secure flag"
-msgstr "virDomainSaveImageGetXMLDesc सुरक्षित फ्लैग के साथ"
 
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "virDomainSnapshotGetXMLDesc सुरक्षित फ्लैग के साथ"

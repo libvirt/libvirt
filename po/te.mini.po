@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 4.10.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"POT-Creation-Date: 2019-07-01 18:50+0100\n"
 "PO-Revision-Date: 2015-03-05 07:40+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Telugu (http://www.transifex.com/projects/p/libvirt/language/"
@@ -586,9 +586,6 @@ msgstr "--%s లేదా --current అవసరమైంది"
 msgid "--descendants requires either --from or --current"
 msgstr "--descendants కు --from లేదా --current కావాలి"
 
-msgid "--print-xml is incompatible with --no-metadata"
-msgstr "--print-xml అనునది --no-metadata తో సారూప్యమైనది కాదు"
-
 msgid "/proc/net/dev: Interface not found"
 msgstr "/proc/net/dev: ఇంటర్ఫేస్ కనబడలేదు"
 
@@ -721,9 +718,6 @@ msgstr "కేటాయింపు"
 
 msgid "Allocation:"
 msgstr "కేటాయింపు:"
-
-msgid "Allows to show or modify description or title of a domain."
-msgstr "ఒక డొమైన్ యొక్క వివరణ లేదా శీర్షికను చూపుటకు లేదా సవరించుటకు అనుమతించు."
 
 msgid "An error occurred, but the cause is unknown"
 msgstr "ఒక దోషం యెదురైంది, అయితే కారణం తెలియనిది"
@@ -931,9 +925,6 @@ msgstr "గమ్యమునకు Bus %s మరీ పెద్దది"
 
 msgid "Busy"
 msgstr "తీరికలేదు"
-
-msgid "CEPH_ARGS was set without an rbd disk"
-msgstr "CEPH_ARGS అనునది rbd డిస్కు లేకుండా అమర్చబడెను"
 
 msgid "CPU Affinity"
 msgstr "CPU ఎఫినిటీ"
@@ -1163,10 +1154,6 @@ msgstr "సిద్దీకరించని CURL హాండిల్ న�
 msgid "Cannot append basic type %s"
 msgstr "ప్రాథమిక రకం %s జేర్చలేదు"
 
-#, c-format
-msgid "Cannot assign address for device name '%s'"
-msgstr "పరికర పేరు '%s' కొరకు చిరునామా అప్పగించలేదు"
-
 msgid "Cannot attach disk until init PID is known"
 msgstr "init పిఐడి తెలిసేంతవరకు డిస్కు అనుబందించలేదు"
 
@@ -1190,10 +1177,6 @@ msgstr "కంటైనర్ ఇటరేటర్ మూయలేదు"
 
 msgid "Cannot complete within timeout period"
 msgstr "సమయముగింపు కాలంలో పూర్తి చేయలేదు"
-
-#, c-format
-msgid "Cannot connect to monitor connection of type '%s' for pid %u"
-msgstr "'%s' రకం మానిటర్ అనుసంధానంకు pid %u కొరకు అనుసంధానించలేదు"
 
 #, c-format
 msgid "Cannot convert socket address to string: %s"
@@ -1439,21 +1422,6 @@ msgid "Cannot parse start time %s in %s"
 msgstr "ప్రారంభ సమయం %s ను %s నందు పార్స్ చేయలేదు"
 
 #, c-format
-msgid ""
-"Cannot plug '%s' interface into '%s' because it would overcommit 'average' "
-"on network '%s'"
-msgstr ""
-"'%s' యింటర్ఫేస్‌ను '%s' నకు చొప్పించలేదు యెంచేతంటే అది నెట్వర్కు '%s' పై 'average' వోవర్‌కమిట్ "
-"చేయును"
-
-#, c-format
-msgid ""
-"Cannot plug '%s' interface into '%s' because it would overcommit 'peak' on "
-"network '%s'"
-msgstr ""
-"'%s' యింటర్ఫేస్‌ను '%s' నకు చొప్పించలేదు యెంచేతంటే అది నెట్వర్కు '%s' పై 'peak' వోవర్‌కమిట్ చేయును"
-
-#, c-format
 msgid "Cannot read %s '%s'"
 msgstr "%s '%s' చదువలేదు"
 
@@ -1495,10 +1463,6 @@ msgid "Cannot set autostart for transient domain"
 msgstr "అస్థిర డొమైన్ కొరకు స్వయంచాలకప్రారంభం అమర్చలేదు"
 
 #, c-format
-msgid "Cannot set bandwidth on interface '%s' of type %d"
-msgstr "ఇంటర్ఫేస్ '%s' యొక్క రకం %d బాండ్‌విడ్త్ అమర్చలేదు"
-
-#, c-format
 msgid "Cannot set close-on-exec %d"
 msgstr "close-on-exec %d అమర్చలేదు"
 
@@ -1532,9 +1496,6 @@ msgstr "JSON పత్రము నందు max_clients దత్తాంశ�
 
 msgid "Cannot set max_workers data in JSON document"
 msgstr "JSON పత్రము నందు max_workers దత్తాంశం అమర్చలేదు"
-
-msgid "Cannot set mdnsGroupName data in JSON document"
-msgstr "JSON పత్రము నందు mdnsGroupName దత్తాంశం అమర్చలేకపోయింది"
 
 msgid "Cannot set memory higher than max memory"
 msgstr "గరిష్ట మెమొరీకన్నా యెక్కువగా మెమొరీని అమర్చలేము"
@@ -1878,12 +1839,6 @@ msgstr "సాకెటుకి కోర్(లు):"
 #, c-format
 msgid "Could find volume with name: %s"
 msgstr "ఈ పేరుతో వాల్యూమ్ కనుగొనలేక పోయింది: %s"
-
-msgid "Could not add variable 'IP' to hashmap"
-msgstr "హాష్‌మాప్‌కు వేరియబుల్ 'IP' జతచేయలేక పోయింది"
-
-msgid "Could not add variable 'MAC' to hashmap"
-msgstr "వేరియబుల్ 'MAC' ను hashmap కు జతచేయలేక పోయింది"
 
 #, c-format
 msgid "Could not assign address to disk '%s'"
@@ -3172,9 +3127,6 @@ msgstr "మాధ్యమం బయటకు పంపు"
 msgid "Empty cpu list for pinning"
 msgstr "పిన్నింగ్ కొరకు ఖాళీ cpu జాబితా"
 
-msgid "Empty qemu environment name specified"
-msgstr "ఖాళీ qemu యెన్విరాన్మెంట్ పేరు తెలుపబడెను"
-
 #, c-format
 msgid "Empty response during %s"
 msgstr "%s నందు ఖాళీ స్పందన"
@@ -3288,9 +3240,6 @@ msgstr "ఇప్పటికేవున్న పరికరం %s ఏ రక
 msgid "Existing device %s is already a bridge"
 msgstr "పరికరం %s ఇప్పటికే వొక బ్రిడ్జ్"
 
-msgid "Exiting due to failure to migrate profile"
-msgstr "ప్రొఫైల్‌ను మైగ్రేట్ చేయుటకు విఫలమైన కారణంగా నిష్క్రమిస్తోంది"
-
 msgid "Expected at least one file descriptor"
 msgstr "కనీసం వొక ఫైల్ వివరణి కావలసివుంది"
 
@@ -3372,14 +3321,6 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Expecting VMX entry 'sched.cpu.affinity' to contain at least as many values "
-"as 'numvcpus' (%lld) but found only %d value(s)"
-msgstr ""
-"VMX ప్రవేశం 'sched.cpu.affinity' ను కనీసం 'numvcpus' (%lld) కలిగివుండగలిగే విలువులను "
-"కలిగివుంటుందని అనుకొంది అయితే %d విలువ(లు) మాత్రమే కలిగివుంది"
-
-#, c-format
-msgid ""
 "Expecting VMX entry 'sched.cpu.shares' to be an unsigned integer or 'low', "
 "'normal' or 'high' but found '%s'"
 msgstr ""
@@ -3452,9 +3393,6 @@ msgstr "అనుకొన్న రకం 'ArrayOf' తో ప్రారం�
 msgid "Expecting virt type to be '%s' but found '%s'"
 msgstr "virt రకంను '%s' గా అనుకొంది అయితే '%s' కనుగొంది"
 
-msgid "Expiry of passwords is not supported"
-msgstr "సంకేతపదముల గడువుతీర్చుటకు తోడ్పాటులేదు"
-
 msgid "Extract the snapshot's parent, if any"
 msgstr "స్నాప్‌షాట్ యొక్క పేరెంట్ వెలికితీయి, ఏమైనా వుంటే"
 
@@ -3508,14 +3446,6 @@ msgstr "సంకేతం సంభాలన వాచ్‌ను జతచే
 #, c-format
 msgid "Failed to add slot for PCI device '%s' to %s"
 msgstr "PCI పరికరముకు స్లాట్‌ను '%s'నుండి %sకు జతచేయుటలో విఫలమైంది"
-
-#, c-format
-msgid "Failed to add timer with timeout %lld"
-msgstr "సమయముగింపు %lld తో టైమర్‌ను జతచేయుటకు విఫలమైంది"
-
-#, c-format
-msgid "Failed to add watch for fd %d events %d"
-msgstr "fd %d ఘటనలు %d కొరకు వాచ్ జతచేయుటకు విఫలమైంది"
 
 #, c-format
 msgid "Failed to allocate PCI device list: %s"
@@ -3764,10 +3694,6 @@ msgstr "పరికరం %s కొరకు ఫైల్‌సిస్టమ�
 
 msgid "Failed to create interface node under bridge node in xml document"
 msgstr "xml పత్రము నందు బ్రిడ్జ్ నోడ్‌ కింద ఇంటర్ఫేస్ నోడ్ సృష్టించుటకు విఫలమైంది"
-
-#, c-format
-msgid "Failed to create mDNS client: %s"
-msgstr "mDNS క్లైంట్ సృష్టించుటకు విఫలమైంది: %s"
 
 #, c-format
 msgid "Failed to create network from %s"
@@ -4255,10 +4181,6 @@ msgstr "వలస తరువాత డొమైన్‌ను నిరంత
 #, c-format
 msgid "Failed to make domain persistent after migration: %s"
 msgstr "వలస తరువాత డొమైన్‌ను నిరంతరాయంగా చేయుటలో విఫలమైంది: %s"
-
-#, c-format
-msgid "Failed to make filesystem of type '%s' on device '%s'"
-msgstr "రకం '%s' యొక్క ఫైల్‌సిస్టమ్ పరికరం '%s' పైన చేయుటకు విఫలమైంది"
 
 #, c-format
 msgid "Failed to make new root %s readonly"
@@ -5146,9 +5068,6 @@ msgstr ""
 msgid "Got invalid memory size %d"
 msgstr "చెల్లని మెమొరీ పరిమాణం %d పొందెను"
 
-msgid "Graphics password only supported for VNC"
-msgstr "గ్రాఫిక్స్ సంకేతపదం అనునది VNC కొరకు మాత్రమే తోడ్పాటునిచ్చును"
-
 msgid ""
 "Grouped commands:\n"
 "\n"
@@ -5260,10 +5179,6 @@ msgstr "%s నడుపుటకు హ్యూమన్ మానిటర్ 
 
 msgid "Hybrid-Suspend"
 msgstr "హైబ్రిడ్-సస్పెండ్"
-
-#, c-format
-msgid "HyperV feature '%s' should not have a value"
-msgstr "HyperV విశేషణం '%s' విలువ కలిగివుండ కూడదు"
 
 msgid "HyperV spinlock retry count must be at least 4095"
 msgstr "HyperV స్పిన్‌లాక్ పునఃప్రయత్న లెక్క తప్పకుండా కనీసం 4095 వుండాలి"
@@ -5444,10 +5359,6 @@ msgstr "సంకేతం ద్వారా ఆటంకపరచబడెన�
 #, c-format
 msgid "Invalid \"nativeMode='%s'\" in vlan <tag> element"
 msgstr "చెల్లని \"nativeMode='%s'\" vlan <tag> మూలకం నందు"
-
-#, c-format
-msgid "Invalid %s transport type '%s'"
-msgstr "చెల్లని %s బదిలీ రకం '%s'"
 
 msgid "Invalid BIOS 'date' format"
 msgstr "చెల్లని BIOS 'date' ఫార్మాట్"
@@ -5764,10 +5675,6 @@ msgstr "చెల్లని ప్రిసీడింగ్ రెగ్య�
 msgid "Invalid prefix or netmask for '%s'"
 msgstr "చెల్లని ప్రిఫిక్స్ లేదా '%s' కొరకు నెట్‌మాస్క్"
 
-#, c-format
-msgid "Invalid query parameter '%s'"
-msgstr "చెల్లని క్వరీ పారామితి '%s'"
-
 msgid "Invalid range end"
 msgstr "చెల్లని విస్తృతి ముగిసినది"
 
@@ -5792,13 +5699,6 @@ msgstr "చెల్లని రక్షణ లేబుల్ %s"
 #, c-format
 msgid "Invalid security label '%s'"
 msgstr "చెల్లని రక్షణ లేబుల్ '%s'"
-
-msgid "Invalid snapshot"
-msgstr "చెల్లని స్నాప్‌షాట్"
-
-#, c-format
-msgid "Invalid snapshot: %s"
-msgstr "చెల్లని స్నాప్‌షాట్: %s"
 
 #, c-format
 msgid ""
@@ -5836,10 +5736,6 @@ msgid ""
 "Invalid to specify MAC address '%s' in network '%s' IPv6 static host "
 "definition"
 msgstr "MAC చిరునామా '%s' ను నెట్వర్కు '%s' IPv6 స్టాటిక్ అతిధేయ నిర్వచనం నందు తెలుపుట చెల్లదు"
-
-#, c-format
-msgid "Invalid transport/scheme '%s'"
-msgstr "చెల్లని బదిలీ/స్కీమ్ '%s'"
 
 #, c-format
 msgid "Invalid type '%s' requested for parameter '%s', actual type is '%s'"
@@ -5915,9 +5811,6 @@ msgstr "డొమైన్ యొక్క మౌంటైన ఫైల్‌వ
 #, c-format
 msgid "Iterator ID exceeds maximum ID of %u"
 msgstr "ఇటరేటర్ ఐడి అనునది %u యొక్క గరిష్ఠ ఐడి దాటినది"
-
-msgid "JSON monitor is required"
-msgstr "JSON మానిటర్ అవసరమైంది"
 
 #, c-format
 msgid "Job submission failed on interface '%s'"
@@ -6074,9 +5967,6 @@ msgstr "తప్పుగారూపొందిన పరికర విల�
 #, c-format
 msgid "Malformed lease target offset %s"
 msgstr "తప్పుగారూపుదిద్దుకొన్న లీజ్ లక్ష్యపు ఆఫ్‌సెట్ %s"
-
-msgid "Malformed mdnsGroupName data in JSON document"
-msgstr "JSON పత్రము నందు తప్పుగారూపొందిన mdnsGroupName దత్తాంశం"
 
 #, c-format
 msgid "Malformed nbd port '%s'"
@@ -6890,10 +6780,6 @@ msgstr "మాస్టర్ USB నియంత్రిక తెలుపల
 msgid "No match"
 msgstr "జోడీ లేదు"
 
-#, c-format
-msgid "No monitor connection for pid %u"
-msgstr "పిఐడి %u కొరకు ఏ మానిటర్ అనుసంధానంలేదు"
-
 msgid "No per-CPU stats available"
 msgstr "ఒక్కో-CPU గణాంకాలు అందుబాటులో లేవు"
 
@@ -7221,9 +7107,6 @@ msgstr "PASS"
 
 msgid "PCI address 0:0:2.0 is in use, QEMU needs it for primary video"
 msgstr "PCI చిరునామా 0:0:2.0 వుపయోగంలో వుంది, QEMU కు అది ప్రాధమిక వీడియో కొరకు కావాలి"
-
-msgid "PCI address Formatting failed"
-msgstr "PCI చిరునామా ఫార్మాట్‌చేయుట విఫలమైంది"
 
 #, c-format
 msgid ""
@@ -9663,10 +9546,6 @@ msgstr "పైప్ తయారు చేయలేదు"
 msgid "Unable to mark loop device as autoclear"
 msgstr "లూప్ పరికరంను autoclear గా గుర్తుంచలేదు"
 
-#, c-format
-msgid "Unable to migrate %s to %s"
-msgstr "%s ను %s కు మైగ్రేట్ చేయలేదు"
-
 msgid "Unable to modify live devices"
 msgstr "లైవ్ పరికరాలు సవరించలేదు"
 
@@ -9883,10 +9762,6 @@ msgstr "%s కొరకు %s పైన వ్యక్తిత్వాన్�
 #, c-format
 msgid "Unable to reset PCI device %s: %s"
 msgstr "PCI పరికరము %sను తిరిగివుంచలేక పోయింది: %s"
-
-#, c-format
-msgid "Unable to resolve %s for pid %u"
-msgstr "%s ను pid %u కొరకు రిజాల్వ్ చేయలేదు"
 
 #, c-format
 msgid "Unable to resolve address '%s' service '%s': %s"
@@ -10349,9 +10224,6 @@ msgstr "తెలియని రీతి తెలుపబడింది"
 msgid "Unknown model type '%s'"
 msgstr "తెలియని రీతి రకం '%s'"
 
-msgid "Unknown poll response."
-msgstr "తెలియని పోల్ స్పందన."
-
 #, c-format
 msgid "Unknown pool adapter type '%s'"
 msgstr "తెలియని పూల్ ఎడాప్టర్ రకం '%s'"
@@ -10653,20 +10525,6 @@ msgstr "విలువ '%s' అనునది '%s' వలె చూపబడ�
 #, c-format
 msgid "Value '%s' is out of %s range"
 msgstr "విలువ '%s' అనునది %s విస్తృతి బయటవుంది"
-
-msgid "Value of cputune emulator_period must be in range [1000, 1000000]"
-msgstr "cputune ఎమ్యులేటర్ పీరియడ్ విలువ తప్పకుండా [1000, 1000000] విస్తృతిలో వుండాలి"
-
-msgid ""
-"Value of cputune emulator_quota must be in range [1000, 18446744073709551]"
-msgstr ""
-"cputune ఎమ్యులేటర్ కోటా యొక్క విలువ తప్పకుండా [1000, 18446744073709551] విస్తృతిలో వుండాలి"
-
-msgid "Value of cputune period must be in range [1000, 1000000]"
-msgstr "cputune పీరియడ్ యొక్క విలువ తప్పకుండా [1000, 1000000] విస్తృతిలో వుండాలి"
-
-msgid "Value of cputune quota must be in range [1000, 18446744073709551]"
-msgstr "cputune కోటా యొక్క విలువ తప్పకుండా [1000, 18446744073709551] విస్తృతిలో వుండాలి"
 
 msgid "Variable value contains invalid character"
 msgstr "వేరియబుల్ విలువ చెల్లని అక్షరం కలిగివుంది"
@@ -10988,12 +10846,6 @@ msgstr ""
 "నెట్వర్కు '%s' కొరకు యింటర్ఫేస్ అనుసంధానం vlan టాగ్‌ను అభ్యర్ధిస్తోంది, అయితే అది యీ రకమైన "
 "నెట్వర్కునకు తోడ్పాటునీయదు"
 
-#, c-format
-msgid ""
-"an interface of type '%s' is requesting a vlan tag, but that is not "
-"supported for this type of connection"
-msgstr "'%s' రకం యింటర్ఫేస్ vlan టాగ్ అభ్యర్ధిస్తోంది, అయితే అది యీ రకమైన అనుసంధానముకు తోడ్పాటునీయదు"
-
 msgid "apparmor_parser exited with error"
 msgstr "apparmor_parser దోషంతో నిష్క్రమించెను"
 
@@ -11112,9 +10964,6 @@ msgstr "ఒక నెట్వర్కును స్వయచాలకప్�
 msgid "autostart a pool"
 msgstr "పూల్ స్వయంచాలకంగా ప్రారంభించుము"
 
-msgid "avahi not available at build time"
-msgstr "బుల్డ్ సమయం వద్ద ఆవాహి అందుబాటులోలేదు"
-
 msgid "avoid file system cache when dumping"
 msgstr "డంప్‌చేయునప్పుడు ఫైల్ వ్యవస్థ క్యాచీను తప్పించండి"
 
@@ -11162,9 +11011,6 @@ msgstr "blkio cgroup మౌంటుకాలేదు"
 msgid "block"
 msgstr "నిరోధక"
 
-msgid "block copy is not supported with this QEMU binary"
-msgstr "ఈ QEMU బైనరీ చేత నిరోధక కాపీ తోడ్పాటునీయదు"
-
 msgid "block copy still active"
 msgstr "నిరోధక నకలు యింకా క్రియాశీలంగా వుంది"
 
@@ -11174,9 +11020,6 @@ msgstr "నిరోధక నకలు యింకా క్రియాశీ
 
 msgid "block device"
 msgstr "నిరోధక పరికరం"
-
-msgid "block jobs not supported with this QEMU binary"
-msgstr "ఈ QEMU బైనరీ చేత నిరోధక జాబ్స్ తోడ్పాటునిచ్చుటలేదు"
 
 #, c-format
 msgid "block peek request too large for remote protocol, %zi > %d"
@@ -11248,14 +11091,6 @@ msgstr "బ్రిడ్జ్ '%s' చెల్లునటువంటి �
 
 msgid "bridge an existing network device"
 msgstr "ఇప్పటికేవున్న నెట్వర్కు పరికరం బ్రిడ్జ్ చేయి"
-
-#, c-format
-msgid ""
-"bridge delay/stp options only allowed in route, nat, and isolated mode, not "
-"in %s (network '%s')"
-msgstr ""
-"బ్రిడ్జ్ జాప్యం/stp ఐచ్చికాలు route, nat, మరియు isolated రీతినందు మాత్రమే అనుమతించబడను, %s "
-"(నెట్వర్కు '%s') నందు కాదు"
 
 msgid "bridge interface misses the bridge element"
 msgstr "బ్రిడ్జి యింటర్ఫేస్ బ్రిడ్జి మూలకంను వదిలివేసింది"
@@ -11375,11 +11210,6 @@ msgid "cannot block signals"
 msgstr "సంకేతములను నిరోధించలేదు"
 
 #, c-format
-msgid ""
-"cannot change between disk snapshot and system checkpoint in snapshot %s"
-msgstr "స్నాప్‌షాట్ %s నందు డిస్కు స్నాప్‌షాట్ మరియు సిస్టమ్ చెక్‌పాయింట్ మధ్యన మార్చలేదు"
-
-#, c-format
 msgid "cannot change between online and offline snapshot state in snapshot %s"
 msgstr "స్నాప్‌షాట్ %s నందు ఆన్‌లైన్ మరియు ఆఫ్‌లైన్ స్నాప్‌షాట్ స్థితి మధ్యన మారలేదు"
 
@@ -11434,9 +11264,6 @@ msgstr "root డైరెక్టరీకు మారలేదు: %s"
 #, c-format
 msgid "cannot change to uid to '%u'"
 msgstr "uid నుండి '%u' కు మారలేదు"
-
-msgid "cannot change vcpu count of this domain"
-msgstr "ఈ డొమైన్ యొక్క vcpu కౌంట్‌ను మార్చలేదు"
 
 #, c-format
 msgid "cannot chmod '%s' to 0660"
@@ -11593,34 +11420,6 @@ msgstr "బైనరీ %s నిర్వర్తించలేక పోయ�
 msgid "cannot extend file '%s'"
 msgstr "ఫైలు '%s'ను పొడిగింపలేము"
 
-#, c-format
-msgid "cannot extract PCI device bus '%s'"
-msgstr "PCI పరికరము bus '%s'ను వెలికితీయలేదు"
-
-#, c-format
-msgid "cannot extract PCI device function '%s'"
-msgstr "PCI పరికరము కార్యక్రమము '%s'ను వెలికితీయలేము"
-
-#, c-format
-msgid "cannot extract PCI device slot '%s'"
-msgstr "PCI పరికరము స్లాట్ '%s'ను వెలికితీయలేక పోయింది"
-
-#, c-format
-msgid "cannot extract USB device address '%s'"
-msgstr "USB పరికర చిరునామా '%s'ను వెలికితీయలేదు"
-
-#, c-format
-msgid "cannot extract USB device bus '%s'"
-msgstr "USB పరికర బస్ '%s'ను వెలికితీయలేదు"
-
-#, c-format
-msgid "cannot extract USB device product '%s'"
-msgstr "USB పరికర వుత్పత్తి '%s'ను వెలికితీయలేదు"
-
-#, c-format
-msgid "cannot extract USB device vendor '%s'"
-msgstr "USB పరికరము అమ్మకందారి '%s'ను వెలికితీయలేము"
-
 msgid "cannot extract blkiotune nodes"
 msgstr "blkiotune నోడ్లను బహిర్గతపరచలేదు"
 
@@ -11648,10 +11447,6 @@ msgid "cannot find CPU map for %s architecture"
 msgstr "%s ఆకృతికొరకు CPU మాప్ కనుగొనలేదు"
 
 #, c-format
-msgid "cannot find NIC definition for vlan %d"
-msgstr "vlan %d కొరకు NIC నిర్వచనమును కనుగొనలేదు"
-
-#, c-format
 msgid "cannot find channel %s"
 msgstr "ఛానల్ %s కనుగొనలేదు"
 
@@ -11673,10 +11468,6 @@ msgstr "కొత్తగా సృష్టించిన వాల్యూ�
 
 msgid "cannot find pid in vmware log file"
 msgstr "vmware లాగ్ ఫైలు నందు pid కనుగొనలేక పోయింది"
-
-#, c-format
-msgid "cannot find port number in character device %s"
-msgstr "కారెక్టర్ పరికరము %s నందు పోర్టు సంఖ్యను కనుగొనలేక పోయింది"
 
 #, c-format
 msgid "cannot find statistics for device '%s'"
@@ -11752,10 +11543,6 @@ msgstr "అస్థిర డొమైన్ స్నాప్‌షాట్ 
 #, c-format
 msgid "cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"
 msgstr "మల్టీఫంక్షన్ PCI పరికరం హాట్ అన్‌ప్లగ్ చేయలేదు: %.4x:%.2x:%.2x.%.1x"
-
-#, c-format
-msgid "cannot hot unplug multifunction PCI device: %s"
-msgstr "మల్టీఫంక్షన్ PCI పరికరం హాట్ అన్‌ప్లగ్ చేయలేదు: %s"
 
 #, c-format
 msgid "cannot initialize cert object: %s"
@@ -11890,21 +11677,6 @@ msgid "cannot parse %s version number in '%.*s'"
 msgstr "%s వర్షన్ సంఖ్యను '%.*s' నందు పార్స్ చేయలేదు"
 
 #, c-format
-msgid "cannot parse CPU topology '%s'"
-msgstr "CPU టోపాలజీ '%s'ను పార్శ్ చేయలేము"
-
-msgid "cannot parse HyperV spinlock retry count"
-msgstr "HyperV స్పిన్‌లాక్ పునఃప్రయత్న లెక్కింపు పార్స్ చేయలేదు"
-
-#, c-format
-msgid "cannot parse NIC definition '%s'"
-msgstr "NIC నిర్వచనము '%s'ను పార్శ్ చేయలేదు"
-
-#, c-format
-msgid "cannot parse NIC vlan in '%s'"
-msgstr "'%s' నందు NIC vlan పార్శ్ చేయలేదు"
-
-#, c-format
 msgid "cannot parse PCI bus '%s'"
 msgstr "PCI బస్ '%s'ను పార్శ్ చేయలేదు"
 
@@ -11921,28 +11693,12 @@ msgid "cannot parse PCI slot '%s'"
 msgstr "PCI స్లాట్‌ '%s'ను పార్శ్ చేయలేదు"
 
 #, c-format
-msgid "cannot parse UUID '%s'"
-msgstr "UUID '%s'ను పార్శ్ చేయలేదు"
-
-#, c-format
-msgid "cannot parse VNC WebSocket port '%s'"
-msgstr "VNC వెబ్‌సాకెట్ పోర్ట్ '%s' పార్స్ చేయలేదు"
-
-#, c-format
-msgid "cannot parse VNC port '%s'"
-msgstr "VNC పోర్ట్ '%s'ను పార్శ్ చేయలేదు"
-
-#, c-format
 msgid "cannot parse bus %s"
 msgstr "బస్ %s పార్శ్ చేయలేము"
 
 #, c-format
 msgid "cannot parse bus '%s'"
 msgstr "బస్ '%s పార్శ్ చేయలేము'"
-
-#, c-format
-msgid "cannot parse cylinders value'%s'"
-msgstr "సిలండర్స్ విలువ'%s' పార్స్ చేయలేదు"
 
 #, c-format
 msgid "cannot parse device %s"
@@ -11954,22 +11710,6 @@ msgstr "పరికరము ముగింపు స్థానమును 
 msgid "cannot parse device start location"
 msgstr "పరికరము ప్రారంభ స్థానమును పార్శ్‍ చేయలేదు"
 
-#, c-format
-msgid "cannot parse drive bus '%s'"
-msgstr "డ్రైవ్ బస్ '%s'ను పార్శ్ చేయలేము"
-
-#, c-format
-msgid "cannot parse drive index '%s'"
-msgstr "డ్రైవ్ విషయసూచిక '%s'ను పార్శ్ చేయలేక పోయింది"
-
-#, c-format
-msgid "cannot parse drive unit '%s'"
-msgstr "డ్రైవ్ యూనిట్ '%s'ను పార్శ్ చేయలేము"
-
-#, c-format
-msgid "cannot parse heads value'%s'"
-msgstr "హెడ్స్ విలువ'%s' పార్స్ చేయలేదు"
-
 msgid "cannot parse instanceid parameter as a uuid"
 msgstr "ఇన్‌స్టాన్సుఐడి పారామితి ను uuid వలె పార్స్ చేయలేదు"
 
@@ -11977,20 +11717,8 @@ msgid "cannot parse interfaceid parameter as a uuid"
 msgstr "ఇంటర్ఫేస్‌ఐడి పారామితి ను uuid వలె పార్స్ చేయలేదు"
 
 #, c-format
-msgid "cannot parse io mode '%s'"
-msgstr "io రీతి '%s' పార్స్ చేయలేదు"
-
-#, c-format
 msgid "cannot parse json %s: %s"
 msgstr "json %sను పార్శ్ చేయలేక పోయింది: %s"
-
-#, c-format
-msgid "cannot parse nbd filename '%s'"
-msgstr "nbd ఫైలుపేరు '%s' పార్స్ చేయలేదు"
-
-#, c-format
-msgid "cannot parse nvram's address '%s'"
-msgstr "nvram యొక్క చిరునామా '%s' పార్స్ చేయలేదు"
 
 #, c-format
 msgid "cannot parse partition number from target '%s'"
@@ -12010,21 +11738,6 @@ msgstr "ఉత్పత్తి %s పార్శ్ చేయలేము"
 #, c-format
 msgid "cannot parse rdp port %s"
 msgstr "rdp పోర్ట్ %sను పార్శ్ చేయలేదు"
-
-msgid "cannot parse reboot-timeout value"
-msgstr "పునఃప్రారంభ-గడువుముగింపు విలువ పార్స్ చేయలేదు"
-
-#, c-format
-msgid "cannot parse sectors value'%s'"
-msgstr "సెక్టార్స్ విలువ'%s' పార్స్ చేయలేదు"
-
-#, c-format
-msgid "cannot parse sheepdog filename '%s'"
-msgstr "sheepdog ఫైల్‌పేరు '%s' పార్స్ చేయలేదు"
-
-#, c-format
-msgid "cannot parse sndbuf size in '%s'"
-msgstr "'%s' నందు sndbuf పరిమాణం పార్స్ చేయలేదు"
 
 #, c-format
 msgid "cannot parse spice port %s"
@@ -12072,10 +11785,6 @@ msgstr "వీడియో హెడ్సు '%s'ను పార్స్ చ�
 #, c-format
 msgid "cannot parse video ram '%s'"
 msgstr "వీడియో ram '%s'ను పార్శ్ చేయలేదు"
-
-#, c-format
-msgid "cannot parse vlan in '%s'"
-msgstr "'%s' నందు vlanను పార్శ్ చేయలేదు"
 
 #, c-format
 msgid "cannot parse vnc WebSocket port %s"
@@ -12546,9 +12255,6 @@ msgstr "ఆకృతీకరణ ఫైలు వాక్య దోషం"
 msgid "configuration file syntax error: %s"
 msgstr "ఆకృతీకరణ ఫైలు వాక్య దోషం: %s"
 
-msgid "conflicting occurrences of kvmclock feature"
-msgstr "kvmclock విశేషణం యొక్క విభేదిస్తున్న సంభవాలు"
-
 msgid "connect to the guest console"
 msgstr "కక్షిదారి కన్సోల్ కు అనుసంధానించు"
 
@@ -12804,10 +12510,6 @@ msgstr "డొమైన్ %s తో వర్చ్యువల్‌బాక�
 #, c-format
 msgid "could not open input path '%s'"
 msgstr "ఇన్పుట్ పాత్‌ను '%s'ను తెరువలేక పోయింది"
-
-#, c-format
-msgid "could not parse CEPH_ARGS '%s'"
-msgstr "CEPH_ARGS '%s' పార్స్ చేయలేక పోయింది"
 
 msgid "could not parse XML"
 msgstr "XML పార్స్ చేయలేక పోయింది"
@@ -13178,9 +12880,6 @@ msgstr "పరికరము %s PCI పరికరము కాదు"
 
 msgid "device alias not found: cannot set link state to down"
 msgstr "పరికరం మారుపేరు కనబడలేదు: లింకు స్థితిను డౌన్‌కు అమర్చలేదు"
-
-msgid "device cannot be detached without a device alias"
-msgstr "పరికరపు యెలియాస్ లేకుండా పరికరము వేరుబడలేదు"
 
 msgid "device cannot be detached: device is busy"
 msgstr "పరికరం వేరుచేయబడలేదు: పరికరం ఖాళీగాలేదు"
@@ -14230,14 +13929,6 @@ msgstr "వ్యక్తిగత కీ సంకేతపదం పొంద
 msgid "failed to rollback transaction: %s%s%s"
 msgstr "ట్రాన్సాక్షన్ వెనుకకు తెచ్చుటకు విఫలమైంది: %s%s%s"
 
-#, c-format
-msgid "failed to run '%s --help': %s"
-msgstr "'%s --help' నడుపుటకు విఫలమైంది: %s"
-
-#, c-format
-msgid "failed to run '%s --version': %s"
-msgstr "'%s --version' నడుపుటకు విఫలమైంది: %s"
-
 msgid "failed to run apparmor_parser"
 msgstr "apparmor_parser నడుపుటకు విఫలమైంది"
 
@@ -14424,9 +14115,6 @@ msgstr "బాహ్య స్నాప్‌షాట్లచే వడపో�
 msgid "filter by internal snapshots"
 msgstr "అంతర్గత స్నాప్‌షాట్లచే వడపోత"
 
-msgid "filter by snapshots taken while active (system checkpoints)"
-msgstr "క్రియాశీంగా వున్నప్పుడు తీసుకొన్న స్నాప్‌షాట్లచే వడపోయి (వ్యవస్థ చెక్‌పాయింట్లు)"
-
 msgid "filter by snapshots taken while inactive"
 msgstr "క్రియాహీనంగా వున్నప్పుడు తీసుకొన్న స్నాప్‌షాట్లచే వడపోయి"
 
@@ -14455,12 +14143,6 @@ msgstr "శక్తివంతమైన నిల్వ పూల్ మూల
 
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"
 msgstr "ఫ్లాగ్సు పారామితి తప్పక VIR_MEMORY_VIRTUAL లేదా VIR_MEMORY_PHYSICAL కావాలి"
-
-msgid "floor attribute is supported only for interfaces of type network"
-msgstr "నెట్వర్కు రకం యొక్క యింటర్ఫేసుల కొరకు మాత్రమే ఫ్లోర్ యాట్రిబ్యూట్ తోడ్పాటునిచ్చును"
-
-msgid "floor attribute isn't supported for network's bandwidth yet"
-msgstr "నెట్వర్కు యొక్క బాండ్‌విడ్త్ కొరకు యింకా ఫ్లోర్ యాట్రిబ్యూట్ తోడ్పాటులేదు"
 
 #, c-format
 msgid "for Linux >= %d.%d.%d"
@@ -14502,10 +14184,6 @@ msgstr "%s %s కొరకు ఫార్మేటర్ దోషమును 
 
 msgid "forward interface entries cannot be modified, only added or deleted"
 msgstr "ఫార్వార్డ్ ఇంటర్ఫేస్ ప్రవేశాలు సవరించలేము, జతచేసిన లేదా తొలగించినవి మాత్రమే"
-
-#, c-format
-msgid "found no rbd hosts in CEPH_ARGS '%s'"
-msgstr "CEPH_ARGS '%s' నందు rbd అతిధేయాలు కనుగొనలేదు"
 
 msgid "from snapshot"
 msgstr "స్నాప్‌షాట్ నుండి"
@@ -15026,10 +14704,6 @@ msgstr "సరికాని అనుసంధాన కేంద్రం"
 msgid "invalid connection pointer in %s"
 msgstr "%sలో సరికాని అనుసంధాన కేంద్రం"
 
-#, c-format
-msgid "invalid device name '%s'"
-msgstr "చెల్లని పరికరం పేరు '%s'"
-
 msgid "invalid domain pointer in"
 msgstr "సరికాని క్షేత్ర కేంద్రం"
 
@@ -15113,10 +14787,6 @@ msgstr "చెల్లని లాజికల్ నిరోధక పరి
 
 msgid "invalid mode"
 msgstr "చెల్లని రీతి"
-
-#, c-format
-msgid "invalid name '%s' for iSCSI disk"
-msgstr "చెల్లని పేరు '%s' iSCSI డిస్కు కొరకు"
 
 #, c-format
 msgid "invalid netfs path (ends in /): %s"
@@ -15276,14 +14946,6 @@ msgstr "చెల్లని uuid %s"
 #, c-format
 msgid "invalid value %d"
 msgstr "చెల్లని విలువ %d"
-
-#, c-format
-msgid "invalid value for disable_s3 parameter: '%s'"
-msgstr "disable_s3 పారామితి కొరకు చెల్లని విలువ: '%s'"
-
-#, c-format
-msgid "invalid value for disable_s4 parameter: '%s'"
-msgstr "disable_s4 పారామితి కొరకు చెల్లని విలువ: '%s'"
 
 msgid "invalid value for rebootTimeout, must be in range [-1,65535]"
 msgstr "reboot Timeout కు చెల్లని విలువ, విస్తృతి తప్పక [-1,65535] మధ్యన వుండాలి"
@@ -15626,14 +15288,8 @@ msgstr "పరికరం '%s' యొక్క లైవ్ అనుబంద�
 msgid "live detach of device '%s' is not supported"
 msgstr "పరికరం '%s' లైవ్ వేర్పాటు తోడ్పాటునీయదు"
 
-msgid "live disk snapshot not supported with this QEMU binary"
-msgstr "ఈ QEMU బైనరీ చేత లైవ్ డిస్కు స్నాప్‌షాట్ తోడ్పాటులేదు"
-
 msgid "live migration"
 msgstr "లైవ్ ప్రవాసం"
-
-msgid "live snapshot creation is supported only with external checkpoints"
-msgstr "లైవ్ స్నాప్‌షాట్ సృష్టీకరణ అనునది బాహ్య చెక్‌పాయింట్స్ తో మాత్రమే తోడ్పాటునిచ్చును"
 
 #, c-format
 msgid "live update of device '%s' is not supported"
@@ -15789,9 +15445,6 @@ msgstr "మెమొరీ ఏట్రిబ్యూట్లు: [file=]name[
 msgid "memory filename '%s' requires external snapshot"
 msgstr "మెమొరీ ఫైల్‌నేమ్ '%s' కు బాహ్య స్నాప్‌షాట్ అవసరమైంది"
 
-msgid "memory locking not supported by QEMU binary"
-msgstr "QEMU బైనరీ చేత మెమొరీ లాకింగ్ తోడ్పాటునీయదు"
-
 #, c-format
 msgid "memory peek request too large for remote protocol, %zi > %d"
 msgstr "దూరస్థ నియమంకు మెమొరీ పీక్ అభ్యర్ధన మరీ యెక్కువ, %Zi > %d"
@@ -15913,9 +15566,6 @@ msgstr "RAM ఫైల్‌సిస్టమ్ కొరకు 'usage' యా�
 msgid "missing EGD backend type"
 msgstr "దొరకని EGD బ్యాకెండ్ రకం"
 
-msgid "missing HyperV spinlock retry count"
-msgstr "HyperV స్పిన్‌లాక్ పునఃప్రయత్న లెక్క దొరకలేదు"
-
 msgid "missing IFLA_VF_INFO in netlink response"
 msgstr "నెట్‌లింక్ స్పందన నందు IFLA_VF_INFO లేదు"
 
@@ -15946,10 +15596,6 @@ msgstr "దొరకని TPM పరికర బ్యాకెండ్"
 
 msgid "missing TPM device backend type"
 msgstr "దొరకని TPM పరికర బ్యాకెండ్ రకం"
-
-#, c-format
-msgid "missing VNC port number in '%s'"
-msgstr "VNC పోర్టు సంఖ్య '%s' నందు దొరకలేదు"
 
 #, c-format
 msgid "missing address type in network %s"
@@ -16020,10 +15666,6 @@ msgstr "డిస్కు %s కొరకు యిప్పటికే వు
 msgid "missing feature name"
 msgstr "దొరకని విశేషణం పేరు"
 
-#, c-format
-msgid "missing file parameter in drive '%s'"
-msgstr "డ్రైవ్ '%s' నందు ఫైలు పారామితి తప్పిపోయినది"
-
 msgid "missing filter parameter table"
 msgstr "వడపోత పారామితి పట్టిక దొరకలేదు"
 
@@ -16042,10 +15684,6 @@ msgstr "మైగ్రేషన్ దత్తాంశం నందు దొ
 
 msgid "missing hub device type"
 msgstr "హబ్ పరికరం రకం లేదు"
-
-#, c-format
-msgid "missing index/unit/bus parameter in drive '%s'"
-msgstr "index/unit/bus పారామితి డ్రైవ్ '%s' నందు తప్పిపోయింది"
 
 msgid "missing input device type"
 msgstr "తప్పిపోయిన ఇన్‌పుట్ పరికరము రకము"
@@ -16229,10 +15867,6 @@ msgstr "auth కొరకు వాడుకరిపేరు లేదు"
 msgid "missing uuid element in migration data"
 msgstr "మైగ్రేషన్ దత్తాంశం నందు uuid మూలకం దొరకలేదు"
 
-#, c-format
-msgid "missing value for %s argument"
-msgstr "%s ఆర్గుమెంట్ కొరకు తప్పిపోయిన విలువ"
-
 msgid "missing vendor"
 msgstr "పోయిన అమ్మకందారి"
 
@@ -16241,9 +15875,6 @@ msgstr "తప్పిపోయిన వీడియో రీతి మరి
 
 msgid "missing vlan tag data"
 msgstr "vlan టాగ్ డాటా దొరకలేదు"
-
-msgid "missing vnc sharing policy"
-msgstr "vnc భాగస్వామ్య విధానం దొరకలేదు"
 
 msgid "missing volume name element"
 msgstr "వాల్యూమ్ నామము మూలకంను పోగొట్టుకుంది"
@@ -16418,18 +16049,6 @@ msgid "network '%s' already exists with uuid %s"
 msgstr "నెట్వర్కు '%s' యిప్పటికే uuid %s తో నిష్క్రమించెను"
 
 #, c-format
-msgid "network '%s' claims dev='%s' is already in use by a different domain"
-msgstr "నెట్వర్కు '%s' అనునది dev='%s' యిప్పటికే వేరే డొమైన్‌చే వుపయోగంలో వుందని చెప్తోంది"
-
-#, c-format
-msgid ""
-"network '%s' claims the PCI device at domain=%d bus=%d slot=%d function=%d "
-"is already in use by a different domain"
-msgstr ""
-"నెట్వర్కు '%s' అనునది PCI పరికరం domain=%d bus=%d slot=%d function=%d వద్ద యిప్పటికే "
-"వేరే డొమైన్ చేత వుపయోగంలో వుందని చెప్తోంది"
-
-#, c-format
 msgid "network '%s' does not have a bridge name."
 msgstr "నెట్వర్కు '%s' బ్రిడ్జు నామమును కలిగిలేదు"
 
@@ -16470,21 +16089,6 @@ msgstr "నెట్వర్కు '%s' కు యింటర్ఫేసు�
 msgid ""
 "network '%s' uses a direct mode, but has no forward dev and no interface pool"
 msgstr "నెట్వర్కు '%s' డైరెక్ట్ రీతి వుపయోగించును, అయితే ఫార్వార్డ్ dev మరియు యింటర్ఫేస్ పూల్ కలిగిలేదు"
-
-#, c-format
-msgid ""
-"network '%s' uses a direct or hostdev mode, but has no forward dev and no "
-"interface pool"
-msgstr ""
-"నెట్వర్కు '%s' డైరెక్ట్ లేదా hostdev రీతిని వుపయోగించును, అయితే ఫార్వార్డ్ dev మరియు యింటర్ఫేస్ పూల్ "
-"కలిగిలేదు"
-
-#, c-format
-msgid ""
-"network '%s' uses a direct/hostdev mode, but has no forward dev and no "
-"interface pool"
-msgstr ""
-"నెట్వర్కు '%s' డైరెక్ట్/hostdev రీతిని వుపయోగించును, అయితే ఫార్వార్డ్ dev మరియు యింటర్ఫేస్ పూల్ కలిగిలేదు"
 
 #, c-format
 msgid "network filter config filename '%s' does not match name '%s'"
@@ -16722,9 +16326,6 @@ msgstr "సరిపోలు uuid '%s'తో యెటువంటి డొమ
 #, c-format
 msgid "no domain with matching uuid '%s' (%s)"
 msgstr "సరిపోలు uuid '%s' (%s) తో డొమైన్ లేదు"
-
-msgid "no emulator path found"
-msgstr "ఎటువంటి యెమ్యులేటర్ పాత్ కనబడలేదు"
 
 msgid "no error"
 msgstr "దోషం లేదు"
@@ -16966,10 +16567,6 @@ msgstr "PPC64 కొరకు మాత్రమే nvram పరికరం త
 msgid "nwfilter is in use"
 msgstr "nwfilter వుపయోగంలో వుంది"
 
-#, c-format
-msgid "object size %zu of %s is smaller than parent class %zu"
-msgstr "ఆబ్జక్టు పరిమాణం %zu దీనిది %s పేరెంట్ క్లాస్ %zu కన్నా చిన్నది"
-
 msgid "occupied"
 msgstr "ఆక్రమిత"
 
@@ -16993,9 +16590,6 @@ msgstr "చిర ఫ్లాగ్ సమితితో ఆఫ్‌లైన
 
 msgid "ok"
 msgstr "సరే"
-
-msgid "online commit not supported with this QEMU binary"
-msgstr "ఈ QEMU చేత ఆన్‌లైన్ కమిట్ తోడ్పాటునీయదు"
 
 msgid "only a single TPM device is supported"
 msgstr "ఒక TPM పరికరం మాత్రమే తోడ్పాటునిచ్చును"
@@ -17262,9 +16856,6 @@ msgstr "డిస్కు '%s' యొక్క పివోట్‌కు క�
 
 msgid "pmsuspended"
 msgstr "pmsuspended"
-
-msgid "poll error"
-msgstr "పోల్ దోషం"
 
 msgid "poll failed in migration tunnel"
 msgstr "మైగ్రేషన్ టన్నెల్ నందు పోల్ విఫలమైంది"
@@ -17565,9 +17156,6 @@ msgstr "remote_open: URL నందు బదలీ గుర్తించన�
 
 msgid "remove all associated storage volumes (use with caution)"
 msgstr "అన్ని సంబందిత నిల్వ వాల్యూమ్లు తీసివేయి (జాగ్రత్తగా వుపయోగించు)"
-
-msgid "remove all domain snapshot metadata, if inactive"
-msgstr "అన్ని డొమైన్ స్నాప్‌షాట్ మెటాడాటా తీసివేయి, క్రియాహీనమైతే"
 
 msgid ""
 "remove associated storage volumes (comma separated list of targets or source "
@@ -18298,12 +17886,6 @@ msgstr "అప్రమేయ లాక్‌స్పేస్ యిప్ప�
 msgid "the domain does not have a current snapshot"
 msgstr "డొమైన్ అనునది ప్రస్తుత స్నాప్‌షాట్ కలిగిలేదు"
 
-msgid "the interface uses a direct mode, but has no source dev"
-msgstr "యింటర్ఫేస్ డైరెక్ట్ రీతి వుపయోగించును, మూలపు dev కలిగిలేదు"
-
-msgid "the interface uses a hostdev mode, but has no hostdev"
-msgstr "యింటర్ఫేస్ hostdev రీతిని వుపయోగించును, అయితే hostdev లేదు"
-
 msgid "the key code"
 msgstr "కీ కోడ్"
 
@@ -18532,10 +18114,6 @@ msgstr "పూల్‌యొక్క రకము"
 
 msgid "type of update (add-first, add-last (add), delete, or modify)"
 msgstr "నవీకరణ రకం (ముందు-జతచేయి, తరువాత-జతచేయి (జతచేయి), తొలగించు, లేదా సవరించు)"
-
-#, c-format
-msgid "udev scan devices returned %d"
-msgstr "udev స్కాన్ పరికరాలు %d తిప్పియిచ్చెను"
 
 msgid "udev_monitor_new_from_netlink returned NULL"
 msgstr "udev_monitor_new_from_netlink అనునది NULL తిప్పియిచ్చినది"
@@ -18933,10 +18511,6 @@ msgid "unexpected domain %s already exists"
 msgstr "అనుకోని డొమైన్ %s యిప్పటికే వుంది"
 
 #, c-format
-msgid "unexpected domain snapshot %s already exists"
-msgstr "అనుకోని డొమైన్ స్నాప్‌షాట్ %s యిప్పటికే వుంది"
-
-#, c-format
 msgid "unexpected domain type %d"
 msgstr "అనుకోని డొమైన్ రకము %d"
 
@@ -18950,10 +18524,6 @@ msgstr "%s నందు అనుకోని ఖాళీ కీపదం"
 
 msgid "unexpected encryption format"
 msgstr "అనుకోని ఎన్క్రిప్షన్ ఫార్మాట్"
-
-#, c-format
-msgid "unexpected feature %zu"
-msgstr "ఊహించని విశేషణం %zu"
 
 #, c-format
 msgid "unexpected filesystem type %d"
@@ -19174,20 +18744,12 @@ msgstr "తెలియని"
 msgid "unknown %s action: %s"
 msgstr "తెలియని %s చర్య: %s"
 
-#, c-format
-msgid "unknown CPU syntax '%s'"
-msgstr "తెలియని CPU సిన్టాక్స్ '%s'"
-
 msgid "unknown OS type"
 msgstr "తెలియని OS రకం"
 
 #, c-format
 msgid "unknown OS type %s"
 msgstr "తెలియని OS %s రకం"
-
-#, c-format
-msgid "unknown PCI device syntax '%s'"
-msgstr "తెలియని PCI పరికరము సిన్టాక్స్ '%s'"
 
 #, c-format
 msgid "unknown PM state value %s"
@@ -19204,10 +18766,6 @@ msgstr "తెలియని RNG రకం '%s'"
 #, c-format
 msgid "unknown SCSI host capability type '%s' for '%s'"
 msgstr "తెలియని SCSI హోస్టు సామర్ధ్య రకము '%s' '%s' కొరకు"
-
-#, c-format
-msgid "unknown USB device syntax '%s'"
-msgstr "తెలియని USB పరికర సిన్టాక్స్ '%s'"
 
 #, c-format
 msgid "unknown accessmode '%s'"
@@ -19256,10 +18814,6 @@ msgstr "తెలియని సామర్ధ్యము రకము '%d' �
 #, c-format
 msgid "unknown capability type '%s'"
 msgstr "తెలియని సామర్ధ్యము రకము '%s'"
-
-#, c-format
-msgid "unknown character device syntax %s"
-msgstr "తెలియని కారెక్టర్ పరికరము సిన్టాక్స్ %s"
 
 #, c-format
 msgid "unknown character device type: %s"
@@ -19507,10 +19061,6 @@ msgid "unknown mii bonding carrier %s"
 msgstr "తెలియని mii బాండింగ్ కారియర్ %s"
 
 #, c-format
-msgid "unknown mirror format value '%s'"
-msgstr "తెలియని మిర్రర్ ఫార్మాట్ విలువ '%s'"
-
-#, c-format
 msgid "unknown mouse mode value '%s'"
 msgstr "తెలియని మౌస్ రీతి విలువ '%s'"
 
@@ -19702,16 +19252,8 @@ msgid "unknown usb source type '%s'"
 msgstr "తెలియని usb మూలము రకము '%s'"
 
 #, c-format
-msgid "unknown video adapter type '%s'"
-msgstr "తెలియని వీడియో ఎడాప్టర్ రకము '%s'"
-
-#, c-format
 msgid "unknown video model '%s'"
 msgstr "తెలియని వీడియో రీతి '%s'"
-
-#, c-format
-msgid "unknown virt type in domain definition '%d'"
-msgstr "డొమైన్ నిర్వచనం '%d'నందు తెలియని virt రకము"
 
 #, c-format
 msgid "unknown virtualport type %s"
@@ -19773,10 +19315,6 @@ msgid "unrecognized command name '%s'"
 msgstr "గుర్తించని ఆదేశం పేరు '%s'"
 
 #, c-format
-msgid "unrecognized driver name value %d  in network '%s'"
-msgstr "గుర్తించని డ్రైవర్ పేరు విలువ %d నెట్వర్కు '%s' నందు"
-
-#, c-format
 msgid "unrecognized network update command code %d"
 msgstr "గుర్తించని నెట్వర్కు నవీకరణ ఆదేశపు కోడ్ %d"
 
@@ -19786,10 +19324,6 @@ msgstr "గుర్తించని విభాగం పేరు '%s'"
 
 msgid "unspecified error"
 msgstr "తెలుపని దోషం"
-
-#, c-format
-msgid "unsupported HyperV Enlightenment feature '%s'"
-msgstr "తోడ్పాటులేని HyperV ఎంటర్‌టైన్మెంట్ విశేషణం '%s'"
 
 #, c-format
 msgid "unsupported HyperV Enlightenment feature: %s"
@@ -20098,9 +19632,6 @@ msgstr "virDirCreate అనునది WIN32 కొరకు ఇంప్లి
 
 msgid "virDomainGetXMLDesc with secure flag"
 msgstr "virDomainGetXMLDesc సురక్షిత ఫ్లాగ్‌తో"
-
-msgid "virDomainSaveImageGetXMLDesc with secure flag"
-msgstr "virDomainSaveImageGetXMLDesc సురక్షిత ఫ్లాగ్ తో"
 
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "virDomainSnapshotGetXMLDesc సురక్షిత ఫ్లాగ్ తో"
