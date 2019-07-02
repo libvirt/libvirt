@@ -2848,7 +2848,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("intel-iommu-caching-mode");
     DO_TEST_CAPS_LATEST("intel-iommu-eim");
     DO_TEST_CAPS_LATEST("intel-iommu-device-iotlb");
-    DO_TEST_PARSE_ERROR("intel-iommu-wrong-machine", NONE);
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("intel-iommu-wrong-machine");
     DO_TEST_CAPS_ARCH_LATEST("iommu-smmuv3", "aarch64");
 
     DO_TEST("cpu-hotplug-startup", QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS);
@@ -2914,29 +2914,9 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-virtio-scsi-reservations");
 
     DO_TEST_CAPS_LATEST("tseg-explicit-size");
-    DO_TEST_PARSE_ERROR("tseg-i440fx",
-                        QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
-                        QEMU_CAPS_DEVICE_PCI_BRIDGE,
-                        QEMU_CAPS_DEVICE_IOH3420,
-                        QEMU_CAPS_ICH9_AHCI,
-                        QEMU_CAPS_MACHINE_SMM_OPT,
-                        QEMU_CAPS_VIRTIO_SCSI,
-                        QEMU_CAPS_MCH_EXTENDED_TSEG_MBYTES);
-    DO_TEST_PARSE_ERROR("tseg-explicit-size",
-                        QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
-                        QEMU_CAPS_DEVICE_PCI_BRIDGE,
-                        QEMU_CAPS_DEVICE_IOH3420,
-                        QEMU_CAPS_ICH9_AHCI,
-                        QEMU_CAPS_MACHINE_SMM_OPT,
-                        QEMU_CAPS_VIRTIO_SCSI);
-    DO_TEST_PARSE_ERROR("tseg-invalid-size",
-                        QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
-                        QEMU_CAPS_DEVICE_PCI_BRIDGE,
-                        QEMU_CAPS_DEVICE_IOH3420,
-                        QEMU_CAPS_ICH9_AHCI,
-                        QEMU_CAPS_MACHINE_SMM_OPT,
-                        QEMU_CAPS_VIRTIO_SCSI,
-                        QEMU_CAPS_MCH_EXTENDED_TSEG_MBYTES);
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("tseg-i440fx");
+    DO_TEST_CAPS_VER_PARSE_ERROR("tseg-explicit-size", "2.10.0");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("tseg-invalid-size");
 
     DO_TEST("video-virtio-gpu-ccw", QEMU_CAPS_CCW,
             QEMU_CAPS_DEVICE_VIRTIO_GPU,
@@ -2970,10 +2950,7 @@ mymain(void)
     DO_TEST_CAPS_VER("virtio-non-transitional", "3.1.0");
     DO_TEST_CAPS_LATEST("virtio-transitional");
     DO_TEST_CAPS_LATEST("virtio-non-transitional");
-    DO_TEST_PARSE_ERROR("virtio-transitional-not-supported",
-                        QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
-                        QEMU_CAPS_DEVICE_PCI_BRIDGE,
-                        QEMU_CAPS_DEVICE_IOH3420);
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("virtio-transitional-not-supported");
 
     /* Simple headless guests for various architectures */
     DO_TEST_CAPS_ARCH_LATEST("aarch64-virt-headless", "aarch64");
