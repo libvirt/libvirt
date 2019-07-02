@@ -712,20 +712,20 @@ mymain(void)
                      ARG_CAPS_VER, ver, \
                      __VA_ARGS__)
 
-# define DO_TEST_CAPS_ARCH_VER(name, arch, ver) \
-    DO_TEST_CAPS_INTERNAL(name, arch, ver, ARG_END)
-
-# define DO_TEST_CAPS_VER(name, ver) \
-    DO_TEST_CAPS_ARCH_VER(name, "x86_64", ver)
-
 # define DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, ...) \
     DO_TEST_CAPS_INTERNAL(name, arch, "latest", __VA_ARGS__)
 
 # define DO_TEST_CAPS_ARCH_LATEST(name, arch) \
     DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, ARG_END)
 
+# define DO_TEST_CAPS_ARCH_VER(name, arch, ver) \
+    DO_TEST_CAPS_INTERNAL(name, arch, ver, ARG_END)
+
 # define DO_TEST_CAPS_LATEST(name) \
     DO_TEST_CAPS_ARCH_LATEST(name, "x86_64")
+
+# define DO_TEST_CAPS_VER(name, ver) \
+    DO_TEST_CAPS_ARCH_VER(name, "x86_64", ver)
 
 # define DO_TEST_CAPS_LATEST_FAILURE(name) \
     DO_TEST_CAPS_ARCH_LATEST_FULL(name, "x86_64", \
@@ -734,7 +734,6 @@ mymain(void)
 # define DO_TEST_CAPS_LATEST_PARSE_ERROR(name) \
     DO_TEST_CAPS_ARCH_LATEST_FULL(name, "x86_64", \
                                   ARG_FLAGS, FLAG_EXPECT_PARSE_ERROR)
-
 
 # define DO_TEST_FULL(name, ...) \
     DO_TEST_INTERNAL(name, "", \

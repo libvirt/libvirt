@@ -207,7 +207,26 @@ mymain(void)
         testQemuInfoClear(&info); \
     } while (0)
 
-# define NONE QEMU_CAPS_LAST
+# define DO_TEST_CAPS_INTERNAL(name, arch, ver, ...) \
+    DO_TEST_INTERNAL(name, "." arch "-" ver, WHEN_BOTH, \
+                     ARG_CAPS_ARCH, arch, \
+                     ARG_CAPS_VER, ver, \
+                     __VA_ARGS__)
+
+# define DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, ...) \
+    DO_TEST_CAPS_INTERNAL(name, arch, "latest", __VA_ARGS__)
+
+# define DO_TEST_CAPS_ARCH_LATEST(name, arch) \
+    DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, ARG_END)
+
+# define DO_TEST_CAPS_ARCH_VER(name, arch, ver) \
+    DO_TEST_CAPS_INTERNAL(name, arch, ver, ARG_END)
+
+# define DO_TEST_CAPS_LATEST(name) \
+    DO_TEST_CAPS_ARCH_LATEST(name, "x86_64")
+
+# define DO_TEST_CAPS_VER(name, ver) \
+    DO_TEST_CAPS_ARCH_VER(name, "x86_64", ver)
 
 # define DO_TEST_FULL(name, when, ...) \
     DO_TEST_INTERNAL(name, "", when, __VA_ARGS__)
@@ -216,27 +235,7 @@ mymain(void)
     DO_TEST_FULL(name, WHEN_BOTH, \
                  ARG_QEMU_CAPS, __VA_ARGS__, QEMU_CAPS_LAST)
 
-# define DO_TEST_CAPS_INTERNAL(name, arch, ver, ...) \
-    DO_TEST_INTERNAL(name, "." arch "-" ver, WHEN_BOTH, \
-                     ARG_CAPS_ARCH, arch, \
-                     ARG_CAPS_VER, ver, \
-                     __VA_ARGS__)
-
-# define DO_TEST_CAPS_ARCH_VER(name, arch, ver) \
-    DO_TEST_CAPS_INTERNAL(name, arch, ver, ARG_END)
-
-# define DO_TEST_CAPS_VER(name, ver) \
-    DO_TEST_CAPS_ARCH_VER(name, "x86_64", ver)
-
-# define DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, ...) \
-    DO_TEST_CAPS_INTERNAL(name, arch, "latest", __VA_ARGS__)
-
-# define DO_TEST_CAPS_ARCH_LATEST(name, arch) \
-    DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, ARG_END)
-
-# define DO_TEST_CAPS_LATEST(name) \
-    DO_TEST_CAPS_ARCH_LATEST(name, "x86_64")
-
+# define NONE QEMU_CAPS_LAST
 
     /* Unset or set all envvars here that are copied in qemudBuildCommandLine
      * using ADD_ENV_COPY, otherwise these tests may fail due to unexpected
