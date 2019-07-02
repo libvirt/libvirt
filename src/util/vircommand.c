@@ -418,27 +418,97 @@ virExecCommon(virCommandPtr cmd, gid_t *groups, int ngroups)
     return ret;
 }
 
+# ifdef __linux__
+/* On Linux, we can utilize procfs and read the table of opened
+ * FDs and selectively close only those FDs we don't want to pass
+ * onto child process (well, the one we will exec soon since this
+ * is called from the child). */
+static int
+virCommandMassCloseGetFDsLinux(virCommandPtr cmd ATTRIBUTE_UNUSED,
+                               virBitmapPtr fds)
+{
+    DIR *dp = NULL;
+    struct dirent *entry;
+    const char *dirName = "/proc/self/fd";
+    int rc;
+    int ret = -1;
+
+    if (virDirOpen(&dp, dirName) < 0)
+        return -1;
+
+    while ((rc = virDirRead(dp, &entry, dirName)) > 0) {
+        int fd;
+
+        if (virStrToLong_i(entry->d_name, NULL, 10, &fd) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unable to parse FD: %s"),
+                           entry->d_name);
+            goto cleanup;
+        }
+
+        if (virBitmapSetBit(fds, fd) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unable to set FD as open: %d"),
+                           fd);
+            goto cleanup;
+        }
+    }
+
+    if (rc < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    VIR_DIR_CLOSE(dp);
+    return ret;
+}
+
+# else /* !__linux__ */
+
+static int
+virCommandMassCloseGetFDsGeneric(virCommandPtr cmd ATTRIBUTE_UNUSED,
+                                 virBitmapPtr fds)
+{
+    virBitmapSetAll(fds);
+    return 0;
+}
+# endif /* !__linux__ */
+
 static int
 virCommandMassClose(virCommandPtr cmd,
                     int childin,
                     int childout,
                     int childerr)
 {
+    VIR_AUTOPTR(virBitmap) fds = NULL;
     int openmax = sysconf(_SC_OPEN_MAX);
-    int fd;
-    int tmpfd;
+    int fd = -1;
 
-    if (openmax < 0) {
-        virReportSystemError(errno,  "%s",
-                             _("sysconf(_SC_OPEN_MAX) failed"));
+    /* In general, it is not safe to call malloc() between fork() and exec()
+     * because the child might have forked at the worst possible time, i.e.
+     * when another thread was in malloc() and thus held its lock. That is to
+     * say, POSIX does not mandate malloc() to be async-safe. Fortunately,
+     * glibc developers are aware of this and made malloc() async-safe.
+     * Therefore we can safely allocate memory here (and transitively call
+     * opendir/readdir) without a deadlock. */
+
+    if (!(fds = virBitmapNew(openmax)))
         return -1;
-    }
 
-    for (fd = 3; fd < openmax; fd++) {
+# ifdef __linux__
+    if (virCommandMassCloseGetFDsLinux(cmd, fds) < 0)
+        return -1;
+# else
+    if (virCommandMassCloseGetFDsGeneric(cmd, fds) < 0)
+        return -1;
+# endif
+
+    fd = virBitmapNextSetBit(fds, 2);
+    for (; fd >= 0; fd = virBitmapNextSetBit(fds, fd)) {
         if (fd == childin || fd == childout || fd == childerr)
             continue;
         if (!virCommandFDIsSet(cmd, fd)) {
-            tmpfd = fd;
+            int tmpfd = fd;
             VIR_MASS_CLOSE(tmpfd);
         } else if (virSetInherit(fd, true) < 0) {
             virReportSystemError(errno, _("failed to preserve fd %d"), fd);
