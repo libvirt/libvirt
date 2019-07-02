@@ -216,11 +216,14 @@ mymain(void)
 # define DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, ...) \
     DO_TEST_CAPS_INTERNAL(name, arch, "latest", __VA_ARGS__)
 
+# define DO_TEST_CAPS_ARCH_VER_FULL(name, arch, ver, ...) \
+    DO_TEST_CAPS_INTERNAL(name, arch, ver, __VA_ARGS__)
+
 # define DO_TEST_CAPS_ARCH_LATEST(name, arch) \
     DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, ARG_END)
 
 # define DO_TEST_CAPS_ARCH_VER(name, arch, ver) \
-    DO_TEST_CAPS_INTERNAL(name, arch, ver, ARG_END)
+    DO_TEST_CAPS_ARCH_VER_FULL(name, arch, ver, ARG_END)
 
 # define DO_TEST_CAPS_LATEST(name) \
     DO_TEST_CAPS_ARCH_LATEST(name, "x86_64")
