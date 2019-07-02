@@ -2898,6 +2898,51 @@ testDomainGetMemoryParameters(virDomainPtr dom,
     virDomainObjEndAPI(&vm);
     return ret;
 }
+
+
+static int
+testDomainGetNumaParameters(virDomainPtr dom,
+                            virTypedParameterPtr params,
+                            int *nparams,
+                            unsigned int flags)
+{
+    virDomainObjPtr vm = NULL;
+    virDomainDefPtr def = NULL;
+    virDomainNumatuneMemMode mode = VIR_DOMAIN_NUMATUNE_MEM_STRICT;
+    VIR_AUTOFREE(char *) nodeset = NULL;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG |
+                  VIR_TYPED_PARAM_STRING_OKAY, -1);
+
+    if ((*nparams) == 0) {
+        *nparams = 2;
+        return 0;
+    }
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (!(def = virDomainObjGetOneDef(vm, flags)))
+        goto cleanup;
+
+    ignore_value(virDomainNumatuneGetMode(def->numa, -1, &mode));
+    nodeset = virDomainNumatuneFormatNodeset(def->numa, NULL, -1);
+
+    TEST_SET_PARAM(0, VIR_DOMAIN_NUMA_MODE, VIR_TYPED_PARAM_INT, mode);
+    TEST_SET_PARAM(1, VIR_DOMAIN_NUMA_NODESET, VIR_TYPED_PARAM_STRING, nodeset);
+
+    nodeset = NULL;
+
+    if (*nparams > 2)
+        *nparams = 2;
+
+    ret = 0;
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
 #undef TEST_SET_PARAM
 
 
@@ -7514,6 +7559,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainGetMaxVcpus = testDomainGetMaxVcpus, /* 0.7.3 */
     .domainGetXMLDesc = testDomainGetXMLDesc, /* 0.1.4 */
     .domainGetMemoryParameters = testDomainGetMemoryParameters, /* 5.6.0 */
+    .domainGetNumaParameters = testDomainGetNumaParameters, /* 5.6.0 */
     .connectListDefinedDomains = testConnectListDefinedDomains, /* 0.1.11 */
     .connectNumOfDefinedDomains = testConnectNumOfDefinedDomains, /* 0.1.11 */
     .domainCreate = testDomainCreate, /* 0.1.11 */
