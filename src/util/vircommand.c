@@ -418,6 +418,37 @@ virExecCommon(virCommandPtr cmd, gid_t *groups, int ngroups)
     return ret;
 }
 
+static int
+virCommandMassClose(virCommandPtr cmd,
+                    int childin,
+                    int childout,
+                    int childerr)
+{
+    int openmax = sysconf(_SC_OPEN_MAX);
+    int fd;
+    int tmpfd;
+
+    if (openmax < 0) {
+        virReportSystemError(errno,  "%s",
+                             _("sysconf(_SC_OPEN_MAX) failed"));
+        return -1;
+    }
+
+    for (fd = 3; fd < openmax; fd++) {
+        if (fd == childin || fd == childout || fd == childerr)
+            continue;
+        if (!virCommandFDIsSet(cmd, fd)) {
+            tmpfd = fd;
+            VIR_MASS_CLOSE(tmpfd);
+        } else if (virSetInherit(fd, true) < 0) {
+            virReportSystemError(errno, _("failed to preserve fd %d"), fd);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
 /*
  * virExec:
  * @cmd virCommandPtr containing all information about the program to
@@ -427,13 +458,12 @@ static int
 virExec(virCommandPtr cmd)
 {
     pid_t pid;
-    int null = -1, fd, openmax;
+    int null = -1;
     int pipeout[2] = {-1, -1};
     int pipeerr[2] = {-1, -1};
     int childin = cmd->infd;
     int childout = -1;
     int childerr = -1;
-    int tmpfd;
     VIR_AUTOFREE(char *) binarystr = NULL;
     const char *binary = NULL;
     int ret;
@@ -539,23 +569,9 @@ virExec(virCommandPtr cmd)
     if (cmd->mask)
         umask(cmd->mask);
     ret = EXIT_CANCELED;
-    openmax = sysconf(_SC_OPEN_MAX);
-    if (openmax < 0) {
-        virReportSystemError(errno,  "%s",
-                             _("sysconf(_SC_OPEN_MAX) failed"));
+
+    if (virCommandMassClose(cmd, childin, childout, childerr) < 0)
         goto fork_error;
-    }
-    for (fd = 3; fd < openmax; fd++) {
-        if (fd == childin || fd == childout || fd == childerr)
-            continue;
-        if (!virCommandFDIsSet(cmd, fd)) {
-            tmpfd = fd;
-            VIR_MASS_CLOSE(tmpfd);
-        } else if (virSetInherit(fd, true) < 0) {
-            virReportSystemError(errno, _("failed to preserve fd %d"), fd);
-            goto fork_error;
-        }
-    }
 
     if (prepareStdFd(childin, STDIN_FILENO) < 0) {
         virReportSystemError(errno,
