@@ -2943,6 +2943,63 @@ testDomainGetNumaParameters(virDomainPtr dom,
     virDomainObjEndAPI(&vm);
     return ret;
 }
+
+
+static int
+testDomainGetInterfaceParameters(virDomainPtr dom,
+                                 const char *device,
+                                 virTypedParameterPtr params,
+                                 int *nparams,
+                                 unsigned int flags)
+{
+    virNetDevBandwidthRate in = {0};
+    virNetDevBandwidthRate out = {0};
+    virDomainObjPtr vm = NULL;
+    virDomainDefPtr def = NULL;
+    virDomainNetDefPtr net = NULL;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG |
+                  VIR_TYPED_PARAM_STRING_OKAY, -1);
+
+    if ((*nparams) == 0) {
+        *nparams = 7;
+        return 0;
+    }
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        return -1;
+
+    if (!(def = virDomainObjGetOneDef(vm, flags)))
+        goto cleanup;
+
+    if (!(net = virDomainNetFind(def, device)))
+        goto cleanup;
+
+    if (net->bandwidth) {
+        if (net->bandwidth->in)
+            in = *net->bandwidth->in;
+        if (net->bandwidth->out)
+            out = *net->bandwidth->out;
+    }
+
+    TEST_SET_PARAM(0, VIR_DOMAIN_BANDWIDTH_IN_AVERAGE, VIR_TYPED_PARAM_UINT, in.average);
+    TEST_SET_PARAM(1, VIR_DOMAIN_BANDWIDTH_IN_PEAK, VIR_TYPED_PARAM_UINT, in.peak);
+    TEST_SET_PARAM(2, VIR_DOMAIN_BANDWIDTH_IN_BURST, VIR_TYPED_PARAM_UINT, in.burst);
+    TEST_SET_PARAM(3, VIR_DOMAIN_BANDWIDTH_IN_FLOOR, VIR_TYPED_PARAM_UINT, in.floor);
+    TEST_SET_PARAM(4, VIR_DOMAIN_BANDWIDTH_OUT_AVERAGE, VIR_TYPED_PARAM_UINT, out.average);
+    TEST_SET_PARAM(5, VIR_DOMAIN_BANDWIDTH_OUT_PEAK, VIR_TYPED_PARAM_UINT, out.peak);
+    TEST_SET_PARAM(6, VIR_DOMAIN_BANDWIDTH_OUT_BURST, VIR_TYPED_PARAM_UINT, out.burst);
+
+    if (*nparams > 7)
+        *nparams = 7;
+
+    ret = 0;
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
 #undef TEST_SET_PARAM
 
 
@@ -7560,6 +7617,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainGetXMLDesc = testDomainGetXMLDesc, /* 0.1.4 */
     .domainGetMemoryParameters = testDomainGetMemoryParameters, /* 5.6.0 */
     .domainGetNumaParameters = testDomainGetNumaParameters, /* 5.6.0 */
+    .domainGetInterfaceParameters = testDomainGetInterfaceParameters, /* 5.6.0 */
     .connectListDefinedDomains = testConnectListDefinedDomains, /* 0.1.11 */
     .connectNumOfDefinedDomains = testConnectNumOfDefinedDomains, /* 0.1.11 */
     .domainCreate = testDomainCreate, /* 0.1.11 */
