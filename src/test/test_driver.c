@@ -3379,6 +3379,69 @@ testDomainGetFSInfo(virDomainPtr dom,
 
 
 static int
+testDomainSetPerfEvents(virDomainPtr dom,
+                        virTypedParameterPtr params,
+                        int nparams,
+                        unsigned int flags)
+{
+    virDomainObjPtr vm = NULL;
+    virDomainDefPtr def = NULL;
+    size_t i;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_PERF_PARAM_CMT, VIR_TYPED_PARAM_BOOLEAN,
+                               VIR_PERF_PARAM_MBMT, VIR_TYPED_PARAM_BOOLEAN,
+                               VIR_PERF_PARAM_MBML, VIR_TYPED_PARAM_BOOLEAN,
+                               VIR_PERF_PARAM_CPU_CYCLES, VIR_TYPED_PARAM_BOOLEAN,
+                               VIR_PERF_PARAM_INSTRUCTIONS, VIR_TYPED_PARAM_BOOLEAN,
+                               VIR_PERF_PARAM_CACHE_REFERENCES, VIR_TYPED_PARAM_BOOLEAN,
+                               VIR_PERF_PARAM_CACHE_MISSES, VIR_TYPED_PARAM_BOOLEAN,
+                               VIR_PERF_PARAM_BRANCH_INSTRUCTIONS, VIR_TYPED_PARAM_BOOLEAN,
+                               VIR_PERF_PARAM_BRANCH_MISSES, VIR_TYPED_PARAM_BOOLEAN,
+                               VIR_PERF_PARAM_BUS_CYCLES, VIR_TYPED_PARAM_BOOLEAN,
+                               VIR_PERF_PARAM_STALLED_CYCLES_FRONTEND, VIR_TYPED_PARAM_BOOLEAN,
+                               VIR_PERF_PARAM_STALLED_CYCLES_BACKEND, VIR_TYPED_PARAM_BOOLEAN,
+                               VIR_PERF_PARAM_REF_CPU_CYCLES, VIR_TYPED_PARAM_BOOLEAN,
+                               VIR_PERF_PARAM_CPU_CLOCK, VIR_TYPED_PARAM_BOOLEAN,
+                               VIR_PERF_PARAM_TASK_CLOCK, VIR_TYPED_PARAM_BOOLEAN,
+                               VIR_PERF_PARAM_PAGE_FAULTS, VIR_TYPED_PARAM_BOOLEAN,
+                               VIR_PERF_PARAM_CONTEXT_SWITCHES, VIR_TYPED_PARAM_BOOLEAN,
+                               VIR_PERF_PARAM_CPU_MIGRATIONS, VIR_TYPED_PARAM_BOOLEAN,
+                               VIR_PERF_PARAM_PAGE_FAULTS_MIN, VIR_TYPED_PARAM_BOOLEAN,
+                               VIR_PERF_PARAM_PAGE_FAULTS_MAJ, VIR_TYPED_PARAM_BOOLEAN,
+                               VIR_PERF_PARAM_ALIGNMENT_FAULTS, VIR_TYPED_PARAM_BOOLEAN,
+                               VIR_PERF_PARAM_EMULATION_FAULTS, VIR_TYPED_PARAM_BOOLEAN,
+                               NULL) < 0)
+        return -1;
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        return -1;
+
+    if (!(def = virDomainObjGetOneDef(vm, flags)))
+        goto cleanup;
+
+    for (i = 0; i < nparams; i++) {
+        virTypedParameterPtr param = &params[i];
+        virPerfEventType type = virPerfEventTypeFromString(param->field);
+
+        if (param->value.b)
+            def->perf.events[type] = VIR_TRISTATE_BOOL_YES;
+        else
+            def->perf.events[type] = VIR_TRISTATE_BOOL_NO;
+    }
+
+    ret = 0;
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
+static int
 testDomainGetPerfEvents(virDomainPtr dom,
                         virTypedParameterPtr *params,
                         int *nparams,
@@ -7416,6 +7479,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainSetAutostart = testDomainSetAutostart, /* 0.3.2 */
     .domainGetDiskErrors = testDomainGetDiskErrors, /* 5.4.0 */
     .domainGetFSInfo = testDomainGetFSInfo, /* 5.6.0 */
+    .domainSetPerfEvents = testDomainSetPerfEvents, /* 5.6.0 */
     .domainGetPerfEvents = testDomainGetPerfEvents, /* 5.6.0 */
     .domainGetSchedulerType = testDomainGetSchedulerType, /* 0.3.2 */
     .domainGetSchedulerParameters = testDomainGetSchedulerParameters, /* 0.3.2 */
