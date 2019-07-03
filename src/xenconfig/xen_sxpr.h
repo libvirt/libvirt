@@ -30,5 +30,3 @@
 /* helper functions to get the dom id from a sexpr */
 int xenGetDomIdFromSxprString(const char *sexpr, int *id);
 int xenGetDomIdFromSxpr(const struct sexpr *root, int *id);
-
-virDomainChrDefPtr xenParseSxprChar(const char *value, const char *tty);

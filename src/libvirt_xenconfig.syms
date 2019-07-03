@@ -5,7 +5,6 @@
 # xenconfig/xen_sxpr.h
 xenGetDomIdFromSxpr;
 xenGetDomIdFromSxprString;
-xenParseSxprChar;
 
 # xenconfig/xen_xm.h
 xenFormatXM;
