@@ -22,8 +22,6 @@
 
 #include <config.h>
 
-#include <regex.h>
-
 #include "internal.h"
 #include "virerror.h"
 #include "virconf.h"
@@ -209,64 +207,4 @@ xenParseSxprChar(const char *value,
  error:
     virDomainChrDefFree(def);
     return NULL;
-}
-
-
-static const char *vif_bytes_per_sec_re = "^[0-9]+[GMK]?[Bb]/s$";
-
-int
-xenParseSxprVifRate(const char *rate, unsigned long long *kbytes_per_sec)
-{
-    char *trate = NULL;
-    char *p;
-    regex_t rec;
-    int err;
-    char *suffix;
-    unsigned long long tmp;
-    int ret = -1;
-
-    if (VIR_STRDUP(trate, rate) < 0)
-        return -1;
-
-    p = strchr(trate, '@');
-    if (p != NULL)
-        *p = 0;
-
-    err = regcomp(&rec, vif_bytes_per_sec_re, REG_EXTENDED|REG_NOSUB);
-    if (err != 0) {
-        char error[100];
-        regerror(err, &rec, error, sizeof(error));
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to compile regular expression '%s': %s"),
-                       vif_bytes_per_sec_re, error);
-        goto cleanup;
-    }
-
-    if (regexec(&rec, trate, 0, NULL, 0)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid rate '%s' specified"), rate);
-        goto cleanup;
-    }
-
-    if (virStrToLong_ull(rate, &suffix, 10, &tmp)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to parse rate '%s'"), rate);
-        goto cleanup;
-    }
-
-    if (*suffix == 'G')
-       tmp *= 1024 * 1024;
-    else if (*suffix == 'M')
-       tmp *= 1024;
-
-    if (*suffix == 'b' || *(suffix + 1) == 'b')
-       tmp /= 8;
-
-    *kbytes_per_sec = tmp;
-    ret = 0;
-
- cleanup:
-    regfree(&rec);
-    VIR_FREE(trate);
-    return ret;
 }
