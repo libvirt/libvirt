@@ -6,7 +6,6 @@
 xenGetDomIdFromSxpr;
 xenGetDomIdFromSxprString;
 xenParseSxprChar;
-xenParseSxprSound;
 xenParseSxprVifRate;
 
 # xenconfig/xen_xm.h

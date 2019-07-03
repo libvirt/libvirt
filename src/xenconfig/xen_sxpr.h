@@ -31,8 +31,6 @@
 int xenGetDomIdFromSxprString(const char *sexpr, int *id);
 int xenGetDomIdFromSxpr(const struct sexpr *root, int *id);
 
-int xenParseSxprSound(virDomainDefPtr def, const char *str);
-
 virDomainChrDefPtr xenParseSxprChar(const char *value, const char *tty);
 
 int xenParseSxprVifRate(const char *rate, unsigned long long *kbytes_per_sec);
