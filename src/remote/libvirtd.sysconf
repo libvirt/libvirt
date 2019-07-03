@@ -1,8 +1,4 @@
-# Override the default config file
-# NOTE: This setting is no longer honoured if using
-# systemd. Set '--config /etc/libvirt/libvirtd.conf'
-# in LIBVIRTD_ARGS instead.
-#LIBVIRTD_CONFIG=/etc/libvirt/libvirtd.conf
+# Customizations for the libvirtd.service systemd unit
 
 # Listen for TCP/IP connections
 # NB. must setup TLS/SSL keys prior to using this
@@ -19,15 +15,3 @@
 #QEMU_AUDIO_DRV=sdl
 #
 #SDL_AUDIODRIVER=pulse
-
-# Override the maximum number of opened files.
-# This only works with traditional init scripts.
-# In the systemd world, the limit can only be changed by overriding
-# LimitNOFILE for libvirtd.service. To do that, just create a *.conf
-# file in /etc/systemd/system/libvirtd.service.d/ (for example
-# /etc/systemd/system/libvirtd.service.d/openfiles.conf) and write
-# the following two lines in it:
-#   [Service]
-#   LimitNOFILE=2048
-#
-#LIBVIRTD_NOFILES_LIMIT=2048
