@@ -3,11 +3,7 @@
 #
 
 # xenconfig/xen_sxpr.h
-xenFormatSxpr;
 xenFormatSxprChr;
-xenFormatSxprDisk;
-xenFormatSxprNet;
-xenFormatSxprOnePCI;
 xenFormatSxprSound;
 xenGetDomIdFromSxpr;
 xenGetDomIdFromSxprString;

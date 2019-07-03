@@ -50,17 +50,5 @@ virDomainChrDefPtr xenParseSxprChar(const char *value, const char *tty);
 
 int xenParseSxprVifRate(const char *rate, unsigned long long *kbytes_per_sec);
 
-int xenFormatSxprDisk(virDomainDiskDefPtr def, virBufferPtr buf, int hvm,
-                      int isAttach);
-
-int xenFormatSxprNet(virConnectPtr conn,
-                     virDomainNetDefPtr def, virBufferPtr buf, int hvm,
-                     int isAttach);
-
-int xenFormatSxprOnePCI(virDomainHostdevDefPtr def, virBufferPtr buf,
-                        int detach);
-
 int xenFormatSxprChr(virDomainChrDefPtr def, virBufferPtr buf);
 int xenFormatSxprSound(virDomainDefPtr def, virBufferPtr buf);
-
-char * xenFormatSxpr(virConnectPtr conn, virDomainDefPtr def);
