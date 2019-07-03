@@ -259,15 +259,6 @@ INSTALL_DATA_LOCAL += install-sasl
 UNINSTALL_LOCAL += uninstall-sasl
 endif WITH_SASL
 
-libvirtd.init: remote/libvirtd.init.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed \
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
-	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
-	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
-	    < $< > $@-t && \
-	    chmod a+x $@-t && \
-	    mv $@-t $@
-
 libvirtd.service: remote/libvirtd.service.in $(top_builddir)/config.status
 	$(AM_V_GEN)sed \
 	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
