@@ -237,6 +237,7 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 %{mingw32_datadir}/libvirt/schemas/interface.rng
 %{mingw32_datadir}/libvirt/schemas/network.rng
 %{mingw32_datadir}/libvirt/schemas/networkcommon.rng
+%{mingw32_datadir}/libvirt/schemas/networkport.rng
 %{mingw32_datadir}/libvirt/schemas/nodedev.rng
 %{mingw32_datadir}/libvirt/schemas/nwfilter.rng
 %{mingw32_datadir}/libvirt/schemas/nwfilter_params.rng
@@ -325,6 +326,7 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 %{mingw64_datadir}/libvirt/schemas/interface.rng
 %{mingw64_datadir}/libvirt/schemas/network.rng
 %{mingw64_datadir}/libvirt/schemas/networkcommon.rng
+%{mingw64_datadir}/libvirt/schemas/networkport.rng
 %{mingw64_datadir}/libvirt/schemas/nodedev.rng
 %{mingw64_datadir}/libvirt/schemas/nwfilter.rng
 %{mingw64_datadir}/libvirt/schemas/nwfilter_params.rng
