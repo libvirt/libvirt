@@ -45,7 +45,6 @@
 #include "libxl_capabilities.h"
 #include "libxl_migration.h"
 #include "xen_xm.h"
-#include "xen_sxpr.h"
 #include "xen_xl.h"
 #include "virtypedparam.h"
 #include "viruri.h"
@@ -2702,16 +2701,9 @@ libxlConnectDomainXMLFromNative(virConnectPtr conn,
                                driver->xmlopt)))
             goto cleanup;
     } else if (STREQ(nativeFormat, XEN_CONFIG_FORMAT_SEXPR)) {
-        /* only support latest xend config format */
-        if (!(def = xenParseSxprString(nativeConfig,
-                                       NULL,
-                                       -1,
-                                       cfg->caps,
-                                       driver->xmlopt))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("parsing sxpr config failed"));
-            goto cleanup;
-        }
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("conversion from 'xen-sxpr' format is no longer supported"));
+        goto cleanup;
     } else {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("unsupported config type %s"), nativeFormat);

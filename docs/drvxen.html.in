@@ -58,8 +58,7 @@ xen+ssh://root@example.com/system (remote access, SSH tunnelled)
       original Xen virtual machine config format used by the legacy
       xm/xend toolstack. The second, known as <code>xen-sxpr</code>,
       is also one of the original formats that was used by xend's
-      legacy HTTP RPC service. For compatibility, import and export
-      of these legacy formats is supported by the libxl driver.
+      legacy HTTP RPC service (<span class='removed'>removed in 5.6.0</span>)
     </p>
 
     <p>
