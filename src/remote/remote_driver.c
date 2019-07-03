@@ -789,6 +789,22 @@ doRemoteOpen(virConnectPtr conn,
     char *daemonPath = NULL;
 #endif
     char *tls_priority = NULL;
+    char *name = NULL;
+    char *command = NULL;
+    char *sockname = NULL;
+    char *netcat = NULL;
+    char *port = NULL;
+    char *authtype = NULL;
+    char *username = NULL;
+    char *pkipath = NULL;
+    char *keyfile = NULL;
+    char *sshauth = NULL;
+    char *knownHostsVerify = NULL;
+    char *knownHosts = NULL;
+    bool sanity = true;
+    bool verify = true;
+    bool tty ATTRIBUTE_UNUSED = true;
+    int retcode = VIR_DRV_OPEN_ERROR;
 
     /* We handle *ALL* URIs here. The caller has rejected any
      * URIs we don't care about */
@@ -848,18 +864,6 @@ doRemoteOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_ERROR;
     }
 
-    /* Local variables which we will initialize. These can
-     * get freed in the failed: path.
-     */
-    char *name = NULL, *command = NULL, *sockname = NULL, *netcat = NULL;
-    char *port = NULL, *authtype = NULL, *username = NULL;
-    bool sanity = true, verify = true, tty ATTRIBUTE_UNUSED = true;
-    char *pkipath = NULL, *keyfile = NULL, *sshauth = NULL;
-
-    char *knownHostsVerify = NULL,  *knownHosts = NULL;
-
-    /* Return code from this function, and the private data. */
-    int retcode = VIR_DRV_OPEN_ERROR;
 
     /* Remote server defaults to "localhost" if not specified. */
     if (conn->uri && conn->uri->port != 0) {
