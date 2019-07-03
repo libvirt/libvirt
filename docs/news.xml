@@ -55,6 +55,17 @@
   <release version="v5.6.0" date="unreleased">
     <section title="New features">
     </section>
+    <section title="Removed features">
+      <change>
+        <summary>
+          xen: Remove sxpr config support
+        </summary>
+        <description>
+          Remove the sxpr style config parser and formatter a year after the
+          xend driver was removed.
+        </description>
+      </change>
+    </section>
     <section title="Improvements">
     </section>
     <section title="Bug fixes">
