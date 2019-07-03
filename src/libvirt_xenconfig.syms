@@ -2,10 +2,6 @@
 # These symbols are dependent upon --with-xen via WITH_XEN or --with-libxl via WITH_LIBXL.
 #
 
-# xenconfig/xen_sxpr.h
-xenGetDomIdFromSxpr;
-xenGetDomIdFromSxprString;
-
 # xenconfig/xen_xm.h
 xenFormatXM;
 xenParseXM;

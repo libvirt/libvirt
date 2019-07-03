@@ -4,8 +4,6 @@ XENCONFIG_SOURCES = \
 	xenconfig/xenxs_private.h \
 	xenconfig/xen_common.c \
 	xenconfig/xen_common.h \
-	xenconfig/xen_sxpr.c \
-	xenconfig/xen_sxpr.h \
 	xenconfig/xen_xm.c \
 	xenconfig/xen_xm.h \
 	$(NULL)

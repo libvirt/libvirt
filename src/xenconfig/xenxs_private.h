@@ -24,7 +24,6 @@
 #include "internal.h"
 
 #include <xen/xen.h>
-#include "xen_sxpr.h"
 
 /* xen-unstable changeset 19788 removed MAX_VIRT_CPUS from public
  * headers.  Its semantic was retained with XEN_LEGACY_MAX_VCPUS.
