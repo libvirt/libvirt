@@ -125,7 +125,6 @@ EXTRA_DIST = \
 	secretxml2xmlin \
 	securityselinuxhelperdata \
 	securityselinuxlabeldata \
-	sexpr2xmldata \
 	storagepoolcapsschemadata \
 	storagepoolschemadata \
 	storagepoolxml2xmlin \
@@ -267,7 +266,7 @@ endif WITH_SECDRIVER_SELINUX
 ssh_SOURCES = ssh.c
 
 if WITH_LIBXL
-test_programs += xlconfigtest sexpr2xmltest \
+test_programs += xlconfigtest \
 	xmconfigtest libxlxml2domconfigtest
 test_libraries += libxltestdriver.la libxlmock.la
 endif WITH_LIBXL
@@ -503,11 +502,6 @@ xlconfigtest_SOURCES = \
 	testutils.c testutils.h
 xlconfigtest_LDADD =$(libxl_LDADDS)
 
-sexpr2xmltest_SOURCES = \
-	sexpr2xmltest.c testutilsxen.c testutilsxen.h \
-	testutils.c testutils.h
-sexpr2xmltest_LDADD = $(libxl_LDADDS)
-
 xmconfigtest_SOURCES = \
 	xmconfigtest.c testutilsxen.c testutilsxen.h \
 	testutils.c testutils.h
@@ -525,7 +519,7 @@ libxlmock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
 libxlmock_la_LIBADD = $(MOCKLIBS_LIBS)
 
 else ! WITH_LIBXL
-EXTRA_DIST += xlconfigtest.c sexpr2xmltest.c \
+EXTRA_DIST += xlconfigtest.c \
 	xmconfigtest.c libxlxml2domconfigtest.c
 endif ! WITH_LIBXL
 

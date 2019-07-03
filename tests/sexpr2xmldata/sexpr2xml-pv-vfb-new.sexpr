@@ -1,9 +1,0 @@
-(domain (domid 6)(name 'pvtest')(memory 420)(maxmem 420)(vcpus 2)\
-(uuid '596a5d2171f48fb2e068e2386a5c413e')(on_poweroff 'destroy')\
-(on_reboot 'destroy')(on_crash 'destroy')\
-(image (linux (kernel '/var/lib/xen/vmlinuz.2Dn2YT')\
-(ramdisk '/var/lib/xen/initrd.img.0u-Vhq')\
-(args ' method=http://download.fedora.devel.redhat.com/pub/fedora/linux/\
-core/test/5.91/x86_64/os  ')))(device (vbd (dev 'xvda')\
-(uname 'file:/root/some.img')(mode 'w')))(device (vfb (type vnc)(vncunused 1)\
-(vnclisten 0.0.0.0)(vncpasswd 123456)(keymap ja)))))

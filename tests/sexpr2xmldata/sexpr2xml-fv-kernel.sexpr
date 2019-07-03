@@ -1,9 +1,0 @@
-(domain (domid 15)(name 'fvtest')(memory 420)(maxmem 420)(vcpus 2)\
-(uuid '596a5d2171f48fb2e068e2386a5c413e')(on_poweroff 'destroy')\
-(on_reboot 'destroy')(on_crash 'destroy')\
-(image (hvm (kernel '/var/lib/xen/vmlinuz.2Dn2YT')\
-(ramdisk '/var/lib/xen/initrd.img.0u-Vhq')\
-(args ' method=http://download.fedora.devel.redhat.com/pub/fedora/linux/\
-core/test/5.91/x86_64/os  ')(loader '/usr/lib/xen/boot/hvmloader')(vcpus 2)\
-(usb 1)(serial pty)))(device (vbd (dev 'ioemu:xvda')\
-(uname 'file:/root/some.img')(mode 'w'))))
