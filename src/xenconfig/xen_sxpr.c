@@ -303,13 +303,13 @@ xenParseSxprSound(virDomainDefPtr def,
 
         if (VIR_ALLOC_N(def->sounds,
                         VIR_DOMAIN_SOUND_MODEL_ES1370 + 1) < 0)
-            goto error;
+            return -1;
 
 
         for (i = 0; i < (VIR_DOMAIN_SOUND_MODEL_ES1370 + 1); i++) {
             virDomainSoundDefPtr sound;
             if (VIR_ALLOC(sound) < 0)
-                goto error;
+                return -1;
             sound->model = i;
             def->sounds[def->nsounds++] = sound;
         }
@@ -329,20 +329,20 @@ xenParseSxprSound(virDomainDefPtr def,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Sound model %s too big for destination"),
                                offset);
-                goto error;
+                return -1;
             }
 
             if (VIR_ALLOC(sound) < 0)
-                goto error;
+                return -1;
 
             if ((sound->model = virDomainSoundModelTypeFromString(model)) < 0) {
                 VIR_FREE(sound);
-                goto error;
+                return -1;
             }
 
             if (VIR_APPEND_ELEMENT(def->sounds, def->nsounds, sound) < 0) {
                 virDomainSoundDefFree(sound);
-                goto error;
+                return -1;
             }
 
             offset = offset2 ? offset2 + 1 : NULL;
@@ -350,7 +350,4 @@ xenParseSxprSound(virDomainDefPtr def,
     }
 
     return 0;
-
- error:
-    return -1;
 }
