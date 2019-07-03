@@ -3,7 +3,6 @@
 #
 
 # xenconfig/xen_sxpr.h
-xenFormatSxprChr;
 xenGetDomIdFromSxpr;
 xenGetDomIdFromSxprString;
 xenParseSxpr;
