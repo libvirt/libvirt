@@ -63,6 +63,7 @@ profile virt-aa-helper /usr/{lib,lib64}/libvirt/virt-aa-helper {
   /**.qcow{,2} r,
   /**.qed r,
   /**.vmdk r,
+  /**.vhd r,
   /**.[iI][sS][oO] r,
   /**/disk{,.*} r,
 
