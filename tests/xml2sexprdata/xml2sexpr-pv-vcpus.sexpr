@@ -1,9 +1,0 @@
-(vm (name 'pvtest')(memory 420)(maxmem 420)(vcpus 4)(vcpu_avail 3)\
-(uuid '596a5d21-71f4-8fb2-e068-e2386a5c413e')(on_poweroff 'destroy')\
-(on_reboot 'destroy')(on_crash 'destroy')\
-(image (linux (kernel '/var/lib/xen/vmlinuz.2Dn2YT')\
-(ramdisk '/var/lib/xen/initrd.img.0u-Vhq')\
-(args ' method=http://download.fedora.devel.redhat.com/pub/fedora/linux/\
-core/test/5.91/x86_64/os  ')(localtime 0)))\
-(localtime 0)(device (vbd (dev 'xvda')\
-(uname 'file:/root/some.img')(mode 'w'))))\

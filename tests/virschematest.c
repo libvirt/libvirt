@@ -217,7 +217,7 @@ mymain(void)
     DO_TEST_DIR("capability.rng", "capabilityschemadata", "vircaps2xmldata");
     DO_TEST_DIR("domain.rng", "domainschemadata",
                 "qemuxml2argvdata", "sexpr2xmldata", "xmconfigdata",
-                "xml2sexprdata", "qemuxml2xmloutdata", "lxcxml2xmldata",
+                "qemuxml2xmloutdata", "lxcxml2xmldata",
                 "lxcxml2xmloutdata", "bhyvexml2argvdata", "genericxml2xmlindata",
                 "genericxml2xmloutdata", "xlconfigdata", "libxlxml2domconfigdata",
                 "qemuhotplugtestdomains");

@@ -1,7 +1,0 @@
-(vm (name 'rhel5')(memory 175)(maxmem 385)(vcpus 1)\
-(uuid '4f77abd2-3019-58e8-3bab-6fbf2118f880')(bootloader '/usr/bin/pygrub')\
-(on_poweroff 'destroy')(on_reboot 'restart')(on_crash 'restart')\
-(image (linux (localtime 0)))(localtime 0)\
-(device (tap (dev 'xvda')(uname 'tap:aio:/xen/rhel5.img')(mode 'w')))\
-(device (vif (mac '00:16:3e:1d:06:15')(bridge 'xenbr0')\
-(script 'vif-bridge'))))\
