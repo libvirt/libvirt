@@ -2878,24 +2878,6 @@ virSecretLookupFormatSecret;
 virSecretLookupParseSecret;
 
 
-# util/virsexpr.h
-sexpr2string;
-sexpr_append;
-sexpr_cons;
-sexpr_float;
-sexpr_fmt_node;
-sexpr_free;
-sexpr_has;
-sexpr_int;
-sexpr_lookup;
-sexpr_nil;
-sexpr_node;
-sexpr_node_copy;
-sexpr_string;
-sexpr_u64;
-string2sexpr;
-
-
 # util/virsocketaddr.h
 virSocketAddrBroadcast;
 virSocketAddrBroadcastByPrefix;
