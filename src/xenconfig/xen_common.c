@@ -2006,25 +2006,34 @@ xenFormatVfb(virConfPtr conf, virDomainDefPtr def)
 static int
 xenFormatSound(virConfPtr conf, virDomainDefPtr def)
 {
-    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
-        if (def->sounds) {
-            virBuffer buf = VIR_BUFFER_INITIALIZER;
-            char *str = NULL;
-            int ret = xenFormatSxprSound(def, &buf);
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    const char * model;
+    VIR_AUTOFREE(char *) str = NULL;
+    size_t i;
 
-            str = virBufferContentAndReset(&buf);
-            if (ret == 0)
-                ret = xenConfigSetString(conf, "soundhw", str);
+    if (def->os.type != VIR_DOMAIN_OSTYPE_HVM ||
+        !def->sounds)
+        return 0;
 
-            VIR_FREE(str);
-            if (ret < 0)
-                return -1;
+    for (i = 0; i < def->nsounds; i++) {
+        if (!(model = virDomainSoundModelTypeToString(def->sounds[i]->model))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unexpected sound model %d"),
+                           def->sounds[i]->model);
+            return -1;
         }
+        if (i)
+            virBufferAddChar(&buf, ',');
+        virBufferEscapeSexpr(&buf, "%s", model);
     }
 
-    return 0;
-}
+    if (virBufferCheckError(&buf) < 0)
+        return -1;
 
+    str = virBufferContentAndReset(&buf);
+
+    return xenConfigSetString(conf, "soundhw", str);
+}
 
 
 static int

@@ -51,4 +51,3 @@ virDomainChrDefPtr xenParseSxprChar(const char *value, const char *tty);
 int xenParseSxprVifRate(const char *rate, unsigned long long *kbytes_per_sec);
 
 int xenFormatSxprChr(virDomainChrDefPtr def, virBufferPtr buf);
-int xenFormatSxprSound(virDomainDefPtr def, virBufferPtr buf);

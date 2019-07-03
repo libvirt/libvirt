@@ -1569,38 +1569,3 @@ xenFormatSxprChr(virDomainChrDefPtr def,
 
     return 0;
 }
-
-
-/**
- * xenFormatSxprSound:
- * @def: the domain config
- * @buf: a buffer for the result S-expression
- *
- * Convert all sound device parts of the domain config into S-expression in buf.
- *
- * Returns 0 if successful or -1 if failed.
- */
-int
-xenFormatSxprSound(virDomainDefPtr def,
-                   virBufferPtr buf)
-{
-    const char *str;
-    size_t i;
-
-    for (i = 0; i < def->nsounds; i++) {
-        if (!(str = virDomainSoundModelTypeToString(def->sounds[i]->model))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected sound model %d"),
-                           def->sounds[i]->model);
-            return -1;
-        }
-        if (i)
-            virBufferAddChar(buf, ',');
-        virBufferEscapeSexpr(buf, "%s", str);
-    }
-
-    if (virBufferCheckError(buf) < 0)
-        return -1;
-
-    return 0;
-}
