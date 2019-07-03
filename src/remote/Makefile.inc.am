@@ -18,13 +18,13 @@ REMOTE_DRIVER_SOURCES = \
 	$(REMOTE_DRIVER_GENERATED) \
 	$(NULL)
 
-LIBVIRTD_GENERATED = \
+REMOTE_DAEMON_GENERATED = \
 	remote/remote_daemon_dispatch_stubs.h \
 	remote/remote_daemon_dispatch_lxc_stubs.h \
 	remote/remote_daemon_dispatch_qemu_stubs.h \
 	$(NULL)
 
-LIBVIRTD_SOURCES = \
+REMOTE_DAEMON_SOURCES = \
 	remote/remote_daemon.c \
 	remote/remote_daemon.h \
 	remote/remote_daemon_config.c \
@@ -33,9 +33,49 @@ LIBVIRTD_SOURCES = \
 	remote/remote_daemon_dispatch.h \
 	remote/remote_daemon_stream.c \
 	remote/remote_daemon_stream.h \
-	$(LIBVIRTD_GENERATED) \
+	$(REMOTE_DAEMON_GENERATED) \
 	$(NULL)
 
+REMOTE_DAEMON_CFLAGS = \
+	$(LIBXML_CFLAGS) \
+	$(GNUTLS_CFLAGS) \
+	$(SASL_CFLAGS) \
+	$(XDR_CFLAGS) \
+	$(DBUS_CFLAGS) \
+	$(LIBNL_CFLAGS) \
+	$(WARN_CFLAGS) \
+	$(PIE_CFLAGS) \
+	-I$(srcdir)/access \
+	-I$(srcdir)/conf \
+	-I$(srcdir)/rpc \
+	$(NULL)
+
+REMOTE_DAEMON_LD_FLAGS = \
+	$(RELRO_LDFLAGS) \
+	$(PIE_LDFLAGS) \
+	$(NO_INDIRECT_LDFLAGS) \
+	$(NO_UNDEFINED_LDFLAGS) \
+	$(NULL)
+
+REMOTE_DAEMON_LD_ADD = \
+	libvirt_driver_admin.la \
+	libvirt-lxc.la \
+	libvirt-qemu.la \
+	libvirt.la \
+	$(LIBXML_LIBS) \
+	$(GNUTLS_LIBS) \
+	$(SASL_LIBS) \
+	$(DBUS_LIBS) \
+	$(LIBNL_LIBS) \
+	$(NULL)
+
+if WITH_DTRACE_PROBES
+REMOTE_DAEMON_LD_ADD += ../src/libvirt_probes.lo
+endif WITH_DTRACE_PROBES
+
+REMOTE_DAEMON_LD_ADD += \
+	../gnulib/lib/libgnu.la \
+	$(NULL)
 
 LOGROTATE_FILES_IN += \
 	remote/libvirtd.qemu.logrotate.in \
@@ -73,7 +113,7 @@ DRIVER_SOURCE_FILES += $(REMOTE_DRIVER_SOURCES)
 EXTRA_DIST += \
 	$(REMOTE_DRIVER_PROTOCOL) \
 	$(REMOTE_DRIVER_SOURCES) \
-	$(LIBVIRTD_SOURCES) \
+	$(REMOTE_DAEMON_SOURCES) \
 	remote/test_libvirtd.aug.in \
 	remote/libvirtd.aug.in \
 	remote/libvirtd.conf.in \
@@ -87,11 +127,11 @@ EXTRA_DIST += \
 # the WITH_REMOTE/WITH_LIBVIRTD conditionals
 BUILT_SOURCES += \
 	$(REMOTE_DRIVER_GENERATED) \
-	$(LIBVIRTD_GENERATED) \
+	$(REMOTE_DAEMON_GENERATED) \
 	$(NULL)
 MAINTAINERCLEANFILES += \
 	$(REMOTE_DRIVER_GENERATED) \
-	$(LIBVIRTD_GENERATED) \
+	$(REMOTE_DAEMON_GENERATED) \
 	$(NULL)
 CLEANFILES += \
 	remote/libvirtd.conf \
@@ -137,51 +177,18 @@ CLEANFILES += remote/libvirtd.aug
 
 man8_MANS += libvirtd.8
 
-libvirtd_SOURCES = $(LIBVIRTD_SOURCES)
+libvirtd_SOURCES = $(REMOTE_DAEMON_SOURCES)
 
 libvirtd_CFLAGS = \
-	$(LIBXML_CFLAGS) \
-	$(GNUTLS_CFLAGS) \
-	$(SASL_CFLAGS) \
-	$(XDR_CFLAGS) \
-	$(DBUS_CFLAGS) \
-	$(LIBNL_CFLAGS) \
-	$(WARN_CFLAGS) \
-	$(PIE_CFLAGS) \
-	-I$(srcdir)/access \
-	-I$(srcdir)/conf \
-	-I$(srcdir)/rpc \
+	$(REMOTE_DAEMON_CFLAGS) \
 	-DSOCK_PREFIX="\"libvirt\"" \
 	-DDAEMON_NAME="\"libvirtd\"" \
 	-DWITH_IP \
 	$(NULL)
 
-libvirtd_LDFLAGS = \
-	$(RELRO_LDFLAGS) \
-	$(PIE_LDFLAGS) \
-	$(NO_INDIRECT_LDFLAGS) \
-	$(NO_UNDEFINED_LDFLAGS) \
-	$(NULL)
+libvirtd_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
 
-libvirtd_LDADD = \
-	libvirt_driver_admin.la \
-	libvirt-lxc.la \
-	libvirt-qemu.la \
-	libvirt.la \
-	$(LIBXML_LIBS) \
-	$(GNUTLS_LIBS) \
-	$(SASL_LIBS) \
-	$(DBUS_LIBS) \
-	$(LIBNL_LIBS) \
-	$(NULL)
-
-if WITH_DTRACE_PROBES
-libvirtd_LDADD += ../src/libvirt_probes.lo
-endif WITH_DTRACE_PROBES
-
-libvirtd_LDADD += \
-	../gnulib/lib/libgnu.la \
-	$(NULL)
+libvirtd_LDADD = $(REMOTE_DAEMON_LD_ADD)
 
 remote/libvirtd.conf: remote/libvirtd.conf.in
 	$(AM_V_GEN)$(SED) \
