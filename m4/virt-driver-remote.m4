@@ -19,6 +19,7 @@ dnl
 
 AC_DEFUN([LIBVIRT_DRIVER_ARG_REMOTE], [
   LIBVIRT_ARG_WITH_FEATURE([REMOTE], [remote driver], [yes])
+  LIBVIRT_ARG_WITH([REMOTE_DEFAULT_MODE], [remote driver default mode], [legacy])
 ])
 
 AC_DEFUN([LIBVIRT_DRIVER_CHECK_REMOTE], [
@@ -26,6 +27,20 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_REMOTE], [
     AC_DEFINE_UNQUOTED([WITH_REMOTE], 1, [whether Remote driver is enabled])
   fi
   AM_CONDITIONAL([WITH_REMOTE], [test "$with_remote" = "yes"])
+
+  case "$with_remote_default_mode" in
+    legacy)
+      REMOTE_DRIVER_MODE_DEFAULT=REMOTE_DRIVER_MODE_LEGACY
+      ;;
+    direct)
+      REMOTE_DRIVER_MODE_DEFAULT=REMOTE_DRIVER_MODE_DIRECT
+      ;;
+    *)
+      AC_MSG_ERROR([Unknown remote mode '$with_remote_default_mode'])
+      ;;
+  esac
+
+  AC_DEFINE_UNQUOTED([REMOTE_DRIVER_MODE_DEFAULT],[$REMOTE_DRIVER_MODE_DEFAULT], [Default remote driver mode])
 ])
 
 AC_DEFUN([LIBVIRT_DRIVER_RESULT_REMOTE], [

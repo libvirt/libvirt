@@ -1170,6 +1170,7 @@ rm -f po/stamp-po
            --without-xenapi \
            --without-vz \
            --without-bhyve \
+           --with-remote-default-mode=legacy \
            --with-interface \
            --with-network \
            --with-storage-fs \

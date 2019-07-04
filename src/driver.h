@@ -108,6 +108,8 @@ int virSetSharedNWFilterDriver(virNWFilterDriverPtr driver) ATTRIBUTE_RETURN_CHE
 int virSetSharedSecretDriver(virSecretDriverPtr driver) ATTRIBUTE_RETURN_CHECK;
 int virSetSharedStorageDriver(virStorageDriverPtr driver) ATTRIBUTE_RETURN_CHECK;
 
+bool virHasDriverForURIScheme(const char *scheme);
+
 int virDriverLoadModule(const char *name,
                         const char *regfunc,
                         bool required);

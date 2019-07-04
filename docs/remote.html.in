@@ -208,6 +208,24 @@ Note that parameter values must be
       </tr>
       <tr>
         <td>
+          <code>mode</code>
+        </td>
+        <td> unix, ssh, libssh, libssh2 </td>
+        <td>
+          <dl>
+            <dt><code>auto</code></dt><dd>automatically determine the daemon</dd>
+            <dt><code>direct</code></dt><dd>connect to per-driver daemons</dd>
+            <dt><code>legacy</code></dt><dd>connect to libvirtd</dd>
+          </dl>
+          Can also be set in <code>libvirt.conf</code> as <code>remote_mode</code>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2"/>
+        <td> Example: <code>mode=direct</code> </td>
+      </tr>
+      <tr>
+        <td>
           <code>command</code>
         </td>
         <td> ssh, ext </td>

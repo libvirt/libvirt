@@ -595,6 +595,33 @@ virRegisterConnectDriver(virConnectDriverPtr driver,
 
 
 /**
+ * virHasDriverForURIScheme:
+ * @scheme: the URI scheme
+ *
+ * Determine if there is a driver registered that explicitly
+ * handles URIs with the scheme @scheme.
+ *
+ * Returns: true if a driver is registered
+ */
+bool
+virHasDriverForURIScheme(const char *scheme)
+{
+    size_t i;
+    size_t j;
+
+    for (i = 0; i < virConnectDriverTabCount; i++) {
+        if (!virConnectDriverTab[i]->uriSchemes)
+            continue;
+        for (j = 0; virConnectDriverTab[i]->uriSchemes[j]; j++) {
+            if (STREQ(virConnectDriverTab[i]->uriSchemes[j], scheme))
+                return true;
+        }
+    }
+
+    return false;
+}
+
+/**
  * virRegisterStateDriver:
  * @driver: pointer to a driver block
  *
