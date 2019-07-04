@@ -2906,6 +2906,90 @@ static char *testDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
         virTypedParameterAssign(&params[index], name, type, value) < 0) \
         goto cleanup
 
+
+static int
+testDomainSetMemoryParameters(virDomainPtr dom,
+                              virTypedParameterPtr params,
+                              int nparams,
+                              unsigned int flags)
+{
+    virDomainObjPtr vm = NULL;
+    virDomainDefPtr def = NULL;
+    unsigned long long swap_hard_limit = 0;
+    unsigned long long hard_limit = 0;
+    unsigned long long soft_limit = 0;
+    bool set_swap_hard_limit = false;
+    bool set_hard_limit = false;
+    bool set_soft_limit = false;
+    int rc;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_DOMAIN_MEMORY_HARD_LIMIT,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_MEMORY_SOFT_LIMIT,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT,
+                               VIR_TYPED_PARAM_ULLONG,
+                               NULL) < 0)
+        return -1;
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        return -1;
+
+    if (!(def = virDomainObjGetOneDef(vm, flags)))
+        goto cleanup;
+
+#define VIR_GET_LIMIT_PARAMETER(PARAM, VALUE) \
+    if ((rc = virTypedParamsGetULLong(params, nparams, PARAM, &VALUE)) < 0) \
+        goto cleanup; \
+ \
+    if (rc == 1) \
+        set_ ## VALUE = true;
+
+    VIR_GET_LIMIT_PARAMETER(VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT, swap_hard_limit)
+    VIR_GET_LIMIT_PARAMETER(VIR_DOMAIN_MEMORY_HARD_LIMIT, hard_limit)
+    VIR_GET_LIMIT_PARAMETER(VIR_DOMAIN_MEMORY_SOFT_LIMIT, soft_limit)
+
+#undef VIR_GET_LIMIT_PARAMETER
+
+    if (set_swap_hard_limit || set_hard_limit) {
+        unsigned long long mem_limit = vm->def->mem.hard_limit;
+        unsigned long long swap_limit = vm->def->mem.swap_hard_limit;
+
+        if (set_swap_hard_limit)
+            swap_limit = swap_hard_limit;
+
+        if (set_hard_limit)
+            mem_limit = hard_limit;
+
+        if (mem_limit > swap_limit) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("memory hard_limit tunable value must be lower "
+                             "than or equal to swap_hard_limit"));
+            goto cleanup;
+        }
+    }
+
+    if (set_soft_limit)
+        def->mem.soft_limit = soft_limit;
+
+    if (set_hard_limit)
+        def->mem.hard_limit = hard_limit;
+
+    if (set_swap_hard_limit)
+        def->mem.swap_hard_limit = swap_hard_limit;
+
+    ret = 0;
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
 static int
 testDomainGetMemoryParameters(virDomainPtr dom,
                               virTypedParameterPtr params,
@@ -7667,6 +7751,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainGetVcpuPinInfo = testDomainGetVcpuPinInfo, /* 1.2.18 */
     .domainGetMaxVcpus = testDomainGetMaxVcpus, /* 0.7.3 */
     .domainGetXMLDesc = testDomainGetXMLDesc, /* 0.1.4 */
+    .domainSetMemoryParameters = testDomainSetMemoryParameters, /* 5.6.0 */
     .domainGetMemoryParameters = testDomainGetMemoryParameters, /* 5.6.0 */
     .domainGetNumaParameters = testDomainGetNumaParameters, /* 5.6.0 */
     .domainGetInterfaceParameters = testDomainGetInterfaceParameters, /* 5.6.0 */
