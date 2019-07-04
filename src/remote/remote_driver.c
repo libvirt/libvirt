@@ -786,25 +786,24 @@ doRemoteOpen(virConnectPtr conn,
         trans_libssh,
     } transport;
 #ifndef WIN32
-    char *daemonPath = NULL;
+    VIR_AUTOFREE(char *) daemonPath = NULL;
 #endif
-    char *tls_priority = NULL;
-    char *name = NULL;
-    char *command = NULL;
-    char *sockname = NULL;
-    char *netcat = NULL;
-    char *port = NULL;
-    char *authtype = NULL;
-    char *username = NULL;
-    char *pkipath = NULL;
-    char *keyfile = NULL;
-    char *sshauth = NULL;
-    char *knownHostsVerify = NULL;
-    char *knownHosts = NULL;
+    VIR_AUTOFREE(char *) tls_priority = NULL;
+    VIR_AUTOFREE(char *) name = NULL;
+    VIR_AUTOFREE(char *) command = NULL;
+    VIR_AUTOFREE(char *) sockname = NULL;
+    VIR_AUTOFREE(char *) netcat = NULL;
+    VIR_AUTOFREE(char *) port = NULL;
+    VIR_AUTOFREE(char *) authtype = NULL;
+    VIR_AUTOFREE(char *) username = NULL;
+    VIR_AUTOFREE(char *) pkipath = NULL;
+    VIR_AUTOFREE(char *) keyfile = NULL;
+    VIR_AUTOFREE(char *) sshauth = NULL;
+    VIR_AUTOFREE(char *) knownHostsVerify = NULL;
+    VIR_AUTOFREE(char *) knownHosts = NULL;
     bool sanity = true;
     bool verify = true;
     bool tty ATTRIBUTE_UNUSED = true;
-    int retcode = VIR_DRV_OPEN_ERROR;
 
     /* We handle *ALL* URIs here. The caller has rejected any
      * URIs we don't care about */
@@ -1257,29 +1256,7 @@ doRemoteOpen(virConnectPtr conn,
                  "by the remote side.");
     }
 
-    /* Successful. */
-    retcode = VIR_DRV_OPEN_SUCCESS;
-
- cleanup:
-    /* Free up the URL and strings. */
-    VIR_FREE(name);
-    VIR_FREE(command);
-    VIR_FREE(sockname);
-    VIR_FREE(authtype);
-    VIR_FREE(netcat);
-    VIR_FREE(sshauth);
-    VIR_FREE(keyfile);
-    VIR_FREE(username);
-    VIR_FREE(port);
-    VIR_FREE(pkipath);
-    VIR_FREE(tls_priority);
-    VIR_FREE(knownHostsVerify);
-    VIR_FREE(knownHosts);
-#ifndef WIN32
-    VIR_FREE(daemonPath);
-#endif
-
-    return retcode;
+    return VIR_DRV_OPEN_SUCCESS;
 
  failed:
     virObjectUnref(priv->remoteProgram);
@@ -1296,7 +1273,7 @@ doRemoteOpen(virConnectPtr conn,
 #endif
 
     VIR_FREE(priv->hostname);
-    goto cleanup;
+    return VIR_DRV_OPEN_ERROR;
 }
 #undef EXTRACT_URI_ARG_STR
 #undef EXTRACT_URI_ARG_BOOL
