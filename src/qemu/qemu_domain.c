@@ -7260,6 +7260,28 @@ qemuDomainSaveStatus(virDomainObjPtr obj)
 
 
 void
+qemuDomainSaveConfig(virDomainObjPtr obj)
+{
+    virQEMUDriverPtr driver = QEMU_DOMAIN_PRIVATE(obj)->driver;
+    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = NULL;
+    virDomainDefPtr def = NULL;
+
+    if (virDomainObjIsActive(obj))
+        def = obj->newDef;
+    else
+        def = obj->def;
+
+    if (!def)
+        return;
+
+    cfg = virQEMUDriverGetConfig(driver);
+
+    if (virDomainSaveConfig(cfg->configDir, driver->caps, def) < 0)
+        VIR_WARN("Failed to save config of vm %s", obj->def->name);
+}
+
+
+void
 qemuDomainObjSetJobPhase(virQEMUDriverPtr driver,
                          virDomainObjPtr obj,
                          int phase)
