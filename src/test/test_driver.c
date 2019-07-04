@@ -3275,7 +3275,7 @@ static int testDomainGetDiskErrors(virDomainPtr dom,
     virDomainObjPtr vm = NULL;
     int ret = -1;
     size_t i;
-    size_t nerrors;
+    size_t nerrors = 0;
 
     virCheckFlags(0, -1);
 
