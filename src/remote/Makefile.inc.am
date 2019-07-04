@@ -89,18 +89,40 @@ SYSCONF_FILES += remote/libvirtd.sysconf
 PODFILES += remote/libvirtd.pod
 MANINFILES += libvirtd.8.in
 
-LIBVIRTD_UNIT_FILES_IN = \
-	remote/libvirtd.service.in \
+LIBVIRTD_SOCKET_UNIT_FILES_IN = \
 	remote/libvirtd.socket.in \
 	remote/libvirtd-ro.socket.in \
 	remote/libvirtd-admin.socket.in \
 	remote/libvirtd-tcp.socket.in \
 	remote/libvirtd-tls.socket.in \
+	$(NULL)
+
+LIBVIRTD_SOCKET_UNIT_FILES = $(notdir $(LIBVIRTD_SOCKET_UNIT_FILES_IN:%.in=%))
+
+LIBVIRTD_UNIT_FILES_IN = \
+	remote/libvirtd.service.in \
+	$(LIBVIRTD_SOCKET_UNIT_FILES_IN) \
+	$(NULL)
+
+VIRTPROXYD_UNIT_FILES_IN = \
+	remote/virtproxyd.service.in \
+	$(NULL)
+
+GUEST_UNIT_FILES_IN = \
 	remote/virt-guest-shutdown.target.in \
 	$(NULL)
 
-SYSTEMD_UNIT_FILES += $(notdir $(LIBVIRTD_UNIT_FILES_IN:%.in=%))
-SYSTEMD_UNIT_FILES_IN += $(LIBVIRTD_UNIT_FILES_IN)
+
+SYSTEMD_UNIT_FILES += \
+	$(notdir $(LIBVIRTD_UNIT_FILES_IN:%.in=%)) \
+	$(notdir $(LIBVIRTD_UNIT_FILES_IN:remote/libvirtd%.in=remote/virtproxyd%)) \
+	$(notdir $(GUEST_UNIT_FILES_IN:%.in=%)) \
+	$(NULL)
+SYSTEMD_UNIT_FILES_IN += \
+	$(LIBVIRTD_UNIT_FILES_IN) \
+	$(VIRTPROXYD_UNIT_FILES_IN) \
+	$(GUEST_UNIT_FILES_IN) \
+	$(NULL)
 
 REMOTE_PROTOCOL = $(srcdir)/remote/remote_protocol.x
 LXC_PROTOCOL = $(srcdir)/remote/lxc_protocol.x
@@ -138,6 +160,7 @@ MAINTAINERCLEANFILES += \
 	$(NULL)
 CLEANFILES += \
 	remote/libvirtd.conf \
+	remote/virtproxyd.conf \
 	$(NULL)
 
 if WITH_REMOTE
@@ -168,15 +191,27 @@ endif ! WITH_REMOTE
 
 if WITH_LIBVIRTD
 
-sbin_PROGRAMS += libvirtd
+sbin_PROGRAMS += libvirtd virtproxyd
 
-augeas_DATA += remote/libvirtd.aug
+augeas_DATA += \
+	remote/libvirtd.aug \
+	remote/virtproxyd.aug \
+	$(NULL)
 
-augeastest_DATA += remote/test_libvirtd.aug
+augeastest_DATA += \
+	remote/test_libvirtd.aug \
+	remote/test_virtproxyd.aug \
+	$(NULL)
 
-nodist_conf_DATA += remote/libvirtd.conf
+nodist_conf_DATA += \
+	remote/libvirtd.conf \
+	remote/virtproxyd.conf \
+	$(NULL)
 
-CLEANFILES += remote/libvirtd.aug
+CLEANFILES += \
+	remote/libvirtd.aug \
+	remote/virtproxyd.aug \
+	$(NULL)
 
 man8_MANS += libvirtd.8
 
@@ -187,11 +222,22 @@ libvirtd_CFLAGS = \
 	-DSOCK_PREFIX="\"libvirt\"" \
 	-DDAEMON_NAME="\"libvirtd\"" \
 	-DWITH_IP \
+	-DLIBVIRTD \
 	$(NULL)
 
 libvirtd_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
 
 libvirtd_LDADD = $(REMOTE_DAEMON_LD_ADD)
+
+virtproxyd_SOURCES = $(REMOTE_DAEMON_SOURCES)
+virtproxyd_CFLAGS = \
+	$(REMOTE_DAEMON_CFLAGS) \
+	-DSOCK_PREFIX="\"libvirt\"" \
+	-DDAEMON_NAME="\"virtproxyd\"" \
+	-DENABLE_IP \
+	$(NULL)
+virtproxyd_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
+virtproxyd_LDADD = $(REMOTE_DAEMON_LD_ADD)
 
 remote/libvirtd.conf: remote/libvirtd.conf.in
 	$(AM_V_GEN)$(SED) \
@@ -199,6 +245,13 @@ remote/libvirtd.conf: remote/libvirtd.conf.in
 		-e '/[@]END[@]/d' \
 		-e 's|[@]sysconfdir[@]|@sysconfdir@|' \
 		-e 's|[@]DAEMON_NAME[@]|libvirtd|' \
+		$< > $@
+
+remote/virtproxyd.conf: remote/libvirtd.conf.in
+	$(AM_V_GEN)sed \
+		-e '/[@]CUT_ENABLE_IP[@]/d' \
+		-e '/[@]END[@]/d' \
+		-e 's/[@]DAEMON_NAME[@]/virtproxyd/' \
 		$< > $@
 
 INSTALL_DATA_DIRS += remote
@@ -218,6 +271,14 @@ remote/libvirtd.aug: remote/libvirtd.aug.in
 		-e 's|[@]DAEMON_NAME_UC[@]|Libvirtd|' \
 		$< > $@
 
+remote/virtproxyd.aug: remote/libvirtd.aug.in
+	$(AM_V_GEN)$(SED) \
+		-e '/[@]CUT_ENABLE_IP[@]/d' \
+		-e '/[@]END[@]/d' \
+		-e 's/[@]DAEMON_NAME[@]/virtproxyd/' \
+		-e 's/[@]DAEMON_NAME_UC[@]/Virtproxyd/' \
+		$< > $@
+
 remote/test_libvirtd.aug: remote/test_libvirtd.aug.in \
 		remote/libvirtd.conf $(AUG_GENTEST)
 	$(AM_V_GEN)$(AUG_GENTEST) remote/libvirtd.conf \
@@ -228,6 +289,17 @@ remote/test_libvirtd.aug: remote/test_libvirtd.aug.in \
 		-e 's|[@]sysconfdir[@]|@sysconfdir@|' \
 		-e 's|[@]DAEMON_NAME[@]|libvirtd|' \
 		-e 's|[@]DAEMON_NAME_UC[@]|Libvirtd|' \
+		> $@ || rm -f $@
+
+remote/test_virtproxyd.aug: remote/test_libvirtd.aug.in \
+		remote/virtproxyd.conf $(AUG_GENTEST)
+	$(AM_V_GEN)$(AUG_GENTEST) remote/virtproxyd.conf \
+		$(srcdir)/remote/test_libvirtd.aug.in | \
+		$(SED) \
+		-e '/[@]CUT_ENABLE_IP[@]/d' \
+		-e '/[@]END[@]/d' \
+		-e 's/[@]DAEMON_NAME[@]/virtproxyd/' \
+		-e 's/[@]DAEMON_NAME_UC[@]/Virtproxyd/' \
 		> $@ || rm -f $@
 
 if WITH_SYSCTL
@@ -304,11 +376,29 @@ LIBVIRTD_UNIT_VARS = \
 	-e 's|[@]deps[@]||g' \
 	$(NULL)
 
+VIRTD_UNIT_VARS = \
+	$(COMMON_UNIT_VARS) \
+	-e 's|[@]deps[@]|Conflicts=$(LIBVIRTD_SOCKET_UNIT_FILES)|g' \
+	$(NULL)
+
+VIRTPROXYD_UNIT_VARS = \
+	$(VIRTD_UNIT_VARS) \
+	-e 's|[@]name[@]|Libvirt proxy|g' \
+	-e 's|[@]service[@]|virtproxyd|g' \
+	-e 's|[@]sockprefix[@]|libvirt|g' \
+	$(NULL)
+
 libvirtd.service: remote/libvirtd.service.in $(top_builddir)/config.status
 	$(AM_V_GEN)$(SED) $(LIBVIRTD_UNIT_VARS) $< > $@-t && mv $@-t $@
 
 libvirt%.socket: remote/libvirt%.socket.in $(top_builddir)/config.status
 	$(AM_V_GEN)$(SED) $(LIBVIRTD_UNIT_VARS) $< > $@-t && mv $@-t $@
+
+virtproxyd.service: remote/virtproxyd.service.in $(top_builddir)/config.status
+	$(AM_V_GEN)$(SED) $(VIRTPROXYD_UNIT_VARS) $< > $@-t && mv $@-t $@
+
+virtproxy%.socket: remote/libvirt%.socket.in $(top_builddir)/config.status
+	$(AM_V_GEN)$(SED) $(VIRTPROXYD_UNIT_VARS) $< > $@-t && mv $@-t $@
 
 virt-guest-shutdown.target: remote/virt-guest-shutdown.target.in \
 			$(top_builddir)/config.status

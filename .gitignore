@@ -161,6 +161,9 @@
 /src/remote/libvirtd.aug
 /src/remote/libvirtd.conf
 /src/remote/test_libvirtd.aug
+/src/remote/test_virtproxyd.aug
+/src/remote/virtproxyd.aug
+/src/remote/virtproxyd.conf
 /src/rpc/virkeepaliveprotocol.[ch]
 /src/rpc/virnetprotocol.[ch]
 /src/test*.aug
@@ -169,6 +172,7 @@
 /src/virt-aa-helper
 /src/virtlockd
 /src/virtlogd
+/src/virtproxyd
 /src/virt-guest-shutdown.target
 /tests/*.log
 /tests/*.pid

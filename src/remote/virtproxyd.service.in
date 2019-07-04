@@ -1,0 +1,24 @@
+[Unit]
+Description=Virtualization daemon
+Conflicts=libvirtd.service
+Requires=virtproxyd.socket
+Requires=virtproxyd-ro.socket
+Requires=virtproxyd-admin.socket
+After=network.target
+After=dbus.service
+After=apparmor.service
+After=local-fs.target
+Documentation=man:libvirtd(8)
+Documentation=https://libvirt.org
+
+[Service]
+Type=notify
+ExecStart=@sbindir@/virtproxyd --timeout 120
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+Also=virtproxyd.socket
+Also=virtproxyd-ro.socket
+Also=virtproxyd-admin.socket
