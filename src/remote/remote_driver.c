@@ -825,7 +825,7 @@ doRemoteOpen(virConnectPtr conn,
             } else {
                 virReportError(VIR_ERR_INVALID_ARG, "%s",
                                _("remote_open: transport in URL not recognised "
-                                 "(should be tls|unix|ssh|ext|tcp|libssh2)"));
+                                 "(should be tls|unix|ssh|ext|tcp|libssh2|libssh)"));
                 return VIR_DRV_OPEN_ERROR;
             }
         }
