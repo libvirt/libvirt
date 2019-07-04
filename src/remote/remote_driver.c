@@ -803,7 +803,9 @@ doRemoteOpen(virConnectPtr conn,
     VIR_AUTOFREE(char *) knownHosts = NULL;
     bool sanity = true;
     bool verify = true;
-    bool tty ATTRIBUTE_UNUSED = true;
+#ifndef WIN32
+    bool tty = true;
+#endif
 
     /* We handle *ALL* URIs here. The caller has rejected any
      * URIs we don't care about */
@@ -908,7 +910,9 @@ doRemoteOpen(virConnectPtr conn,
 
             EXTRACT_URI_ARG_BOOL("no_sanity", sanity);
             EXTRACT_URI_ARG_BOOL("no_verify", verify);
+#ifndef WIN32
             EXTRACT_URI_ARG_BOOL("no_tty", tty);
+#endif
 
             if (STRCASEEQ(var->name, "authfile")) {
                 /* Strip this param, used by virauth.c */
