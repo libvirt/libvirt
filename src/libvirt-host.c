@@ -98,9 +98,6 @@ virConnectSupportsFeature(virConnectPtr conn, int feature)
  * hypervisor, use virConnectGetCapabilities().
  *
  * Returns NULL in case of error, a static zero terminated string otherwise.
- *
- * See also:
- * http://www.redhat.com/archives/libvir-list/2007-February/msg00096.html
  */
 const char *
 virConnectGetType(virConnectPtr conn)
