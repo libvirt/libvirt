@@ -1941,6 +1941,34 @@ static void remoteClientCloseFunc(virNetServerClientPtr client)
 }
 
 
+static int
+remoteOpenConn(const char *uri,
+               bool readonly,
+               virConnectPtr *conn)
+{
+    VIR_DEBUG("Getting secondary uri=%s readonly=%d conn=%p",
+              NULLSTR(uri), readonly, conn);
+    if (*conn)
+        return 0;
+
+    if (!uri) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        return -1;
+    }
+
+    VIR_DEBUG("Opening driver %s", uri);
+    if (readonly)
+        *conn = virConnectOpenReadOnly(uri);
+    else
+        *conn = virConnectOpen(uri);
+    if (!*conn)
+        return -1;
+    VIR_DEBUG("Opened driver %p", *conn);
+
+    return 0;
+}
+
+
 static virConnectPtr
 remoteGetHypervisorConn(virNetServerClientPtr client)
 {
@@ -1962,10 +1990,10 @@ remoteGetInterfaceConn(virNetServerClientPtr client)
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
 
-    if (!priv->interfaceConn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("hypervisor connection not open"));
+    if (remoteOpenConn(priv->interfaceURI,
+                       priv->readonly,
+                       &priv->interfaceConn) < 0)
         return NULL;
-    }
 
     return priv->interfaceConn;
 }
@@ -1977,10 +2005,10 @@ remoteGetNetworkConn(virNetServerClientPtr client)
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
 
-    if (!priv->networkConn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("hypervisor connection not open"));
+    if (remoteOpenConn(priv->networkURI,
+                       priv->readonly,
+                       &priv->networkConn) < 0)
         return NULL;
-    }
 
     return priv->networkConn;
 }
@@ -1992,10 +2020,10 @@ remoteGetNodeDevConn(virNetServerClientPtr client)
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
 
-    if (!priv->nodedevConn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("hypervisor connection not open"));
+    if (remoteOpenConn(priv->nodedevURI,
+                       priv->readonly,
+                       &priv->nodedevConn) < 0)
         return NULL;
-    }
 
     return priv->nodedevConn;
 }
@@ -2007,10 +2035,10 @@ remoteGetNWFilterConn(virNetServerClientPtr client)
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
 
-    if (!priv->nwfilterConn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("hypervisor connection not open"));
+    if (remoteOpenConn(priv->nwfilterURI,
+                       priv->readonly,
+                       &priv->nwfilterConn) < 0)
         return NULL;
-    }
 
     return priv->nwfilterConn;
 }
@@ -2022,10 +2050,10 @@ remoteGetSecretConn(virNetServerClientPtr client)
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
 
-    if (!priv->secretConn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("hypervisor connection not open"));
+    if (remoteOpenConn(priv->secretURI,
+                       priv->readonly,
+                       &priv->secretConn) < 0)
         return NULL;
-    }
 
     return priv->secretConn;
 }
@@ -2037,10 +2065,10 @@ remoteGetStorageConn(virNetServerClientPtr client)
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
 
-    if (!priv->storageConn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("hypervisor connection not open"));
+    if (remoteOpenConn(priv->storageURI,
+                       priv->readonly,
+                       &priv->storageConn) < 0)
         return NULL;
-    }
 
     return priv->storageConn;
 }
@@ -2077,6 +2105,9 @@ remoteDispatchConnectOpen(virNetServerPtr server ATTRIBUTE_UNUSED,
     unsigned int flags;
     struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
     int rv = -1;
+#ifdef MODULE_NAME
+    const char *type = NULL;
+#endif /* !MODULE_NAME */
 
     VIR_DEBUG("priv=%p conn=%p", priv, priv->conn);
     virMutexLock(&priv->lock);
@@ -2095,20 +2126,94 @@ remoteDispatchConnectOpen(virNetServerPtr server ATTRIBUTE_UNUSED,
     if (virNetServerClientGetReadonly(client))
         flags |= VIR_CONNECT_RO;
 
-    priv->conn =
-        flags & VIR_CONNECT_RO
-        ? virConnectOpenReadOnly(name)
-        : virConnectOpen(name);
+    priv->readonly = flags & VIR_CONNECT_RO;
 
-    if (priv->conn == NULL)
+    VIR_DEBUG("Opening driver %s", name);
+    if (priv->readonly) {
+        if (!(priv->conn = virConnectOpenReadOnly(name)))
+            goto cleanup;
+    } else {
+        if (!(priv->conn = virConnectOpen(name)))
+            goto cleanup;
+    }
+    VIR_DEBUG("Opened %p", priv->conn);
+
+#ifdef MODULE_NAME
+    /*
+     * For per-driver daemons, we must setup connection URIs
+     * for sub-drivers.
+     */
+    if (!(type = virConnectGetType(priv->conn)))
         goto cleanup;
 
+    VIR_DEBUG("Primary driver type is '%s'", type);
+    if (STREQ(type, "QEMU") ||
+        STREQ(type, "LIBXL") ||
+        STREQ(type, "LXC") ||
+        STREQ(type, "VBOX") ||
+        STREQ(type, "bhyve") ||
+        STREQ(type, "vz") ||
+        STREQ(type, "Parallels")) {
+        VIR_DEBUG("Hypervisor driver found, setting URIs for secondary drivers");
+        if (getuid() == 0) {
+            priv->interfaceURI = "interface:///system";
+            priv->networkURI = "network:///system";
+            priv->nodedevURI = "nodedev:///system";
+            priv->nwfilterURI = "nwfilter:///system";
+            priv->secretURI = "secret:///system";
+            priv->storageURI = "storage:///system";
+        } else {
+            priv->interfaceURI = "interface:///session";
+            priv->networkURI = "network:///session";
+            priv->nodedevURI = "nodedev:///session";
+            /* No nwfilterURI as this is a root-only driver */
+            priv->secretURI = "secret:///session";
+            priv->storageURI = "storage:///session";
+        }
+    } else if (STREQ(type, "interface")) {
+        VIR_DEBUG("Interface driver found");
+        priv->interfaceConn = virObjectRef(priv->conn);
+    } else if (STREQ(type, "network")) {
+        VIR_DEBUG("Network driver found");
+        priv->networkConn = virObjectRef(priv->conn);
+    } else if (STREQ(type, "nodedev")) {
+        VIR_DEBUG("Nodedev driver found");
+        priv->nodedevConn = virObjectRef(priv->conn);
+    } else if (STREQ(type, "nwfilter")) {
+        VIR_DEBUG("NWFilter driver found");
+        priv->nwfilterConn = virObjectRef(priv->conn);
+    } else if (STREQ(type, "secret")) {
+        VIR_DEBUG("Secret driver found");
+        priv->secretConn = virObjectRef(priv->conn);
+    } else if (STREQ(type, "storage")) {
+        VIR_DEBUG("Storage driver found");
+        priv->storageConn = virObjectRef(priv->conn);
+
+        /* Co-open the secret driver, as apps using the storage driver may well
+         * need access to secrets for storage auth
+         */
+        if (getuid() == 0)
+            priv->secretURI = "secret:///system";
+        else
+            priv->secretURI = "secret:///session";
+    } else {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unexpected driver type '%s' opened"), type);
+        goto cleanup;
+    }
+#else /* !MODULE_NAME */
+    /*
+     * For libvirtd/virtproxyd one connection handles
+     * all drivers
+     */
+    VIR_DEBUG("Pointing secondary drivers to primary");
     priv->interfaceConn = virObjectRef(priv->conn);
     priv->networkConn = virObjectRef(priv->conn);
     priv->nodedevConn = virObjectRef(priv->conn);
     priv->nwfilterConn = virObjectRef(priv->conn);
     priv->secretConn = virObjectRef(priv->conn);
     priv->storageConn = virObjectRef(priv->conn);
+#endif /* !MODULE_NAME */
 
     /* force update the @readonly attribute which was inherited from the
      * virNetServerService object - this is important for sockets that are RW
@@ -2118,8 +2223,13 @@ remoteDispatchConnectOpen(virNetServerPtr server ATTRIBUTE_UNUSED,
     rv = 0;
 
  cleanup:
-    if (rv < 0)
+    if (rv < 0) {
         virNetMessageSaveError(rerr);
+        if (priv->conn) {
+            virObjectUnref(priv->conn);
+            priv->conn = NULL;
+        }
+    }
     virMutexUnlock(&priv->lock);
     return rv;
 }

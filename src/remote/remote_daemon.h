@@ -70,12 +70,25 @@ struct daemonClientPrivate {
      * called, it will be set back to NULL if that succeeds.
      */
     virConnectPtr conn;
+
+    /* These secondary drivers may point back to 'conn'
+     * in the monolithic daemon setups. Otherwise they
+     * can be NULL and opened on first use, pointing
+     * to remote driver use of an external daemon
+     */
     virConnectPtr interfaceConn;
+    const char *interfaceURI;
     virConnectPtr networkConn;
+    const char *networkURI;
     virConnectPtr nodedevConn;
+    const char *nodedevURI;
     virConnectPtr nwfilterConn;
+    const char *nwfilterURI;
     virConnectPtr secretConn;
+    const char *secretURI;
     virConnectPtr storageConn;
+    const char *storageURI;
+    bool readonly;
 
     daemonClientStreamPtr streams;
 };
