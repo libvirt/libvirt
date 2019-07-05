@@ -80,6 +80,8 @@ struct _qemuBlockJobData {
     bool synchronous; /* API call is waiting for this job */
 
     int newstate; /* qemuBlockjobState, subset of events emitted by qemu */
+
+    bool invalidData; /* the job data (except name) is not valid */
 };
 
 int
