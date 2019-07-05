@@ -1,5 +1,5 @@
 @localstatedir@/log/libvirt/libxl/*.log {
-        weekly
+        size 2097153
         missingok
         rotate 4
         compress

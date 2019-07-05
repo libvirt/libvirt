@@ -1,5 +1,13 @@
 @localstatedir@/log/libvirt/qemu/*.log {
-        weekly
+        # The QEMU driver is configured to use virtlogd by
+        # default, which will perform log rollover.
+        # This logrotate config is still installed for cases
+        # where the user has switched off virtlogd.
+        #
+        # If virtlogd is active, ensure that size here is
+        # larger than 'max_size' in the virtlogd config
+        # so that logrotate becomes a no-op
+        size 2097153
         missingok
         rotate 4
         compress
