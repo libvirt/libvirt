@@ -156,6 +156,34 @@ virFileGetXAttrQuiet(const char *path,
 }
 
 
+/*
+ * This may look redundant but is needed to work around an
+ * compiler quirk. The call from the real virFileGetXAttr
+ * to the real virFileGetXAttrQuiet has a quirk where the
+ * return value from virFileGetXAttrQuiet gets scrambled
+ * if we mock virFileGetXAttrQuiet, returning -1 instead
+ * of 0 despite succeeding. This happens on FreeBSD 11/12
+ * hosts with CLang, and is suspected to be some kind of
+ * compiler optimization. By mocking this function too we
+ * can workaround it.
+ */
+int
+virFileGetXAttr(const char *path,
+                const char *name,
+                char **value)
+{
+    int ret;
+
+    if ((ret = virFileGetXAttrQuiet(path, name, value)) < 0) {
+        virReportSystemError(errno,
+                             "Unable to get XATTR %s on %s",
+                             name, path);
+    }
+
+    return ret;
+}
+
+
 int virFileSetXAttr(const char *path,
                     const char *name,
                     const char *value)
