@@ -144,18 +144,18 @@ mymain(void)
     } while (0)
 
 # define DO_TEST_IN(name, uuid) DO_TEST("in->in", name, \
-                                        "domainsnapshotxml2xmlin", \
-                                        "domainsnapshotxml2xmlin", \
+                                        "qemudomainsnapshotxml2xmlin", \
+                                        "qemudomainsnapshotxml2xmlin", \
                                         uuid, 0, 0)
 
 # define DO_TEST_OUT(name, uuid, internal) \
-    DO_TEST("out->out", name, "domainsnapshotxml2xmlout", \
-            "domainsnapshotxml2xmlout", uuid, 0, internal | TEST_REDEFINE)
+    DO_TEST("out->out", name, "qemudomainsnapshotxml2xmlout", \
+            "qemudomainsnapshotxml2xmlout", uuid, 0, internal | TEST_REDEFINE)
 
 # define DO_TEST_INOUT(name, uuid, time, flags) \
     DO_TEST("in->out", name, \
-            "domainsnapshotxml2xmlin",\
-            "domainsnapshotxml2xmlout",\
+            "qemudomainsnapshotxml2xmlin",\
+            "qemudomainsnapshotxml2xmlout",\
             uuid, time, flags)
 
     /* Unset or set all envvars here that are copied in qemudBuildCommandLine

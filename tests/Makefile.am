@@ -85,8 +85,6 @@ EXTRA_DIST = \
 	domaincapsschemadata \
 	domainconfdata \
 	domainschemadata \
-	domainsnapshotxml2xmlin \
-	domainsnapshotxml2xmlout \
 	fchostdata \
 	genericxml2xmlindata \
 	genericxml2xmloutdata \
@@ -112,6 +110,8 @@ EXTRA_DIST = \
 	qemublocktestdata \
 	qemucapabilitiesdata \
 	qemucaps2xmloutdata \
+	qemudomainsnapshotxml2xmlin \
+	qemudomainsnapshotxml2xmlout \
 	qemuhotplugtestcpus \
 	qemuhotplugtestdevices \
 	qemuhotplugtestdomains \
@@ -275,7 +275,7 @@ endif WITH_LIBXL
 
 if WITH_QEMU
 test_programs += qemuxml2argvtest qemuxml2xmltest \
-	domainsnapshotxml2xmltest \
+	qemudomainsnapshotxml2xmltest \
 	qemumonitorjsontest qemuhotplugtest \
 	qemuagenttest qemucapabilitiestest qemucaps2xmltest \
 	qemumemlocktest \
@@ -656,10 +656,10 @@ qemublocktest_LDADD = \
 	$(qemu_LDADDS) \
 	$(NULL)
 
-domainsnapshotxml2xmltest_SOURCES = \
-	domainsnapshotxml2xmltest.c testutilsqemu.c testutilsqemu.h \
+qemudomainsnapshotxml2xmltest_SOURCES = \
+	qemudomainsnapshotxml2xmltest.c testutilsqemu.c testutilsqemu.h \
 	testutils.c testutils.h
-domainsnapshotxml2xmltest_LDADD = $(qemu_LDADDS)
+qemudomainsnapshotxml2xmltest_LDADD = $(qemu_LDADDS)
 
 qemumemlocktest_SOURCES = \
 	qemumemlocktest.c \
@@ -691,7 +691,7 @@ qemufirmwaretest_LDADD = $(qemu_LDADDS)
 
 else ! WITH_QEMU
 EXTRA_DIST += qemuxml2argvtest.c qemuxml2xmltest.c \
-	domainsnapshotxml2xmltest.c \
+	qemudomainsnapshotxml2xmltest.c \
 	testutilsqemu.c testutilsqemu.h \
 	testutilsqemuschema.c testutilsqemuschema.h \
 	qemumonitorjsontest.c qemuhotplugtest.c \

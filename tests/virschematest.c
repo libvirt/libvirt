@@ -222,8 +222,8 @@ mymain(void)
                 "genericxml2xmloutdata", "xlconfigdata", "libxlxml2domconfigdata",
                 "qemuhotplugtestdomains");
     DO_TEST_DIR("domaincaps.rng", "domaincapsschemadata");
-    DO_TEST_DIR("domainsnapshot.rng", "domainsnapshotxml2xmlin",
-                "domainsnapshotxml2xmlout");
+    DO_TEST_DIR("domainsnapshot.rng", "qemudomainsnapshotxml2xmlin",
+                "qemudomainsnapshotxml2xmlout");
     DO_TEST_DIR("interface.rng", "interfaceschemadata");
     DO_TEST_DIR("network.rng", "../src/network", "networkxml2xmlin",
                 "networkxml2xmlout", "networkxml2confdata");
