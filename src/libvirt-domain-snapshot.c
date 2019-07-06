@@ -115,6 +115,9 @@ virDomainSnapshotGetConnect(virDomainSnapshotPtr snapshot)
  * becomes current (see virDomainSnapshotCurrent()), and is a child
  * of any previous current snapshot.
  *
+ * If @flags includes VIR_DOMAIN_SNAPSHOT_CREATE_VALIDATE, then @xmlDesc
+ * is validated against the <domainsnapshot> XML schema.
+ *
  * If @flags includes VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE, then this
  * is a request to reinstate snapshot metadata that was previously
  * captured from virDomainSnapshotGetXMLDesc() before removing that

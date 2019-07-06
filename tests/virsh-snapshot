@@ -180,11 +180,11 @@ compare exp err || fail=1
 # Restore state with redefine
 $abs_top_builddir/tools/virsh -c test:///default >out 2>err <<EOF || fail=1
   # Redefine must be in topological order; this will fail
-  snapshot-create test --redefine s2.xml
+  snapshot-create test --redefine s2.xml --validate
   echo --err marker
   # This is the right order
-  snapshot-create test --redefine s3.xml
-  snapshot-create test --redefine s2.xml --current
+  snapshot-create test --redefine s3.xml --validate
+  snapshot-create test --redefine s2.xml --current --validate
   snapshot-info test --current
 EOF
 

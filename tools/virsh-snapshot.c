@@ -50,6 +50,13 @@ virshSnapshotCreate(vshControl *ctl, virDomainPtr dom, const char *buffer,
 
     snapshot = virDomainSnapshotCreateXML(dom, buffer, flags);
 
+    /* If no source file but validate was not recognized, try again without
+     * that flag. */
+    if (!snapshot && last_error->code == VIR_ERR_NO_SUPPORT && !from) {
+        flags &= ~VIR_DOMAIN_SNAPSHOT_CREATE_VALIDATE;
+        snapshot = virDomainSnapshotCreateXML(dom, buffer, flags);
+    }
+
     /* Emulate --halt on older servers.  */
     if (!snapshot && last_error->code == VIR_ERR_INVALID_ARG &&
         (flags & VIR_DOMAIN_SNAPSHOT_CREATE_HALT)) {
@@ -147,6 +154,10 @@ static const vshCmdOptDef opts_snapshot_create[] = {
      .help = N_("require atomic operation")
     },
     VIRSH_COMMON_OPT_LIVE(N_("take a live snapshot")),
+    {.name = "validate",
+     .type = VSH_OT_BOOL,
+     .help = N_("validate the XML against the schema"),
+    },
     {.name = NULL}
 };
 
@@ -177,6 +188,8 @@ cmdSnapshotCreate(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC;
     if (vshCommandOptBool(cmd, "live"))
         flags |= VIR_DOMAIN_SNAPSHOT_CREATE_LIVE;
+    if (vshCommandOptBool(cmd, "validate"))
+        flags |= VIR_DOMAIN_SNAPSHOT_CREATE_VALIDATE;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         goto cleanup;
@@ -383,7 +396,7 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
     const char *desc = NULL;
     const char *memspec = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    unsigned int flags = 0;
+    unsigned int flags = VIR_DOMAIN_SNAPSHOT_CREATE_VALIDATE;
     const vshCmdOpt *opt = NULL;
 
     if (vshCommandOptBool(cmd, "no-metadata"))

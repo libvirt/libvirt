@@ -2586,13 +2586,16 @@ vzDomainSnapshotCreateXML(virDomainPtr domain,
     bool job = false;
     VIR_AUTOUNREF(virDomainSnapshotDefPtr) def = NULL;
 
-    virCheckFlags(0, NULL);
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_CREATE_VALIDATE, NULL);
 
     if (!(dom = vzDomObjFromDomain(domain)))
         return NULL;
 
     if (virDomainSnapshotCreateXMLEnsureACL(domain->conn, dom->def, flags) < 0)
         goto cleanup;
+
+    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_VALIDATE)
+        parse_flags |= VIR_DOMAIN_SNAPSHOT_PARSE_VALIDATE;
 
     if (!(def = virDomainSnapshotDefParseString(xmlDesc, driver->caps,
                                                 driver->xmlopt, NULL,

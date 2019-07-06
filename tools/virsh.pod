@@ -4588,10 +4588,13 @@ used to represent properties of snapshots.
 
 =item B<snapshot-create> I<domain> [I<xmlfile>] {[I<--redefine> [I<--current>]]
 | [I<--no-metadata>] [I<--halt>] [I<--disk-only>] [I<--reuse-external>]
-[I<--quiesce>] [I<--atomic>] [I<--live>]}
+[I<--quiesce>] [I<--atomic>] [I<--live>]} [I<--validate>]
 
 Create a snapshot for domain I<domain> with the properties specified in
-I<xmlfile>.  Normally, the only properties settable for a domain snapshot
+I<xmlfile>.   Optionally, the I<--validate> option can be passed to
+validate the format of the input XML file against an internal RNG
+schema (identical to using the L<virt-xml-validate(1)> tool). Normally,
+the only properties settable for a domain snapshot
 are the <name> and <description> elements, as well as <disks> if
 I<--disk-only> is given; the rest of the fields are
 ignored, and automatically filled in by libvirt.  If I<xmlfile> is

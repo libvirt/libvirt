@@ -4101,18 +4101,23 @@ esxDomainSnapshotCreateXML(virDomainPtr domain, const char *xmlDesc,
     bool diskOnly = (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) != 0;
     bool quiesce = (flags & VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE) != 0;
     VIR_AUTOUNREF(virDomainSnapshotDefPtr) def = NULL;
+    unsigned int parse_flags = 0;
 
     /* ESX supports disk-only and quiesced snapshots; libvirt tracks no
      * snapshot metadata so supporting that flag is trivial.  */
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY |
                   VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE |
-                  VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA, NULL);
+                  VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA |
+                  VIR_DOMAIN_SNAPSHOT_CREATE_VALIDATE, NULL);
+
+    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_VALIDATE)
+        parse_flags = VIR_DOMAIN_SNAPSHOT_PARSE_VALIDATE;
 
     if (esxVI_EnsureSession(priv->primary) < 0)
         return NULL;
 
     def = virDomainSnapshotDefParseString(xmlDesc, priv->caps,
-                                          priv->xmlopt, NULL, 0);
+                                          priv->xmlopt, NULL, parse_flags);
 
     if (!def)
         return NULL;

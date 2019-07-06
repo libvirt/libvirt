@@ -7183,7 +7183,8 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
         VIR_DOMAIN_SNAPSHOT_CREATE_HALT |
         VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE |
         VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC |
-        VIR_DOMAIN_SNAPSHOT_CREATE_LIVE, NULL);
+        VIR_DOMAIN_SNAPSHOT_CREATE_LIVE |
+        VIR_DOMAIN_SNAPSHOT_CREATE_VALIDATE, NULL);
 
     if ((redefine && !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT)))
         update_current = false;
@@ -7198,6 +7199,9 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
                        _("cannot halt after transient domain snapshot"));
         goto cleanup;
     }
+
+    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_VALIDATE)
+        parse_flags |= VIR_DOMAIN_SNAPSHOT_PARSE_VALIDATE;
 
     if (!(def = virDomainSnapshotDefParseString(xmlDesc,
                                                 privconn->caps,

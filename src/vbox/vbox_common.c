@@ -5487,6 +5487,8 @@ vboxDomainSnapshotCreateXML(virDomainPtr dom,
     nsresult rc;
     resultCodeUnion result;
     virDomainSnapshotPtr ret = NULL;
+    unsigned int parse_flags = (VIR_DOMAIN_SNAPSHOT_PARSE_DISKS |
+                                VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE);
     VIR_AUTOUNREF(virDomainSnapshotDefPtr) def = NULL;
 
     if (!data->vboxObj)
@@ -5496,12 +5498,15 @@ vboxDomainSnapshotCreateXML(virDomainPtr dom,
     /* VBox has no snapshot metadata, so this flag is trivial.  */
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA |
                   VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE |
-                  VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT, NULL);
+                  VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT |
+                  VIR_DOMAIN_SNAPSHOT_CREATE_VALIDATE, NULL);
+
+    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_VALIDATE)
+        parse_flags |= VIR_DOMAIN_SNAPSHOT_PARSE_VALIDATE;
 
     if (!(def = virDomainSnapshotDefParseString(xmlDesc, data->caps,
                                                 data->xmlopt, NULL,
-                                                VIR_DOMAIN_SNAPSHOT_PARSE_DISKS |
-                                                VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE)))
+                                                parse_flags)))
         goto cleanup;
 
 
