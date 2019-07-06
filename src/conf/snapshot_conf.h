@@ -92,6 +92,7 @@ typedef enum {
     VIR_DOMAIN_SNAPSHOT_PARSE_DISKS    = 1 << 1,
     VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL = 1 << 2,
     VIR_DOMAIN_SNAPSHOT_PARSE_OFFLINE  = 1 << 3,
+    VIR_DOMAIN_SNAPSHOT_PARSE_VALIDATE = 1 << 4,
 } virDomainSnapshotParseFlags;
 
 typedef enum {

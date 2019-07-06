@@ -25,6 +25,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "configmake.h"
 #include "internal.h"
 #include "virbitmap.h"
 #include "virbuffer.h"
@@ -407,6 +408,18 @@ virDomainSnapshotDefParseNode(xmlDocPtr xml,
     if (!virXMLNodeNameEqual(root, "domainsnapshot")) {
         virReportError(VIR_ERR_XML_ERROR, "%s", _("domainsnapshot"));
         goto cleanup;
+    }
+
+    if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_VALIDATE) {
+        VIR_AUTOFREE(char *) schema = NULL;
+
+        schema = virFileFindResource("domainsnapshot.rng",
+                                     abs_top_srcdir "/docs/schemas",
+                                     PKGDATADIR "/schemas");
+        if (!schema)
+            goto cleanup;
+        if (virXMLValidateAgainstSchema(schema, xml) < 0)
+            goto cleanup;
     }
 
     ctxt = xmlXPathNewContext(xml);
