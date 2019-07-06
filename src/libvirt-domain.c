@@ -6270,10 +6270,11 @@ virDomainUndefine(virDomainPtr domain)
  * virDomainSnapshotNum()), then including
  * VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA in @flags will also remove
  * that metadata.  Omitting the flag will cause the undefine of an
- * inactive domain to fail.  Active snapshots will retain snapshot
- * metadata until the (now-transient) domain halts, regardless of
- * whether this flag is present.  On hypervisors where snapshots do
- * not use libvirt metadata, this flag has no effect.
+ * inactive domain with snapshots to fail.  Active domains will retain
+ * snapshot metadata until the (now-transient) domain halts,
+ * regardless of whether this flag is present.  On hypervisors that
+ * support snapshots, but where snapshots do not use libvirt metadata,
+ * this flag has no effect.
  *
  * If the domain has any nvram specified, the undefine process will fail
  * unless VIR_DOMAIN_UNDEFINE_KEEP_NVRAM is specified, or if
