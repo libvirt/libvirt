@@ -206,7 +206,7 @@ Metadata:       yes
 EOF
 
 cat <<EOF > exp || fail=1
-error: invalid argument: parent s3 for snapshot s2 not found
+error: invalid argument: parent s3 for moment s2 not found
 error: marker
 EOF
 compare exp err || fail=1

@@ -966,46 +966,15 @@ virDomainSnapshotRedefinePrep(virDomainPtr domain,
 {
     virDomainSnapshotDefPtr def = *defptr;
     virDomainMomentObjPtr other;
-    virDomainSnapshotDefPtr otherdef;
+    virDomainSnapshotDefPtr otherdef = NULL;
     bool check_if_stolen;
 
-    /* Prevent circular chains */
-    if (def->parent.parent_name) {
-        if (STREQ(def->parent.name, def->parent.parent_name)) {
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("cannot set snapshot %s as its own parent"),
-                           def->parent.name);
-            return -1;
-        }
-        other = virDomainSnapshotFindByName(vm->snapshots,
-                                            def->parent.parent_name);
-        if (!other) {
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("parent %s for snapshot %s not found"),
-                           def->parent.parent_name, def->parent.name);
-            return -1;
-        }
-        otherdef = virDomainSnapshotObjGetDef(other);
-        while (otherdef->parent.parent_name) {
-            if (STREQ(otherdef->parent.parent_name, def->parent.name)) {
-                virReportError(VIR_ERR_INVALID_ARG,
-                               _("parent %s would create cycle to %s"),
-                               otherdef->parent.name, def->parent.name);
-                return -1;
-            }
-            other = virDomainSnapshotFindByName(vm->snapshots,
-                                                otherdef->parent.parent_name);
-            if (!other) {
-                VIR_WARN("snapshots are inconsistent for %s",
-                         vm->def->name);
-                break;
-            }
-            otherdef = virDomainSnapshotObjGetDef(other);
-        }
-    }
+    if (virDomainSnapshotCheckCycles(vm->snapshots, def, vm->def->name) < 0)
+        return -1;
 
     other = virDomainSnapshotFindByName(vm->snapshots, def->parent.name);
-    otherdef = other ? virDomainSnapshotObjGetDef(other) : NULL;
+    if (other)
+        otherdef = virDomainSnapshotObjGetDef(other);
     check_if_stolen = other && otherdef->parent.dom;
     if (virDomainSnapshotRedefineValidate(def, domain->uuid, other, xmlopt,
                                           flags) < 0) {

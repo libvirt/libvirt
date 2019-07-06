@@ -52,6 +52,9 @@ int virDomainSnapshotForEach(virDomainSnapshotObjListPtr snapshots,
                              virHashIterator iter,
                              void *data);
 int virDomainSnapshotUpdateRelations(virDomainSnapshotObjListPtr snapshots);
+int virDomainSnapshotCheckCycles(virDomainSnapshotObjListPtr snapshots,
+                                 virDomainSnapshotDefPtr def,
+                                 const char *domname);
 
 #define VIR_DOMAIN_SNAPSHOT_FILTERS_METADATA \
                (VIR_DOMAIN_SNAPSHOT_LIST_METADATA     | \

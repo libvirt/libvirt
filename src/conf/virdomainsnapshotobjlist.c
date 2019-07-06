@@ -235,6 +235,15 @@ virDomainSnapshotUpdateRelations(virDomainSnapshotObjListPtr snapshots)
 
 
 int
+virDomainSnapshotCheckCycles(virDomainSnapshotObjListPtr snapshots,
+                             virDomainSnapshotDefPtr def,
+                             const char *domname)
+{
+    return virDomainMomentCheckCycles(snapshots->base, &def->parent, domname);
+}
+
+
+int
 virDomainListSnapshots(virDomainSnapshotObjListPtr snapshots,
                        virDomainMomentObjPtr from,
                        virDomainPtr dom,

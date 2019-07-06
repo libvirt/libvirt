@@ -117,3 +117,6 @@ int virDomainMomentForEach(virDomainMomentObjListPtr moments,
                            virHashIterator iter,
                            void *data);
 int virDomainMomentUpdateRelations(virDomainMomentObjListPtr moments);
+int virDomainMomentCheckCycles(virDomainMomentObjListPtr list,
+                               virDomainMomentDefPtr def,
+                               const char *domname);
