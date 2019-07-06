@@ -413,6 +413,7 @@ libvirtd_test_scripts = \
 	virsh-schedinfo \
 	virsh-self-test \
 	virt-admin-self-test \
+	virsh-checkpoint \
 	virsh-snapshot \
 	virsh-start \
 	virsh-undefine \
