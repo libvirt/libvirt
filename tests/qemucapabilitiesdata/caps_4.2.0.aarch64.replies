@@ -6236,8 +6236,203 @@
 }
 
 {
-  "execute": "query-machines",
+  "execute": "qom-list-properties",
+  "arguments": {
+    "typename": "max-arm-cpu"
+  },
   "id": "libvirt-32"
+}
+
+{
+  "return": [
+    {
+      "name": "type",
+      "type": "string"
+    },
+    {
+      "name": "sve640",
+      "type": "bool"
+    },
+    {
+      "name": "psci-conduit",
+      "type": "uint32"
+    },
+    {
+      "name": "sve128",
+      "type": "bool"
+    },
+    {
+      "name": "sve1152",
+      "type": "bool"
+    },
+    {
+      "name": "node-id",
+      "type": "int32"
+    },
+    {
+      "name": "sve1408",
+      "type": "bool"
+    },
+    {
+      "name": "memory",
+      "type": "link<qemu:memory-region>"
+    },
+    {
+      "name": "unnamed-gpio-in[3]",
+      "type": "child<irq>"
+    },
+    {
+      "name": "core-count",
+      "type": "int32"
+    },
+    {
+      "name": "sve2048",
+      "type": "bool"
+    },
+    {
+      "name": "aarch64",
+      "description": "Set on/off to enable/disable aarch64 execution state ",
+      "type": "bool"
+    },
+    {
+      "name": "unnamed-gpio-in[1]",
+      "type": "child<irq>"
+    },
+    {
+      "name": "sve1664",
+      "type": "bool"
+    },
+    {
+      "name": "realized",
+      "type": "bool"
+    },
+    {
+      "name": "rvbar",
+      "type": "uint64"
+    },
+    {
+      "name": "sve384",
+      "type": "bool"
+    },
+    {
+      "name": "unnamed-gpio-out[2]",
+      "type": "link<irq>"
+    },
+    {
+      "name": "mp-affinity",
+      "type": "uint64"
+    },
+    {
+      "name": "sve512",
+      "type": "bool"
+    },
+    {
+      "name": "unnamed-gpio-out[0]",
+      "type": "link<irq>"
+    },
+    {
+      "name": "parent_bus",
+      "type": "link<bus>"
+    },
+    {
+      "name": "hotplugged",
+      "type": "bool"
+    },
+    {
+      "name": "gicv3-maintenance-interrupt[0]",
+      "type": "link<irq>"
+    },
+    {
+      "name": "sve896",
+      "type": "bool"
+    },
+    {
+      "name": "sve1024",
+      "type": "bool"
+    },
+    {
+      "name": "pmu-interrupt[0]",
+      "type": "link<irq>"
+    },
+    {
+      "name": "sve1280",
+      "type": "bool"
+    },
+    {
+      "name": "sve1536",
+      "type": "bool"
+    },
+    {
+      "name": "unnamed-gpio-in[2]",
+      "type": "child<irq>"
+    },
+    {
+      "name": "sve-max-vq",
+      "type": "uint32"
+    },
+    {
+      "name": "sve",
+      "type": "bool"
+    },
+    {
+      "name": "start-powered-off",
+      "type": "bool"
+    },
+    {
+      "name": "unnamed-gpio-in[0]",
+      "type": "child<irq>"
+    },
+    {
+      "name": "sve256",
+      "type": "bool"
+    },
+    {
+      "name": "sve1792",
+      "type": "bool"
+    },
+    {
+      "name": "unnamed-gpio-out[3]",
+      "type": "link<irq>"
+    },
+    {
+      "name": "cfgend",
+      "type": "bool"
+    },
+    {
+      "name": "midr",
+      "type": "uint32"
+    },
+    {
+      "name": "hotpluggable",
+      "type": "bool"
+    },
+    {
+      "name": "pmu",
+      "type": "bool"
+    },
+    {
+      "name": "unnamed-gpio-out[1]",
+      "type": "link<irq>"
+    },
+    {
+      "name": "sve1920",
+      "type": "bool"
+    },
+    {
+      "name": "reset-hivecs",
+      "type": "bool"
+    },
+    {
+      "name": "sve768",
+      "type": "bool"
+    }
+  ],
+  "id": "libvirt-32"
+}
+
+{
+  "execute": "query-machines",
+  "id": "libvirt-33"
 }
 
 {
@@ -6795,7 +6990,7 @@
       "deprecated": false
     }
   ],
-  "id": "libvirt-32"
+  "id": "libvirt-33"
 }
 
 {
@@ -6803,7 +6998,7 @@
   "arguments": {
     "typename": "virt-4.2-machine"
   },
-  "id": "libvirt-33"
+  "id": "libvirt-34"
 }
 
 {
@@ -6956,12 +7151,12 @@
       "type": "child<cfi.pflash01>"
     }
   ],
-  "id": "libvirt-33"
+  "id": "libvirt-34"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
@@ -7152,34 +7347,34 @@
       "static": false
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
@@ -8347,12 +8542,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
@@ -8430,12 +8625,12 @@
       "capability": "validate-uuid"
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
   "execute": "query-qmp-schema",
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -21006,12 +21201,12 @@
       ]
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
   "execute": "query-gic-capabilities",
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -21027,7 +21222,7 @@
       "kernel": false
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -21038,11 +21233,11 @@
       "name": "host"
     }
   },
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
-  "id": "libvirt-41",
+  "id": "libvirt-42",
   "error": {
     "class": "GenericError",
     "desc": "The requested expansion type is not supported"

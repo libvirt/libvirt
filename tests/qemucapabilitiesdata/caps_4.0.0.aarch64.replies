@@ -5864,8 +5864,131 @@
 }
 
 {
-  "execute": "query-machines",
+  "execute": "qom-list-properties",
+  "arguments": {
+    "typename": "max-arm-cpu"
+  },
   "id": "libvirt-32"
+}
+
+{
+  "return": [
+    {
+      "name": "type",
+      "type": "string"
+    },
+    {
+      "name": "pmu",
+      "type": "bool"
+    },
+    {
+      "name": "midr",
+      "type": "uint32"
+    },
+    {
+      "name": "mp-affinity",
+      "type": "uint64"
+    },
+    {
+      "name": "hotpluggable",
+      "type": "bool"
+    },
+    {
+      "name": "unnamed-gpio-in[0]",
+      "type": "child<irq>"
+    },
+    {
+      "name": "psci-conduit",
+      "type": "uint32"
+    },
+    {
+      "name": "reset-hivecs",
+      "type": "bool"
+    },
+    {
+      "name": "memory",
+      "type": "link<qemu:memory-region>"
+    },
+    {
+      "name": "unnamed-gpio-out[2]",
+      "type": "link<irq>"
+    },
+    {
+      "name": "hotplugged",
+      "type": "bool"
+    },
+    {
+      "name": "unnamed-gpio-out[3]",
+      "type": "link<irq>"
+    },
+    {
+      "name": "parent_bus",
+      "type": "link<bus>"
+    },
+    {
+      "name": "node-id",
+      "type": "int32"
+    },
+    {
+      "name": "start-powered-off",
+      "type": "bool"
+    },
+    {
+      "name": "unnamed-gpio-out[1]",
+      "type": "link<irq>"
+    },
+    {
+      "name": "core-count",
+      "type": "int32"
+    },
+    {
+      "name": "unnamed-gpio-out[0]",
+      "type": "link<irq>"
+    },
+    {
+      "name": "gicv3-maintenance-interrupt[0]",
+      "type": "link<irq>"
+    },
+    {
+      "name": "rvbar",
+      "type": "uint64"
+    },
+    {
+      "name": "cfgend",
+      "type": "bool"
+    },
+    {
+      "name": "pmu-interrupt[0]",
+      "type": "link<irq>"
+    },
+    {
+      "name": "aarch64",
+      "description": "Set on/off to enable/disable aarch64 execution state ",
+      "type": "bool"
+    },
+    {
+      "name": "unnamed-gpio-in[2]",
+      "type": "child<irq>"
+    },
+    {
+      "name": "unnamed-gpio-in[3]",
+      "type": "child<irq>"
+    },
+    {
+      "name": "realized",
+      "type": "bool"
+    },
+    {
+      "name": "unnamed-gpio-in[1]",
+      "type": "child<irq>"
+    }
+  ],
+  "id": "libvirt-32"
+}
+
+{
+  "execute": "query-machines",
+  "id": "libvirt-33"
 }
 
 {
@@ -6207,7 +6330,7 @@
       "cpu-max": 1
     }
   ],
-  "id": "libvirt-32"
+  "id": "libvirt-33"
 }
 
 {
@@ -6215,7 +6338,7 @@
   "arguments": {
     "typename": "virt-4.0-machine"
   },
-  "id": "libvirt-33"
+  "id": "libvirt-34"
 }
 
 {
@@ -6350,12 +6473,12 @@
       "type": "string"
     }
   ],
-  "id": "libvirt-33"
+  "id": "libvirt-34"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
@@ -6546,34 +6669,34 @@
       "static": false
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
@@ -7721,12 +7844,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
@@ -7800,12 +7923,12 @@
       "capability": "x-ignore-shared"
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
   "execute": "query-qmp-schema",
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -19892,12 +20015,12 @@
       ]
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
   "execute": "query-gic-capabilities",
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -19913,7 +20036,7 @@
       "kernel": false
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
