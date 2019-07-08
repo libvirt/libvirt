@@ -17,11 +17,11 @@
 {
   "return": {
     "qemu": {
-      "micro": 90,
-      "minor": 11,
+      "micro": 0,
+      "minor": 12,
       "major": 2
     },
-    "package": "v2.12.0-rc0"
+    "package": "v2.12.0"
   },
   "id": "libvirt-2"
 }
@@ -4268,89 +4268,12 @@
 {
   "return": [
     {
-      "name": "serial",
-      "type": "str"
-    },
-    {
-      "name": "port_index",
-      "type": "uint16"
-    },
-    {
-      "name": "dpofua",
-      "description": "on/off",
-      "type": "bool"
-    },
-    {
-      "name": "bootindex",
-      "type": "int32"
-    },
-    {
-      "name": "logical_block_size",
-      "description": "A power of two between 512 and 32768",
-      "type": "uint16"
-    },
-    {
-      "name": "discard_granularity",
-      "type": "uint32"
-    },
-    {
-      "name": "lun",
-      "type": "uint32"
-    },
-    {
-      "name": "max_unmap_size",
-      "type": "uint64"
-    },
-    {
-      "name": "drive",
-      "description": "Node name or ID of a block device to use as a backend",
-      "type": "str"
-    },
-    {
-      "name": "port_wwn",
-      "type": "uint64"
-    },
-    {
-      "name": "write-cache",
-      "description": "on/off/auto",
-      "type": "OnOffAuto"
-    },
-    {
-      "name": "share-rw",
-      "type": "bool"
-    },
-    {
-      "name": "opt_io_size",
-      "type": "uint32"
-    },
-    {
       "name": "min_io_size",
       "type": "uint16"
     },
     {
-      "name": "product",
-      "type": "str"
-    },
-    {
-      "name": "scsi-id",
+      "name": "secs",
       "type": "uint32"
-    },
-    {
-      "name": "channel",
-      "type": "uint32"
-    },
-    {
-      "name": "vendor",
-      "type": "str"
-    },
-    {
-      "name": "wwn",
-      "type": "uint64"
-    },
-    {
-      "name": "werror",
-      "description": "Error handling policy, report/ignore/enospc/stop/auto",
-      "type": "BlockdevOnError"
     },
     {
       "name": "removable",
@@ -4358,12 +4281,92 @@
       "type": "bool"
     },
     {
+      "name": "channel",
+      "type": "uint32"
+    },
+    {
+      "name": "heads",
+      "type": "uint32"
+    },
+    {
+      "name": "lun",
+      "type": "uint32"
+    },
+    {
+      "name": "dpofua",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "ver",
+      "type": "str"
+    },
+    {
+      "name": "scsi-id",
+      "type": "uint32"
+    },
+    {
+      "name": "cyls",
+      "type": "uint32"
+    },
+    {
+      "name": "logical_block_size",
+      "description": "A power of two between 512 and 32768",
+      "type": "uint16"
+    },
+    {
+      "name": "rotation_rate",
+      "type": "uint16"
+    },
+    {
+      "name": "drive",
+      "description": "Node name or ID of a block device to use as a backend",
+      "type": "str"
+    },
+    {
+      "name": "scsi_version",
+      "type": "int32"
+    },
+    {
+      "name": "werror",
+      "description": "Error handling policy, report/ignore/enospc/stop/auto",
+      "type": "BlockdevOnError"
+    },
+    {
+      "name": "discard_granularity",
+      "type": "uint32"
+    },
+    {
+      "name": "port_wwn",
+      "type": "uint64"
+    },
+    {
+      "name": "max_unmap_size",
+      "type": "uint64"
+    },
+    {
       "name": "rerror",
       "description": "Error handling policy, report/ignore/enospc/stop/auto",
       "type": "BlockdevOnError"
     },
     {
-      "name": "ver",
+      "name": "max_io_size",
+      "type": "uint64"
+    },
+    {
+      "name": "wwn",
+      "type": "uint64"
+    },
+    {
+      "name": "share-rw",
+      "type": "bool"
+    },
+    {
+      "name": "product",
+      "type": "str"
+    },
+    {
+      "name": "vendor",
       "type": "str"
     },
     {
@@ -4372,8 +4375,25 @@
       "type": "uint16"
     },
     {
-      "name": "max_io_size",
-      "type": "uint64"
+      "name": "port_index",
+      "type": "uint16"
+    },
+    {
+      "name": "bootindex",
+      "type": "int32"
+    },
+    {
+      "name": "serial",
+      "type": "str"
+    },
+    {
+      "name": "write-cache",
+      "description": "on/off/auto",
+      "type": "OnOffAuto"
+    },
+    {
+      "name": "opt_io_size",
+      "type": "uint32"
     }
   ],
   "id": "libvirt-14"
@@ -4394,6 +4414,10 @@
       "type": "str"
     },
     {
+      "name": "secs",
+      "type": "uint32"
+    },
+    {
       "name": "logical_block_size",
       "description": "A power of two between 512 and 32768",
       "type": "uint16"
@@ -4403,13 +4427,21 @@
       "type": "uint32"
     },
     {
+      "name": "bootindex",
+      "type": "int32"
+    },
+    {
+      "name": "rotation_rate",
+      "type": "uint16"
+    },
+    {
       "name": "drive",
       "description": "Node name or ID of a block device to use as a backend",
       "type": "str"
     },
     {
-      "name": "bootindex",
-      "type": "int32"
+      "name": "heads",
+      "type": "uint32"
     },
     {
       "name": "write-cache",
@@ -4431,6 +4463,11 @@
     {
       "name": "unit",
       "type": "uint32"
+    },
+    {
+      "name": "bios-chs-trans",
+      "description": "Logical CHS translation algorithm, auto/none/lba/large/rechs",
+      "type": "BiosAtaTranslation"
     },
     {
       "name": "wwn",
@@ -4458,6 +4495,10 @@
       "name": "physical_block_size",
       "description": "A power of two between 512 and 32768",
       "type": "uint16"
+    },
+    {
+      "name": "cyls",
+      "type": "uint32"
     }
   ],
   "id": "libvirt-15"
@@ -5287,24 +5328,28 @@
       "type": "HostMemPolicy"
     },
     {
-      "name": "share",
+      "name": "dump",
       "type": "bool"
     },
     {
-      "name": "host-nodes",
-      "type": "int"
+      "name": "share",
+      "type": "bool"
     },
     {
       "name": "prealloc",
       "type": "bool"
     },
     {
-      "name": "dump",
-      "type": "bool"
-    },
-    {
       "name": "size",
       "type": "int"
+    },
+    {
+      "name": "host-nodes",
+      "type": "int"
+    },
+    {
+      "name": "id",
+      "type": "string"
     },
     {
       "name": "merge",
@@ -6682,6 +6727,10 @@
     },
     {
       "parameters": [
+        {
+          "name": "x-oob",
+          "type": "boolean"
+        },
         {
           "name": "pretty",
           "type": "boolean"
@@ -14838,9 +14887,9 @@
           "type": "int"
         },
         {
-          "name": "static",
+          "name": "preallocation",
           "default": null,
-          "type": "bool"
+          "type": "356"
         }
       ],
       "meta-type": "object"

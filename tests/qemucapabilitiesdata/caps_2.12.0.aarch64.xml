@@ -153,10 +153,10 @@
   <flag name='memory-backend-memfd.hugetlb'/>
   <flag name='iothread.poll-max-ns'/>
   <flag name='memory-backend-file.align'/>
-  <version>2011090</version>
+  <version>2012000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>61700807</microcodeVersion>
-  <package>v2.12.0-rc0</package>
+  <package>v2.12.0</package>
   <arch>aarch64</arch>
   <cpu type='kvm' name='pxa262'/>
   <cpu type='kvm' name='pxa270-a0'/>
