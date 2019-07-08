@@ -169,6 +169,7 @@
   <flag name='migration-file-drop-cache'/>
   <flag name='vhost-user-gpu'/>
   <flag name='ramfb'/>
+  <flag name='arm-max-cpu'/>
   <version>4001050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>61700242</microcodeVersion>

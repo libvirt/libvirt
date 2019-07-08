@@ -529,6 +529,9 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_DEVICE_RAMFB, /* -device ramfb */
     QEMU_CAPS_MACHINE_PSERIES_CAP_CCF_ASSIST, /* -machine pseries.cap-ccf-assist */
 
+    /* 345 */
+    QEMU_CAPS_ARM_MAX_CPU, /* max-arm-cpu type exists */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 

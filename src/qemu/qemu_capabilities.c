@@ -547,6 +547,9 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "query-cpu-model-comparison",
               "ramfb",
               "machine.pseries.cap-ccf-assist",
+
+              /* 345 */
+              "arm-max-cpu",
     );
 
 
@@ -1141,6 +1144,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "vhost-user-gpu", QEMU_CAPS_DEVICE_VHOST_USER_GPU },
     { "vhost-user-vga", QEMU_CAPS_DEVICE_VHOST_USER_VGA },
     { "ramfb", QEMU_CAPS_DEVICE_RAMFB },
+    { "max-arm-cpu", QEMU_CAPS_ARM_MAX_CPU },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVirtioBalloon[] = {

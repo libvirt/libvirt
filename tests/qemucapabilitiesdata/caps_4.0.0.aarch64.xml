@@ -166,6 +166,7 @@
   <flag name='bochs-display'/>
   <flag name='migration-file-drop-cache'/>
   <flag name='ramfb'/>
+  <flag name='arm-max-cpu'/>
   <version>4000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>61700240</microcodeVersion>
