@@ -2469,11 +2469,14 @@ static int testDomainSetMaxMemory(virDomainPtr domain,
     return 0;
 }
 
-static int testDomainSetMemory(virDomainPtr domain,
-                               unsigned long memory)
+static int testDomainSetMemoryFlags(virDomainPtr domain,
+                                    unsigned long memory,
+                                    unsigned int flags)
 {
     virDomainObjPtr privdom;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     if (!(privdom = testDomObjFromDomain(domain)))
         return -1;
@@ -2489,6 +2492,12 @@ static int testDomainSetMemory(virDomainPtr domain,
  cleanup:
     virDomainObjEndAPI(&privdom);
     return ret;
+}
+
+static int testDomainSetMemory(virDomainPtr domain,
+                               unsigned long memory)
+{
+    return testDomainSetMemoryFlags(domain, memory, 0);
 }
 
 static int
@@ -2679,15 +2688,18 @@ static int testDomainGetVcpus(virDomainPtr domain,
     return ret;
 }
 
-static int testDomainPinVcpu(virDomainPtr domain,
-                             unsigned int vcpu,
-                             unsigned char *cpumap,
-                             int maplen)
+static int testDomainPinVcpuFlags(virDomainPtr domain,
+                                  unsigned int vcpu,
+                                  unsigned char *cpumap,
+                                  int maplen,
+                                  unsigned int flags)
 {
     virDomainVcpuDefPtr vcpuinfo;
     virDomainObjPtr privdom;
     virDomainDefPtr def;
     int ret = -1;
+
+    virCheckFlags(0, -1);
 
     if (!(privdom = testDomObjFromDomain(domain)))
         return -1;
@@ -2718,6 +2730,14 @@ static int testDomainPinVcpu(virDomainPtr domain,
  cleanup:
     virDomainObjEndAPI(&privdom);
     return ret;
+}
+
+static int testDomainPinVcpu(virDomainPtr domain,
+                             unsigned int vcpu,
+                             unsigned char *cpumap,
+                             int maplen)
+{
+    return testDomainPinVcpuFlags(domain, vcpu, cpumap, maplen, 0);
 }
 
 static int
@@ -7595,6 +7615,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainGetMaxMemory = testDomainGetMaxMemory, /* 0.1.4 */
     .domainSetMaxMemory = testDomainSetMaxMemory, /* 0.1.1 */
     .domainSetMemory = testDomainSetMemory, /* 0.1.4 */
+    .domainSetMemoryFlags = testDomainSetMemoryFlags, /* 5.6.0 */
     .domainGetHostname = testDomainGetHostname, /* 5.5.0 */
     .domainGetInfo = testDomainGetInfo, /* 0.1.1 */
     .domainGetState = testDomainGetState, /* 0.9.2 */
@@ -7611,6 +7632,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainSetVcpusFlags = testDomainSetVcpusFlags, /* 0.8.5 */
     .domainGetVcpusFlags = testDomainGetVcpusFlags, /* 0.8.5 */
     .domainPinVcpu = testDomainPinVcpu, /* 0.7.3 */
+    .domainPinVcpuFlags = testDomainPinVcpuFlags, /* 5.6.0 */
     .domainGetVcpus = testDomainGetVcpus, /* 0.7.3 */
     .domainGetVcpuPinInfo = testDomainGetVcpuPinInfo, /* 1.2.18 */
     .domainGetMaxVcpus = testDomainGetMaxVcpus, /* 0.7.3 */
