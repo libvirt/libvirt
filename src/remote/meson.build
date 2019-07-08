@@ -51,6 +51,15 @@ remote_daemon_sources = files(
 
 remote_daemon_generated = []
 
+virt_ssh_helper_sources = files(
+  'remote_sockets.c',
+  'remote_ssh_helper.c',
+)
+
+virt_ssh_helper_dep = [
+  src_dep,
+]
+
 foreach name : [ 'remote', 'qemu', 'lxc' ]
   protocol_x = '@0@_protocol.x'.format(name)
   dispatch_h = '@0@_daemon_dispatch_stubs.h'.format(name)
@@ -278,6 +287,14 @@ if conf.has('WITH_REMOTE')
         rename: [ '50-libvirt.rules' ],
       )
     endif
+
+    virt_helpers += {
+      'name': 'virt-ssh-helper',
+      'sources': [
+        virt_ssh_helper_sources
+      ],
+      'install_dir': bindir,
+    }
   endif
 endif
 

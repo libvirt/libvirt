@@ -1557,6 +1557,8 @@ exit 0
 
 %attr(0755, root, root) %{_libexecdir}/libvirt_iohelper
 
+%attr(0755, root, root) %{_bindir}/virt-ssh-helper
+
 %attr(0755, root, root) %{_sbindir}/libvirtd
 %attr(0755, root, root) %{_sbindir}/virtproxyd
 %attr(0755, root, root) %{_sbindir}/virtlogd

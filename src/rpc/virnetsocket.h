@@ -34,6 +34,7 @@
 typedef struct _virNetSocket virNetSocket;
 typedef virNetSocket *virNetSocketPtr;
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNetSocket, virObjectUnref);
 
 typedef void (*virNetSocketIOFunc)(virNetSocketPtr sock,
                                    int events,

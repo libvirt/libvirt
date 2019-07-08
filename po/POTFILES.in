@@ -184,6 +184,7 @@
 @SRCDIR@src/remote/remote_daemon_stream.c
 @SRCDIR@src/remote/remote_driver.c
 @SRCDIR@src/remote/remote_sockets.c
+@SRCDIR@src/remote/remote_ssh_helper.c
 @SRCDIR@src/rpc/virkeepalive.c
 @SRCDIR@src/rpc/virnetclient.c
 @SRCDIR@src/rpc/virnetclientprogram.c

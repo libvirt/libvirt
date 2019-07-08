@@ -1872,7 +1872,7 @@ sc_group-qemu-caps:
 # List all syntax-check exemptions:
 exclude_file_name_regexp--sc_avoid_strcase = ^tools/vsh\.h$$
 
-_src1=libvirt-stream|qemu/qemu_monitor|util/vir(command|file|fdstream)|rpc/virnetsocket|lxc/lxc_controller|locking/lock_daemon|logging/log_daemon
+_src1=libvirt-stream|qemu/qemu_monitor|util/vir(command|file|fdstream)|rpc/virnetsocket|lxc/lxc_controller|locking/lock_daemon|logging/log_daemon|remote/remote_ssh_helper
 _test1=shunloadtest|virnettlscontexttest|virnettlssessiontest|vircgroupmock|commandhelper
 exclude_file_name_regexp--sc_avoid_write = \
   ^(src/($(_src1))|tools/virsh-console|tests/($(_test1)))\.c$$
