@@ -251,10 +251,12 @@ virshParseSnapshotDiskspec(vshControl *ctl, virBufferPtr buf, const char *str)
     const char *name = NULL;
     const char *snapshot = NULL;
     const char *driver = NULL;
+    const char *stype = NULL;
     const char *file = NULL;
     char **array = NULL;
     int narray;
     size_t i;
+    bool isFile = true;
 
     narray = vshStringToArray(str, &array);
     if (narray <= 0)
@@ -266,6 +268,8 @@ virshParseSnapshotDiskspec(vshControl *ctl, virBufferPtr buf, const char *str)
             snapshot = array[i] + strlen("snapshot=");
         else if (!driver && STRPREFIX(array[i], "driver="))
             driver = array[i] + strlen("driver=");
+        else if (!stype && STRPREFIX(array[i], "stype="))
+            stype = array[i] + strlen("stype=");
         else if (!file && STRPREFIX(array[i], "file="))
             file = array[i] + strlen("file=");
         else
@@ -275,13 +279,26 @@ virshParseSnapshotDiskspec(vshControl *ctl, virBufferPtr buf, const char *str)
     virBufferEscapeString(buf, "<disk name='%s'", name);
     if (snapshot)
         virBufferAsprintf(buf, " snapshot='%s'", snapshot);
+    if (stype) {
+        if (STREQ(stype, "block")) {
+            isFile = false;
+        } else if (STRNEQ(stype, "file")) {
+            vshError(ctl, _("Unknown storage type: '%s'"), stype);
+            goto cleanup;
+        }
+        virBufferAsprintf(buf, " type='%s'", stype);
+    }
     if (driver || file) {
         virBufferAddLit(buf, ">\n");
         virBufferAdjustIndent(buf, 2);
         if (driver)
             virBufferAsprintf(buf, "<driver type='%s'/>\n", driver);
-        if (file)
-            virBufferEscapeString(buf, "<source file='%s'/>\n", file);
+        if (file) {
+            if (isFile)
+                virBufferEscapeString(buf, "<source file='%s'/>\n", file);
+            else
+                virBufferEscapeString(buf, "<source dev='%s'/>\n", file);
+        }
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</disk>\n");
     } else {
@@ -351,7 +368,7 @@ static const vshCmdOptDef opts_snapshot_create_as[] = {
     },
     {.name = "diskspec",
      .type = VSH_OT_ARGV,
-     .help = N_("disk attributes: disk[,snapshot=type][,driver=type][,file=name]")
+     .help = N_("disk attributes: disk[,snapshot=type][,driver=type][,stype=type][,file=name]")
     },
     {.name = NULL}
 };
