@@ -1657,7 +1657,9 @@ phypGetVIOSFreeSCSIAdapter(virConnectPtr conn)
 
 
 static int
-phypDomainAttachDevice(virDomainPtr domain, const char *xml)
+phypDomainAttachDeviceFlags(virDomainPtr domain,
+                            const char *xml,
+                            unsigned int flags)
 {
     int result = -1;
     virConnectPtr conn = domain->conn;
@@ -1676,6 +1678,8 @@ phypDomainAttachDevice(virDomainPtr domain, const char *xml)
     virDomainDefPtr def = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *domain_name = NULL;
+
+    virCheckFlags(0, -1);
 
     if (!(def = virDomainDefNew()))
         goto cleanup;
@@ -1806,6 +1810,12 @@ phypDomainAttachDevice(virDomainPtr domain, const char *xml)
     VIR_FREE(domain_name);
 
     return result;
+}
+
+static int
+phypDomainAttachDevice(virDomainPtr domain, const char *xml)
+{
+    return phypDomainAttachDeviceFlags(domain, xml, 0);
 }
 
 static char *
@@ -3330,7 +3340,7 @@ phypDomainReboot(virDomainPtr dom, unsigned int flags)
 }
 
 static int
-phypDomainShutdown(virDomainPtr dom)
+phypDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
 {
     int result = -1;
     virConnectPtr conn = dom->conn;
@@ -3341,6 +3351,8 @@ phypDomainShutdown(virDomainPtr dom)
     int exit_status = 0;
     char *ret = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    virCheckFlags(0, -1);
 
     virBufferAddLit(&buf, "chsysstate");
     if (system_type == HMC)
@@ -3357,6 +3369,12 @@ phypDomainShutdown(virDomainPtr dom)
     VIR_FREE(ret);
 
     return result;
+}
+
+static int
+phypDomainShutdown(virDomainPtr dom)
+{
+    return phypDomainShutdownFlags(dom, 0);
 }
 
 static int
@@ -3675,6 +3693,7 @@ static virHypervisorDriver phypHypervisorDriver = {
     .domainLookupByName = phypDomainLookupByName, /* 0.7.0 */
     .domainResume = phypDomainResume, /* 0.7.0 */
     .domainShutdown = phypDomainShutdown, /* 0.7.0 */
+    .domainShutdownFlags = phypDomainShutdownFlags, /* 5.6.0 */
     .domainReboot = phypDomainReboot, /* 0.9.1 */
     .domainDestroy = phypDomainDestroy, /* 0.7.3 */
     .domainDestroyFlags = phypDomainDestroyFlags, /* 0.9.4 */
@@ -3688,6 +3707,7 @@ static virHypervisorDriver phypHypervisorDriver = {
     .connectListDefinedDomains = phypConnectListDefinedDomains, /* 0.7.0 */
     .connectNumOfDefinedDomains = phypConnectNumOfDefinedDomains, /* 0.7.0 */
     .domainAttachDevice = phypDomainAttachDevice, /* 0.8.2 */
+    .domainAttachDeviceFlags = phypDomainAttachDeviceFlags, /* 5.6.0 */
     .connectIsEncrypted = phypConnectIsEncrypted, /* 0.7.3 */
     .connectIsSecure = phypConnectIsSecure, /* 0.7.3 */
     .domainIsUpdated = phypDomainIsUpdated, /* 0.8.6 */
