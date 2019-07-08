@@ -1984,7 +1984,9 @@ esxDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
 
 
 static int
-esxDomainSetMemory(virDomainPtr domain, unsigned long memory)
+esxDomainSetMemoryFlags(virDomainPtr domain,
+                        unsigned long memory,
+                        unsigned int flags)
 {
     int result = -1;
     esxPrivate *priv = domain->conn->privateData;
@@ -1993,6 +1995,8 @@ esxDomainSetMemory(virDomainPtr domain, unsigned long memory)
     esxVI_ManagedObjectReference *task = NULL;
     esxVI_TaskInfoState taskInfoState;
     char *taskInfoErrorMessage = NULL;
+
+    virCheckFlags(0, -1);
 
     if (esxVI_EnsureSession(priv->primary) < 0)
         return -1;
@@ -2036,6 +2040,12 @@ esxDomainSetMemory(virDomainPtr domain, unsigned long memory)
     return result;
 }
 
+
+static int
+esxDomainSetMemory(virDomainPtr domain, unsigned long memory)
+{
+    return esxDomainSetMemoryFlags(domain, memory, 0);
+}
 
 
 /*
@@ -5122,6 +5132,7 @@ static virHypervisorDriver esxHypervisorDriver = {
     .domainGetMaxMemory = esxDomainGetMaxMemory, /* 0.7.0 */
     .domainSetMaxMemory = esxDomainSetMaxMemory, /* 0.7.0 */
     .domainSetMemory = esxDomainSetMemory, /* 0.7.0 */
+    .domainSetMemoryFlags = esxDomainSetMemoryFlags, /* 5.6.0 */
     .domainSetMemoryParameters = esxDomainSetMemoryParameters, /* 0.8.6 */
     .domainGetMemoryParameters = esxDomainGetMemoryParameters, /* 0.8.6 */
     .domainGetInfo = esxDomainGetInfo, /* 0.7.0 */
