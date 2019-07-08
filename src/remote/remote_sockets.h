@@ -62,3 +62,9 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
                     bool ro,
                     bool session,
                     char **daemon);
+
+void
+remoteGetURIDaemonInfo(virURIPtr uri,
+                       remoteDriverTransport transport,
+                       bool *session,
+                       bool *autostart);

@@ -1197,7 +1197,8 @@ remoteConnectOpen(virConnectPtr conn,
     struct private_data *priv;
     int ret = VIR_DRV_OPEN_ERROR;
     int rflags = 0;
-    const char *autostart = getenv("LIBVIRT_AUTOSTART");
+    bool user;
+    bool autostart;
     char *driver = NULL;
     remoteDriverTransport transport;
 
@@ -1236,51 +1237,11 @@ remoteConnectOpen(virConnectPtr conn,
     if (flags & VIR_CONNECT_RO)
         rflags |= VIR_DRV_OPEN_REMOTE_RO;
 
-    /*
-     * User session daemon is used for
-     *
-     *  - Any URI with /session suffix
-     *  - Test driver, if a protocol is given
-     *
-     * provided we are running non-root
-     */
-    if (conn->uri &&
-        conn->uri->path &&
-        conn->uri->scheme &&
-        (STREQ(conn->uri->path, "/session") ||
-         STRPREFIX(conn->uri->scheme, "test+")) &&
-        geteuid() > 0) {
-        VIR_DEBUG("User session daemon required");
+    remoteGetURIDaemonInfo(conn->uri, transport, &user, &autostart);
+    if (user)
         rflags |= VIR_DRV_OPEN_REMOTE_USER;
-
-        /*
-         * Furthermore if no servername is given,
-         * and the transport is unix,
-         * and uid is unprivileged then auto-spawn a daemon.
-         */
-        if (!conn->uri->server &&
-            (transport == REMOTE_DRIVER_TRANSPORT_UNIX) &&
-            (!autostart ||
-             STRNEQ(autostart, "0"))) {
-            VIR_DEBUG("Try daemon autostart");
-            rflags |= VIR_DRV_OPEN_REMOTE_AUTOSTART;
-        }
-    }
-
-    /*
-     * If URI is NULL, then do a UNIX connection possibly auto-spawning
-     * unprivileged server and probe remote server for URI.
-     */
-    if (!conn->uri) {
-        VIR_DEBUG("Auto-probe remote URI");
-        if (geteuid() > 0) {
-            VIR_DEBUG("Auto-spawn user daemon instance");
-            rflags |= VIR_DRV_OPEN_REMOTE_USER;
-            if (!autostart ||
-                STRNEQ(autostart, "0"))
-                rflags |= VIR_DRV_OPEN_REMOTE_AUTOSTART;
-        }
-    }
+    if (autostart)
+        rflags |= VIR_DRV_OPEN_REMOTE_AUTOSTART;
 
     ret = doRemoteOpen(conn, priv, driver, transport, auth, conf, rflags);
     if (ret != VIR_DRV_OPEN_SUCCESS) {

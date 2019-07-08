@@ -224,3 +224,62 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
               ro, session);
     return sock_name;
 }
+
+
+void
+remoteGetURIDaemonInfo(virURIPtr uri,
+                       remoteDriverTransport transport,
+                       bool *session,
+                       bool *autostart)
+{
+    const char *autostart_str = getenv("LIBVIRT_AUTOSTART");
+
+    *session = false;
+    *autostart = false;
+
+    /*
+     * User session daemon is used for
+     *
+     *  - Any URI with /session suffix
+     *  - Test driver, if a protocol is given
+     *
+     * provided we are running non-root
+     */
+    if (uri &&
+        uri->path &&
+        uri->scheme &&
+        (STREQ(uri->path, "/session") ||
+         STRPREFIX(uri->scheme, "test+")) &&
+        geteuid() > 0) {
+        VIR_DEBUG("User session daemon required");
+        *session = true;
+
+        /*
+         * Furthermore if no servername is given,
+         * and the transport is unix,
+         * and uid is unprivileged then auto-spawn a daemon.
+         */
+        if (!uri->server &&
+            (transport == REMOTE_DRIVER_TRANSPORT_UNIX) &&
+            (!autostart_str ||
+             STRNEQ(autostart_str, "0"))) {
+            VIR_DEBUG("Try daemon autostart");
+            *autostart = true;
+        }
+    }
+
+    /*
+     * If URI is NULL, then do a UNIX connection possibly auto-spawning
+     * unprivileged server and probe remote server for URI.
+     */
+    if (!uri) {
+        VIR_DEBUG("Auto-probe remote URI");
+        if (geteuid() > 0) {
+            VIR_DEBUG("Auto-spawn user daemon instance");
+            *session = true;
+            if (!autostart_str ||
+                STRNEQ(autostart_str, "0"))
+                *autostart = true;
+        }
+    }
+}
