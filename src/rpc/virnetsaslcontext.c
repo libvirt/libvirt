@@ -77,21 +77,45 @@ VIR_ONCE_GLOBAL_INIT(virNetSASLContext);
 VIR_WARNINGS_NO_DEPRECATED
 #endif
 
-virNetSASLContextPtr virNetSASLContextNewClient(void)
+static int virNetSASLContextClientOnceInit(void)
 {
-    virNetSASLContextPtr ctxt;
-    int err;
-
-    if (virNetSASLContextInitialize() < 0)
-        return NULL;
-
-    err = sasl_client_init(NULL);
+    int err = sasl_client_init(NULL);
     if (err != SASL_OK) {
         virReportError(VIR_ERR_AUTH_FAILED,
                        _("failed to initialize SASL library: %d (%s)"),
                        err, sasl_errstring(err, NULL, NULL));
-        return NULL;
+        return -1;
     }
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virNetSASLContextClient);
+
+
+static int virNetSASLContextServerOnceInit(void)
+{
+    int err = sasl_server_init(NULL, "libvirt");
+    if (err != SASL_OK) {
+        virReportError(VIR_ERR_AUTH_FAILED,
+                       _("failed to initialize SASL library: %d (%s)"),
+                       err, sasl_errstring(err, NULL, NULL));
+        return -1;
+    }
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virNetSASLContextServer);
+
+
+virNetSASLContextPtr virNetSASLContextNewClient(void)
+{
+    virNetSASLContextPtr ctxt;
+
+    if (virNetSASLContextInitialize() < 0 ||
+        virNetSASLContextClientInitialize() < 0)
+        return NULL;
 
     if (!(ctxt = virObjectLockableNew(virNetSASLContextClass)))
         return NULL;
@@ -102,18 +126,10 @@ virNetSASLContextPtr virNetSASLContextNewClient(void)
 virNetSASLContextPtr virNetSASLContextNewServer(const char *const*usernameWhitelist)
 {
     virNetSASLContextPtr ctxt;
-    int err;
 
-    if (virNetSASLContextInitialize() < 0)
+    if (virNetSASLContextInitialize() < 0 ||
+        virNetSASLContextServerInitialize() < 0)
         return NULL;
-
-    err = sasl_server_init(NULL, "libvirt");
-    if (err != SASL_OK) {
-        virReportError(VIR_ERR_AUTH_FAILED,
-                       _("failed to initialize SASL library: %d (%s)"),
-                       err, sasl_errstring(err, NULL, NULL));
-        return NULL;
-    }
 
     if (!(ctxt = virObjectLockableNew(virNetSASLContextClass)))
         return NULL;
