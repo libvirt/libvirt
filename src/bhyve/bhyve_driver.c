@@ -577,17 +577,18 @@ bhyveDomainDefineXML(virConnectPtr conn, const char *xml)
 }
 
 static int
-bhyveDomainUndefine(virDomainPtr domain)
+bhyveDomainUndefineFlags(virDomainPtr domain, unsigned int flags)
 {
     bhyveConnPtr privconn = domain->conn->privateData;
     virObjectEventPtr event = NULL;
     virDomainObjPtr vm;
     int ret = -1;
 
+    virCheckFlags(0, -1);
     if (!(vm = bhyveDomObjFromDomain(domain)))
         goto cleanup;
 
-    if (virDomainUndefineEnsureACL(domain->conn, vm->def) < 0)
+    if (virDomainUndefineFlagsEnsureACL(domain->conn, vm->def) < 0)
         goto cleanup;
 
     if (!vm->persistent) {
@@ -616,6 +617,12 @@ bhyveDomainUndefine(virDomainPtr domain)
     virDomainObjEndAPI(&vm);
     virObjectEventStateQueue(privconn->domainEventState, event);
     return ret;
+}
+
+static int
+bhyveDomainUndefine(virDomainPtr domain)
+{
+    return bhyveDomainUndefineFlags(domain, 0);
 }
 
 static int
@@ -971,17 +978,19 @@ bhyveDomainCreateXML(virConnectPtr conn,
 }
 
 static int
-bhyveDomainDestroy(virDomainPtr dom)
+bhyveDomainDestroyFlags(virDomainPtr dom, unsigned int flags)
 {
     bhyveConnPtr privconn = dom->conn->privateData;
     virDomainObjPtr vm;
     virObjectEventPtr event = NULL;
     int ret = -1;
 
+    virCheckFlags(0, -1);
+
     if (!(vm = bhyveDomObjFromDomain(dom)))
         goto cleanup;
 
-    if (virDomainDestroyEnsureACL(dom->conn, vm->def) < 0)
+    if (virDomainDestroyFlagsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
     if (virDomainObjCheckActive(vm) < 0)
@@ -1002,15 +1011,23 @@ bhyveDomainDestroy(virDomainPtr dom)
 }
 
 static int
-bhyveDomainShutdown(virDomainPtr dom)
+bhyveDomainDestroy(virDomainPtr dom)
+{
+    return bhyveDomainDestroyFlags(dom, 0);
+}
+
+static int
+bhyveDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
 {
     virDomainObjPtr vm;
     int ret = -1;
 
+    virCheckFlags(0, -1);
+
     if (!(vm = bhyveDomObjFromDomain(dom)))
         goto cleanup;
 
-    if (virDomainShutdownEnsureACL(dom->conn, vm->def) < 0)
+    if (virDomainShutdownFlagsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
     if (virDomainObjCheckActive(vm) < 0)
@@ -1021,6 +1038,12 @@ bhyveDomainShutdown(virDomainPtr dom)
  cleanup:
     virDomainObjEndAPI(&vm);
     return ret;
+}
+
+static int
+bhyveDomainShutdown(virDomainPtr dom)
+{
+    return bhyveDomainShutdownFlags(dom, 0);
 }
 
 static int
@@ -1658,13 +1681,16 @@ static virHypervisorDriver bhyveHypervisorDriver = {
     .domainCreateWithFlags = bhyveDomainCreateWithFlags, /* 1.2.3 */
     .domainCreateXML = bhyveDomainCreateXML, /* 1.2.4 */
     .domainDestroy = bhyveDomainDestroy, /* 1.2.2 */
+    .domainDestroyFlags = bhyveDomainDestroyFlags, /* 5.6.0 */
     .domainShutdown = bhyveDomainShutdown, /* 1.3.3 */
+    .domainShutdownFlags = bhyveDomainShutdownFlags, /* 5.6.0 */
     .domainLookupByUUID = bhyveDomainLookupByUUID, /* 1.2.2 */
     .domainLookupByName = bhyveDomainLookupByName, /* 1.2.2 */
     .domainLookupByID = bhyveDomainLookupByID, /* 1.2.3 */
     .domainDefineXML = bhyveDomainDefineXML, /* 1.2.2 */
     .domainDefineXMLFlags = bhyveDomainDefineXMLFlags, /* 1.2.12 */
     .domainUndefine = bhyveDomainUndefine, /* 1.2.2 */
+    .domainUndefineFlags = bhyveDomainUndefineFlags, /* 5.6.0 */
     .domainGetOSType = bhyveDomainGetOSType, /* 1.2.21 */
     .domainGetXMLDesc = bhyveDomainGetXMLDesc, /* 1.2.2 */
     .domainIsActive = bhyveDomainIsActive, /* 1.2.2 */
