@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <body class="docs">
+    <h2>Knowledge base</h2>
+
+    <div class="panel">
+      <dl>
+        <dt><a href="kbase/locking.html">Disk locking</a></dt>
+        <dd>Ensuring exclusive guest access to disks with
+          <a href="kbase/locking-lockd.html">virtlockd</a> or
+          <a href="kbase/locking-sanlock.html">Sanlock</a></dd>
+
+        <dt><a href="kbase/secureusage.html">Secure usage</a></dt>
+        <dd>Secure usage of the libvirt APIs</dd>
+
+        <dt><a href="kbase/launch_security_sev.html">Launch security</a></dt>
+        <dd>Securely launching VMs with AMD SEV</dd>
+      </dl>
+    </div>
+
+    <br class="clear"/>
+
+  </body>
+</html>

@@ -132,6 +132,10 @@ internals_html_in = \
   $(patsubst $(srcdir)/%,%,$(wildcard $(srcdir)/internals/*.html.in))
 internals_html = $(internals_html_in:%.html.in=%.html)
 
+kbase_html_in = \
+  $(patsubst $(srcdir)/%,%,$(wildcard $(srcdir)/kbase/*.html.in))
+kbase_html = $(kbase_html_in:%.html.in=%.html)
+
 # Since we ship pre-built html in the tarball, we must also
 # ship the sources, even when those sources are themselves
 # generated.
@@ -187,6 +191,7 @@ EXTRA_DIST= \
   $(xml) $(qemu_xml) $(lxc_xml) $(admin_xml) $(fig) $(png) $(css) \
   $(javascript) $(logofiles) \
   $(internals_html_in) $(internals_html) $(fonts) \
+  $(kbase_html_in) $(kbase_html) \
   aclperms.htmlinc \
   hvsupport.pl \
   $(schema_DATA)
@@ -202,6 +207,7 @@ MAINTAINERCLEANFILES = \
   $(addprefix $(srcdir)/,$(apihtml)) \
   $(addprefix $(srcdir)/,$(devhelphtml)) \
   $(addprefix $(srcdir)/,$(internals_html)) \
+  $(addprefix $(srcdir)/,$(kbase_html)) \
   $(srcdir)/hvsupport.html.in $(srcdir)/aclperms.htmlinc
 
 timestamp="$(shell if test -n "$$SOURCE_DATE_EPOCH"; \
@@ -218,7 +224,8 @@ qemu_api: $(srcdir)/libvirt-qemu-api.xml $(srcdir)/libvirt-qemu-refs.xml
 lxc_api: $(srcdir)/libvirt-lxc-api.xml $(srcdir)/libvirt-lxc-refs.xml
 admin_api: $(srcdir)/libvirt-admin-api.xml $(srcdir)/libvirt-admin-refs.xml
 
-web: $(dot_html) $(internals_html) html/index.html devhelp/index.html
+web: $(dot_html) $(internals_html) $(kbase_html) \
+	html/index.html devhelp/index.html
 
 hvsupport.html: $(srcdir)/hvsupport.html.in
 
@@ -381,6 +388,9 @@ install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)/internals
 	for f in $(internals_html); do \
 	  $(INSTALL) -m 0644 $(srcdir)/$$f $(DESTDIR)$(HTML_DIR)/internals; done
+	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)/kbase
+	for f in $(kbase_html); do \
+	  $(INSTALL) -m 0644 $(srcdir)/$$f $(DESTDIR)$(HTML_DIR)/kbase; done
 	$(mkinstalldirs) $(DESTDIR)$(DEVHELP_DIR)
 	for file in $(devhelphtml) $(devhelppng) $(devhelpcss); do \
 	    $(INSTALL) -m 0644 $(srcdir)/$${file} $(DESTDIR)$(DEVHELP_DIR) ; \
@@ -403,6 +413,9 @@ uninstall-local:
 	for h in $(apihtml); do rm -f $(DESTDIR)$(HTML_DIR)/$$h; done
 	for p in $(apipng); do rm -f $(DESTDIR)$(HTML_DIR)/$$p; done
 	for f in $(internals_html); do \
+	  rm -f $(DESTDIR)$(HTML_DIR)/$$f; \
+	done
+	for f in $(kbase_html); do \
 	  rm -f $(DESTDIR)$(HTML_DIR)/$$f; \
 	done
 	for f in $(devhelphtml) $(devhelppng) $(devhelpcss); do \

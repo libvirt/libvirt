@@ -86,11 +86,6 @@
         <dt><a href="uri.html">URI format</a></dt>
         <dd>The URI formats used for connecting to libvirt</dd>
 
-        <dt><a href="locking.html">Disk locking</a></dt>
-        <dd>Ensuring exclusive guest access to disks with
-          <a href="locking-lockd.html">virtlockd</a> or
-          <a href="locking-sanlock.html">Sanlock</a></dd>
-
         <dt><a href="cgroups.html">CGroups</a></dt>
         <dd>Control groups integration</dd>
 
@@ -120,8 +115,8 @@
         <dt><a href="hvsupport.html">Driver support</a></dt>
         <dd>matrix of API support per hypervisor per release</dd>
 
-        <dt><a href="secureusage.html">Secure usage</a></dt>
-        <dd>Secure usage of the libvirt APIs</dd>
+        <dt><a href="kbase.html">Knowledge Base</a></dt>
+        <dd>Task oriented guides to key features</dd>
       </dl>
     </div>
 
