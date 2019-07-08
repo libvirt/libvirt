@@ -24,7 +24,7 @@ AC_DEFUN([LIBVIRT_ARG_YAJL],[
 AC_DEFUN([LIBVIRT_CHECK_YAJL],[
   dnl YAJL JSON library http://lloyd.github.com/yajl/
 
-  PKG_CHECK_EXISTS([readline], [use_pkgconfig=1], [use_pkgconfig=0])
+  PKG_CHECK_EXISTS([yajl], [use_pkgconfig=1], [use_pkgconfig=0])
 
   if test $use_pkgconfig = 1; then
     dnl 2.0.3 was the version where the pkg-config file was first added
