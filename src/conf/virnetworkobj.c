@@ -1678,9 +1678,8 @@ virNetworkObjDeletePort(virNetworkObjPtr net,
                         const unsigned char *uuid,
                         const char *stateDir)
 {
-    int ret = -1;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-    char *dir = NULL;
+    VIR_AUTOFREE(char *) dir = NULL;
     virNetworkPortDefPtr portdef;
 
     virUUIDFormat(uuid, uuidstr);
@@ -1689,23 +1688,19 @@ virNetworkObjDeletePort(virNetworkObjPtr net,
         virReportError(VIR_ERR_NO_NETWORK_PORT,
                        _("Network port with UUID %s does not exist"),
                        uuidstr);
-        goto cleanup;
+        return -1;
     }
 
     if (!(dir = virNetworkObjGetPortStatusDir(net, stateDir)))
-        goto cleanup;
+        return -1;
 
     if (virNetworkPortDefDeleteStatus(portdef, dir) < 0)
-        goto cleanup;
+        return -1;
 
     if (virHashRemoveEntry(net->ports, uuidstr) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(dir);
-    return ret;
+    return 0;
 }
 
 
