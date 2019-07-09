@@ -2041,7 +2041,7 @@
       build: avoid compiler warning on shadowed name (Jean-Baptiste Rouault),<br/>
       tests: link against libxml2 (Guido Günther),<br/>
       tests: build viridentitytest only WITH_ATTR. (Jincheng Miao),<br/>
-      maint: Correctly detect wether "gluster" cli tool is accessible (Peter Krempa),<br/>
+      maint: Correctly detect whether "gluster" cli tool is accessible (Peter Krempa),<br/>
       libvirt-guests: avoid bashism (Guido Günther),<br/>
       Use the force flag for mkfs -t xfs (Ján Tomko)<br/>
       </li>
