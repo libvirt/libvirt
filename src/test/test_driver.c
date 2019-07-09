@@ -2602,6 +2602,31 @@ testDomainSetVcpusFlags(virDomainPtr domain, unsigned int nrCpus,
     return ret;
 }
 
+
+static int
+testDomainSetUserPassword(virDomainPtr dom,
+                          const char *user ATTRIBUTE_UNUSED,
+                          const char *password ATTRIBUTE_UNUSED,
+                          unsigned int flags)
+{
+    int ret = -1;
+    virDomainObjPtr vm;
+
+    virCheckFlags(VIR_DOMAIN_PASSWORD_ENCRYPTED, -1);
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        return -1;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
 static int
 testDomainSetVcpus(virDomainPtr domain, unsigned int nrCpus)
 {
@@ -7632,6 +7657,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainSaveImageGetXMLDesc = testDomainSaveImageGetXMLDesc, /* 5.5.0 */
     .domainCoreDump = testDomainCoreDump, /* 0.3.2 */
     .domainCoreDumpWithFormat = testDomainCoreDumpWithFormat, /* 1.2.3 */
+    .domainSetUserPassword = testDomainSetUserPassword, /* 5.6.0 */
     .domainSetVcpus = testDomainSetVcpus, /* 0.1.4 */
     .domainSetVcpusFlags = testDomainSetVcpusFlags, /* 0.8.5 */
     .domainGetVcpusFlags = testDomainGetVcpusFlags, /* 0.8.5 */
