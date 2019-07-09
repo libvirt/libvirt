@@ -1625,7 +1625,6 @@ virNetworkObjAddPort(virNetworkObjPtr net,
                      virNetworkPortDefPtr portdef,
                      const char *stateDir)
 {
-    int ret = -1;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     VIR_AUTOFREE(char *) dir = NULL;
 
@@ -1635,24 +1634,21 @@ virNetworkObjAddPort(virNetworkObjPtr net,
         virReportError(VIR_ERR_NETWORK_PORT_EXIST,
                        _("Network port with UUID %s already exists"),
                        uuidstr);
-        goto cleanup;
+        return -1;
     }
 
     if (!(dir = virNetworkObjGetPortStatusDir(net, stateDir)))
-        goto cleanup;
+        return -1;
 
     if (virHashAddEntry(net->ports, uuidstr, portdef) < 0)
-        goto cleanup;
+        return -1;
 
     if (virNetworkPortDefSaveStatus(portdef, dir) < 0) {
         virHashRemoveEntry(net->ports, uuidstr);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
