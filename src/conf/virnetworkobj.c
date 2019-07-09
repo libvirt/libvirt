@@ -1627,7 +1627,7 @@ virNetworkObjAddPort(virNetworkObjPtr net,
 {
     int ret = -1;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-    char *dir = NULL;
+    VIR_AUTOFREE(char *) dir = NULL;
 
     virUUIDFormat(portdef->uuid, uuidstr);
 
@@ -1717,7 +1717,7 @@ int
 virNetworkObjDeleteAllPorts(virNetworkObjPtr net,
                             const char *stateDir)
 {
-    char *dir;
+    VIR_AUTOFREE(char *) dir = NULL;
     DIR *dh = NULL;
     struct dirent *de;
     int rc;
@@ -1843,7 +1843,7 @@ static int
 virNetworkObjLoadAllPorts(virNetworkObjPtr net,
                           const char *stateDir)
 {
-    char *dir;
+    VIR_AUTOFREE(char *) dir = NULL;
     DIR *dh = NULL;
     struct dirent *de;
     int ret = -1;
