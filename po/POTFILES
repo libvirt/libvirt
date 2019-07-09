@@ -290,7 +290,6 @@ src/vz/vz_utils.h
 src/xenapi/xenapi_driver.c
 src/xenapi/xenapi_utils.c
 src/xenconfig/xen_common.c
-src/xenconfig/xen_sxpr.c
 src/xenconfig/xen_xl.c
 src/xenconfig/xen_xm.c
 tests/virpolkittest.c
