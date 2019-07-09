@@ -1027,7 +1027,7 @@ bhyveDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
     if (!(vm = bhyveDomObjFromDomain(dom)))
         goto cleanup;
 
-    if (virDomainShutdownFlagsEnsureACL(dom->conn, vm->def) < 0)
+    if (virDomainShutdownFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
     if (virDomainObjCheckActive(vm) < 0)
