@@ -11531,6 +11531,54 @@ typedef enum {
 } qemuDomainStorageSourceAccessFlags;
 
 
+static int
+qemuDomainStorageSourceAccessModifyNVMe(virQEMUDriverPtr driver,
+                                        virDomainObjPtr vm,
+                                        virStorageSourcePtr src,
+                                        bool revoke)
+{
+    bool revoke_maxmemlock = false;
+    bool revoke_hostdev = false;
+    int ret = -1;
+
+    if (!virStorageSourceChainHasNVMe(src))
+        return 0;
+
+    VIR_DEBUG("Modifying access for a NVMe disk src=%p revoke=%d",
+              src, revoke);
+
+    if (revoke) {
+        revoke_maxmemlock = true;
+        revoke_hostdev = true;
+        ret = 0;
+        goto revoke;
+    }
+
+    if (qemuDomainAdjustMaxMemLock(vm, true) < 0)
+        goto revoke;
+
+    revoke_maxmemlock = true;
+
+    if (qemuHostdevPrepareOneNVMeDisk(driver, vm->def->name, src) < 0)
+        goto revoke;
+
+    revoke_hostdev = true;
+
+    return 0;
+
+ revoke:
+    if (revoke_maxmemlock) {
+        if (qemuDomainAdjustMaxMemLock(vm, false) < 0)
+            VIR_WARN("Unable to change max memlock limit");
+    }
+
+    if (revoke_hostdev)
+        qemuHostdevReAttachOneNVMeDisk(driver, vm->def->name, src);
+
+    return ret;
+}
+
+
 /**
  * qemuDomainStorageSourceAccessModify:
  * @driver: qemu driver struct
@@ -11562,6 +11610,7 @@ qemuDomainStorageSourceAccessModify(virQEMUDriverPtr driver,
     bool revoke_cgroup = false;
     bool revoke_label = false;
     bool revoke_namespace = false;
+    bool revoke_nvme = false;
     bool revoke_lockspace = false;
 
     VIR_DEBUG("src='%s' readonly=%d force_ro=%d force_rw=%d revoke=%d chain=%d",
@@ -11579,6 +11628,7 @@ qemuDomainStorageSourceAccessModify(virQEMUDriverPtr driver,
         revoke_cgroup = true;
         revoke_label = true;
         revoke_namespace = true;
+        revoke_nvme = true;
         revoke_lockspace = true;
         ret = 0;
         goto revoke;
@@ -11588,6 +11638,11 @@ qemuDomainStorageSourceAccessModify(virQEMUDriverPtr driver,
         goto revoke;
 
     revoke_lockspace = true;
+
+    if (qemuDomainStorageSourceAccessModifyNVMe(driver, vm, src, false) < 0)
+        goto revoke;
+
+    revoke_nvme = true;
 
     /* When modifying access of existing @src namespace does not need update */
     if (!(flags & QEMU_DOMAIN_STORAGE_SOURCE_ACCESS_MODIFY_ACCESS)) {
@@ -11638,6 +11693,9 @@ qemuDomainStorageSourceAccessModify(virQEMUDriverPtr driver,
         if (qemuDomainNamespaceTeardownDisk(vm, src) < 0)
             VIR_WARN("Unable to remove /dev entry for %s", srcstr);
     }
+
+    if (revoke_nvme)
+        qemuDomainStorageSourceAccessModifyNVMe(driver, vm, src, true);
 
     if (revoke_lockspace) {
         if (virDomainLockImageDetach(driver->lockManager, vm, src) < 0)

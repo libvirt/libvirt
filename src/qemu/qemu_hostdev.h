@@ -41,6 +41,9 @@ int qemuHostdevUpdateActiveSCSIDevices(virQEMUDriverPtr driver,
 int qemuHostdevUpdateActiveDomainDevices(virQEMUDriverPtr driver,
                                          virDomainDefPtr def);
 
+int qemuHostdevPrepareOneNVMeDisk(virQEMUDriverPtr driver,
+                                  const char *name,
+                                  virStorageSourcePtr src);
 int qemuHostdevPrepareNVMeDisks(virQEMUDriverPtr driver,
                                 const char *name,
                                 virDomainDiskDefPtr *disks,
@@ -74,6 +77,9 @@ int qemuHostdevPrepareDomainDevices(virQEMUDriverPtr driver,
                                     virQEMUCapsPtr qemuCaps,
                                     unsigned int flags);
 
+void qemuHostdevReAttachOneNVMeDisk(virQEMUDriverPtr driver,
+                                    const char *name,
+                                    virStorageSourcePtr src);
 void qemuHostdevReAttachNVMeDisks(virQEMUDriverPtr driver,
                                   const char *name,
                                   virDomainDiskDefPtr *disks,
