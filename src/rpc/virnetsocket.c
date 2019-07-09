@@ -854,9 +854,9 @@ int virNetSocketNewConnectSSH(const char *nodename,
         virCommandAddArgList(cmd, "-l", username, NULL);
     if (keyfile)
         virCommandAddArgList(cmd, "-i", keyfile, NULL);
+    virCommandAddArgList(cmd, "-T", "-e", "none", NULL);
     if (noTTY)
-        virCommandAddArgList(cmd, "-T", "-o", "BatchMode=yes",
-                             "-e", "none", NULL);
+        virCommandAddArgList(cmd, "-o", "BatchMode=yes", NULL);
     if (noVerify)
         virCommandAddArgList(cmd, "-o", "StrictHostKeyChecking=no", NULL);
 

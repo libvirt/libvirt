@@ -571,12 +571,13 @@ mymain(void)
     struct testSSHData sshData1 = {
         .nodename = "somehost",
         .path = "/tmp/socket",
-        .expectOut = "-- somehost sh -c 'if 'nc' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
-                                         "ARG=-q0;"
-                                     "else "
-                                         "ARG=;"
-                                     "fi;"
-                                     "'nc' $ARG -U /tmp/socket'\n",
+        .expectOut = "-T -e none -- somehost sh -c '"
+                     "if 'nc' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
+                         "ARG=-q0;"
+                     "else "
+                         "ARG=;"
+                     "fi;"
+                     "'nc' $ARG -U /tmp/socket'\n",
     };
     if (virTestRun("SSH test 1", testSocketSSH, &sshData1) < 0)
         ret = -1;
@@ -589,7 +590,7 @@ mymain(void)
         .noTTY = true,
         .noVerify = false,
         .path = "/tmp/socket",
-        .expectOut = "-p 9000 -l fred -T -o BatchMode=yes -e none -- somehost sh -c '"
+        .expectOut = "-p 9000 -l fred -T -e none -o BatchMode=yes -- somehost sh -c '"
                      "if 'netcat' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
                          "ARG=-q0;"
                      "else "
@@ -608,7 +609,7 @@ mymain(void)
         .noTTY = false,
         .noVerify = true,
         .path = "/tmp/socket",
-        .expectOut = "-p 9000 -l fred -o StrictHostKeyChecking=no -- somehost sh -c '"
+        .expectOut = "-p 9000 -l fred -T -e none -o StrictHostKeyChecking=no -- somehost sh -c '"
                      "if 'netcat' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
                          "ARG=-q0;"
                      "else "
@@ -630,7 +631,7 @@ mymain(void)
     struct testSSHData sshData5 = {
         .nodename = "crashyhost",
         .path = "/tmp/socket",
-        .expectOut = "-- crashyhost sh -c "
+        .expectOut = "-T -e none -- crashyhost sh -c "
                      "'if 'nc' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
                          "ARG=-q0;"
                      "else "
@@ -647,7 +648,7 @@ mymain(void)
         .path = "/tmp/socket",
         .keyfile = "/root/.ssh/example_key",
         .noVerify = true,
-        .expectOut = "-i /root/.ssh/example_key -o StrictHostKeyChecking=no -- example.com sh -c '"
+        .expectOut = "-i /root/.ssh/example_key -T -e none -o StrictHostKeyChecking=no -- example.com sh -c '"
                      "if 'nc' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
                          "ARG=-q0;"
                      "else "
@@ -662,12 +663,13 @@ mymain(void)
         .nodename = "somehost",
         .netcat = "nc -4",
         .path = "/tmp/socket",
-        .expectOut = "-- somehost sh -c 'if ''nc -4'' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
-                                         "ARG=-q0;"
-                                     "else "
-                                         "ARG=;"
-                                     "fi;"
-                                     "''nc -4'' $ARG -U /tmp/socket'\n",
+        .expectOut = "-T -e none -- somehost sh -c '"
+                     "if ''nc -4'' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
+                         "ARG=-q0;"
+                     "else "
+                         "ARG=;"
+                     "fi;"
+                     "''nc -4'' $ARG -U /tmp/socket'\n",
     };
     if (virTestRun("SSH test 7", testSocketSSH, &sshData7) < 0)
         ret = -1;
