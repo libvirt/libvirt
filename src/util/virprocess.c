@@ -422,8 +422,6 @@ int virProcessSetAffinity(pid_t pid, virBitmapPtr map)
 {
     size_t i;
     VIR_DEBUG("Set process affinity on %lld", (long long)pid);
-# ifdef CPU_ALLOC
-    /* New method dynamically allocates cpu mask, allowing unlimted cpus */
     int numcpus = 1024;
     size_t masklen;
     cpu_set_t *mask;
@@ -462,22 +460,6 @@ int virProcessSetAffinity(pid_t pid, virBitmapPtr map)
         return -1;
     }
     CPU_FREE(mask);
-# else
-    /* Legacy method uses a fixed size cpu mask, only allows up to 1024 cpus */
-    cpu_set_t mask;
-
-    CPU_ZERO(&mask);
-    for (i = 0; i < virBitmapSize(map); i++) {
-        if (virBitmapIsBitSet(map, i))
-            CPU_SET(i, &mask);
-    }
-
-    if (sched_setaffinity(pid, sizeof(mask), &mask) < 0) {
-        virReportSystemError(errno,
-                             _("cannot set CPU affinity on process %d"), pid);
-        return -1;
-    }
-# endif
 
     return 0;
 }
@@ -491,7 +473,6 @@ virProcessGetAffinity(pid_t pid)
     size_t ncpus;
     virBitmapPtr ret = NULL;
 
-# ifdef CPU_ALLOC
     /* 262144 cpus ought to be enough for anyone */
     ncpus = 1024 << 8;
     masklen = CPU_ALLOC_SIZE(ncpus);
@@ -503,14 +484,6 @@ virProcessGetAffinity(pid_t pid)
     }
 
     CPU_ZERO_S(masklen, mask);
-# else
-    ncpus = 1024;
-    if (VIR_ALLOC(mask) < 0)
-        return NULL;
-
-    masklen = sizeof(*mask);
-    CPU_ZERO(mask);
-# endif
 
     if (sched_getaffinity(pid, masklen, mask) < 0) {
         virReportSystemError(errno,
@@ -522,22 +495,13 @@ virProcessGetAffinity(pid_t pid)
           goto cleanup;
 
     for (i = 0; i < ncpus; i++) {
-# ifdef CPU_ALLOC
          /* coverity[overrun-local] */
         if (CPU_ISSET_S(i, masklen, mask))
             ignore_value(virBitmapSetBit(ret, i));
-# else
-        if (CPU_ISSET(i, mask))
-            ignore_value(virBitmapSetBit(ret, i));
-# endif
     }
 
  cleanup:
-# ifdef CPU_ALLOC
     CPU_FREE(mask);
-# else
-    VIR_FREE(mask);
-# endif
 
     return ret;
 }
