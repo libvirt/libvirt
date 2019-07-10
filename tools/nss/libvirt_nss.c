@@ -244,11 +244,11 @@ findLease(const char *name,
     int ret = -1;
     const char *leaseDir = LEASEDIR;
     struct dirent *entry;
-    virJSONValuePtr leases_array = NULL;
+    VIR_AUTOPTR(virJSONValue) leases_array = NULL;
     ssize_t nleases;
-    leaseAddress *tmpAddress = NULL;
+    VIR_AUTOFREE(leaseAddress *) tmpAddress = NULL;
     size_t ntmpAddress = 0;
-    virMacMapPtr *macmaps = NULL;
+    VIR_AUTOFREE(virMacMapPtr *) macmaps = NULL;
     size_t nMacmaps = 0;
 
     *address = NULL;
@@ -340,12 +340,9 @@ findLease(const char *name,
 
  cleanup:
     *errnop = errno;
-    VIR_FREE(tmpAddress);
-    virJSONValueFree(leases_array);
     VIR_DIR_CLOSE(dir);
     while (nMacmaps)
         virObjectUnref(macmaps[--nMacmaps]);
-    VIR_FREE(macmaps);
     return ret;
 }
 
@@ -389,7 +386,7 @@ NSS_NAME(gethostbyname3)(const char *name, int af, struct hostent *result,
 {
     enum nss_status ret = NSS_STATUS_UNAVAIL;
     char *r_name, **r_aliases, *r_addr, *r_addr_next, **r_addr_list;
-    leaseAddress *addr = NULL;
+    VIR_AUTOFREE(leaseAddress *) addr = NULL;
     size_t naddr, i;
     bool found = false;
     size_t nameLen, need, idx = 0;
@@ -495,7 +492,6 @@ NSS_NAME(gethostbyname3)(const char *name, int af, struct hostent *result,
 
     ret = NSS_STATUS_SUCCESS;
  cleanup:
-    VIR_FREE(addr);
     return ret;
 }
 
