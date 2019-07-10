@@ -145,7 +145,7 @@ vzGetDefaultSCSIModel(vzDriverPtr driver,
 
 int vzCheckUnsupportedGraphics(virDomainGraphicsDefPtr gr);
 
- define PARALLELS_BLOCK_STATS_FOREACH(OP) \
+#define PARALLELS_BLOCK_STATS_FOREACH(OP) \
     OP(rd_req, VIR_DOMAIN_BLOCK_STATS_READ_REQ, "read_requests") \
     OP(rd_bytes, VIR_DOMAIN_BLOCK_STATS_READ_BYTES, "read_total") \
     OP(wr_req, VIR_DOMAIN_BLOCK_STATS_WRITE_REQ, "write_requests") \
