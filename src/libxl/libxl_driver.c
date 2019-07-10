@@ -525,12 +525,10 @@ libxlStateCleanup(void)
 static bool
 libxlDriverShouldLoad(bool privileged)
 {
-    bool ret = false;
-
     /* Don't load if non-root */
     if (!privileged) {
         VIR_INFO("Not running privileged, disabling libxenlight driver");
-        return ret;
+        return false;
     }
 
     if (virFileExists(HYPERVISOR_CAPABILITIES)) {
@@ -549,31 +547,15 @@ libxlDriverShouldLoad(bool privileged)
             VIR_INFO("No Xen capabilities detected, probably not running "
                      "in a Xen Dom0.  Disabling libxenlight driver");
 
-            return ret;
+            return false;
         }
     } else if (!virFileExists(HYPERVISOR_XENSTORED)) {
         VIR_INFO("Disabling driver as neither " HYPERVISOR_CAPABILITIES
                  " nor " HYPERVISOR_XENSTORED " exist");
-        return ret;
+        return false;
     }
 
-    /* Don't load if legacy xen toolstack (xend) is in use */
-    if (virFileExists("/usr/sbin/xend")) {
-        virCommandPtr cmd;
-
-        cmd = virCommandNewArgList("/usr/sbin/xend", "status", NULL);
-        if (virCommandRun(cmd, NULL) == 0) {
-            VIR_INFO("Legacy xen tool stack seems to be in use, disabling "
-                     "libxenlight driver.");
-        } else {
-            ret = true;
-        }
-        virCommandFree(cmd);
-    } else {
-        ret = true;
-    }
-
-    return ret;
+    return true;
 }
 
 /* Callbacks wrapping libvirt's event loop interface */
