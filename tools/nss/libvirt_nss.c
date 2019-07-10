@@ -76,7 +76,27 @@ do { \
 typedef struct {
     unsigned char addr[16];
     int af;
+    long long expirytime;
 } leaseAddress;
+
+
+static int
+leaseAddressSorter(const void *a,
+                   const void *b)
+{
+    const leaseAddress *la = a;
+    const leaseAddress *lb = b;
+
+    return lb->expirytime - la->expirytime;
+}
+
+
+static void
+sortAddr(leaseAddress *tmpAddress,
+         size_t ntmpAddress)
+{
+    qsort(tmpAddress, ntmpAddress, sizeof(*tmpAddress), leaseAddressSorter);
+}
 
 
 static int
@@ -89,6 +109,7 @@ appendAddr(const char *name ATTRIBUTE_UNUSED,
     const char *ipAddr;
     virSocketAddr sa;
     int family;
+    long long expirytime;
     size_t i;
 
     if (!(ipAddr = virJSONValueObjectGetString(lease, "ip-address"))) {
@@ -109,6 +130,12 @@ appendAddr(const char *name ATTRIBUTE_UNUSED,
         return 0;
     }
 
+    if (virJSONValueObjectGetNumberLong(lease, "expiry-time", &expirytime) < 0) {
+        /* A lease cannot be present without expiry-time */
+        ERROR("expiry-time field missing for %s", name);
+        return -1;
+    }
+
     for (i = 0; i < *ntmpAddress; i++) {
         if (memcmp((*tmpAddress)[i].addr,
                    (family == AF_INET ?
@@ -125,6 +152,7 @@ appendAddr(const char *name ATTRIBUTE_UNUSED,
         return -1;
     }
 
+    (*tmpAddress)[*ntmpAddress].expirytime = expirytime;
     (*tmpAddress)[*ntmpAddress].af = family;
     memcpy((*tmpAddress)[*ntmpAddress].addr,
            (family == AF_INET ?
@@ -324,6 +352,8 @@ findLease(const char *name,
     }
 
 #endif /* defined(LIBVIRT_NSS_GUEST) */
+
+    sortAddr(tmpAddress, ntmpAddress);
 
     VIR_STEAL_PTR(*address, tmpAddress);
     *naddress = ntmpAddress;

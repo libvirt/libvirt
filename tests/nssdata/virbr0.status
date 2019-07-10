@@ -3,13 +3,13 @@
         "ip-address": "192.168.122.197",
         "mac-address": "52:54:00:a4:6f:91",
         "hostname": "fedora",
-        "expiry-time": 1900000000
+        "expiry-time": 1900000002
     },
     {
         "ip-address": "192.168.122.198",
         "mac-address": "52:54:00:a4:6f:92",
         "hostname": "fedora",
-        "expiry-time": 1900000000
+        "expiry-time": 1900000001
     },
     {
         "ip-address": "192.168.122.254",
