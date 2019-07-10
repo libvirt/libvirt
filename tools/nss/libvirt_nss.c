@@ -80,7 +80,8 @@ typedef struct {
 
 
 static int
-appendAddr(leaseAddress **tmpAddress,
+appendAddr(const char *name ATTRIBUTE_UNUSED,
+           leaseAddress **tmpAddress,
            size_t *ntmpAddress,
            virJSONValuePtr lease,
            int af)
@@ -196,7 +197,7 @@ findLeaseInJSON(leaseAddress **tmpAddress,
         DEBUG("Found record for %s", name);
         *found = true;
 
-        if (appendAddr(tmpAddress, ntmpAddress, lease, af) < 0)
+        if (appendAddr(name, tmpAddress, ntmpAddress, lease, af) < 0)
             return -1;
     }
 
