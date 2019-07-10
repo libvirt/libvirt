@@ -13,7 +13,9 @@
       incremental backups. Right now, incremental backups are only
       supported for the QEMU hypervisor when using qcow2 disks at the
       active layer; if other disk formats are in use, capturing disk
-      backups requires different libvirt APIs.
+      backups requires different libvirt APIs
+      (see <a href="kbase/domainstatecapture.html">domain state
+      capture</a> for a comparison between APIs).
     </p>
     <p>
       Libvirt is able to facilitate incremental backups by tracking

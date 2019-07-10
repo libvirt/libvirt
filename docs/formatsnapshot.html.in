@@ -9,7 +9,9 @@
     <h2><a id="SnapshotAttributes">Snapshot XML</a></h2>
 
     <p>
-      There are several types of snapshots:
+      Snapshots are one form
+      of <a href="kbase/domainstatecapture.html">domain state
+      capture</a>.  There are several types of snapshots:
     </p>
     <dl>
       <dt>disk snapshot</dt>

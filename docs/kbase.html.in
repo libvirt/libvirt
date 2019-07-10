@@ -16,6 +16,11 @@
 
         <dt><a href="kbase/launch_security_sev.html">Launch security</a></dt>
         <dd>Securely launching VMs with AMD SEV</dd>
+
+        <dt><a href="kbase/domainstatecapture.html">Domain state
+            capture</a></dt>
+        <dd>Comparison between different methods of capturing domain
+          state</dd>
       </dl>
     </div>
 
