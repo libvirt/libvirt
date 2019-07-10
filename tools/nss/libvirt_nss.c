@@ -332,9 +332,8 @@ findLease(const char *name,
 
 #endif /* defined(LIBVIRT_NSS_GUEST) */
 
-    *address = tmpAddress;
+    VIR_STEAL_PTR(*address, tmpAddress);
     *naddress = ntmpAddress;
-    tmpAddress = NULL;
     ntmpAddress = 0;
 
     ret = 0;
