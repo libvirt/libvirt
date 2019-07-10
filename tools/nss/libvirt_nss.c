@@ -85,7 +85,6 @@ appendAddr(leaseAddress **tmpAddress,
            virJSONValuePtr lease,
            int af)
 {
-    int ret = -1;
     const char *ipAddr;
     virSocketAddr sa;
     int family;
@@ -93,21 +92,20 @@ appendAddr(leaseAddress **tmpAddress,
 
     if (!(ipAddr = virJSONValueObjectGetString(lease, "ip-address"))) {
         ERROR("ip-address field missing for %s", name);
-        goto cleanup;
+        return -1;
     }
 
     DEBUG("IP address: %s", ipAddr);
 
     if (virSocketAddrParse(&sa, ipAddr, AF_UNSPEC) < 0) {
         ERROR("Unable to parse %s", ipAddr);
-        goto cleanup;
+        return -1;
     }
 
     family = VIR_SOCKET_ADDR_FAMILY(&sa);
     if (af != AF_UNSPEC && af != family) {
         DEBUG("Skipping address which family is %d, %d requested", family, af);
-        ret = 0;
-        goto cleanup;
+        return 0;
     }
 
     for (i = 0; i < *ntmpAddress; i++) {
@@ -117,14 +115,13 @@ appendAddr(leaseAddress **tmpAddress,
                     (void *) &sa.data.inet6.sin6_addr.s6_addr),
                    FAMILY_ADDRESS_SIZE(family)) == 0) {
             DEBUG("IP address already in the list");
-            ret = 0;
-            goto cleanup;
+            return 0;
         }
     }
 
     if (VIR_REALLOC_N_QUIET(*tmpAddress, *ntmpAddress + 1) < 0) {
         ERROR("Out of memory");
-        goto cleanup;
+        return -1;
     }
 
     (*tmpAddress)[*ntmpAddress].af = family;
@@ -134,9 +131,7 @@ appendAddr(leaseAddress **tmpAddress,
             (void *) &sa.data.inet6.sin6_addr.s6_addr),
            FAMILY_ADDRESS_SIZE(family));
     (*ntmpAddress)++;
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -153,11 +148,10 @@ findLeaseInJSON(leaseAddress **tmpAddress,
     size_t i;
     long long expirytime;
     time_t currtime;
-    int ret = -1;
 
     if ((currtime = time(NULL)) == (time_t) - 1) {
         ERROR("Failed to get current system time");
-        goto cleanup;
+        return -1;
     }
 
     for (i = 0; i < nleases; i++) {
@@ -166,7 +160,7 @@ findLeaseInJSON(leaseAddress **tmpAddress,
         if (!lease) {
             /* This should never happen (TM) */
             ERROR("Unable to get element %zu of %zu", i, nleases);
-            goto cleanup;
+            return -1;
         }
 
         if (macs) {
@@ -190,7 +184,7 @@ findLeaseInJSON(leaseAddress **tmpAddress,
         if (virJSONValueObjectGetNumberLong(lease, "expiry-time", &expirytime) < 0) {
             /* A lease cannot be present without expiry-time */
             ERROR("expiry-time field missing for %s", name);
-            goto cleanup;
+            return -1;
         }
 
         /* Do not report expired lease */
@@ -203,12 +197,10 @@ findLeaseInJSON(leaseAddress **tmpAddress,
         *found = true;
 
         if (appendAddr(tmpAddress, ntmpAddress, lease, af) < 0)
-            goto cleanup;
+            return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
