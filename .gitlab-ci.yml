@@ -11,36 +11,36 @@
 
 debian-9-cross-armv6l:
   <<: *job_definition
-  image: quay.io/libvirt/buildenv-debian-9-cross-armv6l:master
+  image: quay.io/libvirt/buildenv-debian-9-cross-armv6l:latest
 
 debian-9-cross-mipsel:
   <<: *job_definition
-  image: quay.io/libvirt/buildenv-debian-9-cross-mipsel:master
+  image: quay.io/libvirt/buildenv-debian-9-cross-mipsel:latest
 
 debian-9-cross-ppc64le:
   <<: *job_definition
-  image: quay.io/libvirt/buildenv-debian-9-cross-ppc64le:master
+  image: quay.io/libvirt/buildenv-debian-9-cross-ppc64le:latest
 
 debian-9-cross-s390x:
   <<: *job_definition
-  image: quay.io/libvirt/buildenv-debian-9-cross-s390x:master
+  image: quay.io/libvirt/buildenv-debian-9-cross-s390x:latest
 
 debian-sid-cross-aarch64:
   <<: *job_definition
-  image: quay.io/libvirt/buildenv-debian-sid-cross-aarch64:master
+  image: quay.io/libvirt/buildenv-debian-sid-cross-aarch64:latest
 
 debian-sid-cross-armv7l:
   <<: *job_definition
-  image: quay.io/libvirt/buildenv-debian-sid-cross-armv7l:master
+  image: quay.io/libvirt/buildenv-debian-sid-cross-armv7l:latest
 
 debian-sid-cross-i686:
   <<: *job_definition
-  image: quay.io/libvirt/buildenv-debian-sid-cross-i686:master
+  image: quay.io/libvirt/buildenv-debian-sid-cross-i686:latest
 
 debian-sid-cross-mips64el:
   <<: *job_definition
-  image: quay.io/libvirt/buildenv-debian-sid-cross-mips64el:master
+  image: quay.io/libvirt/buildenv-debian-sid-cross-mips64el:latest
 
 debian-sid-cross-mips:
   <<: *job_definition
-  image: quay.io/libvirt/buildenv-debian-sid-cross-mips:master
+  image: quay.io/libvirt/buildenv-debian-sid-cross-mips:latest

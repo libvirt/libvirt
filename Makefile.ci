@@ -53,7 +53,7 @@ CI_IMAGE_PREFIX = quay.io/libvirt/buildenv-
 
 # The default tag is ':latest' but if the container
 # repo above uses different conventions this can override it
-CI_IMAGE_TAG = :master
+CI_IMAGE_TAG = :latest
 
 # We delete the virtual root after completion, set
 # to 0 if you need to keep it around for debugging
