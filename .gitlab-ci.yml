@@ -5,29 +5,33 @@
     - ../autogen.sh $CONFIGURE_OPTS || (cat config.log && exit 1)
     - make -j $(getconf _NPROCESSORS_ONLN)
 
-# We could run every arch on both versions, but it is a little
-# overkill. Instead we run half the jobs on 9 and half the jobs
-# on sid to give reasonable cross-coverage.
+# We could run every arch on every versions, but it is a little
+# overkill. Instead we split jobs evenly across 9, 10 and sid
+# to achieve reasonable cross-coverage.
 
 debian-9-cross-armv6l:
   <<: *job_definition
   image: quay.io/libvirt/buildenv-debian-9-cross-armv6l:latest
 
+debian-9-cross-mips64el:
+  <<: *job_definition
+  image: quay.io/libvirt/buildenv-debian-9-cross-mips64el:latest
+
 debian-9-cross-mipsel:
   <<: *job_definition
   image: quay.io/libvirt/buildenv-debian-9-cross-mipsel:latest
 
-debian-9-cross-ppc64le:
+debian-10-cross-aarch64:
   <<: *job_definition
-  image: quay.io/libvirt/buildenv-debian-9-cross-ppc64le:latest
+  image: quay.io/libvirt/buildenv-debian-10-cross-aarch64:latest
 
-debian-9-cross-s390x:
+debian-10-cross-ppc64le:
   <<: *job_definition
-  image: quay.io/libvirt/buildenv-debian-9-cross-s390x:latest
+  image: quay.io/libvirt/buildenv-debian-10-cross-ppc64le:latest
 
-debian-sid-cross-aarch64:
+debian-10-cross-s390x:
   <<: *job_definition
-  image: quay.io/libvirt/buildenv-debian-sid-cross-aarch64:latest
+  image: quay.io/libvirt/buildenv-debian-10-cross-s390x:latest
 
 debian-sid-cross-armv7l:
   <<: *job_definition
@@ -36,10 +40,6 @@ debian-sid-cross-armv7l:
 debian-sid-cross-i686:
   <<: *job_definition
   image: quay.io/libvirt/buildenv-debian-sid-cross-i686:latest
-
-debian-sid-cross-mips64el:
-  <<: *job_definition
-  image: quay.io/libvirt/buildenv-debian-sid-cross-mips64el:latest
 
 debian-sid-cross-mips:
   <<: *job_definition
