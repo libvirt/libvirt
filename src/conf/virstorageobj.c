@@ -1967,7 +1967,9 @@ virStoragePoolObjMatch(virStoragePoolObjPtr obj,
               (MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_ZFS) &&
                (obj->def->type == VIR_STORAGE_POOL_ZFS))     ||
               (MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_VSTORAGE) &&
-               (obj->def->type == VIR_STORAGE_POOL_VSTORAGE))))
+               (obj->def->type == VIR_STORAGE_POOL_VSTORAGE)) ||
+              (MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_ISCSI_DIRECT) &&
+               (obj->def->type == VIR_STORAGE_POOL_ISCSI_DIRECT))))
             return false;
     }
 
