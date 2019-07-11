@@ -215,7 +215,7 @@ nwfilterStateInitialize(bool privileged,
     }
 
     if ((driver->lockFD =
-         virPidFileAcquire(driver->stateDir, "driver", true, getpid())) < 0)
+         virPidFileAcquire(driver->stateDir, "driver", false, getpid())) < 0)
         goto error;
 
     if (virNWFilterIPAddrMapInit() < 0)

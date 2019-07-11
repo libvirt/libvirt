@@ -4129,7 +4129,7 @@ vzStateInitialize(bool privileged,
     }
 
     if ((vz_driver_lock_fd =
-         virPidFileAcquire(VZ_STATEDIR, "driver", true, getpid())) < 0)
+         virPidFileAcquire(VZ_STATEDIR, "driver", false, getpid())) < 0)
         return -1;
 
     if (prlsdkInit() < 0) {

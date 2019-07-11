@@ -1280,7 +1280,7 @@ bhyveStateInitialize(bool privileged,
     }
 
     if ((bhyve_driver->lockFD =
-         virPidFileAcquire(BHYVE_STATE_DIR, "driver", true, getpid())) < 0)
+         virPidFileAcquire(BHYVE_STATE_DIR, "driver", false, getpid())) < 0)
         goto cleanup;
 
     if (virDomainObjListLoadAllConfigs(bhyve_driver->domains,

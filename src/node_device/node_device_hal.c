@@ -637,7 +637,7 @@ nodeStateInitialize(bool privileged ATTRIBUTE_UNUSED,
     }
 
     if ((driver->lockFD =
-         virPidFileAcquire(driver->stateDir, "driver", true, getpid())) < 0)
+         virPidFileAcquire(driver->stateDir, "driver", false, getpid())) < 0)
         goto failure;
 
     if (!(driver->devs = virNodeDeviceObjListNew()))

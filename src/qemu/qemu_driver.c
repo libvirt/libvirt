@@ -677,7 +677,7 @@ qemuStateInitialize(bool privileged,
     }
 
     if ((qemu_driver->lockFD =
-         virPidFileAcquire(cfg->stateDir, "driver", true, getpid())) < 0)
+         virPidFileAcquire(cfg->stateDir, "driver", false, getpid())) < 0)
         goto error;
 
     qemu_driver->qemuImgBinary = virFindFileInPath("qemu-img");
