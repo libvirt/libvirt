@@ -2469,6 +2469,40 @@ static int testDomainSetMaxMemory(virDomainPtr domain,
     return 0;
 }
 
+
+static int testDomainSetMemoryStatsPeriod(virDomainPtr dom,
+                                          int period,
+                                          unsigned int flags)
+{
+    virDomainObjPtr vm;
+    virDomainDefPtr def;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (!(def = virDomainObjGetOneDef(vm, flags)))
+        goto cleanup;
+
+    if (!virDomainDefHasMemballoon(def)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("No memory balloon device configured, "
+                         "can not set the collection period"));
+        goto cleanup;
+    }
+
+    def->memballoon->period = period;
+
+    ret = 0;
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
 static int testDomainSetMemoryFlags(virDomainPtr domain,
                                     unsigned long memory,
                                     unsigned int flags)
@@ -7729,6 +7763,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainGetMaxMemory = testDomainGetMaxMemory, /* 0.1.4 */
     .domainSetMaxMemory = testDomainSetMaxMemory, /* 0.1.1 */
     .domainSetMemory = testDomainSetMemory, /* 0.1.4 */
+    .domainSetMemoryStatsPeriod = testDomainSetMemoryStatsPeriod, /* 5.6.0 */
     .domainSetMemoryFlags = testDomainSetMemoryFlags, /* 5.6.0 */
     .domainGetHostname = testDomainGetHostname, /* 5.5.0 */
     .domainGetInfo = testDomainGetInfo, /* 0.1.1 */
