@@ -32,6 +32,7 @@
 #include "datatypes.h"
 #include "viralloc.h"
 #include "viruuid.h"
+#include "virfile.h"
 #include "virpci.h"
 #include "virpidfile.h"
 #include "virlog.h"
