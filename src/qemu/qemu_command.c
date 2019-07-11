@@ -4748,13 +4748,12 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
             if (video->heads)
                 virBufferAsprintf(&buf, ",max_outputs=%u", video->heads);
         }
-    } else if (video->vram &&
-        ((video->type == VIR_DOMAIN_VIDEO_TYPE_VGA &&
-          virQEMUCapsGet(qemuCaps, QEMU_CAPS_VGA_VGAMEM)) ||
-         (video->type == VIR_DOMAIN_VIDEO_TYPE_VMVGA &&
-          virQEMUCapsGet(qemuCaps, QEMU_CAPS_VMWARE_SVGA_VGAMEM)))) {
-
-        virBufferAsprintf(&buf, ",vgamem_mb=%u", video->vram / 1024);
+    } else if ((video->type == VIR_DOMAIN_VIDEO_TYPE_VGA &&
+                virQEMUCapsGet(qemuCaps, QEMU_CAPS_VGA_VGAMEM)) ||
+               (video->type == VIR_DOMAIN_VIDEO_TYPE_VMVGA &&
+                virQEMUCapsGet(qemuCaps, QEMU_CAPS_VMWARE_SVGA_VGAMEM))) {
+        if (video->vram)
+            virBufferAsprintf(&buf, ",vgamem_mb=%u", video->vram / 1024);
     }
 
     if (qemuBuildDeviceAddressStr(&buf, def, &video->info, qemuCaps) < 0)
