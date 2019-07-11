@@ -1181,14 +1181,14 @@ udevStateInitialize(bool privileged,
 
     if (privileged) {
         if (virAsprintf(&driver->stateDir,
-                        "%s/run/libvirt/nodedev", LOCALSTATEDIR) < 0)
+                        "%s/run/libvirt/interface", LOCALSTATEDIR) < 0)
             goto cleanup;
     } else {
         VIR_AUTOFREE(char *) rundir = NULL;
 
         if (!(rundir = virGetUserRuntimeDirectory()))
             goto cleanup;
-        if (virAsprintf(&driver->stateDir, "%s/nodedev/run", rundir) < 0)
+        if (virAsprintf(&driver->stateDir, "%s/interface/run", rundir) < 0)
             goto cleanup;
     }
 
