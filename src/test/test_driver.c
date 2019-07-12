@@ -2594,7 +2594,7 @@ static int testDomainSetMemoryFlags(virDomainPtr domain,
 static int testDomainSetMemory(virDomainPtr domain,
                                unsigned long memory)
 {
-    return testDomainSetMemoryFlags(domain, memory, 0);
+    return testDomainSetMemoryFlags(domain, memory, VIR_DOMAIN_AFFECT_LIVE);
 }
 
 static int
