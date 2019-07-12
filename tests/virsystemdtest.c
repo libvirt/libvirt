@@ -23,6 +23,7 @@
 #if defined(WITH_DBUS) && defined(__linux__)
 
 # include <dbus/dbus.h>
+# include <fcntl.h>
 
 # define LIBVIRT_VIRSYSTEMDPRIV_H_ALLOW
 # include "virsystemdpriv.h"
@@ -762,10 +763,17 @@ mymain(void)
 
     if (virTestRun("Test activation empty", testActivationEmpty, NULL) < 0)
         ret = -1;
-    if (virTestRun("Test activation names", testActivationFDNames, NULL) < 0)
-        ret = -1;
-    if (virTestRun("Test activation addrs", testActivationFDAddrs, NULL) < 0)
-        ret = -1;
+
+    if (fcntl(STDERR_FILENO + 1, F_GETFL) == -1 && errno == EBADF &&
+        fcntl(STDERR_FILENO + 2, F_GETFL) == -1 && errno == EBADF &&
+        fcntl(STDERR_FILENO + 3, F_GETFL) == -1 && errno == EBADF) {
+        if (virTestRun("Test activation names", testActivationFDNames, NULL) < 0)
+            ret = -1;
+        if (virTestRun("Test activation addrs", testActivationFDAddrs, NULL) < 0)
+            ret = -1;
+    } else {
+        VIR_INFO("Skipping activation tests as FD 3/4/5 is open");
+    }
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
