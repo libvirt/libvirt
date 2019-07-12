@@ -145,6 +145,11 @@
   <pool type='mpath' supported='no'>
   </pool>
   <pool type='rbd' supported='no'>
+    <volOptions>
+      <defaultFormat type='raw'/>
+      <enum name='targetFormatType'>
+      </enum>
+    </volOptions>
   </pool>
   <pool type='sheepdog' supported='no'>
   </pool>
