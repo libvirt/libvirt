@@ -2482,20 +2482,6 @@ testDomainGetMaxMemory(virDomainPtr domain)
     return ret;
 }
 
-static int testDomainSetMaxMemory(virDomainPtr domain,
-                                  unsigned long memory)
-{
-    virDomainObjPtr privdom;
-
-    if (!(privdom = testDomObjFromDomain(domain)))
-        return -1;
-
-    /* XXX validate not over host memory wrt to other domains */
-    virDomainDefSetMemoryTotal(privdom->def, memory);
-
-    virDomainObjEndAPI(&privdom);
-    return 0;
-}
 
 
 static int testDomainSetMemoryStatsPeriod(virDomainPtr dom,
@@ -2596,6 +2582,14 @@ static int testDomainSetMemory(virDomainPtr domain,
 {
     return testDomainSetMemoryFlags(domain, memory, VIR_DOMAIN_AFFECT_LIVE);
 }
+
+
+static int testDomainSetMaxMemory(virDomainPtr domain,
+                                  unsigned long memory)
+{
+    return testDomainSetMemoryFlags(domain, memory, VIR_DOMAIN_MEM_MAXIMUM);
+}
+
 
 static int
 testDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
