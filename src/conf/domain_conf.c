@@ -738,6 +738,7 @@ VIR_ENUM_IMPL(virDomainVideo,
               "virtio",
               "gop",
               "none",
+              "bochs",
 );
 
 VIR_ENUM_IMPL(virDomainVideoVGAConf,
@@ -15165,6 +15166,9 @@ virDomainVideoDefaultRAM(const virDomainDef *def,
         else
             return 16 * 1024;
         break;
+
+    case VIR_DOMAIN_VIDEO_TYPE_BOCHS:
+        return 16 * 1024;
 
     case VIR_DOMAIN_VIDEO_TYPE_XEN:
         /* Original Xen PVFB hardcoded to 4 MB */

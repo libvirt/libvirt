@@ -3584,6 +3584,7 @@
                 <value>virtio</value>
                 <value>gop</value>
                 <value>none</value>
+                <value>bochs</value>
               </choice>
             </attribute>
             <group>

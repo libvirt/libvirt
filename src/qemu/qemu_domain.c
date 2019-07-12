@@ -4960,6 +4960,7 @@ qemuDomainDeviceDefValidateVideo(const virDomainVideoDef *video)
     case VIR_DOMAIN_VIDEO_TYPE_VMVGA:
     case VIR_DOMAIN_VIDEO_TYPE_QXL:
     case VIR_DOMAIN_VIDEO_TYPE_VIRTIO:
+    case VIR_DOMAIN_VIDEO_TYPE_BOCHS:
     case VIR_DOMAIN_VIDEO_TYPE_LAST:
         break;
     }
