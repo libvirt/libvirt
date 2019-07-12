@@ -85,7 +85,7 @@ $abs_top_builddir/tools/virsh --connect test:///default >out 2>err '
 # and snapshot-list produces timestamps
 sed 's/ *$//; s/[0-9-]\{10\} [0-9:.]* .[0-9]\{4\}/TIMESTAMP/;
    /MarkerA/,/MarkerC/d' < out > out.cooked || fail=1
-# Second part holds domain XMLs
+# Second part holds domain snapshot XMLs
 sed -n '/MarkerA/,/MarkerB/p' < out > s3.xml || fail=1
 sed -n '/MarkerB/,/MarkerC/p' < out > s2.xml || fail=1
 

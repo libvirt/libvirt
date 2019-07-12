@@ -223,11 +223,9 @@
         guest.
       </dd>
       <dt><code>parent</code></dt>
-      <dd>An optional readonly representation of the parent of this
-        snapshot.  If present, this element contains exactly one child
-        element, <code>name</code>.  This specifies the name of the
-        parent snapshot of this snapshot, and is used to represent
-        trees of snapshots.
+      <dd>Readonly, present only if this snapshot has a parent. The
+        parent name is given by the sub-element <code>name</code>. The
+        parent relationship allows tracking a tree of related snapshots.
       </dd>
       <dt><code>domain</code></dt>
       <dd>A readonly representation of the domain that this snapshot
