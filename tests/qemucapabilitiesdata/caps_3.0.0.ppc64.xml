@@ -151,6 +151,7 @@
   <flag name='memory-backend-memfd.hugetlb'/>
   <flag name='iothread.poll-max-ns'/>
   <flag name='memory-backend-file.align'/>
+  <flag name='bochs-display'/>
   <version>2012050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900757</microcodeVersion>

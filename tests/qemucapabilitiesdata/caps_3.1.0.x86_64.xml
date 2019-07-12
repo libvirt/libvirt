@@ -201,6 +201,7 @@
   <flag name='nvdimm.unarmed'/>
   <flag name='overcommit'/>
   <flag name='x86-max-cpu'/>
+  <flag name='bochs-display'/>
   <version>3000092</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100758</microcodeVersion>

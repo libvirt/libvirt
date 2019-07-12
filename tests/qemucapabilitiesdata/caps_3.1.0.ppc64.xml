@@ -156,6 +156,7 @@
   <flag name='memory-backend-file.align'/>
   <flag name='memory-backend-file.pmem'/>
   <flag name='overcommit'/>
+  <flag name='bochs-display'/>
   <version>3000091</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900758</microcodeVersion>

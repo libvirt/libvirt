@@ -533,6 +533,9 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "x86-max-cpu",
               "cpu-unavailable-features",
               "canonical-cpu-features",
+
+              /* 335 */
+              "bochs-display",
     );
 
 
@@ -1121,6 +1124,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "virtio-serial-pci-transitional", QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL },
     { "virtio-serial-pci-non-transitional", QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL },
     { "max-x86_64-cpu", QEMU_CAPS_X86_MAX_CPU },
+    { "bochs-display", QEMU_CAPS_DEVICE_BOCHS_DISPLAY },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVirtioBalloon[] = {

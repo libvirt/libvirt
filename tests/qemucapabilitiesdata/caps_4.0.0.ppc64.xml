@@ -168,6 +168,7 @@
   <flag name='query-current-machine'/>
   <flag name='bitmap-merge'/>
   <flag name='nbd-bitmap'/>
+  <flag name='bochs-display'/>
   <version>4000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900758</microcodeVersion>

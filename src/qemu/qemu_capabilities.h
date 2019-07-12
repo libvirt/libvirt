@@ -515,6 +515,9 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_CPU_UNAVAILABLE_FEATURES, /* "unavailable-features" CPU property */
     QEMU_CAPS_CANONICAL_CPU_FEATURES, /* avoid CPU feature aliases */
 
+    /* 335 */
+    QEMU_CAPS_DEVICE_BOCHS_DISPLAY, /* -device bochs-display */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 

@@ -163,6 +163,7 @@
   <flag name='machine.virt.iommu'/>
   <flag name='bitmap-merge'/>
   <flag name='nbd-bitmap'/>
+  <flag name='bochs-display'/>
   <version>4000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>61700758</microcodeVersion>
