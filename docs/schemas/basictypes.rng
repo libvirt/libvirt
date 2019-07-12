@@ -2,7 +2,7 @@
 <!-- network-related definitions used in multiple grammars -->
 <grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
 
-  <!-- Our unsignedInt doesn"t allow a leading "+" in its lexical form -->
+  <!-- Our unsignedInt doesn't allow a leading "+" in its lexical form -->
   <define name="unsignedInt">
     <data type="unsignedInt">
       <param name="pattern">[0-9]+</param>
