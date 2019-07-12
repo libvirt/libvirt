@@ -608,7 +608,7 @@
 
     <h3>Valid volume format types</h3>
     <p>
-      The RBD pool does not use the volume format type element.
+      Only raw volumes are supported.
     </p>
 
     <h2><a id="StorageBackendSheepdog">Sheepdog pool</a></h2>
