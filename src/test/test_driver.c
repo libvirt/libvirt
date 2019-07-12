@@ -2535,24 +2535,59 @@ static int testDomainSetMemoryFlags(virDomainPtr domain,
                                     unsigned long memory,
                                     unsigned int flags)
 {
-    virDomainObjPtr privdom;
+    virDomainObjPtr vm;
+    virDomainDefPtr def;
     int ret = -1;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG |
+                  VIR_DOMAIN_MEM_MAXIMUM, -1);
 
-    if (!(privdom = testDomObjFromDomain(domain)))
+    if (!(vm = testDomObjFromDomain(domain)))
         return -1;
 
-    if (memory > virDomainDefGetMemoryTotal(privdom->def)) {
-        virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+    if (!(def = virDomainObjGetOneDef(vm, flags)))
         goto cleanup;
+
+    if (flags & VIR_DOMAIN_MEM_MAXIMUM) {
+        if (virDomainObjIsActive(vm)) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("cannot resize the maximum memory on an "
+                             "active domain"));
+            goto cleanup;
+        }
+
+        if (virDomainNumaGetNodeCount(def->numa) > 0) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("initial memory size of a domain with NUMA "
+                             "nodes cannot be modified with this API"));
+            goto cleanup;
+        }
+
+        if (def->mem.max_memory && def->mem.max_memory < memory) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("cannot set initial memory size greater than "
+                             "the maximum memory size"));
+            goto cleanup;
+        }
+
+        virDomainDefSetMemoryTotal(def, memory);
+
+        if (def->mem.cur_balloon > memory)
+            def->mem.cur_balloon = memory;
+    } else {
+        if (memory > virDomainDefGetMemoryTotal(def)) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("cannot set memory higher than max memory"));
+            goto cleanup;
+        }
+
+        def->mem.cur_balloon = memory;
     }
 
-    privdom->def->mem.cur_balloon = memory;
     ret = 0;
-
  cleanup:
-    virDomainObjEndAPI(&privdom);
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
