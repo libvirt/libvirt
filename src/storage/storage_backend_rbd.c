@@ -637,7 +637,7 @@ virStorageBackendRBDGetVolNames(virStorageBackendRBDStatePtr ptr)
     nnames = nimages;
 
     for (i = 0; i < nimages; i++)
-        VIR_STEAL_PTR(names[i], images->name);
+        VIR_STEAL_PTR(names[i], images[i]->name);
 
     return names;
 
