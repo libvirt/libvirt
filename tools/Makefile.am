@@ -231,6 +231,7 @@ virsh_SOURCES = \
 		virsh-completer-interface.c virsh-completer-interface.h \
 		virsh-completer-network.c virsh-completer-network.h \
 		virsh-completer-nodedev.c virsh-completer-nodedev.h \
+		virsh-completer-nwfilter.c virsh-completer-nwfilter.h \
 		virsh-completer-pool.c virsh-completer-pool.h \
 		virsh-completer-volume.c virsh-completer-volume.h \
 		virsh-console.c virsh-console.h \

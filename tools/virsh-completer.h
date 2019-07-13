@@ -26,19 +26,12 @@
 #include "virsh-completer-interface.h"
 #include "virsh-completer-network.h"
 #include "virsh-completer-nodedev.h"
+#include "virsh-completer-nwfilter.h"
 #include "virsh-completer-pool.h"
 #include "virsh-completer-volume.h"
 
 char ** virshCommaStringListComplete(const char *input,
                                      const char **options);
-
-char ** virshNWFilterNameCompleter(vshControl *ctl,
-                                   const vshCmd *cmd,
-                                   unsigned int flags);
-
-char ** virshNWFilterBindingNameCompleter(vshControl *ctl,
-                                          const vshCmd *cmd,
-                                          unsigned int flags);
 
 char ** virshSecretUUIDCompleter(vshControl *ctl,
                                  const vshCmd *cmd,
