@@ -144,53 +144,6 @@ virshCommaStringListComplete(const char *input,
 
 
 char **
-virshStorageVolNameCompleter(vshControl *ctl,
-                             const vshCmd *cmd,
-                             unsigned int flags)
-{
-    virshControlPtr priv = ctl->privData;
-    virStoragePoolPtr pool = NULL;
-    virStorageVolPtr *vols = NULL;
-    int rc;
-    int nvols = 0;
-    size_t i = 0;
-    char **ret = NULL;
-    VIR_AUTOSTRINGLIST tmp = NULL;
-
-    virCheckFlags(0, NULL);
-
-    if (!priv->conn || virConnectIsAlive(priv->conn) <= 0)
-        return NULL;
-
-    if (!(pool = virshCommandOptPool(ctl, cmd, "pool", NULL)))
-        return NULL;
-
-    if ((rc = virStoragePoolListAllVolumes(pool, &vols, flags)) < 0)
-        goto cleanup;
-    nvols = rc;
-
-    if (VIR_ALLOC_N(tmp, nvols + 1) < 0)
-        goto cleanup;
-
-    for (i = 0; i < nvols; i++) {
-        const char *name = virStorageVolGetName(vols[i]);
-
-        if (VIR_STRDUP(tmp[i], name) < 0)
-            goto cleanup;
-    }
-
-    VIR_STEAL_PTR(ret, tmp);
-
- cleanup:
-    virStoragePoolFree(pool);
-    for (i = 0; i < nvols; i++)
-        virStorageVolFree(vols[i]);
-    VIR_FREE(vols);
-    return ret;
-}
-
-
-char **
 virshInterfaceNameCompleter(vshControl *ctl,
                             const vshCmd *cmd ATTRIBUTE_UNUSED,
                             unsigned int flags)

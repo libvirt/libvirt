@@ -24,13 +24,10 @@
 
 #include "virsh-completer-domain.h"
 #include "virsh-completer-pool.h"
+#include "virsh-completer-volume.h"
 
 char ** virshCommaStringListComplete(const char *input,
                                      const char **options);
-
-char ** virshStorageVolNameCompleter(vshControl *ctl,
-                                     const vshCmd *cmd,
-                                     unsigned int flags);
 
 char ** virshInterfaceNameCompleter(vshControl *ctl,
                                     const vshCmd *cmd,
