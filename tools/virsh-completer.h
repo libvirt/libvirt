@@ -23,13 +23,10 @@
 #include "vsh.h"
 
 #include "virsh-completer-domain.h"
+#include "virsh-completer-pool.h"
 
 char ** virshCommaStringListComplete(const char *input,
                                      const char **options);
-
-char ** virshStoragePoolNameCompleter(vshControl *ctl,
-                                      const vshCmd *cmd,
-                                      unsigned int flags);
 
 char ** virshStorageVolNameCompleter(vshControl *ctl,
                                      const vshCmd *cmd,
@@ -82,10 +79,6 @@ char ** virshAllocpagesPagesizeCompleter(vshControl *ctl,
 char ** virshSecretEventNameCompleter(vshControl *ctl,
                                       const vshCmd *cmd,
                                       unsigned int flags);
-
-char ** virshPoolEventNameCompleter(vshControl *ctl,
-                                    const vshCmd *cmd,
-                                    unsigned int flags);
 
 char ** virshNodeDeviceEventNameCompleter(vshControl *ctl,
                                           const vshCmd *cmd,

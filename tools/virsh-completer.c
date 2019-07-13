@@ -144,49 +144,6 @@ virshCommaStringListComplete(const char *input,
 
 
 char **
-virshStoragePoolNameCompleter(vshControl *ctl,
-                              const vshCmd *cmd ATTRIBUTE_UNUSED,
-                              unsigned int flags)
-{
-    virshControlPtr priv = ctl->privData;
-    virStoragePoolPtr *pools = NULL;
-    int npools = 0;
-    size_t i = 0;
-    char **ret = NULL;
-    VIR_AUTOSTRINGLIST tmp = NULL;
-
-    virCheckFlags(VIR_CONNECT_LIST_STORAGE_POOLS_INACTIVE |
-                  VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE |
-                  VIR_CONNECT_LIST_STORAGE_POOLS_PERSISTENT,
-                  NULL);
-
-    if (!priv->conn || virConnectIsAlive(priv->conn) <= 0)
-        return NULL;
-
-    if ((npools = virConnectListAllStoragePools(priv->conn, &pools, flags)) < 0)
-        return NULL;
-
-    if (VIR_ALLOC_N(tmp, npools + 1) < 0)
-        goto cleanup;
-
-    for (i = 0; i < npools; i++) {
-        const char *name = virStoragePoolGetName(pools[i]);
-
-        if (VIR_STRDUP(tmp[i], name) < 0)
-            goto cleanup;
-    }
-
-    VIR_STEAL_PTR(ret, tmp);
-
- cleanup:
-    for (i = 0; i < npools; i++)
-        virStoragePoolFree(pools[i]);
-    VIR_FREE(pools);
-    return ret;
-}
-
-
-char **
 virshStorageVolNameCompleter(vshControl *ctl,
                              const vshCmd *cmd,
                              unsigned int flags)
@@ -746,30 +703,6 @@ virshSecretEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
 
     for (i = 0; i < VIR_SECRET_EVENT_ID_LAST; i++) {
         if (VIR_STRDUP(tmp[i], virshSecretEventCallbacks[i].name) < 0)
-            return NULL;
-    }
-
-    VIR_STEAL_PTR(ret, tmp);
-    return ret;
-}
-
-
-char **
-virshPoolEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
-                            const vshCmd *cmd ATTRIBUTE_UNUSED,
-                            unsigned int flags)
-{
-    size_t i = 0;
-    char **ret = NULL;
-    VIR_AUTOSTRINGLIST tmp = NULL;
-
-    virCheckFlags(0, NULL);
-
-    if (VIR_ALLOC_N(tmp, VIR_STORAGE_POOL_EVENT_ID_LAST + 1) < 0)
-        return NULL;
-
-    for (i = 0; i < VIR_STORAGE_POOL_EVENT_ID_LAST; i++) {
-        if (VIR_STRDUP(tmp[i], virshPoolEventCallbacks[i].name) < 0)
             return NULL;
     }
 
