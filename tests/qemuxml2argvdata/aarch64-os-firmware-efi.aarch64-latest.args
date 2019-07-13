@@ -29,7 +29,6 @@ format=raw,unit=1 \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--no-acpi \
 -boot strict=on \
 -kernel /aarch64.kernel \
 -initrd /aarch64.initrd \
