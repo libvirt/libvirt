@@ -24,23 +24,12 @@
 
 #include "virsh-completer-domain.h"
 #include "virsh-completer-interface.h"
+#include "virsh-completer-network.h"
 #include "virsh-completer-pool.h"
 #include "virsh-completer-volume.h"
 
 char ** virshCommaStringListComplete(const char *input,
                                      const char **options);
-
-char ** virshNetworkNameCompleter(vshControl *ctl,
-                                  const vshCmd *cmd,
-                                  unsigned int flags);
-
-char ** virshNetworkEventNameCompleter(vshControl *ctl,
-                                       const vshCmd *cmd,
-                                       unsigned int flags);
-
-char ** virshNetworkPortUUIDCompleter(vshControl *ctl,
-                                      const vshCmd *cmd,
-                                      unsigned int flags);
 
 char ** virshNodeDeviceNameCompleter(vshControl *ctl,
                                      const vshCmd *cmd,

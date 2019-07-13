@@ -229,6 +229,7 @@ virsh_SOURCES = \
 		virsh-completer.c virsh-completer.h \
 		virsh-completer-domain.c virsh-completer-domain.h \
 		virsh-completer-interface.c virsh-completer-interface.h \
+		virsh-completer-network.c virsh-completer-network.h \
 		virsh-completer-pool.c virsh-completer-pool.h \
 		virsh-completer-volume.c virsh-completer-volume.h \
 		virsh-console.c virsh-console.h \
