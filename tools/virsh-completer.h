@@ -29,6 +29,7 @@
 #include "virsh-completer-nwfilter.h"
 #include "virsh-completer-pool.h"
 #include "virsh-completer-secret.h"
+#include "virsh-completer-snapshot.h"
 #include "virsh-completer-volume.h"
 
 char ** virshCommaStringListComplete(const char *input,
@@ -37,10 +38,6 @@ char ** virshCommaStringListComplete(const char *input,
 char ** virshCheckpointNameCompleter(vshControl *ctl,
                                      const vshCmd *cmd,
                                      unsigned int flags);
-
-char ** virshSnapshotNameCompleter(vshControl *ctl,
-                                   const vshCmd *cmd,
-                                   unsigned int flags);
 
 char ** virshAllocpagesPagesizeCompleter(vshControl *ctl,
                                          const vshCmd *cmd,

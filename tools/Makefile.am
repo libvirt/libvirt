@@ -234,6 +234,7 @@ virsh_SOURCES = \
 		virsh-completer-nwfilter.c virsh-completer-nwfilter.h \
 		virsh-completer-pool.c virsh-completer-pool.h \
 		virsh-completer-secret.c virsh-completer-secret.h \
+		virsh-completer-snapshot.c virsh-completer-snapshot.h \
 		virsh-completer-volume.c virsh-completer-volume.h \
 		virsh-console.c virsh-console.h \
 		virsh-domain.c virsh-domain.h \

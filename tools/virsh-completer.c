@@ -194,51 +194,6 @@ virshCheckpointNameCompleter(vshControl *ctl,
     return NULL;
 }
 
-char **
-virshSnapshotNameCompleter(vshControl *ctl,
-                           const vshCmd *cmd,
-                           unsigned int flags)
-{
-    virshControlPtr priv = ctl->privData;
-    virDomainPtr dom = NULL;
-    virDomainSnapshotPtr *snapshots = NULL;
-    int rc;
-    int nsnapshots = 0;
-    size_t i = 0;
-    char **ret = NULL;
-    VIR_AUTOSTRINGLIST tmp = NULL;
-
-    virCheckFlags(0, NULL);
-
-    if (!priv->conn || virConnectIsAlive(priv->conn) <= 0)
-        return NULL;
-
-    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
-        return NULL;
-
-    if ((rc = virDomainListAllSnapshots(dom, &snapshots, flags)) < 0)
-        goto cleanup;
-    nsnapshots = rc;
-
-    if (VIR_ALLOC_N(tmp, nsnapshots + 1) < 0)
-        goto cleanup;
-
-    for (i = 0; i < nsnapshots; i++) {
-        const char *name = virDomainSnapshotGetName(snapshots[i]);
-
-        if (VIR_STRDUP(tmp[i], name) < 0)
-            goto cleanup;
-    }
-
-    VIR_STEAL_PTR(ret, tmp);
-
- cleanup:
-    virshDomainFree(dom);
-    for (i = 0; i < nsnapshots; i++)
-        virshDomainSnapshotFree(snapshots[i]);
-    VIR_FREE(snapshots);
-    return ret;
-}
 
 static char *
 virshPagesizeNodeToString(xmlNodePtr node)
