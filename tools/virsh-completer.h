@@ -28,14 +28,11 @@
 #include "virsh-completer-nodedev.h"
 #include "virsh-completer-nwfilter.h"
 #include "virsh-completer-pool.h"
+#include "virsh-completer-secret.h"
 #include "virsh-completer-volume.h"
 
 char ** virshCommaStringListComplete(const char *input,
                                      const char **options);
-
-char ** virshSecretUUIDCompleter(vshControl *ctl,
-                                 const vshCmd *cmd,
-                                 unsigned int flags);
 
 char ** virshCheckpointNameCompleter(vshControl *ctl,
                                      const vshCmd *cmd,
@@ -48,10 +45,6 @@ char ** virshSnapshotNameCompleter(vshControl *ctl,
 char ** virshAllocpagesPagesizeCompleter(vshControl *ctl,
                                          const vshCmd *cmd,
                                          unsigned int flags);
-
-char ** virshSecretEventNameCompleter(vshControl *ctl,
-                                      const vshCmd *cmd,
-                                      unsigned int flags);
 
 char ** virshCellnoCompleter(vshControl *ctl,
                              const vshCmd *cmd,
