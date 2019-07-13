@@ -23,15 +23,12 @@
 #include "vsh.h"
 
 #include "virsh-completer-domain.h"
+#include "virsh-completer-interface.h"
 #include "virsh-completer-pool.h"
 #include "virsh-completer-volume.h"
 
 char ** virshCommaStringListComplete(const char *input,
                                      const char **options);
-
-char ** virshInterfaceNameCompleter(vshControl *ctl,
-                                    const vshCmd *cmd,
-                                    unsigned int flags);
 
 char ** virshNetworkNameCompleter(vshControl *ctl,
                                   const vshCmd *cmd,
