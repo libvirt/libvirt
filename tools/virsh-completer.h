@@ -22,21 +22,7 @@
 
 #include "vsh.h"
 
-char ** virshDomainNameCompleter(vshControl *ctl,
-                                 const vshCmd *cmd,
-                                 unsigned int flags);
-
-enum {
-    VIRSH_DOMAIN_INTERFACE_COMPLETER_MAC = 1 << 0, /* Return just MACs */
-};
-
-char ** virshDomainInterfaceCompleter(vshControl *ctl,
-                                      const vshCmd *cmd,
-                                      unsigned int flags);
-
-char ** virshDomainDiskTargetCompleter(vshControl *ctl,
-                                       const vshCmd *cmd,
-                                       unsigned int flags);
+#include "virsh-completer-domain.h"
 
 char ** virshCommaStringListComplete(const char *input,
                                      const char **options);
@@ -97,17 +83,9 @@ char ** virshSecretEventNameCompleter(vshControl *ctl,
                                       const vshCmd *cmd,
                                       unsigned int flags);
 
-char ** virshDomainEventNameCompleter(vshControl *ctl,
-                                      const vshCmd *cmd,
-                                      unsigned int flags);
-
 char ** virshPoolEventNameCompleter(vshControl *ctl,
                                     const vshCmd *cmd,
                                     unsigned int flags);
-
-char ** virshDomainInterfaceStateCompleter(vshControl *ctl,
-                                           const vshCmd *cmd,
-                                           unsigned int flags);
 
 char ** virshNodeDeviceEventNameCompleter(vshControl *ctl,
                                           const vshCmd *cmd,
@@ -117,14 +95,6 @@ char ** virshNodeDeviceCapabilityNameCompleter(vshControl *ctl,
                                                const vshCmd *cmd,
                                                unsigned int flags);
 
-char ** virshDomainDeviceAliasCompleter(vshControl *ctl,
-                                        const vshCmd *cmd,
-                                        unsigned int flags);
-
 char ** virshCellnoCompleter(vshControl *ctl,
                              const vshCmd *cmd,
                              unsigned int flags);
-
-char ** virshDomainShutdownModeCompleter(vshControl *ctl,
-                                         const vshCmd *cmd,
-                                         unsigned int flags);
