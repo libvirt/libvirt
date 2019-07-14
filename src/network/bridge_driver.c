@@ -136,6 +136,12 @@ networkDnsmasqCapsRefresh(virNetworkDriverStatePtr driver)
     return 0;
 }
 
+static virNetworkXMLOptionPtr
+networkDnsmasqCreateXMLConf(void)
+{
+    return virNetworkXMLOptionNew();
+}
+
 
 static int
 networkStateCleanup(void);
@@ -605,6 +611,9 @@ networkStateInitialize(bool privileged,
 
     network_driver->privileged = privileged;
 
+    if (!(network_driver->xmlopt = networkDnsmasqCreateXMLConf()))
+        goto error;
+
     /* configuration/state paths are one of
      * ~/.config/libvirt/... (session/unprivileged)
      * /etc/libvirt/... && /var/(run|lib)/libvirt/... (system/privileged).
@@ -766,6 +775,7 @@ networkStateCleanup(void)
         return -1;
 
     virObjectUnref(network_driver->networkEventState);
+    virObjectUnref(network_driver->xmlopt);
 
     /* free inactive networks */
     virObjectUnref(network_driver->networks);

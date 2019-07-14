@@ -73,6 +73,39 @@ VIR_ENUM_IMPL(virNetworkTaint,
               "hook-script",
 );
 
+static virClassPtr virNetworkXMLOptionClass;
+
+static void
+virNetworkXMLOptionDispose(void *obj ATTRIBUTE_UNUSED)
+{
+    return;
+}
+
+static int
+virNetworkXMLOnceInit(void)
+{
+    if (!VIR_CLASS_NEW(virNetworkXMLOption, virClassForObject()))
+        return -1;
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virNetworkXML);
+
+virNetworkXMLOptionPtr
+virNetworkXMLOptionNew(void)
+{
+    virNetworkXMLOptionPtr xmlopt;
+
+    if (virNetworkXMLInitialize() < 0)
+        return NULL;
+
+    if (!(xmlopt = virObjectNew(virNetworkXMLOptionClass)))
+        return NULL;
+
+    return xmlopt;
+}
+
 static void
 virPortGroupDefClear(virPortGroupDefPtr def)
 {

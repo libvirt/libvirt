@@ -55,6 +55,8 @@ struct _virNetworkDriverState {
 
     /* Immutable pointer, self-locking APIs */
     virObjectEventStatePtr networkEventState;
+
+    virNetworkXMLOptionPtr xmlopt;
 };
 
 typedef struct _virNetworkDriverState virNetworkDriverState;

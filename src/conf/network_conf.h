@@ -41,6 +41,14 @@
 #include "virmacmap.h"
 #include "virenum.h"
 
+
+struct _virNetworkXMLOption {
+    virObject parent;
+};
+typedef struct _virNetworkXMLOption virNetworkXMLOption;
+typedef virNetworkXMLOption *virNetworkXMLOptionPtr;
+
+
 typedef enum {
     VIR_NETWORK_FORWARD_NONE   = 0,
     VIR_NETWORK_FORWARD_NAT,
@@ -288,6 +296,9 @@ enum {
     VIR_NETWORK_OBJ_LIST_ADD_LIVE = (1 << 0),
     VIR_NETWORK_OBJ_LIST_ADD_CHECK_LIVE = (1 << 1),
 };
+
+virNetworkXMLOptionPtr
+virNetworkXMLOptionNew(void);
 
 virNetworkDefPtr
 virNetworkDefCopy(virNetworkDefPtr def, unsigned int flags);

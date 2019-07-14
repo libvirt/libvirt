@@ -730,6 +730,7 @@ virNetworkSaveConfig;
 virNetworkSetBridgeMacAddr;
 virNetworkTaintTypeFromString;
 virNetworkTaintTypeToString;
+virNetworkXMLOptionNew;
 virPortGroupFindByName;
 
 
