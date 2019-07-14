@@ -282,7 +282,9 @@ virNetworkDefFree(virNetworkDefPtr def)
  * Returns a new NetworkDef on success, or NULL on failure.
  */
 virNetworkDefPtr
-virNetworkDefCopy(virNetworkDefPtr def, unsigned int flags)
+virNetworkDefCopy(virNetworkDefPtr def,
+                  virNetworkXMLOptionPtr xmlopt,
+                  unsigned int flags)
 {
     char *xml = NULL;
     virNetworkDefPtr newDef = NULL;
@@ -294,9 +296,9 @@ virNetworkDefCopy(virNetworkDefPtr def, unsigned int flags)
     }
 
     /* deep copy with a format/parse cycle */
-    if (!(xml = virNetworkDefFormat(def, flags)))
+    if (!(xml = virNetworkDefFormat(def, xmlopt, flags)))
         goto cleanup;
-    newDef = virNetworkDefParseString(xml);
+    newDef = virNetworkDefParseString(xml, xmlopt);
  cleanup:
     VIR_FREE(xml);
     return newDef;
@@ -1619,7 +1621,8 @@ virNetworkForwardDefParseXML(const char *networkName,
 
 
 virNetworkDefPtr
-virNetworkDefParseXML(xmlXPathContextPtr ctxt)
+virNetworkDefParseXML(xmlXPathContextPtr ctxt,
+                      virNetworkXMLOptionPtr xmlopt ATTRIBUTE_UNUSED)
 {
     virNetworkDefPtr def;
     char *tmp = NULL;
@@ -2059,14 +2062,15 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
 
 static virNetworkDefPtr
 virNetworkDefParse(const char *xmlStr,
-                   const char *filename)
+                   const char *filename,
+                   virNetworkXMLOptionPtr xmlopt)
 {
     xmlDocPtr xml;
     virNetworkDefPtr def = NULL;
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
 
     if ((xml = virXMLParse(filename, xmlStr, _("(network_definition)")))) {
-        def = virNetworkDefParseNode(xml, xmlDocGetRootElement(xml));
+        def = virNetworkDefParseNode(xml, xmlDocGetRootElement(xml), xmlopt);
         xmlFreeDoc(xml);
     }
 
@@ -2076,22 +2080,25 @@ virNetworkDefParse(const char *xmlStr,
 
 
 virNetworkDefPtr
-virNetworkDefParseString(const char *xmlStr)
+virNetworkDefParseString(const char *xmlStr,
+                         virNetworkXMLOptionPtr xmlopt)
 {
-    return virNetworkDefParse(xmlStr, NULL);
+    return virNetworkDefParse(xmlStr, NULL, xmlopt);
 }
 
 
 virNetworkDefPtr
-virNetworkDefParseFile(const char *filename)
+virNetworkDefParseFile(const char *filename,
+                       virNetworkXMLOptionPtr xmlopt)
 {
-    return virNetworkDefParse(NULL, filename);
+    return virNetworkDefParse(NULL, filename, xmlopt);
 }
 
 
 virNetworkDefPtr
 virNetworkDefParseNode(xmlDocPtr xml,
-                       xmlNodePtr root)
+                       xmlNodePtr root,
+                       virNetworkXMLOptionPtr xmlopt)
 {
     xmlXPathContextPtr ctxt = NULL;
     virNetworkDefPtr def = NULL;
@@ -2111,7 +2118,7 @@ virNetworkDefParseNode(xmlDocPtr xml,
     }
 
     ctxt->node = root;
-    def = virNetworkDefParseXML(ctxt);
+    def = virNetworkDefParseXML(ctxt, xmlopt);
 
  cleanup:
     xmlXPathFreeContext(ctxt);
@@ -2405,6 +2412,7 @@ virNetworkForwardNatDefFormat(virBufferPtr buf,
 int
 virNetworkDefFormatBuf(virBufferPtr buf,
                        const virNetworkDef *def,
+                       virNetworkXMLOptionPtr xmlopt ATTRIBUTE_UNUSED,
                        unsigned int flags)
 {
     const unsigned char *uuid;
@@ -2631,11 +2639,12 @@ virNetworkDefFormatBuf(virBufferPtr buf,
 
 char *
 virNetworkDefFormat(const virNetworkDef *def,
+                    virNetworkXMLOptionPtr xmlopt,
                     unsigned int flags)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (virNetworkDefFormatBuf(&buf, def, flags) < 0)
+    if (virNetworkDefFormatBuf(&buf, def, xmlopt, flags) < 0)
         goto error;
 
     if (virBufferCheckError(&buf) < 0)
@@ -2709,12 +2718,13 @@ virNetworkSaveXML(const char *configDir,
 
 int
 virNetworkSaveConfig(const char *configDir,
-                     virNetworkDefPtr def)
+                     virNetworkDefPtr def,
+                     virNetworkXMLOptionPtr xmlopt)
 {
     int ret = -1;
     char *xml;
 
-    if (!(xml = virNetworkDefFormat(def, VIR_NETWORK_XML_INACTIVE)))
+    if (!(xml = virNetworkDefFormat(def, xmlopt, VIR_NETWORK_XML_INACTIVE)))
         goto cleanup;
 
     if (virNetworkSaveXML(configDir, def, xml))

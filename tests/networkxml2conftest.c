@@ -26,7 +26,7 @@ testCompareXMLToConfFiles(const char *inxml, const char *outconf, dnsmasqCapsPtr
     char *pidfile = NULL;
     dnsmasqContext *dctx = NULL;
 
-    if (!(def = virNetworkDefParseFile(inxml)))
+    if (!(def = virNetworkDefParseFile(inxml, NULL)))
         goto fail;
 
     if (!(obj = virNetworkObjNew()))

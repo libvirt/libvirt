@@ -27,14 +27,14 @@ testCompareXMLToXMLFiles(const char *netxml, const char *updatexml,
     if (virTestLoadFile(updatexml, &updateXmlData) < 0)
         goto error;
 
-    if (!(def = virNetworkDefParseFile(netxml)))
+    if (!(def = virNetworkDefParseFile(netxml, NULL)))
         goto fail;
 
     if (virNetworkDefUpdateSection(def, command, section, parentIndex,
                                    updateXmlData, 0) < 0)
         goto fail;
 
-    if (!(actual = virNetworkDefFormat(def, flags)))
+    if (!(actual = virNetworkDefFormat(def, NULL, flags)))
         goto fail;
 
     if (!expectFailure) {

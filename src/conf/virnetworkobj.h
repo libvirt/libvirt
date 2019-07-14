@@ -140,7 +140,8 @@ virNetworkObjUpdateAssignDef(virNetworkObjPtr network,
 
 int
 virNetworkObjSetDefTransient(virNetworkObjPtr network,
-                             bool live);
+                             bool live,
+                             virNetworkXMLOptionPtr xmlopt);
 
 void
 virNetworkObjUnsetDefTransient(virNetworkObjPtr network);
@@ -191,16 +192,19 @@ virNetworkObjPortListExport(virNetworkPtr net,
 
 int
 virNetworkObjSaveStatus(const char *statusDir,
-                        virNetworkObjPtr net) ATTRIBUTE_RETURN_CHECK;
+                        virNetworkObjPtr net,
+                        virNetworkXMLOptionPtr xmlopt) ATTRIBUTE_RETURN_CHECK;
 
 int
 virNetworkObjLoadAllConfigs(virNetworkObjListPtr nets,
                             const char *configDir,
-                            const char *autostartDir);
+                            const char *autostartDir,
+                            virNetworkXMLOptionPtr xmlopt);
 
 int
 virNetworkObjLoadAllState(virNetworkObjListPtr nets,
-                          const char *stateDir);
+                          const char *stateDir,
+                          virNetworkXMLOptionPtr xmlopt);
 
 int
 virNetworkObjDeleteConfig(const char *configDir,
@@ -218,6 +222,7 @@ virNetworkObjUpdate(virNetworkObjPtr obj,
                     unsigned int section, /* virNetworkUpdateSection */
                     int parentIndex,
                     const char *xml,
+                    virNetworkXMLOptionPtr xmlopt,
                     unsigned int flags);  /* virNetworkUpdateFlags */
 
 int

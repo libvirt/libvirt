@@ -4713,7 +4713,7 @@ qemuProcessGetNetworkAddress(const char *netname,
     if (!xml)
         goto cleanup;
 
-    netdef = virNetworkDefParseString(xml);
+    netdef = virNetworkDefParseString(xml, NULL);
     if (!netdef)
         goto cleanup;
 

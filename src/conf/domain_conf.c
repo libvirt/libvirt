@@ -30936,7 +30936,7 @@ virDomainNetResolveActualType(virDomainNetDefPtr iface)
     if (!(xml = virNetworkGetXMLDesc(net, 0)))
         goto cleanup;
 
-    if (!(def = virNetworkDefParseString(xml)))
+    if (!(def = virNetworkDefParseString(xml, NULL)))
         goto cleanup;
 
     switch ((virNetworkForwardType) def->forward.type) {

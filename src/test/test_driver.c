@@ -971,7 +971,7 @@ testParseNetworks(testDriverPtr privconn,
         if (!node)
             return -1;
 
-        def = virNetworkDefParseNode(ctxt->doc, node);
+        def = virNetworkDefParseNode(ctxt->doc, node, NULL);
         if (!def)
             return -1;
 
@@ -4257,7 +4257,7 @@ testNetworkCreateXML(virConnectPtr conn, const char *xml)
     virNetworkPtr net = NULL;
     virObjectEventPtr event = NULL;
 
-    if ((newDef = virNetworkDefParseString(xml)) == NULL)
+    if ((newDef = virNetworkDefParseString(xml, NULL)) == NULL)
         goto cleanup;
 
     if (!(obj = virNetworkObjAssignDef(privconn->networks, newDef,
@@ -4293,7 +4293,7 @@ testNetworkDefineXML(virConnectPtr conn,
     virNetworkPtr net = NULL;
     virObjectEventPtr event = NULL;
 
-    if ((newDef = virNetworkDefParseString(xml)) == NULL)
+    if ((newDef = virNetworkDefParseString(xml, NULL)) == NULL)
         goto cleanup;
 
     if (!(obj = virNetworkObjAssignDef(privconn->networks, newDef, 0)))
@@ -4379,7 +4379,8 @@ testNetworkUpdate(virNetworkPtr net,
     }
 
     /* update the network config in memory/on disk */
-    if (virNetworkObjUpdate(obj, command, section, parentIndex, xml, flags) < 0)
+    if (virNetworkObjUpdate(obj, command, section,
+                            parentIndex, xml, NULL, flags) < 0)
        goto cleanup;
 
     ret = 0;
@@ -4463,7 +4464,7 @@ testNetworkGetXMLDesc(virNetworkPtr net,
     if (!(obj = testNetworkObjFindByName(privconn, net->name)))
         goto cleanup;
 
-    ret = virNetworkDefFormat(virNetworkObjGetDef(obj), flags);
+    ret = virNetworkDefFormat(virNetworkObjGetDef(obj), NULL, flags);
 
  cleanup:
     virNetworkObjEndAPI(&obj);

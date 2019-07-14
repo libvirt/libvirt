@@ -673,7 +673,8 @@ virNetworkObjAssignDef(virNetworkObjListPtr nets,
  */
 int
 virNetworkObjSetDefTransient(virNetworkObjPtr obj,
-                             bool live)
+                             bool live,
+                             virNetworkXMLOptionPtr xmlopt)
 {
     if (!virNetworkObjIsActive(obj) && !live)
         return 0;
@@ -681,7 +682,9 @@ virNetworkObjSetDefTransient(virNetworkObjPtr obj,
     if (!obj->persistent || obj->newDef)
         return 0;
 
-    obj->newDef = virNetworkDefCopy(obj->def, VIR_NETWORK_XML_INACTIVE);
+    obj->newDef = virNetworkDefCopy(obj->def,
+                                    xmlopt,
+                                    VIR_NETWORK_XML_INACTIVE);
     return obj->newDef ? 0 : -1;
 }
 
@@ -759,6 +762,7 @@ virNetworkObjReplacePersistentDef(virNetworkObjPtr obj,
  */
 static int
 virNetworkObjConfigChangeSetup(virNetworkObjPtr obj,
+                               virNetworkXMLOptionPtr xmlopt,
                                unsigned int flags)
 {
     bool isActive;
@@ -782,7 +786,7 @@ virNetworkObjConfigChangeSetup(virNetworkObjPtr obj,
         /* this should already have been done by the driver, but do it
          * anyway just in case.
          */
-        if (isActive && (virNetworkObjSetDefTransient(obj, false) < 0))
+        if (isActive && (virNetworkObjSetDefTransient(obj, false, xmlopt) < 0))
             goto cleanup;
     }
 
@@ -811,6 +815,7 @@ virNetworkObjRemoveInactive(virNetworkObjListPtr nets,
 
 static char *
 virNetworkObjFormat(virNetworkObjPtr obj,
+                    virNetworkXMLOptionPtr xmlopt,
                     unsigned int flags)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -832,7 +837,7 @@ virNetworkObjFormat(virNetworkObjPtr obj,
                               virNetworkTaintTypeToString(i));
     }
 
-    if (virNetworkDefFormatBuf(&buf, obj->def, flags) < 0)
+    if (virNetworkDefFormatBuf(&buf, obj->def, xmlopt, flags) < 0)
         goto error;
 
     virBufferAdjustIndent(&buf, -2);
@@ -851,13 +856,14 @@ virNetworkObjFormat(virNetworkObjPtr obj,
 
 int
 virNetworkObjSaveStatus(const char *statusDir,
-                        virNetworkObjPtr obj)
+                        virNetworkObjPtr obj,
+                        virNetworkXMLOptionPtr xmlopt)
 {
     int ret = -1;
     int flags = 0;
     char *xml;
 
-    if (!(xml = virNetworkObjFormat(obj, flags)))
+    if (!(xml = virNetworkObjFormat(obj, xmlopt, flags)))
         goto cleanup;
 
     if (virNetworkSaveXML(statusDir, obj->def, xml))
@@ -873,7 +879,8 @@ virNetworkObjSaveStatus(const char *statusDir,
 static virNetworkObjPtr
 virNetworkLoadState(virNetworkObjListPtr nets,
                     const char *stateDir,
-                    const char *name)
+                    const char *name,
+                    virNetworkXMLOptionPtr xmlopt)
 {
     char *configFile = NULL;
     virNetworkDefPtr def = NULL;
@@ -902,7 +909,7 @@ virNetworkLoadState(virNetworkObjListPtr nets,
 
     /* parse the definition first */
     ctxt->node = node;
-    if (!(def = virNetworkDefParseXML(ctxt)))
+    if (!(def = virNetworkDefParseXML(ctxt, xmlopt)))
         goto error;
 
     if (STRNEQ(name, def->name)) {
@@ -1000,7 +1007,8 @@ static virNetworkObjPtr
 virNetworkLoadConfig(virNetworkObjListPtr nets,
                      const char *configDir,
                      const char *autostartDir,
-                     const char *name)
+                     const char *name,
+                     virNetworkXMLOptionPtr xmlopt)
 {
     char *configFile = NULL, *autostartLink = NULL;
     virNetworkDefPtr def = NULL;
@@ -1015,7 +1023,7 @@ virNetworkLoadConfig(virNetworkObjListPtr nets,
     if ((autostart = virFileLinkPointsTo(autostartLink, configFile)) < 0)
         goto error;
 
-    if (!(def = virNetworkDefParseFile(configFile)))
+    if (!(def = virNetworkDefParseFile(configFile, xmlopt)))
         goto error;
 
     if (STRNEQ(name, def->name)) {
@@ -1033,7 +1041,7 @@ virNetworkLoadConfig(virNetworkObjListPtr nets,
     case VIR_NETWORK_FORWARD_OPEN:
         if (!def->mac_specified) {
             virNetworkSetBridgeMacAddr(def);
-            virNetworkSaveConfig(configDir, def);
+            virNetworkSaveConfig(configDir, def, xmlopt);
         }
         break;
 
@@ -1073,7 +1081,8 @@ virNetworkLoadConfig(virNetworkObjListPtr nets,
 
 int
 virNetworkObjLoadAllState(virNetworkObjListPtr nets,
-                          const char *stateDir)
+                          const char *stateDir,
+                          virNetworkXMLOptionPtr xmlopt)
 {
     DIR *dir;
     struct dirent *entry;
@@ -1089,7 +1098,7 @@ virNetworkObjLoadAllState(virNetworkObjListPtr nets,
         if (!virStringStripSuffix(entry->d_name, ".xml"))
             continue;
 
-        obj = virNetworkLoadState(nets, stateDir, entry->d_name);
+        obj = virNetworkLoadState(nets, stateDir, entry->d_name, xmlopt);
 
         if (obj &&
             virNetworkObjLoadAllPorts(obj, stateDir) < 0) {
@@ -1108,7 +1117,8 @@ virNetworkObjLoadAllState(virNetworkObjListPtr nets,
 int
 virNetworkObjLoadAllConfigs(virNetworkObjListPtr nets,
                             const char *configDir,
-                            const char *autostartDir)
+                            const char *autostartDir,
+                            virNetworkXMLOptionPtr xmlopt)
 {
     DIR *dir;
     struct dirent *entry;
@@ -1129,7 +1139,8 @@ virNetworkObjLoadAllConfigs(virNetworkObjListPtr nets,
         obj = virNetworkLoadConfig(nets,
                                    configDir,
                                    autostartDir,
-                                   entry->d_name);
+                                   entry->d_name,
+                                   xmlopt);
         virNetworkObjEndAPI(&obj);
     }
 
@@ -1239,20 +1250,21 @@ virNetworkObjUpdate(virNetworkObjPtr obj,
                     unsigned int section, /* virNetworkUpdateSection */
                     int parentIndex,
                     const char *xml,
+                    virNetworkXMLOptionPtr xmlopt,
                     unsigned int flags)  /* virNetworkUpdateFlags */
 {
     int ret = -1;
     virNetworkDefPtr livedef = NULL, configdef = NULL;
 
     /* normalize config data, and check for common invalid requests. */
-    if (virNetworkObjConfigChangeSetup(obj, flags) < 0)
+    if (virNetworkObjConfigChangeSetup(obj, xmlopt, flags) < 0)
        goto cleanup;
 
     if (flags & VIR_NETWORK_UPDATE_AFFECT_LIVE) {
         virNetworkDefPtr checkdef;
 
         /* work on a copy of the def */
-        if (!(livedef = virNetworkDefCopy(obj->def, 0)))
+        if (!(livedef = virNetworkDefCopy(obj->def, xmlopt, 0)))
             goto cleanup;
         if (virNetworkDefUpdateSection(livedef, command, section,
                                        parentIndex, xml, flags) < 0) {
@@ -1261,7 +1273,7 @@ virNetworkObjUpdate(virNetworkObjPtr obj,
         /* run a final format/parse cycle to make sure we didn't
          * add anything illegal to the def
          */
-        if (!(checkdef = virNetworkDefCopy(livedef, 0)))
+        if (!(checkdef = virNetworkDefCopy(livedef, xmlopt, 0)))
             goto cleanup;
         virNetworkDefFree(checkdef);
     }
@@ -1271,6 +1283,7 @@ virNetworkObjUpdate(virNetworkObjPtr obj,
 
         /* work on a copy of the def */
         if (!(configdef = virNetworkDefCopy(virNetworkObjGetPersistentDef(obj),
+                                            xmlopt,
                                             VIR_NETWORK_XML_INACTIVE))) {
             goto cleanup;
         }
@@ -1279,6 +1292,7 @@ virNetworkObjUpdate(virNetworkObjPtr obj,
             goto cleanup;
         }
         if (!(checkdef = virNetworkDefCopy(configdef,
+                                           xmlopt,
                                            VIR_NETWORK_XML_INACTIVE))) {
             goto cleanup;
         }

@@ -375,7 +375,7 @@ vboxNetworkDefineCreateXML(virConnectPtr conn, const char *xml, bool start)
     PRUnichar *networkNameUtf16 = NULL;
     char *networkNameUtf8 = NULL;
     IHostNetworkInterface *networkInterface = NULL;
-    virNetworkDefPtr def = virNetworkDefParseString(xml);
+    virNetworkDefPtr def = virNetworkDefParseString(xml, NULL);
     virNetworkIPDefPtr ipdef = NULL;
     unsigned char uuid[VIR_UUID_BUFLEN];
     vboxIID vboxnetiid;
@@ -911,7 +911,7 @@ static char *vboxNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
     }
 
     DEBUGIID("Network UUID", &vboxnet0IID);
-    ret = virNetworkDefFormat(def, 0);
+    ret = virNetworkDefFormat(def, NULL, 0);
 
  cleanup:
     vboxIIDUnalloc(&vboxnet0IID);

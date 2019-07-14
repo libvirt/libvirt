@@ -301,28 +301,36 @@ virNetworkXMLOptionPtr
 virNetworkXMLOptionNew(void);
 
 virNetworkDefPtr
-virNetworkDefCopy(virNetworkDefPtr def, unsigned int flags);
+virNetworkDefCopy(virNetworkDefPtr def,
+                  virNetworkXMLOptionPtr xmlopt,
+                  unsigned int flags);
 
 virNetworkDefPtr
-virNetworkDefParseXML(xmlXPathContextPtr ctxt);
+virNetworkDefParseXML(xmlXPathContextPtr ctxt,
+                      virNetworkXMLOptionPtr xmlopt);
 
 virNetworkDefPtr
-virNetworkDefParseString(const char *xmlStr);
+virNetworkDefParseString(const char *xmlStr,
+                         virNetworkXMLOptionPtr xmlopt);
 
 virNetworkDefPtr
-virNetworkDefParseFile(const char *filename);
+virNetworkDefParseFile(const char *filename,
+                       virNetworkXMLOptionPtr xmlopt);
 
 virNetworkDefPtr
 virNetworkDefParseNode(xmlDocPtr xml,
-                       xmlNodePtr root);
+                       xmlNodePtr root,
+                       virNetworkXMLOptionPtr xmlopt);
 
 char *
 virNetworkDefFormat(const virNetworkDef *def,
+                    virNetworkXMLOptionPtr xmlopt,
                     unsigned int flags);
 
 int
 virNetworkDefFormatBuf(virBufferPtr buf,
                        const virNetworkDef *def,
+                       virNetworkXMLOptionPtr xmlopt,
                        unsigned int flags);
 
 const char *
@@ -357,7 +365,8 @@ virNetworkSaveXML(const char *configDir,
 
 int
 virNetworkSaveConfig(const char *configDir,
-                     virNetworkDefPtr def);
+                     virNetworkDefPtr def,
+                     virNetworkXMLOptionPtr xmlopt);
 
 char *
 virNetworkConfigFile(const char *dir,

@@ -30,14 +30,14 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml,
     testCompareNetXML2XMLResult result = TEST_COMPARE_NET_XML2XML_RESULT_SUCCESS;
     virNetworkDefPtr dev = NULL;
 
-    if (!(dev = virNetworkDefParseFile(inxml))) {
+    if (!(dev = virNetworkDefParseFile(inxml, NULL))) {
         result = TEST_COMPARE_NET_XML2XML_RESULT_FAIL_PARSE;
         goto cleanup;
     }
     if (expectResult == TEST_COMPARE_NET_XML2XML_RESULT_FAIL_PARSE)
         goto cleanup;
 
-    if (!(actual = virNetworkDefFormat(dev, flags))) {
+    if (!(actual = virNetworkDefFormat(dev, NULL, flags))) {
         result = TEST_COMPARE_NET_XML2XML_RESULT_FAIL_FORMAT;
         goto cleanup;
     }

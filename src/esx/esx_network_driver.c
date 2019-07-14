@@ -298,7 +298,7 @@ esxNetworkDefineXML(virConnectPtr conn, const char *xml)
         return NULL;
 
     /* Parse network XML */
-    def = virNetworkDefParseString(xml);
+    def = virNetworkDefParseString(xml, NULL);
 
     if (!def)
         return NULL;
@@ -806,7 +806,7 @@ esxNetworkGetXMLDesc(virNetworkPtr network_, unsigned int flags)
         }
     }
 
-    xml = virNetworkDefFormat(def, flags);
+    xml = virNetworkDefFormat(def, NULL, flags);
 
  cleanup:
     esxVI_HostVirtualSwitch_Free(&hostVirtualSwitch);
