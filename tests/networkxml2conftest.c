@@ -25,8 +25,12 @@ testCompareXMLToConfFiles(const char *inxml, const char *outconf, dnsmasqCapsPtr
     virCommandPtr cmd = NULL;
     char *pidfile = NULL;
     dnsmasqContext *dctx = NULL;
+    virNetworkXMLOptionPtr xmlopt = NULL;
 
-    if (!(def = virNetworkDefParseFile(inxml, NULL)))
+    if (!(xmlopt = networkDnsmasqCreateXMLConf()))
+        goto fail;
+
+    if (!(def = virNetworkDefParseFile(inxml, xmlopt)))
         goto fail;
 
     if (!(obj = virNetworkObjNew()))
@@ -63,6 +67,7 @@ testCompareXMLToConfFiles(const char *inxml, const char *outconf, dnsmasqCapsPtr
     VIR_FREE(actual);
     VIR_FREE(pidfile);
     virCommandFree(cmd);
+    virObjectUnref(xmlopt);
     virNetworkObjEndAPI(&obj);
     dnsmasqContextFree(dctx);
     return ret;
@@ -141,6 +146,7 @@ mymain(void)
     DO_TEST("dhcp6-nat-network", dhcpv6);
     DO_TEST("dhcp6host-routed-network", dhcpv6);
     DO_TEST("ptr-domains-auto", dhcpv6);
+    DO_TEST("dnsmasq-options", dhcpv6);
 
     virObjectUnref(dhcpv6);
     virObjectUnref(full);

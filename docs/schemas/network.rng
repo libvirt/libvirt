@@ -405,6 +405,17 @@
         <zeroOrMore>
           <ref name="route"/>
         </zeroOrMore>
+
+      <!-- <dnsmasq:options> -->
+      <optional>
+        <element name="options" ns="http://libvirt.org/schemas/network/dnsmasq/1.0">
+          <zeroOrMore>
+            <element name="option">
+              <attribute name='value'/>
+            </element>
+          </zeroOrMore>
+        </element>
+      </optional>
       </interleave>
     </element>
   </define>

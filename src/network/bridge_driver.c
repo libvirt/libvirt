@@ -69,6 +69,8 @@
 #include "virjson.h"
 #include "virnetworkportdef.h"
 
+#include <libxml/xpathInternals.h>
+
 #define VIR_FROM_THIS VIR_FROM_NETWORK
 #define MAX_BRIDGE_ID 256
 
@@ -82,6 +84,8 @@
 #define SYSCTL_PATH "/proc/sys"
 
 VIR_LOG_INIT("network.bridge_driver");
+
+#define DNSMASQ_NAMESPACE_HREF "http://libvirt.org/schemas/network/dnsmasq/1.0"
 
 static virNetworkDriverStatePtr network_driver;
 
@@ -136,10 +140,126 @@ networkDnsmasqCapsRefresh(virNetworkDriverStatePtr driver)
     return 0;
 }
 
-static virNetworkXMLOptionPtr
+
+static void
+networkDnsmasqDefNamespaceFree(void *nsdata)
+{
+    networkDnsmasqXmlNsDefPtr def = nsdata;
+    if (!def)
+        return;
+
+    virStringListFreeCount(def->options, def->noptions);
+
+    VIR_FREE(def);
+}
+
+
+static int
+networkDnsmasqDefNamespaceParseOptions(networkDnsmasqXmlNsDefPtr nsdef,
+                                       xmlXPathContextPtr ctxt)
+{
+    VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
+    ssize_t nnodes;
+    size_t i;
+
+    if ((nnodes = virXPathNodeSet("./dnsmasq:options/dnsmasq:option",
+                                  ctxt, &nodes)) < 0)
+        return -1;
+
+    if (nnodes == 0)
+        return 0;
+
+    if (VIR_ALLOC_N(nsdef->options, nnodes) < 0)
+        return -1;
+
+    for (i = 0; i < nnodes; i++) {
+        if (!(nsdef->options[nsdef->noptions++] = virXMLPropString(nodes[i], "value"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("No dnsmasq options value specified"));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
+networkDnsmasqDefNamespaceParse(xmlXPathContextPtr ctxt,
+                                void **data)
+{
+    networkDnsmasqXmlNsDefPtr nsdata = NULL;
+    int ret = -1;
+
+    if (xmlXPathRegisterNs(ctxt, BAD_CAST "dnsmasq",
+                           BAD_CAST DNSMASQ_NAMESPACE_HREF) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to register xml namespace '%s'"),
+                       DNSMASQ_NAMESPACE_HREF);
+        return -1;
+    }
+
+    if (VIR_ALLOC(nsdata) < 0)
+        return -1;
+
+    if (networkDnsmasqDefNamespaceParseOptions(nsdata, ctxt))
+        goto cleanup;
+
+    if (nsdata->noptions > 0)
+        VIR_STEAL_PTR(*data, nsdata);
+
+    ret = 0;
+
+ cleanup:
+    networkDnsmasqDefNamespaceFree(nsdata);
+    return ret;
+}
+
+
+static int
+networkDnsmasqDefNamespaceFormatXML(virBufferPtr buf,
+                                    void *nsdata)
+{
+    networkDnsmasqXmlNsDefPtr def = nsdata;
+    size_t i;
+
+    if (!def->noptions)
+        return 0;
+
+    virBufferAddLit(buf, "<dnsmasq:options>\n");
+    virBufferAdjustIndent(buf, 2);
+
+    for (i = 0; i < def->noptions; i++) {
+        virBufferEscapeString(buf, "<dnsmasq:option value='%s'/>\n",
+                              def->options[i]);
+    }
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</dnsmasq:options>\n");
+
+    return 0;
+}
+
+
+static const char *
+networkDnsmasqDefNamespaceHref(void)
+{
+    return "xmlns:dnsmasq='" DNSMASQ_NAMESPACE_HREF "'";
+}
+
+
+virNetworkXMLNamespace networkDnsmasqXMLNamespace = {
+    .parse = networkDnsmasqDefNamespaceParse,
+    .free = networkDnsmasqDefNamespaceFree,
+    .format = networkDnsmasqDefNamespaceFormatXML,
+    .href = networkDnsmasqDefNamespaceHref,
+};
+
+
+virNetworkXMLOptionPtr
 networkDnsmasqCreateXMLConf(void)
 {
-    return virNetworkXMLOptionNew(NULL);
+    return virNetworkXMLOptionNew(&networkDnsmasqXMLNamespace);
 }
 
 
@@ -1478,6 +1598,12 @@ networkDnsmasqConfContents(virNetworkObjPtr obj,
                 }
             }
         }
+    }
+
+    if (def->namespaceData) {
+        networkDnsmasqXmlNsDefPtr dnsmasqxmlns = def->namespaceData;
+        for (i = 0; i < dnsmasqxmlns->noptions; i++)
+            virBufferAsprintf(&configbuf, "%s\n", dnsmasqxmlns->options[i]);
     }
 
     if (!(*configstr = virBufferContentAndReset(&configbuf)))

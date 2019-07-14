@@ -27,6 +27,18 @@
 #include "virdnsmasq.h"
 #include "virnetworkobj.h"
 
+extern virNetworkXMLNamespace networkDnsmasqXMLNamespace;
+
+typedef struct _networkDnsmasqXmlNsDef networkDnsmasqXmlNsDef;
+typedef networkDnsmasqXmlNsDef *networkDnsmasqXmlNsDefPtr;
+struct _networkDnsmasqXmlNsDef {
+    size_t noptions;
+    char **options;
+};
+
+virNetworkXMLOptionPtr
+networkDnsmasqCreateXMLConf(void);
+
 int
 networkRegister(void);
 

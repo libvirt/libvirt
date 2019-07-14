@@ -1,0 +1,15 @@
+<network xmlns:dnsmasq="http://libvirt.org/schemas/network/dnsmasq/1.0">
+  <name>default</name>
+  <uuid>81ff0d90-c91e-6742-64da-4a736edb9a9b</uuid>
+  <bridge name="virbr0"/>
+  <forward mode="nat" dev="eth1"/>
+  <ip address="192.168.122.1" netmask="255.255.255.0">
+    <dhcp>
+      <range start="192.168.122.2" end="192.168.122.254"/>
+    </dhcp>
+  </ip>
+  <dnsmasq:options>
+    <dnsmasq:option value="foo=bar"/>
+    <dnsmasq:option value="cname=*.cloudapps.example.com,master.example.com"/>
+  </dnsmasq:options>
+</network>

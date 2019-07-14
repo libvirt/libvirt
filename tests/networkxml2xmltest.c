@@ -10,6 +10,7 @@
 #include "network_conf.h"
 #include "testutilsqemu.h"
 #include "virstring.h"
+#include "network/bridge_driver.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -29,15 +30,19 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml,
     int ret;
     testCompareNetXML2XMLResult result = TEST_COMPARE_NET_XML2XML_RESULT_SUCCESS;
     virNetworkDefPtr dev = NULL;
+    virNetworkXMLOptionPtr xmlopt = NULL;
 
-    if (!(dev = virNetworkDefParseFile(inxml, NULL))) {
+    if (!(xmlopt = networkDnsmasqCreateXMLConf()))
+        goto cleanup;
+
+    if (!(dev = virNetworkDefParseFile(inxml, xmlopt))) {
         result = TEST_COMPARE_NET_XML2XML_RESULT_FAIL_PARSE;
         goto cleanup;
     }
     if (expectResult == TEST_COMPARE_NET_XML2XML_RESULT_FAIL_PARSE)
         goto cleanup;
 
-    if (!(actual = virNetworkDefFormat(dev, NULL, flags))) {
+    if (!(actual = virNetworkDefFormat(dev, xmlopt, flags))) {
         result = TEST_COMPARE_NET_XML2XML_RESULT_FAIL_FORMAT;
         goto cleanup;
     }
@@ -67,6 +72,7 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml,
 
     VIR_FREE(actual);
     virNetworkDefFree(dev);
+    virObjectUnref(xmlopt);
     return ret;
 }
 
@@ -158,6 +164,7 @@ mymain(void)
     DO_TEST_PARSE_ERROR("passthrough-duplicate");
     DO_TEST("metadata");
     DO_TEST("set-mtu");
+    DO_TEST("dnsmasq-options");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
