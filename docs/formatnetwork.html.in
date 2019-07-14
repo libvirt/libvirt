@@ -1096,6 +1096,28 @@
       </dd>
     </dl>
 
+    <h3><a id="elementsNamespaces">Network namespaces</a></h3>
+
+    <p>
+      A special XML namespace is available for passing options directly to the
+      underlying dnsmasq configuration file. Usage of XML namespaces comes with no
+      support guarantees, so use at your own risk.
+    </p>
+
+    <p>
+      This example XML will pass the option strings <code>foo=bar</code> and
+      <code>cname=*.foo.example.com,master.example.com</code> directly to the
+      underlying dnsmasq instance.
+      <pre>
+&lt;network xmlns:dnsmasq='http://libvirt.org/schemas/network/dnsmasq/1.0'&gt;
+  ...
+  &lt;dnsmasq:options&gt;
+    &lt;dnsmasq:option value="foo=bar"/&gt;
+    &lt;dnsmasq:option value="cname=*.foo.example.com,master.example.com"/&gt;
+  &lt;/dnsmasq:options&gt;
+&lt;/network&gt;</pre>
+    </p>
+
     <h2><a id="examples">Example configuration</a></h2>
 
     <h3><a id="examplesNAT">NAT based network</a></h3>
