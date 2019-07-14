@@ -22,12 +22,12 @@
 
 #include "virsh.h"
 
-struct virshNodedevEventCallback {
+struct virshNodeDeviceEventCallback {
     const char *name;
     virConnectNodeDeviceEventGenericCallback cb;
 };
-typedef struct virshNodedevEventCallback virshNodedevEventCallback;
+typedef struct virshNodeDeviceEventCallback virshNodeDeviceEventCallback;
 
-extern virshNodedevEventCallback virshNodedevEventCallbacks[];
+extern virshNodeDeviceEventCallback virshNodeDeviceEventCallbacks[];
 
 extern const vshCmdDef nodedevCmds[];

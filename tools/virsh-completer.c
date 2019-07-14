@@ -1004,9 +1004,9 @@ virshDomainInterfaceStateCompleter(vshControl *ctl,
 
 
 char **
-virshNodedevEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
-                               const vshCmd *cmd ATTRIBUTE_UNUSED,
-                               unsigned int flags)
+virshNodeDeviceEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
+                                  const vshCmd *cmd ATTRIBUTE_UNUSED,
+                                  unsigned int flags)
 {
     size_t i = 0;
     char **ret = NULL;
@@ -1018,7 +1018,7 @@ virshNodedevEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
         return NULL;
 
     for (i = 0; i < VIR_NODE_DEVICE_EVENT_ID_LAST; i++) {
-        if (VIR_STRDUP(tmp[i], virshNodedevEventCallbacks[i].name) < 0)
+        if (VIR_STRDUP(tmp[i], virshNodeDeviceEventCallbacks[i].name) < 0)
             return NULL;
     }
 
@@ -1028,9 +1028,9 @@ virshNodedevEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
 
 
 char **
-virshNodedevCapabilityNameCompleter(vshControl *ctl,
-                                    const vshCmd *cmd,
-                                    unsigned int flags)
+virshNodeDeviceCapabilityNameCompleter(vshControl *ctl,
+                                       const vshCmd *cmd,
+                                       unsigned int flags)
 {
     VIR_AUTOSTRINGLIST tmp = NULL;
     const char *cap_str = NULL;

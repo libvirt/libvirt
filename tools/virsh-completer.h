@@ -106,13 +106,13 @@ char ** virshDomainInterfaceStateCompleter(vshControl *ctl,
                                            const vshCmd *cmd,
                                            unsigned int flags);
 
-char ** virshNodedevEventNameCompleter(vshControl *ctl,
-                                       const vshCmd *cmd,
-                                       unsigned int flags);
+char ** virshNodeDeviceEventNameCompleter(vshControl *ctl,
+                                          const vshCmd *cmd,
+                                          unsigned int flags);
 
-char ** virshNodedevCapabilityNameCompleter(vshControl *ctl,
-                                            const vshCmd *cmd,
-                                            unsigned int flags);
+char ** virshNodeDeviceCapabilityNameCompleter(vshControl *ctl,
+                                               const vshCmd *cmd,
+                                               unsigned int flags);
 
 char ** virshDomainDeviceAliasCompleter(vshControl *ctl,
                                         const vshCmd *cmd,
