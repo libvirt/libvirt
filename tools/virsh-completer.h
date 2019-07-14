@@ -23,6 +23,7 @@
 #include "vsh.h"
 
 #include "virsh-completer-domain.h"
+#include "virsh-completer-host.h"
 #include "virsh-completer-interface.h"
 #include "virsh-completer-network.h"
 #include "virsh-completer-nodedev.h"
@@ -38,11 +39,3 @@ char ** virshCommaStringListComplete(const char *input,
 char ** virshCheckpointNameCompleter(vshControl *ctl,
                                      const vshCmd *cmd,
                                      unsigned int flags);
-
-char ** virshAllocpagesPagesizeCompleter(vshControl *ctl,
-                                         const vshCmd *cmd,
-                                         unsigned int flags);
-
-char ** virshCellnoCompleter(vshControl *ctl,
-                             const vshCmd *cmd,
-                             unsigned int flags);
