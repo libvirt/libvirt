@@ -41,9 +41,24 @@
 #include "virmacmap.h"
 #include "virenum.h"
 
+typedef int (*virNetworkDefNamespaceParse)(xmlXPathContextPtr, void **);
+typedef void (*virNetworkDefNamespaceFree)(void *);
+typedef int (*virNetworkDefNamespaceXMLFormat)(virBufferPtr, void *);
+typedef const char *(*virNetworkDefNamespaceHref)(void);
+
+typedef struct _virNetworkXMLNamespace virNetworkXMLNamespace;
+typedef virNetworkXMLNamespace *virNetworkXMLNamespacePtr;
+struct _virNetworkXMLNamespace {
+    virNetworkDefNamespaceParse parse;
+    virNetworkDefNamespaceFree free;
+    virNetworkDefNamespaceXMLFormat format;
+    virNetworkDefNamespaceHref href;
+};
 
 struct _virNetworkXMLOption {
     virObject parent;
+
+    virNetworkXMLNamespace ns;
 };
 typedef struct _virNetworkXMLOption virNetworkXMLOption;
 typedef virNetworkXMLOption *virNetworkXMLOptionPtr;
@@ -277,6 +292,10 @@ struct _virNetworkDef {
 
     /* Application-specific custom metadata */
     xmlNodePtr metadata;
+
+    /* Network specific XML namespace data */
+    void *namespaceData;
+    virNetworkXMLNamespace ns;
 };
 
 typedef enum {
@@ -298,7 +317,7 @@ enum {
 };
 
 virNetworkXMLOptionPtr
-virNetworkXMLOptionNew(void);
+virNetworkXMLOptionNew(virNetworkXMLNamespacePtr xmlns);
 
 virNetworkDefPtr
 virNetworkDefCopy(virNetworkDefPtr def,

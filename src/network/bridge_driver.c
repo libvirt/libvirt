@@ -139,7 +139,7 @@ networkDnsmasqCapsRefresh(virNetworkDriverStatePtr driver)
 static virNetworkXMLOptionPtr
 networkDnsmasqCreateXMLConf(void)
 {
-    return virNetworkXMLOptionNew();
+    return virNetworkXMLOptionNew(NULL);
 }
 
 

@@ -93,7 +93,7 @@ virNetworkXMLOnceInit(void)
 VIR_ONCE_GLOBAL_INIT(virNetworkXML);
 
 virNetworkXMLOptionPtr
-virNetworkXMLOptionNew(void)
+virNetworkXMLOptionNew(virNetworkXMLNamespacePtr xmlns)
 {
     virNetworkXMLOptionPtr xmlopt;
 
@@ -102,6 +102,9 @@ virNetworkXMLOptionNew(void)
 
     if (!(xmlopt = virObjectNew(virNetworkXMLOptionClass)))
         return NULL;
+
+    if (xmlns)
+        xmlopt->ns = *xmlns;
 
     return xmlopt;
 }
@@ -268,6 +271,8 @@ virNetworkDefFree(virNetworkDefPtr def)
 
     xmlFreeNode(def->metadata);
 
+    if (def->namespaceData && def->ns.free)
+        (def->ns.free)(def->namespaceData);
     VIR_FREE(def);
 }
 
@@ -1622,7 +1627,7 @@ virNetworkForwardDefParseXML(const char *networkName,
 
 virNetworkDefPtr
 virNetworkDefParseXML(xmlXPathContextPtr ctxt,
-                      virNetworkXMLOptionPtr xmlopt ATTRIBUTE_UNUSED)
+                      virNetworkXMLOptionPtr xmlopt)
 {
     virNetworkDefPtr def;
     char *tmp = NULL;
@@ -2043,6 +2048,12 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt,
         virXMLNodeSanitizeNamespaces(def->metadata);
     }
 
+    if (xmlopt)
+        def->ns = xmlopt->ns;
+    if (def->ns.parse &&
+        (def->ns.parse)(ctxt, &def->namespaceData) < 0)
+        goto error;
+
     ctxt->node = save;
     return def;
 
@@ -2422,6 +2433,8 @@ virNetworkDefFormatBuf(virBufferPtr buf,
     bool hasbridge = false;
 
     virBufferAddLit(buf, "<network");
+    if (def->namespaceData && def->ns.href)
+        virBufferAsprintf(buf, " %s", (def->ns.href)());
     if (!(flags & VIR_NETWORK_XML_INACTIVE) && (def->connections > 0))
         virBufferAsprintf(buf, " connections='%d'", def->connections);
     if (def->ipv6nogw)
@@ -2626,6 +2639,11 @@ virNetworkDefFormatBuf(virBufferPtr buf,
     for (i = 0; i < def->nPortGroups; i++)
         if (virPortGroupDefFormat(buf, &def->portGroups[i]) < 0)
             goto error;
+
+    if (def->namespaceData && def->ns.format) {
+        if ((def->ns.format)(buf, def->namespaceData) < 0)
+            return -1;
+    }
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</network>\n");
