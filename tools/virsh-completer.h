@@ -20,8 +20,6 @@
 
 #pragma once
 
-#include "vsh.h"
-
 #include "virsh-completer-domain.h"
 #include "virsh-completer-host.h"
 #include "virsh-completer-interface.h"

@@ -21,21 +21,8 @@
 #include <config.h>
 
 #include "virsh-completer.h"
-#include "virsh-domain.h"
-#include "virsh.h"
-#include "virsh-pool.h"
-#include "virsh-nodedev.h"
-#include "virsh-util.h"
-#include "virsh-secret.h"
-#include "virsh-network.h"
-#include "internal.h"
-#include "virutil.h"
 #include "viralloc.h"
-#include "virmacaddr.h"
 #include "virstring.h"
-#include "virxml.h"
-#include "conf/node_device_conf.h"
-
 
 /**
  * A completer callback is a function that accepts three arguments:
