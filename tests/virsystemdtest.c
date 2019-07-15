@@ -548,22 +548,21 @@ testActivation(bool useNames)
     size_t nsockIP;
     int ret = -1;
     size_t i;
-    const char *names2 = "demo-unix.socket:demo-ip.socket";
-    const char *names3 = "demo-unix.socket:demo-ip.socket:demo-ip.socket";
     char nfdstr[INT_BUFSIZE_BOUND(size_t)];
     char pidstr[INT_BUFSIZE_BOUND(pid_t)];
     virSystemdActivationMap map[2];
     int *fds = NULL;
     size_t nfds = 0;
     VIR_AUTOPTR(virSystemdActivation) act = NULL;
+    VIR_AUTOCLEAN(virBuffer) names = VIR_BUFFER_INITIALIZER;
+
+    virBufferAddLit(&names, "demo-unix.socket");
 
     if (testActivationCreateFDs(&sockUNIX, &sockIP, &nsockIP) < 0)
         return -1;
 
-    if (nsockIP != 1 && nsockIP != 2) {
-        fprintf(stderr, "Got %zu IP sockets but expected only 1 or 2\n", nsockIP);
-        goto cleanup;
-    }
+    for (i = 0; i < nsockIP; i++)
+        virBufferAddLit(&names, ":demo-ip.socket");
 
     snprintf(nfdstr, sizeof(nfdstr), "%zu", 1 + nsockIP);
     snprintf(pidstr, sizeof(pidstr), "%lld", (long long)getpid());
@@ -571,8 +570,11 @@ testActivation(bool useNames)
     setenv("LISTEN_FDS", nfdstr, 1);
     setenv("LISTEN_PID", pidstr, 1);
 
+    if (virBufferError(&names))
+        goto cleanup;
+
     if (useNames)
-        setenv("LISTEN_FDNAMES", nsockIP == 1 ? names2 : names3, 1);
+        setenv("LISTEN_FDNAMES", virBufferCurrentContent(&names), 1);
     else
         unsetenv("LISTEN_FDNAMES");
 
