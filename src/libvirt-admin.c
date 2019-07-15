@@ -36,10 +36,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_ADMIN
 
-#define LIBVIRTD_ADMIN_SOCK_NAME "libvirt-admin-sock"
-#define VIRTLOGD_ADMIN_SOCK_NAME "virtlogd-admin-sock"
-#define VIRTLOCKD_ADMIN_SOCK_NAME "virtlockd-admin-sock"
-
 
 VIR_LOG_INIT("libvirt-admin");
 
@@ -127,18 +123,29 @@ getSocketPath(virURIPtr uri)
     }
 
     if (!sock_path) {
-        const char *sockbase = NULL;
-        if (STREQ_NULLABLE(uri->scheme, "libvirtd")) {
-            sockbase = LIBVIRTD_ADMIN_SOCK_NAME;
-        } else if (STREQ_NULLABLE(uri->scheme, "virtlogd")) {
-            sockbase = VIRTLOGD_ADMIN_SOCK_NAME;
-        } else if (STREQ_NULLABLE(uri->scheme, "virtlockd")) {
-            sockbase = VIRTLOCKD_ADMIN_SOCK_NAME;
-        } else {
+        VIR_AUTOFREE(char *) sockbase = NULL;
+        bool legacy = false;
+
+        if (!uri->scheme) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           "%s", _("No URI scheme specified"));
+            goto error;
+        }
+        if (STREQ(uri->scheme, "libvirtd")) {
+            legacy = true;
+        } else if (!STRPREFIX(uri->scheme, "virt")) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unsupported URI scheme '%s'"),
-                           NULLSTR(uri->scheme));
+                           uri->scheme);
             goto error;
+        }
+
+        if (legacy) {
+            if (VIR_STRDUP(sockbase, "libvirt-admin-sock") < 0)
+                goto error;
+        } else {
+            if (virAsprintf(&sockbase, "%s-admin-sock", uri->scheme) < 0)
+                goto error;
         }
 
         if (STREQ_NULLABLE(uri->path, "/system")) {
