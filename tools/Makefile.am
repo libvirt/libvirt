@@ -535,6 +535,10 @@ nss_libnss_libvirt_la_LDFLAGS = \
 nss_libnss_libvirt_la_LIBADD = \
 	nss/libnss_libvirt_impl.la
 
+nss_libnss_libvirt_la_DEPENDENCIES = \
+	$(nss_libnss_libvirt_la_LIBADD) \
+	$(LIBVIRT_NSS_SYMBOL_FILE)
+
 noinst_LTLIBRARIES += nss/libnss_libvirt_guest_impl.la
 nss_libnss_libvirt_guest_impl_la_SOURCES = \
 	$(LIBVIRT_NSS_SOURCES) \
@@ -566,6 +570,10 @@ nss_libnss_libvirt_guest_la_LDFLAGS = \
 
 nss_libnss_libvirt_guest_la_LIBADD = \
 	nss/libnss_libvirt_guest_impl.la
+
+nss_libnss_libvirt_guest_la_DEPENDENCIES = \
+	$(nss_libnss_libvirt_guest_la_LIBADD) \
+	$(LIBVIRT_GUEST_NSS_SYMBOL_FILE)
 
 lib_LTLIBRARIES = \
 	nss/libnss_libvirt.la \
