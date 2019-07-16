@@ -2802,6 +2802,33 @@ qemuBuildFSDevStr(const virDomainDef *def,
 
 
 static int
+qemuBuildFSDevCommandLine(virCommandPtr cmd,
+                          virDomainFSDefPtr fs,
+                          const virDomainDef *def,
+                          virQEMUCapsPtr qemuCaps)
+{
+    char *optstr;
+
+    virCommandAddArg(cmd, "-fsdev");
+    if (!(optstr = qemuBuildFSStr(fs)))
+        return -1;
+    virCommandAddArg(cmd, optstr);
+    VIR_FREE(optstr);
+
+    if (qemuCommandAddExtDevice(cmd, &fs->info) < 0)
+        return -1;
+
+    virCommandAddArg(cmd, "-device");
+    if (!(optstr = qemuBuildFSDevStr(def, fs, qemuCaps)))
+        return -1;
+    virCommandAddArg(cmd, optstr);
+    VIR_FREE(optstr);
+
+    return 0;
+}
+
+
+static int
 qemuBuildFilesystemCommandLine(virCommandPtr cmd,
                                const virDomainDef *def,
                                virQEMUCapsPtr qemuCaps)
@@ -2809,23 +2836,8 @@ qemuBuildFilesystemCommandLine(virCommandPtr cmd,
     size_t i;
 
     for (i = 0; i < def->nfss; i++) {
-        char *optstr;
-        virDomainFSDefPtr fs = def->fss[i];
-
-        virCommandAddArg(cmd, "-fsdev");
-        if (!(optstr = qemuBuildFSStr(fs)))
+        if (qemuBuildFSDevCommandLine(cmd, def->fss[i], def, qemuCaps) < 0)
             return -1;
-        virCommandAddArg(cmd, optstr);
-        VIR_FREE(optstr);
-
-        if (qemuCommandAddExtDevice(cmd, &fs->info) < 0)
-            return -1;
-
-        virCommandAddArg(cmd, "-device");
-        if (!(optstr = qemuBuildFSDevStr(def, fs, qemuCaps)))
-            return -1;
-        virCommandAddArg(cmd, optstr);
-        VIR_FREE(optstr);
     }
 
     return 0;
