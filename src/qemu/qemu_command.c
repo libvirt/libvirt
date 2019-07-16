@@ -179,17 +179,6 @@ VIR_ENUM_IMPL(qemuControllerModelUSB,
               "none",
 );
 
-VIR_ENUM_DECL(qemuDomainFSDriver);
-VIR_ENUM_IMPL(qemuDomainFSDriver,
-              VIR_DOMAIN_FS_DRIVER_TYPE_LAST,
-              "local",
-              "local",
-              "handle",
-              NULL,
-              NULL,
-              NULL,
-);
-
 VIR_ENUM_DECL(qemuNumaPolicy);
 VIR_ENUM_IMPL(qemuNumaPolicy,
               VIR_DOMAIN_NUMATUNE_MEM_LAST,
@@ -2704,13 +2693,11 @@ static char *
 qemuBuildFSStr(virDomainFSDefPtr fs)
 {
     VIR_AUTOCLEAN(virBuffer) opt = VIR_BUFFER_INITIALIZER;
-    const char *driver = qemuDomainFSDriverTypeToString(fs->fsdriver);
     const char *wrpolicy = virDomainFSWrpolicyTypeToString(fs->wrpolicy);
-
-    virBufferAdd(&opt, driver, -1);
 
     if (fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_PATH ||
         fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_DEFAULT) {
+        virBufferAddLit(&opt, "local");
         if (fs->accessmode == VIR_DOMAIN_FS_ACCESSMODE_MAPPED) {
             virBufferAddLit(&opt, ",security_model=mapped");
         } else if (fs->accessmode == VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH) {
@@ -2718,6 +2705,9 @@ qemuBuildFSStr(virDomainFSDefPtr fs)
         } else if (fs->accessmode == VIR_DOMAIN_FS_ACCESSMODE_SQUASH) {
             virBufferAddLit(&opt, ",security_model=none");
         }
+    } else if (fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_HANDLE) {
+        /* removed since qemu 4.0.0 see v3.1.0-29-g93aee84f57 */
+        virBufferAddLit(&opt, "handle");
     }
 
     if (fs->wrpolicy)
