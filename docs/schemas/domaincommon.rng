@@ -2645,6 +2645,12 @@
           </optional>
           <ref name='virtioOptions'/>
         </group>
+        <group>
+          <attribute name="type">
+            <value>virtiofs</value>
+          </attribute>
+          <ref name='virtioOptions'/>
+        </group>
         <empty/>
       </choice>
     </element>

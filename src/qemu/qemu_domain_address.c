@@ -699,6 +699,10 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
             }
             break;
 
+        case VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS:
+            /* vhost-user-fs-pci */
+            return virtioFlags;
+
         case VIR_DOMAIN_FS_DRIVER_TYPE_LOOP:
         case VIR_DOMAIN_FS_DRIVER_TYPE_NBD:
         case VIR_DOMAIN_FS_DRIVER_TYPE_PLOOP:

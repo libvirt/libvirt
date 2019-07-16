@@ -477,6 +477,7 @@ VIR_ENUM_IMPL(virDomainFSDriver,
               "loop",
               "nbd",
               "ploop",
+              "virtiofs",
 );
 
 VIR_ENUM_IMPL(virDomainFSAccessMode,

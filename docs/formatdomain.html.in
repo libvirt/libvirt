@@ -3945,6 +3945,11 @@
     &lt;target dir='/import/from/host'/&gt;
     &lt;readonly/&gt;
   &lt;/filesystem&gt;
+  &lt;filesystem type='mount' accessmode='passthrough'&gt;
+      &lt;driver type='virtiofs'/&gt;
+      &lt;source dir='/path'/&gt;
+      &lt;target dir='mount_tag'/&gt;
+  &lt;/filesystem&gt;
   ...
 &lt;/devices&gt;
 ...</pre>
@@ -3973,6 +3978,9 @@
         while the value <code>immediate</code> means that a host writeback
         is immediately triggered for all pages touched during a guest file
         write operation <span class="since">(since 0.9.10)</span>.
+        <span class="since">Since 6.2.0</span>, <code>type='virtiofs'</code>
+        is also supported. Using virtiofs requires setting up shared memory,
+        see the guide: <a href="kbase/virtiofs.html">Virtio-FS</a>
         </dd>
         <dt><code>template</code></dt>
         <dd>
@@ -4008,7 +4016,9 @@
       The filesystem element has an optional attribute <code>accessmode</code>
       which specifies the security mode for accessing the source
       <span class="since">(since 0.8.5)</span>. Currently this only works
-      with <code>type='mount'</code> for the QEMU/KVM driver. The possible
+      with <code>type='mount'</code> for the QEMU/KVM driver.
+      For driver type <code>virtiofs</code>, only <code>passthrough</code> is
+      supported. For other driver types, the possible
       values are:
 
         <dl>

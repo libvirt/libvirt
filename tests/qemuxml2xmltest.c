@@ -1434,6 +1434,9 @@ mymain(void)
     DO_TEST("vhost-vsock-ccw-auto", QEMU_CAPS_DEVICE_VHOST_VSOCK,
             QEMU_CAPS_CCW);
 
+    DO_TEST_CAPS_LATEST("vhost-user-fs-fd-memory");
+    DO_TEST_CAPS_LATEST("vhost-user-fs-hugepages");
+
     DO_TEST("riscv64-virt",
             QEMU_CAPS_DEVICE_VIRTIO_MMIO);
     DO_TEST("riscv64-virt-pci",
