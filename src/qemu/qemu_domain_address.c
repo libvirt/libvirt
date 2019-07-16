@@ -672,18 +672,30 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
         break;
 
     case VIR_DOMAIN_DEVICE_FS:
-        /* the only type of filesystem so far is virtio-9p-pci */
-        switch ((virDomainFSModel) dev->data.fs->model) {
-        case VIR_DOMAIN_FS_MODEL_VIRTIO_TRANSITIONAL:
-            /* Transitional devices only work in conventional PCI slots */
-            return pciFlags;
-        case VIR_DOMAIN_FS_MODEL_VIRTIO:
-        case VIR_DOMAIN_FS_MODEL_VIRTIO_NON_TRANSITIONAL:
-        case VIR_DOMAIN_FS_MODEL_DEFAULT:
-            return virtioFlags;
-        case VIR_DOMAIN_FS_MODEL_LAST:
-            break;
+        switch ((virDomainFSDriverType) dev->data.fs->fsdriver) {
+        case VIR_DOMAIN_FS_DRIVER_TYPE_DEFAULT:
+        case VIR_DOMAIN_FS_DRIVER_TYPE_PATH:
+        case VIR_DOMAIN_FS_DRIVER_TYPE_HANDLE:
+            /* these drivers are handled by virtio-9p-pci */
+            switch ((virDomainFSModel) dev->data.fs->model) {
+            case VIR_DOMAIN_FS_MODEL_VIRTIO_TRANSITIONAL:
+                /* Transitional devices only work in conventional PCI slots */
+                return pciFlags;
+            case VIR_DOMAIN_FS_MODEL_VIRTIO:
+            case VIR_DOMAIN_FS_MODEL_VIRTIO_NON_TRANSITIONAL:
+            case VIR_DOMAIN_FS_MODEL_DEFAULT:
+                return virtioFlags;
+            case VIR_DOMAIN_FS_MODEL_LAST:
+                break;
+            }
+
+        case VIR_DOMAIN_FS_DRIVER_TYPE_LOOP:
+        case VIR_DOMAIN_FS_DRIVER_TYPE_NBD:
+        case VIR_DOMAIN_FS_DRIVER_TYPE_PLOOP:
+        case VIR_DOMAIN_FS_DRIVER_TYPE_LAST:
+            return 0;
         }
+
         return 0;
 
     case VIR_DOMAIN_DEVICE_NET: {
