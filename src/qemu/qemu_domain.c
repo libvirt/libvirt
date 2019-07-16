@@ -6275,6 +6275,47 @@ qemuDomainDeviceDefValidateIOMMU(const virDomainIOMMUDef *iommu,
 
 
 static int
+qemuDomainDeviceDefValidateFS(virDomainFSDefPtr fs,
+                              const virDomainDef *def ATTRIBUTE_UNUSED,
+                              virQEMUCapsPtr qemuCaps ATTRIBUTE_UNUSED)
+{
+    if (fs->type != VIR_DOMAIN_FS_TYPE_MOUNT) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("only supports mount filesystem type"));
+        return -1;
+    }
+
+    switch ((virDomainFSDriverType) fs->fsdriver) {
+    case VIR_DOMAIN_FS_DRIVER_TYPE_DEFAULT:
+    case VIR_DOMAIN_FS_DRIVER_TYPE_PATH:
+        break;
+
+    case VIR_DOMAIN_FS_DRIVER_TYPE_HANDLE:
+        if (fs->accessmode != VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("only supports passthrough accessmode"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_FS_DRIVER_TYPE_LOOP:
+    case VIR_DOMAIN_FS_DRIVER_TYPE_NBD:
+    case VIR_DOMAIN_FS_DRIVER_TYPE_PLOOP:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Filesystem driver type not supported"));
+        return -1;
+
+    case VIR_DOMAIN_FS_DRIVER_TYPE_LAST:
+    default:
+        virReportEnumRangeError(virDomainFSDriverType, fs->fsdriver);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDeviceDefValidateZPCIAddress(virDomainDeviceInfoPtr info,
                                        virQEMUCapsPtr qemuCaps)
 {
@@ -6429,8 +6470,11 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
         ret = qemuDomainDeviceDefValidateIOMMU(dev->data.iommu, def, qemuCaps);
         break;
 
-    case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
+        ret = qemuDomainDeviceDefValidateFS(dev->data.fs, def, qemuCaps);
+        break;
+
+    case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_HUB:
     case VIR_DOMAIN_DEVICE_NVRAM:

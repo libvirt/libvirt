@@ -2707,17 +2707,6 @@ qemuBuildFSStr(virDomainFSDefPtr fs)
     const char *driver = qemuDomainFSDriverTypeToString(fs->fsdriver);
     const char *wrpolicy = virDomainFSWrpolicyTypeToString(fs->wrpolicy);
 
-    if (fs->type != VIR_DOMAIN_FS_TYPE_MOUNT) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("only supports mount filesystem type"));
-        goto error;
-    }
-
-    if (!driver) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Filesystem driver type not supported"));
-        goto error;
-    }
     virBufferAdd(&opt, driver, -1);
 
     if (fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_PATH ||
@@ -2728,14 +2717,6 @@ qemuBuildFSStr(virDomainFSDefPtr fs)
             virBufferAddLit(&opt, ",security_model=passthrough");
         } else if (fs->accessmode == VIR_DOMAIN_FS_ACCESSMODE_SQUASH) {
             virBufferAddLit(&opt, ",security_model=none");
-        }
-    } else {
-        /* For other fs drivers, default(passthru) should always
-         * be supported */
-        if (fs->accessmode != VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("only supports passthrough accessmode"));
-            goto error;
         }
     }
 
@@ -2766,12 +2747,6 @@ qemuBuildFSDevStr(const virDomainDef *def,
                   virQEMUCapsPtr qemuCaps)
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
-
-    if (fs->type != VIR_DOMAIN_FS_TYPE_MOUNT) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("can only passthrough directories"));
-        goto error;
-    }
 
     if (qemuBuildVirtioDevStr(&opt, "virtio-9p", qemuCaps,
                               VIR_DOMAIN_DEVICE_FS, fs) < 0) {
