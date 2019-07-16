@@ -2807,22 +2807,21 @@ qemuBuildFSDevCommandLine(virCommandPtr cmd,
                           const virDomainDef *def,
                           virQEMUCapsPtr qemuCaps)
 {
-    char *optstr;
+    VIR_AUTOFREE(char *) fsdevstr = NULL;
+    VIR_AUTOFREE(char *) devicestr = NULL;
 
     virCommandAddArg(cmd, "-fsdev");
-    if (!(optstr = qemuBuildFSStr(fs)))
+    if (!(fsdevstr = qemuBuildFSStr(fs)))
         return -1;
-    virCommandAddArg(cmd, optstr);
-    VIR_FREE(optstr);
+    virCommandAddArg(cmd, fsdevstr);
 
     if (qemuCommandAddExtDevice(cmd, &fs->info) < 0)
         return -1;
 
     virCommandAddArg(cmd, "-device");
-    if (!(optstr = qemuBuildFSDevStr(def, fs, qemuCaps)))
+    if (!(devicestr = qemuBuildFSDevStr(def, fs, qemuCaps)))
         return -1;
-    virCommandAddArg(cmd, optstr);
-    VIR_FREE(optstr);
+    virCommandAddArg(cmd, devicestr);
 
     return 0;
 }
