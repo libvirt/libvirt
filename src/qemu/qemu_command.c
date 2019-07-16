@@ -2703,7 +2703,7 @@ qemuBuildDisksCommandLine(virCommandPtr cmd,
 static char *
 qemuBuildFSStr(virDomainFSDefPtr fs)
 {
-    virBuffer opt = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) opt = VIR_BUFFER_INITIALIZER;
     const char *driver = qemuDomainFSDriverTypeToString(fs->fsdriver);
     const char *wrpolicy = virDomainFSWrpolicyTypeToString(fs->wrpolicy);
 
@@ -2731,13 +2731,9 @@ qemuBuildFSStr(virDomainFSDefPtr fs)
         virBufferAddLit(&opt, ",readonly");
 
     if (virBufferCheckError(&opt) < 0)
-        goto error;
+        return NULL;
 
     return virBufferContentAndReset(&opt);
-
- error:
-    virBufferFreeAndReset(&opt);
-    return NULL;
 }
 
 
@@ -2746,12 +2742,11 @@ qemuBuildFSDevStr(const virDomainDef *def,
                   virDomainFSDefPtr fs,
                   virQEMUCapsPtr qemuCaps)
 {
-    virBuffer opt = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) opt = VIR_BUFFER_INITIALIZER;
 
     if (qemuBuildVirtioDevStr(&opt, "virtio-9p", qemuCaps,
-                              VIR_DOMAIN_DEVICE_FS, fs) < 0) {
-        goto error;
-    }
+                              VIR_DOMAIN_DEVICE_FS, fs) < 0)
+        return NULL;
 
     virBufferAsprintf(&opt, ",id=%s", fs->info.alias);
     virBufferAsprintf(&opt, ",fsdev=%s%s",
@@ -2760,19 +2755,15 @@ qemuBuildFSDevStr(const virDomainDef *def,
     virQEMUBuildBufferEscapeComma(&opt, fs->dst);
 
     if (qemuBuildVirtioOptionsStr(&opt, fs->virtio, qemuCaps) < 0)
-        goto error;
+        return NULL;
 
     if (qemuBuildDeviceAddressStr(&opt, def, &fs->info, qemuCaps) < 0)
-        goto error;
+        return NULL;
 
     if (virBufferCheckError(&opt) < 0)
-        goto error;
+        return NULL;
 
     return virBufferContentAndReset(&opt);
-
- error:
-    virBufferFreeAndReset(&opt);
-    return NULL;
 }
 
 
