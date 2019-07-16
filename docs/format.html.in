@@ -17,6 +17,7 @@
       <li><a href="formatdomain.html">Domains</a></li>
       <li><a href="formatnetwork.html">Networks</a></li>
       <li><a href="formatnwfilter.html">Network filtering</a></li>
+      <li><a href="formatnetworkport.html">Network ports</a></li>
       <li><a href="formatstorage.html">Storage</a></li>
       <li><a href="formatstorageencryption.html">Storage encryption</a></li>
       <li><a href="formatcaps.html">Capabilities</a></li>
