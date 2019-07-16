@@ -670,8 +670,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
         case VIR_DOMAIN_CONTROLLER_TYPE_CCID:
         case VIR_DOMAIN_CONTROLLER_TYPE_XENBUS:
         case VIR_DOMAIN_CONTROLLER_TYPE_LAST:
-            /* should be 0 */
-            return pciFlags;
+            return 0;
         }
     }
         break;
