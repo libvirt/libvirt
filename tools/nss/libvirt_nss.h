@@ -71,10 +71,12 @@ enum nss_status
 NSS_NAME(gethostbyname2)(const char *name, int af, struct hostent *result,
                          char *buffer, size_t buflen, int *errnop,
                          int *herrnop);
+
 enum nss_status
 NSS_NAME(gethostbyname3)(const char *name, int af, struct hostent *result,
                          char *buffer, size_t buflen, int *errnop,
                          int *herrnop, int32_t *ttlp, char **canonp);
+
 #ifdef HAVE_STRUCT_GAIH_ADDRTUPLE
 enum nss_status
 NSS_NAME(gethostbyname4)(const char *name, struct gaih_addrtuple **pat,
