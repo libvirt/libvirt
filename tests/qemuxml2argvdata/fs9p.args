@@ -24,9 +24,6 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--usb \
--drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \
--device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
 -fsdev local,security_model=passthrough,id=fsdev-fs0,path=/export/to/guest \
 -device virtio-9p-pci,id=fs0,fsdev=fsdev-fs0,mount_tag=/import/from/host,\
 bus=pci.0,addr=0x3 \
@@ -36,5 +33,4 @@ path=/export/to/guest2 \
 bus=pci.0,addr=0x4 \
 -fsdev handle,writeout=immediate,id=fsdev-fs2,path=/export/to/guest3 \
 -device virtio-9p-pci,id=fs2,fsdev=fsdev-fs2,mount_tag=/import/from/host3,\
-bus=pci.0,addr=0x5 \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x6
+bus=pci.0,addr=0x5
