@@ -2802,9 +2802,9 @@ qemuBuildFSDevStr(const virDomainDef *def,
 
 
 static int
-qemuBuildFSDevCommandLine(virCommandPtr cmd,
-                          const virDomainDef *def,
-                          virQEMUCapsPtr qemuCaps)
+qemuBuildFilesystemCommandLine(virCommandPtr cmd,
+                               const virDomainDef *def,
+                               virQEMUCapsPtr qemuCaps)
 {
     size_t i;
 
@@ -10754,7 +10754,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     if (qemuBuildDisksCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
-    if (qemuBuildFSDevCommandLine(cmd, def, qemuCaps) < 0)
+    if (qemuBuildFilesystemCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
     if (qemuBuildNetCommandLine(driver, logManager, secManager, cmd, def,
