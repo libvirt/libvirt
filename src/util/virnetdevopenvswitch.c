@@ -299,58 +299,36 @@ int virNetDevOpenvswitchSetMigrateData(char *migrate, const char *ifname)
     return 0;
 }
 
+
 /**
- * virNetDevOpenvswitchInterfaceStats:
- * @ifname: the name of the interface
- * @stats: the retrieved domain interface stat
+ * virNetDevOpenvswitchInterfaceParseStats:
+ * @json: Input string in JSON format
+ * @stats: parsed stats
  *
- * Retrieves the OVS interfaces stats
+ * For given input string @json parse interface statistics and store them into
+ * @stats.
  *
- * Returns 0 in case of success or -1 in case of failure
+ * Returns: 0 on success,
+ *         -1 otherwise (with error reported).
  */
 int
-virNetDevOpenvswitchInterfaceStats(const char *ifname,
-                                   virDomainInterfaceStatsPtr stats)
+virNetDevOpenvswitchInterfaceParseStats(const char *json,
+                                        virDomainInterfaceStatsPtr stats)
 {
-    VIR_AUTOPTR(virCommand) cmd = NULL;
-    VIR_AUTOFREE(char *) output = NULL;
     VIR_AUTOPTR(virJSONValue) jsonStats = NULL;
     virJSONValuePtr jsonMap = NULL;
     size_t i;
 
-    cmd = virCommandNew(OVSVSCTL);
-    virNetDevOpenvswitchAddTimeout(cmd);
-    virCommandAddArgList(cmd, "--if-exists", "--format=list", "--data=json",
-                         "--no-headings", "--columns=statistics", "list",
-                         "Interface", ifname, NULL);
-    virCommandSetOutputBuffer(cmd, &output);
+    stats->rx_bytes = stats->rx_packets = stats->rx_errs = stats->rx_drop = -1;
+    stats->tx_bytes = stats->tx_packets = stats->tx_errs = stats->tx_drop = -1;
 
-    /* The above command returns either:
-     * 1) empty string if @ifname doesn't exist, or
-     * 2) a JSON array, for instance:
-     *    ["map",[["collisions",0],["rx_bytes",0],["rx_crc_err",0],["rx_dropped",0],
-     *    ["rx_errors",0],["rx_frame_err",0],["rx_over_err",0],["rx_packets",0],
-     *    ["tx_bytes",12406],["tx_dropped",0],["tx_errors",0],["tx_packets",173]]]
-     */
-
-    if (virCommandRun(cmd, NULL) < 0 ||
-        STREQ_NULLABLE(output, "")) {
-        /* no ovs-vsctl or interface 'ifname' doesn't exists in ovs */
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Interface not found"));
-        return -1;
-    }
-
-    if (!(jsonStats = virJSONValueFromString(output)) ||
+    if (!(jsonStats = virJSONValueFromString(json)) ||
         !virJSONValueIsArray(jsonStats) ||
         !(jsonMap = virJSONValueArrayGet(jsonStats, 1))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unable to parse ovs-vsctl output"));
         return -1;
     }
-
-    stats->rx_bytes = stats->rx_packets = stats->rx_errs = stats->rx_drop = -1;
-    stats->tx_bytes = stats->tx_packets = stats->tx_errs = stats->tx_drop = -1;
 
     for (i = 0; i < virJSONValueArraySize(jsonMap); i++) {
         virJSONValuePtr item = virJSONValueArrayGet(jsonMap, i);
@@ -391,6 +369,51 @@ virNetDevOpenvswitchInterfaceStats(const char *ifname,
             VIR_DEBUG("Unused ovs-vsctl stat key=%s val=%lld", key, val);
         }
     }
+
+    return 0;
+}
+
+/**
+ * virNetDevOpenvswitchInterfaceStats:
+ * @ifname: the name of the interface
+ * @stats: the retrieved domain interface stat
+ *
+ * Retrieves the OVS interfaces stats
+ *
+ * Returns 0 in case of success or -1 in case of failure
+ */
+int
+virNetDevOpenvswitchInterfaceStats(const char *ifname,
+                                   virDomainInterfaceStatsPtr stats)
+{
+    VIR_AUTOPTR(virCommand) cmd = NULL;
+    VIR_AUTOFREE(char *) output = NULL;
+
+    cmd = virCommandNew(OVSVSCTL);
+    virNetDevOpenvswitchAddTimeout(cmd);
+    virCommandAddArgList(cmd, "--if-exists", "--format=list", "--data=json",
+                         "--no-headings", "--columns=statistics", "list",
+                         "Interface", ifname, NULL);
+    virCommandSetOutputBuffer(cmd, &output);
+
+    /* The above command returns either:
+     * 1) empty string if @ifname doesn't exist, or
+     * 2) a JSON array, for instance:
+     *    ["map",[["collisions",0],["rx_bytes",0],["rx_crc_err",0],["rx_dropped",0],
+     *    ["rx_errors",0],["rx_frame_err",0],["rx_over_err",0],["rx_packets",0],
+     *    ["tx_bytes",12406],["tx_dropped",0],["tx_errors",0],["tx_packets",173]]]
+     */
+
+    if (virCommandRun(cmd, NULL) < 0 ||
+        STREQ_NULLABLE(output, "")) {
+        /* no ovs-vsctl or interface 'ifname' doesn't exists in ovs */
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Interface not found"));
+        return -1;
+    }
+
+    if (virNetDevOpenvswitchInterfaceParseStats(output, stats) < 0)
+        return -1;
 
     if (stats->rx_bytes == -1 &&
         stats->rx_packets == -1 &&

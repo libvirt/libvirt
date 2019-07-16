@@ -2501,6 +2501,7 @@ virNetDevOpenvswitchAddPort;
 virNetDevOpenvswitchGetMigrateData;
 virNetDevOpenvswitchGetVhostuserIfname;
 virNetDevOpenvswitchInterfaceGetMaster;
+virNetDevOpenvswitchInterfaceParseStats;
 virNetDevOpenvswitchInterfaceStats;
 virNetDevOpenvswitchRemovePort;
 virNetDevOpenvswitchSetMigrateData;

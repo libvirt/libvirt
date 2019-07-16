@@ -147,6 +147,7 @@ EXTRA_DIST = \
 	virmockstathelpers.c \
 	virnetdaemondata \
 	virnetdevtestdata \
+	virnetdevopenvswitchdata \
 	virnetworkportxml2xmldata \
 	virnwfilterbindingxml2xmldata \
 	virpcitestdata \
@@ -1271,9 +1272,17 @@ virmacmaptest_SOURCES = \
 	virmacmaptest.c testutils.h testutils.c
 virmacmaptest_LDADD = $(LDADDS)
 
-test_programs += virmacmaptest
+virnetdevopenvswitchtest_SOURCES = \
+	virnetdevopenvswitchtest.c testutils.h testutils.c
+virnetdevopenvswitchtest_LDADD = $(LDADDS)
+
+test_programs += \
+	virmacmaptest \
+	virnetdevopenvswitchtest
 else ! WITH_YAJL
-EXTRA_DIST +=  virmacmaptest.c
+EXTRA_DIST += \
+	virmacmaptest.c \
+	virnetdevopenvswitchtest.c
 endif ! WITH_YAJL
 
 virnetdevtest_SOURCES = \

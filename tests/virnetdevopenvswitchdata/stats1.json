@@ -1,0 +1,1 @@
+["map",[["collisions",1],["rx_bytes",2],["rx_crc_err",3],["rx_dropped",4],["rx_errors",5],["rx_frame_err",6],["rx_over_err",7],["rx_packets",8],["tx_bytes",9],["tx_dropped",10],["tx_errors",11],["tx_packets",12]]]
