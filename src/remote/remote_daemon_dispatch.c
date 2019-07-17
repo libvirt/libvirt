@@ -112,6 +112,22 @@ remoteSerializeDomainDiskErrors(virDomainDiskErrorPtr errors,
                                 remote_domain_disk_error **ret_errors_val,
                                 u_int *ret_errors_len);
 
+static virConnectPtr
+remoteGetHypervisorConn(virNetServerClientPtr client);
+static virConnectPtr
+remoteGetInterfaceConn(virNetServerClientPtr client);
+static virConnectPtr
+remoteGetNetworkConn(virNetServerClientPtr client);
+static virConnectPtr
+remoteGetNodeDevConn(virNetServerClientPtr client);
+static virConnectPtr
+remoteGetNWFilterConn(virNetServerClientPtr client);
+static virConnectPtr
+remoteGetSecretConn(virNetServerClientPtr client);
+static virConnectPtr
+remoteGetStorageConn(virNetServerClientPtr client);
+
+
 #include "remote_daemon_dispatch_stubs.h"
 #include "remote_daemon_dispatch_qemu_stubs.h"
 #include "remote_daemon_dispatch_lxc_stubs.h"
@@ -1922,6 +1938,111 @@ static void remoteClientCloseFunc(virNetServerClientPtr client)
     daemonRemoveAllClientStreams(priv->streams);
 
     remoteClientFreePrivateCallbacks(priv);
+}
+
+
+static virConnectPtr
+remoteGetHypervisorConn(virNetServerClientPtr client)
+{
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("hypervisor connection not open"));
+        return NULL;
+    }
+
+    return priv->conn;
+}
+
+
+static virConnectPtr
+remoteGetInterfaceConn(virNetServerClientPtr client)
+{
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->interfaceConn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("hypervisor connection not open"));
+        return NULL;
+    }
+
+    return priv->interfaceConn;
+}
+
+
+static virConnectPtr
+remoteGetNetworkConn(virNetServerClientPtr client)
+{
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->networkConn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("hypervisor connection not open"));
+        return NULL;
+    }
+
+    return priv->networkConn;
+}
+
+
+static virConnectPtr
+remoteGetNodeDevConn(virNetServerClientPtr client)
+{
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->nodedevConn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("hypervisor connection not open"));
+        return NULL;
+    }
+
+    return priv->nodedevConn;
+}
+
+
+static virConnectPtr
+remoteGetNWFilterConn(virNetServerClientPtr client)
+{
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->nwfilterConn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("hypervisor connection not open"));
+        return NULL;
+    }
+
+    return priv->nwfilterConn;
+}
+
+
+static virConnectPtr
+remoteGetSecretConn(virNetServerClientPtr client)
+{
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->secretConn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("hypervisor connection not open"));
+        return NULL;
+    }
+
+    return priv->secretConn;
+}
+
+
+static virConnectPtr
+remoteGetStorageConn(virNetServerClientPtr client)
+{
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->storageConn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("hypervisor connection not open"));
+        return NULL;
+    }
+
+    return priv->storageConn;
 }
 
 

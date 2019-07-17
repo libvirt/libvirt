@@ -206,6 +206,15 @@ adminConnectGetLibVersion(virNetDaemonPtr dmn ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static virNetDaemonPtr
+adminGetConn(virNetServerClientPtr client)
+{
+    struct daemonAdmClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    return priv->dmn;
+}
+
 static int
 adminDispatchServerGetThreadpoolParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
                                            virNetServerClientPtr client,
