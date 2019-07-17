@@ -376,7 +376,7 @@ chmod o+x /path/to/directory
     <h3><a id="securityacl">Cgroups device ACLs</a></h3>
 
     <p>
-      Recent Linux kernels have a capability known as "cgroups" which is used
+      Linux kernels have a capability known as "cgroups" which is used
       for resource management. It is implemented via a number of "controllers",
       each controller covering a specific task/functional area. One of the
       available controllers is the "devices" controller, which is able to
