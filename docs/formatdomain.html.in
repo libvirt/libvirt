@@ -1959,7 +1959,7 @@
       <span class="since">Since 3.9.0</span>, the lifecycle events can
       be configured via the
       <a href="html/libvirt-libvirt-domain.html#virDomainSetLifecycleAction">
-        <code>virDomainSetLifecycleAction</code></a> API.
+        <code>virDomainSetLifecycleAction</code></a> API.
     </p>
 
     <p>
