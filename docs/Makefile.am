@@ -236,20 +236,14 @@ $(srcdir)/hvsupport.html.in: $(srcdir)/hvsupport.pl $(api_DATA) \
 	$(AM_V_GEN)$(PERL) $(srcdir)/hvsupport.pl $(top_srcdir)/src > $@ \
 		|| { rm $@ && exit 1; }
 
-# xsltproc seems to add the xmlns="" attribute to random output elements:
-# use sed to strip it out, as leaving it there triggers XML errors during
-# further transformation steps
 news.html.in: \
 	  $(srcdir)/news.xml \
 	  $(srcdir)/news-html.xsl
 	$(AM_V_GEN)$(XSLTPROC) --nonet \
 	    $(srcdir)/news-html.xsl \
 	    $(srcdir)/news.xml \
-	  >$@-tmp \
-	    || { rm -f $@-tmp; exit 1; }; \
-	  sed 's/ xmlns=""//g' $@-tmp >$@ \
-	    || { rm -f $@-tmp; exit 1; }; \
-	  rm -f $@-tmp
+	  >$@ \
+	    || { rm -f $@; exit 1; };
 EXTRA_DIST += \
 	$(srcdir)/news.xml \
 	$(srcdir)/news.rng \
