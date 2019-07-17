@@ -38,7 +38,7 @@
       <li>
         <strong>KVM hypervisor</strong>: The driver will probe <code>/usr/bin</code>
         for the presence of <code>qemu-kvm</code> and <code>/dev/kvm</code> device
-        node. If both are found, then KVM fullyvirtualized, hardware accelerated
+        node. If both are found, then KVM fully virtualized, hardware accelerated
         guests will be available.
       </li>
     </ul>
