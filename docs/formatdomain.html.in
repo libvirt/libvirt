@@ -2439,7 +2439,9 @@
             being modified, and can be one of
             "platform" (currently unsupported),
             "hpet" (libxl, xen, qemu), "kvmclock" (qemu),
-            "pit" (qemu), "rtc" (qemu), "tsc" (libxl) or "hypervclock"
+            "pit" (qemu), "rtc" (qemu), "tsc" (libxl, qemu -
+            <span class="since">since 3.2.0</span>)
+            or "hypervclock"
             (qemu - <span class="since">since 1.2.2</span>).
 
             The <code>hypervclock</code> timer adds support for the
