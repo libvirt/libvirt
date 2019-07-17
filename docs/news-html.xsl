@@ -41,12 +41,17 @@
   <!-- Release -->
   <xsl:template match="release">
     <h3>
-      <strong>
-        <xsl:value-of select="@version"/>
-        <xsl:text> (</xsl:text>
-        <xsl:value-of select="@date"/>
-        <xsl:text>)</xsl:text>
-      </strong>
+      <a>
+        <xsl:attribute name="id">
+          <xsl:value-of select="@version"/>
+        </xsl:attribute>
+        <strong>
+          <xsl:value-of select="@version"/>
+          <xsl:text> (</xsl:text>
+          <xsl:value-of select="@date"/>
+          <xsl:text>)</xsl:text>
+        </strong>
+      </a>
     </h3>
     <ul>
       <xsl:apply-templates select="section"/>
