@@ -74,7 +74,7 @@ AUGEAS_DIRS += libxl
 
 test_libvirtd_libxl.aug: libxl/test_libvirtd_libxl.aug.in \
 		$(srcdir)/libxl/libxl.conf $(AUG_GENTEST)
-	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/libxl/libxl.conf $< $@
+	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/libxl/libxl.conf $< > $@
 
 check-augeas-libxl: test_libvirtd_libxl.aug
 	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \

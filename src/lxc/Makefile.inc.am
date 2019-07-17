@@ -163,7 +163,7 @@ AUGEAS_DIRS += lxc
 
 test_libvirtd_lxc.aug: lxc/test_libvirtd_lxc.aug.in \
 		$(srcdir)/lxc/lxc.conf $(AUG_GENTEST)
-	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/lxc/lxc.conf $< $@
+	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/lxc/lxc.conf $< > $@
 
 check-augeas-lxc: test_libvirtd_lxc.aug
 	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \

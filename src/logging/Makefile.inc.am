@@ -101,7 +101,7 @@ augeastest_DATA += test_virtlogd.aug
 
 test_virtlogd.aug: logging/test_virtlogd.aug.in \
 		logging/virtlogd.conf $(AUG_GENTEST)
-	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/logging/virtlogd.conf $< $@
+	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/logging/virtlogd.conf $< > $@
 
 AUGEAS_DIRS += logging
 

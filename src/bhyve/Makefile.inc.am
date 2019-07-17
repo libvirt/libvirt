@@ -55,7 +55,7 @@ AUGEAS_DIRS += bhyve
 
 test_libvirtd_bhyve.aug: bhyve/test_libvirtd_bhyve.aug.in \
 		$(srcdir)/bhyve/bhyve.conf $(AUG_GENTEST)
-	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/bhyve/bhyve.conf $< $@
+	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/bhyve/bhyve.conf $< > $@
 
 check-augeas-bhyve: test_libvirtd_bhyve.aug
 	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \

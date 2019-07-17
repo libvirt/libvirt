@@ -228,7 +228,7 @@ if WITH_SANLOCK
 if WITH_QEMU
 test_libvirt_sanlock.aug: locking/test_libvirt_sanlock.aug.in \
 		locking/qemu-sanlock.conf $(AUG_GENTEST)
-	$(AM_V_GEN)$(AUG_GENTEST) locking/qemu-sanlock.conf $< $@
+	$(AM_V_GEN)$(AUG_GENTEST) locking/qemu-sanlock.conf $< > $@
 
 check-augeas-sanlock: test_libvirt_sanlock.aug
 	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
@@ -244,14 +244,14 @@ endif ! WITH_SANLOCK
 if WITH_QEMU
 test_libvirt_lockd.aug: locking/test_libvirt_lockd.aug.in \
 		locking/qemu-lockd.conf $(AUG_GENTEST)
-	$(AM_V_GEN)$(AUG_GENTEST) locking/qemu-lockd.conf $< $@
+	$(AM_V_GEN)$(AUG_GENTEST) locking/qemu-lockd.conf $< > $@
 else ! WITH_QEMU
 test_libvirt_lockd.aug:
 endif ! WITH_QEMU
 
 test_virtlockd.aug: locking/test_virtlockd.aug.in \
 		locking/virtlockd.conf $(AUG_GENTEST)
-	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/locking/virtlockd.conf $< $@
+	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/locking/virtlockd.conf $< > $@
 
 if WITH_QEMU
 check-augeas-lockd: test_libvirt_lockd.aug
