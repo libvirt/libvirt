@@ -422,7 +422,7 @@ virTimeBackOffStart(virTimeBackOffVar *var,
 bool
 virTimeBackOffWait(virTimeBackOffVar *var)
 {
-    unsigned long long t, next;
+    unsigned long long next, t = 0;
 
     ignore_value(virTimeMillisNowRaw(&t));
 
