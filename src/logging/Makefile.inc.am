@@ -122,6 +122,7 @@ virtlogd.8.in: logging/virtlogd.pod
 virtlogd.service: logging/virtlogd.service.in $(top_builddir)/config.status
 	$(AM_V_GEN)sed \
 	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
+	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
 	    < $< > $@-t && \
 	    mv $@-t $@
 

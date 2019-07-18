@@ -10,7 +10,7 @@ Documentation=man:libvirtd(8)
 Documentation=https://libvirt.org
 
 [Service]
-EnvironmentFile=-/etc/sysconfig/libvirt-guests
+EnvironmentFile=-@sysconfdir@/sysconfig/libvirt-guests
 # Hack just call traditional service until we factor
 # out the code
 ExecStart=@libexecdir@/libvirt-guests.sh start

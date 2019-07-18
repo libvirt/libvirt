@@ -5,7 +5,7 @@ BindsTo=libvirtd.socket
 After=libvirtd.socket
 
 [Socket]
-# This must match the /etc/libvirt/libvirtd.conf tls_port setting
+# This must match the @sysconfdir@/libvirt/libvirtd.conf tls_port setting
 # when using systemd version < 227
 ListenStream=16514
 Service=libvirtd.service

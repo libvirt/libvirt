@@ -258,6 +258,7 @@ locking/lock_daemon_dispatch_stubs.h: $(LOCK_PROTOCOL) \
 virtlockd.service: locking/virtlockd.service.in $(top_builddir)/config.status
 	$(AM_V_GEN)sed \
 	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
+	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
 	    < $< > $@-t && \
 	    mv $@-t $@
 

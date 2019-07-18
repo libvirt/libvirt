@@ -22,7 +22,7 @@ Documentation=https://libvirt.org
 
 [Service]
 Type=notify
-EnvironmentFile=-/etc/sysconfig/libvirtd
+EnvironmentFile=-@sysconfdir@/sysconfig/libvirtd
 # libvirtd.service is set to run on boot so that autostart of
 # VMs can be performed. We don't want it to stick around if
 # unused though, so we set a timeout. The socket activation

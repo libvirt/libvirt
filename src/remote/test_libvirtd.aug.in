@@ -24,10 +24,10 @@ module Test_@DAEMON_NAME@ =
              { "1" = "polkit" }
         }
 @CUT_ENABLE_IP@
-        { "key_file" = "/etc/pki/libvirt/private/serverkey.pem" }
-        { "cert_file" = "/etc/pki/libvirt/servercert.pem" }
-        { "ca_file" = "/etc/pki/CA/cacert.pem" }
-        { "crl_file" = "/etc/pki/CA/crl.pem" }
+        { "key_file" = "@sysconfdir@/pki/libvirt/private/serverkey.pem" }
+        { "cert_file" = "@sysconfdir@/pki/libvirt/servercert.pem" }
+        { "ca_file" = "@sysconfdir@/pki/CA/cacert.pem" }
+        { "crl_file" = "@sysconfdir@/pki/CA/crl.pem" }
         { "tls_no_sanity_certificate" = "1" }
         { "tls_no_verify_certificate" = "1" }
         { "tls_allowed_dn_list"

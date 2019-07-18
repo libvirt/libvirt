@@ -7,7 +7,7 @@ Documentation=man:virtlogd(8)
 Documentation=https://libvirt.org
 
 [Service]
-EnvironmentFile=-/etc/sysconfig/virtlogd
+EnvironmentFile=-@sysconfdir@/sysconfig/virtlogd
 ExecStart=@sbindir@/virtlogd $VIRTLOGD_ARGS
 ExecReload=/bin/kill -USR1 $MAINPID
 # Loosing the logs is a really bad thing that will

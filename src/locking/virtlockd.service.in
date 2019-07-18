@@ -7,7 +7,7 @@ Documentation=man:virtlockd(8)
 Documentation=https://libvirt.org
 
 [Service]
-EnvironmentFile=-/etc/sysconfig/virtlockd
+EnvironmentFile=-@sysconfdir@/sysconfig/virtlockd
 ExecStart=@sbindir@/virtlockd $VIRTLOCKD_ARGS
 ExecReload=/bin/kill -USR1 $MAINPID
 # Loosing the locks is a really bad thing that will

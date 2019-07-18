@@ -194,6 +194,7 @@ remote/libvirtd.conf: remote/libvirtd.conf.in
 	$(AM_V_GEN)$(SED) \
 		-e '/[@]CUT_ENABLE_IP[@]/d' \
 		-e '/[@]END[@]/d' \
+		-e 's|[@]sysconfdir[@]|@sysconfdir@|' \
 		-e 's|[@]DAEMON_NAME[@]|libvirtd|' \
 		$< > $@
 
@@ -209,6 +210,7 @@ remote/libvirtd.aug: remote/libvirtd.aug.in
 	$(AM_V_GEN)$(SED) \
 		-e '/[@]CUT_ENABLE_IP[@]/d' \
 		-e '/[@]END[@]/d' \
+		-e 's|[@]sysconfdir[@]|@sysconfdir@|' \
 		-e 's|[@]DAEMON_NAME[@]|libvirtd|' \
 		-e 's|[@]DAEMON_NAME_UC[@]|Libvirtd|' \
 		$< > $@
@@ -220,6 +222,7 @@ remote/test_libvirtd.aug: remote/test_libvirtd.aug.in \
 		$(SED) \
 		-e '/[@]CUT_ENABLE_IP[@]/d' \
 		-e '/[@]END[@]/d' \
+		-e 's|[@]sysconfdir[@]|@sysconfdir@|' \
 		-e 's|[@]DAEMON_NAME[@]|libvirtd|' \
 		-e 's|[@]DAEMON_NAME_UC[@]|Libvirtd|' \
 		> $@ || rm -f $@
@@ -301,30 +304,35 @@ libvirtd.service: remote/libvirtd.service.in $(top_builddir)/config.status
 libvirtd.socket: remote/libvirtd.socket.in $(top_builddir)/config.status
 	$(AM_V_GEN)sed \
 	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
 	    < $< > $@-t && \
 	    mv $@-t $@
 
 libvirtd-ro.socket: remote/libvirtd-ro.socket.in $(top_builddir)/config.status
 	$(AM_V_GEN)sed \
 	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
 	    < $< > $@-t && \
 	    mv $@-t $@
 
 libvirtd-admin.socket: remote/libvirtd-admin.socket.in $(top_builddir)/config.status
 	$(AM_V_GEN)sed \
 	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
 	    < $< > $@-t && \
 	    mv $@-t $@
 
 libvirtd-tcp.socket: remote/libvirtd-tcp.socket.in $(top_builddir)/config.status
 	$(AM_V_GEN)sed \
 	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
 	    < $< > $@-t && \
 	    mv $@-t $@
 
 libvirtd-tls.socket: remote/libvirtd-tls.socket.in $(top_builddir)/config.status
 	$(AM_V_GEN)sed \
 	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
 	    < $< > $@-t && \
 	    mv $@-t $@
 

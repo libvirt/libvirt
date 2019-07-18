@@ -1,4 +1,4 @@
-(* /etc/libvirt/@DAEMON_NAME@.conf *)
+(* @sysconfdir@/libvirt/@DAEMON_NAME@.conf *)
 
 module @DAEMON_NAME_UC@ =
    autoload xfm
@@ -114,7 +114,7 @@ module @DAEMON_NAME_UC@ =
 
    let lns = ( record | comment | empty ) *
 
-   let filter = incl "/etc/libvirt/@DAEMON_NAME@.conf"
+   let filter = incl "@sysconfdir@/libvirt/@DAEMON_NAME@.conf"
               . Util.stdexcl
 
    let xfm = transform lns filter

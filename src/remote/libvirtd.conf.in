@@ -134,7 +134,7 @@
 #          the network providing auth (eg, TLS/x509 certificates)
 #
 #  - sasl: use SASL infrastructure. The actual auth scheme is then
-#          controlled from /etc/sasl2/libvirt.conf. For the TCP
+#          controlled from @sysconfdir@/sasl2/libvirt.conf. For the TCP
 #          socket only GSSAPI & DIGEST-MD5 mechanisms will be used.
 #          For non-TCP or TLS sockets, any scheme is allowed.
 #
@@ -166,7 +166,7 @@
 # If you don't enable SASL, then all TCP traffic is cleartext.
 # Don't do this outside of a dev/test scenario. For real world
 # use, always enable SASL and use the GSSAPI or DIGEST-MD5
-# mechanism in /etc/sasl2/libvirt.conf
+# mechanism in @sysconfdir@/sasl2/libvirt.conf
 #auth_tcp = "sasl"
 
 # Change the authentication scheme for TLS sockets.
@@ -199,10 +199,9 @@
 # Use of TLS requires that x509 certificates be issued. The default locations
 # for the certificate files is as follows:
 #
-#   /etc/pki/CA/cacert.pem                 - The CA master certificate
-#   /etc/pki/libvirt/servercert.pem        - The server certificate signed with
-#                                            the cacert.pem
-#   /etc/pki/libvirt/private/serverkey.pem - The server private key
+#   @sysconfdir@/pki/CA/cacert.pem - The CA master certificate
+#   @sysconfdir@/pki/libvirt/servercert.pem - The server certificate signed by cacert.pem
+#   @sysconfdir@/pki/libvirt/private/serverkey.pem - The server private key
 #
 # It is possible to override the default locations by altering the 'key_file',
 # 'cert_file', and 'ca_file' values and uncommenting them below.
@@ -213,20 +212,20 @@
 
 # Override the default server key file path
 #
-#key_file = "/etc/pki/libvirt/private/serverkey.pem"
+#key_file = "@sysconfdir@/pki/libvirt/private/serverkey.pem"
 
 # Override the default server certificate file path
 #
-#cert_file = "/etc/pki/libvirt/servercert.pem"
+#cert_file = "@sysconfdir@/pki/libvirt/servercert.pem"
 
 # Override the default CA certificate path
 #
-#ca_file = "/etc/pki/CA/cacert.pem"
+#ca_file = "@sysconfdir@/pki/CA/cacert.pem"
 
 # Specify a certificate revocation list.
 #
 # Defaults to not using a CRL, uncomment to enable it
-#crl_file = "/etc/pki/CA/crl.pem"
+#crl_file = "@sysconfdir@/pki/CA/crl.pem"
 
 
 
