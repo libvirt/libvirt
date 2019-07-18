@@ -17231,6 +17231,22 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
             }
             qemuBlockJobUpdate(vm, job, QEMU_ASYNC_JOB_NONE);
         }
+
+        if (pivot &&
+            job->state == QEMU_BLOCKJOB_STATE_FAILED) {
+            if (job->errmsg) {
+                virReportError(VIR_ERR_OPERATION_FAILED,
+                               _("block job '%s' failed while pivoting"),
+                               job->name);
+            } else {
+                virReportError(VIR_ERR_OPERATION_FAILED,
+                               _("block job '%s' failed while pivoting: %s"),
+                               job->name, job->errmsg);
+            }
+
+            ret = -1;
+            goto endjob;
+        }
     }
 
  endjob:
