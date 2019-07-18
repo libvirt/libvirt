@@ -561,6 +561,7 @@ struct _virQEMUCapsMachineType {
     unsigned int maxCpus;
     bool hotplugCpus;
     bool qemuDefault;
+    char *defaultCPU;
 };
 
 typedef struct _virQEMUCapsHostCPUData virQEMUCapsHostCPUData;
@@ -1708,6 +1709,7 @@ virQEMUCapsAccelCopyMachineTypes(virQEMUCapsAccelPtr dst,
     for (i = 0; i < src->nmachineTypes; i++) {
         dst->machineTypes[i].name = g_strdup(src->machineTypes[i].name);
         dst->machineTypes[i].alias = g_strdup(src->machineTypes[i].alias);
+        dst->machineTypes[i].defaultCPU = g_strdup(src->machineTypes[i].defaultCPU);
         dst->machineTypes[i].maxCpus = src->machineTypes[i].maxCpus;
         dst->machineTypes[i].hotplugCpus = src->machineTypes[i].hotplugCpus;
         dst->machineTypes[i].qemuDefault = src->machineTypes[i].qemuDefault;
@@ -1787,6 +1789,7 @@ virQEMUCapsAccelClear(virQEMUCapsAccelPtr caps)
     for (i = 0; i < caps->nmachineTypes; i++) {
         VIR_FREE(caps->machineTypes[i].name);
         VIR_FREE(caps->machineTypes[i].alias);
+        VIR_FREE(caps->machineTypes[i].defaultCPU);
     }
     VIR_FREE(caps->machineTypes);
 
@@ -2423,6 +2426,7 @@ virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
 
         mach->alias = g_strdup(machines[i]->alias);
         mach->name = g_strdup(machines[i]->name);
+        mach->defaultCPU = g_strdup(machines[i]->defaultCPU);
 
         mach->maxCpus = machines[i]->maxCpus;
         mach->hotplugCpus = machines[i]->hotplugCpus;
@@ -3644,6 +3648,8 @@ virQEMUCapsLoadMachines(virQEMUCapsAccelPtr caps,
         if (STREQ_NULLABLE(str, "yes"))
             caps->machineTypes[i].qemuDefault = true;
         VIR_FREE(str);
+
+        caps->machineTypes[i].defaultCPU = virXMLPropString(nodes[i], "defaultCPU");
     }
 
     return 0;
@@ -4084,6 +4090,8 @@ virQEMUCapsFormatMachines(virQEMUCapsAccelPtr caps,
                           caps->machineTypes[i].maxCpus);
         if (caps->machineTypes[i].qemuDefault)
             virBufferAddLit(buf, " default='yes'");
+        virBufferEscapeString(buf, " defaultCPU='%s'",
+                              caps->machineTypes[i].defaultCPU);
         virBufferAddLit(buf, "/>\n");
     }
 }

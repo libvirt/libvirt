@@ -371,20 +371,20 @@
   <cpu type='kvm' name='qemu' typename='qemu-s390x-cpu' usable='no'>
     <blocker name='ais'/>
   </cpu>
-  <machine type='kvm' name='s390-ccw-virtio-4.2' alias='s390-ccw-virtio' hotplugCpus='yes' maxCpus='248' default='yes'/>
-  <machine type='kvm' name='s390-ccw-virtio-4.0' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='kvm' name='s390-ccw-virtio-3.1' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='kvm' name='s390-ccw-virtio-2.6' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='kvm' name='s390-ccw-virtio-2.12' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='kvm' name='s390-ccw-virtio-2.9' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='kvm' name='s390-ccw-virtio-3.0' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='kvm' name='s390-ccw-virtio-2.5' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='kvm' name='s390-ccw-virtio-2.11' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='kvm' name='s390-ccw-virtio-2.8' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='kvm' name='s390-ccw-virtio-4.1' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='kvm' name='s390-ccw-virtio-2.4' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='kvm' name='s390-ccw-virtio-2.10' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='kvm' name='s390-ccw-virtio-2.7' hotplugCpus='yes' maxCpus='248'/>
+  <machine type='kvm' name='s390-ccw-virtio-4.2' alias='s390-ccw-virtio' hotplugCpus='yes' maxCpus='248' default='yes' defaultCPU='host-s390x-cpu'/>
+  <machine type='kvm' name='s390-ccw-virtio-4.0' hotplugCpus='yes' maxCpus='248' defaultCPU='host-s390x-cpu'/>
+  <machine type='kvm' name='s390-ccw-virtio-3.1' hotplugCpus='yes' maxCpus='248' defaultCPU='host-s390x-cpu'/>
+  <machine type='kvm' name='s390-ccw-virtio-2.6' hotplugCpus='yes' maxCpus='248' defaultCPU='host-s390x-cpu'/>
+  <machine type='kvm' name='s390-ccw-virtio-2.12' hotplugCpus='yes' maxCpus='248' defaultCPU='host-s390x-cpu'/>
+  <machine type='kvm' name='s390-ccw-virtio-2.9' hotplugCpus='yes' maxCpus='248' defaultCPU='host-s390x-cpu'/>
+  <machine type='kvm' name='s390-ccw-virtio-3.0' hotplugCpus='yes' maxCpus='248' defaultCPU='host-s390x-cpu'/>
+  <machine type='kvm' name='s390-ccw-virtio-2.5' hotplugCpus='yes' maxCpus='248' defaultCPU='host-s390x-cpu'/>
+  <machine type='kvm' name='s390-ccw-virtio-2.11' hotplugCpus='yes' maxCpus='248' defaultCPU='host-s390x-cpu'/>
+  <machine type='kvm' name='s390-ccw-virtio-2.8' hotplugCpus='yes' maxCpus='248' defaultCPU='host-s390x-cpu'/>
+  <machine type='kvm' name='s390-ccw-virtio-4.1' hotplugCpus='yes' maxCpus='248' defaultCPU='host-s390x-cpu'/>
+  <machine type='kvm' name='s390-ccw-virtio-2.4' hotplugCpus='yes' maxCpus='248' defaultCPU='host-s390x-cpu'/>
+  <machine type='kvm' name='s390-ccw-virtio-2.10' hotplugCpus='yes' maxCpus='248' defaultCPU='host-s390x-cpu'/>
+  <machine type='kvm' name='s390-ccw-virtio-2.7' hotplugCpus='yes' maxCpus='248' defaultCPU='host-s390x-cpu'/>
   <hostCPU type='tcg' model='z13.2-base' migratability='no'>
     <property name='dateh2' type='boolean' value='false'/>
     <property name='aen' type='boolean' value='true'/>
@@ -3342,18 +3342,18 @@
     <blocker name='type'/>
   </cpu>
   <cpu type='tcg' name='qemu' typename='qemu-s390x-cpu' usable='yes'/>
-  <machine type='tcg' name='s390-ccw-virtio-4.2' alias='s390-ccw-virtio' hotplugCpus='yes' maxCpus='248' default='yes'/>
-  <machine type='tcg' name='s390-ccw-virtio-4.0' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='tcg' name='s390-ccw-virtio-3.1' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='tcg' name='s390-ccw-virtio-2.6' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='tcg' name='s390-ccw-virtio-2.12' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='tcg' name='s390-ccw-virtio-2.9' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='tcg' name='s390-ccw-virtio-3.0' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='tcg' name='s390-ccw-virtio-2.5' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='tcg' name='s390-ccw-virtio-2.11' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='tcg' name='s390-ccw-virtio-2.8' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='tcg' name='s390-ccw-virtio-4.1' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='tcg' name='s390-ccw-virtio-2.4' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='tcg' name='s390-ccw-virtio-2.10' hotplugCpus='yes' maxCpus='248'/>
-  <machine type='tcg' name='s390-ccw-virtio-2.7' hotplugCpus='yes' maxCpus='248'/>
+  <machine type='tcg' name='s390-ccw-virtio-4.2' alias='s390-ccw-virtio' hotplugCpus='yes' maxCpus='248' default='yes' defaultCPU='qemu-s390x-cpu'/>
+  <machine type='tcg' name='s390-ccw-virtio-4.0' hotplugCpus='yes' maxCpus='248' defaultCPU='qemu-s390x-cpu'/>
+  <machine type='tcg' name='s390-ccw-virtio-3.1' hotplugCpus='yes' maxCpus='248' defaultCPU='qemu-s390x-cpu'/>
+  <machine type='tcg' name='s390-ccw-virtio-2.6' hotplugCpus='yes' maxCpus='248' defaultCPU='qemu-s390x-cpu'/>
+  <machine type='tcg' name='s390-ccw-virtio-2.12' hotplugCpus='yes' maxCpus='248' defaultCPU='qemu-s390x-cpu'/>
+  <machine type='tcg' name='s390-ccw-virtio-2.9' hotplugCpus='yes' maxCpus='248' defaultCPU='qemu-s390x-cpu'/>
+  <machine type='tcg' name='s390-ccw-virtio-3.0' hotplugCpus='yes' maxCpus='248' defaultCPU='qemu-s390x-cpu'/>
+  <machine type='tcg' name='s390-ccw-virtio-2.5' hotplugCpus='yes' maxCpus='248' defaultCPU='qemu-s390x-cpu'/>
+  <machine type='tcg' name='s390-ccw-virtio-2.11' hotplugCpus='yes' maxCpus='248' defaultCPU='qemu-s390x-cpu'/>
+  <machine type='tcg' name='s390-ccw-virtio-2.8' hotplugCpus='yes' maxCpus='248' defaultCPU='qemu-s390x-cpu'/>
+  <machine type='tcg' name='s390-ccw-virtio-4.1' hotplugCpus='yes' maxCpus='248' defaultCPU='qemu-s390x-cpu'/>
+  <machine type='tcg' name='s390-ccw-virtio-2.4' hotplugCpus='yes' maxCpus='248' defaultCPU='qemu-s390x-cpu'/>
+  <machine type='tcg' name='s390-ccw-virtio-2.10' hotplugCpus='yes' maxCpus='248' defaultCPU='qemu-s390x-cpu'/>
+  <machine type='tcg' name='s390-ccw-virtio-2.7' hotplugCpus='yes' maxCpus='248' defaultCPU='qemu-s390x-cpu'/>
 </qemuCaps>

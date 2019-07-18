@@ -3544,6 +3544,7 @@ qemuMonitorMachineInfoFree(qemuMonitorMachineInfoPtr machine)
         return;
     VIR_FREE(machine->name);
     VIR_FREE(machine->alias);
+    VIR_FREE(machine->defaultCPU);
     VIR_FREE(machine);
 }
 

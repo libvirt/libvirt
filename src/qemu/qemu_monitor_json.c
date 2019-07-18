@@ -5551,6 +5551,18 @@ int qemuMonitorJSONGetMachines(qemuMonitorPtr mon,
 
         ignore_value(virJSONValueObjectGetBoolean(child, "hotpluggable-cpus",
                                                   &info->hotplugCpus));
+
+        if (virJSONValueObjectHasKey(child, "default-cpu-type")) {
+            if (!(tmp = virJSONValueObjectGetString(child, "default-cpu-type"))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("query-machines reply has malformed "
+                                 "'default-cpu-type' data"));
+                goto cleanup;
+            }
+
+            if (VIR_STRDUP(info->defaultCPU, tmp) < 0)
+                goto cleanup;
+        }
     }
 
     ret = n;
