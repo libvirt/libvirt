@@ -1294,16 +1294,35 @@ virSecurityManagerMetadataLock(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
      * paths A B and there's another that is trying to lock them
      * in reversed order a deadlock might occur.  But if we sort
      * the paths alphabetically then both processes will try lock
-     * paths in the same order and thus no deadlock can occur. */
+     * paths in the same order and thus no deadlock can occur.
+     * Lastly, it makes searching for duplicate paths below
+     * simpler. */
     qsort(paths, npaths, sizeof(*paths), cmpstringp);
 
     for (i = 0; i < npaths; i++) {
         const char *p = paths[i];
         struct stat sb;
+        size_t j;
         int retries = 10 * 1000;
         int fd;
 
-        if (!p || stat(p, &sb) < 0)
+        if (!p)
+            continue;
+
+        /* If there's a duplicate path on the list, skip it over.
+         * Not only we would fail open()-ing it the second time,
+         * we would deadlock with ourselves trying to lock it the
+         * second time. After all, we've locked it when iterating
+         * over it the first time. */
+        for (j = 0; j < i; j++) {
+            if (STREQ_NULLABLE(p, paths[j]))
+                break;
+        }
+
+        if (i != j)
+            continue;
+
+        if (stat(p, &sb) < 0)
             continue;
 
         if (S_ISDIR(sb.st_mode)) {
