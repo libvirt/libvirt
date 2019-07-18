@@ -25,7 +25,7 @@ EnvironmentFile=-/etc/sysconfig/libvirtd
 # VMs can be performed. We don't want it to stick around if
 # unused though, so we set a timeout. The socket activation
 # then ensures it gets started again if anything needs it
-ExecStart=@sbindir@/libvirtd --timeout 30 $LIBVIRTD_ARGS
+ExecStart=@sbindir@/libvirtd --timeout 120 $LIBVIRTD_ARGS
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 Restart=on-failure

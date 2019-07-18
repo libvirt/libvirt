@@ -137,7 +137,7 @@ static int virNetSocketForkDaemon(const char *binary)
 {
     int ret;
     virCommandPtr cmd = virCommandNewArgList(binary,
-                                             "--timeout=30",
+                                             "--timeout=120",
                                              NULL);
 
     virCommandAddEnvPassCommon(cmd);
