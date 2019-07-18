@@ -47,7 +47,7 @@ libvirt_driver_network_impl_la_CFLAGS = \
 	$(AM_CFLAGS) \
 	$(NULL)
 libvirt_driver_network_impl_la_SOURCES = $(NETWORK_DRIVER_SOURCES)
-libvirt_driver_network_impl_la_LIBADD  = $(DBUS_LIBS)
+libvirt_driver_network_impl_la_LIBADD  = $(DBUS_LIBS) $(LIBXML_LIBS)
 
 libexec_PROGRAMS += libvirt_leaseshelper
 libvirt_leaseshelper_SOURCES = $(NETWORK_LEASES_HELPER_SOURCES)
