@@ -17218,12 +17218,6 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
 
     ignore_value(virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps));
 
-    /*
-     * With the ABORT_ASYNC flag we don't need to do anything, the event will
-     * come from qemu and will update the XML as appropriate, but without the
-     * ABORT_ASYNC flag, we must block to guarantee synchronous operation.  We
-     * do the waiting while still holding the VM job, to prevent newly
-     * scheduled block jobs from confusing us. */
     if (!async) {
         qemuBlockJobUpdate(vm, job, QEMU_ASYNC_JOB_NONE);
         while (qemuBlockJobIsRunning(job)) {
