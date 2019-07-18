@@ -77,11 +77,14 @@ MANINFILES += virtlockd.8.in
 CLEANFILES += $(man8_MANS)
 MAINTAINERCLEANFILES += $(MANINFILES)
 
-SYSTEMD_UNIT_FILES_IN += \
+VIRTLOCKD_UNIT_FILES_IN = \
 	locking/virtlockd.service.in \
 	locking/virtlockd.socket.in \
 	locking/virtlockd-admin.socket.in \
 	$(NULL)
+
+SYSTEMD_UNIT_FILES += $(notdir $(VIRTLOCKD_UNIT_FILES_IN:%.in=%))
+SYSTEMD_UNIT_FILES_IN += $(VIRTLOCKD_UNIT_FILES_IN)
 
 lockdriverdir = $(libdir)/libvirt/lock-driver
 lockdriver_LTLIBRARIES =

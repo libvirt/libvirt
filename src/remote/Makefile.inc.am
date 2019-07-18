@@ -89,7 +89,7 @@ SYSCONF_FILES += remote/libvirtd.sysconf
 PODFILES += remote/libvirtd.pod
 MANINFILES += libvirtd.8.in
 
-SYSTEMD_UNIT_FILES_IN += \
+LIBVIRTD_UNIT_FILES_IN = \
 	remote/libvirtd.service.in \
 	remote/libvirtd.socket.in \
 	remote/libvirtd-ro.socket.in \
@@ -98,6 +98,9 @@ SYSTEMD_UNIT_FILES_IN += \
 	remote/libvirtd-tls.socket.in \
 	remote/virt-guest-shutdown.target.in \
 	$(NULL)
+
+SYSTEMD_UNIT_FILES += $(notdir $(LIBVIRTD_UNIT_FILES_IN:%.in=%))
+SYSTEMD_UNIT_FILES_IN += $(LIBVIRTD_UNIT_FILES_IN)
 
 REMOTE_PROTOCOL = $(srcdir)/remote/remote_protocol.x
 LXC_PROTOCOL = $(srcdir)/remote/lxc_protocol.x

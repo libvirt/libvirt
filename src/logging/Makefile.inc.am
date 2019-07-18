@@ -50,11 +50,14 @@ PODFILES += logging/virtlogd.pod
 MANINFILES += virtlogd.8.in
 SYSCONF_FILES += logging/virtlogd.sysconf
 
-SYSTEMD_UNIT_FILES_IN += \
+VIRTLOGD_UNIT_FILES_IN = \
 	logging/virtlogd.service.in \
 	logging/virtlogd.socket.in \
 	logging/virtlogd-admin.socket.in \
 	$(NULL)
+
+SYSTEMD_UNIT_FILES += $(notdir $(VIRTLOGD_UNIT_FILES_IN:%.in=%))
+SYSTEMD_UNIT_FILES_IN += $(VIRTLOGD_UNIT_FILES_IN)
 
 if WITH_LIBVIRTD
 sbin_PROGRAMS += virtlogd
