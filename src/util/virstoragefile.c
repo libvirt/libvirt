@@ -973,7 +973,6 @@ virStorageFileGetMetadataInternal(virStorageSourcePtr meta,
                                   int *backingFormat)
 {
     int dummy;
-    int ret = -1;
     size_t i;
 
     if (!backingFormat)
@@ -989,7 +988,7 @@ virStorageFileGetMetadataInternal(virStorageSourcePtr meta,
         meta->format >= VIR_STORAGE_FILE_LAST) {
         virReportSystemError(EINVAL, _("unknown storage file meta->format %d"),
                              meta->format);
-        goto cleanup;
+        return -1;
     }
 
     if (fileTypeInfo[meta->format].cryptInfo != NULL) {
@@ -999,7 +998,7 @@ virStorageFileGetMetadataInternal(virStorageSourcePtr meta,
                 int expt_fmt = fileTypeInfo[meta->format].cryptInfo[i].format;
                 if (!meta->encryption) {
                     if (VIR_ALLOC(meta->encryption) < 0)
-                        goto cleanup;
+                        return -1;
 
                     meta->encryption->format = expt_fmt;
                 } else {
@@ -1008,7 +1007,7 @@ virStorageFileGetMetadataInternal(virStorageSourcePtr meta,
                                        _("encryption format %d doesn't match "
                                          "expected format %d"),
                                        meta->encryption->format, expt_fmt);
-                        goto cleanup;
+                        return -1;
                     }
                 }
                 meta->encryption->payload_offset =
@@ -1021,12 +1020,12 @@ virStorageFileGetMetadataInternal(virStorageSourcePtr meta,
      * code into this method, for non-magic files
      */
     if (!fileTypeInfo[meta->format].magic)
-        goto done;
+        return 0;
 
     /* Optionally extract capacity from file */
     if (fileTypeInfo[meta->format].sizeOffset != -1) {
         if ((fileTypeInfo[meta->format].sizeOffset + 8) > len)
-            goto done;
+            return 0;
 
         if (fileTypeInfo[meta->format].endian == LV_LITTLE_ENDIAN)
             meta->capacity = virReadBufInt64LE(buf +
@@ -1037,7 +1036,7 @@ virStorageFileGetMetadataInternal(virStorageSourcePtr meta,
         /* Avoid unlikely, but theoretically possible overflow */
         if (meta->capacity > (ULLONG_MAX /
                               fileTypeInfo[meta->format].sizeMultiplier))
-            goto done;
+            return 0;
         meta->capacity *= fileTypeInfo[meta->format].sizeMultiplier;
     }
 
@@ -1047,25 +1046,21 @@ virStorageFileGetMetadataInternal(virStorageSourcePtr meta,
                                                                backingFormat,
                                                                buf, len);
         if (store == BACKING_STORE_INVALID)
-            goto done;
+            return 0;
 
         if (store == BACKING_STORE_ERROR)
-            goto cleanup;
+            return -1;
     }
 
     if (fileTypeInfo[meta->format].getFeatures != NULL &&
         fileTypeInfo[meta->format].getFeatures(&meta->features, meta->format, buf, len) < 0)
-        goto cleanup;
+        return -1;
 
     if (meta->format == VIR_STORAGE_FILE_QCOW2 && meta->features &&
         VIR_STRDUP(meta->compat, "1.1") < 0)
-        goto cleanup;
+        return -1;
 
- done:
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
