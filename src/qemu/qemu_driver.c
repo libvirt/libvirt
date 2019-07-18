@@ -4686,7 +4686,7 @@ processBlockJobEvent(virQEMUDriverPtr driver,
                      int status)
 {
     virDomainDiskDefPtr disk;
-    qemuBlockJobDataPtr job = NULL;
+    VIR_AUTOUNREF(qemuBlockJobDataPtr) job = NULL;
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         return;
@@ -4712,7 +4712,6 @@ processBlockJobEvent(virQEMUDriverPtr driver,
     qemuBlockJobUpdate(vm, job, QEMU_ASYNC_JOB_NONE);
 
  endjob:
-    qemuBlockJobStartupFinalize(vm, job);
     qemuDomainObjEndJob(driver, vm);
 }
 
