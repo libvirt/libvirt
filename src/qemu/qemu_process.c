@@ -936,7 +936,7 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     virQEMUDriverPtr driver = opaque;
     struct qemuProcessEvent *processEvent = NULL;
     virDomainDiskDefPtr disk;
-    qemuBlockJobDataPtr job = NULL;
+    VIR_AUTOUNREF(qemuBlockJobDataPtr) job = NULL;
     char *data = NULL;
 
     virObjectLock(vm);
@@ -983,7 +983,6 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     }
 
  cleanup:
-    qemuBlockJobStartupFinalize(vm, job);
     qemuProcessEventFree(processEvent);
     virObjectUnlock(vm);
     return 0;
