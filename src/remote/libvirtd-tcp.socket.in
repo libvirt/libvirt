@@ -1,14 +1,15 @@
 [Unit]
-Description=Libvirt non-TLS IP socket
-Before=libvirtd.service
-BindsTo=libvirtd.socket
-After=libvirtd.socket
+Description=@name@ non-TLS IP socket
+Before=@service@.service
+BindsTo=@service@.socket
+After=@service@.socket
+@deps@
 
 [Socket]
-# This must match the @sysconfdir@/libvirt/libvirtd.conf tcp_port setting
+# This must match the @sysconfdir@/libvirt/@service@.conf tcp_port setting
 # when using systemd version < 227
 ListenStream=16509
-Service=libvirtd.service
+Service=@service@.service
 
 [Install]
 WantedBy=sockets.target

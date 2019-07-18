@@ -1,14 +1,15 @@
 [Unit]
-Description=Libvirt local read-only socket
-Before=libvirtd.service
-BindsTo=libvirtd.socket
-After=libvirtd.socket
+Description=@name@ local read-only socket
+Before=@service@.service
+BindsTo=@service@.socket
+After=@service@.socket
+@deps@
 
 [Socket]
-# The directory must match the @sysconfdir@/libvirt/libvirtd.conf unix_sock_dir setting
+# The directory must match the @sysconfdir@/libvirt/@service@.conf unix_sock_dir setting
 # when using systemd version < 227
-ListenStream=@localstatedir@/run/libvirt/libvirt-sock-ro
-Service=libvirtd.service
+ListenStream=@localstatedir@/run/libvirt/@sockprefix@-sock-ro
+Service=@service@.service
 SocketMode=0666
 
 [Install]

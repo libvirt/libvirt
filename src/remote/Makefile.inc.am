@@ -295,6 +295,10 @@ endif WITH_SASL
 
 LIBVIRTD_UNIT_VARS = \
 	$(COMMON_UNIT_VARS) \
+	-e 's|[@]name[@]|Libvirt|g' \
+	-e 's|[@]service[@]|libvirtd|g' \
+	-e 's|[@]sockprefix[@]|libvirt|g' \
+	-e 's|[@]deps[@]||g' \
 	$(NULL)
 
 libvirtd.service: remote/libvirtd.service.in $(top_builddir)/config.status
