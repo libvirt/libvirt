@@ -54,6 +54,15 @@
 <libvirt>
   <release version="v5.6.0" date="unreleased">
     <section title="New features">
+      <change>
+        <summary>
+          qemu: Introduce a new video model of type 'bochs'
+        </summary>
+        <description>
+          Introduce a new video model type that supports the
+          <code>bochs-display</code> device that was added in qemu version 3.0.
+        </description>
+      </change>
     </section>
     <section title="Removed features">
       <change>
