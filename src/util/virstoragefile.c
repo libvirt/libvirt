@@ -965,7 +965,11 @@ virStorageFileGetEncryptionPayloadOffset(const struct FileEncryptionInfo *info,
  * assuming it has the given FORMAT, populate information into META
  * with information about the file and its backing store. Return format
  * of the backing store as BACKING_FORMAT. PATH and FORMAT have to be
- * pre-populated in META */
+ * pre-populated in META.
+ *
+ * Note that this function may be called repeatedly on @meta, so it must
+ * clean up any existing allocated memory which would be overwritten.
+ */
 int
 virStorageFileGetMetadataInternal(virStorageSourcePtr meta,
                                   char *buf,
@@ -1052,10 +1056,13 @@ virStorageFileGetMetadataInternal(virStorageSourcePtr meta,
             return -1;
     }
 
+    virBitmapFree(meta->features);
+    meta->features = NULL;
     if (fileTypeInfo[meta->format].getFeatures != NULL &&
         fileTypeInfo[meta->format].getFeatures(&meta->features, meta->format, buf, len) < 0)
         return -1;
 
+    VIR_FREE(meta->compat);
     if (meta->format == VIR_STORAGE_FILE_QCOW2 && meta->features &&
         VIR_STRDUP(meta->compat, "1.1") < 0)
         return -1;
