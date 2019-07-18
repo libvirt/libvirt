@@ -446,12 +446,7 @@ virCommandMassCloseGetFDsLinux(virCommandPtr cmd ATTRIBUTE_UNUSED,
             goto cleanup;
         }
 
-        if (virBitmapSetBit(fds, fd) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unable to set FD as open: %d"),
-                           fd);
-            goto cleanup;
-        }
+        ignore_value(virBitmapSetBit(fds, fd));
     }
 
     if (rc < 0)
