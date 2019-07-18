@@ -38,6 +38,9 @@ char ** virshDomainDiskTargetCompleter(vshControl *ctl,
                                        const vshCmd *cmd,
                                        unsigned int flags);
 
+char ** virshCommaStringListComplete(const char *input,
+                                     const char **options);
+
 char ** virshStoragePoolNameCompleter(vshControl *ctl,
                                       const vshCmd *cmd,
                                       unsigned int flags);

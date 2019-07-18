@@ -96,7 +96,7 @@
  * Returns: string list of completions on success,
  *          NULL otherwise.
  */
-static char **
+char **
 virshCommaStringListComplete(const char *input,
                              const char **options)
 {
