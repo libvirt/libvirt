@@ -4702,6 +4702,7 @@ processBlockJobEvent(virQEMUDriverPtr driver,
     }
 
     if (!(job = qemuBlockJobDiskGetJob(disk))) {
+        VIR_DEBUG("creating new block job object for '%s'", diskAlias);
         if (!(job = qemuBlockJobDiskNew(vm, disk, type, diskAlias)))
             goto endjob;
         job->state = QEMU_BLOCKJOB_STATE_RUNNING;
