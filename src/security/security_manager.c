@@ -1289,7 +1289,12 @@ virSecurityManagerMetadataLock(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     if (VIR_ALLOC_N(fds, npaths) < 0)
         return NULL;
 
-    /* Sort paths to lock in order to avoid deadlocks. */
+    /* Sort paths to lock in order to avoid deadlocks with other
+     * processes. For instance, if one process wants to lock
+     * paths A B and there's another that is trying to lock them
+     * in reversed order a deadlock might occur.  But if we sort
+     * the paths alphabetically then both processes will try lock
+     * paths in the same order and thus no deadlock can occur. */
     qsort(paths, npaths, sizeof(*paths), cmpstringp);
 
     for (i = 0; i < npaths; i++) {
