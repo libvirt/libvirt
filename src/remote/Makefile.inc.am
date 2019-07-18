@@ -293,48 +293,15 @@ INSTALL_DATA_LOCAL += install-sasl
 UNINSTALL_LOCAL += uninstall-sasl
 endif WITH_SASL
 
+LIBVIRTD_UNIT_VARS = \
+	$(COMMON_UNIT_VARS) \
+	$(NULL)
+
 libvirtd.service: remote/libvirtd.service.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed \
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
-	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
-	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
-	    < $< > $@-t && \
-	    mv $@-t $@
+	$(AM_V_GEN)$(SED) $(LIBVIRTD_UNIT_VARS) $< > $@-t && mv $@-t $@
 
-libvirtd.socket: remote/libvirtd.socket.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed \
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
-	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
-	    < $< > $@-t && \
-	    mv $@-t $@
-
-libvirtd-ro.socket: remote/libvirtd-ro.socket.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed \
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
-	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
-	    < $< > $@-t && \
-	    mv $@-t $@
-
-libvirtd-admin.socket: remote/libvirtd-admin.socket.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed \
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
-	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
-	    < $< > $@-t && \
-	    mv $@-t $@
-
-libvirtd-tcp.socket: remote/libvirtd-tcp.socket.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed \
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
-	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
-	    < $< > $@-t && \
-	    mv $@-t $@
-
-libvirtd-tls.socket: remote/libvirtd-tls.socket.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed \
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
-	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
-	    < $< > $@-t && \
-	    mv $@-t $@
+libvirt%.socket: remote/libvirt%.socket.in $(top_builddir)/config.status
+	$(AM_V_GEN)$(SED) $(LIBVIRTD_UNIT_VARS) $< > $@-t && mv $@-t $@
 
 virt-guest-shutdown.target: remote/virt-guest-shutdown.target.in \
 			$(top_builddir)/config.status

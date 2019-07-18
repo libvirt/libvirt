@@ -89,6 +89,12 @@ man8_MANS =
 DRIVER_SOURCES =
 man7_MANS =
 
+COMMON_UNIT_VARS = \
+	-e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+	-e 's|[@]sbindir[@]|$(sbindir)|g' \
+	-e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
+	$(NULL)
+
 include util/Makefile.inc.am
 include conf/Makefile.inc.am
 include cpu/Makefile.inc.am
