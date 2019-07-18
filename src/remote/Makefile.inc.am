@@ -146,6 +146,7 @@ libvirtd_CFLAGS = \
 	-I$(srcdir)/access \
 	-I$(srcdir)/conf \
 	-I$(srcdir)/rpc \
+	-DSOCK_PREFIX="\"libvirt\"" \
 	$(NULL)
 
 libvirtd_LDFLAGS = \
