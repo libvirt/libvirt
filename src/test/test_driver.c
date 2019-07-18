@@ -6751,6 +6751,29 @@ testDomainScreenshot(virDomainPtr dom ATTRIBUTE_UNUSED,
 
 
 static int
+testDomainInjectNMI(virDomainPtr domain,
+                    unsigned int flags)
+{
+    virDomainObjPtr vm = NULL;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(vm = testDomObjFromDomain(domain)))
+        return -1;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto cleanup;
+
+    /* do nothing */
+    ret = 0;
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
+static int
 testDomainSendKey(virDomainPtr domain,
                   unsigned int codeset,
                   unsigned int holdtime ATTRIBUTE_UNUSED,
@@ -7827,6 +7850,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .nodeGetCPUMap = testNodeGetCPUMap, /* 1.0.0 */
     .domainRename = testDomainRename, /* 4.1.0 */
     .domainScreenshot = testDomainScreenshot, /* 1.0.5 */
+    .domainInjectNMI = testDomainInjectNMI, /* 5.6.0 */
     .domainSendKey = testDomainSendKey, /* 5.5.0 */
     .domainGetMetadata = testDomainGetMetadata, /* 1.1.3 */
     .domainSetMetadata = testDomainSetMetadata, /* 1.1.3 */
