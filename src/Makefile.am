@@ -74,7 +74,6 @@ GENERATED_SYM_FILES =
 augeas_DATA =
 augeastest_DATA =
 conf_DATA =
-AUGEAS_DIRS =
 if WITH_DTRACE_PROBES
 tapset_DATA =
 endif WITH_DTRACE_PROBES
@@ -395,15 +394,20 @@ GENERATED_SYM_FILES += \
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/genprotocol.pl $(RPCGEN) -h \
 	       $< $(srcdir)/$(subst $(srcdir)/,,$@)
 
-
-
-
-
-
-
 check-local: check-augeas
 
-check-augeas: $(AUGEAS_DIRS:%=check-augeas-%)
+check-augeas: $(augeas_DATA) $(augeastest_DATA)
+	$(AM_V_GEN) \
+	if test -x "$(AUGPARSE)"; then \
+	    for f in $(augeastest_DATA); do \
+		DIR=$$(dirname "$$f"); \
+		FILE=$$(basename "$$f"); \
+		"$(AUGPARSE)" \
+		    -I "$(srcdir)/$$DIR" -I "$(builddir)/$$DIR" \
+		    "$$DIR/$$FILE"; \
+	    done; \
+	fi
+.PHONY: check-augeas
 
 AUG_GENTEST = $(PERL) $(top_srcdir)/build-aux/augeas-gentest.pl
 

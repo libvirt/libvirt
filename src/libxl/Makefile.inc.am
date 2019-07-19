@@ -69,16 +69,9 @@ conf_DATA += libxl/libxl.conf
 augeas_DATA += libxl/libvirtd_libxl.aug
 augeastest_DATA += libxl/test_libvirtd_libxl.aug
 
-AUGEAS_DIRS += libxl
-
 libxl/test_libvirtd_libxl.aug: libxl/test_libvirtd_libxl.aug.in \
 		$(srcdir)/libxl/libxl.conf $(AUG_GENTEST)
 	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/libxl/libxl.conf $< > $@
-
-check-augeas-libxl: libxl/test_libvirtd_libxl.aug
-	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
-	    '$(AUGPARSE)' -I $(srcdir)/libxl libxl/test_libvirtd_libxl.aug; \
-	fi
 
 INSTALL_DATA_DIRS += libxl
 
@@ -93,10 +86,6 @@ uninstall-data-libxl:
 	rmdir "$(DESTDIR)$(localstatedir)/log/libvirt/libxl" ||:
 
 endif WITH_LIBXL
-
-.PHONY: \
-	check-augeas-libxl \
-	$(NULL)
 
 EXTRA_DIST += \
 	libxl/libxl.conf \

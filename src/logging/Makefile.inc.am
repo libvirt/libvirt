@@ -101,16 +101,7 @@ logging/test_virtlogd.aug: logging/test_virtlogd.aug.in \
 		logging/virtlogd.conf $(AUG_GENTEST)
 	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/logging/virtlogd.conf $< > $@
 
-AUGEAS_DIRS += logging
-
-check-augeas-logging: logging/test_virtlogd.aug
-	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
-	    '$(AUGPARSE)' -I $(srcdir)/logging logging/test_virtlogd.aug; \
-	fi
-
 endif WITH_LIBVIRTD
-
-.PHONY: check-augeas-logging
 
 logging/log_daemon_dispatch_stubs.h: $(LOG_PROTOCOL) \
 		$(srcdir)/rpc/gendispatch.pl Makefile.am

@@ -117,16 +117,9 @@ conf_DATA += qemu/qemu.conf
 augeas_DATA += qemu/libvirtd_qemu.aug
 augeastest_DATA += qemu/test_libvirtd_qemu.aug
 
-AUGEAS_DIRS += qemu
-
 qemu/test_libvirtd_qemu.aug: qemu/test_libvirtd_qemu.aug.in \
 		$(srcdir)/qemu/qemu.conf $(AUG_GENTEST)
 	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/qemu/qemu.conf $< > $@
-
-check-augeas-qemu: qemu/test_libvirtd_qemu.aug
-	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
-	    '$(AUGPARSE)' -I $(srcdir)/qemu qemu/test_libvirtd_qemu.aug; \
-	fi
 
 INSTALL_DATA_DIRS += qemu
 
@@ -151,7 +144,6 @@ uninstall-data-qemu:
 endif WITH_QEMU
 
 .PHONY: \
-	check-augeas-qemu \
 	install-data-qemu \
 	uninstall-data-qemu \
 	$(NULL)

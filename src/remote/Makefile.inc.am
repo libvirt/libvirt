@@ -184,16 +184,9 @@ install-data-remote:
 uninstall-data-remote:
 	rmdir "$(DESTDIR)$(localstatedir)/log/libvirt" ||:
 
-AUGEAS_DIRS += remote
-
 remote/test_libvirtd.aug: remote/test_libvirtd.aug.in \
 		remote/libvirtd.conf $(AUG_GENTEST)
 	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/remote/libvirtd.conf $< > $@
-
-check-augeas-remote: remote/test_libvirtd.aug
-	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
-	    '$(AUGPARSE)' -I $(srcdir)/remote remote/test_libvirtd.aug; \
-	fi
 
 if WITH_SYSCTL
 # Use $(prefix)/lib rather than $(libdir), since man sysctl.d insists on
@@ -241,7 +234,6 @@ endif WITH_LIBVIRTD
 .PHONY: \
 	install-data-remote \
 	uninstall-data-remote \
-	check-augeas-remote \
 	$(NULL)
 
 # This is needed for clients too, so can't wrap in

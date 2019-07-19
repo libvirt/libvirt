@@ -158,16 +158,9 @@ conf_DATA += lxc/lxc.conf
 augeas_DATA += lxc/libvirtd_lxc.aug
 augeastest_DATA += lxc/test_libvirtd_lxc.aug
 
-AUGEAS_DIRS += lxc
-
 lxc/test_libvirtd_lxc.aug: lxc/test_libvirtd_lxc.aug.in \
 		$(srcdir)/lxc/lxc.conf $(AUG_GENTEST)
 	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/lxc/lxc.conf $< > $@
-
-check-augeas-lxc: lxc/test_libvirtd_lxc.aug
-	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
-	    '$(AUGPARSE)' -I $(srcdir)/lxc lxc/test_libvirtd_lxc.aug; \
-	fi
 
 INSTALL_DATA_DIRS += lxc
 
@@ -196,7 +189,6 @@ lxc/lxc_controller_dispatch.h: $(srcdir)/rpc/gendispatch.pl \
 	  $(srcdir)/lxc/lxc_controller_dispatch.h
 
 .PHONY: \
-	check-agueas-lxc \
 	install-data-lxc \
 	uninstall-data-lxc \
 	$(NULL)

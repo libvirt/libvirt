@@ -51,16 +51,9 @@ conf_DATA += bhyve/bhyve.conf
 augeas_DATA += bhyve/libvirtd_bhyve.aug
 augeastest_DATA += bhyve/test_libvirtd_bhyve.aug
 
-AUGEAS_DIRS += bhyve
-
 bhyve/test_libvirtd_bhyve.aug: bhyve/test_libvirtd_bhyve.aug.in \
 		$(srcdir)/bhyve/bhyve.conf $(AUG_GENTEST)
 	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/bhyve/bhyve.conf $< > $@
-
-check-augeas-bhyve: bhyve/test_libvirtd_bhyve.aug
-	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
-	    '$(AUGPARSE)' -I $(srcdir)/bhyve bhyve/test_libvirtd_bhyve.aug; \
-	fi
 
 endif WITH_BHYVE
 
@@ -68,8 +61,4 @@ EXTRA_DIST += \
 	bhyve/bhyve.conf \
 	bhyve/libvirtd_bhyve.aug \
 	bhyve/test_libvirtd_bhyve.aug.in \
-	$(NULL)
-
-.PHONY: \
-	check-augeas-bhyve \
 	$(NULL)
