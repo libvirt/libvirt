@@ -41,12 +41,9 @@
 #include "virerror.h"
 #include "virbuffer.h"
 #include "viralloc.h"
-#include <libvirt/libvirt-qemu.h>
-#include <libvirt/libvirt-lxc.h>
 #include "virfile.h"
 #include "virthread.h"
 #include "vircommand.h"
-#include "conf/domain_conf.h"
 #include "virtypedparam.h"
 #include "virstring.h"
 
