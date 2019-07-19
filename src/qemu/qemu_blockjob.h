@@ -106,7 +106,7 @@ qemuBlockJobDiskNew(virDomainObjPtr vm,
                     virDomainDiskDefPtr disk,
                     qemuBlockJobType type,
                     const char *jobname)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4);
 
 qemuBlockJobDataPtr
 qemuBlockJobDiskGetJob(virDomainDiskDefPtr disk)
