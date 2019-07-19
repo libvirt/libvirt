@@ -983,6 +983,22 @@ virChrdevFree;
 virChrdevOpen;
 
 
+# conf/virdomaincheckpointobjlist.h
+virDomainCheckpointAssignDef;
+virDomainCheckpointFindByName;
+virDomainCheckpointForEach;
+virDomainCheckpointGetCurrent;
+virDomainCheckpointGetCurrentName;
+virDomainCheckpointLinkParent;
+virDomainCheckpointObjListFree;
+virDomainCheckpointObjListNew;
+virDomainCheckpointObjListRemove;
+virDomainCheckpointObjListRemoveAll;
+virDomainCheckpointSetCurrent;
+virDomainCheckpointUpdateRelations;
+virDomainListCheckpoints;
+
+
 # conf/virdomainmomentobjlist.h
 virDomainMomentDropChildren;
 virDomainMomentDropParent;

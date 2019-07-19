@@ -36,6 +36,8 @@ DOMAIN_CONF_SOURCES = \
 	conf/numa_conf.c \
 	conf/numa_conf.h \
 	conf/virconftypes.h \
+	conf/virdomaincheckpointobjlist.c \
+	conf/virdomaincheckpointobjlist.h \
 	conf/virdomainobjlist.c \
 	conf/virdomainobjlist.h \
 	conf/virdomainmomentobjlist.c \

@@ -31,8 +31,8 @@
 #include "viralloc.h"
 
 /* FIXME: using virObject would allow us to not need this */
-#include "snapshot_conf.h"
 #include "virdomainsnapshotobjlist.h"
+#include "virdomaincheckpointobjlist.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 
@@ -588,4 +588,19 @@ virDomainMomentCheckCycles(virDomainMomentObjListPtr list,
         }
     }
     return 0;
+}
+
+/* If there is exactly one leaf node, return that node. */
+virDomainMomentObjPtr
+virDomainMomentFindLeaf(virDomainMomentObjListPtr list)
+{
+    virDomainMomentObjPtr moment = &list->metaroot;
+
+    if (moment->nchildren != 1)
+        return NULL;
+    while (moment->nchildren == 1)
+        moment = moment->first_child;
+    if (moment->nchildren == 0)
+        return moment;
+    return NULL;
 }

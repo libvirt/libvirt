@@ -105,6 +105,12 @@ typedef virDomainBlockIoTuneInfo *virDomainBlockIoTuneInfoPtr;
 typedef struct _virDomainCheckpointDef virDomainCheckpointDef;
 typedef virDomainCheckpointDef *virDomainCheckpointDefPtr;
 
+typedef struct _virDomainCheckpointObj virDomainCheckpointObj;
+typedef virDomainCheckpointObj *virDomainCheckpointObjPtr;
+
+typedef struct _virDomainCheckpointObjList virDomainCheckpointObjList;
+typedef virDomainCheckpointObjList *virDomainCheckpointObjListPtr;
+
 typedef struct _virDomainChrDef virDomainChrDef;
 typedef virDomainChrDef *virDomainChrDefPtr;
 
