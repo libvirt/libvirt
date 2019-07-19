@@ -3100,6 +3100,14 @@ virPCIGetVirtualFunctionIndex(const char *pf_sysfs_device_link ATTRIBUTE_UNUSED,
 }
 
 int
+virPCIGetSysfsFile(char *virPCIDeviceName ATTRIBUTE_UNUSED,
+                   char **pci_sysfs_device_link ATTRIBUTE_UNUSED)
+{
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
+    return -1;
+}
+
+int
 virPCIDeviceAddressGetSysfsFile(virPCIDeviceAddressPtr dev ATTRIBUTE_UNUSED,
                                 char **pci_sysfs_device_link ATTRIBUTE_UNUSED)
 {
