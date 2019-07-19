@@ -116,14 +116,10 @@ endif WITH_SASL
 if WITH_QEMU
 augeastest_DATA += locking/test_libvirt_lockd.aug
 nodist_conf_DATA += locking/qemu-lockd.conf
-BUILT_SOURCES += locking/qemu-lockd.conf
-DISTCLEANFILES += locking/qemu-lockd.conf
 endif WITH_QEMU
 
 if WITH_LIBXL
 nodist_conf_DATA += locking/libxl-lockd.conf
-BUILT_SOURCES += locking/libxl-lockd.conf
-DISTCLEANFILES += locking/libxl-lockd.conf
 endif WITH_LIBXL
 
 sbin_PROGRAMS += virtlockd
@@ -171,14 +167,10 @@ augeas_DATA += locking/libvirt_sanlock.aug
 if WITH_QEMU
 augeastest_DATA += locking/test_libvirt_sanlock.aug
 nodist_conf_DATA += locking/qemu-sanlock.conf
-BUILT_SOURCES += locking/qemu-sanlock.conf
-DISTCLEANFILES += locking/qemu-sanlock.conf
 endif WITH_QEMU
 
 if WITH_LIBXL
 nodist_conf_DATA += locking/libxl-sanlock.conf
-BUILT_SOURCES += locking/libxl-sanlock.conf
-DISTCLEANFILES += locking/libxl-sanlock.conf
 endif WITH_LIBXL
 
 libexec_PROGRAMS += libvirt_sanlock_helper

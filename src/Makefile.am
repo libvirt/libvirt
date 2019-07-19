@@ -144,6 +144,9 @@ moddir = $(libdir)/libvirt/connection-driver
 confdir = $(sysconfdir)/libvirt
 conf_DATA += libvirt.conf libvirt-admin.conf
 
+CLEANFILES += $(nodist_conf_DATA)
+BUILT_SOURCES += $(nodist_conf_DATA)
+
 augeasdir = $(datadir)/augeas/lenses
 
 augeastestdir = $(datadir)/augeas/lenses/tests
