@@ -29,3 +29,7 @@ char ** virshStoragePoolNameCompleter(vshControl *ctl,
 char ** virshPoolEventNameCompleter(vshControl *ctl,
                                     const vshCmd *cmd,
                                     unsigned int flags);
+
+char ** virshPoolTypeCompleter(vshControl *ctl,
+                               const vshCmd *cmd,
+                               unsigned int flags);

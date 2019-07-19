@@ -1095,6 +1095,7 @@ static const vshCmdOptDef opts_pool_list[] = {
     },
     {.name = "type",
      .type = VSH_OT_STRING,
+     .completer = virshPoolTypeCompleter,
      .help = N_("only list pool of specified type(s) (if supported)")
     },
     {.name = "details",

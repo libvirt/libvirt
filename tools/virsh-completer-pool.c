@@ -21,6 +21,7 @@
 #include <config.h>
 
 #include "virsh-completer-pool.h"
+#include "conf/storage_conf.h"
 #include "viralloc.h"
 #include "virsh-pool.h"
 #include "virsh.h"
@@ -90,4 +91,30 @@ virshPoolEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
 
     VIR_STEAL_PTR(ret, tmp);
     return ret;
+}
+
+
+char **
+virshPoolTypeCompleter(vshControl *ctl,
+                       const vshCmd *cmd,
+                       unsigned int flags)
+{
+    VIR_AUTOSTRINGLIST tmp = NULL;
+    const char *type_str = NULL;
+    size_t i = 0;
+
+    virCheckFlags(0, NULL);
+
+    if (vshCommandOptStringQuiet(ctl, cmd, "type", &type_str) < 0)
+        return NULL;
+
+    if (VIR_ALLOC_N(tmp, VIR_STORAGE_POOL_LAST + 1) < 0)
+        return NULL;
+
+    for (i = 0; i < VIR_STORAGE_POOL_LAST; i++) {
+        if (VIR_STRDUP(tmp[i], virStoragePoolTypeToString(i)) < 0)
+            return NULL;
+    }
+
+    return virshCommaStringListComplete(type_str, (const char **)tmp);
 }
