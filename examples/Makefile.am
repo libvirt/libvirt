@@ -16,8 +16,6 @@
 ## License along with this library.  If not, see
 ## <http://www.gnu.org/licenses/>.
 
-FILTERS = $(wildcard $(srcdir)/xml/nwfilter/*.xml)
-
 ADMIN_EXAMPLES = \
 	$(wildcard $(srcdir)/c/admin/*.c) \
 	$(NULL)
@@ -56,7 +54,6 @@ EXTRA_DIST = \
 	$(STORAGE_XML_EXAMPLES) \
 	$(SYSTEMTAP_EXAMPLES) \
 	$(TEST_XML_EXAMPLES) \
-	$(FILTERS) \
 	$(NULL)
 
 AM_CPPFLAGS = \
@@ -110,13 +107,6 @@ c_domain_suspend_SOURCES = c/domain/suspend.c
 c_misc_event_test_SOURCES = c/misc/event-test.c
 c_misc_hellolibvirt_SOURCES = c/misc/hellolibvirt.c
 c_misc_openauth_SOURCES = c/misc/openauth.c
-
-if WITH_NWFILTER
-
-nwfilterdir = $(sysconfdir)/libvirt/nwfilter
-nwfilter_DATA = $(FILTERS)
-
-endif WITH_NWFILTER
 
 examplesdir = $(docdir)/examples
 

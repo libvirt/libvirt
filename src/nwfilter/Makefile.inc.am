@@ -1,5 +1,9 @@
 # vim: filetype=automake
 
+NWFILTER_XML_FILES = $(wildcard $(srcdir)/nwfilter/xml/*.xml)
+
+EXTRA_DIST += $(NWFILTER_XML_FILES)
+
 NWFILTER_DRIVER_SOURCES = \
 	nwfilter/nwfilter_driver.h \
 	nwfilter/nwfilter_driver.c \
@@ -19,6 +23,10 @@ STATEFUL_DRIVER_SOURCE_FILES += $(NWFILTER_DRIVER_SOURCES)
 EXTRA_DIST += $(NWFILTER_DRIVER_SOURCES)
 
 if WITH_NWFILTER
+
+nwfilterxmldir = $(sysconfdir)/libvirt/nwfilter
+nwfilterxml_DATA = $(NWFILTER_XML_FILES)
+
 noinst_LTLIBRARIES += libvirt_driver_nwfilter_impl.la
 libvirt_driver_nwfilter_la_SOURCES =
 libvirt_driver_nwfilter_la_LIBADD = libvirt_driver_nwfilter_impl.la

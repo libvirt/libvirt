@@ -231,7 +231,7 @@ mymain(void)
                 "networkxml2xmlout", "networkxml2confdata");
     DO_TEST_DIR("networkport.rng", "virnetworkportxml2xmldata");
     DO_TEST_DIR("nodedev.rng", "nodedevschemadata");
-    DO_TEST_DIR("nwfilter.rng", "nwfilterxml2xmlout", "../examples/xml/nwfilter");
+    DO_TEST_DIR("nwfilter.rng", "nwfilterxml2xmlout", "../src/nwfilter");
     DO_TEST_DIR("nwfilterbinding.rng", "virnwfilterbindingxml2xmldata");
     DO_TEST_DIR("secret.rng", "secretxml2xmlin");
     DO_TEST_DIR("storagepoolcaps.rng", "storagepoolcapsschemadata");
