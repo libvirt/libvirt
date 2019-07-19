@@ -10785,13 +10785,14 @@ doMigrate(void *opaque)
             goto save_error;
     }
 
-    if (vshCommandOptInt(ctl, cmd, "parallel-connections", &intOpt) < 0)
+    if ((rv = vshCommandOptInt(ctl, cmd, "parallel-connections", &intOpt)) < 0) {
         goto out;
-    if (intOpt &&
-        virTypedParamsAddInt(&params, &nparams, &maxparams,
-                             VIR_MIGRATE_PARAM_PARALLEL_CONNECTIONS,
-                             intOpt) < 0)
-        goto save_error;
+    } else if (rv > 0) {
+        if (virTypedParamsAddInt(&params, &nparams, &maxparams,
+                                 VIR_MIGRATE_PARAM_PARALLEL_CONNECTIONS,
+                                 intOpt) < 0)
+            goto save_error;
+    }
 
     if (vshCommandOptBool(cmd, "live"))
         flags |= VIR_MIGRATE_LIVE;
