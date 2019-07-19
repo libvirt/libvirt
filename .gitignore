@@ -135,6 +135,7 @@
 /src/libvirt_lxc
 /src/libvirtd
 /src/libvirtd*.logrotate
+/src/libxl/test_libvirtd_libxl.aug
 /src/locking/libxl-lockd.conf
 /src/locking/libxl-sanlock.conf
 /src/locking/lock_daemon_dispatch_stubs.h
@@ -142,8 +143,11 @@
 /src/locking/qemu-lockd.conf
 /src/locking/qemu-sanlock.conf
 /src/locking/test_libvirt_sanlock.aug
+/src/locking/test_libvirt_lockd.aug
+/src/locking/test_virtlockd.aug
 /src/logging/log_daemon_dispatch_stubs.h
 /src/logging/log_protocol.[ch]
+/src/logging/test_virtlogd.aug
 /src/lxc/lxc_controller_dispatch.h
 /src/lxc/lxc_monitor_dispatch.h
 /src/lxc/lxc_monitor_protocol.c
@@ -154,11 +158,10 @@
 /src/remote/*_client_bodies.h
 /src/remote/*_protocol.[ch]
 /src/remote/*_stubs.h
+/src/remote/test_libvirtd.aug
 /src/rpc/virkeepaliveprotocol.[ch]
 /src/rpc/virnetprotocol.[ch]
-/src/test_libvirt*.aug
-/src/test_virtlockd.aug
-/src/test_virtlogd.aug
+/src/test*.aug
 /src/util/virkeycodetable*.h
 /src/util/virkeynametable*.h
 /src/virt-aa-helper

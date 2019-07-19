@@ -115,17 +115,17 @@ endif WITH_DTRACE_PROBES
 conf_DATA += qemu/qemu.conf
 
 augeas_DATA += qemu/libvirtd_qemu.aug
-augeastest_DATA += test_libvirtd_qemu.aug
+augeastest_DATA += qemu/test_libvirtd_qemu.aug
 
 AUGEAS_DIRS += qemu
 
-test_libvirtd_qemu.aug: qemu/test_libvirtd_qemu.aug.in \
+qemu/test_libvirtd_qemu.aug: qemu/test_libvirtd_qemu.aug.in \
 		$(srcdir)/qemu/qemu.conf $(AUG_GENTEST)
 	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/qemu/qemu.conf $< > $@
 
-check-augeas-qemu: test_libvirtd_qemu.aug
+check-augeas-qemu: qemu/test_libvirtd_qemu.aug
 	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
-	    '$(AUGPARSE)' -I $(srcdir)/qemu test_libvirtd_qemu.aug; \
+	    '$(AUGPARSE)' -I $(srcdir)/qemu qemu/test_libvirtd_qemu.aug; \
 	fi
 
 INSTALL_DATA_DIRS += qemu

@@ -95,17 +95,17 @@ endif WITH_SASL
 conf_DATA += logging/virtlogd.conf
 
 augeas_DATA += logging/virtlogd.aug
-augeastest_DATA += test_virtlogd.aug
+augeastest_DATA += logging/test_virtlogd.aug
 
-test_virtlogd.aug: logging/test_virtlogd.aug.in \
+logging/test_virtlogd.aug: logging/test_virtlogd.aug.in \
 		logging/virtlogd.conf $(AUG_GENTEST)
 	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/logging/virtlogd.conf $< > $@
 
 AUGEAS_DIRS += logging
 
-check-augeas-logging: test_virtlogd.aug
+check-augeas-logging: logging/test_virtlogd.aug
 	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
-	    '$(AUGPARSE)' -I $(srcdir)/logging test_virtlogd.aug; \
+	    '$(AUGPARSE)' -I $(srcdir)/logging logging/test_virtlogd.aug; \
 	fi
 
 endif WITH_LIBVIRTD

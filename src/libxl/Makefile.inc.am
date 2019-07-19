@@ -67,17 +67,17 @@ libvirt_driver_libxl_impl_la_SOURCES = $(LIBXL_DRIVER_SOURCES)
 
 conf_DATA += libxl/libxl.conf
 augeas_DATA += libxl/libvirtd_libxl.aug
-augeastest_DATA += test_libvirtd_libxl.aug
+augeastest_DATA += libxl/test_libvirtd_libxl.aug
 
 AUGEAS_DIRS += libxl
 
-test_libvirtd_libxl.aug: libxl/test_libvirtd_libxl.aug.in \
+libxl/test_libvirtd_libxl.aug: libxl/test_libvirtd_libxl.aug.in \
 		$(srcdir)/libxl/libxl.conf $(AUG_GENTEST)
 	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/libxl/libxl.conf $< > $@
 
-check-augeas-libxl: test_libvirtd_libxl.aug
+check-augeas-libxl: libxl/test_libvirtd_libxl.aug
 	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
-	    '$(AUGPARSE)' -I $(srcdir)/libxl test_libvirtd_libxl.aug; \
+	    '$(AUGPARSE)' -I $(srcdir)/libxl libxl/test_libvirtd_libxl.aug; \
 	fi
 
 INSTALL_DATA_DIRS += libxl

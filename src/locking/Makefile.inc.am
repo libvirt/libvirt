@@ -114,7 +114,7 @@ lockd_la_CFLAGS += \
 endif WITH_SASL
 
 if WITH_QEMU
-augeastest_DATA += test_libvirt_lockd.aug
+augeastest_DATA += locking/test_libvirt_lockd.aug
 nodist_conf_DATA += locking/qemu-lockd.conf
 BUILT_SOURCES += locking/qemu-lockd.conf
 DISTCLEANFILES += locking/qemu-lockd.conf
@@ -169,7 +169,7 @@ sanlock_la_LIBADD = -lsanlock_client libvirt.la ../gnulib/lib/libgnu.la
 augeas_DATA += locking/libvirt_sanlock.aug
 
 if WITH_QEMU
-augeastest_DATA += test_libvirt_sanlock.aug
+augeastest_DATA += locking/test_libvirt_sanlock.aug
 nodist_conf_DATA += locking/qemu-sanlock.conf
 BUILT_SOURCES += locking/qemu-sanlock.conf
 DISTCLEANFILES += locking/qemu-sanlock.conf
@@ -201,8 +201,7 @@ man8_MANS += virtlockd.8
 conf_DATA += locking/virtlockd.conf
 
 augeas_DATA += locking/virtlockd.aug
-augeastest_DATA += test_virtlockd.aug
-
+augeastest_DATA += locking/test_virtlockd.aug
 
 INSTALL_DATA_DIRS += locking
 
@@ -224,13 +223,13 @@ endif WITH_SANLOCK
 
 if WITH_SANLOCK
 if WITH_QEMU
-test_libvirt_sanlock.aug: locking/test_libvirt_sanlock.aug.in \
+locking/test_libvirt_sanlock.aug: locking/test_libvirt_sanlock.aug.in \
 		locking/qemu-sanlock.conf $(AUG_GENTEST)
 	$(AM_V_GEN)$(AUG_GENTEST) locking/qemu-sanlock.conf $< > $@
 
-check-augeas-sanlock: test_libvirt_sanlock.aug
+check-augeas-sanlock: locking/test_libvirt_sanlock.aug
 	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
-	    '$(AUGPARSE)' -I $(srcdir)/locking test_libvirt_sanlock.aug; \
+	    '$(AUGPARSE)' -I $(srcdir)/locking locking/test_libvirt_sanlock.aug; \
 	fi
 else ! WITH_QEMU
 check-augeas-sanlock:
@@ -240,29 +239,27 @@ check-augeas-sanlock:
 endif ! WITH_SANLOCK
 
 if WITH_QEMU
-test_libvirt_lockd.aug: locking/test_libvirt_lockd.aug.in \
+locking/test_libvirt_lockd.aug: locking/test_libvirt_lockd.aug.in \
 		locking/qemu-lockd.conf $(AUG_GENTEST)
 	$(AM_V_GEN)$(AUG_GENTEST) locking/qemu-lockd.conf $< > $@
-else ! WITH_QEMU
-test_libvirt_lockd.aug:
-endif ! WITH_QEMU
+endif WITH_QEMU
 
-test_virtlockd.aug: locking/test_virtlockd.aug.in \
+locking/test_virtlockd.aug: locking/test_virtlockd.aug.in \
 		locking/virtlockd.conf $(AUG_GENTEST)
 	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/locking/virtlockd.conf $< > $@
 
 if WITH_QEMU
-check-augeas-lockd: test_libvirt_lockd.aug
+check-augeas-lockd: locking/test_libvirt_lockd.aug
 	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
-	    '$(AUGPARSE)' -I $(srcdir)/locking test_libvirt_lockd.aug; \
+	    '$(AUGPARSE)' -I $(srcdir)/locking locking/test_libvirt_lockd.aug; \
 	fi
 else ! WITH_QEMU
 check-augeas-lockd:
 endif ! WITH_QEMU
 
-check-augeas-virtlockd: test_virtlockd.aug
+check-augeas-virtlockd: locking/test_virtlockd.aug
 	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
-	    '$(AUGPARSE)' -I $(srcdir)/locking test_virtlockd.aug; \
+	    '$(AUGPARSE)' -I $(srcdir)/locking locking/test_virtlockd.aug; \
 	fi
 
 AUGEAS_DIRS += locking

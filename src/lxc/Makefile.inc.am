@@ -156,17 +156,17 @@ endif
 conf_DATA += lxc/lxc.conf
 
 augeas_DATA += lxc/libvirtd_lxc.aug
-augeastest_DATA += test_libvirtd_lxc.aug
+augeastest_DATA += lxc/test_libvirtd_lxc.aug
 
 AUGEAS_DIRS += lxc
 
-test_libvirtd_lxc.aug: lxc/test_libvirtd_lxc.aug.in \
+lxc/test_libvirtd_lxc.aug: lxc/test_libvirtd_lxc.aug.in \
 		$(srcdir)/lxc/lxc.conf $(AUG_GENTEST)
 	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/lxc/lxc.conf $< > $@
 
-check-augeas-lxc: test_libvirtd_lxc.aug
+check-augeas-lxc: lxc/test_libvirtd_lxc.aug
 	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
-	    '$(AUGPARSE)' -I $(srcdir)/lxc test_libvirtd_lxc.aug; \
+	    '$(AUGPARSE)' -I $(srcdir)/lxc lxc/test_libvirtd_lxc.aug; \
 	fi
 
 INSTALL_DATA_DIRS += lxc

@@ -126,7 +126,7 @@ sbin_PROGRAMS += libvirtd
 
 augeas_DATA += remote/libvirtd.aug
 
-augeastest_DATA += test_libvirtd.aug
+augeastest_DATA += remote/test_libvirtd.aug
 
 conf_DATA += remote/libvirtd.conf
 
@@ -186,13 +186,13 @@ uninstall-data-remote:
 
 AUGEAS_DIRS += remote
 
-test_libvirtd.aug: remote/test_libvirtd.aug.in \
+remote/test_libvirtd.aug: remote/test_libvirtd.aug.in \
 		remote/libvirtd.conf $(AUG_GENTEST)
 	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/remote/libvirtd.conf $< > $@
 
-check-augeas-remote: test_libvirtd.aug
+check-augeas-remote: remote/test_libvirtd.aug
 	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
-	    '$(AUGPARSE)' -I $(srcdir)/remote test_libvirtd.aug; \
+	    '$(AUGPARSE)' -I $(srcdir)/remote remote/test_libvirtd.aug; \
 	fi
 
 if WITH_SYSCTL
