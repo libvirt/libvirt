@@ -116,7 +116,6 @@ conf_DATA += qemu/qemu.conf
 
 augeas_DATA += qemu/libvirtd_qemu.aug
 augeastest_DATA += test_libvirtd_qemu.aug
-CLEANFILES += test_libvirtd_qemu.aug
 
 AUGEAS_DIRS += qemu
 

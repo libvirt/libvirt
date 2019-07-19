@@ -46,8 +46,6 @@ MAINTAINERCLEANFILES += \
 	$(LOG_DAEMON_GENERATED) \
 	$(NULL)
 
-CLEANFILES += test_virtlogd.aug
-
 PODFILES += logging/virtlogd.pod
 MANINFILES += virtlogd.8.in
 SYSCONF_FILES += logging/virtlogd.sysconf

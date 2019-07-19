@@ -157,7 +157,6 @@ conf_DATA += lxc/lxc.conf
 
 augeas_DATA += lxc/libvirtd_lxc.aug
 augeastest_DATA += test_libvirtd_lxc.aug
-CLEANFILES += test_libvirtd_lxc.aug
 
 AUGEAS_DIRS += lxc
 

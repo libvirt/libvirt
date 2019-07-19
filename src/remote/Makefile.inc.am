@@ -130,8 +130,6 @@ augeastest_DATA += test_libvirtd.aug
 
 conf_DATA += remote/libvirtd.conf
 
-CLEANFILES += test_libvirtd.aug
-
 man8_MANS += libvirtd.8
 
 libvirtd_SOURCES = $(LIBVIRTD_SOURCES)

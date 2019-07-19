@@ -74,7 +74,7 @@ SYSCONF_FILES += locking/virtlockd.sysconf
 PODFILES += locking/virtlockd.pod
 MANINFILES += virtlockd.8.in
 
-CLEANFILES += test_virtlockd.aug $(man8_MANS)
+CLEANFILES += $(man8_MANS)
 MAINTAINERCLEANFILES += $(MANINFILES)
 
 SYSTEMD_UNIT_FILES_IN += \
@@ -115,7 +115,6 @@ endif WITH_SASL
 
 if WITH_QEMU
 augeastest_DATA += test_libvirt_lockd.aug
-CLEANFILES += test_libvirt_lockd.aug
 nodist_conf_DATA += locking/qemu-lockd.conf
 BUILT_SOURCES += locking/qemu-lockd.conf
 DISTCLEANFILES += locking/qemu-lockd.conf
@@ -171,7 +170,6 @@ augeas_DATA += locking/libvirt_sanlock.aug
 
 if WITH_QEMU
 augeastest_DATA += test_libvirt_sanlock.aug
-CLEANFILES += test_libvirt_sanlock.aug
 nodist_conf_DATA += locking/qemu-sanlock.conf
 BUILT_SOURCES += locking/qemu-sanlock.conf
 DISTCLEANFILES += locking/qemu-sanlock.conf

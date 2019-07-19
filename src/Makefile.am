@@ -149,6 +149,7 @@ augeasdir = $(datadir)/augeas/lenses
 
 augeastestdir = $(datadir)/augeas/lenses/tests
 
+CLEANFILES += $(augeastest_DATA)
 
 # Internal generic driver infrastructure
 DATATYPES_SOURCES = datatypes.h datatypes.c
