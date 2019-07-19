@@ -2401,9 +2401,10 @@ virCgroupRemove(virCgroupPtr group)
     size_t i;
 
     for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
-        if (group->backends[i] &&
-            group->backends[i]->remove(group) < 0) {
-            return -1;
+        if (group->backends[i]) {
+            int rc = group->backends[i]->remove(group);
+            if (rc < 0)
+                return rc;
         }
     }
 
