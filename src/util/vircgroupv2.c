@@ -365,7 +365,8 @@ virCgroupV2PathOfController(virCgroupPtr group,
  *          0 on success
  */
 static int
-virCgroupV2EnableController(virCgroupPtr parent,
+virCgroupV2EnableController(virCgroupPtr group,
+                            virCgroupPtr parent,
                             int controller,
                             bool report)
 {
@@ -390,6 +391,8 @@ virCgroupV2EnableController(virCgroupPtr parent,
         }
         return -2;
     }
+
+    group->unified.controllers |= 1 << controller;
 
     return 0;
 }
@@ -432,14 +435,14 @@ virCgroupV2MakeGroup(virCgroupPtr parent ATTRIBUTE_UNUSED,
             }
 
             if (virCgroupV2HasController(parent, VIR_CGROUP_CONTROLLER_CPU) &&
-                virCgroupV2EnableController(parent,
+                virCgroupV2EnableController(group, parent,
                                             VIR_CGROUP_CONTROLLER_CPU,
                                             true) < 0) {
                 return -1;
             }
 
             if (virCgroupV2HasController(parent, VIR_CGROUP_CONTROLLER_CPUSET) &&
-                virCgroupV2EnableController(parent,
+                virCgroupV2EnableController(group, parent,
                                             VIR_CGROUP_CONTROLLER_CPUSET,
                                             true) < 0) {
                 return -1;
@@ -456,7 +459,7 @@ virCgroupV2MakeGroup(virCgroupPtr parent ATTRIBUTE_UNUSED,
                 if (i == VIR_CGROUP_CONTROLLER_CPUACCT)
                     continue;
 
-                rc = virCgroupV2EnableController(parent, i, false);
+                rc = virCgroupV2EnableController(group, parent, i, false);
                 if (rc < 0) {
                     if (rc == -2) {
                         virResetLastError();
