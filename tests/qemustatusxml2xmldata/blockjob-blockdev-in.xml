@@ -238,6 +238,17 @@
       <disk dst='vdb'/>
       <base node='libvirt-14-format'/>
     </blockjob>
+    <blockjob name='pull-vdd-libvirt-17-format' type='active-commit' state='ready'>
+      <disk dst='vdd'/>
+      <base node='libvirt-19-format'/>
+      <top node='libvirt-17-format'/>
+    </blockjob>
+    <blockjob name='pull-vdc-libvirt-9-format' type='commit' state='running'>
+      <disk dst='vdc'/>
+      <base node='libvirt-11-format'/>
+      <top node='libvirt-9-format'/>
+      <topparent node='libvirt-2-format'/>
+    </blockjob>
     <blockjob name='drive-virtio-disk0' type='copy' state='ready'>
       <disk dst='vda' mirror='yes'/>
     </blockjob>
@@ -581,6 +592,10 @@
             </backingStore>
           </backingStore>
         </backingStore>
+        <mirror type='file' job='active-commit' ready='yes'>
+          <format type='qcow2'/>
+          <source file='/tmp/activecommit2.qcow2'/>
+        </mirror>
         <target dev='vdd' bus='virtio'/>
         <alias name='virtio-disk3'/>
         <address type='pci' domain='0x0000' bus='0x00' slot='0x0e' function='0x0'/>

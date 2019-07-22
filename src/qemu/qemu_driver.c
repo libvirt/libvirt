@@ -17971,7 +17971,8 @@ qemuDomainBlockCommit(virDomainPtr dom,
     virQEMUDriverPtr driver = dom->conn->privateData;
     qemuDomainObjPrivatePtr priv;
     virDomainObjPtr vm = NULL;
-    VIR_AUTOFREE(char *) device = NULL;
+    const char *device = NULL;
+    const char *jobname = NULL;
     int ret = -1;
     virDomainDiskDefPtr disk = NULL;
     virStorageSourcePtr topSource;
@@ -17985,8 +17986,11 @@ qemuDomainBlockCommit(virDomainPtr dom,
     VIR_AUTOFREE(char *) backingPath = NULL;
     unsigned long long speed = bandwidth;
     qemuBlockJobDataPtr job = NULL;
-    qemuBlockJobType jobtype = QEMU_BLOCKJOB_TYPE_COMMIT;
     VIR_AUTOUNREF(virStorageSourcePtr) mirror = NULL;
+    const char *nodetop = NULL;
+    const char *nodebase = NULL;
+    bool persistjob = false;
+    bool blockdev = false;
 
     /* XXX Add support for COMMIT_DELETE */
     virCheckFlags(VIR_DOMAIN_BLOCK_COMMIT_SHALLOW |
@@ -18007,6 +18011,8 @@ qemuDomainBlockCommit(virDomainPtr dom,
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
+    blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
+
     /* Convert bandwidth MiB to bytes, if necessary */
     if (!(flags & VIR_DOMAIN_BLOCK_COMMIT_BANDWIDTH_BYTES)) {
         if (speed > LLONG_MAX >> 20) {
@@ -18019,9 +18025,6 @@ qemuDomainBlockCommit(virDomainPtr dom,
     }
 
     if (!(disk = qemuDomainDiskByName(vm->def, path)))
-        goto endjob;
-
-    if (!(device = qemuAliasDiskDriveFromDisk(disk)))
         goto endjob;
 
     if (virStorageSourceIsEmpty(disk->src)) {
@@ -18055,8 +18058,6 @@ qemuDomainBlockCommit(virDomainPtr dom,
                            disk->dst);
             goto endjob;
         }
-
-        jobtype = QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT;
     } else if (flags & VIR_DOMAIN_BLOCK_COMMIT_ACTIVE) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("active commit requested but '%s' is not active"),
@@ -18129,7 +18130,8 @@ qemuDomainBlockCommit(virDomainPtr dom,
          qemuDomainStorageSourceAccessAllow(driver, vm, top_parent, false, false) < 0))
         goto endjob;
 
-    if (!(job = qemuBlockJobDiskNew(vm, disk, jobtype, device)))
+    if (!(job = qemuBlockJobDiskNewCommit(vm, disk, top_parent, topSource,
+                                          baseSource)))
         goto endjob;
 
     disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
@@ -18139,15 +18141,34 @@ qemuDomainBlockCommit(virDomainPtr dom,
      * depending on whether the input was specified as relative or
      * absolute (that is, our absolute top_canon may do the wrong
      * thing if the user specified a relative name).  */
+
+    if (blockdev) {
+        persistjob = true;
+        jobname = job->name;
+        nodetop = topSource->nodeformat;
+        nodebase = baseSource->nodeformat;
+        device = disk->src->nodeformat;
+        if (!backingPath && top_parent &&
+            !(backingPath = qemuBlockGetBackingStoreString(baseSource)))
+            goto endjob;
+    } else {
+        device = job->name;
+    }
+
     qemuDomainObjEnterMonitor(driver, vm);
-    basePath = qemuMonitorDiskNameLookup(priv->mon, device, disk->src,
-                                         baseSource);
-    topPath = qemuMonitorDiskNameLookup(priv->mon, device, disk->src,
-                                        topSource);
-    if (basePath && topPath)
-        ret = qemuMonitorBlockCommit(priv->mon, device, NULL, false,
-                                     topPath, NULL, basePath, NULL, backingPath,
-                                     speed);
+
+    if (!blockdev) {
+        basePath = qemuMonitorDiskNameLookup(priv->mon, device, disk->src,
+                                             baseSource);
+        topPath = qemuMonitorDiskNameLookup(priv->mon, device, disk->src,
+                                            topSource);
+    }
+
+    if (blockdev || (basePath && topPath))
+        ret = qemuMonitorBlockCommit(priv->mon, device, jobname, persistjob,
+                                     topPath, nodetop, basePath, nodebase,
+                                     backingPath, speed);
+
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || ret < 0) {
         ret = -1;
         goto endjob;

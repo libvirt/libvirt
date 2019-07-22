@@ -2398,6 +2398,12 @@ qemuDomainObjPrivateXMLFormatBlockjobIterator(void *payload,
 
         case QEMU_BLOCKJOB_TYPE_COMMIT:
         case QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT:
+            if (job->data.commit.base)
+                virBufferAsprintf(&childBuf, "<base node='%s'/>\n", job->data.commit.base->nodeformat);
+            if (job->data.commit.top)
+                virBufferAsprintf(&childBuf, "<top node='%s'/>\n", job->data.commit.top->nodeformat);
+            if (job->data.commit.topparent)
+                virBufferAsprintf(&childBuf, "<topparent node='%s'/>\n", job->data.commit.topparent->nodeformat);
         case QEMU_BLOCKJOB_TYPE_COPY:
         case QEMU_BLOCKJOB_TYPE_NONE:
         case QEMU_BLOCKJOB_TYPE_INTERNAL:
@@ -2854,7 +2860,29 @@ qemuDomainObjPrivateXMLParseBlockjobDataSpecific(qemuBlockJobDataPtr job,
             break;
 
         case QEMU_BLOCKJOB_TYPE_COMMIT:
+            qemuDomainObjPrivateXMLParseBlockjobNodename(job,
+                                                         "string(./topparent/@node)",
+                                                         &job->data.commit.topparent,
+                                                         ctxt);
+
+            if (!job->data.commit.topparent)
+                goto broken;
+
+            ATTRIBUTE_FALLTHROUGH;
         case QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT:
+            qemuDomainObjPrivateXMLParseBlockjobNodename(job,
+                                                         "string(./top/@node)",
+                                                         &job->data.commit.top,
+                                                         ctxt);
+            qemuDomainObjPrivateXMLParseBlockjobNodename(job,
+                                                         "string(./base/@node)",
+                                                         &job->data.commit.base,
+                                                         ctxt);
+            if (!job->data.commit.top ||
+                !job->data.commit.base)
+                goto broken;
+            break;
+
         case QEMU_BLOCKJOB_TYPE_COPY:
         case QEMU_BLOCKJOB_TYPE_NONE:
         case QEMU_BLOCKJOB_TYPE_INTERNAL:
@@ -2863,6 +2891,10 @@ qemuDomainObjPrivateXMLParseBlockjobDataSpecific(qemuBlockJobDataPtr job,
     }
 
     return;
+
+ broken:
+    VIR_DEBUG("marking block job '%s' as invalid: malformed job data", job->name);
+    job->invalidData = true;
 }
 
 

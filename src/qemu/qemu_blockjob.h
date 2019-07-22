@@ -77,6 +77,16 @@ struct _qemuBlockJobPullData {
 };
 
 
+typedef struct _qemuBlockJobCommitData qemuBlockJobCommitData;
+typedef qemuBlockJobCommitData *qemuBlockJobDataCommitPtr;
+
+struct _qemuBlockJobCommitData {
+    virStorageSourcePtr topparent;
+    virStorageSourcePtr top;
+    virStorageSourcePtr base;
+};
+
+
 typedef struct _qemuBlockJobData qemuBlockJobData;
 typedef qemuBlockJobData *qemuBlockJobDataPtr;
 
@@ -91,6 +101,7 @@ struct _qemuBlockJobData {
 
     union {
         qemuBlockJobPullData pull;
+        qemuBlockJobCommitData commit;
     } data;
 
     int type; /* qemuBlockJobType */
@@ -131,6 +142,13 @@ qemuBlockJobDataPtr
 qemuBlockJobDiskNewPull(virDomainObjPtr vm,
                         virDomainDiskDefPtr disk,
                         virStorageSourcePtr base);
+
+qemuBlockJobDataPtr
+qemuBlockJobDiskNewCommit(virDomainObjPtr vm,
+                          virDomainDiskDefPtr disk,
+                          virStorageSourcePtr topparent,
+                          virStorageSourcePtr top,
+                          virStorageSourcePtr base);
 
 qemuBlockJobDataPtr
 qemuBlockJobDiskGetJob(virDomainDiskDefPtr disk)

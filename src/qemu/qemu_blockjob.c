@@ -237,6 +237,43 @@ qemuBlockJobDiskNewPull(virDomainObjPtr vm,
 }
 
 
+qemuBlockJobDataPtr
+qemuBlockJobDiskNewCommit(virDomainObjPtr vm,
+                          virDomainDiskDefPtr disk,
+                          virStorageSourcePtr topparent,
+                          virStorageSourcePtr top,
+                          virStorageSourcePtr base)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    VIR_AUTOUNREF(qemuBlockJobDataPtr) job = NULL;
+    VIR_AUTOFREE(char *) jobname = NULL;
+    qemuBlockJobType jobtype = QEMU_BLOCKJOB_TYPE_COMMIT;
+
+    if (topparent == NULL)
+        jobtype = QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT;
+
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+        if (virAsprintf(&jobname, "commit-%s-%s", disk->dst, top->nodeformat) < 0)
+            return NULL;
+    } else {
+        if (!(jobname = qemuAliasDiskDriveFromDisk(disk)))
+            return NULL;
+    }
+
+    if (!(job = qemuBlockJobDataNew(jobtype, jobname)))
+        return NULL;
+
+    job->data.commit.topparent = topparent;
+    job->data.commit.top = top;
+    job->data.commit.base = base;
+
+    if (qemuBlockJobRegister(job, vm, disk, true) < 0)
+        return NULL;
+
+    VIR_RETURN_PTR(job);
+}
+
+
 /**
  * qemuBlockJobDiskRegisterMirror:
  * @job: block job to register 'mirror' chain on
@@ -816,6 +853,167 @@ qemuBlockJobProcessEventCompletedPull(virQEMUDriverPtr driver,
 }
 
 
+/**
+ * qemuBlockJobProcessEventCompletedCommit:
+ * @driver: qemu driver object
+ * @vm: domain object
+ * @job: job data
+ * @asyncJob: qemu asynchronous job type (for monitor interaction)
+ *
+ * This function executes the finalizing steps after a successful block commit
+ * job. The commit job moves the blocks from backing chain images starting from
+ * 'top' into the 'base' image. The overlay of the 'top' image ('topparent')
+ * then directly references the 'base' image. All intermediate images can be
+ * removed/deleted.
+ */
+static void
+qemuBlockJobProcessEventCompletedCommit(virQEMUDriverPtr driver,
+                                        virDomainObjPtr vm,
+                                        qemuBlockJobDataPtr job,
+                                        qemuDomainAsyncJob asyncJob)
+{
+    virStorageSourcePtr baseparent = NULL;
+    virDomainDiskDefPtr cfgdisk = NULL;
+    virStorageSourcePtr cfgnext = NULL;
+    virStorageSourcePtr cfgtopparent = NULL;
+    virStorageSourcePtr cfgtop = NULL;
+    virStorageSourcePtr cfgbase = NULL;
+    virStorageSourcePtr cfgbaseparent = NULL;
+    virStorageSourcePtr n;
+
+    VIR_DEBUG("commit job '%s' on VM '%s' completed", job->name, vm->def->name);
+
+    /* if the job isn't associated with a disk there's nothing to do */
+    if (!job->disk)
+        return;
+
+    if ((cfgdisk = qemuBlockJobGetConfigDisk(vm, job->disk, job->data.commit.base)))
+        cfgnext = cfgdisk->src;
+
+    if (!cfgdisk)
+        qemuBlockJobClearConfigChain(vm, job->disk);
+
+    for (n = job->disk->src; n && n != job->data.commit.base; n = n->backingStore) {
+        if (cfgnext) {
+            if (n == job->data.commit.topparent)
+                cfgtopparent = cfgnext;
+
+            if (n == job->data.commit.top)
+                cfgtop = cfgnext;
+
+            cfgbaseparent = cfgnext;
+            cfgnext = cfgnext->backingStore;
+        }
+        baseparent = n;
+    }
+
+    if (!n)
+        return;
+
+    /* revert access to images */
+    qemuDomainStorageSourceAccessAllow(driver, vm, job->data.commit.base, true, false);
+    if (job->data.commit.topparent != job->disk->src)
+        qemuDomainStorageSourceAccessAllow(driver, vm, job->data.commit.topparent, true, false);
+
+    baseparent->backingStore = NULL;
+    job->data.commit.topparent->backingStore = job->data.commit.base;
+
+    qemuBlockJobEventProcessConcludedRemoveChain(driver, vm, asyncJob, job->data.commit.top);
+    virObjectUnref(job->data.commit.top);
+    job->data.commit.top = NULL;
+
+    if (cfgbaseparent) {
+        cfgbase = cfgbaseparent->backingStore;
+        cfgbaseparent->backingStore = NULL;
+
+        if (cfgtopparent)
+            cfgtopparent->backingStore = cfgbase;
+        else
+            cfgdisk->src = cfgbase;
+
+        virObjectUnref(cfgtop);
+    }
+}
+
+
+/**
+ * qemuBlockJobProcessEventCompletedActiveCommit:
+ * @driver: qemu driver object
+ * @vm: domain object
+ * @job: job data
+ * @asyncJob: qemu asynchronous job type (for monitor interaction)
+ *
+ * This function executes the finalizing steps after a successful active layer
+ * block commit job. The commit job moves the blocks from backing chain images
+ * starting from the active disk source image into the 'base' image. The disk
+ * source then changes to the 'base' image. All intermediate images can be
+ * removed/deleted.
+ */
+static void
+qemuBlockJobProcessEventCompletedActiveCommit(virQEMUDriverPtr driver,
+                                              virDomainObjPtr vm,
+                                              qemuBlockJobDataPtr job,
+                                              qemuDomainAsyncJob asyncJob)
+{
+    virStorageSourcePtr baseparent = NULL;
+    virDomainDiskDefPtr cfgdisk = NULL;
+    virStorageSourcePtr cfgnext = NULL;
+    virStorageSourcePtr cfgtop = NULL;
+    virStorageSourcePtr cfgbase = NULL;
+    virStorageSourcePtr cfgbaseparent = NULL;
+    virStorageSourcePtr n;
+
+    VIR_DEBUG("active commit job '%s' on VM '%s' completed", job->name, vm->def->name);
+
+    /* if the job isn't associated with a disk there's nothing to do */
+    if (!job->disk)
+        return;
+
+    if ((cfgdisk = qemuBlockJobGetConfigDisk(vm, job->disk, job->data.commit.base)))
+        cfgnext = cfgdisk->src;
+
+    for (n = job->disk->src; n && n != job->data.commit.base; n = n->backingStore) {
+        if (cfgnext) {
+            if (n == job->data.commit.top)
+                cfgtop = cfgnext;
+
+            cfgbaseparent = cfgnext;
+            cfgnext = cfgnext->backingStore;
+        }
+        baseparent = n;
+    }
+
+    if (!n)
+        return;
+
+    if (!cfgdisk) {
+        /* in case when the config disk chain didn't match but the disk top seems
+         * to be identical we need to modify the disk source since the active
+         * commit makes the top level image invalid.
+         */
+        qemuBlockJobRewriteConfigDiskSource(vm, job->disk, job->data.commit.base);
+    } else {
+        cfgbase = cfgbaseparent->backingStore;
+        cfgbaseparent->backingStore = NULL;
+        cfgdisk->src = cfgbase;
+        virObjectUnref(cfgtop);
+    }
+
+    /* Move security driver metadata */
+    if (qemuSecurityMoveImageMetadata(driver, vm, job->disk->src, job->data.commit.base) < 0)
+        VIR_WARN("Unable to move disk metadata on vm %s", vm->def->name);
+
+    baseparent->backingStore = NULL;
+    job->disk->src = job->data.commit.base;
+
+    qemuBlockJobEventProcessConcludedRemoveChain(driver, vm, asyncJob, job->data.commit.top);
+    virObjectUnref(job->data.commit.top);
+    job->data.commit.top = NULL;
+    /* the mirror element does not serve functional purpose for the commit job */
+    virObjectUnref(job->disk->mirror);
+    job->disk->mirror = NULL;
+}
+
 static void
 qemuBlockJobEventProcessConcludedTransition(qemuBlockJobDataPtr job,
                                             virQEMUDriverPtr driver,
@@ -830,7 +1028,13 @@ qemuBlockJobEventProcessConcludedTransition(qemuBlockJobDataPtr job,
             break;
 
         case QEMU_BLOCKJOB_TYPE_COMMIT:
+            qemuBlockJobProcessEventCompletedCommit(driver, vm, job, asyncJob);
+            break;
+
         case QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT:
+            qemuBlockJobProcessEventCompletedActiveCommit(driver, vm, job, asyncJob);
+            break;
+
         case QEMU_BLOCKJOB_TYPE_COPY:
         case QEMU_BLOCKJOB_TYPE_NONE:
         case QEMU_BLOCKJOB_TYPE_INTERNAL:
@@ -845,7 +1049,15 @@ qemuBlockJobEventProcessConcludedTransition(qemuBlockJobDataPtr job,
         switch ((qemuBlockJobType) job->type) {
         case QEMU_BLOCKJOB_TYPE_PULL:
         case QEMU_BLOCKJOB_TYPE_COMMIT:
+            break;
+
         case QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT:
+            if (job->disk) {
+                virObjectUnref(job->disk->mirror);
+                job->disk->mirror = NULL;
+            }
+            break;
+
         case QEMU_BLOCKJOB_TYPE_COPY:
         case QEMU_BLOCKJOB_TYPE_NONE:
         case QEMU_BLOCKJOB_TYPE_INTERNAL:
