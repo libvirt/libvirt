@@ -68,6 +68,15 @@ verify((int)QEMU_BLOCKJOB_TYPE_INTERNAL == VIR_DOMAIN_BLOCK_JOB_TYPE_LAST);
 
 VIR_ENUM_DECL(qemuBlockjob);
 
+
+typedef struct _qemuBlockJobPullData qemuBlockJobPullData;
+typedef qemuBlockJobPullData *qemuBlockJobDataPullPtr;
+
+struct _qemuBlockJobPullData {
+    virStorageSourcePtr base;
+};
+
+
 typedef struct _qemuBlockJobData qemuBlockJobData;
 typedef qemuBlockJobData *qemuBlockJobDataPtr;
 
@@ -79,6 +88,10 @@ struct _qemuBlockJobData {
     virDomainDiskDefPtr disk; /* may be NULL, if blockjob does not correspond to any disk */
     virStorageSourcePtr chain; /* Reference to the chain the job operates on. */
     virStorageSourcePtr mirrorChain; /* reference to 'mirror' part of the job */
+
+    union {
+        qemuBlockJobPullData pull;
+    } data;
 
     int type; /* qemuBlockJobType */
     int state; /* qemuBlockjobState */
@@ -113,6 +126,11 @@ qemuBlockJobDiskNew(virDomainObjPtr vm,
 void
 qemuBlockJobDiskRegisterMirror(qemuBlockJobDataPtr job)
     ATTRIBUTE_NONNULL(1);
+
+qemuBlockJobDataPtr
+qemuBlockJobDiskNewPull(virDomainObjPtr vm,
+                        virDomainDiskDefPtr disk,
+                        virStorageSourcePtr base);
 
 qemuBlockJobDataPtr
 qemuBlockJobDiskGetJob(virDomainDiskDefPtr disk)

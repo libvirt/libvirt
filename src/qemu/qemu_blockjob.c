@@ -26,6 +26,7 @@
 #include "qemu_blockjob.h"
 #include "qemu_block.h"
 #include "qemu_domain.h"
+#include "qemu_alias.h"
 
 #include "conf/domain_conf.h"
 #include "conf/domain_event.h"
@@ -199,6 +200,35 @@ qemuBlockJobDiskNew(virDomainObjPtr vm,
 
     if (!(job = qemuBlockJobDataNew(type, jobname)))
         return NULL;
+
+    if (qemuBlockJobRegister(job, vm, disk, true) < 0)
+        return NULL;
+
+    VIR_RETURN_PTR(job);
+}
+
+
+qemuBlockJobDataPtr
+qemuBlockJobDiskNewPull(virDomainObjPtr vm,
+                        virDomainDiskDefPtr disk,
+                        virStorageSourcePtr base)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    VIR_AUTOUNREF(qemuBlockJobDataPtr) job = NULL;
+    VIR_AUTOFREE(char *) jobname = NULL;
+
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+        if (virAsprintf(&jobname, "pull-%s-%s", disk->dst, disk->src->nodeformat) < 0)
+            return NULL;
+    } else {
+        if (!(jobname = qemuAliasDiskDriveFromDisk(disk)))
+            return NULL;
+    }
+
+    if (!(job = qemuBlockJobDataNew(QEMU_BLOCKJOB_TYPE_PULL, jobname)))
+        return NULL;
+
+    job->data.pull.base = base;
 
     if (qemuBlockJobRegister(job, vm, disk, true) < 0)
         return NULL;
@@ -630,16 +660,175 @@ qemuBlockJobEventProcessConcludedRemoveChain(virQEMUDriverPtr driver,
 }
 
 
+/**
+ * qemuBlockJobGetConfigDisk:
+ * @vm: domain object
+ * @disk: disk from the running definition
+ * @diskChainBottom: the last element of backing chain of @disk which is relevant
+ *
+ * Finds and returns the disk corresponding to @disk in the inactive definition.
+ * The inactive disk must have the backing chain starting from the source until
+ * @@diskChainBottom identical. If @diskChainBottom is NULL the whole backing
+ * chains of both @disk and the persistent config definition equivalent must
+ * be identical.
+ */
+static virDomainDiskDefPtr
+qemuBlockJobGetConfigDisk(virDomainObjPtr vm,
+                          virDomainDiskDefPtr disk,
+                          virStorageSourcePtr diskChainBottom)
+{
+    virStorageSourcePtr disksrc = NULL;
+    virStorageSourcePtr cfgsrc = NULL;
+    virDomainDiskDefPtr ret = NULL;
+
+    if (!vm->newDef || !disk)
+        return NULL;
+
+    disksrc = disk->src;
+
+    if (!(ret = virDomainDiskByName(vm->newDef, disk->dst, false)))
+        return NULL;
+
+    cfgsrc = ret->src;
+
+    while (disksrc && cfgsrc) {
+        if (!virStorageSourceIsSameLocation(disksrc, cfgsrc))
+            return NULL;
+
+        if (diskChainBottom && diskChainBottom == disksrc)
+            return ret;
+
+        disksrc = disksrc->backingStore;
+        cfgsrc = cfgsrc->backingStore;
+    }
+
+    if (disksrc || cfgsrc)
+        return NULL;
+
+    return ret;
+}
+
+
+/**
+ * qemuBlockJobClearConfigChain:
+ * @vm: domain object
+ * @disk: disk object from running definition of @vm
+ *
+ * In cases when the backing chain definitions of the live disk differ from
+ * the definition for the next start config and the backing chain would touch
+ * it we'd not be able to restore the chain in the next start config properly.
+ *
+ * This function checks that the source of the running disk definition and the
+ * config disk definition are the same and if such it clears the backing chain
+ * data.
+ */
+static void
+qemuBlockJobClearConfigChain(virDomainObjPtr vm,
+                             virDomainDiskDefPtr disk)
+{
+    virDomainDiskDefPtr cfgdisk = NULL;
+
+    if (!vm->newDef || !disk)
+        return;
+
+    if (!(cfgdisk = virDomainDiskByName(vm->newDef, disk->dst, false)))
+        return;
+
+    if (!virStorageSourceIsSameLocation(disk->src, cfgdisk->src))
+        return;
+
+    virObjectUnref(cfgdisk->src->backingStore);
+    cfgdisk->src->backingStore = NULL;
+}
+
+
+/**
+ * qemuBlockJobProcessEventCompletedPull:
+ * @driver: qemu driver object
+ * @vm: domain object
+ * @job: job data
+ * @asyncJob: qemu asynchronous job type (for monitor interaction)
+ *
+ * This function executes the finalizing steps after a successful block pull job
+ * (block-stream in qemu terminology. The pull job copies all the data from the
+ * images in the backing chain up to the 'base' image. The 'base' image becomes
+ * the backing store of the active top level image. If 'base' was not used
+ * everything is pulled into the top level image and the top level image will
+ * cease to have backing store. All intermediate images between the active image
+ * and base image are no longer required and can be unplugged.
+ */
+static void
+qemuBlockJobProcessEventCompletedPull(virQEMUDriverPtr driver,
+                                      virDomainObjPtr vm,
+                                      qemuBlockJobDataPtr job,
+                                      qemuDomainAsyncJob asyncJob)
+{
+    virStorageSourcePtr baseparent = NULL;
+    virDomainDiskDefPtr cfgdisk = NULL;
+    virStorageSourcePtr cfgbase = NULL;
+    virStorageSourcePtr cfgbaseparent = NULL;
+    virStorageSourcePtr n;
+    virStorageSourcePtr tmp;
+
+    VIR_DEBUG("pull job '%s' on VM '%s' completed", job->name, vm->def->name);
+
+    /* if the job isn't associated with a disk there's nothing to do */
+    if (!job->disk)
+        return;
+
+    if ((cfgdisk = qemuBlockJobGetConfigDisk(vm, job->disk, job->data.pull.base)))
+        cfgbase = cfgdisk->src->backingStore;
+
+    if (!cfgdisk)
+        qemuBlockJobClearConfigChain(vm, job->disk);
+
+    /* when pulling if 'base' is right below the top image we don't have to modify it */
+    if (job->disk->src->backingStore == job->data.pull.base)
+        return;
+
+    if (job->data.pull.base) {
+        for (n = job->disk->src->backingStore; n && n != job->data.pull.base; n = n->backingStore) {
+            /* find the image on top of 'base' */
+
+            if (cfgbase) {
+                cfgbaseparent = cfgbase;
+                cfgbase = cfgbase->backingStore;
+            }
+
+            baseparent = n;
+        }
+    }
+
+    tmp = job->disk->src->backingStore;
+    job->disk->src->backingStore = job->data.pull.base;
+    if (baseparent)
+        baseparent->backingStore = NULL;
+    qemuBlockJobEventProcessConcludedRemoveChain(driver, vm, asyncJob, tmp);
+    virObjectUnref(tmp);
+
+    if (cfgdisk) {
+        tmp = cfgdisk->src->backingStore;
+        cfgdisk->src->backingStore = cfgbase;
+        if (cfgbaseparent)
+            cfgbaseparent->backingStore = NULL;
+        virObjectUnref(tmp);
+    }
+}
+
+
 static void
 qemuBlockJobEventProcessConcludedTransition(qemuBlockJobDataPtr job,
                                             virQEMUDriverPtr driver,
                                             virDomainObjPtr vm,
-                                            qemuDomainAsyncJob asyncJob ATTRIBUTE_UNUSED)
+                                            qemuDomainAsyncJob asyncJob)
 {
     switch ((qemuBlockjobState) job->newstate) {
     case QEMU_BLOCKJOB_STATE_COMPLETED:
         switch ((qemuBlockJobType) job->type) {
         case QEMU_BLOCKJOB_TYPE_PULL:
+            qemuBlockJobProcessEventCompletedPull(driver, vm, job, asyncJob);
+            break;
+
         case QEMU_BLOCKJOB_TYPE_COMMIT:
         case QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT:
         case QEMU_BLOCKJOB_TYPE_COPY:

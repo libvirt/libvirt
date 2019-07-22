@@ -2390,6 +2390,21 @@ qemuDomainObjPrivateXMLFormatBlockjobIterator(void *payload,
             return -1;
     }
 
+    switch ((qemuBlockJobType) job->type) {
+        case QEMU_BLOCKJOB_TYPE_PULL:
+            if (job->data.pull.base)
+                virBufferAsprintf(&childBuf, "<base node='%s'/>\n", job->data.pull.base->nodeformat);
+            break;
+
+        case QEMU_BLOCKJOB_TYPE_COMMIT:
+        case QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT:
+        case QEMU_BLOCKJOB_TYPE_COPY:
+        case QEMU_BLOCKJOB_TYPE_NONE:
+        case QEMU_BLOCKJOB_TYPE_INTERNAL:
+        case QEMU_BLOCKJOB_TYPE_LAST:
+            break;
+    }
+
     return virXMLFormatElement(data->buf, "blockjob", &attrBuf, &childBuf);
 }
 
@@ -2793,6 +2808,64 @@ qemuDomainObjPrivateXMLParseBlockjobChain(xmlNodePtr node,
 }
 
 
+static void
+qemuDomainObjPrivateXMLParseBlockjobNodename(qemuBlockJobDataPtr job,
+                                             const char *xpath,
+                                             virStorageSourcePtr *src,
+                                             xmlXPathContextPtr ctxt)
+{
+    VIR_AUTOFREE(char *) nodename = NULL;
+
+    *src = NULL;
+
+    if (!(nodename = virXPathString(xpath, ctxt)))
+        return;
+
+    if (job->disk &&
+        (*src = virStorageSourceFindByNodeName(job->disk->src, nodename, NULL)))
+        return;
+
+    if (job->chain &&
+        (*src = virStorageSourceFindByNodeName(job->chain, nodename, NULL)))
+        return;
+
+    if (job->mirrorChain &&
+        (*src = virStorageSourceFindByNodeName(job->mirrorChain, nodename, NULL)))
+        return;
+
+    /* the node was in the XML but was not found in the job definitions */
+    VIR_DEBUG("marking block job '%s' as invalid: node name '%s' missing",
+              job->name, nodename);
+    job->invalidData = true;
+}
+
+
+static void
+qemuDomainObjPrivateXMLParseBlockjobDataSpecific(qemuBlockJobDataPtr job,
+                                                 xmlXPathContextPtr ctxt)
+{
+    switch ((qemuBlockJobType) job->type) {
+        case QEMU_BLOCKJOB_TYPE_PULL:
+            qemuDomainObjPrivateXMLParseBlockjobNodename(job,
+                                                         "string(./base/@node)",
+                                                         &job->data.pull.base,
+                                                         ctxt);
+            /* base is not present if pulling everything */
+            break;
+
+        case QEMU_BLOCKJOB_TYPE_COMMIT:
+        case QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT:
+        case QEMU_BLOCKJOB_TYPE_COPY:
+        case QEMU_BLOCKJOB_TYPE_NONE:
+        case QEMU_BLOCKJOB_TYPE_INTERNAL:
+        case QEMU_BLOCKJOB_TYPE_LAST:
+            break;
+    }
+
+    return;
+}
+
+
 static int
 qemuDomainObjPrivateXMLParseBlockjobData(virDomainObjPtr vm,
                                          xmlNodePtr node,
@@ -2866,6 +2939,8 @@ qemuDomainObjPrivateXMLParseBlockjobData(virDomainObjPtr vm,
 
     if (mirror)
         qemuBlockJobDiskRegisterMirror(job);
+
+    qemuDomainObjPrivateXMLParseBlockjobDataSpecific(job, ctxt);
 
     if (qemuBlockJobRegister(job, vm, disk, false) < 0)
         return -1;

@@ -234,6 +234,10 @@
   <allowReboot value='yes'/>
   <nodename index='0'/>
   <blockjobs active='yes'>
+    <blockjob name='pull-vdb-libvirt-3-format' type='pull' state='running'>
+      <disk dst='vdb'/>
+      <base node='libvirt-14-format'/>
+    </blockjob>
     <blockjob name='drive-virtio-disk0' type='copy' state='ready'>
       <disk dst='vda' mirror='yes'/>
     </blockjob>

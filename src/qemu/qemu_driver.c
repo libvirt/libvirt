@@ -17069,7 +17069,8 @@ qemuDomainBlockPullCommon(virQEMUDriverPtr driver,
                           unsigned int flags)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    VIR_AUTOFREE(char *) device = NULL;
+    const char *device = NULL;
+    const char *jobname = NULL;
     virDomainDiskDefPtr disk;
     virStorageSourcePtr baseSource = NULL;
     unsigned int baseIndex = 0;
@@ -17077,6 +17078,9 @@ qemuDomainBlockPullCommon(virQEMUDriverPtr driver,
     VIR_AUTOFREE(char *) backingPath = NULL;
     unsigned long long speed = bandwidth;
     qemuBlockJobDataPtr job = NULL;
+    bool persistjob = false;
+    const char *nodebase = NULL;
+    bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
     int ret = -1;
 
     if (flags & VIR_DOMAIN_BLOCK_REBASE_RELATIVE && !base) {
@@ -17093,9 +17097,6 @@ qemuDomainBlockPullCommon(virQEMUDriverPtr driver,
         goto endjob;
 
     if (!(disk = qemuDomainDiskByName(vm->def, path)))
-        goto endjob;
-
-    if (!(device = qemuAliasDiskDriveFromDisk(disk)))
         goto endjob;
 
     if (qemuDomainDiskBlockJobIsActive(disk))
@@ -17140,16 +17141,32 @@ qemuDomainBlockPullCommon(virQEMUDriverPtr driver,
         speed <<= 20;
     }
 
-    if (!(job = qemuBlockJobDiskNew(vm, disk, QEMU_BLOCKJOB_TYPE_PULL, device)))
+    if (!(job = qemuBlockJobDiskNewPull(vm, disk, baseSource)))
         goto endjob;
 
+    if (blockdev) {
+        jobname = job->name;
+        persistjob = true;
+        if (baseSource) {
+            nodebase = baseSource->nodeformat;
+            if (!backingPath &&
+                !(backingPath = qemuBlockGetBackingStoreString(baseSource)))
+                goto endjob;
+        }
+        device = disk->src->nodeformat;
+    } else {
+        device = job->name;
+    }
+
     qemuDomainObjEnterMonitor(driver, vm);
-    if (baseSource)
+    if (!blockdev && baseSource)
         basePath = qemuMonitorDiskNameLookup(priv->mon, device, disk->src,
                                              baseSource);
-    if (!baseSource || basePath)
-        ret = qemuMonitorBlockStream(priv->mon, device, NULL, false, basePath,
-                                     NULL, backingPath, speed);
+
+    if (blockdev ||
+        (!baseSource || basePath))
+        ret = qemuMonitorBlockStream(priv->mon, device, jobname, persistjob, basePath,
+                                     nodebase, backingPath, speed);
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -1;
 
