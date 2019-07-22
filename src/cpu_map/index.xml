@@ -75,4 +75,8 @@
     <include filename="ppc64_POWERPC_e5500.xml"/>
     <include filename="ppc64_POWERPC_e6500.xml"/>
   </arch>
+
+  <arch name='arm'>
+    <include filename='arm_features.xml'/>
+  </arch>
 </cpus>
