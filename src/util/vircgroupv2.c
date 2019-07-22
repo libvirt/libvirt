@@ -399,7 +399,7 @@ virCgroupV2EnableController(virCgroupPtr group,
 
 
 static int
-virCgroupV2MakeGroup(virCgroupPtr parent ATTRIBUTE_UNUSED,
+virCgroupV2MakeGroup(virCgroupPtr parent,
                      virCgroupPtr group,
                      bool create,
                      unsigned int flags)
