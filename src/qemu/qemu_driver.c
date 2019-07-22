@@ -15114,6 +15114,22 @@ qemuDomainSnapshotDiskDataCollect(virQEMUDriverPtr driver,
         if (virStorageSourceInitChainElement(dd->src, dd->disk->src, false) < 0)
             goto cleanup;
 
+        /* Note that it's unsafe to assume that the disks in the persistent
+         * definition match up with the disks in the live definition just by
+         * checking that the target name is the same. We've done that
+         * historically this way though. */
+        if (vm->newDef &&
+            (dd->persistdisk = virDomainDiskByName(vm->newDef, dd->disk->dst,
+                                                   false))) {
+
+            if (!(dd->persistsrc = virStorageSourceCopy(dd->src, false)))
+                goto cleanup;
+
+            if (virStorageSourceInitChainElement(dd->persistsrc,
+                                                 dd->persistdisk->src, false) < 0)
+                goto cleanup;
+        }
+
         if (qemuDomainStorageFileInit(driver, vm, dd->src, NULL) < 0)
             goto cleanup;
 
@@ -15130,22 +15146,6 @@ qemuDomainSnapshotDiskDataCollect(virQEMUDriverPtr driver,
                 else
                     VIR_FREE(backingStoreStr);
             }
-        }
-
-        /* Note that it's unsafe to assume that the disks in the persistent
-         * definition match up with the disks in the live definition just by
-         * checking that the target name is the same. We've done that
-         * historically this way though. */
-        if (vm->newDef &&
-            (dd->persistdisk = virDomainDiskByName(vm->newDef, dd->disk->dst,
-                                                   false))) {
-
-            if (!(dd->persistsrc = virStorageSourceCopy(dd->src, false)))
-                goto cleanup;
-
-            if (virStorageSourceInitChainElement(dd->persistsrc,
-                                                 dd->persistdisk->src, false) < 0)
-                goto cleanup;
         }
     }
 
