@@ -1923,15 +1923,80 @@ qemuBlockStorageGetCopyOnReadProps(virDomainDiskDefPtr disk)
 }
 
 
+/**
+ * qemuBlockGetBackingStoreString:
+ * @src: storage source to get the string for
+ *
+ * Formats a string used in the backing store field of a disk image which
+ * supports backing store. Non-local storage may result in use of the json:
+ * pseudo protocol for any complex configuration.
+ */
+char *
+qemuBlockGetBackingStoreString(virStorageSourcePtr src)
+{
+    int actualType = virStorageSourceGetActualType(src);
+    VIR_AUTOPTR(virJSONValue) backingProps = NULL;
+    VIR_AUTOPTR(virURI) uri = NULL;
+    VIR_AUTOFREE(char *) backingJSON = NULL;
+    char *ret = NULL;
+
+    if (virStorageSourceIsLocalStorage(src)) {
+        ignore_value(VIR_STRDUP(ret, src->path));
+        return ret;
+    }
+
+    /* generate simplified URIs for the easy cases */
+    if (actualType == VIR_STORAGE_TYPE_NETWORK &&
+        src->nhosts == 1 &&
+        src->hosts->transport == VIR_STORAGE_NET_HOST_TRANS_TCP) {
+
+        switch ((virStorageNetProtocol) src->protocol) {
+        case VIR_STORAGE_NET_PROTOCOL_NBD:
+        case VIR_STORAGE_NET_PROTOCOL_HTTP:
+        case VIR_STORAGE_NET_PROTOCOL_HTTPS:
+        case VIR_STORAGE_NET_PROTOCOL_FTP:
+        case VIR_STORAGE_NET_PROTOCOL_FTPS:
+        case VIR_STORAGE_NET_PROTOCOL_TFTP:
+        case VIR_STORAGE_NET_PROTOCOL_ISCSI:
+        case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
+            if (!(uri = qemuBlockStorageSourceGetURI(src)))
+                return NULL;
+
+            if (!(ret = virURIFormat(uri)))
+                return NULL;
+
+            return ret;
+
+        case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
+        case VIR_STORAGE_NET_PROTOCOL_RBD:
+        case VIR_STORAGE_NET_PROTOCOL_VXHS:
+        case VIR_STORAGE_NET_PROTOCOL_SSH:
+        case VIR_STORAGE_NET_PROTOCOL_LAST:
+        case VIR_STORAGE_NET_PROTOCOL_NONE:
+            break;
+        }
+    }
+
+    /* use json: pseudo protocol otherwise */
+    if (!(backingProps = qemuBlockStorageSourceGetBackendProps(src, false, true, false)))
+        return NULL;
+
+    if (!(backingJSON = virJSONValueToString(backingProps, false)))
+        return NULL;
+
+    if (virAsprintf(&ret, "json:%s", backingJSON) < 0)
+        return NULL;
+
+    return ret;
+}
+
+
 static int
 qemuBlockStorageSourceCreateAddBacking(virStorageSourcePtr backing,
                                        virJSONValuePtr props,
                                        bool format)
 {
-    VIR_AUTOPTR(virJSONValue) backingProps = NULL;
-    VIR_AUTOFREE(char *) backingJSON = NULL;
-    VIR_AUTOFREE(char *) backingPseudoprotocol = NULL;
-    const char *backingFileStr = NULL;
+    VIR_AUTOFREE(char *) backingFileStr = NULL;
     const char *backingFormatStr = NULL;
 
     if (!virStorageSourceIsBacking(backing))
@@ -1945,24 +2010,8 @@ qemuBlockStorageSourceCreateAddBacking(virStorageSourcePtr backing,
             backingFormatStr = virStorageFileFormatTypeToString(backing->format);
     }
 
-    if (virStorageSourceIsLocalStorage(backing)) {
-        backingFileStr = backing->path;
-    } else {
-        if (!(backingProps = qemuBlockStorageSourceGetBackendProps(backing, false,
-                                                                   true, false))) {
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("failed to generate backing file JSON properties"));
-            return -1;
-        }
-
-        if (!(backingJSON = virJSONValueToString(backingProps, false)))
-            return -1;
-
-        if (virAsprintf(&backingPseudoprotocol, "json:%s", backingJSON) < 0)
-            return -1;
-
-        backingFileStr = backingPseudoprotocol;
-    }
+    if (!(backingFileStr = qemuBlockGetBackingStoreString(backing)))
+        return -1;
 
     if (virJSONValueObjectAdd(props,
                               "S:backing-file", backingFileStr,

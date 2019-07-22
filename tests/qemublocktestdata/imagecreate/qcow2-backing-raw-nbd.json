@@ -10,6 +10,6 @@ format:
   "driver": "qcow2",
   "file": "0123456789ABCDEF0123456789ABCDE",
   "size": 1337,
-  "backing-file": "json:{\"driver\":\"nbd\",\"server\":{\"type\":\"inet\",\"host\":\"example.com\",\"port\":\"1234\"}}",
+  "backing-file": "nbd://example.com:1234",
   "backing-fmt": "raw"
 }

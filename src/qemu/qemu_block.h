@@ -168,6 +168,10 @@ qemuBlockSnapshotAddBlockdev(virJSONValuePtr actions,
                              virDomainDiskDefPtr disk,
                              virStorageSourcePtr newsrc);
 
+char *
+qemuBlockGetBackingStoreString(virStorageSourcePtr src)
+    ATTRIBUTE_NONNULL(1);
+
 int
 qemuBlockStorageSourceCreateGetFormatProps(virStorageSourcePtr src,
                                            virStorageSourcePtr backing,
