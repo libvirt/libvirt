@@ -17979,7 +17979,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
     if (!(device = qemuAliasDiskDriveFromDisk(disk)))
         goto endjob;
 
-    if (!disk->src->path) {
+    if (virStorageSourceIsEmpty(disk->src)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("disk %s has no source file to be committed"),
                        disk->dst);
