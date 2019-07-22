@@ -11159,16 +11159,10 @@ qemuBuildStorageSourceChainAttachPrepareDrive(virDomainDiskDefPtr disk,
 }
 
 
-/**
- * qemuBuildStorageSourceChainAttachPrepareBlockdev:
- * @top: storage source chain
- * @qemuCaps: qemu capabilities object
- *
- * Prepares qemuBlockStorageSourceChainDataPtr for attaching @top via -blockdev.
- */
-qemuBlockStorageSourceChainDataPtr
-qemuBuildStorageSourceChainAttachPrepareBlockdev(virStorageSourcePtr top,
-                                                 virQEMUCapsPtr qemuCaps)
+static qemuBlockStorageSourceChainDataPtr
+qemuBuildStorageSourceChainAttachPrepareBlockdevInternal(virStorageSourcePtr top,
+                                                         virQEMUCapsPtr qemuCaps,
+                                                         bool onlyTop)
 {
     VIR_AUTOPTR(qemuBlockStorageSourceAttachData) elem = NULL;
     VIR_AUTOPTR(qemuBlockStorageSourceChainData) data = NULL;
@@ -11186,7 +11180,44 @@ qemuBuildStorageSourceChainAttachPrepareBlockdev(virStorageSourcePtr top,
 
         if (VIR_APPEND_ELEMENT(data->srcdata, data->nsrcdata, elem) < 0)
             return NULL;
+
+        if (onlyTop)
+            break;
     }
 
     VIR_RETURN_PTR(data);
+}
+
+
+/**
+ * qemuBuildStorageSourceChainAttachPrepareBlockdev:
+ * @top: storage source chain
+ * @qemuCaps: qemu capabilities object
+ *
+ * Prepares qemuBlockStorageSourceChainDataPtr for attaching the chain of images
+ * starting at @top via -blockdev.
+ */
+qemuBlockStorageSourceChainDataPtr
+qemuBuildStorageSourceChainAttachPrepareBlockdev(virStorageSourcePtr top,
+                                                 virQEMUCapsPtr qemuCaps)
+{
+    return qemuBuildStorageSourceChainAttachPrepareBlockdevInternal(top, qemuCaps,
+                                                                    false);
+}
+
+
+/**
+ * qemuBuildStorageSourceChainAttachPrepareBlockdevTop:
+ * @top: storage source chain
+ * @qemuCaps: qemu capabilities object
+ *
+ * Prepares qemuBlockStorageSourceChainDataPtr for attaching of @top image only
+ * via -blockdev.
+ */
+qemuBlockStorageSourceChainDataPtr
+qemuBuildStorageSourceChainAttachPrepareBlockdevTop(virStorageSourcePtr top,
+                                                    virQEMUCapsPtr qemuCaps)
+{
+    return qemuBuildStorageSourceChainAttachPrepareBlockdevInternal(top, qemuCaps,
+                                                                    true);
 }

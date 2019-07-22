@@ -117,6 +117,9 @@ qemuBlockStorageSourceChainDataPtr
 qemuBuildStorageSourceChainAttachPrepareBlockdev(virStorageSourcePtr top,
                                                  virQEMUCapsPtr qemuCaps);
 
+qemuBlockStorageSourceChainDataPtr
+qemuBuildStorageSourceChainAttachPrepareBlockdevTop(virStorageSourcePtr top,
+                                                    virQEMUCapsPtr qemuCaps);
 
 char
 *qemuBuildDiskDeviceStr(const virDomainDef *def,
