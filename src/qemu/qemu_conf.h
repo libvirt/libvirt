@@ -28,6 +28,7 @@
 #include "capabilities.h"
 #include "network_conf.h"
 #include "domain_conf.h"
+#include "checkpoint_conf.h"
 #include "snapshot_conf.h"
 #include "domain_event.h"
 #include "virthread.h"
@@ -101,6 +102,7 @@ struct _virQEMUDriverConfig {
     char *cacheDir;
     char *saveDir;
     char *snapshotDir;
+    char *checkpointDir;
     char *channelTargetDir;
     char *nvramDir;
     char *swtpmStorageDir;

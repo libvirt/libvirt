@@ -656,6 +656,11 @@ qemuStateInitialize(bool privileged,
                              cfg->snapshotDir);
         goto error;
     }
+    if (virFileMakePath(cfg->checkpointDir) < 0) {
+        virReportSystemError(errno, _("Failed to create checkpoint dir %s"),
+                             cfg->checkpointDir);
+        goto error;
+    }
     if (virFileMakePath(cfg->autoDumpPath) < 0) {
         virReportSystemError(errno, _("Failed to create dump dir %s"),
                              cfg->autoDumpPath);
@@ -764,6 +769,13 @@ qemuStateInitialize(bool privileged,
             virReportSystemError(errno,
                                  _("unable to set ownership of '%s' to %d:%d"),
                                  cfg->snapshotDir, (int)cfg->user,
+                                 (int)cfg->group);
+            goto error;
+        }
+        if (chown(cfg->checkpointDir, cfg->user, cfg->group) < 0) {
+            virReportSystemError(errno,
+                                 _("unable to set ownership of '%s' to %d:%d"),
+                                 cfg->checkpointDir, (int)cfg->user,
                                  (int)cfg->group);
             goto error;
         }
