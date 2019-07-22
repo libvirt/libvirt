@@ -242,7 +242,8 @@ virCgroupV2StealPlacement(virCgroupPtr group)
 
 
 static int
-virCgroupV2ParseControllersFile(virCgroupPtr group)
+virCgroupV2ParseControllersFile(virCgroupPtr group,
+                                virCgroupPtr parent)
 {
     int rc;
     VIR_AUTOFREE(char *) contStr = NULL;
@@ -250,10 +251,17 @@ virCgroupV2ParseControllersFile(virCgroupPtr group)
     char **contList = NULL;
     char **tmp;
 
-    if (virAsprintf(&contFile, "%s%s/cgroup.controllers",
-                    group->unified.mountPoint,
-                    NULLSTR_EMPTY(group->unified.placement)) < 0)
-        return -1;
+    if (parent) {
+        if (virAsprintf(&contFile, "%s%s/cgroup.subtree_control",
+                        parent->unified.mountPoint,
+                        NULLSTR_EMPTY(parent->unified.placement)) < 0)
+            return -1;
+    } else {
+        if (virAsprintf(&contFile, "%s%s/cgroup.controllers",
+                        group->unified.mountPoint,
+                        NULLSTR_EMPTY(group->unified.placement)) < 0)
+            return -1;
+    }
 
     rc = virFileReadAll(contFile, 1024 * 1024, &contStr);
     if (rc < 0) {
@@ -286,11 +294,12 @@ virCgroupV2ParseControllersFile(virCgroupPtr group)
 
 static int
 virCgroupV2DetectControllers(virCgroupPtr group,
-                             int controllers)
+                             int controllers,
+                             virCgroupPtr parent)
 {
     size_t i;
 
-    if (virCgroupV2ParseControllersFile(group) < 0)
+    if (virCgroupV2ParseControllersFile(group, parent) < 0)
         return -1;
 
     /* In cgroup v2 there is no cpuacct controller, the cpu.stat file always
