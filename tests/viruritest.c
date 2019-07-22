@@ -196,23 +196,19 @@ mymain(void)
         { (char*)"foo", (char*)"two", false },
         { NULL, NULL, false },
     };
-#ifdef HAVE_XMLURI_QUERY_RAW
     virURIParam params3[] = {
         { (char*)"foo", (char*)"&one", false },
         { (char*)"bar", (char*)"&two", false },
         { NULL, NULL, false },
     };
-#endif
     virURIParam params4[] = {
         { (char*)"foo", (char*)"", false },
         { NULL, NULL, false },
     };
-#ifdef HAVE_XMLURI_QUERY_RAW
     virURIParam params5[] = {
         { (char*)"foo", (char*)"one two", false },
         { NULL, NULL, false },
     };
-#endif
     virURIParam params6[] = {
         { (char*)"foo", (char*)"one", false },
         { NULL, NULL, false },
@@ -222,16 +218,12 @@ mymain(void)
     TEST_PARAMS("foo=one&foo=two", "", params2);
     TEST_PARAMS("foo=one&&foo=two", "foo=one&foo=two", params2);
     TEST_PARAMS("foo=one;foo=two", "foo=one&foo=two", params2);
-#ifdef HAVE_XMLURI_QUERY_RAW
     TEST_PARAMS("foo=%26one&bar=%26two", "", params3);
-#endif
     TEST_PARAMS("foo", "foo=", params4);
     TEST_PARAMS("foo=", "", params4);
     TEST_PARAMS("foo=&", "foo=", params4);
     TEST_PARAMS("foo=&&", "foo=", params4);
-#ifdef HAVE_XMLURI_QUERY_RAW
     TEST_PARAMS("foo=one%20two", "", params5);
-#endif
     TEST_PARAMS("=bogus&foo=one", "foo=one", params6);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

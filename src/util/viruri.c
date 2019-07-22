@@ -183,13 +183,8 @@ virURIParse(const char *uri)
         ret->port = xmluri->port;
     if (VIR_STRDUP(ret->path, xmluri->path) < 0)
         goto error;
-#ifdef HAVE_XMLURI_QUERY_RAW
     if (VIR_STRDUP(ret->query, xmluri->query_raw) < 0)
         goto error;
-#else
-    if (VIR_STRDUP(ret->query, xmluri->query) < 0)
-        goto error;
-#endif
     if (VIR_STRDUP(ret->fragment, xmluri->fragment) < 0)
         goto error;
     if (VIR_STRDUP(ret->user, xmluri->user) < 0)
@@ -237,11 +232,7 @@ virURIFormat(virURIPtr uri)
     xmluri.server = uri->server;
     xmluri.port = uri->port;
     xmluri.path = uri->path;
-#ifdef HAVE_XMLURI_QUERY_RAW
     xmluri.query_raw = uri->query;
-#else
-    xmluri.query = uri->query;
-#endif
     xmluri.fragment = uri->fragment;
     xmluri.user = uri->user;
 
