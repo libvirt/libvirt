@@ -10360,6 +10360,21 @@ qemuDomainDiskChangeSupported(virDomainDiskDefPtr disk,
     return true;
 }
 
+
+/* Return the format node name for a given disk of an online guest */
+const char *
+qemuDomainDiskNodeFormatLookup(virDomainObjPtr vm,
+                               const char *disk)
+{
+    size_t i;
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        if (STREQ(vm->def->disks[i]->dst, disk))
+            return vm->def->disks[i]->src->nodeformat;
+    }
+    return NULL;
+}
+
 bool
 qemuDomainDiskBlockJobIsActive(virDomainDiskDefPtr disk)
 {
