@@ -260,6 +260,9 @@
         </source>
       </src>
     </blockjob>
+    <blockjob name='pull-vdc-libvirt-4321-format' type='copy' state='ready' shallownew='yes'>
+      <disk dst='vdc'/>
+    </blockjob>
     <blockjob name='pull-vdc-libvirt-9-format' type='commit' state='running'>
       <disk dst='vdc'/>
       <base node='libvirt-11-format'/>
@@ -571,6 +574,17 @@
             </backingStore>
           </backingStore>
         </backingStore>
+        <mirror type='file' file='/tmp/copy2' format='qcow2' job='copy' ready='yes'>
+          <format type='qcow2'/>
+          <source file='/tmp/copy2' index='4321'>
+            <privateData>
+              <nodenames>
+                <nodename type='storage' name='libvirt-4321-storage'/>
+                <nodename type='format' name='libvirt-4321-format'/>
+              </nodenames>
+            </privateData>
+          </source>
+        </mirror>
         <target dev='vdc' bus='virtio'/>
         <alias name='virtio-disk3'/>
         <address type='pci' domain='0x0000' bus='0x00' slot='0x0d' function='0x0'/>

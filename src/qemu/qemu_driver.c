@@ -18351,7 +18351,6 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
 {
     virQEMUDriverPtr driver = conn->privateData;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    VIR_AUTOFREE(char *) device = NULL;
     virDomainDiskDefPtr disk = NULL;
     int ret = -1;
     bool need_unlink = false;
@@ -18363,6 +18362,11 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     qemuBlockJobDataPtr job = NULL;
     VIR_AUTOUNREF(virStorageSourcePtr) mirror = mirrorsrc;
     bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
+    VIR_AUTOPTR(qemuBlockStorageSourceChainData) data = NULL;
+    VIR_AUTOPTR(qemuBlockStorageSourceChainData) crdata = NULL;
+    virStorageSourcePtr n;
+    virStorageSourcePtr mirrorBacking = NULL;
+    int rc = 0;
 
     /* Preliminaries: find the disk we are editing, sanity checks */
     virCheckFlags(VIR_DOMAIN_BLOCK_COPY_SHALLOW |
@@ -18390,9 +18394,6 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
         goto endjob;
 
     if (!(disk = qemuDomainDiskByName(vm->def, path)))
-        goto endjob;
-
-    if (!(device = qemuAliasDiskDriveFromDisk(disk)))
         goto endjob;
 
     if (qemuDomainDiskBlockJobIsActive(disk))
@@ -18469,7 +18470,8 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
         goto endjob;
     }
 
-    /* pre-create the image file */
+    /* pre-create the image file. In case when 'blockdev' is used this is
+     * required so that libvirt can properly label the image for access by qemu */
     if (!existing) {
         if (virStorageFileCreate(mirror) < 0) {
             virReportSystemError(errno, "%s", _("failed to create copy target"));
@@ -18486,6 +18488,15 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
                                          keepParentLabel) < 0)
         goto endjob;
 
+    /* we must initialize XML-provided chain prior to detecting to keep semantics
+     * with VM startup */
+    if (blockdev) {
+        for (n = mirror; virStorageSourceIsBacking(n); n = n->backingStore) {
+            if (qemuDomainPrepareStorageSourceBlockdev(disk, n, priv, cfg) < 0)
+                goto endjob;
+        }
+    }
+
     /* If reusing an external image that includes a backing file but the user
      * did not enumerate the chain in the XML we need to detect the chain */
     if (mirror_reuse &&
@@ -18497,18 +18508,72 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     if (qemuDomainStorageSourceChainAccessAllow(driver, vm, mirror) < 0)
         goto endjob;
 
-    if (!(job = qemuBlockJobDiskNew(vm, disk, QEMU_BLOCKJOB_TYPE_COPY, device)))
+    if (blockdev) {
+        if (mirror_reuse) {
+            if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdev(mirror,
+                                                                          priv->qemuCaps)))
+                goto endjob;
+        } else {
+            if (qemuBlockStorageSourceCreateDetectSize(vm, mirror, disk->src, QEMU_ASYNC_JOB_NONE) < 0)
+                goto endjob;
+
+            if (mirror_shallow) {
+                /* if external backing store is populated we'll need to open it */
+                if (virStorageSourceHasBacking(mirror)) {
+                    if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdev(mirror->backingStore,
+                                                                                  priv->qemuCaps)))
+                        goto endjob;
+
+                    mirrorBacking = mirror->backingStore;
+                } else {
+                    /* backing store of original image will be reused, but the
+                     * new image must refer to it in the metadata */
+                    mirrorBacking = disk->src->backingStore;
+                }
+            }
+
+            if (!(crdata = qemuBuildStorageSourceChainAttachPrepareBlockdevTop(mirror,
+                                                                               priv->qemuCaps)))
+                goto endjob;
+        }
+
+        if (data) {
+            qemuDomainObjEnterMonitor(driver, vm);
+            rc = qemuBlockStorageSourceChainAttach(priv->mon, data);
+            if (qemuDomainObjExitMonitor(driver, vm) < 0)
+                goto endjob;
+
+            if (rc < 0)
+                goto endjob;
+        }
+
+        if (crdata &&
+            qemuBlockStorageSourceCreate(vm, mirror, mirrorBacking, mirror->backingStore,
+                                         crdata->srcdata[0], QEMU_ASYNC_JOB_NONE) < 0)
+            goto endjob;
+    }
+
+    if (!(job = qemuBlockJobDiskNewCopy(vm, disk, mirror, mirror_shallow, mirror_reuse)))
         goto endjob;
 
     disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
 
     /* Actually start the mirroring */
     qemuDomainObjEnterMonitor(driver, vm);
-    /* qemuMonitorDriveMirror needs to honor the REUSE_EXT flag as specified
-     * by the user */
-    ret = qemuMonitorDriveMirror(priv->mon, device, mirror->path, format,
-                                 bandwidth, granularity, buf_size,
-                                 mirror_shallow, mirror_reuse);
+
+    if (blockdev) {
+        ret = qemuMonitorBlockdevMirror(priv->mon, job->name, true,
+                                        disk->src->nodeformat,
+                                        mirror->nodeformat, bandwidth,
+                                        granularity, buf_size, mirror_shallow);
+    } else {
+        /* qemuMonitorDriveMirror needs to honor the REUSE_EXT flag as specified
+         * by the user */
+        ret = qemuMonitorDriveMirror(priv->mon, job->name, mirror->path, format,
+                                     bandwidth, granularity, buf_size,
+                                     mirror_shallow, mirror_reuse);
+    }
+
     virDomainAuditDisk(vm, NULL, mirror, "mirror", ret >= 0);
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -1;
@@ -18525,6 +18590,16 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     qemuBlockJobStarted(job, vm);
 
  endjob:
+    if (rc < 0 &&
+        virDomainObjIsActive(vm) &&
+        (data || crdata)) {
+        qemuDomainObjEnterMonitor(driver, vm);
+        if (data)
+            qemuBlockStorageSourceChainDetach(priv->mon, data);
+        if (crdata)
+            qemuBlockStorageSourceAttachRollback(priv->mon, crdata->srcdata[0]);
+        ignore_value(qemuDomainObjExitMonitor(driver, vm));
+    }
     if (need_unlink && virStorageFileUnlink(mirror) < 0)
         VIR_WARN("%s", _("unable to remove just-created copy target"));
     virStorageFileDeinit(mirror);

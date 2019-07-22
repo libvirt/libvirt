@@ -2426,6 +2426,10 @@ qemuDomainObjPrivateXMLFormatBlockjobIterator(void *payload,
             break;
 
         case QEMU_BLOCKJOB_TYPE_COPY:
+            if (job->data.copy.shallownew)
+                virBufferAddLit(&attrBuf, " shallownew='yes'");
+            break;
+
         case QEMU_BLOCKJOB_TYPE_NONE:
         case QEMU_BLOCKJOB_TYPE_INTERNAL:
         case QEMU_BLOCKJOB_TYPE_LAST:
@@ -2873,6 +2877,7 @@ qemuDomainObjPrivateXMLParseBlockjobDataSpecific(qemuBlockJobDataPtr job,
                                                  virDomainXMLOptionPtr xmlopt)
 {
     VIR_AUTOFREE(char *) createmode = NULL;
+    VIR_AUTOFREE(char *) shallownew = NULL;
     xmlNodePtr tmp;
 
     switch ((qemuBlockJobType) job->type) {
@@ -2922,6 +2927,14 @@ qemuDomainObjPrivateXMLParseBlockjobDataSpecific(qemuBlockJobDataPtr job,
             break;
 
         case QEMU_BLOCKJOB_TYPE_COPY:
+            if ((shallownew =  virXPathString("string(./@shallownew)", ctxt))) {
+                if (STRNEQ(shallownew, "yes"))
+                    goto broken;
+
+                job->data.copy.shallownew = true;
+            }
+            break;
+
         case QEMU_BLOCKJOB_TYPE_NONE:
         case QEMU_BLOCKJOB_TYPE_INTERNAL:
         case QEMU_BLOCKJOB_TYPE_LAST:

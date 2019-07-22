@@ -309,6 +309,40 @@ qemuBlockJobNewCreate(virDomainObjPtr vm,
 }
 
 
+qemuBlockJobDataPtr
+qemuBlockJobDiskNewCopy(virDomainObjPtr vm,
+                        virDomainDiskDefPtr disk,
+                        virStorageSourcePtr mirror,
+                        bool shallow,
+                        bool reuse)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    VIR_AUTOUNREF(qemuBlockJobDataPtr) job = NULL;
+    VIR_AUTOFREE(char *) jobname = NULL;
+
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+        if (virAsprintf(&jobname, "copy-%s-%s", disk->dst, disk->src->nodeformat) < 0)
+            return NULL;
+    } else {
+        if (!(jobname = qemuAliasDiskDriveFromDisk(disk)))
+            return NULL;
+    }
+
+    if (!(job = qemuBlockJobDataNew(QEMU_BLOCKJOB_TYPE_COPY, jobname)))
+        return NULL;
+
+    job->mirrorChain = virObjectRef(mirror);
+
+    if (shallow && !reuse)
+        job->data.copy.shallownew = true;
+
+    if (qemuBlockJobRegister(job, vm, disk, true) < 0)
+        return NULL;
+
+    VIR_RETURN_PTR(job);
+}
+
+
 /**
  * qemuBlockJobDiskGetJob:
  * @disk: disk definition
@@ -1044,6 +1078,50 @@ qemuBlockJobProcessEventCompletedActiveCommit(virQEMUDriverPtr driver,
 
 
 static void
+qemuBlockJobProcessEventConcludedCopyPivot(virQEMUDriverPtr driver,
+                                           virDomainObjPtr vm,
+                                           qemuBlockJobDataPtr job,
+                                           qemuDomainAsyncJob asyncJob)
+{
+    VIR_DEBUG("copy job '%s' on VM '%s' pivoted", job->name, vm->def->name);
+
+    if (!job->disk)
+        return;
+
+    /* for shallow copy without reusing external image the user can either not
+     * specify the backing chain in which case libvirt will open and use the
+     * chain the user provided or not specify a chain in which case we'll
+     * inherit the rest of the chain */
+    if (job->data.copy.shallownew &&
+        !virStorageSourceIsBacking(job->disk->mirror->backingStore))
+        VIR_STEAL_PTR(job->disk->mirror->backingStore, job->disk->src->backingStore);
+
+    qemuBlockJobRewriteConfigDiskSource(vm, job->disk, job->disk->mirror);
+
+    qemuBlockJobEventProcessConcludedRemoveChain(driver, vm, asyncJob, job->disk->src);
+    virObjectUnref(job->disk->src);
+    VIR_STEAL_PTR(job->disk->src, job->disk->mirror);
+}
+
+
+static void
+qemuBlockJobProcessEventConcludedCopyAbort(virQEMUDriverPtr driver,
+                                           virDomainObjPtr vm,
+                                           qemuBlockJobDataPtr job,
+                                           qemuDomainAsyncJob asyncJob)
+{
+    VIR_DEBUG("copy job '%s' on VM '%s' aborted", job->name, vm->def->name);
+
+    if (!job->disk)
+        return;
+
+    qemuBlockJobEventProcessConcludedRemoveChain(driver, vm, asyncJob, job->disk->mirror);
+    virObjectUnref(job->disk->mirror);
+    job->disk->mirror = NULL;
+}
+
+
+static void
 qemuBlockJobProcessEventConcludedCreate(virQEMUDriverPtr driver,
                                         virDomainObjPtr vm,
                                         qemuBlockJobDataPtr job,
@@ -1111,6 +1189,12 @@ qemuBlockJobEventProcessConcludedTransition(qemuBlockJobDataPtr job,
             break;
 
         case QEMU_BLOCKJOB_TYPE_COPY:
+            if (job->state == QEMU_BLOCKJOB_STATE_PIVOTING)
+                qemuBlockJobProcessEventConcludedCopyPivot(driver, vm, job, asyncJob);
+            else
+                qemuBlockJobProcessEventConcludedCopyAbort(driver, vm, job, asyncJob);
+            break;
+
         case QEMU_BLOCKJOB_TYPE_NONE:
         case QEMU_BLOCKJOB_TYPE_INTERNAL:
         case QEMU_BLOCKJOB_TYPE_LAST:
@@ -1138,6 +1222,9 @@ qemuBlockJobEventProcessConcludedTransition(qemuBlockJobDataPtr job,
             break;
 
         case QEMU_BLOCKJOB_TYPE_COPY:
+            qemuBlockJobProcessEventConcludedCopyAbort(driver, vm, job, asyncJob);
+            break;
+
         case QEMU_BLOCKJOB_TYPE_NONE:
         case QEMU_BLOCKJOB_TYPE_INTERNAL:
         case QEMU_BLOCKJOB_TYPE_LAST:
