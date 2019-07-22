@@ -18236,6 +18236,9 @@ qemuDomainBlockCopyValidateMirror(virStorageSourcePtr mirror,
     int desttype = virStorageSourceGetActualType(mirror);
     struct stat st;
 
+    if (!virStorageSourceIsLocalStorage(mirror))
+        return 0;
+
     if (virStorageFileAccess(mirror, F_OK) < 0) {
         if (errno != ENOENT) {
             virReportSystemError(errno, "%s",
@@ -18362,6 +18365,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     qemuBlockJobDataPtr job = NULL;
     VIR_AUTOUNREF(virStorageSourcePtr) mirror = mirrorsrc;
     bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
+    bool mirror_initialized = false;
     VIR_AUTOPTR(qemuBlockStorageSourceChainData) data = NULL;
     VIR_AUTOPTR(qemuBlockStorageSourceChainData) crdata = NULL;
     virStorageSourcePtr n;
@@ -18434,15 +18438,19 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     }
 
     /* Prepare the destination file.  */
-    /* XXX Allow non-file mirror destinations */
-    if (!virStorageSourceIsLocalStorage(mirror)) {
+    if (!blockdev &&
+        !virStorageSourceIsLocalStorage(mirror)) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("non-file destination not supported yet"));
         goto endjob;
     }
 
-    if (qemuDomainStorageFileInit(driver, vm, mirror, NULL) < 0)
-        goto endjob;
+    if (virStorageFileSupportsCreate(mirror) == 1) {
+        if (qemuDomainStorageFileInit(driver, vm, mirror, NULL) < 0)
+            goto endjob;
+
+        mirror_initialized = true;
+    }
 
     if (qemuDomainBlockCopyValidateMirror(mirror, disk->dst, &existing) < 0)
         goto endjob;
@@ -18451,12 +18459,19 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
         if (!mirror_reuse) {
             mirror->format = disk->src->format;
         } else {
-            /* If the user passed the REUSE_EXT flag, then either they
-             * can also pass the RAW flag or use XML to tell us the format.
-             * So if we get here, we assume it is safe for us to probe the
-             * format from the file that we will be using.  */
-            mirror->format = virStorageFileProbeFormat(mirror->path, cfg->user,
-                                                       cfg->group);
+            if (mirror_initialized &&
+                virStorageSourceIsLocalStorage(mirror)) {
+                /* If the user passed the REUSE_EXT flag, then either they
+                 * can also pass the RAW flag or use XML to tell us the format.
+                 * So if we get here, we assume it is safe for us to probe the
+                 * format from the file that we will be using.  */
+                mirror->format = virStorageFileProbeFormat(mirror->path, cfg->user,
+                                                           cfg->group);
+            } else {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("reused mirror destination format must be specified"));
+                goto endjob;
+            }
         }
     }
 
@@ -18473,12 +18488,14 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     /* pre-create the image file. In case when 'blockdev' is used this is
      * required so that libvirt can properly label the image for access by qemu */
     if (!existing) {
-        if (virStorageFileCreate(mirror) < 0) {
-            virReportSystemError(errno, "%s", _("failed to create copy target"));
-            goto endjob;
-        }
+        if (mirror_initialized) {
+            if (virStorageFileCreate(mirror) < 0) {
+                virReportSystemError(errno, "%s", _("failed to create copy target"));
+                goto endjob;
+            }
 
-        need_unlink = true;
+            need_unlink = true;
+        }
     }
 
     if (mirror->format > 0)
