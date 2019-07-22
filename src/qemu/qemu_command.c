@@ -11160,7 +11160,7 @@ qemuBuildStorageSourceChainAttachPrepareDrive(virDomainDiskDefPtr disk,
 
 
 /**
- * qemuBuildStorageSourceChainAttachPrepareDrive:
+ * qemuBuildStorageSourceChainAttachPrepareBlockdev:
  * @top: storage source chain
  * @qemuCaps: qemu capabilities object
  *
