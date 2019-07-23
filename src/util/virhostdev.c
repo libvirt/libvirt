@@ -613,6 +613,31 @@ virHostdevRestoreNetConfig(virDomainHostdevDefPtr hostdev,
     }
 }
 
+static int
+virHostdevResetAllPCIDevices(virHostdevManagerPtr mgr,
+                             virPCIDeviceListPtr pcidevs)
+{
+    int ret = 0;
+    size_t i;
+
+    for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
+        virPCIDevicePtr pci = virPCIDeviceListGet(pcidevs, i);
+
+        /* We can avoid looking up the actual device here, because performing
+         * a PCI reset on a device doesn't require any information other than
+         * the address, which 'pci' already contains */
+        VIR_DEBUG("Resetting PCI device %s", virPCIDeviceGetName(pci));
+        if (virPCIDeviceReset(pci, mgr->activePCIHostdevs,
+                              mgr->inactivePCIHostdevs) < 0) {
+            VIR_ERROR(_("Failed to reset PCI device: %s"),
+                      virGetLastErrorMessage());
+            ret = -1;
+        }
+    }
+
+    return ret;
+}
+
 int
 virHostdevPreparePCIDevices(virHostdevManagerPtr mgr,
                             const char *drv_name,
@@ -765,17 +790,8 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr mgr,
 
     /* Step 3: Now that all the PCI hostdevs have been detached, we
      * can safely reset them */
-    for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
-        virPCIDevicePtr pci = virPCIDeviceListGet(pcidevs, i);
-
-        /* We can avoid looking up the actual device here, because performing
-         * a PCI reset on a device doesn't require any information other than
-         * the address, which 'pci' already contains */
-        VIR_DEBUG("Resetting PCI device %s", virPCIDeviceGetName(pci));
-        if (virPCIDeviceReset(pci, mgr->activePCIHostdevs,
-                              mgr->inactivePCIHostdevs) < 0)
-            goto reattachdevs;
-    }
+    if (virHostdevResetAllPCIDevices(mgr, pcidevs) < 0)
+        goto reattachdevs;
 
     /* Step 4: For SRIOV network devices, Now that we have detached the
      * the network device, set the new netdev config */
@@ -1046,20 +1062,7 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr mgr,
     }
 
     /* Step 4: perform a PCI Reset on all devices */
-    for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
-        virPCIDevicePtr pci = virPCIDeviceListGet(pcidevs, i);
-
-        /* We can avoid looking up the actual device here, because performing
-         * a PCI reset on a device doesn't require any information other than
-         * the address, which 'pci' already contains */
-        VIR_DEBUG("Resetting PCI device %s", virPCIDeviceGetName(pci));
-        if (virPCIDeviceReset(pci, mgr->activePCIHostdevs,
-                              mgr->inactivePCIHostdevs) < 0) {
-            VIR_ERROR(_("Failed to reset PCI device: %s"),
-                      virGetLastErrorMessage());
-            virResetLastError();
-        }
-    }
+    virHostdevResetAllPCIDevices(mgr, pcidevs);
 
     /* Step 5: Reattach managed devices to their host drivers; unmanaged
      *         devices don't need to be processed further */
