@@ -926,33 +926,6 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr mgr,
     return ret;
 }
 
-/*
- * Pre-condition: inactivePCIHostdevs & activePCIHostdevs
- * are locked
- */
-static void
-virHostdevReattachPCIDevice(virHostdevManagerPtr mgr,
-                            virPCIDevicePtr actual)
-{
-    /* Wait for device cleanup if it is qemu/kvm */
-    if (virPCIDeviceGetStubDriver(actual) == VIR_PCI_STUB_DRIVER_KVM) {
-        int retries = 100;
-        while (virPCIDeviceWaitForCleanup(actual, "kvm_assigned_device")
-               && retries) {
-            usleep(100*1000);
-            retries--;
-        }
-    }
-
-    VIR_DEBUG("Reattaching PCI device %s", virPCIDeviceGetName(actual));
-    if (virPCIDeviceReattach(actual, mgr->activePCIHostdevs,
-                             mgr->inactivePCIHostdevs) < 0) {
-        VIR_ERROR(_("Failed to re-attach PCI device: %s"),
-                  virGetLastErrorMessage());
-        virResetLastError();
-    }
-}
-
 /* @oldStateDir:
  * For upgrade purpose: see virHostdevRestoreNetConfig
  */
@@ -1071,12 +1044,19 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr mgr,
         virPCIDevicePtr actual;
 
         /* We need to look up the actual device because that's what
-         * virHostdevReattachPCIDevice() expects as its argument */
+         * virPCIDeviceReattach() expects as its argument */
         if (!(actual = virPCIDeviceListFind(mgr->inactivePCIHostdevs, pci)))
             continue;
 
-        if (virPCIDeviceGetManaged(actual))
-            virHostdevReattachPCIDevice(mgr, actual);
+        if (virPCIDeviceGetManaged(actual)) {
+            if (virPCIDeviceReattach(actual,
+                                     mgr->activePCIHostdevs,
+                                     mgr->inactivePCIHostdevs) < 0) {
+                VIR_ERROR(_("Failed to re-attach PCI device: %s"),
+                          virGetLastErrorMessage());
+                virResetLastError();
+            }
+        }
         else
             VIR_DEBUG("Not reattaching unmanaged PCI device %s",
                       virPCIDeviceGetName(actual));
