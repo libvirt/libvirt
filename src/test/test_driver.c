@@ -2593,6 +2593,52 @@ static int testDomainSetMaxMemory(virDomainPtr domain,
 
 
 static int
+testDomainGetEmulatorPinInfo(virDomainPtr dom,
+                             unsigned char *cpumaps,
+                             int maplen,
+                             unsigned int flags)
+{
+    virDomainObjPtr vm = NULL;
+    virDomainDefPtr def = NULL;
+    virBitmapPtr cpumask = NULL;
+    virBitmapPtr bitmap = NULL;
+    int hostcpus;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (!(def = virDomainObjGetOneDef(vm, flags)))
+        goto cleanup;
+
+    if ((hostcpus = virHostCPUGetCount()) < 0)
+        goto cleanup;
+
+    if (def->cputune.emulatorpin) {
+        cpumask = def->cputune.emulatorpin;
+    } else if (def->cpumask) {
+        cpumask = def->cpumask;
+    } else {
+        if (!(bitmap = virBitmapNew(hostcpus)))
+            goto cleanup;
+        virBitmapSetAll(bitmap);
+        cpumask = bitmap;
+    }
+
+    virBitmapToDataBuf(cpumask, cpumaps, maplen);
+
+    ret = 1;
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    virBitmapFree(bitmap);
+    return ret;
+}
+
+
+static int
 testDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
 {
     virDomainObjPtr vm;
@@ -8045,6 +8091,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainCoreDump = testDomainCoreDump, /* 0.3.2 */
     .domainCoreDumpWithFormat = testDomainCoreDumpWithFormat, /* 1.2.3 */
     .domainSetUserPassword = testDomainSetUserPassword, /* 5.6.0 */
+    .domainGetEmulatorPinInfo = testDomainGetEmulatorPinInfo, /* 5.6.0 */
     .domainSetVcpus = testDomainSetVcpus, /* 0.1.4 */
     .domainSetVcpusFlags = testDomainSetVcpusFlags, /* 0.8.5 */
     .domainGetVcpusFlags = testDomainGetVcpusFlags, /* 0.8.5 */
