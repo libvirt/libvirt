@@ -2075,7 +2075,6 @@ typedef enum {
 typedef enum {
     VIR_DOMAIN_RNG_BACKEND_RANDOM,
     VIR_DOMAIN_RNG_BACKEND_EGD,
-    /* VIR_DOMAIN_RNG_BACKEND_POOL, */
 
     VIR_DOMAIN_RNG_BACKEND_LAST
 } virDomainRNGBackend;
