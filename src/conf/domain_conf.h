@@ -119,7 +119,6 @@ struct _virDomainDeviceDef {
 };
 
 /* Different types of hypervisor */
-/* NB: Keep in sync with virDomainVirtTypeToString impl */
 typedef enum {
     VIR_DOMAIN_VIRT_NONE = 0,
     VIR_DOMAIN_VIRT_QEMU,
