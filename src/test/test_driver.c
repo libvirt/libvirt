@@ -2593,6 +2593,49 @@ static int testDomainSetMaxMemory(virDomainPtr domain,
 
 
 static int
+testDomainPinEmulator(virDomainPtr dom,
+                      unsigned char *cpumap,
+                      int maplen,
+                      unsigned int flags)
+{
+    virDomainObjPtr vm = NULL;
+    virDomainDefPtr def = NULL;
+    virBitmapPtr pcpumap = NULL;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (!(def = virDomainObjGetOneDef(vm, flags)))
+        goto cleanup;
+
+    if (!(pcpumap = virBitmapNewData(cpumap, maplen)))
+        goto cleanup;
+
+    if (virBitmapIsAllClear(pcpumap)) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Empty cpu list for pinning"));
+        goto cleanup;
+    }
+
+    virBitmapFree(def->cputune.emulatorpin);
+    def->cputune.emulatorpin = NULL;
+
+    if (!(def->cputune.emulatorpin = virBitmapNewCopy(pcpumap)))
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virBitmapFree(pcpumap);
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
+static int
 testDomainGetEmulatorPinInfo(virDomainPtr dom,
                              unsigned char *cpumaps,
                              int maplen,
@@ -8091,6 +8134,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainCoreDump = testDomainCoreDump, /* 0.3.2 */
     .domainCoreDumpWithFormat = testDomainCoreDumpWithFormat, /* 1.2.3 */
     .domainSetUserPassword = testDomainSetUserPassword, /* 5.6.0 */
+    .domainPinEmulator = testDomainPinEmulator, /* 5.6.0 */
     .domainGetEmulatorPinInfo = testDomainGetEmulatorPinInfo, /* 5.6.0 */
     .domainSetVcpus = testDomainSetVcpus, /* 0.1.4 */
     .domainSetVcpusFlags = testDomainSetVcpusFlags, /* 0.8.5 */
