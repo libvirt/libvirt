@@ -2959,6 +2959,9 @@ testQueryJobs(const void *opaque)
     size_t i;
     int ret = -1;
 
+    if (!test)
+        return -1;
+
     if (virAsprintf(&filenameJSON,
                     abs_srcdir "/qemumonitorjsondata/query-jobs-%s.json",
                     data->name) < 0 ||
