@@ -320,6 +320,270 @@
         <alias name='virtio-disk0'/>
         <address type='pci' domain='0x0000' bus='0x00' slot='0x0a' function='0x0'/>
       </disk>
+      <disk type='file' device='disk'>
+        <driver name='qemu' type='qcow2'/>
+        <source file='/tmp/pull4.qcow2' index='3'>
+          <privateData>
+            <nodenames>
+              <nodename type='storage' name='libvirt-3-storage'/>
+              <nodename type='format' name='libvirt-3-format'/>
+            </nodenames>
+          </privateData>
+        </source>
+        <backingStore type='file' index='13'>
+          <format type='qcow2'/>
+          <source file='/tmp/pull3.qcow2'>
+            <privateData>
+              <nodenames>
+                <nodename type='storage' name='libvirt-13-storage'/>
+                <nodename type='format' name='libvirt-13-format'/>
+              </nodenames>
+              <relPath>pull3.qcow2</relPath>
+            </privateData>
+          </source>
+          <backingStore type='file' index='14'>
+            <format type='qcow2'/>
+            <source file='/tmp/pull2.qcow2'>
+              <privateData>
+                <nodenames>
+                  <nodename type='storage' name='libvirt-14-storage'/>
+                  <nodename type='format' name='libvirt-14-format'/>
+                </nodenames>
+                <relPath>pull2.qcow2</relPath>
+              </privateData>
+            </source>
+            <backingStore type='file' index='15'>
+              <format type='qcow2'/>
+              <source file='/tmp/pull1.qcow2'>
+                <privateData>
+                  <nodenames>
+                    <nodename type='storage' name='libvirt-15-storage'/>
+                    <nodename type='format' name='libvirt-15-format'/>
+                  </nodenames>
+                  <relPath>pull1.qcow2</relPath>
+                </privateData>
+              </source>
+              <backingStore type='file' index='16'>
+                <format type='qcow2'/>
+                <source file='/tmp/pull0.qcow2'>
+                  <privateData>
+                    <nodenames>
+                      <nodename type='storage' name='libvirt-16-storage'/>
+                      <nodename type='format' name='libvirt-16-format'/>
+                    </nodenames>
+                    <relPath>pull0.qcow2</relPath>
+                  </privateData>
+                </source>
+                <backingStore/>
+              </backingStore>
+            </backingStore>
+          </backingStore>
+        </backingStore>
+        <target dev='vdb' bus='virtio'/>
+        <alias name='virtio-disk1'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x0b' function='0x0'/>
+        <privateData>
+          <qom name='/machine/peripheral/virtio-disk1/virtio-backend'/>
+        </privateData>
+      </disk>
+      <disk type='file' device='disk'>
+        <driver name='qemu' type='qcow2'/>
+        <source file='/tmp/commit4.qcow2' index='2'>
+          <privateData>
+            <nodenames>
+              <nodename type='storage' name='libvirt-2-storage'/>
+              <nodename type='format' name='libvirt-2-format'/>
+            </nodenames>
+          </privateData>
+        </source>
+        <backingStore type='file' index='9'>
+          <format type='qcow2'/>
+          <source file='/tmp/commit3.qcow2'>
+            <privateData>
+              <nodenames>
+                <nodename type='storage' name='libvirt-9-storage'/>
+                <nodename type='format' name='libvirt-9-format'/>
+              </nodenames>
+              <relPath>commit3.qcow2</relPath>
+            </privateData>
+          </source>
+          <backingStore type='file' index='10'>
+            <format type='qcow2'/>
+            <source file='/tmp/commit2.qcow2'>
+              <privateData>
+                <nodenames>
+                  <nodename type='storage' name='libvirt-10-storage'/>
+                  <nodename type='format' name='libvirt-10-format'/>
+                </nodenames>
+                <relPath>commit2.qcow2</relPath>
+              </privateData>
+            </source>
+            <backingStore type='file' index='11'>
+              <format type='qcow2'/>
+              <source file='/tmp/commit1.qcow2'>
+                <privateData>
+                  <nodenames>
+                    <nodename type='storage' name='libvirt-11-storage'/>
+                    <nodename type='format' name='libvirt-11-format'/>
+                  </nodenames>
+                  <relPath>commit1.qcow2</relPath>
+                </privateData>
+              </source>
+              <backingStore type='file' index='12'>
+                <format type='qcow2'/>
+                <source file='/tmp/commit0.qcow2'>
+                  <privateData>
+                    <nodenames>
+                      <nodename type='storage' name='libvirt-12-storage'/>
+                      <nodename type='format' name='libvirt-12-format'/>
+                    </nodenames>
+                    <relPath>commit0.qcow2</relPath>
+                  </privateData>
+                </source>
+                <backingStore/>
+              </backingStore>
+            </backingStore>
+          </backingStore>
+        </backingStore>
+        <target dev='vdc' bus='virtio'/>
+        <alias name='virtio-disk2'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x0c' function='0x0'/>
+        <privateData>
+          <qom name='/machine/peripheral/virtio-disk2/virtio-backend'/>
+        </privateData>
+      </disk>
+      <disk type='file' device='disk'>
+        <driver name='qemu' type='qcow2'/>
+        <source file='/tmp/copy4.qcow2' index='1'>
+          <privateData>
+            <nodenames>
+              <nodename type='storage' name='libvirt-1-storage'/>
+              <nodename type='format' name='libvirt-1-format'/>
+            </nodenames>
+          </privateData>
+        </source>
+        <backingStore type='file' index='5'>
+          <format type='qcow2'/>
+          <source file='/tmp/copy3.qcow2'>
+            <privateData>
+              <nodenames>
+                <nodename type='storage' name='libvirt-5-storage'/>
+                <nodename type='format' name='libvirt-5-format'/>
+              </nodenames>
+              <relPath>copy3.qcow2</relPath>
+            </privateData>
+          </source>
+          <backingStore type='file' index='6'>
+            <format type='qcow2'/>
+            <source file='/tmp/copy2.qcow2'>
+              <privateData>
+                <nodenames>
+                  <nodename type='storage' name='libvirt-6-storage'/>
+                  <nodename type='format' name='libvirt-6-format'/>
+                </nodenames>
+                <relPath>copy2.qcow2</relPath>
+              </privateData>
+            </source>
+            <backingStore type='file' index='7'>
+              <format type='qcow2'/>
+              <source file='/tmp/copy1.qcow2'>
+                <privateData>
+                  <nodenames>
+                    <nodename type='storage' name='libvirt-7-storage'/>
+                    <nodename type='format' name='libvirt-7-format'/>
+                  </nodenames>
+                  <relPath>copy1.qcow2</relPath>
+                </privateData>
+              </source>
+              <backingStore type='file' index='8'>
+                <format type='qcow2'/>
+                <source file='/tmp/copy0.qcow2'>
+                  <privateData>
+                    <nodenames>
+                      <nodename type='storage' name='libvirt-8-storage'/>
+                      <nodename type='format' name='libvirt-8-format'/>
+                    </nodenames>
+                    <relPath>copy0.qcow2</relPath>
+                  </privateData>
+                </source>
+                <backingStore/>
+              </backingStore>
+            </backingStore>
+          </backingStore>
+        </backingStore>
+        <target dev='vdc' bus='virtio'/>
+        <alias name='virtio-disk3'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x0d' function='0x0'/>
+        <privateData>
+          <qom name='/machine/peripheral/virtio-disk3/virtio-backend'/>
+        </privateData>
+      </disk>
+      <disk type='file' device='disk'>
+        <driver name='qemu' type='qcow2'/>
+        <source file='/tmp/activecommit4.qcow2' index='17'>
+          <privateData>
+            <nodenames>
+              <nodename type='storage' name='libvirt-17-storage'/>
+              <nodename type='format' name='libvirt-17-format'/>
+            </nodenames>
+          </privateData>
+        </source>
+        <backingStore type='file' index='18'>
+          <format type='qcow2'/>
+          <source file='/tmp/activecommit3.qcow2'>
+            <privateData>
+              <nodenames>
+                <nodename type='storage' name='libvirt-18-storage'/>
+                <nodename type='format' name='libvirt-18-format'/>
+              </nodenames>
+              <relPath>activecommit3.qcow2</relPath>
+            </privateData>
+          </source>
+          <backingStore type='file' index='19'>
+            <format type='qcow2'/>
+            <source file='/tmp/activecommit2.qcow2'>
+              <privateData>
+                <nodenames>
+                  <nodename type='storage' name='libvirt-19-storage'/>
+                  <nodename type='format' name='libvirt-19-format'/>
+                </nodenames>
+                <relPath>activecommit2.qcow2</relPath>
+              </privateData>
+            </source>
+            <backingStore type='file' index='20'>
+              <format type='qcow2'/>
+              <source file='/tmp/activecommit1.qcow2'>
+                <privateData>
+                  <nodenames>
+                    <nodename type='storage' name='libvirt-20-storage'/>
+                    <nodename type='format' name='libvirt-20-format'/>
+                  </nodenames>
+                  <relPath>activecommit1.qcow2</relPath>
+                </privateData>
+              </source>
+              <backingStore type='file' index='21'>
+                <format type='qcow2'/>
+                <source file='/tmp/activecommit0.qcow2'>
+                  <privateData>
+                    <nodenames>
+                      <nodename type='storage' name='libvirt-21-storage'/>
+                      <nodename type='format' name='libvirt-21-format'/>
+                    </nodenames>
+                    <relPath>activecommit0.qcow2</relPath>
+                  </privateData>
+                </source>
+                <backingStore/>
+              </backingStore>
+            </backingStore>
+          </backingStore>
+        </backingStore>
+        <target dev='vdd' bus='virtio'/>
+        <alias name='virtio-disk3'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x0e' function='0x0'/>
+        <privateData>
+          <qom name='/machine/peripheral/virtio-disk3/virtio-backend'/>
+        </privateData>
+      </disk>
       <controller type='usb' index='0' model='piix3-uhci'>
         <alias name='usb'/>
         <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
