@@ -9133,9 +9133,6 @@ qemuMonitorJSONGetJobInfoOne(virJSONValuePtr data)
     VIR_AUTOPTR(qemuMonitorJobInfo) job = NULL;
     qemuMonitorJobInfoPtr ret = NULL;
 
-    if (!data)
-        return NULL;
-
     if (VIR_ALLOC(job) < 0)
         return NULL;
 
