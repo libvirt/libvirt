@@ -1220,16 +1220,16 @@ bhyveStateInitialize(bool privileged,
 {
     if (!privileged) {
         VIR_INFO("Not running privileged, disabling driver");
-        return 0;
+        return VIR_DRV_STATE_INIT_SKIPPED;
     }
 
     if (VIR_ALLOC(bhyve_driver) < 0)
-        return -1;
+        return VIR_DRV_STATE_INIT_ERROR;
 
     bhyve_driver->lockFD = -1;
     if (virMutexInit(&bhyve_driver->lock) < 0) {
         VIR_FREE(bhyve_driver);
-        return -1;
+        return VIR_DRV_STATE_INIT_ERROR;
     }
 
     if (!(bhyve_driver->closeCallbacks = virCloseCallbacksNew()))
@@ -1303,11 +1303,11 @@ bhyveStateInitialize(bool privileged,
 
     bhyveAutostartDomains(bhyve_driver);
 
-    return 0;
+    return VIR_DRV_STATE_INIT_COMPLETE;
 
  cleanup:
     bhyveStateCleanup();
-    return -1;
+    return VIR_DRV_STATE_INIT_ERROR;
 }
 
 unsigned

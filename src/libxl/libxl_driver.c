@@ -657,17 +657,17 @@ libxlStateInitialize(bool privileged,
     char ebuf[1024];
 
     if (!libxlDriverShouldLoad(privileged))
-        return 0;
+        return VIR_DRV_STATE_INIT_SKIPPED;
 
     if (VIR_ALLOC(libxl_driver) < 0)
-        return -1;
+        return VIR_DRV_STATE_INIT_ERROR;
 
     libxl_driver->lockFD = -1;
     if (virMutexInit(&libxl_driver->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("cannot initialize mutex"));
         VIR_FREE(libxl_driver);
-        return -1;
+        return VIR_DRV_STATE_INIT_ERROR;
     }
 
     /* Allocate bitmap for vnc port reservation */
@@ -806,12 +806,12 @@ libxlStateInitialize(bool privileged,
     virDomainObjListForEach(libxl_driver->domains, libxlDomainManagedSaveLoad,
                             libxl_driver);
 
-    return 0;
+    return VIR_DRV_STATE_INIT_COMPLETE;
 
  error:
     VIR_FREE(driverConf);
     libxlStateCleanup();
-    return -1;
+    return VIR_DRV_STATE_INIT_ERROR;
 }
 
 static int

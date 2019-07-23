@@ -1545,7 +1545,7 @@ static int lxcStateInitialize(bool privileged,
     /* Check that the user is root, silently disable if not */
     if (!privileged) {
         VIR_INFO("Not running privileged, disabling driver");
-        return 0;
+        return VIR_DRV_STATE_INIT_SKIPPED;
     }
 
     /* Check that this is a container enabled kernel */
@@ -1554,15 +1554,15 @@ static int lxcStateInitialize(bool privileged,
                                      VIR_PROCESS_NAMESPACE_UTS |
                                      VIR_PROCESS_NAMESPACE_IPC) < 0) {
         VIR_INFO("LXC support not available in this kernel, disabling driver");
-        return 0;
+        return VIR_DRV_STATE_INIT_SKIPPED;
     }
 
     if (VIR_ALLOC(lxc_driver) < 0)
-        return -1;
+        return VIR_DRV_STATE_INIT_ERROR;
     lxc_driver->lockFD = -1;
     if (virMutexInit(&lxc_driver->lock) < 0) {
         VIR_FREE(lxc_driver);
-        return -1;
+        return VIR_DRV_STATE_INIT_ERROR;
     }
 
     if (!(lxc_driver->domains = virDomainObjListNew()))
@@ -1633,12 +1633,12 @@ static int lxcStateInitialize(bool privileged,
     virLXCProcessAutostartAll(lxc_driver);
 
     virObjectUnref(caps);
-    return 0;
+    return VIR_DRV_STATE_INIT_COMPLETE;
 
  cleanup:
     virObjectUnref(caps);
     lxcStateCleanup();
-    return -1;
+    return VIR_DRV_STATE_INIT_ERROR;
 }
 
 static void lxcNotifyLoadDomain(virDomainObjPtr vm, int newVM, void *opaque)

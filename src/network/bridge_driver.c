@@ -713,7 +713,7 @@ networkStateInitialize(bool privileged,
                        virStateInhibitCallback callback ATTRIBUTE_UNUSED,
                        void *opaque ATTRIBUTE_UNUSED)
 {
-    int ret = -1;
+    int ret = VIR_DRV_STATE_INIT_ERROR;
     char *configdir = NULL;
     char *rundir = NULL;
 #ifdef WITH_FIREWALLD
@@ -847,7 +847,7 @@ networkStateInitialize(bool privileged,
     }
 #endif
 
-    ret = 0;
+    ret = VIR_DRV_STATE_INIT_COMPLETE;
  cleanup:
     VIR_FREE(configdir);
     VIR_FREE(rundir);

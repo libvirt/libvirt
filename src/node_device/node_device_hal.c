@@ -599,7 +599,7 @@ nodeStateInitialize(bool privileged ATTRIBUTE_UNUSED,
     char **udi = NULL;
     int num_devs;
     size_t i;
-    int ret = -1;
+    int ret = VIR_DRV_STATE_INIT_ERROR;
     DBusConnection *sysbus;
     DBusError err;
 
@@ -608,12 +608,12 @@ nodeStateInitialize(bool privileged ATTRIBUTE_UNUSED,
           cmpstringp);
 
     if (VIR_ALLOC(driver) < 0)
-        return -1;
+        return VIR_DRV_STATE_INIT_ERROR;
 
     driver->lockFD = -1;
     if (virMutexInit(&driver->lock) < 0) {
         VIR_FREE(driver);
-        return -1;
+        return VIR_DRV_STATE_INIT_ERROR;
     }
     nodeDeviceLock();
 
@@ -648,7 +648,7 @@ nodeStateInitialize(bool privileged ATTRIBUTE_UNUSED,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("DBus not available, disabling HAL driver: %s"),
                        virGetLastErrorMessage());
-        ret = 0;
+        ret = VIR_DRV_STATE_INIT_SKIPPED;
         goto failure;
     }
 
@@ -671,7 +671,7 @@ nodeStateInitialize(bool privileged ATTRIBUTE_UNUSED,
         /* We don't want to show a fatal error here,
            otherwise entire libvirtd shuts down when
            hald isn't running */
-        ret = 0;
+        ret = VIR_DRV_STATE_INIT_SKIPPED;
         goto failure;
     }
 
@@ -709,7 +709,7 @@ nodeStateInitialize(bool privileged ATTRIBUTE_UNUSED,
     }
     VIR_FREE(udi);
 
-    return 0;
+    return VIR_DRV_STATE_INIT_COMPLETE;
 
  failure:
     if (dbus_error_is_set(&err)) {

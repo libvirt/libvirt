@@ -792,6 +792,11 @@ static void daemonRunStateInit(void *opaque)
 {
     virNetDaemonPtr dmn = opaque;
     virIdentityPtr sysident = virIdentityGetSystem();
+#ifdef MODULE_NAME
+    bool mandatory = true;
+#else /* ! MODULE_NAME */
+    bool mandatory = false;
+#endif /* ! MODULE_NAME */
 
     virIdentitySetCurrent(sysident);
 
@@ -804,6 +809,7 @@ static void daemonRunStateInit(void *opaque)
      * we're ready, since it can take a long time and this will
      * seriously delay OS bootup process */
     if (virStateInitialize(virNetDaemonIsPrivileged(dmn),
+                           mandatory,
                            daemonInhibitCallback,
                            dmn) < 0) {
         VIR_ERROR(_("Driver state initialization failed"));

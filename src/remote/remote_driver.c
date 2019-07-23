@@ -195,7 +195,7 @@ remoteStateInitialize(bool privileged ATTRIBUTE_UNUSED,
      * re-entering ourselves
      */
     inside_daemon = true;
-    return 0;
+    return VIR_DRV_STATE_INIT_COMPLETE;
 }
 
 

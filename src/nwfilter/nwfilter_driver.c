@@ -184,10 +184,10 @@ nwfilterStateInitialize(bool privileged,
 
     if (virDBusHasSystemBus() &&
         !(sysbus = virDBusGetSystemBus()))
-        return -1;
+        return VIR_DRV_STATE_INIT_ERROR;
 
     if (VIR_ALLOC(driver) < 0)
-        return -1;
+        return VIR_DRV_STATE_INIT_ERROR;
 
     driver->lockFD = -1;
     if (virMutexInit(&driver->lock) < 0)
@@ -201,7 +201,7 @@ nwfilterStateInitialize(bool privileged,
         goto error;
 
     if (!privileged)
-        return 0;
+        return VIR_DRV_STATE_INIT_SKIPPED;
 
     nwfilterDriverLock();
 
@@ -281,13 +281,13 @@ nwfilterStateInitialize(bool privileged,
 
     nwfilterDriverUnlock();
 
-    return 0;
+    return VIR_DRV_STATE_INIT_COMPLETE;
 
  error:
     nwfilterDriverUnlock();
     nwfilterStateCleanup();
 
-    return -1;
+    return VIR_DRV_STATE_INIT_ERROR;
 
  err_techdrivers_shutdown:
     virNWFilterTechDriversShutdown();
@@ -302,7 +302,7 @@ nwfilterStateInitialize(bool privileged,
     virNWFilterObjListFree(driver->nwfilters);
     VIR_FREE(driver);
 
-    return -1;
+    return VIR_DRV_STATE_INIT_ERROR;
 }
 
 /**

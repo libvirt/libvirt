@@ -622,6 +622,7 @@ virRegisterStateDriver(virStateDriverPtr driver)
 /**
  * virStateInitialize:
  * @privileged: set to true if running with root privilege, false otherwise
+ * @mandatory: set to true if all drivers must report success, not skipped
  * @callback: callback to invoke to inhibit shutdown of the daemon
  * @opaque: data to pass to @callback
  *
@@ -631,6 +632,7 @@ virRegisterStateDriver(virStateDriverPtr driver)
  */
 int
 virStateInitialize(bool privileged,
+                   bool mandatory,
                    virStateInhibitCallback callback,
                    void *opaque)
 {
@@ -641,14 +643,21 @@ virStateInitialize(bool privileged,
 
     for (i = 0; i < virStateDriverTabCount; i++) {
         if (virStateDriverTab[i]->stateInitialize) {
+            virDrvStateInitResult ret;
             VIR_DEBUG("Running global init for %s state driver",
                       virStateDriverTab[i]->name);
-            if (virStateDriverTab[i]->stateInitialize(privileged,
-                                                      callback,
-                                                      opaque) < 0) {
+            ret = virStateDriverTab[i]->stateInitialize(privileged,
+                                                        callback,
+                                                        opaque);
+            VIR_DEBUG("State init result %d (mandatory=%d)", ret, mandatory);
+            if (ret == VIR_DRV_STATE_INIT_ERROR) {
                 VIR_ERROR(_("Initialization of %s state driver failed: %s"),
                           virStateDriverTab[i]->name,
                           virGetLastErrorMessage());
+                return -1;
+            } else if (ret == VIR_DRV_STATE_INIT_SKIPPED && mandatory) {
+                VIR_ERROR(_("Initialization of mandatory %s state driver skipped"),
+                          virStateDriverTab[i]->name);
                 return -1;
             }
         }

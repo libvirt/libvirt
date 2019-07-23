@@ -1172,7 +1172,7 @@ udevStateInitialize(bool privileged,
                     virStateInhibitCallback callback ATTRIBUTE_UNUSED,
                     void *opaque ATTRIBUTE_UNUSED)
 {
-    int ret = -1;
+    int ret = VIR_DRV_STATE_INIT_ERROR;
 
     if (VIR_ALLOC(driver) < 0)
         goto cleanup;
@@ -1210,7 +1210,7 @@ udevStateInitialize(bool privileged,
     }
     driver->privileged = privileged;
 
-    ret = 0;
+    ret = VIR_DRV_STATE_INIT_COMPLETE;
 
  cleanup:
     if (ret < 0)

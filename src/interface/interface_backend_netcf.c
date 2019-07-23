@@ -93,10 +93,10 @@ netcfStateInitialize(bool privileged,
                      void *opaque ATTRIBUTE_UNUSED)
 {
     if (virNetcfDriverStateInitialize() < 0)
-        return -1;
+        return VIR_DRV_STATE_INIT_ERROR;
 
     if (!(driver = virObjectLockableNew(virNetcfDriverStateClass)))
-        return -1;
+        return VIR_DRV_STATE_INIT_ERROR;
 
     driver->privileged = privileged;
 
@@ -129,12 +129,12 @@ netcfStateInitialize(bool privileged,
                        _("failed to initialize netcf"));
         goto error;
     }
-    return 0;
+    return VIR_DRV_STATE_INIT_COMPLETE;
 
  error:
     virObjectUnref(driver);
     driver = NULL;
-    return -1;
+    return VIR_DRV_STATE_INIT_ERROR;
 }
 
 

@@ -255,12 +255,12 @@ storageStateInitialize(bool privileged,
     VIR_AUTOFREE(char *) rundir = NULL;
 
     if (VIR_ALLOC(driver) < 0)
-        return -1;
+        return VIR_DRV_STATE_INIT_ERROR;
 
     driver->lockFD = -1;
     if (virMutexInit(&driver->lock) < 0) {
         VIR_FREE(driver);
-        return -1;
+        return VIR_DRV_STATE_INIT_ERROR;
     }
     storageDriverLock();
 
@@ -326,12 +326,12 @@ storageStateInitialize(bool privileged,
 
     storageDriverUnlock();
 
-    return 0;
+    return VIR_DRV_STATE_INIT_COMPLETE;
 
  error:
     storageDriverUnlock();
     storageStateCleanup();
-    return -1;
+    return VIR_DRV_STATE_INIT_ERROR;
 }
 
 /**

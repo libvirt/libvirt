@@ -1816,14 +1816,14 @@ nodeStateInitialize(bool privileged,
     virThread enumThread;
 
     if (VIR_ALLOC(driver) < 0)
-        return -1;
+        return VIR_DRV_STATE_INIT_ERROR;
 
     driver->lockFD = -1;
     if (virMutexInit(&driver->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unable to initialize mutex"));
         VIR_FREE(driver);
-        return -1;
+        return VIR_DRV_STATE_INIT_ERROR;
     }
 
     driver->privileged = privileged;
@@ -1919,11 +1919,11 @@ nodeStateInitialize(bool privileged,
         goto cleanup;
     }
 
-    return 0;
+    return VIR_DRV_STATE_INIT_COMPLETE;
 
  cleanup:
     nodeStateCleanup();
-    return -1;
+    return VIR_DRV_STATE_INIT_ERROR;
 
  unlock:
     virObjectUnlock(priv);

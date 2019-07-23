@@ -457,12 +457,12 @@ secretStateInitialize(bool privileged,
                       void *opaque ATTRIBUTE_UNUSED)
 {
     if (VIR_ALLOC(driver) < 0)
-        return -1;
+        return VIR_DRV_STATE_INIT_ERROR;
 
     driver->lockFD = -1;
     if (virMutexInit(&driver->lock) < 0) {
         VIR_FREE(driver);
-        return -1;
+        return VIR_DRV_STATE_INIT_ERROR;
     }
     secretDriverLock();
 
@@ -514,12 +514,12 @@ secretStateInitialize(bool privileged,
         goto error;
 
     secretDriverUnlock();
-    return 0;
+    return VIR_DRV_STATE_INIT_COMPLETE;
 
  error:
     secretDriverUnlock();
     secretStateCleanup();
-    return -1;
+    return VIR_DRV_STATE_INIT_ERROR;
 }
 
 

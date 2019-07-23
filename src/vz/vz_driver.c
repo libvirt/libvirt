@@ -4118,36 +4118,36 @@ vzStateInitialize(bool privileged,
                   void *opaque ATTRIBUTE_UNUSED)
 {
     if (!privileged)
-        return 0;
+        return VIR_DRV_STATE_INIT_SKIPPED;
 
     vz_driver_privileged = privileged;
 
     if (virFileMakePathWithMode(VZ_STATEDIR, S_IRWXU) < 0) {
         virReportSystemError(errno, _("cannot create state directory '%s'"),
                              VZ_STATEDIR);
-        return -1;
+        return VIR_DRV_STATE_INIT_ERROR;
     }
 
     if ((vz_driver_lock_fd =
          virPidFileAcquire(VZ_STATEDIR, "driver", false, getpid())) < 0)
-        return -1;
+        return VIR_DRV_STATE_INIT_ERROR;
 
     if (prlsdkInit() < 0) {
         VIR_DEBUG("%s", _("Can't initialize Parallels SDK"));
-        return -1;
+        return VIR_DRV_STATE_INIT_ERROR;
     }
 
-   if (virMutexInit(&vz_driver_lock) < 0)
+    if (virMutexInit(&vz_driver_lock) < 0)
         goto error;
 
     /* Failing to create driver here is not fatal and only means
      * that next driver client will try once more when connecting */
     vz_driver = vzDriverObjNew();
-    return 0;
+    return VIR_DRV_STATE_INIT_COMPLETE;
 
  error:
     vzStateCleanup();
-    return -1;
+    return VIR_DRV_STATE_INIT_ERROR;
 }
 
 static virStateDriver vzStateDriver = {

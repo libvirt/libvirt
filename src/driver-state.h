@@ -24,7 +24,13 @@
 # error "Don't include this file directly, only use driver.h"
 #endif
 
-typedef int
+typedef enum {
+    VIR_DRV_STATE_INIT_ERROR = -1,
+    VIR_DRV_STATE_INIT_SKIPPED,
+    VIR_DRV_STATE_INIT_COMPLETE,
+} virDrvStateInitResult;
+
+typedef virDrvStateInitResult
 (*virDrvStateInitialize)(bool privileged,
                          virStateInhibitCallback callback,
                          void *opaque);

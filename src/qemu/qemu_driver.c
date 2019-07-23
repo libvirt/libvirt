@@ -738,7 +738,7 @@ qemuStateInitialize(bool privileged,
     size_t i;
 
     if (VIR_ALLOC(qemu_driver) < 0)
-        return -1;
+        return VIR_DRV_STATE_INIT_ERROR;
 
     qemu_driver->lockFD = -1;
 
@@ -746,7 +746,7 @@ qemuStateInitialize(bool privileged,
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("cannot initialize mutex"));
         VIR_FREE(qemu_driver);
-        return -1;
+        return VIR_DRV_STATE_INIT_ERROR;
     }
 
     qemu_driver->inhibitCallback = callback;
@@ -1082,14 +1082,14 @@ qemuStateInitialize(bool privileged,
 
     qemuAutostartDomains(qemu_driver);
 
-    return 0;
+    return VIR_DRV_STATE_INIT_COMPLETE;
 
  error:
     VIR_FREE(driverConf);
     VIR_FREE(hugepagePath);
     VIR_FREE(memoryBackingPath);
     qemuStateCleanup();
-    return -1;
+    return VIR_DRV_STATE_INIT_ERROR;
 }
 
 static void qemuNotifyLoadDomain(virDomainObjPtr vm, int newVM, void *opaque)
