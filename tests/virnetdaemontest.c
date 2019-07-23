@@ -287,10 +287,13 @@ static int testExecRestart(const void *opaque)
      * fds 100->103 for something else, which is probably
      * fairly reasonable in general
      */
-    dup2(fdserver[0], 100);
-    dup2(fdserver[1], 101);
-    dup2(fdclient[0], 102);
-    dup2(fdclient[1], 103);
+    if (dup2(fdserver[0], 100) < 0 ||
+        dup2(fdserver[1], 101) < 0 ||
+        dup2(fdclient[0], 102) < 0 ||
+        dup2(fdclient[1], 103) < 0) {
+        virReportSystemError(errno, "%s", "dup2() failed");
+        goto cleanup;
+    }
 
     if (virAsprintf(&infile, "%s/virnetdaemondata/input-data-%s.json",
                     abs_srcdir, data->jsonfile) < 0)
