@@ -1634,6 +1634,14 @@ exit 0
 %{_libdir}/%{name}/connection-driver/libvirt_driver_nwfilter.so
 
 %files daemon-driver-secret
+%config(noreplace) %{_sysconfdir}/libvirt/virtsecretd.conf
+%{_datadir}/augeas/lenses/virtsecretd.aug
+%{_datadir}/augeas/lenses/tests/test_virtsecretd.aug
+%{_unitdir}/virtsecretd.service
+%{_unitdir}/virtsecretd.socket
+%{_unitdir}/virtsecretd-ro.socket
+%{_unitdir}/virtsecretd-admin.socket
+%attr(0755, root, root) %{_sbindir}/virtsecretd
 %{_libdir}/%{name}/connection-driver/libvirt_driver_secret.so
 
 %files daemon-driver-storage
