@@ -487,6 +487,11 @@ virCommandMassClose(virCommandPtr cmd,
      * Therefore we can safely allocate memory here (and transitively call
      * opendir/readdir) without a deadlock. */
 
+    if (openmax < 0) {
+        virReportSystemError(errno, "%s", _("sysconf(_SC_OPEN_MAX) failed"));
+        return -1;
+    }
+
     if (!(fds = virBitmapNew(openmax)))
         return -1;
 
