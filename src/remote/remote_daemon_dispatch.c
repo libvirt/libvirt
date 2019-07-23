@@ -50,6 +50,7 @@
 #include "viraccessapicheckqemu.h"
 #include "virpolkit.h"
 #include "virthreadjob.h"
+#include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 
@@ -2094,6 +2095,131 @@ void *remoteClientNew(virNetServerClientPtr client,
 
 /*----- Functions. -----*/
 
+#ifdef VIRTPROXYD
+/*
+ * When running in virtproxyd regular auto-probing of drivers
+ * does not work as we don't have any drivers present (except
+ * stateless ones inside libvirt.so). All the interesting
+ * drivers are in separate daemons. Thus when we get a NULL
+ * URI we need to simulate probing that virConnectOpen would
+ * previously do. We use the existance of the UNIX domain
+ * socket as our hook for probing.
+ *
+ * This assumes no stale sockets left over from a now dead
+ * daemon, but that's reasonable since libvirtd unlinks
+ * sockets it creates on shutdown, or uses systemd activation
+ *
+ * We only try to probe for primary hypervisor drivers,
+ * not the secondary drivers.
+ */
+static int
+remoteDispatchProbeURI(bool readonly,
+                       char **probeduri)
+{
+    *probeduri = NULL;
+    VIR_DEBUG("Probing for driver daemon sockets");
+
+    /*
+     * If running root, either the daemon is running and the socket
+     * exists, or we're using socket activation so the socket exists
+     * too.
+     *
+     * If running non-root, chances are that the daemon won't be
+     * running, nor any socket activation is used. We need to
+     * be able to auto-spawn the daemon. We thus just check to
+     * see what daemons are installed. This is not a big deal as
+     * only QEMU & VBox run as non-root, anyway.
+     */
+    if (geteuid() != 0) {
+        /* Order these the same as virDriverLoadModule
+         * calls in daemonInitialize */
+        const char *drivers[] = {
+# ifdef WITH_QEMU
+            "qemu",
+# endif
+# ifdef WITH_VBOX
+            "vbox",
+# endif
+        };
+        size_t i;
+
+        for (i = 0; i < ARRAY_CARDINALITY(drivers) && !*probeduri; i++) {
+            VIR_AUTOFREE(char *) daemonname = NULL;
+            VIR_AUTOFREE(char *) daemonpath = NULL;
+
+            if (virAsprintf(&daemonname, "virt%sd", drivers[i]) < 0)
+                return -1;
+
+            if (!(daemonpath = virFileFindResource(daemonname, "src", SBINDIR)))
+                return -1;
+
+            if (!virFileExists(daemonpath)) {
+                VIR_DEBUG("Missing daemon %s for driver %s", daemonpath, drivers[i]);
+                continue;
+            }
+
+            if (virAsprintf(probeduri, "%s:///session", drivers[i]) < 0)
+                return -1;
+
+            VIR_DEBUG("Probed URI %s via daemon %s", *probeduri, daemonpath);
+            return 0;
+        }
+    } else {
+        /* Order these the same as virDriverLoadModule
+         * calls in daemonInitialize */
+        const char *drivers[] = {
+# ifdef WITH_LIBXL
+            "libxl",
+# endif
+# ifdef WITH_QEMU
+            "qemu",
+# endif
+# ifdef WITH_LXC
+            "lxc",
+# endif
+# ifdef WITH_VBOX
+            "vbox",
+# endif
+# ifdef WITH_BHYVE
+            "bhyve",
+# endif
+# ifdef WITH_VZ
+            "vz",
+# endif
+        };
+        size_t i;
+
+        for (i = 0; i < ARRAY_CARDINALITY(drivers) && !*probeduri; i++) {
+            VIR_AUTOFREE(char *) sockname = NULL;
+
+            if (virAsprintf(&sockname, "%s/run/libvirt/virt%sd-%s",
+                            LOCALSTATEDIR, drivers[i],
+                            readonly ? "sock-ro" : "sock") < 0)
+                return -1;
+
+            if (!virFileExists(sockname)) {
+                VIR_DEBUG("Missing sock %s for driver %s", sockname, drivers[i]);
+                continue;
+            }
+
+            if (virAsprintf(probeduri, "%s:///system", drivers[i]) < 0)
+                return -1;
+
+            VIR_DEBUG("Probed URI %s via sock %s", *probeduri, sockname);
+            return 0;
+        }
+    }
+
+    /* Even if we didn't probe any socket, we won't
+     * return error. Just let virConnectOpen's normal
+     * logic run which will likely return an error anyway
+     */
+    VIR_DEBUG("No driver sock exists");
+    return 0;
+}
+#endif /* VIRTPROXYD */
+
+
 static int
 remoteDispatchConnectOpen(virNetServerPtr server ATTRIBUTE_UNUSED,
                           virNetServerClientPtr client,
@@ -2102,6 +2228,9 @@ remoteDispatchConnectOpen(virNetServerPtr server ATTRIBUTE_UNUSED,
                           struct remote_connect_open_args *args)
 {
     const char *name;
+#ifdef VIRTPROXYD
+    VIR_AUTOFREE(char *) probeduri = NULL;
+#endif
     unsigned int flags;
     struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
     int rv = -1;
@@ -2127,6 +2256,15 @@ remoteDispatchConnectOpen(virNetServerPtr server ATTRIBUTE_UNUSED,
         flags |= VIR_CONNECT_RO;
 
     priv->readonly = flags & VIR_CONNECT_RO;
+
+#ifdef VIRTPROXYD
+    if (!name || STREQ(name, "")) {
+        if (remoteDispatchProbeURI(priv->readonly, &probeduri) < 0)
+            goto cleanup;
+
+        name = probeduri;
+    }
+#endif
 
     VIR_DEBUG("Opening driver %s", name);
     if (priv->readonly) {
