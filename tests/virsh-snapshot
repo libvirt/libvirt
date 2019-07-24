@@ -34,6 +34,7 @@ $abs_top_builddir/tools/virsh --connect test:///default >out 2>err '
   # Create a series of snapshots, with names that intentionally sort
   # differently by topology than by name. Use revert to create fanout.
   snapshot-create-as test s1
+  snapshot-create-as test s1
   snapshot-create-as test s3
   snapshot-create-as test s2
   snapshot-revert test s3
@@ -90,6 +91,7 @@ sed -n '/MarkerB/,/MarkerC/p' < out > s2.xml || fail=1
 
 cat <<\EOF > exp || fail=1
 Domain snapshot s1 created
+
 Domain snapshot s3 created
 Domain snapshot s2 created
 
@@ -171,6 +173,7 @@ EOF
 compare exp out.cooked || fail=1
 
 cat <<EOF > exp || fail=1
+error: operation failed: domain moment s1 already exists
 error: marker
 error: domain 'test' has no current snapshot
 error: marker

@@ -242,8 +242,8 @@ virDomainMomentAssignDef(virDomainMomentObjListPtr moments,
     virDomainMomentObjPtr moment;
 
     if (virHashLookup(moments->objs, def->name) != NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected domain moment %s already exists"),
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("domain moment %s already exists"),
                        def->name);
         return NULL;
     }
