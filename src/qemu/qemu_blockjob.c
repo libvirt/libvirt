@@ -117,6 +117,16 @@ qemuBlockJobDataNew(qemuBlockJobType type,
 }
 
 
+/**
+ * qemuBlockJobRegister:
+ * @job: job to register
+ * @vm: domain to register @job with
+ * @disk: disk to register @job with
+ * @savestatus: save the status XML after registering
+ *
+ * This function registers @job with @disk and @vm and records it into the status
+ * xml (if @savestatus is true).
+ */
 int
 qemuBlockJobRegister(qemuBlockJobDataPtr job,
                      virDomainObjPtr vm,
