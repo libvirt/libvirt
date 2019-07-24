@@ -3092,6 +3092,87 @@ testDomainGetMemoryParameters(virDomainPtr dom,
 
 
 static int
+testDomainSetNumaParameters(virDomainPtr dom,
+                            virTypedParameterPtr params,
+                            int nparams,
+                            unsigned int flags)
+{
+    virDomainObjPtr vm = NULL;
+    virDomainDefPtr def = NULL;
+    virBitmapPtr nodeset = NULL;
+    virDomainNumatuneMemMode config_mode;
+    bool live;
+    size_t i;
+    int mode = -1;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_DOMAIN_NUMA_MODE,
+                               VIR_TYPED_PARAM_INT,
+                               VIR_DOMAIN_NUMA_NODESET,
+                               VIR_TYPED_PARAM_STRING,
+                               NULL) < 0)
+        return -1;
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        return -1;
+
+    if (!(def = virDomainObjGetOneDefState(vm, flags, &live)))
+        goto cleanup;
+
+    for (i = 0; i < nparams; i++) {
+        virTypedParameterPtr param = &params[i];
+
+        if (STREQ(param->field, VIR_DOMAIN_NUMA_MODE)) {
+            mode = param->value.i;
+
+            if (mode < 0 || mode >= VIR_DOMAIN_NUMATUNE_MEM_LAST) {
+                virReportError(VIR_ERR_INVALID_ARG,
+                               _("unsupported numatune mode: '%d'"), mode);
+                goto cleanup;
+            }
+
+        } else if (STREQ(param->field, VIR_DOMAIN_NUMA_NODESET)) {
+            if (virBitmapParse(param->value.s, &nodeset,
+                               VIR_DOMAIN_CPUMASK_LEN) < 0)
+                goto cleanup;
+
+            if (virBitmapIsAllClear(nodeset)) {
+                virReportError(VIR_ERR_OPERATION_INVALID,
+                               _("Invalid nodeset of 'numatune': %s"),
+                               param->value.s);
+                goto cleanup;
+            }
+        }
+    }
+
+    if (live &&
+        mode != -1 &&
+        virDomainNumatuneGetMode(def->numa, -1, &config_mode) == 0 &&
+        config_mode != mode) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("can't change numatune mode for running domain"));
+        goto cleanup;
+    }
+
+    if (virDomainNumatuneSet(def->numa,
+                             def->placement_mode ==
+                             VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC,
+                             -1, mode, nodeset) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virBitmapFree(nodeset);
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
+static int
 testDomainGetNumaParameters(virDomainPtr dom,
                             virTypedParameterPtr params,
                             int *nparams,
@@ -7948,6 +8029,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainGetXMLDesc = testDomainGetXMLDesc, /* 0.1.4 */
     .domainSetMemoryParameters = testDomainSetMemoryParameters, /* 5.6.0 */
     .domainGetMemoryParameters = testDomainGetMemoryParameters, /* 5.6.0 */
+    .domainSetNumaParameters = testDomainSetNumaParameters, /* 5.6.0 */
     .domainGetNumaParameters = testDomainGetNumaParameters, /* 5.6.0 */
     .domainSetInterfaceParameters = testDomainSetInterfaceParameters, /* 5.6.0 */
     .domainGetInterfaceParameters = testDomainGetInterfaceParameters, /* 5.6.0 */
