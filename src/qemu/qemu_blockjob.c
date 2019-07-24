@@ -434,6 +434,44 @@ qemuBlockJobEmitEvents(virQEMUDriverPtr driver,
 }
 
 
+/**
+ * qemuBlockJobRewriteConfigDiskSource:
+ * @vm: domain object
+ * @disk: live definition disk
+ * @newsrc: new source which should be also considered for the new disk
+ *
+ * For block jobs which modify the running disk source it is required that we
+ * try our best to update the config XML's disk source as well in most cases.
+ *
+ * This helper finds the disk from the persistent definition corresponding to
+ * @disk and updates its source to @newsrc.
+ */
+static void
+qemuBlockJobRewriteConfigDiskSource(virDomainObjPtr vm,
+                                    virDomainDiskDefPtr disk,
+                                    virStorageSourcePtr newsrc)
+{
+    virDomainDiskDefPtr persistDisk = NULL;
+    VIR_AUTOUNREF(virStorageSourcePtr) copy = NULL;
+
+    if (!vm->newDef)
+        return;
+
+    if (!(persistDisk = virDomainDiskByName(vm->newDef, disk->dst, false)))
+        return;
+
+    if (!(copy = virStorageSourceCopy(newsrc, false)) ||
+        virStorageSourceInitChainElement(copy, persistDisk->src, true) < 0) {
+        VIR_WARN("Unable to update persistent definition on vm %s after block job",
+                 vm->def->name);
+        return;
+    }
+
+    virObjectUnref(persistDisk->src);
+    VIR_STEAL_PTR(persistDisk->src, copy);
+}
+
+
 static void
 qemuBlockJobEventProcessLegacyCompleted(virQEMUDriverPtr driver,
                                         virDomainObjPtr vm,
@@ -441,36 +479,12 @@ qemuBlockJobEventProcessLegacyCompleted(virQEMUDriverPtr driver,
                                         int asyncJob)
 {
     virDomainDiskDefPtr disk = job->disk;
-    virDomainDiskDefPtr persistDisk = NULL;
 
     if (!disk)
         return;
 
     if (disk->mirrorState == VIR_DOMAIN_DISK_MIRROR_STATE_PIVOT) {
-        if (vm->newDef) {
-            virStorageSourcePtr copy = NULL;
-
-            if ((persistDisk = virDomainDiskByName(vm->newDef,
-                                                   disk->dst, false))) {
-                copy = virStorageSourceCopy(disk->mirror, false);
-                if (!copy ||
-                    virStorageSourceInitChainElement(copy,
-                                                     persistDisk->src,
-                                                     true) < 0) {
-                    VIR_WARN("Unable to update persistent definition "
-                             "on vm %s after block job",
-                             vm->def->name);
-                    virObjectUnref(copy);
-                    copy = NULL;
-                    persistDisk = NULL;
-                }
-            }
-            if (copy) {
-                virObjectUnref(persistDisk->src);
-                persistDisk->src = copy;
-            }
-        }
-
+        qemuBlockJobRewriteConfigDiskSource(vm, disk, disk->mirror);
         /* XXX We want to revoke security labels as well as audit that
          * revocation, before dropping the original source.  But it gets
          * tricky if both source and mirror share common backing files (we
