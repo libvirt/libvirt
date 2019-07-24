@@ -723,7 +723,7 @@ qemuBlockJobEventProcess(virQEMUDriverPtr driver,
 
     case QEMU_BLOCKJOB_STATE_READY:
         if (job->disk && job->disk->mirror) {
-            job->disk->mirrorState = VIR_DOMAIN_BLOCK_JOB_READY;
+            job->disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_READY;
             qemuBlockJobEmitEvents(driver, vm, job->disk, job->type, job->newstate);
         }
         job->state = job->newstate;
