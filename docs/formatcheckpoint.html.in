@@ -36,7 +36,9 @@
       now, libvirt exposes enough support to create disk checkpoints
       independently from a backup operation
       via <code>virDomainCheckpointCreateXML()</code> <span class="since">since
-      5.6.0</span>.
+      5.6.0</span>.  Likewise, the creation of checkpoints when
+      external snapshots exist is currently forbidden, although future
+      work will make it possible to integrate these two concepts.
     </p>
     <p>
       Attributes of libvirt checkpoints are stored as child elements

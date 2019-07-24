@@ -15777,6 +15777,12 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     if (!(vm = qemuDomObjFromDomain(domain)))
         goto cleanup;
 
+    if (virDomainListCheckpoints(vm->checkpoints, NULL, domain, NULL, 0) > 0) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("cannot create snapshot while checkpoint exists"));
+        goto cleanup;
+    }
+
     cfg = virQEMUDriverGetConfig(driver);
 
     if (virDomainSnapshotCreateXMLEnsureACL(domain->conn, vm->def, flags) < 0)
@@ -18515,6 +18521,12 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
     if (virDomainBlockRebaseEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+    if (virDomainListCheckpoints(vm->checkpoints, NULL, dom, NULL, 0) > 0) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("cannot perform block rebase while checkpoint exists"));
+        goto cleanup;
+    }
+
     /* For normal rebase (enhanced blockpull), the common code handles
      * everything, including vm cleanup. */
     if (!(flags & VIR_DOMAIN_BLOCK_REBASE_COPY))
@@ -18599,6 +18611,12 @@ qemuDomainBlockCopy(virDomainPtr dom, const char *disk, const char *destxml,
     if (virDomainBlockCopyEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+    if (virDomainListCheckpoints(vm->checkpoints, NULL, dom, NULL, 0) > 0) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("cannot perform block copy while checkpoint exists"));
+        goto cleanup;
+    }
+
     for (i = 0; i < nparams; i++) {
         virTypedParameterPtr param = &params[i];
 
@@ -18661,6 +18679,13 @@ qemuDomainBlockPull(virDomainPtr dom, const char *path, unsigned long bandwidth,
         return -1;
     }
 
+    if (virDomainListCheckpoints(vm->checkpoints, NULL, dom, NULL, 0) > 0) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("cannot perform block pull while checkpoint exists"));
+        virDomainObjEndAPI(&vm);
+        return -1;
+    }
+
     return qemuDomainBlockPullCommon(dom->conn->privateData,
                                      vm, path, NULL, bandwidth, flags);
 }
@@ -18710,6 +18735,12 @@ qemuDomainBlockCommit(virDomainPtr dom,
 
     if (virDomainBlockCommitEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
+
+    if (virDomainListCheckpoints(vm->checkpoints, NULL, dom, NULL, 0) > 0) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("cannot perform block commit while checkpoint exists"));
+        goto cleanup;
+    }
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
@@ -22428,6 +22459,12 @@ static int qemuDomainRename(virDomainPtr dom,
     if (virDomainSnapshotObjListNum(vm->snapshots, NULL, 0) > 0) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("cannot rename domain with snapshots"));
+        goto endjob;
+    }
+
+    if (virDomainListCheckpoints(vm->checkpoints, NULL, dom, NULL, flags) > 0) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("cannot rename domain with checkpoints"));
         goto endjob;
     }
 

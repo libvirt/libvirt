@@ -93,7 +93,9 @@
       sets that snapshot as current, and the prior current snapshot is
       the parent of the new snapshot.  Branches in the hierarchy can
       be formed by reverting to a snapshot with a child, then creating
-      another snapshot.
+      another snapshot.  For now, the creation of external snapshots
+      when checkpoints exist is forbidden, although future work will
+      make it possible to integrate these two concepts.
     </p>
     <p>
       The top-level <code>domainsnapshot</code> element may contain

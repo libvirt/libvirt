@@ -45,6 +45,10 @@ $abs_top_builddir/tools/virsh --connect test:///default >out 2>err '
   snapshot-revert test s1
   snapshot-create-as test s7
   snapshot-create-as test s8
+  # checkpoints cannot be created while snapshots exist
+  echo --err marker
+  checkpoint-create-as test c1
+  echo --err marker
   # Checking tree view (siblings sorted alphabetically)
   snapshot-list test --tree
   # Current was last one created, but we can change that
@@ -102,6 +106,9 @@ Domain snapshot s4 created
 
 Domain snapshot s7 created
 Domain snapshot s8 created
+
+
+
 s1
   |
   +- s3
@@ -174,6 +181,9 @@ compare exp out.cooked || fail=1
 
 cat <<EOF > exp || fail=1
 error: operation failed: domain moment s1 already exists
+error: marker
+error: Operation not supported: cannot create checkpoint while snapshot exists
+error: marker
 error: marker
 error: domain 'test' has no current snapshot
 error: marker

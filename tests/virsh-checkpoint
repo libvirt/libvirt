@@ -38,6 +38,10 @@ $abs_top_builddir/tools/virsh --connect test:///default >out 2>err '
   checkpoint-create-as test c1
   checkpoint-create-as test c3
   checkpoint-create-as test c2
+  # snapshots cannot be created while checkpoints exist
+  echo --err marker
+  snapshot-create-as test s1
+  echo --err marker
   # Checking tree view (siblings sorted alphabetically)
   checkpoint-list test --tree
   # Demonstrate list filtering
@@ -77,6 +81,9 @@ Domain checkpoint c1 created
 
 Domain checkpoint c3 created
 Domain checkpoint c2 created
+
+
+
 c1
   |
   +- c3
@@ -126,6 +133,9 @@ compare exp out.cooked || fail=1
 
 cat <<EOF > exp || fail=1
 error: operation failed: domain moment c1 already exists
+error: marker
+error: Operation not supported: cannot create snapshot while checkpoint exists
+error: marker
 EOF
 compare exp err || fail=1
 

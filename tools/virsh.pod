@@ -4669,6 +4669,10 @@ a persistent domain.  However, for transient domains, snapshot
 metadata is silently lost when the domain quits running (whether
 by command such as B<destroy> or by internal guest action).
 
+For now, it is not possible to create snapshots in a domain that has
+checkpoints, although this restriction will be lifted in a future
+release.
+
 =item B<snapshot-create-as> I<domain> {[I<--print-xml>]
 [I<--no-metadata>] [I<--halt>] [I<--reuse-external>]} [I<name>]
 [I<description>] [I<--disk-only> [I<--quiesce>]] [I<--atomic>]
@@ -4734,6 +4738,10 @@ see whether any partial changes occurred.
 If I<--live> is specified, libvirt takes the snapshot while the guest is
 running. This increases the size of the memory image of the external
 snapshot. This is currently supported only for external full system snapshots.
+
+For now, it is not possible to create snapshots in a domain that has
+checkpoints, although this restriction will be lifted in a future
+release.
 
 =item B<snapshot-current> I<domain> {[I<--name>] | [I<--security-info>]
 | [I<snapshotname>]}
@@ -4943,6 +4951,10 @@ a persistent domain.  However, for transient domains, checkpoint
 metadata is silently lost when the domain quits running (whether
 by command such as B<destroy> or by internal guest action).
 
+For now, it is not possible to create checkpoints in a domain that has
+snapshots, although this restriction will be lifted in a future
+release.
+
 =item B<checkpoint-create-as> I<domain> [I<--print-xml>]
 [I<name>] [I<description>] [I<--quiesce>] [I<--diskspec>] B<diskspec>]...
 
@@ -4965,6 +4977,10 @@ results in the following XML:
 If I<--quiesce> is specified, libvirt will try to use guest agent
 to freeze and unfreeze domain's mounted file systems. However,
 if domain has no guest agent, checkpoint creation will fail.
+
+For now, it is not possible to create checkpoints in a domain that has
+snapshots, although this restriction will be lifted in a future
+release.
 
 =item B<checkpoint-edit> I<domain> I<checkpointname>
 
