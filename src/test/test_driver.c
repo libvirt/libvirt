@@ -3109,6 +3109,113 @@ testDomainGetNumaParameters(virDomainPtr dom,
 
 
 static int
+testDomainSetInterfaceParameters(virDomainPtr dom,
+                                 const char *device,
+                                 virTypedParameterPtr params,
+                                 int nparams,
+                                 unsigned int flags)
+{
+    virDomainObjPtr vm = NULL;
+    virDomainDefPtr def;
+    virDomainNetDefPtr net = NULL;
+    virNetDevBandwidthPtr bandwidth = NULL;
+    bool inboundSpecified = false;
+    bool outboundSpecified = false;
+    size_t i;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_DOMAIN_BANDWIDTH_IN_AVERAGE,
+                               VIR_TYPED_PARAM_UINT,
+                               VIR_DOMAIN_BANDWIDTH_IN_PEAK,
+                               VIR_TYPED_PARAM_UINT,
+                               VIR_DOMAIN_BANDWIDTH_IN_BURST,
+                               VIR_TYPED_PARAM_UINT,
+                               VIR_DOMAIN_BANDWIDTH_IN_FLOOR,
+                               VIR_TYPED_PARAM_UINT,
+                               VIR_DOMAIN_BANDWIDTH_OUT_AVERAGE,
+                               VIR_TYPED_PARAM_UINT,
+                               VIR_DOMAIN_BANDWIDTH_OUT_PEAK,
+                               VIR_TYPED_PARAM_UINT,
+                               VIR_DOMAIN_BANDWIDTH_OUT_BURST,
+                               VIR_TYPED_PARAM_UINT,
+                               NULL) < 0)
+        return -1;
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        return -1;
+
+    if (!(def = virDomainObjGetOneDef(vm, flags)))
+        goto cleanup;
+
+    if (!(net = virDomainNetFind(def, device)))
+        goto cleanup;
+
+    if ((VIR_ALLOC(bandwidth) < 0) ||
+        (VIR_ALLOC(bandwidth->in) < 0) ||
+        (VIR_ALLOC(bandwidth->out) < 0))
+        goto cleanup;
+
+    for (i = 0; i < nparams; i++) {
+        virTypedParameterPtr param = &params[i];
+
+        if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_IN_AVERAGE)) {
+            bandwidth->in->average = param->value.ui;
+            inboundSpecified = true;
+        } else if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_IN_PEAK)) {
+            bandwidth->in->peak = param->value.ui;
+        } else if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_IN_BURST)) {
+            bandwidth->in->burst = param->value.ui;
+        } else if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_IN_FLOOR)) {
+            bandwidth->in->floor = param->value.ui;
+            inboundSpecified = true;
+        } else if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_OUT_AVERAGE)) {
+            bandwidth->out->average = param->value.ui;
+            outboundSpecified = true;
+        } else if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_OUT_PEAK)) {
+            bandwidth->out->peak = param->value.ui;
+        } else if (STREQ(param->field, VIR_DOMAIN_BANDWIDTH_OUT_BURST)) {
+            bandwidth->out->burst = param->value.ui;
+        }
+    }
+
+    /* average or floor are mandatory, peak and burst are optional */
+    if (!bandwidth->in->average && !bandwidth->in->floor)
+        VIR_FREE(bandwidth->in);
+    if (!bandwidth->out->average)
+        VIR_FREE(bandwidth->out);
+
+    if (!net->bandwidth) {
+        VIR_STEAL_PTR(net->bandwidth, bandwidth);
+    } else {
+        if (bandwidth->in) {
+            VIR_FREE(net->bandwidth->in);
+            VIR_STEAL_PTR(net->bandwidth->in, bandwidth->in);
+        } else if (inboundSpecified) {
+            /* if we got here it means user requested @inbound to be cleared */
+            VIR_FREE(net->bandwidth->in);
+        }
+        if (bandwidth->out) {
+            VIR_FREE(net->bandwidth->out);
+            VIR_STEAL_PTR(net->bandwidth->out, bandwidth->out);
+        } else if (outboundSpecified) {
+            /* if we got here it means user requested @outbound to be cleared */
+            VIR_FREE(net->bandwidth->out);
+        }
+    }
+
+    ret = 0;
+ cleanup:
+    virNetDevBandwidthFree(bandwidth);
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
+static int
 testDomainGetInterfaceParameters(virDomainPtr dom,
                                  const char *device,
                                  virTypedParameterPtr params,
@@ -7813,6 +7920,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainSetMemoryParameters = testDomainSetMemoryParameters, /* 5.6.0 */
     .domainGetMemoryParameters = testDomainGetMemoryParameters, /* 5.6.0 */
     .domainGetNumaParameters = testDomainGetNumaParameters, /* 5.6.0 */
+    .domainSetInterfaceParameters = testDomainSetInterfaceParameters, /* 5.6.0 */
     .domainGetInterfaceParameters = testDomainGetInterfaceParameters, /* 5.6.0 */
     .connectListDefinedDomains = testConnectListDefinedDomains, /* 0.1.11 */
     .connectNumOfDefinedDomains = testConnectNumOfDefinedDomains, /* 0.1.11 */
