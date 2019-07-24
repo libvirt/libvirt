@@ -433,6 +433,25 @@ qemuBlockJobEmitEvents(virQEMUDriverPtr driver,
     virObjectEventStateQueue(driver->domainEventState, event2);
 }
 
+/**
+ * qemuBlockJobCleanStorageSourceRuntime:
+ * @src: storage source to clean from runtime data
+ *
+ * Remove all runtime related data from the storage source.
+ */
+static void
+qemuBlockJobCleanStorageSourceRuntime(virStorageSourcePtr src)
+{
+    src->id = 0;
+    src->detected = false;
+    VIR_FREE(src->relPath);
+    VIR_FREE(src->backingStoreRaw);
+    VIR_FREE(src->nodestorage);
+    VIR_FREE(src->nodeformat);
+    VIR_FREE(src->tlsAlias);
+    VIR_FREE(src->tlsCertdir);
+}
+
 
 /**
  * qemuBlockJobRewriteConfigDiskSource:
@@ -466,6 +485,8 @@ qemuBlockJobRewriteConfigDiskSource(virDomainObjPtr vm,
                  vm->def->name);
         return;
     }
+
+    qemuBlockJobCleanStorageSourceRuntime(copy);
 
     virObjectUnref(persistDisk->src);
     VIR_STEAL_PTR(persistDisk->src, copy);
