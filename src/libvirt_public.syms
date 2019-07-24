@@ -857,4 +857,8 @@ LIBVIRT_5.7.0 {
         virDomainGetGuestInfo;
 } LIBVIRT_5.6.0;
 
+LIBVIRT_5.8.0 {
+        virConnectSetIdentity;
+} LIBVIRT_5.7.0;
+
 # .... define new API here using predicted next version number ....

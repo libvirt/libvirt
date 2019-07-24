@@ -61,6 +61,57 @@ virConnectRef(virConnectPtr conn)
 }
 
 
+/**
+ * virConnectSetIdentity:
+ * @conn: pointer to the hypervisor connection
+ * @params: parameters containing the identity attributes
+ * @nparams: size of @params array
+ * @flags: currently unused, pass 0
+ *
+ * Override the default identity information associated with
+ * the connection. When connecting to a stateful driver over
+ * a UNIX socket, the daemon will interrogate the remote end
+ * of the UNIX socket to acquire the application's identity.
+ * This identity is used for the fine grained access control
+ * checks on API calls.
+ *
+ * There may be times when application is operating on behalf
+ * of a variety of users, and thus the identity that the
+ * application runs as is not appropriate for access control
+ * checks. In this case, if the application is considered
+ * trustworthy, it can supply alternative identity information.
+ *
+ * The driver may reject the request to change the identity
+ * on a connection if the application is not trustworthy.
+ *
+ * Returns: 0 if the identity change was accepted, -1 on error
+ */
+int
+virConnectSetIdentity(virConnectPtr conn,
+                      virTypedParameterPtr params,
+                      int nparams,
+                      unsigned int flags)
+{
+    VIR_DEBUG("conn=%p params=%p nparams=%d flags=0x%x", conn, params, nparams, flags);
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
+
+    virResetLastError();
+
+    if (conn->driver->connectSetIdentity) {
+        int ret = conn->driver->connectSetIdentity(conn, params, nparams, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(conn);
+    return -1;
+}
+
+
 /*
  * Not for public use.  This function is part of the internal
  * implementation of driver features in the remote case.

@@ -579,6 +579,80 @@ virConnectPtr           virConnectOpenAuth      (const char *name,
                                                  unsigned int flags);
 int                     virConnectRef           (virConnectPtr conn);
 int                     virConnectClose         (virConnectPtr conn);
+
+/**
+ * VIR_CONNECT_IDENTITY_USER_NAME:
+ *
+ * The operating system user name as VIR_TYPED_PARAM_STRING.
+ */
+# define VIR_CONNECT_IDENTITY_USER_NAME "user-name"
+
+/**
+ * VIR_CONNECT_IDENTITY_UNIX_USER_ID:
+ *
+ * The UNIX user ID as VIR_TYPED_PARAM_ULLONG.
+ */
+# define VIR_CONNECT_IDENTITY_UNIX_USER_ID "unix-user-id"
+
+/**
+ * VIR_CONNECT_IDENTITY_GROUP_NAME:
+ *
+ * The operating system group name as VIR_TYPED_PARAM_STRING.
+ */
+# define VIR_CONNECT_IDENTITY_GROUP_NAME "group-name"
+
+/**
+ * VIR_CONNECT_IDENTITY_UNIX_GROUP_ID:
+ *
+ * The UNIX group ID as VIR_TYPED_PARAM_ULLONG.
+ */
+# define VIR_CONNECT_IDENTITY_UNIX_GROUP_ID "unix-group-id"
+
+/**
+ * VIR_CONNECT_IDENTITY_PROCESS_ID:
+ *
+ * The operating system process ID as VIR_TYPED_PARAM_LLONG.
+ */
+# define VIR_CONNECT_IDENTITY_PROCESS_ID "process-id"
+
+/**
+ * VIR_CONNECT_IDENTITY_PROCESS_TIME:
+ *
+ * The operating system process start time as VIR_TYPED_PARAM_ULLONG.
+ *
+ * The units the time is measured in vary according to the
+ * host operating system. On Linux this is usually clock
+ * ticks (as reported in /proc/$PID/stat field 22).
+ */
+# define VIR_CONNECT_IDENTITY_PROCESS_TIME "process-time"
+
+/**
+ * VIR_CONNECT_IDENTITY_SASL_USER_NAME:
+ *
+ * The SASL authenticated username as VIR_TYPED_PARAM_STRING
+ */
+# define VIR_CONNECT_IDENTITY_SASL_USER_NAME "sasl-user-name"
+
+/**
+ * VIR_CONNECT_IDENTITY_X509_DISTINGUISHED_NAME:
+ *
+ * The TLS x509 certificate distinguished named as VIR_TYPED_PARAM_STRING
+ */
+# define VIR_CONNECT_IDENTITY_X509_DISTINGUISHED_NAME "x509-distinguished-name"
+
+/**
+ * VIR_CONNECT_IDENTITY_SELINUX_CONTEXT:
+ *
+ * The application's SELinux context as VIR_TYPED_PARAM_STRING.
+ */
+# define VIR_CONNECT_IDENTITY_SELINUX_CONTEXT "selinux-context"
+
+
+int                     virConnectSetIdentity   (virConnectPtr conn,
+                                                 virTypedParameterPtr params,
+                                                 int nparams,
+                                                 unsigned int flags);
+
 const char *            virConnectGetType       (virConnectPtr conn);
 int                     virConnectGetVersion    (virConnectPtr conn,
                                                  unsigned long *hvVer);
