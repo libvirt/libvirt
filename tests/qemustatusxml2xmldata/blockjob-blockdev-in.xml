@@ -235,7 +235,7 @@
   <nodename index='0'/>
   <blockjobs active='yes'>
     <blockjob name='drive-virtio-disk0' type='copy' state='ready'>
-      <disk dst='vda'/>
+      <disk dst='vda' mirror='yes'/>
     </blockjob>
     <blockjob name='test-orphan-job0' type='copy' state='ready'>
       <chains>

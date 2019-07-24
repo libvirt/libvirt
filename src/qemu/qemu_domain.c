@@ -2367,7 +2367,10 @@ qemuDomainObjPrivateXMLFormatBlockjobIterator(void *payload,
     virBufferEscapeString(&childBuf, "<errmsg>%s</errmsg>", job->errmsg);
 
     if (job->disk) {
-        virBufferEscapeString(&childBuf, "<disk dst='%s'/>\n", job->disk->dst);
+        virBufferEscapeString(&childBuf, "<disk dst='%s'", job->disk->dst);
+        if (job->mirrorChain)
+            virBufferAddLit(&childBuf, " mirror='yes'");
+        virBufferAddLit(&childBuf, "/>\n");
     } else {
         if (job->chain &&
             qemuDomainObjPrivateXMLFormatBlockjobFormatChain(&chainsBuf,
@@ -2806,6 +2809,7 @@ qemuDomainObjPrivateXMLParseBlockjobData(virDomainObjPtr vm,
     int state = QEMU_BLOCKJOB_STATE_FAILED;
     VIR_AUTOFREE(char *) diskdst = NULL;
     VIR_AUTOFREE(char *) newstatestr = NULL;
+    VIR_AUTOFREE(char *) mirror = NULL;
     int newstate = -1;
     bool invalidData = false;
     xmlNodePtr tmp;
@@ -2840,6 +2844,10 @@ qemuDomainObjPrivateXMLParseBlockjobData(virDomainObjPtr vm,
         !(disk = virDomainDiskByName(vm->def, diskdst, false)))
         invalidData = true;
 
+    if ((mirror = virXPathString("string(./disk/@mirror)", ctxt)) &&
+        STRNEQ(mirror, "yes"))
+        invalidData = true;
+
     if (!disk && !invalidData) {
         if ((tmp = virXPathNode("./chains/disk", ctxt)) &&
             !(job->chain = qemuDomainObjPrivateXMLParseBlockjobChain(tmp, ctxt, xmlopt)))
@@ -2854,6 +2862,10 @@ qemuDomainObjPrivateXMLParseBlockjobData(virDomainObjPtr vm,
     job->newstate = newstate;
     job->errmsg = virXPathString("string(./errmsg)", ctxt);
     job->invalidData = invalidData;
+    job->disk = disk;
+
+    if (mirror)
+        qemuBlockJobDiskRegisterMirror(job);
 
     if (qemuBlockJobRegister(job, vm, disk, false) < 0)
         return -1;
