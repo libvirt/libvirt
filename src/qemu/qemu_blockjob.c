@@ -479,6 +479,9 @@ qemuBlockJobRewriteConfigDiskSource(virDomainObjPtr vm,
     if (!(persistDisk = virDomainDiskByName(vm->newDef, disk->dst, false)))
         return;
 
+    if (!virStorageSourceIsSameLocation(disk->src, persistDisk->src))
+        return;
+
     if (!(copy = virStorageSourceCopy(newsrc, false)) ||
         virStorageSourceInitChainElement(copy, persistDisk->src, true) < 0) {
         VIR_WARN("Unable to update persistent definition on vm %s after block job",
