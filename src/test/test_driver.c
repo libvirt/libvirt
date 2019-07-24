@@ -7663,12 +7663,9 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
  cleanup:
     if (vm) {
         if (snapshot) {
-            virDomainMomentObjPtr other;
             if (update_current)
                 virDomainSnapshotSetCurrent(vm->snapshots, snap);
-            other = virDomainSnapshotFindByName(vm->snapshots,
-                                                snap->def->parent_name);
-            virDomainMomentSetParent(snap, other);
+            virDomainSnapshotLinkParent(vm->snapshots, snap);
         }
         virDomainObjEndAPI(&vm);
     }

@@ -223,6 +223,15 @@ virDomainSnapshotForEach(virDomainSnapshotObjListPtr snapshots,
 }
 
 
+/* Populate parent link of a given snapshot. */
+void
+virDomainSnapshotLinkParent(virDomainSnapshotObjListPtr snapshots,
+                            virDomainMomentObjPtr snap)
+{
+    return virDomainMomentLinkParent(snapshots->base, snap);
+}
+
+
 /* Populate parent link and child count of all snapshots, with all
  * assigned defs having relations starting as 0/NULL. Return 0 on
  * success, -1 if a parent is missing or if a circular relationship

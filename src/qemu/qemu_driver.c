@@ -15540,7 +15540,6 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     bool update_current = true;
     bool redefine = flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE;
     unsigned int parse_flags = VIR_DOMAIN_SNAPSHOT_PARSE_DISKS;
-    virDomainMomentObjPtr other = NULL;
     int align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL;
     bool align_match = true;
     virQEMUDriverConfigPtr cfg = NULL;
@@ -15807,9 +15806,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
                            snap->def->name);
             virDomainSnapshotObjListRemove(vm->snapshots, snap);
         } else {
-            other = virDomainSnapshotFindByName(vm->snapshots,
-                                                snap->def->parent_name);
-            virDomainMomentSetParent(snap, other);
+            virDomainSnapshotLinkParent(vm->snapshots, snap);
         }
     } else if (snap) {
         virDomainSnapshotObjListRemove(vm->snapshots, snap);

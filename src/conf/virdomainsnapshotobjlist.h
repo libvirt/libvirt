@@ -51,6 +51,8 @@ void virDomainSnapshotObjListRemoveAll(virDomainSnapshotObjListPtr snapshots);
 int virDomainSnapshotForEach(virDomainSnapshotObjListPtr snapshots,
                              virHashIterator iter,
                              void *data);
+void virDomainSnapshotLinkParent(virDomainSnapshotObjListPtr snapshots,
+                                 virDomainMomentObjPtr moment);
 int virDomainSnapshotUpdateRelations(virDomainSnapshotObjListPtr snapshots);
 int virDomainSnapshotCheckCycles(virDomainSnapshotObjListPtr snapshots,
                                  virDomainSnapshotDefPtr def,

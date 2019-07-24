@@ -151,7 +151,7 @@ virDomainMomentDropChildren(virDomainMomentObjPtr moment)
 
 
 /* Add @moment to @parent's list of children. */
-void
+static void
 virDomainMomentSetParent(virDomainMomentObjPtr moment,
                          virDomainMomentObjPtr parent)
 {
@@ -159,6 +159,27 @@ virDomainMomentSetParent(virDomainMomentObjPtr moment,
     parent->nchildren++;
     moment->sibling = parent->first_child;
     parent->first_child = moment;
+}
+
+
+/* Add @moment to the appropriate parent's list of children. The
+ * caller must ensure that moment->def->parent_name is either NULL
+ * (for a new root) or set to an existing moment already in the
+ * list. */
+void
+virDomainMomentLinkParent(virDomainMomentObjListPtr moments,
+                          virDomainMomentObjPtr moment)
+{
+    virDomainMomentObjPtr parent;
+
+    parent = virDomainMomentFindByName(moments, moment->def->parent_name);
+    if (!parent) {
+        parent = &moments->metaroot;
+        if (moment->def->parent_name)
+            VIR_WARN("moment %s lacks parent %s", moment->def->name,
+                     moment->def->parent_name);
+    }
+    virDomainMomentSetParent(moment, parent);
 }
 
 
@@ -390,7 +411,9 @@ virDomainMomentObjPtr
 virDomainMomentFindByName(virDomainMomentObjListPtr moments,
                           const char *name)
 {
-    return name ? virHashLookup(moments->objs, name) : &moments->metaroot;
+    if (name)
+        return virHashLookup(moments->objs, name);
+    return NULL;
 }
 
 
@@ -484,9 +507,12 @@ virDomainMomentSetRelations(void *payload,
 
     parent = virDomainMomentFindByName(curr->moments, obj->def->parent_name);
     if (!parent) {
-        curr->err = -1;
         parent = &curr->moments->metaroot;
-        VIR_WARN("moment %s lacks parent", obj->def->name);
+        if (obj->def->parent_name) {
+            curr->err = -1;
+            VIR_WARN("moment %s lacks parent %s", obj->def->name,
+                     obj->def->parent_name);
+        }
     } else {
         tmp = parent;
         while (tmp && tmp->def) {

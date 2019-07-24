@@ -60,8 +60,8 @@ void virDomainMomentDropParent(virDomainMomentObjPtr moment);
 void virDomainMomentDropChildren(virDomainMomentObjPtr moment);
 void virDomainMomentMoveChildren(virDomainMomentObjPtr from,
                                  virDomainMomentObjPtr to);
-void virDomainMomentSetParent(virDomainMomentObjPtr moment,
-                              virDomainMomentObjPtr parent);
+void virDomainMomentLinkParent(virDomainMomentObjListPtr moments,
+                               virDomainMomentObjPtr moment);
 
 virDomainMomentObjListPtr virDomainMomentObjListNew(void);
 void virDomainMomentObjListFree(virDomainMomentObjListPtr moments);

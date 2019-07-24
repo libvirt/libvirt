@@ -978,7 +978,6 @@ virDomainMomentDropParent;
 virDomainMomentForEachChild;
 virDomainMomentForEachDescendant;
 virDomainMomentMoveChildren;
-virDomainMomentSetParent;
 
 
 # conf/virdomainobjlist.h
@@ -1007,6 +1006,7 @@ virDomainSnapshotFindByName;
 virDomainSnapshotForEach;
 virDomainSnapshotGetCurrent;
 virDomainSnapshotGetCurrentName;
+virDomainSnapshotLinkParent;
 virDomainSnapshotObjListFree;
 virDomainSnapshotObjListGetNames;
 virDomainSnapshotObjListNew;
