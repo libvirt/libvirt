@@ -3182,7 +3182,9 @@ virTPMEmulatorInit;
 virTPMGetSwtpm;
 virTPMGetSwtpmIoctl;
 virTPMGetSwtpmSetup;
+virTPMSwtpmCapsGet;
 virTPMSwtpmFeatureTypeFromString;
+virTPMSwtpmSetupCapsGet;
 virTPMSwtpmSetupFeatureTypeFromString;
 
 
