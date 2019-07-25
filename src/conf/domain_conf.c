@@ -13049,6 +13049,14 @@ virDomainSmartcardDefParseXML(virDomainXMLOptionPtr xmlopt,
  * <tpm model='tpm-tis'>
  *   <backend type='emulator' version='2'/>
  * </tpm>
+ *
+ * Emulator state encryption is supported with the following:
+ *
+ * <tpm model='tpm-tis'>
+ *   <backend type='emulator' version='2'>
+ *     <encryption uuid='32ee7e76-2178-47a1-ab7b-269e6e348015'/>
+ *   </backend>
+ * </tpm>
  */
 static virDomainTPMDefPtr
 virDomainTPMDefParseXML(virDomainXMLOptionPtr xmlopt,
@@ -13063,6 +13071,7 @@ virDomainTPMDefParseXML(virDomainXMLOptionPtr xmlopt,
     VIR_AUTOFREE(char *) model = NULL;
     VIR_AUTOFREE(char *) backend = NULL;
     VIR_AUTOFREE(char *) version = NULL;
+    VIR_AUTOFREE(char *) secretuuid = NULL;
     VIR_AUTOFREE(xmlNodePtr *) backends = NULL;
 
     if (VIR_ALLOC(def) < 0)
@@ -13127,6 +13136,15 @@ virDomainTPMDefParseXML(virDomainXMLOptionPtr xmlopt,
         def->data.passthrough.source.type = VIR_DOMAIN_CHR_TYPE_DEV;
         break;
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+        secretuuid = virXPathString("string(./backend/encryption/@secret)", ctxt);
+        if (secretuuid) {
+            if (virUUIDParse(secretuuid, def->data.emulator.secretuuid) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Unable to parse secret uuid '%s'"), secretuuid);
+                goto error;
+            }
+            def->data.emulator.hassecretuuid = true;
+        }
         break;
     case VIR_DOMAIN_TPM_TYPE_LAST:
         goto error;
@@ -25953,8 +25971,19 @@ virDomainTPMDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, "</backend>\n");
         break;
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
-        virBufferAsprintf(buf, " version='%s'/>\n",
+        virBufferAsprintf(buf, " version='%s'",
                           virDomainTPMVersionTypeToString(def->version));
+        if (def->data.emulator.hassecretuuid) {
+            char uuidstr[VIR_UUID_STRING_BUFLEN];
+            virBufferAddLit(buf, ">\n");
+            virBufferAdjustIndent(buf, 2);
+            virBufferAsprintf(buf, "<encryption secret='%s'/>\n",
+                virUUIDFormat(def->data.emulator.secretuuid, uuidstr));
+            virBufferAdjustIndent(buf, -2);
+            virBufferAddLit(buf, "</backend>\n");
+        } else {
+            virBufferAddLit(buf, "/>\n");
+        }
         break;
     case VIR_DOMAIN_TPM_TYPE_LAST:
         break;

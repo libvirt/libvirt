@@ -4317,6 +4317,7 @@
           <attribute name="type">
              <value>emulator</value>
           </attribute>
+          <ref name="tpm-backend-emulator-encryption"/>
         </group>
       </choice>
       <choice>
@@ -4342,6 +4343,16 @@
             <ref name="filePath"/>
           </attribute>
         </optional>
+      </element>
+    </optional>
+  </define>
+
+  <define name="tpm-backend-emulator-encryption">
+    <optional>
+      <element name="encryption">
+        <attribute name="secret">
+          <ref name="UUID"/>
+        </attribute>
       </element>
     </optional>
   </define>
