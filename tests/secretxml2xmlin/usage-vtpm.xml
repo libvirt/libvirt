@@ -1,0 +1,7 @@
+<secret ephemeral='no' private='yes'>
+  <uuid>aa6c7af2-45a7-477c-85a2-fe86d9f2514e</uuid>
+  <description>vTPM secret</description>
+  <usage type='vtpm'>
+    <name>vTPMvTPMvTPM</name>
+  </usage>
+</secret>

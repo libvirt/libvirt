@@ -110,6 +110,15 @@ virSecretDefParseUsage(xmlXPathContextPtr ctxt,
         }
         break;
 
+    case VIR_SECRET_USAGE_TYPE_VTPM:
+        def->usage_id = virXPathString("string(./usage/name)", ctxt);
+        if (!def->usage_id) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("vTPM usage specified, but name is missing"));
+            return -1;
+        }
+        break;
+
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected secret usage type %d"),
@@ -254,6 +263,10 @@ virSecretDefFormatUsage(virBufferPtr buf,
         break;
 
     case VIR_SECRET_USAGE_TYPE_TLS:
+        virBufferEscapeString(buf, "<name>%s</name>\n", def->usage_id);
+        break;
+
+    case VIR_SECRET_USAGE_TYPE_VTPM:
         virBufferEscapeString(buf, "<name>%s</name>\n", def->usage_id);
         break;
 

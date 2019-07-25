@@ -80,6 +80,7 @@ mymain(void)
     DO_TEST("usage-ceph");
     DO_TEST("usage-iscsi");
     DO_TEST("usage-tls");
+    DO_TEST("usage-vtpm");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
