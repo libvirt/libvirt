@@ -58,19 +58,19 @@ struct _virCPUx86MSR {
  * ones defined for virDomainHyperv in domain_conf.c.
  * E.g "hv-runtime" -> "runtime", "hv-spinlocks" -> "spinlocks" etc.
 */
-#define VIR_CPU_x86_KVM_HV_RUNTIME   "hv-runtime"
-#define VIR_CPU_x86_KVM_HV_SYNIC     "hv-synic"
-#define VIR_CPU_x86_KVM_HV_STIMER    "hv-stimer"
-#define VIR_CPU_x86_KVM_HV_RELAXED   "hv-relaxed"
-#define VIR_CPU_x86_KVM_HV_SPINLOCKS "hv-spinlocks"
-#define VIR_CPU_x86_KVM_HV_VAPIC     "hv-vapic"
-#define VIR_CPU_x86_KVM_HV_VPINDEX   "hv-vpindex"
-#define VIR_CPU_x86_KVM_HV_RESET     "hv-reset"
-#define VIR_CPU_x86_KVM_HV_FREQUENCIES "hv-frequencies"
-#define VIR_CPU_x86_KVM_HV_REENLIGHTENMENT "hv-reenlightenment"
-#define VIR_CPU_x86_KVM_HV_TLBFLUSH  "hv-tlbflush"
-#define VIR_CPU_x86_KVM_HV_IPI       "hv-ipi"
-#define VIR_CPU_x86_KVM_HV_EVMCS     "hv-evmcs"
+#define VIR_CPU_x86_HV_RUNTIME   "hv-runtime"
+#define VIR_CPU_x86_HV_SYNIC     "hv-synic"
+#define VIR_CPU_x86_HV_STIMER    "hv-stimer"
+#define VIR_CPU_x86_HV_RELAXED   "hv-relaxed"
+#define VIR_CPU_x86_HV_SPINLOCKS "hv-spinlocks"
+#define VIR_CPU_x86_HV_VAPIC     "hv-vapic"
+#define VIR_CPU_x86_HV_VPINDEX   "hv-vpindex"
+#define VIR_CPU_x86_HV_RESET     "hv-reset"
+#define VIR_CPU_x86_HV_FREQUENCIES "hv-frequencies"
+#define VIR_CPU_x86_HV_REENLIGHTENMENT "hv-reenlightenment"
+#define VIR_CPU_x86_HV_TLBFLUSH  "hv-tlbflush"
+#define VIR_CPU_x86_HV_IPI       "hv-ipi"
+#define VIR_CPU_x86_HV_EVMCS     "hv-evmcs"
 
 
 #define VIR_CPU_X86_DATA_INIT { 0 }

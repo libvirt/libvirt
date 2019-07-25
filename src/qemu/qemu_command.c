@@ -7179,7 +7179,7 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
             case VIR_DOMAIN_HYPERV_SPINLOCKS:
                 if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON)
                     virBufferAsprintf(&buf, ",%s=0x%x",
-                                      VIR_CPU_x86_KVM_HV_SPINLOCKS,
+                                      VIR_CPU_x86_HV_SPINLOCKS,
                                       def->hyperv_spinlocks);
                 break;
 
