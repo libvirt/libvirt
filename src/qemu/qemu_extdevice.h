@@ -53,3 +53,6 @@ bool qemuExtDevicesHasDevice(virDomainDefPtr def);
 int qemuExtDevicesSetupCgroup(virQEMUDriverPtr driver,
                               virDomainDefPtr def,
                               virCgroupPtr cgroup);
+
+int qemuExtDevicesInitPaths(virQEMUDriverPtr driver,
+                            virDomainDefPtr def);

@@ -31430,3 +31430,59 @@ virDomainGraphicsNeedsAutoRenderNode(const virDomainGraphicsDef *graphics)
 
     return true;
 }
+
+
+static int
+virDomainCheckTPMChanges(virDomainDefPtr def,
+                         virDomainDefPtr newDef)
+{
+    bool oldEnc, newEnc;
+
+    if (!def->tpm)
+        return 0;
+
+    switch (def->tpm->type) {
+    case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+        if (virFileExists(def->tpm->data.emulator.storagepath)) {
+            /* VM has been started */
+            /* Once a VM was started with an encrypted state we allow
+             * less configuration changes.
+             */
+            oldEnc = def->tpm->data.emulator.hassecretuuid;
+            if (oldEnc && def->tpm->type != newDef->tpm->type) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Changing the type of TPM is not allowed"));
+                return -1;
+            }
+            if (oldEnc && !newDef->tpm) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Removing an encrypted TPM is not allowed"));
+                return -1;
+            }
+            newEnc = newDef->tpm->data.emulator.hassecretuuid;
+            if (oldEnc != newEnc) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                   _("TPM state encryption cannot be changed "
+                     "once VM was started"));
+                return -1;
+            }
+        }
+        break;
+    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+    case VIR_DOMAIN_TPM_TYPE_LAST:
+        break;
+    }
+
+    return 0;
+}
+
+
+int
+virDomainCheckDeviceChanges(virDomainDefPtr def,
+                            virDomainDefPtr newDef)
+{
+    if (!def || !newDef)
+        return 0;
+
+    return virDomainCheckTPMChanges(def, newDef);
+}
