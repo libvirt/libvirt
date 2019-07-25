@@ -2524,6 +2524,7 @@ static int testDomainSetMemoryFlags(virDomainPtr domain,
     virDomainObjPtr vm;
     virDomainDefPtr def;
     int ret = -1;
+    bool live = false;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
@@ -2532,11 +2533,11 @@ static int testDomainSetMemoryFlags(virDomainPtr domain,
     if (!(vm = testDomObjFromDomain(domain)))
         return -1;
 
-    if (!(def = virDomainObjGetOneDef(vm, flags)))
+    if (!(def = virDomainObjGetOneDefState(vm, flags, &live)))
         goto cleanup;
 
     if (flags & VIR_DOMAIN_MEM_MAXIMUM) {
-        if (virDomainObjIsActive(vm)) {
+        if (live) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("cannot resize the maximum memory on an "
                              "active domain"));
