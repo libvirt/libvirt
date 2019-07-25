@@ -78,8 +78,13 @@ virTPMCreateCancelPath(const char *devpath)
  */
 static virMutex swtpm_tools_lock = VIR_MUTEX_INITIALIZER;
 static char *swtpm_path;
+static struct stat swtpm_stat;
+
 static char *swtpm_setup;
+static struct stat swtpm_setup_stat;
+
 static char *swtpm_ioctl;
+static struct stat swtpm_ioctl_stat;
 
 char *
 virTPMGetSwtpm(void)
@@ -139,18 +144,22 @@ virTPMEmulatorInit(void)
     static const struct {
         const char *name;
         char **path;
+        struct stat *stat;
     } prgs[] = {
         {
             .name = "swtpm",
             .path = &swtpm_path,
+            .stat = &swtpm_stat,
         },
         {
             .name = "swtpm_setup",
             .path = &swtpm_setup,
+            .stat = &swtpm_setup_stat,
         },
         {
             .name = "swtpm_ioctl",
             .path = &swtpm_ioctl,
+            .stat = &swtpm_ioctl_stat,
         }
     };
     size_t i;
@@ -160,8 +169,24 @@ virTPMEmulatorInit(void)
     for (i = 0; i < ARRAY_CARDINALITY(prgs); i++) {
         VIR_AUTOFREE(char *) path = NULL;
         bool findit = *prgs[i].path == NULL;
+        struct stat statbuf;
+        char *tmp;
+
+        if (!findit) {
+            /* has executables changed? */
+            if (stat(*prgs[i].path, &statbuf) < 0)
+                findit = true;
+
+            if (!findit &&
+                &statbuf.st_mtime != &prgs[i].stat->st_mtime)
+                findit = true;
+        }
 
         if (findit) {
+            tmp = *prgs[i].path;
+            VIR_FREE(tmp);
+            *prgs[i].path = NULL;
+
             path = virFindFileInPath(prgs[i].name);
             if (!path) {
                 virReportSystemError(ENOENT,
@@ -175,7 +200,13 @@ virTPMEmulatorInit(void)
                                path);
                 goto cleanup;
             }
+            if (stat(path, prgs[i].stat) < 0) {
+                virReportSystemError(errno,
+                                     _("Could not stat %s"), path);
+                goto cleanup;
+            }
             *prgs[i].path = path;
+            path = NULL;
         }
     }
 
