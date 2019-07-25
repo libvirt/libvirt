@@ -142,6 +142,8 @@ VIR_ENUM_IMPL(virErrorDomain,
               "Resource control",
               "FirewallD",
               "Domain Checkpoint",
+
+              "TPM", /* 70 */
 );
 
 

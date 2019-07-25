@@ -3181,6 +3181,8 @@ virTPMEmulatorInit;
 virTPMGetSwtpm;
 virTPMGetSwtpmIoctl;
 virTPMGetSwtpmSetup;
+virTPMSwtpmFeatureTypeFromString;
+virTPMSwtpmSetupFeatureTypeFromString;
 
 
 # util/virtypedparam.h

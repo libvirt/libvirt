@@ -27,8 +27,24 @@
 #include "viralloc.h"
 #include "virfile.h"
 #include "virtpm.h"
+#include "vircommand.h"
+#include "virbitmap.h"
+#include "virjson.h"
+#include "virlog.h"
 
-#define VIR_FROM_THIS VIR_FROM_NONE
+#define VIR_FROM_THIS VIR_FROM_TPM
+
+VIR_LOG_INIT("util.tpm");
+
+VIR_ENUM_IMPL(virTPMSwtpmFeature,
+              VIR_TPM_SWTPM_FEATURE_LAST,
+              "cmdarg-pwd-fd",
+);
+
+VIR_ENUM_IMPL(virTPMSwtpmSetupFeature,
+              VIR_TPM_SWTPM_SETUP_FEATURE_LAST,
+              "cmdarg-pwdfile-fd",
+);
 
 /**
  * virTPMCreateCancelPath:
@@ -74,17 +90,22 @@ virTPMCreateCancelPath(const char *devpath)
 }
 
 /*
- * executables for the swtpm; to be found on the host
+ * executables for the swtpm; to be found on the host along with
+ * capabilties bitmap
  */
 static virMutex swtpm_tools_lock = VIR_MUTEX_INITIALIZER;
 static char *swtpm_path;
 static struct stat swtpm_stat;
+static virBitmapPtr swtpm_caps;
 
 static char *swtpm_setup;
 static struct stat swtpm_setup_stat;
+static virBitmapPtr swtpm_setup_caps;
 
 static char *swtpm_ioctl;
 static struct stat swtpm_ioctl_stat;
+
+typedef int (*TypeFromStringFn)(const char *);
 
 char *
 virTPMGetSwtpm(void)
@@ -131,6 +152,101 @@ virTPMGetSwtpmIoctl(void)
     return s;
 }
 
+/* virTPMExecGetCaps
+ *
+ * Execute the prepared command and parse the returned JSON object
+ * to get the capabilities supported by the executable.
+ * A JSON object like this is expected:
+ *
+ * {
+ *  "type": "swtpm",
+ *  "features": [
+ *    "cmdarg-seccomp",
+ *    "cmdarg-key-fd",
+ *    "cmdarg-pwd-fd"
+ *  ]
+ * }
+ */
+static virBitmapPtr
+virTPMExecGetCaps(virCommandPtr cmd,
+                  TypeFromStringFn typeFromStringFn)
+{
+    int exitstatus;
+    virBitmapPtr bitmap;
+    VIR_AUTOFREE(char *) outbuf = NULL;
+    VIR_AUTOPTR(virJSONValue) json = NULL;
+    virJSONValuePtr featureList;
+    virJSONValuePtr item;
+    size_t idx;
+    const char *str;
+    int typ;
+
+    virCommandSetOutputBuffer(cmd, &outbuf);
+    if (virCommandRun(cmd, &exitstatus) < 0)
+        return NULL;
+
+    if (!(bitmap = virBitmapNewEmpty()))
+        return NULL;
+
+    /* older version does not support --print-capabilties -- that's fine */
+    if (exitstatus != 0) {
+        VIR_DEBUG("Found swtpm that doesn't support --print-capabilities");
+        return bitmap;
+    }
+
+    json = virJSONValueFromString(outbuf);
+    if (!json)
+        goto error_bad_json;
+
+    featureList = virJSONValueObjectGetArray(json, "features");
+    if (!featureList)
+        goto error_bad_json;
+
+    if (!virJSONValueIsArray(featureList))
+        goto error_bad_json;
+
+    for (idx = 0; idx < virJSONValueArraySize(featureList); idx++) {
+        item = virJSONValueArrayGet(featureList, idx);
+        if (!item)
+            continue;
+
+        str = virJSONValueGetString(item);
+        if (!str)
+            goto error_bad_json;
+        typ = typeFromStringFn(str);
+        if (typ < 0)
+            continue;
+
+        if (virBitmapSetBitExpand(bitmap, typ) < 0)
+            goto cleanup;
+    }
+
+ cleanup:
+    return bitmap;
+
+ error_bad_json:
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("Unexpected JSON format: %s"), outbuf);
+    goto cleanup;
+}
+
+static virBitmapPtr
+virTPMGetCaps(TypeFromStringFn typeFromStringFn,
+                  const char *exec, const char *param1)
+{
+    VIR_AUTOPTR(virCommand) cmd = NULL;
+
+    if (!(cmd = virCommandNew(exec)))
+        return NULL;
+
+    if (param1)
+        virCommandAddArg(cmd, param1);
+    virCommandAddArg(cmd, "--print-capabilities");
+    virCommandClearCaps(cmd);
+
+    return virTPMExecGetCaps(cmd, typeFromStringFn);
+}
+
 /*
  * virTPMEmulatorInit
  *
@@ -145,16 +261,24 @@ virTPMEmulatorInit(void)
         const char *name;
         char **path;
         struct stat *stat;
+        const char *parm;
+        virBitmapPtr *caps;
+        TypeFromStringFn typeFromStringFn;
     } prgs[] = {
         {
             .name = "swtpm",
             .path = &swtpm_path,
             .stat = &swtpm_stat,
+            .parm = "socket",
+            .caps = &swtpm_caps,
+            .typeFromStringFn = virTPMSwtpmFeatureTypeFromString,
         },
         {
             .name = "swtpm_setup",
             .path = &swtpm_setup,
             .stat = &swtpm_setup_stat,
+            .caps = &swtpm_setup_caps,
+            .typeFromStringFn = virTPMSwtpmSetupFeatureTypeFromString,
         },
         {
             .name = "swtpm_ioctl",
@@ -206,6 +330,14 @@ virTPMEmulatorInit(void)
                 goto cleanup;
             }
             *prgs[i].path = path;
+
+            if (prgs[i].caps) {
+                *prgs[i].caps = virTPMGetCaps(prgs[i].typeFromStringFn,
+                                              path, prgs[i].parm);
+                path = NULL;
+                if (!*prgs[i].caps)
+                    goto cleanup;
+            }
             path = NULL;
         }
     }

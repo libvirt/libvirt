@@ -26,3 +26,18 @@ char *virTPMGetSwtpm(void);
 char *virTPMGetSwtpmSetup(void);
 char *virTPMGetSwtpmIoctl(void);
 int virTPMEmulatorInit(void);
+
+typedef enum {
+    VIR_TPM_SWTPM_FEATURE_CMDARG_PWD_FD,
+
+    VIR_TPM_SWTPM_FEATURE_LAST
+} virTPMSwtpmFeature;
+
+typedef enum {
+    VIR_TPM_SWTPM_SETUP_FEATURE_CMDARG_PWDFILE_FD,
+
+    VIR_TPM_SWTPM_SETUP_FEATURE_LAST
+} virTPMSwtpmSetupFeature;
+
+VIR_ENUM_DECL(virTPMSwtpmFeature);
+VIR_ENUM_DECL(virTPMSwtpmSetupFeature);
