@@ -656,6 +656,7 @@ mymain(void)
     DO_TEST("tpm-passthrough-crb", NONE);
     DO_TEST("tpm-emulator", NONE);
     DO_TEST("tpm-emulator-tpm2", NONE);
+    DO_TEST("tpm-emulator-tpm2-enc", NONE);
 
     DO_TEST("metadata", NONE);
     DO_TEST("metadata-duplicate", NONE);
