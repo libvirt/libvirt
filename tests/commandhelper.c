@@ -23,6 +23,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <poll.h>
 
 #include "internal.h"
 #define NO_LIBVIRT
@@ -62,12 +63,26 @@ int main(int argc, char **argv) {
     char *cwd;
     FILE *log = fopen(abs_builddir "/commandhelper.log", "w");
     int ret = EXIT_FAILURE;
+    int readfds[3] = { STDIN_FILENO, };
+    int numreadfds = 1;
+    struct pollfd fds[3];
+    int numpollfds = 0;
+    char *buffers[3] = {NULL, NULL, NULL};
+    size_t buflen[3] = {0, 0, 0};
+    char c;
 
     if (!log)
         return ret;
 
-    for (i = 1; i < argc; i++)
+    for (i = 1; i < argc; i++) {
         fprintf(log, "ARG:%s\n", argv[i]);
+
+        if (STREQ(argv[i - 1], "--readfd") &&
+            sscanf(argv[i], "%u%c", &readfds[numreadfds++], &c) != 1) {
+            printf("Could not parse fd %s\n", argv[i]);
+            goto cleanup;
+        }
+    }
 
     origenv = environ;
     n = 0;
@@ -134,15 +149,56 @@ int main(int argc, char **argv) {
     fprintf(stderr, "BEGIN STDERR\n");
     fflush(stderr);
 
+    for (i = 0; i < numreadfds; i++) {
+        fds[numpollfds].fd = readfds[i];
+        fds[numpollfds].events = POLLIN;
+        fds[numpollfds].revents = 0;
+        numpollfds++;
+    }
+
     for (;;) {
-        got = read(STDIN_FILENO, buf, sizeof(buf));
-        if (got < 0)
+        unsigned ctr = 0;
+
+        if (poll(fds, numpollfds, -1) < 0) {
+            printf("poll failed: %s\n", strerror(errno));
             goto cleanup;
-        if (got == 0)
+        }
+
+        for (i = 0; i < numpollfds; i++) {
+            if (fds[i].revents & (POLLIN | POLLHUP | POLLERR)) {
+                fds[i].revents = 0;
+
+                got = read(fds[i].fd, buf, sizeof(buf));
+                if (got < 0)
+                    goto cleanup;
+                if (got == 0) {
+                    /* do not want to hear from this fd anymore */
+                    fds[i].events = 0;
+                } else {
+                    buffers[i] = realloc(buffers[i], buflen[i] + got);
+                    if (!buf[i]) {
+                        fprintf(stdout, "Out of memory!\n");
+                        goto cleanup;
+                    }
+                    memcpy(buffers[i] + buflen[i], buf, got);
+                    buflen[i] += got;
+                }
+            }
+        }
+        for (i = 0; i < numpollfds; i++) {
+            if (fds[i].events) {
+                ctr++;
+                break;
+            }
+        }
+        if (ctr == 0)
             break;
-        if (write(STDOUT_FILENO, buf, got) != got)
+    }
+
+    for (i = 0; i < numpollfds; i++) {
+        if (write(STDOUT_FILENO, buffers[i], buflen[i]) != buflen[i])
             goto cleanup;
-        if (write(STDERR_FILENO, buf, got) != got)
+        if (write(STDERR_FILENO, buffers[i], buflen[i]) != buflen[i])
             goto cleanup;
     }
 
@@ -154,6 +210,8 @@ int main(int argc, char **argv) {
     ret = EXIT_SUCCESS;
 
  cleanup:
+    for (i = 0; i < ARRAY_CARDINALITY(buffers); i++)
+        free(buffers[i]);
     fclose(log);
     free(newenv);
     return ret;
