@@ -30,7 +30,7 @@ License
 The libvirt C API is distributed under the terms of GNU Lesser General
 Public License, version 2.1 (or later). Some parts of the code that are
 not part of the C library may have the more restrictive GNU General
-Public License, version 2.1 (or later). See the files `COPYING.LESSER`
+Public License, version 2.0 (or later). See the files `COPYING.LESSER`
 and `COPYING` for full license terms & conditions.
 
 
