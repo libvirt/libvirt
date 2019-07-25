@@ -76,6 +76,16 @@ struct _virCommandFD {
     unsigned int flags;
 };
 
+typedef struct _virCommandSendBuffer virCommandSendBuffer;
+typedef virCommandSendBuffer *virCommandSendBufferPtr;
+
+struct _virCommandSendBuffer {
+    int fd;
+    unsigned char *buffer;
+    size_t buflen;
+    off_t offset;
+};
+
 struct _virCommand {
     int has_error; /* ENOMEM on allocation failure, -1 for anything else.  */
 
@@ -135,6 +145,9 @@ struct _virCommand {
     char *appArmorProfile;
 #endif
     int mask;
+
+    virCommandSendBufferPtr sendBuffers;
+    size_t numSendBuffers;
 };
 
 /* See virCommandSetDryRun for description for this variable */
@@ -1728,6 +1741,85 @@ virCommandSetWorkingDirectory(virCommandPtr cmd, const char *pwd)
 }
 
 
+static int
+virCommandGetNumSendBuffers(virCommandPtr cmd)
+{
+    return cmd->numSendBuffers;
+}
+
+
+static void
+virCommandFreeSendBuffers(virCommandPtr cmd)
+{
+    size_t i;
+
+    for (i = 0; i < virCommandGetNumSendBuffers(cmd); i++) {
+        VIR_FORCE_CLOSE(cmd->sendBuffers[i].fd);
+        VIR_FREE(cmd->sendBuffers[i].buffer);
+    }
+    VIR_FREE(cmd->sendBuffers);
+}
+
+
+/**
+ * virCommandSetSendBuffer
+ * @cmd: the command to modify
+ *
+ * Pass a buffer to virCommand that will be written into the
+ * given file descriptor. The buffer will be freed automatically
+ * and the file descriptor closed.
+ */
+#if defined(F_SETFL)
+int
+virCommandSetSendBuffer(virCommandPtr cmd,
+                        int fd,
+                        unsigned char *buffer, size_t buflen)
+{
+    size_t i = virCommandGetNumSendBuffers(cmd);
+
+    if (!cmd || cmd->has_error)
+        return -1;
+
+    if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("fcntl failed to set O_NONBLOCK"));
+        cmd->has_error = errno;
+        return -1;
+    }
+
+    if (VIR_REALLOC_N(cmd->sendBuffers, i + 1) < 0) {
+        cmd->has_error = ENOMEM;
+        return -1;
+    }
+
+    cmd->sendBuffers[i].fd = fd;
+    cmd->sendBuffers[i].buffer = buffer;
+    cmd->sendBuffers[i].buflen = buflen;
+    cmd->sendBuffers[i].offset = 0;
+
+    cmd->numSendBuffers++;
+
+    return 0;
+}
+
+#else /* !defined(F_SETFL) */
+
+int
+virCommandSetSendBuffer(virCommandPtr cmd,
+                        int fd ATTRIBUTE_UNUSED,
+                        unsigned char *buffer ATTRIBUTE_UNUSED,
+                        size_t buflen ATTRIBUTE_UNUSED)
+{
+    if (!cmd || cmd->has_error)
+        return -1;
+
+    cmd->has_error = ENOTSUP;
+
+    return -1;
+}
+
+#endif
+
 /**
  * virCommandSetInputBuffer:
  * @cmd: the command to modify
@@ -2866,6 +2958,8 @@ virCommandFree(virCommandPtr cmd)
 #if defined(WITH_SECDRIVER_APPARMOR)
     VIR_FREE(cmd->appArmorProfile);
 #endif
+
+    virCommandFreeSendBuffers(cmd);
 
     VIR_FREE(cmd);
 }

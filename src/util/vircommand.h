@@ -146,6 +146,11 @@ void virCommandAddArgList(virCommandPtr cmd,
 void virCommandSetWorkingDirectory(virCommandPtr cmd,
                                    const char *pwd) ATTRIBUTE_NONNULL(2);
 
+int virCommandSetSendBuffer(virCommandPtr cmd,
+                            int fd,
+                            unsigned char *buffer, size_t buflen)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
+
 void virCommandSetInputBuffer(virCommandPtr cmd,
                               const char *inbuf) ATTRIBUTE_NONNULL(2);
 
