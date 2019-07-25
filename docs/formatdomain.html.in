@@ -8215,6 +8215,9 @@ qemu-kvm -net nic,model=? /dev/null
       TPM functionality for each VM. QEMU talks to it over a Unix socket. With
       the emulator device type each guest gets its own private TPM.
       <span class="since">'emulator' since 4.5.0</span>
+      The state of the TPM emulator can be encrypted by providing an
+      <code>encryption</code> element.
+      <span class="since">'encryption' since 5.6.0</span>
     </p>
     <p>
      Example: usage of the TPM Emulator
@@ -8224,6 +8227,7 @@ qemu-kvm -net nic,model=? /dev/null
   &lt;devices&gt;
     &lt;tpm model='tpm-tis'&gt;
       &lt;backend type='emulator' version='2.0'&gt;
+        &lt;encryption secret='6dd3e4a5-1d76-44ce-961f-f119f5aad935'/&gt;
       &lt;/backend&gt;
     &lt;/tpm&gt;
   &lt;/devices&gt;
@@ -8285,6 +8289,14 @@ qemu-kvm -net nic,model=? /dev/null
           <li>'1.2' : creates a TPM 1.2</li>
           <li>'2.0' : creates a TPM 2.0</li>
         </ul>
+      </dd>
+      <dt><code>encryption</code></dt>
+      <dd>
+        <p>
+          The <code>encryption</code> element allows the state of a TPM emulator
+          to be encrypted. The <code>secret</code> must reference a secret object
+          that holds the passphrase from which the encryption key will be derived.
+        </p>
       </dd>
     </dl>
 
