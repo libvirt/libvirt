@@ -44,6 +44,15 @@
 <libvirt>
   <release version="v5.10.0" date="unreleased">
     <section title="New features">
+      <change>
+        <summary>
+          qemu: Introduce support for ARM CPU features
+        </summary>
+        <description>
+          The only features supported at the moment are SVE vector lengths,
+          which were introduced in QEMU 4.2.0.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
