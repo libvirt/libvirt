@@ -2891,6 +2891,7 @@ virCgroupNewMachine(const char *name ATTRIBUTE_UNUSED,
                     int *nicindexes ATTRIBUTE_UNUSED,
                     const char *partition ATTRIBUTE_UNUSED,
                     int controllers ATTRIBUTE_UNUSED,
+                    unsigned int maxthreads ATTRIBUTE_UNUSED,
                     virCgroupPtr *group ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
