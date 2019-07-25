@@ -2598,7 +2598,8 @@ virQEMUCapsGetCPUFeatures(virQEMUCapsPtr qemuCaps,
         if (migratable && prop->migratable == VIR_TRISTATE_BOOL_NO)
             continue;
 
-        if (VIR_STRDUP(list[n++], prop->name) < 0)
+        if (VIR_STRDUP(list[n++],
+                       virQEMUCapsCPUFeatureFromQEMU(qemuCaps, prop->name)) < 0)
             goto cleanup;
     }
 
