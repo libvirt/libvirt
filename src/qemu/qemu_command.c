@@ -7133,7 +7133,7 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
                                 !!timer->present);
         } else if (timer->name == VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK &&
                    timer->present == 1) {
-            virBufferAddLit(&buf, ",hv_time");
+            virBufferAddLit(&buf, ",hv-time");
         } else if (timer->name == VIR_DOMAIN_TIMER_NAME_TSC &&
                    timer->frequency > 0) {
             virBufferAsprintf(&buf, ",tsc-frequency=%lu", timer->frequency);
@@ -7151,6 +7151,11 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
     }
 
     if (def->features[VIR_DOMAIN_FEATURE_HYPERV] == VIR_TRISTATE_SWITCH_ON) {
+        const char *hvPrefix = "hv-";
+
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CANONICAL_CPU_FEATURES))
+            hvPrefix = "hv_";
+
         for (i = 0; i < VIR_DOMAIN_HYPERV_LAST; i++) {
             switch ((virDomainHyperv) i) {
             case VIR_DOMAIN_HYPERV_RELAXED:
@@ -7166,19 +7171,21 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
             case VIR_DOMAIN_HYPERV_IPI:
             case VIR_DOMAIN_HYPERV_EVMCS:
                 if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON)
-                    virBufferAsprintf(&buf, ",hv_%s",
+                    virBufferAsprintf(&buf, ",%s%s",
+                                      hvPrefix,
                                       virDomainHypervTypeToString(i));
                 break;
 
             case VIR_DOMAIN_HYPERV_SPINLOCKS:
                 if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON)
-                    virBufferAsprintf(&buf, ",hv_spinlocks=0x%x",
+                    virBufferAsprintf(&buf, ",%s=0x%x",
+                                      VIR_CPU_x86_KVM_HV_SPINLOCKS,
                                       def->hyperv_spinlocks);
                 break;
 
             case VIR_DOMAIN_HYPERV_VENDOR_ID:
                 if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON)
-                    virBufferAsprintf(&buf, ",hv_vendor_id=%s",
+                    virBufferAsprintf(&buf, ",hv-vendor-id=%s",
                                       def->hyperv_vendor_id);
                 break;
 
@@ -7191,7 +7198,7 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
 
     for (i = 0; i < def->npanics; i++) {
         if (def->panics[i]->model == VIR_DOMAIN_PANIC_MODEL_HYPERV) {
-            virBufferAddLit(&buf, ",hv_crash");
+            virBufferAddLit(&buf, ",hv-crash");
             break;
         }
     }

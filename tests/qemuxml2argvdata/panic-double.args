@@ -11,7 +11,7 @@ QEMU_AUDIO_DRV=none \
 -name QEMUGuest1 \
 -S \
 -machine pc,accel=tcg,usb=off,dump-guest-core=off \
--cpu qemu32,hv_crash \
+-cpu qemu32,hv-crash \
 -m 214 \
 -realtime mlock=off \
 -smp 6,sockets=6,cores=1,threads=1 \
