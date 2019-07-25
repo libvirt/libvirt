@@ -2315,10 +2315,11 @@ typedef struct qemuDomainPrivateBlockJobFormatData {
 
 
 static int
-qemuDomainObjPrivateXMLFormatBlockjobFormatChain(virBufferPtr buf,
-                                                 const char *chainname,
-                                                 virStorageSourcePtr src,
-                                                 virDomainXMLOptionPtr xmlopt)
+qemuDomainObjPrivateXMLFormatBlockjobFormatSource(virBufferPtr buf,
+                                                  const char *element,
+                                                  virStorageSourcePtr src,
+                                                  virDomainXMLOptionPtr xmlopt,
+                                                  bool chain)
 {
     VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
@@ -2333,10 +2334,11 @@ qemuDomainObjPrivateXMLFormatBlockjobFormatChain(virBufferPtr buf,
     if (virDomainDiskSourceFormat(&childBuf, src, "source", 0, true, xmlflags, xmlopt) < 0)
         return -1;
 
-    if (virDomainDiskBackingStoreFormat(&childBuf, src, xmlopt, xmlflags) < 0)
+    if (chain &&
+        virDomainDiskBackingStoreFormat(&childBuf, src, xmlopt, xmlflags) < 0)
         return -1;
 
-    if (virXMLFormatElement(buf, chainname, &attrBuf, &childBuf) < 0)
+    if (virXMLFormatElement(buf, element, &attrBuf, &childBuf) < 0)
         return -1;
 
     return 0;
@@ -2375,17 +2377,19 @@ qemuDomainObjPrivateXMLFormatBlockjobIterator(void *payload,
         virBufferAddLit(&childBuf, "/>\n");
     } else {
         if (job->chain &&
-            qemuDomainObjPrivateXMLFormatBlockjobFormatChain(&chainsBuf,
-                                                             "disk",
-                                                             job->chain,
-                                                             data->xmlopt) < 0)
+            qemuDomainObjPrivateXMLFormatBlockjobFormatSource(&chainsBuf,
+                                                              "disk",
+                                                              job->chain,
+                                                              data->xmlopt,
+                                                              true) < 0)
             return -1;
 
         if (job->mirrorChain &&
-            qemuDomainObjPrivateXMLFormatBlockjobFormatChain(&chainsBuf,
-                                                             "mirror",
-                                                             job->mirrorChain,
-                                                             data->xmlopt) < 0)
+            qemuDomainObjPrivateXMLFormatBlockjobFormatSource(&chainsBuf,
+                                                              "mirror",
+                                                              job->mirrorChain,
+                                                              data->xmlopt,
+                                                              true) < 0)
             return -1;
 
         if (virXMLFormatElement(&childBuf, "chains", NULL, &chainsBuf) < 0)
