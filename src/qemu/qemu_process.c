@@ -4104,7 +4104,7 @@ qemuProcessVerifyHypervFeatures(virDomainDefPtr def,
         if (def->hyperv_features[i] != VIR_TRISTATE_SWITCH_ON)
             continue;
 
-        if (virAsprintf(&cpuFeature, "__kvm_hv_%s",
+        if (virAsprintf(&cpuFeature, "hv-%s",
                         virDomainHypervTypeToString(i)) < 0)
             return -1;
 

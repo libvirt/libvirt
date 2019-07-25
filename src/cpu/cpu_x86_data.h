@@ -56,21 +56,21 @@ struct _virCPUx86MSR {
 /*
  * The following HyperV feature names suffixes must exactly match corresponding
  * ones defined for virDomainHyperv in domain_conf.c.
- * E.g "__kvm_runtime" -> "runtime", "__kvm_hv_spinlocks" -> "spinlocks" etc.
+ * E.g "hv-runtime" -> "runtime", "hv-spinlocks" -> "spinlocks" etc.
 */
-#define VIR_CPU_x86_KVM_HV_RUNTIME   "__kvm_hv_runtime"
-#define VIR_CPU_x86_KVM_HV_SYNIC     "__kvm_hv_synic"
-#define VIR_CPU_x86_KVM_HV_STIMER    "__kvm_hv_stimer"
-#define VIR_CPU_x86_KVM_HV_RELAXED   "__kvm_hv_relaxed"
-#define VIR_CPU_x86_KVM_HV_SPINLOCKS  "__kvm_hv_spinlocks"
-#define VIR_CPU_x86_KVM_HV_VAPIC     "__kvm_hv_vapic"
-#define VIR_CPU_x86_KVM_HV_VPINDEX   "__kvm_hv_vpindex"
-#define VIR_CPU_x86_KVM_HV_RESET     "__kvm_hv_reset"
-#define VIR_CPU_x86_KVM_HV_FREQUENCIES "__kvm_hv_frequencies"
-#define VIR_CPU_x86_KVM_HV_REENLIGHTENMENT "__kvm_hv_reenlightenment"
-#define VIR_CPU_x86_KVM_HV_TLBFLUSH  "__kvm_hv_tlbflush"
-#define VIR_CPU_x86_KVM_HV_IPI       "__kvm_hv_ipi"
-#define VIR_CPU_x86_KVM_HV_EVMCS     "__kvm_hv_evmcs"
+#define VIR_CPU_x86_KVM_HV_RUNTIME   "hv-runtime"
+#define VIR_CPU_x86_KVM_HV_SYNIC     "hv-synic"
+#define VIR_CPU_x86_KVM_HV_STIMER    "hv-stimer"
+#define VIR_CPU_x86_KVM_HV_RELAXED   "hv-relaxed"
+#define VIR_CPU_x86_KVM_HV_SPINLOCKS "hv-spinlocks"
+#define VIR_CPU_x86_KVM_HV_VAPIC     "hv-vapic"
+#define VIR_CPU_x86_KVM_HV_VPINDEX   "hv-vpindex"
+#define VIR_CPU_x86_KVM_HV_RESET     "hv-reset"
+#define VIR_CPU_x86_KVM_HV_FREQUENCIES "hv-frequencies"
+#define VIR_CPU_x86_KVM_HV_REENLIGHTENMENT "hv-reenlightenment"
+#define VIR_CPU_x86_KVM_HV_TLBFLUSH  "hv-tlbflush"
+#define VIR_CPU_x86_KVM_HV_IPI       "hv-ipi"
+#define VIR_CPU_x86_KVM_HV_EVMCS     "hv-evmcs"
 
 
 #define VIR_CPU_X86_DATA_INIT { 0 }
