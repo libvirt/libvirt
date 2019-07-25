@@ -41,78 +41,11 @@
 #include "configmake.h"
 #include "dirname.h"
 #include "qemu_tpm.h"
+#include "virtpm.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 VIR_LOG_INIT("qemu.tpm");
-
-/*
- * executables for the swtpm; to be found on the host
- */
-static char *swtpm_path;
-static char *swtpm_setup;
-static char *swtpm_ioctl;
-
-/*
- * qemuTPMEmulatorInit
- *
- * Initialize the Emulator functions by searching for necessary
- * executables that we will use to start and setup the swtpm
- */
-static int
-qemuTPMEmulatorInit(void)
-{
-    if (!swtpm_path) {
-        swtpm_path = virFindFileInPath("swtpm");
-        if (!swtpm_path) {
-            virReportSystemError(ENOENT, "%s",
-                                 _("Unable to find 'swtpm' binary in $PATH"));
-            return -1;
-        }
-        if (!virFileIsExecutable(swtpm_path)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("TPM emulator %s is not an executable"),
-                           swtpm_path);
-            VIR_FREE(swtpm_path);
-            return -1;
-        }
-    }
-
-    if (!swtpm_setup) {
-        swtpm_setup = virFindFileInPath("swtpm_setup");
-        if (!swtpm_setup) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Could not find 'swtpm_setup' in PATH"));
-            return -1;
-        }
-        if (!virFileIsExecutable(swtpm_setup)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("'%s' is not an executable"),
-                           swtpm_setup);
-            VIR_FREE(swtpm_setup);
-            return -1;
-        }
-    }
-
-    if (!swtpm_ioctl) {
-        swtpm_ioctl = virFindFileInPath("swtpm_ioctl");
-        if (!swtpm_ioctl) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Could not find swtpm_ioctl in PATH"));
-            return -1;
-        }
-        if (!virFileIsExecutable(swtpm_ioctl)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("swtpm_ioctl program %s is not an executable"),
-                           swtpm_ioctl);
-            VIR_FREE(swtpm_ioctl);
-            return -1;
-        }
-    }
-
-    return 0;
-}
-
 
 /*
  * qemuTPMCreateEmulatorStoragePath
@@ -345,12 +278,13 @@ qemuTPMEmulatorGetPid(const char *swtpmStateDir,
                       pid_t *pid)
 {
     int ret;
+    VIR_AUTOFREE(char *) swtpm = virTPMGetSwtpm();
     char *pidfile = qemuTPMEmulatorCreatePidFilename(swtpmStateDir,
                                                      shortName);
     if (!pidfile)
         return -ENOMEM;
 
-    ret = virPidFileReadPathIfAlive(pidfile, pid, swtpm_path);
+    ret = virPidFileReadPathIfAlive(pidfile, pid, swtpm);
 
     VIR_FREE(pidfile);
 
@@ -386,7 +320,7 @@ qemuTPMEmulatorPrepareHost(virDomainTPMDefPtr tpm,
 {
     int ret = -1;
 
-    if (qemuTPMEmulatorInit() < 0)
+    if (virTPMEmulatorInit() < 0)
         return -1;
 
     /* create log dir ... allow 'tss' user to cd into it */
@@ -471,6 +405,10 @@ qemuTPMEmulatorRunSetup(const char *storagepath,
     int ret = -1;
     char uuid[VIR_UUID_STRING_BUFLEN];
     char *vmid = NULL;
+    VIR_AUTOFREE(char *)swtpm_setup = virTPMGetSwtpmSetup();
+
+    if (!swtpm_setup)
+        return -1;
 
     if (!privileged && tpmversion == VIR_DOMAIN_TPM_VERSION_1_2)
         return virFileWriteStr(logfile,
@@ -562,6 +500,10 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDefPtr tpm,
     virCommandPtr cmd = NULL;
     bool created = false;
     char *pidfile;
+    VIR_AUTOFREE(char *) swtpm = virTPMGetSwtpm();
+
+    if (!swtpm)
+        return NULL;
 
     if (qemuTPMCreateEmulatorStorage(tpm->data.emulator.storagepath,
                                      &created, swtpm_user, swtpm_group) < 0)
@@ -575,7 +517,7 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDefPtr tpm,
 
     unlink(tpm->data.emulator.source.data.nix.path);
 
-    cmd = virCommandNew(swtpm_path);
+    cmd = virCommandNew(swtpm);
     if (!cmd)
         goto error;
 
@@ -639,8 +581,12 @@ qemuTPMEmulatorStop(const char *swtpmStateDir,
     virCommandPtr cmd;
     char *pathname;
     char *errbuf = NULL;
+    VIR_AUTOFREE(char *) swtpm_ioctl = virTPMGetSwtpmIoctl();
 
-    if (qemuTPMEmulatorInit() < 0)
+    if (!swtpm_ioctl)
+        return;
+
+    if (virTPMEmulatorInit() < 0)
         return;
 
     if (!(pathname = qemuTPMCreateEmulatorSocket(swtpmStateDir, shortName)))

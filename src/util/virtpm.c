@@ -72,3 +72,125 @@ virTPMCreateCancelPath(const char *devpath)
  cleanup:
     return path;
 }
+
+/*
+ * executables for the swtpm; to be found on the host
+ */
+static virMutex swtpm_tools_lock = VIR_MUTEX_INITIALIZER;
+static char *swtpm_path;
+static char *swtpm_setup;
+static char *swtpm_ioctl;
+
+char *
+virTPMGetSwtpm(void)
+{
+    char *s;
+
+    if (!swtpm_path && virTPMEmulatorInit() < 0)
+        return NULL;
+
+    virMutexLock(&swtpm_tools_lock);
+    ignore_value(VIR_STRDUP(s, swtpm_path));
+    virMutexUnlock(&swtpm_tools_lock);
+
+    return s;
+}
+
+char *
+virTPMGetSwtpmSetup(void)
+{
+    char *s;
+
+    if (!swtpm_setup && virTPMEmulatorInit() < 0)
+        return NULL;
+
+    virMutexLock(&swtpm_tools_lock);
+    ignore_value(VIR_STRDUP(s, swtpm_setup));
+    virMutexUnlock(&swtpm_tools_lock);
+
+    return s;
+}
+
+char *
+virTPMGetSwtpmIoctl(void)
+{
+    char *s;
+
+    if (!swtpm_ioctl && virTPMEmulatorInit() < 0)
+        return NULL;
+
+    virMutexLock(&swtpm_tools_lock);
+    ignore_value(VIR_STRDUP(s, swtpm_ioctl));
+    virMutexUnlock(&swtpm_tools_lock);
+
+    return s;
+}
+
+/*
+ * virTPMEmulatorInit
+ *
+ * Initialize the Emulator functions by searching for necessary
+ * executables that we will use to start and setup the swtpm
+ */
+int
+virTPMEmulatorInit(void)
+{
+    int ret = -1;
+
+    virMutexLock(&swtpm_tools_lock);
+
+    if (!swtpm_path) {
+        swtpm_path = virFindFileInPath("swtpm");
+        if (!swtpm_path) {
+            virReportSystemError(ENOENT, "%s",
+                                 _("Unable to find 'swtpm' binary in $PATH"));
+            goto cleanup;
+        }
+        if (!virFileIsExecutable(swtpm_path)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("TPM emulator %s is not an executable"),
+                           swtpm_path);
+            VIR_FREE(swtpm_path);
+            goto cleanup;
+        }
+    }
+
+    if (!swtpm_setup) {
+        swtpm_setup = virFindFileInPath("swtpm_setup");
+        if (!swtpm_setup) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Could not find 'swtpm_setup' in PATH"));
+            goto cleanup;
+        }
+        if (!virFileIsExecutable(swtpm_setup)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("'%s' is not an executable"),
+                           swtpm_setup);
+            VIR_FREE(swtpm_setup);
+            goto cleanup;
+        }
+    }
+
+    if (!swtpm_ioctl) {
+        swtpm_ioctl = virFindFileInPath("swtpm_ioctl");
+        if (!swtpm_ioctl) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Could not find swtpm_ioctl in PATH"));
+            goto cleanup;
+        }
+        if (!virFileIsExecutable(swtpm_ioctl)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("swtpm_ioctl program %s is not an executable"),
+                           swtpm_ioctl);
+            VIR_FREE(swtpm_ioctl);
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
+    virMutexUnlock(&swtpm_tools_lock);
+
+    return ret;
+}

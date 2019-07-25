@@ -3177,6 +3177,10 @@ virTimeStringThenRaw;
 
 # util/virtpm.h
 virTPMCreateCancelPath;
+virTPMEmulatorInit;
+virTPMGetSwtpm;
+virTPMGetSwtpmIoctl;
+virTPMGetSwtpmSetup;
 
 
 # util/virtypedparam.h

@@ -21,3 +21,8 @@
 #pragma once
 
 char *virTPMCreateCancelPath(const char *devpath) ATTRIBUTE_NOINLINE;
+
+char *virTPMGetSwtpm(void);
+char *virTPMGetSwtpmSetup(void);
+char *virTPMGetSwtpmIoctl(void);
+int virTPMEmulatorInit(void);
