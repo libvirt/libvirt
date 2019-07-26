@@ -43,7 +43,7 @@ struct _virCPUx86MSR {
 #define CPUX86_KVM      0x40000000
 #define CPUX86_EXTENDED 0x80000000
 
-#define VIR_CPU_x86_KVM_PV_UNHALT    "__kvm_pv_unhalt"
+#define VIR_CPU_x86_KVM_PV_UNHALT   "kvm_pv_unhalt"
 
 /*
  * The following HyperV feature names suffixes must exactly match corresponding

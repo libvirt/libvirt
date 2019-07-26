@@ -7146,7 +7146,7 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
     }
 
     if (def->features[VIR_DOMAIN_FEATURE_PVSPINLOCK]) {
-        qemuBuildCpuFeature(qemuCaps, &buf, "kvm_pv_unhalt",
+        qemuBuildCpuFeature(qemuCaps, &buf, VIR_CPU_x86_KVM_PV_UNHALT,
                             def->features[VIR_DOMAIN_FEATURE_PVSPINLOCK] == VIR_TRISTATE_SWITCH_ON);
     }
 
