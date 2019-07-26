@@ -18304,19 +18304,23 @@ qemuDomainBlockCopyCommonValidateUserMirrorBackingStore(virStorageSourcePtr mirr
 {
     /* note that if original disk does not have backing chain, shallow is cleared */
     bool shallow = flags & VIR_DOMAIN_BLOCK_COPY_SHALLOW;
-    bool reuse = flags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT;
 
-    if (!mirror->backingStore) {
-        /* deep copy won't need backing store so we can terminate it */
-        if (!shallow &&
+    if (!virStorageSourceHasBacking(mirror)) {
+        /* for deep copy there won't be backing chain so we can terminate it */
+        if (!mirror->backingStore &&
+            !shallow &&
             !(mirror->backingStore = virStorageSourceNew()))
             return -1;
 
-        return 0;
-    }
-
-    /* validate user provided backing store */
-    if (virStorageSourceHasBacking(mirror)) {
+        /* When reusing an external image we document that the user must ensure
+         * that the <mirror> image must expose data as the original image did
+         * either by providing correct chain or prepopulating the image. This
+         * means we can't validate this any more regardless of whether shallow
+         * copy is requested.
+         *
+         * For a copy when we are not reusing external image requesting shallow
+         * is okay and will inherit the original backing chain */
+    } else {
         if (!blockdev) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
                            _("backingStore of mirror target is not supported by this qemu"));
@@ -18326,13 +18330,6 @@ qemuDomainBlockCopyCommonValidateUserMirrorBackingStore(virStorageSourcePtr mirr
         if (!shallow) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
                            _("backingStore of mirror without VIR_DOMAIN_BLOCK_COPY_SHALLOW doesn't make sense"));
-            return -1;
-        }
-    } else {
-        /* shallow copy without reuse requires some kind of backing data */
-        if (!reuse && shallow) {
-            virReportError(VIR_ERR_INVALID_ARG, "%s",
-                           _("VIR_DOMAIN_BLOCK_COPY_SHALLOW implies backing chain for mirror"));
             return -1;
         }
     }
