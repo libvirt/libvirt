@@ -3116,6 +3116,13 @@ struct remote_domain_get_guest_info_ret {
                 remote_typed_param * params_val;
         } params;
 };
+struct remote_connect_set_identity_args {
+        struct {
+                u_int              params_len;
+                remote_typed_param * params_val;
+        } params;
+        u_int                      flags;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -3535,4 +3542,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_CHECKPOINT_GET_PARENT = 416,
         REMOTE_PROC_DOMAIN_CHECKPOINT_DELETE = 417,
         REMOTE_PROC_DOMAIN_GET_GUEST_INFO = 418,
+        REMOTE_PROC_CONNECT_SET_IDENTITY = 419,
 };

@@ -844,6 +844,18 @@ virIdentityPtr virNetServerClientGetIdentity(virNetServerClientPtr client)
 }
 
 
+void virNetServerClientSetIdentity(virNetServerClientPtr client,
+                                   virIdentityPtr identity)
+{
+    virObjectLock(client);
+    virObjectUnref(client->identity);
+    client->identity = identity;
+    if (client->identity)
+        virObjectRef(client->identity);
+    virObjectUnlock(client);
+}
+
+
 int virNetServerClientGetSELinuxContext(virNetServerClientPtr client,
                                         char **context)
 {

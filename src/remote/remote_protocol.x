@@ -53,6 +53,9 @@ typedef string remote_nonnull_string<REMOTE_STRING_MAX>;
 /* A long string, which may be NULL. */
 typedef remote_nonnull_string *remote_string;
 
+/* Upper limit on identity parameters */
+const REMOTE_CONNECT_IDENTITY_PARAMS_MAX = 20;
+
 /* Upper limit on lists of domains. */
 const REMOTE_DOMAIN_LIST_MAX = 16384;
 
@@ -3736,6 +3739,11 @@ struct remote_domain_get_guest_info_ret {
     remote_typed_param params<REMOTE_DOMAIN_GUEST_INFO_PARAMS_MAX>;
 };
 
+struct remote_connect_set_identity_args {
+    remote_typed_param params<REMOTE_CONNECT_IDENTITY_PARAMS_MAX>;
+    unsigned int flags;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -6603,5 +6611,11 @@ enum remote_procedure {
      * @generate: none
      * @acl: domain:write
      */
-    REMOTE_PROC_DOMAIN_GET_GUEST_INFO = 418
+    REMOTE_PROC_DOMAIN_GET_GUEST_INFO = 418,
+
+    /**
+     * @generate: client
+     * @acl: connect:write
+     */
+    REMOTE_PROC_CONNECT_SET_IDENTITY = 419
 };

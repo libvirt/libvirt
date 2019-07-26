@@ -178,6 +178,7 @@ virNetServerClientSetAuthLocked;
 virNetServerClientSetAuthPendingLocked;
 virNetServerClientSetCloseHook;
 virNetServerClientSetDispatcher;
+virNetServerClientSetIdentity;
 virNetServerClientSetQuietEOF;
 virNetServerClientSetReadonly;
 virNetServerClientStartKeepAlive;

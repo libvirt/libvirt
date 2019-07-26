@@ -8507,6 +8507,7 @@ static virHypervisorDriver hypervisor_driver = {
     .name = "remote",
     .connectOpen = remoteConnectOpen, /* 0.3.0 */
     .connectClose = remoteConnectClose, /* 0.3.0 */
+    .connectSetIdentity = remoteConnectSetIdentity, /* 5.8.0 */
     .connectSupportsFeature = remoteConnectSupportsFeature, /* 0.3.0 */
     .connectGetType = remoteConnectGetType, /* 0.3.0 */
     .connectGetVersion = remoteConnectGetVersion, /* 0.3.0 */

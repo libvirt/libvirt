@@ -51,6 +51,7 @@
 #include "virpolkit.h"
 #include "virthreadjob.h"
 #include "configmake.h"
+#include "access/viraccessapicheck.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 
@@ -1945,10 +1946,16 @@ static void remoteClientCloseFunc(virNetServerClientPtr client)
 static int
 remoteOpenConn(const char *uri,
                bool readonly,
+               bool preserveIdentity,
                virConnectPtr *conn)
 {
-    VIR_DEBUG("Getting secondary uri=%s readonly=%d conn=%p",
-              NULLSTR(uri), readonly, conn);
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+    int ret = -1;
+
+    VIR_DEBUG("Getting secondary uri=%s readonly=%d preserveIdent=%d conn=%p",
+              NULLSTR(uri), readonly, preserveIdentity, conn);
+
     if (*conn)
         return 0;
 
@@ -1957,16 +1964,43 @@ remoteOpenConn(const char *uri,
         return -1;
     }
 
+    if (preserveIdentity) {
+        VIR_AUTOUNREF(virIdentityPtr) ident = NULL;
+
+        if (!(ident = virIdentityGetCurrent()))
+            return -1;
+
+        if (virIdentityGetParameters(ident, &params, &nparams) < 0)
+            goto error;
+    }
+
     VIR_DEBUG("Opening driver %s", uri);
     if (readonly)
         *conn = virConnectOpenReadOnly(uri);
     else
         *conn = virConnectOpen(uri);
     if (!*conn)
-        return -1;
+        goto error;
     VIR_DEBUG("Opened driver %p", *conn);
 
-    return 0;
+    if (preserveIdentity) {
+        if (virConnectSetIdentity(*conn, params, nparams, 0) < 0)
+            goto error;
+
+        VIR_DEBUG("Forwarded current identity to secondary driver");
+    }
+
+    ret = 0;
+ cleanup:
+    virTypedParamsFree(params, nparams);
+    return ret;
+
+ error:
+    if (*conn) {
+        virConnectClose(*conn);
+        *conn = NULL;
+    }
+    goto cleanup;
 }
 
 
@@ -1993,6 +2027,7 @@ remoteGetInterfaceConn(virNetServerClientPtr client)
 
     if (remoteOpenConn(priv->interfaceURI,
                        priv->readonly,
+                       true,
                        &priv->interfaceConn) < 0)
         return NULL;
 
@@ -2008,6 +2043,7 @@ remoteGetNetworkConn(virNetServerClientPtr client)
 
     if (remoteOpenConn(priv->networkURI,
                        priv->readonly,
+                       true,
                        &priv->networkConn) < 0)
         return NULL;
 
@@ -2023,6 +2059,7 @@ remoteGetNodeDevConn(virNetServerClientPtr client)
 
     if (remoteOpenConn(priv->nodedevURI,
                        priv->readonly,
+                       true,
                        &priv->nodedevConn) < 0)
         return NULL;
 
@@ -2038,6 +2075,7 @@ remoteGetNWFilterConn(virNetServerClientPtr client)
 
     if (remoteOpenConn(priv->nwfilterURI,
                        priv->readonly,
+                       true,
                        &priv->nwfilterConn) < 0)
         return NULL;
 
@@ -2053,6 +2091,7 @@ remoteGetSecretConn(virNetServerClientPtr client)
 
     if (remoteOpenConn(priv->secretURI,
                        priv->readonly,
+                       true,
                        &priv->secretConn) < 0)
         return NULL;
 
@@ -2068,6 +2107,7 @@ remoteGetStorageConn(virNetServerClientPtr client)
 
     if (remoteOpenConn(priv->storageURI,
                        priv->readonly,
+                       true,
                        &priv->storageConn) < 0)
         return NULL;
 
@@ -2237,6 +2277,7 @@ remoteDispatchConnectOpen(virNetServerPtr server ATTRIBUTE_UNUSED,
 #ifdef MODULE_NAME
     const char *type = NULL;
 #endif /* !MODULE_NAME */
+    bool preserveIdentity = false;
 
     VIR_DEBUG("priv=%p conn=%p", priv, priv->conn);
     virMutexLock(&priv->lock);
@@ -2264,16 +2305,16 @@ remoteDispatchConnectOpen(virNetServerPtr server ATTRIBUTE_UNUSED,
 
         name = probeduri;
     }
-#endif
+
+    preserveIdentity = true;
+#endif /* VIRTPROXYD */
 
     VIR_DEBUG("Opening driver %s", name);
-    if (priv->readonly) {
-        if (!(priv->conn = virConnectOpenReadOnly(name)))
-            goto cleanup;
-    } else {
-        if (!(priv->conn = virConnectOpen(name)))
-            goto cleanup;
-    }
+    if (remoteOpenConn(name,
+                       priv->readonly,
+                       preserveIdentity,
+                       &priv->conn) < 0)
+        goto cleanup;
     VIR_DEBUG("Opened %p", priv->conn);
 
 #ifdef MODULE_NAME
@@ -2382,6 +2423,53 @@ remoteDispatchConnectClose(virNetServerPtr server ATTRIBUTE_UNUSED,
     virNetServerClientDelayedClose(client);
     return 0;
 }
+
+
+static int
+remoteDispatchConnectSetIdentity(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                 virNetServerClientPtr client,
+                                 virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                 virNetMessageErrorPtr rerr,
+                                 remote_connect_set_identity_args *args)
+{
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+    int rv = -1;
+    virConnectPtr conn = remoteGetHypervisorConn(client);
+    VIR_AUTOUNREF(virIdentityPtr) ident = NULL;
+    if (!conn)
+        goto cleanup;
+
+    VIR_DEBUG("Received forwarded identity");
+    if (virTypedParamsDeserialize((virTypedParameterRemotePtr) args->params.params_val,
+                                  args->params.params_len,
+                                  REMOTE_CONNECT_IDENTITY_PARAMS_MAX,
+                                  &params,
+                                  &nparams) < 0)
+        goto cleanup;
+
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
+
+    if (virConnectSetIdentityEnsureACL(conn) < 0)
+        goto cleanup;
+
+    if (!(ident = virIdentityNew()))
+        goto cleanup;
+
+    if (virIdentitySetParameters(ident, params, nparams) < 0)
+        goto cleanup;
+
+    virNetServerClientSetIdentity(client, ident);
+
+    rv = 0;
+
+ cleanup:
+    virTypedParamsFree(params, nparams);
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    return rv;
+}
+
 
 
 static int

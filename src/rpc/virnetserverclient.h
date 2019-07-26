@@ -123,6 +123,8 @@ int virNetServerClientGetSELinuxContext(virNetServerClientPtr client,
                                         char **context);
 
 virIdentityPtr virNetServerClientGetIdentity(virNetServerClientPtr client);
+void virNetServerClientSetIdentity(virNetServerClientPtr client,
+                                   virIdentityPtr identity);
 
 void *virNetServerClientGetPrivateData(virNetServerClientPtr client);
 
