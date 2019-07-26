@@ -36,6 +36,7 @@
 #include "virutil.h"
 #include "virstring.h"
 #include "virprocess.h"
+#include "virtypedparam.h"
 
 #define VIR_FROM_THIS VIR_FROM_IDENTITY
 
@@ -544,4 +545,59 @@ int virIdentitySetSELinuxContext(virIdentityPtr ident,
                                    &ident->maxparams,
                                    VIR_CONNECT_IDENTITY_SELINUX_CONTEXT,
                                    context);
+}
+
+
+int virIdentitySetParameters(virIdentityPtr ident,
+                             virTypedParameterPtr params,
+                             int nparams)
+{
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_CONNECT_IDENTITY_USER_NAME,
+                               VIR_TYPED_PARAM_STRING,
+                               VIR_CONNECT_IDENTITY_UNIX_USER_ID,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_CONNECT_IDENTITY_GROUP_NAME,
+                               VIR_TYPED_PARAM_STRING,
+                               VIR_CONNECT_IDENTITY_UNIX_GROUP_ID,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_CONNECT_IDENTITY_PROCESS_ID,
+                               VIR_TYPED_PARAM_LLONG,
+                               VIR_CONNECT_IDENTITY_PROCESS_TIME,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_CONNECT_IDENTITY_SASL_USER_NAME,
+                               VIR_TYPED_PARAM_STRING,
+                               VIR_CONNECT_IDENTITY_X509_DISTINGUISHED_NAME,
+                               VIR_TYPED_PARAM_STRING,
+                               VIR_CONNECT_IDENTITY_SELINUX_CONTEXT,
+                               VIR_TYPED_PARAM_STRING,
+                               NULL) < 0)
+        return -1;
+
+    virTypedParamsFree(ident->params, ident->nparams);
+    ident->params = NULL;
+    ident->nparams = 0;
+    ident->maxparams = 0;
+    if (virTypedParamsCopy(&ident->params, params, nparams) < 0)
+        return -1;
+    ident->nparams = nparams;
+    ident->maxparams = nparams;
+
+    return 0;
+}
+
+
+int virIdentityGetParameters(virIdentityPtr ident,
+                             virTypedParameterPtr *params,
+                             int *nparams)
+{
+    *params = NULL;
+    *nparams = 0;
+
+    if (virTypedParamsCopy(params, ident->params, ident->nparams) < 0)
+        return -1;
+
+    *nparams = ident->nparams;
+
+    return 0;
 }

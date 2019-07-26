@@ -71,3 +71,11 @@ int virIdentitySetX509DName(virIdentityPtr ident,
                             const char *dname);
 int virIdentitySetSELinuxContext(virIdentityPtr ident,
                                  const char *context);
+
+int virIdentitySetParameters(virIdentityPtr ident,
+                             virTypedParameterPtr params,
+                             int nparams);
+
+int virIdentityGetParameters(virIdentityPtr ident,
+                             virTypedParameterPtr *params,
+                             int *nparams);
