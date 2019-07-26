@@ -2144,28 +2144,28 @@ virHostGetBootTime;
 # util/viridentity.h
 virIdentityGetAttr;
 virIdentityGetCurrent;
+virIdentityGetGroupName;
+virIdentityGetProcessID;
+virIdentityGetProcessTime;
 virIdentityGetSASLUserName;
 virIdentityGetSELinuxContext;
 virIdentityGetSystem;
 virIdentityGetUNIXGroupID;
-virIdentityGetUNIXGroupName;
-virIdentityGetUNIXProcessID;
-virIdentityGetUNIXProcessTime;
 virIdentityGetUNIXUserID;
-virIdentityGetUNIXUserName;
+virIdentityGetUserName;
 virIdentityGetX509DName;
 virIdentityIsEqual;
 virIdentityNew;
 virIdentitySetAttr;
 virIdentitySetCurrent;
+virIdentitySetGroupName;
+virIdentitySetProcessID;
+virIdentitySetProcessTime;
 virIdentitySetSASLUserName;
 virIdentitySetSELinuxContext;
 virIdentitySetUNIXGroupID;
-virIdentitySetUNIXGroupName;
-virIdentitySetUNIXProcessID;
-virIdentitySetUNIXProcessTime;
 virIdentitySetUNIXUserID;
-virIdentitySetUNIXUserName;
+virIdentitySetUserName;
 virIdentitySetX509DName;
 
 

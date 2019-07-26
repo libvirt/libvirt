@@ -779,21 +779,21 @@ virNetServerClientCreateIdentity(virNetServerClientPtr client)
 
         if (!(username = virGetUserName(uid)))
             goto error;
-        if (virIdentitySetUNIXUserName(ret, username) < 0)
+        if (virIdentitySetUserName(ret, username) < 0)
             goto error;
         if (virIdentitySetUNIXUserID(ret, uid) < 0)
             goto error;
 
         if (!(groupname = virGetGroupName(gid)))
             goto error;
-        if (virIdentitySetUNIXGroupName(ret, groupname) < 0)
+        if (virIdentitySetGroupName(ret, groupname) < 0)
             goto error;
         if (virIdentitySetUNIXGroupID(ret, gid) < 0)
             goto error;
 
-        if (virIdentitySetUNIXProcessID(ret, pid) < 0)
+        if (virIdentitySetProcessID(ret, pid) < 0)
             goto error;
-        if (virIdentitySetUNIXProcessTime(ret, timestamp) < 0)
+        if (virIdentitySetProcessTime(ret, timestamp) < 0)
             goto error;
     }
 

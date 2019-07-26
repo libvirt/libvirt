@@ -144,25 +144,25 @@ virIdentityPtr virIdentityGetSystem(void)
     if (!(ret = virIdentityNew()))
         goto error;
 
-    if (virIdentitySetUNIXProcessID(ret, getpid()) < 0)
+    if (virIdentitySetProcessID(ret, getpid()) < 0)
         goto error;
 
     if (virProcessGetStartTime(getpid(), &startTime) < 0)
         goto error;
     if (startTime != 0 &&
-        virIdentitySetUNIXProcessTime(ret, startTime) < 0)
+        virIdentitySetProcessTime(ret, startTime) < 0)
         goto error;
 
     if (!(username = virGetUserName(geteuid())))
         return ret;
-    if (virIdentitySetUNIXUserName(ret, username) < 0)
+    if (virIdentitySetUserName(ret, username) < 0)
         goto error;
     if (virIdentitySetUNIXUserID(ret, getuid()) < 0)
         goto error;
 
     if (!(groupname = virGetGroupName(getegid())))
         return ret;
-    if (virIdentitySetUNIXGroupName(ret, groupname) < 0)
+    if (virIdentitySetGroupName(ret, groupname) < 0)
         goto error;
     if (virIdentitySetUNIXGroupID(ret, getgid()) < 0)
         goto error;
@@ -310,11 +310,11 @@ bool virIdentityIsEqual(virIdentityPtr identA,
 }
 
 
-int virIdentityGetUNIXUserName(virIdentityPtr ident,
-                               const char **username)
+int virIdentityGetUserName(virIdentityPtr ident,
+                           const char **username)
 {
     return virIdentityGetAttr(ident,
-                              VIR_IDENTITY_ATTR_UNIX_USER_NAME,
+                              VIR_IDENTITY_ATTR_USER_NAME,
                               username);
 }
 
@@ -342,11 +342,11 @@ int virIdentityGetUNIXUserID(virIdentityPtr ident,
     return 0;
 }
 
-int virIdentityGetUNIXGroupName(virIdentityPtr ident,
-                                const char **groupname)
+int virIdentityGetGroupName(virIdentityPtr ident,
+                            const char **groupname)
 {
     return virIdentityGetAttr(ident,
-                              VIR_IDENTITY_ATTR_UNIX_GROUP_NAME,
+                              VIR_IDENTITY_ATTR_GROUP_NAME,
                               groupname);
 }
 
@@ -375,15 +375,15 @@ int virIdentityGetUNIXGroupID(virIdentityPtr ident,
 }
 
 
-int virIdentityGetUNIXProcessID(virIdentityPtr ident,
-                                pid_t *pid)
+int virIdentityGetProcessID(virIdentityPtr ident,
+                            pid_t *pid)
 {
     unsigned long long val;
     const char *processid;
 
     *pid = 0;
     if (virIdentityGetAttr(ident,
-                           VIR_IDENTITY_ATTR_UNIX_PROCESS_ID,
+                           VIR_IDENTITY_ATTR_PROCESS_ID,
                            &processid) < 0)
         return -1;
 
@@ -399,12 +399,12 @@ int virIdentityGetUNIXProcessID(virIdentityPtr ident,
 }
 
 
-int virIdentityGetUNIXProcessTime(virIdentityPtr ident,
-                                  unsigned long long *timestamp)
+int virIdentityGetProcessTime(virIdentityPtr ident,
+                              unsigned long long *timestamp)
 {
     const char *processtime;
     if (virIdentityGetAttr(ident,
-                           VIR_IDENTITY_ATTR_UNIX_PROCESS_TIME,
+                           VIR_IDENTITY_ATTR_PROCESS_TIME,
                            &processtime) < 0)
         return -1;
 
@@ -445,11 +445,11 @@ int virIdentityGetSELinuxContext(virIdentityPtr ident,
 }
 
 
-int virIdentitySetUNIXUserName(virIdentityPtr ident,
-                               const char *username)
+int virIdentitySetUserName(virIdentityPtr ident,
+                           const char *username)
 {
     return virIdentitySetAttr(ident,
-                              VIR_IDENTITY_ATTR_UNIX_USER_NAME,
+                              VIR_IDENTITY_ATTR_USER_NAME,
                               username);
 }
 
@@ -468,11 +468,11 @@ int virIdentitySetUNIXUserID(virIdentityPtr ident,
 }
 
 
-int virIdentitySetUNIXGroupName(virIdentityPtr ident,
-                                const char *groupname)
+int virIdentitySetGroupName(virIdentityPtr ident,
+                            const char *groupname)
 {
     return virIdentitySetAttr(ident,
-                              VIR_IDENTITY_ATTR_UNIX_GROUP_NAME,
+                              VIR_IDENTITY_ATTR_GROUP_NAME,
                               groupname);
 }
 
@@ -491,8 +491,8 @@ int virIdentitySetUNIXGroupID(virIdentityPtr ident,
 }
 
 
-int virIdentitySetUNIXProcessID(virIdentityPtr ident,
-                                pid_t pid)
+int virIdentitySetProcessID(virIdentityPtr ident,
+                            pid_t pid)
 {
     VIR_AUTOFREE(char *) val = NULL;
 
@@ -500,13 +500,13 @@ int virIdentitySetUNIXProcessID(virIdentityPtr ident,
         return -1;
 
     return virIdentitySetAttr(ident,
-                              VIR_IDENTITY_ATTR_UNIX_PROCESS_ID,
+                              VIR_IDENTITY_ATTR_PROCESS_ID,
                               val);
 }
 
 
-int virIdentitySetUNIXProcessTime(virIdentityPtr ident,
-                                  unsigned long long timestamp)
+int virIdentitySetProcessTime(virIdentityPtr ident,
+                              unsigned long long timestamp)
 {
     VIR_AUTOFREE(char *) val = NULL;
 
@@ -514,7 +514,7 @@ int virIdentitySetUNIXProcessTime(virIdentityPtr ident,
         return -1;
 
     return virIdentitySetAttr(ident,
-                              VIR_IDENTITY_ATTR_UNIX_PROCESS_TIME,
+                              VIR_IDENTITY_ATTR_PROCESS_TIME,
                               val);
 }
 

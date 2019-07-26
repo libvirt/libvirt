@@ -46,12 +46,12 @@ static int testIdentityAttrs(const void *data ATTRIBUTE_UNUSED)
         goto cleanup;
 
     if (virIdentitySetAttr(ident,
-                           VIR_IDENTITY_ATTR_UNIX_USER_NAME,
+                           VIR_IDENTITY_ATTR_USER_NAME,
                            "fred") < 0)
         goto cleanup;
 
     if (virIdentityGetAttr(ident,
-                           VIR_IDENTITY_ATTR_UNIX_USER_NAME,
+                           VIR_IDENTITY_ATTR_USER_NAME,
                            &val) < 0)
         goto cleanup;
 
@@ -61,7 +61,7 @@ static int testIdentityAttrs(const void *data ATTRIBUTE_UNUSED)
     }
 
     if (virIdentityGetAttr(ident,
-                           VIR_IDENTITY_ATTR_UNIX_GROUP_NAME,
+                           VIR_IDENTITY_ATTR_GROUP_NAME,
                            &val) < 0)
         goto cleanup;
 
@@ -71,14 +71,14 @@ static int testIdentityAttrs(const void *data ATTRIBUTE_UNUSED)
     }
 
     if (virIdentitySetAttr(ident,
-                           VIR_IDENTITY_ATTR_UNIX_USER_NAME,
+                           VIR_IDENTITY_ATTR_USER_NAME,
                            "joe") != -1) {
         VIR_DEBUG("Unexpectedly overwrote attribute");
         goto cleanup;
     }
 
     if (virIdentityGetAttr(ident,
-                           VIR_IDENTITY_ATTR_UNIX_USER_NAME,
+                           VIR_IDENTITY_ATTR_USER_NAME,
                            &val) < 0)
         goto cleanup;
 
@@ -111,7 +111,7 @@ static int testIdentityEqual(const void *data ATTRIBUTE_UNUSED)
     }
 
     if (virIdentitySetAttr(identa,
-                           VIR_IDENTITY_ATTR_UNIX_USER_NAME,
+                           VIR_IDENTITY_ATTR_USER_NAME,
                            "fred") < 0)
         goto cleanup;
 
@@ -121,7 +121,7 @@ static int testIdentityEqual(const void *data ATTRIBUTE_UNUSED)
     }
 
     if (virIdentitySetAttr(identb,
-                           VIR_IDENTITY_ATTR_UNIX_USER_NAME,
+                           VIR_IDENTITY_ATTR_USER_NAME,
                            "fred") < 0)
         goto cleanup;
 
@@ -131,11 +131,11 @@ static int testIdentityEqual(const void *data ATTRIBUTE_UNUSED)
     }
 
     if (virIdentitySetAttr(identa,
-                           VIR_IDENTITY_ATTR_UNIX_GROUP_NAME,
+                           VIR_IDENTITY_ATTR_GROUP_NAME,
                            "flintstone") < 0)
         goto cleanup;
     if (virIdentitySetAttr(identb,
-                           VIR_IDENTITY_ATTR_UNIX_GROUP_NAME,
+                           VIR_IDENTITY_ATTR_GROUP_NAME,
                            "flintstone") < 0)
         goto cleanup;
 
