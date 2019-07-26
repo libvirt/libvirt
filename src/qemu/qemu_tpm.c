@@ -512,7 +512,7 @@ qemuTPMEmulatorRunSetup(const char *storagepath,
                 VIR_TPM_SWTPM_SETUP_FEATURE_CMDARG_PWDFILE_FD)) {
             virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
                 _("%s does not support passing a passphrase using a file "
-                  "descriptor"), virTPMGetSwtpmSetup());
+                  "descriptor"), swtpm_setup);
             goto cleanup;
         }
         if ((pwdfile_fd = qemuTPMSetupEncryption(secretuuid, cmd)) < 0)
@@ -652,7 +652,7 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDefPtr tpm,
         if (!virTPMSwtpmCapsGet(VIR_TPM_SWTPM_FEATURE_CMDARG_PWD_FD)) {
             virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
                   _("%s does not support passing passphrase via file descriptor"),
-                  virTPMGetSwtpm());
+                  swtpm);
             goto error;
         }
 
