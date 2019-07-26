@@ -3638,5 +3638,4 @@ bool
 virDomainGraphicsNeedsAutoRenderNode(const virDomainGraphicsDef *graphics);
 
 int
-virDomainCheckDeviceChanges(virDomainDefPtr def, virDomainDefPtr newDef)
-    ATTRIBUTE_NONNULL(2);
+virDomainCheckDeviceChanges(virDomainDefPtr def, virDomainDefPtr newDef);
