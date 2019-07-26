@@ -1775,7 +1775,7 @@ virCommandSetSendBuffer(virCommandPtr cmd,
                         int fd,
                         unsigned char *buffer, size_t buflen)
 {
-    size_t i = virCommandGetNumSendBuffers(cmd);
+    size_t i;
 
     if (!cmd || cmd->has_error)
         return -1;
@@ -1787,6 +1787,7 @@ virCommandSetSendBuffer(virCommandPtr cmd,
         return -1;
     }
 
+    i = virCommandGetNumSendBuffers(cmd);
     if (VIR_REALLOC_N(cmd->sendBuffers, i + 1) < 0) {
         cmd->has_error = ENOMEM;
         return -1;
