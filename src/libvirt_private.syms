@@ -2142,7 +2142,6 @@ virHostGetBootTime;
 
 
 # util/viridentity.h
-virIdentityGetAttr;
 virIdentityGetCurrent;
 virIdentityGetGroupName;
 virIdentityGetProcessID;
@@ -2156,7 +2155,6 @@ virIdentityGetUserName;
 virIdentityGetX509DName;
 virIdentityIsEqual;
 virIdentityNew;
-virIdentitySetAttr;
 virIdentitySetCurrent;
 virIdentitySetGroupName;
 virIdentitySetProcessID;

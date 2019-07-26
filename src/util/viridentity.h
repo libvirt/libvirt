@@ -26,20 +26,6 @@
 typedef struct _virIdentity virIdentity;
 typedef virIdentity *virIdentityPtr;
 
-typedef enum {
-      VIR_IDENTITY_ATTR_USER_NAME,
-      VIR_IDENTITY_ATTR_UNIX_USER_ID,
-      VIR_IDENTITY_ATTR_GROUP_NAME,
-      VIR_IDENTITY_ATTR_UNIX_GROUP_ID,
-      VIR_IDENTITY_ATTR_PROCESS_ID,
-      VIR_IDENTITY_ATTR_PROCESS_TIME,
-      VIR_IDENTITY_ATTR_SASL_USER_NAME,
-      VIR_IDENTITY_ATTR_X509_DISTINGUISHED_NAME,
-      VIR_IDENTITY_ATTR_SELINUX_CONTEXT,
-
-      VIR_IDENTITY_ATTR_LAST,
-} virIdentityAttrType;
-
 virIdentityPtr virIdentityGetCurrent(void);
 int virIdentitySetCurrent(virIdentityPtr ident);
 
@@ -47,17 +33,6 @@ virIdentityPtr virIdentityGetSystem(void);
 
 virIdentityPtr virIdentityNew(void);
 
-int virIdentitySetAttr(virIdentityPtr ident,
-                       unsigned int attr,
-                       const char *value)
-    ATTRIBUTE_NONNULL(1)
-    ATTRIBUTE_NONNULL(3);
-
-int virIdentityGetAttr(virIdentityPtr ident,
-                       unsigned int attr,
-                       const char **value)
-    ATTRIBUTE_NONNULL(1)
-    ATTRIBUTE_NONNULL(3);
 
 bool virIdentityIsEqual(virIdentityPtr identA,
                         virIdentityPtr identB)

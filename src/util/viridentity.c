@@ -41,6 +41,20 @@
 
 VIR_LOG_INIT("util.identity");
 
+typedef enum {
+      VIR_IDENTITY_ATTR_USER_NAME,
+      VIR_IDENTITY_ATTR_UNIX_USER_ID,
+      VIR_IDENTITY_ATTR_GROUP_NAME,
+      VIR_IDENTITY_ATTR_UNIX_GROUP_ID,
+      VIR_IDENTITY_ATTR_PROCESS_ID,
+      VIR_IDENTITY_ATTR_PROCESS_TIME,
+      VIR_IDENTITY_ATTR_SASL_USER_NAME,
+      VIR_IDENTITY_ATTR_X509_DISTINGUISHED_NAME,
+      VIR_IDENTITY_ATTR_SELINUX_CONTEXT,
+
+      VIR_IDENTITY_ATTR_LAST,
+} virIdentityAttrType;
+
 struct _virIdentity {
     virObject parent;
 
@@ -233,9 +247,10 @@ static void virIdentityDispose(void *object)
  *
  * Returns: 0 on success, or -1 on error
  */
-int virIdentitySetAttr(virIdentityPtr ident,
-                       unsigned int attr,
-                       const char *value)
+static int
+virIdentitySetAttr(virIdentityPtr ident,
+                   unsigned int attr,
+                   const char *value)
 {
     int ret = -1;
     VIR_DEBUG("ident=%p attribute=%u value=%s", ident, attr, value);
@@ -269,9 +284,10 @@ int virIdentitySetAttr(virIdentityPtr ident,
  *
  * Returns 0 on success, -1 on error
  */
-int virIdentityGetAttr(virIdentityPtr ident,
-                       unsigned int attr,
-                       const char **value)
+static int
+virIdentityGetAttr(virIdentityPtr ident,
+                   unsigned int attr,
+                   const char **value)
 {
     VIR_DEBUG("ident=%p attribute=%d value=%p", ident, attr, value);
 

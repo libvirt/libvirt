@@ -45,14 +45,10 @@ static int testIdentityAttrs(const void *data ATTRIBUTE_UNUSED)
     if (!(ident = virIdentityNew()))
         goto cleanup;
 
-    if (virIdentitySetAttr(ident,
-                           VIR_IDENTITY_ATTR_USER_NAME,
-                           "fred") < 0)
+    if (virIdentitySetUserName(ident, "fred") < 0)
         goto cleanup;
 
-    if (virIdentityGetAttr(ident,
-                           VIR_IDENTITY_ATTR_USER_NAME,
-                           &val) < 0)
+    if (virIdentityGetUserName(ident, &val) < 0)
         goto cleanup;
 
     if (STRNEQ_NULLABLE(val, "fred")) {
@@ -60,9 +56,7 @@ static int testIdentityAttrs(const void *data ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    if (virIdentityGetAttr(ident,
-                           VIR_IDENTITY_ATTR_GROUP_NAME,
-                           &val) < 0)
+    if (virIdentityGetGroupName(ident, &val) < 0)
         goto cleanup;
 
     if (val != NULL) {
@@ -70,16 +64,12 @@ static int testIdentityAttrs(const void *data ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    if (virIdentitySetAttr(ident,
-                           VIR_IDENTITY_ATTR_USER_NAME,
-                           "joe") != -1) {
+    if (virIdentitySetUserName(ident, "joe") >= 0) {
         VIR_DEBUG("Unexpectedly overwrote attribute");
         goto cleanup;
     }
 
-    if (virIdentityGetAttr(ident,
-                           VIR_IDENTITY_ATTR_USER_NAME,
-                           &val) < 0)
+    if (virIdentityGetUserName(ident, &val) < 0)
         goto cleanup;
 
     if (STRNEQ_NULLABLE(val, "fred")) {
@@ -110,9 +100,7 @@ static int testIdentityEqual(const void *data ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    if (virIdentitySetAttr(identa,
-                           VIR_IDENTITY_ATTR_USER_NAME,
-                           "fred") < 0)
+    if (virIdentitySetUserName(identa, "fred") < 0)
         goto cleanup;
 
     if (virIdentityIsEqual(identa, identb)) {
@@ -120,9 +108,7 @@ static int testIdentityEqual(const void *data ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    if (virIdentitySetAttr(identb,
-                           VIR_IDENTITY_ATTR_USER_NAME,
-                           "fred") < 0)
+    if (virIdentitySetUserName(identb, "fred") < 0)
         goto cleanup;
 
     if (!virIdentityIsEqual(identa, identb)) {
@@ -130,13 +116,9 @@ static int testIdentityEqual(const void *data ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    if (virIdentitySetAttr(identa,
-                           VIR_IDENTITY_ATTR_GROUP_NAME,
-                           "flintstone") < 0)
+    if (virIdentitySetGroupName(identa, "flintstone") < 0)
         goto cleanup;
-    if (virIdentitySetAttr(identb,
-                           VIR_IDENTITY_ATTR_GROUP_NAME,
-                           "flintstone") < 0)
+    if (virIdentitySetGroupName(identb, "flintstone") < 0)
         goto cleanup;
 
     if (!virIdentityIsEqual(identa, identb)) {
@@ -144,9 +126,7 @@ static int testIdentityEqual(const void *data ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    if (virIdentitySetAttr(identb,
-                           VIR_IDENTITY_ATTR_SASL_USER_NAME,
-                           "fred@FLINTSTONE.COM") < 0)
+    if (virIdentitySetSASLUserName(identb, "fred@FLINTSTONE.COM") < 0)
         goto cleanup;
 
     if (virIdentityIsEqual(identa, identb)) {
@@ -181,9 +161,7 @@ static int testIdentityGetSystem(const void *data)
         goto cleanup;
     }
 
-    if (virIdentityGetAttr(ident,
-                           VIR_IDENTITY_ATTR_SELINUX_CONTEXT,
-                           &val) < 0)
+    if (virIdentityGetSELinuxContext(ident, &val) < 0)
         goto cleanup;
 
     if (STRNEQ_NULLABLE(val, context)) {
