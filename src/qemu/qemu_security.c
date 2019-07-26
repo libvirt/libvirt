@@ -476,7 +476,7 @@ qemuSecurityStartTPMEmulator(virQEMUDriverPtr driver,
 
     if (virSecurityManagerTransactionCommit(driver->securityManager,
                                             -1, priv->rememberOwner) < 0)
-        goto cleanup;
+        goto cleanup_abort;
     transactionStarted = false;
 
     if (virSecurityManagerSetChildProcessLabel(driver->securityManager,
@@ -512,6 +512,7 @@ qemuSecurityStartTPMEmulator(virQEMUDriverPtr driver,
                                             -1, priv->rememberOwner) < 0)
         VIR_WARN("Unable to run security manager transaction");
 
+ cleanup_abort:
     virSecurityManagerTransactionAbort(driver->securityManager);
     return ret;
 }
