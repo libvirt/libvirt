@@ -1219,8 +1219,6 @@ static int test27(const void *unused ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    virCommandFree(cmd);
-
     if (!outactual || !erractual)
         goto cleanup;
 
@@ -1236,6 +1234,7 @@ static int test27(const void *unused ATTRIBUTE_UNUSED)
     ret = 0;
 
  cleanup:
+    virCommandFree(cmd);
     VIR_FORCE_CLOSE(pipe1[0]);
     VIR_FORCE_CLOSE(pipe2[0]);
     VIR_FORCE_CLOSE(pipe1[1]);
