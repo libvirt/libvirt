@@ -207,6 +207,8 @@ Descendants:    0
 Metadata:       yes
 
 EOF
+sed '1,/^virsh #/d; /virsh #/d' < out > out.cooked || fail=1
+compare exp out.cooked || fail=1
 
 cat <<EOF > exp || fail=1
 error: invalid argument: parent s3 for moment s2 not found
