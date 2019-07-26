@@ -340,9 +340,13 @@ qemuTPMEmulatorPrepareHost(virDomainTPMDefPtr tpm,
                     logDir, vmname) < 0)
         goto cleanup;
 
+    if (!virFileExists(tpm->data.emulator.logfile) &&
+        virFileTouch(tpm->data.emulator.logfile, 0644) < 0) {
+        goto cleanup;
+    }
+
     /* ... and make sure it can be accessed by swtpm_user */
-    if (virFileExists(tpm->data.emulator.logfile) &&
-        chown(tpm->data.emulator.logfile, swtpm_user, swtpm_group) < 0) {
+    if (chown(tpm->data.emulator.logfile, swtpm_user, swtpm_group) < 0) {
         virReportSystemError(errno,
                              _("Could not chown on swtpm logfile %s"),
                              tpm->data.emulator.logfile);
