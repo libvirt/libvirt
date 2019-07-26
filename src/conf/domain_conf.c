@@ -29,6 +29,7 @@
 #include "configmake.h"
 #include "internal.h"
 #include "virerror.h"
+#include "checkpoint_conf.h"
 #include "datatypes.h"
 #include "domain_addr.h"
 #include "domain_conf.h"
@@ -60,6 +61,7 @@
 #include "virhostdev.h"
 #include "virmdev.h"
 #include "virdomainsnapshotobjlist.h"
+#include "virdomaincheckpointobjlist.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 
@@ -3486,6 +3488,7 @@ static void virDomainObjDispose(void *obj)
         (dom->privateDataFreeFunc)(dom->privateData);
 
     virDomainSnapshotObjListFree(dom->snapshots);
+    virDomainCheckpointObjListFree(dom->checkpoints);
 }
 
 virDomainObjPtr
@@ -3513,6 +3516,9 @@ virDomainObjNew(virDomainXMLOptionPtr xmlopt)
     }
 
     if (!(domain->snapshots = virDomainSnapshotObjListNew()))
+        goto error;
+
+    if (!(domain->checkpoints = virDomainCheckpointObjListNew()))
         goto error;
 
     virObjectLock(domain);

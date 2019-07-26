@@ -75,6 +75,7 @@ virDomainCheckpointDefFormat;
 virDomainCheckpointDefNew;
 virDomainCheckpointDefParseString;
 virDomainCheckpointFormatConvertXMLFlags;
+virDomainCheckpointRedefinePrep;
 virDomainCheckpointTypeFromString;
 virDomainCheckpointTypeToString;
 

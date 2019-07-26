@@ -36,6 +36,7 @@
 #include "virerror.h"
 #include "virxml.h"
 #include "virstring.h"
+#include "virdomaincheckpointobjlist.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN_CHECKPOINT
 
@@ -532,4 +533,65 @@ virDomainCheckpointDefFormat(virDomainCheckpointDefPtr def,
         return NULL;
 
     return virBufferContentAndReset(&buf);
+}
+
+
+int
+virDomainCheckpointRedefinePrep(virDomainPtr domain,
+                                virDomainObjPtr vm,
+                                virDomainCheckpointDefPtr *defptr,
+                                virDomainMomentObjPtr *chk,
+                                virDomainXMLOptionPtr xmlopt,
+                                bool *update_current)
+{
+    virDomainCheckpointDefPtr def = *defptr;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    virDomainMomentObjPtr other = NULL;
+    virDomainCheckpointDefPtr otherdef = NULL;
+
+    virUUIDFormat(domain->uuid, uuidstr);
+
+    if (virDomainCheckpointCheckCycles(vm->checkpoints, def, vm->def->name) < 0)
+        return -1;
+
+    if (!def->parent.dom ||
+        memcmp(def->parent.dom->uuid, domain->uuid, VIR_UUID_BUFLEN)) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("definition for checkpoint %s must use uuid %s"),
+                       def->parent.name, uuidstr);
+        return -1;
+    }
+    if (virDomainCheckpointAlignDisks(def) < 0)
+        return -1;
+
+    if (def->parent.parent_name)
+        other = virDomainCheckpointFindByName(vm->checkpoints,
+                                              def->parent.parent_name);
+    if (other == virDomainCheckpointGetCurrent(vm->checkpoints)) {
+        *update_current = true;
+        virDomainCheckpointSetCurrent(vm->checkpoints, NULL);
+    }
+
+    other = virDomainCheckpointFindByName(vm->checkpoints, def->parent.name);
+    if (other) {
+        otherdef = virDomainCheckpointObjGetDef(other);
+        if (!virDomainDefCheckABIStability(otherdef->parent.dom,
+                                           def->parent.dom, xmlopt))
+            return -1;
+
+        if (other == virDomainCheckpointGetCurrent(vm->checkpoints)) {
+            *update_current = true;
+            virDomainCheckpointSetCurrent(vm->checkpoints, NULL);
+        }
+
+        /* Drop and rebuild the parent relationship, but keep all
+         * child relations by reusing chk.  */
+        virDomainMomentDropParent(other);
+        virObjectUnref(otherdef);
+        other->def = &(*defptr)->parent;
+        *defptr = NULL;
+        *chk = other;
+    }
+
+    return 0;
 }

@@ -89,4 +89,11 @@ virDomainCheckpointDefFormat(virDomainCheckpointDefPtr def,
 int
 virDomainCheckpointAlignDisks(virDomainCheckpointDefPtr checkpoint);
 
+int virDomainCheckpointRedefinePrep(virDomainPtr domain,
+                                    virDomainObjPtr vm,
+                                    virDomainCheckpointDefPtr *def,
+                                    virDomainMomentObjPtr *checkpoint,
+                                    virDomainXMLOptionPtr xmlopt,
+                                    bool *update_current);
+
 VIR_ENUM_DECL(virDomainCheckpoint);
