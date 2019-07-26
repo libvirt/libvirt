@@ -453,6 +453,7 @@ qemuTPMSetupEncryption(const unsigned char *secretuuid,
  *           for the user given by userid or 'tss'
  * @tpmversion: The version of the TPM, either a TPM 1.2 or TPM 2
  * @encryption: pointer to virStorageEncryption holding secret
+ * @incomingMigration: whether we have an incoming migration
  *
  * Setup the external swtpm by creating endorsement key and
  * certificates for it.
@@ -466,7 +467,8 @@ qemuTPMEmulatorRunSetup(const char *storagepath,
                         gid_t swtpm_group,
                         const char *logfile,
                         const virDomainTPMVersion tpmversion,
-                        const unsigned char *secretuuid)
+                        const unsigned char *secretuuid,
+                        bool incomingMigration)
 {
     virCommandPtr cmd = NULL;
     int exitstatus;
@@ -525,16 +527,23 @@ qemuTPMEmulatorRunSetup(const char *storagepath,
         pwdfile_fd = -1;
     }
 
-    virCommandAddArgList(cmd,
-                         "--tpm-state", storagepath,
-                         "--vmid", vmid,
-                         "--logfile", logfile,
-                         "--createek",
-                         "--create-ek-cert",
-                         "--create-platform-cert",
-                         "--lock-nvram",
-                         "--not-overwrite",
-                         NULL);
+    if (!incomingMigration) {
+        virCommandAddArgList(cmd,
+                             "--tpm-state", storagepath,
+                             "--vmid", vmid,
+                             "--logfile", logfile,
+                             "--createek",
+                             "--create-ek-cert",
+                             "--create-platform-cert",
+                             "--lock-nvram",
+                             "--not-overwrite",
+                             NULL);
+    } else {
+        virCommandAddArgList(cmd,
+                             "--tpm-state", storagepath,
+                             "--overwrite",
+                             NULL);
+    }
 
     virCommandClearCaps(cmd);
 
@@ -568,6 +577,7 @@ qemuTPMEmulatorRunSetup(const char *storagepath,
  * @swtpmStateDir: the directory where swtpm writes the pid file and creates the
  *                 Unix socket
  * @shortName: the short name of the VM
+ * @incomingMigration: whether we have an incoming migration
  *
  * Create the virCommand use for starting the emulator
  * Do some initializations on the way, such as creation of storage
@@ -581,7 +591,8 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDefPtr tpm,
                             uid_t swtpm_user,
                             gid_t swtpm_group,
                             const char *swtpmStateDir,
-                            const char *shortName)
+                            const char *shortName,
+                            bool incomingMigration)
 {
     virCommandPtr cmd = NULL;
     bool created = false;
@@ -605,7 +616,7 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDefPtr tpm,
         qemuTPMEmulatorRunSetup(tpm->data.emulator.storagepath, vmname, vmuuid,
                                 privileged, swtpm_user, swtpm_group,
                                 tpm->data.emulator.logfile, tpm->version,
-                                secretuuid) < 0)
+                                secretuuid, incomingMigration) < 0)
         goto error;
 
     unlink(tpm->data.emulator.source.data.nix.path);
@@ -814,6 +825,7 @@ qemuExtTPMCleanupHost(virDomainDefPtr def)
  * @driver: QEMU driver
  * @vm: the domain object
  * @logCtxt: log context
+ * @incomingMigration: whether we have an incoming migration
  *
  * Start the external TPM Emulator:
  * - have the command line built
@@ -822,7 +834,8 @@ qemuExtTPMCleanupHost(virDomainDefPtr def)
 static int
 qemuExtTPMStartEmulator(virQEMUDriverPtr driver,
                         virDomainObjPtr vm,
-                        qemuDomainLogContextPtr logCtxt)
+                        qemuDomainLogContextPtr logCtxt,
+                        bool incomingMigration)
 {
     int ret = -1;
     virCommandPtr cmd = NULL;
@@ -846,7 +859,8 @@ qemuExtTPMStartEmulator(virQEMUDriverPtr driver,
                                             driver->privileged,
                                             cfg->swtpm_user,
                                             cfg->swtpm_group,
-                                            cfg->swtpmStateDir, shortName)))
+                                            cfg->swtpmStateDir, shortName,
+                                            incomingMigration)))
         goto cleanup;
 
     if (qemuExtDeviceLogCommand(logCtxt, cmd, "TPM Emulator") < 0)
@@ -903,14 +917,15 @@ qemuExtTPMStartEmulator(virQEMUDriverPtr driver,
 int
 qemuExtTPMStart(virQEMUDriverPtr driver,
                 virDomainObjPtr vm,
-                qemuDomainLogContextPtr logCtxt)
+                qemuDomainLogContextPtr logCtxt,
+                bool incomingMigration)
 {
     int ret = 0;
     virDomainTPMDefPtr tpm = vm->def->tpm;
 
     switch (tpm->type) {
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
-        ret = qemuExtTPMStartEmulator(driver, vm, logCtxt);
+        ret = qemuExtTPMStartEmulator(driver, vm, logCtxt, incomingMigration);
         break;
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
     case VIR_DOMAIN_TPM_TYPE_LAST:

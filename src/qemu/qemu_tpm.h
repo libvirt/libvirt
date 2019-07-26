@@ -37,7 +37,8 @@ void qemuExtTPMCleanupHost(virDomainDefPtr def)
 
 int qemuExtTPMStart(virQEMUDriverPtr driver,
                     virDomainObjPtr vm,
-                    qemuDomainLogContextPtr logCtxt)
+                    qemuDomainLogContextPtr logCtxt,
+                    bool incomingMigration)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_RETURN_CHECK;
 
