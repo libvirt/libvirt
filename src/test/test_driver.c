@@ -3629,6 +3629,133 @@ static int testDomainSetMetadata(virDomainPtr dom,
     return ret;
 }
 
+#define TEST_TOTAL_CPUTIME 48772617035LL
+
+static int
+testDomainGetDomainTotalCpuStats(virTypedParameterPtr params,
+                                 int nparams)
+{
+    if (nparams == 0) /* return supported number of params */
+        return 3;
+
+    if (virTypedParameterAssign(&params[0], VIR_DOMAIN_CPU_STATS_CPUTIME,
+                                VIR_TYPED_PARAM_ULLONG, TEST_TOTAL_CPUTIME) < 0)
+        return -1;
+
+    if (nparams > 1 &&
+        virTypedParameterAssign(&params[1],
+                                VIR_DOMAIN_CPU_STATS_USERTIME,
+                                VIR_TYPED_PARAM_ULLONG, 5540000000) < 0)
+        return -1;
+
+    if (nparams > 2 &&
+        virTypedParameterAssign(&params[2],
+                                VIR_DOMAIN_CPU_STATS_SYSTEMTIME,
+                                VIR_TYPED_PARAM_ULLONG, 6460000000) < 0)
+        return -1;
+
+    if (nparams > 3)
+        nparams = 3;
+
+    return nparams;
+}
+
+
+static int
+testDomainGetPercpuStats(virTypedParameterPtr params,
+                         unsigned int nparams,
+                         int start_cpu,
+                         unsigned int ncpus,
+                         int total_cpus)
+{
+    size_t i;
+    int need_cpus;
+    int param_idx;
+    unsigned long long percpu_time = (TEST_TOTAL_CPUTIME / total_cpus);
+
+    /* return the number of supported params */
+    if (nparams == 0 && ncpus != 0)
+        return 2;
+
+    /* return total number of cpus */
+    if (ncpus == 0)
+        return total_cpus;
+
+    if (start_cpu >= total_cpus) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("start_cpu %d larger than maximum of %d"),
+                       start_cpu, total_cpus - 1);
+        return -1;
+    }
+
+    /* return percpu cputime in index 0 */
+    param_idx = 0;
+
+    /* number of cpus to compute */
+    need_cpus = MIN(total_cpus, start_cpu + ncpus);
+
+    for (i = start_cpu; i < need_cpus; i++) {
+        int idx = (i - start_cpu) * nparams + param_idx;
+
+        if (virTypedParameterAssign(&params[idx],
+                                    VIR_DOMAIN_CPU_STATS_CPUTIME,
+                                    VIR_TYPED_PARAM_ULLONG,
+                                    percpu_time + i) < 0)
+            return -1;
+    }
+
+    /* return percpu vcputime in index 1 */
+    param_idx = 1;
+
+    if (param_idx < nparams) {
+        for (i = start_cpu; i < need_cpus; i++) {
+            int idx = (i - start_cpu) * nparams + param_idx;
+
+            if (virTypedParameterAssign(&params[idx],
+                                        VIR_DOMAIN_CPU_STATS_VCPUTIME,
+                                        VIR_TYPED_PARAM_ULLONG,
+                                        percpu_time + i - 1234567890) < 0)
+                return -1;
+        }
+        param_idx++;
+    }
+
+    return param_idx;
+}
+
+
+static int
+testDomainGetCPUStats(virDomainPtr dom,
+                      virTypedParameterPtr params,
+                      unsigned int nparams,
+                      int start_cpu,
+                      unsigned int ncpus,
+                      unsigned int flags)
+{
+    virDomainObjPtr vm = NULL;
+    testDriverPtr privconn = dom->conn->privateData;
+    int ret = -1;
+
+    virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        return -1;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto cleanup;
+
+    if (start_cpu == -1)
+        ret = testDomainGetDomainTotalCpuStats(params, nparams);
+    else
+        ret = testDomainGetPercpuStats(params, nparams, start_cpu, ncpus,
+                                       privconn->nodeInfo.cores);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
 static int
 testDomainSendProcessSignal(virDomainPtr dom,
                             long long pid_value,
@@ -8564,6 +8691,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainSendKey = testDomainSendKey, /* 5.5.0 */
     .domainGetMetadata = testDomainGetMetadata, /* 1.1.3 */
     .domainSetMetadata = testDomainSetMetadata, /* 1.1.3 */
+    .domainGetCPUStats = testDomainGetCPUStats, /* 5.6.0 */
     .domainSendProcessSignal = testDomainSendProcessSignal, /* 5.5.0 */
     .connectGetCPUModelNames = testConnectGetCPUModelNames, /* 1.1.3 */
     .domainManagedSave = testDomainManagedSave, /* 1.1.4 */
