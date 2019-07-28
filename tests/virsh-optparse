@@ -179,26 +179,6 @@ virsh -q -c $test_url cpu-stats test --start -1 >out 2>err && fail=1
 test -s out && fail=1
 compare exp-err err || fail=1
 
-# Zero. The test driver doesn't support the operation so the command
-# fails, but the value has been parsed correctly
-cat <<\EOF > exp-err || framework_failure
-error: Failed to retrieve CPU statistics for domain 'test'
-error: this function is not supported by the connection driver: virDomainGetCPUStats
-EOF
-virsh -q -c $test_url cpu-stats test --start 0 >out 2>err && fail=1
-test -s out && fail=1
-compare exp-err err || fail=1
-
-# Valid numeric value. The test driver doesn't support the operation
-# so the command fails, but the value has been parsed correctly
-cat <<\EOF > exp-err || framework_failure
-error: Failed to retrieve CPU statistics for domain 'test'
-error: this function is not supported by the connection driver: virDomainGetCPUStats
-EOF
-virsh -q -c $test_url cpu-stats test --start 42 >out 2>err && fail=1
-test -s out && fail=1
-compare exp-err err || fail=1
-
 ### Test a scaled numeric option
 
 # Non-numeric value
