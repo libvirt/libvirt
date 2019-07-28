@@ -133,7 +133,6 @@ virDomainCheckpointDefParse(xmlXPathContextPtr ctxt,
     int n;
     char *tmp;
     VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
-    VIR_AUTOFREE(char *)creation = NULL;
     VIR_AUTOUNREF(virDomainCheckpointDefPtr) def = NULL;
 
     if (!(def = virDomainCheckpointDefNew()))
