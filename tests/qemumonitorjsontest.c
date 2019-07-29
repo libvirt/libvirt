@@ -2996,6 +2996,9 @@ testQueryJobs(const void *opaque)
     ret = 0;
 
  cleanup:
+    for (i = 0; i < njobs; i++)
+        qemuMonitorJobInfoFree(jobs[i]);
+    VIR_FREE(jobs);
     qemuMonitorTestFree(test);
     return ret;
 }
