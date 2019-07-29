@@ -4411,6 +4411,14 @@ virStorageFileIsInitialized(const virStorageSource *src)
 }
 
 
+/**
+ * virStorageFileGetBackendForSupportCheck:
+ * @src: storage source to check support for
+ * @backend: pointer to the storage backend for @src if it's supported
+ *
+ * Returns 0 if @src is not supported by any storage backend currently linked
+ * 1 if it is supported and -1 on error with an error reported.
+ */
 static int
 virStorageFileGetBackendForSupportCheck(const virStorageSource *src,
                                         virStorageFileBackendPtr *backend)
@@ -4425,7 +4433,7 @@ virStorageFileGetBackendForSupportCheck(const virStorageSource *src,
 
     if (src->drv) {
         *backend = src->drv->backend;
-        return 0;
+        return 1;
     }
 
     actualType = virStorageSourceGetActualType(src);
@@ -4433,7 +4441,10 @@ virStorageFileGetBackendForSupportCheck(const virStorageSource *src,
     if (virStorageFileBackendForType(actualType, src->protocol, false, backend) < 0)
         return -1;
 
-    return 0;
+    if (!*backend)
+        return 0;
+
+    return 1;
 }
 
 
@@ -4443,12 +4454,8 @@ virStorageFileSupportsBackingChainTraversal(virStorageSourcePtr src)
     virStorageFileBackendPtr backend;
     int rv;
 
-    rv = virStorageFileGetBackendForSupportCheck(src, &backend);
-    if (rv < 0)
-        return -1;
-
-    if (!backend)
-        return 0;
+    if ((rv = virStorageFileGetBackendForSupportCheck(src, &backend)) < 1)
+        return rv;
 
     return backend->storageFileGetUniqueIdentifier &&
            backend->storageFileRead &&
@@ -4470,11 +4477,8 @@ virStorageFileSupportsSecurityDriver(const virStorageSource *src)
     virStorageFileBackendPtr backend;
     int rv;
 
-    rv = virStorageFileGetBackendForSupportCheck(src, &backend);
-    if (rv < 0)
-        return -1;
-    if (backend == NULL)
-        return 0;
+    if ((rv = virStorageFileGetBackendForSupportCheck(src, &backend)) < 1)
+        return rv;
 
     return backend->storageFileChown ? 1 : 0;
 }
@@ -4492,13 +4496,10 @@ int
 virStorageFileSupportsAccess(const virStorageSource *src)
 {
     virStorageFileBackendPtr backend;
-    int ret;
+    int rv;
 
-    ret = virStorageFileGetBackendForSupportCheck(src, &backend);
-    if (ret < 0)
-        return -1;
-    if (backend == NULL)
-        return 0;
+    if ((rv = virStorageFileGetBackendForSupportCheck(src, &backend)) < 1)
+        return rv;
 
     return backend->storageFileAccess ? 1 : 0;
 }
