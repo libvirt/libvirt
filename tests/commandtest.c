@@ -1231,6 +1231,9 @@ static int test27(const void *unused ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
+    if (checkoutput("test27", NULL) < 0)
+        goto cleanup;
+
     ret = 0;
 
  cleanup:
