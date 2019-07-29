@@ -2148,15 +2148,12 @@ remoteDispatchDomainGetSchedulerType(virNetServerPtr server ATTRIBUTE_UNUSED,
     char *type;
     int nparams;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if (!(type = virDomainGetSchedulerType(dom, &nparams)))
@@ -2185,13 +2182,10 @@ remoteDispatchDomainGetSchedulerParameters(virNetServerPtr server ATTRIBUTE_UNUS
     virTypedParameterPtr params = NULL;
     int nparams = 0;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     if (args->nparams > REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
@@ -2201,7 +2195,7 @@ remoteDispatchDomainGetSchedulerParameters(virNetServerPtr server ATTRIBUTE_UNUS
         goto cleanup;
     nparams = args->nparams;
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if (virDomainGetSchedulerParameters(dom, params, &nparams) < 0)
@@ -2235,13 +2229,10 @@ remoteDispatchDomainGetSchedulerParametersFlags(virNetServerPtr server ATTRIBUTE
     virTypedParameterPtr params = NULL;
     int nparams = 0;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     if (args->nparams > REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
@@ -2251,7 +2242,7 @@ remoteDispatchDomainGetSchedulerParametersFlags(virNetServerPtr server ATTRIBUTE
         goto cleanup;
     nparams = args->nparams;
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if (virDomainGetSchedulerParametersFlags(dom, params, &nparams,
@@ -2287,13 +2278,10 @@ remoteDispatchDomainMemoryStats(virNetServerPtr server ATTRIBUTE_UNUSED,
     int nr_stats;
     size_t i;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     if (args->maxStats > REMOTE_DOMAIN_MEMORY_STATS_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2301,7 +2289,7 @@ remoteDispatchDomainMemoryStats(virNetServerPtr server ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     /* Allocate stats array for making dispatch call */
@@ -2346,15 +2334,12 @@ remoteDispatchDomainBlockPeek(virNetServerPtr server ATTRIBUTE_UNUSED,
     size_t size;
     unsigned int flags;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
     path = args->path;
     offset = args->offset;
@@ -2400,15 +2385,12 @@ remoteDispatchDomainBlockStatsFlags(virNetServerPtr server ATTRIBUTE_UNUSED,
     int nparams = 0;
     unsigned int flags;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
     flags = args->flags;
 
@@ -2462,15 +2444,12 @@ remoteDispatchDomainMemoryPeek(virNetServerPtr server ATTRIBUTE_UNUSED,
     size_t size;
     unsigned int flags;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
     offset = args->offset;
     size = args->size;
@@ -2512,15 +2491,12 @@ remoteDispatchDomainGetSecurityLabel(virNetServerPtr server ATTRIBUTE_UNUSED,
     virDomainPtr dom = NULL;
     virSecurityLabelPtr seclabel = NULL;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if (VIR_ALLOC(seclabel) < 0)
@@ -2557,15 +2533,12 @@ remoteDispatchDomainGetSecurityLabelList(virNetServerPtr server ATTRIBUTE_UNUSED
     virSecurityLabelPtr seclabels = NULL;
     int len, rv = -1;
     size_t i;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if ((len = virDomainGetSecurityLabelList(dom, &seclabels)) < 0) {
@@ -2611,16 +2584,13 @@ remoteDispatchNodeGetSecurityModel(virNetServerPtr server ATTRIBUTE_UNUSED,
 {
     virSecurityModel secmodel;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     memset(&secmodel, 0, sizeof(secmodel));
-    if (virNodeGetSecurityModel(priv->conn, &secmodel) < 0)
+    if (virNodeGetSecurityModel(conn, &secmodel) < 0)
         goto cleanup;
 
     ret->model.model_len = strlen(secmodel.model) + 1;
@@ -2653,15 +2623,12 @@ remoteDispatchDomainGetVcpuPinInfo(virNetServerPtr server ATTRIBUTE_UNUSED,
     unsigned char *cpumaps = NULL;
     int num;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if (args->ncpumaps > REMOTE_VCPUINFO_MAX) {
@@ -2715,15 +2682,12 @@ remoteDispatchDomainPinEmulator(virNetServerPtr server ATTRIBUTE_UNUSED,
 {
     int rv = -1;
     virDomainPtr dom = NULL;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if (virDomainPinEmulator(dom,
@@ -2754,15 +2718,12 @@ remoteDispatchDomainGetEmulatorPinInfo(virNetServerPtr server ATTRIBUTE_UNUSED,
     unsigned char *cpumaps = NULL;
     int r;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     /* Allocate buffers to take the results */
@@ -2805,15 +2766,12 @@ remoteDispatchDomainGetVcpus(virNetServerPtr server ATTRIBUTE_UNUSED,
     int info_len;
     size_t i;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if (args->maxinfo > REMOTE_VCPUINFO_MAX) {
@@ -2882,18 +2840,16 @@ remoteDispatchDomainGetIOThreadInfo(virNetServerPtr server ATTRIBUTE_UNUSED,
 {
     int rv = -1;
     size_t i;
-    struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
     virDomainIOThreadInfoPtr *info = NULL;
     virDomainPtr dom = NULL;
     remote_domain_iothread_info *dst;
     int ninfo = 0;
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if ((ninfo = virDomainGetIOThreadInfo(dom, &info, args->flags)) < 0)
@@ -2958,13 +2914,10 @@ remoteDispatchDomainMigratePrepare(virNetServerPtr server ATTRIBUTE_UNUSED,
     char **uri_out;
     char *dname;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     uri_in = args->uri_in == NULL ? NULL : *args->uri_in;
     dname = args->dname == NULL ? NULL : *args->dname;
@@ -2973,7 +2926,7 @@ remoteDispatchDomainMigratePrepare(virNetServerPtr server ATTRIBUTE_UNUSED,
     if (VIR_ALLOC(uri_out) < 0)
         goto cleanup;
 
-    if (virDomainMigratePrepare(priv->conn, &cookie, &cookielen,
+    if (virDomainMigratePrepare(conn, &cookie, &cookielen,
                                 uri_in, uri_out,
                                 args->flags, dname, args->resource) < 0)
         goto cleanup;
@@ -3013,13 +2966,10 @@ remoteDispatchDomainMigratePrepare2(virNetServerPtr server ATTRIBUTE_UNUSED,
     char **uri_out;
     char *dname;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     uri_in = args->uri_in == NULL ? NULL : *args->uri_in;
     dname = args->dname == NULL ? NULL : *args->dname;
@@ -3028,7 +2978,7 @@ remoteDispatchDomainMigratePrepare2(virNetServerPtr server ATTRIBUTE_UNUSED,
     if (VIR_ALLOC(uri_out) < 0)
         goto cleanup;
 
-    if (virDomainMigratePrepare2(priv->conn, &cookie, &cookielen,
+    if (virDomainMigratePrepare2(conn, &cookie, &cookielen,
                                  uri_in, uri_out,
                                  args->flags, dname, args->resource,
                                  args->dom_xml) < 0)
@@ -3064,13 +3014,10 @@ remoteDispatchDomainGetMemoryParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
     int nparams = 0;
     unsigned int flags;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     flags = args->flags;
 
@@ -3082,7 +3029,7 @@ remoteDispatchDomainGetMemoryParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
         goto cleanup;
     nparams = args->nparams;
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if (virDomainGetMemoryParameters(dom, params, &nparams, flags) < 0)
@@ -3126,13 +3073,10 @@ remoteDispatchDomainGetNumaParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
     int nparams = 0;
     unsigned int flags;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     flags = args->flags;
 
@@ -3144,7 +3088,7 @@ remoteDispatchDomainGetNumaParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
         goto cleanup;
     nparams = args->nparams;
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if (virDomainGetNumaParameters(dom, params, &nparams, flags) < 0)
@@ -3188,13 +3132,10 @@ remoteDispatchDomainGetBlkioParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
     int nparams = 0;
     unsigned int flags;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     flags = args->flags;
 
@@ -3206,7 +3147,7 @@ remoteDispatchDomainGetBlkioParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
         goto cleanup;
     nparams = args->nparams;
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if (virDomainGetBlkioParameters(dom, params, &nparams, flags) < 0)
@@ -3251,13 +3192,10 @@ remoteDispatchNodeGetCPUStats(virNetServerPtr server ATTRIBUTE_UNUSED,
     int nparams = 0;
     unsigned int flags;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     flags = args->flags;
 
@@ -3269,7 +3207,7 @@ remoteDispatchNodeGetCPUStats(virNetServerPtr server ATTRIBUTE_UNUSED,
         goto cleanup;
     nparams = args->nparams;
 
-    if (virNodeGetCPUStats(priv->conn, cpuNum, params, &nparams, flags) < 0)
+    if (virNodeGetCPUStats(conn, cpuNum, params, &nparams, flags) < 0)
         goto cleanup;
 
     /* In this case, we need to send back the number of stats
@@ -3323,13 +3261,10 @@ remoteDispatchNodeGetMemoryStats(virNetServerPtr server ATTRIBUTE_UNUSED,
     int nparams = 0;
     unsigned int flags;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     flags = args->flags;
 
@@ -3341,7 +3276,7 @@ remoteDispatchNodeGetMemoryStats(virNetServerPtr server ATTRIBUTE_UNUSED,
         goto cleanup;
     nparams = args->nparams;
 
-    if (virNodeGetMemoryStats(priv->conn, cellNum, params, &nparams, flags) < 0)
+    if (virNodeGetMemoryStats(conn, cellNum, params, &nparams, flags) < 0)
         goto cleanup;
 
     /* In this case, we need to send back the number of parameters
@@ -3393,15 +3328,12 @@ remoteDispatchDomainGetLaunchSecurityInfo(virNetServerPtr server ATTRIBUTE_UNUSE
     virTypedParameterPtr params = NULL;
     int nparams = 0;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if (virDomainGetLaunchSecurityInfo(dom, &params, &nparams, args->flags) < 0)
@@ -3440,15 +3372,12 @@ remoteDispatchDomainGetPerfEvents(virNetServerPtr server ATTRIBUTE_UNUSED,
     virTypedParameterPtr params = NULL;
     int nparams = 0;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if (virDomainGetPerfEvents(dom, &params, &nparams, args->flags) < 0)
@@ -3486,15 +3415,12 @@ remoteDispatchDomainGetBlockJobInfo(virNetServerPtr server ATTRIBUTE_UNUSED,
     virDomainPtr dom = NULL;
     virDomainBlockJobInfo tmp;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     rv = virDomainGetBlockJobInfo(dom, args->path, &tmp, args->flags);
@@ -3527,13 +3453,10 @@ remoteDispatchDomainGetBlockIoTune(virNetServerPtr server ATTRIBUTE_UNUSED,
     int rv = -1;
     virTypedParameterPtr params = NULL;
     int nparams = 0;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     if (args->nparams > REMOTE_DOMAIN_BLOCK_IO_TUNE_PARAMETERS_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
@@ -3544,7 +3467,7 @@ remoteDispatchDomainGetBlockIoTune(virNetServerPtr server ATTRIBUTE_UNUSED,
         goto cleanup;
     nparams = args->nparams;
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if (virDomainGetBlockIoTune(dom, args->disk ? *args->disk : NULL,
@@ -4104,15 +4027,12 @@ remoteDispatchNodeDeviceGetParent(virNetServerPtr server ATTRIBUTE_UNUSED,
     virNodeDevicePtr dev = NULL;
     const char *parent = NULL;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetNodeDevConn(client);
 
-    if (!priv->nodedevConn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(dev = virNodeDeviceLookupByName(priv->nodedevConn, args->name)))
+    if (!(dev = virNodeDeviceLookupByName(conn, args->name)))
         goto cleanup;
 
     parent = virNodeDeviceGetParent(dev);
@@ -4144,15 +4064,14 @@ remoteDispatchConnectRegisterCloseCallback(virNetServerPtr server ATTRIBUTE_UNUS
     int rv = -1;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
     virMutexLock(&priv->lock);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (virConnectRegisterCloseCallback(priv->conn,
+    if (virConnectRegisterCloseCallback(conn,
                                         remoteRelayConnectionClosedEvent,
                                         client, NULL) < 0)
         goto cleanup;
@@ -4176,15 +4095,14 @@ remoteDispatchConnectUnregisterCloseCallback(virNetServerPtr server ATTRIBUTE_UN
     int rv = -1;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
     virMutexLock(&priv->lock);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (virConnectUnregisterCloseCallback(priv->conn,
+    if (virConnectUnregisterCloseCallback(conn,
                                           remoteRelayConnectionClosedEvent) < 0)
         goto cleanup;
 
@@ -4211,13 +4129,12 @@ remoteDispatchConnectDomainEventRegister(virNetServerPtr server ATTRIBUTE_UNUSED
     daemonClientEventCallbackPtr ref;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
     virMutexLock(&priv->lock);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     /* If we call register first, we could append a complete callback
      * to our array, but on OOM append failure, we'd have to then hope
@@ -4239,7 +4156,7 @@ remoteDispatchConnectDomainEventRegister(virNetServerPtr server ATTRIBUTE_UNUSED
                            callback) < 0)
         goto cleanup;
 
-    if ((callbackID = virConnectDomainEventRegisterAny(priv->conn,
+    if ((callbackID = virConnectDomainEventRegisterAny(conn,
                                                        NULL,
                                                        VIR_DOMAIN_EVENT_ID_LIFECYCLE,
                                                        VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventLifecycle),
@@ -4275,13 +4192,12 @@ remoteDispatchConnectDomainEventDeregister(virNetServerPtr server ATTRIBUTE_UNUS
     size_t i;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
     virMutexLock(&priv->lock);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     for (i = 0; i < priv->ndomainEventCallbacks; i++) {
         if (priv->domainEventCallbacks[i]->eventID == VIR_DOMAIN_EVENT_ID_LIFECYCLE) {
@@ -4297,7 +4213,7 @@ remoteDispatchConnectDomainEventDeregister(virNetServerPtr server ATTRIBUTE_UNUS
         goto cleanup;
     }
 
-    if (virConnectDomainEventDeregisterAny(priv->conn, callbackID) < 0)
+    if (virConnectDomainEventDeregisterAny(conn, callbackID) < 0)
         goto cleanup;
 
     VIR_DELETE_ELEMENT(priv->domainEventCallbacks, i,
@@ -4361,15 +4277,12 @@ remoteDispatchSecretGetValue(virNetServerPtr server ATTRIBUTE_UNUSED,
     size_t value_size;
     unsigned char *value;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetSecretConn(client);
 
-    if (!priv->secretConn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(secret = get_nonnull_secret(priv->secretConn, args->secret)))
+    if (!(secret = get_nonnull_secret(conn, args->secret)))
         goto cleanup;
 
     if (!(value = virSecretGetValue(secret, &value_size, args->flags)))
@@ -4397,15 +4310,12 @@ remoteDispatchDomainGetState(virNetServerPtr server ATTRIBUTE_UNUSED,
 {
     virDomainPtr dom = NULL;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if (virDomainGetState(dom, &ret->state, &ret->reason, args->flags) < 0)
@@ -4439,13 +4349,12 @@ remoteDispatchConnectDomainEventRegisterAny(virNetServerPtr server ATTRIBUTE_UNU
     daemonClientEventCallbackPtr ref;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
     virMutexLock(&priv->lock);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     /* We intentionally do not use VIR_DOMAIN_EVENT_ID_LAST here; any
      * new domain events added after this point should only use the
@@ -4475,7 +4384,7 @@ remoteDispatchConnectDomainEventRegisterAny(virNetServerPtr server ATTRIBUTE_UNU
                            callback) < 0)
         goto cleanup;
 
-    if ((callbackID = virConnectDomainEventRegisterAny(priv->conn,
+    if ((callbackID = virConnectDomainEventRegisterAny(conn,
                                                        NULL,
                                                        args->eventID,
                                                        domainEventCallbacks[args->eventID],
@@ -4515,16 +4424,15 @@ remoteDispatchConnectDomainEventCallbackRegisterAny(virNetServerPtr server ATTRI
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
     virDomainPtr dom = NULL;
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
     virMutexLock(&priv->lock);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     if (args->dom &&
-        !(dom = get_nonnull_domain(priv->conn, *args->dom)))
+        !(dom = get_nonnull_domain(conn, *args->dom)))
         goto cleanup;
 
     if (args->eventID >= VIR_DOMAIN_EVENT_ID_LAST || args->eventID < 0) {
@@ -4550,7 +4458,7 @@ remoteDispatchConnectDomainEventCallbackRegisterAny(virNetServerPtr server ATTRI
                            callback) < 0)
         goto cleanup;
 
-    if ((callbackID = virConnectDomainEventRegisterAny(priv->conn,
+    if ((callbackID = virConnectDomainEventRegisterAny(conn,
                                                        dom,
                                                        args->eventID,
                                                        domainEventCallbacks[args->eventID],
@@ -4589,13 +4497,12 @@ remoteDispatchConnectDomainEventDeregisterAny(virNetServerPtr server ATTRIBUTE_U
     size_t i;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
     virMutexLock(&priv->lock);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     /* We intentionally do not use VIR_DOMAIN_EVENT_ID_LAST here; any
      * new domain events added after this point should only use the
@@ -4619,7 +4526,7 @@ remoteDispatchConnectDomainEventDeregisterAny(virNetServerPtr server ATTRIBUTE_U
         goto cleanup;
     }
 
-    if (virConnectDomainEventDeregisterAny(priv->conn, callbackID) < 0)
+    if (virConnectDomainEventDeregisterAny(conn, callbackID) < 0)
         goto cleanup;
 
     VIR_DELETE_ELEMENT(priv->domainEventCallbacks, i,
@@ -4646,13 +4553,12 @@ remoteDispatchConnectDomainEventCallbackDeregisterAny(virNetServerPtr server ATT
     size_t i;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
     virMutexLock(&priv->lock);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     for (i = 0; i < priv->ndomainEventCallbacks; i++) {
         if (priv->domainEventCallbacks[i]->callbackID == args->callbackID)
@@ -4665,7 +4571,7 @@ remoteDispatchConnectDomainEventCallbackDeregisterAny(virNetServerPtr server ATT
         goto cleanup;
     }
 
-    if (virConnectDomainEventDeregisterAny(priv->conn, args->callbackID) < 0)
+    if (virConnectDomainEventDeregisterAny(conn, args->callbackID) < 0)
         goto cleanup;
 
     VIR_DELETE_ELEMENT(priv->domainEventCallbacks, i,
@@ -4691,15 +4597,12 @@ qemuDispatchDomainMonitorCommand(virNetServerPtr server ATTRIBUTE_UNUSED,
 {
     virDomainPtr dom = NULL;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if (virDomainQemuMonitorCommand(dom, args->cmd, &ret->result,
@@ -4731,15 +4634,12 @@ remoteDispatchDomainMigrateBegin3(virNetServerPtr server ATTRIBUTE_UNUSED,
     char *cookieout = NULL;
     int cookieoutlen = 0;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     xmlin = args->xmlin == NULL ? NULL : *args->xmlin;
@@ -4781,13 +4681,10 @@ remoteDispatchDomainMigratePrepare3(virNetServerPtr server ATTRIBUTE_UNUSED,
     char **uri_out;
     char *dname;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     uri_in = args->uri_in == NULL ? NULL : *args->uri_in;
     dname = args->dname == NULL ? NULL : *args->dname;
@@ -4796,7 +4693,7 @@ remoteDispatchDomainMigratePrepare3(virNetServerPtr server ATTRIBUTE_UNUSED,
     if (VIR_ALLOC(uri_out) < 0)
         goto cleanup;
 
-    if (virDomainMigratePrepare3(priv->conn,
+    if (virDomainMigratePrepare3(conn,
                                  args->cookie_in.cookie_in_val,
                                  args->cookie_in.cookie_in_len,
                                  &cookieout, &cookieoutlen,
@@ -4839,15 +4736,12 @@ remoteDispatchDomainMigratePerform3(virNetServerPtr server ATTRIBUTE_UNUSED,
     char *cookieout = NULL;
     int cookieoutlen = 0;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     xmlin = args->xmlin == NULL ? NULL : *args->xmlin;
@@ -4892,18 +4786,15 @@ remoteDispatchDomainMigrateFinish3(virNetServerPtr server ATTRIBUTE_UNUSED,
     char *uri;
     char *dconnuri;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     uri = args->uri == NULL ? NULL : *args->uri;
     dconnuri = args->dconnuri == NULL ? NULL : *args->dconnuri;
 
-    if (!(dom = virDomainMigrateFinish3(priv->conn, args->dname,
+    if (!(dom = virDomainMigrateFinish3(conn, args->dname,
                                         args->cookie_in.cookie_in_val,
                                         args->cookie_in.cookie_in_len,
                                         &cookieout, &cookieoutlen,
@@ -4941,15 +4832,12 @@ remoteDispatchDomainMigrateConfirm3(virNetServerPtr server ATTRIBUTE_UNUSED,
 {
     virDomainPtr dom = NULL;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if (virDomainMigrateConfirm3(dom,
@@ -4977,8 +4865,7 @@ static int remoteDispatchConnectSupportsFeature(virNetServerPtr server ATTRIBUTE
 {
     int rv = -1;
     int supported = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = NULL;
 
     /* This feature is checked before opening the connection, thus we must
      * check it first.
@@ -4990,10 +4877,10 @@ static int remoteDispatchConnectSupportsFeature(virNetServerPtr server ATTRIBUTE
         goto done;
     }
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    conn = remoteGetHypervisorConn(client);
+
+    if (!conn)
         goto cleanup;
-    }
 
     switch ((virDrvFeature) args->feature) {
     case VIR_DRV_FEATURE_FD_PASSING:
@@ -5013,7 +4900,7 @@ static int remoteDispatchConnectSupportsFeature(virNetServerPtr server ATTRIBUTE
     case VIR_DRV_FEATURE_MIGRATION_OFFLINE:
     case VIR_DRV_FEATURE_MIGRATION_PARAMS:
     default:
-        if ((supported = virConnectSupportsFeature(priv->conn, args->feature)) < 0)
+        if ((supported = virConnectSupportsFeature(conn, args->feature)) < 0)
             goto cleanup;
         break;
     case VIR_DRV_FEATURE_PROGRAM_KEEPALIVE:
@@ -5042,15 +4929,12 @@ remoteDispatchDomainOpenGraphics(virNetServerPtr server ATTRIBUTE_UNUSED,
     virDomainPtr dom = NULL;
     int rv = -1;
     int fd = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if ((fd = virNetMessageDupFD(msg, 0)) < 0)
@@ -5083,15 +4967,12 @@ remoteDispatchDomainOpenGraphicsFd(virNetServerPtr server ATTRIBUTE_UNUSED,
     virDomainPtr dom = NULL;
     int rv = -1;
     int fd = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if ((fd = virDomainOpenGraphicsFD(dom,
@@ -5130,13 +5011,10 @@ remoteDispatchDomainGetInterfaceParameters(virNetServerPtr server ATTRIBUTE_UNUS
     int nparams = 0;
     unsigned int flags;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     flags = args->flags;
 
@@ -5148,7 +5026,7 @@ remoteDispatchDomainGetInterfaceParameters(virNetServerPtr server ATTRIBUTE_UNUS
         goto cleanup;
     nparams = args->nparams;
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if (virDomainGetInterfaceParameters(dom, device, params, &nparams, flags) < 0)
@@ -5188,16 +5066,13 @@ remoteDispatchDomainGetCPUStats(virNetServerPtr server ATTRIBUTE_UNUSED,
                                 remote_domain_get_cpu_stats_ret *ret)
 {
     virDomainPtr dom = NULL;
-    struct daemonClientPrivate *priv;
     virTypedParameterPtr params = NULL;
     int rv = -1;
     int percpu_len = 0;
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    priv = virNetServerClientGetPrivateData(client);
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     if (args->nparams > REMOTE_NODE_CPU_STATS_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
@@ -5212,7 +5087,7 @@ remoteDispatchDomainGetCPUStats(virNetServerPtr server ATTRIBUTE_UNUSED,
         VIR_ALLOC_N(params, args->ncpus * args->nparams) < 0)
         goto cleanup;
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     percpu_len = virDomainGetCPUStats(dom, params, args->nparams,
@@ -5262,15 +5137,12 @@ remoteDispatchDomainGetDiskErrors(virNetServerPtr server ATTRIBUTE_UNUSED,
     virDomainPtr dom = NULL;
     virDomainDiskErrorPtr errors = NULL;
     int len = 0;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if (args->maxerrors > REMOTE_DOMAIN_DISK_ERRORS_MAX) {
@@ -5322,15 +5194,12 @@ remoteDispatchNodeGetSevInfo(virNetServerPtr server ATTRIBUTE_UNUSED,
     virTypedParameterPtr params = NULL;
     int nparams = 0;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (virNodeGetSEVInfo(priv->conn, &params, &nparams, args->flags) < 0)
+    if (virNodeGetSEVInfo(conn, &params, &nparams, args->flags) < 0)
         goto cleanup;
 
     if (nparams > REMOTE_NODE_SEV_INFO_MAX) {
@@ -5367,13 +5236,10 @@ remoteDispatchNodeGetMemoryParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
     int nparams = 0;
     unsigned int flags;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     flags = args->flags;
 
@@ -5385,7 +5251,7 @@ remoteDispatchNodeGetMemoryParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
         goto cleanup;
     nparams = args->nparams;
 
-    if (virNodeGetMemoryParameters(priv->conn, params, &nparams, flags) < 0)
+    if (virNodeGetMemoryParameters(conn, params, &nparams, flags) < 0)
         goto cleanup;
 
     /* In this case, we need to send back the number of parameters
@@ -5425,17 +5291,14 @@ remoteDispatchNodeGetCPUMap(virNetServerPtr server ATTRIBUTE_UNUSED,
     unsigned int flags;
     int cpunum;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     flags = args->flags;
 
-    cpunum = virNodeGetCPUMap(priv->conn, args->need_map ? &cpumap : NULL,
+    cpunum = virNodeGetCPUMap(conn, args->need_map ? &cpumap : NULL,
                               args->need_online ? &online : NULL, flags);
     if (cpunum < 0)
         goto cleanup;
@@ -5467,19 +5330,16 @@ lxcDispatchDomainOpenNamespace(virNetServerPtr server ATTRIBUTE_UNUSED,
                                lxc_domain_open_namespace_args *args)
 {
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
     int *fdlist = NULL;
     int ret;
     virDomainPtr dom = NULL;
     size_t i;
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     ret = virDomainLxcOpenNamespace(dom,
@@ -5521,15 +5381,12 @@ remoteDispatchDomainGetJobStats(virNetServerPtr server ATTRIBUTE_UNUSED,
     virTypedParameterPtr params = NULL;
     int nparams = 0;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if (virDomainGetJobStats(dom, &ret->type, &params,
@@ -5574,13 +5431,10 @@ remoteDispatchDomainMigrateBegin3Params(virNetServerPtr server ATTRIBUTE_UNUSED,
     char *cookieout = NULL;
     int cookieoutlen = 0;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     if (args->params.params_len > REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX) {
         virReportError(VIR_ERR_RPC,
@@ -5589,7 +5443,7 @@ remoteDispatchDomainMigrateBegin3Params(virNetServerPtr server ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if (virTypedParamsDeserialize((virTypedParameterRemotePtr) args->params.params_val,
@@ -5630,13 +5484,10 @@ remoteDispatchDomainMigratePrepare3Params(virNetServerPtr server ATTRIBUTE_UNUSE
     int cookieoutlen = 0;
     char **uri_out;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     if (args->params.params_len > REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX) {
         virReportError(VIR_ERR_RPC,
@@ -5654,7 +5505,7 @@ remoteDispatchDomainMigratePrepare3Params(virNetServerPtr server ATTRIBUTE_UNUSE
     if (VIR_ALLOC(uri_out) < 0)
         goto cleanup;
 
-    if (virDomainMigratePrepare3Params(priv->conn, params, nparams,
+    if (virDomainMigratePrepare3Params(conn, params, nparams,
                                        args->cookie_in.cookie_in_val,
                                        args->cookie_in.cookie_in_len,
                                        &cookieout, &cookieoutlen,
@@ -5689,15 +5540,12 @@ remoteDispatchDomainMigratePrepareTunnel3Params(virNetServerPtr server ATTRIBUTE
     char *cookieout = NULL;
     int cookieoutlen = 0;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
     virStreamPtr st = NULL;
     daemonClientStreamPtr stream = NULL;
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     if (args->params.params_len > REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX) {
         virReportError(VIR_ERR_RPC,
@@ -5711,12 +5559,12 @@ remoteDispatchDomainMigratePrepareTunnel3Params(virNetServerPtr server ATTRIBUTE
                                   0, &params, &nparams) < 0)
         goto cleanup;
 
-    if (!(st = virStreamNew(priv->conn, VIR_STREAM_NONBLOCK)) ||
+    if (!(st = virStreamNew(conn, VIR_STREAM_NONBLOCK)) ||
         !(stream = daemonCreateClientStream(client, st, remoteProgram,
                                             &msg->header, false)))
         goto cleanup;
 
-    if (virDomainMigratePrepareTunnel3Params(priv->conn, st, params, nparams,
+    if (virDomainMigratePrepareTunnel3Params(conn, st, params, nparams,
                                              args->cookie_in.cookie_in_val,
                                              args->cookie_in.cookie_in_len,
                                              &cookieout, &cookieoutlen,
@@ -5761,13 +5609,10 @@ remoteDispatchDomainMigratePerform3Params(virNetServerPtr server ATTRIBUTE_UNUSE
     int cookieoutlen = 0;
     char *dconnuri;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     if (args->params.params_len > REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX) {
         virReportError(VIR_ERR_RPC,
@@ -5776,7 +5621,7 @@ remoteDispatchDomainMigratePerform3Params(virNetServerPtr server ATTRIBUTE_UNUSE
         goto cleanup;
     }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if (virTypedParamsDeserialize((virTypedParameterRemotePtr) args->params.params_val,
@@ -5821,13 +5666,10 @@ remoteDispatchDomainMigrateFinish3Params(virNetServerPtr server ATTRIBUTE_UNUSED
     char *cookieout = NULL;
     int cookieoutlen = 0;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     if (args->params.params_len > REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX) {
         virReportError(VIR_ERR_RPC,
@@ -5841,7 +5683,7 @@ remoteDispatchDomainMigrateFinish3Params(virNetServerPtr server ATTRIBUTE_UNUSED
                                   0, &params, &nparams) < 0)
         goto cleanup;
 
-    dom = virDomainMigrateFinish3Params(priv->conn, params, nparams,
+    dom = virDomainMigrateFinish3Params(conn, params, nparams,
                                         args->cookie_in.cookie_in_val,
                                         args->cookie_in.cookie_in_len,
                                         &cookieout, &cookieoutlen,
@@ -5879,13 +5721,10 @@ remoteDispatchDomainMigrateConfirm3Params(virNetServerPtr server ATTRIBUTE_UNUSE
     int nparams = 0;
     virDomainPtr dom = NULL;
     int rv = -1;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     if (args->params.params_len > REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX) {
         virReportError(VIR_ERR_RPC,
@@ -5894,7 +5733,7 @@ remoteDispatchDomainMigrateConfirm3Params(virNetServerPtr server ATTRIBUTE_UNUSE
         goto cleanup;
     }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if (virTypedParamsDeserialize((virTypedParameterRemotePtr) args->params.params_val,
@@ -5929,15 +5768,12 @@ remoteDispatchConnectGetCPUModelNames(virNetServerPtr server ATTRIBUTE_UNUSED,
 {
     int len, rv = -1;
     char **models = NULL;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    len = virConnectGetCPUModelNames(priv->conn, args->arch,
+    len = virConnectGetCPUModelNames(conn, args->arch,
                                      args->need_results ? &models : NULL,
                                      args->flags);
     if (len < 0)
@@ -5981,16 +5817,13 @@ remoteDispatchDomainCreateXMLWithFiles(virNetServerPtr server ATTRIBUTE_UNUSED,
 {
     int rv = -1;
     virDomainPtr dom = NULL;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
     int *files = NULL;
     unsigned int nfiles = 0;
     size_t i;
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     if (VIR_ALLOC_N(files, msg->nfds) < 0)
         goto cleanup;
@@ -6000,7 +5833,7 @@ remoteDispatchDomainCreateXMLWithFiles(virNetServerPtr server ATTRIBUTE_UNUSED,
         nfiles++;
     }
 
-    if ((dom = virDomainCreateXMLWithFiles(priv->conn, args->xml_desc,
+    if ((dom = virDomainCreateXMLWithFiles(conn, args->xml_desc,
                                            nfiles, files,
                                            args->flags)) == NULL)
         goto cleanup;
@@ -6030,16 +5863,13 @@ static int remoteDispatchDomainCreateWithFiles(virNetServerPtr server ATTRIBUTE_
 {
     int rv = -1;
     virDomainPtr dom = NULL;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
     int *files = NULL;
     unsigned int nfiles = 0;
     size_t i;
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     if (VIR_ALLOC_N(files, msg->nfds) < 0)
         goto cleanup;
@@ -6049,7 +5879,7 @@ static int remoteDispatchDomainCreateWithFiles(virNetServerPtr server ATTRIBUTE_
         nfiles++;
     }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if (virDomainCreateWithFiles(dom,
@@ -6085,19 +5915,18 @@ remoteDispatchConnectNetworkEventRegisterAny(virNetServerPtr server ATTRIBUTE_UN
     int rv = -1;
     daemonClientEventCallbackPtr callback = NULL;
     daemonClientEventCallbackPtr ref;
+    virNetworkPtr net = NULL;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
-    virNetworkPtr net = NULL;
+    virConnectPtr conn = remoteGetNetworkConn(client);
 
     virMutexLock(&priv->lock);
 
-    if (!priv->networkConn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     if (args->net &&
-        !(net = get_nonnull_network(priv->networkConn, *args->net)))
+        !(net = get_nonnull_network(conn, *args->net)))
         goto cleanup;
 
     if (args->eventID >= VIR_NETWORK_EVENT_ID_LAST || args->eventID < 0) {
@@ -6123,7 +5952,7 @@ remoteDispatchConnectNetworkEventRegisterAny(virNetServerPtr server ATTRIBUTE_UN
                            callback) < 0)
         goto cleanup;
 
-    if ((callbackID = virConnectNetworkEventRegisterAny(priv->networkConn,
+    if ((callbackID = virConnectNetworkEventRegisterAny(conn,
                                                         net,
                                                         args->eventID,
                                                         networkEventCallbacks[args->eventID],
@@ -6161,13 +5990,12 @@ remoteDispatchConnectNetworkEventDeregisterAny(virNetServerPtr server ATTRIBUTE_
     size_t i;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetNetworkConn(client);
 
     virMutexLock(&priv->lock);
 
-    if (!priv->networkConn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     for (i = 0; i < priv->nnetworkEventCallbacks; i++) {
         if (priv->networkEventCallbacks[i]->callbackID == args->callbackID)
@@ -6180,7 +6008,7 @@ remoteDispatchConnectNetworkEventDeregisterAny(virNetServerPtr server ATTRIBUTE_
         goto cleanup;
     }
 
-    if (virConnectNetworkEventDeregisterAny(priv->networkConn, args->callbackID) < 0)
+    if (virConnectNetworkEventDeregisterAny(conn, args->callbackID) < 0)
         goto cleanup;
 
     VIR_DELETE_ELEMENT(priv->networkEventCallbacks, i,
@@ -6210,16 +6038,15 @@ remoteDispatchConnectStoragePoolEventRegisterAny(virNetServerPtr server ATTRIBUT
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
     virStoragePoolPtr  pool = NULL;
+    virConnectPtr conn = remoteGetStorageConn(client);
 
     virMutexLock(&priv->lock);
 
-    if (!priv->storageConn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     if (args->pool &&
-        !(pool = get_nonnull_storage_pool(priv->storageConn, *args->pool)))
+        !(pool = get_nonnull_storage_pool(conn, *args->pool)))
         goto cleanup;
 
     if (args->eventID >= VIR_STORAGE_POOL_EVENT_ID_LAST || args->eventID < 0) {
@@ -6245,7 +6072,7 @@ remoteDispatchConnectStoragePoolEventRegisterAny(virNetServerPtr server ATTRIBUT
                            callback) < 0)
         goto cleanup;
 
-    if ((callbackID = virConnectStoragePoolEventRegisterAny(priv->storageConn,
+    if ((callbackID = virConnectStoragePoolEventRegisterAny(conn,
                                                             pool,
                                                             args->eventID,
                                                             storageEventCallbacks[args->eventID],
@@ -6282,13 +6109,12 @@ remoteDispatchConnectStoragePoolEventDeregisterAny(virNetServerPtr server ATTRIB
     size_t i;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetStorageConn(client);
 
     virMutexLock(&priv->lock);
 
-    if (!priv->storageConn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     for (i = 0; i < priv->nstorageEventCallbacks; i++) {
         if (priv->storageEventCallbacks[i]->callbackID == args->callbackID)
@@ -6301,7 +6127,7 @@ remoteDispatchConnectStoragePoolEventDeregisterAny(virNetServerPtr server ATTRIB
         goto cleanup;
     }
 
-    if (virConnectStoragePoolEventDeregisterAny(priv->storageConn, args->callbackID) < 0)
+    if (virConnectStoragePoolEventDeregisterAny(conn, args->callbackID) < 0)
         goto cleanup;
 
     VIR_DELETE_ELEMENT(priv->storageEventCallbacks, i,
@@ -6331,16 +6157,15 @@ remoteDispatchConnectNodeDeviceEventRegisterAny(virNetServerPtr server ATTRIBUTE
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
     virNodeDevicePtr  dev = NULL;
+    virConnectPtr conn = remoteGetNodeDevConn(client);
 
     virMutexLock(&priv->lock);
 
-    if (!priv->nodedevConn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     if (args->dev &&
-        !(dev = get_nonnull_node_device(priv->nodedevConn, *args->dev)))
+        !(dev = get_nonnull_node_device(conn, *args->dev)))
         goto cleanup;
 
     if (args->eventID >= VIR_NODE_DEVICE_EVENT_ID_LAST || args->eventID < 0) {
@@ -6366,7 +6191,7 @@ remoteDispatchConnectNodeDeviceEventRegisterAny(virNetServerPtr server ATTRIBUTE
                            callback) < 0)
         goto cleanup;
 
-    if ((callbackID = virConnectNodeDeviceEventRegisterAny(priv->nodedevConn,
+    if ((callbackID = virConnectNodeDeviceEventRegisterAny(conn,
                                                            dev,
                                                            args->eventID,
                                                            nodeDeviceEventCallbacks[args->eventID],
@@ -6403,13 +6228,12 @@ remoteDispatchConnectNodeDeviceEventDeregisterAny(virNetServerPtr server ATTRIBU
     size_t i;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetNodeDevConn(client);
 
     virMutexLock(&priv->lock);
 
-    if (!priv->nodedevConn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     for (i = 0; i < priv->nnodeDeviceEventCallbacks; i++) {
         if (priv->nodeDeviceEventCallbacks[i]->callbackID == args->callbackID)
@@ -6422,7 +6246,7 @@ remoteDispatchConnectNodeDeviceEventDeregisterAny(virNetServerPtr server ATTRIBU
         goto cleanup;
     }
 
-    if (virConnectNodeDeviceEventDeregisterAny(priv->nodedevConn, args->callbackID) < 0)
+    if (virConnectNodeDeviceEventDeregisterAny(conn, args->callbackID) < 0)
         goto cleanup;
 
     VIR_DELETE_ELEMENT(priv->nodeDeviceEventCallbacks, i,
@@ -6452,16 +6276,15 @@ remoteDispatchConnectSecretEventRegisterAny(virNetServerPtr server ATTRIBUTE_UNU
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
     virSecretPtr secret = NULL;
+    virConnectPtr conn = remoteGetSecretConn(client);
 
     virMutexLock(&priv->lock);
 
-    if (!priv->secretConn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     if (args->secret &&
-        !(secret = get_nonnull_secret(priv->secretConn, *args->secret)))
+        !(secret = get_nonnull_secret(conn, *args->secret)))
         goto cleanup;
 
     if (args->eventID >= VIR_SECRET_EVENT_ID_LAST || args->eventID < 0) {
@@ -6487,7 +6310,7 @@ remoteDispatchConnectSecretEventRegisterAny(virNetServerPtr server ATTRIBUTE_UNU
                            callback) < 0)
         goto cleanup;
 
-    if ((callbackID = virConnectSecretEventRegisterAny(priv->secretConn,
+    if ((callbackID = virConnectSecretEventRegisterAny(conn,
                                                        secret,
                                                        args->eventID,
                                                        secretEventCallbacks[args->eventID],
@@ -6524,13 +6347,12 @@ remoteDispatchConnectSecretEventDeregisterAny(virNetServerPtr server ATTRIBUTE_U
     size_t i;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetSecretConn(client);
 
     virMutexLock(&priv->lock);
 
-    if (!priv->secretConn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     for (i = 0; i < priv->nsecretEventCallbacks; i++) {
         if (priv->secretEventCallbacks[i]->callbackID == args->callbackID)
@@ -6543,7 +6365,7 @@ remoteDispatchConnectSecretEventDeregisterAny(virNetServerPtr server ATTRIBUTE_U
         goto cleanup;
     }
 
-    if (virConnectSecretEventDeregisterAny(priv->secretConn, args->callbackID) < 0)
+    if (virConnectSecretEventDeregisterAny(conn, args->callbackID) < 0)
         goto cleanup;
 
     VIR_DELETE_ELEMENT(priv->secretEventCallbacks, i,
@@ -6574,16 +6396,15 @@ qemuDispatchConnectDomainMonitorEventRegister(virNetServerPtr server ATTRIBUTE_U
         virNetServerClientGetPrivateData(client);
     virDomainPtr dom = NULL;
     const char *event = args->event ? *args->event : NULL;
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
     virMutexLock(&priv->lock);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     if (args->dom &&
-        !(dom = get_nonnull_domain(priv->conn, *args->dom)))
+        !(dom = get_nonnull_domain(conn, *args->dom)))
         goto cleanup;
 
     /* If we call register first, we could append a complete callback
@@ -6603,7 +6424,7 @@ qemuDispatchConnectDomainMonitorEventRegister(virNetServerPtr server ATTRIBUTE_U
                            callback) < 0)
         goto cleanup;
 
-    if ((callbackID = virConnectDomainQemuMonitorEventRegister(priv->conn,
+    if ((callbackID = virConnectDomainQemuMonitorEventRegister(conn,
                                                                dom,
                                                                event,
                                                                remoteRelayDomainQemuMonitorEvent,
@@ -6642,13 +6463,12 @@ qemuDispatchConnectDomainMonitorEventDeregister(virNetServerPtr server ATTRIBUTE
     size_t i;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
     virMutexLock(&priv->lock);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     for (i = 0; i < priv->nqemuEventCallbacks; i++) {
         if (priv->qemuEventCallbacks[i]->callbackID == args->callbackID)
@@ -6661,7 +6481,7 @@ qemuDispatchConnectDomainMonitorEventDeregister(virNetServerPtr server ATTRIBUTE
         goto cleanup;
     }
 
-    if (virConnectDomainQemuMonitorEventDeregister(priv->conn,
+    if (virConnectDomainQemuMonitorEventDeregister(conn,
                                                    args->callbackID) < 0)
         goto cleanup;
 
@@ -6689,15 +6509,12 @@ remoteDispatchDomainGetTime(virNetServerPtr server ATTRIBUTE_UNUSED,
     virDomainPtr dom = NULL;
     long long seconds;
     unsigned int nseconds;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if (virDomainGetTime(dom, &seconds, &nseconds, args->flags) < 0)
@@ -6725,13 +6542,10 @@ remoteDispatchNodeGetFreePages(virNetServerPtr server ATTRIBUTE_UNUSED,
 {
     int rv = -1;
     int len;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     if (args->pages.pages_len * args->cellCount > REMOTE_NODE_MAX_CELLS) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -6744,7 +6558,7 @@ remoteDispatchNodeGetFreePages(virNetServerPtr server ATTRIBUTE_UNUSED,
                     args->pages.pages_len * args->cellCount) < 0)
         goto cleanup;
 
-    if ((len = virNodeGetFreePages(priv->conn,
+    if ((len = virNodeGetFreePages(conn,
                                    args->pages.pages_len,
                                    args->pages.pages_val,
                                    args->startCell,
@@ -6838,17 +6652,15 @@ remoteDispatchNetworkGetDHCPLeases(virNetServerPtr server ATTRIBUTE_UNUSED,
 {
     int rv = -1;
     size_t i;
-    struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
     virNetworkDHCPLeasePtr *leases = NULL;
     virNetworkPtr net = NULL;
     int nleases = 0;
+    virConnectPtr conn = remoteGetNetworkConn(client);
 
-    if (!priv->networkConn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(net = get_nonnull_network(priv->networkConn, args->net)))
+    if (!(net = get_nonnull_network(conn, args->net)))
         goto cleanup;
 
     if ((nleases = virNetworkGetDHCPLeases(net,
@@ -6906,22 +6718,20 @@ remoteDispatchConnectGetAllDomainStats(virNetServerPtr server ATTRIBUTE_UNUSED,
 {
     int rv = -1;
     size_t i;
-    struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
     virDomainStatsRecordPtr *retStats = NULL;
     int nrecords = 0;
     virDomainPtr *doms = NULL;
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
     if (args->doms.doms_len) {
         if (VIR_ALLOC_N(doms, args->doms.doms_len + 1) < 0)
             goto cleanup;
 
         for (i = 0; i < args->doms.doms_len; i++) {
-            if (!(doms[i] = get_nonnull_domain(priv->conn, args->doms.doms_val[i])))
+            if (!(doms[i] = get_nonnull_domain(conn, args->doms.doms_val[i])))
                 goto cleanup;
         }
 
@@ -6931,7 +6741,7 @@ remoteDispatchConnectGetAllDomainStats(virNetServerPtr server ATTRIBUTE_UNUSED,
                                               args->flags)) < 0)
             goto cleanup;
     } else {
-        if ((nrecords = virConnectGetAllDomainStats(priv->conn,
+        if ((nrecords = virConnectGetAllDomainStats(conn,
                                                     args->stats,
                                                     &retStats,
                                                     args->flags)) < 0)
@@ -6993,15 +6803,12 @@ remoteDispatchNodeAllocPages(virNetServerPtr server ATTRIBUTE_UNUSED,
 {
     int rv = -1;
     int len;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if ((len = virNodeAllocPages(priv->conn,
+    if ((len = virNodeAllocPages(conn,
                                  args->pageSizes.pageSizes_len,
                                  args->pageSizes.pageSizes_val,
                                  (unsigned long long *) args->pageCounts.pageCounts_val,
@@ -7030,19 +6837,17 @@ remoteDispatchDomainGetFSInfo(virNetServerPtr server ATTRIBUTE_UNUSED,
 {
     int rv = -1;
     size_t i, j;
-    struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
     virDomainFSInfoPtr *info = NULL;
     virDomainPtr dom = NULL;
     remote_domain_fsinfo *dst;
     int ninfo = 0;
     size_t ndisk;
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if ((ninfo = virDomainGetFSInfo(dom, &info, args->flags)) < 0)
@@ -7227,15 +7032,12 @@ remoteDispatchDomainInterfaceAddresses(virNetServerPtr server ATTRIBUTE_UNUSED,
     virDomainPtr dom = NULL;
     virDomainInterfacePtr *ifaces = NULL;
     int ifaces_count = 0;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetHypervisorConn(client);
 
-    if (!priv->conn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(dom = get_nonnull_domain(priv->conn, args->dom)))
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
         goto cleanup;
 
     if ((ifaces_count = virDomainInterfaceAddresses(dom, &ifaces, args->source, args->flags)) < 0)
@@ -7273,15 +7075,12 @@ remoteDispatchStorageVolGetInfoFlags(virNetServerPtr server ATTRIBUTE_UNUSED,
     int rv = -1;
     virStorageVolPtr vol = NULL;
     virStorageVolInfo tmp;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetStorageConn(client);
 
-    if (!priv->storageConn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(vol = get_nonnull_storage_vol(priv->storageConn, args->vol)))
+    if (!(vol = get_nonnull_storage_vol(conn, args->vol)))
         goto cleanup;
 
     if (virStorageVolGetInfoFlags(vol, &tmp, args->flags) < 0)
@@ -7312,15 +7111,12 @@ remoteDispatchNetworkPortGetParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
     virNetworkPortPtr port = NULL;
     virTypedParameterPtr params = NULL;
     int nparams = 0;
-    struct daemonClientPrivate *priv =
-        virNetServerClientGetPrivateData(client);
+    virConnectPtr conn = remoteGetNetworkConn(client);
 
-    if (!priv->networkConn) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+    if (!conn)
         goto cleanup;
-    }
 
-    if (!(port = get_nonnull_network_port(priv->networkConn, args->port)))
+    if (!(port = get_nonnull_network_port(conn, args->port)))
         goto cleanup;
 
     if (virNetworkPortGetParameters(port, &params, &nparams, args->flags) < 0)
