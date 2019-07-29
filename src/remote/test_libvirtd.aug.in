@@ -1,5 +1,5 @@
 module Test_libvirtd =
-   ::CONFIG::
+   @CONFIG@
 
    test Libvirtd.lns get conf =
         { "listen_tls" = "0" }

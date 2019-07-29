@@ -1,5 +1,5 @@
 module Test_libvirt_lockd =
-  ::CONFIG::
+  @CONFIG@
 
    test Libvirt_lockd.lns get conf =
 { "auto_disk_leases" = "0" }

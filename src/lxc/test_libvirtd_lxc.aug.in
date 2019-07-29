@@ -1,5 +1,5 @@
 module Test_libvirtd_lxc =
-  ::CONFIG::
+  @CONFIG@
 
    test Libvirtd_lxc.lns get conf =
 { "log_with_libvirtd" = "1" }

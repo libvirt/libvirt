@@ -1,5 +1,5 @@
 module Test_virtlockd =
-   ::CONFIG::
+   @CONFIG@
 
    test Virtlockd.lns get conf =
         { "log_level" = "3" }

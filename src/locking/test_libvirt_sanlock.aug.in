@@ -1,5 +1,5 @@
 module Test_libvirt_sanlock =
-  ::CONFIG::
+  @CONFIG@
 
    test Libvirt_sanlock.lns get conf =
 { "auto_disk_leases" = "1" }
