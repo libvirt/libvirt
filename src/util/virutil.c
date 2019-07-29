@@ -1738,7 +1738,7 @@ const char *virGetEnvBlockSUID(const char *name)
 
 
 /**
- * virGetEnvBlockSUID:
+ * virGetEnvAllowSUID:
  * @name: the environment variable name
  *
  * Obtain an environment variable which is safe to
