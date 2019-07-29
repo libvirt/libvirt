@@ -532,6 +532,7 @@ int virStorageFileChown(const virStorageSource *src, uid_t uid, gid_t gid);
 
 int virStorageFileSupportsSecurityDriver(const virStorageSource *src);
 int virStorageFileSupportsAccess(const virStorageSource *src);
+int virStorageFileSupportsCreate(const virStorageSource *src);
 
 int virStorageFileGetMetadata(virStorageSourcePtr src,
                               uid_t uid, gid_t gid,

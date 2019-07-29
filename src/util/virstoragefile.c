@@ -4505,6 +4505,26 @@ virStorageFileSupportsAccess(const virStorageSource *src)
 }
 
 
+/**
+ * virStorageFileSupportsCreate:
+ * @src: a storage file structure
+ *
+ * Check if the storage driver supports creating storage described by @src
+ * via virStorageFileCreate.
+ */
+int
+virStorageFileSupportsCreate(const virStorageSource *src)
+{
+    virStorageFileBackendPtr backend;
+    int rv;
+
+    if ((rv = virStorageFileGetBackendForSupportCheck(src, &backend)) < 1)
+        return rv;
+
+    return backend->storageFileCreate ? 1 : 0;
+}
+
+
 void
 virStorageFileDeinit(virStorageSourcePtr src)
 {
