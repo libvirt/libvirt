@@ -4212,12 +4212,12 @@ remoteDispatchConnectDomainEventRegister(virNetServerPtr server ATTRIBUTE_UNUSED
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
 
+    virMutexLock(&priv->lock);
+
     if (!priv->conn) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
         goto cleanup;
     }
-
-    virMutexLock(&priv->lock);
 
     /* If we call register first, we could append a complete callback
      * to our array, but on OOM append failure, we'd have to then hope
@@ -4276,12 +4276,12 @@ remoteDispatchConnectDomainEventDeregister(virNetServerPtr server ATTRIBUTE_UNUS
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
 
+    virMutexLock(&priv->lock);
+
     if (!priv->conn) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
         goto cleanup;
     }
-
-    virMutexLock(&priv->lock);
 
     for (i = 0; i < priv->ndomainEventCallbacks; i++) {
         if (priv->domainEventCallbacks[i]->eventID == VIR_DOMAIN_EVENT_ID_LIFECYCLE) {
@@ -4440,12 +4440,12 @@ remoteDispatchConnectDomainEventRegisterAny(virNetServerPtr server ATTRIBUTE_UNU
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
 
+    virMutexLock(&priv->lock);
+
     if (!priv->conn) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
         goto cleanup;
     }
-
-    virMutexLock(&priv->lock);
 
     /* We intentionally do not use VIR_DOMAIN_EVENT_ID_LAST here; any
      * new domain events added after this point should only use the
@@ -4516,12 +4516,12 @@ remoteDispatchConnectDomainEventCallbackRegisterAny(virNetServerPtr server ATTRI
         virNetServerClientGetPrivateData(client);
     virDomainPtr dom = NULL;
 
+    virMutexLock(&priv->lock);
+
     if (!priv->conn) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
         goto cleanup;
     }
-
-    virMutexLock(&priv->lock);
 
     if (args->dom &&
         !(dom = get_nonnull_domain(priv->conn, *args->dom)))
@@ -4590,12 +4590,12 @@ remoteDispatchConnectDomainEventDeregisterAny(virNetServerPtr server ATTRIBUTE_U
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
 
+    virMutexLock(&priv->lock);
+
     if (!priv->conn) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
         goto cleanup;
     }
-
-    virMutexLock(&priv->lock);
 
     /* We intentionally do not use VIR_DOMAIN_EVENT_ID_LAST here; any
      * new domain events added after this point should only use the
@@ -4647,12 +4647,12 @@ remoteDispatchConnectDomainEventCallbackDeregisterAny(virNetServerPtr server ATT
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
 
+    virMutexLock(&priv->lock);
+
     if (!priv->conn) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
         goto cleanup;
     }
-
-    virMutexLock(&priv->lock);
 
     for (i = 0; i < priv->ndomainEventCallbacks; i++) {
         if (priv->domainEventCallbacks[i]->callbackID == args->callbackID)
@@ -6089,12 +6089,12 @@ remoteDispatchConnectNetworkEventRegisterAny(virNetServerPtr server ATTRIBUTE_UN
         virNetServerClientGetPrivateData(client);
     virNetworkPtr net = NULL;
 
+    virMutexLock(&priv->lock);
+
     if (!priv->networkConn) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
         goto cleanup;
     }
-
-    virMutexLock(&priv->lock);
 
     if (args->net &&
         !(net = get_nonnull_network(priv->networkConn, *args->net)))
@@ -6162,12 +6162,12 @@ remoteDispatchConnectNetworkEventDeregisterAny(virNetServerPtr server ATTRIBUTE_
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
 
+    virMutexLock(&priv->lock);
+
     if (!priv->networkConn) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
         goto cleanup;
     }
-
-    virMutexLock(&priv->lock);
 
     for (i = 0; i < priv->nnetworkEventCallbacks; i++) {
         if (priv->networkEventCallbacks[i]->callbackID == args->callbackID)
@@ -6211,12 +6211,12 @@ remoteDispatchConnectStoragePoolEventRegisterAny(virNetServerPtr server ATTRIBUT
         virNetServerClientGetPrivateData(client);
     virStoragePoolPtr  pool = NULL;
 
+    virMutexLock(&priv->lock);
+
     if (!priv->storageConn) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
         goto cleanup;
     }
-
-    virMutexLock(&priv->lock);
 
     if (args->pool &&
         !(pool = get_nonnull_storage_pool(priv->storageConn, *args->pool)))
@@ -6283,12 +6283,12 @@ remoteDispatchConnectStoragePoolEventDeregisterAny(virNetServerPtr server ATTRIB
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
 
+    virMutexLock(&priv->lock);
+
     if (!priv->storageConn) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
         goto cleanup;
     }
-
-    virMutexLock(&priv->lock);
 
     for (i = 0; i < priv->nstorageEventCallbacks; i++) {
         if (priv->storageEventCallbacks[i]->callbackID == args->callbackID)
@@ -6332,12 +6332,12 @@ remoteDispatchConnectNodeDeviceEventRegisterAny(virNetServerPtr server ATTRIBUTE
         virNetServerClientGetPrivateData(client);
     virNodeDevicePtr  dev = NULL;
 
+    virMutexLock(&priv->lock);
+
     if (!priv->nodedevConn) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
         goto cleanup;
     }
-
-    virMutexLock(&priv->lock);
 
     if (args->dev &&
         !(dev = get_nonnull_node_device(priv->nodedevConn, *args->dev)))
@@ -6404,12 +6404,12 @@ remoteDispatchConnectNodeDeviceEventDeregisterAny(virNetServerPtr server ATTRIBU
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
 
+    virMutexLock(&priv->lock);
+
     if (!priv->nodedevConn) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
         goto cleanup;
     }
-
-    virMutexLock(&priv->lock);
 
     for (i = 0; i < priv->nnodeDeviceEventCallbacks; i++) {
         if (priv->nodeDeviceEventCallbacks[i]->callbackID == args->callbackID)
@@ -6453,12 +6453,12 @@ remoteDispatchConnectSecretEventRegisterAny(virNetServerPtr server ATTRIBUTE_UNU
         virNetServerClientGetPrivateData(client);
     virSecretPtr secret = NULL;
 
+    virMutexLock(&priv->lock);
+
     if (!priv->secretConn) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
         goto cleanup;
     }
-
-    virMutexLock(&priv->lock);
 
     if (args->secret &&
         !(secret = get_nonnull_secret(priv->secretConn, *args->secret)))
@@ -6525,12 +6525,12 @@ remoteDispatchConnectSecretEventDeregisterAny(virNetServerPtr server ATTRIBUTE_U
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
 
+    virMutexLock(&priv->lock);
+
     if (!priv->secretConn) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
         goto cleanup;
     }
-
-    virMutexLock(&priv->lock);
 
     for (i = 0; i < priv->nsecretEventCallbacks; i++) {
         if (priv->secretEventCallbacks[i]->callbackID == args->callbackID)
@@ -6575,12 +6575,12 @@ qemuDispatchConnectDomainMonitorEventRegister(virNetServerPtr server ATTRIBUTE_U
     virDomainPtr dom = NULL;
     const char *event = args->event ? *args->event : NULL;
 
+    virMutexLock(&priv->lock);
+
     if (!priv->conn) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
         goto cleanup;
     }
-
-    virMutexLock(&priv->lock);
 
     if (args->dom &&
         !(dom = get_nonnull_domain(priv->conn, *args->dom)))
@@ -6643,12 +6643,12 @@ qemuDispatchConnectDomainMonitorEventDeregister(virNetServerPtr server ATTRIBUTE
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
 
+    virMutexLock(&priv->lock);
+
     if (!priv->conn) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
         goto cleanup;
     }
-
-    virMutexLock(&priv->lock);
 
     for (i = 0; i < priv->nqemuEventCallbacks; i++) {
         if (priv->qemuEventCallbacks[i]->callbackID == args->callbackID)
