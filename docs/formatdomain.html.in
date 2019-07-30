@@ -2033,6 +2033,7 @@
     &lt;vpindex state='on'/&gt;
     &lt;runtime state='on'/&gt;
     &lt;synic state='on'/&gt;
+    &lt;stimer state='on'/&gt;
     &lt;reset state='on'/&gt;
     &lt;vendor_id state='on' value='KVM Hv'/&gt;
     &lt;frequencies state='on'/&gt;
