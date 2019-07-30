@@ -1338,7 +1338,7 @@ exclude_file_name_regexp--sc_prohibit_always-defined_macros = \
   ^tests/virtestmock.c$$
 
 exclude_file_name_regexp--sc_prohibit_readdir = \
-  ^tests/(.*mock|virfilewrapper)\.c$$
+  ^(tests/(.*mock|virfilewrapper)\.c|tools/nss/libvirt_nss\.c)$$
 
 exclude_file_name_regexp--sc_prohibit_cross_inclusion = \
   ^(src/util/virclosecallbacks\.h|src/util/virhostdev\.h)$$

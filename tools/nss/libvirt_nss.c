@@ -281,7 +281,8 @@ findLease(const char *name,
         goto cleanup;
     }
 
-    if (virDirOpenQuiet(&dir, leaseDir) < 0) {
+    dir = opendir(leaseDir);
+    if (!dir) {
         ERROR("Failed to open dir '%s'", leaseDir);
         goto cleanup;
     }
@@ -292,7 +293,7 @@ findLease(const char *name,
     }
 
     DEBUG("Dir: %s", leaseDir);
-    while ((ret = virDirRead(dir, &entry, leaseDir)) > 0) {
+    while ((entry = readdir(dir)) != NULL) {
         char *path;
 
         if (virStringHasSuffix(entry->d_name, ".status")) {
@@ -324,8 +325,11 @@ findLease(const char *name,
             nMacmaps++;
             VIR_FREE(path);
         }
+
+        errno = 0;
     }
-    VIR_DIR_CLOSE(dir);
+    closedir(dir);
+    dir = NULL;
 
     nleases = virJSONValueArraySize(leases_array);
     DEBUG("Read %zd leases", nleases);
@@ -363,7 +367,8 @@ findLease(const char *name,
 
  cleanup:
     *errnop = errno;
-    VIR_DIR_CLOSE(dir);
+    if (dir)
+        closedir(dir);
     while (nMacmaps)
         virObjectUnref(macmaps[--nMacmaps]);
     return ret;
