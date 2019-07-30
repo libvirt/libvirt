@@ -44,7 +44,6 @@ VIR_LOG_INIT("util.pci");
 
 #define PCI_SYSFS "/sys/bus/pci/"
 #define PCI_ID_LEN 10   /* "XXXX XXXX" */
-#define PCI_ADDR_LEN 13 /* "XXXX:XX:XX.X" */
 
 VIR_ENUM_IMPL(virPCIELinkSpeed,
               VIR_PCIE_LINK_SPEED_LAST,
@@ -69,7 +68,7 @@ VIR_ENUM_IMPL(virPCIHeader,
 struct _virPCIDevice {
     virPCIDeviceAddress address;
 
-    char          name[PCI_ADDR_LEN]; /* domain:bus:slot.function */
+    char          *name;              /* domain:bus:slot.function */
     char          id[PCI_ID_LEN];     /* product vendor */
     char          *path;
 
@@ -1761,13 +1760,11 @@ virPCIDeviceNew(unsigned int domain,
     dev->address.slot = slot;
     dev->address.function = function;
 
-    if (snprintf(dev->name, sizeof(dev->name), "%.4x:%.2x:%.2x.%.1x",
-                 domain, bus, slot, function) >= sizeof(dev->name)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("dev->name buffer overflow: %.4x:%.2x:%.2x.%.1x"),
-                       domain, bus, slot, function);
+    if (virAsprintf(&dev->name,
+                    "%.4x:%.2x:%.2x.%.1x",
+                    domain, bus, slot, function) < 0)
         return NULL;
-    }
+
     if (virAsprintf(&dev->path, PCI_SYSFS "devices/%s/config",
                     dev->name) < 0)
         return NULL;
@@ -1816,7 +1813,8 @@ virPCIDeviceCopy(virPCIDevicePtr dev)
     *copy = *dev;
     copy->path = NULL;
     copy->used_by_drvname = copy->used_by_domname = NULL;
-    if (VIR_STRDUP(copy->path, dev->path) < 0 ||
+    if (VIR_STRDUP(copy->name, dev->name) < 0 ||
+        VIR_STRDUP(copy->path, dev->path) < 0 ||
         VIR_STRDUP(copy->used_by_drvname, dev->used_by_drvname) < 0 ||
         VIR_STRDUP(copy->used_by_domname, dev->used_by_domname) < 0) {
         goto error;
@@ -1835,6 +1833,7 @@ virPCIDeviceFree(virPCIDevicePtr dev)
     if (!dev)
         return;
     VIR_DEBUG("%s %s: freeing", dev->id, dev->name);
+    VIR_FREE(dev->name);
     VIR_FREE(dev->path);
     VIR_FREE(dev->used_by_drvname);
     VIR_FREE(dev->used_by_domname);
