@@ -7091,8 +7091,8 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
     switch ((virDomainDeviceAddressType) info->type) {
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
         if (!virPCIDeviceAddressIsEmpty(&info->addr.pci)) {
-            virBufferAsprintf(&attrBuf, " domain='0x%.4x' bus='0x%.2x' "
-                              "slot='0x%.2x' function='0x%.1x'",
+            virBufferAsprintf(&attrBuf, " domain='0x%04x' bus='0x%02x' "
+                              "slot='0x%02x' function='0x%d'",
                               info->addr.pci.domain,
                               info->addr.pci.bus,
                               info->addr.pci.slot,

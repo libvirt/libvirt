@@ -293,8 +293,8 @@ virPCIDeviceAddressFormat(virBufferPtr buf,
                           virPCIDeviceAddress addr,
                           bool includeTypeInAddr)
 {
-    virBufferAsprintf(buf, "<address %sdomain='0x%.4x' bus='0x%.2x' "
-                      "slot='0x%.2x' function='0x%.1x'/>\n",
+    virBufferAsprintf(buf, "<address %sdomain='0x%04x' bus='0x%02x' "
+                      "slot='0x%02x' function='0x%d'/>\n",
                       includeTypeInAddr ? "type='pci' " : "",
                       addr.domain,
                       addr.bus,

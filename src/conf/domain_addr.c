@@ -868,7 +868,7 @@ virDomainPCIAddressReserveAddrInternal(virDomainPCIAddressSetPtr addrs,
         /* The first device decides the isolation group for the
          * entire bus */
         bus->isolationGroup = isolationGroup;
-        VIR_DEBUG("PCI bus %.4x:%.2x assigned isolation group %u because of "
+        VIR_DEBUG("PCI bus %04x:%02x assigned isolation group %u because of "
                   "first device %s",
                   addr->domain, addr->bus, isolationGroup, addrStr);
     } else if (bus->isolationGroup != isolationGroup && fromConfig) {
@@ -879,7 +879,7 @@ virDomainPCIAddressReserveAddrInternal(virDomainPCIAddressSetPtr addrs,
          * back to the default (because at that point isolation can't
          * be guaranteed anymore) */
         bus->isolationGroup = 0;
-        VIR_DEBUG("PCI bus %.4x:%.2x assigned isolation group %u because of "
+        VIR_DEBUG("PCI bus %04x:%02x assigned isolation group %u because of "
                   "user assigned address %s",
                   addr->domain, addr->bus, isolationGroup, addrStr);
     }
@@ -1114,7 +1114,7 @@ virDomainPCIAddressFindUnusedFunctionOnBus(virDomainPCIAddressBusPtr bus,
 
     if (!virDomainPCIAddressFlagsCompatible(searchAddr, addrStr, bus->flags,
                                             flags, false, false)) {
-        VIR_DEBUG("PCI bus %.4x:%.2x is not compatible with the device",
+        VIR_DEBUG("PCI bus %04x:%02x is not compatible with the device",
                   searchAddr->domain, searchAddr->bus);
     } else {
         while (searchAddr->slot <= bus->maxSlot) {
@@ -1150,7 +1150,7 @@ virDomainPCIAddressFindUnusedFunctionOnBus(virDomainPCIAddressBusPtr bus,
                 }
             }
 
-            VIR_DEBUG("PCI slot %.4x:%.2x:%.2x already in use",
+            VIR_DEBUG("PCI slot %04x:%02x:%02x already in use",
                       searchAddr->domain, searchAddr->bus, searchAddr->slot);
             searchAddr->slot++;
         }
@@ -1248,7 +1248,7 @@ virDomainPCIAddressGetNextAddr(virDomainPCIAddressSetPtr addrs,
     return -1;
 
  success:
-    VIR_DEBUG("Found free PCI slot %.4x:%.2x:%.2x",
+    VIR_DEBUG("Found free PCI slot %04x:%02x:%02x",
               a.domain, a.bus, a.slot);
     *next_addr = a;
     return 0;

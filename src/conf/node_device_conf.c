@@ -239,8 +239,8 @@ virNodeDeviceCapPCIDefFormat(virBufferPtr buf,
         virBufferAddLit(buf, "<capability type='phys_function'>\n");
         virBufferAdjustIndent(buf, 2);
         virBufferAsprintf(buf,
-                          "<address domain='0x%.4x' bus='0x%.2x' "
-                          "slot='0x%.2x' function='0x%.1x'/>\n",
+                          "<address domain='0x%04x' bus='0x%02x' "
+                          "slot='0x%02x' function='0x%d'/>\n",
                           data->pci_dev.physical_function->domain,
                           data->pci_dev.physical_function->bus,
                           data->pci_dev.physical_function->slot,
@@ -260,8 +260,8 @@ virNodeDeviceCapPCIDefFormat(virBufferPtr buf,
             virBufferAdjustIndent(buf, 2);
             for (i = 0; i < data->pci_dev.num_virtual_functions; i++) {
                 virBufferAsprintf(buf,
-                                  "<address domain='0x%.4x' bus='0x%.2x' "
-                                  "slot='0x%.2x' function='0x%.1x'/>\n",
+                                  "<address domain='0x%04x' bus='0x%02x' "
+                                  "slot='0x%02x' function='0x%d'/>\n",
                                   data->pci_dev.virtual_functions[i]->domain,
                                   data->pci_dev.virtual_functions[i]->bus,
                                   data->pci_dev.virtual_functions[i]->slot,
@@ -302,8 +302,8 @@ virNodeDeviceCapPCIDefFormat(virBufferPtr buf,
         virBufferAdjustIndent(buf, 2);
         for (i = 0; i < data->pci_dev.nIommuGroupDevices; i++) {
             virBufferAsprintf(buf,
-                              "<address domain='0x%.4x' bus='0x%.2x' "
-                              "slot='0x%.2x' function='0x%.1x'/>\n",
+                              "<address domain='0x%04x' bus='0x%02x' "
+                              "slot='0x%02x' function='0x%d'/>\n",
                               data->pci_dev.iommuGroupDevices[i]->domain,
                               data->pci_dev.iommuGroupDevices[i]->bus,
                               data->pci_dev.iommuGroupDevices[i]->slot,

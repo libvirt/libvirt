@@ -1006,8 +1006,8 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
 
         virBufferAddLit(&buf, "<source>\n");
         virBufferAdjustIndent(&buf, 2);
-        virBufferAsprintf(&buf, "<address type='pci' domain='0x%.4x'"
-                          " bus='0x%.2x' slot='0x%.2x' function='0x%.1x'/>\n",
+        virBufferAsprintf(&buf, "<address type='pci' domain='0x%04x'"
+                          " bus='0x%02x' slot='0x%02x' function='0x%d'/>\n",
                           pciAddr.domain, pciAddr.bus,
                           pciAddr.slot, pciAddr.function);
         virBufferAdjustIndent(&buf, -2);
