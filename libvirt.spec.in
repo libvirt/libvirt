@@ -1135,10 +1135,17 @@ exit 1
     # Nightly edk2.git-arm
     LOADERS="$LOADERS:/usr/share/edk2.git/arm/QEMU_EFI-pflash.raw:/usr/share/edk2.git/arm/vars-template-pflash.raw"
 
-    # Fedora edk2-ovmf
+    # Fedora edk2-ovmf, x86_64
     LOADERS="$LOADERS:/usr/share/edk2/ovmf/OVMF_CODE.fd:/usr/share/edk2/ovmf/OVMF_VARS.fd"
+    # Fedora edk2-ovmf, x86_64, with Secure Boot
+    LOADERS="$LOADERS:/usr/share/edk2/ovmf/OVMF_CODE.secboot.fd:/usr/share/edk2/ovmf/OVMF_VARS.secboot.fd"
     # Fedora edk2-ovmf-ia32
     LOADERS="$LOADERS:/usr/share/edk2/ovmf-ia32/OVMF_CODE.fd:/usr/share/edk2/ovmf-ia32/OVMF_VARS.fd"
+    # Fedora edk2-ovmf-ia32, with Secure Boot.  (NB: Unlike x86_64, for
+    # 'ia32', there is no secboot-variant "VARS" file (NVRAM template).
+    # So the NVRAM template for 'ovmf-ia32/OVMF_CODE.secboot.fd' is the
+    # same as the one for the non-secboot variant.)
+    LOADERS="$LOADERS:/usr/share/edk2/ovmf-ia32/OVMF_CODE.secboot.fd:/usr/share/edk2/ovmf-ia32/OVMF_VARS.fd"
     # Fedora edk2-aarch64
     LOADERS="$LOADERS:/usr/share/edk2/aarch64/QEMU_EFI-pflash.raw:/usr/share/edk2/aarch64/vars-template-pflash.raw"
     # Fedora edk2-arm
