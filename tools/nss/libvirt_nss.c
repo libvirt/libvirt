@@ -38,7 +38,6 @@
 
 #include "virlease.h"
 #include "viralloc.h"
-#include "virfile.h"
 #include "virtime.h"
 #include "virerror.h"
 #include "virsocketaddr.h"
@@ -304,7 +303,7 @@ findLease(const char *name,
         size_t dlen = strlen(entry->d_name);
 
         if (dlen >= 7 && STREQ(entry->d_name + dlen - 7, ".status")) {
-            if (!(path = virFileBuildPath(leaseDir, entry->d_name, NULL)))
+            if (asprintf(&path, "%s/%s", leaseDir, entry->d_name) < 0)
                 goto cleanup;
 
             DEBUG("Processing %s", path);
@@ -315,7 +314,7 @@ findLease(const char *name,
             }
             VIR_FREE(path);
         } else if (dlen >= 5 && STREQ(entry->d_name + dlen - 5, ".macs")) {
-            if (!(path = virFileBuildPath(leaseDir, entry->d_name, NULL)))
+            if (asprintf(&path, "%s/%s", leaseDir, entry->d_name) < 0)
                 goto cleanup;
 
             if (VIR_REALLOC_N_QUIET(macmaps, nMacmaps + 1) < 0) {
