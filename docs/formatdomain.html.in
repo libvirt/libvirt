@@ -2142,13 +2142,13 @@
         </tr>
         <tr>
           <td>synic</td>
-          <td>Enable Synthetic Interrupt Controller (SyNIC)</td>
+          <td>Enable Synthetic Interrupt Controller (SynIC)</td>
           <td>on, off</td>
           <td><span class="since">1.3.3 (QEMU 2.6)</span></td>
         </tr>
         <tr>
           <td>stimer</td>
-          <td>Enable SyNIC timers</td>
+          <td>Enable SynIC timers</td>
           <td>on, off</td>
           <td><span class="since">1.3.3 (QEMU 2.6)</span></td>
         </tr>
