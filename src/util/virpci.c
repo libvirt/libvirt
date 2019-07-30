@@ -1734,7 +1734,8 @@ virPCIDeviceAddressAsString(virPCIDeviceAddressPtr addr)
 {
     char *str;
 
-    ignore_value(virAsprintf(&str, "%.4x:%.2x:%.2x.%.1x",
+    ignore_value(virAsprintf(&str,
+                             VIR_PCI_DEVICE_ADDRESS_FMT,
                              addr->domain,
                              addr->bus,
                              addr->slot,
@@ -1761,7 +1762,7 @@ virPCIDeviceNew(unsigned int domain,
     dev->address.function = function;
 
     if (virAsprintf(&dev->name,
-                    "%.4x:%.2x:%.2x.%.1x",
+                    VIR_PCI_DEVICE_ADDRESS_FMT,
                     domain, bus, slot, function) < 0)
         return NULL;
 
@@ -2120,7 +2121,7 @@ int virPCIDeviceFileIterate(virPCIDevicePtr dev,
     struct dirent *ent;
     int direrr;
 
-    if (virAsprintf(&pcidir, "/sys/bus/pci/devices/%04x:%02x:%02x.%x",
+    if (virAsprintf(&pcidir, "/sys/bus/pci/devices/" VIR_PCI_DEVICE_ADDRESS_FMT,
                     dev->address.domain, dev->address.bus,
                     dev->address.slot, dev->address.function) < 0)
         goto cleanup;
@@ -2174,7 +2175,7 @@ virPCIDeviceAddressIOMMUGroupIterate(virPCIDeviceAddressPtr orig,
     int direrr;
 
     if (virAsprintf(&groupPath,
-                    PCI_SYSFS "devices/%04x:%02x:%02x.%x/iommu_group/devices",
+                    PCI_SYSFS "devices/" VIR_PCI_DEVICE_ADDRESS_FMT "/iommu_group/devices",
                     orig->domain, orig->bus, orig->slot, orig->function) < 0)
         goto cleanup;
 
@@ -2323,8 +2324,9 @@ virPCIDeviceAddressGetIOMMUGroupNum(virPCIDeviceAddressPtr addr)
     const char *groupNumStr;
     unsigned int groupNum;
 
-    if (virAsprintf(&devName, "%.4x:%.2x:%.2x.%.1x", addr->domain,
-                    addr->bus, addr->slot, addr->function) < 0)
+    if (virAsprintf(&devName,
+                    VIR_PCI_DEVICE_ADDRESS_FMT,
+                    addr->domain, addr->bus, addr->slot, addr->function) < 0)
         return -1;
 
     if (!(devPath = virPCIFile(devName, "iommu_group")))
@@ -2648,7 +2650,8 @@ virPCIGetPhysicalFunction(const char *vf_sysfs_path,
     }
 
     if ((*pf = virPCIGetDeviceAddressFromSysfsLink(device_link))) {
-        VIR_DEBUG("PF for VF device '%s': %.4x:%.2x:%.2x.%.1x", vf_sysfs_path,
+        VIR_DEBUG("PF for VF device '%s': " VIR_PCI_DEVICE_ADDRESS_FMT,
+                  vf_sysfs_path,
                   (*pf)->domain, (*pf)->bus, (*pf)->slot, (*pf)->function);
     }
 
@@ -2806,7 +2809,7 @@ virPCIDeviceAddressGetSysfsFile(virPCIDeviceAddressPtr addr,
                                 char **pci_sysfs_device_link)
 {
     if (virAsprintf(pci_sysfs_device_link,
-                    PCI_SYSFS "devices/%04x:%02x:%02x.%x",
+                    PCI_SYSFS "devices/" VIR_PCI_DEVICE_ADDRESS_FMT,
                     addr->domain, addr->bus,
                     addr->slot, addr->function) < 0)
         return -1;

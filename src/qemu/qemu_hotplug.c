@@ -5388,7 +5388,8 @@ qemuDomainDetachPrepHostdev(virDomainObjPtr vm,
         switch (subsys->type) {
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
             virReportError(VIR_ERR_DEVICE_MISSING,
-                           _("host pci device %.4x:%.2x:%.2x.%.1x not found"),
+                           _("host pci device " VIR_PCI_DEVICE_ADDRESS_FMT
+                             " not found"),
                            pcisrc->addr.domain, pcisrc->addr.bus,
                            pcisrc->addr.slot, pcisrc->addr.function);
             break;
@@ -5874,7 +5875,7 @@ qemuDomainDetachDeviceLive(virDomainObjPtr vm,
     if (qemuIsMultiFunctionDevice(vm->def, info)) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("cannot hot unplug %s device with multifunction PCI guest address: "
-                         "%.4x:%.2x:%.2x.%.1x"),
+                         VIR_PCI_DEVICE_ADDRESS_FMT),
                        virDomainDeviceTypeToString(detach.type),
                        info->addr.pci.domain, info->addr.pci.bus,
                        info->addr.pci.slot, info->addr.pci.function);

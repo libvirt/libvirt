@@ -376,7 +376,8 @@ virDomainAuditHostdev(virDomainObjPtr vm, virDomainHostdevDefPtr hostdev,
     case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
         switch ((virDomainHostdevSubsysType) hostdev->source.subsys.type) {
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-            if (virAsprintfQuiet(&address, "%.4x:%.2x:%.2x.%.1x",
+            if (virAsprintfQuiet(&address,
+                                 VIR_PCI_DEVICE_ADDRESS_FMT,
                                  pcisrc->addr.domain,
                                  pcisrc->addr.bus,
                                  pcisrc->addr.slot,

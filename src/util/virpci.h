@@ -44,6 +44,8 @@ struct _virZPCIDeviceAddress {
     unsigned int fid;
 };
 
+#define VIR_PCI_DEVICE_ADDRESS_FMT "%.4x:%.2x:%.2x.%.1x"
+
 struct _virPCIDeviceAddress {
     unsigned int domain;
     unsigned int bus;

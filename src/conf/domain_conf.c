@@ -16992,7 +16992,7 @@ virDomainNetFindIdx(virDomainDefPtr def, virDomainNetDefPtr net)
         if (MACAddrSpecified && PCIAddrSpecified) {
             virReportError(VIR_ERR_DEVICE_MISSING,
                            _("no device matching MAC address %s found on "
-                             "%.4x:%.2x:%.2x.%.1x"),
+                             VIR_PCI_DEVICE_ADDRESS_FMT),
                            virMacAddrFormat(&net->mac, mac),
                            net->info.addr.pci.domain,
                            net->info.addr.pci.bus,
@@ -17000,7 +17000,7 @@ virDomainNetFindIdx(virDomainDefPtr def, virDomainNetDefPtr net)
                            net->info.addr.pci.function);
         } else if (PCIAddrSpecified) {
             virReportError(VIR_ERR_DEVICE_MISSING,
-                           _("no device found on %.4x:%.2x:%.2x.%.1x"),
+                           _("no device found on " VIR_PCI_DEVICE_ADDRESS_FMT),
                            net->info.addr.pci.domain,
                            net->info.addr.pci.bus,
                            net->info.addr.pci.slot,
@@ -21625,8 +21625,8 @@ virDomainDeviceInfoCheckABIStability(virDomainDeviceInfoPtr src,
             src->addr.pci.slot != dst->addr.pci.slot ||
             src->addr.pci.function != dst->addr.pci.function) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Target device PCI address %04x:%02x:%02x.%02x "
-                             "does not match source %04x:%02x:%02x.%02x"),
+                           _("Target device PCI address " VIR_PCI_DEVICE_ADDRESS_FMT
+                             "does not match source " VIR_PCI_DEVICE_ADDRESS_FMT),
                            dst->addr.pci.domain, dst->addr.pci.bus,
                            dst->addr.pci.slot, dst->addr.pci.function,
                            src->addr.pci.domain, src->addr.pci.bus,

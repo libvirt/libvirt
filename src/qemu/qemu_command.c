@@ -4933,7 +4933,8 @@ qemuBuildPCIHostdevDevStr(const virDomainDef *def,
     }
 
     virBufferAddLit(&buf, ",host=");
-    virBufferAsprintf(&buf, "%.4x:%.2x:%.2x.%.1x",
+    virBufferAsprintf(&buf,
+                      VIR_PCI_DEVICE_ADDRESS_FMT,
                       pcisrc->addr.domain,
                       pcisrc->addr.bus,
                       pcisrc->addr.slot,
