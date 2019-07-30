@@ -1749,7 +1749,6 @@ virPCIDeviceNew(unsigned int domain,
                 unsigned int slot,
                 unsigned int function)
 {
-    virPCIDevicePtr ret = NULL;
     VIR_AUTOPTR(virPCIDevice) dev = NULL;
     VIR_AUTOFREE(char *) vendor = NULL;
     VIR_AUTOFREE(char *) product = NULL;
@@ -1767,17 +1766,17 @@ virPCIDeviceNew(unsigned int domain,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("dev->name buffer overflow: %.4x:%.2x:%.2x.%.1x"),
                        domain, bus, slot, function);
-        goto cleanup;
+        return NULL;
     }
     if (virAsprintf(&dev->path, PCI_SYSFS "devices/%s/config",
                     dev->name) < 0)
-        goto cleanup;
+        return NULL;
 
     if (!virFileExists(dev->path)) {
         virReportSystemError(errno,
                              _("Device %s not found: could not access %s"),
                              dev->name, dev->path);
-        goto cleanup;
+        return NULL;
     }
 
     vendor  = virPCIDeviceReadID(dev, "vendor");
@@ -1787,7 +1786,7 @@ virPCIDeviceNew(unsigned int domain,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to read product/vendor ID for %s"),
                        dev->name);
-        goto cleanup;
+        return NULL;
     }
 
     /* strings contain '0x' prefix */
@@ -1796,15 +1795,12 @@ virPCIDeviceNew(unsigned int domain,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("dev->id buffer overflow: %s %s"),
                        &vendor[2], &product[2]);
-        goto cleanup;
+        return NULL;
     }
 
     VIR_DEBUG("%s %s: initialized", dev->id, dev->name);
 
-    VIR_STEAL_PTR(ret, dev);
-
- cleanup:
-    return ret;
+    VIR_RETURN_PTR(dev);
 }
 
 
