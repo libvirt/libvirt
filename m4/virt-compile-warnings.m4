@@ -68,61 +68,8 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     # Source: https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
     dontwarn="$dontwarn -Wdisabled-optimization"
 
-    # gcc 4.2 treats attribute(format) as an implicit attribute(nonnull),
-    # which triggers spurious warnings for our usage
-    AC_CACHE_CHECK([whether the C compiler's -Wformat allows NULL strings],
-      [lv_cv_gcc_wformat_null_works], [
-      save_CFLAGS=$CFLAGS
-      CFLAGS='-Wunknown-pragmas -Werror -Wformat'
-      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-        #include <stddef.h>
-        static __attribute__ ((__format__ (__printf__, 1, 2))) int
-        foo (const char *fmt, ...) { return !fmt; }
-      ]], [[
-        return foo(NULL);
-      ]])],
-      [lv_cv_gcc_wformat_null_works=yes],
-      [lv_cv_gcc_wformat_null_works=no])
-      CFLAGS=$save_CFLAGS])
-
-    # Gnulib uses '#pragma GCC diagnostic push' to silence some
-    # warnings, but older gcc doesn't support this.
-    AC_CACHE_CHECK([whether pragma GCC diagnostic push works],
-      [lv_cv_gcc_pragma_push_works], [
-      save_CFLAGS=$CFLAGS
-      CFLAGS='-Wunknown-pragmas -Werror'
-      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic pop
-      ]])],
-      [lv_cv_gcc_pragma_push_works=yes],
-      [lv_cv_gcc_pragma_push_works=no])
-      CFLAGS=$save_CFLAGS])
-    if test $lv_cv_gcc_pragma_push_works = no; then
-      dontwarn="$dontwarn -Wmissing-prototypes"
-      dontwarn="$dontwarn -Wmissing-declarations"
-      dontwarn="$dontwarn -Wcast-align"
-    else
-      AC_DEFINE_UNQUOTED([WORKING_PRAGMA_PUSH], 1,
-       [Define to 1 if gcc supports pragma push/pop])
-    fi
-
-    dnl Check whether strchr(s, char variable) causes a bogus compile
-    dnl warning, which is the case with GCC < 4.6 on some glibc
-    AC_CACHE_CHECK([whether the C compiler's -Wlogical-op gives bogus warnings],
-      [lv_cv_gcc_wlogical_op_broken], [
-      save_CFLAGS="$CFLAGS"
-      CFLAGS="-O2 -Wlogical-op -Werror"
-      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-        #include <string.h>
-        ]], [[
-        const char *haystack;
-        char needle;
-        return strchr(haystack, needle) == haystack;]])],
-        [lv_cv_gcc_wlogical_op_broken=no],
-        [lv_cv_gcc_wlogical_op_broken=yes])
-      CFLAGS="$save_CFLAGS"])
-
+    # Broken in 6.0 and later
+    #     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69602
     AC_CACHE_CHECK([whether gcc gives bogus warnings for -Wlogical-op],
       [lv_cv_gcc_wlogical_op_equal_expr_broken], [
         save_CFLAGS="$CFLAGS"
@@ -188,14 +135,8 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     wantwarn="$wantwarn -Wswitch-enum"
 
     # GNULIB turns on -Wformat=2 which implies -Wformat-nonliteral,
-    # so we need to manually re-exclude it.  Also, older gcc 4.2
-    # added an implied ATTRIBUTE_NONNULL on any parameter marked
-    # ATTRIBUTE_FMT_PRINT, which causes -Wformat failure on our
-    # intentional use of virReportError(code, NULL).
+    # so we need to manually re-exclude it.
     wantwarn="$wantwarn -Wno-format-nonliteral"
-    if test $lv_cv_gcc_wformat_null_works = no; then
-      wantwarn="$wantwarn -Wno-format"
-    fi
 
     # -Wformat enables this by default, and we should keep it,
     # but need to rewrite various areas of code first
@@ -282,12 +223,6 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
      # define _FORTIFY_SOURCE 2
      #endif
     ])
-
-    if test "$gl_cv_warn_c__Wlogical_op" = yes &&
-       test "$lv_cv_gcc_wlogical_op_broken" = yes; then
-      AC_DEFINE_UNQUOTED([BROKEN_GCC_WLOGICALOP_STRCHR], 1,
-       [Define to 1 if gcc -Wlogical-op reports false positives on strchr])
-    fi
 
     if test "$gl_cv_warn_c__Wlogical_op" = yes &&
        test "$lv_cv_gcc_wlogical_op_equal_expr_broken" = yes; then

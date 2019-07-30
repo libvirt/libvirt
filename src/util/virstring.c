@@ -1350,9 +1350,6 @@ virStringHasControlChars(const char *str)
 }
 
 
-VIR_WARNINGS_NO_WLOGICALOP_STRCHR
-
-
 /**
  * virStringStripControlChars:
  * @str: the string to strip

@@ -421,9 +421,6 @@ virBufferVasprintf(virBufferPtr buf, const char *format, va_list argptr)
 }
 
 
-VIR_WARNINGS_NO_WLOGICALOP_STRCHR
-
-
 /**
  * virBufferEscapeString:
  * @buf: the buffer to append to

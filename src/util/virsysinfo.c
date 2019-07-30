@@ -478,10 +478,6 @@ virSysinfoReadARM(void)
     return NULL;
 }
 
-
-
-VIR_WARNINGS_NO_WLOGICALOP_STRCHR
-
 static char *
 virSysinfoParseS390Delimited(const char *base, const char *name, char **value,
                              char delim1, char delim2)

@@ -185,54 +185,36 @@
 # endif
 #endif
 
-#if WORKING_PRAGMA_PUSH
-# define VIR_WARNINGS_NO_CAST_ALIGN \
+#define VIR_WARNINGS_NO_CAST_ALIGN \
     _Pragma ("GCC diagnostic push") \
     _Pragma ("GCC diagnostic ignored \"-Wcast-align\"")
 
-# define VIR_WARNINGS_NO_DEPRECATED \
+#define VIR_WARNINGS_NO_DEPRECATED \
     _Pragma ("GCC diagnostic push") \
     _Pragma ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 
-# if HAVE_SUGGEST_ATTRIBUTE_FORMAT
-#  define VIR_WARNINGS_NO_PRINTF \
+#if HAVE_SUGGEST_ATTRIBUTE_FORMAT
+# define VIR_WARNINGS_NO_PRINTF \
     _Pragma ("GCC diagnostic push") \
     _Pragma ("GCC diagnostic ignored \"-Wsuggest-attribute=format\"")
-# else
-#  define VIR_WARNINGS_NO_PRINTF \
+#else
+# define VIR_WARNINGS_NO_PRINTF \
     _Pragma ("GCC diagnostic push")
-# endif
+#endif
 
 /* Workaround bogus GCC 6.0 for logical 'or' equal expression warnings.
  * (GCC bz 69602) */
-# if BROKEN_GCC_WLOGICALOP_EQUAL_EXPR
-#  define VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR \
+#if BROKEN_GCC_WLOGICALOP_EQUAL_EXPR
+# define VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR \
      _Pragma ("GCC diagnostic push") \
      _Pragma ("GCC diagnostic ignored \"-Wlogical-op\"")
-# else
-#  define VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR \
+#else
+# define VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR \
      _Pragma ("GCC diagnostic push")
-# endif
+#endif
 
-# define VIR_WARNINGS_RESET \
+#define VIR_WARNINGS_RESET \
     _Pragma ("GCC diagnostic pop")
-#else
-# define VIR_WARNINGS_NO_CAST_ALIGN
-# define VIR_WARNINGS_NO_DEPRECATED
-# define VIR_WARNINGS_NO_PRINTF
-# define VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR
-# define VIR_WARNINGS_RESET
-#endif
-
-/* Workaround bogus GCC < 4.6 that produces false -Wlogical-op warnings for
- * strchr(). Those old GCCs don't support push/pop. */
-#if BROKEN_GCC_WLOGICALOP_STRCHR
-# define VIR_WARNINGS_NO_WLOGICALOP_STRCHR \
-    _Pragma ("GCC diagnostic ignored \"-Wlogical-op\"")
-#else
-# define VIR_WARNINGS_NO_WLOGICALOP_STRCHR
-#endif
-
 
 /*
  * Use this when passing possibly-NULL strings to printf-a-likes.

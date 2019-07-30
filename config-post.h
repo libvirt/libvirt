@@ -71,7 +71,7 @@
 #endif /* LIBVIRT_NSS */
 
 #ifndef __GNUC__
-# error "Libvirt requires GCC >= 4.4, or CLang"
+# error "Libvirt requires GCC >= 4.8, or CLang"
 #endif
 
 /*
@@ -86,6 +86,6 @@
     ((__GNUC__ << 16) + __GNUC_MINOR__ >= ((maj) << 16) + (min))
 #endif
 
-#if !(__GNUC_PREREQ(4, 4) || defined(__clang__))
-# error "Libvirt requires GCC >= 4.4, or CLang"
+#if !(__GNUC_PREREQ(4, 8) || defined(__clang__))
+# error "Libvirt requires GCC >= 4.8, or CLang"
 #endif
