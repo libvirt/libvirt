@@ -67,6 +67,8 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     # > to handle the code effectively.
     # Source: https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
     dontwarn="$dontwarn -Wdisabled-optimization"
+    # Various valid glib APIs/macros trigger this warning
+    dontwarn="$dontwarn -Wbad-function-cast"
 
     # Broken in 6.0 and later
     #     https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69602

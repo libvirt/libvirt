@@ -52,6 +52,8 @@ BuildRequires:  mingw32-gcc
 BuildRequires:  mingw64-gcc
 BuildRequires:  mingw32-binutils
 BuildRequires:  mingw64-binutils
+BuildRequires:  mingw32-glib2 >= 2.48
+BuildRequires:  mingw64-glib2 >= 2.48
 BuildRequires:  mingw32-libgpg-error
 BuildRequires:  mingw64-libgpg-error
 BuildRequires:  mingw32-libgcrypt

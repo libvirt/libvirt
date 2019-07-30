@@ -273,6 +273,7 @@ BuildRequires: systemd-units
 %if %{with_libxl}
 BuildRequires: xen-devel
 %endif
+BuildRequires: glib2-devel >= 2.48
 BuildRequires: libxml2-devel
 BuildRequires: libxslt
 BuildRequires: readline-devel

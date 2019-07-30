@@ -13,6 +13,7 @@ addons:
       - rpcgen
       - xz
       - yajl
+      - glib
 
 matrix:
   include:
