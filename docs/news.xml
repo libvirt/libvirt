@@ -63,6 +63,17 @@
           <code>bochs-display</code> device that was added in qemu version 3.0.
         </description>
       </change>
+      <change>
+        <summary>
+          api: new virDomainCheckpoint APIs
+        </summary>
+        <description>
+          Introduce several new APIs for creating and managing
+          checkpoints in the test and qemu drivers (the latter
+          requires qcow2 images). Checkpoints serve as a way to tell
+          which portions of a disk have changed since a point in time.
+        </description>
+      </change>
     </section>
     <section title="Removed features">
       <change>
