@@ -512,9 +512,6 @@ dnl
 AC_CHECK_HEADERS([linux/kvm.h])
 
 
-AM_CONDITIONAL([WITH_SETUID_RPC_CLIENT], [test "$with_lxc$with_login_shell" != "nono"])
-
-
 dnl
 dnl check for kernel headers required by src/bridge.c
 dnl

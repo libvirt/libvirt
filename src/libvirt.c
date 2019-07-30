@@ -281,42 +281,36 @@ virGlobalInit(void)
 #endif /* HAVE_LIBINTL_H */
 
     /*
-     * Note we must avoid everything except 'remote' driver
-     * for virt-login-shell usage
-     */
-#ifndef LIBVIRT_SETUID_RPC_CLIENT
-    /*
      * Note that the order is important: the first ones have a higher
      * priority when calling virConnectOpen.
      */
-# ifdef WITH_TEST
+#ifdef WITH_TEST
     if (testRegister() == -1)
         goto error;
-# endif
-# ifdef WITH_OPENVZ
+#endif
+#ifdef WITH_OPENVZ
     if (openvzRegister() == -1)
         goto error;
-# endif
-# ifdef WITH_VMWARE
+#endif
+#ifdef WITH_VMWARE
     if (vmwareRegister() == -1)
         goto error;
-# endif
-# ifdef WITH_PHYP
+#endif
+#ifdef WITH_PHYP
     if (phypRegister() == -1)
         goto error;
-# endif
-# ifdef WITH_ESX
+#endif
+#ifdef WITH_ESX
     if (esxRegister() == -1)
         goto error;
-# endif
-# ifdef WITH_HYPERV
+#endif
+#ifdef WITH_HYPERV
     if (hypervRegister() == -1)
         goto error;
-# endif
-# ifdef WITH_XENAPI
+#endif
+#ifdef WITH_XENAPI
     if (xenapiRegister() == -1)
         goto error;
-# endif
 #endif
 #ifdef WITH_REMOTE
     if (remoteRegister() == -1)
