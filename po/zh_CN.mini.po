@@ -18,9 +18,9 @@
 # Di Wei <dwlinux@outlook.com>, 2019. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.10.0\n"
+"Project-Id-Version: libvirt 5.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-01 18:50+0100\n"
+"POT-Creation-Date: 2019-07-30 11:31+0100\n"
 "PO-Revision-Date: 2019-03-29 03:37+0000\n"
 "Last-Translator: Di Wei <dwlinux@outlook.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/projects/p/libvirt/"
@@ -1745,10 +1745,6 @@ msgstr "无法确定布尔值设备路径"
 
 msgid "Cannot determine free memory"
 msgstr "无法确定剩余内存"
-
-#, c-format
-msgid "Cannot directly attach floppy %s"
-msgstr "无法直接附加软盘 %s"
 
 msgid "Cannot disable close-on-exec flag"
 msgstr "无法禁用 close-on-exec 标签"
@@ -10023,10 +10019,6 @@ msgid "Too long network device name"
 msgstr "网络文件名过长"
 
 #, c-format
-msgid "Too many (%u) FDs passed from caller"
-msgstr "通过了过多来自主叫方的 (%u) FD"
-
-#, c-format
 msgid "Too many CPU models '%d' for limit '%d'"
 msgstr "CPU 型号数 '%d' 已超过限制 '%d'"
 
@@ -12648,9 +12640,6 @@ msgstr "嗲用程序忽略 cookieout 或者 cookieoutlen"
 msgid "caller ignores uri_out"
 msgstr "调度程序忽略 uri_out"
 
-msgid "can only passthrough directories"
-msgstr "只能穿过目录"
-
 msgid "can't change link state: device alias not found"
 msgstr "无法更改链接状态：未找到设备别名"
 
@@ -13229,22 +13218,6 @@ msgid "cannot parse CPU data"
 msgstr "无法解析 CPU 数据"
 
 #, c-format
-msgid "cannot parse PCI bus '%s'"
-msgstr "无法解析 PCI 总线 '%s'"
-
-#, c-format
-msgid "cannot parse PCI domain '%s'"
-msgstr "无法解析 PCI 域 '%s'"
-
-#, c-format
-msgid "cannot parse PCI func '%s'"
-msgstr "无法解析 PCI 功能 '%s'"
-
-#, c-format
-msgid "cannot parse PCI slot '%s'"
-msgstr "无法解析 PCI 插槽 '%s'"
-
-#, c-format
 msgid "cannot parse bus %s"
 msgstr "无法解析总线 %s"
 
@@ -13319,12 +13292,6 @@ msgstr "无法解析 typeid 参数值"
 
 msgid "cannot parse value of typeidversion parameter"
 msgstr "无法解析 typeidversion 参数值"
-
-msgid "cannot parse vbd filename, missing driver name"
-msgstr "缺少驱动名，无法解释 vbd 文件名"
-
-msgid "cannot parse vbd filename, missing driver type"
-msgstr "缺少驱动类型，无法解释 vbd 文件名"
 
 #, c-format
 msgid "cannot parse vendor id %s"
@@ -13551,10 +13518,6 @@ msgstr "无法设定 netlink 插槽 nonblocking"
 #, c-format
 msgid "cannot set security props %d (%s)"
 msgstr "无法设定安全支持 %d（%s）"
-
-#, c-format
-msgid "cannot set snapshot %s as its own parent"
-msgstr "无法将快照 %s 设定为其自身上级"
 
 msgid "cannot set supplemental groups"
 msgstr "无法设定补充组"
@@ -14592,15 +14555,8 @@ msgid "disk '%s' must use snapshot mode '%s'"
 msgstr "磁盘 '%s' 必须使用快照模式 '%s'"
 
 #, c-format
-msgid "disk '%s' not ready for pivot yet"
-msgstr "pivot 还不能使用磁盘 '%s'"
-
-#, c-format
 msgid "disk '%s' specified twice"
 msgstr "两次指定磁盘 '%s'"
-
-msgid "disk attributes: disk[,snapshot=type][,driver=type][,file=name]"
-msgstr "磁盘属性: disk[,snapshot=type][,driver=type][,file=name]"
 
 #, c-format
 msgid "disk bus '%s' cannot be hot unplugged."
@@ -14824,21 +14780,6 @@ msgstr "域信息"
 
 msgid "domain information in XML"
 msgstr "XML 中的域信息"
-
-msgid "domain information incomplete, missing HVM loader"
-msgstr "域信息不完全，缺少 HVM 装载程序"
-
-msgid "domain information incomplete, missing kernel & bootloader"
-msgstr "域信息不完全,缺少内核和启动器"
-
-msgid "domain information incomplete, missing name"
-msgstr "域信息不完全，缺少名称"
-
-msgid "domain information incomplete, vbd has no dev"
-msgstr "域信息不完全，vbd 没有 dev"
-
-msgid "domain information incomplete, vbd has no src"
-msgstr "域信息不完全，vbd 没有 src"
 
 msgid "domain is already running"
 msgstr "域正在运行中"
@@ -17428,9 +17369,6 @@ msgstr "不正常的卷扩展大小值"
 msgid "malformed volume extent stripes value"
 msgstr "不正常的卷扩展条值"
 
-msgid "managed PCI devices not supported with XenD"
-msgstr "XenD 不支持管理的 PCI 设备"
-
 msgid "managed save of a domain state"
 msgstr "管理域状态的保存"
 
@@ -17646,18 +17584,6 @@ msgstr "缺少 EGD 后端类型"
 
 msgid "missing IFLA_VF_INFO in netlink response"
 msgstr "netlink 响应中缺少 IFLA_VF_INFO"
-
-msgid "missing PCI bus"
-msgstr "缺少 PCI 总线"
-
-msgid "missing PCI domain"
-msgstr "缺少 PCI 域"
-
-msgid "missing PCI func"
-msgstr "缺少 PCI 功能"
-
-msgid "missing PCI slot"
-msgstr "缺少 PCI 插槽"
 
 msgid "missing RNG device backend model"
 msgstr "缺少 RNG 设备后端型号"
@@ -18327,9 +18253,6 @@ msgstr "没有找到 CPUs"
 msgid "no FLR, PM reset or bus reset available"
 msgstr "没有可用 FLR、PM 重置 或者总线重置"
 
-msgid "no HVM domain loader"
-msgstr "无 HVM 域装载程序"
-
 msgid "no IFLA_PORT_RESPONSE found in netlink message"
 msgstr "netlink 中没有找到 IFLA_PORT_RESPONSE"
 
@@ -18951,19 +18874,8 @@ msgstr "多次出现参数 '%s'"
 msgid "parameter=value"
 msgstr "parameter=value"
 
-#, c-format
-msgid "parent %s for snapshot %s not found"
-msgstr "未找到快照 %s 的上级 %s"
-
-#, c-format
-msgid "parent %s would create cycle to %s"
-msgstr "上级 %s 无法生成 %s 循环"
-
 msgid "parser error"
 msgstr "语法错误"
-
-msgid "parsing sxpr config failed"
-msgstr "解析 sxpr 配置失败"
 
 msgid "partial string to autocomplete"
 msgstr "需要自动补全的命令名片断"
@@ -19072,10 +18984,6 @@ msgstr "pid"
 #, c-format
 msgid "pid_value in %s is too large"
 msgstr "%s 中的 pid_value 太长"
-
-#, c-format
-msgid "pivot of disk '%s' requires an active copy job"
-msgstr "磁盘'%s' 的 pivot 需要活跃复制任务"
 
 msgid "pmsuspended"
 msgstr "pmsuspended"
@@ -19395,13 +19303,6 @@ msgstr "remoteNodeGetMemoryStats: 返回的统计数据超过限制"
 
 msgid "remote_open: for 'ext' transport, command is required"
 msgstr "remote_open：'ext' 传输需要命令"
-
-msgid ""
-"remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp|"
-"libssh2)"
-msgstr ""
-"remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp|"
-"libssh2)"
 
 msgid "removable is only valid for usb disks"
 msgstr "removable 只能用于 usb 磁盘"
@@ -20909,10 +20810,6 @@ msgid "unexpected filesystem type %d"
 msgstr "意外的文件系统类型 %d"
 
 #, c-format
-msgid "unexpected graphics type %d"
-msgstr "意外的图形类型 %d"
-
-#, c-format
 msgid "unexpected hostdev driver name type %d "
 msgstr "意外的 hostdev 驱动程序名称类型 %d"
 
@@ -20947,10 +20844,6 @@ msgstr "意外 iscsi 卷名 '%s'"
 #, c-format
 msgid "unexpected lifecycle action %d"
 msgstr "意外的周期动作 %d"
-
-#, c-format
-msgid "unexpected lifecycle value %d"
-msgstr "意外的周期值 %d"
 
 #, c-format
 msgid "unexpected memballoon model %d"
@@ -21392,10 +21285,6 @@ msgid "unknown graphics type %s"
 msgstr "未知图形类型 %s"
 
 #, c-format
-msgid "unknown graphics type '%s'"
-msgstr "未知图形类型 '%s'"
-
-#, c-format
 msgid "unknown guest csum mode '%s'"
 msgstr "未知虚拟机 csum 模式 ‘%s’"
 
@@ -21499,16 +21388,8 @@ msgid "unknown interface type '%s'"
 msgstr "未知接口类型 '%s'"
 
 #, c-format
-msgid "unknown lifecycle type %s"
-msgstr "未知周期类型 %s"
-
-#, c-format
 msgid "unknown link state: %s"
 msgstr "未知链接状态：%s"
-
-#, c-format
-msgid "unknown localtime offset %s"
-msgstr "未知本地时间补偿 %s"
 
 #, c-format
 msgid "unknown memory balloon model '%s'"
@@ -21607,10 +21488,6 @@ msgstr "未知 rule action 属性值"
 
 msgid "unknown rule direction attribute value"
 msgstr "未知 rule direction 属性值"
-
-#, c-format
-msgid "unknown s-expression kind %d"
-msgstr "%d 的 s 表达式类型"
 
 msgid "unknown secret usage type"
 msgstr "未知 secret 用法类型"
@@ -21980,10 +21857,6 @@ msgstr "不支持的显示器类型 '%s'"
 #, c-format
 msgid "unsupported network event ID %d"
 msgstr "不支持的网络事件 ID %d"
-
-#, c-format
-msgid "unsupported network type %d"
-msgstr "不支持的网络类型 %d"
 
 msgid "unsupported option"
 msgstr "不支持的选项"

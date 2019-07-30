@@ -12,9 +12,9 @@
 # sweta <swkothar@redhat.com>, 2013-2014
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.10.0\n"
+"Project-Id-Version: libvirt 5.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-01 18:50+0100\n"
+"POT-Creation-Date: 2019-07-30 11:31+0100\n"
 "PO-Revision-Date: 2015-02-23 06:16+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Gujarati (http://www.transifex.com/projects/p/libvirt/"
@@ -1372,10 +1372,6 @@ msgstr "બલુન ઉપકરણ પાથને નક્કી કરી �
 
 msgid "Cannot determine free memory"
 msgstr "મુક્ત મેમરી નક્કી કરી શકાતી નથી"
-
-#, c-format
-msgid "Cannot directly attach floppy %s"
-msgstr "ફ્લોપી %s ને સીધુ જ જોડી શકાતુ નથી"
 
 msgid "Cannot disable close-on-exec flag"
 msgstr "close-on-exec ફ્લેગને નિષ્ક્રિય કરી શકાતુ નથી"
@@ -11760,9 +11756,6 @@ msgstr "કોલર એ cookieout અથવા cookieoutlen અવગણે છ
 msgid "caller ignores uri_out"
 msgstr "કોલર uri_out ને અવગણે છે"
 
-msgid "can only passthrough directories"
-msgstr "લોગ ડિરેક્ટરી %s બનાવી શકાતુ નથી"
-
 msgid "can't change link state: device alias not found"
 msgstr "કડી સ્થિતિને બદલી શકાતુ નથી: ઉપકરણ ઉપસર્ગ મળ્યો નથી"
 
@@ -12355,22 +12348,6 @@ msgid "cannot parse CPU data"
 msgstr "CPU માહિતીનું પદચ્છેદન કરી શકાતુ નથી"
 
 #, c-format
-msgid "cannot parse PCI bus '%s'"
-msgstr "PCI બસ '%s' નું પદચ્છેદન કરી શકાતુ નથી"
-
-#, c-format
-msgid "cannot parse PCI domain '%s'"
-msgstr "ડોમેઈન '%s' નું પદચ્છેદન કરી શકાતુ નથી"
-
-#, c-format
-msgid "cannot parse PCI func '%s'"
-msgstr "PCI વિધેય '%s' નું પદચ્છેદન કરી શકાતુ નથી"
-
-#, c-format
-msgid "cannot parse PCI slot '%s'"
-msgstr "PCI સ્લોટ '%s' નું પદચ્છેદન કરી શકાતુ નથી"
-
-#, c-format
 msgid "cannot parse bus %s"
 msgstr "બસ %s નું પદચ્છેદન કરી શકાતુ નથી"
 
@@ -12447,12 +12424,6 @@ msgstr "typeid પરિમાણની કિંમતનુ પદચ્છે
 
 msgid "cannot parse value of typeidversion parameter"
 msgstr "typeidversion પરિમાણની કિંમતનુ પદચ્છેદન કરી શકાતુ નથી"
-
-msgid "cannot parse vbd filename, missing driver name"
-msgstr "vbd ફાઈલનામ પદચ્છેદન કરી શકતા નથી, ગુમ થયેલ ડ્રાઈવર નામ"
-
-msgid "cannot parse vbd filename, missing driver type"
-msgstr "vbd ફાઈલનામ પદચ્છેદન કરી શકતા નથી, ગુમ થયેલ ડ્રાઈવર પ્રકાર"
 
 #, c-format
 msgid "cannot parse vendor id %s"
@@ -12673,10 +12644,6 @@ msgstr "નેટલીંક સોકેટ nonblocking ને સુયોજ
 #, c-format
 msgid "cannot set security props %d (%s)"
 msgstr "સુરક્ષા આધાર %d (%s) સુયોજિત કરી શકાતુ નથી"
-
-#, c-format
-msgid "cannot set snapshot %s as its own parent"
-msgstr "તેની પોતાનાં મુખ્ય તરીકે સ્નેપશોટ %s ને સુયોજિત કરી શકાતુ નથી"
 
 msgid "cannot set supplemental groups"
 msgstr "પૂરક જૂથોને સુયોજિત કરી શકાતુ નથી"
@@ -13679,15 +13646,8 @@ msgid "disk '%s' must use snapshot mode '%s'"
 msgstr "ડિસ્ક '%s' ને સ્નેપશોટ સ્થિતિ '%s' ને વાપરવી જ જોઇએ"
 
 #, c-format
-msgid "disk '%s' not ready for pivot yet"
-msgstr "ડિસ્ક '%s' હજુ પિવોટ માટે તૈયાર નથી"
-
-#, c-format
 msgid "disk '%s' specified twice"
 msgstr "ડિસ્ક '%s' બે વાર સ્પષ્ટ થયેલ છે"
-
-msgid "disk attributes: disk[,snapshot=type][,driver=type][,file=name]"
-msgstr "ડિસ્ક ગુણધર્મો: disk[,snapshot=type][,driver=type][,file=name]"
 
 #, c-format
 msgid "disk bus '%s' cannot be hot unplugged."
@@ -13891,21 +13851,6 @@ msgstr "ડોમેઈન જાણકારી"
 
 msgid "domain information in XML"
 msgstr "XML માં ડોમેઈન જાણકારી"
-
-msgid "domain information incomplete, missing HVM loader"
-msgstr "ડોમેઈન જાણકારી અપૂર્ણ, ગુમ થયેલ HVM લોડર"
-
-msgid "domain information incomplete, missing kernel & bootloader"
-msgstr "ડોમેઈન જાણકારી અપૂર્ણ, કર્નલ અને બુટલોડર ગુમ થયેલ"
-
-msgid "domain information incomplete, missing name"
-msgstr "ડોમેઈન જાણકારી અપૂર્ણ, ગુમ થયેલ નામ"
-
-msgid "domain information incomplete, vbd has no dev"
-msgstr "ડોમેઈન જાણકારી અપૂર્ણ, vbd ને કોઈ dev નથી"
-
-msgid "domain information incomplete, vbd has no src"
-msgstr "ડોમેઈન જાણકારી અપૂર્ણ, vbd ને કોઈ src નથી"
 
 msgid "domain is already running"
 msgstr "ડોમેઈન પહેલાથી જ ચાલી રહ્યું છે"
@@ -16216,9 +16161,6 @@ msgstr "મેલફોર્મ થયેલ વોલ્યુમ વિસ્
 msgid "malformed volume extent stripes value"
 msgstr "મેલફોર્મ થયેલ વોલ્યુમ વિસ્તાર માપ કિંમત"
 
-msgid "managed PCI devices not supported with XenD"
-msgstr "સંચાલિત થયેલ PCI ઉપકરણો એ XenD સાથે આધારભૂત નથી"
-
 msgid "managed save of a domain state"
 msgstr "ડોમેઇન સ્થિતિનું સંચાલિત થયેલ સંગ્રહ"
 
@@ -16414,18 +16356,6 @@ msgstr "ગેરહાજર EGD બેકઍન્ડ પ્રકાર"
 
 msgid "missing IFLA_VF_INFO in netlink response"
 msgstr "નેટલીંક સ્ત્રોતમાં ગુમ થયેલ IFLA_VF_INFO"
-
-msgid "missing PCI bus"
-msgstr "ગુમ થયેલ PCI બસ"
-
-msgid "missing PCI domain"
-msgstr "ગેરહાજર PCI ડોમેઇન"
-
-msgid "missing PCI func"
-msgstr "ગુમ થયેલ PCI વિધેય"
-
-msgid "missing PCI slot"
-msgstr "ગુમ થયેલ PCI સ્લોટ"
 
 msgid "missing RNG device backend model"
 msgstr "ગેરહાજર RNG ઉપકરણ બેકઍન્ડ મોડલ"
@@ -17032,9 +16962,6 @@ msgstr "CPUs મળ્યુ નથી"
 
 msgid "no FLR, PM reset or bus reset available"
 msgstr "FLR નથી, PM પુન:સુયોજન અથવા બસ પુન:સુયોજન ઉપલ્બધ"
-
-msgid "no HVM domain loader"
-msgstr "HVM ડોમેઇન લોડર નથી"
 
 msgid "no IFLA_PORT_RESPONSE found in netlink message"
 msgstr "નેટલીંક સંદેશામાં IFLA_PORT_RESPONSE મળ્યુ નથી"
@@ -17644,14 +17571,6 @@ msgstr "પરિમાણ '%s' ઘણી વખત ઉદ્ભવે છે"
 msgid "parameter=value"
 msgstr "parameter=value"
 
-#, c-format
-msgid "parent %s for snapshot %s not found"
-msgstr "સ્નેપશોટ %s માટે મુખ્ય %s મળ્યુ નથી"
-
-#, c-format
-msgid "parent %s would create cycle to %s"
-msgstr "મુખ્ય %s એ %s માટે ચક્ર રચના કરશે"
-
 msgid "parser error"
 msgstr "પદચ્છેદન ભૂલ"
 
@@ -17762,10 +17681,6 @@ msgstr "pid"
 #, c-format
 msgid "pid_value in %s is too large"
 msgstr "%s માં pid_value ઘણી મોટી છે"
-
-#, c-format
-msgid "pivot of disk '%s' requires an active copy job"
-msgstr "ડિસ્ક '%s' નાં પિવોટને સક્રિય કોપી જૉબની જરૂરિયાત છે"
 
 msgid "pmsuspended"
 msgstr "pmsuspended"
@@ -18076,12 +17991,6 @@ msgstr "remoteNodeGetMemoryStats: સ્થિતિઓ પરત નંબર �
 
 msgid "remote_open: for 'ext' transport, command is required"
 msgstr "remote_open: 'ext' પરિવહન માટે, આદેશ જરૂરી છે"
-
-msgid ""
-"remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp|"
-"libssh2)"
-msgstr ""
-"remote_open:URL માં પરિવહન આળખાયુ નહિં(tls|unix|ssh|ext|tcp|libssh2 હોવુ જોઇએ)"
 
 msgid "removable is only valid for usb disks"
 msgstr "દૂર કરી શકાય તેવુ ફક્ત usb ડિસ્ક માટે યોગ્ય છે"
@@ -19522,10 +19431,6 @@ msgid "unexpected filesystem type %d"
 msgstr "અનિચ્છનીય ફાઇલસિસ્ટમ પ્રકાર %d"
 
 #, c-format
-msgid "unexpected graphics type %d"
-msgstr "અનિચ્છનીય ગ્રાફિક્સ પ્રકાર %d"
-
-#, c-format
 msgid "unexpected hostdev driver name type %d "
 msgstr "અનિચ્છનીય hostdev ડ્રાઇવર નામ પ્રકાર %d "
 
@@ -19560,10 +19465,6 @@ msgstr "અનિચ્છનીય iscsi વોલ્યુમ નામ '%s'"
 #, c-format
 msgid "unexpected lifecycle action %d"
 msgstr "અનિચ્છનીય લાઇફસાયકલ %d"
-
-#, c-format
-msgid "unexpected lifecycle value %d"
-msgstr "અનિચ્છનીય લાઇફસાયકલ કિંમત %d"
 
 #, c-format
 msgid "unexpected memballoon model %d"
@@ -20014,10 +19915,6 @@ msgid "unknown graphics type %s"
 msgstr "અજ્ઞાત ગ્રાફિક્સ પ્રકાર %s"
 
 #, c-format
-msgid "unknown graphics type '%s'"
-msgstr "અજ્ઞાત ગ્રાફિક્સ પ્રકાર '%s'"
-
-#, c-format
 msgid "unknown guest ecn mode '%s'"
 msgstr "અજ્ઞાત મહેમાન ecn સ્થિતિ '%s'"
 
@@ -20079,14 +19976,6 @@ msgstr "અજ્ઞાત ઇન્ટરફેસ પ્રકાર %s"
 #, c-format
 msgid "unknown interface type '%s'"
 msgstr "અજ્ઞાત ઇન્ટરફેસ પ્રકાર '%s'"
-
-#, c-format
-msgid "unknown lifecycle type %s"
-msgstr "અજ્ઞાત લાઇફસાયકલ પ્રકાર %s"
-
-#, c-format
-msgid "unknown localtime offset %s"
-msgstr "અજ્ઞાત સ્થાનિકસમય ઓફસેટ %s"
 
 #, c-format
 msgid "unknown memory balloon model '%s'"
@@ -20161,10 +20050,6 @@ msgstr "અજ્ઞાત નિયમ ક્રિયા ગુણધર્મ
 
 msgid "unknown rule direction attribute value"
 msgstr "અજ્ઞાત નિયમ દિશા ગુણધર્મ કિંમત"
-
-#, c-format
-msgid "unknown s-expression kind %d"
-msgstr "અજ્ઞાત પ્રક્રિયા: %d"
 
 msgid "unknown secret usage type"
 msgstr "અજ્ઞાત ગુપ્તતા વપરાશ પ્રકાર"
@@ -20512,10 +20397,6 @@ msgstr "બિનઆધારભૂત ઇન્ટરફેસ પ્રકા�
 #, c-format
 msgid "unsupported monitor type '%s'"
 msgstr "બિનઆધારિત મોનિટર પ્રકાર '%s'"
-
-#, c-format
-msgid "unsupported network type %d"
-msgstr "બિનઆધારિત નેટવર્ક પ્રકાર %d"
 
 msgid "unsupported option"
 msgstr "બિનઆધારભૂત વિકલ્પ"

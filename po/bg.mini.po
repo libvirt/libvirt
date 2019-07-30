@@ -7,9 +7,9 @@
 # Miroslav Ivanov <kiro.kopeleto@gmail.com>, 2007.
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.10.0\n"
+"Project-Id-Version: libvirt 5.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"POT-Creation-Date: 2019-07-30 11:31+0100\n"
 "PO-Revision-Date: 2015-02-26 07:16+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Bulgarian (http://www.transifex.com/projects/p/fedora/"
@@ -573,12 +573,6 @@ msgstr "автоматично стартиране на мрежа"
 msgid "block device"
 msgstr "блоково устройство"
 
-msgid "cannot parse vbd filename, missing driver name"
-msgstr "грешка при разбор името на файла на vbd, липсва име на драйвер"
-
-msgid "cannot parse vbd filename, missing driver type"
-msgstr "грешка при разбор името на файла на vbd, липсва тип на драйвер"
-
 msgid "cap for XEN_CREDIT"
 msgstr "граница за XEN_CREDIT"
 
@@ -684,20 +678,6 @@ msgstr "информация за домейн"
 
 msgid "domain information in XML"
 msgstr "информация за домейн в XML"
-
-msgid "domain information incomplete, missing kernel & bootloader"
-msgstr ""
-"информацията за домейна е непълна, липсва ядро и програма за начално "
-"зареждане"
-
-msgid "domain information incomplete, missing name"
-msgstr "информацията за домейна е непълна, липсва име"
-
-msgid "domain information incomplete, vbd has no dev"
-msgstr "информацията за домейна е непълна, vbd няма dev"
-
-msgid "domain information incomplete, vbd has no src"
-msgstr "информацията за домейна е непълна, vbd няма src"
 
 msgid "domain name or uuid"
 msgstr "име на домейн или uuid"

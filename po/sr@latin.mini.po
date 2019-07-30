@@ -7,9 +7,9 @@
 # Marko Mijatovic <jomi86@gmail.com>, 2008.
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.10.0\n"
+"Project-Id-Version: libvirt 5.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-01 18:50+0100\n"
+"POT-Creation-Date: 2019-07-30 11:31+0100\n"
 "PO-Revision-Date: 2015-03-03 06:01+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Serbian (Latin) (http://www.transifex.com/projects/p/fedora/"
@@ -969,14 +969,6 @@ msgstr "ne mogu da raščlanim mesto završetka uređaja"
 msgid "cannot parse device start location"
 msgstr "ne mogu da raščlanim mesto početka uređaja"
 
-msgid "cannot parse vbd filename, missing driver name"
-msgstr ""
-"ne mogu protumačiti vbd ime datoteke, nedostaje ime upravljačkog programa"
-
-msgid "cannot parse vbd filename, missing driver type"
-msgstr ""
-"ne mogu protumačiti vbd ime datoteke, nedostaje vrsta upravljačkog programa"
-
 #, c-format
 msgid "cannot query SASL ssf on connection %d (%s)"
 msgstr "ne mogu da izvršim upit SASL ssf na vezi %d (%s)"
@@ -1162,21 +1154,6 @@ msgstr "podaci o domenu"
 
 msgid "domain information in XML"
 msgstr "podaci o domenu u XML-u"
-
-msgid "domain information incomplete, missing HVM loader"
-msgstr "nepotpuni podaci o domenu, nedostaje HVM program za učitavanje"
-
-msgid "domain information incomplete, missing kernel & bootloader"
-msgstr "nepotpuni podaci o domenu, nedostaje jezgro i pokretački program"
-
-msgid "domain information incomplete, missing name"
-msgstr "nepotpuni podaci o domenu, nedostaje ime"
-
-msgid "domain information incomplete, vbd has no dev"
-msgstr "nepotpuni podaci o domenu, vbd nema dev"
-
-msgid "domain information incomplete, vbd has no src"
-msgstr "nepotpuni podaci o domenu, vbd nema src"
 
 msgid "domain is not in running state"
 msgstr "domen nije u radnom stanju"
@@ -1651,9 +1628,6 @@ msgstr "ime mreže ili uuid"
 
 msgid "network uuid"
 msgstr "uuid mreže"
-
-msgid "no HVM domain loader"
-msgstr "nema programa za učitavanje HVM domena"
 
 msgid "no autostart"
 msgstr "bez samopokretanja"

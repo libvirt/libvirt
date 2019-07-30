@@ -11,9 +11,9 @@
 # Robert Antoni Buj Gelonch <rbuj@fedoraproject.org>, 2018. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.10.0\n"
+"Project-Id-Version: libvirt 5.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-01 18:50+0100\n"
+"POT-Creation-Date: 2019-07-30 11:31+0100\n"
 "PO-Revision-Date: 2018-02-24 11:19+0000\n"
 "Last-Translator: Robert Antoni Buj Gelonch <rbuj@fedoraproject.org>\n"
 "Language-Team: Catalan (http://www.transifex.com/projects/p/libvirt/language/"
@@ -793,13 +793,6 @@ msgstr "dispositiu de blocs"
 msgid "cannot list SASL mechanisms %d (%s)"
 msgstr "no es poden llistar els mecanismes SASL %d (%s)"
 
-msgid "cannot parse vbd filename, missing driver name"
-msgstr "no es pot analitzar el nom de fitxer vbd, falta el nom del controlador"
-
-msgid "cannot parse vbd filename, missing driver type"
-msgstr ""
-"no es pot analitzar el nom de fitxer vbd, falta el tipus de controlador"
-
 #, c-format
 msgid "cannot query SASL ssf on connection %d (%s)"
 msgstr "no es pot consultar el ssf de SASL en la connexió %d (%s)"
@@ -932,20 +925,6 @@ msgstr "informació del domini"
 
 msgid "domain information in XML"
 msgstr "informació de domini en XML"
-
-msgid "domain information incomplete, missing kernel & bootloader"
-msgstr ""
-"la informació del domini és incompleta, falta el kernel i el gestor "
-"d'arrencada"
-
-msgid "domain information incomplete, missing name"
-msgstr "la informació del domini és incompleta, falta el nom"
-
-msgid "domain information incomplete, vbd has no dev"
-msgstr "la informació del domini és incompleta, vbd no té dev"
-
-msgid "domain information incomplete, vbd has no src"
-msgstr "la informació del domini és incompleta, vbd no té src"
 
 msgid "domain is not in running state"
 msgstr "el domini no està en estat d'execució"

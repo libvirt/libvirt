@@ -8,9 +8,9 @@
 # Toni Rantala <trantalafilo@gmail.com>, 2017. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.10.0\n"
+"Project-Id-Version: libvirt 5.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"POT-Creation-Date: 2019-07-30 11:31+0100\n"
 "PO-Revision-Date: 2017-03-26 10:24+0000\n"
 "Last-Translator: Jiri Grönroos <jiri.gronroos@iki.fi>\n"
 "Language-Team: Finnish (http://www.transifex.com/projects/p/fedora/language/"
@@ -765,12 +765,6 @@ msgstr "toimialueen tiedot"
 
 msgid "domain information in XML"
 msgstr "toimialuetiedot XML-muodossa"
-
-msgid "domain information incomplete, missing kernel & bootloader"
-msgstr "toimialuetieto on epätäydellistä, ydin ja käynnistyslatain puuttuu"
-
-msgid "domain information incomplete, missing name"
-msgstr "toimialuetiedot ovat epätäydellisiä, nimi puuttuu"
 
 msgid "domain is not running"
 msgstr "toimialue ei ole käynnissä"

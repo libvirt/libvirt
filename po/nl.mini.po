@@ -9,9 +9,9 @@
 # Richard E. van der Luit <nippur@fedoraproject.org>, 2013
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.10.0\n"
+"Project-Id-Version: libvirt 5.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-01 18:50+0100\n"
+"POT-Creation-Date: 2019-07-30 11:31+0100\n"
 "PO-Revision-Date: 2015-02-26 09:23+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/fedora/language/"
@@ -395,10 +395,6 @@ msgstr "Kan log map '%s' niet aanmaken"
 
 msgid "Cannot deactivate storage pool autostart"
 msgstr "Kan opslag pool autostart niet de-activeren"
-
-#, c-format
-msgid "Cannot directly attach floppy %s"
-msgstr "Kan floppy %s niet direct aansluiten"
 
 msgid "Cannot enable general autostart option without affecting other domains"
 msgstr ""
@@ -4489,9 +4485,6 @@ msgstr "aanroeper negeert cookie of cookielen"
 msgid "caller ignores uri_out"
 msgstr "aanroeper negeert uri_out"
 
-msgid "can only passthrough directories"
-msgstr "kan mappen alleen maar doorgeven"
-
 #, c-format
 msgid "can't open session to the domain with id %d"
 msgstr "kan sessie naar het domein met id %d niet openen"
@@ -4739,22 +4732,6 @@ msgid "cannot open volume '%s'"
 msgstr "kan volume '%s' niet openen"
 
 #, c-format
-msgid "cannot parse PCI bus '%s'"
-msgstr "kan PCI bus '%s' niet ontleden"
-
-#, c-format
-msgid "cannot parse PCI domain '%s'"
-msgstr "kan PCI domein '%s' niet ontleden"
-
-#, c-format
-msgid "cannot parse PCI func '%s'"
-msgstr "kan PCI functie '%s' niet ontleden"
-
-#, c-format
-msgid "cannot parse PCI slot '%s'"
-msgstr "kan PCI sleuf '%s' niet ontleden"
-
-#, c-format
 msgid "cannot parse bus %s"
 msgstr "kan bus %s niet ontleden"
 
@@ -4812,12 +4789,6 @@ msgstr "kan waarde typeid parameter niet ontleden"
 
 msgid "cannot parse value of typeidversion parameter"
 msgstr "kan waarde typeidversion parameter niet ontleden"
-
-msgid "cannot parse vbd filename, missing driver name"
-msgstr "kan vbd bestandsnaam niet ontleden, driver naam ontbreekt"
-
-msgid "cannot parse vbd filename, missing driver type"
-msgstr "kan vbd bestandsnaam niet ontleden, driver type ontbreekt"
 
 #, c-format
 msgid "cannot parse vendor id %s"
@@ -5635,21 +5606,6 @@ msgstr "domein informatie"
 
 msgid "domain information in XML"
 msgstr "domein informatie in XML"
-
-msgid "domain information incomplete, missing HVM loader"
-msgstr "domein-informatie onvolledig, HVM lader ontbreekt"
-
-msgid "domain information incomplete, missing kernel & bootloader"
-msgstr "domein-informatie onvolledig, kernel en bootloader ontbreken"
-
-msgid "domain information incomplete, missing name"
-msgstr "domein-informatie onvolledig, naam ontbreekt"
-
-msgid "domain information incomplete, vbd has no dev"
-msgstr "domein-informatie onvolledig, vbd heeft geen dev"
-
-msgid "domain information incomplete, vbd has no src"
-msgstr "domein-informatie onvolledig, vbd heeft geen src"
 
 msgid "domain is already running"
 msgstr "domein draait al"
@@ -6727,9 +6683,6 @@ msgstr "ongeldige volume omvang offset waarde"
 msgid "malformed volume extent size value"
 msgstr "ongeldige volume omvang grootte waarde"
 
-msgid "managed PCI devices not supported with XenD"
-msgstr "beheerde PCI apparaten niet ondersteund met XenD"
-
 msgid "managed save of a domain state"
 msgstr "beheer opslaan van een domein toestand"
 
@@ -6798,18 +6751,6 @@ msgstr "ontbrekende \""
 
 msgid "missing 'timezone' attribute for clock with offset='timezone'"
 msgstr "ontbrekend 'timezone' attribuut voor klok met offset='timezone'"
-
-msgid "missing PCI bus"
-msgstr "ontbrekende PCI bus"
-
-msgid "missing PCI domain"
-msgstr "ontbrekend PCI domein"
-
-msgid "missing PCI func"
-msgstr "ontbrekende PCI functie"
-
-msgid "missing PCI slot"
-msgstr "ontbrekende PCI sleuf"
 
 #, c-format
 msgid "missing SCSI host capability type for '%s'"
@@ -7055,9 +6996,6 @@ msgstr "nee"
 
 msgid "no FLR, PM reset or bus reset available"
 msgstr "LR, PM reset of bus reset niet beschikbaar"
-
-msgid "no HVM domain loader"
-msgstr "geen HVM domein lader"
 
 msgid "no IFLA_PORT_RESPONSE found in netlink message"
 msgstr "geen IFLA_PORT_RESPONSE gevonden in netlink boodschap"
@@ -8200,10 +8138,6 @@ msgid "unexpected filesystem type %d"
 msgstr "onverwacht bestandssysteem type %d"
 
 #, c-format
-msgid "unexpected graphics type %d"
-msgstr "onverwacht grafisch type %d"
-
-#, c-format
 msgid "unexpected hostdev mode %d"
 msgstr "onverwachte hostdev mode %d"
 
@@ -8226,10 +8160,6 @@ msgstr "onverwacht interface type %d"
 #, c-format
 msgid "unexpected lifecycle action %d"
 msgstr "onverwachte levenscyclus actie %d"
-
-#, c-format
-msgid "unexpected lifecycle value %d"
-msgstr "onverwachte levenscyclus waarde %d"
 
 #, c-format
 msgid "unexpected memballoon model %d"
@@ -8449,10 +8379,6 @@ msgstr "onbekende volledig-scherm waarde '%s'"
 msgid "unknown graphics device type '%s'"
 msgstr "onbekend grafisch apparaat type '%s'"
 
-#, c-format
-msgid "unknown graphics type '%s'"
-msgstr "onbekend grafisch type '%s'"
-
 msgid "unknown host"
 msgstr "onbekende host"
 
@@ -8483,10 +8409,6 @@ msgstr "onbekend interface type %s"
 #, c-format
 msgid "unknown interface type '%s'"
 msgstr "onbekend interface type '%s'"
-
-#, c-format
-msgid "unknown lifecycle type %s"
-msgstr "onbekend levenscyclus type %s"
 
 #, c-format
 msgid "unknown memory balloon model '%s'"
@@ -8736,10 +8658,6 @@ msgstr "niet-ondersteunde input bus %s"
 #, c-format
 msgid "unsupported monitor type '%s'"
 msgstr "niet-ondersteund monitor type '%s'"
-
-#, c-format
-msgid "unsupported network type %d"
-msgstr "niet-ondersteund netwerk type %d"
 
 msgid "unsupported option"
 msgstr "niet-ondersteunde optie"

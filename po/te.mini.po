@@ -9,9 +9,9 @@
 # Sree Ganesh <sthottem@redhat.com>, 2006
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.10.0\n"
+"Project-Id-Version: libvirt 5.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-01 18:50+0100\n"
+"POT-Creation-Date: 2019-07-30 11:31+0100\n"
 "PO-Revision-Date: 2015-03-05 07:40+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Telugu (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1219,10 +1219,6 @@ msgstr "బెలూన్ పరికర పాత్ నిర్ణయిం
 
 msgid "Cannot determine free memory"
 msgstr "ఖాళీ మెమొరీ నిర్ణయించలేదు"
-
-#, c-format
-msgid "Cannot directly attach floppy %s"
-msgstr "ఫ్లాపి %sను నేరుగా అనుభందించలేదు"
 
 msgid "Cannot disable close-on-exec flag"
 msgstr "close-on-exec ఫ్లాగ్ అచేతనం చేయలేదు"
@@ -11140,9 +11136,6 @@ msgstr "కాలర్ cookieout లేదా cookieoutlen ను విస్�
 msgid "caller ignores uri_out"
 msgstr "కాలర్ uri_out విస్మరించెను"
 
-msgid "can only passthrough directories"
-msgstr "సంచయాలు మాత్రమే పాస్‌త్రూ కాగలవు"
-
 msgid "can't change link state: device alias not found"
 msgstr "లింకు స్థితిని మార్చలేదు: పరికరం మారుపేరు కనబడలేదు"
 
@@ -11677,22 +11670,6 @@ msgid "cannot parse %s version number in '%.*s'"
 msgstr "%s వర్షన్ సంఖ్యను '%.*s' నందు పార్స్ చేయలేదు"
 
 #, c-format
-msgid "cannot parse PCI bus '%s'"
-msgstr "PCI బస్ '%s'ను పార్శ్ చేయలేదు"
-
-#, c-format
-msgid "cannot parse PCI domain '%s'"
-msgstr "PCI డొమైన్ '%s'ను పార్శ్ చేయలేదు"
-
-#, c-format
-msgid "cannot parse PCI func '%s'"
-msgstr "PCI ప్రమేయం(ఫంక్షన్) '%s'ను పార్శ్ చేయలేదు"
-
-#, c-format
-msgid "cannot parse PCI slot '%s'"
-msgstr "PCI స్లాట్‌ '%s'ను పార్శ్ చేయలేదు"
-
-#, c-format
 msgid "cannot parse bus %s"
 msgstr "బస్ %s పార్శ్ చేయలేము"
 
@@ -11767,12 +11744,6 @@ msgstr "టైప్‌ఐడి పారామితి యొక్క వి
 
 msgid "cannot parse value of typeidversion parameter"
 msgstr "టైప్‌ఐడివర్షన్ పారామితి యొక్క విలువ పార్స్ చేయలేదు"
-
-msgid "cannot parse vbd filename, missing driver name"
-msgstr "vbd ఫైలు పేరు విశ్లేషించటానికి కుదరదు, డ్రైవరు పేరు తప్పిపోయింది"
-
-msgid "cannot parse vbd filename, missing driver type"
-msgstr "vbd ఫైలు పేరు విశ్లేషించటానికి కుదరదు, డ్రైవరు రకం తప్పిపోయింది"
 
 #, c-format
 msgid "cannot parse vendor id %s"
@@ -11991,10 +11962,6 @@ msgstr "నాన్‌బ్లాకింగ్ కొరకు నెట్�
 #, c-format
 msgid "cannot set security props %d (%s)"
 msgstr "రక్షణ లక్షణములను అమర్చలేక పోయింది %d (%s)"
-
-#, c-format
-msgid "cannot set snapshot %s as its own parent"
-msgstr "స్నాప్‌షాట్ %s ను దాని స్వంత పేరెంట్ వలె అమర్చలేదు"
 
 msgid "cannot set supplemental groups"
 msgstr "సప్లమెంటల్ సమూహాల కొరకు అమర్చలేదు"
@@ -12968,15 +12935,8 @@ msgid "disk '%s' must use snapshot mode '%s'"
 msgstr "డిస్కు '%s' తప్పక స్నాప్‌షాట్ రీతి '%s' వుపయోగించాలి"
 
 #, c-format
-msgid "disk '%s' not ready for pivot yet"
-msgstr "డిస్కు '%s' పివోట్ కొరకు ఇంకా సిద్దం కాలేదు"
-
-#, c-format
 msgid "disk '%s' specified twice"
 msgstr "డిస్కు '%s' రెండుమార్లు తెలుపబడెను"
-
-msgid "disk attributes: disk[,snapshot=type][,driver=type][,file=name]"
-msgstr "డిస్కు ఏట్రిబ్యూట్లు: disk[,snapshot=type][,driver=type][,file=name]"
 
 #, c-format
 msgid "disk bus '%s' cannot be hot unplugged."
@@ -13177,21 +13137,6 @@ msgstr "క్షేత్ర సమాచారం"
 
 msgid "domain information in XML"
 msgstr "XMLలో క్షేత్ర సమాచారం"
-
-msgid "domain information incomplete, missing HVM loader"
-msgstr "డొమైన్ సమాచారము పూర్తిగాలేదు, HVM లోడర్ తప్పిపోయినది"
-
-msgid "domain information incomplete, missing kernel & bootloader"
-msgstr "డొమైన్ సమాచారం అసంపూర్తిగా ఉంది, కెర్నలు & బూట్‌లోడ తప్పిపోయింది"
-
-msgid "domain information incomplete, missing name"
-msgstr "క్షేత్ర సమాచారం అసంపూర్తిగా ఉంది, పేరు తప్పిపోయింది"
-
-msgid "domain information incomplete, vbd has no dev"
-msgstr "క్షేత్ర సమాచారం అసంపూర్తిగా ఉంది, vbd devని కలిగిలేదు"
-
-msgid "domain information incomplete, vbd has no src"
-msgstr "క్షేత్ర సమాచారం అసంపూర్తిగా ఉంది, vbd srcని కలిగిలేదు"
 
 msgid "domain is already running"
 msgstr "డొమైన్ యిప్పటికే నడుచుచున్నది"
@@ -15402,9 +15347,6 @@ msgstr "తప్పుగాపార్మైన వాల్యూమ్ ప�
 msgid "malformed volume extent stripes value"
 msgstr "తప్పుగారూపొందిన వాల్యూమ్ ఎక్సుటెంట్ స్ట్రైప్స్ విలువ"
 
-msgid "managed PCI devices not supported with XenD"
-msgstr "నిర్వహించిన PCI పరికరములు XenD తో మద్దతించవు"
-
 msgid "managed save of a domain state"
 msgstr "డొమైన్ స్థితి యొక్క నిర్వాహిత దాపు"
 
@@ -15568,18 +15510,6 @@ msgstr "దొరకని EGD బ్యాకెండ్ రకం"
 
 msgid "missing IFLA_VF_INFO in netlink response"
 msgstr "నెట్‌లింక్ స్పందన నందు IFLA_VF_INFO లేదు"
-
-msgid "missing PCI bus"
-msgstr "తప్పిపోయిన PCI బస్"
-
-msgid "missing PCI domain"
-msgstr "తప్పిపోయిన PCI డొమైన్"
-
-msgid "missing PCI func"
-msgstr "తప్పిపోయిన PCI ప్రమేయం(ఫంక్షన్)"
-
-msgid "missing PCI slot"
-msgstr "తప్పిపోయిన PCI స్లాట్"
 
 msgid "missing RNG device backend model"
 msgstr "దొరకని RNG పరికర బ్యాకెండ్ రకం"
@@ -16164,9 +16094,6 @@ msgstr "ఏ CPU లు కనబడలేదు"
 msgid "no FLR, PM reset or bus reset available"
 msgstr "FLR లేదు, PM పునఃఅమర్పు లేదా బస్ పునఃఅమర్పు అందుబాటులో వుంది"
 
-msgid "no HVM domain loader"
-msgstr "ఎటువంటి HVM డొమైన్ లోడర్ లేదు"
-
 msgid "no IFLA_PORT_RESPONSE found in netlink message"
 msgstr "netlink సందేశం నందు ఏ IFLA_PORT_RESPONSE కనబడలేదు"
 
@@ -16740,14 +16667,6 @@ msgstr "పారామితి '%s' బహుళ పర్యాయాలు �
 msgid "parameter=value"
 msgstr "parameter=value"
 
-#, c-format
-msgid "parent %s for snapshot %s not found"
-msgstr "పేరెంట్ %s స్నాప్‌షాట్ %s కొరకు కనబడలేదు"
-
-#, c-format
-msgid "parent %s would create cycle to %s"
-msgstr "పేరెంట్ %s అనునది %s కు సైకిల్ సృష్టించేది"
-
 msgid "parser error"
 msgstr "పార్శర్ దోషం"
 
@@ -16849,10 +16768,6 @@ msgstr "pid"
 #, c-format
 msgid "pid_value in %s is too large"
 msgstr "%s నందలి pid_value మరీ పెద్దది"
-
-#, c-format
-msgid "pivot of disk '%s' requires an active copy job"
-msgstr "డిస్కు '%s' యొక్క పివోట్‌కు క్రియాశీల కాపీ జాబ్ కావాలి"
 
 msgid "pmsuspended"
 msgstr "pmsuspended"
@@ -17148,11 +17063,6 @@ msgstr "remoteNodeGetMemoryStats: గణాంకాలు తిప్పియ
 
 msgid "remote_open: for 'ext' transport, command is required"
 msgstr "remote_open: 'ext' బదిలీకరణకు, ఆదేశము అవసరమైనది"
-
-msgid ""
-"remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp|"
-"libssh2)"
-msgstr "remote_open: URL నందు బదలీ గుర్తించనది (tls|unix|ssh|ext|tcp|libssh2 కావాలి)"
 
 msgid "remove all associated storage volumes (use with caution)"
 msgstr "అన్ని సంబందిత నిల్వ వాల్యూమ్లు తీసివేయి (జాగ్రత్తగా వుపయోగించు)"
@@ -18530,10 +18440,6 @@ msgid "unexpected filesystem type %d"
 msgstr "అనుకోని దస్త్రవ్యవస్థ రకము %d"
 
 #, c-format
-msgid "unexpected graphics type %d"
-msgstr "అనుకొని గ్రాఫిక్స్ రకము %d"
-
-#, c-format
 msgid "unexpected hostdev driver name type %d "
 msgstr "అనుకోని hostdev డ్రైవర్ పేరు రకం %d"
 
@@ -18568,10 +18474,6 @@ msgstr "అనుకోని iscsi వాల్యూమ్ పేరు '%s'"
 #, c-format
 msgid "unexpected lifecycle action %d"
 msgstr "అనుకోని లైఫ్‌సైకిల్ చర్య %d"
-
-#, c-format
-msgid "unexpected lifecycle value %d"
-msgstr "అనుకోని లైఫ్‌సైకిల్ విలువ %d"
 
 #, c-format
 msgid "unexpected memballoon model %d"
@@ -18982,10 +18884,6 @@ msgstr "తెలియని గ్రాఫిక్స్ లిజన్ ర
 msgid "unknown graphics type %s"
 msgstr "తెలియని గ్రాఫిక్స్ రకం %s"
 
-#, c-format
-msgid "unknown graphics type '%s'"
-msgstr "తెలియని గ్రాఫిక్స్ రకము '%s'"
-
 msgid "unknown host"
 msgstr "తెలియని ఆతిధేయి"
 
@@ -19036,14 +18934,6 @@ msgstr "తెలియని ఇంటర్ఫేస్ రకము %s"
 #, c-format
 msgid "unknown interface type '%s'"
 msgstr "తెలియని ఇంటర్ఫేస్ రకము '%s'"
-
-#, c-format
-msgid "unknown lifecycle type %s"
-msgstr "తెలియని లైఫ్‌సైకిల్ రకము %s"
-
-#, c-format
-msgid "unknown localtime offset %s"
-msgstr "తెలియని స్థానికసమయం ఆఫ్‌సెట్ %s"
 
 #, c-format
 msgid "unknown memory balloon model '%s'"
@@ -19118,10 +19008,6 @@ msgstr "చెల్లని రూల్ చర్య యాట్రిబ్
 
 msgid "unknown rule direction attribute value"
 msgstr "తెలియని రూల్ డైరెక్షన్ ఏట్రిబ్యూట్ విలువ"
-
-#, c-format
-msgid "unknown s-expression kind %d"
-msgstr "తెలియని s-expression రకం %d"
 
 msgid "unknown secret usage type"
 msgstr "తెలియని రహస్య వినియోగరకము"
@@ -19445,10 +19331,6 @@ msgstr "మద్దతీయని ఇన్‌పుట్ బస్ %s"
 #, c-format
 msgid "unsupported monitor type '%s'"
 msgstr "మద్దతీయని మానిటర్ రకము '%s'"
-
-#, c-format
-msgid "unsupported network type %d"
-msgstr "మద్దతీయని నెట్వర్కు రకము %d"
 
 msgid "unsupported option"
 msgstr "తోడ్పాటులేని ఐచ్చికం రకం"

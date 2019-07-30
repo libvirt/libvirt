@@ -10,9 +10,9 @@
 # Piotr Drąg <piotrdrag@gmail.com>, 2016. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.10.0\n"
+"Project-Id-Version: libvirt 5.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-01 18:50+0100\n"
+"POT-Creation-Date: 2019-07-30 11:31+0100\n"
 "PO-Revision-Date: 2016-09-16 11:27+0000\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish (http://www.transifex.com/projects/p/fedora/language/"
@@ -422,10 +422,6 @@ msgstr "Nie można utworzyć katalogu dziennika „%s”"
 msgid "Cannot deactivate storage pool autostart"
 msgstr ""
 "Nie można dezaktywować automatycznego uruchamiania puli pamięci masowej"
-
-#, c-format
-msgid "Cannot directly attach floppy %s"
-msgstr "Nie można bezpośrednio podłączyć dyskietki %s"
 
 msgid "Cannot enable general autostart option without affecting other domains"
 msgstr ""
@@ -4701,9 +4697,6 @@ msgstr "program wywołujący ignoruje ciasteczko lub cookielen"
 msgid "caller ignores uri_out"
 msgstr "program wywołujący ignoruje uri_out"
 
-msgid "can only passthrough directories"
-msgstr "można przejść tylko przez katalogi"
-
 #, c-format
 msgid "can't open session to the domain with id %d"
 msgstr "nie można otworzyć sesji w domenie o identyfikatorze %d"
@@ -4984,22 +4977,6 @@ msgid "cannot open volume '%s'"
 msgstr "nie można otworzyć woluminu „%s”"
 
 #, c-format
-msgid "cannot parse PCI bus '%s'"
-msgstr "nie można przetworzyć magistrali PCI „%s”"
-
-#, c-format
-msgid "cannot parse PCI domain '%s'"
-msgstr "nie można przetworzyć domeny PCI „%s”"
-
-#, c-format
-msgid "cannot parse PCI func '%s'"
-msgstr "nie można przetworzyć funkcji PCI „%s”"
-
-#, c-format
-msgid "cannot parse PCI slot '%s'"
-msgstr "nie można przetworzyć gniazda PCI „%s”"
-
-#, c-format
 msgid "cannot parse bus %s"
 msgstr "nie można przetworzyć magistrali %s"
 
@@ -5057,12 +5034,6 @@ msgstr "nie można przetworzyć wartości parametru typeid"
 
 msgid "cannot parse value of typeidversion parameter"
 msgstr "nie można przetworzyć wartości parametru typeidversion"
-
-msgid "cannot parse vbd filename, missing driver name"
-msgstr "nie można przetworzyć nazwy pliku vbd, brak nazwy sterownika"
-
-msgid "cannot parse vbd filename, missing driver type"
-msgstr "nie można przetworzyć nazwy pliku vbd, brak typu sterownika"
 
 #, c-format
 msgid "cannot parse vendor id %s"
@@ -5896,21 +5867,6 @@ msgstr "informacje o domenie"
 
 msgid "domain information in XML"
 msgstr "informacje o domenie w XML"
-
-msgid "domain information incomplete, missing HVM loader"
-msgstr "informacje o domenie są niepełne, brak wczytywania HVM"
-
-msgid "domain information incomplete, missing kernel & bootloader"
-msgstr "informacje o domenie są niepełne, brak jądra i programu startowego"
-
-msgid "domain information incomplete, missing name"
-msgstr "informacje o domenie są niepełne, brak nazwy"
-
-msgid "domain information incomplete, vbd has no dev"
-msgstr "informacje o domenie są niepełne, vbd nie ma dev"
-
-msgid "domain information incomplete, vbd has no src"
-msgstr "informacje o domenie są niepełne, vbd nie ma src"
 
 msgid "domain is already running"
 msgstr "domena jest już uruchomiona"
@@ -7042,9 +6998,6 @@ msgstr "błędnie sformatowana wartość wyrównania obszaru woluminu"
 msgid "malformed volume extent size value"
 msgstr "błędnie sformatowana wartość rozmiaru obszaru woluminu"
 
-msgid "managed PCI devices not supported with XenD"
-msgstr "zarządzane urządzenia PCI nie są obsługiwane za pomocą XenD"
-
 msgid "managed save of a domain state"
 msgstr "zarządzany zapis stanu domeny"
 
@@ -7118,18 +7071,6 @@ msgstr "brak \""
 
 msgid "missing 'timezone' attribute for clock with offset='timezone'"
 msgstr "brak atrybutu „timezone” dla zegara z offset=„timezone”"
-
-msgid "missing PCI bus"
-msgstr "brak magistrali PCI"
-
-msgid "missing PCI domain"
-msgstr "brak domeny PCI"
-
-msgid "missing PCI func"
-msgstr "brak funkcji PCI"
-
-msgid "missing PCI slot"
-msgstr "brak gniazda PCI"
 
 #, c-format
 msgid "missing SCSI host capability type for '%s'"
@@ -7389,9 +7330,6 @@ msgstr "nie"
 
 msgid "no FLR, PM reset or bus reset available"
 msgstr "brak FLR, przywrócenie PM lub magistrali jest niedostępne"
-
-msgid "no HVM domain loader"
-msgstr "brak wczytywania domeny HVM"
 
 msgid "no IFLA_PORT_RESPONSE found in netlink message"
 msgstr "nie odnaleziono IFLA_PORT_RESPONSE w odpowiedzi netlink"
@@ -8576,10 +8514,6 @@ msgid "unexpected filesystem type %d"
 msgstr "nieoczekiwany typ systemu plików %d"
 
 #, c-format
-msgid "unexpected graphics type %d"
-msgstr "nieoczekiwany typ grafiki %d"
-
-#, c-format
 msgid "unexpected hostdev mode %d"
 msgstr "nieoczekiwany tryb urządzenia gospodarza %d"
 
@@ -8602,10 +8536,6 @@ msgstr "nieoczekiwany typ interfejsu %d"
 #, c-format
 msgid "unexpected lifecycle action %d"
 msgstr "nieoczekiwana czynność cyklu życia %d"
-
-#, c-format
-msgid "unexpected lifecycle value %d"
-msgstr "nieoczekiwana wartość cyklu życiowego %d"
 
 #, c-format
 msgid "unexpected memballoon model %d"
@@ -8828,10 +8758,6 @@ msgstr "nieznana wartość pełnego ekranu „%s”"
 msgid "unknown graphics device type '%s'"
 msgstr "nieznany typ urządzenia graficznego „%s”"
 
-#, c-format
-msgid "unknown graphics type '%s'"
-msgstr "nieznany typ grafiki „%s”"
-
 msgid "unknown host"
 msgstr "nieznany gospodarz"
 
@@ -8862,10 +8788,6 @@ msgstr "nieznany typ interfejsu %s"
 #, c-format
 msgid "unknown interface type '%s'"
 msgstr "nieznany typ interfejsu „%s”"
-
-#, c-format
-msgid "unknown lifecycle type %s"
-msgstr "nieznany typ cyklu życiowego %s"
 
 #, c-format
 msgid "unknown memory balloon model '%s'"
@@ -9114,10 +9036,6 @@ msgstr "nieobsługiwana magistrala wejściowa %s"
 #, c-format
 msgid "unsupported monitor type '%s'"
 msgstr "nieobsługiwany typ monitora „%s”"
-
-#, c-format
-msgid "unsupported network type %d"
-msgstr "nieobsługiwany typ sieci %d"
 
 msgid "unsupported option"
 msgstr "nieobsługiwana opcja"

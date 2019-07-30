@@ -13,9 +13,9 @@
 # Jaswinder Singh <jsingh@redhat.com>, 2007,2009-2010,2012
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.10.0\n"
+"Project-Id-Version: libvirt 5.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-01 18:50+0100\n"
+"POT-Creation-Date: 2019-07-30 11:31+0100\n"
 "PO-Revision-Date: 2015-03-01 05:31+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Panjabi (Punjabi) (http://www.transifex.com/projects/p/"
@@ -1262,10 +1262,6 @@ msgstr "ਬੈਲੂਨ ਯੰਤਰ ਰਾਹ ਪਤਾ ਨਹੀਂ ਕਰ ਸ
 
 msgid "Cannot determine free memory"
 msgstr "ਖਾਲੀ ਮੈਮੋਰੀ ਪਤਾ ਨਹੀਂ ਕਰ ਸਕਦਾ"
-
-#, c-format
-msgid "Cannot directly attach floppy %s"
-msgstr "ਫਲਾਪੀ %s ਨੂੰ ਸਿੱਧਾ ਜੋੜ ਨਹੀਂ ਸਕਦਾ"
 
 msgid "Cannot disable close-on-exec flag"
 msgstr "close-on-exec ਫਲੈਗ ਨੂੰ ਅਯੋਗ ਨਹੀਂ ਕਰ ਸਕਦਾ"
@@ -11213,9 +11209,6 @@ msgstr "ਬੁਲਾਉਣ ਵਾਲਾ cookieout ਜਾਂ cookieoutlen ਨੂ�
 msgid "caller ignores uri_out"
 msgstr "ਕਾਲ ਕਰਤਾ uri_out ਨੂੰ ਅਣਦੇਖਿਆ ਕਰਦਾ ਹੈ"
 
-msgid "can only passthrough directories"
-msgstr "ਸਿਰਫ ਪਾਸਥਰੋ ਡਾਇਰੈਕਟਰੀਆਂ ਹੋ ਸਕਦੀਆਂ ਹਨ"
-
 msgid "can't change link state: device alias not found"
 msgstr "ਲਿੰਕ ਹਾਲਾਤ ਬਦਲ ਨਹੀਂ ਸਕਦਾ: ਯੰਤਰ ਉਪਨਾਮ ਨਹੀਂ ਲੱਭਿਆ"
 
@@ -11750,22 +11743,6 @@ msgid "cannot parse %s version number in '%.*s'"
 msgstr "%s ਵਰਜਨ ਨੰਬਰ ਨੂੰ '%.*s' ਵਿੱਚ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
 #, c-format
-msgid "cannot parse PCI bus '%s'"
-msgstr "PCI ਬੱਸ '%s' ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
-
-#, c-format
-msgid "cannot parse PCI domain '%s'"
-msgstr "PCI ਡੋਮੇਨ '%s' ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
-
-#, c-format
-msgid "cannot parse PCI func '%s'"
-msgstr "PCI ਫੰਕ '%s' ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
-
-#, c-format
-msgid "cannot parse PCI slot '%s'"
-msgstr "PCI ਸਲਾਟ '%s' ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
-
-#, c-format
 msgid "cannot parse bus %s"
 msgstr "ਬੱਸ %s ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
@@ -11840,12 +11817,6 @@ msgstr "typeid ਪੈਰਾਮੀਟਰ ਦੇ ਮੁੱਲ ਨੂੰ ਪਾਰ�
 
 msgid "cannot parse value of typeidversion parameter"
 msgstr "typeidversion ਪੈਰਾਮੀਟਰ ਦੇ ਮੁੱਲ ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
-
-msgid "cannot parse vbd filename, missing driver name"
-msgstr "vbd ਫਾਇਲ ਨਾਂ ਪਾਰਸ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ, ਡਰਾਈਵਰ ਕਿਸਮ ਨਹੀਂ ਹੈ"
-
-msgid "cannot parse vbd filename, missing driver type"
-msgstr "vbd ਫਾਇਲ ਨਾਂ ਪਾਰਸ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ, ਡਰਾਈਵਰ ਕਿਸਮ ਨਹੀਂ ਹੈ"
 
 #, c-format
 msgid "cannot parse vendor id %s"
@@ -12066,10 +12037,6 @@ msgstr "netlink ਸਾਕਟ ਨੂੰ ਭੇਜ ਨਹੀਂ ਸਕਦਾ ਹ�
 #, c-format
 msgid "cannot set security props %d (%s)"
 msgstr "ਸੁਰੱਖਿਆ props %d (%s) ਸੈੱਟ ਨਹੀਂ ਕਰ ਸਕਦਾ"
-
-#, c-format
-msgid "cannot set snapshot %s as its own parent"
-msgstr "ਸਨੈਪਸ਼ਾਟ %s ਨੂੰ ਆਪਣੇ ਮੂਲ ਵਜੋਂ ਸੈੱਟ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
 msgid "cannot set supplemental groups"
 msgstr "ਅਨੁਬੰਧਿਤ ਸਮੂਹਾਂ ਨੂੰ ਸੈੱਟ ਨਹੀਂ ਕਰ ਸਕਦਾ"
@@ -13050,15 +13017,8 @@ msgid "disk '%s' must use snapshot mode '%s'"
 msgstr "ਡਿਸਕ '%s' ਸਨੈਪਸ਼ਾਟ ਰੂਪ '%s' ਜਰੂਰ ਵਰਤੇ"
 
 #, c-format
-msgid "disk '%s' not ready for pivot yet"
-msgstr "ਡਿਸਕ %s ਅਜੇ ਧੁਰੀ ਬਣਨ ਲਈ ਤਿਆਰ ਨਹੀਂ ਹੈ"
-
-#, c-format
 msgid "disk '%s' specified twice"
 msgstr "ਡਿਸਕ '%s' ਦੋ ਵਾਰ ਦਰਸਾਈ ਗਈ"
-
-msgid "disk attributes: disk[,snapshot=type][,driver=type][,file=name]"
-msgstr "ਡਿਸਕ ਐਟਰੀਬਿਊਟ: disk[,snapshot=type][,driver=type][,file=name]"
 
 #, c-format
 msgid "disk bus '%s' cannot be hot unplugged."
@@ -13259,21 +13219,6 @@ msgstr "ਡੋਮੇਨ ਜਾਣਕਾਰੀ"
 
 msgid "domain information in XML"
 msgstr "XML ਵਿੱਚ ਡੋਮੇਨ ਜਾਣਕਾਰੀ"
-
-msgid "domain information incomplete, missing HVM loader"
-msgstr "ਡੋਮੇਨ ਜਾਣਕਾਰੀ ਅਧੂਰੀ ਹੈ, ਨਾਂ ਨਹੀਂ ਹੈ"
-
-msgid "domain information incomplete, missing kernel & bootloader"
-msgstr "ਡੋਮੇਨ ਜਾਣਕਾਰੀ ਅਧੂਰੀ ਹੈ, ਕਰਨਲ ਤੇ ਬੂਟਲੋਡਰ ਗੁੰਮ ਹੈ"
-
-msgid "domain information incomplete, missing name"
-msgstr "ਡੋਮੇਨ ਜਾਣਕਾਰੀ ਅਧੂਰੀ ਹੈ, ਨਾਂ ਨਹੀਂ ਹੈ"
-
-msgid "domain information incomplete, vbd has no dev"
-msgstr "ਡੋਮੇਨ ਜਾਣਾਕਰੀ ਅਧੂਰੀ ਹੈ, vbd ਕੋਲ ਕੋਈ dev ਨਹੀਂ ਹੈ"
-
-msgid "domain information incomplete, vbd has no src"
-msgstr "ਡੋਮੇਨ ਜਾਣਾਕਰੀ ਅਧੂਰੀ ਹੈ, vbd ਕੋਲ ਕੋਈ ਸਰੋਤ ਨਹੀਂ ਹੈ"
 
 msgid "domain is already running"
 msgstr "ਡੋਮੇਨ ਪਹਿਲਾਂ ਹੀ ਚੱਲ ਰਿਹਾ ਹੈ"
@@ -15484,9 +15429,6 @@ msgstr "ਗਲਤ ਵਾਲੀਅਮ ਐਕਸਟੈੰਟ ਅਕਾਰ ਮੁ�
 msgid "malformed volume extent stripes value"
 msgstr "ਗਲਤ ਵਾਲੀਅਮ ਐਕਸਟੈੰਟ ਅਕਾਰ ਮੁੱਲ"
 
-msgid "managed PCI devices not supported with XenD"
-msgstr "ਪ੍ਰਬੰਧਿਤ PCI ਜੰਤਰਾਂ ਨੂੰ XenD ਨਾਲ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
-
 msgid "managed save of a domain state"
 msgstr "ਇੱਕ ਡੋਮੇਨ ਹਾਲਤ ਇੱਕ ਫਾਇਲ ਵਿੱਚ ਸੰਭਾਲੋ"
 
@@ -15651,18 +15593,6 @@ msgstr "ਗੁੰਮ EGD ਬੈਕਐੰਡ ਕਿਸਮ"
 
 msgid "missing IFLA_VF_INFO in netlink response"
 msgstr "ਨੈੱਟਲਿੰਕ ਹੁੰਗਾਰੇ ਵਿੱਚ ਗੁੰਮ IFLA_VF_INFO "
-
-msgid "missing PCI bus"
-msgstr "ਗੁੰਮ PCI ਬੱਸ"
-
-msgid "missing PCI domain"
-msgstr "ਗੁੰਮ PCI ਡੋਮੇਨ"
-
-msgid "missing PCI func"
-msgstr "ਗੁੰਮ PCI func"
-
-msgid "missing PCI slot"
-msgstr "ਗੁੰਮ PCI ਸਲਾਟ"
 
 msgid "missing RNG device backend model"
 msgstr "ਗੁੰਮ RNG ਯੰਤਰ ਬੈਕਐੰਡ ਮਾਡਲ"
@@ -16248,9 +16178,6 @@ msgstr "ਕੋਈ cpu ਨਹੀਂ ਲੱਭਿਆ"
 msgid "no FLR, PM reset or bus reset available"
 msgstr "ਕੋਈ FLR ਨਹੀਂ, PM ਰੀਸੈੱਟ ਜਾਂ ਬੱਸ ਰੀਸੈੱਟ ਉਪਲੱਬਧ ਹਨ"
 
-msgid "no HVM domain loader"
-msgstr "ਕੋਈ HVM ਡੋਮੇਨ ਲੋਡਰ ਨਹੀਂ ਹੈ"
-
 msgid "no IFLA_PORT_RESPONSE found in netlink message"
 msgstr "no IFLA_PORT_RESPONSE found in netlink message"
 
@@ -16826,14 +16753,6 @@ msgstr "ਪੈਰਾਮੀਟਰ '%s' ਬਹੁਤ ਵਾਰੀ ਵਾਪਰਦ�
 msgid "parameter=value"
 msgstr "parameter=value"
 
-#, c-format
-msgid "parent %s for snapshot %s not found"
-msgstr "ਮੂਲ %s ਸਨੈਪਸ਼ਾਟ %s ਲਈ ਨਹੀਂ ਲੱਭਿਆ"
-
-#, c-format
-msgid "parent %s would create cycle to %s"
-msgstr "%s ਨੂੰ %s ਬਣਾਉਣ ਲਈ ਚਲਾ ਨਹੀਂ ਸਕਿਆ"
-
 msgid "parser error"
 msgstr "ਪਾਰਸਰ ਗਲਤੀ"
 
@@ -16935,10 +16854,6 @@ msgstr "pid"
 #, c-format
 msgid "pid_value in %s is too large"
 msgstr "%s ਵਿੱਚ pid_value ਬਹੁਤ ਵੱਡੀ ਹੈ"
-
-#, c-format
-msgid "pivot of disk '%s' requires an active copy job"
-msgstr "ਡਿਸਕ '%s' ਦੀ ਧੁਰੀ ਨੂੰ ਇੱਕ ਸਰਗਰਮ ਨਕਲ ਜੌਬ ਲੋੜੀਂਦੀ ਹੈ"
 
 msgid "pmsuspended"
 msgstr "pmsuspended"
@@ -17234,13 +17149,6 @@ msgstr "remoteNodeGetMemoryStats:  ਨਤੀਜੇ ਵਜੋਂ ਮਿਲੇ ਪ
 
 msgid "remote_open: for 'ext' transport, command is required"
 msgstr "remote_open: 'ext' ਟਰਾਂਸਪੋਰਟ ਲਈ, ਕਮਾਂਡ ਲੋੜੀਂਦੀ ਹੈ"
-
-msgid ""
-"remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp|"
-"libssh2)"
-msgstr ""
-"remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp|"
-"libssh2)"
 
 msgid "remove all associated storage volumes (use with caution)"
 msgstr "ਸਾਰੇ ਸੰਬੰਧਿਤ ਭੰਡਾਰਣ ਆਇਤਨ ਹਟਾਓ (ਧਿਆਨ ਨਾਲ ਵਰਤੋ)"
@@ -18623,10 +18531,6 @@ msgid "unexpected filesystem type %d"
 msgstr "ਅਚਾਨਕ ਫਾਇਲ-ਸਿਸਟਮ ਕਿਸਮ %d"
 
 #, c-format
-msgid "unexpected graphics type %d"
-msgstr "ਅਣਜਾਣ ਗਰਾਫਿਕਸ ਕਿਸਮ %d"
-
-#, c-format
 msgid "unexpected hostdev driver name type %d "
 msgstr "ਅਣਕਿਆਸੀ hostdev ਚਾਲਕ ਨਾਂ ਕਿਸਮ %d "
 
@@ -18661,10 +18565,6 @@ msgstr "ਅਣਕਿਆਸਿਆ iscsi ਆਇਤਨ ਨਾਂ '%s'"
 #, c-format
 msgid "unexpected lifecycle action %d"
 msgstr "ਅਚਾਨਕ lifecycle ਕਾਰਵਾਈ %d"
-
-#, c-format
-msgid "unexpected lifecycle value %d"
-msgstr "ਅਚਾਨਕ lifecycle ਮੁੱਲ %d"
 
 #, c-format
 msgid "unexpected memballoon model %d"
@@ -19076,10 +18976,6 @@ msgstr "ਅਣਜਾਣ ਗਰਾਫਿਕਸ ਕਿਸਮ '%s'"
 msgid "unknown graphics type %s"
 msgstr "ਅਣਜਾਣ ਗਰਾਫਿਕਸ ਕਿਸਮ %s"
 
-#, c-format
-msgid "unknown graphics type '%s'"
-msgstr "ਅਣਜਾਣ ਗਰਾਫਿਕਸ ਕਿਸਮ '%s'"
-
 msgid "unknown host"
 msgstr "ਅਚਾਨਕ ਮੇਜ਼ਬਾਨ"
 
@@ -19130,14 +19026,6 @@ msgstr "ਅਣਜਾਣ ਇੰਟਰਫੇਸ ਕਿਸਮ %s"
 #, c-format
 msgid "unknown interface type '%s'"
 msgstr "ਅਚਾਨਕ ਇੰਟਰਫੇਸ ਕਿਸਮ '%s'"
-
-#, c-format
-msgid "unknown lifecycle type %s"
-msgstr "ਅਣਜਾਮ lifecycle ਕਿਸਮ %s"
-
-#, c-format
-msgid "unknown localtime offset %s"
-msgstr "ਅਣਜਾਣ ਘੜੀ ਆਫਸੈੱਟ '%s'"
 
 #, c-format
 msgid "unknown memory balloon model '%s'"
@@ -19212,10 +19100,6 @@ msgstr "ਅਣਜਾਣ ਰੂਲ ਐਕਸ਼ਨ ਐਟਰੀਬਿਊਟ ਮੁ�
 
 msgid "unknown rule direction attribute value"
 msgstr "ਅਣਜਾਣ ਰੂਲ ਦਿਸ਼ਾ ਐਟਰੂਬਿਊਟ ਮੁੱਲ"
-
-#, c-format
-msgid "unknown s-expression kind %d"
-msgstr "ਅਣਜਾਣ s-expression ਕਿਸਮ %d"
 
 msgid "unknown secret usage type"
 msgstr "ਅਣਜਾਣ ਸੀਕਰੇਟ ਉਪਯੋਗਤਾ ਕਿਸਮ"
@@ -19539,10 +19423,6 @@ msgstr "ਨਾ-ਸਹਿਯੋਗੀ ਇੰਪੁੱਟ ਬੱਸ %s"
 #, c-format
 msgid "unsupported monitor type '%s'"
 msgstr "ਨਾ-ਸਹਿਯੋਗੀ ਮਾਨੀਟਰ ਕਿਸਮ '%s'"
-
-#, c-format
-msgid "unsupported network type %d"
-msgstr "ਨਾ-ਸਹਿਯੋਗੀ ਨੈੱਟਵਰਕ ਕਿਸਮ %d"
 
 msgid "unsupported option"
 msgstr "ਨਾ-ਸਹਿਯੋਗੀ ਚੋਣ"

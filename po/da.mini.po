@@ -9,9 +9,9 @@
 # Magnus Larsson <fedoratrans@gmail.com>, 2006.
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.10.0\n"
+"Project-Id-Version: libvirt 5.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"POT-Creation-Date: 2019-07-30 11:31+0100\n"
 "PO-Revision-Date: 2015-02-26 08:52+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Danish (http://www.transifex.com/projects/p/fedora/language/"
@@ -447,12 +447,6 @@ msgstr "start et domæne automatisk"
 msgid "autostart a network"
 msgstr "autostart et netværk"
 
-msgid "cannot parse vbd filename, missing driver name"
-msgstr "Kan ikke fortolke vbd-filnavn, mangler drivernavn"
-
-msgid "cannot parse vbd filename, missing driver type"
-msgstr "Kan ikke fortolke vbd-filnavn, mangler drivertype"
-
 msgid "capabilities"
 msgstr "faciliteter"
 
@@ -546,18 +540,6 @@ msgstr "domæneinformation"
 
 msgid "domain information in XML"
 msgstr "domæneinformation i XML"
-
-msgid "domain information incomplete, missing kernel & bootloader"
-msgstr "domæneinformation ukomplet, mangler kerne & opstartsindlæser"
-
-msgid "domain information incomplete, missing name"
-msgstr "domæneinformation ukomplet, mangler navn"
-
-msgid "domain information incomplete, vbd has no dev"
-msgstr "domæneinformation ukomplet, vbd har ingen dev"
-
-msgid "domain information incomplete, vbd has no src"
-msgstr "domæneinformation ukomplet, vbd har ingen src"
 
 msgid "domain name or uuid"
 msgstr "domænenavn eller uuid"

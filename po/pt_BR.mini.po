@@ -20,9 +20,9 @@
 # Filipe Rosset <rosset.filipe@gmail.com>, 2017. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.10.0\n"
+"Project-Id-Version: libvirt 5.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-01 18:50+0100\n"
+"POT-Creation-Date: 2019-07-30 11:31+0100\n"
 "PO-Revision-Date: 2017-04-15 11:51+0000\n"
 "Last-Translator: Filipe Rosset <rosset.filipe@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) (http://www.transifex.com/projects/p/"
@@ -1389,10 +1389,6 @@ msgstr "Não foi possível determinar caminho de dispositivo de balão"
 msgid "Cannot determine free memory"
 msgstr "Não é possível determinar memória livre"
 
-#, c-format
-msgid "Cannot directly attach floppy %s"
-msgstr "Não foi possível conectar diretamente o disquete %s"
-
 msgid "Cannot disable close-on-exec flag"
 msgstr "Não foi possível desabilitar flag close-on-exec"
 
@@ -1987,6 +1983,9 @@ msgid ""
 msgstr ""
 "Conectar ao hypervisor local. Este é um comando embutido depois da "
 "inicialização do shell."
+
+msgid "Connected since"
+msgstr "Conectado desde"
 
 #, c-format
 msgid "Connected to domain %s\n"
@@ -11923,9 +11922,6 @@ msgstr "chamador ignora cookieout ou cookieoutlen"
 msgid "caller ignores uri_out"
 msgstr "chamador ignora uri_out"
 
-msgid "can only passthrough directories"
-msgstr "somente diretórios podem passar"
-
 msgid "can't change link state: device alias not found"
 msgstr ""
 "não foi possível modificar o estado do link: alias do dispositivo não foi "
@@ -12497,22 +12493,6 @@ msgid "cannot parse CPU data"
 msgstr "Não foi possível analisar os dados da CPU"
 
 #, c-format
-msgid "cannot parse PCI bus '%s'"
-msgstr "não foi possível analisar o bus do PCI '%s'"
-
-#, c-format
-msgid "cannot parse PCI domain '%s'"
-msgstr "não foi possível analisar o domínio do PCI '%s'"
-
-#, c-format
-msgid "cannot parse PCI func '%s'"
-msgstr "não foi possível analisar a func do PCI '%s'"
-
-#, c-format
-msgid "cannot parse PCI slot '%s'"
-msgstr "não foi possível analisar o slot do PCI '%s'"
-
-#, c-format
 msgid "cannot parse bus %s"
 msgstr "não foi possível analisar o barramento %s"
 
@@ -12589,14 +12569,6 @@ msgstr "Não foi possível analisar o valor do parâmetro de typeid"
 
 msgid "cannot parse value of typeidversion parameter"
 msgstr "Não foi possível analisar o valor do parâmetro de typeidversion"
-
-msgid "cannot parse vbd filename, missing driver name"
-msgstr ""
-"não foi possível analisar o nome do arquivo vbd, falta o nome do driver"
-
-msgid "cannot parse vbd filename, missing driver type"
-msgstr ""
-"não foi possível analisar o nome do arquivo vbd, falta o tipo do driver"
 
 #, c-format
 msgid "cannot parse vendor id %s"
@@ -12825,10 +12797,6 @@ msgstr "não foi possível definir soquete de netlink nonblocking"
 #, c-format
 msgid "cannot set security props %d (%s)"
 msgstr "não foi possível definir as propriedades de segurança %d (%s)"
-
-#, c-format
-msgid "cannot set snapshot %s as its own parent"
-msgstr "não foi possível definir snapshot %s como seu próprio pai"
 
 msgid "cannot set supplemental groups"
 msgstr "não foi possível definir grupos adicionais"
@@ -13839,15 +13807,8 @@ msgid "disk '%s' must use snapshot mode '%s'"
 msgstr "disco '%s' deve utilizar o modo de snapshot '%s'"
 
 #, c-format
-msgid "disk '%s' not ready for pivot yet"
-msgstr "disco '%s' não é dinâmico ainda"
-
-#, c-format
 msgid "disk '%s' specified twice"
 msgstr "disco '%s' especificado duas vezes"
-
-msgid "disk attributes: disk[,snapshot=type][,driver=type][,file=name]"
-msgstr "atributos de disco: disk[,snapshot=type][,driver=type][,file=name]"
 
 #, c-format
 msgid "disk bus '%s' cannot be hot unplugged."
@@ -14066,23 +14027,6 @@ msgstr "informações do domínio"
 
 msgid "domain information in XML"
 msgstr "informações do domínio em XML."
-
-msgid "domain information incomplete, missing HVM loader"
-msgstr "informação do domínio incompleta, falta carregador do HVM"
-
-msgid "domain information incomplete, missing kernel & bootloader"
-msgstr ""
-"informação do domínio incompleta, falta o kernel & o gerenciador de "
-"inicialização"
-
-msgid "domain information incomplete, missing name"
-msgstr "informação do domínio incompleta, falta o nome"
-
-msgid "domain information incomplete, vbd has no dev"
-msgstr "informação do domínio incompleta, o vbd não tem dev"
-
-msgid "domain information incomplete, vbd has no src"
-msgstr "informação do domínio incompleta, o vbd não tem src"
 
 msgid "domain is already running"
 msgstr "domínio já está sendo executado"
@@ -16380,9 +16324,6 @@ msgstr "valor do tamanho da extensão do volume inválido"
 msgid "malformed volume extent stripes value"
 msgstr "valor das faixas da extensão do volume malformado"
 
-msgid "managed PCI devices not supported with XenD"
-msgstr "dispositivos PCI gerenciados não são suportados com o XenD"
-
 msgid "managed save of a domain state"
 msgstr "Salvamento gerenciado de um estado de domínio"
 
@@ -16587,18 +16528,6 @@ msgstr "falta tipo de backend EGD"
 
 msgid "missing IFLA_VF_INFO in netlink response"
 msgstr "falta IFLA_VF_INFO na resposta do netlink"
-
-msgid "missing PCI bus"
-msgstr "falta o bus do PCI"
-
-msgid "missing PCI domain"
-msgstr "falta o domíni PCI"
-
-msgid "missing PCI func"
-msgstr "falta a func do PCI"
-
-msgid "missing PCI slot"
-msgstr "falta o slot do PCI"
 
 msgid "missing RNG device backend model"
 msgstr "falta modelo de backend de dispostivo de RNG"
@@ -17204,9 +17133,6 @@ msgstr "Nenhuma CPUs encontrada"
 
 msgid "no FLR, PM reset or bus reset available"
 msgstr "não há nenhuma redefinição de FLR, PM ou redefinição de bus disponível"
-
-msgid "no HVM domain loader"
-msgstr "não há carregador de domínio HVM"
 
 msgid "no IFLA_PORT_RESPONSE found in netlink message"
 msgstr "Não foi encontrado nenhum  IFLA_PORT_RESPONSE na mensagem de netlink"
@@ -17814,14 +17740,6 @@ msgstr "parâmetro '%s' ocorre diversas vezes"
 msgid "parameter=value"
 msgstr "parameter=valor"
 
-#, c-format
-msgid "parent %s for snapshot %s not found"
-msgstr "pai %s para snapshot %s não foi encontrado"
-
-#, c-format
-msgid "parent %s would create cycle to %s"
-msgstr "pai %s criaria ciclo para %s"
-
 msgid "parser error"
 msgstr "erro do analisador"
 
@@ -17934,10 +17852,6 @@ msgstr "pid"
 #, c-format
 msgid "pid_value in %s is too large"
 msgstr "pid_value em %s é muito grande"
-
-#, c-format
-msgid "pivot of disk '%s' requires an active copy job"
-msgstr "dinâmica de disco '%s' requer um trabalho de cópia ativo"
 
 msgid "pmsuspended"
 msgstr "pmsuspended"
@@ -18240,13 +18154,6 @@ msgstr ""
 
 msgid "remote_open: for 'ext' transport, command is required"
 msgstr "remote_open: para o transporte \"ext\", é necessário um comando"
-
-msgid ""
-"remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp|"
-"libssh2)"
-msgstr ""
-"remote_open: transporte em URL não reconhecida (deveria ser tls|unix|ssh|ext|"
-"tcp|libssh2)"
 
 msgid "removable is only valid for usb disks"
 msgstr "removível só é válido para discos usb"
@@ -19677,10 +19584,6 @@ msgid "unexpected filesystem type %d"
 msgstr "tipo de sistema de arquivos %d inesperado"
 
 #, c-format
-msgid "unexpected graphics type %d"
-msgstr "tipo de vídeo %d inesperado"
-
-#, c-format
 msgid "unexpected hostdev driver name type %d "
 msgstr "tipo de nome de driver hostdev inesperado %d"
 
@@ -19715,10 +19618,6 @@ msgstr "nome de volume iscsi inesperado '%s'"
 #, c-format
 msgid "unexpected lifecycle action %d"
 msgstr "ação inesperada %d do ciclo de vida"
-
-#, c-format
-msgid "unexpected lifecycle value %d"
-msgstr "valor %d do ciclo de vida inesperado"
 
 #, c-format
 msgid "unexpected memballoon model %d"
@@ -20139,10 +20038,6 @@ msgstr "tipo de escuta de gráficos desconhecido '%s'"
 msgid "unknown graphics type %s"
 msgstr "tipo de gráficos desconhecido %s"
 
-#, c-format
-msgid "unknown graphics type '%s'"
-msgstr "tipo de vídeo \"%s\" desconhecido"
-
 msgid "unknown host"
 msgstr "hospedeiro desconhecido"
 
@@ -20195,16 +20090,8 @@ msgid "unknown interface type '%s'"
 msgstr "tipo de interface desconhecida \"%s\""
 
 #, c-format
-msgid "unknown lifecycle type %s"
-msgstr "tipo de ciclo de vida %s desconhecido"
-
-#, c-format
 msgid "unknown link state: %s"
 msgstr "Estado de link desconhecido: %s"
-
-#, c-format
-msgid "unknown localtime offset %s"
-msgstr "offset de localtime desconhecido %s"
 
 #, c-format
 msgid "unknown memory balloon model '%s'"
@@ -20279,10 +20166,6 @@ msgstr "valor do atributo de ação de regra desconhecido"
 
 msgid "unknown rule direction attribute value"
 msgstr "valor de atributo de direção de regra desconhecido"
-
-#, c-format
-msgid "unknown s-expression kind %d"
-msgstr "tipo s-expression desconhecido %d"
 
 msgid "unknown secret usage type"
 msgstr "tipo de uso secreto desconhecido"
@@ -20619,10 +20502,6 @@ msgstr "tipo de monitor não suportado '%s'"
 #, c-format
 msgid "unsupported network event ID %d"
 msgstr "evento de rede não suportado ID %d"
-
-#, c-format
-msgid "unsupported network type %d"
-msgstr "não há suporte ao tipo de rede %d"
 
 msgid "unsupported option"
 msgstr "opção não suportada"

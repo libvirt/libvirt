@@ -8,9 +8,9 @@
 # Daniel  <veillard@redhat.com>, 2011.
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.10.0\n"
+"Project-Id-Version: libvirt 5.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"POT-Creation-Date: 2019-07-30 11:31+0100\n"
 "PO-Revision-Date: 2015-02-27 08:02+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Macedonian (http://www.transifex.com/projects/p/fedora/"
@@ -528,16 +528,6 @@ msgstr "автом. старт на домен"
 msgid "autostart a network"
 msgstr "автом. стартува мрежа"
 
-msgid "cannot parse vbd filename, missing driver name"
-msgstr ""
-"не можам да го анализирам името на датотека за vbd, недостасува име на "
-"управувач"
-
-msgid "cannot parse vbd filename, missing driver type"
-msgstr ""
-"не можам да го анализирам името на датотека за vbd, недостасува тип на "
-"управувач"
-
 msgid "cap for XEN_CREDIT"
 msgstr "способност за XEN_CREDIT"
 
@@ -643,20 +633,6 @@ msgstr "информација за домен"
 
 msgid "domain information in XML"
 msgstr "информација за домен во XML"
-
-msgid "domain information incomplete, missing kernel & bootloader"
-msgstr ""
-"информацијата за доменот е нецелосна, недостасува кернел и подигач на "
-"системот"
-
-msgid "domain information incomplete, missing name"
-msgstr "информацијата за доменот е нецелосна, недостасува име"
-
-msgid "domain information incomplete, vbd has no dev"
-msgstr "информацијата за домен не е комплетна, vbd нема dev"
-
-msgid "domain information incomplete, vbd has no src"
-msgstr "информацијата за домен не е комплетна, vbd нема извор"
 
 msgid "domain name or uuid"
 msgstr "име или uuid на домен"

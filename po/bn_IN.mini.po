@@ -8,9 +8,9 @@
 # runab <runab@redhat.com>, 2006-2010
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.10.0\n"
+"Project-Id-Version: libvirt 5.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-01 18:50+0100\n"
+"POT-Creation-Date: 2019-07-30 11:31+0100\n"
 "PO-Revision-Date: 2015-02-26 07:10+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Bengali (India) (http://www.transifex.com/projects/p/libvirt/"
@@ -521,10 +521,6 @@ msgstr "autostart ডিরেক্টরি %s নির্মাণ করত
 #, c-format
 msgid "Cannot create log directory '%s'"
 msgstr "লগ ডিরেক্টরি '%s' নির্মাণ করতে ব্যর্থ"
-
-#, c-format
-msgid "Cannot directly attach floppy %s"
-msgstr "%s ফ্লপি সরাসরি সংযুক্ত করা সম্ভব নয়"
 
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
@@ -4194,22 +4190,6 @@ msgid "cannot open volume '%s'"
 msgstr "ভলিউম '%s' খুলতে ব্যর্থ"
 
 #, c-format
-msgid "cannot parse PCI bus '%s'"
-msgstr "PCI বাস '%s' পার্স করা সম্ভব নয়"
-
-#, c-format
-msgid "cannot parse PCI domain '%s'"
-msgstr "PCI ডোমেইন '%s' পার্স করা সম্ভব নয়"
-
-#, c-format
-msgid "cannot parse PCI func '%s'"
-msgstr "PCI func '%s' পার্স করা সম্ভব নয়"
-
-#, c-format
-msgid "cannot parse PCI slot '%s'"
-msgstr "PCI স্লট '%s' পার্স করা সম্ভব নয়"
-
-#, c-format
 msgid "cannot parse bus %s"
 msgstr "বাস %s পার্স করতে ব্যর্থ"
 
@@ -4281,12 +4261,6 @@ msgstr "typeid প্যারামিটারের মান পার্জ
 
 msgid "cannot parse value of typeidversion parameter"
 msgstr "typeidversion প্যারামিটারের মান পার্জ করা যাবে না"
-
-msgid "cannot parse vbd filename, missing driver name"
-msgstr "vbd ফাইলের নাম পার্স করতে ব্যর্থ, ড্রাইভারের নাম অনুপস্থিত"
-
-msgid "cannot parse vbd filename, missing driver type"
-msgstr "vbd ফাইলের নাম পার্স করতে ব্যর্থ, ড্রাইভারের ধরন অনুপস্থিত"
 
 #, c-format
 msgid "cannot parse vendor id %s"
@@ -4902,21 +4876,6 @@ msgstr "ডোমেইন সংক্রান্ত তথ্য"
 
 msgid "domain information in XML"
 msgstr "XML-র মধ্যে ডোমেইন সংক্রান্ত তথ্য"
-
-msgid "domain information incomplete, missing HVM loader"
-msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, HVM লোডার অনুপস্থিত"
-
-msgid "domain information incomplete, missing kernel & bootloader"
-msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, কার্নেল ও বুট-লোডার অনুপস্থিত"
-
-msgid "domain information incomplete, missing name"
-msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, নাম অনুপস্থিত"
-
-msgid "domain information incomplete, vbd has no dev"
-msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, vbd-র মধ্যে dev অনুপস্থিত"
-
-msgid "domain information incomplete, vbd has no src"
-msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, vbd-র মধ্যে src অনুপস্থিত"
 
 msgid "domain is already running"
 msgstr "ডোমেইন বর্তমানে সক্রিয়"
@@ -5900,9 +5859,6 @@ msgstr "ভলিউম এক্সটেন্টের অফ-সেট ম�
 msgid "malformed volume extent size value"
 msgstr "ভলিউম এক্সটেন্টের মাপ ত্রুটিপূর্ণ"
 
-msgid "managed PCI devices not supported with XenD"
-msgstr "পরিচালিত PCI ডিভাইসগুলি XenD দ্বারা সমর্থিত নয়"
-
 msgid "maxStats > REMOTE_DOMAIN_MEMORY_STATS_MAX"
 msgstr "maxStats > REMOTE_DOMAIN_MEMORY_STATS_MAX"
 
@@ -5994,18 +5950,6 @@ msgstr "RAM filesystem এর ক্ষেত্রে 'usage' অ্যাট�
 
 msgid "missing EGD backend type"
 msgstr "EGD ব্যাক-এন্ড ধরন অনুপস্থিত"
-
-msgid "missing PCI bus"
-msgstr "PCI বাস অনুপস্থিত"
-
-msgid "missing PCI domain"
-msgstr "অনুপস্থিত PCI ডোমেইন"
-
-msgid "missing PCI func"
-msgstr "PCI func অনুপস্থিত"
-
-msgid "missing PCI slot"
-msgstr "PCI স্লট অনুপস্থিত"
 
 msgid "missing RNG device backend model"
 msgstr "RNG ডিভাইস ব্যাক-এন্ড মডেল অনুপস্থিত"
@@ -6365,9 +6309,6 @@ msgstr "না"
 
 msgid "no FLR, PM reset or bus reset available"
 msgstr "কোনো FLR, PM reset অথবা bus reset উপলব্ধ নয়"
-
-msgid "no HVM domain loader"
-msgstr "কোনো HVM ডোমেইন লোডার উপস্থিত নেই"
 
 #, c-format
 msgid "no PCI bus ID supplied for '%s'"
@@ -7453,10 +7394,6 @@ msgid "unexpected filesystem type %d"
 msgstr "অপ্রত্যাশিত প্রকৃতির ফাইল-সিস্টেম %d"
 
 #, c-format
-msgid "unexpected graphics type %d"
-msgstr "অপ্রত্যাশিত প্রকৃতির গ্রাফিক্স %d"
-
-#, c-format
 msgid "unexpected hostdev driver name type %d "
 msgstr "অপ্রত্যাশিত hostdev ড্রাইভার নাম ধরন %d "
 
@@ -7487,10 +7424,6 @@ msgstr "অপ্রত্যাশিত প্রকৃতির ইন্ট�
 #, c-format
 msgid "unexpected lifecycle action %d"
 msgstr "অপ্রত্যাশিত কর্মকালের কর্ম %d"
-
-#, c-format
-msgid "unexpected lifecycle value %d"
-msgstr "কর্মকালের অপ্রত্যাশিত মান %d"
 
 #, c-format
 msgid "unexpected memballoon model %d"
@@ -7839,10 +7772,6 @@ msgstr "অজানা ধরনের গ্রাফিক্স ডিভা
 msgid "unknown graphics listen type '%s'"
 msgstr "অপ্রত্যাশিত গ্র্যাফিক্স লিশন মোড '%s'"
 
-#, c-format
-msgid "unknown graphics type '%s'"
-msgstr "অপ্রত্যাশিত গ্রাফিক্স মোড '%s'"
-
 msgid "unknown host"
 msgstr "অজানা হোস্ট"
 
@@ -7893,10 +7822,6 @@ msgstr "অজানা ধরনের ইন্টারফেস %s"
 #, c-format
 msgid "unknown interface type '%s'"
 msgstr "অজানা ধরনের ইন্টারফেস '%s'"
-
-#, c-format
-msgid "unknown lifecycle type %s"
-msgstr "কর্মকালের অজানা ধরন %s"
 
 #, c-format
 msgid "unknown memory balloon model '%s'"
@@ -8211,10 +8136,6 @@ msgstr "অসমর্থিত ইনপুট বাস %s"
 #, c-format
 msgid "unsupported monitor type '%s'"
 msgstr "'%s' ধরনের মনিটর সমর্থিত নয়"
-
-#, c-format
-msgid "unsupported network type %d"
-msgstr "%d প্রকৃতির নেটওয়ার্ক সমর্থিত নয়"
 
 #, c-format
 msgid "unsupported option '-%c'. See --help."

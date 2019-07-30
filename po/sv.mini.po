@@ -11,9 +11,9 @@
 # Göran Uddeborg <goeran@uddeborg.se>, 2017. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.10.0\n"
+"Project-Id-Version: libvirt 5.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-01 18:50+0100\n"
+"POT-Creation-Date: 2019-07-30 11:31+0100\n"
 "PO-Revision-Date: 2017-02-26 05:02+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish (http://www.transifex.com/projects/p/libvirt/language/"
@@ -295,10 +295,6 @@ msgstr "Anrop av %s för oväntad typ ”%s”"
 #, c-format
 msgid "Can't read %s"
 msgstr "Kan inte läsa %s"
-
-#, c-format
-msgid "Cannot directly attach floppy %s"
-msgstr "Kan inte direktansluta diskett %s"
 
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
@@ -1155,10 +1151,6 @@ msgid "Thread(s) per core:"
 msgstr "Trådar per kärna:"
 
 #, c-format
-msgid "Too many (%u) FDs passed from caller"
-msgstr "För många (%u) FB:are skickade från anroparen"
-
-#, c-format
 msgid "Too many clients '%d' for limit '%d'"
 msgstr "För många klienter ”%d” för gränsen ”%d”"
 
@@ -1392,12 +1384,6 @@ msgstr "kan inte tolka värdet på parametern typeid"
 msgid "cannot parse value of typeidversion parameter"
 msgstr "kan inte tolka värdet av parametern typeidversion"
 
-msgid "cannot parse vbd filename, missing driver name"
-msgstr "kan inte analysera vbd-filnamn, saknar drivrutinsnamn"
-
-msgid "cannot parse vbd filename, missing driver type"
-msgstr "kan inte analysera vbd-filnamn, saknar drivrutinstyp"
-
 #, c-format
 msgid "cannot remove config %s"
 msgstr "kan inte ta bort konfigurationen %s"
@@ -1603,18 +1589,6 @@ msgstr "domäninformation"
 
 msgid "domain information in XML"
 msgstr "domäninformation i XML"
-
-msgid "domain information incomplete, missing kernel & bootloader"
-msgstr "domäninformation ej komplett, saknar kärna & startprogram"
-
-msgid "domain information incomplete, missing name"
-msgstr "domäninformation inkomplett, saknar namn"
-
-msgid "domain information incomplete, vbd has no dev"
-msgstr "domäninformation inkomplett, vbd har ingen dev"
-
-msgid "domain information incomplete, vbd has no src"
-msgstr "domäninformation inkomplett, vbd har ingen src"
 
 msgid "domain name or uuid"
 msgstr "domännamn eller uuid"
@@ -1893,9 +1867,6 @@ msgid "machine is not in poweroff|saved|aborted state, so couldn't start it"
 msgstr ""
 "maskinen inte är i avstängt|sparat|avbrutet läge, så det gick inte att "
 "starta den"
-
-msgid "managed PCI devices not supported with XenD"
-msgstr "hanterade PCI-enheter stödjs inte med XenD"
 
 msgid "maxStats > REMOTE_DOMAIN_MEMORY_STATS_MAX"
 msgstr "maxStats > REMOTE_DOMAIN_MEMORY_STATS_MAX"
@@ -2306,14 +2277,6 @@ msgid "unexpected domain %s already exists"
 msgstr "oväntad domän %s finns redan"
 
 #, c-format
-msgid "unexpected graphics type %d"
-msgstr "oväntad grafiktyp %d"
-
-#, c-format
-msgid "unexpected lifecycle value %d"
-msgstr "oväntat livscykelvärde %d"
-
-#, c-format
 msgid "unexpected sysinfo type model %d"
 msgstr "oväntade sysinfo typmodell %d"
 
@@ -2391,10 +2354,6 @@ msgid "unknown interface type '%s'"
 msgstr "okän gränssnittstyp ”%s”"
 
 #, c-format
-msgid "unknown lifecycle type %s"
-msgstr "okänd livscykeltyp %s"
-
-#, c-format
 msgid "unknown parameter type: %d"
 msgstr "okänd parametertyp: %d"
 
@@ -2431,10 +2390,6 @@ msgstr "ej stödd händelse-ID %d"
 #, c-format
 msgid "unsupported flags: (0x%x)"
 msgstr "flaggor som inte stödjs: (0x%x)"
-
-#, c-format
-msgid "unsupported network type %d"
-msgstr "nätverkstypen stödjs inte %d"
 
 #, c-format
 msgid "unsupported option '-%c'. See --help."

@@ -14,9 +14,9 @@
 # shanky <prasad.mvs@gmail.com>, 2013
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.10.0\n"
+"Project-Id-Version: libvirt 5.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-01 18:50+0100\n"
+"POT-Creation-Date: 2019-07-30 11:31+0100\n"
 "PO-Revision-Date: 2015-02-27 07:08+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Kannada (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1322,10 +1322,6 @@ msgstr "ಬಲೂನ್ ಸಾಧನ ಮಾರ್ಗವನ್ನು ನಿರ್
 
 msgid "Cannot determine free memory"
 msgstr "ಮುಕ್ತವಾಗಿರುವ ಮೆಮೊರಿಯನ್ನು ಪತ್ತೆ ನಿರ್ಧರಿಸಲಾಗಿಲ್ಲ"
-
-#, c-format
-msgid "Cannot directly attach floppy %s"
-msgstr "ಫ್ಲಾಪಿ %s ಅನ್ನು ನೇರವಾಗಿ ಲಗತ್ತಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
 msgid "Cannot disable close-on-exec flag"
 msgstr "close-on-exec ಫ್ಲಾಗ್‌ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
@@ -11582,9 +11578,6 @@ msgstr "ಕಾಲರ್ ಇಂದ cookieout ಅಥವ cookieoutlen ಅನ್ನ�
 msgid "caller ignores uri_out"
 msgstr "ಕಾಲರ್ ಇಂದ uri_out ಅನ್ನು ಕಡೆಗಣಿಸಲಾಗಿದೆ"
 
-msgid "can only passthrough directories"
-msgstr "ಕೋಶಗಳನ್ನು ಮಾತ್ರ ಪಾಸ್‌ತ್ರೂ ಮಾಡಬಲ್ಲದು"
-
 msgid "can't change link state: device alias not found"
 msgstr "ಕೊಂಡಿಯ ಸ್ಥಿತಿಯನ್ನು ಬದಲಾಯಿಸಲಾಗಿಲ್ಲ: ಸಾಧನದ ಆಲಿಯಾಸ್ ಕಂಡುಬಂದಿಲ್ಲ"
 
@@ -12121,22 +12114,6 @@ msgid "cannot parse %s version number in '%.*s'"
 msgstr "ಆವೃತ್ತಿಯ ಸಂಖ್ಯೆಯಾದ %.s ಅನ್ನು '%.*s' ನಲ್ಲಿ ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ"
 
 #, c-format
-msgid "cannot parse PCI bus '%s'"
-msgstr "PCI ಬಸ್‌ %s ಅನ್ನು ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ"
-
-#, c-format
-msgid "cannot parse PCI domain '%s'"
-msgstr "PCI ಡೊಮೈನ್ %s ಅನ್ನು ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ"
-
-#, c-format
-msgid "cannot parse PCI func '%s'"
-msgstr "PCI ಕ್ರಿಯೆ %s ಅನ್ನು ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ"
-
-#, c-format
-msgid "cannot parse PCI slot '%s'"
-msgstr "PCI ಸ್ಲಾಟ್‌ %s ಅನ್ನು ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ"
-
-#, c-format
 msgid "cannot parse bus %s"
 msgstr "ಬಸ್‌ %s ಅನ್ನು ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ"
 
@@ -12212,12 +12189,6 @@ msgstr "typeid ನಿಯತಾಂಕದ ಮೌಲ್ಯವನ್ನು ಪಾರ
 
 msgid "cannot parse value of typeidversion parameter"
 msgstr "typeidversion ನಿಯತಾಂಕದ ಮೌಲ್ಯವನ್ನು ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ"
-
-msgid "cannot parse vbd filename, missing driver name"
-msgstr "vbd ಕಡತದಹೆಸರನ್ನು ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ, ಚಾಲಕದ ಹೆಸರು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
-
-msgid "cannot parse vbd filename, missing driver type"
-msgstr "vbd ಕಡತದಹೆಸರಿನ ಶಬ್ಧ ಲಕ್ಷಣ ಹೇಳಲಾಗಿಲ್ಲ, ಚಾಲಕದ ಬಗೆ ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
 #, c-format
 msgid "cannot parse vendor id %s"
@@ -12438,10 +12409,6 @@ msgstr "ನೆಟ್‌ಲಿಂಕ್ ಸಾಕೆಟ್ ನಾನ್‌ಬ್�
 #, c-format
 msgid "cannot set security props %d (%s)"
 msgstr "%d ಸುರಕ್ಷತಾ ಗುಣಗಳನ್ನು ಹೊಂದಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ (%s)"
-
-#, c-format
-msgid "cannot set snapshot %s as its own parent"
-msgstr "%s ಸ್ನ್ಯಾಪ್‌ಶಾಟ್ ಅನ್ನು ಅದರದ್ದೇ ಆದ ಪೋಷಕ (ಪೇರೆಂಟ್) ಎಂದು ಹೊಂದಿಸಲಾಗಿಲ್ಲ"
 
 msgid "cannot set supplemental groups"
 msgstr "ಪೂರಕ ಗುಂಪುಗಳನ್ನು ಹೊಂದಿಸಲಾಗಿಲ್ಲ"
@@ -13435,15 +13402,8 @@ msgid "disk '%s' must use snapshot mode '%s'"
 msgstr "'%s' ಡಿಸ್ಕ್  '%s' ಸ್ನ್ಯಾಪ್‌ಶಾಟ್ ಕ್ರಮವನ್ನು ಬಳಸಬೇಕು"
 
 #, c-format
-msgid "disk '%s' not ready for pivot yet"
-msgstr "'%s' ಡಿಸ್ಕ್ ಇನ್ನೂ ಸಹ ಪರಿಭ್ರಮಣಕ್ಕೆ ಸಿದ್ಧಗೊಂಡಿಲ್ಲ"
-
-#, c-format
 msgid "disk '%s' specified twice"
 msgstr "'%s' ಡಿಸ್ಕನ್ನು ಎರಡು ಬಾರಿ ಸೂಚಿಸಲಾಗಿದೆ"
-
-msgid "disk attributes: disk[,snapshot=type][,driver=type][,file=name]"
-msgstr "ಡಿಸ್ಕ್‍ ಗುಣವಿಶೇಷಗಳು: disk[,snapshot=type][,driver=type][,file=name]"
 
 #, c-format
 msgid "disk bus '%s' cannot be hot unplugged."
@@ -13646,21 +13606,6 @@ msgstr "ಡೊಮೇನ್‌ನ ಮಾಹಿತಿ"
 
 msgid "domain information in XML"
 msgstr "XML ನಲ್ಲಿ ಡೊಮೇನ್‌ನ ಮಾಹಿತಿ"
-
-msgid "domain information incomplete, missing HVM loader"
-msgstr "ಡೊಮೇನ್‌ನ ಮಾಹಿತಿಯು ಅಪೂರ್ಣವಾಗಿದೆ, HVM ಕಂಡುಬಂದಿಲ್ಲ"
-
-msgid "domain information incomplete, missing kernel & bootloader"
-msgstr "ಡೊಮೇನ್‌ನ ಮಾಹಿತಿಯು ಅಪೂರ್ಣವಾಗಿದೆ, ಕರ್ನಲ್ ಹಾಗು ಬೂಟ್ ಲೋಡರ್ ಕಂಡುಬಂದಿಲ್ಲ"
-
-msgid "domain information incomplete, missing name"
-msgstr "ಡೊಮೇನ್‌ನ ಮಾಹಿತಿಯು ಅಪೂರ್ಣವಾಗಿದೆ, ಹೆಸರು ಕಂಡುಬಂದಿಲ್ಲ"
-
-msgid "domain information incomplete, vbd has no dev"
-msgstr "ಡೊಮೇನ್‌ನ ಮಾಹಿತಿಯು ಅಪೂರ್ಣವಾಗಿದೆ, vbd ಯು dev ಅನ್ನು ಹೊಂದಿಲ್ಲ"
-
-msgid "domain information incomplete, vbd has no src"
-msgstr "ಡೊಮೇನ್‌ನ ಮಾಹಿತಿಯು ಅಪೂರ್ಣವಾಗಿದೆ, vbd ಯು src ಅನ್ನು ಹೊಂದಿಲ್ಲ"
 
 msgid "domain is already running"
 msgstr "ಡೊಮೇನ್‌ ಈಗಾಗಲೆ ಚಾಲನೆಯಲ್ಲಿದೆ"
@@ -15905,9 +15850,6 @@ msgstr "ತಪ್ಪಾಗಿರುವ ಪರಿಮಾಣದ ವ್ಯಾಪ್�
 msgid "malformed volume extent stripes value"
 msgstr "ತಪ್ಪಾಗಿರುವ ಪರಿಮಾಣದ ವ್ಯಾಪ್ತಿಯ ಪಟ್ಟಿಗಳ ಮೌಲ್ಯ"
 
-msgid "managed PCI devices not supported with XenD"
-msgstr "ನಿರ್ವಹಿಸಲಾದ PCI ಸಾಧನಗಳಿಗೆ XenD ಯಲ್ಲಿ ಬೆಂಬಲವಿಲ್ಲ"
-
 msgid "managed save of a domain state"
 msgstr "ಒಂದು ಡೊಮೇನ್‌ನ ವ್ಯವಸ್ಥಾಪಿಸಲಾದ ಉಳಿಸುವಿಕೆ"
 
@@ -16107,18 +16049,6 @@ msgstr "EGD ಸಾಧನದ ಬ್ಯಾಕೆಂಡ್ ಬಗೆಯ ಕಾಣ�
 
 msgid "missing IFLA_VF_INFO in netlink response"
 msgstr "ನೆಟ್‌ಲಿಂಕ್ ಪ್ರತ್ಯುತ್ತರದಲ್ಲಿ IFLA_VF_INFO ಕಾಣಿಸುತ್ತಿಲ್ಲ"
-
-msgid "missing PCI bus"
-msgstr "PCI ಬಸ್ ಕಾಣಿಸುತ್ತಿಲ್ಲ"
-
-msgid "missing PCI domain"
-msgstr "ಕಾಣೆಯಾದ PCI ಡೊಮೇನ್‌"
-
-msgid "missing PCI func"
-msgstr "PCI ಉತ್ಪನ್ನವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
-
-msgid "missing PCI slot"
-msgstr "PCI ಸ್ಲಾಟ್‌ ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
 msgid "missing RNG device backend model"
 msgstr "RNG ಸಾಧನ ಬ್ಯಾಕೆಂಡ್ ಮಾದರಿಯು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
@@ -16721,9 +16651,6 @@ msgstr "ಯಾವುದೆ CPUಗಳು ಕಂಡುಬಂದಿಲ್ಲ"
 msgid "no FLR, PM reset or bus reset available"
 msgstr "ಯಾವುದೆ FLR, PM ಮರುಹೊಂದಿಕೆ ಅಥವ ಬಸ್‌ ಮರುಹೊಂದಿಕೆ ಲಭ್ಯವಿಲ್ಲ"
 
-msgid "no HVM domain loader"
-msgstr "ಯಾವುದೆ HVM ಡೊಮೇನ್‌ನ ಲೋಡರ್ ಇಲ್ಲ"
-
 msgid "no IFLA_PORT_RESPONSE found in netlink message"
 msgstr "ನೆಟ್‌ಲಿಂಕ್ ಸಂದೇಶದಲ್ಲಿ ಯಾವುದೆ IFLA_PORT_RESPONSE ಕಂಡುಬಂದಿಲ್ಲ"
 
@@ -17301,14 +17228,6 @@ msgstr "'%s' ನಿಯತಾಂಕವು ಹಲವಾರು ಬಾರಿ ಕಾ�
 msgid "parameter=value"
 msgstr "parameter=value"
 
-#, c-format
-msgid "parent %s for snapshot %s not found"
-msgstr "%s ಎಂಬ ಪೋಷಕ (%s ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ಗಾಗಿ) ಕಂಡು ಬಂದಿಲ್ಲ "
-
-#, c-format
-msgid "parent %s would create cycle to %s"
-msgstr "%s ಪೋಷಕವು %s ಗೆ ಆವರ್ತನವನ್ನು ರಚಿಸುತ್ತದೆ"
-
 msgid "parser error"
 msgstr "ಪಾರ್ಸ್ ಮಾಡುವಲ್ಲಿ ದೋಷ"
 
@@ -17416,10 +17335,6 @@ msgstr "pid"
 #, c-format
 msgid "pid_value in %s is too large"
 msgstr "%s ನಲ್ಲಿನ pid_value ಬಹಳ ದೊಡ್ಡದಾಗಿದೆ"
-
-#, c-format
-msgid "pivot of disk '%s' requires an active copy job"
-msgstr "'%s' ಡಿಸ್ಕಿನ ತಿರುಗಣೆಗೆ (ಪಿವೋಟ್) ಒಂದು ಸಕ್ರಿಯ ಪ್ರತಿ ಮಾಡುವ ಕೆಲಸದ ಅಗತ್ಯವಿದೆ"
 
 msgid "pmsuspended"
 msgstr "pmsuspended"
@@ -17718,13 +17633,6 @@ msgstr ""
 
 msgid "remote_open: for 'ext' transport, command is required"
 msgstr "remote_open: 'ext' ವರ್ಗಾವಣೆಗಾಗಿ ಆದೇಶಯ ಅಗತ್ಯವಿದೆ"
-
-msgid ""
-"remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp|"
-"libssh2)"
-msgstr ""
-"remote_open: URL ನಲ್ಲಿರುವ ವರ್ಗಾವಣೆಯನ್ನು ಗುರುತಿಸಲಾಗಿಲ್ಲ(tls|unix|ssh|ext|tcp||"
-"libssh2) ಆಗಿರಬೇಕು"
 
 msgid "remove all associated storage volumes (use with caution)"
 msgstr "ಸಂಬಂಧಿಸಿದ ಎಲ್ಲಾ ಶೇಖರಣಾ ಪರಿಮಾಣಗಳನ್ನು ತೆಗೆದುಹಾಕು (ಎಚ್ಚರಿಕೆಯೊಂದಿಗೆ ಬಳಸಿ)"
@@ -19125,10 +19033,6 @@ msgid "unexpected filesystem type %d"
 msgstr "ಅನಿರೀಕ್ಷಿತ ಕಡತವ್ಯವಸ್ಥೆಯ ಬಗೆ %d"
 
 #, c-format
-msgid "unexpected graphics type %d"
-msgstr "ಅನಿರೀಕ್ಷಿತ ಗ್ರಾಫಿಕ್ಸಿನ ಬಗೆ %d"
-
-#, c-format
 msgid "unexpected hostdev driver name type %d "
 msgstr "ಅನಿರೀಕ್ಷಿತ hostdev ನ ಚಾಲಕದ ಹೆಸರಿನ ಬಗೆ %d "
 
@@ -19163,10 +19067,6 @@ msgstr "ಅನಿರೀಕ್ಷಿತವಾದ iscsi ಪರಿಮಾಣದ ಹ�
 #, c-format
 msgid "unexpected lifecycle action %d"
 msgstr "ಅನಿರೀಕ್ಷಿತ ಜೀವನಚಕ್ರ ಕ್ರಿಯೆ %d"
-
-#, c-format
-msgid "unexpected lifecycle value %d"
-msgstr "ಅನಿರೀಕ್ಷಿತ ಜೀವನಚಕ್ರ ಮೌಲ್ಯ %d"
 
 #, c-format
 msgid "unexpected memballoon model %d"
@@ -19580,10 +19480,6 @@ msgstr "ಅಜ್ಞಾತ ಗ್ರಾಫಿಕ್ಸಿನ ಆಲಿಸುವ 
 msgid "unknown graphics type %s"
 msgstr "ಅಜ್ಞಾತ ಗ್ರಾಫಿಕ್ಸಿನ ಬಗೆ '%s"
 
-#, c-format
-msgid "unknown graphics type '%s'"
-msgstr "ಅಜ್ಞಾತ ಗ್ರಾಫಿಕ್ಸಿನ ಬಗೆ '%s'"
-
 msgid "unknown host"
 msgstr "ಅಜ್ಞಾತ ಆತಿಥೇಯ"
 
@@ -19634,14 +19530,6 @@ msgstr "ಅಜ್ಞಾತ ಸಂಪರ್ಕಸಾಧನದ ಬಗೆ %s"
 #, c-format
 msgid "unknown interface type '%s'"
 msgstr "ಅಜ್ಞಾತ ಸಂಪರ್ಕಸಾಧನದ ಬಗೆ '%s'"
-
-#, c-format
-msgid "unknown lifecycle type %s"
-msgstr "ಅಜ್ಞಾತ ಜೀವನಚಕ್ರದ ಬಗೆ %s"
-
-#, c-format
-msgid "unknown localtime offset %s"
-msgstr "ಅಜ್ಞಾತ ಸ್ಥಳೀಯಸಮಯದ ಆಫ್‌ಸೆಟ್ %s"
 
 #, c-format
 msgid "unknown memory balloon model '%s'"
@@ -19716,10 +19604,6 @@ msgstr "ಗೊತ್ತಿಲ್ಲದ ನಿಯಮ ಕ್ರಿಯೆಯ ಗು
 
 msgid "unknown rule direction attribute value"
 msgstr "ಗೊತ್ತಿಲ್ಲದ ನಿಯಮ ಗುರಿ ದಿಕ್ಕಿನ ಗುಣವಿಶೇಷದ ಮೌಲ್ಯ"
-
-#, c-format
-msgid "unknown s-expression kind %d"
-msgstr "ಗೊತ್ತಿರದ s-expression ರೀತಿ %d"
 
 msgid "unknown secret usage type"
 msgstr "ಅಜ್ಞಾತ ಸೀಕ್ರೆಟ್‌ ಬಳಕೆಯ ಬಗೆ"
@@ -20044,10 +19928,6 @@ msgstr "ಬೆಂಬಲವಿಲ್ಲದ ಆದಾನ ಬಸ್ %s"
 #, c-format
 msgid "unsupported monitor type '%s'"
 msgstr "ಬೆಂಬಲವಿಲ್ಲದ ಮಾನಿಟರ್ ಬಗೆ '%s'"
-
-#, c-format
-msgid "unsupported network type %d"
-msgstr "ಬೆಂಬಲವಿಲ್ಲದ ಜಾಲಬಂಧದ ಬಗೆ %d"
 
 msgid "unsupported option"
 msgstr "ಬೆಂಬಲವಿಲ್ಲದ ಆಯ್ಕೆ"

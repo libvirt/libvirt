@@ -7,9 +7,9 @@
 # Daniel  <veillard@redhat.com>, 2011.
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.10.0\n"
+"Project-Id-Version: libvirt 5.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"POT-Creation-Date: 2019-07-30 11:31+0100\n"
 "PO-Revision-Date: 2015-02-26 07:12+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Bosnian (http://www.transifex.com/projects/p/fedora/language/"
@@ -329,16 +329,6 @@ msgstr ""
 "Dobrodošli u %s, virtualizacijski interaktivni terminal.\n"
 "\n"
 
-msgid "cannot parse vbd filename, missing driver name"
-msgstr ""
-"raščlanjivanje naziva datoteke vbd nije moguće, nedostaje naziv upravljačkog "
-"programa"
-
-msgid "cannot parse vbd filename, missing driver type"
-msgstr ""
-"raščlanjivanje naziva datoteke vbd nije moguće, nedostaje vrsta upravljačkog "
-"programa"
-
 msgid "change maximum memory limit"
 msgstr "promijeni najviše ograničenje memorije"
 
@@ -414,15 +404,6 @@ msgstr "podaci domene"
 
 msgid "domain information in XML"
 msgstr "podaci domene u XML-u"
-
-msgid "domain information incomplete, missing name"
-msgstr "podaci domene nisu potpuni, nedostaje name"
-
-msgid "domain information incomplete, vbd has no dev"
-msgstr "podaci domene nisu potpuni, vbd nema dev"
-
-msgid "domain information incomplete, vbd has no src"
-msgstr "podaci domene nisu potpuni, vbd nema src"
 
 msgid "domain name or uuid"
 msgstr "naziv domene ili uuid"

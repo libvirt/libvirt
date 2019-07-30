@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-01 18:50+0100\n"
+"POT-Creation-Date: 2019-07-30 11:31+0100\n"
 "PO-Revision-Date: 2018-03-10 04:16+0000\n"
 "Last-Translator: Javier Blanco <javi.deb@gmail.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1297,10 +1297,6 @@ msgstr "No se puede determinar ruta de dispositivo de globo"
 
 msgid "Cannot determine free memory"
 msgstr "No se puede determinar memoria libre"
-
-#, c-format
-msgid "Cannot directly attach floppy %s"
-msgstr "No es posible asociar directamente disquetera %s"
 
 msgid "Cannot disable close-on-exec flag"
 msgstr "No se puede inhabilitar indicador close-on-exec"
@@ -11755,9 +11751,6 @@ msgstr "El llamador ignora cookieout o cookieoutlen"
 msgid "caller ignores uri_out"
 msgstr "el llamador ignora uri_out"
 
-msgid "can only passthrough directories"
-msgstr "Solamente puede pasar directorios"
-
 msgid "can't change link state: device alias not found"
 msgstr ""
 "No se puede cambiar estado de enlace: no se encuentra alias de dispositivo"
@@ -12320,22 +12313,6 @@ msgid "cannot parse %s version number in '%.*s'"
 msgstr "No  se puede analizar el número de la versión %s en '%.*s'"
 
 #, c-format
-msgid "cannot parse PCI bus '%s'"
-msgstr "no es posible analizar el bus PCI '%s'"
-
-#, c-format
-msgid "cannot parse PCI domain '%s'"
-msgstr "no es posible analizar el dominio PCI '%s'"
-
-#, c-format
-msgid "cannot parse PCI func '%s'"
-msgstr "no es posible analizar func PCI '%s'"
-
-#, c-format
-msgid "cannot parse PCI slot '%s'"
-msgstr "no es posible analizar el slot PCI '%s'"
-
-#, c-format
 msgid "cannot parse bus %s"
 msgstr "No es posible analizar el bus %s"
 
@@ -12412,13 +12389,6 @@ msgstr "No es posible analizar el valor del parámetro typeid"
 
 msgid "cannot parse value of typeidversion parameter"
 msgstr "No es posible analizar el valor del parámetro typeidversion"
-
-msgid "cannot parse vbd filename, missing driver name"
-msgstr ""
-"no es posible analizar nombre de archivo vbd, falta el nombre del dispositivo"
-
-msgid "cannot parse vbd filename, missing driver type"
-msgstr "no es posible analizar nombre de archivo"
 
 #, c-format
 msgid "cannot parse vendor id %s"
@@ -12646,10 +12616,6 @@ msgstr "No se puede establecer socket de netlink de no bloqueo"
 #, c-format
 msgid "cannot set security props %d (%s)"
 msgstr "no es posible establecer props de seguridad %d (%s)"
-
-#, c-format
-msgid "cannot set snapshot %s as its own parent"
-msgstr "No se puede establecer %s como su  propio  padre"
 
 msgid "cannot set supplemental groups"
 msgstr "No se pueden establecer grupos complementarios"
@@ -13662,17 +13628,8 @@ msgid "disk '%s' must use snapshot mode '%s'"
 msgstr "Disco '%s' debe usar modo de instantánea '%s'"
 
 #, c-format
-msgid "disk '%s' not ready for pivot yet"
-msgstr "disco '%s' no está listo para pivotar"
-
-#, c-format
 msgid "disk '%s' specified twice"
 msgstr "Disco '%s se especificó dos veces"
-
-msgid "disk attributes: disk[,snapshot=type][,driver=type][,file=name]"
-msgstr ""
-"Atributos de disco: disco[,instantánea=tipo][,controlador=tipo][,"
-"archivo=nombre]"
 
 #, c-format
 msgid "disk bus '%s' cannot be hot unplugged."
@@ -13888,21 +13845,6 @@ msgstr "información de dominio"
 
 msgid "domain information in XML"
 msgstr "información del dominio en XML"
-
-msgid "domain information incomplete, missing HVM loader"
-msgstr "información de dominio incompleta, no se encuentra cargador HVM"
-
-msgid "domain information incomplete, missing kernel & bootloader"
-msgstr "información de dominio incompleta, falta kernel y gestor de arranque"
-
-msgid "domain information incomplete, missing name"
-msgstr "información de dominio incompleta, no se encuentra el nombre"
-
-msgid "domain information incomplete, vbd has no dev"
-msgstr "información de dominio incompleta, vbd no posee dev"
-
-msgid "domain information incomplete, vbd has no src"
-msgstr "información de dominio incompleta, vbd no posee src"
 
 msgid "domain is already running"
 msgstr "el dominio ya se encuentra en ejecución"
@@ -16174,9 +16116,6 @@ msgstr "valor del tamaño de volumen erróneo"
 msgid "malformed volume extent stripes value"
 msgstr "malformed volume extent stripes value"
 
-msgid "managed PCI devices not supported with XenD"
-msgstr "los dispositivos PCI administrados no tienen soporte con XenD"
-
 msgid "managed save of a domain state"
 msgstr "Almacenamiento administrado de un estado de dominio"
 
@@ -16389,18 +16328,6 @@ msgstr "Falta tipo de segundo plano EGD "
 
 msgid "missing IFLA_VF_INFO in netlink response"
 msgstr "Falta IFLA_VF_INFO en respuesta de netlink"
-
-msgid "missing PCI bus"
-msgstr "no se encuentra el bus PCI"
-
-msgid "missing PCI domain"
-msgstr "no se encuentra el dominio PCI"
-
-msgid "missing PCI func"
-msgstr "no se encuentra func PCI"
-
-msgid "missing PCI slot"
-msgstr "no se encuentra el slot PCI"
 
 msgid "missing RNG device backend model"
 msgstr "Falta modelo de dispositivo RNG"
@@ -17012,9 +16939,6 @@ msgstr "No se hallaron  CPU"
 msgid "no FLR, PM reset or bus reset available"
 msgstr "no existe disponible ni FLR, ni reinicio PM, ni reinicio del bus"
 
-msgid "no HVM domain loader"
-msgstr "no existe un cargador de dominio HVM"
-
 msgid "no IFLA_PORT_RESPONSE found in netlink message"
 msgstr "No se ha encontrado IFLA_PORT_RESPONSE en el mensaje netlink"
 
@@ -17619,14 +17543,6 @@ msgstr "El parámetro '%s' se  presenta varias veces"
 msgid "parameter=value"
 msgstr "parameter=value"
 
-#, c-format
-msgid "parent %s for snapshot %s not found"
-msgstr "No se encontró padre %s para instantánea %s"
-
-#, c-format
-msgid "parent %s would create cycle to %s"
-msgstr "El padre %s crearía ciclo para %s"
-
 msgid "parser error"
 msgstr "error de examinador"
 
@@ -17737,10 +17653,6 @@ msgstr "PID"
 #, c-format
 msgid "pid_value in %s is too large"
 msgstr "pid_value en %s es demasiado grande"
-
-#, c-format
-msgid "pivot of disk '%s' requires an active copy job"
-msgstr "pivote de disco '%s' requiere una tarea de copia activa"
 
 msgid "pmsuspended"
 msgstr "pmsuspended"
@@ -18045,13 +17957,6 @@ msgstr ""
 
 msgid "remote_open: for 'ext' transport, command is required"
 msgstr "remote_open: para transporte 'etx', se necesita un comando"
-
-msgid ""
-"remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp|"
-"libssh2)"
-msgstr ""
-"remote_open: transporte en URL no es reconocido (debe ser  tls|unix|ssh|ext|"
-"tcp|libssh2)"
 
 msgid "remove all associated storage volumes (use with caution)"
 msgstr ""
@@ -19485,10 +19390,6 @@ msgid "unexpected filesystem type %d"
 msgstr "tipo de sistema de archivos %d no esperado"
 
 #, c-format
-msgid "unexpected graphics type %d"
-msgstr "tipo de gráficos %d no esperado"
-
-#, c-format
 msgid "unexpected hostdev driver name type %d "
 msgstr "Se esperaba tipo de nombre de controlador hostdev %d"
 
@@ -19523,10 +19424,6 @@ msgstr "No se esperaba nombre de volumen iscsi '%s'"
 #, c-format
 msgid "unexpected lifecycle action %d"
 msgstr "acción %d de ciclo de vida no esperada"
-
-#, c-format
-msgid "unexpected lifecycle value %d"
-msgstr "valor %d de ciclo de vida no esperado"
 
 #, c-format
 msgid "unexpected memballoon model %d"
@@ -19941,10 +19838,6 @@ msgstr "Tipo de escucha de gráficos '%s'"
 msgid "unknown graphics type %s"
 msgstr "No se conoce el tipo de gráfica %s"
 
-#, c-format
-msgid "unknown graphics type '%s'"
-msgstr "tipo de gráficos '%s' desconocido"
-
 msgid "unknown host"
 msgstr "host desconocido"
 
@@ -19996,14 +19889,6 @@ msgstr "tipo de interfaz %s desconocido"
 #, c-format
 msgid "unknown interface type '%s'"
 msgstr "Tipo de interfaz '%s' desconocido"
-
-#, c-format
-msgid "unknown lifecycle type %s"
-msgstr "tipo de ciclo de vida %s desconocido"
-
-#, c-format
-msgid "unknown localtime offset %s"
-msgstr "Desplazamiento desconocido de de localtime: %s"
 
 #, c-format
 msgid "unknown memory balloon model '%s'"
@@ -20078,10 +19963,6 @@ msgstr "El valor del atributo de acción de regla es desconocido"
 
 msgid "unknown rule direction attribute value"
 msgstr "El valor de atributo de dirección de regla es desconocido"
-
-#, c-format
-msgid "unknown s-expression kind %d"
-msgstr "Clase s-expression desconocida %d"
 
 msgid "unknown secret usage type"
 msgstr "tipo de utilización de secreto desconocido"
@@ -20417,10 +20298,6 @@ msgstr "Bus de entrada '%s' no soportado"
 #, c-format
 msgid "unsupported monitor type '%s'"
 msgstr "tipo de monitor '%s' no soportado"
-
-#, c-format
-msgid "unsupported network type %d"
-msgstr "tipo de red %d no soportado"
 
 msgid "unsupported option"
 msgstr "Opción sin soporte"

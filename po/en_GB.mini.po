@@ -9,9 +9,9 @@
 # readmanr <robert_readman@hotmail.com>, 2013
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.10.0\n"
+"Project-Id-Version: libvirt 5.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-01 18:50+0100\n"
+"POT-Creation-Date: 2019-07-30 11:31+0100\n"
 "PO-Revision-Date: 2015-02-24 06:05+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: English (United Kingdom) (http://www.transifex.com/projects/p/"
@@ -1355,10 +1355,6 @@ msgstr "Cannot determine balloon device path"
 
 msgid "Cannot determine free memory"
 msgstr "Cannot determine free memory"
-
-#, c-format
-msgid "Cannot directly attach floppy %s"
-msgstr "Cannot directly attach floppy %s"
 
 msgid "Cannot disable close-on-exec flag"
 msgstr "Cannot disable close-on-exec flag"
@@ -11605,9 +11601,6 @@ msgstr "caller ignores cookieout or cookieoutlen"
 msgid "caller ignores uri_out"
 msgstr "caller ignores uri_out"
 
-msgid "can only passthrough directories"
-msgstr "can only passthrough directories"
-
 msgid "can't change link state: device alias not found"
 msgstr "can't change link state: device alias not found"
 
@@ -12160,22 +12153,6 @@ msgid "cannot parse %s version number in '%.*s'"
 msgstr "cannot parse %s version number in '%.*s'"
 
 #, c-format
-msgid "cannot parse PCI bus '%s'"
-msgstr "cannot parse PCI bus '%s'"
-
-#, c-format
-msgid "cannot parse PCI domain '%s'"
-msgstr "cannot parse PCI domain '%s'"
-
-#, c-format
-msgid "cannot parse PCI func '%s'"
-msgstr "cannot parse PCI func '%s'"
-
-#, c-format
-msgid "cannot parse PCI slot '%s'"
-msgstr "cannot parse PCI slot '%s'"
-
-#, c-format
 msgid "cannot parse bus %s"
 msgstr "cannot parse bus %s"
 
@@ -12250,12 +12227,6 @@ msgstr "cannot parse value of typeid parameter"
 
 msgid "cannot parse value of typeidversion parameter"
 msgstr "cannot parse value of typeidversion parameter"
-
-msgid "cannot parse vbd filename, missing driver name"
-msgstr "cannot parse vbd filename, missing driver name"
-
-msgid "cannot parse vbd filename, missing driver type"
-msgstr "cannot parse vbd filename, missing driver type"
 
 #, c-format
 msgid "cannot parse vendor id %s"
@@ -12476,10 +12447,6 @@ msgstr "cannot set netlink socket nonblocking"
 #, c-format
 msgid "cannot set security props %d (%s)"
 msgstr "cannot set security props %d (%s)"
-
-#, c-format
-msgid "cannot set snapshot %s as its own parent"
-msgstr "cannot set snapshot %s as its own parent"
 
 msgid "cannot set supplemental groups"
 msgstr "cannot set supplemental groups"
@@ -13470,15 +13437,8 @@ msgid "disk '%s' must use snapshot mode '%s'"
 msgstr "disk '%s' must use snapshot mode '%s'"
 
 #, c-format
-msgid "disk '%s' not ready for pivot yet"
-msgstr "disk '%s' not ready for pivot yet"
-
-#, c-format
 msgid "disk '%s' specified twice"
 msgstr "disk '%s' specified twice"
-
-msgid "disk attributes: disk[,snapshot=type][,driver=type][,file=name]"
-msgstr "disk attributes: disk[,snapshot=type][,driver=type][,file=name]"
 
 #, c-format
 msgid "disk bus '%s' cannot be hot unplugged."
@@ -13680,21 +13640,6 @@ msgstr "domain information"
 
 msgid "domain information in XML"
 msgstr "domain information in XML"
-
-msgid "domain information incomplete, missing HVM loader"
-msgstr "domain information incomplete, missing HVM loader"
-
-msgid "domain information incomplete, missing kernel & bootloader"
-msgstr "domain information incomplete, missing kernel & bootloader"
-
-msgid "domain information incomplete, missing name"
-msgstr "domain information incomplete, missing name"
-
-msgid "domain information incomplete, vbd has no dev"
-msgstr "domain information incomplete, vbd has no dev"
-
-msgid "domain information incomplete, vbd has no src"
-msgstr "domain information incomplete, vbd has no src"
 
 msgid "domain is already running"
 msgstr "domain is already running"
@@ -15974,9 +15919,6 @@ msgstr "malformed volume extent size value"
 msgid "malformed volume extent stripes value"
 msgstr "malformed volume extent stripes value"
 
-msgid "managed PCI devices not supported with XenD"
-msgstr "managed PCI devices not supported with XenD"
-
 msgid "managed save of a domain state"
 msgstr "managed save of a domain state"
 
@@ -16173,18 +16115,6 @@ msgstr "missing EGD backend type"
 
 msgid "missing IFLA_VF_INFO in netlink response"
 msgstr "missing IFLA_VF_INFO in netlink response"
-
-msgid "missing PCI bus"
-msgstr "missing PCI bus"
-
-msgid "missing PCI domain"
-msgstr "missing PCI domain"
-
-msgid "missing PCI func"
-msgstr "missing PCI func"
-
-msgid "missing PCI slot"
-msgstr "missing PCI slot"
 
 msgid "missing RNG device backend model"
 msgstr "missing RNG device backend model"
@@ -16784,9 +16714,6 @@ msgstr "no CPUs found"
 msgid "no FLR, PM reset or bus reset available"
 msgstr "no FLR, PM reset or bus reset available"
 
-msgid "no HVM domain loader"
-msgstr "no HVM domain loader"
-
 msgid "no IFLA_PORT_RESPONSE found in netlink message"
 msgstr "no IFLA_PORT_RESPONSE found in netlink message"
 
@@ -17365,14 +17292,6 @@ msgstr "parameter '%s' occurs multiple times"
 msgid "parameter=value"
 msgstr "parameter=value"
 
-#, c-format
-msgid "parent %s for snapshot %s not found"
-msgstr "parent %s for snapshot %s not found"
-
-#, c-format
-msgid "parent %s would create cycle to %s"
-msgstr "parent %s would create cycle to %s"
-
 msgid "parser error"
 msgstr "parser error"
 
@@ -17480,10 +17399,6 @@ msgstr "pid"
 #, c-format
 msgid "pid_value in %s is too large"
 msgstr "pid_value in %s is too large"
-
-#, c-format
-msgid "pivot of disk '%s' requires an active copy job"
-msgstr "pivot of disk '%s' requires an active copy job"
 
 msgid "pmsuspended"
 msgstr "pmsuspended"
@@ -17779,13 +17694,6 @@ msgstr "remoteNodeGetMemoryStats: returned number of stats exceeds limit"
 
 msgid "remote_open: for 'ext' transport, command is required"
 msgstr "remote_open: for 'ext' transport, command is required"
-
-msgid ""
-"remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp|"
-"libssh2)"
-msgstr ""
-"remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp|"
-"libssh2)"
 
 msgid "removable is only valid for usb disks"
 msgstr "removable is only valid for usb disks"
@@ -19202,10 +19110,6 @@ msgid "unexpected filesystem type %d"
 msgstr "unexpected filesystem type %d"
 
 #, c-format
-msgid "unexpected graphics type %d"
-msgstr "unexpected graphics type %d"
-
-#, c-format
 msgid "unexpected hostdev driver name type %d "
 msgstr "unexpected hostdev driver name type %d "
 
@@ -19240,10 +19144,6 @@ msgstr "unexpected iscsi volume name '%s'"
 #, c-format
 msgid "unexpected lifecycle action %d"
 msgstr "unexpected lifecycle action %d"
-
-#, c-format
-msgid "unexpected lifecycle value %d"
-msgstr "unexpected lifecycle value %d"
 
 #, c-format
 msgid "unexpected memballoon model %d"
@@ -19663,10 +19563,6 @@ msgstr "unknown graphics listen type '%s'"
 msgid "unknown graphics type %s"
 msgstr "unknown graphics type %s"
 
-#, c-format
-msgid "unknown graphics type '%s'"
-msgstr "unknown graphics type '%s'"
-
 msgid "unknown host"
 msgstr "unknown host"
 
@@ -19717,14 +19613,6 @@ msgstr "unknown interface type %s"
 #, c-format
 msgid "unknown interface type '%s'"
 msgstr "unknown interface type '%s'"
-
-#, c-format
-msgid "unknown lifecycle type %s"
-msgstr "unknown lifecycle type %s"
-
-#, c-format
-msgid "unknown localtime offset %s"
-msgstr "unknown localtime offset %s"
 
 #, c-format
 msgid "unknown memory balloon model '%s'"
@@ -19799,10 +19687,6 @@ msgstr "unknown rule action attribute value"
 
 msgid "unknown rule direction attribute value"
 msgstr "unknown rule direction attribute value"
-
-#, c-format
-msgid "unknown s-expression kind %d"
-msgstr "unknown s-expression kind %d"
 
 msgid "unknown secret usage type"
 msgstr "unknown secret usage type"
@@ -20126,10 +20010,6 @@ msgstr "unsupported input bus %s"
 #, c-format
 msgid "unsupported monitor type '%s'"
 msgstr "unsupported monitor type '%s'"
-
-#, c-format
-msgid "unsupported network type %d"
-msgstr "unsupported network type %d"
 
 msgid "unsupported option"
 msgstr "unsupported option"

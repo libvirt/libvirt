@@ -21,9 +21,9 @@
 # Thomas Canniot <thomas.canniot@laposte.net>, 2007
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.10.0\n"
+"Project-Id-Version: libvirt 5.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-01 18:50+0100\n"
+"POT-Creation-Date: 2019-07-30 11:31+0100\n"
 "PO-Revision-Date: 2015-02-26 09:47+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: French <trans-fr@lists.fedoraproject.org>\n"
@@ -2218,13 +2218,6 @@ msgid "cannot parse usage '%s' for RAM filesystem"
 msgstr ""
 "impossible d'analyser l'utilisation de « %s » pour le système de fichier RAM"
 
-msgid "cannot parse vbd filename, missing driver name"
-msgstr "impossible d'analyser le nom de fichier de vdb, nom de pilote manquant"
-
-msgid "cannot parse vbd filename, missing driver type"
-msgstr ""
-"impossible d'analyser le nom de fichier de vdb, type du pilote manquant"
-
 #, c-format
 msgid "cannot parse vendor id %s"
 msgstr "impossible d'analyser l'ID du constructeur %s"
@@ -2469,22 +2462,6 @@ msgstr "informations du domaine"
 
 msgid "domain information in XML"
 msgstr "informations du domaine en XML"
-
-msgid "domain information incomplete, missing HVM loader"
-msgstr "informations de domaine incomplètes, chargeur HVM manquant"
-
-msgid "domain information incomplete, missing kernel & bootloader"
-msgstr ""
-"informations de domaine incomplètes, noyau et chargeur de démarrage manquants"
-
-msgid "domain information incomplete, missing name"
-msgstr "informations de domaine incomplètes, nom manquant"
-
-msgid "domain information incomplete, vbd has no dev"
-msgstr "informations de domaine incomplètes, vbd n'a pas de dev"
-
-msgid "domain information incomplete, vbd has no src"
-msgstr "informations de domaine incomplètes, vbd n'a pas de src"
 
 msgid "domain is not running"
 msgstr "le domaine n'est pas actif"
@@ -3171,9 +3148,6 @@ msgstr "nom du domaine ou UUID"
 
 msgid "network uuid"
 msgstr "UUID réseau"
-
-msgid "no HVM domain loader"
-msgstr "aucun chargeur de domaine HVM"
 
 msgid "no autostart"
 msgstr "pas de démarrage automatique"

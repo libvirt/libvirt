@@ -11,9 +11,9 @@
 # sandeeps <sshedmak@redhat.com>, 2013-2014
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.10.0\n"
+"Project-Id-Version: libvirt 5.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-01 18:50+0100\n"
+"POT-Creation-Date: 2019-07-30 11:31+0100\n"
 "PO-Revision-Date: 2015-02-27 01:03+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Marathi (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1578,10 +1578,6 @@ msgstr "बाइनरि '%s' करिता बेसनाव ओळखण�
 msgid "Cannot determine free memory"
 msgstr "मोकळी मेमरि ओळखणे अशक्य"
 
-#, c-format
-msgid "Cannot directly attach floppy %s"
-msgstr "फ्लॉपी %s प्रत्यक्षरित्या जुळवणे अशक्य"
-
 msgid "Cannot disable close-on-exec flag"
 msgstr "close-on-exec फ्लॅग बंद करणे अशक्य"
 
@@ -1592,10 +1588,6 @@ msgstr "पाइप %d वरील close-on-exec फ्लॅग बंद क
 #, c-format
 msgid "Cannot disable close-on-exec flag on socket %d"
 msgstr "सॉकेट %d वरील close-on-exec फ्लॅग बंद करणे अशक्य"
-
-#, c-format
-msgid "Cannot dup2() fd %d before passing it to the child"
-msgstr "चाइल्डकरिता पुरविण्याआधी dup2() ला fd %d करणे अशक्य"
 
 #, c-format
 msgid "Cannot duplicate FD %d"
@@ -1891,10 +1883,6 @@ msgstr "सक्रीय डोमेनवर कमाल मेमरिल
 
 msgid "Cannot run interactive console without a controlling TTY"
 msgstr "TTY ला नियंत्रत केल्याविना परस्पर कंसोल चालवणे अशक्य"
-
-#, c-format
-msgid "Cannot set O_CLOEXEC on fd %d before passing it to the child"
-msgstr "चाइल्डकरिता पुरविण्याआधी fd %d वरील O_CLOEXEC सेट करणे अशक्य"
 
 msgid "Cannot set a base label with AppArmour"
 msgstr "AppArmour सह बेस लेबल ठरवणे अशक्य"
@@ -10223,10 +10211,6 @@ msgid "Too long network device name"
 msgstr "खूप लांब नेटवर्क साधनचे नाव"
 
 #, c-format
-msgid "Too many (%u) FDs passed from caller"
-msgstr "कॉलरपासून एकापेक्षा जास्त (%u) FDs पुरवले"
-
-#, c-format
 msgid "Too many CPU models '%d' for limit '%d'"
 msgstr "एकापेक्षा जास्त CPU प्रतिकृती '%d', मर्यादा '%d' करिता"
 
@@ -12794,10 +12778,6 @@ msgstr ""
 "नेटवर्क '%s' सह जोडणी करणारी इंटरफेस vlan टॅगकरिता विनंती करत आहे, जे या नेटवर्क "
 "प्रकारकरिता समर्थन पुरवत नाही"
 
-#, c-format
-msgid "another job on disk '%s' is still being ended"
-msgstr "डिस्क '%s' वरील इतर जॉब अजूनही समाप्त होत आहे"
-
 msgid "apparmor_parser exited with error"
 msgstr "apparmor_parser त्रुटीविना बाहेर पडले"
 
@@ -13131,9 +13111,6 @@ msgstr "कॉलर cookieout किंवा cookieoutlen कडे दुर�
 
 msgid "caller ignores uri_out"
 msgstr "कॉलर uri_out ला दुर्लक्ष करतो"
-
-msgid "can only passthrough directories"
-msgstr "फक्त डिरेक्ट्रिज् पासथ्रु करणे शक्य आहे"
 
 msgid "can't change link state: device alias not found"
 msgstr "लिंक स्तर बदलणे अशक्य: डिव्हाइस अलायस आढळले नाही"
@@ -13769,22 +13746,6 @@ msgid "cannot parse CPU data"
 msgstr "CPU डाटा वाचणे अशक्य"
 
 #, c-format
-msgid "cannot parse PCI bus '%s'"
-msgstr "PCI बस '%s' वाचणे अशक्य"
-
-#, c-format
-msgid "cannot parse PCI domain '%s'"
-msgstr "PCI क्षेत्र '%s' वाचणे अशक्य"
-
-#, c-format
-msgid "cannot parse PCI func '%s'"
-msgstr "PCI func '%s' वाचणे अशक्य"
-
-#, c-format
-msgid "cannot parse PCI slot '%s'"
-msgstr "PCI स्लॉट '%s' वाचणे अशक्य"
-
-#, c-format
 msgid "cannot parse bus %s"
 msgstr "वस %s वाचणे अशक्य"
 
@@ -13863,12 +13824,6 @@ msgstr "typeid घटकाचे मूल्य वाचणे अशक्�
 
 msgid "cannot parse value of typeidversion parameter"
 msgstr "typeidversion घटकाचे मूल्य वाचणे अशक्य"
-
-msgid "cannot parse vbd filename, missing driver name"
-msgstr "vbd फाइलनाव विश्लेषित करणे अशक्य, हरवलेले ड्राइवर नाव"
-
-msgid "cannot parse vbd filename, missing driver type"
-msgstr "vbd फाइलनाव विश्लेषित करणे अशक्य, हरवलेला ड्राइवर प्रकार"
 
 #, c-format
 msgid "cannot parse vendor id %s"
@@ -14100,10 +14055,6 @@ msgstr "netlink सॉकेट नॉनब्लॉकिंग ठरवण�
 #, c-format
 msgid "cannot set security props %d (%s)"
 msgstr "सुरक्षा गुणधर्म %d (%s) सेट करणे अशक्य"
-
-#, c-format
-msgid "cannot set snapshot %s as its own parent"
-msgstr "स्वतःचे पॅरेंट म्हणून स्नॅपशॉट %s सेट करणे अशक्य"
 
 msgid "cannot set supplemental groups"
 msgstr "अगाऊ गट सेट करणे अशक्य"
@@ -15191,19 +15142,12 @@ msgid "disk '%s' must use snapshot mode '%s'"
 msgstr "डिस्क '%s' ने स्नॅपशॉट मोड '%s' याचा वापर करायला पाहिजे"
 
 #, c-format
-msgid "disk '%s' not ready for pivot yet"
-msgstr "डिस्क '%s' पिवोटरीता अजूनही सज्ज नाही"
-
-#, c-format
 msgid "disk '%s' specified twice"
 msgstr "डिस्क '%s' दोनवेळा निर्देशीत केले"
 
 #, c-format
 msgid "disk '%s' was not found in the domain config"
 msgstr "डोमेन काँफिग अंतर्गत डिस्क '%s' आढळले नाही"
-
-msgid "disk attributes: disk[,snapshot=type][,driver=type][,file=name]"
-msgstr "डिस्क गुणधर्म: disk[,snapshot=type][,driver=type][,file=name]"
 
 #, c-format
 msgid "disk bus '%s' cannot be hot unplugged."
@@ -15445,21 +15389,6 @@ msgstr "डोमेन माहिती"
 
 msgid "domain information in XML"
 msgstr "XML मध्ये डोमेन माहिती"
-
-msgid "domain information incomplete, missing HVM loader"
-msgstr "क्षेत्र माहिती अपूर्ण, HVM दाखलकर्ता आढळले नाही"
-
-msgid "domain information incomplete, missing kernel & bootloader"
-msgstr "क्षेत्र माहिती अपूर्ण, कर्नल व बूट दाखलक सापडत नाही"
-
-msgid "domain information incomplete, missing name"
-msgstr "डोमेन माहिती अपूर्ण, नाव हरवलेले"
-
-msgid "domain information incomplete, vbd has no dev"
-msgstr "डोमेन माहिती अपूर्ण, vbd ला dev नाही"
-
-msgid "domain information incomplete, vbd has no src"
-msgstr "डोमेन माहिती अपूरी. vbd ला कोणताही src नाही"
 
 msgid "domain is already running"
 msgstr "क्षेत्र आधिपासूनच चालू आहे"
@@ -18365,9 +18294,6 @@ msgstr "सदोषीत खंड मर्यादा आकार मु�
 msgid "malformed volume extent stripes value"
 msgstr "सदोषीत खंड विस्तार मूल्य खोडते"
 
-msgid "managed PCI devices not supported with XenD"
-msgstr "व्यवस्थापीत PCI साधन XenD द्वारे समर्थीत नाही"
-
 msgid "managed save of a domain state"
 msgstr "डोमेन स्टेटचे व्यवस्थापीत साठवणे"
 
@@ -18593,18 +18519,6 @@ msgstr "EGD बॅकएंड प्रकार आढळले नाही"
 
 msgid "missing IFLA_VF_INFO in netlink response"
 msgstr "netlink प्रतिसादमध्ये IFLA_VF_INFO आढळले नाही"
-
-msgid "missing PCI bus"
-msgstr "PCI बस आढळले नाही"
-
-msgid "missing PCI domain"
-msgstr "PCI क्षेत्र आढळले नाही"
-
-msgid "missing PCI func"
-msgstr "PCI func आढळले नाही"
-
-msgid "missing PCI slot"
-msgstr "PCI स्लॉट आढळले नाही"
 
 msgid "missing RNG device backend model"
 msgstr "RNG साधन बॅकएंड प्रतिकृती आढळली नाही"
@@ -19369,9 +19283,6 @@ msgstr "CPUs आढळले नाही"
 msgid "no FLR, PM reset or bus reset available"
 msgstr "FLR आढळले नाही, PM reset किंवा bus reset उपलब्ध"
 
-msgid "no HVM domain loader"
-msgstr "HVM क्षेत्र दाखलकर्ता नाही"
-
 msgid "no IFLA_PORT_RESPONSE found in netlink message"
 msgstr "netlink प्रतिसाद संदेशमध्ये IFLA_PORT_RESPONSE आढळले नाही"
 
@@ -20052,19 +19963,8 @@ msgstr "घटक '%s' एकपेक्षाजास्त वेळ आढ�
 msgid "parameter=value"
 msgstr "parameter=value"
 
-#, c-format
-msgid "parent %s for snapshot %s not found"
-msgstr "स्नॅपशॉट %2$s करिता पॅरेंट %1$s आढळले नाही"
-
-#, c-format
-msgid "parent %s would create cycle to %s"
-msgstr "पॅरेंट %s, %s करिता सायकल निर्माण करेल"
-
 msgid "parser error"
 msgstr "वाचकाकडून त्रूटी"
-
-msgid "parsing sxpr config failed"
-msgstr "sxpr काँफिग वाचणे अपयशी"
 
 msgid "pass file descriptors N,M,... to the guest"
 msgstr "अतिथीकरिता फाइल डिस्क्रिप्टर्स N,M,... पाठवणे अशक्य"
@@ -20203,10 +20103,6 @@ msgstr "pid"
 #, c-format
 msgid "pid_value in %s is too large"
 msgstr "%s मधील pid_value खूप मोठे आहे"
-
-#, c-format
-msgid "pivot of disk '%s' requires an active copy job"
-msgstr "डिस्क '%s' ला सक्रिय कॉपी जॉबची आवश्यकता आहे"
 
 msgid "pmsuspended"
 msgstr "pmsuspended"
@@ -20561,12 +20457,6 @@ msgstr "remoteNodeGetMemoryStats: पुरवलेल्या stats ची �
 
 msgid "remote_open: for 'ext' transport, command is required"
 msgstr "remote_open: 'ext' transport करिता, आदेश आवश्यक आहे"
-
-msgid ""
-"remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp|"
-"libssh2)"
-msgstr ""
-"remote_open: URL मधील ट्रांस्पोर्ट अनोळखी (tls|unix|ssh|ext|tcp|libssh2 पाहिजे)"
 
 msgid "removable is only valid for usb disks"
 msgstr "काढून टाकण्याजोगी फक्त usb डिस्क्सकरिता वैध असते"
@@ -22287,10 +22177,6 @@ msgid "unexpected filesystem type %d"
 msgstr "अनपेक्षीत फाइलप्रणाली प्रकार %d"
 
 #, c-format
-msgid "unexpected graphics type %d"
-msgstr "अनेपक्षीत चित्रलेख प्रकार %d"
-
-#, c-format
 msgid "unexpected hostdev driver name type %d "
 msgstr "अनपेक्षित hostdev ड्राइव्हर नाव प्रकार %d"
 
@@ -22325,10 +22211,6 @@ msgstr "अनपेक्षित iscsi वॉल्युम नाव '%s'"
 #, c-format
 msgid "unexpected lifecycle action %d"
 msgstr "अनपेक्षीत कार्यकाळ कृती %d"
-
-#, c-format
-msgid "unexpected lifecycle value %d"
-msgstr "अनपेक्षीत कार्यकाळ मूल्य %d"
 
 #, c-format
 msgid "unexpected memballoon model %d"
@@ -22801,10 +22683,6 @@ msgid "unknown graphics type %s"
 msgstr "अपरिचीत चित्रलेख प्रकार '%s"
 
 #, c-format
-msgid "unknown graphics type '%s'"
-msgstr "अपरिचीत चित्रलेख प्रकार '%s'"
-
-#, c-format
 msgid "unknown guest csum mode '%s'"
 msgstr "अपरिचीत अतिथी csum मोड '%s'"
 
@@ -22904,16 +22782,8 @@ msgid "unknown interface type '%s'"
 msgstr "अपरिचीत संवाद प्रकार '%s'"
 
 #, c-format
-msgid "unknown lifecycle type %s"
-msgstr "अपरिचीत कार्यकाळ प्रकार %s"
-
-#, c-format
 msgid "unknown link state: %s"
 msgstr "अपरिचीत दुवा स्तर: %s"
-
-#, c-format
-msgid "unknown localtime offset %s"
-msgstr "अपरिचीत स्थनीयवेळ ऑफसेट %s"
 
 #, c-format
 msgid "unknown memory balloon model '%s'"
@@ -23004,10 +22874,6 @@ msgstr "अपरिचीत रूल ॲक्शन गुणधर्म �
 
 msgid "unknown rule direction attribute value"
 msgstr "अपरिचीत रूल डाइरेक्शन गुणधर्म मूल्य"
-
-#, c-format
-msgid "unknown s-expression kind %d"
-msgstr "अपरिचीत s-expression प्रकार %d"
 
 msgid "unknown secret usage type"
 msgstr "अपरिचीत गोपणीयता वापरणी प्रकार"
@@ -23385,10 +23251,6 @@ msgstr "असमर्थीत मॉनीटर प्रकार '%s'"
 #, c-format
 msgid "unsupported network event ID %d"
 msgstr "असमर्थीत नेटवर्क इव्हेंट ID %d"
-
-#, c-format
-msgid "unsupported network type %d"
-msgstr "असमर्थीत जाळ प्रकार %d"
 
 #, c-format
 msgid "unsupported numatune mode: '%d'"

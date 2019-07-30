@@ -7,9 +7,9 @@
 # Marko Mijatovic <jomi86@gmail.com>, 2008.
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.10.0\n"
+"Project-Id-Version: libvirt 5.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-01 18:50+0100\n"
+"POT-Creation-Date: 2019-07-30 11:31+0100\n"
 "PO-Revision-Date: 2015-03-03 07:52+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Serbian (http://www.transifex.com/projects/p/fedora/language/"
@@ -968,14 +968,6 @@ msgstr "не могу да рашчланим место завршетка ур
 msgid "cannot parse device start location"
 msgstr "не могу да рашчланим место почетка уређаја"
 
-msgid "cannot parse vbd filename, missing driver name"
-msgstr ""
-"не могу протумачити vbd име датотеке, недостаје име управљачког програма"
-
-msgid "cannot parse vbd filename, missing driver type"
-msgstr ""
-"не могу протумачити vbd име датотеке, недостаје врста управљачког програма"
-
 #, c-format
 msgid "cannot query SASL ssf on connection %d (%s)"
 msgstr "не могу да извршим упит SASL ssf на вези %d (%s)"
@@ -1161,21 +1153,6 @@ msgstr "подаци о домену"
 
 msgid "domain information in XML"
 msgstr "подаци о домену у XML-у"
-
-msgid "domain information incomplete, missing HVM loader"
-msgstr "непотпуни подаци о домену, недостаје HVM програм за учитавање"
-
-msgid "domain information incomplete, missing kernel & bootloader"
-msgstr "непотпуни подаци о домену, недостаје језгро и покретачки програм"
-
-msgid "domain information incomplete, missing name"
-msgstr "непотпуни подаци о домену, недостаје име"
-
-msgid "domain information incomplete, vbd has no dev"
-msgstr "непотпуни подаци о домену, vbd нема dev"
-
-msgid "domain information incomplete, vbd has no src"
-msgstr "непотпуни подаци о домену, vbd нема src"
 
 msgid "domain is not in running state"
 msgstr "домен није у радном стању"
@@ -1650,9 +1627,6 @@ msgstr "име мреже или uuid"
 
 msgid "network uuid"
 msgstr "uuid мреже"
-
-msgid "no HVM domain loader"
-msgstr "нема програма за учитавање HVM домена"
 
 msgid "no autostart"
 msgstr "без самопокретања"

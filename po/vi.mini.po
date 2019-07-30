@@ -6,9 +6,9 @@
 # Daniel  <veillard@redhat.com>, 2011.
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.10.0\n"
+"Project-Id-Version: libvirt 5.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-01 18:50+0100\n"
+"POT-Creation-Date: 2019-07-30 11:31+0100\n"
 "PO-Revision-Date: 2015-03-05 01:32+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/projects/p/fedora/"
@@ -331,10 +331,6 @@ msgstr "Không thể tạo thư mục bản ghi '%s'"
 
 msgid "Cannot deactivate storage pool autostart"
 msgstr "Không thể khử kích hoạt tự động chạy pool lưu trữ"
-
-#, c-format
-msgid "Cannot directly attach floppy %s"
-msgstr "Không thể gắn đĩa mềm %s trực tiếp"
 
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
@@ -3974,9 +3970,6 @@ msgstr "bộ gọi bỏ qua cookie hay cookielen"
 msgid "caller ignores uri_out"
 msgstr "bộ gọi bỏ qua uri_out"
 
-msgid "can only passthrough directories"
-msgstr "chỉ có thể xuyên qua các thư mục"
-
 #, c-format
 msgid "can't open session to the domain with id %d"
 msgstr "không thể mở phiên làm việc tới miền với id %d"
@@ -4190,22 +4183,6 @@ msgid "cannot open volume '%s'"
 msgstr "không thể mở ổ '%s'"
 
 #, c-format
-msgid "cannot parse PCI bus '%s'"
-msgstr "không thể phân tích tuyến PCI '%s'"
-
-#, c-format
-msgid "cannot parse PCI domain '%s'"
-msgstr "không thể phân tích miền PCI '%s'"
-
-#, c-format
-msgid "cannot parse PCI func '%s'"
-msgstr "không thể phân tích chức năng PCI '%s'"
-
-#, c-format
-msgid "cannot parse PCI slot '%s'"
-msgstr "không thể phân tích khe PCI '%s'"
-
-#, c-format
 msgid "cannot parse bus %s"
 msgstr "không thể phân tích tuyến %s"
 
@@ -4246,12 +4223,6 @@ msgstr "không thể phân tích giá trị của thông số typeid"
 
 msgid "cannot parse value of typeidversion parameter"
 msgstr "không thể phân tích giá trị của thông số typeidversion"
-
-msgid "cannot parse vbd filename, missing driver name"
-msgstr "không thể phân tích tên tập tin vbd, thiếu tên trình điều khiển"
-
-msgid "cannot parse vbd filename, missing driver type"
-msgstr "không thể phân tích tên tập tin vbd , thiếu kiểu trình điều khiển"
 
 #, c-format
 msgid "cannot parse vendor id %s"
@@ -4943,21 +4914,6 @@ msgstr "thông tin miền"
 
 msgid "domain information in XML"
 msgstr "thông tin miền trong XML"
-
-msgid "domain information incomplete, missing HVM loader"
-msgstr "thông tin miền không hoàn thiện, thiếu bộ tải HVM"
-
-msgid "domain information incomplete, missing kernel & bootloader"
-msgstr "thông tin miền không hoàn thiện, thiếu nhân & bộ khởi động"
-
-msgid "domain information incomplete, missing name"
-msgstr "thông tin miền không đầy đủ, thiếu tên"
-
-msgid "domain information incomplete, vbd has no dev"
-msgstr "thông tin miền không đầy đủ, vbd không có dev"
-
-msgid "domain information incomplete, vbd has no src"
-msgstr "thông tin miền không đầy đủ, vbd không có src"
 
 msgid "domain is already running"
 msgstr "miền đã đang chạy"
@@ -5915,9 +5871,6 @@ msgstr "giá trị phân nhánh vùng ổ sai dạng thức"
 msgid "malformed volume extent size value"
 msgstr "giá trị kích thước vùng ổ sai dạng thức"
 
-msgid "managed PCI devices not supported with XenD"
-msgstr "các thiết bị PCI đã quản lý không hỗ trợ với XenD"
-
 msgid "managed save of a domain state"
 msgstr "phần lưu được quản lý của một trạng thái miền"
 
@@ -5973,18 +5926,6 @@ msgstr "thiếu \""
 
 msgid "missing 'timezone' attribute for clock with offset='timezone'"
 msgstr "thiếu thuộc tính 'múi-giờ' cho đồng hồ với offset='múi-giờ'"
-
-msgid "missing PCI bus"
-msgstr "thiếu tuyến PCI"
-
-msgid "missing PCI domain"
-msgstr "thiếu miền PCI"
-
-msgid "missing PCI func"
-msgstr "thiếu chức năng PCI"
-
-msgid "missing PCI slot"
-msgstr "thiếu khe PCI"
 
 #, c-format
 msgid "missing SCSI host capability type for '%s'"
@@ -6207,9 +6148,6 @@ msgstr "không"
 
 msgid "no FLR, PM reset or bus reset available"
 msgstr "không có thiết lập lại FLR, PM hay thiết lập lại tuyến có sẵn"
-
-msgid "no HVM domain loader"
-msgstr "không có bộ tải miền HVM"
 
 msgid "no IFLA_PORT_RESPONSE found in netlink message"
 msgstr "không có IFLA_PORT_RESPONSE tìm thấy trong tin nhắn netlink"
@@ -7217,10 +7155,6 @@ msgid "unexpected filesystem type %d"
 msgstr "kiểu tập tin hệ thống không mong đợi %d"
 
 #, c-format
-msgid "unexpected graphics type %d"
-msgstr "kiểu đồ hoạ %d không mong muốn"
-
-#, c-format
 msgid "unexpected hostdev mode %d"
 msgstr "chế độ hostdev không mong đợi %d"
 
@@ -7243,10 +7177,6 @@ msgstr "kiểu giao diện không mong đợi %d"
 #, c-format
 msgid "unexpected lifecycle action %d"
 msgstr "hành động vòng đời %d không mong muốn"
-
-#, c-format
-msgid "unexpected lifecycle value %d"
-msgstr "giá trị vòng đời %d không mong muốn"
 
 #, c-format
 msgid "unexpected memballoon model %d"
@@ -7449,10 +7379,6 @@ msgstr "giá trị toàn màn hình không rõ '%s'"
 msgid "unknown graphics device type '%s'"
 msgstr "kiểu thiết bị đồ họa không rõ '%s'"
 
-#, c-format
-msgid "unknown graphics type '%s'"
-msgstr "kiểu đồ hoạ không rõ '%s'"
-
 msgid "unknown host"
 msgstr "máy chủ không rõ"
 
@@ -7483,10 +7409,6 @@ msgstr "kiểu giao diện không rõ %s"
 #, c-format
 msgid "unknown interface type '%s'"
 msgstr "kiểu giao diện không rõ '%s'"
-
-#, c-format
-msgid "unknown lifecycle type %s"
-msgstr "kiểu vòng đời %s không rõ"
 
 #, c-format
 msgid "unknown memory balloon model '%s'"
@@ -7676,10 +7598,6 @@ msgstr "tuyến nhập không được hỗ trợ %s"
 #, c-format
 msgid "unsupported monitor type '%s'"
 msgstr "kiểu bộ quản lý '%s' không hỗ trợ"
-
-#, c-format
-msgid "unsupported network type %d"
-msgstr "kiểu mạng %d không hỗ trợ"
 
 #, c-format
 msgid "unsupported option '-%c'. See --help."

@@ -17,9 +17,9 @@
 # Tomoyuki KATO <tomo@dream.daynight.jp>, 2011-2014
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.10.0\n"
+"Project-Id-Version: libvirt 5.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-01 18:50+0100\n"
+"POT-Creation-Date: 2019-07-30 11:31+0100\n"
 "PO-Revision-Date: 2015-02-23 06:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/libvirt/"
@@ -1406,10 +1406,6 @@ msgstr "バルーンデバイスパスがわかりませんでした"
 
 msgid "Cannot determine free memory"
 msgstr "空きメモリーがわかりません"
-
-#, c-format
-msgid "Cannot directly attach floppy %s"
-msgstr "フロッピー %s を直接接続できません"
 
 msgid "Cannot disable close-on-exec flag"
 msgstr "close-on-exec フラグを無効化できません"
@@ -11883,9 +11879,6 @@ msgstr "コーラーが cookieout または cookieoutlen を無視します"
 msgid "caller ignores uri_out"
 msgstr "コーラーが uri_out を無視します"
 
-msgid "can only passthrough directories"
-msgstr "パススルーのディレクトリーのみできます"
-
 msgid "can't change link state: device alias not found"
 msgstr ""
 "リンクステートを変更できません: デバイスのエイリアスが見つかりませんでした"
@@ -12446,22 +12439,6 @@ msgid "cannot parse CPU data"
 msgstr "CPU データを構文解析できません"
 
 #, c-format
-msgid "cannot parse PCI bus '%s'"
-msgstr "PCI bus '%s' を構文解析できません"
-
-#, c-format
-msgid "cannot parse PCI domain '%s'"
-msgstr "PCI domain '%s' を構文解析できません"
-
-#, c-format
-msgid "cannot parse PCI func '%s'"
-msgstr "PCI func '%s' を構文解析できません"
-
-#, c-format
-msgid "cannot parse PCI slot '%s'"
-msgstr "PCI slot '%s' を構文解析できません"
-
-#, c-format
 msgid "cannot parse bus %s"
 msgstr "bus %s を構文解析できません"
 
@@ -12542,12 +12519,6 @@ msgstr "typeid パラメーターの値を構文解析できません"
 
 msgid "cannot parse value of typeidversion parameter"
 msgstr "typeidversion パラメーターの値を構文解析できません"
-
-msgid "cannot parse vbd filename, missing driver name"
-msgstr "vbd のファイル名を構文解析できません。ドライバー名がありません"
-
-msgid "cannot parse vbd filename, missing driver type"
-msgstr "vbd のファイル名を構文解析できません、ドライバータイプがありません"
 
 #, c-format
 msgid "cannot parse vendor id %s"
@@ -12768,10 +12739,6 @@ msgstr "ネットリンクソケットを非ブロックに設定できません
 #, c-format
 msgid "cannot set security props %d (%s)"
 msgstr "セキュリティプロパティ %d (%s) をセットできません"
-
-#, c-format
-msgid "cannot set snapshot %s as its own parent"
-msgstr "スナップショット %s を自身の親として設定できません"
 
 msgid "cannot set supplemental groups"
 msgstr "補助グループを設定できません"
@@ -13769,15 +13736,8 @@ msgstr ""
 "ディスク '%s' はスナップショットのモード '%s' を使用しなければいけません"
 
 #, c-format
-msgid "disk '%s' not ready for pivot yet"
-msgstr "ディスク '%s' はまだピボットの準備ができていません"
-
-#, c-format
 msgid "disk '%s' specified twice"
 msgstr "ディスク '%s' が二重定義されました"
-
-msgid "disk attributes: disk[,snapshot=type][,driver=type][,file=name]"
-msgstr "ディスク属性: disk[,snapshot=type][,driver=type][,file=name]"
 
 #, c-format
 msgid "disk bus '%s' cannot be hot unplugged."
@@ -13999,21 +13959,6 @@ msgstr "ドメインの情報"
 
 msgid "domain information in XML"
 msgstr "XML 形式のドメイン情報"
-
-msgid "domain information incomplete, missing HVM loader"
-msgstr "ドメイン情報が不完全です、HVM ローダーがありません"
-
-msgid "domain information incomplete, missing kernel & bootloader"
-msgstr "ドメイン情報が不完全です、カーネルとブートローダーが不足しています"
-
-msgid "domain information incomplete, missing name"
-msgstr "ドメイン情報が不完全です、name が不足しています"
-
-msgid "domain information incomplete, vbd has no dev"
-msgstr "ドメイン情報が不完全です、vbd に dev がありません"
-
-msgid "domain information incomplete, vbd has no src"
-msgstr "ドメイン情報が不完全です、vbd に src がありません"
 
 msgid "domain is already running"
 msgstr "ドメインがすでに実行中です"
@@ -16368,9 +16313,6 @@ msgstr "不正な形式のボリューム拡張サイズ値"
 msgid "malformed volume extent stripes value"
 msgstr "不正な形式のボリューム拡張ストライプ値"
 
-msgid "managed PCI devices not supported with XenD"
-msgstr "管理された PCI デバイスは XenD でサポートされません"
-
 msgid "managed save of a domain state"
 msgstr "ドメインの状態の管理保存"
 
@@ -16574,18 +16516,6 @@ msgstr "EGD バックエンド形式がありません"
 
 msgid "missing IFLA_VF_INFO in netlink response"
 msgstr "netlink 応答に IFLA_VF_INFO がありません"
-
-msgid "missing PCI bus"
-msgstr "PCI バスがありません"
-
-msgid "missing PCI domain"
-msgstr "PCI ドメインがありません"
-
-msgid "missing PCI func"
-msgstr "PCI 機能がありません"
-
-msgid "missing PCI slot"
-msgstr "PCI スロットがありません"
 
 msgid "missing RNG device backend model"
 msgstr "RNG デバイスのバックエンドモデルがありません"
@@ -17213,9 +17143,6 @@ msgstr "CPU が見つかりません"
 msgid "no FLR, PM reset or bus reset available"
 msgstr "FLR や PM リセットや バスリセットができません"
 
-msgid "no HVM domain loader"
-msgstr "HVM ドメインローダーがありません"
-
 msgid "no IFLA_PORT_RESPONSE found in netlink message"
 msgstr "netlink メッセージに IFLA_PORT_RESPONSE が見つかりませんでした"
 
@@ -17811,14 +17738,6 @@ msgstr "パラメーター '%s' が複数回現れています"
 msgid "parameter=value"
 msgstr "パラメーター=値"
 
-#, c-format
-msgid "parent %s for snapshot %s not found"
-msgstr "親 %s （スナップショット %s）が見つかりません"
-
-#, c-format
-msgid "parent %s would create cycle to %s"
-msgstr "親 %s が %s にサイクルを作成しました"
-
 msgid "parser error"
 msgstr "構文解析エラー"
 
@@ -17924,10 +17843,6 @@ msgstr "プロセス ID"
 #, c-format
 msgid "pid_value in %s is too large"
 msgstr "%s の pid_value が大きすぎます"
-
-#, c-format
-msgid "pivot of disk '%s' requires an active copy job"
-msgstr "ディスク '%s' をピボットするには稼働中のコピージョブが必要です"
 
 msgid "pmsuspended"
 msgstr "サスペンドしました"
@@ -18218,13 +18133,6 @@ msgstr "remoteNodeGetMemoryStats: 返された統計情報の数が制限を超�
 
 msgid "remote_open: for 'ext' transport, command is required"
 msgstr "remote_open: 'ext' トランスポートにはコマンドが必要です"
-
-msgid ""
-"remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp|"
-"libssh2)"
-msgstr ""
-"remote_open: URL の転送方式が認識できません (tls|unix|ssh|ext|tcp|libssh2 の"
-"どれかにする必要があります)"
 
 msgid "removable is only valid for usb disks"
 msgstr "USB ディスクのみがリムーバブルをサポートします"
@@ -19680,10 +19588,6 @@ msgid "unexpected filesystem type %d"
 msgstr "予期しないファイルシステム形式 %d"
 
 #, c-format
-msgid "unexpected graphics type %d"
-msgstr "予期しないグラフィックス形式 %d です"
-
-#, c-format
 msgid "unexpected hostdev driver name type %d "
 msgstr "予期しないホストデバイスのドライバー名形式 %d "
 
@@ -19718,10 +19622,6 @@ msgstr "予期しない iSCSI ボリューム名 '%s'"
 #, c-format
 msgid "unexpected lifecycle action %d"
 msgstr "予期しないライフサイクルアクション %d です"
-
-#, c-format
-msgid "unexpected lifecycle value %d"
-msgstr "予期しないライフサイクル値 %d です"
 
 #, c-format
 msgid "unexpected memballoon model %d"
@@ -20153,10 +20053,6 @@ msgstr "不明なグラフィックスのリッスン形式 '%s' です"
 msgid "unknown graphics type %s"
 msgstr "不明なグラフィックス形式 %s"
 
-#, c-format
-msgid "unknown graphics type '%s'"
-msgstr "不明なグラフィックタイプ '%s'"
-
 msgid "unknown host"
 msgstr "不明なホスト"
 
@@ -20207,14 +20103,6 @@ msgstr "不明なインターフェース形式 %s"
 #, c-format
 msgid "unknown interface type '%s'"
 msgstr "不明なインターフェイス形式 '%s'"
-
-#, c-format
-msgid "unknown lifecycle type %s"
-msgstr "不明なライフサイクル形式 %s"
-
-#, c-format
-msgid "unknown localtime offset %s"
-msgstr "不明なローカル時間オフセット %s"
 
 #, c-format
 msgid "unknown memory balloon model '%s'"
@@ -20289,10 +20177,6 @@ msgstr "不明なルール action 属性値"
 
 msgid "unknown rule direction attribute value"
 msgstr "不明なルール direction 属性値"
-
-#, c-format
-msgid "unknown s-expression kind %d"
-msgstr "不明な S 式種別 %d"
 
 msgid "unknown secret usage type"
 msgstr "不明なシークレット使用形式"
@@ -20627,10 +20511,6 @@ msgstr "サポートのない入力バス %s"
 #, c-format
 msgid "unsupported monitor type '%s'"
 msgstr "サポートされないモニター形式 '%s' です"
-
-#, c-format
-msgid "unsupported network type %d"
-msgstr "サポートされないネットワーク形式 %d です"
 
 msgid "unsupported option"
 msgstr "サポートされないオプションです"

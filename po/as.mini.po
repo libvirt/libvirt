@@ -13,9 +13,9 @@
 # Nilamdyuti Goswami <ngoswami@redhat.com>, 2014
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.10.0\n"
+"Project-Id-Version: libvirt 5.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-01 18:50+0100\n"
+"POT-Creation-Date: 2019-07-30 11:31+0100\n"
 "PO-Revision-Date: 2015-02-26 06:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Assamese (http://www.transifex.com/projects/p/libvirt/"
@@ -1385,10 +1385,6 @@ msgstr "বেলুন ডিভাইচ পথ নিৰ্ধাৰণ ক�
 
 msgid "Cannot determine free memory"
 msgstr "মুক্ত মেমৰি নিৰ্ধাৰণ কৰিব নোৱাৰি"
-
-#, c-format
-msgid "Cannot directly attach floppy %s"
-msgstr "ফ্ল'পি %s পোনেপোনে সংযুক্ত কৰিব নোৱাৰি"
 
 msgid "Cannot disable close-on-exec flag"
 msgstr "close-on-exec ফ্লেগ অসামৰ্থবান কৰিব নোৱাৰি"
@@ -9421,10 +9417,6 @@ msgid "Too long network device name"
 msgstr "নে'টৱৰ্ক ফাইলৰ নাম বিশ্লেষণ কৰা হৈছে"
 
 #, c-format
-msgid "Too many (%u) FDs passed from caller"
-msgstr "কলাৰৰ পৰা অত্যাধিক (%u) FDs প্ৰেৰণ কৰা হৈছে"
-
-#, c-format
 msgid "Too many CPU models '%d' for limit '%d'"
 msgstr "সীমা '%d' ৰ বাবে CPU আৰ্হি '%d'"
 
@@ -11886,9 +11878,6 @@ msgstr "কলাৰে cookieout অথবা cookieoutlen উপেক্ষ�
 msgid "caller ignores uri_out"
 msgstr "কলাৰে uri_out উপেক্ষা কৰে"
 
-msgid "can only passthrough directories"
-msgstr "কেৱল ডাইৰেকটৰিসমূহ পাছথ্ৰু কৰিব পাৰি"
-
 msgid "can't change link state: device alias not found"
 msgstr "সংযোগ অৱস্থা পৰিবৰ্তন কৰিব নোৱাৰি: ডিভাইচ এলিয়াচ পোৱা নগল"
 
@@ -12451,22 +12440,6 @@ msgid "cannot parse %s version number in '%.*s'"
 msgstr "%s সংস্কৰণ সংখ্যা বিশ্লেষণ কৰিব নোৱাৰি '%.*s'"
 
 #, c-format
-msgid "cannot parse PCI bus '%s'"
-msgstr "PCI bus '%s' বিশ্লেষণ কৰিব নোৱাৰি"
-
-#, c-format
-msgid "cannot parse PCI domain '%s'"
-msgstr "PCI ডোমেইন '%s' বিশ্লেষণ কৰিব নোৱাৰি"
-
-#, c-format
-msgid "cannot parse PCI func '%s'"
-msgstr "PCI আপেক্ষক '%s' বিশ্লেষণ কৰিব নোৱাৰি"
-
-#, c-format
-msgid "cannot parse PCI slot '%s'"
-msgstr "PCI slot '%s' বিশ্লেষণ কৰিব নোৱাৰি"
-
-#, c-format
 msgid "cannot parse bus %s"
 msgstr "bus %s বিশ্লেষণ কৰিব নোৱাৰি"
 
@@ -12542,12 +12515,6 @@ msgstr "typeid প্ৰাচলৰ মান বিশ্লেষণ কৰ�
 
 msgid "cannot parse value of typeidversion parameter"
 msgstr "typeidversion প্ৰাচলৰ মান বিশ্লেষণ কৰিব নোৱাৰি"
-
-msgid "cannot parse vbd filename, missing driver name"
-msgstr "vbd ফাইলৰ নাম বিশ্লষণ কৰোঁতে ব্যৰ্থ, চালকেৰ নাম অনুপস্থিত"
-
-msgid "cannot parse vbd filename, missing driver type"
-msgstr "vbd ফাইলৰ নাম বিশ্লষণ কৰোঁতে ব্যৰ্থ, চালকেৰ ধৰণ অনুপস্থিত"
 
 #, c-format
 msgid "cannot parse vendor id %s"
@@ -12767,10 +12734,6 @@ msgstr "নেটলিঙ্ক চকেট অপ্ৰতিৰোধি হ
 #, c-format
 msgid "cannot set security props %d (%s)"
 msgstr "security props %d নিৰ্ধাৰণ কৰিব নোৱাৰি (%s)"
-
-#, c-format
-msgid "cannot set snapshot %s as its own parent"
-msgstr "স্নেপশ্বট %s ক তাৰ নিজস্ব উপধায়ক হিচাপে প্ৰাপ্ত কৰিব নোৱাৰি"
 
 msgid "cannot set supplemental groups"
 msgstr "পৰিপূৰক দলসমূহ সংহতি কৰিব নোৱাৰি"
@@ -13791,15 +13754,8 @@ msgid "disk '%s' must use snapshot mode '%s'"
 msgstr "ডিস্ক '%s' এ স্নেপশ্বট অৱস্থা '%s' ব্যৱহাৰ কৰিব লাগিব"
 
 #, c-format
-msgid "disk '%s' not ready for pivot yet"
-msgstr "ডিস্ক '%s' এতিয়াও pivot ৰ বাবে প্ৰস্তুত নহয়"
-
-#, c-format
 msgid "disk '%s' specified twice"
 msgstr "ডিস্ক '%s' দুবাৰ ধাৰ্য্য কৰা হৈছে"
-
-msgid "disk attributes: disk[,snapshot=type][,driver=type][,file=name]"
-msgstr "ডিস্ক বৈশিষ্টসমূহ: disk[,snapshot=type][,driver=type][,file=name]"
 
 #, c-format
 msgid "disk bus '%s' cannot be hot unplugged."
@@ -14016,21 +13972,6 @@ msgstr "ডোমেইন সংক্ৰান্ত তথ্য"
 
 msgid "domain information in XML"
 msgstr "XML ত ডোমেইন সংক্ৰান্ত তথ্য"
-
-msgid "domain information incomplete, missing HVM loader"
-msgstr "ডোমেইম"
-
-msgid "domain information incomplete, missing kernel & bootloader"
-msgstr "ডোমেইন সংক্ৰান্ত তথ্য অসম্পূৰ্ণ, কাৰ্ণেল আৰু বুট লোডাৰ অনুপস্থিত"
-
-msgid "domain information incomplete, missing name"
-msgstr "ডোমেইন সংক্ৰান্ত তথ্য অসম্পূৰ্ণ, নাম অনুপস্থিত"
-
-msgid "domain information incomplete, vbd has no dev"
-msgstr "ডোমেইন সংক্ৰান্ত তথ্য অসম্পূৰ্ণ, vbd ত dev অনুপস্থিত"
-
-msgid "domain information incomplete, vbd has no src"
-msgstr "ডোমেইন সংক্ৰান্ত তথ্য অসম্পূৰ্ণ, vbd ত src অনুপস্থিত"
 
 msgid "domain is already running"
 msgstr "ডোমেইন বৰ্তমানে সক্ৰিয়ন"
@@ -16411,9 +16352,6 @@ msgstr "ভুল volume extent size মান"
 msgid "malformed volume extent stripes value"
 msgstr "ক্ষতিগ্ৰস্থ ভলিউম এক্সটেণ্ট স্ট্ৰাইপ্চ মান"
 
-msgid "managed PCI devices not supported with XenD"
-msgstr "XenD ৰে অসমৰ্থিত PCI ডিভাইচৰ পৰিচালনা কৰক"
-
 msgid "managed save of a domain state"
 msgstr "এটা ডমেইন অৱস্থাৰ ব্যৱস্থাপিত সংৰক্ষণ"
 
@@ -16625,18 +16563,6 @@ msgstr "সন্ধানহীন EGD বেকএণ্ড ধৰণ"
 
 msgid "missing IFLA_VF_INFO in netlink response"
 msgstr "নেটলিঙ্ক প্ৰতিক্ৰিয়াত IFLA_VF_INFO সন্ধানহীন"
-
-msgid "missing PCI bus"
-msgstr "হৰুৱা PCI bus"
-
-msgid "missing PCI domain"
-msgstr "হৰুৱা PCI ডোমেইন"
-
-msgid "missing PCI func"
-msgstr "হৰুৱা PCI func"
-
-msgid "missing PCI slot"
-msgstr "হৰুৱা PCI slot"
 
 msgid "missing RNG device backend model"
 msgstr "সন্ধানহীন RNG ডিভাইচ বেকএণ্ড আৰ্হি"
@@ -17275,9 +17201,6 @@ msgstr "কোনো CPU পোৱা নগল"
 msgid "no FLR, PM reset or bus reset available"
 msgstr "কোনো FLR, PM reset বা bus reset উপলব্ধ নহয়"
 
-msgid "no HVM domain loader"
-msgstr "ডোমেইম"
-
 msgid "no IFLA_PORT_RESPONSE found in netlink message"
 msgstr "নেটলিঙ্ক বাৰ্তাত কোনো IFLA_PORT_RESPONSE পোৱা নগল"
 
@@ -17872,14 +17795,6 @@ msgstr "প্ৰাচল '%s' বহুবাৰ উপস্থিত হয়"
 msgid "parameter=value"
 msgstr "value array বিতৰণ কৰক"
 
-#, c-format
-msgid "parent %s for snapshot %s not found"
-msgstr "স্নেপশ্বট %s ৰ বাবে উপধায়ক %s পোৱা নগল"
-
-#, c-format
-msgid "parent %s would create cycle to %s"
-msgstr "উপধায়ক %s এ %s লে চক্ৰ সৃষ্টি কৰিব"
-
 msgid "parser error"
 msgstr "বিশ্লেষণ কৰোঁতাৰ ভুল"
 
@@ -17988,10 +17903,6 @@ msgstr "pid"
 #, c-format
 msgid "pid_value in %s is too large"
 msgstr "%s ত pid_value অত্যাধিক ডাঙৰ"
-
-#, c-format
-msgid "pivot of disk '%s' requires an active copy job"
-msgstr "ডিস্ক '%s' ৰ pivot ৰ এটা সক্ৰিয় কপি কাৰ্য্যৰ প্ৰয়োজন হয়"
 
 msgid "pmsuspended"
 msgstr "pmsuspended"
@@ -18294,12 +18205,6 @@ msgstr "remoteNodeGetMemoryStats: stats ৰ ঘুৰাই দিয়া সং�
 
 msgid "remote_open: for 'ext' transport, command is required"
 msgstr "remote_open: 'ext' সম্প্ৰচাৰৰ বাবে আদেশ আৱশ্যক"
-
-msgid ""
-"remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp|"
-"libssh2)"
-msgstr ""
-"remote_open: URL ত পৰিবহন পৰিচিত নহয় (tls|unix|ssh|ext|tcp|libssh2 হব লাগে)"
 
 msgid "removable is only valid for usb disks"
 msgstr "আতৰাব পৰা কেৱল usb ডিস্কসমূহৰ বাবে বৈধ"
@@ -19780,10 +19685,6 @@ msgid "unexpected filesystem type %d"
 msgstr "অপ্ৰত্যাশিত ফাইলপ্ৰণালীৰ প্ৰকৃতি %d"
 
 #, c-format
-msgid "unexpected graphics type %d"
-msgstr "অপ্ৰত্যাশিত ডোমেইনৰ প্ৰকৃতি %d"
-
-#, c-format
 msgid "unexpected hostdev driver name type %d "
 msgstr "অপ্ৰত্যাশিত hostdev ড্ৰাইভাৰ নাম ধৰণ %d"
 
@@ -19818,10 +19719,6 @@ msgstr "অপ্ৰত্যাশিত iscsi ভলিউম নাম '%s'"
 #, c-format
 msgid "unexpected lifecycle action %d"
 msgstr "অপ্ৰত্যাশিত lifecycle কাৰ্য্য %d"
-
-#, c-format
-msgid "unexpected lifecycle value %d"
-msgstr "অপ্ৰত্যাশিত lifecycle মান %d"
 
 #, c-format
 msgid "unexpected memballoon model %d"
@@ -20249,10 +20146,6 @@ msgid "unknown graphics type %s"
 msgstr "অজ্ঞাত গ্ৰাফিক্স ধৰণ %s"
 
 #, c-format
-msgid "unknown graphics type '%s'"
-msgstr "অজ্ঞাত auth ধৰণ '%s'"
-
-#, c-format
 msgid "unknown guest csum mode '%s'"
 msgstr "অজ্ঞাত অতিথি csum অৱস্থা '%s'"
 
@@ -20352,16 +20245,8 @@ msgid "unknown interface type '%s'"
 msgstr "অজ্ঞাত সংযোগমাধ্যমৰ ধৰণ '%s'"
 
 #, c-format
-msgid "unknown lifecycle type %s"
-msgstr "অজ্ঞাত OS ৰ ধৰণ %s"
-
-#, c-format
 msgid "unknown link state: %s"
 msgstr "অজ্ঞাত লিঙ্ক অৱস্থা: %s"
-
-#, c-format
-msgid "unknown localtime offset %s"
-msgstr "অজ্ঞাত স্থানীয়সময় অফচেট %s"
 
 #, c-format
 msgid "unknown memory balloon model '%s'"
@@ -20452,10 +20337,6 @@ msgstr "অজ্ঞাত নিয়ম কাৰ্য্য বৈশিষ্
 
 msgid "unknown rule direction attribute value"
 msgstr "অজ্ঞাত নিয়ম দিশ বৈশিষ্ট্য মান"
-
-#, c-format
-msgid "unknown s-expression kind %d"
-msgstr "অজ্ঞাত s-অভিব্যক্তি ধৰণ %d"
 
 msgid "unknown secret usage type"
 msgstr "গোপনীয় ব্যৱহাৰৰ অজ্ঞাত ধৰণ"
@@ -20809,10 +20690,6 @@ msgstr "'%s' ধৰণৰ মনিটৰ সমৰ্থিত নহয়"
 #, c-format
 msgid "unsupported network event ID %d"
 msgstr "অসমৰ্থিত নেটৱৰ্ক ইভেণ্ট ID %d"
-
-#, c-format
-msgid "unsupported network type %d"
-msgstr "অসমৰ্থিত নে'টৱৰ্ক সমষ্টিৰ ধৰণ %d"
 
 msgid "unsupported option"
 msgstr "অসমৰ্থিত বিকল্প"

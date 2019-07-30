@@ -8,9 +8,9 @@
 # Gabor Egry <gaba@freemail.hu>, 2007.
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.10.0\n"
+"Project-Id-Version: libvirt 5.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-01-14 16:56+0000\n"
+"POT-Creation-Date: 2019-07-30 11:31+0100\n"
 "PO-Revision-Date: 2015-02-27 04:56+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Hungarian (http://www.transifex.com/projects/p/fedora/"
@@ -450,12 +450,6 @@ msgstr "egy tartomány automatikus indítása"
 msgid "autostart a network"
 msgstr "hálózat automatikus indítása"
 
-msgid "cannot parse vbd filename, missing driver name"
-msgstr "nem értelmezhető a vbd-fájlnév, hiányzik a meghajtóprogram neve"
-
-msgid "cannot parse vbd filename, missing driver type"
-msgstr "nem értelmezhető a vbd-fájlnév, hiányzik a meghajtóprogram típusa"
-
 msgid "capabilities"
 msgstr "képességek"
 
@@ -549,19 +543,6 @@ msgstr "tartományinformáció"
 
 msgid "domain information in XML"
 msgstr "tartományinformáció XML-ben"
-
-msgid "domain information incomplete, missing kernel & bootloader"
-msgstr ""
-"a tartományinformáció nem teljes - hiányzik a rendszermag és a rendszerindító"
-
-msgid "domain information incomplete, missing name"
-msgstr "a tartományinformáció nem teljes - hiányzik a név"
-
-msgid "domain information incomplete, vbd has no dev"
-msgstr "a tartományinformáció nem teljes - vbd nem rendelkezik eszközzel (dev)"
-
-msgid "domain information incomplete, vbd has no src"
-msgstr "a tartományinformáció nem teljes - vbd nem rendelkezik forrással"
 
 msgid "domain name or uuid"
 msgstr "tartománynév vagy uuid"

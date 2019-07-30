@@ -17,9 +17,9 @@
 # sandeep shedmake <sandeep.shedmake@gmail.com>, 2007
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.10.0\n"
+"Project-Id-Version: libvirt 5.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-01 18:50+0100\n"
+"POT-Creation-Date: 2019-07-30 11:31+0100\n"
 "PO-Revision-Date: 2015-02-23 12:39+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Hindi (http://www.transifex.com/projects/p/fedora/language/"
@@ -828,10 +828,6 @@ msgstr "संजाल ऑटोस्टार्ट निष्क्रि�
 
 msgid "Cannot deactivate storage pool autostart"
 msgstr "भंडारण पूल autostart को निष्क्रिय नहीं कर सका "
-
-#, c-format
-msgid "Cannot directly attach floppy %s"
-msgstr "%s फ्लॉपी सीधा संलग्न नहीं कर सकता है"
 
 #, c-format
 msgid "Cannot duplicate fd %d onto fd %d"
@@ -6743,9 +6739,6 @@ msgstr "कॉलर कुकी या कुकी लेन की की �
 msgid "caller ignores uri_out"
 msgstr "कॉलर uri_out की अनदेखी कर रहा हैं "
 
-msgid "can only passthrough directories"
-msgstr "केवल डिरेक्ट्रीज़ passthrough किया गया "
-
 msgid "can't change link state: device alias not found"
 msgstr "लिंक की स्थिति परिवर्तित नहीं कर सकता: युक्ति उर्फ नहीं मिला"
 
@@ -7123,22 +7116,6 @@ msgid "cannot parse %s version number in '%.*s'"
 msgstr "%s संस्करण संख्या का विश्लेषण नहीं कर सकता है '%.*s' में "
 
 #, c-format
-msgid "cannot parse PCI bus '%s'"
-msgstr "PCI बस '%s' का विश्लेषण नहीं कर सकता है"
-
-#, c-format
-msgid "cannot parse PCI domain '%s'"
-msgstr "'%s' डोमेन विश्लेषित नहीं सकता है"
-
-#, c-format
-msgid "cannot parse PCI func '%s'"
-msgstr "PCI प्रकार्य '%s' का विश्लेषण नहीं कर सकता है"
-
-#, c-format
-msgid "cannot parse PCI slot '%s'"
-msgstr "PCI स्लॉट '%s' का विश्लेषण नहीं कर सकता है"
-
-#, c-format
 msgid "cannot parse bus %s"
 msgstr "%s बस नहीं विश्लेषित कर सकता है"
 
@@ -7211,12 +7188,6 @@ msgstr "typeid पैरामीटर का मान विश्लेष�
 
 msgid "cannot parse value of typeidversion parameter"
 msgstr "सीमा के बाहर managerid का मान"
-
-msgid "cannot parse vbd filename, missing driver name"
-msgstr "vbd फाइलनाम विश्लेषित नहीं कर सकता है, ड्राइवर नाम नहीं मिल रहा है"
-
-msgid "cannot parse vbd filename, missing driver type"
-msgstr "vbd फाइलनाम विश्लेषित नहीं कर सकता है, ड्राइवर प्रकार नहीं मिल रहा है"
 
 #, c-format
 msgid "cannot parse vendor id %s"
@@ -7389,10 +7360,6 @@ msgstr "'%s' मोड को %04o में सेट नहीं कर स�
 #, c-format
 msgid "cannot set security props %d (%s)"
 msgstr "सुरक्षा प्रस्ताव %d (%s) सेट नहीं कर सकता है"
-
-#, c-format
-msgid "cannot set snapshot %s as its own parent"
-msgstr "स्नैपशॉट %s अपने जनक के रूप में सेट नहीं कर सकता"
 
 msgid "cannot set vcpus on an inactive domain"
 msgstr "किसी सक्रिय डोमेन पर vcpus सेट नहीं कर सकता है "
@@ -8127,21 +8094,6 @@ msgstr "डोमेन सूचना"
 
 msgid "domain information in XML"
 msgstr "XML में डोमेन सूचना"
-
-msgid "domain information incomplete, missing HVM loader"
-msgstr "डोमेन सूचना अपूर्ण, गुम HVM लोडर"
-
-msgid "domain information incomplete, missing kernel & bootloader"
-msgstr "डोमेन सूचना अपूर्ण, गुम कर्नेल और बूटलोडर"
-
-msgid "domain information incomplete, missing name"
-msgstr "डोमेन सूचना अपूर्ण, गुम नाम"
-
-msgid "domain information incomplete, vbd has no dev"
-msgstr "डोमेन सूचना अपूर्ण, vbd के पास कोई dev नहीं"
-
-msgid "domain information incomplete, vbd has no src"
-msgstr "डोमेन सूचना अपूर्ण, vbd के पास कोई src नहीं"
 
 msgid "domain is already running"
 msgstr "डोमेन पहले से चल रहा है"
@@ -9560,9 +9512,6 @@ msgstr "विरूपित आवाज विस्तार ऑफसेट
 msgid "malformed volume extent size value"
 msgstr "विरूपित आवाज विस्तार आकार मान"
 
-msgid "managed PCI devices not supported with XenD"
-msgstr "प्रबंधित PCI युक्ति जो XenD के साथ समर्थित नहीं है"
-
 msgid "maxStats > REMOTE_DOMAIN_MEMORY_STATS_MAX"
 msgstr "maxStats > REMOTE_DOMAIN_MEMORY_STATS_MAX"
 
@@ -9662,18 +9611,6 @@ msgstr "RAM फ़ाइलतंत्र के लिए अनुपस्�
 
 msgid "missing EGD backend type"
 msgstr "EGD बैकएंड प्रकार लापता"
-
-msgid "missing PCI bus"
-msgstr "गुम PCI बस"
-
-msgid "missing PCI domain"
-msgstr "गुम PCI डोमेन"
-
-msgid "missing PCI func"
-msgstr "गुम PCI प्रकार्य"
-
-msgid "missing PCI slot"
-msgstr "गुम PCI स्लॉट"
 
 msgid "missing RNG device backend model"
 msgstr "लापता RNG युक्ति बैकएंड मॉडल"
@@ -10113,9 +10050,6 @@ msgstr "कोई CPUs नहीं मिला"
 msgid "no FLR, PM reset or bus reset available"
 msgstr "कोई FLR नहीं, PM रिसेट या बस रिसेट उपलब्ध"
 
-msgid "no HVM domain loader"
-msgstr "कोई HVM डोमेन लोडर नहीं"
-
 #, c-format
 msgid "no PCI bus ID supplied for '%s'"
 msgstr "कोई PCI बस ID नहीं जो '%s' के लिए दी गई"
@@ -10497,14 +10431,6 @@ msgstr "स्मृति के बाहर"
 msgid "parameter=value"
 msgstr "parameter=value"
 
-#, c-format
-msgid "parent %s for snapshot %s not found"
-msgstr "स्नैपशॉट %s के लिए जनक %s नही मिला "
-
-#, c-format
-msgid "parent %s would create cycle to %s"
-msgstr "%s का जनक %s चक्र बनाया होगा "
-
 msgid "parser error"
 msgstr "विश्लेषक त्रुटि"
 
@@ -10733,13 +10659,6 @@ msgstr "पुल ताजा करें"
 
 msgid "remote_open: for 'ext' transport, command is required"
 msgstr "remote_open: 'ext' transport के लिए, कमांड जरूरी है"
-
-msgid ""
-"remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp|"
-"libssh2)"
-msgstr ""
-"remote_open: URL में परिवहन परिचित नहीं है (tls|unix|ssh|ext|tcp|libssh2 होना "
-"चाहिए)"
 
 msgid "rename to new name during migration (if supported)"
 msgstr "प्रवास के दौरान नए नाम में फिर नाम बदलें (यदि समर्थित है)"
@@ -11634,10 +11553,6 @@ msgid "unexpected filesystem type %d"
 msgstr "अप्रत्याशित फ़ाइलतंत्र प्रकार %d"
 
 #, c-format
-msgid "unexpected graphics type %d"
-msgstr "अप्रत्याशित आलेखी प्रकार %d"
-
-#, c-format
 msgid "unexpected hostdev mode %d"
 msgstr "अप्रत्याशित होस्टडेव विधि %d"
 
@@ -11664,10 +11579,6 @@ msgstr "अप्रत्याशित अंतरफलक प्रका�
 #, c-format
 msgid "unexpected lifecycle action %d"
 msgstr "अप्रत्याशित जीवनचक्र क्रिया %d"
-
-#, c-format
-msgid "unexpected lifecycle value %d"
-msgstr "अप्रत्याशित जीवनचक्र मान %d"
 
 #, c-format
 msgid "unexpected memballoon model %d"
@@ -12034,10 +11945,6 @@ msgstr "अज्ञात आलेखी श्रवण प्रकार '%
 msgid "unknown graphics type %s"
 msgstr "अज्ञात आलेखी प्रकार %s"
 
-#, c-format
-msgid "unknown graphics type '%s'"
-msgstr "अज्ञात आलेखी प्रकार '%s'"
-
 msgid "unknown host"
 msgstr "अज्ञात मेजबान"
 
@@ -12088,10 +11995,6 @@ msgstr "अज्ञात अंतरफलक प्रकार %s"
 #, c-format
 msgid "unknown interface type '%s'"
 msgstr "अज्ञात अंतरफलक प्रकार '%s'"
-
-#, c-format
-msgid "unknown lifecycle type %s"
-msgstr "अज्ञात जीवन चक्र प्रकार %s"
 
 #, c-format
 msgid "unknown memory balloon model '%s'"
@@ -12438,10 +12341,6 @@ msgstr "असमर्थित इनपुट बस %s"
 #, c-format
 msgid "unsupported monitor type '%s'"
 msgstr "असमर्थित मॉनिटर प्रकार '%s'"
-
-#, c-format
-msgid "unsupported network type %d"
-msgstr "असमर्थित संजाल प्रकार %d"
 
 msgid "unsupported option"
 msgstr "असमर्थित विकल्प"

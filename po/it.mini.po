@@ -10,9 +10,9 @@
 # Silvio Pierro <perplesso82@gmail.com>, 2009
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.10.0\n"
+"Project-Id-Version: libvirt 5.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-01 18:50+0100\n"
+"POT-Creation-Date: 2019-07-30 11:31+0100\n"
 "PO-Revision-Date: 2015-02-27 05:14+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Italian (http://www.transifex.com/projects/p/libvirt/language/"
@@ -291,10 +291,6 @@ msgstr "Impossibile creare la directory di log '%s'"
 
 msgid "Cannot deactivate storage pool autostart"
 msgstr "Impossibile disattivare l'autostart dello storage pool"
-
-#, c-format
-msgid "Cannot directly attach floppy %s"
-msgstr "Impossibile collegare direttamente il floppy %s"
 
 msgid "Cannot enable general autostart option without affecting other domains"
 msgstr ""
@@ -3027,12 +3023,6 @@ msgstr "errore nel parsing del valore del parametro typeid"
 msgid "cannot parse value of typeidversion parameter"
 msgstr "errore nel parsing del valore del parametro typeidversion"
 
-msgid "cannot parse vbd filename, missing driver name"
-msgstr "impossibile analizzare il filename vbd, nome del driver mancante"
-
-msgid "cannot parse vbd filename, missing driver type"
-msgstr "impossibile analizzare il filename vbd, tipo di driver mancante"
-
 #, c-format
 msgid "cannot parse vendor id %s"
 msgstr "impossibile analizzare l'id produttore %s"
@@ -3479,21 +3469,6 @@ msgstr "informazioni del dominio"
 
 msgid "domain information in XML"
 msgstr "informazioni del dominio in XML"
-
-msgid "domain information incomplete, missing HVM loader"
-msgstr "informazioni del dominio incomplete, loader HVM mancante"
-
-msgid "domain information incomplete, missing kernel & bootloader"
-msgstr "informazioni del dominio incomplete, kernel & bootloader mancante"
-
-msgid "domain information incomplete, missing name"
-msgstr "informazioni del dominio incomplete, nome mancante"
-
-msgid "domain information incomplete, vbd has no dev"
-msgstr "informazioni del dominio incomplete, vbd non presenta dev"
-
-msgid "domain information incomplete, vbd has no src"
-msgstr "informazioni del dominio incomplete, vbd non presenta src"
 
 msgid "domain is already running"
 msgstr "il dominio è già in esecuzione"
@@ -4488,9 +4463,6 @@ msgstr "uuid di rete"
 msgid "no CPUs found"
 msgstr "nessuna CPU trovata"
 
-msgid "no HVM domain loader"
-msgstr "loader di dominio HVM non presente"
-
 #, c-format
 msgid "no PCI bus ID supplied for '%s'"
 msgstr "nessun ID bus PCI fornito per '%s'"
@@ -5288,10 +5260,6 @@ msgid "unexpected filesystem type %d"
 msgstr "tipo di filesystem %d inaspettato"
 
 #, c-format
-msgid "unexpected graphics type %d"
-msgstr "tipo di grafica inaspettata %d"
-
-#, c-format
 msgid "unexpected hostdev mode %d"
 msgstr "modo hostdev %d inaspettato"
 
@@ -5314,10 +5282,6 @@ msgstr "tipo di interfaccia %d inaspettato"
 #, c-format
 msgid "unexpected lifecycle action %d"
 msgstr "azione ciclo di vita inattesa %d"
-
-#, c-format
-msgid "unexpected lifecycle value %d"
-msgstr "valore ciclo vita inatteso %d"
 
 #, c-format
 msgid "unexpected memballoon model %d"
@@ -5510,10 +5474,6 @@ msgstr "valore di schermo intero sconosciuto '%s'"
 msgid "unknown graphics device type '%s'"
 msgstr "tipo di dispositivo grafico sconosciuto '%s'"
 
-#, c-format
-msgid "unknown graphics type '%s'"
-msgstr "tipo di grafica sconosciuta '%s'"
-
 msgid "unknown host"
 msgstr "host sconosciuto"
 
@@ -5544,10 +5504,6 @@ msgstr "tipo di interfaccia sconosciuta %s"
 #, c-format
 msgid "unknown interface type '%s'"
 msgstr "tipo di interfaccia sconosciuta '%s'"
-
-#, c-format
-msgid "unknown lifecycle type %s"
-msgstr "tipo di ciclo vita sconosciuto %s"
 
 #, c-format
 msgid "unknown memory balloon model '%s'"
@@ -5770,10 +5726,6 @@ msgstr "bus di input %s non supportato"
 #, c-format
 msgid "unsupported monitor type '%s'"
 msgstr "tipo di monitor non supportato '%s'"
-
-#, c-format
-msgid "unsupported network type %d"
-msgstr "tipo di rete non supportata %d"
 
 #, c-format
 msgid "unsupported option '-%c'. See --help."

@@ -9,9 +9,9 @@
 # Manoj Kumar Giri <mgiri@redhat.com>, 2013
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 4.10.0\n"
+"Project-Id-Version: libvirt 5.6.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-01 18:50+0100\n"
+"POT-Creation-Date: 2019-07-30 11:31+0100\n"
 "PO-Revision-Date: 2015-02-27 04:59+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Oriya (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1243,10 +1243,6 @@ msgstr "ବ୍ୟାଲୁନ ଉପକରଣ ପଥ ନିର୍ଦ୍ଧାର
 
 msgid "Cannot determine free memory"
 msgstr "ଖାଲି ସ୍ଥାନ ନିର୍ଦ୍ଧାରଣ କରିପାରିବେ ନାହିଁ"
-
-#, c-format
-msgid "Cannot directly attach floppy %s"
-msgstr "ଫ୍ଲପି %sକୁ ସିଧାସଳଖ ଭାବରେ ସଂଲଗ୍ନ କରିପାରିବେ ନାହିଁ"
 
 msgid "Cannot disable close-on-exec flag"
 msgstr "close-on-exec କୁ ନିଷ୍କ୍ରିୟ କରିପାରିବେ ନାହିଁ"
@@ -8162,10 +8158,6 @@ msgid "Too long network device name"
 msgstr "ଅତ୍ୟଧିକ ବଡ଼ ନେଟୱର୍କ ଉପକରଣ ନାମ"
 
 #, c-format
-msgid "Too many (%u) FDs passed from caller"
-msgstr "ଅତ୍ୟଧିକ (%u) FDs କଲର ପାଖରୁ ଯାଇଛି"
-
-#, c-format
 msgid "Too many CPU models '%d' for limit '%d'"
 msgstr "ଅତ୍ଯଧିକ CPU ମଡେଲ '%d' ସିମୀତ '%d' ପାଇଁ"
 
@@ -11104,22 +11096,6 @@ msgid "cannot parse CPU data"
 msgstr "CPU ତଥ୍ଯକୁ ବିଶ୍ଳେଷଣ କରି ହେବ ନାହିଁ"
 
 #, c-format
-msgid "cannot parse PCI bus '%s'"
-msgstr "PCI ପରିପଥ '%s'କୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ନାହିଁ"
-
-#, c-format
-msgid "cannot parse PCI domain '%s'"
-msgstr "PCI ପରିସର '%s'କୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ନାହିଁ"
-
-#, c-format
-msgid "cannot parse PCI func '%s'"
-msgstr "PCI ଫଳନ '%s'କୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ନାହିଁ"
-
-#, c-format
-msgid "cannot parse PCI slot '%s'"
-msgstr "PCI ସ୍ଲଟ '%s'କୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ନାହିଁ"
-
-#, c-format
 msgid "cannot parse bus %s"
 msgstr "ପରିପଥ %s କୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ନାହିଁ"
 
@@ -11196,12 +11172,6 @@ msgstr "typeid ପ୍ରାଚଳର ମୂଲ୍ୟକୁ ବିଶ୍ଳେଷ
 
 msgid "cannot parse value of typeidversion parameter"
 msgstr "typeidversion ପ୍ରାଚଳର ମୂଲ୍ୟକୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ନାହିଁ"
-
-msgid "cannot parse vbd filename, missing driver name"
-msgstr "vbd ଫାଇଲ ନାମକୁ ବିଶ୍ଳେଷଣ କରିପାରିବ ନାହିଁ, ଡ୍ରାଇଭର ନାମ ଅନୁପସ୍ଥିତ"
-
-msgid "cannot parse vbd filename, missing driver type"
-msgstr "vbd ଫାଇଲ ନାମକୁ ବିଶ୍ଳେଷଣ କରିପାରିବ ନାହିଁ, ଡ୍ରାଇଭର ପ୍ରକାର ଅନୁପସ୍ଥିତ"
 
 #, c-format
 msgid "cannot parse vendor id %s"
@@ -11418,10 +11388,6 @@ msgstr "netlink ସକେଟକୁ ଅଟକ ହୋଇନଥିବା ପରି 
 #, c-format
 msgid "cannot set security props %d (%s)"
 msgstr "ସୁରକ୍ଷା props ବିନ୍ୟାସ କରିପାରିବେ ନାହିଁ %d (%s)"
-
-#, c-format
-msgid "cannot set snapshot %s as its own parent"
-msgstr "ଆଶୁଚିତ୍ର %s କୁ ତାହାର ମୂଖ୍ୟ ଭାବରେ ସେଟ କରିପାରିବେ ନାହିଁ"
 
 msgid "cannot set supplemental groups"
 msgstr "ଅନୁପୂରକ ଶ୍ରେଣୀଗୁଡ଼ିକୁ ସେଟ କରିପାରିବେ ନାହିଁ"
@@ -12352,15 +12318,8 @@ msgid "disk '%s' must use snapshot mode '%s'"
 msgstr "ଡିସ୍କ '%s' ନିଶ୍ଚିତ ଭାବରେ ଆଶୁଚିତ୍ର ଧାରା '%s' ବ୍ୟବହାର କରିଥାଏ"
 
 #, c-format
-msgid "disk '%s' not ready for pivot yet"
-msgstr "ଡିସ୍କ '%s' ଏପର୍ଯ୍ୟନ୍ତ କେନ୍ଦ୍ର ବିନ୍ଦୁ ପାଇଁ ପ୍ରସ୍ତୁତ ନାହିଁ"
-
-#, c-format
 msgid "disk '%s' specified twice"
 msgstr "ଡିସ୍କ '%s' କୁ ଦୁଇଥର ଉଲ୍ଲେଖ ହୋଇଛି"
-
-msgid "disk attributes: disk[,snapshot=type][,driver=type][,file=name]"
-msgstr "ଡିସ୍କ ଗୁଣଗୁଡ଼ିକ: ଡିସ୍କ[,ଆଶୁଚିତ୍ର=ପ୍ରକାର][,ଡ୍ରାଇଭର=ପ୍ରକାର][,ଫାଇଲ=ନାମ]"
 
 #, c-format
 msgid "disk bus '%s' cannot be hot unplugged."
@@ -12563,21 +12522,6 @@ msgstr "ପରିସର ସୂଚନା"
 
 msgid "domain information in XML"
 msgstr "XML ରେ ପରିସର ସୂଚନା"
-
-msgid "domain information incomplete, missing HVM loader"
-msgstr "ପରିସର ସୂଚନା ଅସମ୍ପୂର୍ଣ୍ଣ, HVM ଅନୁପସ୍ଥିତ"
-
-msgid "domain information incomplete, missing kernel & bootloader"
-msgstr "ପରିସର ସୂଚନା ଅସମ୍ପୂର୍ଣ୍ଣ, କର୍ଣ୍ଣଲ ଏବଂ ବୁଟ-ଲୋଡର ଅନୁପସ୍ଥିତ"
-
-msgid "domain information incomplete, missing name"
-msgstr "ପରିସର ସୂଚନା ଅସମ୍ପୂର୍ଣ୍ଣ, domid ଅନୁପସ୍ଥିତ "
-
-msgid "domain information incomplete, vbd has no dev"
-msgstr "ପରିସର ସୂଚନା ଅସମ୍ପୂର୍ଣ୍ଣ, vbd ର କୌଣସି dev ନାହିଁ"
-
-msgid "domain information incomplete, vbd has no src"
-msgstr "ପରିସର ସୂଚନା ଅସମ୍ପୂର୍ଣ୍ଣ, vbd ର କୌଣସି src ନାହିଁ"
 
 msgid "domain is already running"
 msgstr "ପରିସର %s ଟି ପୂର୍ବରୁ ଚାଲୁଅଛି"
@@ -14951,9 +14895,6 @@ msgstr "ତ୍ରୁଟିଯୁକ୍ତ ଆକାର ପର୍ଯ୍ୟନ୍�
 msgid "malformed volume extent stripes value"
 msgstr "ତ୍ରୁଟିଯୁକ୍ତ ଗାର ପର୍ଯ୍ୟନ୍ତ ଆକାର ମୂଲ୍ଯ"
 
-msgid "managed PCI devices not supported with XenD"
-msgstr "PCI ଉପକରଣଗୁଡ଼ିକ XenD ସହିତ ସମର୍ଥିତ ନୁହଁ"
-
 msgid "managed save of a domain state"
 msgstr "ଏକ ଡମେନ ସ୍ଥିତିର ପରିଚାଳିତ ସଂରକ୍ଷଣ"
 
@@ -15108,18 +15049,6 @@ msgstr "ଅନୁପସ୍ଥିତ EGD ପୃଷ୍ଠଭୂମି ପ୍ରକ
 
 msgid "missing IFLA_VF_INFO in netlink response"
 msgstr "netlink ଉତ୍ତରରେ ଅନୁପସ୍ଥିତ IFLA_VF_INFO"
-
-msgid "missing PCI bus"
-msgstr "ଅନୁପସ୍ଥିତ PCI ପରିପଥ"
-
-msgid "missing PCI domain"
-msgstr "ଅନୁପସ୍ଥିତ PCI ପରିସର"
-
-msgid "missing PCI func"
-msgstr "ଅନୁପସ୍ଥିତ PCI ଫଳନ"
-
-msgid "missing PCI slot"
-msgstr "ଅନୁପସ୍ଥିତ PCI ସ୍ଲଟ"
 
 msgid "missing RNG device backend model"
 msgstr "ଅନୁପସ୍ଥିତ RNG ଉପକରଣ ପୃଷ୍ଠଭୂମି ମଡେଲ"
@@ -15693,9 +15622,6 @@ msgstr "କୌଣସି CPU ମିଳିଲା ନାହିଁ"
 
 msgid "no FLR, PM reset or bus reset available"
 msgstr "କୌଣସି FLR, PM ପୁନଃସ୍ଥାପନ କରାହୋଇ ନାହିଁ ଅଥବା ବସ ପୁନଃସ୍ଥାପନ ଉପଲବ୍ଧ"
-
-msgid "no HVM domain loader"
-msgstr "କୌଣସି HVM ପରିସର ଧାରକ ନାହିଁ"
 
 msgid "no IFLA_PORT_RESPONSE found in netlink message"
 msgstr "IFLA_PORT_RESPONSE ରେ କୌଣସି netlink ସନ୍ଦେଶ ମିଳିଲା ନାହିଁ"
@@ -16274,19 +16200,8 @@ msgstr "ପ୍ରାଚଳ '%s' ଏକାଧିକ ଥର ଘଟିଥାଏ"
 msgid "parameter=value"
 msgstr "ପ୍ରାଚଳ=ମୂଲ୍ଯ"
 
-#, c-format
-msgid "parent %s for snapshot %s not found"
-msgstr "ମୂଖ୍ୟ %s ଆଶୁଚିତ୍ର %s ପାଇଁ ମିଳୁ ନାହିଁ"
-
-#, c-format
-msgid "parent %s would create cycle to %s"
-msgstr "ମୂଖ୍ୟ %s ଚକ୍ରକୁ %s ରେ ନିର୍ମାଣ କରିପାରେ"
-
 msgid "parser error"
 msgstr "ବିଶ୍ଳେଷଣ ତୃଟି"
-
-msgid "parsing sxpr config failed"
-msgstr "sxpr ସଂରଚନାକୁ ବିଶ୍ଳଷଣ କରିବାରେ ବିଫଳ"
 
 msgid "pass file descriptors N,M,... to the guest"
 msgstr "ଅତିଥି ମଧ୍ଯକୁ ଫାଇଲ ବର୍ଣ୍ଣନାକାରୀ N,M,... ଇତ୍ୟାଦିମାନଙ୍କୁ ପଠାନ୍ତୁ"
@@ -16644,12 +16559,6 @@ msgstr "ଗୋଟିଏ ପୁଲକୁ ସତେଜ କରନ୍ତୁ"
 
 msgid "remote_open: for 'ext' transport, command is required"
 msgstr "remote_open: 'ext' ପରିବହନ ପାଇଁ, ନିର୍ଦ୍ଦେଶ ଆବଶ୍ୟକ"
-
-msgid ""
-"remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp|"
-"libssh2)"
-msgstr ""
-"remote_open:URL ରେ ପରିବହନ ଚିହ୍ନିତ ନୁହଁ (tls|unix|ssh|ext|tcp|libssh2 ହେବା ଉଚିତ)"
 
 msgid "remove all associated storage volumes (use with caution)"
 msgstr "ସମସ୍ତ ସମ୍ପୃକ୍ତ ସଂରକ୍ଷଣ ଭଲ୍ୟୁମଗୁଡ଼ିକୁ ବାହାର କରନ୍ତୁ (ସାବଧାନତାର ସହିତ ବ୍ୟବହାର କରନ୍ତୁ)"
@@ -17962,10 +17871,6 @@ msgid "unexpected filesystem type %d"
 msgstr "ଅପ୍ରତ୍ୟାଶିତ ଫାଇଲ ତନ୍ତ୍ର ପ୍ରକାର %d"
 
 #, c-format
-msgid "unexpected graphics type %d"
-msgstr "ଅପ୍ରତ୍ୟାଶିତ ଆଲେଖୀ ପ୍ରକାର %d"
-
-#, c-format
 msgid "unexpected hostdev driver name type %d "
 msgstr "ଅପ୍ରତ୍ୟାଶିତ hostdev ଡ୍ରାଇଭର ନାମ ପ୍ରକାର %d"
 
@@ -18000,10 +17905,6 @@ msgstr "ଅପ୍ରତ୍ୟାଶିତ iscsi ଭଲ୍ୟୁମ ନାମ '%s
 #, c-format
 msgid "unexpected lifecycle action %d"
 msgstr "ଅପ୍ରତ୍ଯାଶିତ ଜୀବନ ଚକ୍ର କାର୍ଯ୍ୟ %d"
-
-#, c-format
-msgid "unexpected lifecycle value %d"
-msgstr "ଅପ୍ରତ୍ଯାଶିତ ଜୀବନ ଚକ୍ର ମୂଲ୍ୟ %d"
 
 #, c-format
 msgid "unexpected memballoon model %d"
@@ -18436,10 +18337,6 @@ msgid "unknown graphics type %s"
 msgstr "ଅଜଣା ଆଲେଖୀ ପ୍ରକାର %s"
 
 #, c-format
-msgid "unknown graphics type '%s'"
-msgstr "ଅଜଣା ଆଲେଖୀ ପ୍ରକାର '%s'"
-
-#, c-format
 msgid "unknown guest csum mode '%s'"
 msgstr "ଅଜଣା ଅତିଥି csum ଧାରା '%s'"
 
@@ -18539,16 +18436,8 @@ msgid "unknown interface type '%s'"
 msgstr "ଅଜଣା ଅନ୍ତରାପୃଷ୍ଠ ପ୍ରକାର '%s'"
 
 #, c-format
-msgid "unknown lifecycle type %s"
-msgstr "ଅଜଣା ଜୀବନ ଚକ୍ର ପ୍ରକାର %s"
-
-#, c-format
 msgid "unknown link state: %s"
 msgstr "ଅଜଣା ଲିଙ୍କ ସ୍ଥିତି: %s"
-
-#, c-format
-msgid "unknown localtime offset %s"
-msgstr "ଅଜଣା ସ୍ଥାନୀୟ ସମୟ %s"
 
 #, c-format
 msgid "unknown memory balloon model '%s'"
@@ -18996,10 +18885,6 @@ msgstr "ଅସମର୍ଥିତ ପ୍ରଦର୍ଶିକା ପ୍ରକା�
 #, c-format
 msgid "unsupported network event ID %d"
 msgstr "ଅସମର୍ଥିତ ନେଟୱର୍କ ଘଟଣା ID %d"
-
-#, c-format
-msgid "unsupported network type %d"
-msgstr "ଅସମର୍ଥିତ ନେଟୱର୍କ ପ୍ରକାର %d"
 
 msgid "unsupported option"
 msgstr "ଅସମର୍ଥିତ ବିକଳ୍ପ"
