@@ -1668,7 +1668,7 @@ bool
 virPCIDeviceAddressIsValid(virPCIDeviceAddressPtr addr,
                            bool report)
 {
-    if (addr->domain > 0xFFFF) {
+    if (addr->domain > 0xFFFFFFFF) {
         if (report)
             virReportError(VIR_ERR_XML_ERROR,
                            _("Invalid PCI address domain='0x%x', "

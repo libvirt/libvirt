@@ -26,7 +26,7 @@
     <interface type='user'>
       <mac address='00:11:22:33:44:55'/>
       <model type='rtl8139'/>
-      <address type='pci' domain='0x10000' bus='0x00' slot='0x05' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x100' slot='0x05' function='0x0'/>
     </interface>
     <memballoon model='none'/>
   </devices>

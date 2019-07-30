@@ -324,7 +324,7 @@
   </define>
 
   <define name="pciDomain">
-    <ref name="uint16"/>
+    <ref name="uint32"/>
   </define>
   <define name="pciBus">
     <ref name="uint8"/>
