@@ -24,6 +24,6 @@ server,nowait \
 -rtc base=utc \
 -no-shutdown \
 -device zpci,uid=1,fid=0,target=hostdev0,id=zpci1 \
--device vfio-pci,host=00:00.0,id=hostdev0,bus=pci.0,addr=0x1 \
+-device vfio-pci,host=0000:00:00.0,id=hostdev0,bus=pci.0,addr=0x1 \
 -device zpci,uid=2,fid=1,target=balloon0,id=zpci2 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2

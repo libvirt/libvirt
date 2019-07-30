@@ -4933,10 +4933,10 @@ qemuBuildPCIHostdevDevStr(const virDomainDef *def,
     }
 
     virBufferAddLit(&buf, ",host=");
-    if (pcisrc->addr.domain)
-        virBufferAsprintf(&buf, "%.4x:", pcisrc->addr.domain);
-    virBufferAsprintf(&buf, "%.2x:%.2x.%.1x",
-                      pcisrc->addr.bus, pcisrc->addr.slot,
+    virBufferAsprintf(&buf, "%.4x:%.2x:%.2x.%.1x",
+                      pcisrc->addr.domain,
+                      pcisrc->addr.bus,
+                      pcisrc->addr.slot,
                       pcisrc->addr.function);
     virBufferAsprintf(&buf, ",id=%s", dev->info->alias);
     if (dev->info->bootIndex)
