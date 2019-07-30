@@ -2041,7 +2041,6 @@
     &lt;tlbflush state='on'/&gt;
     &lt;ipi state='on'/&gt;
     &lt;evmcs state='on'/&gt;
-    &lt;msrs unknown='ignore'/&gt;
   &lt;/hyperv&gt;
   &lt;kvm&gt;
     &lt;hidden state='on'/&gt;
@@ -2057,6 +2056,7 @@
     &lt;tseg unit='MiB'&gt;48&lt;/tseg&gt;
   &lt;/smm&gt;
   &lt;htm state='on'/&gt;
+  &lt;msrs unknown='ignore'/&gt;
 &lt;/features&gt;
 ...</pre>
 
