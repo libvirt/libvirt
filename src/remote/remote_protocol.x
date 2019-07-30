@@ -6538,7 +6538,7 @@ enum remote_procedure {
      */
     REMOTE_PROC_NETWORK_PORT_DELETE = 410,
 
-   /**
+    /**
      * @generate: both
      * @acl: domain:checkpoint
      * @acl: domain:fs_freeze:VIR_DOMAIN_CHECKPOINT_CREATE_QUIESCE
