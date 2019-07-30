@@ -41,7 +41,6 @@
 #include "virfile.h"
 #include "virtime.h"
 #include "virerror.h"
-#include "virstring.h"
 #include "virsocketaddr.h"
 #include "configmake.h"
 #include "virmacmap.h"
@@ -193,13 +192,20 @@ findLeaseInJSON(leaseAddress **tmpAddress,
         }
 
         if (macs) {
+            const char **macstmp = macs;
             const char *macAddr;
+            bool match = false;
 
             macAddr = virJSONValueObjectGetString(lease, "mac-address");
             if (!macAddr)
                 continue;
 
-            if (!virStringListHasString(macs, macAddr))
+            while (*macstmp && !match) {
+                if (STREQ(*macstmp, macAddr))
+                    match = true;
+                macstmp++;
+            }
+            if (!match)
                 continue;
         } else {
             const char *lease_name;
@@ -295,8 +301,9 @@ findLease(const char *name,
     DEBUG("Dir: %s", leaseDir);
     while ((entry = readdir(dir)) != NULL) {
         char *path;
+        size_t dlen = strlen(entry->d_name);
 
-        if (virStringHasSuffix(entry->d_name, ".status")) {
+        if (dlen >= 7 && STREQ(entry->d_name + dlen - 7, ".status")) {
             if (!(path = virFileBuildPath(leaseDir, entry->d_name, NULL)))
                 goto cleanup;
 
@@ -307,7 +314,7 @@ findLease(const char *name,
                 goto cleanup;
             }
             VIR_FREE(path);
-        } else if (virStringHasSuffix(entry->d_name, ".macs")) {
+        } else if (dlen >= 5 && STREQ(entry->d_name + dlen - 5, ".macs")) {
             if (!(path = virFileBuildPath(leaseDir, entry->d_name, NULL)))
                 goto cleanup;
 
