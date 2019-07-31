@@ -16,36 +16,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-/*
- * The NSS module can be loaded into any binary and thus we want
- * to minimize what code is liable to be run. Especiall we need
- * to minimize use of any 3rd party libraries which have
- * __attribute__((constructor)) functions.
- *
- * The only way to avoid such deps is to re-compile the
- * functions with the code in question disabled, and for that we
- * must override the main config.h rules. Hence this file :-(
- */
-#ifdef LIBVIRT_NSS
-# undef HAVE_LIBNL
-# undef HAVE_LIBNL3
-# undef HAVE_LIBSASL2
-# undef HAVE_SYS_ACL_H
-# undef WITH_CAPNG
-# undef WITH_CURL
-# undef WITH_DEVMAPPER
-# undef WITH_DTRACE_PROBES
-# undef WITH_GNUTLS
-# undef WITH_LIBSSH
-# undef WITH_MACVTAP
-# undef WITH_NUMACTL
-# undef WITH_SASL
-# undef WITH_SSH2
-# undef WITH_VIRTUALPORT
-# undef WITH_SECDRIVER_SELINUX
-# undef WITH_SECDRIVER_APPARMOR
-#endif /* LIBVIRT_NSS */
-
 #ifndef __GNUC__
 # error "Libvirt requires GCC >= 4.8, or CLang"
 #endif
