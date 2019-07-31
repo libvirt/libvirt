@@ -36,11 +36,12 @@
 # include <nsswitch.h>
 #endif
 
-#include "virlease.h"
 #include "viralloc.h"
 #include "virtime.h"
 #include "virsocketaddr.h"
 #include "configmake.h"
+
+#include "libvirt_nss_leases.h"
 
 #if defined(LIBVIRT_NSS_GUEST)
 # include "libvirt_nss_macs.h"
@@ -50,13 +51,6 @@
 
 #define LIBVIRT_ALIGN(x) (((x) + __SIZEOF_POINTER__ - 1) & ~(__SIZEOF_POINTER__ - 1))
 #define FAMILY_ADDRESS_SIZE(family) ((family) == AF_INET6 ? 16 : 4)
-
-typedef struct {
-    unsigned char addr[16];
-    int af;
-    long long expirytime;
-} leaseAddress;
-
 
 static int
 leaseAddressSorter(const void *a,
@@ -74,147 +68,6 @@ sortAddr(leaseAddress *tmpAddress,
          size_t ntmpAddress)
 {
     qsort(tmpAddress, ntmpAddress, sizeof(*tmpAddress), leaseAddressSorter);
-}
-
-
-static int
-appendAddr(const char *name ATTRIBUTE_UNUSED,
-           leaseAddress **tmpAddress,
-           size_t *ntmpAddress,
-           virJSONValuePtr lease,
-           int af)
-{
-    const char *ipAddr;
-    virSocketAddr sa;
-    int family;
-    long long expirytime;
-    size_t i;
-
-    if (!(ipAddr = virJSONValueObjectGetString(lease, "ip-address"))) {
-        ERROR("ip-address field missing for %s", name);
-        return -1;
-    }
-
-    DEBUG("IP address: %s", ipAddr);
-
-    if (virSocketAddrParse(&sa, ipAddr, AF_UNSPEC) < 0) {
-        ERROR("Unable to parse %s", ipAddr);
-        return -1;
-    }
-
-    family = VIR_SOCKET_ADDR_FAMILY(&sa);
-    if (af != AF_UNSPEC && af != family) {
-        DEBUG("Skipping address which family is %d, %d requested", family, af);
-        return 0;
-    }
-
-    if (virJSONValueObjectGetNumberLong(lease, "expiry-time", &expirytime) < 0) {
-        /* A lease cannot be present without expiry-time */
-        ERROR("expiry-time field missing for %s", name);
-        return -1;
-    }
-
-    for (i = 0; i < *ntmpAddress; i++) {
-        if (memcmp((*tmpAddress)[i].addr,
-                   (family == AF_INET ?
-                    (void *) &sa.data.inet4.sin_addr.s_addr :
-                    (void *) &sa.data.inet6.sin6_addr.s6_addr),
-                   FAMILY_ADDRESS_SIZE(family)) == 0) {
-            DEBUG("IP address already in the list");
-            return 0;
-        }
-    }
-
-    if (VIR_REALLOC_N_QUIET(*tmpAddress, *ntmpAddress + 1) < 0) {
-        ERROR("Out of memory");
-        return -1;
-    }
-
-    (*tmpAddress)[*ntmpAddress].expirytime = expirytime;
-    (*tmpAddress)[*ntmpAddress].af = family;
-    memcpy((*tmpAddress)[*ntmpAddress].addr,
-           (family == AF_INET ?
-            (void *) &sa.data.inet4.sin_addr.s_addr :
-            (void *) &sa.data.inet6.sin6_addr.s6_addr),
-           FAMILY_ADDRESS_SIZE(family));
-    (*ntmpAddress)++;
-    return 0;
-}
-
-
-static int
-findLeaseInJSON(leaseAddress **tmpAddress,
-                size_t *ntmpAddress,
-                virJSONValuePtr leases_array,
-                size_t nleases,
-                const char *name,
-                const char **macs,
-                size_t nmacs,
-                int af,
-                bool *found)
-{
-    size_t i;
-    size_t j;
-    long long expirytime;
-    time_t currtime;
-
-    if ((currtime = time(NULL)) == (time_t) - 1) {
-        ERROR("Failed to get current system time");
-        return -1;
-    }
-
-    for (i = 0; i < nleases; i++) {
-        virJSONValuePtr lease = virJSONValueArrayGet(leases_array, i);
-
-        if (!lease) {
-            /* This should never happen (TM) */
-            ERROR("Unable to get element %zu of %zu", i, nleases);
-            return -1;
-        }
-
-        if (macs) {
-            const char *macAddr;
-            bool match = false;
-
-            macAddr = virJSONValueObjectGetString(lease, "mac-address");
-            if (!macAddr)
-                continue;
-
-            for (j = 0; j < nmacs && !match; j++) {
-                if (STREQ(macs[j], macAddr))
-                    match = true;
-            }
-            if (!match)
-                continue;
-        } else {
-            const char *lease_name;
-
-            lease_name = virJSONValueObjectGetString(lease, "hostname");
-
-            if (STRNEQ_NULLABLE(name, lease_name))
-                continue;
-        }
-
-        if (virJSONValueObjectGetNumberLong(lease, "expiry-time", &expirytime) < 0) {
-            /* A lease cannot be present without expiry-time */
-            ERROR("expiry-time field missing for %s", name);
-            return -1;
-        }
-
-        /* Do not report expired lease */
-        if (expirytime < (long long) currtime) {
-            DEBUG("Skipping expired lease for %s", name);
-            continue;
-        }
-
-        DEBUG("Found record for %s", name);
-        *found = true;
-
-        if (appendAddr(name, tmpAddress, ntmpAddress, lease, af) < 0)
-            return -1;
-    }
-
-    return 0;
 }
 
 
@@ -250,13 +103,12 @@ findLease(const char *name,
     int ret = -1;
     const char *leaseDir = LEASEDIR;
     struct dirent *entry;
-    VIR_AUTOPTR(virJSONValue) leases_array = NULL;
-    ssize_t nleases;
-    VIR_AUTOFREE(leaseAddress *) tmpAddress = NULL;
-    size_t ntmpAddress = 0;
+    char **leaseFiles = NULL;
+    size_t nleaseFiles = 0;
     char **macs = NULL;
     size_t nmacs = 0;
     size_t i;
+    time_t now;
 
     *address = NULL;
     *naddress = 0;
@@ -273,27 +125,21 @@ findLease(const char *name,
         goto cleanup;
     }
 
-    if (!(leases_array = virJSONValueNewArray())) {
-        ERROR("Failed to create json array");
-        goto cleanup;
-    }
-
     DEBUG("Dir: %s", leaseDir);
     while ((entry = readdir(dir)) != NULL) {
         char *path;
         size_t dlen = strlen(entry->d_name);
 
         if (dlen >= 7 && STREQ(entry->d_name + dlen - 7, ".status")) {
+            char **tmpLease;
             if (asprintf(&path, "%s/%s", leaseDir, entry->d_name) < 0)
                 goto cleanup;
 
-            DEBUG("Processing %s", path);
-            if (virLeaseReadCustomLeaseFile(leases_array, path, NULL, NULL) < 0) {
-                ERROR("Unable to parse %s", path);
-                VIR_FREE(path);
+            tmpLease = realloc(leaseFiles, sizeof(char *) * (nleaseFiles + 1));
+            if (!tmpLease)
                 goto cleanup;
-            }
-            VIR_FREE(path);
+            leaseFiles = tmpLease;
+            leaseFiles[nleaseFiles++] = path;
 #if defined(LIBVIRT_NSS_GUEST)
         } else if (dlen >= 5 && STREQ(entry->d_name + dlen - 5, ".macs")) {
             if (asprintf(&path, "%s/%s", leaseDir, entry->d_name) < 0)
@@ -313,9 +159,6 @@ findLease(const char *name,
     closedir(dir);
     dir = NULL;
 
-    nleases = virJSONValueArraySize(leases_array);
-    DEBUG("Read %zd leases", nleases);
-
 #if defined(LIBVIRT_NSS_GUEST)
     DEBUG("Finding with %zu macs", nmacs);
     if (!nmacs)
@@ -324,26 +167,38 @@ findLease(const char *name,
         DEBUG("  %s", macs[i]);
 #endif
 
-    if (findLeaseInJSON(&tmpAddress, &ntmpAddress,
-                        leases_array, nleases,
-                        name, (const char**)macs, nmacs,
-                        af, found) < 0)
+    if ((now = time(NULL)) == (time_t)-1) {
+        DEBUG("Failed to get time");
         goto cleanup;
+    }
 
-    DEBUG("Found %zu addresses", ntmpAddress);
-    sortAddr(tmpAddress, ntmpAddress);
+    for (i = 0; i < nleaseFiles; i++) {
+        if (findLeases(leaseFiles[i],
+                       name, macs, nmacs,
+                       af, now,
+                       address, naddress,
+                       found) < 0)
+            goto cleanup;
+    }
 
-    VIR_STEAL_PTR(*address, tmpAddress);
-    *naddress = ntmpAddress;
-    ntmpAddress = 0;
+    DEBUG("Found %zu addresses", *naddress);
+    sortAddr(*address, *naddress);
 
     ret = 0;
 
  cleanup:
     *errnop = errno;
+    for (i = 0; i < nleaseFiles; i++)
+        free(leaseFiles[i]);
+    free(leaseFiles);
     for (i = 0; i < nmacs; i++)
         free(macs[i]);
     free(macs);
+    if (ret < 0) {
+        free(*address);
+        *address = NULL;
+        *naddress = 0;
+    }
     if (dir)
         closedir(dir);
     return ret;

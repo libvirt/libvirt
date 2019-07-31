@@ -28,10 +28,8 @@
 #include <yajl/yajl_gen.h>
 #include <yajl/yajl_parse.h>
 
-#include "internal.h"
-
-#include "libvirt_nss.h"
 #include "libvirt_nss_macs.h"
+#include "libvirt_nss.h"
 
 enum {
     FIND_MACS_STATE_START,

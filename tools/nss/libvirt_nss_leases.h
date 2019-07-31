@@ -1,5 +1,5 @@
 /*
- * libvirt_nss_macs.h: Name Service Switch plugin MAC file parser
+ * libvirt_nss_leases.h: Name Service Switch plugin lease file parser
  *
  * Copyright (C) 2019 Red Hat, Inc.
  *
@@ -22,8 +22,19 @@
 
 #include "internal.h"
 
+typedef struct {
+    unsigned char addr[16];
+    int af;
+    long long expirytime;
+} leaseAddress;
+
 int
-findMACs(const char *file,
-         const char *name,
-         char ***macs,
-         size_t *nmacs);
+findLeases(const char *file,
+           const char *name,
+           char **macs,
+           size_t nmacs,
+           int af,
+           time_t now,
+           leaseAddress **addrs,
+           size_t *naddrs,
+           bool *found);

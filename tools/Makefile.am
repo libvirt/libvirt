@@ -476,7 +476,10 @@ endif ! WITH_BSD_NSS
 
 LIBVIRT_NSS_SOURCES = \
 	nss/libvirt_nss.c \
-	nss/libvirt_nss.h
+	nss/libvirt_nss.h \
+	nss/libvirt_nss_leases.c \
+	nss/libvirt_nss_leases.h \
+	$(NULL)
 
 if WITH_NSS
 noinst_LTLIBRARIES += nss/libnss_libvirt_impl.la
@@ -485,6 +488,7 @@ nss_libnss_libvirt_impl_la_SOURCES = \
 
 nss_libnss_libvirt_impl_la_CFLAGS = \
 	-DLIBVIRT_NSS \
+	$(YAJL_CFLAGS) \
 	$(AM_CFLAGS) \
 	$(NULL)
 
