@@ -30,7 +30,6 @@
 
 #include "libvirt_nss_leases.h"
 #include "libvirt_nss.h"
-#include "viralloc.h"
 
 enum {
     FIND_LEASES_STATE_START,
@@ -79,6 +78,7 @@ appendAddr(const char *name ATTRIBUTE_UNUSED,
     } sa;
     unsigned char addr[16];
     int err;
+    leaseAddress *newAddr;
 
     DEBUG("IP address: %s", ipAddr);
 
@@ -131,10 +131,12 @@ appendAddr(const char *name ATTRIBUTE_UNUSED,
         }
     }
 
-    if (VIR_REALLOC_N_QUIET(*tmpAddress, *ntmpAddress + 1) < 0) {
+    newAddr = realloc(*tmpAddress, sizeof(*newAddr) * (*ntmpAddress + 1));
+    if (!newAddr) {
         ERROR("Out of memory");
         return -1;
     }
+    *tmpAddress = newAddr;
 
     (*tmpAddress)[*ntmpAddress].expirytime = expirytime;
     (*tmpAddress)[*ntmpAddress].af = family;

@@ -30,13 +30,14 @@
 
 
 #if 0
-# include "virerror.h"
+# include <errno.h>
 # define ERROR(...) \
 do { \
     char ebuf[1024]; \
+    strerror_r(errno, ebuf, sizeof(ebuf)); \
     fprintf(stderr, "ERROR %s:%d : ", __FUNCTION__, __LINE__); \
     fprintf(stderr, __VA_ARGS__); \
-    fprintf(stderr, " : %s\n", virStrerror(errno, ebuf, sizeof(ebuf))); \
+    fprintf(stderr, " : %s\n", ebuf); \
     fprintf(stderr, "\n"); \
 } while (0)
 

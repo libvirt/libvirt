@@ -31,13 +31,15 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <arpa/inet.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
 
 #if defined(HAVE_BSD_NSS)
 # include <nsswitch.h>
 #endif
 
-#include "viralloc.h"
-#include "virtime.h"
 #include "configmake.h"
 
 #include "libvirt_nss_leases.h"
@@ -146,10 +148,10 @@ findLease(const char *name,
 
             DEBUG("Processing %s", path);
             if (findMACs(path, name, &macs, &nmacs) < 0) {
-                VIR_FREE(path);
+                free(path);
                 goto cleanup;
             }
-            VIR_FREE(path);
+            free(path);
 #endif /* LIBVIRT_NSS_GUEST */
         }
 
@@ -243,7 +245,7 @@ NSS_NAME(gethostbyname3)(const char *name, int af, struct hostent *result,
 {
     enum nss_status ret = NSS_STATUS_UNAVAIL;
     char *r_name, **r_aliases, *r_addr, *r_addr_next, **r_addr_list;
-    VIR_AUTOFREE(leaseAddress *) addr = NULL;
+    leaseAddress *addr = NULL;
     size_t naddr, i;
     bool found = false;
     size_t nameLen, need, idx = 0;
@@ -259,6 +261,7 @@ NSS_NAME(gethostbyname3)(const char *name, int af, struct hostent *result,
         af = AF_INET;
 
     if ((r = findLease(name, af, &addr, &naddr, &found, errnop)) < 0) {
+        free(addr);
         /* Error occurred. Return immediately. */
         if (*errnop == EAGAIN) {
             *herrnop = TRY_AGAIN;
@@ -273,11 +276,13 @@ NSS_NAME(gethostbyname3)(const char *name, int af, struct hostent *result,
         /* NOT found */
         *errnop = ESRCH;
         *herrnop = HOST_NOT_FOUND;
+        free(addr);
         return NSS_STATUS_NOTFOUND;
     } else if (!naddr) {
         /* Found, but no data */
         *errnop = ENXIO;
         *herrnop = NO_DATA;
+        free(addr);
         return NSS_STATUS_UNAVAIL;
     }
 
@@ -349,6 +354,7 @@ NSS_NAME(gethostbyname3)(const char *name, int af, struct hostent *result,
 
     ret = NSS_STATUS_SUCCESS;
  cleanup:
+    free(addr);
     return ret;
 }
 
