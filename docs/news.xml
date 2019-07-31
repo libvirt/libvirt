@@ -74,6 +74,17 @@
           which portions of a disk have changed since a point in time.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Add support for overriding max threads per process limit
+        </summary>
+        <description>
+          systemd-based systems impose a limit on the number of threads a
+          process can spawn, which in some cases can be exceeded by QEMU
+          processes running VMs. Add a <code>max_threads_per_process</code>
+          option to qemu.conf to override the system default.
+        </description>
+      </change>
     </section>
     <section title="Removed features">
       <change>
