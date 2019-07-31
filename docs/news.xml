@@ -76,6 +76,16 @@
       </change>
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          qemu: Allow to validate XML for snapshot creation
+        </summary>
+        <description>
+          Add flag <code>VIR_DOMAIN_SNAPSHOT_CREATE_VALIDATE</code> to validate
+          snapshot input XML. For virsh, users can use it as <code>virsh
+          snapshot-create --validate</code>.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
