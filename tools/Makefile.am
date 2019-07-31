@@ -507,11 +507,15 @@ nss_libnss_libvirt_la_LIBADD = \
 
 noinst_LTLIBRARIES += nss/libnss_libvirt_guest_impl.la
 nss_libnss_libvirt_guest_impl_la_SOURCES = \
-	$(LIBVIRT_NSS_SOURCES)
+	$(LIBVIRT_NSS_SOURCES) \
+	nss/libvirt_nss_macs.h \
+	nss/libvirt_nss_macs.c \
+	$(NULL)
 
 nss_libnss_libvirt_guest_impl_la_CFLAGS = \
 	-DLIBVIRT_NSS \
 	-DLIBVIRT_NSS_GUEST \
+	$(YAJL_CFLAGS) \
 	$(AM_CFLAGS) \
 	$(NULL)
 
