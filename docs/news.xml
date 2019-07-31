@@ -78,7 +78,7 @@
     <section title="Improvements">
       <change>
         <summary>
-          qemu: Allow to validate XML for snapshot creation
+          qemu: Allow XML validation for snapshot creation
         </summary>
         <description>
           Add flag <code>VIR_DOMAIN_SNAPSHOT_CREATE_VALIDATE</code> to validate
@@ -92,7 +92,7 @@
         </summary>
         <description>
           A soft TPM backend could be encrypted with passphrase. Now libvirt
-          supports using <code>secret</code> object to hold the passphrase,
+          supports using a <code>secret</code> object to hold the passphrase,
           and referring to it via the <code>encryption</code> element of the
           TPM device.
         </description>
