@@ -30,7 +30,6 @@
 
 #include "libvirt_nss_leases.h"
 #include "libvirt_nss.h"
-#include "virsocketaddr.h"
 #include "viralloc.h"
 
 enum {
@@ -69,17 +68,46 @@ appendAddr(const char *name ATTRIBUTE_UNUSED,
            long long expirytime,
            int af)
 {
-    virSocketAddr sa;
     int family;
     size_t i;
+    struct addrinfo hints = {0};
+    struct addrinfo *res = NULL;
+    union {
+        struct sockaddr sa;
+        struct sockaddr_in sin;
+        struct sockaddr_in6 sin6;
+    } sa;
+    unsigned char addr[16];
+    int err;
 
     DEBUG("IP address: %s", ipAddr);
-    if (virSocketAddrParse(&sa, ipAddr, AF_UNSPEC) < 0) {
-        ERROR("Unable to parse %s", ipAddr);
+
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_flags = AI_NUMERICHOST;
+
+    if ((err = getaddrinfo(ipAddr, NULL, &hints, &res)) != 0) {
+        ERROR("Cannot parse socket address '%s': %s",
+              ipAddr, gai_strerror(err));
         return -1;
     }
 
-    family = VIR_SOCKET_ADDR_FAMILY(&sa);
+    if (!res) {
+        ERROR("No resolved address for '%s'", ipAddr);
+        return -1;
+    }
+    family = res->ai_family;
+    memcpy(&sa, res->ai_addr, res->ai_addrlen);
+    freeaddrinfo(res);
+
+    if (family == AF_INET) {
+        memcpy(addr, &sa.sin.sin_addr, sizeof(sa.sin.sin_addr));
+    } else if (family == AF_INET6) {
+        memcpy(addr, &sa.sin6.sin6_addr, sizeof(sa.sin6.sin6_addr));
+    } else {
+        DEBUG("Skipping unexpected family %d", family);
+        return 0;
+    }
+
     if (af != AF_UNSPEC && af != family) {
         DEBUG("Skipping address which family is %d, %d requested", family, af);
         return 0;
@@ -88,15 +116,15 @@ appendAddr(const char *name ATTRIBUTE_UNUSED,
     for (i = 0; i < *ntmpAddress; i++) {
         if (family == AF_INET) {
             if (memcmp((*tmpAddress)[i].addr,
-                       &sa.data.inet4.sin_addr.s_addr,
-                       sizeof(sa.data.inet4.sin_addr.s_addr)) == 0) {
+                       &sa.sin.sin_addr,
+                       sizeof(sa.sin.sin_addr)) == 0) {
                 DEBUG("IP address already in the list");
                 return 0;
             }
         } else {
             if (memcmp((*tmpAddress)[i].addr,
-                       &sa.data.inet6.sin6_addr.s6_addr,
-                       sizeof(sa.data.inet6.sin6_addr.s6_addr)) == 0) {
+                       &sa.sin6.sin6_addr,
+                       sizeof(sa.sin6.sin6_addr)) == 0) {
                 DEBUG("IP address already in the list");
                 return 0;
             }
@@ -112,12 +140,12 @@ appendAddr(const char *name ATTRIBUTE_UNUSED,
     (*tmpAddress)[*ntmpAddress].af = family;
     if (family == AF_INET)
         memcpy((*tmpAddress)[*ntmpAddress].addr,
-               &sa.data.inet4.sin_addr.s_addr,
-               sizeof(sa.data.inet4.sin_addr.s_addr));
+               &sa.sin.sin_addr,
+               sizeof(sa.sin.sin_addr));
     else
         memcpy((*tmpAddress)[*ntmpAddress].addr,
-               &sa.data.inet6.sin6_addr.s6_addr,
-               sizeof(sa.data.inet6.sin6_addr.s6_addr));
+               &sa.sin6.sin6_addr,
+               sizeof(sa.sin6.sin6_addr));
     (*ntmpAddress)++;
     return 0;
 }

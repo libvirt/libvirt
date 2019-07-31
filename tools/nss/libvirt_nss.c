@@ -38,7 +38,6 @@
 
 #include "viralloc.h"
 #include "virtime.h"
-#include "virsocketaddr.h"
 #include "configmake.h"
 
 #include "libvirt_nss_leases.h"
@@ -474,25 +473,45 @@ aiforaf(const char *name, int af, struct addrinfo *pai, struct addrinfo **aip)
 
     addrList = resolved.h_addr_list;
     while (*addrList) {
-        virSocketAddr sa;
-        char *ipAddr = NULL;
+        union {
+            struct sockaddr sa;
+            struct sockaddr_in sin;
+            struct sockaddr_in6 sin6;
+        } sa;
+        socklen_t salen;
         void *address = *addrList;
+        char host[NI_MAXHOST];
+        char port[NI_MAXSERV];
 
         memset(&sa, 0, sizeof(sa));
         if (resolved.h_addrtype == AF_INET) {
-            virSocketAddrSetIPv4AddrNetOrder(&sa, *((uint32_t *) address));
+            sa.sin.sin_family = AF_INET;
+            memcpy(&sa.sin.sin_addr.s_addr,
+                   address,
+                   FAMILY_ADDRESS_SIZE(AF_INET));
+            salen = sizeof(sa.sin);
         } else {
-            virSocketAddrSetIPv6AddrNetOrder(&sa, address);
+            sa.sin6.sin6_family = AF_INET6;
+            memcpy(&sa.sin6.sin6_addr.s6_addr,
+                   address,
+                   FAMILY_ADDRESS_SIZE(AF_INET6));
+            salen = sizeof(sa.sin6);
         }
 
-        ipAddr = virSocketAddrFormat(&sa);
+        if ((err = getnameinfo(&sa.sa, salen,
+                               host, sizeof(host),
+                               port, sizeof(port),
+                               NI_NUMERICHOST | NI_NUMERICSERV)) != 0) {
+            ERROR("Cannot convert socket address to string: %s",
+                  gai_strerror(err));
+            continue;
+        }
 
         hints = *pai;
         hints.ai_flags = AI_NUMERICHOST;
         hints.ai_family = af;
 
-        if (getaddrinfo(ipAddr, NULL, &hints, &res0)) {
-            VIR_FREE(ipAddr);
+        if (getaddrinfo(host, NULL, &hints, &res0)) {
             addrList++;
             continue;
         }
@@ -504,7 +523,6 @@ aiforaf(const char *name, int af, struct addrinfo *pai, struct addrinfo **aip)
         while ((*aip)->ai_next)
            *aip = (*aip)->ai_next;
 
-        VIR_FREE(ipAddr);
         addrList++;
     }
 }
