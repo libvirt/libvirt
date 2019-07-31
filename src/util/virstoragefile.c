@@ -2928,6 +2928,7 @@ virStorageSourceParseNBDColonString(const char *nbdstr,
                                     virStorageSourcePtr src)
 {
     VIR_AUTOSTRINGLIST backing = NULL;
+    const char *exportname;
 
     if (!(backing = virStringSplit(nbdstr, ":", 0)))
         return -1;
@@ -2975,8 +2976,9 @@ virStorageSourceParseNBDColonString(const char *nbdstr,
             return -1;
     }
 
-    if (backing[3] && STRPREFIX(backing[3], "exportname=")) {
-        if (VIR_STRDUP(src->path, backing[3] + strlen("exportname=")) < 0)
+    if ((exportname = strstr(nbdstr, "exportname="))) {
+        exportname += strlen("exportname=");
+        if (VIR_STRDUP(src->path, exportname) < 0)
             return -1;
     }
 
