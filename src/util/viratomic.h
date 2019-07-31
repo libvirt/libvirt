@@ -218,7 +218,10 @@ VIR_STATIC unsigned int virAtomicIntXor(volatile unsigned int *atomic,
 
 # ifdef VIR_ATOMIC_OPS_WIN32
 
+#  pragma push_macro("DATADIR") /* If "configmake.h" was included first */
+#  undef DATADIR
 #  include <winsock2.h>
+#  pragma pop_macro("DATADIR")
 #  include <windows.h>
 #  include <intrin.h>
 #  if !defined(_M_AMD64) && !defined (_M_IA64) && !defined(_M_X64)
