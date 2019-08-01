@@ -183,6 +183,7 @@
 /tests/test_conf
 /tools/libvirt-guests.sh
 /tools/virt-login-shell
+/tools/virt-login-shell-helper
 /tools/virsh
 /tools/virsh-*-edit.c
 /tools/virt-admin

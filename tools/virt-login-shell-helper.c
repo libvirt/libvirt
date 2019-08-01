@@ -157,8 +157,10 @@ main(int argc, char **argv)
     pid_t cpid = -1;
     int ret = EXIT_CANCELED;
     int status;
-    uid_t uid = getuid();
-    gid_t gid = getgid();
+    unsigned long long uidval;
+    unsigned long long gidval;
+    uid_t uid;
+    gid_t gid;
     char *name = NULL;
     char **shargv = NULL;
     size_t shargvlen = 0;
@@ -199,6 +201,16 @@ main(int argc, char **argv)
     if (virGettextInitialize() < 0)
         return ret;
 
+    if (geteuid() != 0) {
+        fprintf(stderr, _("%s: must be run as root\n"), argv[0]);
+        return ret;
+    }
+
+    if (getuid() != 0) {
+        fprintf(stderr, _("%s: must not be run setuid root\n"), argv[0]);
+        return ret;
+    }
+
     while ((arg = getopt_long(argc, argv, "hVc:", opt, &longindex)) != -1) {
         switch (arg) {
         case 'h':
@@ -220,16 +232,28 @@ main(int argc, char **argv)
         }
     }
 
-    if (argc > optind) {
-        virReportSystemError(EINVAL, _("%s takes no options"), progname);
+    if (optind != (argc - 2)) {
+        virReportSystemError(EINVAL, _("%s expects UID and GID parameters"), progname);
         goto cleanup;
     }
 
-    if (uid == 0) {
-        virReportSystemError(EPERM, _("%s must be run by non root users"),
-                             progname);
+    if (virStrToLong_ull(argv[optind], NULL, 10, &uidval) < 0 ||
+        ((uid_t)uidval) != uidval) {
+        virReportSystemError(EINVAL, _("%s cannot parse UID '%s'"),
+                             progname, argv[optind]);
         goto cleanup;
     }
+
+    optind++;
+    if (virStrToLong_ull(argv[optind], NULL, 10, &gidval) < 0 ||
+        ((gid_t)gidval) != gidval) {
+        virReportSystemError(EINVAL, _("%s cannot parse GID '%s'"),
+                             progname, argv[optind]);
+        goto cleanup;
+    }
+
+    uid = (uid_t)uidval;
+    gid = (gid_t)gidval;
 
     name = virGetUserName(uid);
     if (!name)

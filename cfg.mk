@@ -1203,7 +1203,7 @@ exclude_file_name_regexp--sc_avoid_write = \
 
 exclude_file_name_regexp--sc_bindtextdomain = .*
 
-exclude_file_name_regexp--sc_gettext_init = ^(tests|examples)/
+exclude_file_name_regexp--sc_gettext_init = ^((tests|examples)/|tools/virt-login-shell.c)
 
 exclude_file_name_regexp--sc_copyright_format = \
 	^cfg\.mk$$
@@ -1229,7 +1229,7 @@ exclude_file_name_regexp--sc_prohibit_access_xok = \
 	^(cfg\.mk|src/util/virutil\.c)$$
 
 exclude_file_name_regexp--sc_prohibit_asprintf = \
-  ^(cfg\.mk|bootstrap.conf$$|examples/|src/util/virstring\.[ch]$$|tests/vircgroupmock\.c$$)
+  ^(cfg\.mk|bootstrap.conf$$|examples/|src/util/virstring\.[ch]$$|tests/vircgroupmock\.c|tools/virt-login-shell\.c$$)
 
 exclude_file_name_regexp--sc_prohibit_strdup = \
   ^(docs/|examples/|src/util/virstring\.c|tests/vir(netserverclient|cgroup)mock.c|tests/commandhelper\.c$$)
@@ -1256,7 +1256,7 @@ exclude_file_name_regexp--sc_prohibit_newline_at_end_of_diagnostic = \
   ^src/rpc/gendispatch\.pl$$
 
 exclude_file_name_regexp--sc_prohibit_nonreentrant = \
-  ^((po|tests|examples)/|docs/.*(py|js|html\.in)|run.in$$|tools/wireshark/util/genxdrstub\.pl$$)
+  ^((po|tests|examples)/|docs/.*(py|js|html\.in)|run.in$$|tools/wireshark/util/genxdrstub\.pl|tools/virt-login-shell\.c$$)
 
 exclude_file_name_regexp--sc_prohibit_select = \
 	^cfg\.mk$$
@@ -1270,7 +1270,7 @@ exclude_file_name_regexp--sc_prohibit_raw_allocation = \
 exclude_file_name_regexp--sc_prohibit_readlink = \
   ^src/(util/virutil|lxc/lxc_container)\.c$$
 
-exclude_file_name_regexp--sc_prohibit_setuid = ^src/util/virutil\.c$$
+exclude_file_name_regexp--sc_prohibit_setuid = ^src/util/virutil\.c|tools/virt-login-shell\.c$$
 
 exclude_file_name_regexp--sc_prohibit_sprintf = \
   ^(cfg\.mk|docs/hacking\.html\.in|.*\.stp|.*\.pl)$$
@@ -1317,7 +1317,7 @@ exclude_file_name_regexp--sc_prohibit_unsigned_pid = \
   ^(include/libvirt/.*\.h|src/(qemu/qemu_driver\.c|driver-hypervisor\.h|libvirt(-[a-z]*)?\.c|.*\.x|util/vir(polkit|systemd)\.c)|tests/virpolkittest\.c|tools/virsh-domain\.c)$$
 
 exclude_file_name_regexp--sc_prohibit_getenv = \
-  ^tests/.*\.[ch]$$
+  ^tests/.*\.[ch]|tools/virt-login-shell\.c$$
 
 exclude_file_name_regexp--sc_avoid_attribute_unused_in_header = \
   ^(src/util/virlog\.h|src/network/bridge_driver\.h)$$
