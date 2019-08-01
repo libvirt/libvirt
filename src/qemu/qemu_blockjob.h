@@ -134,10 +134,6 @@ qemuBlockJobDiskNew(virDomainObjPtr vm,
                     const char *jobname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4);
 
-void
-qemuBlockJobDiskRegisterMirror(qemuBlockJobDataPtr job)
-    ATTRIBUTE_NONNULL(1);
-
 qemuBlockJobDataPtr
 qemuBlockJobDiskNewPull(virDomainObjPtr vm,
                         virDomainDiskDefPtr disk,

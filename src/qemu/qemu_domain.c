@@ -2976,7 +2976,7 @@ qemuDomainObjPrivateXMLParseBlockjobData(virDomainObjPtr vm,
     job->disk = disk;
 
     if (mirror)
-        qemuBlockJobDiskRegisterMirror(job);
+        job->mirrorChain = virObjectRef(job->disk->mirror);
 
     qemuDomainObjPrivateXMLParseBlockjobDataSpecific(job, ctxt);
 

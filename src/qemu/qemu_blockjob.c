@@ -129,7 +129,7 @@ qemuBlockJobDataNew(qemuBlockJobType type,
  * xml (if @savestatus is true).
  *
  * Note that if @job also references a separate chain e.g. for disk mirroring,
- * then qemuBlockJobDiskRegisterMirror should be used separately.
+ * then job->mirrorchain needs to be set manually.
  */
 int
 qemuBlockJobRegister(qemuBlockJobDataPtr job,
@@ -271,24 +271,6 @@ qemuBlockJobDiskNewCommit(virDomainObjPtr vm,
         return NULL;
 
     VIR_RETURN_PTR(job);
-}
-
-
-/**
- * qemuBlockJobDiskRegisterMirror:
- * @job: block job to register 'mirror' chain on
- *
- * In cases when the disk->mirror attribute references a separate storage chain
- * such as for block-copy, this function registers it with the job. Note
- * that this function does not save the status XML and thus must be used before
- * qemuBlockJobRegister or qemuBlockJobStarted to properly track the chain
- * in the status XML.
- */
-void
-qemuBlockJobDiskRegisterMirror(qemuBlockJobDataPtr job)
-{
-    if (job->disk)
-        job->mirrorChain = virObjectRef(job->disk->mirror);
 }
 
 
