@@ -54,7 +54,7 @@ static int virLoginShellAllowedUser(virConfPtr conf,
         goto cleanup;
 
 
-    for (entries = users; *entries; entries++) {
+    for (entries = users; entries && *entries; entries++) {
         char *entry = *entries;
         /*
           If string begins with a % this indicates a linux group.
