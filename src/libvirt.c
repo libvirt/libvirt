@@ -250,13 +250,12 @@ virGlobalInit(void)
         virErrorInitialize() < 0)
         goto error;
 
-#ifndef LIBVIRT_SETUID_RPC_CLIENT
-    if (virIsSUID()) {
+    if (getuid() != geteuid() ||
+        getgid() != getegid()) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("libvirt.so is not safe to use from setuid programs"));
+                       _("libvirt.so is not safe to use from setuid/setgid programs"));
         goto error;
     }
-#endif
 
     virLogSetFromEnv();
 
@@ -843,12 +842,6 @@ virConnectOpenInternal(const char *name,
 
     if (name && name[0] == '\0')
         name = NULL;
-
-    if (!name && virIsSUID()) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("An explicit URI must be provided when setuid"));
-        goto failed;
-    }
 
     /* Convert xen -> xen:///system for back compat */
     if (name && STRCASEEQ(name, "xen"))

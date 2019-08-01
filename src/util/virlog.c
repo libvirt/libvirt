@@ -1588,7 +1588,6 @@ virLogParseOutput(const char *src)
     size_t count = 0;
     virLogPriority prio;
     int dest;
-    bool isSUID = virIsSUID();
 
     VIR_DEBUG("output=%s", src);
 
@@ -1623,14 +1622,6 @@ virLogParseOutput(const char *src)
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Output '%s' does not meet the format requirements "
                          "for destination type '%s'"), src, tokens[1]);
-        goto cleanup;
-    }
-
-    /* if running with setuid, only 'stderr' is allowed */
-    if (isSUID && dest != VIR_LOG_TO_STDERR) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Running with SUID permits only destination of type "
-                         "'stderr'"));
         goto cleanup;
     }
 

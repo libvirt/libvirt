@@ -853,21 +853,6 @@ doRemoteOpen(virConnectPtr conn,
         transport = trans_unix;
     }
 
-    /*
-     * We don't want to be executing external programs in setuid mode,
-     * so this rules out 'ext' and 'ssh' transports. Exclude libssh
-     * and tls too, since we're not confident the libraries are safe
-     * for setuid usage. Just allow UNIX sockets, since that does
-     * not require any external libraries or command execution
-     */
-    if (virIsSUID() &&
-        transport != trans_unix) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Only Unix socket URI transport is allowed in setuid mode"));
-        return VIR_DRV_OPEN_ERROR;
-    }
-
-
     /* Remote server defaults to "localhost" if not specified. */
     if (conn->uri && conn->uri->port != 0) {
         if (virAsprintf(&port, "%d", conn->uri->port) < 0)
@@ -1353,8 +1338,7 @@ remoteConnectOpen(virConnectPtr conn,
          * transport is listed, or transport is unix,
          * and uid is unprivileged then auto-spawn a daemon.
          */
-        if (!virIsSUID() &&
-            !conn->uri->server &&
+        if (!conn->uri->server &&
             (transport == NULL || STREQ(transport, "unix")) &&
             (!autostart ||
              STRNEQ(autostart, "0"))) {
@@ -1372,9 +1356,8 @@ remoteConnectOpen(virConnectPtr conn,
         if (geteuid() > 0) {
             VIR_DEBUG("Auto-spawn user daemon instance");
             rflags |= VIR_DRV_OPEN_REMOTE_USER;
-            if (!virIsSUID() &&
-                (!autostart ||
-                 STRNEQ(autostart, "0")))
+            if (!autostart ||
+                STRNEQ(autostart, "0"))
                 rflags |= VIR_DRV_OPEN_REMOTE_AUTOSTART;
         }
     }

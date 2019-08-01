@@ -1750,18 +1750,6 @@ const char *virGetEnvAllowSUID(const char *name)
     return getenv(name); /* exempt from syntax-check */
 }
 
-
-/**
- * virIsSUID:
- * Return a true value if running setuid. Does not
- * check for elevated capabilities bits.
- */
-bool virIsSUID(void)
-{
-    return getuid() != geteuid();
-}
-
-
 static time_t selfLastChanged;
 
 time_t virGetSelfLastChanged(void)

@@ -143,7 +143,6 @@ int virParseOwnershipIds(const char *label, uid_t *uidPtr, gid_t *gidPtr);
 
 const char *virGetEnvBlockSUID(const char *name);
 const char *virGetEnvAllowSUID(const char *name);
-bool virIsSUID(void);
 
 
 time_t virGetSelfLastChanged(void);
