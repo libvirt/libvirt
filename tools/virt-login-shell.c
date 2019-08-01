@@ -143,6 +143,12 @@ show_version(void)
 }
 
 
+static void
+hideErrorFunc(void *opaque ATTRIBUTE_UNUSED,
+              virErrorPtr err ATTRIBUTE_UNUSED)
+{
+}
+
 int
 main(int argc, char **argv)
 {
@@ -186,7 +192,7 @@ main(int argc, char **argv)
         return EXIT_CANCELED;
     }
 
-    virSetErrorFunc(NULL, NULL);
+    virSetErrorFunc(NULL, hideErrorFunc);
     virSetErrorLogPriorityFunc(NULL);
 
     progname = argv[0];
@@ -403,7 +409,7 @@ main(int argc, char **argv)
 
     if (saved_err) {
         virSetError(saved_err);
-        virDispatchError(NULL);
+        fprintf(stderr, "%s: %s\n", argv[0], virGetLastErrorMessage());
     }
     return ret;
 }
