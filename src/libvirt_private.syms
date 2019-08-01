@@ -3273,8 +3273,6 @@ virFormatIntDecimal;
 virFormatIntPretty;
 virGetDeviceID;
 virGetDeviceUnprivSGIO;
-virGetEnvAllowSUID;
-virGetEnvBlockSUID;
 virGetGroupID;
 virGetGroupList;
 virGetGroupName;

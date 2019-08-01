@@ -913,7 +913,7 @@ main(int argc, char **argv)
 
     if (!ctl->connname)
         ctl->connname = vshStrdup(ctl,
-                                  virGetEnvBlockSUID("VIRSH_DEFAULT_CONNECT_URI"));
+                                  getenv("VIRSH_DEFAULT_CONNECT_URI"));
 
     if (!ctl->imode) {
         ret = vshCommandRun(ctl, ctl->cmd);

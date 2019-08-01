@@ -509,7 +509,7 @@ virSystemdNotifyStartup(void)
         .msg_iovlen = 1,
     };
 
-    if (!(path = virGetEnvBlockSUID("NOTIFY_SOCKET"))) {
+    if (!(path = getenv("NOTIFY_SOCKET"))) {
         VIR_DEBUG("Skipping systemd notify, not requested");
         return;
     }
@@ -798,7 +798,7 @@ virSystemdGetListenFDs(void)
 
     VIR_DEBUG("Setting up networking from caller");
 
-    if (!(pidstr = virGetEnvAllowSUID("LISTEN_PID"))) {
+    if (!(pidstr = getenv("LISTEN_PID"))) {
         VIR_DEBUG("No LISTEN_PID from caller");
         return 0;
     }
@@ -814,7 +814,7 @@ virSystemdGetListenFDs(void)
         return 0;
     }
 
-    if (!(fdstr = virGetEnvAllowSUID("LISTEN_FDS"))) {
+    if (!(fdstr = getenv("LISTEN_FDS"))) {
         VIR_DEBUG("No LISTEN_FDS from caller");
         return 0;
     }
@@ -866,7 +866,7 @@ virSystemdActivationNew(virSystemdActivationMap *map,
     if (!(act->fds = virHashCreate(10, virSystemdActivationEntryFree)))
         goto error;
 
-    fdnames = virGetEnvAllowSUID("LISTEN_FDNAMES");
+    fdnames = getenv("LISTEN_FDNAMES");
     if (fdnames) {
         if (virSystemdActivationInitFromNames(act, nfds, fdnames) < 0)
             goto error;

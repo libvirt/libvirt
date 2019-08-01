@@ -986,7 +986,7 @@ qemuFirmwareFetchConfigs(char ***firmwares,
          * much sense to parse files in root's home directory. It
          * makes sense only for session daemon which runs under
          * regular user. */
-        if (VIR_STRDUP(xdgConfig, virGetEnvBlockSUID("XDG_CONFIG_HOME")) < 0)
+        if (VIR_STRDUP(xdgConfig, getenv("XDG_CONFIG_HOME")) < 0)
             return -1;
 
         if (!xdgConfig) {

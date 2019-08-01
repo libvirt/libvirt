@@ -1424,7 +1424,7 @@ virCommandAddEnvPass(virCommandPtr cmd, const char *name)
     if (!cmd || cmd->has_error)
         return;
 
-    value = virGetEnvAllowSUID(name);
+    value = getenv(name);
     if (value)
         virCommandAddEnvPair(cmd, name, value);
 }

@@ -2429,7 +2429,7 @@ vshEditWriteToTempFile(vshControl *ctl, const char *doc)
     int fd;
     char ebuf[1024];
 
-    tmpdir = virGetEnvBlockSUID("TMPDIR");
+    tmpdir = getenv("TMPDIR");
     if (!tmpdir) tmpdir = "/tmp";
     if (virAsprintf(&ret, "%s/virshXXXXXX.xml", tmpdir) < 0) {
         vshError(ctl, "%s", _("out of memory"));
@@ -2476,9 +2476,9 @@ vshEditFile(vshControl *ctl, const char *filename)
     int outfd = STDOUT_FILENO;
     int errfd = STDERR_FILENO;
 
-    editor = virGetEnvBlockSUID("VISUAL");
+    editor = getenv("VISUAL");
     if (!editor)
-        editor = virGetEnvBlockSUID("EDITOR");
+        editor = getenv("EDITOR");
     if (!editor)
         editor = DEFAULT_EDITOR;
 
@@ -2956,7 +2956,7 @@ vshReadlineInit(vshControl *ctl)
         goto cleanup;
 
     /* Limit the total size of the history buffer */
-    if ((histsize_str = virGetEnvBlockSUID(histsize_env))) {
+    if ((histsize_str = getenv(histsize_env))) {
         if (virStrToLong_i(histsize_str, NULL, 10, &max_history) < 0) {
             vshError(ctl, _("Bad $%s value."), histsize_env);
             goto cleanup;
@@ -3072,7 +3072,7 @@ vshInitDebug(vshControl *ctl)
             return -1;
 
         /* log level not set from commandline, check env variable */
-        debugEnv = virGetEnvAllowSUID(env);
+        debugEnv = getenv(env);
         if (debugEnv) {
             int debug;
             if (virStrToLong_i(debugEnv, NULL, 10, &debug) < 0 ||
@@ -3091,7 +3091,7 @@ vshInitDebug(vshControl *ctl)
             return -1;
 
         /* log file not set from cmdline */
-        debugEnv = virGetEnvBlockSUID(env);
+        debugEnv = getenv(env);
         if (debugEnv && *debugEnv) {
             ctl->logfile = vshStrdup(ctl, debugEnv);
             vshOpenLogFile(ctl);

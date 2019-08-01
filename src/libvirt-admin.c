@@ -169,7 +169,7 @@ getSocketPath(virURIPtr uri)
 static int
 virAdmGetDefaultURI(virConfPtr conf, char **uristr)
 {
-    const char *defname = virGetEnvAllowSUID("LIBVIRT_ADMIN_DEFAULT_URI");
+    const char *defname = getenv("LIBVIRT_ADMIN_DEFAULT_URI");
     if (defname && *defname) {
         if (VIR_STRDUP(*uristr, defname) < 0)
             return -1;

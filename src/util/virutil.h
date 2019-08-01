@@ -141,9 +141,6 @@ char *virGetUnprivSGIOSysfsPath(const char *path,
 
 int virParseOwnershipIds(const char *label, uid_t *uidPtr, gid_t *gidPtr);
 
-const char *virGetEnvBlockSUID(const char *name);
-const char *virGetEnvAllowSUID(const char *name);
-
 
 time_t virGetSelfLastChanged(void);
 void virUpdateSelfLastChanged(const char *path);

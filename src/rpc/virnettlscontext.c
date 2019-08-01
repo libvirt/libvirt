@@ -1439,7 +1439,7 @@ void virNetTLSSessionDispose(void *obj)
 void virNetTLSInit(void)
 {
     const char *gnutlsdebug;
-    if ((gnutlsdebug = virGetEnvAllowSUID("LIBVIRT_GNUTLS_DEBUG")) != NULL) {
+    if ((gnutlsdebug = getenv("LIBVIRT_GNUTLS_DEBUG")) != NULL) {
         int val;
         if (virStrToLong_i(gnutlsdebug, NULL, 10, &val) < 0)
             val = 10;

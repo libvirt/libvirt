@@ -3558,7 +3558,7 @@ vboxDumpDisplay(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
 
         graphics->type = VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP;
         if (VIR_STRDUP(graphics->data.desktop.display,
-                       virGetEnvBlockSUID("DISPLAY")) < 0)
+                       getenv("DISPLAY")) < 0)
             goto cleanup;
     }
 

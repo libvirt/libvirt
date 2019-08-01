@@ -86,10 +86,10 @@ main(int argc, char **argv)
     const char *ip = NULL;
     const char *mac = NULL;
     const char *leases_str = NULL;
-    const char *iaid = virGetEnvAllowSUID("DNSMASQ_IAID");
-    const char *clientid = virGetEnvAllowSUID("DNSMASQ_CLIENT_ID");
-    const char *interface = virGetEnvAllowSUID("DNSMASQ_INTERFACE");
-    const char *hostname = virGetEnvAllowSUID("DNSMASQ_SUPPLIED_HOSTNAME");
+    const char *iaid = getenv("DNSMASQ_IAID");
+    const char *clientid = getenv("DNSMASQ_CLIENT_ID");
+    const char *interface = getenv("DNSMASQ_INTERFACE");
+    const char *hostname = getenv("DNSMASQ_SUPPLIED_HOSTNAME");
     char *server_duid = NULL;
     int action = -1;
     int pid_file_fd = -1;
@@ -131,7 +131,7 @@ main(int argc, char **argv)
      * events for expired leases. So, libvirtd sets another env var for this
      * purpose */
     if (!interface &&
-        !(interface = virGetEnvAllowSUID("VIR_BRIDGE_NAME")))
+        !(interface = getenv("VIR_BRIDGE_NAME")))
         goto cleanup;
 
     ip = argv[3];
@@ -148,11 +148,11 @@ main(int argc, char **argv)
 
     /* Check if it is an IPv6 lease */
     if (iaid) {
-        mac = virGetEnvAllowSUID("DNSMASQ_MAC");
+        mac = getenv("DNSMASQ_MAC");
         clientid = argv[2];
     }
 
-    if (VIR_STRDUP(server_duid, virGetEnvAllowSUID("DNSMASQ_SERVER_DUID")) < 0)
+    if (VIR_STRDUP(server_duid, getenv("DNSMASQ_SERVER_DUID")) < 0)
         goto cleanup;
 
     if (virAsprintf(&custom_lease_file,

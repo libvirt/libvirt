@@ -1308,13 +1308,13 @@ virLogSetFromEnv(void)
     if (virLogInitialize() < 0)
         return;
 
-    debugEnv = virGetEnvAllowSUID("LIBVIRT_DEBUG");
+    debugEnv = getenv("LIBVIRT_DEBUG");
     if (debugEnv && *debugEnv)
         virLogSetDefaultPriority(virLogParseDefaultPriority(debugEnv));
-    debugEnv = virGetEnvAllowSUID("LIBVIRT_LOG_FILTERS");
+    debugEnv = getenv("LIBVIRT_LOG_FILTERS");
     if (debugEnv && *debugEnv)
         virLogSetFilters(debugEnv);
-    debugEnv = virGetEnvAllowSUID("LIBVIRT_LOG_OUTPUTS");
+    debugEnv = getenv("LIBVIRT_LOG_OUTPUTS");
     if (debugEnv && *debugEnv)
         virLogSetOutputs(debugEnv);
 }

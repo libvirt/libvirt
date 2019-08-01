@@ -213,13 +213,13 @@ virLeaseNew(virJSONValuePtr *lease_ret,
             const char *server_duid)
 {
     VIR_AUTOPTR(virJSONValue) lease_new = NULL;
-    const char *exptime_tmp = virGetEnvAllowSUID("DNSMASQ_LEASE_EXPIRES");
+    const char *exptime_tmp = getenv("DNSMASQ_LEASE_EXPIRES");
     long long expirytime = 0;
     VIR_AUTOFREE(char *) exptime = NULL;
 
     /* In case hostname is still unknown, use the last known one */
     if (!hostname)
-        hostname = virGetEnvAllowSUID("DNSMASQ_OLD_HOSTNAME");
+        hostname = getenv("DNSMASQ_OLD_HOSTNAME");
 
     if (!mac)
         return 0;

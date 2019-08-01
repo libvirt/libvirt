@@ -1674,7 +1674,7 @@ virFindFileInPath(const char *file)
     }
 
     /* copy PATH env so we can tweak it */
-    origpath = virGetEnvBlockSUID("PATH");
+    origpath = getenv("PATH");
     if (!origpath)
         origpath = "/bin:/usr/bin";
 
@@ -1735,7 +1735,7 @@ virFileFindResourceFull(const char *filename,
                         const char *envname)
 {
     char *ret = NULL;
-    const char *envval = envname ? virGetEnvBlockSUID(envname) : NULL;
+    const char *envval = envname ? getenv(envname) : NULL;
     const char *path;
 
     if (!prefix)

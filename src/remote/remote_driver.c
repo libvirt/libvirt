@@ -1297,7 +1297,7 @@ remoteConnectOpen(virConnectPtr conn,
     struct private_data *priv;
     int ret = VIR_DRV_OPEN_ERROR;
     int rflags = 0;
-    const char *autostart = virGetEnvBlockSUID("LIBVIRT_AUTOSTART");
+    const char *autostart = getenv("LIBVIRT_AUTOSTART");
     char *driver = NULL;
     char *transport = NULL;
 

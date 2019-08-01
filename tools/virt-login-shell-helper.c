@@ -372,8 +372,8 @@ main(int argc, char **argv)
 
     /* We're duping the string because the clearenv()
      * call will shortly release the pointer we get
-     * back from virGetEnvAllowSUID() right here */
-    if (VIR_STRDUP(term, virGetEnvAllowSUID("TERM")) < 0)
+     * back from getenv() right here */
+    if (VIR_STRDUP(term, getenv("TERM")) < 0)
         goto cleanup;
 
     /* A fork is required to create new process in correct pid namespace.  */

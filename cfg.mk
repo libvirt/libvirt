@@ -855,12 +855,6 @@ sc_prohibit_unbounded_arrays_in_rpc:
 	halt='Arrays in XDR must have a upper limit set for <NNN>' \
 	  $(_sc_search_regexp)
 
-sc_prohibit_getenv:
-	@prohibit='\b(secure_)?getenv *\(' \
-	exclude='exempt from syntax-check' \
-	halt='Use virGetEnv{Allow,Block}SUID instead of getenv' \
-	  $(_sc_search_regexp)
-
 sc_prohibit_atoi:
 	@prohibit='\bato(i|f|l|ll|q) *\(' \
 	halt='Use virStrToLong* instead of atoi, atol, atof, atoq, atoll' \
@@ -1315,9 +1309,6 @@ exclude_file_name_regexp--sc_prohibit_int_ijk = \
 
 exclude_file_name_regexp--sc_prohibit_unsigned_pid = \
   ^(include/libvirt/.*\.h|src/(qemu/qemu_driver\.c|driver-hypervisor\.h|libvirt(-[a-z]*)?\.c|.*\.x|util/vir(polkit|systemd)\.c)|tests/virpolkittest\.c|tools/virsh-domain\.c)$$
-
-exclude_file_name_regexp--sc_prohibit_getenv = \
-  ^tests/.*\.[ch]|tools/virt-login-shell\.c$$
 
 exclude_file_name_regexp--sc_avoid_attribute_unused_in_header = \
   ^(src/util/virlog\.h|src/network/bridge_driver\.h)$$

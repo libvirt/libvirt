@@ -739,7 +739,7 @@ char *virGetUserShell(uid_t uid)
 
 static char *virGetXDGDirectory(const char *xdgenvname, const char *xdgdefdir)
 {
-    const char *path = virGetEnvBlockSUID(xdgenvname);
+    const char *path = getenv(xdgenvname);
     char *ret = NULL;
     char *home = NULL;
 
@@ -767,7 +767,7 @@ char *virGetUserCacheDirectory(void)
 
 char *virGetUserRuntimeDirectory(void)
 {
-    const char *path = virGetEnvBlockSUID("XDG_RUNTIME_DIR");
+    const char *path = getenv("XDG_RUNTIME_DIR");
 
     if (!path || !path[0]) {
         return virGetUserCacheDirectory();
@@ -1137,7 +1137,7 @@ virGetUserDirectoryByUID(uid_t uid ATTRIBUTE_UNUSED)
     const char *dir;
     char *ret;
 
-    dir = virGetEnvBlockSUID("HOME");
+    dir = getenv("HOME");
 
     /* Only believe HOME if it is an absolute path and exists */
     if (dir) {
@@ -1157,7 +1157,7 @@ virGetUserDirectoryByUID(uid_t uid ATTRIBUTE_UNUSED)
 
     if (!dir)
         /* USERPROFILE is probably the closest equivalent to $HOME? */
-        dir = virGetEnvBlockSUID("USERPROFILE");
+        dir = getenv("USERPROFILE");
 
     if (VIR_STRDUP(ret, dir) < 0)
         return NULL;
@@ -1720,34 +1720,6 @@ virParseOwnershipIds(const char *label, uid_t *uidPtr, gid_t *gidPtr)
     VIR_FREE(tmp_label);
 
     return rc;
-}
-
-
-/**
- * virGetEnvBlockSUID:
- * @name: the environment variable name
- *
- * Obtain an environment variable which is unsafe to
- * use when running setuid. If running setuid, a NULL
- * value will be returned
- */
-const char *virGetEnvBlockSUID(const char *name)
-{
-    return secure_getenv(name); /* exempt from syntax-check */
-}
-
-
-/**
- * virGetEnvAllowSUID:
- * @name: the environment variable name
- *
- * Obtain an environment variable which is safe to
- * use when running setuid. The value will be returned
- * even when running setuid
- */
-const char *virGetEnvAllowSUID(const char *name)
-{
-    return getenv(name); /* exempt from syntax-check */
 }
 
 static time_t selfLastChanged;
