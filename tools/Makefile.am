@@ -198,7 +198,7 @@ virt_host_validate_CFLAGS = \
 # This we statically link to a library containing only the minimal
 # libvirt client code, not libvirt.so itself.
 virt_login_shell_SOURCES = \
-		virt-login-shell.c
+		virt-login-shell-helper.c
 
 virt_login_shell_LDFLAGS = \
 		$(AM_LDFLAGS) \

@@ -1,5 +1,5 @@
 /*
- * virt-login-shell.c: a shell to connect to a container
+ * virt-login-shell-helper.c: a shell to connect to a container
  *
  * Copyright (C) 2013-2014 Red Hat, Inc.
  *
