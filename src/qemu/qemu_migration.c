@@ -1257,6 +1257,8 @@ qemuMigrationSrcIsSafe(virDomainDefPtr def,
     for (i = 0; i < def->ndisks; i++) {
         virDomainDiskDefPtr disk = def->disks[i];
         const char *src = virDomainDiskGetSource(disk);
+        int actualType = virStorageSourceGetActualType(disk->src);
+        bool unsafe = false;
 
         /* Disks without any source (i.e. floppies and CD-ROMs)
          * OR readonly are safe. */
@@ -1270,21 +1272,34 @@ qemuMigrationSrcIsSafe(virDomainDefPtr def,
             continue;
 
         /* However, disks on local FS (e.g. ext4) are not safe. */
-        if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_FILE) {
+        switch ((virStorageType) actualType) {
+        case VIR_STORAGE_TYPE_FILE:
             if ((rc = virFileIsSharedFS(src)) < 0) {
                 return false;
             } else if (rc == 0) {
-                virReportError(VIR_ERR_MIGRATE_UNSAFE, "%s",
-                               _("Migration without shared storage is unsafe"));
-                return false;
+                unsafe = true;
             }
             if ((rc = virStorageFileIsClusterFS(src)) < 0)
                 return false;
             else if (rc == 1)
                 continue;
-        } else if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_NETWORK) {
+            break;
+        case VIR_STORAGE_TYPE_NETWORK:
             /* But network disks are safe again. */
             continue;
+
+        case VIR_STORAGE_TYPE_NONE:
+        case VIR_STORAGE_TYPE_BLOCK:
+        case VIR_STORAGE_TYPE_DIR:
+        case VIR_STORAGE_TYPE_VOLUME:
+        case VIR_STORAGE_TYPE_LAST:
+            break;
+        }
+
+        if (unsafe) {
+            virReportError(VIR_ERR_MIGRATE_UNSAFE, "%s",
+                           _("Migration without shared storage is unsafe"));
+            return false;
         }
 
         /* Our code elsewhere guarantees shared disks are either readonly (in
