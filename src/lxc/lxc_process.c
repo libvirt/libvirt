@@ -936,7 +936,7 @@ virLXCProcessBuildControllerCmd(virLXCDriverPtr driver,
     cmd = virCommandNew(vm->def->emulator);
 
     /* The controller may call ip command, so we have to retain PATH. */
-    virCommandAddEnvPassBlockSUID(cmd, "PATH", "/bin:/usr/bin");
+    virCommandAddEnvPass(cmd, "PATH");
 
     virCommandAddEnvFormat(cmd, "LIBVIRT_DEBUG=%d",
                            virLogGetDefaultPriority());

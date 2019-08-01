@@ -305,8 +305,8 @@ static int test6(const void *unused ATTRIBUTE_UNUSED)
 {
     virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
 
-    virCommandAddEnvPassBlockSUID(cmd, "DISPLAY", NULL);
-    virCommandAddEnvPassBlockSUID(cmd, "DOESNOTEXIST", NULL);
+    virCommandAddEnvPass(cmd, "DISPLAY");
+    virCommandAddEnvPass(cmd, "DOESNOTEXIST");
 
     if (virCommandRun(cmd, NULL) < 0) {
         printf("Cannot run child %s\n", virGetLastErrorMessage());
@@ -329,8 +329,8 @@ static int test7(const void *unused ATTRIBUTE_UNUSED)
     virCommandPtr cmd = virCommandNew(abs_builddir "/commandhelper");
 
     virCommandAddEnvPassCommon(cmd);
-    virCommandAddEnvPassBlockSUID(cmd, "DISPLAY", NULL);
-    virCommandAddEnvPassBlockSUID(cmd, "DOESNOTEXIST", NULL);
+    virCommandAddEnvPass(cmd, "DISPLAY");
+    virCommandAddEnvPass(cmd, "DOESNOTEXIST");
 
     if (virCommandRun(cmd, NULL) < 0) {
         printf("Cannot run child %s\n", virGetLastErrorMessage());

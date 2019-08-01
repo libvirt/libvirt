@@ -1410,49 +1410,21 @@ virCommandAddEnvBuffer(virCommandPtr cmd, virBufferPtr buf)
 
 
 /**
- * virCommandAddEnvPassAllowSUID:
+ * virCommandAddEnvPass:
  * @cmd: the command to modify
  * @name: the name to look up in current environment
  *
  * Pass an environment variable to the child
  * using current process' value
- *
- * Allow to be passed even if setuid
  */
 void
-virCommandAddEnvPassAllowSUID(virCommandPtr cmd, const char *name)
+virCommandAddEnvPass(virCommandPtr cmd, const char *name)
 {
     const char *value;
     if (!cmd || cmd->has_error)
         return;
 
     value = virGetEnvAllowSUID(name);
-    if (value)
-        virCommandAddEnvPair(cmd, name, value);
-}
-
-
-/**
- * virCommandAddEnvPassBlockSUID:
- * @cmd: the command to modify
- * @name: the name to look up in current environment
- * @defvalue: value to return if running setuid, may be NULL
- *
- * Pass an environment variable to the child
- * using current process' value.
- *
- * Do not pass if running setuid
- */
-void
-virCommandAddEnvPassBlockSUID(virCommandPtr cmd, const char *name, const char *defvalue)
-{
-    const char *value;
-    if (!cmd || cmd->has_error)
-        return;
-
-    value = virGetEnvBlockSUID(name);
-    if (!value)
-        value = defvalue;
     if (value)
         virCommandAddEnvPair(cmd, name, value);
 }
@@ -1478,13 +1450,13 @@ virCommandAddEnvPassCommon(virCommandPtr cmd)
 
     virCommandAddEnvPair(cmd, "LC_ALL", "C");
 
-    virCommandAddEnvPassBlockSUID(cmd, "LD_PRELOAD", NULL);
-    virCommandAddEnvPassBlockSUID(cmd, "LD_LIBRARY_PATH", NULL);
-    virCommandAddEnvPassBlockSUID(cmd, "PATH", "/bin:/usr/bin");
-    virCommandAddEnvPassBlockSUID(cmd, "HOME", NULL);
-    virCommandAddEnvPassAllowSUID(cmd, "USER");
-    virCommandAddEnvPassAllowSUID(cmd, "LOGNAME");
-    virCommandAddEnvPassBlockSUID(cmd, "TMPDIR", NULL);
+    virCommandAddEnvPass(cmd, "LD_PRELOAD");
+    virCommandAddEnvPass(cmd, "LD_LIBRARY_PATH");
+    virCommandAddEnvPass(cmd, "PATH");
+    virCommandAddEnvPass(cmd, "HOME");
+    virCommandAddEnvPass(cmd, "USER");
+    virCommandAddEnvPass(cmd, "LOGNAME");
+    virCommandAddEnvPass(cmd, "TMPDIR");
 }
 
 

@@ -141,9 +141,9 @@ static int virNetSocketForkDaemon(const char *binary)
                                              NULL);
 
     virCommandAddEnvPassCommon(cmd);
-    virCommandAddEnvPassBlockSUID(cmd, "XDG_CACHE_HOME", NULL);
-    virCommandAddEnvPassBlockSUID(cmd, "XDG_CONFIG_HOME", NULL);
-    virCommandAddEnvPassBlockSUID(cmd, "XDG_RUNTIME_DIR", NULL);
+    virCommandAddEnvPass(cmd, "XDG_CACHE_HOME");
+    virCommandAddEnvPass(cmd, "XDG_CONFIG_HOME");
+    virCommandAddEnvPass(cmd, "XDG_RUNTIME_DIR");
     virCommandClearCaps(cmd);
     virCommandDaemonize(cmd);
     ret = virCommandRun(cmd, NULL);
@@ -873,11 +873,11 @@ int virNetSocketNewConnectSSH(const char *nodename,
 
     cmd = virCommandNew(binary ? binary : "ssh");
     virCommandAddEnvPassCommon(cmd);
-    virCommandAddEnvPassBlockSUID(cmd, "KRB5CCNAME", NULL);
-    virCommandAddEnvPassBlockSUID(cmd, "SSH_AUTH_SOCK", NULL);
-    virCommandAddEnvPassBlockSUID(cmd, "SSH_ASKPASS", NULL);
-    virCommandAddEnvPassBlockSUID(cmd, "DISPLAY", NULL);
-    virCommandAddEnvPassBlockSUID(cmd, "XAUTHORITY", NULL);
+    virCommandAddEnvPass(cmd, "KRB5CCNAME");
+    virCommandAddEnvPass(cmd, "SSH_AUTH_SOCK");
+    virCommandAddEnvPass(cmd, "SSH_ASKPASS");
+    virCommandAddEnvPass(cmd, "DISPLAY");
+    virCommandAddEnvPass(cmd, "XAUTHORITY");
     virCommandClearCaps(cmd);
 
     if (service)
