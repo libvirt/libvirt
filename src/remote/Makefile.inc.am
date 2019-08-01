@@ -181,7 +181,6 @@ endif WITH_DTRACE_PROBES
 
 libvirtd_LDADD += \
 	../gnulib/lib/libgnu.la \
-	$(LIBSOCKET) \
 	$(NULL)
 
 remote/libvirtd.conf: remote/libvirtd.conf.in
