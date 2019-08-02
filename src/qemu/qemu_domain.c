@@ -8361,6 +8361,7 @@ qemuDomainObjExitRemote(virDomainObjPtr obj,
 
 static virDomainDefPtr
 qemuDomainDefFromXML(virQEMUDriverPtr driver,
+                     virQEMUCapsPtr qemuCaps,
                      const char *xml)
 {
     virCapsPtr caps;
@@ -8369,7 +8370,7 @@ qemuDomainDefFromXML(virQEMUDriverPtr driver,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         return NULL;
 
-    def = virDomainDefParseString(xml, caps, driver->xmlopt, NULL,
+    def = virDomainDefParseString(xml, caps, driver->xmlopt, qemuCaps,
                                   VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                   VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
 
@@ -8380,6 +8381,7 @@ qemuDomainDefFromXML(virQEMUDriverPtr driver,
 
 virDomainDefPtr
 qemuDomainDefCopy(virQEMUDriverPtr driver,
+                  virQEMUCapsPtr qemuCaps,
                   virDomainDefPtr src,
                   unsigned int flags)
 {
@@ -8389,7 +8391,7 @@ qemuDomainDefCopy(virQEMUDriverPtr driver,
     if (!(xml = qemuDomainDefFormatXML(driver, src, flags)))
         return NULL;
 
-    ret = qemuDomainDefFromXML(driver, xml);
+    ret = qemuDomainDefFromXML(driver, qemuCaps, xml);
 
     VIR_FREE(xml);
     return ret;
@@ -10616,6 +10618,7 @@ qemuDomainMigratableDefCheckABIStability(virQEMUDriverPtr driver,
 
 bool
 qemuDomainDefCheckABIStability(virQEMUDriverPtr driver,
+                               virQEMUCapsPtr qemuCaps,
                                virDomainDefPtr src,
                                virDomainDefPtr dst)
 {
@@ -10623,8 +10626,8 @@ qemuDomainDefCheckABIStability(virQEMUDriverPtr driver,
     virDomainDefPtr migratableDefDst = NULL;
     bool ret = false;
 
-    if (!(migratableDefSrc = qemuDomainDefCopy(driver, src, COPY_FLAGS)) ||
-        !(migratableDefDst = qemuDomainDefCopy(driver, dst, COPY_FLAGS)))
+    if (!(migratableDefSrc = qemuDomainDefCopy(driver, qemuCaps, src, COPY_FLAGS)) ||
+        !(migratableDefDst = qemuDomainDefCopy(driver, qemuCaps, dst, COPY_FLAGS)))
         goto cleanup;
 
     ret = qemuDomainMigratableDefCheckABIStability(driver,
@@ -10643,14 +10646,15 @@ qemuDomainCheckABIStability(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
                             virDomainDefPtr dst)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDefPtr migratableSrc = NULL;
     virDomainDefPtr migratableDst = NULL;
     char *xml = NULL;
     bool ret = false;
 
     if (!(xml = qemuDomainFormatXML(driver, vm, COPY_FLAGS)) ||
-        !(migratableSrc = qemuDomainDefFromXML(driver, xml)) ||
-        !(migratableDst = qemuDomainDefCopy(driver, dst, COPY_FLAGS)))
+        !(migratableSrc = qemuDomainDefFromXML(driver, priv->qemuCaps, xml)) ||
+        !(migratableDst = qemuDomainDefCopy(driver, priv->qemuCaps, dst, COPY_FLAGS)))
         goto cleanup;
 
     ret = qemuDomainMigratableDefCheckABIStability(driver,

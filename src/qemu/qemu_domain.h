@@ -649,6 +649,7 @@ int qemuDomainObjExitRemote(virDomainObjPtr obj,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
 virDomainDefPtr qemuDomainDefCopy(virQEMUDriverPtr driver,
+                                  virQEMUCapsPtr qemuCaps,
                                   virDomainDefPtr src,
                                   unsigned int flags);
 
@@ -863,6 +864,7 @@ int qemuDomainUpdateMemoryDeviceInfo(virQEMUDriverPtr driver,
                                      int asyncJob);
 
 bool qemuDomainDefCheckABIStability(virQEMUDriverPtr driver,
+                                    virQEMUCapsPtr qemuCaps,
                                     virDomainDefPtr src,
                                     virDomainDefPtr dst);
 

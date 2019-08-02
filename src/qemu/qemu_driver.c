@@ -6764,7 +6764,7 @@ qemuDomainSaveImageUpdateDef(virQEMUDriverPtr driver,
                                            VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 
-    if (!(newdef_migr = qemuDomainDefCopy(driver,
+    if (!(newdef_migr = qemuDomainDefCopy(driver, NULL,
                                           newdef,
                                           QEMU_DOMAIN_FORMAT_LIVE_FLAGS |
                                           VIR_DOMAIN_XML_MIGRATABLE)))
@@ -16553,7 +16553,7 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     switch ((virDomainSnapshotState) snapdef->state) {
     case VIR_DOMAIN_SNAPSHOT_RUNNING:
     case VIR_DOMAIN_SNAPSHOT_PAUSED:
-
+        priv = vm->privateData;
         start_flags |= VIR_QEMU_PROCESS_START_PAUSED;
 
         /* Transitions 2, 3, 5, 6, 8, 9 */
@@ -16580,7 +16580,9 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                     if (!(config->cpu = virCPUDefCopy(cookie->cpu)))
                         goto endjob;
 
-                    compatible = qemuDomainDefCheckABIStability(driver, vm->def,
+                    compatible = qemuDomainDefCheckABIStability(driver,
+                                                                priv->qemuCaps,
+                                                                vm->def,
                                                                 config);
                 } else {
                     compatible = qemuDomainCheckABIStability(driver, vm, config);
@@ -16624,7 +16626,6 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                 }
             }
 
-            priv = vm->privateData;
             if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
                 /* Transitions 5, 6 */
                 if (qemuProcessStopCPUs(driver, vm,

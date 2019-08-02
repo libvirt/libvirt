@@ -2381,7 +2381,7 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
                 if (!newdef)
                     goto cleanup;
 
-                if (!qemuDomainDefCheckABIStability(driver, *def, newdef)) {
+                if (!qemuDomainDefCheckABIStability(driver, NULL, *def, newdef)) {
                     virDomainDefFree(newdef);
                     goto cleanup;
                 }
@@ -3427,7 +3427,7 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
                 goto error;
         } else {
             virDomainDefPtr def = vm->newDef ? vm->newDef : vm->def;
-            if (!(persistDef = qemuDomainDefCopy(driver, def,
+            if (!(persistDef = qemuDomainDefCopy(driver, priv->qemuCaps, def,
                                                  VIR_DOMAIN_XML_SECURE |
                                                  VIR_DOMAIN_XML_MIGRATABLE)))
                 goto error;
