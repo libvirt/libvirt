@@ -85,6 +85,29 @@
           option to qemu.conf to override the system default.
         </description>
       </change>
+      <change>
+        <summary>
+          Remember original owners and SELinux labels of files
+        </summary>
+        <description>
+          When a domain is starting up libvirt changes DAC and
+          SELinux labels so that domain can access it. However,
+          it never remembered the original labels and therefore
+          the file was returned back to <code>root:root</code>.
+          With this release, the original labels are remembered
+          and restored properly.
+        </description>
+      </change>
+      <change>
+        <summary>
+          network: Allow passing arbitrary options to dnsmasq
+        </summary>
+        <description>
+          This works similarly to the existing support for passing arbitary
+          options to QEMU, and just like that feature it comes with no
+          support guarantees.
+        </description>
+      </change>
     </section>
     <section title="Removed features">
       <change>
@@ -119,8 +142,59 @@
           TPM device.
         </description>
       </change>
+      <change>
+        <summary>
+          test driver: Expand API coverage
+        </summary>
+        <description>
+          Additional APIs have been implemented in the test driver.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Implement per-driver locking
+        </summary>
+        <description>
+          Drivers now acquire a lock when they're loaded, ensuring that there
+          can never be two instances of the same driver active at a time.
+        </description>
+      </change>
+      <change>
+        <summary>
+          nss: Report newer addresses first
+        </summary>
+        <description>
+          In some cases, a guest might be assigned a new IP address by DHCP
+          before the previous lease has expired, in which case the NSS plugin
+          will correctly report both addresses; many applications, however,
+          ignore all addresses but the first, and may thus end up trying to
+          connect using a stale address. To prevent that from happening, the
+          NSS plugin will now always report the newest address first.
+        </description>
+      </change>
+      <change>
+        <summary>
+          util: Optimize mass closing of FDs when spawning child processes
+        </summary>
+        <description>
+          When the limit on the number of FDs is very high, closing all
+          unwanted FDs after calling <code>fork()</code> can take a lot of
+          time and delay the start of the child process. libvirt will now
+          use an optimized algorithm that minimizes such delays.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
+      <change>
+        <summary>
+          logging: Ensure virtlogd rollover takes priority over logrotate
+        </summary>
+        <description>
+          virtlogd implements its own rollover mechanism, but until now
+          logrotate could end up acting on the logs before virtlogd had a
+          chance to do so itself.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v5.5.0" date="2019-07-02">
