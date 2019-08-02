@@ -10299,10 +10299,8 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     VIR_STEAL_PTR(def->vendor, vendor);
     VIR_STEAL_PTR(def->product, product);
 
-    if (!(flags & VIR_DOMAIN_DEF_PARSE_DISK_SOURCE)) {
-        if (virDomainDiskBackingStoreParse(ctxt, def->src, flags, xmlopt) < 0)
-            goto error;
-    }
+    if (virDomainDiskBackingStoreParse(ctxt, def->src, flags, xmlopt) < 0)
+        goto error;
 
     if (flags & VIR_DOMAIN_DEF_PARSE_STATUS &&
         virDomainDiskDefParsePrivateData(ctxt, def, xmlopt) < 0)
