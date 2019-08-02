@@ -16,14 +16,14 @@
 ## License along with this library.  If not, see
 ## <http://www.gnu.org/licenses/>.
 
+LCOV = lcov
+GENHTML = genhtml
+
 SUBDIRS = . gnulib/lib include/libvirt src tools docs gnulib/tests \
   tests po examples
 
 XZ_OPT ?= -v -T0
 export XZ_OPT
-
-# have gnulib 'make coverage' output to 'cov' dir
-COVERAGE_OUT = "cov"
 
 ACLOCAL_AMFLAGS = -I m4
 
@@ -86,6 +86,20 @@ check-local: all tests
 
 check-access: all
 	@($(MAKE) $(AM_MAKEFLAGS) -C tests check-access)
+
+cov: clean-cov
+	$(MKDIR_P) $(top_builddir)/coverage
+	$(LCOV) -c -o $(top_builddir)/coverage/libvirt.info.tmp \
+	  -d $(top_builddir)/src \
+	  -d $(top_builddir)/tests
+	$(LCOV) -r $(top_builddir)/coverage/libvirt.info.tmp \
+	  -o $(top_builddir)/coverage/libvirt.info
+	rm $(top_builddir)/coverage/libvirt.info.tmp
+	$(GENHTML) --show-details -t "libvirt" -o $(top_builddir)/coverage \
+	  --legend $(top_builddir)/coverage/libvirt.info
+
+clean-cov:
+	rm -rf $(top_builddir)/coverage
 
 MAINTAINERCLEANFILES = .git-module-status
 

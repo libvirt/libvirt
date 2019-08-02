@@ -33,6 +33,7 @@ WARN_CFLAGS += $(STRICT_FRAME_LIMIT_CFLAGS)
 
 AM_CFLAGS = \
 	$(WARN_CFLAGS) \
+	$(COVERAGE_CFLAGS) \
 	$(PIE_CFLAGS) \
 	$(LIBXML_CFLAGS) \
 	$(NULL)
@@ -143,6 +144,7 @@ libvirt_shell_la_CFLAGS = \
 libvirt_shell_la_LDFLAGS = \
 		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
+		$(COVERAGE_LDFLAGS) \
 		$(NULL)
 libvirt_shell_la_LIBADD = \
 		../src/libvirt.la \
@@ -188,6 +190,7 @@ endif ! WITH_BHYVE
 virt_host_validate_LDFLAGS = \
 		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
+		$(COVERAGE_LDFLAGS) \
 		$(NULL)
 
 virt_host_validate_LDADD = \
@@ -213,6 +216,7 @@ virt_login_shell_helper_SOURCES = \
 virt_login_shell_helper_LDFLAGS = \
 		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
+		$(COVERAGE_LDFLAGS) \
 		$(NULL)
 virt_login_shell_helper_LDADD = \
 		../src/libvirt.la \
@@ -256,6 +260,7 @@ virsh_SOURCES = \
 virsh_LDFLAGS = \
 		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
+		$(COVERAGE_LDFLAGS) \
 		$(NULL)
 virsh_LDADD = \
 		$(STATIC_BINARIES) \
@@ -273,6 +278,7 @@ virt_admin_SOURCES = \
 
 virt_admin_LDFLAGS = \
 		$(AM_LDFLAGS) \
+		$(COVERAGE_LDFLAGS) \
 		$(STATIC_BINARIES) \
 		$(PIE_LDFLAGS) \
 		$(NULL)

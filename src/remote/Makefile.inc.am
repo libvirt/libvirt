@@ -45,6 +45,7 @@ REMOTE_DAEMON_CFLAGS = \
 	$(LIBNL_CFLAGS) \
 	$(WARN_CFLAGS) \
 	$(PIE_CFLAGS) \
+	$(COVERAGE_CFLAGS) \
 	-I$(srcdir)/access \
 	-I$(srcdir)/conf \
 	-I$(srcdir)/rpc \
@@ -55,6 +56,7 @@ REMOTE_DAEMON_LD_FLAGS = \
 	$(PIE_LDFLAGS) \
 	$(NO_INDIRECT_LDFLAGS) \
 	$(NO_UNDEFINED_LDFLAGS) \
+	$(COVERAGE_LDFLAGS) \
 	$(NULL)
 
 REMOTE_DAEMON_LD_ADD = \

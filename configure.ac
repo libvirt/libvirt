@@ -726,6 +726,23 @@ fi
 AC_SUBST([VIR_TEST_EXPENSIVE_DEFAULT])
 AM_CONDITIONAL([WITH_EXPENSIVE_TESTS], [test $VIR_TEST_EXPENSIVE_DEFAULT = 1])
 
+LIBVIRT_ARG_ENABLE([TEST_COVERAGE], [turn on code coverage instrumentation], [no])
+case "$enable_test_coverage" in
+  yes|no) ;;
+  *) AC_MSG_ERROR([bad value ${enable_test_coverga} for test-coverage option]) ;;
+esac
+
+if test "$enable_test_coverage" = yes; then
+  save_WARN_CFLAGS=$WARN_CFLAGS
+  WARN_CFLAGS=
+  gl_WARN_ADD([-fprofile-arcs])
+  gl_WARN_ADD([-ftest-coverage])
+  COVERAGE_FLAGS=$WARN_CFLAGS
+  AC_SUBST([COVERAGE_CFLAGS], [$COVERAGE_FLAGS])
+  AC_SUBST([COVERAGE_LDFLAGS], [$COVERAGE_FLAGS])
+  WARN_CFLAGS=$save_WARN_CFLAGS
+fi
+
 LIBVIRT_ARG_ENABLE([TEST_OOM], [memory allocation failure checking], [no])
 case "$enable_test_oom" in
   yes|no) ;;
@@ -1011,6 +1028,7 @@ LIBVIRT_WIN_RESULT_WINDRES
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Test suite])
 AC_MSG_NOTICE([])
+AC_MSG_NOTICE([         Coverage: $enable_test_coverage])
 AC_MSG_NOTICE([        Alloc OOM: $enable_test_oom])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Miscellaneous])
