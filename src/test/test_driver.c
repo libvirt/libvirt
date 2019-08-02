@@ -7391,6 +7391,59 @@ testDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
     return 0;
 }
 
+
+static int
+testDomainMemoryStats(virDomainPtr dom,
+                      virDomainMemoryStatPtr stats,
+                      unsigned int nr_stats,
+                      unsigned int flags)
+{
+    virDomainObjPtr vm = NULL;
+    int cur_memory;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        return -1;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto cleanup;
+
+    cur_memory = vm->def->mem.cur_balloon;
+    ret = 0;
+
+#define STATS_SET_PARAM(name, value) \
+    if (ret < nr_stats) { \
+        stats[ret].tag = name; \
+        stats[ret].val = value; \
+        ret++; \
+    }
+
+    if (virDomainDefHasMemballoon(vm->def)) {
+        STATS_SET_PARAM(VIR_DOMAIN_MEMORY_STAT_ACTUAL_BALLOON, cur_memory);
+        STATS_SET_PARAM(VIR_DOMAIN_MEMORY_STAT_SWAP_IN, 0);
+        STATS_SET_PARAM(VIR_DOMAIN_MEMORY_STAT_SWAP_OUT, 0);
+        STATS_SET_PARAM(VIR_DOMAIN_MEMORY_STAT_MAJOR_FAULT, 0);
+        STATS_SET_PARAM(VIR_DOMAIN_MEMORY_STAT_MINOR_FAULT, 0);
+        STATS_SET_PARAM(VIR_DOMAIN_MEMORY_STAT_UNUSED, cur_memory / 2);
+        STATS_SET_PARAM(VIR_DOMAIN_MEMORY_STAT_AVAILABLE, cur_memory);
+        STATS_SET_PARAM(VIR_DOMAIN_MEMORY_STAT_USABLE, cur_memory / 2);
+        STATS_SET_PARAM(VIR_DOMAIN_MEMORY_STAT_LAST_UPDATE, 627319920);
+        STATS_SET_PARAM(VIR_DOMAIN_MEMORY_STAT_DISK_CACHES, cur_memory / 8);
+        STATS_SET_PARAM(VIR_DOMAIN_MEMORY_STAT_HUGETLB_PGALLOC, 0);
+        STATS_SET_PARAM(VIR_DOMAIN_MEMORY_STAT_HUGETLB_PGFAIL, 0);
+        STATS_SET_PARAM(VIR_DOMAIN_MEMORY_STAT_RSS, cur_memory / 2);
+    }
+
+#undef STATS_SET_PARAM
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
 static int
 testDomainMemoryPeek(virDomainPtr dom,
                      unsigned long long start,
@@ -8723,6 +8776,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainManagedSave = testDomainManagedSave, /* 1.1.4 */
     .domainHasManagedSaveImage = testDomainHasManagedSaveImage, /* 1.1.4 */
     .domainManagedSaveRemove = testDomainManagedSaveRemove, /* 1.1.4 */
+    .domainMemoryStats = testDomainMemoryStats, /* 5.7.0 */
     .domainMemoryPeek = testDomainMemoryPeek, /* 5.4.0 */
 
     .domainSnapshotNum = testDomainSnapshotNum, /* 1.1.4 */
