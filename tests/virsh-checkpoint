@@ -140,7 +140,7 @@ EOF
 compare exp err || fail=1
 
 # Restore state with redefine
-$abs_top_builddir/tools/virsh -c test:///default >out 2>err <<EOF || fail=1
+$abs_top_builddir/tools/virsh -c test:///default >out 2>err '
   # Redefine must be in topological order; this will fail
   checkpoint-create test --redefine c2.xml
   echo --err marker
@@ -149,7 +149,7 @@ $abs_top_builddir/tools/virsh -c test:///default >out 2>err <<EOF || fail=1
   checkpoint-create test --redefine c2.xml
   checkpoint-list test --leaves --name
   checkpoint-info test c2
-EOF
+' || fail=1
 
 cat <<\EOF > exp || fail=1
 
@@ -165,8 +165,7 @@ Children:       0
 Descendants:    0
 
 EOF
-sed '1,/^virsh #/d; /virsh #/d' < out > out.cooked || fail=1
-compare exp out.cooked || fail=1
+compare exp out || fail=1
 
 cat <<EOF > exp || fail=1
 error: invalid argument: parent c3 for moment c2 not found
