@@ -1590,8 +1590,8 @@
           hand, the ABI provided to the guest is reproducible. During
           migration, complete CPU model definition is transferred to the
           destination host so the migrated guest will see exactly the same CPU
-          model even if the destination host contains more capable CPUs for
-          the running instance of the guest; but shutting down and restarting
+          model for the running instance of the guest, even if the destination
+          host contains more capable CPUs or newer kernel; but shutting down and restarting
           the guest may present different hardware to the guest according to
           the capabilities of the new host. Prior to libvirt 3.2.0 and QEMU
           2.9.0 detection of the host CPU model via QEMU is not supported.
@@ -1625,10 +1625,10 @@
           environment cannot be reproduced on different hardware. Thus, if you
           hit any bugs, you are on your own. Further details of that CPU can
           be changed using <code>feature</code> elements. Migration of a guest
-          using host-passthrough is dangerous if the source and destination
-          hosts are not identical in both hardware and configuration. If such
-          a migration is attempted then the guest may hang or crash upon
-          resuming execution on the destination host.</dd>
+          using host-passthrough is dangerous if the source and destination hosts
+          are not identical in both hardware, QEMU version, microcode version
+          and configuration. If such a migration is attempted then the guest may
+          hang or crash upon resuming execution on the destination host.</dd>
         </dl>
 
         Both <code>host-model</code> and <code>host-passthrough</code> modes
