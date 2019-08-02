@@ -2410,6 +2410,8 @@ qemuDomainObjPrivateXMLFormatBlockjobIterator(void *payload,
                 virBufferAsprintf(&childBuf, "<top node='%s'/>\n", job->data.commit.top->nodeformat);
             if (job->data.commit.topparent)
                 virBufferAsprintf(&childBuf, "<topparent node='%s'/>\n", job->data.commit.topparent->nodeformat);
+            break;
+
         case QEMU_BLOCKJOB_TYPE_COPY:
         case QEMU_BLOCKJOB_TYPE_NONE:
         case QEMU_BLOCKJOB_TYPE_INTERNAL:
