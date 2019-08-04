@@ -386,6 +386,35 @@ testBuildCapabilities(virConnectPtr conn)
 }
 
 
+typedef struct _testDomainObjPrivate testDomainObjPrivate;
+typedef testDomainObjPrivate *testDomainObjPrivatePtr;
+struct _testDomainObjPrivate {
+    testDriverPtr driver;
+};
+
+
+static void *
+testDomainObjPrivateAlloc(void *opaque)
+{
+    testDomainObjPrivatePtr priv;
+
+    if (VIR_ALLOC(priv) < 0)
+        return NULL;
+
+    priv->driver = opaque;
+
+    return priv;
+}
+
+
+static void
+testDomainObjPrivateFree(void *data)
+{
+    testDomainObjPrivatePtr priv = data;
+    VIR_FREE(priv);
+}
+
+
 static testDriverPtr
 testDriverNew(void)
 {
@@ -401,6 +430,10 @@ testDriverNew(void)
                     VIR_DOMAIN_DEF_FEATURE_FW_AUTOSELECT |
                     VIR_DOMAIN_DEF_FEATURE_NET_MODEL_STRING,
     };
+    virDomainXMLPrivateDataCallbacks privatecb = {
+        .alloc = testDomainObjPrivateAlloc,
+        .free = testDomainObjPrivateFree,
+    };
     testDriverPtr ret;
 
     if (testDriverInitialize() < 0)
@@ -409,7 +442,7 @@ testDriverNew(void)
     if (!(ret = virObjectLockableNew(testDriverClass)))
         return NULL;
 
-    if (!(ret->xmlopt = virDomainXMLOptionNew(&config, NULL, &ns, NULL, NULL)) ||
+    if (!(ret->xmlopt = virDomainXMLOptionNew(&config, &privatecb, &ns, NULL, NULL)) ||
         !(ret->eventState = virObjectEventStateNew()) ||
         !(ret->ifaces = virInterfaceObjListNew()) ||
         !(ret->domains = virDomainObjListNew()) ||
