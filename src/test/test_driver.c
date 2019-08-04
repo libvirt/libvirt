@@ -4194,6 +4194,37 @@ testDomainFSThaw(virDomainPtr dom,
 }
 
 
+static int
+testDomainFSTrim(virDomainPtr dom,
+                 const char *mountPoint,
+                 unsigned long long minimum ATTRIBUTE_UNUSED,
+                 unsigned int flags)
+{
+    virDomainObjPtr vm;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        return -1;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto cleanup;
+
+    if (mountPoint && STRNEQ(mountPoint, "/") && STRNEQ(mountPoint, "/boot")) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("mount point not found: %s"),
+                       mountPoint);
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
 static int testDomainGetAutostart(virDomainPtr domain,
                                   int *autostart)
 {
@@ -8897,6 +8928,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainUndefineFlags = testDomainUndefineFlags, /* 0.9.4 */
     .domainFSFreeze = testDomainFSFreeze, /* 5.7.0 */
     .domainFSThaw = testDomainFSThaw, /* 5.7.0 */
+    .domainFSTrim = testDomainFSTrim, /* 5.7.0 */
     .domainGetAutostart = testDomainGetAutostart, /* 0.3.2 */
     .domainSetAutostart = testDomainSetAutostart, /* 0.3.2 */
     .domainGetDiskErrors = testDomainGetDiskErrors, /* 5.4.0 */
