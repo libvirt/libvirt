@@ -4134,6 +4134,66 @@ testDomainFSFreeze(virDomainPtr dom,
 }
 
 
+static int
+testDomainFSThaw(virDomainPtr dom,
+                   const char **mountpoints,
+                   unsigned int nmountpoints,
+                   unsigned int flags)
+{
+    virDomainObjPtr vm;
+    testDomainObjPrivatePtr priv;
+    size_t i;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto cleanup;
+
+    priv = vm->privateData;
+
+    if (nmountpoints == 0) {
+        ret = priv->frozen[0] + priv->frozen[1];
+        priv->frozen[0] = priv->frozen[1] = false;
+    } else {
+        int nthaw = 0;
+        bool freeze[2];
+
+        memcpy(&freeze, priv->frozen, 2);
+
+        for (i = 0; i < nmountpoints; i++) {
+            if (STREQ(mountpoints[i], "/")) {
+                if (freeze[0]) {
+                    freeze[0] = false;
+                    nthaw++;
+                }
+            } else if (STREQ(mountpoints[i], "/boot")) {
+                if (freeze[1]) {
+                    freeze[1] = false;
+                    nthaw++;
+                }
+            } else {
+                virReportError(VIR_ERR_OPERATION_INVALID,
+                               _("mount point not found: %s"),
+                               mountpoints[i]);
+                goto cleanup;
+            }
+        }
+
+        /* steal the helper copy */
+        memcpy(priv->frozen, &freeze, 2);
+        ret = nthaw;
+    }
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
 static int testDomainGetAutostart(virDomainPtr domain,
                                   int *autostart)
 {
@@ -8836,6 +8896,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainUndefine = testDomainUndefine, /* 0.1.11 */
     .domainUndefineFlags = testDomainUndefineFlags, /* 0.9.4 */
     .domainFSFreeze = testDomainFSFreeze, /* 5.7.0 */
+    .domainFSThaw = testDomainFSThaw, /* 5.7.0 */
     .domainGetAutostart = testDomainGetAutostart, /* 0.3.2 */
     .domainSetAutostart = testDomainSetAutostart, /* 0.3.2 */
     .domainGetDiskErrors = testDomainGetDiskErrors, /* 5.4.0 */
