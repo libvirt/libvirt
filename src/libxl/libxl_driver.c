@@ -6515,6 +6515,70 @@ libxlConnectBaselineCPU(virConnectPtr conn,
     return cpustr;
 }
 
+static int
+libxlDomainSetMetadata(virDomainPtr dom,
+                       int type,
+                       const char *metadata,
+                       const char *key,
+                       const char *uri,
+                       unsigned int flags)
+{
+    libxlDriverPrivatePtr driver = dom->conn->privateData;
+    VIR_AUTOUNREF(libxlDriverConfigPtr) cfg = libxlDriverConfigGet(driver);
+    virDomainObjPtr vm = NULL;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (!(vm = libxlDomObjFromDomain(dom)))
+        return -1;
+
+    if (virDomainSetMetadataEnsureACL(dom->conn, vm->def, flags) < 0)
+        goto cleanup;
+
+    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    ret = virDomainObjSetMetadata(vm, type, metadata, key, uri, cfg->caps,
+                                  driver->xmlopt, cfg->stateDir,
+                                  cfg->configDir, flags);
+
+    if (ret == 0) {
+        virObjectEventPtr ev = NULL;
+        ev = virDomainEventMetadataChangeNewFromObj(vm, type, uri);
+        virObjectEventStateQueue(driver->domainEventState, ev);
+    }
+
+    libxlDomainObjEndJob(driver, vm);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+static char *
+libxlDomainGetMetadata(virDomainPtr dom,
+                       int type,
+                       const char *uri,
+                       unsigned int flags)
+{
+    virDomainObjPtr vm;
+    char *ret = NULL;
+
+    if (!(vm = libxlDomObjFromDomain(dom)))
+        return NULL;
+
+    if (virDomainGetMetadataEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    ret = virDomainObjGetMetadata(vm, type, uri, flags);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
 static virHypervisorDriver libxlHypervisorDriver = {
     .name = LIBXL_DRIVER_NAME,
     .connectURIProbe = libxlConnectURIProbe,
@@ -6628,6 +6692,9 @@ static virHypervisorDriver libxlHypervisorDriver = {
     .connectGetDomainCapabilities = libxlConnectGetDomainCapabilities, /* 2.0.0 */
     .connectCompareCPU = libxlConnectCompareCPU, /* 2.3.0 */
     .connectBaselineCPU = libxlConnectBaselineCPU, /* 2.3.0 */
+    .domainSetMetadata = libxlDomainSetMetadata, /* 5.7.0 */
+    .domainGetMetadata = libxlDomainGetMetadata, /* 5.7.0 */
+
 };
 
 static virConnectDriver libxlConnectDriver = {
