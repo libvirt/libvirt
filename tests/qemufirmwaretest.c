@@ -105,6 +105,7 @@ struct supportedData {
     const char *machine;
     virArch arch;
     bool secure;
+    const char *fwlist;
     unsigned int *interfaces;
     size_t ninterfaces;
 };
@@ -117,15 +118,35 @@ testSupportedFW(const void *opaque)
     uint64_t actualInterfaces;
     uint64_t expectedInterfaces = 0;
     bool actualSecure;
+    virFirmwarePtr *expFWs = NULL;
+    size_t nexpFWs = 0;
+    virFirmwarePtr *actFWs = NULL;
+    size_t nactFWs = 0;
     size_t i;
+    int ret = -1;
 
     for (i = 0; i < data->ninterfaces; i++)
         expectedInterfaces |= 1ULL << data->interfaces[i];
 
-    if (qemuFirmwareGetSupported(data->machine, data->arch, false,
-                                 &actualInterfaces, &actualSecure, NULL, NULL) < 0) {
-        fprintf(stderr, "Unable to get list of supported interfaces\n");
+    if (virFirmwareParseList(data->fwlist, &expFWs, &nexpFWs) < 0) {
+        fprintf(stderr, "Unable to parse list of expected FW paths\n");
         return -1;
+    }
+
+    /* virFirmwareParseList() expects to see pairs of paths: ${FW}:${NVRAM}.
+     * Well, some images don't have a NVRAM store. In that case NULL was passed:
+     * ${FW}:NULL. Now iterate over expected firmwares and fix this. */
+    for (i = 0; i < nexpFWs; i++) {
+        virFirmwarePtr tmp = expFWs[i];
+
+        if (STREQ(tmp->nvram, "NULL"))
+            VIR_FREE(tmp->nvram);
+    }
+
+    if (qemuFirmwareGetSupported(data->machine, data->arch, false,
+                                 &actualInterfaces, &actualSecure, &actFWs, &nactFWs) < 0) {
+        fprintf(stderr, "Unable to get list of supported interfaces\n");
+        goto cleanup;
     }
 
     if (actualInterfaces != expectedInterfaces) {
@@ -133,7 +154,7 @@ testSupportedFW(const void *opaque)
                 "Mismatch in supported interfaces. "
                 "Expected 0x%" PRIx64 " got 0x%" PRIx64 "\n",
                 expectedInterfaces, actualInterfaces);
-        return -1;
+        goto cleanup;
     }
 
     if (actualSecure != data->secure) {
@@ -141,10 +162,42 @@ testSupportedFW(const void *opaque)
                 "Mismatch in SMM requirement/support. "
                 "Expected %d got %d\n",
                 data->secure, actualSecure);
-        return -1;
+        goto cleanup;
     }
 
-    return 0;
+    for (i = 0; i < nactFWs; i++) {
+        virFirmwarePtr actFW = actFWs[i];
+        virFirmwarePtr expFW = NULL;
+
+        if (i >= nexpFWs) {
+            fprintf(stderr, "Unexpected FW image: %s NVRAM: %s\n",
+                    actFW->name, NULLSTR(actFW->nvram));
+            goto cleanup;
+        }
+
+        expFW = expFWs[i];
+
+        if (STRNEQ(actFW->name, expFW->name) ||
+            STRNEQ_NULLABLE(actFW->nvram, expFW->nvram)) {
+            fprintf(stderr, "Unexpected FW image: %s NVRAM: %s\n"
+                    "Expected: %s NVRAM: %s\n",
+                    actFW->name, NULLSTR(actFW->nvram),
+                    expFW->name, NULLSTR(expFW->nvram));
+            goto cleanup;
+        }
+    }
+
+    if (i < nexpFWs) {
+        fprintf(stderr, "Expected FW image: %s NVRAM: %s got nothing\n",
+                expFWs[i]->name, NULLSTR(expFWs[i]->nvram));
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    virFirmwareFreeList(actFWs, nactFWs);
+    virFirmwareFreeList(expFWs, nexpFWs);
+    return ret;
 }
 
 
@@ -176,10 +229,13 @@ mymain(void)
     if (virTestRun("QEMU FW precedence test", testFWPrecedence, NULL) < 0)
         ret = -1;
 
-#define DO_SUPPORTED_TEST(machine, arch, secure, ...) \
+    /* The @fwlist contains pairs of ${FW}:${NVRAM}. If there's
+     * no NVRAM expected pass literal "NULL" and test fixes that
+     * later. */
+#define DO_SUPPORTED_TEST(machine, arch, secure, fwlist, ...) \
     do { \
         unsigned int interfaces[] = {__VA_ARGS__}; \
-        struct supportedData data = {machine, arch, secure, \
+        struct supportedData data = {machine, arch, secure, fwlist, \
                                      interfaces, ARRAY_CARDINALITY(interfaces)}; \
         if (virTestRun("QEMU FW SUPPORTED " machine " " #arch, \
                        testSupportedFW, &data) < 0) \
@@ -187,16 +243,24 @@ mymain(void)
     } while (0)
 
     DO_SUPPORTED_TEST("pc-i440fx-3.1", VIR_ARCH_X86_64, false,
+                      "/usr/share/seabios/bios-256k.bin:NULL:"
+                      "/usr/share/OVMF/OVMF_CODE.fd:/usr/share/OVMF/OVMF_VARS.fd",
                       VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS,
                       VIR_DOMAIN_OS_DEF_FIRMWARE_EFI);
     DO_SUPPORTED_TEST("pc-i440fx-3.1", VIR_ARCH_I686, false,
+                      "/usr/share/seabios/bios-256k.bin:NULL",
                       VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS);
     DO_SUPPORTED_TEST("pc-q35-3.1", VIR_ARCH_X86_64, true,
+                      "/usr/share/seabios/bios-256k.bin:NULL:"
+                      "/usr/share/OVMF/OVMF_CODE.secboot.fd:/usr/share/OVMF/OVMF_VARS.secboot.fd:"
+                      "/usr/share/OVMF/OVMF_CODE.fd:/usr/share/OVMF/OVMF_VARS.fd",
                       VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS,
                       VIR_DOMAIN_OS_DEF_FIRMWARE_EFI);
     DO_SUPPORTED_TEST("pc-q35-3.1", VIR_ARCH_I686, false,
+                      "/usr/share/seabios/bios-256k.bin:NULL",
                       VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS);
     DO_SUPPORTED_TEST("virt-3.1", VIR_ARCH_AARCH64, false,
+                      "/usr/share/AAVMF/AAVMF_CODE.fd:/usr/share/AAVMF/AAVMF_VARS.fd",
                       VIR_DOMAIN_OS_DEF_FIRMWARE_EFI);
 
     virFileWrapperClearPrefixes();
