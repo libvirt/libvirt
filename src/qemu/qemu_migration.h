@@ -115,6 +115,7 @@ qemuMigrationSrcBegin(virConnectPtr conn,
 
 virDomainDefPtr
 qemuMigrationAnyPrepareDef(virQEMUDriverPtr driver,
+                           virQEMUCapsPtr qemuCaps,
                            const char *dom_xml,
                            const char *dname,
                            char **origname);

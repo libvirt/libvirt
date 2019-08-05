@@ -2861,6 +2861,7 @@ qemuMigrationDstPrepareDirect(virQEMUDriverPtr driver,
 
 virDomainDefPtr
 qemuMigrationAnyPrepareDef(virQEMUDriverPtr driver,
+                           virQEMUCapsPtr qemuCaps,
                            const char *dom_xml,
                            const char *dname,
                            char **origname)
@@ -2878,7 +2879,8 @@ qemuMigrationAnyPrepareDef(virQEMUDriverPtr driver,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         return NULL;
 
-    if (!(def = virDomainDefParseString(dom_xml, caps, driver->xmlopt, NULL,
+    if (!(def = virDomainDefParseString(dom_xml, caps, driver->xmlopt,
+                                        qemuCaps,
                                         VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                         VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
         goto cleanup;
@@ -3422,7 +3424,9 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
 
     if (flags & VIR_MIGRATE_PERSIST_DEST) {
         if (persist_xml) {
-            if (!(persistDef = qemuMigrationAnyPrepareDef(driver, persist_xml,
+            if (!(persistDef = qemuMigrationAnyPrepareDef(driver,
+                                                          priv->qemuCaps,
+                                                          persist_xml,
                                                           NULL, NULL)))
                 goto error;
         } else {
