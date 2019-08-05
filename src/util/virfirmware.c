@@ -31,7 +31,7 @@
 VIR_LOG_INIT("util.firmware");
 
 
-static void
+void
 virFirmwareFree(virFirmwarePtr firmware)
 {
     if (!firmware)

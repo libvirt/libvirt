@@ -32,6 +32,11 @@ struct _virFirmware {
 
 
 void
+virFirmwareFree(virFirmwarePtr firmware);
+
+VIR_DEFINE_AUTOPTR_FUNC(virFirmware, virFirmwareFree);
+
+void
 virFirmwareFreeList(virFirmwarePtr *firmwares, size_t nfirmwares);
 
 int

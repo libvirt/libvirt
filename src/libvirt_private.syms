@@ -2040,6 +2040,7 @@ virFirewallDZoneExists;
 
 
 # util/virfirmware.h
+virFirmwareFree;
 virFirmwareFreeList;
 virFirmwareParse;
 virFirmwareParseList;
