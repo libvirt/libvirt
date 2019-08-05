@@ -5181,12 +5181,16 @@ virQEMUCapsFillDomainOSCaps(virDomainCapsOSPtr os,
     virDomainCapsLoaderPtr capsLoader = &os->loader;
     uint64_t autoFirmwares = 0;
     bool secure = false;
+    virFirmwarePtr *firmwaresAlt = NULL;
+    size_t nfirmwaresAlt = 0;
+    int ret = -1;
 
     os->supported = VIR_TRISTATE_BOOL_YES;
     os->firmware.report = true;
 
     if (qemuFirmwareGetSupported(machine, arch, privileged,
-                                 &autoFirmwares, &secure, NULL, NULL) < 0)
+                                 &autoFirmwares, &secure,
+                                 &firmwaresAlt, &nfirmwaresAlt) < 0)
         return -1;
 
     if (autoFirmwares & (1ULL << VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS))
@@ -5194,9 +5198,15 @@ virQEMUCapsFillDomainOSCaps(virDomainCapsOSPtr os,
     if (autoFirmwares & (1ULL << VIR_DOMAIN_OS_DEF_FIRMWARE_EFI))
         VIR_DOMAIN_CAPS_ENUM_SET(os->firmware, VIR_DOMAIN_OS_DEF_FIRMWARE_EFI);
 
-    if (virQEMUCapsFillDomainLoaderCaps(capsLoader, secure, firmwares, nfirmwares) < 0)
-        return -1;
-    return 0;
+    if (virQEMUCapsFillDomainLoaderCaps(capsLoader, secure,
+                                        firmwaresAlt ? firmwaresAlt : firmwares,
+                                        firmwaresAlt ? nfirmwaresAlt : nfirmwares) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virFirmwareFreeList(firmwaresAlt, nfirmwaresAlt);
+    return ret;
 }
 
 
