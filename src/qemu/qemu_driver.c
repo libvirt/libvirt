@@ -6805,6 +6805,7 @@ qemuDomainSaveImageUpdateDef(virQEMUDriverPtr driver,
 /**
  * qemuDomainSaveImageOpen:
  * @driver: qemu driver data
+ * @qemuCaps: pointer to qemuCaps if the domain is running or NULL
  * @path: path of the save image
  * @ret_def: returns domain definition created from the XML stored in the image
  * @ret_data: returns structure filled with data from the image header
@@ -6819,6 +6820,7 @@ qemuDomainSaveImageUpdateDef(virQEMUDriverPtr driver,
  */
 static int ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
 qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
+                        virQEMUCapsPtr qemuCaps,
                         const char *path,
                         virDomainDefPtr *ret_def,
                         virQEMUSaveDataPtr *ret_data,
@@ -6943,7 +6945,7 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
     }
 
     /* Create a domain from this XML */
-    if (!(def = virDomainDefParseString(data->xml, caps, driver->xmlopt, NULL,
+    if (!(def = virDomainDefParseString(data->xml, caps, driver->xmlopt, qemuCaps,
                                         VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                         VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
         goto error;
@@ -7126,7 +7128,7 @@ qemuDomainRestoreFlags(virConnectPtr conn,
 
     virNWFilterReadLockFilterUpdates();
 
-    fd = qemuDomainSaveImageOpen(driver, path, &def, &data,
+    fd = qemuDomainSaveImageOpen(driver, NULL, path, &def, &data,
                                  (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) != 0,
                                  &wrapperFd, false, false);
     if (fd < 0)
@@ -7223,7 +7225,7 @@ qemuDomainSaveImageGetXMLDesc(virConnectPtr conn, const char *path,
 
     virCheckFlags(VIR_DOMAIN_SAVE_IMAGE_XML_SECURE, NULL);
 
-    fd = qemuDomainSaveImageOpen(driver, path, &def, &data,
+    fd = qemuDomainSaveImageOpen(driver, NULL, path, &def, &data,
                                  false, NULL, false, false);
 
     if (fd < 0)
@@ -7261,7 +7263,7 @@ qemuDomainSaveImageDefineXML(virConnectPtr conn, const char *path,
     else if (flags & VIR_DOMAIN_SAVE_PAUSED)
         state = 0;
 
-    fd = qemuDomainSaveImageOpen(driver, path, &def, &data,
+    fd = qemuDomainSaveImageOpen(driver, NULL, path, &def, &data,
                                  false, NULL, true, false);
 
     if (fd < 0)
@@ -7345,7 +7347,7 @@ qemuDomainManagedSaveGetXMLDesc(virDomainPtr dom, unsigned int flags)
         goto cleanup;
     }
 
-    if ((fd = qemuDomainSaveImageOpen(driver, path, &def, &data,
+    if ((fd = qemuDomainSaveImageOpen(driver, priv->qemuCaps, path, &def, &data,
                                       false, NULL, false, false)) < 0)
         goto cleanup;
 
@@ -7412,7 +7414,7 @@ qemuDomainObjRestore(virConnectPtr conn,
     virQEMUSaveDataPtr data = NULL;
     virFileWrapperFdPtr wrapperFd = NULL;
 
-    fd = qemuDomainSaveImageOpen(driver, path, &def, &data,
+    fd = qemuDomainSaveImageOpen(driver, NULL, path, &def, &data,
                                  bypass_cache, &wrapperFd, false, true);
     if (fd < 0) {
         if (fd == -3)
