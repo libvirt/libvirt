@@ -3948,6 +3948,16 @@ static int testDomainCreate(virDomainPtr domain)
     return testDomainCreateWithFlags(domain, 0);
 }
 
+
+static int testDomainCreateWithFiles(virDomainPtr domain,
+                                     unsigned int nfiles ATTRIBUTE_UNUSED,
+                                     int *files ATTRIBUTE_UNUSED,
+                                     unsigned int flags)
+{
+    return testDomainCreateWithFlags(domain, flags);
+}
+
+
 static int testDomainUndefineFlags(virDomainPtr domain,
                                    unsigned int flags)
 {
@@ -8655,6 +8665,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .connectNumOfDefinedDomains = testConnectNumOfDefinedDomains, /* 0.1.11 */
     .domainCreate = testDomainCreate, /* 0.1.11 */
     .domainCreateWithFlags = testDomainCreateWithFlags, /* 0.8.2 */
+    .domainCreateWithFiles = testDomainCreateWithFiles, /* 5.7.0 */
     .domainDefineXML = testDomainDefineXML, /* 0.1.11 */
     .domainDefineXMLFlags = testDomainDefineXMLFlags, /* 1.2.12 */
     .domainUndefine = testDomainUndefine, /* 0.1.11 */
