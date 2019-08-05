@@ -781,6 +781,7 @@ qemuMigrationCookieCapsXMLFormat(virBufferPtr buf,
 
 static int
 qemuMigrationCookieXMLFormat(virQEMUDriverPtr driver,
+                             virQEMUCapsPtr qemuCaps,
                              virBufferPtr buf,
                              qemuMigrationCookiePtr mig)
 {
@@ -822,6 +823,7 @@ qemuMigrationCookieXMLFormat(virQEMUDriverPtr driver,
     if ((mig->flags & QEMU_MIGRATION_COOKIE_PERSISTENT) &&
         mig->persistent) {
         if (qemuDomainDefFormatBuf(driver,
+                                   qemuCaps,
                                    mig->persistent,
                                    VIR_DOMAIN_XML_INACTIVE |
                                    VIR_DOMAIN_XML_SECURE |
@@ -873,11 +875,12 @@ qemuMigrationCookieXMLFormat(virQEMUDriverPtr driver,
 
 static char *
 qemuMigrationCookieXMLFormatStr(virQEMUDriverPtr driver,
+                                virQEMUCapsPtr qemuCaps,
                                 qemuMigrationCookiePtr mig)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (qemuMigrationCookieXMLFormat(driver, &buf, mig) < 0) {
+    if (qemuMigrationCookieXMLFormat(driver, qemuCaps, &buf, mig) < 0) {
         virBufferFreeAndReset(&buf);
         return NULL;
     }
@@ -1419,6 +1422,8 @@ qemuMigrationBakeCookie(qemuMigrationCookiePtr mig,
                         int *cookieoutlen,
                         unsigned int flags)
 {
+    qemuDomainObjPrivatePtr priv = dom->privateData;
+
     if (!cookieout || !cookieoutlen)
         return 0;
 
@@ -1462,7 +1467,7 @@ qemuMigrationBakeCookie(qemuMigrationCookiePtr mig,
         qemuMigrationCookieAddCaps(mig, dom, party) < 0)
         return -1;
 
-    if (!(*cookieout = qemuMigrationCookieXMLFormatStr(driver, mig)))
+    if (!(*cookieout = qemuMigrationCookieXMLFormatStr(driver, priv->qemuCaps, mig)))
         return -1;
 
     *cookieoutlen = strlen(*cookieout) + 1;

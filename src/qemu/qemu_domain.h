@@ -654,11 +654,13 @@ virDomainDefPtr qemuDomainDefCopy(virQEMUDriverPtr driver,
                                   unsigned int flags);
 
 int qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
+                           virQEMUCapsPtr qemuCaps,
                            virDomainDefPtr vm,
                            unsigned int flags,
                            virBuffer *buf);
 
 char *qemuDomainDefFormatXML(virQEMUDriverPtr driver,
+                             virQEMUCapsPtr qemuCaps,
                              virDomainDefPtr vm,
                              unsigned int flags);
 
@@ -667,6 +669,7 @@ char *qemuDomainFormatXML(virQEMUDriverPtr driver,
                           unsigned int flags);
 
 char *qemuDomainDefFormatLive(virQEMUDriverPtr driver,
+                              virQEMUCapsPtr qemuCaps,
                               virDomainDefPtr def,
                               virCPUDefPtr origCPU,
                               bool inactive,

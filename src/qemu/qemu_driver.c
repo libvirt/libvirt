@@ -3446,9 +3446,10 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver,
             virDomainDefFree(def);
             goto endjob;
         }
-        xml = qemuDomainDefFormatLive(driver, def, NULL, true, true);
+        xml = qemuDomainDefFormatLive(driver, priv->qemuCaps, def, NULL, true, true);
     } else {
-        xml = qemuDomainDefFormatLive(driver, vm->def, priv->origCPU, true, true);
+        xml = qemuDomainDefFormatLive(driver, priv->qemuCaps, vm->def,
+                                      priv->origCPU, true, true);
     }
     if (!xml) {
         virReportError(VIR_ERR_OPERATION_FAILED,
@@ -7231,7 +7232,7 @@ qemuDomainSaveImageGetXMLDesc(virConnectPtr conn, const char *path,
     if (virDomainSaveImageGetXMLDescEnsureACL(conn, def) < 0)
         goto cleanup;
 
-    ret = qemuDomainDefFormatXML(driver, def, flags);
+    ret = qemuDomainDefFormatXML(driver, NULL, def, flags);
 
  cleanup:
     virQEMUSaveDataFree(data);
@@ -7284,7 +7285,7 @@ qemuDomainSaveImageDefineXML(virConnectPtr conn, const char *path,
 
     VIR_FREE(data->xml);
 
-    if (!(data->xml = qemuDomainDefFormatXML(driver, newdef,
+    if (!(data->xml = qemuDomainDefFormatXML(driver, NULL, newdef,
                                              VIR_DOMAIN_XML_INACTIVE |
                                              VIR_DOMAIN_XML_SECURE |
                                              VIR_DOMAIN_XML_MIGRATABLE)))
@@ -7323,11 +7324,14 @@ qemuDomainManagedSaveGetXMLDesc(virDomainPtr dom, unsigned int flags)
     virDomainDefPtr def = NULL;
     int fd = -1;
     virQEMUSaveDataPtr data = NULL;
+    qemuDomainObjPrivatePtr priv;
 
     virCheckFlags(VIR_DOMAIN_SAVE_IMAGE_XML_SECURE, NULL);
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         return ret;
+
+    priv = vm->privateData;
 
     if (virDomainManagedSaveGetXMLDescEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
@@ -7345,7 +7349,7 @@ qemuDomainManagedSaveGetXMLDesc(virDomainPtr dom, unsigned int flags)
                                       false, NULL, false, false)) < 0)
         goto cleanup;
 
-    ret = qemuDomainDefFormatXML(driver, def, flags);
+    ret = qemuDomainDefFormatXML(driver, priv->qemuCaps, def, flags);
 
  cleanup:
     virQEMUSaveDataFree(data);
@@ -15639,7 +15643,8 @@ qemuDomainSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
                                                     "snapshot", false)) < 0)
             goto cleanup;
 
-        if (!(xml = qemuDomainDefFormatLive(driver, vm->def, priv->origCPU,
+        if (!(xml = qemuDomainDefFormatLive(driver, priv->qemuCaps,
+                                            vm->def, priv->origCPU,
                                             true, true)) ||
             !(snapdef->cookie = (virObjectPtr) qemuDomainSaveCookieNew(vm)))
             goto cleanup;
@@ -15897,7 +15902,8 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     } else {
         /* Easiest way to clone inactive portion of vm->def is via
          * conversion in and back out of xml.  */
-        if (!(xml = qemuDomainDefFormatLive(driver, vm->def, priv->origCPU,
+        if (!(xml = qemuDomainDefFormatLive(driver, priv->qemuCaps,
+                                            vm->def, priv->origCPU,
                                             true, true)) ||
             !(def->parent.dom = virDomainDefParseString(xml, caps, driver->xmlopt, NULL,
                                                         VIR_DOMAIN_DEF_PARSE_INACTIVE |
@@ -16997,7 +17003,8 @@ qemuDomainCheckpointPrepare(virQEMUDriverPtr driver, virCapsPtr caps,
 
     /* Easiest way to clone inactive portion of vm->def is via
      * conversion in and back out of xml.  */
-    if (!(xml = qemuDomainDefFormatLive(driver, vm->def, priv->origCPU,
+    if (!(xml = qemuDomainDefFormatLive(driver, priv->qemuCaps,
+                                        vm->def, priv->origCPU,
                                         true, true)) ||
         !(def->parent.dom = virDomainDefParseString(xml, caps, driver->xmlopt, NULL,
                                                     VIR_DOMAIN_DEF_PARSE_INACTIVE |

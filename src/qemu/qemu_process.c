@@ -4644,13 +4644,14 @@ qemuProcessStartHook(virQEMUDriverPtr driver,
                      virHookQemuOpType op,
                      virHookSubopType subop)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     char *xml;
     int ret;
 
     if (!virHookPresent(VIR_HOOK_DRIVER_QEMU))
         return 0;
 
-    if (!(xml = qemuDomainDefFormatXML(driver, vm->def, 0)))
+    if (!(xml = qemuDomainDefFormatXML(driver, priv->qemuCaps, vm->def, 0)))
         return -1;
 
     ret = virHookCall(VIR_HOOK_DRIVER_QEMU, vm->def->name, op, subop,
@@ -7482,7 +7483,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
 
     /* now that we know it's stopped call the hook if present */
     if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
-        char *xml = qemuDomainDefFormatXML(driver, vm->def, 0);
+        char *xml = qemuDomainDefFormatXML(driver, NULL, vm->def, 0);
 
         /* we can't stop the operation even if the script raised an error */
         ignore_value(virHookCall(VIR_HOOK_DRIVER_QEMU, vm->def->name,
@@ -7658,7 +7659,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
 
     /* The "release" hook cleans up additional resources */
     if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
-        char *xml = qemuDomainDefFormatXML(driver, vm->def, 0);
+        char *xml = qemuDomainDefFormatXML(driver, NULL, vm->def, 0);
 
         /* we can't stop the operation even if the script raised an error */
         virHookCall(VIR_HOOK_DRIVER_QEMU, vm->def->name,
@@ -8220,7 +8221,7 @@ qemuProcessReconnect(void *opaque)
 
     /* Run an hook to allow admins to do some magic */
     if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
-        char *xml = qemuDomainDefFormatXML(driver, obj->def, 0);
+        char *xml = qemuDomainDefFormatXML(driver, priv->qemuCaps, obj->def, 0);
         int hookret;
 
         hookret = virHookCall(VIR_HOOK_DRIVER_QEMU, obj->def->name,

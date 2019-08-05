@@ -2083,9 +2083,9 @@ qemuMigrationSrcBeginPhase(virQEMUDriverPtr driver,
         if (!qemuDomainCheckABIStability(driver, vm, def))
             goto cleanup;
 
-        rv = qemuDomainDefFormatLive(driver, def, NULL, false, true);
+        rv = qemuDomainDefFormatLive(driver, priv->qemuCaps, def, NULL, false, true);
     } else {
-        rv = qemuDomainDefFormatLive(driver, vm->def, priv->origCPU,
+        rv = qemuDomainDefFormatLive(driver, priv->qemuCaps, vm->def, priv->origCPU,
                                      false, true);
     }
 
@@ -2355,7 +2355,7 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
         char *xml;
         int hookret;
 
-        if (!(xml = qemuDomainDefFormatXML(driver, *def,
+        if (!(xml = qemuDomainDefFormatXML(driver, NULL, *def,
                                            VIR_DOMAIN_XML_SECURE |
                                            VIR_DOMAIN_XML_MIGRATABLE)))
             goto cleanup;
