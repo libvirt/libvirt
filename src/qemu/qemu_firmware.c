@@ -1413,6 +1413,25 @@ qemuFirmwareFillDomain(virQEMUDriverPtr driver,
 }
 
 
+/**
+ * qemuFirmwareGetSupported:
+ * @machine: machine type
+ * @arch: architecture
+ * @privileged: whether running as privileged user
+ * @supported: returned bitmap of supported interfaces
+ * @secure: true if at least one secure boot enabled FW was found
+ *
+ * Parse all FW descriptors (depending whether running as @privileged this may
+ * or may not include user's $HOME) and for given combination of @machine and
+ * @arch extract information to be later reported in domain capabilities.
+ * The @supported contains a bitmap of found interfaces (and ORed values of 1
+ * << VIR_DOMAIN_OS_DEF_FIRMWARE_*). Then, @supported is true if at least one
+ * FW descriptor signalizes secure boot (although, this is checked against SMM
+ * rather than SECURE_BOOT because reasons).
+ *
+ * Returns: 0 on success,
+ *         -1 otherwise.
+ */
 int
 qemuFirmwareGetSupported(const char *machine,
                          virArch arch,
