@@ -1420,6 +1420,8 @@ qemuFirmwareFillDomain(virQEMUDriverPtr driver,
  * @privileged: whether running as privileged user
  * @supported: returned bitmap of supported interfaces
  * @secure: true if at least one secure boot enabled FW was found
+ * @fws: (optional) list of found firmwares
+ * @nfws: (optional) number of members in @fws
  *
  * Parse all FW descriptors (depending whether running as @privileged this may
  * or may not include user's $HOME) and for given combination of @machine and
@@ -1429,6 +1431,15 @@ qemuFirmwareFillDomain(virQEMUDriverPtr driver,
  * FW descriptor signalizes secure boot (although, this is checked against SMM
  * rather than SECURE_BOOT because reasons).
  *
+ * If @fws and @nfws are not NULL, then @fws is allocated (must be freed by
+ * caller when no longer needed) and contains list of firmwares found in form
+ * of virFirmware. This can be useful if caller wants to know the paths to
+ * firmware images (e.g. to present them in domain capabilities XML).
+ * Moreover, to allow the caller distinguish between no FW descriptors found
+ * and no matching FW descriptors found (nfws == 0 in both cases), the @fws is
+ * going to be allocated in case of the latter anyway (with no real content
+ * though).
+ *
  * Returns: 0 on success,
  *         -1 otherwise.
  */
@@ -1437,7 +1448,9 @@ qemuFirmwareGetSupported(const char *machine,
                          virArch arch,
                          bool privileged,
                          uint64_t *supported,
-                         bool *secure)
+                         bool *secure,
+                         virFirmwarePtr **fws,
+                         size_t *nfws)
 {
     qemuFirmwarePtr *firmwares = NULL;
     ssize_t nfirmwares = 0;
@@ -1446,12 +1459,21 @@ qemuFirmwareGetSupported(const char *machine,
     *supported = VIR_DOMAIN_OS_DEF_FIRMWARE_NONE;
     *secure = false;
 
+    if (fws) {
+        *fws = NULL;
+        *nfws = 0;
+    }
+
     if ((nfirmwares = qemuFirmwareFetchParsedConfigs(privileged,
                                                      &firmwares, NULL)) < 0)
         return -1;
 
     for (i = 0; i < nfirmwares; i++) {
         qemuFirmwarePtr fw = firmwares[i];
+        const qemuFirmwareMappingFlash *flash = &fw->mapping.data.flash;
+        const qemuFirmwareMappingMemory *memory = &fw->mapping.data.memory;
+        const char *fwpath = NULL;
+        const char *nvrampath = NULL;
         size_t j;
 
         if (!qemuFirmwareMatchesMachineArch(fw, machine, arch))
@@ -1491,7 +1513,45 @@ qemuFirmwareGetSupported(const char *machine,
                 break;
             }
         }
+
+        switch (fw->mapping.device) {
+        case QEMU_FIRMWARE_DEVICE_FLASH:
+            fwpath = flash->executable.filename;
+            nvrampath = flash->nvram_template.filename;
+            break;
+
+        case QEMU_FIRMWARE_DEVICE_MEMORY:
+            fwpath = memory->filename;
+            break;
+
+        case QEMU_FIRMWARE_DEVICE_KERNEL:
+        case QEMU_FIRMWARE_DEVICE_NONE:
+        case QEMU_FIRMWARE_DEVICE_LAST:
+            break;
+        }
+
+        if (fws && fwpath) {
+            VIR_AUTOPTR(virFirmware) tmp = NULL;
+
+            /* Append only unique pairs. */
+            for (j = 0; j < *nfws; j++) {
+                if (STREQ((*fws)[j]->name, fwpath) &&
+                    STREQ_NULLABLE((*fws)[j]->nvram, nvrampath))
+                    break;
+            }
+
+            if (j == *nfws &&
+                (VIR_ALLOC(tmp) < 0 ||
+                 VIR_STRDUP(tmp->name, fwpath) < 0 ||
+                 VIR_STRDUP(tmp->nvram, nvrampath) < 0 ||
+                 VIR_APPEND_ELEMENT(*fws, *nfws, tmp) < 0))
+                return -1;
+        }
     }
+
+    if (fws && !*fws && nfirmwares &&
+        VIR_REALLOC_N(*fws, 0) < 0)
+        return -1;
 
     for (i = 0; i < nfirmwares; i++)
         qemuFirmwareFree(firmwares[i]);

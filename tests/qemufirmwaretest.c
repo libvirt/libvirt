@@ -123,7 +123,7 @@ testSupportedFW(const void *opaque)
         expectedInterfaces |= 1ULL << data->interfaces[i];
 
     if (qemuFirmwareGetSupported(data->machine, data->arch, false,
-                                 &actualInterfaces, &actualSecure) < 0) {
+                                 &actualInterfaces, &actualSecure, NULL, NULL) < 0) {
         fprintf(stderr, "Unable to get list of supported interfaces\n");
         return -1;
     }

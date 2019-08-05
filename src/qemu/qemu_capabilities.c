@@ -5185,7 +5185,8 @@ virQEMUCapsFillDomainOSCaps(virDomainCapsOSPtr os,
     os->supported = VIR_TRISTATE_BOOL_YES;
     os->firmware.report = true;
 
-    if (qemuFirmwareGetSupported(machine, arch, privileged, &autoFirmwares, &secure) < 0)
+    if (qemuFirmwareGetSupported(machine, arch, privileged,
+                                 &autoFirmwares, &secure, NULL, NULL) < 0)
         return -1;
 
     if (autoFirmwares & (1ULL << VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS))

@@ -24,6 +24,7 @@
 #include "qemu_conf.h"
 #include "virautoclean.h"
 #include "virarch.h"
+#include "virfirmware.h"
 
 typedef struct _qemuFirmware qemuFirmware;
 typedef qemuFirmware *qemuFirmwarePtr;
@@ -53,6 +54,8 @@ qemuFirmwareGetSupported(const char *machine,
                          virArch arch,
                          bool privileged,
                          uint64_t *supported,
-                         bool *secure);
+                         bool *secure,
+                         virFirmwarePtr **fws,
+                         size_t *nfws);
 
 verify(VIR_DOMAIN_OS_DEF_FIRMWARE_LAST <= 64);
