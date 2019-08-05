@@ -1684,6 +1684,17 @@ testDomainCreateXML(virConnectPtr conn, const char *xml,
 }
 
 
+static virDomainPtr
+testDomainCreateXMLWithFiles(virConnectPtr conn,
+                             const char *xml,
+                             unsigned int nfiles ATTRIBUTE_UNUSED,
+                             int *files ATTRIBUTE_UNUSED,
+                             unsigned int flags)
+{
+    return testDomainCreateXML(conn, xml, flags);
+}
+
+
 static virDomainPtr testDomainLookupByID(virConnectPtr conn,
                                          int id)
 {
@@ -8614,6 +8625,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .connectNumOfDomains = testConnectNumOfDomains, /* 0.1.1 */
     .connectListAllDomains = testConnectListAllDomains, /* 0.9.13 */
     .domainCreateXML = testDomainCreateXML, /* 0.1.4 */
+    .domainCreateXMLWithFiles = testDomainCreateXMLWithFiles, /* 5.7.0 */
     .domainLookupByID = testDomainLookupByID, /* 0.1.1 */
     .domainLookupByUUID = testDomainLookupByUUID, /* 0.1.1 */
     .domainLookupByName = testDomainLookupByName, /* 0.1.1 */
