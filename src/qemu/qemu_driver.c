@@ -3437,7 +3437,8 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver,
     if (xmlin) {
         virDomainDefPtr def = NULL;
 
-        if (!(def = virDomainDefParseString(xmlin, caps, driver->xmlopt, NULL,
+        if (!(def = virDomainDefParseString(xmlin, caps, driver->xmlopt,
+                                            priv->qemuCaps,
                                             VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                             VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE))) {
             goto endjob;
@@ -15907,7 +15908,8 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
         if (!(xml = qemuDomainDefFormatLive(driver, priv->qemuCaps,
                                             vm->def, priv->origCPU,
                                             true, true)) ||
-            !(def->parent.dom = virDomainDefParseString(xml, caps, driver->xmlopt, NULL,
+            !(def->parent.dom = virDomainDefParseString(xml, caps, driver->xmlopt,
+                                                        priv->qemuCaps,
                                                         VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                                         VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
             goto endjob;
@@ -17008,7 +17010,8 @@ qemuDomainCheckpointPrepare(virQEMUDriverPtr driver, virCapsPtr caps,
     if (!(xml = qemuDomainDefFormatLive(driver, priv->qemuCaps,
                                         vm->def, priv->origCPU,
                                         true, true)) ||
-        !(def->parent.dom = virDomainDefParseString(xml, caps, driver->xmlopt, NULL,
+        !(def->parent.dom = virDomainDefParseString(xml, caps, driver->xmlopt,
+                                                    priv->qemuCaps,
                                                     VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                                     VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
         goto cleanup;
