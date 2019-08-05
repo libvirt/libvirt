@@ -367,7 +367,7 @@ virConsoleNew(void)
     if (virConsoleInitialize() < 0)
         return NULL;
 
-    if (!(con = virObjectNew(virConsoleClass)))
+    if (!(con = virObjectLockableNew(virConsoleClass)))
         return NULL;
 
     if (virCondInit(&con->cond) < 0) {
