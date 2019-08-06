@@ -59,9 +59,9 @@ struct _virCPUx86Feature {
     { .type = VIR_CPU_X86_DATA_CPUID, \
       .data = { .cpuid = {__VA_ARGS__} } }
 
-#define KVM_FEATURE_DEF(Name, Eax_in, Eax) \
+#define KVM_FEATURE_DEF(Name, Eax_in, Eax, Edx) \
     static virCPUx86DataItem Name ## _data[] = { \
-        CPUID(.eax_in = Eax_in, .eax = Eax), \
+        CPUID(.eax_in = Eax_in, .eax = Eax, .edx = Edx), \
     }
 
 #define KVM_FEATURE(Name) \
@@ -74,32 +74,32 @@ struct _virCPUx86Feature {
     }
 
 KVM_FEATURE_DEF(VIR_CPU_x86_KVM_PV_UNHALT,
-                0x40000001, 0x00000080);
+                0x40000001, 0x00000080, 0x0);
 
 KVM_FEATURE_DEF(VIR_CPU_x86_HV_RUNTIME,
-                0x40000003, 0x00000001);
+                0x40000003, 0x00000001, 0x0);
 KVM_FEATURE_DEF(VIR_CPU_x86_HV_SYNIC,
-                0x40000003, 0x00000004);
+                0x40000003, 0x00000004, 0x0);
 KVM_FEATURE_DEF(VIR_CPU_x86_HV_STIMER,
-                0x40000003, 0x00000008);
+                0x40000003, 0x00000008, 0x0);
 KVM_FEATURE_DEF(VIR_CPU_x86_HV_RELAXED,
-                0x40000003, 0x00000020);
+                0x40000003, 0x00000020, 0x0);
 KVM_FEATURE_DEF(VIR_CPU_x86_HV_VAPIC,
-                0x40000003, 0x00000030);
+                0x40000003, 0x00000030, 0x0);
 KVM_FEATURE_DEF(VIR_CPU_x86_HV_VPINDEX,
-                0x40000003, 0x00000040);
+                0x40000003, 0x00000040, 0x0);
 KVM_FEATURE_DEF(VIR_CPU_x86_HV_RESET,
-                0x40000003, 0x00000080);
+                0x40000003, 0x00000080, 0x0);
 KVM_FEATURE_DEF(VIR_CPU_x86_HV_FREQUENCIES,
-                0x40000003, 0x00000800);
+                0x40000003, 0x00000800, 0x0);
 KVM_FEATURE_DEF(VIR_CPU_x86_HV_REENLIGHTENMENT,
-                0x40000003, 0x00002000);
+                0x40000003, 0x00002000, 0x0);
 KVM_FEATURE_DEF(VIR_CPU_x86_HV_TLBFLUSH,
-                0x40000004, 0x00000004);
+                0x40000004, 0x00000004, 0x0);
 KVM_FEATURE_DEF(VIR_CPU_x86_HV_IPI,
-                0x40000004, 0x00000400);
+                0x40000004, 0x00000400, 0x0);
 KVM_FEATURE_DEF(VIR_CPU_x86_HV_EVMCS,
-                0x40000004, 0x00004000);
+                0x40000004, 0x00004000, 0x0);
 
 static virCPUx86Feature x86_kvm_features[] =
 {
