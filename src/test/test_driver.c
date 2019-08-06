@@ -2004,6 +2004,28 @@ static int testDomainReboot(virDomainPtr domain,
 }
 
 
+static int
+testDomainReset(virDomainPtr dom,
+                unsigned int flags)
+{
+    virDomainObjPtr vm;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        return -1;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
 static char *
 testDomainGetHostname(virDomainPtr domain,
                       unsigned int flags)
@@ -8878,6 +8900,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainShutdown = testDomainShutdown, /* 0.1.1 */
     .domainShutdownFlags = testDomainShutdownFlags, /* 0.9.10 */
     .domainReboot = testDomainReboot, /* 0.1.1 */
+    .domainReset = testDomainReset, /* 5.7.0 */
     .domainDestroy = testDomainDestroy, /* 0.1.1 */
     .domainDestroyFlags = testDomainDestroyFlags, /* 4.2.0 */
     .domainGetOSType = testDomainGetOSType, /* 0.1.9 */
