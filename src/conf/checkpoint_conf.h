@@ -75,6 +75,7 @@ virDomainCheckpointDefPtr
 virDomainCheckpointDefParseString(const char *xmlStr,
                                   virCapsPtr caps,
                                   virDomainXMLOptionPtr xmlopt,
+                                  void *parseOpaque,
                                   unsigned int flags);
 
 virDomainCheckpointDefPtr

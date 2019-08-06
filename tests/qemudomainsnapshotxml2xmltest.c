@@ -55,7 +55,7 @@ testCompareXMLToXMLFiles(const char *inxml,
         goto cleanup;
 
     if (!(def = virDomainSnapshotDefParseString(inXmlData, driver.caps,
-                                                driver.xmlopt, &cur,
+                                                driver.xmlopt, NULL, &cur,
                                                 parseflags)))
         goto cleanup;
     if (cur) {

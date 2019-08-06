@@ -228,6 +228,7 @@ static virDomainSnapshotDefPtr
 virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
                           virCapsPtr caps,
                           virDomainXMLOptionPtr xmlopt,
+                          void *parseOpaque,
                           bool *current,
                           unsigned int flags)
 {
@@ -303,7 +304,8 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
                 goto cleanup;
             }
             def->parent.dom = virDomainDefParseNode(ctxt->node->doc, domainNode,
-                                                    caps, xmlopt, NULL, domainflags);
+                                                    caps, xmlopt, parseOpaque,
+                                                    domainflags);
             if (!def->parent.dom)
                 goto cleanup;
         } else {
@@ -413,6 +415,7 @@ virDomainSnapshotDefParseNode(xmlDocPtr xml,
                               xmlNodePtr root,
                               virCapsPtr caps,
                               virDomainXMLOptionPtr xmlopt,
+                              void *parseOpaque,
                               bool *current,
                               unsigned int flags)
 {
@@ -443,7 +446,7 @@ virDomainSnapshotDefParseNode(xmlDocPtr xml,
     }
 
     ctxt->node = root;
-    def = virDomainSnapshotDefParse(ctxt, caps, xmlopt, current, flags);
+    def = virDomainSnapshotDefParse(ctxt, caps, xmlopt, parseOpaque, current, flags);
  cleanup:
     xmlXPathFreeContext(ctxt);
     return def;
@@ -453,6 +456,7 @@ virDomainSnapshotDefPtr
 virDomainSnapshotDefParseString(const char *xmlStr,
                                 virCapsPtr caps,
                                 virDomainXMLOptionPtr xmlopt,
+                                void *parseOpaque,
                                 bool *current,
                                 unsigned int flags)
 {
@@ -463,7 +467,8 @@ virDomainSnapshotDefParseString(const char *xmlStr,
     if ((xml = virXMLParse(NULL, xmlStr, _("(domain_snapshot)")))) {
         xmlKeepBlanksDefault(keepBlanksDefault);
         ret = virDomainSnapshotDefParseNode(xml, xmlDocGetRootElement(xml),
-                                            caps, xmlopt, current, flags);
+                                            caps, xmlopt, parseOpaque,
+                                            current, flags);
         xmlFreeDoc(xml);
     }
     xmlKeepBlanksDefault(keepBlanksDefault);

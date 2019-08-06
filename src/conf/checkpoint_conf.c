@@ -128,6 +128,7 @@ static virDomainCheckpointDefPtr
 virDomainCheckpointDefParse(xmlXPathContextPtr ctxt,
                             virCapsPtr caps,
                             virDomainXMLOptionPtr xmlopt,
+                            void *parseOpaque,
                             unsigned int flags)
 {
     virDomainCheckpointDefPtr ret = NULL;
@@ -174,7 +175,7 @@ virDomainCheckpointDefParse(xmlXPathContextPtr ctxt,
                 return NULL;
             }
             def->parent.dom = virDomainDefParseNode(ctxt->node->doc, domainNode,
-                                                    caps, xmlopt, NULL,
+                                                    caps, xmlopt, parseOpaque,
                                                     domainflags);
             if (!def->parent.dom)
                 return NULL;
@@ -207,6 +208,7 @@ virDomainCheckpointDefParseNode(xmlDocPtr xml,
                                 xmlNodePtr root,
                                 virCapsPtr caps,
                                 virDomainXMLOptionPtr xmlopt,
+                                void *parseOpaque,
                                 unsigned int flags)
 {
     xmlXPathContextPtr ctxt = NULL;
@@ -234,7 +236,7 @@ virDomainCheckpointDefParseNode(xmlDocPtr xml,
     }
 
     ctxt->node = root;
-    def = virDomainCheckpointDefParse(ctxt, caps, xmlopt, flags);
+    def = virDomainCheckpointDefParse(ctxt, caps, xmlopt, parseOpaque, flags);
  cleanup:
     xmlXPathFreeContext(ctxt);
     return def;
@@ -244,6 +246,7 @@ virDomainCheckpointDefPtr
 virDomainCheckpointDefParseString(const char *xmlStr,
                                   virCapsPtr caps,
                                   virDomainXMLOptionPtr xmlopt,
+                                  void *parseOpaque,
                                   unsigned int flags)
 {
     virDomainCheckpointDefPtr ret = NULL;
@@ -253,7 +256,7 @@ virDomainCheckpointDefParseString(const char *xmlStr,
     if ((xml = virXMLParse(NULL, xmlStr, _("(domain_checkpoint)")))) {
         xmlKeepBlanksDefault(keepBlanksDefault);
         ret = virDomainCheckpointDefParseNode(xml, xmlDocGetRootElement(xml),
-                                              caps, xmlopt, flags);
+                                              caps, xmlopt, parseOpaque, flags);
         xmlFreeDoc(xml);
     }
     xmlKeepBlanksDefault(keepBlanksDefault);

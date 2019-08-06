@@ -5505,7 +5505,7 @@ vboxDomainSnapshotCreateXML(virDomainPtr dom,
         parse_flags |= VIR_DOMAIN_SNAPSHOT_PARSE_VALIDATE;
 
     if (!(def = virDomainSnapshotDefParseString(xmlDesc, data->caps,
-                                                data->xmlopt, NULL,
+                                                data->xmlopt, NULL, NULL,
                                                 parse_flags)))
         goto cleanup;
 
@@ -6949,7 +6949,7 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
     }
     def = virDomainSnapshotDefParseString(defXml,
                                           data->caps,
-                                          data->xmlopt, NULL,
+                                          data->xmlopt, NULL, NULL,
                                           VIR_DOMAIN_SNAPSHOT_PARSE_DISKS |
                                           VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE);
     if (!def) {

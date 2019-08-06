@@ -54,7 +54,7 @@ testCompareXMLToXMLFiles(const char *inxml,
         return -1;
 
     if (!(def = virDomainCheckpointDefParseString(inXmlData, driver.caps,
-                                                  driver.xmlopt,
+                                                  driver.xmlopt, NULL,
                                                   parseflags))) {
         if (flags & TEST_INVALID)
             return 0;

@@ -106,12 +106,14 @@ unsigned int virDomainSnapshotFormatConvertXMLFlags(unsigned int flags);
 virDomainSnapshotDefPtr virDomainSnapshotDefParseString(const char *xmlStr,
                                                         virCapsPtr caps,
                                                         virDomainXMLOptionPtr xmlopt,
+                                                        void *parseOpaque,
                                                         bool *current,
                                                         unsigned int flags);
 virDomainSnapshotDefPtr virDomainSnapshotDefParseNode(xmlDocPtr xml,
                                                       xmlNodePtr root,
                                                       virCapsPtr caps,
                                                       virDomainXMLOptionPtr xmlopt,
+                                                      void *parseOpaque,
                                                       bool *current,
                                                       unsigned int flags);
 virDomainSnapshotDefPtr virDomainSnapshotDefNew(void);

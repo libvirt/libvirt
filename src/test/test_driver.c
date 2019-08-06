@@ -902,6 +902,7 @@ testParseDomainSnapshots(testDriverPtr privconn,
         def = virDomainSnapshotDefParseNode(ctxt->doc, node,
                                             privconn->caps,
                                             privconn->xmlopt,
+                                            NULL,
                                             &cur,
                                             VIR_DOMAIN_SNAPSHOT_PARSE_DISKS |
                                             VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL |
@@ -8207,7 +8208,7 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
     if (!(def = virDomainSnapshotDefParseString(xmlDesc,
                                                 privconn->caps,
                                                 privconn->xmlopt,
-                                                NULL,
+                                                NULL, NULL,
                                                 parse_flags)))
         goto cleanup;
 
@@ -8668,7 +8669,7 @@ testDomainCheckpointCreateXML(virDomainPtr domain,
     }
 
     if (!(def = virDomainCheckpointDefParseString(xmlDesc, privconn->caps,
-                                                  privconn->xmlopt,
+                                                  privconn->xmlopt, NULL,
                                                   parse_flags)))
         goto cleanup;
 

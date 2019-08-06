@@ -464,8 +464,12 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
     int ret = -1;
     virCapsPtr caps = NULL;
     int direrr;
+    qemuDomainObjPrivatePtr priv;
 
     virObjectLock(vm);
+
+    priv = vm->privateData;
+
     if (virAsprintf(&snapDir, "%s/%s", baseDir, vm->def->name) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to allocate memory for "
@@ -504,7 +508,8 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
         }
 
         def = virDomainSnapshotDefParseString(xmlStr, caps,
-                                              qemu_driver->xmlopt, &cur,
+                                              qemu_driver->xmlopt,
+                                              priv->qemuCaps, &cur,
                                               flags);
         if (def == NULL) {
             /* Nothing we can do here, skip this one */
@@ -579,8 +584,11 @@ qemuDomainCheckpointLoad(virDomainObjPtr vm,
     int ret = -1;
     virCapsPtr caps = NULL;
     int direrr;
+    qemuDomainObjPrivatePtr priv;
 
     virObjectLock(vm);
+    priv = vm->privateData;
+
     if (virAsprintf(&chkDir, "%s/%s", baseDir, vm->def->name) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to allocate memory for "
@@ -620,6 +628,7 @@ qemuDomainCheckpointLoad(virDomainObjPtr vm,
 
         def = virDomainCheckpointDefParseString(xmlStr, caps,
                                                 qemu_driver->xmlopt,
+                                                priv->qemuCaps,
                                                 flags);
         if (!def || virDomainCheckpointAlignDisks(def) < 0) {
             /* Nothing we can do here, skip this one */
@@ -15804,6 +15813,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
         goto cleanup;
     }
 
+    priv = vm->privateData;
     cfg = virQEMUDriverGetConfig(driver);
 
     if (virDomainSnapshotCreateXMLEnsureACL(domain->conn, vm->def, flags) < 0)
@@ -15831,7 +15841,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
         parse_flags |= VIR_DOMAIN_SNAPSHOT_PARSE_VALIDATE;
 
     if (!(def = virDomainSnapshotDefParseString(xmlDesc, caps, driver->xmlopt,
-                                                NULL, parse_flags)))
+                                                priv->qemuCaps, NULL, parse_flags)))
         goto cleanup;
 
     /* reject snapshot names containing slashes or starting with dot as
@@ -15907,8 +15917,6 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
         goto cleanup;
 
     qemuDomainObjSetAsyncJobMask(vm, QEMU_JOB_NONE);
-
-    priv = vm->privateData;
 
     if (redefine) {
         if (virDomainSnapshotRedefinePrep(domain, vm, &def, &snap,
@@ -17182,7 +17190,7 @@ qemuDomainCheckpointCreateXML(virDomainPtr domain,
     }
 
     if (!(def = virDomainCheckpointDefParseString(xmlDesc, caps, driver->xmlopt,
-                                                  parse_flags)))
+                                                  priv->qemuCaps, parse_flags)))
         goto cleanup;
     /* Unlike snapshots, the RNG schema already ensured a sane filename. */
 
