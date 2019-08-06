@@ -187,7 +187,8 @@ static int testIdentityGetSystem(const void *data)
         goto cleanup;
 
     if (STRNEQ_NULLABLE(val, context)) {
-        VIR_DEBUG("Unexpected SELinux context attribute");
+        VIR_DEBUG("Want SELinux context '%s' got '%s'",
+                  context, val);
         goto cleanup;
     }
 

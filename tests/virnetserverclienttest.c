@@ -140,8 +140,8 @@ static int testIdentity(const void *opaque ATTRIBUTE_UNUSED)
         goto cleanup;
     }
     if (STRNEQ_NULLABLE("foo_u:bar_r:wizz_t:s0-s0:c0.c1023", gotSELinuxContext)) {
-        fprintf(stderr, "Want groupname 'foo_u:bar_r:wizz_t:s0-s0:c0.c1023' got '%s'\n",
-                NULLSTR(gotGroupID));
+        fprintf(stderr, "Want SELinux context 'foo_u:bar_r:wizz_t:s0-s0:c0.c1023' got '%s'\n",
+                NULLSTR(gotSELinuxContext));
         goto cleanup;
     }
 
