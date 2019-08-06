@@ -2678,8 +2678,21 @@ qemuBuildFilesystemCommandLine(virCommandPtr cmd,
     size_t i;
 
     for (i = 0; i < def->nfss; i++) {
-        if (qemuBuildFSDevCommandLine(cmd, def->fss[i], def, qemuCaps) < 0)
-            return -1;
+        switch ((virDomainFSDriverType) def->fss[i]->fsdriver) {
+        case VIR_DOMAIN_FS_DRIVER_TYPE_DEFAULT:
+        case VIR_DOMAIN_FS_DRIVER_TYPE_PATH:
+        case VIR_DOMAIN_FS_DRIVER_TYPE_HANDLE:
+            /* these drivers are handled by virtio-9p-pci */
+            if (qemuBuildFSDevCommandLine(cmd, def->fss[i], def, qemuCaps) < 0)
+                return -1;
+            break;
+
+        case VIR_DOMAIN_FS_DRIVER_TYPE_LOOP:
+        case VIR_DOMAIN_FS_DRIVER_TYPE_NBD:
+        case VIR_DOMAIN_FS_DRIVER_TYPE_PLOOP:
+        case VIR_DOMAIN_FS_DRIVER_TYPE_LAST:
+            break;
+        }
     }
 
     return 0;
