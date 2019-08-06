@@ -20737,7 +20737,7 @@ qemuDomainGetResctrlMonData(virQEMUDriverPtr driver,
     virDomainResctrlDefPtr resctrl = NULL;
     virQEMUResctrlMonDataPtr res = NULL;
     char **features = NULL;
-    virCapsPtr caps = NULL;
+    VIR_AUTOUNREF(virCapsPtr) caps = NULL;
     size_t i = 0;
     size_t j = 0;
 
