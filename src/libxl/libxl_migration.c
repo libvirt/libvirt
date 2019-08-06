@@ -1343,7 +1343,7 @@ libxlDomainMigrationDstFinish(virConnectPtr dconn,
 
         vm->persistent = 1;
         if (!(vmdef = virDomainObjGetPersistentDef(cfg->caps,
-                                                   driver->xmlopt, vm)))
+                                                   driver->xmlopt, vm, NULL)))
             goto cleanup;
 
         if (virDomainSaveConfig(cfg->configDir, cfg->caps, vmdef) < 0)

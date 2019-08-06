@@ -713,7 +713,7 @@ testDomainStartState(testDriverPtr privconn,
 
     if (virDomainObjSetDefTransient(privconn->caps,
                                     privconn->xmlopt,
-                                    dom) < 0) {
+                                    dom, NULL) < 0) {
         goto cleanup;
     }
 

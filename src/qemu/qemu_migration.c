@@ -4853,6 +4853,7 @@ qemuMigrationDstPersist(virQEMUDriverPtr driver,
                         bool ignoreSaveError)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     virCapsPtr caps = NULL;
     virDomainDefPtr vmdef;
     virDomainDefPtr oldDef = NULL;
@@ -4867,7 +4868,8 @@ qemuMigrationDstPersist(virQEMUDriverPtr driver,
     oldDef = vm->newDef;
     vm->newDef = qemuMigrationCookieGetPersistent(mig);
 
-    if (!(vmdef = virDomainObjGetPersistentDef(caps, driver->xmlopt, vm)))
+    if (!(vmdef = virDomainObjGetPersistentDef(caps, driver->xmlopt, vm,
+                                               priv->qemuCaps)))
         goto error;
 
     if (virDomainSaveConfig(cfg->configDir, driver->caps, vmdef) < 0 &&

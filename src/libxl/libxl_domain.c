@@ -1340,7 +1340,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver,
         VIR_FREE(managed_save_path);
     }
 
-    if (virDomainObjSetDefTransient(cfg->caps, driver->xmlopt, vm) < 0)
+    if (virDomainObjSetDefTransient(cfg->caps, driver->xmlopt, vm, NULL) < 0)
         goto cleanup;
 
     /* Run an early hook to set-up missing devices */

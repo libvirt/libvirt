@@ -1607,7 +1607,7 @@ virDomainLiveConfigHelperMethod(virCapsPtr caps,
         return -1;
 
     if (*flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        if (!(*persistentDef = virDomainObjGetPersistentDef(caps, xmlopt, dom))) {
+        if (!(*persistentDef = virDomainObjGetPersistentDef(caps, xmlopt, dom, NULL))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Get persistent config failed"));
             return -1;
@@ -2294,7 +2294,7 @@ libxlDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         goto endjob;
     }
 
-    if (!(def = virDomainObjGetPersistentDef(cfg->caps, driver->xmlopt, vm)))
+    if (!(def = virDomainObjGetPersistentDef(cfg->caps, driver->xmlopt, vm, NULL)))
         goto endjob;
 
     maplen = VIR_CPU_MAPLEN(nvcpus);
@@ -4126,7 +4126,7 @@ libxlDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
 
         /* Make a copy for updated domain. */
         if (!(vmdef = virDomainObjCopyPersistentDef(vm, cfg->caps,
-                                                    driver->xmlopt)))
+                                                    driver->xmlopt, NULL)))
             goto endjob;
 
         if (libxlDomainAttachDeviceConfig(vmdef, dev) < 0)
@@ -4216,7 +4216,7 @@ libxlDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
 
         /* Make a copy for updated domain. */
         if (!(vmdef = virDomainObjCopyPersistentDef(vm, cfg->caps,
-                                                    driver->xmlopt)))
+                                                    driver->xmlopt, NULL)))
             goto endjob;
 
         if (libxlDomainDetachDeviceConfig(vmdef, dev) < 0)
@@ -4303,7 +4303,7 @@ libxlDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
 
         /* Make a copy for updated domain. */
         if (!(vmdef = virDomainObjCopyPersistentDef(vm, cfg->caps,
-                                                    driver->xmlopt)))
+                                                    driver->xmlopt, NULL)))
             goto cleanup;
 
         if ((ret = libxlDomainUpdateDeviceConfig(vmdef, dev)) < 0)

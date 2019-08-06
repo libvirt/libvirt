@@ -3674,7 +3674,8 @@ virDomainObjWaitUntil(virDomainObjPtr vm,
 int
 virDomainObjSetDefTransient(virCapsPtr caps,
                             virDomainXMLOptionPtr xmlopt,
-                            virDomainObjPtr domain)
+                            virDomainObjPtr domain,
+                            void *parseOpaque)
 {
     int ret = -1;
 
@@ -3684,7 +3685,8 @@ virDomainObjSetDefTransient(virCapsPtr caps,
     if (domain->newDef)
         return 0;
 
-    if (!(domain->newDef = virDomainDefCopy(domain->def, caps, xmlopt, NULL, false)))
+    if (!(domain->newDef = virDomainDefCopy(domain->def, caps, xmlopt,
+                                            parseOpaque, false)))
         goto out;
 
     ret = 0;
@@ -3723,10 +3725,11 @@ virDomainObjRemoveTransientDef(virDomainObjPtr domain)
 virDomainDefPtr
 virDomainObjGetPersistentDef(virCapsPtr caps,
                              virDomainXMLOptionPtr xmlopt,
-                             virDomainObjPtr domain)
+                             virDomainObjPtr domain,
+                             void *parseOpaque)
 {
     if (virDomainObjIsActive(domain) &&
-        virDomainObjSetDefTransient(caps, xmlopt, domain) < 0)
+        virDomainObjSetDefTransient(caps, xmlopt, domain, parseOpaque) < 0)
         return NULL;
 
     if (domain->newDef)
@@ -29341,12 +29344,13 @@ virDomainDefCopy(virDomainDefPtr src,
 virDomainDefPtr
 virDomainObjCopyPersistentDef(virDomainObjPtr dom,
                               virCapsPtr caps,
-                              virDomainXMLOptionPtr xmlopt)
+                              virDomainXMLOptionPtr xmlopt,
+                              void *parseOpaque)
 {
     virDomainDefPtr cur;
 
-    cur = virDomainObjGetPersistentDef(caps, xmlopt, dom);
-    return virDomainDefCopy(cur, caps, xmlopt, NULL, false);
+    cur = virDomainObjGetPersistentDef(caps, xmlopt, dom, parseOpaque);
+    return virDomainDefCopy(cur, caps, xmlopt, parseOpaque, false);
 }
 
 

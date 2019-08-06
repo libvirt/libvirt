@@ -2902,12 +2902,14 @@ void virDomainObjAssignDef(virDomainObjPtr domain,
                            virDomainDefPtr *oldDef);
 int virDomainObjSetDefTransient(virCapsPtr caps,
                                 virDomainXMLOptionPtr xmlopt,
-                                virDomainObjPtr domain);
+                                virDomainObjPtr domain,
+                                void *parseOpaque);
 void virDomainObjRemoveTransientDef(virDomainObjPtr domain);
 virDomainDefPtr
 virDomainObjGetPersistentDef(virCapsPtr caps,
                              virDomainXMLOptionPtr xmlopt,
-                             virDomainObjPtr domain);
+                             virDomainObjPtr domain,
+                             void *parseOpaque);
 
 int virDomainObjUpdateModificationImpact(virDomainObjPtr vm,
                                          unsigned int *flags);
@@ -2928,7 +2930,8 @@ virDomainDefPtr virDomainDefCopy(virDomainDefPtr src,
                                  bool migratable);
 virDomainDefPtr virDomainObjCopyPersistentDef(virDomainObjPtr dom,
                                               virCapsPtr caps,
-                                              virDomainXMLOptionPtr xmlopt);
+                                              virDomainXMLOptionPtr xmlopt,
+                                              void *parseOpaque);
 
 typedef enum {
     /* parse internal domain status information */

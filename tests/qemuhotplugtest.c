@@ -427,7 +427,7 @@ testQemuHotplugCpuPrepare(const char *test,
 
     /* create vm->newDef */
     data->vm->persistent = true;
-    if (virDomainObjSetDefTransient(caps, driver.xmlopt, data->vm) < 0)
+    if (virDomainObjSetDefTransient(caps, driver.xmlopt, data->vm, NULL) < 0)
         goto error;
 
     priv = data->vm->privateData;
