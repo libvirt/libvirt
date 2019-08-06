@@ -2575,6 +2575,46 @@ qemuBuildDisksCommandLine(virCommandPtr cmd,
 }
 
 
+static int
+qemuBuildVHostUserFsCommandLine(virCommandPtr cmd,
+                                virDomainFSDef *fs,
+                                const virDomainDef *def,
+                                qemuDomainObjPrivatePtr priv)
+{
+    g_autofree char *chardev_alias = NULL;
+    g_auto(virBuffer) opt = VIR_BUFFER_INITIALIZER;
+
+    chardev_alias = g_strdup_printf("chr-vu-%s", fs->info.alias);
+
+    virCommandAddArg(cmd, "-chardev");
+    virBufferAddLit(&opt, "socket");
+    virBufferAsprintf(&opt, ",id=%s", chardev_alias);
+    virBufferAddLit(&opt, ",path=");
+    virQEMUBuildBufferEscapeComma(&opt, QEMU_DOMAIN_FS_PRIVATE(fs)->vhostuser_fs_sock);
+    virCommandAddArgBuffer(cmd, &opt);
+
+    virCommandAddArg(cmd, "-device");
+
+    if (qemuBuildVirtioDevStr(&opt, "vhost-user-fs", priv->qemuCaps,
+                              VIR_DOMAIN_DEVICE_FS, fs) < 0)
+        return -1;
+
+    virBufferAsprintf(&opt, ",chardev=%s", chardev_alias);
+    if (fs->queue_size)
+        virBufferAsprintf(&opt, ",queue-size=%llu", fs->queue_size);
+    virBufferAddLit(&opt, ",tag=");
+    virQEMUBuildBufferEscapeComma(&opt, fs->dst);
+    if (qemuBuildVirtioOptionsStr(&opt, fs->virtio, priv->qemuCaps) < 0)
+        return -1;
+
+    if (qemuBuildDeviceAddressStr(&opt, def, &fs->info, priv->qemuCaps) < 0)
+        return -1;
+
+    virCommandAddArgBuffer(cmd, &opt);
+    return 0;
+}
+
+
 static char *
 qemuBuildFSStr(virDomainFSDefPtr fs)
 {
@@ -2667,7 +2707,7 @@ static int
 qemuBuildFilesystemCommandLine(virCommandPtr cmd,
                                const virDomainDef *def,
                                virQEMUCapsPtr qemuCaps,
-                               qemuDomainObjPrivatePtr priv G_GNUC_UNUSED)
+                               qemuDomainObjPrivatePtr priv)
 {
     size_t i;
 
@@ -2682,7 +2722,9 @@ qemuBuildFilesystemCommandLine(virCommandPtr cmd,
             break;
 
         case VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS:
-            /* TODO: vhost-user-fs-pci */
+            /* vhost-user-fs-pci */
+            if (qemuBuildVHostUserFsCommandLine(cmd, def->fss[i], def, priv) < 0)
+                return -1;
             break;
 
         case VIR_DOMAIN_FS_DRIVER_TYPE_LOOP:

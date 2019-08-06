@@ -1,0 +1,47 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/tmp/lib/domain--1-guest \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/tmp/lib/domain--1-guest/.local/share \
+XDG_CACHE_HOME=/tmp/lib/domain--1-guest/.cache \
+XDG_CONFIG_HOME=/tmp/lib/domain--1-guest/.config \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-x86_64 \
+-name guest=guest,debug-threads=on \
+-S \
+-object secret,id=masterKey0,format=raw,\
+file=/tmp/lib/domain--1-guest/master-key.aes \
+-machine q35,accel=tcg,usb=off,dump-guest-core=off \
+-cpu qemu64 \
+-m 2048 \
+-overcommit mem-lock=off \
+-smp 2,sockets=2,cores=1,threads=1 \
+-object memory-backend-file,id=ram-node0,prealloc=yes,\
+mem-path=/dev/hugepages2M/libvirt/qemu/-1-guest,share=yes,size=2147483648 \
+-numa node,nodeid=0,cpus=0-1,memdev=ram-node0 \
+-uuid 1ccfd97d-5eb4-478a-bbe6-88d254c16db7 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-boot strict=on \
+-device pcie-root-port,port=0x8,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,\
+addr=0x1 \
+-device pcie-root-port,port=0x9,chassis=2,id=pci.2,bus=pcie.0,addr=0x1.0x1 \
+-device pcie-root-port,port=0xa,chassis=3,id=pci.3,bus=pcie.0,addr=0x1.0x2 \
+-device pcie-root-port,port=0xb,chassis=4,id=pci.4,bus=pcie.0,addr=0x1.0x3 \
+-blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/guest.qcow2",\
+"node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"qcow2",\
+"file":"libvirt-1-storage"}' \
+-device virtio-blk-pci,scsi=off,bus=pci.4,addr=0x0,drive=libvirt-1-format,\
+id=virtio-disk0,bootindex=1 \
+-chardev socket,id=chr-vu-fs0,path=/tmp/lib/domain--1-guest/fs0.vhost-fs.sock \
+-device vhost-user-fs-pci,chardev=chr-vu-fs0,tag=mount_tag,bus=pci.1,addr=0x0 \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
+resourcecontrol=deny \
+-msg timestamp=on

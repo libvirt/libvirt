@@ -3061,6 +3061,9 @@ mymain(void)
 
     DO_TEST_CAPS_VER("launch-security-sev", "2.12.0");
 
+    DO_TEST_CAPS_LATEST("vhost-user-fs-fd-memory");
+    DO_TEST_CAPS_LATEST("vhost-user-fs-hugepages");
+
     DO_TEST("riscv64-virt",
             QEMU_CAPS_DEVICE_VIRTIO_MMIO);
     DO_TEST("riscv64-virt-pci",
