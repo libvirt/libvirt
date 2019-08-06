@@ -1197,6 +1197,7 @@ qemuMigrationCookieCapsXMLParse(xmlXPathContextPtr ctxt)
 static int
 qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
                             virQEMUDriverPtr driver,
+                            virQEMUCapsPtr qemuCaps,
                             xmlDocPtr doc,
                             xmlXPathContextPtr ctxt,
                             unsigned int flags)
@@ -1338,7 +1339,7 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
             goto error;
         }
         mig->persistent = virDomainDefParseNode(doc, nodes[0],
-                                                caps, driver->xmlopt, NULL,
+                                                caps, driver->xmlopt, qemuCaps,
                                                 VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                                 VIR_DOMAIN_DEF_PARSE_ABI_UPDATE_MIGRATION |
                                                 VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
@@ -1391,6 +1392,7 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
 static int
 qemuMigrationCookieXMLParseStr(qemuMigrationCookiePtr mig,
                                virQEMUDriverPtr driver,
+                               virQEMUCapsPtr qemuCaps,
                                const char *xml,
                                unsigned int flags)
 {
@@ -1403,7 +1405,7 @@ qemuMigrationCookieXMLParseStr(qemuMigrationCookiePtr mig,
     if (!(doc = virXMLParseStringCtxt(xml, _("(qemu_migration_cookie)"), &ctxt)))
         goto cleanup;
 
-    ret = qemuMigrationCookieXMLParse(mig, driver, doc, ctxt, flags);
+    ret = qemuMigrationCookieXMLParse(mig, driver, qemuCaps, doc, ctxt, flags);
 
  cleanup:
     xmlXPathFreeContext(ctxt);
@@ -1505,6 +1507,7 @@ qemuMigrationEatCookie(virQEMUDriverPtr driver,
     if (cookiein && cookieinlen &&
         qemuMigrationCookieXMLParseStr(mig,
                                        driver,
+                                       priv->qemuCaps,
                                        cookiein,
                                        flags) < 0)
         goto error;
