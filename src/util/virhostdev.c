@@ -353,7 +353,7 @@ virHostdevNetDevice(virDomainHostdevDefPtr hostdev,
 
 
 static bool
-virHostdevIsPCINetDevice(virDomainHostdevDefPtr hostdev)
+virHostdevIsPCINetDevice(const virDomainHostdevDef *hostdev)
 {
     return hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
         hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
@@ -368,7 +368,7 @@ virHostdevIsPCINetDevice(virDomainHostdevDefPtr hostdev)
  * Returns true if @hostdev is a SCSI device, false otherwise.
  */
 bool
-virHostdevIsSCSIDevice(virDomainHostdevDefPtr hostdev)
+virHostdevIsSCSIDevice(const virDomainHostdevDef *hostdev)
 {
     return hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
         hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI;
@@ -382,7 +382,7 @@ virHostdevIsSCSIDevice(virDomainHostdevDefPtr hostdev)
  * Returns true if @hostdev is a Mediated device, false otherwise.
  */
 bool
-virHostdevIsMdevDevice(virDomainHostdevDefPtr hostdev)
+virHostdevIsMdevDevice(const virDomainHostdevDef *hostdev)
 {
     return hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
         hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV;
