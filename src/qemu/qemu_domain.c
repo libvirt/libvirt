@@ -11761,9 +11761,7 @@ getPPC64MemLockLimitBytes(virDomainDefPtr def)
     for (i = 0; i < def->nhostdevs; i++) {
         virDomainHostdevDefPtr dev = def->hostdevs[i];
 
-        if (dev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-            dev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
-            dev->source.subsys.u.pci.backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
+        if (virHostdevIsVFIODevice(dev)) {
             usesVFIO = true;
 
             pciAddr = &dev->source.subsys.u.pci.addr;
@@ -11915,12 +11913,8 @@ qemuDomainGetMemLockLimitBytes(virDomainDefPtr def)
      * Note that this may not be valid for all platforms.
      */
     for (i = 0; i < def->nhostdevs; i++) {
-        virDomainHostdevSubsysPtr subsys = &def->hostdevs[i]->source.subsys;
-
-        if (def->hostdevs[i]->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-            (subsys->type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV ||
-             (subsys->type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
-              subsys->u.pci.backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO))) {
+        if (virHostdevIsVFIODevice(def->hostdevs[i]) ||
+            virHostdevIsMdevDevice(def->hostdevs[i])) {
             memKB = virDomainDefGetMemoryTotal(def) + 1024 * 1024;
             goto done;
         }

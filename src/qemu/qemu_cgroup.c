@@ -413,9 +413,7 @@ qemuTeardownHostdevCgroup(virDomainObjPtr vm,
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
         return 0;
 
-    if (dev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-        dev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
-        dev->source.subsys.u.pci.backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO &&
+    if (virHostdevIsVFIODevice(dev) &&
         qemuDomainGetHostdevPath(vm->def, dev, true,
                                  &npaths, &path, NULL) < 0)
         goto cleanup;
