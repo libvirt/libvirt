@@ -33,12 +33,6 @@ virIdentityPtr virIdentityGetSystem(void);
 
 virIdentityPtr virIdentityNew(void);
 
-
-bool virIdentityIsEqual(virIdentityPtr identA,
-                        virIdentityPtr identB)
-    ATTRIBUTE_NONNULL(1)
-    ATTRIBUTE_NONNULL(2);
-
 int virIdentityGetUserName(virIdentityPtr ident,
                            const char **username);
 int virIdentityGetUNIXUserID(virIdentityPtr ident,

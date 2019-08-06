@@ -297,35 +297,6 @@ virIdentityGetAttr(virIdentityPtr ident,
 }
 
 
-/**
- * virIdentityIsEqual:
- * @identA: the first identity
- * @identB: the second identity
- *
- * Compares every attribute in @identA and @identB
- * to determine if they refer to the same identity
- *
- * Returns true if they are equal, false if not equal
- */
-bool virIdentityIsEqual(virIdentityPtr identA,
-                        virIdentityPtr identB)
-{
-    bool ret = false;
-    size_t i;
-    VIR_DEBUG("identA=%p identB=%p", identA, identB);
-
-    for (i = 0; i < VIR_IDENTITY_ATTR_LAST; i++) {
-        if (STRNEQ_NULLABLE(identA->attrs[i],
-                            identB->attrs[i]))
-            goto cleanup;
-    }
-
-    ret = true;
- cleanup:
-    return ret;
-}
-
-
 int virIdentityGetUserName(virIdentityPtr ident,
                            const char **username)
 {
