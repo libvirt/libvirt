@@ -28078,19 +28078,24 @@ virDomainDefFormatFeatures(virBufferPtr buf,
                 case VIR_DOMAIN_HYPERV_TLBFLUSH:
                 case VIR_DOMAIN_HYPERV_IPI:
                 case VIR_DOMAIN_HYPERV_EVMCS:
+                    virBufferAddLit(&childBuf, "/>\n");
                     break;
 
                 case VIR_DOMAIN_HYPERV_SPINLOCKS:
-                    if (def->hyperv_features[j] != VIR_TRISTATE_SWITCH_ON)
+                    if (def->hyperv_features[j] != VIR_TRISTATE_SWITCH_ON) {
+                        virBufferAddLit(&childBuf, "/>\n");
                         break;
-                    virBufferAsprintf(&childBuf, " retries='%d'",
+                    }
+                    virBufferAsprintf(&childBuf, " retries='%d'/>\n",
                                       def->hyperv_spinlocks);
                     break;
 
                 case VIR_DOMAIN_HYPERV_VENDOR_ID:
-                    if (def->hyperv_features[j] != VIR_TRISTATE_SWITCH_ON)
+                    if (def->hyperv_features[j] != VIR_TRISTATE_SWITCH_ON) {
+                        virBufferAddLit(&childBuf, "/>\n");
                         break;
-                    virBufferEscapeString(&childBuf, " value='%s'",
+                    }
+                    virBufferEscapeString(&childBuf, " value='%s'/>\n",
                                           def->hyperv_vendor_id);
                     break;
 
@@ -28098,8 +28103,6 @@ virDomainDefFormatFeatures(virBufferPtr buf,
                 case VIR_DOMAIN_HYPERV_LAST:
                     break;
                 }
-
-                virBufferAddLit(&childBuf, "/>\n");
             }
             virBufferAdjustIndent(&childBuf, -2);
             virBufferAddLit(&childBuf, "</hyperv>\n");
