@@ -20744,7 +20744,8 @@ qemuDomainGetResctrlMonData(virQEMUDriverPtr driver,
     caps = virQEMUDriverGetCapabilities(driver, false);
 
     if (tag == VIR_RESCTRL_MONITOR_TYPE_CACHE) {
-        features = caps->host.cache.monitor->features;
+        if (caps->host.cache.monitor)
+            features = caps->host.cache.monitor->features;
     } else {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("Unsupported resctrl monitor type"));
