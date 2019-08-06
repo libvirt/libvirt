@@ -2672,7 +2672,8 @@ qemuBuildFSDevCommandLine(virCommandPtr cmd,
 static int
 qemuBuildFilesystemCommandLine(virCommandPtr cmd,
                                const virDomainDef *def,
-                               virQEMUCapsPtr qemuCaps)
+                               virQEMUCapsPtr qemuCaps,
+                               qemuDomainObjPrivatePtr priv G_GNUC_UNUSED)
 {
     size_t i;
 
@@ -9860,7 +9861,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     if (qemuBuildDisksCommandLine(cmd, def, qemuCaps) < 0)
         return NULL;
 
-    if (qemuBuildFilesystemCommandLine(cmd, def, qemuCaps) < 0)
+    if (qemuBuildFilesystemCommandLine(cmd, def, qemuCaps, priv) < 0)
         return NULL;
 
     if (qemuBuildNetCommandLine(driver, vm, logManager, secManager, cmd,
