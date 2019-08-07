@@ -18299,12 +18299,9 @@ qemuDomainBlockCopyValidateMirror(virStorageSourcePtr mirror,
  */
 static int
 qemuDomainBlockCopyCommonValidateUserMirrorBackingStore(virStorageSourcePtr mirror,
-                                                        unsigned int flags,
+                                                        bool shallow,
                                                         bool blockdev)
 {
-    /* note that if original disk does not have backing chain, shallow is cleared */
-    bool shallow = flags & VIR_DOMAIN_BLOCK_COPY_SHALLOW;
-
     if (!virStorageSourceHasBacking(mirror)) {
         /* for deep copy there won't be backing chain so we can terminate it */
         if (!mirror->backingStore &&
@@ -18417,9 +18414,10 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
 
     /* clear the _SHALLOW flag if there is only one layer */
     if (!virStorageSourceHasBacking(disk->src))
-        flags &= ~VIR_DOMAIN_BLOCK_COPY_SHALLOW;
+        mirror_shallow = false;
 
-    if (qemuDomainBlockCopyCommonValidateUserMirrorBackingStore(mirror, flags,
+    if (qemuDomainBlockCopyCommonValidateUserMirrorBackingStore(mirror,
+                                                                mirror_shallow,
                                                                 blockdev) < 0)
         goto endjob;
 
