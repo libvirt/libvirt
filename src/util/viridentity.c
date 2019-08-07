@@ -281,10 +281,8 @@ virIdentitySetAttr(virIdentityPtr ident,
  * with the identifying attribute @attr in @ident. If
  * @attr is not set, then it will simply be initialized
  * to NULL and considered as a successful read
- *
- * Returns 0 on success, -1 on error
  */
-static int
+static void
 virIdentityGetAttr(virIdentityPtr ident,
                    unsigned int attr,
                    const char **value)
@@ -292,20 +290,29 @@ virIdentityGetAttr(virIdentityPtr ident,
     VIR_DEBUG("ident=%p attribute=%d value=%p", ident, attr, value);
 
     *value = ident->attrs[attr];
-
-    return 0;
 }
 
 
+/*
+ * Returns: 0 if not present, 1 if present, -1 on error
+ */
 int virIdentityGetUserName(virIdentityPtr ident,
                            const char **username)
 {
-    return virIdentityGetAttr(ident,
-                              VIR_IDENTITY_ATTR_USER_NAME,
-                              username);
+    virIdentityGetAttr(ident,
+                       VIR_IDENTITY_ATTR_USER_NAME,
+                       username);
+
+    if (!*username)
+        return 0;
+
+    return 1;
 }
 
 
+/*
+ * Returns: 0 if not present, 1 if present, -1 on error
+ */
 int virIdentityGetUNIXUserID(virIdentityPtr ident,
                              uid_t *uid)
 {
@@ -313,31 +320,44 @@ int virIdentityGetUNIXUserID(virIdentityPtr ident,
     const char *userid;
 
     *uid = -1;
-    if (virIdentityGetAttr(ident,
-                           VIR_IDENTITY_ATTR_UNIX_USER_ID,
-                           &userid) < 0)
-        return -1;
-
+    virIdentityGetAttr(ident,
+                       VIR_IDENTITY_ATTR_UNIX_USER_ID,
+                       &userid);
     if (!userid)
-        return -1;
+        return 0;
 
-    if (virStrToLong_i(userid, NULL, 10, &val) < 0)
+    if (virStrToLong_i(userid, NULL, 10, &val) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Cannot parse user ID '%s'"), userid);
         return -1;
+    }
 
     *uid = (uid_t)val;
 
-    return 0;
+    return 1;
 }
 
+
+/*
+ * Returns: 0 if not present, 1 if present, -1 on error
+ */
 int virIdentityGetGroupName(virIdentityPtr ident,
                             const char **groupname)
 {
-    return virIdentityGetAttr(ident,
-                              VIR_IDENTITY_ATTR_GROUP_NAME,
-                              groupname);
+    virIdentityGetAttr(ident,
+                       VIR_IDENTITY_ATTR_GROUP_NAME,
+                       groupname);
+
+    if (!*groupname)
+        return 0;
+
+    return 1;
 }
 
 
+/*
+ * Returns: 0 if not present, 1 if present, -1 on error
+ */
 int virIdentityGetUNIXGroupID(virIdentityPtr ident,
                               gid_t *gid)
 {
@@ -345,23 +365,28 @@ int virIdentityGetUNIXGroupID(virIdentityPtr ident,
     const char *groupid;
 
     *gid = -1;
-    if (virIdentityGetAttr(ident,
-                           VIR_IDENTITY_ATTR_UNIX_GROUP_ID,
-                           &groupid) < 0)
-        return -1;
+    virIdentityGetAttr(ident,
+                       VIR_IDENTITY_ATTR_UNIX_GROUP_ID,
+                       &groupid);
 
     if (!groupid)
-        return -1;
+        return 0;
 
-    if (virStrToLong_i(groupid, NULL, 10, &val) < 0)
+    if (virStrToLong_i(groupid, NULL, 10, &val) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Cannot parse group ID '%s'"), groupid);
         return -1;
+    }
 
     *gid = (gid_t)val;
 
-    return 0;
+    return 1;
 }
 
 
+/*
+ * Returns: 0 if not present, 1 if present, -1 on error
+ */
 int virIdentityGetProcessID(virIdentityPtr ident,
                             pid_t *pid)
 {
@@ -369,66 +394,99 @@ int virIdentityGetProcessID(virIdentityPtr ident,
     const char *processid;
 
     *pid = 0;
-    if (virIdentityGetAttr(ident,
-                           VIR_IDENTITY_ATTR_PROCESS_ID,
-                           &processid) < 0)
-        return -1;
+    virIdentityGetAttr(ident,
+                       VIR_IDENTITY_ATTR_PROCESS_ID,
+                       &processid);
 
     if (!processid)
-        return -1;
+        return 0;
 
-    if (virStrToLong_ull(processid, NULL, 10, &val) < 0)
+    if (virStrToLong_ull(processid, NULL, 10, &val) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Cannot parse process ID '%s'"), processid);
         return -1;
+    }
 
     *pid = (pid_t)val;
 
-    return 0;
+    return 1;
 }
 
 
+/*
+ * Returns: 0 if not present, 1 if present, -1 on error
+ */
 int virIdentityGetProcessTime(virIdentityPtr ident,
                               unsigned long long *timestamp)
 {
     const char *processtime;
-    if (virIdentityGetAttr(ident,
-                           VIR_IDENTITY_ATTR_PROCESS_TIME,
-                           &processtime) < 0)
-        return -1;
+
+    *timestamp = 0;
+    virIdentityGetAttr(ident,
+                       VIR_IDENTITY_ATTR_PROCESS_TIME,
+                       &processtime);
 
     if (!processtime)
-        return -1;
+        return 0;
 
-    if (virStrToLong_ull(processtime, NULL, 10, timestamp) < 0)
+    if (virStrToLong_ull(processtime, NULL, 10, timestamp) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Cannot parse process time '%s'"), processtime);
         return -1;
+    }
 
-    return 0;
+    return 1;
 }
 
 
+/*
+ * Returns: 0 if not present, 1 if present, -1 on error
+ */
 int virIdentityGetSASLUserName(virIdentityPtr ident,
                                const char **username)
 {
-    return virIdentityGetAttr(ident,
-                              VIR_IDENTITY_ATTR_SASL_USER_NAME,
-                              username);
+    virIdentityGetAttr(ident,
+                       VIR_IDENTITY_ATTR_SASL_USER_NAME,
+                       username);
+
+    if (!*username)
+        return 0;
+
+    return 1;
 }
 
 
+/*
+ * Returns: 0 if not present, 1 if present, -1 on error
+ */
 int virIdentityGetX509DName(virIdentityPtr ident,
                             const char **dname)
 {
-    return virIdentityGetAttr(ident,
-                              VIR_IDENTITY_ATTR_X509_DISTINGUISHED_NAME,
-                              dname);
+    virIdentityGetAttr(ident,
+                       VIR_IDENTITY_ATTR_X509_DISTINGUISHED_NAME,
+                       dname);
+
+    if (!*dname)
+        return 0;
+
+    return 1;
 }
 
 
+/*
+ * Returns: 0 if not present, 1 if present, -1 on error
+ */
 int virIdentityGetSELinuxContext(virIdentityPtr ident,
                                  const char **context)
 {
-    return virIdentityGetAttr(ident,
-                              VIR_IDENTITY_ATTR_SELINUX_CONTEXT,
-                              context);
+    virIdentityGetAttr(ident,
+                       VIR_IDENTITY_ATTR_SELINUX_CONTEXT,
+                       context);
+
+    if (!*context)
+        return 0;
+
+    return 1;
 }
 
 

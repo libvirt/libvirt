@@ -85,7 +85,7 @@ static int testIdentity(const void *opaque ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    if (virIdentityGetUserName(ident, &gotUsername) < 0) {
+    if (virIdentityGetUserName(ident, &gotUsername) <= 0) {
         fprintf(stderr, "Missing username in identity\n");
         goto cleanup;
     }
@@ -95,7 +95,7 @@ static int testIdentity(const void *opaque ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    if (virIdentityGetUNIXUserID(ident, &gotUserID) < 0) {
+    if (virIdentityGetUNIXUserID(ident, &gotUserID) <= 0) {
         fprintf(stderr, "Missing user ID in identity\n");
         goto cleanup;
     }
@@ -105,7 +105,7 @@ static int testIdentity(const void *opaque ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    if (virIdentityGetGroupName(ident, &gotGroupname) < 0) {
+    if (virIdentityGetGroupName(ident, &gotGroupname) <= 0) {
         fprintf(stderr, "Missing groupname in identity\n");
         goto cleanup;
     }
@@ -115,7 +115,7 @@ static int testIdentity(const void *opaque ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    if (virIdentityGetUNIXGroupID(ident, &gotGroupID) < 0) {
+    if (virIdentityGetUNIXGroupID(ident, &gotGroupID) <= 0) {
         fprintf(stderr, "Missing group ID in identity\n");
         goto cleanup;
     }
@@ -125,7 +125,7 @@ static int testIdentity(const void *opaque ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    if (virIdentityGetSELinuxContext(ident, &gotSELinuxContext) < 0) {
+    if (virIdentityGetSELinuxContext(ident, &gotSELinuxContext) <= 0) {
         fprintf(stderr, "Missing SELinux context in identity\n");
         goto cleanup;
     }

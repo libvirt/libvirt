@@ -222,6 +222,7 @@ adminClientGetInfo(virNetServerClientPtr client,
     const char *attr = NULL;
     virTypedParameterPtr tmpparams = NULL;
     virIdentityPtr identity = NULL;
+    int rc;
 
     virCheckFlags(0, -1);
 
@@ -234,11 +235,12 @@ adminClientGetInfo(virNetServerClientPtr client,
                                  readonly) < 0)
         goto cleanup;
 
-    if (virIdentityGetSASLUserName(identity, &attr) < 0 ||
-        (attr &&
-         virTypedParamsAddString(&tmpparams, nparams, &maxparams,
-                                 VIR_CLIENT_INFO_SASL_USER_NAME,
-                                 attr) < 0))
+    if ((rc = virIdentityGetSASLUserName(identity, &attr)) < 0)
+        goto cleanup;
+    if (rc == 1 &&
+        virTypedParamsAddString(&tmpparams, nparams, &maxparams,
+                                VIR_CLIENT_INFO_SASL_USER_NAME,
+                                attr) < 0)
         goto cleanup;
 
     if (!virNetServerClientIsLocal(client)) {
@@ -247,48 +249,60 @@ adminClientGetInfo(virNetServerClientPtr client,
                                     sock_addr) < 0)
             goto cleanup;
 
-        if (virIdentityGetX509DName(identity, &attr) < 0 ||
-            (attr &&
-             virTypedParamsAddString(&tmpparams, nparams, &maxparams,
-                                     VIR_CLIENT_INFO_X509_DISTINGUISHED_NAME,
-                                     attr) < 0))
+        if ((rc = virIdentityGetX509DName(identity, &attr)) < 0)
+            goto cleanup;
+        if (rc == 1 &&
+            virTypedParamsAddString(&tmpparams, nparams, &maxparams,
+                                    VIR_CLIENT_INFO_X509_DISTINGUISHED_NAME,
+                                    attr) < 0)
             goto cleanup;
     } else {
         pid_t pid;
         uid_t uid;
         gid_t gid;
-        if (virIdentityGetUNIXUserID(identity, &uid) < 0 ||
+        if ((rc = virIdentityGetUNIXUserID(identity, &uid)) < 0)
+            goto cleanup;
+        if (rc == 1 &&
             virTypedParamsAddInt(&tmpparams, nparams, &maxparams,
                                  VIR_CLIENT_INFO_UNIX_USER_ID, uid) < 0)
             goto cleanup;
 
-        if (virIdentityGetUserName(identity, &attr) < 0 ||
+        if ((rc = virIdentityGetUserName(identity, &attr)) < 0)
+            goto cleanup;
+        if (rc == 1 &&
             virTypedParamsAddString(&tmpparams, nparams, &maxparams,
                                     VIR_CLIENT_INFO_UNIX_USER_NAME,
                                     attr) < 0)
             goto cleanup;
 
-        if (virIdentityGetUNIXGroupID(identity, &gid) < 0 ||
+        if ((rc = virIdentityGetUNIXGroupID(identity, &gid)) < 0)
+            goto cleanup;
+        if (rc == 1 &&
             virTypedParamsAddInt(&tmpparams, nparams, &maxparams,
                                  VIR_CLIENT_INFO_UNIX_GROUP_ID, gid) < 0)
             goto cleanup;
 
-        if (virIdentityGetGroupName(identity, &attr) < 0 ||
+        if ((rc = virIdentityGetGroupName(identity, &attr)) < 0)
+            goto cleanup;
+        if (rc == 1 &&
             virTypedParamsAddString(&tmpparams, nparams, &maxparams,
                                     VIR_CLIENT_INFO_UNIX_GROUP_NAME,
                                     attr) < 0)
             goto cleanup;
 
-        if (virIdentityGetProcessID(identity, &pid) < 0 ||
+        if ((rc = virIdentityGetProcessID(identity, &pid)) < 0)
+            goto cleanup;
+        if (rc == 1 &&
             virTypedParamsAddInt(&tmpparams, nparams, &maxparams,
                                  VIR_CLIENT_INFO_UNIX_PROCESS_ID, pid) < 0)
             goto cleanup;
     }
 
-    if (virIdentityGetSELinuxContext(identity, &attr) < 0 ||
-        (attr &&
-         virTypedParamsAddString(&tmpparams, nparams, &maxparams,
-                                VIR_CLIENT_INFO_SELINUX_CONTEXT, attr) < 0))
+    if ((rc = virIdentityGetSELinuxContext(identity, &attr)) < 0)
+        goto cleanup;
+    if (rc == 1 &&
+        virTypedParamsAddString(&tmpparams, nparams, &maxparams,
+                                VIR_CLIENT_INFO_SELINUX_CONTEXT, attr) < 0)
         goto cleanup;
 
     *params = tmpparams;

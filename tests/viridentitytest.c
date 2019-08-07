@@ -41,6 +41,7 @@ static int testIdentityAttrs(const void *data ATTRIBUTE_UNUSED)
     int ret = -1;
     virIdentityPtr ident;
     const char *val;
+    int rc;
 
     if (!(ident = virIdentityNew()))
         goto cleanup;
@@ -48,18 +49,18 @@ static int testIdentityAttrs(const void *data ATTRIBUTE_UNUSED)
     if (virIdentitySetUserName(ident, "fred") < 0)
         goto cleanup;
 
-    if (virIdentityGetUserName(ident, &val) < 0)
+    if ((rc = virIdentityGetUserName(ident, &val)) < 0)
         goto cleanup;
 
-    if (STRNEQ_NULLABLE(val, "fred")) {
+    if (STRNEQ_NULLABLE(val, "fred") || rc != 1) {
         VIR_DEBUG("Expected 'fred' got '%s'", NULLSTR(val));
         goto cleanup;
     }
 
-    if (virIdentityGetGroupName(ident, &val) < 0)
+    if ((rc = virIdentityGetGroupName(ident, &val)) < 0)
         goto cleanup;
 
-    if (val != NULL) {
+    if (val != NULL || rc != 0) {
         VIR_DEBUG("Unexpected groupname attribute");
         goto cleanup;
     }
@@ -69,10 +70,10 @@ static int testIdentityAttrs(const void *data ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    if (virIdentityGetUserName(ident, &val) < 0)
+    if ((rc = virIdentityGetUserName(ident, &val)) < 0)
         goto cleanup;
 
-    if (STRNEQ_NULLABLE(val, "fred")) {
+    if (STRNEQ_NULLABLE(val, "fred") || rc != 1) {
         VIR_DEBUG("Expected 'fred' got '%s'", NULLSTR(val));
         goto cleanup;
     }
@@ -90,6 +91,7 @@ static int testIdentityGetSystem(const void *data)
     int ret = -1;
     virIdentityPtr ident = NULL;
     const char *val;
+    int rc;
 
 #if !WITH_SELINUX
     if (context) {
@@ -104,13 +106,20 @@ static int testIdentityGetSystem(const void *data)
         goto cleanup;
     }
 
-    if (virIdentityGetSELinuxContext(ident, &val) < 0)
+    if ((rc = virIdentityGetSELinuxContext(ident, &val)) < 0)
         goto cleanup;
 
-    if (STRNEQ_NULLABLE(val, context)) {
-        VIR_DEBUG("Want SELinux context '%s' got '%s'",
-                  context, val);
-        goto cleanup;
+    if (context == NULL) {
+        if (val != NULL || rc != 0) {
+            VIR_DEBUG("Unexpected SELinux context %s", NULLSTR(val));
+            goto cleanup;
+        }
+    } else {
+        if (STRNEQ_NULLABLE(val, context) || rc != 1) {
+            VIR_DEBUG("Want SELinux context '%s' got '%s'",
+                      context, val);
+            goto cleanup;
+        }
     }
 
     ret = 0;
