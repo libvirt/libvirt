@@ -20728,7 +20728,8 @@ qemuDomainGetResctrlMonData(virQEMUDriverPtr driver,
     size_t i = 0;
     size_t j = 0;
 
-    caps = virQEMUDriverGetCapabilities(driver, false);
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        return -1;
 
     switch (tag) {
     case VIR_RESCTRL_MONITOR_TYPE_CACHE:
