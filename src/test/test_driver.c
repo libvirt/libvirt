@@ -2135,6 +2135,35 @@ testDomainGetTime(virDomainPtr dom,
     return ret;
 }
 
+
+static int
+testDomainSetTime(virDomainPtr dom,
+                  long long seconds,
+                  unsigned int nseconds,
+                  unsigned int flags)
+{
+    virDomainObjPtr vm = NULL;
+    testDomainObjPrivatePtr priv;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_TIME_SYNC, ret);
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        return -1;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto cleanup;
+
+    priv = vm->privateData;
+    priv->seconds = seconds;
+    priv->nseconds = nseconds;
+
+    ret = 0;
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
 #define TEST_SAVE_MAGIC "TestGuestMagic"
 
 
@@ -8923,6 +8952,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainGetInfo = testDomainGetInfo, /* 0.1.1 */
     .domainGetState = testDomainGetState, /* 0.9.2 */
     .domainGetTime = testDomainGetTime, /* 5.4.0 */
+    .domainSetTime = testDomainSetTime, /* 5.7.0 */
     .domainSave = testDomainSave, /* 0.3.2 */
     .domainSaveFlags = testDomainSaveFlags, /* 0.9.4 */
     .domainRestore = testDomainRestore, /* 0.3.2 */
