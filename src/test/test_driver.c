@@ -392,6 +392,10 @@ struct _testDomainObjPrivate {
     testDriverPtr driver;
 
     bool frozen[2]; /* used by file system related calls */
+
+    /* used by get/set time APIs */
+    long long seconds;
+    unsigned int nseconds;
 };
 
 
@@ -405,6 +409,9 @@ testDomainObjPrivateAlloc(void *opaque)
 
     priv->driver = opaque;
     priv->frozen[0] = priv->frozen[1] = false;
+
+    priv->seconds = 627319920;
+    priv->nseconds = 0;
 
     return priv;
 }
@@ -2104,6 +2111,7 @@ testDomainGetTime(virDomainPtr dom,
                   unsigned int flags)
 {
     virDomainObjPtr vm = NULL;
+    testDomainObjPrivatePtr priv;
     int ret = -1;
 
     virCheckFlags(0, -1);
@@ -2117,8 +2125,9 @@ testDomainGetTime(virDomainPtr dom,
         goto cleanup;
     }
 
-    *seconds = 627319920;
-    *nseconds = 0;
+    priv = vm->privateData;
+    *seconds = priv->seconds;
+    *nseconds = priv->nseconds;
 
     ret = 0;
  cleanup:
