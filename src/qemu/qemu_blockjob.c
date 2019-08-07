@@ -521,6 +521,7 @@ qemuBlockJobRewriteConfigDiskSource(virDomainObjPtr vm,
 {
     virDomainDiskDefPtr persistDisk = NULL;
     VIR_AUTOUNREF(virStorageSourcePtr) copy = NULL;
+    virStorageSourcePtr n;
 
     if (!vm->newDef)
         return;
@@ -531,14 +532,24 @@ qemuBlockJobRewriteConfigDiskSource(virDomainObjPtr vm,
     if (!virStorageSourceIsSameLocation(disk->src, persistDisk->src))
         return;
 
-    if (!(copy = virStorageSourceCopy(newsrc, false)) ||
+    if (!(copy = virStorageSourceCopy(newsrc, true)) ||
         virStorageSourceInitChainElement(copy, persistDisk->src, true) < 0) {
         VIR_WARN("Unable to update persistent definition on vm %s after block job",
                  vm->def->name);
         return;
     }
 
-    qemuBlockJobCleanStorageSourceRuntime(copy);
+    for (n = copy; virStorageSourceIsBacking(n); n = n->backingStore) {
+        qemuBlockJobCleanStorageSourceRuntime(n);
+
+        /* discard any detected backing store */
+        if (virStorageSourceIsBacking(n->backingStore) &&
+            n->backingStore->detected) {
+            virObjectUnref(n->backingStore);
+            n->backingStore = NULL;
+            break;
+        }
+    }
 
     virObjectUnref(persistDisk->src);
     VIR_STEAL_PTR(persistDisk->src, copy);
