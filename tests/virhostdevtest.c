@@ -556,7 +556,7 @@ static int
 mymain(void)
 {
     int ret = 0;
-    char *fakerootdir;
+    VIR_AUTOFREE(char *) fakerootdir = NULL;
 
     if (VIR_STRDUP_QUIET(fakerootdir, FAKEROOTDIRTEMPLATE) < 0) {
         fprintf(stderr, "Out of memory\n");
@@ -593,8 +593,6 @@ mymain(void)
 
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
-
-    VIR_FREE(fakerootdir);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
