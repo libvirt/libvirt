@@ -527,7 +527,7 @@ aiforaf(const char *name, int af, struct addrinfo *pai, struct addrinfo **aip)
 
         (*aip)->ai_next = res0;
         while ((*aip)->ai_next)
-           *aip = (*aip)->ai_next;
+            *aip = (*aip)->ai_next;
 
         addrList++;
     }
