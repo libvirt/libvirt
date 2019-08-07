@@ -268,7 +268,7 @@ virSecurityMoveRememberedLabel(const char *name,
     VIR_AUTOFREE(char *) attr_name = NULL;
     VIR_AUTOFREE(char *) attr_value = NULL;
 
-    if (!(ref_name = virSecurityGetRefCountAttrName(name)) |
+    if (!(ref_name = virSecurityGetRefCountAttrName(name)) ||
         !(attr_name = virSecurityGetAttrName(name)))
         return -1;
 
