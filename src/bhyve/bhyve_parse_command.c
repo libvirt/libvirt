@@ -501,7 +501,7 @@ bhyveParsePCINet(virDomainDefPtr def,
     const char *separator = NULL;
     const char *mac = NULL;
 
-    if (VIR_ALLOC(net) < 0)
+    if (!(net = virDomainNetDefNew(xmlopt)))
         goto cleanup;
 
     /* As we only support interface type='bridge' and cannot

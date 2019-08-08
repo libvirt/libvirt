@@ -359,7 +359,7 @@ lxcCreateNetDef(const char *type,
     virDomainNetDefPtr net = NULL;
     virMacAddr macAddr;
 
-    if (VIR_ALLOC(net) < 0)
+    if (!(net = virDomainNetDefNew(NULL)))
         goto error;
 
     if (STREQ_NULLABLE(flag, "up"))

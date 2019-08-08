@@ -1234,7 +1234,7 @@ xenParseVif(char *entry, const char *vif_typename)
         key = nextkey;
     }
 
-    if (VIR_ALLOC(net) < 0)
+    if (!(net = virDomainNetDefNew(NULL)))
         goto cleanup;
 
     if (mac[0]) {
