@@ -512,6 +512,18 @@ struct _qemuDomainGraphicsPrivate {
 };
 
 
+#define QEMU_DOMAIN_NETWORK_PRIVATE(dev) \
+    ((qemuDomainNetworkPrivatePtr) (dev)->privateData)
+
+typedef struct _qemuDomainNetworkPrivate qemuDomainNetworkPrivate;
+typedef qemuDomainNetworkPrivate *qemuDomainNetworkPrivatePtr;
+struct _qemuDomainNetworkPrivate {
+    virObject parent;
+
+    bool tmp_to_be_larger_than_parent;
+};
+
+
 typedef enum {
     QEMU_PROCESS_EVENT_WATCHDOG = 0,
     QEMU_PROCESS_EVENT_GUESTPANIC,
