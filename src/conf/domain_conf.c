@@ -5454,22 +5454,24 @@ virDomainDeviceDefPostParseOne(virDomainDeviceDefPtr dev,
                                const virDomainDef *def,
                                virCapsPtr caps,
                                unsigned int flags,
-                               virDomainXMLOptionPtr xmlopt)
+                               virDomainXMLOptionPtr xmlopt,
+                               void *parseOpaque)
 {
-    void *parseOpaque = NULL;
+    void *data = NULL;
     int ret;
 
-    if (xmlopt->config.domainPostParseDataAlloc) {
+    if (!parseOpaque && xmlopt->config.domainPostParseDataAlloc) {
         if (xmlopt->config.domainPostParseDataAlloc(def, caps, flags,
                                                     xmlopt->config.priv,
-                                                    &parseOpaque) < 0)
+                                                    &data) < 0)
             return -1;
+        parseOpaque = data;
     }
 
     ret = virDomainDeviceDefPostParse(dev, def, caps, flags, xmlopt, parseOpaque);
 
-    if (parseOpaque && xmlopt->config.domainPostParseDataFree)
-        xmlopt->config.domainPostParseDataFree(parseOpaque);
+    if (data && xmlopt->config.domainPostParseDataFree)
+        xmlopt->config.domainPostParseDataFree(data);
 
     return ret;
 }
@@ -16279,6 +16281,7 @@ virDomainDeviceDefParse(const char *xmlStr,
                         const virDomainDef *def,
                         virCapsPtr caps,
                         virDomainXMLOptionPtr xmlopt,
+                        void *parseOpaque,
                         unsigned int flags)
 {
     xmlDocPtr xml;
@@ -16441,7 +16444,8 @@ virDomainDeviceDefParse(const char *xmlStr,
     }
 
     /* callback to fill driver specific device aspects */
-    if (virDomainDeviceDefPostParseOne(dev, def, caps, flags, xmlopt) < 0)
+    if (virDomainDeviceDefPostParseOne(dev, def, caps, flags,
+                                       xmlopt, parseOpaque) < 0)
         goto error;
 
     /* validate the configuration */
@@ -29799,7 +29803,8 @@ virDomainDeviceDefPtr
 virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
                        const virDomainDef *def,
                        virCapsPtr caps,
-                       virDomainXMLOptionPtr xmlopt)
+                       virDomainXMLOptionPtr xmlopt,
+                       void *parseOpaque)
 {
     VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     int flags = VIR_DOMAIN_DEF_FORMAT_INACTIVE | VIR_DOMAIN_DEF_FORMAT_SECURE;
@@ -29887,7 +29892,7 @@ virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
         return NULL;
 
     xmlStr = virBufferContentAndReset(&buf);
-    return virDomainDeviceDefParse(xmlStr, def, caps, xmlopt,
+    return virDomainDeviceDefParse(xmlStr, def, caps, xmlopt, parseOpaque,
                                    VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                    VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
 }

@@ -8866,7 +8866,8 @@ qemuDomainAttachDeviceLiveAndConfig(virDomainObjPtr vm,
             goto cleanup;
 
         if (!(devConf = virDomainDeviceDefParse(xml, vmdef, caps,
-                                                driver->xmlopt, parse_flags)))
+                                                driver->xmlopt, priv->qemuCaps,
+                                                parse_flags)))
             goto cleanup;
 
         if (virDomainDeviceValidateAliasForHotplug(vm, devConf,
@@ -8886,7 +8887,8 @@ qemuDomainAttachDeviceLiveAndConfig(virDomainObjPtr vm,
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         if (!(devLive = virDomainDeviceDefParse(xml, vm->def, caps,
-                                                driver->xmlopt, parse_flags)))
+                                                driver->xmlopt, priv->qemuCaps,
+                                                parse_flags)))
             goto cleanup;
 
         if (virDomainDeviceValidateAliasForHotplug(vm, devLive,
@@ -9017,8 +9019,8 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
         !(flags & VIR_DOMAIN_AFFECT_LIVE))
         parse_flags |= VIR_DOMAIN_DEF_PARSE_INACTIVE;
 
-    dev = dev_copy = virDomainDeviceDefParse(xml, vm->def,
-                                             caps, driver->xmlopt,
+    dev = dev_copy = virDomainDeviceDefParse(xml, vm->def, caps,
+                                             driver->xmlopt, priv->qemuCaps,
                                              parse_flags);
     if (dev == NULL)
         goto endjob;
@@ -9029,7 +9031,8 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
          * create a deep copy of device as adding
          * to CONFIG takes one instance.
          */
-        dev_copy = virDomainDeviceDefCopy(dev, vm->def, caps, driver->xmlopt);
+        dev_copy = virDomainDeviceDefCopy(dev, vm->def, caps,
+                                          driver->xmlopt, priv->qemuCaps);
         if (!dev_copy)
             goto endjob;
     }
@@ -9115,8 +9118,8 @@ qemuDomainDetachDeviceLiveAndConfig(virQEMUDriverPtr driver,
         !(flags & VIR_DOMAIN_AFFECT_LIVE))
         parse_flags |= VIR_DOMAIN_DEF_PARSE_INACTIVE;
 
-    dev = dev_copy = virDomainDeviceDefParse(xml, vm->def,
-                                             caps, driver->xmlopt,
+    dev = dev_copy = virDomainDeviceDefParse(xml, vm->def, caps,
+                                             driver->xmlopt, priv->qemuCaps,
                                              parse_flags);
     if (dev == NULL)
         goto cleanup;
@@ -9127,7 +9130,8 @@ qemuDomainDetachDeviceLiveAndConfig(virQEMUDriverPtr driver,
          * create a deep copy of device as adding
          * to CONFIG takes one instance.
          */
-        dev_copy = virDomainDeviceDefCopy(dev, vm->def, caps, driver->xmlopt);
+        dev_copy = virDomainDeviceDefCopy(dev, vm->def, caps,
+                                          driver->xmlopt, priv->qemuCaps);
         if (!dev_copy)
             goto cleanup;
     }

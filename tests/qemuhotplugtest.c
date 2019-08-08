@@ -274,7 +274,7 @@ testQemuHotplug(const void *data)
         device_parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
 
     if (!(dev = virDomainDeviceDefParse(device_xml, vm->def,
-                                        caps, driver.xmlopt,
+                                        caps, driver.xmlopt, NULL,
                                         device_parse_flags)))
         goto cleanup;
 

@@ -1962,7 +1962,7 @@ openvzDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
     if (!(def = virDomainObjGetOneDef(vm, flags)))
         goto cleanup;
 
-    dev = virDomainDeviceDefParse(xml, def, driver->caps, driver->xmlopt,
+    dev = virDomainDeviceDefParse(xml, def, driver->caps, driver->xmlopt, NULL,
                                   VIR_DOMAIN_DEF_PARSE_INACTIVE);
     if (!dev)
         goto cleanup;

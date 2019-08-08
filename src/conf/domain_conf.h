@@ -2866,7 +2866,8 @@ void virDomainDeviceDefFree(virDomainDeviceDefPtr def);
 virDomainDeviceDefPtr virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
                                              const virDomainDef *def,
                                              virCapsPtr caps,
-                                             virDomainXMLOptionPtr xmlopt);
+                                             virDomainXMLOptionPtr xmlopt,
+                                             void *parseOpaque);
 virDomainDeviceInfoPtr virDomainDeviceGetInfo(virDomainDeviceDefPtr device);
 void virDomainDeviceSetData(virDomainDeviceDefPtr device,
                             void *devicedata);
@@ -2998,6 +2999,7 @@ virDomainDeviceDefPtr virDomainDeviceDefParse(const char *xmlStr,
                                               const virDomainDef *def,
                                               virCapsPtr caps,
                                               virDomainXMLOptionPtr xmlopt,
+                                              void *parseOpaque,
                                               unsigned int flags);
 virDomainDiskDefPtr virDomainDiskDefParse(const char *xmlStr,
                                           const virDomainDef *def,
