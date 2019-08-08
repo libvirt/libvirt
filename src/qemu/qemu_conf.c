@@ -247,6 +247,8 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
         goto error;
     if (virAsprintf(&cfg->autostartDir, "%s/qemu/autostart", cfg->configBaseDir) < 0)
         goto error;
+    if (virAsprintf(&cfg->slirpStateDir, "%s/slirp", cfg->stateDir) < 0)
+        goto error;
 
     /* Set the default directory to find TLS X.509 certificates.
      * This will then be used as a fallback if the service specific
@@ -335,6 +337,7 @@ static void virQEMUDriverConfigDispose(void *obj)
     VIR_FREE(cfg->swtpmLogDir);
     VIR_FREE(cfg->stateDir);
     VIR_FREE(cfg->swtpmStateDir);
+    VIR_FREE(cfg->slirpStateDir);
 
     VIR_FREE(cfg->libDir);
     VIR_FREE(cfg->cacheDir);

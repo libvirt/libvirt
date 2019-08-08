@@ -832,6 +832,11 @@ qemuStateInitialize(bool privileged,
                              cfg->memoryBackingDir);
         goto error;
     }
+    if (virFileMakePath(cfg->slirpStateDir) < 0) {
+        virReportSystemError(errno, _("Failed to create slirp state dir %s"),
+                             cfg->slirpStateDir);
+        goto error;
+    }
 
     if ((qemu_driver->lockFD =
          virPidFileAcquire(cfg->stateDir, "driver", false, getpid())) < 0)
@@ -968,6 +973,13 @@ qemuStateInitialize(bool privileged,
             virReportSystemError(errno,
                                  _("unable to set ownership of '%s' to %d:%d"),
                                  cfg->memoryBackingDir, (int)cfg->user,
+                                 (int)cfg->group);
+            goto error;
+        }
+        if (chown(cfg->slirpStateDir, cfg->user, cfg->group) < 0) {
+            virReportSystemError(errno,
+                                 _("unable to set ownership of '%s' to %d:%d"),
+                                 cfg->slirpStateDir, (int)cfg->user,
                                  (int)cfg->group);
             goto error;
         }
