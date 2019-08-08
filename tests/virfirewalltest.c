@@ -150,7 +150,8 @@ VIR_MOCK_WRAP_RET_ARGS(dbus_connection_send_with_reply_and_block,
             if (nargs == 1 &&
                 STREQ(type, "ipv4") &&
                 STREQ(args[0], "-L")) {
-                if (virDBusCreateReply(&reply,
+                if (virDBusCreateReply(message,
+                                       &reply,
                                        "s", TEST_FILTER_TABLE_LIST) < 0)
                     goto error;
             } else if (nargs == 3 &&
@@ -158,11 +159,13 @@ VIR_MOCK_WRAP_RET_ARGS(dbus_connection_send_with_reply_and_block,
                        STREQ(args[0], "-t") &&
                        STREQ(args[1], "nat") &&
                        STREQ(args[2], "-L")) {
-                if (virDBusCreateReply(&reply,
+                if (virDBusCreateReply(message,
+                                       &reply,
                                        "s", TEST_NAT_TABLE_LIST) < 0)
                     goto error;
             } else {
-                if (virDBusCreateReply(&reply,
+                if (virDBusCreateReply(message,
+                                       &reply,
                                        "s", "success") < 0)
                     goto error;
             }
