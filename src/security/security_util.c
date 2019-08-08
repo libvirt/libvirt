@@ -244,6 +244,19 @@ virSecuritySetRememberedLabel(const char *name,
 }
 
 
+/**
+ * virSecurityMoveRememberedLabel:
+ * @name: security driver name
+ * @src: source file
+ * @dst: destination file
+ *
+ * For given security driver @name, move all XATTRs related to seclabel
+ * remembering from @src to @dst. However, if @dst is NULL, then XATTRs
+ * are just removed from @src.
+ *
+ * Returns: 0 on success,
+ *         -1 otherwise.
+ */
 int
 virSecurityMoveRememberedLabel(const char *name,
                                const char *src,
