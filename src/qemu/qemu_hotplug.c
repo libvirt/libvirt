@@ -1385,7 +1385,8 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
 
     if (!(netstr = qemuBuildHostNetStr(net, driver,
                                        tapfdName, tapfdSize,
-                                       vhostfdName, vhostfdSize)))
+                                       vhostfdName, vhostfdSize,
+                                       NULL)))
         goto cleanup;
 
     qemuDomainObjEnterMonitor(driver, vm);
