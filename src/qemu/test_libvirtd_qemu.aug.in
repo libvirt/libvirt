@@ -104,6 +104,7 @@ module Test_libvirtd_qemu =
 }
 { "memory_backing_dir" = "/var/lib/libvirt/qemu/ram" }
 { "pr_helper" = "/usr/bin/qemu-pr-helper" }
+{ "slirp_helper" = "/usr/bin/slirp-helper" }
 { "swtpm_user" = "tss" }
 { "swtpm_group" = "tss" }
 { "capability_filters"

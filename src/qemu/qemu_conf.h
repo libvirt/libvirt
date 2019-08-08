@@ -153,6 +153,7 @@ struct _virQEMUDriverConfig {
 
     char *bridgeHelperName;
     char *prHelperName;
+    char *slirpHelperName;
 
     bool macFilter;
 
