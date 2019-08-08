@@ -337,6 +337,7 @@ AC_CHECK_FUNCS_ONCE([\
   getpwuid_r \
   getrlimit \
   getuid \
+  getutxid \
   if_indextoname \
   mmap \
   newlocale \

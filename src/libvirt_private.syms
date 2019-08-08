@@ -2135,6 +2135,10 @@ virHostMemGetStats;
 virHostMemSetParameters;
 
 
+# util/virhostuptime.h
+virHostGetBootTime;
+
+
 # util/viridentity.h
 virIdentityGetAttr;
 virIdentityGetCurrent;

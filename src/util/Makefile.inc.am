@@ -91,6 +91,8 @@ UTIL_SOURCES = \
 	util/virhostdev.h \
 	util/virhostmem.c \
 	util/virhostmem.h \
+	util/virhostuptime.c \
+	util/virhostuptime.h \
 	util/viridentity.c \
 	util/viridentity.h \
 	util/virinitctl.c \
