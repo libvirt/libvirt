@@ -36,37 +36,22 @@
 VIR_LOG_INIT("qemu.qemu_extdevice");
 
 int
-qemuExtDeviceLogCommand(qemuDomainLogContextPtr logCtxt,
+qemuExtDeviceLogCommand(virQEMUDriverPtr driver,
+                        virDomainObjPtr vm,
                         virCommandPtr cmd,
                         const char *info)
 {
-    int ret = -1;
-    char *timestamp = NULL;
-    char *logline = NULL;
-    int logFD;
+    VIR_AUTOFREE(char *) timestamp = virTimeStringNow();
+    VIR_AUTOFREE(char *) cmds = virCommandToString(cmd, false);
 
-    logFD = qemuDomainLogContextGetWriteFD(logCtxt);
+    if (!timestamp || !cmds)
+        return -1;
 
-    if ((timestamp = virTimeStringNow()) == NULL)
-        goto cleanup;
-
-    if (virAsprintf(&logline, "%s: Starting external device: %s\n",
-                    timestamp, info) < 0)
-        goto cleanup;
-
-    if (safewrite(logFD, logline, strlen(logline)) < 0)
-        goto cleanup;
-
-    virCommandWriteArgLog(cmd, logFD);
-
-    ret = 0;
-
- cleanup:
-    VIR_FREE(timestamp);
-    VIR_FREE(logline);
-
-    return ret;
+    return qemuDomainLogAppendMessage(driver, vm,
+                                      _("%s: Starting external device: %s\n%s\n"),
+                                      timestamp, info, cmds);
 }
+
 
 
 /*
@@ -128,7 +113,6 @@ qemuExtDevicesCleanupHost(virQEMUDriverPtr driver,
 int
 qemuExtDevicesStart(virQEMUDriverPtr driver,
                     virDomainObjPtr vm,
-                    qemuDomainLogContextPtr logCtxt,
                     bool incomingMigration)
 {
     int ret = 0;
@@ -137,7 +121,7 @@ qemuExtDevicesStart(virQEMUDriverPtr driver,
         return -1;
 
     if (vm->def->tpm)
-        ret = qemuExtTPMStart(driver, vm, logCtxt, incomingMigration);
+        ret = qemuExtTPMStart(driver, vm, incomingMigration);
 
     return ret;
 }

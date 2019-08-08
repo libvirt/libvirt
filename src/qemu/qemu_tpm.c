@@ -824,7 +824,6 @@ qemuExtTPMCleanupHost(virDomainDefPtr def)
  *
  * @driver: QEMU driver
  * @vm: the domain object
- * @logCtxt: log context
  * @incomingMigration: whether we have an incoming migration
  *
  * Start the external TPM Emulator:
@@ -834,7 +833,6 @@ qemuExtTPMCleanupHost(virDomainDefPtr def)
 static int
 qemuExtTPMStartEmulator(virQEMUDriverPtr driver,
                         virDomainObjPtr vm,
-                        qemuDomainLogContextPtr logCtxt,
                         bool incomingMigration)
 {
     int ret = -1;
@@ -863,7 +861,7 @@ qemuExtTPMStartEmulator(virQEMUDriverPtr driver,
                                             incomingMigration)))
         goto cleanup;
 
-    if (qemuExtDeviceLogCommand(logCtxt, cmd, "TPM Emulator") < 0)
+    if (qemuExtDeviceLogCommand(driver, vm, cmd, "TPM Emulator") < 0)
         goto cleanup;
 
     virCommandSetErrorBuffer(cmd, &errbuf);
@@ -917,7 +915,6 @@ qemuExtTPMStartEmulator(virQEMUDriverPtr driver,
 int
 qemuExtTPMStart(virQEMUDriverPtr driver,
                 virDomainObjPtr vm,
-                qemuDomainLogContextPtr logCtxt,
                 bool incomingMigration)
 {
     int ret = 0;
@@ -925,7 +922,7 @@ qemuExtTPMStart(virQEMUDriverPtr driver,
 
     switch (tpm->type) {
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
-        ret = qemuExtTPMStartEmulator(driver, vm, logCtxt, incomingMigration);
+        ret = qemuExtTPMStartEmulator(driver, vm, incomingMigration);
         break;
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
     case VIR_DOMAIN_TPM_TYPE_LAST:

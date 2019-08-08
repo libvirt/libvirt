@@ -23,10 +23,11 @@
 #include "qemu_conf.h"
 #include "qemu_domain.h"
 
-int qemuExtDeviceLogCommand(qemuDomainLogContextPtr logCtxt,
+int qemuExtDeviceLogCommand(virQEMUDriverPtr driver,
+                            virDomainObjPtr vm,
                             virCommandPtr cmd,
                             const char *info)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
     ATTRIBUTE_RETURN_CHECK;
 
 int qemuExtDevicesPrepareHost(virQEMUDriverPtr driver,
@@ -40,9 +41,8 @@ void qemuExtDevicesCleanupHost(virQEMUDriverPtr driver,
 
 int qemuExtDevicesStart(virQEMUDriverPtr driver,
                         virDomainObjPtr vm,
-                        qemuDomainLogContextPtr logCtxt,
                         bool incomingMigration)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
     ATTRIBUTE_RETURN_CHECK;
 
 void qemuExtDevicesStop(virQEMUDriverPtr driver,
