@@ -395,6 +395,7 @@ struct _qemuDomainObjPrivate {
     virHashTablePtr blockjobs;
 
     virHashTablePtr dbusVMStates;
+    bool disableSlirp;
 };
 
 #define QEMU_DOMAIN_PRIVATE(vm) \
@@ -559,6 +560,7 @@ struct _qemuDomainSaveCookie {
     virObject parent;
 
     virCPUDefPtr cpu;
+    bool slirpHelper;
 };
 
 
