@@ -21,6 +21,8 @@
 
 #include <config.h>
 
+#include <unistd.h>
+
 #include "configmake.h"
 #include "internal.h"
 #include "virbitmap.h"
