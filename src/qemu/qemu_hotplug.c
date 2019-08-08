@@ -1147,6 +1147,8 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDeviceDef dev = { VIR_DOMAIN_DEVICE_NET, { .net = net } };
     virErrorPtr originalError = NULL;
+    VIR_AUTOFREE(char *) slirpfdName = NULL;
+    int slirpfd = -1;
     char **tapfdName = NULL;
     int *tapfd = NULL;
     size_t tapfdSize = 0;
@@ -1326,7 +1328,26 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
         break;
 
     case VIR_DOMAIN_NET_TYPE_USER:
-        /* No preparation needed. */
+        if (!priv->disableSlirp &&
+            virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NET_SOCKET_DGRAM)) {
+            qemuSlirpPtr slirp = qemuInterfacePrepareSlirp(driver, net);
+
+            if (!slirp)
+                break;
+
+            QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp = slirp;
+
+            if (qemuSlirpOpen(slirp, driver, vm->def) < 0 ||
+                qemuSlirpStart(slirp, vm, driver, net, true, NULL) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               "%s", _("Failed to start slirp"));
+                goto cleanup;
+            }
+
+            slirpfd = qemuSlirpGetFD(slirp);
+            if (virAsprintf(&slirpfdName, "slirpfd-%s", net->info.alias) < 0)
+                goto cleanup;
+        }
         break;
 
     case VIR_DOMAIN_NET_TYPE_SERVER:
@@ -1386,7 +1407,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     if (!(netstr = qemuBuildHostNetStr(net, driver,
                                        tapfdName, tapfdSize,
                                        vhostfdName, vhostfdSize,
-                                       NULL)))
+                                       slirpfdName)))
         goto cleanup;
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -1402,7 +1423,8 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
 
     if (qemuMonitorAddNetdev(priv->mon, netstr,
                              tapfd, tapfdName, tapfdSize,
-                             vhostfd, vhostfdName, vhostfdSize) < 0) {
+                             vhostfd, vhostfdName, vhostfdSize,
+                             slirpfd, slirpfdName) < 0) {
         ignore_value(qemuDomainObjExitMonitor(driver, vm));
         virDomainAuditNet(vm, NULL, net, "attach", false);
         goto try_remove;
@@ -1517,6 +1539,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     VIR_FREE(charDevAlias);
     virObjectUnref(conn);
     virDomainCCWAddressSetFree(ccwaddrs);
+    VIR_FORCE_CLOSE(slirpfd);
 
     return ret;
 
@@ -1526,6 +1549,8 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
 
     virErrorPreserveLast(&originalError);
     if (virAsprintf(&netdev_name, "host%s", net->info.alias) >= 0) {
+        if (QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp)
+            qemuSlirpStop(QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp, vm, driver, net, true);
         qemuDomainObjEnterMonitor(driver, vm);
         if (charDevPlugged &&
             qemuMonitorDetachCharDev(priv->mon, charDevAlias) < 0)
@@ -2196,7 +2221,7 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
 
     if (guestfwd) {
         if (qemuMonitorAddNetdev(priv->mon, devstr,
-                                 NULL, NULL, 0, NULL, NULL, 0) < 0)
+                                 NULL, NULL, 0, NULL, NULL, 0, -1, NULL) < 0)
             goto exit_monitor;
     } else {
         if (qemuMonitorAddDevice(priv->mon, devstr) < 0)
@@ -4668,6 +4693,9 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
+
+    if (QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp)
+        qemuSlirpStop(QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp, vm, driver, net, true);
 
     virDomainAuditNet(vm, net, NULL, "detach", true);
 

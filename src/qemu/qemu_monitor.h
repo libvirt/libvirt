@@ -886,7 +886,8 @@ int qemuMonitorRemoveFd(qemuMonitorPtr mon, int fdset, int fd);
 int qemuMonitorAddNetdev(qemuMonitorPtr mon,
                          const char *netdevstr,
                          int *tapfd, char **tapfdName, int tapfdSize,
-                         int *vhostfd, char **vhostfdName, int vhostfdSize);
+                         int *vhostfd, char **vhostfdName, int vhostfdSize,
+                         int slirpfd, char *slirpfdName);
 
 int qemuMonitorRemoveNetdev(qemuMonitorPtr mon,
                             const char *alias);
