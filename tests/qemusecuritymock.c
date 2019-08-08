@@ -32,6 +32,7 @@
 #include "viralloc.h"
 #include "qemusecuritytest.h"
 #include "security/security_manager.h"
+#include "virhostuptime.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -487,4 +488,15 @@ virProcessRunInFork(virProcessForkCallback cb,
                     void *opaque)
 {
     return cb(-1, opaque);
+}
+
+
+/* We don't really need to mock this function. The qemusecuritytest doesn't
+ * care about the actual value. However, travis runs build and tests in a
+ * container where utmp is missing and thus this function fails. */
+int
+virHostGetBootTime(unsigned long long *when)
+{
+    *when = 1234567890;
+    return 0;
 }

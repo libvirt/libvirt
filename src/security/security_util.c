@@ -22,10 +22,15 @@
 #include "virfile.h"
 #include "virstring.h"
 #include "virerror.h"
+#include "virlog.h"
+#include "viruuid.h"
+#include "virhostuptime.h"
 
 #include "security_util.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
+
+VIR_LOG_INIT("security.security_util");
 
 /* There are four namespaces available on Linux (xattr(7)):
  *
@@ -83,6 +88,153 @@ virSecurityGetRefCountAttrName(const char *name ATTRIBUTE_UNUSED)
 }
 
 
+#ifdef XATTR_NAMESPACE
+static char *
+virSecurityGetTimestampAttrName(const char *name)
+{
+    char *ret = NULL;
+    ignore_value(virAsprintf(&ret, XATTR_NAMESPACE ".libvirt.security.timestamp_%s", name));
+    return ret;
+}
+#else /* !XATTR_NAMESPACE */
+static char *
+virSecurityGetTimestampAttrName(const char *name ATTRIBUTE_UNUSED)
+{
+    errno = ENOSYS;
+    virReportSystemError(errno, "%s",
+                         _("Extended attributes are not supported on this system"));
+    return NULL;
+}
+#endif /* !XATTR_NAMESPACE */
+
+
+static char *
+virSecurityGetTimestamp(void)
+{
+    unsigned long long boottime = 0;
+    char *ret = NULL;
+
+    if (virHostGetBootTime(&boottime) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to get host boot time"));
+        return NULL;
+    }
+
+    ignore_value(virAsprintf(&ret, "%llu", boottime));
+    return ret;
+}
+
+
+/**
+ * virSecurityValidateTimestamp:
+ * @name: security driver name
+ * @path: file name
+ *
+ * Check if remembered label on @path for security driver @name
+ * is valid, i.e. the label has been set since the last boot. If
+ * the label was set in previous runs, all XATTRs related to
+ * @name are removed so that clean slate is restored.
+ *
+ * This is done having extra attribute timestamp_$SECDRIVER which
+ * contains the host boot time. Its value is then compared to
+ * actual host boot time. If these two values don't match then
+ * XATTRs are considered as stale and thus invalid.
+ *
+ * In ideal world, where there network file systems have XATTRs
+ * using plain host boot time is not enough as it may lead to a
+ * situation where a freshly started host sees XATTRs, sees the
+ * timestamp put there by some longer running host and considers
+ * the XATTRs invalid. Well, there is not an easy way out. We
+ * would need to somehow check if the longer running host is
+ * still there and uses the @path (how?).
+ * Fortunately, there is only one network file system which
+ * supports XATTRs currently (GlusterFS via FUSE) and it is used
+ * so rarely that it's almost a corner case.
+ * The worst thing that happens there is that we remove XATTRs
+ * and thus return @path to the default label for $SECDRIVER.
+ *
+ * Returns: 0 if remembered label is valid,
+ *          1 if remembered label was not valid,
+ *         -2 if underlying file system doesn't support XATTRs,
+ *         -1 otherwise.
+ */
+static int
+virSecurityValidateTimestamp(const char *name,
+                             const char *path)
+{
+    VIR_AUTOFREE(char *) expected_timestamp = NULL;
+    VIR_AUTOFREE(char *) timestamp_name = NULL;
+    VIR_AUTOFREE(char *) value = NULL;
+
+    if (!(expected_timestamp = virSecurityGetTimestamp()) ||
+        !(timestamp_name = virSecurityGetTimestampAttrName(name)))
+        return -1;
+
+    errno = 0;
+    if (virFileGetXAttrQuiet(path, timestamp_name, &value) < 0) {
+        if (errno == ENOSYS || errno == ENOTSUP) {
+            return -2;
+        } else if (errno != ENODATA) {
+            virReportSystemError(errno,
+                                 _("Unable to get XATTR %s on %s"),
+                                 timestamp_name,
+                                 path);
+            return -1;
+        }
+
+        /* Timestamp is missing. We could continue and claim a valid timestamp.
+         * But then we would never remove stale XATTRs. Therefore, claim it
+         * invalid and have the code below remove all XATTRs. This of course
+         * means that we will not restore the original owner, but the plus side
+         * is that we reset refcounter which will represent the true state.
+         */
+    }
+
+    if (STREQ_NULLABLE(value, expected_timestamp)) {
+        VIR_DEBUG("XATTRs on %s secdriver=%s are valid", path, name);
+        return 0;
+    }
+
+    VIR_WARN("Invalid XATTR timestamp detected on %s secdriver=%s", path, name);
+
+    if (virSecurityMoveRememberedLabel(name, path, NULL) < 0)
+        return -1;
+
+    return 1;
+}
+
+
+static int
+virSecurityAddTimestamp(const char *name,
+                        const char *path)
+{
+    VIR_AUTOFREE(char *) timestamp_name = NULL;
+    VIR_AUTOFREE(char *) timestamp_value = NULL;
+
+    if (!(timestamp_value = virSecurityGetTimestamp()) ||
+        !(timestamp_name = virSecurityGetTimestampAttrName(name)))
+        return -1;
+
+    return virFileSetXAttr(path, timestamp_name, timestamp_value);
+}
+
+
+static int
+virSecurityRemoveTimestamp(const char *name,
+                           const char *path)
+{
+    VIR_AUTOFREE(char *) timestamp_name = NULL;
+
+    if (!(timestamp_name = virSecurityGetTimestampAttrName(name)))
+        return -1;
+
+    if (virFileRemoveXAttr(path, timestamp_name) < 0 && errno != ENOENT)
+        return -1;
+
+    return 0;
+}
+
+
 /**
  * virSecurityGetRememberedLabel:
  * @name: security driver name
@@ -117,8 +269,12 @@ virSecurityGetRememberedLabel(const char *name,
     VIR_AUTOFREE(char *) attr_name = NULL;
     VIR_AUTOFREE(char *) value = NULL;
     unsigned int refcount = 0;
+    int rc;
 
     *label = NULL;
+
+    if ((rc = virSecurityValidateTimestamp(name, path)) < 0)
+        return rc;
 
     if (!(ref_name = virSecurityGetRefCountAttrName(name)))
         return -1;
@@ -163,6 +319,9 @@ virSecurityGetRememberedLabel(const char *name,
 
         if (virFileRemoveXAttr(path, attr_name) < 0)
             return -1;
+
+        if (virSecurityRemoveTimestamp(name, path) < 0)
+            return -1;
     }
 
     return 0;
@@ -198,6 +357,10 @@ virSecuritySetRememberedLabel(const char *name,
     VIR_AUTOFREE(char *) attr_name = NULL;
     VIR_AUTOFREE(char *) value = NULL;
     unsigned int refcount = 0;
+    int rc;
+
+    if ((rc = virSecurityValidateTimestamp(name, path)) < 0)
+        return rc;
 
     if (!(ref_name = virSecurityGetRefCountAttrName(name)))
         return -1;
@@ -231,6 +394,9 @@ virSecuritySetRememberedLabel(const char *name,
             return -1;
 
         if (virFileSetXAttr(path, attr_name, label) < 0)
+            return -1;
+
+        if (virSecurityAddTimestamp(name, path) < 0)
             return -1;
     }
 
@@ -266,9 +432,12 @@ virSecurityMoveRememberedLabel(const char *name,
     VIR_AUTOFREE(char *) ref_value = NULL;
     VIR_AUTOFREE(char *) attr_name = NULL;
     VIR_AUTOFREE(char *) attr_value = NULL;
+    VIR_AUTOFREE(char *) timestamp_name = NULL;
+    VIR_AUTOFREE(char *) timestamp_value = NULL;
 
     if (!(ref_name = virSecurityGetRefCountAttrName(name)) ||
-        !(attr_name = virSecurityGetAttrName(name)))
+        !(attr_name = virSecurityGetAttrName(name)) ||
+        !(timestamp_name = virSecurityGetTimestampAttrName(name)))
         return -1;
 
     if (virFileGetXAttrQuiet(src, ref_name, &ref_value) < 0) {
@@ -293,6 +462,17 @@ virSecurityMoveRememberedLabel(const char *name,
         }
     }
 
+    if (virFileGetXAttrQuiet(src, timestamp_name, &timestamp_value) < 0) {
+        if (errno == ENOSYS || errno == ENOTSUP) {
+            return -2;
+        } else if (errno != ENODATA) {
+            virReportSystemError(errno,
+                                 _("Unable to get XATTR %s on %s"),
+                                 attr_name, src);
+            return -1;
+        }
+    }
+
     if (ref_value &&
         virFileRemoveXAttr(src, ref_name) < 0) {
         return -1;
@@ -300,6 +480,11 @@ virSecurityMoveRememberedLabel(const char *name,
 
     if (attr_value &&
         virFileRemoveXAttr(src, attr_name) < 0) {
+        return -1;
+    }
+
+    if (timestamp_value &&
+        virFileRemoveXAttr(src, timestamp_name) < 0) {
         return -1;
     }
 
@@ -312,6 +497,13 @@ virSecurityMoveRememberedLabel(const char *name,
         if (attr_value &&
             virFileSetXAttr(dst, attr_name, attr_value) < 0) {
             ignore_value(virFileRemoveXAttr(dst, ref_name));
+            return -1;
+        }
+
+        if (timestamp_value &&
+            virFileSetXAttr(dst, timestamp_name, timestamp_value) < 0) {
+            ignore_value(virFileRemoveXAttr(dst, ref_name));
+            ignore_value(virFileRemoveXAttr(dst, attr_name));
             return -1;
         }
     }

@@ -74,7 +74,7 @@ fi
 declare -a XATTRS
 for i in "dac" "selinux"; do
     for p in ${LIBVIRT_XATTR_PREFIXES[@]}; do
-        XATTRS+=("$p.$i" "$p.ref_$i")
+        XATTRS+=("$p.$i" "$p.ref_$i" "$p.timestamp_$i")
     done
 done
 
