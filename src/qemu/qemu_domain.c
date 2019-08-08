@@ -32,6 +32,7 @@
 #include "qemu_migration.h"
 #include "qemu_migration_params.h"
 #include "qemu_security.h"
+#include "qemu_slirp.h"
 #include "qemu_extdevice.h"
 #include "qemu_blockjob.h"
 #include "viralloc.h"
@@ -1302,6 +1303,9 @@ qemuDomainNetworkPrivateNew(void)
 static void
 qemuDomainNetworkPrivateDispose(void *obj ATTRIBUTE_UNUSED)
 {
+    qemuDomainNetworkPrivatePtr priv = obj;
+
+    qemuSlirpFree(priv->slirp);
 }
 
 
@@ -2651,6 +2655,63 @@ qemuDomainObjPrivateXMLFormatJob(virBufferPtr buf,
 }
 
 
+static bool
+qemuDomainHasSlirp(virDomainObjPtr vm)
+{
+    size_t i;
+
+    for (i = 0; i < vm->def->nnets; i++) {
+        virDomainNetDefPtr net = vm->def->nets[i];
+
+        if (QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp)
+            return true;
+    }
+
+    return false;
+}
+
+
+static int
+qemuDomainObjPrivateXMLFormatSlirp(virBufferPtr buf,
+                                   virDomainObjPtr vm)
+{
+    size_t i;
+
+    if (!qemuDomainHasSlirp(vm))
+        return 0;
+
+    virBufferAddLit(buf, "<slirp>\n");
+    virBufferAdjustIndent(buf, 2);
+
+    for (i = 0; i < vm->def->nnets; i++) {
+        virDomainNetDefPtr net = vm->def->nets[i];
+        qemuSlirpPtr slirp = QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp;
+        size_t j;
+
+        if (!slirp)
+            continue;
+
+        virBufferAsprintf(buf, "<helper alias='%s' pid='%d'>\n",
+                          net->info.alias, slirp->pid);
+
+        virBufferAdjustIndent(buf, 2);
+        for (j = 0; j < QEMU_SLIRP_FEATURE_LAST; j++) {
+            if (qemuSlirpHasFeature(slirp, j)) {
+                virBufferAsprintf(buf, "<feature name='%s'/>\n",
+                                  qemuSlirpFeatureTypeToString(j));
+            }
+        }
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</helper>\n");
+    }
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</slirp>\n");
+
+
+    return 0;
+}
+
 static int
 qemuDomainObjPrivateXMLFormat(virBufferPtr buf,
                               virDomainObjPtr vm)
@@ -2750,6 +2811,9 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf,
         virBufferAddLit(buf, "<memPrealloc/>\n");
 
     if (qemuDomainObjPrivateXMLFormatBlockjobs(buf, vm) < 0)
+        return -1;
+
+    if (qemuDomainObjPrivateXMLFormatSlirp(buf, vm) < 0)
         return -1;
 
     return 0;
@@ -3310,6 +3374,45 @@ qemuDomainObjPrivateXMLParseJob(virDomainObjPtr vm,
 
 
 static int
+qemuDomainObjPrivateXMLParseSlirpFeatures(xmlNodePtr featuresNode,
+                                          xmlXPathContextPtr ctxt,
+                                          qemuSlirpPtr slirp)
+{
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+    VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
+    size_t i;
+    int n;
+
+    ctxt->node = featuresNode;
+
+    if ((n = virXPathNodeSet("./feature", ctxt, &nodes)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("failed to parse slirp-helper features"));
+        return -1;
+    }
+
+    for (i = 0; i < n; i++) {
+        VIR_AUTOFREE(char *) str = virXMLPropString(nodes[i], "name");
+        int feature;
+
+        if (!str)
+            continue;
+
+        feature = qemuSlirpFeatureTypeFromString(str);
+        if (feature < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unknown slirp feature %s"), str);
+            return -1;
+        }
+
+        qemuSlirpSetFeature(slirp, feature);
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
                              virDomainObjPtr vm,
                              virDomainDefParserConfigPtr config)
@@ -3444,6 +3547,35 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
                 goto error;
             }
         }
+    }
+    VIR_FREE(nodes);
+
+    if ((n = virXPathNodeSet("./slirp/helper", ctxt, &nodes)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to parse slirp helper list"));
+        goto error;
+    }
+    for (i = 0; i < n; i++) {
+        VIR_AUTOFREE(char *) alias = virXMLPropString(nodes[i], "alias");
+        VIR_AUTOFREE(char *) pid = virXMLPropString(nodes[i], "pid");
+        VIR_AUTOPTR(qemuSlirp) slirp = qemuSlirpNew();
+        virDomainDeviceDef dev;
+
+        if (!alias || !pid || !slirp ||
+            virStrToLong_i(pid, NULL, 10, &slirp->pid) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("failed to parse slirp helper list"));
+            goto error;
+        }
+
+        if (virDomainDefFindDevice(vm->def, alias, &dev, true) < 0 ||
+            dev.type != VIR_DOMAIN_DEVICE_NET)
+            goto error;
+
+        if (qemuDomainObjPrivateXMLParseSlirpFeatures(nodes[i], ctxt, slirp) < 0)
+            goto error;
+
+        VIR_STEAL_PTR(QEMU_DOMAIN_NETWORK_PRIVATE(dev.data.net)->slirp, slirp);
     }
     VIR_FREE(nodes);
 

@@ -33,6 +33,7 @@
 #include "qemu_conf.h"
 #include "qemu_capabilities.h"
 #include "qemu_migration_params.h"
+#include "qemu_slirp.h"
 #include "virmdev.h"
 #include "virchrdev.h"
 #include "virobject.h"
@@ -520,7 +521,7 @@ typedef qemuDomainNetworkPrivate *qemuDomainNetworkPrivatePtr;
 struct _qemuDomainNetworkPrivate {
     virObject parent;
 
-    bool tmp_to_be_larger_than_parent;
+    qemuSlirpPtr slirp;
 };
 
 
