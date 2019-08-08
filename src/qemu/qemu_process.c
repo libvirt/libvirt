@@ -7418,8 +7418,6 @@ void qemuProcessStop(virQEMUDriverPtr driver,
 
     qemuProcessBuildDestroyMemoryPaths(driver, vm, NULL, false);
 
-    vm->def->id = -1;
-
     if (virAtomicIntDecAndTest(&driver->nactive) && driver->inhibitCallback)
         driver->inhibitCallback(false, driver->inhibitOpaque);
 
@@ -7494,6 +7492,8 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     qemuDomainCleanupRun(driver, vm);
 
     qemuExtDevicesStop(driver, vm);
+
+    vm->def->id = -1;
 
     /* Stop autodestroy in case guest is restarted */
     qemuProcessAutoDestroyRemove(driver, vm);
