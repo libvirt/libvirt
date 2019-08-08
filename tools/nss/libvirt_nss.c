@@ -26,7 +26,6 @@
 
 #include "libvirt_nss.h"
 
-#include <netinet/in.h>
 #include <resolv.h>
 #include <sys/types.h>
 #include <dirent.h>
@@ -541,7 +540,9 @@ aiforaf(const char *name, int af, struct addrinfo *pai, struct addrinfo **aip)
 }
 
 int
-_nss_compat_getaddrinfo(void *retval, void *mdata ATTRIBUTE_UNUSED, va_list ap)
+_nss_compat_getaddrinfo(void *retval,
+                        void *mdata __attribute__((unused)),
+                        va_list ap)
 {
     struct addrinfo sentinel, *cur, *ai;
     const char *name;
@@ -567,7 +568,9 @@ _nss_compat_getaddrinfo(void *retval, void *mdata ATTRIBUTE_UNUSED, va_list ap)
 }
 
 int
-_nss_compat_gethostbyname2_r(void *retval, void *mdata ATTRIBUTE_UNUSED, va_list ap)
+_nss_compat_gethostbyname2_r(void *retval,
+                             void *mdata __attribute__((unused)),
+                             va_list ap)
 {
     int ret;
 
@@ -594,7 +597,8 @@ _nss_compat_gethostbyname2_r(void *retval, void *mdata ATTRIBUTE_UNUSED, va_list
 }
 
 ns_mtab*
-nss_module_register(const char *name ATTRIBUTE_UNUSED, unsigned int *size,
+nss_module_register(const char *name __attribute__((unused)),
+                    unsigned int *size,
                     nss_module_unregister_fn *unregister)
 {
     *size = sizeof(methods) / sizeof(methods[0]);
