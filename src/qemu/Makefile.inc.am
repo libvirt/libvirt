@@ -58,6 +58,8 @@ QEMU_DRIVER_SOURCES = \
 	qemu/qemu_security.h \
 	qemu/qemu_qapi.c \
 	qemu/qemu_qapi.h \
+	qemu/qemu_slirp.c \
+	qemu/qemu_slirp.h \
 	qemu/qemu_tpm.c \
 	qemu/qemu_tpm.h \
 	$(NULL)
