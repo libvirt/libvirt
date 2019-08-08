@@ -86,7 +86,7 @@ endif
 # is liable to mess with SELinux labelling which will
 # then prevent the host accessing them. And podman cannot
 # relabel the files due to it running rootless. So
-# copying them first is safer and error-prone.
+# copying them first is safer and less error-prone.
 CI_PWDB_MOUNTS = \
 	--volume $(CI_SCRATCHDIR)/group:/etc/group:ro,z \
 	--volume $(CI_SCRATCHDIR)/passwd:/etc/passwd:ro,z \
@@ -98,22 +98,26 @@ CI_PWDB_MOUNTS = \
 CI_ULIMIT_FILES = 1024
 
 ifeq ($(CI_ENGINE),podman)
-	# Podman cannot reuse host namespace when running non-root containers.  Until
-	# support for --keep-uid is added we can just create another mapping that will
-	# do that for us.  Beware, that in {uid,git}map=container_id:host_id:range,
-	# the host_id does actually refer to the uid in the first mapping where 0
-	# (root) is mapped to the current user and rest is offset.
-
-	# In order to set up this mapping, we need to keep all the user IDs to prevent
-	# possible errors as some images might expect UIDs up to 90000 (looking at you
-	# fedora), so we don't want the overflowuid to be used for them.  For mapping
-	# all the other users properly ther eneeds to be some math done.  Don't worry,
-	# it's just addition and subtraction.
-
-	# 65536 ought to be enough (tm), but for really rare cases the maximums might
-	# need to be higher, but that only happens when your /etc/sub{u,g}id allow
-	# users to have more IDs.  Unless --keep-uid is supported, let's do this in a
-	# way that should work for everyone.
+	# Podman cannot reuse host namespace when running non-root
+	# containers.  Until support for --keep-uid is added we can
+	# just create another mapping that will do that for us.
+	# Beware, that in {uid,git}map=container_id:host_id:range, the
+	# host_id does actually refer to the uid in the first mapping
+	# where 0 (root) is mapped to the current user and rest is
+	# offset.
+	#
+	# In order to set up this mapping, we need to keep all the
+	# user IDs to prevent possible errors as some images might
+	# expect UIDs up to 90000 (looking at you fedora), so we don't
+	# want the overflowuid to be used for them.  For mapping all
+	# the other users properly, some math needs to be done.
+	# Don't worry, it's just addition and subtraction.
+	#
+	# 65536 ought to be enough (tm), but for really rare cases the
+	# maximums might need to be higher, but that only happens when
+	# your /etc/sub{u,g}id allow users to have more IDs.  Unless
+	# --keep-uid is supported, let's do this in a way that should
+	# work for everyone.
 	CI_MAX_UID = $(shell sed -n "s/^$USER:[^:]\+://p" /etc/subuid)
 	CI_MAX_GID = $(shell sed -n "s/^$USER:[^:]\+://p" /etc/subgid)
 	ifeq ($(CI_MAX_UID),)
