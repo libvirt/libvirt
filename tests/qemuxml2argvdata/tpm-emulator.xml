@@ -23,7 +23,7 @@
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
     <tpm model='tpm-tis'>
-      <backend type='emulator'/>
+      <backend type='emulator' version='1.2'/>
     </tpm>
     <memballoon model='virtio'/>
   </devices>
