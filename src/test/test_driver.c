@@ -7729,6 +7729,45 @@ testDomainMemoryPeek(virDomainPtr dom,
 }
 
 
+static int
+testDomainGetBlockInfo(virDomainPtr dom,
+                       const char *path,
+                       virDomainBlockInfoPtr info,
+                       unsigned int flags)
+{
+    virDomainObjPtr vm = NULL;
+    virDomainDiskDefPtr disk;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        return -1;
+
+    if (!(disk = virDomainDiskByName(vm->def, path, false))) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("invalid path %s not assigned to domain"), path);
+        goto cleanup;
+    }
+
+    if (virStorageSourceIsEmpty(disk->src)) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("disk '%s' does not currently have a source assigned"),
+                       path);
+        goto cleanup;
+    }
+
+    info->capacity = 1099506450432;
+    info->allocation = 1099511627776;
+    info->physical = 1099511627776;
+
+    ret = 0;
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
 /*
  * Snapshot APIs
  */
@@ -9031,6 +9070,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainManagedSaveRemove = testDomainManagedSaveRemove, /* 1.1.4 */
     .domainMemoryStats = testDomainMemoryStats, /* 5.7.0 */
     .domainMemoryPeek = testDomainMemoryPeek, /* 5.4.0 */
+    .domainGetBlockInfo = testDomainGetBlockInfo, /* 5.7.0 */
 
     .domainSnapshotNum = testDomainSnapshotNum, /* 1.1.4 */
     .domainSnapshotListNames = testDomainSnapshotListNames, /* 1.1.4 */
