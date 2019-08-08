@@ -113,34 +113,32 @@ virSecurityGetRememberedLabel(const char *name,
                               const char *path,
                               char **label)
 {
-    char *ref_name = NULL;
-    char *attr_name = NULL;
-    char *value = NULL;
+    VIR_AUTOFREE(char *) ref_name = NULL;
+    VIR_AUTOFREE(char *) attr_name = NULL;
+    VIR_AUTOFREE(char *) value = NULL;
     unsigned int refcount = 0;
-    int ret = -1;
 
     *label = NULL;
 
     if (!(ref_name = virSecurityGetRefCountAttrName(name)))
-        goto cleanup;
+        return -1;
 
     if (virFileGetXAttrQuiet(path, ref_name, &value) < 0) {
-        if (errno == ENOSYS || errno == ENODATA || errno == ENOTSUP) {
-            ret = -2;
-        } else {
-            virReportSystemError(errno,
-                                 _("Unable to get XATTR %s on %s"),
-                                 ref_name,
-                                 path);
-        }
-        goto cleanup;
+        if (errno == ENOSYS || errno == ENODATA || errno == ENOTSUP)
+            return -2;
+
+        virReportSystemError(errno,
+                             _("Unable to get XATTR %s on %s"),
+                             ref_name,
+                             path);
+        return -1;
     }
 
     if (virStrToLong_ui(value, NULL, 10, &refcount) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("malformed refcount %s on %s"),
                        value, path);
-        goto cleanup;
+        return -1;
     }
 
     VIR_FREE(value);
@@ -149,30 +147,25 @@ virSecurityGetRememberedLabel(const char *name,
 
     if (refcount > 0) {
         if (virAsprintf(&value, "%u", refcount) < 0)
-            goto cleanup;
+            return -1;
 
         if (virFileSetXAttr(path, ref_name, value) < 0)
-            goto cleanup;
+            return -1;
     } else {
         if (virFileRemoveXAttr(path, ref_name) < 0)
-            goto cleanup;
+            return -1;
 
         if (!(attr_name = virSecurityGetAttrName(name)))
-            goto cleanup;
+            return -1;
 
         if (virFileGetXAttr(path, attr_name, label) < 0)
-            goto cleanup;
+            return -1;
 
         if (virFileRemoveXAttr(path, attr_name) < 0)
-            goto cleanup;
+            return -1;
     }
 
-    ret = 0;
- cleanup:
-    VIR_FREE(value);
-    VIR_FREE(attr_name);
-    VIR_FREE(ref_name);
-    return ret;
+    return 0;
 }
 
 
@@ -201,25 +194,23 @@ virSecuritySetRememberedLabel(const char *name,
                               const char *path,
                               const char *label)
 {
-    char *ref_name = NULL;
-    char *attr_name = NULL;
-    char *value = NULL;
+    VIR_AUTOFREE(char *) ref_name = NULL;
+    VIR_AUTOFREE(char *) attr_name = NULL;
+    VIR_AUTOFREE(char *) value = NULL;
     unsigned int refcount = 0;
-    int ret = -1;
 
     if (!(ref_name = virSecurityGetRefCountAttrName(name)))
-        goto cleanup;
+        return -1;
 
     if (virFileGetXAttrQuiet(path, ref_name, &value) < 0) {
         if (errno == ENOSYS || errno == ENOTSUP) {
-            ret = -2;
-            goto cleanup;
+            return -2;
         } else if (errno != ENODATA) {
             virReportSystemError(errno,
                                  _("Unable to get XATTR %s on %s"),
                                  ref_name,
                                  path);
-            goto cleanup;
+            return -1;
         }
     }
 
@@ -228,7 +219,7 @@ virSecuritySetRememberedLabel(const char *name,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("malformed refcount %s on %s"),
                        value, path);
-        goto cleanup;
+        return -1;
     }
 
     VIR_FREE(value);
@@ -237,24 +228,19 @@ virSecuritySetRememberedLabel(const char *name,
 
     if (refcount == 1) {
         if (!(attr_name = virSecurityGetAttrName(name)))
-            goto cleanup;
+            return -1;
 
         if (virFileSetXAttr(path, attr_name, label) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (virAsprintf(&value, "%u", refcount) < 0)
-        goto cleanup;
+        return -1;
 
     if (virFileSetXAttr(path, ref_name, value) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = refcount;
- cleanup:
-    VIR_FREE(value);
-    VIR_FREE(attr_name);
-    VIR_FREE(ref_name);
-    return ret;
+    return refcount;
 }
 
 
