@@ -141,7 +141,7 @@ virUUIDParse(const char *uuidstr, unsigned char *uuid)
 
 /**
  * virUUIDFormat:
- * @uuid: array of VIR_UUID_RAW_LEN bytes to store the raw UUID
+ * @uuid: array of VIR_UUID_BUFLEN bytes to store the raw UUID
  * @uuidstr: array of VIR_UUID_STRING_BUFLEN bytes to store the
  * string representation of the UUID in. The resulting string
  * will be NULL terminated.
