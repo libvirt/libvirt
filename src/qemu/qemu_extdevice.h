@@ -31,7 +31,7 @@ int qemuExtDeviceLogCommand(virQEMUDriverPtr driver,
     ATTRIBUTE_RETURN_CHECK;
 
 int qemuExtDevicesPrepareHost(virQEMUDriverPtr driver,
-                              virDomainDefPtr def)
+                              virDomainObjPtr vm)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
     ATTRIBUTE_RETURN_CHECK;
 

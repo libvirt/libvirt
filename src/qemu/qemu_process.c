@@ -6619,7 +6619,7 @@ qemuProcessPrepareHost(virQEMUDriverPtr driver,
         goto cleanup;
 
     VIR_DEBUG("Preparing external devices");
-    if (qemuExtDevicesPrepareHost(driver, vm->def) < 0)
+    if (qemuExtDevicesPrepareHost(driver, vm) < 0)
         goto cleanup;
 
     if (qemuProcessPrepareSEVGuestInput(vm) < 0)
