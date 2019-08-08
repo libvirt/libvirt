@@ -1105,6 +1105,7 @@ qemuMigrationSrcIsAllowed(virQEMUDriverPtr driver,
                           bool remote,
                           unsigned int flags)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     int nsnapshots;
     int pauseReason;
     size_t i;
@@ -1131,7 +1132,13 @@ qemuMigrationSrcIsAllowed(virQEMUDriverPtr driver,
                            _("cannot migrate domain with I/O error"));
             return false;
         }
+    }
 
+    if (virHashSize(priv->dbusVMStates) > 0 &&
+        !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DBUS_VMSTATE)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("domain requires dbus-vmstate support"));
+        return false;
     }
 
     /* following checks don't make sense for offline migration */
