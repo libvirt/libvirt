@@ -413,6 +413,83 @@ qemuHotplugRemoveManagedPR(virQEMUDriverPtr driver,
 
 
 /**
+ * qemuDomainAttachDBusVMState:
+ * @driver: QEMU driver object
+ * @vm: domain object
+ * @id
+ * @addr
+ * @asyncJob: asynchronous job identifier
+ *
+ * Add dbus-vmstate object.
+ *
+ * Returns: 0 on success, -1 on error.
+ */
+int
+qemuDomainAttachDBusVMState(virQEMUDriverPtr driver,
+                            virDomainObjPtr vm,
+                            const char *id,
+                            const char *addr,
+                            qemuDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    VIR_AUTOPTR(virJSONValue) props = NULL;
+    int ret;
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DBUS_VMSTATE)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("dbus-vmstate object is not supported by this QEMU binary"));
+        return -1;
+    }
+
+    if (!(props = qemuBuildDBusVMStateInfoProps(id, addr)))
+        return -1;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return -1;
+
+    ret = qemuMonitorAddObject(priv->mon, &props, NULL);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        return -1;
+
+    return ret;
+}
+
+
+/**
+ * qemuDomainDetachDBusVMState:
+ * @driver: QEMU driver object
+ * @vm: domain object
+ * @asyncJob: asynchronous job identifier
+ *
+ * Remove dbus-vmstate object from @vm.
+ *
+ * Returns: 0 on success, -1 on error.
+ */
+int
+qemuDomainDetachDBusVMState(virQEMUDriverPtr driver,
+                            virDomainObjPtr vm,
+                            const char *id,
+                            qemuDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    VIR_AUTOFREE(char *) alias = qemuAliasDBusVMStateFromId(id);
+    int ret;
+
+    if (!alias ||
+        qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return -1;
+
+    ret = qemuMonitorDelObject(priv->mon, alias);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        return -1;
+
+    return ret;
+}
+
+
+/**
  * qemuDomainChangeMediaBlockdev:
  * @driver: qemu driver structure
  * @vm: domain definition

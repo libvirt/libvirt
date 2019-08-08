@@ -62,6 +62,9 @@ virJSONValuePtr qemuBuildPRManagedManagerInfoProps(qemuDomainObjPrivatePtr priv)
 int qemuBuildSecretInfoProps(qemuDomainSecretInfoPtr secinfo,
                              virJSONValuePtr *propsret);
 
+virJSONValuePtr qemuBuildDBusVMStateInfoProps(const char *id,
+                                              const char *addr);
+
 /* Generate the object properties for a tls-creds-x509 */
 int qemuBuildTLSx509BackendProps(const char *tlspath,
                                  bool isListen,

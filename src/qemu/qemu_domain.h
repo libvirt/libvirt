@@ -392,6 +392,8 @@ struct _qemuDomainObjPrivate {
 
     /* running block jobs */
     virHashTablePtr blockjobs;
+
+    virHashTablePtr dbusVMStates;
 };
 
 #define QEMU_DOMAIN_PRIVATE(vm) \
