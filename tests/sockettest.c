@@ -50,7 +50,7 @@ static int testFormat(virSocketAddr *addr, const char *addrstr, bool pass)
         return pass ? -1 : 0;
 
     if (STRNEQ(newaddrstr, addrstr)) {
-        virTestDifference(stderr, newaddrstr, addrstr);
+        virTestDifference(stderr, addrstr, newaddrstr);
         VIR_FREE(newaddrstr);
         return pass ? -1 : 0;
     } else {
