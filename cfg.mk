@@ -59,6 +59,7 @@ local-checks-to-skip = \
   sc_obsolete_symbols \
   sc_prohibit_S_IS_definition \
   sc_prohibit_atoi_atof \
+  sc_prohibit_gnu_make_extensions \
   sc_prohibit_hash_without_use \
   sc_prohibit_jm_in_m4 \
   sc_prohibit_quote_without_use \
