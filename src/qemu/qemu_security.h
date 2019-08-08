@@ -101,6 +101,14 @@ int qemuSecurityRestoreSavedStateLabel(virQEMUDriverPtr driver,
                                        virDomainObjPtr vm,
                                        const char *savefile);
 
+int qemuSecurityCommandRun(virQEMUDriverPtr driver,
+                           virDomainObjPtr vm,
+                           virCommandPtr cmd,
+                           uid_t uid,
+                           gid_t gid,
+                           int *exitstatus,
+                           int *cmdret);
+
 /* Please note that for these APIs there is no wrapper yet. Do NOT blindly add
  * new APIs here. If an API can touch a file add a proper wrapper instead.
  */

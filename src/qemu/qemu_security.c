@@ -479,21 +479,10 @@ qemuSecurityStartTPMEmulator(virQEMUDriverPtr driver,
         goto cleanup_abort;
     transactionStarted = false;
 
-    if (virSecurityManagerSetChildProcessLabel(driver->securityManager,
-                                               vm->def, cmd) < 0)
-        goto cleanup;
-
-    if (virSecurityManagerPreFork(driver->securityManager) < 0)
+    if (qemuSecurityCommandRun(driver, vm, cmd, uid, gid, exitstatus, cmdret) < 0)
         goto cleanup;
 
     ret = 0;
-    /* make sure we run this with the appropriate user */
-    virCommandSetUID(cmd, uid);
-    virCommandSetGID(cmd, gid);
-
-    *cmdret = virCommandRun(cmd, exitstatus);
-
-    virSecurityManagerPostFork(driver->securityManager);
 
     if (*cmdret < 0)
         goto cleanup;
@@ -631,4 +620,49 @@ qemuSecurityRestoreSavedStateLabel(virQEMUDriverPtr driver,
  cleanup:
     virSecurityManagerTransactionAbort(driver->securityManager);
     return ret;
+}
+
+
+/**
+ * qemuSecurityCommandRun:
+ * @driver: the QEMU driver
+ * @vm: the domain object
+ * @cmd: the command to run
+ * @uid: the uid to force
+ * @gid: the gid to force
+ * @existstatus: pointer to int returning exit status of process
+ * @cmdret: pointer to int returning result of virCommandRun
+ *
+ * Run @cmd with seclabels set on it. If @uid and/or @gid are not
+ * -1 then their value is enforced.
+ *
+ * Returns: 0 on success,
+ *         -1 otherwise.
+ */
+int
+qemuSecurityCommandRun(virQEMUDriverPtr driver,
+                       virDomainObjPtr vm,
+                       virCommandPtr cmd,
+                       uid_t uid,
+                       gid_t gid,
+                       int *exitstatus,
+                       int *cmdret)
+{
+    if (virSecurityManagerSetChildProcessLabel(driver->securityManager,
+                                               vm->def, cmd) < 0)
+        return -1;
+
+    if (uid != (uid_t) -1)
+        virCommandSetUID(cmd, uid);
+    if (gid != (gid_t) -1)
+        virCommandSetGID(cmd, gid);
+
+    if (virSecurityManagerPreFork(driver->securityManager) < 0)
+        return -1;
+
+    *cmdret = virCommandRun(cmd, exitstatus);
+
+    virSecurityManagerPostFork(driver->securityManager);
+
+    return 0;
 }
