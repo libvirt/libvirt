@@ -39,6 +39,7 @@
 #include "qemu_hotplug.h"
 #include "qemu_blockjob.h"
 #include "qemu_security.h"
+#include "qemu_slirp.h"
 #include "qemu_block.h"
 
 #include "domain_audit.h"
@@ -1139,6 +1140,17 @@ qemuMigrationSrcIsAllowed(virQEMUDriverPtr driver,
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("domain requires dbus-vmstate support"));
         return false;
+    }
+
+    for (i = 0; i < vm->def->nnets; i++) {
+        virDomainNetDefPtr net = vm->def->nets[i];
+        qemuSlirpPtr slirp = QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp;
+
+        if (slirp && !qemuSlirpHasFeature(slirp, QEMU_SLIRP_FEATURE_MIGRATE)) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("a slirp-helper cannot be migrated"));
+            return false;
+        }
     }
 
     /* following checks don't make sense for offline migration */
