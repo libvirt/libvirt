@@ -4814,7 +4814,7 @@ networkAllocatePort(virNetworkObjPtr obj,
         if (!(port->plugtype == VIR_NETWORK_PORT_PLUG_TYPE_HOSTDEV_PCI ||
               (port->plugtype == VIR_NETWORK_PORT_PLUG_TYPE_DIRECT &&
                port->plug.direct.mode == VIR_NETDEV_MACVLAN_MODE_PASSTHRU) ||
-              (port->plugtype == VIR_DOMAIN_NET_TYPE_BRIDGE &&
+              (port->plugtype == VIR_NETWORK_PORT_PLUG_TYPE_BRIDGE &&
                port->virtPortProfile &&
                port->virtPortProfile->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH))) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
