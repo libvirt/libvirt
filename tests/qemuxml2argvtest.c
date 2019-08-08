@@ -17,6 +17,7 @@
 # include "qemu/qemu_domain.h"
 # include "qemu/qemu_migration.h"
 # include "qemu/qemu_process.h"
+# include "qemu/qemu_slirp.h"
 # include "datatypes.h"
 # include "conf/storage_conf.h"
 # include "cpu/cpu_map.h"
@@ -398,6 +399,7 @@ testCheckExclusiveFlags(int flags)
                   FLAG_FIPS |
                   FLAG_REAL_CAPS |
                   FLAG_SKIP_LEGACY_CPUS |
+                  FLAG_SLIRP_HELPER |
                   0, -1);
 
     VIR_EXCLUSIVE_FLAGS_RET(FLAG_REAL_CAPS, FLAG_SKIP_LEGACY_CPUS, -1);
@@ -524,6 +526,19 @@ testCompareXMLToArgv(const void *data)
         case VIR_DOMAIN_TPM_TYPE_LAST:
             break;
        }
+    }
+
+    if (flags & FLAG_SLIRP_HELPER) {
+        for (i = 0; i < vm->def->nnets; i++) {
+            virDomainNetDefPtr net = vm->def->nets[i];
+
+            if (net->type == VIR_DOMAIN_NET_TYPE_USER &&
+                virQEMUCapsGet(info->qemuCaps, QEMU_CAPS_NET_SOCKET_DGRAM)) {
+                qemuSlirpPtr slirp = qemuSlirpNew();
+                slirp->fd[0] = 42;
+                QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp = slirp;
+            }
+        }
     }
 
     if (!(cmd = qemuProcessCreatePretendCmd(&driver, vm, migrateURI,
@@ -1284,6 +1299,7 @@ mymain(void)
     DO_TEST_FAILURE("net-vhostuser-fail",
                     QEMU_CAPS_VHOSTUSER_MULTIQUEUE);
     DO_TEST("net-user", NONE);
+    DO_TEST_CAPS_ARCH_VER_FULL("net-user", "x86_64", "4.0.0", ARG_FLAGS, FLAG_SLIRP_HELPER);
     DO_TEST("net-user-addr", NONE);
     DO_TEST("net-virtio", NONE);
     DO_TEST("net-virtio-device",

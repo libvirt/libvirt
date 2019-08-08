@@ -51,6 +51,7 @@ typedef enum {
     FLAG_FIPS               = 1 << 2,
     FLAG_REAL_CAPS          = 1 << 3,
     FLAG_SKIP_LEGACY_CPUS   = 1 << 4,
+    FLAG_SLIRP_HELPER       = 1 << 5,
 } testQemuInfoFlags;
 
 struct testQemuInfo {
