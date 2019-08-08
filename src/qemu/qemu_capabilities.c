@@ -538,6 +538,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "bochs-display",
               "migration-file-drop-cache",
               "net-socket-dgram",
+              "dbus-vmstate",
     );
 
 
@@ -1128,6 +1129,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "virtio-serial-pci-non-transitional", QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL },
     { "max-x86_64-cpu", QEMU_CAPS_X86_MAX_CPU },
     { "bochs-display", QEMU_CAPS_DEVICE_BOCHS_DISPLAY },
+    { "dbus-vmstate", QEMU_CAPS_DBUS_VMSTATE },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVirtioBalloon[] = {
