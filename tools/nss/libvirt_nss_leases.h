@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "internal.h"
+#include <sys/types.h>
 
 typedef struct {
     unsigned char addr[16];

@@ -28,8 +28,12 @@
 #include <errno.h>
 #include <string.h>
 
-#include "configmake.h"
-#include "intprops.h"
+/*
+ * These gnulib files are used for their macros only,
+ * so don't introduce a link time dep, which we must avoid
+ */
+#include "gnulib/lib/configmake.h"
+#include "gnulib/lib/intprops.h"
 
 int main(int argc, char **argv) {
     char uidstr[INT_BUFSIZE_BOUND(uid_t)];

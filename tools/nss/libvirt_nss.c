@@ -32,6 +32,8 @@
 #include <dirent.h>
 #include <arpa/inet.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <errno.h>
 #include <string.h>
 #include <time.h>
 
@@ -40,7 +42,12 @@
 # include <nsswitch.h>
 #endif
 
-#include "configmake.h"
+/*
+ * This gnulib files is used for its macros only,
+ * so doesn't introduce a link time dep, which we
+ * must avoid
+ */
+#include "gnulib/lib/configmake.h"
 
 #include "libvirt_nss_leases.h"
 
@@ -131,7 +138,7 @@ findLease(const char *name,
         char *path;
         size_t dlen = strlen(entry->d_name);
 
-        if (dlen >= 7 && STREQ(entry->d_name + dlen - 7, ".status")) {
+        if (dlen >= 7 && !strcmp(entry->d_name + dlen - 7, ".status")) {
             char **tmpLease;
             if (asprintf(&path, "%s/%s", leaseDir, entry->d_name) < 0)
                 goto cleanup;
@@ -142,7 +149,7 @@ findLease(const char *name,
             leaseFiles = tmpLease;
             leaseFiles[nleaseFiles++] = path;
 #if defined(LIBVIRT_NSS_GUEST)
-        } else if (dlen >= 5 && STREQ(entry->d_name + dlen - 5, ".macs")) {
+        } else if (dlen >= 5 && !strcmp(entry->d_name + dlen - 5, ".macs")) {
             if (asprintf(&path, "%s/%s", leaseDir, entry->d_name) < 0)
                 goto cleanup;
 

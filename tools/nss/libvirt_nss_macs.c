@@ -67,7 +67,7 @@ findMACsParserString(void *ctx,
         return 0;
 
     if (parser->state == FIND_MACS_STATE_ENTRY) {
-        if (STRNEQ(parser->key, "domain"))
+        if (strcmp(parser->key, "domain"))
             return 0;
 
         free(parser->entry.name);
@@ -75,7 +75,7 @@ findMACsParserString(void *ctx,
             return 0;
     } else if (parser->state == FIND_MACS_STATE_ENTRY_MACS) {
         char **macs;
-        if (STRNEQ(parser->key, "macs"))
+        if (strcmp(parser->key, "macs"))
             return 0;
 
         if (!(macs = realloc(parser->entry.macs,
@@ -142,7 +142,7 @@ findMACsParserEndMap(void *ctx)
     if (parser->state != FIND_MACS_STATE_ENTRY)
         return 0;
 
-    if (STREQ(parser->entry.name, parser->name)) {
+    if (!strcmp(parser->entry.name, parser->name)) {
         char **macs = realloc(*parser->macs,
                               sizeof(char *) * ((*parser->nmacs) + parser->entry.nmacs));
         if (!macs)

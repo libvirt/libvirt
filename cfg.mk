@@ -1346,3 +1346,6 @@ exclude_file_name_regexp--sc_prohibit_cross_inclusion = \
 
 exclude_file_name_regexp--sc_prohibit_dirent_d_type = \
   ^(src/util/vircgroup.c)$
+
+exclude_file_name_regexp--sc_prohibit_strcmp = \
+  ^(tools/nss/libvirt_nss.*\.c)

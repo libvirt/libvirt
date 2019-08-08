@@ -23,6 +23,12 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir) \
 	$(NULL)
 
+# We do not want to accidentally include stuff from gnulib
+# or the main src/ dir or public API dir. Specific files can
+# still be included via their path relative to the root if
+# needed
+STANDALONE_CPPFLAGS = -I$(top_srcdir)
+
 WARN_CFLAGS += $(STRICT_FRAME_LIMIT_CFLAGS)
 
 AM_CFLAGS = \
@@ -198,6 +204,8 @@ virt_host_validate_CFLAGS = \
 # real virt-login-shell-helper binary.
 virt_login_shell_SOURCES = \
 		virt-login-shell.c
+
+virt_login_shell_CPPFLAGS = $(STANDALONE_CPPFLAGS)
 
 virt_login_shell_helper_SOURCES = \
 		virt-login-shell-helper.c
@@ -486,6 +494,7 @@ noinst_LTLIBRARIES += nss/libnss_libvirt_impl.la
 nss_libnss_libvirt_impl_la_SOURCES = \
 	$(LIBVIRT_NSS_SOURCES)
 
+nss_libnss_libvirt_impl_la_CPPFLAGS = $(STANDALONE_CPPFLAGS)
 nss_libnss_libvirt_impl_la_CFLAGS = \
 	-DLIBVIRT_NSS \
 	$(YAJL_CFLAGS) \
@@ -516,6 +525,7 @@ nss_libnss_libvirt_guest_impl_la_SOURCES = \
 	nss/libvirt_nss_macs.c \
 	$(NULL)
 
+nss_libnss_libvirt_guest_impl_la_CPPFLAGS = $(STANDALONE_CPPFLAGS)
 nss_libnss_libvirt_guest_impl_la_CFLAGS = \
 	-DLIBVIRT_NSS \
 	-DLIBVIRT_NSS_GUEST \

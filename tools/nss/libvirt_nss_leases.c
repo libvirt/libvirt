@@ -23,6 +23,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <fcntl.h>
 
 #include <yajl/yajl_gen.h>
@@ -60,7 +61,7 @@ typedef struct {
 
 
 static int
-appendAddr(const char *name ATTRIBUTE_UNUSED,
+appendAddr(const char *name __attribute__((unused)),
            leaseAddress **tmpAddress,
            size_t *ntmpAddress,
            const char *ipAddr,
@@ -165,7 +166,7 @@ findLeasesParserInteger(void *ctx,
         return 0;
 
     if (parser->state == FIND_LEASES_STATE_ENTRY) {
-        if (STRNEQ(parser->key, "expiry-time"))
+        if (strcmp(parser->key, "expiry-time"))
             return 0;
 
         parser->entry.expiry = val;
@@ -190,13 +191,13 @@ findLeasesParserString(void *ctx,
         return 0;
 
     if (parser->state == FIND_LEASES_STATE_ENTRY) {
-        if (STREQ(parser->key, "ip-address")) {
+        if (!strcmp(parser->key, "ip-address")) {
             if (!(parser->entry.ipaddr = strndup((char *)stringVal, stringLen)))
                 return 0;
-        } else if (STREQ(parser->key, "mac-address")) {
+        } else if (!strcmp(parser->key, "mac-address")) {
             if (!(parser->entry.macaddr = strndup((char *)stringVal, stringLen)))
                 return 0;
-        } else if (STREQ(parser->key, "hostname")) {
+        } else if (!strcmp(parser->key, "hostname")) {
             if (!(parser->entry.hostname = strndup((char *)stringVal, stringLen)))
                 return 0;
         } else {
@@ -264,12 +265,12 @@ findLeasesParserEndMap(void *ctx)
         DEBUG("Check %zu macs", parser->nmacs);
         for (i = 0; i < parser->nmacs && !found; i++) {
             DEBUG("Check mac '%s' vs '%s'", parser->macs[i], NULLSTR(parser->entry.macaddr));
-            if (STREQ_NULLABLE(parser->macs[i], parser->entry.macaddr))
+            if (parser->entry.macaddr && !strcmp(parser->macs[i], parser->entry.macaddr))
                 found = true;
         }
     } else {
         DEBUG("Check name '%s' vs '%s'", parser->name, NULLSTR(parser->entry.hostname));
-        if (STREQ_NULLABLE(parser->name, parser->entry.hostname))
+        if (parser->entry.hostname && !strcmp(parser->name, parser->entry.hostname))
             found = true;
     }
     DEBUG("Found %d", found);
