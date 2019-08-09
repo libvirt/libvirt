@@ -41,6 +41,15 @@
 <libvirt>
   <release version="v5.7.0" date="unreleased">
     <section title="New features">
+      <change>
+        <summary>
+          qemu: Support Direct Mode for Hyper-V Synthetic timers
+        </summary>
+        <description>
+          The QEMU driver now supports Direct Mode for Hyper-V Synthetic timers
+          for Hyper-V guests.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
