@@ -100,6 +100,8 @@ KVM_FEATURE_DEF(VIR_CPU_x86_HV_IPI,
                 0x40000004, 0x00000400, 0x0);
 KVM_FEATURE_DEF(VIR_CPU_x86_HV_EVMCS,
                 0x40000004, 0x00004000, 0x0);
+KVM_FEATURE_DEF(VIR_CPU_x86_HV_STIMER_DIRECT,
+                0x40000003, 0x0, 0x00080000);
 
 static virCPUx86Feature x86_kvm_features[] =
 {
@@ -116,6 +118,7 @@ static virCPUx86Feature x86_kvm_features[] =
     KVM_FEATURE(VIR_CPU_x86_HV_TLBFLUSH),
     KVM_FEATURE(VIR_CPU_x86_HV_IPI),
     KVM_FEATURE(VIR_CPU_x86_HV_EVMCS),
+    KVM_FEATURE(VIR_CPU_x86_HV_STIMER_DIRECT),
 };
 
 typedef struct _virCPUx86Model virCPUx86Model;

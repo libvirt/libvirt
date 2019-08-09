@@ -5907,7 +5907,7 @@
         </optional>
         <optional>
           <element name="stimer">
-            <ref name="featurestate"/>
+            <ref name="stimer"/>
           </element>
         </optional>
         <optional>
@@ -5954,6 +5954,20 @@
         </optional>
       </interleave>
     </element>
+  </define>
+
+  <!-- Hyper-V stimer features -->
+  <define name="stimer">
+    <interleave>
+      <optional>
+        <ref name="featurestate"/>
+      </optional>
+      <optional>
+        <element name="direct">
+          <ref name="featurestate"/>
+        </element>
+      </optional>
+    </interleave>
   </define>
 
   <!-- Optional KVM features -->

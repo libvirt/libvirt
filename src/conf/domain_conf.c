@@ -20394,6 +20394,39 @@ virDomainDefParseXML(xmlDocPtr xml,
         ctxt->node = node;
     }
 
+    if (def->features[VIR_DOMAIN_HYPERV_STIMER] == VIR_TRISTATE_SWITCH_ON) {
+        int value;
+        if ((n = virXPathNodeSet("./features/hyperv/stimer/*", ctxt, &nodes)) < 0)
+            goto error;
+
+        for (i = 0; i < n; i++) {
+            if (STRNEQ((const char *)nodes[i]->name, "direct")) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unsupported Hyper-V stimer feature: %s"),
+                               nodes[i]->name);
+                goto error;
+            }
+
+            if (!(tmp = virXMLPropString(nodes[i], "state"))) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("missing 'state' attribute for "
+                                 "Hyper-V stimer '%s' feature"), "direct");
+                        goto error;
+            }
+
+            if ((value = virTristateSwitchTypeFromString(tmp)) < 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("invalid value of state argument "
+                                 "for Hyper-V stimer '%s' feature"), "direct");
+                goto error;
+            }
+
+            VIR_FREE(tmp);
+            def->hyperv_stimer_direct = value;
+        }
+        VIR_FREE(nodes);
+    }
+
     if (def->features[VIR_DOMAIN_FEATURE_KVM] == VIR_TRISTATE_SWITCH_ON) {
         int feature;
         int value;
@@ -22616,6 +22649,17 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
             case VIR_DOMAIN_HYPERV_LAST:
                 break;
             }
+        }
+    }
+
+    if (src->hyperv_features[VIR_DOMAIN_HYPERV_STIMER] == VIR_TRISTATE_SWITCH_ON) {
+        if (src->hyperv_stimer_direct != dst->hyperv_stimer_direct) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("State of HyperV stimer direct feature differs: "
+                             "source: '%s', destination: '%s'"),
+                           virTristateSwitchTypeToString(src->hyperv_stimer_direct),
+                           virTristateSwitchTypeToString(dst->hyperv_stimer_direct));
+            return false;
         }
     }
 
@@ -28079,7 +28123,6 @@ virDomainDefFormatFeatures(virBufferPtr buf,
                 case VIR_DOMAIN_HYPERV_VPINDEX:
                 case VIR_DOMAIN_HYPERV_RUNTIME:
                 case VIR_DOMAIN_HYPERV_SYNIC:
-                case VIR_DOMAIN_HYPERV_STIMER:
                 case VIR_DOMAIN_HYPERV_RESET:
                 case VIR_DOMAIN_HYPERV_FREQUENCIES:
                 case VIR_DOMAIN_HYPERV_REENLIGHTENMENT:
@@ -28096,6 +28139,23 @@ virDomainDefFormatFeatures(virBufferPtr buf,
                     }
                     virBufferAsprintf(&childBuf, " retries='%d'/>\n",
                                       def->hyperv_spinlocks);
+                    break;
+
+                case VIR_DOMAIN_HYPERV_STIMER:
+                    if (def->hyperv_features[j] != VIR_TRISTATE_SWITCH_ON) {
+                        virBufferAddLit(&childBuf, "/>\n");
+                        break;
+                    }
+                    if (def->hyperv_stimer_direct == VIR_TRISTATE_SWITCH_ON) {
+                        virBufferAddLit(&childBuf, ">\n");
+                        virBufferAdjustIndent(&childBuf, 2);
+                        virBufferAddLit(&childBuf, "<direct state='on'/>\n");
+                        virBufferAdjustIndent(&childBuf, -2);
+                        virBufferAddLit(&childBuf, "</stimer>\n");
+                    } else {
+                        virBufferAddLit(&childBuf, "/>\n");
+                    }
+
                     break;
 
                 case VIR_DOMAIN_HYPERV_VENDOR_ID:
