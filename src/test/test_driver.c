@@ -3611,6 +3611,107 @@ testDomainGetInterfaceParameters(virDomainPtr dom,
     virDomainObjEndAPI(&vm);
     return ret;
 }
+
+
+static int
+testDomainGetBlockIoTune(virDomainPtr dom,
+                         const char *path,
+                         virTypedParameterPtr params,
+                         int *nparams,
+                         unsigned int flags)
+{
+    virDomainObjPtr vm = NULL;
+    virDomainDefPtr def = NULL;
+    virDomainDiskDefPtr disk;
+    virDomainBlockIoTuneInfo reply = {0};
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG |
+                  VIR_TYPED_PARAM_STRING_OKAY, -1);
+
+    flags &= ~VIR_TYPED_PARAM_STRING_OKAY;
+
+    if (*nparams == 0) {
+        *nparams = 20;
+        return 0;
+    }
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        return -1;
+
+    if (!(def = virDomainObjGetOneDef(vm, flags)))
+        goto cleanup;
+
+    if (!(disk = virDomainDiskByName(def, path, true))) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("disk '%s' was not found in the domain config"),
+                       path);
+        goto cleanup;
+    }
+
+    reply = disk->blkdeviotune;
+    if (VIR_STRDUP(reply.group_name, disk->blkdeviotune.group_name) < 0)
+        goto cleanup;
+
+    TEST_SET_PARAM(0, VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC,
+                   VIR_TYPED_PARAM_ULLONG, reply.total_bytes_sec);
+    TEST_SET_PARAM(1, VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC,
+                   VIR_TYPED_PARAM_ULLONG, reply.read_bytes_sec);
+    TEST_SET_PARAM(2, VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC,
+                   VIR_TYPED_PARAM_ULLONG, reply.write_bytes_sec);
+
+    TEST_SET_PARAM(3, VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC,
+                   VIR_TYPED_PARAM_ULLONG, reply.total_iops_sec);
+    TEST_SET_PARAM(4, VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC,
+                   VIR_TYPED_PARAM_ULLONG, reply.read_iops_sec);
+    TEST_SET_PARAM(5, VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC,
+                   VIR_TYPED_PARAM_ULLONG, reply.write_iops_sec);
+
+    TEST_SET_PARAM(6, VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC_MAX,
+                   VIR_TYPED_PARAM_ULLONG, reply.total_bytes_sec_max);
+    TEST_SET_PARAM(7, VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC_MAX,
+                   VIR_TYPED_PARAM_ULLONG, reply.read_bytes_sec_max);
+    TEST_SET_PARAM(8, VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC_MAX,
+                   VIR_TYPED_PARAM_ULLONG, reply.write_bytes_sec_max);
+
+    TEST_SET_PARAM(9, VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC_MAX,
+                   VIR_TYPED_PARAM_ULLONG, reply.total_iops_sec_max);
+    TEST_SET_PARAM(10, VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC_MAX,
+                   VIR_TYPED_PARAM_ULLONG, reply.read_iops_sec_max);
+    TEST_SET_PARAM(11, VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC_MAX,
+                   VIR_TYPED_PARAM_ULLONG, reply.write_iops_sec_max);
+
+    TEST_SET_PARAM(12, VIR_DOMAIN_BLOCK_IOTUNE_SIZE_IOPS_SEC,
+                   VIR_TYPED_PARAM_ULLONG, reply.size_iops_sec);
+
+    TEST_SET_PARAM(13, VIR_DOMAIN_BLOCK_IOTUNE_GROUP_NAME,
+                   VIR_TYPED_PARAM_STRING, reply.group_name);
+    reply.group_name = NULL;
+
+    TEST_SET_PARAM(14, VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC_MAX_LENGTH,
+                   VIR_TYPED_PARAM_ULLONG, reply.total_bytes_sec_max_length);
+    TEST_SET_PARAM(15, VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC_MAX_LENGTH,
+                   VIR_TYPED_PARAM_ULLONG, reply.read_bytes_sec_max_length);
+    TEST_SET_PARAM(16, VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC_MAX_LENGTH,
+                   VIR_TYPED_PARAM_ULLONG, reply.write_bytes_sec_max_length);
+
+    TEST_SET_PARAM(17, VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC_MAX_LENGTH,
+                   VIR_TYPED_PARAM_ULLONG, reply.total_iops_sec_max_length);
+    TEST_SET_PARAM(18, VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC_MAX_LENGTH,
+                   VIR_TYPED_PARAM_ULLONG, reply.read_iops_sec_max_length);
+    TEST_SET_PARAM(19, VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC_MAX_LENGTH,
+                   VIR_TYPED_PARAM_ULLONG, reply.write_iops_sec_max_length);
+
+    if (*nparams > 20)
+        *nparams = 20;
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(reply.group_name);
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
 #undef TEST_SET_PARAM
 
 
@@ -9019,6 +9120,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainGetNumaParameters = testDomainGetNumaParameters, /* 5.6.0 */
     .domainSetInterfaceParameters = testDomainSetInterfaceParameters, /* 5.6.0 */
     .domainGetInterfaceParameters = testDomainGetInterfaceParameters, /* 5.6.0 */
+    .domainGetBlockIoTune = testDomainGetBlockIoTune, /* 5.7.0 */
     .connectListDefinedDomains = testConnectListDefinedDomains, /* 0.1.11 */
     .connectNumOfDefinedDomains = testConnectNumOfDefinedDomains, /* 0.1.11 */
     .domainCreate = testDomainCreate, /* 0.1.11 */
