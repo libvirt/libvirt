@@ -4112,10 +4112,26 @@ qemuProcessVerifyHypervFeatures(virDomainDefPtr def,
         rc = virCPUDataCheckFeature(cpu, cpuFeature);
         VIR_FREE(cpuFeature);
 
-        if (rc < 0)
+        if (rc < 0) {
             return -1;
-        else if (rc == 1)
+        } else if (rc == 1) {
+            if (i == VIR_DOMAIN_HYPERV_STIMER) {
+                if (def->hyperv_stimer_direct != VIR_TRISTATE_SWITCH_ON)
+                    continue;
+
+                rc = virCPUDataCheckFeature(cpu, VIR_CPU_x86_HV_STIMER_DIRECT);
+                if (rc < 0)
+                    return -1;
+                else if (rc == 1)
+                    continue;
+
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("host doesn't support hyperv stimer '%s' feature"),
+                               "direct");
+                return -1;
+            }
             continue;
+        }
 
         switch ((virDomainHyperv) i) {
         case VIR_DOMAIN_HYPERV_RELAXED:

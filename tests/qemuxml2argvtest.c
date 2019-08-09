@@ -917,6 +917,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("hyperv-off");
     DO_TEST_CAPS_VER("hyperv-panic", "4.0.0");
     DO_TEST_CAPS_LATEST("hyperv-panic");
+    DO_TEST_CAPS_LATEST("hyperv-stimer-direct");
 
     DO_TEST("kvm-features", NONE);
     DO_TEST("kvm-features-off", NONE);
