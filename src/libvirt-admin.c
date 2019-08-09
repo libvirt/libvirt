@@ -222,7 +222,7 @@ virAdmConnectOpen(const char *name, unsigned int flags)
     if (virAdmInitialize() < 0)
         goto error;
 
-    VIR_DEBUG("flags=0x%x", flags);
+    VIR_DEBUG("name=%s flags=0x%x", NULLSTR(name), flags);
     virResetLastError();
 
     if (!(conn = virAdmConnectNew()))
@@ -1034,7 +1034,8 @@ virAdmServerGetClientLimits(virAdmServerPtr srv,
 {
     int ret = -1;
 
-    VIR_DEBUG("srv=%p, flags=0x%x", srv, flags);
+    VIR_DEBUG("srv=%p, params=%p, nparams=%p, flags=0x%x",
+              srv, params, nparams, flags);
     virResetLastError();
 
     virCheckAdmServerGoto(srv, error);
@@ -1159,7 +1160,8 @@ virAdmConnectGetLoggingFilters(virAdmConnectPtr conn,
 {
     int ret = -1;
 
-    VIR_DEBUG("conn=%p, flags=0x%x", conn, flags);
+    VIR_DEBUG("conn=%p, filters=%p, flags=0x%x",
+              conn, filters, flags);
 
     virResetLastError();
     virCheckAdmConnectReturn(conn, -1);
@@ -1236,7 +1238,7 @@ virAdmConnectSetLoggingFilters(virAdmConnectPtr conn,
 {
     int ret = -1;
 
-    VIR_DEBUG("conn=%p, flags=0x%x", conn, flags);
+    VIR_DEBUG("conn=%p, filters=%s, flags=0x%x", conn, filters, flags);
 
     virResetLastError();
     virCheckAdmConnectReturn(conn, -1);
