@@ -201,7 +201,7 @@ findLeasesParserString(void *ctx,
             if (!(parser->entry.hostname = strndup((char *)stringVal, stringLen)))
                 return 0;
         } else {
-            return 0;
+            return 1;
         }
     } else {
         return 0;

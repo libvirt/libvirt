@@ -20,6 +20,7 @@
     {
         "ip-address": "192.168.122.3",
         "mac-address": "52:54:00:aa:bb:cc",
+        "client-id": "01:52:54:00:aa:bb:cc",
         "expiry-time": 2000000000
     }
 ]
