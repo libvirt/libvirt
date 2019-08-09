@@ -13058,13 +13058,13 @@ virDomainSmartcardDefParseXML(virDomainXMLOptionPtr xmlopt,
  * or like this:
  *
  * <tpm model='tpm-tis'>
- *   <backend type='emulator' version='2'/>
+ *   <backend type='emulator' version='2.0'/>
  * </tpm>
  *
  * Emulator state encryption is supported with the following:
  *
  * <tpm model='tpm-tis'>
- *   <backend type='emulator' version='2'>
+ *   <backend type='emulator' version='2.0'>
  *     <encryption uuid='32ee7e76-2178-47a1-ab7b-269e6e348015'/>
  *   </backend>
  * </tpm>
