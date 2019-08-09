@@ -217,7 +217,6 @@ virDomainBootTypeFromString;
 virDomainBootTypeToString;
 virDomainCapabilitiesPolicyTypeToString;
 virDomainCapsFeatureTypeToString;
-virDomainCheckDeviceChanges;
 virDomainChrConsoleTargetTypeFromString;
 virDomainChrConsoleTargetTypeToString;
 virDomainChrDefForeach;

@@ -79,7 +79,7 @@ qemuExtDeviceLogCommand(qemuDomainLogContextPtr logCtxt,
  * stored and we can remove directories and files in case of domain XML
  * changes.
  */
-int
+static int
 qemuExtDevicesInitPaths(virQEMUDriverPtr driver,
                         virDomainDefPtr def)
 {

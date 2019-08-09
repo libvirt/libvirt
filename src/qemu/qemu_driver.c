@@ -53,7 +53,6 @@
 #include "qemu_migration_params.h"
 #include "qemu_blockjob.h"
 #include "qemu_security.h"
-#include "qemu_extdevice.h"
 
 #include "virerror.h"
 #include "virlog.h"
@@ -7776,30 +7775,6 @@ qemuDomainCreate(virDomainPtr dom)
     return qemuDomainCreateWithFlags(dom, 0);
 }
 
-static int
-qemuDomainCheckDeviceChanges(virQEMUDriverPtr driver,
-                             virDomainDefPtr def)
-{
-    virDomainObjPtr vm;
-    int ret;
-
-    vm = virDomainObjListFindByUUID(driver->domains, def->uuid);
-    if (!vm)
-        return 0;
-
-    if (qemuExtDevicesInitPaths(driver, vm->def) < 0) {
-        ret = -1;
-        goto cleanup;
-    }
-
-    ret = virDomainCheckDeviceChanges(vm->def, def);
-
- cleanup:
-    virDomainObjEndAPI(&vm);
-
-    return ret;
-}
-
 static virDomainPtr
 qemuDomainDefineXMLFlags(virConnectPtr conn,
                          const char *xml,
@@ -7834,9 +7809,6 @@ qemuDomainDefineXMLFlags(virConnectPtr conn,
         goto cleanup;
 
     if (virDomainDefineXMLFlagsEnsureACL(conn, def) < 0)
-        goto cleanup;
-
-    if (qemuDomainCheckDeviceChanges(driver, def) < 0)
         goto cleanup;
 
     if (!(vm = virDomainObjListAdd(driver->domains, def,
