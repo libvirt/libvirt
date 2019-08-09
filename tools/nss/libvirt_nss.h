@@ -33,6 +33,8 @@
 
 #if 0
 # include <errno.h>
+# include <stdio.h>
+# define NULLSTR(s) ((s) ? (s) : "<null>")
 # define ERROR(...) \
 do { \
     char ebuf[1024]; \
