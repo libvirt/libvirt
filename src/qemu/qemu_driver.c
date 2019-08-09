@@ -15318,6 +15318,7 @@ qemuDomainSnapshotDiskDataCollect(virQEMUDriverPtr driver,
     qemuDomainSnapshotDiskDataPtr dd;
     char *backingStoreStr;
     virDomainSnapshotDefPtr snapdef = virDomainSnapshotObjGetDef(snap);
+    virDomainDiskDefPtr persistdisk;
     int ret = -1;
 
     if (VIR_ALLOC_N(data, snapdef->ndisks) < 0)
@@ -15338,13 +15339,12 @@ qemuDomainSnapshotDiskDataCollect(virQEMUDriverPtr driver,
         if (virStorageSourceInitChainElement(dd->src, dd->disk->src, false) < 0)
             goto cleanup;
 
-        /* Note that it's unsafe to assume that the disks in the persistent
-         * definition match up with the disks in the live definition just by
-         * checking that the target name is the same. We've done that
-         * historically this way though. */
+        /* modify disk in persistent definition only when the source is the same */
         if (vm->newDef &&
-            (dd->persistdisk = virDomainDiskByName(vm->newDef, dd->disk->dst,
-                                                   false))) {
+            (persistdisk = virDomainDiskByName(vm->newDef, dd->disk->dst, false)) &&
+            virStorageSourceIsSameLocation(dd->disk->src, persistdisk->src)) {
+
+            dd->persistdisk = persistdisk;
 
             if (!(dd->persistsrc = virStorageSourceCopy(dd->src, false)))
                 goto cleanup;
