@@ -3613,6 +3613,255 @@ testDomainGetInterfaceParameters(virDomainPtr dom,
 }
 
 
+#define TEST_BLOCK_IOTUNE_MAX 1000000000000000LL
+
+static int
+testDomainSetBlockIoTune(virDomainPtr dom,
+                         const char *path,
+                         virTypedParameterPtr params,
+                         int nparams,
+                         unsigned int flags)
+{
+    virDomainObjPtr vm = NULL;
+    virDomainDefPtr def = NULL;
+    virDomainBlockIoTuneInfo info = {0};
+    virDomainDiskDefPtr conf_disk = NULL;
+    virTypedParameterPtr eventParams = NULL;
+    int eventNparams = 0;
+    int eventMaxparams = 0;
+    size_t i;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC_MAX,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC_MAX,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC_MAX,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC_MAX,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC_MAX,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC_MAX,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_BLOCK_IOTUNE_SIZE_IOPS_SEC,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_BLOCK_IOTUNE_GROUP_NAME,
+                               VIR_TYPED_PARAM_STRING,
+                               VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC_MAX_LENGTH,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC_MAX_LENGTH,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC_MAX_LENGTH,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC_MAX_LENGTH,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC_MAX_LENGTH,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC_MAX_LENGTH,
+                               VIR_TYPED_PARAM_ULLONG,
+                               NULL) < 0)
+        return -1;
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        return -1;
+
+    if (!(def = virDomainObjGetOneDef(vm, flags)))
+        goto cleanup;
+
+    if (!(conf_disk = virDomainDiskByName(def, path, true))) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("missing persistent configuration for disk '%s'"),
+                       path);
+        goto cleanup;
+    }
+
+    info = conf_disk->blkdeviotune;
+    if (VIR_STRDUP(info.group_name, conf_disk->blkdeviotune.group_name) < 0)
+        goto cleanup;
+
+    if (virTypedParamsAddString(&eventParams, &eventNparams, &eventMaxparams,
+                                VIR_DOMAIN_TUNABLE_BLKDEV_DISK, path) < 0)
+        goto cleanup;
+
+#define SET_IOTUNE_FIELD(FIELD, STR, TUNABLE_STR) \
+    if (STREQ(param->field, STR)) { \
+        info.FIELD = param->value.ul; \
+        if (virTypedParamsAddULLong(&eventParams, &eventNparams, \
+                                    &eventMaxparams, \
+                                    TUNABLE_STR, \
+                                    param->value.ul) < 0) \
+            goto cleanup; \
+        continue; \
+    }
+
+    for (i = 0; i < nparams; i++) {
+        virTypedParameterPtr param = &params[i];
+
+        if (param->value.ul > TEST_BLOCK_IOTUNE_MAX) {
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+                           _("block I/O throttle limit value must"
+                             " be no more than %llu"), TEST_BLOCK_IOTUNE_MAX);
+            goto cleanup;
+        }
+
+        SET_IOTUNE_FIELD(total_bytes_sec,
+                         VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC,
+                         VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_BYTES_SEC);
+        SET_IOTUNE_FIELD(read_bytes_sec,
+                         VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC,
+                         VIR_DOMAIN_TUNABLE_BLKDEV_READ_BYTES_SEC);
+        SET_IOTUNE_FIELD(write_bytes_sec,
+                         VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC,
+                         VIR_DOMAIN_TUNABLE_BLKDEV_WRITE_BYTES_SEC);
+        SET_IOTUNE_FIELD(total_iops_sec,
+                         VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC,
+                         VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_IOPS_SEC);
+        SET_IOTUNE_FIELD(read_iops_sec,
+                         VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC,
+                         VIR_DOMAIN_TUNABLE_BLKDEV_READ_IOPS_SEC);
+        SET_IOTUNE_FIELD(write_iops_sec,
+                         VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC,
+                         VIR_DOMAIN_TUNABLE_BLKDEV_WRITE_IOPS_SEC);
+
+        SET_IOTUNE_FIELD(total_bytes_sec_max,
+                         VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC_MAX,
+                         VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_BYTES_SEC_MAX);
+        SET_IOTUNE_FIELD(read_bytes_sec_max,
+                         VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC_MAX,
+                         VIR_DOMAIN_TUNABLE_BLKDEV_READ_BYTES_SEC_MAX);
+        SET_IOTUNE_FIELD(write_bytes_sec_max,
+                         VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC_MAX,
+                         VIR_DOMAIN_TUNABLE_BLKDEV_WRITE_BYTES_SEC_MAX);
+        SET_IOTUNE_FIELD(total_iops_sec_max,
+                         VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC_MAX,
+                         VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_IOPS_SEC_MAX);
+        SET_IOTUNE_FIELD(read_iops_sec_max,
+                         VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC_MAX,
+                         VIR_DOMAIN_TUNABLE_BLKDEV_READ_IOPS_SEC_MAX);
+        SET_IOTUNE_FIELD(write_iops_sec_max,
+                         VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC_MAX,
+                         VIR_DOMAIN_TUNABLE_BLKDEV_WRITE_IOPS_SEC_MAX);
+        SET_IOTUNE_FIELD(size_iops_sec,
+                         VIR_DOMAIN_BLOCK_IOTUNE_SIZE_IOPS_SEC,
+                         VIR_DOMAIN_TUNABLE_BLKDEV_SIZE_IOPS_SEC);
+
+        if (STREQ(param->field, VIR_DOMAIN_BLOCK_IOTUNE_GROUP_NAME)) {
+            VIR_FREE(info.group_name);
+            if (VIR_STRDUP(info.group_name, param->value.s) < 0)
+                goto cleanup;
+            if (virTypedParamsAddString(&eventParams,
+                                        &eventNparams,
+                                        &eventMaxparams,
+                                        VIR_DOMAIN_TUNABLE_BLKDEV_GROUP_NAME,
+                                        param->value.s) < 0)
+                goto cleanup;
+            continue;
+        }
+
+        SET_IOTUNE_FIELD(total_bytes_sec_max_length,
+                         VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC_MAX_LENGTH,
+                         VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_BYTES_SEC_MAX_LENGTH);
+        SET_IOTUNE_FIELD(read_bytes_sec_max_length,
+                         VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC_MAX_LENGTH,
+                         VIR_DOMAIN_TUNABLE_BLKDEV_READ_BYTES_SEC_MAX_LENGTH);
+        SET_IOTUNE_FIELD(write_bytes_sec_max_length,
+                         VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC_MAX_LENGTH,
+                         VIR_DOMAIN_TUNABLE_BLKDEV_WRITE_BYTES_SEC_MAX_LENGTH);
+        SET_IOTUNE_FIELD(total_iops_sec_max_length,
+                         VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC_MAX_LENGTH,
+                         VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_IOPS_SEC_MAX_LENGTH);
+        SET_IOTUNE_FIELD(read_iops_sec_max_length,
+                         VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC_MAX_LENGTH,
+                         VIR_DOMAIN_TUNABLE_BLKDEV_READ_IOPS_SEC_MAX_LENGTH);
+        SET_IOTUNE_FIELD(write_iops_sec_max_length,
+                         VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC_MAX_LENGTH,
+                         VIR_DOMAIN_TUNABLE_BLKDEV_WRITE_IOPS_SEC_MAX_LENGTH);
+    }
+#undef SET_IOTUNE_FIELD
+
+    if ((info.total_bytes_sec && info.read_bytes_sec) ||
+        (info.total_bytes_sec && info.write_bytes_sec)) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("total and read/write of bytes_sec "
+                         "cannot be set at the same time"));
+        goto cleanup;
+    }
+
+    if ((info.total_iops_sec && info.read_iops_sec) ||
+        (info.total_iops_sec && info.write_iops_sec)) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("total and read/write of iops_sec "
+                         "cannot be set at the same time"));
+        goto cleanup;
+    }
+
+    if ((info.total_bytes_sec_max && info.read_bytes_sec_max) ||
+        (info.total_bytes_sec_max && info.write_bytes_sec_max)) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("total and read/write of bytes_sec_max "
+                         "cannot be set at the same time"));
+        goto cleanup;
+    }
+
+    if ((info.total_iops_sec_max && info.read_iops_sec_max) ||
+        (info.total_iops_sec_max && info.write_iops_sec_max)) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("total and read/write of iops_sec_max "
+                         "cannot be set at the same time"));
+        goto cleanup;
+    }
+
+
+#define TEST_BLOCK_IOTUNE_MAX_CHECK(FIELD, FIELD_MAX) \
+    do { \
+        if (info.FIELD > info.FIELD_MAX) { \
+            virReportError(VIR_ERR_INVALID_ARG, \
+                           _("%s cannot be set higher than %s "), \
+                             #FIELD, #FIELD_MAX); \
+            goto cleanup; \
+        } \
+    } while (0);
+
+    TEST_BLOCK_IOTUNE_MAX_CHECK(total_bytes_sec, total_bytes_sec_max);
+    TEST_BLOCK_IOTUNE_MAX_CHECK(read_bytes_sec, read_bytes_sec_max);
+    TEST_BLOCK_IOTUNE_MAX_CHECK(write_bytes_sec, write_bytes_sec_max);
+    TEST_BLOCK_IOTUNE_MAX_CHECK(total_iops_sec, total_iops_sec_max);
+    TEST_BLOCK_IOTUNE_MAX_CHECK(read_iops_sec, read_iops_sec_max);
+    TEST_BLOCK_IOTUNE_MAX_CHECK(write_iops_sec, write_iops_sec_max);
+
+#undef TEST_BLOCK_IOTUNE_MAX_CHECK
+
+    if (virDomainDiskSetBlockIOTune(conf_disk, &info) < 0)
+        goto cleanup;
+    info.group_name = NULL;
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(info.group_name);
+    virDomainObjEndAPI(&vm);
+    if (eventNparams)
+        virTypedParamsFree(eventParams, eventNparams);
+    return ret;
+}
+
+
 static int
 testDomainGetBlockIoTune(virDomainPtr dom,
                          const char *path,
@@ -9120,6 +9369,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainGetNumaParameters = testDomainGetNumaParameters, /* 5.6.0 */
     .domainSetInterfaceParameters = testDomainSetInterfaceParameters, /* 5.6.0 */
     .domainGetInterfaceParameters = testDomainGetInterfaceParameters, /* 5.6.0 */
+    .domainSetBlockIoTune = testDomainSetBlockIoTune, /* 5.7.0 */
     .domainGetBlockIoTune = testDomainGetBlockIoTune, /* 5.7.0 */
     .connectListDefinedDomains = testConnectListDefinedDomains, /* 0.1.11 */
     .connectNumOfDefinedDomains = testConnectNumOfDefinedDomains, /* 0.1.11 */
