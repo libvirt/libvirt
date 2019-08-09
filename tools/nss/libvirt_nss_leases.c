@@ -399,9 +399,10 @@ findLeases(const char *file,
 
         if (yajl_parse(parser, (const unsigned char *)line, rv)  !=
             yajl_status_ok) {
-            ERROR("Parse failed %s",
-                  yajl_get_error(parser, 1,
-                                 (const unsigned char*)line, rv));
+            unsigned char *err = yajl_get_error(parser, 1,
+                                                (const unsigned char*)line, rv);
+            ERROR("Parse failed %s", (const char *) err);
+            yajl_free_error(parser, err);
             goto cleanup;
         }
     }
