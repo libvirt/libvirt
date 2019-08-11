@@ -668,7 +668,6 @@ int virNetDevTapCreateInBridgePort(const char *brname,
                                    unsigned int flags)
 {
     virMacAddr tapmac;
-    char macaddrstr[VIR_MAC_STRING_BUFLEN];
     size_t i;
 
     if (virNetDevTapCreate(ifname, tunpath, tapfd, tapfdSize, flags) < 0)
@@ -682,19 +681,18 @@ int virNetDevTapCreateInBridgePort(const char *brname,
      */
     virMacAddrSet(&tapmac, macaddr);
     if (!(flags & VIR_NETDEV_TAP_CREATE_USE_MAC_FOR_BRIDGE)) {
-        if (macaddr->addr[0] == 0xFE) {
-            /* For normal use, the tap device's MAC address cannot
-             * match the MAC address used by the guest. This results
-             * in "received packet on vnetX with own address as source
-             * address" error logs from the kernel.
-             */
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unable to use MAC address starting with "
-                             "reserved value 0xFE - '%s' - "),
-                           virMacAddrFormat(macaddr, macaddrstr));
-            goto error;
-        }
-        tapmac.addr[0] = 0xFE; /* Discourage bridge from using TAP dev MAC */
+        /* The tap device's MAC address cannot match the MAC address
+         * used by the guest. This results in "received packet on
+         * vnetX with own address as source address" error logs from
+         * the kernel. Making the tap address as high as possible
+         * discourages the bridge from using this tap's MAC as its own
+         * (a Linux host bridge will take on the lowest numbered MAC
+         * of all devices attached to it).
+         */
+        if (tapmac.addr[0] == 0xFE)
+            tapmac.addr[0] = 0xFA;
+        else
+            tapmac.addr[0] = 0xFE;
     }
 
     if (virNetDevSetMAC(*ifname, &tapmac) < 0)

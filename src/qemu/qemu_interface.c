@@ -444,8 +444,17 @@ qemuInterfaceEthernetConnect(virDomainDefPtr def,
     }
 
     virDomainAuditNetDevice(def, net, tunpath, true);
+
+    /* The tap device's MAC address cannot match the MAC address
+     * used by the guest. This results in "received packet on
+     * vnetX with own address as source address" error logs from
+     * the kernel.
+     */
     virMacAddrSet(&tapmac, &net->mac);
-    tapmac.addr[0] = 0xFE;
+    if (tapmac.addr[0] == 0xFE)
+        tapmac.addr[0] = 0xFA;
+    else
+        tapmac.addr[0] = 0xFE;
 
     if (virNetDevSetMAC(net->ifname, &tapmac) < 0)
         goto cleanup;
