@@ -74,7 +74,21 @@ struct virQEMUQAPISchemaTraverseContext {
     virHashTablePtr schema;
     char **queries;
     virJSONValuePtr returnType;
+    size_t depth;
 };
+
+
+static int
+virQEMUQAPISchemaTraverseContextValidateDepth(struct virQEMUQAPISchemaTraverseContext *ctxt)
+{
+    if (ctxt->depth++ > 1000) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("possible loop in QMP schema"));
+        return -1;
+    }
+
+    return 0;
+}
 
 
 static void
@@ -328,6 +342,9 @@ virQEMUQAPISchemaTraverse(const char *baseName,
     virJSONValuePtr cur;
     const char *metatype;
     size_t i;
+
+    if (virQEMUQAPISchemaTraverseContextValidateDepth(ctxt) < 0)
+        return -2;
 
     if (!(cur = virHashLookup(ctxt->schema, baseName)))
         return -2;
