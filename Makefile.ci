@@ -49,7 +49,7 @@ CI_SUBMODULES = $(shell git submodule | awk '{ print $$2 }')
 # Location of the container images we're going to pull
 # Can be useful to overridde to use a locally built
 # image instead
-CI_IMAGE_PREFIX = quay.io/libvirt/buildenv-
+CI_IMAGE_PREFIX = quay.io/libvirt/buildenv-libvirt-
 
 # The default tag is ':latest' but if the container
 # repo above uses different conventions this can override it
