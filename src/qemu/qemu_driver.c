@@ -15008,32 +15008,34 @@ qemuDomainSnapshotPrepareDiskExternal(virDomainDiskDefPtr disk,
             return -1;
     }
 
-    if (virStorageFileInit(snapdisk->src) < 0)
-        return -1;
-
-    rc = virStorageFileStat(snapdisk->src, &st);
-    err = errno;
-
-    virStorageFileDeinit(snapdisk->src);
-
-    if (rc < 0) {
-        if (err != ENOENT) {
-            virReportSystemError(err,
-                                 _("unable to stat for disk %s: %s"),
-                                 snapdisk->name, snapdisk->src->path);
+    if (virStorageSourceIsLocalStorage(snapdisk->src)) {
+        if (virStorageFileInit(snapdisk->src) < 0)
             return -1;
-        } else if (reuse) {
-            virReportSystemError(err,
-                                 _("missing existing file for disk %s: %s"),
-                                 snapdisk->name, snapdisk->src->path);
+
+        rc = virStorageFileStat(snapdisk->src, &st);
+        err = errno;
+
+        virStorageFileDeinit(snapdisk->src);
+
+        if (rc < 0) {
+            if (err != ENOENT) {
+                virReportSystemError(err,
+                                     _("unable to stat for disk %s: %s"),
+                                     snapdisk->name, snapdisk->src->path);
+                return -1;
+            } else if (reuse) {
+                virReportSystemError(err,
+                                     _("missing existing file for disk %s: %s"),
+                                     snapdisk->name, snapdisk->src->path);
+                return -1;
+            }
+        } else if (!S_ISBLK(st.st_mode) && st.st_size && !reuse) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("external snapshot file for disk %s already "
+                             "exists and is not a block device: %s"),
+                           snapdisk->name, snapdisk->src->path);
             return -1;
         }
-    } else if (!S_ISBLK(st.st_mode) && st.st_size && !reuse) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("external snapshot file for disk %s already "
-                         "exists and is not a block device: %s"),
-                       snapdisk->name, snapdisk->src->path);
-        return -1;
     }
 
     return 0;
