@@ -15407,13 +15407,6 @@ qemuDomainSnapshotUpdateDiskSources(virQEMUDriverPtr driver,
                                     virDomainObjPtr vm,
                                     qemuDomainSnapshotDiskDataPtr dd)
 {
-    if (!dd->src) {
-        /* Remove old metadata */
-        if (qemuSecurityMoveImageMetadata(driver, vm, dd->disk->src, NULL) < 0)
-            VIR_WARN("Unable to remove disk metadata on vm %s", vm->def->name);
-        return;
-    }
-
     /* storage driver access won'd be needed */
     if (dd->initialized)
         virStorageFileDeinit(dd->src);
