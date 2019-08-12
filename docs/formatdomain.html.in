@@ -2044,6 +2044,7 @@
   &lt;/hyperv&gt;
   &lt;kvm&gt;
     &lt;hidden state='on'/&gt;
+    &lt;hint-dedicated state='on'/&gt;
   &lt;/kvm&gt;
   &lt;pvspinlock state='on'/&gt;
   &lt;gic version='2'/&gt;
@@ -2216,6 +2217,12 @@
           <td>Hide the KVM hypervisor from standard MSR based discovery</td>
           <td>on, off</td>
           <td><span class="since">1.2.8 (QEMU 2.1.0)</span></td>
+        </tr>
+        <tr>
+          <td>hint-dedicated</td>
+          <td>Allows a guest to enable optimizations when running on dedicated vCPUs</td>
+          <td>on, off</td>
+          <td><span class="since">5.7.0 (QEMU 2.12.1)</span></td>
         </tr>
       </table>
       </dd>

@@ -5965,6 +5965,11 @@
             <ref name="featurestate"/>
           </element>
         </optional>
+        <optional>
+          <element name="hint-dedicated">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>

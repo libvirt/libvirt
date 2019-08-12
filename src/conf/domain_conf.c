@@ -202,6 +202,7 @@ VIR_ENUM_IMPL(virDomainHyperv,
 VIR_ENUM_IMPL(virDomainKVM,
               VIR_DOMAIN_KVM_LAST,
               "hidden",
+              "hint-dedicated",
 );
 
 VIR_ENUM_IMPL(virDomainMsrsUnknown,
@@ -20412,6 +20413,7 @@ virDomainDefParseXML(xmlDocPtr xml,
 
             switch ((virDomainKVM) feature) {
                 case VIR_DOMAIN_KVM_HIDDEN:
+                case VIR_DOMAIN_KVM_DEDICATED:
                     if (!(tmp = virXMLPropString(nodes[i], "state"))) {
                         virReportError(VIR_ERR_XML_ERROR,
                                        _("missing 'state' attribute for "
@@ -22624,6 +22626,7 @@ virDomainDefFeaturesCheckABIStability(virDomainDefPtr src,
         for (i = 0; i < VIR_DOMAIN_KVM_LAST; i++) {
             switch ((virDomainKVM) i) {
             case VIR_DOMAIN_KVM_HIDDEN:
+            case VIR_DOMAIN_KVM_DEDICATED:
                 if (src->kvm_features[i] != dst->kvm_features[i]) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("State of KVM feature '%s' differs: "
@@ -28124,6 +28127,7 @@ virDomainDefFormatFeatures(virBufferPtr buf,
             for (j = 0; j < VIR_DOMAIN_KVM_LAST; j++) {
                 switch ((virDomainKVM) j) {
                 case VIR_DOMAIN_KVM_HIDDEN:
+                case VIR_DOMAIN_KVM_DEDICATED:
                     if (def->kvm_features[j])
                         virBufferAsprintf(&childBuf, "<%s state='%s'/>\n",
                                           virDomainKVMTypeToString(j),
