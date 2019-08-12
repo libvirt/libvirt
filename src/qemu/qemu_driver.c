@@ -14983,8 +14983,9 @@ qemuDomainSnapshotPrepareDiskExternal(virDomainDiskDefPtr disk,
                                       bool active,
                                       bool reuse)
 {
-    int ret = -1;
     struct stat st;
+    int err;
+    int rc;
 
     if (disk->src->readonly) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -15010,31 +15011,32 @@ qemuDomainSnapshotPrepareDiskExternal(virDomainDiskDefPtr disk,
     if (virStorageFileInit(snapdisk->src) < 0)
         return -1;
 
-    if (virStorageFileStat(snapdisk->src, &st) < 0) {
-        if (errno != ENOENT) {
-            virReportSystemError(errno,
+    rc = virStorageFileStat(snapdisk->src, &st);
+    err = errno;
+
+    virStorageFileDeinit(snapdisk->src);
+
+    if (rc < 0) {
+        if (err != ENOENT) {
+            virReportSystemError(err,
                                  _("unable to stat for disk %s: %s"),
                                  snapdisk->name, snapdisk->src->path);
-            goto cleanup;
+            return -1;
         } else if (reuse) {
-            virReportSystemError(errno,
+            virReportSystemError(err,
                                  _("missing existing file for disk %s: %s"),
                                  snapdisk->name, snapdisk->src->path);
-            goto cleanup;
+            return -1;
         }
     } else if (!S_ISBLK(st.st_mode) && st.st_size && !reuse) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("external snapshot file for disk %s already "
                          "exists and is not a block device: %s"),
                        snapdisk->name, snapdisk->src->path);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    virStorageFileDeinit(snapdisk->src);
-    return ret;
+    return 0;
 }
 
 
