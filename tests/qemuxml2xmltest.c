@@ -14,6 +14,8 @@
 # include "qemu/qemu_domain.h"
 # include "testutilsqemu.h"
 # include "virstring.h"
+# include "virfilewrapper.h"
+# include "configmake.h"
 
 # define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -166,6 +168,15 @@ mymain(void)
     }
 
     setenv("LIBVIRT_FAKE_ROOT_DIR", fakerootdir, 1);
+
+    /* Required for tpm-emulator tests
+     */
+    virFileWrapperAddPrefix(SYSCONFDIR "/qemu/firmware",
+                            abs_srcdir "/qemufirmwaredata/etc/qemu/firmware");
+    virFileWrapperAddPrefix(PREFIX "/share/qemu/firmware",
+                            abs_srcdir "/qemufirmwaredata/usr/share/qemu/firmware");
+    virFileWrapperAddPrefix("/home/user/.config/qemu/firmware",
+                            abs_srcdir "/qemufirmwaredata/home/user/.config/qemu/firmware");
 
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
@@ -1325,6 +1336,7 @@ mymain(void)
     virHashFree(capslatest);
     qemuTestDriverFree(&driver);
     VIR_FREE(fakerootdir);
+    virFileWrapperClearPrefixes();
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

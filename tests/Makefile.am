@@ -573,7 +573,8 @@ qemuxml2argvmock_la_LIBADD = $(MOCKLIBS_LIBS)
 
 qemuxml2xmltest_SOURCES = \
 	qemuxml2xmltest.c testutilsqemu.c testutilsqemu.h \
-	testutils.c testutils.h
+	testutils.c testutils.h \
+	virfilewrapper.c virfilewrapper.h
 qemuxml2xmltest_LDADD = $(qemu_LDADDS)
 
 qemumonitorjsontest_SOURCES = \
