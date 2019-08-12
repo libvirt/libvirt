@@ -15361,6 +15361,22 @@ qemuDomainSnapshotDiskPrepareOne(virQEMUDriverPtr driver,
         }
     }
 
+    /* pre-create the image file so that we can label it before handing it to qemu */
+    if (!reuse && dd->src->type != VIR_STORAGE_TYPE_BLOCK) {
+        if (virStorageFileCreate(dd->src) < 0) {
+            virReportSystemError(errno, _("failed to create image file '%s'"),
+                                 NULLSTR(dd->src->path));
+            return -1;
+        }
+        dd->created = true;
+    }
+
+    /* set correct security, cgroup and locking options on the new image */
+    if (qemuDomainStorageSourceAccessAllow(driver, vm, dd->src, false, true) < 0)
+        return -1;
+
+    dd->prepared = true;
+
     return 0;
 }
 
@@ -15463,36 +15479,6 @@ qemuDomainSnapshotDiskUpdateSource(virQEMUDriverPtr driver,
 }
 
 
-static int
-qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
-                                         virDomainObjPtr vm,
-                                         qemuDomainSnapshotDiskDataPtr dd,
-                                         virJSONValuePtr actions,
-                                         bool reuse)
-{
-    if (qemuBlockSnapshotAddLegacy(actions, dd->disk, dd->src, reuse) < 0)
-        return -1;
-
-    /* pre-create the image file so that we can label it before handing it to qemu */
-    if (!reuse && dd->src->type != VIR_STORAGE_TYPE_BLOCK) {
-        if (virStorageFileCreate(dd->src) < 0) {
-            virReportSystemError(errno, _("failed to create image file '%s'"),
-                                 NULLSTR(dd->src->path));
-            return -1;
-        }
-        dd->created = true;
-    }
-
-    /* set correct security, cgroup and locking options on the new image */
-    if (qemuDomainStorageSourceAccessAllow(driver, vm, dd->src, false, true) < 0)
-        return -1;
-
-    dd->prepared = true;
-
-    return 0;
-}
-
-
 /* The domain is expected to be locked and active. */
 static int
 qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
@@ -15534,9 +15520,10 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
       * VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL with a valid file name and
       * qcow2 format.  */
     for (i = 0; i < ndiskdata; i++) {
-        if (qemuDomainSnapshotCreateSingleDiskActive(driver, vm,
-                                                     &diskdata[i],
-                                                     actions, reuse) < 0)
+        if (qemuBlockSnapshotAddLegacy(actions,
+                                       diskdata[i].disk,
+                                       diskdata[i].src,
+                                       reuse) < 0)
             goto cleanup;
     }
 
