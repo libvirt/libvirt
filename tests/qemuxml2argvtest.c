@@ -496,7 +496,7 @@ testCompareXMLToArgv(const void *data)
         if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
             hostdev->source.subsys.u.pci.backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT) {
-            hostdev->source.subsys.u.pci.backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM;
+            hostdev->source.subsys.u.pci.backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO;
         }
     }
 
@@ -1303,9 +1303,9 @@ mymain(void)
     DO_TEST("net-many-models", NONE);
     DO_TEST("net-mcast", NONE);
     DO_TEST("net-udp", NONE);
-    DO_TEST("net-hostdev", NONE);
-    DO_TEST("net-hostdev-bootorder", NONE);
-    DO_TEST("net-hostdev-multidomain", NONE);
+    DO_TEST("net-hostdev", QEMU_CAPS_DEVICE_VFIO_PCI);
+    DO_TEST("net-hostdev-bootorder", QEMU_CAPS_DEVICE_VFIO_PCI);
+    DO_TEST("net-hostdev-multidomain", QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("net-hostdev-vfio",
             QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("net-hostdev-vfio-multidomain",
@@ -1576,8 +1576,8 @@ mymain(void)
     DO_TEST("hostdev-usb-address", NONE);
     DO_TEST("hostdev-usb-address-device", NONE);
     DO_TEST("hostdev-usb-address-device-boot", NONE);
-    DO_TEST("hostdev-pci-address", NONE);
-    DO_TEST("hostdev-pci-address-device", NONE);
+    DO_TEST("hostdev-pci-address", QEMU_CAPS_DEVICE_VFIO_PCI);
+    DO_TEST("hostdev-pci-address-device", QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("hostdev-vfio",
             QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("hostdev-vfio-multidomain",
@@ -1613,7 +1613,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_ZPCI);
     DO_TEST_PARSE_ERROR("hostdev-vfio-zpci",
                         QEMU_CAPS_DEVICE_VFIO_PCI);
-    DO_TEST("pci-rom", NONE);
+    DO_TEST("pci-rom", QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("pci-rom-disabled", NONE);
     DO_TEST("pci-rom-disabled-invalid", NONE);
 

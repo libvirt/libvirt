@@ -33,7 +33,7 @@ addr=0x3,rombar=1 \
 -netdev user,id=hostnet1 \
 -device virtio-net-pci,netdev=hostnet1,id=net1,mac=52:54:00:24:a5:9e,bus=pci.0,\
 addr=0x4,romfile=/etc/fake/bootrom.bin \
--device pci-assign,host=0000:06:12.5,id=hostdev0,bus=pci.0,addr=0x5,rombar=0 \
--device pci-assign,host=0000:06:12.6,id=hostdev1,bus=pci.0,addr=0x6,rombar=1,\
+-device vfio-pci,host=0000:06:12.5,id=hostdev0,bus=pci.0,addr=0x5,rombar=0 \
+-device vfio-pci,host=0000:06:12.6,id=hostdev1,bus=pci.0,addr=0x6,rombar=1,\
 romfile=/etc/fake/bootrom.bin \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x7

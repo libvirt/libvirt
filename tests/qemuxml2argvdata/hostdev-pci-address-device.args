@@ -27,5 +27,5 @@ server,nowait \
 -usb \
 -drive file=/dev/HostVG/QEMUGuest2,format=raw,if=none,id=drive-ide0-0-0 \
 -device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
--device pci-assign,host=0000:06:12.5,id=hostdev0,bus=pci.0,addr=0x3 \
+-device vfio-pci,host=0000:06:12.5,id=hostdev0,bus=pci.0,addr=0x3 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4
