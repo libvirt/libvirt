@@ -96,7 +96,7 @@ myInit(void)
         subsys.u.pci.addr.bus = 0;
         subsys.u.pci.addr.slot = i + 1;
         subsys.u.pci.addr.function = 0;
-        subsys.u.pci.backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM;
+        subsys.u.pci.backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO;
         hostdevs[i]->source.subsys = subsys;
     }
 
@@ -104,7 +104,7 @@ myInit(void)
         if (!(dev[i] = virPCIDeviceNew(0, 0, i + 1, 0)))
             goto cleanup;
 
-        virPCIDeviceSetStubDriver(dev[i], VIR_PCI_STUB_DRIVER_KVM);
+        virPCIDeviceSetStubDriver(dev[i], VIR_PCI_STUB_DRIVER_VFIO);
     }
 
     if (VIR_ALLOC(mgr) < 0)
