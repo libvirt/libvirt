@@ -15302,6 +15302,62 @@ qemuDomainSnapshotDiskDataCleanup(qemuDomainSnapshotDiskDataPtr data,
 }
 
 
+static int
+qemuDomainSnapshotDiskDataCollectOne(virQEMUDriverPtr driver,
+                                     virDomainObjPtr vm,
+                                     virDomainDiskDefPtr disk,
+                                     virDomainSnapshotDiskDefPtr snapdisk,
+                                     qemuDomainSnapshotDiskDataPtr dd,
+                                     bool reuse)
+{
+    char *backingStoreStr;
+    virDomainDiskDefPtr persistdisk;
+
+    dd->disk = disk;
+
+    if (!(dd->src = virStorageSourceCopy(snapdisk->src, false)))
+        return -1;
+
+    if (virStorageSourceInitChainElement(dd->src, dd->disk->src, false) < 0)
+        return -1;
+
+    /* modify disk in persistent definition only when the source is the same */
+    if (vm->newDef &&
+        (persistdisk = virDomainDiskByName(vm->newDef, dd->disk->dst, false)) &&
+        virStorageSourceIsSameLocation(dd->disk->src, persistdisk->src)) {
+
+        dd->persistdisk = persistdisk;
+
+        if (!(dd->persistsrc = virStorageSourceCopy(dd->src, false)))
+            return -1;
+
+        if (virStorageSourceInitChainElement(dd->persistsrc,
+                                             dd->persistdisk->src, false) < 0)
+            return -1;
+    }
+
+    if (qemuDomainStorageFileInit(driver, vm, dd->src, NULL) < 0)
+        return -1;
+
+    dd->initialized = true;
+
+    /* relative backing store paths need to be updated so that relative
+     * block commit still works */
+    if (reuse) {
+        if (virStorageFileGetBackingStoreStr(dd->src, &backingStoreStr) < 0)
+            return -1;
+        if (backingStoreStr != NULL) {
+            if (virStorageIsRelative(backingStoreStr))
+                VIR_STEAL_PTR(dd->relPath, backingStoreStr);
+            else
+                VIR_FREE(backingStoreStr);
+        }
+    }
+
+    return 0;
+}
+
+
 /**
  * qemuDomainSnapshotDiskDataCollect:
  *
@@ -15319,10 +15375,7 @@ qemuDomainSnapshotDiskDataCollect(virQEMUDriverPtr driver,
     size_t i;
     qemuDomainSnapshotDiskDataPtr data;
     size_t ndata = 0;
-    qemuDomainSnapshotDiskDataPtr dd;
-    char *backingStoreStr;
     virDomainSnapshotDefPtr snapdef = virDomainSnapshotObjGetDef(snap);
-    virDomainDiskDefPtr persistdisk;
     int ret = -1;
 
     if (VIR_ALLOC_N(data, snapdef->ndisks) < 0)
@@ -15332,49 +15385,10 @@ qemuDomainSnapshotDiskDataCollect(virQEMUDriverPtr driver,
         if (snapdef->disks[i].snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE)
             continue;
 
-        dd = data + ndata;
-        ndata++;
-
-        dd->disk = vm->def->disks[i];
-
-        if (!(dd->src = virStorageSourceCopy(snapdef->disks[i].src, false)))
+        if (qemuDomainSnapshotDiskDataCollectOne(driver, vm, vm->def->disks[i],
+                                                 snapdef->disks + i,
+                                                 data + ndata++, reuse) < 0)
             goto cleanup;
-
-        if (virStorageSourceInitChainElement(dd->src, dd->disk->src, false) < 0)
-            goto cleanup;
-
-        /* modify disk in persistent definition only when the source is the same */
-        if (vm->newDef &&
-            (persistdisk = virDomainDiskByName(vm->newDef, dd->disk->dst, false)) &&
-            virStorageSourceIsSameLocation(dd->disk->src, persistdisk->src)) {
-
-            dd->persistdisk = persistdisk;
-
-            if (!(dd->persistsrc = virStorageSourceCopy(dd->src, false)))
-                goto cleanup;
-
-            if (virStorageSourceInitChainElement(dd->persistsrc,
-                                                 dd->persistdisk->src, false) < 0)
-                goto cleanup;
-        }
-
-        if (qemuDomainStorageFileInit(driver, vm, dd->src, NULL) < 0)
-            goto cleanup;
-
-        dd->initialized = true;
-
-        /* relative backing store paths need to be updated so that relative
-         * block commit still works */
-        if (reuse) {
-            if (virStorageFileGetBackingStoreStr(dd->src, &backingStoreStr) < 0)
-                goto cleanup;
-            if (backingStoreStr != NULL) {
-                if (virStorageIsRelative(backingStoreStr))
-                    VIR_STEAL_PTR(dd->relPath, backingStoreStr);
-                else
-                    VIR_FREE(backingStoreStr);
-            }
-        }
     }
 
     VIR_STEAL_PTR(*rdata, data);
