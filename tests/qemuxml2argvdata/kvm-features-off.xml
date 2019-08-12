@@ -12,6 +12,7 @@
     <acpi/>
     <kvm>
       <hidden state='off'/>
+      <hint-dedicated state='off'/>
     </kvm>
   </features>
   <clock offset='utc'/>

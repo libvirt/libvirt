@@ -1,4 +1,4 @@
-<domain type='qemu'>
+<domain type='kvm'>
   <name>QEMUGuest1</name>
   <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
   <memory unit='KiB'>219100</memory>
@@ -12,8 +12,10 @@
     <acpi/>
     <kvm>
       <hidden state='on'/>
+      <hint-dedicated state='on'/>
     </kvm>
   </features>
+  <cpu mode='host-passthrough' check='none'/>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
