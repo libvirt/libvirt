@@ -42,7 +42,6 @@ static char *(*real_virFileCanonicalizePath)(const char *path);
  * vircgroupmock.c:462:22: error: static variable 'fakesysfsdir' is used in an inline function with external linkage [-Werror,-Wstatic-in-inline]
  */
 char *fakerootdir;
-char *fakesysfspcidir;
 
 # define SYSFS_PCI_PREFIX "/sys/bus/pci/"
 
@@ -213,9 +212,7 @@ pci_read_file(const char *path,
     int fd = -1;
     VIR_AUTOFREE(char *) newpath = NULL;
 
-    if (virAsprintfQuiet(&newpath, "%s/%s",
-                         fakesysfspcidir,
-                         path + strlen(SYSFS_PCI_PREFIX)) < 0) {
+    if (virAsprintfQuiet(&newpath, "%s/%s", fakerootdir, path) < 0) {
         errno = ENOMEM;
         goto cleanup;
     }
@@ -246,8 +243,8 @@ getrealpath(char **newpath,
     init_env();
 
     if (STRPREFIX(path, SYSFS_PCI_PREFIX)) {
-        if (virAsprintfQuiet(newpath, "%s/%s",
-                             fakesysfspcidir,
+        if (virAsprintfQuiet(newpath, "%s/sys/bus/pci/%s",
+                             fakerootdir,
                              path + strlen(SYSFS_PCI_PREFIX)) < 0) {
             errno = ENOMEM;
             return -1;
@@ -357,7 +354,7 @@ pci_device_new_from_stub(const struct pciDevice *data)
     if (VIR_ALLOC_QUIET(dev) < 0 ||
         virAsprintfQuiet(&configSrc, "%s/virpcitestdata/%s.config",
                          abs_srcdir, id) < 0 ||
-        virAsprintfQuiet(&devpath, "%s/devices/%s", fakesysfspcidir, data->id) < 0)
+        virAsprintfQuiet(&devpath, "%s/sys/bus/pci/devices/%s", fakerootdir, data->id) < 0)
         ABORT_OOM();
 
     memcpy(dev, data, sizeof(*dev));
@@ -479,7 +476,7 @@ pci_driver_new(const char *name, int fail, ...)
 
     if (VIR_ALLOC_QUIET(driver) < 0 ||
         VIR_STRDUP_QUIET(driver->name, name) < 0 ||
-        virAsprintfQuiet(&driverpath, "%s/drivers/%s", fakesysfspcidir, name) < 0)
+        virAsprintfQuiet(&driverpath, "%s/sys/bus/pci/drivers/%s", fakerootdir, name) < 0)
         ABORT_OOM();
 
     driver->fail = fail;
@@ -586,10 +583,10 @@ pci_driver_bind(struct pciDriver *driver,
     }
 
     /* Make symlink under device tree */
-    if (virAsprintfQuiet(&devpath, "%s/devices/%s/driver",
-                         fakesysfspcidir, dev->id) < 0 ||
-        virAsprintfQuiet(&driverpath, "%s/drivers/%s",
-                         fakesysfspcidir, driver->name) < 0) {
+    if (virAsprintfQuiet(&devpath, "%s/sys/bus/pci/devices/%s/driver",
+                         fakerootdir, dev->id) < 0 ||
+        virAsprintfQuiet(&driverpath, "%s/sys/bus/pci/drivers/%s",
+                         fakerootdir, driver->name) < 0) {
         errno = ENOMEM;
         return -1;
     }
@@ -600,10 +597,10 @@ pci_driver_bind(struct pciDriver *driver,
     /* Make symlink under driver tree */
     VIR_FREE(devpath);
     VIR_FREE(driverpath);
-    if (virAsprintfQuiet(&devpath, "%s/devices/%s",
-                         fakesysfspcidir, dev->id) < 0 ||
-        virAsprintfQuiet(&driverpath, "%s/drivers/%s/%s",
-                         fakesysfspcidir, driver->name, dev->id) < 0) {
+    if (virAsprintfQuiet(&devpath, "%s/sys/bus/pci/devices/%s",
+                         fakerootdir, dev->id) < 0 ||
+        virAsprintfQuiet(&driverpath, "%s/sys/bus/pci/drivers/%s/%s",
+                         fakerootdir, driver->name, dev->id) < 0) {
         errno = ENOMEM;
         return -1;
     }
@@ -629,10 +626,10 @@ pci_driver_unbind(struct pciDriver *driver,
     }
 
     /* Make symlink under device tree */
-    if (virAsprintfQuiet(&devpath, "%s/devices/%s/driver",
-                         fakesysfspcidir, dev->id) < 0 ||
-        virAsprintfQuiet(&driverpath, "%s/drivers/%s/%s",
-                         fakesysfspcidir, driver->name, dev->id) < 0) {
+    if (virAsprintfQuiet(&devpath, "%s/sys/bus/pci/devices/%s/driver",
+                         fakerootdir, dev->id) < 0 ||
+        virAsprintfQuiet(&driverpath, "%s/sys/bus/pci/drivers/%s/%s",
+                         fakerootdir, driver->name, dev->id) < 0) {
         errno = ENOMEM;
         return -1;
     }
@@ -836,7 +833,9 @@ init_syms(void)
 static void
 init_env(void)
 {
-    if (fakerootdir && fakesysfspcidir)
+    VIR_AUTOFREE(char *) fakesysfspcidir = NULL;
+
+    if (fakerootdir)
         return;
 
     if (!(fakerootdir = getenv("LIBVIRT_FAKE_ROOT_DIR")))
