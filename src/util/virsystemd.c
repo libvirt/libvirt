@@ -181,7 +181,7 @@ virSystemdHasMachined(void)
     return ret;
 }
 
-static int
+int
 virSystemdHasLogind(void)
 {
     int ret;

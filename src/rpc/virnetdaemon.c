@@ -508,6 +508,9 @@ virNetDaemonCallInhibit(virNetDaemonPtr dmn,
     VIR_DEBUG("dmn=%p what=%s who=%s why=%s mode=%s",
               dmn, NULLSTR(what), NULLSTR(who), NULLSTR(why), NULLSTR(mode));
 
+    if (virSystemdHasLogind() < 0)
+        return;
+
     if (!(systemBus = virDBusGetSystemBus()))
         return;
 

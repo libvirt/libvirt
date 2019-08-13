@@ -57,6 +57,8 @@ int virSystemdTerminateMachine(const char *name);
 
 void virSystemdNotifyStartup(void);
 
+int virSystemdHasLogind(void);
+
 int virSystemdCanSuspend(bool *result);
 
 int virSystemdCanHibernate(bool *result);
