@@ -2994,6 +2994,7 @@ virStorageFileReportBrokenChain;
 virStorageFileResize;
 virStorageFileStat;
 virStorageFileSupportsAccess;
+virStorageFileSupportsBackingChainTraversal;
 virStorageFileSupportsCreate;
 virStorageFileSupportsSecurityDriver;
 virStorageFileUnlink;
