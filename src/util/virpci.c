@@ -291,7 +291,7 @@ virPCIDeviceGetDriverPathAndName(virPCIDevicePtr dev, char **path, char **name)
 
 
 static int
-virPCIDeviceConfigOpen(virPCIDevicePtr dev, bool fatal)
+virPCIDeviceConfigOpenInternal(virPCIDevicePtr dev, bool fatal)
 {
     int fd;
 
@@ -312,6 +312,12 @@ virPCIDeviceConfigOpen(virPCIDevicePtr dev, bool fatal)
 
     VIR_DEBUG("%s %s: opened %s", dev->id, dev->name, dev->path);
     return fd;
+}
+
+static int
+virPCIDeviceConfigOpen(virPCIDevicePtr dev, bool fatal)
+{
+    return virPCIDeviceConfigOpenInternal(dev, fatal);
 }
 
 static void
