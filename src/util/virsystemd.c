@@ -140,6 +140,7 @@ char *virSystemdMakeSliceName(const char *partition)
 }
 
 static int virSystemdHasMachinedCachedValue = -1;
+static int virSystemdHasLogindCachedValue = -1;
 
 /* Reset the cache from tests for testing the underlying dbus calls
  * as well */
@@ -147,6 +148,12 @@ void virSystemdHasMachinedResetCachedValue(void)
 {
     virSystemdHasMachinedCachedValue = -1;
 }
+
+void virSystemdHasLogindResetCachedValue(void)
+{
+    virSystemdHasLogindCachedValue = -1;
+}
+
 
 /* -2 = machine1 is not supported on this machine
  * -1 = error
@@ -178,14 +185,23 @@ static int
 virSystemdHasLogind(void)
 {
     int ret;
+    int val;
+
+    val = virAtomicIntGet(&virSystemdHasLogindCachedValue);
+    if (val != -1)
+        return val;
 
     ret = virDBusIsServiceEnabled("org.freedesktop.login1");
-    if (ret < 0)
+    if (ret < 0) {
+        if (ret == -2)
+            virAtomicIntSet(&virSystemdHasLogindCachedValue, -2);
+        return ret;
+    }
+
+    if ((ret = virDBusIsServiceRegistered("org.freedesktop.login1")) == -1)
         return ret;
 
-    if ((ret = virDBusIsServiceRegistered("org.freedesktop.login1")) < 0)
-        return ret;
-
+    virAtomicIntSet(&virSystemdHasLogindCachedValue, ret);
     return ret;
 }
 

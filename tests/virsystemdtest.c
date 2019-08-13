@@ -751,12 +751,15 @@ mymain(void)
         }; \
         if (virTestRun("Test " name " ", testPMSupportHelper, &data) < 0) \
             ret = -1; \
+        virSystemdHasLogindResetCachedValue(); \
         if (virTestRun("Test " name " no systemd ", \
                        testPMSupportHelperNoSystemd, &data) < 0) \
             ret = -1; \
+        virSystemdHasLogindResetCachedValue(); \
         if (virTestRun("Test systemd " name " not running ", \
                        testPMSupportSystemdNotRunning, &data) < 0) \
             ret = -1; \
+        virSystemdHasLogindResetCachedValue(); \
     } while (0)
 
     TESTS_PM_SUPPORT_HELPER("canSuspend", &virSystemdCanSuspend);

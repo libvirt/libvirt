@@ -28,3 +28,4 @@
 #include "virsystemd.h"
 
 void virSystemdHasMachinedResetCachedValue(void);
+void virSystemdHasLogindResetCachedValue(void);

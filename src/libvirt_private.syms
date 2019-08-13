@@ -3135,6 +3135,7 @@ virSystemdCanSuspend;
 virSystemdCreateMachine;
 virSystemdGetActivation;
 virSystemdGetMachineNameByPID;
+virSystemdHasLogindResetCachedValue;
 virSystemdHasMachinedResetCachedValue;
 virSystemdMakeScopeName;
 virSystemdMakeSliceName;
