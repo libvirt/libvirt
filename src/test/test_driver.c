@@ -8129,6 +8129,63 @@ testDomainGetBlockInfo(virDomainPtr dom,
 }
 
 
+static void
+testDomainModifyLifecycleAction(virDomainDefPtr def,
+                                virDomainLifecycle type,
+                                virDomainLifecycleAction action)
+{
+    switch (type) {
+    case VIR_DOMAIN_LIFECYCLE_POWEROFF:
+        def->onPoweroff = action;
+        break;
+    case VIR_DOMAIN_LIFECYCLE_REBOOT:
+        def->onReboot = action;
+        break;
+    case VIR_DOMAIN_LIFECYCLE_CRASH:
+        def->onCrash = action;
+        break;
+    case VIR_DOMAIN_LIFECYCLE_LAST:
+        break;
+    }
+}
+
+
+static int
+testDomainSetLifecycleAction(virDomainPtr dom,
+                             unsigned int type,
+                             unsigned int action,
+                             unsigned int flags)
+{
+    virDomainObjPtr vm = NULL;
+    virDomainDefPtr def = NULL;
+    virDomainDefPtr persistentDef = NULL;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (!virDomainDefLifecycleActionAllowed(type, action))
+        return -1;
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        return -1;
+
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
+        goto cleanup;
+
+    if (def)
+        testDomainModifyLifecycleAction(def, type, action);
+
+    if (persistentDef)
+        testDomainModifyLifecycleAction(persistentDef, type, action);
+
+    ret = 0;
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
 /*
  * Snapshot APIs
  */
@@ -9434,6 +9491,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainMemoryStats = testDomainMemoryStats, /* 5.7.0 */
     .domainMemoryPeek = testDomainMemoryPeek, /* 5.4.0 */
     .domainGetBlockInfo = testDomainGetBlockInfo, /* 5.7.0 */
+    .domainSetLifecycleAction = testDomainSetLifecycleAction, /* 5.7.0 */
 
     .domainSnapshotNum = testDomainSnapshotNum, /* 1.1.4 */
     .domainSnapshotListNames = testDomainSnapshotListNames, /* 1.1.4 */
