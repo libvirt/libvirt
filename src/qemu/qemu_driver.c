@@ -14917,7 +14917,8 @@ qemuDomainSnapshotPrepareDiskExternalInactive(virDomainSnapshotDiskDefPtr snapdi
 
 static int
 qemuDomainSnapshotPrepareDiskExternalActive(virDomainSnapshotDiskDefPtr snapdisk,
-                                            virDomainDiskDefPtr domdisk)
+                                            virDomainDiskDefPtr domdisk,
+                                            bool blockdev)
 {
     int actualType = virStorageSourceGetActualType(snapdisk->src);
 
@@ -14934,6 +14935,10 @@ qemuDomainSnapshotPrepareDiskExternalActive(virDomainSnapshotDiskDefPtr snapdisk
         break;
 
     case VIR_STORAGE_TYPE_NETWORK:
+        /* defer all of the checking to either qemu or libvirt's blockdev code */
+        if (blockdev)
+            break;
+
         switch ((virStorageNetProtocol) snapdisk->src->protocol) {
         case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
             break;
@@ -14981,7 +14986,8 @@ static int
 qemuDomainSnapshotPrepareDiskExternal(virDomainDiskDefPtr disk,
                                       virDomainSnapshotDiskDefPtr snapdisk,
                                       bool active,
-                                      bool reuse)
+                                      bool reuse,
+                                      bool blockdev)
 {
     struct stat st;
     int err;
@@ -15004,7 +15010,7 @@ qemuDomainSnapshotPrepareDiskExternal(virDomainDiskDefPtr disk,
         if (qemuDomainSnapshotPrepareDiskExternalInactive(snapdisk, disk) < 0)
             return -1;
     } else {
-        if (qemuDomainSnapshotPrepareDiskExternalActive(snapdisk, disk) < 0)
+        if (qemuDomainSnapshotPrepareDiskExternalActive(snapdisk, disk, blockdev) < 0)
             return -1;
     }
 
@@ -15105,6 +15111,8 @@ qemuDomainSnapshotPrepare(virDomainObjPtr vm,
                           virDomainSnapshotDefPtr def,
                           unsigned int *flags)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
     int ret = -1;
     size_t i;
     bool active = virDomainObjIsActive(vm);
@@ -15163,7 +15171,7 @@ qemuDomainSnapshotPrepare(virDomainObjPtr vm,
             }
 
             if (qemuDomainSnapshotPrepareDiskExternal(dom_disk, disk,
-                                                      active, reuse) < 0)
+                                                      active, reuse, blockdev) < 0)
                 goto cleanup;
 
             external++;
