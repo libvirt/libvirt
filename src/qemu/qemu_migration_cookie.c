@@ -1507,7 +1507,7 @@ qemuMigrationEatCookie(virQEMUDriverPtr driver,
     if (cookiein && cookieinlen &&
         qemuMigrationCookieXMLParseStr(mig,
                                        driver,
-                                       priv->qemuCaps,
+                                       priv ? priv->qemuCaps : NULL,
                                        cookiein,
                                        flags) < 0)
         goto error;
