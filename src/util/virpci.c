@@ -291,11 +291,11 @@ virPCIDeviceGetDriverPathAndName(virPCIDevicePtr dev, char **path, char **name)
 
 
 static int
-virPCIDeviceConfigOpenInternal(virPCIDevicePtr dev, bool fatal)
+virPCIDeviceConfigOpenInternal(virPCIDevicePtr dev, bool readonly, bool fatal)
 {
     int fd;
 
-    fd = open(dev->path, O_RDWR);
+    fd = open(dev->path, readonly ? O_RDONLY : O_RDWR);
 
     if (fd < 0) {
         if (fatal) {
@@ -317,13 +317,13 @@ virPCIDeviceConfigOpenInternal(virPCIDevicePtr dev, bool fatal)
 static int
 virPCIDeviceConfigOpen(virPCIDevicePtr dev, bool fatal)
 {
-    return virPCIDeviceConfigOpenInternal(dev, fatal);
+    return virPCIDeviceConfigOpenInternal(dev, false, fatal);
 }
 
 static int
 virPCIDeviceConfigOpenWrite(virPCIDevicePtr dev)
 {
-    return virPCIDeviceConfigOpenInternal(dev, true);
+    return virPCIDeviceConfigOpenInternal(dev, false, true);
 }
 
 static void
