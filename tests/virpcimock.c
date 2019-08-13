@@ -119,8 +119,16 @@ struct pciDriver {
     unsigned int fail;  /* Bitwise-OR of driverActions that should fail */
 };
 
+struct pciDeviceAddress {
+    unsigned int domain;
+    unsigned int bus;
+    unsigned int device;
+    unsigned int function;
+};
+# define ADDR_STR_FMT "%04x:%02x:%02x.%d"
+
 struct pciDevice {
-    const char *id;
+    struct pciDeviceAddress addr;
     int vendor;
     int device;
     int klass;
@@ -146,7 +154,7 @@ static void init_env(void);
 
 static int pci_device_autobind(struct pciDevice *dev);
 static void pci_device_new_from_stub(const struct pciDevice *data);
-static struct pciDevice *pci_device_find_by_id(const char *id);
+static struct pciDevice *pci_device_find_by_id(struct pciDeviceAddress const *addr);
 static struct pciDevice *pci_device_find_by_content(const char *path);
 
 static void pci_driver_new(const char *name, int fail, ...);
@@ -339,22 +347,49 @@ remove_fd(int fd)
  * PCI Device functions
  */
 static char *
+pci_address_format(struct pciDeviceAddress const *addr)
+{
+    char *ret;
+
+    ignore_value(virAsprintfQuiet(&ret, ADDR_STR_FMT,
+                                  addr->domain, addr->bus,
+                                  addr->device, addr->function));
+    return ret;
+}
+
+static int
+pci_address_parse(struct pciDeviceAddress *addr,
+                  const char *buf)
+{
+    if (sscanf(buf, ADDR_STR_FMT,
+               &addr->domain, &addr->bus,
+               &addr->device, &addr->function) != 4)
+        return -1;
+    return 0;
+}
+
+
+static char *
 pci_device_get_path(const struct pciDevice *dev,
                     const char *file,
                     bool faked)
 {
     char *ret = NULL;
     const char *prefix = "";
+    VIR_AUTOFREE(char *) devid = NULL;
 
     if (faked)
         prefix = fakerootdir;
 
+    if (!(devid = pci_address_format(&dev->addr)))
+        return NULL;
+
     if (file) {
         ignore_value(virAsprintfQuiet(&ret, "%s" SYSFS_PCI_PREFIX "devices/%s/%s",
-                                      prefix, dev->id, file));
+                                      prefix, devid, file));
     } else {
         ignore_value(virAsprintfQuiet(&ret, "%s" SYSFS_PCI_PREFIX "devices/%s",
-                                      prefix, dev->id));
+                                      prefix, devid));
     }
 
     return ret;
@@ -367,13 +402,15 @@ pci_device_new_from_stub(const struct pciDevice *data)
     struct pciDevice *dev;
     VIR_AUTOFREE(char *) devpath = NULL;
     VIR_AUTOFREE(char *) id = NULL;
+    VIR_AUTOFREE(char *) devid = NULL;
     char *c;
     VIR_AUTOFREE(char *) configSrc = NULL;
     char tmp[256];
     struct stat sb;
     bool configSrcExists = false;
 
-    if (VIR_STRDUP_QUIET(id, data->id) < 0)
+    if (!(devid = pci_address_format(&data->addr)) ||
+        VIR_STRDUP_QUIET(id, devid) < 0)
         ABORT_OOM();
 
     /* Replace ':' with '-' to create the config filename from the
@@ -453,20 +490,20 @@ pci_device_new_from_stub(const struct pciDevice *data)
     make_symlink(devpath, "iommu_group", tmp);
 
     if (pci_device_autobind(dev) < 0)
-        ABORT("Unable to bind: %s", data->id);
+        ABORT("Unable to bind: %s", devid);
 
     if (VIR_APPEND_ELEMENT_QUIET(pciDevices, nPCIDevices, dev) < 0)
         ABORT_OOM();
 }
 
 static struct pciDevice *
-pci_device_find_by_id(const char *id)
+pci_device_find_by_id(struct pciDeviceAddress const *addr)
 {
     size_t i;
     for (i = 0; i < nPCIDevices; i++) {
         struct pciDevice *dev = pciDevices[i];
 
-        if (STREQ(dev->id, id))
+        if (!memcmp(&dev->addr, addr, sizeof(*addr)))
             return dev;
     }
 
@@ -477,11 +514,13 @@ static struct pciDevice *
 pci_device_find_by_content(const char *path)
 {
     char tmp[32];
+    struct pciDeviceAddress addr;
 
-    if (pci_read_file(path, tmp, sizeof(tmp), true) < 0)
+    if (pci_read_file(path, tmp, sizeof(tmp), true) < 0 ||
+        pci_address_parse(&addr, tmp) < 0)
         return NULL;
 
-    return pci_device_find_by_id(tmp);
+    return pci_device_find_by_id(&addr);
 }
 
 static int
@@ -608,6 +647,7 @@ pci_driver_find_by_path(const char *path)
 static struct pciDriver *
 pci_driver_find_by_driver_override(struct pciDevice *dev)
 {
+    VIR_AUTOFREE(char *) devid = NULL;
     VIR_AUTOFREE(char *) path = NULL;
     char tmp[32];
     size_t i;
@@ -632,6 +672,7 @@ static int
 pci_driver_bind(struct pciDriver *driver,
                 struct pciDevice *dev)
 {
+    VIR_AUTOFREE(char *) devid = NULL;
     VIR_AUTOFREE(char *) devpath = NULL;
     VIR_AUTOFREE(char *) driverpath = NULL;
 
@@ -654,8 +695,9 @@ pci_driver_bind(struct pciDriver *driver,
     /* Make symlink under driver tree */
     VIR_FREE(devpath);
     VIR_FREE(driverpath);
-    if (!(devpath = pci_device_get_path(dev, NULL, true)) ||
-        !(driverpath = pci_driver_get_path(driver, dev->id, true))) {
+    if (!(devid = pci_address_format(&dev->addr)) ||
+        !(devpath = pci_device_get_path(dev, NULL, true)) ||
+        !(driverpath = pci_driver_get_path(driver, devid, true))) {
         errno = ENOMEM;
         return -1;
     }
@@ -671,6 +713,7 @@ static int
 pci_driver_unbind(struct pciDriver *driver,
                   struct pciDevice *dev)
 {
+    VIR_AUTOFREE(char *) devid = NULL;
     VIR_AUTOFREE(char *) devpath = NULL;
     VIR_AUTOFREE(char *) driverpath = NULL;
 
@@ -681,8 +724,9 @@ pci_driver_unbind(struct pciDriver *driver,
     }
 
     /* Make symlink under device tree */
-    if (!(devpath = pci_device_get_path(dev, "driver", true)) ||
-        !(driverpath = pci_driver_get_path(driver, dev->id, true))) {
+    if (!(devid = pci_address_format(&dev->addr)) ||
+        !(devpath = pci_device_get_path(dev, "driver", true)) ||
+        !(driverpath = pci_driver_get_path(driver, devid, true))) {
         errno = ENOMEM;
         return -1;
     }
@@ -915,8 +959,10 @@ init_env(void)
 
 # define MAKE_PCI_DEVICE(Id, Vendor, Device, ...) \
     do { \
-        struct pciDevice dev = {.id = Id, .vendor = Vendor, \
+        struct pciDevice dev = {.vendor = Vendor, \
                                 .device = Device, __VA_ARGS__}; \
+        if (pci_address_parse(&dev.addr, Id) < 0) \
+            ABORT("Unable to parse PCI address " Id); \
         pci_device_new_from_stub(&dev); \
     } while (0)
 
