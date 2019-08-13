@@ -174,6 +174,21 @@ virSystemdHasMachined(void)
     return ret;
 }
 
+static int
+virSystemdHasLogind(void)
+{
+    int ret;
+
+    ret = virDBusIsServiceEnabled("org.freedesktop.login1");
+    if (ret < 0)
+        return ret;
+
+    if ((ret = virDBusIsServiceRegistered("org.freedesktop.login1")) < 0)
+        return ret;
+
+    return ret;
+}
+
 
 char *
 virSystemdGetMachineNameByPID(pid_t pid)
@@ -547,11 +562,7 @@ virSystemdPMSupportTarget(const char *methodName, bool *result)
     DBusMessage *message = NULL;
     char *response;
 
-    ret = virDBusIsServiceEnabled("org.freedesktop.login1");
-    if (ret < 0)
-        return ret;
-
-    if ((ret = virDBusIsServiceRegistered("org.freedesktop.login1")) < 0)
+    if ((ret = virSystemdHasLogind()) < 0)
         return ret;
 
     if (!(conn = virDBusGetSystemBus()))
