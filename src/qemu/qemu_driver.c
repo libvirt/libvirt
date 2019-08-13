@@ -15359,16 +15359,16 @@ qemuDomainSnapshotDiskPrepareOne(virQEMUDriverPtr driver,
             else
                 VIR_FREE(backingStoreStr);
         }
-    }
-
-    /* pre-create the image file so that we can label it before handing it to qemu */
-    if (!reuse && dd->src->type != VIR_STORAGE_TYPE_BLOCK) {
-        if (virStorageFileCreate(dd->src) < 0) {
-            virReportSystemError(errno, _("failed to create image file '%s'"),
-                                 NULLSTR(dd->src->path));
-            return -1;
+    } else {
+        /* pre-create the image file so that we can label it before handing it to qemu */
+        if (dd->src->type != VIR_STORAGE_TYPE_BLOCK) {
+            if (virStorageFileCreate(dd->src) < 0) {
+                virReportSystemError(errno, _("failed to create image file '%s'"),
+                                     NULLSTR(dd->src->path));
+                return -1;
+            }
+            dd->created = true;
         }
-        dd->created = true;
     }
 
     /* set correct security, cgroup and locking options on the new image */
