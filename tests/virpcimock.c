@@ -504,6 +504,29 @@ pci_device_autobind(struct pciDevice *dev)
 /*
  * PCI Driver functions
  */
+static char *
+pci_driver_get_path(const struct pciDriver *driver,
+                    const char *file,
+                    bool faked)
+{
+    char *ret = NULL;
+    const char *prefix = "";
+
+    if (faked)
+        prefix = fakerootdir;
+
+    if (file) {
+        ignore_value(virAsprintfQuiet(&ret, "%s" SYSFS_PCI_PREFIX "drivers/%s/%s",
+                                      prefix, driver->name, file));
+    } else {
+        ignore_value(virAsprintfQuiet(&ret, "%s" SYSFS_PCI_PREFIX "drivers/%s",
+                                      prefix, driver->name));
+    }
+
+    return ret;
+}
+
+
 static void
 pci_driver_new(const char *name, int fail, ...)
 {
@@ -514,7 +537,7 @@ pci_driver_new(const char *name, int fail, ...)
 
     if (VIR_ALLOC_QUIET(driver) < 0 ||
         VIR_STRDUP_QUIET(driver->name, name) < 0 ||
-        virAsprintfQuiet(&driverpath, "%s/sys/bus/pci/drivers/%s", fakerootdir, name) < 0)
+        !(driverpath = pci_driver_get_path(driver, NULL, true)))
         ABORT_OOM();
 
     driver->fail = fail;
@@ -620,8 +643,7 @@ pci_driver_bind(struct pciDriver *driver,
 
     /* Make symlink under device tree */
     if (!(devpath = pci_device_get_path(dev, "driver", true)) ||
-        virAsprintfQuiet(&driverpath, "%s/sys/bus/pci/drivers/%s",
-                         fakerootdir, driver->name) < 0) {
+        !(driverpath = pci_driver_get_path(driver, NULL, true))) {
         errno = ENOMEM;
         return -1;
     }
@@ -633,8 +655,7 @@ pci_driver_bind(struct pciDriver *driver,
     VIR_FREE(devpath);
     VIR_FREE(driverpath);
     if (!(devpath = pci_device_get_path(dev, NULL, true)) ||
-        virAsprintfQuiet(&driverpath, "%s/sys/bus/pci/drivers/%s/%s",
-                         fakerootdir, driver->name, dev->id) < 0) {
+        !(driverpath = pci_driver_get_path(driver, dev->id, true))) {
         errno = ENOMEM;
         return -1;
     }
@@ -661,8 +682,7 @@ pci_driver_unbind(struct pciDriver *driver,
 
     /* Make symlink under device tree */
     if (!(devpath = pci_device_get_path(dev, "driver", true)) ||
-        virAsprintfQuiet(&driverpath, "%s/sys/bus/pci/drivers/%s/%s",
-                         fakerootdir, driver->name, dev->id) < 0) {
+        !(driverpath = pci_driver_get_path(driver, dev->id, true))) {
         errno = ENOMEM;
         return -1;
     }
