@@ -239,19 +239,20 @@ static int
 virNodeSuspendSupportsTargetPMUtils(unsigned int target, bool *supported)
 {
     VIR_AUTOPTR(virCommand) cmd = NULL;
+    const char *binary = "pm-is-supported";
     int status;
 
     *supported = false;
 
     switch (target) {
     case VIR_NODE_SUSPEND_TARGET_MEM:
-        cmd = virCommandNewArgList("pm-is-supported", "--suspend", NULL);
+        cmd = virCommandNewArgList(binary, "--suspend", NULL);
         break;
     case VIR_NODE_SUSPEND_TARGET_DISK:
-        cmd = virCommandNewArgList("pm-is-supported", "--hibernate", NULL);
+        cmd = virCommandNewArgList(binary, "--hibernate", NULL);
         break;
     case VIR_NODE_SUSPEND_TARGET_HYBRID:
-        cmd = virCommandNewArgList("pm-is-supported", "--suspend-hybrid", NULL);
+        cmd = virCommandNewArgList(binary, "--suspend-hybrid", NULL);
         break;
     default:
         return -1;
