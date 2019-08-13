@@ -402,6 +402,30 @@ pci_device_get_path(const struct pciDevice *dev,
 
 
 static void
+pci_device_create_iommu(const struct pciDevice *dev,
+                        const char *devid)
+{
+    VIR_AUTOFREE(char *) iommuPath = NULL;
+    char tmp[256];
+
+    if (virAsprintfQuiet(&iommuPath, "%s/sys/kernel/iommu_groups/%d/devices/",
+                         fakerootdir, dev->iommuGroup) < 0)
+        ABORT_OOM();
+
+    if (virFileMakePath(iommuPath) < 0)
+        ABORT("Unable to create: %s", iommuPath);
+
+    if (snprintf(tmp, sizeof(tmp),
+                 "../../../../devices/pci%04x:%02x/%s",
+                 dev->addr.domain, dev->addr.bus, devid) < 0) {
+        ABORT("@tmp overflow");
+    }
+
+    make_symlink(iommuPath, devid, tmp);
+}
+
+
+static void
 pci_device_new_from_stub(const struct pciDevice *data)
 {
     struct pciDevice *dev;
@@ -481,13 +505,7 @@ pci_device_new_from_stub(const struct pciDevice *data)
 
     make_file(devpath, "driver_override", NULL, -1);
 
-    if (snprintf(tmp, sizeof(tmp),
-                 "%s/../../../kernel/iommu_groups/%d",
-                 devpath, dev->iommuGroup) < 0) {
-        ABORT("@tmp overflow");
-    }
-    if (virFileMakePath(tmp) < 0)
-        ABORT("Unable to create %s", tmp);
+    pci_device_create_iommu(dev, devid);
 
     if (snprintf(tmp, sizeof(tmp),
                  "../../../kernel/iommu_groups/%d", dev->iommuGroup) < 0) {
