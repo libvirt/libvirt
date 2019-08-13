@@ -29,6 +29,7 @@
 #include "datatypes.h"
 
 #include "viralloc.h"
+#include "virfile.h"
 #include "virlog.h"
 #include "virerror.h"
 
@@ -239,10 +240,14 @@ static int
 virNodeSuspendSupportsTargetPMUtils(unsigned int target, bool *supported)
 {
     VIR_AUTOPTR(virCommand) cmd = NULL;
-    const char *binary = "pm-is-supported";
+    VIR_AUTOFREE(char *) binary = NULL;
     int status;
 
     *supported = false;
+
+    binary = virFindFileInPath("pm-is-supported");
+    if (!binary)
+        return -2;
 
     switch (target) {
     case VIR_NODE_SUSPEND_TARGET_MEM:
