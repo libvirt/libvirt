@@ -320,6 +320,12 @@ virPCIDeviceConfigOpen(virPCIDevicePtr dev, bool fatal)
     return virPCIDeviceConfigOpenInternal(dev, fatal);
 }
 
+static int
+virPCIDeviceConfigOpenWrite(virPCIDevicePtr dev)
+{
+    return virPCIDeviceConfigOpenInternal(dev, true);
+}
+
 static void
 virPCIDeviceConfigClose(virPCIDevicePtr dev, int cfgfd)
 {
@@ -808,7 +814,7 @@ virPCIDeviceTrySecondaryBusReset(virPCIDevicePtr dev,
                        dev->name);
         return -1;
     }
-    if ((parentfd = virPCIDeviceConfigOpen(parent, true)) < 0)
+    if ((parentfd = virPCIDeviceConfigOpenWrite(parent)) < 0)
         goto out;
 
     VIR_DEBUG("%s %s: doing a secondary bus reset", dev->id, dev->name);
@@ -957,7 +963,7 @@ virPCIDeviceReset(virPCIDevicePtr dev,
     }
     VIR_DEBUG("Resetting device %s", dev->name);
 
-    if ((fd = virPCIDeviceConfigOpen(dev, true)) < 0)
+    if ((fd = virPCIDeviceConfigOpenWrite(dev)) < 0)
         goto cleanup;
 
     if (virPCIDeviceInit(dev, fd) < 0)
