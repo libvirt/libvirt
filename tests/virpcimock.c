@@ -384,12 +384,17 @@ pci_device_get_path(const struct pciDevice *dev,
     if (!(devid = pci_address_format(&dev->addr)))
         return NULL;
 
+    /* PCI devices really do live under /sys/devices/pciDDDD:BB
+     * and then they are just symlinked to /sys/bus/pci/devices/
+     */
     if (file) {
-        ignore_value(virAsprintfQuiet(&ret, "%s" SYSFS_PCI_PREFIX "devices/%s/%s",
-                                      prefix, devid, file));
+        ignore_value(virAsprintfQuiet(&ret, "%s/sys/devices/pci%04x:%02x/%s/%s",
+                                      prefix, dev->addr.domain, dev->addr.bus,
+                                      devid, file));
     } else {
-        ignore_value(virAsprintfQuiet(&ret, "%s" SYSFS_PCI_PREFIX "devices/%s",
-                                      prefix, devid));
+        ignore_value(virAsprintfQuiet(&ret, "%s/sys/devices/pci%04x:%02x/%s",
+                                      prefix, dev->addr.domain, dev->addr.bus,
+                                      devid));
     }
 
     return ret;
@@ -401,6 +406,7 @@ pci_device_new_from_stub(const struct pciDevice *data)
 {
     struct pciDevice *dev;
     VIR_AUTOFREE(char *) devpath = NULL;
+    VIR_AUTOFREE(char *) devsympath = NULL;
     VIR_AUTOFREE(char *) id = NULL;
     VIR_AUTOFREE(char *) devid = NULL;
     char *c;
@@ -488,6 +494,17 @@ pci_device_new_from_stub(const struct pciDevice *data)
         ABORT("@tmp overflow");
     }
     make_symlink(devpath, "iommu_group", tmp);
+
+    if (snprintf(tmp, sizeof(tmp),
+                 "../../../devices/pci%04x:%02x/%s",
+                 dev->addr.domain, dev->addr.bus, devid) < 0) {
+        ABORT("@tmp overflow");
+    }
+
+    if (virAsprintfQuiet(&devsympath, "%s" SYSFS_PCI_PREFIX "devices", fakerootdir) < 0)
+        ABORT_OOM();
+
+    make_symlink(devsympath, devid, tmp);
 
     if (pci_device_autobind(dev) < 0)
         ABORT("Unable to bind: %s", devid);
