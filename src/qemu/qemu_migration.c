@@ -1214,6 +1214,7 @@ qemuMigrationSrcIsAllowed(virQEMUDriverPtr driver,
 
 static bool
 qemuMigrationSrcIsSafe(virDomainDefPtr def,
+                       virQEMUCapsPtr qemuCaps,
                        size_t nmigrate_disks,
                        const char **migrate_disks,
                        unsigned int flags)
@@ -1263,6 +1264,11 @@ qemuMigrationSrcIsSafe(virDomainDefPtr def,
             disk->cachemode == VIR_DOMAIN_DISK_CACHE_DISABLE ||
             disk->cachemode == VIR_DOMAIN_DISK_CACHE_DIRECTSYNC)
             continue;
+
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MIGRATION_FILE_DROP_CACHE)) {
+            VIR_DEBUG("QEMU supports flushing caches; migration is safe");
+            continue;
+        }
 
         virReportError(VIR_ERR_MIGRATE_UNSAFE, "%s",
                        _("Migration may lead to data corruption if disks"
@@ -1971,7 +1977,8 @@ qemuMigrationSrcBeginPhase(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (!(flags & (VIR_MIGRATE_UNSAFE | VIR_MIGRATE_OFFLINE)) &&
-        !qemuMigrationSrcIsSafe(vm->def, nmigrate_disks, migrate_disks, flags))
+        !qemuMigrationSrcIsSafe(vm->def, priv->qemuCaps,
+                                nmigrate_disks, migrate_disks, flags))
         goto cleanup;
 
     if (flags & VIR_MIGRATE_POSTCOPY &&
@@ -4583,7 +4590,8 @@ qemuMigrationSrcPerformJob(virQEMUDriverPtr driver,
         goto endjob;
 
     if (!(flags & (VIR_MIGRATE_UNSAFE | VIR_MIGRATE_OFFLINE)) &&
-        !qemuMigrationSrcIsSafe(vm->def, nmigrate_disks, migrate_disks, flags))
+        !qemuMigrationSrcIsSafe(vm->def, priv->qemuCaps,
+                                nmigrate_disks, migrate_disks, flags))
         goto endjob;
 
     qemuMigrationSrcStoreDomainState(vm);
