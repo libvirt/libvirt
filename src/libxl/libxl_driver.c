@@ -1434,6 +1434,7 @@ libxlDomainPMSuspendForDuration(virDomainPtr dom,
     int ret = -1;
     libxlDriverPrivatePtr driver = dom->conn->privateData;
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
+    virObjectEventPtr event = NULL;
 
     virCheckFlags(0, -1);
     if (target != VIR_NODE_SUSPEND_TARGET_MEM) {
@@ -1474,6 +1475,10 @@ libxlDomainPMSuspendForDuration(virDomainPtr dom,
         goto endjob;
     }
 
+    virDomainObjSetState(vm, VIR_DOMAIN_PMSUSPENDED, VIR_DOMAIN_PMSUSPENDED_UNKNOWN);
+    event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_PMSUSPENDED,
+                                              VIR_DOMAIN_EVENT_PMSUSPENDED_MEMORY);
+
     ret = 0;
 
  endjob:
@@ -1481,6 +1486,7 @@ libxlDomainPMSuspendForDuration(virDomainPtr dom,
 
  cleanup:
     virDomainObjEndAPI(&vm);
+    virObjectEventStateQueue(driver->domainEventState, event);
     return ret;
 }
 #endif
