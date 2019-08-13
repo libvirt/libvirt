@@ -315,9 +315,9 @@ virPCIDeviceConfigOpenInternal(virPCIDevicePtr dev, bool readonly, bool fatal)
 }
 
 static int
-virPCIDeviceConfigOpen(virPCIDevicePtr dev, bool fatal)
+virPCIDeviceConfigOpen(virPCIDevicePtr dev)
 {
-    return virPCIDeviceConfigOpenInternal(dev, false, fatal);
+    return virPCIDeviceConfigOpenInternal(dev, true, true);
 }
 
 static int
@@ -2426,7 +2426,7 @@ virPCIDeviceDownstreamLacksACS(virPCIDevicePtr dev)
     int ret = 0;
     uint16_t device_class;
 
-    if ((fd = virPCIDeviceConfigOpen(dev, true)) < 0)
+    if ((fd = virPCIDeviceConfigOpen(dev)) < 0)
         return -1;
 
     if (virPCIDeviceInit(dev, fd) < 0) {
@@ -3168,7 +3168,7 @@ virPCIDeviceIsPCIExpress(virPCIDevicePtr dev)
     int fd;
     int ret = -1;
 
-    if ((fd = virPCIDeviceConfigOpen(dev, true)) < 0)
+    if ((fd = virPCIDeviceConfigOpen(dev)) < 0)
         return ret;
 
     if (virPCIDeviceInit(dev, fd) < 0)
@@ -3188,7 +3188,7 @@ virPCIDeviceHasPCIExpressLink(virPCIDevicePtr dev)
     int ret = -1;
     uint16_t cap, type;
 
-    if ((fd = virPCIDeviceConfigOpen(dev, true)) < 0)
+    if ((fd = virPCIDeviceConfigOpen(dev)) < 0)
         return ret;
 
     if (virPCIDeviceInit(dev, fd) < 0)
@@ -3216,7 +3216,7 @@ virPCIDeviceGetLinkCapSta(virPCIDevicePtr dev,
     int fd;
     int ret = -1;
 
-    if ((fd = virPCIDeviceConfigOpen(dev, true)) < 0)
+    if ((fd = virPCIDeviceConfigOpen(dev)) < 0)
         return ret;
 
     if (virPCIDeviceInit(dev, fd) < 0)
@@ -3254,7 +3254,7 @@ int virPCIGetHeaderType(virPCIDevicePtr dev, int *hdrType)
 
     *hdrType = -1;
 
-    if ((fd = virPCIDeviceConfigOpen(dev, true)) < 0)
+    if ((fd = virPCIDeviceConfigOpen(dev)) < 0)
         return -1;
 
     type = virPCIDeviceRead8(dev, fd, PCI_HEADER_TYPE);
