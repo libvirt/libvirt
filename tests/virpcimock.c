@@ -833,7 +833,7 @@ init_syms(void)
 static void
 init_env(void)
 {
-    VIR_AUTOFREE(char *) fakesysfspcidir = NULL;
+    VIR_AUTOFREE(char *) tmp = NULL;
 
     if (fakerootdir)
         return;
@@ -841,14 +841,14 @@ init_env(void)
     if (!(fakerootdir = getenv("LIBVIRT_FAKE_ROOT_DIR")))
         ABORT("Missing LIBVIRT_FAKE_ROOT_DIR env variable\n");
 
-    if (virAsprintfQuiet(&fakesysfspcidir, "%s%s",
+    if (virAsprintfQuiet(&tmp, "%s%s",
                          fakerootdir, SYSFS_PCI_PREFIX) < 0)
         ABORT_OOM();
 
-    if (virFileMakePath(fakesysfspcidir) < 0)
-        ABORT("Unable to create: %s", fakesysfspcidir);
+    if (virFileMakePath(tmp) < 0)
+        ABORT("Unable to create: %s", tmp);
 
-    make_file(fakesysfspcidir, "drivers_probe", NULL, -1);
+    make_file(tmp, "drivers_probe", NULL, -1);
 
 # define MAKE_PCI_DRIVER(name, ...) \
     pci_driver_new(name, 0, __VA_ARGS__, -1, -1)
