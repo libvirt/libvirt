@@ -189,6 +189,19 @@ make_file(const char *path,
 }
 
 static void
+make_dir(const char *path,
+         const char *name)
+{
+    VIR_AUTOFREE(char *) dirpath = NULL;
+
+    if (virAsprintfQuiet(&dirpath, "%s/%s", path, name) < 0)
+        ABORT_OOM();
+
+    if (virFileMakePath(dirpath) < 0)
+        ABORT("Unable to create: %s", dirpath);
+}
+
+static void
 make_symlink(const char *path,
           const char *name,
           const char *target)
@@ -848,6 +861,8 @@ init_env(void)
     if (virFileMakePath(tmp) < 0)
         ABORT("Unable to create: %s", tmp);
 
+    make_dir(tmp, "devices");
+    make_dir(tmp, "drivers");
     make_file(tmp, "drivers_probe", NULL, -1);
 
 # define MAKE_PCI_DRIVER(name, ...) \
