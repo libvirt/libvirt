@@ -167,6 +167,7 @@
   <flag name='bitmap-merge'/>
   <flag name='nbd-bitmap'/>
   <flag name='bochs-display'/>
+  <flag name='migration-file-drop-cache'/>
   <version>4000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>0</microcodeVersion>

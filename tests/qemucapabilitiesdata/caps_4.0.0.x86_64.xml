@@ -206,6 +206,7 @@
   <flag name='nbd-bitmap'/>
   <flag name='x86-max-cpu'/>
   <flag name='bochs-display'/>
+  <flag name='migration-file-drop-cache'/>
   <version>4000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100758</microcodeVersion>
