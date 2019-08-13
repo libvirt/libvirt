@@ -338,6 +338,29 @@ remove_fd(int fd)
 /*
  * PCI Device functions
  */
+static char *
+pci_device_get_path(const struct pciDevice *dev,
+                    const char *file,
+                    bool faked)
+{
+    char *ret = NULL;
+    const char *prefix = "";
+
+    if (faked)
+        prefix = fakerootdir;
+
+    if (file) {
+        ignore_value(virAsprintfQuiet(&ret, "%s" SYSFS_PCI_PREFIX "devices/%s/%s",
+                                      prefix, dev->id, file));
+    } else {
+        ignore_value(virAsprintfQuiet(&ret, "%s" SYSFS_PCI_PREFIX "devices/%s",
+                                      prefix, dev->id));
+    }
+
+    return ret;
+}
+
+
 static void
 pci_device_new_from_stub(const struct pciDevice *data)
 {
@@ -366,11 +389,13 @@ pci_device_new_from_stub(const struct pciDevice *data)
 
     if (VIR_ALLOC_QUIET(dev) < 0 ||
         virAsprintfQuiet(&configSrc, "%s/virpcitestdata/%s.config",
-                         abs_srcdir, id) < 0 ||
-        virAsprintfQuiet(&devpath, "%s/sys/bus/pci/devices/%s", fakerootdir, data->id) < 0)
+                         abs_srcdir, id) < 0)
         ABORT_OOM();
 
     memcpy(dev, data, sizeof(*dev));
+
+    if (!(devpath = pci_device_get_path(dev, NULL, true)))
+        ABORT_OOM();
 
     if (virFileMakePath(devpath) < 0)
         ABORT("Unable to create: %s", devpath);
@@ -564,9 +589,7 @@ pci_driver_find_by_driver_override(struct pciDevice *dev)
     char tmp[32];
     size_t i;
 
-    if (virAsprintfQuiet(&path,
-                         SYSFS_PCI_PREFIX "devices/%s/driver_override",
-                         dev->id) < 0)
+    if (!(path = pci_device_get_path(dev, "driver_override", false)))
         return NULL;
 
     if (pci_read_file(path, tmp, sizeof(tmp), false) < 0)
@@ -596,8 +619,7 @@ pci_driver_bind(struct pciDriver *driver,
     }
 
     /* Make symlink under device tree */
-    if (virAsprintfQuiet(&devpath, "%s/sys/bus/pci/devices/%s/driver",
-                         fakerootdir, dev->id) < 0 ||
+    if (!(devpath = pci_device_get_path(dev, "driver", true)) ||
         virAsprintfQuiet(&driverpath, "%s/sys/bus/pci/drivers/%s",
                          fakerootdir, driver->name) < 0) {
         errno = ENOMEM;
@@ -610,8 +632,7 @@ pci_driver_bind(struct pciDriver *driver,
     /* Make symlink under driver tree */
     VIR_FREE(devpath);
     VIR_FREE(driverpath);
-    if (virAsprintfQuiet(&devpath, "%s/sys/bus/pci/devices/%s",
-                         fakerootdir, dev->id) < 0 ||
+    if (!(devpath = pci_device_get_path(dev, NULL, true)) ||
         virAsprintfQuiet(&driverpath, "%s/sys/bus/pci/drivers/%s/%s",
                          fakerootdir, driver->name, dev->id) < 0) {
         errno = ENOMEM;
@@ -639,8 +660,7 @@ pci_driver_unbind(struct pciDriver *driver,
     }
 
     /* Make symlink under device tree */
-    if (virAsprintfQuiet(&devpath, "%s/sys/bus/pci/devices/%s/driver",
-                         fakerootdir, dev->id) < 0 ||
+    if (!(devpath = pci_device_get_path(dev, "driver", true)) ||
         virAsprintfQuiet(&driverpath, "%s/sys/bus/pci/drivers/%s/%s",
                          fakerootdir, driver->name, dev->id) < 0) {
         errno = ENOMEM;
