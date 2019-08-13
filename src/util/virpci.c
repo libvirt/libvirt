@@ -321,6 +321,12 @@ virPCIDeviceConfigOpen(virPCIDevicePtr dev, bool fatal)
 }
 
 static int
+virPCIDeviceConfigOpenTry(virPCIDevicePtr dev)
+{
+    return virPCIDeviceConfigOpenInternal(dev, true, false);
+}
+
+static int
 virPCIDeviceConfigOpenWrite(virPCIDevicePtr dev)
 {
     return virPCIDeviceConfigOpenInternal(dev, false, true);
@@ -692,7 +698,7 @@ virPCIDeviceIsParent(virPCIDevicePtr dev, virPCIDevicePtr check, void *data)
     if (dev->address.domain != check->address.domain)
         return 0;
 
-    if ((fd = virPCIDeviceConfigOpen(check, false)) < 0)
+    if ((fd = virPCIDeviceConfigOpenTry(check)) < 0)
         return 0;
 
     /* Is it a bridge? */
@@ -740,7 +746,7 @@ virPCIDeviceIsParent(virPCIDevicePtr dev, virPCIDevicePtr check, void *data)
             int bestfd;
             uint8_t best_secondary;
 
-            if ((bestfd = virPCIDeviceConfigOpen(*best, false)) < 0)
+            if ((bestfd = virPCIDeviceConfigOpenTry(*best)) < 0)
                 goto cleanup;
             best_secondary = virPCIDeviceRead8(*best, bestfd, PCI_SECONDARY_BUS);
             virPCIDeviceConfigClose(*best, bestfd);
