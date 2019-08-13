@@ -1266,7 +1266,7 @@ qemuMigrationSrcIsSafe(virDomainDefPtr def,
 
         virReportError(VIR_ERR_MIGRATE_UNSAFE, "%s",
                        _("Migration may lead to data corruption if disks"
-                         " use cache != none or cache != directsync"));
+                         " use cache other than none or directsync"));
         return false;
     }
 
