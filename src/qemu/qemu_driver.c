@@ -15316,6 +15316,8 @@ qemuDomainSnapshotDiskPrepareOne(virQEMUDriverPtr driver,
 {
     char *backingStoreStr;
     virDomainDiskDefPtr persistdisk;
+    bool supportsCreate;
+    bool supportsBacking;
 
     dd->disk = disk;
 
@@ -15343,31 +15345,38 @@ qemuDomainSnapshotDiskPrepareOne(virQEMUDriverPtr driver,
             return -1;
     }
 
-    if (qemuDomainStorageFileInit(driver, vm, dd->src, NULL) < 0)
-        return -1;
+    supportsCreate = virStorageFileSupportsCreate(dd->src);
+    supportsBacking = virStorageFileSupportsBackingChainTraversal(dd->src);
 
-    dd->initialized = true;
-
-    /* relative backing store paths need to be updated so that relative
-     * block commit still works */
-    if (reuse) {
-        if (virStorageFileGetBackingStoreStr(dd->src, &backingStoreStr) < 0)
+    if (supportsCreate || supportsBacking) {
+        if (qemuDomainStorageFileInit(driver, vm, dd->src, NULL) < 0)
             return -1;
-        if (backingStoreStr != NULL) {
-            if (virStorageIsRelative(backingStoreStr))
-                VIR_STEAL_PTR(dd->relPath, backingStoreStr);
-            else
-                VIR_FREE(backingStoreStr);
-        }
-    } else {
-        /* pre-create the image file so that we can label it before handing it to qemu */
-        if (dd->src->type != VIR_STORAGE_TYPE_BLOCK) {
-            if (virStorageFileCreate(dd->src) < 0) {
-                virReportSystemError(errno, _("failed to create image file '%s'"),
-                                     NULLSTR(dd->src->path));
-                return -1;
+
+        dd->initialized = true;
+
+        /* relative backing store paths need to be updated so that relative
+         * block commit still works */
+        if (reuse) {
+            if (supportsBacking) {
+                if (virStorageFileGetBackingStoreStr(dd->src, &backingStoreStr) < 0)
+                    return -1;
+                if (backingStoreStr != NULL) {
+                    if (virStorageIsRelative(backingStoreStr))
+                        VIR_STEAL_PTR(dd->relPath, backingStoreStr);
+                    else
+                        VIR_FREE(backingStoreStr);
+                }
             }
-            dd->created = true;
+        } else {
+            /* pre-create the image file so that we can label it before handing it to qemu */
+            if (supportsCreate && dd->src->type != VIR_STORAGE_TYPE_BLOCK) {
+                if (virStorageFileCreate(dd->src) < 0) {
+                    virReportSystemError(errno, _("failed to create image file '%s'"),
+                                         NULLSTR(dd->src->path));
+                    return -1;
+                }
+                dd->created = true;
+            }
         }
     }
 
