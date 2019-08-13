@@ -1902,6 +1902,40 @@ static int testDomainSuspend(virDomainPtr domain)
     return ret;
 }
 
+
+static void
+testDomainActionSetState(virDomainObjPtr dom,
+                         int lifecycle_type)
+{
+    switch (lifecycle_type) {
+    case VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY:
+        virDomainObjSetState(dom, VIR_DOMAIN_SHUTOFF,
+                             VIR_DOMAIN_SHUTOFF_SHUTDOWN);
+        break;
+
+    case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART:
+        virDomainObjSetState(dom, VIR_DOMAIN_RUNNING,
+                             VIR_DOMAIN_RUNNING_BOOTED);
+        break;
+
+    case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE:
+        virDomainObjSetState(dom, VIR_DOMAIN_SHUTOFF,
+                             VIR_DOMAIN_SHUTOFF_SHUTDOWN);
+        break;
+
+    case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME:
+        virDomainObjSetState(dom, VIR_DOMAIN_RUNNING,
+                             VIR_DOMAIN_RUNNING_BOOTED);
+        break;
+
+    default:
+        virDomainObjSetState(dom, VIR_DOMAIN_SHUTOFF,
+                             VIR_DOMAIN_SHUTOFF_SHUTDOWN);
+        break;
+    }
+}
+
+
 static int testDomainShutdownFlags(virDomainPtr domain,
                                    unsigned int flags)
 {
@@ -1922,13 +1956,17 @@ static int testDomainShutdownFlags(virDomainPtr domain,
         goto cleanup;
     }
 
-    testDomainShutdownState(domain, privdom, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
-    event = virDomainEventLifecycleNewFromObj(privdom,
-                                     VIR_DOMAIN_EVENT_STOPPED,
-                                     VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
+    testDomainActionSetState(privdom, privdom->def->onPoweroff);
 
-    if (!privdom->persistent)
-        virDomainObjListRemove(privconn->domains, privdom);
+    if (virDomainObjGetState(privdom, NULL) == VIR_DOMAIN_SHUTOFF) {
+        testDomainShutdownState(domain, privdom, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
+        event = virDomainEventLifecycleNewFromObj(privdom,
+                                                  VIR_DOMAIN_EVENT_STOPPED,
+                                                  VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
+
+        if (!privdom->persistent)
+            virDomainObjListRemove(privconn->domains, privdom);
+    }
 
     ret = 0;
  cleanup:
@@ -1964,35 +2002,7 @@ static int testDomainReboot(virDomainPtr domain,
     if (virDomainObjCheckActive(privdom) < 0)
         goto cleanup;
 
-    virDomainObjSetState(privdom, VIR_DOMAIN_SHUTDOWN,
-                         VIR_DOMAIN_SHUTDOWN_USER);
-
-    switch (privdom->def->onReboot) {
-    case VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY:
-        virDomainObjSetState(privdom, VIR_DOMAIN_SHUTOFF,
-                             VIR_DOMAIN_SHUTOFF_SHUTDOWN);
-        break;
-
-    case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART:
-        virDomainObjSetState(privdom, VIR_DOMAIN_RUNNING,
-                             VIR_DOMAIN_RUNNING_BOOTED);
-        break;
-
-    case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE:
-        virDomainObjSetState(privdom, VIR_DOMAIN_SHUTOFF,
-                             VIR_DOMAIN_SHUTOFF_SHUTDOWN);
-        break;
-
-    case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME:
-        virDomainObjSetState(privdom, VIR_DOMAIN_RUNNING,
-                             VIR_DOMAIN_RUNNING_BOOTED);
-        break;
-
-    default:
-        virDomainObjSetState(privdom, VIR_DOMAIN_SHUTOFF,
-                             VIR_DOMAIN_SHUTOFF_SHUTDOWN);
-        break;
-    }
+    testDomainActionSetState(privdom, privdom->def->onReboot);
 
     if (virDomainObjGetState(privdom, NULL) == VIR_DOMAIN_SHUTOFF) {
         testDomainShutdownState(domain, privdom, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
