@@ -1473,34 +1473,5 @@ int foo()
         in the same way, but still make sure they get reviewed if non-trivial.
       </li>
     </ul>
-    <h2><a id="coverage">Code coverage reports</a></h2>
-
-    <p>
-      Code coverage HTML reports can be generated with:
-    </p>
-
-<pre>
-  make coverage
-</pre>
-
-    <p>
-      Reports will be generated in the <code>cov/</code> directory. Point a
-      web browser at <code>cov/index.html</code> for the full report.
-    </p>
-
-    <p>
-      The <code>make coverage</code> target is provided by <code>gnulib</code>.
-      It is a convenience helper for calling the following 3 targets in order.
-      It may be useful to occasionally call these directly.
-
-    <ul>
-      <li><code>make init-coverage</code>: run <code>make clean</code> and
-          remove all code coverage counter files (*.gcno, etc.)</li>
-      <li><code>make build-coverage</code>: run <code>make</code> and
-          <code>make check</code> with <code>CFLAGS</code> filled in with
-          necessary coverage flags</li>
-      <li><code>make gen-coverage</code>: generate the HTML report</li>
-    </ul>
-    </p>
   </body>
 </html>
