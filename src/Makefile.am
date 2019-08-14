@@ -318,9 +318,11 @@ $(srcdir)/remote_protocol-struct \
 $(srcdir)/virnetprotocol-struct $(srcdir)/virkeepaliveprotocol-struct: \
 		$(srcdir)/%-struct: rpc/libvirt_net_rpc_la-%.lo
 	$(PDWTAGS)
+if WITH_LXC
 $(srcdir)/lxc_monitor_protocol-struct: \
 		$(srcdir)/%-struct: lxc/libvirt_driver_lxc_impl_la-%.lo
 	$(PDWTAGS)
+endif WITH_LXC
 $(srcdir)/lock_protocol-struct: \
 		$(srcdir)/%-struct: locking/lockd_la-%.lo
 	$(PDWTAGS)
