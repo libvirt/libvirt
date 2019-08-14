@@ -53,7 +53,7 @@ struct virHostdevIsPCINodeDeviceUsedData {
     virHostdevManagerPtr mgr;
     const char *driverName;
     const char *domainName;
-    const bool usesVFIO;
+    bool usesVFIO;
 };
 
 /* This module makes heavy use of bookkeeping lists contained inside a
@@ -707,7 +707,7 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr mgr,
         virPCIDevicePtr pci = virPCIDeviceListGet(pcidevs, i);
         bool strict_acs_check = !!(flags & VIR_HOSTDEV_STRICT_ACS_CHECK);
         bool usesVFIO = (virPCIDeviceGetStubDriver(pci) == VIR_PCI_STUB_DRIVER_VFIO);
-        struct virHostdevIsPCINodeDeviceUsedData data = {mgr, drv_name, dom_name, usesVFIO};
+        struct virHostdevIsPCINodeDeviceUsedData data = {mgr, drv_name, dom_name, false};
         int hdrType = -1;
 
         if (virPCIGetHeaderType(pci, &hdrType) < 0)
@@ -728,18 +728,19 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr mgr,
         }
 
         /* The device is in use by other active domain if
-         * the dev is in list activePCIHostdevs. VFIO devices
-         * belonging to same iommu group can't be shared
-         * across guests.
-         */
+         * the dev is in list activePCIHostdevs. */
         devAddr = virPCIDeviceGetAddress(pci);
+        if (virHostdevIsPCINodeDeviceUsed(devAddr, &data))
+            goto cleanup;
+
+        /* VFIO devices belonging to same IOMMU group can't be
+         * shared across guests. Check if that's the case. */
         if (usesVFIO) {
+            data.usesVFIO = true;
             if (virPCIDeviceAddressIOMMUGroupIterate(devAddr,
                                                      virHostdevIsPCINodeDeviceUsed,
                                                      &data) < 0)
                 goto cleanup;
-        } else if (virHostdevIsPCINodeDeviceUsed(devAddr, &data)) {
-            goto cleanup;
         }
     }
 
