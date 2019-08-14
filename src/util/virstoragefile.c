@@ -3748,7 +3748,7 @@ virStorageSourceNewFromBacking(virStorageSourcePtr parent)
  * To be called for domain storage source reporting as the volume code does
  * not set/use the 'type' field for the voldef->source.target
  *
- * Returns 0 on success, -1 on error.
+ * Returns 0 on success, -1 on error. No libvirt errors are reported.
  */
 int
 virStorageSourceUpdatePhysicalSize(virStorageSourcePtr src,
@@ -3765,11 +3765,8 @@ virStorageSourceUpdatePhysicalSize(virStorageSourcePtr src,
         break;
 
     case VIR_STORAGE_TYPE_BLOCK:
-        if ((end = lseek(fd, 0, SEEK_END)) == (off_t) -1) {
-            virReportSystemError(errno, _("failed to seek to end of '%s'"),
-                                 src->path);
+        if ((end = lseek(fd, 0, SEEK_END)) == (off_t) -1)
             return -1;
-        }
 
         src->physical = end;
         break;
@@ -3782,12 +3779,7 @@ virStorageSourceUpdatePhysicalSize(virStorageSourcePtr src,
     case VIR_STORAGE_TYPE_VOLUME:
     case VIR_STORAGE_TYPE_NONE:
     case VIR_STORAGE_TYPE_LAST:
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot retrieve physical for path '%s' type '%s'"),
-                       NULLSTR(src->path),
-                       virStorageTypeToString(actual_type));
         return -1;
-        break;
     }
 
     return 0;
