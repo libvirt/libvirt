@@ -51,6 +51,7 @@ static virHostdevManagerPtr virHostdevManagerNew(void);
 
 struct virHostdevIsPCINodeDeviceUsedData {
     virHostdevManagerPtr mgr;
+    const char *driverName;
     const char *domainName;
     const bool usesVFIO;
 };
@@ -91,8 +92,8 @@ static int virHostdevIsPCINodeDeviceUsed(virPCIDeviceAddressPtr devAddr, void *o
         virPCIDeviceGetUsedBy(actual, &actual_drvname, &actual_domname);
 
         if (helperData->usesVFIO &&
-            (actual_domname && helperData->domainName) &&
-            (STREQ(actual_domname, helperData->domainName)))
+            STREQ_NULLABLE(actual_drvname, helperData->driverName) &&
+            STREQ_NULLABLE(actual_domname, helperData->domainName))
             goto iommu_owner;
 
         if (actual_drvname && actual_domname)
@@ -706,7 +707,7 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr mgr,
         virPCIDevicePtr pci = virPCIDeviceListGet(pcidevs, i);
         bool strict_acs_check = !!(flags & VIR_HOSTDEV_STRICT_ACS_CHECK);
         bool usesVFIO = (virPCIDeviceGetStubDriver(pci) == VIR_PCI_STUB_DRIVER_VFIO);
-        struct virHostdevIsPCINodeDeviceUsedData data = { mgr, dom_name, usesVFIO };
+        struct virHostdevIsPCINodeDeviceUsedData data = {mgr, drv_name, dom_name, usesVFIO};
         int hdrType = -1;
 
         if (virPCIGetHeaderType(pci, &hdrType) < 0)
@@ -1995,7 +1996,7 @@ int
 virHostdevPCINodeDeviceDetach(virHostdevManagerPtr mgr,
                               virPCIDevicePtr pci)
 {
-    struct virHostdevIsPCINodeDeviceUsedData data = { mgr, NULL, false };
+    struct virHostdevIsPCINodeDeviceUsedData data = {mgr, NULL, NULL, false};
     int ret = -1;
 
     virObjectLock(mgr->activePCIHostdevs);
@@ -2021,7 +2022,7 @@ int
 virHostdevPCINodeDeviceReAttach(virHostdevManagerPtr mgr,
                                 virPCIDevicePtr pci)
 {
-    struct virHostdevIsPCINodeDeviceUsedData data = { mgr, NULL, false };
+    struct virHostdevIsPCINodeDeviceUsedData data = {mgr, NULL, NULL, false};
     int ret = -1;
 
     virObjectLock(mgr->activePCIHostdevs);
