@@ -12363,6 +12363,7 @@ qemuDomainStorageUpdatePhysical(virQEMUDriverPtr driver,
  * @cfg: driver configuration data
  * @vm: domain object
  * @src: storage source data
+ * @skipInaccessible: Suppress reporting of common errors when accessing @src
  *
  * Refresh the capacity and allocation limits of a given storage source.
  *
@@ -12384,22 +12385,27 @@ qemuDomainStorageUpdatePhysical(virQEMUDriverPtr driver,
  * is sparse, but the amount of sparseness changes due to writes or
  * punching holes), and physical size of a non-raw file can change.
  *
- * Returns 0 on success, -1 on failure
+ * Returns 1 if @src was successfully updated, 0 if @src can't be opened and
+ * @skipInaccessible is true (no errors are reported) or -1 otherwise (errors
+ * are reported).
  */
 static int
 qemuStorageLimitsRefresh(virQEMUDriverPtr driver,
                          virQEMUDriverConfigPtr cfg,
                          virDomainObjPtr vm,
-                         virStorageSourcePtr src)
+                         virStorageSourcePtr src,
+                         bool skipInaccessible)
 {
+    int rc;
     int ret = -1;
     int fd = -1;
     struct stat sb;
     char *buf = NULL;
     ssize_t len;
 
-    if (qemuDomainStorageOpenStat(driver, cfg, vm, src, &fd, &sb, false) < 0)
-        goto cleanup;
+    if ((rc = qemuDomainStorageOpenStat(driver, cfg, vm, src, &fd, &sb,
+                                        skipInaccessible)) <= 0)
+        return rc;
 
     if (virStorageSourceIsLocalStorage(src)) {
         if ((len = virFileReadHeaderFD(fd, VIR_STORAGE_MAX_HEADER, &buf)) < 0) {
@@ -12427,7 +12433,7 @@ qemuStorageLimitsRefresh(virQEMUDriverPtr driver,
         S_ISBLK(sb.st_mode))
         src->allocation = 0;
 
-    ret = 0;
+    ret = 1;
 
  cleanup:
     VIR_FREE(buf);
@@ -12477,7 +12483,7 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
 
     /* for inactive domains we have to peek into the files */
     if (!virDomainObjIsActive(vm)) {
-        if ((qemuStorageLimitsRefresh(driver, cfg, vm, disk->src)) < 0)
+        if ((qemuStorageLimitsRefresh(driver, cfg, vm, disk->src, false)) < 0)
             goto endjob;
 
         info->capacity = disk->src->capacity;
@@ -21295,7 +21301,7 @@ qemuDomainGetStatsOneBlockFallback(virQEMUDriverPtr driver,
     if (virStorageSourceIsEmpty(src))
         return 0;
 
-    if (qemuStorageLimitsRefresh(driver, cfg, dom, src) < 0) {
+    if (qemuStorageLimitsRefresh(driver, cfg, dom, src, false) < 0) {
         virResetLastError();
         return 0;
     }
