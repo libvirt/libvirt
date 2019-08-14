@@ -2141,9 +2141,9 @@ remoteDispatchProbeURI(bool readonly,
             "vbox",
 # endif
         };
-        size_t i;
+        ssize_t i;
 
-        for (i = 0; i < ARRAY_CARDINALITY(drivers) && !*probeduri; i++) {
+        for (i = 0; i < (ssize_t) ARRAY_CARDINALITY(drivers) && !*probeduri; i++) {
             VIR_AUTOFREE(char *) daemonname = NULL;
             VIR_AUTOFREE(char *) daemonpath = NULL;
 
@@ -2187,9 +2187,9 @@ remoteDispatchProbeURI(bool readonly,
             "vz",
 # endif
         };
-        size_t i;
+        ssize_t i;
 
-        for (i = 0; i < ARRAY_CARDINALITY(drivers) && !*probeduri; i++) {
+        for (i = 0; i < (ssize_t) ARRAY_CARDINALITY(drivers) && !*probeduri; i++) {
             VIR_AUTOFREE(char *) sockname = NULL;
 
             if (virAsprintf(&sockname, "%s/run/libvirt/virt%sd-%s",
