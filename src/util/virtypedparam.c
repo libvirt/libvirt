@@ -209,7 +209,8 @@ virTypedParameterToString(virTypedParameterPtr param)
 static int
 virTypedParameterAssignValueVArgs(virTypedParameterPtr param,
                                   int type,
-                                  va_list ap)
+                                  va_list ap,
+                                  bool copystr)
 {
     param->type = type;
     switch (type) {
@@ -232,7 +233,13 @@ virTypedParameterAssignValueVArgs(virTypedParameterPtr param,
         param->value.b = !!va_arg(ap, int);
         break;
     case VIR_TYPED_PARAM_STRING:
-        param->value.s = va_arg(ap, char *);
+        if (copystr) {
+            if (VIR_STRDUP(param->value.s, va_arg(ap, char *)) < 0)
+                return -1;
+        } else {
+            param->value.s = va_arg(ap, char *);
+        }
+
         if (!param->value.s && VIR_STRDUP(param->value.s, "") < 0)
             return -1;
         break;
@@ -265,7 +272,7 @@ virTypedParameterAssign(virTypedParameterPtr param, const char *name,
     }
 
     va_start(ap, type);
-    ret = virTypedParameterAssignValueVArgs(param, type, ap);
+    ret = virTypedParameterAssignValueVArgs(param, type, ap, false);
     va_end(ap);
 
     return ret;
