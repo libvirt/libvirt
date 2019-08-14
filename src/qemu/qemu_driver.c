@@ -12247,6 +12247,7 @@ qemuDomainMemoryPeek(virDomainPtr dom,
  * @src: storage source data
  * @ret_fd: pointer to return open'd file descriptor
  * @ret_sb: pointer to return stat buffer (local or remote)
+ * @skipInaccessible: Don't report error if files are not accessible
  *
  * For local storage, open the file using qemuOpenFile and then use
  * fstat() to grab the stat struct data for the caller.
@@ -12254,7 +12255,9 @@ qemuDomainMemoryPeek(virDomainPtr dom,
  * For remote storage, attempt to access the file and grab the stat
  * struct data if the remote connection supports it.
  *
- * Returns 0 on success with @ret_fd and @ret_sb populated, -1 on failure
+ * Returns 1 if @src was successfully opened (@ret_fd and @ret_sb is populated),
+ * 0 if @src can't be opened and @skipInaccessible is true (no errors are
+ * reported) or -1 otherwise (errors are reported).
  */
 static int
 qemuDomainStorageOpenStat(virQEMUDriverPtr driver,
@@ -12262,9 +12265,13 @@ qemuDomainStorageOpenStat(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
                           virStorageSourcePtr src,
                           int *ret_fd,
-                          struct stat *ret_sb)
+                          struct stat *ret_sb,
+                          bool skipInaccessible)
 {
     if (virStorageSourceIsLocalStorage(src)) {
+        if (skipInaccessible && !virFileExists(src->path))
+            return 0;
+
         if ((*ret_fd = qemuOpenFile(driver, vm, src->path, O_RDONLY,
                                     NULL)) < 0)
             return -1;
@@ -12275,6 +12282,9 @@ qemuDomainStorageOpenStat(virQEMUDriverPtr driver,
             return -1;
         }
     } else {
+        if (skipInaccessible && virStorageFileSupportsBackingChainTraversal(src) <= 0)
+            return 0;
+
         if (virStorageFileInitAs(src, cfg->user, cfg->group) < 0)
             return -1;
 
@@ -12286,7 +12296,7 @@ qemuDomainStorageOpenStat(virQEMUDriverPtr driver,
         }
     }
 
-    return 0;
+    return 1;
 }
 
 
@@ -12321,7 +12331,7 @@ qemuDomainStorageUpdatePhysical(virQEMUDriverPtr driver,
     if (virStorageSourceIsEmpty(src))
         return 0;
 
-    if (qemuDomainStorageOpenStat(driver, cfg, vm, src, &fd, &sb) < 0)
+    if (qemuDomainStorageOpenStat(driver, cfg, vm, src, &fd, &sb, false) < 0)
         return -1;
 
     ret = virStorageSourceUpdatePhysicalSize(src, fd, &sb);
@@ -12372,7 +12382,7 @@ qemuStorageLimitsRefresh(virQEMUDriverPtr driver,
     char *buf = NULL;
     ssize_t len;
 
-    if (qemuDomainStorageOpenStat(driver, cfg, vm, src, &fd, &sb) < 0)
+    if (qemuDomainStorageOpenStat(driver, cfg, vm, src, &fd, &sb, false) < 0)
         goto cleanup;
 
     if (virStorageSourceIsLocalStorage(src)) {
