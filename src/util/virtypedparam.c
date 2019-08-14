@@ -205,24 +205,12 @@ virTypedParameterToString(virTypedParameterPtr param)
     return value;
 }
 
-/* Assign name, type, and the appropriately typed arg to param; in the
- * case of a string, the caller is assumed to have malloc'd a string,
- * or can pass NULL to have this function malloc an empty string.
- * Return 0 on success, -1 after an error message on failure.  */
-int
-virTypedParameterAssign(virTypedParameterPtr param, const char *name,
-                        int type, ...)
+
+static int
+virTypedParameterAssignValueVArgs(virTypedParameterPtr param,
+                                  int type,
+                                  va_list ap)
 {
-    va_list ap;
-    int ret = -1;
-
-    va_start(ap, type);
-
-    if (virStrcpyStatic(param->field, name) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, _("Field name '%s' too long"),
-                       name);
-        goto cleanup;
-    }
     param->type = type;
     switch (type) {
     case VIR_TYPED_PARAM_INT:
@@ -246,17 +234,40 @@ virTypedParameterAssign(virTypedParameterPtr param, const char *name,
     case VIR_TYPED_PARAM_STRING:
         param->value.s = va_arg(ap, char *);
         if (!param->value.s && VIR_STRDUP(param->value.s, "") < 0)
-            goto cleanup;
+            return -1;
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected type %d for field %s"), type, name);
-        goto cleanup;
+                       _("unexpected type %d for field %s"), type,
+                       NULLSTR(param->field));
+        return -1;
     }
 
-    ret = 0;
- cleanup:
+    return 0;
+}
+
+
+/* Assign name, type, and the appropriately typed arg to param; in the
+ * case of a string, the caller is assumed to have malloc'd a string,
+ * or can pass NULL to have this function malloc an empty string.
+ * Return 0 on success, -1 after an error message on failure.  */
+int
+virTypedParameterAssign(virTypedParameterPtr param, const char *name,
+                        int type, ...)
+{
+    va_list ap;
+    int ret = -1;
+
+    if (virStrcpyStatic(param->field, name) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("Field name '%s' too long"),
+                       name);
+        return -1;
+    }
+
+    va_start(ap, type);
+    ret = virTypedParameterAssignValueVArgs(param, type, ap);
     va_end(ap);
+
     return ret;
 }
 
