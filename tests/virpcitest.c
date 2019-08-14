@@ -106,12 +106,12 @@ testVirPCIDeviceDetach(const void *opaque ATTRIBUTE_UNUSED)
         if (!(dev[i] = virPCIDeviceNew(0, 0, i + 1, 0)))
             goto cleanup;
 
-        virPCIDeviceSetStubDriver(dev[i], VIR_PCI_STUB_DRIVER_KVM);
+        virPCIDeviceSetStubDriver(dev[i], VIR_PCI_STUB_DRIVER_VFIO);
 
         if (virPCIDeviceDetach(dev[i], activeDevs, inactiveDevs) < 0)
             goto cleanup;
 
-        if (testVirPCIDeviceCheckDriver(dev[i], "pci-stub") < 0)
+        if (testVirPCIDeviceCheckDriver(dev[i], "vfio-pci") < 0)
             goto cleanup;
 
         CHECK_LIST_COUNT(activeDevs, 0);
@@ -147,7 +147,7 @@ testVirPCIDeviceReset(const void *opaque ATTRIBUTE_UNUSED)
         if (!(dev[i] = virPCIDeviceNew(0, 0, i + 1, 0)))
             goto cleanup;
 
-        virPCIDeviceSetStubDriver(dev[i], VIR_PCI_STUB_DRIVER_KVM);
+        virPCIDeviceSetStubDriver(dev[i], VIR_PCI_STUB_DRIVER_VFIO);
 
         if (virPCIDeviceReset(dev[i], activeDevs, inactiveDevs) < 0)
             goto cleanup;
@@ -187,7 +187,7 @@ testVirPCIDeviceReattach(const void *opaque ATTRIBUTE_UNUSED)
         CHECK_LIST_COUNT(activeDevs, 0);
         CHECK_LIST_COUNT(inactiveDevs, i + 1);
 
-        virPCIDeviceSetStubDriver(dev[i], VIR_PCI_STUB_DRIVER_KVM);
+        virPCIDeviceSetStubDriver(dev[i], VIR_PCI_STUB_DRIVER_VFIO);
     }
 
     CHECK_LIST_COUNT(activeDevs, 0);
@@ -245,7 +245,7 @@ testVirPCIDeviceDetachSingle(const void *opaque)
     if (!dev)
         goto cleanup;
 
-    virPCIDeviceSetStubDriver(dev, VIR_PCI_STUB_DRIVER_KVM);
+    virPCIDeviceSetStubDriver(dev, VIR_PCI_STUB_DRIVER_VFIO);
 
     if (virPCIDeviceDetach(dev, NULL, NULL) < 0)
         goto cleanup;
@@ -405,7 +405,7 @@ mymain(void)
     /* Detach an unbound device */
     DO_TEST_PCI_DRIVER(0, 0x0a, 2, 0, NULL);
     DO_TEST_PCI(testVirPCIDeviceDetachSingle, 0, 0x0a, 2, 0);
-    DO_TEST_PCI_DRIVER(0, 0x0a, 2, 0, "pci-stub");
+    DO_TEST_PCI_DRIVER(0, 0x0a, 2, 0, "vfio-pci");
 
     /* Reattach an unknown unbound device */
     DO_TEST_PCI_DRIVER(0, 0x0a, 3, 0, NULL);
