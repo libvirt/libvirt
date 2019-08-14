@@ -21301,7 +21301,7 @@ qemuDomainGetStatsOneBlockFallback(virQEMUDriverPtr driver,
     if (virStorageSourceIsEmpty(src))
         return 0;
 
-    if (qemuStorageLimitsRefresh(driver, cfg, dom, src, false) < 0) {
+    if (qemuStorageLimitsRefresh(driver, cfg, dom, src, true) <= 0) {
         virResetLastError();
         return 0;
     }
