@@ -167,6 +167,7 @@ CI_ENGINE_ARGS = \
 	--volume $(CI_HOST_SRCDIR):$(CI_CONT_SRCDIR):z \
 	--workdir $(CI_CONT_SRCDIR) \
 	--ulimit nofile=$(CI_ULIMIT_FILES):$(CI_ULIMIT_FILES) \
+	--cap-add=SYS_PTRACE \
 	$(NULL)
 
 ci-check-engine:
