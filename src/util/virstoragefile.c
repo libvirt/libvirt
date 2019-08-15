@@ -2664,32 +2664,31 @@ static int
 virStorageSourceParseBackingURI(virStorageSourcePtr src,
                                 const char *uristr)
 {
-    virURIPtr uri = NULL;
+    VIR_AUTOPTR(virURI) uri = NULL;
     const char *path = NULL;
-    int ret = -1;
     VIR_AUTOSTRINGLIST scheme = NULL;
 
     if (!(uri = virURIParse(uristr))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to parse backing file location '%s'"),
                        uristr);
-        goto cleanup;
+        return -1;
     }
 
     if (VIR_ALLOC(src->hosts) < 0)
-        goto cleanup;
+        return -1;
 
     src->nhosts = 1;
 
     if (!(scheme = virStringSplit(uri->scheme, "+", 2)))
-        goto cleanup;
+        return -1;
 
     if (!scheme[0] ||
         (src->protocol = virStorageNetProtocolTypeFromString(scheme[0])) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("invalid backing protocol '%s'"),
                        NULLSTR(scheme[0]));
-        goto cleanup;
+        return -1;
     }
 
     if (scheme[1] &&
@@ -2697,13 +2696,13 @@ virStorageSourceParseBackingURI(virStorageSourcePtr src,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("invalid protocol transport type '%s'"),
                        scheme[1]);
-        goto cleanup;
+        return -1;
     }
 
     /* handle socket stored as a query */
     if (uri->query) {
         if (VIR_STRDUP(src->hosts->socket, STRSKIP(uri->query, "socket=")) < 0)
-            goto cleanup;
+            return -1;
     }
 
     /* XXX We currently don't support auth, so don't bother parsing it */
@@ -2725,7 +2724,7 @@ virStorageSourceParseBackingURI(virStorageSourcePtr src,
         path = NULL;
 
     if (VIR_STRDUP(src->path, path) < 0)
-        goto cleanup;
+        return -1;
 
     if (src->protocol == VIR_STORAGE_NET_PROTOCOL_GLUSTER) {
         char *tmp;
@@ -2733,7 +2732,7 @@ virStorageSourceParseBackingURI(virStorageSourcePtr src,
         if (!src->path) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("missing volume name and path for gluster volume"));
-            goto cleanup;
+            return -1;
         }
 
         if (!(tmp = strchr(src->path, '/')) ||
@@ -2741,13 +2740,13 @@ virStorageSourceParseBackingURI(virStorageSourcePtr src,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("missing volume name or file name in "
                              "gluster source path '%s'"), src->path);
-            goto cleanup;
+            return -1;
         }
 
         src->volume = src->path;
 
         if (VIR_STRDUP(src->path, tmp + 1) < 0)
-            goto cleanup;
+            return -1;
 
         tmp[0] = '\0';
     }
@@ -2755,13 +2754,9 @@ virStorageSourceParseBackingURI(virStorageSourcePtr src,
     src->hosts->port = uri->port;
 
     if (VIR_STRDUP(src->hosts->name, uri->server) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    virURIFree(uri);
-    return ret;
+    return 0;
 }
 
 
