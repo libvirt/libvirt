@@ -444,7 +444,9 @@ int virStorageSourceUpdateCapacity(virStorageSourcePtr src,
                                    char *buf, ssize_t len,
                                    bool probe);
 
-virStorageSourcePtr virStorageSourceNewFromBacking(virStorageSourcePtr parent);
+int virStorageSourceNewFromBacking(virStorageSourcePtr parent,
+                                   virStorageSourcePtr *backing);
+
 virStorageSourcePtr virStorageSourceCopy(const virStorageSource *src,
                                          bool backingChain)
     ATTRIBUTE_NONNULL(1);

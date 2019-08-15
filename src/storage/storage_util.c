@@ -3391,7 +3391,7 @@ storageBackendProbeTarget(virStorageSourcePtr target,
         return -1;
 
     if (meta->backingStoreRaw) {
-        if (!(target->backingStore = virStorageSourceNewFromBacking(meta)))
+        if (virStorageSourceNewFromBacking(meta, &target->backingStore) < 0)
             return -1;
 
         target->backingStore->format = backingStoreFormat;

@@ -3681,12 +3681,26 @@ virStorageSourceNewFromBackingAbsolute(const char *path)
 }
 
 
-virStorageSourcePtr
-virStorageSourceNewFromBacking(virStorageSourcePtr parent)
+/**
+ * virStorageSourceNewFromBacking:
+ * @parent: storage source parent
+ * @backing: returned backing store definition
+ *
+ * Creates a storage source which describes the backing image of @parent and
+ * fills it into @backing depending on the 'backingStoreRaw' property of @parent
+ * and other data. Note that for local storage this function accesses the file
+ * to update the actual type of the backing store.
+ *
+ * Returns 0 and fills @backing, or -1 on error (with appropriate error reported).
+ */
+int
+virStorageSourceNewFromBacking(virStorageSourcePtr parent,
+                               virStorageSourcePtr *backing)
 {
     struct stat st;
-    virStorageSourcePtr ret = NULL;
     VIR_AUTOUNREF(virStorageSourcePtr) def = NULL;
+
+    *backing = NULL;
 
     if (virStorageIsRelative(parent->backingStoreRaw))
         def = virStorageSourceNewFromBackingRelative(parent,
@@ -3694,29 +3708,30 @@ virStorageSourceNewFromBacking(virStorageSourcePtr parent)
     else
         def = virStorageSourceNewFromBackingAbsolute(parent->backingStoreRaw);
 
-    if (def) {
-        /* possibly update local type */
-        if (def->type == VIR_STORAGE_TYPE_FILE) {
-            if (stat(def->path, &st) == 0) {
-                if (S_ISDIR(st.st_mode)) {
-                    def->type = VIR_STORAGE_TYPE_DIR;
-                    def->format = VIR_STORAGE_FILE_DIR;
-                } else if (S_ISBLK(st.st_mode)) {
-                    def->type = VIR_STORAGE_TYPE_BLOCK;
-                }
+    if (!def)
+        return -1;
+
+    /* possibly update local type */
+    if (def->type == VIR_STORAGE_TYPE_FILE) {
+        if (stat(def->path, &st) == 0) {
+            if (S_ISDIR(st.st_mode)) {
+                def->type = VIR_STORAGE_TYPE_DIR;
+                def->format = VIR_STORAGE_FILE_DIR;
+            } else if (S_ISBLK(st.st_mode)) {
+                def->type = VIR_STORAGE_TYPE_BLOCK;
             }
         }
-
-        /* copy parent's labelling and other top level stuff */
-        if (virStorageSourceInitChainElement(def, parent, true) < 0)
-            return NULL;
-
-        def->readonly = true;
-        def->detected = true;
     }
 
-    VIR_STEAL_PTR(ret, def);
-    return ret;
+    /* copy parent's labelling and other top level stuff */
+    if (virStorageSourceInitChainElement(def, parent, true) < 0)
+        return -1;
+
+    def->readonly = true;
+    def->detected = true;
+
+    VIR_STEAL_PTR(*backing, def);
+    return 0;
 }
 
 
@@ -4893,7 +4908,7 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
         goto cleanup;
 
     if (src->backingStoreRaw) {
-        if (!(backingStore = virStorageSourceNewFromBacking(src)))
+        if (virStorageSourceNewFromBacking(src, &backingStore) < 0)
             goto cleanup;
 
         if (backingFormat == VIR_STORAGE_FILE_AUTO)
