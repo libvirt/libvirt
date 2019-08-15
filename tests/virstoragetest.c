@@ -603,6 +603,7 @@ testPathRelative(const void *args)
 struct testBackingParseData {
     const char *backing;
     const char *expect;
+    int rv;
 };
 
 static int
@@ -612,13 +613,20 @@ testBackingParse(const void *args)
     VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     VIR_AUTOFREE(char *) xml = NULL;
     VIR_AUTOUNREF(virStorageSourcePtr) src = NULL;
+    int rc;
+    int erc = data->rv;
 
-    if (virStorageSourceNewFromBackingAbsolute(data->backing, &src) < 0) {
-        if (!data->expect)
-            return 0;
-        else
-            return -1;
+    /* expect failure return code with NULL expected data */
+    if (!data->expect)
+        erc = -1;
+
+    if ((rc = virStorageSourceNewFromBackingAbsolute(data->backing, &src)) != erc) {
+        fprintf(stderr, "expected return value '%d' actual '%d'\n", erc, rc);
+        return -1;
     }
+
+    if (!src)
+        return 0;
 
     if (src && !data->expect) {
         fprintf(stderr, "parsing of backing store string '%s' should "
@@ -1225,14 +1233,18 @@ mymain(void)
 
     virTestCounterReset("Backing store parse ");
 
-#define TEST_BACKING_PARSE(bck, xml) \
+#define TEST_BACKING_PARSE_FULL(bck, xml, rc) \
     do { \
         data5.backing = bck; \
         data5.expect = xml; \
+        data5.rv = rc; \
         if (virTestRun(virTestCounterNext(), \
                        testBackingParse, &data5) < 0) \
             ret = -1; \
     } while (0)
+
+#define TEST_BACKING_PARSE(bck, xml) \
+    TEST_BACKING_PARSE_FULL(bck, xml, 0)
 
     TEST_BACKING_PARSE("path", "<source file='path'/>\n");
     TEST_BACKING_PARSE("://", NULL);
