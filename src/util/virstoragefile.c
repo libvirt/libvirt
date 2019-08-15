@@ -3075,7 +3075,9 @@ virStorageSourceParseBackingJSONUriStr(virStorageSourcePtr src,
                                        const char *uri,
                                        int protocol)
 {
-    if (virStorageSourceParseBackingURI(src, uri) < 0)
+    int rc;
+
+    if ((rc = virStorageSourceParseBackingURI(src, uri)) < 0)
         return -1;
 
     if (src->protocol != protocol) {
@@ -3087,7 +3089,7 @@ virStorageSourceParseBackingJSONUriStr(virStorageSourcePtr src,
         return -1;
     }
 
-    return 0;
+    return rc;
 }
 
 
