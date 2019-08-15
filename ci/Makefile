@@ -65,6 +65,11 @@ CI_REUSE = 0
 CI_UID = $(shell id -u)
 CI_GID = $(shell id -g)
 
+# We also need the user's login and home directory to prepare the
+# environment the way some programs expect it
+CI_USER_LOGIN = $(shell echo "$$USER")
+CI_USER_HOME = $(shell echo "$$HOME")
+
 CI_ENGINE = auto
 # Container engine we are going to use, can be overridden per make
 # invocation, if it is not we try podman and then default to docker.
@@ -85,6 +90,10 @@ endif
 CI_PWDB_MOUNTS = \
 	--volume $(CI_SCRATCHDIR)/group:/etc/group:ro,z \
 	--volume $(CI_SCRATCHDIR)/passwd:/etc/passwd:ro,z \
+	$(NULL)
+
+CI_HOME_MOUNTS = \
+	--volume $(CI_SCRATCHDIR)/home:$(CI_USER_HOME):z \
 	$(NULL)
 
 # Docker containers can have very large ulimits
@@ -113,8 +122,8 @@ ifeq ($(CI_ENGINE),podman)
 	# your /etc/sub{u,g}id allow users to have more IDs.  Unless
 	# --keep-uid is supported, let's do this in a way that should
 	# work for everyone.
-	CI_MAX_UID = $(shell sed -n "s/^$$USER:[^:]\+://p" /etc/subuid)
-	CI_MAX_GID = $(shell sed -n "s/^$$USER:[^:]\+://p" /etc/subgid)
+	CI_MAX_UID = $(shell sed -n "s/^$(CI_USER_LOGIN):[^:]\+://p" /etc/subuid)
+	CI_MAX_GID = $(shell sed -n "s/^$(CI_USER_LOGIN):[^:]\+://p" /etc/subgid)
 	ifeq ($(CI_MAX_UID),)
 		CI_MAX_UID = 65536
 	endif
@@ -163,6 +172,7 @@ CI_ENGINE_ARGS = \
 	--tty \
 	$(CI_PODMAN_ARGS) \
 	$(CI_PWDB_MOUNTS) \
+	$(CI_HOME_MOUNTS) \
 	--volume $(CI_HOST_SRCDIR):$(CI_CONT_SRCDIR):z \
 	--workdir $(CI_CONT_SRCDIR) \
 	--ulimit nofile=$(CI_ULIMIT_FILES):$(CI_ULIMIT_FILES) \
@@ -179,6 +189,7 @@ ci-prepare-tree: ci-check-engine
 		mkdir -p $(CI_SCRATCHDIR); \
 		cp /etc/passwd $(CI_SCRATCHDIR); \
 		cp /etc/group $(CI_SCRATCHDIR); \
+		mkdir -p $(CI_SCRATCHDIR)/home; \
 		echo "Cloning $(CI_GIT_ROOT) to $(CI_HOST_SRCDIR)"; \
 		git clone $(CI_GIT_ARGS) $(CI_GIT_ROOT) $(CI_HOST_SRCDIR) || exit 1; \
 		for mod in $$(git submodule | awk '{ print $$2 }' | sed -E 's,^../,,g') ; \
