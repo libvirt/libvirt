@@ -7,3 +7,7 @@
 #  CI_PREPARE_SCRIPT=/path/to/your/prepare/script
 #
 # to make.
+#
+# Note that this script will have root privileges inside the
+# container, so it can be used for things like installing additional
+# packages.

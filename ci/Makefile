@@ -178,7 +178,6 @@ CI_GIT_ARGS = \
 #   --tty     Ensure we have ability to Ctrl-C the build
 CI_ENGINE_ARGS = \
 	--rm \
-	--user $(CI_UID):$(CI_GID) \
 	--interactive \
 	--tty \
 	$(CI_PODMAN_ARGS) \
@@ -219,13 +218,17 @@ ci-run-command@%: ci-prepare-tree
 	$(CI_ENGINE) run $(CI_ENGINE_ARGS) $(CI_IMAGE_PREFIX)$*$(CI_IMAGE_TAG) \
 		/bin/bash -c ' \
 		$(CI_USER_HOME)/prepare || exit 1; \
-		export CI_CONT_SRCDIR="$(CI_CONT_SRCDIR)"; \
-		export CI_CONT_BUILDDIR="$(CI_CONT_BUILDDIR)"; \
-		export CI_SMP="$(CI_SMP)"; \
-		export CI_CONFIGURE="$(CI_CONFIGURE)"; \
-		export CI_CONFIGURE_ARGS="$(CI_CONFIGURE_ARGS)"; \
-		export CI_MAKE_ARGS="$(CI_MAKE_ARGS)"; \
-		$(CI_COMMAND) || exit 1'
+		sudo \
+		  --login \
+		  --user="#$(CI_UID)" \
+		  --group="#$(CI_GID)" \
+		  CI_CONT_SRCDIR="$(CI_CONT_SRCDIR)" \
+		  CI_CONT_BUILDDIR="$(CI_CONT_BUILDDIR)" \
+		  CI_SMP="$(CI_SMP)" \
+		  CI_CONFIGURE="$(CI_CONFIGURE)" \
+		  CI_CONFIGURE_ARGS="$(CI_CONFIGURE_ARGS)" \
+		  CI_MAKE_ARGS="$(CI_MAKE_ARGS)" \
+		  $(CI_COMMAND) || exit 1'
 	@test "$(CI_CLEAN)" = "1" && rm -rf $(CI_SCRATCHDIR) || :
 
 ci-shell@%:
