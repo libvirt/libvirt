@@ -42,10 +42,6 @@ CI_MAKE_ARGS =
 # Any extra arguments to pass to configure
 CI_CONFIGURE_ARGS =
 
-# Avoid pulling submodules over the network by locally
-# cloning them
-CI_SUBMODULES = $(shell git submodule | awk '{ print $$2 }')
-
 # Location of the container images we're going to pull
 # Can be useful to overridde to use a locally built
 # image instead
@@ -186,7 +182,7 @@ ci-prepare-tree: ci-check-engine
 		cp /etc/group $(CI_SCRATCHDIR); \
 		echo "Cloning $(CI_GIT_ROOT) to $(CI_HOST_SRCDIR)"; \
 		git clone $(CI_GIT_ARGS) $(CI_GIT_ROOT) $(CI_HOST_SRCDIR) || exit 1; \
-		for mod in $(CI_SUBMODULES) ; \
+		for mod in $$(git submodule | awk '{ print $$2 }') ; \
 		do \
 			test -f $(CI_GIT_ROOT)/$$mod/.git || continue ; \
 			echo "Cloning $(CI_GIT_ROOT)/$$mod to $(CI_HOST_SRCDIR)/$$mod"; \
