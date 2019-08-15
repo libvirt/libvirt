@@ -41,6 +41,9 @@ CI_MAKE_ARGS =
 # Any extra arguments to pass to configure
 CI_CONFIGURE_ARGS =
 
+# Script containing build instructions
+CI_BUILD_SCRIPT = $(CI_ROOTDIR)/build.sh
+
 # Location of the container images we're going to pull
 # Can be useful to overridde to use a locally built
 # image instead
@@ -94,6 +97,10 @@ CI_PWDB_MOUNTS = \
 
 CI_HOME_MOUNTS = \
 	--volume $(CI_SCRATCHDIR)/home:$(CI_USER_HOME):z \
+	$(NULL)
+
+CI_SCRIPT_MOUNTS = \
+	--volume $(CI_SCRATCHDIR)/build:$(CI_USER_HOME)/build:z \
 	$(NULL)
 
 # Docker containers can have very large ulimits
@@ -173,6 +180,7 @@ CI_ENGINE_ARGS = \
 	$(CI_PODMAN_ARGS) \
 	$(CI_PWDB_MOUNTS) \
 	$(CI_HOME_MOUNTS) \
+	$(CI_SCRIPT_MOUNTS) \
 	--volume $(CI_HOST_SRCDIR):$(CI_CONT_SRCDIR):z \
 	--workdir $(CI_CONT_SRCDIR) \
 	--ulimit nofile=$(CI_ULIMIT_FILES):$(CI_ULIMIT_FILES) \
@@ -190,6 +198,8 @@ ci-prepare-tree: ci-check-engine
 		cp /etc/passwd $(CI_SCRATCHDIR); \
 		cp /etc/group $(CI_SCRATCHDIR); \
 		mkdir -p $(CI_SCRATCHDIR)/home; \
+		cp "$(CI_BUILD_SCRIPT)" $(CI_SCRATCHDIR)/build; \
+		chmod +x "$(CI_SCRATCHDIR)/build"; \
 		echo "Cloning $(CI_GIT_ROOT) to $(CI_HOST_SRCDIR)"; \
 		git clone $(CI_GIT_ARGS) $(CI_GIT_ROOT) $(CI_HOST_SRCDIR) || exit 1; \
 		for mod in $$(git submodule | awk '{ print $$2 }' | sed -E 's,^../,,g') ; \
@@ -200,38 +210,16 @@ ci-prepare-tree: ci-check-engine
 		done ; \
 	fi
 
-# $CONFIGURE_OPTS is a env that can optionally be set in the container,
-# populated at build time from the Dockerfile. A typical use case would
-# be to pass --host/--target args to trigger cross-compilation
-#
-# This can be augmented by make local args in $(CI_CONFIGURE_ARGS)
-#
-# gl_public_submodule_commit= to disable gnulib's submodule check
-# which breaks due to way we clone the submodules
 ci-build@%: ci-prepare-tree
 	$(CI_ENGINE) run $(CI_ENGINE_ARGS) $(CI_IMAGE_PREFIX)$*$(CI_IMAGE_TAG) \
-		/bin/bash -c '\
-		mkdir -p $(CI_CONT_BUILDDIR) || exit 1 ; \
-		cd $(CI_CONT_BUILDDIR) ; \
-		NOCONFIGURE=1 $(CI_CONT_SRCDIR)/autogen.sh || exit 1 ; \
-		$(CI_CONFIGURE) $${CONFIGURE_OPTS} $(CI_CONFIGURE_ARGS) ; \
-		if test $$? != 0 ; \
-		then \
-			test -f config.log && cat config.log ; \
-			exit 1 ; \
-		fi; \
-		find -name test-suite.log -delete ; \
-		export VIR_TEST_DEBUG=1 ; \
-		make -j$(CI_SMP) gl_public_submodule_commit= $(CI_MAKE_ARGS) ; \
-		if test $$? != 0 ; then \
-			LOGS=`find -name test-suite.log` ; \
-			if test "$${LOGS}" != "" ; then \
-				echo "=== LOG FILE(S) START ===" ; \
-				cat $${LOGS} ; \
-				echo "=== LOG FILE(S) END ===" ; \
-			fi ; \
-			exit 1 ;\
-		fi'
+		/bin/bash -c ' \
+		export CI_CONT_SRCDIR="$(CI_CONT_SRCDIR)"; \
+		export CI_CONT_BUILDDIR="$(CI_CONT_BUILDDIR)"; \
+		export CI_SMP="$(CI_SMP)"; \
+		export CI_CONFIGURE="$(CI_CONFIGURE)"; \
+		export CI_CONFIGURE_ARGS="$(CI_CONFIGURE_ARGS)"; \
+		export CI_MAKE_ARGS="$(CI_MAKE_ARGS)"; \
+		$(CI_USER_HOME)/build || exit 1'
 	@test "$(CI_CLEAN)" = "1" && rm -rf $(CI_SCRATCHDIR) || :
 
 ci-check@%:
