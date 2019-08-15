@@ -118,8 +118,8 @@ ifeq ($(CI_ENGINE),podman)
 	# your /etc/sub{u,g}id allow users to have more IDs.  Unless
 	# --keep-uid is supported, let's do this in a way that should
 	# work for everyone.
-	CI_MAX_UID = $(shell sed -n "s/^$USER:[^:]\+://p" /etc/subuid)
-	CI_MAX_GID = $(shell sed -n "s/^$USER:[^:]\+://p" /etc/subgid)
+	CI_MAX_UID = $(shell sed -n "s/^$$USER:[^:]\+://p" /etc/subuid)
+	CI_MAX_GID = $(shell sed -n "s/^$$USER:[^:]\+://p" /etc/subgid)
 	ifeq ($(CI_MAX_UID),)
 		CI_MAX_UID = 65536
 	endif
