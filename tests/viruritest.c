@@ -171,6 +171,7 @@ mymain(void)
 
     TEST_PARSE("test://example.com", "test", "example.com", 0, NULL, NULL, NULL, NULL, NULL);
     TEST_PARSE("test://foo@example.com", "test", "example.com", 0, NULL, NULL, NULL, "foo", NULL);
+    TEST_PARSE("test://foo:pass@example.com", "test", "example.com", 0, NULL, NULL, NULL, "foo:pass", NULL);
     TEST_PARSE("test://example.com:123", "test", "example.com", 123, NULL, NULL, NULL, NULL, NULL);
     TEST_PARSE("test://example.com:123/system?name=value#foo", "test", "example.com", 123, "/system", "name=value", "foo", NULL, params);
     TEST_PARSE("test://127.0.0.1:123/system", "test", "127.0.0.1", 123, "/system", NULL, NULL, NULL, NULL);
