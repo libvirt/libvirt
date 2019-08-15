@@ -11417,8 +11417,7 @@ qemuDomainBlockStatsGatherTotals(qemuBlockStatsPtr data,
                                  qemuBlockStatsPtr total)
 {
 #define QEMU_BLOCK_STAT_TOTAL(NAME) \
-    if (data->NAME > 0) \
-        total->NAME += data->NAME
+    total->NAME += data->NAME
 
     QEMU_BLOCK_STAT_TOTAL(wr_bytes);
     QEMU_BLOCK_STAT_TOTAL(wr_req);
@@ -11574,10 +11573,14 @@ qemuDomainBlockStats(virDomainPtr dom,
     if (qemuDomainBlocksStatsGather(driver, vm, path, false, &blockstats) < 0)
         goto endjob;
 
-    stats->rd_req = blockstats->rd_req;
-    stats->rd_bytes = blockstats->rd_bytes;
-    stats->wr_req = blockstats->wr_req;
-    stats->wr_bytes = blockstats->wr_bytes;
+    if (VIR_ASSIGN_IS_OVERFLOW(stats->rd_req, blockstats->rd_req) ||
+        VIR_ASSIGN_IS_OVERFLOW(stats->rd_bytes, blockstats->rd_bytes) ||
+        VIR_ASSIGN_IS_OVERFLOW(stats->wr_req, blockstats->wr_req) ||
+        VIR_ASSIGN_IS_OVERFLOW(stats->wr_bytes, blockstats->wr_bytes)) {
+        virReportError(VIR_ERR_OVERFLOW, "%s", _("statistic value too large"));
+        goto endjob;
+    }
+
     /* qemu doesn't report the error count */
     stats->errs = -1;
 
@@ -11639,9 +11642,15 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
     nstats = 0;
 
 #define QEMU_BLOCK_STATS_ASSIGN_PARAM(VAR, NAME) \
-    if (nstats < *nparams && (blockstats->VAR) != -1) { \
+    if (nstats < *nparams) { \
+        long long tmp; \
+        if (VIR_ASSIGN_IS_OVERFLOW(tmp, (blockstats->VAR))) { \
+            virReportError(VIR_ERR_OVERFLOW, \
+                           _("value of '%s' is too large"), NAME); \
+            goto endjob; \
+        } \
         if (virTypedParameterAssign(params + nstats, NAME, \
-                                    VIR_TYPED_PARAM_LLONG, (blockstats->VAR)) < 0) \
+                                    VIR_TYPED_PARAM_LLONG, tmp) < 0) \
             goto endjob; \
         nstats++; \
     }
@@ -21479,11 +21488,11 @@ do { \
     char param_name[VIR_TYPED_PARAM_FIELD_LENGTH]; \
     snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, \
              "block.%zu.%s", num, name); \
-    if (value >= 0 && virTypedParamsAddULLong(&(record)->params, \
-                                              &(record)->nparams, \
-                                              maxparams, \
-                                              param_name, \
-                                              value) < 0) \
+    if (virTypedParamsAddULLong(&(record)->params, \
+                                &(record)->nparams, \
+                                maxparams, \
+                                param_name, \
+                                value) < 0) \
         goto cleanup; \
 } while (0)
 
