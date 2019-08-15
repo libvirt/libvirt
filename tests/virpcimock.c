@@ -32,6 +32,7 @@
 
 static int (*real_access)(const char *path, int mode);
 static int (*real_open)(const char *path, int flags, ...);
+static int (*real___open_2)(const char *path, int flags);
 static int (*real_close)(int fd);
 static DIR * (*real_opendir)(const char *name);
 static char *(*real_virFileCanonicalizePath)(const char *path);
@@ -805,6 +806,7 @@ init_syms(void)
 
     VIR_MOCK_REAL_INIT(access);
     VIR_MOCK_REAL_INIT(open);
+    VIR_MOCK_REAL_INIT(__open_2);
     VIR_MOCK_REAL_INIT(close);
     VIR_MOCK_REAL_INIT(opendir);
     VIR_MOCK_REAL_INIT(virFileCanonicalizePath);
@@ -931,6 +933,33 @@ open(const char *path, int flags, ...)
     VIR_FREE(newpath);
     return ret;
 }
+
+
+int
+__open_2(const char *path, int flags)
+{
+    VIR_AUTOFREE(char *) newpath = NULL;
+    int ret;
+
+    init_syms();
+
+    if (STRPREFIX(path, SYSFS_PCI_PREFIX) &&
+        getrealpath(&newpath, path) < 0)
+        return -1;
+
+    ret = real___open_2(newpath ? newpath : path, flags);
+
+    /* Catch both: /sys/bus/pci/drivers/... and
+     * /sys/bus/pci/device/.../driver/... */
+    if (ret >= 0 && STRPREFIX(path, SYSFS_PCI_PREFIX) &&
+        strstr(path, "driver") && add_fd(ret, path) < 0) {
+        real_close(ret);
+        ret = -1;
+    }
+
+    return ret;
+}
+
 
 DIR *
 opendir(const char *path)
