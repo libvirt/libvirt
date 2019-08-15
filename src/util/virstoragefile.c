@@ -3624,16 +3624,12 @@ static int
 virStorageSourceParseBackingJSON(virStorageSourcePtr src,
                                  const char *json)
 {
-    virJSONValuePtr root = NULL;
-    int ret = -1;
+    VIR_AUTOPTR(virJSONValue) root = NULL;
 
     if (!(root = virJSONValueFromString(json)))
         return -1;
 
-    ret = virStorageSourceParseBackingJSONInternal(src, root);
-
-    virJSONValueFree(root);
-    return ret;
+    return virStorageSourceParseBackingJSONInternal(src, root);
 }
 
 
