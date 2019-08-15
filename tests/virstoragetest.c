@@ -613,7 +613,7 @@ testBackingParse(const void *args)
     VIR_AUTOFREE(char *) xml = NULL;
     VIR_AUTOUNREF(virStorageSourcePtr) src = NULL;
 
-    if (!(src = virStorageSourceNewFromBackingAbsolute(data->backing))) {
+    if (virStorageSourceNewFromBackingAbsolute(data->backing, &src) < 0) {
         if (!data->expect)
             return 0;
         else

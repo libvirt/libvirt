@@ -85,7 +85,8 @@ testBackingXMLjsonXML(const void *args)
     if (virAsprintf(&protocolwrapper, "json:%s", propsstr) < 0)
         return -1;
 
-    if (!(jsonsrc = virStorageSourceNewFromBackingAbsolute(protocolwrapper))) {
+    if (virStorageSourceNewFromBackingAbsolute(protocolwrapper,
+                                               &jsonsrc) < 0) {
         fprintf(stderr, "failed to parse disk json\n");
         return -1;
     }

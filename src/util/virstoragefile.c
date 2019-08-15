@@ -3635,22 +3635,32 @@ virStorageSourceParseBackingJSON(virStorageSourcePtr src,
 }
 
 
-virStorageSourcePtr
-virStorageSourceNewFromBackingAbsolute(const char *path)
+/**
+ * virStorageSourceNewFromBackingAbsolute
+ * @path: string representing absolute location of a storage source
+ * @src: filled with virStorageSource object representing @path
+ *
+ * Returns 0 on success and fills @src or -1 on error and reports appropriate
+ * error.
+ */
+int
+virStorageSourceNewFromBackingAbsolute(const char *path,
+                                       virStorageSourcePtr *src)
 {
     const char *json;
-    virStorageSourcePtr ret = NULL;
     int rc;
     VIR_AUTOUNREF(virStorageSourcePtr) def = NULL;
 
+    *src = NULL;
+
     if (!(def = virStorageSourceNew()))
-        return NULL;
+        return -1;
 
     if (virStorageIsFile(path)) {
         def->type = VIR_STORAGE_TYPE_FILE;
 
         if (VIR_STRDUP(def->path, path) < 0)
-            return NULL;
+            return -1;
     } else {
         def->type = VIR_STORAGE_TYPE_NETWORK;
 
@@ -3665,7 +3675,7 @@ virStorageSourceNewFromBackingAbsolute(const char *path)
             rc = virStorageSourceParseBackingColon(def, path);
 
         if (rc < 0)
-            return NULL;
+            return -1;
 
         virStorageSourceNetworkAssignDefaultPorts(def);
 
@@ -3678,8 +3688,8 @@ virStorageSourceNewFromBackingAbsolute(const char *path)
         }
     }
 
-    VIR_STEAL_PTR(ret, def);
-    return ret;
+    VIR_STEAL_PTR(*src, def);
+    return 0;
 }
 
 
@@ -3704,14 +3714,15 @@ virStorageSourceNewFromBacking(virStorageSourcePtr parent,
 
     *backing = NULL;
 
-    if (virStorageIsRelative(parent->backingStoreRaw))
-        def = virStorageSourceNewFromBackingRelative(parent,
-                                                     parent->backingStoreRaw);
-    else
-        def = virStorageSourceNewFromBackingAbsolute(parent->backingStoreRaw);
-
-    if (!def)
-        return -1;
+    if (virStorageIsRelative(parent->backingStoreRaw)) {
+        if (!(def = virStorageSourceNewFromBackingRelative(parent,
+                                                           parent->backingStoreRaw)))
+            return -1;
+    } else {
+        if (virStorageSourceNewFromBackingAbsolute(parent->backingStoreRaw,
+                                                   &def) < 0)
+            return -1;
+    }
 
     /* possibly update local type */
     if (def->type == VIR_STORAGE_TYPE_FILE) {

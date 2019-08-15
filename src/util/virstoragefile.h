@@ -473,7 +473,8 @@ int virStorageFileGetRelativeBackingPath(virStorageSourcePtr from,
 
 int virStorageFileCheckCompat(const char *compat);
 
-virStorageSourcePtr virStorageSourceNewFromBackingAbsolute(const char *path);
+int virStorageSourceNewFromBackingAbsolute(const char *path,
+                                           virStorageSourcePtr *src);
 
 bool virStorageSourceIsRelative(virStorageSourcePtr src);
 
