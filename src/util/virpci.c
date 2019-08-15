@@ -839,7 +839,7 @@ virPCIDeviceTrySecondaryBusReset(virPCIDevicePtr dev,
     /* Read the control register, set the reset flag, wait 200ms,
      * unset the reset flag and wait 200ms.
      */
-    ctl = virPCIDeviceRead16(dev, cfgfd, PCI_BRIDGE_CONTROL);
+    ctl = virPCIDeviceRead16(dev, parentfd, PCI_BRIDGE_CONTROL);
 
     virPCIDeviceWrite16(parent, parentfd, PCI_BRIDGE_CONTROL,
                         ctl | PCI_BRIDGE_CTL_RESET);
