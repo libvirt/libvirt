@@ -41,6 +41,9 @@ CI_MAKE_ARGS =
 # Any extra arguments to pass to configure
 CI_CONFIGURE_ARGS =
 
+# Script containing environment preparation steps
+CI_PREPARE_SCRIPT = $(CI_ROOTDIR)/prepare.sh
+
 # Script containing build instructions
 CI_BUILD_SCRIPT = $(CI_ROOTDIR)/build.sh
 
@@ -100,6 +103,7 @@ CI_HOME_MOUNTS = \
 	$(NULL)
 
 CI_SCRIPT_MOUNTS = \
+	--volume $(CI_SCRATCHDIR)/prepare:$(CI_USER_HOME)/prepare:z \
 	--volume $(CI_SCRATCHDIR)/build:$(CI_USER_HOME)/build:z \
 	$(NULL)
 
@@ -198,8 +202,9 @@ ci-prepare-tree: ci-check-engine
 		cp /etc/passwd $(CI_SCRATCHDIR); \
 		cp /etc/group $(CI_SCRATCHDIR); \
 		mkdir -p $(CI_SCRATCHDIR)/home; \
+		cp "$(CI_PREPARE_SCRIPT)" $(CI_SCRATCHDIR)/prepare; \
 		cp "$(CI_BUILD_SCRIPT)" $(CI_SCRATCHDIR)/build; \
-		chmod +x "$(CI_SCRATCHDIR)/build"; \
+		chmod +x "$(CI_SCRATCHDIR)/prepare" "$(CI_SCRATCHDIR)/build"; \
 		echo "Cloning $(CI_GIT_ROOT) to $(CI_HOST_SRCDIR)"; \
 		git clone $(CI_GIT_ARGS) $(CI_GIT_ROOT) $(CI_HOST_SRCDIR) || exit 1; \
 		for mod in $$(git submodule | awk '{ print $$2 }' | sed -E 's,^../,,g') ; \
@@ -213,6 +218,7 @@ ci-prepare-tree: ci-check-engine
 ci-run-command@%: ci-prepare-tree
 	$(CI_ENGINE) run $(CI_ENGINE_ARGS) $(CI_IMAGE_PREFIX)$*$(CI_IMAGE_TAG) \
 		/bin/bash -c ' \
+		$(CI_USER_HOME)/prepare || exit 1; \
 		export CI_CONT_SRCDIR="$(CI_CONT_SRCDIR)"; \
 		export CI_CONT_BUILDDIR="$(CI_CONT_BUILDDIR)"; \
 		export CI_SMP="$(CI_SMP)"; \

@@ -52,6 +52,7 @@ EXTRA_DIST = \
   build-aux/vc-list-files \
   ci/Makefile \
   ci/build.sh \
+  ci/prepare.sh \
   $(NULL)
 
 pkgconfigdir = $(libdir)/pkgconfig
