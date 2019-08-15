@@ -18,7 +18,7 @@ CI_HOST_SRCDIR = $(CI_SCRATCHDIR)/src
 # The directory holding the source inside the
 # container, i.e. where we want to expose
 # the $(CI_HOST_SRCDIR) directory from the host
-CI_CONT_SRCDIR = /src
+CI_CONT_SRCDIR = $(CI_USER_HOME)/libvirt
 
 # Relative directory to perform the build in. This
 # defaults to using a separate build dir, but can be
