@@ -308,7 +308,7 @@
 
   <xsl:template match="typedef[@type = 'enum']">
     <xsl:variable name="name" select="string(@name)"/>
-    <h3><a name="{$name}"><code><xsl:value-of select="$name"/></code></a></h3>
+    <h3><a id="{$name}"><code><xsl:value-of select="$name"/></code></a></h3>
     <div class="api">
       <pre>
         <span class="keyword">enum</span><xsl:text> </xsl:text>
@@ -357,7 +357,7 @@
   </xsl:template>
 
   <xsl:template match="struct">
-    <h3><a name="{@name}"><code><xsl:value-of select="@name"/></code></a></h3>
+    <h3><a id="{@name}"><code><xsl:value-of select="@name"/></code></a></h3>
     <div class="api">
       <pre>
         <span class="keyword">struct </span>
@@ -447,7 +447,7 @@
 
   <xsl:template match="macro">
     <xsl:variable name="name" select="string(@name)"/>
-    <h3><a name="{$name}"><code><xsl:value-of select="$name"/></code></a></h3>
+    <h3><a id="{$name}"><code><xsl:value-of select="$name"/></code></a></h3>
     <pre class="api"><span class="directive">#define</span><xsl:text> </xsl:text><xsl:value-of select="$name"/></pre>
     <div class="description">
     <xsl:call-template name="formattext">
@@ -558,7 +558,7 @@
     <xsl:variable name="nlen" select="string-length($name)"/>
     <xsl:variable name="tlen" select="string-length(return/@type)"/>
     <xsl:variable name="blen" select="(($nlen + 8) - (($nlen + 8) mod 8)) + (($tlen + 8) - (($tlen + 8) mod 8))"/>
-    <h3><a name="{$name}"><code><xsl:value-of select="$name"/></code></a></h3>
+    <h3><a id="{$name}"><code><xsl:value-of select="$name"/></code></a></h3>
     <pre class="api">
     <span class="keyword">typedef</span><xsl:text> </xsl:text>
     <span class="type">
@@ -636,7 +636,7 @@
     <xsl:variable name="nlen" select="string-length($name)"/>
     <xsl:variable name="tlen" select="string-length(return/@type)"/>
     <xsl:variable name="blen" select="(($nlen + 8) - (($nlen + 8) mod 8)) + (($tlen + 8) - (($tlen + 8) mod 8))"/>
-    <h3><a name="{$name}"><code><xsl:value-of select="$name"/></code></a></h3>
+    <h3><a id="{$name}"><code><xsl:value-of select="$name"/></code></a></h3>
     <pre class="api">
     <span class="type">
       <xsl:call-template name="dumptext">
@@ -783,16 +783,16 @@
         <h2>Description</h2>
 
         <xsl:if test="count(exports[@type='macro']) > 0">
-          <h3><a name="macros">Macros</a></h3>
+          <h3><a id="macros">Macros</a></h3>
           <xsl:apply-templates select="exports[@type='macro']">
             <xsl:sort select='@symbol'/>
           </xsl:apply-templates>
         </xsl:if>
-        <h3><a name="types">Types</a></h3>
+        <h3><a id="types">Types</a></h3>
         <xsl:apply-templates select="exports[@type='typedef']">
           <xsl:sort select='@symbol'/>
         </xsl:apply-templates>
-        <h3><a name="functions">Functions</a></h3>
+        <h3><a id="functions">Functions</a></h3>
         <xsl:apply-templates select="exports[@type='function']">
           <xsl:sort select='@symbol'/>
         </xsl:apply-templates>
