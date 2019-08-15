@@ -609,28 +609,27 @@ static int
 testBackingParse(const void *args)
 {
     const struct testBackingParseData *data = args;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-    int ret = -1;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     VIR_AUTOFREE(char *) xml = NULL;
     VIR_AUTOUNREF(virStorageSourcePtr) src = NULL;
 
     if (!(src = virStorageSourceNewFromBackingAbsolute(data->backing))) {
         if (!data->expect)
-            ret = 0;
-
-        goto cleanup;
+            return 0;
+        else
+            return -1;
     }
 
     if (src && !data->expect) {
         fprintf(stderr, "parsing of backing store string '%s' should "
                         "have failed\n", data->backing);
-        goto cleanup;
+        return -1;
     }
 
     if (virDomainDiskSourceFormat(&buf, src, "source", 0, false, 0, NULL) < 0 ||
         !(xml = virBufferContentAndReset(&buf))) {
         fprintf(stderr, "failed to format disk source xml\n");
-        goto cleanup;
+        return -1;
     }
 
     if (STRNEQ(xml, data->expect)) {
@@ -638,15 +637,10 @@ testBackingParse(const void *args)
                         "expected storage source xml:\n%s\n"
                         "actual storage source xml:\n%s\n",
                         data->backing, data->expect, xml);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    virBufferFreeAndReset(&buf);
-
-    return ret;
+    return 0;
 }
 
 
