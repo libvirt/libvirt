@@ -3592,22 +3592,21 @@ static int
 virStorageSourceParseBackingJSONInternal(virStorageSourcePtr src,
                                          virJSONValuePtr json)
 {
-    virJSONValuePtr deflattened = NULL;
+    VIR_AUTOPTR(virJSONValue) deflattened = NULL;
     virJSONValuePtr file;
     const char *drvname;
     size_t i;
-    int ret = -1;
     VIR_AUTOFREE(char *) str = NULL;
 
     if (!(deflattened = virJSONValueObjectDeflatten(json)))
-        goto cleanup;
+        return -1;
 
     if (!(file = virJSONValueObjectGetObject(deflattened, "file"))) {
         str = virJSONValueToString(json, false);
         virReportError(VIR_ERR_INVALID_ARG,
                        _("JSON backing volume definition '%s' lacks 'file' object"),
                        NULLSTR(str));
-        goto cleanup;
+        return -1;
     }
 
     if (!(drvname = virJSONValueObjectGetString(file, "driver"))) {
@@ -3615,23 +3614,18 @@ virStorageSourceParseBackingJSONInternal(virStorageSourcePtr src,
         virReportError(VIR_ERR_INVALID_ARG,
                        _("JSON backing volume definition '%s' lacks driver name"),
                        NULLSTR(str));
-        goto cleanup;
+        return -1;
     }
 
     for (i = 0; i < ARRAY_CARDINALITY(jsonParsers); i++) {
-        if (STREQ(drvname, jsonParsers[i].drvname)) {
-            ret = jsonParsers[i].func(src, file, jsonParsers[i].opaque);
-            goto cleanup;
-        }
+        if (STREQ(drvname, jsonParsers[i].drvname))
+            return jsonParsers[i].func(src, file, jsonParsers[i].opaque);
     }
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    _("missing parser implementation for JSON backing volume "
                      "driver '%s'"), drvname);
-
- cleanup:
-    virJSONValueFree(deflattened);
-    return ret;
+    return -1;
 }
 
 
