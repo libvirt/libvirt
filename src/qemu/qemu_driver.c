@@ -21477,20 +21477,6 @@ qemuDomainGetStatsInterface(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
             goto cleanup; \
     } while (0)
 
-/* expects a LL, but typed parameter must be ULL */
-#define QEMU_ADD_BLOCK_PARAM_LL(record, maxparams, num, name, value) \
-do { \
-    char param_name[VIR_TYPED_PARAM_FIELD_LENGTH]; \
-    snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, \
-             "block.%zu.%s", num, name); \
-    if (virTypedParamsAddULLong(&(record)->params, \
-                                &(record)->nparams, \
-                                maxparams, \
-                                param_name, \
-                                value) < 0) \
-        goto cleanup; \
-} while (0)
-
 #define QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, num, name, value) \
 do { \
     char param_name[VIR_TYPED_PARAM_FIELD_LENGTH]; \
@@ -21669,14 +21655,14 @@ qemuDomainGetStatsBlockExportFrontend(const char *frontendname,
         goto cleanup;
     }
 
-    QEMU_ADD_BLOCK_PARAM_LL(records, nrecords, recordnr, "rd.reqs", entry->rd_req);
-    QEMU_ADD_BLOCK_PARAM_LL(records, nrecords, recordnr, "rd.bytes", entry->rd_bytes);
-    QEMU_ADD_BLOCK_PARAM_LL(records, nrecords, recordnr, "rd.times", entry->rd_total_times);
-    QEMU_ADD_BLOCK_PARAM_LL(records, nrecords, recordnr, "wr.reqs", entry->wr_req);
-    QEMU_ADD_BLOCK_PARAM_LL(records, nrecords, recordnr, "wr.bytes", entry->wr_bytes);
-    QEMU_ADD_BLOCK_PARAM_LL(records, nrecords, recordnr, "wr.times", entry->wr_total_times);
-    QEMU_ADD_BLOCK_PARAM_LL(records, nrecords, recordnr, "fl.reqs", entry->flush_req);
-    QEMU_ADD_BLOCK_PARAM_LL(records, nrecords, recordnr, "fl.times", entry->flush_total_times);
+    QEMU_ADD_BLOCK_PARAM_ULL(records, nrecords, recordnr, "rd.reqs", entry->rd_req);
+    QEMU_ADD_BLOCK_PARAM_ULL(records, nrecords, recordnr, "rd.bytes", entry->rd_bytes);
+    QEMU_ADD_BLOCK_PARAM_ULL(records, nrecords, recordnr, "rd.times", entry->rd_total_times);
+    QEMU_ADD_BLOCK_PARAM_ULL(records, nrecords, recordnr, "wr.reqs", entry->wr_req);
+    QEMU_ADD_BLOCK_PARAM_ULL(records, nrecords, recordnr, "wr.bytes", entry->wr_bytes);
+    QEMU_ADD_BLOCK_PARAM_ULL(records, nrecords, recordnr, "wr.times", entry->wr_total_times);
+    QEMU_ADD_BLOCK_PARAM_ULL(records, nrecords, recordnr, "fl.reqs", entry->flush_req);
+    QEMU_ADD_BLOCK_PARAM_ULL(records, nrecords, recordnr, "fl.times", entry->flush_total_times);
 
     ret = 0;
  cleanup:
@@ -21870,8 +21856,6 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
     virObjectUnref(cfg);
     return ret;
 }
-
-#undef QEMU_ADD_BLOCK_PARAM_LL
 
 #undef QEMU_ADD_BLOCK_PARAM_ULL
 
