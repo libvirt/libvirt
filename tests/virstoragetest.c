@@ -1260,6 +1260,10 @@ mymain(void)
                        "<source protocol='http' name='file'>\n"
                        "  <host name='example.com' port='80'/>\n"
                        "</source>\n");
+    TEST_BACKING_PARSE_FULL("http://user:pass@example.com/file",
+                            "<source protocol='http' name='file'>\n"
+                            "  <host name='example.com' port='80'/>\n"
+                            "</source>\n", 1);
     TEST_BACKING_PARSE("rbd:testshare:id=asdf:mon_host=example.com",
                        "<source protocol='rbd' name='testshare'>\n"
                        "  <host name='example.com'/>\n"
@@ -1288,6 +1292,10 @@ mymain(void)
                        "<source protocol='nbd' name='exportname'>\n"
                        "  <host name='example.org' port='1234'/>\n"
                        "</source>\n");
+    TEST_BACKING_PARSE_FULL("iscsi://testuser:testpass@example.org:1234/exportname",
+                            "<source protocol='iscsi' name='exportname'>\n"
+                            "  <host name='example.org' port='1234'/>\n"
+                            "</source>\n", 1);
 
 #ifdef WITH_YAJL
     TEST_BACKING_PARSE("json:", NULL);
@@ -1492,6 +1500,26 @@ mymain(void)
                        "<source protocol='iscsi' name='iqn.2016-12.com.virttest:emulated-iscsi-noauth.target/0'>\n"
                        "  <host name='test.org' port='3260'/>\n"
                        "</source>\n");
+    TEST_BACKING_PARSE_FULL("json:{\"file\":{\"driver\":\"iscsi\","
+                                            "\"transport\":\"tcp\","
+                                            "\"portal\":\"test.org\","
+                                            "\"user\":\"testuser\","
+                                            "\"target\":\"iqn.2016-12.com.virttest:emulated-iscsi-auth.target\""
+                                            "}"
+                            "}",
+                       "<source protocol='iscsi' name='iqn.2016-12.com.virttest:emulated-iscsi-auth.target/0'>\n"
+                       "  <host name='test.org' port='3260'/>\n"
+                       "</source>\n", 1);
+    TEST_BACKING_PARSE_FULL("json:{\"file\":{\"driver\":\"iscsi\","
+                                            "\"transport\":\"tcp\","
+                                            "\"portal\":\"test.org\","
+                                            "\"password\":\"testpass\","
+                                            "\"target\":\"iqn.2016-12.com.virttest:emulated-iscsi-auth.target\""
+                                            "}"
+                            "}",
+                       "<source protocol='iscsi' name='iqn.2016-12.com.virttest:emulated-iscsi-auth.target/0'>\n"
+                       "  <host name='test.org' port='3260'/>\n"
+                       "</source>\n", 1);
     TEST_BACKING_PARSE("json:{\"file\":{\"driver\":\"iscsi\","
                                        "\"transport\":\"tcp\","
                                        "\"portal\":\"test.org:1234\","

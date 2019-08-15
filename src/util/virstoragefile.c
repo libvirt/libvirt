@@ -2705,8 +2705,6 @@ virStorageSourceParseBackingURI(virStorageSourcePtr src,
             return -1;
     }
 
-    /* XXX We currently don't support auth, so don't bother parsing it */
-
     /* uri->path is NULL if the URI does not contain slash after host:
      * transport://host:port */
     if (uri->path)
@@ -2755,6 +2753,10 @@ virStorageSourceParseBackingURI(virStorageSourcePtr src,
 
     if (VIR_STRDUP(src->hosts->name, uri->server) < 0)
         return -1;
+
+    /* Libvirt doesn't handle inline authentication. Make the caller aware. */
+    if (uri->user)
+        return 1;
 
     return 0;
 }
@@ -3312,6 +3314,11 @@ virStorageSourceParseBackingJSONiSCSI(virStorageSourcePtr src,
 
     if (virAsprintf(&src->path, "%s/%s", target, lun) < 0)
         return -1;
+
+    /* Libvirt doesn't handle inline authentication. Make the caller aware. */
+    if (virJSONValueObjectGetString(json, "user") ||
+        virJSONValueObjectGetString(json, "password"))
+        return 1;
 
     return 0;
 }
