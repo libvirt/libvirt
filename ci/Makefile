@@ -172,7 +172,6 @@ CI_GIT_ARGS = \
 #             as dev so that file ownership matches host
 #             instead of root:root
 #   --volume  to pass in the cloned git repo & config
-#   --workdir to set cwd to vpath build location
 #   --ulimit  lower files limit for performance reasons
 #   --interactive
 #   --tty     Ensure we have ability to Ctrl-C the build
@@ -185,7 +184,6 @@ CI_ENGINE_ARGS = \
 	$(CI_HOME_MOUNTS) \
 	$(CI_SCRIPT_MOUNTS) \
 	--volume $(CI_HOST_SRCDIR):$(CI_CONT_SRCDIR):z \
-	--workdir $(CI_CONT_SRCDIR) \
 	--ulimit nofile=$(CI_ULIMIT_FILES):$(CI_ULIMIT_FILES) \
 	--cap-add=SYS_PTRACE \
 	$(NULL)
