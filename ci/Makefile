@@ -1,16 +1,15 @@
 # -*- makefile -*-
 # vim: filetype=make
 
-# Figure out name and path to this file. This isn't
-# portable but we only care for modern GNU make
-CI_MAKEFILE = $(abspath $(firstword $(MAKEFILE_LIST)))
+# The root directory of the libvirt.git checkout
+CI_GIT_ROOT = $(shell git rev-parse --show-toplevel)
+
+# The root directory for all CI-related contents
+CI_ROOTDIR = $(CI_GIT_ROOT)/ci
 
 # The directory holding content on the host that we will
 # expose to the container.
-CI_SCRATCHDIR = $(shell pwd)/ci-tree
-
-# The root directory of the libvirt.git checkout
-CI_GIT_ROOT = $(shell git rev-parse --show-toplevel)
+CI_SCRATCHDIR = $(CI_ROOTDIR)/scratch
 
 # The directory holding the clone of the git repo that
 # we will expose to the container
@@ -182,7 +181,7 @@ ci-prepare-tree: ci-check-engine
 		cp /etc/group $(CI_SCRATCHDIR); \
 		echo "Cloning $(CI_GIT_ROOT) to $(CI_HOST_SRCDIR)"; \
 		git clone $(CI_GIT_ARGS) $(CI_GIT_ROOT) $(CI_HOST_SRCDIR) || exit 1; \
-		for mod in $$(git submodule | awk '{ print $$2 }') ; \
+		for mod in $$(git submodule | awk '{ print $$2 }' | sed -E 's,^../,,g') ; \
 		do \
 			test -f $(CI_GIT_ROOT)/$$mod/.git || continue ; \
 			echo "Cloning $(CI_GIT_ROOT)/$$mod to $(CI_HOST_SRCDIR)/$$mod"; \
@@ -225,7 +224,7 @@ ci-build@%: ci-prepare-tree
 	@test "$(CI_CLEAN)" = "1" && rm -rf $(CI_SCRATCHDIR) || :
 
 ci-check@%:
-	$(MAKE) -f $(CI_MAKEFILE) ci-build@$* CI_MAKE_ARGS="check"
+	$(MAKE) -C $(CI_ROOTDIR) ci-build@$* CI_MAKE_ARGS="check"
 
 ci-shell@%: ci-prepare-tree
 	$(CI_ENGINE) run $(CI_ENGINE_ARGS) $(CI_IMAGE_PREFIX)$*$(CI_IMAGE_TAG) /bin/bash

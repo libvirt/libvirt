@@ -35,7 +35,6 @@ EXTRA_DIST = \
   libvirt-qemu.pc.in \
   libvirt-lxc.pc.in \
   libvirt-admin.pc.in \
-  Makefile.ci \
   Makefile.nonreentrant \
   autogen.sh \
   cfg.mk \
@@ -51,6 +50,7 @@ EXTRA_DIST = \
   build-aux/prohibit-duplicate-header.pl \
   build-aux/useless-if-before-free \
   build-aux/vc-list-files \
+  ci/Makefile \
   $(NULL)
 
 pkgconfigdir = $(libdir)/pkgconfig
@@ -123,4 +123,4 @@ gen-AUTHORS:
 	fi
 
 ci-%:
-	$(MAKE) -f Makefile.ci $@
+	$(MAKE) -C ci/ $@

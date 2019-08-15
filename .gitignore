@@ -44,7 +44,7 @@
 /autom4te.cache
 /build-aux/*
 /build/
-/ci-tree/
+/ci/scratch/
 /confdefs.h
 /config.cache
 /config.guess

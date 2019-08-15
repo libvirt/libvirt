@@ -22,28 +22,28 @@ matrix:
         - IMAGE="ubuntu-18"
         - MAKE_ARGS="syntax-check distcheck"
       script:
-        - make -f Makefile.ci ci-build@$IMAGE CI_MAKE_ARGS="$MAKE_ARGS"
+        - make -C ci/ ci-build@$IMAGE CI_MAKE_ARGS="$MAKE_ARGS"
     - services:
         - docker
       env:
         - IMAGE="centos-7"
         - MAKE_ARGS="syntax-check distcheck"
       script:
-        - make -f Makefile.ci ci-build@$IMAGE CI_MAKE_ARGS="$MAKE_ARGS"
+        - make -C ci/ ci-build@$IMAGE CI_MAKE_ARGS="$MAKE_ARGS"
     - services:
         - docker
       env:
         - IMAGE="fedora-30"
         - MINGW="mingw32"
       script:
-        - make -f Makefile.ci ci-build@$IMAGE CI_CONFIGURE="$MINGW-configure"
+        - make -C ci/ ci-build@$IMAGE CI_CONFIGURE="$MINGW-configure"
     - services:
         - docker
       env:
         - IMAGE="fedora-30"
         - MINGW="mingw64"
       script:
-        - make -f Makefile.ci ci-build@$IMAGE CI_CONFIGURE="$MINGW-configure"
+        - make -C ci/ ci-build@$IMAGE CI_CONFIGURE="$MINGW-configure"
     - compiler: clang
       language: c
       os: osx
