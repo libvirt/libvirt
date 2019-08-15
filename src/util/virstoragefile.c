@@ -3265,7 +3265,6 @@ virStorageSourceParseBackingJSONiSCSI(virStorageSourcePtr src,
     const char *lun = virJSONValueObjectGetStringOrNumber(json, "lun");
     const char *uri;
     char *port;
-    int ret = -1;
 
     /* legacy URI based syntax passed via 'filename' option */
     if ((uri = virJSONValueObjectGetString(json, "filename")))
@@ -3279,14 +3278,14 @@ virStorageSourceParseBackingJSONiSCSI(virStorageSourcePtr src,
         lun = "0";
 
     if (VIR_ALLOC(src->hosts) < 0)
-        goto cleanup;
+        return -1;
 
     src->nhosts = 1;
 
     if (STRNEQ_NULLABLE(transport, "tcp")) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("only TCP transport is supported for iSCSI volumes"));
-        goto cleanup;
+        return -1;
     }
 
     src->hosts->transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
@@ -3294,33 +3293,30 @@ virStorageSourceParseBackingJSONiSCSI(virStorageSourcePtr src,
     if (!portal) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("missing 'portal' address in iSCSI backing definition"));
-        goto cleanup;
+        return -1;
     }
 
     if (!target) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("missing 'target' in iSCSI backing definition"));
-        goto cleanup;
+        return -1;
     }
 
     if (VIR_STRDUP(src->hosts->name, portal) < 0)
-        goto cleanup;
+        return -1;
 
     if ((port = strrchr(src->hosts->name, ':')) &&
         !strchr(port, ']')) {
         if (virStringParsePort(port + 1, &src->hosts->port) < 0)
-            goto cleanup;
+            return -1;
 
         *port = '\0';
     }
 
     if (virAsprintf(&src->path, "%s/%s", target, lun) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
