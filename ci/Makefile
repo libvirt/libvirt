@@ -210,7 +210,7 @@ ci-prepare-tree: ci-check-engine
 		done ; \
 	fi
 
-ci-build@%: ci-prepare-tree
+ci-run-command@%: ci-prepare-tree
 	$(CI_ENGINE) run $(CI_ENGINE_ARGS) $(CI_IMAGE_PREFIX)$*$(CI_IMAGE_TAG) \
 		/bin/bash -c ' \
 		export CI_CONT_SRCDIR="$(CI_CONT_SRCDIR)"; \
@@ -219,15 +219,17 @@ ci-build@%: ci-prepare-tree
 		export CI_CONFIGURE="$(CI_CONFIGURE)"; \
 		export CI_CONFIGURE_ARGS="$(CI_CONFIGURE_ARGS)"; \
 		export CI_MAKE_ARGS="$(CI_MAKE_ARGS)"; \
-		$(CI_USER_HOME)/build || exit 1'
+		$(CI_COMMAND) || exit 1'
 	@test "$(CI_CLEAN)" = "1" && rm -rf $(CI_SCRATCHDIR) || :
+
+ci-shell@%:
+	$(MAKE) -C $(CI_ROOTDIR) ci-run-command@$* CI_COMMAND="/bin/bash"
+
+ci-build@%:
+	$(MAKE) -C $(CI_ROOTDIR) ci-run-command@$* CI_COMMAND="$(CI_USER_HOME)/build"
 
 ci-check@%:
 	$(MAKE) -C $(CI_ROOTDIR) ci-build@$* CI_MAKE_ARGS="check"
-
-ci-shell@%: ci-prepare-tree
-	$(CI_ENGINE) run $(CI_ENGINE_ARGS) $(CI_IMAGE_PREFIX)$*$(CI_IMAGE_TAG) /bin/bash
-	@test "$(CI_CLEAN)" = "1" && rm -rf $(CI_SCRATCHDIR) || :
 
 ci-help:
 	@echo "Build libvirt inside containers used for CI"
