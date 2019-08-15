@@ -411,16 +411,16 @@ typedef enum {
     VIR_ACCESS_PERM_NETWORK_START,
 
     /**
-     * @desc: List network ports
-     * @message: Listing network ports requires authorization
-     */
-    VIR_ACCESS_PERM_NETWORK_SEARCH_PORTS,
-
-    /**
      * @desc: Stop network
      * @message: Stopping network requires authorization
      */
     VIR_ACCESS_PERM_NETWORK_STOP,
+
+    /**
+     * @desc: List network ports
+     * @message: Listing network ports requires authorization
+     */
+    VIR_ACCESS_PERM_NETWORK_SEARCH_PORTS,
 
     VIR_ACCESS_PERM_NETWORK_LAST
 } virAccessPermNetwork;
