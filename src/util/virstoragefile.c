@@ -4935,8 +4935,14 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
         goto cleanup;
 
     if (src->backingStoreRaw) {
-        if (virStorageSourceNewFromBacking(src, &backingStore) < 0)
+        if ((rv = virStorageSourceNewFromBacking(src, &backingStore)) < 0)
             goto cleanup;
+
+        if (rv == 1) {
+            /* the backing file would not be usable for VM usage */
+            ret = 0;
+            goto cleanup;
+        }
 
         if (backingFormat == VIR_STORAGE_FILE_AUTO)
             backingStore->format = VIR_STORAGE_FILE_RAW;
