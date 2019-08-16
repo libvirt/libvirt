@@ -182,9 +182,6 @@ qemuAssignDeviceDiskAlias(virDomainDefPtr def,
     const char *prefix = virDomainDiskBusTypeToString(disk->bus);
     int controllerModel = -1;
 
-    if (disk->info.alias)
-        return 0;
-
     if (!disk->info.alias) {
         if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
             if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
@@ -220,7 +217,8 @@ qemuAssignDeviceDiskAlias(virDomainDefPtr def,
      * on the alias in qemu. While certain disk types use just the alias, some
      * need the full path into /machine/peripheral as a historical artifact.
      */
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+    if (!diskPriv->qomName &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV)) {
         switch ((virDomainDiskBus) disk->bus) {
         case VIR_DOMAIN_DISK_BUS_FDC:
         case VIR_DOMAIN_DISK_BUS_IDE:
