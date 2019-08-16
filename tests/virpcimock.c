@@ -935,6 +935,11 @@ open(const char *path, int flags, ...)
 }
 
 
+/* in some cases this function may not be present in headers, so we need
+ * a declaration to silence the complier */
+int
+__open_2(const char *path, int flags);
+
 int
 __open_2(const char *path, int flags)
 {
