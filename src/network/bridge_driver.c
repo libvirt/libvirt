@@ -5592,17 +5592,17 @@ networkPortCreateXML(virNetworkPtr net,
         rc = networkNotifyPort(obj, portdef);
     else
         rc = networkAllocatePort(obj, portdef);
-    if (rc < 0) {
-        virErrorPtr saved;
-        saved = virSaveLastError();
-        ignore_value(networkReleasePort(obj, portdef));
-        virSetError(saved);
-        virFreeError(saved);
+    if (rc < 0)
         goto cleanup;
-    }
 
     if (virNetworkObjAddPort(obj, portdef, driver->stateDir) < 0) {
+        virErrorPtr saved;
+
+        saved = virSaveLastError();
+        ignore_value(networkReleasePort(obj, portdef));
         virNetworkPortDefFree(portdef);
+        virSetError(saved);
+        virFreeError(saved);
         goto cleanup;
     }
 
