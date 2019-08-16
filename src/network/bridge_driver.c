@@ -2987,13 +2987,12 @@ networkStartNetwork(virNetworkDriverStatePtr driver,
 
  cleanup:
     if (ret < 0) {
+        virErrorPtr save_err;
+
+        virErrorPreserveLast(&save_err);
         virNetworkObjUnsetDefTransient(obj);
-        virErrorPtr save_err = virSaveLastError();
-        int save_errno = errno;
         networkShutdownNetwork(driver, obj);
-        virSetError(save_err);
-        virFreeError(save_err);
-        errno = save_errno;
+        virErrorRestore(&save_err);
     }
     return ret;
 }
@@ -5596,13 +5595,13 @@ networkPortCreateXML(virNetworkPtr net,
         goto cleanup;
 
     if (virNetworkObjAddPort(obj, portdef, driver->stateDir) < 0) {
-        virErrorPtr saved;
+        virErrorPtr save_err;
 
-        saved = virSaveLastError();
+        virErrorPreserveLast(&save_err);
         ignore_value(networkReleasePort(obj, portdef));
         virNetworkPortDefFree(portdef);
-        virSetError(saved);
-        virFreeError(saved);
+        virErrorRestore(&save_err);
+
         goto cleanup;
     }
 
