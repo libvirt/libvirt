@@ -4990,7 +4990,8 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
  * other non-raw format at will.
  *
  * If @report_broken is true, the whole function fails with a possibly sane
- * error instead of just returning a broken chain.
+ * error instead of just returning a broken chain. Note that the inability for
+ * libvirt to traverse a given source is not considered an error.
  *
  * Caller MUST free result after use via virObjectUnref.
  */
