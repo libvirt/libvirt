@@ -3556,6 +3556,13 @@ virStorageSourceParseBackingJSONVxHS(virStorageSourcePtr src,
 
 struct virStorageSourceJSONDriverParser {
     const char *drvname;
+    /**
+     * The callback gets a pre-allocated storage source @src and the JSON
+     * object to parse. The callback shall return -1 on error and report error
+     * 0 on success and 1 in cases when the configuration itself is valid, but
+     * can't be converted to libvirt's configuration (e.g. inline authentication
+     * credentials are present).
+     */
     int (*func)(virStorageSourcePtr src, virJSONValuePtr json, int opaque);
     int opaque;
 };
@@ -3640,15 +3647,17 @@ virStorageSourceParseBackingJSON(virStorageSourcePtr src,
  * @path: string representing absolute location of a storage source
  * @src: filled with virStorageSource object representing @path
  *
- * Returns 0 on success and fills @src or -1 on error and reports appropriate
- * error.
+ * Returns 0 on success, 1 if we could parse all location data but @path
+ * specified other data unrepresentable by libvirt (e.g. inline authentication).
+ * In both cases @src is filled. On error -1 is returned @src is NULL and an
+ * error is reported.
  */
 int
 virStorageSourceNewFromBackingAbsolute(const char *path,
                                        virStorageSourcePtr *src)
 {
     const char *json;
-    int rc;
+    int rc = 0;
     VIR_AUTOUNREF(virStorageSourcePtr) def = NULL;
 
     *src = NULL;
@@ -3689,7 +3698,7 @@ virStorageSourceNewFromBackingAbsolute(const char *path,
     }
 
     VIR_STEAL_PTR(*src, def);
-    return 0;
+    return rc;
 }
 
 
@@ -3703,7 +3712,11 @@ virStorageSourceNewFromBackingAbsolute(const char *path,
  * and other data. Note that for local storage this function accesses the file
  * to update the actual type of the backing store.
  *
- * Returns 0 and fills @backing, or -1 on error (with appropriate error reported).
+ * Returns 0 on success, 1 if we could parse all location data but the backinig
+ * store specification contained other data unrepresentable by libvirt (e.g.
+ * inline authentication).
+ * In both cases @src is filled. On error -1 is returned @src is NULL and an
+ * error is reported.
  */
 int
 virStorageSourceNewFromBacking(virStorageSourcePtr parent,
@@ -3711,6 +3724,7 @@ virStorageSourceNewFromBacking(virStorageSourcePtr parent,
 {
     struct stat st;
     VIR_AUTOUNREF(virStorageSourcePtr) def = NULL;
+    int rc = 0;
 
     *backing = NULL;
 
@@ -3719,8 +3733,8 @@ virStorageSourceNewFromBacking(virStorageSourcePtr parent,
                                                            parent->backingStoreRaw)))
             return -1;
     } else {
-        if (virStorageSourceNewFromBackingAbsolute(parent->backingStoreRaw,
-                                                   &def) < 0)
+        if ((rc = virStorageSourceNewFromBackingAbsolute(parent->backingStoreRaw,
+                                                         &def)) < 0)
             return -1;
     }
 
@@ -3744,7 +3758,7 @@ virStorageSourceNewFromBacking(virStorageSourcePtr parent,
     def->detected = true;
 
     VIR_STEAL_PTR(*backing, def);
-    return 0;
+    return rc;
 }
 
 
