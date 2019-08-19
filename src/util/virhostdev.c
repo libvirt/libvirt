@@ -212,6 +212,51 @@ virHostdevManagerGetDefault(void)
     return virObjectRef(manager);
 }
 
+/**
+ * virHostdevGetPCIHostDevice:
+ * @hostdev: domain hostdev definition
+ * @pci: returned PCI device
+ *
+ * For given @hostdev which represents a PCI device construct its
+ * virPCIDevice representation and return it in @pci. If @hostdev
+ * does not represent a PCI device then @pci is set to NULL and 0
+ * is returned.
+ *
+ * Returns: 0 on success (@pci might be NULL though),
+ *         -1 otherwise (with error reported).
+ */
+static int
+virHostdevGetPCIHostDevice(const virDomainHostdevDef *hostdev,
+                           virPCIDevicePtr *pci)
+{
+    VIR_AUTOPTR(virPCIDevice) actual = NULL;
+    const virDomainHostdevSubsysPCI *pcisrc = &hostdev->source.subsys.u.pci;
+
+    *pci = NULL;
+
+    if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
+        hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
+        return 0;
+
+    actual = virPCIDeviceNew(pcisrc->addr.domain, pcisrc->addr.bus,
+                             pcisrc->addr.slot, pcisrc->addr.function);
+
+    if (!actual)
+        return -1;
+
+    virPCIDeviceSetManaged(actual, hostdev->managed);
+
+    if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO)
+        virPCIDeviceSetStubDriver(actual, VIR_PCI_STUB_DRIVER_VFIO);
+    else if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN)
+        virPCIDeviceSetStubDriver(actual, VIR_PCI_STUB_DRIVER_XEN);
+    else
+        virPCIDeviceSetStubDriver(actual, VIR_PCI_STUB_DRIVER_KVM);
+
+    VIR_STEAL_PTR(*pci, actual);
+    return 0;
+}
+
 static virPCIDeviceListPtr
 virHostdevGetPCIHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
 {
@@ -223,27 +268,13 @@ virHostdevGetPCIHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
 
     for (i = 0; i < nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = hostdevs[i];
-        virDomainHostdevSubsysPCIPtr pcisrc = &hostdev->source.subsys.u.pci;
         VIR_AUTOPTR(virPCIDevice) pci = NULL;
 
-        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
-            continue;
-        if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
-            continue;
-
-        pci = virPCIDeviceNew(pcisrc->addr.domain, pcisrc->addr.bus,
-                              pcisrc->addr.slot, pcisrc->addr.function);
-        if (!pci)
+        if (virHostdevGetPCIHostDevice(hostdev, &pci) < 0)
             return NULL;
 
-        virPCIDeviceSetManaged(pci, hostdev->managed);
-
-        if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO)
-            virPCIDeviceSetStubDriver(pci, VIR_PCI_STUB_DRIVER_VFIO);
-        else if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN)
-            virPCIDeviceSetStubDriver(pci, VIR_PCI_STUB_DRIVER_XEN);
-        else
-            virPCIDeviceSetStubDriver(pci, VIR_PCI_STUB_DRIVER_KVM);
+        if (!pci)
+            continue;
 
         if (virPCIDeviceListAdd(pcidevs, pci) < 0)
             return NULL;
@@ -252,7 +283,6 @@ virHostdevGetPCIHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
 
     VIR_RETURN_PTR(pcidevs);
 }
-
 
 static int
 virHostdevPCISysfsPath(virDomainHostdevDefPtr hostdev,
@@ -1067,7 +1097,6 @@ virHostdevUpdateActivePCIDevices(virHostdevManagerPtr mgr,
                                  const char *drv_name,
                                  const char *dom_name)
 {
-    virDomainHostdevDefPtr hostdev = NULL;
     size_t i;
     int ret = -1;
 
@@ -1078,31 +1107,17 @@ virHostdevUpdateActivePCIDevices(virHostdevManagerPtr mgr,
     virObjectLock(mgr->inactivePCIHostdevs);
 
     for (i = 0; i < nhostdevs; i++) {
+        const virDomainHostdevDef *hostdev = hostdevs[i];
         VIR_AUTOPTR(virPCIDevice) actual = NULL;
-        virDomainHostdevSubsysPCIPtr pcisrc;
-        hostdev = hostdevs[i];
-        pcisrc = &hostdev->source.subsys.u.pci;
 
-        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
-            continue;
-        if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
-            continue;
-
-        actual = virPCIDeviceNew(pcisrc->addr.domain, pcisrc->addr.bus,
-                                 pcisrc->addr.slot, pcisrc->addr.function);
-
-        if (!actual)
+        if (virHostdevGetPCIHostDevice(hostdev, &actual) < 0)
             goto cleanup;
 
-        virPCIDeviceSetManaged(actual, hostdev->managed);
-        virPCIDeviceSetUsedBy(actual, drv_name, dom_name);
+        if (!actual)
+            continue;
 
-        if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO)
-            virPCIDeviceSetStubDriver(actual, VIR_PCI_STUB_DRIVER_VFIO);
-        else if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN)
-            virPCIDeviceSetStubDriver(actual, VIR_PCI_STUB_DRIVER_XEN);
-        else
-            virPCIDeviceSetStubDriver(actual, VIR_PCI_STUB_DRIVER_KVM);
+        if (virPCIDeviceSetUsedBy(actual, drv_name, dom_name) < 0)
+            goto cleanup;
 
         /* Setup the original states for the PCI device */
         virPCIDeviceSetUnbindFromStub(actual, hostdev->origstates.states.pci.unbind_from_stub);
