@@ -673,7 +673,7 @@ virCgroupV2GetBlkioWeight(virCgroupPtr group,
         tmp = value;
     }
 
-    if (virStrToLong_ui(tmp, NULL, 10, weight) < 0) {
+    if (virStrToLong_ui(tmp, &tmp, 10, weight) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unable to parse '%s' as an integer"),
                        tmp);
@@ -869,7 +869,7 @@ virCgroupV2GetBlkioDeviceWeight(virCgroupPtr group,
 
     if (!str) {
         *weight = 0;
-    } else if (virStrToLong_ui(str, NULL, 10, weight) < 0) {
+    } else if (virStrToLong_ui(str, &str, 10, weight) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unable to parse '%s' as an integer"),
                        str);
@@ -939,7 +939,7 @@ virCgroupV2GetBlkioDeviceReadIops(virCgroupPtr group,
 
         if (STREQLEN(tmp, "max", 3)) {
             *riops = 0;
-        } else if (virStrToLong_ui(tmp, NULL, 10, riops) < 0) {
+        } else if (virStrToLong_ui(tmp, &tmp, 10, riops) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unable to parse '%s' as an integer"),
                            str);
@@ -1010,7 +1010,7 @@ virCgroupV2GetBlkioDeviceWriteIops(virCgroupPtr group,
 
         if (STREQLEN(tmp, "max", 3)) {
             *wiops = 0;
-        } else if (virStrToLong_ui(tmp, NULL, 10, wiops) < 0) {
+        } else if (virStrToLong_ui(tmp, &tmp, 10, wiops) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unable to parse '%s' as an integer"),
                            str);
@@ -1081,7 +1081,7 @@ virCgroupV2GetBlkioDeviceReadBps(virCgroupPtr group,
 
         if (STREQLEN(tmp, "max", 3)) {
             *rbps = 0;
-        } else if (virStrToLong_ull(tmp, NULL, 10, rbps) < 0) {
+        } else if (virStrToLong_ull(tmp, &tmp, 10, rbps) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unable to parse '%s' as an integer"),
                            str);
@@ -1152,7 +1152,7 @@ virCgroupV2GetBlkioDeviceWriteBps(virCgroupPtr group,
 
         if (STREQLEN(tmp, "max", 3)) {
             *wbps = 0;
-        } else if (virStrToLong_ull(tmp, NULL, 10, wbps) < 0) {
+        } else if (virStrToLong_ull(tmp, &tmp, 10, wbps) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unable to parse '%s' as an integer"),
                            str);
@@ -1535,7 +1535,7 @@ virCgroupV2GetCpuCfsPeriod(virCgroupPtr group,
         return -1;
     }
 
-    if (virStrToLong_ull(tmp, NULL, 10, cfs_period) < 0) {
+    if (virStrToLong_ull(tmp, &tmp, 10, cfs_period) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to parse value '%s' from cpu.max."), str);
         return -1;
@@ -1585,7 +1585,7 @@ virCgroupV2GetCpuCfsQuota(virCgroupPtr group,
     if (STREQLEN(str, "max", 3))
         *cfs_quota = ULLONG_MAX / 1000;
 
-    if (virStrToLong_ll(str, NULL, 10, cfs_quota) < 0) {
+    if (virStrToLong_ll(str, &str, 10, cfs_quota) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to parse value '%s' from cpu.max."), str);
         return -1;
