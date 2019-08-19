@@ -682,7 +682,6 @@ pci_driver_find_by_path(const char *path)
 static struct pciDriver *
 pci_driver_find_by_driver_override(struct pciDevice *dev)
 {
-    VIR_AUTOFREE(char *) devid = NULL;
     VIR_AUTOFREE(char *) path = NULL;
     char tmp[32];
     size_t i;
