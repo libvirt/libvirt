@@ -54,7 +54,6 @@ VIR_ENUM_IMPL(virPCIStubDriver,
               VIR_PCI_STUB_DRIVER_LAST,
               "none",
               "pciback", /* XEN */
-              "pci-stub", /* KVM */
               "vfio-pci", /* VFIO */
 );
 
@@ -1539,16 +1538,6 @@ virPCIDeviceReattach(virPCIDevicePtr dev,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Not reattaching active device %s"), dev->name);
         return -1;
-    }
-
-    /* Wait for device cleanup if it is qemu/kvm */
-    if (virPCIDeviceGetStubDriver(dev) == VIR_PCI_STUB_DRIVER_KVM) {
-        int retries = 100;
-        while (virPCIDeviceWaitForCleanup(dev, "kvm_assigned_device")
-               && retries) {
-            usleep(100*1000);
-            retries--;
-        }
     }
 
     if (virPCIDeviceUnbindFromStub(dev) < 0)

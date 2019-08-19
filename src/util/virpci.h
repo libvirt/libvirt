@@ -59,7 +59,6 @@ struct _virPCIDeviceAddress {
 typedef enum {
     VIR_PCI_STUB_DRIVER_NONE = 0,
     VIR_PCI_STUB_DRIVER_XEN,
-    VIR_PCI_STUB_DRIVER_KVM,
     VIR_PCI_STUB_DRIVER_VFIO,
     VIR_PCI_STUB_DRIVER_LAST
 } virPCIStubDriver;
