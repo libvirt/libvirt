@@ -197,7 +197,6 @@ char *virPCIDeviceGetIOMMUGroupDev(virPCIDevicePtr dev);
 
 int virPCIDeviceIsAssignable(virPCIDevicePtr dev,
                              int strict_acs_check);
-int virPCIDeviceWaitForCleanup(virPCIDevicePtr dev, const char *matcher);
 
 virPCIDeviceAddressPtr
 virPCIGetDeviceAddressFromSysfsLink(const char *device_link);

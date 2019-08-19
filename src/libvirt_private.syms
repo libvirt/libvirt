@@ -2702,7 +2702,6 @@ virPCIDeviceSetStubDriver;
 virPCIDeviceSetUnbindFromStub;
 virPCIDeviceSetUsedBy;
 virPCIDeviceUnbind;
-virPCIDeviceWaitForCleanup;
 virPCIEDeviceInfoFree;
 virPCIELinkSpeedTypeFromString;
 virPCIELinkSpeedTypeToString;
