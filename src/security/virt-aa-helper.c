@@ -172,6 +172,7 @@ parserCommand(const char *profile_name, const char cmd)
         };
         VIR_AUTOPTR(virCommand) command = virCommandNewArgs(argv);
 
+        virCommandRawStatus(command);
         if ((ret = virCommandRun(command, &status)) != 0 ||
             (WIFEXITED(status) && WEXITSTATUS(status) != 0)) {
             if (ret != 0) {
