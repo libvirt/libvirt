@@ -4878,28 +4878,6 @@ qemuBuildVideoCommandLine(virCommandPtr cmd,
 }
 
 
-int
-qemuOpenPCIConfig(virDomainHostdevDefPtr dev)
-{
-    virDomainHostdevSubsysPCIPtr pcisrc = &dev->source.subsys.u.pci;
-    char *path = NULL;
-    int configfd = -1;
-
-    if (virAsprintf(&path, "/sys/bus/pci/devices/%04x:%02x:%02x.%01x/config",
-                    pcisrc->addr.domain, pcisrc->addr.bus,
-                    pcisrc->addr.slot, pcisrc->addr.function) < 0)
-        return -1;
-
-    configfd = open(path, O_RDWR, 0);
-
-    if (configfd < 0)
-        virReportSystemError(errno, _("Failed opening %s"), path);
-
-    VIR_FREE(path);
-
-    return configfd;
-}
-
 char *
 qemuBuildPCIHostdevDevStr(const virDomainDef *def,
                           virDomainHostdevDefPtr dev,

@@ -157,8 +157,6 @@ int qemuBuildRNGBackendProps(virDomainRNGDefPtr rng,
                              virQEMUCapsPtr qemuCaps,
                              virJSONValuePtr *props);
 
-int qemuOpenPCIConfig(virDomainHostdevDefPtr dev);
-
 /* Current, best practice */
 char *qemuBuildUSBHostdevDevStr(const virDomainDef *def,
                                 virDomainHostdevDefPtr dev,
