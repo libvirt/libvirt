@@ -10004,7 +10004,6 @@ qemuBuildTPMOpenBackendFDs(const char *tpmdev,
 static char *
 qemuBuildTPMBackendStr(const virDomainDef *def,
                        virCommandPtr cmd,
-                       virQEMUCapsPtr qemuCaps,
                        int *tpmfd,
                        int *cancelfd,
                        char **chardev)
@@ -10033,9 +10032,6 @@ qemuBuildTPMBackendStr(const virDomainDef *def,
 
     switch (tpm->type) {
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_TPM_PASSTHROUGH))
-            goto no_support;
-
         tpmdev = tpm->data.passthrough.source.data.file.path;
         if (!(cancel_path = virTPMCreateCancelPath(tpmdev)))
             goto error;
@@ -10062,9 +10058,6 @@ qemuBuildTPMBackendStr(const virDomainDef *def,
 
         break;
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_TPM_EMULATOR))
-            goto no_support;
-
         virBufferAddLit(&buf, ",chardev=chrtpm");
 
         if (virAsprintf(chardev, "socket,id=chrtpm,path=%s",
@@ -10080,12 +10073,6 @@ qemuBuildTPMBackendStr(const virDomainDef *def,
         goto error;
 
     return virBufferContentAndReset(&buf);
-
- no_support:
-    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                   _("The QEMU executable %s does not support TPM "
-                     "backend type %s"),
-                   def->emulator, type);
 
  error:
     VIR_FREE(devset);
@@ -10110,7 +10097,7 @@ qemuBuildTPMCommandLine(virCommandPtr cmd,
     if (!def->tpm)
         return 0;
 
-    if (!(optstr = qemuBuildTPMBackendStr(def, cmd, qemuCaps,
+    if (!(optstr = qemuBuildTPMBackendStr(def, cmd,
                                           &tpmfd, &cancelfd,
                                           &chardev)))
         return -1;

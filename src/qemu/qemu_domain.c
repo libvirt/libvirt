@@ -6367,7 +6367,8 @@ qemuDomainDeviceDefValidateVsock(const virDomainVsockDef *vsock,
 
 static int
 qemuDomainDeviceDefValidateTPM(virDomainTPMDef *tpm,
-                               const virDomainDef *def ATTRIBUTE_UNUSED)
+                               const virDomainDef *def,
+                               virQEMUCapsPtr qemuCaps)
 {
     /* TPM 1.2 and 2 are not compatible, so we choose a specific version here */
     if (tpm->version == VIR_DOMAIN_TPM_VERSION_DEFAULT)
@@ -6389,7 +6390,31 @@ qemuDomainDeviceDefValidateTPM(virDomainTPMDef *tpm,
     case VIR_DOMAIN_TPM_VERSION_LAST:
         break;
     }
+
+    switch (tpm->type) {
+    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_TPM_PASSTHROUGH))
+            goto no_support;
+        break;
+
+    case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_TPM_EMULATOR))
+            goto no_support;
+
+        break;
+    case VIR_DOMAIN_TPM_TYPE_LAST:
+        break;
+    }
+
     return 0;
+
+ no_support:
+    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                   _("The QEMU executable %s does not support TPM "
+                     "backend type %s"),
+                   def->emulator,
+                   virDomainTPMBackendTypeToString(tpm->type));
+    return -1;
 }
 
 
@@ -6830,7 +6855,7 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
         break;
 
     case VIR_DOMAIN_DEVICE_TPM:
-        ret = qemuDomainDeviceDefValidateTPM(dev->data.tpm, def);
+        ret = qemuDomainDeviceDefValidateTPM(dev->data.tpm, def, qemuCaps);
         break;
 
     case VIR_DOMAIN_DEVICE_GRAPHICS:
