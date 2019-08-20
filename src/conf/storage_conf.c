@@ -997,9 +997,10 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
     /* Make a copy of all the callback pointers here for easier use,
      * especially during the virStoragePoolSourceClear method */
     def->ns = options->ns;
-    if (def->ns.parse &&
-        (def->ns.parse)(ctxt, &def->namespaceData) < 0)
-        return NULL;
+    if (def->ns.parse) {
+        if ((def->ns.parse)(ctxt, &def->namespaceData) < 0)
+            return NULL;
+    }
 
     VIR_STEAL_PTR(ret, def);
     return ret;
