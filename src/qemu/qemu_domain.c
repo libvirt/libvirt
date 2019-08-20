@@ -3724,7 +3724,7 @@ qemuDomainDefNamespaceFormatXML(virBufferPtr buf,
 static const char *
 qemuDomainDefNamespaceHref(void)
 {
-    return "xmlns:qemu='" QEMU_NAMESPACE_HREF "'";
+    return QEMU_NAMESPACE_HREF;
 }
 
 

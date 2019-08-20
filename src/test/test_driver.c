@@ -181,6 +181,12 @@ struct _testDomainNamespaceDef {
     xmlNodePtr *snap_nodes;
 };
 
+static const char*
+testDomainDefNamespaceHref(void)
+{
+    return TEST_NAMESPACE_HREF;
+}
+
 static void
 testDomainDefNamespaceFree(void *data)
 {
@@ -430,6 +436,7 @@ testDriverNew(void)
         .parse = testDomainDefNamespaceParse,
         .free = testDomainDefNamespaceFree,
         .prefix = "test",
+        .href = testDomainDefNamespaceHref,
     };
     virDomainDefParserConfig config = {
         .features = VIR_DOMAIN_DEF_FEATURE_MEMORY_HOTPLUG |

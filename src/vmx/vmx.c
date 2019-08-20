@@ -600,7 +600,7 @@ virVMXDomainDefNamespaceFormatXML(virBufferPtr buf, void *nsdata)
 static const char *
 virVMXDomainDefNamespaceHref(void)
 {
-    return "xmlns:vmware='http://libvirt.org/schemas/domain/vmware/1.0'";
+    return "http://libvirt.org/schemas/domain/vmware/1.0";
 }
 
 static virXMLNamespace virVMXDomainXMLNamespace = {

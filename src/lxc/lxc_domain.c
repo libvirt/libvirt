@@ -313,7 +313,7 @@ lxcDomainDefNamespaceFormatXML(virBufferPtr buf,
 static const char *
 lxcDomainDefNamespaceHref(void)
 {
-    return "xmlns:lxc='" LXC_NAMESPACE_HREF "'";
+    return LXC_NAMESPACE_HREF;
 }
 
 

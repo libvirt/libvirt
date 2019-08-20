@@ -270,7 +270,7 @@ bhyveDomainDefNamespaceFormatXML(virBufferPtr buf,
 static const char *
 bhyveDomainDefNamespaceHref(void)
 {
-    return "xmlns:bhyve='" BHYVE_NAMESPACE_HREF "'";
+    return BHYVE_NAMESPACE_HREF;
 }
 
 virXMLNamespace virBhyveDriverDomainXMLNamespace = {
