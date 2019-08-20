@@ -607,6 +607,7 @@ static virXMLNamespace virVMXDomainXMLNamespace = {
     .parse = NULL,
     .free = virVMXDomainDefNamespaceFree,
     .format = virVMXDomainDefNamespaceFormatXML,
+    .prefix = "vmware",
     .href = virVMXDomainDefNamespaceHref,
 };
 

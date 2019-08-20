@@ -277,5 +277,6 @@ virXMLNamespace virBhyveDriverDomainXMLNamespace = {
     .parse = bhyveDomainDefNamespaceParse,
     .free = bhyveDomainDefNamespaceFree,
     .format = bhyveDomainDefNamespaceFormatXML,
+    .prefix = "bhyve",
     .href = bhyveDomainDefNamespaceHref,
 };

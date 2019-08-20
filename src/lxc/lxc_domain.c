@@ -321,6 +321,7 @@ virXMLNamespace virLXCDriverDomainXMLNamespace = {
     .parse = lxcDomainDefNamespaceParse,
     .free = lxcDomainDefNamespaceFree,
     .format = lxcDomainDefNamespaceFormatXML,
+    .prefix = "lxc",
     .href = lxcDomainDefNamespaceHref,
 };
 

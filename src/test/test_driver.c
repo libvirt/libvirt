@@ -429,6 +429,7 @@ testDriverNew(void)
     virXMLNamespace ns = {
         .parse = testDomainDefNamespaceParse,
         .free = testDomainDefNamespaceFree,
+        .prefix = "test",
     };
     virDomainDefParserConfig config = {
         .features = VIR_DOMAIN_DEF_FEATURE_MEMORY_HOTPLUG |
