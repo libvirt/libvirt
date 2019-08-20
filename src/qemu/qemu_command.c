@@ -3191,12 +3191,12 @@ qemuBuildControllersByTypeCommandLine(virCommandPtr cmd,
                                       virQEMUCapsPtr qemuCaps,
                                       virDomainControllerType type)
 {
-    char *devstr = NULL;
     int ret = -1;
     size_t i;
 
     for (i = 0; i < def->ncontrollers; i++) {
         virDomainControllerDefPtr cont = def->controllers[i];
+        VIR_AUTOFREE(char *) devstr = NULL;
 
         if (cont->type != type)
             continue;
@@ -3229,7 +3229,6 @@ qemuBuildControllersByTypeCommandLine(virCommandPtr cmd,
             continue;
         }
 
-        VIR_FREE(devstr);
         if (qemuBuildControllerDevStr(def, cont, qemuCaps, &devstr) < 0)
             goto cleanup;
 
@@ -3244,7 +3243,6 @@ qemuBuildControllersByTypeCommandLine(virCommandPtr cmd,
 
     ret = 0;
  cleanup:
-    VIR_FREE(devstr);
     return ret;
 }
 
