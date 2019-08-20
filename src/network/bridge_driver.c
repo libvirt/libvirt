@@ -244,7 +244,7 @@ networkDnsmasqDefNamespaceFormatXML(virBufferPtr buf,
 static const char *
 networkDnsmasqDefNamespaceHref(void)
 {
-    return "xmlns:dnsmasq='" DNSMASQ_NAMESPACE_HREF "'";
+    return DNSMASQ_NAMESPACE_HREF;
 }
 
 

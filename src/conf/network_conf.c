@@ -2434,8 +2434,8 @@ virNetworkDefFormatBuf(virBufferPtr buf,
     bool hasbridge = false;
 
     virBufferAddLit(buf, "<network");
-    if (def->namespaceData && def->ns.href)
-        virBufferAsprintf(buf, " %s", (def->ns.href)());
+    if (def->namespaceData && def->ns.format)
+        virXMLNamespaceFormatNS(buf, &def->ns);
     if (!(flags & VIR_NETWORK_XML_INACTIVE) && (def->connections > 0))
         virBufferAsprintf(buf, " connections='%d'", def->connections);
     if (def->ipv6nogw)
