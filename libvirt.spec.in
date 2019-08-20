@@ -900,7 +900,7 @@ capabilities of recent versions of Linux (and other OSes).
 Summary: Client side libraries
 # So remote clients can access libvirt over SSH tunnel
 # (client invokes 'nc' against the UNIX socket on the server)
-Requires: nc
+Requires: /usr/bin/nc
 Requires: cyrus-sasl
 # Needed by default sasl.conf - no onerous extra deps, since
 # 100's of other things on a system already pull in krb5-libs
