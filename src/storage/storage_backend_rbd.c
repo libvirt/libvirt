@@ -1546,6 +1546,7 @@ static virXMLNamespace virStoragePoolRBDXMLNamespace = {
     .parse = virStoragePoolDefRBDNamespaceParse,
     .free = virStoragePoolDefRBDNamespaceFree,
     .format = virStoragePoolDefRBDNamespaceFormatXML,
+    .prefix = "rbd",
     .href = virStoragePoolDefRBDNamespaceHref,
 };
 

@@ -705,6 +705,7 @@ static virXMLNamespace virStoragePoolFSXMLNamespace = {
     .parse = virStoragePoolDefFSNamespaceParse,
     .free = virStoragePoolDefFSNamespaceFree,
     .format = virStoragePoolDefFSNamespaceFormatXML,
+    .prefix = "fs",
     .href = virStoragePoolDefFSNamespaceHref,
 };
 #endif /* WITH_STORAGE_FS */
