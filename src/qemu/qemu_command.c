@@ -10010,7 +10010,6 @@ qemuBuildTPMBackendStr(const virDomainDef *def,
 {
     const virDomainTPMDef *tpm = def->tpm;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    const char *type = NULL;
     char *cancel_path = NULL;
     char *devset = NULL;
     char *cancelset = NULL;
@@ -10019,16 +10018,8 @@ qemuBuildTPMBackendStr(const virDomainDef *def,
     *tpmfd = -1;
     *cancelfd = -1;
 
-    switch (tpm->type) {
-    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
-    case VIR_DOMAIN_TPM_TYPE_EMULATOR:
-        type = virDomainTPMBackendTypeToString(tpm->type);
-        break;
-    case VIR_DOMAIN_TPM_TYPE_LAST:
-        goto error;
-    }
-
-    virBufferAsprintf(&buf, "%s,id=tpm-%s", type, tpm->info.alias);
+    virBufferAsprintf(&buf, "%s", virDomainTPMBackendTypeToString(tpm->type));
+    virBufferAsprintf(&buf, ",id=tpm-%s", tpm->info.alias);
 
     switch (tpm->type) {
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
