@@ -6850,7 +6850,7 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
 {
     int ret = -1;
     size_t i;
-    virCapsPtr caps = NULL;
+    VIR_AUTOUNREF(virCapsPtr) caps = NULL;
     virCPUDefPtr cpu = def->cpu;
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
@@ -6928,7 +6928,6 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
 
     ret = 0;
  cleanup:
-    virObjectUnref(caps);
     return ret;
 }
 
@@ -8436,7 +8435,7 @@ qemuInterfaceVhostuserConnect(virQEMUDriverPtr driver,
                               virQEMUCapsPtr qemuCaps,
                               char **chardev)
 {
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
     int ret = -1;
 
     switch ((virDomainChrType)net->data.vhostuser->type) {
@@ -8469,7 +8468,6 @@ qemuInterfaceVhostuserConnect(virQEMUDriverPtr driver,
 
     ret = 0;
  cleanup:
-    virObjectUnref(cfg);
     return ret;
 }
 
@@ -10366,7 +10364,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     size_t i;
     char uuid[VIR_UUID_STRING_BUFLEN];
     virCommandPtr cmd = NULL;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
     unsigned int bootHostdevNet = 0;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDefPtr def = vm->def;
@@ -10621,11 +10619,9 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
         cfg->logTimestamp)
         virCommandAddArgList(cmd, "-msg", "timestamp=on", NULL);
 
-    virObjectUnref(cfg);
     return cmd;
 
  error:
-    virObjectUnref(cfg);
     virCommandFree(cmd);
     return NULL;
 }
