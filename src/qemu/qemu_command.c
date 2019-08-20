@@ -7881,7 +7881,9 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
     size_t i, j;
     virQEMUCapsPtr qemuCaps = priv->qemuCaps;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    char *cpumask = NULL, *tmpmask = NULL, *next = NULL;
+    char *cpumask = NULL;
+    char *tmpmask = NULL;
+    char *next = NULL;
     virBufferPtr nodeBackends = NULL;
     bool needBackend = false;
     int rc;
