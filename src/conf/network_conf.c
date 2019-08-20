@@ -93,7 +93,7 @@ virNetworkXMLOnceInit(void)
 VIR_ONCE_GLOBAL_INIT(virNetworkXML);
 
 virNetworkXMLOptionPtr
-virNetworkXMLOptionNew(virNetworkXMLNamespacePtr xmlns)
+virNetworkXMLOptionNew(virXMLNamespacePtr xmlns)
 {
     virNetworkXMLOptionPtr xmlopt;
 

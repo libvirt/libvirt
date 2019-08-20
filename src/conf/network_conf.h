@@ -23,10 +23,6 @@
 
 #define DNS_RECORD_LENGTH_SRV  (512 - 30)  /* Limit minus overhead as mentioned in RFC-2782 */
 
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <libxml/xpath.h>
-
 #include "internal.h"
 #include "virthread.h"
 #include "virsocketaddr.h"
@@ -40,25 +36,12 @@
 #include "virobject.h"
 #include "virmacmap.h"
 #include "virenum.h"
-
-typedef int (*virNetworkDefNamespaceParse)(xmlXPathContextPtr, void **);
-typedef void (*virNetworkDefNamespaceFree)(void *);
-typedef int (*virNetworkDefNamespaceXMLFormat)(virBufferPtr, void *);
-typedef const char *(*virNetworkDefNamespaceHref)(void);
-
-typedef struct _virNetworkXMLNamespace virNetworkXMLNamespace;
-typedef virNetworkXMLNamespace *virNetworkXMLNamespacePtr;
-struct _virNetworkXMLNamespace {
-    virNetworkDefNamespaceParse parse;
-    virNetworkDefNamespaceFree free;
-    virNetworkDefNamespaceXMLFormat format;
-    virNetworkDefNamespaceHref href;
-};
+#include "virxml.h"
 
 struct _virNetworkXMLOption {
     virObject parent;
 
-    virNetworkXMLNamespace ns;
+    virXMLNamespace ns;
 };
 typedef struct _virNetworkXMLOption virNetworkXMLOption;
 typedef virNetworkXMLOption *virNetworkXMLOptionPtr;
@@ -295,7 +278,7 @@ struct _virNetworkDef {
 
     /* Network specific XML namespace data */
     void *namespaceData;
-    virNetworkXMLNamespace ns;
+    virXMLNamespace ns;
 };
 
 typedef enum {
@@ -317,7 +300,7 @@ enum {
 };
 
 virNetworkXMLOptionPtr
-virNetworkXMLOptionNew(virNetworkXMLNamespacePtr xmlns);
+virNetworkXMLOptionNew(virXMLNamespacePtr xmlns);
 
 virNetworkDefPtr
 virNetworkDefCopy(virNetworkDefPtr def,

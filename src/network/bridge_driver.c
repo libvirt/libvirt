@@ -248,7 +248,7 @@ networkDnsmasqDefNamespaceHref(void)
 }
 
 
-virNetworkXMLNamespace networkDnsmasqXMLNamespace = {
+virXMLNamespace networkDnsmasqXMLNamespace = {
     .parse = networkDnsmasqDefNamespaceParse,
     .free = networkDnsmasqDefNamespaceFree,
     .format = networkDnsmasqDefNamespaceFormatXML,
