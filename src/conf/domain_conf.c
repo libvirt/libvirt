@@ -19643,7 +19643,6 @@ virDomainMemorytuneDefParse(virDomainDefPtr def,
 
 static virDomainDefPtr
 virDomainDefParseXML(xmlDocPtr xml,
-                     xmlNodePtr root ATTRIBUTE_UNUSED,
                      xmlXPathContextPtr ctxt,
                      virCapsPtr caps,
                      virDomainXMLOptionPtr xmlopt,
@@ -21386,7 +21385,7 @@ virDomainObjParseXML(xmlDocPtr xml,
 
     oldnode = ctxt->node;
     ctxt->node = config;
-    obj->def = virDomainDefParseXML(xml, config, ctxt, caps, xmlopt, flags);
+    obj->def = virDomainDefParseXML(xml, ctxt, caps, xmlopt, flags);
     ctxt->node = oldnode;
     if (!obj->def)
         goto error;
@@ -21531,7 +21530,7 @@ virDomainDefParseNode(xmlDocPtr xml,
 
     ctxt->node = root;
 
-    if (!(def = virDomainDefParseXML(xml, root, ctxt, caps, xmlopt, flags)))
+    if (!(def = virDomainDefParseXML(xml, ctxt, caps, xmlopt, flags)))
         goto cleanup;
 
     /* callback to fill driver specific domain aspects */
