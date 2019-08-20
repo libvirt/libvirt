@@ -1408,3 +1408,11 @@ virXPathContextNodeRestore(virXPathContextNodeSavePtr save)
 
     save->ctxt->node = save->node;
 }
+
+
+void
+virXMLNamespaceFormatNS(virBufferPtr buf,
+                        virXMLNamespace const *ns)
+{
+    virBufferAsprintf(buf, " xmlns:%s='%s'", ns->prefix, ns->href());
+}

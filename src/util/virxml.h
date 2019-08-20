@@ -261,3 +261,7 @@ struct _virXMLNamespace {
 };
 typedef struct _virXMLNamespace virXMLNamespace;
 typedef virXMLNamespace *virXMLNamespacePtr;
+
+void
+virXMLNamespaceFormatNS(virBufferPtr buf,
+                        virXMLNamespace const *ns);
