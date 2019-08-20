@@ -33,14 +33,14 @@ matrix:
     - services:
         - docker
       env:
-        - IMAGE="fedora-rawhide"
+        - IMAGE="fedora-30"
         - MINGW="mingw32"
       script:
         - make -f Makefile.ci ci-build@$IMAGE CI_CONFIGURE="$MINGW-configure"
     - services:
         - docker
       env:
-        - IMAGE="fedora-rawhide"
+        - IMAGE="fedora-30"
         - MINGW="mingw64"
       script:
         - make -f Makefile.ci ci-build@$IMAGE CI_CONFIGURE="$MINGW-configure"
