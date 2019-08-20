@@ -265,3 +265,6 @@ typedef virXMLNamespace *virXMLNamespacePtr;
 void
 virXMLNamespaceFormatNS(virBufferPtr buf,
                         virXMLNamespace const *ns);
+int
+virXMLNamespaceRegister(xmlXPathContextPtr ctxt,
+                        virXMLNamespace const *ns);
