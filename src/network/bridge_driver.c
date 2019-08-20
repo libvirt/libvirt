@@ -252,6 +252,7 @@ virXMLNamespace networkDnsmasqXMLNamespace = {
     .parse = networkDnsmasqDefNamespaceParse,
     .free = networkDnsmasqDefNamespaceFree,
     .format = networkDnsmasqDefNamespaceFormatXML,
+    .prefix = "dnsmasq",
     .href = networkDnsmasqDefNamespaceHref,
 };
 
