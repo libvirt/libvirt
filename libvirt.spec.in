@@ -425,6 +425,9 @@ Summary: Server side daemon and supporting files for libvirt library
 # The client side, i.e. shared libs are in a subpackage
 Requires: %{name}-libs = %{version}-%{release}
 
+# (client invokes 'nc' against the UNIX socket on the server)
+Requires: /usr/bin/nc
+
 # for modprobe of pci devices
 Requires: module-init-tools
 
@@ -899,8 +902,6 @@ capabilities of recent versions of Linux (and other OSes).
 %package libs
 Summary: Client side libraries
 # So remote clients can access libvirt over SSH tunnel
-# (client invokes 'nc' against the UNIX socket on the server)
-Requires: /usr/bin/nc
 Requires: cyrus-sasl
 # Needed by default sasl.conf - no onerous extra deps, since
 # 100's of other things on a system already pull in krb5-libs
