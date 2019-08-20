@@ -10867,7 +10867,7 @@ qemuBuildSerialChrDeviceStr(char **deviceStr,
                             virDomainChrDefPtr serial,
                             virQEMUCapsPtr qemuCaps)
 {
-    virBuffer cmd = VIR_BUFFER_INITIALIZER;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
     virQEMUCapsFlags caps;
 
     switch ((virDomainChrSerialTargetModel) serial->targetModel) {
@@ -10901,21 +10901,21 @@ qemuBuildSerialChrDeviceStr(char **deviceStr,
         goto error;
     }
 
-    virBufferAsprintf(&cmd, "%s,chardev=char%s,id=%s",
+    virBufferAsprintf(&buf, "%s,chardev=char%s,id=%s",
                       virDomainChrSerialTargetModelTypeToString(serial->targetModel),
                       serial->info.alias, serial->info.alias);
 
-    if (qemuBuildDeviceAddressStr(&cmd, def, &serial->info, qemuCaps) < 0)
+    if (qemuBuildDeviceAddressStr(&buf, def, &serial->info, qemuCaps) < 0)
         goto error;
 
-    if (virBufferCheckError(&cmd) < 0)
+    if (virBufferCheckError(&buf) < 0)
         goto error;
 
-    *deviceStr = virBufferContentAndReset(&cmd);
+    *deviceStr = virBufferContentAndReset(&buf);
     return 0;
 
  error:
-    virBufferFreeAndReset(&cmd);
+    virBufferFreeAndReset(&buf);
     return -1;
 }
 
