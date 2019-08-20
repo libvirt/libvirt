@@ -26,7 +26,6 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <libxml/xmlsave.h>
-#include <libxml/xpathInternals.h>
 
 
 #include "virerror.h"
@@ -212,14 +211,6 @@ testDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
     size_t i;
     unsigned int tmpuint;
     VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
-
-    if (xmlXPathRegisterNs(ctxt, BAD_CAST "test",
-                           BAD_CAST TEST_NAMESPACE_HREF) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to register xml namespace '%s'"),
-                       TEST_NAMESPACE_HREF);
-        return -1;
-    }
 
     if (VIR_ALLOC(nsdata) < 0)
         return -1;

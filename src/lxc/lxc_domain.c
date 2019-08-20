@@ -26,7 +26,6 @@
 #include "viralloc.h"
 #include "virlog.h"
 #include "virerror.h"
-#include <libxml/xpathInternals.h>
 #include "virstring.h"
 #include "virutil.h"
 #include "virfile.h"
@@ -218,13 +217,6 @@ lxcDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
     int n;
     char *tmp = NULL;
     size_t i;
-
-    if (xmlXPathRegisterNs(ctxt, BAD_CAST "lxc", BAD_CAST LXC_NAMESPACE_HREF) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to register xml namespace '%s'"),
-                       LXC_NAMESPACE_HREF);
-        return -1;
-    }
 
     if (VIR_ALLOC(lxcDef) < 0)
         return -1;

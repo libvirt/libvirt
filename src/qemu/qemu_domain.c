@@ -73,7 +73,6 @@
 # include <selinux/selinux.h>
 #endif
 
-#include <libxml/xpathInternals.h>
 #include "dosname.h"
 
 #define QEMU_QXL_VGAMEM_DEFAULT 16 * 1024
@@ -3631,13 +3630,6 @@ qemuDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
 {
     qemuDomainXmlNsDefPtr nsdata = NULL;
     int ret = -1;
-
-    if (xmlXPathRegisterNs(ctxt, BAD_CAST "qemu", BAD_CAST QEMU_NAMESPACE_HREF) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to register xml namespace '%s'"),
-                       QEMU_NAMESPACE_HREF);
-        return -1;
-    }
 
     if (VIR_ALLOC(nsdata) < 0)
         return -1;

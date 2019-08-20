@@ -21344,6 +21344,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     def->ns = xmlopt->ns;
 
     if (def->ns.parse) {
+        if (virXMLNamespaceRegister(ctxt, &def->ns) < 0)
+            goto error;
         if ((def->ns.parse)(ctxt, &def->namespaceData) < 0)
             goto error;
     }

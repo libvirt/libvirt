@@ -27,8 +27,6 @@
 #include "viralloc.h"
 #include "virlog.h"
 
-#include <libxml/xpathInternals.h>
-
 #define VIR_FROM_THIS VIR_FROM_BHYVE
 
 VIR_LOG_INIT("bhyve.bhyve_domain");
@@ -204,13 +202,6 @@ bhyveDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
     int n;
     size_t i;
     int ret = -1;
-
-    if (xmlXPathRegisterNs(ctxt, BAD_CAST "bhyve", BAD_CAST BHYVE_NAMESPACE_HREF) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to register xml namespace '%s'"),
-                       BHYVE_NAMESPACE_HREF);
-        return -1;
-    }
 
     if (VIR_ALLOC(cmd) < 0)
         return -1;
