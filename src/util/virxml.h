@@ -246,3 +246,17 @@ VIR_DEFINE_AUTOCLEAN_FUNC(virXPathContextNodeSave, virXPathContextNodeRestore);
 
 VIR_DEFINE_AUTOPTR_FUNC(xmlDoc, xmlFreeDoc);
 VIR_DEFINE_AUTOPTR_FUNC(xmlXPathContext, xmlXPathFreeContext);
+
+typedef int (*virXMLNamespaceParse)(xmlXPathContextPtr ctxt, void **nsdata);
+typedef void (*virXMLNamespaceFree)(void *nsdata);
+typedef int (*virXMLNamespaceFormat)(virBufferPtr buf, void *nsdata);
+typedef const char *(*virXMLNamespaceHref)(void);
+
+struct _virXMLNamespace {
+    virXMLNamespaceParse parse;
+    virXMLNamespaceFree free;
+    virXMLNamespaceFormat format;
+    virXMLNamespaceHref href;
+};
+typedef struct _virXMLNamespace virXMLNamespace;
+typedef virXMLNamespace *virXMLNamespacePtr;
