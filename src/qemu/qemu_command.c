@@ -205,7 +205,7 @@ qemuBuildMasterKeyCommandLine(virCommandPtr cmd,
     int ret = -1;
     char *alias = NULL;
     char *path = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     /* If the -object secret does not exist, then just return. This just
      * means the domain won't be able to use a secret master key and is
@@ -235,7 +235,6 @@ qemuBuildMasterKeyCommandLine(virCommandPtr cmd,
     ret = 0;
 
  cleanup:
-    virBufferFreeAndReset(&buf);
     VIR_FREE(alias);
     VIR_FREE(path);
     return ret;
@@ -737,7 +736,7 @@ static int
 qemuBuildObjectSecretCommandLine(virCommandPtr cmd,
                                  qemuDomainSecretInfoPtr secinfo)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     int ret = -1;
     virJSONValuePtr props = NULL;
 
@@ -753,7 +752,6 @@ qemuBuildObjectSecretCommandLine(virCommandPtr cmd,
     ret  = 0;
 
  cleanup:
-    virBufferFreeAndReset(&buf);
     virJSONValueFree(props);
     return ret;
 }
@@ -935,7 +933,7 @@ qemuBuildTLSx509CommandLine(virCommandPtr cmd,
                             const char *alias,
                             virQEMUCapsPtr qemuCaps)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     int ret = -1;
     virJSONValuePtr props = NULL;
 
@@ -952,7 +950,6 @@ qemuBuildTLSx509CommandLine(virCommandPtr cmd,
     ret = 0;
 
  cleanup:
-    virBufferFreeAndReset(&buf);
     virJSONValueFree(props);
     return ret;
 }
@@ -988,7 +985,7 @@ qemuBuildNetworkDriveStr(virStorageSourcePtr src,
                          qemuDomainSecretInfoPtr secinfo)
 {
     char *ret = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
     switch ((virStorageNetProtocol) src->protocol) {
@@ -1141,7 +1138,6 @@ qemuBuildNetworkDriveStr(virStorageSourcePtr src,
     }
 
  cleanup:
-    virBufferFreeAndReset(&buf);
 
     return ret;
 }
@@ -1838,7 +1834,7 @@ static char *
 qemuBuildDriveStr(virDomainDiskDefPtr disk,
                   virQEMUCapsPtr qemuCaps)
 {
-    virBuffer opt = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) opt = VIR_BUFFER_INITIALIZER;
     int detect_zeroes = virDomainDiskGetDetectZeroesMode(disk->discard,
                                                          disk->detect_zeroes);
 
@@ -1922,7 +1918,6 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
     return virBufferContentAndReset(&opt);
 
  error:
-    virBufferFreeAndReset(&opt);
     return NULL;
 }
 
@@ -2005,7 +2000,7 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
                        unsigned int bootindex,
                        virQEMUCapsPtr qemuCaps)
 {
-    virBuffer opt = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) opt = VIR_BUFFER_INITIALIZER;
     const char *bus = virDomainDiskQEMUBusTypeToString(disk->bus);
     const char *contAlias;
     char *backendAlias = NULL;
@@ -2343,14 +2338,13 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
 
  error:
     VIR_FREE(backendAlias);
-    virBufferFreeAndReset(&opt);
     return NULL;
 }
 
 char *
 qemuBuildZPCIDevStr(virDomainDeviceInfoPtr dev)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAsprintf(&buf,
                       "zpci,uid=%u,fid=%u,target=%s,id=zpci%u",
@@ -2359,10 +2353,8 @@ qemuBuildZPCIDevStr(virDomainDeviceInfoPtr dev)
                       dev->alias,
                       dev->addr.pci.zpci.uid);
 
-    if (virBufferCheckError(&buf) < 0) {
-        virBufferFreeAndReset(&buf);
+    if (virBufferCheckError(&buf) < 0)
         return NULL;
-    }
 
     return virBufferContentAndReset(&buf);
 }
@@ -2405,7 +2397,7 @@ qemuBuildFloppyCommandLineControllerOptions(virCommandPtr cmd,
                                             virQEMUCapsPtr qemuCaps,
                                             unsigned int bootFloppy)
 {
-    virBuffer fdc_opts = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) fdc_opts = VIR_BUFFER_INITIALIZER;
     bool explicitfdc = qemuDomainNeedsFDC(def);
     bool hasfloppy = false;
     unsigned int bootindex;
@@ -2485,7 +2477,6 @@ qemuBuildFloppyCommandLineControllerOptions(virCommandPtr cmd,
     VIR_FREE(backendAlias);
     VIR_FREE(backendStr);
     VIR_FREE(bootindexStr);
-    virBufferFreeAndReset(&fdc_opts);
     return ret;
 }
 
@@ -2494,15 +2485,13 @@ static int
 qemuBuildObjectCommandline(virCommandPtr cmd,
                            virJSONValuePtr objProps)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (!objProps)
         return 0;
 
-    if (virQEMUBuildObjectCommandlineFromJSON(&buf, objProps) < 0) {
-        virBufferFreeAndReset(&buf);
+    if (virQEMUBuildObjectCommandlineFromJSON(&buf, objProps) < 0)
         return -1;
-    }
 
     virCommandAddArg(cmd, "-object");
     virCommandAddArgBuffer(cmd, &buf);
@@ -2939,7 +2928,7 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
                           virQEMUCapsPtr qemuCaps,
                           char **devstr)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     *devstr = NULL;
 
@@ -3123,7 +3112,6 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
     return 0;
 
  error:
-    virBufferFreeAndReset(&buf);
     return -1;
 }
 
@@ -3749,7 +3737,7 @@ char *
 qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem,
                          qemuDomainObjPrivatePtr priv)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *device;
 
     if (!mem->info.alias) {
@@ -3835,7 +3823,7 @@ qemuBuildNicDevStr(virDomainDefPtr def,
                    size_t vhostfdSize,
                    virQEMUCapsPtr qemuCaps)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     bool usingVirtio = false;
     char macaddr[VIR_MAC_STRING_BUFLEN];
 
@@ -3996,7 +3984,6 @@ qemuBuildNicDevStr(virDomainDefPtr def,
     return virBufferContentAndReset(&buf);
 
  error:
-    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -4010,7 +3997,7 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
                     size_t vhostfdSize)
 {
     bool is_tap = false;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virDomainNetType netType = virDomainNetGetActualType(net);
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     size_t i;
@@ -4145,7 +4132,6 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
 
     ret = virBufferContentAndReset(&buf);
  cleanup:
-    virBufferFreeAndReset(&buf);
     virObjectUnref(cfg);
     VIR_FREE(addr);
     return ret;
@@ -4157,7 +4143,7 @@ qemuBuildWatchdogDevStr(const virDomainDef *def,
                         virDomainWatchdogDefPtr dev,
                         virQEMUCapsPtr qemuCaps)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     const char *model = virDomainWatchdogModelTypeToString(dev->model);
     if (!model) {
@@ -4176,7 +4162,6 @@ qemuBuildWatchdogDevStr(const virDomainDef *def,
     return virBufferContentAndReset(&buf);
 
  error:
-    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -4230,7 +4215,7 @@ qemuBuildMemballoonCommandLine(virCommandPtr cmd,
                                const virDomainDef *def,
                                virQEMUCapsPtr qemuCaps)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (!virDomainDefHasMemballoon(def))
         return 0;
@@ -4261,7 +4246,6 @@ qemuBuildMemballoonCommandLine(virCommandPtr cmd,
     return 0;
 
  error:
-    virBufferFreeAndReset(&buf);
     return -1;
 }
 
@@ -4269,7 +4253,7 @@ qemuBuildMemballoonCommandLine(virCommandPtr cmd,
 static char *
 qemuBuildNVRAMDevStr(virDomainNVRAMDefPtr dev)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (dev->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO &&
         dev->info.addr.spaprvio.has_reg) {
@@ -4287,7 +4271,6 @@ qemuBuildNVRAMDevStr(virDomainNVRAMDefPtr dev)
     return virBufferContentAndReset(&buf);
 
  error:
-    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -4330,7 +4313,7 @@ qemuBuildVirtioInputDevStr(const virDomainDef *def,
                            virDomainInputDefPtr dev,
                            virQEMUCapsPtr qemuCaps)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     switch ((virDomainInputType)dev->type) {
     case VIR_DOMAIN_INPUT_TYPE_MOUSE:
@@ -4382,7 +4365,6 @@ qemuBuildVirtioInputDevStr(const virDomainDef *def,
     return virBufferContentAndReset(&buf);
 
  error:
-    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -4391,7 +4373,7 @@ qemuBuildUSBInputDevStr(const virDomainDef *def,
                         virDomainInputDefPtr dev,
                         virQEMUCapsPtr qemuCaps)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     switch (dev->type) {
     case VIR_DOMAIN_INPUT_TYPE_MOUSE:
@@ -4420,7 +4402,6 @@ qemuBuildUSBInputDevStr(const virDomainDef *def,
     return virBufferContentAndReset(&buf);
 
  error:
-    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -4480,7 +4461,7 @@ qemuBuildSoundDevStr(const virDomainDef *def,
                      virDomainSoundDefPtr sound,
                      virQEMUCapsPtr qemuCaps)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *model = NULL;
 
     /* Hack for devices with different names in QEMU and libvirt */
@@ -4533,7 +4514,6 @@ qemuBuildSoundDevStr(const virDomainDef *def,
     return virBufferContentAndReset(&buf);
 
  error:
-    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -4559,7 +4539,7 @@ qemuBuildSoundCodecStr(virDomainSoundDefPtr sound,
                        virDomainSoundCodecDefPtr codec,
                        virQEMUCapsPtr qemuCaps)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *stype;
     int type, flags;
 
@@ -4579,7 +4559,6 @@ qemuBuildSoundCodecStr(virDomainSoundDefPtr sound,
     return virBufferContentAndReset(&buf);
 
  error:
-    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -4653,7 +4632,7 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
                         virDomainVideoDefPtr video,
                         virQEMUCapsPtr qemuCaps)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *model;
 
     /* We try to chose the best model for primary video device by preferring
@@ -4741,7 +4720,6 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
     return virBufferContentAndReset(&buf);
 
  error:
-    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -4884,7 +4862,7 @@ qemuBuildPCIHostdevDevStr(const virDomainDef *def,
                           unsigned int bootIndex, /* used iff dev->info->bootIndex == 0 */
                           virQEMUCapsPtr qemuCaps)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virDomainHostdevSubsysPCIPtr pcisrc = &dev->source.subsys.u.pci;
     int backend = pcisrc->backend;
 
@@ -4927,7 +4905,6 @@ qemuBuildPCIHostdevDevStr(const virDomainDef *def,
     return virBufferContentAndReset(&buf);
 
  error:
-    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -4937,7 +4914,7 @@ qemuBuildUSBHostdevDevStr(const virDomainDef *def,
                           virDomainHostdevDefPtr dev,
                           virQEMUCapsPtr qemuCaps)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virDomainHostdevSubsysUSBPtr usbsrc = &dev->source.subsys.u.usb;
 
     if (!dev->missing && !usbsrc->bus && !usbsrc->device) {
@@ -4964,7 +4941,6 @@ qemuBuildUSBHostdevDevStr(const virDomainDef *def,
     return virBufferContentAndReset(&buf);
 
  error:
-    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -4974,7 +4950,7 @@ qemuBuildHubDevStr(const virDomainDef *def,
                    virDomainHubDefPtr dev,
                    virQEMUCapsPtr qemuCaps)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (dev->type != VIR_DOMAIN_HUB_TYPE_USB) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -5000,7 +4976,6 @@ qemuBuildHubDevStr(const virDomainDef *def,
     return virBufferContentAndReset(&buf);
 
  error:
-    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -5045,7 +5020,7 @@ qemuBuildSCSIiSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
                                 virQEMUCapsPtr qemuCaps)
 {
     char *ret = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *netsource = NULL;
     virJSONValuePtr srcprops = NULL;
     virDomainHostdevSubsysSCSIPtr scsisrc = &dev->source.subsys.u.scsi;
@@ -5077,7 +5052,6 @@ qemuBuildSCSIiSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
  cleanup:
     VIR_FREE(netsource);
     virJSONValueFree(srcprops);
-    virBufferFreeAndReset(&buf);
     return ret;
 }
 
@@ -5087,7 +5061,7 @@ qemuBuildSCSIVHostHostdevDevStr(const virDomainDef *def,
                            virQEMUCapsPtr qemuCaps,
                            char *vhostfdName)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virDomainHostdevSubsysSCSIVHostPtr hostsrc = &dev->source.subsys.u.scsi_host;
 
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VHOST_SCSI)) {
@@ -5115,7 +5089,6 @@ qemuBuildSCSIVHostHostdevDevStr(const virDomainDef *def,
     return virBufferContentAndReset(&buf);
 
  cleanup:
-    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -5123,7 +5096,7 @@ char *
 qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
                            virQEMUCapsPtr qemuCaps)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *source = NULL;
     char *drivealias = NULL;
     virDomainHostdevSubsysSCSIPtr scsisrc = &dev->source.subsys.u.scsi;
@@ -5152,7 +5125,6 @@ qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
 
     return virBufferContentAndReset(&buf);
  error:
-    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -5160,7 +5132,7 @@ char *
 qemuBuildSCSIHostdevDevStr(const virDomainDef *def,
                            virDomainHostdevDefPtr dev)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     int model = -1;
     char *driveAlias;
     const char *contAlias;
@@ -5217,7 +5189,6 @@ qemuBuildSCSIHostdevDevStr(const virDomainDef *def,
 
     return virBufferContentAndReset(&buf);
  error:
-    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -5362,7 +5333,7 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
                        unsigned int flags)
 {
     qemuDomainChrSourcePrivatePtr chrSourcePriv = QEMU_DOMAIN_CHR_SOURCE_PRIVATE(dev);
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     bool telnet;
     char *charAlias = NULL;
     char *ret = NULL;
@@ -5553,7 +5524,6 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
     ret = virBufferContentAndReset(&buf);
  cleanup:
     VIR_FREE(charAlias);
-    virBufferFreeAndReset(&buf);
     return ret;
 }
 
@@ -5562,7 +5532,7 @@ qemuBuildHostdevMediatedDevStr(const virDomainDef *def,
                                virDomainHostdevDefPtr dev,
                                virQEMUCapsPtr qemuCaps)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virDomainHostdevSubsysMediatedDevPtr mdevsrc = &dev->source.subsys.u.mdev;
     char *ret = NULL;
     char *mdevPath = NULL;
@@ -5593,7 +5563,6 @@ qemuBuildHostdevMediatedDevStr(const virDomainDef *def,
 
  cleanup:
     VIR_FREE(mdevPath);
-    virBufferFreeAndReset(&buf);
     return ret;
 }
 
@@ -5821,7 +5790,7 @@ static char *
 qemuBuildVirtioSerialPortDevStr(const virDomainDef *def,
                                 virDomainChrDefPtr dev)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *contAlias;
 
     switch (dev->deviceType) {
@@ -5881,14 +5850,13 @@ qemuBuildVirtioSerialPortDevStr(const virDomainDef *def,
     return virBufferContentAndReset(&buf);
 
  error:
-    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
 static char *
 qemuBuildSclpDevStr(virDomainChrDefPtr dev)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     if (dev->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE) {
         switch (dev->targetType) {
         case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLP:
@@ -5911,7 +5879,6 @@ qemuBuildSclpDevStr(virDomainChrDefPtr dev)
     return virBufferContentAndReset(&buf);
 
  error:
-    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -6020,7 +5987,7 @@ qemuBuildRNGDevStr(const virDomainDef *def,
                    virDomainRNGDefPtr dev,
                    virQEMUCapsPtr qemuCaps)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (!qemuDomainCheckCCWS390AddressSupport(def, &dev->info, qemuCaps,
                                               dev->source.file))
@@ -6053,7 +6020,6 @@ qemuBuildRNGDevStr(const virDomainDef *def,
     return virBufferContentAndReset(&buf);
 
  error:
-    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -6122,7 +6088,7 @@ qemuBuildRNGCommandLine(virLogManagerPtr logManager,
 static char *
 qemuBuildSmbiosBiosStr(virSysinfoBIOSDefPtr def)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (!def)
         return NULL;
@@ -6158,7 +6124,7 @@ static char *
 qemuBuildSmbiosSystemStr(virSysinfoSystemDefPtr def,
                          bool skip_uuid)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (!def ||
         (!def->manufacturer && !def->product && !def->version &&
@@ -6211,7 +6177,7 @@ qemuBuildSmbiosSystemStr(virSysinfoSystemDefPtr def,
 static char *
 qemuBuildSmbiosBaseBoardStr(virSysinfoBaseBoardDefPtr def)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (!def)
         return NULL;
@@ -6253,7 +6219,6 @@ qemuBuildSmbiosBaseBoardStr(virSysinfoBaseBoardDefPtr def)
     return virBufferContentAndReset(&buf);
 
  error:
-    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -6261,7 +6226,7 @@ qemuBuildSmbiosBaseBoardStr(virSysinfoBaseBoardDefPtr def)
 static char *
 qemuBuildSmbiosOEMStringsStr(virSysinfoOEMStringsDefPtr def)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
     if (!def)
@@ -6281,7 +6246,7 @@ qemuBuildSmbiosOEMStringsStr(virSysinfoOEMStringsDefPtr def)
 static char *
 qemuBuildSmbiosChassisStr(virSysinfoChassisDefPtr def)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (!def)
         return NULL;
@@ -6318,7 +6283,6 @@ qemuBuildSmbiosChassisStr(virSysinfoChassisDefPtr def)
     return virBufferContentAndReset(&buf);
 
  error:
-    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -6410,7 +6374,7 @@ qemuBuildVMGenIDCommandLine(virCommandPtr cmd,
                             const virDomainDef *def,
                             virQEMUCapsPtr qemuCaps)
 {
-    virBuffer opts = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) opts = VIR_BUFFER_INITIALIZER;
     char guid[VIR_UUID_STRING_BUFLEN];
 
     if (!def->genidRequested)
@@ -6428,7 +6392,6 @@ qemuBuildVMGenIDCommandLine(virCommandPtr cmd,
     virCommandAddArg(cmd, "-device");
     virCommandAddArgBuffer(cmd, &opts);
 
-    virBufferFreeAndReset(&opts);
     return 0;
 }
 
@@ -6461,7 +6424,7 @@ static char *
 qemuBuildClockArgStr(virDomainClockDefPtr def)
 {
     size_t i;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     switch (def->offset) {
     case VIR_DOMAIN_CLOCK_OFFSET_UTC:
@@ -6572,7 +6535,6 @@ qemuBuildClockArgStr(virDomainClockDefPtr def)
     return virBufferContentAndReset(&buf);
 
  error:
-    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -6747,7 +6709,7 @@ qemuBuildBootCommandLine(virCommandPtr cmd,
                          const virDomainDef *def,
                          virQEMUCapsPtr qemuCaps)
 {
-    virBuffer boot_buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) boot_buf = VIR_BUFFER_INITIALIZER;
     char *boot_opts_str = NULL;
 
     if (def->os.bootmenu) {
@@ -6816,7 +6778,6 @@ qemuBuildBootCommandLine(virCommandPtr cmd,
 
  error:
     VIR_FREE(boot_opts_str);
-    virBufferFreeAndReset(&boot_buf);
     return -1;
 }
 
@@ -7051,8 +7012,8 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
     virArch hostarch = virArchFromHost();
     char *cpu = NULL, *cpu_flags = NULL;
     int ret = -1;
-    virBuffer cpu_buf = VIR_BUFFER_INITIALIZER;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) cpu_buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
     if (def->cpu &&
@@ -7263,8 +7224,6 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
  cleanup:
     VIR_FREE(cpu);
     VIR_FREE(cpu_flags);
-    virBufferFreeAndReset(&buf);
-    virBufferFreeAndReset(&cpu_buf);
     return ret;
 }
 
@@ -7336,7 +7295,7 @@ qemuBuildNameCommandLine(virCommandPtr cmd,
                          const virDomainDef *def,
                          virQEMUCapsPtr qemuCaps)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virCommandAddArg(cmd, "-name");
 
@@ -7366,7 +7325,7 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
     virTristateSwitch vmport = def->features[VIR_DOMAIN_FEATURE_VMPORT];
     virTristateSwitch smm = def->features[VIR_DOMAIN_FEATURE_SMM];
     virCPUDefPtr cpu = def->cpu;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
     int ret = -1;
 
@@ -7646,7 +7605,6 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
 
     ret = 0;
  cleanup:
-    virBufferFreeAndReset(&buf);
     return ret;
 }
 
@@ -7671,7 +7629,7 @@ qemuBuildSmpCommandLine(virCommandPtr cmd,
                         virDomainDefPtr def)
 {
     char *smp;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     unsigned int maxvcpus = virDomainDefGetVcpusMax(def);
     unsigned int nvcpus = 0;
     virDomainVcpuDefPtr vcpu;
@@ -7836,7 +7794,7 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
 {
     size_t i, j;
     virQEMUCapsPtr qemuCaps = priv->qemuCaps;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *cpumask = NULL;
     char *tmpmask = NULL;
     char *next = NULL;
@@ -7984,7 +7942,6 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
         VIR_FREE(nodeBackends);
     }
 
-    virBufferFreeAndReset(&buf);
     return ret;
 }
 
@@ -8000,7 +7957,7 @@ qemuBuildMemoryDeviceCommandLine(virCommandPtr cmd,
     /* memory hotplug requires NUMA to be enabled - we already checked
      * that memory devices are present only when NUMA is */
     for (i = 0; i < def->nmems; i++) {
-        virBuffer buf = VIR_BUFFER_INITIALIZER;
+        VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
         char *dimmStr;
 
         if (qemuBuildMemoryDimmBackendStr(&buf, def->mems[i], def, cfg, priv) < 0)
@@ -8028,7 +7985,7 @@ qemuBuildGraphicsSDLCommandLine(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
                                 virDomainGraphicsDefPtr graphics)
 {
     int ret = -1;
-    virBuffer opt = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) opt = VIR_BUFFER_INITIALIZER;
 
     if (graphics->data.sdl.xauth)
         virCommandAddEnvPair(cmd, "XAUTHORITY", graphics->data.sdl.xauth);
@@ -8067,7 +8024,6 @@ qemuBuildGraphicsSDLCommandLine(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
 
     ret = 0;
  cleanup:
-    virBufferFreeAndReset(&opt);
     return ret;
 }
 
@@ -8078,7 +8034,7 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
                                 virQEMUCapsPtr qemuCaps,
                                 virDomainGraphicsDefPtr graphics)
 {
-    virBuffer opt = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) opt = VIR_BUFFER_INITIALIZER;
     virDomainGraphicsListenDefPtr glisten = NULL;
     bool escapeAddr;
 
@@ -8204,7 +8160,6 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
     return 0;
 
  error:
-    virBufferFreeAndReset(&opt);
     return -1;
 }
 
@@ -8215,7 +8170,7 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
                                   virQEMUCapsPtr qemuCaps,
                                   virDomainGraphicsDefPtr graphics)
 {
-    virBuffer opt = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) opt = VIR_BUFFER_INITIALIZER;
     virDomainGraphicsListenDefPtr glisten = NULL;
     int port = graphics->data.spice.port;
     int tlsPort = graphics->data.spice.tlsPort;
@@ -8456,7 +8411,6 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
     return 0;
 
  error:
-    virBufferFreeAndReset(&opt);
     return -1;
 }
 
@@ -8468,7 +8422,7 @@ qemuBuildGraphicsEGLHeadlessCommandLine(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNU
                                         virDomainGraphicsDefPtr graphics)
 {
     int ret = -1;
-    virBuffer opt = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) opt = VIR_BUFFER_INITIALIZER;
 
     virBufferAddLit(&opt, "egl-headless");
 
@@ -8493,7 +8447,6 @@ qemuBuildGraphicsEGLHeadlessCommandLine(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNU
 
     ret = 0;
  cleanup:
-    virBufferFreeAndReset(&opt);
     return ret;
 }
 
@@ -9042,7 +8995,7 @@ qemuBuildSmartcardCommandLine(virLogManagerPtr logManager,
     size_t i;
     virDomainSmartcardDefPtr smartcard;
     char *devstr;
-    virBuffer opt = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) opt = VIR_BUFFER_INITIALIZER;
     const char *database;
     const char *contAlias = NULL;
     unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT |
@@ -9064,7 +9017,6 @@ qemuBuildSmartcardCommandLine(virLogManagerPtr logManager,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("this QEMU binary lacks multiple smartcard "
                          "support"));
-        virBufferFreeAndReset(&opt);
         return -1;
     }
 
@@ -9115,7 +9067,6 @@ qemuBuildSmartcardCommandLine(virLogManagerPtr logManager,
                                               smartcard->data.passthru,
                                               smartcard->info.alias,
                                               qemuCaps, cdevflags))) {
-            virBufferFreeAndReset(&opt);
             return -1;
         }
         virCommandAddArg(cmd, "-chardev");
@@ -9130,7 +9081,6 @@ qemuBuildSmartcardCommandLine(virLogManagerPtr logManager,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected smartcard type %d"),
                        smartcard->type);
-        virBufferFreeAndReset(&opt);
         return -1;
     }
 
@@ -9155,7 +9105,7 @@ qemuBuildShmemDevLegacyStr(virDomainDefPtr def,
                            virDomainShmemDefPtr shmem,
                            virQEMUCapsPtr qemuCaps)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_IVSHMEM)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -9193,7 +9143,6 @@ qemuBuildShmemDevLegacyStr(virDomainDefPtr def,
     return virBufferContentAndReset(&buf);
 
  error:
-    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -9202,7 +9151,7 @@ qemuBuildShmemDevStr(virDomainDefPtr def,
                      virDomainShmemDefPtr shmem,
                      virQEMUCapsPtr qemuCaps)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if ((shmem->model == VIR_DOMAIN_SHMEM_MODEL_IVSHMEM_PLAIN &&
          !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_IVSHMEM_PLAIN)) ||
@@ -9230,10 +9179,8 @@ qemuBuildShmemDevStr(virDomainDefPtr def,
                           virTristateSwitchTypeToString(shmem->msi.ioeventfd));
     }
 
-    if (qemuBuildDeviceAddressStr(&buf, def, &shmem->info, qemuCaps) < 0) {
-        virBufferFreeAndReset(&buf);
+    if (qemuBuildDeviceAddressStr(&buf, def, &shmem->info, qemuCaps) < 0)
         return NULL;
-    }
 
     if (virBufferCheckError(&buf) < 0)
         return NULL;
@@ -9279,7 +9226,7 @@ qemuBuildShmemCommandLine(virLogManagerPtr logManager,
                           bool chardevStdioLogd)
 {
     virJSONValuePtr memProps = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *devstr = NULL;
     int rc;
     unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT |
@@ -9711,7 +9658,7 @@ qemuBuildRedirdevDevStr(const virDomainDef *def,
                         virQEMUCapsPtr qemuCaps)
 {
     size_t i;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virDomainRedirFilterDefPtr redirfilter = def->redirfilter;
 
     if (dev->bus != VIR_DOMAIN_REDIRDEV_BUS_USB) {
@@ -9781,7 +9728,6 @@ qemuBuildRedirdevDevStr(const virDomainDef *def,
     return virBufferContentAndReset(&buf);
 
  error:
-    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -9833,7 +9779,7 @@ qemuBuildDomainLoaderCommandLine(virCommandPtr cmd,
                                  virDomainDefPtr def)
 {
     virDomainLoaderDefPtr loader = def->os.loader;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     int unit = 0;
 
     if (!loader)
@@ -9883,8 +9829,6 @@ qemuBuildDomainLoaderCommandLine(virCommandPtr cmd,
         /* nada */
         break;
     }
-
-    virBufferFreeAndReset(&buf);
 }
 
 
@@ -9892,7 +9836,7 @@ static char *
 qemuBuildTPMDevStr(const virDomainDef *def,
                    virQEMUCapsPtr qemuCaps)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const virDomainTPMDef *tpm = def->tpm;
     const char *model = virDomainTPMModelTypeToString(tpm->model);
     virQEMUCapsFlags flag;
@@ -9927,7 +9871,6 @@ qemuBuildTPMDevStr(const virDomainDef *def,
     return virBufferContentAndReset(&buf);
 
  error:
-    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -9965,7 +9908,7 @@ qemuBuildTPMBackendStr(const virDomainDef *def,
                        char **chardev)
 {
     const virDomainTPMDef *tpm = def->tpm;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *cancel_path = NULL;
     char *devset = NULL;
     char *cancelset = NULL;
@@ -10024,8 +9967,6 @@ qemuBuildTPMBackendStr(const virDomainDef *def,
  error:
     VIR_FREE(devset);
     VIR_FREE(cancel_path);
-
-    virBufferFreeAndReset(&buf);
     return NULL;
 }
 
@@ -10088,7 +10029,7 @@ static int
 qemuBuildSEVCommandLine(virDomainObjPtr vm, virCommandPtr cmd,
                         virDomainSEVDefPtr sev)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *path = NULL;
     int ret = -1;
@@ -10121,7 +10062,6 @@ qemuBuildSEVCommandLine(virDomainObjPtr vm, virCommandPtr cmd,
     virCommandAddArgBuffer(cmd, &buf);
     ret = 0;
  cleanup:
-    virBufferFreeAndReset(&buf);
     return ret;
 }
 
@@ -10306,7 +10246,7 @@ qemuBuildManagedPRCommandLine(virCommandPtr cmd,
                               const virDomainDef *def,
                               qemuDomainObjPrivatePtr priv)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virJSONValuePtr props = NULL;
     int ret = -1;
 
@@ -10324,7 +10264,6 @@ qemuBuildManagedPRCommandLine(virCommandPtr cmd,
 
     ret = 0;
  cleanup:
-    virBufferFreeAndReset(&buf);
     virJSONValueFree(props);
     return ret;
 }
@@ -10455,7 +10394,7 @@ qemuBuildVsockDevStr(virDomainDefPtr def,
                      const char *fdprefix)
 {
     qemuDomainVsockPrivatePtr priv = (qemuDomainVsockPrivatePtr)vsock->privateData;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *ret = NULL;
 
 
@@ -10476,7 +10415,6 @@ qemuBuildVsockDevStr(virDomainDefPtr def,
     ret = virBufferContentAndReset(&buf);
 
  cleanup:
-    virBufferFreeAndReset(&buf);
     return ret;
 }
 
@@ -10803,7 +10741,7 @@ qemuBuildSerialChrDeviceStr(char **deviceStr,
                             virDomainChrDefPtr serial,
                             virQEMUCapsPtr qemuCaps)
 {
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virQEMUCapsFlags caps;
 
     switch ((virDomainChrSerialTargetModel) serial->targetModel) {
@@ -10851,7 +10789,6 @@ qemuBuildSerialChrDeviceStr(char **deviceStr,
     return 0;
 
  error:
-    virBufferFreeAndReset(&buf);
     return -1;
 }
 
