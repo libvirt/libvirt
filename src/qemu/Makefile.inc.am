@@ -187,20 +187,20 @@ INSTALL_DATA_DIRS += qemu
 
 install-data-qemu:
 	$(MKDIR_P) -m 0751 "$(DESTDIR)$(localstatedir)/lib/libvirt/qemu"
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/qemu"
+	$(MKDIR_P) "$(DESTDIR)$(runstatedir)/libvirt/qemu"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/cache/libvirt/qemu"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/log/libvirt/qemu"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/swtpm"
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/qemu/swtpm"
+	$(MKDIR_P) "$(DESTDIR)$(runstatedir)/libvirt/qemu/swtpm"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/log/swtpm/libvirt/qemu"
 
 uninstall-data-qemu:
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/qemu" ||:
-	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/qemu" ||:
+	rmdir "$(DESTDIR)$(runstatedir)/libvirt/qemu" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/cache/libvirt/qemu" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/log/libvirt/qemu" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/swtpm"
-	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/qemu/swtpm" ||:
+	rmdir "$(DESTDIR)$(runstatedir)/libvirt/qemu/swtpm" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/log/swtpm/libvirt/qemu" ||:
 
 endif WITH_QEMU

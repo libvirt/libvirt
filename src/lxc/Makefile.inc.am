@@ -229,12 +229,12 @@ INSTALL_DATA_DIRS += lxc
 
 install-data-lxc:
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/lxc"
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/lxc"
+	$(MKDIR_P) "$(DESTDIR)$(runstatedir)/libvirt/lxc"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/log/libvirt/lxc"
 
 uninstall-data-lxc:
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/lxc" ||:
-	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/lxc" ||:
+	rmdir "$(DESTDIR)$(runstatedir)/libvirt/lxc" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/log/libvirt/lxc" ||:
 
 endif WITH_LXC

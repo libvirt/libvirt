@@ -129,12 +129,12 @@ INSTALL_DATA_DIRS += libxl
 
 install-data-libxl:
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/libxl"
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/libxl"
+	$(MKDIR_P) "$(DESTDIR)$(runstatedir)/libvirt/libxl"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/log/libvirt/libxl"
 
 uninstall-data-libxl:
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/libxl" ||:
-	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/libxl" ||:
+	rmdir "$(DESTDIR)$(runstatedir)/libvirt/libxl" ||:
 	rmdir "$(DESTDIR)$(localstatedir)/log/libvirt/libxl" ||:
 
 endif WITH_LIBXL

@@ -136,7 +136,7 @@ UUID=$(shell uuidgen 2>/dev/null)
 install-data-network:
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/network"
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/lib/libvirt/dnsmasq"
-	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/run/libvirt/network"
+	$(MKDIR_P) "$(DESTDIR)$(runstatedir)/libvirt/network"
 	$(MKDIR_P) "$(DESTDIR)$(confdir)/qemu/networks/autostart"
 	$(INSTALL_DATA) $(srcdir)/network/default.xml \
 	  $(DESTDIR)$(confdir)/qemu/networks/default.xml
@@ -163,7 +163,7 @@ uninstall-data-network:
 	rmdir "$(DESTDIR)$(confdir)/qemu/networks/autostart" || :
 	rmdir "$(DESTDIR)$(confdir)/qemu/networks" || :
 	rmdir "$(DESTDIR)$(localstatedir)/lib/libvirt/network" ||:
-	rmdir "$(DESTDIR)$(localstatedir)/run/libvirt/network" ||:
+	rmdir "$(DESTDIR)$(runstatedir)/libvirt/network" ||:
 if WITH_FIREWALLD_ZONE
 	rm -f  $(DESTDIR)$(prefix)/lib/firewalld/zones/libvirt.xml
 endif WITH_FIREWALLD_ZONE
