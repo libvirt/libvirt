@@ -91,7 +91,7 @@ struct _virLXCDomainObjPrivate {
     struct virLXCDomainJobObj job;
 };
 
-extern virDomainXMLNamespace virLXCDriverDomainXMLNamespace;
+extern virXMLNamespace virLXCDriverDomainXMLNamespace;
 extern virDomainXMLPrivateDataCallbacks virLXCDriverPrivateDataCallbacks;
 extern virDomainDefParserConfig virLXCDriverDomainDefParserConfig;
 

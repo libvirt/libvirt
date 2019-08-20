@@ -854,7 +854,7 @@ void qemuDomainCleanupRun(virQEMUDriverPtr driver,
 void qemuDomainObjPrivateDataClear(qemuDomainObjPrivatePtr priv);
 
 extern virDomainXMLPrivateDataCallbacks virQEMUDriverPrivateDataCallbacks;
-extern virDomainXMLNamespace virQEMUDriverDomainXMLNamespace;
+extern virXMLNamespace virQEMUDriverDomainXMLNamespace;
 extern virDomainDefParserConfig virQEMUDriverDomainDefParserConfig;
 extern virDomainABIStability virQEMUDriverDomainABIStability;
 extern virSaveCookieCallbacks virQEMUDriverDomainSaveCookie;

@@ -317,7 +317,7 @@ lxcDomainDefNamespaceHref(void)
 }
 
 
-virDomainXMLNamespace virLXCDriverDomainXMLNamespace = {
+virXMLNamespace virLXCDriverDomainXMLNamespace = {
     .parse = lxcDomainDefNamespaceParse,
     .free = lxcDomainDefNamespaceFree,
     .format = lxcDomainDefNamespaceFormatXML,

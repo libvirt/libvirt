@@ -426,7 +426,7 @@ testDomainObjPrivateFree(void *data)
 static testDriverPtr
 testDriverNew(void)
 {
-    virDomainXMLNamespace ns = {
+    virXMLNamespace ns = {
         .parse = testDomainDefNamespaceParse,
         .free = testDomainDefNamespaceFree,
     };

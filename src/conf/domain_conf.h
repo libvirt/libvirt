@@ -2491,7 +2491,7 @@ struct _virDomainDef {
     virDomainVsockDefPtr vsock;
 
     void *namespaceData;
-    virDomainXMLNamespace ns;
+    virXMLNamespace ns;
 
     virDomainKeyWrapDefPtr keywrap;
 
@@ -2731,7 +2731,7 @@ struct _virDomainABIStability {
 
 virDomainXMLOptionPtr virDomainXMLOptionNew(virDomainDefParserConfigPtr config,
                                             virDomainXMLPrivateDataCallbacksPtr priv,
-                                            virDomainXMLNamespacePtr xmlns,
+                                            virXMLNamespacePtr xmlns,
                                             virDomainABIStabilityPtr abi,
                                             virSaveCookieCallbacksPtr saveCookie);
 
@@ -2747,7 +2747,7 @@ int virDomainXMLOptionRunMomentPostParse(virDomainXMLOptionPtr xmlopt,
 
 void virDomainNetGenerateMAC(virDomainXMLOptionPtr xmlopt, virMacAddrPtr mac);
 
-virDomainXMLNamespacePtr
+virXMLNamespacePtr
 virDomainXMLOptionGetNamespace(virDomainXMLOptionPtr xmlopt)
     ATTRIBUTE_NONNULL(1);
 

@@ -3728,7 +3728,7 @@ qemuDomainDefNamespaceHref(void)
 }
 
 
-virDomainXMLNamespace virQEMUDriverDomainXMLNamespace = {
+virXMLNamespace virQEMUDriverDomainXMLNamespace = {
     .parse = qemuDomainDefNamespaceParse,
     .free = qemuDomainDefNamespaceFree,
     .format = qemuDomainDefNamespaceFormatXML,

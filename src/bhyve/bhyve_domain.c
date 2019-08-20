@@ -273,7 +273,7 @@ bhyveDomainDefNamespaceHref(void)
     return "xmlns:bhyve='" BHYVE_NAMESPACE_HREF "'";
 }
 
-virDomainXMLNamespace virBhyveDriverDomainXMLNamespace = {
+virXMLNamespace virBhyveDriverDomainXMLNamespace = {
     .parse = bhyveDomainDefNamespaceParse,
     .free = bhyveDomainDefNamespaceFree,
     .format = bhyveDomainDefNamespaceFormatXML,

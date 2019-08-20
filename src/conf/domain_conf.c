@@ -79,7 +79,7 @@ struct _virDomainXMLOption {
     virDomainXMLPrivateDataCallbacks privateData;
 
     /* XML namespace callbacks */
-    virDomainXMLNamespace ns;
+    virXMLNamespace ns;
 
     /* ABI stability callbacks */
     virDomainABIStability abi;
@@ -1385,7 +1385,7 @@ virDomainKeyWrapDefParseXML(virDomainDefPtr def, xmlXPathContextPtr ctxt)
 virDomainXMLOptionPtr
 virDomainXMLOptionNew(virDomainDefParserConfigPtr config,
                       virDomainXMLPrivateDataCallbacksPtr priv,
-                      virDomainXMLNamespacePtr xmlns,
+                      virXMLNamespacePtr xmlns,
                       virDomainABIStabilityPtr abi,
                       virSaveCookieCallbacksPtr saveCookie)
 {
@@ -1435,7 +1435,7 @@ virDomainXMLOptionNew(virDomainDefParserConfigPtr config,
  * Returns a pointer to the stored namespace structure.
  * The lifetime of the pointer is equal to @xmlopt;
  */
-virDomainXMLNamespacePtr
+virXMLNamespacePtr
 virDomainXMLOptionGetNamespace(virDomainXMLOptionPtr xmlopt)
 {
     return &xmlopt->ns;

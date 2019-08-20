@@ -342,9 +342,6 @@ typedef virDomainVsockDef *virDomainVsockDefPtr;
 typedef struct _virDomainWatchdogDef virDomainWatchdogDef;
 typedef virDomainWatchdogDef *virDomainWatchdogDefPtr;
 
-typedef struct _virDomainXMLNamespace virDomainXMLNamespace;
-typedef virDomainXMLNamespace *virDomainXMLNamespacePtr;
-
 typedef struct _virDomainXMLOption virDomainXMLOption;
 typedef virDomainXMLOption *virDomainXMLOptionPtr;
 

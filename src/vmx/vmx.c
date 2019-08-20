@@ -603,7 +603,7 @@ virVMXDomainDefNamespaceHref(void)
     return "xmlns:vmware='http://libvirt.org/schemas/domain/vmware/1.0'";
 }
 
-static virDomainXMLNamespace virVMXDomainXMLNamespace = {
+static virXMLNamespace virVMXDomainXMLNamespace = {
     .parse = NULL,
     .free = virVMXDomainDefNamespaceFree,
     .format = virVMXDomainDefNamespaceFormatXML,
