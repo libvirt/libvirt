@@ -1542,7 +1542,7 @@ virStorageBackend virStorageBackendRBD = {
 };
 
 
-static virStoragePoolXMLNamespace virStoragePoolRBDXMLNamespace = {
+static virXMLNamespace virStoragePoolRBDXMLNamespace = {
     .parse = virStoragePoolDefRBDNamespaceParse,
     .free = virStoragePoolDefRBDNamespaceFree,
     .format = virStoragePoolDefRBDNamespaceFormatXML,

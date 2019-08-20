@@ -92,7 +92,7 @@ VIR_LOG_INIT("storage.storage_util");
  */
 int
 virStorageBackendNamespaceInit(int poolType,
-                               virStoragePoolXMLNamespacePtr xmlns)
+                               virXMLNamespacePtr xmlns)
 {
     return virStoragePoolOptionsPoolTypeSetXMLNamespace(poolType, xmlns);
 }

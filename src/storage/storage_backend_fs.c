@@ -701,7 +701,7 @@ virStorageBackend virStorageBackendNetFileSystem = {
     .wipeVol = virStorageBackendVolWipeLocal,
 };
 
-static virStoragePoolXMLNamespace virStoragePoolFSXMLNamespace = {
+static virXMLNamespace virStoragePoolFSXMLNamespace = {
     .parse = virStoragePoolDefFSNamespaceParse,
     .free = virStoragePoolDefFSNamespaceFree,
     .format = virStoragePoolDefFSNamespaceFormatXML,

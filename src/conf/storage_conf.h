@@ -31,28 +31,13 @@
 #include "storage_adapter_conf.h"
 #include "virautoclean.h"
 #include "virenum.h"
+#include "virxml.h"
 
-#include <libxml/tree.h>
 
-/* Various callbacks needed to parse/create Storage Pool XML's using
- * a private namespace */
-typedef int (*virStoragePoolDefNamespaceParse)(xmlXPathContextPtr, void **);
-typedef void (*virStoragePoolDefNamespaceFree)(void *);
-typedef int (*virStoragePoolDefNamespaceXMLFormat)(virBufferPtr, void *);
-typedef const char *(*virStoragePoolDefNamespaceHref)(void);
-
-typedef struct _virStoragePoolXMLNamespace virStoragePoolXMLNamespace;
-typedef virStoragePoolXMLNamespace *virStoragePoolXMLNamespacePtr;
-struct _virStoragePoolXMLNamespace {
-    virStoragePoolDefNamespaceParse parse;
-    virStoragePoolDefNamespaceFree free;
-    virStoragePoolDefNamespaceXMLFormat format;
-    virStoragePoolDefNamespaceHref href;
-};
 
 int
 virStoragePoolOptionsPoolTypeSetXMLNamespace(int type,
-                                             virStoragePoolXMLNamespacePtr ns);
+                                             virXMLNamespacePtr ns);
 
 int
 virStoragePoolOptionsFormatPool(virBufferPtr buf,
@@ -277,7 +262,7 @@ struct _virStoragePoolDef {
 
     /* Pool backend specific XML namespace data */
     void *namespaceData;
-    virStoragePoolXMLNamespace ns;
+    virXMLNamespace ns;
 };
 
 typedef struct _virStoragePoolSourceList virStoragePoolSourceList;

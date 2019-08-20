@@ -36,7 +36,7 @@ struct _virStoragePoolFSMountOptionsDef {
 
 int
 virStorageBackendNamespaceInit(int poolType,
-                               virStoragePoolXMLNamespacePtr xmlns);
+                               virXMLNamespacePtr xmlns);
 
 
 /* File creation/cloning functions used for cloning between backends */

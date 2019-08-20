@@ -140,7 +140,7 @@ struct _virStoragePoolOptions {
     int defaultFormat;
     int lastFormat;
 
-    virStoragePoolXMLNamespace ns;
+    virXMLNamespace ns;
 
     virStoragePoolFormatToString formatToString;
     virStoragePoolFormatFromString formatFromString;
@@ -341,7 +341,7 @@ virStoragePoolOptionsForPoolType(int type)
  */
 int
 virStoragePoolOptionsPoolTypeSetXMLNamespace(int type,
-                                             virStoragePoolXMLNamespacePtr ns)
+                                             virXMLNamespacePtr ns)
 {
     int ret = -1;
     virStoragePoolTypeInfoPtr backend = virStoragePoolTypeInfoLookup(type);
