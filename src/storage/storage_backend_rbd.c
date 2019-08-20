@@ -36,7 +36,6 @@
 #include "rbd/librbd.h"
 #include "secret_util.h"
 #include "storage_util.h"
-#include <libxml/xpathInternals.h>
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -90,14 +89,6 @@ virStoragePoolDefRBDNamespaceParse(xmlXPathContextPtr ctxt,
     size_t i;
     int ret = -1;
     VIR_AUTOFREE(xmlNodePtr *)nodes = NULL;
-
-    if (xmlXPathRegisterNs(ctxt, BAD_CAST "rbd",
-                           BAD_CAST STORAGE_POOL_RBD_NAMESPACE_HREF) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to register xml namespace '%s'"),
-                       STORAGE_POOL_RBD_NAMESPACE_HREF);
-        return -1;
-    }
 
     nnodes = virXPathNodeSet("./rbd:config_opts/rbd:option", ctxt, &nodes);
     if (nnodes < 0)

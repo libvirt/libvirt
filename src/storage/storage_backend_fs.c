@@ -41,7 +41,6 @@ VIR_LOG_INIT("storage.storage_backend_fs");
 
 #if WITH_STORAGE_FS
 
-# include <libxml/xpathInternals.h>
 # include <mntent.h>
 
 struct _virNetfsDiscoverState {
@@ -570,14 +569,6 @@ virStoragePoolDefFSNamespaceParse(xmlXPathContextPtr ctxt,
     size_t i;
     int ret = -1;
     VIR_AUTOFREE(xmlNodePtr *)nodes = NULL;
-
-    if (xmlXPathRegisterNs(ctxt, BAD_CAST "fs",
-                           BAD_CAST STORAGE_POOL_FS_NAMESPACE_HREF) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to register xml namespace '%s'"),
-                       STORAGE_POOL_FS_NAMESPACE_HREF);
-        return -1;
-    }
 
     nnodes = virXPathNodeSet("./fs:mount_opts/fs:option", ctxt, &nodes);
     if (nnodes < 0)

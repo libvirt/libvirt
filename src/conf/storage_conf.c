@@ -998,6 +998,8 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
      * especially during the virStoragePoolSourceClear method */
     def->ns = options->ns;
     if (def->ns.parse) {
+        if (virXMLNamespaceRegister(ctxt, &def->ns) < 0)
+            return NULL;
         if ((def->ns.parse)(ctxt, &def->namespaceData) < 0)
             return NULL;
     }
