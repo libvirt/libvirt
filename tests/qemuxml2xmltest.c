@@ -664,11 +664,11 @@ mymain(void)
     DO_TEST("numad-auto-memory-vcpu-cpuset", NONE);
     DO_TEST("usb-ich9-ehci-addr", NONE);
     DO_TEST("disk-copy_on_read", NONE);
-    DO_TEST("tpm-passthrough", NONE);
-    DO_TEST("tpm-passthrough-crb", NONE);
-    DO_TEST("tpm-emulator", NONE);
-    DO_TEST("tpm-emulator-tpm2", NONE);
-    DO_TEST("tpm-emulator-tpm2-enc", NONE);
+    DO_TEST_CAPS_LATEST("tpm-passthrough");
+    DO_TEST_CAPS_LATEST("tpm-passthrough-crb");
+    DO_TEST_CAPS_LATEST("tpm-emulator");
+    DO_TEST_CAPS_LATEST("tpm-emulator-tpm2");
+    DO_TEST_CAPS_LATEST("tpm-emulator-tpm2-enc");
 
     DO_TEST("metadata", NONE);
     DO_TEST("metadata-duplicate", NONE);

@@ -5,7 +5,7 @@
   <currentMemory unit='KiB'>512288</currentMemory>
   <vcpu placement='static'>1</vcpu>
   <os>
-    <type arch='x86_64' machine='pc-i440fx-2.12'>hvm</type>
+    <type arch='x86_64' machine='pc-0.12'>hvm</type>
     <boot dev='hd'/>
     <bootmenu enable='yes'/>
   </os>
@@ -18,19 +18,19 @@
   <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-system-x86_64</emulator>
-    <controller type='usb' index='0'>
+    <controller type='usb' index='0' model='piix3-uhci'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
     </controller>
     <controller type='pci' index='0' model='pci-root'/>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
     <tpm model='tpm-tis'>
-      <backend type='emulator' version='2.0'>
-        <encryption secret='32ee7e76-2178-47a1-ab7b-269e6e348015'/>
+      <backend type='passthrough'>
+        <device path='/dev/tpm0'/>
       </backend>
     </tpm>
     <memballoon model='virtio'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </memballoon>
   </devices>
 </domain>
