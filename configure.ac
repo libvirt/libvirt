@@ -129,6 +129,29 @@ if test -d $srcdir/.git && git --version >/dev/null 2>&1 ; then
   AB_VERSION=`cd $srcdir && git describe --match 'v[[0-9]]*' 2>/dev/null`
 fi
 
+dnl autoconf 2.70 adds a --runstatedir option so that downstreams
+dnl can point to /run instead of the historic /var/run, but
+dnl autoconf hasn't had a release since 2012.
+dnl
+dnl gnulib sets configmake.h to include runstatedir, but sets
+dnl it to $localstatedir/run if $runstatedir env var is not set
+dnl which is useless for apps that need to use /run without
+dnl waiting for autoconf 2.70
+dnl
+dnl we introduce --with-runstatedir and then overwrite the
+dnl value of $runstatedir so gnulib's configmake.h becomes useful
+AC_ARG_WITH(
+    [runstatedir],
+    [AS_HELP_STRING(
+        [--with-runstatedir],
+        [State directory for temporary sockets, pid files, etc])])
+
+if test -n "$with_runstatedir"
+then
+  runstatedir=$with_runstatedir
+fi
+
+
 gl_EARLY
 gl_INIT
 
