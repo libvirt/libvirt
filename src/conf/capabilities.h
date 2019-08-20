@@ -182,8 +182,7 @@ struct _virCapsStoragePool {
 };
 
 
-typedef int (*virDomainDefNamespaceParse)(xmlDocPtr, xmlNodePtr,
-                                          xmlXPathContextPtr, void **);
+typedef int (*virDomainDefNamespaceParse)(xmlXPathContextPtr, void **);
 typedef void (*virDomainDefNamespaceFree)(void *);
 typedef int (*virDomainDefNamespaceXMLFormat)(virBufferPtr, void *);
 typedef const char *(*virDomainDefNamespaceHref)(void);

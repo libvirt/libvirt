@@ -207,9 +207,7 @@ lxcDomainDefNamespaceFree(void *nsdata)
 }
 
 static int
-lxcDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
-                           xmlNodePtr root ATTRIBUTE_UNUSED,
-                           xmlXPathContextPtr ctxt,
+lxcDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
                            void **data)
 {
     lxcDomainDefPtr lxcDef = NULL;

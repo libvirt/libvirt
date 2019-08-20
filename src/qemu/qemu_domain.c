@@ -3626,9 +3626,7 @@ qemuDomainDefNamespaceParseCaps(qemuDomainXmlNsDefPtr nsdef,
 
 
 static int
-qemuDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
-                            xmlNodePtr root ATTRIBUTE_UNUSED,
-                            xmlXPathContextPtr ctxt,
+qemuDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
                             void **data)
 {
     qemuDomainXmlNsDefPtr nsdata = NULL;

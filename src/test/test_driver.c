@@ -198,9 +198,7 @@ testDomainDefNamespaceFree(void *data)
 }
 
 static int
-testDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
-                            xmlNodePtr root ATTRIBUTE_UNUSED,
-                            xmlXPathContextPtr ctxt,
+testDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
                             void **data)
 {
     testDomainNamespaceDefPtr nsdata = NULL;

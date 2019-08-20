@@ -19643,7 +19643,7 @@ virDomainMemorytuneDefParse(virDomainDefPtr def,
 
 static virDomainDefPtr
 virDomainDefParseXML(xmlDocPtr xml,
-                     xmlNodePtr root,
+                     xmlNodePtr root ATTRIBUTE_UNUSED,
                      xmlXPathContextPtr ctxt,
                      virCapsPtr caps,
                      virDomainXMLOptionPtr xmlopt,
@@ -21345,7 +21345,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     def->ns = xmlopt->ns;
 
     if (def->ns.parse &&
-        (def->ns.parse)(xml, root, ctxt, &def->namespaceData) < 0)
+        (def->ns.parse)(ctxt, &def->namespaceData) < 0)
         goto error;
 
     return def;

@@ -196,9 +196,7 @@ bhyveDomainDefNamespaceFree(void *nsdata)
 }
 
 static int
-bhyveDomainDefNamespaceParse(xmlDocPtr xml ATTRIBUTE_UNUSED,
-                             xmlNodePtr root ATTRIBUTE_UNUSED,
-                             xmlXPathContextPtr ctxt,
+bhyveDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
                              void **data)
 {
     bhyveDomainCmdlineDefPtr cmd = NULL;
