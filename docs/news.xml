@@ -51,6 +51,19 @@
         </description>
       </change>
     </section>
+    <section title="Removed features">
+      <change>
+        <summary>
+          Remove KVM assignment support
+        </summary>
+        <description>
+          The KVM style of PCI device assignment was removed from
+          the kernel in version 4.12.0 after being deprecated since 4.2.0.
+          Libvirt defaults to VFIO for a long time. Remove support for
+          KVM device assignment from libvirt too.
+        </description>
+      </change>
+    </section>
     <section title="Improvements">
     </section>
     <section title="Bug fixes">
