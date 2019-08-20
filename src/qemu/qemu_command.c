@@ -9145,6 +9145,7 @@ qemuBuildShmemCommandLine(virLogManagerPtr logManager,
     VIR_AUTOPTR(virJSONValue) memProps = NULL;
     VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *devstr = NULL;
+    VIR_AUTOFREE(char *) chardev = NULL;
     int rc;
     unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT |
         QEMU_BUILD_CHARDEV_UNIX_FD_PASS;
@@ -9215,16 +9216,15 @@ qemuBuildShmemCommandLine(virLogManagerPtr logManager,
     VIR_FREE(devstr);
 
     if (shmem->server.enabled) {
-        devstr = qemuBuildChrChardevStr(logManager, secManager,
+        chardev = qemuBuildChrChardevStr(logManager, secManager,
                                         cmd, cfg, def,
                                         &shmem->server.chr,
                                         shmem->info.alias, qemuCaps,
                                         cdevflags);
-        if (!devstr)
+        if (!chardev)
             return -1;
 
-        virCommandAddArgList(cmd, "-chardev", devstr, NULL);
-        VIR_FREE(devstr);
+        virCommandAddArgList(cmd, "-chardev", chardev, NULL);
     }
 
     return 0;
