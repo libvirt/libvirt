@@ -5974,7 +5974,8 @@ qemuBuildRNGCommandLine(virLogManagerPtr logManager,
         VIR_AUTOPTR(virJSONValue) props = NULL;
         virBuffer buf = VIR_BUFFER_INITIALIZER;
         virDomainRNGDefPtr rng = def->rngs[i];
-        char *tmp;
+        VIR_AUTOFREE(char *) chardev = NULL;
+        VIR_AUTOFREE(char *) devstr = NULL;
         int rc;
 
         if (!rng->info.alias) {
@@ -5985,14 +5986,12 @@ qemuBuildRNGCommandLine(virLogManagerPtr logManager,
 
         /* possibly add character device for backend */
         if (qemuBuildRNGBackendChrdevStr(logManager, secManager, cmd, cfg, def,
-                                         rng, qemuCaps, &tmp,
+                                         rng, qemuCaps, &chardev,
                                          chardevStdioLogd) < 0)
             return -1;
 
-        if (tmp) {
-            virCommandAddArgList(cmd, "-chardev", tmp, NULL);
-            VIR_FREE(tmp);
-        }
+        if (chardev)
+            virCommandAddArgList(cmd, "-chardev", chardev, NULL);
 
         if (qemuBuildRNGBackendProps(rng, qemuCaps, &props) < 0)
             return -1;
@@ -6009,10 +6008,9 @@ qemuBuildRNGCommandLine(virLogManagerPtr logManager,
         if (qemuCommandAddExtDevice(cmd, &rng->info) < 0)
             return -1;
 
-        if (!(tmp = qemuBuildRNGDevStr(def, rng, qemuCaps)))
+        if (!(devstr = qemuBuildRNGDevStr(def, rng, qemuCaps)))
             return -1;
-        virCommandAddArgList(cmd, "-device", tmp, NULL);
-        VIR_FREE(tmp);
+        virCommandAddArgList(cmd, "-device", devstr, NULL);
     }
 
     return 0;
