@@ -68,14 +68,6 @@ char *fakerootdir;
  * created by us. There are some actions that we must take if some special
  * files are written to. Here's the list of files we watch:
  *
- * /sys/bus/pci/drivers/<driver>/new_id:
- *   Learn the driver new vendor and device combination.
- *   Data in format "VVVV DDDD".
- *
- * /sys/bus/pci/drivers/<driver>/remove_id
- *   Make the driver forget about vendor and device.
- *   Data in format "VVVV DDDD".
- *
  * /sys/bus/pci/drivers/<driver>/bind
  *   Check if driver supports the device and bind driver to it (create symlink
  *   called 'driver' pointing to the /sys/but/pci/drivers/<driver>).
@@ -168,8 +160,6 @@ static int pci_driver_unbind(struct pciDriver *driver, struct pciDevice *dev);
 static int pci_driver_handle_change(int fd, const char *path);
 static int pci_driver_handle_bind(const char *path);
 static int pci_driver_handle_unbind(const char *path);
-static int pci_driver_handle_new_id(const char *path);
-static int pci_driver_handle_remove_id(const char *path);
 
 
 /*
@@ -640,8 +630,6 @@ pci_driver_new(const char *name, int fail, ...)
 
     make_file(driverpath, "bind", NULL, -1);
     make_file(driverpath, "unbind", NULL, -1);
-    make_file(driverpath, "new_id", NULL, -1);
-    make_file(driverpath, "remove_id", NULL, -1);
 
     if (VIR_APPEND_ELEMENT_QUIET(pciDrivers, nPCIDrivers, driver) < 0)
         ABORT_OOM();
@@ -801,10 +789,6 @@ pci_driver_handle_change(int fd ATTRIBUTE_UNUSED, const char *path)
         ret = pci_driver_handle_bind(path);
     else if (STREQ(file, "unbind"))
         ret = pci_driver_handle_unbind(path);
-    else if (STREQ(file, "new_id"))
-        ret = pci_driver_handle_new_id(path);
-    else if (STREQ(file, "remove_id"))
-        ret = pci_driver_handle_remove_id(path);
     else if (STREQ(file, "drivers_probe"))
         ret = pci_driver_handle_drivers_probe(path);
     else if (STREQ(file, "driver_override"))
@@ -845,102 +829,6 @@ pci_driver_handle_unbind(const char *path)
     }
 
     ret = pci_driver_unbind(dev->driver, dev);
- cleanup:
-    return ret;
-}
-
-static int
-pci_driver_handle_new_id(const char *path)
-{
-    int ret = -1;
-    struct pciDriver *driver = pci_driver_find_by_path(path);
-    size_t i;
-    int vendor, device;
-    char buf[32];
-
-    if (!driver || PCI_ACTION_NEW_ID & driver->fail) {
-        errno = ENODEV;
-        goto cleanup;
-    }
-
-    if (pci_read_file(path, buf, sizeof(buf), true) < 0)
-        goto cleanup;
-
-    if (sscanf(buf, "%x %x", &vendor, &device) < 2) {
-        errno = EINVAL;
-        goto cleanup;
-    }
-
-    for (i = 0; i < driver->len; i++) {
-        if (driver->vendor[i] == vendor &&
-            driver->device[i] == device)
-            break;
-    }
-
-    if (i == driver->len) {
-        if (VIR_REALLOC_N_QUIET(driver->vendor, driver->len + 1) < 0 ||
-            VIR_REALLOC_N_QUIET(driver->device, driver->len + 1) < 0) {
-            errno = ENOMEM;
-            goto cleanup;
-        }
-
-        driver->vendor[driver->len] = vendor;
-        driver->device[driver->len] = device;
-        driver->len++;
-    }
-
-    for (i = 0; i < nPCIDevices; i++) {
-        struct pciDevice *dev = pciDevices[i];
-
-        if (!dev->driver &&
-            dev->vendor == vendor &&
-            dev->device == device &&
-            pci_driver_bind(driver, dev) < 0)
-                goto cleanup;
-    }
-
-    ret = 0;
- cleanup:
-    return ret;
-}
-
-static int
-pci_driver_handle_remove_id(const char *path)
-{
-    int ret = -1;
-    struct pciDriver *driver = pci_driver_find_by_path(path);
-    size_t i;
-    int vendor, device;
-    char buf[32];
-
-    if (!driver || PCI_ACTION_REMOVE_ID & driver->fail) {
-        errno = ENODEV;
-        goto cleanup;
-    }
-
-    if (pci_read_file(path, buf, sizeof(buf), true) < 0)
-        goto cleanup;
-
-    if (sscanf(buf, "%x %x", &vendor, &device) < 2) {
-        errno = EINVAL;
-        goto cleanup;
-    }
-
-    for (i = 0; i < driver->len; i++) {
-        if (driver->vendor[i] == vendor &&
-            driver->device[i] == device)
-            continue;
-    }
-
-    if (i != driver->len) {
-        if (VIR_DELETE_ELEMENT(driver->vendor, i, driver->len) < 0)
-            goto cleanup;
-        driver->len++;
-        if (VIR_DELETE_ELEMENT(driver->device, i, driver->len) < 0)
-            goto cleanup;
-    }
-
-    ret = 0;
  cleanup:
     return ret;
 }
