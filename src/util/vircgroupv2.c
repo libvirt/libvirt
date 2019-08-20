@@ -1582,8 +1582,10 @@ virCgroupV2GetCpuCfsQuota(virCgroupPtr group,
         return -1;
     }
 
-    if (STREQLEN(str, "max", 3))
+    if (STREQLEN(str, "max", 3)) {
         *cfs_quota = ULLONG_MAX / 1000;
+        return 0;
+    }
 
     if (virStrToLong_ll(str, &str, 10, cfs_quota) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
