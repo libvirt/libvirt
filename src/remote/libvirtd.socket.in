@@ -6,7 +6,7 @@ Before=@service@.service
 [Socket]
 # The directory must match the @sysconfdir@/libvirt/@service@.conf unix_sock_dir setting
 # when using systemd version < 227
-ListenStream=@localstatedir@/run/libvirt/@sockprefix@-sock
+ListenStream=@runstatedir@/libvirt/@sockprefix@-sock
 Service=@service@.service
 SocketMode=0666
 

@@ -3,7 +3,7 @@ Description=Virtual machine lock manager socket
 Before=libvirtd.service
 
 [Socket]
-ListenStream=@localstatedir@/run/libvirt/virtlockd-sock
+ListenStream=@runstatedir@/libvirt/virtlockd-sock
 SocketMode=0600
 
 [Install]

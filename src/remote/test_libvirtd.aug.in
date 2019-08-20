@@ -13,7 +13,7 @@ module Test_@DAEMON_NAME@ =
         { "unix_sock_ro_perms" = "0777" }
         { "unix_sock_rw_perms" = "0770" }
         { "unix_sock_admin_perms" = "0700" }
-        { "unix_sock_dir" = "/var/run/libvirt" }
+        { "unix_sock_dir" = "@runstatedir@/libvirt" }
         { "auth_unix_ro" = "none" }
         { "auth_unix_rw" = "none" }
 @CUT_ENABLE_IP@

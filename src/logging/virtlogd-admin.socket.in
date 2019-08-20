@@ -5,7 +5,7 @@ BindsTo=virtlogd.socket
 After=virtlogd.socket
 
 [Socket]
-ListenStream=@localstatedir@/run/libvirt/virtlogd-admin-sock
+ListenStream=@runstatedir@/libvirt/virtlogd-admin-sock
 Service=virtlogd.service
 SocketMode=0600
 

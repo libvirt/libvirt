@@ -3,7 +3,7 @@ Description=Virtual machine log manager socket
 Before=libvirtd.service
 
 [Socket]
-ListenStream=@localstatedir@/run/libvirt/virtlogd-sock
+ListenStream=@runstatedir@/libvirt/virtlogd-sock
 SocketMode=0600
 
 [Install]

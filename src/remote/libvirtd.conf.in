@@ -119,7 +119,7 @@
 # This setting is not required or honoured if using systemd socket
 # activation with systemd version >= 227
 #
-#unix_sock_dir = "/var/run/libvirt"
+#unix_sock_dir = "@runstatedir@/libvirt"
 
 
 
