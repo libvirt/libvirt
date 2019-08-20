@@ -953,7 +953,7 @@ static char *
 qemuBuildNetworkDriveURI(virStorageSourcePtr src,
                          qemuDomainSecretInfoPtr secinfo)
 {
-    virURIPtr uri = NULL;
+    VIR_AUTOPTR(virURI) uri = NULL;
     char *ret = NULL;
 
     if (!(uri = qemuBlockStorageSourceGetURI(src)))
@@ -969,7 +969,6 @@ qemuBuildNetworkDriveURI(virStorageSourcePtr src,
     ret = virURIFormat(uri);
 
  cleanup:
-    virURIFree(uri);
     return ret;
 }
 
