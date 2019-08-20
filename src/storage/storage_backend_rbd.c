@@ -178,7 +178,7 @@ virStoragePoolDefRBDNamespaceFormatXML(virBufferPtr buf,
 static const char *
 virStoragePoolDefRBDNamespaceHref(void)
 {
-    return "xmlns:rbd='" STORAGE_POOL_RBD_NAMESPACE_HREF "'";
+    return STORAGE_POOL_RBD_NAMESPACE_HREF;
 }
 
 

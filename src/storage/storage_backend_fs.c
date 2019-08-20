@@ -636,7 +636,7 @@ virStoragePoolDefFSNamespaceFormatXML(virBufferPtr buf,
 static const char *
 virStoragePoolDefFSNamespaceHref(void)
 {
-    return "xmlns:fs='" STORAGE_POOL_FS_NAMESPACE_HREF "'";
+    return STORAGE_POOL_FS_NAMESPACE_HREF;
 }
 
 #endif /* WITH_STORAGE_FS */
