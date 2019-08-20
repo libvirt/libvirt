@@ -32,7 +32,9 @@
 
 static int (*real_access)(const char *path, int mode);
 static int (*real_open)(const char *path, int flags, ...);
+#ifdef __GLIBC__
 static int (*real___open_2)(const char *path, int flags);
+#endif /* ! __GLIBC__ */
 static int (*real_close)(int fd);
 static DIR * (*real_opendir)(const char *name);
 static char *(*real_virFileCanonicalizePath)(const char *path);
@@ -955,7 +957,9 @@ init_syms(void)
 
     VIR_MOCK_REAL_INIT(access);
     VIR_MOCK_REAL_INIT(open);
+#ifdef __GLIBC__
     VIR_MOCK_REAL_INIT(__open_2);
+#endif /* ! __GLIBC__ */
     VIR_MOCK_REAL_INIT(close);
     VIR_MOCK_REAL_INIT(opendir);
     VIR_MOCK_REAL_INIT(virFileCanonicalizePath);
@@ -1084,6 +1088,7 @@ open(const char *path, int flags, ...)
 }
 
 
+#ifdef __GLIBC__
 /* in some cases this function may not be present in headers, so we need
  * a declaration to silence the complier */
 int
@@ -1113,7 +1118,7 @@ __open_2(const char *path, int flags)
 
     return ret;
 }
-
+#endif /* ! __GLIBC__ */
 
 DIR *
 opendir(const char *path)
