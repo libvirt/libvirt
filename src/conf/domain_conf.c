@@ -19590,7 +19590,6 @@ virDomainMemorytuneDefParse(virDomainDefPtr def,
     VIR_AUTOUNREF(virResctrlAllocPtr) alloc = NULL;
     ssize_t i = 0;
     int n;
-    int ret = -1;
 
     ctxt->node = node;
 
@@ -19632,14 +19631,13 @@ virDomainMemorytuneDefParse(virDomainDefPtr def,
         if (!(resctrl = virDomainResctrlNew(node, alloc, vcpus, flags)))
             return -1;
 
-        if (VIR_APPEND_ELEMENT(def->resctrls, def->nresctrls, resctrl) < 0)
-            goto cleanup;
+        if (VIR_APPEND_ELEMENT(def->resctrls, def->nresctrls, resctrl) < 0) {
+            virDomainResctrlDefFree(resctrl);
+            return -1;
+        }
     }
 
-    ret = 0;
- cleanup:
-    virDomainResctrlDefFree(resctrl);
-    return ret;
+    return 0;
 }
 
 

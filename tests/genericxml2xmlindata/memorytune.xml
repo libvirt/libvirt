@@ -5,6 +5,10 @@
   <currentMemory unit='KiB'>219136</currentMemory>
   <vcpu placement='static'>4</vcpu>
   <cputune>
+    <cachetune vcpus='0-1'>
+      <cache id='0' level='3' type='both' size='768' unit='KiB'/>
+      <cache id='1' level='3' type='both' size='768' unit='KiB'/>
+    </cachetune>
     <memorytune vcpus='0-1'>
       <node id='0' bandwidth='20'/>
       <node id='1' bandwidth='30'/>
