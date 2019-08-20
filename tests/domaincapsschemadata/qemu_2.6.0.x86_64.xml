@@ -119,7 +119,6 @@
       <enum name='capsType'/>
       <enum name='pciBackend'>
         <value>default</value>
-        <value>kvm</value>
         <value>vfio</value>
       </enum>
     </hostdev>

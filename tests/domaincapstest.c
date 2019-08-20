@@ -117,7 +117,6 @@ fillQemuCaps(virDomainCapsPtr domCaps,
      * instead of mocking set the expected values here by hand. */
     VIR_DOMAIN_CAPS_ENUM_SET(domCaps->hostdev.pciBackend,
                              VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT,
-                             VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM,
                              VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO);
 
     /* As of f05b6a918e28 we are expecting to see OVMF_CODE.fd file which
