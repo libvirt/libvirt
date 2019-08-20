@@ -142,11 +142,11 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
             goto error;
 
         if (virAsprintf(&cfg->stateDir,
-                      "%s/run/libvirt/qemu", LOCALSTATEDIR) < 0)
+                      "%s/libvirt/qemu", RUNSTATEDIR) < 0)
             goto error;
 
         if (virAsprintf(&cfg->swtpmStateDir,
-                       "%s/run/libvirt/qemu/swtpm", LOCALSTATEDIR) < 0)
+                       "%s/libvirt/qemu/swtpm", RUNSTATEDIR) < 0)
             goto error;
 
         if (virAsprintf(&cfg->cacheDir,

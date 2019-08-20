@@ -479,7 +479,7 @@ int virPidFileRelease(const char *dir,
 
 int
 virPidFileConstructPath(bool privileged,
-                        const char *statedir,
+                        const char *runstatedir,
                         const char *progname,
                         char **pidfile)
 {
@@ -490,12 +490,12 @@ virPidFileConstructPath(bool privileged,
          * This is here just to allow calling this function with
          * statedir == NULL; of course only when !privileged.
          */
-        if (!statedir) {
+        if (!runstatedir) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("No statedir specified"));
+                           "%s", _("No runstatedir specified"));
             return -1;
         }
-        if (virAsprintf(pidfile, "%s/run/%s.pid", statedir, progname) < 0)
+        if (virAsprintf(pidfile, "%s/%s.pid", runstatedir, progname) < 0)
             return -1;
     } else {
         if (!(rundir = virGetUserRuntimeDirectory()))

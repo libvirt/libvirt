@@ -205,7 +205,7 @@ nwfilterStateInitialize(bool privileged,
 
     nwfilterDriverLock();
 
-    if (VIR_STRDUP(driver->stateDir, LOCALSTATEDIR "/run/libvirt/nwfilter") < 0)
+    if (VIR_STRDUP(driver->stateDir, RUNSTATEDIR "/libvirt/nwfilter") < 0)
         goto error;
 
     if (virFileMakePathWithMode(driver->stateDir, S_IRWXU) < 0) {
@@ -261,7 +261,7 @@ nwfilterStateInitialize(bool privileged,
         goto error;
     }
 
-    if (VIR_STRDUP(driver->bindingDir, LOCALSTATEDIR "/run/libvirt/nwfilter-binding") < 0)
+    if (VIR_STRDUP(driver->bindingDir, RUNSTATEDIR "/libvirt/nwfilter-binding") < 0)
         goto error;
 
     if (virFileMakePathWithMode(driver->bindingDir, S_IRWXU) < 0) {

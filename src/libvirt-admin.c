@@ -149,7 +149,7 @@ getSocketPath(virURIPtr uri)
         }
 
         if (STREQ_NULLABLE(uri->path, "/system")) {
-            if (virAsprintf(&sock_path, LOCALSTATEDIR "/run/libvirt/%s",
+            if (virAsprintf(&sock_path, RUNSTATEDIR "/libvirt/%s",
                             sockbase) < 0)
                 goto error;
         } else if (STREQ_NULLABLE(uri->path, "/session")) {

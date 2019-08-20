@@ -749,29 +749,40 @@ virSystemdActivationInitFromMap(virSystemdActivationPtr act,
             goto error;
         }
 
+        VIR_DEBUG("Got socket family %d for FD %d",
+                  addr.data.sa.sa_family, nextfd);
+
         for (i = 0; i < nmap && !name; i++) {
             if (map[i].name == NULL)
                 continue;
 
             if (addr.data.sa.sa_family == AF_INET) {
-                if (map[i].family == AF_INET &&
-                    addr.data.inet4.sin_port == htons(map[i].port))
-                    name = map[i].name;
+                if (map[i].family == AF_INET) {
+                    VIR_DEBUG("Expect %d got %d",
+                              map[i].port, ntohs(addr.data.inet4.sin_port));
+                    if (addr.data.inet4.sin_port == htons(map[i].port))
+                        name = map[i].name;
+                }
             } else if (addr.data.sa.sa_family == AF_INET6) {
                 /* NB use of AF_INET here is correct. The "map" struct
                  * only refers to AF_INET. The socket may be AF_INET
                  * or AF_INET6
                  */
-                if (map[i].family == AF_INET &&
-                    addr.data.inet6.sin6_port == htons(map[i].port))
-                    name = map[i].name;
+                if (map[i].family == AF_INET) {
+                    VIR_DEBUG("Expect %d got %d",
+                              map[i].port, ntohs(addr.data.inet6.sin6_port));
+                    if (addr.data.inet6.sin6_port == htons(map[i].port))
+                        name = map[i].name;
+                }
 #ifndef WIN32
             } else if (addr.data.sa.sa_family == AF_UNIX) {
-                if (map[i].family == AF_UNIX &&
-                    STREQLEN(map[i].path,
-                             addr.data.un.sun_path,
-                             sizeof(addr.data.un.sun_path)))
-                    name = map[i].name;
+                if (map[i].family == AF_UNIX) {
+                    VIR_DEBUG("Expect %s got %s", map[i].path, addr.data.un.sun_path);
+                    if (STREQLEN(map[i].path,
+                                 addr.data.un.sun_path,
+                                 sizeof(addr.data.un.sun_path)))
+                        name = map[i].name;
+                }
 #endif
             } else {
                 virReportError(VIR_ERR_INTERNAL_ERROR,

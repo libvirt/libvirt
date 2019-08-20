@@ -102,7 +102,7 @@ netcfStateInitialize(bool privileged,
 
     if (privileged) {
         if (virAsprintf(&driver->stateDir,
-                        "%s/run/libvirt/interface", LOCALSTATEDIR) < 0)
+                        "%s/libvirt/interface", RUNSTATEDIR) < 0)
             goto error;
     } else {
         VIR_AUTOFREE(char *) rundir = NULL;

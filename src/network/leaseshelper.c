@@ -160,7 +160,7 @@ main(int argc, char **argv)
                     interface) < 0)
         goto cleanup;
 
-    if (VIR_STRDUP(pid_file, LOCALSTATEDIR "/run/leaseshelper.pid") < 0)
+    if (VIR_STRDUP(pid_file, RUNSTATEDIR "/leaseshelper.pid") < 0)
         goto cleanup;
 
     /* Try to claim the pidfile, exiting if we can't */

@@ -2192,8 +2192,8 @@ remoteDispatchProbeURI(bool readonly,
         for (i = 0; i < (ssize_t) ARRAY_CARDINALITY(drivers) && !*probeduri; i++) {
             VIR_AUTOFREE(char *) sockname = NULL;
 
-            if (virAsprintf(&sockname, "%s/run/libvirt/virt%sd-%s",
-                            LOCALSTATEDIR, drivers[i],
+            if (virAsprintf(&sockname, "%s/libvirt/virt%sd-%s",
+                            RUNSTATEDIR, drivers[i],
                             readonly ? "sock-ro" : "sock") < 0)
                 return -1;
 

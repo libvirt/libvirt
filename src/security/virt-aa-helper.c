@@ -1232,8 +1232,8 @@ get_files(vahControl * ctl)
 
             /* Unix socket for QEMU and swtpm to use */
             virBufferAsprintf(&buf,
-                "  \"/run/libvirt/qemu/swtpm/%s-swtpm.sock\" rw,\n",
-                shortName);
+                "  \"%s/libvirt/qemu/swtpm/%s-swtpm.sock\" rw,\n",
+                RUNSTATEDIR, shortName);
             /* Paths for swtpm to use: give it access to its state
              * directory, log, and PID files.
              */
@@ -1244,8 +1244,8 @@ get_files(vahControl * ctl)
                 "  \"%s/log/swtpm/libvirt/qemu/%s-swtpm.log\" a,\n",
                 LOCALSTATEDIR, ctl->def->name);
             virBufferAsprintf(&buf,
-                "  \"/run/libvirt/qemu/swtpm/%s-swtpm.pid\" rw,\n",
-                shortName);
+                "  \"%s/libvirt/qemu/swtpm/%s-swtpm.pid\" rw,\n",
+                RUNSTATEDIR, shortName);
 
             VIR_FREE(shortName);
             break;
@@ -1486,14 +1486,10 @@ main(int argc, char **argv)
                                   LOCALSTATEDIR, ctl->def->name);
                 virBufferAsprintf(&buf, "  \"%s/lib/libvirt/qemu/domain-%d-%.*s/*\" rw,\n",
                                   LOCALSTATEDIR, ctl->def->id, 20, ctl->def->name);
-                virBufferAsprintf(&buf, "  \"%s/run/libvirt/**/%s.pid\" rwk,\n",
-                                  LOCALSTATEDIR, ctl->def->name);
-                virBufferAsprintf(&buf, "  \"/run/libvirt/**/%s.pid\" rwk,\n",
-                                  ctl->def->name);
-                virBufferAsprintf(&buf, "  \"%s/run/libvirt/**/*.tunnelmigrate.dest.%s\" rw,\n",
-                                  LOCALSTATEDIR, ctl->def->name);
-                virBufferAsprintf(&buf, "  \"/run/libvirt/**/*.tunnelmigrate.dest.%s\" rw,\n",
-                                  ctl->def->name);
+                virBufferAsprintf(&buf, "  \"%s/libvirt/**/%s.pid\" rwk,\n",
+                                  RUNSTATEDIR, ctl->def->name);
+                virBufferAsprintf(&buf, "  \"%s/libvirt/**/*.tunnelmigrate.dest.%s\" rw,\n",
+                                  RUNSTATEDIR, ctl->def->name);
             }
             if (ctl->files)
                 virBufferAdd(&buf, ctl->files, -1);

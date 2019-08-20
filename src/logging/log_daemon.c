@@ -388,8 +388,8 @@ virLogDaemonUnixSocketPaths(bool privileged,
                             char **adminSockfile)
 {
     if (privileged) {
-        if (VIR_STRDUP(*sockfile, LOCALSTATEDIR "/run/libvirt/virtlogd-sock") < 0 ||
-            VIR_STRDUP(*adminSockfile, LOCALSTATEDIR "/run/libvirt/virtlogd-admin-sock") < 0)
+        if (VIR_STRDUP(*sockfile, RUNSTATEDIR "/libvirt/virtlogd-sock") < 0 ||
+            VIR_STRDUP(*adminSockfile, RUNSTATEDIR "/libvirt/virtlogd-admin-sock") < 0)
             goto error;
     } else {
         char *rundir = NULL;
@@ -623,7 +623,7 @@ virLogDaemonExecRestartStatePath(bool privileged,
                                  char **state_file)
 {
     if (privileged) {
-        if (VIR_STRDUP(*state_file, LOCALSTATEDIR "/run/virtlogd-restart-exec.json") < 0)
+        if (VIR_STRDUP(*state_file, RUNSTATEDIR "/virtlogd-restart-exec.json") < 0)
             goto error;
     } else {
         char *rundir = NULL;
@@ -834,14 +834,14 @@ virLogDaemonUsage(const char *argv0, bool privileged)
                   "      %s/libvirt/virtlogd.conf\n"
                   "\n"
                   "    Sockets:\n"
-                  "      %s/run/libvirt/virtlogd-sock\n"
+                  "      %s/libvirt/virtlogd-sock\n"
                   "\n"
                   "    PID file (unless overridden by -p):\n"
-                  "      %s/run/virtlogd.pid\n"
+                  "      %s/virtlogd.pid\n"
                   "\n"),
                 SYSCONFDIR,
-                LOCALSTATEDIR,
-                LOCALSTATEDIR);
+                RUNSTATEDIR,
+                RUNSTATEDIR);
     } else {
         fprintf(stderr, "%s",
                 _("\n"
@@ -992,7 +992,7 @@ int main(int argc, char **argv) {
 
     if (!pid_file &&
         virPidFileConstructPath(privileged,
-                                LOCALSTATEDIR,
+                                RUNSTATEDIR,
                                 "virtlogd",
                                 &pid_file) < 0) {
         VIR_ERROR(_("Can't determine pid file path."));
@@ -1019,7 +1019,7 @@ int main(int argc, char **argv) {
 
     /* Ensure the rundir exists (on tmpfs on some systems) */
     if (privileged) {
-        if (VIR_STRDUP_QUIET(run_dir, LOCALSTATEDIR "/run/libvirt") < 0)
+        if (VIR_STRDUP_QUIET(run_dir, RUNSTATEDIR "/libvirt") < 0)
             goto no_memory;
     } else {
         if (!(run_dir = virGetUserRuntimeDirectory())) {

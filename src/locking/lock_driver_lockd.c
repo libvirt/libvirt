@@ -124,7 +124,7 @@ static char *virLockManagerLockDaemonPath(bool privileged)
 {
     char *path;
     if (privileged) {
-        if (VIR_STRDUP(path, LOCALSTATEDIR "/run/libvirt/virtlockd-sock") < 0)
+        if (VIR_STRDUP(path, RUNSTATEDIR "/libvirt/virtlockd-sock") < 0)
             return NULL;
     } else {
         char *rundir = NULL;

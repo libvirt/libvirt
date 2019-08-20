@@ -474,7 +474,7 @@ secretStateInitialize(bool privileged,
                         "%s/libvirt/secrets", SYSCONFDIR) < 0)
             goto error;
         if (virAsprintf(&driver->stateDir,
-                        "%s/run/libvirt/secrets", LOCALSTATEDIR) < 0)
+                        "%s/libvirt/secrets", RUNSTATEDIR) < 0)
             goto error;
     } else {
         VIR_AUTOFREE(char *) rundir = NULL;

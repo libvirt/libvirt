@@ -238,12 +238,12 @@ daemonUnixSocketPaths(struct daemonConfig *config,
         }
     } else {
         if (privileged) {
-            if (virAsprintf(sockfile, "%s/run/libvirt/%s-sock",
-                            LOCALSTATEDIR, SOCK_PREFIX) < 0 ||
-                virAsprintf(rosockfile, "%s/run/libvirt/%s-sock-ro",
-                            LOCALSTATEDIR, SOCK_PREFIX) < 0 ||
-                virAsprintf(admsockfile, "%s/run/libvirt/%s-admin-sock",
-                            LOCALSTATEDIR, SOCK_PREFIX) < 0)
+            if (virAsprintf(sockfile, "%s/libvirt/%s-sock",
+                            RUNSTATEDIR, SOCK_PREFIX) < 0 ||
+                virAsprintf(rosockfile, "%s/libvirt/%s-sock-ro",
+                            RUNSTATEDIR, SOCK_PREFIX) < 0 ||
+                virAsprintf(admsockfile, "%s/libvirt/%s-admin-sock",
+                            RUNSTATEDIR, SOCK_PREFIX) < 0)
                 goto cleanup;
         } else {
             mode_t old_umask;
@@ -945,11 +945,11 @@ daemonUsage(const char *argv0, bool privileged)
 
     fprintf(stderr, "    %s\n", _("Sockets:"));
     fprintf(stderr, "      %s/libvirt/%s-sock\n",
-            privileged ? LOCALSTATEDIR "/run" : "$XDG_RUNTIME_DIR",
+            privileged ? RUNSTATEDIR : "$XDG_RUNTIME_DIR",
             SOCK_PREFIX);
     if (privileged)
-        fprintf(stderr, "      %s/run/libvirt/%s-sock-ro\n",
-                LOCALSTATEDIR, SOCK_PREFIX);
+        fprintf(stderr, "      %s/libvirt/%s-sock-ro\n",
+                RUNSTATEDIR, SOCK_PREFIX);
     fprintf(stderr, "\n");
 
 #ifdef WITH_IP
@@ -969,7 +969,7 @@ daemonUsage(const char *argv0, bool privileged)
     fprintf(stderr, "    %s\n",
             _("PID file (unless overridden by -p):"));
     fprintf(stderr, "      %s/%s.pid\n",
-            privileged ? LOCALSTATEDIR "/run" : "$XDG_RUNTIME_DIR/libvirt",
+            privileged ? RUNSTATEDIR : "$XDG_RUNTIME_DIR/libvirt",
             DAEMON_NAME);
     fprintf(stderr, "\n");
 }
@@ -1149,7 +1149,7 @@ int main(int argc, char **argv) {
 
     if (!pid_file &&
         virPidFileConstructPath(privileged,
-                                LOCALSTATEDIR,
+                                RUNSTATEDIR,
                                 DAEMON_NAME,
                                 &pid_file) < 0) {
         VIR_ERROR(_("Can't determine pid file path."));
@@ -1194,7 +1194,7 @@ int main(int argc, char **argv) {
 
     /* Ensure the rundir exists (on tmpfs on some systems) */
     if (privileged) {
-        if (VIR_STRDUP_QUIET(run_dir, LOCALSTATEDIR "/run/libvirt") < 0) {
+        if (VIR_STRDUP_QUIET(run_dir, RUNSTATEDIR "/libvirt") < 0) {
             VIR_ERROR(_("Can't allocate memory"));
             goto cleanup;
         }

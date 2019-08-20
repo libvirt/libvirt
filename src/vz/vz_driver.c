@@ -60,7 +60,7 @@ VIR_LOG_INIT("parallels.parallels_driver");
 
 #define PRLCTL                      "prlctl"
 
-#define VZ_STATEDIR LOCALSTATEDIR "/run/libvirt/vz"
+#define VZ_STATEDIR RUNSTATEDIR "/libvirt/vz"
 
 static virClassPtr vzDriverClass;
 

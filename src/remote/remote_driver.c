@@ -789,6 +789,12 @@ remoteGetUNIXSocketHelper(remoteDriverTransport transport,
                         userdir, sock_prefix) < 0)
             return NULL;
     } else {
+        /* Intentionally do *NOT* use RUNSTATEDIR here. We might
+         * be connecting to a remote machine, and cannot assume
+         * the remote host has /run. The converse is ok though,
+         * any machine with /run will have a /var/run symlink.
+         * The portable option is to thus use $LOCALSTATEDIR/run
+         */
         if (virAsprintf(&sockname, "%s/run/libvirt/%s-%s",
                         LOCALSTATEDIR, sock_prefix,
                         flags & VIR_DRV_OPEN_REMOTE_RO ?

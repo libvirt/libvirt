@@ -41,7 +41,7 @@
 
 VIR_LOG_INIT("util.hostdev");
 
-#define HOSTDEV_STATE_DIR LOCALSTATEDIR "/run/libvirt/hostdevmgr"
+#define HOSTDEV_STATE_DIR RUNSTATEDIR "/libvirt/hostdevmgr"
 
 static virHostdevManagerPtr manager; /* global hostdev manager, never freed */
 

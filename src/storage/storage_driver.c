@@ -278,7 +278,7 @@ storageStateInitialize(bool privileged,
             VIR_STRDUP(driver->autostartDir,
                        SYSCONFDIR "/libvirt/storage/autostart") < 0 ||
             VIR_STRDUP(driver->stateDir,
-                       LOCALSTATEDIR "/run/libvirt/storage") < 0)
+                       RUNSTATEDIR "/libvirt/storage") < 0)
             goto error;
     } else {
         configdir = virGetUserConfigDirectory();

@@ -72,11 +72,11 @@ upgrades of the virtlogd service.
 The default configuration file used by virtlogd, unless overridden on the
 command line using the B<-f>|B<--config> option.
 
-=item F<LOCALSTATEDIR/run/libvirt/virtlogd-sock>
+=item F<RUNSTATEDIR/libvirt/virtlogd-sock>
 
 The sockets libvirtd will use.
 
-=item F<LOCALSTATEDIR/run/virtlogd.pid>
+=item F<RUNSTATEDIR/virtlogd.pid>
 
 The PID file to use, unless overridden by the B<-p>|B<--pid-file> option.
 
@@ -116,8 +116,8 @@ To retrieve the version of virtlogd:
 To start virtlogd, instructing it to daemonize and create a PID file:
 
  # virtlogd -d
- # ls -la LOCALSTATEDIR/run/virtlogd.pid
- -rw-r--r-- 1 root root 6 Jul  9 02:40 LOCALSTATEDIR/run/virtlogd.pid
+ # ls -la RUNSTATEDIR/virtlogd.pid
+ -rw-r--r-- 1 root root 6 Jul  9 02:40 RUNSTATEDIR/virtlogd.pid
  #
 
 =head1 BUGS

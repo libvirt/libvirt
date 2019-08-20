@@ -470,7 +470,7 @@ static int virLXCProcessSetupNamespaceNet(int ns_type, const char *name)
         return -1;
     }
 
-    if (virAsprintf(&path, "/var/run/netns/%s", name) < 0)
+    if (virAsprintf(&path, "%s/netns/%s", RUNSTATEDIR, name) < 0)
         return  -1;
     fd = open(path, O_RDONLY);
     VIR_FREE(path);

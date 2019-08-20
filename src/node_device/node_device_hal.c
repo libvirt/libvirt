@@ -619,7 +619,7 @@ nodeStateInitialize(bool privileged ATTRIBUTE_UNUSED,
 
     if (privileged) {
         if (virAsprintf(&driver->stateDir,
-                        "%s/run/libvirt/nodedev", LOCALSTATEDIR) < 0)
+                        "%s/libvirt/nodedev", RUNSTATEDIR) < 0)
             goto failure;
     } else {
         VIR_AUTOFREE(char *) rundir = NULL;

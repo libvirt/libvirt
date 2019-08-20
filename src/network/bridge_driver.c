@@ -726,9 +726,9 @@ networkStateInitialize(bool privileged,
             VIR_STRDUP(network_driver->networkAutostartDir,
                        SYSCONFDIR "/libvirt/qemu/networks/autostart") < 0 ||
             VIR_STRDUP(network_driver->stateDir,
-                       LOCALSTATEDIR "/run/libvirt/network") < 0 ||
+                       RUNSTATEDIR "/libvirt/network") < 0 ||
             VIR_STRDUP(network_driver->pidDir,
-                       LOCALSTATEDIR "/run/libvirt/network") < 0 ||
+                       RUNSTATEDIR "/libvirt/network") < 0 ||
             VIR_STRDUP(network_driver->dnsmasqStateDir,
                        LOCALSTATEDIR "/lib/libvirt/dnsmasq") < 0 ||
             VIR_STRDUP(network_driver->radvdStateDir,

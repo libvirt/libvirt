@@ -72,11 +72,11 @@ upgrades of the virtlockd service.
 The default configuration file used by virtlockd, unless overridden on the
 command line using the B<-f>|B<--config> option.
 
-=item F<LOCALSTATEDIR/run/libvirt/virtlockd-sock>
+=item F<RUNSTATEDIR/libvirt/virtlockd-sock>
 
 The sockets libvirtd will use.
 
-=item F<LOCALSTATEDIR/run/virtlockd.pid>
+=item F<RUNSTATEDIR/virtlockd.pid>
 
 The PID file to use, unless overridden by the B<-p>|B<--pid-file> option.
 
@@ -116,8 +116,8 @@ To retrieve the version of virtlockd:
 To start virtlockd, instructing it to daemonize and create a PID file:
 
  # virtlockd -d
- # ls -la LOCALSTATEDIR/run/virtlockd.pid
- -rw-r--r-- 1 root root 6 Jul  9 02:40 LOCALSTATEDIR/run/virtlockd.pid
+ # ls -la RUNSTATEDIR/virtlockd.pid
+ -rw-r--r-- 1 root root 6 Jul  9 02:40 RUNSTATEDIR/virtlockd.pid
  #
 
 =head1 BUGS

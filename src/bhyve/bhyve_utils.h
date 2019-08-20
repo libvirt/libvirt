@@ -31,7 +31,7 @@
 
 #define BHYVE_AUTOSTART_DIR    SYSCONFDIR "/libvirt/bhyve/autostart"
 #define BHYVE_CONFIG_DIR       SYSCONFDIR "/libvirt/bhyve"
-#define BHYVE_STATE_DIR        LOCALSTATEDIR "/run/libvirt/bhyve"
+#define BHYVE_STATE_DIR        RUNSTATEDIR "/libvirt/bhyve"
 #define BHYVE_LOG_DIR          LOCALSTATEDIR "/log/libvirt/bhyve"
 
 typedef struct _virBhyveDriverConfig virBhyveDriverConfig;

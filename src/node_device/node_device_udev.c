@@ -1830,7 +1830,7 @@ nodeStateInitialize(bool privileged,
 
     if (privileged) {
         if (virAsprintf(&driver->stateDir,
-                        "%s/run/libvirt/nodedev", LOCALSTATEDIR) < 0)
+                        "%s/libvirt/nodedev", RUNSTATEDIR) < 0)
             goto cleanup;
     } else {
         VIR_AUTOFREE(char *) rundir = NULL;

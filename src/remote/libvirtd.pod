@@ -84,9 +84,9 @@ On receipt of B<SIGHUP> libvirtd will reload its configuration.
 The default configuration file used by libvirtd, unless overridden on the
 command line using the B<-f>|B<--config> option.
 
-=item F<LOCALSTATEDIR/run/libvirt/libvirt-sock>
+=item F<RUNSTATEDIR/libvirt/libvirt-sock>
 
-=item F<LOCALSTATEDIR/run/libvirt/libvirt-sock-ro>
+=item F<RUNSTATEDIR/libvirt/libvirt-sock-ro>
 
 The sockets libvirtd will use.
 
@@ -102,7 +102,7 @@ The TLS B<Server> certificate libvirtd will use.
 
 The TLS B<Server> private key libvirtd will use.
 
-=item F<LOCALSTATEDIR/run/libvirtd.pid>
+=item F<RUNSTATEDIR/libvirtd.pid>
 
 The PID file to use, unless overridden by the B<-p>|B<--pid-file> option.
 
@@ -154,8 +154,8 @@ To retrieve the version of libvirtd:
 To start libvirtd, instructing it to daemonize and create a PID file:
 
  # libvirtd -d
- # ls -la LOCALSTATEDIR/run/libvirtd.pid
- -rw-r--r-- 1 root root 6 Jul  9 02:40 LOCALSTATEDIR/run/libvirtd.pid
+ # ls -la RUNSTATEDIR/libvirtd.pid
+ -rw-r--r-- 1 root root 6 Jul  9 02:40 RUNSTATEDIR/libvirtd.pid
  #
 
 =head1 BUGS

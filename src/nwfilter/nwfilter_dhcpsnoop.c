@@ -29,7 +29,7 @@
  *      while :; do kill -SIGTERM `pidof dhclient`; dhclient eth0; ifconfig eth0; done
  *
  *   On the host check the lease file and that it's periodically shortened:
- *      cat /var/run/libvirt/network/nwfilter.leases; date +%s
+ *      cat $runstatedir/libvirt/network/nwfilter.leases; date +%s
  *
  *   On the host also check that the ebtables rules 'look' ok:
  *      ebtables -t nat -L
@@ -71,7 +71,7 @@ VIR_LOG_INIT("nwfilter.nwfilter_dhcpsnoop");
 
 #ifdef HAVE_LIBPCAP
 
-# define LEASEFILE_DIR LOCALSTATEDIR "/run/libvirt/network/"
+# define LEASEFILE_DIR RUNSTATEDIR "/libvirt/network/"
 # define LEASEFILE LEASEFILE_DIR "nwfilter.leases"
 # define TMPLEASEFILE LEASEFILE_DIR "nwfilter.ltmp"
 
