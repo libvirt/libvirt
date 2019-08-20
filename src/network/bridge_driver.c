@@ -69,8 +69,6 @@
 #include "virjson.h"
 #include "virnetworkportdef.h"
 
-#include <libxml/xpathInternals.h>
-
 #define VIR_FROM_THIS VIR_FROM_NETWORK
 #define MAX_BRIDGE_ID 256
 
@@ -190,14 +188,6 @@ networkDnsmasqDefNamespaceParse(xmlXPathContextPtr ctxt,
 {
     networkDnsmasqXmlNsDefPtr nsdata = NULL;
     int ret = -1;
-
-    if (xmlXPathRegisterNs(ctxt, BAD_CAST "dnsmasq",
-                           BAD_CAST DNSMASQ_NAMESPACE_HREF) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to register xml namespace '%s'"),
-                       DNSMASQ_NAMESPACE_HREF);
-        return -1;
-    }
 
     if (VIR_ALLOC(nsdata) < 0)
         return -1;
