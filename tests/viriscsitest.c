@@ -365,6 +365,5 @@ mymain(void)
     return EXIT_SUCCESS;
 }
 
-VIR_TEST_MAIN_PRELOAD(mymain,
-                      abs_builddir "/.libs/virrandommock.so")
+VIR_TEST_MAIN_PRELOAD(mymain, VIR_TEST_MOCK("virrandom"))
 #endif /* WIN32 */

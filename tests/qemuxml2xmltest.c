@@ -1343,9 +1343,9 @@ mymain(void)
 }
 
 VIR_TEST_MAIN_PRELOAD(mymain,
-                      abs_builddir "/.libs/virpcimock.so",
-                      abs_builddir "/.libs/virrandommock.so",
-                      abs_builddir "/.libs/virdeterministichashmock.so")
+                      VIR_TEST_MOCK("virpci"),
+                      VIR_TEST_MOCK("virrandom"),
+                      VIR_TEST_MOCK("virdeterministichash"))
 
 #else
 

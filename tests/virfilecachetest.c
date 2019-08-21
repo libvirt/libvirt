@@ -233,4 +233,4 @@ mymain(void)
     return ret != 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }
 
-VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virfilecachemock.so")
+VIR_TEST_MAIN_PRELOAD(mymain, VIR_TEST_MOCK("virfilecache"))

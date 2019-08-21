@@ -464,7 +464,7 @@ mymain(void)
 }
 
 #ifdef __linux__
-VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virfilemock.so")
+VIR_TEST_MAIN_PRELOAD(mymain, VIR_TEST_MOCK("virfile"))
 #else
 VIR_TEST_MAIN(mymain)
 #endif

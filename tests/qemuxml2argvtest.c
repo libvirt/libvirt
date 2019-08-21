@@ -2994,10 +2994,10 @@ mymain(void)
 }
 
 VIR_TEST_MAIN_PRELOAD(mymain,
-                      abs_builddir "/.libs/qemuxml2argvmock.so",
-                      abs_builddir "/.libs/virrandommock.so",
-                      abs_builddir "/.libs/qemucpumock.so",
-                      abs_builddir "/.libs/virpcimock.so")
+                      VIR_TEST_MOCK("qemuxml2argv"),
+                      VIR_TEST_MOCK("virrandom"),
+                      VIR_TEST_MOCK("qemucpu"),
+                      VIR_TEST_MOCK("virpci"))
 
 #else
 

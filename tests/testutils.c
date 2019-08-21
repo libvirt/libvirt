@@ -962,8 +962,6 @@ virTestSetEnvPath(void)
     return ret;
 }
 
-#define TEST_MOCK (abs_builddir "/.libs/virtestmock.so")
-
 int virTestMain(int argc,
                 char **argv,
                 int (*func)(void),
@@ -981,7 +979,7 @@ int virTestMain(int argc,
     virLogOutputPtr *outputs = NULL;
 
     if (getenv("VIR_TEST_FILE_ACCESS"))
-        VIR_TEST_PRELOAD(TEST_MOCK);
+        VIR_TEST_PRELOAD(VIR_TEST_MOCK("virtest"));
 
     va_start(ap, func);
     while ((lib = va_arg(ap, const char *)))

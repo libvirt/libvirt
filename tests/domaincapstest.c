@@ -486,8 +486,8 @@ mymain(void)
 
 #if WITH_QEMU
 VIR_TEST_MAIN_PRELOAD(mymain,
-                       abs_builddir "/.libs/domaincapsmock.so",
-                       abs_builddir "/.libs/qemucpumock.so")
+                      VIR_TEST_MOCK("domaincaps"),
+                      VIR_TEST_MOCK("qemucpu"))
 #else
-VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/domaincapsmock.so")
+VIR_TEST_MAIN_PRELOAD(mymain, VIR_TEST_MOCK("domaincaps"))
 #endif

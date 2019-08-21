@@ -1198,7 +1198,7 @@ mymain(void)
 }
 
 # if WITH_DBUS
-VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virdbusmock.so")
+VIR_TEST_MAIN_PRELOAD(mymain, VIR_TEST_MOCK("virdbus"))
 # else
 VIR_TEST_MAIN(mymain)
 # endif
