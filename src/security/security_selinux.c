@@ -1257,12 +1257,27 @@ virSecuritySELinuxGetProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     return 0;
 }
 
-/* Attempt to change the label of PATH to TCON.  If OPTIONAL is true,
- * return 1 if labelling was not possible.  Otherwise, require a label
- * change, and return 0 for success, -1 for failure.  */
+/**
+ * virSecuritySELinuxSetFileconImpl:
+ * @path: path to the file to set context on
+ * @tcon: target context to set
+ * @privileged: whether running as privileged user
+ *
+ * Set @tcon SELinux context on @path. If unable to do so, check SELinux
+ * configuration and produce sensible error message suggesting solution.
+ * It may happen that setting context fails but hypervisor will be able to
+ * open the @path successfully. This is because some file systems don't
+ * support SELinux, are RO, or the @path had the correct context from the
+ * start. If that is the case, a positive one is returned.
+ *
+ * Returns:  0 if context was set successfully
+ *           1 if setting the context failed in a non-critical fashion
+ *           -1 in case of error
+ */
 static int
-virSecuritySELinuxSetFileconImpl(const char *path, const char *tcon,
-                                 bool optional, bool privileged)
+virSecuritySELinuxSetFileconImpl(const char *path,
+                                 const char *tcon,
+                                 bool privileged)
 {
     security_context_t econ;
 
@@ -1278,7 +1293,7 @@ virSecuritySELinuxSetFileconImpl(const char *path, const char *tcon,
             if (STREQ(tcon, econ)) {
                 freecon(econ);
                 /* It's alright, there's nothing to change anyway. */
-                return optional ? 1 : 0;
+                return 1;
             }
             freecon(econ);
         }
@@ -1315,9 +1330,9 @@ virSecuritySELinuxSetFileconImpl(const char *path, const char *tcon,
                 VIR_INFO("Setting security context '%s' on '%s' not supported",
                          tcon, path);
             }
-            if (optional)
-                return 1;
         }
+
+        return 1;
     }
     return 0;
 }
@@ -1377,7 +1392,7 @@ virSecuritySELinuxSetFileconHelper(virSecurityManagerPtr mgr,
         }
     }
 
-    if (virSecuritySELinuxSetFileconImpl(path, tcon, optional, privileged) < 0)
+    if (virSecuritySELinuxSetFileconImpl(path, tcon, privileged) < 0)
         goto cleanup;
 
     ret = 0;
@@ -1542,7 +1557,7 @@ virSecuritySELinuxRestoreFileLabel(virSecurityManagerPtr mgr,
         }
     }
 
-    if (virSecuritySELinuxSetFileconImpl(newpath, fcon, false, privileged) < 0)
+    if (virSecuritySELinuxSetFileconImpl(newpath, fcon, privileged) < 0)
         goto cleanup;
 
     ret = 0;
