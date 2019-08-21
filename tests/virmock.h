@@ -288,3 +288,13 @@
             abort(); \
         } \
     } while (0)
+
+#define VIR_MOCK_REAL_INIT_ALIASED(name, alias) \
+    do { \
+        if (real_##name == NULL && \
+            !(real_##name = dlsym(RTLD_NEXT, \
+                                  alias))) { \
+            fprintf(stderr, "Missing symbol '" alias "'\n"); \
+            abort(); \
+        } \
+    } while (0)
