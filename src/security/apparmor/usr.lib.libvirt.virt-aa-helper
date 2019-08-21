@@ -18,7 +18,6 @@ profile virt-aa-helper /usr/{lib,lib64}/libvirt/virt-aa-helper {
   @{PROC}/filesystems r,
 
   # Used when internally running another command (namely apparmor_parser)
-  @{PROC}/self/fd/ r,
   @{PROC}/@{pid}/fd/ r,
 
   /etc/libnl-3/classid r,
