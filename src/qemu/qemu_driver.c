@@ -5930,7 +5930,6 @@ static int qemuNodeGetSecurityModel(virConnectPtr conn,
                                     virSecurityModelPtr secmodel)
 {
     virQEMUDriverPtr driver = conn->privateData;
-    char *p;
     g_autoptr(virCaps) caps = NULL;
 
     memset(secmodel, 0, sizeof(*secmodel));
@@ -5946,23 +5945,21 @@ static int qemuNodeGetSecurityModel(virConnectPtr conn,
         caps->host.secModels[0].model == NULL)
         return 0;
 
-    p = caps->host.secModels[0].model;
-    if (strlen(p) >= VIR_SECURITY_MODEL_BUFLEN-1) {
+    if (virStrcpy(secmodel->model, caps->host.secModels[0].model,
+                  VIR_SECURITY_MODEL_BUFLEN) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("security model string exceeds max %d bytes"),
-                       VIR_SECURITY_MODEL_BUFLEN-1);
+                       VIR_SECURITY_MODEL_BUFLEN - 1);
         return -1;
     }
-    strcpy(secmodel->model, p);
 
-    p = caps->host.secModels[0].doi;
-    if (strlen(p) >= VIR_SECURITY_DOI_BUFLEN-1) {
+    if (virStrcpy(secmodel->doi, caps->host.secModels[0].doi,
+                  VIR_SECURITY_DOI_BUFLEN) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("security DOI string exceeds max %d bytes"),
-                       VIR_SECURITY_DOI_BUFLEN-1);
+                       VIR_SECURITY_DOI_BUFLEN - 1);
         return -1;
     }
-    strcpy(secmodel->doi, p);
 
     return 0;
 }
