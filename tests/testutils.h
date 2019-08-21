@@ -117,9 +117,15 @@ int virTestMain(int argc,
         return virTestMain(argc, argv, func, NULL); \
     }
 
+#ifdef __APPLE__
+# define PRELOAD_VAR "DYLD_INSERT_LIBRARIES"
+#else
+# define PRELOAD_VAR "LD_PRELOAD"
+#endif
+
 #define VIR_TEST_PRELOAD(lib) \
     do { \
-        const char *preload = getenv("LD_PRELOAD"); \
+        const char *preload = getenv(PRELOAD_VAR); \
         if (preload == NULL || strstr(preload, lib) == NULL) { \
             char *newenv; \
             if (!virFileIsExecutable(lib)) { \
@@ -132,7 +138,7 @@ int virTestMain(int argc,
                 perror("virAsprintf"); \
                 return EXIT_FAILURE; \
             } \
-            setenv("LD_PRELOAD", newenv, 1); \
+            setenv(PRELOAD_VAR, newenv, 1); \
             execv(argv[0], argv); \
         } \
     } while (0)
