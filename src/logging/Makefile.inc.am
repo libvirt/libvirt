@@ -123,21 +123,11 @@ virtlogd.8.in: logging/virtlogd.pod
 	mv $@-t2 $@
 
 virtlogd.service: logging/virtlogd.service.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed \
-	    -e 's|[@]sbindir[@]|$(sbindir)|g' \
-	    -e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
-	    < $< > $@-t && \
-	    mv $@-t $@
+	$(AM_V_GEN)sed $(COMMON_UNIT_VARS) $< > $@-t && mv $@-t $@
 
 virtlogd.socket: logging/virtlogd.socket.in $(top_builddir)/config.status
-	$(AM_V_GEN)sed \
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
-	    < $< > $@-t && \
-	    mv $@-t $@
+	$(AM_V_GEN)sed $(COMMON_UNIT_VARS) $< > $@-t && mv $@-t $@
 
 virtlogd-admin.socket: logging/virtlogd-admin.socket.in \
                        $(top_builddir)/config.status
-	$(AM_V_GEN)sed \
-	    -e 's|[@]localstatedir[@]|$(localstatedir)|g' \
-	    < $< > $@-t && \
-	    mv $@-t $@
+	$(AM_V_GEN)sed $(COMMON_UNIT_VARS) $< > $@-t && mv $@-t $@
