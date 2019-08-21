@@ -5934,14 +5934,12 @@ static int qemuNodeGetSecurityModel(virConnectPtr conn,
 
     memset(secmodel, 0, sizeof(*secmodel));
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        return 0;
-
     if (virNodeGetSecurityModelEnsureACL(conn) < 0)
         return 0;
 
     /* We treat no driver as success, but simply return no data in *secmodel */
-    if (caps->host.nsecModels == 0 ||
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)) ||
+        caps->host.nsecModels == 0 ||
         caps->host.secModels[0].model == NULL)
         return 0;
 
