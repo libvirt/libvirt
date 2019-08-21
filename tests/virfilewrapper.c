@@ -157,7 +157,12 @@ int access(const char *path, int mode)
     return real_access(newpath ? newpath : path, mode);
 }
 
+# ifdef __APPLE__
+int _open(const char *path, int flags, ...) __asm("_open");
+int _open(const char *path, int flags, ...)
+# else
 int open(const char *path, int flags, ...)
+# endif
 {
     VIR_AUTOFREE(char *) newpath = NULL;
     va_list ap;
