@@ -5511,23 +5511,51 @@
     <h5><a id="elementsNICSEthernet">Generic ethernet connection</a></h5>
 
     <p>
-      Provides a means for the administrator to execute an arbitrary script
-      to connect the guest's network to the LAN. The guest will have a tun
-      device created with a name of vnetN, which can also be overridden with the
-      &lt;target&gt; element. After creating the tun device a shell script will
-      be run which is expected to do whatever host network integration is
-      required. By default this script is called /etc/qemu-ifup but can be
-      overridden.
+      Provides a means to use a new or existing tap device (or veth
+      device pair, depening on the needs of the hypervisor driver)
+      that is partially or wholly setup external to libvirt (either
+      prior to the guest starting, or while the guest is being started
+      via an optional script specified in the config).
+    </p>
+    <p>
+      The name of the tap device can optionally be specified with
+      the <code>dev</code> attribute of the
+      <code>&lt;target&gt;</code> element. If no target dev is
+      specified, libvirt will create a new standard tap device with a
+      name of the pattern "vnetN", where "N" is replaced with a
+      number. If a target dev is specified and that device doesn't
+      exist, then a new standard tap device will be created with the
+      exact dev name given. If the specified target dev does exist,
+      then that existing device will be used. Usually some basic setup
+      of the device is done by libvirt, including setting a MAC
+      address, and the IFF_UP flag, but if the <code>dev</code> is a
+      pre-existing device, and the <code>managed</code> attribute of
+      the <code>target</code> element is also set to "no" (the default
+      value is "yes"), even this basic setup will not be performed -
+      libvirt will simply pass the device on to the hypervisor with no
+      setup at all. <span class="since">Since 5.7.0</span> Using
+      managed='no' with a pre-created tap device is useful because
+      it permits a virtual machine managed by an unprivileged libvirtd
+      to have emulated network devices based on tap devices.
+    </p>
+    <p>
+      After creating/opening the tap device, an optional shell script
+      (given in the <code>path</code> attribute of
+      the <code>&lt;script&gt;</code> element) will be run; this can
+      be used to do whatever extra host network integration is
+      required.
     </p>
 
 <pre>
 ...
 &lt;devices&gt;
-  &lt;interface type='ethernet'/&gt;
+  &lt;interface type='ethernet'&gt;
+    &lt;script path='/etc/qemu-ifup-mynet'/&gt;
+  &lt;/interface&gt;
   ...
   &lt;interface type='ethernet'&gt;
-    &lt;target dev='vnet7'/&gt;
-    &lt;script path='/etc/qemu-ifup-mynet'/&gt;
+    &lt;target dev='mytap1' managed='no'/&gt;
+    &lt;model type='virtio'/&gt;
   &lt;/interface&gt;
 &lt;/devices&gt;
 ...</pre>

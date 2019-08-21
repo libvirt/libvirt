@@ -6112,6 +6112,14 @@ virDomainNetDefValidate(const virDomainNetDef *net)
                        virDomainNetTypeToString(net->type));
         return -1;
     }
+    if (net->managed_tap == VIR_TRISTATE_BOOL_NO &&
+        net->type != VIR_DOMAIN_NET_TYPE_ETHERNET) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unmanaged target dev is not supported on "
+                         "interfaces of type '%s'"),
+                       virDomainNetTypeToString(net->type));
+        return -1;
+    }
     return 0;
 }
 
@@ -11421,6 +11429,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     VIR_AUTOFREE(char *) bridge = NULL;
     VIR_AUTOFREE(char *) dev = NULL;
     VIR_AUTOFREE(char *) ifname = NULL;
+    VIR_AUTOFREE(char *) managed_tap = NULL;
     VIR_AUTOFREE(char *) ifname_guest = NULL;
     VIR_AUTOFREE(char *) ifname_guest_actual = NULL;
     VIR_AUTOFREE(char *) script = NULL;
@@ -11583,13 +11592,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
             } else if (!ifname &&
                        virXMLNodeNameEqual(cur, "target")) {
                 ifname = virXMLPropString(cur, "dev");
-                if (ifname &&
-                    (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
-                    (STRPREFIX(ifname, VIR_NET_GENERATED_TAP_PREFIX) ||
-                     (prefix && STRPREFIX(ifname, prefix)))) {
-                    /* An auto-generated target name, blank it out */
-                    VIR_FREE(ifname);
-                }
+                managed_tap = virXMLPropString(cur, "managed");
             } else if ((!ifname_guest || !ifname_guest_actual) &&
                        virXMLNodeNameEqual(cur, "guest")) {
                 ifname_guest = virXMLPropString(cur, "dev");
@@ -11922,6 +11925,27 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     if (virDomainNetIPInfoParseXML(_("guest interface"),
                                    ctxt, &def->guestIP) < 0)
         goto error;
+
+    if (managed_tap) {
+        if (STREQ(managed_tap, "no")) {
+            def->managed_tap = VIR_TRISTATE_BOOL_NO;
+        } else if (STREQ(managed_tap, "yes")) {
+            def->managed_tap = VIR_TRISTATE_BOOL_YES;
+        } else {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("invalid 'managed' value '%s'"),
+                           managed_tap);
+            goto error;
+        }
+    }
+
+    if (def->managed_tap != VIR_TRISTATE_BOOL_NO && ifname &&
+        (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
+        (STRPREFIX(ifname, VIR_NET_GENERATED_TAP_PREFIX) ||
+         (prefix && STRPREFIX(ifname, prefix)))) {
+        /* An auto-generated target name, blank it out */
+        VIR_FREE(ifname);
+    }
 
     if (script != NULL)
         VIR_STEAL_PTR(def->script, script);
@@ -25550,11 +25574,16 @@ virDomainNetDefFormat(virBufferPtr buf,
     virBufferEscapeString(buf, "<backenddomain name='%s'/>\n", def->domain_name);
 
     if (def->ifname &&
-        !((flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE) &&
-          (STRPREFIX(def->ifname, VIR_NET_GENERATED_TAP_PREFIX) ||
-           (prefix && STRPREFIX(def->ifname, prefix))))) {
+        (def->managed_tap == VIR_TRISTATE_BOOL_NO ||
+         !((flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE) &&
+           (STRPREFIX(def->ifname, VIR_NET_GENERATED_TAP_PREFIX) ||
+            (prefix && STRPREFIX(def->ifname, prefix)))))) {
         /* Skip auto-generated target names for inactive config. */
         virBufferEscapeString(&attrBuf, " dev='%s'", def->ifname);
+    }
+    if (def->managed_tap != VIR_TRISTATE_BOOL_ABSENT) {
+        virBufferAsprintf(&attrBuf, " managed='%s'",
+                          virTristateBoolTypeToString(def->managed_tap));
     }
 
     if (virXMLFormatElement(buf, "target", &attrBuf, NULL) < 0)
