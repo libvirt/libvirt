@@ -465,7 +465,11 @@ mymain(void)
 
     DO_TEST_LOCALHOST("127.0.0.1", true);
     DO_TEST_LOCALHOST("2130706433", true);
+
+    /* Octal IPv4 doesn't work in getaddrinfo on macOS */
+#ifndef __APPLE__
     DO_TEST_LOCALHOST("0177.0.0.01", true);
+#endif
     DO_TEST_LOCALHOST("::1", true);
     DO_TEST_LOCALHOST("0::1", true);
     DO_TEST_LOCALHOST("0:0:0::1", true);
