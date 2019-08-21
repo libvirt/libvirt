@@ -106,7 +106,9 @@ virConsoleShutdown(virConsolePtr con)
 
     if (con->st) {
         virStreamEventRemoveCallback(con->st);
-        virStreamAbort(con->st);
+        if (virStreamAbort(con->st) < 0)
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot terminate console stream"));
         virStreamFree(con->st);
         con->st = NULL;
     }
@@ -172,10 +174,6 @@ virConsoleEventOnStream(virStreamPtr st,
         if (got == -2)
             goto cleanup; /* blocking */
         if (got <= 0) {
-            if (got == 0)
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("console stream EOF"));
-
             virConsoleShutdown(con);
             goto cleanup;
         }
