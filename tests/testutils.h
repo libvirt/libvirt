@@ -119,8 +119,10 @@ int virTestMain(int argc,
 
 #ifdef __APPLE__
 # define PRELOAD_VAR "DYLD_INSERT_LIBRARIES"
+# define MOCK_EXT ".dylib"
 #else
 # define PRELOAD_VAR "LD_PRELOAD"
+# define MOCK_EXT ".so"
 #endif
 
 #define VIR_TEST_PRELOAD(lib) \
@@ -147,8 +149,6 @@ int virTestMain(int argc,
     int main(int argc, char **argv) { \
         return virTestMain(argc, argv, func, __VA_ARGS__, NULL); \
     }
-
-#define MOCK_EXT ".so"
 
 #define VIR_TEST_MOCK(mock) (abs_builddir "/.libs/lib" mock "mock" MOCK_EXT)
 

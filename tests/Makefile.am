@@ -48,7 +48,7 @@ AM_CFLAGS = \
 AM_LDFLAGS = \
 	-export-dynamic
 
-MOCKLIBS_LDFLAGS = -module -avoid-version \
+MOCKLIBS_LDFLAGS = -avoid-version \
 	-rpath /evil/libtool/hack/to/force/shared/lib/creation \
 	$(MINGW_EXTRA_LDFLAGS)
 
