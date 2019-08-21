@@ -119,9 +119,12 @@ int virTestMain(int argc,
 
 #ifdef __APPLE__
 # define PRELOAD_VAR "DYLD_INSERT_LIBRARIES"
+# define FORCE_FLAT_NAMESPACE \
+            setenv("DYLD_FORCE_FLAT_NAMESPACE", "1", 1);
 # define MOCK_EXT ".dylib"
 #else
 # define PRELOAD_VAR "LD_PRELOAD"
+# define FORCE_FLAT_NAMESPACE
 # define MOCK_EXT ".so"
 #endif
 
@@ -141,6 +144,7 @@ int virTestMain(int argc,
                 return EXIT_FAILURE; \
             } \
             setenv(PRELOAD_VAR, newenv, 1); \
+            FORCE_FLAT_NAMESPACE \
             execv(argv[0], argv); \
         } \
     } while (0)
