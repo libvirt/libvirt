@@ -212,6 +212,7 @@ fi
 
 AM_CONDITIONAL([WITH_LINUX], [test "$with_linux" = "yes"])
 AM_CONDITIONAL([WITH_FREEBSD], [test "$with_freebsd" = "yes"])
+AM_CONDITIONAL([WITH_MACOS], [test "$with_macos" = "yes"])
 
 # We don't support the daemon yet
 if test "$with_win" = "yes" ; then
