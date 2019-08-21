@@ -751,6 +751,7 @@ virSecurityDACSetOwnership(virSecurityManagerPtr mgr,
                            bool remember)
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virErrorPtr origerr;
     struct stat sb;
     int refcount;
     int rc;
@@ -784,12 +785,13 @@ virSecurityDACSetOwnership(virSecurityManagerPtr mgr,
              * is @refcount domains using the @path. Do not
              * change the label (as it would almost certainly
              * cause the other domains to lose access to the
-             * @path). */
+             * @path). However, the refcounter was incremented in
+             * XATTRs so decrease it. */
             if (sb.st_uid != uid || sb.st_gid != gid) {
                 virReportError(VIR_ERR_OPERATION_INVALID,
                                _("Setting different DAC user or group on %s "
                                  "which is already in use"), path);
-                return -1;
+                goto error;
             }
         }
     }
@@ -797,25 +799,26 @@ virSecurityDACSetOwnership(virSecurityManagerPtr mgr,
     VIR_INFO("Setting DAC user and group on '%s' to '%ld:%ld'",
              NULLSTR(src ? src->path : path), (long)uid, (long)gid);
 
-    if (virSecurityDACSetOwnershipInternal(priv, src, path, uid, gid) < 0) {
-        virErrorPtr origerr;
-
-        virErrorPreserveLast(&origerr);
-        /* Try to restore the label. This is done so that XATTRs
-         * are left in the same state as when the control entered
-         * this function. However, if our attempt fails, there's
-         * not much we can do. XATTRs refcounting is fubar'ed and
-         * the only option we have is warn users. */
-        if (virSecurityDACRestoreFileLabelInternal(mgr, src, path, remember) < 0)
-            VIR_WARN("Unable to restore label on '%s'. "
-                     "XATTRs might have been left in inconsistent state.",
-                     NULLSTR(src ? src->path : path));
-
-        virErrorRestore(&origerr);
-        return -1;
-    }
+    if (virSecurityDACSetOwnershipInternal(priv, src, path, uid, gid) < 0)
+        goto error;
 
     return 0;
+
+ error:
+    virErrorPreserveLast(&origerr);
+    /* Try to restore the label. This is done so that XATTRs
+     * are left in the same state as when the control entered
+     * this function. However, if our attempt fails, there's
+     * not much we can do. XATTRs refcounting is fubar'ed and
+     * the only option we have is warn users. */
+    if (virSecurityDACRestoreFileLabelInternal(mgr, src, path, remember) < 0)
+        VIR_WARN("Unable to restore label on '%s'. "
+                 "XATTRs might have been left in inconsistent state.",
+                 NULLSTR(src ? src->path : path));
+
+    virErrorRestore(&origerr);
+
+    return -1;
 }
 
 

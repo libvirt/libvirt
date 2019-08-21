@@ -1334,6 +1334,7 @@ virSecuritySELinuxSetFileconHelper(virSecurityManagerPtr mgr,
     security_context_t econ = NULL;
     int refcount;
     int rc;
+    bool rollback = false;
     int ret = -1;
 
     if ((rc = virSecuritySELinuxTransactionAppend(path, tcon,
@@ -1353,6 +1354,8 @@ virSecuritySELinuxSetFileconHelper(virSecurityManagerPtr mgr,
 
         if (econ) {
             refcount = virSecuritySELinuxRememberLabel(path, econ);
+            if (refcount > 0)
+                rollback = true;
             if (refcount == -2) {
                 /* Not supported. Don't error though. */
             } else if (refcount < 0) {
@@ -1362,7 +1365,8 @@ virSecuritySELinuxSetFileconHelper(virSecurityManagerPtr mgr,
                  * is @refcount domains using the @path. Do not
                  * change the label (as it would almost certainly
                  * cause the other domains to lose access to the
-                 * @path). */
+                 * @path). However, the refcounter was
+                 * incremented in XATTRs so decrease it. */
                 if (STRNEQ(econ, tcon)) {
                     virReportError(VIR_ERR_OPERATION_INVALID,
                                    _("Setting different SELinux label on %s "
@@ -1373,7 +1377,12 @@ virSecuritySELinuxSetFileconHelper(virSecurityManagerPtr mgr,
         }
     }
 
-    if (virSecuritySELinuxSetFileconImpl(path, tcon, optional, privileged) < 0) {
+    if (virSecuritySELinuxSetFileconImpl(path, tcon, optional, privileged) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    if (ret < 0 && rollback) {
         virErrorPtr origerr;
 
         virErrorPreserveLast(&origerr);
@@ -1388,11 +1397,8 @@ virSecuritySELinuxSetFileconHelper(virSecurityManagerPtr mgr,
                      path);
 
         virErrorRestore(&origerr);
-        goto cleanup;
-    }
 
-    ret = 0;
- cleanup:
+    }
     freecon(econ);
     return ret;
 }
