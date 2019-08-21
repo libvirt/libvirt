@@ -167,8 +167,6 @@ testDriverDispose(void *obj)
     virObjectUnref(driver->eventState);
 }
 
-#define TEST_NAMESPACE_HREF "http://libvirt.org/schemas/domain/test/1.0"
-
 typedef struct _testDomainNamespaceDef testDomainNamespaceDef;
 typedef testDomainNamespaceDef *testDomainNamespaceDefPtr;
 struct _testDomainNamespaceDef {
@@ -179,12 +177,6 @@ struct _testDomainNamespaceDef {
     unsigned int num_snap_nodes;
     xmlNodePtr *snap_nodes;
 };
-
-static const char*
-testDomainDefNamespaceHref(void)
-{
-    return TEST_NAMESPACE_HREF;
-}
 
 static void
 testDomainDefNamespaceFree(void *data)
@@ -427,7 +419,7 @@ testDriverNew(void)
         .parse = testDomainDefNamespaceParse,
         .free = testDomainDefNamespaceFree,
         .prefix = "test",
-        .href = testDomainDefNamespaceHref,
+        .uri = "http://libvirt.org/schemas/domain/test/1.0",
     };
     virDomainDefParserConfig config = {
         .features = VIR_DOMAIN_DEF_FEATURE_MEMORY_HOTPLUG |

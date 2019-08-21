@@ -257,7 +257,7 @@ struct _virXMLNamespace {
     virXMLNamespaceFree free;
     virXMLNamespaceFormat format;
     const char *prefix;
-    virXMLNamespaceHref href;
+    const char *uri;
 };
 typedef struct _virXMLNamespace virXMLNamespace;
 typedef virXMLNamespace *virXMLNamespacePtr;

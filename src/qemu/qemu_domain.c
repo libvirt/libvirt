@@ -81,8 +81,6 @@
 
 VIR_LOG_INIT("qemu.qemu_domain");
 
-#define QEMU_NAMESPACE_HREF "http://libvirt.org/schemas/domain/qemu/1.0"
-
 VIR_ENUM_IMPL(qemuDomainJob,
               QEMU_JOB_LAST,
               "none",
@@ -3713,19 +3711,13 @@ qemuDomainDefNamespaceFormatXML(virBufferPtr buf,
     return 0;
 }
 
-static const char *
-qemuDomainDefNamespaceHref(void)
-{
-    return QEMU_NAMESPACE_HREF;
-}
-
 
 virXMLNamespace virQEMUDriverDomainXMLNamespace = {
     .parse = qemuDomainDefNamespaceParse,
     .free = qemuDomainDefNamespaceFree,
     .format = qemuDomainDefNamespaceFormatXML,
     .prefix = "qemu",
-    .href = qemuDomainDefNamespaceHref,
+    .uri = "http://libvirt.org/schemas/domain/qemu/1.0",
 };
 
 

@@ -31,8 +31,6 @@
 
 VIR_LOG_INIT("bhyve.bhyve_domain");
 
-#define BHYVE_NAMESPACE_HREF "http://libvirt.org/schemas/domain/bhyve/1.0"
-
 static void *
 bhyveDomainObjPrivateAlloc(void *opaque ATTRIBUTE_UNUSED)
 {
@@ -258,16 +256,11 @@ bhyveDomainDefNamespaceFormatXML(virBufferPtr buf,
     return 0;
 }
 
-static const char *
-bhyveDomainDefNamespaceHref(void)
-{
-    return BHYVE_NAMESPACE_HREF;
-}
-
 virXMLNamespace virBhyveDriverDomainXMLNamespace = {
     .parse = bhyveDomainDefNamespaceParse,
     .free = bhyveDomainDefNamespaceFree,
     .format = bhyveDomainDefNamespaceFormatXML,
     .prefix = "bhyve",
-    .href = bhyveDomainDefNamespaceHref,
+    .uri = "http://libvirt.org/schemas/domain/bhyve/1.0",
+
 };

@@ -528,7 +528,6 @@ virStorageBackendFileSystemBuild(virStoragePoolObjPtr pool,
 
 #if WITH_STORAGE_FS
 
-# define STORAGE_POOL_FS_NAMESPACE_HREF "http://libvirt.org/schemas/storagepool/fs/1.0"
 
 /* Backend XML Namespace handling for fs or netfs specific mount options to
  * be added to the mount -o {options_list} command line that are not otherwise
@@ -624,12 +623,6 @@ virStoragePoolDefFSNamespaceFormatXML(virBufferPtr buf,
 }
 
 
-static const char *
-virStoragePoolDefFSNamespaceHref(void)
-{
-    return STORAGE_POOL_FS_NAMESPACE_HREF;
-}
-
 #endif /* WITH_STORAGE_FS */
 
 
@@ -697,7 +690,7 @@ static virXMLNamespace virStoragePoolFSXMLNamespace = {
     .free = virStoragePoolDefFSNamespaceFree,
     .format = virStoragePoolDefFSNamespaceFormatXML,
     .prefix = "fs",
-    .href = virStoragePoolDefFSNamespaceHref,
+    .uri = "http://libvirt.org/schemas/storagepool/fs/1.0",
 };
 #endif /* WITH_STORAGE_FS */
 

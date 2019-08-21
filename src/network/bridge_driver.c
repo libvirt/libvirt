@@ -83,8 +83,6 @@
 
 VIR_LOG_INIT("network.bridge_driver");
 
-#define DNSMASQ_NAMESPACE_HREF "http://libvirt.org/schemas/network/dnsmasq/1.0"
-
 static virNetworkDriverStatePtr network_driver;
 
 
@@ -231,19 +229,12 @@ networkDnsmasqDefNamespaceFormatXML(virBufferPtr buf,
 }
 
 
-static const char *
-networkDnsmasqDefNamespaceHref(void)
-{
-    return DNSMASQ_NAMESPACE_HREF;
-}
-
-
 virXMLNamespace networkDnsmasqXMLNamespace = {
     .parse = networkDnsmasqDefNamespaceParse,
     .free = networkDnsmasqDefNamespaceFree,
     .format = networkDnsmasqDefNamespaceFormatXML,
     .prefix = "dnsmasq",
-    .href = networkDnsmasqDefNamespaceHref,
+    .uri = "http://libvirt.org/schemas/network/dnsmasq/1.0",
 };
 
 

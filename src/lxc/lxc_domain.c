@@ -34,7 +34,6 @@
 #include "virinitctl.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
-#define LXC_NAMESPACE_HREF "http://libvirt.org/schemas/domain/lxc/1.0"
 
 VIR_ENUM_IMPL(virLXCDomainJob,
               LXC_JOB_LAST,
@@ -302,19 +301,13 @@ lxcDomainDefNamespaceFormatXML(virBufferPtr buf,
     return 0;
 }
 
-static const char *
-lxcDomainDefNamespaceHref(void)
-{
-    return LXC_NAMESPACE_HREF;
-}
-
 
 virXMLNamespace virLXCDriverDomainXMLNamespace = {
     .parse = lxcDomainDefNamespaceParse,
     .free = lxcDomainDefNamespaceFree,
     .format = lxcDomainDefNamespaceFormatXML,
     .prefix = "lxc",
-    .href = lxcDomainDefNamespaceHref,
+    .uri = "http://libvirt.org/schemas/domain/lxc/1.0",
 };
 
 

@@ -597,18 +597,12 @@ virVMXDomainDefNamespaceFormatXML(virBufferPtr buf, void *nsdata)
     return 0;
 }
 
-static const char *
-virVMXDomainDefNamespaceHref(void)
-{
-    return "http://libvirt.org/schemas/domain/vmware/1.0";
-}
-
 static virXMLNamespace virVMXDomainXMLNamespace = {
     .parse = NULL,
     .free = virVMXDomainDefNamespaceFree,
     .format = virVMXDomainDefNamespaceFormatXML,
     .prefix = "vmware",
-    .href = virVMXDomainDefNamespaceHref,
+    .uri = "http://libvirt.org/schemas/domain/vmware/1.0",
 };
 
 virDomainXMLOptionPtr

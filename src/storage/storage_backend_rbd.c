@@ -58,8 +58,6 @@ struct _virStoragePoolRBDConfigOptionsDef {
     char **values;
 };
 
-#define STORAGE_POOL_RBD_NAMESPACE_HREF "http://libvirt.org/schemas/storagepool/rbd/1.0"
-
 static void
 virStoragePoolDefRBDNamespaceFree(void *nsdata)
 {
@@ -163,13 +161,6 @@ virStoragePoolDefRBDNamespaceFormatXML(virBufferPtr buf,
     virBufferAddLit(buf, "</rbd:config_opts>\n");
 
     return 0;
-}
-
-
-static const char *
-virStoragePoolDefRBDNamespaceHref(void)
-{
-    return STORAGE_POOL_RBD_NAMESPACE_HREF;
 }
 
 
@@ -1538,7 +1529,7 @@ static virXMLNamespace virStoragePoolRBDXMLNamespace = {
     .free = virStoragePoolDefRBDNamespaceFree,
     .format = virStoragePoolDefRBDNamespaceFormatXML,
     .prefix = "rbd",
-    .href = virStoragePoolDefRBDNamespaceHref,
+    .uri = "http://libvirt.org/schemas/storagepool/rbd/1.0",
 };
 
 

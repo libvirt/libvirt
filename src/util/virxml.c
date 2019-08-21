@@ -1416,7 +1416,7 @@ void
 virXMLNamespaceFormatNS(virBufferPtr buf,
                         virXMLNamespace const *ns)
 {
-    virBufferAsprintf(buf, " xmlns:%s='%s'", ns->prefix, ns->href());
+    virBufferAsprintf(buf, " xmlns:%s='%s'", ns->prefix, ns->uri);
 }
 
 
@@ -1426,10 +1426,10 @@ virXMLNamespaceRegister(xmlXPathContextPtr ctxt,
 {
     if (xmlXPathRegisterNs(ctxt,
                            BAD_CAST ns->prefix,
-                           BAD_CAST ns->href()) < 0) {
+                           BAD_CAST ns->uri) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to register xml namespace '%s'"),
-                       ns->href());
+                       ns->uri);
         return -1;
     }
 
