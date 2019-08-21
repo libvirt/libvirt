@@ -7713,8 +7713,7 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
     /* set default value */
     seclabel->type = VIR_DOMAIN_SECLABEL_DYNAMIC;
 
-    p = virXMLPropStringLimit(ctxt->node, "type",
-                              VIR_SECURITY_LABEL_BUFLEN - 1);
+    p = virXMLPropString(ctxt->node, "type");
     if (p) {
         seclabel->type = virDomainSeclabelTypeFromString(p);
         if (seclabel->type <= 0) {
@@ -7729,8 +7728,7 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
         seclabel->relabel = false;
 
     VIR_FREE(p);
-    p = virXMLPropStringLimit(ctxt->node, "relabel",
-                              VIR_SECURITY_LABEL_BUFLEN-1);
+    p = virXMLPropString(ctxt->node, "relabel");
     if (p) {
         if (virStringParseYesNo(p, &seclabel->relabel) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
