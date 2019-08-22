@@ -26,11 +26,7 @@ Documentation=https://libvirt.org
 [Service]
 Type=notify
 EnvironmentFile=-@sysconfdir@/sysconfig/libvirtd
-# libvirtd.service is set to run on boot so that autostart of
-# VMs can be performed. We don't want it to stick around if
-# unused though, so we set a timeout. The socket activation
-# then ensures it gets started again if anything needs it
-ExecStart=@sbindir@/libvirtd --timeout 120 $LIBVIRTD_ARGS
+ExecStart=@sbindir@/libvirtd $LIBVIRTD_ARGS
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 Restart=on-failure
