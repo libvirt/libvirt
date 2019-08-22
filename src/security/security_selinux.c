@@ -1384,12 +1384,18 @@ virSecuritySELinuxSetFilecon(virSecurityManagerPtr mgr,
         }
     }
 
-    if (virSecuritySELinuxSetFileconImpl(path, tcon, privileged) < 0)
+    rc = virSecuritySELinuxSetFileconImpl(path, tcon, privileged);
+    if (rc < 0)
         goto cleanup;
+
+    /* Do not try restoring the label if it was not changed
+     * (setting it failed in a non-critical fashion) */
+    if (rc == 0)
+        rollback = false;
 
     ret = 0;
  cleanup:
-    if (ret < 0 && rollback) {
+    if (rollback) {
         virErrorPtr origerr;
 
         virErrorPreserveLast(&origerr);
