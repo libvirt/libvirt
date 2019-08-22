@@ -81,7 +81,6 @@ typedef virSecuritySELinuxContextItem *virSecuritySELinuxContextItemPtr;
 struct _virSecuritySELinuxContextItem {
     char *path;
     char *tcon;
-    bool optional;
     bool remember; /* Whether owner remembering should be done for @path/@src */
     bool restore; /* Whether current operation is 'set' or 'restore' */
 };
@@ -122,7 +121,6 @@ static int
 virSecuritySELinuxContextListAppend(virSecuritySELinuxContextListPtr list,
                                     const char *path,
                                     const char *tcon,
-                                    bool optional,
                                     bool remember,
                                     bool restore)
 {
@@ -135,7 +133,6 @@ virSecuritySELinuxContextListAppend(virSecuritySELinuxContextListPtr list,
     if (VIR_STRDUP(item->path, path) < 0 || VIR_STRDUP(item->tcon, tcon) < 0)
         goto cleanup;
 
-    item->optional = optional;
     item->remember = remember;
     item->restore = restore;
 
@@ -170,7 +167,6 @@ virSecuritySELinuxContextListFree(void *opaque)
  * virSecuritySELinuxTransactionAppend:
  * @path: Path to chown
  * @tcon: target context
- * @optional: true if setting @tcon is optional
  * @remember: if the original owner should be recorded/recalled
  * @restore: if current operation is set or restore
  *
@@ -187,7 +183,6 @@ virSecuritySELinuxContextListFree(void *opaque)
 static int
 virSecuritySELinuxTransactionAppend(const char *path,
                                     const char *tcon,
-                                    bool optional,
                                     bool remember,
                                     bool restore)
 {
@@ -198,7 +193,7 @@ virSecuritySELinuxTransactionAppend(const char *path,
         return 0;
 
     if (virSecuritySELinuxContextListAppend(list, path, tcon,
-                                            optional, remember, restore) < 0)
+                                            remember, restore) < 0)
         return -1;
 
     return 1;
@@ -234,7 +229,6 @@ virSecuritySELinuxRecallLabel(const char *path,
 static int virSecuritySELinuxSetFileconHelper(virSecurityManagerPtr mgr,
                                               const char *path,
                                               const char *tcon,
-                                              bool optional,
                                               bool remember);
 
 
@@ -290,7 +284,6 @@ virSecuritySELinuxTransactionRun(pid_t pid ATTRIBUTE_UNUSED,
             rv = virSecuritySELinuxSetFileconHelper(list->manager,
                                                     item->path,
                                                     item->tcon,
-                                                    item->optional,
                                                     remember);
         } else {
             rv = virSecuritySELinuxRestoreFileLabel(list->manager,
@@ -1342,7 +1335,6 @@ static int
 virSecuritySELinuxSetFileconHelper(virSecurityManagerPtr mgr,
                                    const char *path,
                                    const char *tcon,
-                                   bool optional,
                                    bool remember)
 {
     bool privileged = virSecurityManagerGetPrivileged(mgr);
@@ -1353,7 +1345,7 @@ virSecuritySELinuxSetFileconHelper(virSecurityManagerPtr mgr,
     int ret = -1;
 
     if ((rc = virSecuritySELinuxTransactionAppend(path, tcon,
-                                                  optional, remember, false)) < 0)
+                                                  remember, false)) < 0)
         return -1;
     else if (rc > 0)
         return 0;
@@ -1425,7 +1417,7 @@ virSecuritySELinuxSetFilecon(virSecurityManagerPtr mgr,
                              const char *tcon,
                              bool remember)
 {
-    return virSecuritySELinuxSetFileconHelper(mgr, path, tcon, false, remember);
+    return virSecuritySELinuxSetFileconHelper(mgr, path, tcon, remember);
 }
 
 static int
@@ -1512,7 +1504,7 @@ virSecuritySELinuxRestoreFileLabel(virSecurityManagerPtr mgr,
     }
 
     if ((rc = virSecuritySELinuxTransactionAppend(path, NULL,
-                                                  false, recall, true)) < 0) {
+                                                  recall, true)) < 0) {
         goto cleanup;
     } else if (rc > 0) {
         ret = 0;
