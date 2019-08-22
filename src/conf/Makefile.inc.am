@@ -12,6 +12,8 @@ NETDEV_CONF_SOURCES = \
 	$(NULL)
 
 DOMAIN_CONF_SOURCES = \
+	conf/backup_conf.c \
+	conf/backup_conf.h \
 	conf/capabilities.c \
 	conf/capabilities.h \
 	conf/checkpoint_conf.c \
