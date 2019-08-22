@@ -47,6 +47,7 @@
 #include "virstring.h"
 #include "virgettext.h"
 
+#include "virsh-backup.h"
 #include "virsh-checkpoint.h"
 #include "virsh-console.h"
 #include "virsh-domain.h"
@@ -831,6 +832,7 @@ static const vshCmdGrp cmdGroups[] = {
     {VIRSH_CMD_GRP_NODEDEV, "nodedev", nodedevCmds},
     {VIRSH_CMD_GRP_SECRET, "secret", secretCmds},
     {VIRSH_CMD_GRP_SNAPSHOT, "snapshot", snapshotCmds},
+    {VIRSH_CMD_GRP_BACKUP, "backup", backupCmds},
     {VIRSH_CMD_GRP_STORAGE_POOL, "pool", storagePoolCmds},
     {VIRSH_CMD_GRP_STORAGE_VOL, "volume", storageVolCmds},
     {VIRSH_CMD_GRP_VIRSH, "virsh", virshCmds},

@@ -51,6 +51,7 @@
 #define VIRSH_CMD_GRP_NWFILTER         "Network Filter"
 #define VIRSH_CMD_GRP_SECRET           "Secret"
 #define VIRSH_CMD_GRP_SNAPSHOT         "Snapshot"
+#define VIRSH_CMD_GRP_BACKUP           "Backup"
 #define VIRSH_CMD_GRP_HOST_AND_HV      "Host and Hypervisor"
 #define VIRSH_CMD_GRP_VIRSH            "Virsh itself"
 

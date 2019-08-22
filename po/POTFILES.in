@@ -329,6 +329,7 @@
 @SRCDIR@/src/vz/vz_utils.h
 @SRCDIR@/tests/virpolkittest.c
 @SRCDIR@/tools/libvirt-guests.sh.in
+@SRCDIR@/tools/virsh-backup.c
 @SRCDIR@/tools/virsh-checkpoint.c
 @SRCDIR@/tools/virsh-completer-host.c
 @SRCDIR@/tools/virsh-console.c
