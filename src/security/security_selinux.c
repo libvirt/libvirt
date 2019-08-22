@@ -1420,15 +1420,6 @@ virSecuritySELinuxSetFileconHelper(virSecurityManagerPtr mgr,
 
 
 static int
-virSecuritySELinuxSetFileconOptional(virSecurityManagerPtr mgr,
-                                     const char *path,
-                                     const char *tcon,
-                                     bool remember)
-{
-    return virSecuritySELinuxSetFileconHelper(mgr, path, tcon, true, remember);
-}
-
-static int
 virSecuritySELinuxSetFilecon(virSecurityManagerPtr mgr,
                              const char *path,
                              const char *tcon,
@@ -1884,28 +1875,28 @@ virSecuritySELinuxSetImageLabelInternal(virSecurityManagerPtr mgr,
                                            parent_seclabel->label, remember);
     } else if (!parent || parent == src) {
         if (src->shared) {
-            ret = virSecuritySELinuxSetFileconOptional(mgr,
-                                                       src->path,
-                                                       data->file_context,
-                                                       remember);
+            ret = virSecuritySELinuxSetFilecon(mgr,
+                                               src->path,
+                                               data->file_context,
+                                               remember);
         } else if (src->readonly) {
-            ret = virSecuritySELinuxSetFileconOptional(mgr,
-                                                       src->path,
-                                                       data->content_context,
-                                                       remember);
+            ret = virSecuritySELinuxSetFilecon(mgr,
+                                               src->path,
+                                               data->content_context,
+                                               remember);
         } else if (secdef->imagelabel) {
-            ret = virSecuritySELinuxSetFileconOptional(mgr,
-                                                       src->path,
-                                                       secdef->imagelabel,
-                                                       remember);
+            ret = virSecuritySELinuxSetFilecon(mgr,
+                                               src->path,
+                                               secdef->imagelabel,
+                                               remember);
         } else {
             ret = 0;
         }
     } else {
-        ret = virSecuritySELinuxSetFileconOptional(mgr,
-                                                   src->path,
-                                                   data->content_context,
-                                                   remember);
+        ret = virSecuritySELinuxSetFilecon(mgr,
+                                           src->path,
+                                           data->content_context,
+                                           remember);
     }
 
     if (ret == 1 && !disk_seclabel) {
@@ -2045,14 +2036,14 @@ virSecuritySELinuxSetSCSILabel(virSCSIDevicePtr dev,
         return 0;
 
     if (virSCSIDeviceGetShareable(dev))
-        return virSecuritySELinuxSetFileconOptional(mgr, file,
-                                                    data->file_context, true);
+        return virSecuritySELinuxSetFilecon(mgr, file,
+                                            data->file_context, true);
     else if (virSCSIDeviceGetReadonly(dev))
-        return virSecuritySELinuxSetFileconOptional(mgr, file,
-                                                    data->content_context, true);
+        return virSecuritySELinuxSetFilecon(mgr, file,
+                                            data->content_context, true);
     else
-        return virSecuritySELinuxSetFileconOptional(mgr, file,
-                                                    secdef->imagelabel, true);
+        return virSecuritySELinuxSetFilecon(mgr, file,
+                                            secdef->imagelabel, true);
 }
 
 static int
