@@ -3754,6 +3754,23 @@ struct remote_domain_agent_set_response_timeout_ret {
     int result;
 };
 
+
+struct remote_domain_backup_begin_args {
+    remote_nonnull_domain dom;
+    remote_nonnull_string backup_xml;
+    remote_string checkpoint_xml;
+    unsigned int flags;
+};
+
+struct remote_domain_backup_get_xml_desc_args {
+    remote_nonnull_domain dom;
+    unsigned int flags;
+};
+
+struct remote_domain_backup_get_xml_desc_ret {
+    remote_nonnull_string xml;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -6633,5 +6650,19 @@ enum remote_procedure {
      * @generate: both
      * @acl: domain:write
      */
-    REMOTE_PROC_DOMAIN_AGENT_SET_RESPONSE_TIMEOUT = 420
+    REMOTE_PROC_DOMAIN_AGENT_SET_RESPONSE_TIMEOUT = 420,
+
+    /**
+     * @generate: both
+     * @acl: domain:checkpoint
+     * @acl: domain:block_write
+     */
+    REMOTE_PROC_DOMAIN_BACKUP_BEGIN = 421,
+
+    /**
+     * @generate: both
+     * @priority: high
+     * @acl: domain:read
+     */
+    REMOTE_PROC_DOMAIN_BACKUP_GET_XML_DESC = 422
 };
