@@ -226,10 +226,10 @@ virSecuritySELinuxRecallLabel(const char *path,
 }
 
 
-static int virSecuritySELinuxSetFileconHelper(virSecurityManagerPtr mgr,
-                                              const char *path,
-                                              const char *tcon,
-                                              bool remember);
+static int virSecuritySELinuxSetFilecon(virSecurityManagerPtr mgr,
+                                        const char *path,
+                                        const char *tcon,
+                                        bool remember);
 
 
 static int virSecuritySELinuxRestoreFileLabel(virSecurityManagerPtr mgr,
@@ -281,10 +281,10 @@ virSecuritySELinuxTransactionRun(pid_t pid ATTRIBUTE_UNUSED,
         const bool remember = item->remember && list->lock;
 
         if (!item->restore) {
-            rv = virSecuritySELinuxSetFileconHelper(list->manager,
-                                                    item->path,
-                                                    item->tcon,
-                                                    remember);
+            rv = virSecuritySELinuxSetFilecon(list->manager,
+                                              item->path,
+                                              item->tcon,
+                                              remember);
         } else {
             rv = virSecuritySELinuxRestoreFileLabel(list->manager,
                                                     item->path,
@@ -1332,10 +1332,10 @@ virSecuritySELinuxSetFileconImpl(const char *path,
 
 
 static int
-virSecuritySELinuxSetFileconHelper(virSecurityManagerPtr mgr,
-                                   const char *path,
-                                   const char *tcon,
-                                   bool remember)
+virSecuritySELinuxSetFilecon(virSecurityManagerPtr mgr,
+                             const char *path,
+                             const char *tcon,
+                             bool remember)
 {
     bool privileged = virSecurityManagerGetPrivileged(mgr);
     security_context_t econ = NULL;
@@ -1410,15 +1410,6 @@ virSecuritySELinuxSetFileconHelper(virSecurityManagerPtr mgr,
     return ret;
 }
 
-
-static int
-virSecuritySELinuxSetFilecon(virSecurityManagerPtr mgr,
-                             const char *path,
-                             const char *tcon,
-                             bool remember)
-{
-    return virSecuritySELinuxSetFileconHelper(mgr, path, tcon, remember);
-}
 
 static int
 virSecuritySELinuxFSetFilecon(int fd, char *tcon)
