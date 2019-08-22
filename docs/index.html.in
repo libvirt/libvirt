@@ -59,7 +59,8 @@
           <a href="formatnode.html">node devices</a>,
           <a href="formatsecret.html">secrets</a>,
           <a href="formatsnapshot.html">snapshots</a>,
-          <a href="formatcheckpoint.html">checkpoints</a></dd>
+          <a href="formatcheckpoint.html">checkpoints</a>,
+          <a href="formatbackup.html">backup jobs</a></dd>
         <dt><a href="http://wiki.libvirt.org">Wiki</a></dt>
         <dd>Read further community contributed content</dd>
       </dl>

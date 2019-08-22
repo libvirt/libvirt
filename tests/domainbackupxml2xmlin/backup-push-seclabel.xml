@@ -1,0 +1,17 @@
+<domainbackup mode="push">
+  <incremental>1525889631</incremental>
+  <disks>
+    <disk name='vda' type='file'>
+      <driver type='raw'/>
+      <target file='/path/to/file'>
+        <seclabel model='dac' relabel='no'/>
+      </target>
+    </disk>
+    <disk name='vdb' type='block'>
+      <driver type='qcow2'/>
+      <target dev='/dev/block'>
+        <seclabel model='dac' relabel='no'/>
+      </target>
+    </disk>
+  </disks>
+</domainbackup>

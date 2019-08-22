@@ -1,0 +1,223 @@
+<?xml version="1.0"?>
+<!-- A Relax NG schema for the libvirt domain backup properties XML format -->
+<grammar xmlns="http://relaxng.org/ns/structure/1.0">
+  <start>
+    <ref name='domainbackup'/>
+  </start>
+
+  <include href='domaincommon.rng'/>
+
+  <define name='domainbackup'>
+    <element name='domainbackup'>
+      <interleave>
+        <optional>
+          <element name='incremental'>
+            <text/>
+          </element>
+        </optional>
+        <choice>
+          <group>
+            <optional>
+              <attribute name='mode'>
+                <value>push</value>
+              </attribute>
+            </optional>
+            <ref name='backupDisksPush'/>
+          </group>
+          <group>
+            <attribute name='mode'>
+              <value>pull</value>
+            </attribute>
+            <interleave>
+              <element name='server'>
+                <choice>
+                  <group>
+                    <optional>
+                      <attribute name='transport'>
+                        <value>tcp</value>
+                      </attribute>
+                    </optional>
+                    <attribute name='name'>
+                      <choice>
+                        <ref name='dnsName'/>
+                        <ref name='ipAddr'/>
+                      </choice>
+                    </attribute>
+                    <optional>
+                      <attribute name='port'>
+                        <ref name='unsignedInt'/>
+                      </attribute>
+                    </optional>
+                    <!-- add tls? -->
+                  </group>
+                  <group>
+                    <attribute name='transport'>
+                      <value>unix</value>
+                    </attribute>
+                    <attribute name='socket'>
+                      <ref name='absFilePath'/>
+                    </attribute>
+                  </group>
+                </choice>
+              </element>
+              <ref name='backupDisksPull'/>
+            </interleave>
+          </group>
+        </choice>
+      </interleave>
+    </element>
+  </define>
+
+  <define name='backupPushDriver'>
+    <optional>
+      <element name='driver'>
+        <attribute name='type'>
+          <ref name='storageFormat'/>
+        </attribute>
+      </element>
+    </optional>
+  </define>
+
+  <define name='backupPullDriver'>
+    <optional>
+      <element name='driver'>
+        <attribute name='type'>
+          <value>qcow2</value>
+        </attribute>
+      </element>
+    </optional>
+  </define>
+
+  <define name='backupAttr'>
+    <optional>
+      <attribute name='backup'>
+        <choice>
+          <value>yes</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
+
+  <define name='backupDisksPush'>
+    <optional>
+      <element name='disks'>
+        <oneOrMore>
+          <element name='disk'>
+            <attribute name='name'>
+              <choice>
+                <ref name='diskTarget'/>
+              </choice>
+            </attribute>
+            <choice>
+              <group>
+                <attribute name='backup'>
+                  <value>no</value>
+                </attribute>
+              </group>
+              <group>
+                <ref name='backupAttr'/>
+                <attribute name='type'>
+                  <value>file</value>
+                </attribute>
+                <interleave>
+                  <optional>
+                    <element name='target'>
+                      <attribute name='file'>
+                        <ref name='absFilePath'/>
+                      </attribute>
+                      <zeroOrMore>
+                        <ref name='devSeclabel'/>
+                      </zeroOrMore>
+                    </element>
+                  </optional>
+                  <ref name='backupPushDriver'/>
+                </interleave>
+              </group>
+              <group>
+                <ref name='backupAttr'/>
+                <attribute name='type'>
+                  <value>block</value>
+                </attribute>
+                <interleave>
+                  <optional>
+                    <element name='target'>
+                      <attribute name='dev'>
+                        <ref name='absFilePath'/>
+                      </attribute>
+                      <zeroOrMore>
+                        <ref name='devSeclabel'/>
+                      </zeroOrMore>
+                    </element>
+                  </optional>
+                  <ref name='backupPushDriver'/>
+                </interleave>
+              </group>
+            </choice>
+          </element>
+        </oneOrMore>
+      </element>
+    </optional>
+  </define>
+
+  <define name='backupDisksPull'>
+    <optional>
+      <element name='disks'>
+        <oneOrMore>
+          <element name='disk'>
+            <attribute name='name'>
+              <choice>
+                <ref name='diskTarget'/>
+              </choice>
+            </attribute>
+            <choice>
+              <group>
+                <attribute name='backup'>
+                  <value>no</value>
+                </attribute>
+              </group>
+              <group>
+                <optional>
+                  <ref name='backupAttr'/>
+                  <attribute name='type'>
+                    <value>file</value>
+                  </attribute>
+                </optional>
+                <optional>
+                  <interleave>
+                    <element name='scratch'>
+                      <attribute name='file'>
+                        <ref name='absFilePath'/>
+                      </attribute>
+                      <zeroOrMore>
+                        <ref name='devSeclabel'/>
+                      </zeroOrMore>
+                    </element>
+                    <ref name='backupPullDriver'/>
+                  </interleave>
+                </optional>
+              </group>
+              <group>
+                <ref name='backupAttr'/>
+                <attribute name='type'>
+                  <value>block</value>
+                </attribute>
+                <interleave>
+                  <element name='scratch'>
+                    <attribute name='dev'>
+                      <ref name='absFilePath'/>
+                    </attribute>
+                    <zeroOrMore>
+                      <ref name='devSeclabel'/>
+                    </zeroOrMore>
+                  </element>
+                  <ref name='backupPullDriver'/>
+                </interleave>
+              </group>
+            </choice>
+          </element>
+        </oneOrMore>
+      </element>
+    </optional>
+  </define>
+
+</grammar>

@@ -91,6 +91,7 @@ EXTRA_DIST = \
 	commanddata \
 	cputestdata \
 	domaincapsdata \
+	domainbackupxml2xmlin \
 	domainconfdata \
 	domainschemadata \
 	fchostdata \

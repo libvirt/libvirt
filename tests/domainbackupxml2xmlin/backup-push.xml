@@ -1,0 +1,10 @@
+<domainbackup mode="push">
+  <incremental>1525889631</incremental>
+  <disks>
+    <disk name='vda' type='file'>
+      <driver type='raw'/>
+      <target file='/path/to/file'/>
+    </disk>
+    <disk name='hda' backup='no'/>
+  </disks>
+</domainbackup>

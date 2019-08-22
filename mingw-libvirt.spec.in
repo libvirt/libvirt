@@ -238,6 +238,7 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 %{mingw32_datadir}/libvirt/schemas/capability.rng
 %{mingw32_datadir}/libvirt/schemas/cputypes.rng
 %{mingw32_datadir}/libvirt/schemas/domain.rng
+%{mingw32_datadir}/libvirt/schemas/domainbackup.rng
 %{mingw32_datadir}/libvirt/schemas/domaincaps.rng
 %{mingw32_datadir}/libvirt/schemas/domaincheckpoint.rng
 %{mingw32_datadir}/libvirt/schemas/domaincommon.rng
@@ -329,6 +330,7 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 %{mingw64_datadir}/libvirt/schemas/capability.rng
 %{mingw64_datadir}/libvirt/schemas/cputypes.rng
 %{mingw64_datadir}/libvirt/schemas/domain.rng
+%{mingw64_datadir}/libvirt/schemas/domainbackup.rng
 %{mingw64_datadir}/libvirt/schemas/domaincaps.rng
 %{mingw64_datadir}/libvirt/schemas/domaincheckpoint.rng
 %{mingw64_datadir}/libvirt/schemas/domaincommon.rng

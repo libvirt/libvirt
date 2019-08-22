@@ -28,12 +28,12 @@
       first checkpoint and the second backup operation), it is
       possible to do an offline reconstruction of the state of the
       disk at the time of the second backup without having to copy as
-      much data as a second full backup would require.  Future API
-      additions will make it possible to create checkpoints in
-      conjunction with a backup
-      via <code>virDomainBackupBegin()</code> or with an external
-      snapshot via <code>virDomainSnapshotCreateXML2</code>; but for
-      now, libvirt exposes enough support to create disk checkpoints
+      much data as a second full backup would require. Most disk
+      checkpoints are created in conjunction with a backup
+      via <code>virDomainBackupBegin()</code>, although a future API
+      addition of <code>virDomainSnapshotCreateXML2()</code> will also
+      make this possible when creating external snapshots; however,
+      libvirt also exposes enough support to create disk checkpoints
       independently from a backup operation
       via <code>virDomainCheckpointCreateXML()</code> <span class="since">since
       5.6.0</span>.  Likewise, the creation of checkpoints when
