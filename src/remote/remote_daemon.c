@@ -422,6 +422,14 @@ daemonSetupNetworking(virNetServerPtr srv,
     if (virSystemdGetActivation(actmap, ARRAY_CARDINALITY(actmap), &act) < 0)
         return -1;
 
+#ifdef WITH_IP
+    if (act && ipsock) {
+        VIR_ERROR(_("--listen parameter not permitted with systemd activation "
+                    "sockets, see 'man libvirtd' for further guidance"));
+        return -1;
+    }
+#endif /* ! WITH_IP */
+
     if (config->unix_sock_group) {
         if (virGetGroupID(config->unix_sock_group, &unix_sock_gid) < 0)
             return ret;

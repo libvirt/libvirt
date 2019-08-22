@@ -30,6 +30,35 @@ and will be picked up automatically if their XML configuration has been
 defined.  Any guests whose XML configuration has not been defined will be lost
 from the configuration.
 
+=head1 SYSTEM SOCKET ACTIVATION
+
+The B<libvirtd> daemon is capable of starting in two modes.
+
+In the traditional mode, it will create and listen on UNIX sockets itself.
+If the B<--listen> parameter is given, it will also listen on TCP/IP socket(s),
+according to the B<listen_tcp> and B<listen_tls> options in
+B</etc/libvirt/libvirtd.conf>
+
+In socket activation mode, it will rely on systemd to create and listen
+on the UNIX, and optionally TCP/IP, sockets and pass them as pre-opened
+file descriptors. In this mode, it is not permitted to pass the B<--listen>
+parameter, and most of the socket related config options in
+B</etc/libvirt/libvirtd.conf> will no longer have any effect. To enable
+TCP or TLS sockets use either
+
+B<$ systemctl start libvirtd-tls.socket>
+
+Or
+
+B<$ systemctl start libvirtd-tcp.socket>
+
+Socket activation mode is generally the default when running on a host
+OS that uses systemd. To revert to the traditional mode, all the socket
+unit files must be masked:
+
+B<$ systemctl mask libvirtd.socket libvirtd-ro.socket \
+      libvirtd-admin.socket libvirtd-tls.socket libvirtd-tcp.socket>
+
 =head1 OPTIONS
 
 =over
@@ -48,7 +77,9 @@ Use this configuration file, overriding the default value.
 
 =item B<-l, --listen>
 
-Listen for TCP/IP connections.
+Listen for TCP/IP connections. This should not be set if using systemd
+socket activation. Instead activate the libvirtd-tls.socket or
+libvirtd-tcp.socket unit files.
 
 =item B<-p, --pid-file> I<FILE>
 
