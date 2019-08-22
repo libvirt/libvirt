@@ -102,8 +102,11 @@ virDomainCheckpointGetConnect(virDomainCheckpointPtr checkpoint)
  * @flags: bitwise-OR of supported virDomainCheckpointCreateFlags
  *
  * Create a new checkpoint using @xmlDesc, with a top-level
- * <domaincheckpoint> element, on a running @domain.  Note that @xmlDesc
- * must validate against the <domaincheckpoint> XML schema.
+ * <domaincheckpoint> element, on a running @domain.  Note that
+ * @xmlDesc must validate against the <domaincheckpoint> XML schema.
+ * Typically, it is more common to create a new checkpoint as part of
+ * kicking off a backup job with virDomainBackupBegin(); however, it
+ * is also possible to start a checkpoint without a backup.
  *
  * See <a href="formatcheckpoint.html#CheckpointAttributes">Checkpoint XML</a>
  * for more details on @xmlDesc. In particular, some hypervisors may require

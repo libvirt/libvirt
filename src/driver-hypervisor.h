@@ -1377,6 +1377,16 @@ typedef int
                                        int timeout,
                                        unsigned int flags);
 
+typedef int
+(*virDrvDomainBackupBegin)(virDomainPtr domain,
+                           const char *backupXML,
+                           const char *checkpointXML,
+                           unsigned int flags);
+
+typedef char *
+(*virDrvDomainBackupGetXMLDesc)(virDomainPtr domain,
+                                unsigned int flags);
+
 typedef struct _virHypervisorDriver virHypervisorDriver;
 typedef virHypervisorDriver *virHypervisorDriverPtr;
 
@@ -1638,4 +1648,6 @@ struct _virHypervisorDriver {
     virDrvDomainCheckpointDelete domainCheckpointDelete;
     virDrvDomainGetGuestInfo domainGetGuestInfo;
     virDrvDomainAgentSetResponseTimeout domainAgentSetResponseTimeout;
+    virDrvDomainBackupBegin domainBackupBegin;
+    virDrvDomainBackupGetXMLDesc domainBackupGetXMLDesc;
 };

@@ -4143,8 +4143,10 @@ typedef void (*virConnectDomainEventMigrationIterationCallback)(virConnectPtr co
  * @nparams: size of the params array
  * @opaque: application specific data
  *
- * This callback occurs when a job (such as migration) running on the domain
- * is completed. The params array will contain statistics of the just completed
+ * This callback occurs when a job (such as migration or backup) running on
+ * the domain is completed.
+ *
+ * The params array will contain statistics of the just completed
  * job as virDomainGetJobStats would return. The callback must not free @params
  * (the array will be freed once the callback finishes).
  *
@@ -4962,5 +4964,18 @@ typedef enum {
 int virDomainAgentSetResponseTimeout(virDomainPtr domain,
                                      int timeout,
                                      unsigned int flags);
+
+typedef enum {
+    VIR_DOMAIN_BACKUP_BEGIN_REUSE_EXTERNAL = (1 << 0), /* reuse separately
+                                                          provided images */
+} virDomainBackupBeginFlags;
+
+int virDomainBackupBegin(virDomainPtr domain,
+                         const char *backupXML,
+                         const char *checkpointXML,
+                         unsigned int flags);
+
+char *virDomainBackupGetXMLDesc(virDomainPtr domain,
+                                unsigned int flags);
 
 #endif /* LIBVIRT_DOMAIN_H */

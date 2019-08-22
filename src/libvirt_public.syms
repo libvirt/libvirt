@@ -867,4 +867,10 @@ LIBVIRT_5.10.0 {
         virDomainAgentSetResponseTimeout;
 } LIBVIRT_5.8.0;
 
+LIBVIRT_6.0.0 {
+    global:
+        virDomainBackupBegin;
+        virDomainBackupGetXMLDesc;
+} LIBVIRT_5.10.0;
+
 # .... define new API here using predicted next version number ....
