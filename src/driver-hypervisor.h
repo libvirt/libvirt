@@ -1359,6 +1359,13 @@ typedef int
 (*virDrvDomainCheckpointDelete)(virDomainCheckpointPtr checkpoint,
                                 unsigned int flags);
 
+typedef int
+(*virDrvDomainGetGuestInfo)(virDomainPtr domain,
+                            unsigned int types,
+                            virTypedParameterPtr *params,
+                            int *nparams,
+                            unsigned int flags);
+
 typedef struct _virHypervisorDriver virHypervisorDriver;
 typedef virHypervisorDriver *virHypervisorDriverPtr;
 
@@ -1617,4 +1624,5 @@ struct _virHypervisorDriver {
     virDrvDomainCheckpointLookupByName domainCheckpointLookupByName;
     virDrvDomainCheckpointGetParent domainCheckpointGetParent;
     virDrvDomainCheckpointDelete domainCheckpointDelete;
+    virDrvDomainGetGuestInfo domainGetGuestInfo;
 };

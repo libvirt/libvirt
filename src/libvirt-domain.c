@@ -12212,6 +12212,123 @@ virDomainSetVcpu(virDomainPtr domain,
     return -1;
 }
 
+/**
+ * virDomainGetGuestInfo:
+ * @domain: pointer to domain object
+ * @types: types of information to return, binary-OR of virDomainGuestInfoTypes
+ * @params: location to store the guest info parameters
+ * @nparams: number of items in @params
+ * @flags: currently unused, set to 0
+ *
+ * Queries the guest agent for the various information about the guest system.
+ * The reported data depends on the guest agent implementation. The information
+ * is returned as an array of typed parameters containing the individual
+ * parameters. The parameter name for each information field consists of a
+ * dot-separated strign containing the name of the requested group followed by
+ * a group-specific description of the statistic value.
+ *
+ * The information groups are enabled using the @types parameter which is a
+ * binary-OR of enum virDomainGuestInfoTypes. The following groups are available
+ * (although not necessarily implemented for each hypervisor):
+ *
+ * VIR_DOMAIN_GUEST_INFO_USERS:
+ *  returns information about users that are currently logged in within the
+ *  guest domain. The typed parameter keys are in this format:
+ *
+ *      "user.count" - the number of active users on this domain as an
+ *                     unsigned int
+ *      "user.<num>.name - username of the user as a string
+ *      "user.<num>.domain - domain of the user as a string (may only be
+ *                           present on certain guest types)
+ *      "user.<num>.login-time - the login time of a user in milliseconds
+ *                               since the epoch as unsigned long long
+ *
+ * VIR_DOMAIN_GUEST_INFO_OS:
+ *  Return information about the operating system running within the guest. The
+ *  typed parameter keys are in this format:
+ *
+ *      "os.id" - a string identifying the operating system
+ *      "os.name" - the name of the operating system, suitable for presentation
+ *                  to a user, as a string
+ *      "os.pretty-name" - a pretty name for the operating system, suitable for
+ *                         presentation to a user, as a string
+ *      "os.version" - the version of the operating system suitable for
+ *                     presentation to a user, as a string
+ *      "os.version-id" - the version id of the operating system suitable for
+ *                        processing by scripts, as a string
+ *      "os.kernel-release" - the release of the operating system kernel, as a
+ *                            string
+ *      "os.kernel-version" - the version of the operating system kernel, as a
+ *                            string
+ *      "os.machine" - the machine hardware name as a string
+ *      "os.variant" - a specific variant or edition of the operating system
+ *                     suitable for presentation to a user, as a string
+ *      "os.variant-id" - the id for a specific variant or edition of the
+ *                        operating system, as a string
+ *
+ * VIR_DOMAIN_GUEST_INFO_TIMEZONE:
+ *  Returns information about the timezone within the domain. The typed
+ *  parameter keys are in this format:
+ *
+ *      "timezone.name" - the name of the timezone as a string
+ *      "timezone.offset" - the offset to UTC in seconds as an int
+ *
+ * VIR_DOMAIN_GUEST_INFO_FILESYSTEM:
+ *  Returns inforamtion about the filesystems within the domain.  The typed
+ *  parameter keys are in this format:
+ *      "fs.count" - the number of filesystems defined on this domain
+ *                   as an unsigned int
+ *      "fs.<num>.mountpoint" - the path to the mount point for the filesystem
+ *      "fs.<num>.name" - device name in the guest (e.g. "sda1")
+ *      "fs.<num>.fstype" - the type of filesystem
+ *      "fs.<num>.total-bytes" - the total size of the filesystem
+ *      "fs.<num>.used-bytes" - the number of bytes used in the filesystem
+ *      "fs.<num>.disk.count" - the number of disks targeted by this filesystem
+ *      "fs.<num>.disk.<num>.alias" - the device alias of the disk (e.g. sda)
+ *      "fs.<num>.disk.<num>.serial" - the serial number of the disk
+ *      "fs.<num>.disk.<num>.device" - the device node of the disk
+ *
+ * Using 0 for @types returns all information groups supported by the given
+ * hypervisor.
+ *
+ * This API requires the VM to run. The caller is responsible for calling
+ * virTypedParamsFree to free memory returned in @params.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+int virDomainGetGuestInfo(virDomainPtr domain,
+                          unsigned int types,
+                          virTypedParameterPtr *params,
+                          int *nparams,
+                          unsigned int flags)
+{
+    VIR_DOMAIN_DEBUG(domain, "types=0x%x, params=%p, nparams=%p, flags=0x%x",
+                     types, params, nparams, flags);
+
+    virResetLastError();
+
+    virCheckDomainReturn(domain, -1);
+    virCheckReadOnlyGoto(domain->conn->flags, error);
+
+    virCheckNonNullArgGoto(params, error);
+    virCheckNonNullArgGoto(nparams, error);
+
+    if (domain->conn->driver->domainGetGuestInfo) {
+        int ret;
+        ret = domain->conn->driver->domainGetGuestInfo(domain, types,
+                                                       params, nparams, flags);
+
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(domain->conn);
+    return -1;
+}
 
 /**
  * virDomainSetBlockThreshold:

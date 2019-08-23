@@ -4902,4 +4902,18 @@ int virDomainGetLaunchSecurityInfo(virDomainPtr domain,
                                    int *nparams,
                                    unsigned int flags);
 
+typedef enum {
+    VIR_DOMAIN_GUEST_INFO_USERS = (1 << 0), /* return active users */
+    VIR_DOMAIN_GUEST_INFO_OS = (1 << 1), /* return OS information */
+    VIR_DOMAIN_GUEST_INFO_TIMEZONE = (1 << 2), /* return timezone information */
+    VIR_DOMAIN_GUEST_INFO_HOSTNAME = (1 << 3), /* return hostname information */
+    VIR_DOMAIN_GUEST_INFO_FILESYSTEM = (1 << 4), /* return filesystem information */
+} virDomainGuestInfoTypes;
+
+int virDomainGetGuestInfo(virDomainPtr domain,
+                          unsigned int types,
+                          virTypedParameterPtr *params,
+                          int *nparams,
+                          unsigned int flags);
+
 #endif /* LIBVIRT_DOMAIN_H */
