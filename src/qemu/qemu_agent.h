@@ -130,3 +130,8 @@ int qemuAgentGetOSInfo(qemuAgentPtr mon,
                        virTypedParameterPtr *params,
                        int *nparams,
                        int *maxparams);
+
+int qemuAgentGetTimezone(qemuAgentPtr mon,
+                         virTypedParameterPtr *params,
+                         int *nparams,
+                         int *maxparams);

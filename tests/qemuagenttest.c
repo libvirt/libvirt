@@ -1169,7 +1169,82 @@ testQemuAgentOSInfo(const void *data)
     return ret;
 }
 
+static const char testQemuAgentTimezoneResponse1[] =
+"{\"return\":{\"zone\":\"IST\",\"offset\":19800}}";
+static const char testQemuAgentTimezoneResponse2[] =
+"{\"return\":{\"zone\":\"CEST\",\"offset\":7200}}";
+static const char testQemuAgentTimezoneResponse3[] =
+"{\"return\":{\"zone\":\"NDT\",\"offset\":-9000}}";
+static const char testQemuAgentTimezoneResponse4[] =
+"{\"return\":{\"zone\":\"PDT\",\"offset\":-25200}}";
 
+static int
+testQemuAgentTimezone(const void *data)
+{
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNewAgent(xmlopt);
+    int ret = -1;
+
+    if (!test)
+        return -1;
+
+#define VALIDATE_TIMEZONE(response_, expected_name_, expected_offset_) \
+    do { \
+        virTypedParameterPtr params_ = NULL; \
+        int nparams_ = 0; \
+        int maxparams_ = 0; \
+        const char *name_ = NULL; \
+        int offset_; \
+        if (qemuMonitorTestAddAgentSyncResponse(test) < 0) \
+            goto cleanup; \
+        if (qemuMonitorTestAddItem(test, "guest-get-timezone", \
+                                   response_) < 0) \
+            goto cleanup; \
+        if (qemuAgentGetTimezone(qemuMonitorTestGetAgent(test), \
+                                 &params_, &nparams_, &maxparams_) < 0) \
+            goto cleanup; \
+        if (nparams_ != 2) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
+                           "Expected 2 params, got %d", nparams_); \
+            goto cleanup; \
+        } \
+        if (virTypedParamsGetString(params_, nparams_, \
+                                    "timezone.name", &name_) < 0) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, "missing param '%s'", \
+                           "tiemzone.name"); \
+            goto cleanup; \
+        } \
+        if (STRNEQ(name_, expected_name_)) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
+                           "Expected name '%s', got '%s'", expected_name_, name_); \
+            goto cleanup; \
+        } \
+        if (virTypedParamsGetInt(params_, nparams_, \
+                                 "timezone.offset", &offset_) < 0) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, "missing param '%s'", \
+                           "tiemzone.offset"); \
+            goto cleanup; \
+        } \
+        if (offset_ != expected_offset_) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
+                           "Expected offset '%i', got '%i'", offset_, \
+                           expected_offset_); \
+            goto cleanup; \
+        } \
+        virTypedParamsFree(params_, nparams_); \
+    } while (0)
+
+    VALIDATE_TIMEZONE(testQemuAgentTimezoneResponse1, "IST", 19800);
+    VALIDATE_TIMEZONE(testQemuAgentTimezoneResponse2, "CEST", 7200);
+    VALIDATE_TIMEZONE(testQemuAgentTimezoneResponse3, "NDT", -9000);
+    VALIDATE_TIMEZONE(testQemuAgentTimezoneResponse4, "PDT", -25200);
+
+    ret = 0;
+
+ cleanup:
+    qemuMonitorTestFree(test);
+    return ret;
+}
 static int
 mymain(void)
 {
@@ -1201,6 +1276,7 @@ mymain(void)
     DO_TEST(GetInterfaces);
     DO_TEST(Users);
     DO_TEST(OSInfo);
+    DO_TEST(Timezone);
 
     DO_TEST(Timeout); /* Timeout should always be called last */
 
