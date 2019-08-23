@@ -2178,6 +2178,97 @@ qemuAgentGetFSInfo(qemuAgentPtr mon,
     return ret;
 }
 
+int
+qemuAgentGetFSInfoParams(qemuAgentPtr mon,
+                         virTypedParameterPtr *params,
+                         int *nparams, int *maxparams,
+                         virDomainDefPtr vmdef)
+{
+    int ret = -1;
+    qemuAgentFSInfoPtr *fsinfo = NULL;
+    size_t i, j;
+    int nfs;
+
+    if ((nfs = qemuAgentGetFSInfoInternal(mon, &fsinfo, vmdef)) < 0)
+        return -1;
+
+    if (virTypedParamsAddUInt(params, nparams, maxparams,
+                              "fs.count", nfs) < 0)
+        goto cleanup;
+
+    for (i = 0; i < nfs; i++) {
+        char param_name[VIR_TYPED_PARAM_FIELD_LENGTH];
+        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                 "fs.%zu.name", i);
+        if (virTypedParamsAddString(params, nparams, maxparams,
+                                    param_name, fsinfo[i]->name) < 0)
+            goto cleanup;
+        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                 "fs.%zu.mountpoint", i);
+        if (virTypedParamsAddString(params, nparams, maxparams,
+                                    param_name, fsinfo[i]->mountpoint) < 0)
+            goto cleanup;
+        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                 "fs.%zu.fstype", i);
+        if (virTypedParamsAddString(params, nparams, maxparams,
+                                    param_name, fsinfo[i]->fstype) < 0)
+            goto cleanup;
+
+        /* disk usage values are not returned by older guest agents, so
+         * only add the params if the value is set */
+        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                 "fs.%zu.total-bytes", i);
+        if (fsinfo[i]->total_bytes != -1 &&
+            virTypedParamsAddULLong(params, nparams, maxparams,
+                                    param_name, fsinfo[i]->total_bytes) < 0)
+            goto cleanup;
+
+        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                 "fs.%zu.used-bytes", i);
+        if (fsinfo[i]->used_bytes != -1 &&
+            virTypedParamsAddULLong(params, nparams, maxparams,
+                                    param_name, fsinfo[i]->used_bytes) < 0)
+            goto cleanup;
+
+        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                 "fs.%zu.disk.count", i);
+        if (virTypedParamsAddUInt(params, nparams, maxparams,
+                                  param_name, fsinfo[i]->ndisks) < 0)
+            goto cleanup;
+        for (j = 0; j < fsinfo[i]->ndisks; j++) {
+            qemuAgentDiskInfoPtr d = fsinfo[i]->disks[j];
+            snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                     "fs.%zu.disk.%zu.alias", i, j);
+            if (d->alias &&
+                virTypedParamsAddString(params, nparams, maxparams,
+                                        param_name, d->alias) < 0)
+                goto cleanup;
+
+            snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                     "fs.%zu.disk.%zu.serial", i, j);
+            if (d->serial &&
+                virTypedParamsAddString(params, nparams, maxparams,
+                                        param_name, d->serial) < 0)
+                goto cleanup;
+
+            snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                     "fs.%zu.disk.%zu.device", i, j);
+            if (d->devnode &&
+                virTypedParamsAddString(params, nparams, maxparams,
+                                        param_name, d->devnode) < 0)
+                goto cleanup;
+        }
+    }
+    ret = nfs;
+
+ cleanup:
+    for (i = 0; i < nfs; i++)
+        qemuAgentFSInfoFree(fsinfo[i]);
+    VIR_FREE(fsinfo);
+
+    return ret;
+}
+
 /*
  * qemuAgentGetInterfaces:
  * @mon: Agent monitor

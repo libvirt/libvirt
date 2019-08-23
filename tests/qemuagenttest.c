@@ -168,38 +168,45 @@ testQemuAgentFSTrim(const void *data)
 
 
 static int
-testQemuAgentGetFSInfo(const void *data)
+testQemuAgentGetFSInfoCommon(virDomainXMLOptionPtr xmlopt,
+                             qemuMonitorTestPtr *test,
+                             virDomainDefPtr *def)
 {
-    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNewAgent(xmlopt);
+    int ret = -1;
     char *domain_filename = NULL;
-    virDomainDefPtr def = NULL;
-    virDomainFSInfoPtr *info = NULL;
-    int ret = -1, ninfo = 0, i;
+    qemuMonitorTestPtr ret_test = NULL;
+    virDomainDefPtr ret_def = NULL;
 
-    if (!test)
+    if (!test || !def)
+        return -1;
+
+    if (!(ret_test = qemuMonitorTestNewAgent(xmlopt)))
         return -1;
 
     if (virAsprintf(&domain_filename, "%s/qemuagentdata/fsinfo.xml",
                     abs_srcdir) < 0)
         goto cleanup;
 
-    if (!(def = virDomainDefParseFile(domain_filename, driver.caps, xmlopt,
-                                      NULL, VIR_DOMAIN_DEF_PARSE_INACTIVE)))
+    if (!(ret_def = virDomainDefParseFile(domain_filename, driver.caps, xmlopt,
+                                          NULL, VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 
-    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
+    if (qemuMonitorTestAddAgentSyncResponse(ret_test) < 0)
         goto cleanup;
 
-    if (qemuMonitorTestAddItem(test, "guest-get-fsinfo",
+    if (qemuMonitorTestAddItem(ret_test, "guest-get-fsinfo",
                                "{\"return\": ["
                                "  {\"name\": \"sda1\", \"mountpoint\": \"/\","
+                               "   \"total-bytes\":952840192,"
+                               "   \"used-bytes\":229019648,"
                                "   \"disk\": ["
-                               "     {\"bus-type\": \"ide\","
+                               "     {\"serial\": \"ARBITRARYSTRING\","
+                               "      \"bus-type\": \"ide\","
                                "      \"bus\": 1, \"unit\": 0,"
                                "      \"pci-controller\": {"
                                "        \"bus\": 0, \"slot\": 1,"
                                "        \"domain\": 0, \"function\": 1},"
+                               "      \"dev\": \"/dev/sda1\","
                                "      \"target\": 0}],"
                                "   \"type\": \"ext4\"},"
                                "  {\"name\": \"dm-1\","
@@ -221,6 +228,31 @@ testQemuAgentGetFSInfo(const void *data)
                                "  {\"name\": \"sdb1\","
                                "   \"mountpoint\": \"/mnt/disk\","
                                "   \"disk\": [], \"type\": \"xfs\"}]}") < 0)
+                               goto cleanup;
+
+    VIR_STEAL_PTR(*test, ret_test);
+    VIR_STEAL_PTR(*def, ret_def);
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(domain_filename);
+    if (ret_test)
+        qemuMonitorTestFree(ret_test);
+    virDomainDefFree(ret_def);
+
+    return ret;
+}
+
+static int
+testQemuAgentGetFSInfo(const void *data)
+{
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = NULL;
+    virDomainDefPtr def = NULL;
+    virDomainFSInfoPtr *info = NULL;
+    int ret = -1, ninfo = 0, i;
+
+    if (testQemuAgentGetFSInfoCommon(xmlopt, &test, &def) < 0)
         goto cleanup;
 
     if ((ninfo = qemuAgentGetFSInfo(qemuMonitorTestGetAgent(test),
@@ -295,7 +327,151 @@ testQemuAgentGetFSInfo(const void *data)
     for (i = 0; i < ninfo; i++)
         virDomainFSInfoFree(info[i]);
     VIR_FREE(info);
-    VIR_FREE(domain_filename);
+    virDomainDefFree(def);
+    qemuMonitorTestFree(test);
+    return ret;
+}
+
+static int
+testQemuAgentGetFSInfoParams(const void *data)
+{
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = NULL;
+    virDomainDefPtr def = NULL;
+    virTypedParameterPtr params = NULL;
+    int nparams = 0, maxparams = 0;
+    int ret = -1;
+    unsigned int count;
+    const char *name, *mountpoint, *fstype, *alias, *serial;
+    unsigned int diskcount;
+    unsigned long long bytesused, bytestotal;
+    const char *alias2;
+
+    if (testQemuAgentGetFSInfoCommon(xmlopt, &test, &def) < 0)
+        goto cleanup;
+
+    if (qemuAgentGetFSInfoParams(qemuMonitorTestGetAgent(test),
+                                 &params, &nparams, &maxparams, def) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Failed to execute qemuAgentGetFSInfoParams()");
+        goto cleanup;
+    }
+
+    if (virTypedParamsGetUInt(params, nparams, "fs.count", &count) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "expected filesystem count");
+        goto cleanup;
+    }
+
+    if (count != 3) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "expected 3 filesystems information, got %d", count);
+        goto cleanup;
+    }
+
+    if (virTypedParamsGetString(params, nparams, "fs.2.name", &name) < 0 ||
+        virTypedParamsGetString(params, nparams, "fs.2.mountpoint", &mountpoint) < 0 ||
+        virTypedParamsGetString(params, nparams, "fs.2.fstype", &fstype) < 0 ||
+        virTypedParamsGetULLong(params, nparams, "fs.2.used-bytes", &bytesused) <= 0 ||
+        virTypedParamsGetULLong(params, nparams, "fs.2.total-bytes", &bytestotal) <= 0 ||
+        virTypedParamsGetUInt(params, nparams, "fs.2.disk.count", &diskcount) < 0 ||
+        virTypedParamsGetString(params, nparams, "fs.2.disk.0.alias", &alias) < 0 ||
+        virTypedParamsGetString(params, nparams, "fs.2.disk.0.serial", &serial) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+            "Missing an expected parameter for sda1 (%s,%s)",
+            name, alias);
+        goto cleanup;
+    }
+
+    if (STRNEQ(name, "sda1") ||
+        STRNEQ(mountpoint, "/") ||
+        STRNEQ(fstype, "ext4") ||
+        bytesused != 229019648 ||
+        bytestotal != 952840192 ||
+        diskcount != 1 ||
+        STRNEQ(alias, "hdc") ||
+        STRNEQ(serial, "ARBITRARYSTRING")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+            "unexpected filesystems information returned for sda1 (%s,%s)",
+            name, alias);
+        goto cleanup;
+    }
+
+    if (virTypedParamsGetString(params, nparams, "fs.1.name", &name) < 0 ||
+        virTypedParamsGetString(params, nparams, "fs.1.mountpoint", &mountpoint) < 0 ||
+        virTypedParamsGetString(params, nparams, "fs.1.fstype", &fstype) < 0 ||
+        virTypedParamsGetULLong(params, nparams, "fs.1.used-bytes", &bytesused) == 1 ||
+        virTypedParamsGetULLong(params, nparams, "fs.1.total-bytes", &bytestotal) == 1 ||
+        virTypedParamsGetUInt(params, nparams, "fs.1.disk.count", &diskcount) < 0 ||
+        virTypedParamsGetString(params, nparams, "fs.1.disk.0.alias", &alias) < 0 ||
+        virTypedParamsGetString(params, nparams, "fs.1.disk.1.alias", &alias2) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+            "Incorrect parameters for dm-1 (%s,%s)",
+            name, alias);
+        goto cleanup;
+    }
+    if (STRNEQ(name, "dm-1") ||
+        STRNEQ(mountpoint, "/opt") ||
+        STRNEQ(fstype, "vfat") ||
+        diskcount != 2 ||
+        STRNEQ(alias, "vda") ||
+        STRNEQ(alias2, "vdb")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+            "unexpected filesystems information returned for dm-1 (%s,%s)",
+            name, alias);
+        goto cleanup;
+    }
+
+    alias = NULL;
+    if (virTypedParamsGetString(params, nparams, "fs.0.name", &name) < 0 ||
+        virTypedParamsGetString(params, nparams, "fs.0.mountpoint", &mountpoint) < 0 ||
+        virTypedParamsGetString(params, nparams, "fs.0.fstype", &fstype) < 0 ||
+        virTypedParamsGetULLong(params, nparams, "fs.0.used-bytes", &bytesused) == 1 ||
+        virTypedParamsGetULLong(params, nparams, "fs.0.total-bytes", &bytestotal) == 1 ||
+        virTypedParamsGetUInt(params, nparams, "fs.0.disk.count", &diskcount) < 0 ||
+        virTypedParamsGetString(params, nparams, "fs.0.disk.0.alias", &alias) == 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+            "Incorrect parameters for sdb1 (%s,%s)",
+            name, alias);
+        goto cleanup;
+    }
+
+    if (STRNEQ(name, "sdb1") ||
+        STRNEQ(mountpoint, "/mnt/disk") ||
+        STRNEQ(fstype, "xfs") ||
+        diskcount != 0 ||
+        alias != NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+            "unexpected filesystems information returned for sdb1 (%s,%s)",
+            name, alias);
+        goto cleanup;
+    }
+
+    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
+        goto cleanup;
+
+    if (qemuMonitorTestAddItem(test, "guest-get-fsinfo",
+                               "{\"error\":"
+                               "    {\"class\":\"CommandDisabled\","
+                               "     \"desc\":\"The command guest-get-fsinfo "
+                                               "has been disabled for "
+                                               "this instance\","
+                               "     \"data\":{\"name\":\"guest-get-fsinfo\"}"
+                               "    }"
+                               "}") < 0)
+        goto cleanup;
+
+    if (qemuAgentGetFSInfoParams(qemuMonitorTestGetAgent(test), &params,
+                                 &nparams, &maxparams, def) != -1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "agent get-fsinfo command should have failed");
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virTypedParamsFree(params, nparams);
     virDomainDefFree(def);
     qemuMonitorTestFree(test);
     return ret;
@@ -1268,6 +1444,7 @@ mymain(void)
     DO_TEST(FSFreeze);
     DO_TEST(FSThaw);
     DO_TEST(FSTrim);
+    DO_TEST(GetFSInfoParams);
     DO_TEST(GetFSInfo);
     DO_TEST(Suspend);
     DO_TEST(Shutdown);

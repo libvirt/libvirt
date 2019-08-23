@@ -74,6 +74,11 @@ int qemuAgentFSThaw(qemuAgentPtr mon);
 int qemuAgentGetFSInfo(qemuAgentPtr mon, virDomainFSInfoPtr **info,
                        virDomainDefPtr vmdef);
 
+int qemuAgentGetFSInfoParams(qemuAgentPtr mon,
+                             virTypedParameterPtr *params,
+                             int *nparams, int *maxparams,
+                             virDomainDefPtr vmdef);
+
 int qemuAgentSuspend(qemuAgentPtr mon,
                      unsigned int target);
 
