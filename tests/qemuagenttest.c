@@ -1048,6 +1048,127 @@ testQemuAgentUsers(const void *data)
     return ret;
 }
 
+static const char testQemuAgentOSInfoResponse[] =
+    "{\"return\": "
+    "   {\"name\":\"CentOS Linux\", "
+    "   \"kernel-release\":\"3.10.0-862.14.4.el7.x86_64\", "
+    "   \"version\":\"7 (Core)\", "
+    "   \"pretty-name\":\"CentOS Linux 7 (Core)\", "
+    "   \"version-id\":\"7\", "
+    "   \"kernel-version\":\"#1 SMP Wed Sep 26 15:12:11 UTC 2018\", "
+    "   \"machine\":\"x86_64\", "
+    "   \"id\":\"centos\"} "
+    "}";
+
+static const char testQemuAgentOSInfoResponse2[] =
+    "{\"return\": "
+    "   {\"name\":\"Microsoft Windows\", "
+    "   \"kernel-release\":\"7601\", "
+    "   \"version\":\"Microsoft Windows 77\", "
+    "   \"variant\":\"client\", "
+    "   \"pretty-name\":\"Windows 7 Professional\", "
+    "   \"version-id\":\"\", "
+    "   \"variant-id\":\"client\", "
+    "   \"kernel-version\":\"6.1\", "
+    "   \"machine\":\"x86_64\", "
+    "   \"id\":\"mswindows\"} "
+    "}";
+
+static int
+testQemuAgentOSInfo(const void *data)
+{
+    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
+    qemuMonitorTestPtr test = qemuMonitorTestNewAgent(xmlopt);
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+    int maxparams = 0;
+    int ret = -1;
+
+    if (!test)
+        return -1;
+
+    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
+        goto cleanup;
+
+    if (qemuMonitorTestAddItem(test, "guest-get-osinfo",
+                               testQemuAgentOSInfoResponse) < 0)
+        goto cleanup;
+
+    /* get osinfo */
+    if (qemuAgentGetOSInfo(qemuMonitorTestGetAgent(test),
+                           &params, &nparams, &maxparams) < 0)
+        goto cleanup;
+
+    if (nparams != 8) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "Expected 8 params, got %d", nparams);
+        goto cleanup;
+    }
+#define VALIDATE_PARAM(param_name_, expected_) \
+    do { \
+        const char *value_ = NULL; \
+        if (virTypedParamsGetString(params, nparams, param_name_, &value_) < 0 || \
+            value_ == NULL) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, "missing param '%s'", param_name_); \
+            goto cleanup; \
+        } \
+        if (STRNEQ(value_, expected_)) { \
+            virReportError(VIR_ERR_INTERNAL_ERROR, \
+                           "Expected name '%s', got '%s'", expected_, value_); \
+            goto cleanup; \
+        } \
+    } while (0)
+
+    VALIDATE_PARAM("os.id", "centos");
+    VALIDATE_PARAM("os.name", "CentOS Linux");
+    VALIDATE_PARAM("os.version", "7 (Core)");
+    VALIDATE_PARAM("os.version-id", "7");
+    VALIDATE_PARAM("os.pretty-name", "CentOS Linux 7 (Core)");
+    VALIDATE_PARAM("os.kernel-release", "3.10.0-862.14.4.el7.x86_64");
+    VALIDATE_PARAM("os.kernel-version", "#1 SMP Wed Sep 26 15:12:11 UTC 2018");
+    VALIDATE_PARAM("os.machine", "x86_64");
+    virTypedParamsFree(params, nparams);
+    params = NULL;
+    nparams = 0;
+    maxparams = 0;
+
+    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
+        goto cleanup;
+
+    if (qemuMonitorTestAddItem(test, "guest-get-osinfo",
+                               testQemuAgentOSInfoResponse2) < 0)
+        goto cleanup;
+
+    /* get users with domain */
+    if (qemuAgentGetOSInfo(qemuMonitorTestGetAgent(test),
+                           &params, &nparams, &maxparams) < 0)
+        goto cleanup;
+
+    if (nparams != 10) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "Expected 10 params, got %d", nparams);
+        goto cleanup;
+    }
+
+    VALIDATE_PARAM("os.id", "mswindows");
+    VALIDATE_PARAM("os.name", "Microsoft Windows");
+    VALIDATE_PARAM("os.pretty-name", "Windows 7 Professional");
+    VALIDATE_PARAM("os.version", "Microsoft Windows 77");
+    VALIDATE_PARAM("os.version-id", "");
+    VALIDATE_PARAM("os.variant", "client");
+    VALIDATE_PARAM("os.variant-id", "client");
+    VALIDATE_PARAM("os.kernel-release", "7601");
+    VALIDATE_PARAM("os.kernel-version", "6.1");
+    VALIDATE_PARAM("os.machine", "x86_64");
+    virTypedParamsFree(params, nparams);
+
+    ret = 0;
+
+ cleanup:
+    qemuMonitorTestFree(test);
+    return ret;
+}
+
 
 static int
 mymain(void)
@@ -1079,6 +1200,7 @@ mymain(void)
     DO_TEST(ArbitraryCommand);
     DO_TEST(GetInterfaces);
     DO_TEST(Users);
+    DO_TEST(OSInfo);
 
     DO_TEST(Timeout); /* Timeout should always be called last */
 

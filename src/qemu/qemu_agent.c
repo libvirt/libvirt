@@ -2325,3 +2325,50 @@ qemuAgentGetUsers(qemuAgentPtr mon,
 
     return ndata;
 }
+
+int
+qemuAgentGetOSInfo(qemuAgentPtr mon,
+                   virTypedParameterPtr *params,
+                   int *nparams,
+                   int *maxparams)
+{
+    VIR_AUTOPTR(virJSONValue) cmd = NULL;
+    VIR_AUTOPTR(virJSONValue) reply = NULL;
+    virJSONValuePtr data = NULL;
+
+    if (!(cmd = qemuAgentMakeCommand("guest-get-osinfo", NULL)))
+        return -1;
+
+    if (qemuAgentCommand(mon, cmd, &reply, true,
+                         VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0)
+        return -1;
+
+    if (!(data = virJSONValueObjectGetObject(reply, "return"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("guest-get-osinfo reply was missing return data"));
+        return -1;
+    }
+
+#define OSINFO_ADD_PARAM(agent_string_, param_string_) \
+    do { \
+        const char *result; \
+        if ((result = virJSONValueObjectGetString(data, agent_string_))) { \
+            if (virTypedParamsAddString(params, nparams, maxparams, \
+                                        param_string_, result) < 0) { \
+                return -1; \
+            } \
+        } \
+    } while (0)
+    OSINFO_ADD_PARAM("id", "os.id");
+    OSINFO_ADD_PARAM("name", "os.name");
+    OSINFO_ADD_PARAM("pretty-name", "os.pretty-name");
+    OSINFO_ADD_PARAM("version", "os.version");
+    OSINFO_ADD_PARAM("version-id", "os.version-id");
+    OSINFO_ADD_PARAM("machine", "os.machine");
+    OSINFO_ADD_PARAM("variant", "os.variant");
+    OSINFO_ADD_PARAM("variant-id", "os.variant-id");
+    OSINFO_ADD_PARAM("kernel-release", "os.kernel-release");
+    OSINFO_ADD_PARAM("kernel-version", "os.kernel-version");
+
+    return 0;
+}

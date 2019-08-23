@@ -125,3 +125,8 @@ int qemuAgentGetUsers(qemuAgentPtr mon,
                       virTypedParameterPtr *params,
                       int *nparams,
                       int *maxparams);
+
+int qemuAgentGetOSInfo(qemuAgentPtr mon,
+                       virTypedParameterPtr *params,
+                       int *nparams,
+                       int *maxparams);
