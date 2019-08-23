@@ -7650,3 +7650,50 @@ remoteSerializeDomainDiskErrors(virDomainDiskErrorPtr errors,
     }
     return -1;
 }
+
+static int
+remoteDispatchDomainGetGuestInfo(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                 virNetServerClientPtr client,
+                                 virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                 virNetMessageErrorPtr rerr,
+                                 remote_domain_get_guest_info_args *args,
+                                 remote_domain_get_guest_info_ret *ret)
+{
+    int rv = -1;
+    virConnectPtr conn = remoteGetHypervisorConn(client);
+    virDomainPtr dom = NULL;
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+
+    if (!conn)
+        goto cleanup;
+
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
+        goto cleanup;
+
+    if (virDomainGetGuestInfo(dom, args->types, &params, &nparams, args->flags) < 0)
+        goto cleanup;
+
+    if (nparams > REMOTE_DOMAIN_GUEST_INFO_PARAMS_MAX) {
+        virReportError(VIR_ERR_RPC,
+                       _("Too many params in guestinfo: %d for limit %d"),
+                       nparams, REMOTE_DOMAIN_GUEST_INFO_PARAMS_MAX);
+        goto cleanup;
+    }
+
+    if (virTypedParamsSerialize(params, nparams,
+                                (virTypedParameterRemotePtr *) &ret->params.params_val,
+                                &ret->params.params_len,
+                                VIR_TYPED_PARAM_STRING_OKAY) < 0)
+        goto cleanup;
+
+    rv = 0;
+
+ cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    virTypedParamsFree(params, nparams);
+    virObjectUnref(dom);
+
+    return rv;
+}

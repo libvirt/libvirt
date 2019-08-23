@@ -8306,6 +8306,49 @@ remoteNetworkPortGetParameters(virNetworkPortPtr port,
     return rv;
 }
 
+static int
+remoteDomainGetGuestInfo(virDomainPtr dom,
+                         unsigned int types,
+                         virTypedParameterPtr *params,
+                         int *nparams,
+                         unsigned int flags)
+{
+    int rv = -1;
+    struct private_data *priv = dom->conn->privateData;
+    remote_domain_get_guest_info_args args;
+    remote_domain_get_guest_info_ret ret;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.dom, dom);
+
+    args.types = types;
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof(ret));
+
+    if (call(dom->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_GUEST_INFO,
+             (xdrproc_t)xdr_remote_domain_get_guest_info_args, (char *)&args,
+             (xdrproc_t)xdr_remote_domain_get_guest_info_ret, (char *)&ret) == -1)
+        goto done;
+
+    if (virTypedParamsDeserialize((virTypedParameterRemotePtr) ret.params.params_val,
+                                  ret.params.params_len,
+                                  REMOTE_DOMAIN_GUEST_INFO_PARAMS_MAX,
+                                  params,
+                                  nparams) < 0)
+        goto cleanup;
+
+    rv = 0;
+
+ cleanup:
+    xdr_free((xdrproc_t)xdr_remote_domain_get_guest_info_ret,
+             (char *) &ret);
+
+ done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire
  * (name, uuid) pair into virDomainPtr or virNetworkPtr object.
@@ -8733,6 +8776,7 @@ static virHypervisorDriver hypervisor_driver = {
     .domainCheckpointLookupByName = remoteDomainCheckpointLookupByName, /* 5.6.0 */
     .domainCheckpointGetParent = remoteDomainCheckpointGetParent, /* 5.6.0 */
     .domainCheckpointDelete = remoteDomainCheckpointDelete, /* 5.6.0 */
+    .domainGetGuestInfo = remoteDomainGetGuestInfo, /* 5.7.0 */
 };
 
 static virNetworkDriver network_driver = {

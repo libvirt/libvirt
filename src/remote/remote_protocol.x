@@ -269,6 +269,9 @@ const REMOTE_NODE_SEV_INFO_MAX = 64;
 /* Upper limit on number of launch security information entries */
 const REMOTE_DOMAIN_LAUNCH_SECURITY_INFO_PARAMS_MAX = 64;
 
+/* Upper limit on number of parameters describing a guest */
+const REMOTE_DOMAIN_GUEST_INFO_PARAMS_MAX = 2048;
+
 /*
  * Upper limit on list of network port parameters
  */
@@ -3723,6 +3726,16 @@ struct remote_domain_checkpoint_delete_args {
     unsigned int flags;
 };
 
+struct remote_domain_get_guest_info_args {
+    remote_nonnull_domain dom;
+    unsigned int types;
+    unsigned int flags;
+};
+
+struct remote_domain_get_guest_info_ret {
+    remote_typed_param params<REMOTE_DOMAIN_GUEST_INFO_PARAMS_MAX>;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -6584,5 +6597,11 @@ enum remote_procedure {
      * @generate: both
      * @acl: domain:checkpoint
      */
-    REMOTE_PROC_DOMAIN_CHECKPOINT_DELETE = 417
+    REMOTE_PROC_DOMAIN_CHECKPOINT_DELETE = 417,
+
+    /**
+     * @generate: none
+     * @acl: domain:write
+     */
+    REMOTE_PROC_DOMAIN_GET_GUEST_INFO = 418
 };

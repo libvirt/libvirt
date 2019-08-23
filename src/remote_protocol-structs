@@ -3105,6 +3105,17 @@ struct remote_domain_checkpoint_delete_args {
         remote_nonnull_domain_checkpoint checkpoint;
         u_int                      flags;
 };
+struct remote_domain_get_guest_info_args {
+        remote_nonnull_domain      dom;
+        u_int                      types;
+        u_int                      flags;
+};
+struct remote_domain_get_guest_info_ret {
+        struct {
+                u_int              params_len;
+                remote_typed_param * params_val;
+        } params;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -3523,4 +3534,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_CHECKPOINT_LOOKUP_BY_NAME = 415,
         REMOTE_PROC_DOMAIN_CHECKPOINT_GET_PARENT = 416,
         REMOTE_PROC_DOMAIN_CHECKPOINT_DELETE = 417,
+        REMOTE_PROC_DOMAIN_GET_GUEST_INFO = 418,
 };
