@@ -23201,6 +23201,103 @@ qemuDomainGetLaunchSecurityInfo(virDomainPtr domain,
     return ret;
 }
 
+static const unsigned int supportedGuestInfoTypes =
+    VIR_DOMAIN_GUEST_INFO_USERS |
+    VIR_DOMAIN_GUEST_INFO_OS |
+    VIR_DOMAIN_GUEST_INFO_TIMEZONE |
+    VIR_DOMAIN_GUEST_INFO_HOSTNAME |
+    VIR_DOMAIN_GUEST_INFO_FILESYSTEM;
+
+static void
+qemuDomainGetGuestInfoCheckSupport(unsigned int *types)
+{
+    if (*types == 0)
+        *types = supportedGuestInfoTypes;
+
+    *types = *types & supportedGuestInfoTypes;
+}
+
+static int
+qemuDomainGetGuestInfo(virDomainPtr dom,
+                       unsigned int types,
+                       virTypedParameterPtr *params,
+                       int *nparams,
+                       unsigned int flags)
+{
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    qemuAgentPtr agent;
+    int ret = -1;
+    int maxparams = 0;
+    VIR_AUTOFREE(char *) hostname = NULL;
+    unsigned int supportedTypes = types;
+
+    virCheckFlags(0, -1);
+    qemuDomainGetGuestInfoCheckSupport(&supportedTypes);
+
+    if (!(vm = qemuDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainGetGuestInfoEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (qemuDomainObjBeginAgentJob(driver, vm, QEMU_AGENT_JOB_QUERY) < 0)
+        goto cleanup;
+
+    if (!qemuDomainAgentAvailable(vm, true))
+        goto endjob;
+
+    agent = qemuDomainObjEnterAgent(vm);
+
+    /* Although the libvirt qemu driver supports all of these guest info types,
+     * some guest agents might be too old to support these commands. If these
+     * info categories were explicitly requested (i.e. 'types' is non-zero),
+     * abort and report an error on any failures, otherwise continue and return
+     * as much info as is supported by the guest agent. */
+    if (supportedTypes & VIR_DOMAIN_GUEST_INFO_USERS) {
+        if (qemuAgentGetUsers(agent, params, nparams, &maxparams) < 0 &&
+            types != 0)
+            goto exitagent;
+    }
+    if (supportedTypes & VIR_DOMAIN_GUEST_INFO_OS) {
+        if (qemuAgentGetOSInfo(agent, params, nparams, &maxparams) < 0
+            && types != 0)
+            goto exitagent;
+    }
+    if (supportedTypes & VIR_DOMAIN_GUEST_INFO_TIMEZONE) {
+        if (qemuAgentGetTimezone(agent, params, nparams, &maxparams) < 0
+            && types != 0)
+            goto exitagent;
+    }
+    if (supportedTypes & VIR_DOMAIN_GUEST_INFO_HOSTNAME) {
+        if (qemuAgentGetHostname(agent, &hostname) < 0) {
+            if (types != 0)
+                goto exitagent;
+        } else {
+            if (virTypedParamsAddString(params, nparams, &maxparams, "hostname",
+                                        hostname) < 0)
+                goto exitagent;
+        }
+    }
+    if (supportedTypes & VIR_DOMAIN_GUEST_INFO_FILESYSTEM) {
+        if (qemuAgentGetFSInfoParams(agent, params, nparams, &maxparams, vm->def) < 0 &&
+            types != 0)
+            goto exitagent;
+    }
+
+    ret = 0;
+
+ exitagent:
+    qemuDomainObjExitAgent(vm, agent);
+
+ endjob:
+    qemuDomainObjEndAgentJob(vm);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
 static virHypervisorDriver qemuHypervisorDriver = {
     .name = QEMU_DRIVER_NAME,
     .connectURIProbe = qemuConnectURIProbe,
@@ -23436,6 +23533,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainCheckpointLookupByName = qemuDomainCheckpointLookupByName, /* 5.6.0 */
     .domainCheckpointGetParent = qemuDomainCheckpointGetParent, /* 5.6.0 */
     .domainCheckpointDelete = qemuDomainCheckpointDelete, /* 5.6.0 */
+    .domainGetGuestInfo = qemuDomainGetGuestInfo, /* 5.7.0 */
 };
 
 
