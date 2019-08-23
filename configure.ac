@@ -465,8 +465,6 @@ LIBVIRT_DRIVER_CHECK_LIBVIRTD
 LIBVIRT_DRIVER_CHECK_NETWORK
 LIBVIRT_DRIVER_CHECK_INTERFACE
 
-AM_CONDITIONAL([WITH_XENCONFIG], [test "$with_libxl" = "yes"])
-
 
 dnl
 dnl in case someone want to build static binaries

@@ -18,7 +18,6 @@ libvirt_driver_xenapi_la_CFLAGS = \
 	$(XENAPI_CFLAGS) \
 	$(CURL_CFLAGS) \
 	-I$(srcdir)/conf \
-	-I$(srcdir)/xenconfig \
 	$(AM_CFLAGS) \
 	$(NULL)
 libvirt_driver_xenapi_la_LDFLAGS = $(AM_LDFLAGS)

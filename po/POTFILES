@@ -88,6 +88,9 @@ src/libxl/libxl_conf.c
 src/libxl/libxl_domain.c
 src/libxl/libxl_driver.c
 src/libxl/libxl_migration.c
+src/libxl/xen_common.c
+src/libxl/xen_xl.c
+src/libxl/xen_xm.c
 src/locking/lock_daemon.c
 src/locking/lock_daemon_dispatch.c
 src/locking/lock_driver_lockd.c
@@ -291,9 +294,6 @@ src/vz/vz_utils.c
 src/vz/vz_utils.h
 src/xenapi/xenapi_driver.c
 src/xenapi/xenapi_utils.c
-src/xenconfig/xen_common.c
-src/xenconfig/xen_xl.c
-src/xenconfig/xen_xm.c
 tests/virpolkittest.c
 tools/libvirt-guests.sh.in
 tools/virsh-checkpoint.c

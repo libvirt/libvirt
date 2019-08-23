@@ -27,7 +27,7 @@
 
 #include "internal.h"
 #include "datatypes.h"
-#include "xenconfig/xen_xl.h"
+#include "libxl/xen_xl.h"
 #include "viralloc.h"
 #include "virstring.h"
 #include "testutils.h"

@@ -1,6 +1,13 @@
 # vim: filetype=automake
 
 LIBXL_DRIVER_SOURCES = \
+	libxl/xenxs_private.h \
+	libxl/xen_common.c \
+	libxl/xen_common.h \
+	libxl/xen_xl.c \
+	libxl/xen_xl.h \
+	libxl/xen_xm.c \
+	libxl/xen_xm.h \
 	libxl/libxl_conf.c \
 	libxl/libxl_conf.h \
 	libxl/libxl_capabilities.c \
@@ -15,29 +22,13 @@ LIBXL_DRIVER_SOURCES = \
 	libxl/libxl_migration.h \
 	$(NULL)
 
-XENCONFIG_LIBXL_SOURCES = \
-	$(XENCONFIG_SOURCES) \
-	xenconfig/xen_xl.c \
-	xenconfig/xen_xl.h \
-	$(NULL)
-
 DRIVER_SOURCE_FILES += $(LIBXL_DRIVER_SOURCES)
 STATEFUL_DRIVER_SOURCE_FILES += $(LIBXL_DRIVER_SOURCES)
 EXTRA_DIST += \
 	$(LIBXL_DRIVER_SOURCES) \
-	$(XENCONFIG_LIBXL_SOURCES) \
 	$(NULL)
 
 if WITH_LIBXL
-noinst_LTLIBRARIES += libvirt_xenconfig_libxl.la
-libvirt_xenconfig_libxl_la_LIBADD = $(LIBXL_LIBS)
-libvirt_xenconfig_libxl_la_CFLAGS = \
-	-I$(srcdir)/conf \
-	-I$(srcdir)/libxl \
-	$(AM_CFLAGS) \
-	$(NULL)
-libvirt_xenconfig_libxl_la_SOURCES = $(XENCONFIG_LIBXL_SOURCES)
-
 noinst_LTLIBRARIES += libvirt_driver_libxl_impl.la
 libvirt_driver_libxl_la_SOURCES =
 libvirt_driver_libxl_la_LIBADD = \
@@ -54,14 +45,12 @@ libvirt_driver_libxl_impl_la_CFLAGS = \
 	-I$(srcdir)/access \
 	-I$(srcdir)/conf \
 	-I$(srcdir)/secret \
-	-I$(srcdir)/xenconfig \
 	$(AM_CFLAGS) \
 	$(NULL)
 libvirt_driver_libxl_impl_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_libxl_impl_la_LIBADD = \
 	$(LIBXL_LIBS) \
 	$(LIBXML_LIBS) \
-	libvirt_xenconfig_libxl.la \
 	$(NULL)
 libvirt_driver_libxl_impl_la_SOURCES = $(LIBXL_DRIVER_SOURCES)
 

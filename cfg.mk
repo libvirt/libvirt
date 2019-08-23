@@ -791,7 +791,7 @@ sc_prohibit_cross_inclusion:
 	    access/ | conf/) safe="($$dir|conf|util)";; \
 	    cpu/| network/| node_device/| rpc/| security/| storage/) \
 	      safe="($$dir|util|conf|storage)";; \
-	    xenapi/ | xenconfig/ ) safe="($$dir|util|conf|xen|cpu)";; \
+	    xenapi/) safe="($$dir|util|conf|xen|cpu)";; \
 	    *) safe="($$dir|$(mid_dirs)|util)";; \
 	  esac; \
 	  in_vc_files="^src/$$dir" \
