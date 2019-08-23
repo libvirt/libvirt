@@ -120,3 +120,8 @@ int qemuAgentSetUserPassword(qemuAgentPtr mon,
                              const char *user,
                              const char *password,
                              bool crypted);
+
+int qemuAgentGetUsers(qemuAgentPtr mon,
+                      virTypedParameterPtr *params,
+                      int *nparams,
+                      int *maxparams);

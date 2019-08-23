@@ -2240,3 +2240,88 @@ qemuAgentSetUserPassword(qemuAgentPtr mon,
     VIR_FREE(password64);
     return ret;
 }
+
+int
+qemuAgentGetUsers(qemuAgentPtr mon,
+                  virTypedParameterPtr *params,
+                  int *nparams,
+                  int *maxparams)
+{
+    VIR_AUTOPTR(virJSONValue) cmd = NULL;
+    VIR_AUTOPTR(virJSONValue) reply = NULL;
+    virJSONValuePtr data = NULL;
+    size_t ndata;
+    size_t i;
+
+    if (!(cmd = qemuAgentMakeCommand("guest-get-users", NULL)))
+        return -1;
+
+    if (qemuAgentCommand(mon, cmd, &reply, true,
+                         VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0)
+        return -1;
+
+    if (!(data = virJSONValueObjectGetArray(reply, "return"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("guest-get-users reply was missing return data"));
+        return -1;
+    }
+
+    if (!virJSONValueIsArray(data)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Malformed guest-get-users data array"));
+        return -1;
+    }
+
+    ndata = virJSONValueArraySize(data);
+
+    if (virTypedParamsAddUInt(params, nparams, maxparams,
+                              "user.count", ndata) < 0)
+        return -1;
+
+    for (i = 0; i < ndata; i++) {
+        virJSONValuePtr entry = virJSONValueArrayGet(data, i);
+        char param_name[VIR_TYPED_PARAM_FIELD_LENGTH];
+        const char *strvalue;
+        double logintime;
+
+        if (!entry) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("array element missing in guest-get-users return "
+                             "value"));
+            return -1;
+        }
+
+        if (!(strvalue = virJSONValueObjectGetString(entry, "user"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("'user' missing in reply of guest-get-users"));
+            return -1;
+        }
+
+        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, "user.%zu.name", i);
+        if (virTypedParamsAddString(params, nparams, maxparams,
+                                    param_name, strvalue) < 0)
+            return -1;
+
+        /* 'domain' is only present for windows guests */
+        if ((strvalue = virJSONValueObjectGetString(entry, "domain"))) {
+            snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                     "user.%zu.domain", i);
+            if (virTypedParamsAddString(params, nparams, maxparams,
+                                        param_name, strvalue) < 0)
+                return -1;
+        }
+
+        if (virJSONValueObjectGetNumberDouble(entry, "login-time", &logintime) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("'login-time' missing in reply of guest-get-users"));
+            return -1;
+        }
+        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                 "user.%zu.login-time", i);
+        if (virTypedParamsAddULLong(params, nparams, maxparams,
+                                    param_name, logintime * 1000) < 0)
+            return -1;
+    }
+
+    return ndata;
+}
