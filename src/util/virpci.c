@@ -1136,7 +1136,7 @@ virPCIDeviceBindWithDriverOverride(virPCIDevicePtr dev,
 }
 
 static int
-virPCIDeviceUnbindFromStubWithOverride(virPCIDevicePtr dev)
+virPCIDeviceUnbindFromStub(virPCIDevicePtr dev)
 {
     if (!dev->unbind_from_stub) {
         VIR_DEBUG("Unbind from stub skipped for PCI device %s", dev->name);
@@ -1147,13 +1147,7 @@ virPCIDeviceUnbindFromStubWithOverride(virPCIDevicePtr dev)
 }
 
 static int
-virPCIDeviceUnbindFromStub(virPCIDevicePtr dev)
-{
-    return virPCIDeviceUnbindFromStubWithOverride(dev);
-}
-
-static int
-virPCIDeviceBindToStubWithOverride(virPCIDevicePtr dev)
+virPCIDeviceBindToStub(virPCIDevicePtr dev)
 {
     const char *stubDriverName;
     VIR_AUTOFREE(char *) stubDriverPath = NULL;
@@ -1190,12 +1184,6 @@ virPCIDeviceBindToStubWithOverride(virPCIDevicePtr dev)
 
     dev->unbind_from_stub = true;
     return 0;
-}
-
-static int
-virPCIDeviceBindToStub(virPCIDevicePtr dev)
-{
-    return virPCIDeviceBindToStubWithOverride(dev);
 }
 
 /* virPCIDeviceDetach:
