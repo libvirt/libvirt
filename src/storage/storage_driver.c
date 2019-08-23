@@ -808,7 +808,7 @@ storagePoolCreateXML(virConnectPtr conn,
     pool = virGetStoragePool(conn, def->name, def->uuid, NULL, NULL);
 
  cleanup:
-    if (virStoragePoolObjIsStarting(obj)) {
+    if (obj && virStoragePoolObjIsStarting(obj)) {
         if (!virStoragePoolObjIsActive(obj))
             virStoragePoolUpdateInactive(obj);
         virStoragePoolObjSetStarting(obj, false);
