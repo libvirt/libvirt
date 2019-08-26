@@ -2524,6 +2524,7 @@ virNetDevMacVLanCreate;
 virNetDevMacVLanCreateWithVPortProfile;
 virNetDevMacVLanDelete;
 virNetDevMacVLanDeleteWithVPortProfile;
+virNetDevMacVLanIsMacvtap;
 virNetDevMacVLanModeTypeFromString;
 virNetDevMacVLanReleaseName;
 virNetDevMacVLanReserveName;

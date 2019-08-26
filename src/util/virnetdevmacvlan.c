@@ -279,6 +279,29 @@ virNetDevMacVLanReleaseName(const char *name)
 
 
 /**
+ * virNetDevMacVLanIsMacvtap:
+ * @ifname: Name of the interface
+ *
+ * Return T if the named netdev exists and is a macvtap device
+ * F in all other cases.
+ */
+bool
+virNetDevMacVLanIsMacvtap(const char *ifname)
+{
+    int ifindex;
+    VIR_AUTOFREE(char *) tapname = NULL;
+
+    if (virNetDevGetIndex(ifname, &ifindex) < 0)
+        return false;
+
+    if (virAsprintf(&tapname, "/dev/tap%d", ifindex) < 0)
+        return false;
+
+    return virFileExists(tapname);
+}
+
+
+/**
  * virNetDevMacVLanCreate:
  *
  * @ifname: The name the interface is supposed to have; optional parameter

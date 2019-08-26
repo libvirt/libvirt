@@ -57,6 +57,9 @@ typedef enum {
 int virNetDevMacVLanReserveName(const char *name, bool quietfail);
 int virNetDevMacVLanReleaseName(const char *name);
 
+bool virNetDevMacVLanIsMacvtap(const char *ifname)
+   ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK ATTRIBUTE_NOINLINE;
+
 int virNetDevMacVLanCreate(const char *ifname,
                            const char *type,
                            const virMacAddr *macaddress,
