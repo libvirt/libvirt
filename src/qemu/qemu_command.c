@@ -3916,13 +3916,12 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
     VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virDomainNetType netType = virDomainNetGetActualType(net);
     size_t i;
-    char *ret = NULL;
 
     if (net->script && netType != VIR_DOMAIN_NET_TYPE_ETHERNET) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("scripts are not supported on interfaces of type %s"),
                        virDomainNetTypeToString(netType));
-        goto cleanup;
+        return NULL;
     }
 
     switch (netType) {
@@ -3989,7 +3988,7 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
                 const char *prefix = "";
 
                 if (!(addr = virSocketAddrFormat(&ip->address)))
-                    goto cleanup;
+                    return NULL;
 
                 if (VIR_SOCKET_ADDR_IS_FAMILY(&ip->address, AF_INET))
                     prefix = "net=";
@@ -4046,11 +4045,9 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
 
     virBufferTrim(&buf, ",", -1);
     if (virBufferCheckError(&buf) < 0)
-        goto cleanup;
+        return NULL;
 
-    ret = virBufferContentAndReset(&buf);
- cleanup:
-    return ret;
+    return virBufferContentAndReset(&buf);
 }
 
 
