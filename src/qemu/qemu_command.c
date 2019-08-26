@@ -3906,7 +3906,7 @@ qemuBuildNicDevStr(virDomainDefPtr def,
 
 char *
 qemuBuildHostNetStr(virDomainNetDefPtr net,
-                    virQEMUDriverPtr driver,
+                    virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
                     char **tapfd,
                     size_t tapfdSize,
                     char **vhostfd,
@@ -3916,7 +3916,6 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
     bool is_tap = false;
     VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virDomainNetType netType = virDomainNetGetActualType(net);
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     size_t i;
     char *ret = NULL;
 
@@ -4052,7 +4051,6 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
 
     ret = virBufferContentAndReset(&buf);
  cleanup:
-    virObjectUnref(cfg);
     return ret;
 }
 
