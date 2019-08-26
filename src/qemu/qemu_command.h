@@ -86,7 +86,6 @@ qemuBuildChrDeviceStr(char **deviceStr,
                       virQEMUCapsPtr qemuCaps);
 
 char *qemuBuildHostNetStr(virDomainNetDefPtr net,
-                          virQEMUDriverPtr driver,
                           char **tapfd,
                           size_t tapfdSize,
                           char **vhostfd,

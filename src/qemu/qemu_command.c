@@ -3906,7 +3906,6 @@ qemuBuildNicDevStr(virDomainDefPtr def,
 
 char *
 qemuBuildHostNetStr(virDomainNetDefPtr net,
-                    virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
                     char **tapfd,
                     size_t tapfdSize,
                     char **vhostfd,
@@ -8551,7 +8550,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
     if (chardev)
         virCommandAddArgList(cmd, "-chardev", chardev, NULL);
 
-    if (!(host = qemuBuildHostNetStr(net, driver,
+    if (!(host = qemuBuildHostNetStr(net,
                                      tapfdName, tapfdSize,
                                      vhostfdName, vhostfdSize,
                                      slirpfdName)))
