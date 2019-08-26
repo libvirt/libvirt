@@ -3590,14 +3590,13 @@ qemuBuildMemoryCellBackendStr(virDomainDefPtr def,
 {
     VIR_AUTOPTR(virJSONValue) props = NULL;
     VIR_AUTOFREE(char *) alias = NULL;
-    int ret = -1;
     int rc;
     virDomainMemoryDef mem = { 0 };
     unsigned long long memsize = virDomainNumaGetNodeMemorySize(def->numa,
                                                                 cell);
 
     if (virAsprintf(&alias, "ram-node%zu", cell) < 0)
-        goto cleanup;
+        return -1;
 
     mem.size = memsize;
     mem.targetNode = cell;
@@ -3605,16 +3604,12 @@ qemuBuildMemoryCellBackendStr(virDomainDefPtr def,
 
     if ((rc = qemuBuildMemoryBackendProps(&props, alias, cfg,
                                           priv, def, &mem, false)) < 0)
-        goto cleanup;
+        return -1;
 
     if (virQEMUBuildObjectCommandlineFromJSON(buf, props) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = rc;
-
- cleanup:
-
-    return ret;
+    return rc;
 }
 
 
