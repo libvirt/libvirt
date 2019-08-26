@@ -10363,7 +10363,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
 {
     size_t i;
     char uuid[VIR_UUID_STRING_BUFLEN];
-    virCommandPtr cmd = NULL;
+    VIR_AUTOPTR(virCommand) cmd = NULL;
     VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
     unsigned int bootHostdevNet = 0;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -10619,10 +10619,9 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
         cfg->logTimestamp)
         virCommandAddArgList(cmd, "-msg", "timestamp=on", NULL);
 
-    return cmd;
+    VIR_RETURN_PTR(cmd);
 
  error:
-    virCommandFree(cmd);
     return NULL;
 }
 
