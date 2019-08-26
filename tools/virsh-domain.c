@@ -10587,6 +10587,10 @@ static const vshCmdOptDef opts_migrate[] = {
      .type = VSH_OT_INT,
      .help = N_("number of connections for parallel migration")
     },
+    {.name = "precopy-bandwidth",
+     .type = VSH_OT_INT,
+     .help = N_("pre-copy migration bandwidth limit in MiB/s")
+    },
     {.name = NULL}
 };
 
@@ -10798,6 +10802,15 @@ doMigrate(void *opaque)
         if (virTypedParamsAddInt(&params, &nparams, &maxparams,
                                  VIR_MIGRATE_PARAM_PARALLEL_CONNECTIONS,
                                  intOpt) < 0)
+            goto save_error;
+    }
+
+    if ((rv = vshCommandOptULongLong(ctl, cmd, "precopy-bandwidth", &ullOpt)) < 0) {
+        goto out;
+    } else if (rv > 0) {
+        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
+                                    VIR_MIGRATE_PARAM_BANDWIDTH,
+                                    ullOpt) < 0)
             goto save_error;
     }
 

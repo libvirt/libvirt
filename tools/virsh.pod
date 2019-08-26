@@ -1927,6 +1927,7 @@ I<domain> I<desturi> [I<migrateuri>] [I<graphicsuri>] [I<listen-address>] [I<dna
 [I<auto-converge-increment>] [I<--persistent-xml> B<file>] [I<--tls>]
 [I<--postcopy-bandwidth> B<bandwidth>]
 [I<--parallel> [I<--parallel-connections> B<connections>]]
+[I<--precopy-bandwidth> B<bandwidth>]
 
 Migrate domain to another host.  Add I<--live> for live migration; <--p2p>
 for peer-2-peer migration; I<--direct> for direct migration; or I<--tunnelled>
@@ -1958,7 +1959,8 @@ B<migrate-postcopy> command sent from another virsh instance or use
 I<--postcopy-after-precopy> along with I<--postcopy> to let libvirt
 automatically switch to post-copy after the first pass of pre-copy is finished.
 The maximum bandwidth consumed during the post-copy phase may be limited using
-I<--postcopy-bandwidth>.
+I<--postcopy-bandwidth>. The maximum bandwidth consumed during the pre-copy phase
+may be limited using I<--precopy-bandwidth>.
 
 I<--auto-converge> forces convergence during live migration. The initial
 guest CPU throttling rate can be set with I<auto-converge-initial>. If the
