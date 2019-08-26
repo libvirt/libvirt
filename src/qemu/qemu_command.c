@@ -3333,7 +3333,7 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
     VIR_AUTOFREE(char *) memPath = NULL;
     bool prealloc = false;
     virBitmapPtr nodemask = NULL;
-    int ret = -1;
+    int rc;
     VIR_AUTOPTR(virJSONValue) props = NULL;
     bool nodeSpecified = virDomainNumatuneNodeSpecified(def->numa, mem->targetNode);
     unsigned long long pagesize = mem->pagesize;
@@ -3547,7 +3547,7 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
         !force) {
         /* report back that using the new backend is not necessary
          * to achieve the desired configuration */
-        ret = 1;
+        rc = 1;
     } else {
         /* otherwise check the required capability */
         if (STREQ(backendType, "memory-backend-file") &&
@@ -3570,14 +3570,14 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
             return -1;
         }
 
-        ret = 0;
+        rc = 0;
     }
 
     if (!(*backendProps = qemuMonitorCreateObjectPropsWrap(backendType, alias,
                                                            &props)))
-        ret = -1;
+        return -1;
 
-    return ret;
+    return rc;
 }
 
 
