@@ -1,0 +1,32 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/tmp/lib/domain--1-QEMUGuest1 \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest1/.local/share \
+XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest1/.cache \
+XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-i686 \
+-name QEMUGuest1 \
+-S \
+-machine pc,accel=tcg,usb=off,dump-guest-core=off \
+-m 214 \
+-realtime mlock=off \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
+server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-no-acpi \
+-usb \
+-drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \
+-device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
+-netdev tap,fd=3,id=hostnet0,vhost=on,vhostfd=44 \
+-device virtio-net-pci,netdev=hostnet0,id=net0,mac=fe:11:22:33:44:55,bus=pci.0,\
+addr=0x3

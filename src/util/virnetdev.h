@@ -150,7 +150,7 @@ int virNetDevSetupControl(const char *ifname,
     ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevExists(const char *brname)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK ATTRIBUTE_NOINLINE;
 
 int virNetDevSetOnline(const char *ifname,
                        bool online)

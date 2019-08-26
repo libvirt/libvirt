@@ -149,8 +149,12 @@ virNetDevTapCreate(char **ifname,
     for (i = 0; i < tapfdSize; i++)
         tapfd[i] = STDERR_FILENO + 1 + i;
 
-    VIR_FREE(*ifname);
-    return VIR_STRDUP(*ifname, "vnet0");
+    if (STREQ_NULLABLE(*ifname, "mytap0")) {
+        return 0;
+    } else {
+        VIR_FREE(*ifname);
+        return VIR_STRDUP(*ifname, "vnet0");
+    }
 }
 
 int
@@ -159,6 +163,14 @@ virNetDevSetMAC(const char *ifname ATTRIBUTE_UNUSED,
 {
     return 0;
 }
+
+
+int
+virNetDevExists(const char *ifname)
+{
+    return STREQ_NULLABLE(ifname, "mytap0");
+}
+
 
 int virNetDevIPAddrAdd(const char *ifname ATTRIBUTE_UNUSED,
                        virSocketAddr *addr ATTRIBUTE_UNUSED,

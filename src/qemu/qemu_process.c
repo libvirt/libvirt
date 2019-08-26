@@ -7559,7 +7559,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
                              cfg->stateDir));
             break;
         case VIR_DOMAIN_NET_TYPE_ETHERNET:
-            if (net->ifname) {
+            if (net->managed_tap != VIR_TRISTATE_BOOL_NO && net->ifname) {
                 ignore_value(virNetDevTapDelete(net->ifname, net->backend.tap));
                 VIR_FREE(net->ifname);
             }

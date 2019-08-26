@@ -428,36 +428,53 @@ qemuInterfaceEthernetConnect(virDomainDefPtr def,
     if (virDomainNetIsVirtioModel(net))
         tap_create_flags |= VIR_NETDEV_TAP_CREATE_VNET_HDR;
 
-    if (!net->ifname ||
-        STRPREFIX(net->ifname, VIR_NET_GENERATED_TAP_PREFIX) ||
-        strchr(net->ifname, '%')) {
-        VIR_FREE(net->ifname);
-        if (VIR_STRDUP(net->ifname, VIR_NET_GENERATED_TAP_PREFIX "%d") < 0)
+    if (net->managed_tap == VIR_TRISTATE_BOOL_NO) {
+        if (!net->ifname) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("target dev must be supplied when managed='no'"));
             goto cleanup;
-        /* avoid exposing vnet%d in getXMLDesc or error outputs */
-        template_ifname = true;
+        }
+        if (virNetDevExists(net->ifname) != 1) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("target managed='no' but specified dev doesn't exist"));
+            goto cleanup;
+        }
+        if (virNetDevTapCreate(&net->ifname, tunpath, tapfd, tapfdSize,
+                               tap_create_flags) < 0) {
+            goto cleanup;
+        }
+    } else {
+        if (!net->ifname ||
+            STRPREFIX(net->ifname, VIR_NET_GENERATED_TAP_PREFIX) ||
+            strchr(net->ifname, '%')) {
+            VIR_FREE(net->ifname);
+            if (VIR_STRDUP(net->ifname, VIR_NET_GENERATED_TAP_PREFIX "%d") < 0)
+                goto cleanup;
+            /* avoid exposing vnet%d in getXMLDesc or error outputs */
+            template_ifname = true;
+        }
+        if (virNetDevTapCreate(&net->ifname, tunpath, tapfd, tapfdSize,
+                               tap_create_flags) < 0) {
+            goto cleanup;
+        }
+
+        /* The tap device's MAC address cannot match the MAC address
+         * used by the guest. This results in "received packet on
+         * vnetX with own address as source address" error logs from
+         * the kernel.
+         */
+        virMacAddrSet(&tapmac, &net->mac);
+        if (tapmac.addr[0] == 0xFE)
+            tapmac.addr[0] = 0xFA;
+        else
+            tapmac.addr[0] = 0xFE;
+
+        if (virNetDevSetMAC(net->ifname, &tapmac) < 0)
+            goto cleanup;
+
+        if (virNetDevSetOnline(net->ifname, true) < 0)
+            goto cleanup;
     }
-    if (virNetDevTapCreate(&net->ifname, tunpath, tapfd, tapfdSize,
-                           tap_create_flags) < 0) {
-        goto cleanup;
-    }
-
-    /* The tap device's MAC address cannot match the MAC address
-     * used by the guest. This results in "received packet on
-     * vnetX with own address as source address" error logs from
-     * the kernel.
-     */
-    virMacAddrSet(&tapmac, &net->mac);
-    if (tapmac.addr[0] == 0xFE)
-        tapmac.addr[0] = 0xFA;
-    else
-        tapmac.addr[0] = 0xFE;
-
-    if (virNetDevSetMAC(net->ifname, &tapmac) < 0)
-        goto cleanup;
-
-    if (virNetDevSetOnline(net->ifname, true) < 0)
-        goto cleanup;
 
     if (net->script &&
         virNetDevRunEthernetScript(net->ifname, net->script) < 0)
