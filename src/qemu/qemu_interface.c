@@ -439,9 +439,18 @@ qemuInterfaceEthernetConnect(virDomainDefPtr def,
                            _("target managed='no' but specified dev doesn't exist"));
             goto cleanup;
         }
-        if (virNetDevTapCreate(&net->ifname, tunpath, tapfd, tapfdSize,
-                               tap_create_flags) < 0) {
-            goto cleanup;
+        if (virNetDevMacVLanIsMacvtap(net->ifname)) {
+            auditdev = net->ifname;
+            if (virNetDevMacVLanTapOpen(net->ifname, tapfd, tapfdSize) < 0)
+                goto cleanup;
+            if (virNetDevMacVLanTapSetup(tapfd, tapfdSize,
+                                         virDomainNetIsVirtioModel(net)) < 0) {
+                goto cleanup;
+            }
+        } else {
+            if (virNetDevTapCreate(&net->ifname, tunpath, tapfd, tapfdSize,
+                                   tap_create_flags) < 0)
+                goto cleanup;
         }
     } else {
         if (!net->ifname ||
