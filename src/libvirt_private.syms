@@ -2529,6 +2529,8 @@ virNetDevMacVLanModeTypeFromString;
 virNetDevMacVLanReleaseName;
 virNetDevMacVLanReserveName;
 virNetDevMacVLanRestartWithVPortProfile;
+virNetDevMacVLanTapOpen;
+virNetDevMacVLanTapSetup;
 virNetDevMacVLanVPortProfileRegisterCallback;
 
 

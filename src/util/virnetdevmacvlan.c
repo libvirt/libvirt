@@ -374,19 +374,17 @@ int virNetDevMacVLanDelete(const char *ifname)
  * @ifname: Name of the macvtap interface
  * @tapfd: array of file descriptor return value for the new macvtap device
  * @tapfdSize: number of file descriptors in @tapfd
- * @retries : Number of retries in case udev for example may need to be
- *            waited for to create the tap chardev
  *
  * Open the macvtap's tap device, possibly multiple times if @tapfdSize > 1.
  *
  * Returns 0 on success, -1 otherwise.
  */
-static int
+int
 virNetDevMacVLanTapOpen(const char *ifname,
                         int *tapfd,
-                        size_t tapfdSize,
-                        int retries)
+                        size_t tapfdSize)
 {
+    int retries = 10;
     int ret = -1;
     int ifindex;
     size_t i = 0;
@@ -446,7 +444,7 @@ virNetDevMacVLanTapOpen(const char *ifname,
  *
  * Returns 0 on success, -1 in case of fatal error.
  */
-static int
+int
 virNetDevMacVLanTapSetup(int *tapfd, size_t tapfdSize, bool vnet_hdr)
 {
     unsigned int features;
@@ -1040,7 +1038,7 @@ virNetDevMacVLanCreateWithVPortProfile(const char *ifnameRequested,
     }
 
     if (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP) {
-        if (virNetDevMacVLanTapOpen(ifnameCreated, tapfd, tapfdSize, 10) < 0)
+        if (virNetDevMacVLanTapOpen(ifnameCreated, tapfd, tapfdSize) < 0)
             goto disassociate_exit;
 
         if (virNetDevMacVLanTapSetup(tapfd, tapfdSize, vnet_hdr) < 0)
