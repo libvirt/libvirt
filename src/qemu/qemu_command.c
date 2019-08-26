@@ -3431,7 +3431,7 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
         useHugepage = false;
     } else if (useHugepage && pagesize == 0) {
         if (qemuBuildMemoryGetDefaultPagesize(cfg, &pagesize) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (!(props = virJSONValueNewObject()))
@@ -3443,70 +3443,70 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
         if (useHugepage &&
             (virJSONValueObjectAdd(props, "b:hugetlb", useHugepage, NULL) < 0 ||
              virJSONValueObjectAdd(props, "U:hugetlbsize", pagesize << 10, NULL) < 0)) {
-            goto cleanup;
+            return -1;
         }
 
         if (qemuBuildMemoryBackendPropsShare(props, memAccess) < 0)
-            goto cleanup;
+            return -1;
 
     } else if (useHugepage || mem->nvdimmPath || memAccess ||
         def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_FILE) {
 
         if (mem->nvdimmPath) {
             if (VIR_STRDUP(memPath, mem->nvdimmPath) < 0)
-                goto cleanup;
+                return -1;
             if (!priv->memPrealloc)
                 prealloc = true;
         } else if (useHugepage) {
             if (qemuGetDomainHupageMemPath(def, cfg, pagesize, &memPath) < 0)
-                goto cleanup;
+                return -1;
             if (!priv->memPrealloc)
                 prealloc = true;
         } else {
             /* We can have both pagesize and mem source. If that's the case,
              * prefer hugepages as those are more specific. */
             if (qemuGetMemoryBackingPath(def, cfg, mem->info.alias, &memPath) < 0)
-                goto cleanup;
+                return -1;
         }
 
         if (virJSONValueObjectAdd(props,
                                   "B:prealloc", prealloc,
                                   "s:mem-path", memPath,
                                   NULL) < 0)
-            goto cleanup;
+            return -1;
 
         if (!mem->nvdimmPath &&
             discard == VIR_TRISTATE_BOOL_YES) {
             if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE_DISCARD)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("this QEMU doesn't support memory discard"));
-                goto cleanup;
+                return -1;
             }
 
             if (virJSONValueObjectAdd(props,
                                       "B:discard-data", true,
                                       NULL) < 0)
-                goto cleanup;
+                return -1;
         }
 
         if (qemuBuildMemoryBackendPropsShare(props, memAccess) < 0)
-            goto cleanup;
+            return -1;
     } else {
         backendType = "memory-backend-ram";
     }
 
     if (virJSONValueObjectAdd(props, "U:size", mem->size * 1024, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (mem->alignsize) {
         if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE_ALIGN)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("nvdimm align property is not available "
                              "with this QEMU binary"));
-            goto cleanup;
+            return -1;
         }
         if (virJSONValueObjectAdd(props, "U:align", mem->alignsize * 1024, NULL) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (mem->nvdimmPmem) {
@@ -3514,10 +3514,10 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("nvdimm pmem property is not available "
                              "with this QEMU binary"));
-            goto cleanup;
+            return -1;
         }
         if (virJSONValueObjectAdd(props, "s:pmem", "on", NULL) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (mem->sourceNodes) {
@@ -3525,17 +3525,17 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
     } else {
         if (virDomainNumatuneMaybeGetNodeset(def->numa, priv->autoNodeset,
                                              &nodemask, mem->targetNode) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (nodemask) {
         if (!virNumaNodesetIsAvailable(nodemask))
-            goto cleanup;
+            return -1;
         if (virJSONValueObjectAdd(props,
                                   "m:host-nodes", nodemask,
                                   "S:policy", qemuNumaPolicyTypeToString(mode),
                                   NULL) < 0)
-            goto cleanup;
+            return -1;
     }
 
     /* If none of the following is requested... */
@@ -3555,19 +3555,19 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("this qemu doesn't support the "
                              "memory-backend-file object"));
-            goto cleanup;
+            return -1;
         } else if (STREQ(backendType, "memory-backend-ram") &&
                    !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("this qemu doesn't support the "
                              "memory-backend-ram object"));
-            goto cleanup;
+            return -1;
         } else if (STREQ(backendType, "memory-backend-memory") &&
                    !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_MEMORY_MEMFD)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("this qemu doesn't support the "
                              "memory-backend-memfd object"));
-            goto cleanup;
+            return -1;
         }
 
         ret = 0;
@@ -3577,7 +3577,6 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
                                                            &props)))
         ret = -1;
 
- cleanup:
     return ret;
 }
 
