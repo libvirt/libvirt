@@ -12224,7 +12224,7 @@ virDomainSetVcpu(virDomainPtr domain,
  * The reported data depends on the guest agent implementation. The information
  * is returned as an array of typed parameters containing the individual
  * parameters. The parameter name for each information field consists of a
- * dot-separated strign containing the name of the requested group followed by
+ * dot-separated string containing the name of the requested group followed by
  * a group-specific description of the statistic value.
  *
  * The information groups are enabled using the @types parameter which is a
