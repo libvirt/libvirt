@@ -12237,11 +12237,11 @@ virDomainSetVcpu(virDomainPtr domain,
  *
  *      "user.count" - the number of active users on this domain as an
  *                     unsigned int
- *      "user.<num>.name - username of the user as a string
- *      "user.<num>.domain - domain of the user as a string (may only be
- *                           present on certain guest types)
- *      "user.<num>.login-time - the login time of a user in milliseconds
- *                               since the epoch as unsigned long long
+ *      "user.<num>.name" - username of the user as a string
+ *      "user.<num>.domain" - domain of the user as a string (may only be
+ *                            present on certain guest types)
+ *      "user.<num>.login-time" - the login time of a user in milliseconds
+ *                                since the epoch as unsigned long long
  *
  * VIR_DOMAIN_GUEST_INFO_OS:
  *  Return information about the operating system running within the guest. The
@@ -12276,6 +12276,7 @@ virDomainSetVcpu(virDomainPtr domain,
  * VIR_DOMAIN_GUEST_INFO_FILESYSTEM:
  *  Returns inforamtion about the filesystems within the domain.  The typed
  *  parameter keys are in this format:
+ *
  *      "fs.count" - the number of filesystems defined on this domain
  *                   as an unsigned int
  *      "fs.<num>.mountpoint" - the path to the mount point for the filesystem
@@ -12287,6 +12288,12 @@ virDomainSetVcpu(virDomainPtr domain,
  *      "fs.<num>.disk.<num>.alias" - the device alias of the disk (e.g. sda)
  *      "fs.<num>.disk.<num>.serial" - the serial number of the disk
  *      "fs.<num>.disk.<num>.device" - the device node of the disk
+ *
+ * VIR_DOMAIN_GUEST_INFO_HOSTNAME:
+ *  Returns information about the hostname of the domain. The typed
+ *  parameter keys are in this format:
+ *
+ *      "hostname" - the hostname of the domain
  *
  * Using 0 for @types returns all information groups supported by the given
  * hypervisor.
