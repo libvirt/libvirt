@@ -414,6 +414,7 @@ qemuInterfaceEthernetConnect(virDomainDefPtr def,
     bool template_ifname = false;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     const char *tunpath = "/dev/net/tun";
+    const char *auditdev = tunpath;
 
     if (net->backend.tap) {
         tunpath = net->backend.tap;
@@ -424,6 +425,9 @@ qemuInterfaceEthernetConnect(virDomainDefPtr def,
         }
     }
 
+    if (virDomainNetIsVirtioModel(net))
+        tap_create_flags |= VIR_NETDEV_TAP_CREATE_VNET_HDR;
+
     if (!net->ifname ||
         STRPREFIX(net->ifname, VIR_NET_GENERATED_TAP_PREFIX) ||
         strchr(net->ifname, '%')) {
@@ -433,17 +437,10 @@ qemuInterfaceEthernetConnect(virDomainDefPtr def,
         /* avoid exposing vnet%d in getXMLDesc or error outputs */
         template_ifname = true;
     }
-
-    if (virDomainNetIsVirtioModel(net))
-        tap_create_flags |= VIR_NETDEV_TAP_CREATE_VNET_HDR;
-
     if (virNetDevTapCreate(&net->ifname, tunpath, tapfd, tapfdSize,
                            tap_create_flags) < 0) {
-        virDomainAuditNetDevice(def, net, tunpath, false);
         goto cleanup;
     }
-
-    virDomainAuditNetDevice(def, net, tunpath, true);
 
     /* The tap device's MAC address cannot match the MAC address
      * used by the guest. This results in "received packet on
@@ -477,11 +474,15 @@ qemuInterfaceEthernetConnect(virDomainDefPtr def,
         goto cleanup;
     }
 
+    virDomainAuditNetDevice(def, net, auditdev, true);
+
     ret = 0;
 
  cleanup:
     if (ret < 0) {
         size_t i;
+
+        virDomainAuditNetDevice(def, net, auditdev, false);
         for (i = 0; i < tapfdSize && tapfd[i] >= 0; i++)
             VIR_FORCE_CLOSE(tapfd[i]);
         if (template_ifname)
