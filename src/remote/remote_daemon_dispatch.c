@@ -6996,15 +6996,15 @@ remoteDispatchConnectGetAllDomainStats(virNetServerPtr server ATTRIBUTE_UNUSED,
             goto cleanup;
     }
 
-    if (nrecords > REMOTE_CONNECT_GET_ALL_DOMAIN_STATS_MAX) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Number of domain stats records is %d, "
-                         "which exceeds max limit: %d"),
-                       nrecords, REMOTE_CONNECT_GET_ALL_DOMAIN_STATS_MAX);
-        goto cleanup;
-    }
-
     if (nrecords) {
+        if (nrecords > REMOTE_DOMAIN_LIST_MAX) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Number of domain stats records is %d, "
+                             "which exceeds max limit: %d"),
+                           nrecords, REMOTE_DOMAIN_LIST_MAX);
+            goto cleanup;
+        }
+
         if (VIR_ALLOC_N(ret->retStats.retStats_val, nrecords) < 0)
             goto cleanup;
 
