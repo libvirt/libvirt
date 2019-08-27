@@ -7025,8 +7025,11 @@ remoteDispatchConnectGetAllDomainStats(virNetServerPtr server ATTRIBUTE_UNUSED,
     rv = 0;
 
  cleanup:
-    if (rv < 0)
+    if (rv < 0) {
         virNetMessageSaveError(rerr);
+        xdr_free((xdrproc_t)xdr_remote_connect_get_all_domain_stats_ret,
+                 (char *) ret);
+    }
 
     virDomainStatsRecordListFree(retStats);
     virObjectListFree(doms);
