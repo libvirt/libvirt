@@ -163,6 +163,7 @@ testVirHostdevPreparePCIHostdevs_unmanaged(void)
     if (virHostdevPreparePCIDevices(mgr, drv_name, dom_name, uuid,
                                     &hostdevs[0], 1, 0) == 0)
         return -1;
+    virResetLastError();
     CHECK_PCI_LIST_COUNT(mgr->activePCIHostdevs, active_count);
     CHECK_PCI_LIST_COUNT(mgr->inactivePCIHostdevs, inactive_count);
 
@@ -170,6 +171,7 @@ testVirHostdevPreparePCIHostdevs_unmanaged(void)
     if (virHostdevPreparePCIDevices(mgr, drv_name, "test_domain1", uuid,
                                     &hostdevs[1], 1, 0) == 0)
         return -1;
+    virResetLastError();
     CHECK_PCI_LIST_COUNT(mgr->activePCIHostdevs, active_count);
     CHECK_PCI_LIST_COUNT(mgr->inactivePCIHostdevs, inactive_count);
 
@@ -177,6 +179,7 @@ testVirHostdevPreparePCIHostdevs_unmanaged(void)
     if (virHostdevPreparePCIDevices(mgr, "test_driver1", dom_name, uuid,
                                     &hostdevs[2], 1, 0) == 0)
         return -1;
+    virResetLastError();
     CHECK_PCI_LIST_COUNT(mgr->activePCIHostdevs, active_count);
     CHECK_PCI_LIST_COUNT(mgr->inactivePCIHostdevs, inactive_count);
 
@@ -244,6 +247,7 @@ testVirHostdevPreparePCIHostdevs_managed(bool mixed)
     if (virHostdevPreparePCIDevices(mgr, drv_name, dom_name, uuid,
                                     &hostdevs[0], 1, 0) == 0)
         return -1;
+    virResetLastError();
     CHECK_PCI_LIST_COUNT(mgr->activePCIHostdevs, active_count);
     CHECK_PCI_LIST_COUNT(mgr->inactivePCIHostdevs, inactive_count);
 
@@ -251,6 +255,7 @@ testVirHostdevPreparePCIHostdevs_managed(bool mixed)
     if (virHostdevPreparePCIDevices(mgr, drv_name, "test_domain1", uuid,
                                     &hostdevs[1], 1, 0) == 0)
         return -1;
+    virResetLastError();
     CHECK_PCI_LIST_COUNT(mgr->activePCIHostdevs, active_count);
     CHECK_PCI_LIST_COUNT(mgr->inactivePCIHostdevs, inactive_count);
 
@@ -258,6 +263,7 @@ testVirHostdevPreparePCIHostdevs_managed(bool mixed)
     if (virHostdevPreparePCIDevices(mgr, "test_driver1", dom_name, uuid,
                                     &hostdevs[2], 1, 0) == 0)
         return -1;
+    virResetLastError();
     CHECK_PCI_LIST_COUNT(mgr->activePCIHostdevs, active_count);
     CHECK_PCI_LIST_COUNT(mgr->inactivePCIHostdevs, inactive_count);
 
