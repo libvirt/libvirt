@@ -5196,6 +5196,15 @@ qemuDomainMdevDefVFIOPCIValidate(const virDomainHostdevDef *hostdev,
 {
     const virDomainHostdevSubsysMediatedDev *dev;
 
+    /* VFIO-PCI does not support boot */
+    if (hostdev->info->bootIndex) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("booting from assigned devices is not "
+                         "supported by mediated devices of "
+                         "model vfio-pci"));
+        return -1;
+    }
+
     dev = &hostdev->source.subsys.u.mdev;
     if (dev->display == VIR_TRISTATE_SWITCH_ABSENT)
         return 0;
@@ -5229,11 +5238,20 @@ qemuDomainMdevDefVFIOPCIValidate(const virDomainHostdevDef *hostdev,
 
 
 static int
-qemuDomainMdevDefVFIOAPValidate(const virDomainHostdevDef *hostdev ATTRIBUTE_UNUSED,
+qemuDomainMdevDefVFIOAPValidate(const virDomainHostdevDef *hostdev,
                                 const virDomainDef *def)
 {
     size_t i;
     bool vfioap_found = false;
+
+    /* VFIO-AP does not support boot */
+    if (hostdev->info->bootIndex) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("booting from assigned devices is not "
+                         "supported by mediated devices of "
+                         "model vfio-ap"));
+        return -1;
+    }
 
     /* VFIO-AP is restricted to a single mediated device only */
     for (i = 0; i < def->nhostdevs; i++) {
@@ -5310,12 +5328,6 @@ qemuDomainDeviceDefValidateHostdev(const virDomainHostdevDef *hostdev,
             }
             break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
-            if (hostdev->info->bootIndex) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("booting from assigned devices is not "
-                                 "supported by mediated devices"));
-                return -1;
-            }
             return qemuDomainMdevDefValidate(hostdev, def, qemuCaps);
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
         default:

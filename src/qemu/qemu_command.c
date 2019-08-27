@@ -5375,6 +5375,7 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
     return virBufferContentAndReset(&buf);
 }
 
+
 char *
 qemuBuildHostdevMediatedDevStr(const virDomainDef *def,
                                virDomainHostdevDefPtr dev,
@@ -5402,6 +5403,9 @@ qemuBuildHostdevMediatedDevStr(const virDomainDef *def,
 
     if (qemuBuildDeviceAddressStr(&buf, def, dev->info, qemuCaps) < 0)
         return NULL;
+
+    if (dev->info->bootIndex)
+        virBufferAsprintf(&buf, ",bootindex=%u", dev->info->bootIndex);
 
     if (virBufferCheckError(&buf) < 0)
         return NULL;
