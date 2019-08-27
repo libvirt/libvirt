@@ -713,6 +713,333 @@ Configure a domain to be automatically started at boot.
 
 The option I<--disable> disables autostarting.
 
+=item B<blkdeviotune> I<domain> I<device>
+[[I<--config>] [I<--live>] | [I<--current>]]
+[[I<total-bytes-sec>] | [I<read-bytes-sec>] [I<write-bytes-sec>]]
+[[I<total-iops-sec>] | [I<read-iops-sec>] [I<write-iops-sec>]]
+[[I<total-bytes-sec-max>] | [I<read-bytes-sec-max>] [I<write-bytes-sec-max>]]
+[[I<total-iops-sec-max>] | [I<read-iops-sec-max>] [I<write-iops-sec-max>]]
+[[I<total-bytes-sec-max-length>] |
+[I<read-bytes-sec-max-length>] [I<write-bytes-sec-max-length>]]
+[[I<total-iops-sec-max-length>] |
+[I<read-iops-sec-max-length>] [I<write-iops-sec-max-length>]]
+[I<size-iops-sec>] [I<group-name>]
+
+Set or query the block disk io parameters for a block device of I<domain>.
+I<device> specifies a unique target name (<target dev='name'/>) or source
+file (<source file='name'/>) for one of the disk devices attached to
+I<domain> (see also B<domblklist> for listing these names).
+
+If no limit is specified, it will query current I/O limits setting.
+Otherwise, alter the limits with these flags:
+I<--total-bytes-sec> specifies total throughput limit as a scaled integer, the
+default being bytes per second if no suffix is specified.
+I<--read-bytes-sec> specifies read throughput limit as a scaled integer, the
+default being bytes per second if no suffix is specified.
+I<--write-bytes-sec> specifies write throughput limit as a scaled integer, the
+default being bytes per second if no suffix is specified.
+I<--total-iops-sec> specifies total I/O operations limit per second.
+I<--read-iops-sec> specifies read I/O operations limit per second.
+I<--write-iops-sec> specifies write I/O operations limit per second.
+I<--total-bytes-sec-max> specifies maximum total throughput limit as a scaled
+integer, the default being bytes per second if no suffix is specified
+I<--read-bytes-sec-max> specifies maximum read throughput limit as a scaled
+integer, the default being bytes per second if no suffix is specified.
+I<--write-bytes-sec-max> specifies maximum write throughput limit as a scaled
+integer, the default being bytes per second if no suffix is specified.
+I<--total-iops-sec-max> specifies maximum total I/O operations limit per second.
+I<--read-iops-sec-max> specifies maximum read I/O operations limit per second.
+I<--write-iops-sec-max> specifies maximum write I/O operations limit per second.
+I<--total-bytes-sec-max-length> specifies duration in seconds to allow maximum
+total throughput limit.
+I<--read-bytes-sec-max-length> specifies duration in seconds to allow maximum
+read throughput limit.
+I<--write-bytes-sec-max-length> specifies duration in seconds to allow maximum
+write throughput limit.
+I<--total-iops-sec-max-length> specifies duration in seconds to allow maximum
+total I/O operations limit.
+I<--read-iops-sec-max-length> specifies duration in seconds to allow maximum
+read I/O operations limit.
+I<--write-iops-sec-max-length> specifies duration in seconds to allow maximum
+write I/O operations limit.
+I<--size-iops-sec> specifies size I/O operations limit per second.
+I<--group-name> specifies group name to share I/O quota between multiple drives.
+For a qemu domain, if no name is provided, then the default is to have a single
+group for each I<device>.
+
+Older versions of virsh only accepted these options with underscore
+instead of dash, as in I<--total_bytes_sec>.
+
+Bytes and iops values are independent, but setting only one value (such
+as --read-bytes-sec) resets the other two in that category to unlimited.
+An explicit 0 also clears any limit.  A non-zero value for a given total
+cannot be mixed with non-zero values for read or write.
+
+It is up to the hypervisor to determine how to handle the length values.
+For the qemu hypervisor, if an I/O limit value or maximum value is set,
+then the default value of 1 second will be displayed. Supplying a 0 will
+reset the value back to the default.
+
+If I<--live> is specified, affect a running guest.
+If I<--config> is specified, affect the next boot of a persistent guest.
+If I<--current> is specified, affect the current guest state.
+When setting the disk io parameters both I<--live> and I<--config> flags may be
+given, but I<--current> is exclusive. For querying only one of I<--live>,
+I<--config> or I<--current> can be specified. If no flag is specified, behavior
+is different depending on hypervisor.
+
+=item B<blkiotune> I<domain> [I<--weight> B<weight>]
+[I<--device-weights> B<device-weights>]
+[I<--device-read-iops-sec> B<device-read-iops-sec>]
+[I<--device-write-iops-sec> B<device-write-iops-sec>]
+[I<--device-read-bytes-sec> B<device-read-bytes-sec>]
+[I<--device-write-bytes-sec> B<device-write-bytes-sec>]
+[[I<--config>] [I<--live>] | [I<--current>]]
+
+Display or set the blkio parameters. QEMU/KVM supports I<--weight>.
+I<--weight> is in range [100, 1000]. After kernel 2.6.39, the value
+could be in the range [10, 1000].
+
+B<device-weights> is a single string listing one or more device/weight
+pairs, in the format of /path/to/device,weight,/path/to/device,weight.
+Each weight is in the range [100, 1000], [10, 1000] after kernel 2.6.39,
+or the value 0 to remove that device from per-device listings.
+Only the devices listed in the string are modified;
+any existing per-device weights for other devices remain unchanged.
+
+B<device-read-iops-sec> is a single string listing one or more device/read_iops_sec
+pairs, int the format of /path/to/device,read_iops_sec,/path/to/device,read_iops_sec.
+Each read_iops_sec is a number which type is unsigned int, value 0 to remove that
+device from per-device listing.
+Only the devices listed in the string are modified;
+any existing per-device read_iops_sec for other devices remain unchanged.
+
+B<device-write-iops-sec> is a single string listing one or more device/write_iops_sec
+pairs, int the format of /path/to/device,write_iops_sec,/path/to/device,write_iops_sec.
+Each write_iops_sec is a number which type is unsigned int, value 0 to remove that
+device from per-device listing.
+Only the devices listed in the string are modified;
+any existing per-device write_iops_sec for other devices remain unchanged.
+
+B<device-read-bytes-sec> is a single string listing one or more device/read_bytes_sec
+pairs, int the format of /path/to/device,read_bytes_sec,/path/to/device,read_bytes_sec.
+Each read_bytes_sec is a number which type is unsigned long long, value 0 to remove
+that device from per-device listing.
+Only the devices listed in the string are modified;
+any existing per-device read_bytes_sec for other devices remain unchanged.
+
+B<device-write-bytes-sec> is a single string listing one or more device/write_bytes_sec
+pairs, int the format of /path/to/device,write_bytes_sec,/path/to/device,write_bytes_sec.
+Each write_bytes_sec is a number which type is unsigned long long, value 0 to remove
+that device from per-device listing.
+Only the devices listed in the string are modified;
+any existing per-device write_bytes_sec for other devices remain unchanged.
+
+If I<--live> is specified, affect a running guest.
+If I<--config> is specified, affect the next boot of a persistent guest.
+If I<--current> is specified, affect the current guest state.
+Both I<--live> and I<--config> flags may be given, but I<--current> is
+exclusive. If no flag is specified, behavior is different depending
+on hypervisor.
+
+=item B<blockcommit> I<domain> I<path> [I<bandwidth>] [I<--bytes>]
+[I<base>] [I<--shallow>] [I<top>] [I<--delete>] [I<--keep-relative>]
+[I<--wait> [I<--async>] [I<--verbose>]] [I<--timeout> B<seconds>]
+[I<--active>] [{I<--pivot> | I<--keep-overlay>}]
+
+Reduce the length of a backing image chain, by committing changes at the
+top of the chain (snapshot or delta files) into backing images.  By
+default, this command attempts to flatten the entire chain.  If I<base>
+and/or I<top> are specified as files within the backing chain, then the
+operation is constrained to committing just that portion of the chain;
+I<--shallow> can be used instead of I<base> to specify the immediate
+backing file of the resulting top image to be committed.  The files
+being committed are rendered invalid, possibly as soon as the operation
+starts; using the I<--delete> flag will attempt to remove these invalidated
+files at the successful completion of the commit operation. When the
+I<--keep-relative> flag is used, the backing file paths will be kept relative.
+
+When I<top> is omitted or specified as the active image, it is also
+possible to specify I<--active> to trigger a two-phase active commit. In
+the first phase, I<top> is copied into I<base> and the job can only be
+canceled, with top still containing data not yet in base. In the second
+phase, I<top> and I<base> remain identical until a call to B<blockjob>
+with the I<--abort> flag (keeping top as the active image that tracks
+changes from that point in time) or the I<--pivot> flag (making base
+the new active image and invalidating top).
+
+By default, this command returns as soon as possible, and data for
+the entire disk is committed in the background; the progress of the
+operation can be checked with B<blockjob>.  However, if I<--wait> is
+specified, then this command will block until the operation completes
+(or for I<--active>, enters the second phase), or until the operation
+is canceled because the optional I<timeout> in seconds elapses
+or SIGINT is sent (usually with C<Ctrl-C>).  Using I<--verbose> along
+with I<--wait> will produce periodic status updates.  If job cancellation
+is triggered, I<--async> will return control to the user as fast as
+possible, otherwise the command may continue to block a little while
+longer until the job is done cleaning up.  Using I<--pivot> is shorthand
+for combining I<--active> I<--wait> with an automatic B<blockjob>
+I<--pivot>; and using I<--keep-overlay> is shorthand for combining
+I<--active> I<--wait> with an automatic B<blockjob> I<--abort>.
+
+I<path> specifies fully-qualified path of the disk; it corresponds
+to a unique target name (<target dev='name'/>) or source file (<source
+file='name'/>) for one of the disk devices attached to I<domain> (see
+also B<domblklist> for listing these names).
+I<bandwidth> specifies copying bandwidth limit in MiB/s, although for
+qemu, it may be non-zero only for an online domain. For further information
+on the I<bandwidth> argument see the corresponding section for the B<blockjob>
+command.
+
+=item B<blockcopy> I<domain> I<path> { I<dest> [I<format>] [I<--blockdev>]
+| I<--xml> B<file> } [I<--shallow>] [I<--reuse-external>] [I<bandwidth>]
+[I<--wait> [I<--async>] [I<--verbose>]] [{I<--pivot> | I<--finish>}]
+[I<--timeout> B<seconds>] [I<granularity>] [I<buf-size>] [I<--bytes>]
+[I<--transient-job>]
+
+Copy a disk backing image chain to a destination.  Either I<dest> as
+the destination file name, or I<--xml> with the name of an XML file containing
+a top-level <disk> element describing the destination, must be present.
+Additionally, if I<dest> is given, I<format> should be specified to declare
+the format of the destination (if I<format> is omitted, then libvirt
+will reuse the format of the source, or with I<--reuse-external> will
+be forced to probe the destination format, which could be a potential
+security hole).  The command supports I<--raw> as a boolean flag synonym for
+I<--format=raw>.  When using I<dest>, the destination is treated as a regular
+file unless I<--blockdev> is used to signal that it is a block device. By
+default, this command flattens the entire chain; but if I<--shallow> is
+specified, the copy shares the backing chain.
+
+If I<--reuse-external> is specified, then the destination must exist and have
+sufficient space to hold the copy. If I<--shallow> is used in
+conjunction with I<--reuse-external> then the pre-created image must have
+guest visible contents identical to guest visible contents of the backing
+file of the original image. This may be used to modify the backing file
+names on the destination.
+
+By default, the copy job runs in the background, and consists of two
+phases.  Initially, the job must copy all data from the source, and
+during this phase, the job can only be canceled to revert back to the
+source disk, with no guarantees about the destination.  After this phase
+completes, both the source and the destination remain mirrored until a
+call to B<blockjob> with the I<--abort> and I<--pivot> flags pivots over
+to the copy, or a call without I<--pivot> leaves the destination as a
+faithful copy of that point in time.  However, if I<--wait> is specified,
+then this command will block until the mirroring phase begins, or cancel
+the operation if the optional I<timeout> in seconds elapses or SIGINT is
+sent (usually with C<Ctrl-C>).  Using I<--verbose> along with I<--wait>
+will produce periodic status updates.  Using I<--pivot> (similar to
+B<blockjob> I<--pivot>) or I<--finish> (similar to B<blockjob> I<--abort>)
+implies I<--wait>, and will additionally end the job cleanly rather than
+leaving things in the mirroring phase.  If job cancellation is triggered
+by timeout or by I<--finish>, I<--async> will return control to the user
+as fast as possible, otherwise the command may continue to block a little
+while longer until the job has actually cancelled.
+
+I<path> specifies fully-qualified path of the disk.
+I<bandwidth> specifies copying bandwidth limit in MiB/s. Specifying a negative
+value is interpreted as an unsigned long long value that might be essentially
+unlimited, but more likely would overflow; it is safer to use 0 for that
+purpose. For further information on the I<bandwidth> argument see the
+corresponding section for the B<blockjob> command.
+Specifying I<granularity> allows fine-tuning of the granularity that will be
+copied when a dirty region is detected; larger values trigger less
+I/O overhead but may end up copying more data overall (the default value is
+usually correct); hypervisors may restrict this to be a power of two or fall
+within a certain range. Specifying I<buf-size> will control how much data can
+be simultaneously in-flight during the copy; larger values use more memory but
+may allow faster completion (the default value is usually correct).
+
+I<--transient-job> allows specifying that the user does not require the job to
+be recovered if the VM crashes or is turned off before the job completes. This
+flag removes the restriction of copy jobs to transient domains if that
+restriction is applied by the hypervisor.
+
+=item B<blockjob> I<domain> I<path> { [I<--abort>] [I<--async>] [I<--pivot>] |
+[I<--info>] [I<--raw>] [I<--bytes>] | [I<bandwidth>] }
+
+Manage active block operations.  There are three mutually-exclusive modes:
+I<--info>, I<bandwidth>, and I<--abort>.  I<--async> and I<--pivot> imply
+abort mode; I<--raw> implies info mode; and if no mode was given, I<--info>
+mode is assumed.
+
+I<path> specifies fully-qualified path of the disk; it corresponds
+to a unique target name (<target dev='name'/>) or source file (<source
+file='name'/>) for one of the disk devices attached to I<domain> (see
+also B<domblklist> for listing these names).
+
+In I<--abort> mode, the active job on the specified disk will
+be aborted.  If I<--async> is also specified, this command will return
+immediately, rather than waiting for the cancellation to complete.  If
+I<--pivot> is specified, this requests that an active copy or active
+commit job be pivoted over to the new image.
+
+In I<--info> mode, the active job information on the specified
+disk will be printed.  By default, the output is a single human-readable
+summary line; this format may change in future versions.  Adding
+I<--raw> lists each field of the struct, in a stable format.  If the
+I<--bytes> flag is set, then the command errors out if the server could
+not supply bytes/s resolution; when omitting the flag, raw output is
+listed in MiB/s and human-readable output automatically selects the
+best resolution supported by the server.
+
+I<bandwidth> can be used to set bandwidth limit for the active job in MiB/s.
+If I<--bytes> is specified then the bandwidth value is interpreted in
+bytes/s. Specifying a negative value is interpreted as an unsigned long
+value or essentially unlimited. The hypervisor can choose whether to
+reject the value or convert it to the maximum value allowed. Optionally a
+scaled positive number may be used as bandwidth (see B<NOTES> above). Using
+I<--bytes> with a scaled value permits a finer granularity to be selected.
+A scaled value used without I<--bytes> will be rounded down to MiB/s. Note
+that the I<--bytes> may be unsupported by the hypervisor.
+
+=item B<blockpull> I<domain> I<path> [I<bandwidth>] [I<--bytes>] [I<base>]
+[I<--wait> [I<--verbose>] [I<--timeout> B<seconds>] [I<--async>]]
+[I<--keep-relative>]
+
+Populate a disk from its backing image chain. By default, this command
+flattens the entire chain; but if I<base> is specified, containing the
+name of one of the backing files in the chain, then that file becomes
+the new backing file and only the intermediate portion of the chain is
+pulled.  Once all requested data from the backing image chain has been
+pulled, the disk no longer depends on that portion of the backing chain.
+
+By default, this command returns as soon as possible, and data for
+the entire disk is pulled in the background; the progress of the
+operation can be checked with B<blockjob>.  However, if I<--wait> is
+specified, then this command will block until the operation completes,
+or cancel the operation if the optional I<timeout> in seconds elapses
+or SIGINT is sent (usually with C<Ctrl-C>).  Using I<--verbose> along
+with I<--wait> will produce periodic status updates.  If job cancellation
+is triggered, I<--async> will return control to the user as fast as
+possible, otherwise the command may continue to block a little while
+longer until the job is done cleaning up.
+
+Using the I<--keep-relative> flag will keep the backing chain names
+relative.
+
+I<path> specifies fully-qualified path of the disk; it corresponds
+to a unique target name (<target dev='name'/>) or source file (<source
+file='name'/>) for one of the disk devices attached to I<domain> (see
+also B<domblklist> for listing these names).
+I<bandwidth> specifies copying bandwidth limit in MiB/s. For further information
+on the I<bandwidth> argument see the corresponding section for the B<blockjob>
+command.
+
+=item B<blockresize> I<domain> I<path> I<size>
+
+Resize a block device of domain while the domain is running, I<path>
+specifies the absolute path of the block device; it corresponds
+to a unique target name (<target dev='name'/>) or source file (<source
+file='name'/>) for one of the disk devices attached to I<domain> (see
+also B<domblklist> for listing these names).
+
+I<size> is a scaled integer (see B<NOTES> above) which defaults to KiB
+(blocks of 1024 bytes) if there is no suffix.  You must use a suffix of
+"B" to get bytes (note that for historical reasons, this differs from
+B<vol-resize> which defaults to bytes without a suffix).
+
 =item B<console> I<domain> [I<devname>] [I<--safe>] [I<--force>]
 
 Connect the virtual serial console for the guest. The optional
@@ -725,6 +1052,14 @@ if the driver supports safe console handling. This flag specifies that
 the server has to ensure exclusive access to console devices. Optionally
 the I<--force> flag may be specified, requesting to disconnect any existing
 sessions, such as in a case of a broken connection.
+
+=item B<cpu-stats> I<domain> [I<--total>] [I<start>] [I<count>]
+
+Provide cpu statistics information of a domain. The domain should
+be running. Default it shows stats for all CPUs, and a total. Use
+I<--total> for only the total stats, I<start> for only the per-cpu
+stats of the CPUs from I<start>, I<count> for only I<count> CPUs'
+stats.
 
 =item B<create> I<FILE> [I<--console>] [I<--paused>] [I<--autodestroy>]
 [I<--pass-fds N,M,...>] [I<--validate>]
@@ -822,6 +1157,35 @@ If I<--graceful> is specified, don't resort to extreme measures
 (e.g. SIGKILL) when the guest doesn't stop after a reasonable timeout;
 return an error instead.
 
+=item B<domblkerror> I<domain>
+
+Show errors on block devices.  This command usually comes handy when
+B<domstate> command says that a domain was paused due to I/O error.
+The B<domblkerror> command lists all block devices in error state and
+the error seen on each of them.
+
+=item B<domblkinfo> I<domain> [I<block-device> I<--all>] [I<--human>]
+
+Get block device size info for a domain.  A I<block-device> corresponds
+to a unique target name (<target dev='name'/>) or source file (<source
+file='name'/>) for one of the disk devices attached to I<domain> (see
+also B<domblklist> for listing these names). If I<--human> is set, the
+output will have a human readable output.
+If I<--all> is set, the output will be a table showing all block devices
+size info associated with I<domain>.
+The I<--all> option takes precedence of the others.
+
+=item B<domblklist> I<domain> [I<--inactive>] [I<--details>]
+
+Print a table showing the brief information of all block devices
+associated with I<domain>. If I<--inactive> is specified, query the
+block devices that will be used on the next boot, rather than those
+currently in use by a running domain. If I<--details> is specified,
+disk type and device value will also be printed. Other contexts
+that require a block device name (such as I<domblkinfo> or
+I<snapshot-create> for disk snapshots) will accept either target
+or unique source names printed by this command.
+
 =item B<domblkstat> I<domain> [I<block-device>] [I<--human>]
 
 Get device block stats for a running domain.  A I<block-device> corresponds
@@ -850,6 +1214,99 @@ B<Explanation of fields> (fields appear in the following order):
     <-- other fields provided by hypervisor -->
 
 
+=item B<domblkthreshold> I<domain> I<dev> I<threshold>
+
+Set the threshold value for delivering the block-threshold event. I<dev>
+specifies the disk device target or backing chain element of given device using
+the 'target[1]' syntax. I<threshold> is a scaled value of the offset. If the
+block device should write beyond that offset the event will be delivered.
+
+=item B<domcontrol> I<domain>
+
+Returns state of an interface to VMM used to control a domain.  For
+states other than "ok" or "error" the command also prints number of
+seconds elapsed since the control interface entered its current state.
+
+=item B<domdisplay> I<domain> [I<--include-password>]
+[[I<--type>] B<type>] [I<--all>]
+
+Output a URI which can be used to connect to the graphical display of the
+domain via VNC, SPICE or RDP.  The particular graphical display type can
+be selected using the B<type> parameter (e.g. "vnc", "spice", "rdp").  If
+I<--include-password> is specified, the SPICE channel password will be
+included in the URI. If I<--all> is specified, then all show all possible
+graphical displays, for a VM could have more than one graphical displays.
+
+=item B<domfsfreeze> I<domain> [[I<--mountpoint>] B<mountpoint>...]
+
+Freeze mounted filesystems within a running domain to prepare for consistent
+snapshots.
+
+The I<--mountpoint> option takes a parameter B<mountpoint>, which is a
+mount point path of the filesystem to be frozen. This option can occur
+multiple times. If this is not specified, every mounted filesystem is frozen.
+
+Note: B<snapshot-create> command has a I<--quiesce> option to freeze
+and thaw the filesystems automatically to keep snapshots consistent.
+B<domfsfreeze> command is only needed when a user wants to utilize the
+native snapshot features of storage devices not supported by libvirt.
+
+=item B<domfsinfo> I<domain>
+
+Show a list of mounted filesystems within the running domain. The list contains
+mountpoints, names of a mounted device in the guest, filesystem types, and
+unique target names used in the domain XML (<target dev='name'/>).
+
+Note that this command requires a guest agent configured and running in the
+domain's guest OS.
+
+=item B<domfsthaw> I<domain> [[I<--mountpoint>] B<mountpoint>...]
+
+Thaw mounted filesystems within a running domain, which have been frozen by
+domfsfreeze command.
+
+The I<--mountpoint> option takes a parameter B<mountpoint>, which is a
+mount point path of the filesystem to be thawed. This option can occur
+multiple times. If this is not specified, every mounted filesystem is thawed.
+
+=item B<domfstrim> I<domain> [I<--minimum> B<bytes>]
+[I<--mountpoint mountPoint>]
+
+Issue a fstrim command on all mounted filesystems within a running
+domain. It discards blocks which are not in use by the filesystem.
+If I<--minimum> B<bytes> is specified, it tells guest kernel length
+of contiguous free range. Smaller than this may be ignored (this is
+a hint and the guest may not respect it). By increasing this value,
+the fstrim operation will complete more quickly for filesystems
+with badly fragmented free space, although not all blocks will
+be discarded.  The default value is zero, meaning "discard
+every free block". Moreover, if a user wants to trim only one mount
+point, it can be specified via optional I<--mountpoint> parameter.
+
+=item B<domhostname> I<domain>
+
+Returns the hostname of a domain, if the hypervisor makes it available.
+
+=item B<domid> I<domain-name-or-uuid>
+
+Convert a domain name (or UUID) to a domain id
+
+=item B<domif-getlink> I<domain> I<interface-device> [I<--config>]
+
+Query link state of the domain's virtual interface. If I<--config>
+is specified, query the persistent configuration, for compatibility
+purposes, I<--persistent> is alias of I<--config>.
+
+I<interface-device> can be the interface's target name or the MAC address.
+
+=item B<domif-setlink> I<domain> I<interface-device> I<state> [I<--config>]
+
+Modify link state of the domain's virtual interface. Possible values for
+state are "up" and "down". If I<--config> is specified, only the persistent
+configuration of the domain is modified, for compatibility purposes,
+I<--persistent> is alias of I<--config>.
+I<interface-device> can be the interface's target name or the MAC address.
+
 =item B<domifaddr> I<domain> [I<interface>] [I<--full>]
               [I<--source lease|agent|arp>]
 
@@ -870,6 +1327,15 @@ addresses, currently 'lease' to read DHCP leases, 'agent' to query
 the guest OS via an agent, or 'arp' to get IP from host's arp tables.
 If unspecified, 'lease' is the default.
 
+=item B<domiflist> I<domain> [I<--inactive>]
+
+Print a table showing the brief information of all virtual interfaces
+associated with I<domain>. If I<--inactive> is specified, query the
+virtual interfaces that will be used on the next boot, rather than those
+currently in use by a running domain. Other contexts that require a MAC
+address of virtual interface (such as I<detach-interface> or
+I<domif-setlink>) will accept the MAC address printed by this command.
+
 =item B<domifstat> I<domain> I<interface-device>
 
 Get network interface stats for a running domain. The network
@@ -878,22 +1344,6 @@ physical source interface. This does not include, for example, a
 'user' interface type since it is a virtual LAN with NAT to the
 outside world. I<interface-device> can be the interface target by
 name or MAC address.
-
-=item B<domif-setlink> I<domain> I<interface-device> I<state> [I<--config>]
-
-Modify link state of the domain's virtual interface. Possible values for
-state are "up" and "down". If I<--config> is specified, only the persistent
-configuration of the domain is modified, for compatibility purposes,
-I<--persistent> is alias of I<--config>.
-I<interface-device> can be the interface's target name or the MAC address.
-
-=item B<domif-getlink> I<domain> I<interface-device> [I<--config>]
-
-Query link state of the domain's virtual interface. If I<--config>
-is specified, query the persistent configuration, for compatibility
-purposes, I<--persistent> is alias of I<--config>.
-
-I<interface-device> can be the interface's target name or the MAC address.
 
 =item B<domiftune> I<domain> I<interface-device>
 [[I<--config>] [I<--live>] | [I<--current>]]
@@ -921,6 +1371,24 @@ If I<--current> is specified, affect the current guest state.
 Both I<--live> and I<--config> flags may be given, but I<--current> is
 exclusive. If no flag is specified, behavior is different depending
 on hypervisor.
+
+=item B<dominfo> I<domain>
+
+Returns basic information about the domain.
+
+=item B<domjobabort> I<domain>
+
+Abort the currently running domain job.
+
+=item B<domjobinfo> I<domain> [I<--completed>]
+
+Returns information about jobs running on a domain. I<--completed> tells
+virsh to return information about a recently finished job. Statistics of
+a completed job are automatically destroyed once read or when libvirtd
+is restarted. Note that time information returned for completed
+migrations may be completely irrelevant unless both source and
+destination hosts have synchronized time (i.e., NTP daemon is running
+on both of them).
 
 =item B<dommemstat> I<domain> [I<--period> B<seconds>]
 [[I<--config>] [I<--live>] | [I<--current>]]
@@ -967,34 +1435,51 @@ Both I<--live> and I<--config> flags may be given, but I<--current> is
 exclusive. If no flag is specified, behavior is different depending
 on the guest state.
 
-=item B<domblkerror> I<domain>
+=item B<domname> I<domain-id-or-uuid>
 
-Show errors on block devices.  This command usually comes handy when
-B<domstate> command says that a domain was paused due to I/O error.
-The B<domblkerror> command lists all block devices in error state and
-the error seen on each of them.
+Convert a domain Id (or UUID) to domain name
 
-=item B<domblkinfo> I<domain> [I<block-device> I<--all>] [I<--human>]
+=item B<dompmsuspend> I<domain> I<target> [I<--duration>]
 
-Get block device size info for a domain.  A I<block-device> corresponds
-to a unique target name (<target dev='name'/>) or source file (<source
-file='name'/>) for one of the disk devices attached to I<domain> (see
-also B<domblklist> for listing these names). If I<--human> is set, the
-output will have a human readable output.
-If I<--all> is set, the output will be a table showing all block devices
-size info associated with I<domain>.
-The I<--all> option takes precedence of the others.
+Suspend a running domain into one of these states (possible I<target>
+values):
+    mem equivalent of S3 ACPI state
+    disk equivalent of S4 ACPI state
+    hybrid RAM is saved to disk but not powered off
 
-=item B<domblklist> I<domain> [I<--inactive>] [I<--details>]
+The I<--duration> argument specifies number of seconds before the domain is
+woken up after it was suspended (see also B<dompmwakeup>). Default is 0 for
+unlimited suspend time. (This feature isn't currently supported by any
+hypervisor driver and 0 should be used.).
 
-Print a table showing the brief information of all block devices
-associated with I<domain>. If I<--inactive> is specified, query the
-block devices that will be used on the next boot, rather than those
-currently in use by a running domain. If I<--details> is specified,
-disk type and device value will also be printed. Other contexts
-that require a block device name (such as I<domblkinfo> or
-I<snapshot-create> for disk snapshots) will accept either target
-or unique source names printed by this command.
+Note that this command requires a guest agent configured and running in the
+domain's guest OS.
+
+Beware that at least for QEMU, the domain's process will be terminated when
+target disk is used and a new process will be launched when libvirt is asked
+to wake up the domain. As a result of this, any runtime changes, such as
+device hotplug or memory settings, are lost unless such changes were made
+with I<--config> flag.
+
+
+=item B<dompmwakeup> I<domain>
+
+Wakeup a domain from pmsuspended state (either suspended by dompmsuspend or
+from the guest itself). Injects a wakeup into the guest that is in pmsuspended
+state, rather than waiting for the previously requested duration (if any) to
+elapse. This operation doesn't not necessarily fail if the domain is running.
+
+=item B<domrename> I<domain> I<new-name>
+
+Rename a domain. This command changes current domain name to the new name
+specified in the second argument.
+
+B<Note>: Domain must be inactive and without snapshots or checkpoints.
+
+=item B<domstate> I<domain> [I<--reason>]
+
+Returns state about a domain.  I<--reason> tells virsh to also print
+reason for the state.
 
 =item B<domstats> [I<--raw>] [I<--enforce>] [I<--backing>] [I<--nowait>]
 [I<--state>] [I<--cpu-total>] [I<--balloon>] [I<--vcpu>] [I<--interface>]
@@ -1196,404 +1681,6 @@ This may cause unnecessary delay in delivering stats. Using
 I<--nowait> suppresses this behaviour. On the other hand
 some statistics might be missing for such domain.
 
-=item B<domiflist> I<domain> [I<--inactive>]
-
-Print a table showing the brief information of all virtual interfaces
-associated with I<domain>. If I<--inactive> is specified, query the
-virtual interfaces that will be used on the next boot, rather than those
-currently in use by a running domain. Other contexts that require a MAC
-address of virtual interface (such as I<detach-interface> or
-I<domif-setlink>) will accept the MAC address printed by this command.
-
-=item B<blockcommit> I<domain> I<path> [I<bandwidth>] [I<--bytes>]
-[I<base>] [I<--shallow>] [I<top>] [I<--delete>] [I<--keep-relative>]
-[I<--wait> [I<--async>] [I<--verbose>]] [I<--timeout> B<seconds>]
-[I<--active>] [{I<--pivot> | I<--keep-overlay>}]
-
-Reduce the length of a backing image chain, by committing changes at the
-top of the chain (snapshot or delta files) into backing images.  By
-default, this command attempts to flatten the entire chain.  If I<base>
-and/or I<top> are specified as files within the backing chain, then the
-operation is constrained to committing just that portion of the chain;
-I<--shallow> can be used instead of I<base> to specify the immediate
-backing file of the resulting top image to be committed.  The files
-being committed are rendered invalid, possibly as soon as the operation
-starts; using the I<--delete> flag will attempt to remove these invalidated
-files at the successful completion of the commit operation. When the
-I<--keep-relative> flag is used, the backing file paths will be kept relative.
-
-When I<top> is omitted or specified as the active image, it is also
-possible to specify I<--active> to trigger a two-phase active commit. In
-the first phase, I<top> is copied into I<base> and the job can only be
-canceled, with top still containing data not yet in base. In the second
-phase, I<top> and I<base> remain identical until a call to B<blockjob>
-with the I<--abort> flag (keeping top as the active image that tracks
-changes from that point in time) or the I<--pivot> flag (making base
-the new active image and invalidating top).
-
-By default, this command returns as soon as possible, and data for
-the entire disk is committed in the background; the progress of the
-operation can be checked with B<blockjob>.  However, if I<--wait> is
-specified, then this command will block until the operation completes
-(or for I<--active>, enters the second phase), or until the operation
-is canceled because the optional I<timeout> in seconds elapses
-or SIGINT is sent (usually with C<Ctrl-C>).  Using I<--verbose> along
-with I<--wait> will produce periodic status updates.  If job cancellation
-is triggered, I<--async> will return control to the user as fast as
-possible, otherwise the command may continue to block a little while
-longer until the job is done cleaning up.  Using I<--pivot> is shorthand
-for combining I<--active> I<--wait> with an automatic B<blockjob>
-I<--pivot>; and using I<--keep-overlay> is shorthand for combining
-I<--active> I<--wait> with an automatic B<blockjob> I<--abort>.
-
-I<path> specifies fully-qualified path of the disk; it corresponds
-to a unique target name (<target dev='name'/>) or source file (<source
-file='name'/>) for one of the disk devices attached to I<domain> (see
-also B<domblklist> for listing these names).
-I<bandwidth> specifies copying bandwidth limit in MiB/s, although for
-qemu, it may be non-zero only for an online domain. For further information
-on the I<bandwidth> argument see the corresponding section for the B<blockjob>
-command.
-
-=item B<blockcopy> I<domain> I<path> { I<dest> [I<format>] [I<--blockdev>]
-| I<--xml> B<file> } [I<--shallow>] [I<--reuse-external>] [I<bandwidth>]
-[I<--wait> [I<--async>] [I<--verbose>]] [{I<--pivot> | I<--finish>}]
-[I<--timeout> B<seconds>] [I<granularity>] [I<buf-size>] [I<--bytes>]
-[I<--transient-job>]
-
-Copy a disk backing image chain to a destination.  Either I<dest> as
-the destination file name, or I<--xml> with the name of an XML file containing
-a top-level <disk> element describing the destination, must be present.
-Additionally, if I<dest> is given, I<format> should be specified to declare
-the format of the destination (if I<format> is omitted, then libvirt
-will reuse the format of the source, or with I<--reuse-external> will
-be forced to probe the destination format, which could be a potential
-security hole).  The command supports I<--raw> as a boolean flag synonym for
-I<--format=raw>.  When using I<dest>, the destination is treated as a regular
-file unless I<--blockdev> is used to signal that it is a block device. By
-default, this command flattens the entire chain; but if I<--shallow> is
-specified, the copy shares the backing chain.
-
-If I<--reuse-external> is specified, then the destination must exist and have
-sufficient space to hold the copy. If I<--shallow> is used in
-conjunction with I<--reuse-external> then the pre-created image must have
-guest visible contents identical to guest visible contents of the backing
-file of the original image. This may be used to modify the backing file
-names on the destination.
-
-By default, the copy job runs in the background, and consists of two
-phases.  Initially, the job must copy all data from the source, and
-during this phase, the job can only be canceled to revert back to the
-source disk, with no guarantees about the destination.  After this phase
-completes, both the source and the destination remain mirrored until a
-call to B<blockjob> with the I<--abort> and I<--pivot> flags pivots over
-to the copy, or a call without I<--pivot> leaves the destination as a
-faithful copy of that point in time.  However, if I<--wait> is specified,
-then this command will block until the mirroring phase begins, or cancel
-the operation if the optional I<timeout> in seconds elapses or SIGINT is
-sent (usually with C<Ctrl-C>).  Using I<--verbose> along with I<--wait>
-will produce periodic status updates.  Using I<--pivot> (similar to
-B<blockjob> I<--pivot>) or I<--finish> (similar to B<blockjob> I<--abort>)
-implies I<--wait>, and will additionally end the job cleanly rather than
-leaving things in the mirroring phase.  If job cancellation is triggered
-by timeout or by I<--finish>, I<--async> will return control to the user
-as fast as possible, otherwise the command may continue to block a little
-while longer until the job has actually cancelled.
-
-I<path> specifies fully-qualified path of the disk.
-I<bandwidth> specifies copying bandwidth limit in MiB/s. Specifying a negative
-value is interpreted as an unsigned long long value that might be essentially
-unlimited, but more likely would overflow; it is safer to use 0 for that
-purpose. For further information on the I<bandwidth> argument see the
-corresponding section for the B<blockjob> command.
-Specifying I<granularity> allows fine-tuning of the granularity that will be
-copied when a dirty region is detected; larger values trigger less
-I/O overhead but may end up copying more data overall (the default value is
-usually correct); hypervisors may restrict this to be a power of two or fall
-within a certain range. Specifying I<buf-size> will control how much data can
-be simultaneously in-flight during the copy; larger values use more memory but
-may allow faster completion (the default value is usually correct).
-
-I<--transient-job> allows specifying that the user does not require the job to
-be recovered if the VM crashes or is turned off before the job completes. This
-flag removes the restriction of copy jobs to transient domains if that
-restriction is applied by the hypervisor.
-
-=item B<blockpull> I<domain> I<path> [I<bandwidth>] [I<--bytes>] [I<base>]
-[I<--wait> [I<--verbose>] [I<--timeout> B<seconds>] [I<--async>]]
-[I<--keep-relative>]
-
-Populate a disk from its backing image chain. By default, this command
-flattens the entire chain; but if I<base> is specified, containing the
-name of one of the backing files in the chain, then that file becomes
-the new backing file and only the intermediate portion of the chain is
-pulled.  Once all requested data from the backing image chain has been
-pulled, the disk no longer depends on that portion of the backing chain.
-
-By default, this command returns as soon as possible, and data for
-the entire disk is pulled in the background; the progress of the
-operation can be checked with B<blockjob>.  However, if I<--wait> is
-specified, then this command will block until the operation completes,
-or cancel the operation if the optional I<timeout> in seconds elapses
-or SIGINT is sent (usually with C<Ctrl-C>).  Using I<--verbose> along
-with I<--wait> will produce periodic status updates.  If job cancellation
-is triggered, I<--async> will return control to the user as fast as
-possible, otherwise the command may continue to block a little while
-longer until the job is done cleaning up.
-
-Using the I<--keep-relative> flag will keep the backing chain names
-relative.
-
-I<path> specifies fully-qualified path of the disk; it corresponds
-to a unique target name (<target dev='name'/>) or source file (<source
-file='name'/>) for one of the disk devices attached to I<domain> (see
-also B<domblklist> for listing these names).
-I<bandwidth> specifies copying bandwidth limit in MiB/s. For further information
-on the I<bandwidth> argument see the corresponding section for the B<blockjob>
-command.
-
-=item B<blkdeviotune> I<domain> I<device>
-[[I<--config>] [I<--live>] | [I<--current>]]
-[[I<total-bytes-sec>] | [I<read-bytes-sec>] [I<write-bytes-sec>]]
-[[I<total-iops-sec>] | [I<read-iops-sec>] [I<write-iops-sec>]]
-[[I<total-bytes-sec-max>] | [I<read-bytes-sec-max>] [I<write-bytes-sec-max>]]
-[[I<total-iops-sec-max>] | [I<read-iops-sec-max>] [I<write-iops-sec-max>]]
-[[I<total-bytes-sec-max-length>] |
-[I<read-bytes-sec-max-length>] [I<write-bytes-sec-max-length>]]
-[[I<total-iops-sec-max-length>] |
-[I<read-iops-sec-max-length>] [I<write-iops-sec-max-length>]]
-[I<size-iops-sec>] [I<group-name>]
-
-Set or query the block disk io parameters for a block device of I<domain>.
-I<device> specifies a unique target name (<target dev='name'/>) or source
-file (<source file='name'/>) for one of the disk devices attached to
-I<domain> (see also B<domblklist> for listing these names).
-
-If no limit is specified, it will query current I/O limits setting.
-Otherwise, alter the limits with these flags:
-I<--total-bytes-sec> specifies total throughput limit as a scaled integer, the
-default being bytes per second if no suffix is specified.
-I<--read-bytes-sec> specifies read throughput limit as a scaled integer, the
-default being bytes per second if no suffix is specified.
-I<--write-bytes-sec> specifies write throughput limit as a scaled integer, the
-default being bytes per second if no suffix is specified.
-I<--total-iops-sec> specifies total I/O operations limit per second.
-I<--read-iops-sec> specifies read I/O operations limit per second.
-I<--write-iops-sec> specifies write I/O operations limit per second.
-I<--total-bytes-sec-max> specifies maximum total throughput limit as a scaled
-integer, the default being bytes per second if no suffix is specified
-I<--read-bytes-sec-max> specifies maximum read throughput limit as a scaled
-integer, the default being bytes per second if no suffix is specified.
-I<--write-bytes-sec-max> specifies maximum write throughput limit as a scaled
-integer, the default being bytes per second if no suffix is specified.
-I<--total-iops-sec-max> specifies maximum total I/O operations limit per second.
-I<--read-iops-sec-max> specifies maximum read I/O operations limit per second.
-I<--write-iops-sec-max> specifies maximum write I/O operations limit per second.
-I<--total-bytes-sec-max-length> specifies duration in seconds to allow maximum
-total throughput limit.
-I<--read-bytes-sec-max-length> specifies duration in seconds to allow maximum
-read throughput limit.
-I<--write-bytes-sec-max-length> specifies duration in seconds to allow maximum
-write throughput limit.
-I<--total-iops-sec-max-length> specifies duration in seconds to allow maximum
-total I/O operations limit.
-I<--read-iops-sec-max-length> specifies duration in seconds to allow maximum
-read I/O operations limit.
-I<--write-iops-sec-max-length> specifies duration in seconds to allow maximum
-write I/O operations limit.
-I<--size-iops-sec> specifies size I/O operations limit per second.
-I<--group-name> specifies group name to share I/O quota between multiple drives.
-For a qemu domain, if no name is provided, then the default is to have a single
-group for each I<device>.
-
-Older versions of virsh only accepted these options with underscore
-instead of dash, as in I<--total_bytes_sec>.
-
-Bytes and iops values are independent, but setting only one value (such
-as --read-bytes-sec) resets the other two in that category to unlimited.
-An explicit 0 also clears any limit.  A non-zero value for a given total
-cannot be mixed with non-zero values for read or write.
-
-It is up to the hypervisor to determine how to handle the length values.
-For the qemu hypervisor, if an I/O limit value or maximum value is set,
-then the default value of 1 second will be displayed. Supplying a 0 will
-reset the value back to the default.
-
-If I<--live> is specified, affect a running guest.
-If I<--config> is specified, affect the next boot of a persistent guest.
-If I<--current> is specified, affect the current guest state.
-When setting the disk io parameters both I<--live> and I<--config> flags may be
-given, but I<--current> is exclusive. For querying only one of I<--live>,
-I<--config> or I<--current> can be specified. If no flag is specified, behavior
-is different depending on hypervisor.
-
-=item B<blockjob> I<domain> I<path> { [I<--abort>] [I<--async>] [I<--pivot>] |
-[I<--info>] [I<--raw>] [I<--bytes>] | [I<bandwidth>] }
-
-Manage active block operations.  There are three mutually-exclusive modes:
-I<--info>, I<bandwidth>, and I<--abort>.  I<--async> and I<--pivot> imply
-abort mode; I<--raw> implies info mode; and if no mode was given, I<--info>
-mode is assumed.
-
-I<path> specifies fully-qualified path of the disk; it corresponds
-to a unique target name (<target dev='name'/>) or source file (<source
-file='name'/>) for one of the disk devices attached to I<domain> (see
-also B<domblklist> for listing these names).
-
-In I<--abort> mode, the active job on the specified disk will
-be aborted.  If I<--async> is also specified, this command will return
-immediately, rather than waiting for the cancellation to complete.  If
-I<--pivot> is specified, this requests that an active copy or active
-commit job be pivoted over to the new image.
-
-In I<--info> mode, the active job information on the specified
-disk will be printed.  By default, the output is a single human-readable
-summary line; this format may change in future versions.  Adding
-I<--raw> lists each field of the struct, in a stable format.  If the
-I<--bytes> flag is set, then the command errors out if the server could
-not supply bytes/s resolution; when omitting the flag, raw output is
-listed in MiB/s and human-readable output automatically selects the
-best resolution supported by the server.
-
-I<bandwidth> can be used to set bandwidth limit for the active job in MiB/s.
-If I<--bytes> is specified then the bandwidth value is interpreted in
-bytes/s. Specifying a negative value is interpreted as an unsigned long
-value or essentially unlimited. The hypervisor can choose whether to
-reject the value or convert it to the maximum value allowed. Optionally a
-scaled positive number may be used as bandwidth (see B<NOTES> above). Using
-I<--bytes> with a scaled value permits a finer granularity to be selected.
-A scaled value used without I<--bytes> will be rounded down to MiB/s. Note
-that the I<--bytes> may be unsupported by the hypervisor.
-
-
-=item B<domblkthreshold> I<domain> I<dev> I<threshold>
-
-Set the threshold value for delivering the block-threshold event. I<dev>
-specifies the disk device target or backing chain element of given device using
-the 'target[1]' syntax. I<threshold> is a scaled value of the offset. If the
-block device should write beyond that offset the event will be delivered.
-
-=item B<blockresize> I<domain> I<path> I<size>
-
-Resize a block device of domain while the domain is running, I<path>
-specifies the absolute path of the block device; it corresponds
-to a unique target name (<target dev='name'/>) or source file (<source
-file='name'/>) for one of the disk devices attached to I<domain> (see
-also B<domblklist> for listing these names).
-
-I<size> is a scaled integer (see B<NOTES> above) which defaults to KiB
-(blocks of 1024 bytes) if there is no suffix.  You must use a suffix of
-"B" to get bytes (note that for historical reasons, this differs from
-B<vol-resize> which defaults to bytes without a suffix).
-
-=item B<domdisplay> I<domain> [I<--include-password>]
-[[I<--type>] B<type>] [I<--all>]
-
-Output a URI which can be used to connect to the graphical display of the
-domain via VNC, SPICE or RDP.  The particular graphical display type can
-be selected using the B<type> parameter (e.g. "vnc", "spice", "rdp").  If
-I<--include-password> is specified, the SPICE channel password will be
-included in the URI. If I<--all> is specified, then all show all possible
-graphical displays, for a VM could have more than one graphical displays.
-
-=item B<domfsinfo> I<domain>
-
-Show a list of mounted filesystems within the running domain. The list contains
-mountpoints, names of a mounted device in the guest, filesystem types, and
-unique target names used in the domain XML (<target dev='name'/>).
-
-Note that this command requires a guest agent configured and running in the
-domain's guest OS.
-
-=item B<domfsfreeze> I<domain> [[I<--mountpoint>] B<mountpoint>...]
-
-Freeze mounted filesystems within a running domain to prepare for consistent
-snapshots.
-
-The I<--mountpoint> option takes a parameter B<mountpoint>, which is a
-mount point path of the filesystem to be frozen. This option can occur
-multiple times. If this is not specified, every mounted filesystem is frozen.
-
-Note: B<snapshot-create> command has a I<--quiesce> option to freeze
-and thaw the filesystems automatically to keep snapshots consistent.
-B<domfsfreeze> command is only needed when a user wants to utilize the
-native snapshot features of storage devices not supported by libvirt.
-
-=item B<domfsthaw> I<domain> [[I<--mountpoint>] B<mountpoint>...]
-
-Thaw mounted filesystems within a running domain, which have been frozen by
-domfsfreeze command.
-
-The I<--mountpoint> option takes a parameter B<mountpoint>, which is a
-mount point path of the filesystem to be thawed. This option can occur
-multiple times. If this is not specified, every mounted filesystem is thawed.
-
-=item B<domfstrim> I<domain> [I<--minimum> B<bytes>]
-[I<--mountpoint mountPoint>]
-
-Issue a fstrim command on all mounted filesystems within a running
-domain. It discards blocks which are not in use by the filesystem.
-If I<--minimum> B<bytes> is specified, it tells guest kernel length
-of contiguous free range. Smaller than this may be ignored (this is
-a hint and the guest may not respect it). By increasing this value,
-the fstrim operation will complete more quickly for filesystems
-with badly fragmented free space, although not all blocks will
-be discarded.  The default value is zero, meaning "discard
-every free block". Moreover, if a user wants to trim only one mount
-point, it can be specified via optional I<--mountpoint> parameter.
-
-=item B<domhostname> I<domain>
-
-Returns the hostname of a domain, if the hypervisor makes it available.
-
-=item B<dominfo> I<domain>
-
-Returns basic information about the domain.
-
-=item B<domuuid> I<domain-name-or-id>
-
-Convert a domain name or id to domain UUID
-
-=item B<domid> I<domain-name-or-uuid>
-
-Convert a domain name (or UUID) to a domain id
-
-=item B<domjobabort> I<domain>
-
-Abort the currently running domain job.
-
-=item B<domjobinfo> I<domain> [I<--completed>]
-
-Returns information about jobs running on a domain. I<--completed> tells
-virsh to return information about a recently finished job. Statistics of
-a completed job are automatically destroyed once read or when libvirtd
-is restarted. Note that time information returned for completed
-migrations may be completely irrelevant unless both source and
-destination hosts have synchronized time (i.e., NTP daemon is running
-on both of them).
-
-=item B<domname> I<domain-id-or-uuid>
-
-Convert a domain Id (or UUID) to domain name
-
-=item B<domrename> I<domain> I<new-name>
-
-Rename a domain. This command changes current domain name to the new name
-specified in the second argument.
-
-B<Note>: Domain must be inactive and without snapshots or checkpoints.
-
-=item B<domstate> I<domain> [I<--reason>]
-
-Returns state about a domain.  I<--reason> tells virsh to also print
-reason for the state.
-
-=item B<domcontrol> I<domain>
-
-Returns state of an interface to VMM used to control a domain.  For
-states other than "ok" or "error" the command also prints number of
-seconds elapsed since the control interface entered its current state.
-
 =item B<domtime> I<domain> { [I<--now>] [I<--pretty>] [I<--sync>]
 [I<--time> B<time>] }
 
@@ -1611,6 +1698,10 @@ The I<--sync> modifies the set behavior a bit: The time passed is
 ignored, but the time to set is read from domain's RTC instead. Please
 note, that some hypervisors may require a guest agent to be configured
 in order to get or set the guest time.
+
+=item B<domuuid> I<domain-name-or-id>
+
+Convert a domain name or id to domain UUID
 
 =item B<domxml-from-native> I<format> I<config>
 
@@ -1693,6 +1784,21 @@ except that it does some error checking.
 
 The editor used can be supplied by the C<$VISUAL> or C<$EDITOR> environment
 variables, and defaults to C<vi>.
+
+=item B<emulatorpin> I<domain> [I<cpulist>] [[I<--live>] [I<--config>]
+ | [I<--current>]]
+
+Query or change the pinning of domain's emulator threads to host physical
+CPUs.
+
+See B<vcpupin> for I<cpulist>.
+
+If I<--live> is specified, affect a running guest.
+If I<--config> is specified, affect the next boot of a persistent guest.
+If I<--current> is specified, affect the current guest state.
+Both I<--live> and I<--config> flags may be given if I<cpulist> is present,
+but I<--current> is exclusive.
+If no flag is specified, behavior is different depending on hypervisor.
 
 =item B<event> {[I<domain>] { I<event> | I<--all> } [I<--loop>]
 [I<--timeout> I<seconds>] [I<--timestamp>] | I<--list>}
@@ -1778,6 +1884,44 @@ I<--filesystem> returns:
   "fs.<num>.disk.<num>.serial" - the serial number of disk <num>
   "fs.<num>.disk.<num>.device" - the device node of disk <num>
 
+=item B<guestvcpus> I<domain> [[I<--enable>] | [I<--disable>]] [I<cpulist>]
+
+Query or change state of vCPUs from guest's point of view using the guest agent.
+When invoked without I<cpulist> the guest is queried for available guest vCPUs,
+their state and possibility to be offlined.
+
+If I<cpulist> is provided then one of I<--enable> or I<--disable> must be
+provided too. The desired operation is then executed on the domain.
+
+See B<vcpupin> for information on I<cpulist>.
+
+=item B<iothreadadd> I<domain> I<iothread_id>
+[[I<--config>] [I<--live>] | [I<--current>]]
+
+Add a new IOThread to the domain using the specified I<iothread_id>.
+If the I<iothread_id> already exists, the command will fail. The
+I<iothread_id> must be greater than zero.
+
+If I<--live> is specified, affect a running guest. If the guest is not
+running an error is returned.
+If I<--config> is specified, affect the next boot of a persistent guest.
+If I<--current> is specified or I<--live> and I<--config> are not specified,
+affect the current guest state.
+
+=item B<iothreaddel> I<domain> I<iothread_id>
+[[I<--config>] [I<--live>] | [I<--current>]]
+
+Delete an IOThread from the domain using the specified I<iothread_id>.
+If an IOThread is currently assigned to a disk resource such as via the
+B<attach-disk> command, then the attempt to remove the IOThread will fail.
+If the I<iothread_id> does not exist an error will occur.
+
+If I<--live> is specified, affect a running guest. If the guest is not
+running an error is returned.
+If I<--config> is specified, affect the next boot of a persistent guest.
+If I<--current> is specified or I<--live> and I<--config> are not specified,
+affect the current guest state.
+
 =item B<iothreadinfo> I<domain> [[I<--live>] [I<--config>] | [I<--current>]]
 
 Display basic domain IOThreads information including the IOThread ID and
@@ -1816,19 +1960,6 @@ If no flag is specified, behavior is different depending on hypervisor.
 B<Note>: The expression is sequentially evaluated, so "0-15,^8" is
 identical to "9-14,0-7,15" but not identical to "^8,0-15".
 
-=item B<iothreadadd> I<domain> I<iothread_id>
-[[I<--config>] [I<--live>] | [I<--current>]]
-
-Add a new IOThread to the domain using the specified I<iothread_id>.
-If the I<iothread_id> already exists, the command will fail. The
-I<iothread_id> must be greater than zero.
-
-If I<--live> is specified, affect a running guest. If the guest is not
-running an error is returned.
-If I<--config> is specified, affect the next boot of a persistent guest.
-If I<--current> is specified or I<--live> and I<--config> are not specified,
-affect the current guest state.
-
 =item B<iothreadset> I<domain> I<iothread_id>
 [[I<--poll-max-ns> B<ns>] [I<--poll-grow> B<factor>]
 [I<--poll-shrink> B<divisor>]]
@@ -1853,20 +1984,6 @@ running an error is returned.
 If I<--current> is specified or I<--live> is not specified, then handle
 as if I<--live> was specified.
 
-=item B<iothreaddel> I<domain> I<iothread_id>
-[[I<--config>] [I<--live>] | [I<--current>]]
-
-Delete an IOThread from the domain using the specified I<iothread_id>.
-If an IOThread is currently assigned to a disk resource such as via the
-B<attach-disk> command, then the attempt to remove the IOThread will fail.
-If the I<iothread_id> does not exist an error will occur.
-
-If I<--live> is specified, affect a running guest. If the guest is not
-running an error is returned.
-If I<--config> is specified, affect the next boot of a persistent guest.
-If I<--current> is specified or I<--live> and I<--config> are not specified,
-affect the current guest state.
-
 =item B<managedsave> I<domain> [I<--bypass-cache>]
 [{I<--running> | I<--paused>}] [I<--verbose>]
 
@@ -1888,11 +2005,6 @@ state the B<start> should use.
 
 The B<dominfo> command can be used to query whether a domain currently
 has any managed save image.
-
-=item B<managedsave-remove> I<domain>
-
-Remove the B<managedsave> state file for a domain, if it exists.  This
-ensures the domain will do a full boot the next time it is started.
 
 =item B<managedsave-define> I<domain> I<xml> [{I<--running> | I<--paused>}]
 
@@ -1933,19 +2045,69 @@ except that it does some error checking.
 The editor used can be supplied by the C<$VISUAL> or C<$EDITOR> environment
 variables, and defaults to C<vi>.
 
+=item B<managedsave-remove> I<domain>
+
+Remove the B<managedsave> state file for a domain, if it exists.  This
+ensures the domain will do a full boot the next time it is started.
+
 =item B<maxvcpus> [I<type>]
 
 Provide the maximum number of virtual CPUs supported for a guest VM on
 this connection.  If provided, the I<type> parameter must be a valid
 type attribute for the <domain> element of XML.
 
-=item B<cpu-stats> I<domain> [I<--total>] [I<start>] [I<count>]
+=item B<memtune> I<domain> [I<--hard-limit> B<size>]
+[I<--soft-limit> B<size>] [I<--swap-hard-limit> B<size>]
+[I<--min-guarantee> B<size>] [[I<--config>] [I<--live>] | [I<--current>]]
 
-Provide cpu statistics information of a domain. The domain should
-be running. Default it shows stats for all CPUs, and a total. Use
-I<--total> for only the total stats, I<start> for only the per-cpu
-stats of the CPUs from I<start>, I<count> for only I<count> CPUs'
-stats.
+Allows you to display or set the domain memory parameters. Without
+flags, the current settings are displayed; with a flag, the
+appropriate limit is adjusted if supported by the hypervisor.  LXC and
+QEMU/KVM support I<--hard-limit>, I<--soft-limit>, and I<--swap-hard-limit>.
+I<--min-guarantee> is supported only by ESX hypervisor.  Each of these
+limits are scaled integers (see B<NOTES> above), with a default of
+kibibytes (blocks of 1024 bytes) if no suffix is present. Libvirt rounds
+up to the nearest kibibyte.  Some hypervisors require a larger granularity
+than KiB, and requests that are not an even multiple will be rounded up.
+For example, vSphere/ESX rounds the parameter up to mebibytes (1024 kibibytes).
+
+If I<--live> is specified, affect a running guest.
+If I<--config> is specified, affect the next boot of a persistent guest.
+If I<--current> is specified, affect the current guest state.
+Both I<--live> and I<--config> flags may be given, but I<--current> is
+exclusive. If no flag is specified, behavior is different depending
+on hypervisor.
+
+For QEMU/KVM, the parameters are applied to the QEMU process as a whole.
+Thus, when counting them, one needs to add up guest RAM, guest video RAM, and
+some memory overhead of QEMU itself.  The last piece is hard to determine so
+one needs guess and try.
+
+For LXC, the displayed hard_limit value is the current memory setting
+from the XML or the results from a B<virsh setmem> command.
+
+=over 4
+
+=item I<--hard-limit>
+
+The maximum memory the guest can use.
+
+=item I<--soft-limit>
+
+The memory limit to enforce during memory contention.
+
+=item I<--swap-hard-limit>
+
+The maximum memory plus swap the guest can use.  This has to be more
+than hard-limit value provided.
+
+=item I<--min-guarantee>
+
+The guaranteed minimum memory allocation for the guest.
+
+=back
+
+Specifying -1 as a value for these limits is interpreted as unlimited.
 
 =item B<metadata> I<domain> [[I<--live>] [I<--config>] | [I<--current>]]
 [I<--edit>] [I<uri>] [I<key>] [I<set>] [I<--remove>]
@@ -2172,18 +2334,6 @@ error if this parameter is used.
 Optional I<disks-port> sets the port that hypervisor on destination side should
 bind to for incoming disks traffic. Currently it is supported only by qemu.
 
-=item B<migrate-setmaxdowntime> I<domain> I<downtime>
-
-Set maximum tolerable downtime for a domain which is being live-migrated to
-another host.  The I<downtime> is a number of milliseconds the guest is allowed
-to be down at the end of live migration.
-
-=item B<migrate-getmaxdowntime> I<domain>
-
-Get the maximum tolerable downtime for a domain which is being live-migrated to
-another host.  This is the number of milliseconds the guest is allowed
-to be down at the end of live migration.
-
 =item B<migrate-compcache> I<domain> [I<--size> B<bytes>]
 
 Sets and/or gets size of the cache (in bytes) used for compressing repeatedly
@@ -2196,15 +2346,11 @@ is supposed to be used while the domain is being live-migrated as a reaction
 to migration progress and increasing number of compression cache misses
 obtained from domjobinfo.
 
-=item B<migrate-setspeed> I<domain> I<bandwidth> [I<--postcopy>]
+=item B<migrate-getmaxdowntime> I<domain>
 
-Set the maximum migration bandwidth (in MiB/s) for a domain which is being
-migrated to another host. I<bandwidth> is interpreted as an unsigned long
-long value. Specifying a negative value results in an essentially unlimited
-value being provided to the hypervisor. The hypervisor can choose whether to
-reject the value or convert it to the maximum value allowed. If the
-I<--postcopy> option is specified, the command will set the maximum bandwidth
-allowed during a post-copy migration phase.
+Get the maximum tolerable downtime for a domain which is being live-migrated to
+another host.  This is the number of milliseconds the guest is allowed
+to be down at the end of live migration.
 
 =item B<migrate-getspeed> I<domain> [I<--postcopy>]
 
@@ -2216,6 +2362,22 @@ allowed during a post-copy migration phase.
 
 Switch the current migration from pre-copy to post-copy. This is only
 supported for a migration started with I<--postcopy> option.
+
+=item B<migrate-setmaxdowntime> I<domain> I<downtime>
+
+Set maximum tolerable downtime for a domain which is being live-migrated to
+another host.  The I<downtime> is a number of milliseconds the guest is allowed
+to be down at the end of live migration.
+
+=item B<migrate-setspeed> I<domain> I<bandwidth> [I<--postcopy>]
+
+Set the maximum migration bandwidth (in MiB/s) for a domain which is being
+migrated to another host. I<bandwidth> is interpreted as an unsigned long
+long value. Specifying a negative value results in an essentially unlimited
+value being provided to the hypervisor. The hypervisor can choose whether to
+reject the value or convert it to the maximum value allowed. If the
+I<--postcopy> option is specified, the command will set the maximum bandwidth
+allowed during a post-copy migration phase.
 
 =item B<numatune> I<domain> [I<--mode> B<mode>] [I<--nodeset> B<nodeset>]
 [[I<--config>] [I<--live>] | [I<--current>]]
@@ -2237,6 +2399,93 @@ excluding a node.
 If I<--live> is specified, set scheduler information of a running guest.
 If I<--config> is specified, affect the next boot of a persistent guest.
 If I<--current> is specified, affect the current guest state.
+
+=item B<perf> I<domain> [I<--enable> B<eventSpec>]
+[I<--disable> B<eventSpec>]
+[[I<--config>] [I<--live>] | [I<--current>]]
+
+Get the current perf events setting or enable/disable specific perf
+events for a guest domain.
+
+Perf is a performance analyzing tool in Linux, and it can instrument
+CPU performance counters, tracepoints, kprobes, and uprobes (dynamic
+tracing). Perf supports a list of measurable events, and can measure
+events coming from different sources. For instance, some event are
+pure kernel counters, in this case they are called software events,
+including context-switches, minor-faults, etc.. Now dozens of events
+from different sources can be supported by perf.
+
+Currently only QEMU/KVM supports this command. The I<--enable> and I<--disable>
+option combined with B<eventSpec> can be used to enable or disable specific
+performance event. B<eventSpec> is a string list of one or more events
+separated by commas. Valid event names are as follows:
+
+B<Valid perf event names>
+  cmt              - A PQos (Platform Qos) feature to monitor the
+                     usage of cache by applications running on the
+                     platform.
+  mbmt             - Provides a way to monitor the total system
+                     memory bandwidth between one level of cache
+                     and another.
+  mbml             - Provides a way to limit the amount of data
+                     (bytes/s) send through the memory controller
+                     on the socket.
+  cache_misses     - Provides the count of cache misses by
+                     applications running on the platform.
+  cache_references - Provides the count of cache hits by
+                     applications running on th e platform.
+  instructions     - Provides the count of instructions executed
+                     by applications running on the platform.
+  cpu_cycles       - Provides the count of cpu cycles
+                     (total/elapsed). May be used with
+                     instructions in order to get a cycles
+                     per instruction.
+  branch_instructions - Provides the count of branch instructions
+                        executed by applications running on the
+                        platform.
+  branch_misses    - Provides the count of branch misses executed
+                     by applications running on the platform.
+  bus_cycles       - Provides the count of bus cycles executed
+                     by applications running on the platform.
+  stalled_cycles_frontend - Provides the count of stalled cpu
+                            cycles in the frontend of the
+                            instruction processor pipeline by
+                            applications running on the platform.
+  stalled_cycles_backend - Provides the count of stalled cpu
+                           cycles in the backend of the
+                           instruction processor pipeline by
+                           applications running on the platform.
+  ref_cpu_cycles   -  Provides the count of total cpu cycles
+                      not affected by CPU frequency scaling by
+                      applications running on the platform.
+  cpu_clock - Provides the cpu clock time consumed by
+              applications running on the platform.
+  task_clock - Provides the task clock time consumed by
+               applications running on the platform.
+  page_faults - Provides the count of page faults by
+                applications running on the platform.
+  context_switches - Provides the count of context switches
+                     by applications running on the platform.
+  cpu_migrations - Provides the count cpu migrations by
+                   applications running on the platform.
+  page_faults_min - Provides the count minor page faults
+                    by applications running on the platform.
+  page_faults_maj - Provides the count major page faults
+                    by applications running on the platform.
+  alignment_faults - Provides the count alignment faults
+                     by applications running on the platform.
+  emulation_faults - Provides the count emulation faults
+                     by applications running on the platform.
+
+B<Note>: The statistics can be retrieved using the B<domstats> command using
+the I<--perf> flag.
+
+If I<--live> is specified, affect a running guest.
+If I<--config> is specified, affect the next boot of a persistent guest.
+If I<--current> is specified, affect the current guest state.
+Both I<--live> and I<--config> flags may be given, but I<--current> is
+exclusive. If no flag is specified, behavior is different depending
+on hypervisor.
 
 =item B<reboot> I<domain> [I<--mode MODE-LIST>]
 
@@ -2287,6 +2536,12 @@ B<Note>: To avoid corrupting file system contents within the domain, you
 should not reuse the saved state file for a second B<restore> unless you
 have also reverted all storage volumes back to the same contents as when
 the state file was created.
+
+=item B<resume> I<domain>
+
+Moves a domain out of the suspended state.  This will allow a previously
+suspended domain to now be eligible for scheduling by the underlying
+hypervisor.
 
 =item B<save> I<domain> I<state-file> [I<--bypass-cache>] [I<--xml> B<file>]
 [{I<--running> | I<--paused>}] [I<--verbose>]
@@ -2550,34 +2805,6 @@ B<Examples>
   virsh send-process-signal myguest 1 sigterm
   virsh send-process-signal myguest 1 SIG_HUP
 
-=item B<setmem> I<domain> B<size> [[I<--config>] [I<--live>] |
-[I<--current>]]
-
-Change the memory allocation for a guest domain.
-If I<--live> is specified, perform a memory balloon of a running guest.
-If I<--config> is specified, affect the next boot of a persistent guest.
-If I<--current> is specified, affect the current guest state.
-Both I<--live> and I<--config> flags may be given, but I<--current> is
-exclusive. If no flag is specified, behavior is different depending
-on hypervisor.
-
-I<size> is a scaled integer (see B<NOTES> above); it defaults to kibibytes
-(blocks of 1024 bytes) unless you provide a suffix (and the older option
-name I<--kilobytes> is available as a deprecated synonym) .  Libvirt rounds
-up to the nearest kibibyte.  Some hypervisors require a larger granularity
-than KiB, and requests that are not an even multiple will be rounded up.
-For example, vSphere/ESX rounds the parameter up to mebibytes (1024 kibibytes).
-
-For Xen, you can only adjust the memory of a running domain if the domain is
-paravirtualized or running the PV balloon driver.
-
-For LXC, the value being set is the cgroups value for limit_in_bytes or the
-maximum amount of user memory (including file cache). When viewing memory
-inside the container, this is the /proc/meminfo "MemTotal" value. When viewing
-the value from the host, use the B<virsh memtune> command. In order to view
-the current memory in use and the maximum value allowed to set memory, use
-the B<virsh dominfo> command.
-
 =item B<set-lifecycle-action> I<domain> I<type> I<action>
 [[I<--config>] [I<--live>] | [I<--current>]]
 
@@ -2621,199 +2848,33 @@ up to the nearest kibibyte.  Some hypervisors require a larger granularity
 than KiB, and requests that are not an even multiple will be rounded up.
 For example, vSphere/ESX rounds the parameter up to mebibytes (1024 kibibytes).
 
-=item B<memtune> I<domain> [I<--hard-limit> B<size>]
-[I<--soft-limit> B<size>] [I<--swap-hard-limit> B<size>]
-[I<--min-guarantee> B<size>] [[I<--config>] [I<--live>] | [I<--current>]]
+=item B<setmem> I<domain> B<size> [[I<--config>] [I<--live>] |
+[I<--current>]]
 
-Allows you to display or set the domain memory parameters. Without
-flags, the current settings are displayed; with a flag, the
-appropriate limit is adjusted if supported by the hypervisor.  LXC and
-QEMU/KVM support I<--hard-limit>, I<--soft-limit>, and I<--swap-hard-limit>.
-I<--min-guarantee> is supported only by ESX hypervisor.  Each of these
-limits are scaled integers (see B<NOTES> above), with a default of
-kibibytes (blocks of 1024 bytes) if no suffix is present. Libvirt rounds
+Change the memory allocation for a guest domain.
+If I<--live> is specified, perform a memory balloon of a running guest.
+If I<--config> is specified, affect the next boot of a persistent guest.
+If I<--current> is specified, affect the current guest state.
+Both I<--live> and I<--config> flags may be given, but I<--current> is
+exclusive. If no flag is specified, behavior is different depending
+on hypervisor.
+
+I<size> is a scaled integer (see B<NOTES> above); it defaults to kibibytes
+(blocks of 1024 bytes) unless you provide a suffix (and the older option
+name I<--kilobytes> is available as a deprecated synonym) .  Libvirt rounds
 up to the nearest kibibyte.  Some hypervisors require a larger granularity
 than KiB, and requests that are not an even multiple will be rounded up.
 For example, vSphere/ESX rounds the parameter up to mebibytes (1024 kibibytes).
 
-If I<--live> is specified, affect a running guest.
-If I<--config> is specified, affect the next boot of a persistent guest.
-If I<--current> is specified, affect the current guest state.
-Both I<--live> and I<--config> flags may be given, but I<--current> is
-exclusive. If no flag is specified, behavior is different depending
-on hypervisor.
+For Xen, you can only adjust the memory of a running domain if the domain is
+paravirtualized or running the PV balloon driver.
 
-For QEMU/KVM, the parameters are applied to the QEMU process as a whole.
-Thus, when counting them, one needs to add up guest RAM, guest video RAM, and
-some memory overhead of QEMU itself.  The last piece is hard to determine so
-one needs guess and try.
-
-For LXC, the displayed hard_limit value is the current memory setting
-from the XML or the results from a B<virsh setmem> command.
-
-=over 4
-
-=item I<--hard-limit>
-
-The maximum memory the guest can use.
-
-=item I<--soft-limit>
-
-The memory limit to enforce during memory contention.
-
-=item I<--swap-hard-limit>
-
-The maximum memory plus swap the guest can use.  This has to be more
-than hard-limit value provided.
-
-=item I<--min-guarantee>
-
-The guaranteed minimum memory allocation for the guest.
-
-=back
-
-Specifying -1 as a value for these limits is interpreted as unlimited.
-
-=item B<perf> I<domain> [I<--enable> B<eventSpec>]
-[I<--disable> B<eventSpec>]
-[[I<--config>] [I<--live>] | [I<--current>]]
-
-Get the current perf events setting or enable/disable specific perf
-events for a guest domain.
-
-Perf is a performance analyzing tool in Linux, and it can instrument
-CPU performance counters, tracepoints, kprobes, and uprobes (dynamic
-tracing). Perf supports a list of measurable events, and can measure
-events coming from different sources. For instance, some event are
-pure kernel counters, in this case they are called software events,
-including context-switches, minor-faults, etc.. Now dozens of events
-from different sources can be supported by perf.
-
-Currently only QEMU/KVM supports this command. The I<--enable> and I<--disable>
-option combined with B<eventSpec> can be used to enable or disable specific
-performance event. B<eventSpec> is a string list of one or more events
-separated by commas. Valid event names are as follows:
-
-B<Valid perf event names>
-  cmt              - A PQos (Platform Qos) feature to monitor the
-                     usage of cache by applications running on the
-                     platform.
-  mbmt             - Provides a way to monitor the total system
-                     memory bandwidth between one level of cache
-                     and another.
-  mbml             - Provides a way to limit the amount of data
-                     (bytes/s) send through the memory controller
-                     on the socket.
-  cache_misses     - Provides the count of cache misses by
-                     applications running on the platform.
-  cache_references - Provides the count of cache hits by
-                     applications running on th e platform.
-  instructions     - Provides the count of instructions executed
-                     by applications running on the platform.
-  cpu_cycles       - Provides the count of cpu cycles
-                     (total/elapsed). May be used with
-                     instructions in order to get a cycles
-                     per instruction.
-  branch_instructions - Provides the count of branch instructions
-                        executed by applications running on the
-                        platform.
-  branch_misses    - Provides the count of branch misses executed
-                     by applications running on the platform.
-  bus_cycles       - Provides the count of bus cycles executed
-                     by applications running on the platform.
-  stalled_cycles_frontend - Provides the count of stalled cpu
-                            cycles in the frontend of the
-                            instruction processor pipeline by
-                            applications running on the platform.
-  stalled_cycles_backend - Provides the count of stalled cpu
-                           cycles in the backend of the
-                           instruction processor pipeline by
-                           applications running on the platform.
-  ref_cpu_cycles   -  Provides the count of total cpu cycles
-                      not affected by CPU frequency scaling by
-                      applications running on the platform.
-  cpu_clock - Provides the cpu clock time consumed by
-              applications running on the platform.
-  task_clock - Provides the task clock time consumed by
-               applications running on the platform.
-  page_faults - Provides the count of page faults by
-                applications running on the platform.
-  context_switches - Provides the count of context switches
-                     by applications running on the platform.
-  cpu_migrations - Provides the count cpu migrations by
-                   applications running on the platform.
-  page_faults_min - Provides the count minor page faults
-                    by applications running on the platform.
-  page_faults_maj - Provides the count major page faults
-                    by applications running on the platform.
-  alignment_faults - Provides the count alignment faults
-                     by applications running on the platform.
-  emulation_faults - Provides the count emulation faults
-                     by applications running on the platform.
-
-B<Note>: The statistics can be retrieved using the B<domstats> command using
-the I<--perf> flag.
-
-If I<--live> is specified, affect a running guest.
-If I<--config> is specified, affect the next boot of a persistent guest.
-If I<--current> is specified, affect the current guest state.
-Both I<--live> and I<--config> flags may be given, but I<--current> is
-exclusive. If no flag is specified, behavior is different depending
-on hypervisor.
-
-=item B<blkiotune> I<domain> [I<--weight> B<weight>]
-[I<--device-weights> B<device-weights>]
-[I<--device-read-iops-sec> B<device-read-iops-sec>]
-[I<--device-write-iops-sec> B<device-write-iops-sec>]
-[I<--device-read-bytes-sec> B<device-read-bytes-sec>]
-[I<--device-write-bytes-sec> B<device-write-bytes-sec>]
-[[I<--config>] [I<--live>] | [I<--current>]]
-
-Display or set the blkio parameters. QEMU/KVM supports I<--weight>.
-I<--weight> is in range [100, 1000]. After kernel 2.6.39, the value
-could be in the range [10, 1000].
-
-B<device-weights> is a single string listing one or more device/weight
-pairs, in the format of /path/to/device,weight,/path/to/device,weight.
-Each weight is in the range [100, 1000], [10, 1000] after kernel 2.6.39,
-or the value 0 to remove that device from per-device listings.
-Only the devices listed in the string are modified;
-any existing per-device weights for other devices remain unchanged.
-
-B<device-read-iops-sec> is a single string listing one or more device/read_iops_sec
-pairs, int the format of /path/to/device,read_iops_sec,/path/to/device,read_iops_sec.
-Each read_iops_sec is a number which type is unsigned int, value 0 to remove that
-device from per-device listing.
-Only the devices listed in the string are modified;
-any existing per-device read_iops_sec for other devices remain unchanged.
-
-B<device-write-iops-sec> is a single string listing one or more device/write_iops_sec
-pairs, int the format of /path/to/device,write_iops_sec,/path/to/device,write_iops_sec.
-Each write_iops_sec is a number which type is unsigned int, value 0 to remove that
-device from per-device listing.
-Only the devices listed in the string are modified;
-any existing per-device write_iops_sec for other devices remain unchanged.
-
-B<device-read-bytes-sec> is a single string listing one or more device/read_bytes_sec
-pairs, int the format of /path/to/device,read_bytes_sec,/path/to/device,read_bytes_sec.
-Each read_bytes_sec is a number which type is unsigned long long, value 0 to remove
-that device from per-device listing.
-Only the devices listed in the string are modified;
-any existing per-device read_bytes_sec for other devices remain unchanged.
-
-B<device-write-bytes-sec> is a single string listing one or more device/write_bytes_sec
-pairs, int the format of /path/to/device,write_bytes_sec,/path/to/device,write_bytes_sec.
-Each write_bytes_sec is a number which type is unsigned long long, value 0 to remove
-that device from per-device listing.
-Only the devices listed in the string are modified;
-any existing per-device write_bytes_sec for other devices remain unchanged.
-
-If I<--live> is specified, affect a running guest.
-If I<--config> is specified, affect the next boot of a persistent guest.
-If I<--current> is specified, affect the current guest state.
-Both I<--live> and I<--config> flags may be given, but I<--current> is
-exclusive. If no flag is specified, behavior is different depending
-on hypervisor.
+For LXC, the value being set is the cgroups value for limit_in_bytes or the
+maximum amount of user memory (including file cache). When viewing memory
+inside the container, this is the /proc/meminfo "MemTotal" value. When viewing
+the value from the host, use the B<virsh memtune> command. In order to view
+the current memory in use and the maximum value allowed to set memory, use
+the B<virsh dominfo> command.
 
 =item B<setvcpus> I<domain> I<count> [I<--maximum>] [[I<--config>]
 [I<--live>] | [I<--current>]] [I<--guest>] [I<--hotpluggable>]
@@ -2926,42 +2987,6 @@ is only supported with container based virtualization.
 
 Suspend a running domain. It is kept in memory but won't be scheduled
 anymore.
-
-=item B<resume> I<domain>
-
-Moves a domain out of the suspended state.  This will allow a previously
-suspended domain to now be eligible for scheduling by the underlying
-hypervisor.
-
-=item B<dompmsuspend> I<domain> I<target> [I<--duration>]
-
-Suspend a running domain into one of these states (possible I<target>
-values):
-    mem equivalent of S3 ACPI state
-    disk equivalent of S4 ACPI state
-    hybrid RAM is saved to disk but not powered off
-
-The I<--duration> argument specifies number of seconds before the domain is
-woken up after it was suspended (see also B<dompmwakeup>). Default is 0 for
-unlimited suspend time. (This feature isn't currently supported by any
-hypervisor driver and 0 should be used.).
-
-Note that this command requires a guest agent configured and running in the
-domain's guest OS.
-
-Beware that at least for QEMU, the domain's process will be terminated when
-target disk is used and a new process will be launched when libvirt is asked
-to wake up the domain. As a result of this, any runtime changes, such as
-device hotplug or memory settings, are lost unless such changes were made
-with I<--config> flag.
-
-
-=item B<dompmwakeup> I<domain>
-
-Wakeup a domain from pmsuspended state (either suspended by dompmsuspend or
-from the guest itself). Injects a wakeup into the guest that is in pmsuspended
-state, rather than waiting for the previously requested duration (if any) to
-elapse. This operation doesn't not necessarily fail if the domain is running.
 
 =item B<ttyconsole> I<domain>
 
@@ -3125,32 +3150,6 @@ If no flag is specified, behavior is different depending on hypervisor.
 
 B<Note>: The expression is sequentially evaluated, so "0-15,^8" is
 identical to "9-14,0-7,15" but not identical to "^8,0-15".
-
-=item B<emulatorpin> I<domain> [I<cpulist>] [[I<--live>] [I<--config>]
- | [I<--current>]]
-
-Query or change the pinning of domain's emulator threads to host physical
-CPUs.
-
-See B<vcpupin> for I<cpulist>.
-
-If I<--live> is specified, affect a running guest.
-If I<--config> is specified, affect the next boot of a persistent guest.
-If I<--current> is specified, affect the current guest state.
-Both I<--live> and I<--config> flags may be given if I<cpulist> is present,
-but I<--current> is exclusive.
-If no flag is specified, behavior is different depending on hypervisor.
-
-=item B<guestvcpus> I<domain> [[I<--enable>] | [I<--disable>]] [I<cpulist>]
-
-Query or change state of vCPUs from guest's point of view using the guest agent.
-When invoked without I<cpulist> the guest is queried for available guest vCPUs,
-their state and possibility to be offlined.
-
-If I<cpulist> is provided then one of I<--enable> or I<--disable> must be
-provided too. The desired operation is then executed on the domain.
-
-See B<vcpupin> for information on I<cpulist>.
 
 =item B<vncdisplay> I<domain>
 
