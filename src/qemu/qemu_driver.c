@@ -22126,19 +22126,14 @@ qemuDomainGetFSInfo(virDomainPtr dom,
                     unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
-    qemuDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
     qemuAgentPtr agent;
-    virCapsPtr caps = NULL;
-    virDomainDefPtr def = NULL;
     int ret = -1;
 
     virCheckFlags(0, ret);
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         return ret;
-
-    priv = vm->privateData;
 
     if (virDomainGetFSInfoEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -22154,14 +22149,8 @@ qemuDomainGetFSInfo(virDomainPtr dom,
     if (!qemuDomainAgentAvailable(vm, true))
         goto endjob;
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto endjob;
-
-    if (!(def = virDomainDefCopy(vm->def, caps, driver->xmlopt, priv->qemuCaps, false)))
-        goto endjob;
-
     agent = qemuDomainObjEnterAgent(vm);
-    ret = qemuAgentGetFSInfo(agent, info, def);
+    ret = qemuAgentGetFSInfo(agent, info, vm->def);
     qemuDomainObjExitAgent(vm, agent);
 
  endjob:
@@ -22169,8 +22158,6 @@ qemuDomainGetFSInfo(virDomainPtr dom,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virDomainDefFree(def);
-    virObjectUnref(caps);
     return ret;
 }
 
