@@ -5295,9 +5295,22 @@ qemuDomainDeviceDefValidateHostdev(const virDomainHostdevDef *hostdev,
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
+            break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
+            if (hostdev->info->bootIndex) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("booting from assigned devices is only "
+                                 "supported for PCI, USB and SCSI devices"));
+                return -1;
+            }
             break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
+            if (hostdev->info->bootIndex) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("booting from assigned devices is only "
+                                 "supported for PCI, USB and SCSI devices"));
+                return -1;
+            }
             mdevsrc = &hostdev->source.subsys.u.mdev;
             return qemuDomainMdevDefValidate(mdevsrc, def, qemuCaps);
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:

@@ -5422,18 +5422,6 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
         virDomainHostdevSubsysPtr subsys = &hostdev->source.subsys;
         VIR_AUTOFREE(char *) devstr = NULL;
 
-        if (hostdev->info->bootIndex) {
-            if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
-                (subsys->type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
-                 subsys->type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB &&
-                 subsys->type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("booting from assigned devices is only "
-                                 "supported for PCI, USB and SCSI devices"));
-                return -1;
-            }
-        }
-
         /* USB */
         if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             subsys->type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
