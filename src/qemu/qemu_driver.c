@@ -23220,6 +23220,7 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
     int maxparams = 0;
     VIR_AUTOFREE(char *) hostname = NULL;
     unsigned int supportedTypes = types;
+    int rc;
 
     virCheckFlags(0, -1);
     qemuDomainGetGuestInfoCheckSupport(&supportedTypes);
@@ -23240,30 +23241,30 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
 
     agent = qemuDomainObjEnterAgent(vm);
 
-    /* Although the libvirt qemu driver supports all of these guest info types,
-     * some guest agents might be too old to support these commands. If these
-     * info categories were explicitly requested (i.e. 'types' is non-zero),
-     * abort and report an error on any failures, otherwise continue and return
-     * as much info as is supported by the guest agent. */
+    /* The agent info commands will return -2 for any commands that are not
+     * supported by the agent, or -1 for all other errors. In the case where no
+     * categories were explicitly requested (i.e. 'types' is 0), ignore
+     * 'unsupported' errors and gather as much information as we can. In all
+     * other cases, abort on error. */
     if (supportedTypes & VIR_DOMAIN_GUEST_INFO_USERS) {
-        if (qemuAgentGetUsers(agent, params, nparams, &maxparams) < 0 &&
-            types != 0)
+        rc = qemuAgentGetUsers(agent, params, nparams, &maxparams);
+        if (rc < 0 && !(rc == -2 && types == 0))
             goto exitagent;
     }
     if (supportedTypes & VIR_DOMAIN_GUEST_INFO_OS) {
-        if (qemuAgentGetOSInfo(agent, params, nparams, &maxparams) < 0
-            && types != 0)
+        rc = qemuAgentGetOSInfo(agent, params, nparams, &maxparams);
+        if (rc < 0 && !(rc == -2 && types == 0))
             goto exitagent;
     }
     if (supportedTypes & VIR_DOMAIN_GUEST_INFO_TIMEZONE) {
-        if (qemuAgentGetTimezone(agent, params, nparams, &maxparams) < 0
-            && types != 0)
+        rc = qemuAgentGetTimezone(agent, params, nparams, &maxparams);
+        if (rc < 0 && !(rc == -2 && types == 0))
             goto exitagent;
     }
     if (supportedTypes & VIR_DOMAIN_GUEST_INFO_HOSTNAME) {
-        if (qemuAgentGetHostname(agent, &hostname) < 0) {
-            if (types != 0)
-                goto exitagent;
+        rc = qemuAgentGetHostname(agent, &hostname);
+        if (rc < 0 && !(rc == -2 && types == 0)) {
+            goto exitagent;
         } else {
             if (virTypedParamsAddString(params, nparams, &maxparams, "hostname",
                                         hostname) < 0)
@@ -23271,8 +23272,8 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
         }
     }
     if (supportedTypes & VIR_DOMAIN_GUEST_INFO_FILESYSTEM) {
-        if (qemuAgentGetFSInfoParams(agent, params, nparams, &maxparams, vm->def) < 0 &&
-            types != 0)
+        rc = qemuAgentGetFSInfoParams(agent, params, nparams, &maxparams, vm->def);
+        if (rc < 0 && !(rc == -2 && types == 0))
             goto exitagent;
     }
 

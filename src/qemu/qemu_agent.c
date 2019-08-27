@@ -995,6 +995,26 @@ qemuAgentStringifyErrorClass(const char *klass)
         return "unknown QEMU command error";
 }
 
+/* Checks whether the agent reply msg is an error caused by an unsupported
+ * command.
+ *
+ * Returns true when reply is CommandNotFound or CommandDisabled
+ *         false otherwise
+ */
+static bool
+qemuAgentErrorCommandUnsupported(virJSONValuePtr reply)
+{
+    const char *klass;
+    virJSONValuePtr error = virJSONValueObjectGet(reply, "error");
+
+    if (!error)
+        return false;
+
+    klass = virJSONValueObjectGetString(error, "class");
+    return STREQ_NULLABLE(klass, "CommandNotFound") ||
+        STREQ_NULLABLE(klass, "CommandDisabled");
+}
+
 /* Ignoring OOM in this method, since we're already reporting
  * a more important error
  *
@@ -1708,8 +1728,11 @@ qemuAgentGetHostname(qemuAgentPtr mon,
         return ret;
 
     if (qemuAgentCommand(mon, cmd, &reply, true,
-                         VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0)
+                         VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0) {
+        if (qemuAgentErrorCommandUnsupported(reply))
+            ret = -2;
         goto cleanup;
+    }
 
     if (!(data = virJSONValueObjectGet(reply, "return"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2005,6 +2028,10 @@ qemuAgentGetFSInfoInternalDisk(virJSONValuePtr jsondisks,
     return 0;
 }
 
+/* Returns: 0 on success
+ *          -2 when agent command is not supported by the agent
+ *          -1 otherwise
+ */
 static int
 qemuAgentGetFSInfoInternal(qemuAgentPtr mon,
                            qemuAgentFSInfoPtr **info,
@@ -2023,8 +2050,11 @@ qemuAgentGetFSInfoInternal(qemuAgentPtr mon,
         return ret;
 
     if (qemuAgentCommand(mon, cmd, &reply, true,
-                         VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0)
+                         VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0) {
+        if (qemuAgentErrorCommandUnsupported(reply))
+            ret = -2;
         goto cleanup;
+    }
 
     if (!(data = virJSONValueObjectGet(reply, "return"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2141,6 +2171,9 @@ qemuAgentGetFSInfoInternal(qemuAgentPtr mon,
     return ret;
 }
 
+/* Returns: 0 on success
+ *          -1 otherwise
+ */
 int
 qemuAgentGetFSInfo(qemuAgentPtr mon,
                    virDomainFSInfoPtr **info,
@@ -2178,6 +2211,10 @@ qemuAgentGetFSInfo(qemuAgentPtr mon,
     return ret;
 }
 
+/* Returns: 0 on success
+ *          -2 when agent command is not supported by the agent
+ *          -1 otherwise
+ */
 int
 qemuAgentGetFSInfoParams(qemuAgentPtr mon,
                          virTypedParameterPtr *params,
@@ -2190,7 +2227,7 @@ qemuAgentGetFSInfoParams(qemuAgentPtr mon,
     int nfs;
 
     if ((nfs = qemuAgentGetFSInfoInternal(mon, &fsinfo, vmdef)) < 0)
-        return -1;
+        return nfs;
 
     if (virTypedParamsAddUInt(params, nparams, maxparams,
                               "fs.count", nfs) < 0)
@@ -2499,6 +2536,10 @@ qemuAgentSetUserPassword(qemuAgentPtr mon,
     return ret;
 }
 
+/* Returns: 0 on success
+ *          -2 when agent command is not supported by the agent
+ *          -1 otherwise
+ */
 int
 qemuAgentGetUsers(qemuAgentPtr mon,
                   virTypedParameterPtr *params,
@@ -2515,8 +2556,11 @@ qemuAgentGetUsers(qemuAgentPtr mon,
         return -1;
 
     if (qemuAgentCommand(mon, cmd, &reply, true,
-                         VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0)
+                         VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0) {
+        if (qemuAgentErrorCommandUnsupported(reply))
+            return -2;
         return -1;
+    }
 
     if (!(data = virJSONValueObjectGetArray(reply, "return"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2584,6 +2628,10 @@ qemuAgentGetUsers(qemuAgentPtr mon,
     return ndata;
 }
 
+/* Returns: 0 on success
+ *          -2 when agent command is not supported by the agent
+ *          -1 otherwise
+ */
 int
 qemuAgentGetOSInfo(qemuAgentPtr mon,
                    virTypedParameterPtr *params,
@@ -2598,8 +2646,11 @@ qemuAgentGetOSInfo(qemuAgentPtr mon,
         return -1;
 
     if (qemuAgentCommand(mon, cmd, &reply, true,
-                         VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0)
+                         VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0) {
+        if (qemuAgentErrorCommandUnsupported(reply))
+            return -2;
         return -1;
+    }
 
     if (!(data = virJSONValueObjectGetObject(reply, "return"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2631,6 +2682,10 @@ qemuAgentGetOSInfo(qemuAgentPtr mon,
     return 0;
 }
 
+/* Returns: 0 on success
+ *          -2 when agent command is not supported by the agent
+ *          -1 otherwise
+ */
 int
 qemuAgentGetTimezone(qemuAgentPtr mon,
                      virTypedParameterPtr *params,
@@ -2647,8 +2702,11 @@ qemuAgentGetTimezone(qemuAgentPtr mon,
         return -1;
 
     if (qemuAgentCommand(mon, cmd, &reply, true,
-                         VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0)
+                         VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0) {
+        if (qemuAgentErrorCommandUnsupported(reply))
+            return -2;
         return -1;
+    }
 
     if (!(data = virJSONValueObjectGetObject(reply, "return"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

@@ -462,7 +462,7 @@ testQemuAgentGetFSInfoParams(const void *data)
         goto cleanup;
 
     if (qemuAgentGetFSInfoParams(qemuMonitorTestGetAgent(test), &params,
-                                 &nparams, &maxparams, def) != -1) {
+                                 &nparams, &maxparams, def) != -2) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "agent get-fsinfo command should have failed");
         goto cleanup;
