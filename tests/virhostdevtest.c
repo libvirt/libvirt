@@ -141,7 +141,7 @@ testVirHostdevPreparePCIHostdevs_unmanaged(void)
     inactive_count = virPCIDeviceListCount(mgr->inactivePCIHostdevs);
 
     /* Test normal functionality */
-    VIR_DEBUG("Test 0 hostdevs");
+    VIR_TEST_DEBUG("Test 0 hostdevs");
     if (virHostdevPreparePCIDevices(mgr, drv_name, dom_name, uuid,
                                     NULL, 0, 0) < 0)
         return -1;
@@ -149,7 +149,7 @@ testVirHostdevPreparePCIHostdevs_unmanaged(void)
     CHECK_PCI_LIST_COUNT(mgr->inactivePCIHostdevs, inactive_count);
 
     /* Test unmanaged hostdevs */
-    VIR_DEBUG("Test >=1 unmanaged hostdevs");
+    VIR_TEST_DEBUG("Test >=1 unmanaged hostdevs");
     if (virHostdevPreparePCIDevices(mgr, drv_name, dom_name, uuid,
                                     hostdevs, nhostdevs, 0) < 0)
         return -1;
@@ -159,21 +159,21 @@ testVirHostdevPreparePCIHostdevs_unmanaged(void)
     /* Test conflict */
     active_count = virPCIDeviceListCount(mgr->activePCIHostdevs);
     inactive_count = virPCIDeviceListCount(mgr->inactivePCIHostdevs);
-    VIR_DEBUG("Test: prepare same hostdevs for same driver/domain again");
+    VIR_TEST_DEBUG("Test: prepare same hostdevs for same driver/domain again");
     if (virHostdevPreparePCIDevices(mgr, drv_name, dom_name, uuid,
                                     &hostdevs[0], 1, 0) == 0)
         return -1;
     CHECK_PCI_LIST_COUNT(mgr->activePCIHostdevs, active_count);
     CHECK_PCI_LIST_COUNT(mgr->inactivePCIHostdevs, inactive_count);
 
-    VIR_DEBUG("Test: prepare same hostdevs for same driver, diff domain again");
+    VIR_TEST_DEBUG("Test: prepare same hostdevs for same driver, diff domain again");
     if (virHostdevPreparePCIDevices(mgr, drv_name, "test_domain1", uuid,
                                     &hostdevs[1], 1, 0) == 0)
         return -1;
     CHECK_PCI_LIST_COUNT(mgr->activePCIHostdevs, active_count);
     CHECK_PCI_LIST_COUNT(mgr->inactivePCIHostdevs, inactive_count);
 
-    VIR_DEBUG("Test: prepare same hostdevs for diff driver/domain again");
+    VIR_TEST_DEBUG("Test: prepare same hostdevs for diff driver/domain again");
     if (virHostdevPreparePCIDevices(mgr, "test_driver1", dom_name, uuid,
                                     &hostdevs[2], 1, 0) == 0)
         return -1;
@@ -190,7 +190,7 @@ testVirHostdevReAttachPCIHostdevs_unmanaged(void)
 
     for (i = 0; i < nhostdevs; i++) {
         if (hostdevs[i]->managed != false) {
-            VIR_DEBUG("invalid test");
+            VIR_TEST_DEBUG("invalid test");
             return -1;
         }
     }
@@ -198,12 +198,12 @@ testVirHostdevReAttachPCIHostdevs_unmanaged(void)
     active_count = virPCIDeviceListCount(mgr->activePCIHostdevs);
     inactive_count = virPCIDeviceListCount(mgr->inactivePCIHostdevs);
 
-    VIR_DEBUG("Test 0 hostdevs");
+    VIR_TEST_DEBUG("Test 0 hostdevs");
     virHostdevReAttachPCIDevices(mgr, drv_name, dom_name, NULL, 0, NULL);
     CHECK_PCI_LIST_COUNT(mgr->activePCIHostdevs, active_count);
     CHECK_PCI_LIST_COUNT(mgr->inactivePCIHostdevs, inactive_count);
 
-    VIR_DEBUG("Test >=1 unmanaged hostdevs");
+    VIR_TEST_DEBUG("Test >=1 unmanaged hostdevs");
     virHostdevReAttachPCIDevices(mgr, drv_name, dom_name,
                                   hostdevs, nhostdevs, NULL);
     CHECK_PCI_LIST_COUNT(mgr->activePCIHostdevs, active_count - nhostdevs);
@@ -224,7 +224,7 @@ testVirHostdevPreparePCIHostdevs_managed(bool mixed)
     inactive_count = virPCIDeviceListCount(mgr->inactivePCIHostdevs);
 
     /* Test normal functionality */
-    VIR_DEBUG("Test >=1 hostdevs");
+    VIR_TEST_DEBUG("Test >=1 hostdevs");
     if (virHostdevPreparePCIDevices(mgr, drv_name, dom_name, uuid,
                                      hostdevs, nhostdevs, 0) < 0)
         return -1;
@@ -240,21 +240,21 @@ testVirHostdevPreparePCIHostdevs_managed(bool mixed)
     /* Test conflict */
     active_count = virPCIDeviceListCount(mgr->activePCIHostdevs);
     inactive_count = virPCIDeviceListCount(mgr->inactivePCIHostdevs);
-    VIR_DEBUG("Test: prepare same hostdevs for same driver/domain again");
+    VIR_TEST_DEBUG("Test: prepare same hostdevs for same driver/domain again");
     if (virHostdevPreparePCIDevices(mgr, drv_name, dom_name, uuid,
                                     &hostdevs[0], 1, 0) == 0)
         return -1;
     CHECK_PCI_LIST_COUNT(mgr->activePCIHostdevs, active_count);
     CHECK_PCI_LIST_COUNT(mgr->inactivePCIHostdevs, inactive_count);
 
-    VIR_DEBUG("Test: prepare same hostdevs for same driver, diff domain again");
+    VIR_TEST_DEBUG("Test: prepare same hostdevs for same driver, diff domain again");
     if (virHostdevPreparePCIDevices(mgr, drv_name, "test_domain1", uuid,
                                     &hostdevs[1], 1, 0) == 0)
         return -1;
     CHECK_PCI_LIST_COUNT(mgr->activePCIHostdevs, active_count);
     CHECK_PCI_LIST_COUNT(mgr->inactivePCIHostdevs, inactive_count);
 
-    VIR_DEBUG("Test: prepare same hostdevs for diff driver/domain again");
+    VIR_TEST_DEBUG("Test: prepare same hostdevs for diff driver/domain again");
     if (virHostdevPreparePCIDevices(mgr, "test_driver1", dom_name, uuid,
                                     &hostdevs[2], 1, 0) == 0)
         return -1;
@@ -271,7 +271,7 @@ testVirHostdevReAttachPCIHostdevs_managed(bool mixed)
 
     for (i = 0; i < nhostdevs; i++) {
         if (hostdevs[i]->managed != true) {
-            VIR_DEBUG("invalid test");
+            VIR_TEST_DEBUG("invalid test");
             return -1;
         }
     }
@@ -279,12 +279,12 @@ testVirHostdevReAttachPCIHostdevs_managed(bool mixed)
     active_count = virPCIDeviceListCount(mgr->activePCIHostdevs);
     inactive_count = virPCIDeviceListCount(mgr->inactivePCIHostdevs);
 
-    VIR_DEBUG("Test 0 hostdevs");
+    VIR_TEST_DEBUG("Test 0 hostdevs");
     virHostdevReAttachPCIDevices(mgr, drv_name, dom_name, NULL, 0, NULL);
     CHECK_PCI_LIST_COUNT(mgr->activePCIHostdevs, active_count);
     CHECK_PCI_LIST_COUNT(mgr->inactivePCIHostdevs, inactive_count);
 
-    VIR_DEBUG("Test >=1 hostdevs");
+    VIR_TEST_DEBUG("Test >=1 hostdevs");
     virHostdevReAttachPCIDevices(mgr, drv_name, dom_name,
                                   hostdevs, nhostdevs, NULL);
     CHECK_PCI_LIST_COUNT(mgr->activePCIHostdevs, active_count - nhostdevs);
@@ -357,14 +357,14 @@ testVirHostdevUpdateActivePCIHostdevs(void)
     active_count = virPCIDeviceListCount(mgr->activePCIHostdevs);
     inactive_count = virPCIDeviceListCount(mgr->inactivePCIHostdevs);
 
-    VIR_DEBUG("Test 0 hostdevs");
+    VIR_TEST_DEBUG("Test 0 hostdevs");
     if (virHostdevUpdateActivePCIDevices(mgr, NULL, 0,
                                          drv_name, dom_name) < 0)
         return -1;
     CHECK_PCI_LIST_COUNT(mgr->activePCIHostdevs, active_count);
     CHECK_PCI_LIST_COUNT(mgr->inactivePCIHostdevs, inactive_count);
 
-    VIR_DEBUG("Test >=1 hostdevs");
+    VIR_TEST_DEBUG("Test >=1 hostdevs");
     if (virHostdevUpdateActivePCIDevices(mgr, hostdevs, nhostdevs,
                                          drv_name, dom_name) < 0)
         return -1;
