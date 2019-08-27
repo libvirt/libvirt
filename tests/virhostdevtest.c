@@ -161,22 +161,22 @@ testVirHostdevPreparePCIHostdevs_unmanaged(void)
     active_count = virPCIDeviceListCount(mgr->activePCIHostdevs);
     inactive_count = virPCIDeviceListCount(mgr->inactivePCIHostdevs);
     VIR_DEBUG("Test: prepare same hostdevs for same driver/domain again");
-    if (!virHostdevPreparePCIDevices(mgr, drv_name, dom_name, uuid,
-                                     &hostdevs[0], 1, 0))
+    if (virHostdevPreparePCIDevices(mgr, drv_name, dom_name, uuid,
+                                    &hostdevs[0], 1, 0) == 0)
         goto cleanup;
     CHECK_PCI_LIST_COUNT(mgr->activePCIHostdevs, active_count);
     CHECK_PCI_LIST_COUNT(mgr->inactivePCIHostdevs, inactive_count);
 
     VIR_DEBUG("Test: prepare same hostdevs for same driver, diff domain again");
-    if (!virHostdevPreparePCIDevices(mgr, drv_name, "test_domain1", uuid,
-                                     &hostdevs[1], 1, 0))
+    if (virHostdevPreparePCIDevices(mgr, drv_name, "test_domain1", uuid,
+                                    &hostdevs[1], 1, 0) == 0)
         goto cleanup;
     CHECK_PCI_LIST_COUNT(mgr->activePCIHostdevs, active_count);
     CHECK_PCI_LIST_COUNT(mgr->inactivePCIHostdevs, inactive_count);
 
     VIR_DEBUG("Test: prepare same hostdevs for diff driver/domain again");
-    if (!virHostdevPreparePCIDevices(mgr, "test_driver1", dom_name, uuid,
-                                     &hostdevs[2], 1, 0))
+    if (virHostdevPreparePCIDevices(mgr, "test_driver1", dom_name, uuid,
+                                    &hostdevs[2], 1, 0) == 0)
         goto cleanup;
     CHECK_PCI_LIST_COUNT(mgr->activePCIHostdevs, active_count);
     CHECK_PCI_LIST_COUNT(mgr->inactivePCIHostdevs, inactive_count);
@@ -252,22 +252,22 @@ testVirHostdevPreparePCIHostdevs_managed(bool mixed)
     active_count = virPCIDeviceListCount(mgr->activePCIHostdevs);
     inactive_count = virPCIDeviceListCount(mgr->inactivePCIHostdevs);
     VIR_DEBUG("Test: prepare same hostdevs for same driver/domain again");
-    if (!virHostdevPreparePCIDevices(mgr, drv_name, dom_name, uuid,
-                                      &hostdevs[0], 1, 0))
+    if (virHostdevPreparePCIDevices(mgr, drv_name, dom_name, uuid,
+                                    &hostdevs[0], 1, 0) == 0)
         goto cleanup;
     CHECK_PCI_LIST_COUNT(mgr->activePCIHostdevs, active_count);
     CHECK_PCI_LIST_COUNT(mgr->inactivePCIHostdevs, inactive_count);
 
     VIR_DEBUG("Test: prepare same hostdevs for same driver, diff domain again");
-    if (!virHostdevPreparePCIDevices(mgr, drv_name, "test_domain1", uuid,
-                                      &hostdevs[1], 1, 0))
+    if (virHostdevPreparePCIDevices(mgr, drv_name, "test_domain1", uuid,
+                                    &hostdevs[1], 1, 0) == 0)
         goto cleanup;
     CHECK_PCI_LIST_COUNT(mgr->activePCIHostdevs, active_count);
     CHECK_PCI_LIST_COUNT(mgr->inactivePCIHostdevs, inactive_count);
 
     VIR_DEBUG("Test: prepare same hostdevs for diff driver/domain again");
-    if (!virHostdevPreparePCIDevices(mgr, "test_driver1", dom_name, uuid,
-                                      &hostdevs[2], 1, 0))
+    if (virHostdevPreparePCIDevices(mgr, "test_driver1", dom_name, uuid,
+                                    &hostdevs[2], 1, 0) == 0)
         goto cleanup;
     CHECK_PCI_LIST_COUNT(mgr->activePCIHostdevs, active_count);
     CHECK_PCI_LIST_COUNT(mgr->inactivePCIHostdevs, inactive_count);
