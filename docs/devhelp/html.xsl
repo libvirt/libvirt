@@ -173,7 +173,7 @@
   <xsl:template mode="details" match="struct">
     <xsl:variable name="name" select="string(@name)"/>
     <div class="refsect2" lang="en">
-    <h3><a name="{$name}">Structure </a><xsl:value-of select="$name"/></h3>
+    <h3><a id="{$name}">Structure </a><xsl:value-of select="$name"/></h3>
     <pre class="programlisting">
     <xsl:value-of select="@type"/><xsl:text> {
 </xsl:text>
@@ -214,7 +214,7 @@
   <xsl:template mode="details" match="typedef[@type != 'enum']">
     <xsl:variable name="name" select="string(@name)"/>
     <div class="refsect2" lang="en">
-    <h3><a name="{$name}">Typedef </a><xsl:value-of select="$name"/></h3>
+    <h3><a id="{$name}">Typedef </a><xsl:value-of select="$name"/></h3>
     <pre class="programlisting">
     <xsl:call-template name="dumptext">
       <xsl:with-param name="text" select="string(@type)"/>
@@ -236,7 +236,7 @@
   <xsl:template mode="details" match="variable">
     <xsl:variable name="name" select="string(@name)"/>
     <div class="refsect2" lang="en">
-    <h3><a name="{$name}">Variable </a><xsl:value-of select="$name"/></h3>
+    <h3><a id="{$name}">Variable </a><xsl:value-of select="$name"/></h3>
     <pre class="programlisting">
     <xsl:call-template name="dumptext">
       <xsl:with-param name="text" select="string(@type)"/>
@@ -258,7 +258,7 @@
   <xsl:template mode="details" match="typedef[@type = 'enum']">
     <xsl:variable name="name" select="string(@name)"/>
     <div class="refsect2" lang="en">
-    <h3><a name="{$name}">Enum </a><xsl:value-of select="$name"/></h3>
+    <h3><a id="{$name}">Enum </a><xsl:value-of select="$name"/></h3>
     <pre class="programlisting">
     <xsl:text>enum </xsl:text>
     <a href="#{$name}"><xsl:value-of select="$name"/></a>
@@ -267,7 +267,7 @@
     <xsl:for-each select="/api/symbols/enum[@type=$name]">
       <xsl:sort select="@value" data-type="number" order="ascending"/>
       <xsl:text>    </xsl:text>
-      <a name="{@name}"><xsl:value-of select="@name"/></a>
+      <a id="{@name}"><xsl:value-of select="@name"/></a>
       <xsl:if test="@value">
         <xsl:text> = </xsl:text>
 	<xsl:value-of select="@value"/>
@@ -295,7 +295,7 @@
   <xsl:template mode="details" match="macro">
     <xsl:variable name="name" select="string(@name)"/>
     <div class="refsect2" lang="en">
-    <h3><a name="{$name}">Macro </a><xsl:value-of select="$name"/></h3>
+    <h3><a id="{$name}">Macro </a><xsl:value-of select="$name"/></h3>
     <pre class="programlisting">
     <xsl:text>#define </xsl:text>
     <a href="#{$name}"><xsl:value-of select="$name"/></a>
@@ -342,7 +342,7 @@
     <xsl:variable name="tlen" select="string-length(return/@type)"/>
     <xsl:variable name="blen" select="(($nlen + 8) - (($nlen + 8) mod 8)) + (($tlen + 8) - (($tlen + 8) mod 8))"/>
     <div class="refsect2" lang="en">
-    <h3><a name="{$name}"></a><xsl:value-of select="$name"/> ()</h3>
+    <h3><a id="{$name}"></a><xsl:value-of select="$name"/> ()</h3>
     <pre class="programlisting">
     <xsl:call-template name="dumptext">
       <xsl:with-param name="text" select="return/@type"/>
@@ -419,7 +419,7 @@
     <xsl:variable name="tlen" select="string-length(return/@type)"/>
     <xsl:variable name="blen" select="(($nlen + 8) - (($nlen + 8) mod 8)) + (($tlen + 8) - (($tlen + 8) mod 8))"/>
     <div class="refsect2" lang="en">
-    <h3><a name="{$name}"></a>Function type <xsl:value-of select="$name"/> </h3>
+    <h3><a id="{$name}"></a>Function type <xsl:value-of select="$name"/> </h3>
     <pre class="programlisting">
     <xsl:call-template name="dumptext">
       <xsl:with-param name="text" select="return/@type"/>

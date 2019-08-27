@@ -6,14 +6,14 @@
 
     <ul id="toc"></ul>
 
-    <h2><a name="description">Description</a></h2>
+    <h2><a id="description">Description</a></h2>
 
     <p>
       libvirt-dbus wraps libvirt API to provide a high-level object-oriented
       API better suited for dbus-based applications.
     </p>
 
-    <h2><a name="git">GIT source repository</a></h2>
+    <h2><a id="git">GIT source repository</a></h2>
     <p>
       The D-Bus bindings source code is maintained in a
       <a href="https://git-scm.com/">git</a> repository available on
@@ -32,7 +32,7 @@ git clone https://libvirt.org/git/libvirt-dbus.git
 <a href="https://libvirt.org/git/?p=libvirt-dbus.git">https://libvirt.org/git/?p=libvirt-dbus.git</a>
 </pre>
 
-    <h2><a name="usage">Usage</a></h2>
+    <h2><a id="usage">Usage</a></h2>
 
     <p>
       libvirt-dbus exports libvirt API using D-Bus objects with methods and

@@ -258,7 +258,7 @@
       </xsl:call-template>
     </span>
     <xsl:text> </xsl:text>
-    <a name="{@name}"></a>
+    <a id="{@name}"></a>
     <xsl:value-of select="@name"/>
     <xsl:text>
 </xsl:text>
@@ -281,7 +281,7 @@
           </xsl:call-template>
         </span>
 	<xsl:text> </xsl:text>
-	<a name="{$name}"><xsl:value-of select="$name"/></a>
+	<a id="{$name}"><xsl:value-of select="$name"/></a>
 	<xsl:text>
 </xsl:text>
       </xsl:otherwise>
@@ -320,7 +320,7 @@
         <xsl:for-each select="/api/symbols/enum[@type = $name]">
           <xsl:sort select="@value" data-type="number" order="ascending"/>
           <tr>
-            <td><a name="{@name}"><xsl:value-of select="@name"/></a></td>
+            <td><a id="{@name}"><xsl:value-of select="@name"/></a></td>
             <td><xsl:text> = </xsl:text></td>
             <xsl:choose>
               <xsl:when test="@info != ''">

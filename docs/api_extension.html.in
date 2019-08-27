@@ -89,7 +89,7 @@
       separately.
     </p>
 
-    <h2><a name='publicapi'>Defining the public API</a></h2>
+    <h2><a id='publicapi'>Defining the public API</a></h2>
 
     <p>The first task is to define the public API.  If the new API
       involves an XML extension, you have to enhance the RelaxNG
@@ -119,7 +119,7 @@
       rework it as you go through the process of implementing it.
     </p>
 
-    <h2><a name='internalapi'>Defining the internal API</a></h2>
+    <h2><a id='internalapi'>Defining the internal API</a></h2>
 
     <p>
       Each public API call is associated with a driver, such as a host
@@ -146,7 +146,7 @@
       provide a <code>NULL</code> stub for the new function.
     </p>
 
-    <h2><a name='implpublic'>Implementing the public API</a></h2>
+    <h2><a id='implpublic'>Implementing the public API</a></h2>
 
     <p>
       Implementing the public API is largely a formality in which we wire up
@@ -179,7 +179,7 @@
 
     <p><code>src/libvirt-$MODULE.c</code></p>
 
-    <h2><a name='remoteproto'>Implementing the remote protocol</a></h2>
+    <h2><a id='remoteproto'>Implementing the remote protocol</a></h2>
 
     <p>
       Implementing the remote protocol is essentially a
@@ -187,7 +187,7 @@
       understood by referring to the existing code.
     </p>
 
-    <h3><a name='wireproto'>Defining the wire protocol format</a></h3>
+    <h3><a id='wireproto'>Defining the wire protocol format</a></h3>
 
     <p>
       Defining the wire protocol involves making additions to:
@@ -226,7 +226,7 @@
         src/remote/remote_protocol.h
     </code></p>
 
-    <h3><a name='rpcclient'>Implement the RPC client</a></h3>
+    <h3><a id='rpcclient'>Implement the RPC client</a></h3>
 
     <p>
       Implementing the RPC client uses the rpcgen generated .h files.

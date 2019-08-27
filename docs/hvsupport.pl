@@ -364,7 +364,7 @@ when it was removed is also mentioned (highlighted in
 EOF
 
     foreach my $grp (sort { $a cmp $b } keys %groups) {
-    print "<h2><a name=\"$grp\">", $groupheaders{$grp}, "</a></h2>\n";
+    print "<h2><a id=\"$grp\">", $groupheaders{$grp}, "</a></h2>\n";
     print <<EOF;
 <table class="top_table">
 <thead>
