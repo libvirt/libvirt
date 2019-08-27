@@ -5190,10 +5190,13 @@ qemuDomainDeviceDefValidateNetwork(const virDomainNetDef *net)
 
 
 static int
-qemuDomainMdevDefVFIOPCIValidate(const virDomainHostdevSubsysMediatedDev *dev,
+qemuDomainMdevDefVFIOPCIValidate(const virDomainHostdevDef *hostdev,
                                  const virDomainDef *def,
                                  virQEMUCapsPtr qemuCaps)
 {
+    const virDomainHostdevSubsysMediatedDev *dev;
+
+    dev = &hostdev->source.subsys.u.mdev;
     if (dev->display == VIR_TRISTATE_SWITCH_ABSENT)
         return 0;
 
@@ -5226,17 +5229,18 @@ qemuDomainMdevDefVFIOPCIValidate(const virDomainHostdevSubsysMediatedDev *dev,
 
 
 static int
-qemuDomainMdevDefVFIOAPValidate(const virDomainDef *def)
+qemuDomainMdevDefVFIOAPValidate(const virDomainHostdevDef *hostdev ATTRIBUTE_UNUSED,
+                                const virDomainDef *def)
 {
     size_t i;
     bool vfioap_found = false;
 
     /* VFIO-AP is restricted to a single mediated device only */
     for (i = 0; i < def->nhostdevs; i++) {
-        virDomainHostdevDefPtr hostdev = def->hostdevs[i];
+        virDomainHostdevDefPtr hdev = def->hostdevs[i];
 
-        if (virHostdevIsMdevDevice(hostdev) &&
-            hostdev->source.subsys.u.mdev.model == VIR_MDEV_MODEL_TYPE_VFIO_AP) {
+        if (virHostdevIsMdevDevice(hdev) &&
+            hdev->source.subsys.u.mdev.model == VIR_MDEV_MODEL_TYPE_VFIO_AP) {
             if (vfioap_found) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("Only one hostdev of model vfio-ap is "
@@ -5252,15 +5256,18 @@ qemuDomainMdevDefVFIOAPValidate(const virDomainDef *def)
 
 
 static int
-qemuDomainMdevDefValidate(const virDomainHostdevSubsysMediatedDev *mdevsrc,
+qemuDomainMdevDefValidate(const virDomainHostdevDef *hostdev,
                           const virDomainDef *def,
                           virQEMUCapsPtr qemuCaps)
 {
+    const virDomainHostdevSubsysMediatedDev *mdevsrc;
+
+    mdevsrc = &hostdev->source.subsys.u.mdev;
     switch ((virMediatedDeviceModelType) mdevsrc->model) {
     case VIR_MDEV_MODEL_TYPE_VFIO_PCI:
-        return qemuDomainMdevDefVFIOPCIValidate(mdevsrc, def, qemuCaps);
+        return qemuDomainMdevDefVFIOPCIValidate(hostdev, def, qemuCaps);
     case VIR_MDEV_MODEL_TYPE_VFIO_AP:
-        return qemuDomainMdevDefVFIOAPValidate(def);
+        return qemuDomainMdevDefVFIOAPValidate(hostdev, def);
     case VIR_MDEV_MODEL_TYPE_VFIO_CCW:
         break;
     case VIR_MDEV_MODEL_TYPE_LAST:
@@ -5279,8 +5286,6 @@ qemuDomainDeviceDefValidateHostdev(const virDomainHostdevDef *hostdev,
                                    const virDomainDef *def,
                                    virQEMUCapsPtr qemuCaps)
 {
-    const virDomainHostdevSubsysMediatedDev *mdevsrc;
-
     /* forbid capabilities mode hostdev in this kind of hypervisor */
     if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -5311,8 +5316,7 @@ qemuDomainDeviceDefValidateHostdev(const virDomainHostdevDef *hostdev,
                                  "supported by mediated devices"));
                 return -1;
             }
-            mdevsrc = &hostdev->source.subsys.u.mdev;
-            return qemuDomainMdevDefValidate(mdevsrc, def, qemuCaps);
+            return qemuDomainMdevDefValidate(hostdev, def, qemuCaps);
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
         default:
             virReportEnumRangeError(virDomainHostdevSubsysType,
