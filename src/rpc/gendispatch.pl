@@ -951,6 +951,7 @@ elsif ($mode eq "server") {
                     splice(@args_list, int($5), 0, "&$1_len");
 
                     push(@ret_list, "if (virTypedParamsSerialize($1, $1_len,\n" .
+                                    "                                $2,\n" .
                                     "                                (virTypedParameterRemotePtr *) &ret->$1.$1_val,\n" .
                                     "                                &ret->$1.$1_len,\n" .
                                     "                                VIR_TYPED_PARAM_STRING_OKAY) < 0)\n" .
@@ -1436,6 +1437,7 @@ elsif ($mode eq "client") {
                     push(@args_list, "virTypedParameterPtr $1");
                     push(@args_list, "int n$1");
                     push(@setters_list2, "if (virTypedParamsSerialize($1, n$1,\n" .
+                                         "                                $2,\n" .
                                          "                                (virTypedParameterRemotePtr *) &args.$1.$1_val,\n" .
                                          "                                &args.$1.$1_len,\n" .
                                          "                                VIR_TYPED_PARAM_STRING_OKAY) < 0) {\n" .

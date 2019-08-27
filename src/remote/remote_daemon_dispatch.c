@@ -1152,6 +1152,7 @@ remoteRelayDomainEventTunable(virConnectPtr conn,
         goto error;
 
     if (virTypedParamsSerialize(params, nparams,
+                                REMOTE_DOMAIN_EVENT_TUNABLE_MAX,
                                 (virTypedParameterRemotePtr *) &data.params.params_val,
                                 &data.params.params_len,
                                 VIR_TYPED_PARAM_STRING_OKAY) < 0) {
@@ -1318,6 +1319,7 @@ remoteRelayDomainEventJobCompleted(virConnectPtr conn,
         goto error;
 
     if (virTypedParamsSerialize(params, nparams,
+                                REMOTE_DOMAIN_JOB_STATS_MAX,
                                 (virTypedParameterRemotePtr *) &data.params.params_val,
                                 &data.params.params_len,
                                 VIR_TYPED_PARAM_STRING_OKAY) < 0) {
@@ -2450,6 +2452,7 @@ remoteDispatchDomainGetSchedulerParameters(virNetServerPtr server ATTRIBUTE_UNUS
         goto cleanup;
 
     if (virTypedParamsSerialize(params, nparams,
+                                REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX,
                                 (virTypedParameterRemotePtr *) &ret->params.params_val,
                                 &ret->params.params_len,
                                 0) < 0)
@@ -2498,6 +2501,7 @@ remoteDispatchDomainGetSchedulerParametersFlags(virNetServerPtr server ATTRIBUTE
         goto cleanup;
 
     if (virTypedParamsSerialize(params, nparams,
+                                REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX,
                                 (virTypedParameterRemotePtr *) &ret->params.params_val,
                                 &ret->params.params_len,
                                 args->flags) < 0)
@@ -2663,6 +2667,7 @@ remoteDispatchDomainBlockStatsFlags(virNetServerPtr server ATTRIBUTE_UNUSED,
 
     /* Serialize the block stats. */
     if (virTypedParamsSerialize(params, nparams,
+                                REMOTE_DOMAIN_BLOCK_STATS_PARAMETERS_MAX,
                                 (virTypedParameterRemotePtr *) &ret->params.params_val,
                                 &ret->params.params_len,
                                 args->flags) < 0)
@@ -3292,6 +3297,7 @@ remoteDispatchDomainGetMemoryParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
     }
 
     if (virTypedParamsSerialize(params, nparams,
+                                REMOTE_DOMAIN_MEMORY_PARAMETERS_MAX,
                                 (virTypedParameterRemotePtr *) &ret->params.params_val,
                                 &ret->params.params_len,
                                 args->flags) < 0)
@@ -3351,6 +3357,7 @@ remoteDispatchDomainGetNumaParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
     }
 
     if (virTypedParamsSerialize(params, nparams,
+                                REMOTE_DOMAIN_NUMA_PARAMETERS_MAX,
                                 (virTypedParameterRemotePtr *) &ret->params.params_val,
                                 &ret->params.params_len,
                                 flags) < 0)
@@ -3410,6 +3417,7 @@ remoteDispatchDomainGetBlkioParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
     }
 
     if (virTypedParamsSerialize(params, nparams,
+                                REMOTE_DOMAIN_BLKIO_PARAMETERS_MAX,
                                 (virTypedParameterRemotePtr *) &ret->params.params_val,
                                 &ret->params.params_len,
                                 args->flags) < 0)
@@ -3587,12 +3595,8 @@ remoteDispatchDomainGetLaunchSecurityInfo(virNetServerPtr server ATTRIBUTE_UNUSE
     if (virDomainGetLaunchSecurityInfo(dom, &params, &nparams, args->flags) < 0)
         goto cleanup;
 
-    if (nparams > REMOTE_DOMAIN_LAUNCH_SECURITY_INFO_PARAMS_MAX) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
-        goto cleanup;
-    }
-
     if (virTypedParamsSerialize(params, nparams,
+                                REMOTE_DOMAIN_LAUNCH_SECURITY_INFO_PARAMS_MAX,
                                 (virTypedParameterRemotePtr *) &ret->params.params_val,
                                 &ret->params.params_len,
                                 args->flags) < 0)
@@ -3631,12 +3635,8 @@ remoteDispatchDomainGetPerfEvents(virNetServerPtr server ATTRIBUTE_UNUSED,
     if (virDomainGetPerfEvents(dom, &params, &nparams, args->flags) < 0)
         goto cleanup;
 
-    if (nparams > REMOTE_DOMAIN_PERF_EVENTS_MAX) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
-        goto cleanup;
-    }
-
     if (virTypedParamsSerialize(params, nparams,
+                                REMOTE_DOMAIN_PERF_EVENTS_MAX,
                                 (virTypedParameterRemotePtr *) &ret->params.params_val,
                                 &ret->params.params_len,
                                 0) < 0)
@@ -3732,6 +3732,7 @@ remoteDispatchDomainGetBlockIoTune(virNetServerPtr server ATTRIBUTE_UNUSED,
 
     /* Serialize the block I/O tuning parameters. */
     if (virTypedParamsSerialize(params, nparams,
+                                REMOTE_DOMAIN_BLOCK_IO_TUNE_PARAMETERS_MAX,
                                 (virTypedParameterRemotePtr *) &ret->params.params_val,
                                 &ret->params.params_len,
                                 args->flags) < 0)
@@ -5289,6 +5290,7 @@ remoteDispatchDomainGetInterfaceParameters(virNetServerPtr server ATTRIBUTE_UNUS
     }
 
     if (virTypedParamsSerialize(params, nparams,
+                                REMOTE_DOMAIN_INTERFACE_PARAMETERS_MAX,
                                 (virTypedParameterRemotePtr *) &ret->params.params_val,
                                 &ret->params.params_len,
                                 flags) < 0)
@@ -5348,6 +5350,7 @@ remoteDispatchDomainGetCPUStats(virNetServerPtr server ATTRIBUTE_UNUSED,
         goto success;
 
     if (virTypedParamsSerialize(params, args->nparams * args->ncpus,
+                                REMOTE_DOMAIN_GET_CPU_STATS_MAX,
                                 (virTypedParameterRemotePtr *) &ret->params.params_val,
                                 &ret->params.params_len,
                                 args->flags) < 0)
@@ -5450,13 +5453,8 @@ remoteDispatchNodeGetSevInfo(virNetServerPtr server ATTRIBUTE_UNUSED,
     if (virNodeGetSEVInfo(conn, &params, &nparams, args->flags) < 0)
         goto cleanup;
 
-    if (nparams > REMOTE_NODE_SEV_INFO_MAX) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
-        goto cleanup;
-    }
-
-
     if (virTypedParamsSerialize(params, nparams,
+                                REMOTE_NODE_SEV_INFO_MAX,
                                 (virTypedParameterRemotePtr *) &ret->params.params_val,
                                 &ret->params.params_len,
                                 args->flags) < 0)
@@ -5511,6 +5509,7 @@ remoteDispatchNodeGetMemoryParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
     }
 
     if (virTypedParamsSerialize(params, nparams,
+                                REMOTE_NODE_MEMORY_PARAMETERS_MAX,
                                 (virTypedParameterRemotePtr *) &ret->params.params_val,
                                 &ret->params.params_len,
                                 args->flags) < 0)
@@ -5641,14 +5640,8 @@ remoteDispatchDomainGetJobStats(virNetServerPtr server ATTRIBUTE_UNUSED,
                              &nparams, args->flags) < 0)
         goto cleanup;
 
-    if (nparams > REMOTE_DOMAIN_JOB_STATS_MAX) {
-        virReportError(VIR_ERR_RPC,
-                       _("Too many job stats '%d' for limit '%d'"),
-                       nparams, REMOTE_DOMAIN_JOB_STATS_MAX);
-        goto cleanup;
-    }
-
     if (virTypedParamsSerialize(params, nparams,
+                                REMOTE_DOMAIN_JOB_STATS_MAX,
                                 (virTypedParameterRemotePtr *) &ret->params.params_val,
                                 &ret->params.params_len,
                                 0) < 0)
@@ -7018,6 +7011,7 @@ remoteDispatchConnectGetAllDomainStats(virNetServerPtr server ATTRIBUTE_UNUSED,
 
             if (virTypedParamsSerialize(retStats[i]->params,
                                         retStats[i]->nparams,
+                                        REMOTE_CONNECT_GET_ALL_DOMAIN_STATS_MAX,
                                         (virTypedParameterRemotePtr *) &dst->params.params_val,
                                         &dst->params.params_len,
                                         VIR_TYPED_PARAM_STRING_OKAY) < 0)
@@ -7370,12 +7364,8 @@ remoteDispatchNetworkPortGetParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
     if (virNetworkPortGetParameters(port, &params, &nparams, args->flags) < 0)
         goto cleanup;
 
-    if (nparams > REMOTE_NETWORK_PORT_PARAMETERS_MAX) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
-        goto cleanup;
-    }
-
     if (virTypedParamsSerialize(params, nparams,
+                                REMOTE_NETWORK_PORT_PARAMETERS_MAX,
                                 (virTypedParameterRemotePtr *) &ret->params.params_val,
                                 &ret->params.params_len,
                                 args->flags) < 0)
@@ -7674,14 +7664,8 @@ remoteDispatchDomainGetGuestInfo(virNetServerPtr server ATTRIBUTE_UNUSED,
     if (virDomainGetGuestInfo(dom, args->types, &params, &nparams, args->flags) < 0)
         goto cleanup;
 
-    if (nparams > REMOTE_DOMAIN_GUEST_INFO_PARAMS_MAX) {
-        virReportError(VIR_ERR_RPC,
-                       _("Too many params in guestinfo: %d for limit %d"),
-                       nparams, REMOTE_DOMAIN_GUEST_INFO_PARAMS_MAX);
-        goto cleanup;
-    }
-
     if (virTypedParamsSerialize(params, nparams,
+                                REMOTE_DOMAIN_GUEST_INFO_PARAMS_MAX,
                                 (virTypedParameterRemotePtr *) &ret->params.params_val,
                                 &ret->params.params_len,
                                 VIR_TYPED_PARAM_STRING_OKAY) < 0)

@@ -237,15 +237,8 @@ adminDispatchServerGetThreadpoolParameters(virNetServerPtr server ATTRIBUTE_UNUS
                                            args->flags) < 0)
         goto cleanup;
 
-    if (nparams > ADMIN_SERVER_THREADPOOL_PARAMETERS_MAX) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Number of threadpool parameters %d exceeds max "
-                         "allowed limit: %d"), nparams,
-                       ADMIN_SERVER_THREADPOOL_PARAMETERS_MAX);
-        goto cleanup;
-    }
-
     if (virTypedParamsSerialize(params, nparams,
+                                ADMIN_SERVER_THREADPOOL_PARAMETERS_MAX,
                                 (virTypedParameterRemotePtr *) &ret->params.params_val,
                                 &ret->params.params_len, 0) < 0)
         goto cleanup;
@@ -336,15 +329,8 @@ adminDispatchClientGetInfo(virNetServerPtr server ATTRIBUTE_UNUSED,
     if (adminClientGetInfo(clnt, &params, &nparams, args->flags) < 0)
         goto cleanup;
 
-    if (nparams > ADMIN_CLIENT_INFO_PARAMETERS_MAX) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Number of client info parameters %d exceeds max "
-                         "allowed limit: %d"), nparams,
-                       ADMIN_CLIENT_INFO_PARAMETERS_MAX);
-        goto cleanup;
-    }
-
     if (virTypedParamsSerialize(params, nparams,
+                                ADMIN_CLIENT_INFO_PARAMETERS_MAX,
                                 (virTypedParameterRemotePtr *) &ret->params.params_val,
                                 &ret->params.params_len,
                                 VIR_TYPED_PARAM_STRING_OKAY) < 0)
@@ -383,15 +369,8 @@ adminDispatchServerGetClientLimits(virNetServerPtr server ATTRIBUTE_UNUSED,
     if (adminServerGetClientLimits(srv, &params, &nparams, args->flags) < 0)
         goto cleanup;
 
-    if (nparams > ADMIN_SERVER_CLIENT_LIMITS_MAX) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Number of client processing parameters %d exceeds "
-                         "max allowed limit: %d"), nparams,
-                       ADMIN_SERVER_CLIENT_LIMITS_MAX);
-        goto cleanup;
-    }
-
     if (virTypedParamsSerialize(params, nparams,
+                                ADMIN_SERVER_CLIENT_LIMITS_MAX,
                                 (virTypedParameterRemotePtr *) &ret->params.params_val,
                                 &ret->params.params_len, 0) < 0)
         goto cleanup;

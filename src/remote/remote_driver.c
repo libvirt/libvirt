@@ -7109,14 +7109,8 @@ remoteDomainMigrateBegin3Params(virDomainPtr domain,
     make_nonnull_domain(&args.dom, domain);
     args.flags = flags;
 
-    if (nparams > REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX) {
-        virReportError(VIR_ERR_RPC,
-                       _("Too many migration parameters '%d' for limit '%d'"),
-                       nparams, REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX);
-        goto cleanup;
-    }
-
     if (virTypedParamsSerialize(params, nparams,
+                                REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX,
                                 (virTypedParameterRemotePtr *) &args.params.params_val,
                                 &args.params.params_len,
                                 VIR_TYPED_PARAM_STRING_OKAY) < 0) {
@@ -7177,14 +7171,8 @@ remoteDomainMigratePrepare3Params(virConnectPtr dconn,
     memset(&args, 0, sizeof(args));
     memset(&ret, 0, sizeof(ret));
 
-    if (nparams > REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX) {
-        virReportError(VIR_ERR_RPC,
-                       _("Too many migration parameters '%d' for limit '%d'"),
-                       nparams, REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX);
-        goto cleanup;
-    }
-
     if (virTypedParamsSerialize(params, nparams,
+                                REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX,
                                 (virTypedParameterRemotePtr *) &args.params.params_val,
                                 &args.params.params_len,
                                 VIR_TYPED_PARAM_STRING_OKAY) < 0) {
@@ -7261,18 +7249,12 @@ remoteDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
     memset(&args, 0, sizeof(args));
     memset(&ret, 0, sizeof(ret));
 
-    if (nparams > REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX) {
-        virReportError(VIR_ERR_RPC,
-                       _("Too many migration parameters '%d' for limit '%d'"),
-                       nparams, REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX);
-        goto cleanup;
-    }
-
     args.cookie_in.cookie_in_val = (char *)cookiein;
     args.cookie_in.cookie_in_len = cookieinlen;
     args.flags = flags;
 
     if (virTypedParamsSerialize(params, nparams,
+                                REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX,
                                 (virTypedParameterRemotePtr *) &args.params.params_val,
                                 &args.params.params_len,
                                 VIR_TYPED_PARAM_STRING_OKAY) < 0) {
@@ -7351,13 +7333,6 @@ remoteDomainMigratePerform3Params(virDomainPtr dom,
     memset(&args, 0, sizeof(args));
     memset(&ret, 0, sizeof(ret));
 
-    if (nparams > REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX) {
-        virReportError(VIR_ERR_RPC,
-                       _("Too many migration parameters '%d' for limit '%d'"),
-                       nparams, REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX);
-        goto cleanup;
-    }
-
     make_nonnull_domain(&args.dom, dom);
     args.dconnuri = dconnuri == NULL ? NULL : (char **) &dconnuri;
     args.cookie_in.cookie_in_val = (char *)cookiein;
@@ -7365,6 +7340,7 @@ remoteDomainMigratePerform3Params(virDomainPtr dom,
     args.flags = flags;
 
     if (virTypedParamsSerialize(params, nparams,
+                                REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX,
                                 (virTypedParameterRemotePtr *) &args.params.params_val,
                                 &args.params.params_len,
                                 VIR_TYPED_PARAM_STRING_OKAY) < 0) {
@@ -7425,19 +7401,13 @@ remoteDomainMigrateFinish3Params(virConnectPtr dconn,
     memset(&args, 0, sizeof(args));
     memset(&ret, 0, sizeof(ret));
 
-    if (nparams > REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX) {
-        virReportError(VIR_ERR_RPC,
-                       _("Too many migration parameters '%d' for limit '%d'"),
-                       nparams, REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX);
-        goto cleanup;
-    }
-
     args.cookie_in.cookie_in_val = (char *)cookiein;
     args.cookie_in.cookie_in_len = cookieinlen;
     args.flags = flags;
     args.cancelled = cancelled;
 
     if (virTypedParamsSerialize(params, nparams,
+                                REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX,
                                 (virTypedParameterRemotePtr *) &args.params.params_val,
                                 &args.params.params_len,
                                 VIR_TYPED_PARAM_STRING_OKAY) < 0) {
@@ -7499,13 +7469,6 @@ remoteDomainMigrateConfirm3Params(virDomainPtr domain,
 
     memset(&args, 0, sizeof(args));
 
-    if (nparams > REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX) {
-        virReportError(VIR_ERR_RPC,
-                       _("Too many migration parameters '%d' for limit '%d'"),
-                       nparams, REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX);
-        goto cleanup;
-    }
-
     make_nonnull_domain(&args.dom, domain);
     args.cookie_in.cookie_in_len = cookieinlen;
     args.cookie_in.cookie_in_val = (char *) cookiein;
@@ -7513,6 +7476,7 @@ remoteDomainMigrateConfirm3Params(virDomainPtr domain,
     args.cancelled = cancelled;
 
     if (virTypedParamsSerialize(params, nparams,
+                                REMOTE_DOMAIN_MIGRATE_PARAM_LIST_MAX,
                                 (virTypedParameterRemotePtr *) &args.params.params_val,
                                 &args.params.params_len,
                                 VIR_TYPED_PARAM_STRING_OKAY) < 0) {

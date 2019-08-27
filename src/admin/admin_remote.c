@@ -294,6 +294,7 @@ remoteAdminServerSetThreadPoolParameters(virAdmServerPtr srv,
     virObjectLock(priv);
 
     if (virTypedParamsSerialize(params, nparams,
+                                ADMIN_SERVER_THREADPOOL_PARAMETERS_MAX,
                                 (virTypedParameterRemotePtr *) &args.params.params_val,
                                 &args.params.params_len,
                                 0) < 0)
@@ -405,6 +406,7 @@ remoteAdminServerSetClientLimits(virAdmServerPtr srv,
     virObjectLock(priv);
 
     if (virTypedParamsSerialize(params, nparams,
+                                ADMIN_SERVER_CLIENT_LIMITS_MAX,
                                 (virTypedParameterRemotePtr *) &args.params.params_val,
                                 &args.params.params_len,
                                 0) < 0)

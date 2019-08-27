@@ -113,6 +113,7 @@ int virTypedParamsDeserialize(virTypedParameterRemotePtr remote_params,
 
 int virTypedParamsSerialize(virTypedParameterPtr params,
                             int nparams,
+                            int limit,
                             virTypedParameterRemotePtr *remote_params_val,
                             unsigned int *remote_params_len,
                             unsigned int flags);

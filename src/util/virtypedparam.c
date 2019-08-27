@@ -1480,12 +1480,15 @@ virTypedParamsDeserialize(virTypedParameterRemotePtr remote_params,
  * virTypedParamsSerialize:
  * @params: array of parameters to be serialized and later sent to remote side
  * @nparams: number of elements in @params
+ * @limit: user specified maximum limit to @remote_params_len
  * @remote_params_val: protocol independent remote representation of @params
  * @remote_params_len: the final number of elements in @remote_params_val
  * @flags: bitwise-OR of virTypedParameterFlags
  *
  * This method serializes typed parameters provided by @params into
  * @remote_params_val which is the representation actually being sent.
+ * It also checks, if the @limit imposed by RPC on the maximum number of
+ * parameters is not exceeded.
  *
  * Server side using this method also filters out any string parameters that
  * must not be returned to older clients and handles possibly sparse arrays
@@ -1496,6 +1499,7 @@ virTypedParamsDeserialize(virTypedParameterRemotePtr remote_params,
 int
 virTypedParamsSerialize(virTypedParameterPtr params,
                         int nparams,
+                        int limit,
                         virTypedParameterRemotePtr *remote_params_val,
                         unsigned int *remote_params_len,
                         unsigned int flags)
@@ -1503,8 +1507,15 @@ virTypedParamsSerialize(virTypedParameterPtr params,
     size_t i;
     size_t j;
     int rv = -1;
-    virTypedParameterRemotePtr params_val;
+    virTypedParameterRemotePtr params_val = NULL;
     int params_len = nparams;
+
+    if (nparams > limit) {
+        virReportError(VIR_ERR_RPC,
+                       _("too many parameters '%d' for limit '%d'"),
+                       nparams, limit);
+        goto cleanup;
+    }
 
     if (VIR_ALLOC_N(params_val, nparams) < 0)
         goto cleanup;
