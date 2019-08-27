@@ -14051,6 +14051,86 @@ cmdDomFSInfo(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
+/*
+ * "guestinfo" command
+ */
+static const vshCmdInfo info_guestinfo[] = {
+    {.name = "help",
+     .data = N_("query information about the guest (via agent)")
+    },
+    {.name = "desc",
+     .data = N_("Use the guest agent to query various information from guest's "
+                "point of view")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_guestinfo[] = {
+    VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
+    {.name = "user",
+     .type = VSH_OT_BOOL,
+     .help = N_("report active users"),
+    },
+    {.name = "os",
+     .type = VSH_OT_BOOL,
+     .help = N_("report operating system information"),
+    },
+    {.name = "timezone",
+     .type = VSH_OT_BOOL,
+     .help = N_("report timezone information"),
+    },
+    {.name = "hostname",
+     .type = VSH_OT_BOOL,
+     .help = N_("report hostname"),
+    },
+    {.name = "filesystem",
+     .type = VSH_OT_BOOL,
+     .help = N_("report filesystem information"),
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdGuestInfo(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    bool ret = false;
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+    size_t i;
+    unsigned int types = 0;
+
+    if (vshCommandOptBool(cmd, "user"))
+        types |= VIR_DOMAIN_GUEST_INFO_USERS;
+    if (vshCommandOptBool(cmd, "os"))
+        types |= VIR_DOMAIN_GUEST_INFO_OS;
+    if (vshCommandOptBool(cmd, "timezone"))
+        types |= VIR_DOMAIN_GUEST_INFO_TIMEZONE;
+    if (vshCommandOptBool(cmd, "hostname"))
+        types |= VIR_DOMAIN_GUEST_INFO_HOSTNAME;
+    if (vshCommandOptBool(cmd, "filesystem"))
+        types |= VIR_DOMAIN_GUEST_INFO_FILESYSTEM;
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (virDomainGetGuestInfo(dom, types, &params, &nparams, 0) < 0)
+        goto cleanup;
+
+    for (i = 0; i < nparams; i++) {
+        char *str = vshGetTypedParamValue(ctl, &params[i]);
+        vshPrint(ctl, "%-20s: %s\n", params[i].field, str);
+        VIR_FREE(str);
+    }
+
+    ret = true;
+
+ cleanup:
+    virTypedParamsFree(params, nparams);
+    virshDomainFree(dom);
+    return ret;
+}
+
 const vshCmdDef domManagementCmds[] = {
     {.name = "attach-device",
      .handler = cmdAttachDevice,
@@ -14664,6 +14744,12 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdDomblkthreshold,
      .opts = opts_domblkthreshold,
      .info = info_domblkthreshold,
+     .flags = 0
+    },
+    {.name = "guestinfo",
+     .handler = cmdGuestInfo,
+     .opts = opts_guestinfo,
+     .info = info_guestinfo,
      .flags = 0
     },
     {.name = NULL}

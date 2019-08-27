@@ -1714,6 +1714,70 @@ events until a timeout or interrupt key.
 When I<--timestamp> is used, a human-readable timestamp will be printed
 before the event.
 
+=item B<guestinfo> I<domain> [I<--user>] [I<--os>] [I<--timezone>]
+[I<--hostname>] [I<--filesystem>]
+
+Print information about the guest from the point of view of the guest agent.
+Note that this command requires a guest agent to be configured and running in
+the domain's guest OS.
+
+When run without any arguments, this command prints all information types that
+are supported by the guest agent. You can limit the types of information that
+are returned by specifying one or more flags.  If a requested information
+type is not supported, the processes will provide an exit code of 1.
+Available information types flags are I<--user>, I<--os>,
+I<--timezone>, I<--hostname>, and I<--filesystem>.
+
+Note that depending on the hypervisor type and the version of the guest agent
+running within the domain, not all of the following information may be
+returned.
+
+When selecting the I<--user> information type, the following fields may be
+returned:
+
+ "user.count" - the number of active users on this domain
+ "user.<num>.name" - username of user <num>
+ "user.<num>.domain" - domain of the user <num> (may only be present on certain
+                       guest types)
+ "user.<num>.login-time" - the login time of user <num> in milliseconds since
+                           the epoch
+
+I<--os> returns:
+
+ "os.id" - a string identifying the operating system
+ "os.name" - the name of the operating system
+ "os.pretty-name" - a pretty name for the operating system
+ "os.version" - the version of the operating system
+ "os.version-id" - the version id of the operating system
+ "os.kernel-release" - the release of the operating system kernel
+ "os.kernel-version" - the version of the operating system kernel
+ "os.machine" - the machine hardware name
+ "os.variant" - a specific variant or edition of the operating system
+ "os.variant-id" - the id for a specific variant or edition of the operating
+                   system
+
+I<--timezone> returns:
+
+ "timezone.name" - the name of the timezone
+ "timezone.offset" - the offset to UTC in seconds
+
+I<--hostname> returns:
+
+  "hostname" - the hostname of the domain
+
+I<--filesystem> returns:
+
+  "fs.count" - the number of filesystems defined on this domain
+  "fs.<num>.mountpoint" - the path to the mount point for filesystem <num>
+  "fs.<num>.name" - device name in the guest (e.g. "sda1") for filesystem <num>
+  "fs.<num>.fstype" - the type of filesystem <num>
+  "fs.<num>.total-bytes" - the total size of filesystem <num>
+  "fs.<num>.used-bytes" - the number of bytes used in filesystem <num>
+  "fs.<num>.disk.count" - the number of disks targeted by filesystem <num>
+  "fs.<num>.disk.<num>.alias" - the device alias of disk <num> (e.g. sda)
+  "fs.<num>.disk.<num>.serial" - the serial number of disk <num>
+  "fs.<num>.disk.<num>.device" - the device node of disk <num>
+
 =item B<iothreadinfo> I<domain> [[I<--live>] [I<--config>] | [I<--current>]]
 
 Display basic domain IOThreads information including the IOThread ID and
