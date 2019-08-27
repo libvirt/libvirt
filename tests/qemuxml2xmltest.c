@@ -959,6 +959,10 @@ mymain(void)
             QEMU_CAPS_CCW,
             QEMU_CAPS_CCW_CSSID_UNRESTRICTED,
             QEMU_CAPS_DEVICE_VFIO_CCW);
+    DO_TEST("hostdev-subsys-mdev-vfio-ap",
+            QEMU_CAPS_CCW,
+            QEMU_CAPS_CCW_CSSID_UNRESTRICTED,
+            QEMU_CAPS_DEVICE_VFIO_AP);
 
     DO_TEST("s390-defaultconsole",
             QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
