@@ -22143,7 +22143,9 @@ qemuDomainGetFSInfo(virDomainPtr dom,
     if (virDomainGetFSInfoEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (qemuDomainObjBeginAgentJob(driver, vm, QEMU_AGENT_JOB_QUERY) < 0)
+    if (qemuDomainObjBeginJobWithAgent(driver, vm,
+                                       QEMU_JOB_QUERY,
+                                       QEMU_AGENT_JOB_QUERY) < 0)
         goto cleanup;
 
     if (virDomainObjCheckActive(vm) < 0)
@@ -22163,7 +22165,7 @@ qemuDomainGetFSInfo(virDomainPtr dom,
     qemuDomainObjExitAgent(vm, agent);
 
  endjob:
-    qemuDomainObjEndAgentJob(vm);
+    qemuDomainObjEndJobWithAgent(driver, vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -23241,7 +23243,9 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
     if (virDomainGetGuestInfoEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (qemuDomainObjBeginAgentJob(driver, vm, QEMU_AGENT_JOB_QUERY) < 0)
+    if (qemuDomainObjBeginJobWithAgent(driver, vm,
+                                       QEMU_JOB_QUERY,
+                                       QEMU_AGENT_JOB_QUERY) < 0)
         goto cleanup;
 
     if (!qemuDomainAgentAvailable(vm, true))
@@ -23291,7 +23295,7 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
     qemuDomainObjExitAgent(vm, agent);
 
  endjob:
-    qemuDomainObjEndAgentJob(vm);
+    qemuDomainObjEndJobWithAgent(driver, vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
