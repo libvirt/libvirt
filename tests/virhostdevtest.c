@@ -509,7 +509,6 @@ mymain(void)
 
 # define DO_TEST(fnc) \
     do { \
-        VIR_DEBUG("Testing: %s", #fnc); \
         if (virTestRun(#fnc, fnc, NULL) < 0) \
             ret = -1; \
     } while (0)
