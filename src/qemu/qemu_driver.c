@@ -15435,6 +15435,13 @@ qemuDomainSnapshotUpdateDiskSources(virQEMUDriverPtr driver,
     if (qemuSecurityMoveImageMetadata(driver, vm, dd->disk->src, dd->src) < 0)
         VIR_WARN("Unable to move disk metadata on vm %s", vm->def->name);
 
+    /* unlock the write lock on the original image as qemu will no longer write to it */
+    virDomainLockImageDetach(driver->lockManager, vm, dd->disk->src);
+
+    /* unlock also the new image if the VM is paused to follow the locking semantics */
+    if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_RUNNING)
+        virDomainLockImageDetach(driver->lockManager, vm, dd->src);
+
     /* the old disk image is now readonly */
     dd->disk->src->readonly = true;
 
@@ -15553,23 +15560,8 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    if (ret < 0) {
+    if (ret < 0)
         virErrorPreserveLast(&orig_err);
-    } else {
-        /* on successful snapshot we need to remove locks from the now-old
-         * disks and if the VM is paused release locks on the images since qemu
-         * stopped using them*/
-        bool paused = virDomainObjGetState(vm, NULL) != VIR_DOMAIN_RUNNING;
-
-        for (i = 0; i < ndiskdata; i++) {
-            if (paused)
-                virDomainLockImageDetach(driver->lockManager, vm,
-                                         diskdata[i].disk->src);
-
-            virDomainLockImageDetach(driver->lockManager, vm,
-                                     diskdata[i].disk->src->backingStore);
-        }
-    }
 
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0 ||
         (vm->newDef && virDomainSaveConfig(cfg->configDir, driver->caps,
