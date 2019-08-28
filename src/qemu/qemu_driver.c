@@ -15271,10 +15271,13 @@ qemuDomainSnapshotDiskDataCleanup(qemuDomainSnapshotDiskDataPtr data,
                                   virQEMUDriverPtr driver,
                                   virDomainObjPtr vm)
 {
+    virErrorPtr orig_err;
     size_t i;
 
     if (!data)
         return;
+
+    virErrorPreserveLast(&orig_err);
 
     for (i = 0; i < ndata; i++) {
         /* on success of the snapshot the 'src' and 'persistsrc' properties will
@@ -15299,6 +15302,7 @@ qemuDomainSnapshotDiskDataCleanup(qemuDomainSnapshotDiskDataPtr data,
     }
 
     VIR_FREE(data);
+    virErrorRestore(&orig_err);
 }
 
 
@@ -15506,7 +15510,6 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
     bool reuse = (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT) != 0;
     qemuDomainSnapshotDiskDataPtr diskdata = NULL;
     size_t ndiskdata = 0;
-    virErrorPtr orig_err = NULL;
 
     if (virDomainObjCheckActive(vm) < 0)
         return -1;
@@ -15565,12 +15568,7 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    if (ret < 0)
-        virErrorPreserveLast(&orig_err);
-
     qemuDomainSnapshotDiskDataCleanup(diskdata, ndiskdata, driver, vm);
-    virErrorRestore(&orig_err);
-
     return ret;
 }
 
