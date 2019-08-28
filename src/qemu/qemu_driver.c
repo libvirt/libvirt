@@ -15557,16 +15557,16 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
     if (rc < 0)
         goto cleanup;
 
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0 ||
+        (vm->newDef && virDomainSaveConfig(cfg->configDir, driver->caps,
+                                           vm->newDef) < 0))
+        goto cleanup;
+
     ret = 0;
 
  cleanup:
     if (ret < 0)
         virErrorPreserveLast(&orig_err);
-
-    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0 ||
-        (vm->newDef && virDomainSaveConfig(cfg->configDir, driver->caps,
-                                           vm->newDef) < 0))
-        ret = -1;
 
     qemuDomainSnapshotDiskDataCleanup(diskdata, ndiskdata, driver, vm);
     virErrorRestore(&orig_err);
