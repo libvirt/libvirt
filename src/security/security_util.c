@@ -269,12 +269,8 @@ virSecurityGetRememberedLabel(const char *name,
     VIR_AUTOFREE(char *) attr_name = NULL;
     VIR_AUTOFREE(char *) value = NULL;
     unsigned int refcount = 0;
-    int rc;
 
     *label = NULL;
-
-    if ((rc = virSecurityValidateTimestamp(name, path)) < 0)
-        return rc;
 
     if (!(ref_name = virSecurityGetRefCountAttrName(name)))
         return -1;
@@ -288,6 +284,20 @@ virSecurityGetRememberedLabel(const char *name,
                              ref_name,
                              path);
         return -1;
+    }
+
+    if (value) {
+        int rc;
+
+        /* Do this after we've tried to get refcounter to ensure underlying FS
+         * supports XATTRs and @path has refcounter attribute set, because
+         * validator might throws a warning. */
+        if ((rc = virSecurityValidateTimestamp(name, path)) < 0)
+            return rc;
+
+        /* Invalid label is like a non-existent one */
+        if (rc == 1)
+            return -2;
     }
 
     if (virStrToLong_ui(value, NULL, 10, &refcount) < 0) {
@@ -357,10 +367,6 @@ virSecuritySetRememberedLabel(const char *name,
     VIR_AUTOFREE(char *) attr_name = NULL;
     VIR_AUTOFREE(char *) value = NULL;
     unsigned int refcount = 0;
-    int rc;
-
-    if ((rc = virSecurityValidateTimestamp(name, path)) < 0)
-        return rc;
 
     if (!(ref_name = virSecurityGetRefCountAttrName(name)))
         return -1;
@@ -375,6 +381,20 @@ virSecuritySetRememberedLabel(const char *name,
                                  path);
             return -1;
         }
+    }
+
+    if (value) {
+        int rc;
+
+        /* Do this after we've tried to get refcounter to ensure underlying FS
+         * supports XATTRs and @path has refcounter attribute set, because
+         * validator might throws a warning. */
+        if ((rc = virSecurityValidateTimestamp(name, path)) < 0)
+            return rc;
+
+        /* Invalid label is like a non-existent one */
+        if (rc == 1)
+            VIR_FREE(value);
     }
 
     if (value &&
