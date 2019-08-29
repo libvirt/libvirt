@@ -44,7 +44,10 @@ libvirt_driver_nodedev_la_CFLAGS = \
 	$(LIBNL_CFLAGS) \
 	$(NULL)
 libvirt_driver_nodedev_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-libvirt_driver_nodedev_la_LIBADD = libvirt.la
+libvirt_driver_nodedev_la_LIBADD = \
+	libvirt.la \
+	$(GLIB_LIBS) \
+	$(NULL)
 
 if WITH_HAL
 libvirt_driver_nodedev_la_SOURCES += $(NODE_DEVICE_DRIVER_HAL_SOURCES)

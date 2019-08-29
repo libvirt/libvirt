@@ -28,6 +28,7 @@ libvirt_driver_interface_la_CFLAGS = \
 libvirt_driver_interface_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
 libvirt_driver_interface_la_LIBADD = \
 	libvirt.la \
+	$(GLIB_LIBS) \
 	$(NULL)
 libvirt_driver_interface_la_SOURCES = $(INTERFACE_DRIVER_SOURCES)
 if WITH_NETCF

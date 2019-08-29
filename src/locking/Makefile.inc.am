@@ -103,6 +103,7 @@ lockd_la_CFLAGS = \
 lockd_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
 lockd_la_LIBADD = \
 	libvirt.la \
+	$(GLIB_LIBS) \
 	../gnulib/lib/libgnu.la \
 	$(NULL)
 augeas_DATA += locking/libvirt_lockd.aug
@@ -145,6 +146,7 @@ virtlockd_LDFLAGS = \
 virtlockd_LDADD = \
 	libvirt.la \
 	libvirt_driver_admin.la \
+	$(GLIB_LIBS) \
 	../gnulib/lib/libgnu.la \
 	$(CYGWIN_EXTRA_LIBADD) \
 	$(NULL)
@@ -163,7 +165,12 @@ lockdriver_LTLIBRARIES += sanlock.la
 sanlock_la_SOURCES = $(LOCK_DRIVER_SANLOCK_SOURCES)
 sanlock_la_CFLAGS = -I$(srcdir)/conf $(AM_CFLAGS)
 sanlock_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
-sanlock_la_LIBADD = -lsanlock_client libvirt.la ../gnulib/lib/libgnu.la
+sanlock_la_LIBADD = \
+	-lsanlock_client \
+	libvirt.la \
+	$(GLIB_LIBS) \
+	../gnulib/lib/libgnu.la \
+	$(NULL)
 
 augeas_DATA += locking/libvirt_sanlock.aug
 

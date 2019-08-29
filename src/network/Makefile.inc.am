@@ -32,6 +32,7 @@ libvirt_driver_network_la_SOURCES =
 libvirt_driver_network_la_LIBADD = \
 	libvirt_driver_network_impl.la \
 	libvirt.la \
+	$(GLIB_LIBS) \
 	../gnulib/lib/libgnu.la \
 	$(LIBNL_LIBS) \
 	$(DBUS_LIBS) \
@@ -121,6 +122,7 @@ libvirt_leaseshelper_LDFLAGS = \
 	$(NULL)
 libvirt_leaseshelper_LDADD = \
 	libvirt.la \
+	$(GLIB_LIBS) \
 	../gnulib/lib/libgnu.la
 if WITH_DTRACE_PROBES
 libvirt_leaseshelper_LDADD += libvirt_probes.lo

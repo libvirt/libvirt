@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <glib.h>
 
 #if STATIC_ANALYSIS
 # undef NDEBUG /* Don't let a prior NDEBUG definition cause trouble.  */

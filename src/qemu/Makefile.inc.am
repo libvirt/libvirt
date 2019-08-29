@@ -83,6 +83,7 @@ libvirt_driver_qemu_la_SOURCES =
 libvirt_driver_qemu_la_LIBADD = \
 	libvirt_driver_qemu_impl.la \
 	libvirt.la \
+	$(GLIB_LIBS) \
 	../gnulib/lib/libgnu.la \
 	$(NULL)
 mod_LTLIBRARIES += libvirt_driver_qemu.la

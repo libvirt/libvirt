@@ -34,6 +34,7 @@ AM_CPPFLAGS =	-I../gnulib/lib \
 WARN_CFLAGS += $(STRICT_FRAME_LIMIT_CFLAGS)
 
 AM_CFLAGS =	$(LIBXML_CFLAGS) \
+		$(GLIB_CFLAGS) \
 		$(WARN_CFLAGS) \
 		$(LOCK_CHECKING_CFLAGS) \
 		$(WIN32_EXTRA_CFLAGS) \
@@ -558,6 +559,7 @@ libvirt_admin_la_LIBADD += \
 		$(YAJL_LIBS) \
 		$(DEVMAPPER_LIBS) \
 		$(LIBXML_LIBS) \
+		$(GLIB_LIBS) \
 		$(SSH2_LIBS) \
 		$(SASL_LIBS) \
 		$(GNUTLS_LIBS) \
@@ -773,6 +775,7 @@ libvirt_iohelper_LDFLAGS = \
 		$(NULL)
 libvirt_iohelper_LDADD = \
 		libvirt.la \
+		$(GLIB_LIBS) \
 		../gnulib/lib/libgnu.la
 if WITH_DTRACE_PROBES
 libvirt_iohelper_LDADD += libvirt_probes.lo

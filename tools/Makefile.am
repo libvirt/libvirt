@@ -36,6 +36,7 @@ AM_CFLAGS = \
 	$(COVERAGE_CFLAGS) \
 	$(PIE_CFLAGS) \
 	$(LIBXML_CFLAGS) \
+	$(GLIB_CFLAGS) \
 	$(NULL)
 
 AM_LDFLAGS = \
@@ -150,6 +151,7 @@ libvirt_shell_la_LIBADD = \
 		../src/libvirt.la \
 		$(LIBXML_LIBS) \
 		$(READLINE_LIBS) \
+		$(GLIB_LIBS) \
 		../gnulib/lib/libgnu.la \
 		$(NULL)
 libvirt_shell_la_SOURCES = \
@@ -195,6 +197,7 @@ virt_host_validate_LDFLAGS = \
 
 virt_host_validate_LDADD = \
 		../src/libvirt.la \
+		$(GLIB_LIBS) \
 		../gnulib/lib/libgnu.la \
 		$(NULL)
 
@@ -221,6 +224,7 @@ virt_login_shell_helper_LDFLAGS = \
 virt_login_shell_helper_LDADD = \
 		../src/libvirt.la \
 		../src/libvirt-lxc.la \
+		$(GLIB_LIBS) \
 		../gnulib/lib/libgnu.la
 
 virt_login_shell_helper_CFLAGS = \

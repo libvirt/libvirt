@@ -59,7 +59,9 @@ libvirt_driver_access_la_CFLAGS = \
 	$(AM_CFLAGS) \
 	$(NULL)
 libvirt_driver_access_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_driver_access_la_LIBADD =
+libvirt_driver_access_la_LIBADD = \
+	$(GLIB_LIBS) \
+	$(NULL)
 
 
 $(ACCESS_DRIVER_POLKIT_POLICY): $(srcdir)/access/viraccessperm.h \

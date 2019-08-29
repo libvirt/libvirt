@@ -82,6 +82,7 @@ virtlogd_LDFLAGS = \
 virtlogd_LDADD = \
 		libvirt_driver_admin.la \
 		libvirt.la \
+		$(GLIB_LIBS) \
 		../gnulib/lib/libgnu.la \
 		$(CYGWIN_EXTRA_LIBADD) \
 		$(NULL)

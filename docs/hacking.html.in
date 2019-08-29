@@ -989,6 +989,27 @@ BAD:
       it points to, or it is aliased to another pointer that is.
     </p>
 
+    <h2><a id="glib">Adoption of GLib APIs</a></h2>
+
+    <p>
+      Libvirt has adopted use of the
+      <a href="https://developer.gnome.org/glib/stable/">GLib library</a>.
+      Due to libvirt's long history of development, there are many APIs
+      in libvirt, for which GLib provides an alternative solution. The
+      general rule to follow is that the standard GLib solution will be
+      preferred over historical libvirt APIs. Existing code will be
+      ported over to use GLib APIs over time, but new code should use
+      the GLib APIs straight away where possible.
+    </p>
+
+    <p>
+      The following is a list of libvirt APIs that should no longer be
+      used in new code, and their suggested GLib replacements:
+    </p>
+
+    <dl>
+    </dl>
+
     <h2><a id="memalloc">Low level memory management</a></h2>
 
     <p>

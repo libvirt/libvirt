@@ -35,6 +35,7 @@ AM_CFLAGS = \
 	-Dabs_srcdir="\"$(abs_srcdir)\"" \
 	-Dabs_top_srcdir="\"$(abs_top_srcdir)\"" \
 	$(LIBXML_CFLAGS) \
+	$(GLIB_CFLAGS) \
 	$(LIBNL_CFLAGS) \
 	$(GNUTLS_CFLAGS) \
 	$(SASL_CFLAGS) \
@@ -72,7 +73,9 @@ LDADDS = \
 	$(NO_INDIRECT_LDFLAGS) \
 	$(PROBES_O) \
 	$(GNULIB_LIBS) \
-	../src/libvirt.la
+	../src/libvirt.la \
+	$(GLIB_LIBS) \
+	$(NULL)
 
 MOCKLIBS_LIBS = \
 	$(GNULIB_LIBS) \
@@ -522,7 +525,7 @@ libxlxml2domconfigtest_LDADD = $(libxl_LDADDS) $(LIBXML_LIBS)
 
 libxlmock_la_SOURCES = \
 	libxlmock.c
-libxlmock_la_CFLAGS = $(LIBXL_CFLAGS) $(LIBXML_CFLAGS)
+libxlmock_la_CFLAGS = $(LIBXL_CFLAGS) $(LIBXML_CFLAGS) $(GLIB_CFLAGS)
 libxlmock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
 libxlmock_la_LIBADD = $(MOCKLIBS_LIBS)
 

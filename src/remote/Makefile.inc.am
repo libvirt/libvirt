@@ -38,6 +38,7 @@ REMOTE_DAEMON_SOURCES = \
 
 REMOTE_DAEMON_CFLAGS = \
 	$(LIBXML_CFLAGS) \
+	$(GLIB_CFLAGS) \
 	$(GNUTLS_CFLAGS) \
 	$(SASL_CFLAGS) \
 	$(XDR_CFLAGS) \
@@ -76,6 +77,7 @@ REMOTE_DAEMON_LD_ADD += ../src/libvirt_probes.lo
 endif WITH_DTRACE_PROBES
 
 REMOTE_DAEMON_LD_ADD += \
+	$(GLIB_LIBS) \
 	../gnulib/lib/libgnu.la \
 	$(NULL)
 

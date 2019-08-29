@@ -46,6 +46,7 @@ libvirt_driver_nwfilter_impl_la_LIBADD = \
 	$(LIBPCAP_LIBS) \
 	$(LIBNL_LIBS) \
 	$(DBUS_LIBS) \
+	$(GLIB_LIBS) \
 	../gnulib/lib/libgnu.la \
 	$(NULL)
 libvirt_driver_nwfilter_impl_la_SOURCES = $(NWFILTER_DRIVER_SOURCES)

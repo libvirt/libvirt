@@ -73,6 +73,7 @@ virt_aa_helper_LDFLAGS = \
 virt_aa_helper_LDADD = \
 	libvirt.la \
 	libvirt_driver_storage_impl.la \
+	$(GLIB_LIBS) \
 	../gnulib/lib/libgnu.la \
 	$(NULL)
 if WITH_DTRACE_PROBES
