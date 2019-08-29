@@ -992,7 +992,7 @@ int virTestMain(int argc,
 
     setenv("VIR_TEST_MOCK_PROGNAME", progname, 1);
 
-    virFileActivateDirOverride(argv[0]);
+    virFileActivateDirOverrideForProg(argv[0]);
 
     if (virTestSetEnvPath() < 0)
         return EXIT_AM_HARDFAIL;

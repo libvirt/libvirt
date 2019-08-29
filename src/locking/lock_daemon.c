@@ -1188,7 +1188,7 @@ int main(int argc, char **argv) {
         }
     }
 
-    virFileActivateDirOverride(argv[0]);
+    virFileActivateDirOverrideForProg(argv[0]);
 
     if (!(config = virLockDaemonConfigNew(privileged))) {
         VIR_ERROR(_("Can't create initial configuration"));

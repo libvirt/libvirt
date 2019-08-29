@@ -60,6 +60,12 @@ else
 fi
 export PKG_CONFIG_PATH
 
+# Ensure that any 3rd party apps using libvirt.so from the build tree get
+# files resolved to the build/source tree too. Typically useful for language
+# bindings running tests against non-installed libvirt.
+LIBVIRT_DIR_OVERRIDE=1
+export LIBVIRT_DIR_OVERRIDE
+
 # This is a cheap way to find some use-after-free and uninitialized
 # read problems when using glibc.
 random_val="$(awk 'BEGIN{srand(); print 1+int(255*rand())}' < /dev/null)"

@@ -1552,7 +1552,7 @@ main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    virFileActivateDirOverride(argv[0]);
+    virFileActivateDirOverrideForProg(argv[0]);
 
     if (!vshInit(ctl, cmdGroups, NULL))
         exit(EXIT_FAILURE);

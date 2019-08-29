@@ -1034,7 +1034,7 @@ int main(int argc, char **argv) {
 
     virUpdateSelfLastChanged(argv[0]);
 
-    virFileActivateDirOverride(argv[0]);
+    virFileActivateDirOverrideForProg(argv[0]);
 
     while (1) {
         int optidx = 0;

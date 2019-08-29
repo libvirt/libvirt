@@ -1774,7 +1774,7 @@ virFileFindResource(const char *filename,
 
 
 /**
- * virFileActivateDirOverride:
+ * virFileActivateDirOverrideForProg:
  * @argv0: argv[0] of the calling program
  *
  * Look at @argv0 and try to detect if running from
@@ -1782,7 +1782,7 @@ virFileFindResource(const char *filename,
  * on the binary name, or '/.libs/' in the path
  */
 void
-virFileActivateDirOverride(const char *argv0)
+virFileActivateDirOverrideForProg(const char *argv0)
 {
     char *file = strrchr(argv0, '/');
     if (!file || file[1] == '\0')
@@ -1793,6 +1793,20 @@ virFileActivateDirOverride(const char *argv0)
         useDirOverride = true;
         VIR_DEBUG("Activating build dir override for %s", argv0);
     }
+}
+
+
+/**
+ * virFileActivateDirOverrideForLib:
+ *
+ * Look for LIBVIRT_DIR_OVERRIDE env var to see if we should find files from
+ * the build/src tree instead of install tree.
+ */
+void
+virFileActivateDirOverrideForLib(void)
+{
+    if (getenv("LIBVIRT_DIR_OVERRIDE") != NULL)
+        useDirOverride = true;
 }
 
 

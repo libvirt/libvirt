@@ -247,6 +247,8 @@ virGlobalInit(void)
         virErrorInitialize() < 0)
         goto error;
 
+    virFileActivateDirOverrideForLib();
+
     if (getuid() != geteuid() ||
         getgid() != getegid()) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
