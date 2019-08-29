@@ -1301,14 +1301,18 @@ virSecuritySELinuxSetFileconImpl(const char *path,
         if (setfilecon_errno != EOPNOTSUPP && setfilecon_errno != ENOTSUP &&
             setfilecon_errno != EROFS) {
         VIR_WARNINGS_RESET
-            virReportSystemError(setfilecon_errno,
-                                 _("unable to set security context '%s' on '%s'"),
-                                 tcon, path);
             /* However, don't claim error if SELinux is in Enforcing mode and
              * we are running as unprivileged user and we really did see EPERM.
              * Otherwise we want to return error if SELinux is Enforcing. */
-            if (security_getenforce() == 1 && (setfilecon_errno != EPERM || privileged))
+            if (security_getenforce() == 1 &&
+                (setfilecon_errno != EPERM || privileged)) {
+                virReportSystemError(setfilecon_errno,
+                                     _("unable to set security context '%s' on '%s'"),
+                                     tcon, path);
                 return -1;
+            }
+            VIR_WARN("unable to set security context '%s' on '%s' (errno %d)",
+                     tcon, path, setfilecon_errno);
         } else {
             const char *msg;
             if (virFileIsSharedFSType(path, VIR_FILE_SHFS_NFS) == 1 &&
