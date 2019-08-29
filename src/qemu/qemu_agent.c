@@ -2208,6 +2208,7 @@ qemuAgentGetFSInfo(qemuAgentPtr mon,
             virDomainFSInfoFree(info_ret[i]);
     }
     VIR_FREE(agentinfo);
+    VIR_FREE(info_ret);
     return ret;
 }
 
