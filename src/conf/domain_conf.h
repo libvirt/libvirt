@@ -3080,6 +3080,12 @@ int virDomainDefFormatInternal(virDomainDefPtr def,
                                unsigned int flags,
                                virBufferPtr buf,
                                virDomainXMLOptionPtr xmlopt);
+int virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
+                                          virCapsPtr caps,
+                                          unsigned int flags,
+                                          virBufferPtr buf,
+                                          virDomainXMLOptionPtr xmlopt,
+                                          const char *rootname);
 
 int virDomainDiskSourceFormat(virBufferPtr buf,
                               virStorageSourcePtr src,

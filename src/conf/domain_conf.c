@@ -28336,17 +28336,29 @@ virDomainDefFormatFeatures(virBufferPtr buf,
     return virXMLFormatElement(buf, "features", NULL, &childBuf);
 }
 
-
-/* This internal version appends to an existing buffer
- * (possibly with auto-indent), rather than flattening
- * to string.
- * Return -1 on failure.  */
 int
 virDomainDefFormatInternal(virDomainDefPtr def,
                            virCapsPtr caps,
                            unsigned int flags,
                            virBufferPtr buf,
                            virDomainXMLOptionPtr xmlopt)
+{
+    return virDomainDefFormatInternalSetRootName(def, caps, flags, buf,
+                                                 xmlopt, "domain");
+}
+
+
+/* This internal version appends to an existing buffer
+ * (possibly with auto-indent), rather than flattening
+ * to string.
+ * Return -1 on failure.  */
+int
+virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
+                                      virCapsPtr caps,
+                                      unsigned int flags,
+                                      virBufferPtr buf,
+                                      virDomainXMLOptionPtr xmlopt,
+                                      const char *rootname)
 {
     unsigned char *uuid;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -28371,7 +28383,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     if (def->id == -1)
         flags |= VIR_DOMAIN_DEF_FORMAT_INACTIVE;
 
-    virBufferAsprintf(buf, "<domain type='%s'", type);
+    virBufferAsprintf(buf, "<%s type='%s'", rootname, type);
     if (!(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE))
         virBufferAsprintf(buf, " id='%d'", def->id);
     if (def->namespaceData && def->ns.format)
@@ -28853,7 +28865,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     virDomainSEVDefFormat(buf, def->sev);
 
     virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</domain>\n");
+    virBufferAsprintf(buf, "</%s>\n", rootname);
 
     if (virBufferCheckError(buf) < 0)
         goto error;
