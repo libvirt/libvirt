@@ -25,7 +25,7 @@
     <interface type='hostdev' managed='yes'>
       <mac address='00:11:22:33:44:55'/>
       <source>
-        <address type='pci' domain='0x0000' bus='0x03' slot='0x07' function='0x1'/>
+        <address type='pci' domain='0x0000' bus='0x06' slot='0x12' function='0x1'/>
       </source>
       <model type='virtio'/>
       <filterref filter='myfilter'/>

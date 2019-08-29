@@ -124,6 +124,7 @@ struct pciDevice {
     int device;
     int klass;
     int iommuGroup;
+    const char *physfn;
     struct pciDriver *driver;   /* Driver attached. NULL if attached to no driver */
 };
 
@@ -544,6 +545,15 @@ pci_device_new_from_stub(const struct pciDevice *data)
         ABORT_OOM();
 
     make_symlink(devsympath, devid, tmp);
+
+    if (dev->physfn) {
+        if (snprintf(tmp, sizeof(tmp),
+                     "%s%s/devices/%s", fakerootdir,
+                     SYSFS_PCI_PREFIX, dev->physfn) < 0) {
+            ABORT("@tmp overflow");
+        }
+        make_symlink(devpath, "physfn", tmp);
+    }
 
     if (pci_device_autobind(dev) < 0)
         ABORT("Unable to bind: %s", devid);
@@ -1020,6 +1030,15 @@ init_env(void)
     MAKE_PCI_DEVICE("0000:0a:01.0", 0x8086, 0x0047, 8);
     MAKE_PCI_DEVICE("0000:0a:02.0", 0x8286, 0x0048, 8);
     MAKE_PCI_DEVICE("0000:0a:03.0", 0x8386, 0x0048, 8);
+    MAKE_PCI_DEVICE("0000:06:12.0", 0x8086, 0x0047, 9);
+    MAKE_PCI_DEVICE("0000:06:12.1", 0x8086, 0x0047, 10,
+                    .physfn = "0000:06:12.0"); /* Virtual Function */
+    MAKE_PCI_DEVICE("0000:06:12.2", 0x8086, 0x0047, 11,
+                    .physfn = "0000:06:12.0"); /* Virtual Function */
+    MAKE_PCI_DEVICE("0021:de:1f.0", 0x8086, 0x0047, 12);
+    MAKE_PCI_DEVICE("0021:de:1f.1", 0x8086, 0x0047, 13,
+                    .physfn = "0021:de:1f.0"); /* Virtual Function */
+
 }
 
 

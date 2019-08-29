@@ -25,7 +25,7 @@
     <hostdev mode='subsystem' type='pci' managed='yes'>
       <driver name='vfio'/>
       <source>
-        <address domain='0x55aa' bus='32' slot='15' function='3'/>
+        <address domain='0x0021' bus='222' slot='31' function='1'/>
       </source>
     </hostdev>
     <memballoon model='virtio'/>
