@@ -141,9 +141,9 @@
     "arguments": {
         "driver": "qemu64-x86_64-cpu",
         "id": "vcpu5",
-        "socket-id": 1,
         "core-id": 0,
-        "thread-id": 1
+        "thread-id": 1,
+        "socket-id": 1
     },
     "id": "libvirt-3"
 }
@@ -303,9 +303,9 @@
     "arguments": {
         "driver": "qemu64-x86_64-cpu",
         "id": "vcpu6",
-        "socket-id": 1,
         "core-id": 1,
-        "thread-id": 0
+        "thread-id": 0,
+        "socket-id": 1
     },
     "id": "libvirt-6"
 }
