@@ -66,6 +66,7 @@ virDomainMomentDefDispose(void *obj)
     VIR_FREE(def->description);
     VIR_FREE(def->parent_name);
     virDomainDefFree(def->dom);
+    virDomainDefFree(def->inactiveDom);
 }
 
 /* Provide defaults for creation time and moment name after parsing XML */

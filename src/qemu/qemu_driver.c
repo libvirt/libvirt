@@ -16029,6 +16029,13 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
                                                         VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
             goto endjob;
 
+        if (vm->newDef) {
+            def->parent.inactiveDom = virDomainDefCopy(vm->newDef, caps,
+                                                       driver->xmlopt, priv->qemuCaps, true);
+            if (!def->parent.inactiveDom)
+                goto endjob;
+        }
+
         if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) {
             align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
             align_match = false;
@@ -16561,6 +16568,7 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     qemuDomainObjPrivatePtr priv;
     int rc;
     virDomainDefPtr config = NULL;
+    virDomainDefPtr inactiveConfig = NULL;
     virQEMUDriverConfigPtr cfg = NULL;
     virCapsPtr caps = NULL;
     bool was_stopped = false;
@@ -16663,16 +16671,34 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
          * in the failure cases where we know there was no change?  */
     }
 
-    /* Prepare to copy the snapshot inactive xml as the config of this
-     * domain.
-     *
-     * XXX Should domain snapshots track live xml rather
-     * than inactive xml?  */
     if (snap->def->dom) {
         config = virDomainDefCopy(snap->def->dom, caps,
                                   driver->xmlopt, priv->qemuCaps, true);
         if (!config)
             goto endjob;
+    }
+
+    if (snap->def->inactiveDom) {
+        inactiveConfig = virDomainDefCopy(snap->def->inactiveDom, caps,
+                                          driver->xmlopt, priv->qemuCaps, true);
+        if (!inactiveConfig)
+            goto endjob;
+    } else {
+        /* Inactive domain definition is missing:
+         * - either this is an old active snapshot and we need to copy the
+         *   active definition as an inactive one
+         * - or this is an inactive snapshot which means config contains the
+         *   inactive definition.
+         */
+        if (snapdef->state == VIR_DOMAIN_SNAPSHOT_RUNNING ||
+            snapdef->state == VIR_DOMAIN_SNAPSHOT_PAUSED) {
+            inactiveConfig = virDomainDefCopy(snap->def->dom, caps,
+                                              driver->xmlopt, priv->qemuCaps, true);
+            if (!inactiveConfig)
+                goto endjob;
+        } else {
+            VIR_STEAL_PTR(inactiveConfig, config);
+        }
     }
 
     cookie = (qemuDomainSaveCookiePtr) snapdef->cookie;
@@ -16777,24 +16803,32 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                 goto endjob;
             }
             if (config) {
-                virDomainObjAssignDef(vm, config, false, NULL);
                 virCPUDefFree(priv->origCPU);
                 VIR_STEAL_PTR(priv->origCPU, origCPU);
-                config = NULL;
-                defined = true;
             }
 
             if (cookie && !cookie->slirpHelper)
                 priv->disableSlirp = true;
 
+            if (inactiveConfig) {
+                virDomainObjAssignDef(vm, inactiveConfig, false, NULL);
+                inactiveConfig = NULL;
+                defined = true;
+            }
         } else {
             /* Transitions 2, 3 */
         load:
             was_stopped = true;
-            if (config) {
-                virDomainObjAssignDef(vm, config, false, NULL);
-                config = NULL;
+
+            if (inactiveConfig) {
+                virDomainObjAssignDef(vm, inactiveConfig, false, NULL);
+                inactiveConfig = NULL;
                 defined = true;
+            }
+
+            if (config) {
+                virDomainObjAssignDef(vm, config, true, NULL);
+                config = NULL;
             }
 
             /* No cookie means libvirt which saved the domain was too old to
@@ -16881,9 +16915,10 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             qemuProcessEndJob(driver, vm);
             goto cleanup;
         }
-        if (config) {
-            virDomainObjAssignDef(vm, config, false, NULL);
-            config = NULL;
+
+        if (inactiveConfig) {
+            virDomainObjAssignDef(vm, inactiveConfig, false, NULL);
+            inactiveConfig = NULL;
             defined = true;
         }
 
@@ -16968,6 +17003,7 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     virNWFilterUnlockFilterUpdates();
     virCPUDefFree(origCPU);
     virDomainDefFree(config);
+    virDomainDefFree(inactiveConfig);
 
     return ret;
 }

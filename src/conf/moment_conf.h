@@ -36,7 +36,18 @@ struct _virDomainMomentDef {
     char *parent_name;
     long long creationTime; /* in seconds */
 
+    /*
+     * Store the active domain definition in case of online
+     * guest and the inactive domain definition in case of
+     * offline guest
+     */
     virDomainDefPtr dom;
+
+    /*
+     * Store the inactive domain definition in case of online
+     * guest and leave NULL in case of offline guest
+     */
+    virDomainDefPtr inactiveDom;
 };
 
 virClassPtr virClassForDomainMomentDef(void);

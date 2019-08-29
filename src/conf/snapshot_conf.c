@@ -235,6 +235,7 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
     virDomainSnapshotDefPtr def = NULL;
     virDomainSnapshotDefPtr ret = NULL;
     xmlNodePtr *nodes = NULL;
+    xmlNodePtr inactiveDomNode = NULL;
     size_t i;
     int n;
     char *creation = NULL, *state = NULL;
@@ -244,6 +245,8 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
     char *memoryFile = NULL;
     bool offline = !!(flags & VIR_DOMAIN_SNAPSHOT_PARSE_OFFLINE);
     virSaveCookieCallbacksPtr saveCookie = virDomainXMLOptionGetSaveCookie(xmlopt);
+    int domainflags = VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                      VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE;
 
     if (!(def = virDomainSnapshotDefNew()))
         return NULL;
@@ -293,8 +296,6 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
          * clients will have to decide between best effort
          * initialization or outright failure.  */
         if ((tmp = virXPathString("string(./domain/@type)", ctxt))) {
-            int domainflags = VIR_DOMAIN_DEF_PARSE_INACTIVE |
-                              VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE;
             xmlNodePtr domainNode = virXPathNode("./domain", ctxt);
 
             VIR_FREE(tmp);
@@ -310,6 +311,16 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
                 goto cleanup;
         } else {
             VIR_WARN("parsing older snapshot that lacks domain");
+        }
+
+        /* /inactiveDomain entry saves the config XML present in a running
+         * VM. In case of absent, leave parent.inactiveDom NULL and use
+         * parent.dom for config and live XML. */
+        if ((inactiveDomNode = virXPathNode("./inactiveDomain", ctxt))) {
+            def->parent.inactiveDom = virDomainDefParseNode(ctxt->node->doc, inactiveDomNode,
+                                                            caps, xmlopt, NULL, domainflags);
+            if (!def->parent.inactiveDom)
+                goto cleanup;
         }
     } else if (virDomainXMLOptionRunMomentPostParse(xmlopt, &def->parent) < 0) {
         goto cleanup;
@@ -906,6 +917,13 @@ virDomainSnapshotDefFormatInternal(virBufferPtr buf,
         virBufferAsprintf(buf, "<uuid>%s</uuid>\n", uuidstr);
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</domain>\n");
+    }
+
+    if (def->parent.inactiveDom) {
+        if (virDomainDefFormatInternalSetRootName(def->parent.inactiveDom, caps,
+                                                  domainflags, buf, xmlopt,
+                                                  "inactiveDomain") < 0)
+            goto error;
     }
 
     if (virSaveCookieFormatBuf(buf, def->cookie,
