@@ -105,6 +105,11 @@ struct pciDriver {
     size_t len;            /* @len is used for both @vendor and @device */
 };
 
+struct pciIommuGroup {
+    int iommu;
+    size_t nDevicesBoundToVFIO; /* Indicates the devices in the group */
+};
+
 struct pciDeviceAddress {
     unsigned int domain;
     unsigned int bus;
@@ -132,6 +137,9 @@ size_t nPCIDevices = 0;
 
 struct pciDriver **pciDrivers = NULL;
 size_t nPCIDrivers = 0;
+
+struct pciIommuGroup **pciIommuGroups = NULL;
+size_t npciIommuGroups = 0;
 
 struct fdCallback *callbacks = NULL;
 size_t nCallbacks = 0;
@@ -251,6 +259,15 @@ getrealpath(char **newpath,
         if (virAsprintfQuiet(newpath, "%s/sys/bus/pci/%s",
                              fakerootdir,
                              path + strlen(SYSFS_PCI_PREFIX)) < 0) {
+            errno = ENOMEM;
+            return -1;
+        }
+    } else if (STRPREFIX(path, "/sys/kernel/") ||
+               STRPREFIX(path, "/dev/vfio/")) {
+
+        if (virAsprintfQuiet(newpath, "%s/%s",
+                             fakerootdir,
+                             path) < 0) {
             errno = ENOMEM;
             return -1;
         }
@@ -389,8 +406,10 @@ static void
 pci_device_create_iommu(const struct pciDevice *dev,
                         const char *devid)
 {
+    struct pciIommuGroup *iommuGroup;
     VIR_AUTOFREE(char *) iommuPath = NULL;
     char tmp[256];
+    size_t i;
 
     if (virAsprintfQuiet(&iommuPath, "%s/sys/kernel/iommu_groups/%d/devices/",
                          fakerootdir, dev->iommuGroup) < 0)
@@ -406,6 +425,24 @@ pci_device_create_iommu(const struct pciDevice *dev,
     }
 
     make_symlink(iommuPath, devid, tmp);
+
+    /* pci_device_create_iommu can be called more than one for the
+     * same iommuGroup. Bail out here if the iommuGroup was already
+     * created beforehand. */
+    for (i = 0; i < npciIommuGroups; i++) {
+        if (pciIommuGroups[i]->iommu == dev->iommuGroup)
+            return;
+    }
+
+    if (VIR_ALLOC_QUIET(iommuGroup) < 0)
+        ABORT_OOM();
+
+    iommuGroup->iommu = dev->iommuGroup;
+    iommuGroup->nDevicesBoundToVFIO = 0; /* No device bound to VFIO by default */
+
+    if (VIR_APPEND_ELEMENT_QUIET(pciIommuGroups, npciIommuGroups,
+                                 iommuGroup) < 0)
+        ABORT_OOM();
 }
 
 
@@ -558,6 +595,74 @@ pci_device_autobind(struct pciDevice *dev)
     return pci_driver_bind(driver, dev);
 }
 
+static int
+pci_vfio_release_iommu(struct pciDevice *device)
+{
+    VIR_AUTOFREE(char *) vfiopath = NULL;
+    size_t i = 0;
+
+    for (i = 0; i < npciIommuGroups; i++) {
+        if (device->iommuGroup != pciIommuGroups[i]->iommu)
+            continue;
+
+        if (pciIommuGroups[i]->nDevicesBoundToVFIO == 0) {
+            errno = EXDEV;
+            return -1;
+        }
+
+        pciIommuGroups[i]->nDevicesBoundToVFIO--;
+
+        if (!pciIommuGroups[i]->nDevicesBoundToVFIO) {
+            if (virAsprintfQuiet(&vfiopath, "%s/dev/vfio/%d",
+                                 fakerootdir,
+                                 device->iommuGroup) < 0) {
+                errno = ENOMEM;
+                return -1;
+            }
+
+            if (unlink(vfiopath) < 0)
+                return -1;
+        }
+        break;
+    }
+
+    return 0;
+}
+
+static int
+pci_vfio_lock_iommu(struct pciDevice *device)
+{
+    VIR_AUTOFREE(char *) vfiopath = NULL;
+    int ret = -1;
+    size_t i = 0;
+    int fd = -1;
+
+    for (i = 0; i < npciIommuGroups; i++) {
+        if (device->iommuGroup != pciIommuGroups[i]->iommu)
+            continue;
+
+        if (pciIommuGroups[i]->nDevicesBoundToVFIO == 0) {
+            if (virAsprintfQuiet(&vfiopath, "%s/dev/vfio/%d",
+                                 fakerootdir,
+                                 device->iommuGroup) < 0) {
+                errno = ENOMEM;
+                goto cleanup;
+            }
+            if ((fd = real_open(vfiopath, O_CREAT)) < 0)
+                goto cleanup;
+
+        }
+
+        pciIommuGroups[i]->nDevicesBoundToVFIO++;
+        break;
+    }
+
+    ret = 0;
+ cleanup:
+    if (fd != -1)
+        real_close(fd);
+    return ret;
+}
 
 /*
  * PCI Driver functions
@@ -719,6 +824,10 @@ pci_driver_bind(struct pciDriver *driver,
     if (symlink(devpath, driverpath) < 0)
         return -1;
 
+    if (STREQ(driver->name, "vfio-pci") &&
+        pci_vfio_lock_iommu(dev) < 0)
+        return -1;
+
     dev->driver = driver;
     return 0;
 }
@@ -747,6 +856,10 @@ pci_driver_unbind(struct pciDriver *driver,
 
     if (unlink(devpath) < 0 ||
         unlink(driverpath) < 0)
+        return -1;
+
+    if (STREQ(driver->name, "vfio-pci") &&
+        pci_vfio_release_iommu(dev) < 0)
         return -1;
 
     dev->driver = NULL;
@@ -865,6 +978,16 @@ init_env(void)
     make_dir(tmp, "drivers");
     make_file(tmp, "drivers_probe", NULL, -1);
 
+    /* Create /dev/vfio/ dir and /dev/vfio/vfio file */
+    VIR_FREE(tmp);
+    if (virAsprintfQuiet(&tmp, "%s/dev/vfio", fakerootdir) < 0)
+        ABORT_OOM();
+
+    if (virFileMakePath(tmp) < 0)
+        ABORT("Unable to create: %s", tmp);
+
+    make_file(tmp, "vfio", NULL, -1);
+
 # define MAKE_PCI_DRIVER(name, ...) \
     pci_driver_new(name, __VA_ARGS__, -1, -1)
 
@@ -872,29 +995,31 @@ init_env(void)
     MAKE_PCI_DRIVER("i915", 0x8086, 0x0046, 0x8086, 0x0047);
     MAKE_PCI_DRIVER("vfio-pci", -1, -1);
 
-# define MAKE_PCI_DEVICE(Id, Vendor, Device, ...) \
+# define MAKE_PCI_DEVICE(Id, Vendor, Device, IommuGroup, ...) \
     do { \
         struct pciDevice dev = {.vendor = Vendor, \
-                                .device = Device, __VA_ARGS__}; \
+                                .device = Device, \
+                                .iommuGroup = IommuGroup, __VA_ARGS__}; \
         if (pci_address_parse(&dev.addr, Id) < 0) \
             ABORT("Unable to parse PCI address " Id); \
         pci_device_new_from_stub(&dev); \
     } while (0)
 
-    MAKE_PCI_DEVICE("0000:00:00.0", 0x8086, 0x0044);
-    MAKE_PCI_DEVICE("0000:00:01.0", 0x8086, 0x0044);
-    MAKE_PCI_DEVICE("0000:00:02.0", 0x8086, 0x0046);
-    MAKE_PCI_DEVICE("0000:00:03.0", 0x8086, 0x0048);
-    MAKE_PCI_DEVICE("0001:00:00.0", 0x1014, 0x03b9, .klass = 0x060400);
-    MAKE_PCI_DEVICE("0001:01:00.0", 0x8086, 0x105e, .iommuGroup = 0);
-    MAKE_PCI_DEVICE("0001:01:00.1", 0x8086, 0x105e, .iommuGroup = 0);
-    MAKE_PCI_DEVICE("0005:80:00.0", 0x10b5, 0x8112, .klass = 0x060400);
-    MAKE_PCI_DEVICE("0005:90:01.0", 0x1033, 0x0035, .iommuGroup = 1);
-    MAKE_PCI_DEVICE("0005:90:01.1", 0x1033, 0x0035, .iommuGroup = 1);
-    MAKE_PCI_DEVICE("0005:90:01.2", 0x1033, 0x00e0, .iommuGroup = 1);
-    MAKE_PCI_DEVICE("0000:0a:01.0", 0x8086, 0x0047);
-    MAKE_PCI_DEVICE("0000:0a:02.0", 0x8286, 0x0048);
-    MAKE_PCI_DEVICE("0000:0a:03.0", 0x8386, 0x0048);
+    MAKE_PCI_DEVICE("0000:00:00.0", 0x8086, 0x0044, 0);
+    MAKE_PCI_DEVICE("0000:00:01.0", 0x8086, 0x0044, 1);
+    MAKE_PCI_DEVICE("0000:00:02.0", 0x8086, 0x0046, 2);
+    MAKE_PCI_DEVICE("0000:00:03.0", 0x8086, 0x0048, 3);
+    MAKE_PCI_DEVICE("0001:00:00.0", 0x1014, 0x03b9, 4, .klass = 0x060400);
+    MAKE_PCI_DEVICE("0001:01:00.0", 0x8086, 0x105e, 5);
+    MAKE_PCI_DEVICE("0001:01:00.1", 0x8086, 0x105e, 5);
+    MAKE_PCI_DEVICE("0005:80:00.0", 0x10b5, 0x8112, 6, .klass = 0x060400);
+    MAKE_PCI_DEVICE("0005:90:01.0", 0x1033, 0x0035, 7);
+    MAKE_PCI_DEVICE("0005:90:01.1", 0x1033, 0x0035, 7);
+    MAKE_PCI_DEVICE("0005:90:01.2", 0x1033, 0x00e0, 7);
+    MAKE_PCI_DEVICE("0005:90:01.3", 0x1033, 0x00e0, 7);
+    MAKE_PCI_DEVICE("0000:0a:01.0", 0x8086, 0x0047, 8);
+    MAKE_PCI_DEVICE("0000:0a:02.0", 0x8286, 0x0048, 8);
+    MAKE_PCI_DEVICE("0000:0a:03.0", 0x8386, 0x0048, 8);
 }
 
 
