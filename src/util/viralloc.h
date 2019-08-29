@@ -600,11 +600,6 @@ void virDisposeString(char **strptr)
                                     sizeof(*(ptr)), NULL)
 
 
-void virAllocTestInit(void);
-int virAllocTestCount(void);
-void virAllocTestOOM(int n, int m);
-void virAllocTestHook(void (*func)(int, void*), void *data);
-
 /**
  * VIR_AUTOFREE:
  * @type: type of the variable to be freed automatically

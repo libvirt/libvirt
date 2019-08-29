@@ -155,9 +155,6 @@
         <dt><a href="internals/locking.html">Lock managers</a></dt>
         <dd>Use lock managers to protect disk content</dd>
 
-        <dt><a href="internals/oomtesting.html">Out of memory testing</a></dt>
-        <dd>Simulating OOM conditions in the test suite</dd>
-
         <dt><a href="testsuites.html">Functional testing</a></dt>
         <dd>Testing libvirt with <a href="testtck.html">TCK test suite</a> and
          <a href="testapi.html">Libvirt-test-API</a></dd>

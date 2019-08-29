@@ -567,14 +567,12 @@ testCompareXMLToArgv(const void *data)
         VIR_TEST_DEBUG("Error expected but there wasn't any.");
         goto cleanup;
     }
-    if (!virTestOOMActive()) {
-        if (flags & FLAG_EXPECT_FAILURE) {
-            if ((log = virTestLogContentAndReset()))
-                VIR_TEST_DEBUG("Got expected error: \n%s", log);
-        }
-        virResetLastError();
-        ret = 0;
+    if (flags & FLAG_EXPECT_FAILURE) {
+        if ((log = virTestLogContentAndReset()))
+            VIR_TEST_DEBUG("Got expected error: \n%s", log);
     }
+    virResetLastError();
+    ret = 0;
 
  cleanup:
     VIR_FREE(log);

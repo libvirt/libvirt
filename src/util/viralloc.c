@@ -30,80 +30,6 @@
 
 VIR_LOG_INIT("util.alloc");
 
-#if TEST_OOM
-static int testMallocNext;
-static int testMallocFailFirst;
-static int testMallocFailLast;
-static void (*testMallocHook)(int, void*);
-static void *testMallocHookData;
-
-void virAllocTestInit(void)
-{
-    testMallocNext = 1;
-    testMallocFailFirst = 0;
-    testMallocFailLast = 0;
-}
-
-int virAllocTestCount(void)
-{
-    return testMallocNext - 1;
-}
-
-void virAllocTestHook(void (*func)(int, void*), void *data)
-{
-    testMallocHook = func;
-    testMallocHookData = data;
-}
-
-void virAllocTestOOM(int n, int m)
-{
-    testMallocNext = 1;
-    testMallocFailFirst = n;
-    testMallocFailLast = n + m - 1;
-}
-
-static int virAllocTestFail(void)
-{
-    int fail = 0;
-    if (testMallocNext == 0)
-        return 0;
-
-    fail =
-        testMallocNext >= testMallocFailFirst &&
-        testMallocNext <= testMallocFailLast;
-
-    if (fail && testMallocHook)
-        (testMallocHook)(testMallocNext, testMallocHookData);
-
-    testMallocNext++;
-    return fail;
-}
-
-#else
-
-void virAllocTestOOM(int n ATTRIBUTE_UNUSED,
-                     int m ATTRIBUTE_UNUSED)
-{
-    /* nada */
-}
-
-int virAllocTestCount(void)
-{
-    return 0;
-}
-
-void virAllocTestInit(void)
-{
-    /* nada */
-}
-
-void virAllocTestHook(void (*func)(int, void*) ATTRIBUTE_UNUSED,
-                      void *data ATTRIBUTE_UNUSED)
-{
-    /* nada */
-}
-#endif
-
 
 /**
  * virAlloc:
@@ -130,16 +56,6 @@ int virAlloc(void *ptrptr,
              const char *funcname,
              size_t linenr)
 {
-#if TEST_OOM
-    if (virAllocTestFail()) {
-        *(void **)ptrptr = NULL;
-        if (report)
-            virReportOOMErrorFull(domcode, filename, funcname, linenr);
-        errno = ENOMEM;
-        return -1;
-    }
-#endif
-
     *(void **)ptrptr = calloc(1, size);
     if (*(void **)ptrptr == NULL) {
         if (report)
@@ -177,16 +93,6 @@ int virAllocN(void *ptrptr,
               const char *funcname,
               size_t linenr)
 {
-#if TEST_OOM
-    if (virAllocTestFail()) {
-        *(void **)ptrptr = NULL;
-        if (report)
-            virReportOOMErrorFull(domcode, filename, funcname, linenr);
-        errno = ENOMEM;
-        return -1;
-    }
-#endif
-
     *(void**)ptrptr = calloc(count, size);
     if (*(void**)ptrptr == NULL) {
         if (report)
@@ -226,14 +132,6 @@ int virReallocN(void *ptrptr,
                 size_t linenr)
 {
     void *tmp;
-#if TEST_OOM
-    if (virAllocTestFail()) {
-        if (report)
-            virReportOOMErrorFull(domcode, filename, funcname, linenr);
-        errno = ENOMEM;
-        return -1;
-    }
-#endif
 
     if (xalloc_oversized(count, size)) {
         if (report)
@@ -538,15 +436,6 @@ int virAllocVar(void *ptrptr,
                 size_t linenr)
 {
     size_t alloc_size = 0;
-
-#if TEST_OOM
-    if (virAllocTestFail()) {
-        if (report)
-            virReportOOMErrorFull(domcode, filename, funcname, linenr);
-        errno = ENOMEM;
-        return -1;
-    }
-#endif
 
     if (VIR_ALLOC_VAR_OVERSIZED(struct_size, count, element_size)) {
         if (report)

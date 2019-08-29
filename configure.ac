@@ -764,22 +764,6 @@ if test "$enable_test_coverage" = yes; then
   WARN_CFLAGS=$save_WARN_CFLAGS
 fi
 
-LIBVIRT_ARG_ENABLE([TEST_OOM], [memory allocation failure checking], [no])
-case "$enable_test_oom" in
-  yes|no) ;;
-  *) AC_MSG_ERROR([bad value ${enable_test_oom} for test-oom option]) ;;
-esac
-
-if test "$enable_test_oom" = yes; then
-  have_trace=yes
-  AC_CHECK_HEADER([execinfo.h],[],[have_trace=no])
-  AC_CHECK_FUNC([backtrace],[],[have_trace=no])
-  if test "$have_trace" = "yes"; then
-    AC_DEFINE([TEST_OOM_TRACE], 1, [Whether backtrace() is available])
-  fi
-  AC_DEFINE([TEST_OOM], 1, [Whether malloc OOM checking is enabled])
-fi
-
 LIBVIRT_ARG_ENABLE([TEST_LOCKING], [thread locking tests using CIL], [no])
 case "$enable_test_locking" in
   yes|no) ;;
@@ -1048,7 +1032,6 @@ AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Test suite])
 AC_MSG_NOTICE([])
 LIBVIRT_RESULT([Coverage], [$enable_test_coverage])
-LIBVIRT_RESULT([Alloc OOM], [$enable_test_oom])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Miscellaneous])
 AC_MSG_NOTICE([])

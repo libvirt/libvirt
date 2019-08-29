@@ -109,7 +109,6 @@ EXTRA_DIST = \
 	nwfilterxml2firewalldata \
 	nwfilterxml2xmlin \
 	nwfilterxml2xmlout \
-	oomtrace.pl \
 	qemuagentdata \
 	qemublocktestdata \
 	qemucapabilitiesdata \

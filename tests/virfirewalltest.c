@@ -611,9 +611,6 @@ testFirewallNoRollback(const void *opaque ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    if (virTestOOMActive())
-        goto cleanup;
-
     if (virBufferError(&cmdbuf))
         goto cleanup;
 
@@ -700,9 +697,6 @@ testFirewallSingleRollback(const void *opaque ATTRIBUTE_UNUSED)
         fprintf(stderr, "Firewall apply unexpectedly worked\n");
         goto cleanup;
     }
-
-    if (virTestOOMActive())
-        goto cleanup;
 
     if (virBufferError(&cmdbuf))
         goto cleanup;
@@ -793,9 +787,6 @@ testFirewallManyRollback(const void *opaque ATTRIBUTE_UNUSED)
         fprintf(stderr, "Firewall apply unexpectedly worked\n");
         goto cleanup;
     }
-
-    if (virTestOOMActive())
-        goto cleanup;
 
     if (virBufferError(&cmdbuf))
         goto cleanup;
@@ -916,9 +907,6 @@ testFirewallChainedRollback(const void *opaque ATTRIBUTE_UNUSED)
         fprintf(stderr, "Firewall apply unexpectedly worked\n");
         goto cleanup;
     }
-
-    if (virTestOOMActive())
-        goto cleanup;
 
     if (virBufferError(&cmdbuf))
         goto cleanup;

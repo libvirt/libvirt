@@ -42,13 +42,6 @@
 #include "virprocess.h"
 #include "virstring.h"
 
-#ifdef TEST_OOM
-# ifdef TEST_OOM_TRACE
-#  include <dlfcn.h>
-#  include <execinfo.h>
-# endif
-#endif
-
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 VIR_LOG_INIT("tests.testutils");
@@ -61,28 +54,12 @@ static unsigned int testVerbose = -1;
 static unsigned int testExpensive = -1;
 static unsigned int testRegenerate = -1;
 
-#ifdef TEST_OOM
-static unsigned int testOOM;
-static unsigned int testOOMStart = -1;
-static unsigned int testOOMEnd = -1;
-static unsigned int testOOMTrace;
-# ifdef TEST_OOM_TRACE
-void *testAllocStack[30];
-int ntestAllocStack;
-# endif
-#endif
-static bool testOOMActive;
 
 static size_t testCounter;
 static virBitmapPtr testBitmap;
 
 char *progname;
 static char *perl;
-
-bool virTestOOMActive(void)
-{
-    return testOOMActive;
-}
 
 static int virTestUseTerminalColors(void)
 {
@@ -104,42 +81,6 @@ virTestGetFlag(const char *name)
     return flag;
 }
 
-#ifdef TEST_OOM_TRACE
-static void virTestAllocHook(int nalloc ATTRIBUTE_UNUSED,
-                             void *opaque ATTRIBUTE_UNUSED)
-{
-    ntestAllocStack = backtrace(testAllocStack, ARRAY_CARDINALITY(testAllocStack));
-}
-#endif
-
-#ifdef TEST_OOM_TRACE
-static void
-virTestShowTrace(void)
-{
-    size_t j;
-    for (j = 2; j < ntestAllocStack; j++) {
-        Dl_info info;
-        char *cmd;
-
-        dladdr(testAllocStack[j], &info);
-        if (info.dli_fname &&
-            strstr(info.dli_fname, ".so")) {
-            if (virAsprintf(&cmd, ADDR2LINE " -f -e %s %p",
-                            info.dli_fname,
-                            ((void*)((unsigned long long)testAllocStack[j]
-                                     - (unsigned long long)info.dli_fbase))) < 0)
-                continue;
-        } else {
-            if (virAsprintf(&cmd, ADDR2LINE " -f -e %s %p",
-                            (char*)(info.dli_fname ? info.dli_fname : "<unknown>"),
-                            testAllocStack[j]) < 0)
-                continue;
-        }
-        ignore_value(system(cmd));
-        VIR_FREE(cmd);
-    }
-}
-#endif
 
 /*
  * Runs test
@@ -206,76 +147,6 @@ virTestRun(const char *title,
         else
             fprintf(stderr, "!");
     }
-
-#ifdef TEST_OOM
-    if (testOOM && ret != EXIT_AM_SKIP) {
-        int nalloc;
-        int oomret;
-        int start, end;
-        size_t i;
-        virResetLastError();
-        virAllocTestInit();
-# ifdef TEST_OOM_TRACE
-        virAllocTestHook(virTestAllocHook, NULL);
-# endif
-        oomret = body(data);
-        nalloc = virAllocTestCount();
-        fprintf(stderr, "    Test OOM for nalloc=%d ", nalloc);
-        if (testOOMStart == -1 ||
-            testOOMEnd == -1) {
-            start = 0;
-            end = nalloc;
-        } else {
-            start = testOOMStart;
-            end = testOOMEnd + 1;
-        }
-        testOOMActive = true;
-        for (i = start; i < end; i++) {
-            bool missingFail = false;
-# ifdef TEST_OOM_TRACE
-            memset(testAllocStack, 0, sizeof(testAllocStack));
-            ntestAllocStack = 0;
-# endif
-            virAllocTestOOM(i + 1, 1);
-            oomret = body(data);
-
-            /* fprintf() disabled because XML parsing APIs don't allow
-             * distinguish between element / attribute not present
-             * in the XML (which is non-fatal), vs OOM / malformed
-             * which should be fatal. Thus error reporting for
-             * optionally present XML is mostly broken.
-             */
-            if (oomret == 0) {
-                missingFail = true;
-# if 0
-                fprintf(stderr, " alloc %zu failed but no err status\n", i + 1);
-# endif
-            } else {
-                if (virGetLastErrorCode() == VIR_ERR_OK) {
-# if 0
-                    fprintf(stderr, " alloc %zu failed but no error report\n", i + 1);
-# endif
-                    missingFail = true;
-                }
-            }
-            if ((missingFail && testOOMTrace) || (testOOMTrace > 1)) {
-                fprintf(stderr, "%s", "!");
-# ifdef TEST_OOM_TRACE
-                virTestShowTrace();
-# endif
-                ret = -1;
-            } else {
-                fprintf(stderr, "%s", ".");
-            }
-        }
-        testOOMActive = false;
-        if (ret == 0)
-            fprintf(stderr, " OK\n");
-        else
-            fprintf(stderr, " FAILED\n");
-        virAllocTestInit();
-    }
-#endif /* TEST_OOM */
 
     unsetenv("VIR_TEST_MOCK_TESTNAME");
     return ret;
@@ -876,8 +747,7 @@ virtTestLogOutput(virLogSourcePtr source ATTRIBUTE_UNUSED,
 {
     struct virtTestLogData *log = data;
     virCheckFlags(VIR_LOG_STACK_TRACE,);
-    if (!testOOMActive)
-        virBufferAsprintf(&log->buf, "%s: %s", timestamp, str);
+    virBufferAsprintf(&log->buf, "%s: %s", timestamp, str);
 }
 
 static void
@@ -971,9 +841,6 @@ int virTestMain(int argc,
     va_list ap;
     int ret;
     char *testRange = NULL;
-#ifdef TEST_OOM
-    char *oomstr;
-#endif
     size_t noutputs = 0;
     virLogOutputPtr output = NULL;
     virLogOutputPtr *outputs = NULL;
@@ -1033,60 +900,6 @@ int virTestMain(int argc,
             return EXIT_FAILURE;
         }
     }
-
-#ifdef TEST_OOM
-    if ((oomstr = getenv("VIR_TEST_OOM")) != NULL) {
-        char *next;
-        if (testDebug == -1)
-            testDebug = 1;
-        testOOM = 1;
-        if (oomstr[0] != '\0' &&
-            oomstr[1] == ':') {
-            if (virStrToLong_ui(oomstr + 2, &next, 10, &testOOMStart) < 0) {
-                fprintf(stderr, "Cannot parse range %s\n", oomstr);
-                return EXIT_FAILURE;
-            }
-            if (*next == '\0') {
-                testOOMEnd = testOOMStart;
-            } else {
-                if (*next != '-') {
-                    fprintf(stderr, "Cannot parse range %s\n", oomstr);
-                    return EXIT_FAILURE;
-                }
-                if (virStrToLong_ui(next+1, NULL, 10, &testOOMEnd) < 0) {
-                    fprintf(stderr, "Cannot parse range %s\n", oomstr);
-                    return EXIT_FAILURE;
-                }
-            }
-        } else {
-            testOOMStart = -1;
-            testOOMEnd = -1;
-        }
-    }
-
-# ifdef TEST_OOM_TRACE
-    if ((oomstr = getenv("VIR_TEST_OOM_TRACE")) != NULL) {
-        if (virStrToLong_ui(oomstr, NULL, 10, &testOOMTrace) < 0) {
-            fprintf(stderr, "Cannot parse oom trace %s\n", oomstr);
-            return EXIT_FAILURE;
-        }
-    }
-# else
-    if (getenv("VIR_TEST_OOM_TRACE")) {
-        fprintf(stderr, "%s", "OOM test tracing not enabled in this build\n");
-        return EXIT_FAILURE;
-    }
-# endif
-#else /* TEST_OOM */
-    if (getenv("VIR_TEST_OOM")) {
-        fprintf(stderr, "%s", "OOM testing not enabled in this build\n");
-        return EXIT_FAILURE;
-    }
-    if (getenv("VIR_TEST_OOM_TRACE")) {
-        fprintf(stderr, "%s", "OOM test tracing not enabled in this build\n");
-        return EXIT_FAILURE;
-    }
-#endif /* TEST_OOM */
 
     /* Find perl early because some tests override PATH */
     perl = virFindFileInPath("perl");
