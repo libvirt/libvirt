@@ -178,23 +178,6 @@ void virDisposeString(char **strptr)
 #define VIR_EXPAND_N(ptr, count, add) virExpandN(&(ptr), sizeof(*(ptr)), &(count), add)
 
 /**
- * VIR_EXPAND_N_QUIET:
- * @ptr: pointer to hold address of allocated memory
- * @count: variable tracking number of elements currently allocated
- * @add: number of elements to add
- *
- * Re-allocate an array of 'count' elements, each sizeof(*ptr)
- * bytes long, to be 'count' + 'add' elements long, then store the
- * address of allocated memory in 'ptr' and the new size in 'count'.
- * The new elements are filled with zero.
- *
- * This macro is safe to use on arguments with side effects.
- *
- * Returns 0 on success, aborts on OOM
- */
-#define VIR_EXPAND_N_QUIET(ptr, count, add) VIR_EXPAND_N(ptr, count, add)
-
-/**
  * VIR_RESIZE_N:
  * @ptr: pointer to hold address of allocated memory
  * @alloc: variable tracking number of elements currently allocated
@@ -218,30 +201,6 @@ void virDisposeString(char **strptr)
  */
 #define VIR_RESIZE_N(ptr, alloc, count, add) \
     virResizeN(&(ptr), sizeof(*(ptr)), &(alloc), count, add)
-
-/**
- * VIR_RESIZE_N_QUIET:
- * @ptr: pointer to hold address of allocated memory
- * @alloc: variable tracking number of elements currently allocated
- * @count: number of elements currently in use
- * @add: minimum number of elements to additionally support
- *
- * Blindly using VIR_EXPAND_N(array, alloc, 1) in a loop scales
- * quadratically, because every iteration must copy contents from
- * all prior iterations.  But amortized linear scaling can be achieved
- * by tracking allocation size separately from the number of used
- * elements, and growing geometrically only as needed.
- *
- * If 'count' + 'add' is larger than 'alloc', then geometrically reallocate
- * the array of 'alloc' elements, each sizeof(*ptr) bytes long, and store
- * the address of allocated memory in 'ptr' and the new size in 'alloc'.
- * The new elements are filled with zero.
- *
- * This macro is safe to use on arguments with side effects.
- *
- * Returns 0 on success, aborts on OOM
- */
-#define VIR_RESIZE_N_QUIET(ptr, alloc, count, add) VIR_RESIZE_N(ptr, alloc, count, add)
 
 /**
  * VIR_SHRINK_N:
@@ -349,16 +308,6 @@ void virDisposeString(char **strptr)
     virInsertElementsN(&(ptr), sizeof(*(ptr)), at, &(count), \
                        VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), false, true)
 
-/* Quiet version of macros above */
-#define VIR_INSERT_ELEMENT_QUIET(ptr, at, count, newelem) \
-    VIR_INSERT_ELEMENT(ptr, at, count, newelem)
-#define VIR_INSERT_ELEMENT_COPY_QUIET(ptr, at, count, newelem) \
-    VIR_INSERT_ELEMENT_COPY(ptr, at, count, newelem)
-#define VIR_INSERT_ELEMENT_INPLACE_QUIET(ptr, at, count, newelem) \
-    VIR_INSERT_ELEMENT_INPLACE(ptr, at, count, newelem)
-#define VIR_INSERT_ELEMENT_COPY_INPLACE_QUIET(ptr, at, count, newelem) \
-    VIR_INSERT_ELEMENT_COPY_INPLACE(ptr, at, count, newelem)
-
 /**
  * VIR_APPEND_ELEMENT:
  * @ptr:     pointer to array of objects (*not* ptr to ptr)
@@ -412,8 +361,6 @@ void virDisposeString(char **strptr)
 /* Quiet version of macros above */
 #define VIR_APPEND_ELEMENT_QUIET(ptr, count, newelem) \
     VIR_APPEND_ELEMENT(ptr, count, newelem)
-#define VIR_APPEND_ELEMENT_COPY_QUIET(ptr, count, newelem) \
-    VIR_APPEND_ELEMENT_COPY(ptr, count, newelem)
 
 /**
  * VIR_DELETE_ELEMENT:
@@ -471,27 +418,6 @@ void virDisposeString(char **strptr)
  */
 #define VIR_ALLOC_VAR(ptr, type, count) \
     virAllocVar(&(ptr), sizeof(*(ptr)), sizeof(type), (count))
-
-/**
- * VIR_ALLOC_VAR_QUIET:
- * @ptr: pointer to hold address of allocated memory
- * @type: element type of trailing array
- * @count: number of array elements to allocate
- *
- * Allocate sizeof(*ptr) bytes plus an array of 'count' elements, each
- * sizeof('type').  This sort of allocation is useful for receiving
- * the data of certain ioctls and other APIs which return a struct in
- * which the last element is an array of undefined length.  The caller
- * of this type of API is expected to know the length of the array
- * that will be returned and allocate a suitable buffer to contain the
- * returned data.  C99 refers to these variable length objects as
- * structs containing flexible array members.
- *
- * This macro is safe to use on arguments with side effects.
- *
- * Returns -1 on failure, 0 on success
- */
-#define VIR_ALLOC_VAR_QUIET(ptr, type, count) VIR_ALLOC_VAR(ptr, type, count)
 
 /**
  * VIR_FREE:
