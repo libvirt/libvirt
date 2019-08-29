@@ -449,6 +449,9 @@ struct _qemuDomainVcpuPrivate {
     char *alias;
     virTristateBool halted;
 
+    /* copy of the data that qemu returned */
+    virJSONValuePtr props;
+
     /* information for hotpluggable cpus */
     char *type;
     int socket_id;

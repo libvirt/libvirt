@@ -570,6 +570,9 @@ struct qemuMonitorQueryHotpluggableCpusEntry {
     char *qom_path; /* full device qom path only present for online cpus */
     char *alias; /* device alias, may be NULL for non-hotpluggable entities */
 
+    /* verbatim copy of the JSON data representing the CPU which must be used for hotplug */
+    virJSONValuePtr props;
+
     /* topology information -1 if qemu didn't report given parameter */
     int node_id;
     int socket_id;
@@ -602,6 +605,9 @@ struct _qemuMonitorCPUInfo {
 
     /* name of the qemu type to add in case of hotplug */
     char *type;
+
+    /* verbatim copy of the returned data from qemu which should be used when plugging */
+    virJSONValuePtr props;
 
     /* alias of an hotpluggable entry. Entries with alias can be hot-unplugged */
     char *alias;

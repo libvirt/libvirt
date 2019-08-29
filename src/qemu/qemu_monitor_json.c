@@ -8378,6 +8378,7 @@ qemuMonitorQueryHotpluggableCpusFree(struct qemuMonitorQueryHotpluggableCpusEntr
         VIR_FREE(entry->type);
         VIR_FREE(entry->qom_path);
         VIR_FREE(entry->alias);
+        virJSONValueFree(entry->props);
     }
 
     VIR_FREE(entries);
@@ -8425,6 +8426,9 @@ qemuMonitorJSONProcessHotpluggableCpusReply(virJSONValuePtr vcpu,
                        _("query-hotpluggable-cpus didn't return device props"));
         return -1;
     }
+
+    if (!(entry->props = virJSONValueCopy(props)))
+        return -1;
 
     entry->node_id = -1;
     entry->socket_id = -1;

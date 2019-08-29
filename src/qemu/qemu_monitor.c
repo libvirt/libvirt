@@ -1780,6 +1780,7 @@ qemuMonitorCPUInfoClear(qemuMonitorCPUInfoPtr cpus,
         VIR_FREE(cpus[i].qom_path);
         VIR_FREE(cpus[i].alias);
         VIR_FREE(cpus[i].type);
+        virJSONValueFree(cpus[i].props);
     }
 }
 
@@ -1931,6 +1932,7 @@ qemuMonitorGetCPUInfoHotplug(struct qemuMonitorQueryHotpluggableCpusEntry *hotpl
         VIR_STEAL_PTR(vcpus[mastervcpu].qom_path, hotplugvcpus[i].qom_path);
         VIR_STEAL_PTR(vcpus[mastervcpu].alias, hotplugvcpus[i].alias);
         VIR_STEAL_PTR(vcpus[mastervcpu].type, hotplugvcpus[i].type);
+        VIR_STEAL_PTR(vcpus[mastervcpu].props, hotplugvcpus[i].props);
         vcpus[mastervcpu].id = hotplugvcpus[i].enable_id;
 
         /* copy state information to slave vcpus */

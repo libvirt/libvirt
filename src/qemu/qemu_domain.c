@@ -1144,6 +1144,7 @@ qemuDomainVcpuPrivateDispose(void *obj)
 
     VIR_FREE(priv->type);
     VIR_FREE(priv->alias);
+    virJSONValueFree(priv->props);
     return;
 }
 
@@ -11920,6 +11921,8 @@ qemuDomainRefreshVcpuInfo(virQEMUDriverPtr driver,
         VIR_STEAL_PTR(vcpupriv->type, info[i].type);
         VIR_FREE(vcpupriv->alias);
         VIR_STEAL_PTR(vcpupriv->alias, info[i].alias);
+        virJSONValueFree(vcpupriv->props);
+        VIR_STEAL_PTR(vcpupriv->props, info[i].props);
         vcpupriv->enable_id = info[i].id;
         vcpupriv->qemu_id = info[i].qemu_id;
 
