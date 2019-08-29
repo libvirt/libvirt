@@ -1148,7 +1148,8 @@ opendir(const char *path)
 
     init_syms();
 
-    if (STRPREFIX(path, SYSFS_PCI_PREFIX) &&
+    if ((STRPREFIX(path, SYSFS_PCI_PREFIX) ||
+        STRPREFIX(path, "/sys/kernel/")) &&
         getrealpath(&newpath, path) < 0)
         return NULL;
 

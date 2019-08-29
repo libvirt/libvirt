@@ -75,7 +75,7 @@ int virProcessGetNamespaces(pid_t pid,
 int virProcessSetNamespaces(size_t nfdlist,
                             int *fdlist);
 
-int virProcessSetMaxMemLock(pid_t pid, unsigned long long bytes);
+int virProcessSetMaxMemLock(pid_t pid, unsigned long long bytes) ATTRIBUTE_NOINLINE;
 int virProcessSetMaxProcesses(pid_t pid, unsigned int procs);
 int virProcessSetMaxFiles(pid_t pid, unsigned int files);
 int virProcessSetMaxCoreSize(pid_t pid, unsigned long long bytes);

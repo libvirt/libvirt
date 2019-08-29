@@ -1,0 +1,51 @@
+<domain type='kvm' id='7'>
+  <name>hotplug</name>
+  <uuid>d091ea82-29e6-2e34-3005-f02617b36e87</uuid>
+  <memory unit='KiB'>4194304</memory>
+  <currentMemory unit='KiB'>4194304</currentMemory>
+  <vcpu placement='static'>4</vcpu>
+  <os>
+    <type arch='ppc64' machine='pseries'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-ppc64</emulator>
+    <controller type='pci' index='0' model='pci-root'>
+      <model name='spapr-pci-host-bridge'/>
+      <target index='0'/>
+      <alias name='pci.0'/>
+    </controller>
+    <controller type='pci' index='1' model='pci-root'>
+      <model name='spapr-pci-host-bridge'/>
+      <target index='1'/>
+      <alias name='pci.1'/>
+    </controller>
+    <controller type='usb' index='0'>
+      <alias name='usb'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
+    </controller>
+    <input type='keyboard' bus='usb'>
+      <alias name='input0'/>
+      <address type='usb' bus='0' port='1'/>
+    </input>
+    <input type='mouse' bus='usb'>
+      <alias name='input1'/>
+      <address type='usb' bus='0' port='2'/>
+    </input>
+    <hostdev mode='subsystem' type='pci' managed='yes'>
+      <driver name='vfio'/>
+      <source>
+        <address domain='0x0000' bus='0x06' slot='0x12' function='0x2'/>
+      </source>
+      <alias name='hostdev0'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x01' function='0x0'/>
+    </hostdev>
+    <memballoon model='none'/>
+    <panic model='pseries'/>
+  </devices>
+  <seclabel type='none' model='none'/>
+</domain>
