@@ -128,22 +128,16 @@ int virStrcpy(char *dest, const char *src, size_t destbytes)
 #define virStrcpyStatic(dest, src) virStrcpy((dest), (src), sizeof(dest))
 
 /* Don't call these directly - use the macros below */
-int virStrdup(char **dest, const char *src, bool report, int domcode,
-              const char *filename, const char *funcname, size_t linenr)
+int virStrdup(char **dest, const char *src)
     ATTRIBUTE_RETURN_CHECK ATTRIBUTE_NONNULL(1);
 
-int virStrndup(char **dest, const char *src, ssize_t n, bool report, int domcode,
-               const char *filename, const char *funcname, size_t linenr)
+int virStrndup(char **dest, const char *src, ssize_t n)
     ATTRIBUTE_RETURN_CHECK ATTRIBUTE_NONNULL(1);
-int virAsprintfInternal(bool report, int domcode, const char *filename,
-                        const char *funcname, size_t linenr, char **strp,
-                        const char *fmt, ...)
-    ATTRIBUTE_NONNULL(6) ATTRIBUTE_NONNULL(7) ATTRIBUTE_FMT_PRINTF(7, 8)
+int virAsprintfInternal(char **strp, const char *fmt, ...)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_FMT_PRINTF(2, 3)
     ATTRIBUTE_RETURN_CHECK;
-int virVasprintfInternal(bool report, int domcode, const char *filename,
-                         const char *funcname, size_t linenr, char **strp,
-                         const char *fmt, va_list list)
-    ATTRIBUTE_NONNULL(6) ATTRIBUTE_NONNULL(7) ATTRIBUTE_FMT_PRINTF(7, 0)
+int virVasprintfInternal(char **strp, const char *fmt, va_list list)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_FMT_PRINTF(2, 0)
     ATTRIBUTE_RETURN_CHECK;
 
 /**
@@ -155,11 +149,9 @@ int virVasprintfInternal(bool report, int domcode, const char *filename,
  *
  * This macro is safe to use on arguments with side effects.
  *
- * Returns -1 on failure (with OOM error reported), 0 if @src was NULL,
- * 1 if @src was copied
+ * Returns 0 if @src was NULL, 1 if @src was copied, aborts on OOM
  */
-#define VIR_STRDUP(dst, src) virStrdup(&(dst), src, true, VIR_FROM_THIS, \
-                                       __FILE__, __FUNCTION__, __LINE__)
+#define VIR_STRDUP(dst, src) virStrdup(&(dst), src)
 
 /**
  * VIR_STRDUP_QUIET:
@@ -170,9 +162,9 @@ int virVasprintfInternal(bool report, int domcode, const char *filename,
  *
  * This macro is safe to use on arguments with side effects.
  *
- * Returns -1 on failure, 0 if @src was NULL, 1 if @src was copied
+ * Returns 0 if @src was NULL, 1 if @src was copied, aborts on OOM
  */
-#define VIR_STRDUP_QUIET(dst, src) virStrdup(&(dst), src, false, 0, NULL, NULL, 0)
+#define VIR_STRDUP_QUIET(dst, src) VIR_STRDUP(dst, src)
 
 /**
  * VIR_STRNDUP:
@@ -187,12 +179,9 @@ int virVasprintfInternal(bool report, int domcode, const char *filename,
  *
  * This macro is safe to use on arguments with side effects.
  *
- * Returns -1 on failure (with OOM error reported), 0 if @src was NULL,
- * 1 if @src was copied
+ * Returns 0 if @src was NULL, 1 if @src was copied, aborts on OOM
  */
-#define VIR_STRNDUP(dst, src, n) virStrndup(&(dst), src, n, true, \
-                                            VIR_FROM_THIS, __FILE__, \
-                                            __FUNCTION__, __LINE__)
+#define VIR_STRNDUP(dst, src, n) virStrndup(&(dst), src, n)
 
 /**
  * VIR_STRNDUP_QUIET:
@@ -208,51 +197,41 @@ int virVasprintfInternal(bool report, int domcode, const char *filename,
  *
  * This macro is safe to use on arguments with side effects.
  *
- * Returns -1 on failure, 0 if @src was NULL, 1 if @src was copied
+ * Returns 0 if @src was NULL, 1 if @src was copied, aborts on OOM
  */
-#define VIR_STRNDUP_QUIET(dst, src, n) virStrndup(&(dst), src, n, false, \
-                                                  0, NULL, NULL, 0)
+#define VIR_STRNDUP_QUIET(dst, src, n) virStrndup(&(dst), src, n)
 
 size_t virStringListLength(const char * const *strings);
 
 /**
  * virVasprintf
  *
- * Like glibc's vasprintf but makes sure *strp == NULL on failure, in which
- * case the OOM error is reported too.
+ * Like glibc's vasprintf but aborts on OOM
  *
- * Returns -1 on failure (with OOM error reported), number of bytes printed
- * on success.
+ * Returns number of bytes printed on success, aborts on OOM
  */
-#define virVasprintf(strp, fmt, list) \
-    virVasprintfInternal(true, VIR_FROM_THIS, __FILE__, __FUNCTION__, \
-                         __LINE__, strp, fmt, list)
+#define virVasprintf(strp, fmt, list) virVasprintfInternal(strp, fmt, list)
 
 /**
  * virVasprintfQuiet
  *
- * Like glibc's vasprintf but makes sure *strp == NULL on failure.
+ * Like glibc's vasprintf but aborts on OOM.
  *
- * Returns -1 on failure, number of bytes printed on success.
+ * Returns number of bytes printed on success, aborts on OOM
  */
-#define virVasprintfQuiet(strp, fmt, list) \
-    virVasprintfInternal(false, 0, NULL, NULL, 0, strp, fmt, list)
+#define virVasprintfQuiet(strp, fmt, list) virVasprintf(strp, fmt, list)
 
 /**
  * virAsprintf:
  * @strp: variable to hold result (char **)
  * @fmt: printf format
  *
- * Like glibc's asprintf but makes sure *strp == NULL on failure, in which case
- * the OOM error is reported too.
+ * Like glibc's asprintf but aborts on OOM.
  *
- * Returns -1 on failure (with OOM error reported), number of bytes printed
- * on success.
+ * Returns number of bytes printed on success, aborts on OOM
  */
 
-#define virAsprintf(strp, ...) \
-    virAsprintfInternal(true, VIR_FROM_THIS, __FILE__, __FUNCTION__, __LINE__, \
-                        strp, __VA_ARGS__)
+#define virAsprintf(strp, ...) virAsprintfInternal(strp, __VA_ARGS__)
 
 /**
  * virAsprintfQuiet:
@@ -261,12 +240,10 @@ size_t virStringListLength(const char * const *strings);
  *
  * Like glibc's asprintf but makes sure *strp == NULL on failure.
  *
- * Returns -1 on failure, number of bytes printed on success.
+ * Returns number of bytes printed on success, aborts on OOM
  */
 
-#define virAsprintfQuiet(strp, ...) \
-    virAsprintfInternal(false, 0, NULL, NULL, 0, \
-                        strp, __VA_ARGS__)
+#define virAsprintfQuiet(strp, ...) virAsprintf(strp, __VA_ARGS__)
 
 int virStringSortCompare(const void *a, const void *b);
 int virStringSortRevCompare(const void *a, const void *b);

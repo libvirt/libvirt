@@ -726,40 +726,27 @@ virDoubleToStr(char **strp, double number)
 
 
 int
-virVasprintfInternal(bool report,
-                     int domcode,
-                     const char *filename,
-                     const char *funcname,
-                     size_t linenr,
-                     char **strp,
+virVasprintfInternal(char **strp,
                      const char *fmt,
                      va_list list)
 {
     int ret;
 
-    if ((ret = vasprintf(strp, fmt, list)) == -1) {
-        if (report)
-            virReportOOMErrorFull(domcode, filename, funcname, linenr);
-        *strp = NULL;
-    }
+    if ((ret = vasprintf(strp, fmt, list)) == -1)
+        abort();
+
     return ret;
 }
 
 int
-virAsprintfInternal(bool report,
-                    int domcode,
-                    const char *filename,
-                    const char *funcname,
-                    size_t linenr,
-                    char **strp,
+virAsprintfInternal(char **strp,
                     const char *fmt, ...)
 {
     va_list ap;
     int ret;
 
     va_start(ap, fmt);
-    ret = virVasprintfInternal(report, domcode, filename,
-                               funcname, linenr, strp, fmt, ap);
+    ret = virVasprintfInternal(strp, fmt, ap);
     va_end(ap);
     return ret;
 }
@@ -937,37 +924,20 @@ virStringIsEmpty(const char *str)
  * virStrdup:
  * @dest: where to store duplicated string
  * @src: the source string to duplicate
- * @report: whether to report OOM error, if there is one
- * @domcode: error domain code
- * @filename: caller's filename
- * @funcname: caller's funcname
- * @linenr: caller's line number
  *
- * Wrapper over strdup, which reports OOM error if told so,
- * in which case callers wants to pass @domcode, @filename,
- * @funcname and @linenr which should represent location in
- * caller's body where virStrdup is called from. Consider
- * using VIR_STRDUP which sets these automatically.
+ * Wrapper over strdup, which aborts on OOM error.
  *
- * Returns: 0 for NULL src, 1 on successful copy, -1 otherwise.
+ * Returns: 0 for NULL src, 1 on successful copy, aborts on OOM
  */
 int
 virStrdup(char **dest,
-          const char *src,
-          bool report,
-          int domcode,
-          const char *filename,
-          const char *funcname,
-          size_t linenr)
+          const char *src)
 {
     *dest = NULL;
     if (!src)
         return 0;
-    if (!(*dest = strdup(src))) {
-        if (report)
-            virReportOOMErrorFull(domcode, filename, funcname, linenr);
-        return -1;
-    }
+    if (!(*dest = strdup(src)))
+        abort();
 
     return 1;
 }
@@ -977,45 +947,28 @@ virStrdup(char **dest,
  * @dest: where to store duplicated string
  * @src: the source string to duplicate
  * @n: how many bytes to copy
- * @report: whether to report OOM error, if there is one
- * @domcode: error domain code
- * @filename: caller's filename
- * @funcname: caller's funcname
- * @linenr: caller's line number
  *
- * Wrapper over strndup, which reports OOM error if told so,
- * in which case callers wants to pass @domcode, @filename,
- * @funcname and @linenr which should represent location in
- * caller's body where virStrndup is called from. Consider
- * using VIR_STRNDUP which sets these automatically.
+ * Wrapper over strndup, which aborts on OOM error.
  *
  * In case @n is smaller than zero, the whole @src string is
  * copied.
  *
- * Returns: 0 for NULL src, 1 on successful copy, -1 otherwise.
+ * Returns: 0 for NULL src, 1 on successful copy, aborts on OOM
  */
 int
 virStrndup(char **dest,
            const char *src,
-           ssize_t n,
-           bool report,
-           int domcode,
-           const char *filename,
-           const char *funcname,
-           size_t linenr)
+           ssize_t n)
 {
     *dest = NULL;
     if (!src)
         return 0;
     if (n < 0)
         n = strlen(src);
-    if (!(*dest = strndup(src, n))) {
-        if (report)
-            virReportOOMErrorFull(domcode, filename, funcname, linenr);
-        return -1;
-    }
+    if (!(*dest = strndup(src, n)))
+        abort();
 
-   return 1;
+    return 1;
 }
 
 
@@ -1483,10 +1436,8 @@ virStringEncodeBase64(const uint8_t *buf, size_t buflen)
     char *ret;
 
     base64_encode_alloc((const char *) buf, buflen, &ret);
-    if (!ret) {
-        virReportOOMError();
-        return NULL;
-    }
+    if (!ret)
+        abort();
 
     return ret;
 }
