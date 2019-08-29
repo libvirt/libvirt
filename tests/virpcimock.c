@@ -45,7 +45,16 @@ static char *(*real_virFileCanonicalizePath)(const char *path);
  */
 char *fakerootdir;
 
+/* To add a new mocked prefix in virpcimock:
+ * - add the prefix here as a define to make it easier to track what we
+ * are mocking;
+ * - add it to the 'pathPrefixIsMocked()' helper;
+ * - (optional) edit 'getrealpath()' if you need the resulting mocked
+ * path to be different than <fakerootdir>/path
+ */
 # define SYSFS_PCI_PREFIX "/sys/bus/pci/"
+# define SYSFS_KERNEL_PREFIX "/sys/kernel/"
+# define DEV_VFIO_PREFIX "/dev/vfio/"
 
 # define STDERR(...) \
     fprintf(stderr, "%s %zu: ", __FUNCTION__, (size_t) __LINE__); \
@@ -250,11 +259,20 @@ pci_read_file(const char *path,
     return ret;
 }
 
+static bool
+pathPrefixIsMocked(const char *path)
+{
+    return STRPREFIX(path, SYSFS_PCI_PREFIX) ||
+           STRPREFIX(path, SYSFS_KERNEL_PREFIX) ||
+           STRPREFIX(path, DEV_VFIO_PREFIX);
+}
+
 static int
 getrealpath(char **newpath,
             const char *path)
 {
-    init_env();
+    if (!fakerootdir && pathPrefixIsMocked(path))
+        init_env();
 
     if (STRPREFIX(path, SYSFS_PCI_PREFIX)) {
         if (virAsprintfQuiet(newpath, "%s/sys/bus/pci/%s",
@@ -263,9 +281,7 @@ getrealpath(char **newpath,
             errno = ENOMEM;
             return -1;
         }
-    } else if (STRPREFIX(path, "/sys/kernel/") ||
-               STRPREFIX(path, "/dev/vfio/")) {
-
+    } else if (pathPrefixIsMocked(path)) {
         if (virAsprintfQuiet(newpath, "%s/%s",
                              fakerootdir,
                              path) < 0) {
@@ -971,9 +987,6 @@ init_env(void)
 {
     VIR_AUTOFREE(char *) tmp = NULL;
 
-    if (fakerootdir)
-        return;
-
     if (!(fakerootdir = getenv("LIBVIRT_FAKE_ROOT_DIR")))
         ABORT("Missing LIBVIRT_FAKE_ROOT_DIR env variable\n");
 
@@ -1055,21 +1068,19 @@ access(const char *path, int mode)
 
     init_syms();
 
-    if (STRPREFIX(path, SYSFS_PCI_PREFIX) &&
-        getrealpath(&newpath, path) < 0)
+    if (getrealpath(&newpath, path) < 0)
         return -1;
 
-    return real_access(newpath ? newpath : path, mode);
+    return real_access(newpath, mode);
 }
 
 
 static int
 virMockStatRedirect(const char *path, char **newpath)
 {
-    if (STRPREFIX(path, SYSFS_PCI_PREFIX)) {
-        if (getrealpath(newpath, path) < 0)
-            return -1;
-    }
+    if (getrealpath(newpath, path) < 0)
+        return -1;
+
     return 0;
 }
 
@@ -1082,8 +1093,7 @@ open(const char *path, int flags, ...)
 
     init_syms();
 
-    if (STRPREFIX(path, SYSFS_PCI_PREFIX) &&
-        getrealpath(&newpath, path) < 0)
+    if (getrealpath(&newpath, path) < 0)
         return -1;
 
     if (flags & O_CREAT) {
@@ -1092,9 +1102,9 @@ open(const char *path, int flags, ...)
         va_start(ap, flags);
         mode = (mode_t) va_arg(ap, int);
         va_end(ap);
-        ret = real_open(newpath ? newpath : path, flags, mode);
+        ret = real_open(newpath, flags, mode);
     } else {
-        ret = real_open(newpath ? newpath : path, flags);
+        ret = real_open(newpath, flags);
     }
 
     /* Catch both: /sys/bus/pci/drivers/... and
@@ -1123,11 +1133,10 @@ __open_2(const char *path, int flags)
 
     init_syms();
 
-    if (STRPREFIX(path, SYSFS_PCI_PREFIX) &&
-        getrealpath(&newpath, path) < 0)
+    if (getrealpath(&newpath, path) < 0)
         return -1;
 
-    ret = real___open_2(newpath ? newpath : path, flags);
+    ret = real___open_2(newpath, flags);
 
     /* Catch both: /sys/bus/pci/drivers/... and
      * /sys/bus/pci/device/.../driver/... */
@@ -1148,12 +1157,10 @@ opendir(const char *path)
 
     init_syms();
 
-    if ((STRPREFIX(path, SYSFS_PCI_PREFIX) ||
-        STRPREFIX(path, "/sys/kernel/")) &&
-        getrealpath(&newpath, path) < 0)
+    if (getrealpath(&newpath, path) < 0)
         return NULL;
 
-    return real_opendir(newpath ? newpath : path);
+    return real_opendir(newpath);
 }
 
 int
@@ -1171,11 +1178,10 @@ virFileCanonicalizePath(const char *path)
 
     init_syms();
 
-    if (STRPREFIX(path, SYSFS_PCI_PREFIX) &&
-        getrealpath(&newpath, path) < 0)
+    if (getrealpath(&newpath, path) < 0)
         return NULL;
 
-    return real_virFileCanonicalizePath(newpath ? newpath : path);
+    return real_virFileCanonicalizePath(newpath);
 }
 
 # include "virmockstathelpers.c"
