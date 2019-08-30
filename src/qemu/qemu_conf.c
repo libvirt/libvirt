@@ -1266,7 +1266,6 @@ virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver)
     virSecurityManagerPtr *sec_managers = NULL;
     /* Security driver data */
     const char *doi, *model, *lbl, *type;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     const int virtTypes[] = {VIR_DOMAIN_VIRT_KVM,
                              VIR_DOMAIN_VIRT_QEMU,};
 
@@ -1313,13 +1312,11 @@ virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver)
     }
     VIR_FREE(sec_managers);
 
-    virObjectUnref(cfg);
     return caps;
 
  error:
     VIR_FREE(sec_managers);
     virObjectUnref(caps);
-    virObjectUnref(cfg);
     return NULL;
 }
 
