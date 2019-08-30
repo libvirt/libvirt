@@ -2034,7 +2034,7 @@ qemuBlockStorageSourceCreateGetFormatPropsGeneric(virStorageSourcePtr src,
     if (virJSONValueObjectCreate(&props,
                                  "s:driver", driver,
                                  "s:file", src->nodestorage,
-                                 "u:size", src->capacity,
+                                 "U:size", src->capacity,
                                  NULL) < 0)
         return -1;
 
@@ -2100,7 +2100,7 @@ qemuBlockStorageSourceCreateGetFormatPropsLUKS(virStorageSourcePtr src,
     if (virJSONValueObjectAdd(luksprops,
                               "s:driver", "luks",
                               "s:file", src->nodestorage,
-                              "u:size", src->capacity,
+                              "U:size", src->capacity,
                               NULL) < 0)
         return -1;
 
@@ -2153,7 +2153,7 @@ qemuBlockStorageSourceCreateGetFormatPropsQcow2(virStorageSourcePtr src,
     if (virJSONValueObjectCreate(&qcow2props,
                                  "s:driver", "qcow2",
                                  "s:file", src->nodestorage,
-                                 "u:size", src->capacity,
+                                 "U:size", src->capacity,
                                  "S:version", qcow2version,
                                  NULL) < 0)
         return -1;
@@ -2177,7 +2177,7 @@ qemuBlockStorageSourceCreateGetFormatPropsQcow(virStorageSourcePtr src,
     if (virJSONValueObjectCreate(&qcowprops,
                                  "s:driver", "qcow",
                                  "s:file", src->nodestorage,
-                                 "u:size", src->capacity,
+                                 "U:size", src->capacity,
                                  NULL) < 0)
         return -1;
 
@@ -2200,7 +2200,7 @@ qemuBlockStorageSourceCreateGetFormatPropsQed(virStorageSourcePtr src,
     if (virJSONValueObjectCreate(&qedprops,
                                  "s:driver", "qed",
                                  "s:file", src->nodestorage,
-                                 "u:size", src->capacity,
+                                 "U:size", src->capacity,
                                  NULL) < 0)
         return -1;
 
@@ -2373,7 +2373,7 @@ qemuBlockStorageSourceCreateGetStorageProps(virStorageSourcePtr src,
                                  "s:driver", driver,
                                  "S:filename", filename,
                                  "A:location", &location,
-                                 "u:size", src->physical,
+                                 "U:size", src->physical,
                                  NULL) < 0)
         return -1;
 
