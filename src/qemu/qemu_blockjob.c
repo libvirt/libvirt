@@ -659,7 +659,23 @@ qemuBlockJobEventProcessLegacyCompleted(virQEMUDriverPtr driver,
         disk->src = disk->mirror;
     } else {
         if (disk->mirror) {
+            virStorageSourcePtr n;
+
             virDomainLockImageDetach(driver->lockManager, vm, disk->mirror);
+
+            /* Ideally, we would restore seclabels on the backing chain here
+             * but we don't know if somebody else is not using parts of it.
+             * Remove security driver metadata so that they are not leaked. */
+            for (n = disk->mirror; virStorageSourceIsBacking(n); n = n->backingStore) {
+                if (qemuSecurityMoveImageMetadata(driver, vm, n, NULL) < 0) {
+                    VIR_WARN("Unable to remove disk metadata on "
+                             "vm %s from %s (disk target %s)",
+                             vm->def->name,
+                             NULLSTR(disk->src->path),
+                             disk->dst);
+                }
+            }
+
             virObjectUnref(disk->mirror);
         }
     }
@@ -728,7 +744,23 @@ qemuBlockJobEventProcessLegacy(virQEMUDriverPtr driver,
     case VIR_DOMAIN_BLOCK_JOB_FAILED:
     case VIR_DOMAIN_BLOCK_JOB_CANCELED:
         if (disk->mirror) {
+            virStorageSourcePtr n;
+
             virDomainLockImageDetach(driver->lockManager, vm, disk->mirror);
+
+            /* Ideally, we would restore seclabels on the backing chain here
+             * but we don't know if somebody else is not using parts of it.
+             * Remove security driver metadata so that they are not leaked. */
+            for (n = disk->mirror; virStorageSourceIsBacking(n); n = n->backingStore) {
+                if (qemuSecurityMoveImageMetadata(driver, vm, n, NULL) < 0) {
+                    VIR_WARN("Unable to remove disk metadata on "
+                             "vm %s from %s (disk target %s)",
+                             vm->def->name,
+                             NULLSTR(disk->src->path),
+                             disk->dst);
+                }
+            }
+
             virObjectUnref(disk->mirror);
             disk->mirror = NULL;
         }
@@ -1128,16 +1160,33 @@ qemuBlockJobProcessEventConcludedCopyAbort(virQEMUDriverPtr driver,
 
 
 static void
-qemuBlockJobProcessEventFailedActiveCommit(virDomainObjPtr vm,
+qemuBlockJobProcessEventFailedActiveCommit(virQEMUDriverPtr driver,
+                                           virDomainObjPtr vm,
                                            qemuBlockJobDataPtr job)
 {
+    virDomainDiskDefPtr disk = job->disk;
+    virStorageSourcePtr n;
+
     VIR_DEBUG("active commit job '%s' on VM '%s' failed", job->name, vm->def->name);
 
-    if (!job->disk)
+    if (!disk)
         return;
 
-    virObjectUnref(job->disk->mirror);
-    job->disk->mirror = NULL;
+    /* Ideally, we would make the backing chain read only again (yes, SELinux
+     * can do that using different labels). But that is not implemented yet and
+     * not leaking security driver metadata is more important. */
+    for (n = disk->mirror; virStorageSourceIsBacking(n); n = n->backingStore) {
+        if (qemuSecurityMoveImageMetadata(driver, vm, n, NULL) < 0) {
+            VIR_WARN("Unable to remove disk metadata on "
+                     "vm %s from %s (disk target %s)",
+                     vm->def->name,
+                     NULLSTR(disk->src->path),
+                     disk->dst);
+        }
+    }
+
+    virObjectUnref(disk->mirror);
+    disk->mirror = NULL;
 }
 
 
@@ -1231,7 +1280,7 @@ qemuBlockJobEventProcessConcludedTransition(qemuBlockJobDataPtr job,
             break;
 
         case QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT:
-            qemuBlockJobProcessEventFailedActiveCommit(vm, job);
+            qemuBlockJobProcessEventFailedActiveCommit(driver, vm, job);
             break;
 
         case QEMU_BLOCKJOB_TYPE_CREATE:
