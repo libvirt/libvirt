@@ -646,8 +646,14 @@ qemuBlockJobEventProcessLegacyCompleted(virQEMUDriverPtr driver,
         virDomainLockImageDetach(driver->lockManager, vm, disk->src);
 
         /* Move secret driver metadata */
-        if (qemuSecurityMoveImageMetadata(driver, vm, disk->src, disk->mirror) < 0)
-            VIR_WARN("Unable to move disk metadata on vm %s", vm->def->name);
+        if (qemuSecurityMoveImageMetadata(driver, vm, disk->src, disk->mirror) < 0) {
+            VIR_WARN("Unable to move disk metadata on "
+                     "vm %s from %s to %s (disk target %s)",
+                     vm->def->name,
+                     NULLSTR(disk->src->path),
+                     NULLSTR(disk->mirror->path),
+                     disk->dst);
+        }
 
         virObjectUnref(disk->src);
         disk->src = disk->mirror;
