@@ -58,7 +58,7 @@ static size_t testCounter;
 static virBitmapPtr testBitmap;
 
 char *progname;
-static char *perl;
+static char *python;
 
 static int virTestUseTerminalColors(void)
 {
@@ -419,14 +419,14 @@ virTestRewrapFile(const char *filename)
           virStringHasSuffix(filename, ".ldargs")))
         return 0;
 
-    if (!perl) {
-        fprintf(stderr, "cannot rewrap %s: unable to find perl in path", filename);
+    if (!python) {
+        fprintf(stderr, "cannot rewrap %s: unable to find python in path", filename);
         return -1;
     }
 
-    script = g_strdup_printf("%s/test-wrap-argv.pl", abs_srcdir);
+    script = g_strdup_printf("%s/test-wrap-argv.py", abs_srcdir);
 
-    cmd = virCommandNewArgList(perl, script, "--in-place", filename, NULL);
+    cmd = virCommandNewArgList(python, script, "--in-place", filename, NULL);
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
@@ -910,8 +910,8 @@ int virTestMain(int argc,
         }
     }
 
-    /* Find perl early because some tests override PATH */
-    perl = virFindFileInPath("perl");
+    /* Find python early because some tests override PATH */
+    python = virFindFileInPath("python");
 
     ret = (func)();
 
@@ -922,7 +922,7 @@ int virTestMain(int argc,
         fprintf(stderr, " %-3zu %s\n", testCounter, ret == 0 ? "OK" : "FAIL");
     }
     virLogReset();
-    VIR_FREE(perl);
+    VIR_FREE(python);
     return ret;
 }
 

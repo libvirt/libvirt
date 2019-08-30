@@ -65,6 +65,7 @@ EXTRA_DIST = \
   scripts/mock-noinline.py \
   scripts/prohibit-duplicate-header.py \
   scripts/reformat-news.py \
+  scripts/test-wrap-argv.py \
   build-aux/syntax-check.mk \
   build-aux/useless-if-before-free \
   build-aux/vc-list-files \
