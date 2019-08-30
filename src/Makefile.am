@@ -330,14 +330,24 @@ check-protocol:
 endif !WITH_REMOTE
 EXTRA_DIST += $(PROTOCOL_STRUCTS)
 
+DRIVERS = \
+	$(srcdir)/driver-hypervisor.h \
+	$(srcdir)/driver-interface.h \
+	$(srcdir)/driver-network.h \
+	$(srcdir)/driver-nodedev.h \
+	$(srcdir)/driver-nwfilter.h \
+	$(srcdir)/driver-secret.h \
+	$(srcdir)/driver-state.h \
+	$(srcdir)/driver-storage.h \
+	$(srcdir)/driver-stream.h \
+	$(NULL)
+
 check-drivername:
-	$(AM_V_GEN)$(PERL) $(srcdir)/check-drivername.pl \
-		$(srcdir)/driver.h \
+	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/check-drivername.py \
+		$(DRIVERS) \
 		$(srcdir)/libvirt_public.syms \
 		$(srcdir)/libvirt_qemu.syms \
 		$(srcdir)/libvirt_lxc.syms
-
-EXTRA_DIST += check-drivername.pl
 
 check-driverimpls:
 	$(AM_V_GEN)$(PERL) $(srcdir)/check-driverimpls.pl \

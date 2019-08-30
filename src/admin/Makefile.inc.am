@@ -116,7 +116,7 @@ check-admin-symsorting:
 		$(srcdir) $(ADMIN_SYM_FILES)
 
 check-admin-drivername:
-	$(AM_V_GEN)$(PERL) $(srcdir)/check-drivername.pl \
+	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/check-drivername.py \
 		$(srcdir)/admin/libvirt_admin_public.syms
 
 check-admin: check-admin-symfile check-admin-symsorting check-admin-drivername

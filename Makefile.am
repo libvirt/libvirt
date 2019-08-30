@@ -48,6 +48,7 @@ EXTRA_DIST = \
   scripts/augeas-gentest.py \
   build-aux/check-spacing.pl \
   scripts/check-aclperms.py \
+  scripts/check-drivername.py \
   scripts/check-symfile.py \
   scripts/check-symsorting.py \
   scripts/dtrace2systemtap.py \
