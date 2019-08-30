@@ -283,9 +283,9 @@ else ! WITH_LINUX
 check-symfile:
 endif ! WITH_LINUX
 check-symsorting:
-	$(AM_V_GEN)$(PERL) $(srcdir)/check-symsorting.pl \
+	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/check-symsorting.py \
 		$(srcdir) $(SYM_FILES)
-EXTRA_DIST += check-symfile.pl check-symsorting.pl
+EXTRA_DIST += check-symfile.pl
 
 # Keep this list synced with RPC_PROBE_FILES
 PROTOCOL_STRUCTS = \
