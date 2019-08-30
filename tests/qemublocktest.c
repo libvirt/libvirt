@@ -420,8 +420,8 @@ testQemuImageCreate(const void *opaque)
         return -1;
 
     /* fake some sizes */
-    src->capacity = 1337;
-    src->physical = 42;
+    src->capacity = UINT_MAX * 2ULL;
+    src->physical = UINT_MAX + 1ULL;
 
     if (qemuDomainValidateStorageSource(src, data->qemuCaps) < 0)
         return -1;

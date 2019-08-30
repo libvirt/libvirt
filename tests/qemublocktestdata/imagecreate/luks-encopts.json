@@ -2,7 +2,7 @@ protocol:
 {
   "driver": "file",
   "filename": "/var/lib/libvirt/images/i.img",
-  "size": 42
+  "size": 4294967296
 }
 
 format:
@@ -15,5 +15,5 @@ format:
   "ivgen-hash-alg": "sha256",
   "driver": "luks",
   "file": "0123456789ABCDEF0123456789ABCDE",
-  "size": 1337
+  "size": 8589934590
 }

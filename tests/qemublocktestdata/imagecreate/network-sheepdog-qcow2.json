@@ -9,12 +9,12 @@ protocol:
     },
     "vdi": "asdf/i.qcow2"
   },
-  "size": 42
+  "size": 4294967296
 }
 
 format:
 {
   "driver": "qcow2",
   "file": "0123456789ABCDEF0123456789ABCDE",
-  "size": 1337
+  "size": 8589934590
 }
