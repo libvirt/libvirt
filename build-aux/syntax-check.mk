@@ -2180,8 +2180,8 @@ spacing-check:
 	  { echo '$(ME): incorrect formatting' 1>&2; exit 1; }
 
 mock-noinline:
-	$(AM_V_GEN)$(VC_LIST) | $(GREP) '\.[ch]$$' | xargs \
-	$(PERL) $(top_srcdir)/build-aux/mock-noinline.pl
+	$(AM_V_GEN)$(VC_LIST) | $(GREP) '\.[ch]$$' | $(RUNUTF8) xargs \
+	$(PYTHON) $(top_srcdir)/scripts/mock-noinline.py
 
 header-ifdef:
 	$(AM_V_GEN)$(VC_LIST) | $(GREP) '\.[h]$$' | xargs \
