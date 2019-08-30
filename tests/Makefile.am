@@ -456,7 +456,7 @@ EXTRA_DIST += $(test_scripts)
 if WITH_LINUX
 check-access: file-access-clean
 	VIR_TEST_FILE_ACCESS=1 $(MAKE) $(AM_MAKEFLAGS) check
-	$(PERL) $(abs_srcdir)/check-file-access.pl \
+	$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/check-file-access.py \
 		$(abs_builddir)/test_file_access.txt \
 		$(abs_srcdir)/file_access_whitelist.txt | sort -u
 
@@ -465,7 +465,6 @@ file-access-clean:
 endif WITH_LINUX
 
 EXTRA_DIST += \
-	check-file-access.pl \
 	file_access_whitelist.txt
 
 if WITH_TESTS

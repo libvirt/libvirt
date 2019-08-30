@@ -5,7 +5,7 @@
 #  $path: $progname: $testname
 #  $path: $action: $progname: $testname
 #
-# All these variables are evaluated as perl RE. So to allow
+# All these variables are evaluated as python RE. So to allow
 # /dev/sda and /dev/sdb, you can just '/dev/sd[a-b]', or to allow
 # /proc/$pid/status you can '/proc/\d+/status' and so on.
 # Moreover, $action, $progname and $testname can be empty, in which
