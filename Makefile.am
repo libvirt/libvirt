@@ -45,7 +45,7 @@ EXTRA_DIST = \
   run.in \
   README.md \
   AUTHORS.in \
-  build-aux/augeas-gentest.pl \
+  scripts/augeas-gentest.py \
   build-aux/check-spacing.pl \
   build-aux/header-ifdef.pl \
   build-aux/minimize-po.pl \

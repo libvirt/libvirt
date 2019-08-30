@@ -421,8 +421,8 @@ check-augeas: $(augeas_DATA) $(augeastest_DATA)
 	fi
 .PHONY: check-augeas
 
-AUG_GENTEST_SCRIPT = $(top_srcdir)/build-aux/augeas-gentest.pl
-AUG_GENTEST = $(PERL) $(AUG_GENTEST_SCRIPT)
+AUG_GENTEST_SCRIPT = $(top_srcdir)/scripts/augeas-gentest.py
+AUG_GENTEST = $(RUNUTF8) $(PYTHON) $(AUG_GENTEST_SCRIPT)
 
 
 #
