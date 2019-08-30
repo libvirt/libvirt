@@ -52,6 +52,7 @@ EXTRA_DIST = \
   scripts/check-aclrules.py \
   scripts/check-drivername.py \
   scripts/check-driverimpls.py \
+  scripts/check-remote-protocol.py \
   scripts/check-symfile.py \
   scripts/check-symsorting.py \
   scripts/dtrace2systemtap.py \

@@ -196,83 +196,6 @@ DRIVER_SOURCES += \
 
 
 
-# Ensure that we don't change the struct or member names or member ordering
-# in remote_protocol.x  The embedded perl below needs a few comments, and
-# presumes you know what pdwtags output looks like:
-# * use -0777 -n to slurp the entire file into $_.
-# * the "split" splits on the /* DD */ comments, so that $p iterates
-#     through the struct definitions.
-# * process only "struct remote_..." entries
-# * remove comments and preceding TAB throughout
-# * remove empty lines throughout
-# * remove white space at end of buffer
-
-# With pdwtags 1.8, --verbose output includes separators like these:
-# /* 93 */
-# /* <0> (null):0 */
-# with the second line omitted for intrinsic types.
-# Whereas with pdwtags 1.3, they look like this:
-# /* <2d2> /usr/include/libio.h:180 */
-# The alternation of the following regexps matches both cases.
-r1 = /\* \d+ \*/
-r2 = /\* <[[:xdigit:]]+> \S+:\d+ \*/
-libs_prefix = remote_|qemu_|lxc_|admin_
-other_prefix = keepalive|vir(Net|LockSpace|LXCMonitor)
-struct_prefix = ($(libs_prefix)|$(other_prefix))
-
-# Depending on configure options, libtool creates one or both of
-# remote/{,.libs/}libvirt_driver_remote_la-remote_protocol.o.  We want
-# the newest of the two, in case configure options changed and a stale
-# file is left around from an earlier build.
-# The pdwtags output is completely different when building with clang
-# which causes the comparison against expected output to fail, so skip
-# if using clang as CC.
-PDWTAGS = \
-	$(AM_V_GEN)if $(CC) -v 2>&1 | grep -q clang; then \
-	   echo 'WARNING: skipping pdwtags test with Clang' >&2; \
-	   exit 0; \
-	fi; \
-	if (pdwtags --help) > /dev/null 2>&1; then \
-	  o=`ls -t $(<:.lo=.$(OBJEXT)) \
-	     $(subst /,/.libs/,$(<:.lo=.$(OBJEXT))) \
-	    2>/dev/null | sed -n 1p`; \
-	  test -f "$$o" || { echo ".o for $< not found" >&2; exit 1; }; \
-	  pdwtags --verbose $$o > $(@F)-t1 2> $(@F)-t2; \
-	  if test ! -s $(@F)-t1 && test -s $(@F)-t2; then \
-	    rm -rf $(@F)-t?; \
-	    echo 'WARNING: pdwtags appears broken; skipping the $@ test' >&2;\
-	  else \
-	    $(PERL) -0777 -n \
-		-e 'foreach my $$p (split m!\n*(?:$(r1)|$(r2))\n!) {' \
-		-e '  if ($$p =~ /^(struct|enum) $(struct_prefix)/) {' \
-		-e '    $$p =~ s!\t*/\*.*?\*/!!sg;' \
-		-e '    $$p =~ s!\s+\n!\n!sg;' \
-		-e '    $$p =~ s!\s+$$!!;' \
-		-e '    $$p =~ s!\t!        !g;' \
-		-e '    print "$$p\n";' \
-		-e '    $$n++;' \
-		-e '  }' \
-		-e '}' \
-		-e 'BEGIN {' \
-		-e '  print "/* -*- c -*- */\n";' \
-		-e '}' \
-		-e 'END {' \
-		-e '  if ($$n < 1) {' \
-		-e '    warn "WARNING: your pdwtags program is too old\n";' \
-		-e '    warn "WARNING: skipping the $@ test\n";' \
-		-e '    warn "WARNING: install dwarves-1.3 or newer\n";' \
-		-e '    exit 8;' \
-		-e '  }' \
-		-e '}' \
-		< $(@F)-t1 > $(@F)-t3; \
-	    case $$? in 8) rm -f $(@F)-t?; exit 0;; 0) ;; *) exit 1;; esac;\
-	    diff -u $(@)s $(@F)-t3; st=$$?; rm -f $(@F)-t?; exit $$st; \
-	  fi; \
-	else \
-	  echo 'WARNING: you lack pdwtags; skipping the $@ test' >&2; \
-	  echo 'WARNING: install the dwarves package to get pdwtags' >&2; \
-	fi
-
 # .libs/libvirt.so is built by libtool as a side-effect of the Makefile
 # rule for libvirt.la.  However, checking symbols relies on Linux ELF layout
 if WITH_LINUX
@@ -301,27 +224,38 @@ PROTOCOL_STRUCTS = \
 if WITH_REMOTE
 check-protocol: $(PROTOCOL_STRUCTS) $(PROTOCOL_STRUCTS:structs=struct)
 
+# Ensure that we don't change the struct or member names or member ordering
+# in remote_protocol.x  The check-remote-protocol.py script post-processes
+# output to extract the bits we want.
+
+CHECK_REMOTE_PROTOCOL = $(top_srcdir)/scripts/check-remote-protocol.py
+
 # The .o file that pdwtags parses is created as a side effect of running
 # libtool; but from make's perspective we depend on the .lo file.
 $(srcdir)/remote_protocol-struct \
 	$(srcdir)/qemu_protocol-struct \
 	$(srcdir)/lxc_protocol-struct: \
 		$(srcdir)/%-struct: remote/libvirt_driver_remote_la-%.lo
-	$(PDWTAGS)
+	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(CHECK_REMOTE_PROTOCOL) \
+		"$(CC)" "$(OBJEXT)" $< $(@)s
 $(srcdir)/virnetprotocol-struct $(srcdir)/virkeepaliveprotocol-struct: \
 		$(srcdir)/%-struct: rpc/libvirt_net_rpc_la-%.lo
-	$(PDWTAGS)
+	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(CHECK_REMOTE_PROTOCOL) \
+		"$(CC)" "$(OBJEXT)" $< $(@)s
 if WITH_LXC
 $(srcdir)/lxc_monitor_protocol-struct: \
 		$(srcdir)/%-struct: lxc/libvirt_driver_lxc_impl_la-%.lo
-	$(PDWTAGS)
+	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(CHECK_REMOTE_PROTOCOL) \
+		"$(CC)" "$(OBJEXT)" $< $(@)s
 endif WITH_LXC
 $(srcdir)/lock_protocol-struct: \
 		$(srcdir)/%-struct: locking/lockd_la-%.lo
-	$(PDWTAGS)
+	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(CHECK_REMOTE_PROTOCOL) \
+		"$(CC)" "$(OBJEXT)" $< $(@)s
 $(srcdir)/admin_protocol-struct: \
 		$(srcdir)/%-struct: admin/libvirt_admin_la-%.lo
-	$(PDWTAGS)
+	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(CHECK_REMOTE_PROTOCOL) \
+		"$(CC)" "$(OBJEXT)" $< $(@)s
 
 else !WITH_REMOTE
 # The $(PROTOCOL_STRUCTS) files must live in git, because they cannot be

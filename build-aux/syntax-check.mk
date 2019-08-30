@@ -419,6 +419,7 @@ sc_prohibit_mkdtemp:
 # access with F_OK or R_OK is okay, though.
 sc_prohibit_access_xok:
 	@prohibit='access(at)? *\(.*X_OK' \
+	in_vc_files='\.[ch]$$' \
 	halt='use virFileIsExecutable instead of access(,X_OK)' \
 	  $(_sc_search_regexp)
 
@@ -2234,7 +2235,7 @@ exclude_file_name_regexp--sc_prohibit_PATH_MAX = \
 	^build-aux/syntax-check\.mk$$
 
 exclude_file_name_regexp--sc_prohibit_access_xok = \
-	^(build-aux/syntax-check\.mk|src/util/virutil\.c)$$
+	^(src/util/virutil\.c)$$
 
 exclude_file_name_regexp--sc_prohibit_asprintf = \
   ^(build-aux/syntax-check\.mk|bootstrap.conf$$|examples/|src/util/virstring\.[ch]$$|tests/vircgroupmock\.c|tools/virt-login-shell\.c|tools/nss/libvirt_nss\.c$$)
