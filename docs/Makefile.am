@@ -354,7 +354,6 @@ EXTRA_DIST= \
   $(kbase_html_in) $(kbase_rst) \
   $(manpages_rst) \
   aclperms.htmlinc \
-  hvsupport.pl \
   $(schema_DATA)
 
 acl_generated = aclperms.htmlinc
@@ -389,12 +388,12 @@ timestamp="$(shell if test -n "$$SOURCE_DATE_EPOCH"; \
 
 hvsupport.html: hvsupport.html.in
 
-hvsupport.html.in: $(srcdir)/hvsupport.pl $(api_DATA) \
+hvsupport.html.in: $(top_srcdir)/scripts/hvsupport.py $(api_DATA) \
 		$(top_srcdir)/src/libvirt_public.syms \
 	$(top_srcdir)/src/libvirt_qemu.syms $(top_srcdir)/src/libvirt_lxc.syms \
 	$(top_srcdir)/src/driver.h
-	$(AM_V_GEN)$(PERL) $(srcdir)/hvsupport.pl $(top_srcdir) $(top_builddir) > $@ \
-		|| { rm $@ && exit 1; }
+	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/hvsupport.py \
+		$(top_srcdir) $(top_builddir) > $@ || { rm $@ && exit 1; }
 
 news.html.in: \
 	  $(srcdir)/news.xml \
