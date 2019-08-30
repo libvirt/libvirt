@@ -50,6 +50,7 @@ EXTRA_DIST = \
   scripts/check-aclperms.py \
   scripts/check-symfile.py \
   scripts/check-symsorting.py \
+  scripts/dtrace2systemtap.py \
   scripts/header-ifdef.py \
   scripts/minimize-po.py \
   scripts/mock-noinline.py \
