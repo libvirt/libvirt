@@ -43,7 +43,6 @@ ACCESS_DRIVER_POLKIT_POLICY = access/org.libvirt.api.policy
 GENERATED_SYM_FILES += $(ACCESS_DRIVER_SYM_FILES)
 
 EXTRA_DIST += \
-	access/genpolkit.pl \
 	$(NULL)
 
 
@@ -66,8 +65,9 @@ libvirt_driver_access_la_LIBADD = \
 
 
 $(ACCESS_DRIVER_POLKIT_POLICY): $(srcdir)/access/viraccessperm.h \
-    $(srcdir)/access/genpolkit.pl Makefile.am
-	$(AM_V_GEN)$(PERL) $(srcdir)/access/genpolkit.pl < $< > $@ || rm -f $@
+    $(top_srcdir)/scripts/genpolkit.py Makefile.am
+	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) \
+	$(top_srcdir)/scripts/genpolkit.py $< > $@ || rm -f $@
 
 if WITH_POLKIT
 libvirt_driver_access_la_SOURCES += $(ACCESS_DRIVER_POLKIT_SOURCES)
