@@ -344,7 +344,6 @@ schemadir = $(pkgdatadir)/schemas
 schema_DATA = $(wildcard $(srcdir)/schemas/*.rng)
 
 EXTRA_DIST= \
-  genaclperms.pl \
   site.xsl subsite.xsl newapi.xsl page.xsl \
   wrapstring.xsl \
   $(dot_html_in) $(dot_rst) $(gif) $(apipng) \
@@ -359,8 +358,8 @@ EXTRA_DIST= \
 acl_generated = aclperms.htmlinc
 
 aclperms.htmlinc: $(top_srcdir)/src/access/viraccessperm.h \
-        $(srcdir)/genaclperms.pl Makefile.am
-	$(AM_V_GEN)$(PERL) $(srcdir)/genaclperms.pl $< > $@
+        $(top_srcdir)/scripts/genaclperms.py Makefile.am
+	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/genaclperms.py $< > $@
 
 CLEANFILES = \
   $(dot_html) \
