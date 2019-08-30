@@ -2166,8 +2166,8 @@ endif
 
 # Don't include duplicate header in the source (either *.c or *.h)
 prohibit-duplicate-header:
-	$(AM_V_GEN)$(VC_LIST_EXCEPT) | $(GREP) '\.[chx]$$' | xargs \
-	$(PERL) -W $(top_srcdir)/build-aux/prohibit-duplicate-header.pl
+	$(AM_V_GEN)$(VC_LIST_EXCEPT) | $(GREP) '\.[chx]$$' | $(RUNUTF8) xargs \
+	$(PYTHON) $(top_srcdir)/scripts/prohibit-duplicate-header.py
 
 spacing-check:
 	$(AM_V_GEN)$(VC_LIST) | $(GREP) '\.c$$' | xargs \
