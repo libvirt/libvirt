@@ -1005,7 +1005,12 @@ static bool
 qemuAgentErrorCommandUnsupported(virJSONValuePtr reply)
 {
     const char *klass;
-    virJSONValuePtr error = virJSONValueObjectGet(reply, "error");
+    virJSONValuePtr error;
+
+    if (!reply)
+        return false;
+
+    error = virJSONValueObjectGet(reply, "error");
 
     if (!error)
         return false;
