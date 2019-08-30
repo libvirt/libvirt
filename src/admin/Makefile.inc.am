@@ -105,8 +105,8 @@ libvirt_admin_la_CFLAGS = \
 
 if WITH_LINUX
 check-admin-symfile: admin/libvirt_admin.syms libvirt-admin.la
-	$(AM_V_GEN)$(PERL) $(srcdir)/check-symfile.pl admin/libvirt_admin.syms \
-		.libs/libvirt-admin.so
+	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/check-symfile.py \
+		admin/libvirt_admin.syms .libs/libvirt-admin.so
 else ! WITH_LINUX
 check-admin-symfile:
 endif ! WITH_LINUX
