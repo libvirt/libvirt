@@ -350,7 +350,7 @@ check-drivername:
 		$(srcdir)/libvirt_lxc.syms
 
 check-driverimpls:
-	$(AM_V_GEN)$(PERL) $(srcdir)/check-driverimpls.pl \
+	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/check-driverimpls.py \
 		$(DRIVER_SOURCE_FILES)
 
 check-aclrules:
@@ -363,7 +363,7 @@ check-aclperms:
 		$(srcdir)/access/viraccessperm.h \
 		$(srcdir)/access/viraccessperm.c
 
-EXTRA_DIST += check-driverimpls.pl check-aclrules.pl
+EXTRA_DIST += check-aclrules.pl
 
 check-local: check-protocol check-symfile check-symsorting \
 	check-drivername check-driverimpls check-aclrules \
