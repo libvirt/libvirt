@@ -479,6 +479,7 @@ sc_prohibit_risky_id_promotion:
 # since gnulib has more guarantees for snprintf portability
 sc_prohibit_sprintf:
 	@prohibit='\<[s]printf\>' \
+	in_vc_files='\.[ch]$$' \
 	halt='use g_snprintf, not sprintf' \
 	  $(_sc_search_regexp)
 
@@ -2278,9 +2279,6 @@ exclude_file_name_regexp--sc_prohibit_readlink = \
   ^src/(util/virutil|lxc/lxc_container)\.c$$
 
 exclude_file_name_regexp--sc_prohibit_setuid = ^src/util/virutil\.c|tools/virt-login-shell\.c$$
-
-exclude_file_name_regexp--sc_prohibit_sprintf = \
-  ^(build-aux/syntax-check\.mk|docs/hacking\.html\.in|.*\.stp|.*\.pl)$$
 
 exclude_file_name_regexp--sc_prohibit_snprintf = \
   ^(build-aux/syntax-check\.mk|docs/hacking\.html\.in|tools/virt-login-shell\.c)$$
