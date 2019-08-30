@@ -1122,6 +1122,20 @@ qemuBlockJobProcessEventConcludedCopyAbort(virQEMUDriverPtr driver,
 
 
 static void
+qemuBlockJobProcessEventFailedActiveCommit(virDomainObjPtr vm,
+                                           qemuBlockJobDataPtr job)
+{
+    VIR_DEBUG("active commit job '%s' on VM '%s' failed", job->name, vm->def->name);
+
+    if (!job->disk)
+        return;
+
+    virObjectUnref(job->disk->mirror);
+    job->disk->mirror = NULL;
+}
+
+
+static void
 qemuBlockJobProcessEventConcludedCreate(virQEMUDriverPtr driver,
                                         virDomainObjPtr vm,
                                         qemuBlockJobDataPtr job,
@@ -1211,10 +1225,7 @@ qemuBlockJobEventProcessConcludedTransition(qemuBlockJobDataPtr job,
             break;
 
         case QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT:
-            if (job->disk) {
-                virObjectUnref(job->disk->mirror);
-                job->disk->mirror = NULL;
-            }
+            qemuBlockJobProcessEventFailedActiveCommit(vm, job);
             break;
 
         case QEMU_BLOCKJOB_TYPE_CREATE:
