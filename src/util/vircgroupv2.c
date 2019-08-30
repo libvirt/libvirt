@@ -849,6 +849,7 @@ virCgroupV2GetBlkioDeviceWeight(virCgroupPtr group,
     VIR_AUTOFREE(char *) path = NULL;
     VIR_AUTOFREE(char *) str = NULL;
     VIR_AUTOFREE(char *) value = NULL;
+    char *tmp;
 
     if (virCgroupV2PathOfController(group, VIR_CGROUP_CONTROLLER_BLKIO,
                                     "io.weight", &path) < 0) {
@@ -869,7 +870,7 @@ virCgroupV2GetBlkioDeviceWeight(virCgroupPtr group,
 
     if (!str) {
         *weight = 0;
-    } else if (virStrToLong_ui(str, &str, 10, weight) < 0) {
+    } else if (virStrToLong_ui(str, &tmp, 10, weight) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unable to parse '%s' as an integer"),
                        str);
@@ -1576,6 +1577,7 @@ virCgroupV2GetCpuCfsQuota(virCgroupPtr group,
                           long long *cfs_quota)
 {
     VIR_AUTOFREE(char *) str = NULL;
+    char *tmp;
 
     if (virCgroupGetValueStr(group, VIR_CGROUP_CONTROLLER_CPU,
                              "cpu.max", &str) < 0) {
@@ -1587,7 +1589,7 @@ virCgroupV2GetCpuCfsQuota(virCgroupPtr group,
         return 0;
     }
 
-    if (virStrToLong_ll(str, &str, 10, cfs_quota) < 0) {
+    if (virStrToLong_ll(str, &tmp, 10, cfs_quota) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to parse value '%s' from cpu.max."), str);
         return -1;
