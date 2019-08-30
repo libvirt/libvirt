@@ -2187,7 +2187,8 @@ test-wrap-argv:
 	$(PYTHON) $(top_srcdir)/scripts/test-wrap-argv.py --check
 
 group-qemu-caps:
-	$(AM_V_GEN)$(PERL) $(top_srcdir)/tests/group-qemu-caps.pl --check $(top_srcdir)/
+	$(AM_V_GEN)$(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/group-qemu-caps.py \
+		--check --prefix $(top_srcdir)/
 
 # List all syntax-check exemptions:
 exclude_file_name_regexp--sc_avoid_strcase = ^tools/vsh\.h$$

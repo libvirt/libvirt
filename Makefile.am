@@ -59,6 +59,7 @@ EXTRA_DIST = \
   scripts/esx_vi_generator.py \
   scripts/genpolkit.py \
   scripts/gensystemtap.py \
+  scripts/group-qemu-caps.py \
   scripts/header-ifdef.py \
   scripts/hyperv_wmi_generator.py \
   scripts/minimize-po.py \
