@@ -2184,8 +2184,8 @@ mock-noinline:
 	$(PYTHON) $(top_srcdir)/scripts/mock-noinline.py
 
 header-ifdef:
-	$(AM_V_GEN)$(VC_LIST) | $(GREP) '\.[h]$$' | xargs \
-	$(PERL) $(top_srcdir)/build-aux/header-ifdef.pl
+	$(AM_V_GEN)$(VC_LIST) | $(GREP) '\.[h]$$' | $(RUNUTF8) xargs \
+	$(PYTHON) $(top_srcdir)/scripts/header-ifdef.py
 
 test-wrap-argv:
 	$(AM_V_GEN)$(VC_LIST) | $(GREP) -E '\.(ldargs|args)' | xargs \
