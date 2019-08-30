@@ -3123,7 +3123,7 @@ static int qemuMonitorJSONSaveMemory(qemuMonitorPtr mon,
     int ret = -1;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand(cmdtype,
                                                      "U:val", offset,
-                                                     "u:size", length,
+                                                     "U:size", length,
                                                      "s:filename", path,
                                                      NULL);
     virJSONValuePtr reply = NULL;
