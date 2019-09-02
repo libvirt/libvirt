@@ -3012,14 +3012,18 @@ qemuDomainObjPrivateXMLParseBlockjobData(virDomainObjPtr vm,
             invalidData = true;
     }
 
+    if (mirror) {
+        if (disk)
+            job->mirrorChain = virObjectRef(disk->mirror);
+        else
+            invalidData = true;
+    }
+
     job->state = state;
     job->newstate = newstate;
     job->errmsg = virXPathString("string(./errmsg)", ctxt);
     job->invalidData = invalidData;
     job->disk = disk;
-
-    if (mirror)
-        job->mirrorChain = virObjectRef(job->disk->mirror);
 
     qemuDomainObjPrivateXMLParseBlockjobDataSpecific(job, ctxt, xmlopt);
 
