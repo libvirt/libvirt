@@ -67,12 +67,12 @@
     <section title="Improvements">
       <change>
         <summary>
-          virsh: Support setting precopy bandwidth in migrate subcommand
+          virsh: Support setting bandwidth in migrate subcommand
         </summary>
         <description>
           In addition to postcopy bandwidth, the <code>virsh migrate</code>
           subcommand now supports specifying precopy bandwidth with the
-          <code>--precopy-bandwidth</code> parameter.
+          <code>--bandwidth</code> parameter.
         </description>
       </change>
     </section>
