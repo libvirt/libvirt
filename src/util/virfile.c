@@ -781,6 +781,14 @@ int virFileLoopDeviceAssociate(const char *file,
     memset(&lo, 0, sizeof(lo));
     lo.lo_flags = LO_FLAGS_AUTOCLEAR;
 
+    /* Set backing file name for LOOP_GET_STATUS64 queries */
+    if (virStrncpy((char *) lo.lo_file_name, file,
+                   strlen(file), LO_NAME_SIZE) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to set backing file %s"), file);
+        goto cleanup;
+    }
+
     if ((fsfd = open(file, O_RDWR)) < 0) {
         virReportSystemError(errno,
                              _("Unable to open %s"), file);
