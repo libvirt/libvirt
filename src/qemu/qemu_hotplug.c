@@ -1582,6 +1582,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
     bool teardowncgroup = false;
     bool teardownlabel = false;
     bool teardowndevice = false;
+    bool teardownmemlock = false;
     int backend;
     VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
     unsigned int flags = 0;
@@ -1623,6 +1624,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
 
     if (qemuDomainAdjustMaxMemLockHostdev(vm, hostdev) < 0)
         goto error;
+    teardownmemlock = true;
 
     if (qemuDomainNamespaceSetupHostdev(vm, hostdev) < 0)
         goto error;
@@ -1690,6 +1692,8 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
     if (teardowndevice &&
         qemuDomainNamespaceTeardownHostdev(vm, hostdev) < 0)
         VIR_WARN("Unable to remove host device from /dev");
+    if (teardownmemlock && qemuDomainAdjustMaxMemLock(vm) < 0)
+        VIR_WARN("Unable to reset maximum locked memory on hotplug fail");
 
     if (releaseaddr)
         qemuDomainReleaseDeviceAddress(vm, info);
