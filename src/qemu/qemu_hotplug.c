@@ -1621,17 +1621,8 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
         break;
     }
 
-    /* Temporarily add the hostdev to the domain definition. This is needed
-     * because qemuDomainAdjustMaxMemLock() requires the hostdev to be already
-     * part of the domain definition, but other functions like
-     * qemuAssignDeviceHostdevAlias() used below expect it *not* to be there.
-     * A better way to handle this would be nice */
-    vm->def->hostdevs[vm->def->nhostdevs++] = hostdev;
-    if (qemuDomainAdjustMaxMemLock(vm) < 0) {
-        vm->def->hostdevs[--(vm->def->nhostdevs)] = NULL;
+    if (qemuDomainAdjustMaxMemLockHostdev(vm, hostdev) < 0)
         goto error;
-    }
-    vm->def->hostdevs[--(vm->def->nhostdevs)] = NULL;
 
     if (qemuDomainNamespaceSetupHostdev(vm, hostdev) < 0)
         goto error;

@@ -11968,6 +11968,36 @@ qemuDomainAdjustMaxMemLock(virDomainObjPtr vm)
      return ret;
 }
 
+
+/**
+ * qemuDomainAdjustMaxMemLockHostdev:
+ * @vm: domain
+ * @hostdev: device
+ *
+ * Temporarily add the hostdev to the domain definition. This is needed
+ * because qemuDomainAdjustMaxMemLock() requires the hostdev to be already
+ * part of the domain definition, but other functions like
+ * qemuAssignDeviceHostdevAlias() expect it *not* to be there.
+ * A better way to handle this would be nice
+ *
+ * Returns: 0 on success, <0 on failure
+ */
+int
+qemuDomainAdjustMaxMemLockHostdev(virDomainObjPtr vm,
+                                  virDomainHostdevDefPtr hostdev)
+{
+    int ret = 0;
+
+    vm->def->hostdevs[vm->def->nhostdevs++] = hostdev;
+    if (qemuDomainAdjustMaxMemLock(vm) < 0)
+        ret = -1;
+
+    vm->def->hostdevs[--(vm->def->nhostdevs)] = NULL;
+
+    return ret;
+}
+
+
 /**
  * qemuDomainHasVcpuPids:
  * @vm: Domain object

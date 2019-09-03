@@ -952,6 +952,8 @@ void qemuDomainUpdateCurrentMemorySize(virDomainObjPtr vm);
 
 unsigned long long qemuDomainGetMemLockLimitBytes(virDomainDefPtr def);
 int qemuDomainAdjustMaxMemLock(virDomainObjPtr vm);
+int qemuDomainAdjustMaxMemLockHostdev(virDomainObjPtr vm,
+                                      virDomainHostdevDefPtr hostdev);
 
 int qemuDomainDefValidateMemoryHotplug(const virDomainDef *def,
                                        virQEMUCapsPtr qemuCaps,
