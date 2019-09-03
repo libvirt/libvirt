@@ -10720,33 +10720,23 @@ qemuBuildStorageSourceChainAttachPrepareDrive(virDomainDiskDefPtr disk,
 }
 
 
-static qemuBlockStorageSourceChainDataPtr
-qemuBuildStorageSourceChainAttachPrepareBlockdevInternal(virStorageSourcePtr top,
-                                                         virQEMUCapsPtr qemuCaps,
-                                                         bool onlyTop)
+static int
+qemuBuildStorageSourceChainAttachPrepareBlockdevOne(qemuBlockStorageSourceChainData *data,
+                                                    virStorageSourcePtr src,
+                                                    virQEMUCapsPtr qemuCaps)
 {
     VIR_AUTOPTR(qemuBlockStorageSourceAttachData) elem = NULL;
-    VIR_AUTOPTR(qemuBlockStorageSourceChainData) data = NULL;
-    virStorageSourcePtr n;
 
-    if (VIR_ALLOC(data) < 0)
-        return NULL;
+    if (!(elem = qemuBlockStorageSourceAttachPrepareBlockdev(src, true)))
+        return -1;
 
-    for (n = top; virStorageSourceIsBacking(n); n = n->backingStore) {
-        if (!(elem = qemuBlockStorageSourceAttachPrepareBlockdev(n, true)))
-            return NULL;
+    if (qemuBuildStorageSourceAttachPrepareCommon(src, elem, qemuCaps) < 0)
+        return -1;
 
-        if (qemuBuildStorageSourceAttachPrepareCommon(n, elem, qemuCaps) < 0)
-            return NULL;
+    if (VIR_APPEND_ELEMENT(data->srcdata, data->nsrcdata, elem) < 0)
+        return -1;
 
-        if (VIR_APPEND_ELEMENT(data->srcdata, data->nsrcdata, elem) < 0)
-            return NULL;
-
-        if (onlyTop)
-            break;
-    }
-
-    VIR_RETURN_PTR(data);
+    return 0;
 }
 
 
@@ -10762,8 +10752,18 @@ qemuBlockStorageSourceChainDataPtr
 qemuBuildStorageSourceChainAttachPrepareBlockdev(virStorageSourcePtr top,
                                                  virQEMUCapsPtr qemuCaps)
 {
-    return qemuBuildStorageSourceChainAttachPrepareBlockdevInternal(top, qemuCaps,
-                                                                    false);
+    VIR_AUTOPTR(qemuBlockStorageSourceChainData) data = NULL;
+    virStorageSourcePtr n;
+
+    if (VIR_ALLOC(data) < 0)
+        return NULL;
+
+    for (n = top; virStorageSourceIsBacking(n); n = n->backingStore) {
+        if (qemuBuildStorageSourceChainAttachPrepareBlockdevOne(data, n, qemuCaps) < 0)
+            return NULL;
+    }
+
+    VIR_RETURN_PTR(data);
 }
 
 
@@ -10779,6 +10779,13 @@ qemuBlockStorageSourceChainDataPtr
 qemuBuildStorageSourceChainAttachPrepareBlockdevTop(virStorageSourcePtr top,
                                                     virQEMUCapsPtr qemuCaps)
 {
-    return qemuBuildStorageSourceChainAttachPrepareBlockdevInternal(top, qemuCaps,
-                                                                    true);
+    VIR_AUTOPTR(qemuBlockStorageSourceChainData) data = NULL;
+
+    if (VIR_ALLOC(data) < 0)
+        return NULL;
+
+    if (qemuBuildStorageSourceChainAttachPrepareBlockdevOne(data, top, qemuCaps) < 0)
+        return NULL;
+
+    VIR_RETURN_PTR(data);
 }
