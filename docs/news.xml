@@ -87,6 +87,15 @@
           KVM device assignment from libvirt too.
         </description>
       </change>
+      <change>
+        <summary>
+          libxml: min required libxml is now 2.9.1
+        </summary>
+        <description>
+          Support for building with libxml versions older than 2.9.1
+          has been dropped.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
