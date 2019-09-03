@@ -42,6 +42,18 @@
   <release version="v5.8.0" date="unreleased">
     <section title="New features">
     </section>
+    <section title="Removed features">
+      <change>
+        <summary>
+          Remove xenapi driver
+        </summary>
+        <description>
+          The xenapi driver is removed since it has not received any significant
+          development since its initial contribution nine years ago and has no
+          known user base.
+        </description>
+      </change>
+    </section>
     <section title="Improvements">
     </section>
     <section title="Bug fixes">
