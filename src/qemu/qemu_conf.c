@@ -1730,35 +1730,6 @@ qemuGetHostdevPath(virDomainHostdevDefPtr hostdev)
 
 
 static int
-qemuAddSharedHostdev(virQEMUDriverPtr driver,
-                     virDomainHostdevDefPtr hostdev,
-                     const char *name)
-{
-    char *dev_path = NULL;
-    char *key = NULL;
-    int ret = -1;
-
-    if (!qemuIsSharedHostdev(hostdev))
-        return 0;
-
-    if (!(dev_path = qemuGetHostdevPath(hostdev)))
-        goto cleanup;
-
-    if (!(key = qemuGetSharedDeviceKey(dev_path)))
-        goto cleanup;
-
-    qemuDriverLock(driver);
-    ret = qemuSharedDeviceEntryInsert(driver, key, name);
-    qemuDriverUnlock(driver);
-
- cleanup:
-    VIR_FREE(dev_path);
-    VIR_FREE(key);
-    return ret;
-}
-
-
-static int
 qemuSharedDeviceEntryRemove(virQEMUDriverPtr driver,
                             const char *key,
                             const char *name)
@@ -1779,6 +1750,42 @@ qemuSharedDeviceEntryRemove(virQEMUDriverPtr driver,
         ignore_value(virHashRemoveEntry(driver->sharedDevices, key));
 
     return 0;
+}
+
+
+static int
+qemuAddRemoveSharedHostdevInternal(virQEMUDriverPtr driver,
+                                   virDomainHostdevDefPtr hostdev,
+                                   const char *name,
+                                   bool addDevice)
+{
+    char *dev_path = NULL;
+    char *key = NULL;
+    int ret = -1;
+
+    if (!qemuIsSharedHostdev(hostdev))
+        return 0;
+
+    if (!(dev_path = qemuGetHostdevPath(hostdev)))
+        goto cleanup;
+
+    if (!(key = qemuGetSharedDeviceKey(dev_path)))
+        goto cleanup;
+
+    qemuDriverLock(driver);
+
+    if (addDevice)
+        ret = qemuSharedDeviceEntryInsert(driver, key, name);
+    else
+        ret = qemuSharedDeviceEntryRemove(driver, key, name);
+
+    qemuDriverUnlock(driver);
+
+ cleanup:
+    VIR_FREE(dev_path);
+    VIR_FREE(key);
+    return ret;
+
 }
 
 
@@ -1803,7 +1810,8 @@ qemuAddSharedDevice(virQEMUDriverPtr driver,
     if (dev->type == VIR_DOMAIN_DEVICE_DISK)
         return qemuAddSharedDisk(driver, dev->data.disk, name);
     else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV)
-        return qemuAddSharedHostdev(driver, dev->data.hostdev, name);
+        return qemuAddRemoveSharedHostdevInternal(driver, dev->data.hostdev,
+                                                  name, true);
     else
         return 0;
 }
@@ -1838,33 +1846,6 @@ qemuRemoveSharedDisk(virQEMUDriverPtr driver,
 }
 
 
-static int
-qemuRemoveSharedHostdev(virQEMUDriverPtr driver,
-                        virDomainHostdevDefPtr hostdev,
-                        const char *name)
-{
-    char *dev_path = NULL;
-    char *key = NULL;
-    int ret = -1;
-
-    if (!qemuIsSharedHostdev(hostdev))
-        return 0;
-
-    if (!(dev_path = qemuGetHostdevPath(hostdev)))
-        goto cleanup;
-
-    if (!(key = qemuGetSharedDeviceKey(dev_path)))
-        goto cleanup;
-
-    qemuDriverLock(driver);
-    ret = qemuSharedDeviceEntryRemove(driver, key, name);
-    qemuDriverUnlock(driver);
-
- cleanup:
-    VIR_FREE(dev_path);
-    VIR_FREE(key);
-    return ret;
-}
 
 
 /* qemuRemoveSharedDevice:
@@ -1884,7 +1865,8 @@ qemuRemoveSharedDevice(virQEMUDriverPtr driver,
     if (dev->type == VIR_DOMAIN_DEVICE_DISK)
         return qemuRemoveSharedDisk(driver, dev->data.disk, name);
     else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV)
-        return qemuRemoveSharedHostdev(driver, dev->data.hostdev, name);
+        return qemuAddRemoveSharedHostdevInternal(driver, dev->data.hostdev,
+                                                  name, false);
     else
         return 0;
 }
