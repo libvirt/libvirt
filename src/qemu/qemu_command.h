@@ -119,6 +119,7 @@ qemuBuildStorageSourceChainAttachPrepareBlockdev(virStorageSourcePtr top,
 
 qemuBlockStorageSourceChainDataPtr
 qemuBuildStorageSourceChainAttachPrepareBlockdevTop(virStorageSourcePtr top,
+                                                    virStorageSourcePtr backingStore,
                                                     virQEMUCapsPtr qemuCaps);
 
 char

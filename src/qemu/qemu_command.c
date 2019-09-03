@@ -10723,11 +10723,12 @@ qemuBuildStorageSourceChainAttachPrepareDrive(virDomainDiskDefPtr disk,
 static int
 qemuBuildStorageSourceChainAttachPrepareBlockdevOne(qemuBlockStorageSourceChainData *data,
                                                     virStorageSourcePtr src,
+                                                    virStorageSourcePtr backingStore,
                                                     virQEMUCapsPtr qemuCaps)
 {
     VIR_AUTOPTR(qemuBlockStorageSourceAttachData) elem = NULL;
 
-    if (!(elem = qemuBlockStorageSourceAttachPrepareBlockdev(src, src->backingStore, true)))
+    if (!(elem = qemuBlockStorageSourceAttachPrepareBlockdev(src, backingStore, true)))
         return -1;
 
     if (qemuBuildStorageSourceAttachPrepareCommon(src, elem, qemuCaps) < 0)
@@ -10759,7 +10760,9 @@ qemuBuildStorageSourceChainAttachPrepareBlockdev(virStorageSourcePtr top,
         return NULL;
 
     for (n = top; virStorageSourceIsBacking(n); n = n->backingStore) {
-        if (qemuBuildStorageSourceChainAttachPrepareBlockdevOne(data, n, qemuCaps) < 0)
+        if (qemuBuildStorageSourceChainAttachPrepareBlockdevOne(data, n,
+                                                                n->backingStore,
+                                                                qemuCaps) < 0)
             return NULL;
     }
 
@@ -10770,6 +10773,7 @@ qemuBuildStorageSourceChainAttachPrepareBlockdev(virStorageSourcePtr top,
 /**
  * qemuBuildStorageSourceChainAttachPrepareBlockdevTop:
  * @top: storage source chain
+ * @backingStore: a storage source to use as backing of @top
  * @qemuCaps: qemu capabilities object
  *
  * Prepares qemuBlockStorageSourceChainDataPtr for attaching of @top image only
@@ -10777,6 +10781,7 @@ qemuBuildStorageSourceChainAttachPrepareBlockdev(virStorageSourcePtr top,
  */
 qemuBlockStorageSourceChainDataPtr
 qemuBuildStorageSourceChainAttachPrepareBlockdevTop(virStorageSourcePtr top,
+                                                    virStorageSourcePtr backingStore,
                                                     virQEMUCapsPtr qemuCaps)
 {
     VIR_AUTOPTR(qemuBlockStorageSourceChainData) data = NULL;
@@ -10784,7 +10789,8 @@ qemuBuildStorageSourceChainAttachPrepareBlockdevTop(virStorageSourcePtr top,
     if (VIR_ALLOC(data) < 0)
         return NULL;
 
-    if (qemuBuildStorageSourceChainAttachPrepareBlockdevOne(data, top, qemuCaps) < 0)
+    if (qemuBuildStorageSourceChainAttachPrepareBlockdevOne(data, top, backingStore,
+                                                            qemuCaps) < 0)
         return NULL;
 
     VIR_RETURN_PTR(data);
