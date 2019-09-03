@@ -1396,15 +1396,16 @@ qemuBlockStorageSourceGetBlockdevFormatProps(virStorageSourcePtr src)
  * qemuBlockStorageSourceGetBlockdevProps:
  *
  * @src: storage source to format
+ * @backingStore: a storage source to use as backing of @src
  *
  * Formats @src into a JSON object which can be used with blockdev-add or
  * -blockdev. The formatted object contains both the storage and format layer
  * in nested form including link to the backing chain layer if necessary.
  */
 virJSONValuePtr
-qemuBlockStorageSourceGetBlockdevProps(virStorageSourcePtr src)
+qemuBlockStorageSourceGetBlockdevProps(virStorageSourcePtr src,
+                                       virStorageSourcePtr backingStore)
 {
-    virStorageSourcePtr backingStore = src->backingStore;
     VIR_AUTOPTR(virJSONValue) props = NULL;
 
     if (!(props = qemuBlockStorageSourceGetBlockdevFormatProps(src)))
@@ -1484,7 +1485,8 @@ qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSourcePtr src,
     if (VIR_ALLOC(data) < 0)
         return NULL;
 
-    if (!(data->formatProps = qemuBlockStorageSourceGetBlockdevProps(src)) ||
+    if (!(data->formatProps = qemuBlockStorageSourceGetBlockdevProps(src,
+                                                                     src->backingStore)) ||
         !(data->storageProps = qemuBlockStorageSourceGetBackendProps(src, false,
                                                                      false,
                                                                      autoreadonly)))

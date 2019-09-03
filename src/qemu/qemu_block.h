@@ -66,7 +66,8 @@ virURIPtr
 qemuBlockStorageSourceGetURI(virStorageSourcePtr src);
 
 virJSONValuePtr
-qemuBlockStorageSourceGetBlockdevProps(virStorageSourcePtr src);
+qemuBlockStorageSourceGetBlockdevProps(virStorageSourcePtr src,
+                                       virStorageSourcePtr backingStore);
 
 virJSONValuePtr
 qemuBlockStorageGetCopyOnReadProps(virDomainDiskDefPtr disk);
