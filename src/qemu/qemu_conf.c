@@ -1802,6 +1802,26 @@ qemuAddRemoveSharedHostdevInternal(virQEMUDriverPtr driver,
 
 }
 
+static int
+qemuAddRemoveSharedDeviceInternal(virQEMUDriverPtr driver,
+                                  virDomainDeviceDefPtr dev,
+                                  const char *name,
+                                  bool addDevice)
+{
+    /* Currently the only conflicts we have to care about for
+     * the shared disk and shared host device is "sgio" setting,
+     * which is only valid for block disk and scsi host device.
+     */
+    if (dev->type == VIR_DOMAIN_DEVICE_DISK)
+        return qemuAddRemoveSharedDiskInternal(driver, dev->data.disk,
+                                               name, addDevice);
+    else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV)
+        return qemuAddRemoveSharedHostdevInternal(driver, dev->data.hostdev,
+                                                  name, addDevice);
+    else
+        return 0;
+}
+
 
 /* qemuAddSharedDevice:
  * @driver: Pointer to qemu driver struct
@@ -1817,18 +1837,7 @@ qemuAddSharedDevice(virQEMUDriverPtr driver,
                     virDomainDeviceDefPtr dev,
                     const char *name)
 {
-    /* Currently the only conflicts we have to care about for
-     * the shared disk and shared host device is "sgio" setting,
-     * which is only valid for block disk and scsi host device.
-     */
-    if (dev->type == VIR_DOMAIN_DEVICE_DISK)
-        return qemuAddRemoveSharedDiskInternal(driver, dev->data.disk,
-                                               name, true);
-    else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV)
-        return qemuAddRemoveSharedHostdevInternal(driver, dev->data.hostdev,
-                                                  name, true);
-    else
-        return 0;
+    return qemuAddRemoveSharedDeviceInternal(driver, dev, name, true);
 }
 
 
@@ -1855,14 +1864,7 @@ qemuRemoveSharedDevice(virQEMUDriverPtr driver,
                        virDomainDeviceDefPtr dev,
                        const char *name)
 {
-    if (dev->type == VIR_DOMAIN_DEVICE_DISK)
-        return qemuAddRemoveSharedDiskInternal(driver, dev->data.disk,
-                                               name, false);
-    else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV)
-        return qemuAddRemoveSharedHostdevInternal(driver, dev->data.hostdev,
-                                                  name, false);
-    else
-        return 0;
+    return qemuAddRemoveSharedDeviceInternal(driver, dev, name, false);
 }
 
 
