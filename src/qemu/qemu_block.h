@@ -109,6 +109,7 @@ VIR_DEFINE_AUTOPTR_FUNC(qemuBlockStorageSourceAttachData,
 
 qemuBlockStorageSourceAttachDataPtr
 qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSourcePtr src,
+                                            virStorageSourcePtr backingStore,
                                             bool autoreadonly);
 
 qemuBlockStorageSourceAttachDataPtr

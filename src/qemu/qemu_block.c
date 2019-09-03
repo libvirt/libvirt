@@ -1464,6 +1464,7 @@ qemuBlockStorageSourceAttachDataFree(qemuBlockStorageSourceAttachDataPtr data)
 /**
  * qemuBlockStorageSourceAttachPrepareBlockdev:
  * @src: storage source to prepare data from
+ * @backingStore: storage source to use as backing of @src
  * @autoreadonly: use 'auto-read-only' feature of qemu
  *
  * Creates a qemuBlockStorageSourceAttachData structure containing data to attach
@@ -1478,6 +1479,7 @@ qemuBlockStorageSourceAttachDataFree(qemuBlockStorageSourceAttachDataPtr data)
  */
 qemuBlockStorageSourceAttachDataPtr
 qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSourcePtr src,
+                                            virStorageSourcePtr backingStore,
                                             bool autoreadonly)
 {
     VIR_AUTOPTR(qemuBlockStorageSourceAttachData) data = NULL;
@@ -1486,7 +1488,7 @@ qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSourcePtr src,
         return NULL;
 
     if (!(data->formatProps = qemuBlockStorageSourceGetBlockdevProps(src,
-                                                                     src->backingStore)) ||
+                                                                     backingStore)) ||
         !(data->storageProps = qemuBlockStorageSourceGetBackendProps(src, false,
                                                                      false,
                                                                      autoreadonly)))

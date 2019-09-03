@@ -10727,7 +10727,7 @@ qemuBuildStorageSourceChainAttachPrepareBlockdevOne(qemuBlockStorageSourceChainD
 {
     VIR_AUTOPTR(qemuBlockStorageSourceAttachData) elem = NULL;
 
-    if (!(elem = qemuBlockStorageSourceAttachPrepareBlockdev(src, true)))
+    if (!(elem = qemuBlockStorageSourceAttachPrepareBlockdev(src, src->backingStore, true)))
         return -1;
 
     if (qemuBuildStorageSourceAttachPrepareCommon(src, elem, qemuCaps) < 0)
