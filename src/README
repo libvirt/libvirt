@@ -37,7 +37,6 @@ Then there are the hypervisor implementations:
  * vbox/         - Virtual Box using native API
  * vmware/       - VMware Workstation and Player using the vmrun tool
  * xen/          - Xen using hypercalls, XenD SEXPR & XenStore
- * xenapi/       - Xen using libxenserver
 
 
 Finally some secondary drivers that are shared for several HVs.

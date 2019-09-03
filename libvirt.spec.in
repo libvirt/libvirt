@@ -118,14 +118,13 @@
 %endif
 
 # RHEL doesn't ship OpenVZ, VBox, PowerHypervisor,
-# VMware, libxenserver (xenapi), libxenlight (Xen 4.1 and newer),
+# VMware, libxenlight (Xen 4.1 and newer),
 # or HyperV.
 %if 0%{?rhel}
     %define with_openvz 0
     %define with_vbox 0
     %define with_phyp 0
     %define with_vmware 0
-    %define with_xenapi 0
     %define with_libxl 0
     %define with_hyperv 0
     %define with_vz 0
@@ -1169,7 +1168,6 @@ rm -f po/stamp-po
            %{?arg_esx} \
            %{?arg_hyperv} \
            %{?arg_vmware} \
-           --without-xenapi \
            --without-vz \
            --without-bhyve \
            --with-remote-default-mode=legacy \

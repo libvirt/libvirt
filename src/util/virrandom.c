@@ -183,8 +183,7 @@ virRandomGenerateWWN(char **wwn,
     if (STREQ(virt_type, "QEMU")) {
         oui = QUMRANET_OUI;
     } else if (STREQ(virt_type, "Xen") ||
-               STREQ(virt_type, "xenlight") ||
-               STREQ(virt_type, "XenAPI")) {
+               STREQ(virt_type, "xenlight")) {
         oui = XEN_OUI;
     } else if (STREQ(virt_type, "ESX") ||
                STREQ(virt_type, "VMWARE")) {

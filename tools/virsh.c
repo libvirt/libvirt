@@ -536,9 +536,6 @@ virshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
 #ifdef WITH_HYPERV
     vshPrint(ctl, " Hyper-V");
 #endif
-#ifdef WITH_XENAPI
-    vshPrint(ctl, " XenAPI");
-#endif
 #ifdef WITH_BHYVE
     vshPrint(ctl, " Bhyve");
 #endif

@@ -132,8 +132,6 @@ credentials=defgrp</pre>
         over SSH</li>
       <li><code>esx</code> - used for connections to an ESX or
         VirtualCenter server</li>
-      <li><code>xen</code> - used for connections to a Xen Enterprise
-        sever using XenAPI</li>
     </ol>
 
     <p>

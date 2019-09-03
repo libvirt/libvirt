@@ -611,7 +611,6 @@ msg_gen_function += virRaiseError
 msg_gen_function += virReportError
 msg_gen_function += virReportErrorHelper
 msg_gen_function += virReportSystemError
-msg_gen_function += xenapiSessionErrorHandler
 msg_gen_function += virLastErrorPrefixMessage
 
 # Uncomment the following and run "make syntax-check" to see diagnostics
@@ -668,7 +667,7 @@ sc_prohibit_diagnostic_without_format:
 	   $(VC_LIST_EXCEPT) | xargs \
 		$(GREP) -A2 -nE '\<$(func_re) *\(.*,$$' /dev/null; } \
 	   | $(SED) -rn -e ':l; /[,"]$$/ {N;b l;}' \
-		-e '/(xenapiSessionErrorHandler|vah_(error|warning))/d' \
+		-e '/(vah_(error|warning))/d' \
 		-e '/\<$(func_re) *\([^"]*"([^%"]|"\n[^"]*")*"[,)]/p' \
            | $(GREP) -vE 'VIR_ERROR' && \
 	  { echo '$(ME): found diagnostic without %' 1>&2; \
@@ -791,7 +790,6 @@ sc_prohibit_cross_inclusion:
 	    access/ | conf/) safe="($$dir|conf|util)";; \
 	    cpu/| network/| node_device/| rpc/| security/| storage/) \
 	      safe="($$dir|util|conf|storage)";; \
-	    xenapi/) safe="($$dir|util|conf|xen|cpu)";; \
 	    *) safe="($$dir|$(mid_dirs)|util)";; \
 	  esac; \
 	  in_vc_files="^src/$$dir" \

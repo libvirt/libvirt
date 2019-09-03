@@ -292,8 +292,6 @@ src/vz/vz_driver.c
 src/vz/vz_sdk.c
 src/vz/vz_utils.c
 src/vz/vz_utils.h
-src/xenapi/xenapi_driver.c
-src/xenapi/xenapi_utils.c
 tests/virpolkittest.c
 tools/libvirt-guests.sh.in
 tools/virsh-checkpoint.c

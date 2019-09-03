@@ -81,9 +81,6 @@
 #ifdef WITH_HYPERV
 # include "hyperv/hyperv_driver.h"
 #endif
-#ifdef WITH_XENAPI
-# include "xenapi/xenapi_driver.h"
-#endif
 #ifdef WITH_BHYVE
 # include "bhyve/bhyve_driver.h"
 #endif
@@ -305,10 +302,6 @@ virGlobalInit(void)
 #endif
 #ifdef WITH_HYPERV
     if (hypervRegister() == -1)
-        goto error;
-#endif
-#ifdef WITH_XENAPI
-    if (xenapiRegister() == -1)
         goto error;
 #endif
 #ifdef WITH_REMOTE
@@ -988,9 +981,6 @@ virConnectOpenInternal(const char *name,
 #endif
 #ifndef WITH_HYPERV
              STRCASEEQ(ret->uri->scheme, "hyperv") ||
-#endif
-#ifndef WITH_XENAPI
-             STRCASEEQ(ret->uri->scheme, "xenapi") ||
 #endif
 #ifndef WITH_VZ
              STRCASEEQ(ret->uri->scheme, "parallels") ||
