@@ -2868,6 +2868,7 @@ qemuDomainAttachMediatedDevice(virQEMUDriverPtr driver,
     bool teardowncgroup = false;
     bool teardownlabel = false;
     bool teardowndevice = false;
+    bool teardownmemlock = false;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDeviceDef dev = { VIR_DOMAIN_DEVICE_HOSTDEV,
                                 { .hostdev = hostdev } };
@@ -2911,6 +2912,10 @@ qemuDomainAttachMediatedDevice(virQEMUDriverPtr driver,
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0)
         goto cleanup;
 
+    if (qemuDomainAdjustMaxMemLockHostdev(vm, hostdev) < 0)
+        goto cleanup;
+    teardownmemlock = true;
+
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorAddDevice(priv->mon, devstr);
     if (qemuDomainObjExitMonitor(driver, vm) < 0) {
@@ -2926,6 +2931,8 @@ qemuDomainAttachMediatedDevice(virQEMUDriverPtr driver,
     ret = 0;
  cleanup:
     if (ret < 0) {
+        if (teardownmemlock && qemuDomainAdjustMaxMemLock(vm) < 0)
+            VIR_WARN("Unable to reset maximum locked memory on hotplug fail");
         if (teardowncgroup && qemuTeardownHostdevCgroup(vm, hostdev) < 0)
             VIR_WARN("Unable to remove host device cgroup ACL on hotplug fail");
         if (teardownlabel &&
