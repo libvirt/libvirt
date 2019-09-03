@@ -85,13 +85,13 @@
       </change>
       <change>
         <summary>
-          Split libvirtd into separate daemons
+          Experimental split of libvirtd into separate daemons
         </summary>
         <description>
           The big monolithic libvirtd daemon can now be replaced by smaller
-          per-driver daemons. Distributions can chose if they want the former
-          or the latter. The libvirtd is still kept around for backwards
-          compatibility.
+          per-driver daemons. The new split daemons are considered experimental
+          at this time and distributions are encouraged to continue using the
+          traditional libvirtd by default.
         </description>
       </change>
     </section>
@@ -156,13 +156,22 @@
       </change>
       <change>
         <summary>
-          Stop linking virt-login-shell and NSS plugins with libvirt.so
+          Stop linking NSS plugins with libvirt.so
         </summary>
         <description>
-          In order to allow libvirt to abort on out of memory, we need to stop
-          linking libvirt.so to virt-login-shell or the NSS plugins where we
-          don't want to abort. This change also resulted in smaller binaries
-          and libraries.
+          This reduces the amount of code and 3rd party libraries are that
+          loaded into all processes.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Split the setuid virt-login-shell binary into two pieces
+        </summary>
+        <description>
+          The setuid virt-login-shell binary is now a tiny shim that
+          sanitizes the process execution environment variables and
+          arguments, before launching the trusted virt-login-shell-helper
+          binary.
         </description>
       </change>
       <change>
