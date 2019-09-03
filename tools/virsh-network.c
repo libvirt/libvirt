@@ -1593,10 +1593,10 @@ cmdNetworkPortDumpXML(vshControl *ctl, const vshCmd *cmd)
  */
 static const vshCmdInfo info_network_port_delete[] = {
     {.name = "help",
-     .data = N_("network port information in XML")
+     .data = N_("delete the specified network port")
     },
     {.name = "desc",
-     .data = N_("Output the network port information as an XML dump to stdout.")
+     .data = N_("Delete the specified network port.")
     },
     {.name = NULL}
 };
