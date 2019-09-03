@@ -18550,10 +18550,12 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
                      * new image must refer to it in the metadata */
                     mirrorBacking = disk->src->backingStore;
                 }
+            } else {
+                mirrorBacking = mirror->backingStore;
             }
 
             if (!(crdata = qemuBuildStorageSourceChainAttachPrepareBlockdevTop(mirror,
-                                                                               mirror->backingStore,
+                                                                               mirrorBacking,
                                                                                priv->qemuCaps)))
                 goto endjob;
         }
