@@ -50,6 +50,30 @@
           for Hyper-V guests.
         </description>
       </change>
+      <change>
+        <summary>
+          lib: Add virDomainGetGuestInfo()
+        </summary>
+        <description>
+          This API is intended to aggregate several guest agent information
+          queries and is inspired by stats API
+          <code>virDomainListGetStats()</code>. It is anticipated that this
+          information will be provided by a guest agent
+          running within the domain. It's exposed as <code>virsh
+          guestinfo</code>.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Split libvirtd into separate daemons
+        </summary>
+        <description>
+          The big monolithic libvirtd daemon can now be replaced by smaller
+          per-driver daemons. Distributions can chose if they want the former
+          or the latter. The libvirtd is still kept around for backwards
+          compatibility.
+        </description>
+      </change>
     </section>
     <section title="Removed features">
       <change>
@@ -75,8 +99,117 @@
           <code>--bandwidth</code> parameter.
         </description>
       </change>
+      <change>
+        <summary>
+          libxl: Implement domain metadata getter/setter
+        </summary>
+        <description>
+          The libxl driver now supports <code>virDomainGetMetadata()</code> and
+          <code>virDomainSetMetadata()</code> APIs.
+        </description>
+      </change>
+      <change>
+        <summary>
+          test driver: Expand API coverage
+        </summary>
+        <description>
+          Additional APIs have been implemented in the test driver.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Report RNG device in domain capabilities XML
+        </summary>
+        <description>
+          Libvirt now reports if RNG devices are supported by the underlying
+          hypervisor in the domain capabilities XML.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Stop linking virt-login-shell and NSS plugins with libvirt.so
+        </summary>
+        <description>
+          In order to allow libvirt to abort on out of memory, we need to stop
+          linking libvirt.so to virt-login-shell or the NSS plugins where we
+          don't want to abort. This change also resulted in smaller binaries
+          and libraries.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Allow migration with disk cache on
+        </summary>
+        <description>
+          When QEMU supports flushing caches at the end of migration, we can
+          safely allow migration even if <code>disk/driver/@cache</code> is
+          neither <code>none</code> nor <code>directsync</code>.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
+      <change>
+        <summary>
+          Various security label remembering fixes
+        </summary>
+        <description>
+          In the previous release libvirt introduced remembering of original
+          owners and SELinux labels on files. However, the feature did not work
+          properly with snapshots, on migrations or on network filesystems.
+          This is now fixed.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Allow greater PCI domain numbers
+        </summary>
+        <description>
+          Libvirt used to require PCI domain number to be not greater than
+          0xFFFF. The code was changed to allow 32 bits long numbers.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Various D-Bus fixes
+        </summary>
+        <description>
+          When D-Bus is not available, libvirt was reporting random errors.
+          These are now gone.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Prefer read-only opening of PCI config files
+        </summary>
+        <description>
+          When enumerating PCI bus, libvirt opens config files under
+          <code>sysfs</code> mount and parses them to learn various aspects of
+          the device (e.g. its capabilities). Only in a very limited number of
+          cases it is actually writing into the file. However, it used to open
+          the file also for writing even if it was only reading from it.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Fix AppArmor profile
+        </summary>
+        <description>
+          Since the <code>5.6.0</code> release, libvirt uses
+          <code>procfs</code> to learn the list of opened file descriptors when
+          spawning a command. However, our AppArmor profile was not allowing
+          such access.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Don't block storage driver when starting or building a pool
+        </summary>
+        <description>
+          Starting or building a storage pool can take a long time to finish.
+          During this time the storage driver was blocked and thus no other API
+          involving the storage driver could run. This is now fixed.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v5.6.0" date="2019-08-05">
