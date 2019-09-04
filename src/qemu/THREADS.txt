@@ -25,25 +25,15 @@ There are a number of locks on various objects
 
   * virDomainObjPtr
 
-    Will be locked after calling any of the virDomainObjListFindBy{ID,Name,UUID}
-    methods.  However, preferred method is qemuDomObjFromDomain() that uses
-    virDomainFindByUUIDRef() which also increases the reference counter and
-    finds the domain in the domain list without blocking all other lookups.
-    When the domain is locked and the reference increased, the preferred way of
-    decrementing the reference counter and unlocking the domain is using the
+    Will be locked and the reference counter will be increased after calling
+    any of the virDomainObjListFindBy{ID,Name,UUID} methods. The preferred way
+    of decrementing the reference counter and unlocking the domain is using the
     virDomainObjEndAPI() function.
 
     Lock must be held when changing/reading any variable in the virDomainObjPtr
 
-    If the lock needs to be dropped & then re-acquired for a short period of
-    time, the reference count must be incremented first using virDomainObjRef().
-    There is no need to increase the reference count if qemuDomObjFromDomain()
-    was used for looking up the domain.  In this case there is one reference
-    already added by that function.
-
     This lock must not be held for anything which sleeps/waits (i.e. monitor
     commands).
-
 
 
   * qemuMonitorPrivatePtr: Job conditions
