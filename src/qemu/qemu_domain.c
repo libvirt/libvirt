@@ -10004,21 +10004,18 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
                              virStorageSourcePtr disksrc,
                              bool report_broken)
 {
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
     virStorageSourcePtr src; /* iterator for the backing chain declared in XML */
     virStorageSourcePtr n; /* iterator for the backing chain detected from disk */
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int ret = -1;
     uid_t uid;
     gid_t gid;
 
     if (!disksrc)
         disksrc = disk->src;
 
-    if (virStorageSourceIsEmpty(disksrc)) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (virStorageSourceIsEmpty(disksrc))
+        return 0;
 
     /* There is no need to check the backing chain for disks without backing
      * support */
@@ -10030,13 +10027,13 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
             if (report_broken)
                 virStorageFileReportBrokenChain(errno, disksrc, disksrc);
 
-            goto cleanup;
+            return -1;
         }
 
         /* terminate the chain for such images as the code below would do */
         if (!disksrc->backingStore &&
             !(disksrc->backingStore = virStorageSourceNew()))
-            goto cleanup;
+            return -1;
 
         /* host cdrom requires special treatment in qemu, so we need to check
          * whether a block device is a cdrom */
@@ -10046,8 +10043,7 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
             virFileIsCDROM(disksrc->path) == 1)
             disksrc->hostcdrom = true;
 
-        ret = 0;
-        goto cleanup;
+        return 0;
     }
 
     src = disksrc;
@@ -10057,16 +10053,16 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
             int rv = virStorageFileSupportsAccess(src);
 
             if (rv < 0)
-                goto cleanup;
+                return -1;
 
             if (rv > 0) {
                 if (qemuDomainStorageFileInit(driver, vm, src, disksrc) < 0)
-                    goto cleanup;
+                    return -1;
 
                 if (virStorageFileAccess(src, F_OK) < 0) {
                     virStorageFileReportBrokenChain(errno, src, disksrc);
                     virStorageFileDeinit(src);
-                    goto cleanup;
+                    return -1;
                 }
 
                 virStorageFileDeinit(src);
@@ -10077,33 +10073,27 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
 
     /* We skipped to the end of the chain. Skip detection if there's the
      * terminator. (An allocated but empty backingStore) */
-    if (src->backingStore) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (src->backingStore)
+        return 0;
 
     qemuDomainGetImageIds(cfg, vm, src, disksrc, &uid, &gid);
 
     if (virStorageFileGetMetadata(src, uid, gid, report_broken) < 0)
-        goto cleanup;
+        return -1;
 
     for (n = src->backingStore; virStorageSourceIsBacking(n); n = n->backingStore) {
         if (qemuDomainValidateStorageSource(n, priv->qemuCaps) < 0)
-            goto cleanup;
+            return -1;
 
         if (qemuDomainPrepareDiskSourceData(disk, n, cfg, priv->qemuCaps) < 0)
-            goto cleanup;
+            return -1;
 
         if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV) &&
             qemuDomainPrepareStorageSourceBlockdev(disk, n, priv, cfg) < 0)
-            goto cleanup;
+            return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    virObjectUnref(cfg);
-    return ret;
+    return 0;
 }
 
 
