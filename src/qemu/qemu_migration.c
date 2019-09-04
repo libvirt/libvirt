@@ -907,6 +907,7 @@ qemuMigrationSrcNBDStorageCopyOne(virQEMUDriverPtr driver,
                                   const char *tlsAlias,
                                   unsigned int flags)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     qemuBlockJobDataPtr job = NULL;
     char *diskAlias = NULL;
@@ -921,7 +922,8 @@ qemuMigrationSrcNBDStorageCopyOne(virQEMUDriverPtr driver,
 
     qemuBlockJobSyncBegin(job);
 
-    if (flags & VIR_MIGRATE_TLS) {
+    if (flags & VIR_MIGRATE_TLS ||
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
         rc = qemuMigrationSrcNBDStorageCopyBlockdev(driver, vm,
                                                     disk, diskAlias,
                                                     host, port,
