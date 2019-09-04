@@ -796,50 +796,49 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriverPtr driver,
     VIR_AUTOPTR(qemuBlockStorageSourceAttachData) data = NULL;
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     int mon_ret = 0;
-    int ret = -1;
     VIR_AUTOUNREF(virStorageSourcePtr) copysrc = NULL;
 
     VIR_DEBUG("starting blockdev mirror for disk=%s to host=%s", diskAlias, host);
 
     if (!(copysrc = virStorageSourceNew()))
-        goto cleanup;
+        return -1;
 
     copysrc->type = VIR_STORAGE_TYPE_NETWORK;
     copysrc->protocol = VIR_STORAGE_NET_PROTOCOL_NBD;
     copysrc->format = VIR_STORAGE_FILE_RAW;
 
     if (!(copysrc->backingStore = virStorageSourceNew()))
-        goto cleanup;
+        return -1;
 
     if (VIR_STRDUP(copysrc->path, diskAlias) < 0)
-        goto cleanup;
+        return -1;
 
     if (VIR_ALLOC_N(copysrc->hosts, 1) < 0)
-        goto cleanup;
+        return -1;
 
     copysrc->nhosts = 1;
     copysrc->hosts->transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
     copysrc->hosts->port = port;
     if (VIR_STRDUP(copysrc->hosts->name, host) < 0)
-        goto cleanup;
+        return -1;
 
     if (VIR_STRDUP(copysrc->tlsAlias, tlsAlias) < 0)
-        goto cleanup;
+        return -1;
 
     if (virAsprintf(&copysrc->nodestorage, "migration-%s-storage", disk->dst) < 0 ||
         virAsprintf(&copysrc->nodeformat, "migration-%s-format", disk->dst) < 0)
-        goto cleanup;
+        return -1;
 
     /* Migration via blockdev-mirror was supported sooner than the auto-read-only
      * feature was added to qemu */
     if (!(data = qemuBlockStorageSourceAttachPrepareBlockdev(copysrc,
                                                              copysrc->backingStore,
                                                              false)))
-        goto cleanup;
+        return -1;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm,
                                        QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
-        goto cleanup;
+        return -1;
 
     mon_ret = qemuBlockStorageSourceAttachApply(qemuDomainGetMonitor(vm), data);
 
@@ -852,14 +851,11 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriverPtr driver,
         qemuBlockStorageSourceAttachRollback(qemuDomainGetMonitor(vm), data);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || mon_ret < 0)
-        goto cleanup;
+        return -1;
 
     VIR_STEAL_PTR(diskPriv->migrSource, copysrc);
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
