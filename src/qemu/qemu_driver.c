@@ -15315,6 +15315,9 @@ qemuDomainSnapshotDiskDataCollectOne(virQEMUDriverPtr driver,
 
     dd->disk = disk;
 
+    if (qemuDomainStorageSourceValidateDepth(disk->src, 1, disk->dst) < 0)
+        return -1;
+
     if (!(dd->src = virStorageSourceCopy(snapdisk->src, false)))
         return -1;
 
@@ -18330,6 +18333,9 @@ qemuDomainBlockCopyCommonValidateUserMirrorBackingStore(virStorageSourcePtr mirr
                            _("backingStore of mirror without VIR_DOMAIN_BLOCK_COPY_SHALLOW doesn't make sense"));
             return -1;
         }
+
+        if (qemuDomainStorageSourceValidateDepth(mirror, 0, NULL) < 0)
+            return -1;
     }
 
     return 0;

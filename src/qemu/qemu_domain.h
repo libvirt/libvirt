@@ -802,6 +802,10 @@ int qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
                                 virDomainObjPtr vm,
                                 unsigned int flags);
 
+int qemuDomainStorageSourceValidateDepth(virStorageSourcePtr src,
+                                         int add,
+                                         const char *diskdst);
+
 int qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm,
                                  virDomainDiskDefPtr disk,
