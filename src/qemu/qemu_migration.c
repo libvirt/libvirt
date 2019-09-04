@@ -983,13 +983,12 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriverPtr driver,
                                unsigned int flags)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int ret = -1;
     int port;
     size_t i;
     unsigned long long mirror_speed = speed;
     bool mirror_shallow = *migrate_flags & QEMU_MONITOR_MIGRATE_NON_SHARED_INC;
     int rv;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
 
     VIR_DEBUG("Starting drive mirrors for domain %s", vm->def->name);
 
@@ -997,7 +996,7 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriverPtr driver,
         virReportError(VIR_ERR_OVERFLOW,
                        _("bandwidth must be less than %llu"),
                        LLONG_MAX >> 20);
-        goto cleanup;
+        return -1;
     }
     mirror_speed <<= 20;
 
@@ -1015,34 +1014,34 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriverPtr driver,
         if (qemuMigrationSrcNBDStorageCopyOne(driver, vm, disk, host, port,
                                               mirror_speed, mirror_shallow,
                                               tlsAlias, flags) < 0)
-            goto cleanup;
+            return -1;
 
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0) {
             VIR_WARN("Failed to save status on vm %s", vm->def->name);
-            goto cleanup;
+            return -1;
         }
     }
 
     while ((rv = qemuMigrationSrcNBDStorageCopyReady(vm, QEMU_ASYNC_JOB_MIGRATION_OUT)) != 1) {
         if (rv < 0)
-            goto cleanup;
+            return -1;
 
         if (priv->job.abortJob) {
             priv->job.current->status = QEMU_DOMAIN_JOB_STATUS_CANCELED;
             virReportError(VIR_ERR_OPERATION_ABORTED, _("%s: %s"),
                            qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
                            _("canceled by client"));
-            goto cleanup;
+            return -1;
         }
 
         if (dconn && virConnectIsAlive(dconn) <= 0) {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                            _("Lost connection to destination host"));
-            goto cleanup;
+            return -1;
         }
 
         if (virDomainObjWait(vm) < 0)
-            goto cleanup;
+            return -1;
     }
 
     qemuMigrationSrcFetchMirrorStats(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
@@ -1051,11 +1050,8 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriverPtr driver,
     /* Okay, all disks are ready. Modify migrate_flags */
     *migrate_flags &= ~(QEMU_MONITOR_MIGRATE_NON_SHARED_DISK |
                         QEMU_MONITOR_MIGRATE_NON_SHARED_INC);
-    ret = 0;
 
- cleanup:
-    virObjectUnref(cfg);
-    return ret;
+    return 0;
 }
 
 
