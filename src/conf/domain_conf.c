@@ -13064,7 +13064,7 @@ virDomainSmartcardDefParseXML(virDomainXMLOptionPtr xmlopt,
  *
  * <tpm model='tpm-tis'>
  *   <backend type='emulator' version='2.0'>
- *     <encryption uuid='32ee7e76-2178-47a1-ab7b-269e6e348015'/>
+ *     <encryption secret='32ee7e76-2178-47a1-ab7b-269e6e348015'/>
  *   </backend>
  * </tpm>
  */
