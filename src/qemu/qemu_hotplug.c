@@ -617,6 +617,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
     VIR_AUTOPTR(virJSONValue) corProps = NULL;
     VIR_AUTOFREE(char *) corAlias = NULL;
+    bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
 
     if (qemuDomainStorageSourceChainAccessAllow(driver, vm, disk->src) < 0)
         goto cleanup;
@@ -627,7 +628,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     if (qemuDomainPrepareDiskSource(disk, priv, cfg) < 0)
         goto error;
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+    if (blockdev) {
         if (disk->copy_on_read == VIR_TRISTATE_SWITCH_ON &&
             !(corProps = qemuBlockStorageGetCopyOnReadProps(disk)))
         goto cleanup;
@@ -665,6 +666,21 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     if (qemuMonitorAddDevice(priv->mon, devstr) < 0) {
         ignore_value(qemuDomainDetachExtensionDevice(priv->mon, &disk->info));
         goto exit_monitor;
+    }
+
+    /* Setup throttling of disk via block_set_io_throttle QMP command. This
+     * is a hack until the 'throttle' blockdev driver will support modification
+     * of the trhottle group. See also qemuProcessSetupDiskThrottlingBlockdev.
+     * As there isn't anything sane to do if this fails, let's just return
+     * success.
+     */
+    if (blockdev &&
+        qemuDiskConfigBlkdeviotuneEnabled(disk)) {
+        qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+        if (qemuMonitorSetBlockIoThrottle(priv->mon, NULL, diskPriv->qomName,
+                                          &disk->blkdeviotune,
+                                          true, true, true) < 0)
+            VIR_WARN("failed to set blkdeviotune for '%s' of '%s'", disk->dst, vm->def->name);
     }
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0) {

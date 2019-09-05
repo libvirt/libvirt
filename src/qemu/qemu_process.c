@@ -6671,6 +6671,7 @@ qemuProcessGenID(virDomainObjPtr vm,
  * Sets up disk trottling for -blockdev via block_set_io_throttle monitor
  * command. This hack should be replaced by proper use of the 'throttle'
  * blockdev driver in qemu once it will support changing of the throttle group.
+ * Same hack is done in qemuDomainAttachDiskGeneric.
  */
 static int
 qemuProcessSetupDiskThrottlingBlockdev(virQEMUDriverPtr driver,
