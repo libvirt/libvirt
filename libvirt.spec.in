@@ -1528,14 +1528,6 @@ exit 0
 %doc AUTHORS ChangeLog.gz NEWS README README.md
 %doc libvirt-docs/*
 
-# API docs
-%dir %{_datadir}/gtk-doc/html/libvirt/
-%doc %{_datadir}/gtk-doc/html/libvirt/*.devhelp
-%doc %{_datadir}/gtk-doc/html/libvirt/*.html
-%doc %{_datadir}/gtk-doc/html/libvirt/*.png
-%doc %{_datadir}/gtk-doc/html/libvirt/*.css
-
-
 %files daemon
 
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/

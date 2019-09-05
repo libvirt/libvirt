@@ -17,7 +17,6 @@
 ## <http://www.gnu.org/licenses/>.
 
 HTML_DIR = $(docdir)/html
-DEVHELP_DIR=$(datadir)/gtk-doc/html/libvirt
 
 modules = \
 	libvirt-common \
@@ -50,16 +49,6 @@ apipng = \
   html/home.png \
   html/right.png
 
-devhelphtml = \
-  devhelp/libvirt.devhelp \
-  devhelp/index.html \
-  devhelp/general.html \
-  $(devhelphtml_generated)
-
-devhelphtml_generated = \
-	$(addprefix devhelp/libvirt-,$(addsuffix .html,$(modules))) \
-	$(NULL)
-
 css = \
   generic.css \
   libvirt.css \
@@ -83,16 +72,6 @@ fonts = \
   fonts/overpass-mono-regular.woff \
   fonts/overpass-mono-semibold.woff \
   fonts/overpass-regular.woff
-
-devhelppng = \
-  devhelp/home.png \
-  devhelp/left.png \
-  devhelp/right.png \
-  devhelp/up.png
-
-devhelpcss = devhelp/style.css
-
-devhelpxsl = devhelp/devhelp.xsl devhelp/html.xsl
 
 logofiles = \
   logos/logo-base.svg \
@@ -188,7 +167,6 @@ EXTRA_DIST= \
   site.xsl subsite.xsl newapi.xsl page.xsl \
   wrapstring.xsl \
   $(dot_html) $(dot_html_in) $(gif) $(apihtml) $(apipng) \
-  $(devhelphtml) $(devhelppng) $(devhelpcss) $(devhelpxsl) \
   $(xml) $(qemu_xml) $(lxc_xml) $(admin_xml) $(fig) $(png) $(css) \
   $(javascript) $(logofiles) \
   $(internals_html_in) $(internals_html) $(fonts) \
@@ -206,7 +184,6 @@ $(srcdir)/aclperms.htmlinc: $(top_srcdir)/src/access/viraccessperm.h \
 MAINTAINERCLEANFILES = \
   $(addprefix $(srcdir)/,$(dot_html)) \
   $(addprefix $(srcdir)/,$(apihtml)) \
-  $(addprefix $(srcdir)/,$(devhelphtml)) \
   $(addprefix $(srcdir)/,$(internals_html)) \
   $(addprefix $(srcdir)/,$(kbase_html)) \
   $(srcdir)/hvsupport.html.in $(srcdir)/aclperms.htmlinc
@@ -226,7 +203,7 @@ lxc_api: $(srcdir)/libvirt-lxc-api.xml $(srcdir)/libvirt-lxc-refs.xml
 admin_api: $(srcdir)/libvirt-admin-api.xml $(srcdir)/libvirt-admin-refs.xml
 
 web: $(dot_html) $(internals_html) $(kbase_html) \
-	html/index.html devhelp/index.html
+	html/index.html
 
 hvsupport.html: $(srcdir)/hvsupport.html.in
 
@@ -283,12 +260,6 @@ html/index.html: libvirt-api.xml newapi.xsl page.xsl $(APIBUILD_STAMP)
 	  --stringparam timestamp $(timestamp) \
 	  $(srcdir)/newapi.xsl $(srcdir)/libvirt-api.xml && \
 	  $(XMLLINT) --nonet --noout $(srcdir)/html/*.html
-
-$(addprefix $(srcdir)/,$(devhelphtml)): $(srcdir)/libvirt-api.xml $(devhelpxsl)
-	$(AM_V_GEN)$(XSLTPROC) --stringparam timestamp $(timestamp) \
-	  --nonet -o $(srcdir)/devhelp/ \
-	  $(top_srcdir)/docs/devhelp/devhelp.xsl $(srcdir)/libvirt-api.xml
-
 
 python_generated_files = \
 		$(srcdir)/html/libvirt-libvirt-lxc.html \
@@ -388,10 +359,6 @@ install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)/kbase
 	for f in $(kbase_html); do \
 	  $(INSTALL) -m 0644 $(srcdir)/$$f $(DESTDIR)$(HTML_DIR)/kbase; done
-	$(mkinstalldirs) $(DESTDIR)$(DEVHELP_DIR)
-	for file in $(devhelphtml) $(devhelppng) $(devhelpcss); do \
-	    $(INSTALL) -m 0644 $(srcdir)/$${file} $(DESTDIR)$(DEVHELP_DIR) ; \
-	done
 	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)/fonts
 	for f in $(fonts); do \
 	  $(INSTALL) -m 0644 $(srcdir)/$$f $(DESTDIR)$(HTML_DIR)/fonts; \
@@ -414,7 +381,4 @@ uninstall-local:
 	done
 	for f in $(kbase_html); do \
 	  rm -f $(DESTDIR)$(HTML_DIR)/$$f; \
-	done
-	for f in $(devhelphtml) $(devhelppng) $(devhelpcss); do \
-	  rm -f $(DESTDIR)$(DEVHELP_DIR)/$$(basename $$f); \
 	done
