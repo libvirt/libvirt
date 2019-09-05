@@ -258,48 +258,48 @@ qemuDomainChangeMediaLegacy(virQEMUDriverPtr driver,
                             virStorageSourcePtr newsrc,
                             bool force)
 {
-    int ret = -1, rc;
-    char *driveAlias = NULL;
+    int rc;
+    VIR_AUTOFREE(char *) driveAlias = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     const char *format = NULL;
-    char *sourcestr = NULL;
+    VIR_AUTOFREE(char *) sourcestr = NULL;
 
     if (!disk->info.alias) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("missing disk device alias name for %s"), disk->dst);
-        goto cleanup;
+        return -1;
     }
 
     if (!(driveAlias = qemuAliasDiskDriveFromDisk(disk)))
-        goto cleanup;
+        return -1;
 
     qemuDomainObjEnterMonitor(driver, vm);
     rc = qemuMonitorEjectMedia(priv->mon, driveAlias, force);
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        goto cleanup;
+        return -1;
 
     /* If the tray is present wait for it to open. */
     if (!force && diskPriv->tray) {
         rc = qemuHotplugWaitForTrayEject(vm, disk);
         if (rc < 0)
-            goto cleanup;
+            return -1;
 
         /* re-issue ejection command to pop out the media */
         qemuDomainObjEnterMonitor(driver, vm);
         rc = qemuMonitorEjectMedia(priv->mon, driveAlias, false);
         if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
-            goto cleanup;
+            return -1;
 
     } else  {
         /* otherwise report possible errors from the attempt to eject the media*/
         if (rc < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (!virStorageSourceIsEmpty(newsrc)) {
         if (qemuGetDriveSourceString(newsrc, NULL, &sourcestr) < 0)
-            goto cleanup;
+            return -1;
 
         if (virStorageSourceGetActualType(newsrc) != VIR_STORAGE_TYPE_DIR)
             format = virStorageFileFormatTypeToString(newsrc->format);
@@ -310,18 +310,13 @@ qemuDomainChangeMediaLegacy(virQEMUDriverPtr driver,
                                     sourcestr,
                                     format);
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (rc < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(driveAlias);
-    VIR_FREE(sourcestr);
-    return ret;
+    return 0;
 }
 
 
