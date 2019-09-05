@@ -613,7 +613,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     VIR_AUTOPTR(qemuBlockStorageSourceChainData) data = NULL;
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    char *devstr = NULL;
+    VIR_AUTOFREE(char *) devstr = NULL;
     VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
     VIR_AUTOPTR(virJSONValue) corProps = NULL;
     VIR_AUTOFREE(char *) corAlias = NULL;
@@ -679,7 +679,6 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
 
  cleanup:
     qemuDomainSecretDiskDestroy(disk);
-    VIR_FREE(devstr);
     return ret;
 
  exit_monitor:
