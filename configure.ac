@@ -708,6 +708,14 @@ AC_PATH_PROG([FLAKE8], [flake8])
 if test -z "$FLAKE8"; then
     AC_MSG_WARN(['flake8' binary is required to check python code style])
 fi
+
+dnl Python3 < 3.7 treats the C locale as 7-bit only.
+dnl We must force env vars so it treats it as UTF-8
+dnl regardless of the user's locale.
+RUNUTF8="LC_ALL= LANG=C LC_CTYPE=en_US.UTF-8"
+AC_SUBST(RUNUTF8)
+
+
 AC_PATH_PROG([PERL], [perl])
 if test -z "$PERL"; then
          AC_MSG_ERROR(['perl' binary is required to build libvirt])

@@ -69,7 +69,7 @@ NEWS: \
 	    $(srcdir)/docs/news.xml \
 	  >$@-tmp \
 	    || { rm -f $@-tmp; exit 1; }; \
-	  $(PYTHON) $(srcdir)/docs/reformat-news.py $@-tmp >$@ \
+	  $(RUNUTF8) $(PYTHON) $(srcdir)/docs/reformat-news.py $@-tmp >$@ \
 	    || { rm -f $@-tmp; exit 1; }; \
 	  rm -f $@-tmp; \
 	fi

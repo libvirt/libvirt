@@ -41,7 +41,7 @@ $(HYPERV_DRIVER_GENERATED): $(HYPERV_GENERATED_STAMP)
 
 $(HYPERV_GENERATED_STAMP): $(srcdir)/hyperv/hyperv_wmi_generator.input \
                             $(srcdir)/hyperv/hyperv_wmi_generator.py
-	$(AM_V_GEN)srcdir=$(srcdir) $(PYTHON) \
+	$(AM_V_GEN)srcdir=$(srcdir) $(RUNUTF8) $(PYTHON) \
 	  $(srcdir)/hyperv/hyperv_wmi_generator.py \
 	  && touch $@
 

@@ -63,8 +63,8 @@ $(ESX_DRIVER_GENERATED): $(ESX_GENERATED_STAMP)
 
 $(ESX_GENERATED_STAMP): $(srcdir)/esx/esx_vi_generator.input \
                          $(srcdir)/esx/esx_vi_generator.py
-	$(AM_V_GEN)srcdir=$(srcdir) $(PYTHON) $(srcdir)/esx/esx_vi_generator.py \
-	  && touch $@
+	$(AM_V_GEN)srcdir=$(srcdir) $(RUNUTF8) $(PYTHON) \
+		$(srcdir)/esx/esx_vi_generator.py && touch $@
 
 MAINTAINERCLEANFILES += $(ESX_DRIVER_GENERATED) $(ESX_GENERATED_STAMP)
 
