@@ -5635,11 +5635,15 @@ virDomainDefPostParseVideo(virDomainDefPtr def,
         return 0;
 
     if (def->videos[0]->type == VIR_DOMAIN_VIDEO_TYPE_NONE) {
+        char *alias;
+
         /* we don't want to format any values we automatically fill in for
-         * videos into the XML, so clear them
-         */
+         * videos into the XML, so clear them, but retain any user-assigned
+         * alias */
+        VIR_STEAL_PTR(alias, def->videos[0]->info.alias);
         virDomainVideoDefClear(def->videos[0]);
         def->videos[0]->type = VIR_DOMAIN_VIDEO_TYPE_NONE;
+        VIR_STEAL_PTR(def->videos[0]->info.alias, alias);
     } else {
         virDomainDeviceDef device = {
             .type = VIR_DOMAIN_DEVICE_VIDEO,

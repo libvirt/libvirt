@@ -34,6 +34,7 @@
     </graphics>
     <video>
       <model type='none'/>
+      <alias name='ua-user-video-alias'/>
     </video>
     <memballoon model='virtio'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
