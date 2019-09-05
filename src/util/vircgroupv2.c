@@ -1508,7 +1508,7 @@ virCgroupV2SetCpuCfsPeriod(virCgroupPtr group,
                        _("Invalid 'cpu.max' data."));
         return -1;
     }
-    *tmp = '\n';
+    *tmp = '\0';
 
     if (virAsprintf(&value, "%s %llu", str, cfs_period) < 0)
         return -1;
