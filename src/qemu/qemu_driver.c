@@ -304,7 +304,7 @@ qemuAutostartDomain(virDomainObjPtr vm,
 static void
 qemuAutostartDomains(virQEMUDriverPtr driver)
 {
-    virDomainObjListForEach(driver->domains, qemuAutostartDomain, driver);
+    virDomainObjListForEach(driver->domains, false, qemuAutostartDomain, driver);
 }
 
 
@@ -1055,10 +1055,12 @@ qemuStateInitialize(bool privileged,
      * the driver with. This is to avoid race between autostart and reconnect
      * threads */
     virDomainObjListForEach(qemu_driver->domains,
+                            false,
                             qemuDomainFindMaxID,
                             &qemu_driver->lastvmid);
 
     virDomainObjListForEach(qemu_driver->domains,
+                            false,
                             qemuDomainNetsRestart,
                             NULL);
 
@@ -1072,14 +1074,17 @@ qemuStateInitialize(bool privileged,
         goto error;
 
     virDomainObjListForEach(qemu_driver->domains,
+                            false,
                             qemuDomainSnapshotLoad,
                             cfg->snapshotDir);
 
     virDomainObjListForEach(qemu_driver->domains,
+                            false,
                             qemuDomainCheckpointLoad,
                             cfg->checkpointDir);
 
     virDomainObjListForEach(qemu_driver->domains,
+                            false,
                             qemuDomainManagedSaveLoad,
                             qemu_driver);
 

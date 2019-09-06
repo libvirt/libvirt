@@ -466,7 +466,7 @@ virBhyveProcessReconnectAll(bhyveConnPtr driver)
     data.driver = driver;
     data.kd = kd;
 
-    virDomainObjListForEach(driver->domains, virBhyveProcessReconnect, &data);
+    virDomainObjListForEach(driver->domains, false, virBhyveProcessReconnect, &data);
 
     kvm_close(kd);
 }

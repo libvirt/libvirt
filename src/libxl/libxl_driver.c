@@ -497,7 +497,7 @@ libxlReconnectDomain(virDomainObjPtr vm,
 static void
 libxlReconnectDomains(libxlDriverPrivatePtr driver)
 {
-    virDomainObjListForEach(driver->domains, libxlReconnectDomain, driver);
+    virDomainObjListForEach(driver->domains, true, libxlReconnectDomain, driver);
 }
 
 static int
@@ -800,10 +800,12 @@ libxlStateInitialize(bool privileged,
                                        NULL, NULL) < 0)
         goto error;
 
-    virDomainObjListForEach(libxl_driver->domains, libxlAutostartDomain,
+    virDomainObjListForEach(libxl_driver->domains, false,
+                            libxlAutostartDomain,
                             libxl_driver);
 
-    virDomainObjListForEach(libxl_driver->domains, libxlDomainManagedSaveLoad,
+    virDomainObjListForEach(libxl_driver->domains, false,
+                            libxlDomainManagedSaveLoad,
                             libxl_driver);
 
     return VIR_DRV_STATE_INIT_COMPLETE;
@@ -832,7 +834,8 @@ libxlStateReload(void)
                                    libxl_driver->xmlopt,
                                    NULL, libxl_driver);
 
-    virDomainObjListForEach(libxl_driver->domains, libxlAutostartDomain,
+    virDomainObjListForEach(libxl_driver->domains, false,
+                            libxlAutostartDomain,
                             libxl_driver);
 
     virObjectUnref(cfg);

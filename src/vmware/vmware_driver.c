@@ -990,7 +990,7 @@ static int vmwareDomainObjListUpdateDomain(virDomainObjPtr dom, void *data)
 static void
 vmwareDomainObjListUpdateAll(virDomainObjListPtr doms, struct vmware_driver *driver)
 {
-    virDomainObjListForEach(doms, vmwareDomainObjListUpdateDomain, driver);
+    virDomainObjListForEach(doms, false, vmwareDomainObjListUpdateDomain, driver);
 }
 
 static int

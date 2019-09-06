@@ -114,7 +114,7 @@ bhyveAutostartDomains(bhyveConnPtr driver)
 
     struct bhyveAutostartData data = { driver, conn };
 
-    virDomainObjListForEach(driver->domains, bhyveAutostartDomain, &data);
+    virDomainObjListForEach(driver->domains, false, bhyveAutostartDomain, &data);
 
     virObjectUnref(conn);
 }

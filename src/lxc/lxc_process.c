@@ -1639,7 +1639,7 @@ virLXCProcessAutostartAll(virLXCDriverPtr driver)
 
     struct virLXCProcessAutostartData data = { driver, conn };
 
-    virDomainObjListForEach(driver->domains,
+    virDomainObjListForEach(driver->domains, false,
                             virLXCProcessAutostartDomain,
                             &data);
 
@@ -1760,6 +1760,6 @@ virLXCProcessReconnectDomain(virDomainObjPtr vm,
 int virLXCProcessReconnectAll(virLXCDriverPtr driver,
                               virDomainObjListPtr doms)
 {
-    virDomainObjListForEach(doms, virLXCProcessReconnectDomain, driver);
+    virDomainObjListForEach(doms, false, virLXCProcessReconnectDomain, driver);
     return 0;
 }

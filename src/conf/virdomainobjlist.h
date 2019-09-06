@@ -91,6 +91,7 @@ typedef int (*virDomainObjListIterator)(virDomainObjPtr dom,
                                         void *opaque);
 
 int virDomainObjListForEach(virDomainObjListPtr doms,
+                            bool modify,
                             virDomainObjListIterator callback,
                             void *opaque);
 

@@ -818,25 +818,33 @@ virDomainObjListHelper(void *payload,
 /**
  * virDomainObjListForEach:
  * @doms: Pointer to the domain object list
+ * @modify: Whether to lock @doms for modify operation
  * @callback: callback to run over each domain on the list
  * @opaque: opaque data to pass to @callback
  *
  * For every domain on the list (@doms) run @callback on it. If
  * @callback fails (i.e. returns a negative value), the iteration
- * carries still on until all domains are visited.
+ * carries still on until all domains are visited. Moreover, if
+ * @callback wants to modify the list of domains (@doms) then
+ * @modify must be set to true.
  *
  * Returns: 0 on success,
  *         -1 otherwise.
  */
 int
 virDomainObjListForEach(virDomainObjListPtr doms,
+                        bool modify,
                         virDomainObjListIterator callback,
                         void *opaque)
 {
     struct virDomainListIterData data = {
         callback, opaque, 0,
     };
-    virObjectRWLockRead(doms);
+
+    if (modify)
+        virObjectRWLockWrite(doms);
+    else
+        virObjectRWLockRead(doms);
     virHashForEach(doms->objs, virDomainObjListHelper, &data);
     virObjectRWUnlock(doms);
     return data.ret;

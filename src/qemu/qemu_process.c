@@ -8369,7 +8369,8 @@ void
 qemuProcessReconnectAll(virQEMUDriverPtr driver)
 {
     struct qemuProcessReconnectData data = {.driver = driver};
-    virDomainObjListForEach(driver->domains, qemuProcessReconnectHelper, &data);
+    virDomainObjListForEach(driver->domains, true,
+                            qemuProcessReconnectHelper, &data);
 }
 
 
