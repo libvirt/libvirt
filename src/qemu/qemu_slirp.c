@@ -298,7 +298,6 @@ qemuSlirpStart(qemuSlirpPtr slirp,
 {
     VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
     VIR_AUTOPTR(virCommand) cmd = NULL;
-    VIR_AUTOFREE(char *) cmdstr = NULL;
     VIR_AUTOFREE(char *) pidfile = NULL;
     VIR_AUTOFREE(char *) dbus_path = NULL;
     VIR_AUTOFREE(char *) dbus_addr = NULL;
