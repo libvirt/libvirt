@@ -1020,6 +1020,14 @@ BAD:
         classic libvirt memory allocation APIs and GLib APIs within
         a single method. Keep the style consistent, converting existing
         code to GLib style in a separate, prior commit.</dd>
+
+      <dt>VIR_STRDUP, VIR_STRNDUP</dt>
+      <dd>Prefer the GLib APIs g_strdup and g_strndup.</dd>
+
+      <dt>virAsprintf, virVasprintf</dt>
+      <dd>The GLib APIs g_strdup_printf / g_strdup_vprint should be used
+        instead. Don't use g_vasprintf unless having the string length
+        returned is unavoidable.</dd>
     </dl>
 
     <h2><a id="file_handling">File handling</a></h2>

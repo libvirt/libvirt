@@ -18,6 +18,7 @@
 
 #include <config.h>
 
+#include <glib/gprintf.h>
 #include <regex.h>
 #include <locale.h>
 
@@ -730,10 +731,21 @@ virVasprintfInternal(char **strp,
                      const char *fmt,
                      va_list list)
 {
+    char *str = NULL;
     int ret;
 
-    if ((ret = vasprintf(strp, fmt, list)) == -1)
+    ret = g_vasprintf(&str, fmt, list);
+
+    /* GLib is supposed to abort() on OOM, but a mistake meant
+     * it did not. Delete this once our min glib is at 2.64.0
+     * which includes the fix:
+     *   https://gitlab.gnome.org/GNOME/glib/merge_requests/1145
+     */
+#if !GLIB_CHECK_VERSION(2, 64, 0)
+    if (!str)
         abort();
+#endif
+    *strp = str;
 
     return ret;
 }
@@ -743,11 +755,17 @@ virAsprintfInternal(char **strp,
                     const char *fmt, ...)
 {
     va_list ap;
+    char *str = NULL;
     int ret;
 
     va_start(ap, fmt);
-    ret = virVasprintfInternal(strp, fmt, ap);
+    ret = g_vasprintf(&str, fmt, ap);
     va_end(ap);
+
+    if (!*str)
+        abort();
+    *strp = str;
+
     return ret;
 }
 
@@ -936,8 +954,7 @@ virStrdup(char **dest,
     *dest = NULL;
     if (!src)
         return 0;
-    if (!(*dest = strdup(src)))
-        abort();
+    *dest = g_strdup(src);
 
     return 1;
 }
@@ -965,8 +982,7 @@ virStrndup(char **dest,
         return 0;
     if (n < 0)
         n = strlen(src);
-    if (!(*dest = strndup(src, n)))
-        abort();
+    *dest = g_strndup(src, n);
 
     return 1;
 }

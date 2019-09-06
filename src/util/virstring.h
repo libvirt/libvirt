@@ -145,6 +145,8 @@ int virVasprintfInternal(char **strp, const char *fmt, va_list list)
  * @dst: variable to hold result (char*, not char**)
  * @src: string to duplicate
  *
+ * DEPRECATED: use g_strdup instead
+ *
  * Duplicate @src string and store it into @dst.
  *
  * This macro is safe to use on arguments with side effects.
@@ -157,6 +159,8 @@ int virVasprintfInternal(char **strp, const char *fmt, va_list list)
  * VIR_STRDUP_QUIET:
  * @dst: variable to hold result (char*, not char**)
  * @src: string to duplicate
+ *
+ * DEPRECATED: use g_strdup instead
  *
  * Duplicate @src string and store it into @dst.
  *
@@ -171,6 +175,8 @@ int virVasprintfInternal(char **strp, const char *fmt, va_list list)
  * @dst: variable to hold result (char*, not char**)
  * @src: string to duplicate
  * @n: the maximum number of bytes to copy
+ *
+ * DEPRECATED: use g_strndup instead
  *
  * Duplicate @src string and store it into @dst. If @src is longer than @n,
  * only @n bytes are copied and terminating null byte '\0' is added. If @n
@@ -188,6 +194,8 @@ int virVasprintfInternal(char **strp, const char *fmt, va_list list)
  * @dst: variable to hold result (char*, not char**)
  * @src: string to duplicate
  * @n: the maximum number of bytes to copy
+ *
+ * DEPRECATED: use g_strndup instead
  *
  * Duplicate @src string and store it into @dst. If @src is longer than @n,
  * only @n bytes are copied and terminating null byte '\0' is added. If @n
