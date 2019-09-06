@@ -815,6 +815,19 @@ virDomainObjListHelper(void *payload,
 }
 
 
+/**
+ * virDomainObjListForEach:
+ * @doms: Pointer to the domain object list
+ * @callback: callback to run over each domain on the list
+ * @opaque: opaque data to pass to @callback
+ *
+ * For every domain on the list (@doms) run @callback on it. If
+ * @callback fails (i.e. returns a negative value), the iteration
+ * carries still on until all domains are visited.
+ *
+ * Returns: 0 on success,
+ *         -1 otherwise.
+ */
 int
 virDomainObjListForEach(virDomainObjListPtr doms,
                         virDomainObjListIterator callback,
