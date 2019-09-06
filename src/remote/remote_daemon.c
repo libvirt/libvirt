@@ -226,14 +226,14 @@ daemonUnixSocketPaths(struct daemonConfig *config,
 
     if (config->unix_sock_dir) {
         if (virAsprintf(sockfile, "%s/%s-sock",
-                        SOCK_PREFIX, config->unix_sock_dir) < 0)
+                        config->unix_sock_dir, SOCK_PREFIX) < 0)
             goto cleanup;
 
         if (privileged) {
             if (virAsprintf(rosockfile, "%s/%s-sock-ro",
-                            SOCK_PREFIX, config->unix_sock_dir) < 0 ||
+                            config->unix_sock_dir, SOCK_PREFIX) < 0 ||
                 virAsprintf(admsockfile, "%s/%s-admin-sock",
-                            SOCK_PREFIX, config->unix_sock_dir) < 0)
+                            config->unix_sock_dir, SOCK_PREFIX) < 0)
                 goto cleanup;
         }
     } else {
