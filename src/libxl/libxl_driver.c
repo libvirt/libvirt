@@ -1459,7 +1459,7 @@ libxlDomainPMSuspendForDuration(virDomainPtr dom,
     if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
         goto cleanup;
 
-    if (!virDomainObjCheckActive(vm))
+    if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
     /* Unlock virDomainObjPtr to not deadlock with even handler, which will try
