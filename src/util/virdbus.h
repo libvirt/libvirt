@@ -52,11 +52,9 @@ int virDBusCreateMethodV(DBusMessage **call,
                          const char *member,
                          const char *types,
                          va_list args);
-int virDBusCreateReply(DBusMessage *msg,
-                       DBusMessage **reply,
+int virDBusCreateReply(DBusMessage **reply,
                        const char *types, ...);
-int virDBusCreateReplyV(DBusMessage *msg,
-                        DBusMessage **reply,
+int virDBusCreateReplyV(DBusMessage **reply,
                         const char *types,
                         va_list args);
 

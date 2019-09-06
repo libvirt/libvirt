@@ -1456,7 +1456,6 @@ int virDBusCreateMethod(DBusMessage **call,
 
 /**
  * virDBusCreateReplyV:
- * @msg: the message to reply to
  * @reply: pointer to be filled with a method reply message
  * @types: type signature for following method arguments
  * @args: method arguments
@@ -1469,14 +1468,13 @@ int virDBusCreateMethod(DBusMessage **call,
  * as variadic args. See virDBusCreateMethodV for a
  * description of this parameter.
  */
-int virDBusCreateReplyV(DBusMessage *msg,
-                        DBusMessage **reply,
+int virDBusCreateReplyV(DBusMessage **reply,
                         const char *types,
                         va_list args)
 {
     int ret = -1;
 
-    if (!(*reply = dbus_message_new_method_return(msg))) {
+    if (!(*reply = dbus_message_new(DBUS_MESSAGE_TYPE_METHOD_RETURN))) {
         virReportOOMError();
         goto cleanup;
     }
@@ -1495,7 +1493,6 @@ int virDBusCreateReplyV(DBusMessage *msg,
 
 /**
  * virDBusCreateReply:
- * @msg: the message to reply to
  * @reply: pointer to be filled with a method reply message
  * @types: type signature for following method arguments
  * @...: method arguments
@@ -1503,15 +1500,14 @@ int virDBusCreateReplyV(DBusMessage *msg,
  * See virDBusCreateReplyV for a description of the
  * behaviour of this method.
  */
-int virDBusCreateReply(DBusMessage *msg,
-                       DBusMessage **reply,
+int virDBusCreateReply(DBusMessage **reply,
                        const char *types, ...)
 {
     va_list args;
     int ret;
 
     va_start(args, types);
-    ret = virDBusCreateReplyV(msg, reply, types, args);
+    ret = virDBusCreateReplyV(reply, types, args);
     va_end(args);
 
     return ret;
@@ -1815,8 +1811,7 @@ int virDBusCreateMethodV(DBusMessage **call ATTRIBUTE_UNUSED,
     return -1;
 }
 
-int virDBusCreateReplyV(DBusMessage *msg ATTRIBUTE_UNUSED,
-                        DBusMessage **reply ATTRIBUTE_UNUSED,
+int virDBusCreateReplyV(DBusMessage **reply ATTRIBUTE_UNUSED,
                         const char *types ATTRIBUTE_UNUSED,
                         va_list args ATTRIBUTE_UNUSED)
 {
@@ -1825,8 +1820,7 @@ int virDBusCreateReplyV(DBusMessage *msg ATTRIBUTE_UNUSED,
     return -1;
 }
 
-int virDBusCreateReply(DBusMessage *msg ATTRIBUTE_UNUSED,
-                       DBusMessage **reply ATTRIBUTE_UNUSED,
+int virDBusCreateReply(DBusMessage **reply ATTRIBUTE_UNUSED,
                        const char *types ATTRIBUTE_UNUSED, ...)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR,
