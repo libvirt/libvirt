@@ -29,5 +29,5 @@ AC_DEFUN([LIBVIRT_CHECK_DEBUG], [
 ])
 
 AC_DEFUN([LIBVIRT_RESULT_DEBUG], [
-  AC_MSG_NOTICE([             Debug: $enable_debug])
+  LIBVIRT_RESULT([Debug], [$enable_debug])
 ])

@@ -37,5 +37,5 @@ AC_DEFUN([LIBVIRT_CHECK_LOADER_NVRAM], [
 ])
 
 AC_DEFUN([LIBVIRT_RESULT_LOADER_NVRAM], [
-  AC_MSG_NOTICE([      Loader/NVRAM: $with_loader_nvram])
+  LIBVIRT_RESULT([Loader/NVRAM], [$with_loader_nvram])
 ])

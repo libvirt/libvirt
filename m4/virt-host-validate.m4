@@ -39,5 +39,5 @@ AC_DEFUN([LIBVIRT_CHECK_HOST_VALIDATE], [
 ])
 
 AC_DEFUN([LIBVIRT_RESULT_HOST_VALIDATE], [
-  AC_MSG_NOTICE([virt-host-validate: $with_host_validate])
+  LIBVIRT_RESULT([virt-host-validate], [$with_host_validate])
 ])

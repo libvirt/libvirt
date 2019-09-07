@@ -1047,14 +1047,14 @@ LIBVIRT_WIN_RESULT_WINDRES
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Test suite])
 AC_MSG_NOTICE([])
-AC_MSG_NOTICE([         Coverage: $enable_test_coverage])
-AC_MSG_NOTICE([        Alloc OOM: $enable_test_oom])
+LIBVIRT_RESULT([Coverage], [$enable_test_coverage])
+LIBVIRT_RESULT([Alloc OOM], [$enable_test_oom])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Miscellaneous])
 AC_MSG_NOTICE([])
 LIBVIRT_RESULT_DEBUG
-AC_MSG_NOTICE([       Use -Werror: $enable_werror])
-AC_MSG_NOTICE([     Warning Flags: $WARN_CFLAGS])
+LIBVIRT_RESULT([Use -Werror], [$enable_werror])
+LIBVIRT_RESULT([Warning Flags], [$WARN_CFLAGS])
 LIBVIRT_RESULT_DTRACE
 LIBVIRT_RESULT_NUMAD
 LIBVIRT_RESULT_INIT_SCRIPT

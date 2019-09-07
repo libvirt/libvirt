@@ -28,5 +28,5 @@ AC_DEFUN([LIBVIRT_CHECK_DEFAULT_EDITOR], [
 ])
 
 AC_DEFUN([LIBVIRT_RESULT_DEFAULT_EDITOR], [
-  AC_MSG_NOTICE([    Default Editor: $with_default_editor])
+  LIBVIRT_RESULT([Default Editor], [$with_default_editor])
 ])

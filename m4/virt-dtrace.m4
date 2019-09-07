@@ -41,5 +41,5 @@ AC_DEFUN([LIBVIRT_CHECK_DTRACE], [
 ])
 
 AC_DEFUN([LIBVIRT_RESULT_DTRACE], [
-  AC_MSG_NOTICE([            DTrace: $with_dtrace])
+  LIBVIRT_RESULT([DTrace], [$with_dtrace])
 ])

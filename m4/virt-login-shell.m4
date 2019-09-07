@@ -39,5 +39,5 @@ AC_DEFUN([LIBVIRT_CHECK_LOGIN_SHELL], [
 ])
 
 AC_DEFUN([LIBVIRT_RESULT_LOGIN_SHELL], [
-  AC_MSG_NOTICE([  virt-login-shell: $with_login_shell])
+  LIBVIRT_RESULT([virt-login-shell], [$with_login_shell])
 ])

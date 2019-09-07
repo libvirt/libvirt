@@ -48,5 +48,5 @@ AC_DEFUN([LIBVIRT_CHECK_CHRDEV_LOCK_FILES], [
 ])
 
 AC_DEFUN([LIBVIRT_RESULT_CHRDEV_LOCK_FILES], [
-  AC_MSG_NOTICE([ Char device locks: $with_chrdev_lock_files])
+  LIBVIRT_RESULT([Char device locks], [$with_chrdev_lock_files])
 ])

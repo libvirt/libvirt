@@ -54,5 +54,5 @@ AC_DEFUN([LIBVIRT_CHECK_NUMAD], [
 ])
 
 AC_DEFUN([LIBVIRT_RESULT_NUMAD], [
-  AC_MSG_NOTICE([             numad: $with_numad])
+  LIBVIRT_RESULT([numad], [$with_numad])
 ])

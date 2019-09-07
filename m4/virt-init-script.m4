@@ -51,5 +51,5 @@ AC_DEFUN([LIBVIRT_CHECK_INIT_SCRIPT],[
 ])
 
 AC_DEFUN([LIBVIRT_RESULT_INIT_SCRIPT],[
-    AC_MSG_NOTICE([       Init script: $with_init_script])
+    LIBVIRT_RESULT([Init script], [$with_init_script])
 ])
