@@ -33,9 +33,9 @@ dnl  LIBVIRT_RESULT([yajl], [yes], [-I/opt/yajl/include -lyajl])
 dnl
 AC_DEFUN([LIBVIRT_RESULT], [
   if test "$2" = "no" || test -z "$3" ; then
-    STR=`printf "%10s: %-3s" "$1" "$2"`
+    STR=`printf "%20s: %s" "$1" "$2"`
   else
-    STR=`printf "%10s: %-3s (%s)" "$1" "$2" "$3"`
+    STR=`printf "%20s: %s (%s)" "$1" "$2" "$3"`
   fi
 
   AC_MSG_NOTICE([$STR])
