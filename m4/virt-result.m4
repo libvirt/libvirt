@@ -31,12 +31,27 @@ dnl  eg
 dnl
 dnl  LIBVIRT_RESULT([yajl], [yes], [-I/opt/yajl/include -lyajl])
 dnl
+
+m4_defun_init([_AS_ECHO_LOG_N],
+[AS_REQUIRE([_AS_LINENO_PREPARE])],
+[_AS_ECHO_N([$as_me:${as_lineno-$LINENO}: $1], AS_MESSAGE_LOG_FD)])
+
+m4_defun_init([AS_MESSAGE_N],
+[AS_REQUIRE([_AS_ME_PREPARE])],
+[m4_ifval(AS_MESSAGE_LOG_FD,
+	  [{ _AS_ECHO_LOG_N([$1])
+_AS_ECHO_N([$as_me: $1], [$2]);}],
+	  [_AS_ECHO_N([$as_me: $1], [$2])])[]])
+
 AC_DEFUN([LIBVIRT_RESULT], [
+  STR=`printf "%20s: " "$1"`
   if test "$2" = "no" || test -z "$3" ; then
-    STR=`printf "%20s: %s" "$1" "$2"`
+    VAL=`printf "%s" "$2"`
   else
-    STR=`printf "%20s: %s (%s)" "$1" "$2" "$3"`
+    VAL=`printf "%s (%s)" "$2" "$3"`
   fi
 
-  AC_MSG_NOTICE([$STR])
+  AS_MESSAGE_N([$STR])
+  _AS_ECHO([$VAL], AS_MESSAGE_LOG_FD)
+  COLORIZE_RESULT([$VAL])
 ])
