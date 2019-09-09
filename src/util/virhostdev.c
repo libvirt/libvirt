@@ -1091,7 +1091,6 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr mgr,
 
     virObjectUnlock(mgr->activePCIHostdevs);
     virObjectUnlock(mgr->inactivePCIHostdevs);
-    virObjectUnref(pcidevs);
 }
 
 int
