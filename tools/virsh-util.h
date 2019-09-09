@@ -39,8 +39,11 @@ virshCommandOptDomain(vshControl *ctl,
                       const vshCmd *cmd,
                       const char **name);
 
+typedef virDomain virshDomain;
+
 void
 virshDomainFree(virDomainPtr dom);
+VIR_DEFINE_AUTOPTR_FUNC(virshDomain, virshDomainFree);
 
 void
 virshDomainCheckpointFree(virDomainCheckpointPtr chk);
