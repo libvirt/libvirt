@@ -21,6 +21,8 @@ UTIL_SOURCES = \
 	util/virauthconfig.h \
 	util/virbitmap.c \
 	util/virbitmap.h \
+	util/virbpf.c \
+	util/virbpf.h \
 	util/virbuffer.c \
 	util/virbuffer.h \
 	util/virperf.c \

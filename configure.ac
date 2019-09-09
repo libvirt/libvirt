@@ -881,6 +881,11 @@ AC_CHECK_DECLS([clock_serv_t, host_get_clock_service, clock_get_time],
                 #include <mach/mach.h>
                ])
 
+# Check if we have new enough kernel to support BPF devices for cgroups v2
+if test "$with_linux" = "yes"; then
+    AC_CHECK_DECLS([BPF_PROG_QUERY], [], [], [#include <linux/bpf.h>])
+fi
+
 # Check if we need to look for ifconfig
 if test "$want_ifconfig" = "yes"; then
      AC_PATH_PROG([IFCONFIG_PATH], [ifconfig])

@@ -144,6 +144,7 @@ VIR_ENUM_IMPL(virErrorDomain,
               "Domain Checkpoint",
 
               "TPM", /* 70 */
+              "BPF",
 );
 
 
