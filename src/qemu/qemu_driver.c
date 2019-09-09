@@ -16941,8 +16941,6 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             virDomainSnapshotSetCurrent(vm->snapshots, NULL);
             ret = -1;
         }
-    } else if (snap) {
-        virDomainSnapshotSetCurrent(vm->snapshots, NULL);
     }
     if (ret == 0 && config && vm->persistent &&
         !(ret = virDomainSaveConfig(cfg->configDir, driver->caps,
