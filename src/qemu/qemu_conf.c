@@ -1679,7 +1679,7 @@ qemuSharedDeviceEntryRemove(virQEMUDriverPtr driver,
 
 
 static int
-qemuAddRemoveSharedDiskInternal(virQEMUDriverPtr driver,
+qemuSharedDiskAddRemoveInternal(virQEMUDriverPtr driver,
                                 virDomainDiskDefPtr disk,
                                 const char *name,
                                 bool addDisk)
@@ -1730,7 +1730,7 @@ qemuAddSharedDisk(virQEMUDriverPtr driver,
                   virDomainDiskDefPtr disk,
                   const char *name)
 {
-    return qemuAddRemoveSharedDiskInternal(driver, disk, name, true);
+    return qemuSharedDiskAddRemoveInternal(driver, disk, name, true);
 }
 
 
@@ -1768,7 +1768,7 @@ qemuGetHostdevPath(virDomainHostdevDefPtr hostdev)
 
 
 static int
-qemuAddRemoveSharedHostdevInternal(virQEMUDriverPtr driver,
+qemuSharedHostdevAddRemoveInternal(virQEMUDriverPtr driver,
                                    virDomainHostdevDefPtr hostdev,
                                    const char *name,
                                    bool addDevice)
@@ -1803,7 +1803,7 @@ qemuAddRemoveSharedHostdevInternal(virQEMUDriverPtr driver,
 }
 
 static int
-qemuAddRemoveSharedDeviceInternal(virQEMUDriverPtr driver,
+qemuSharedDeviceAddRemoveInternal(virQEMUDriverPtr driver,
                                   virDomainDeviceDefPtr dev,
                                   const char *name,
                                   bool addDevice)
@@ -1813,10 +1813,10 @@ qemuAddRemoveSharedDeviceInternal(virQEMUDriverPtr driver,
      * which is only valid for block disk and scsi host device.
      */
     if (dev->type == VIR_DOMAIN_DEVICE_DISK)
-        return qemuAddRemoveSharedDiskInternal(driver, dev->data.disk,
+        return qemuSharedDiskAddRemoveInternal(driver, dev->data.disk,
                                                name, addDevice);
     else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV)
-        return qemuAddRemoveSharedHostdevInternal(driver, dev->data.hostdev,
+        return qemuSharedHostdevAddRemoveInternal(driver, dev->data.hostdev,
                                                   name, addDevice);
     else
         return 0;
@@ -1837,7 +1837,7 @@ qemuAddSharedDevice(virQEMUDriverPtr driver,
                     virDomainDeviceDefPtr dev,
                     const char *name)
 {
-    return qemuAddRemoveSharedDeviceInternal(driver, dev, name, true);
+    return qemuSharedDeviceAddRemoveInternal(driver, dev, name, true);
 }
 
 
@@ -1846,7 +1846,7 @@ qemuRemoveSharedDisk(virQEMUDriverPtr driver,
                      virDomainDiskDefPtr disk,
                      const char *name)
 {
-    return qemuAddRemoveSharedDiskInternal(driver, disk, name, false);
+    return qemuSharedDiskAddRemoveInternal(driver, disk, name, false);
 }
 
 
@@ -1864,7 +1864,7 @@ qemuRemoveSharedDevice(virQEMUDriverPtr driver,
                        virDomainDeviceDefPtr dev,
                        const char *name)
 {
-    return qemuAddRemoveSharedDeviceInternal(driver, dev, name, false);
+    return qemuSharedDeviceAddRemoveInternal(driver, dev, name, false);
 }
 
 
