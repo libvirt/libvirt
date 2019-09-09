@@ -105,7 +105,7 @@ qemuDriverUnlock(virQEMUDriverPtr driver)
 
 virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
 {
-    virQEMUDriverConfigPtr cfg;
+    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = NULL;
 
     if (virQEMUConfigInitialize() < 0)
         return NULL;
@@ -117,9 +117,9 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
 
     if (privileged) {
         if (virGetUserID(QEMU_USER, &cfg->user) < 0)
-            goto error;
+            return NULL;
         if (virGetGroupID(QEMU_GROUP, &cfg->group) < 0)
-            goto error;
+            return NULL;
     } else {
         cfg->user = (uid_t)-1;
         cfg->group = (gid_t)-1;
@@ -132,48 +132,48 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
     if (privileged) {
         if (virAsprintf(&cfg->logDir,
                         "%s/log/libvirt/qemu", LOCALSTATEDIR) < 0)
-            goto error;
+            return NULL;
 
         if (virAsprintf(&cfg->swtpmLogDir,
                         "%s/log/swtpm/libvirt/qemu", LOCALSTATEDIR) < 0)
-            goto error;
+            return NULL;
 
         if (VIR_STRDUP(cfg->configBaseDir, SYSCONFDIR "/libvirt") < 0)
-            goto error;
+            return NULL;
 
         if (virAsprintf(&cfg->stateDir,
                       "%s/libvirt/qemu", RUNSTATEDIR) < 0)
-            goto error;
+            return NULL;
 
         if (virAsprintf(&cfg->swtpmStateDir,
                        "%s/libvirt/qemu/swtpm", RUNSTATEDIR) < 0)
-            goto error;
+            return NULL;
 
         if (virAsprintf(&cfg->cacheDir,
                       "%s/cache/libvirt/qemu", LOCALSTATEDIR) < 0)
-            goto error;
+            return NULL;
 
         if (virAsprintf(&cfg->libDir,
                       "%s/lib/libvirt/qemu", LOCALSTATEDIR) < 0)
-            goto error;
+            return NULL;
         if (virAsprintf(&cfg->saveDir, "%s/save", cfg->libDir) < 0)
-            goto error;
+            return NULL;
         if (virAsprintf(&cfg->snapshotDir, "%s/snapshot", cfg->libDir) < 0)
-            goto error;
+            return NULL;
         if (virAsprintf(&cfg->checkpointDir, "%s/checkpoint", cfg->libDir) < 0)
-            goto error;
+            return NULL;
         if (virAsprintf(&cfg->autoDumpPath, "%s/dump", cfg->libDir) < 0)
-            goto error;
+            return NULL;
         if (virAsprintf(&cfg->channelTargetDir,
                         "%s/channel/target", cfg->libDir) < 0)
-            goto error;
+            return NULL;
         if (virAsprintf(&cfg->nvramDir, "%s/nvram", cfg->libDir) < 0)
-            goto error;
+            return NULL;
         if (virAsprintf(&cfg->memoryBackingDir, "%s/ram", cfg->libDir) < 0)
-            goto error;
+            return NULL;
         if (virAsprintf(&cfg->swtpmStorageDir, "%s/lib/libvirt/swtpm",
                         LOCALSTATEDIR) < 0)
-            goto error;
+            return NULL;
         if (!virDoesUserExist("tss") ||
             virGetUserID("tss", &cfg->swtpm_user) < 0)
             cfg->swtpm_user = 0; /* fall back to root */
@@ -186,57 +186,57 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
 
         cachedir = virGetUserCacheDirectory();
         if (!cachedir)
-            goto error;
+            return NULL;
 
         if (virAsprintf(&cfg->logDir, "%s/qemu/log", cachedir) < 0)
-            goto error;
+            return NULL;
         if (virAsprintf(&cfg->swtpmLogDir, "%s/qemu/log", cachedir) < 0)
-            goto error;
+            return NULL;
         if (virAsprintf(&cfg->cacheDir, "%s/qemu/cache", cachedir) < 0)
-            goto error;
+            return NULL;
 
         rundir = virGetUserRuntimeDirectory();
         if (!rundir)
-            goto error;
+            return NULL;
         if (virAsprintf(&cfg->stateDir, "%s/qemu/run", rundir) < 0)
-            goto error;
+            return NULL;
 
         if (virAsprintf(&cfg->swtpmStateDir, "%s/swtpm", cfg->stateDir) < 0)
-            goto error;
+            return NULL;
 
         if (!(cfg->configBaseDir = virGetUserConfigDirectory()))
-            goto error;
+            return NULL;
 
         if (virAsprintf(&cfg->libDir, "%s/qemu/lib", cfg->configBaseDir) < 0)
-            goto error;
+            return NULL;
         if (virAsprintf(&cfg->saveDir, "%s/qemu/save", cfg->configBaseDir) < 0)
-            goto error;
+            return NULL;
         if (virAsprintf(&cfg->snapshotDir, "%s/qemu/snapshot", cfg->configBaseDir) < 0)
-            goto error;
+            return NULL;
         if (virAsprintf(&cfg->checkpointDir, "%s/qemu/checkpoint", cfg->configBaseDir) < 0)
-            goto error;
+            return NULL;
         if (virAsprintf(&cfg->autoDumpPath, "%s/qemu/dump", cfg->configBaseDir) < 0)
-            goto error;
+            return NULL;
         if (virAsprintf(&cfg->channelTargetDir,
                         "%s/qemu/channel/target", cfg->configBaseDir) < 0)
-            goto error;
+            return NULL;
         if (virAsprintf(&cfg->nvramDir,
                         "%s/qemu/nvram", cfg->configBaseDir) < 0)
-            goto error;
+            return NULL;
         if (virAsprintf(&cfg->memoryBackingDir, "%s/qemu/ram", cfg->configBaseDir) < 0)
-            goto error;
+            return NULL;
         if (virAsprintf(&cfg->swtpmStorageDir, "%s/qemu/swtpm", cfg->configBaseDir) < 0)
-            goto error;
+            return NULL;
         cfg->swtpm_user = (uid_t)-1;
         cfg->swtpm_group = (gid_t)-1;
     }
 
     if (virAsprintf(&cfg->configDir, "%s/qemu", cfg->configBaseDir) < 0)
-        goto error;
+        return NULL;
     if (virAsprintf(&cfg->autostartDir, "%s/qemu/autostart", cfg->configBaseDir) < 0)
-        goto error;
+        return NULL;
     if (virAsprintf(&cfg->slirpStateDir, "%s/slirp", cfg->stateDir) < 0)
-        goto error;
+        return NULL;
 
     /* Set the default directory to find TLS X.509 certificates.
      * This will then be used as a fallback if the service specific
@@ -244,13 +244,13 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
      */
     if (VIR_STRDUP(cfg->defaultTLSx509certdir,
                    SYSCONFDIR "/pki/qemu") < 0)
-        goto error;
+        return NULL;
 
     if (VIR_STRDUP(cfg->vncListen, VIR_LOOPBACK_IPV4_ADDR) < 0)
-        goto error;
+        return NULL;
 
     if (VIR_STRDUP(cfg->spiceListen, VIR_LOOPBACK_IPV4_ADDR) < 0)
-        goto error;
+        return NULL;
 
     cfg->remotePortMin = QEMU_REMOTE_PORT_MIN;
     cfg->remotePortMax = QEMU_REMOTE_PORT_MAX;
@@ -268,13 +268,13 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
         virFileFindHugeTLBFS(&cfg->hugetlbfs, &cfg->nhugetlbfs) < 0) {
         /* This however is not implemented on all platforms. */
         if (virGetLastErrorCode() != VIR_ERR_NO_SUPPORT)
-            goto error;
+            return NULL;
     }
 
     if (VIR_STRDUP(cfg->bridgeHelperName, QEMU_BRIDGE_HELPER) < 0 ||
         VIR_STRDUP(cfg->prHelperName, QEMU_PR_HELPER) < 0 ||
         VIR_STRDUP(cfg->slirpHelperName, QEMU_SLIRP_HELPER) < 0)
-        goto error;
+        return NULL;
 
     cfg->clearEmulatorCapabilities = true;
 
@@ -290,23 +290,19 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
     cfg->stdioLogD = true;
 
     if (!(cfg->namespaces = virBitmapNew(QEMU_DOMAIN_NS_LAST)))
-        goto error;
+        return NULL;
 
     if (privileged &&
         qemuDomainNamespaceAvailable(QEMU_DOMAIN_NS_MOUNT) &&
         virBitmapSetBit(cfg->namespaces, QEMU_DOMAIN_NS_MOUNT) < 0)
-        goto error;
+        return NULL;
 
     if (virFirmwareParseList(DEFAULT_LOADER_NVRAM,
                              &cfg->firmwares,
                              &cfg->nfirmwares) < 0)
-        goto error;
+        return NULL;
 
-    return cfg;
-
- error:
-    virObjectUnref(cfg);
-    return NULL;
+    VIR_RETURN_PTR(cfg);
 }
 
 
@@ -1252,7 +1248,7 @@ virQEMUDriverCreateXMLConf(virQEMUDriverPtr driver)
 virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver)
 {
     size_t i, j;
-    virCapsPtr caps;
+    VIR_AUTOUNREF(virCapsPtr) caps = NULL;
     VIR_AUTOFREE(virSecurityManagerPtr) *sec_managers = NULL;
     /* Security driver data */
     const char *doi, *model, *lbl, *type;
@@ -1261,17 +1257,17 @@ virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver)
 
     /* Basic host arch / guest machine capabilities */
     if (!(caps = virQEMUCapsInit(driver->qemuCapsCache)))
-        goto error;
+        return NULL;
 
     if (virGetHostUUID(caps->host.host_uuid)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("cannot get the host uuid"));
-        goto error;
+        return NULL;
     }
 
     /* access sec drivers and create a sec model for each one */
     if (!(sec_managers = qemuSecurityGetNested(driver->securityManager)))
-        goto error;
+        return NULL;
 
     /* calculate length */
     for (i = 0; sec_managers[i]; i++)
@@ -1279,7 +1275,7 @@ virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver)
     caps->host.nsecModels = i;
 
     if (VIR_ALLOC_N(caps->host.secModels, caps->host.nsecModels) < 0)
-        goto error;
+        return NULL;
 
     for (i = 0; sec_managers[i]; i++) {
         virCapsHostSecModelPtr sm = &caps->host.secModels[i];
@@ -1287,25 +1283,21 @@ virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver)
         model = qemuSecurityGetModel(sec_managers[i]);
         if (VIR_STRDUP(sm->model, model) < 0 ||
             VIR_STRDUP(sm->doi, doi) < 0)
-            goto error;
+            return NULL;
 
         for (j = 0; j < ARRAY_CARDINALITY(virtTypes); j++) {
             lbl = qemuSecurityGetBaseLabel(sec_managers[i], virtTypes[j]);
             type = virDomainVirtTypeToString(virtTypes[j]);
             if (lbl &&
                 virCapabilitiesHostSecModelAddBaseLabel(sm, type, lbl) < 0)
-                goto error;
+                return NULL;
         }
 
         VIR_DEBUG("Initialized caps for security driver \"%s\" with "
                   "DOI \"%s\"", model, doi);
     }
 
-    return caps;
-
- error:
-    virObjectUnref(caps);
-    return NULL;
+    VIR_RETURN_PTR(caps);
 }
 
 
@@ -1392,9 +1384,9 @@ virQEMUDriverGetDomainCapabilities(virQEMUDriverPtr driver,
                                    virArch arch,
                                    virDomainVirtType virttype)
 {
-    virDomainCapsPtr ret = NULL, domCaps = NULL;
-    virCapsPtr caps = NULL;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    VIR_AUTOUNREF(virDomainCapsPtr) domCaps = NULL;
+    VIR_AUTOUNREF(virCapsPtr) caps = NULL;
+    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
     virHashTablePtr domCapsCache = virQEMUCapsGetDomainCapsCache(qemuCaps);
     struct virQEMUDriverSearchDomcapsData data = {
         .path = virQEMUCapsGetBinary(qemuCaps),
@@ -1404,7 +1396,7 @@ virQEMUDriverGetDomainCapabilities(virQEMUDriverPtr driver,
     };
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
+        return NULL;
 
     domCaps = virHashSearch(domCapsCache,
                             virQEMUDriverSearchDomcaps, &data, NULL);
@@ -1412,24 +1404,19 @@ virQEMUDriverGetDomainCapabilities(virQEMUDriverPtr driver,
         /* hash miss, build new domcaps */
         if (!(domCaps = virDomainCapsNew(data.path, data.machine,
                                          data.arch, data.virttype)))
-            goto cleanup;
+            return NULL;
 
         if (virQEMUCapsFillDomainCaps(caps, domCaps, qemuCaps,
                                       driver->privileged,
                                       cfg->firmwares, cfg->nfirmwares) < 0)
-            goto cleanup;
+            return NULL;
 
         if (virHashAddEntry(domCapsCache, machine, domCaps) < 0)
-            goto cleanup;
+            return NULL;
     }
 
     virObjectRef(domCaps);
-    VIR_STEAL_PTR(ret, domCaps);
- cleanup:
-    virObjectUnref(domCaps);
-    virObjectUnref(cfg);
-    virObjectUnref(caps);
-    return ret;
+    VIR_RETURN_PTR(domCaps);
 }
 
 
