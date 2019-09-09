@@ -21520,12 +21520,21 @@ virDomainDefParse(const char *xmlStr,
     xmlDocPtr xml = NULL;
     virDomainDefPtr def = NULL;
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
+    xmlNodePtr root;
 
     if (!(xml = virXMLParse(filename, xmlStr, _("(domain_definition)"))))
         goto cleanup;
 
-    def = virDomainDefParseNode(xml, xmlDocGetRootElement(xml), caps,
-                                xmlopt, parseOpaque, flags);
+    root = xmlDocGetRootElement(xml);
+    if (!virXMLNodeNameEqual(root, "domain")) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("unexpected root element <%s>, "
+                         "expecting <domain>"),
+                       root->name);
+        goto cleanup;
+    }
+
+    def = virDomainDefParseNode(xml, root, caps, xmlopt, parseOpaque, flags);
 
  cleanup:
     xmlFreeDoc(xml);
@@ -21565,14 +21574,6 @@ virDomainDefParseNode(xmlDocPtr xml,
     xmlXPathContextPtr ctxt = NULL;
     virDomainDefPtr def = NULL;
     virDomainDefPtr ret = NULL;
-
-    if (!virXMLNodeNameEqual(root, "domain")) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("unexpected root element <%s>, "
-                         "expecting <domain>"),
-                       root->name);
-        goto cleanup;
-    }
 
     ctxt = xmlXPathNewContext(xml);
     if (ctxt == NULL) {
