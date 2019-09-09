@@ -35,6 +35,8 @@ UTIL_SOURCES = \
 	util/vircgroupv1.h \
 	util/vircgroupv2.c \
 	util/vircgroupv2.h \
+	util/vircgroupv2devices.c \
+	util/vircgroupv2devices.h \
 	util/virclosecallbacks.c \
 	util/virclosecallbacks.h \
 	util/vircommand.c \

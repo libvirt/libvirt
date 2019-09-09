@@ -1716,6 +1716,9 @@ virCgroupV1Register;
 # util/vircgroupv2.h
 virCgroupV2Register;
 
+# util/vircgroupv2devices.h
+virCgroupV2DevicesAvailable;
+
 # util/virclosecallbacks.h
 virCloseCallbacksGet;
 virCloseCallbacksGetConn;
