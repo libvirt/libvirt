@@ -525,14 +525,13 @@ AppArmorGetSecurityProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                        "%s", _("error getting profile status"));
         goto cleanup;
     } else if (status == -1) {
-        profile_name[0] = '\0';
-    }
-
-    if (virStrcpy(sec->label, profile_name,
-        VIR_SECURITY_LABEL_BUFLEN) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("error copying profile name"));
-        goto cleanup;
+        sec->label[0] = '\0';
+    } else {
+        if (virStrcpy(sec->label, profile_name, VIR_SECURITY_LABEL_BUFLEN) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("error copying profile name"));
+            goto cleanup;
+        }
     }
 
     sec->enforcing = status == 1;
