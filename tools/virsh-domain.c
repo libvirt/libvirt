@@ -8834,8 +8834,7 @@ static int getSignalNumber(vshControl *ctl, const char *signame)
 static bool
 cmdSendProcessSignal(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
-    bool ret = false;
+    VIR_AUTOPTR(virshDomain) dom = NULL;
     const char *signame;
     long long pid_value;
     int signum;
@@ -8844,24 +8843,20 @@ cmdSendProcessSignal(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (vshCommandOptLongLong(ctl, cmd, "pid", &pid_value) < 0)
-        goto cleanup;
+        return false;
 
     if (vshCommandOptStringReq(ctl, cmd, "signame", &signame) < 0)
-        goto cleanup;
+        return false;
 
     if ((signum = getSignalNumber(ctl, signame)) < 0) {
         vshError(ctl, _("malformed signal name: %s"), signame);
-        goto cleanup;
+        return false;
     }
 
     if (virDomainSendProcessSignal(dom, pid_value, signum, 0) < 0)
-        goto cleanup;
+        return false;
 
-    ret = true;
-
- cleanup:
-    virshDomainFree(dom);
-    return ret;
+    return true;
 }
 
 /*
