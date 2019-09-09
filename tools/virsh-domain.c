@@ -9512,7 +9512,6 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
     unsigned int flags = 0;
     const vshCmdOpt *opt = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    VIR_AUTOPTR(virJSONValue) pretty = NULL;
 
     VSH_EXCLUSIVE_OPTIONS("hmp", "pretty");
 
@@ -9538,8 +9537,7 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool(cmd, "pretty")) {
         char *tmp;
-        pretty = virJSONValueFromString(result);
-        if (pretty && (tmp = virJSONValueToString(pretty, true))) {
+        if ((tmp = virJSONStringReformat(result, true))) {
             VIR_FREE(result);
             result = tmp;
             virTrimSpaces(result, NULL);
