@@ -8645,17 +8645,15 @@ static const vshCmdOptDef opts_inject_nmi[] = {
 static bool
 cmdInjectNMI(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
-    bool ret = true;
+    VIR_AUTOPTR(virshDomain) dom = NULL;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
     if (virDomainInjectNMI(dom, 0) < 0)
-            ret = false;
+        return false;
 
-    virshDomainFree(dom);
-    return ret;
+    return true;
 }
 
 /*
