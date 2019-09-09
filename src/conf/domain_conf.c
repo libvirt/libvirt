@@ -21517,16 +21517,18 @@ virDomainDefParse(const char *xmlStr,
                   void *parseOpaque,
                   unsigned int flags)
 {
-    xmlDocPtr xml;
+    xmlDocPtr xml = NULL;
     virDomainDefPtr def = NULL;
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
 
-    if ((xml = virXMLParse(filename, xmlStr, _("(domain_definition)")))) {
-        def = virDomainDefParseNode(xml, xmlDocGetRootElement(xml), caps,
-                                    xmlopt, parseOpaque, flags);
-        xmlFreeDoc(xml);
-    }
+    if (!(xml = virXMLParse(filename, xmlStr, _("(domain_definition)"))))
+        goto cleanup;
 
+    def = virDomainDefParseNode(xml, xmlDocGetRootElement(xml), caps,
+                                xmlopt, parseOpaque, flags);
+
+ cleanup:
+    xmlFreeDoc(xml);
     xmlKeepBlanksDefault(keepBlanksDefault);
     return def;
 }
