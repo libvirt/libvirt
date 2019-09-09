@@ -9506,14 +9506,13 @@ static const vshCmdOptDef opts_qemu_monitor_command[] = {
 static bool
 cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom = NULL;
-    bool ret = false;
-    char *monitor_cmd = NULL;
-    char *result = NULL;
+    VIR_AUTOPTR(virshDomain) dom = NULL;
+    VIR_AUTOFREE(char *) monitor_cmd = NULL;
+    VIR_AUTOFREE(char *) result = NULL;
     unsigned int flags = 0;
     const vshCmdOpt *opt = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    virJSONValuePtr pretty = NULL;
+    VIR_AUTOPTR(virJSONValue) pretty = NULL;
 
     VSH_EXCLUSIVE_OPTIONS("hmp", "pretty");
 
@@ -9527,7 +9526,7 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
 
     if (virBufferError(&buf)) {
         vshError(ctl, "%s", _("Failed to collect command"));
-        goto cleanup;
+        return false;
     }
     monitor_cmd = virBufferContentAndReset(&buf);
 
@@ -9535,7 +9534,7 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_QEMU_MONITOR_COMMAND_HMP;
 
     if (virDomainQemuMonitorCommand(dom, monitor_cmd, &result, flags) < 0)
-        goto cleanup;
+        return false;
 
     if (vshCommandOptBool(cmd, "pretty")) {
         char *tmp;
@@ -9549,16 +9548,7 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
         }
     }
     vshPrint(ctl, "%s\n", result);
-
-    ret = true;
-
- cleanup:
-    VIR_FREE(result);
-    VIR_FREE(monitor_cmd);
-    virJSONValueFree(pretty);
-    virshDomainFree(dom);
-
-    return ret;
+    return true;
 }
 
 /*
