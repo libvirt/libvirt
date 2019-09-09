@@ -68,7 +68,7 @@ static int
 testCompareParseXML(const char *xlcfg, const char *xml, bool replaceVars)
 {
     char *gotxlcfgData = NULL;
-    virConfPtr conf = NULL;
+    VIR_AUTOPTR(virConf) conf = NULL;
     virConnectPtr conn = NULL;
     int wrote = 4096;
     int ret = -1;
@@ -113,8 +113,6 @@ testCompareParseXML(const char *xlcfg, const char *xml, bool replaceVars)
  fail:
     VIR_FREE(replacedXML);
     VIR_FREE(gotxlcfgData);
-    if (conf)
-        virConfFree(conf);
     virDomainDefFree(def);
     virObjectUnref(conn);
 
@@ -130,7 +128,7 @@ testCompareFormatXML(const char *xlcfg, const char *xml, bool replaceVars)
 {
     char *xlcfgData = NULL;
     char *gotxml = NULL;
-    virConfPtr conf = NULL;
+    VIR_AUTOPTR(virConf) conf = NULL;
     int ret = -1;
     virConnectPtr conn;
     virDomainDefPtr def = NULL;
@@ -165,8 +163,6 @@ testCompareFormatXML(const char *xlcfg, const char *xml, bool replaceVars)
     ret = 0;
 
  fail:
-    if (conf)
-        virConfFree(conf);
     VIR_FREE(replacedXML);
     VIR_FREE(xlcfgData);
     VIR_FREE(gotxml);

@@ -1275,7 +1275,7 @@ virVMXParseConfig(virVMXContext *ctx,
                   const char *vmx)
 {
     bool success = false;
-    virConfPtr conf = NULL;
+    VIR_AUTOPTR(virConf) conf = NULL;
     char *encoding = NULL;
     char *utf8;
     virDomainDefPtr def = NULL;
@@ -1850,7 +1850,6 @@ virVMXParseConfig(virVMXContext *ctx,
         def = NULL;
     }
 
-    virConfFree(conf);
     VIR_FREE(encoding);
     VIR_FREE(sched_cpu_affinity);
     VIR_FREE(sched_cpu_shares);

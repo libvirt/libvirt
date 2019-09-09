@@ -252,8 +252,7 @@ int
 virLXCLoadDriverConfig(virLXCDriverConfigPtr cfg,
                        const char *filename)
 {
-    virConfPtr conf;
-    int ret = -1;
+    VIR_AUTOPTR(virConf) conf = NULL;
 
     /* Avoid error from non-existent or unreadable file. */
     if (access(filename, R_OK) == -1)
@@ -264,21 +263,18 @@ virLXCLoadDriverConfig(virLXCDriverConfigPtr cfg,
         return -1;
 
     if (virConfGetValueBool(conf, "log_with_libvirtd", &cfg->log_libvirtd) < 0)
-        goto cleanup;
+        return -1;
 
     if (virConfGetValueString(conf, "security_driver", &cfg->securityDriverName) < 0)
-        goto cleanup;
+        return -1;
 
     if (virConfGetValueBool(conf, "security_default_confined", &cfg->securityDefaultConfined) < 0)
-        goto cleanup;
+        return -1;
 
     if (virConfGetValueBool(conf, "security_require_confined", &cfg->securityRequireConfined) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    virConfFree(conf);
-    return ret;
+    return 0;
 }
 
 virLXCDriverConfigPtr virLXCDriverGetConfig(virLXCDriverPtr driver)

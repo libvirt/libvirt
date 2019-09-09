@@ -1864,8 +1864,7 @@ libxlDriverConfigGet(libxlDriverPrivatePtr driver)
 int libxlDriverConfigLoadFile(libxlDriverConfigPtr cfg,
                               const char *filename)
 {
-    virConfPtr conf = NULL;
-    int ret = -1;
+    VIR_AUTOPTR(virConf) conf = NULL;
 
     /* defaults for keepalive messages */
     cfg->keepAliveInterval = 5;
@@ -1880,30 +1879,25 @@ int libxlDriverConfigLoadFile(libxlDriverConfigPtr cfg,
     }
 
     if (!(conf = virConfReadFile(filename, 0)))
-        goto cleanup;
+        return -1;
 
     /* setup autoballoon */
     if (libxlGetAutoballoonConf(cfg, conf) < 0)
-        goto cleanup;
+        return -1;
 
     if (virConfGetValueString(conf, "lock_manager", &cfg->lockManagerName) < 0)
-        goto cleanup;
+        return -1;
 
     if (virConfGetValueInt(conf, "keepalive_interval", &cfg->keepAliveInterval) < 0)
-        goto cleanup;
+        return -1;
 
     if (virConfGetValueUInt(conf, "keepalive_count", &cfg->keepAliveCount) < 0)
-        goto cleanup;
+        return -1;
 
     if (virConfGetValueBool(conf, "nested_hvm", &cfg->nested_hvm) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    virConfFree(conf);
-    return ret;
-
+    return 0;
 }
 
 /*

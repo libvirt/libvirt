@@ -1000,8 +1000,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
                                 const char *filename,
                                 bool privileged)
 {
-    virConfPtr conf = NULL;
-    int ret = -1;
+    VIR_AUTOPTR(virConf) conf = NULL;
 
     /* Just check the file is readable before opening it, otherwise
      * libvirt emits an error.
@@ -1012,67 +1011,63 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     }
 
     if (!(conf = virConfReadFile(filename, 0)))
-        goto cleanup;
+        return -1;
 
     if (virQEMUDriverConfigLoadDefaultTLSEntry(cfg, conf) < 0)
-        goto cleanup;
+        return -1;
 
     if (virQEMUDriverConfigLoadVNCEntry(cfg, conf) < 0)
-        goto cleanup;
+        return -1;
 
     if (virQEMUDriverConfigLoadNographicsEntry(cfg, conf) < 0)
-        goto cleanup;
+        return -1;
 
     if (virQEMUDriverConfigLoadSPICEEntry(cfg, conf) < 0)
-        goto cleanup;
+        return -1;
 
     if (virQEMUDriverConfigLoadSpecificTLSEntry(cfg, conf) < 0)
-        goto cleanup;
+        return -1;
 
     if (virQEMUDriverConfigLoadRemoteDisplayEntry(cfg, conf, filename) < 0)
-        goto cleanup;
+        return -1;
 
     if (virQEMUDriverConfigLoadSaveEntry(cfg, conf) < 0)
-        goto cleanup;
+        return -1;
 
     if (virQEMUDriverConfigLoadProcessEntry(cfg, conf) < 0)
-        goto cleanup;
+        return -1;
 
     if (virQEMUDriverConfigLoadDeviceEntry(cfg, conf) < 0)
-        goto cleanup;
+        return -1;
 
     if (virQEMUDriverConfigLoadRPCEntry(cfg, conf) < 0)
-        goto cleanup;
+        return -1;
 
     if (virQEMUDriverConfigLoadNetworkEntry(cfg, conf, filename) < 0)
-        goto cleanup;
+        return -1;
 
     if (virQEMUDriverConfigLoadLogEntry(cfg, conf) < 0)
-        goto cleanup;
+        return -1;
 
     if (virQEMUDriverConfigLoadNVRAMEntry(cfg, conf) < 0)
-        goto cleanup;
+        return -1;
 
     if (virQEMUDriverConfigLoadGlusterDebugEntry(cfg, conf) < 0)
-        goto cleanup;
+        return -1;
 
     if (virQEMUDriverConfigLoadSecurityEntry(cfg, conf, privileged) < 0)
-        goto cleanup;
+        return -1;
 
     if (virQEMUDriverConfigLoadMemoryEntry(cfg, conf) < 0)
-        goto cleanup;
+        return -1;
 
     if (virQEMUDriverConfigLoadSWTPMEntry(cfg, conf) < 0)
-        goto cleanup;
+        return -1;
 
     if (virQEMUDriverConfigLoadCapsFiltersEntry(cfg, conf) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    virConfFree(conf);
-    return ret;
+    return 0;
 }
 
 

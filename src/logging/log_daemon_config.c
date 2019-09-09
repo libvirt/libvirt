@@ -120,8 +120,7 @@ virLogDaemonConfigLoadFile(virLogDaemonConfigPtr data,
                            const char *filename,
                            bool allow_missing)
 {
-    virConfPtr conf;
-    int ret;
+    VIR_AUTOPTR(virConf) conf = NULL;
 
     if (allow_missing &&
         access(filename, R_OK) == -1 &&
@@ -132,7 +131,5 @@ virLogDaemonConfigLoadFile(virLogDaemonConfigPtr data,
     if (!conf)
         return -1;
 
-    ret = virLogDaemonConfigLoadOptions(data, conf);
-    virConfFree(conf);
-    return ret;
+    return virLogDaemonConfigLoadOptions(data, conf);
 }

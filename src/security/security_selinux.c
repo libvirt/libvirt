@@ -635,7 +635,7 @@ virSecuritySELinuxGenNewContext(const char *basecontext,
 static int
 virSecuritySELinuxLXCInitialize(virSecurityManagerPtr mgr)
 {
-    virConfPtr selinux_conf;
+    VIR_AUTOPTR(virConf) selinux_conf = NULL;
     virSecuritySELinuxDataPtr data = virSecurityManagerGetPrivateData(mgr);
 
     data->skipAllLabel = true;
@@ -685,7 +685,6 @@ virSecuritySELinuxLXCInitialize(virSecurityManagerPtr mgr)
     if (!(data->mcs = virHashCreate(10, NULL)))
         goto error;
 
-    virConfFree(selinux_conf);
     return 0;
 
  error:
@@ -693,7 +692,6 @@ virSecuritySELinuxLXCInitialize(virSecurityManagerPtr mgr)
     selabel_close(data->label_handle);
     data->label_handle = NULL;
 # endif
-    virConfFree(selinux_conf);
     VIR_FREE(data->domain_context);
     VIR_FREE(data->file_context);
     VIR_FREE(data->content_context);

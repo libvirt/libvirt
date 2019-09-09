@@ -401,8 +401,7 @@ daemonConfigLoadFile(struct daemonConfig *data,
                      const char *filename,
                      bool allow_missing)
 {
-    virConfPtr conf;
-    int ret;
+    VIR_AUTOPTR(virConf) conf = NULL;
 
     if (allow_missing &&
         access(filename, R_OK) == -1 &&
@@ -413,23 +412,18 @@ daemonConfigLoadFile(struct daemonConfig *data,
     if (!conf)
         return -1;
 
-    ret = daemonConfigLoadOptions(data, filename, conf);
-    virConfFree(conf);
-    return ret;
+    return daemonConfigLoadOptions(data, filename, conf);
 }
 
 int daemonConfigLoadData(struct daemonConfig *data,
                          const char *filename,
                          const char *filedata)
 {
-    virConfPtr conf;
-    int ret;
+    VIR_AUTOPTR(virConf) conf = NULL;
 
     conf = virConfReadString(filedata, 0);
     if (!conf)
         return -1;
 
-    ret = daemonConfigLoadOptions(data, filename, conf);
-    virConfFree(conf);
-    return ret;
+    return daemonConfigLoadOptions(data, filename, conf);
 }

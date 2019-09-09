@@ -599,27 +599,22 @@ virConfPtr
 xenFormatXM(virConnectPtr conn,
             virDomainDefPtr def)
 {
-    virConfPtr conf = NULL;
+    VIR_AUTOPTR(virConf) conf = NULL;
 
     if (!(conf = virConfNew()))
-        goto cleanup;
+        return NULL;
 
     if (xenFormatConfigCommon(conf, def, conn, XEN_CONFIG_FORMAT_XM) < 0)
-        goto cleanup;
+        return NULL;
 
     if (xenFormatXMOS(conf, def) < 0)
-        goto cleanup;
+        return NULL;
 
     if (xenFormatXMDisks(conf, def) < 0)
-        goto cleanup;
+        return NULL;
 
     if (xenFormatXMInputDevs(conf, def) < 0)
-        goto cleanup;
+        return NULL;
 
-    return conf;
-
- cleanup:
-    if (conf)
-        virConfFree(conf);
-    return NULL;
+    VIR_RETURN_PTR(conf);
 }

@@ -2198,52 +2198,47 @@ xenFormatXLDomainChannels(virConfPtr conf, virDomainDefPtr def)
 virConfPtr
 xenFormatXL(virDomainDefPtr def, virConnectPtr conn)
 {
-    virConfPtr conf = NULL;
+    VIR_AUTOPTR(virConf) conf = NULL;
 
     if (!(conf = virConfNew()))
-        goto cleanup;
+        return NULL;
 
     if (xenFormatConfigCommon(conf, def, conn, XEN_CONFIG_FORMAT_XL) < 0)
-        goto cleanup;
+        return NULL;
 
     if (xenFormatXLOS(conf, def) < 0)
-        goto cleanup;
+        return NULL;
 
     if (xenFormatXLCPUID(conf, def) < 0)
-        goto cleanup;
+        return NULL;
 
 #ifdef LIBXL_HAVE_VNUMA
     if (xenFormatXLDomainVnuma(conf, def) < 0)
-        goto cleanup;
+        return NULL;
 #endif
 
 #ifdef LIBXL_HAVE_BUILDINFO_GRANT_LIMITS
     if (xenFormatXLGntLimits(conf, def) < 0)
-        goto cleanup;
+        return NULL;
 #endif
 
     if (xenFormatXLDomainDisks(conf, def) < 0)
-        goto cleanup;
+        return NULL;
 
     if (xenFormatXLSpice(conf, def) < 0)
-        goto cleanup;
+        return NULL;
 
     if (xenFormatXLInputDevs(conf, def) < 0)
-        goto cleanup;
+        return NULL;
 
     if (xenFormatXLUSB(conf, def) < 0)
-        goto cleanup;
+        return NULL;
 
     if (xenFormatXLUSBController(conf, def) < 0)
-        goto cleanup;
+        return NULL;
 
     if (xenFormatXLDomainChannels(conf, def) < 0)
-        goto cleanup;
+        return NULL;
 
-    return conf;
-
- cleanup:
-    if (conf)
-        virConfFree(conf);
-    return NULL;
+    VIR_RETURN_PTR(conf);
 }

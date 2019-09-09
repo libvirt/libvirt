@@ -1079,7 +1079,7 @@ lxcParseConfigString(const char *config,
                      virDomainXMLOptionPtr xmlopt)
 {
     virDomainDefPtr vmdef = NULL;
-    virConfPtr properties = NULL;
+    VIR_AUTOPTR(virConf) properties = NULL;
     VIR_AUTOFREE(char *) value = NULL;
 
     if (!(properties = virConfReadString(config, VIR_CONF_FLAG_LXC_FORMAT)))
@@ -1192,14 +1192,9 @@ lxcParseConfigString(const char *config,
                               xmlopt, NULL) < 0)
         goto error;
 
-    goto cleanup;
+    return vmdef;
 
  error:
     virDomainDefFree(vmdef);
-    vmdef = NULL;
-
- cleanup:
-    virConfFree(properties);
-
-    return vmdef;
+    return NULL;
 }

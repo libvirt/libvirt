@@ -859,7 +859,7 @@ virConnectOpenInternal(const char *name,
     size_t i;
     int res;
     virConnectPtr ret;
-    virConfPtr conf = NULL;
+    VIR_AUTOPTR(virConf) conf = NULL;
     char *uristr = NULL;
 
     ret = virGetConnect();
@@ -1069,14 +1069,12 @@ virConnectOpenInternal(const char *name,
         goto failed;
     }
 
-    virConfFree(conf);
     VIR_FREE(uristr);
 
     return ret;
 
  failed:
     VIR_FREE(uristr);
-    virConfFree(conf);
     virObjectUnref(ret);
 
     return NULL;

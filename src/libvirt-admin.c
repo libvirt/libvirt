@@ -223,7 +223,7 @@ virAdmConnectOpen(const char *name, unsigned int flags)
     char *sock_path = NULL;
     char *alias = NULL;
     virAdmConnectPtr conn = NULL;
-    virConfPtr conf = NULL;
+    VIR_AUTOPTR(virConf) conf = NULL;
     char *uristr = NULL;
 
     if (virAdmInitialize() < 0)
@@ -272,7 +272,6 @@ virAdmConnectOpen(const char *name, unsigned int flags)
  cleanup:
     VIR_FREE(sock_path);
     VIR_FREE(uristr);
-    virConfFree(conf);
     return conn;
 
  error:

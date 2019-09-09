@@ -81,8 +81,7 @@ static virLockManagerLockDaemonDriverPtr driver;
 
 static int virLockManagerLockDaemonLoadConfig(const char *configFile)
 {
-    virConfPtr conf;
-    int ret = -1;
+    VIR_AUTOPTR(virConf) conf = NULL;
 
     if (access(configFile, R_OK) == -1) {
         if (errno != ENOENT) {
@@ -98,25 +97,22 @@ static int virLockManagerLockDaemonLoadConfig(const char *configFile)
         return -1;
 
     if (virConfGetValueBool(conf, "auto_disk_leases", &driver->autoDiskLease) < 0)
-        goto cleanup;
+        return -1;
 
     if (virConfGetValueString(conf, "file_lockspace_dir", &driver->fileLockSpaceDir) < 0)
-        goto cleanup;
+        return -1;
 
     if (virConfGetValueString(conf, "lvm_lockspace_dir", &driver->lvmLockSpaceDir) < 0)
-        goto cleanup;
+        return -1;
 
     if (virConfGetValueString(conf, "scsi_lockspace_dir", &driver->scsiLockSpaceDir) < 0)
-        goto cleanup;
+        return -1;
 
     driver->requireLeaseForDisks = !driver->autoDiskLease;
     if (virConfGetValueBool(conf, "require_lease_for_disks", &driver->requireLeaseForDisks) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    virConfFree(conf);
-    return ret;
+    return 0;
 }
 
 

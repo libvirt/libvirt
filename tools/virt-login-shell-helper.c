@@ -152,7 +152,7 @@ hideErrorFunc(void *opaque ATTRIBUTE_UNUSED,
 int
 main(int argc, char **argv)
 {
-    virConfPtr conf = NULL;
+    VIR_AUTOPTR(virConf) conf = NULL;
     const char *login_shell_path = conf_file;
     pid_t cpid = -1;
     int ret = EXIT_CANCELED;
@@ -414,7 +414,6 @@ main(int argc, char **argv)
         for (i = 0; i < nfdlist; i++)
             VIR_FORCE_CLOSE(fdlist[i]);
     VIR_FREE(fdlist);
-    virConfFree(conf);
     if (dom)
         virDomainFree(dom);
     if (conn)

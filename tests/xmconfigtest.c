@@ -41,7 +41,7 @@ static int
 testCompareParseXML(const char *xmcfg, const char *xml)
 {
     char *gotxmcfgData = NULL;
-    virConfPtr conf = NULL;
+    VIR_AUTOPTR(virConf) conf = NULL;
     int ret = -1;
     virConnectPtr conn = NULL;
     int wrote = 4096;
@@ -76,8 +76,6 @@ testCompareParseXML(const char *xmcfg, const char *xml)
 
  fail:
     VIR_FREE(gotxmcfgData);
-    if (conf)
-        virConfFree(conf);
     virDomainDefFree(def);
     virObjectUnref(conn);
 
@@ -89,7 +87,7 @@ testCompareFormatXML(const char *xmcfg, const char *xml)
 {
     char *xmcfgData = NULL;
     char *gotxml = NULL;
-    virConfPtr conf = NULL;
+    VIR_AUTOPTR(virConf) conf = NULL;
     int ret = -1;
     virDomainDefPtr def = NULL;
 
@@ -111,8 +109,6 @@ testCompareFormatXML(const char *xmcfg, const char *xml)
     ret = 0;
 
  fail:
-    if (conf)
-        virConfFree(conf);
     VIR_FREE(xmcfgData);
     VIR_FREE(gotxml);
     virDomainDefFree(def);
