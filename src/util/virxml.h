@@ -30,6 +30,9 @@
 #include "virbuffer.h"
 #include "virautoclean.h"
 
+xmlXPathContextPtr virXMLXPathContextNew(xmlDocPtr xml)
+    ATTRIBUTE_RETURN_CHECK;
+
 int              virXPathBoolean(const char *xpath,
                                  xmlXPathContextPtr ctxt);
 char *            virXPathString(const char *xpath,

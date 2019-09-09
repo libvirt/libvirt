@@ -248,11 +248,8 @@ virNWFilterBindingObjParseNode(xmlDocPtr doc,
         goto cleanup;
     }
 
-    ctxt = xmlXPathNewContext(doc);
-    if (ctxt == NULL) {
-        virReportOOMError();
+    if (!(ctxt = virXMLXPathContextNew(doc)))
         goto cleanup;
-    }
 
     ctxt->node = root;
     obj = virNWFilterBindingObjParseXML(doc, ctxt);

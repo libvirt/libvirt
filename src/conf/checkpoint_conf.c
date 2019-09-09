@@ -227,11 +227,8 @@ virDomainCheckpointDefParseNode(xmlDocPtr xml,
     if (virXMLValidateAgainstSchema(schema, xml) < 0)
         return NULL;
 
-    ctxt = xmlXPathNewContext(xml);
-    if (ctxt == NULL) {
-        virReportOOMError();
+    if (!(ctxt = virXMLXPathContextNew(xml)))
         goto cleanup;
-    }
 
     ctxt->node = root;
     def = virDomainCheckpointDefParse(ctxt, caps, xmlopt, parseOpaque, flags);

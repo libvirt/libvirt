@@ -144,11 +144,9 @@ secretXMLParseNode(xmlDocPtr xml, xmlNodePtr root)
         goto cleanup;
     }
 
-    ctxt = xmlXPathNewContext(xml);
-    if (ctxt == NULL) {
-        virReportOOMError();
+    if (!(ctxt = virXMLXPathContextNew(xml)))
         goto cleanup;
-    }
+
     ctxt->node = root;
 
     if (VIR_ALLOC(def) < 0)

@@ -182,11 +182,8 @@ virNWFilterBindingDefParseNode(xmlDocPtr xml,
         goto cleanup;
     }
 
-    ctxt = xmlXPathNewContext(xml);
-    if (ctxt == NULL) {
-        virReportOOMError();
+    if (!(ctxt = virXMLXPathContextNew(xml)))
         goto cleanup;
-    }
 
     ctxt->node = root;
     def = virNWFilterBindingDefParseXML(ctxt);

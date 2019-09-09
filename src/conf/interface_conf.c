@@ -830,11 +830,8 @@ virInterfaceDefParseNode(xmlDocPtr xml,
         return NULL;
     }
 
-    ctxt = xmlXPathNewContext(xml);
-    if (ctxt == NULL) {
-        virReportOOMError();
+    if (!(ctxt = virXMLXPathContextNew(xml)))
         goto cleanup;
-    }
 
     ctxt->node = root;
     def = virInterfaceDefParseXML(ctxt, VIR_INTERFACE_TYPE_LAST);

@@ -46,6 +46,20 @@ struct virParserData {
 };
 
 
+xmlXPathContextPtr
+virXMLXPathContextNew(xmlDocPtr xml)
+{
+    xmlXPathContextPtr ctxt;
+
+    if (!(ctxt = xmlXPathNewContext(xml))) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    return ctxt;
+}
+
+
 /**
  * virXPathString:
  * @xpath: the XPath string to evaluate
@@ -824,11 +838,9 @@ virXMLParseHelper(int domcode,
     }
 
     if (ctxt) {
-        *ctxt = xmlXPathNewContext(xml);
-        if (!*ctxt) {
-            virReportOOMError();
+        if (!(*ctxt = virXMLXPathContextNew(xml)))
             goto error;
-        }
+
         (*ctxt)->node = xmlDocGetRootElement(xml);
     }
 

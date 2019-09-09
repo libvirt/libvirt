@@ -4674,11 +4674,9 @@ prlsdkParseSnapshotTree(const char *treexml)
         goto cleanup;
     }
 
-    ctxt = xmlXPathNewContext(xml);
-    if (ctxt == NULL) {
-        virReportOOMError();
+    if (!(ctxt = virXMLXPathContextNew(xml)))
         goto cleanup;
-    }
+
     ctxt->node = root;
 
     if ((n = virXPathNodeSet("//SavedStateItem", ctxt, &nodes)) < 0) {

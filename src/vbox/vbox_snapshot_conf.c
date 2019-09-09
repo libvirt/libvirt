@@ -615,10 +615,9 @@ virVBoxSnapshotConfLoadVboxFile(const char *filePath,
                        _("Unable to parse the xml"));
         goto cleanup;
     }
-    if (!(xPathContext = xmlXPathNewContext(xml))) {
-        virReportOOMError();
+    if (!(xPathContext = virXMLXPathContextNew(xml)))
         goto cleanup;
-    }
+
     if (xmlXPathRegisterNs(xPathContext,
                            BAD_CAST "vbox",
                            BAD_CAST "http://www.innotek.de/VirtualBox-settings") < 0) {
@@ -1299,10 +1298,10 @@ virVBoxSnapshotConfGetRWDisksPathsFromLibvirtXML(const char *filePath,
                        _("Unable to parse the xml"));
         goto cleanup;
     }
-    if (!(xPathContext = xmlXPathNewContext(xml))) {
-        virReportOOMError();
+
+    if (!(xPathContext = virXMLXPathContextNew(xml)))
         goto cleanup;
-    }
+
     xPathContext->node = xmlDocGetRootElement(xml);
     if ((nodeSize = virXPathNodeSet("/domainsnapshot/disks/disk",
                                     xPathContext, &nodes)) < 0)
@@ -1360,10 +1359,10 @@ virVBoxSnapshotConfGetRODisksPathsFromLibvirtXML(const char *filePath,
                        _("Unable to parse the xml"));
         goto cleanup;
     }
-    if (!(xPathContext = xmlXPathNewContext(xml))) {
-        virReportOOMError();
+
+    if (!(xPathContext = virXMLXPathContextNew(xml)))
         goto cleanup;
-    }
+
     xPathContext->node = xmlDocGetRootElement(xml);
     if ((nodeSize = virXPathNodeSet("/domainsnapshot/domain/devices/disk",
                                     xPathContext,

@@ -21575,11 +21575,8 @@ virDomainDefParseNode(xmlDocPtr xml,
     virDomainDefPtr def = NULL;
     virDomainDefPtr ret = NULL;
 
-    ctxt = xmlXPathNewContext(xml);
-    if (ctxt == NULL) {
-        virReportOOMError();
+    if (!(ctxt = virXMLXPathContextNew(xml)))
         goto cleanup;
-    }
 
     ctxt->node = root;
 
@@ -21621,10 +21618,8 @@ virDomainObjParseNode(xmlDocPtr xml,
         goto cleanup;
     }
 
-    if (!(ctxt = xmlXPathNewContext(xml))) {
-        virReportOOMError();
+    if (!(ctxt = virXMLXPathContextNew(xml)))
         goto cleanup;
-    }
 
     ctxt->node = root;
     obj = virDomainObjParseXML(xml, ctxt, caps, xmlopt, flags);

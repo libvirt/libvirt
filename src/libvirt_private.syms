@@ -3365,6 +3365,7 @@ virXMLValidateAgainstSchema;
 virXMLValidatorFree;
 virXMLValidatorInit;
 virXMLValidatorValidate;
+virXMLXPathContextNew;
 virXPathBoolean;
 virXPathContextNodeRestore;
 virXPathInt;
