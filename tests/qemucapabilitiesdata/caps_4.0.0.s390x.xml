@@ -132,7 +132,6 @@
   <flag name='bitmap-merge'/>
   <flag name='nbd-bitmap'/>
   <flag name='migration-file-drop-cache'/>
-  <flag name='net-socket-dgram'/>
   <version>4000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>39100758</microcodeVersion>
