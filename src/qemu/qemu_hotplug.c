@@ -1308,7 +1308,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
 
     case VIR_DOMAIN_NET_TYPE_USER:
         if (!priv->disableSlirp &&
-            virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NET_SOCKET_DGRAM)) {
+            virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DBUS_VMSTATE)) {
             qemuSlirpPtr slirp = qemuInterfacePrepareSlirp(driver, net);
 
             if (!slirp)

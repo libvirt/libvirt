@@ -533,7 +533,7 @@ testCompareXMLToArgv(const void *data)
             virDomainNetDefPtr net = vm->def->nets[i];
 
             if (net->type == VIR_DOMAIN_NET_TYPE_USER &&
-                virQEMUCapsGet(info->qemuCaps, QEMU_CAPS_NET_SOCKET_DGRAM)) {
+                virQEMUCapsGet(info->qemuCaps, QEMU_CAPS_DBUS_VMSTATE)) {
                 qemuSlirpPtr slirp = qemuSlirpNew();
                 slirp->fd[0] = 42;
                 QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp = slirp;

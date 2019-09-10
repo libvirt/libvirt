@@ -29,7 +29,7 @@ file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \
 -device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
--netdev socket,fd=42,id=hostnet0 \
+-netdev user,id=hostnet0 \
 -device rtl8139,netdev=hostnet0,id=net0,mac=00:11:22:33:44:55,bus=pci.0,\
 addr=0x2 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
