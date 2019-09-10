@@ -1178,6 +1178,13 @@ int virNetDevMacVLanRestartWithVPortProfile(const char *cr_ifname,
 }
 
 #else /* ! WITH_MACVTAP */
+bool virNetDevMacVLanIsMacvtap(const char *ifname ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Cannot create macvlan devices on this platform"));
+    return false;
+}
+
 int virNetDevMacVLanCreate(const char *ifname ATTRIBUTE_UNUSED,
                            const char *type ATTRIBUTE_UNUSED,
                            const virMacAddr *macaddress ATTRIBUTE_UNUSED,
@@ -1191,6 +1198,26 @@ int virNetDevMacVLanCreate(const char *ifname ATTRIBUTE_UNUSED,
 }
 
 int virNetDevMacVLanDelete(const char *ifname ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Cannot create macvlan devices on this platform"));
+    return -1;
+}
+
+int
+virNetDevMacVLanTapOpen(const char *ifname ATTRIBUTE_UNUSED,
+                        int *tapfd ATTRIBUTE_UNUSED,
+                        size_t tapfdSize ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Cannot create macvlan devices on this platform"));
+    return -1;
+}
+
+int
+virNetDevMacVLanTapSetup(int *tapfd ATTRIBUTE_UNUSED,
+                         size_t tapfdSize ATTRIBUTE_UNUSED,
+                         bool vnet_hdr ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Cannot create macvlan devices on this platform"));
