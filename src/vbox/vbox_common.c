@@ -1110,7 +1110,7 @@ vboxAttachDrives(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
         case VIR_DOMAIN_DISK_BUS_SCSI:
             VBOX_UTF8_TO_UTF16(VBOX_CONTROLLER_SCSI_NAME, &storageCtlName);
 
-            cont = virDomainDeviceFindSCSIController(def, &disk->info);
+            cont = virDomainDeviceFindSCSIController(def, &disk->info.addr.drive);
             if (cont && cont->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1068) {
                 VBOX_UTF16_FREE(storageCtlName);
                 VBOX_UTF8_TO_UTF16(VBOX_CONTROLLER_SAS_NAME, &storageCtlName);

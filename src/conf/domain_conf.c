@@ -8528,13 +8528,13 @@ virDomainHostdevDefParseXMLCaps(xmlNodePtr node G_GNUC_UNUSED,
 
 virDomainControllerDefPtr
 virDomainDeviceFindSCSIController(const virDomainDef *def,
-                                  virDomainDeviceInfoPtr info)
+                                  const virDomainDeviceDriveAddress *addr)
 {
     size_t i;
 
     for (i = 0; i < def->ncontrollers; i++) {
         if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI &&
-            def->controllers[i]->idx == info->addr.drive.controller)
+            def->controllers[i]->idx == addr->controller)
             return def->controllers[i];
     }
 
@@ -18560,7 +18560,7 @@ virDomainDefMaybeAddHostdevSCSIcontroller(virDomainDefPtr def)
              * So let's grab the model from it and update the model we're
              * going to add as long as this one isn't undefined. The premise
              * being keeping the same controller model for all SCSI hostdevs. */
-            cont = virDomainDeviceFindSCSIController(def, hostdev->info);
+            cont = virDomainDeviceFindSCSIController(def, &hostdev->info->addr.drive);
             if (cont && cont->model != -1)
                 newModel = cont->model;
         }

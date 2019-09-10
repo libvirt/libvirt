@@ -111,7 +111,7 @@ qemuDomainFindSCSIControllerModel(const virDomainDef *def,
 {
     virDomainControllerDefPtr cont;
 
-    if (!(cont = virDomainDeviceFindSCSIController(def, info))) {
+    if (!(cont = virDomainDeviceFindSCSIController(def, &info->addr.drive))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unable to find a SCSI controller for idx=%d"),
                        info->addr.drive.controller);
