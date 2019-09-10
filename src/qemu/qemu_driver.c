@@ -16568,6 +16568,7 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     virCPUDefPtr origCPU = NULL;
     unsigned int start_flags = VIR_QEMU_PROCESS_START_GEN_VMID;
     qemuDomainAsyncJob jobType = QEMU_ASYNC_JOB_START;
+    bool defined = false;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING |
                   VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED |
@@ -16779,6 +16780,8 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                 virDomainObjAssignDef(vm, config, false, NULL);
                 virCPUDefFree(priv->origCPU);
                 VIR_STEAL_PTR(priv->origCPU, origCPU);
+                config = NULL;
+                defined = true;
             }
 
             if (cookie && !cookie->slirpHelper)
@@ -16788,8 +16791,11 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             /* Transitions 2, 3 */
         load:
             was_stopped = true;
-            if (config)
+            if (config) {
                 virDomainObjAssignDef(vm, config, false, NULL);
+                config = NULL;
+                defined = true;
+            }
 
             /* No cookie means libvirt which saved the domain was too old to
              * mess up the CPU definitions.
@@ -16875,8 +16881,11 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             qemuProcessEndJob(driver, vm);
             goto cleanup;
         }
-        if (config)
+        if (config) {
             virDomainObjAssignDef(vm, config, false, NULL);
+            config = NULL;
+            defined = true;
+        }
 
         if (flags & (VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING |
                      VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED)) {
@@ -16942,7 +16951,7 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             ret = -1;
         }
     }
-    if (ret == 0 && config && vm->persistent &&
+    if (ret == 0 && defined && vm->persistent &&
         !(ret = virDomainSaveConfig(cfg->configDir, driver->caps,
                                     vm->newDef ? vm->newDef : vm->def))) {
         detail = VIR_DOMAIN_EVENT_DEFINED_FROM_SNAPSHOT;
@@ -16958,6 +16967,7 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     virObjectUnref(cfg);
     virNWFilterUnlockFilterUpdates();
     virCPUDefFree(origCPU);
+    virDomainDefFree(config);
 
     return ret;
 }
