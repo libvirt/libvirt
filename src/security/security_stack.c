@@ -24,8 +24,10 @@
 
 #include "virerror.h"
 #include "viralloc.h"
+#include "virlog.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
+VIR_LOG_INIT("security.security_stack");
 
 typedef struct _virSecurityStackData virSecurityStackData;
 typedef virSecurityStackData *virSecurityStackDataPtr;
@@ -145,14 +147,18 @@ virSecurityStackTransactionStart(virSecurityManagerPtr mgr)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityStackItemPtr item = priv->itemsHead;
-    int rc = 0;
 
     for (; item; item = item->next) {
         if (virSecurityManagerTransactionStart(item->securityManager) < 0)
-            rc = -1;
+            goto rollback;
     }
 
-    return rc;
+    return 0;
+
+ rollback:
+    for (item = item->prev; item; item = item->prev)
+        virSecurityManagerTransactionAbort(item->securityManager);
+    return -1;
 }
 
 
@@ -163,14 +169,18 @@ virSecurityStackTransactionCommit(virSecurityManagerPtr mgr,
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityStackItemPtr item = priv->itemsHead;
-    int rc = 0;
 
     for (; item; item = item->next) {
         if (virSecurityManagerTransactionCommit(item->securityManager, pid, lock) < 0)
-            rc = -1;
+            goto rollback;
     }
 
-    return rc;
+    return 0;
+
+ rollback:
+    for (item = item->prev; item; item = item->prev)
+        virSecurityManagerTransactionAbort(item->securityManager);
+    return -1;
 }
 
 
@@ -278,17 +288,31 @@ virSecurityStackSetHostdevLabel(virSecurityManagerPtr mgr,
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityStackItemPtr item = priv->itemsHead;
-    int rc = 0;
 
     for (; item; item = item->next) {
         if (virSecurityManagerSetHostdevLabel(item->securityManager,
                                               vm,
                                               dev,
                                               vroot) < 0)
-            rc = -1;
+            goto rollback;
     }
 
-    return rc;
+    return 0;
+
+ rollback:
+    for (item = item->prev; item; item = item->prev) {
+        if (virSecurityManagerRestoreHostdevLabel(item->securityManager,
+                                                  vm,
+                                                  dev,
+                                                  vroot) < 0) {
+            VIR_WARN("Unable to restore hostdev label after failed set label "
+                     "call virDriver=%s driver=%s domain=%s hostdev=%p",
+                     virSecurityManagerGetVirtDriver(mgr),
+                     virSecurityManagerGetDriver(item->securityManager),
+                     vm->name, dev);
+        }
+    }
+    return -1;
 }
 
 
@@ -323,16 +347,30 @@ virSecurityStackSetAllLabel(virSecurityManagerPtr mgr,
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityStackItemPtr item = priv->itemsHead;
-    int rc = 0;
 
     for (; item; item = item->next) {
         if (virSecurityManagerSetAllLabel(item->securityManager, vm,
                                           stdin_path, chardevStdioLogd,
                                           migrated) < 0)
-            rc = -1;
+            goto rollback;
     }
 
-    return rc;
+    return 0;
+
+ rollback:
+    for (item = item->prev; item; item = item->prev) {
+        if (virSecurityManagerRestoreAllLabel(item->securityManager,
+                                              vm,
+                                              migrated,
+                                              chardevStdioLogd) < 0) {
+            VIR_WARN("Unable to restore all labels after failed set label call "
+                     "virDriver=%s driver=%s domain=%s migrated=%d",
+                     virSecurityManagerGetVirtDriver(mgr),
+                     virSecurityManagerGetDriver(item->securityManager),
+                     vm->name, migrated);
+        }
+    }
+    return -1;
 }
 
 
@@ -363,14 +401,27 @@ virSecurityStackSetSavedStateLabel(virSecurityManagerPtr mgr,
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityStackItemPtr item = priv->itemsHead;
-    int rc = 0;
 
     for (; item; item = item->next) {
         if (virSecurityManagerSetSavedStateLabel(item->securityManager, vm, savefile) < 0)
-            rc = -1;
+            goto rollback;
     }
 
-    return rc;
+    return 0;
+
+ rollback:
+    for (item = item->prev; item; item = item->prev) {
+        if (virSecurityManagerRestoreSavedStateLabel(item->securityManager,
+                                                     vm,
+                                                     savefile) < 0) {
+            VIR_WARN("Unable to restore saved state label after failed set "
+                     "label call virDriver=%s driver=%s savefile=%s",
+                     virSecurityManagerGetVirtDriver(mgr),
+                     virSecurityManagerGetDriver(item->securityManager),
+                     savefile);
+        }
+    }
+    return -1;
 }
 
 
@@ -451,14 +502,25 @@ virSecurityStackSetDaemonSocketLabel(virSecurityManagerPtr mgr,
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityStackItemPtr item = priv->itemsHead;
-    int rc = 0;
 
     for (; item; item = item->next) {
         if (virSecurityManagerSetDaemonSocketLabel(item->securityManager, vm) < 0)
-            rc = -1;
+            goto rollback;
     }
 
-    return rc;
+    return 0;
+ rollback:
+    for (item = item->prev; item; item = item->prev) {
+        if (virSecurityManagerClearSocketLabel(item->securityManager,
+                                               vm) < 0) {
+            VIR_WARN("Unable to clear new daemon socket label after failed "
+                     "set label call virDriver=%s driver=%s domain=%s",
+                     virSecurityManagerGetVirtDriver(mgr),
+                     virSecurityManagerGetDriver(item->securityManager),
+                     vm->name);
+        }
+    }
+    return -1;
 }
 
 
@@ -468,14 +530,25 @@ virSecurityStackSetSocketLabel(virSecurityManagerPtr mgr,
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityStackItemPtr item = priv->itemsHead;
-    int rc = 0;
 
     for (; item; item = item->next) {
         if (virSecurityManagerSetSocketLabel(item->securityManager, vm) < 0)
-            rc = -1;
+            goto rollback;
     }
 
-    return rc;
+    return 0;
+ rollback:
+    for (item = item->prev; item; item = item->prev) {
+        if (virSecurityManagerClearSocketLabel(item->securityManager,
+                                               vm) < 0) {
+            VIR_WARN("Unable to clear new socket label after failed "
+                     "set label call virDriver=%s driver=%s domain=%s",
+                     virSecurityManagerGetVirtDriver(mgr),
+                     virSecurityManagerGetDriver(item->securityManager),
+                     vm->name);
+        }
+    }
+    return -1;
 }
 
 
@@ -573,15 +646,30 @@ virSecurityStackSetImageLabel(virSecurityManagerPtr mgr,
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityStackItemPtr item = priv->itemsHead;
-    int rc = 0;
 
     for (; item; item = item->next) {
         if (virSecurityManagerSetImageLabel(item->securityManager, vm, src,
                                             flags) < 0)
-            rc = -1;
+            goto rollback;
     }
 
-    return rc;
+    return 0;
+
+ rollback:
+    for (item = item->prev; item; item = item->prev) {
+        if (virSecurityManagerRestoreImageLabel(item->securityManager,
+                                                vm,
+                                                src,
+                                                flags) < 0) {
+            VIR_WARN("Unable to restore image label after failed set label "
+                     "call virDriver=%s driver=%s domain=%s src=%p (path=%s) "
+                     "flags=0x%x",
+                     virSecurityManagerGetVirtDriver(mgr),
+                     virSecurityManagerGetDriver(item->securityManager),
+                     vm->name, src, NULLSTR(src->path), flags);
+        }
+    }
+    return -1;
 }
 
 static int
@@ -629,14 +717,27 @@ virSecurityStackSetMemoryLabel(virSecurityManagerPtr mgr,
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityStackItemPtr item = priv->itemsHead;
-    int rc = 0;
 
     for (; item; item = item->next) {
         if (virSecurityManagerSetMemoryLabel(item->securityManager, vm, mem) < 0)
-            rc = -1;
+            goto rollback;
     }
 
-    return rc;
+    return 0;
+
+ rollback:
+    for (item = item->prev; item; item = item->prev) {
+        if (virSecurityManagerRestoreMemoryLabel(item->securityManager,
+                                                 vm,
+                                                 mem) < 0) {
+            VIR_WARN("Unable to restore memory label after failed set label "
+                     "call virDriver=%s driver=%s domain=%s mem=%p",
+                     virSecurityManagerGetVirtDriver(mgr),
+                     virSecurityManagerGetDriver(item->securityManager),
+                     vm->name, mem);
+        }
+    }
+    return -1;
 }
 
 static int
@@ -664,14 +765,27 @@ virSecurityStackSetInputLabel(virSecurityManagerPtr mgr,
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityStackItemPtr item = priv->itemsHead;
-    int rc = 0;
 
     for (; item; item = item->next) {
         if (virSecurityManagerSetInputLabel(item->securityManager, vm, input) < 0)
-            rc = -1;
+            goto rollback;
     }
 
-    return rc;
+    return 0;
+
+ rollback:
+    for (item = item->prev; item; item = item->prev) {
+        if (virSecurityManagerRestoreInputLabel(item->securityManager,
+                                                vm,
+                                                input) < 0) {
+            VIR_WARN("Unable to restore input label after failed set label "
+                     "call virDriver=%s driver=%s domain=%s input=%p",
+                     virSecurityManagerGetVirtDriver(mgr),
+                     virSecurityManagerGetDriver(item->securityManager),
+                     vm->name, input);
+        }
+    }
+    return -1;
 }
 
 static int
@@ -719,16 +833,30 @@ virSecurityStackDomainSetChardevLabel(virSecurityManagerPtr mgr,
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityStackItemPtr item = priv->itemsHead;
-    int rc = 0;
 
     for (; item; item = item->next) {
         if (virSecurityManagerSetChardevLabel(item->securityManager,
                                               def, dev_source,
                                               chardevStdioLogd) < 0)
-            rc = -1;
+            goto rollback;
     }
 
-    return rc;
+    return 0;
+
+ rollback:
+    for (item = item->prev; item; item = item->prev) {
+        if (virSecurityManagerRestoreChardevLabel(item->securityManager,
+                                                  def,
+                                                  dev_source,
+                                                  chardevStdioLogd) < 0) {
+            VIR_WARN("Unable to restore chardev label after failed set label "
+                     "call virDriver=%s driver=%s domain=%s dev_source=%p",
+                     virSecurityManagerGetVirtDriver(mgr),
+                     virSecurityManagerGetDriver(item->securityManager),
+                     def->name, dev_source);
+        }
+    }
+    return -1;
 }
 
 static int
@@ -758,15 +886,27 @@ virSecurityStackSetTPMLabels(virSecurityManagerPtr mgr,
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityStackItemPtr item = priv->itemsHead;
-    int rc = 0;
 
     for (; item; item = item->next) {
         if (virSecurityManagerSetTPMLabels(item->securityManager,
                                            vm) < 0)
-            rc = -1;
+            goto rollback;
     }
 
-    return rc;
+    return 0;
+
+ rollback:
+    for (item = item->prev; item; item = item->prev) {
+        if (virSecurityManagerRestoreTPMLabels(item->securityManager,
+                                               vm) < 0) {
+            VIR_WARN("Unable to restore TPM label after failed set label "
+                     "call virDriver=%s driver=%s domain=%s",
+                     virSecurityManagerGetVirtDriver(mgr),
+                     virSecurityManagerGetDriver(item->securityManager),
+                     vm->name);
+        }
+    }
+    return -1;
 }
 
 
