@@ -80,6 +80,7 @@ void virSecurityManagerTransactionAbort(virSecurityManagerPtr mgr);
 
 void *virSecurityManagerGetPrivateData(virSecurityManagerPtr mgr);
 
+const char *virSecurityManagerGetDriver(virSecurityManagerPtr mgr);
 const char *virSecurityManagerGetVirtDriver(virSecurityManagerPtr mgr);
 const char *virSecurityManagerGetDOI(virSecurityManagerPtr mgr);
 const char *virSecurityManagerGetModel(virSecurityManagerPtr mgr);

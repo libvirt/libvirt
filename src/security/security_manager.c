@@ -333,6 +333,13 @@ virSecurityManagerGetVirtDriver(virSecurityManagerPtr mgr)
 
 
 const char *
+virSecurityManagerGetDriver(virSecurityManagerPtr mgr)
+{
+    return mgr->drv->name;
+}
+
+
+const char *
 virSecurityManagerGetDOI(virSecurityManagerPtr mgr)
 {
     if (mgr->drv->getDOI) {
