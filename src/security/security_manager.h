@@ -121,7 +121,8 @@ int virSecurityManagerCheckAllLabel(virSecurityManagerPtr mgr,
 int virSecurityManagerSetAllLabel(virSecurityManagerPtr mgr,
                                   virDomainDefPtr sec,
                                   const char *stdin_path,
-                                  bool chardevStdioLogd);
+                                  bool chardevStdioLogd,
+                                  bool migrated);
 int virSecurityManagerRestoreAllLabel(virSecurityManagerPtr mgr,
                                       virDomainDefPtr def,
                                       bool migrated,

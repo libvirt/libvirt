@@ -3133,7 +3133,8 @@ static int
 virSecuritySELinuxSetAllLabel(virSecurityManagerPtr mgr,
                               virDomainDefPtr def,
                               const char *stdin_path,
-                              bool chardevStdioLogd)
+                              bool chardevStdioLogd,
+                              bool migrated ATTRIBUTE_UNUSED)
 {
     size_t i;
     virSecuritySELinuxDataPtr data = virSecurityManagerGetPrivateData(mgr);

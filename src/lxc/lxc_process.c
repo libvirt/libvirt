@@ -1346,7 +1346,7 @@ int virLXCProcessStart(virConnectPtr conn,
 
     VIR_DEBUG("Setting domain security labels");
     if (virSecurityManagerSetAllLabel(driver->securityManager,
-                                      vm->def, NULL, false) < 0)
+                                      vm->def, NULL, false, false) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting up consoles");

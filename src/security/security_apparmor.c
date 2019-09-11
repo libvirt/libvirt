@@ -488,7 +488,8 @@ static int
 AppArmorSetSecurityAllLabel(virSecurityManagerPtr mgr,
                             virDomainDefPtr def,
                             const char *stdin_path,
-                            bool chardevStdioLogd ATTRIBUTE_UNUSED)
+                            bool chardevStdioLogd ATTRIBUTE_UNUSED,
+                            bool migrated ATTRIBUTE_UNUSED)
 {
     virSecurityLabelDefPtr secdef = virDomainDefGetSecurityLabelDef(def,
                                                     SECURITY_APPARMOR_NAME);

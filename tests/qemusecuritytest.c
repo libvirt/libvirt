@@ -116,7 +116,7 @@ testDomain(const void *opaque)
     if (setenv(ENVVAR, "1", 0) < 0)
         return -1;
 
-    if (qemuSecuritySetAllLabel(data->driver, vm, NULL) < 0)
+    if (qemuSecuritySetAllLabel(data->driver, vm, NULL, false) < 0)
         goto cleanup;
 
     qemuSecurityRestoreAllLabel(data->driver, vm, false);

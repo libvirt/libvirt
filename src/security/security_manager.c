@@ -852,13 +852,15 @@ int
 virSecurityManagerSetAllLabel(virSecurityManagerPtr mgr,
                               virDomainDefPtr vm,
                               const char *stdin_path,
-                              bool chardevStdioLogd)
+                              bool chardevStdioLogd,
+                              bool migrated)
 {
     if (mgr->drv->domainSetSecurityAllLabel) {
         int ret;
         virObjectLock(mgr);
         ret = mgr->drv->domainSetSecurityAllLabel(mgr, vm, stdin_path,
-                                                  chardevStdioLogd);
+                                                  chardevStdioLogd,
+                                                  migrated);
         virObjectUnlock(mgr);
         return ret;
     }

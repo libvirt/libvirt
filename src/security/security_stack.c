@@ -316,7 +316,8 @@ static int
 virSecurityStackSetAllLabel(virSecurityManagerPtr mgr,
                             virDomainDefPtr vm,
                             const char *stdin_path,
-                            bool chardevStdioLogd)
+                            bool chardevStdioLogd,
+                            bool migrated)
 {
     virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityStackItemPtr item = priv->itemsHead;
@@ -324,7 +325,8 @@ virSecurityStackSetAllLabel(virSecurityManagerPtr mgr,
 
     for (; item; item = item->next) {
         if (virSecurityManagerSetAllLabel(item->securityManager, vm,
-                                          stdin_path, chardevStdioLogd) < 0)
+                                          stdin_path, chardevStdioLogd,
+                                          migrated) < 0)
             rc = -1;
     }
 

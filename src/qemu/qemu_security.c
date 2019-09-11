@@ -32,7 +32,8 @@ VIR_LOG_INIT("qemu.qemu_process");
 int
 qemuSecuritySetAllLabel(virQEMUDriverPtr driver,
                         virDomainObjPtr vm,
-                        const char *stdin_path)
+                        const char *stdin_path,
+                        bool migrated)
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -47,7 +48,8 @@ qemuSecuritySetAllLabel(virQEMUDriverPtr driver,
     if (virSecurityManagerSetAllLabel(driver->securityManager,
                                       vm->def,
                                       stdin_path,
-                                      priv->chardevStdioLogd) < 0)
+                                      priv->chardevStdioLogd,
+                                      migrated) < 0)
         goto cleanup;
 
     if (virSecurityManagerTransactionCommit(driver->securityManager,
