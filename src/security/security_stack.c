@@ -35,6 +35,7 @@ typedef virSecurityStackItem *virSecurityStackItemPtr;
 struct _virSecurityStackItem {
     virSecurityManagerPtr securityManager;
     virSecurityStackItemPtr next;
+    virSecurityStackItemPtr prev;
 };
 
 struct _virSecurityStackData {
@@ -56,6 +57,7 @@ virSecurityStackAddNested(virSecurityManagerPtr mgr,
     if (VIR_ALLOC(item) < 0)
         return -1;
     item->securityManager = nested;
+    item->prev = tmp;
     if (tmp)
         tmp->next = item;
     else
