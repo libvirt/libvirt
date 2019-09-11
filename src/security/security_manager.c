@@ -114,7 +114,7 @@ virSecurityManagerNewStack(virSecurityManagerPtr primary)
 {
     virSecurityManagerPtr mgr =
         virSecurityManagerNewDriver(&virSecurityDriverStack,
-                                    virSecurityManagerGetDriver(primary),
+                                    virSecurityManagerGetVirtDriver(primary),
                                     primary->flags);
 
     if (!mgr)
@@ -326,7 +326,7 @@ virSecurityManagerGetPrivateData(virSecurityManagerPtr mgr)
 
 
 const char *
-virSecurityManagerGetDriver(virSecurityManagerPtr mgr)
+virSecurityManagerGetVirtDriver(virSecurityManagerPtr mgr)
 {
     return mgr->virtDriver;
 }
