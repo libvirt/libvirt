@@ -30688,7 +30688,15 @@ virDomainNetDefActualFromNetworkPort(virDomainNetDefPtr iface,
         actual->data.hostdev.def.parentnet = iface;
         actual->data.hostdev.def.info = &iface->info;
         actual->data.hostdev.def.mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
-        actual->data.hostdev.def.managed = port->plug.hostdevpci.managed;
+        switch (port->plug.hostdevpci.managed) {
+        case VIR_TRISTATE_BOOL_YES:
+            actual->data.hostdev.def.managed = true;
+            break;
+        case VIR_TRISTATE_BOOL_ABSENT:
+        case VIR_TRISTATE_BOOL_NO:
+            actual->data.hostdev.def.managed = false;
+            break;
+        }
         actual->data.hostdev.def.source.subsys.type = VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI;
         actual->data.hostdev.def.source.subsys.u.pci.addr = port->plug.hostdevpci.addr;
         switch ((virNetworkForwardDriverNameType)port->plug.hostdevpci.driver) {
@@ -30820,7 +30828,7 @@ virDomainNetDefActualToNetworkPort(virDomainDefPtr dom,
                            iface->ifname);
             goto error;
         }
-        port->plug.hostdevpci.managed = actual->data.hostdev.def.managed;
+        port->plug.hostdevpci.managed = virTristateBoolFromBool(actual->data.hostdev.def.managed);
         port->plug.hostdevpci.addr = actual->data.hostdev.def.source.subsys.u.pci.addr;
         switch ((virDomainHostdevSubsysPCIBackendType)actual->data.hostdev.def.source.subsys.u.pci.backend) {
         case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT:
