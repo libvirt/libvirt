@@ -5136,11 +5136,21 @@ virQEMUCapsFillDomainLoaderCaps(virDomainCapsLoaderPtr capsLoader,
 
     for (i = 0; i < nfirmwares; i++) {
         const char *filename = firmwares[i]->name;
+        size_t j;
 
         if (!virFileExists(filename)) {
             VIR_DEBUG("loader filename=%s does not exist", filename);
             continue;
         }
+
+        /* Put only unique FW images onto the list */
+        for (j = 0; j < capsLoader->values.nvalues; j++) {
+            if (STREQ(filename, capsLoader->values.values[j]))
+                break;
+        }
+
+        if (j != capsLoader->values.nvalues)
+            continue;
 
         if (VIR_STRDUP(capsLoader->values.values[capsLoader->values.nvalues],
                        filename) < 0)
