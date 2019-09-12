@@ -80,6 +80,9 @@ if [ -z "$TYPE" ]; then
      *domain*)
         TYPE="domain"
         ;;
+     *networkport*)
+        TYPE="networkport"
+        ;;
      *network*)
         TYPE="network"
         ;;
