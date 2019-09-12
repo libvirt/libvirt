@@ -5300,6 +5300,86 @@ qemuDomainWatchdogDefValidate(const virDomainWatchdogDef *dev,
 }
 
 
+int
+qemuDomainValidateActualNetDef(const virDomainNetDef *net,
+                               virQEMUCapsPtr qemuCaps)
+{
+    /*
+     * Validations that can only be properly checked at runtime (after
+     * an <interface type='network'> has been resolved to its actual
+     * type.
+     *
+     * (In its current form this function can still be called before
+     * the actual type has been resolved (e.g. at domain definition
+     * time), but only if the validations would SUCCEED for
+     * type='network'.)
+     */
+    virDomainNetType actualType = virDomainNetGetActualType(net);
+
+    /* Only tap/macvtap devices support multiqueue. */
+    if (net->driver.virtio.queues > 0) {
+
+        if (!(actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
+              actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
+              actualType == VIR_DOMAIN_NET_TYPE_DIRECT ||
+              actualType == VIR_DOMAIN_NET_TYPE_ETHERNET ||
+              actualType == VIR_DOMAIN_NET_TYPE_VHOSTUSER)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("multiqueue network is not supported for: %s"),
+                           virDomainNetTypeToString(actualType));
+            return -1;
+        }
+
+        if (net->driver.virtio.queues > 1 &&
+            actualType == VIR_DOMAIN_NET_TYPE_VHOSTUSER &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VHOSTUSER_MULTIQUEUE)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("multiqueue network is not supported for vhost-user "
+                             "with this QEMU binary"));
+            return -1;
+        }
+    }
+
+    /*
+     * Only standard tap devices support nwfilter rules, and even then only
+     * when *not* connected to an OVS bridge or midonet (indicated by having
+     * a <virtualport> element in the config)
+     */
+    if (net->filter) {
+        virNetDevVPortProfilePtr vport = virDomainNetGetActualVirtPortProfile(net);
+        if (!(actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
+              actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
+              actualType == VIR_DOMAIN_NET_TYPE_ETHERNET)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("filterref is not supported for "
+                             "network interfaces of type %s"),
+                           virDomainNetTypeToString(actualType));
+            return -1;
+        }
+        if (vport && vport->virtPortType != VIR_NETDEV_VPORT_PROFILE_NONE) {
+            /* currently none of the defined virtualport types support iptables */
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("filterref is not supported for "
+                             "network interfaces with virtualport type %s"),
+                           virNetDevVPortTypeToString(vport->virtPortType));
+            return -1;
+        }
+    }
+
+    if (net->backend.tap &&
+        !(actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
+          actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
+          actualType == VIR_DOMAIN_NET_TYPE_ETHERNET)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Custom tap device path is not supported for: %s"),
+                       virDomainNetTypeToString(actualType));
+        return -1;
+    }
+
+    return 0;
+}
+
+
 static int
 qemuDomainDeviceDefValidateNetwork(const virDomainNetDef *net)
 {

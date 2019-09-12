@@ -8352,50 +8352,8 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
     if (!bootindex)
         bootindex = net->info.bootIndex;
 
-    /* Currently nothing besides TAP devices supports multiqueue. */
-    if (net->driver.virtio.queues > 0 &&
-        !(actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
-          actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
-          actualType == VIR_DOMAIN_NET_TYPE_DIRECT ||
-          actualType == VIR_DOMAIN_NET_TYPE_ETHERNET ||
-          actualType == VIR_DOMAIN_NET_TYPE_VHOSTUSER)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Multiqueue network is not supported for: %s"),
-                       virDomainNetTypeToString(actualType));
+    if (qemuDomainValidateActualNetDef(net, qemuCaps) < 0)
         return -1;
-    }
-
-    /* and only TAP devices support nwfilter rules */
-    if (net->filter) {
-        virNetDevVPortProfilePtr vport = virDomainNetGetActualVirtPortProfile(net);
-        if (!(actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
-              actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
-              actualType == VIR_DOMAIN_NET_TYPE_ETHERNET)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("filterref is not supported for "
-                             "network interfaces of type %s"),
-                           virDomainNetTypeToString(actualType));
-            return -1;
-        }
-        if (vport && vport->virtPortType != VIR_NETDEV_VPORT_PROFILE_NONE) {
-            /* currently none of the defined virtualport types support iptables */
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("filterref is not supported for "
-                             "network interfaces with virtualport type %s"),
-                           virNetDevVPortTypeToString(vport->virtPortType));
-            return -1;
-        }
-    }
-
-    if (net->backend.tap &&
-        !(actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
-          actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
-          actualType == VIR_DOMAIN_NET_TYPE_ETHERNET)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Custom tap device path is not supported for: %s"),
-                       virDomainNetTypeToString(actualType));
-        return -1;
-    }
 
     switch (actualType) {
     case VIR_DOMAIN_NET_TYPE_NETWORK:
@@ -8457,14 +8415,6 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
 
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
         requireNicdev = true;
-
-        if (net->driver.virtio.queues > 1 &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VHOSTUSER_MULTIQUEUE)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("multi-queue is not supported for vhost-user "
-                             "with this QEMU binary"));
-            goto cleanup;
-        }
 
         if (qemuInterfaceVhostuserConnect(driver, logManager, secManager,
                                           cmd, def, net, qemuCaps, &chardev) < 0)
