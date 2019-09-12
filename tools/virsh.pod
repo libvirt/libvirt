@@ -3780,6 +3780,42 @@ specified.
 
 =back
 
+=head1 NETWORK PORT COMMANDS
+
+The following commands manipulate network ports. Libvirt virtual networks
+have ports created when a virtual machine has a virtual network interface
+added. In general there should be no need to use any of the commands
+here, since the hypervisor drivers run these commands are the right
+point in a virtual machine's lifecycle. They can be useful for debugging
+problems and / or recovering from bugs / stale state.
+
+=over 4
+
+=item B<net-port-list> { [I<--table>] | I<--uuid> }
+                       I<network>
+
+List all network ports recorded against the network.
+
+If I<--uuid> is specified network ports' UUID's are printed
+instead of a table. Flag I<--table> specifies that the legacy
+table-formatted output should be used. This is the default.
+All of these are mutually exclusive.
+
+=item B<net-port-create> I<network> I<file>
+
+Allocate a new network port reserving resources based on the
+port description.
+
+=item B<net-port-dumpxml> I<network> I<port>
+
+Output the network port information as an XML dump to stdout.
+
+=item B<net-port-delete> I<network> I<port>
+
+Delete record of the network port and release its resources
+
+=back
+
 =head1 INTERFACE COMMANDS
 
 The following commands manipulate host interfaces.  Often, these host
