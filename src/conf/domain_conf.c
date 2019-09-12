@@ -30994,6 +30994,12 @@ virDomainNetReleaseActualDevice(virConnectPtr conn,
     virNetworkPortPtr port = NULL;
     int ret = -1;
 
+    /* Port might not exist if a failure occurred during VM startup */
+    if (!virUUIDIsValid(iface->data.network.portid)) {
+        ret = 0;
+        goto cleanup;
+    }
+
     if (!(net = virNetworkLookupByName(conn, iface->data.network.name)))
         goto cleanup;
 
