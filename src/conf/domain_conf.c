@@ -748,6 +748,7 @@ VIR_ENUM_IMPL(virDomainVideo,
               "gop",
               "none",
               "bochs",
+              "ramfb",
 );
 
 VIR_ENUM_IMPL(virDomainVideoVGAConf,
@@ -15299,6 +15300,7 @@ virDomainVideoDefaultRAM(const virDomainDef *def,
     case VIR_DOMAIN_VIDEO_TYPE_VIRTIO:
     case VIR_DOMAIN_VIDEO_TYPE_GOP:
     case VIR_DOMAIN_VIDEO_TYPE_NONE:
+    case VIR_DOMAIN_VIDEO_TYPE_RAMFB:
     case VIR_DOMAIN_VIDEO_TYPE_LAST:
     default:
         return 0;

@@ -114,6 +114,7 @@ VIR_ENUM_IMPL(qemuVideo,
               "" /* don't support gop */,
               "" /* 'none' doesn't make sense here */,
               "bochs-display",
+              "", /* ramfb can't be used with -vga */
 );
 
 VIR_ENUM_DECL(qemuDeviceVideo);
@@ -132,6 +133,7 @@ VIR_ENUM_IMPL(qemuDeviceVideo,
               "" /* don't support gop */,
               "" /* 'none' doesn't make sense here */,
               "bochs-display",
+              "ramfb",
 );
 
 VIR_ENUM_DECL(qemuDeviceVideoSecondary);
@@ -150,6 +152,7 @@ VIR_ENUM_IMPL(qemuDeviceVideoSecondary,
               "" /* don't support gop */,
               "" /* 'none' doesn't make sense here */,
               "" /* no secondary device for bochs */,
+              "" /* no secondary device for ramfb */,
 );
 
 VIR_ENUM_DECL(qemuSoundCodec);

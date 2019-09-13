@@ -41,6 +41,15 @@
 <libvirt>
   <release version="v5.9.0" date="unreleased">
     <section title="New features">
+      <change>
+        <summary>
+          qemu: Introduce a new video model of type 'ramfb'
+        </summary>
+        <description>
+          Introduce a new video model type to the domain XML that supports the
+          <code>ramfb</code> standalone device in qemu.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>

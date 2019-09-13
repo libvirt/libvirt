@@ -3598,6 +3598,7 @@
                 <value>gop</value>
                 <value>none</value>
                 <value>bochs</value>
+                <value>ramfb</value>
               </choice>
             </attribute>
             <group>

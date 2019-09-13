@@ -936,6 +936,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
         case VIR_DOMAIN_VIDEO_TYPE_DEFAULT:
         case VIR_DOMAIN_VIDEO_TYPE_GOP:
         case VIR_DOMAIN_VIDEO_TYPE_NONE:
+        case VIR_DOMAIN_VIDEO_TYPE_RAMFB:
         case VIR_DOMAIN_VIDEO_TYPE_LAST:
             return 0;
         }
@@ -1787,8 +1788,10 @@ qemuDomainValidateDevicePCISlotsPIIX3(virDomainDefPtr def,
             return -1;
     }
 
+    /* ramfb is not a PCI device */
     if (def->nvideos > 0 &&
-        def->videos[0]->type != VIR_DOMAIN_VIDEO_TYPE_NONE) {
+        def->videos[0]->type != VIR_DOMAIN_VIDEO_TYPE_NONE &&
+        def->videos[0]->type != VIR_DOMAIN_VIDEO_TYPE_RAMFB) {
         /* Because the PIIX3 integrated IDE/USB controllers are
          * already at slot 1, when qemu looks for the first free slot
          * to place the VGA controller (which is always the first
@@ -1971,8 +1974,10 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDefPtr def,
            return -1;
     }
 
+    /* ramfb is not a PCI device */
     if (def->nvideos > 0 &&
-        def->videos[0]->type != VIR_DOMAIN_VIDEO_TYPE_NONE) {
+        def->videos[0]->type != VIR_DOMAIN_VIDEO_TYPE_NONE &&
+        def->videos[0]->type != VIR_DOMAIN_VIDEO_TYPE_RAMFB) {
         /* NB: unlike the pc machinetypes, on q35 machinetypes the
          * integrated devices are at slot 0x1f, so when qemu looks for
          * the first free slot for the first VGA, it will always be at
@@ -2351,7 +2356,8 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
 
     /* Video devices */
     for (i = 0; i < def->nvideos; i++) {
-        if (def->videos[i]->type == VIR_DOMAIN_VIDEO_TYPE_NONE)
+        if (def->videos[i]->type == VIR_DOMAIN_VIDEO_TYPE_NONE ||
+            def->videos[i]->type == VIR_DOMAIN_VIDEO_TYPE_RAMFB)
             continue;
 
         if (!virDeviceInfoPCIAddressIsWanted(&def->videos[i]->info))
