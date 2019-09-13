@@ -2743,21 +2743,39 @@ networkShutdownNetworkVirtual(virNetworkDriverStatePtr driver,
 static int
 networkStartNetworkBridge(virNetworkObjPtr obj)
 {
+    virNetworkDefPtr def = virNetworkObjGetDef(obj);
+
     /* put anything here that needs to be done each time a network of
      * type BRIDGE, is started. On failure, undo anything you've done,
      * and return -1. On success return 0.
      */
-    return networkStartHandleMACTableManagerMode(obj, NULL);
+    if (virNetDevBandwidthSet(def->bridge, def->bandwidth, true, true) < 0)
+        goto error;
+
+    if (networkStartHandleMACTableManagerMode(obj, NULL) < 0)
+        goto error;
+
+    return 0;
+
+ error:
+    if (def->bandwidth)
+       virNetDevBandwidthClear(def->bridge);
+    return -1;
 }
 
 
 static int
 networkShutdownNetworkBridge(virNetworkObjPtr obj ATTRIBUTE_UNUSED)
 {
+    virNetworkDefPtr def = virNetworkObjGetDef(obj);
+
     /* put anything here that needs to be done each time a network of
      * type BRIDGE is shutdown. On failure, undo anything you've done,
      * and return -1. On success return 0.
      */
+    if (def->bandwidth)
+       virNetDevBandwidthClear(def->bridge);
+
     return 0;
 }
 
