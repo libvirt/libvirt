@@ -528,6 +528,21 @@ networkBridgeDummyNicName(const char *brname)
 
 
 static int
+networkNotifyPort(virNetworkObjPtr obj,
+                  virNetworkPortDefPtr port);
+
+static bool
+networkUpdatePort(virNetworkPortDefPtr port,
+                  void *opaque)
+{
+    virNetworkObjPtr obj = opaque;
+
+    networkNotifyPort(obj, port);
+
+    return false;
+}
+
+static int
 networkUpdateState(virNetworkObjPtr obj,
                    void *opaque)
 {
@@ -590,6 +605,8 @@ networkUpdateState(virNetworkObjPtr obj,
         virReportEnumRangeError(virNetworkForwardType, def->forward.type);
         goto cleanup;
     }
+
+    virNetworkObjPortForEach(obj, networkUpdatePort, obj);
 
     /* Try and read dnsmasq/radvd pids of active networks */
     if (virNetworkObjIsActive(obj) && def->ips && (def->nips > 0)) {

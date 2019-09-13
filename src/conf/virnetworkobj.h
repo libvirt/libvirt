@@ -190,6 +190,15 @@ virNetworkObjPortListExport(virNetworkPtr net,
                             virNetworkPortPtr **ports,
                             virNetworkPortListFilter filter);
 
+typedef bool
+(*virNetworkPortListIter)(virNetworkPortDefPtr portdef,
+                          void *opaque);
+
+int
+virNetworkObjPortForEach(virNetworkObjPtr obj,
+                         virNetworkPortListIter iter,
+                         void *opaque);
+
 int
 virNetworkObjSaveStatus(const char *statusDir,
                         virNetworkObjPtr net,

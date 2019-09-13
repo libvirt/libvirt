@@ -1844,6 +1844,39 @@ virNetworkObjPortListExport(virNetworkPtr net,
 }
 
 
+typedef struct _virNetworkObjPortListForEachData virNetworkObjPortListForEachData;
+struct _virNetworkObjPortListForEachData {
+    virNetworkPortListIter iter;
+    void *opaque;
+    bool err;
+};
+
+static int
+virNetworkObjPortForEachCallback(void *payload,
+                                 const void *name ATTRIBUTE_UNUSED,
+                                 void *opaque)
+{
+    virNetworkObjPortListForEachData *data = opaque;
+
+    if (!data->iter(payload, data->opaque))
+        data->err = true;
+
+    return 0;
+}
+
+int
+virNetworkObjPortForEach(virNetworkObjPtr obj,
+                         virNetworkPortListIter iter,
+                         void *opaque)
+{
+    virNetworkObjPortListForEachData data = { iter, opaque, false };
+    virHashForEach(obj->ports, virNetworkObjPortForEachCallback, &data);
+    if (data.err)
+        return -1;
+    return 0;
+}
+
+
 static int
 virNetworkObjLoadAllPorts(virNetworkObjPtr net,
                           const char *stateDir)
