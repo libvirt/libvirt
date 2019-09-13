@@ -5192,9 +5192,14 @@ networkCheckBandwidth(virNetworkObjPtr obj,
         return -1;
     }
 
+    if (!netBand || !netBand->in) {
+        VIR_DEBUG("No network bandwidth controls present");
+        /* no QoS required, claim success */
+        return 1;
+    }
     if (((!ifaceBand || !ifaceBand->in || !ifaceBand->in->floor) &&
-         (!oldBandwidth || !oldBandwidth->in || !oldBandwidth->in->floor)) ||
-        !netBand || !netBand->in) {
+         (!oldBandwidth || !oldBandwidth->in || !oldBandwidth->in->floor))) {
+        VIR_DEBUG("No old/new interface bandwidth floor");
         /* no QoS required, claim success */
         return 1;
     }
