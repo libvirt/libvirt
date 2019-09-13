@@ -1188,32 +1188,11 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
             goto cleanup;
     }
 
+    /* final validation now that we have full info on the type */
+    if (qemuDomainValidateActualNetDef(net, priv->qemuCaps) < 0)
+        return -1;
+
     actualType = virDomainNetGetActualType(net);
-
-    /* Currently only TAP/macvtap devices supports multiqueue. */
-    if (net->driver.virtio.queues > 0 &&
-        !(actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
-          actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
-          actualType == VIR_DOMAIN_NET_TYPE_DIRECT ||
-          actualType == VIR_DOMAIN_NET_TYPE_ETHERNET ||
-          actualType == VIR_DOMAIN_NET_TYPE_VHOSTUSER)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Multiqueue network is not supported for: %s"),
-                       virDomainNetTypeToString(actualType));
-        return -1;
-    }
-
-    /* and only TAP devices support nwfilter rules */
-    if (net->filter &&
-        !(actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
-          actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
-          actualType == VIR_DOMAIN_NET_TYPE_ETHERNET)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("filterref is not supported for "
-                         "network interfaces of type %s"),
-                       virDomainNetTypeToString(actualType));
-        return -1;
-    }
 
     if (qemuAssignDeviceNetAlias(vm->def, net, -1) < 0)
         goto cleanup;
@@ -3542,6 +3521,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
                     virDomainObjPtr vm,
                     virDomainDeviceDefPtr dev)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainNetDefPtr newdev = dev->data.net;
     virDomainNetDefPtr *devslot = NULL;
     virDomainNetDefPtr olddev;
@@ -3748,6 +3728,10 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
         if (virDomainNetAllocateActualDevice(conn, vm->def, newdev) < 0)
             goto cleanup;
     }
+
+    /* final validation now that we have full info on the type */
+    if (qemuDomainValidateActualNetDef(newdev, priv->qemuCaps) < 0)
+        goto cleanup;
 
     newType = virDomainNetGetActualType(newdev);
 
