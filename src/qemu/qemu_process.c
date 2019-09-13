@@ -5271,7 +5271,9 @@ qemuProcessStartValidateVideo(virDomainObjPtr vm,
                  !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_GPU)) ||
                 (video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO &&
                  video->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
-                 !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_GPU_CCW))) {
+                 !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_GPU_CCW)) ||
+                (video->type == VIR_DOMAIN_VIDEO_TYPE_BOCHS &&
+                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_BOCHS_DISPLAY))) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("this QEMU does not support '%s' video device"),
                                virDomainVideoTypeToString(video->type));
