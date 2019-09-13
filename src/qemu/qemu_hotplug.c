@@ -4561,6 +4561,7 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
     }
 
     if (hostdev->parentnet) {
+        net = hostdev->parentnet;
         for (i = 0; i < vm->def->nnets; i++) {
             if (vm->def->nets[i] == hostdev->parentnet) {
                 virDomainNetRemove(vm->def, i);
