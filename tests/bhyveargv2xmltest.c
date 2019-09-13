@@ -39,38 +39,36 @@ testCompareXMLToArgvFiles(const char *xmlfile,
 
     if (!(vmdef = bhyveParseCommandLineString(cmd, driver.bhyvecaps,
                                               driver.xmlopt))) {
-        if ((flags & FLAG_EXPECT_FAILURE) && !virTestOOMActive()) {
-                VIR_TEST_DEBUG("Got expected failure from "
-                               "bhyveParseCommandLineString.");
+        if ((flags & FLAG_EXPECT_FAILURE)) {
+            VIR_TEST_DEBUG("Got expected failure from "
+                           "bhyveParseCommandLineString.");
         } else {
             goto fail;
         }
-    } else if ((flags & FLAG_EXPECT_FAILURE) && !virTestOOMActive()) {
+    } else if ((flags & FLAG_EXPECT_FAILURE)) {
         VIR_TEST_DEBUG("Did not get expected failure from "
                        "bhyveParseCommandLineString.");
         goto fail;
     }
 
-    if (!virTestOOMActive()) {
-        if ((log = virTestLogContentAndReset()) == NULL)
+    if ((log = virTestLogContentAndReset()) == NULL)
+        goto fail;
+    if (flags & FLAG_EXPECT_WARNING) {
+        if (*log) {
+            VIR_TEST_DEBUG("Got expected warning from "
+                           "bhyveParseCommandLineString:\n%s",
+                           log);
+        } else {
+            VIR_TEST_DEBUG("bhyveParseCommandLineString "
+                           "should have logged a warning");
             goto fail;
-        if (flags & FLAG_EXPECT_WARNING) {
-            if (*log) {
-                VIR_TEST_DEBUG("Got expected warning from "
-                            "bhyveParseCommandLineString:\n%s",
-                            log);
-            } else {
-                VIR_TEST_DEBUG("bhyveParseCommandLineString "
-                        "should have logged a warning");
-                goto fail;
-            }
-        } else { /* didn't expect a warning */
-            if (*log) {
-                VIR_TEST_DEBUG("Got unexpected warning from "
-                            "bhyveParseCommandLineString:\n%s",
-                            log);
-                goto fail;
-            }
+        }
+    } else { /* didn't expect a warning */
+        if (*log) {
+            VIR_TEST_DEBUG("Got unexpected warning from "
+                           "bhyveParseCommandLineString:\n%s",
+                           log);
+            goto fail;
         }
     }
 
