@@ -211,6 +211,7 @@
   <flag name='migration-file-drop-cache'/>
   <flag name='vhost-user-gpu'/>
   <flag name='vhost-user-vga'/>
+  <flag name='ramfb'/>
   <version>4001050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100760</microcodeVersion>

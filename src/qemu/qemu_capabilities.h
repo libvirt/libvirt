@@ -526,6 +526,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_INCREMENTAL_BACKUP, /* incremental backup is supported */
     QEMU_CAPS_QUERY_CPU_MODEL_BASELINE, /* qmp query-cpu-model-baseline */
     QEMU_CAPS_QUERY_CPU_MODEL_COMPARISON, /* qmp query-cpu-model-comparison */
+    QEMU_CAPS_DEVICE_RAMFB, /* -device ramfb */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

@@ -545,6 +545,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "incremental-backup",
               "query-cpu-model-baseline",
               "query-cpu-model-comparison",
+              "ramfb",
     );
 
 
@@ -1140,6 +1141,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "dbus-vmstate", QEMU_CAPS_DBUS_VMSTATE },
     { "vhost-user-gpu", QEMU_CAPS_DEVICE_VHOST_USER_GPU },
     { "vhost-user-vga", QEMU_CAPS_DEVICE_VHOST_USER_VGA },
+    { "ramfb", QEMU_CAPS_DEVICE_RAMFB },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVirtioBalloon[] = {

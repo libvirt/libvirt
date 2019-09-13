@@ -125,6 +125,7 @@
   <flag name='memory-backend-file.align'/>
   <flag name='query-cpu-model-baseline'/>
   <flag name='query-cpu-model-comparison'/>
+  <flag name='ramfb'/>
   <version>3000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>39100757</microcodeVersion>
