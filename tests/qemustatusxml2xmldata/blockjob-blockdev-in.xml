@@ -238,8 +238,8 @@
       <disk dst='vdb'/>
       <base node='libvirt-14-format'/>
     </blockjob>
-    <blockjob name='pull-vdd-libvirt-17-format' type='active-commit' state='ready'>
-      <disk dst='vdd'/>
+    <blockjob name='commit-vde-libvirt-17-format' type='active-commit' state='ready'>
+      <disk dst='vde'/>
       <base node='libvirt-19-format'/>
       <top node='libvirt-17-format'/>
     </blockjob>
@@ -260,10 +260,10 @@
         </source>
       </src>
     </blockjob>
-    <blockjob name='pull-vdc-libvirt-4321-format' type='copy' state='ready' shallownew='yes'>
-      <disk dst='vdc'/>
+    <blockjob name='copy-vdd-libvirt-4321-format' type='copy' state='ready' shallownew='yes'>
+      <disk dst='vdd'/>
     </blockjob>
-    <blockjob name='pull-vdc-libvirt-9-format' type='commit' state='running'>
+    <blockjob name='commit-vdc-libvirt-9-format' type='commit' state='running'>
       <disk dst='vdc'/>
       <base node='libvirt-11-format'/>
       <top node='libvirt-9-format'/>
@@ -585,7 +585,7 @@
             </privateData>
           </source>
         </mirror>
-        <target dev='vdc' bus='virtio'/>
+        <target dev='vdd' bus='virtio'/>
         <alias name='virtio-disk3'/>
         <address type='pci' domain='0x0000' bus='0x00' slot='0x0d' function='0x0'/>
         <privateData>
@@ -655,7 +655,7 @@
           <format type='qcow2'/>
           <source file='/tmp/activecommit2.qcow2'/>
         </mirror>
-        <target dev='vdd' bus='virtio'/>
+        <target dev='vde' bus='virtio'/>
         <alias name='virtio-disk3'/>
         <address type='pci' domain='0x0000' bus='0x00' slot='0x0e' function='0x0'/>
         <privateData>
