@@ -134,6 +134,9 @@ xenParseXLOS(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
             }
         }
 
+        if (xenConfigCopyStringOpt(conf, "acpi_firmware", &def->os.slic_table) < 0)
+            return -1;
+
 #ifdef LIBXL_HAVE_BUILDINFO_KERNEL
         if (xenConfigCopyStringOpt(conf, "kernel", &def->os.kernel) < 0)
             return -1;
@@ -1246,6 +1249,10 @@ xenFormatXLOS(virConfPtr conf, virDomainDefPtr def)
             if (xenConfigSetString(conf, "bios", "ovmf") < 0)
                 return -1;
         }
+
+        if (def->os.slic_table &&
+            xenConfigSetString(conf, "acpi_firmware", def->os.slic_table) < 0)
+            return -1;
 
 #ifdef LIBXL_HAVE_BUILDINFO_KERNEL
         if (def->os.kernel &&
