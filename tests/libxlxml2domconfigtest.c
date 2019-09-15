@@ -212,6 +212,8 @@ mymain(void)
     DO_TEST("fullvirt-cpuid-legacy-nest");
 # endif
 
+    DO_TEST("fullvirt-acpi-slic");
+
 # ifdef LIBXL_HAVE_BUILDINFO_GRANT_LIMITS
     DO_TEST("max-gntframes-hvm");
 # endif

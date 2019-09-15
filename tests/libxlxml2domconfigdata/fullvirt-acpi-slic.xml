@@ -1,0 +1,32 @@
+<domain type='xen'>
+  <name>XenGuest2</name>
+  <uuid>c7a5fdb2-cdaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>592896</memory>
+  <currentMemory unit='KiB'>403456</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='xenfv'>hvm</type>
+    <acpi>
+      <table type='slic'>/path/to/slic.dat</table>
+    </acpi>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+    <pae/>
+  </features>
+  <clock offset='variable' adjustment='0' basis='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <devices>
+    <disk type='block' device='disk'>
+      <driver name='phy' type='raw'/>
+      <source dev='/dev/HostVG/XenGuest2'/>
+      <target dev='hda' bus='ide'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+  </devices>
+</domain>
