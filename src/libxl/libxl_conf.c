@@ -506,6 +506,11 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
                           def->features[VIR_DOMAIN_FEATURE_ACPI] ==
                           VIR_TRISTATE_SWITCH_ON);
 
+        /* copy SLIC table path to acpi_firmware */
+        if (def->os.slic_table &&
+                VIR_STRDUP(b_info->u.hvm.acpi_firmware, def->os.slic_table) < 0)
+            return -1;
+
         if (def->nsounds > 0) {
             /*
              * Use first sound device.  man xl.cfg(5) describes soundhw as
