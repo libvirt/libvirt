@@ -2601,17 +2601,16 @@ qemuMonitorJSONGetOneBlockStatsInfo(virJSONValuePtr dev,
                                     virHashTablePtr hash,
                                     bool backingChain)
 {
-    qemuBlockStatsPtr bstats = NULL;
-    int ret = -1;
+    VIR_AUTOFREE(qemuBlockStatsPtr) bstats = NULL;
     int nstats = 0;
     const char *qdevname = NULL;
     const char *nodename = NULL;
-    char *devicename = NULL;
+    VIR_AUTOFREE(char *) devicename = NULL;
     virJSONValuePtr backing;
 
     if (dev_name &&
         !(devicename = qemuDomainStorageAlias(dev_name, depth)))
-        goto cleanup;
+        return -1;
 
     qdevname = virJSONValueObjectGetString(dev, "qdev");
     nodename = virJSONValueObjectGetString(dev, "node-name");
@@ -2619,35 +2618,31 @@ qemuMonitorJSONGetOneBlockStatsInfo(virJSONValuePtr dev,
     if (!devicename && !qdevname && !nodename) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("blockstats device entry was not in expected format"));
-        goto cleanup;
+        return -1;
     }
 
     if (!(bstats = qemuMonitorJSONBlockStatsCollectData(dev, &nstats)))
-        goto cleanup;
+        return -1;
 
     if (devicename &&
         qemuMonitorJSONAddOneBlockStatsInfo(bstats, devicename, hash) < 0)
-        goto cleanup;
+        return -1;
 
     if (qdevname && STRNEQ_NULLABLE(qdevname, devicename) &&
         qemuMonitorJSONAddOneBlockStatsInfo(bstats, qdevname, hash) < 0)
-        goto cleanup;
+        return -1;
 
     if (nodename &&
         qemuMonitorJSONAddOneBlockStatsInfo(bstats, nodename, hash) < 0)
-        goto cleanup;
+        return -1;
 
     if (backingChain &&
         (backing = virJSONValueObjectGetObject(dev, "backing")) &&
         qemuMonitorJSONGetOneBlockStatsInfo(backing, dev_name, depth + 1,
                                             hash, true) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = nstats;
- cleanup:
-    VIR_FREE(bstats);
-    VIR_FREE(devicename);
-    return ret;
+    return nstats;
 }
 
 
