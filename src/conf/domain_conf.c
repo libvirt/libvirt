@@ -16330,19 +16330,19 @@ virDomainDeviceDefParse(const char *xmlStr,
                         void *parseOpaque,
                         unsigned int flags)
 {
-    xmlDocPtr xml;
+    VIR_AUTOPTR(xmlDoc) xml = NULL;
     xmlNodePtr node;
-    xmlXPathContextPtr ctxt = NULL;
-    virDomainDeviceDefPtr dev = NULL;
+    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
+    VIR_AUTOFREE(virDomainDeviceDefPtr) dev = NULL;
     char *netprefix;
 
     if (!(xml = virXMLParseStringCtxt(xmlStr, _("(device_definition)"), &ctxt)))
-        goto error;
+        return NULL;
 
     node = ctxt->node;
 
     if (VIR_ALLOC(dev) < 0)
-        goto error;
+        return NULL;
 
     if ((dev->type = virDomainDeviceTypeFromString((const char *) node->name)) < 0) {
         /* Some crazy mapping of serial, parallel, console and channel to
@@ -16356,7 +16356,7 @@ virDomainDeviceDefParse(const char *xmlStr,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown device type '%s'"),
                            node->name);
-            goto error;
+            return NULL;
         }
     }
 
@@ -16366,71 +16366,71 @@ virDomainDeviceDefParse(const char *xmlStr,
                                                         def->seclabels,
                                                         def->nseclabels,
                                                         flags)))
-            goto error;
+            return NULL;
         break;
     case VIR_DOMAIN_DEVICE_LEASE:
         if (!(dev->data.lease = virDomainLeaseDefParseXML(node)))
-            goto error;
+            return NULL;
         break;
     case VIR_DOMAIN_DEVICE_FS:
         if (!(dev->data.fs = virDomainFSDefParseXML(xmlopt, node, ctxt, flags)))
-            goto error;
+            return NULL;
         break;
     case VIR_DOMAIN_DEVICE_NET:
         netprefix = caps->host.netprefix;
         if (!(dev->data.net = virDomainNetDefParseXML(xmlopt, node, ctxt,
                                                       netprefix, flags)))
-            goto error;
+            return NULL;
         break;
     case VIR_DOMAIN_DEVICE_INPUT:
         if (!(dev->data.input = virDomainInputDefParseXML(xmlopt, def, node,
                                                           ctxt, flags)))
-            goto error;
+            return NULL;
         break;
     case VIR_DOMAIN_DEVICE_SOUND:
         if (!(dev->data.sound = virDomainSoundDefParseXML(xmlopt, node,
                                                           ctxt, flags)))
-            goto error;
+            return NULL;
         break;
     case VIR_DOMAIN_DEVICE_WATCHDOG:
         if (!(dev->data.watchdog = virDomainWatchdogDefParseXML(xmlopt,
                                                                 node, flags)))
-            goto error;
+            return NULL;
         break;
     case VIR_DOMAIN_DEVICE_VIDEO:
         if (!(dev->data.video = virDomainVideoDefParseXML(xmlopt, node,
                                                           ctxt, def, flags)))
-            goto error;
+            return NULL;
         break;
     case VIR_DOMAIN_DEVICE_HOSTDEV:
         if (!(dev->data.hostdev = virDomainHostdevDefParseXML(xmlopt, node,
                                                               ctxt,
                                                               flags)))
-            goto error;
+            return NULL;
         break;
     case VIR_DOMAIN_DEVICE_CONTROLLER:
         if (!(dev->data.controller = virDomainControllerDefParseXML(xmlopt, node,
                                                                     ctxt, flags)))
-            goto error;
+            return NULL;
         break;
     case VIR_DOMAIN_DEVICE_GRAPHICS:
         if (!(dev->data.graphics = virDomainGraphicsDefParseXML(xmlopt, node,
                                                                 ctxt, flags)))
-            goto error;
+            return NULL;
         break;
     case VIR_DOMAIN_DEVICE_HUB:
         if (!(dev->data.hub = virDomainHubDefParseXML(xmlopt, node, flags)))
-            goto error;
+            return NULL;
         break;
     case VIR_DOMAIN_DEVICE_REDIRDEV:
         if (!(dev->data.redirdev = virDomainRedirdevDefParseXML(xmlopt, node,
                                                                 ctxt, flags)))
-            goto error;
+            return NULL;
         break;
     case VIR_DOMAIN_DEVICE_RNG:
         if (!(dev->data.rng = virDomainRNGDefParseXML(xmlopt, node,
                                                       ctxt, flags)))
-            goto error;
+            return NULL;
         break;
     case VIR_DOMAIN_DEVICE_CHR:
         if (!(dev->data.chr = virDomainChrDefParseXML(xmlopt,
@@ -16439,50 +16439,50 @@ virDomainDeviceDefParse(const char *xmlStr,
                                                       def->seclabels,
                                                       def->nseclabels,
                                                       flags)))
-            goto error;
+            return NULL;
         break;
     case VIR_DOMAIN_DEVICE_SMARTCARD:
         if (!(dev->data.smartcard = virDomainSmartcardDefParseXML(xmlopt, node,
                                                                   ctxt, flags)))
-            goto error;
+            return NULL;
         break;
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
         if (!(dev->data.memballoon = virDomainMemballoonDefParseXML(xmlopt,
                                                                     node,
                                                                     ctxt,
                                                                     flags)))
-            goto error;
+            return NULL;
         break;
     case VIR_DOMAIN_DEVICE_NVRAM:
         if (!(dev->data.nvram = virDomainNVRAMDefParseXML(xmlopt, node, flags)))
-            goto error;
+            return NULL;
         break;
     case VIR_DOMAIN_DEVICE_SHMEM:
         if (!(dev->data.shmem = virDomainShmemDefParseXML(xmlopt, node,
                                                           ctxt, flags)))
-            goto error;
+            return NULL;
         break;
     case VIR_DOMAIN_DEVICE_TPM:
         if (!(dev->data.tpm = virDomainTPMDefParseXML(xmlopt, node, ctxt, flags)))
-            goto error;
+            return NULL;
         break;
     case VIR_DOMAIN_DEVICE_PANIC:
         if (!(dev->data.panic = virDomainPanicDefParseXML(xmlopt, node, flags)))
-            goto error;
+            return NULL;
         break;
     case VIR_DOMAIN_DEVICE_MEMORY:
         if (!(dev->data.memory = virDomainMemoryDefParseXML(xmlopt, node,
                                                             ctxt, flags)))
-            goto error;
+            return NULL;
         break;
     case VIR_DOMAIN_DEVICE_IOMMU:
         if (!(dev->data.iommu = virDomainIOMMUDefParseXML(node, ctxt)))
-            goto error;
+            return NULL;
         break;
     case VIR_DOMAIN_DEVICE_VSOCK:
         if (!(dev->data.vsock = virDomainVsockDefParseXML(xmlopt, node, ctxt,
                                                           flags)))
-            goto error;
+            return NULL;
         break;
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_LAST:
@@ -16492,20 +16492,13 @@ virDomainDeviceDefParse(const char *xmlStr,
     /* callback to fill driver specific device aspects */
     if (virDomainDeviceDefPostParseOne(dev, def, caps, flags,
                                        xmlopt, parseOpaque) < 0)
-        goto error;
+        return NULL;
 
     /* validate the configuration */
     if (virDomainDeviceDefValidate(dev, def, flags, xmlopt) < 0)
-        goto error;
+        return NULL;
 
- cleanup:
-    xmlFreeDoc(xml);
-    xmlXPathFreeContext(ctxt);
-    return dev;
-
- error:
-    VIR_FREE(dev);
-    goto cleanup;
+    VIR_RETURN_PTR(dev);
 }
 
 
