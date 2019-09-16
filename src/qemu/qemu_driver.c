@@ -11549,10 +11549,6 @@ qemuDomainBlocksStatsGather(virQEMUDriverPtr driver,
 }
 
 
-/* This uses the 'info blockstats' monitor command which was
- * integrated into both qemu & kvm in late 2007.  If the command is
- * not supported we detect this and return the appropriate error.
- */
 static int
 qemuDomainBlockStats(virDomainPtr dom,
                      const char *path,
