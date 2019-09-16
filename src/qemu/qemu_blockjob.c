@@ -664,9 +664,9 @@ qemuBlockJobEventProcessLegacyCompleted(virQEMUDriverPtr driver,
         virObjectUnref(disk->src);
         disk->src = disk->mirror;
     } else {
-        if (disk->mirror) {
-            virStorageSourcePtr n;
+        virStorageSourcePtr n;
 
+        if (disk->mirror) {
             virDomainLockImageDetach(driver->lockManager, vm, disk->mirror);
 
             /* Ideally, we would restore seclabels on the backing chain here
@@ -683,6 +683,16 @@ qemuBlockJobEventProcessLegacyCompleted(virQEMUDriverPtr driver,
             }
 
             virObjectUnref(disk->mirror);
+        }
+
+        for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
+            if (qemuSecurityMoveImageMetadata(driver, vm, n, NULL) < 0) {
+                VIR_WARN("Unable to remove disk metadata on "
+                         "vm %s from %s (disk target %s)",
+                         vm->def->name,
+                         NULLSTR(n->path),
+                         disk->dst);
+            }
         }
     }
 
