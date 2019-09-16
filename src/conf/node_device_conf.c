@@ -2052,8 +2052,7 @@ virNodeDeviceDefParseNode(xmlDocPtr xml,
                           int create,
                           const char *virt_type)
 {
-    xmlXPathContextPtr ctxt = NULL;
-    virNodeDeviceDefPtr def = NULL;
+    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
 
     if (!virXMLNodeNameEqual(root, "device")) {
         virReportError(VIR_ERR_XML_ERROR,
@@ -2064,14 +2063,10 @@ virNodeDeviceDefParseNode(xmlDocPtr xml,
     }
 
     if (!(ctxt = virXMLXPathContextNew(xml)))
-        goto cleanup;
+        return NULL;
 
     ctxt->node = root;
-    def = virNodeDeviceDefParseXML(ctxt, create, virt_type);
-
- cleanup:
-    xmlXPathFreeContext(ctxt);
-    return def;
+    return virNodeDeviceDefParseXML(ctxt, create, virt_type);
 }
 
 

@@ -2114,8 +2114,7 @@ virNetworkDefParseNode(xmlDocPtr xml,
                        xmlNodePtr root,
                        virNetworkXMLOptionPtr xmlopt)
 {
-    xmlXPathContextPtr ctxt = NULL;
-    virNetworkDefPtr def = NULL;
+    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
 
     if (!virXMLNodeNameEqual(root, "network")) {
         virReportError(VIR_ERR_XML_ERROR,
@@ -2126,14 +2125,10 @@ virNetworkDefParseNode(xmlDocPtr xml,
     }
 
     if (!(ctxt = virXMLXPathContextNew(xml)))
-        goto cleanup;
+        return NULL;
 
     ctxt->node = root;
-    def = virNetworkDefParseXML(ctxt, xmlopt);
-
- cleanup:
-    xmlXPathFreeContext(ctxt);
-    return def;
+    return virNetworkDefParseXML(ctxt, xmlopt);
 }
 
 

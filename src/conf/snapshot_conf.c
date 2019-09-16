@@ -430,12 +430,11 @@ virDomainSnapshotDefParseNode(xmlDocPtr xml,
                               bool *current,
                               unsigned int flags)
 {
-    xmlXPathContextPtr ctxt = NULL;
-    virDomainSnapshotDefPtr def = NULL;
+    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
 
     if (!virXMLNodeNameEqual(root, "domainsnapshot")) {
         virReportError(VIR_ERR_XML_ERROR, "%s", _("domainsnapshot"));
-        goto cleanup;
+        return NULL;
     }
 
     if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_VALIDATE) {
@@ -445,19 +444,16 @@ virDomainSnapshotDefParseNode(xmlDocPtr xml,
                                      abs_top_srcdir "/docs/schemas",
                                      PKGDATADIR "/schemas");
         if (!schema)
-            goto cleanup;
+            return NULL;
         if (virXMLValidateAgainstSchema(schema, xml) < 0)
-            goto cleanup;
+            return NULL;
     }
 
     if (!(ctxt = virXMLXPathContextNew(xml)))
-        goto cleanup;
+        return NULL;
 
     ctxt->node = root;
-    def = virDomainSnapshotDefParse(ctxt, caps, xmlopt, parseOpaque, current, flags);
- cleanup:
-    xmlXPathFreeContext(ctxt);
-    return def;
+    return virDomainSnapshotDefParse(ctxt, caps, xmlopt, parseOpaque, current, flags);
 }
 
 virDomainSnapshotDefPtr

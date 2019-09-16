@@ -209,13 +209,12 @@ virDomainCheckpointDefParseNode(xmlDocPtr xml,
                                 void *parseOpaque,
                                 unsigned int flags)
 {
-    xmlXPathContextPtr ctxt = NULL;
-    virDomainCheckpointDefPtr def = NULL;
+    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
     VIR_AUTOFREE(char *) schema = NULL;
 
     if (!virXMLNodeNameEqual(root, "domaincheckpoint")) {
         virReportError(VIR_ERR_XML_ERROR, "%s", _("domaincheckpoint"));
-        goto cleanup;
+        return NULL;
     }
 
     /* This is a new enough API to make schema validation unconditional */
@@ -228,13 +227,10 @@ virDomainCheckpointDefParseNode(xmlDocPtr xml,
         return NULL;
 
     if (!(ctxt = virXMLXPathContextNew(xml)))
-        goto cleanup;
+        return NULL;
 
     ctxt->node = root;
-    def = virDomainCheckpointDefParse(ctxt, caps, xmlopt, parseOpaque, flags);
- cleanup:
-    xmlXPathFreeContext(ctxt);
-    return def;
+    return virDomainCheckpointDefParse(ctxt, caps, xmlopt, parseOpaque, flags);
 }
 
 virDomainCheckpointDefPtr

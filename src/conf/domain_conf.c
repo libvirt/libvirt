@@ -21600,26 +21600,21 @@ virDomainObjParseNode(xmlDocPtr xml,
                       virDomainXMLOptionPtr xmlopt,
                       unsigned int flags)
 {
-    xmlXPathContextPtr ctxt = NULL;
-    virDomainObjPtr obj = NULL;
+    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
 
     if (!virXMLNodeNameEqual(root, "domstatus")) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("unexpected root element <%s>, "
                          "expecting <domstatus>"),
                        root->name);
-        goto cleanup;
+        return NULL;
     }
 
     if (!(ctxt = virXMLXPathContextNew(xml)))
-        goto cleanup;
+        return NULL;
 
     ctxt->node = root;
-    obj = virDomainObjParseXML(xml, ctxt, caps, xmlopt, flags);
-
- cleanup:
-    xmlXPathFreeContext(ctxt);
-    return obj;
+    return virDomainObjParseXML(xml, ctxt, caps, xmlopt, flags);
 }
 
 
