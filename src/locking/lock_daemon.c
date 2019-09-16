@@ -1124,7 +1124,6 @@ int main(int argc, char **argv) {
     privileged = geteuid() == 0;
 
     if (virGettextInitialize() < 0 ||
-        virThreadInitialize() < 0 ||
         virErrorInitialize() < 0) {
         fprintf(stderr, _("%s: initialization failed\n"), argv[0]);
         exit(EXIT_FAILURE);

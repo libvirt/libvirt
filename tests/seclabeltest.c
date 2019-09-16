@@ -11,9 +11,6 @@ mymain(void)
     virSecurityManagerPtr mgr;
     const char *doi, *model;
 
-    if (virThreadInitialize() < 0)
-        return EXIT_FAILURE;
-
     mgr = virSecurityManagerNew(NULL, "QEMU", VIR_SECURITY_MANAGER_DEFAULT_CONFINED);
     if (mgr == NULL) {
         fprintf(stderr, "Failed to start security driver");

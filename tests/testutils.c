@@ -877,8 +877,7 @@ int virTestMain(int argc,
     }
     fprintf(stderr, "TEST: %s\n", progname);
 
-    if (virThreadInitialize() < 0 ||
-        virErrorInitialize() < 0)
+    if (virErrorInitialize() < 0)
         return EXIT_FAILURE;
 
     virLogSetFromEnv();

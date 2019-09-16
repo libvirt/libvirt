@@ -321,8 +321,6 @@ mymain(void)
         }
     }
 
-    if (virThreadInitialize() < 0)
-        return EXIT_FAILURE;
     char *debugEnv = getenv("LIBVIRT_DEBUG");
     if (debugEnv && *debugEnv &&
         (virLogSetDefaultPriority(virLogParseDefaultPriority(debugEnv)) < 0)) {

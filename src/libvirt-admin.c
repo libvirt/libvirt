@@ -52,8 +52,7 @@ virAdmGlobalInit(void)
      * virAdmConnectOpen first.  But we can't rely on VIR_DEBUG working
      * until after initialization is complete, and since this is
      * one-shot, we never get here again.  */
-    if (virThreadInitialize() < 0 ||
-        virErrorInitialize() < 0)
+    if (virErrorInitialize() < 0)
         goto error;
 
     virLogSetFromEnv();

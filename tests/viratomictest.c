@@ -164,9 +164,6 @@ mymain(void)
 {
     int ret = 0;
 
-    if (virThreadInitialize() < 0)
-        return -1;
-
     if (virTestRun("types", testTypes, NULL) < 0)
         ret = -1;
     if (virTestRun("threads", testThreads, NULL) < 0)

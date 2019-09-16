@@ -82,9 +82,6 @@ struct virOnceControl {
 
 typedef void (*virOnceFunc)(void);
 
-int virThreadInitialize(void) ATTRIBUTE_RETURN_CHECK;
-void virThreadOnExit(void);
-
 typedef void (*virThreadFunc)(void *opaque);
 
 #define virThreadCreate(thread, joinable, func, opaque) \

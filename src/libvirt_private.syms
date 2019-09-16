@@ -3174,7 +3174,6 @@ virRWLockWrite;
 virThreadCancel;
 virThreadCreateFull;
 virThreadID;
-virThreadInitialize;
 virThreadIsSelf;
 virThreadJoin;
 virThreadSelf;

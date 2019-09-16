@@ -3019,8 +3019,7 @@ mymain(void)
     return EXIT_AM_SKIP;
 #endif
 
-    if (virThreadInitialize() < 0 ||
-        qemuTestDriverInit(&driver) < 0)
+    if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
 
     virEventRegisterDefaultImpl();

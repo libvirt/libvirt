@@ -203,9 +203,6 @@ mymain(void)
     return EXIT_AM_SKIP;
 #endif
 
-    if (virThreadInitialize() < 0)
-        return EXIT_FAILURE;
-
     virEventRegisterDefaultImpl();
 
     if (testQemuDataInit(&data) < 0)

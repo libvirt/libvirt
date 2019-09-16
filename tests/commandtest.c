@@ -1292,9 +1292,6 @@ mymain(void)
     int timer = -1;
     int virinitret;
 
-    if (virThreadInitialize() < 0)
-        return EXIT_FAILURE;
-
     if (chdir("/tmp") < 0)
         return EXIT_FAILURE;
 

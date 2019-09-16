@@ -33,16 +33,6 @@
 #include "virthreadjob.h"
 
 
-/* Nothing special required for pthreads */
-int virThreadInitialize(void)
-{
-    return 0;
-}
-
-void virThreadOnExit(void)
-{
-}
-
 int virOnce(virOnceControlPtr once, virOnceFunc init)
 {
     return pthread_once(&once->once, init);

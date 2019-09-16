@@ -243,8 +243,7 @@ virGlobalInit(void)
      * virConnectOpen first.  But we can't rely on VIR_DEBUG working
      * until after initialization is complete, and since this is
      * one-shot, we never get here again.  */
-    if (virThreadInitialize() < 0 ||
-        virErrorInitialize() < 0)
+    if (virErrorInitialize() < 0)
         goto error;
 
     virFileActivateDirOverrideForLib();
@@ -365,12 +364,8 @@ DllMain(HINSTANCE instance ATTRIBUTE_UNUSED,
         break;
 
     case DLL_THREAD_ATTACH:
-        /* Nothing todo in libvirt yet */
-        break;
-
     case DLL_THREAD_DETACH:
-        /* Release per-thread local data */
-        virThreadOnExit();
+        /* Nothing todo in libvirt yet */
         break;
 
     case DLL_PROCESS_DETACH:

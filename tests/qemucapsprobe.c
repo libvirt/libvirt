@@ -54,8 +54,7 @@ main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    if (virThreadInitialize() < 0 ||
-        virInitialize() < 0) {
+    if (virInitialize() < 0) {
         fprintf(stderr, "Failed to initialize libvirt");
         return EXIT_FAILURE;
     }
