@@ -16508,20 +16508,19 @@ virDomainDiskDefParse(const char *xmlStr,
                       virDomainXMLOptionPtr xmlopt,
                       unsigned int flags)
 {
-    xmlDocPtr xml;
-    xmlXPathContextPtr ctxt = NULL;
-    virDomainDiskDefPtr disk = NULL;
+    VIR_AUTOPTR(xmlDoc) xml = NULL;
+    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
     virSecurityLabelDefPtr *seclabels = NULL;
     size_t nseclabels = 0;
 
     if (!(xml = virXMLParseStringCtxt(xmlStr, _("(disk_definition)"), &ctxt)))
-        goto cleanup;
+        return NULL;
 
     if (!virXMLNodeNameEqual(ctxt->node, "disk")) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("expecting root element of 'disk', not '%s'"),
                        ctxt->node->name);
-        goto cleanup;
+        return NULL;
     }
 
     if (def) {
@@ -16529,13 +16528,8 @@ virDomainDiskDefParse(const char *xmlStr,
         nseclabels = def->nseclabels;
     }
 
-    disk = virDomainDiskDefParseXML(xmlopt, ctxt->node, ctxt,
+    return virDomainDiskDefParseXML(xmlopt, ctxt->node, ctxt,
                                     seclabels, nseclabels, flags);
-
- cleanup:
-    xmlFreeDoc(xml);
-    xmlXPathFreeContext(ctxt);
-    return disk;
 }
 
 

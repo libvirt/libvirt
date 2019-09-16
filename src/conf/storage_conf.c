@@ -695,36 +695,30 @@ virStoragePoolSourcePtr
 virStoragePoolDefParseSourceString(const char *srcSpec,
                                    int pool_type)
 {
-    xmlDocPtr doc = NULL;
+    VIR_AUTOPTR(xmlDoc) doc = NULL;
     xmlNodePtr node = NULL;
-    xmlXPathContextPtr xpath_ctxt = NULL;
-    virStoragePoolSourcePtr ret = NULL;
+    VIR_AUTOPTR(xmlXPathContext) xpath_ctxt = NULL;
     VIR_AUTOPTR(virStoragePoolSource) def = NULL;
 
     if (!(doc = virXMLParseStringCtxt(srcSpec,
                                       _("(storage_source_specification)"),
                                       &xpath_ctxt)))
-        goto cleanup;
+        return NULL;
 
     if (VIR_ALLOC(def) < 0)
-        goto cleanup;
+        return NULL;
 
     if (!(node = virXPathNode("/source", xpath_ctxt))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("root element was not source"));
-        goto cleanup;
+        return NULL;
     }
 
     if (virStoragePoolDefParseSource(xpath_ctxt, def, pool_type,
                                      node) < 0)
-        goto cleanup;
+        return NULL;
 
-    VIR_STEAL_PTR(ret, def);
- cleanup:
-    xmlFreeDoc(doc);
-    xmlXPathFreeContext(xpath_ctxt);
-
-    return ret;
+    VIR_RETURN_PTR(def);
 }
 
 
