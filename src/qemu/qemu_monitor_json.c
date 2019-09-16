@@ -2527,8 +2527,7 @@ static qemuBlockStatsPtr
 qemuMonitorJSONBlockStatsCollectData(virJSONValuePtr dev,
                                      int *nstats)
 {
-    qemuBlockStatsPtr bstats = NULL;
-    qemuBlockStatsPtr ret = NULL;
+    VIR_AUTOFREE(qemuBlockStatsPtr) bstats = NULL;
     virJSONValuePtr parent;
     virJSONValuePtr parentstats;
     virJSONValuePtr stats;
@@ -2537,11 +2536,11 @@ qemuMonitorJSONBlockStatsCollectData(virJSONValuePtr dev,
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("blockstats stats entry was not "
                          "in expected format"));
-        goto cleanup;
+        return NULL;
     }
 
     if (VIR_ALLOC(bstats) < 0)
-        goto cleanup;
+        return NULL;
 
 #define QEMU_MONITOR_BLOCK_STAT_GET(NAME, VAR, MANDATORY) \
     if (MANDATORY || virJSONValueObjectHasKey(stats, NAME)) { \
@@ -2549,7 +2548,7 @@ qemuMonitorJSONBlockStatsCollectData(virJSONValuePtr dev,
         if (virJSONValueObjectGetNumberLong(stats, NAME, &VAR) < 0) { \
             virReportError(VIR_ERR_INTERNAL_ERROR, \
                            _("cannot read %s statistic"), NAME); \
-            goto cleanup; \
+            return NULL; \
         } \
     }
     QEMU_MONITOR_BLOCK_STAT_GET("rd_bytes", bstats->rd_bytes, true);
@@ -2569,11 +2568,7 @@ qemuMonitorJSONBlockStatsCollectData(virJSONValuePtr dev,
             bstats->wr_highest_offset_valid = true;
     }
 
-    VIR_STEAL_PTR(ret, bstats);
-
- cleanup:
-    VIR_FREE(bstats);
-    return ret;
+    VIR_RETURN_PTR(bstats);
 }
 
 
