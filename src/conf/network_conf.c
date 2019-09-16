@@ -3654,31 +3654,31 @@ virNetworkDefUpdateSection(virNetworkDefPtr def,
         break;
     case VIR_NETWORK_SECTION_IP_DHCP_HOST:
         return virNetworkDefUpdateIPDHCPHost(def, command,
-                                            parentIndex, ctxt, flags);
+                                             parentIndex, ctxt, flags);
         break;
     case VIR_NETWORK_SECTION_IP_DHCP_RANGE:
         return virNetworkDefUpdateIPDHCPRange(def, command,
-                                             parentIndex, ctxt, flags);
+                                              parentIndex, ctxt, flags);
         break;
     case VIR_NETWORK_SECTION_FORWARD:
         return virNetworkDefUpdateForward(def, command,
-                                         parentIndex, ctxt, flags);
+                                          parentIndex, ctxt, flags);
         break;
     case VIR_NETWORK_SECTION_FORWARD_INTERFACE:
         return virNetworkDefUpdateForwardInterface(def, command,
-                                                  parentIndex, ctxt, flags);
+                                                   parentIndex, ctxt, flags);
         break;
     case VIR_NETWORK_SECTION_FORWARD_PF:
         return virNetworkDefUpdateForwardPF(def, command,
-                                           parentIndex, ctxt, flags);
+                                            parentIndex, ctxt, flags);
         break;
     case VIR_NETWORK_SECTION_PORTGROUP:
         return virNetworkDefUpdatePortGroup(def, command,
-                                           parentIndex, ctxt, flags);
+                                            parentIndex, ctxt, flags);
         break;
     case VIR_NETWORK_SECTION_DNS_HOST:
         return virNetworkDefUpdateDNSHost(def, command,
-                                         parentIndex, ctxt, flags);
+                                          parentIndex, ctxt, flags);
         break;
     case VIR_NETWORK_SECTION_DNS_TXT:
         return virNetworkDefUpdateDNSTxt(def, command, parentIndex, ctxt, flags);
