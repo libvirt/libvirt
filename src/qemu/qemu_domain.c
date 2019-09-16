@@ -29,6 +29,7 @@
 #include "qemu_dbus.h"
 #include "qemu_process.h"
 #include "qemu_capabilities.h"
+#include "qemu_hostdev.h"
 #include "qemu_migration.h"
 #include "qemu_migration_params.h"
 #include "qemu_security.h"
@@ -12709,6 +12710,14 @@ qemuDomainSupportsVideoVga(virDomainVideoDefPtr video,
     }
 
     return true;
+}
+
+
+bool
+qemuDomainNeedsVFIO(const virDomainDef *def)
+{
+    return virDomainDefHasVFIOHostdev(def) ||
+        virDomainDefHasMdevHostdev(def);
 }
 
 
