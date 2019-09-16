@@ -21558,32 +21558,26 @@ virDomainDefParseNode(xmlDocPtr xml,
                       void *parseOpaque,
                       unsigned int flags)
 {
-    xmlXPathContextPtr ctxt = NULL;
-    virDomainDefPtr def = NULL;
-    virDomainDefPtr ret = NULL;
+    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
+    VIR_AUTOPTR(virDomainDef) def = NULL;
 
     if (!(ctxt = virXMLXPathContextNew(xml)))
-        goto cleanup;
+        return NULL;
 
     ctxt->node = root;
 
     if (!(def = virDomainDefParseXML(xml, ctxt, caps, xmlopt, flags)))
-        goto cleanup;
+        return NULL;
 
     /* callback to fill driver specific domain aspects */
     if (virDomainDefPostParse(def, caps, flags, xmlopt, parseOpaque) < 0)
-        goto cleanup;
+        return NULL;
 
     /* validate configuration */
     if (virDomainDefValidate(def, caps, flags, xmlopt) < 0)
-        goto cleanup;
+        return NULL;
 
-    VIR_STEAL_PTR(ret, def);
-
- cleanup:
-    virDomainDefFree(def);
-    xmlXPathFreeContext(ctxt);
-    return ret;
+    VIR_RETURN_PTR(def);
 }
 
 
