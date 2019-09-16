@@ -11412,7 +11412,7 @@ qemuDomainBlockResize(virDomainPtr dom,
 }
 
 
-static int
+static void
 qemuDomainBlockStatsGatherTotals(qemuBlockStatsPtr data,
                                  qemuBlockStatsPtr total)
 {
@@ -11424,7 +11424,6 @@ qemuDomainBlockStatsGatherTotals(qemuBlockStatsPtr data,
     total->wr_total_times += data->wr_total_times;
     total->rd_total_times += data->rd_total_times;
     total->flush_total_times += data->flush_total_times;
-    return 0;
 }
 
 
