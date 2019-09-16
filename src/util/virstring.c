@@ -786,7 +786,7 @@ virStrncpy(char *dest, const char *src, size_t n, size_t destbytes)
     if (n == -1)
         n = src_len;
 
-    if (n <= 0 || n > src_len || n > (destbytes - 1))
+    if (n > src_len || n > (destbytes - 1))
         return -1;
 
     memcpy(dest, src, n);
