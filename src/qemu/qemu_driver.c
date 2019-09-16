@@ -11416,18 +11416,14 @@ static int
 qemuDomainBlockStatsGatherTotals(qemuBlockStatsPtr data,
                                  qemuBlockStatsPtr total)
 {
-#define QEMU_BLOCK_STAT_TOTAL(NAME) \
-    total->NAME += data->NAME
-
-    QEMU_BLOCK_STAT_TOTAL(wr_bytes);
-    QEMU_BLOCK_STAT_TOTAL(wr_req);
-    QEMU_BLOCK_STAT_TOTAL(rd_bytes);
-    QEMU_BLOCK_STAT_TOTAL(rd_req);
-    QEMU_BLOCK_STAT_TOTAL(flush_req);
-    QEMU_BLOCK_STAT_TOTAL(wr_total_times);
-    QEMU_BLOCK_STAT_TOTAL(rd_total_times);
-    QEMU_BLOCK_STAT_TOTAL(flush_total_times);
-#undef QEMU_BLOCK_STAT_TOTAL
+    total->wr_bytes += data->wr_bytes;
+    total->wr_req += data->wr_req;
+    total->rd_bytes += data->rd_bytes;
+    total->rd_req += data->rd_req;
+    total->flush_req += data->flush_req;
+    total->wr_total_times += data->wr_total_times;
+    total->rd_total_times += data->rd_total_times;
+    total->flush_total_times += data->flush_total_times;
     return 0;
 }
 
