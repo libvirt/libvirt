@@ -291,8 +291,6 @@ void virStringFilterChars(char *str, const char *valid);
 bool virStringIsPrintable(const char *str);
 bool virStringBufferIsPrintable(const uint8_t *buf, size_t buflen);
 
-char *virStringEncodeBase64(const uint8_t *buf, size_t buflen);
-
 void virStringTrimOptionalNewline(char *str);
 
 int virStringParsePort(const char *str,

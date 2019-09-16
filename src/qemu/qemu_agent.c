@@ -39,7 +39,6 @@
 #include "virtime.h"
 #include "virobject.h"
 #include "virstring.h"
-#include "base64.h"
 #include "virenum.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
@@ -2518,9 +2517,8 @@ qemuAgentSetUserPassword(qemuAgentPtr mon,
     virJSONValuePtr reply = NULL;
     char *password64 = NULL;
 
-    if (!(password64 = virStringEncodeBase64((unsigned char *)password,
-                                             strlen(password))))
-        goto cleanup;
+    password64 = g_base64_encode((unsigned char *)password,
+                                 strlen(password));
 
     if (!(cmd = qemuAgentMakeCommand("guest-set-user-password",
                                      "b:crypted", crypted,

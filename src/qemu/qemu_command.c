@@ -837,9 +837,8 @@ qemuBuildRBDSecinfoURI(virBufferPtr buf,
 
     switch ((qemuDomainSecretInfoType) secinfo->type) {
     case VIR_DOMAIN_SECRET_INFO_TYPE_PLAIN:
-        if (!(base64secret = virStringEncodeBase64(secinfo->s.plain.secret,
-                                                   secinfo->s.plain.secretlen)))
-            return -1;
+        base64secret = g_base64_encode(secinfo->s.plain.secret,
+                                       secinfo->s.plain.secretlen);
         virBufferEscape(buf, '\\', ":", ":id=%s", secinfo->s.plain.username);
         virBufferEscape(buf, '\\', ":",
                         ":key=%s:auth_supported=cephx\\;none",

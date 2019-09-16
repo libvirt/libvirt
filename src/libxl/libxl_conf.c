@@ -1004,8 +1004,7 @@ libxlMakeNetworkDiskSrc(virStorageSourcePtr src, char **srcstr)
             goto cleanup;
 
         /* RBD expects an encoded secret */
-        if (!(base64secret = virStringEncodeBase64(secret, secretlen)))
-            goto cleanup;
+        base64secret = g_base64_encode(secret, secretlen);
     }
 
     if (!(*srcstr = libxlMakeNetworkDiskSrcStr(src, username, base64secret)))

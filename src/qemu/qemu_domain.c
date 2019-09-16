@@ -1470,8 +1470,7 @@ qemuDomainSecretAESSetup(qemuDomainObjPrivatePtr priv,
         goto cleanup;
 
     /* Encode the IV and save that since qemu will need it */
-    if (!(secinfo->s.aes.iv = virStringEncodeBase64(raw_iv, ivlen)))
-        goto cleanup;
+    secinfo->s.aes.iv = g_base64_encode(raw_iv, ivlen);
 
     /* Grab the unencoded secret */
     if (virSecretGetSecretString(conn, seclookupdef, usageType,
@@ -1488,9 +1487,8 @@ qemuDomainSecretAESSetup(qemuDomainObjPrivatePtr priv,
     memset(secret, 0, secretlen);
 
     /* Now encode the ciphertext and store to be passed to qemu */
-    if (!(secinfo->s.aes.ciphertext = virStringEncodeBase64(ciphertext,
-                                                            ciphertextlen)))
-        goto cleanup;
+    secinfo->s.aes.ciphertext = g_base64_encode(ciphertext,
+                                                ciphertextlen);
 
     ret = 0;
 

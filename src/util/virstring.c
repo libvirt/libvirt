@@ -22,7 +22,6 @@
 #include <regex.h>
 #include <locale.h>
 
-#include "base64.h"
 #include "c-ctype.h"
 #include "virstring.h"
 #include "virthread.h"
@@ -1437,26 +1436,6 @@ virStringBufferIsPrintable(const uint8_t *buf,
     return true;
 }
 
-
-/**
- * virStringEncodeBase64:
- * @buf: buffer of bytes to encode
- * @buflen: number of bytes to encode
- *
- * Encodes @buf to base 64 and returns the resulting string. The caller is
- * responsible for freeing the result.
- */
-char *
-virStringEncodeBase64(const uint8_t *buf, size_t buflen)
-{
-    char *ret;
-
-    base64_encode_alloc((const char *) buf, buflen, &ret);
-    if (!ret)
-        abort();
-
-    return ret;
-}
 
 /**
  * virStringTrimOptionalNewline:

@@ -28,7 +28,6 @@
 #include "storage_conf.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "base64.h"
 #include "viruuid.h"
 #include "virstring.h"
 #include "virrandom.h"
@@ -218,8 +217,7 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
                                      &secret_value, &secret_value_size) < 0)
             goto cleanup;
 
-        if (!(rados_key = virStringEncodeBase64(secret_value, secret_value_size)))
-            goto cleanup;
+        rados_key = g_base64_encode(secret_value, secret_value_size);
 
         if (virStorageBackendRBDRADOSConfSet(ptr->cluster,
                                              "key", rados_key) < 0)

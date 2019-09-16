@@ -31,7 +31,6 @@
 #include "virhash.h"
 #include "virlog.h"
 #include "virstring.h"
-#include "base64.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECRET
 
@@ -698,8 +697,7 @@ virSecretObjSaveData(virSecretObjPtr obj)
     if (!obj->value)
         return 0;
 
-    if (!(base64 = virStringEncodeBase64(obj->value, obj->value_size)))
-        return -1;
+    base64 = g_base64_encode(obj->value, obj->value_size);
 
     if (virFileRewriteStr(obj->base64File, S_IRUSR | S_IWUSR, base64) < 0)
         return -1;
@@ -825,8 +823,6 @@ virSecretLoadValue(virSecretObjPtr obj)
     int ret = -1, fd = -1;
     struct stat st;
     g_autofree char *contents = NULL;
-    char *value = NULL;
-    size_t value_size;
 
     if ((fd = open(obj->base64File, O_RDONLY)) == -1) {
         if (errno == ENOENT) {
@@ -851,7 +847,7 @@ virSecretLoadValue(virSecretObjPtr obj)
         goto cleanup;
     }
 
-    if (VIR_ALLOC_N(contents, st.st_size) < 0)
+    if (VIR_ALLOC_N(contents, st.st_size + 1) < 0)
         goto cleanup;
 
     if (saferead(fd, contents, st.st_size) != st.st_size) {
@@ -859,29 +855,15 @@ virSecretLoadValue(virSecretObjPtr obj)
                              obj->base64File);
         goto cleanup;
     }
+    contents[st.st_size] = '\0';
 
     VIR_FORCE_CLOSE(fd);
 
-    if (!base64_decode_alloc(contents, st.st_size, &value, &value_size)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("invalid base64 in '%s'"),
-                       obj->base64File);
-        goto cleanup;
-    }
-    if (value == NULL)
-        goto cleanup;
-
-    obj->value = (unsigned char *)value;
-    value = NULL;
-    obj->value_size = value_size;
+    obj->value = g_base64_decode(contents, &obj->value_size);
 
     ret = 0;
 
  cleanup:
-    if (value != NULL) {
-        memset(value, 0, value_size);
-        VIR_FREE(value);
-    }
     if (contents != NULL)
         memset(contents, 0, st.st_size);
     VIR_FORCE_CLOSE(fd);

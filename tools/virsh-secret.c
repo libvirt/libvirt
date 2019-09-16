@@ -22,7 +22,6 @@
 #include "virsh-secret.h"
 
 #include "internal.h"
-#include "base64.h"
 #include "virbuffer.h"
 #include "viralloc.h"
 #include "virfile.h"
@@ -192,7 +191,7 @@ cmdSecretSetValue(vshControl *ctl, const vshCmd *cmd)
     virSecretPtr secret;
     size_t value_size;
     const char *base64 = NULL;
-    char *value;
+    unsigned char *value;
     int res;
     bool ret = false;
 
@@ -202,16 +201,9 @@ cmdSecretSetValue(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "base64", &base64) < 0)
         goto cleanup;
 
-    if (!base64_decode_alloc(base64, strlen(base64), &value, &value_size)) {
-        vshError(ctl, "%s", _("Invalid base64 data"));
-        goto cleanup;
-    }
-    if (value == NULL) {
-        vshError(ctl, "%s", _("Failed to allocate memory"));
-        goto cleanup;
-    }
+    value = g_base64_decode(base64, &value_size);
 
-    res = virSecretSetValue(secret, (unsigned char *)value, value_size, 0);
+    res = virSecretSetValue(secret, value, value_size, 0);
     memset(value, 0, value_size);
     VIR_FREE(value);
 
@@ -267,8 +259,7 @@ cmdSecretGetValue(vshControl *ctl, const vshCmd *cmd)
     if (value == NULL)
         goto cleanup;
 
-    if (!(base64 = virStringEncodeBase64(value, value_size)))
-        goto cleanup;
+    base64 = g_base64_encode(value, value_size);
 
     vshPrint(ctl, "%s", base64);
     ret = true;

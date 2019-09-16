@@ -25,7 +25,6 @@
 #include <unistd.h>
 
 #include "internal.h"
-#include "base64.h"
 #include "datatypes.h"
 #include "driver.h"
 #include "virlog.h"
