@@ -85,12 +85,6 @@ int virTypedParameterAssign(virTypedParameterPtr param, const char *name,
                             int type, /* TYPE arg */ ...)
     ATTRIBUTE_RETURN_CHECK;
 
-int virTypedParameterAssignFromStr(virTypedParameterPtr param,
-                                   const char *name,
-                                   int type,
-                                   const char *val)
-    ATTRIBUTE_RETURN_CHECK;
-
 int virTypedParamsReplaceString(virTypedParameterPtr *params,
                                 int *nparams,
                                 const char *name,

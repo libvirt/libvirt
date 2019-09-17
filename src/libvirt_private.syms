@@ -3229,7 +3229,6 @@ virTPMSwtpmSetupFeatureTypeFromString;
 
 # util/virtypedparam.h
 virTypedParameterAssign;
-virTypedParameterAssignFromStr;
 virTypedParameterToString;
 virTypedParameterTypeFromString;
 virTypedParameterTypeToString;
