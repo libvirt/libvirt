@@ -405,16 +405,10 @@ qemuTeardownHostdevCgroup(virDomainObjPtr vm,
     size_t i, npaths = 0;
     int rv, ret = -1;
 
-    /* currently this only does something for PCI devices using vfio
-     * for device assignment, but it is called for *all* hostdev
-     * devices.
-     */
-
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
         return 0;
 
-    if (virHostdevIsVFIODevice(dev) &&
-        qemuDomainGetHostdevPath(vm->def, dev, true,
+    if (qemuDomainGetHostdevPath(vm->def, dev, true,
                                  &npaths, &path, NULL) < 0)
         goto cleanup;
 
