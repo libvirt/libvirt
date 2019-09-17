@@ -25,6 +25,7 @@
 #include "qemu_domain.h"
 #include "qemu_process.h"
 #include "qemu_extdevice.h"
+#include "qemu_hostdev.h"
 #include "virlog.h"
 #include "viralloc.h"
 #include "virerror.h"
@@ -359,6 +360,16 @@ qemuTeardownInputCgroup(virDomainObjPtr vm,
 }
 
 
+/**
+ * qemuSetupHostdevCgroup:
+ * vm: domain object
+ * @dev: device to allow
+ *
+ * For given host device @dev allow access to in Cgroups.
+ *
+ * Returns: 0 on success,
+ *         -1 otherwise.
+ */
 int
 qemuSetupHostdevCgroup(virDomainObjPtr vm,
                        virDomainHostdevDefPtr dev)
@@ -385,6 +396,16 @@ qemuSetupHostdevCgroup(virDomainObjPtr vm,
             goto cleanup;
     }
 
+    if (qemuHostdevNeedsVFIO(dev)) {
+        VIR_DEBUG("Cgroup allow %s perms=%d", QEMU_DEV_VFIO, VIR_CGROUP_DEVICE_RW);
+        rv = virCgroupAllowDevicePath(priv->cgroup, QEMU_DEV_VFIO,
+                                      VIR_CGROUP_DEVICE_RW, false);
+        virDomainAuditCgroupPath(vm, priv->cgroup, "allow",
+                                 QEMU_DEV_VFIO, "rw", rv);
+        if (rv < 0)
+            goto cleanup;
+    }
+
     ret = 0;
 
  cleanup:
@@ -395,9 +416,21 @@ qemuSetupHostdevCgroup(virDomainObjPtr vm,
     return ret;
 }
 
+
+/**
+ * qemuTeardownHostdevCgroup:
+ * @vm: doamin object
+ * @dev: device to tear down
+ *
+ * For given host device @dev deny access to it in CGroups.
+ * Note, @dev must not be in @vm's definition.
+ *
+ * Returns: 0 on success,
+ *         -1 otherwise.
+ */
 int
 qemuTeardownHostdevCgroup(virDomainObjPtr vm,
-                       virDomainHostdevDefPtr dev)
+                          virDomainHostdevDefPtr dev)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char **path = NULL;
@@ -417,6 +450,17 @@ qemuTeardownHostdevCgroup(virDomainObjPtr vm,
                                      VIR_CGROUP_DEVICE_RWM, false);
         virDomainAuditCgroupPath(vm, priv->cgroup,
                                  "deny", path[i], "rwm", rv);
+        if (rv < 0)
+            goto cleanup;
+    }
+
+    if (qemuHostdevNeedsVFIO(dev) &&
+        !qemuDomainNeedsVFIO(vm->def)) {
+        VIR_DEBUG("Cgroup deny " QEMU_DEV_VFIO);
+        rv = virCgroupDenyDevicePath(priv->cgroup, QEMU_DEV_VFIO,
+                                     VIR_CGROUP_DEVICE_RWM, false);
+        virDomainAuditCgroupPath(vm, priv->cgroup, "deny",
+                                 QEMU_DEV_VFIO, "rwm", rv);
         if (rv < 0)
             goto cleanup;
     }
@@ -803,6 +847,8 @@ qemuSetupDevicesCgroup(virDomainObjPtr vm)
         goto cleanup;
 
     for (i = 0; i < vm->def->nhostdevs; i++) {
+        /* This may allow /dev/vfio/vfio multiple times, but that
+         * is not a problem. Kernel will have only one record. */
         if (qemuSetupHostdevCgroup(vm, vm->def->hostdevs[i]) < 0)
             goto cleanup;
     }
