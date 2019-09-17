@@ -532,6 +532,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     /* 345 */
     QEMU_CAPS_ARM_MAX_CPU, /* max-arm-cpu type exists */
     QEMU_CAPS_BLOCK_FILE_AUTO_READONLY_DYNAMIC, /* the auto-read-only property of block backends for files is dynamic */
+    QEMU_CAPS_SAVEVM_MONITOR_NODES, /* 'savevm' handles monitor-owned nodes properly */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

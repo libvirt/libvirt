@@ -214,6 +214,7 @@
   <flag name='vhost-user-vga'/>
   <flag name='ramfb'/>
   <flag name='blockdev-file-dynamic-auto-read-only'/>
+  <flag name='savevm-monitor-nodes'/>
   <version>4001092</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100242</microcodeVersion>
