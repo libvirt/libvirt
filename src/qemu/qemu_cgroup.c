@@ -375,26 +375,23 @@ qemuSetupHostdevCgroup(virDomainObjPtr vm,
                        virDomainHostdevDefPtr dev)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    char **path = NULL;
-    int *perms = NULL;
-    size_t i, npaths = 0;
+    g_autofree char *path = NULL;
+    int perms;
     int rv, ret = -1;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
         return 0;
 
-    if (qemuDomainGetHostdevPath(NULL, dev, false, &npaths, &path, &perms) < 0)
+    if (qemuDomainGetHostdevPath(dev, &path, &perms) < 0)
         goto cleanup;
 
-    for (i = 0; i < npaths; i++) {
-        VIR_DEBUG("Cgroup allow %s perms=%d", path[i], perms[i]);
-        rv = virCgroupAllowDevicePath(priv->cgroup, path[i], perms[i], false);
-        virDomainAuditCgroupPath(vm, priv->cgroup, "allow", path[i],
-                                 virCgroupGetDevicePermsString(perms[i]),
-                                 rv);
-        if (rv < 0)
-            goto cleanup;
-    }
+    VIR_DEBUG("Cgroup allow %s perms=%d", path, perms);
+    rv = virCgroupAllowDevicePath(priv->cgroup, path, perms, false);
+    virDomainAuditCgroupPath(vm, priv->cgroup, "allow", path,
+                             virCgroupGetDevicePermsString(perms),
+                             rv);
+    if (rv < 0)
+        goto cleanup;
 
     if (qemuHostdevNeedsVFIO(dev)) {
         VIR_DEBUG("Cgroup allow %s perms=%d", QEMU_DEV_VFIO, VIR_CGROUP_DEVICE_RW);
@@ -409,10 +406,6 @@ qemuSetupHostdevCgroup(virDomainObjPtr vm,
     ret = 0;
 
  cleanup:
-    for (i = 0; i < npaths; i++)
-        VIR_FREE(path[i]);
-    VIR_FREE(path);
-    VIR_FREE(perms);
     return ret;
 }
 
@@ -433,26 +426,22 @@ qemuTeardownHostdevCgroup(virDomainObjPtr vm,
                           virDomainHostdevDefPtr dev)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    char **path = NULL;
-    size_t i, npaths = 0;
+    g_autofree char *path = NULL;
     int rv, ret = -1;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
         return 0;
 
-    if (qemuDomainGetHostdevPath(vm->def, dev, true,
-                                 &npaths, &path, NULL) < 0)
+    if (qemuDomainGetHostdevPath(dev, &path, NULL) < 0)
         goto cleanup;
 
-    for (i = 0; i < npaths; i++) {
-        VIR_DEBUG("Cgroup deny %s", path[i]);
-        rv = virCgroupDenyDevicePath(priv->cgroup, path[i],
-                                     VIR_CGROUP_DEVICE_RWM, false);
-        virDomainAuditCgroupPath(vm, priv->cgroup,
-                                 "deny", path[i], "rwm", rv);
-        if (rv < 0)
-            goto cleanup;
-    }
+    VIR_DEBUG("Cgroup deny %s", path);
+    rv = virCgroupDenyDevicePath(priv->cgroup, path,
+                                 VIR_CGROUP_DEVICE_RWM, false);
+    virDomainAuditCgroupPath(vm, priv->cgroup,
+                             "deny", path, "rwm", rv);
+    if (rv < 0)
+        goto cleanup;
 
     if (qemuHostdevNeedsVFIO(dev) &&
         !qemuDomainNeedsVFIO(vm->def)) {
@@ -467,9 +456,6 @@ qemuTeardownHostdevCgroup(virDomainObjPtr vm,
 
     ret = 0;
  cleanup:
-    for (i = 0; i < npaths; i++)
-        VIR_FREE(path[i]);
-    VIR_FREE(path);
     return ret;
 }
 

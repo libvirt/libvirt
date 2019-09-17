@@ -1099,12 +1099,9 @@ bool qemuDomainSupportsVideoVga(virDomainVideoDefPtr video,
 
 bool qemuDomainNeedsVFIO(const virDomainDef *def);
 
-int qemuDomainGetHostdevPath(virDomainDefPtr def,
-                             virDomainHostdevDefPtr dev,
-                             bool teardown,
-                             size_t *npaths,
-                             char ***path,
-                             int **perms);
+int qemuDomainGetHostdevPath(virDomainHostdevDefPtr dev,
+                             char **path,
+                             int *perms);
 
 int qemuDomainBuildNamespace(virQEMUDriverConfigPtr cfg,
                              virSecurityManagerPtr mgr,
