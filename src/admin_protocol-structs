@@ -1,13 +1,4 @@
 /* -*- c -*- */
-enum {
-        VIR_TYPED_PARAM_INT = 1,
-        VIR_TYPED_PARAM_UINT = 2,
-        VIR_TYPED_PARAM_LLONG = 3,
-        VIR_TYPED_PARAM_ULLONG = 4,
-        VIR_TYPED_PARAM_DOUBLE = 5,
-        VIR_TYPED_PARAM_BOOLEAN = 6,
-        VIR_TYPED_PARAM_STRING = 7,
-};
 struct admin_typed_param_value {
         int                        type;
         union {
