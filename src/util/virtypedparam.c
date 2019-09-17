@@ -514,8 +514,6 @@ virTypedParamsGetStringList(virTypedParameterPtr params,
     int nfiltered;
     virTypedParameterPtr *filtered = NULL;
 
-    virResetLastError();
-
     virCheckNonNullArgGoto(values, error);
     *values = NULL;
 
@@ -540,7 +538,6 @@ virTypedParamsGetStringList(virTypedParameterPtr params,
     if (values)
         VIR_FREE(*values);
     VIR_FREE(filtered);
-    virDispatchError(NULL);
     return -1;
 }
 
