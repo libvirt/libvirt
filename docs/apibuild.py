@@ -52,7 +52,7 @@ included_files = {
   "libvirt-stream.c": "Stream interfaces for the libvirt library",
   "virerror.c": "implements error handling and reporting code for libvirt",
   "virevent.c": "event loop for monitoring file handles",
-  "virtypedparam.c": "virTypedParameters APIs",
+  "virtypedparam-public.c": "virTypedParameters APIs",
 }
 
 qemu_included_files = {

@@ -318,7 +318,7 @@ $(APIBUILD_STAMP): $(srcdir)/apibuild.py \
 		$(top_srcdir)/src/libvirt-admin.c \
 		$(top_srcdir)/src/util/virerror.c \
 		$(top_srcdir)/src/util/virevent.c \
-		$(top_srcdir)/src/util/virtypedparam.c
+		$(top_srcdir)/src/util/virtypedparam-public.c
 	$(AM_V_GEN)srcdir=$(srcdir) builddir=$(builddir) \
 		$(RUNUTF8) $(PYTHON) $(APIBUILD)
 	touch $@

@@ -207,6 +207,7 @@ UTIL_SOURCES = \
 	util/virtime.h \
 	util/virtpm.c \
 	util/virtpm.h \
+	util/virtypedparam-public.c \
 	util/virtypedparam.c \
 	util/virtypedparam.h \
 	util/virusb.c \
