@@ -31494,6 +31494,20 @@ virDomainDefHasVFIOHostdev(const virDomainDef *def)
 }
 
 
+bool
+virDomainDefHasMdevHostdev(const virDomainDef *def)
+{
+    size_t i;
+
+    for (i = 0; i < def->nhostdevs; i++) {
+        if (virHostdevIsMdevDevice(def->hostdevs[i]))
+            return true;
+    }
+
+    return false;
+}
+
+
 /**
  * virDomainGraphicsDefHasOpenGL:
  * @def: domain definition

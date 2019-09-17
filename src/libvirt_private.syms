@@ -295,6 +295,7 @@ virDomainDefGetVcpusMax;
 virDomainDefGetVcpusTopology;
 virDomainDefHasDeviceAddress;
 virDomainDefHasManagedPR;
+virDomainDefHasMdevHostdev;
 virDomainDefHasMemballoon;
 virDomainDefHasMemoryHotplug;
 virDomainDefHasUSB;

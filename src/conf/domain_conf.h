@@ -3671,6 +3671,9 @@ bool
 virDomainDefHasVFIOHostdev(const virDomainDef *def);
 
 bool
+virDomainDefHasMdevHostdev(const virDomainDef *def);
+
+bool
 virDomainGraphicsDefHasOpenGL(const virDomainDef *def);
 
 bool
