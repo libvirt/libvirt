@@ -118,6 +118,15 @@ qemuHostdevUpdateActiveDomainDevices(virQEMUDriverPtr driver,
     return 0;
 }
 
+
+bool
+qemuHostdevNeedsVFIO(const virDomainHostdevDef *hostdev)
+{
+    return virHostdevIsVFIODevice(hostdev) ||
+        virHostdevIsMdevDevice(hostdev);
+}
+
+
 bool
 qemuHostdevHostSupportsPassthroughVFIO(void)
 {

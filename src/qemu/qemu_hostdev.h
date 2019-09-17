@@ -24,6 +24,8 @@
 #include "qemu_conf.h"
 #include "domain_conf.h"
 
+bool qemuHostdevNeedsVFIO(const virDomainHostdevDef *hostdev);
+
 bool qemuHostdevHostSupportsPassthroughVFIO(void);
 
 int qemuHostdevUpdateActiveMediatedDevices(virQEMUDriverPtr driver,
