@@ -265,12 +265,12 @@ int virSocketAddrResolveService(const char *service)
         if (tmp->ai_family == AF_INET) {
             struct sockaddr_in in;
             memcpy(&in, tmp->ai_addr, sizeof(in));
-            port = in.sin_port;
+            port = ntohs(in.sin_port);
             goto cleanup;
         } else if (tmp->ai_family == AF_INET6) {
             struct sockaddr_in6 in;
             memcpy(&in, tmp->ai_addr, sizeof(in));
-            port = in.sin6_port;
+            port = ntohs(in.sin6_port);
             goto cleanup;
         }
         tmp++;
