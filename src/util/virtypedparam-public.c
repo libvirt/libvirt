@@ -34,18 +34,16 @@ virTypedParameterAssignFromStr(virTypedParameterPtr param,
                                int type,
                                const char *val)
 {
-    int ret = -1;
-
     if (!val) {
         virReportError(VIR_ERR_INVALID_ARG, _("NULL value for field '%s'"),
                        name);
-        goto cleanup;
+        return -1;
     }
 
     if (virStrcpyStatic(param->field, name) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, _("Field name '%s' too long"),
                        name);
-        goto cleanup;
+        return -1;
     }
 
     param->type = type;
@@ -55,7 +53,7 @@ virTypedParameterAssignFromStr(virTypedParameterPtr param,
             virReportError(VIR_ERR_INVALID_ARG,
                            _("Invalid value for field '%s': expected int"),
                            name);
-            goto cleanup;
+            return -1;
         }
         break;
     case VIR_TYPED_PARAM_UINT:
@@ -64,7 +62,7 @@ virTypedParameterAssignFromStr(virTypedParameterPtr param,
                            _("Invalid value for field '%s': "
                              "expected unsigned int"),
                            name);
-            goto cleanup;
+            return -1;
         }
         break;
     case VIR_TYPED_PARAM_LLONG:
@@ -73,7 +71,7 @@ virTypedParameterAssignFromStr(virTypedParameterPtr param,
                            _("Invalid value for field '%s': "
                              "expected long long"),
                            name);
-            goto cleanup;
+            return -1;
         }
         break;
     case VIR_TYPED_PARAM_ULLONG:
@@ -82,7 +80,7 @@ virTypedParameterAssignFromStr(virTypedParameterPtr param,
                            _("Invalid value for field '%s': "
                              "expected unsigned long long"),
                            name);
-            goto cleanup;
+            return -1;
         }
         break;
     case VIR_TYPED_PARAM_DOUBLE:
@@ -91,7 +89,7 @@ virTypedParameterAssignFromStr(virTypedParameterPtr param,
                            _("Invalid value for field '%s': "
                              "expected double"),
                            name);
-            goto cleanup;
+            return -1;
         }
         break;
     case VIR_TYPED_PARAM_BOOLEAN:
@@ -102,22 +100,20 @@ virTypedParameterAssignFromStr(virTypedParameterPtr param,
         } else {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("Invalid boolean value for field '%s'"), name);
-            goto cleanup;
+            return -1;
         }
         break;
     case VIR_TYPED_PARAM_STRING:
         if (VIR_STRDUP(param->value.s, val) < 0)
-            goto cleanup;
+            return -1;
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected type %d for field %s"), type, name);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 /* The following APIs are public and their signature may never change. */
