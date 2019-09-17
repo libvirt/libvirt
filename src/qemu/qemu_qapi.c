@@ -216,6 +216,21 @@ virQEMUQAPISchemaTraverseCommand(virJSONValuePtr cur,
 {
     const char *query = virQEMUQAPISchemaTraverseContextNextQuery(ctxt);
     const char *querytype;
+    char modifier = *query;
+
+    if (!c_isalpha(modifier))
+        query++;
+
+    /* exit on modifers for other types */
+    if (modifier == '^' || modifier == '!' || modifier == '+' || modifier == '*')
+        return 0;
+
+    if (modifier == '$') {
+        if (virQEMUQAPISchemaTraverseContextHasNextQuery(ctxt))
+            return -3;
+
+        return virQEMUQAPISchemaTraverseHasObjectFeature(query, cur);
+    }
 
     if (!(querytype = virJSONValueObjectGetString(cur, query)))
         return 0;
