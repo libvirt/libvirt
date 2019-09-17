@@ -30942,13 +30942,16 @@ virDomainNetNotifyActualDevice(virConnectPtr conn,
                                virDomainDefPtr dom,
                                virDomainNetDefPtr iface)
 {
+    virDomainNetType actualType = virDomainNetGetActualType(iface);
+
     if (!virUUIDIsValid(iface->data.network.portid)) {
         if (virDomainNetCreatePort(conn, dom, iface,
                                    VIR_NETWORK_PORT_CREATE_RECLAIM) < 0)
             return;
     }
 
-    if (virDomainNetGetActualType(iface) == VIR_DOMAIN_NET_TYPE_BRIDGE) {
+    if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
+        actualType == VIR_DOMAIN_NET_TYPE_BRIDGE) {
         /*
          * NB: we can't notify the guest of any MTU change anyway,
          * so there is no point in trying to learn the actualMTU
