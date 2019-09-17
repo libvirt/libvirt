@@ -12802,8 +12802,7 @@ qemuDomainGetHostdevPath(virDomainDefPtr def,
             if (!usb)
                 goto cleanup;
 
-            if (!(tmpPath = (char *)virUSBDeviceGetPath(usb)))
-                goto cleanup;
+            tmpPath = (char *)virUSBDeviceGetPath(usb);
             perm = VIR_CGROUP_DEVICE_RW;
             break;
 
@@ -12824,8 +12823,7 @@ qemuDomainGetHostdevPath(virDomainDefPtr def,
                 if (!scsi)
                     goto cleanup;
 
-                if (!(tmpPath = (char *)virSCSIDeviceGetPath(scsi)))
-                    goto cleanup;
+                tmpPath = (char *)virSCSIDeviceGetPath(scsi);
                 perm = virSCSIDeviceGetReadonly(scsi) ?
                     VIR_CGROUP_DEVICE_READ : VIR_CGROUP_DEVICE_RW;
             }
@@ -12837,8 +12835,7 @@ qemuDomainGetHostdevPath(virDomainDefPtr def,
                 if (!(host = virSCSIVHostDeviceNew(hostsrc->wwpn)))
                     goto cleanup;
 
-                if (!(tmpPath = (char *)virSCSIVHostDeviceGetPath(host)))
-                    goto cleanup;
+                tmpPath = (char *)virSCSIVHostDeviceGetPath(host);
                 perm = VIR_CGROUP_DEVICE_RW;
             }
             break;
