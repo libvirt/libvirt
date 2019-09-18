@@ -270,6 +270,13 @@ qemuCheckpointPrepare(virQEMUDriverPtr driver,
         if (disk->type != VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP)
             continue;
 
+        if (STRNEQ(disk->bitmap, def->parent.name)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("bitmap for disk '%s' must match checkpoint name '%s'"),
+                           disk->name, def->parent.name);
+            goto cleanup;
+        }
+
         if (vm->def->disks[i]->src->format != VIR_STORAGE_FILE_QCOW2) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("checkpoint for disk %s unsupported "
