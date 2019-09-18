@@ -1509,7 +1509,7 @@ static int vzDomainAttachDeviceFlags(virDomainPtr domain, const char *xml,
         goto cleanup;
 
     dev = virDomainDeviceDefParse(xml, dom->def, driver->caps,
-                                  driver->xmlopt, VIR_DOMAIN_XML_INACTIVE);
+                                  driver->xmlopt, NULL, VIR_DOMAIN_XML_INACTIVE);
     if (dev == NULL)
         goto cleanup;
 
@@ -1565,7 +1565,7 @@ static int vzDomainDetachDeviceFlags(virDomainPtr domain, const char *xml,
         goto cleanup;
 
     dev = virDomainDeviceDefParse(xml, dom->def, driver->caps,
-                                  driver->xmlopt,
+                                  driver->xmlopt, NULL,
                                   VIR_DOMAIN_XML_INACTIVE |
                                   VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
     if (dev == NULL)
@@ -1657,7 +1657,7 @@ static int vzDomainUpdateDeviceFlags(virDomainPtr domain,
         goto cleanup;
 
     if (!(dev = virDomainDeviceDefParse(xml, dom->def, driver->caps,
-                                        driver->xmlopt,
+                                        driver->xmlopt, NULL,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
