@@ -2609,7 +2609,7 @@ vzDomainSnapshotCreateXML(virDomainPtr domain,
         parse_flags |= VIR_DOMAIN_SNAPSHOT_PARSE_VALIDATE;
 
     if (!(def = virDomainSnapshotDefParseString(xmlDesc, driver->caps,
-                                                driver->xmlopt, NULL,
+                                                driver->xmlopt, NULL, NULL,
                                                 parse_flags)))
         goto cleanup;
 
