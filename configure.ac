@@ -704,6 +704,10 @@ AC_PATH_PROGS([PYTHON], [python3 python2 python])
 if test -z "$PYTHON"; then
     AC_MSG_ERROR(['python3', 'python2' or 'python' binary is required to build libvirt])
 fi
+AC_PATH_PROG([FLAKE8], [flake8])
+if test -z "$FLAKE8"; then
+    AC_MSG_WARN(['flake8' binary is required to check python code style])
+fi
 AC_PATH_PROG([PERL], [perl])
 if test -z "$PERL"; then
          AC_MSG_ERROR(['perl' binary is required to build libvirt])

@@ -812,11 +812,13 @@ sc_require_enum_last_marker:
 	    exit 1; } || :
 
 # In Python files we don't want to end lines with a semicolon like in C
-sc_prohibit_semicolon_at_eol_in_python:
-	@prohibit='^[^#].*\;$$' \
-	in_vc_files='\.py$$' \
-	halt='python does not require to end lines with a semicolon' \
-	  $(_sc_search_regexp)
+sc_flake8:
+	@if [ -n "$(FLAKE8)" ]; then \
+		$(VC_LIST_EXCEPT) | $(GREP) '\.py$$' | xargs \
+			$(FLAKE8) --select E703 --show-source; \
+	else \
+		echo '$(ME): skipping test $@: flake8 not installed' 1>&2; \
+	fi
 
 # mymain() in test files should use return, not exit, for nicer output
 sc_prohibit_exit_in_tests:
@@ -1139,6 +1141,11 @@ syntax-check: spacing-check test-wrap-argv \
 	@if ! cppi --version >/dev/null 2>&1; then \
 		echo "*****************************************************" >&2; \
 		echo "* cppi not installed, some checks have been skipped *" >&2; \
+		echo "*****************************************************" >&2; \
+	fi; \
+	if [ -z "$(FLAKE8)" ]; then \
+		echo "*****************************************************" >&2; \
+		echo "* flake8 not installed, sc_flake8 has been skipped  *" >&2; \
 		echo "*****************************************************" >&2; \
 	fi
 endif
