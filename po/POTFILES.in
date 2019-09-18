@@ -140,6 +140,7 @@
 @SRCDIR@/src/phyp/phyp_driver.c
 @SRCDIR@/src/qemu/qemu_agent.c
 @SRCDIR@/src/qemu/qemu_alias.c
+@SRCDIR@/src/qemu/qemu_backup.c
 @SRCDIR@/src/qemu/qemu_block.c
 @SRCDIR@/src/qemu/qemu_blockjob.c
 @SRCDIR@/src/qemu/qemu_capabilities.c
