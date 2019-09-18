@@ -414,6 +414,9 @@ struct _qemuDomainObjPrivate {
      * commandline for pflash drives. */
     virStorageSourcePtr pflash0;
     virStorageSourcePtr pflash1;
+
+    /* running backup job */
+    virDomainBackupDefPtr backup;
 };
 
 #define QEMU_DOMAIN_PRIVATE(vm) \
