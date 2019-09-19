@@ -242,25 +242,20 @@ virDomainCapsCPUModelsAdd(virDomainCapsCPUModelsPtr cpuModels,
                           virDomainCapsCPUUsable usable,
                           char **blockers)
 {
-    char *nameCopy = NULL;
-    char **blockersCopy = NULL;
+    g_autofree char * nameCopy = NULL;
+    VIR_AUTOSTRINGLIST blockersCopy = NULL;
 
     if (VIR_STRNDUP(nameCopy, name, nameLen) < 0)
-        goto error;
+        return -1;
 
     if (virStringListCopy(&blockersCopy, (const char **)blockers) < 0)
-        goto error;
+        return -1;
 
     if (virDomainCapsCPUModelsAddSteal(cpuModels, &nameCopy,
                                        usable, &blockersCopy) < 0)
-        goto error;
+        return -1;
 
     return 0;
-
- error:
-    VIR_FREE(nameCopy);
-    virStringListFree(blockersCopy);
-    return -1;
 }
 
 
