@@ -183,6 +183,11 @@ virCPUDefPtr
 virCPUDefCopyWithoutModel(const virCPUDef *cpu);
 
 int
+virCPUDefParseXMLString(const char *xml,
+                        virCPUType type,
+                        virCPUDefPtr *cpu);
+
+int
 virCPUDefParseXML(xmlXPathContextPtr ctxt,
                   const char *xpath,
                   virCPUType mode,

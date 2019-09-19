@@ -111,31 +111,19 @@ virCPUCompareXML(virArch arch,
                  const char *xml,
                  bool failIncompatible)
 {
-    xmlDocPtr doc = NULL;
-    xmlXPathContextPtr ctxt = NULL;
     virCPUDefPtr cpu = NULL;
     virCPUCompareResult ret = VIR_CPU_COMPARE_ERROR;
 
     VIR_DEBUG("arch=%s, host=%p, xml=%s",
               virArchToString(arch), host, NULLSTR(xml));
 
-    if (!xml) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s", _("missing CPU definition"));
-        goto cleanup;
-    }
-
-    if (!(doc = virXMLParseStringCtxt(xml, _("(CPU_definition)"), &ctxt)))
-        goto cleanup;
-
-    if (virCPUDefParseXML(ctxt, NULL, VIR_CPU_TYPE_AUTO, &cpu) < 0)
+    if (virCPUDefParseXMLString(xml, VIR_CPU_TYPE_AUTO, &cpu) < 0)
         goto cleanup;
 
     ret = virCPUCompare(arch, host, cpu, failIncompatible);
 
  cleanup:
     virCPUDefFree(cpu);
-    xmlXPathFreeContext(ctxt);
-    xmlFreeDoc(doc);
 
     return ret;
 }

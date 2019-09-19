@@ -101,6 +101,7 @@ virCPUDefIsEqual;
 virCPUDefListFree;
 virCPUDefListParse;
 virCPUDefParseXML;
+virCPUDefParseXMLString;
 virCPUDefStealModel;
 virCPUDefUpdateFeature;
 virCPUModeTypeToString;
