@@ -1620,10 +1620,12 @@ qemuSharedDeviceEntryRemove(virQEMUDriverPtr driver,
     if (!qemuSharedDeviceEntryDomainExists(entry, name, &idx))
         return 0;
 
-    if (entry->ref != 1)
+    if (entry->ref != 1) {
+        VIR_FREE(entry->domains[idx]);
         VIR_DELETE_ELEMENT(entry->domains, idx, entry->ref);
-    else
+    } else {
         ignore_value(virHashRemoveEntry(driver->sharedDevices, key));
+    }
 
     return 0;
 }
