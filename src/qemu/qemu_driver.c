@@ -13632,6 +13632,45 @@ qemuConnectCompareCPU(virConnectPtr conn,
 }
 
 
+static virCPUCompareResult
+qemuConnectCPUModelComparison(virQEMUCapsPtr qemuCaps,
+                              const char *libDir,
+                              uid_t runUid,
+                              gid_t runGid,
+                              virCPUDefPtr cpu_a,
+                              virCPUDefPtr cpu_b,
+                              bool failIncompatible)
+{
+    qemuProcessQMPPtr proc = NULL;
+    char *result = NULL;
+    int ret = VIR_CPU_COMPARE_ERROR;
+
+    if (!(proc = qemuProcessQMPNew(virQEMUCapsGetBinary(qemuCaps),
+                                   libDir, runUid, runGid, false)))
+        goto cleanup;
+
+    if (qemuProcessQMPStart(proc) < 0)
+        goto cleanup;
+
+    if (qemuMonitorGetCPUModelComparison(proc->mon, cpu_a, cpu_b, &result) < 0)
+        goto cleanup;
+
+    if (STREQ(result, "identical"))
+        ret = VIR_CPU_COMPARE_IDENTICAL;
+    else if (STREQ(result, "superset"))
+        ret = VIR_CPU_COMPARE_SUPERSET;
+    else if (failIncompatible)
+        virReportError(VIR_ERR_CPU_INCOMPATIBLE, NULL);
+    else
+        ret = VIR_CPU_COMPARE_INCOMPATIBLE;
+
+ cleanup:
+    VIR_FREE(result);
+    qemuProcessQMPFree(proc);
+    return ret;
+}
+
+
 static int
 qemuConnectCompareHypervisorCPU(virConnectPtr conn,
                                 const char *emulator,
@@ -13643,9 +13682,11 @@ qemuConnectCompareHypervisorCPU(virConnectPtr conn,
 {
     int ret = VIR_CPU_COMPARE_ERROR;
     virQEMUDriverPtr driver = conn->privateData;
+    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
     virQEMUCapsPtr qemuCaps = NULL;
     bool failIncompatible;
     virCPUDefPtr hvCPU;
+    virCPUDefPtr cpu = NULL;
     virArch arch;
     virDomainVirtType virttype;
 
@@ -13680,6 +13721,14 @@ qemuConnectCompareHypervisorCPU(virConnectPtr conn,
 
     if (ARCH_IS_X86(arch)) {
         ret = virCPUCompareXML(arch, hvCPU, xmlCPU, failIncompatible);
+    } else if (ARCH_IS_S390(arch) &&
+               virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_COMPARISON)) {
+        if (virCPUDefParseXMLString(xmlCPU, VIR_CPU_TYPE_AUTO, &cpu) < 0)
+            goto cleanup;
+
+        ret = qemuConnectCPUModelComparison(qemuCaps, cfg->libDir,
+                                            cfg->user, cfg->group,
+                                            hvCPU, cpu, failIncompatible);
     } else {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("comparing with the hypervisor CPU is not supported "
@@ -13687,6 +13736,7 @@ qemuConnectCompareHypervisorCPU(virConnectPtr conn,
     }
 
  cleanup:
+    virCPUDefFree(cpu);
     virObjectUnref(qemuCaps);
     return ret;
 }
