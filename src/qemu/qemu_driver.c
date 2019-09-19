@@ -21349,10 +21349,6 @@ qemuDomainGetStatsInterface(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
 #undef QEMU_ADD_NET_PARAM
 
-#define QEMU_ADD_BLOCK_PARAM_ULL(params, num, name, value) \
-    if (virTypedParamListAddULLong((params), (value), "block.%zu.%s", (num), (name)) < 0) \
-        goto cleanup
-
 /* refresh information by opening images on the disk */
 static int
 qemuDomainGetStatsOneBlockFallback(virQEMUDriverPtr driver,
@@ -21498,32 +21494,28 @@ qemuDomainGetStatsBlockExportBackendStorage(const char *entryname,
 static int
 qemuDomainGetStatsBlockExportFrontend(const char *frontendname,
                                       virHashTablePtr stats,
-                                      size_t recordnr,
-                                      virTypedParamListPtr params)
+                                      size_t idx,
+                                      virTypedParamListPtr par)
 {
-    qemuBlockStats *entry;
-    int ret = -1;
+    qemuBlockStats *en;
 
     /* In case where qemu didn't provide the stats we stop here rather than
      * trying to refresh the stats from the disk. Inability to provide stats is
      * usually caused by blocked storage so this would make libvirtd hang */
-    if (!stats || !frontendname || !(entry = virHashLookup(stats, frontendname))) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (!stats || !frontendname || !(en = virHashLookup(stats, frontendname)))
+        return 0;
 
-    QEMU_ADD_BLOCK_PARAM_ULL(params, recordnr, "rd.reqs", entry->rd_req);
-    QEMU_ADD_BLOCK_PARAM_ULL(params, recordnr, "rd.bytes", entry->rd_bytes);
-    QEMU_ADD_BLOCK_PARAM_ULL(params, recordnr, "rd.times", entry->rd_total_times);
-    QEMU_ADD_BLOCK_PARAM_ULL(params, recordnr, "wr.reqs", entry->wr_req);
-    QEMU_ADD_BLOCK_PARAM_ULL(params, recordnr, "wr.bytes", entry->wr_bytes);
-    QEMU_ADD_BLOCK_PARAM_ULL(params, recordnr, "wr.times", entry->wr_total_times);
-    QEMU_ADD_BLOCK_PARAM_ULL(params, recordnr, "fl.reqs", entry->flush_req);
-    QEMU_ADD_BLOCK_PARAM_ULL(params, recordnr, "fl.times", entry->flush_total_times);
+    if (virTypedParamListAddULLong(par, en->rd_req, "block.%zu.rd.reqs", idx) < 0 ||
+        virTypedParamListAddULLong(par, en->rd_bytes, "block.%zu.rd.bytes", idx) < 0 ||
+        virTypedParamListAddULLong(par, en->rd_total_times, "block.%zu.rd.times", idx) < 0 ||
+        virTypedParamListAddULLong(par, en->wr_req, "block.%zu.wr.reqs", idx) < 0 ||
+        virTypedParamListAddULLong(par, en->wr_bytes, "block.%zu.wr.bytes", idx) < 0 ||
+        virTypedParamListAddULLong(par, en->wr_total_times, "block.%zu.wr.times", idx) < 0 ||
+        virTypedParamListAddULLong(par, en->flush_req, "block.%zu.fl.reqs", idx) < 0 ||
+        virTypedParamListAddULLong(par, en->flush_total_times, "block.%zu.fl.times", idx) < 0)
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -21714,7 +21706,6 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
     return ret;
 }
 
-#undef QEMU_ADD_BLOCK_PARAM_ULL
 
 static int
 qemuDomainGetStatsIOThread(virQEMUDriverPtr driver,
