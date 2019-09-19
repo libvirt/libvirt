@@ -5736,27 +5736,28 @@ qemuMonitorJSONMakeCPUModel(virCPUDefPtr cpu,
 
 static int
 qemuMonitorJSONParseCPUModelData(virJSONValuePtr data,
+                                 const char *cmd_name,
                                  bool fail_no_props,
                                  virJSONValuePtr *cpu_model,
                                  virJSONValuePtr *cpu_props,
                                  const char **cpu_name)
 {
     if (!(*cpu_model = virJSONValueObjectGetObject(data, "model"))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("query-cpu-model-expansion reply data was missing 'model'"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("%s reply data was missing 'model'"), cmd_name);
         return -1;
     }
 
     if (!(*cpu_name = virJSONValueObjectGetString(*cpu_model, "name"))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("query-cpu-model-expansion reply data was missing 'name'"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("%s reply data was missing 'name'"), cmd_name);
         return -1;
     }
 
     if (!(*cpu_props = virJSONValueObjectGetObject(*cpu_model, "props")) &&
         fail_no_props) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("query-cpu-model-expansion reply data was missing 'props'"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("%s reply data was missing 'props'"), cmd_name);
         return -1;
     }
 
@@ -5854,7 +5855,7 @@ qemuMonitorJSONGetCPUModelExpansion(qemuMonitorPtr mon,
 
     data = virJSONValueObjectGetObject(reply, "return");
 
-    if (qemuMonitorJSONParseCPUModelData(data,
+    if (qemuMonitorJSONParseCPUModelData(data, "query-cpu-model-expansion",
                                          fail_no_props, &cpu_model, &cpu_props,
                                          &cpu_name) < 0)
         return -1;
