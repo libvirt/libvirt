@@ -286,8 +286,7 @@ char *qemuMonitorJSONDiskNameLookup(qemuMonitorPtr mon,
 
 int qemuMonitorJSONArbitraryCommand(qemuMonitorPtr mon,
                                     const char *cmd_str,
-                                    char **reply_str,
-                                    bool hmp);
+                                    char **reply_str);
 
 int qemuMonitorJSONInjectNMI(qemuMonitorPtr mon);
 

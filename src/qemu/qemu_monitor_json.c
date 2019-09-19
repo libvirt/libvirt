@@ -4624,25 +4624,20 @@ qemuMonitorJSONDiskNameLookup(qemuMonitorPtr mon,
 
 int qemuMonitorJSONArbitraryCommand(qemuMonitorPtr mon,
                                     const char *cmd_str,
-                                    char **reply_str,
-                                    bool hmp)
+                                    char **reply_str)
 {
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
     int ret = -1;
 
-    if (hmp) {
-        return qemuMonitorJSONHumanCommand(mon, cmd_str, reply_str);
-    } else {
-        if (!(cmd = virJSONValueFromString(cmd_str)))
-            goto cleanup;
+    if (!(cmd = virJSONValueFromString(cmd_str)))
+        goto cleanup;
 
-        if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-            goto cleanup;
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
 
-        if (!(*reply_str = virJSONValueToString(reply, false)))
-            goto cleanup;
-    }
+    if (!(*reply_str = virJSONValueToString(reply, false)))
+        goto cleanup;
 
     ret = 0;
 

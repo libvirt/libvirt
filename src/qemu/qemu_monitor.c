@@ -3191,7 +3191,10 @@ qemuMonitorArbitraryCommand(qemuMonitorPtr mon,
 
     QEMU_CHECK_MONITOR(mon);
 
-    return qemuMonitorJSONArbitraryCommand(mon, cmd, reply, hmp);
+    if (hmp)
+        return qemuMonitorJSONHumanCommand(mon, cmd, reply);
+    else
+        return qemuMonitorJSONArbitraryCommand(mon, cmd, reply);
 }
 
 
