@@ -38,15 +38,10 @@ int qemuMonitorTextAddDrive(qemuMonitorPtr mon,
     char *cmd = NULL;
     char *reply = NULL;
     int ret = -1;
-    char *safe_str;
-
-    safe_str = qemuMonitorEscapeArg(drivestr);
-    if (!safe_str)
-        return -1;
 
     /* 'dummy' here is just a placeholder since there is no PCI
      * address required when attaching drives to a controller */
-    if (virAsprintf(&cmd, "drive_add dummy %s", safe_str) < 0)
+    if (virAsprintf(&cmd, "drive_add dummy %s", drivestr) < 0)
         goto cleanup;
 
     if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
@@ -85,7 +80,6 @@ int qemuMonitorTextAddDrive(qemuMonitorPtr mon,
  cleanup:
     VIR_FREE(cmd);
     VIR_FREE(reply);
-    VIR_FREE(safe_str);
     return ret;
 }
 
@@ -95,13 +89,9 @@ int qemuMonitorTextDriveDel(qemuMonitorPtr mon,
 {
     char *cmd = NULL;
     char *reply = NULL;
-    char *safedev;
     int ret = -1;
 
-    if (!(safedev = qemuMonitorEscapeArg(drivestr)))
-        goto cleanup;
-
-    if (virAsprintf(&cmd, "drive_del %s", safedev) < 0)
+    if (virAsprintf(&cmd, "drive_del %s", drivestr) < 0)
         goto cleanup;
 
     if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
@@ -129,7 +119,6 @@ int qemuMonitorTextDriveDel(qemuMonitorPtr mon,
  cleanup:
     VIR_FREE(cmd);
     VIR_FREE(reply);
-    VIR_FREE(safedev);
     return ret;
 }
 
@@ -140,10 +129,8 @@ qemuMonitorTextCreateSnapshot(qemuMonitorPtr mon,
     char *cmd = NULL;
     char *reply = NULL;
     int ret = -1;
-    char *safename;
 
-    if (!(safename = qemuMonitorEscapeArg(name)) ||
-        virAsprintf(&cmd, "savevm \"%s\"", safename) < 0)
+    if (virAsprintf(&cmd, "savevm \"%s\"", name) < 0)
         goto cleanup;
 
     if (qemuMonitorHMPCommand(mon, cmd, &reply))
@@ -166,7 +153,6 @@ qemuMonitorTextCreateSnapshot(qemuMonitorPtr mon,
     ret = 0;
 
  cleanup:
-    VIR_FREE(safename);
     VIR_FREE(cmd);
     VIR_FREE(reply);
     return ret;
@@ -179,8 +165,7 @@ int qemuMonitorTextLoadSnapshot(qemuMonitorPtr mon, const char *name)
     int ret = -1;
     char *safename;
 
-    if (!(safename = qemuMonitorEscapeArg(name)) ||
-        virAsprintf(&cmd, "loadvm \"%s\"", safename) < 0)
+    if (virAsprintf(&cmd, "loadvm \"%s\"", name) < 0)
         goto cleanup;
 
     if (qemuMonitorHMPCommand(mon, cmd, &reply))
@@ -223,10 +208,8 @@ int qemuMonitorTextDeleteSnapshot(qemuMonitorPtr mon, const char *name)
     char *cmd = NULL;
     char *reply = NULL;
     int ret = -1;
-    char *safename;
 
-    if (!(safename = qemuMonitorEscapeArg(name)) ||
-        virAsprintf(&cmd, "delvm \"%s\"", safename) < 0)
+    if (virAsprintf(&cmd, "delvm \"%s\"", name) < 0)
         goto cleanup;
     if (qemuMonitorHMPCommand(mon, cmd, &reply))
         goto cleanup;
@@ -249,7 +232,6 @@ int qemuMonitorTextDeleteSnapshot(qemuMonitorPtr mon, const char *name)
     ret = 0;
 
  cleanup:
-    VIR_FREE(safename);
     VIR_FREE(cmd);
     VIR_FREE(reply);
     return ret;

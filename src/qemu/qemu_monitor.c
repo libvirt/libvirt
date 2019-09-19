@@ -1258,24 +1258,9 @@ qemuMonitorHMPCommand(qemuMonitorPtr mon,
                       const char *cmd,
                       char **reply)
 {
-    char *json_cmd = NULL;
-    int ret = -1;
-
     QEMU_CHECK_MONITOR(mon);
 
-    /* hack to avoid complicating each call to text monitor functions */
-    json_cmd = qemuMonitorUnescapeArg(cmd);
-    if (!json_cmd) {
-        VIR_DEBUG("Could not unescape command: %s", cmd);
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Unable to unescape command"));
-        goto cleanup;
-    }
-    ret = qemuMonitorJSONHumanCommand(mon, json_cmd, reply);
-
- cleanup:
-    VIR_FREE(json_cmd);
-    return ret;
+    return qemuMonitorJSONHumanCommand(mon, cmd, reply);
 }
 
 
