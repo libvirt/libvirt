@@ -4393,6 +4393,10 @@ virQEMUCapsInitQMPVersionCaps(virQEMUCapsPtr qemuCaps)
         ARCH_IS_PPC64(qemuCaps->arch)) {
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_MAX_CPU_COMPAT);
     }
+
+    /* -net socket,fd= with dgram socket (for ex, with slirp helper) */
+    if (qemuCaps->version >= 4000000)
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_NET_SOCKET_DGRAM);
 }
 
 
