@@ -28,7 +28,6 @@
 #include <unistd.h>
 #include <sys/time.h>
 
-#include "qemu_monitor_text.h"
 #include "qemu_monitor_json.h"
 #include "qemu_alias.h"
 #include "qemu_capabilities.h"
