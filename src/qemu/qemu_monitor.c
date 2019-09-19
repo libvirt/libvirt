@@ -3571,6 +3571,7 @@ qemuMonitorCPUDefsFree(qemuMonitorCPUDefsPtr defs)
     for (i = 0; i < defs->ncpus; i++) {
         g_strfreev(defs->cpus[i].blockers);
         g_free(defs->cpus[i].name);
+        g_free(defs->cpus[i].type);
     }
 
     g_free(defs->cpus);
@@ -3607,6 +3608,7 @@ qemuMonitorCPUDefsCopy(qemuMonitorCPUDefsPtr src)
 
         cpuDst->usable = cpuSrc->usable;
         cpuDst->name = g_strdup(cpuSrc->name);
+        cpuDst->type = g_strdup(cpuSrc->type);
         cpuDst->blockers = g_strdupv(cpuSrc->blockers);
     }
 

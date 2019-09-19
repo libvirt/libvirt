@@ -1090,6 +1090,7 @@ typedef qemuMonitorCPUDefInfo *qemuMonitorCPUDefInfoPtr;
 struct _qemuMonitorCPUDefInfo {
     virDomainCapsCPUUsable usable;
     char *name;
+    char *type;
     char **blockers; /* NULL-terminated string list */
 };
 

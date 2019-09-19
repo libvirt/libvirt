@@ -3530,6 +3530,8 @@ virQEMUCapsLoadCPUModels(virQEMUCapsPtr qemuCaps,
             return -1;
         }
 
+        cpu->type = virXMLPropString(nodes[i], "typename");
+
         node = ctxt->node;
         ctxt->node = nodes[i];
         nblockers = virXPathNodeSet("./blocker", ctxt, &blockerNodes);
@@ -3991,6 +3993,7 @@ virQEMUCapsFormatCPUModels(virQEMUCapsPtr qemuCaps,
 
         virBufferAsprintf(buf, "<cpu type='%s' ", typeStr);
         virBufferEscapeString(buf, "name='%s'", cpu->name);
+        virBufferEscapeString(buf, " typename='%s'", cpu->type);
         if (cpu->usable) {
             virBufferAsprintf(buf, " usable='%s'",
                               virDomainCapsCPUUsableTypeToString(cpu->usable));

@@ -122,134 +122,134 @@
     <property name='te' type='boolean' value='true'/>
     <property name='cmm' type='boolean' value='true'/>
   </hostCPU>
-  <cpu type='kvm' name='z10EC-base'/>
-  <cpu type='kvm' name='z9EC-base'/>
-  <cpu type='kvm' name='z196.2-base'/>
-  <cpu type='kvm' name='z900-base'/>
-  <cpu type='kvm' name='z990'/>
-  <cpu type='kvm' name='z900.2-base'/>
-  <cpu type='kvm' name='host'/>
-  <cpu type='kvm' name='z900.3'/>
-  <cpu type='kvm' name='z114'/>
-  <cpu type='kvm' name='z890-base'/>
-  <cpu type='kvm' name='z13.2-base'/>
-  <cpu type='kvm' name='zEC12.2'/>
-  <cpu type='kvm' name='z900.2'/>
-  <cpu type='kvm' name='z10BC'/>
-  <cpu type='kvm' name='z10BC.2'/>
-  <cpu type='kvm' name='z196'/>
-  <cpu type='kvm' name='z9EC'/>
-  <cpu type='kvm' name='z990-base'/>
-  <cpu type='kvm' name='z10EC.3'/>
-  <cpu type='kvm' name='z900'/>
-  <cpu type='kvm' name='z9EC.3-base'/>
-  <cpu type='kvm' name='z990.5-base'/>
-  <cpu type='kvm' name='z10EC.2'/>
-  <cpu type='kvm' name='z9BC.2'/>
-  <cpu type='kvm' name='z10EC'/>
-  <cpu type='kvm' name='z990.3-base'/>
-  <cpu type='kvm' name='z13s'/>
-  <cpu type='kvm' name='z10EC.3-base'/>
-  <cpu type='kvm' name='zEC12.2-base'/>
-  <cpu type='kvm' name='z890.3-base'/>
-  <cpu type='kvm' name='z9EC.3'/>
-  <cpu type='kvm' name='z990.5'/>
-  <cpu type='kvm' name='z13'/>
-  <cpu type='kvm' name='z13s-base'/>
-  <cpu type='kvm' name='z9EC.2'/>
-  <cpu type='kvm' name='z990.4'/>
-  <cpu type='kvm' name='zEC12-base'/>
-  <cpu type='kvm' name='z9EC.2-base'/>
-  <cpu type='kvm' name='zBC12'/>
-  <cpu type='kvm' name='z196.2'/>
-  <cpu type='kvm' name='z990.3'/>
-  <cpu type='kvm' name='z990.2-base'/>
-  <cpu type='kvm' name='z900.3-base'/>
-  <cpu type='kvm' name='z890.3'/>
-  <cpu type='kvm' name='z10EC.2-base'/>
-  <cpu type='kvm' name='z990.2'/>
-  <cpu type='kvm' name='z890.2'/>
-  <cpu type='kvm' name='z800-base'/>
-  <cpu type='kvm' name='zBC12-base'/>
-  <cpu type='kvm' name='zEC12'/>
-  <cpu type='kvm' name='z9BC.2-base'/>
-  <cpu type='kvm' name='z9BC'/>
-  <cpu type='kvm' name='z10BC.2-base'/>
-  <cpu type='kvm' name='z990.4-base'/>
-  <cpu type='kvm' name='qemu'/>
-  <cpu type='kvm' name='z10BC-base'/>
-  <cpu type='kvm' name='z9BC-base'/>
-  <cpu type='kvm' name='z800'/>
-  <cpu type='kvm' name='z890.2-base'/>
-  <cpu type='kvm' name='z13.2'/>
-  <cpu type='kvm' name='z114-base'/>
-  <cpu type='kvm' name='z196-base'/>
-  <cpu type='kvm' name='z13-base'/>
-  <cpu type='kvm' name='z890'/>
-  <cpu type='tcg' name='z10EC-base'/>
-  <cpu type='tcg' name='z9EC-base'/>
-  <cpu type='tcg' name='z196.2-base'/>
-  <cpu type='tcg' name='z900-base'/>
-  <cpu type='tcg' name='z990'/>
-  <cpu type='tcg' name='z900.2-base'/>
-  <cpu type='tcg' name='host'/>
-  <cpu type='tcg' name='z900.3'/>
-  <cpu type='tcg' name='z114'/>
-  <cpu type='tcg' name='z890-base'/>
-  <cpu type='tcg' name='z13.2-base'/>
-  <cpu type='tcg' name='zEC12.2'/>
-  <cpu type='tcg' name='z900.2'/>
-  <cpu type='tcg' name='z10BC'/>
-  <cpu type='tcg' name='z10BC.2'/>
-  <cpu type='tcg' name='z196'/>
-  <cpu type='tcg' name='z9EC'/>
-  <cpu type='tcg' name='z990-base'/>
-  <cpu type='tcg' name='z10EC.3'/>
-  <cpu type='tcg' name='z900'/>
-  <cpu type='tcg' name='z9EC.3-base'/>
-  <cpu type='tcg' name='z990.5-base'/>
-  <cpu type='tcg' name='z10EC.2'/>
-  <cpu type='tcg' name='z9BC.2'/>
-  <cpu type='tcg' name='z10EC'/>
-  <cpu type='tcg' name='z990.3-base'/>
-  <cpu type='tcg' name='z13s'/>
-  <cpu type='tcg' name='z10EC.3-base'/>
-  <cpu type='tcg' name='zEC12.2-base'/>
-  <cpu type='tcg' name='z890.3-base'/>
-  <cpu type='tcg' name='z9EC.3'/>
-  <cpu type='tcg' name='z990.5'/>
-  <cpu type='tcg' name='z13'/>
-  <cpu type='tcg' name='z13s-base'/>
-  <cpu type='tcg' name='z9EC.2'/>
-  <cpu type='tcg' name='z990.4'/>
-  <cpu type='tcg' name='zEC12-base'/>
-  <cpu type='tcg' name='z9EC.2-base'/>
-  <cpu type='tcg' name='zBC12'/>
-  <cpu type='tcg' name='z196.2'/>
-  <cpu type='tcg' name='z990.3'/>
-  <cpu type='tcg' name='z990.2-base'/>
-  <cpu type='tcg' name='z900.3-base'/>
-  <cpu type='tcg' name='z890.3'/>
-  <cpu type='tcg' name='z10EC.2-base'/>
-  <cpu type='tcg' name='z990.2'/>
-  <cpu type='tcg' name='z890.2'/>
-  <cpu type='tcg' name='z800-base'/>
-  <cpu type='tcg' name='zBC12-base'/>
-  <cpu type='tcg' name='zEC12'/>
-  <cpu type='tcg' name='z9BC.2-base'/>
-  <cpu type='tcg' name='z9BC'/>
-  <cpu type='tcg' name='z10BC.2-base'/>
-  <cpu type='tcg' name='z990.4-base'/>
-  <cpu type='tcg' name='qemu'/>
-  <cpu type='tcg' name='z10BC-base'/>
-  <cpu type='tcg' name='z9BC-base'/>
-  <cpu type='tcg' name='z800'/>
-  <cpu type='tcg' name='z890.2-base'/>
-  <cpu type='tcg' name='z13.2'/>
-  <cpu type='tcg' name='z114-base'/>
-  <cpu type='tcg' name='z196-base'/>
-  <cpu type='tcg' name='z13-base'/>
-  <cpu type='tcg' name='z890'/>
+  <cpu type='kvm' name='z10EC-base' typename='z10EC-base-s390-cpu'/>
+  <cpu type='kvm' name='z9EC-base' typename='z9EC-base-s390-cpu'/>
+  <cpu type='kvm' name='z196.2-base' typename='z196.2-base-s390-cpu'/>
+  <cpu type='kvm' name='z900-base' typename='z900-base-s390-cpu'/>
+  <cpu type='kvm' name='z990' typename='z990-s390-cpu'/>
+  <cpu type='kvm' name='z900.2-base' typename='z900.2-base-s390-cpu'/>
+  <cpu type='kvm' name='host' typename='host-s390-cpu'/>
+  <cpu type='kvm' name='z900.3' typename='z900.3-s390-cpu'/>
+  <cpu type='kvm' name='z114' typename='z114-s390-cpu'/>
+  <cpu type='kvm' name='z890-base' typename='z890-base-s390-cpu'/>
+  <cpu type='kvm' name='z13.2-base' typename='z13.2-base-s390-cpu'/>
+  <cpu type='kvm' name='zEC12.2' typename='zEC12.2-s390-cpu'/>
+  <cpu type='kvm' name='z900.2' typename='z900.2-s390-cpu'/>
+  <cpu type='kvm' name='z10BC' typename='z10BC-s390-cpu'/>
+  <cpu type='kvm' name='z10BC.2' typename='z10BC.2-s390-cpu'/>
+  <cpu type='kvm' name='z196' typename='z196-s390-cpu'/>
+  <cpu type='kvm' name='z9EC' typename='z9EC-s390-cpu'/>
+  <cpu type='kvm' name='z990-base' typename='z990-base-s390-cpu'/>
+  <cpu type='kvm' name='z10EC.3' typename='z10EC.3-s390-cpu'/>
+  <cpu type='kvm' name='z900' typename='z900-s390-cpu'/>
+  <cpu type='kvm' name='z9EC.3-base' typename='z9EC.3-base-s390-cpu'/>
+  <cpu type='kvm' name='z990.5-base' typename='z990.5-base-s390-cpu'/>
+  <cpu type='kvm' name='z10EC.2' typename='z10EC.2-s390-cpu'/>
+  <cpu type='kvm' name='z9BC.2' typename='z9BC.2-s390-cpu'/>
+  <cpu type='kvm' name='z10EC' typename='z10EC-s390-cpu'/>
+  <cpu type='kvm' name='z990.3-base' typename='z990.3-base-s390-cpu'/>
+  <cpu type='kvm' name='z13s' typename='z13s-s390-cpu'/>
+  <cpu type='kvm' name='z10EC.3-base' typename='z10EC.3-base-s390-cpu'/>
+  <cpu type='kvm' name='zEC12.2-base' typename='zEC12.2-base-s390-cpu'/>
+  <cpu type='kvm' name='z890.3-base' typename='z890.3-base-s390-cpu'/>
+  <cpu type='kvm' name='z9EC.3' typename='z9EC.3-s390-cpu'/>
+  <cpu type='kvm' name='z990.5' typename='z990.5-s390-cpu'/>
+  <cpu type='kvm' name='z13' typename='z13-s390-cpu'/>
+  <cpu type='kvm' name='z13s-base' typename='z13s-base-s390-cpu'/>
+  <cpu type='kvm' name='z9EC.2' typename='z9EC.2-s390-cpu'/>
+  <cpu type='kvm' name='z990.4' typename='z990.4-s390-cpu'/>
+  <cpu type='kvm' name='zEC12-base' typename='zEC12-base-s390-cpu'/>
+  <cpu type='kvm' name='z9EC.2-base' typename='z9EC.2-base-s390-cpu'/>
+  <cpu type='kvm' name='zBC12' typename='zBC12-s390-cpu'/>
+  <cpu type='kvm' name='z196.2' typename='z196.2-s390-cpu'/>
+  <cpu type='kvm' name='z990.3' typename='z990.3-s390-cpu'/>
+  <cpu type='kvm' name='z990.2-base' typename='z990.2-base-s390-cpu'/>
+  <cpu type='kvm' name='z900.3-base' typename='z900.3-base-s390-cpu'/>
+  <cpu type='kvm' name='z890.3' typename='z890.3-s390-cpu'/>
+  <cpu type='kvm' name='z10EC.2-base' typename='z10EC.2-base-s390-cpu'/>
+  <cpu type='kvm' name='z990.2' typename='z990.2-s390-cpu'/>
+  <cpu type='kvm' name='z890.2' typename='z890.2-s390-cpu'/>
+  <cpu type='kvm' name='z800-base' typename='z800-base-s390-cpu'/>
+  <cpu type='kvm' name='zBC12-base' typename='zBC12-base-s390-cpu'/>
+  <cpu type='kvm' name='zEC12' typename='zEC12-s390-cpu'/>
+  <cpu type='kvm' name='z9BC.2-base' typename='z9BC.2-base-s390-cpu'/>
+  <cpu type='kvm' name='z9BC' typename='z9BC-s390-cpu'/>
+  <cpu type='kvm' name='z10BC.2-base' typename='z10BC.2-base-s390-cpu'/>
+  <cpu type='kvm' name='z990.4-base' typename='z990.4-base-s390-cpu'/>
+  <cpu type='kvm' name='qemu' typename='qemu-s390-cpu'/>
+  <cpu type='kvm' name='z10BC-base' typename='z10BC-base-s390-cpu'/>
+  <cpu type='kvm' name='z9BC-base' typename='z9BC-base-s390-cpu'/>
+  <cpu type='kvm' name='z800' typename='z800-s390-cpu'/>
+  <cpu type='kvm' name='z890.2-base' typename='z890.2-base-s390-cpu'/>
+  <cpu type='kvm' name='z13.2' typename='z13.2-s390-cpu'/>
+  <cpu type='kvm' name='z114-base' typename='z114-base-s390-cpu'/>
+  <cpu type='kvm' name='z196-base' typename='z196-base-s390-cpu'/>
+  <cpu type='kvm' name='z13-base' typename='z13-base-s390-cpu'/>
+  <cpu type='kvm' name='z890' typename='z890-s390-cpu'/>
+  <cpu type='tcg' name='z10EC-base' typename='z10EC-base-s390-cpu'/>
+  <cpu type='tcg' name='z9EC-base' typename='z9EC-base-s390-cpu'/>
+  <cpu type='tcg' name='z196.2-base' typename='z196.2-base-s390-cpu'/>
+  <cpu type='tcg' name='z900-base' typename='z900-base-s390-cpu'/>
+  <cpu type='tcg' name='z990' typename='z990-s390-cpu'/>
+  <cpu type='tcg' name='z900.2-base' typename='z900.2-base-s390-cpu'/>
+  <cpu type='tcg' name='host' typename='host-s390-cpu'/>
+  <cpu type='tcg' name='z900.3' typename='z900.3-s390-cpu'/>
+  <cpu type='tcg' name='z114' typename='z114-s390-cpu'/>
+  <cpu type='tcg' name='z890-base' typename='z890-base-s390-cpu'/>
+  <cpu type='tcg' name='z13.2-base' typename='z13.2-base-s390-cpu'/>
+  <cpu type='tcg' name='zEC12.2' typename='zEC12.2-s390-cpu'/>
+  <cpu type='tcg' name='z900.2' typename='z900.2-s390-cpu'/>
+  <cpu type='tcg' name='z10BC' typename='z10BC-s390-cpu'/>
+  <cpu type='tcg' name='z10BC.2' typename='z10BC.2-s390-cpu'/>
+  <cpu type='tcg' name='z196' typename='z196-s390-cpu'/>
+  <cpu type='tcg' name='z9EC' typename='z9EC-s390-cpu'/>
+  <cpu type='tcg' name='z990-base' typename='z990-base-s390-cpu'/>
+  <cpu type='tcg' name='z10EC.3' typename='z10EC.3-s390-cpu'/>
+  <cpu type='tcg' name='z900' typename='z900-s390-cpu'/>
+  <cpu type='tcg' name='z9EC.3-base' typename='z9EC.3-base-s390-cpu'/>
+  <cpu type='tcg' name='z990.5-base' typename='z990.5-base-s390-cpu'/>
+  <cpu type='tcg' name='z10EC.2' typename='z10EC.2-s390-cpu'/>
+  <cpu type='tcg' name='z9BC.2' typename='z9BC.2-s390-cpu'/>
+  <cpu type='tcg' name='z10EC' typename='z10EC-s390-cpu'/>
+  <cpu type='tcg' name='z990.3-base' typename='z990.3-base-s390-cpu'/>
+  <cpu type='tcg' name='z13s' typename='z13s-s390-cpu'/>
+  <cpu type='tcg' name='z10EC.3-base' typename='z10EC.3-base-s390-cpu'/>
+  <cpu type='tcg' name='zEC12.2-base' typename='zEC12.2-base-s390-cpu'/>
+  <cpu type='tcg' name='z890.3-base' typename='z890.3-base-s390-cpu'/>
+  <cpu type='tcg' name='z9EC.3' typename='z9EC.3-s390-cpu'/>
+  <cpu type='tcg' name='z990.5' typename='z990.5-s390-cpu'/>
+  <cpu type='tcg' name='z13' typename='z13-s390-cpu'/>
+  <cpu type='tcg' name='z13s-base' typename='z13s-base-s390-cpu'/>
+  <cpu type='tcg' name='z9EC.2' typename='z9EC.2-s390-cpu'/>
+  <cpu type='tcg' name='z990.4' typename='z990.4-s390-cpu'/>
+  <cpu type='tcg' name='zEC12-base' typename='zEC12-base-s390-cpu'/>
+  <cpu type='tcg' name='z9EC.2-base' typename='z9EC.2-base-s390-cpu'/>
+  <cpu type='tcg' name='zBC12' typename='zBC12-s390-cpu'/>
+  <cpu type='tcg' name='z196.2' typename='z196.2-s390-cpu'/>
+  <cpu type='tcg' name='z990.3' typename='z990.3-s390-cpu'/>
+  <cpu type='tcg' name='z990.2-base' typename='z990.2-base-s390-cpu'/>
+  <cpu type='tcg' name='z900.3-base' typename='z900.3-base-s390-cpu'/>
+  <cpu type='tcg' name='z890.3' typename='z890.3-s390-cpu'/>
+  <cpu type='tcg' name='z10EC.2-base' typename='z10EC.2-base-s390-cpu'/>
+  <cpu type='tcg' name='z990.2' typename='z990.2-s390-cpu'/>
+  <cpu type='tcg' name='z890.2' typename='z890.2-s390-cpu'/>
+  <cpu type='tcg' name='z800-base' typename='z800-base-s390-cpu'/>
+  <cpu type='tcg' name='zBC12-base' typename='zBC12-base-s390-cpu'/>
+  <cpu type='tcg' name='zEC12' typename='zEC12-s390-cpu'/>
+  <cpu type='tcg' name='z9BC.2-base' typename='z9BC.2-base-s390-cpu'/>
+  <cpu type='tcg' name='z9BC' typename='z9BC-s390-cpu'/>
+  <cpu type='tcg' name='z10BC.2-base' typename='z10BC.2-base-s390-cpu'/>
+  <cpu type='tcg' name='z990.4-base' typename='z990.4-base-s390-cpu'/>
+  <cpu type='tcg' name='qemu' typename='qemu-s390-cpu'/>
+  <cpu type='tcg' name='z10BC-base' typename='z10BC-base-s390-cpu'/>
+  <cpu type='tcg' name='z9BC-base' typename='z9BC-base-s390-cpu'/>
+  <cpu type='tcg' name='z800' typename='z800-s390-cpu'/>
+  <cpu type='tcg' name='z890.2-base' typename='z890.2-base-s390-cpu'/>
+  <cpu type='tcg' name='z13.2' typename='z13.2-s390-cpu'/>
+  <cpu type='tcg' name='z114-base' typename='z114-base-s390-cpu'/>
+  <cpu type='tcg' name='z196-base' typename='z196-base-s390-cpu'/>
+  <cpu type='tcg' name='z13-base' typename='z13-base-s390-cpu'/>
+  <cpu type='tcg' name='z890' typename='z890-s390-cpu'/>
   <machine name='s390-ccw-virtio-2.9' alias='s390-ccw-virtio' maxCpus='248' default='yes'/>
   <machine name='s390-ccw-virtio-2.7' maxCpus='248'/>
   <machine name='s390-ccw-virtio-2.6' maxCpus='248'/>
