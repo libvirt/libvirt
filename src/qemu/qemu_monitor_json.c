@@ -5919,6 +5919,48 @@ qemuMonitorJSONGetCPUModelBaseline(qemuMonitorPtr mon,
 }
 
 
+int
+qemuMonitorJSONGetCPUModelComparison(qemuMonitorPtr mon,
+                                     virCPUDefPtr cpu_a,
+                                     virCPUDefPtr cpu_b,
+                                     char **result)
+{
+    VIR_AUTOPTR(virJSONValue) model_a = NULL;
+    VIR_AUTOPTR(virJSONValue) model_b = NULL;
+    VIR_AUTOPTR(virJSONValue) cmd = NULL;
+    VIR_AUTOPTR(virJSONValue) reply = NULL;
+    const char *data_result;
+    virJSONValuePtr data;
+
+    if (!(model_a = qemuMonitorJSONMakeCPUModel(cpu_a, true)) ||
+        !(model_b = qemuMonitorJSONMakeCPUModel(cpu_b, true)))
+        return -1;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-cpu-model-comparison",
+                                           "a:modela", &model_a,
+                                           "a:modelb", &model_b,
+                                           NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return -1;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        return -1;
+
+    data = virJSONValueObjectGetObject(reply, "return");
+
+    if (!(data_result = virJSONValueObjectGetString(data, "result"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-cpu-model-comparison reply data was missing "
+                         "'result'"));
+        return -1;
+    }
+
+    return VIR_STRDUP(*result, data_result);
+}
+
+
 int qemuMonitorJSONGetCommands(qemuMonitorPtr mon,
                                char ***commands)
 {

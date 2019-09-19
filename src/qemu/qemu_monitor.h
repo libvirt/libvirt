@@ -1158,6 +1158,11 @@ int qemuMonitorGetCPUModelBaseline(qemuMonitorPtr mon,
                                    virCPUDefPtr cpu_b,
                                    qemuMonitorCPUModelInfoPtr *baseline);
 
+int qemuMonitorGetCPUModelComparison(qemuMonitorPtr mon,
+                                     virCPUDefPtr cpu_a,
+                                     virCPUDefPtr cpu_b,
+                                     char **result);
+
 qemuMonitorCPUModelInfoPtr
 qemuMonitorCPUModelInfoCopy(const qemuMonitorCPUModelInfo *orig);
 
