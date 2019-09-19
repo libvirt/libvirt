@@ -903,6 +903,15 @@ int virNetSocketNewConnectSSH(const char *nodename,
         return -1;
     }
     quoted = virBufferContentAndReset(&buf);
+
+    virBufferEscapeShell(&buf, quoted);
+    VIR_FREE(quoted);
+    if (virBufferCheckError(&buf) < 0) {
+        virCommandFree(cmd);
+        return -1;
+    }
+    quoted = virBufferContentAndReset(&buf);
+
     /*
      * This ugly thing is a shell script to detect availability of
      * the -q option for 'nc': debian and suse based distros need this

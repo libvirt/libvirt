@@ -492,6 +492,10 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
     virBufferEscapeShell(&buf, netcatPath);
     if (!(nc = virBufferContentAndReset(&buf)))
         goto no_memory;
+    virBufferEscapeShell(&buf, nc);
+    VIR_FREE(nc);
+    if (!(nc = virBufferContentAndReset(&buf)))
+        goto no_memory;
 
     virBufferAsprintf(&buf,
          "sh -c "
@@ -596,6 +600,10 @@ virNetClientPtr virNetClientNewLibssh(const char *host,
     DEFAULT_VALUE(knownHostsVerify, "normal");
 
     virBufferEscapeShell(&buf, netcatPath);
+    if (!(nc = virBufferContentAndReset(&buf)))
+        goto no_memory;
+    virBufferEscapeShell(&buf, nc);
+    VIR_FREE(nc);
     if (!(nc = virBufferContentAndReset(&buf)))
         goto no_memory;
 

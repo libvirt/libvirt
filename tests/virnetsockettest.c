@@ -661,15 +661,15 @@ mymain(void)
 
     struct testSSHData sshData7 = {
         .nodename = "somehost",
-        .netcat = "nc -4",
+        .netcat = "/tmp/fo o/nc",
         .path = "/tmp/socket",
         .expectOut = "-T -e none -- somehost sh -c '"
-                     "if ''nc -4'' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
+                     "if \'''\\''/tmp/fo o/nc'\\'''' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
                          "ARG=-q0;"
                      "else "
                          "ARG=;"
                      "fi;"
-                     "''nc -4'' $ARG -U /tmp/socket'\n",
+                     "'''\\''/tmp/fo o/nc'\\'''' $ARG -U /tmp/socket'\n",
     };
     if (virTestRun("SSH test 7", testSocketSSH, &sshData7) < 0)
         ret = -1;
