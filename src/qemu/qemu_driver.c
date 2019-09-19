@@ -20896,22 +20896,13 @@ qemuConnectGetDomainCapabilities(virConnectPtr conn,
 static int
 qemuDomainGetStatsState(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
                         virDomainObjPtr dom,
-                        virDomainStatsRecordPtr record,
-                        int *maxparams,
+                        virTypedParamListPtr params,
                         unsigned int privflags ATTRIBUTE_UNUSED)
 {
-    if (virTypedParamsAddInt(&record->params,
-                             &record->nparams,
-                             maxparams,
-                             "state.state",
-                             dom->state.state) < 0)
+    if (virTypedParamListAddInt(params, dom->state.state, "state.state") < 0)
         return -1;
 
-    if (virTypedParamsAddInt(&record->params,
-                             &record->nparams,
-                             maxparams,
-                             "state.reason",
-                             dom->state.reason) < 0)
+    if (virTypedParamListAddInt(params, dom->state.reason, "state.reason") < 0)
         return -1;
 
     return 0;
@@ -21052,10 +21043,8 @@ qemuDomainGetResctrlMonData(virQEMUDriverPtr driver,
 static int
 qemuDomainGetStatsCpuCache(virQEMUDriverPtr driver,
                            virDomainObjPtr dom,
-                           virDomainStatsRecordPtr record,
-                           int *maxparams)
+                           virTypedParamListPtr params)
 {
-    char param_name[VIR_TYPED_PARAM_FIELD_LENGTH];
     virQEMUResctrlMonDataPtr *resdata = NULL;
     size_t nresdata = 0;
     size_t i = 0;
@@ -21069,49 +21058,29 @@ qemuDomainGetStatsCpuCache(virQEMUDriverPtr driver,
                                     VIR_RESCTRL_MONITOR_TYPE_CACHE) < 0)
         goto cleanup;
 
-    snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-             "cpu.cache.monitor.count");
-    if (virTypedParamsAddUInt(&record->params, &record->nparams,
-                              maxparams, param_name, nresdata) < 0)
+    if (virTypedParamListAddUInt(params, nresdata, "cpu.cache.monitor.count") < 0)
         goto cleanup;
 
     for (i = 0; i < nresdata; i++) {
-        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                 "cpu.cache.monitor.%zu.name", i);
-        if (virTypedParamsAddString(&record->params,
-                                    &record->nparams,
-                                    maxparams,
-                                    param_name,
-                                    resdata[i]->name) < 0)
+        if (virTypedParamListAddString(params, resdata[i]->name,
+                                       "cpu.cache.monitor.%zu.name", i) < 0)
             goto cleanup;
 
-        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                 "cpu.cache.monitor.%zu.vcpus", i);
-        if (virTypedParamsAddString(&record->params, &record->nparams,
-                                    maxparams, param_name,
-                                    resdata[i]->vcpus) < 0)
+        if (virTypedParamListAddString(params, resdata[i]->vcpus,
+                                       "cpu.cache.monitor.%zu.vcpus", i) < 0)
             goto cleanup;
 
-        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                 "cpu.cache.monitor.%zu.bank.count", i);
-        if (virTypedParamsAddUInt(&record->params, &record->nparams,
-                                  maxparams, param_name,
-                                  resdata[i]->nstats) < 0)
+        if (virTypedParamListAddUInt(params, resdata[i]->nstats,
+                                     "cpu.cache.monitor.%zu.bank.count", i) < 0)
             goto cleanup;
 
         for (j = 0; j < resdata[i]->nstats; j++) {
-            snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                     "cpu.cache.monitor.%zu.bank.%zu.id", i, j);
-            if (virTypedParamsAddUInt(&record->params, &record->nparams,
-                                      maxparams, param_name,
-                                      resdata[i]->stats[j]->id) < 0)
+            if (virTypedParamListAddUInt(params, resdata[i]->stats[j]->id,
+                                         "cpu.cache.monitor.%zu.bank.%zu.id", i, j) < 0)
                 goto cleanup;
 
-            snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                     "cpu.cache.monitor.%zu.bank.%zu.bytes", i, j);
-            if (virTypedParamsAddUInt(&record->params, &record->nparams,
-                                      maxparams, param_name,
-                                      resdata[i]->stats[j]->vals[0]) < 0)
+            if (virTypedParamListAddUInt(params, resdata[i]->stats[j]->vals[0],
+                                         "cpu.cache.monitor.%zu.bank.%zu.bytes", i, j) < 0)
                 goto cleanup;
         }
     }
@@ -21127,8 +21096,7 @@ qemuDomainGetStatsCpuCache(virQEMUDriverPtr driver,
 
 static int
 qemuDomainGetStatsCpuCgroup(virDomainObjPtr dom,
-                            virDomainStatsRecordPtr record,
-                            int *maxparams)
+                            virTypedParamListPtr params)
 {
     qemuDomainObjPrivatePtr priv = dom->privateData;
     unsigned long long cpu_time = 0;
@@ -21140,25 +21108,13 @@ qemuDomainGetStatsCpuCgroup(virDomainObjPtr dom,
         return 0;
 
     err = virCgroupGetCpuacctUsage(priv->cgroup, &cpu_time);
-    if (!err && virTypedParamsAddULLong(&record->params,
-                                        &record->nparams,
-                                        maxparams,
-                                        "cpu.time",
-                                        cpu_time) < 0)
+    if (!err && virTypedParamListAddULLong(params, cpu_time, "cpu.time") < 0)
         return -1;
 
     err = virCgroupGetCpuacctStat(priv->cgroup, &user_time, &sys_time);
-    if (!err && virTypedParamsAddULLong(&record->params,
-                                        &record->nparams,
-                                        maxparams,
-                                        "cpu.user",
-                                        user_time) < 0)
+    if (!err && virTypedParamListAddULLong(params, user_time, "cpu.user") < 0)
         return -1;
-    if (!err && virTypedParamsAddULLong(&record->params,
-                                        &record->nparams,
-                                        maxparams,
-                                        "cpu.system",
-                                        sys_time) < 0)
+    if (!err && virTypedParamListAddULLong(params, sys_time, "cpu.system") < 0)
         return -1;
 
     return 0;
@@ -21168,14 +21124,13 @@ qemuDomainGetStatsCpuCgroup(virDomainObjPtr dom,
 static int
 qemuDomainGetStatsCpu(virQEMUDriverPtr driver,
                       virDomainObjPtr dom,
-                      virDomainStatsRecordPtr record,
-                      int *maxparams,
+                      virTypedParamListPtr params,
                       unsigned int privflags ATTRIBUTE_UNUSED)
 {
-    if (qemuDomainGetStatsCpuCgroup(dom, record, maxparams) < 0)
+    if (qemuDomainGetStatsCpuCgroup(dom, params) < 0)
         return -1;
 
-    if (qemuDomainGetStatsCpuCache(driver, dom, record, maxparams) < 0)
+    if (qemuDomainGetStatsCpuCache(driver, dom, params) < 0)
         return -1;
 
     return 0;
@@ -21185,8 +21140,7 @@ qemuDomainGetStatsCpu(virQEMUDriverPtr driver,
 static int
 qemuDomainGetStatsBalloon(virQEMUDriverPtr driver,
                           virDomainObjPtr dom,
-                          virDomainStatsRecordPtr record,
-                          int *maxparams,
+                          virTypedParamListPtr params,
                           unsigned int privflags)
 {
     virDomainMemoryStatStruct stats[VIR_DOMAIN_MEMORY_STAT_NR];
@@ -21200,18 +21154,11 @@ qemuDomainGetStatsBalloon(virQEMUDriverPtr driver,
         cur_balloon = dom->def->mem.cur_balloon;
     }
 
-    if (virTypedParamsAddULLong(&record->params,
-                                &record->nparams,
-                                maxparams,
-                                "balloon.current",
-                                cur_balloon) < 0)
+    if (virTypedParamListAddULLong(params, cur_balloon, "balloon.current") < 0)
         return -1;
 
-    if (virTypedParamsAddULLong(&record->params,
-                                &record->nparams,
-                                maxparams,
-                                "balloon.maximum",
-                                virDomainDefGetMemoryTotal(dom->def)) < 0)
+    if (virTypedParamListAddULLong(params, virDomainDefGetMemoryTotal(dom->def),
+                                   "balloon.maximum") < 0)
         return -1;
 
     if (!HAVE_JOB(privflags) || !virDomainObjIsActive(dom))
@@ -21224,11 +21171,7 @@ qemuDomainGetStatsBalloon(virQEMUDriverPtr driver,
 
 #define STORE_MEM_RECORD(TAG, NAME) \
     if (stats[i].tag == VIR_DOMAIN_MEMORY_STAT_ ##TAG) \
-        if (virTypedParamsAddULLong(&record->params, \
-                                    &record->nparams, \
-                                    maxparams, \
-                                    "balloon." NAME, \
-                                    stats[i].val) < 0) \
+        if (virTypedParamListAddULLong(params, stats[i].val, "balloon." NAME) < 0) \
             return -1;
 
     for (i = 0; i < nr_stats; i++) {
@@ -21255,30 +21198,22 @@ qemuDomainGetStatsBalloon(virQEMUDriverPtr driver,
 static int
 qemuDomainGetStatsVcpu(virQEMUDriverPtr driver,
                        virDomainObjPtr dom,
-                       virDomainStatsRecordPtr record,
-                       int *maxparams,
+                       virTypedParamListPtr params,
                        unsigned int privflags)
 {
     virDomainVcpuDefPtr vcpu;
     qemuDomainVcpuPrivatePtr vcpupriv;
     size_t i;
     int ret = -1;
-    char param_name[VIR_TYPED_PARAM_FIELD_LENGTH];
     virVcpuInfoPtr cpuinfo = NULL;
     unsigned long long *cpuwait = NULL;
 
-    if (virTypedParamsAddUInt(&record->params,
-                              &record->nparams,
-                              maxparams,
-                              "vcpu.current",
-                              virDomainDefGetVcpus(dom->def)) < 0)
+    if (virTypedParamListAddUInt(params, virDomainDefGetVcpus(dom->def),
+                                 "vcpu.current") < 0)
         return -1;
 
-    if (virTypedParamsAddUInt(&record->params,
-                              &record->nparams,
-                              maxparams,
-                              "vcpu.maximum",
-                              virDomainDefGetVcpusMax(dom->def)) < 0)
+    if (virTypedParamListAddUInt(params, virDomainDefGetVcpusMax(dom->def),
+                                 "vcpu.maximum") < 0)
         return -1;
 
     if (VIR_ALLOC_N(cpuinfo, virDomainDefGetVcpus(dom->def)) < 0 ||
@@ -21301,34 +21236,20 @@ qemuDomainGetStatsVcpu(virQEMUDriverPtr driver,
     }
 
     for (i = 0; i < virDomainDefGetVcpus(dom->def); i++) {
-        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                 "vcpu.%u.state", cpuinfo[i].number);
-        if (virTypedParamsAddInt(&record->params,
-                                 &record->nparams,
-                                 maxparams,
-                                 param_name,
-                                 cpuinfo[i].state) < 0)
+        if (virTypedParamListAddInt(params, cpuinfo[i].state,
+                                    "vcpu.%u.state", cpuinfo[i].number) < 0)
             goto cleanup;
 
         /* stats below are available only if the VM is alive */
         if (!virDomainObjIsActive(dom))
             continue;
 
-        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                 "vcpu.%u.time", cpuinfo[i].number);
-        if (virTypedParamsAddULLong(&record->params,
-                                    &record->nparams,
-                                    maxparams,
-                                    param_name,
-                                    cpuinfo[i].cpuTime) < 0)
+        if (virTypedParamListAddULLong(params, cpuinfo[i].cpuTime,
+                                       "vcpu.%u.time", cpuinfo[i].number) < 0)
             goto cleanup;
-        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                 "vcpu.%u.wait", cpuinfo[i].number);
-        if (virTypedParamsAddULLong(&record->params,
-                                    &record->nparams,
-                                    maxparams,
-                                    param_name,
-                                    cpuwait[i]) < 0)
+
+        if (virTypedParamListAddULLong(params, cpuwait[i],
+                                       "vcpu.%u.wait", cpuinfo[i].number) < 0)
             goto cleanup;
 
         /* state below is extracted from the individual vcpu structs */
@@ -21338,13 +21259,10 @@ qemuDomainGetStatsVcpu(virQEMUDriverPtr driver,
         vcpupriv = QEMU_DOMAIN_VCPU_PRIVATE(vcpu);
 
         if (vcpupriv->halted != VIR_TRISTATE_BOOL_ABSENT) {
-            snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                     "vcpu.%u.halted", cpuinfo[i].number);
-            if (virTypedParamsAddBoolean(&record->params,
-                                         &record->nparams,
-                                         maxparams,
-                                         param_name,
-                                         vcpupriv->halted == VIR_TRISTATE_BOOL_YES) < 0)
+            if (virTypedParamListAddBoolean(params,
+                                            vcpupriv->halted == VIR_TRISTATE_BOOL_YES,
+                                            "vcpu.%u.halted",
+                                            cpuinfo[i].number) < 0)
                 goto cleanup;
         }
     }
@@ -21357,49 +21275,15 @@ qemuDomainGetStatsVcpu(virQEMUDriverPtr driver,
     return ret;
 }
 
-#define QEMU_ADD_COUNT_PARAM(record, maxparams, type, count) \
-do { \
-    char param_name[VIR_TYPED_PARAM_FIELD_LENGTH]; \
-    snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, "%s.count", type); \
-    if (virTypedParamsAddUInt(&(record)->params, \
-                              &(record)->nparams, \
-                              maxparams, \
-                              param_name, \
-                              count) < 0) \
-        goto cleanup; \
-} while (0)
-
-#define QEMU_ADD_NAME_PARAM(record, maxparams, type, subtype, num, name) \
-do { \
-    char param_name[VIR_TYPED_PARAM_FIELD_LENGTH]; \
-    snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, \
-             "%s.%zu.%s", type, num, subtype); \
-    if (virTypedParamsAddString(&(record)->params, \
-                                &(record)->nparams, \
-                                maxparams, \
-                                param_name, \
-                                name) < 0) \
-        goto cleanup; \
-} while (0)
-
-#define QEMU_ADD_NET_PARAM(record, maxparams, num, name, value) \
-do { \
-    char param_name[VIR_TYPED_PARAM_FIELD_LENGTH]; \
-    snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, \
-             "net.%zu.%s", num, name); \
-    if (value >= 0 && virTypedParamsAddULLong(&(record)->params, \
-                                              &(record)->nparams, \
-                                              maxparams, \
-                                              param_name, \
-                                              value) < 0) \
-        return -1; \
-} while (0)
+#define QEMU_ADD_NET_PARAM(params, num, name, value) \
+    if (value >= 0 && \
+        virTypedParamListAddULLong((params), (value), "net.%zu.%s", (num), (name)) < 0) \
+        return -1;
 
 static int
 qemuDomainGetStatsInterface(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
                             virDomainObjPtr dom,
-                            virDomainStatsRecordPtr record,
-                            int *maxparams,
+                            virTypedParamListPtr params,
                             unsigned int privflags ATTRIBUTE_UNUSED)
 {
     size_t i;
@@ -21409,7 +21293,8 @@ qemuDomainGetStatsInterface(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
     if (!virDomainObjIsActive(dom))
         return 0;
 
-    QEMU_ADD_COUNT_PARAM(record, maxparams, "net", dom->def->nnets);
+    if (virTypedParamListAddUInt(params, dom->def->nnets, "net.count") < 0)
+        goto cleanup;
 
     /* Check the path is one of the domain's network interfaces. */
     for (i = 0; i < dom->def->nnets; i++) {
@@ -21423,8 +21308,8 @@ qemuDomainGetStatsInterface(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
         actualType = virDomainNetGetActualType(net);
 
-        QEMU_ADD_NAME_PARAM(record, maxparams,
-                            "net", "name", i, net->ifname);
+        if (virTypedParamListAddString(params, net->ifname, "net.%zu.name", i) < 0)
+            goto cleanup;
 
         if (actualType == VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
             if (virNetDevOpenvswitchInterfaceStats(net->ifname, &tmp) < 0) {
@@ -21439,21 +21324,21 @@ qemuDomainGetStatsInterface(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
             }
         }
 
-        QEMU_ADD_NET_PARAM(record, maxparams, i,
+        QEMU_ADD_NET_PARAM(params, i,
                            "rx.bytes", tmp.rx_bytes);
-        QEMU_ADD_NET_PARAM(record, maxparams, i,
+        QEMU_ADD_NET_PARAM(params, i,
                            "rx.pkts", tmp.rx_packets);
-        QEMU_ADD_NET_PARAM(record, maxparams, i,
+        QEMU_ADD_NET_PARAM(params, i,
                            "rx.errs", tmp.rx_errs);
-        QEMU_ADD_NET_PARAM(record, maxparams, i,
+        QEMU_ADD_NET_PARAM(params, i,
                            "rx.drop", tmp.rx_drop);
-        QEMU_ADD_NET_PARAM(record, maxparams, i,
+        QEMU_ADD_NET_PARAM(params, i,
                            "tx.bytes", tmp.tx_bytes);
-        QEMU_ADD_NET_PARAM(record, maxparams, i,
+        QEMU_ADD_NET_PARAM(params, i,
                            "tx.pkts", tmp.tx_packets);
-        QEMU_ADD_NET_PARAM(record, maxparams, i,
+        QEMU_ADD_NET_PARAM(params, i,
                            "tx.errs", tmp.tx_errs);
-        QEMU_ADD_NET_PARAM(record, maxparams, i,
+        QEMU_ADD_NET_PARAM(params, i,
                            "tx.drop", tmp.tx_drop);
     }
 
@@ -21464,39 +21349,16 @@ qemuDomainGetStatsInterface(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
 #undef QEMU_ADD_NET_PARAM
 
-#define QEMU_ADD_BLOCK_PARAM_UI(record, maxparams, num, name, value) \
-    do { \
-        char param_name[VIR_TYPED_PARAM_FIELD_LENGTH]; \
-        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, \
-                 "block.%zu.%s", num, name); \
-        if (virTypedParamsAddUInt(&(record)->params, \
-                                  &(record)->nparams, \
-                                  maxparams, \
-                                  param_name, \
-                                  value) < 0) \
-            goto cleanup; \
-    } while (0)
-
-#define QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, num, name, value) \
-do { \
-    char param_name[VIR_TYPED_PARAM_FIELD_LENGTH]; \
-    snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, \
-             "block.%zu.%s", num, name); \
-    if (virTypedParamsAddULLong(&(record)->params, \
-                                &(record)->nparams, \
-                                maxparams, \
-                                param_name, \
-                                value) < 0) \
-        goto cleanup; \
-} while (0)
+#define QEMU_ADD_BLOCK_PARAM_ULL(params, num, name, value) \
+    if (virTypedParamListAddULLong((params), (value), "block.%zu.%s", (num), (name)) < 0) \
+        goto cleanup
 
 /* refresh information by opening images on the disk */
 static int
 qemuDomainGetStatsOneBlockFallback(virQEMUDriverPtr driver,
                                    virQEMUDriverConfigPtr cfg,
                                    virDomainObjPtr dom,
-                                   virDomainStatsRecordPtr record,
-                                   int *maxparams,
+                                   virTypedParamListPtr params,
                                    virStorageSourcePtr src,
                                    size_t block_idx)
 {
@@ -21511,13 +21373,13 @@ qemuDomainGetStatsOneBlockFallback(virQEMUDriverPtr driver,
     }
 
     if (src->allocation)
-        QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx,
+        QEMU_ADD_BLOCK_PARAM_ULL(params, block_idx,
                                  "allocation", src->allocation);
     if (src->capacity)
-        QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx,
+        QEMU_ADD_BLOCK_PARAM_ULL(params, block_idx,
                                  "capacity", src->capacity);
     if (src->physical)
-        QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx,
+        QEMU_ADD_BLOCK_PARAM_ULL(params, block_idx,
                                  "physical", src->physical);
     ret = 0;
  cleanup:
@@ -21565,8 +21427,7 @@ static int
 qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
                            virQEMUDriverConfigPtr cfg,
                            virDomainObjPtr dom,
-                           virDomainStatsRecordPtr record,
-                           int *maxparams,
+                           virTypedParamListPtr params,
                            const char *entryname,
                            virStorageSourcePtr src,
                            size_t block_idx,
@@ -21578,8 +21439,8 @@ qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
     /* the VM is offline so we have to go and load the stast from the disk by
      * ourselves */
     if (!virDomainObjIsActive(dom)) {
-        ret = qemuDomainGetStatsOneBlockFallback(driver, cfg, dom, record,
-                                                 maxparams, src, block_idx);
+        ret = qemuDomainGetStatsOneBlockFallback(driver, cfg, dom, params,
+                                                 src, block_idx);
         goto cleanup;
     }
 
@@ -21591,18 +21452,18 @@ qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx,
+    QEMU_ADD_BLOCK_PARAM_ULL(params, block_idx,
                              "allocation", entry->wr_highest_offset);
 
     if (entry->capacity)
-        QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx,
+        QEMU_ADD_BLOCK_PARAM_ULL(params, block_idx,
                                  "capacity", entry->capacity);
     if (entry->physical) {
-        QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx,
+        QEMU_ADD_BLOCK_PARAM_ULL(params, block_idx,
                                  "physical", entry->physical);
     } else {
         if (qemuDomainStorageUpdatePhysical(driver, cfg, dom, src) == 0)
-            QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx,
+            QEMU_ADD_BLOCK_PARAM_ULL(params, block_idx,
                                      "physical", src->physical);
     }
 
@@ -21616,8 +21477,7 @@ static int
 qemuDomainGetStatsBlockExportBackendStorage(const char *entryname,
                                             virHashTablePtr stats,
                                             size_t recordnr,
-                                            virDomainStatsRecordPtr records,
-                                            int *nrecords)
+                                            virTypedParamListPtr params)
 {
     qemuBlockStats *entry;
     int ret = -1;
@@ -21628,7 +21488,7 @@ qemuDomainGetStatsBlockExportBackendStorage(const char *entryname,
     }
 
     if (entry->write_threshold)
-        QEMU_ADD_BLOCK_PARAM_ULL(records, nrecords, recordnr, "threshold",
+        QEMU_ADD_BLOCK_PARAM_ULL(params, recordnr, "threshold",
                                  entry->write_threshold);
 
     ret = 0;
@@ -21641,8 +21501,7 @@ static int
 qemuDomainGetStatsBlockExportFrontend(const char *frontendname,
                                       virHashTablePtr stats,
                                       size_t recordnr,
-                                      virDomainStatsRecordPtr records,
-                                      int *nrecords)
+                                      virTypedParamListPtr params)
 {
     qemuBlockStats *entry;
     int ret = -1;
@@ -21655,14 +21514,14 @@ qemuDomainGetStatsBlockExportFrontend(const char *frontendname,
         goto cleanup;
     }
 
-    QEMU_ADD_BLOCK_PARAM_ULL(records, nrecords, recordnr, "rd.reqs", entry->rd_req);
-    QEMU_ADD_BLOCK_PARAM_ULL(records, nrecords, recordnr, "rd.bytes", entry->rd_bytes);
-    QEMU_ADD_BLOCK_PARAM_ULL(records, nrecords, recordnr, "rd.times", entry->rd_total_times);
-    QEMU_ADD_BLOCK_PARAM_ULL(records, nrecords, recordnr, "wr.reqs", entry->wr_req);
-    QEMU_ADD_BLOCK_PARAM_ULL(records, nrecords, recordnr, "wr.bytes", entry->wr_bytes);
-    QEMU_ADD_BLOCK_PARAM_ULL(records, nrecords, recordnr, "wr.times", entry->wr_total_times);
-    QEMU_ADD_BLOCK_PARAM_ULL(records, nrecords, recordnr, "fl.reqs", entry->flush_req);
-    QEMU_ADD_BLOCK_PARAM_ULL(records, nrecords, recordnr, "fl.times", entry->flush_total_times);
+    QEMU_ADD_BLOCK_PARAM_ULL(params, recordnr, "rd.reqs", entry->rd_req);
+    QEMU_ADD_BLOCK_PARAM_ULL(params, recordnr, "rd.bytes", entry->rd_bytes);
+    QEMU_ADD_BLOCK_PARAM_ULL(params, recordnr, "rd.times", entry->rd_total_times);
+    QEMU_ADD_BLOCK_PARAM_ULL(params, recordnr, "wr.reqs", entry->wr_req);
+    QEMU_ADD_BLOCK_PARAM_ULL(params, recordnr, "wr.bytes", entry->wr_bytes);
+    QEMU_ADD_BLOCK_PARAM_ULL(params, recordnr, "wr.times", entry->wr_total_times);
+    QEMU_ADD_BLOCK_PARAM_ULL(params, recordnr, "fl.reqs", entry->flush_req);
+    QEMU_ADD_BLOCK_PARAM_ULL(params, recordnr, "fl.times", entry->flush_total_times);
 
     ret = 0;
  cleanup:
@@ -21674,18 +21533,20 @@ static int
 qemuDomainGetStatsBlockExportHeader(virDomainDiskDefPtr disk,
                                     virStorageSourcePtr src,
                                     size_t recordnr,
-                                    virDomainStatsRecordPtr records,
-                                    int *nrecords)
+                                    virTypedParamListPtr params)
 {
     int ret = -1;
 
-    QEMU_ADD_NAME_PARAM(records, nrecords, "block", "name", recordnr, disk->dst);
+    if (virTypedParamListAddString(params, disk->dst, "block.%zu.name", recordnr) < 0)
+        goto cleanup;
 
-    if (virStorageSourceIsLocalStorage(src) && src->path)
-        QEMU_ADD_NAME_PARAM(records, nrecords, "block", "path", recordnr, src->path);
-    if (src->id)
-        QEMU_ADD_BLOCK_PARAM_UI(records, nrecords, recordnr, "backingIndex",
-                                src->id);
+    if (virStorageSourceIsLocalStorage(src) && src->path &&
+        virTypedParamListAddString(params, src->path, "block.%zu.path", recordnr) < 0)
+        goto cleanup;
+
+    if (src->id &&
+        virTypedParamListAddUInt(params, src->id, "block.%zu.backingIndex", recordnr) < 0)
+        goto cleanup;
 
     ret = 0;
  cleanup:
@@ -21697,8 +21558,7 @@ static int
 qemuDomainGetStatsBlockExportDisk(virDomainDiskDefPtr disk,
                                   virHashTablePtr stats,
                                   virHashTablePtr nodestats,
-                                  virDomainStatsRecordPtr records,
-                                  int *nrecords,
+                                  virTypedParamListPtr params,
                                   size_t *recordnr,
                                   bool visitBacking,
                                   virQEMUDriverPtr driver,
@@ -21725,7 +21585,7 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDefPtr disk,
                  "skip getting stats", disk->dst);
 
         return qemuDomainGetStatsBlockExportHeader(disk, disk->src, *recordnr,
-                                                   records, nrecords);
+                                                   params);
     }
 
     for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
@@ -21746,25 +21606,24 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDefPtr disk,
             backendstoragealias = alias;
         }
 
-        if (qemuDomainGetStatsBlockExportHeader(disk, n, *recordnr,
-                                                records, nrecords) < 0)
+        if (qemuDomainGetStatsBlockExportHeader(disk, n, *recordnr, params) < 0)
             goto cleanup;
 
         /* The following stats make sense only for the frontend device */
         if (n == disk->src) {
             if (qemuDomainGetStatsBlockExportFrontend(frontendalias, stats, *recordnr,
-                                                      records, nrecords) < 0)
+                                                      params) < 0)
                 goto cleanup;
         }
 
-        if (qemuDomainGetStatsOneBlock(driver, cfg, dom, records, nrecords,
+        if (qemuDomainGetStatsOneBlock(driver, cfg, dom, params,
                                        backendalias, n, *recordnr,
                                        stats) < 0)
             goto cleanup;
 
         if (qemuDomainGetStatsBlockExportBackendStorage(backendstoragealias,
                                                         stats, *recordnr,
-                                                        records, nrecords) < 0)
+                                                        params) < 0)
             goto cleanup;
 
         VIR_FREE(alias);
@@ -21785,8 +21644,7 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDefPtr disk,
 static int
 qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
                         virDomainObjPtr dom,
-                        virDomainStatsRecordPtr record,
-                        int *maxparams,
+                        virTypedParamListPtr params,
                         unsigned int privflags)
 {
     size_t i;
@@ -21835,18 +21693,19 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
     /* When listing backing chains, it's easier to fix up the count
      * after the iteration than it is to iterate twice; but we still
      * want count listed first.  */
-    count_index = record->nparams;
-    QEMU_ADD_COUNT_PARAM(record, maxparams, "block", 0);
+    count_index = params->npar;
+    if (virTypedParamListAddUInt(params, 0, "block.count") < 0)
+        goto cleanup;
 
     for (i = 0; i < dom->def->ndisks; i++) {
         if (qemuDomainGetStatsBlockExportDisk(dom->def->disks[i], stats, nodestats,
-                                              record, maxparams, &visited,
+                                              params, &visited,
                                               visitBacking, driver, cfg, dom,
                                               blockdev) < 0)
             goto cleanup;
     }
 
-    record->params[count_index].value.ui = visited;
+    params->par[count_index].value.ui = visited;
     ret = 0;
 
  cleanup:
@@ -21859,39 +21718,10 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
 
 #undef QEMU_ADD_BLOCK_PARAM_ULL
 
-#undef QEMU_ADD_NAME_PARAM
-
-#define QEMU_ADD_IOTHREAD_PARAM_UI(record, maxparams, id, name, value) \
-    do { \
-        char param_name[VIR_TYPED_PARAM_FIELD_LENGTH]; \
-        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, \
-                 "iothread.%u.%s", id, name); \
-        if (virTypedParamsAddUInt(&(record)->params, \
-                                  &(record)->nparams, \
-                                  maxparams, \
-                                  param_name, \
-                                  value) < 0) \
-            goto cleanup; \
-    } while (0)
-
-#define QEMU_ADD_IOTHREAD_PARAM_ULL(record, maxparams, id, name, value) \
-do { \
-    char param_name[VIR_TYPED_PARAM_FIELD_LENGTH]; \
-    snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, \
-             "iothread.%u.%s", id, name); \
-    if (virTypedParamsAddULLong(&(record)->params, \
-                                &(record)->nparams, \
-                                maxparams, \
-                                param_name, \
-                                value) < 0) \
-        goto cleanup; \
-} while (0)
-
 static int
 qemuDomainGetStatsIOThread(virQEMUDriverPtr driver,
                            virDomainObjPtr dom,
-                           virDomainStatsRecordPtr record,
-                           int *maxparams,
+                           virTypedParamListPtr params,
                            unsigned int privflags ATTRIBUTE_UNUSED)
 {
     qemuDomainObjPrivatePtr priv = dom->privateData;
@@ -21912,22 +21742,20 @@ qemuDomainGetStatsIOThread(virQEMUDriverPtr driver,
     if (niothreads == 0)
         return 0;
 
-    QEMU_ADD_COUNT_PARAM(record, maxparams, "iothread", niothreads);
+    if (virTypedParamListAddUInt(params, niothreads, "iothread.count") < 0)
+        goto cleanup;
 
     for (i = 0; i < niothreads; i++) {
         if (iothreads[i]->poll_valid) {
-            QEMU_ADD_IOTHREAD_PARAM_ULL(record, maxparams,
-                                        iothreads[i]->iothread_id,
-                                        "poll-max-ns",
-                                        iothreads[i]->poll_max_ns);
-            QEMU_ADD_IOTHREAD_PARAM_UI(record, maxparams,
-                                       iothreads[i]->iothread_id,
-                                       "poll-grow",
-                                       iothreads[i]->poll_grow);
-            QEMU_ADD_IOTHREAD_PARAM_UI(record, maxparams,
-                                       iothreads[i]->iothread_id,
-                                       "poll-shrink",
-                                       iothreads[i]->poll_shrink);
+            if (virTypedParamListAddULLong(params, iothreads[i]->poll_max_ns,
+                                           "iothread.%zu.poll-max-ns", i) < 0)
+                goto cleanup;
+            if (virTypedParamListAddUInt(params, iothreads[i]->poll_grow,
+                                         "iothread.%zu.poll-grow", i) < 0)
+                goto cleanup;
+            if (virTypedParamListAddUInt(params, iothreads[i]->poll_shrink,
+                                         "iothread.%zu.poll-shrink", i) < 0)
+                goto cleanup;
         }
     }
 
@@ -21941,32 +21769,19 @@ qemuDomainGetStatsIOThread(virQEMUDriverPtr driver,
     return ret;
 }
 
-#undef QEMU_ADD_IOTHREAD_PARAM_UI
-
-#undef QEMU_ADD_IOTHREAD_PARAM_ULL
-
-#undef QEMU_ADD_COUNT_PARAM
 
 static int
 qemuDomainGetStatsPerfOneEvent(virPerfPtr perf,
                                virPerfEventType type,
-                               virDomainStatsRecordPtr record,
-                               int *maxparams)
+                               virTypedParamListPtr params)
 {
-    char param_name[VIR_TYPED_PARAM_FIELD_LENGTH];
     uint64_t value = 0;
 
     if (virPerfReadEvent(perf, type, &value) < 0)
         return -1;
 
-    snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, "perf.%s",
-             virPerfEventTypeToString(type));
-
-    if (virTypedParamsAddULLong(&record->params,
-                                &record->nparams,
-                                maxparams,
-                                param_name,
-                                value) < 0)
+    if (virTypedParamListAddULLong(params, value, "perf.%s",
+                                   virPerfEventTypeToString(type)) < 0)
         return -1;
 
     return 0;
@@ -21975,8 +21790,7 @@ qemuDomainGetStatsPerfOneEvent(virPerfPtr perf,
 static int
 qemuDomainGetStatsPerf(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
                        virDomainObjPtr dom,
-                       virDomainStatsRecordPtr record,
-                       int *maxparams,
+                       virTypedParamListPtr params,
                        unsigned int privflags ATTRIBUTE_UNUSED)
 {
     size_t i;
@@ -21987,8 +21801,7 @@ qemuDomainGetStatsPerf(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
         if (!virPerfEventIsEnabled(priv->perf, i))
              continue;
 
-        if (qemuDomainGetStatsPerfOneEvent(priv->perf, i,
-                                           record, maxparams) < 0)
+        if (qemuDomainGetStatsPerfOneEvent(priv->perf, i, params) < 0)
             goto cleanup;
     }
 
@@ -22001,8 +21814,7 @@ qemuDomainGetStatsPerf(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 typedef int
 (*qemuDomainGetStatsFunc)(virQEMUDriverPtr driver,
                           virDomainObjPtr dom,
-                          virDomainStatsRecordPtr record,
-                          int *maxparams,
+                          virTypedParamListPtr list,
                           unsigned int flags);
 
 struct qemuDomainGetStatsWorker {
@@ -22073,37 +21885,31 @@ qemuDomainGetStats(virConnectPtr conn,
                    virDomainStatsRecordPtr *record,
                    unsigned int flags)
 {
-    int maxparams = 0;
-    virDomainStatsRecordPtr tmp;
+    VIR_AUTOFREE(virDomainStatsRecordPtr) tmp = NULL;
+    VIR_AUTOPTR(virTypedParamList) params = NULL;
     size_t i;
-    int ret = -1;
 
-    if (VIR_ALLOC(tmp) < 0)
-        goto cleanup;
+    if (VIR_ALLOC(params) < 0)
+        return -1;
 
     for (i = 0; qemuDomainGetStatsWorkers[i].func; i++) {
         if (stats & qemuDomainGetStatsWorkers[i].stats) {
-            if (qemuDomainGetStatsWorkers[i].func(conn->privateData, dom, tmp,
-                                                  &maxparams, flags) < 0)
-                goto cleanup;
+            if (qemuDomainGetStatsWorkers[i].func(conn->privateData, dom, params,
+                                                  flags) < 0)
+                return -1;
         }
     }
 
+    if (VIR_ALLOC(tmp) < 0)
+        return -1;
+
     if (!(tmp->dom = virGetDomain(conn, dom->def->name,
                                   dom->def->uuid, dom->def->id)))
-        goto cleanup;
+        return -1;
 
-    *record = tmp;
-    tmp = NULL;
-    ret = 0;
-
- cleanup:
-    if (tmp) {
-        virTypedParamsFree(tmp->params, tmp->nparams);
-        VIR_FREE(tmp);
-    }
-
-    return ret;
+    tmp->nparams = virTypedParamListStealParams(params, &tmp->params);
+    VIR_STEAL_PTR(*record, tmp);
+    return 0;
 }
 
 
