@@ -23,6 +23,7 @@
 
 
 #include "qemu_monitor_text.h"
+#include "qemu_monitor_json.h"
 #include "viralloc.h"
 #include "virlog.h"
 #include "virerror.h"
@@ -44,7 +45,7 @@ int qemuMonitorTextAddDrive(qemuMonitorPtr mon,
     if (virAsprintf(&cmd, "drive_add dummy %s", drivestr) < 0)
         goto cleanup;
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
+    if (qemuMonitorJSONHumanCommand(mon, cmd, &reply) < 0)
         goto cleanup;
 
     if (strstr(reply, "unknown command:")) {
@@ -94,7 +95,7 @@ int qemuMonitorTextDriveDel(qemuMonitorPtr mon,
     if (virAsprintf(&cmd, "drive_del %s", drivestr) < 0)
         goto cleanup;
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
+    if (qemuMonitorJSONHumanCommand(mon, cmd, &reply) < 0)
         goto cleanup;
 
     if (strstr(reply, "unknown command:")) {
@@ -133,7 +134,7 @@ qemuMonitorTextCreateSnapshot(qemuMonitorPtr mon,
     if (virAsprintf(&cmd, "savevm \"%s\"", name) < 0)
         goto cleanup;
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply))
+    if (qemuMonitorJSONHumanCommand(mon, cmd, &reply))
         goto cleanup;
 
     if (strstr(reply, "Error while creating snapshot") ||
@@ -168,7 +169,7 @@ int qemuMonitorTextLoadSnapshot(qemuMonitorPtr mon, const char *name)
     if (virAsprintf(&cmd, "loadvm \"%s\"", name) < 0)
         goto cleanup;
 
-    if (qemuMonitorHMPCommand(mon, cmd, &reply))
+    if (qemuMonitorJSONHumanCommand(mon, cmd, &reply))
         goto cleanup;
 
     if (strstr(reply, "No block device supports snapshots")) {
@@ -211,7 +212,7 @@ int qemuMonitorTextDeleteSnapshot(qemuMonitorPtr mon, const char *name)
 
     if (virAsprintf(&cmd, "delvm \"%s\"", name) < 0)
         goto cleanup;
-    if (qemuMonitorHMPCommand(mon, cmd, &reply))
+    if (qemuMonitorJSONHumanCommand(mon, cmd, &reply))
         goto cleanup;
 
     if (strstr(reply, "No block device supports snapshots")) {

@@ -426,9 +426,6 @@ int qemuMonitorUpdateVideoVram64Size(qemuMonitorPtr mon,
                                      virDomainVideoDefPtr video,
                                      const char *videoName)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
-int qemuMonitorHMPCommand(qemuMonitorPtr mon,
-                          const char *cmd,
-                          char **reply);
 
 int qemuMonitorEmitEvent(qemuMonitorPtr mon, const char *event,
                          long long seconds, unsigned int micros,

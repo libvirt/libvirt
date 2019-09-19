@@ -1160,17 +1160,6 @@ qemuMonitorUpdateVideoVram64Size(qemuMonitorPtr mon,
 }
 
 
-int
-qemuMonitorHMPCommand(qemuMonitorPtr mon,
-                      const char *cmd,
-                      char **reply)
-{
-    QEMU_CHECK_MONITOR(mon);
-
-    return qemuMonitorJSONHumanCommand(mon, cmd, reply);
-}
-
-
 /* Ensure proper locking around callbacks.  */
 #define QEMU_MONITOR_CALLBACK(mon, ret, callback, ...) \
     do { \
