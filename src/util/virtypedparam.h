@@ -24,6 +24,7 @@
 #include "internal.h"
 #include "virutil.h"
 #include "virenum.h"
+#include "virautoclean.h"
 
 /**
  * VIR_TYPED_PARAM_MULTIPLE:
@@ -128,3 +129,54 @@ VIR_ENUM_DECL(virTypedParameter);
             VIR_FREE(_value); \
         } \
     } while (0)
+
+typedef struct _virTypedParamList virTypedParamList;
+typedef virTypedParamList *virTypedParamListPtr;
+
+struct _virTypedParamList {
+    virTypedParameterPtr par;
+    size_t npar;
+    size_t par_alloc;
+};
+
+void virTypedParamListFree(virTypedParamListPtr list);
+VIR_DEFINE_AUTOPTR_FUNC(virTypedParamList, virTypedParamListFree);
+
+size_t virTypedParamListStealParams(virTypedParamListPtr list,
+                                    virTypedParameterPtr *params);
+
+int virTypedParamListAddInt(virTypedParamListPtr list,
+                            int value,
+                            const char *namefmt,
+                            ...)
+    ATTRIBUTE_FMT_PRINTF(3, 4) ATTRIBUTE_RETURN_CHECK;
+int virTypedParamListAddUInt(virTypedParamListPtr list,
+                             unsigned int value,
+                             const char *namefmt,
+                             ...)
+    ATTRIBUTE_FMT_PRINTF(3, 4) ATTRIBUTE_RETURN_CHECK;
+int virTypedParamListAddLLong(virTypedParamListPtr list,
+                              long long value,
+                              const char *namefmt,
+                              ...)
+    ATTRIBUTE_FMT_PRINTF(3, 4) ATTRIBUTE_RETURN_CHECK;
+int virTypedParamListAddULLong(virTypedParamListPtr list,
+                               unsigned long long value,
+                               const char *namefmt,
+                               ...)
+    ATTRIBUTE_FMT_PRINTF(3, 4) ATTRIBUTE_RETURN_CHECK;
+int virTypedParamListAddString(virTypedParamListPtr list,
+                               const char *value,
+                               const char *namefmt,
+                               ...)
+    ATTRIBUTE_FMT_PRINTF(3, 4) ATTRIBUTE_RETURN_CHECK;
+int virTypedParamListAddBoolean(virTypedParamListPtr list,
+                                bool value,
+                                const char *namefmt,
+                                ...)
+    ATTRIBUTE_FMT_PRINTF(3, 4) ATTRIBUTE_RETURN_CHECK;
+int virTypedParamListAddDouble(virTypedParamListPtr list,
+                               double value,
+                               const char *namefmt,
+                               ...)
+    ATTRIBUTE_FMT_PRINTF(3, 4) ATTRIBUTE_RETURN_CHECK;
