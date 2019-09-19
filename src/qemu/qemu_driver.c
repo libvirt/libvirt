@@ -21436,42 +21436,42 @@ qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
                            virHashTablePtr stats)
 {
     qemuBlockStats *entry;
-    int ret = -1;
 
     /* the VM is offline so we have to go and load the stast from the disk by
      * ourselves */
     if (!virDomainObjIsActive(dom)) {
-        ret = qemuDomainGetStatsOneBlockFallback(driver, cfg, dom, params,
-                                                 src, block_idx);
-        goto cleanup;
+        return qemuDomainGetStatsOneBlockFallback(driver, cfg, dom, params,
+                                                  src, block_idx);
     }
 
     /* In case where qemu didn't provide the stats we stop here rather than
      * trying to refresh the stats from the disk. Inability to provide stats is
      * usually caused by blocked storage so this would make libvirtd hang */
-    if (!stats || !entryname || !(entry = virHashLookup(stats, entryname))) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (!stats || !entryname || !(entry = virHashLookup(stats, entryname)))
+        return 0;
 
-    QEMU_ADD_BLOCK_PARAM_ULL(params, block_idx,
-                             "allocation", entry->wr_highest_offset);
+    if (virTypedParamListAddULLong(params, entry->wr_highest_offset,
+                                   "block.%zu.allocation", block_idx) < 0)
+        return -1;
 
-    if (entry->capacity)
-        QEMU_ADD_BLOCK_PARAM_ULL(params, block_idx,
-                                 "capacity", entry->capacity);
+    if (entry->capacity &&
+        virTypedParamListAddULLong(params, entry->capacity,
+                                   "block.%zu.capacity", block_idx) < 0)
+        return -1;
+
     if (entry->physical) {
-        QEMU_ADD_BLOCK_PARAM_ULL(params, block_idx,
-                                 "physical", entry->physical);
+        if (virTypedParamListAddULLong(params, entry->physical,
+                                       "block.%zu.physical", block_idx) < 0)
+            return -1;
     } else {
-        if (qemuDomainStorageUpdatePhysical(driver, cfg, dom, src) == 0)
-            QEMU_ADD_BLOCK_PARAM_ULL(params, block_idx,
-                                     "physical", src->physical);
+        if (qemuDomainStorageUpdatePhysical(driver, cfg, dom, src) == 0) {
+            if (virTypedParamListAddULLong(params, src->physical,
+                                           "block.%zu.physical", block_idx) < 0)
+                return -1;
+        }
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
