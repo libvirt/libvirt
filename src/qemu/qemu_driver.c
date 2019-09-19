@@ -21362,8 +21362,6 @@ qemuDomainGetStatsOneBlockFallback(virQEMUDriverPtr driver,
                                    virStorageSourcePtr src,
                                    size_t block_idx)
 {
-    int ret = -1;
-
     if (virStorageSourceIsEmpty(src))
         return 0;
 
@@ -21372,18 +21370,22 @@ qemuDomainGetStatsOneBlockFallback(virQEMUDriverPtr driver,
         return 0;
     }
 
-    if (src->allocation)
-        QEMU_ADD_BLOCK_PARAM_ULL(params, block_idx,
-                                 "allocation", src->allocation);
-    if (src->capacity)
-        QEMU_ADD_BLOCK_PARAM_ULL(params, block_idx,
-                                 "capacity", src->capacity);
-    if (src->physical)
-        QEMU_ADD_BLOCK_PARAM_ULL(params, block_idx,
-                                 "physical", src->physical);
-    ret = 0;
- cleanup:
-    return ret;
+    if (src->allocation &&
+        virTypedParamListAddULLong(params, src->allocation,
+                                   "block.%zu.allocation", block_idx) < 0)
+        return -1;
+
+    if (src->capacity &&
+        virTypedParamListAddULLong(params, src->capacity,
+                                   "block.%zu.capacity", block_idx) < 0)
+        return -1;
+
+    if (src->physical &&
+        virTypedParamListAddULLong(params, src->physical,
+                                   "block.%zu.physical", block_idx) < 0)
+        return -1;
+
+    return 0;
 }
 
 
