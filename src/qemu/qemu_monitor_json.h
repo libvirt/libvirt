@@ -41,10 +41,9 @@ int qemuMonitorJSONIOProcess(qemuMonitorPtr mon,
                              size_t len,
                              qemuMonitorMessagePtr msg);
 
-int qemuMonitorJSONHumanCommandWithFd(qemuMonitorPtr mon,
-                                      const char *cmd,
-                                      int scm_fd,
-                                      char **reply);
+int qemuMonitorJSONHumanCommand(qemuMonitorPtr mon,
+                                const char *cmd,
+                                char **reply);
 
 int qemuMonitorJSONSetCapabilities(qemuMonitorPtr mon);
 

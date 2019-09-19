@@ -1555,10 +1555,9 @@ static void qemuMonitorJSONHandleRdmaGidStatusChanged(qemuMonitorPtr mon,
 
 
 int
-qemuMonitorJSONHumanCommandWithFd(qemuMonitorPtr mon,
-                                  const char *cmd_str,
-                                  int scm_fd,
-                                  char **reply_str)
+qemuMonitorJSONHumanCommand(qemuMonitorPtr mon,
+                            const char *cmd_str,
+                            char **reply_str)
 {
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
@@ -1569,7 +1568,7 @@ qemuMonitorJSONHumanCommandWithFd(qemuMonitorPtr mon,
                                      "s:command-line", cmd_str,
                                      NULL);
 
-    if (!cmd || qemuMonitorJSONCommandWithFd(mon, cmd, scm_fd, &reply) < 0)
+    if (!cmd || qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
 
     if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
@@ -4634,7 +4633,7 @@ int qemuMonitorJSONArbitraryCommand(qemuMonitorPtr mon,
     int ret = -1;
 
     if (hmp) {
-        return qemuMonitorJSONHumanCommandWithFd(mon, cmd_str, -1, reply_str);
+        return qemuMonitorJSONHumanCommand(mon, cmd_str, reply_str);
     } else {
         if (!(cmd = virJSONValueFromString(cmd_str)))
             goto cleanup;

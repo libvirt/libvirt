@@ -1271,7 +1271,7 @@ qemuMonitorHMPCommand(qemuMonitorPtr mon,
                        _("Unable to unescape command"));
         goto cleanup;
     }
-    ret = qemuMonitorJSONHumanCommandWithFd(mon, json_cmd, -1, reply);
+    ret = qemuMonitorJSONHumanCommand(mon, json_cmd, reply);
 
  cleanup:
     VIR_FREE(json_cmd);
