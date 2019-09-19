@@ -2503,6 +2503,7 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCapsPtr qemuCaps,
     qemuMonitorCPUModelInfoPtr nonMigratable = NULL;
     virHashTablePtr hash = NULL;
     const char *model;
+    virCPUDefPtr cpu;
     qemuMonitorCPUModelExpansionType type;
     virDomainVirtType virtType;
     int ret = -1;
@@ -2518,6 +2519,9 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCapsPtr qemuCaps,
         model = "host";
     }
 
+    if (VIR_ALLOC(cpu) < 0 || VIR_STRDUP(cpu->model, model) < 0)
+        goto cleanup;
+
     /* Some x86_64 features defined in cpu_map.xml use spelling which differ
      * from the one preferred by QEMU. Static expansion would give us only the
      * preferred spelling. With new QEMU we always use the QEMU's canonical
@@ -2531,12 +2535,12 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCapsPtr qemuCaps,
     else
         type = QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC;
 
-    if (qemuMonitorGetCPUModelExpansion(mon, type, model, true, &modelInfo) < 0)
+    if (qemuMonitorGetCPUModelExpansion(mon, type, cpu, true, &modelInfo) < 0)
         goto cleanup;
 
     /* Try to check migratability of each feature. */
     if (modelInfo &&
-        qemuMonitorGetCPUModelExpansion(mon, type, model, false,
+        qemuMonitorGetCPUModelExpansion(mon, type, cpu, false,
                                         &nonMigratable) < 0)
         goto cleanup;
 
@@ -2580,6 +2584,7 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCapsPtr qemuCaps,
     virHashFree(hash);
     qemuMonitorCPUModelInfoFree(nonMigratable);
     qemuMonitorCPUModelInfoFree(modelInfo);
+    virCPUDefFree(cpu);
 
     return ret;
 }

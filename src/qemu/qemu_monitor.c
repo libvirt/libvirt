@@ -3546,16 +3546,15 @@ qemuMonitorCPUDefInfoFree(qemuMonitorCPUDefInfoPtr cpu)
 int
 qemuMonitorGetCPUModelExpansion(qemuMonitorPtr mon,
                                 qemuMonitorCPUModelExpansionType type,
-                                const char *model_name,
+                                virCPUDefPtr cpu,
                                 bool migratable,
                                 qemuMonitorCPUModelInfoPtr *model_info)
 {
-    VIR_DEBUG("type=%d model_name=%s migratable=%d",
-              type, model_name, migratable);
+    VIR_DEBUG("type=%d cpu=%p migratable=%d", type, cpu, migratable);
 
     QEMU_CHECK_MONITOR(mon);
 
-    return qemuMonitorJSONGetCPUModelExpansion(mon, type, model_name,
+    return qemuMonitorJSONGetCPUModelExpansion(mon, type, cpu,
                                                migratable, model_info);
 }
 

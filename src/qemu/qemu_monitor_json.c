@@ -5685,7 +5685,7 @@ qemuMonitorJSONParseCPUModelProperty(const char *key,
 
 
 static virJSONValuePtr
-qemuMonitorJSONMakeCPUModel(const char *model_name,
+qemuMonitorJSONMakeCPUModel(virCPUDefPtr cpu,
                             bool migratable)
 {
     virJSONValuePtr model = NULL;
@@ -5694,7 +5694,7 @@ qemuMonitorJSONMakeCPUModel(const char *model_name,
     if (!(model = virJSONValueNewObject()))
         goto error;
 
-    if (virJSONValueObjectAppendString(model, "name", model_name) < 0)
+    if (virJSONValueObjectAppendString(model, "name", cpu->model) < 0)
         goto error;
 
     if (!migratable) {
@@ -5776,7 +5776,7 @@ qemuMonitorJSONParseCPUModel(const char *cpu_name,
 int
 qemuMonitorJSONGetCPUModelExpansion(qemuMonitorPtr mon,
                                     qemuMonitorCPUModelExpansionType type,
-                                    const char *model_name,
+                                    virCPUDefPtr cpu,
                                     bool migratable,
                                     qemuMonitorCPUModelInfoPtr *model_info)
 {
@@ -5791,7 +5791,7 @@ qemuMonitorJSONGetCPUModelExpansion(qemuMonitorPtr mon,
 
     *model_info = NULL;
 
-    if (!(model = qemuMonitorJSONMakeCPUModel(model_name, migratable)))
+    if (!(model = qemuMonitorJSONMakeCPUModel(cpu, migratable)))
         return -1;
 
  retry:
