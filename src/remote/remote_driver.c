@@ -1943,7 +1943,7 @@ remoteDeserializeDomainDiskErrors(remote_domain_disk_error *ret_errors_val,
 
  error:
     for (j = 0; j < i; j++)
-        VIR_FREE(errors[i].disk);
+        VIR_FREE(errors[j].disk);
 
     return -1;
 }
