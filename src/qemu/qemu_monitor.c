@@ -3548,6 +3548,7 @@ qemuMonitorGetCPUModelExpansion(qemuMonitorPtr mon,
                                 qemuMonitorCPUModelExpansionType type,
                                 virCPUDefPtr cpu,
                                 bool migratable,
+                                bool fail_no_props,
                                 qemuMonitorCPUModelInfoPtr *model_info)
 {
     VIR_DEBUG("type=%d cpu=%p migratable=%d", type, cpu, migratable);
@@ -3555,7 +3556,8 @@ qemuMonitorGetCPUModelExpansion(qemuMonitorPtr mon,
     QEMU_CHECK_MONITOR(mon);
 
     return qemuMonitorJSONGetCPUModelExpansion(mon, type, cpu,
-                                               migratable, model_info);
+                                               migratable, fail_no_props,
+                                               model_info);
 }
 
 

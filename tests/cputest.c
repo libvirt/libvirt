@@ -482,6 +482,7 @@ cpuTestMakeQEMUCaps(const struct data *data)
     qemuMonitorTestPtr testMon = NULL;
     qemuMonitorCPUModelInfoPtr model = NULL;
     virCPUDefPtr cpu = NULL;
+    bool fail_no_props = true;
     char *json = NULL;
 
     if (virAsprintf(&json, "%s/cputestdata/%s-cpuid-%s.json",
@@ -494,9 +495,12 @@ cpuTestMakeQEMUCaps(const struct data *data)
     if (VIR_ALLOC(cpu) < 0 || VIR_STRDUP(cpu->model, "host") < 0)
         goto cleanup;
 
+    if (ARCH_IS_S390(data->arch))
+        fail_no_props = false;
+
     if (qemuMonitorGetCPUModelExpansion(qemuMonitorTestGetMonitor(testMon),
                                         QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC,
-                                        cpu, true, &model) < 0)
+                                        cpu, true, fail_no_props, &model) < 0)
         goto error;
 
     if (!(qemuCaps = virQEMUCapsNew()))

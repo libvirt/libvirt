@@ -2506,6 +2506,7 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCapsPtr qemuCaps,
     virCPUDefPtr cpu;
     qemuMonitorCPUModelExpansionType type;
     virDomainVirtType virtType;
+    bool fail_no_props = true;
     int ret = -1;
 
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION))
@@ -2535,12 +2536,17 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCapsPtr qemuCaps,
     else
         type = QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC;
 
-    if (qemuMonitorGetCPUModelExpansion(mon, type, cpu, true, &modelInfo) < 0)
+    /* Older s390 models do not report a feature set */
+    if (ARCH_IS_S390(qemuCaps->arch))
+        fail_no_props = false;
+
+    if (qemuMonitorGetCPUModelExpansion(mon, type, cpu, true, fail_no_props,
+                                        &modelInfo) < 0)
         goto cleanup;
 
     /* Try to check migratability of each feature. */
     if (modelInfo &&
-        qemuMonitorGetCPUModelExpansion(mon, type, cpu, false,
+        qemuMonitorGetCPUModelExpansion(mon, type, cpu, false, fail_no_props,
                                         &nonMigratable) < 0)
         goto cleanup;
 

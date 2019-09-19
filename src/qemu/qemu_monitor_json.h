@@ -383,8 +383,9 @@ int qemuMonitorJSONGetCPUModelExpansion(qemuMonitorPtr mon,
                                         qemuMonitorCPUModelExpansionType type,
                                         virCPUDefPtr cpu,
                                         bool migratable,
+                                        bool fail_no_props,
                                         qemuMonitorCPUModelInfoPtr *model_info)
-    ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(5);
+    ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(6);
 
 int qemuMonitorJSONGetCommands(qemuMonitorPtr mon,
                                char ***commands)
