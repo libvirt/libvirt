@@ -3561,6 +3561,20 @@ qemuMonitorGetCPUModelExpansion(qemuMonitorPtr mon,
 }
 
 
+int
+qemuMonitorGetCPUModelBaseline(qemuMonitorPtr mon,
+                               virCPUDefPtr cpu_a,
+                               virCPUDefPtr cpu_b,
+                               qemuMonitorCPUModelInfoPtr *baseline)
+{
+    VIR_DEBUG("cpu_a=%p cpu_b=%p", cpu_a, cpu_b);
+
+    QEMU_CHECK_MONITOR(mon);
+
+    return qemuMonitorJSONGetCPUModelBaseline(mon, cpu_a, cpu_b, baseline);
+}
+
+
 void
 qemuMonitorCPUModelInfoFree(qemuMonitorCPUModelInfoPtr model_info)
 {

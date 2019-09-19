@@ -5877,6 +5877,48 @@ qemuMonitorJSONGetCPUModelExpansion(qemuMonitorPtr mon,
 }
 
 
+int
+qemuMonitorJSONGetCPUModelBaseline(qemuMonitorPtr mon,
+                                   virCPUDefPtr cpu_a,
+                                   virCPUDefPtr cpu_b,
+                                   qemuMonitorCPUModelInfoPtr *baseline)
+{
+    VIR_AUTOPTR(virJSONValue) model_a = NULL;
+    VIR_AUTOPTR(virJSONValue) model_b = NULL;
+    VIR_AUTOPTR(virJSONValue) cmd = NULL;
+    VIR_AUTOPTR(virJSONValue) reply = NULL;
+    virJSONValuePtr data;
+    virJSONValuePtr cpu_model;
+    virJSONValuePtr cpu_props = NULL;
+    const char *cpu_name = "";
+
+    if (!(model_a = qemuMonitorJSONMakeCPUModel(cpu_a, true)) ||
+        !(model_b = qemuMonitorJSONMakeCPUModel(cpu_b, true)))
+        return -1;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-cpu-model-baseline",
+                                           "a:modela", &model_a,
+                                           "a:modelb", &model_b,
+                                           NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return -1;
+
+    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_OBJECT) < 0)
+        return -1;
+
+    data = virJSONValueObjectGetObject(reply, "return");
+
+    if (qemuMonitorJSONParseCPUModelData(data, "query-cpu-model-baseline",
+                                         false, &cpu_model, &cpu_props,
+                                         &cpu_name) < 0)
+        return -1;
+
+    return qemuMonitorJSONParseCPUModel(cpu_name, cpu_props, baseline);
+}
+
+
 int qemuMonitorJSONGetCommands(qemuMonitorPtr mon,
                                char ***commands)
 {

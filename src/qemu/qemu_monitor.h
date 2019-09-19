@@ -1153,6 +1153,11 @@ int qemuMonitorGetCPUModelExpansion(qemuMonitorPtr mon,
 
 void qemuMonitorCPUModelInfoFree(qemuMonitorCPUModelInfoPtr model_info);
 
+int qemuMonitorGetCPUModelBaseline(qemuMonitorPtr mon,
+                                   virCPUDefPtr cpu_a,
+                                   virCPUDefPtr cpu_b,
+                                   qemuMonitorCPUModelInfoPtr *baseline);
+
 qemuMonitorCPUModelInfoPtr
 qemuMonitorCPUModelInfoCopy(const qemuMonitorCPUModelInfo *orig);
 
