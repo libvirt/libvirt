@@ -5690,6 +5690,7 @@ qemuMonitorJSONMakeCPUModel(virCPUDefPtr cpu,
 {
     virJSONValuePtr model = NULL;
     virJSONValuePtr props = NULL;
+    size_t i;
 
     if (!(model = virJSONValueNewObject()))
         goto error;
@@ -5697,12 +5698,31 @@ qemuMonitorJSONMakeCPUModel(virCPUDefPtr cpu,
     if (virJSONValueObjectAppendString(model, "name", cpu->model) < 0)
         goto error;
 
-    if (!migratable) {
-        if (!(props = virJSONValueNewObject()) ||
-            virJSONValueObjectAppendBoolean(props, "migratable", false) < 0 ||
-            virJSONValueObjectAppend(model, "props", props) < 0)
+    if (cpu->nfeatures || !migratable) {
+        if (!(props = virJSONValueNewObject()))
             goto error;
-        props = NULL;
+
+        for (i = 0; i < cpu->nfeatures; i++) {
+            char *name = cpu->features[i].name;
+            bool enabled = false;
+
+            /* policy may be reported as -1 if the CPU def is a host model */
+            if (cpu->features[i].policy == VIR_CPU_FEATURE_REQUIRE ||
+                cpu->features[i].policy == VIR_CPU_FEATURE_FORCE ||
+                cpu->features[i].policy == -1)
+                enabled = true;
+
+            if (virJSONValueObjectAppendBoolean(props, name, enabled) < 0)
+                goto error;
+        }
+
+        if (!migratable &&
+            virJSONValueObjectAppendBoolean(props, "migratable", false) < 0) {
+            goto error;
+        }
+
+        if (virJSONValueObjectAppend(model, "props", props) < 0)
+            goto error;
     }
 
     return model;
