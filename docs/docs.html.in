@@ -128,6 +128,9 @@
         <dt><a href="hacking.html">Contributor guidelines</a></dt>
         <dd>General hacking guidelines for contributors</dd>
 
+        <dt><a href="strategy.html">Project strategy</a></dt>
+        <dd>Sets a vision for future direction &amp; technical choices</dd>
+
         <dt><a href="bugs.html">Bug reports</a></dt>
         <dd>How and where to report bugs and request features</dd>
 
