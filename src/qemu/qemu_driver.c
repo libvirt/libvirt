@@ -21525,22 +21525,18 @@ qemuDomainGetStatsBlockExportHeader(virDomainDiskDefPtr disk,
                                     size_t recordnr,
                                     virTypedParamListPtr params)
 {
-    int ret = -1;
-
     if (virTypedParamListAddString(params, disk->dst, "block.%zu.name", recordnr) < 0)
-        goto cleanup;
+        return -1;
 
     if (virStorageSourceIsLocalStorage(src) && src->path &&
         virTypedParamListAddString(params, src->path, "block.%zu.path", recordnr) < 0)
-        goto cleanup;
+        return -1;
 
     if (src->id &&
         virTypedParamListAddUInt(params, src->id, "block.%zu.backingIndex", recordnr) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -21784,20 +21780,16 @@ qemuDomainGetStatsPerf(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 {
     size_t i;
     qemuDomainObjPrivatePtr priv = dom->privateData;
-    int ret = -1;
 
     for (i = 0; i < VIR_PERF_EVENT_LAST; i++) {
         if (!virPerfEventIsEnabled(priv->perf, i))
              continue;
 
         if (qemuDomainGetStatsPerfOneEvent(priv->perf, i, params) < 0)
-            goto cleanup;
+            return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 typedef int
