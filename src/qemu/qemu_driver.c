@@ -21482,20 +21482,16 @@ qemuDomainGetStatsBlockExportBackendStorage(const char *entryname,
                                             virTypedParamListPtr params)
 {
     qemuBlockStats *entry;
-    int ret = -1;
 
-    if (!stats || !entryname || !(entry = virHashLookup(stats, entryname))) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (!stats || !entryname || !(entry = virHashLookup(stats, entryname)))
+        return 0;
 
-    if (entry->write_threshold)
-        QEMU_ADD_BLOCK_PARAM_ULL(params, recordnr, "threshold",
-                                 entry->write_threshold);
+    if (entry->write_threshold &&
+        virTypedParamListAddULLong(params, entry->write_threshold,
+                                   "block.%zu.threshold", recordnr) < 0)
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
