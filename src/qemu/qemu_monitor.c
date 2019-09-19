@@ -2789,59 +2789,6 @@ qemuMonitorCloseFileHandle(qemuMonitorPtr mon,
 }
 
 
-/* Add the open file descriptor FD into the non-negative set FDSET.
- * If NAME is present, it will be passed along for logging purposes.
- * Returns the counterpart fd that qemu received, or -1 on error.  */
-int
-qemuMonitorAddFd(qemuMonitorPtr mon, int fdset, int fd, const char *name)
-{
-    VIR_DEBUG("fdset=%d, fd=%d, name=%s", fdset, fd, NULLSTR(name));
-
-    QEMU_CHECK_MONITOR(mon);
-
-    if (fd < 0 || fdset < 0) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("fd and fdset must be valid"));
-        return -1;
-    }
-
-    if (!mon->hasSendFD) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("qemu is not using a unix socket monitor, "
-                         "cannot send fd %s"), NULLSTR(name));
-        return -1;
-    }
-
-    return qemuMonitorJSONAddFd(mon, fdset, fd, name);
-}
-
-
-/* Remove one of qemu's fds from the given FDSET, or if FD is
- * negative, remove the entire set.  Preserve any previous error on
- * entry.  Returns 0 on success, -1 on error.  */
-int
-qemuMonitorRemoveFd(qemuMonitorPtr mon, int fdset, int fd)
-{
-    int ret = -1;
-    virErrorPtr error;
-
-    VIR_DEBUG("fdset=%d, fd=%d", fdset, fd);
-
-    error = virSaveLastError();
-
-    QEMU_CHECK_MONITOR_GOTO(mon, cleanup);
-
-    ret = qemuMonitorJSONRemoveFd(mon, fdset, fd);
-
- cleanup:
-    if (error) {
-        virSetError(error);
-        virFreeError(error);
-    }
-    return ret;
-}
-
-
 int
 qemuMonitorAddNetdev(qemuMonitorPtr mon,
                      const char *netdevstr,

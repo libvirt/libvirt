@@ -203,12 +203,9 @@ int qemuMonitorJSONRemovePCIDevice(qemuMonitorPtr mon,
 int qemuMonitorJSONSendFileHandle(qemuMonitorPtr mon,
                                   const char *fdname,
                                   int fd);
-int qemuMonitorJSONAddFd(qemuMonitorPtr mon, int fdset, int fd,
-                         const char *name);
 
 int qemuMonitorJSONCloseFileHandle(qemuMonitorPtr mon,
                                    const char *fdname);
-int qemuMonitorJSONRemoveFd(qemuMonitorPtr mon, int fdset, int fd);
 
 int qemuMonitorJSONAddNetdev(qemuMonitorPtr mon,
                              const char *netdevstr);

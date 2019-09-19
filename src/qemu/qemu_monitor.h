@@ -874,14 +874,12 @@ int qemuMonitorGraphicsRelocate(qemuMonitorPtr mon,
 int qemuMonitorSendFileHandle(qemuMonitorPtr mon,
                               const char *fdname,
                               int fd);
-int qemuMonitorAddFd(qemuMonitorPtr mon, int fdset, int fd, const char *name);
 
-/* These two functions preserve previous error and only set their own
+/* This function preserves previous error and only set their own
  * error if no error was set before.
  */
 int qemuMonitorCloseFileHandle(qemuMonitorPtr mon,
                                const char *fdname);
-int qemuMonitorRemoveFd(qemuMonitorPtr mon, int fdset, int fd);
 
 int qemuMonitorAddNetdev(qemuMonitorPtr mon,
                          const char *netdevstr,
