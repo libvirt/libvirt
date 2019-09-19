@@ -13739,6 +13739,90 @@ qemuConnectBaselineCPU(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
+/**
+ * qemuConnectStealCPUModelFromInfo:
+ *
+ * Consumes @src and replaces the content of @dst with CPU model name and
+ * features from @src. When this function returns (both with success or
+ * failure), @src is freed.
+ */
+static int
+qemuConnectStealCPUModelFromInfo(virCPUDefPtr dst,
+                                 qemuMonitorCPUModelInfoPtr *src)
+{
+    qemuMonitorCPUModelInfoPtr info;
+    size_t i;
+    int ret = -1;
+
+    virCPUDefFreeModel(dst);
+
+    VIR_STEAL_PTR(info, *src);
+    VIR_STEAL_PTR(dst->model, info->name);
+
+    for (i = 0; i < info->nprops; i++) {
+        char *name = info->props[i].name;
+
+        if (info->props[i].type != QEMU_MONITOR_CPU_PROPERTY_BOOLEAN ||
+            !info->props[i].value.boolean)
+            continue;
+
+        if (virCPUDefAddFeature(dst, name, VIR_CPU_FEATURE_REQUIRE) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    qemuMonitorCPUModelInfoFree(info);
+    return ret;
+}
+
+
+static virCPUDefPtr
+qemuConnectCPUModelBaseline(virQEMUCapsPtr qemuCaps,
+                            const char *libDir,
+                            uid_t runUid,
+                            gid_t runGid,
+                            virCPUDefPtr *cpus,
+                            int ncpus)
+{
+    qemuProcessQMPPtr proc;
+    virCPUDefPtr ret = NULL;
+    virCPUDefPtr baseline = NULL;
+    qemuMonitorCPUModelInfoPtr result = NULL;
+    size_t i;
+
+    if (!(proc = qemuProcessQMPNew(virQEMUCapsGetBinary(qemuCaps),
+                                   libDir, runUid, runGid, false)))
+        goto cleanup;
+
+    if (qemuProcessQMPStart(proc) < 0)
+        goto cleanup;
+
+    if (VIR_ALLOC(baseline) < 0)
+        goto cleanup;
+
+    if (virCPUDefCopyModel(baseline, cpus[0], false))
+        goto cleanup;
+
+    for (i = 1; i < ncpus; i++) {
+        if (qemuMonitorGetCPUModelBaseline(proc->mon, baseline,
+                                           cpus[i], &result) < 0)
+            goto cleanup;
+
+        if (qemuConnectStealCPUModelFromInfo(baseline, &result) < 0)
+            goto cleanup;
+    }
+
+    VIR_STEAL_PTR(ret, baseline);
+
+ cleanup:
+    qemuProcessQMPFree(proc);
+    virCPUDefFree(baseline);
+    return ret;
+}
+
+
 static char *
 qemuConnectBaselineHypervisorCPU(virConnectPtr conn,
                                  const char *emulator,
@@ -13750,6 +13834,7 @@ qemuConnectBaselineHypervisorCPU(virConnectPtr conn,
                                  unsigned int flags)
 {
     virQEMUDriverPtr driver = conn->privateData;
+    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
     virCPUDefPtr *cpus = NULL;
     virQEMUCapsPtr qemuCaps = NULL;
     virArch arch;
@@ -13803,6 +13888,12 @@ qemuConnectBaselineHypervisorCPU(virConnectPtr conn,
 
         if (!(cpu = virCPUBaseline(arch, cpus, ncpus, cpuModels,
                                    (const char **)features, migratable)))
+            goto cleanup;
+    } else if (ARCH_IS_S390(arch) &&
+               virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_BASELINE)) {
+        if (!(cpu = qemuConnectCPUModelBaseline(qemuCaps, cfg->libDir,
+                                                cfg->user, cfg->group,
+                                                cpus, ncpus)))
             goto cleanup;
     } else {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
