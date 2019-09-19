@@ -891,19 +891,20 @@ virObjectEventStateRegisterID(virConnectPtr conn,
     virObjectLock(state);
 
     if ((state->callbacks->count == 0) &&
-        (state->timer == -1) &&
-        (state->timer = virEventAddTimeout(-1,
-                                           virObjectEventTimer,
-                                           state,
-                                           virObjectFreeCallback)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("could not initialize domain event timer"));
-        goto cleanup;
-    }
+        (state->timer == -1)) {
+        if ((state->timer = virEventAddTimeout(-1,
+                                               virObjectEventTimer,
+                                               state,
+                                               virObjectFreeCallback)) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("could not initialize domain event timer"));
+            goto cleanup;
+        }
 
-    /* event loop has one reference, but we need one more for the
-     * timer's opaque argument */
-    virObjectRef(state);
+        /* event loop has one reference, but we need one more for the
+         * timer's opaque argument */
+        virObjectRef(state);
+    }
 
     ret = virObjectEventCallbackListAddID(conn, state->callbacks,
                                           key, filter, filter_opaque,
