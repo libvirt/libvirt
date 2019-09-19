@@ -187,7 +187,6 @@ int ATTRIBUTE_FMT_PRINTF(2, 3)
 qemuMonitorReportError(qemuMonitorTestPtr test, const char *errmsg, ...)
 {
     va_list msgargs;
-    VIR_AUTOFREE(char *) tmp = NULL;
     VIR_AUTOFREE(char *) msg = NULL;
     VIR_AUTOFREE(char *) jsonmsg = NULL;
     int ret = -1;
@@ -197,13 +196,10 @@ qemuMonitorReportError(qemuMonitorTestPtr test, const char *errmsg, ...)
     if (virVasprintf(&msg, errmsg, msgargs) < 0)
         goto cleanup;
 
-    if (!(tmp = qemuMonitorEscapeArg(msg)))
-        goto cleanup;
-
     if (virAsprintf(&jsonmsg, "{ \"error\": "
                     " { \"desc\": \"%s\", "
                     "   \"class\": \"UnexpectedCommand\" } }",
-                    tmp) < 0)
+                    msg) < 0)
         goto cleanup;
 
     ret = qemuMonitorTestAddResponse(test, jsonmsg);

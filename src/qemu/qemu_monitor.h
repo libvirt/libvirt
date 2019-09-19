@@ -382,9 +382,6 @@ struct _qemuMonitorCallbacks {
     qemuMonitorDomainRdmaGidStatusChangedCallback domainRdmaGidStatusChanged;
 };
 
-char *qemuMonitorEscapeArg(const char *in);
-char *qemuMonitorUnescapeArg(const char *in);
-
 qemuMonitorPtr qemuMonitorOpen(virDomainObjPtr vm,
                                virDomainChrSourceDefPtr config,
                                bool retry,
