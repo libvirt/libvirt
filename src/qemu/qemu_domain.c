@@ -13845,12 +13845,10 @@ qemuDomainGetHostdevPath(virDomainHostdevDefPtr dev,
     virDomainHostdevSubsysSCSIPtr scsisrc = &dev->source.subsys.u.scsi;
     virDomainHostdevSubsysSCSIVHostPtr hostsrc = &dev->source.subsys.u.scsi_host;
     virDomainHostdevSubsysMediatedDevPtr mdevsrc = &dev->source.subsys.u.mdev;
-    g_autoptr(virPCIDevice) pci = NULL;
     g_autoptr(virUSBDevice) usb = NULL;
     g_autoptr(virSCSIDevice) scsi = NULL;
     g_autoptr(virSCSIVHostDevice) host = NULL;
     g_autofree char *tmpPath = NULL;
-    g_autofree int *tmpPerms = NULL;
     int perm = 0;
 
     switch ((virDomainHostdevMode) dev->mode) {
@@ -13858,14 +13856,7 @@ qemuDomainGetHostdevPath(virDomainHostdevDefPtr dev,
         switch ((virDomainHostdevSubsysType)dev->source.subsys.type) {
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
             if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
-                pci = virPCIDeviceNew(pcisrc->addr.domain,
-                                      pcisrc->addr.bus,
-                                      pcisrc->addr.slot,
-                                      pcisrc->addr.function);
-                if (!pci)
-                    return -1;
-
-                if (!(tmpPath = virPCIDeviceGetIOMMUGroupDev(pci)))
+                if (!(tmpPath = virPCIDeviceAddressGetIOMMUGroupDev(&pcisrc->addr)))
                     return -1;
 
                 perm = VIR_CGROUP_DEVICE_RW;

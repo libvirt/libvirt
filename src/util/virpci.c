@@ -1942,6 +1942,21 @@ virPCIDeviceAddressGetIOMMUGroupNum(virPCIDeviceAddressPtr addr)
 }
 
 
+char *
+virPCIDeviceAddressGetIOMMUGroupDev(const virPCIDeviceAddress *devAddr)
+{
+    g_autoptr(virPCIDevice) pci = NULL;
+
+    if (!(pci = virPCIDeviceNew(devAddr->domain,
+                                devAddr->bus,
+                                devAddr->slot,
+                                devAddr->function)))
+        return NULL;
+
+    return virPCIDeviceGetIOMMUGroupDev(pci);
+}
+
+
 /* virPCIDeviceGetIOMMUGroupDev - return the name of the device used
  * to control this PCI device's group (e.g. "/dev/vfio/15")
  */

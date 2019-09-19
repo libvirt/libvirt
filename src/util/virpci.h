@@ -195,6 +195,7 @@ int virPCIDeviceAddressGetIOMMUGroupAddresses(virPCIDeviceAddressPtr devAddr,
                                               virPCIDeviceAddressPtr **iommuGroupDevices,
                                               size_t *nIommuGroupDevices);
 int virPCIDeviceAddressGetIOMMUGroupNum(virPCIDeviceAddressPtr addr);
+char *virPCIDeviceAddressGetIOMMUGroupDev(const virPCIDeviceAddress *devAddr);
 char *virPCIDeviceGetIOMMUGroupDev(virPCIDevicePtr dev);
 
 int virPCIDeviceIsAssignable(virPCIDevicePtr dev,
