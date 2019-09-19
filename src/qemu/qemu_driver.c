@@ -8314,7 +8314,8 @@ static int
 qemuCheckDiskConfigAgainstDomain(const virDomainDef *def,
                                  const virDomainDiskDef *disk)
 {
-    if (virDomainSCSIDriveAddressIsUsed(def, &disk->info.addr.drive)) {
+    if (disk->bus == VIR_DOMAIN_DISK_BUS_SCSI &&
+        virDomainSCSIDriveAddressIsUsed(def, &disk->info.addr.drive)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("Domain already contains a disk with that address"));
         return -1;
