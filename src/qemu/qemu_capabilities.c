@@ -1873,7 +1873,7 @@ virQEMUCapsAddCPUDefinitions(virQEMUCapsPtr qemuCaps,
     }
 
     for (i = 0; i < count; i++) {
-        if (virDomainCapsCPUModelsAdd(cpus, name[i], -1, usable, NULL) < 0)
+        if (virDomainCapsCPUModelsAdd(cpus, name[i], usable, NULL) < 0)
             return -1;
     }
 

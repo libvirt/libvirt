@@ -845,7 +845,7 @@ cpuTestUpdateLive(const void *arg)
             usable = hvModel->usable;
         }
 
-        if (virDomainCapsCPUModelsAdd(models, expected->model, -1,
+        if (virDomainCapsCPUModelsAdd(models, expected->model,
                                       usable, blockers) < 0)
             goto cleanup;
 
@@ -954,7 +954,7 @@ cpuTestInitModels(const char **list)
         return NULL;
 
     for (model = list; *model; model++) {
-        if (virDomainCapsCPUModelsAdd(cpus, *model, -1,
+        if (virDomainCapsCPUModelsAdd(cpus, *model,
                                       VIR_DOMCAPS_CPU_USABLE_UNKNOWN, NULL) < 0)
             goto error;
     }
