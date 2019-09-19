@@ -92,6 +92,7 @@
   <flag name='sdl-gl'/>
   <flag name='vhost-vsock'/>
   <flag name='zpci'/>
+  <flag name='query-cpu-model-baseline'/>
   <version>2007093</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>39100764</microcodeVersion>

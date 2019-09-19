@@ -123,6 +123,7 @@
   <flag name='memory-backend-memfd.hugetlb'/>
   <flag name='iothread.poll-max-ns'/>
   <flag name='memory-backend-file.align'/>
+  <flag name='query-cpu-model-baseline'/>
   <version>3000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>39100757</microcodeVersion>

@@ -97,6 +97,7 @@
   <flag name='vhost-vsock'/>
   <flag name='zpci'/>
   <flag name='iothread.poll-max-ns'/>
+  <flag name='query-cpu-model-baseline'/>
   <version>2009000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>39100765</microcodeVersion>

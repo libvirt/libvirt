@@ -110,6 +110,7 @@
   <flag name='egl-headless'/>
   <flag name='zpci'/>
   <flag name='iothread.poll-max-ns'/>
+  <flag name='query-cpu-model-baseline'/>
   <version>2011000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>39100806</microcodeVersion>
