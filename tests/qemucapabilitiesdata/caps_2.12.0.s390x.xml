@@ -122,6 +122,7 @@
   <flag name='iothread.poll-max-ns'/>
   <flag name='memory-backend-file.align'/>
   <flag name='query-cpu-model-baseline'/>
+  <flag name='query-cpu-model-comparison'/>
   <version>2012000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>39100807</microcodeVersion>

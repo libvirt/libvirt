@@ -98,6 +98,7 @@
   <flag name='zpci'/>
   <flag name='iothread.poll-max-ns'/>
   <flag name='query-cpu-model-baseline'/>
+  <flag name='query-cpu-model-comparison'/>
   <version>2009000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>39100765</microcodeVersion>

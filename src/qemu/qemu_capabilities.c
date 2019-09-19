@@ -544,6 +544,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 340 */
               "incremental-backup",
               "query-cpu-model-baseline",
+              "query-cpu-model-comparison",
     );
 
 
@@ -991,6 +992,7 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "query-current-machine", QEMU_CAPS_QUERY_CURRENT_MACHINE },
     { "block-dirty-bitmap-merge", QEMU_CAPS_BITMAP_MERGE },
     { "query-cpu-model-baseline", QEMU_CAPS_QUERY_CPU_MODEL_BASELINE },
+    { "query-cpu-model-comparison", QEMU_CAPS_QUERY_CPU_MODEL_COMPARISON },
 };
 
 struct virQEMUCapsStringFlags virQEMUCapsMigration[] = {
