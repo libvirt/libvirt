@@ -829,7 +829,7 @@ virIdentityPtr virNetServerClientGetIdentity(virNetServerClientPtr client)
     if (!client->identity)
         client->identity = virNetServerClientCreateIdentity(client);
     if (client->identity)
-        ret = virObjectRef(client->identity);
+        ret = g_object_ref(client->identity);
     virObjectUnlock(client);
     return ret;
 }
@@ -839,10 +839,10 @@ void virNetServerClientSetIdentity(virNetServerClientPtr client,
                                    virIdentityPtr identity)
 {
     virObjectLock(client);
-    virObjectUnref(client->identity);
+    g_clear_object(&client->identity);
     client->identity = identity;
     if (client->identity)
-        virObjectRef(client->identity);
+        g_object_ref(client->identity);
     virObjectUnlock(client);
 }
 
@@ -979,7 +979,7 @@ void virNetServerClientDispose(void *obj)
     if (client->privateData)
         client->privateDataFreeFunc(client->privateData);
 
-    virObjectUnref(client->identity);
+    g_clear_object(&client->identity);
 
 #if WITH_SASL
     virObjectUnref(client->sasl);
@@ -1674,7 +1674,7 @@ virNetServerClientGetInfo(virNetServerClientPtr client,
         goto cleanup;
     }
 
-    *identity = virObjectRef(client->identity);
+    *identity = g_object_ref(client->identity);
 
     ret = 0;
  cleanup:

@@ -38,12 +38,9 @@ VIR_LOG_INIT("tests.identitytest");
 
 static int testIdentityAttrs(const void *data ATTRIBUTE_UNUSED)
 {
-    g_autoptr(virIdentity) ident = NULL;
+    g_autoptr(virIdentity) ident = virIdentityNew();
     const char *val;
     int rc;
-
-    if (!(ident = virIdentityNew()))
-        return -1;
 
     if (virIdentitySetUserName(ident, "fred") < 0)
         return -1;

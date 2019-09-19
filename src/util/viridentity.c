@@ -43,25 +43,29 @@
 VIR_LOG_INIT("util.identity");
 
 struct _virIdentity {
-    virObject parent;
+    GObject parent;
 
     int nparams;
     int maxparams;
     virTypedParameterPtr params;
 };
 
-static virClassPtr virIdentityClass;
+G_DEFINE_TYPE(virIdentity, vir_identity, G_TYPE_OBJECT)
+
 static virThreadLocal virIdentityCurrent;
 
-static void virIdentityDispose(void *obj);
+static void virIdentityFinalize(GObject *obj);
+
+static void virIdentityCurrentCleanup(void *ident)
+{
+    if (ident)
+        g_object_unref(ident);
+}
 
 static int virIdentityOnceInit(void)
 {
-    if (!VIR_CLASS_NEW(virIdentity, virClassForObject()))
-        return -1;
-
     if (virThreadLocalInit(&virIdentityCurrent,
-                           (virThreadLocalCleanup)virObjectUnref) < 0) {
+                           virIdentityCurrentCleanup) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot initialize thread local for current identity"));
         return -1;
@@ -72,13 +76,24 @@ static int virIdentityOnceInit(void)
 
 VIR_ONCE_GLOBAL_INIT(virIdentity);
 
+static void vir_identity_init(virIdentity *ident G_GNUC_UNUSED)
+{
+}
+
+static void vir_identity_class_init(virIdentityClass *klass)
+{
+    GObjectClass *obj = G_OBJECT_CLASS(klass);
+
+    obj->finalize = virIdentityFinalize;
+}
+
 /**
  * virIdentityGetCurrent:
  *
  * Get the current identity associated with this thread. The
  * caller will own a reference to the returned identity, but
  * must not modify the object in any way, other than to
- * release the reference when done with virObjectUnref
+ * release the reference when done with g_object_unref
  *
  * Returns: a reference to the current identity, or NULL
  */
@@ -90,7 +105,9 @@ virIdentityPtr virIdentityGetCurrent(void)
         return NULL;
 
     ident = virThreadLocalGet(&virIdentityCurrent);
-    return virObjectRef(ident);
+    if (ident)
+        g_object_ref(ident);
+    return ident;
 }
 
 
@@ -113,10 +130,11 @@ int virIdentitySetCurrent(virIdentityPtr ident)
     old = virThreadLocalGet(&virIdentityCurrent);
 
     if (virThreadLocalSet(&virIdentityCurrent,
-                          virObjectRef(ident)) < 0) {
+                          ident ? g_object_ref(ident) : NULL) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unable to set thread local identity"));
-        virObjectUnref(ident);
+        if (ident)
+            g_object_unref(ident);
         return -1;
     }
 
@@ -197,23 +215,17 @@ virIdentityPtr virIdentityGetSystem(void)
  */
 virIdentityPtr virIdentityNew(void)
 {
-    virIdentityPtr ident;
-
-    if (virIdentityInitialize() < 0)
-        return NULL;
-
-    if (!(ident = virObjectNew(virIdentityClass)))
-        return NULL;
-
-    return ident;
+    return VIR_IDENTITY(g_object_new(VIR_TYPE_IDENTITY, NULL));
 }
 
 
-static void virIdentityDispose(void *object)
+static void virIdentityFinalize(GObject *object)
 {
-    virIdentityPtr ident = object;
+    virIdentityPtr ident = VIR_IDENTITY(object);
 
     virTypedParamsFree(ident->params, ident->nparams);
+
+    G_OBJECT_CLASS(vir_identity_parent_class)->finalize(object);
 }
 
 
