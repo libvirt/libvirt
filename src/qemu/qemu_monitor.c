@@ -1254,10 +1254,9 @@ qemuMonitorUpdateVideoVram64Size(qemuMonitorPtr mon,
 
 
 int
-qemuMonitorHMPCommandWithFd(qemuMonitorPtr mon,
-                            const char *cmd,
-                            int scm_fd,
-                            char **reply)
+qemuMonitorHMPCommand(qemuMonitorPtr mon,
+                      const char *cmd,
+                      char **reply)
 {
     char *json_cmd = NULL;
     int ret = -1;
@@ -1272,7 +1271,7 @@ qemuMonitorHMPCommandWithFd(qemuMonitorPtr mon,
                        _("Unable to unescape command"));
         goto cleanup;
     }
-    ret = qemuMonitorJSONHumanCommandWithFd(mon, json_cmd, scm_fd, reply);
+    ret = qemuMonitorJSONHumanCommandWithFd(mon, json_cmd, -1, reply);
 
  cleanup:
     VIR_FREE(json_cmd);
