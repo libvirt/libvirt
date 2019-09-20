@@ -423,11 +423,32 @@ daemonSetupNetworking(virNetServerPtr srv,
         return -1;
 
 #ifdef WITH_IP
+# ifdef LIBVIRTD
     if (act && ipsock) {
         VIR_ERROR(_("--listen parameter not permitted with systemd activation "
                     "sockets, see 'man libvirtd' for further guidance"));
         return -1;
     }
+# else /* ! LIBVIRTD */
+    /*
+     * "ipsock" traditionally reflected whether --listen is set.
+     * The listen_tcp & listen_tls params in libvirtd.conf were
+     * not honoured unless --listen was set.
+     *
+     * In virtproxyd we dropped --listen, and have listen_tcp and
+     * listen_tls in the config file both default to 0. The user
+     * can turn on listening simply by setting the libvirtd.conf
+     * file settings and doesn't have to worry about also adding
+     * --listen, which is saner.
+     *
+     * Hence, we initialized ipsock == 1 by default with virtproxyd.
+     * When using systemd activation though, we clear ipsock, so
+     * later code doesn't have any surprising behaviour differences
+     * for virtproxyd vs libvirtd.
+     */
+    if (act)
+        ipsock = 0;
+# endif /* ! LIBVIRTD */
 #endif /* ! WITH_IP */
 
     if (config->unix_sock_group) {
