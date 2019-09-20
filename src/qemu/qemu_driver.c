@@ -17291,7 +17291,7 @@ qemuDomainCheckpointCreateXML(virDomainPtr domain,
         goto cleanup;
 
     if (redefine) {
-        if (virDomainCheckpointRedefinePrep(domain, vm, &def, &chk,
+        if (virDomainCheckpointRedefinePrep(vm, &def, &chk,
                                             driver->xmlopt,
                                             &update_current) < 0)
             goto endjob;

@@ -9073,7 +9073,7 @@ testDomainCheckpointCreateXML(virDomainPtr domain,
         goto cleanup;
 
     if (redefine) {
-        if (virDomainCheckpointRedefinePrep(domain, vm, &def, &chk,
+        if (virDomainCheckpointRedefinePrep(vm, &def, &chk,
                                             privconn->xmlopt,
                                             &update_current) < 0)
             goto cleanup;

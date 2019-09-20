@@ -90,8 +90,7 @@ virDomainCheckpointDefFormat(virDomainCheckpointDefPtr def,
 int
 virDomainCheckpointAlignDisks(virDomainCheckpointDefPtr checkpoint);
 
-int virDomainCheckpointRedefinePrep(virDomainPtr domain,
-                                    virDomainObjPtr vm,
+int virDomainCheckpointRedefinePrep(virDomainObjPtr vm,
                                     virDomainCheckpointDefPtr *def,
                                     virDomainMomentObjPtr *checkpoint,
                                     virDomainXMLOptionPtr xmlopt,

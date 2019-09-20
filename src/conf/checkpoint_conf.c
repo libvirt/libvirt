@@ -532,8 +532,7 @@ virDomainCheckpointDefFormat(virDomainCheckpointDefPtr def,
 
 
 int
-virDomainCheckpointRedefinePrep(virDomainPtr domain,
-                                virDomainObjPtr vm,
+virDomainCheckpointRedefinePrep(virDomainObjPtr vm,
                                 virDomainCheckpointDefPtr *defptr,
                                 virDomainMomentObjPtr *chk,
                                 virDomainXMLOptionPtr xmlopt,
@@ -544,13 +543,13 @@ virDomainCheckpointRedefinePrep(virDomainPtr domain,
     virDomainMomentObjPtr other = NULL;
     virDomainCheckpointDefPtr otherdef = NULL;
 
-    virUUIDFormat(domain->uuid, uuidstr);
+    virUUIDFormat(vm->def->uuid, uuidstr);
 
     if (virDomainCheckpointCheckCycles(vm->checkpoints, def, vm->def->name) < 0)
         return -1;
 
     if (!def->parent.dom ||
-        memcmp(def->parent.dom->uuid, domain->uuid, VIR_UUID_BUFLEN)) {
+        memcmp(def->parent.dom->uuid, vm->def->uuid, VIR_UUID_BUFLEN)) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("definition for checkpoint %s must use uuid %s"),
                        def->parent.name, uuidstr);
