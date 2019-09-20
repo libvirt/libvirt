@@ -161,42 +161,13 @@ static int qemuARPGetInterfaces(virDomainObjPtr vm,
 
 static virQEMUDriverPtr qemu_driver;
 
-/**
- * qemuDomObjFromDomain:
- * @domain: Domain pointer that has to be looked up
- *
- * This function looks up @domain and returns the appropriate virDomainObjPtr
- * that has to be released by calling virDomainObjEndAPI().
- *
- * Returns the domain object with incremented reference counter which is locked
- * on success, NULL otherwise.
- */
-static virDomainObjPtr
-qemuDomObjFromDomain(virDomainPtr domain)
-{
-    virDomainObjPtr vm;
-    virQEMUDriverPtr driver = domain->conn->privateData;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-
-    vm = virDomainObjListFindByUUID(driver->domains, domain->uuid);
-    if (!vm) {
-        virUUIDFormat(domain->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching uuid '%s' (%s)"),
-                       uuidstr, domain->name);
-        return NULL;
-    }
-
-    return vm;
-}
-
 /* Looks up the domain object from snapshot and unlocks the
  * driver. The returned domain object is locked and ref'd and the
  * caller must call virDomainObjEndAPI() on it. */
 static virDomainObjPtr
 qemuDomObjFromSnapshot(virDomainSnapshotPtr snapshot)
 {
-    return qemuDomObjFromDomain(snapshot->domain);
+    return qemuDomainObjFromDomain(snapshot->domain);
 }
 
 
@@ -230,7 +201,7 @@ qemuSnapObjFromSnapshot(virDomainObjPtr vm,
 static virDomainObjPtr
 qemuDomObjFromCheckpoint(virDomainCheckpointPtr checkpoint)
 {
-    return qemuDomObjFromDomain(checkpoint->domain);
+    return qemuDomainObjFromDomain(checkpoint->domain);
 }
 
 
@@ -1730,7 +1701,7 @@ static int qemuDomainIsActive(virDomainPtr dom)
     virDomainObjPtr obj;
     int ret = -1;
 
-    if (!(obj = qemuDomObjFromDomain(dom)))
+    if (!(obj = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainIsActiveEnsureACL(dom->conn, obj->def) < 0)
@@ -1748,7 +1719,7 @@ static int qemuDomainIsPersistent(virDomainPtr dom)
     virDomainObjPtr obj;
     int ret = -1;
 
-    if (!(obj = qemuDomObjFromDomain(dom)))
+    if (!(obj = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainIsPersistentEnsureACL(dom->conn, obj->def) < 0)
@@ -1766,7 +1737,7 @@ static int qemuDomainIsUpdated(virDomainPtr dom)
     virDomainObjPtr obj;
     int ret = -1;
 
-    if (!(obj = qemuDomObjFromDomain(dom)))
+    if (!(obj = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainIsUpdatedEnsureACL(dom->conn, obj->def) < 0)
@@ -1946,7 +1917,7 @@ static int qemuDomainSuspend(virDomainPtr dom)
     int state;
     virQEMUDriverConfigPtr cfg = NULL;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     if (virDomainSuspendEnsureACL(dom->conn, vm->def) < 0)
@@ -2001,7 +1972,7 @@ static int qemuDomainResume(virDomainPtr dom)
     int reason;
     virQEMUDriverConfigPtr cfg = NULL;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     cfg = virQEMUDriverGetConfig(driver);
@@ -2064,7 +2035,7 @@ static int qemuDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
     virCheckFlags(VIR_DOMAIN_SHUTDOWN_ACPI_POWER_BTN |
                   VIR_DOMAIN_SHUTDOWN_GUEST_AGENT, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (vm->def->onPoweroff == VIR_DOMAIN_LIFECYCLE_ACTION_RESTART ||
@@ -2168,7 +2139,7 @@ qemuDomainReboot(virDomainPtr dom, unsigned int flags)
     virCheckFlags(VIR_DOMAIN_REBOOT_ACPI_POWER_BTN |
                   VIR_DOMAIN_REBOOT_GUEST_AGENT, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (vm->def->onReboot == VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY ||
@@ -2256,7 +2227,7 @@ qemuDomainReset(virDomainPtr dom, unsigned int flags)
 
     virCheckFlags(0, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainResetEnsureACL(dom->conn, vm->def) < 0)
@@ -2319,7 +2290,7 @@ qemuDomainDestroyFlags(virDomainPtr dom,
 
     virCheckFlags(VIR_DOMAIN_DESTROY_GRACEFUL, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     priv = vm->privateData;
@@ -2384,7 +2355,7 @@ static char *qemuDomainGetOSType(virDomainPtr dom) {
     virDomainObjPtr vm;
     char *type = NULL;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainGetOSTypeEnsureACL(dom->conn, vm->def) < 0)
@@ -2404,7 +2375,7 @@ qemuDomainGetMaxMemory(virDomainPtr dom)
     virDomainObjPtr vm;
     unsigned long long ret = 0;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainGetMaxMemoryEnsureACL(dom->conn, vm->def) < 0)
@@ -2432,7 +2403,7 @@ static int qemuDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
                   VIR_DOMAIN_AFFECT_CONFIG |
                   VIR_DOMAIN_MEM_MAXIMUM, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     cfg = virQEMUDriverGetConfig(driver);
@@ -2559,7 +2530,7 @@ static int qemuDomainSetMemoryStatsPeriod(virDomainPtr dom, int period,
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     cfg = virQEMUDriverGetConfig(driver);
@@ -2630,7 +2601,7 @@ static int qemuDomainInjectNMI(virDomainPtr domain, unsigned int flags)
 
     virCheckFlags(0, -1);
 
-    if (!(vm = qemuDomObjFromDomain(domain)))
+    if (!(vm = qemuDomainObjFromDomain(domain)))
         return -1;
 
     if (virDomainInjectNMIEnsureACL(domain->conn, vm->def) < 0)
@@ -2690,7 +2661,7 @@ static int qemuDomainSendKey(virDomainPtr domain,
         }
     }
 
-    if (!(vm = qemuDomObjFromDomain(domain)))
+    if (!(vm = qemuDomainObjFromDomain(domain)))
         goto cleanup;
 
     priv = vm->privateData;
@@ -2726,7 +2697,7 @@ qemuDomainGetInfo(virDomainPtr dom,
     virDomainObjPtr vm;
     int ret = -1;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainGetInfoEnsureACL(dom->conn, vm->def) < 0)
@@ -2782,7 +2753,7 @@ qemuDomainGetState(virDomainPtr dom,
 
     virCheckFlags(0, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainGetStateEnsureACL(dom->conn, vm->def) < 0)
@@ -2807,7 +2778,7 @@ qemuDomainGetControlInfo(virDomainPtr dom,
 
     virCheckFlags(0, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainGetControlInfoEnsureACL(dom->conn, vm->def) < 0)
@@ -3617,7 +3588,7 @@ qemuDomainSaveFlags(virDomainPtr dom, const char *path, const char *dxml,
                                                 "save", false)) < 0)
         goto cleanup;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainSaveFlagsEnsureACL(dom->conn, vm->def) < 0)
@@ -3672,7 +3643,7 @@ qemuDomainManagedSave(virDomainPtr dom, unsigned int flags)
                   VIR_DOMAIN_SAVE_RUNNING |
                   VIR_DOMAIN_SAVE_PAUSED, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     if (virDomainManagedSaveEnsureACL(dom->conn, vm->def) < 0)
@@ -3743,7 +3714,7 @@ qemuDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
 
     virCheckFlags(0, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     if (virDomainHasManagedSaveImageEnsureACL(dom->conn, vm->def) < 0)
@@ -3766,7 +3737,7 @@ qemuDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
 
     virCheckFlags(0, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     if (virDomainManagedSaveRemoveEnsureACL(dom->conn, vm->def) < 0)
@@ -4009,7 +3980,7 @@ qemuDomainCoreDumpWithFormat(virDomainPtr dom,
                   VIR_DUMP_BYPASS_CACHE | VIR_DUMP_RESET |
                   VIR_DUMP_MEMORY_ONLY, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     if (virDomainCoreDumpWithFormatEnsureACL(dom->conn, vm->def) < 0)
@@ -4123,7 +4094,7 @@ qemuDomainScreenshot(virDomainPtr dom,
 
     virCheckFlags(0, NULL);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     priv = vm->privateData;
@@ -5186,7 +5157,7 @@ qemuDomainSetVcpusFlags(virDomainPtr dom,
                   VIR_DOMAIN_VCPU_GUEST |
                   VIR_DOMAIN_VCPU_HOTPLUGGABLE, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainSetVcpusFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
@@ -5333,7 +5304,7 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
 
     cfg = virQEMUDriverGetConfig(driver);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainPinVcpuFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
@@ -5413,7 +5384,7 @@ qemuDomainGetVcpuPinInfo(virDomainPtr dom,
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainGetVcpuPinInfoEnsureACL(dom->conn, vm->def) < 0)
@@ -5458,7 +5429,7 @@ qemuDomainPinEmulator(virDomainPtr dom,
 
     cfg = virQEMUDriverGetConfig(driver);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainPinEmulatorEnsureACL(dom->conn, vm->def, flags) < 0)
@@ -5562,7 +5533,7 @@ qemuDomainGetEmulatorPinInfo(virDomainPtr dom,
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainGetEmulatorPinInfoEnsureACL(dom->conn, vm->def) < 0)
@@ -5611,7 +5582,7 @@ qemuDomainGetVcpus(virDomainPtr dom,
     virDomainObjPtr vm;
     int ret = -1;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainGetVcpusEnsureACL(dom->conn, vm->def) < 0)
@@ -5648,7 +5619,7 @@ qemuDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
                   VIR_DOMAIN_VCPU_MAXIMUM |
                   VIR_DOMAIN_VCPU_GUEST, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     if (virDomainGetVcpusFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
@@ -5883,7 +5854,7 @@ qemuDomainGetIOThreadInfo(virDomainPtr dom,
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainGetIOThreadInfoEnsureACL(dom->conn, vm->def) < 0)
@@ -5930,7 +5901,7 @@ qemuDomainPinIOThread(virDomainPtr dom,
 
     cfg = virQEMUDriverGetConfig(driver);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
     priv = vm->privateData;
 
@@ -6507,7 +6478,7 @@ qemuDomainAddIOThread(virDomainPtr dom,
         return -1;
     }
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainAddIOThreadEnsureACL(dom->conn, vm->def, flags) < 0)
@@ -6542,7 +6513,7 @@ qemuDomainDelIOThread(virDomainPtr dom,
         return -1;
     }
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainDelIOThreadEnsureACL(dom->conn, vm->def, flags) < 0)
@@ -6591,7 +6562,7 @@ qemuDomainSetIOThreadParams(virDomainPtr dom,
 
     iothread.iothread_id = iothread_id;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainSetIOThreadParamsEnsureACL(dom->conn, vm->def, flags) < 0)
@@ -6617,7 +6588,7 @@ static int qemuDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr secl
 
     memset(seclabel, 0, sizeof(*seclabel));
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     if (virDomainGetSecurityLabelEnsureACL(dom->conn, vm->def) < 0)
@@ -6658,7 +6629,7 @@ static int qemuDomainGetSecurityLabelList(virDomainPtr dom,
     size_t i;
     int ret = -1;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     if (virDomainGetSecurityLabelListEnsureACL(dom->conn, vm->def) < 0)
@@ -7348,7 +7319,7 @@ qemuDomainManagedSaveGetXMLDesc(virDomainPtr dom, unsigned int flags)
 
     virCheckFlags(VIR_DOMAIN_SAVE_IMAGE_XML_SECURE, NULL);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return ret;
 
     priv = vm->privateData;
@@ -7390,7 +7361,7 @@ qemuDomainManagedSaveDefineXML(virDomainPtr dom, const char *dxml,
     char *path = NULL;
     int ret = -1;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     if (virDomainManagedSaveDefineXMLEnsureACL(conn, vm->def) < 0)
@@ -7506,7 +7477,7 @@ static char
     virCheckFlags(VIR_DOMAIN_XML_COMMON_FLAGS | VIR_DOMAIN_XML_UPDATE_CPU,
                   NULL);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainGetXMLDescEnsureACL(dom->conn, vm->def, flags) < 0)
@@ -7746,7 +7717,7 @@ qemuDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
 
     virNWFilterReadLockFilterUpdates();
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainCreateWithFlagsEnsureACL(dom->conn, vm->def) < 0)
@@ -7899,7 +7870,7 @@ qemuDomainUndefineFlags(virDomainPtr dom,
         return -1;
     }
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     cfg = virQEMUDriverGetConfig(driver);
@@ -8926,7 +8897,7 @@ qemuDomainAttachDeviceFlags(virDomainPtr dom,
 
     virNWFilterReadLockFilterUpdates();
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainAttachDeviceFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
@@ -8985,7 +8956,7 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     priv = vm->privateData;
@@ -9256,7 +9227,7 @@ qemuDomainDetachDeviceFlags(virDomainPtr dom,
     virDomainObjPtr vm = NULL;
     int ret = -1;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainDetachDeviceFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
@@ -9291,7 +9262,7 @@ qemuDomainDetachDeviceAlias(virDomainPtr dom,
     virDomainObjPtr vm = NULL;
     int ret = -1;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainDetachDeviceAliasEnsureACL(dom->conn, vm->def, flags) < 0)
@@ -9329,7 +9300,7 @@ static int qemuDomainGetAutostart(virDomainPtr dom,
     virDomainObjPtr vm;
     int ret = -1;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainGetAutostartEnsureACL(dom->conn, vm->def) < 0)
@@ -9352,7 +9323,7 @@ static int qemuDomainSetAutostart(virDomainPtr dom,
     int ret = -1;
     virQEMUDriverConfigPtr cfg = NULL;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     cfg = virQEMUDriverGetConfig(driver);
@@ -9428,7 +9399,7 @@ static char *qemuDomainGetSchedulerType(virDomainPtr dom,
     qemuDomainObjPrivatePtr priv;
     virQEMUDriverPtr driver = dom->conn->privateData;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     priv = vm->privateData;
@@ -9683,7 +9654,7 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
                                NULL) < 0)
         return -1;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     priv = vm->privateData;
@@ -9891,7 +9862,7 @@ qemuDomainGetBlkioParameters(virDomainPtr dom,
      * that can't parse it.  */
     flags &= ~VIR_TYPED_PARAM_STRING_OKAY;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     priv = vm->privateData;
@@ -9993,7 +9964,7 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
         return -1;
 
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     priv = vm->privateData;
@@ -10127,7 +10098,7 @@ qemuDomainGetMemoryParameters(virDomainPtr dom,
                   VIR_DOMAIN_AFFECT_CONFIG |
                   VIR_TYPED_PARAM_STRING_OKAY, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     priv = vm->privateData;
@@ -10281,7 +10252,7 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
                                NULL) < 0)
         return -1;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     priv = vm->privateData;
@@ -10400,7 +10371,7 @@ qemuDomainGetNumaParameters(virDomainPtr dom,
                   VIR_DOMAIN_AFFECT_CONFIG |
                   VIR_TYPED_PARAM_STRING_OKAY, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
     priv = vm->privateData;
 
@@ -10518,7 +10489,7 @@ qemuDomainSetPerfEvents(virDomainPtr dom,
                                NULL) < 0)
         return -1;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     cfg = virQEMUDriverGetConfig(driver);
@@ -10597,7 +10568,7 @@ qemuDomainGetPerfEvents(virDomainPtr dom,
                   VIR_DOMAIN_AFFECT_CONFIG |
                   VIR_TYPED_PARAM_STRING_OKAY, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainGetPerfEventsEnsureACL(dom->conn, vm->def) < 0)
@@ -10792,7 +10763,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
                                NULL) < 0)
         return -1;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     priv = vm->privateData;
@@ -11213,7 +11184,7 @@ qemuDomainGetSchedulerParametersFlags(virDomainPtr dom,
                   VIR_DOMAIN_AFFECT_CONFIG |
                   VIR_TYPED_PARAM_STRING_OKAY, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     priv = vm->privateData;
@@ -11341,7 +11312,7 @@ qemuDomainBlockResize(virDomainPtr dom,
         size *= 1024;
     }
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     priv = vm->privateData;
@@ -11543,7 +11514,7 @@ qemuDomainBlockStats(virDomainPtr dom,
     int ret = -1;
     virDomainObjPtr vm;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainBlockStatsEnsureACL(dom->conn, vm->def) < 0)
@@ -11601,7 +11572,7 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
     /* We don't return strings, and thus trivially support this flag.  */
     flags &= ~VIR_TYPED_PARAM_STRING_OKAY;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainBlockStatsFlagsEnsureACL(dom->conn, vm->def) < 0)
@@ -11677,7 +11648,7 @@ qemuDomainInterfaceStats(virDomainPtr dom,
     virDomainNetDefPtr net = NULL;
     int ret = -1;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainInterfaceStatsEnsureACL(dom->conn, vm->def) < 0)
@@ -11744,7 +11715,7 @@ qemuDomainSetInterfaceParameters(virDomainPtr dom,
                                NULL) < 0)
         return -1;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     cfg = virQEMUDriverGetConfig(driver);
@@ -11935,7 +11906,7 @@ qemuDomainGetInterfaceParameters(virDomainPtr dom,
                   VIR_DOMAIN_AFFECT_CONFIG |
                   VIR_TYPED_PARAM_STRING_OKAY, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     if (virDomainGetInterfaceParametersEnsureACL(dom->conn, vm->def) < 0)
@@ -12078,7 +12049,7 @@ qemuDomainMemoryStats(virDomainPtr dom,
 
     virCheckFlags(0, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainMemoryStatsEnsureACL(dom->conn, vm->def) < 0)
@@ -12112,7 +12083,7 @@ qemuDomainBlockPeek(virDomainPtr dom,
 
     virCheckFlags(0, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainBlockPeekEnsureACL(dom->conn, vm->def) < 0)
@@ -12180,7 +12151,7 @@ qemuDomainMemoryPeek(virDomainPtr dom,
 
     virCheckFlags(VIR_MEMORY_VIRTUAL | VIR_MEMORY_PHYSICAL, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     cfg = virQEMUDriverGetConfig(driver);
@@ -12469,7 +12440,7 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
 
     virCheckFlags(0, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     cfg = virQEMUDriverGetConfig(driver);
@@ -12807,7 +12778,7 @@ qemuDomainMigratePerform(virDomainPtr dom,
                                                    QEMU_MIGRATION_SOURCE)))
         goto cleanup;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainMigratePerformEnsureACL(dom->conn, vm->def) < 0)
@@ -12894,7 +12865,7 @@ qemuDomainMigrateBegin3(virDomainPtr domain,
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, NULL);
 
-    if (!(vm = qemuDomObjFromDomain(domain)))
+    if (!(vm = qemuDomainObjFromDomain(domain)))
         return NULL;
 
     if (virDomainMigrateBegin3EnsureACL(domain->conn, vm->def) < 0) {
@@ -12940,7 +12911,7 @@ qemuDomainMigrateBegin3Params(virDomainPtr domain,
     if (nmigrate_disks < 0)
         goto cleanup;
 
-    if (!(vm = qemuDomObjFromDomain(domain)))
+    if (!(vm = qemuDomainObjFromDomain(domain)))
         goto cleanup;
 
     if (virDomainMigrateBegin3ParamsEnsureACL(domain->conn, vm->def) < 0) {
@@ -13236,7 +13207,7 @@ qemuDomainMigratePerform3(virDomainPtr dom,
                                                    QEMU_MIGRATION_SOURCE)))
         goto cleanup;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainMigratePerform3EnsureACL(dom->conn, vm->def) < 0)
@@ -13322,7 +13293,7 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
                                                    QEMU_MIGRATION_SOURCE)))
         goto cleanup;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainMigratePerform3ParamsEnsureACL(dom->conn, vm->def) < 0)
@@ -13443,7 +13414,7 @@ qemuDomainMigrateConfirm3(virDomainPtr domain,
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
 
-    if (!(vm = qemuDomObjFromDomain(domain)))
+    if (!(vm = qemuDomainObjFromDomain(domain)))
         return -1;
 
     if (virDomainMigrateConfirm3EnsureACL(domain->conn, vm->def) < 0) {
@@ -13471,7 +13442,7 @@ qemuDomainMigrateConfirm3Params(virDomainPtr domain,
     if (virTypedParamsValidate(params, nparams, QEMU_MIGRATION_PARAMETERS) < 0)
         return -1;
 
-    if (!(vm = qemuDomObjFromDomain(domain)))
+    if (!(vm = qemuDomainObjFromDomain(domain)))
         return -1;
 
     if (virDomainMigrateConfirm3ParamsEnsureACL(domain->conn, vm->def) < 0) {
@@ -14045,7 +14016,7 @@ qemuDomainGetJobInfo(virDomainPtr dom,
     virDomainObjPtr vm;
     int ret = -1;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainGetJobInfoEnsureACL(dom->conn, vm->def) < 0)
@@ -14085,7 +14056,7 @@ qemuDomainGetJobStats(virDomainPtr dom,
 
     virCheckFlags(VIR_DOMAIN_JOB_STATS_COMPLETED, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainGetJobStatsEnsureACL(dom->conn, vm->def) < 0)
@@ -14122,7 +14093,7 @@ static int qemuDomainAbortJob(virDomainPtr dom)
     qemuDomainObjPrivatePtr priv;
     int reason;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainAbortJobEnsureACL(dom->conn, vm->def) < 0)
@@ -14193,7 +14164,7 @@ qemuDomainMigrateSetMaxDowntime(virDomainPtr dom,
 
     virCheckFlags(0, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainMigrateSetMaxDowntimeEnsureACL(dom->conn, vm->def) < 0)
@@ -14235,7 +14206,7 @@ qemuDomainMigrateGetMaxDowntime(virDomainPtr dom,
 
     virCheckFlags(0, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     if (virDomainMigrateGetMaxDowntimeEnsureACL(dom->conn, vm->def) < 0)
@@ -14288,7 +14259,7 @@ qemuDomainMigrateGetCompressionCache(virDomainPtr dom,
 
     virCheckFlags(0, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainMigrateGetCompressionCacheEnsureACL(dom->conn, vm->def) < 0)
@@ -14336,7 +14307,7 @@ qemuDomainMigrateSetCompressionCache(virDomainPtr dom,
 
     virCheckFlags(0, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainMigrateSetCompressionCacheEnsureACL(dom->conn, vm->def) < 0)
@@ -14388,7 +14359,7 @@ qemuDomainMigrateSetMaxSpeed(virDomainPtr dom,
 
     virCheckFlags(VIR_DOMAIN_MIGRATE_MAX_SPEED_POSTCOPY, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     priv = vm->privateData;
@@ -14520,7 +14491,7 @@ qemuDomainMigrateGetMaxSpeed(virDomainPtr dom,
 
     virCheckFlags(VIR_DOMAIN_MIGRATE_MAX_SPEED_POSTCOPY, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     priv = vm->privateData;
@@ -14554,7 +14525,7 @@ qemuDomainMigrateStartPostCopy(virDomainPtr dom,
 
     virCheckFlags(0, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainMigrateStartPostCopyEnsureACL(dom->conn, vm->def) < 0)
@@ -15889,7 +15860,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     if (redefine)
         parse_flags |= VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE;
 
-    if (!(vm = qemuDomObjFromDomain(domain)))
+    if (!(vm = qemuDomainObjFromDomain(domain)))
         goto cleanup;
 
     priv = vm->privateData;
@@ -16161,7 +16132,7 @@ qemuDomainSnapshotListNames(virDomainPtr domain,
                   VIR_DOMAIN_SNAPSHOT_LIST_TOPOLOGICAL |
                   VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
 
-    if (!(vm = qemuDomObjFromDomain(domain)))
+    if (!(vm = qemuDomainObjFromDomain(domain)))
         return -1;
 
     if (virDomainSnapshotListNamesEnsureACL(domain->conn, vm->def) < 0)
@@ -16187,7 +16158,7 @@ qemuDomainSnapshotNum(virDomainPtr domain,
                   VIR_DOMAIN_SNAPSHOT_LIST_TOPOLOGICAL |
                   VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
 
-    if (!(vm = qemuDomObjFromDomain(domain)))
+    if (!(vm = qemuDomainObjFromDomain(domain)))
         return -1;
 
     if (virDomainSnapshotNumEnsureACL(domain->conn, vm->def) < 0)
@@ -16213,7 +16184,7 @@ qemuDomainListAllSnapshots(virDomainPtr domain,
                   VIR_DOMAIN_SNAPSHOT_LIST_TOPOLOGICAL |
                   VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
 
-    if (!(vm = qemuDomObjFromDomain(domain)))
+    if (!(vm = qemuDomainObjFromDomain(domain)))
         return -1;
 
     if (virDomainListAllSnapshotsEnsureACL(domain->conn, vm->def) < 0)
@@ -16330,7 +16301,7 @@ qemuDomainSnapshotLookupByName(virDomainPtr domain,
 
     virCheckFlags(0, NULL);
 
-    if (!(vm = qemuDomObjFromDomain(domain)))
+    if (!(vm = qemuDomainObjFromDomain(domain)))
         return NULL;
 
     if (virDomainSnapshotLookupByNameEnsureACL(domain->conn, vm->def) < 0)
@@ -16356,7 +16327,7 @@ qemuDomainHasCurrentSnapshot(virDomainPtr domain,
 
     virCheckFlags(0, -1);
 
-    if (!(vm = qemuDomObjFromDomain(domain)))
+    if (!(vm = qemuDomainObjFromDomain(domain)))
         return -1;
 
     if (virDomainHasCurrentSnapshotEnsureACL(domain->conn, vm->def) < 0)
@@ -16414,7 +16385,7 @@ qemuDomainSnapshotCurrent(virDomainPtr domain,
 
     virCheckFlags(0, NULL);
 
-    if (!(vm = qemuDomObjFromDomain(domain)))
+    if (!(vm = qemuDomainObjFromDomain(domain)))
         return NULL;
 
     if (virDomainSnapshotCurrentEnsureACL(domain->conn, vm->def) < 0)
@@ -17280,7 +17251,7 @@ qemuDomainCheckpointCreateXML(virDomainPtr domain,
         update_current = false;
     }
 
-    if (!(vm = qemuDomObjFromDomain(domain)))
+    if (!(vm = qemuDomainObjFromDomain(domain)))
         goto cleanup;
 
     if (virDomainSnapshotObjListNum(vm->snapshots, NULL, 0) > 0) {
@@ -17418,7 +17389,7 @@ qemuDomainListAllCheckpoints(virDomainPtr domain,
                   VIR_DOMAIN_CHECKPOINT_LIST_TOPOLOGICAL |
                   VIR_DOMAIN_CHECKPOINT_FILTERS_ALL, -1);
 
-    if (!(vm = qemuDomObjFromDomain(domain)))
+    if (!(vm = qemuDomainObjFromDomain(domain)))
         return -1;
 
     if (virDomainListAllCheckpointsEnsureACL(domain->conn, vm->def) < 0)
@@ -17475,7 +17446,7 @@ qemuDomainCheckpointLookupByName(virDomainPtr domain,
 
     virCheckFlags(0, NULL);
 
-    if (!(vm = qemuDomObjFromDomain(domain)))
+    if (!(vm = qemuDomainObjFromDomain(domain)))
         return NULL;
 
     if (virDomainCheckpointLookupByNameEnsureACL(domain->conn, vm->def) < 0)
@@ -17680,7 +17651,7 @@ static int qemuDomainQemuMonitorCommand(virDomainPtr domain, const char *cmd,
 
     virCheckFlags(VIR_DOMAIN_QEMU_MONITOR_COMMAND_HMP, -1);
 
-    if (!(vm = qemuDomObjFromDomain(domain)))
+    if (!(vm = qemuDomainObjFromDomain(domain)))
         goto cleanup;
 
     if (virDomainQemuMonitorCommandEnsureACL(domain->conn, vm->def) < 0)
@@ -17727,7 +17698,7 @@ qemuDomainOpenConsole(virDomainPtr dom,
     virCheckFlags(VIR_DOMAIN_CONSOLE_SAFE |
                   VIR_DOMAIN_CONSOLE_FORCE, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainOpenConsoleEnsureACL(dom->conn, vm->def) < 0)
@@ -17804,7 +17775,7 @@ qemuDomainOpenChannel(virDomainPtr dom,
 
     virCheckFlags(VIR_DOMAIN_CHANNEL_FORCE, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainOpenChannelEnsureACL(dom->conn, vm->def) < 0)
@@ -18072,7 +18043,7 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
     virCheckFlags(VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC |
                   VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     if (virDomainBlockJobAbortEnsureACL(dom->conn, vm->def) < 0)
@@ -18234,7 +18205,7 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom,
 
     virCheckFlags(VIR_DOMAIN_BLOCK_JOB_INFO_BANDWIDTH_BYTES, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     if (virDomainGetBlockJobInfoEnsureACL(dom->conn, vm->def) < 0)
@@ -18306,7 +18277,7 @@ qemuDomainBlockJobSetSpeed(virDomainPtr dom,
         speed <<= 20;
     }
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     if (virDomainBlockJobSetSpeedEnsureACL(dom->conn, vm->def) < 0)
@@ -18763,7 +18734,7 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
                   VIR_DOMAIN_BLOCK_REBASE_COPY_DEV |
                   VIR_DOMAIN_BLOCK_REBASE_BANDWIDTH_BYTES, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     if (virDomainBlockRebaseEnsureACL(dom->conn, vm->def) < 0)
@@ -18853,7 +18824,7 @@ qemuDomainBlockCopy(virDomainPtr dom, const char *disk, const char *destxml,
                                NULL) < 0)
         return -1;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     if (virDomainBlockCopyEnsureACL(dom->conn, vm->def) < 0)
@@ -18919,7 +18890,7 @@ qemuDomainBlockPull(virDomainPtr dom, const char *path, unsigned long bandwidth,
     virDomainObjPtr vm;
     virCheckFlags(VIR_DOMAIN_BLOCK_PULL_BANDWIDTH_BYTES, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     if (virDomainBlockPullEnsureACL(dom->conn, vm->def) < 0) {
@@ -18976,7 +18947,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
                   VIR_DOMAIN_BLOCK_COMMIT_RELATIVE |
                   VIR_DOMAIN_BLOCK_COMMIT_BANDWIDTH_BYTES, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
     priv = vm->privateData;
 
@@ -19199,7 +19170,7 @@ qemuDomainOpenGraphics(virDomainPtr dom,
 
     virCheckFlags(VIR_DOMAIN_OPEN_GRAPHICS_SKIPAUTH, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     if (virDomainOpenGraphicsEnsureACL(dom->conn, vm->def) < 0)
@@ -19271,7 +19242,7 @@ qemuDomainOpenGraphicsFD(virDomainPtr dom,
 
     virCheckFlags(VIR_DOMAIN_OPEN_GRAPHICS_SKIPAUTH, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     if (virDomainOpenGraphicsFdEnsureACL(dom->conn, vm->def) < 0)
@@ -19488,7 +19459,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
 
     memset(&info, 0, sizeof(info));
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     if (virDomainSetBlockIoTuneEnsureACL(dom->conn, vm->def, flags) < 0)
@@ -19785,7 +19756,7 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
     /* We don't return strings, and thus trivially support this flag.  */
     flags &= ~VIR_TYPED_PARAM_STRING_OKAY;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     priv = vm->privateData;
@@ -19932,7 +19903,7 @@ qemuDomainGetDiskErrors(virDomainPtr dom,
 
     virCheckFlags(0, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     priv = vm->privateData;
@@ -20012,7 +19983,7 @@ qemuDomainSetMetadata(virDomainPtr dom,
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
     cfg = virQEMUDriverGetConfig(driver);
@@ -20054,7 +20025,7 @@ qemuDomainGetMetadata(virDomainPtr dom,
     virDomainObjPtr vm;
     char *ret = NULL;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return NULL;
 
     if (virDomainGetMetadataEnsureACL(dom->conn, vm->def) < 0)
@@ -20083,7 +20054,7 @@ qemuDomainGetCPUStats(virDomainPtr domain,
 
     virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
 
-    if (!(vm = qemuDomObjFromDomain(domain)))
+    if (!(vm = qemuDomainObjFromDomain(domain)))
         return -1;
 
     priv = vm->privateData;
@@ -20167,7 +20138,7 @@ qemuDomainPMSuspendForDuration(virDomainPtr dom,
         return -1;
     }
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainPMSuspendForDurationEnsureACL(dom->conn, vm->def) < 0)
@@ -20250,7 +20221,7 @@ qemuDomainPMWakeup(virDomainPtr dom,
 
     virCheckFlags(0, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainPMWakeupEnsureACL(dom->conn, vm->def) < 0)
@@ -20311,7 +20282,7 @@ qemuDomainQemuAgentCommand(virDomainPtr domain,
 
     virCheckFlags(0, NULL);
 
-    if (!(vm = qemuDomObjFromDomain(domain)))
+    if (!(vm = qemuDomainObjFromDomain(domain)))
         goto cleanup;
 
     if (virDomainQemuAgentCommandEnsureACL(domain->conn, vm->def) < 0)
@@ -20411,7 +20382,7 @@ qemuDomainFSTrim(virDomainPtr dom,
         return -1;
     }
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainFSTrimEnsureACL(dom->conn, vm->def) < 0)
@@ -20591,7 +20562,7 @@ qemuDomainGetHostname(virDomainPtr dom,
 
     virCheckFlags(0, NULL);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return NULL;
 
     if (virDomainGetHostnameEnsureACL(dom->conn, vm->def) < 0)
@@ -20633,7 +20604,7 @@ qemuDomainGetTime(virDomainPtr dom,
 
     virCheckFlags(0, ret);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return ret;
 
     if (virDomainGetTimeEnsureACL(dom->conn, vm->def) < 0)
@@ -20682,7 +20653,7 @@ qemuDomainSetTime(virDomainPtr dom,
 
     virCheckFlags(VIR_DOMAIN_TIME_SYNC, ret);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return ret;
 
     if (virDomainSetTimeEnsureACL(dom->conn, vm->def) < 0)
@@ -20757,7 +20728,7 @@ qemuDomainFSFreeze(virDomainPtr dom,
 
     virCheckFlags(0, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainFSFreezeEnsureACL(dom->conn, vm->def) < 0)
@@ -20798,7 +20769,7 @@ qemuDomainFSThaw(virDomainPtr dom,
         return ret;
     }
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainFSThawEnsureACL(dom->conn, vm->def) < 0)
@@ -22024,7 +21995,7 @@ qemuDomainGetFSInfo(virDomainPtr dom,
 
     virCheckFlags(0, ret);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return ret;
 
     if (virDomainGetFSInfoEnsureACL(dom->conn, vm->def) < 0)
@@ -22066,7 +22037,7 @@ qemuDomainInterfaceAddresses(virDomainPtr dom,
 
     virCheckFlags(0, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainInterfaceAddressesEnsureACL(dom->conn, vm->def) < 0)
@@ -22284,7 +22255,7 @@ qemuDomainSetUserPassword(virDomainPtr dom,
 
     virCheckFlags(VIR_DOMAIN_PASSWORD_ENCRYPTED, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         return ret;
 
     if (virDomainSetUserPasswordEnsureACL(dom->conn, vm->def) < 0)
@@ -22444,7 +22415,7 @@ static int qemuDomainRename(virDomainPtr dom,
 
     virCheckFlags(0, ret);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainRenameEnsureACL(dom->conn, vm->def) < 0)
@@ -22584,7 +22555,7 @@ qemuDomainGetGuestVcpus(virDomainPtr dom,
 
     virCheckFlags(0, ret);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainGetGuestVcpusEnsureACL(dom->conn, vm->def) < 0)
@@ -22643,7 +22614,7 @@ qemuDomainSetGuestVcpus(virDomainPtr dom,
     if (virBitmapParse(cpumap, &map, QEMU_GUEST_VCPU_MAX_ID) < 0)
         goto cleanup;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainSetGuestVcpusEnsureACL(dom->conn, vm->def) < 0)
@@ -22736,7 +22707,7 @@ qemuDomainSetVcpu(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainSetVcpuEnsureACL(dom->conn, vm->def, flags) < 0)
@@ -22794,7 +22765,7 @@ qemuDomainSetBlockThreshold(virDomainPtr dom,
 
     virCheckFlags(0, -1);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     priv = vm->privateData;
@@ -22890,7 +22861,7 @@ qemuDomainSetLifecycleAction(virDomainPtr dom,
     if (!virDomainDefLifecycleActionAllowed(type, action))
         goto cleanup;
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     priv = vm->privateData;
@@ -23064,7 +23035,7 @@ qemuDomainGetLaunchSecurityInfo(virDomainPtr domain,
     virDomainObjPtr vm;
     int ret = -1;
 
-    if (!(vm = qemuDomObjFromDomain(domain)))
+    if (!(vm = qemuDomainObjFromDomain(domain)))
         goto cleanup;
 
     if (virDomainGetLaunchSecurityInfoEnsureACL(domain->conn, vm->def) < 0)
@@ -23117,7 +23088,7 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
     virCheckFlags(0, -1);
     qemuDomainGetGuestInfoCheckSupport(&supportedTypes);
 
-    if (!(vm = qemuDomObjFromDomain(dom)))
+    if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainGetGuestInfoEnsureACL(dom->conn, vm->def) < 0)
