@@ -236,7 +236,7 @@ virtproxyd_CFLAGS = \
 	$(REMOTE_DAEMON_CFLAGS) \
 	-DSOCK_PREFIX="\"libvirt\"" \
 	-DDAEMON_NAME="\"virtproxyd\"" \
-	-DENABLE_IP \
+	-DWITH_IP \
 	-DVIRTPROXYD \
 	$(NULL)
 virtproxyd_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
