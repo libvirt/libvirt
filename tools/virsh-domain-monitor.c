@@ -631,8 +631,8 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
     for (i = 0; i < ndisks; i++) {
         ctxt->node = disks[i];
 
+        type = virXPathString("string(./@type)", ctxt);
         if (details) {
-            type = virXPathString("string(./@type)", ctxt);
             device = virXPathString("string(./@device)", ctxt);
             if (!type || !device) {
                 vshPrint(ctl, "unable to query block list details");
@@ -645,11 +645,30 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
             vshError(ctl, "unable to query block list");
             goto cleanup;
         }
-        source = virXPathString("string(./source/@file"
-                                "|./source/@dev"
-                                "|./source/@dir"
-                                "|./source/@name"
-                                "|./source/@volume)", ctxt);
+
+        if (STREQ_NULLABLE(type, "nvme")) {
+            g_autofree char *namespace = NULL;
+            virPCIDeviceAddress addr = { 0 };
+            xmlNodePtr addrNode = NULL;
+
+            if (!(namespace = virXPathString("string(./source/@namespace)", ctxt)) ||
+                !(addrNode = virXPathNode("./source/address", ctxt)) ||
+                virPCIDeviceAddressParseXML(addrNode, &addr) < 0) {
+                vshError(ctl, "Unable to query NVMe disk address");
+                goto cleanup;
+            }
+
+            source = g_strdup_printf("nvme://%04x:%02x:%02x.%d/%s",
+                                     addr.domain, addr.bus, addr.slot,
+                                     addr.function, namespace);
+        } else {
+            source = virXPathString("string(./source/@file"
+                                    "|./source/@dev"
+                                    "|./source/@dir"
+                                    "|./source/@name"
+                                    "|./source/@volume)", ctxt);
+        }
+
         if (details) {
             if (vshTableRowAppend(table, type, device, target,
                                   NULLSTR_MINUS(source), NULL) < 0)
