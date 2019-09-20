@@ -22,8 +22,6 @@
 
 #include <config.h>
 
-#include <regex.h>
-
 #include "domain_event.h"
 #include "object_event.h"
 #include "object_event_private.h"
@@ -2009,7 +2007,7 @@ virDomainQemuMonitorEventNew(int id,
  * deregisters.  */
 struct virDomainQemuMonitorEventData {
     char *event;
-    regex_t regex;
+    GRegex *regex;
     unsigned int flags;
     void *opaque;
     virFreeCallback freecb;
@@ -2241,7 +2239,7 @@ virDomainQemuMonitorEventFilter(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (data->flags == -1)
         return true;
     if (data->flags & VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_REGEX)
-        return regexec(&data->regex, monitorEvent->event, 0, NULL, 0) == 0;
+        return g_regex_match(data->regex, monitorEvent->event, 0, NULL) == TRUE;
     if (data->flags & VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_NOCASE)
         return STRCASEEQ(monitorEvent->event, data->event);
     return STREQ(monitorEvent->event, data->event);
@@ -2255,7 +2253,7 @@ virDomainQemuMonitorEventCleanup(void *opaque)
 
     VIR_FREE(data->event);
     if (data->flags & VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_REGEX)
-        regfree(&data->regex);
+        g_regex_unref(data->regex);
     if (data->freecb)
         (data->freecb)(data->opaque);
     VIR_FREE(data);
@@ -2306,20 +2304,17 @@ virDomainQemuMonitorEventStateRegisterID(virConnectPtr conn,
         return -1;
     data->flags = flags;
     if (event && flags != -1) {
-        int rflags = REG_NOSUB;
-
-        if (flags & VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_NOCASE)
-            rflags |= REG_ICASE;
         if (flags & VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_REGEX) {
-            int err = regcomp(&data->regex, event, rflags);
+            int cflags = G_REGEX_OPTIMIZE;
+            g_autoptr(GError) err = NULL;
 
-            if (err) {
-                char error[100];
-                regerror(err, &data->regex, error, sizeof(error));
+            if (flags & VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_NOCASE)
+                cflags |= G_REGEX_CASELESS;
+            data->regex = g_regex_new(event, cflags, 0, &err);
+            if (!data->regex) {
                 virReportError(VIR_ERR_INVALID_ARG,
                                _("failed to compile regex '%s': %s"),
-                               event, error);
-                regfree(&data->regex);
+                               event, err->message);
                 VIR_FREE(data);
                 return -1;
             }
