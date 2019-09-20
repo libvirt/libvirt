@@ -7877,7 +7877,7 @@ qemuDomainUndefineFlags(virDomainPtr dom,
                            ncheckpoints);
             goto endjob;
         }
-        if (qemuDomainCheckpointDiscardAllMetadata(driver, vm) < 0)
+        if (qemuCheckpointDiscardAllMetadata(driver, vm) < 0)
             goto endjob;
     }
 

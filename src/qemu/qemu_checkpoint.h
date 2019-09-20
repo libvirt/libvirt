@@ -20,6 +20,7 @@
 
 #include "virconftypes.h"
 #include "datatypes.h"
+#include "qemu_conf.h"
 
 virDomainObjPtr
 qemuDomObjFromCheckpoint(virDomainCheckpointPtr checkpoint);
@@ -31,6 +32,10 @@ qemuCheckpointObjFromCheckpoint(virDomainObjPtr vm,
 virDomainMomentObjPtr
 qemuCheckpointObjFromName(virDomainObjPtr vm,
                           const char *name);
+
+int
+qemuCheckpointDiscardAllMetadata(virQEMUDriverPtr driver,
+                                 virDomainObjPtr vm);
 
 virDomainCheckpointPtr
 qemuCheckpointCreateXML(virDomainPtr domain,
