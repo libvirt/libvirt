@@ -30851,8 +30851,9 @@ virDomainNetDefActualToNetworkPort(virDomainDefPtr dom,
     if (VIR_ALLOC(port) < 0)
         return NULL;
 
-    /* Bad - we need to preserve original port uuid */
-    if (virUUIDGenerate(port->uuid) < 0) {
+    if (virUUIDIsValid(iface->data.network.portid)) {
+        memcpy(port->uuid, iface->data.network.portid, VIR_UUID_BUFLEN);
+    } else if (virUUIDGenerate(port->uuid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("Failed to generate UUID"));
         return NULL;
@@ -30981,6 +30982,23 @@ virDomainNetCreatePort(virConnectPtr conn,
         return -1;
 
     if (flags & VIR_NETWORK_PORT_CREATE_RECLAIM) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        char macstr[VIR_MAC_STRING_BUFLEN];
+
+        virUUIDFormat(iface->data.network.portid, uuidstr);
+        virMacAddrFormat(&iface->mac, macstr);
+
+        /* if the port is already registered, then we are done */
+        if (virUUIDIsValid(iface->data.network.portid) &&
+            (port = virNetworkPortLookupByUUID(net, iface->data.network.portid))) {
+            VIR_DEBUG("network: %s domain: %s mac: %s port: %s - already registered, skipping",
+                      iface->data.network.name, dom->name, macstr, uuidstr);
+            return 0;
+        }
+
+        /* otherwise we need to create a new port */
+        VIR_DEBUG("network: %s domain: %s mac: %s port: %s - not found, reclaiming",
+                  iface->data.network.name, dom->name, macstr, uuidstr);
         if (!(portdef = virDomainNetDefActualToNetworkPort(dom, iface)))
             return -1;
     } else {
@@ -31029,10 +31047,9 @@ virDomainNetNotifyActualDevice(virConnectPtr conn,
 {
     virDomainNetType actualType = virDomainNetGetActualType(iface);
 
-    if (!virUUIDIsValid(iface->data.network.portid)) {
-        if (virDomainNetCreatePort(conn, dom, iface,
-                                   VIR_NETWORK_PORT_CREATE_RECLAIM) < 0)
-            return;
+    if (virDomainNetCreatePort(conn, dom, iface,
+                               VIR_NETWORK_PORT_CREATE_RECLAIM) < 0) {
+        return;
     }
 
     if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
