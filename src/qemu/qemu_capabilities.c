@@ -5277,24 +5277,17 @@ virQEMUCapsFillDomainCPUCaps(virCapsPtr caps,
 
     if (virQEMUCapsIsCPUModeSupported(qemuCaps, caps, domCaps->virttype,
                                       VIR_CPU_MODE_CUSTOM)) {
-        virDomainCapsCPUModelsPtr filtered = NULL;
-        char **models = NULL;
         const char *blacklist[] = { "host", NULL };
+        VIR_AUTOSTRINGLIST models = NULL;
 
         if (virCPUGetModels(domCaps->arch, &models) >= 0) {
-            virDomainCapsCPUModelsPtr cpus;
-
-            if (domCaps->virttype == VIR_DOMAIN_VIRT_KVM)
-                cpus = qemuCaps->kvmCPUModels;
-            else
-                cpus = qemuCaps->tcgCPUModels;
-
-            filtered = virDomainCapsCPUModelsFilter(cpus,
-                                                    (const char **)models,
-                                                    blacklist);
-            virStringListFree(models);
+            domCaps->cpu.custom = virQEMUCapsGetCPUDefinitions(qemuCaps,
+                                                               domCaps->virttype,
+                                                               (const char **)models,
+                                                               blacklist);
+        } else {
+            domCaps->cpu.custom = NULL;
         }
-        domCaps->cpu.custom = filtered;
     }
 }
 
