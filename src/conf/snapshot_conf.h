@@ -129,8 +129,7 @@ int virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr snapshot,
 bool virDomainSnapshotDefIsExternal(virDomainSnapshotDefPtr def);
 bool virDomainSnapshotIsExternal(virDomainMomentObjPtr snap);
 
-int virDomainSnapshotRedefinePrep(virDomainPtr domain,
-                                  virDomainObjPtr vm,
+int virDomainSnapshotRedefinePrep(virDomainObjPtr vm,
                                   virDomainSnapshotDefPtr *def,
                                   virDomainMomentObjPtr *snap,
                                   virDomainXMLOptionPtr xmlopt,

@@ -15969,7 +15969,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     qemuDomainObjSetAsyncJobMask(vm, QEMU_JOB_NONE);
 
     if (redefine) {
-        if (virDomainSnapshotRedefinePrep(domain, vm, &def, &snap,
+        if (virDomainSnapshotRedefinePrep(vm, &def, &snap,
                                           driver->xmlopt,
                                           &update_current, flags) < 0)
             goto endjob;

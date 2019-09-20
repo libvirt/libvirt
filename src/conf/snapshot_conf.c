@@ -986,8 +986,7 @@ virDomainSnapshotIsExternal(virDomainMomentObjPtr snap)
 }
 
 int
-virDomainSnapshotRedefinePrep(virDomainPtr domain,
-                              virDomainObjPtr vm,
+virDomainSnapshotRedefinePrep(virDomainObjPtr vm,
                               virDomainSnapshotDefPtr *defptr,
                               virDomainMomentObjPtr *snap,
                               virDomainXMLOptionPtr xmlopt,
@@ -1006,7 +1005,7 @@ virDomainSnapshotRedefinePrep(virDomainPtr domain,
     if (other)
         otherdef = virDomainSnapshotObjGetDef(other);
     check_if_stolen = other && otherdef->parent.dom;
-    if (virDomainSnapshotRedefineValidate(def, domain->uuid, other, xmlopt,
+    if (virDomainSnapshotRedefineValidate(def, vm->def->uuid, other, xmlopt,
                                           flags) < 0) {
         /* revert any stealing of the snapshot domain definition */
         if (check_if_stolen && def->parent.dom && !otherdef->parent.dom)

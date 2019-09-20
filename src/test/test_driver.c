@@ -8612,7 +8612,7 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
         goto cleanup;
 
     if (redefine) {
-        if (virDomainSnapshotRedefinePrep(domain, vm, &def, &snap,
+        if (virDomainSnapshotRedefinePrep(vm, &def, &snap,
                                           privconn->xmlopt,
                                           &update_current, flags) < 0)
             goto cleanup;
