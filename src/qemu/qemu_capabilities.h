@@ -573,7 +573,9 @@ int virQEMUCapsAddCPUDefinitions(virQEMUCapsPtr qemuCaps,
                                  size_t count,
                                  virDomainCapsCPUUsable usable);
 virDomainCapsCPUModelsPtr virQEMUCapsGetCPUDefinitions(virQEMUCapsPtr qemuCaps,
-                                                       virDomainVirtType type);
+                                                       virDomainVirtType type,
+                                                       const char **modelWhitelist,
+                                                       const char **modelBlacklist);
 virDomainCapsCPUModelsPtr virQEMUCapsFetchCPUDefinitions(qemuMonitorPtr mon,
                                                          virArch arch);
 

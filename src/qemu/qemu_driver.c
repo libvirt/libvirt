@@ -13710,7 +13710,7 @@ qemuConnectBaselineHypervisorCPU(virConnectPtr conn,
     if (!qemuCaps)
         goto cleanup;
 
-    if (!(cpuModels = virQEMUCapsGetCPUDefinitions(qemuCaps, virttype)) ||
+    if (!(cpuModels = virQEMUCapsGetCPUDefinitions(qemuCaps, virttype, NULL, NULL)) ||
         cpuModels->nmodels == 0) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("QEMU '%s' does not support any CPU models for "

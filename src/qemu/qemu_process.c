@@ -6054,7 +6054,7 @@ qemuProcessUpdateGuestCPU(virDomainDefPtr def,
                                                  VIR_QEMU_CAPS_HOST_CPU_MIGRATABLE)) < 0)
             return -1;
 
-        cpuModels = virQEMUCapsGetCPUDefinitions(qemuCaps, def->virtType);
+        cpuModels = virQEMUCapsGetCPUDefinitions(qemuCaps, def->virtType, NULL, NULL);
 
         if (virCPUTranslate(def->os.arch, def->cpu, cpuModels) < 0)
             return -1;

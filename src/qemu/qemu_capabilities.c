@@ -1883,7 +1883,9 @@ virQEMUCapsAddCPUDefinitions(virQEMUCapsPtr qemuCaps,
 
 virDomainCapsCPUModelsPtr
 virQEMUCapsGetCPUDefinitions(virQEMUCapsPtr qemuCaps,
-                             virDomainVirtType type)
+                             virDomainVirtType type,
+                             const char **modelWhitelist,
+                             const char **modelBlacklist)
 {
     virDomainCapsCPUModelsPtr cpuModels;
 
@@ -1894,6 +1896,9 @@ virQEMUCapsGetCPUDefinitions(virQEMUCapsPtr qemuCaps,
 
     if (!cpuModels)
         return NULL;
+
+    if (modelWhitelist || modelBlacklist)
+        return virDomainCapsCPUModelsFilter(cpuModels, modelWhitelist, modelBlacklist);
 
     return virDomainCapsCPUModelsCopy(cpuModels);
 }
@@ -3132,7 +3137,7 @@ virQEMUCapsInitCPUModelX86(virQEMUCapsPtr qemuCaps,
     if (!(data = virQEMUCapsGetCPUModelX86Data(qemuCaps, model, migratable)))
         goto cleanup;
 
-    cpuModels = virQEMUCapsGetCPUDefinitions(qemuCaps, type);
+    cpuModels = virQEMUCapsGetCPUDefinitions(qemuCaps, type, NULL, NULL);
 
     if (cpuDecode(cpu, data, cpuModels) < 0)
         goto cleanup;
@@ -3221,7 +3226,7 @@ virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
 
         VIR_DEBUG("No host CPU model info from QEMU; probing host CPU directly");
 
-        cpuModels = virQEMUCapsGetCPUDefinitions(qemuCaps, type);
+        cpuModels = virQEMUCapsGetCPUDefinitions(qemuCaps, type, NULL, NULL);
         hostCPU = virQEMUCapsProbeHostCPU(hostArch, cpuModels);
 
         if (!hostCPU ||
