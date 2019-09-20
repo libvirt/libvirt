@@ -1729,45 +1729,41 @@ qemuDomainValidateDevicePCISlotsPIIX3(virDomainDefPtr def,
     /* Verify that first IDE and USB controllers (if any) is on the PIIX3, fn 1 */
     for (i = 0; i < def->ncontrollers; i++) {
         virDomainControllerDefPtr cont = def->controllers[i];
+        virPCIDeviceAddress primaryIDEAddr = {.domain = 0, .bus = 0,
+                                              .slot = 1, .function = 1};
+        virPCIDeviceAddress piix3USBAddr = {.domain = 0, .bus = 0,
+                                            .slot = 1, .function = 2};
 
         /* First IDE controller lives on the PIIX3 at slot=1, function=1 */
         if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_IDE &&
             cont->idx == 0) {
             if (virDeviceInfoPCIAddressIsPresent(&cont->info)) {
-                if (cont->info.addr.pci.domain != 0 ||
-                    cont->info.addr.pci.bus != 0 ||
-                    cont->info.addr.pci.slot != 1 ||
-                    cont->info.addr.pci.function != 1) {
+                if (!virPCIDeviceAddressEqual(&cont->info.addr.pci,
+                                              &primaryIDEAddr)) {
                     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("Primary IDE controller must have PCI address 0:0:1.1"));
+                                   _("Primary IDE controller must have PCI "
+                                     "address 0:0:1.1"));
                     return -1;
                 }
             } else {
                 cont->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
-                cont->info.addr.pci.domain = 0;
-                cont->info.addr.pci.bus = 0;
-                cont->info.addr.pci.slot = 1;
-                cont->info.addr.pci.function = 1;
+                cont->info.addr.pci = primaryIDEAddr;
             }
         } else if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
                    cont->idx == 0 &&
                    (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI ||
                     cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT)) {
             if (virDeviceInfoPCIAddressIsPresent(&cont->info)) {
-                if (cont->info.addr.pci.domain != 0 ||
-                    cont->info.addr.pci.bus != 0 ||
-                    cont->info.addr.pci.slot != 1 ||
-                    cont->info.addr.pci.function != 2) {
+                if (!virPCIDeviceAddressEqual(&cont->info.addr.pci,
+                                              &piix3USBAddr)) {
                     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("PIIX3 USB controller at index 0 must have PCI address 0:0:1.2"));
+                                   _("PIIX3 USB controller at index 0 must "
+                                     "have PCI address 0:0:1.2"));
                     return -1;
                 }
             } else {
                 cont->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
-                cont->info.addr.pci.domain = 0;
-                cont->info.addr.pci.bus = 0;
-                cont->info.addr.pci.slot = 1;
-                cont->info.addr.pci.function = 2;
+                cont->info.addr.pci = piix3USBAddr;
             }
         } else {
             /* this controller is not skipped in qemuDomainCollectPCIAddress */
@@ -1800,6 +1796,8 @@ qemuDomainValidateDevicePCISlotsPIIX3(virDomainDefPtr def,
          * at slot 2.
          */
         virDomainVideoDefPtr primaryVideo = def->videos[0];
+        virPCIDeviceAddress primaryCardAddr = {.domain = 0, .bus = 0,
+                                               .slot = 2, .function = 0};
 
         if (virDeviceInfoPCIAddressIsWanted(&primaryVideo->info)) {
             memset(&tmp_addr, 0, sizeof(tmp_addr));
@@ -1830,10 +1828,8 @@ qemuDomainValidateDevicePCISlotsPIIX3(virDomainDefPtr def,
                 primaryVideo->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
             }
         } else if (!qemuDeviceVideoUsable) {
-            if (primaryVideo->info.addr.pci.domain != 0 ||
-                primaryVideo->info.addr.pci.bus != 0 ||
-                primaryVideo->info.addr.pci.slot != 2 ||
-                primaryVideo->info.addr.pci.function != 0) {
+            if (!virPCIDeviceAddressEqual(&primaryVideo->info.addr.pci,
+                                          &primaryCardAddr)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Primary video card must have PCI address 0:0:2.0"));
                 return -1;
@@ -1870,6 +1866,8 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDefPtr def,
 
     for (i = 0; i < def->ncontrollers; i++) {
         virDomainControllerDefPtr cont = def->controllers[i];
+        virPCIDeviceAddress primarySATAAddr = {.domain = 0, .bus = 0,
+                                               .slot = 0x1F, .function = 2};
 
         switch (cont->type) {
         case VIR_DOMAIN_CONTROLLER_TYPE_SATA:
@@ -1879,20 +1877,16 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDefPtr def,
              */
             if (cont->idx == 0) {
                 if (virDeviceInfoPCIAddressIsPresent(&cont->info)) {
-                    if (cont->info.addr.pci.domain != 0 ||
-                        cont->info.addr.pci.bus != 0 ||
-                        cont->info.addr.pci.slot != 0x1F ||
-                        cont->info.addr.pci.function != 2) {
+                    if (!virPCIDeviceAddressEqual(&cont->info.addr.pci,
+                                                  &primarySATAAddr)) {
                         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                       _("Primary SATA controller must have PCI address 0:0:1f.2"));
+                                       _("Primary SATA controller must have "
+                                         "PCI address 0:0:1f.2"));
                         return -1;
                     }
                 } else {
                     cont->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
-                    cont->info.addr.pci.domain = 0;
-                    cont->info.addr.pci.bus = 0;
-                    cont->info.addr.pci.slot = 0x1F;
-                    cont->info.addr.pci.function = 2;
+                    cont->info.addr.pci = primarySATAAddr;
                 }
             }
             break;
