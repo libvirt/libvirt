@@ -191,27 +191,6 @@ virDomainCapsCPUModelsCopy(virDomainCapsCPUModelsPtr old)
 
 
 int
-virDomainCapsCPUModelsAddSteal(virDomainCapsCPUModelsPtr cpuModels,
-                               char **name,
-                               virDomainCapsCPUUsable usable,
-                               char ***blockers)
-{
-    if (VIR_RESIZE_N(cpuModels->models, cpuModels->nmodels_max,
-                     cpuModels->nmodels, 1) < 0)
-        return -1;
-
-    cpuModels->models[cpuModels->nmodels].usable = usable;
-    cpuModels->models[cpuModels->nmodels].name = g_steal_pointer(&*name);
-
-    if (blockers)
-        cpuModels->models[cpuModels->nmodels].blockers = g_steal_pointer(&*blockers);
-
-    cpuModels->nmodels++;
-    return 0;
-}
-
-
-int
 virDomainCapsCPUModelsAdd(virDomainCapsCPUModelsPtr cpuModels,
                           const char *name,
                           virDomainCapsCPUUsable usable,
@@ -219,15 +198,23 @@ virDomainCapsCPUModelsAdd(virDomainCapsCPUModelsPtr cpuModels,
 {
     g_autofree char * nameCopy = NULL;
     VIR_AUTOSTRINGLIST blockersCopy = NULL;
+    virDomainCapsCPUModelPtr cpu;
 
     nameCopy = g_strdup(name);
 
     if (virStringListCopy(&blockersCopy, (const char **)blockers) < 0)
         return -1;
 
-    if (virDomainCapsCPUModelsAddSteal(cpuModels, &nameCopy,
-                                       usable, &blockersCopy) < 0)
+    if (VIR_RESIZE_N(cpuModels->models, cpuModels->nmodels_max,
+                     cpuModels->nmodels, 1) < 0)
         return -1;
+
+    cpu = cpuModels->models + cpuModels->nmodels;
+    cpuModels->nmodels++;
+
+    cpu->usable = usable;
+    cpu->name = g_steal_pointer(&nameCopy);
+    cpu->blockers = g_steal_pointer(&blockersCopy);
 
     return 0;
 }

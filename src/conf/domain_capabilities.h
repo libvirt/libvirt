@@ -203,10 +203,6 @@ virDomainCapsPtr virDomainCapsNew(const char *path,
 
 virDomainCapsCPUModelsPtr virDomainCapsCPUModelsNew(size_t nmodels);
 virDomainCapsCPUModelsPtr virDomainCapsCPUModelsCopy(virDomainCapsCPUModelsPtr old);
-int virDomainCapsCPUModelsAddSteal(virDomainCapsCPUModelsPtr cpuModels,
-                                   char **name,
-                                   virDomainCapsCPUUsable usable,
-                                   char ***blockers);
 int virDomainCapsCPUModelsAdd(virDomainCapsCPUModelsPtr cpuModels,
                               const char *name,
                               virDomainCapsCPUUsable usable,
