@@ -13684,7 +13684,7 @@ qemuConnectBaselineHypervisorCPU(virConnectPtr conn,
     g_autoptr(virQEMUCaps) qemuCaps = NULL;
     virArch arch;
     virDomainVirtType virttype;
-    virDomainCapsCPUModelsPtr cpuModels;
+    g_autoptr(virDomainCapsCPUModels) cpuModels = NULL;
     bool migratable;
     virCPUDefPtr cpu = NULL;
     char *cpustr = NULL;

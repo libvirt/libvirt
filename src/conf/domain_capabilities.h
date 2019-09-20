@@ -139,6 +139,8 @@ struct _virDomainCapsCPUModels {
     virDomainCapsCPUModelPtr models;
 };
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainCapsCPUModels, virObjectUnref);
+
 typedef struct _virDomainCapsCPU virDomainCapsCPU;
 typedef virDomainCapsCPU *virDomainCapsCPUPtr;
 struct _virDomainCapsCPU {
