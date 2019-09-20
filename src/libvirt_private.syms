@@ -194,7 +194,6 @@ virDomainAuditVcpu;
 virDomainCapsCPUModelsAdd;
 virDomainCapsCPUModelsAddSteal;
 virDomainCapsCPUModelsCopy;
-virDomainCapsCPUModelsFilter;
 virDomainCapsCPUModelsGet;
 virDomainCapsCPUModelsNew;
 virDomainCapsCPUUsableTypeFromString;
