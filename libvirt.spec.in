@@ -1225,7 +1225,6 @@ rm -f po/stamp-po
            --with-init-script=systemd \
            %{?arg_login_shell}
 make %{?_smp_mflags} V=1
-gzip -9 ChangeLog
 
 %install
 rm -fr %{buildroot}
@@ -1523,7 +1522,7 @@ exit 0
 %files
 
 %files docs
-%doc AUTHORS ChangeLog.gz NEWS README README.md
+%doc AUTHORS ChangeLog NEWS README README.md
 %doc libvirt-docs/*
 
 %files daemon
