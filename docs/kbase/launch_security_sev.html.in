@@ -349,6 +349,18 @@ EOF</pre>
   ...
 &lt;/domain&gt;</pre>
 
+    <h2><a id="Guest">Checking SEV from within the guest</a></h2>
+    <p>
+        After making the necessary adjustments discussed in
+        <a href="#Configuration">Configuration</a>, the VM should now boot
+        successfully with SEV enabled. You can then verify that the guest has
+        SEV enabled by running:
+    </p>
+
+    <pre>
+# dmesg | grep -i sev
+AMD Secure Encrypted Virtualization (SEV) active</pre>
+
     <h2><a id="Limitations">Limitations</a></h2>
     <p>
         Currently, the boot disk cannot be of type virtio-blk, instead, virtio-scsi
