@@ -49,8 +49,7 @@ ats=on \
 ats=on \
 -device virtio-input-host-pci,id=input3,evdev=/dev/input/event1234,bus=pci.0,\
 addr=0x12,iommu_platform=on,ats=on \
--device virtio-gpu-pci,id=video0,virgl=on,bus=pci.0,addr=0x2,iommu_platform=on,\
-ats=on \
+-device virtio-gpu-pci,id=video0,bus=pci.0,addr=0x2,iommu_platform=on,ats=on \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0xc,iommu_platform=on,\
 ats=on \
 -object rng-random,id=objrng0,filename=/dev/random \
