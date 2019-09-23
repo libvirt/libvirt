@@ -509,7 +509,7 @@ typedef qemuDomainVideoPrivate *qemuDomainVideoPrivatePtr;
 struct _qemuDomainVideoPrivate {
     virObject parent;
 
-    bool tmp_to_remove;
+    int vhost_user_fd;
 };
 
 

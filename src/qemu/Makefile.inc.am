@@ -66,6 +66,8 @@ QEMU_DRIVER_SOURCES = \
 	qemu/qemu_tpm.h \
 	qemu/qemu_vhost_user.c \
 	qemu/qemu_vhost_user.h \
+	qemu/qemu_vhost_user_gpu.c \
+	qemu/qemu_vhost_user_gpu.h \
 	$(NULL)
 
 

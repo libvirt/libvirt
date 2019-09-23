@@ -1341,8 +1341,11 @@ qemuDomainVideoPrivateNew(void)
 
 
 static void
-qemuDomainVideoPrivateDispose(void *obj ATTRIBUTE_UNUSED)
+qemuDomainVideoPrivateDispose(void *obj)
 {
+    qemuDomainVideoPrivatePtr priv = obj;
+
+    VIR_FORCE_CLOSE(priv->vhost_user_fd);
 }
 
 
