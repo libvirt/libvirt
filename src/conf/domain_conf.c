@@ -30671,7 +30671,7 @@ virNetworkPortDefPtr
 virDomainNetDefToNetworkPort(virDomainDefPtr dom,
                              virDomainNetDefPtr iface)
 {
-    virNetworkPortDefPtr port;
+    VIR_AUTOPTR(virNetworkPortDef) port = NULL;
 
     if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -30686,34 +30686,30 @@ virDomainNetDefToNetworkPort(virDomainDefPtr dom,
     if (virUUIDGenerate(port->uuid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("Failed to generate UUID"));
-        goto error;
+        return NULL;
     }
 
     memcpy(port->owneruuid, dom->uuid, VIR_UUID_BUFLEN);
     if (VIR_STRDUP(port->ownername, dom->name) < 0)
-        goto error;
+        return NULL;
 
     if (VIR_STRDUP(port->group, iface->data.network.portgroup) < 0)
-        goto error;
+        return NULL;
 
     memcpy(&port->mac, &iface->mac, VIR_MAC_BUFLEN);
 
     if (virNetDevVPortProfileCopy(&port->virtPortProfile, iface->virtPortProfile) < 0)
-        goto error;
+        return NULL;
 
     if (virNetDevBandwidthCopy(&port->bandwidth, iface->bandwidth) < 0)
-        goto error;
+        return NULL;
 
     if (virNetDevVlanCopy(&port->vlan, &iface->vlan) < 0)
-        goto error;
+        return NULL;
 
     port->trustGuestRxFilters = iface->trustGuestRxFilters;
 
-    return port;
-
- error:
-    virNetworkPortDefFree(port);
-    return NULL;
+    VIR_RETURN_PTR(port);
 }
 
 int
@@ -30834,7 +30830,7 @@ virDomainNetDefActualToNetworkPort(virDomainDefPtr dom,
                                    virDomainNetDefPtr iface)
 {
     virDomainActualNetDefPtr actual;
-    virNetworkPortDefPtr port;
+    VIR_AUTOPTR(virNetworkPortDef) port = NULL;
 
     if (!iface->data.network.actual) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -30859,15 +30855,15 @@ virDomainNetDefActualToNetworkPort(virDomainDefPtr dom,
     if (virUUIDGenerate(port->uuid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("Failed to generate UUID"));
-        goto error;
+        return NULL;
     }
 
     memcpy(port->owneruuid, dom->uuid, VIR_UUID_BUFLEN);
     if (VIR_STRDUP(port->ownername, dom->name) < 0)
-        goto error;
+        return NULL;
 
     if (VIR_STRDUP(port->group, iface->data.network.portgroup) < 0)
-        goto error;
+        return NULL;
 
     memcpy(&port->mac, &iface->mac, VIR_MAC_BUFLEN);
 
@@ -30876,7 +30872,7 @@ virDomainNetDefActualToNetworkPort(virDomainDefPtr dom,
         port->plugtype = VIR_NETWORK_PORT_PLUG_TYPE_NETWORK;
         if (VIR_STRDUP(port->plug.bridge.brname,
                        actual->data.bridge.brname) < 0)
-            goto error;
+            return NULL;
         port->plug.bridge.macTableManager = actual->data.bridge.macTableManager;
         break;
 
@@ -30884,7 +30880,7 @@ virDomainNetDefActualToNetworkPort(virDomainDefPtr dom,
         port->plugtype = VIR_NETWORK_PORT_PLUG_TYPE_BRIDGE;
         if (VIR_STRDUP(port->plug.bridge.brname,
                        actual->data.bridge.brname) < 0)
-            goto error;
+            return NULL;
         port->plug.bridge.macTableManager = actual->data.bridge.macTableManager;
         break;
 
@@ -30892,7 +30888,7 @@ virDomainNetDefActualToNetworkPort(virDomainDefPtr dom,
         port->plugtype = VIR_NETWORK_PORT_PLUG_TYPE_DIRECT;
         if (VIR_STRDUP(port->plug.direct.linkdev,
                        actual->data.direct.linkdev) < 0)
-            goto error;
+            return NULL;
         port->plug.direct.mode = actual->data.direct.mode;
         break;
 
@@ -30903,7 +30899,7 @@ virDomainNetDefActualToNetworkPort(virDomainDefPtr dom,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Actual interface '%s' hostdev was not a PCI device"),
                            iface->ifname);
-            goto error;
+            return NULL;
         }
         port->plug.hostdevpci.managed = virTristateBoolFromBool(actual->data.hostdev.def.managed);
         port->plug.hostdevpci.addr = actual->data.hostdev.def.source.subsys.u.pci.addr;
@@ -30929,7 +30925,7 @@ virDomainNetDefActualToNetworkPort(virDomainDefPtr dom,
         default:
             virReportEnumRangeError(virDomainHostdevSubsysPCIBackendType,
                                     actual->data.hostdev.def.source.subsys.u.pci.backend);
-            goto error;
+            return NULL;
         }
 
         break;
@@ -30945,31 +30941,27 @@ virDomainNetDefActualToNetworkPort(virDomainDefPtr dom,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unexpected network port type %s"),
                        virDomainNetTypeToString(virDomainNetGetActualType(iface)));
-        goto error;
+        return NULL;
 
     case VIR_DOMAIN_NET_TYPE_LAST:
     default:
         virReportEnumRangeError(virNetworkPortPlugType, port->plugtype);
-        goto error;
+        return NULL;
     }
 
     if (virNetDevVPortProfileCopy(&port->virtPortProfile, actual->virtPortProfile) < 0)
-        goto error;
+        return NULL;
 
     if (virNetDevBandwidthCopy(&port->bandwidth, actual->bandwidth) < 0)
-        goto error;
+        return NULL;
 
     if (virNetDevVlanCopy(&port->vlan, &actual->vlan) < 0)
-        goto error;
+        return NULL;
 
     port->class_id = actual->class_id;
     port->trustGuestRxFilters = actual->trustGuestRxFilters;
 
-    return port;
-
- error:
-    virNetworkPortDefFree(port);
-    return NULL;
+    VIR_RETURN_PTR(port);
 }
 
 
@@ -30979,60 +30971,47 @@ virDomainNetCreatePort(virConnectPtr conn,
                        virDomainNetDefPtr iface,
                        unsigned int flags)
 {
-    virNetworkPtr net = NULL;
-    int ret = -1;
-    virNetworkPortDefPtr portdef = NULL;
-    virNetworkPortPtr port = NULL;
-    char *portxml = NULL;
-    virErrorPtr saved;
+    virErrorPtr save_err;
+    VIR_AUTOUNREF(virNetworkPtr) net = NULL;
+    VIR_AUTOPTR(virNetworkPortDef) portdef = NULL;
+    VIR_AUTOUNREF(virNetworkPortPtr) port = NULL;
+    VIR_AUTOFREE(char *) portxml = NULL;
 
     if (!(net = virNetworkLookupByName(conn, iface->data.network.name)))
         return -1;
 
     if (flags & VIR_NETWORK_PORT_CREATE_RECLAIM) {
         if (!(portdef = virDomainNetDefActualToNetworkPort(dom, iface)))
-            goto cleanup;
+            return -1;
     } else {
         if (!(portdef = virDomainNetDefToNetworkPort(dom, iface)))
-            goto cleanup;
+            return -1;
     }
 
     if (!(portxml = virNetworkPortDefFormat(portdef)))
-        goto cleanup;
+        return -1;
 
+    /* prepare to re-use portdef */
     virNetworkPortDefFree(portdef);
     portdef = NULL;
 
     if (!(port = virNetworkPortCreateXML(net, portxml, flags)))
-        goto cleanup;
+        return -1;
 
+    /* prepare to re-use portxml */
     VIR_FREE(portxml);
 
-    if (!(portxml = virNetworkPortGetXMLDesc(port, 0)))
-        goto deleteport;
-
-    if (!(portdef = virNetworkPortDefParseString(portxml)))
-        goto deleteport;
-
-    if (virDomainNetDefActualFromNetworkPort(iface, portdef) < 0)
-        goto deleteport;
+    if (!(portxml = virNetworkPortGetXMLDesc(port, 0)) ||
+        !(portdef = virNetworkPortDefParseString(portxml)) ||
+        virDomainNetDefActualFromNetworkPort(iface, portdef) < 0) {
+        virErrorPreserveLast(&save_err);
+        virNetworkPortDelete(port, 0);
+        virErrorRestore(&save_err);
+        return -1;
+    }
 
     virNetworkPortGetUUID(port, iface->data.network.portid);
-
-    ret = 0;
- cleanup:
-    virNetworkPortDefFree(portdef);
-    VIR_FREE(portxml);
-    virObjectUnref(port);
-    virObjectUnref(net);
-    return ret;
-
- deleteport:
-    saved = virSaveLastError();
-    virNetworkPortDelete(port, 0);
-    virSetError(saved);
-    virFreeError(saved);
-    goto cleanup;
+    return 0;
 }
 
 int

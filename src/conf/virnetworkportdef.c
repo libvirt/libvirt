@@ -75,7 +75,7 @@ virNetworkPortDefFree(virNetworkPortDefPtr def)
 static virNetworkPortDefPtr
 virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
 {
-    virNetworkPortDefPtr def;
+    VIR_AUTOPTR(virNetworkPortDef) def = NULL;
     VIR_AUTOFREE(char *) uuid = NULL;
     xmlNodePtr virtPortNode;
     xmlNodePtr vlanNode;
@@ -96,19 +96,19 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
     if (!uuid) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("network port has no uuid"));
-        goto error;
+        return NULL;
     }
     if (virUUIDParse(uuid, def->uuid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unable to parse UUID '%s'"), uuid);
-        goto error;
+        return NULL;
     }
 
     def->ownername = virXPathString("string(./owner/name)", ctxt);
     if (!def->ownername) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("network port has no owner name"));
-        goto error;
+        return NULL;
     }
 
     VIR_FREE(uuid);
@@ -116,13 +116,13 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
     if (!uuid) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("network port has no owner UUID"));
-        goto error;
+        return NULL;
     }
 
     if (virUUIDParse(uuid, def->owneruuid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unable to parse UUID '%s'"), uuid);
-        goto error;
+        return NULL;
     }
 
     def->group = virXPathString("string(./group)", ctxt);
@@ -130,19 +130,19 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
     virtPortNode = virXPathNode("./virtualport", ctxt);
     if (virtPortNode &&
         (!(def->virtPortProfile = virNetDevVPortProfileParse(virtPortNode, 0)))) {
-        goto error;
+        return NULL;
     }
 
     mac = virXPathString("string(./mac/@address)", ctxt);
     if (!mac) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("network port has no mac"));
-        goto error;
+        return NULL;
     }
     if (virMacAddrParse(mac, &def->mac) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unable to parse MAC '%s'"), mac);
-        goto error;
+        return NULL;
     }
 
     bandwidthNode = virXPathNode("./bandwidth", ctxt);
@@ -155,11 +155,11 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
     if (bandwidthNode &&
         virNetDevBandwidthParse(&def->bandwidth, &def->class_id,
                                 bandwidthNode, true) < 0)
-        goto error;
+        return NULL;
 
     vlanNode = virXPathNode("./vlan", ctxt);
     if (vlanNode && virNetDevVlanParse(vlanNode, ctxt, &def->vlan) < 0)
-        goto error;
+        return NULL;
 
 
     trustGuestRxFilters
@@ -170,7 +170,7 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
             virReportError(VIR_ERR_XML_ERROR,
                            _("Invalid guest rx filters trust setting '%s' "),
                            trustGuestRxFilters);
-            goto error;
+            return NULL;
         }
     }
 
@@ -191,7 +191,7 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
         if (!(def->plug.bridge.brname = virXPathString("string(./plug/@bridge)", ctxt))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Missing network port bridge name"));
-            goto error;
+            return NULL;
         }
         macmgr = virXPathString("string(./plug/@macTableManager)", ctxt);
         if (macmgr &&
@@ -200,7 +200,7 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
             virReportError(VIR_ERR_XML_ERROR,
                            _("Invalid macTableManager setting '%s' "
                              "in network port"), macmgr);
-            goto error;
+            return NULL;
         }
         break;
 
@@ -208,7 +208,7 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
         if (!(def->plug.direct.linkdev = virXPathString("string(./plug/@dev)", ctxt))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Missing network port link device name"));
-            goto error;
+            return NULL;
         }
         mode = virXPathString("string(./plug/@mode)", ctxt);
         if (mode &&
@@ -216,7 +216,7 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
              virNetDevMacVLanModeTypeFromString(mode)) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("Invalid mode setting '%s' in network port"), mode);
-            goto error;
+            return NULL;
         }
         break;
 
@@ -227,7 +227,7 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
              virTristateBoolTypeFromString(managed)) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("Invalid managed setting '%s' in network port"), mode);
-            goto error;
+            return NULL;
         }
         driver = virXPathString("string(./plug/driver/@name)", ctxt);
         if (driver &&
@@ -235,31 +235,25 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
              virNetworkForwardDriverNameTypeFromString(driver)) <= 0) {
               virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Missing network port driver name"));
-            goto error;
+            return NULL;
         }
         if (!(addressNode = virXPathNode("./plug/address", ctxt))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Missing network port PCI address"));
-            goto error;
+            return NULL;
         }
 
         if (virPCIDeviceAddressParseXML(addressNode, &def->plug.hostdevpci.addr) < 0)
-            goto error;
+            return NULL;
         break;
 
     case VIR_NETWORK_PORT_PLUG_TYPE_LAST:
     default:
         virReportEnumRangeError(virNetworkPortPlugType, def->plugtype);
-        goto error;
+        return NULL;
     }
 
- cleanup:
-    return def;
-
- error:
-    virNetworkPortDefFree(def);
-    def = NULL;
-    goto cleanup;
+    VIR_RETURN_PTR(def);
 }
 
 

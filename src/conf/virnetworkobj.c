@@ -1887,7 +1887,7 @@ virNetworkObjLoadAllPorts(virNetworkObjPtr net,
     int ret = -1;
     int rc;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-    virNetworkPortDefPtr portdef = NULL;
+    VIR_AUTOPTR(virNetworkPortDef) portdef = NULL;
 
     if (!(dir = virNetworkObjGetPortStatusDir(net, stateDir)))
         goto cleanup;
@@ -1925,6 +1925,5 @@ virNetworkObjLoadAllPorts(virNetworkObjPtr net,
     ret = 0;
  cleanup:
     VIR_DIR_CLOSE(dh);
-    virNetworkPortDefFree(portdef);
     return ret;
 }

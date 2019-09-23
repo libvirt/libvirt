@@ -5560,7 +5560,7 @@ networkPortCreateXML(virNetworkPtr net,
     virNetworkDriverStatePtr driver = networkGetDriver();
     virNetworkObjPtr obj;
     virNetworkDefPtr def;
-    virNetworkPortDefPtr portdef = NULL;
+    VIR_AUTOPTR(virNetworkPortDef) portdef = NULL;
     virNetworkPortPtr ret = NULL;
     int rc;
 
@@ -5610,13 +5610,13 @@ networkPortCreateXML(virNetworkPtr net,
 
         virErrorPreserveLast(&save_err);
         ignore_value(networkReleasePort(obj, portdef));
-        virNetworkPortDefFree(portdef);
         virErrorRestore(&save_err);
 
         goto cleanup;
     }
 
     ret = virGetNetworkPort(net, portdef->uuid);
+    portdef = NULL;
  cleanup:
     virNetworkObjEndAPI(&obj);
     return ret;

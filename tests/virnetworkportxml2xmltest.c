@@ -38,7 +38,7 @@ testCompareXMLToXMLFiles(const char *expected)
 {
     char *actual = NULL;
     int ret = -1;
-    virNetworkPortDefPtr dev = NULL;
+    VIR_AUTOPTR(virNetworkPortDef) dev = NULL;
 
     if (!(dev = virNetworkPortDefParseFile(expected)))
         goto cleanup;
@@ -52,7 +52,6 @@ testCompareXMLToXMLFiles(const char *expected)
     ret = 0;
  cleanup:
     VIR_FREE(actual);
-    virNetworkPortDefFree(dev);
     return ret;
 }
 
