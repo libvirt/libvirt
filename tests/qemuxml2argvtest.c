@@ -687,6 +687,16 @@ mymain(void)
     virFileWrapperAddPrefix("/home/user/.config/qemu/firmware",
                             abs_srcdir "/qemufirmwaredata/home/user/.config/qemu/firmware");
 
+    virFileWrapperAddPrefix(SYSCONFDIR "/qemu/vhost-user",
+                            abs_srcdir "/qemuvhostuserdata/etc/qemu/vhost-user");
+    virFileWrapperAddPrefix(PREFIX "/share/qemu/vhost-user",
+                            abs_srcdir "/qemuvhostuserdata/usr/share/qemu/vhost-user");
+    virFileWrapperAddPrefix("/home/user/.config/qemu/vhost-user",
+                            abs_srcdir "/qemuvhostuserdata/home/user/.config/qemu/vhost-user");
+
+    virFileWrapperAddPrefix("/usr/libexec/qemu/vhost-user",
+                            abs_srcdir "/qemuvhostuserdata/usr/libexec/qemu/vhost-user");
+
 /**
  * The following set of macros allows testing of XML -> argv conversion with a
  * real set of capabilities gathered from a real qemu copy. It is desired to use
