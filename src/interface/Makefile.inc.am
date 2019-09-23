@@ -75,10 +75,12 @@ VIRTINTERFACED_UNIT_VARS = \
 	-e 's|[@]sockprefix[@]|virtinterfaced|g' \
 	$(NULL)
 
-virtinterfaced.service: interface/virtinterfaced.service.in $(top_builddir)/config.status
+virtinterfaced.service: interface/virtinterfaced.service.in \
+		$(top_builddir)/config.status
 	$(AM_V_GEN)$(SED) $(VIRTINTERFACED_UNIT_VARS) $< > $@-t && mv $@-t $@
 
-virtinterface%.socket: remote/libvirt%.socket.in $(top_builddir)/config.status
+virtinterface%.socket: remote/libvirt%.socket.in \
+		$(top_builddir)/config.status
 	$(AM_V_GEN)$(SED) $(VIRTINTERFACED_UNIT_VARS) $< > $@-t && mv $@-t $@
 
 interface/virtinterfaced.conf: remote/libvirtd.conf.in

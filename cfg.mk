@@ -737,7 +737,7 @@ sc_prohibit_long_lines:
 	halt='Wrap long lines in expected output files' \
 	  $(_sc_search_regexp)
 	@prohibit='.{80}' \
-	in_vc_files='Makefile\.am' \
+	in_vc_files='Makefile(\.inc)?\.am' \
 	halt='Wrap long lines in Makefiles' \
 	  $(_sc_search_regexp)
 

@@ -98,10 +98,12 @@ VIRTNODEDEVD_UNIT_VARS = \
 	-e 's|[@]sockprefix[@]|virtnodedevd|g' \
 	$(NULL)
 
-virtnodedevd.service: node_device/virtnodedevd.service.in $(top_builddir)/config.status
+virtnodedevd.service: node_device/virtnodedevd.service.in \
+		$(top_builddir)/config.status
 	$(AM_V_GEN)$(SED) $(VIRTNODEDEVD_UNIT_VARS) $< > $@-t && mv $@-t $@
 
-virtnodedev%.socket: remote/libvirt%.socket.in $(top_builddir)/config.status
+virtnodedev%.socket: remote/libvirt%.socket.in \
+		$(top_builddir)/config.status
 	$(AM_V_GEN)$(SED) $(VIRTNODEDEVD_UNIT_VARS) $< > $@-t && mv $@-t $@
 
 node_device/virtnodedevd.conf: remote/libvirtd.conf.in

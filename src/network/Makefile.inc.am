@@ -82,10 +82,12 @@ VIRTNETWORKD_UNIT_VARS = \
 	-e 's|[@]sockprefix[@]|virtnetworkd|g' \
 	$(NULL)
 
-virtnetworkd.service: network/virtnetworkd.service.in $(top_builddir)/config.status
+virtnetworkd.service: network/virtnetworkd.service.in \
+		$(top_builddir)/config.status
 	$(AM_V_GEN)$(SED) $(VIRTNETWORKD_UNIT_VARS) $< > $@-t && mv $@-t $@
 
-virtnetwork%.socket: remote/libvirt%.socket.in $(top_builddir)/config.status
+virtnetwork%.socket: remote/libvirt%.socket.in \
+		$(top_builddir)/config.status
 	$(AM_V_GEN)$(SED) $(VIRTNETWORKD_UNIT_VARS) $< > $@-t && mv $@-t $@
 
 network/virtnetworkd.conf: remote/libvirtd.conf.in

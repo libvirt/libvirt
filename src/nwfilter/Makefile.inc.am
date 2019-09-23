@@ -83,10 +83,12 @@ VIRTNWFILTERD_UNIT_VARS = \
 	-e 's|[@]sockprefix[@]|virtnwfilterd|g' \
 	$(NULL)
 
-virtnwfilterd.service: nwfilter/virtnwfilterd.service.in $(top_builddir)/config.status
+virtnwfilterd.service: nwfilter/virtnwfilterd.service.in \
+		$(top_builddir)/config.status
 	$(AM_V_GEN)$(SED) $(VIRTNWFILTERD_UNIT_VARS) $< > $@-t && mv $@-t $@
 
-virtnwfilter%.socket: remote/libvirt%.socket.in $(top_builddir)/config.status
+virtnwfilter%.socket: remote/libvirt%.socket.in \
+		$(top_builddir)/config.status
 	$(AM_V_GEN)$(SED) $(VIRTNWFILTERD_UNIT_VARS) $< > $@-t && mv $@-t $@
 
 nwfilter/virtnwfilterd.conf: remote/libvirtd.conf.in

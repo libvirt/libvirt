@@ -175,10 +175,12 @@ VIRTSTORAGED_UNIT_VARS = \
 	-e 's|[@]sockprefix[@]|virtstoraged|g' \
 	$(NULL)
 
-virtstoraged.service: storage/virtstoraged.service.in $(top_builddir)/config.status
+virtstoraged.service: storage/virtstoraged.service.in \
+		$(top_builddir)/config.status
 	$(AM_V_GEN)$(SED) $(VIRTSTORAGED_UNIT_VARS) $< > $@-t && mv $@-t $@
 
-virtstorage%.socket: remote/libvirt%.socket.in $(top_builddir)/config.status
+virtstorage%.socket: remote/libvirt%.socket.in \
+		$(top_builddir)/config.status
 	$(AM_V_GEN)$(SED) $(VIRTSTORAGED_UNIT_VARS) $< > $@-t && mv $@-t $@
 
 storage/virtstoraged.conf: remote/libvirtd.conf.in
@@ -264,7 +266,8 @@ libvirt_storage_backend_iscsi_la_LIBADD = \
 endif WITH_STORAGE_ISCSI
 
 if WITH_STORAGE_ISCSI_DIRECT
-libvirt_storage_backend_iscsi_direct_la_SOURCES = $(STORAGE_DRIVER_ISCSI_DIRECT_SOURCES)
+libvirt_storage_backend_iscsi_direct_la_SOURCES = \
+	$(STORAGE_DRIVER_ISCSI_DIRECT_SOURCES)
 libvirt_storage_backend_iscsi_direct_la_CFLAGS = \
 	-I$(srcdir)/conf \
 	-I$(srcdir)/secret \
@@ -346,13 +349,15 @@ libvirt_storage_backend_rbd_la_LDFLAGS = $(AM_LDFLAGS_MOD)
 endif WITH_STORAGE_RBD
 
 if WITH_STORAGE_SHEEPDOG
-libvirt_storage_backend_sheepdog_la_SOURCES = $(STORAGE_DRIVER_SHEEPDOG_SOURCES)
+libvirt_storage_backend_sheepdog_la_SOURCES = \
+	$(STORAGE_DRIVER_SHEEPDOG_SOURCES)
 libvirt_storage_backend_sheepdog_la_CFLAGS = \
 	-I$(srcdir)/conf \
 	$(AM_CFLAGS) \
 	$(NULL)
 
-libvirt_storage_backend_sheepdog_priv_la_SOURCES = $(STORAGE_DRIVER_SHEEPDOG_SOURCES)
+libvirt_storage_backend_sheepdog_priv_la_SOURCES = \
+	$(STORAGE_DRIVER_SHEEPDOG_SOURCES)
 libvirt_storage_backend_sheepdog_priv_la_CFLAGS = \
 	-I$(srcdir)/conf \
 	$(AM_CFLAGS) \
@@ -368,7 +373,8 @@ libvirt_storage_backend_sheepdog_la_LIBADD = \
 endif WITH_STORAGE_SHEEPDOG
 
 if WITH_STORAGE_GLUSTER
-libvirt_storage_backend_gluster_la_SOURCES = $(STORAGE_DRIVER_GLUSTER_SOURCES)
+libvirt_storage_backend_gluster_la_SOURCES = \
+	$(STORAGE_DRIVER_GLUSTER_SOURCES)
 libvirt_storage_backend_gluster_la_LIBADD = \
 	libvirt.la \
 	$(GLUSTERFS_LIBS) \
@@ -384,7 +390,8 @@ storagebackend_LTLIBRARIES += libvirt_storage_backend_gluster.la
 libvirt_storage_backend_gluster_la_LDFLAGS = $(AM_LDFLAGS_MOD)
 
 
-libvirt_storage_file_gluster_la_SOURCES = $(STORAGE_FILE_GLUSTER_SOURCES)
+libvirt_storage_file_gluster_la_SOURCES = \
+	$(STORAGE_FILE_GLUSTER_SOURCES)
 libvirt_storage_file_gluster_la_LIBADD = \
 	libvirt.la \
 	$(GLUSTERFS_LIBS) \
@@ -401,7 +408,8 @@ libvirt_storage_file_gluster_la_LDFLAGS = $(AM_LDFLAGS_MOD)
 endif WITH_STORAGE_GLUSTER
 
 if WITH_STORAGE_ZFS
-libvirt_storage_backend_zfs_la_SOURCES = $(STORAGE_DRIVER_ZFS_SOURCES)
+libvirt_storage_backend_zfs_la_SOURCES = \
+	$(STORAGE_DRIVER_ZFS_SOURCES)
 libvirt_storage_backend_zfs_la_CFLAGS = \
 	-I$(srcdir)/conf \
 	$(AM_CFLAGS) \
@@ -416,7 +424,8 @@ libvirt_storage_backend_zfs_la_LIBADD = \
 endif WITH_STORAGE_ZFS
 
 if WITH_STORAGE_VSTORAGE
-libvirt_storage_backend_vstorage_la_SOURCES = $(STORAGE_DRIVER_VSTORAGE_SOURCES)
+libvirt_storage_backend_vstorage_la_SOURCES = \
+	$(STORAGE_DRIVER_VSTORAGE_SOURCES)
 libvirt_storage_backend_vstorage_la_CFLAGS = \
 	-I$(srcdir)/conf \
 	$(AM_CFLAGS) \
