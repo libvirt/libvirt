@@ -538,6 +538,8 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "bochs-display",
               "migration-file-drop-cache",
               "dbus-vmstate",
+              "vhost-user-gpu",
+              "vhost-user-vga",
     );
 
 
@@ -1129,6 +1131,8 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "max-x86_64-cpu", QEMU_CAPS_X86_MAX_CPU },
     { "bochs-display", QEMU_CAPS_DEVICE_BOCHS_DISPLAY },
     { "dbus-vmstate", QEMU_CAPS_DBUS_VMSTATE },
+    { "vhost-user-gpu", QEMU_CAPS_DEVICE_VHOST_USER_GPU },
+    { "vhost-user-vga", QEMU_CAPS_DEVICE_VHOST_USER_VGA },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVirtioBalloon[] = {

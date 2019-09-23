@@ -209,6 +209,8 @@
   <flag name='canonical-cpu-features'/>
   <flag name='bochs-display'/>
   <flag name='migration-file-drop-cache'/>
+  <flag name='vhost-user-gpu'/>
+  <flag name='vhost-user-vga'/>
   <version>4000050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100759</microcodeVersion>
