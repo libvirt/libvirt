@@ -4513,16 +4513,23 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
                         virQEMUCapsPtr qemuCaps)
 {
     VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    const char *model;
+    const char *model = NULL;
 
     /* We try to chose the best model for primary video device by preferring
      * model with VGA compatibility mode.  For some video devices on some
      * architectures there might not be such model so fallback to one
      * without VGA compatibility mode. */
-    if (video->primary && qemuDomainSupportsVideoVga(video, qemuCaps))
-        model = qemuDeviceVideoTypeToString(video->type);
-    else
-        model = qemuDeviceVideoSecondaryTypeToString(video->type);
+    if (video->backend == VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER) {
+        if (video->primary && qemuDomainSupportsVideoVga(video, qemuCaps))
+            model = "vhost-user-vga";
+        else
+            model = "vhost-user-gpu";
+    } else {
+        if (video->primary && qemuDomainSupportsVideoVga(video, qemuCaps))
+            model = qemuDeviceVideoTypeToString(video->type);
+        else
+            model = qemuDeviceVideoSecondaryTypeToString(video->type);
+    }
 
     if (!model || STREQ(model, "")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -4531,8 +4538,8 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
         return NULL;
     }
 
-    if (STREQ(model, "virtio-gpu")) {
-        if (qemuBuildVirtioDevStr(&buf, "virtio-gpu", qemuCaps,
+    if (STREQ(model, "virtio-gpu") || STREQ(model, "vhost-user-gpu")) {
+        if (qemuBuildVirtioDevStr(&buf, model, qemuCaps,
                                   VIR_DOMAIN_DEVICE_VIDEO, video) < 0) {
             return NULL;
         }
@@ -4575,6 +4582,10 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
             if (video->heads)
                 virBufferAsprintf(&buf, ",max_outputs=%u", video->heads);
         }
+    } else if (video->backend == VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER) {
+        if (video->heads)
+            virBufferAsprintf(&buf, ",max_outputs=%u", video->heads);
+        virBufferAsprintf(&buf, ",chardev=chr-vu-%s", video->info.alias);
     } else if (video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO) {
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS)) {
             if (video->heads)
@@ -4686,12 +4697,43 @@ qemuBuildVgaVideoCommand(virCommandPtr cmd,
 }
 
 
+static char *
+qemuBuildVhostUserChardevStr(const char *alias,
+                             int *fd,
+                             virCommandPtr cmd)
+{
+    char *chardev = NULL;
+
+    if (virAsprintf(&chardev, "socket,id=chr-vu-%s,fd=%d", alias, *fd) < 0)
+        return NULL;
+
+    virCommandPassFD(cmd, *fd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
+    *fd = -1;
+
+    return chardev;
+}
+
+
 static int
 qemuBuildVideoCommandLine(virCommandPtr cmd,
                           const virDomainDef *def,
                           virQEMUCapsPtr qemuCaps)
 {
     size_t i;
+
+    for (i = 0; i < def->nvideos; i++) {
+        VIR_AUTOFREE(char *) chardev = NULL;
+        virDomainVideoDefPtr video = def->videos[i];
+
+        if (video->backend == VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER) {
+            if (!(chardev = qemuBuildVhostUserChardevStr(video->info.alias,
+                                &QEMU_DOMAIN_VIDEO_PRIVATE(video)->vhost_user_fd,
+                                cmd)))
+                return -1;
+
+            virCommandAddArgList(cmd, "-chardev", chardev, NULL);
+        }
+    }
 
     for (i = 0; i < def->nvideos; i++) {
         VIR_AUTOFREE(char *) str = NULL;
