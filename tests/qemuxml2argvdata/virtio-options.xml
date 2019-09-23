@@ -75,7 +75,7 @@
     <video>
       <driver iommu='on' ats='on' name='vhostuser'/>
       <model type='virtio' heads='1' primary='yes'>
-        <acceleration accel3d='yes'/>
+        <acceleration accel3d='yes' rendernode='/dev/dri/test'/>
       </model>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </video>

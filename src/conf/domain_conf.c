@@ -2840,6 +2840,8 @@ virDomainVideoDefClear(virDomainVideoDefPtr def)
 
     virDomainDeviceInfoClear(&def->info);
 
+    if (def->accel)
+        VIR_FREE(def->accel->rendernode);
     VIR_FREE(def->accel);
     VIR_FREE(def->virtio);
     VIR_FREE(def->driver);
@@ -6279,6 +6281,11 @@ virDomainVideoDefValidate(const virDomainVideoDef *video,
         break;
     case VIR_DOMAIN_VIDEO_BACKEND_TYPE_DEFAULT:
     case VIR_DOMAIN_VIDEO_BACKEND_TYPE_QEMU:
+        if (video->accel && video->accel->rendernode) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("unsupported rendernode accel attribute without 'vhostuser'"));
+            return -1;
+        }
         break;
     case VIR_DOMAIN_VIDEO_BACKEND_TYPE_LAST:
     default:
@@ -15341,6 +15348,7 @@ virDomainVideoAccelDefParseXML(xmlNodePtr node)
     int val;
     VIR_AUTOFREE(char *) accel2d = NULL;
     VIR_AUTOFREE(char *) accel3d = NULL;
+    VIR_AUTOFREE(char *) rendernode = NULL;
 
     cur = node->children;
     while (cur != NULL) {
@@ -15349,12 +15357,13 @@ virDomainVideoAccelDefParseXML(xmlNodePtr node)
                 virXMLNodeNameEqual(cur, "acceleration")) {
                 accel3d = virXMLPropString(cur, "accel3d");
                 accel2d = virXMLPropString(cur, "accel2d");
+                rendernode = virXMLPropString(cur, "rendernode");
             }
         }
         cur = cur->next;
     }
 
-    if (!accel3d && !accel2d)
+    if (!accel3d && !accel2d && !rendernode)
         return NULL;
 
     if (VIR_ALLOC(def) < 0)
@@ -15377,6 +15386,9 @@ virDomainVideoAccelDefParseXML(xmlNodePtr node)
         }
         def->accel2d = val;
     }
+
+    if (rendernode)
+        def->rendernode = virFileSanitizePath(rendernode);
 
  cleanup:
     return def;
@@ -26506,6 +26518,7 @@ virDomainVideoAccelDefFormat(virBufferPtr buf,
         virBufferAsprintf(buf, " accel2d='%s'",
                           virTristateBoolTypeToString(def->accel2d));
     }
+    virBufferEscapeString(buf, " rendernode='%s'", def->rendernode);
     virBufferAddLit(buf, "/>\n");
 }
 

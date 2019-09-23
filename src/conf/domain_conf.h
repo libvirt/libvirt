@@ -1417,6 +1417,7 @@ VIR_ENUM_DECL(virDomainVideoVGAConf);
 struct _virDomainVideoAccelDef {
     int accel2d; /* enum virTristateBool */
     int accel3d; /* enum virTristateBool */
+    char *rendernode;
 };
 
 
