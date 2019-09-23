@@ -44,6 +44,8 @@ static FILE *(*real_fopen)(const char *path, const char *mode);
 static int (*real_access)(const char *path, int mode);
 static int (*real_mkdir)(const char *path, mode_t mode);
 static DIR *(*real_opendir)(const char *path);
+static int (*real_execv)(const char *path, char *const argv[]);
+static int (*real_execve)(const char *path, char *const argv[], char *const envp[]);
 
 static void init_syms(void)
 {
@@ -55,6 +57,8 @@ static void init_syms(void)
     VIR_MOCK_REAL_INIT(mkdir);
     VIR_MOCK_REAL_INIT(open);
     VIR_MOCK_REAL_INIT(opendir);
+    VIR_MOCK_REAL_INIT(execv);
+    VIR_MOCK_REAL_INIT(execve);
 }
 
 
@@ -189,6 +193,24 @@ DIR *opendir(const char *path)
     PATH_OVERRIDE(newpath, path);
 
     return real_opendir(newpath ? newpath : path);
+}
+
+int execv(const char *path, char *const argv[])
+{
+    VIR_AUTOFREE(char *) newpath = NULL;
+
+    PATH_OVERRIDE(newpath, path);
+
+    return real_execv(newpath ? newpath : path, argv);
+}
+
+int execve(const char *path, char *const argv[], char *const envp[])
+{
+    VIR_AUTOFREE(char *) newpath = NULL;
+
+    PATH_OVERRIDE(newpath, path);
+
+    return real_execve(newpath ? newpath : path, argv, envp);
 }
 
 #endif
