@@ -728,6 +728,13 @@ VIR_ENUM_IMPL(virDomainPanicModel,
               "s390",
 );
 
+VIR_ENUM_IMPL(virDomainVideoBackend,
+              VIR_DOMAIN_VIDEO_BACKEND_TYPE_LAST,
+              "default",
+              "qemu",
+              "vhostuser",
+);
+
 VIR_ENUM_IMPL(virDomainVideo,
               VIR_DOMAIN_VIDEO_TYPE_LAST,
               "default",
@@ -6260,6 +6267,23 @@ virDomainVideoDefValidate(const virDomainVideoDef *video,
                              "defined for the domain"));
             return -1;
         }
+    }
+
+    switch (video->backend) {
+    case VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER:
+        if (video->type != VIR_DOMAIN_VIDEO_TYPE_VIRTIO) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("'vhostuser' driver is only supported with 'virtio' device"));
+            return -1;
+        }
+        break;
+    case VIR_DOMAIN_VIDEO_BACKEND_TYPE_DEFAULT:
+    case VIR_DOMAIN_VIDEO_BACKEND_TYPE_QEMU:
+        break;
+    case VIR_DOMAIN_VIDEO_BACKEND_TYPE_LAST:
+    default:
+        virReportEnumRangeError(virDomainInputType, video->backend);
+        return -1;
     }
 
     return 0;
@@ -15405,6 +15429,7 @@ virDomainVideoDefParseXML(virDomainXMLOptionPtr xmlopt,
     xmlNodePtr cur;
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
     VIR_AUTOFREE(char *) type = NULL;
+    VIR_AUTOFREE(char *) driver_name = NULL;
     VIR_AUTOFREE(char *) heads = NULL;
     VIR_AUTOFREE(char *) vram = NULL;
     VIR_AUTOFREE(char *) vram64 = NULL;
@@ -15440,6 +15465,7 @@ virDomainVideoDefParseXML(virDomainXMLOptionPtr xmlopt,
             if (virXMLNodeNameEqual(cur, "driver")) {
                 if (virDomainVirtioOptionsParseXML(cur, &def->virtio) < 0)
                     goto error;
+                driver_name = virXMLPropString(cur, "name");
             }
         }
         cur = cur->next;
@@ -15453,6 +15479,16 @@ virDomainVideoDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
     } else {
         def->type = virDomainVideoDefaultType(dom);
+    }
+
+    if (driver_name) {
+        if ((def->backend = virDomainVideoBackendTypeFromString(driver_name)) < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown video driver '%s'"), driver_name);
+            goto error;
+        }
+    } else {
+        def->backend = VIR_DOMAIN_VIDEO_BACKEND_TYPE_DEFAULT;
     }
 
     if (ram) {
@@ -26493,13 +26529,17 @@ virDomainVideoDefFormat(virBufferPtr buf,
     virDomainVirtioOptionsFormat(&driverBuf, def->virtio);
     if (virBufferCheckError(&driverBuf) < 0)
         goto cleanup;
-    if (virBufferUse(&driverBuf) || (def->driver && def->driver->vgaconf)) {
+    if (virBufferUse(&driverBuf) || (def->driver && def->driver->vgaconf) ||
+        def->backend != VIR_DOMAIN_VIDEO_BACKEND_TYPE_DEFAULT) {
         virBufferAddLit(buf, "<driver");
         if (virBufferUse(&driverBuf))
             virBufferAddBuffer(buf, &driverBuf);
         if (def->driver && def->driver->vgaconf)
             virBufferAsprintf(buf, " vgaconf='%s'",
                               virDomainVideoVGAConfTypeToString(def->driver->vgaconf));
+        if (def->backend != VIR_DOMAIN_VIDEO_BACKEND_TYPE_DEFAULT)
+            virBufferAsprintf(buf, " name='%s'",
+                              virDomainVideoBackendTypeToString(def->backend));
         virBufferAddLit(buf, "/>\n");
     }
     virBufferAsprintf(buf, "<model type='%s'",

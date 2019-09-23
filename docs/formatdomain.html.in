@@ -6997,6 +6997,7 @@ qemu-kvm -net nic,model=? /dev/null
     &lt;model type='vga' vram='16384' heads='1'&gt;
       &lt;acceleration accel3d='yes' accel2d='yes'/&gt;
     &lt;/model&gt;
+    &lt;driver name='qemu'/&gt;
   &lt;/video&gt;
 &lt;/devices&gt;
 ...</pre>
@@ -7097,7 +7098,16 @@ qemu-kvm -net nic,model=? /dev/null
       <dd>
         The subelement <code>driver</code> can be used to tune the device:
         <dl>
-          <dt>virtio options</dt>
+          <dt><code>name</code></dt>
+          <dd>
+            Specify the backend driver to use, either "qemu" or
+            "vhostuser" depending on the hypervisor features available
+            (<span class="since">since 5.8.0</span>).  "qemu" is the
+            default QEMU backend. "vhostuser" will use a separate
+            vhost-user process backend (for <code>virtio</code>
+            device).
+          </dd>
+        <dt>virtio options</dt>
           <dd>
           <a href="#elementsVirtio">Virtio-specific options</a> can also be
           set (<span class="since">Since 3.5.0</span>)

@@ -1376,6 +1376,16 @@ struct _virDomainWatchdogDef {
 };
 
 
+/* the backend driver used for virtio interfaces */
+typedef enum {
+    VIR_DOMAIN_VIDEO_BACKEND_TYPE_DEFAULT,
+    VIR_DOMAIN_VIDEO_BACKEND_TYPE_QEMU,
+    VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER,
+
+    VIR_DOMAIN_VIDEO_BACKEND_TYPE_LAST
+} virDomainVideoBackendType;
+
+
 typedef enum {
     VIR_DOMAIN_VIDEO_TYPE_DEFAULT,
     VIR_DOMAIN_VIDEO_TYPE_VGA,
@@ -1426,6 +1436,7 @@ struct _virDomainVideoDef {
     virDomainVideoDriverDefPtr driver;
     virDomainDeviceInfo info;
     virDomainVirtioOptionsPtr virtio;
+    virDomainVideoBackendType backend;
 };
 
 /* graphics console modes */
@@ -3423,6 +3434,7 @@ VIR_ENUM_DECL(virDomainWatchdogModel);
 VIR_ENUM_DECL(virDomainWatchdogAction);
 VIR_ENUM_DECL(virDomainPanicModel);
 VIR_ENUM_DECL(virDomainVideo);
+VIR_ENUM_DECL(virDomainVideoBackend);
 VIR_ENUM_DECL(virDomainHostdevMode);
 VIR_ENUM_DECL(virDomainHostdevSubsys);
 VIR_ENUM_DECL(virDomainHostdevCaps);

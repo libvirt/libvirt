@@ -73,7 +73,7 @@
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
     <video>
-      <driver iommu='on' ats='on'/>
+      <driver iommu='on' ats='on' name='vhostuser'/>
       <model type='virtio' heads='1' primary='yes'>
         <acceleration accel3d='yes'/>
       </model>

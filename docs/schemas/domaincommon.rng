@@ -3566,6 +3566,14 @@
             <ref name="virtioOptions"/>
           </optional>
           <optional>
+            <attribute name="name">
+              <choice>
+                <value>qemu</value>
+                <value>vhostuser</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
             <attribute name="vgaconf">
               <choice>
                 <value>io</value>
