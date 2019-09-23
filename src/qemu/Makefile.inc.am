@@ -32,6 +32,8 @@ QEMU_DRIVER_SOURCES = \
 	qemu/qemu_hotplugpriv.h \
 	qemu/qemu_conf.c \
 	qemu/qemu_conf.h \
+	qemu/qemu_interop_config.c \
+	qemu/qemu_interop_config.h \
 	qemu/qemu_process.c \
 	qemu/qemu_process.h \
 	qemu/qemu_processpriv.h \
