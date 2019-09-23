@@ -64,6 +64,8 @@ QEMU_DRIVER_SOURCES = \
 	qemu/qemu_slirp.h \
 	qemu/qemu_tpm.c \
 	qemu/qemu_tpm.h \
+	qemu/qemu_vhost_user.c \
+	qemu/qemu_vhost_user.h \
 	$(NULL)
 
 

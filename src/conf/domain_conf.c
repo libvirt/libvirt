@@ -2844,6 +2844,8 @@ virDomainVideoDefClear(virDomainVideoDefPtr def)
         VIR_FREE(def->accel->rendernode);
     VIR_FREE(def->accel);
     VIR_FREE(def->virtio);
+    if (def->driver)
+        VIR_FREE(def->driver->vhost_user_binary);
     VIR_FREE(def->driver);
 
     memset(def, 0, sizeof(*def));

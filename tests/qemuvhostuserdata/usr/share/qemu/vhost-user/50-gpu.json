@@ -1,0 +1,8 @@
+{
+  "description": "QEMU vhost-user-gpu",
+  "type": "gpu",
+  "binary": "/usr/libexec/qemu/vhost-user/test-vhost-user-gpu",
+  "tags": [
+    "CONFIG_OPENGL_DMABUF=y"
+  ]
+}

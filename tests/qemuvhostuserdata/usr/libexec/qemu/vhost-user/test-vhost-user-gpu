@@ -1,0 +1,11 @@
+#!/bin/sh
+
+cat <<EOF
+{
+  "type": "gpu",
+  "features": [
+    "render-node",
+    "virgl"
+  ]
+}
+EOF
