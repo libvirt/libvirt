@@ -2820,12 +2820,18 @@ void virDomainShmemDefFree(virDomainShmemDefPtr def)
 
 
 virDomainVideoDefPtr
-virDomainVideoDefNew(void)
+virDomainVideoDefNew(virDomainXMLOptionPtr xmlopt)
 {
     virDomainVideoDefPtr def;
 
     if (VIR_ALLOC(def) < 0)
         return NULL;
+
+    if (xmlopt && xmlopt->privateData.videoNew &&
+        !(def->privateData = xmlopt->privateData.videoNew())) {
+        VIR_FREE(def);
+        return NULL;
+    }
 
     def->heads = 1;
     return def;
@@ -2858,6 +2864,7 @@ void virDomainVideoDefFree(virDomainVideoDefPtr def)
         return;
 
     virDomainVideoDefClear(def);
+    virObjectUnref(def->privateData);
     VIR_FREE(def);
 }
 
@@ -5681,7 +5688,8 @@ virDomainDefPostParseVideo(virDomainDefPtr def,
 
 static int
 virDomainDefPostParseCommon(virDomainDefPtr def,
-                            struct virDomainDefPostParseDeviceIteratorData *data)
+                            struct virDomainDefPostParseDeviceIteratorData *data,
+                            virDomainXMLOptionPtr xmlopt)
 {
     size_t i;
 
@@ -5716,7 +5724,7 @@ virDomainDefPostParseCommon(virDomainDefPtr def,
     if (virDomainDefPostParseTimer(def) < 0)
         return -1;
 
-    if (virDomainDefAddImplicitDevices(def) < 0)
+    if (virDomainDefAddImplicitDevices(def, xmlopt) < 0)
         return -1;
 
     if (virDomainDefPostParseVideo(def, data) < 0)
@@ -5842,7 +5850,7 @@ virDomainDefPostParse(virDomainDefPtr def,
     if (virDomainDefPostParseCheckFailure(def, parseFlags, ret) < 0)
         goto cleanup;
 
-    if ((ret = virDomainDefPostParseCommon(def, &data)) < 0)
+    if ((ret = virDomainDefPostParseCommon(def, &data, xmlopt)) < 0)
         goto cleanup;
 
     if (xmlopt->config.assignAddressesCallback) {
@@ -15451,7 +15459,7 @@ virDomainVideoDefParseXML(virDomainXMLOptionPtr xmlopt,
     VIR_AUTOFREE(char *) vgamem = NULL;
     VIR_AUTOFREE(char *) primary = NULL;
 
-    if (!(def = virDomainVideoDefNew()))
+    if (!(def = virDomainVideoDefNew(xmlopt)))
         return NULL;
 
     ctxt->node = node;
@@ -23743,7 +23751,7 @@ virDomainDefAddImplicitControllers(virDomainDefPtr def)
 }
 
 static int
-virDomainDefAddImplicitVideo(virDomainDefPtr def)
+virDomainDefAddImplicitVideo(virDomainDefPtr def, virDomainXMLOptionPtr xmlopt)
 {
     int ret = -1;
     virDomainVideoDefPtr video = NULL;
@@ -23753,7 +23761,7 @@ virDomainDefAddImplicitVideo(virDomainDefPtr def)
     if (def->ngraphics == 0 || def->nvideos > 0)
         return 0;
 
-    if (!(video = virDomainVideoDefNew()))
+    if (!(video = virDomainVideoDefNew(xmlopt)))
         goto cleanup;
     video->type = virDomainVideoDefaultType(def);
     if (VIR_APPEND_ELEMENT(def->videos, def->nvideos, video) < 0)
@@ -23766,7 +23774,7 @@ virDomainDefAddImplicitVideo(virDomainDefPtr def)
 }
 
 int
-virDomainDefAddImplicitDevices(virDomainDefPtr def)
+virDomainDefAddImplicitDevices(virDomainDefPtr def, virDomainXMLOptionPtr xmlopt)
 {
     if (virDomainDefAddConsoleCompat(def) < 0)
         return -1;
@@ -23774,7 +23782,7 @@ virDomainDefAddImplicitDevices(virDomainDefPtr def)
     if (virDomainDefAddImplicitControllers(def) < 0)
         return -1;
 
-    if (virDomainDefAddImplicitVideo(def) < 0)
+    if (virDomainDefAddImplicitVideo(def, xmlopt) < 0)
         return -1;
 
     return 0;

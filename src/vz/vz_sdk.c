@@ -1928,7 +1928,7 @@ prlsdkLoadDomain(vzDriverPtr driver,
     if (prlsdkGetDomainState(dom, sdkdom, &domainState) < 0)
         goto error;
 
-    if (!IS_CT(def) && virDomainDefAddImplicitDevices(def) < 0)
+    if (!IS_CT(def) && virDomainDefAddImplicitDevices(def, driver->xmlopt) < 0)
         goto error;
 
     if (def->ngraphics > 0) {

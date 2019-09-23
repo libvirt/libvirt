@@ -1427,6 +1427,8 @@ struct _virDomainVideoDriverDef {
 };
 
 struct _virDomainVideoDef {
+    virObjectPtr privateData;
+
     int type;   /* enum virDomainVideoType */
     unsigned int ram;  /* kibibytes (multiples of 1024) */
     unsigned int vram; /* kibibytes (multiples of 1024) */
@@ -2729,6 +2731,7 @@ struct _virDomainXMLPrivateDataCallbacks {
     virDomainXMLPrivateDataNewFunc    vsockNew;
     virDomainXMLPrivateDataNewFunc    graphicsNew;
     virDomainXMLPrivateDataNewFunc    networkNew;
+    virDomainXMLPrivateDataNewFunc    videoNew;
     virDomainXMLPrivateDataFormatFunc format;
     virDomainXMLPrivateDataParseFunc  parse;
     /* following function shall return a pointer which will be used as the
@@ -2870,7 +2873,7 @@ void virDomainSoundDefFree(virDomainSoundDefPtr def);
 void virDomainMemballoonDefFree(virDomainMemballoonDefPtr def);
 void virDomainNVRAMDefFree(virDomainNVRAMDefPtr def);
 void virDomainWatchdogDefFree(virDomainWatchdogDefPtr def);
-virDomainVideoDefPtr virDomainVideoDefNew(void);
+virDomainVideoDefPtr virDomainVideoDefNew(virDomainXMLOptionPtr xmlopt);
 void virDomainVideoDefFree(virDomainVideoDefPtr def);
 void virDomainVideoDefClear(virDomainVideoDefPtr def);
 virDomainHostdevDefPtr virDomainHostdevDefNew(void);
@@ -3063,7 +3066,8 @@ bool virDomainDefCheckABIStabilityFlags(virDomainDefPtr src,
                                         virDomainXMLOptionPtr xmlopt,
                                         unsigned int flags);
 
-int virDomainDefAddImplicitDevices(virDomainDefPtr def);
+int virDomainDefAddImplicitDevices(virDomainDefPtr def,
+                                   virDomainXMLOptionPtr xmlopt);
 
 virDomainIOThreadIDDefPtr virDomainIOThreadIDFind(const virDomainDef *def,
                                                   unsigned int iothread_id);
