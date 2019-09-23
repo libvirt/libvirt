@@ -8549,7 +8549,6 @@ qemu-kvm -net nic,model=? /dev/null
   &lt;memory model='nvdimm'&gt;
     &lt;source&gt;
       &lt;path&gt;/tmp/nvdimm&lt;/path&gt;
-      &lt;alignsize unit='KiB'&gt;2048&lt;/alignsize&gt;
     &lt;/source&gt;
     &lt;target&gt;
       &lt;size unit='KiB'&gt;524288&lt;/size&gt;
@@ -8560,9 +8559,10 @@ qemu-kvm -net nic,model=? /dev/null
       &lt;readonly/&gt;
     &lt;/target&gt;
   &lt;/memory&gt;
-  &lt;memory model='nvdimm'&gt;
+  &lt;memory model='nvdimm' access='shared'&gt;
     &lt;source&gt;
       &lt;path&gt;/dev/dax0.0&lt;/path&gt;
+      &lt;alignsize unit='KiB'&gt;2048&lt;/alignsize&gt;
       &lt;pmem/&gt;
     &lt;/source&gt;
     &lt;target&gt;
@@ -8596,6 +8596,8 @@ qemu-kvm -net nic,model=? /dev/null
           module basis. Values are the same as
           <a href="#elementsMemoryBacking">Memory Backing</a>:
           <code>shared</code> and <code>private</code>.
+          For <code>nvdimm</code> model, if using real NVDIMM DAX device as
+          backend, <code>shared</code> is required.
         </p>
       </dd>
 
@@ -8659,7 +8661,8 @@ qemu-kvm -net nic,model=? /dev/null
               alignment used to mmap the address range for the backend
               <code>path</code>. If not supplied the host page size is used.
               For example, to mmap a real NVDIMM device a 2M-aligned page may
-              be required.
+              be required, and host page size is 4KB, then we need to set this
+              element to 2MB.
               <span class="since">Since 5.0.0</span>
             </p>
           </dd>
