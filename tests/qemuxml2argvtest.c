@@ -3016,6 +3016,9 @@ mymain(void)
     DO_TEST_CAPS_LATEST("os-firmware-efi-secboot");
     DO_TEST_CAPS_ARCH_LATEST("aarch64-os-firmware-efi", "aarch64");
 
+    DO_TEST_CAPS_LATEST("vhost-user-vga");
+    DO_TEST_CAPS_LATEST("vhost-user-gpu-secondary");
+
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
 
