@@ -5266,33 +5266,42 @@ qemuProcessStartValidateVideo(virDomainObjPtr vm,
     for (i = 0; i < vm->def->nvideos; i++) {
         video = vm->def->videos[i];
 
-        if ((video->type == VIR_DOMAIN_VIDEO_TYPE_VGA &&
-             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VGA)) ||
-            (video->type == VIR_DOMAIN_VIDEO_TYPE_CIRRUS &&
-             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_CIRRUS_VGA)) ||
-            (video->type == VIR_DOMAIN_VIDEO_TYPE_VMVGA &&
-             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VMWARE_SVGA)) ||
-            (video->type == VIR_DOMAIN_VIDEO_TYPE_QXL &&
-             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QXL)) ||
-            (video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO &&
-             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_GPU)) ||
-            (video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO &&
-             video->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
-             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_GPU_CCW))) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("this QEMU does not support '%s' video device"),
-                           virDomainVideoTypeToString(video->type));
-            return -1;
-        }
-
-        if (video->accel) {
-            if (video->accel->accel3d == VIR_TRISTATE_SWITCH_ON &&
-                (video->type != VIR_DOMAIN_VIDEO_TYPE_VIRTIO ||
-                 !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_VIRGL))) {
+        if (video->backend == VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER) {
+            if (video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO &&
+                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VHOST_USER_GPU)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("this QEMU does not support 'vhost-user' video device"));
+                return -1;
+            }
+        } else {
+            if ((video->type == VIR_DOMAIN_VIDEO_TYPE_VGA &&
+                 !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VGA)) ||
+                (video->type == VIR_DOMAIN_VIDEO_TYPE_CIRRUS &&
+                 !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_CIRRUS_VGA)) ||
+                (video->type == VIR_DOMAIN_VIDEO_TYPE_VMVGA &&
+                 !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VMWARE_SVGA)) ||
+                (video->type == VIR_DOMAIN_VIDEO_TYPE_QXL &&
+                 !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QXL)) ||
+                (video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO &&
+                 !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_GPU)) ||
+                (video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO &&
+                 video->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
+                 !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_GPU_CCW))) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("%s 3d acceleration is not supported"),
+                               _("this QEMU does not support '%s' video device"),
                                virDomainVideoTypeToString(video->type));
                 return -1;
+            }
+
+            if (video->accel) {
+                if (video->accel->accel3d == VIR_TRISTATE_SWITCH_ON &&
+                    (video->type != VIR_DOMAIN_VIDEO_TYPE_VIRTIO ||
+                     !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_VIRGL))) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("%s 3d acceleration is not supported"),
+                                   virDomainVideoTypeToString(video->type));
+                    return -1;
+                }
             }
         }
     }
