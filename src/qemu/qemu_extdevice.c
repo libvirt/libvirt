@@ -21,6 +21,7 @@
 #include <config.h>
 
 #include "qemu_extdevice.h"
+#include "qemu_vhost_user_gpu.h"
 #include "qemu_domain.h"
 #include "qemu_tpm.h"
 #include "qemu_slirp.h"
@@ -73,6 +74,34 @@ qemuExtDevicesInitPaths(virQEMUDriverPtr driver,
 
     if (def->tpm)
         ret = qemuExtTPMInitPaths(driver, def);
+
+    return ret;
+}
+
+
+/*
+ * qemuExtDevicesPrepareDomain:
+ *
+ * @driver: QEMU driver
+ * @vm: domain
+ *
+ * Code that modifies live XML of a domain which is about to start.
+ */
+int
+qemuExtDevicesPrepareDomain(virQEMUDriverPtr driver,
+                            virDomainObjPtr vm)
+{
+    int ret = 0;
+    size_t i;
+
+    for (i = 0; i < vm->def->nvideos; i++) {
+        virDomainVideoDefPtr video = vm->def->videos[i];
+
+        if (video->backend == VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER) {
+            if ((ret = qemuExtVhostUserGPUPrepareDomain(driver, video)) < 0)
+                break;
+        }
+    }
 
     return ret;
 }

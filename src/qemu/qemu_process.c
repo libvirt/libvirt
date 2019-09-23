@@ -6367,6 +6367,10 @@ qemuProcessPrepareDomain(virQEMUDriverPtr driver,
     if (qemuFirmwareFillDomain(driver, vm, flags) < 0)
         goto cleanup;
 
+    VIR_DEBUG("Preparing external devices");
+    if (qemuExtDevicesPrepareDomain(driver, vm) < 0)
+        goto cleanup;
+
     for (i = 0; i < vm->def->nchannels; i++) {
         if (qemuDomainPrepareChannel(vm->def->channels[i],
                                      priv->channelTargetDir) < 0)
