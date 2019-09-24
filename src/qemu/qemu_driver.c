@@ -15917,12 +15917,6 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
-    if (qemuProcessAutoDestroyActive(driver, vm)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("domain is marked for auto destroy"));
-        goto cleanup;
-    }
-
     if (!vm->persistent && (flags & VIR_DOMAIN_SNAPSHOT_CREATE_HALT)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("cannot halt after transient domain snapshot"));
