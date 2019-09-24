@@ -184,8 +184,8 @@ def formatCPUData(cpuData, path, comment):
         if "msr" in cpuData:
             msr = cpuData["msr"]
             for index in sorted(msr.keys()):
-                f.write("  <msr index='0x%x' edx='0x%08x' eax='0x%08x'/>\n" %(
-                        index, msr[index]['edx'], msr[index]['eax']))
+                f.write("  <msr index='0x%x' edx='0x%08x' eax='0x%08x'/>\n" %
+                        (index, msr[index]['edx'], msr[index]['eax']))
 
         f.write("</cpudata>\n")
 

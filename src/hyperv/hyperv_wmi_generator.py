@@ -127,7 +127,7 @@ class WmiClass:
 
             for property in cls.properties:
                 source += property.generate_typemap()
-            source += '    { "", "", 0 },\n' # null terminated
+            source += '    { "", "", 0 },\n'  # null terminated
             source += '};\n\n'
 
         source += self._define_WmiInfo_struct()

@@ -402,7 +402,7 @@ class Type:
         return string
 
     def generate_typefromstring(self):
-        string =  "           if (STREQ(type, \"%s\"))\n" % self.name
+        string = "           if (STREQ(type, \"%s\"))\n" % self.name
         string += "               return esxVI_Type_%s;\n" % self.name
 
         return string
@@ -410,11 +410,11 @@ class Type:
 
 class GenericObject(Type):
     FEATURE__DYNAMIC_CAST = (1 << 1)
-    FEATURE__LIST         = (1 << 2)
-    FEATURE__DEEP_COPY    = (1 << 3)
-    FEATURE__ANY_TYPE     = (1 << 4)
-    FEATURE__SERIALIZE    = (1 << 5)
-    FEATURE__DESERIALIZE  = (1 << 6)
+    FEATURE__LIST = (1 << 2)
+    FEATURE__DEEP_COPY = (1 << 3)
+    FEATURE__ANY_TYPE = (1 << 4)
+    FEATURE__SERIALIZE = (1 << 5)
+    FEATURE__DESERIALIZE = (1 << 6)
 
     def __init__(self, name, category, managed, generic_objects_by_name):
         Type.__init__(self, "struct", name)

@@ -520,9 +520,9 @@ class CLexer:
                     i = 0
                     nline = len(line)
                     while i < nline:
-                        if line[i] == '*' and i+1 < nline and line[i+1] == '/':
-                            self.line = line[i+2:]
-                            line = line[:i-1]
+                        if line[i] == '*' and i + 1 < nline and line[i + 1] == '/':
+                            self.line = line[i + 2:]
+                            line = line[:i - 1]
                             nline = i
                             found = 1
                             break
@@ -542,11 +542,11 @@ class CLexer:
                 return self.last
             i = 0
             while i < nline:
-                if line[i] == '/' and i+1 < nline and line[i+1] == '/':
+                if line[i] == '/' and i + 1 < nline and line[i + 1] == '/':
                     self.line = line[i:]
                     line = line[:i]
                     break
-                if line[i] == '/' and i+1 < nline and line[i+1] == '*':
+                if line[i] == '/' and i + 1 < nline and line[i + 1] == '*':
                     self.line = line[i:]
                     line = line[:i]
                     break
@@ -576,14 +576,14 @@ class CLexer:
                     continue
                 if line[i] in "+-*><=/%&!|.":
                     if line[i] == '.' and i + 2 < nline and \
-                       line[i+1] == '.' and line[i+2] == '.':
+                       line[i + 1] == '.' and line[i + 2] == '.':
                         self.tokens.append(('name', '...'))
                         i = i + 3
                         continue
 
                     j = i + 1
                     if j < nline and line[j] in "+-*><=/%&!|":
-                        self.tokens.append(('op', line[i:j+1]))
+                        self.tokens.append(('op', line[i:j + 1]))
                         i = j + 1
                     else:
                         self.tokens.append(('op', line[i]))
@@ -994,7 +994,7 @@ class CParser:
                     lst.append(token[1])
                     token = self.lexer.token()
                 try:
-                    name = name.split('(') [0]
+                    name = name.split('(')[0]
                 except Exception:
                     pass
 
