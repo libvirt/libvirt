@@ -453,9 +453,9 @@ class GenericObject(Type):
             members += "\n"
 
         if self.extends is not None:
-            members += self.generic_objects_by_name[self.extends] \
-                       .generate_struct_members(add_banner=True,
-                                                struct_gap=False) + "\n"
+            obj = self.generic_objects_by_name[self.extends]
+            members += obj.generate_struct_members(add_banner=True,
+                                                   struct_gap=False) + "\n"
 
         if self.extends is not None or add_banner:
             members += "    /* %s */\n" % self.name
@@ -482,8 +482,8 @@ class GenericObject(Type):
                           % (suffix, extended_by)
 
             for extended_by in self.extended_by:
-                source += self.generic_objects_by_name[extended_by] \
-                          .generate_dispatch(suffix, False)
+                obj = self.generic_objects_by_name[extended_by]
+                source += obj.generate_dispatch(suffix, False)
 
         return source
 
@@ -491,8 +491,8 @@ class GenericObject(Type):
         source = ""
 
         if self.extends is not None:
-            source += self.generic_objects_by_name[self.extends] \
-                      .generate_free_code(add_banner=True) + "\n"
+            obj = self.generic_objects_by_name[self.extends]
+            source += obj.generate_free_code(add_banner=True) + "\n"
 
         if self.extends is not None or add_banner:
             source += "    /* %s */\n" % self.name
@@ -516,8 +516,8 @@ class GenericObject(Type):
         source = ""
 
         if self.extends is not None:
-            source += self.generic_objects_by_name[self.extends] \
-                      .generate_validate_code(add_banner=True) + "\n"
+            obj = self.generic_objects_by_name[self.extends]
+            source += obj.generate_validate_code(add_banner=True) + "\n"
 
         if self.extends is not None or add_banner:
             source += "    /* %s */\n" % self.name
@@ -564,8 +564,8 @@ class Object(GenericObject):
                           % extended_by
 
             for extended_by in self.extended_by:
-                source += objects_by_name[extended_by] \
-                          .generate_dynamic_cast_code(False)
+                obj = objects_by_name[extended_by]
+                source += obj.generate_dynamic_cast_code(False)
 
         return source
 
@@ -573,8 +573,8 @@ class Object(GenericObject):
         source = ""
 
         if self.extends is not None:
-            source += objects_by_name[self.extends] \
-                      .generate_deep_copy_code(add_banner=True) + "\n"
+            obj = objects_by_name[self.extends]
+            source += obj.generate_deep_copy_code(add_banner=True) + "\n"
 
         if self.extends is not None or add_banner:
             source += "    /* %s */\n" % self.name
@@ -598,8 +598,8 @@ class Object(GenericObject):
         source = ""
 
         if self.extends is not None:
-            source += objects_by_name[self.extends] \
-                      .generate_serialize_code(add_banner=True) + "\n"
+            obj = objects_by_name[self.extends]
+            source += obj.generate_serialize_code(add_banner=True) + "\n"
 
         if self.extends is not None or add_banner:
             source += "    /* %s */\n" % self.name
@@ -616,8 +616,8 @@ class Object(GenericObject):
         source = ""
 
         if self.extends is not None:
-            source += objects_by_name[self.extends] \
-                      .generate_deserialize_code(add_banner=True) + "\n"
+            obj = objects_by_name[self.extends]
+            source += obj.generate_deserialize_code(add_banner=True) + "\n"
 
         if self.extends is not None or add_banner:
             source += "    /* %s */\n" % self.name
@@ -671,40 +671,46 @@ class Object(GenericObject):
                       % (self.name, self.name, self.name)
 
             if self.features & Object.FEATURE__LIST:
-                header += ("int esxVI_%s_DeepCopyList(esxVI_%s **dstList, "
-                                                     "esxVI_%s *srcList);\n") \
-                          % (self.name, self.name, self.name)
+                header += ((
+                    "int esxVI_%s_DeepCopyList(esxVI_%s **dstList, "
+                    "                          esxVI_%s *srcList);\n") %
+                    (self.name, self.name, self.name))
 
         if self.features & Object.FEATURE__ANY_TYPE:
-            header += ("int esxVI_%s_CastFromAnyType(esxVI_AnyType *anyType, "
-                                                    "esxVI_%s **item);\n") \
-                      % (self.name, self.name)
+            header += ((
+                "int esxVI_%s_CastFromAnyType(esxVI_AnyType *anyType, "
+                "                             esxVI_%s **item);\n") %
+                (self.name, self.name))
 
             if self.features & Object.FEATURE__LIST:
-                header += ("int esxVI_%s_CastListFromAnyType(esxVI_AnyType *anyType, "
-                                                            "esxVI_%s **list);\n") \
-                          % (self.name, self.name)
+                header += ((
+                    "int esxVI_%s_CastListFromAnyType(esxVI_AnyType *anyType, "
+                    "                                 esxVI_%s **list);\n") %
+                    (self.name, self.name))
 
         if self.features & Object.FEATURE__SERIALIZE:
-            header += ("int esxVI_%s_Serialize(esxVI_%s *item, "
-                                              "const char *element, "
-                                              "virBufferPtr output);\n") \
-                      % (self.name, self.name)
+            header += ((
+                "int esxVI_%s_Serialize(esxVI_%s *item, "
+                "                       const char *element, "
+                "                       virBufferPtr output);\n") %
+                (self.name, self.name))
 
             if self.features & Object.FEATURE__LIST:
-                header += ("int esxVI_%s_SerializeList(esxVI_%s *list, "
-                                                      "const char *element, "
-                                                      "virBufferPtr output);\n") \
-                          % (self.name, self.name)
+                header += ((
+                    "int esxVI_%s_SerializeList(esxVI_%s *list, "
+                    "                           const char *element, "
+                    "                           virBufferPtr output);\n") %
+                    (self.name, self.name))
 
         if self.features & Object.FEATURE__DESERIALIZE:
             header += "int esxVI_%s_Deserialize(xmlNodePtr node, esxVI_%s **item);\n" \
                       % (self.name, self.name)
 
             if self.features & Object.FEATURE__LIST:
-                header += ("int esxVI_%s_DeserializeList(xmlNodePtr node, "
-                                                        "esxVI_%s **list);\n") \
-                          % (self.name, self.name)
+                header += ((
+                    "int esxVI_%s_DeserializeList(xmlNodePtr node, "
+                    "                             esxVI_%s **list);\n") %
+                    (self.name, self.name))
 
         header += "\n\n\n"
 
@@ -887,8 +893,8 @@ class ManagedObject(GenericObject):
         source = ""
 
         if self.extends is not None:
-            source += managed_objects_by_name[self.extends] \
-                      .generate_lookup_code1(add_banner=True) + "\n"
+            obj = managed_objects_by_name[self.extends]
+            source += obj.generate_lookup_code1(add_banner=True) + "\n"
 
         if self.extends is not None or add_banner:
             source += "    /* %s */\n" % self.name
@@ -912,8 +918,8 @@ class ManagedObject(GenericObject):
         source = ""
 
         if self.extends is not None:
-            source += managed_objects_by_name[self.extends] \
-                      .generate_lookup_code2(add_banner=True) + "\n"
+            obj = managed_objects_by_name[self.extends]
+            source += obj.generate_lookup_code2(add_banner=True) + "\n"
 
         if self.extends is not None or add_banner:
             source += "    /* %s */\n" % self.name
@@ -957,12 +963,12 @@ class ManagedObject(GenericObject):
         header += "int esxVI_%s_Alloc(esxVI_%s **item);\n" % (self.name, self.name)
         header += "void esxVI_%s_Free(esxVI_%s **item);\n" % (self.name, self.name)
         header += ("int esxVI_%s_Validate(esxVI_%s *item, "
-                                         "esxVI_String *selectedPropertyNameList);\n") \
-                  % (self.name, self.name)
+                   "                      esxVI_String *selectedPropertyNameList);\n") \
+            % (self.name, self.name)
 
         if self.features & Object.FEATURE__LIST:
             header += "int esxVI_%s_AppendToList(esxVI_%s **list, esxVI_%s *item);\n" \
-                      % (self.name, self.name, self.name)
+                % (self.name, self.name, self.name)
 
         header += "\n\n\n"
 
@@ -972,11 +978,11 @@ class ManagedObject(GenericObject):
         # functions
         return (
             "int esxVI_Lookup%(name)s(esxVI_Context *ctx,"
-                                     " const char *name,"
-                                     " esxVI_ManagedObjectReference *root,"
-                                     " esxVI_String *selectedPropertyNameList,"
-                                     " esxVI_%(name)s **item,"
-                                     " esxVI_Occurrence occurrence);\n\n"
+            "                         const char *name,"
+            "                         esxVI_ManagedObjectReference *root,"
+            "                         esxVI_String *selectedPropertyNameList,"
+            "                         esxVI_%(name)s **item,"
+            "                         esxVI_Occurrence occurrence);\n\n"
             % {"name": self.name}
         )
 
@@ -1074,18 +1080,18 @@ class Enum(Type):
         # functions
         if self.features & Enum.FEATURE__ANY_TYPE:
             header += ("int esxVI_%s_CastFromAnyType(esxVI_AnyType *anyType, "
-                                                    "esxVI_%s *item);\n") \
-                      % (self.name, self.name)
+                       "                             esxVI_%s *item);\n") \
+                % (self.name, self.name)
 
         if self.features & Enum.FEATURE__SERIALIZE:
             header += ("int esxVI_%s_Serialize(esxVI_%s item, const char *element, "
-                                              "virBufferPtr output);\n") \
-                      % (self.name, self.name)
+                       "                       virBufferPtr output);\n") \
+                % (self.name, self.name)
 
         if self.features & Enum.FEATURE__DESERIALIZE:
             header += ("int esxVI_%s_Deserialize(xmlNodePtr node, "
-                                                "esxVI_%s *item);\n") \
-                      % (self.name, self.name)
+                       "                         esxVI_%s *item);\n") \
+                % (self.name, self.name)
 
         header += "\n\n\n"
 
@@ -1096,12 +1102,12 @@ class Enum(Type):
         source += " * VI Enum: %s\n" % self.name
         source += " */\n\n"
         source += "static const esxVI_Enumeration _esxVI_%s_Enumeration = {\n" \
-                  % self.name
+            % self.name
         source += "    esxVI_Type_%s, {\n" % self.name
 
         for value in self.values:
             source += "        { \"%s\", esxVI_%s_%s },\n" \
-                      % (value, self.name, capitalize_first(value))
+                % (value, self.name, capitalize_first(value))
 
         source += "        { NULL, -1 },\n"
         source += "    },\n"
@@ -1239,11 +1245,11 @@ def parse_method(block):
 
 
 def is_known_type(type):
-    return type in predefined_objects or \
-           type in predefined_enums or \
-           type in objects_by_name or \
-           type in managed_objects_by_name or \
-           type in enums_by_name
+    return (type in predefined_objects or
+            type in predefined_enums or
+            type in objects_by_name or
+            type in managed_objects_by_name or
+            type in enums_by_name)
 
 
 def open_and_print(filename):
@@ -1497,17 +1503,19 @@ def propagate_feature(obj, feature):
         return
 
     for property in obj.properties:
-        if property.occurrence == OCCURRENCE__IGNORED or \
-           not property.is_type_generated():
+        if (property.occurrence == OCCURRENCE__IGNORED or
+                not property.is_type_generated()):
             continue
 
         if property.is_enum():
-            if feature == Object.FEATURE__SERIALIZE and \
-               not (enums_by_name[property.type].features & Enum.FEATURE__SERIALIZE):
+            if (feature == Object.FEATURE__SERIALIZE and
+                not (enums_by_name[property.type].features &
+                     Enum.FEATURE__SERIALIZE)):
                 enums_by_name[property.type].features |= Enum.FEATURE__SERIALIZE
                 features_have_changed = True
-            elif feature == Object.FEATURE__DESERIALIZE and \
-               not (enums_by_name[property.type].features & Enum.FEATURE__DESERIALIZE):
+            elif (feature == Object.FEATURE__DESERIALIZE and
+                  not (enums_by_name[property.type].features &
+                       Enum.FEATURE__DESERIALIZE)):
                 enums_by_name[property.type].features |= Enum.FEATURE__DESERIALIZE
                 features_have_changed = True
         elif property.is_object():

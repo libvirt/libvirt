@@ -24,103 +24,103 @@ debugsym = None
 # C parser analysis code
 #
 included_files = {
-  "libvirt-common.h": "header with general libvirt API definitions",
-  "libvirt-domain.h": "header with general libvirt API definitions",
-  "libvirt-domain-checkpoint.h": "header with general libvirt API definitions",
-  "libvirt-domain-snapshot.h": "header with general libvirt API definitions",
-  "libvirt-event.h": "header with general libvirt API definitions",
-  "libvirt-host.h": "header with general libvirt API definitions",
-  "libvirt-interface.h": "header with general libvirt API definitions",
-  "libvirt-network.h": "header with general libvirt API definitions",
-  "libvirt-nodedev.h": "header with general libvirt API definitions",
-  "libvirt-nwfilter.h": "header with general libvirt API definitions",
-  "libvirt-secret.h": "header with general libvirt API definitions",
-  "libvirt-storage.h": "header with general libvirt API definitions",
-  "libvirt-stream.h": "header with general libvirt API definitions",
-  "virterror.h": "header with error specific API definitions",
-  "libvirt.c": "Main interfaces for the libvirt library",
-  "libvirt-domain.c": "Domain interfaces for the libvirt library",
-  "libvirt-domain-checkpoint.c": "Domain checkpoint interfaces for the libvirt library",
-  "libvirt-domain-snapshot.c": "Domain snapshot interfaces for the libvirt library",
-  "libvirt-host.c": "Host interfaces for the libvirt library",
-  "libvirt-interface.c": "Interface interfaces for the libvirt library",
-  "libvirt-network.c": "Network interfaces for the libvirt library",
-  "libvirt-nodedev.c": "Node device interfaces for the libvirt library",
-  "libvirt-nwfilter.c": "NWFilter interfaces for the libvirt library",
-  "libvirt-secret.c": "Secret interfaces for the libvirt library",
-  "libvirt-storage.c": "Storage interfaces for the libvirt library",
-  "libvirt-stream.c": "Stream interfaces for the libvirt library",
-  "virerror.c": "implements error handling and reporting code for libvirt",
-  "virevent.c": "event loop for monitoring file handles",
-  "virtypedparam-public.c": "virTypedParameters APIs",
+    "libvirt-common.h": "header with general libvirt API definitions",
+    "libvirt-domain.h": "header with general libvirt API definitions",
+    "libvirt-domain-checkpoint.h": "header with general libvirt API definitions",
+    "libvirt-domain-snapshot.h": "header with general libvirt API definitions",
+    "libvirt-event.h": "header with general libvirt API definitions",
+    "libvirt-host.h": "header with general libvirt API definitions",
+    "libvirt-interface.h": "header with general libvirt API definitions",
+    "libvirt-network.h": "header with general libvirt API definitions",
+    "libvirt-nodedev.h": "header with general libvirt API definitions",
+    "libvirt-nwfilter.h": "header with general libvirt API definitions",
+    "libvirt-secret.h": "header with general libvirt API definitions",
+    "libvirt-storage.h": "header with general libvirt API definitions",
+    "libvirt-stream.h": "header with general libvirt API definitions",
+    "virterror.h": "header with error specific API definitions",
+    "libvirt.c": "Main interfaces for the libvirt library",
+    "libvirt-domain.c": "Domain interfaces for the libvirt library",
+    "libvirt-domain-checkpoint.c": "Domain checkpoint interfaces for the libvirt library",
+    "libvirt-domain-snapshot.c": "Domain snapshot interfaces for the libvirt library",
+    "libvirt-host.c": "Host interfaces for the libvirt library",
+    "libvirt-interface.c": "Interface interfaces for the libvirt library",
+    "libvirt-network.c": "Network interfaces for the libvirt library",
+    "libvirt-nodedev.c": "Node device interfaces for the libvirt library",
+    "libvirt-nwfilter.c": "NWFilter interfaces for the libvirt library",
+    "libvirt-secret.c": "Secret interfaces for the libvirt library",
+    "libvirt-storage.c": "Storage interfaces for the libvirt library",
+    "libvirt-stream.c": "Stream interfaces for the libvirt library",
+    "virerror.c": "implements error handling and reporting code for libvirt",
+    "virevent.c": "event loop for monitoring file handles",
+    "virtypedparam-public.c": "virTypedParameters APIs",
 }
 
 qemu_included_files = {
-  "libvirt-qemu.h": "header with QEMU specific API definitions",
-  "libvirt-qemu.c": "Implementations for the QEMU specific APIs",
+    "libvirt-qemu.h": "header with QEMU specific API definitions",
+    "libvirt-qemu.c": "Implementations for the QEMU specific APIs",
 }
 
 lxc_included_files = {
-  "libvirt-lxc.h": "header with LXC specific API definitions",
-  "libvirt-lxc.c": "Implementations for the LXC specific APIs",
+    "libvirt-lxc.h": "header with LXC specific API definitions",
+    "libvirt-lxc.c": "Implementations for the LXC specific APIs",
 }
 
 admin_included_files = {
-  "libvirt-admin.h": "header with admin specific API definitions",
-  "admin/libvirt-admin.c": "Implementations for the admin specific APIs",
+    "libvirt-admin.h": "header with admin specific API definitions",
+    "admin/libvirt-admin.c": "Implementations for the admin specific APIs",
 }
 
 ignored_words = {
-  "G_GNUC_UNUSED": (0, "macro keyword"),
-  "G_GNUC_NULL_TERMINATED": (0, "macro keyword"),
-  "VIR_DEPRECATED": (0, "macro keyword"),
-  "VIR_EXPORT_VAR": (0, "macro keyword"),
-  "WINAPI": (0, "Windows keyword"),
-  "__declspec": (3, "Windows keyword"),
-  "__stdcall": (0, "Windows keyword"),
+    "G_GNUC_UNUSED": (0, "macro keyword"),
+    "G_GNUC_NULL_TERMINATED": (0, "macro keyword"),
+    "VIR_DEPRECATED": (0, "macro keyword"),
+    "VIR_EXPORT_VAR": (0, "macro keyword"),
+    "WINAPI": (0, "Windows keyword"),
+    "__declspec": (3, "Windows keyword"),
+    "__stdcall": (0, "Windows keyword"),
 }
 
 ignored_functions = {
-  "virConnectSupportsFeature": "private function for remote access",
-  "virDomainMigrateFinish": "private function for migration",
-  "virDomainMigrateFinish2": "private function for migration",
-  "virDomainMigratePerform": "private function for migration",
-  "virDomainMigratePrepare": "private function for migration",
-  "virDomainMigratePrepare2": "private function for migration",
-  "virDomainMigratePrepareTunnel": "private function for tunnelled migration",
-  "virDomainMigrateBegin3": "private function for migration",
-  "virDomainMigrateFinish3": "private function for migration",
-  "virDomainMigratePerform3": "private function for migration",
-  "virDomainMigratePrepare3": "private function for migration",
-  "virDomainMigrateConfirm3": "private function for migration",
-  "virDomainMigratePrepareTunnel3": "private function for tunnelled migration",
-  "DllMain": "specific function for Win32",
-  "virTypedParamsValidate": "internal function in virtypedparam.c",
-  "virTypedParameterValidateSet": "internal function in virtypedparam.c",
-  "virTypedParameterAssign": "internal function in virtypedparam.c",
-  "virTypedParameterAssignFromStr": "internal function in virtypedparam.c",
-  "virTypedParameterToString": "internal function in virtypedparam.c",
-  "virTypedParamsCheck": "internal function in virtypedparam.c",
-  "virTypedParamsCopy": "internal function in virtypedparam.c",
-  "virDomainMigrateBegin3Params": "private function for migration",
-  "virDomainMigrateFinish3Params": "private function for migration",
-  "virDomainMigratePerform3Params": "private function for migration",
-  "virDomainMigratePrepare3Params": "private function for migration",
-  "virDomainMigrateConfirm3Params": "private function for migration",
-  "virDomainMigratePrepareTunnel3Params": "private function for tunnelled migration",
-  "virErrorCopyNew": "private",
+    "virConnectSupportsFeature": "private function for remote access",
+    "virDomainMigrateFinish": "private function for migration",
+    "virDomainMigrateFinish2": "private function for migration",
+    "virDomainMigratePerform": "private function for migration",
+    "virDomainMigratePrepare": "private function for migration",
+    "virDomainMigratePrepare2": "private function for migration",
+    "virDomainMigratePrepareTunnel": "private function for tunnelled migration",
+    "virDomainMigrateBegin3": "private function for migration",
+    "virDomainMigrateFinish3": "private function for migration",
+    "virDomainMigratePerform3": "private function for migration",
+    "virDomainMigratePrepare3": "private function for migration",
+    "virDomainMigrateConfirm3": "private function for migration",
+    "virDomainMigratePrepareTunnel3": "private function for tunnelled migration",
+    "DllMain": "specific function for Win32",
+    "virTypedParamsValidate": "internal function in virtypedparam.c",
+    "virTypedParameterValidateSet": "internal function in virtypedparam.c",
+    "virTypedParameterAssign": "internal function in virtypedparam.c",
+    "virTypedParameterAssignFromStr": "internal function in virtypedparam.c",
+    "virTypedParameterToString": "internal function in virtypedparam.c",
+    "virTypedParamsCheck": "internal function in virtypedparam.c",
+    "virTypedParamsCopy": "internal function in virtypedparam.c",
+    "virDomainMigrateBegin3Params": "private function for migration",
+    "virDomainMigrateFinish3Params": "private function for migration",
+    "virDomainMigratePerform3Params": "private function for migration",
+    "virDomainMigratePrepare3Params": "private function for migration",
+    "virDomainMigrateConfirm3Params": "private function for migration",
+    "virDomainMigratePrepareTunnel3Params": "private function for tunnelled migration",
+    "virErrorCopyNew": "private",
 }
 
 ignored_macros = {
-  "_virSchedParameter": "backward compatibility macro for virTypedParameter",
-  "_virBlkioParameter": "backward compatibility macro for virTypedParameter",
-  "_virMemoryParameter": "backward compatibility macro for virTypedParameter",
+    "_virSchedParameter": "backward compatibility macro for virTypedParameter",
+    "_virBlkioParameter": "backward compatibility macro for virTypedParameter",
+    "_virMemoryParameter": "backward compatibility macro for virTypedParameter",
 }
 
 # macros that should be completely skipped
 hidden_macros = {
-  "VIR_DEPRECATED": "internal macro to mark deprecated apis",
-  "VIR_EXPORT_VAR": "internal macro to mark exported vars",
+    "VIR_DEPRECATED": "internal macro to mark deprecated apis",
+    "VIR_EXPORT_VAR": "internal macro to mark exported vars",
 }
 
 
@@ -909,8 +909,8 @@ class CParser:
                 i = i + 1
             if i >= nbargs:
                 if not quiet:
-                    self.warning("Unable to find arg %s from function comment for %s" % (
-                       arg, name))
+                    self.warning("Unable to find arg %s from function comment for %s" %
+                                 (arg, name))
         while len(lines) > 0 and lines[0] == '*':
             del lines[0]
         desc = None
@@ -977,7 +977,7 @@ class CParser:
                 return None
             if token[0] == 'preproc':
                 self.index_add(token[1], self.filename, not self.is_header,
-                                "include")
+                               "include")
                 return self.lexer.token()
             return token
         if name == "#define":
@@ -989,8 +989,8 @@ class CParser:
                 name = token[1]
                 lst = []
                 token = self.lexer.token()
-                while token is not None and token[0] == 'preproc' and \
-                      token[1][0] != '#':
+                while (token is not None and token[0] == 'preproc' and
+                       token[1][0] != '#'):
                     lst.append(token[1])
                     token = self.lexer.token()
                 try:
@@ -1058,17 +1058,17 @@ class CParser:
             except Exception:
                 pass
         elif name == "#else":
-            if self.conditionals != [] and \
-               self.defines[-1].find('ENABLED') != -1:
+            if (self.conditionals != [] and
+                    self.defines[-1].find('ENABLED') != -1):
                 self.conditionals[-1] = "!(%s)" % self.conditionals[-1]
         elif name == "#endif":
-            if self.conditionals != [] and \
-               self.defines[-1].find('ENABLED') != -1:
+            if (self.conditionals != [] and
+                    self.defines[-1].find('ENABLED') != -1):
                 self.conditionals = self.conditionals[:-1]
             self.defines = self.defines[:-1]
         token = self.lexer.token()
-        while token is not None and token[0] == 'preproc' and \
-            token[1][0] != '#':
+        while (token is not None and token[0] == 'preproc' and
+               token[1][0] != '#'):
             token = self.lexer.token()
         return token
 
@@ -1133,19 +1133,19 @@ class CParser:
                 if signature is not None:
                     type = type.split('(')[0]
                     d = self.mergeFunctionComment(name,
-                            ((type, None), signature), 1)
+                                                  ((type, None), signature), 1)
                     self.index_add(name, self.filename, not self.is_header,
-                                    "functype", d)
+                                   "functype", d)
                 else:
                     if base_type == "struct":
                         self.index_add(name, self.filename, not self.is_header,
-                                        "struct", type)
+                                       "struct", type)
                         base_type = "struct " + name
                     else:
                         # TODO report missing or misformatted comments
                         info = self.parseTypeComment(name, 1)
                         self.index_add(name, self.filename, not self.is_header,
-                                    "typedef", type, info)
+                                       "typedef", type, info)
                 token = self.token()
             else:
                 self.error("parsing typedef: expecting a name")
@@ -1188,20 +1188,20 @@ class CParser:
                     if oldtok[0] == "name" and oldtok[1][0:3] == "vir":
                         if token[0] == "sep" and token[1] == "(":
                             self.index_add_ref(oldtok[1], self.filename,
-                                                0, "function")
+                                               0, "function")
                             token = self.token()
                         elif token[0] == "name":
                             token = self.token()
                             if token[0] == "sep" and (token[1] == ";" or
                                token[1] == "," or token[1] == "="):
                                 self.index_add_ref(oldtok[1], self.filename,
-                                                    0, "type")
+                                                   0, "type")
                     elif oldtok[0] == "name" and oldtok[1][0:4] == "XEN_":
                         self.index_add_ref(oldtok[1], self.filename,
-                                            0, "typedef")
+                                           0, "typedef")
                     elif oldtok[0] == "name" and oldtok[1][0:7] == "LIBXEN_":
                         self.index_add_ref(oldtok[1], self.filename,
-                                            0, "typedef")
+                                           0, "typedef")
 
                 else:
                     token = self.token()
@@ -1350,7 +1350,7 @@ class CParser:
                         value = token[1][1:]
                     token = self.token()
                     while token[0] != "sep" or (token[1] != ',' and
-                          token[1] != '}'):
+                                                token[1] != '}'):
                         # We might be dealing with '1U << 12' here
                         value = value + re.sub(r"^(\d+)U$", "\\1", token[1])
                         token = self.token()
@@ -1670,7 +1670,8 @@ class CParser:
             return token
         token = self.token()
         while token is not None and (token[0] == "op" or
-              token[0] == "name" and token[1] == "const"):
+                                     token[0] == "name" and
+                                     token[1] == "const"):
             self.type = self.type + " " + token[1]
             token = self.token()
 
@@ -1718,8 +1719,8 @@ class CParser:
                 while token is not None and token[0] == "sep" and token[1] == '[':
                     self.type = self.type + token[1]
                     token = self.token()
-                    while token is not None and token[0] != 'sep' and \
-                          token[1] != ']' and token[1] != ';':
+                    while (token is not None and token[0] != 'sep' and
+                           token[1] != ']' and token[1] != ';'):
                         self.type = self.type + token[1]
                         token = self.token()
                 if token is not None and token[0] == 'sep' and token[1] == ']':
@@ -1868,13 +1869,13 @@ class CParser:
                         token = self.token()
 #                        print('Entering extern "C line ', self.lineno())
                         while token is not None and (token[0] != 'sep' or
-                              token[1] != "}"):
+                                                     token[1] != "}"):
                             if token[0] == 'name':
                                 token = self.parseGlobal(token)
                             else:
-                                self.error(
-                                 "token %s %s unexpected at the top level" % (
-                                        token[0], token[1]))
+                                self.error(("token %s %s unexpected at the "
+                                            "top level") %
+                                           (token[0], token[1]))
                                 token = self.parseGlobal(token)
 #                        print('Exiting extern "C" line', self.lineno())
                         token = self.token()
@@ -1933,10 +1934,11 @@ class CParser:
                     if type == "struct":
                         self.checkLongLegacyStruct(self.name, self.struct_fields)
                         self.index_add(self.name, self.filename,
-                             not self.is_header, "struct", self.struct_fields)
+                                       not self.is_header, "struct",
+                                       self.struct_fields)
                     else:
                         self.index_add(self.name, self.filename,
-                             not self.is_header, "variable", type)
+                                       not self.is_header, "variable", type)
                     break
                 elif token[1] == "(":
                     token = self.token()
@@ -1946,22 +1948,24 @@ class CParser:
                     if token[0] == "sep" and token[1] == ";":
                         self.checkLongLegacyFunction(self.name, type, self.signature)
                         d = self.mergeFunctionComment(self.name,
-                                ((type, None), self.signature), 1)
+                                                      ((type, None),
+                                                       self.signature), 1)
                         self.index_add(self.name, self.filename, static,
-                                        "function", d)
+                                       "function", d)
                         token = self.token()
                     elif token[0] == "sep" and token[1] == "{":
                         self.checkLongLegacyFunction(self.name, type, self.signature)
                         d = self.mergeFunctionComment(self.name,
-                                ((type, None), self.signature), static)
+                                                      ((type, None),
+                                                       self.signature), static)
                         self.index_add(self.name, self.filename, static,
-                                        "function", d)
+                                       "function", d)
                         token = self.token()
                         token = self.parseBlock(token)
                 elif token[1] == ',':
                     self.comment = None
                     self.index_add(self.name, self.filename, static,
-                                    "variable", type)
+                                   "variable", type)
                     type = type_orig
                     token = self.token()
                     while token is not None and token[0] == "sep":
@@ -1984,7 +1988,7 @@ class CParser:
                 token = self.parseGlobal(token)
             else:
                 self.error("token %s %s unexpected at the top level" % (
-                       token[0], token[1]))
+                    token[0], token[1]))
                 token = self.parseGlobal(token)
                 return
         self.parseTopComment(self.top_comment)
@@ -2182,7 +2186,7 @@ class docBuilder:
         id = self.idx.typedefs[name]
         if id.info[0:7] == 'struct ':
             output.write("    <struct name='%s' file='%s' type='%s'" % (
-                     name, self.modulename_file(id.header), id.info))
+                name, self.modulename_file(id.header), id.info))
             name = id.info[7:]
             if (name in self.idx.structs and
                     isinstance(self.idx.structs[name].info, (list, tuple))):
@@ -2221,10 +2225,10 @@ class docBuilder:
         id = self.idx.variables[name]
         if id.info is not None:
             output.write("    <variable name='%s' file='%s' type='%s'/>\n" % (
-                    name, self.modulename_file(id.header), id.info))
+                name, self.modulename_file(id.header), id.info))
         else:
             output.write("    <variable name='%s' file='%s'/>\n" % (
-                    name, self.modulename_file(id.header)))
+                name, self.modulename_file(id.header)))
 
     def serialize_function(self, output, name):
         id = self.idx.functions[name]
@@ -2256,7 +2260,7 @@ class docBuilder:
                     self.error("Missing documentation for return of function `%s'" % name)
                 else:
                     output.write("      <return type='%s' info='%s'/>\n" % (
-                             ret[0], escape(ret[1])))
+                        ret[0], escape(ret[1])))
                     self.indexString(name, ret[1])
             for param in params:
                 if param[0] == 'void':
@@ -2407,10 +2411,10 @@ class docBuilder:
         for id in typ:
             idf = self.idx.identifiers[id]
             module = idf.header
-            output.write("    <reference name='%s' href='%s'/>\n" % (id,
-                         'html/' + self.basename + '-' +
-                         self.modulename_file(module) + '.html#' +
-                         id))
+            output.write("    <reference name='%s' href='%s'/>\n" %
+                         (id, 'html/' + self.basename + '-' +
+                          self.modulename_file(module) + '.html#' +
+                          id))
 
     def serialize_xrefs_index(self, output):
         index = self.xref
