@@ -1881,6 +1881,35 @@ virQEMUCapsAddCPUDefinitions(virQEMUCapsPtr qemuCaps,
 }
 
 
+static virDomainCapsCPUModelsPtr
+virQEMUCapsCPUDefsToModels(qemuMonitorCPUDefsPtr defs,
+                           const char **modelWhitelist,
+                           const char **modelBlacklist)
+{
+    g_autoptr(virDomainCapsCPUModels) cpuModels = NULL;
+    size_t i;
+
+    if (!(cpuModels = virDomainCapsCPUModelsNew(defs->ncpus)))
+        return NULL;
+
+    for (i = 0; i < defs->ncpus; i++) {
+        qemuMonitorCPUDefInfoPtr cpu = defs->cpus + i;
+
+        if (modelWhitelist && !virStringListHasString(modelWhitelist, cpu->name))
+            continue;
+
+        if (modelBlacklist && virStringListHasString(modelBlacklist, cpu->name))
+            continue;
+
+        if (virDomainCapsCPUModelsAdd(cpuModels, cpu->name, cpu->usable,
+                                      cpu->blockers) < 0)
+            return NULL;
+    }
+
+    return g_steal_pointer(&cpuModels);
+}
+
+
 virDomainCapsCPUModelsPtr
 virQEMUCapsGetCPUDefinitions(virQEMUCapsPtr qemuCaps,
                              virDomainVirtType type,
@@ -2447,19 +2476,15 @@ virQEMUCapsFetchCPUDefinitions(qemuMonitorPtr mon,
                                virDomainCapsCPUModelsPtr *cpuModels)
 {
     g_autoptr(qemuMonitorCPUDefs) defs = NULL;
-    virDomainCapsCPUModelsPtr models = NULL;
     size_t i;
-    int ret = -1;
 
     *cpuModels = NULL;
 
     if (qemuMonitorGetCPUDefinitions(mon, &defs) < 0)
         return -1;
 
-    if (!defs) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (!defs)
+        return 0;
 
     /* QEMU 2.11 for Power renamed all CPU models to lower case, we need to
      * translate them back to libvirt's upper case model names. */
@@ -2468,7 +2493,7 @@ virQEMUCapsFetchCPUDefinitions(qemuMonitorPtr mon,
         char **name;
 
         if (virCPUGetModels(arch, &libvirtModels) < 0)
-            goto cleanup;
+            return -1;
 
         for (name = libvirtModels; name && *name; name++) {
             for (i = 0; i < defs->ncpus; i++) {
@@ -2481,23 +2506,10 @@ virQEMUCapsFetchCPUDefinitions(qemuMonitorPtr mon,
         }
     }
 
-    if (!(models = virDomainCapsCPUModelsNew(defs->ncpus)))
-        goto cleanup;
+    if (!(*cpuModels = virQEMUCapsCPUDefsToModels(defs, NULL, NULL)))
+        return -1;
 
-    for (i = 0; i < defs->ncpus; i++) {
-        if (virDomainCapsCPUModelsAddSteal(models,
-                                           &defs->cpus[i].name,
-                                           defs->cpus[i].usable,
-                                           &defs->cpus[i].blockers) < 0)
-            goto cleanup;
-    }
-
-    *cpuModels = g_steal_pointer(&models);
-    ret = 0;
-
- cleanup:
-    virObjectUnref(models);
-    return ret;
+    return 0;
 }
 
 
