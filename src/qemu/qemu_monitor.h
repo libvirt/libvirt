@@ -1097,7 +1097,7 @@ typedef struct _qemuMonitorCPUDefs qemuMonitorCPUDefs;
 typedef qemuMonitorCPUDefs *qemuMonitorCPUDefsPtr;
 struct _qemuMonitorCPUDefs {
     size_t ncpus;
-    qemuMonitorCPUDefInfoPtr *cpus;
+    qemuMonitorCPUDefInfoPtr cpus;
 };
 
 int qemuMonitorGetCPUDefinitions(qemuMonitorPtr mon,

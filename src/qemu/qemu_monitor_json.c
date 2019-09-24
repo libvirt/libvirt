@@ -5607,12 +5607,7 @@ qemuMonitorJSONGetCPUDefinitions(qemuMonitorPtr mon,
     for (i = 0; i < defs->ncpus; i++) {
         virJSONValuePtr child = virJSONValueArrayGet(data, i);
         const char *tmp;
-        qemuMonitorCPUDefInfoPtr cpu;
-
-        if (VIR_ALLOC(cpu) < 0)
-            return -1;
-
-        defs->cpus[i] = cpu;
+        qemuMonitorCPUDefInfoPtr cpu = defs->cpus + i;
 
         if (!(tmp = virJSONValueObjectGetString(child, "name"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

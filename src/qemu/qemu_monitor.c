@@ -3569,9 +3569,8 @@ qemuMonitorCPUDefsFree(qemuMonitorCPUDefsPtr defs)
         return;
 
     for (i = 0; i < defs->ncpus; i++) {
-        g_strfreev(defs->cpus[i]->blockers);
-        g_free(defs->cpus[i]->name);
-        g_free(defs->cpus[i]);
+        g_strfreev(defs->cpus[i].blockers);
+        g_free(defs->cpus[i].name);
     }
 
     g_free(defs->cpus);
@@ -3585,7 +3584,7 @@ qemuMonitorCPUDefsNew(size_t count)
     g_autoptr(qemuMonitorCPUDefs) defs = NULL;
 
     defs = g_new0(qemuMonitorCPUDefs, 1);
-    defs->cpus = g_new0(qemuMonitorCPUDefInfoPtr, count);
+    defs->cpus = g_new0(qemuMonitorCPUDefInfo, count);
     defs->ncpus = count;
 
     return g_steal_pointer(&defs);

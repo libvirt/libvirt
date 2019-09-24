@@ -463,16 +463,16 @@ testQemuMonitorJSONGetCPUDefinitions(const void *opaque)
 
 #define CHECK_FULL(i, wantname, Usable) \
     do { \
-        if (STRNEQ(defs->cpus[i]->name, (wantname))) { \
+        if (STRNEQ(defs->cpus[i].name, (wantname))) { \
             virReportError(VIR_ERR_INTERNAL_ERROR, \
                            "name %s is not %s", \
-                           defs->cpus[i]->name, (wantname)); \
+                           defs->cpus[i].name, (wantname)); \
             return -1; \
         } \
-        if (defs->cpus[i]->usable != (Usable)) { \
+        if (defs->cpus[i].usable != (Usable)) { \
             virReportError(VIR_ERR_INTERNAL_ERROR, \
                            "%s: expecting usable flag %d, got %d", \
-                           defs->cpus[i]->name, Usable, defs->cpus[i]->usable); \
+                           defs->cpus[i].name, Usable, defs->cpus[i].usable); \
             return -1; \
         } \
     } while (0)
