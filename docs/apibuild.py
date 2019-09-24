@@ -479,7 +479,7 @@ class CLexer:
                     self.tokens[0] = ('preproc', "#" + self.tokens[1][1])
                     del self.tokens[1]
                 break
-            l = len(line)
+            nline = len(line)
             if line[0] == '"' or line[0] == "'":
                 quote = line[0]
                 i = 1
@@ -500,12 +500,12 @@ class CLexer:
                 tok = ""
                 while found == 0:
                     i = 0
-                    l = len(line)
-                    while i < l:
-                        if line[i] == '*' and i+1 < l and line[i+1] == '/':
+                    nline = len(line)
+                    while i < nline:
+                        if line[i] == '*' and i+1 < nline and line[i+1] == '/':
                             self.line = line[i+2:]
                             line = line[:i-1]
-                            l = i
+                            nline = i
                             found = 1
                             break
                         i = i + 1
@@ -523,12 +523,12 @@ class CLexer:
                 self.last = ('comment', line)
                 return self.last
             i = 0
-            while i < l:
-                if line[i] == '/' and i+1 < l and line[i+1] == '/':
+            while i < nline:
+                if line[i] == '/' and i+1 < nline and line[i+1] == '/':
                     self.line = line[i:]
                     line = line[:i]
                     break
-                if line[i] == '/' and i+1 < l and line[i+1] == '*':
+                if line[i] == '/' and i+1 < nline and line[i+1] == '*':
                     self.line = line[i:]
                     line = line[:i]
                     break
@@ -537,15 +537,15 @@ class CLexer:
                     line = line[:i]
                     break
                 i = i + 1
-            l = len(line)
+            nline = len(line)
             i = 0
-            while i < l:
+            while i < nline:
                 if line[i] == ' ' or line[i] == '\t':
                     i = i + 1
                     continue
                 if line[i].isalnum():
                     s = i
-                    while i < l:
+                    while i < nline:
                         if line[i] not in " \t(){}:;,+-*/%&!|[]=><":
                             i = i + 1
                         else:
@@ -557,14 +557,14 @@ class CLexer:
                     i = i + 1
                     continue
                 if line[i] in "+-*><=/%&!|.":
-                    if line[i] == '.' and i + 2 < l and \
+                    if line[i] == '.' and i + 2 < nline and \
                        line[i+1] == '.' and line[i+2] == '.':
                         self.tokens.append(('name', '...'))
                         i = i + 3
                         continue
 
                     j = i + 1
-                    if j < l and line[j] in "+-*><=/%&!|":
+                    if j < nline and line[j] in "+-*><=/%&!|":
                         self.tokens.append(('op', line[i:j+1]))
                         i = j + 1
                     else:
@@ -572,7 +572,7 @@ class CLexer:
                         i = i + 1
                     continue
                 s = i
-                while i < l:
+                while i < nline:
                     if line[i] not in " \t(){}:;,+-*/%&!|[]=><":
                         i = i + 1
                     else:
@@ -779,9 +779,9 @@ class CParser:
         while lines[0] == '*':
             del lines[0]
         while len(lines) > 0 and lines[0][0:3] == '* @':
-            l = lines[0][3:]
+            prefix = lines[0][3:]
             try:
-                arg, desc = l.split(':', 1)
+                arg, desc = prefix.split(':', 1)
                 desc = desc.strip()
                 arg = arg.strip()
             except:
@@ -791,25 +791,25 @@ class CParser:
                 del lines[0]
                 continue
             del lines[0]
-            l = lines[0].strip()
-            while len(l) > 2 and l[0:3] != '* @':
-                while l[0] == '*':
-                    l = l[1:]
-                desc = desc + ' ' + l.strip()
+            line = lines[0].strip()
+            while len(line) > 2 and line[0:3] != '* @':
+                while line[0] == '*':
+                    line = line[1:]
+                desc = desc + ' ' + line.strip()
                 del lines[0]
                 if len(lines) == 0:
                     break
-                l = lines[0]
+                line = lines[0]
             args.append((arg, desc))
         while len(lines) > 0 and lines[0] == '*':
             del lines[0]
         desc = ""
         while len(lines) > 0:
-            l = lines[0]
-            while len(l) > 0 and l[0] == '*':
-                l = l[1:]
-            l = l.strip()
-            desc = desc + " " + l
+            line = lines[0]
+            while len(line) > 0 and line[0] == '*':
+                line = line[1:]
+            line = line.strip()
+            desc = desc + " " + line
             del lines[0]
 
         desc = desc.strip()
@@ -860,9 +860,9 @@ class CParser:
             del lines[0]
         nbargs = len(args)
         while len(lines) > 0 and lines[0][0:3] == '* @':
-            l = lines[0][3:]
+            prefix = lines[0][3:]
             try:
-                arg, desc = l.split(':', 1)
+                arg, desc = prefix.split(':', 1)
                 desc = desc.strip()
                 arg = arg.strip()
             except:
@@ -872,15 +872,15 @@ class CParser:
                 del lines[0]
                 continue
             del lines[0]
-            l = lines[0].strip()
-            while len(l) > 2 and l[0:3] != '* @':
-                while l[0] == '*':
-                    l = l[1:]
-                desc = desc + ' ' + l.strip()
+            line = lines[0].strip()
+            while len(line) > 2 and line[0:3] != '* @':
+                while line[0] == '*':
+                    line = line[1:]
+                desc = desc + ' ' + line.strip()
                 del lines[0]
                 if len(lines) == 0:
                     break
-                l = lines[0]
+                line = lines[0]
             i = 0
             while i < nbargs:
                 if args[i][1] == arg:
@@ -895,35 +895,35 @@ class CParser:
             del lines[0]
         desc = None
         while len(lines) > 0:
-            l = lines[0]
+            line = lines[0]
             i = 0
             # Remove all leading '*', followed by at most one ' ' character
             # since we need to preserve correct indentation of code examples
-            while i < len(l) and l[i] == '*':
+            while i < len(line) and line[i] == '*':
                 i = i + 1
             if i > 0:
-                if i < len(l) and l[i] == ' ':
+                if i < len(line) and line[i] == ' ':
                     i = i + 1
-                l = l[i:]
-            if len(l) >= 6 and l[0:7] == "Returns":
+                line = line[i:]
+            if len(line) >= 6 and line[0:7] == "Returns":
                 try:
-                    l = l.split(' ', 1)[1]
+                    line = line.split(' ', 1)[1]
                 except:
-                    l = ""
-                retdesc = l.strip()
+                    line = ""
+                retdesc = line.strip()
                 del lines[0]
                 while len(lines) > 0:
-                    l = lines[0]
-                    while len(l) > 0 and l[0] == '*':
-                        l = l[1:]
-                    l = l.strip()
-                    retdesc = retdesc + " " + l
+                    line = lines[0]
+                    while len(line) > 0 and line[0] == '*':
+                        line = line[1:]
+                    line = line.strip()
+                    retdesc = retdesc + " " + line
                     del lines[0]
             else:
                 if desc is not None:
-                    desc = desc + "\n" + l
+                    desc = desc + "\n" + line
                 else:
-                    desc = l
+                    desc = line
                 del lines[0]
 
         if desc is None:
