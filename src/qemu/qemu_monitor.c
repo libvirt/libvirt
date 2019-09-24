@@ -3591,6 +3591,29 @@ qemuMonitorCPUDefsNew(size_t count)
 }
 
 
+qemuMonitorCPUDefsPtr
+qemuMonitorCPUDefsCopy(qemuMonitorCPUDefsPtr src)
+{
+    g_autoptr(qemuMonitorCPUDefs) defs = NULL;
+    size_t i;
+
+    if (!src)
+        return NULL;
+
+    defs = qemuMonitorCPUDefsNew(src->ncpus);
+    for (i = 0; i < src->ncpus; i++) {
+        qemuMonitorCPUDefInfoPtr cpuDst = defs->cpus + i;
+        qemuMonitorCPUDefInfoPtr cpuSrc = src->cpus + i;
+
+        cpuDst->usable = cpuSrc->usable;
+        cpuDst->name = g_strdup(cpuSrc->name);
+        cpuDst->blockers = g_strdupv(cpuSrc->blockers);
+    }
+
+    return g_steal_pointer(&defs);
+}
+
+
 int
 qemuMonitorGetCPUModelExpansion(qemuMonitorPtr mon,
                                 qemuMonitorCPUModelExpansionType type,

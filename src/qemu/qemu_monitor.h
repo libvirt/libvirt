@@ -1103,6 +1103,7 @@ struct _qemuMonitorCPUDefs {
 int qemuMonitorGetCPUDefinitions(qemuMonitorPtr mon,
                                  qemuMonitorCPUDefsPtr *cpuDefs);
 qemuMonitorCPUDefsPtr qemuMonitorCPUDefsNew(size_t count);
+qemuMonitorCPUDefsPtr qemuMonitorCPUDefsCopy(qemuMonitorCPUDefsPtr src);
 void qemuMonitorCPUDefsFree(qemuMonitorCPUDefsPtr defs);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuMonitorCPUDefs, qemuMonitorCPUDefsFree);
 
