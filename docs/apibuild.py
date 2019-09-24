@@ -665,7 +665,7 @@ class CParser:
         for line in lines:
             line = line.lstrip().lstrip('*').lstrip()
 
-            m = re.match('([_.a-zA-Z0-9]+):(.*)', line)
+            m = re.match(r'([_.a-zA-Z0-9]+):(.*)', line)
             if m:
                 item = m.group(1)
                 line = m.group(2).lstrip()
@@ -1333,7 +1333,7 @@ class CParser:
                     while token[0] != "sep" or (token[1] != ',' and
                           token[1] != '}'):
                         # We might be dealing with '1U << 12' here
-                        value = value + re.sub("^(\d+)U$", "\\1", token[1])
+                        value = value + re.sub(r"^(\d+)U$", "\\1", token[1])
                         token = self.token()
                 else:
                     try:
@@ -2108,7 +2108,7 @@ class docBuilder:
                 if valhex != "":
                     output.write(" value_hex='%s'" % (valhex))
 
-                m = re.match("\(?1<<(\d+)\)?", info[0])
+                m = re.match(r"\(?1<<(\d+)\)?", info[0])
                 if m:
                     output.write(" value_bitshift='%s'" % (m.group(1)))
 
