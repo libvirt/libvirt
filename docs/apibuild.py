@@ -252,7 +252,7 @@ class index:
         try:
             d = self.identifiers[name]
             d.update(header, module, type, lineno, info, extra, conditionals)
-        except:
+        except Exception:
             d = identifier(name, header, module, type, lineno, info, extra,
                            conditionals)
             self.identifiers[name] = d
@@ -276,7 +276,7 @@ class index:
         try:
             d = self.identifiers[name]
             d.update(header, module, type, lineno, info, extra, conditionals)
-        except:
+        except Exception:
             d = identifier(name, header, module, type, lineno, info, extra,
                            conditionals)
             self.identifiers[name] = d
@@ -784,7 +784,7 @@ class CParser:
                 arg, desc = prefix.split(':', 1)
                 desc = desc.strip()
                 arg = arg.strip()
-            except:
+            except Exception:
                 if not quiet:
                     self.warning("Misformatted macro comment for %s" % name)
                     self.warning("  problem with '%s'" % lines[0])
@@ -865,7 +865,7 @@ class CParser:
                 arg, desc = prefix.split(':', 1)
                 desc = desc.strip()
                 arg = arg.strip()
-            except:
+            except Exception:
                 if not quiet:
                     self.warning("Misformatted function comment for %s" % name)
                     self.warning("  problem with '%s'" % lines[0])
@@ -908,7 +908,7 @@ class CParser:
             if len(line) >= 6 and line[0:7] == "Returns":
                 try:
                     line = line.split(' ', 1)[1]
-                except:
+                except Exception:
                     line = ""
                 retdesc = line.strip()
                 del lines[0]
@@ -976,7 +976,7 @@ class CParser:
                     token = self.lexer.token()
                 try:
                     name = name.split('(') [0]
-                except:
+                except Exception:
                     pass
 
                 # skip hidden macros
@@ -1016,7 +1016,7 @@ class CParser:
                 self.defines.append(apstr)
                 if apstr.find('ENABLED') != -1:
                     self.conditionals.append("defined(%s)" % apstr)
-            except:
+            except Exception:
                 pass
         elif name == "#ifndef":
             apstr = self.lexer.tokens[0][1]
@@ -1024,7 +1024,7 @@ class CParser:
                 self.defines.append(apstr)
                 if apstr.find('ENABLED') != -1:
                     self.conditionals.append("!defined(%s)" % apstr)
-            except:
+            except Exception:
                 pass
         elif name == "#if":
             apstr = ""
@@ -1036,7 +1036,7 @@ class CParser:
                 self.defines.append(apstr)
                 if apstr.find('ENABLED') != -1:
                     self.conditionals.append(apstr)
-            except:
+            except Exception:
                 pass
         elif name == "#else":
             if self.conditionals != [] and \
@@ -1338,7 +1338,7 @@ class CParser:
                 else:
                     try:
                         value = "%d" % (int(value) + 1)
-                    except:
+                    except Exception:
                         self.warning("Failed to compute value of enum %s" % name)
                         value = ""
                 if token[0] == "sep" and token[1] == ",":
@@ -1797,7 +1797,7 @@ class CParser:
             try:
                 if not CParser.long_legacy_functions[name][0]:
                     raise Exception()
-            except:
+            except Exception:
                 self.error(("function '%s' is not allowed to return long, "
                             "use long long instead") % name)
 
@@ -1806,7 +1806,7 @@ class CParser:
                 try:
                     if param[1] not in CParser.long_legacy_functions[name][1]:
                         raise Exception()
-                except:
+                except Exception:
                     self.error(("function '%s' is not allowed to take long "
                                 "parameter '%s', use long long instead")
                                % (name, param[1]))
@@ -1826,7 +1826,7 @@ class CParser:
                 try:
                     if field[1] not in CParser.long_legacy_struct_fields[name]:
                         raise Exception()
-                except:
+                except Exception:
                     self.error(("struct '%s' is not allowed to contain long "
                                 "field '%s', use long long instead")
                                % (name, field[1]))
@@ -2101,7 +2101,7 @@ class docBuilder:
                 try:
                     val = eval(info[0])
                     valhex = hex(val)
-                except:
+                except Exception:
                     val = info[0]
                 output.write(" value='%s'" % (val))
 
@@ -2181,7 +2181,7 @@ class docBuilder:
                             self.serialize_union(output, field, desc)
                         else:
                             output.write("      <field name='%s' type='%s' info='%s'/>\n" % (field[1], field[0], desc))
-                except:
+                except Exception:
                     self.warning("Failed to serialize struct %s" % name)
                 output.write("    </struct>\n")
             else:
@@ -2196,7 +2196,7 @@ class docBuilder:
                     output.write("    </typedef>\n")
                 else:
                     output.write("/>\n")
-            except:
+            except Exception:
                 output.write("/>\n")
 
     def serialize_variable(self, output, name):
@@ -2251,7 +2251,7 @@ class docBuilder:
                 else:
                     output.write("      <arg name='%s' type='%s' info='%s'/>\n" % (param[1], param[0], escape(param[2])))
                     self.indexString(name, param[2])
-        except:
+        except Exception:
             print("Exception:", sys.exc_info()[1], file=sys.stderr)
             self.warning("Failed to save function %s info: %s" % (name, repr(id.info)))
         output.write("    </%s>\n" % (id.type))
@@ -2331,7 +2331,7 @@ class docBuilder:
                         funcs[param[0]].append(name)
                     else:
                         funcs[param[0]] = [name]
-            except:
+            except Exception:
                 pass
         typ = sorted(funcs.keys())
         for type in typ:
@@ -2359,7 +2359,7 @@ class docBuilder:
                     funcs[ret[0]].append(name)
                 else:
                     funcs[ret[0]] = [name]
-            except:
+            except Exception:
                 pass
         typ = sorted(funcs.keys())
         for type in typ:
