@@ -5574,8 +5574,8 @@ qemuMonitorJSONGetCPUDefinitions(qemuMonitorPtr mon,
                                  qemuMonitorCPUDefInfoPtr **cpus)
 {
     int ret = -1;
-    virJSONValuePtr cmd;
-    virJSONValuePtr reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
     virJSONValuePtr data;
     qemuMonitorCPUDefInfoPtr *cpulist = NULL;
     size_t n = 0;
@@ -5675,8 +5675,6 @@ qemuMonitorJSONGetCPUDefinitions(qemuMonitorPtr mon,
             qemuMonitorCPUDefInfoFree(cpulist[i]);
         VIR_FREE(cpulist);
     }
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
     return ret;
 }
 
