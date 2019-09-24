@@ -2401,6 +2401,7 @@ class docBuilder:
         count = 0
         chunk = 0
         chunks = []
+        first_letter = None
         for id in typ:
             if len(index[id]) > 30:
                 continue

@@ -407,7 +407,7 @@ def report_error(message):
 
 
 
-def parse_class(block):
+def parse_class(block, number):
     # expected format: class <name>
     header_items = block[0][1].split()
 
@@ -488,7 +488,7 @@ def main():
         if block is not None:
             if line == "end":
                 if block[0][1].startswith("class"):
-                    parse_class(block)
+                    parse_class(block, number)
 
                 block = None
             else:
