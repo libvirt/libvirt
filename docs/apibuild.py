@@ -553,17 +553,10 @@ class CLexer:
                     self.tokens.append(('name', line[s:i]))
                     continue
                 if line[i] in "(){}:;,[]":
-#                 if line[i] == '(' or line[i] == ')' or line[i] == '{' or \
-#                   line[i] == '}' or line[i] == ':' or line[i] == ';' or \
-#                   line[i] == ',' or line[i] == '[' or line[i] == ']':
                     self.tokens.append(('sep', line[i]))
                     i = i + 1
                     continue
                 if line[i] in "+-*><=/%&!|.":
-#                 if line[i] == '+' or line[i] == '-' or line[i] == '*' or \
-#                   line[i] == '>' or line[i] == '<' or line[i] == '=' or \
-#                   line[i] == '/' or line[i] == '%' or line[i] == '&' or \
-#                   line[i] == '!' or line[i] == '|' or line[i] == '.':
                     if line[i] == '.' and i + 2 < l and \
                        line[i+1] == '.' and line[i+2] == '.':
                         self.tokens.append(('name', '...'))
@@ -572,10 +565,6 @@ class CLexer:
 
                     j = i + 1
                     if j < l and line[j] in "+-*><=/%&!|":
-#                       line[j] == '+' or line[j] == '-' or line[j] == '*' or \
-#                       line[j] == '>' or line[j] == '<' or line[j] == '=' or \
-#                       line[j] == '/' or line[j] == '%' or line[j] == '&' or \
-#                       line[j] == '!' or line[j] == '|'):
                         self.tokens.append(('op', line[i:j+1]))
                         i = j + 1
                     else:
@@ -585,18 +574,6 @@ class CLexer:
                 s = i
                 while i < l:
                     if line[i] not in " \t(){}:;,+-*/%&!|[]=><":
-#                        line[i] != ' ' and line[i] != '\t' and
-#                        line[i] != '(' and line[i] != ')' and
-#                        line[i] != '{'  and line[i] != '}' and
-#                        line[i] != ':' and line[i] != ';' and
-#                        line[i] != ',' and line[i] != '+' and
-#                        line[i] != '-' and line[i] != '*' and
-#                        line[i] != '/' and line[i] != '%' and
-#                        line[i] != '&' and line[i] != '!' and
-#                        line[i] != '|' and line[i] != '[' and
-#                        line[i] != ']' and line[i] != '=' and
-#                        line[i] != '*' and line[i] != '>' and
-#                        line[i] != '<'):
                         i = i + 1
                     else:
                         break
