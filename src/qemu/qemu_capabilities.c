@@ -2446,18 +2446,17 @@ virQEMUCapsFetchCPUDefinitions(qemuMonitorPtr mon,
                                virArch arch,
                                virDomainCapsCPUModelsPtr *cpuModels)
 {
+    g_autoptr(qemuMonitorCPUDefs) defs = NULL;
     virDomainCapsCPUModelsPtr models = NULL;
-    qemuMonitorCPUDefInfoPtr *cpus = NULL;
-    int ncpus = 0;
     size_t i;
     int ret = -1;
 
     *cpuModels = NULL;
 
-    if ((ncpus = qemuMonitorGetCPUDefinitions(mon, &cpus)) < 0)
+    if (qemuMonitorGetCPUDefinitions(mon, &defs) < 0)
         return -1;
 
-    if (ncpus == 0) {
+    if (!defs) {
         ret = 0;
         goto cleanup;
     }
@@ -2472,29 +2471,29 @@ virQEMUCapsFetchCPUDefinitions(qemuMonitorPtr mon,
             goto cleanup;
 
         for (name = libvirtModels; name && *name; name++) {
-            for (i = 0; i < ncpus; i++) {
-                if (STRCASENEQ(cpus[i]->name, *name))
+            for (i = 0; i < defs->ncpus; i++) {
+                if (STRCASENEQ(defs->cpus[i]->name, *name))
                     continue;
 
-                VIR_FREE(cpus[i]->name);
-                cpus[i]->name = g_strdup(*name);
+                VIR_FREE(defs->cpus[i]->name);
+                defs->cpus[i]->name = g_strdup(*name);
             }
         }
     }
 
-    if (!(models = virDomainCapsCPUModelsNew(ncpus)))
+    if (!(models = virDomainCapsCPUModelsNew(defs->ncpus)))
         goto cleanup;
 
-    for (i = 0; i < ncpus; i++) {
+    for (i = 0; i < defs->ncpus; i++) {
         virDomainCapsCPUUsable usable = VIR_DOMCAPS_CPU_USABLE_UNKNOWN;
 
-        if (cpus[i]->usable == VIR_TRISTATE_BOOL_YES)
+        if (defs->cpus[i]->usable == VIR_TRISTATE_BOOL_YES)
             usable = VIR_DOMCAPS_CPU_USABLE_YES;
-        else if (cpus[i]->usable == VIR_TRISTATE_BOOL_NO)
+        else if (defs->cpus[i]->usable == VIR_TRISTATE_BOOL_NO)
             usable = VIR_DOMCAPS_CPU_USABLE_NO;
 
-        if (virDomainCapsCPUModelsAddSteal(models, &cpus[i]->name, usable,
-                                           &cpus[i]->blockers) < 0)
+        if (virDomainCapsCPUModelsAddSteal(models, &defs->cpus[i]->name, usable,
+                                           &defs->cpus[i]->blockers) < 0)
             goto cleanup;
     }
 
@@ -2502,9 +2501,6 @@ virQEMUCapsFetchCPUDefinitions(qemuMonitorPtr mon,
     ret = 0;
 
  cleanup:
-    for (i = 0; i < ncpus; i++)
-        qemuMonitorCPUDefInfoFree(cpus[i]);
-    VIR_FREE(cpus);
     virObjectUnref(models);
     return ret;
 }

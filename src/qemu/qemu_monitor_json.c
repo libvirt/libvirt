@@ -5571,56 +5571,53 @@ int qemuMonitorJSONGetMachines(qemuMonitorPtr mon,
 
 int
 qemuMonitorJSONGetCPUDefinitions(qemuMonitorPtr mon,
-                                 qemuMonitorCPUDefInfoPtr **cpus)
+                                 qemuMonitorCPUDefsPtr *cpuDefs)
 {
-    int ret = -1;
+    g_autoptr(qemuMonitorCPUDefs) defs = NULL;
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
     virJSONValuePtr data;
-    qemuMonitorCPUDefInfoPtr *cpulist = NULL;
-    size_t n = 0;
+    size_t ncpus;
     size_t i;
 
-    *cpus = NULL;
+    *cpuDefs = NULL;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("query-cpu-definitions", NULL)))
         return -1;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        goto cleanup;
+        return -1;
 
     /* Urgh, some QEMU architectures have the query-cpu-definitions
      * command, but return 'GenericError' with string "Not supported",
      * instead of simply omitting the command entirely :-(
      */
-    if (qemuMonitorJSONHasError(reply, "GenericError")) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (qemuMonitorJSONHasError(reply, "GenericError"))
+        return 0;
 
     if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_ARRAY) < 0)
-        goto cleanup;
+        return -1;
 
     data = virJSONValueObjectGetArray(reply, "return");
-    n = virJSONValueArraySize(data);
+    ncpus = virJSONValueArraySize(data);
 
-    if (VIR_ALLOC_N(cpulist, n) < 0)
-        goto cleanup;
+    if (!(defs = qemuMonitorCPUDefsNew(ncpus)))
+        return -1;
 
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < defs->ncpus; i++) {
         virJSONValuePtr child = virJSONValueArrayGet(data, i);
         const char *tmp;
         qemuMonitorCPUDefInfoPtr cpu;
 
         if (VIR_ALLOC(cpu) < 0)
-            goto cleanup;
+            return -1;
 
-        cpulist[i] = cpu;
+        defs->cpus[i] = cpu;
 
         if (!(tmp = virJSONValueObjectGetString(child, "name"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("query-cpu-definitions reply data was missing 'name'"));
-            goto cleanup;
+            return -1;
         }
 
         cpu->name = g_strdup(tmp);
@@ -5636,7 +5633,7 @@ qemuMonitorJSONGetCPUDefinitions(qemuMonitorPtr mon,
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("unavailable-features in query-cpu-definitions "
                                  "reply data was not an array"));
-                goto cleanup;
+                return -1;
             }
 
             len = virJSONValueArraySize(blockers);
@@ -5648,7 +5645,7 @@ qemuMonitorJSONGetCPUDefinitions(qemuMonitorPtr mon,
 
             cpu->usable = VIR_TRISTATE_BOOL_NO;
             if (VIR_ALLOC_N(cpu->blockers, len + 1) < 0)
-                goto cleanup;
+                return -1;
 
             for (j = 0; j < len; j++) {
                 virJSONValuePtr blocker = virJSONValueArrayGet(blockers, j);
@@ -5657,7 +5654,7 @@ qemuMonitorJSONGetCPUDefinitions(qemuMonitorPtr mon,
                     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("unexpected value in unavailable-features "
                                      "array"));
-                    goto cleanup;
+                    return -1;
                 }
 
                 cpu->blockers[j] = g_strdup(virJSONValueGetString(blocker));
@@ -5665,17 +5662,8 @@ qemuMonitorJSONGetCPUDefinitions(qemuMonitorPtr mon,
         }
     }
 
-    ret = n;
-    *cpus = cpulist;
-    cpulist = NULL;
-
- cleanup:
-    if (cpulist) {
-        for (i = 0; i < n; i++)
-            qemuMonitorCPUDefInfoFree(cpulist[i]);
-        VIR_FREE(cpulist);
-    }
-    return ret;
+    *cpuDefs = g_steal_pointer(&defs);
+    return 0;
 }
 
 

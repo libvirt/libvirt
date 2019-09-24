@@ -428,10 +428,7 @@ testQemuMonitorJSONGetCPUDefinitions(const void *opaque)
 {
     const testGenericData *data = opaque;
     virDomainXMLOptionPtr xmlopt = data->xmlopt;
-    int ret = -1;
-    qemuMonitorCPUDefInfoPtr *cpus = NULL;
-    int ncpus = 0;
-    size_t i;
+    g_autoptr(qemuMonitorCPUDefs) defs = NULL;
     g_autoptr(qemuMonitorTest) test = NULL;
 
     if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
@@ -453,31 +450,30 @@ testQemuMonitorJSONGetCPUDefinitions(const void *opaque)
                                "   } "
                                "  ]"
                                "}") < 0)
-        goto cleanup;
+        return -1;
 
-    if ((ncpus = qemuMonitorGetCPUDefinitions(qemuMonitorTestGetMonitor(test),
-                                              &cpus)) < 0)
-        goto cleanup;
+    if (qemuMonitorGetCPUDefinitions(qemuMonitorTestGetMonitor(test), &defs) < 0)
+        return -1;
 
-    if (ncpus != 3) {
+    if (defs->ncpus != 3) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "ncpus %d is not 3", ncpus);
-        goto cleanup;
+                       "ncpus %zu is not 3", defs->ncpus);
+        return -1;
     }
 
 #define CHECK_FULL(i, wantname, Usable) \
     do { \
-        if (STRNEQ(cpus[i]->name, (wantname))) { \
+        if (STRNEQ(defs->cpus[i]->name, (wantname))) { \
             virReportError(VIR_ERR_INTERNAL_ERROR, \
                            "name %s is not %s", \
-                           cpus[i]->name, (wantname)); \
-            goto cleanup; \
+                           defs->cpus[i]->name, (wantname)); \
+            return -1; \
         } \
-        if (cpus[i]->usable != (Usable)) { \
+        if (defs->cpus[i]->usable != (Usable)) { \
             virReportError(VIR_ERR_INTERNAL_ERROR, \
                            "%s: expecting usable flag %d, got %d", \
-                           cpus[i]->name, Usable, cpus[i]->usable); \
-            goto cleanup; \
+                           defs->cpus[i]->name, Usable, defs->cpus[i]->usable); \
+            return -1; \
         } \
     } while (0)
 
@@ -496,13 +492,7 @@ testQemuMonitorJSONGetCPUDefinitions(const void *opaque)
 #undef CHECK_USABLE
 #undef CHECK_FULL
 
-    ret = 0;
-
- cleanup:
-    for (i = 0; i < ncpus; i++)
-        qemuMonitorCPUDefInfoFree(cpus[i]);
-    VIR_FREE(cpus);
-    return ret;
+    return 0;
 }
 
 

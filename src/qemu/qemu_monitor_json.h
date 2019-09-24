@@ -379,7 +379,7 @@ int qemuMonitorJSONGetMachines(qemuMonitorPtr mon,
     ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorJSONGetCPUDefinitions(qemuMonitorPtr mon,
-                                     qemuMonitorCPUDefInfoPtr **cpus)
+                                     qemuMonitorCPUDefsPtr *cpuDefs)
     ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorJSONGetCPUModelExpansion(qemuMonitorPtr mon,

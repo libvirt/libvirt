@@ -3550,25 +3550,45 @@ qemuMonitorMachineInfoFree(qemuMonitorMachineInfoPtr machine)
 
 int
 qemuMonitorGetCPUDefinitions(qemuMonitorPtr mon,
-                             qemuMonitorCPUDefInfoPtr **cpus)
+                             qemuMonitorCPUDefsPtr *cpuDefs)
 {
-    VIR_DEBUG("cpus=%p", cpus);
+    VIR_DEBUG("cpuDefs=%p", cpuDefs);
 
     QEMU_CHECK_MONITOR(mon);
 
-    return qemuMonitorJSONGetCPUDefinitions(mon, cpus);
+    return qemuMonitorJSONGetCPUDefinitions(mon, cpuDefs);
 }
 
 
 void
-qemuMonitorCPUDefInfoFree(qemuMonitorCPUDefInfoPtr cpu)
+qemuMonitorCPUDefsFree(qemuMonitorCPUDefsPtr defs)
 {
-    if (!cpu)
+    size_t i;
+
+    if (!defs)
         return;
 
-    virStringListFree(cpu->blockers);
-    VIR_FREE(cpu->name);
-    VIR_FREE(cpu);
+    for (i = 0; i < defs->ncpus; i++) {
+        g_strfreev(defs->cpus[i]->blockers);
+        g_free(defs->cpus[i]->name);
+        g_free(defs->cpus[i]);
+    }
+
+    g_free(defs->cpus);
+    g_free(defs);
+}
+
+
+qemuMonitorCPUDefsPtr
+qemuMonitorCPUDefsNew(size_t count)
+{
+    g_autoptr(qemuMonitorCPUDefs) defs = NULL;
+
+    defs = g_new0(qemuMonitorCPUDefs, 1);
+    defs->cpus = g_new0(qemuMonitorCPUDefInfoPtr, count);
+    defs->ncpus = count;
+
+    return g_steal_pointer(&defs);
 }
 
 
