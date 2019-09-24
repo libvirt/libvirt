@@ -1155,7 +1155,8 @@ qemuMigrationSrcIsAllowed(virQEMUDriverPtr driver,
 
     /* following checks don't make sense for offline migration */
     if (!(flags & VIR_MIGRATE_OFFLINE)) {
-        if (qemuProcessAutoDestroyActive(driver, vm)) {
+        if (remote &&
+            qemuProcessAutoDestroyActive(driver, vm)) {
             virReportError(VIR_ERR_OPERATION_INVALID,
                            "%s", _("domain is marked for auto destroy"));
             return false;
