@@ -17314,12 +17314,6 @@ qemuDomainCheckpointCreateXML(virDomainPtr domain,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
-    if (qemuProcessAutoDestroyActive(driver, vm)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("domain is marked for auto destroy"));
-        goto cleanup;
-    }
-
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("cannot create checkpoint for inactive domain"));
