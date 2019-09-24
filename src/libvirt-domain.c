@@ -152,7 +152,8 @@ virDomainGetConnect(virDomainPtr dom)
  * object is finally released. This will also happen if the
  * client application crashes / loses its connection to the
  * libvirtd daemon. Any domains marked for auto destroy will
- * block attempts at migration, save-to-file, or snapshots.
+ * block attempts at migration. Hypervisors may also block save-to-file,
+ * or snapshots.
  *
  * virDomainFree should be used to free the resources after the
  * domain object is no longer needed.
@@ -217,7 +218,8 @@ virDomainCreateXML(virConnectPtr conn, const char *xmlDesc,
  * object is finally released. This will also happen if the
  * client application crashes / loses its connection to the
  * libvirtd daemon. Any domains marked for auto destroy will
- * block attempts at migration, save-to-file, or snapshots.
+ * block attempts at migration. Hypervisors may also block
+ * save-to-file, or snapshots.
  *
  * virDomainFree should be used to free the resources after the
  * domain object is no longer needed.
@@ -6565,7 +6567,8 @@ virDomainCreate(virDomainPtr domain)
  * object is finally released. This will also happen if the
  * client application crashes / loses its connection to the
  * libvirtd daemon. Any domains marked for auto destroy will
- * block attempts at migration, save-to-file, or snapshots.
+ * block attempts at migration. Hypervisors may also block save-to-file,
+ * or snapshots.
  *
  * If the VIR_DOMAIN_START_BYPASS_CACHE flag is set, and there is a
  * managed save file for this domain (created by virDomainManagedSave()),
