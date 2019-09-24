@@ -5,6 +5,7 @@ import sys
 import json
 import xmltodict
 
+
 def checkCPUIDFeature(cpuData, feature):
     eax_in = feature["eax_in"]
     ecx_in = feature["ecx_in"]

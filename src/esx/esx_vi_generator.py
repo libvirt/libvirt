@@ -29,7 +29,6 @@ import os
 import os.path
 
 
-
 OCCURRENCE__REQUIRED_ITEM = "r"
 OCCURRENCE__REQUIRED_LIST = "rl"
 OCCURRENCE__OPTIONAL_ITEM = "o"
@@ -47,10 +46,8 @@ autobind_names = set()
 separator = "/* " + ("* " * 37) + "*\n"
 
 
-
 def aligned(left, right, length=59):
     return left.ljust(length, ' ') + right
-
 
 
 class Member:
@@ -58,18 +55,14 @@ class Member:
         self.type = type
         self.occurrence = occurrence
 
-
     def is_enum(self):
         return self.type in predefined_enums or self.type in enums_by_name
-
 
     def is_object(self):
         return self.type in predefined_objects or self.type in objects_by_name
 
-
     def is_type_generated(self):
         return self.type in enums_by_name or self.type in objects_by_name
-
 
     def get_occurrence_comment(self):
         occurrence_map = {
@@ -84,8 +77,6 @@ class Member:
             raise ValueError("unknown occurrence value '%s'" % self.occurrence)
 
 
-
-
 class Parameter(Member):
     def __init__(self, type, name, occurrence):
         Member.__init__(self, type, occurrence)
@@ -95,7 +86,6 @@ class Parameter(Member):
         else:
             self.name = name
             self.autobind_name = None
-
 
     def generate_parameter(self, is_last=False, is_header=True, offset=0):
         if self.occurrence == OCCURRENCE__IGNORED:
@@ -118,7 +108,6 @@ class Parameter(Member):
 
             return aligned(string, self.get_occurrence_comment() + "\n")
 
-
     def generate_return(self, offset=0, end_of_line=";"):
         if self.occurrence == OCCURRENCE__IGNORED:
             raise ValueError("invalid function parameter occurrence value '%s'"
@@ -131,14 +120,12 @@ class Parameter(Member):
 
             return aligned(string, self.get_occurrence_comment() + "\n")
 
-
     def generate_require_code(self):
         if self.occurrence in [OCCURRENCE__REQUIRED_ITEM,
                                OCCURRENCE__REQUIRED_LIST]:
             return "    ESX_VI__METHOD__PARAMETER__REQUIRE(%s)\n" % self.name
         else:
             return ""
-
 
     def generate_serialize_code(self):
         if self.occurrence in [OCCURRENCE__REQUIRED_LIST,
@@ -151,7 +138,6 @@ class Parameter(Member):
         else:
             return "    ESX_VI__METHOD__PARAMETER__SERIALIZE(%s, %s)\n" \
                    % (self.type, self.name)
-
 
     def get_type_string(self, as_return_value=False):
         string = ""
@@ -173,7 +159,6 @@ class Parameter(Member):
 
         return string
 
-
     def get_occurrence_short_enum(self):
         if self.occurrence == OCCURRENCE__REQUIRED_ITEM:
             return "RequiredItem"
@@ -185,7 +170,6 @@ class Parameter(Member):
             return "OptionalList"
 
         raise ValueError("unknown occurrence value '%s'" % self.occurrence)
-
 
 
 class Method:
@@ -200,7 +184,6 @@ class Method:
                 self.parameters.append(parameter)
             else:
                 self.autobind_parameter = parameter
-
 
     def generate_header(self):
         header = "int esxVI_%s\n" % self.name
@@ -223,7 +206,6 @@ class Method:
         header += "\n"
 
         return header
-
 
     def generate_source(self):
         source = "/* esxVI_%s */\n" % self.name
@@ -288,13 +270,11 @@ class Method:
         return source
 
 
-
 class Property(Member):
     def __init__(self, type, name, occurrence):
         Member.__init__(self, type, occurrence)
 
         self.name = name
-
 
     def generate_struct_member(self):
         if self.occurrence == OCCURRENCE__IGNORED:
@@ -303,7 +283,6 @@ class Property(Member):
             string = "    %s%s; " % (self.get_type_string(), self.name)
 
             return aligned(string, self.get_occurrence_comment() + "\n")
-
 
     def generate_free_code(self):
         if self.type == "String" and \
@@ -319,7 +298,6 @@ class Property(Member):
             else:
                 return "    esxVI_%s_Free(&item->%s);\n" % (self.type, self.name)
 
-
     def generate_validate_code(self, managed=False):
         if managed:
             macro = "ESX_VI__TEMPLATE__PROPERTY__MANAGED_REQUIRE"
@@ -333,7 +311,6 @@ class Property(Member):
             return "    /* FIXME: %s is currently ignored */\n" % self.name
         else:
             return ""
-
 
     def generate_deep_copy_code(self):
         if self.occurrence == OCCURRENCE__IGNORED:
@@ -351,7 +328,6 @@ class Property(Member):
             return "    ESX_VI__TEMPLATE__PROPERTY__DEEP_COPY(%s, %s)\n" \
                    % (self.type, self.name)
 
-
     def generate_serialize_code(self):
         if self.occurrence == OCCURRENCE__IGNORED:
             return "    /* FIXME: %s is currently ignored */\n" % self.name
@@ -365,7 +341,6 @@ class Property(Member):
         else:
             return "    ESX_VI__TEMPLATE__PROPERTY__SERIALIZE(%s, %s)\n" \
                    % (self.type, self.name)
-
 
     def generate_deserialize_code(self):
         if self.occurrence == OCCURRENCE__IGNORED:
@@ -382,7 +357,6 @@ class Property(Member):
             return "    ESX_VI__TEMPLATE__PROPERTY__DESERIALIZE(%s, %s)\n" \
                    % (self.type, self.name)
 
-
     def generate_lookup_code(self):
         if self.occurrence == OCCURRENCE__IGNORED:
             return "    ESX_VI__TEMPLATE__PROPERTY__CAST_FROM_ANY_TYPE_IGNORE(%s) /* FIXME */\n" \
@@ -398,7 +372,6 @@ class Property(Member):
             return "    ESX_VI__TEMPLATE__PROPERTY__CAST_FROM_ANY_TYPE(%s, %s)\n" \
                    % (self.type, self.name)
 
-
     def get_type_string(self):
         if self.type == "String" and \
            self.occurrence not in [OCCURRENCE__REQUIRED_LIST,
@@ -410,28 +383,23 @@ class Property(Member):
             return "esxVI_%s *" % self.type
 
 
-
 class Type:
     def __init__(self, kind, name):
         self.kind = kind
         self.name = name
 
-
     def generate_typedef(self):
         return "typedef %s _esxVI_%s esxVI_%s;\n" \
                % (self.kind, self.name, self.name)
 
-
     def generate_typeenum(self):
         return "    esxVI_Type_%s,\n" % self.name
-
 
     def generate_typetostring(self):
         string = "          case esxVI_Type_%s:\n" % self.name
         string += "            return \"%s\";\n\n" % self.name
 
         return string
-
 
     def generate_typefromstring(self):
         string =  "           if (STREQ(type, \"%s\"))\n" % self.name
@@ -448,13 +416,11 @@ class GenericObject(Type):
     FEATURE__SERIALIZE    = (1 << 5)
     FEATURE__DESERIALIZE  = (1 << 6)
 
-
     def __init__(self, name, category, managed, generic_objects_by_name):
         Type.__init__(self, "struct", name)
         self.category = category
         self.managed = managed
         self.generic_objects_by_name = generic_objects_by_name
-
 
     def generate_comment(self):
         comment = separator
@@ -480,7 +446,6 @@ class GenericObject(Type):
 
         return comment
 
-
     def generate_struct_members(self, add_banner=False, struct_gap=False):
         members = ""
 
@@ -503,7 +468,6 @@ class GenericObject(Type):
 
         return members
 
-
     def generate_dispatch(self, suffix, is_first=True):
         source = ""
 
@@ -522,7 +486,6 @@ class GenericObject(Type):
                           .generate_dispatch(suffix, False)
 
         return source
-
 
     def generate_free_code(self, add_banner=False):
         source = ""
@@ -548,7 +511,6 @@ class GenericObject(Type):
                 source += string
 
         return source
-
 
     def generate_validate_code(self, add_banner=False):
         source = ""
@@ -576,7 +538,6 @@ class GenericObject(Type):
         return source
 
 
-
 class Object(GenericObject):
     def __init__(self, name, extends, properties, features=0, extended_by=None):
         GenericObject.__init__(self, name, 'VI Object', False, objects_by_name)
@@ -588,7 +549,6 @@ class Object(GenericObject):
 
         if self.extended_by is not None:
             self.extended_by.sort()
-
 
     def generate_dynamic_cast_code(self, is_first=True):
         source = ""
@@ -608,7 +568,6 @@ class Object(GenericObject):
                           .generate_dynamic_cast_code(False)
 
         return source
-
 
     def generate_deep_copy_code(self, add_banner=False):
         source = ""
@@ -635,7 +594,6 @@ class Object(GenericObject):
 
         return source
 
-
     def generate_serialize_code(self, add_banner=False):
         source = ""
 
@@ -654,7 +612,6 @@ class Object(GenericObject):
 
         return source
 
-
     def generate_deserialize_code(self, add_banner=False):
         source = ""
 
@@ -672,7 +629,6 @@ class Object(GenericObject):
                 source += property.generate_deserialize_code()
 
         return source
-
 
     def generate_header(self):
         header = self.generate_comment()
@@ -753,7 +709,6 @@ class Object(GenericObject):
         header += "\n\n\n"
 
         return header
-
 
     def generate_source(self):
         source = separator
@@ -916,7 +871,6 @@ class Object(GenericObject):
         return source
 
 
-
 class ManagedObject(GenericObject):
     def __init__(self, name, extends, properties, features=0, extended_by=None):
         GenericObject.__init__(self, name, 'VI Managed Object', True,
@@ -928,7 +882,6 @@ class ManagedObject(GenericObject):
 
         if self.extended_by is not None:
             self.extended_by.sort()
-
 
     def generate_lookup_code1(self, add_banner=False):
         source = ""
@@ -955,7 +908,6 @@ class ManagedObject(GenericObject):
 
         return source
 
-
     def generate_lookup_code2(self, add_banner=False):
         source = ""
 
@@ -980,7 +932,6 @@ class ManagedObject(GenericObject):
                 source += string
 
         return source
-
 
     def generate_header(self):
         header = self.generate_comment()
@@ -1017,7 +968,6 @@ class ManagedObject(GenericObject):
 
         return header
 
-
     def generate_helper_header(self):
         # functions
         return (
@@ -1029,7 +979,6 @@ class ManagedObject(GenericObject):
                                      " esxVI_Occurrence occurrence);\n\n"
             % {"name": self.name}
         )
-
 
     def generate_source(self):
         source = self.generate_comment()
@@ -1084,7 +1033,6 @@ class ManagedObject(GenericObject):
 
         return source
 
-
     def generate_helper_source(self):
         # lookup
         return (
@@ -1106,12 +1054,10 @@ class Enum(Type):
     FEATURE__SERIALIZE = (1 << 2)
     FEATURE__DESERIALIZE = (1 << 3)
 
-
     def __init__(self, name, values, features=0):
         Type.__init__(self, "enum", name)
         self.values = values
         self.features = features
-
 
     def generate_header(self):
         header = separator
@@ -1144,7 +1090,6 @@ class Enum(Type):
         header += "\n\n\n"
 
         return header
-
 
     def generate_source(self):
         source = separator
@@ -1183,16 +1128,13 @@ class Enum(Type):
         return source
 
 
-
 def report_error(message):
     print("error: " + message)
     sys.exit(1)
 
 
-
 def capitalize_first(string):
     return string[:1].upper() + string[1:]
-
 
 
 def parse_object(block):
@@ -1239,7 +1181,6 @@ def parse_object(block):
         return Object(name=name, extends=extends, properties=properties)
 
 
-
 def parse_enum(block):
     # expected format: enum <name>
     header_items = block[0][1].split()
@@ -1258,7 +1199,6 @@ def parse_enum(block):
         values.append(line[1])
 
     return Enum(name=name, values=values)
-
 
 
 def parse_method(block):
@@ -1298,14 +1238,12 @@ def parse_method(block):
     return Method(name=name, parameters=parameters, returns=returns)
 
 
-
 def is_known_type(type):
     return type in predefined_objects or \
            type in predefined_enums or \
            type in objects_by_name or \
            type in managed_objects_by_name or \
            type in enums_by_name
-
 
 
 def open_and_print(filename):
@@ -1315,7 +1253,6 @@ def open_and_print(filename):
         print("  GEN      " + filename)
 
     return open(filename, "wt")
-
 
 
 predefined_enums = ["Boolean"]
@@ -1386,7 +1323,6 @@ input_filename = os.path.join(sys.argv[1], "esx/esx_vi_generator.input")
 output_dirname = os.path.join(sys.argv[2], "esx")
 
 
-
 types_typedef = open_and_print(os.path.join(output_dirname, "esx_vi_types.generated.typedef"))
 types_typeenum = open_and_print(os.path.join(output_dirname, "esx_vi_types.generated.typeenum"))
 types_typetostring = open_and_print(os.path.join(output_dirname, "esx_vi_types.generated.typetostring"))
@@ -1400,14 +1336,12 @@ helpers_header = open_and_print(os.path.join(output_dirname, "esx_vi.generated.h
 helpers_source = open_and_print(os.path.join(output_dirname, "esx_vi.generated.c"))
 
 
-
 number = 0
 objects_by_name = {}
 managed_objects_by_name = {}
 enums_by_name = {}
 methods_by_name = {}
 block = None
-
 
 
 # parse input file
@@ -1449,7 +1383,6 @@ for line in open(input_filename, "rt").readlines():
             block.append((number, line))
 
 
-
 for method in methods_by_name.values():
     # method parameter types must be serializable
     for parameter in method.parameters:
@@ -1489,7 +1422,6 @@ for method in methods_by_name.values():
                 objects_by_name[method.returns.type].features |= Object.FEATURE__LIST
 
 
-
 for enum in enums_by_name.values():
     # apply additional features
     if enum.name in additional_enum_features:
@@ -1497,7 +1429,6 @@ for enum in enums_by_name.values():
 
         if additional_enum_features[enum.name] & Enum.FEATURE__ANY_TYPE:
             enum.features |= Enum.FEATURE__DESERIALIZE
-
 
 
 for obj in objects_by_name.values():
@@ -1551,14 +1482,12 @@ for obj in objects_by_name.values():
             extended_obj.extended_by.sort()
 
 
-
 for obj in objects_by_name.values():
     # if an object is a candidate (it is used directly as parameter or return
     # type or is a member of another object) and it is extended by another
     # object then this type needs the dynamic cast feature
     if obj.candidate_for_dynamic_cast and obj.extended_by:
         obj.features |= Object.FEATURE__DYNAMIC_CAST
-
 
 
 def propagate_feature(obj, feature):
@@ -1590,7 +1519,6 @@ def propagate_feature(obj, feature):
                 propagate_feature(objects_by_name[property.type], feature)
 
 
-
 def inherit_features(obj):
     global features_have_changed
 
@@ -1614,7 +1542,6 @@ def inherit_features(obj):
             inherit_features(objects_by_name[extended_by])
 
 
-
 # there are two directions to spread features:
 # 1) up and down the inheritance chain
 # 2) from object types to their member property types
@@ -1632,7 +1559,6 @@ while features_have_changed:
 
     for obj in objects_by_name.values():
         inherit_features(obj)
-
 
 
 for obj in managed_objects_by_name.values():
@@ -1658,7 +1584,6 @@ for obj in managed_objects_by_name.values():
             extended_obj.extended_by.sort()
 
 
-
 notice = "/* Generated by esx_vi_generator.py */\n\n\n\n"
 
 types_typedef.write(notice)
@@ -1672,7 +1597,6 @@ methods_source.write(notice)
 methods_macro.write(notice)
 helpers_header.write(notice)
 helpers_source.write(notice)
-
 
 
 # output enums
@@ -1689,7 +1613,6 @@ for name in names:
     types_typefromstring.write(enums_by_name[name].generate_typefromstring())
     types_header.write(enums_by_name[name].generate_header())
     types_source.write(enums_by_name[name].generate_source())
-
 
 
 # output objects
@@ -1712,7 +1635,6 @@ for name in names:
     types_source.write(objects_by_name[name].generate_source())
 
 
-
 # output managed objects
 types_typedef.write("\n\n\n" +
                     separator +
@@ -1733,7 +1655,6 @@ for name in names:
     types_source.write(managed_objects_by_name[name].generate_source())
 
 
-
 # output methods
 names = sorted(methods_by_name.keys())
 
@@ -1750,7 +1671,6 @@ for name in names:
     string += aligned("", "%s)\n\n\n\n" % name, 49)
 
     methods_macro.write(string)
-
 
 
 # output helpers

@@ -30,6 +30,7 @@ separator = "/*" + ("*" * 50) + "*\n"
 wmi_version_separator = "/"
 wmi_classes_by_name = {}
 
+
 class WmiClass:
     """Represents WMI class and provides methods to generate C code.
 
@@ -48,7 +49,6 @@ class WmiClass:
         self.name = name
         self.versions = versions if versions else list()
         self.common = None
-
 
     def prepare(self):
         """Prepares the class for code generation
@@ -72,7 +72,6 @@ class WmiClass:
         # finally, identify common members in all versions and make sure they
         # are in the same order - to ensure C struct member alignment
         self._align_property_members()
-
 
     def generate_classes_header(self):
         """Generate C header code and return it as string
@@ -101,7 +100,6 @@ class WmiClass:
         header += self._declare_hypervObject_struct()
 
         return header
-
 
     def generate_classes_source(self):
         """Returns a C code string defining wsman data structs
@@ -132,12 +130,10 @@ class WmiClass:
             source += '    { "", "", 0 },\n' # null terminated
             source += '};\n\n'
 
-
         source += self._define_WmiInfo_struct()
         source += "\n\n"
 
         return source
-
 
     def generate_classes_typedef(self):
         """Returns C string for typdefs"""
@@ -151,8 +147,6 @@ class WmiClass:
             typedef += "typedef struct _%s_Data %s_Data;\n" % (cls.name, cls.name)
 
         return typedef
-
-
 
     def _declare_data_structs(self):
         """Returns string C code declaring data structs.
@@ -184,7 +178,6 @@ class WmiClass:
 
         return header
 
-
     def _declare_hypervObject_struct(self):
         """Return string for C code declaring hypervObject instance"""
 
@@ -210,7 +203,6 @@ class WmiClass:
         header += "\n\n\n"
 
         return header
-
 
     def _define_WmiInfo_struct(self):
         """Return string for C code defining *_WmiInfo struct
@@ -240,7 +232,6 @@ class WmiClass:
         source += "};\n"
 
         return source
-
 
     def _align_property_members(self):
         """Identifies common properties in all class versions.
@@ -308,7 +299,6 @@ class WmiClass:
             self.common.append(x[0])
 
 
-
 class ClassUriInfo:
     """Prepares URI information needed for wsman requests."""
 
@@ -328,7 +318,6 @@ class ClassUriInfo:
         self.resourceUri = "%s/%s" % (baseUri, wmi_name)
 
 
-
 class WmiClassVersion:
     """Represents specific version of WMI class."""
 
@@ -337,7 +326,6 @@ class WmiClassVersion:
         self.version = version
         self.properties = properties
         self.uri_info = uri_info
-
 
 
 class Property:
@@ -359,7 +347,6 @@ class Property:
         "uint64": "UINT64"
     }
 
-
     def __init__(self, type, name, is_array):
         if type not in Property.typemap:
             report_error("unhandled property type %s" % type)
@@ -368,14 +355,12 @@ class Property:
         self.name = name
         self.is_array = is_array
 
-
     def generate_classes_header(self):
         if self.is_array:
             return "    XML_TYPE_DYN_ARRAY %s;\n" % self.name
         else:
             return "    XML_TYPE_%s %s;\n" \
                    % (Property.typemap[self.type], self.name)
-
 
     def generate_classes_source(self, class_name):
         if self.is_array:
@@ -385,10 +370,8 @@ class Property:
             return "    SER_NS_%s(%s_RESOURCE_URI, \"%s\", 1),\n" \
                    % (Property.typemap[self.type], class_name.upper(), self.name)
 
-
     def generate_typemap(self):
         return '    { "%s", "%s", %s },\n' % (self.name, self.type.lower(), str(self.is_array).lower())
-
 
 
 def open_and_print(filename):
@@ -400,11 +383,9 @@ def open_and_print(filename):
     return open(filename, "wt")
 
 
-
 def report_error(message):
     print("error: " + message)
     sys.exit(1)
-
 
 
 def parse_class(block, number):
@@ -450,7 +431,6 @@ def parse_class(block, number):
         wmi_classes_by_name[wmi_name].versions.append(cls)
     else:
         wmi_classes_by_name[wmi_name] = WmiClass(wmi_name, [cls])
-
 
 
 def main():
@@ -510,7 +490,6 @@ def main():
         classes_typedef.write(cls.generate_classes_typedef())
         classes_header.write(cls.generate_classes_header())
         classes_source.write(cls.generate_classes_source())
-
 
 
 if __name__ == "__main__":

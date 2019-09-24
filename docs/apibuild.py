@@ -123,6 +123,7 @@ hidden_macros = {
   "VIR_EXPORT_VAR": "internal macro to mark exported vars",
 }
 
+
 def escape(raw):
     raw = raw.replace('&', '&amp;')
     raw = raw.replace('<', '&lt;')
@@ -131,8 +132,10 @@ def escape(raw):
     raw = raw.replace('"', '&quot;')
     return raw
 
+
 def uniq(items):
     return sorted(set(items))
+
 
 class identifier:
     def __init__(self, name, header=None, module=None, type=None, lineno=0,
@@ -167,21 +170,27 @@ class identifier:
             r = r + " " + repr(self.conditionals)
         return r
 
-
     def set_header(self, header):
         self.header = header
+
     def set_module(self, module):
         self.module = module
+
     def set_type(self, type):
         self.type = type
+
     def set_info(self, info):
         self.info = info
+
     def set_extra(self, extra):
         self.extra = extra
+
     def set_lineno(self, lineno):
         self.lineno = lineno
+
     def set_static(self, static):
         self.static = static
+
     def set_conditionals(self, conditionals):
         if conditionals is None or len(conditionals) == 0:
             self.conditionals = None
@@ -190,20 +199,28 @@ class identifier:
 
     def get_name(self):
         return self.name
+
     def get_header(self):
         return self.module
+
     def get_module(self):
         return self.module
+
     def get_type(self):
         return self.type
+
     def get_info(self):
         return self.info
+
     def get_lineno(self):
         return self.lineno
+
     def get_extra(self):
         return self.extra
+
     def get_static(self):
         return self.static
+
     def get_conditionals(self):
         return self.conditionals
 
@@ -224,6 +241,7 @@ class identifier:
             self.set_extra(extra)
         if conditionals is not None:
             self.set_conditionals(conditionals)
+
 
 class index:
     def __init__(self, name="noname"):
@@ -409,7 +427,6 @@ class index:
         elif count != 0:
             print("  %d public %s" % (count, type))
 
-
     def analyze(self):
         if not quiet:
             self.analyze_dict("functions", self.functions)
@@ -418,6 +435,7 @@ class index:
             self.analyze_dict("unions", self.unions)
             self.analyze_dict("typedefs", self.typedefs)
             self.analyze_dict("macros", self.macros)
+
 
 class CLexer:
     """A lexer for the C language, tokenize the input by reading and
@@ -584,6 +602,7 @@ class CLexer:
         self.last = tok
         return tok
 
+
 class CParser:
     """The C module parser"""
     def __init__(self, filename, idx=None):
@@ -745,6 +764,7 @@ class CParser:
                          % name)
 
         return desc
+
     #
     # Parse a comment block associate to a macro
     #
@@ -944,7 +964,6 @@ class CParser:
                 self.warning("Function comment for %s lacks description of return value" % name)
             if desc == "":
                 self.warning("Function comment for %s lacks description of the function" % name)
-
 
         return (ret[0], retdesc), args, desc
 
@@ -1433,7 +1452,6 @@ class CParser:
             # Then an optional comment
             if token[0] == "comment":
                 token = self.token()
-
 
         if token[0] == "sep" and token[1] == ';':
             token = self.token()

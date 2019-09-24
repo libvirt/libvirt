@@ -24,6 +24,7 @@ import sys
 
 COLUMNS = 80
 
+
 def reformat_with_indent(text, initial_indent, indent):
 
     res = ""
