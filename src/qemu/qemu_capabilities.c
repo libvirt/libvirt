@@ -3464,15 +3464,10 @@ virQEMUCapsLoadCPUModels(virQEMUCapsPtr qemuCaps,
                          virDomainVirtType type)
 {
     virDomainCapsCPUModelsPtr cpus = NULL;
-    xmlNodePtr *nodes = NULL;
-    char *str = NULL;
+    g_autofree xmlNodePtr * nodes = NULL;
     size_t i;
     int n;
-    int ret = -1;
     xmlNodePtr node;
-    xmlNodePtr *blockerNodes = NULL;
-    char **blockers = NULL;
-    int nblockers;
 
     if (type == VIR_DOMAIN_VIRT_KVM)
         n = virXPathNodeSet("./cpu[@type='kvm']", ctxt, &nodes);
@@ -3482,16 +3477,14 @@ virQEMUCapsLoadCPUModels(virQEMUCapsPtr qemuCaps,
     if (n < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to parse qemu capabilities cpus"));
-        goto cleanup;
+        return -1;
     }
 
-    if (n == 0) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (n == 0)
+        return 0;
 
     if (!(cpus = virDomainCapsCPUModelsNew(n)))
-        goto cleanup;
+        return -1;
 
     if (type == VIR_DOMAIN_VIRT_KVM)
         qemuCaps->kvmCPUModels = cpus;
@@ -3500,19 +3493,24 @@ virQEMUCapsLoadCPUModels(virQEMUCapsPtr qemuCaps,
 
     for (i = 0; i < n; i++) {
         int usable = VIR_DOMCAPS_CPU_USABLE_UNKNOWN;
+        g_autofree char * strUsable = NULL;
+        g_autofree char * name = NULL;
+        g_autofree xmlNodePtr * blockerNodes = NULL;
+        VIR_AUTOSTRINGLIST blockers = NULL;
+        int nblockers;
 
-        if ((str = virXMLPropString(nodes[i], "usable")) &&
-            (usable = virDomainCapsCPUUsableTypeFromString(str)) < 0) {
+        if ((strUsable = virXMLPropString(nodes[i], "usable")) &&
+            (usable = virDomainCapsCPUUsableTypeFromString(strUsable)) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unknown value '%s' in attribute 'usable'"), str);
-            goto cleanup;
+                           _("unknown value '%s' in attribute 'usable'"),
+                           strUsable);
+            return -1;
         }
-        VIR_FREE(str);
 
-        if (!(str = virXMLPropString(nodes[i], "name"))) {
+        if (!(name = virXMLPropString(nodes[i], "name"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("missing cpu name in QEMU capabilities cache"));
-            goto cleanup;
+            return -1;
         }
 
         node = ctxt->node;
@@ -3523,38 +3521,30 @@ virQEMUCapsLoadCPUModels(virQEMUCapsPtr qemuCaps,
         if (nblockers < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to parse CPU blockers in QEMU capabilities"));
-            goto cleanup;
+            return -1;
         }
 
         if (nblockers > 0) {
             size_t j;
 
             if (VIR_ALLOC_N(blockers, nblockers + 1) < 0)
-                goto cleanup;
+                return -1;
 
             for (j = 0; j < nblockers; j++) {
                 if (!(blockers[j] = virXMLPropString(blockerNodes[j], "name"))) {
                     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("missing blocker name in QEMU "
                                      "capabilities cache"));
-                    goto cleanup;
+                    return -1;
                 }
             }
-            VIR_FREE(blockerNodes);
         }
 
-        if (virDomainCapsCPUModelsAddSteal(cpus, &str, usable, &blockers) < 0)
-            goto cleanup;
+        if (virDomainCapsCPUModelsAddSteal(cpus, &name, usable, &blockers) < 0)
+            return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(nodes);
-    VIR_FREE(str);
-    VIR_FREE(blockerNodes);
-    virStringListFree(blockers);
-    return ret;
+    return 0;
 }
 
 
