@@ -882,11 +882,28 @@ sc_require_enum_last_marker:
 	  { echo '$(ME): enum impl needs _LAST marker on second line' 1>&2; \
 	    exit 1; } || :
 
-# In Python files we don't want to end lines with a semicolon like in C
+# Validate many python style rules
+FLAKE8_INDENTATION = E114,E115,E116,E121,E125,E126,E127,E128,E129,E131
+FLAKE8_WHITESPACE = E211,E221,E222,E225,E226,E231,E261
+FLAKE8_BLANK_LINES = E301,E302,E303,E305
+FLAKE8_LINE_LENGTH = E501
+FLAKE8_STATEMENTS = E722,E741
+FLAKE8_ERRORS = F821
+FLAKE8_WARNINGS = W504,W605
+
+FLAKE8_IGNORE = $(FLAKE8_INDENTATION),$\
+		$(FLAKE8_WHITESPACE),$\
+		$(FLAKE8_BLANK_LINES),$\
+		$(FLAKE8_LINE_LENGTH),$\
+		$(FLAKE8_STATEMENTS),$\
+		$(FLAKE8_ERRORS),$\
+		$(FLAKE8_WARNINGS) \
+		$(NULL)
+
 sc_flake8:
 	@if [ -n "$(FLAKE8)" ]; then \
 		$(VC_LIST_EXCEPT) | $(GREP) '\.py$$' | xargs \
-			$(FLAKE8) --select E703 --show-source; \
+			$(FLAKE8) --ignore $(FLAKE8_IGNORE) --show-source; \
 	else \
 		echo '$(ME): skipping test $@: flake8 not installed' 1>&2; \
 	fi
