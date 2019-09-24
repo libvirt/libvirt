@@ -1238,10 +1238,10 @@ get_files(vahControl * ctl)
              * directory, log, and PID files.
              */
             virBufferAsprintf(&buf,
-                "  \"%s/lib/libvirt/swtpm/%s/%s/**\" rw,\n",
+                "  \"%s/lib/libvirt/swtpm/%s/%s/**\" rwk,\n",
                 LOCALSTATEDIR, uuidstr, tpmpath);
             virBufferAsprintf(&buf,
-                "  \"%s/log/swtpm/libvirt/qemu/%s-swtpm.log\" a,\n",
+                "  \"%s/log/swtpm/libvirt/qemu/%s-swtpm.log\" w,\n",
                 LOCALSTATEDIR, ctl->def->name);
             virBufferAsprintf(&buf,
                 "  \"%s/libvirt/qemu/swtpm/%s-swtpm.pid\" rw,\n",
