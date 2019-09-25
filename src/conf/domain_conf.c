@@ -15504,11 +15504,13 @@ virDomainVideoDefParseXML(virDomainXMLOptionPtr xmlopt,
     }
 
     if (driver_name) {
-        if ((def->backend = virDomainVideoBackendTypeFromString(driver_name)) < 0) {
+        int backend;
+        if ((backend = virDomainVideoBackendTypeFromString(driver_name)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown video driver '%s'"), driver_name);
             goto error;
         }
+        def->backend = backend;
     } else {
         def->backend = VIR_DOMAIN_VIDEO_BACKEND_TYPE_DEFAULT;
     }

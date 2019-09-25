@@ -1378,7 +1378,7 @@ struct _virDomainWatchdogDef {
 
 /* the backend driver used for virtio interfaces */
 typedef enum {
-    VIR_DOMAIN_VIDEO_BACKEND_TYPE_DEFAULT,
+    VIR_DOMAIN_VIDEO_BACKEND_TYPE_DEFAULT = 0,
     VIR_DOMAIN_VIDEO_BACKEND_TYPE_QEMU,
     VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER,
 
