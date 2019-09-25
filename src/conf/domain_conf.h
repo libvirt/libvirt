@@ -3174,6 +3174,7 @@ virDomainNetDefPtr virDomainNetFind(virDomainDefPtr def, const char *device);
 virDomainNetDefPtr virDomainNetFindByName(virDomainDefPtr def, const char *ifname);
 bool virDomainHasNet(virDomainDefPtr def, virDomainNetDefPtr net);
 int virDomainNetInsert(virDomainDefPtr def, virDomainNetDefPtr net);
+int virDomainNetUpdate(virDomainDefPtr def, size_t netidx, virDomainNetDefPtr newnet);
 virDomainNetDefPtr virDomainNetRemove(virDomainDefPtr def, size_t i);
 void virDomainNetRemoveHostdev(virDomainDefPtr def, virDomainNetDefPtr net);
 

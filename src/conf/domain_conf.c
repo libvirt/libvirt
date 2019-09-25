@@ -17169,6 +17169,47 @@ virDomainNetRemove(virDomainDefPtr def, size_t i)
     return net;
 }
 
+
+int
+virDomainNetUpdate(virDomainDefPtr def,
+                   size_t netidx,
+                   virDomainNetDefPtr newnet)
+{
+    size_t hostdevidx;
+    virDomainNetDefPtr oldnet = def->nets[netidx];
+    virDomainHostdevDefPtr oldhostdev = virDomainNetGetActualHostdev(oldnet);
+    virDomainHostdevDefPtr newhostdev = virDomainNetGetActualHostdev(newnet);
+
+    /*
+     * if newnet or oldnet has a valid hostdev*, we need to update the
+     * hostdevs list
+     */
+    if (oldhostdev) {
+        for (hostdevidx = 0; hostdevidx < def->nhostdevs; hostdevidx++) {
+            if (def->hostdevs[hostdevidx] == oldhostdev)
+                break;
+        }
+    }
+
+    if (oldhostdev && hostdevidx < def->nhostdevs) {
+        if (newhostdev) {
+            /* update existing entry in def->hostdevs */
+            def->hostdevs[hostdevidx] = newhostdev;
+        } else {
+            /* delete oldhostdev from def->hostdevs */
+            virDomainHostdevRemove(def, hostdevidx);
+        }
+    } else if (newhostdev) {
+        /* add newhostdev to end of def->hostdevs */
+        if (VIR_APPEND_ELEMENT(def->hostdevs, def->nhostdevs, newhostdev) < 0)
+            return -1;
+    }
+
+    def->nets[netidx] = newnet;
+    return 0;
+}
+
+
 int virDomainControllerInsert(virDomainDefPtr def,
                               virDomainControllerDefPtr controller)
 {

@@ -508,6 +508,7 @@ virDomainNetSetModelString;
 virDomainNetTypeFromString;
 virDomainNetTypeSharesHostView;
 virDomainNetTypeToString;
+virDomainNetUpdate;
 virDomainNostateReasonTypeFromString;
 virDomainNostateReasonTypeToString;
 virDomainObjAssignDef;
