@@ -498,7 +498,7 @@ qemuMonitorJSONHasError(virJSONValuePtr reply,
  *
  * Returns 0 on success and -1 on error.
  */
-int
+static int
 qemuMonitorJSONTransactionAdd(virJSONValuePtr actions,
                               const char *cmdname,
                               ...)

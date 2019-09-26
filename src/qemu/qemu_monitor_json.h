@@ -28,10 +28,6 @@
 #include "cpu/cpu.h"
 #include "util/virgic.h"
 
-int qemuMonitorJSONTransactionAdd(virJSONValuePtr actions,
-                                  const char *cmdname,
-                                  ...);
-
 int qemuMonitorJSONIOProcessLine(qemuMonitorPtr mon,
                                  const char *line,
                                  qemuMonitorMessagePtr msg);
