@@ -23,7 +23,6 @@
 #include "qemu_checkpoint.h"
 #include "qemu_capabilities.h"
 #include "qemu_monitor.h"
-#include "qemu_monitor_json.h"
 #include "qemu_domain.h"
 
 #include "virerror.h"
@@ -307,12 +306,7 @@ qemuCheckpointAddActions(virDomainObjPtr vm,
         if (disk->type != VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP)
             continue;
         node = qemuDomainDiskNodeFormatLookup(vm, disk->name);
-        if (qemuMonitorJSONTransactionAdd(actions,
-                                          "block-dirty-bitmap-add",
-                                          "s:node", node,
-                                          "s:name", disk->bitmap,
-                                          "b:persistent", true,
-                                          NULL) < 0)
+        if (qemuMonitorTransactionBitmapAdd(actions, node, disk->bitmap, true, false) < 0)
             return -1;
 
         /* We only want one active bitmap for a disk along the
@@ -335,11 +329,7 @@ qemuCheckpointAddActions(virDomainObjPtr vm,
                 if (STRNEQ(disk->name, disk2->name) ||
                     disk2->type != VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP)
                     continue;
-                if (qemuMonitorJSONTransactionAdd(actions,
-                                                  "block-dirty-bitmap-disable",
-                                                  "s:node", node,
-                                                  "s:name", disk2->bitmap,
-                                                  NULL) < 0)
+                if (qemuMonitorTransactionBitmapDisable(actions, node, disk2->bitmap) < 0)
                     return -1;
                 search_parents = false;
                 break;
