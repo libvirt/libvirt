@@ -612,6 +612,9 @@ int virQEMUCapsGetMachineMaxCpus(virQEMUCapsPtr qemuCaps,
 bool virQEMUCapsGetMachineHotplugCpus(virQEMUCapsPtr qemuCaps,
                                       virDomainVirtType virtType,
                                       const char *name);
+const char *virQEMUCapsGetMachineDefaultCPU(virQEMUCapsPtr qemuCaps,
+                                            const char *name,
+                                            virDomainVirtType type);
 
 void virQEMUCapsFilterByMachineType(virQEMUCapsPtr qemuCaps,
                                     virDomainVirtType virtType,
