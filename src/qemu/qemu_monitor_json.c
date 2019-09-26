@@ -9100,6 +9100,41 @@ qemuMonitorJSONTransactionBitmapMerge(virJSONValuePtr actions,
 }
 
 
+int
+qemuMonitorJSONTransactionSnapshotLegacy(virJSONValuePtr actions,
+                                         const char *device,
+                                         const char *path,
+                                         const char *format,
+                                         bool existing)
+{
+    const char *mode = NULL;
+
+    if (existing)
+        mode = "existing";
+
+    return qemuMonitorJSONTransactionAdd(actions,
+                                         "blockdev-snapshot-sync",
+                                         "s:device", device,
+                                         "s:snapshot-file", path,
+                                         "s:format", format,
+                                         "S:mode", mode,
+                                         NULL);
+}
+
+
+int
+qemuMonitorJSONTransactionSnapshotBlockdev(virJSONValuePtr actions,
+                                           const char *node,
+                                           const char *overlay)
+{
+    return qemuMonitorJSONTransactionAdd(actions,
+                                         "blockdev-snapshot",
+                                         "s:node", node,
+                                         "s:overlay", overlay,
+                                         NULL);
+}
+
+
 static qemuMonitorJobInfoPtr
 qemuMonitorJSONGetJobInfoOne(virJSONValuePtr data)
 {

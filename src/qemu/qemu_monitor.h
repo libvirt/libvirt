@@ -1361,3 +1361,14 @@ qemuMonitorTransactionBitmapMerge(virJSONValuePtr actions,
                                   const char *node,
                                   const char *target,
                                   virJSONValuePtr *sources);
+
+int
+qemuMonitorTransactionSnapshotLegacy(virJSONValuePtr actions,
+                                     const char *device,
+                                     const char *path,
+                                     const char *format,
+                                     bool existing);
+int
+qemuMonitorTransactionSnapshotBlockdev(virJSONValuePtr actions,
+                                       const char *node,
+                                       const char *overlay);
