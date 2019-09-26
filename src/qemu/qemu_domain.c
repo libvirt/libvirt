@@ -15513,3 +15513,24 @@ qemuDomainDefHasManagedPR(virDomainObjPtr vm)
 
     return jobPR;
 }
+
+
+/**
+ * qemuDomainSupportsCheckpointsBlockjobs:
+ * @vm: domain object
+ *
+ * Checks whether a block job is supported in possible combination with
+ * checkpoints (qcow2 bitmaps). Returns -1 if unsupported and reports an error
+ * 0 in case everything is supported.
+ */
+int
+qemuDomainSupportsCheckpointsBlockjobs(virDomainObjPtr vm)
+{
+    if (virDomainListCheckpoints(vm->checkpoints, NULL, NULL, NULL, 0) > 0) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("cannot perform block operations while checkpoint exists"));
+        return -1;
+    }
+
+    return 0;
+}

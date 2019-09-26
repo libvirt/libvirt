@@ -1217,3 +1217,7 @@ qemuDomainPausedReasonToSuspendedEvent(virDomainPausedReason reason);
 int
 qemuDomainValidateActualNetDef(const virDomainNetDef *net,
                                virQEMUCapsPtr qemuCaps);
+
+int
+qemuDomainSupportsCheckpointsBlockjobs(virDomainObjPtr vm)
+    ATTRIBUTE_RETURN_CHECK;

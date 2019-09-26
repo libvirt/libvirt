@@ -15836,11 +15836,8 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     if (virDomainSnapshotCreateXMLEnsureACL(domain->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    if (virDomainListCheckpoints(vm->checkpoints, NULL, domain, NULL, 0) > 0) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("cannot create snapshot while checkpoint exists"));
+    if (qemuDomainSupportsCheckpointsBlockjobs(vm) < 0)
         goto cleanup;
-    }
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
@@ -18364,11 +18361,8 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
     if (virDomainBlockRebaseEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (virDomainListCheckpoints(vm->checkpoints, NULL, dom, NULL, 0) > 0) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("cannot perform block rebase while checkpoint exists"));
+    if (qemuDomainSupportsCheckpointsBlockjobs(vm) < 0)
         goto cleanup;
-    }
 
     /* For normal rebase (enhanced blockpull), the common code handles
      * everything, including vm cleanup. */
@@ -18454,11 +18448,8 @@ qemuDomainBlockCopy(virDomainPtr dom, const char *disk, const char *destxml,
     if (virDomainBlockCopyEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (virDomainListCheckpoints(vm->checkpoints, NULL, dom, NULL, 0) > 0) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("cannot perform block copy while checkpoint exists"));
+    if (qemuDomainSupportsCheckpointsBlockjobs(vm) < 0)
         goto cleanup;
-    }
 
     for (i = 0; i < nparams; i++) {
         virTypedParameterPtr param = &params[i];
@@ -18522,11 +18513,8 @@ qemuDomainBlockPull(virDomainPtr dom, const char *path, unsigned long bandwidth,
     if (virDomainBlockPullEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (virDomainListCheckpoints(vm->checkpoints, NULL, dom, NULL, 0) > 0) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("cannot perform block pull while checkpoint exists"));
+    if (qemuDomainSupportsCheckpointsBlockjobs(vm) < 0)
         goto cleanup;
-    }
 
     ret = qemuDomainBlockPullCommon(vm, path, NULL, bandwidth, flags);
 
@@ -18581,11 +18569,8 @@ qemuDomainBlockCommit(virDomainPtr dom,
     if (virDomainBlockCommitEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (virDomainListCheckpoints(vm->checkpoints, NULL, dom, NULL, 0) > 0) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("cannot perform block commit while checkpoint exists"));
+    if (qemuDomainSupportsCheckpointsBlockjobs(vm) < 0)
         goto cleanup;
-    }
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
