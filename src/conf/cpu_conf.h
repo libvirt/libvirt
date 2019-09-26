@@ -151,6 +151,7 @@ virCPUDefFreeModel(virCPUDefPtr def);
 
 void
 virCPUDefFree(virCPUDefPtr def);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCPUDef, virCPUDefFree);
 
 int ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
 virCPUDefCopyModel(virCPUDefPtr dst,
