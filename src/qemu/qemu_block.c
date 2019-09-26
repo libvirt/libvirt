@@ -22,7 +22,6 @@
 #include "qemu_command.h"
 #include "qemu_domain.h"
 #include "qemu_alias.h"
-#include "qemu_monitor_json.h"
 
 #include "viralloc.h"
 #include "virstring.h"
@@ -1880,15 +1879,7 @@ qemuBlockSnapshotAddLegacy(virJSONValuePtr actions,
     if (qemuGetDriveSourceString(newsrc, NULL, &source) < 0)
         return -1;
 
-    if (qemuMonitorJSONTransactionAdd(actions, "blockdev-snapshot-sync",
-                                      "s:device", device,
-                                      "s:snapshot-file", source,
-                                      "s:format", format,
-                                      "S:mode", reuse ? "existing" : NULL,
-                                      NULL) < 0)
-        return -1;
-
-    return 0;
+    return qemuMonitorTransactionSnapshotLegacy(actions, device, source, format, reuse);
 }
 
 
@@ -1897,13 +1888,9 @@ qemuBlockSnapshotAddBlockdev(virJSONValuePtr actions,
                              virDomainDiskDefPtr disk,
                              virStorageSourcePtr newsrc)
 {
-    if (qemuMonitorJSONTransactionAdd(actions, "blockdev-snapshot",
-                                      "s:node", disk->src->nodeformat,
-                                      "s:overlay", newsrc->nodeformat,
-                                      NULL) < 0)
-        return -1;
-
-    return 0;
+    return qemuMonitorTransactionSnapshotBlockdev(actions,
+                                                  disk->src->nodeformat,
+                                                  newsrc->nodeformat);
 }
 
 
