@@ -17929,14 +17929,14 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
 /* bandwidth in MiB/s per public API. Caller must lock vm beforehand,
  * and not access it afterwards.  */
 static int
-qemuDomainBlockPullCommon(virQEMUDriverPtr driver,
-                          virDomainObjPtr vm,
+qemuDomainBlockPullCommon(virDomainObjPtr vm,
                           const char *path,
                           const char *base,
                           unsigned long bandwidth,
                           unsigned int flags)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverPtr driver = priv->driver;
     const char *device = NULL;
     const char *jobname = NULL;
     virDomainDiskDefPtr disk;
@@ -18750,7 +18750,6 @@ static int
 qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
                       unsigned long bandwidth, unsigned int flags)
 {
-    virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     int ret = -1;
     unsigned long long speed = bandwidth;
@@ -18779,7 +18778,7 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
     /* For normal rebase (enhanced blockpull), the common code handles
      * everything, including vm cleanup. */
     if (!(flags & VIR_DOMAIN_BLOCK_REBASE_COPY))
-        return qemuDomainBlockPullCommon(driver, vm, path, base, bandwidth, flags);
+        return qemuDomainBlockPullCommon(vm, path, base, bandwidth, flags);
 
     /* If we got here, we are doing a block copy rebase. */
     if (!(dest = virStorageSourceNew()))
@@ -18935,8 +18934,7 @@ qemuDomainBlockPull(virDomainPtr dom, const char *path, unsigned long bandwidth,
         return -1;
     }
 
-    return qemuDomainBlockPullCommon(dom->conn->privateData,
-                                     vm, path, NULL, bandwidth, flags);
+    return qemuDomainBlockPullCommon(vm, path, NULL, bandwidth, flags);
 }
 
 
