@@ -200,21 +200,10 @@ netcfConnectOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_ERROR;
     }
 
-    if (driver->privileged) {
-        if (STRNEQ(conn->uri->path, "/system")) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected interface URI path '%s', try interface:///system"),
-                           conn->uri->path);
-            return VIR_DRV_OPEN_ERROR;
-        }
-    } else {
-        if (STRNEQ(conn->uri->path, "/session")) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected interface URI path '%s', try interface:///session"),
-                           conn->uri->path);
-            return VIR_DRV_OPEN_ERROR;
-        }
-    }
+    if (!virConnectValidateURIPath(conn->uri->path,
+                                   "interface",
+                                   driver->privileged))
+        return VIR_DRV_OPEN_ERROR;
 
     if (virConnectOpenEnsureACL(conn) < 0)
         return VIR_DRV_OPEN_ERROR;
