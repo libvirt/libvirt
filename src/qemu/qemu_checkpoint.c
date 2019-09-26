@@ -364,9 +364,9 @@ qemuCheckpointCreateXML(virDomainPtr domain,
     bool redefine = flags & VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE;
     unsigned int parse_flags = 0;
     virDomainMomentObjPtr other = NULL;
-    virQEMUDriverConfigPtr cfg = NULL;
-    virCapsPtr caps = NULL;
-    virJSONValuePtr actions = NULL;
+    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = NULL;
+    VIR_AUTOUNREF(virCapsPtr) caps = NULL;
+    VIR_AUTOPTR(virJSONValue) actions = NULL;
     int ret;
     VIR_AUTOUNREF(virDomainCheckpointDefPtr) def = NULL;
 
@@ -381,32 +381,32 @@ qemuCheckpointCreateXML(virDomainPtr domain,
     if (virDomainSnapshotObjListNum(vm->snapshots, NULL, 0) > 0) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("cannot create checkpoint while snapshot exists"));
-        goto cleanup;
+        return NULL;
     }
 
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BITMAP_MERGE)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("qemu binary lacks persistent bitmaps support"));
-        goto cleanup;
+        return NULL;
     }
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
+        return NULL;
 
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("cannot create checkpoint for inactive domain"));
-        goto cleanup;
+        return NULL;
     }
 
     if (!(def = virDomainCheckpointDefParseString(xmlDesc, caps, driver->xmlopt,
                                                   priv->qemuCaps, parse_flags)))
-        goto cleanup;
+        return NULL;
     /* Unlike snapshots, the RNG schema already ensured a sane filename. */
 
     /* We are going to modify the domain below. */
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
-        goto cleanup;
+        return NULL;
 
     if (redefine) {
         if (virDomainCheckpointRedefinePrep(vm, &def, &chk,
@@ -485,10 +485,6 @@ qemuCheckpointCreateXML(virDomainPtr domain,
 
     qemuDomainObjEndJob(driver, vm);
 
- cleanup:
-    virJSONValueFree(actions);
-    virObjectUnref(caps);
-    virObjectUnref(cfg);
     return checkpoint;
 }
 
