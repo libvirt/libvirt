@@ -130,11 +130,14 @@ qemuCheckpointDiscard(virQEMUDriverPtr driver,
 
     if (!metadata_only) {
         qemuDomainObjPrivatePtr priv = vm->privateData;
-        bool success = true;
         bool search_parents;
         virDomainCheckpointDefPtr chkdef = virDomainCheckpointObjGetDef(chk);
+        int rc;
+        g_autoptr(virJSONValue) actions = NULL;
 
-        qemuDomainObjEnterMonitor(driver, vm);
+        if (!(actions = virJSONValueNewArray()))
+            return -1;
+
         parent = virDomainCheckpointFindByName(vm->checkpoints,
                                                chk->def->parent_name);
         for (i = 0; i < chkdef->ndisks; i++) {
@@ -164,31 +167,29 @@ qemuCheckpointDiscard(virQEMUDriverPtr driver,
                         continue;
                     search_parents = false;
 
-                    arr = virJSONValueNewArray();
-                    if (!arr ||
-                        virJSONValueArrayAppendString(arr, disk->bitmap) < 0) {
-                        success = false;
-                        break;
+                    if (!(arr = virJSONValueNewArray()))
+                        return -1;
+
+                    if (virJSONValueArrayAppendString(arr, disk->bitmap) < 0)
+                        return -1;
+
+                    if (chk == virDomainCheckpointGetCurrent(vm->checkpoints)) {
+                        if (qemuMonitorTransactionBitmapEnable(actions, node, disk2->bitmap) < 0)
+                            return -1;
                     }
-                    if (chk == virDomainCheckpointGetCurrent(vm->checkpoints) &&
-                        qemuMonitorEnableBitmap(priv->mon, node,
-                                                disk2->bitmap) < 0) {
-                        success = false;
-                        break;
-                    }
-                    if (qemuMonitorMergeBitmaps(priv->mon, node,
-                                                disk2->bitmap, &arr) < 0) {
-                        success = false;
-                        break;
-                    }
+
+                    if (qemuMonitorTransactionBitmapMerge(actions, node, disk2->bitmap, &arr) < 0)
+                        return -1;
                 }
             }
-            if (qemuMonitorDeleteBitmap(priv->mon, node, disk->bitmap) < 0) {
-                success = false;
-                break;
-            }
+
+            if (qemuMonitorTransactionBitmapRemove(actions, node, disk->bitmap) < 0)
+                return -1;
         }
-        if (qemuDomainObjExitMonitor(driver, vm) < 0 || !success)
+
+        qemuDomainObjEnterMonitor(driver, vm);
+        rc = qemuMonitorTransaction(priv->mon, &actions);
+        if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
             return -1;
     }
 
