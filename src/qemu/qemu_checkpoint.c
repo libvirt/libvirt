@@ -377,12 +377,6 @@ qemuCheckpointCreateXML(virDomainPtr domain,
         update_current = false;
     }
 
-    if (virDomainSnapshotObjListNum(vm->snapshots, NULL, 0) > 0) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("cannot create checkpoint while snapshot exists"));
-        return NULL;
-    }
-
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_INCREMENTAL_BACKUP)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("incremental backup is not supported yet"));
