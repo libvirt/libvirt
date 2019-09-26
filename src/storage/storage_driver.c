@@ -411,21 +411,10 @@ storageConnectOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_ERROR;
     }
 
-    if (driver->privileged) {
-        if (STRNEQ(conn->uri->path, "/system")) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected storage URI path '%s', try storage:///system"),
-                           conn->uri->path);
-            return VIR_DRV_OPEN_ERROR;
-        }
-    } else {
-        if (STRNEQ(conn->uri->path, "/session")) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected storage URI path '%s', try storage:///session"),
-                           conn->uri->path);
-            return VIR_DRV_OPEN_ERROR;
-        }
-    }
+    if (!virConnectValidateURIPath(conn->uri->path,
+                                   "storage",
+                                   driver->privileged))
+        return VIR_DRV_OPEN_ERROR;
 
     if (virConnectOpenEnsureACL(conn) < 0)
         return VIR_DRV_OPEN_ERROR;
