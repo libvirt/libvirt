@@ -1344,6 +1344,7 @@ virStreamClass;
 
 
 # driver.h
+virConnectValidateURIPath;
 virGetConnectInterface;
 virGetConnectNetwork;
 virGetConnectNodeDev;

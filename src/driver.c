@@ -269,3 +269,29 @@ virSetConnectStorage(virConnectPtr conn)
     VIR_DEBUG("Override storage connection with %p", conn);
     return virThreadLocalSet(&connectStorage, conn);
 }
+
+bool
+virConnectValidateURIPath(const char *uriPath,
+                          const char *entityName,
+                          bool privileged)
+{
+    if (privileged) {
+        if (STRNEQ(uriPath, "/system")) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unexpected %s URI path '%s', try "
+                             "%s:///system"),
+                           entityName, uriPath, entityName);
+            return false;
+        }
+    } else {
+        if (STRNEQ(uriPath, "/session")) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unexpected %s URI path '%s', try "
+                             "%s:///session"),
+                           entityName, uriPath, entityName);
+            return false;
+        }
+    }
+
+    return true;
+}

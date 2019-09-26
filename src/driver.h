@@ -127,3 +127,7 @@ int virSetConnectNWFilter(virConnectPtr conn);
 int virSetConnectNodeDev(virConnectPtr conn);
 int virSetConnectSecret(virConnectPtr conn);
 int virSetConnectStorage(virConnectPtr conn);
+
+bool virConnectValidateURIPath(const char *uriPath,
+                               const char *entityName,
+                               bool privileged);
