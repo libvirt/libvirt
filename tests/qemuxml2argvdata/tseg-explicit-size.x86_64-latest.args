@@ -14,6 +14,7 @@ QEMU_AUDIO_DRV=none \
 file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -machine pc-q35-2.10,accel=tcg,usb=off,smm=on,dump-guest-core=off \
 -global mch.extended-tseg-mbytes=48 \
+-cpu qemu64 \
 -m 214 \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \

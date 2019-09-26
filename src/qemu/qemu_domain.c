@@ -4430,6 +4430,64 @@ qemuDomainDefVcpusPostParse(virDomainDefPtr def)
 
 
 static int
+qemuDomainDefSetDefaultCPU(virDomainDefPtr def,
+                           virQEMUCapsPtr qemuCaps)
+{
+    const char *model;
+
+    if (def->cpu &&
+        (def->cpu->mode != VIR_CPU_MODE_CUSTOM ||
+         def->cpu->model))
+        return 0;
+
+    /* Default CPU model info from QEMU is usable for TCG only except for
+     * x86, s390, and ppc64. */
+    if (!ARCH_IS_X86(def->os.arch) &&
+        !ARCH_IS_S390(def->os.arch) &&
+        !ARCH_IS_PPC64(def->os.arch) &&
+        def->virtType != VIR_DOMAIN_VIRT_QEMU)
+        return 0;
+
+    model = virQEMUCapsGetMachineDefaultCPU(qemuCaps, def->os.machine, def->virtType);
+    if (!model) {
+        VIR_DEBUG("Unknown default CPU model for domain '%s'", def->name);
+        return 0;
+    }
+
+    if (STREQ(model, "host") && def->virtType != VIR_DOMAIN_VIRT_KVM) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("QEMU reports invalid default CPU model \"host\" "
+                         "for non-kvm domain virt type"));
+        return -1;
+    }
+
+    VIR_DEBUG("Setting default CPU model for domain '%s' to %s",
+              def->name, model);
+
+    if (!def->cpu)
+        def->cpu = g_new0(virCPUDef, 1);
+
+    /* We need to turn off all CPU checks when the domain is started because
+     * the default CPU (e.g., qemu64) may not be runnable on any host. QEMU
+     * will just disable the unavailable features and we will update the CPU
+     * definition accordingly and set check to FULL when starting the domain. */
+    def->cpu->type = VIR_CPU_TYPE_GUEST;
+    def->cpu->check = VIR_CPU_CHECK_NONE;
+
+    if (STREQ(model, "host")) {
+        def->cpu->mode = VIR_CPU_MODE_HOST_PASSTHROUGH;
+    } else {
+        def->cpu->mode = VIR_CPU_MODE_CUSTOM;
+        def->cpu->match = VIR_CPU_MATCH_EXACT;
+        def->cpu->fallback = VIR_CPU_FALLBACK_FORBID;
+        def->cpu->model = g_strdup(model);
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDefCPUPostParse(virDomainDefPtr def)
 {
     virCPUFeatureDefPtr sveFeature = NULL;
@@ -4637,6 +4695,9 @@ qemuDomainDefPostParse(virDomainDefPtr def,
         return -1;
 
     if (qemuCanonicalizeMachine(def, qemuCaps) < 0)
+        return -1;
+
+    if (qemuDomainDefSetDefaultCPU(def, qemuCaps) < 0)
         return -1;
 
     qemuDomainDefEnableDefaultFeatures(def, qemuCaps);

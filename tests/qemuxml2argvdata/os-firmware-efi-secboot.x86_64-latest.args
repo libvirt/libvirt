@@ -13,6 +13,7 @@ QEMU_AUDIO_DRV=none \
 -object secret,id=masterKey0,format=raw,\
 file=/tmp/lib/domain--1-fedora/master-key.aes \
 -machine pc-q35-4.0,accel=kvm,usb=off,smm=on,dump-guest-core=off \
+-cpu qemu64 \
 -global driver=cfi.pflash01,property=secure,value=on \
 -drive file=/usr/share/OVMF/OVMF_CODE.secboot.fd,if=pflash,format=raw,unit=0,\
 readonly=on \
