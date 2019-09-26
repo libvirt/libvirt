@@ -371,7 +371,6 @@ qemuCheckpointCreateXML(virDomainPtr domain,
     VIR_AUTOUNREF(virDomainCheckpointDefPtr) def = NULL;
 
     virCheckFlags(VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE, NULL);
-    /* TODO: VIR_DOMAIN_CHECKPOINT_CREATE_QUIESCE */
 
     if (redefine) {
         parse_flags |= VIR_DOMAIN_CHECKPOINT_PARSE_REDEFINE;
@@ -571,8 +570,6 @@ qemuCheckpointDelete(virDomainObjPtr vm,
         return -1;
 
     if (!metadata_only) {
-        /* Until qemu-img supports offline bitmap deletion, we are stuck
-         * with requiring a running guest */
         if (!virDomainObjIsActive(vm)) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("cannot delete checkpoint for inactive domain"));
