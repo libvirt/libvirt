@@ -632,3 +632,27 @@ int qemuMonitorJSONMergeBitmaps(qemuMonitorPtr mon,
 int qemuMonitorJSONDeleteBitmap(qemuMonitorPtr mon,
                                 const char *node,
                                 const char *bitmap);
+
+int
+qemuMonitorJSONTransactionBitmapAdd(virJSONValuePtr actions,
+                                    const char *node,
+                                    const char *name,
+                                    bool persistent,
+                                    bool disabled);
+int
+qemuMonitorJSONTransactionBitmapRemove(virJSONValuePtr actions,
+                                       const char *node,
+                                       const char *name);
+int
+qemuMonitorJSONTransactionBitmapEnable(virJSONValuePtr actions,
+                                       const char *node,
+                                       const char *name);
+int
+qemuMonitorJSONTransactionBitmapDisable(virJSONValuePtr actions,
+                                        const char *node,
+                                        const char *name);
+int
+qemuMonitorJSONTransactionBitmapMerge(virJSONValuePtr actions,
+                                      const char *node,
+                                      const char *target,
+                                      virJSONValuePtr *sources);

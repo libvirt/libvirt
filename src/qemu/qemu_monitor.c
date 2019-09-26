@@ -4491,3 +4491,51 @@ qemuMonitorGetJobInfo(qemuMonitorPtr mon,
 
     return qemuMonitorJSONGetJobInfo(mon, jobs, njobs);
 }
+
+
+int
+qemuMonitorTransactionBitmapAdd(virJSONValuePtr actions,
+                                const char *node,
+                                const char *name,
+                                bool persistent,
+                                bool disabled)
+{
+    return qemuMonitorJSONTransactionBitmapAdd(actions, node, name, persistent, disabled);
+}
+
+
+int
+qemuMonitorTransactionBitmapRemove(virJSONValuePtr actions,
+                                   const char *node,
+                                   const char *name)
+{
+    return qemuMonitorJSONTransactionBitmapRemove(actions, node, name);
+}
+
+
+int
+qemuMonitorTransactionBitmapEnable(virJSONValuePtr actions,
+                                   const char *node,
+                                   const char *name)
+{
+    return qemuMonitorJSONTransactionBitmapEnable(actions, node, name);
+}
+
+
+int
+qemuMonitorTransactionBitmapDisable(virJSONValuePtr actions,
+                                    const char *node,
+                                    const char *name)
+{
+    return qemuMonitorJSONTransactionBitmapDisable(actions, node, name);
+}
+
+
+int
+qemuMonitorTransactionBitmapMerge(virJSONValuePtr actions,
+                                  const char *node,
+                                  const char *target,
+                                  virJSONValuePtr *sources)
+{
+    return qemuMonitorJSONTransactionBitmapMerge(actions, node, target, sources);
+}

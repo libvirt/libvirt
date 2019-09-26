@@ -1337,3 +1337,27 @@ VIR_DEFINE_AUTOPTR_FUNC(qemuMonitorJobInfo, qemuMonitorJobInfoFree);
 int qemuMonitorGetJobInfo(qemuMonitorPtr mon,
                           qemuMonitorJobInfoPtr **jobs,
                           size_t *njobs);
+
+int
+qemuMonitorTransactionBitmapAdd(virJSONValuePtr actions,
+                                const char *node,
+                                const char *name,
+                                bool persistent,
+                                bool disabled);
+int
+qemuMonitorTransactionBitmapRemove(virJSONValuePtr actions,
+                                   const char *node,
+                                   const char *name);
+int
+qemuMonitorTransactionBitmapEnable(virJSONValuePtr actions,
+                                   const char *node,
+                                   const char *name);
+int
+qemuMonitorTransactionBitmapDisable(virJSONValuePtr actions,
+                                    const char *node,
+                                    const char *name);
+int
+qemuMonitorTransactionBitmapMerge(virJSONValuePtr actions,
+                                  const char *node,
+                                  const char *target,
+                                  virJSONValuePtr *sources);
