@@ -938,21 +938,10 @@ networkConnectOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_ERROR;
     }
 
-    if (network_driver->privileged) {
-        if (STRNEQ(conn->uri->path, "/system")) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected network URI path '%s', try network:///system"),
-                           conn->uri->path);
-            return VIR_DRV_OPEN_ERROR;
-        }
-    } else {
-        if (STRNEQ(conn->uri->path, "/session")) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected network URI path '%s', try network:///session"),
-                           conn->uri->path);
-            return VIR_DRV_OPEN_ERROR;
-        }
-    }
+    if (!virConnectValidateURIPath(conn->uri->path,
+                                   "network",
+                                   network_driver->privileged))
+        return VIR_DRV_OPEN_ERROR;
 
     if (virConnectOpenEnsureACL(conn) < 0)
         return VIR_DRV_OPEN_ERROR;
