@@ -4613,54 +4613,50 @@ qemuDomainDefPostParse(virDomainDefPtr def,
                        void *parseOpaque)
 {
     virQEMUDriverPtr driver = opaque;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     /* Note that qemuCaps may be NULL when this function is called. This
      * function shall not fail in that case. It will be re-run on VM startup
      * with the capabilities populated. */
     virQEMUCapsPtr qemuCaps = parseOpaque;
-    int ret = -1;
 
     if (def->os.bootloader || def->os.bootloaderArgs) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("bootloader is not supported by QEMU"));
-        goto cleanup;
+        return -1;
     }
 
     if (!def->os.machine) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("missing machine type"));
-        goto cleanup;
+        return -1;
     }
 
     qemuDomainNVRAMPathGenerate(cfg, def);
 
     if (qemuDomainDefAddDefaultDevices(def, qemuCaps) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuCanonicalizeMachine(def, qemuCaps) < 0)
-        goto cleanup;
+        return -1;
 
     qemuDomainDefEnableDefaultFeatures(def, qemuCaps);
 
     if (qemuDomainRecheckInternalPaths(def, cfg, parseFlags) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuSecurityVerify(driver->securityManager, def) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuDomainDefVcpusPostParse(def) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuDomainDefCPUPostParse(def) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuDomainDefTsegPostParse(def, qemuCaps) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    virObjectUnref(cfg);
-    return ret;
+    return 0;
 }
 
 
