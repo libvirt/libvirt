@@ -194,10 +194,14 @@ virCgroupV2DetectMounts(virCgroupPtr group,
 static int
 virCgroupV2DetectPlacement(virCgroupPtr group,
                            const char *path,
-                           const char *controllers ATTRIBUTE_UNUSED,
+                           const char *controllers,
                            const char *selfpath)
 {
     if (group->unified.placement)
+        return 0;
+
+    /* controllers == "" indicates the cgroupv2 controller path */
+    if (STRNEQ(controllers, ""))
         return 0;
 
     /*
