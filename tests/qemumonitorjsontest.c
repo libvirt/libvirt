@@ -3005,6 +3005,44 @@ testQueryJobs(const void *opaque)
 
 
 static int
+testQemuMonitorJSONTransaction(const void *opaque)
+{
+    const testGenericData *data = opaque;
+    VIR_AUTOPTR(qemuMonitorTest) test = NULL;
+    VIR_AUTOPTR(virJSONValue) actions = NULL;
+    VIR_AUTOPTR(virJSONValue) mergebitmaps = NULL;
+
+    if (!(test = qemuMonitorTestNewSchema(data->xmlopt, data->schema)))
+        return -1;
+
+    if (!(actions = virJSONValueNewArray()) ||
+        !(mergebitmaps = virJSONValueNewArray()))
+        return -1;
+
+    if (virJSONValueArrayAppendString(mergebitmaps, "mergemap1") < 0 ||
+        virJSONValueArrayAppendString(mergebitmaps, "mergemap2") < 0)
+        return -1;
+
+    if (qemuMonitorTransactionBitmapAdd(actions, "node1", "bitmap1", true, true) < 0 ||
+        qemuMonitorTransactionBitmapRemove(actions, "node2", "bitmap2") < 0 ||
+        qemuMonitorTransactionBitmapEnable(actions, "node3", "bitmap3") < 0 ||
+        qemuMonitorTransactionBitmapDisable(actions, "node4", "bitmap4") < 0 ||
+        qemuMonitorTransactionBitmapMerge(actions, "node5", "bitmap5", &mergebitmaps) < 0 ||
+        qemuMonitorTransactionSnapshotLegacy(actions, "dev6", "path", "qcow2", true) < 0 ||
+        qemuMonitorTransactionSnapshotBlockdev(actions, "node7", "overlay7") < 0)
+        return -1;
+
+    if (qemuMonitorTestAddItem(test, "transaction", "{\"return\":{}}") < 0)
+        return -1;
+
+    if (qemuMonitorJSONTransaction(qemuMonitorTestGetMonitor(test), &actions) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -3095,6 +3133,7 @@ mymain(void)
     DO_TEST(CPU);
     DO_TEST(GetNonExistingCPUData);
     DO_TEST(GetIOThreads);
+    DO_TEST(Transaction);
     DO_TEST_SIMPLE("qmp_capabilities", qemuMonitorJSONSetCapabilities);
     DO_TEST_SIMPLE("system_powerdown", qemuMonitorJSONSystemPowerdown);
     DO_TEST_SIMPLE("system_reset", qemuMonitorJSONSystemReset);
