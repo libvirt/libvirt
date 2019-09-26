@@ -2853,6 +2853,7 @@ virDomainVideoDefClear(virDomainVideoDefPtr def)
     if (def->driver)
         VIR_FREE(def->driver->vhost_user_binary);
     VIR_FREE(def->driver);
+    virObjectUnref(def->privateData);
 
     memset(def, 0, sizeof(*def));
 }
@@ -2864,7 +2865,6 @@ void virDomainVideoDefFree(virDomainVideoDefPtr def)
         return;
 
     virDomainVideoDefClear(def);
-    virObjectUnref(def->privateData);
     VIR_FREE(def);
 }
 
