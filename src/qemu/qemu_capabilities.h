@@ -522,6 +522,9 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_DEVICE_VHOST_USER_GPU, /* -device vhost-user-gpu */
     QEMU_CAPS_DEVICE_VHOST_USER_VGA, /* -device vhost-user-vga */
 
+    /* 340 */
+    QEMU_CAPS_INCREMENTAL_BACKUP, /* incremental backup is supported */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 

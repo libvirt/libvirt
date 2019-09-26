@@ -540,6 +540,9 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "dbus-vmstate",
               "vhost-user-gpu",
               "vhost-user-vga",
+
+              /* 340 */
+              "incremental-backup",
     );
 
 
