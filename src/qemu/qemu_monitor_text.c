@@ -75,6 +75,13 @@ int qemuMonitorTextAddDrive(qemuMonitorPtr mon,
         goto cleanup;
     }
 
+    if (strstr(reply, "IOMMU") ||
+        strstr(reply, "VFIO")) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       reply);
+        goto cleanup;
+    }
+
     ret = 0;
 
  cleanup:
