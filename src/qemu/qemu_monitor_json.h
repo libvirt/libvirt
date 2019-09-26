@@ -627,23 +627,6 @@ int
 qemuMonitorJSONGetCurrentMachineInfo(qemuMonitorPtr mon,
                                      qemuMonitorCurrentMachineInfoPtr info)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-int qemuMonitorJSONAddBitmap(qemuMonitorPtr mon,
-                             const char *node,
-                             const char *bitmap,
-                             bool persistent);
-
-int qemuMonitorJSONEnableBitmap(qemuMonitorPtr mon,
-                                const char *node,
-                                const char *bitmap);
-
-int qemuMonitorJSONMergeBitmaps(qemuMonitorPtr mon,
-                                const char *node,
-                                const char *dst,
-                                virJSONValuePtr *src);
-
-int qemuMonitorJSONDeleteBitmap(qemuMonitorPtr mon,
-                                const char *node,
-                                const char *bitmap);
 
 int
 qemuMonitorJSONTransactionBitmapAdd(virJSONValuePtr actions,

@@ -702,25 +702,6 @@ int qemuMonitorSetBalloon(qemuMonitorPtr mon,
                           unsigned long long newmem);
 int qemuMonitorSetCPU(qemuMonitorPtr mon, int cpu, bool online);
 
-int qemuMonitorAddBitmap(qemuMonitorPtr mon,
-                         const char *node,
-                         const char *bitmap,
-                         bool persistent)
-    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
-int qemuMonitorEnableBitmap(qemuMonitorPtr mon,
-                            const char *node,
-                            const char *bitmap)
-    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
-int qemuMonitorMergeBitmaps(qemuMonitorPtr mon,
-                            const char *node,
-                            const char *dst,
-                            virJSONValuePtr *src)
-    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
-int qemuMonitorDeleteBitmap(qemuMonitorPtr mon,
-                            const char *node,
-                            const char *bitmap)
-    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
-
 
 /* XXX should we pass the virDomainDiskDefPtr instead
  * and hide dev_name details inside monitor. Reconsider

@@ -1335,9 +1335,6 @@ GEN_TEST_FUNC(qemuMonitorJSONBlockdevTrayOpen, "foodev", true)
 GEN_TEST_FUNC(qemuMonitorJSONBlockdevTrayClose, "foodev")
 GEN_TEST_FUNC(qemuMonitorJSONBlockdevMediumRemove, "foodev")
 GEN_TEST_FUNC(qemuMonitorJSONBlockdevMediumInsert, "foodev", "newnode")
-GEN_TEST_FUNC(qemuMonitorJSONAddBitmap, "node", "bitmap", true)
-GEN_TEST_FUNC(qemuMonitorJSONEnableBitmap, "node", "bitmap")
-GEN_TEST_FUNC(qemuMonitorJSONDeleteBitmap, "node", "bitmap")
 GEN_TEST_FUNC(qemuMonitorJSONJobDismiss, "jobname")
 GEN_TEST_FUNC(qemuMonitorJSONJobCancel, "jobname", false)
 GEN_TEST_FUNC(qemuMonitorJSONJobComplete, "jobname")
@@ -1376,40 +1373,6 @@ testQemuMonitorJSONqemuMonitorJSONNBDServerStart(const void *opaque)
     if (qemuMonitorJSONNBDServerStart(qemuMonitorTestGetMonitor(test),
                                       &server_unix, "test-alias") < 0)
         return -1;
-
-    return 0;
-}
-
-static int
-testQemuMonitorJSONqemuMonitorJSONMergeBitmaps(const void *opaque)
-{
-    const testGenericData *data = opaque;
-    virDomainXMLOptionPtr xmlopt = data->xmlopt;
-    g_autoptr(qemuMonitorTest) test = NULL;
-    g_autoptr(virJSONValue) arr = NULL;
-
-    if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
-        return -1;
-
-    if (!(arr = virJSONValueNewArray()))
-        return -1;
-
-    if (virJSONValueArrayAppendString(arr, "b1") < 0 ||
-        virJSONValueArrayAppendString(arr, "b2") < 0)
-        return -1;
-
-    if (qemuMonitorTestAddItem(test, "block-dirty-bitmap-merge",
-                               "{\"return\":{}}") < 0)
-        return -1;
-
-    if (qemuMonitorJSONMergeBitmaps(qemuMonitorTestGetMonitor(test),
-                                    "node", "dst", &arr) < 0)
-        return -1;
-
-    if (arr) {
-        VIR_TEST_VERBOSE("arr should have been cleared");
-        return -1;
-    }
 
     return 0;
 }
@@ -3154,9 +3117,6 @@ mymain(void)
     DO_TEST_GEN(qemuMonitorJSONBlockdevTrayClose);
     DO_TEST_GEN(qemuMonitorJSONBlockdevMediumRemove);
     DO_TEST_GEN(qemuMonitorJSONBlockdevMediumInsert);
-    DO_TEST_GEN(qemuMonitorJSONAddBitmap);
-    DO_TEST_GEN(qemuMonitorJSONEnableBitmap);
-    DO_TEST_GEN(qemuMonitorJSONDeleteBitmap);
     DO_TEST_GEN(qemuMonitorJSONJobDismiss);
     DO_TEST_GEN(qemuMonitorJSONJobCancel);
     DO_TEST_GEN(qemuMonitorJSONJobComplete);
@@ -3176,7 +3136,6 @@ mymain(void)
     DO_TEST(qemuMonitorJSONSendKeyHoldtime);
     DO_TEST(qemuMonitorSupportsActiveCommit);
     DO_TEST(qemuMonitorJSONNBDServerStart);
-    DO_TEST(qemuMonitorJSONMergeBitmaps);
 
     DO_TEST_CPU_DATA("host");
     DO_TEST_CPU_DATA("full");
