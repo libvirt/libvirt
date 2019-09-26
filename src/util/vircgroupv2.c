@@ -155,6 +155,8 @@ virCgroupV2CopyPlacement(virCgroupPtr group,
                          const char *path,
                          virCgroupPtr parent)
 {
+    VIR_DEBUG("group=%p path=%s parent=%p", group, path, parent);
+
     if (path[0] == '/') {
         if (VIR_STRDUP(group->unified.placement, path) < 0)
             return -1;
@@ -199,6 +201,9 @@ virCgroupV2DetectPlacement(virCgroupPtr group,
 {
     if (group->unified.placement)
         return 0;
+
+    VIR_DEBUG("group=%p path=%s controllers=%s selfpath=%s",
+              group, path, controllers, selfpath);
 
     /* controllers == "" indicates the cgroupv2 controller path */
     if (STRNEQ(controllers, ""))

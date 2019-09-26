@@ -1157,7 +1157,8 @@ virCgroupNewMachineSystemd(const char *name,
     virCgroupFree(&init);
 
     if (!path || STREQ(path, "/") || path[0] != '/') {
-        VIR_DEBUG("Systemd didn't setup its controller");
+        VIR_DEBUG("Systemd didn't setup its controller, path=%s",
+                  NULLSTR(path));
         return -2;
     }
 
