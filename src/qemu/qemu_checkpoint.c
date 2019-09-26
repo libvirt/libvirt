@@ -383,9 +383,9 @@ qemuCheckpointCreateXML(virDomainPtr domain,
         return NULL;
     }
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BITMAP_MERGE)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("qemu binary lacks persistent bitmaps support"));
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_INCREMENTAL_BACKUP)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("incremental backup is not supported yet"));
         return NULL;
     }
 
@@ -570,14 +570,15 @@ qemuCheckpointDelete(virDomainObjPtr vm,
         return -1;
 
     if (!metadata_only) {
+        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_INCREMENTAL_BACKUP)) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("incremental backup is not supported yet"));
+            goto endjob;
+        }
+
         if (!virDomainObjIsActive(vm)) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("cannot delete checkpoint for inactive domain"));
-            goto endjob;
-        }
-        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BITMAP_MERGE)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("qemu binary lacks persistent bitmaps support"));
             goto endjob;
         }
     }
