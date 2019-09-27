@@ -118,11 +118,11 @@ int qemuMonitorJSONChangeMedia(qemuMonitorPtr mon,
 
 int qemuMonitorJSONSaveVirtualMemory(qemuMonitorPtr mon,
                                      unsigned long long offset,
-                                     size_t length,
+                                     unsigned long long length,
                                      const char *path);
 int qemuMonitorJSONSavePhysicalMemory(qemuMonitorPtr mon,
                                       unsigned long long offset,
-                                      size_t length,
+                                      unsigned long long length,
                                       const char *path);
 
 int qemuMonitorJSONSetMigrationSpeed(qemuMonitorPtr mon,

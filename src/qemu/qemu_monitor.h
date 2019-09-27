@@ -726,11 +726,11 @@ int qemuMonitorChangeMedia(qemuMonitorPtr mon,
 
 int qemuMonitorSaveVirtualMemory(qemuMonitorPtr mon,
                                  unsigned long long offset,
-                                 size_t length,
+                                 unsigned long long length,
                                  const char *path);
 int qemuMonitorSavePhysicalMemory(qemuMonitorPtr mon,
                                   unsigned long long offset,
-                                  size_t length,
+                                  unsigned long long length,
                                   const char *path);
 
 int qemuMonitorSetMigrationSpeed(qemuMonitorPtr mon,

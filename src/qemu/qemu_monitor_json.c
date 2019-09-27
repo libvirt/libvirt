@@ -3100,7 +3100,7 @@ int qemuMonitorJSONChangeMedia(qemuMonitorPtr mon,
 static int qemuMonitorJSONSaveMemory(qemuMonitorPtr mon,
                                      const char *cmdtype,
                                      unsigned long long offset,
-                                     size_t length,
+                                     unsigned long long length,
                                      const char *path)
 {
     int ret = -1;
@@ -3129,7 +3129,7 @@ static int qemuMonitorJSONSaveMemory(qemuMonitorPtr mon,
 
 int qemuMonitorJSONSaveVirtualMemory(qemuMonitorPtr mon,
                                      unsigned long long offset,
-                                     size_t length,
+                                     unsigned long long length,
                                      const char *path)
 {
     return qemuMonitorJSONSaveMemory(mon, "memsave", offset, length, path);
@@ -3137,7 +3137,7 @@ int qemuMonitorJSONSaveVirtualMemory(qemuMonitorPtr mon,
 
 int qemuMonitorJSONSavePhysicalMemory(qemuMonitorPtr mon,
                                       unsigned long long offset,
-                                      size_t length,
+                                      unsigned long long length,
                                       const char *path)
 {
     return qemuMonitorJSONSaveMemory(mon, "pmemsave", offset, length, path);

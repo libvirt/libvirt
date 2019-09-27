@@ -2348,10 +2348,10 @@ qemuMonitorChangeMedia(qemuMonitorPtr mon,
 int
 qemuMonitorSaveVirtualMemory(qemuMonitorPtr mon,
                              unsigned long long offset,
-                             size_t length,
+                             unsigned long long length,
                              const char *path)
 {
-    VIR_DEBUG("offset=%llu length=%zu path=%s", offset, length, path);
+    VIR_DEBUG("offset=%llu length=%llu path=%s", offset, length, path);
 
     QEMU_CHECK_MONITOR(mon);
 
@@ -2362,10 +2362,10 @@ qemuMonitorSaveVirtualMemory(qemuMonitorPtr mon,
 int
 qemuMonitorSavePhysicalMemory(qemuMonitorPtr mon,
                               unsigned long long offset,
-                              size_t length,
+                              unsigned long long length,
                               const char *path)
 {
-    VIR_DEBUG("offset=%llu length=%zu path=%s", offset, length, path);
+    VIR_DEBUG("offset=%llu length=%llu path=%s", offset, length, path);
 
     QEMU_CHECK_MONITOR(mon);
 
