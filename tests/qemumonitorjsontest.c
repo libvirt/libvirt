@@ -2962,7 +2962,13 @@ testQemuMonitorJSONTransaction(const void *opaque)
         qemuMonitorTransactionBitmapDisable(actions, "node4", "bitmap4") < 0 ||
         qemuMonitorTransactionBitmapMerge(actions, "node5", "bitmap5", &mergebitmaps) < 0 ||
         qemuMonitorTransactionSnapshotLegacy(actions, "dev6", "path", "qcow2", true) < 0 ||
-        qemuMonitorTransactionSnapshotBlockdev(actions, "node7", "overlay7") < 0)
+        qemuMonitorTransactionSnapshotBlockdev(actions, "node7", "overlay7") < 0 ||
+        qemuMonitorTransactionBackup(actions, "dev8", "job8", "target8", "bitmap8",
+                                     QEMU_MONITOR_TRANSACTION_BACKUP_SYNC_MODE_NONE) < 0 ||
+        qemuMonitorTransactionBackup(actions, "dev9", "job9", "target9", "bitmap9",
+                                     QEMU_MONITOR_TRANSACTION_BACKUP_SYNC_MODE_INCREMENTAL) < 0 ||
+        qemuMonitorTransactionBackup(actions, "devA", "jobA", "targetA", "bitmapA",
+                                     QEMU_MONITOR_TRANSACTION_BACKUP_SYNC_MODE_FULL) < 0)
         return -1;
 
     if (qemuMonitorTestAddItem(test, "transaction", "{\"return\":{}}") < 0)

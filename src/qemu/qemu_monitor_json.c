@@ -9198,6 +9198,35 @@ qemuMonitorJSONTransactionSnapshotBlockdev(virJSONValuePtr actions,
                                          NULL);
 }
 
+VIR_ENUM_DECL(qemuMonitorTransactionBackupSyncMode);
+VIR_ENUM_IMPL(qemuMonitorTransactionBackupSyncMode,
+              QEMU_MONITOR_TRANSACTION_BACKUP_SYNC_MODE_LAST,
+              "none",
+              "incremental",
+              "full");
+
+int
+qemuMonitorJSONTransactionBackup(virJSONValuePtr actions,
+                                 const char *device,
+                                 const char *jobname,
+                                 const char *target,
+                                 const char *bitmap,
+                                 qemuMonitorTransactionBackupSyncMode syncmode)
+{
+    const char *syncmodestr = qemuMonitorTransactionBackupSyncModeTypeToString(syncmode);
+
+    return qemuMonitorJSONTransactionAdd(actions,
+                                         "blockdev-backup",
+                                         "s:device", device,
+                                         "s:job-id", jobname,
+                                         "s:target", target,
+                                         "s:sync", syncmodestr,
+                                         "S:bitmap", bitmap,
+                                         "T:auto-finalize", VIR_TRISTATE_BOOL_YES,
+                                         "T:auto-dismiss", VIR_TRISTATE_BOOL_NO,
+                                         NULL);
+}
+
 
 static qemuMonitorJobInfoPtr
 qemuMonitorJSONGetJobInfoOne(virJSONValuePtr data)

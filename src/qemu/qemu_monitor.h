@@ -1392,3 +1392,18 @@ int
 qemuMonitorTransactionSnapshotBlockdev(virJSONValuePtr actions,
                                        const char *node,
                                        const char *overlay);
+
+typedef enum {
+    QEMU_MONITOR_TRANSACTION_BACKUP_SYNC_MODE_NONE = 0,
+    QEMU_MONITOR_TRANSACTION_BACKUP_SYNC_MODE_INCREMENTAL,
+    QEMU_MONITOR_TRANSACTION_BACKUP_SYNC_MODE_FULL,
+    QEMU_MONITOR_TRANSACTION_BACKUP_SYNC_MODE_LAST,
+} qemuMonitorTransactionBackupSyncMode;
+
+int
+qemuMonitorTransactionBackup(virJSONValuePtr actions,
+                             const char *device,
+                             const char *jobname,
+                             const char *target,
+                             const char *bitmap,
+                             qemuMonitorTransactionBackupSyncMode syncmode);

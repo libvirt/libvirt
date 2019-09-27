@@ -667,3 +667,11 @@ int
 qemuMonitorJSONTransactionSnapshotBlockdev(virJSONValuePtr actions,
                                            const char *node,
                                            const char *overlay);
+
+int
+qemuMonitorJSONTransactionBackup(virJSONValuePtr actions,
+                                 const char *device,
+                                 const char *jobname,
+                                 const char *target,
+                                 const char *bitmap,
+                                 qemuMonitorTransactionBackupSyncMode syncmode);

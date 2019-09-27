@@ -4615,3 +4615,16 @@ qemuMonitorTransactionSnapshotBlockdev(virJSONValuePtr actions,
 {
     return qemuMonitorJSONTransactionSnapshotBlockdev(actions, node, overlay);
 }
+
+
+int
+qemuMonitorTransactionBackup(virJSONValuePtr actions,
+                             const char *device,
+                             const char *jobname,
+                             const char *target,
+                             const char *bitmap,
+                             qemuMonitorTransactionBackupSyncMode syncmode)
+{
+    return qemuMonitorJSONTransactionBackup(actions, device, jobname, target,
+                                            bitmap, syncmode);
+}
