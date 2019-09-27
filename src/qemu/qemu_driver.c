@@ -17254,17 +17254,17 @@ qemuDomainCheckpointCreateXML(virDomainPtr domain,
     if (!(vm = qemuDomainObjFromDomain(domain)))
         goto cleanup;
 
-    if (virDomainSnapshotObjListNum(vm->snapshots, NULL, 0) > 0) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("cannot create checkpoint while snapshot exists"));
-        goto cleanup;
-    }
-
     priv = vm->privateData;
     cfg = virQEMUDriverGetConfig(driver);
 
     if (virDomainCheckpointCreateXMLEnsureACL(domain->conn, vm->def, flags) < 0)
         goto cleanup;
+
+    if (virDomainSnapshotObjListNum(vm->snapshots, NULL, 0) > 0) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("cannot create checkpoint while snapshot exists"));
+        goto cleanup;
+    }
 
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BITMAP_MERGE)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
