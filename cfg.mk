@@ -1353,4 +1353,4 @@ exclude_file_name_regexp--sc_prohibit_dirent_d_type = \
   ^(src/util/vircgroup.c)$
 
 exclude_file_name_regexp--sc_prohibit_strcmp = \
-  ^(tools/nss/libvirt_nss.*\.c)
+  ^(tools/nss/libvirt_nss.*\.c|tools/virt-login-shell\.c)
