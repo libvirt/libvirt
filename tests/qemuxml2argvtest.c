@@ -528,6 +528,16 @@ testCompareXMLToArgv(const void *data)
        }
     }
 
+    for (i = 0; i < vm->def->nvideos; i++) {
+        virDomainVideoDefPtr video = vm->def->videos[i];
+
+        if (video->backend == VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER) {
+            qemuDomainVideoPrivatePtr vpriv = QEMU_DOMAIN_VIDEO_PRIVATE(video);
+
+            vpriv->vhost_user_fd = 1729;
+        }
+    }
+
     if (flags & FLAG_SLIRP_HELPER) {
         for (i = 0; i < vm->def->nnets; i++) {
             virDomainNetDefPtr net = vm->def->nets[i];

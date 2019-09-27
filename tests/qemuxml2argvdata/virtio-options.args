@@ -49,7 +49,7 @@ ats=on \
 ats=on \
 -device virtio-input-host-pci,id=input3,evdev=/dev/input/event1234,bus=pci.0,\
 addr=0x12,iommu_platform=on,ats=on \
--chardev socket,id=chr-vu-video0,fd=0 \
+-chardev socket,id=chr-vu-video0,fd=1729 \
 -device vhost-user-gpu-pci,id=video0,max_outputs=1,chardev=chr-vu-video0,\
 bus=pci.0,addr=0x2,iommu_platform=on,ats=on \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0xc,iommu_platform=on,\
