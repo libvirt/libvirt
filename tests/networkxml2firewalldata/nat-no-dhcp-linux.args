@@ -16,6 +16,13 @@ iptables \
 --table filter \
 --insert LIBVIRT_OUT \
 --out-interface virbr0 \
+--protocol tcp \
+--destination-port 68 \
+--jump ACCEPT
+iptables \
+--table filter \
+--insert LIBVIRT_OUT \
+--out-interface virbr0 \
 --protocol udp \
 --destination-port 68 \
 --jump ACCEPT
@@ -35,6 +42,20 @@ iptables \
 --jump ACCEPT
 iptables \
 --table filter \
+--insert LIBVIRT_OUT \
+--out-interface virbr0 \
+--protocol tcp \
+--destination-port 53 \
+--jump ACCEPT
+iptables \
+--table filter \
+--insert LIBVIRT_OUT \
+--out-interface virbr0 \
+--protocol udp \
+--destination-port 53 \
+--jump ACCEPT
+iptables \
+--table filter \
 --insert LIBVIRT_FWO \
 --in-interface virbr0 \
 --jump REJECT
@@ -81,10 +102,31 @@ ip6tables \
 --jump ACCEPT
 ip6tables \
 --table filter \
+--insert LIBVIRT_OUT \
+--out-interface virbr0 \
+--protocol tcp \
+--destination-port 53 \
+--jump ACCEPT
+ip6tables \
+--table filter \
+--insert LIBVIRT_OUT \
+--out-interface virbr0 \
+--protocol udp \
+--destination-port 53 \
+--jump ACCEPT
+ip6tables \
+--table filter \
 --insert LIBVIRT_INP \
 --in-interface virbr0 \
 --protocol udp \
 --destination-port 547 \
+--jump ACCEPT
+ip6tables \
+--table filter \
+--insert LIBVIRT_OUT \
+--out-interface virbr0 \
+--protocol udp \
+--destination-port 546 \
 --jump ACCEPT
 iptables \
 --table filter \

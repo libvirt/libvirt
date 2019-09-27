@@ -304,6 +304,42 @@ iptablesRemoveUdpInput(virFirewallPtr fw,
 }
 
 /**
+ * iptablesAddTcpOutput:
+ * @ctx: pointer to the IP table context
+ * @iface: the interface name
+ * @port: the TCP port to add
+ *
+ * Add an output to the IP table allowing access to the given @port from
+ * the given @iface interface for TCP packets
+ */
+void
+iptablesAddTcpOutput(virFirewallPtr fw,
+                     virFirewallLayer layer,
+                     const char *iface,
+                     int port)
+{
+    iptablesOutput(fw, layer, true, iface, port, ADD, 1);
+}
+
+/**
+ * iptablesRemoveTcpOutput:
+ * @ctx: pointer to the IP table context
+ * @iface: the interface name
+ * @port: the UDP port to remove
+ *
+ * Removes an output from the IP table, hence forbidding access to the given
+ * @port from the given @iface interface for TCP packets
+ */
+void
+iptablesRemoveTcpOutput(virFirewallPtr fw,
+                        virFirewallLayer layer,
+                        const char *iface,
+                        int port)
+{
+    iptablesOutput(fw, layer, deletePrivate, iface, port, REMOVE, 1);
+}
+
+/**
  * iptablesAddUdpOutput:
  * @ctx: pointer to the IP table context
  * @iface: the interface name

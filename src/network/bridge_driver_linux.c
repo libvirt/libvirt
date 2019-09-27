@@ -553,18 +553,23 @@ networkAddGeneralIPv4FirewallRules(virFirewallPtr fw,
             break;
     }
 
-    /* allow DHCP requests through to dnsmasq */
+    /* allow DHCP requests through to dnsmasq & back out */
     iptablesAddTcpInput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 67);
     iptablesAddUdpInput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 67);
+    iptablesAddTcpOutput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 68);
     iptablesAddUdpOutput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 68);
 
-    /* allow DNS requests through to dnsmasq */
+    /* allow DNS requests through to dnsmasq & back out */
     iptablesAddTcpInput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 53);
     iptablesAddUdpInput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 53);
+    iptablesAddTcpOutput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 53);
+    iptablesAddUdpOutput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 53);
 
-    /* allow TFTP requests through to dnsmasq if necessary */
-    if (ipv4def && ipv4def->tftproot)
+    /* allow TFTP requests through to dnsmasq if necessary & back out*/
+    if (ipv4def && ipv4def->tftproot) {
         iptablesAddUdpInput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 69);
+        iptablesAddUdpOutput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 69);
+    }
 
     /* Catch all rules to block forwarding to/from bridges */
     iptablesAddForwardRejectOut(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge);
@@ -592,13 +597,18 @@ networkRemoveGeneralIPv4FirewallRules(virFirewallPtr fw,
     iptablesRemoveForwardRejectIn(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge);
     iptablesRemoveForwardRejectOut(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge);
 
-    if (ipv4def && ipv4def->tftproot)
+    if (ipv4def && ipv4def->tftproot) {
         iptablesRemoveUdpInput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 69);
+        iptablesRemoveUdpOutput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 69);
+    }
 
     iptablesRemoveUdpInput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 53);
     iptablesRemoveTcpInput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 53);
+    iptablesRemoveUdpOutput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 53);
+    iptablesRemoveTcpOutput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 53);
 
     iptablesRemoveUdpOutput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 68);
+    iptablesRemoveTcpOutput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 68);
     iptablesRemoveUdpInput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 67);
     iptablesRemoveTcpInput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 67);
 }
@@ -626,10 +636,14 @@ networkAddGeneralIPv6FirewallRules(virFirewallPtr fw,
     iptablesAddForwardAllowCross(fw, VIR_FIREWALL_LAYER_IPV6, def->bridge);
 
     if (virNetworkDefGetIPByIndex(def, AF_INET6, 0)) {
-        /* allow DNS over IPv6 */
+        /* allow DNS over IPv6 & back out */
         iptablesAddTcpInput(fw, VIR_FIREWALL_LAYER_IPV6, def->bridge, 53);
         iptablesAddUdpInput(fw, VIR_FIREWALL_LAYER_IPV6, def->bridge, 53);
+        iptablesAddTcpOutput(fw, VIR_FIREWALL_LAYER_IPV6, def->bridge, 53);
+        iptablesAddUdpOutput(fw, VIR_FIREWALL_LAYER_IPV6, def->bridge, 53);
+        /* allow DHCPv6 & back out */
         iptablesAddUdpInput(fw, VIR_FIREWALL_LAYER_IPV6, def->bridge, 547);
+        iptablesAddUdpOutput(fw, VIR_FIREWALL_LAYER_IPV6, def->bridge, 546);
     }
 }
 
@@ -643,7 +657,10 @@ networkRemoveGeneralIPv6FirewallRules(virFirewallPtr fw,
     }
 
     if (virNetworkDefGetIPByIndex(def, AF_INET6, 0)) {
+        iptablesRemoveUdpOutput(fw, VIR_FIREWALL_LAYER_IPV6, def->bridge, 546);
         iptablesRemoveUdpInput(fw, VIR_FIREWALL_LAYER_IPV6, def->bridge, 547);
+        iptablesRemoveUdpOutput(fw, VIR_FIREWALL_LAYER_IPV6, def->bridge, 53);
+        iptablesRemoveTcpOutput(fw, VIR_FIREWALL_LAYER_IPV6, def->bridge, 53);
         iptablesRemoveUdpInput(fw, VIR_FIREWALL_LAYER_IPV6, def->bridge, 53);
         iptablesRemoveTcpInput(fw, VIR_FIREWALL_LAYER_IPV6, def->bridge, 53);
     }

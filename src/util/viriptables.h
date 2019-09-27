@@ -45,6 +45,14 @@ void             iptablesRemoveUdpInput          (virFirewallPtr fw,
                                                   const char *iface,
                                                   int port);
 
+void             iptablesAddTcpOutput            (virFirewallPtr fw,
+                                                  virFirewallLayer layer,
+                                                  const char *iface,
+                                                  int port);
+void             iptablesRemoveTcpOutput         (virFirewallPtr fw,
+                                                  virFirewallLayer layer,
+                                                  const char *iface,
+                                                  int port);
 void             iptablesAddUdpOutput            (virFirewallPtr fw,
                                                   virFirewallLayer layer,
                                                   const char *iface,
