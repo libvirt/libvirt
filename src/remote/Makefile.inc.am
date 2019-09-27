@@ -287,7 +287,7 @@ remote/virtproxyd.aug: remote/libvirtd.aug.in
 		$< > $@
 
 remote/test_libvirtd.aug: remote/test_libvirtd.aug.in \
-		remote/libvirtd.conf $(AUG_GENTEST)
+		remote/libvirtd.conf $(AUG_GENTEST_SCRIPT)
 	$(AM_V_GEN)$(AUG_GENTEST) remote/libvirtd.conf \
 		$(srcdir)/remote/test_libvirtd.aug.in | \
 		$(SED) \
@@ -300,7 +300,7 @@ remote/test_libvirtd.aug: remote/test_libvirtd.aug.in \
 		> $@ || rm -f $@
 
 remote/test_virtproxyd.aug: remote/test_libvirtd.aug.in \
-		remote/virtproxyd.conf $(AUG_GENTEST)
+		remote/virtproxyd.conf $(AUG_GENTEST_SCRIPT)
 	$(AM_V_GEN)$(AUG_GENTEST) remote/virtproxyd.conf \
 		$(srcdir)/remote/test_libvirtd.aug.in | \
 		$(SED) \

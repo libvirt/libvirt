@@ -98,7 +98,7 @@ interface/virtinterfaced.aug: remote/libvirtd.aug.in
 		$< > $@
 
 interface/test_virtinterfaced.aug: remote/test_libvirtd.aug.in \
-		interface/virtinterfaced.conf $(AUG_GENTEST)
+		interface/virtinterfaced.conf $(AUG_GENTEST_SCRIPT)
 	$(AM_V_GEN)$(AUG_GENTEST) interface/virtinterfaced.conf \
 		$(srcdir)/remote/test_libvirtd.aug.in | \
 		$(SED) \

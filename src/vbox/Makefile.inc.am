@@ -118,7 +118,7 @@ vbox/virtvboxd.aug: remote/libvirtd.aug.in
 		$< > $@
 
 vbox/test_virtvboxd.aug: remote/test_libvirtd.aug.in \
-		vbox/virtvboxd.conf $(AUG_GENTEST)
+		vbox/virtvboxd.conf $(AUG_GENTEST_SCRIPT)
 	$(AM_V_GEN)$(AUG_GENTEST) vbox/virtvboxd.conf \
 		$(srcdir)/remote/test_libvirtd.aug.in | \
 		$(SED) \

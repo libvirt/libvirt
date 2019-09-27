@@ -105,7 +105,7 @@ network/virtnetworkd.aug: remote/libvirtd.aug.in
 		$< > $@
 
 network/test_virtnetworkd.aug: remote/test_libvirtd.aug.in \
-		network/virtnetworkd.conf $(AUG_GENTEST)
+		network/virtnetworkd.conf $(AUG_GENTEST_SCRIPT)
 	$(AM_V_GEN)$(AUG_GENTEST) network/virtnetworkd.conf \
 		$(srcdir)/remote/test_libvirtd.aug.in | \
 		$(SED) \

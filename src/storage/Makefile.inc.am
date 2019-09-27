@@ -198,7 +198,7 @@ storage/virtstoraged.aug: remote/libvirtd.aug.in
 		$< > $@
 
 storage/test_virtstoraged.aug: remote/test_libvirtd.aug.in \
-		storage/virtstoraged.conf $(AUG_GENTEST)
+		storage/virtstoraged.conf $(AUG_GENTEST_SCRIPT)
 	$(AM_V_GEN)$(AUG_GENTEST) storage/virtstoraged.conf \
 		$(srcdir)/remote/test_libvirtd.aug.in | \
 		$(SED) \

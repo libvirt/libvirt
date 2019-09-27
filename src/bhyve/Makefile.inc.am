@@ -78,7 +78,7 @@ bhyve/virtbhyved.aug: remote/libvirtd.aug.in
 		$< > $@
 
 bhyve/test_virtbhyved.aug: remote/test_libvirtd.aug.in \
-		bhyve/virtbhyved.conf $(AUG_GENTEST)
+		bhyve/virtbhyved.conf $(AUG_GENTEST_SCRIPT)
 	$(AM_V_GEN)$(AUG_GENTEST) bhyve/virtbhyved.conf \
 		$(srcdir)/remote/test_libvirtd.aug.in | \
 		$(SED) \
@@ -92,7 +92,7 @@ augeas_DATA += bhyve/libvirtd_bhyve.aug
 augeastest_DATA += bhyve/test_libvirtd_bhyve.aug
 
 bhyve/test_libvirtd_bhyve.aug: bhyve/test_libvirtd_bhyve.aug.in \
-		$(srcdir)/bhyve/bhyve.conf $(AUG_GENTEST)
+		$(srcdir)/bhyve/bhyve.conf $(AUG_GENTEST_SCRIPT)
 	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/bhyve/bhyve.conf $< > $@
 
 endif WITH_BHYVE

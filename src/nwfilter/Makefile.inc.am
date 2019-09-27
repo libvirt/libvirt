@@ -106,7 +106,7 @@ nwfilter/virtnwfilterd.aug: remote/libvirtd.aug.in
 		$< > $@
 
 nwfilter/test_virtnwfilterd.aug: remote/test_libvirtd.aug.in \
-		nwfilter/virtnwfilterd.conf $(AUG_GENTEST)
+		nwfilter/virtnwfilterd.conf $(AUG_GENTEST_SCRIPT)
 	$(AM_V_GEN)$(AUG_GENTEST) nwfilter/virtnwfilterd.conf \
 		$(srcdir)/remote/test_libvirtd.aug.in | \
 		$(SED) \

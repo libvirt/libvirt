@@ -226,7 +226,7 @@ endif WITH_SANLOCK
 if WITH_SANLOCK
 if WITH_QEMU
 locking/test_libvirt_sanlock.aug: locking/test_libvirt_sanlock.aug.in \
-		locking/qemu-sanlock.conf $(AUG_GENTEST)
+		locking/qemu-sanlock.conf $(AUG_GENTEST_SCRIPT)
 	$(AM_V_GEN)$(AUG_GENTEST) locking/qemu-sanlock.conf $< > $@
 
 endif WITH_QEMU
@@ -234,12 +234,12 @@ endif WITH_SANLOCK
 
 if WITH_QEMU
 locking/test_libvirt_lockd.aug: locking/test_libvirt_lockd.aug.in \
-		locking/qemu-lockd.conf $(AUG_GENTEST)
+		locking/qemu-lockd.conf $(AUG_GENTEST_SCRIPT)
 	$(AM_V_GEN)$(AUG_GENTEST) locking/qemu-lockd.conf $< > $@
 endif WITH_QEMU
 
 locking/test_virtlockd.aug: locking/test_virtlockd.aug.in \
-		locking/virtlockd.conf $(AUG_GENTEST)
+		locking/virtlockd.conf $(AUG_GENTEST_SCRIPT)
 	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/locking/virtlockd.conf $< > $@
 
 endif WITH_LIBVIRTD

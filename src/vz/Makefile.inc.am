@@ -92,7 +92,7 @@ vz/virtvzd.aug: remote/libvirtd.aug.in
 		$< > $@
 
 vz/test_virtvzd.aug: remote/test_libvirtd.aug.in \
-		vz/virtvzd.conf $(AUG_GENTEST)
+		vz/virtvzd.conf $(AUG_GENTEST_SCRIPT)
 	$(AM_V_GEN)$(AUG_GENTEST) vz/virtvzd.conf \
 		$(srcdir)/remote/test_libvirtd.aug.in | \
 		$(SED) \

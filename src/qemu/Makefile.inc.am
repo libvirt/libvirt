@@ -178,7 +178,7 @@ qemu/virtqemud.aug: remote/libvirtd.aug.in
 		$< > $@
 
 qemu/test_virtqemud.aug: remote/test_libvirtd.aug.in \
-		qemu/virtqemud.conf $(AUG_GENTEST)
+		qemu/virtqemud.conf $(AUG_GENTEST_SCRIPT)
 	$(AM_V_GEN)$(AUG_GENTEST) qemu/virtqemud.conf \
 		$(srcdir)/remote/test_libvirtd.aug.in | \
 		$(SED) \
@@ -193,7 +193,7 @@ augeas_DATA += qemu/libvirtd_qemu.aug
 augeastest_DATA += qemu/test_libvirtd_qemu.aug
 
 qemu/test_libvirtd_qemu.aug: qemu/test_libvirtd_qemu.aug.in \
-		$(srcdir)/qemu/qemu.conf $(AUG_GENTEST)
+		$(srcdir)/qemu/qemu.conf $(AUG_GENTEST_SCRIPT)
 	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/qemu/qemu.conf $< > $@
 
 INSTALL_DATA_DIRS += qemu

@@ -165,7 +165,7 @@ lxc/virtlxcd.aug: remote/libvirtd.aug.in
 		$< > $@
 
 lxc/test_virtlxcd.aug: remote/test_libvirtd.aug.in \
-		lxc/virtlxcd.conf $(AUG_GENTEST)
+		lxc/virtlxcd.conf $(AUG_GENTEST_SCRIPT)
 	$(AM_V_GEN)$(AUG_GENTEST) lxc/virtlxcd.conf \
 		$(srcdir)/remote/test_libvirtd.aug.in | \
 		$(SED) \
@@ -226,7 +226,7 @@ augeas_DATA += lxc/libvirtd_lxc.aug
 augeastest_DATA += lxc/test_libvirtd_lxc.aug
 
 lxc/test_libvirtd_lxc.aug: lxc/test_libvirtd_lxc.aug.in \
-		$(srcdir)/lxc/lxc.conf $(AUG_GENTEST)
+		$(srcdir)/lxc/lxc.conf $(AUG_GENTEST_SCRIPT)
 	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/lxc/lxc.conf $< > $@
 
 INSTALL_DATA_DIRS += lxc
