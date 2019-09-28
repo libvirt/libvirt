@@ -116,14 +116,16 @@ appendAddr(const char *name __attribute__((unused)),
 
     for (i = 0; i < *ntmpAddress; i++) {
         if (family == AF_INET) {
-            if (memcmp((*tmpAddress)[i].addr,
+            if ((*tmpAddress)[i].af == AF_INET &&
+                memcmp((*tmpAddress)[i].addr,
                        &sa.sin.sin_addr,
                        sizeof(sa.sin.sin_addr)) == 0) {
                 DEBUG("IP address already in the list");
                 return 0;
             }
         } else {
-            if (memcmp((*tmpAddress)[i].addr,
+            if ((*tmpAddress)[i].af == AF_INET6 &&
+                memcmp((*tmpAddress)[i].addr,
                        &sa.sin6.sin6_addr,
                        sizeof(sa.sin6.sin6_addr)) == 0) {
                 DEBUG("IP address already in the list");
