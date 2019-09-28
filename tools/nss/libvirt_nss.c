@@ -267,7 +267,6 @@ NSS_NAME(gethostbyname3)(const char *name, int af, struct hostent *result,
         af = AF_INET;
 
     if ((r = findLease(name, af, &addr, &naddr, &found, errnop)) < 0) {
-        free(addr);
         /* Error occurred. Return immediately. */
         if (*errnop == EAGAIN) {
             *herrnop = TRY_AGAIN;
@@ -282,13 +281,11 @@ NSS_NAME(gethostbyname3)(const char *name, int af, struct hostent *result,
         /* NOT found */
         *errnop = ESRCH;
         *herrnop = HOST_NOT_FOUND;
-        free(addr);
         return NSS_STATUS_NOTFOUND;
     } else if (!naddr) {
         /* Found, but no data */
         *errnop = ENXIO;
         *herrnop = NO_DATA;
-        free(addr);
         return NSS_STATUS_UNAVAIL;
     }
 
