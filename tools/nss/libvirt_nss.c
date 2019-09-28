@@ -451,6 +451,7 @@ NSS_NAME(gethostbyname4)(const char *name, struct gaih_addrtuple **pat,
     *herrnop = NETDB_SUCCESS;
     ret = NSS_STATUS_SUCCESS;
  cleanup:
+    free(addr);
     return ret;
 }
 #endif /* HAVE_STRUCT_GAIH_ADDRTUPLE */
