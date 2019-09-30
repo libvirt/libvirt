@@ -1290,12 +1290,6 @@ qemuCheckDiskConfig(virDomainDiskDefPtr disk,
     if (qemuCheckDiskConfigBlkdeviotune(disk, qemuCaps) < 0)
         return -1;
 
-    if (virDiskNameToIndex(disk->dst) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unsupported disk type '%s'"), disk->dst);
-        return -1;
-    }
-
     if (disk->wwn) {
         if ((disk->bus != VIR_DOMAIN_DISK_BUS_IDE) &&
             (disk->bus != VIR_DOMAIN_DISK_BUS_SCSI)) {
