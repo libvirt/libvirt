@@ -4704,6 +4704,12 @@ qemuBuildVhostUserChardevStr(const char *alias,
 {
     char *chardev = NULL;
 
+    if (*fd == -1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Attempt to pass closed vhostuser FD"));
+        return NULL;
+    }
+
     if (virAsprintf(&chardev, "socket,id=chr-vu-%s,fd=%d", alias, *fd) < 0)
         return NULL;
 
