@@ -78,8 +78,7 @@ virAccessDriverPolkitGetCaller(const char *actionid,
                                unsigned long long *startTime,
                                uid_t *uid)
 {
-    virIdentityPtr identity = virIdentityGetCurrent();
-    int ret = -1;
+    g_autoptr(virIdentity) identity = virIdentityGetCurrent();
     int rc;
 
     if (!identity) {
@@ -90,37 +89,33 @@ virAccessDriverPolkitGetCaller(const char *actionid,
     }
 
     if ((rc = virIdentityGetProcessID(identity, pid)) < 0)
-        goto cleanup;
+        return -1;
 
     if (rc == 0) {
         virAccessError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("No process ID available"));
-        goto cleanup;
+        return -1;
     }
 
     if ((rc = virIdentityGetProcessTime(identity, startTime)) < 0)
-        goto cleanup;
+        return -1;
 
     if (rc == 0) {
         virAccessError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("No process start time available"));
-        goto cleanup;
+        return -1;
     }
 
     if ((rc = virIdentityGetUNIXUserID(identity, uid)) < 0)
-        goto cleanup;
+        return -1;
 
     if (rc == 0) {
         virAccessError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("No UNIX caller UID available"));
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    virObjectUnref(identity);
-    return ret;
+    return 0;
 }
 
 
@@ -130,21 +125,20 @@ virAccessDriverPolkitCheck(virAccessManagerPtr manager ATTRIBUTE_UNUSED,
                            const char *permname,
                            const char **attrs)
 {
-    char *actionid = NULL;
-    int ret = -1;
+    g_autofree char *actionid = NULL;
     pid_t pid;
     uid_t uid;
     unsigned long long startTime;
     int rv;
 
     if (!(actionid = virAccessDriverPolkitFormatAction(typename, permname)))
-        goto cleanup;
+        return -1;
 
     if (virAccessDriverPolkitGetCaller(actionid,
                                        &pid,
                                        &startTime,
                                        &uid) < 0)
-        goto cleanup;
+        return -1;
 
     VIR_DEBUG("Check action '%s' for process '%lld' time %lld uid %d",
               actionid, (long long)pid, startTime, uid);
@@ -157,18 +151,14 @@ virAccessDriverPolkitCheck(virAccessManagerPtr manager ATTRIBUTE_UNUSED,
                             false);
 
     if (rv == 0) {
-        ret = 1; /* Allowed */
+        return 1; /* Allowed */
     } else {
         if (rv == -2) {
-            ret = 0; /* Denied */
+            return 0; /* Denied */
         } else {
-            ret = -1; /* Error */
+            return -1; /* Error */
         }
     }
-
- cleanup:
-    VIR_FREE(actionid);
-    return ret;
 }
 
 
