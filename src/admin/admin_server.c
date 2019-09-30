@@ -310,6 +310,8 @@ adminClientGetInfo(virNetServerClientPtr client,
     ret = 0;
 
  cleanup:
+    if (tmpparams)
+        virTypedParamsFree(tmpparams, *nparams);
     virObjectUnref(identity);
     VIR_FREE(sock_addr);
     return ret;
