@@ -412,13 +412,6 @@ qemuCheckpointCreateXML(virDomainPtr domain,
         if (!redefine &&
             VIR_STRDUP(chk->def->parent_name, other->def->name) < 0)
             goto endjob;
-        if (update_current) {
-            virDomainCheckpointSetCurrent(vm->checkpoints, NULL);
-            if (qemuCheckpointWriteMetadata(vm, other,
-                                            driver->caps, driver->xmlopt,
-                                            cfg->checkpointDir) < 0)
-                goto endjob;
-        }
     }
 
     /* actually do the checkpoint */
