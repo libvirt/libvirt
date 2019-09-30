@@ -16001,13 +16001,6 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
         if (!redefine &&
             VIR_STRDUP(snap->def->parent_name, current->def->name) < 0)
                 goto endjob;
-        if (update_current) {
-            virDomainSnapshotSetCurrent(vm->snapshots, NULL);
-            if (qemuDomainSnapshotWriteMetadata(vm, current,
-                                                driver->caps, driver->xmlopt,
-                                                cfg->snapshotDir) < 0)
-                goto endjob;
-        }
     }
 
     /* actually do the snapshot */
@@ -16480,7 +16473,6 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     virDomainObjPtr vm = NULL;
     int ret = -1;
     virDomainMomentObjPtr snap = NULL;
-    virDomainMomentObjPtr current = NULL;
     virDomainSnapshotDefPtr snapdef;
     virObjectEventPtr event = NULL;
     virObjectEventPtr event2 = NULL;
@@ -16578,17 +16570,6 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                            _("must respawn qemu to start inactive snapshot"));
             goto endjob;
         }
-    }
-
-    current = virDomainSnapshotGetCurrent(vm->snapshots);
-    if (current) {
-        virDomainSnapshotSetCurrent(vm->snapshots, NULL);
-        if (qemuDomainSnapshotWriteMetadata(vm, current,
-                                            driver->caps, driver->xmlopt,
-                                            cfg->snapshotDir) < 0)
-            goto endjob;
-        /* XXX Should we restore the current snapshot after this point
-         * in the failure cases where we know there was no change?  */
     }
 
     if (snap->def->dom) {
