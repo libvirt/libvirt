@@ -534,6 +534,7 @@ virDomainCheckpointRedefinePrep(virDomainObjPtr vm,
 {
     virDomainCheckpointDefPtr def = *defptr;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
+    virDomainMomentObjPtr parent = NULL;
     virDomainMomentObjPtr other = NULL;
     virDomainCheckpointDefPtr otherdef = NULL;
 
@@ -552,12 +553,13 @@ virDomainCheckpointRedefinePrep(virDomainObjPtr vm,
     if (virDomainCheckpointAlignDisks(def) < 0)
         return -1;
 
-    if (def->parent.parent_name)
-        other = virDomainCheckpointFindByName(vm->checkpoints,
-                                              def->parent.parent_name);
-    if (other == virDomainCheckpointGetCurrent(vm->checkpoints)) {
-        *update_current = true;
-        virDomainCheckpointSetCurrent(vm->checkpoints, NULL);
+    if (def->parent.parent_name &&
+         (parent = virDomainCheckpointFindByName(vm->checkpoints,
+                                                 def->parent.parent_name))) {
+        if (parent == virDomainCheckpointGetCurrent(vm->checkpoints)) {
+            *update_current = true;
+            virDomainCheckpointSetCurrent(vm->checkpoints, NULL);
+        }
     }
 
     other = virDomainCheckpointFindByName(vm->checkpoints, def->parent.name);
