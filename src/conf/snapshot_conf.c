@@ -983,7 +983,6 @@ virDomainSnapshotRedefinePrep(virDomainObjPtr vm,
                               virDomainSnapshotDefPtr *defptr,
                               virDomainMomentObjPtr *snap,
                               virDomainXMLOptionPtr xmlopt,
-                              bool *update_current G_GNUC_UNUSED,
                               unsigned int flags)
 {
     virDomainSnapshotDefPtr def = *defptr;

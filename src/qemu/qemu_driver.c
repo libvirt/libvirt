@@ -15903,7 +15903,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     if (redefine) {
         if (virDomainSnapshotRedefinePrep(vm, &def, &snap,
                                           driver->xmlopt,
-                                          &update_current, flags) < 0)
+                                          flags) < 0)
             goto endjob;
     } else {
         /* Easiest way to clone inactive portion of vm->def is via

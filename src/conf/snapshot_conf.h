@@ -136,7 +136,6 @@ int virDomainSnapshotRedefinePrep(virDomainObjPtr vm,
                                   virDomainSnapshotDefPtr *def,
                                   virDomainMomentObjPtr *snap,
                                   virDomainXMLOptionPtr xmlopt,
-                                  bool *update_current,
                                   unsigned int flags);
 
 int virDomainSnapshotRedefineValidate(virDomainSnapshotDefPtr def,

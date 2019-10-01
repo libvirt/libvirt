@@ -8575,7 +8575,7 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
     if (redefine) {
         if (virDomainSnapshotRedefinePrep(vm, &def, &snap,
                                           privconn->xmlopt,
-                                          &update_current, flags) < 0)
+                                          flags) < 0)
             goto cleanup;
     } else {
         if (!(def->parent.dom = virDomainDefCopy(vm->def,
