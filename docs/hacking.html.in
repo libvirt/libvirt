@@ -1028,6 +1028,24 @@ BAD:
       <dd>The GLib APIs g_strdup_printf / g_strdup_vprint should be used
         instead. Don't use g_vasprintf unless having the string length
         returned is unavoidable.</dd>
+
+      <dt>VIR_AUTOPTR, VIR_AUTOCLEAN, VIR_AUTOFREE</dt>
+      <dd>The GLib macros g_autoptr, g_auto and g_autofree must be used
+        instead in all new code. In existing code, the GLib macros must
+        never be mixed with libvirt macros within a method, nor should
+        they be mixed with VIR_FREE. If introducing GLib macros to an
+        existing method, any use of libvirt macros must be converted
+        in an independent commit.
+      </dd>
+
+      <dt>VIR_DEFINE_AUTOPTR_FUNC, VIR_DEFINE_AUTOCLEAN_FUNC</dt>
+      <dd>The GLib macros G_DEFINE_AUTOPTR_CLEANUP_FUNC and
+        G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC must be used in all
+        new code. Existing code should be converted to the
+        new macros where relevant. It is permissible to use
+        g_autoptr, g_auto on an object whose cleanup function
+        is declared with the libvirt macros and vice-verca.
+      </dd>
     </dl>
 
     <h2><a id="file_handling">File handling</a></h2>

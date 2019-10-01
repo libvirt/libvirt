@@ -20,7 +20,21 @@
 
 #pragma once
 
-#define VIR_AUTOPTR_FUNC_NAME(type) type##AutoPtrFree
+/**
+ * DEPRECATION WARNING
+ *
+ * The macros in this file should not be used in newly written code.
+ * Use the equivalent GLib macros instead.
+ *
+ * For existing code, use of the libvirt and GLib macros must NEVER
+ * be mixed within a single method.
+ *
+ * The use of the libvirt VIR_FREE macros should also not be mixed
+ * with GLib auto-free macros and vice-verca.
+ *
+ * Existing code should be converted to the new GLib macros and
+ * g_free APIs as needed.
+ */
 
 /**
  * VIR_DEFINE_AUTOPTR_FUNC:
@@ -31,15 +45,8 @@
  * resources allocated to a variable of type @type. This newly
  * defined function works as a necessary wrapper around @func.
  */
-#define VIR_DEFINE_AUTOPTR_FUNC(type, func) \
-    static inline void VIR_AUTOPTR_FUNC_NAME(type)(type **_ptr) \
-    { \
-        if (*_ptr) \
-            (func)(*_ptr); \
-        *_ptr = NULL; \
-    }
-
-#define VIR_AUTOCLEAN_FUNC_NAME(type) type##AutoClean
+#define VIR_DEFINE_AUTOPTR_FUNC(t, f) \
+    G_DEFINE_AUTOPTR_CLEANUP_FUNC(t, f)
 
 /**
  * VIR_DEFINE_AUTOCLEAN_FUNC:
@@ -51,10 +58,7 @@
  * take pointer to @type.
  */
 #define VIR_DEFINE_AUTOCLEAN_FUNC(type, func) \
-    static inline void VIR_AUTOCLEAN_FUNC_NAME(type)(type *_ptr) \
-    { \
-        (func)(_ptr); \
-    }
+    G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(type, func)
 
 /**
  * VIR_AUTOPTR:
@@ -68,8 +72,7 @@
  * Note that this macro must NOT be used with vectors! The freeing function
  * will not free any elements beyond the first.
  */
-#define VIR_AUTOPTR(type) \
-    __attribute__((cleanup(VIR_AUTOPTR_FUNC_NAME(type)))) type *
+#define VIR_AUTOPTR(type) g_autoptr(type)
 
 /**
  * VIR_AUTOCLEAN:
@@ -83,5 +86,4 @@
  * Note that this macro must NOT be used with vectors! The cleaning function
  * will not clean any elements beyond the first.
  */
-#define VIR_AUTOCLEAN(type) \
-    __attribute__((cleanup(VIR_AUTOCLEAN_FUNC_NAME(type)))) type
+#define VIR_AUTOCLEAN(type) g_auto(type)
