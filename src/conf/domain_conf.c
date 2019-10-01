@@ -29462,7 +29462,7 @@ virDomainNetGetActualType(const virDomainNetDef *iface)
 }
 
 const char *
-virDomainNetGetActualBridgeName(virDomainNetDefPtr iface)
+virDomainNetGetActualBridgeName(const virDomainNetDef *iface)
 {
     if (iface->type == VIR_DOMAIN_NET_TYPE_BRIDGE)
         return iface->data.bridge.brname;
@@ -29475,7 +29475,7 @@ virDomainNetGetActualBridgeName(virDomainNetDefPtr iface)
 }
 
 int
-virDomainNetGetActualBridgeMACTableManager(virDomainNetDefPtr iface)
+virDomainNetGetActualBridgeMACTableManager(const virDomainNetDef *iface)
 {
     if (iface->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
         iface->data.network.actual &&
@@ -29486,7 +29486,7 @@ virDomainNetGetActualBridgeMACTableManager(virDomainNetDefPtr iface)
 }
 
 const char *
-virDomainNetGetActualDirectDev(virDomainNetDefPtr iface)
+virDomainNetGetActualDirectDev(const virDomainNetDef *iface)
 {
     if (iface->type == VIR_DOMAIN_NET_TYPE_DIRECT)
         return iface->data.direct.linkdev;
@@ -29498,7 +29498,7 @@ virDomainNetGetActualDirectDev(virDomainNetDefPtr iface)
 }
 
 int
-virDomainNetGetActualDirectMode(virDomainNetDefPtr iface)
+virDomainNetGetActualDirectMode(const virDomainNetDef *iface)
 {
     if (iface->type == VIR_DOMAIN_NET_TYPE_DIRECT)
         return iface->data.direct.mode;
@@ -29585,7 +29585,7 @@ virDomainNetGetActualVlan(const virDomainNetDef *iface)
 
 
 bool
-virDomainNetGetActualTrustGuestRxFilters(virDomainNetDefPtr iface)
+virDomainNetGetActualTrustGuestRxFilters(const virDomainNetDef *iface)
 {
     if (iface->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
         iface->data.network.actual)

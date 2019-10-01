@@ -3208,17 +3208,17 @@ int virDomainGraphicsListenAppendSocket(virDomainGraphicsDefPtr def,
             ATTRIBUTE_NONNULL(1);
 
 virDomainNetType virDomainNetGetActualType(const virDomainNetDef *iface);
-const char *virDomainNetGetActualBridgeName(virDomainNetDefPtr iface);
-int virDomainNetGetActualBridgeMACTableManager(virDomainNetDefPtr iface);
-const char *virDomainNetGetActualDirectDev(virDomainNetDefPtr iface);
-int virDomainNetGetActualDirectMode(virDomainNetDefPtr iface);
+const char *virDomainNetGetActualBridgeName(const virDomainNetDef *iface);
+int virDomainNetGetActualBridgeMACTableManager(const virDomainNetDef *iface);
+const char *virDomainNetGetActualDirectDev(const virDomainNetDef *iface);
+int virDomainNetGetActualDirectMode(const virDomainNetDef *iface);
 virDomainHostdevDefPtr virDomainNetGetActualHostdev(virDomainNetDefPtr iface);
 const virNetDevVPortProfile *
 virDomainNetGetActualVirtPortProfile(const virDomainNetDef *iface);
 const virNetDevBandwidth *
 virDomainNetGetActualBandwidth(const virDomainNetDef *iface);
 const virNetDevVlan *virDomainNetGetActualVlan(const virDomainNetDef *iface);
-bool virDomainNetGetActualTrustGuestRxFilters(virDomainNetDefPtr iface);
+bool virDomainNetGetActualTrustGuestRxFilters(const virDomainNetDef *iface);
 const char *virDomainNetGetModelString(const virDomainNetDef *net);
 int virDomainNetSetModelString(virDomainNetDefPtr et,
                                const char *model);
