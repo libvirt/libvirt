@@ -1682,14 +1682,14 @@ virSecuritySELinuxSetTPMFileLabel(virSecurityManagerPtr mgr,
     switch (tpm->type) {
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
         tpmdev = tpm->data.passthrough.source.data.file.path;
-        rc = virSecuritySELinuxSetFilecon(mgr, tpmdev, seclabel->imagelabel, true);
+        rc = virSecuritySELinuxSetFilecon(mgr, tpmdev, seclabel->imagelabel, false);
         if (rc < 0)
             return -1;
 
         if ((cancel_path = virTPMCreateCancelPath(tpmdev)) != NULL) {
             rc = virSecuritySELinuxSetFilecon(mgr,
                                               cancel_path,
-                                              seclabel->imagelabel, true);
+                                              seclabel->imagelabel, false);
             VIR_FREE(cancel_path);
             if (rc < 0) {
                 virSecuritySELinuxRestoreTPMFileLabelInt(mgr, def, tpm);
@@ -1701,7 +1701,7 @@ virSecuritySELinuxSetTPMFileLabel(virSecurityManagerPtr mgr,
         break;
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
         tpmdev = tpm->data.emulator.source.data.nix.path;
-        rc = virSecuritySELinuxSetFilecon(mgr, tpmdev, seclabel->imagelabel, true);
+        rc = virSecuritySELinuxSetFilecon(mgr, tpmdev, seclabel->imagelabel, false);
         if (rc < 0)
             return -1;
         break;
@@ -1730,10 +1730,10 @@ virSecuritySELinuxRestoreTPMFileLabelInt(virSecurityManagerPtr mgr,
     switch (tpm->type) {
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
         tpmdev = tpm->data.passthrough.source.data.file.path;
-        rc = virSecuritySELinuxRestoreFileLabel(mgr, tpmdev, true);
+        rc = virSecuritySELinuxRestoreFileLabel(mgr, tpmdev, false);
 
         if ((cancel_path = virTPMCreateCancelPath(tpmdev)) != NULL) {
-            if (virSecuritySELinuxRestoreFileLabel(mgr, cancel_path, true) < 0)
+            if (virSecuritySELinuxRestoreFileLabel(mgr, cancel_path, false) < 0)
                 rc = -1;
             VIR_FREE(cancel_path);
         }

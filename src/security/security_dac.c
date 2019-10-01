@@ -1653,14 +1653,14 @@ virSecurityDACSetTPMFileLabel(virSecurityManagerPtr mgr,
 
     switch (tpm->type) {
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
-        ret = virSecurityDACSetChardevLabel(mgr, def,
-                                            &tpm->data.passthrough.source,
-                                            false);
+        ret = virSecurityDACSetChardevLabelHelper(mgr, def,
+                                                  &tpm->data.passthrough.source,
+                                                  false, false);
         break;
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
-        ret = virSecurityDACSetChardevLabel(mgr, def,
-                                            &tpm->data.emulator.source,
-                                            false);
+        ret = virSecurityDACSetChardevLabelHelper(mgr, def,
+                                                  &tpm->data.emulator.source,
+                                                  false, false);
         break;
     case VIR_DOMAIN_TPM_TYPE_LAST:
         break;
@@ -1679,9 +1679,9 @@ virSecurityDACRestoreTPMFileLabel(virSecurityManagerPtr mgr,
 
     switch (tpm->type) {
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
-        ret = virSecurityDACRestoreChardevLabel(mgr, def,
-                                                &tpm->data.passthrough.source,
-                                                false);
+        ret = virSecurityDACRestoreChardevLabelHelper(mgr, def,
+                                                      &tpm->data.passthrough.source,
+                                                      false, false);
         break;
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
         /* swtpm will have removed the Unix socket upon termination */
