@@ -51,7 +51,7 @@ static int testIdentity(const void *opaque ATTRIBUTE_UNUSED)
     int ret = -1;
     virNetSocketPtr sock = NULL;
     virNetServerClientPtr client = NULL;
-    virIdentityPtr ident = NULL;
+    g_autoptr(virIdentity) ident = NULL;
     const char *gotUsername = NULL;
     uid_t gotUserID;
     const char *gotGroupname = NULL;
@@ -141,7 +141,6 @@ static int testIdentity(const void *opaque ATTRIBUTE_UNUSED)
     if (client)
         virNetServerClientClose(client);
     virObjectUnref(client);
-    virObjectUnref(ident);
     VIR_FORCE_CLOSE(sv[0]);
     VIR_FORCE_CLOSE(sv[1]);
     return ret;

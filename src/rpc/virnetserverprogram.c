@@ -370,13 +370,13 @@ virNetServerProgramDispatchCall(virNetServerProgramPtr prog,
                                 virNetServerClientPtr client,
                                 virNetMessagePtr msg)
 {
-    char *arg = NULL;
-    char *ret = NULL;
+    g_autofree char *arg = NULL;
+    g_autofree char *ret = NULL;
     int rv = -1;
     virNetServerProgramProcPtr dispatcher;
     virNetMessageError rerr;
     size_t i;
-    virIdentityPtr identity = NULL;
+    g_autoptr(virIdentity) identity = NULL;
 
     memset(&rerr, 0, sizeof(rerr));
 
@@ -484,10 +484,7 @@ virNetServerProgramDispatchCall(virNetServerProgramPtr prog,
     }
 
     xdr_free(dispatcher->ret_filter, ret);
-    VIR_FREE(arg);
-    VIR_FREE(ret);
 
-    virObjectUnref(identity);
     /* Put reply on end of tx queue to send out  */
     return virNetServerClientSendMessage(client, msg);
 
@@ -495,10 +492,6 @@ virNetServerProgramDispatchCall(virNetServerProgramPtr prog,
     /* Bad stuff (de-)serializing message, but we have an
      * RPC error message we can send back to the client */
     rv = virNetServerProgramSendReplyError(prog, client, msg, &rerr, &msg->header);
-
-    VIR_FREE(arg);
-    VIR_FREE(ret);
-    virObjectUnref(identity);
 
     return rv;
 }
