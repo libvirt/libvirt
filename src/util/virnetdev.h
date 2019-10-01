@@ -253,7 +253,7 @@ virNetDevReadNetConfig(const char *linkdev, int vf,
 int
 virNetDevSetNetConfig(const char *linkdev, int vf,
                       const virMacAddr *adminMAC,
-                      virNetDevVlanPtr vlan,
+                      const virNetDevVlan *vlan,
                       const virMacAddr *MAC,
                       bool setVLan)
     ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;

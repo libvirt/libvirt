@@ -33,7 +33,7 @@ int virNetDevOpenvswitchAddPort(const char *brname,
                                 const virMacAddr *macaddr,
                                 const unsigned char *vmuuid,
                                 virNetDevVPortProfilePtr ovsport,
-                                virNetDevVlanPtr virtVlan)
+                                const virNetDevVlan *virtVlan)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     G_GNUC_WARN_UNUSED_RESULT;
 
@@ -65,5 +65,5 @@ int virNetDevOpenvswitchGetVhostuserIfname(const char *path,
     ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT G_GNUC_NO_INLINE;
 
 int virNetDevOpenvswitchUpdateVlan(const char *ifname,
-                                   virNetDevVlanPtr virtVlan)
+                                   const virNetDevVlan *virtVlan)
     ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;

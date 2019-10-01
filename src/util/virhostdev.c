@@ -497,7 +497,7 @@ virHostdevSetNetConfig(virDomainHostdevDefPtr hostdev,
                        const unsigned char *uuid)
 {
     g_autofree char *linkdev = NULL;
-    virNetDevVlanPtr vlan;
+    const virNetDevVlan *vlan;
     virNetDevVPortProfilePtr virtPort;
     int vf = -1;
     bool port_profile_associate = true;

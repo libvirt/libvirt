@@ -1668,7 +1668,7 @@ xenFormatNet(virConnectPtr conn,
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
     {
         virNetDevVPortProfilePtr port_profile = virDomainNetGetActualVirtPortProfile(net);
-        virNetDevVlanPtr virt_vlan = virDomainNetGetActualVlan(net);
+        const virNetDevVlan *virt_vlan = virDomainNetGetActualVlan(net);
         const char *script = net->script;
         size_t i;
 

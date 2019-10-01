@@ -68,7 +68,7 @@ virNetDevOpenvswitchAddTimeout(virCommandPtr cmd)
  * Returns 0 in case of success or -1 in case of failure.
  */
 static int
-virNetDevOpenvswitchConstructVlans(virCommandPtr cmd, virNetDevVlanPtr virtVlan)
+virNetDevOpenvswitchConstructVlans(virCommandPtr cmd, const virNetDevVlan *virtVlan)
 {
     int ret = -1;
     size_t i = 0;
@@ -133,7 +133,7 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
                                 const virMacAddr *macaddr,
                                 const unsigned char *vmuuid,
                                 virNetDevVPortProfilePtr ovsport,
-                                virNetDevVlanPtr virtVlan)
+                                const virNetDevVlan *virtVlan)
 {
     char macaddrstr[VIR_MAC_STRING_BUFLEN];
     char ifuuidstr[VIR_UUID_STRING_BUFLEN];
@@ -538,7 +538,7 @@ virNetDevOpenvswitchGetVhostuserIfname(const char *path,
  * Returns 0 in case of success or -1 in case of failure.
  */
 int virNetDevOpenvswitchUpdateVlan(const char *ifname,
-                                   virNetDevVlanPtr virtVlan)
+                                   const virNetDevVlan *virtVlan)
 {
     g_autoptr(virCommand) cmd = NULL;
 

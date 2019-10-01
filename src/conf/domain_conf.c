@@ -29566,10 +29566,10 @@ virDomainNetGetActualBandwidth(virDomainNetDefPtr iface)
     return iface->bandwidth;
 }
 
-virNetDevVlanPtr
-virDomainNetGetActualVlan(virDomainNetDefPtr iface)
+const virNetDevVlan *
+virDomainNetGetActualVlan(const virDomainNetDef *iface)
 {
-    virNetDevVlanPtr vlan = &iface->vlan;
+    const virNetDevVlan *vlan = &iface->vlan;
 
     /* if there is an ActualNetDef, *always* return
      * its vlan rather than the NetDef's vlan.

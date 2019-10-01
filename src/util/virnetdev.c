@@ -2168,7 +2168,7 @@ virNetDevReadNetConfig(const char *linkdev, int vf,
 int
 virNetDevSetNetConfig(const char *linkdev, int vf,
                       const virMacAddr *adminMAC,
-                      virNetDevVlanPtr vlan,
+                      const virNetDevVlan *vlan,
                       const virMacAddr *MAC,
                       bool setVlan)
 {
@@ -2391,7 +2391,7 @@ int
 virNetDevSetNetConfig(const char *linkdev G_GNUC_UNUSED,
                       int vf G_GNUC_UNUSED,
                       const virMacAddr *adminMAC G_GNUC_UNUSED,
-                      virNetDevVlanPtr vlan G_GNUC_UNUSED,
+                      const virNetDevVlan *vlan G_GNUC_UNUSED,
                       const virMacAddr *MAC G_GNUC_UNUSED,
                       bool setVlan G_GNUC_UNUSED)
 {

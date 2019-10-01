@@ -1204,7 +1204,7 @@ libxlMakeNic(virDomainDefPtr def,
     virConnectPtr conn = NULL;
     virNetDevBandwidthPtr actual_bw;
     virNetDevVPortProfilePtr port_profile;
-    virNetDevVlanPtr virt_vlan;
+    const virNetDevVlan *virt_vlan;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     size_t i;
     const char *script = NULL;
