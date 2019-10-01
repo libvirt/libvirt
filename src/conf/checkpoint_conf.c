@@ -569,11 +569,6 @@ virDomainCheckpointRedefinePrep(virDomainObjPtr vm,
                                            def->parent.dom, xmlopt))
             return -1;
 
-        if (other == virDomainCheckpointGetCurrent(vm->checkpoints)) {
-            *update_current = true;
-            virDomainCheckpointSetCurrent(vm->checkpoints, NULL);
-        }
-
         /* Drop and rebuild the parent relationship, but keep all
          * child relations by reusing chk.  */
         virDomainMomentDropParent(other);
