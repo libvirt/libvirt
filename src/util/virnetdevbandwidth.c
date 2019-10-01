@@ -188,7 +188,7 @@ virNetDevBandwidthManipulateFilter(const char *ifname,
  */
 int
 virNetDevBandwidthSet(const char *ifname,
-                      virNetDevBandwidthPtr bandwidth,
+                      const virNetDevBandwidth *bandwidth,
                       bool hierarchical_class,
                       bool swapped)
 {
@@ -478,8 +478,8 @@ virNetDevBandwidthCopy(virNetDevBandwidthPtr *dest,
 }
 
 bool
-virNetDevBandwidthEqual(virNetDevBandwidthPtr a,
-                        virNetDevBandwidthPtr b)
+virNetDevBandwidthEqual(const virNetDevBandwidth *a,
+                        const virNetDevBandwidth *b)
 {
     if (!a && !b)
         return true;

@@ -260,7 +260,7 @@ virNetDevBandwidthRateFormat(virNetDevBandwidthRatePtr def,
  * Returns 0 on success, else -1.
  */
 int
-virNetDevBandwidthFormat(virNetDevBandwidthPtr def,
+virNetDevBandwidthFormat(const virNetDevBandwidth *def,
                          unsigned int class_id,
                          virBufferPtr buf)
 {

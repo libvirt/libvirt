@@ -3215,8 +3215,8 @@ int virDomainNetGetActualDirectMode(virDomainNetDefPtr iface);
 virDomainHostdevDefPtr virDomainNetGetActualHostdev(virDomainNetDefPtr iface);
 virNetDevVPortProfilePtr
 virDomainNetGetActualVirtPortProfile(const virDomainNetDef *iface);
-virNetDevBandwidthPtr
-virDomainNetGetActualBandwidth(virDomainNetDefPtr iface);
+const virNetDevBandwidth *
+virDomainNetGetActualBandwidth(const virDomainNetDef *iface);
 const virNetDevVlan *virDomainNetGetActualVlan(const virDomainNetDef *iface);
 bool virDomainNetGetActualTrustGuestRxFilters(virDomainNetDefPtr iface);
 const char *virDomainNetGetModelString(const virDomainNetDef *net);

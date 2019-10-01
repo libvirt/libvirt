@@ -3812,7 +3812,7 @@ lxcDomainAttachDeviceNetLive(virConnectPtr conn,
     virLXCDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
     virDomainNetType actualType;
-    virNetDevBandwidthPtr actualBandwidth;
+    const virNetDevBandwidth *actualBandwidth;
     char *veth = NULL;
 
     if (!priv->initpid) {

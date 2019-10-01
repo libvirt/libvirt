@@ -29,7 +29,7 @@ int virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
                             xmlNodePtr node,
                             bool allowFloor)
     ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
-int virNetDevBandwidthFormat(virNetDevBandwidthPtr def,
+int virNetDevBandwidthFormat(const virNetDevBandwidth *def,
                              unsigned int class_id,
                              virBufferPtr buf);
 

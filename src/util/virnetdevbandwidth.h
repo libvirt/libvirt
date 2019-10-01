@@ -39,7 +39,7 @@ struct _virNetDevBandwidth {
 void virNetDevBandwidthFree(virNetDevBandwidthPtr def);
 
 int virNetDevBandwidthSet(const char *ifname,
-                          virNetDevBandwidthPtr bandwidth,
+                          const virNetDevBandwidth *bandwidth,
                           bool hierarchical_class,
                           bool swapped)
     G_GNUC_WARN_UNUSED_RESULT;
@@ -48,7 +48,7 @@ int virNetDevBandwidthCopy(virNetDevBandwidthPtr *dest,
                            const virNetDevBandwidth *src)
     ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
-bool virNetDevBandwidthEqual(virNetDevBandwidthPtr a, virNetDevBandwidthPtr b);
+bool virNetDevBandwidthEqual(const virNetDevBandwidth *a, const virNetDevBandwidth *b);
 
 int virNetDevBandwidthPlug(const char *brname,
                            virNetDevBandwidthPtr net_bandwidth,

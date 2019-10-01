@@ -29554,8 +29554,8 @@ virDomainNetGetActualVirtPortProfile(const virDomainNetDef *iface)
     }
 }
 
-virNetDevBandwidthPtr
-virDomainNetGetActualBandwidth(virDomainNetDefPtr iface)
+const virNetDevBandwidth *
+virDomainNetGetActualBandwidth(const virDomainNetDef *iface)
 {
     /* if there is an ActualNetDef, *always* return
      * its bandwidth rather than the NetDef's bandwidth.

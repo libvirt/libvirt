@@ -333,7 +333,7 @@ char *virLXCProcessSetupInterfaceDirect(virConnectPtr conn,
     char *ret = NULL;
     char *res_ifname = NULL;
     virLXCDriverPtr driver = conn->privateData;
-    virNetDevBandwidthPtr bw;
+    const virNetDevBandwidth *bw;
     virNetDevVPortProfilePtr prof;
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
     const char *linkdev = virDomainNetGetActualDirectDev(net);
@@ -546,7 +546,7 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
 
     for (i = 0; i < def->nnets; i++) {
         char *veth = NULL;
-        virNetDevBandwidthPtr actualBandwidth;
+        const virNetDevBandwidth *actualBandwidth;
         /* If appropriate, grab a physical device from the configured
          * network's pool of devices, or resolve bridge device name
          * to the one defined in the network definition.
