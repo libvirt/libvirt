@@ -85,7 +85,7 @@ enum virNetDevVPortProfileLinkOp {
 #endif
 
 bool
-virNetDevVPortProfileEqual(virNetDevVPortProfilePtr a, virNetDevVPortProfilePtr b)
+virNetDevVPortProfileEqual(const virNetDevVPortProfile *a, const virNetDevVPortProfile *b)
 {
     /* NULL resistant */
     if (!a && !b)
@@ -226,7 +226,7 @@ virNetDevVPortProfileCheckComplete(virNetDevVPortProfilePtr virtport,
  * an error is logged and -1 is returned.
  */
 int
-virNetDevVPortProfileCheckNoExtras(virNetDevVPortProfilePtr virtport)
+virNetDevVPortProfileCheckNoExtras(const virNetDevVPortProfile *virtport)
 {
     const char *extra = NULL;
 
@@ -283,7 +283,7 @@ virNetDevVPortProfileCheckNoExtras(virNetDevVPortProfilePtr virtport)
  */
 static int
 virNetDevVPortProfileMerge(virNetDevVPortProfilePtr orig,
-                           virNetDevVPortProfilePtr mods)
+                           const virNetDevVPortProfile *mods)
 {
     enum virNetDevVPortProfile otype;
 
@@ -423,9 +423,9 @@ virNetDevVPortProfileMerge(virNetDevVPortProfilePtr orig,
  */
 
 int virNetDevVPortProfileMerge3(virNetDevVPortProfilePtr *result,
-                                virNetDevVPortProfilePtr fromInterface,
-                                virNetDevVPortProfilePtr fromNetwork,
-                                virNetDevVPortProfilePtr fromPortgroup)
+                                const virNetDevVPortProfile *fromInterface,
+                                const virNetDevVPortProfile *fromNetwork,
+                                const virNetDevVPortProfile *fromPortgroup)
 {
     int ret = -1;
     *result = NULL;

@@ -77,19 +77,19 @@ struct _virNetDevVPortProfile {
 };
 
 
-bool virNetDevVPortProfileEqual(virNetDevVPortProfilePtr a,
-                                virNetDevVPortProfilePtr b);
+bool virNetDevVPortProfileEqual(const virNetDevVPortProfile *a,
+                                const virNetDevVPortProfile *b);
 int virNetDevVPortProfileCopy(virNetDevVPortProfilePtr *dst,
                               const virNetDevVPortProfile *src);
 
 int virNetDevVPortProfileCheckComplete(virNetDevVPortProfilePtr virtport,
                                        bool generateMissing);
-int virNetDevVPortProfileCheckNoExtras(virNetDevVPortProfilePtr virtport);
+int virNetDevVPortProfileCheckNoExtras(const virNetDevVPortProfile *virtport);
 
 int virNetDevVPortProfileMerge3(virNetDevVPortProfilePtr *result,
-                                virNetDevVPortProfilePtr fromInterface,
-                                virNetDevVPortProfilePtr fromNetwork,
-                                virNetDevVPortProfilePtr fromPortgroup);
+                                const virNetDevVPortProfile *fromInterface,
+                                const virNetDevVPortProfile *fromNetwork,
+                                const virNetDevVPortProfile *fromPortgroup);
 
 int virNetDevVPortProfileAssociate(const char *ifname,
                                    const virNetDevVPortProfile *virtPort,

@@ -5491,7 +5491,7 @@ qemuDomainValidateActualNetDef(const virDomainNetDef *net,
      * a <virtualport> element in the config)
      */
     if (net->filter) {
-        virNetDevVPortProfilePtr vport = virDomainNetGetActualVirtPortProfile(net);
+        const virNetDevVPortProfile *vport = virDomainNetGetActualVirtPortProfile(net);
 
         if (!(actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
               actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||

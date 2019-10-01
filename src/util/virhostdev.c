@@ -402,7 +402,7 @@ virHostdevIsVFIODevice(const virDomainHostdevDef *hostdev)
 
 static int
 virHostdevNetConfigVirtPortProfile(const char *linkdev, int vf,
-                                   virNetDevVPortProfilePtr virtPort,
+                                   const virNetDevVPortProfile *virtPort,
                                    const virMacAddr *macaddr,
                                    const unsigned char *uuid,
                                    bool associate)
@@ -498,7 +498,7 @@ virHostdevSetNetConfig(virDomainHostdevDefPtr hostdev,
 {
     g_autofree char *linkdev = NULL;
     const virNetDevVlan *vlan;
-    virNetDevVPortProfilePtr virtPort;
+    const virNetDevVPortProfile *virtPort;
     int vf = -1;
     bool port_profile_associate = true;
 
@@ -548,7 +548,7 @@ virHostdevRestoreNetConfig(virDomainHostdevDefPtr hostdev,
     g_autofree virMacAddrPtr MAC = NULL;
     g_autofree virMacAddrPtr adminMAC = NULL;
     g_autoptr(virNetDevVlan) vlan = NULL;
-    virNetDevVPortProfilePtr virtPort;
+    const virNetDevVPortProfile *virtPort;
     int vf = -1;
     bool port_profile_associate = false;
 

@@ -132,7 +132,7 @@ virNetDevOpenvswitchConstructVlans(virCommandPtr cmd, const virNetDevVlan *virtV
 int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
                                 const virMacAddr *macaddr,
                                 const unsigned char *vmuuid,
-                                virNetDevVPortProfilePtr ovsport,
+                                const virNetDevVPortProfile *ovsport,
                                 const virNetDevVlan *virtVlan)
 {
     char macaddrstr[VIR_MAC_STRING_BUFLEN];

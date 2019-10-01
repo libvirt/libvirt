@@ -7328,7 +7328,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virErrorPtr orig_err;
     virDomainDefPtr def = vm->def;
-    virNetDevVPortProfilePtr vport = NULL;
+    const virNetDevVPortProfile *vport = NULL;
     size_t i;
     char *timestamp;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);

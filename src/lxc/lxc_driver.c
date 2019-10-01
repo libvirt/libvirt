@@ -4331,7 +4331,7 @@ lxcDomainDetachDeviceNetLive(virDomainObjPtr vm,
     int detachidx, ret = -1;
     virDomainNetType actualType;
     virDomainNetDefPtr detach = NULL;
-    virNetDevVPortProfilePtr vport = NULL;
+    const virNetDevVPortProfile *vport = NULL;
     virErrorPtr save_err = NULL;
 
     if ((detachidx = virDomainNetFindIdx(vm->def, dev->data.net)) < 0)

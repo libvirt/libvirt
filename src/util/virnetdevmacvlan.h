@@ -78,7 +78,7 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *ifname,
                                            virNetDevMacVLanMode mode,
                                            const virNetDevVlan *vlan,
                                            const unsigned char *vmuuid,
-                                           virNetDevVPortProfilePtr virtPortProfile,
+                                           const virNetDevVPortProfile *virtPortProfile,
                                            char **res_ifname,
                                            virNetDevVPortProfileOp vmop,
                                            char *stateDir,
@@ -101,7 +101,7 @@ int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname,
                                            const virMacAddr *macaddress,
                                            const char *linkdev,
                                            int mode,
-                                           virNetDevVPortProfilePtr virtPortProfile,
+                                           const virNetDevVPortProfile *virtPortProfile,
                                            char *stateDir)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_NONNULL(6) G_GNUC_WARN_UNUSED_RESULT;
@@ -110,7 +110,7 @@ int virNetDevMacVLanRestartWithVPortProfile(const char *cr_ifname,
                                             const virMacAddr *macaddress,
                                             const char *linkdev,
                                             const unsigned char *vmuuid,
-                                            virNetDevVPortProfilePtr virtPortProfile,
+                                            const virNetDevVPortProfile *virtPortProfile,
                                             virNetDevVPortProfileOp vmOp)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_NONNULL(4) G_GNUC_WARN_UNUSED_RESULT;
@@ -119,7 +119,7 @@ int virNetDevMacVLanVPortProfileRegisterCallback(const char *ifname,
                                                  const virMacAddr *macaddress,
                                                  const char *linkdev,
                                                  const unsigned char *vmuuid,
-                                                 virNetDevVPortProfilePtr virtPortProfile,
+                                                 const virNetDevVPortProfile *virtPortProfile,
                                                  virNetDevVPortProfileOp vmOp)
 ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
 ATTRIBUTE_NONNULL(4) G_GNUC_WARN_UNUSED_RESULT;

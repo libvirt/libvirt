@@ -32,7 +32,7 @@ int virNetDevOpenvswitchAddPort(const char *brname,
                                 const char *ifname,
                                 const virMacAddr *macaddr,
                                 const unsigned char *vmuuid,
-                                virNetDevVPortProfilePtr ovsport,
+                                const virNetDevVPortProfile *ovsport,
                                 const virNetDevVlan *virtVlan)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     G_GNUC_WARN_UNUSED_RESULT;

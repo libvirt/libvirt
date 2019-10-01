@@ -242,7 +242,7 @@ qemuMigrationCookieNetworkAlloc(virQEMUDriverPtr driver G_GNUC_UNUSED,
 
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDefPtr netptr;
-        virNetDevVPortProfilePtr vport;
+        const virNetDevVPortProfile *vport;
 
         netptr = def->nets[i];
         vport = virDomainNetGetActualVirtPortProfile(netptr);

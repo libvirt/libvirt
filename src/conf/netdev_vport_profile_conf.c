@@ -197,7 +197,7 @@ virNetDevVPortProfileParse(xmlNodePtr node, unsigned int flags)
 
 
 int
-virNetDevVPortProfileFormat(virNetDevVPortProfilePtr virtPort,
+virNetDevVPortProfileFormat(const virNetDevVPortProfile *virtPort,
                             virBufferPtr buf)
 {
     enum virNetDevVPortProfile type;
