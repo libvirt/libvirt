@@ -22,6 +22,7 @@
 #pragma once
 
 #include "internal.h"
+#include "virautoclean.h"
 
 typedef struct _virSystemdActivation virSystemdActivation;
 typedef virSystemdActivation *virSystemdActivationPtr;
@@ -81,6 +82,6 @@ void virSystemdActivationClaimFDs(virSystemdActivationPtr act,
                                   int **fds,
                                   size_t *nfds);
 
-void virSystemdActivationFree(virSystemdActivationPtr *act);
+void virSystemdActivationFree(virSystemdActivationPtr act);
 
-#define virSystemdActivationAutoPtrFree virSystemdActivationFree
+VIR_DEFINE_AUTOPTR_FUNC(virSystemdActivation, virSystemdActivationFree);

@@ -650,7 +650,7 @@ testActivationEmpty(const void *opaque ATTRIBUTE_UNUSED)
 
     if (act != NULL) {
         fprintf(stderr, "Unexpectedly got activation object");
-        virSystemdActivationFree(&act);
+        virSystemdActivationFree(act);
         return -1;
     }
 

@@ -917,7 +917,7 @@ virSystemdActivationNew(virSystemdActivationMap *map,
     return act;
 
  error:
-    virSystemdActivationFree(&act);
+    virSystemdActivationFree(act);
     return NULL;
 }
 
@@ -1046,12 +1046,12 @@ virSystemdActivationClaimFDs(virSystemdActivationPtr act,
  * associated with the activation object
  */
 void
-virSystemdActivationFree(virSystemdActivationPtr *act)
+virSystemdActivationFree(virSystemdActivationPtr act)
 {
-    if (!*act)
+    if (!act)
         return;
 
-    virHashFree((*act)->fds);
+    virHashFree(act->fds);
 
-    VIR_FREE(*act);
+    VIR_FREE(act);
 }
