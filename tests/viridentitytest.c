@@ -38,58 +38,53 @@ VIR_LOG_INIT("tests.identitytest");
 
 static int testIdentityAttrs(const void *data ATTRIBUTE_UNUSED)
 {
-    int ret = -1;
-    virIdentityPtr ident;
+    g_autoptr(virIdentity) ident = NULL;
     const char *val;
     int rc;
 
     if (!(ident = virIdentityNew()))
-        goto cleanup;
+        return -1;
 
     if (virIdentitySetUserName(ident, "fred") < 0)
-        goto cleanup;
+        return -1;
 
     if ((rc = virIdentityGetUserName(ident, &val)) < 0)
-        goto cleanup;
+        return -1;
 
     if (STRNEQ_NULLABLE(val, "fred") || rc != 1) {
         VIR_DEBUG("Expected 'fred' got '%s'", NULLSTR(val));
-        goto cleanup;
+        return -1;
     }
 
     if ((rc = virIdentityGetGroupName(ident, &val)) < 0)
-        goto cleanup;
+        return -1;
 
     if (val != NULL || rc != 0) {
         VIR_DEBUG("Unexpected groupname attribute");
-        goto cleanup;
+        return -1;
     }
 
     if (virIdentitySetUserName(ident, "joe") >= 0) {
         VIR_DEBUG("Unexpectedly overwrote attribute");
-        goto cleanup;
+        return -1;
     }
 
     if ((rc = virIdentityGetUserName(ident, &val)) < 0)
-        goto cleanup;
+        return -1;
 
     if (STRNEQ_NULLABLE(val, "fred") || rc != 1) {
         VIR_DEBUG("Expected 'fred' got '%s'", NULLSTR(val));
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    virObjectUnref(ident);
-    return ret;
+    return 0;
 }
 
 
 static int testIdentityGetSystem(const void *data)
 {
     const char *context = data;
-    int ret = -1;
-    virIdentityPtr ident = NULL;
+    g_autoptr(virIdentity) ident = NULL;
     const char *val;
     int rc;
 
@@ -97,35 +92,32 @@ static int testIdentityGetSystem(const void *data)
     if (context) {
         VIR_DEBUG("libvirt not compiled with SELinux, skipping this test");
         ret = EXIT_AM_SKIP;
-        goto cleanup;
+        return -1;
     }
 #endif
 
     if (!(ident = virIdentityGetSystem())) {
         VIR_DEBUG("Unable to get system identity");
-        goto cleanup;
+        return -1;
     }
 
     if ((rc = virIdentityGetSELinuxContext(ident, &val)) < 0)
-        goto cleanup;
+        return -1;
 
     if (context == NULL) {
         if (val != NULL || rc != 0) {
             VIR_DEBUG("Unexpected SELinux context %s", NULLSTR(val));
-            goto cleanup;
+            return -1;
         }
     } else {
         if (STRNEQ_NULLABLE(val, context) || rc != 1) {
             VIR_DEBUG("Want SELinux context '%s' got '%s'",
                       context, val);
-            goto cleanup;
+            return -1;
         }
     }
 
-    ret = 0;
- cleanup:
-    virObjectUnref(ident);
-    return ret;
+    return 0;
 }
 
 static int testSetFakeSELinuxContext(const void *data ATTRIBUTE_UNUSED)

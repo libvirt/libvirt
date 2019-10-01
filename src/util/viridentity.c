@@ -105,7 +105,7 @@ virIdentityPtr virIdentityGetCurrent(void)
  */
 int virIdentitySetCurrent(virIdentityPtr ident)
 {
-    virIdentityPtr old;
+    g_autoptr(virIdentity) old = NULL;
 
     if (virIdentityInitialize() < 0)
         return -1;
@@ -119,8 +119,6 @@ int virIdentitySetCurrent(virIdentityPtr ident)
         virObjectUnref(ident);
         return -1;
     }
-
-    virObjectUnref(old);
 
     return 0;
 }
@@ -136,60 +134,56 @@ int virIdentitySetCurrent(virIdentityPtr ident)
  */
 virIdentityPtr virIdentityGetSystem(void)
 {
-    VIR_AUTOFREE(char *) username = NULL;
-    VIR_AUTOFREE(char *) groupname = NULL;
+    g_autofree char *username = NULL;
+    g_autofree char *groupname = NULL;
     unsigned long long startTime;
-    virIdentityPtr ret = NULL;
+    g_autoptr(virIdentity) ret = NULL;
 #if WITH_SELINUX
     security_context_t con;
 #endif
 
     if (!(ret = virIdentityNew()))
-        goto error;
+        return NULL;
 
     if (virIdentitySetProcessID(ret, getpid()) < 0)
-        goto error;
+        return NULL;
 
     if (virProcessGetStartTime(getpid(), &startTime) < 0)
-        goto error;
+        return NULL;
     if (startTime != 0 &&
         virIdentitySetProcessTime(ret, startTime) < 0)
-        goto error;
+        return NULL;
 
     if (!(username = virGetUserName(geteuid())))
         return ret;
     if (virIdentitySetUserName(ret, username) < 0)
-        goto error;
+        return NULL;
     if (virIdentitySetUNIXUserID(ret, getuid()) < 0)
-        goto error;
+        return NULL;
 
     if (!(groupname = virGetGroupName(getegid())))
         return ret;
     if (virIdentitySetGroupName(ret, groupname) < 0)
-        goto error;
+        return NULL;
     if (virIdentitySetUNIXGroupID(ret, getgid()) < 0)
-        goto error;
+        return NULL;
 
 #if WITH_SELINUX
     if (is_selinux_enabled() > 0) {
         if (getcon(&con) < 0) {
             virReportSystemError(errno, "%s",
                                  _("Unable to lookup SELinux process context"));
-            return ret;
+            return NULL;
         }
         if (virIdentitySetSELinuxContext(ret, con) < 0) {
             freecon(con);
-            goto error;
+            return NULL;
         }
         freecon(con);
     }
 #endif
 
-    return ret;
-
- error:
-    virObjectUnref(ret);
-    return NULL;
+    return g_steal_pointer(&ret);
 }
 
 
