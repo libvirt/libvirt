@@ -232,9 +232,11 @@ virSecurityDACTransactionRun(pid_t pid ATTRIBUTE_UNUSED,
             return -1;
 
         for (i = 0; i < list->nItems; i++) {
-            const char *p = list->items[i]->path;
+            virSecurityDACChownItemPtr item = list->items[i];
+            const char *p = item->path;
 
-            VIR_APPEND_ELEMENT_COPY_INPLACE(paths, npaths, p);
+            if (item->remember)
+                VIR_APPEND_ELEMENT_COPY_INPLACE(paths, npaths, p);
         }
 
         if (!(state = virSecurityManagerMetadataLock(list->manager, paths, npaths)))
