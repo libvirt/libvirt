@@ -347,6 +347,88 @@ qemuCheckpointAddActions(virDomainObjPtr vm,
 }
 
 
+static virDomainMomentObjPtr
+qemuCheckpointRedefine(virQEMUDriverPtr driver,
+                       virDomainObjPtr vm,
+                       virDomainCheckpointDefPtr *def,
+                       bool *update_current)
+{
+    virDomainMomentObjPtr chk = NULL;
+
+    if (virDomainCheckpointRedefinePrep(vm, def, &chk, driver->xmlopt,
+                                        update_current) < 0)
+        return NULL;
+
+    /* XXX Should we validate that the redefined checkpoint even
+     * makes sense, such as checking that qemu-img recognizes the
+     * checkpoint bitmap name in at least one of the domain's disks?  */
+
+    if (chk)
+        return chk;
+
+    chk = virDomainCheckpointAssignDef(vm->checkpoints, *def);
+    *def = NULL;
+    return chk;
+}
+
+
+int
+qemuCheckpointCreateCommon(virQEMUDriverPtr driver,
+                           virDomainObjPtr vm,
+                           virCapsPtr caps,
+                           virDomainCheckpointDefPtr *def,
+                           virJSONValuePtr *actions,
+                           virDomainMomentObjPtr *chk)
+{
+    g_autoptr(virJSONValue) tmpactions = NULL;
+    virDomainMomentObjPtr parent;
+
+    if (qemuCheckpointPrepare(driver, caps, vm, *def) < 0)
+        return -1;
+
+    if ((parent = virDomainCheckpointGetCurrent(vm->checkpoints)))
+        (*def)->parent.parent_name = g_strdup(parent->def->name);
+
+    if (!(tmpactions = virJSONValueNewArray()))
+        return -1;
+
+    if (qemuCheckpointAddActions(vm, tmpactions, parent, *def) < 0)
+        return -1;
+
+    if (!(*chk = virDomainCheckpointAssignDef(vm->checkpoints, *def)))
+        return -1;
+
+    *def = NULL;
+
+    *actions = g_steal_pointer(&tmpactions);
+    return 0;
+}
+
+
+static virDomainMomentObjPtr
+qemuCheckpointCreate(virQEMUDriverPtr driver,
+                     virDomainObjPtr vm,
+                     virCapsPtr caps,
+                     virDomainCheckpointDefPtr *def)
+{
+    g_autoptr(virJSONValue) actions = NULL;
+    virDomainMomentObjPtr chk = NULL;
+    int rc;
+
+    if (qemuCheckpointCreateCommon(driver, vm, caps, def, &actions, &chk) < 0)
+        return NULL;
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    rc = qemuMonitorTransaction(qemuDomainGetMonitor(vm), &actions);
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0) {
+        virDomainCheckpointObjListRemove(vm->checkpoints, chk);
+        return NULL;
+    }
+
+    return chk;
+}
+
+
 virDomainCheckpointPtr
 qemuCheckpointCreateXML(virDomainPtr domain,
                         virDomainObjPtr vm,
@@ -360,11 +442,8 @@ qemuCheckpointCreateXML(virDomainPtr domain,
     bool update_current = true;
     bool redefine = flags & VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE;
     unsigned int parse_flags = 0;
-    virDomainMomentObjPtr other = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
     g_autoptr(virCaps) caps = NULL;
-    g_autoptr(virJSONValue) actions = NULL;
-    int ret;
     g_autoptr(virDomainCheckpointDef) def = NULL;
 
     virCheckFlags(VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE, NULL);
@@ -399,43 +478,30 @@ qemuCheckpointCreateXML(virDomainPtr domain,
         return NULL;
 
     if (redefine) {
-        if (virDomainCheckpointRedefinePrep(vm, &def, &chk,
-                                            driver->xmlopt,
-                                            &update_current) < 0)
-            goto endjob;
-    } else if (qemuCheckpointPrepare(driver, caps, vm, def) < 0) {
+        chk = qemuCheckpointRedefine(driver, vm, &def, &update_current);
+    } else {
+        chk = qemuCheckpointCreate(driver, vm, caps, &def);
+    }
+
+    if (!chk)
+        goto endjob;
+
+    if (update_current)
+        virDomainCheckpointSetCurrent(vm->checkpoints, chk);
+
+    if (qemuCheckpointWriteMetadata(vm, chk, driver->caps,
+                                    driver->xmlopt,
+                                    cfg->checkpointDir) < 0) {
+        /* if writing of metadata fails, error out rather than trying
+         * to silently carry on without completing the checkpoint */
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unable to save metadata for checkpoint %s"),
+                       chk->def->name);
+        virDomainCheckpointObjListRemove(vm->checkpoints, chk);
         goto endjob;
     }
 
-    if (!chk) {
-        if (!(chk = virDomainCheckpointAssignDef(vm->checkpoints, def)))
-            goto endjob;
-
-        def = NULL;
-    }
-
-    other = virDomainCheckpointGetCurrent(vm->checkpoints);
-    if (other) {
-        if (!redefine)
-            chk->def->parent_name = g_strdup(other->def->name);
-    }
-
-    /* actually do the checkpoint */
-    if (redefine) {
-        /* XXX Should we validate that the redefined checkpoint even
-         * makes sense, such as checking that qemu-img recognizes the
-         * checkpoint bitmap name in at least one of the domain's disks?  */
-    } else {
-        if (!(actions = virJSONValueNewArray()))
-            goto endjob;
-        if (qemuCheckpointAddActions(vm, actions, other,
-                                     virDomainCheckpointObjGetDef(chk)) < 0)
-            goto endjob;
-        qemuDomainObjEnterMonitor(driver, vm);
-        ret = qemuMonitorTransaction(priv->mon, &actions);
-        if (qemuDomainObjExitMonitor(driver, vm) < 0 || ret < 0)
-            goto endjob;
-    }
+    virDomainCheckpointLinkParent(vm->checkpoints, chk);
 
     /* If we fail after this point, there's not a whole lot we can do;
      * we've successfully created the checkpoint, so we have to go
@@ -444,27 +510,6 @@ qemuCheckpointCreateXML(virDomainPtr domain,
     checkpoint = virGetDomainCheckpoint(domain, chk->def->name);
 
  endjob:
-    if (checkpoint) {
-        if (update_current)
-            virDomainCheckpointSetCurrent(vm->checkpoints, chk);
-        if (qemuCheckpointWriteMetadata(vm, chk, driver->caps,
-                                        driver->xmlopt,
-                                        cfg->checkpointDir) < 0) {
-            /* if writing of metadata fails, error out rather than trying
-             * to silently carry on without completing the checkpoint */
-            virObjectUnref(checkpoint);
-            checkpoint = NULL;
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unable to save metadata for checkpoint %s"),
-                           chk->def->name);
-            virDomainCheckpointObjListRemove(vm->checkpoints, chk);
-        } else {
-            virDomainCheckpointLinkParent(vm->checkpoints, chk);
-        }
-    } else if (chk) {
-        virDomainCheckpointObjListRemove(vm->checkpoints, chk);
-    }
-
     qemuDomainObjEndJob(driver, vm);
 
     return checkpoint;
