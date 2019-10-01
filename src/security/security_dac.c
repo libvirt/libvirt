@@ -1431,10 +1431,11 @@ virSecurityDACRestoreHostdevLabel(virSecurityManagerPtr mgr,
 
 
 static int
-virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
-                              virDomainDefPtr def,
-                              virDomainChrSourceDefPtr dev_source,
-                              bool chardevStdioLogd)
+virSecurityDACSetChardevLabelHelper(virSecurityManagerPtr mgr,
+                                    virDomainDefPtr def,
+                                    virDomainChrSourceDefPtr dev_source,
+                                    bool chardevStdioLogd,
+                                    bool remember)
 
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
@@ -1471,7 +1472,7 @@ virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
     case VIR_DOMAIN_CHR_TYPE_FILE:
         ret = virSecurityDACSetOwnership(mgr, NULL,
                                          dev_source->data.file.path,
-                                         user, group, true);
+                                         user, group, remember);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PIPE:
@@ -1479,12 +1480,12 @@ virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
             virAsprintf(&out, "%s.out", dev_source->data.file.path) < 0)
             goto done;
         if (virFileExists(in) && virFileExists(out)) {
-            if (virSecurityDACSetOwnership(mgr, NULL, in, user, group, true) < 0 ||
-                virSecurityDACSetOwnership(mgr, NULL, out, user, group, true) < 0)
+            if (virSecurityDACSetOwnership(mgr, NULL, in, user, group, remember) < 0 ||
+                virSecurityDACSetOwnership(mgr, NULL, out, user, group, remember) < 0)
                 goto done;
         } else if (virSecurityDACSetOwnership(mgr, NULL,
                                               dev_source->data.file.path,
-                                              user, group, true) < 0) {
+                                              user, group, remember) < 0) {
             goto done;
         }
         ret = 0;
@@ -1499,7 +1500,7 @@ virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
              * and passed via FD */
             if (virSecurityDACSetOwnership(mgr, NULL,
                                            dev_source->data.nix.path,
-                                           user, group, true) < 0)
+                                           user, group, remember) < 0)
                 goto done;
         }
         ret = 0;
@@ -1525,11 +1526,24 @@ virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
     return ret;
 }
 
+
 static int
-virSecurityDACRestoreChardevLabel(virSecurityManagerPtr mgr,
-                                  virDomainDefPtr def ATTRIBUTE_UNUSED,
-                                  virDomainChrSourceDefPtr dev_source,
-                                  bool chardevStdioLogd)
+virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
+                              virDomainDefPtr def,
+                              virDomainChrSourceDefPtr dev_source,
+                              bool chardevStdioLogd)
+{
+    return virSecurityDACSetChardevLabelHelper(mgr, def, dev_source,
+                                               chardevStdioLogd, true);
+}
+
+
+static int
+virSecurityDACRestoreChardevLabelHelper(virSecurityManagerPtr mgr,
+                                        virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                        virDomainChrSourceDefPtr dev_source,
+                                        bool chardevStdioLogd,
+                                        bool recall)
 {
     virSecurityDeviceLabelDefPtr chr_seclabel = NULL;
     char *in = NULL, *out = NULL;
@@ -1549,7 +1563,9 @@ virSecurityDACRestoreChardevLabel(virSecurityManagerPtr mgr,
     switch ((virDomainChrType)dev_source->type) {
     case VIR_DOMAIN_CHR_TYPE_DEV:
     case VIR_DOMAIN_CHR_TYPE_FILE:
-        ret = virSecurityDACRestoreFileLabel(mgr, dev_source->data.file.path);
+        ret = virSecurityDACRestoreFileLabelInternal(mgr, NULL,
+                                                     dev_source->data.file.path,
+                                                     recall);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PIPE:
@@ -1557,10 +1573,12 @@ virSecurityDACRestoreChardevLabel(virSecurityManagerPtr mgr,
             virAsprintf(&in, "%s.in", dev_source->data.file.path) < 0)
             goto done;
         if (virFileExists(in) && virFileExists(out)) {
-            if (virSecurityDACRestoreFileLabel(mgr, out) < 0 ||
-                virSecurityDACRestoreFileLabel(mgr, in) < 0)
+            if (virSecurityDACRestoreFileLabelInternal(mgr, NULL, out, recall) < 0 ||
+                virSecurityDACRestoreFileLabelInternal(mgr, NULL, in, recall) < 0)
                 goto done;
-        } else if (virSecurityDACRestoreFileLabel(mgr, dev_source->data.file.path) < 0) {
+        } else if (virSecurityDACRestoreFileLabelInternal(mgr, NULL,
+                                                          dev_source->data.file.path,
+                                                          recall) < 0) {
             goto done;
         }
         ret = 0;
@@ -1568,7 +1586,9 @@ virSecurityDACRestoreChardevLabel(virSecurityManagerPtr mgr,
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         if (!dev_source->data.nix.listen &&
-            virSecurityDACRestoreFileLabel(mgr, dev_source->data.nix.path) < 0) {
+            virSecurityDACRestoreFileLabelInternal(mgr, NULL,
+                                                   dev_source->data.nix.path,
+                                                   recall) < 0) {
             goto done;
         }
         ret = 0;
@@ -1592,6 +1612,17 @@ virSecurityDACRestoreChardevLabel(virSecurityManagerPtr mgr,
     VIR_FREE(in);
     VIR_FREE(out);
     return ret;
+}
+
+
+static int
+virSecurityDACRestoreChardevLabel(virSecurityManagerPtr mgr,
+                                  virDomainDefPtr def,
+                                  virDomainChrSourceDefPtr dev_source,
+                                  bool chardevStdioLogd)
+{
+    return virSecurityDACRestoreChardevLabelHelper(mgr, def, dev_source,
+                                                   chardevStdioLogd, true);
 }
 
 
