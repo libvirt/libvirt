@@ -556,10 +556,8 @@ virDomainCheckpointRedefinePrep(virDomainObjPtr vm,
     if (def->parent.parent_name &&
          (parent = virDomainCheckpointFindByName(vm->checkpoints,
                                                  def->parent.parent_name))) {
-        if (parent == virDomainCheckpointGetCurrent(vm->checkpoints)) {
+        if (parent == virDomainCheckpointGetCurrent(vm->checkpoints))
             *update_current = true;
-            virDomainCheckpointSetCurrent(vm->checkpoints, NULL);
-        }
     }
 
     other = virDomainCheckpointFindByName(vm->checkpoints, def->parent.name);
