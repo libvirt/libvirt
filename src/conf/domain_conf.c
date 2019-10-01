@@ -6135,7 +6135,7 @@ virDomainRedirdevDefValidate(const virDomainDef *def,
 
 
 int
-virDomainActualNetDefValidate(const virDomainNetDef *net G_GNUC_UNUSED)
+virDomainActualNetDefValidate(const virDomainNetDef *net)
 {
     /* Unlike virDomainNetDefValidate(), which is a static function
      * called internally to this file, virDomainActualNetDefValidate()
@@ -6150,9 +6150,43 @@ virDomainActualNetDefValidate(const virDomainNetDef *net G_GNUC_UNUSED)
      * is allowed for a type of interface), but *not*
      * hypervisor-specific things.
      */
+    char macstr[VIR_MAC_STRING_BUFLEN];
+    virDomainNetType actualType = virDomainNetGetActualType(net);
+    const virNetDevVPortProfile *vport = virDomainNetGetActualVirtPortProfile(net);
+    const virNetDevBandwidth *bandwidth = virDomainNetGetActualBandwidth(net);
+
+    virMacAddrFormat(&net->mac, macstr);
+
+    if (virDomainNetGetActualVlan(net)) {
+        /* vlan configuration via libvirt is only supported for PCI
+         * Passthrough SR-IOV devices (hostdev or macvtap passthru
+         * mode) and openvswitch bridges. Otherwise log an error and
+         * fail
+         */
+        if (!(actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV ||
+              (actualType == VIR_DOMAIN_NET_TYPE_DIRECT &&
+               virDomainNetGetActualDirectMode(net) == VIR_NETDEV_MACVLAN_MODE_PASSTHRU) ||
+              (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE &&
+               vport  && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH))) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("interface %s - vlan tag not supported for this connection type"),
+                           macstr);
+            return -1;
+        }
+    }
+
+    /* bandwidth configuration via libvirt is not supported for
+     * hostdev network devices
+     */
+    if (bandwidth && actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("interface %s - bandwidth settings are not supported "
+                         "for hostdev interfaces"),
+                       macstr);
+        return -1;
+    }
 
     return 0;
-
 }
 
 
