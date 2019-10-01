@@ -983,7 +983,7 @@ virDomainSnapshotRedefinePrep(virDomainObjPtr vm,
                               virDomainSnapshotDefPtr *defptr,
                               virDomainMomentObjPtr *snap,
                               virDomainXMLOptionPtr xmlopt,
-                              bool *update_current,
+                              bool *update_current G_GNUC_UNUSED,
                               unsigned int flags)
 {
     virDomainSnapshotDefPtr def = *defptr;
@@ -1006,11 +1006,6 @@ virDomainSnapshotRedefinePrep(virDomainObjPtr vm,
         return -1;
     }
     if (other) {
-        if (other == virDomainSnapshotGetCurrent(vm->snapshots)) {
-            *update_current = true;
-            virDomainSnapshotSetCurrent(vm->snapshots, NULL);
-        }
-
         /* Drop and rebuild the parent relationship, but keep all
          * child relations by reusing snap. */
         virDomainMomentDropParent(other);
