@@ -159,7 +159,7 @@ remoteRelayDomainEventCheckACL(virNetServerClientPtr client,
                                virConnectPtr conn, virDomainPtr dom)
 {
     virDomainDef def;
-    virIdentityPtr identity = NULL;
+    g_autoptr(virIdentity) identity = NULL;
     bool ret = false;
 
     /* For now, we just create a virDomainDef with enough contents to
@@ -177,7 +177,6 @@ remoteRelayDomainEventCheckACL(virNetServerClientPtr client,
 
  cleanup:
     ignore_value(virIdentitySetCurrent(NULL));
-    virObjectUnref(identity);
     return ret;
 }
 
@@ -187,7 +186,7 @@ remoteRelayNetworkEventCheckACL(virNetServerClientPtr client,
                                 virConnectPtr conn, virNetworkPtr net)
 {
     virNetworkDef def;
-    virIdentityPtr identity = NULL;
+    g_autoptr(virIdentity) identity = NULL;
     bool ret = false;
 
     /* For now, we just create a virNetworkDef with enough contents to
@@ -204,7 +203,6 @@ remoteRelayNetworkEventCheckACL(virNetServerClientPtr client,
 
  cleanup:
     ignore_value(virIdentitySetCurrent(NULL));
-    virObjectUnref(identity);
     return ret;
 }
 
@@ -214,7 +212,7 @@ remoteRelayStoragePoolEventCheckACL(virNetServerClientPtr client,
                                     virStoragePoolPtr pool)
 {
     virStoragePoolDef def;
-    virIdentityPtr identity = NULL;
+    g_autoptr(virIdentity) identity = NULL;
     bool ret = false;
 
     /* For now, we just create a virStoragePoolDef with enough contents to
@@ -231,7 +229,6 @@ remoteRelayStoragePoolEventCheckACL(virNetServerClientPtr client,
 
  cleanup:
     ignore_value(virIdentitySetCurrent(NULL));
-    virObjectUnref(identity);
     return ret;
 }
 
@@ -241,7 +238,7 @@ remoteRelayNodeDeviceEventCheckACL(virNetServerClientPtr client,
                                    virNodeDevicePtr dev)
 {
     virNodeDeviceDef def;
-    virIdentityPtr identity = NULL;
+    g_autoptr(virIdentity) identity = NULL;
     bool ret = false;
 
     /* For now, we just create a virNodeDeviceDef with enough contents to
@@ -257,7 +254,6 @@ remoteRelayNodeDeviceEventCheckACL(virNetServerClientPtr client,
 
  cleanup:
     ignore_value(virIdentitySetCurrent(NULL));
-    virObjectUnref(identity);
     return ret;
 }
 
@@ -267,7 +263,7 @@ remoteRelaySecretEventCheckACL(virNetServerClientPtr client,
                                virSecretPtr secret)
 {
     virSecretDef def;
-    virIdentityPtr identity = NULL;
+    g_autoptr(virIdentity) identity = NULL;
     bool ret = false;
 
     /* For now, we just create a virSecretDef with enough contents to
@@ -285,7 +281,6 @@ remoteRelaySecretEventCheckACL(virNetServerClientPtr client,
 
  cleanup:
     ignore_value(virIdentitySetCurrent(NULL));
-    virObjectUnref(identity);
     return ret;
 }
 
@@ -294,7 +289,7 @@ remoteRelayDomainQemuMonitorEventCheckACL(virNetServerClientPtr client,
                                           virConnectPtr conn, virDomainPtr dom)
 {
     virDomainDef def;
-    virIdentityPtr identity = NULL;
+    g_autoptr(virIdentity) identity = NULL;
     bool ret = false;
 
     /* For now, we just create a virDomainDef with enough contents to
@@ -311,7 +306,6 @@ remoteRelayDomainQemuMonitorEventCheckACL(virNetServerClientPtr client,
 
  cleanup:
     ignore_value(virIdentitySetCurrent(NULL));
-    virObjectUnref(identity);
     return ret;
 }
 
@@ -1869,7 +1863,7 @@ void remoteRelayConnectionClosedEvent(virConnectPtr conn ATTRIBUTE_UNUSED, int r
 static void
 remoteClientFreePrivateCallbacks(struct daemonClientPrivate *priv)
 {
-    virIdentityPtr sysident = virIdentityGetSystem();
+    g_autoptr(virIdentity) sysident = virIdentityGetSystem();
     virIdentitySetCurrent(sysident);
 
     DEREG_CB(priv->conn, priv->domainEventCallbacks,
@@ -1898,7 +1892,6 @@ remoteClientFreePrivateCallbacks(struct daemonClientPrivate *priv)
     }
 
     virIdentitySetCurrent(NULL);
-    virObjectUnref(sysident);
 }
 #undef DEREG_CB
 
@@ -1965,7 +1958,7 @@ remoteOpenConn(const char *uri,
     }
 
     if (preserveIdentity) {
-        VIR_AUTOUNREF(virIdentityPtr) ident = NULL;
+        g_autoptr(virIdentity) ident = NULL;
 
         if (!(ident = virIdentityGetCurrent()))
             return -1;
@@ -2436,7 +2429,7 @@ remoteDispatchConnectSetIdentity(virNetServerPtr server ATTRIBUTE_UNUSED,
     int nparams = 0;
     int rv = -1;
     virConnectPtr conn = remoteGetHypervisorConn(client);
-    VIR_AUTOUNREF(virIdentityPtr) ident = NULL;
+    g_autoptr(virIdentity) ident = NULL;
     if (!conn)
         goto cleanup;
 
@@ -3982,7 +3975,7 @@ static int
 remoteSASLFinish(virNetServerPtr server,
                  virNetServerClientPtr client)
 {
-    virIdentityPtr clnt_identity = NULL;
+    g_autoptr(virIdentity) clnt_identity = NULL;
     const char *identity;
     struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
     int ssf;
@@ -3990,7 +3983,7 @@ remoteSASLFinish(virNetServerPtr server,
     /* TLS or UNIX domain sockets trivially OK */
     if (!virNetServerClientIsSecure(client)) {
         if ((ssf = virNetSASLSessionGetKeySize(priv->sasl)) < 0)
-            goto error;
+            return -1;
 
         VIR_DEBUG("negotiated an SSF of %d", ssf);
         if (ssf < 56) { /* 56 is good for Kerberos */
@@ -4006,7 +3999,7 @@ remoteSASLFinish(virNetServerPtr server,
         return -2;
 
     if (!(clnt_identity = virNetServerClientGetIdentity(client)))
-        goto error;
+        return -1;
 
     virNetServerSetClientAuthenticated(server, client);
     virNetServerClientSetSASLSession(client, priv->sasl);
@@ -4018,14 +4011,10 @@ remoteSASLFinish(virNetServerPtr server,
           "client=%p auth=%d identity=%s",
           client, REMOTE_AUTH_SASL, identity);
 
-    virObjectUnref(clnt_identity);
     virObjectUnref(priv->sasl);
     priv->sasl = NULL;
 
     return 0;
-
- error:
-    return -1;
 }
 
 /*

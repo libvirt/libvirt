@@ -826,7 +826,7 @@ handleSystemMessageFunc(DBusConnection *connection ATTRIBUTE_UNUSED,
 static void daemonRunStateInit(void *opaque)
 {
     virNetDaemonPtr dmn = opaque;
-    virIdentityPtr sysident = virIdentityGetSystem();
+    g_autoptr(virIdentity) sysident = virIdentityGetSystem();
 #ifdef MODULE_NAME
     bool mandatory = true;
 #else /* ! MODULE_NAME */
@@ -879,7 +879,6 @@ static void daemonRunStateInit(void *opaque)
  cleanup:
     daemonInhibitCallback(false, dmn);
     virObjectUnref(dmn);
-    virObjectUnref(sysident);
     virIdentitySetCurrent(NULL);
 }
 
