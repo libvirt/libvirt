@@ -256,8 +256,7 @@ fi
 # a partition, or to undo any other global state changes.
 cleanup_() { :; }
 
-mktempd="$abs_top_srcdir/build-aux/mktempd"
-t_=$("$SHELL" "$mktempd" "$test_dir_" lv-$this_test.XXXXXXXXXX) \
+t_=$("mktemp" "-d" "$test_dir_/lv-$this_test.XXXXXXXXXX") \
     || error_ "failed to create temporary directory in $test_dir_"
 
 # Run each test from within a temporary sub-directory named after the
