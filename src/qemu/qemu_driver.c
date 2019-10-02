@@ -13783,6 +13783,7 @@ qemuConnectCPUModelBaseline(virQEMUCapsPtr qemuCaps,
                             const char *libDir,
                             uid_t runUid,
                             gid_t runGid,
+                            bool expand_features,
                             virCPUDefPtr *cpus,
                             int ncpus)
 {
@@ -13808,6 +13809,16 @@ qemuConnectCPUModelBaseline(virQEMUCapsPtr qemuCaps,
     for (i = 1; i < ncpus; i++) {
         if (qemuMonitorGetCPUModelBaseline(proc->mon, baseline,
                                            cpus[i], &result) < 0)
+            goto cleanup;
+
+        if (qemuConnectStealCPUModelFromInfo(baseline, &result) < 0)
+            goto cleanup;
+    }
+
+    if (expand_features) {
+        if (qemuMonitorGetCPUModelExpansion(proc->mon,
+                                            QEMU_MONITOR_CPU_MODEL_EXPANSION_FULL,
+                                            baseline, true, false, &result) < 0)
             goto cleanup;
 
         if (qemuConnectStealCPUModelFromInfo(baseline, &result) < 0)
@@ -13891,9 +13902,11 @@ qemuConnectBaselineHypervisorCPU(virConnectPtr conn,
             goto cleanup;
     } else if (ARCH_IS_S390(arch) &&
                virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_BASELINE)) {
+        bool expand_features = (flags & VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES);
+
         if (!(cpu = qemuConnectCPUModelBaseline(qemuCaps, cfg->libDir,
                                                 cfg->user, cfg->group,
-                                                cpus, ncpus)))
+                                                expand_features, cpus, ncpus)))
             goto cleanup;
     } else {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
