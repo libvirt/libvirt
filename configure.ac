@@ -123,12 +123,6 @@ AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_CPP
 
-dnl Setting AB_VERSION makes the 'autobuild' lines of configure output
-dnl slightly more useful
-if test -d $srcdir/.git && git --version >/dev/null 2>&1 ; then
-  AB_VERSION=`cd $srcdir && git describe --match 'v[[0-9]]*' 2>/dev/null`
-fi
-
 dnl autoconf 2.70 adds a --runstatedir option so that downstreams
 dnl can point to /run instead of the historic /var/run, but
 dnl autoconf hasn't had a release since 2012.
