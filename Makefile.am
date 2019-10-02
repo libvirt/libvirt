@@ -42,6 +42,8 @@ EXTRA_DIST = \
   Makefile.nonreentrant \
   autogen.sh \
   cfg.mk \
+  GNUmakefile \
+  maint.mk \
   run.in \
   README.md \
   AUTHORS.in \
@@ -107,6 +109,10 @@ clean-cov:
 	rm -rf $(top_builddir)/coverage
 
 MAINTAINERCLEANFILES = .git-module-status
+
+distclean-local: clean-GNUmakefile
+clean-GNUmakefile:
+	test '$(srcdir)' = . || rm -f $(top_builddir)/GNUmakefile
 
 dist-hook: gen-AUTHORS
 

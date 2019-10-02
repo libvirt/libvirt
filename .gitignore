@@ -37,12 +37,15 @@
 .sc-start-sc_*
 .ycm_extra_conf.py
 /AUTHORS
-/GNUmakefile
 /INSTALL
 /NEWS
 /aclocal.m4
 /autom4te.cache
-/build-aux/*
+/build-aux/.gitignore
+/build-aux/compile
+/build-aux/depcomp
+/build-aux/missing
+/build-aux/test-driver
 /build/
 /ci/scratch/
 /confdefs.h
@@ -95,7 +98,6 @@
 /ltconfig
 /ltmain.sh
 /m4/*
-/maint.mk
 /mingw-libvirt.spec
 /mkinstalldirs
 /po/*gmo
@@ -264,7 +266,6 @@ stamp-h
 stamp-h.in
 stamp-h1
 tags
-!/build-aux/*.pl
 !/gnulib/lib/Makefile.am
 !/gnulib/tests/Makefile.am
 !/m4/virt-*.m4

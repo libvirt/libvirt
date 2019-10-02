@@ -1209,7 +1209,7 @@ exclude_file_name_regexp--sc_copyright_format = \
 	^cfg\.mk$$
 
 exclude_file_name_regexp--sc_copyright_usage = \
-  ^COPYING(|\.LESSER)$$
+  ^(COPYING(|\.LESSER))|maint\.mk$$
 
 exclude_file_name_regexp--sc_flags_usage = \
   ^(cfg\.mk|docs/|src/util/virnetdevtap\.c$$|tests/((vir(cgroup|pci|test|usb)|nss|qemuxml2argv|qemusecurity)mock|virfilewrapper)\.c$$)
@@ -1222,8 +1222,14 @@ exclude_file_name_regexp--sc_po_check = ^(docs/|src/rpc/gendispatch\.pl$$)
 exclude_file_name_regexp--sc_prohibit_VIR_ERR_NO_MEMORY = \
   ^(cfg\.mk|include/libvirt/virterror\.h|src/remote/remote_daemon_dispatch\.c|src/util/virerror\.c|docs/internals/oomtesting\.html\.in)$$
 
+exclude_file_name_regexp--sc_makefile_TAB_only_indentation = \
+  ^maint\.mk$$
+
+exclude_file_name_regexp--sc_makefile_at_at_check = \
+  ^maint\.mk$$
+
 exclude_file_name_regexp--sc_prohibit_PATH_MAX = \
-	^cfg\.mk$$
+	^(maint|cfg)\.mk$$
 
 exclude_file_name_regexp--sc_prohibit_access_xok = \
 	^(cfg\.mk|src/util/virutil\.c)$$
@@ -1265,7 +1271,7 @@ exclude_file_name_regexp--sc_prohibit_canonicalize_file_name = \
   ^(cfg\.mk|tests/virfilemock\.c)$$
 
 exclude_file_name_regexp--sc_prohibit_raw_allocation = \
-  ^(docs/hacking\.html\.in|src/util/viralloc\.[ch]|examples/.*|tests/(securityselinuxhelper|(vircgroup|nss)mock|commandhelper)\.c|tools/wireshark/src/packet-libvirt\.c|tools/nss/libvirt_nss(_leases|_macs)?\.c)$$
+  ^(docs/hacking\.html\.in|src/util/viralloc\.[ch]|examples/.*|tests/(securityselinuxhelper|(vircgroup|nss)mock|commandhelper)\.c|tools/wireshark/src/packet-libvirt\.c|tools/nss/libvirt_nss(_leases|_macs)?\.c|build-aux/useless-if-before-free)$$
 
 exclude_file_name_regexp--sc_prohibit_readlink = \
   ^src/(util/virutil|lxc/lxc_container)\.c$$
@@ -1283,7 +1289,7 @@ exclude_file_name_regexp--sc_prohibit_xmlGetProp = ^src/util/virxml\.c$$
 
 exclude_file_name_regexp--sc_prohibit_xmlURI = ^src/util/viruri\.c$$
 
-exclude_file_name_regexp--sc_prohibit_return_as_function = \.py$$
+exclude_file_name_regexp--sc_prohibit_return_as_function = \.py|build-aux/useless-if-before-free$$
 
 exclude_file_name_regexp--sc_require_config_h = \
 	^(examples/|tools/virsh-edit\.c$$|tests/virmockstathelpers.c)
@@ -1354,3 +1360,6 @@ exclude_file_name_regexp--sc_prohibit_dirent_d_type = \
 
 exclude_file_name_regexp--sc_prohibit_strcmp = \
   ^(tools/nss/libvirt_nss.*\.c|tools/virt-login-shell\.c)
+
+exclude_file_name_regexp--sc_prohibit_backslash_alignment = \
+  ^maint\.mk$$
