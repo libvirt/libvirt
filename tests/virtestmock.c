@@ -22,7 +22,6 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <fcntl.h>
-#include <execinfo.h>
 #include <sys/file.h>
 #include <sys/stat.h>
 #include <sys/socket.h>

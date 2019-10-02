@@ -746,7 +746,7 @@ virtTestLogOutput(virLogSourcePtr source G_GNUC_UNUSED,
                   void *data)
 {
     struct virtTestLogData *log = data;
-    virCheckFlags(VIR_LOG_STACK_TRACE,);
+    virCheckFlags(0,);
     virBufferAsprintf(&log->buf, "%s: %s", timestamp, str);
 }
 

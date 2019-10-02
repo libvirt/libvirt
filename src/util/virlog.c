@@ -28,7 +28,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <execinfo.h>
 #include <regex.h>
 #include <sys/uio.h>
 #if HAVE_SYSLOG_H
@@ -694,26 +693,6 @@ virLogVMessage(virLogSourcePtr source,
 
 
 static void
-virLogStackTraceToFd(int fd)
-{
-    void *array[100];
-    int size;
-    static bool doneWarning;
-    const char *msg = "Stack trace not available on this platform\n";
-
-#define STRIP_DEPTH 3
-    size = backtrace(array, G_N_ELEMENTS(array));
-    if (size) {
-        backtrace_symbols_fd(array +  STRIP_DEPTH, size - STRIP_DEPTH, fd);
-        ignore_value(safewrite(fd, "\n", 1));
-    } else if (!doneWarning) {
-        ignore_value(safewrite(fd, msg, strlen(msg)));
-        doneWarning = true;
-    }
-#undef STRIP_DEPTH
-}
-
-static void
 virLogOutputToFd(virLogSourcePtr source G_GNUC_UNUSED,
                  virLogPriority priority G_GNUC_UNUSED,
                  const char *filename G_GNUC_UNUSED,
@@ -729,6 +708,8 @@ virLogOutputToFd(virLogSourcePtr source G_GNUC_UNUSED,
     int fd = (intptr_t) data;
     char *msg;
 
+    virCheckFlags(0,);
+
     if (fd < 0)
         return;
 
@@ -737,9 +718,6 @@ virLogOutputToFd(virLogSourcePtr source G_GNUC_UNUSED,
 
     ignore_value(safewrite(fd, msg, strlen(msg)));
     VIR_FREE(msg);
-
-    if (flags & VIR_LOG_STACK_TRACE)
-        virLogStackTraceToFd(fd);
 }
 
 
@@ -832,7 +810,7 @@ virLogOutputToSyslog(virLogSourcePtr source G_GNUC_UNUSED,
                      const char *str,
                      void *data G_GNUC_UNUSED)
 {
-    virCheckFlags(VIR_LOG_STACK_TRACE,);
+    virCheckFlags(0,);
 
     syslog(virLogPrioritySyslog(priority), "%s", str);
 }
@@ -980,7 +958,7 @@ virLogOutputToJournald(virLogSourcePtr source,
                        const char *str G_GNUC_UNUSED,
                        void *data)
 {
-    virCheckFlags(VIR_LOG_STACK_TRACE,);
+    virCheckFlags(0,);
     int buffd = -1;
     int journalfd = (intptr_t) data;
     struct msghdr mh;
@@ -1168,8 +1146,6 @@ virLogGetFilters(void)
     virLogLock();
     for (i = 0; i < virLogNbFilters; i++) {
         const char *sep = ":";
-        if (virLogFilters[i]->flags & VIR_LOG_STACK_TRACE)
-            sep = ":+";
         virBufferAsprintf(&filterbuf, "%d%s%s ",
                           virLogFilters[i]->priority,
                           sep,
@@ -1416,7 +1392,7 @@ virLogFilterNew(const char *match,
     char *mdup = NULL;
     size_t mlen = strlen(match);
 
-    virCheckFlags(VIR_LOG_STACK_TRACE, NULL);
+    virCheckFlags(0, NULL);
 
     if (priority < VIR_LOG_DEBUG || priority > VIR_LOG_ERROR) {
         virReportError(VIR_ERR_INVALID_ARG, _("Invalid log priority %d"),
@@ -1659,11 +1635,8 @@ virLogParseOutput(const char *src)
  * virLogParseFilter:
  * @src: string defining a single filter
  *
- * The format of @src should be one of the following:
+ * The format of @src should be:
  *    x:name - filter affecting all modules which match 'name'
- *    x:+name
- *
- *      '+' - hints the logger to also include a stack trace for every message
  *      'name' - match string which either matches a name of a directory in
  *               libvirt's source tree which in turn affects all modules in
  *               that directory or it can matches a specific module within a
@@ -1711,7 +1684,9 @@ virLogParseFilter(const char *src)
 
     match = tokens[1];
     if (match[0] == '+') {
-        flags |= VIR_LOG_STACK_TRACE;
+        /* '+' used to indicate printing a stack trace,
+         * but we dropped that feature, so just chomp
+         * that leading '+' */
         match++;
     }
 
