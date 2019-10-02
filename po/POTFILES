@@ -1,5 +1,4 @@
 gnulib/lib/gai_strerror.c
-gnulib/lib/getopt.c
 gnulib/lib/regcomp.c
 src/access/viraccessdriverpolkit.c
 src/access/viraccessmanager.c

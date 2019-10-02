@@ -51,9 +51,6 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_BHYVE],[
     AM_CONDITIONAL([WITH_BHYVE], [test "$with_bhyve" = "yes"])
 ])
 
-dnl Build with gnulib's getopt which contains a reentrant interface
-AC_DEFUN([gl_REPLACE_GETOPT_ALWAYS], [])
-
 AC_DEFUN([LIBVIRT_DRIVER_RESULT_BHYVE],[
     LIBVIRT_RESULT([Bhyve], [$with_bhyve])
 ])
