@@ -35,8 +35,7 @@ export TAR_OPTIONS = --owner=0 --group=0 --numeric-owner
 ALL_RECURSIVE_TARGETS =
 
 include Makefile
-include $(srcdir)/$(_build-aux)/cfg.mk
-include $(srcdir)/$(_build-aux)/maint.mk
+include $(srcdir)/$(_build-aux)/syntax-check.mk
 
 else
 
@@ -44,8 +43,7 @@ else
 srcdir = .
 
 # The package can override .DEFAULT_GOAL to run actions like autoreconf.
-include $(srcdir)/$(_build-aux)/cfg.mk
-include $(srcdir)/$(_build-aux)/maint.mk
+include $(srcdir)/$(_build-aux)/syntax-check.mk
 
 ifeq ($(.DEFAULT_GOAL),abort-due-to-no-makefile)
 $(MAKECMDGOALS): abort-due-to-no-makefile
