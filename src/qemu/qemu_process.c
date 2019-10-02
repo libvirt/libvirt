@@ -7611,7 +7611,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
  retry:
     if ((ret = qemuRemoveCgroup(vm)) < 0) {
         if (ret == -EBUSY && (retries++ < 5)) {
-            usleep(200*1000);
+            g_usleep(200*1000);
             goto retry;
         }
         VIR_WARN("Failed to remove cgroup for %s",

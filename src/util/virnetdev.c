@@ -2304,7 +2304,7 @@ virNetDevSetNetConfig(const char *linkdev, int vf,
              * wait, then upcoming operations on the VF may fail.
              */
             while (retries-- > 0 && !virNetDevExists(linkdev))
-               usleep(1000);
+               g_usleep(1000);
         }
 
         if (pfDevOrig && setMACrc == 0) {

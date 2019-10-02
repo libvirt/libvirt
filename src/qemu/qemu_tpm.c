@@ -884,7 +884,7 @@ qemuExtTPMStartEmulator(virQEMUDriverPtr driver,
         rc = qemuTPMEmulatorGetPid(cfg->swtpmStateDir, shortName, &pid);
         if (rc < 0) {
             timeout -= 50;
-            usleep(50 * 1000);
+            g_usleep(50 * 1000);
             continue;
         }
         if (rc == 0 && pid == (pid_t)-1)

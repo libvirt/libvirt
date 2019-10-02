@@ -101,7 +101,7 @@ static int testFDStreamReadCommon(const char *scratchdir, bool blocking)
             got = st->driver->streamRecv(st, buf + offset, want);
             if (got < 0) {
                 if (got == -2 && !blocking) {
-                    usleep(20 * 1000);
+                    g_usleep(20 * 1000);
                     goto reread;
                 }
                 virFilePrintf(stderr, "Failed to read stream: %s\n",
@@ -222,7 +222,7 @@ static int testFDStreamWriteCommon(const char *scratchdir, bool blocking)
             got = st->driver->streamSend(st, pattern + offset, want);
             if (got < 0) {
                 if (got == -2 && !blocking) {
-                    usleep(20 * 1000);
+                    g_usleep(20 * 1000);
                     goto rewrite;
                 }
                 if (i == 9 &&

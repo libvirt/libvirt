@@ -1349,7 +1349,7 @@ virSecurityManagerMetadataLock(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                 if (retries && (errno == EACCES || errno == EAGAIN)) {
                     /* File is locked. Try again. */
                     retries--;
-                    usleep(1000);
+                    g_usleep(1000);
                     continue;
                 } else {
                     virReportSystemError(errno,

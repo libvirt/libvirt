@@ -1415,7 +1415,7 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
 
     /* simulate holdtime by sleeping */
     if (holdtime > 0)
-        usleep(holdtime * 1000);
+        g_usleep(holdtime * 1000);
 
     /* release the keys */
     for (i = 0; i < nkeycodes; i++) {

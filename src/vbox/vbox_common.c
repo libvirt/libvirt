@@ -7932,7 +7932,7 @@ vboxDomainSendKey(virDomainPtr dom,
     /* since VBOX does not support holdtime, simulate it by sleeping and
        then sending the release key scancodes */
     if (holdtime > 0)
-        usleep(holdtime * 1000);
+        g_usleep(holdtime * 1000);
 
     rc = gVBoxAPI.UIKeyboard.PutScancodes(keyboard, nkeycodes, keyUpCodes,
                                           &codesStored);

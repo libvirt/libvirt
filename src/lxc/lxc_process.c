@@ -1095,7 +1095,7 @@ virLXCProcessReadLogOutputData(virDomainObjPtr vm,
             goto cleanup;
         }
 
-        usleep(100*1000);
+        g_usleep(100*1000);
         retries--;
     }
 

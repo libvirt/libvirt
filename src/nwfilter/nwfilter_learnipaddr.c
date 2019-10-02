@@ -812,7 +812,7 @@ virNWFilterLearnThreadsTerminate(bool allowNewThreads)
     threadsTerminate = true;
 
     while (virHashSize(pendingLearnReq) != 0)
-        usleep((PKT_TIMEOUT_MS * 1000) / 3);
+        g_usleep((PKT_TIMEOUT_MS * 1000) / 3);
 
     if (allowNewThreads)
         threadsTerminate = false;

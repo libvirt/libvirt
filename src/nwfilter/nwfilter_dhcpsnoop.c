@@ -1273,7 +1273,7 @@ virNWFilterSnoopRatePenalty(virNWFilterSnoopPcapConfPtr pc,
         unsigned long long now;
 
         if (virTimeMillisNowRaw(&now) < 0) {
-            usleep(PCAP_FLOOD_TIMEOUT_MS); /* 1 ms */
+            g_usleep(PCAP_FLOOD_TIMEOUT_MS); /* 1 ms */
             pc->penaltyTimeoutAbs = 0;
         } else {
             /* don't listen to the fd for 1 ms */
@@ -2010,7 +2010,7 @@ virNWFilterSnoopJoinThreads(void)
     while (virAtomicIntGet(&virNWFilterSnoopState.nThreads) != 0) {
         VIR_WARN("Waiting for snooping threads to terminate: %u",
                  virAtomicIntGet(&virNWFilterSnoopState.nThreads));
-        usleep(1000 * 1000);
+        g_usleep(1000 * 1000);
     }
 }
 

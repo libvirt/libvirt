@@ -749,7 +749,7 @@ int virNetSocketNewConnectUNIX(const char *path,
             daemonLaunched = true;
         }
 
-        usleep(10000);
+        g_usleep(10000);
     }
 
     localAddr.len = sizeof(localAddr.data);

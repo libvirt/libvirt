@@ -1945,7 +1945,7 @@ virshBlockJobWait(virshBlockJobWaitDataPtr data)
             break;
         }
 
-        usleep(500 * 1000);
+        g_usleep(500 * 1000);
     }
 
     /* print 100% completed */

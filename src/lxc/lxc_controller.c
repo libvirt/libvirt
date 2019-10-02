@@ -574,7 +574,7 @@ static int virLXCControllerAppendNBDPids(virLXCControllerPtr ctrl,
     while (!virFileExists(pidpath)) {
         /* wait for 100ms before checking again, but don't do it for ever */
         if (errno == ENOENT && loops < 10) {
-            usleep(100 * 1000);
+            g_usleep(100 * 1000);
             loops++;
         } else {
             virReportSystemError(errno,

@@ -2965,7 +2965,7 @@ static int lxcFreezeContainer(virDomainObjPtr vm)
          * decide that the freezing has been complete only with
          * the state actually transit to "FROZEN".
          */
-        usleep(check_interval * 1000);
+        g_usleep(check_interval * 1000);
 
         r = virCgroupGetFreezerState(priv->cgroup, &state);
 

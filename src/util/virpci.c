@@ -833,11 +833,11 @@ virPCIDeviceTrySecondaryBusReset(virPCIDevicePtr dev,
     virPCIDeviceWrite16(parent, parentfd, PCI_BRIDGE_CONTROL,
                         ctl | PCI_BRIDGE_CTL_RESET);
 
-    usleep(200 * 1000); /* sleep 200ms */
+    g_usleep(200 * 1000); /* sleep 200ms */
 
     virPCIDeviceWrite16(parent, parentfd, PCI_BRIDGE_CONTROL, ctl);
 
-    usleep(200 * 1000); /* sleep 200ms */
+    g_usleep(200 * 1000); /* sleep 200ms */
 
     if (virPCIDeviceWrite(dev, cfgfd, 0, config_space, PCI_CONF_LEN) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -881,12 +881,12 @@ virPCIDeviceTryPowerManagementReset(virPCIDevicePtr dev, int cfgfd)
     virPCIDeviceWrite32(dev, cfgfd, dev->pci_pm_cap_pos + PCI_PM_CTRL,
                         ctl | PCI_PM_CTRL_STATE_D3hot);
 
-    usleep(10 * 1000); /* sleep 10ms */
+    g_usleep(10 * 1000); /* sleep 10ms */
 
     virPCIDeviceWrite32(dev, cfgfd, dev->pci_pm_cap_pos + PCI_PM_CTRL,
                         ctl | PCI_PM_CTRL_STATE_D0);
 
-    usleep(10 * 1000); /* sleep 10ms */
+    g_usleep(10 * 1000); /* sleep 10ms */
 
     if (virPCIDeviceWrite(dev, cfgfd, 0, &config_space[0], PCI_CONF_LEN) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,

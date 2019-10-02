@@ -2656,7 +2656,7 @@ virCgroupKillPainfully(virCgroupPtr group)
         if (ret <= 0)
             break;
 
-        usleep(200 * 1000);
+        g_usleep(200 * 1000);
     }
     VIR_DEBUG("Complete %d", ret);
     return ret;

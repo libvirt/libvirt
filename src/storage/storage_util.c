@@ -1940,7 +1940,7 @@ virStorageBackendStablePath(virStoragePoolObjPtr pool,
     if (virDirOpenQuiet(&dh, def->target.path) < 0) {
         opentries++;
         if (loop && errno == ENOENT && opentries < 50) {
-            usleep(100 * 1000);
+            g_usleep(100 * 1000);
             goto reopen;
         }
         virReportSystemError(errno,
@@ -1975,7 +1975,7 @@ virStorageBackendStablePath(virStoragePoolObjPtr pool,
     }
 
     if (!direrr && loop && ++retry < 100) {
-        usleep(100 * 1000);
+        g_usleep(100 * 1000);
         goto retry;
     }
 

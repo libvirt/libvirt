@@ -1034,7 +1034,7 @@ networkKillDaemon(pid_t pid,
          * than modifications to domains, this seems a reasonable
          * tradeoff in exchange for less code disruption.
          */
-        usleep(20 * 1000);
+        g_usleep(20 * 1000);
     }
     VIR_WARN("Timed out waiting after SIG%s to %s process %d "
              "(network '%s')",

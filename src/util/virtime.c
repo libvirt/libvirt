@@ -448,6 +448,6 @@ virTimeBackOffWait(virTimeBackOffVar *var)
 
     VIR_DEBUG("sleeping for %llu ms", next);
 
-    usleep(next * 1000);
+    g_usleep(next * 1000);
     return 1;
 }

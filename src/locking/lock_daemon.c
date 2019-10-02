@@ -657,7 +657,7 @@ virLockDaemonClientFree(void *opaque)
                     VIR_WARN("Failed to kill off pid %lld",
                              (unsigned long long)priv->clientPid);
                 }
-                usleep(200 * 1000);
+                g_usleep(200 * 1000);
             }
         }
     }

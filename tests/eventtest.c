@@ -382,7 +382,7 @@ mymain(void)
     startJob();
     pthread_mutex_unlock(&eventThreadMutex);
     sched_yield();
-    usleep(100 * 1000);
+    g_usleep(100 * 1000);
     pthread_mutex_lock(&eventThreadMutex);
     virEventPollRemoveHandle(handles[1].watch);
     if (finishJob("Interrupted during poll", -1, -1) != EXIT_SUCCESS)
@@ -448,7 +448,7 @@ mymain(void)
     startJob();
     pthread_mutex_unlock(&eventThreadMutex);
     sched_yield();
-    usleep(100 * 1000);
+    g_usleep(100 * 1000);
     pthread_mutex_lock(&eventThreadMutex);
     virEventPollRemoveTimeout(timers[1].timer);
     if (finishJob("Interrupted during poll", -1, -1) != EXIT_SUCCESS)

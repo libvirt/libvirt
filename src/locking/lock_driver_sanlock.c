@@ -376,7 +376,7 @@ virLockManagerSanlockSetupLockspace(virLockManagerSanlockDriverPtr driver)
 #else
             /* fall back to polling */
             VIR_DEBUG("Sleeping for %dms", LOCKSPACE_SLEEP);
-            usleep(LOCKSPACE_SLEEP * 1000);
+            g_usleep(LOCKSPACE_SLEEP * 1000);
 #endif
             VIR_DEBUG("Retrying to add lockspace (left %d)", retries);
             goto retry;

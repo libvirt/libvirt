@@ -404,7 +404,7 @@ virNetDevMacVLanTapOpen(const char *ifname,
                 tapfd[i] = fd;
             } else if (retries-- > 0) {
                 /* may need to wait for udev to be done */
-                usleep(20000);
+                g_usleep(20000);
             } else {
                 /* However, if haven't succeeded, quit. */
                 virReportSystemError(errno,

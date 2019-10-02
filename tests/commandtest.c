@@ -262,7 +262,7 @@ static int test4(const void *unused ATTRIBUTE_UNUSED)
         goto cleanup;
     }
     while (kill(pid, 0) != -1)
-        usleep(100*1000);
+        g_usleep(100*1000);
 
     ret = checkoutput("test4", NULL);
 
@@ -751,7 +751,7 @@ static int test18(const void *unused ATTRIBUTE_UNUSED)
     }
 
     while (kill(pid, SIGINT) != -1)
-        usleep(100*1000);
+        g_usleep(100*1000);
 
     ret = 0;
 
@@ -1052,7 +1052,7 @@ static int test25(const void *unused ATTRIBUTE_UNUSED)
                 goto cleanup;
             }
 
-            usleep(10 * 1000);
+            g_usleep(10 * 1000);
         } else {
             break;
         }

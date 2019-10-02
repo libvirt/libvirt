@@ -1650,7 +1650,7 @@ qemuMonitorJSONStartCPUs(qemuMonitorPtr mon)
 
         virJSONValueFree(reply);
         reply = NULL;
-        usleep(250000);
+        g_usleep(250000);
     } while (++i <= timeout);
 
     virJSONValueFree(cmd);

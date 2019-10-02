@@ -465,7 +465,7 @@ virNetDevIPWaitDadFinish(virSocketAddrPtr *addrs, size_t count)
         /* Parse response. */
         dad = virNetDevIPParseDadStatus(resp, recvbuflen, addrs, count);
         if (dad)
-            usleep(1000 * 10);
+            g_usleep(1000 * 10);
     }
     /* Check timeout. */
     if (dad) {

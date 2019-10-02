@@ -4387,7 +4387,7 @@ virFileWaitForExists(const char *path,
         if (tries == 0 || errno != ENOENT)
             return -1;
 
-        usleep(ms * 1000);
+        g_usleep(ms * 1000);
     }
 
     return 0;

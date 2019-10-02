@@ -177,7 +177,7 @@ virProcessAbort(pid_t pid)
     } else if (ret == 0) {
         VIR_DEBUG("trying SIGTERM to child process %d", pid);
         kill(pid, SIGTERM);
-        usleep(10 * 1000);
+        g_usleep(10 * 1000);
         while ((ret = waitpid(pid, &status, WNOHANG)) == -1 &&
                errno == EINTR);
         if (ret == pid) {
@@ -399,7 +399,7 @@ virProcessKillPainfullyDelay(pid_t pid, bool force, unsigned int extradelay)
             goto cleanup; /* process is dead */
         }
 
-        usleep(200 * 1000);
+        g_usleep(200 * 1000);
     }
 
     virReportSystemError(EBUSY,

@@ -999,7 +999,7 @@ virNetDevVPortProfileOpCommon(const char *ifname, int ifindex,
             break;
         }
 
-        usleep(STATUS_POLL_INTERVL_USEC);
+        g_usleep(STATUS_POLL_INTERVL_USEC);
     }
 
     if (status == PORT_PROFILE_RESPONSE_INPROGRESS) {
