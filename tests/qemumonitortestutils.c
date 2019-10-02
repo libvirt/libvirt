@@ -417,7 +417,7 @@ qemuMonitorTestFree(qemuMonitorTestPtr test)
     VIR_FREE(test->items);
 
     if (test->tmpdir && rmdir(test->tmpdir) < 0)
-        VIR_WARN("Failed to remove tempdir: %s", strerror(errno));
+        VIR_WARN("Failed to remove tempdir: %s", g_strerror(errno));
 
     VIR_FREE(test->tmpdir);
 

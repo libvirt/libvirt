@@ -20,14 +20,14 @@ mymain(void)
     model = virSecurityManagerGetModel(mgr);
     if (!model) {
         fprintf(stderr, "Failed to copy secModel model: %s",
-                strerror(errno));
+                g_strerror(errno));
         return EXIT_FAILURE;
     }
 
     doi = virSecurityManagerGetDOI(mgr);
     if (!doi) {
         fprintf(stderr, "Failed to copy secModel DOI: %s",
-                strerror(errno));
+                g_strerror(errno));
         return EXIT_FAILURE;
     }
 

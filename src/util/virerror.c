@@ -1322,8 +1322,11 @@ const char *virStrerror(int theerrno, char *errBuf, size_t errBufLen)
 {
     int save_errno = errno;
     const char *ret;
+    const char *str = g_strerror(theerrno);
+    size_t len = strlen(str);
 
-    strerror_r(theerrno, errBuf, errBufLen);
+    memcpy(errBuf, str, MIN(len, errBufLen));
+    errBuf[errBufLen-1] = '\0';
     ret = errBuf;
     errno = save_errno;
     return ret;
@@ -1349,11 +1352,9 @@ void virReportSystemErrorFull(int domcode,
                               const char *fmt, ...)
 {
     int save_errno = errno;
-    char strerror_buf[VIR_ERROR_MAX_LENGTH];
     char msgDetailBuf[VIR_ERROR_MAX_LENGTH];
 
-    const char *errnoDetail = virStrerror(theerrno, strerror_buf,
-                                          sizeof(strerror_buf));
+    const char *errnoDetail = g_strerror(theerrno);
     const char *msg = virErrorMsg(VIR_ERR_SYSTEM_ERROR, fmt);
     const char *msgDetail = NULL;
 

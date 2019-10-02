@@ -172,12 +172,12 @@ virTestLoadFile(const char *file, char **buf)
     int len, tmplen, buflen;
 
     if (!fp) {
-        fprintf(stderr, "%s: failed to open: %s\n", file, strerror(errno));
+        fprintf(stderr, "%s: failed to open: %s\n", file, g_strerror(errno));
         return -1;
     }
 
     if (fstat(fileno(fp), &st) < 0) {
-        fprintf(stderr, "%s: failed to fstat: %s\n", file, strerror(errno));
+        fprintf(stderr, "%s: failed to fstat: %s\n", file, g_strerror(errno));
         VIR_FORCE_FCLOSE(fp);
         return -1;
     }
@@ -208,7 +208,7 @@ virTestLoadFile(const char *file, char **buf)
             tmplen -= len;
         }
         if (ferror(fp)) {
-            fprintf(stderr, "%s: read failed: %s\n", file, strerror(errno));
+            fprintf(stderr, "%s: read failed: %s\n", file, g_strerror(errno));
             VIR_FORCE_FCLOSE(fp);
             VIR_FREE(*buf);
             return -1;

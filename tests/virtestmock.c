@@ -76,12 +76,12 @@ printFile(const char *file,
     }
 
     if (!(fp = real_fopen(output, "a"))) {
-        fprintf(stderr, "Unable to open %s: %s\n", output, strerror(errno));
+        fprintf(stderr, "Unable to open %s: %s\n", output, g_strerror(errno));
         abort();
     }
 
     if (flock(fileno(fp), LOCK_EX) < 0) {
-        fprintf(stderr, "Unable to lock %s: %s\n", output, strerror(errno));
+        fprintf(stderr, "Unable to lock %s: %s\n", output, g_strerror(errno));
         fclose(fp);
         abort();
     }

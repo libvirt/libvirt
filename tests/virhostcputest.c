@@ -37,7 +37,7 @@ linuxTestCompareFiles(const char *cpuinfofile,
     cpuinfo = fopen(cpuinfofile, "r");
     if (!cpuinfo) {
         fprintf(stderr, "unable to open: %s : %s\n",
-                cpuinfofile, strerror(errno));
+                cpuinfofile, g_strerror(errno));
         goto fail;
     }
 
@@ -86,7 +86,7 @@ linuxCPUStatsToBuf(virBufferPtr buf,
 
     if ((sc_clk_tck = sysconf(_SC_CLK_TCK)) < 0) {
         fprintf(stderr, "sysconf(_SC_CLK_TCK) fails : %s\n",
-                strerror(errno));
+                g_strerror(errno));
         return -1;
     }
     tick_to_nsec = (1000ull * 1000ull * 1000ull) / sc_clk_tck;
