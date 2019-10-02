@@ -43,7 +43,6 @@ EXTRA_DIST = \
   AUTHORS.in \
   build-aux/augeas-gentest.pl \
   build-aux/check-spacing.pl \
-  build-aux/gitlog-to-changelog \
   build-aux/header-ifdef.pl \
   build-aux/minimize-po.pl \
   build-aux/mock-noinline.pl \
