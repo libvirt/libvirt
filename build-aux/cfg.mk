@@ -16,16 +16,6 @@
 # along with this program.  If not, see
 # <http://www.gnu.org/licenses/>.
 
-# Use alpha.gnu.org for alpha and beta releases.
-# Use ftp.gnu.org for major releases.
-gnu_ftp_host-alpha = alpha.gnu.org
-gnu_ftp_host-beta = alpha.gnu.org
-gnu_ftp_host-major = ftp.gnu.org
-gnu_rel_host = $(gnu_ftp_host-$(RELEASE_TYPE))
-
-url_dir_list = \
-  ftp://$(gnu_rel_host)/gnu/coreutils
-
 # We use .gnulib, not gnulib.
 gnulib_dir = $(srcdir)/.gnulib
 
