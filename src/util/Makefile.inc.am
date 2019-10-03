@@ -279,6 +279,7 @@ libvirt_util_la_CFLAGS = \
 	$(ACL_CFLAGS) \
 	$(NULL)
 libvirt_util_la_LIBADD = \
+	-lm \
 	$(CAPNG_LIBS) \
 	$(YAJL_LIBS) \
 	$(LIBNL_LIBS) \
