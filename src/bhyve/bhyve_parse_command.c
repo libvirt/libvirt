@@ -23,7 +23,6 @@
 
 #include <config.h>
 #include <libutil.h>
-#include <getopt_int.h>
 
 #include "bhyve_capabilities.h"
 #include "bhyve_command.h"
@@ -633,6 +632,14 @@ bhyveParseBhyvePCIArg(virDomainDefPtr def,
     return -1;
 }
 
+#define CONSUME_ARG(var) \
+    if ((opti + 1) == argc) { \
+        virReportError(VIR_ERR_INVALID_ARG, _("Missing argument for '%s'"), \
+                       argv[opti]); \
+        goto error; \
+    } \
+    var = argv[++opti]
+
 /*
  * Parse the /usr/sbin/bhyve command line.
  */
@@ -642,28 +649,24 @@ bhyveParseBhyveCommandLine(virDomainDefPtr def,
                            unsigned caps,
                            int argc, char **argv)
 {
-    int c;
-    const char optstr[] = "abehuwxACHIPSWYp:g:c:s:m:l:U:";
     int vcpus = 1;
     size_t memory = 0;
     unsigned nahcidisks = 0;
     unsigned nvirtiodisks = 0;
-    struct _getopt_data *parser;
+    size_t opti;
+    const char *arg;
 
-    if (!argv)
-        goto error;
+    for (opti = 1; opti < argc; opti++) {
+        if (argv[opti][0] != '-')
+            break;
 
-    if (VIR_ALLOC(parser) < 0)
-        goto error;
-
-    while ((c = _getopt_internal_r(argc, argv, optstr,
-            NULL, NULL, 0, parser, 0)) != -1) {
-        switch (c) {
+        switch (argv[opti][1]) {
         case 'A':
             def->features[VIR_DOMAIN_FEATURE_ACPI] = VIR_TRISTATE_SWITCH_ON;
             break;
         case 'c':
-            if (virStrToLong_i(parser->optarg, NULL, 10, &vcpus) < 0) {
+            CONSUME_ARG(arg);
+            if (virStrToLong_i(arg, NULL, 10, &vcpus) < 0) {
                 virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                                _("Failed to parse number of vCPUs"));
                 goto error;
@@ -674,20 +677,23 @@ bhyveParseBhyveCommandLine(virDomainDefPtr def,
                 goto error;
             break;
         case 'l':
-            if (bhyveParseBhyveLPCArg(def, caps, parser->optarg))
+            CONSUME_ARG(arg);
+            if (bhyveParseBhyveLPCArg(def, caps, arg))
                 goto error;
             break;
         case 's':
+            CONSUME_ARG(arg);
             if (bhyveParseBhyvePCIArg(def,
                                       xmlopt,
                                       caps,
                                       &nahcidisks,
                                       &nvirtiodisks,
-                                      parser->optarg))
+                                      arg))
                 goto error;
             break;
         case 'm':
-            if (bhyveParseMemsize(parser->optarg, &memory)) {
+            CONSUME_ARG(arg);
+            if (bhyveParseMemsize(arg, &memory)) {
                 virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                                _("Failed to parse memory"));
                 goto error;
@@ -709,19 +715,23 @@ bhyveParseBhyveCommandLine(virDomainDefPtr def,
             def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_UTC;
             break;
         case 'U':
-            if (virUUIDParse(parser->optarg, def->uuid) < 0) {
+            CONSUME_ARG(arg);
+            if (virUUIDParse(arg, def->uuid) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Cannot parse UUID '%s'"), parser->optarg);
+                               _("Cannot parse UUID '%s'"), arg);
                 goto error;
             }
             break;
         case 'S':
             def->mem.locked = true;
             break;
+        case 'p':
+        case 'g':
+            CONSUME_ARG(arg);
         }
     }
 
-    if (argc != parser->optind) {
+    if (argc != opti) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("Failed to parse arguments for bhyve command"));
         goto error;
@@ -738,11 +748,9 @@ bhyveParseBhyveCommandLine(virDomainDefPtr def,
         goto error;
     }
 
-    VIR_FREE(parser);
     return 0;
 
  error:
-    VIR_FREE(parser);
     return -1;
 }
 
@@ -753,42 +761,38 @@ static int
 bhyveParseBhyveLoadCommandLine(virDomainDefPtr def,
                                int argc, char **argv)
 {
-    int c;
     /* bhyveload called with default arguments when only -m and -d are given.
      * Store this in a bit field and check if only those two options are given
      * later */
     unsigned arguments = 0;
     size_t memory = 0;
-    struct _getopt_data *parser;
     size_t i = 0;
     int ret = -1;
+    size_t opti;
+    const char *arg;
 
-    const char optstr[] = "CSc:d:e:h:l:m:";
+    for (opti = 1; opti < argc; opti++) {
+        if (argv[opti][0] != '-')
+            break;
 
-    if (!argv)
-        goto error;
-
-    if (VIR_ALLOC(parser) < 0)
-        goto error;
-
-    while ((c = _getopt_internal_r(argc, argv, optstr,
-            NULL, NULL, 0, parser, 0)) != -1) {
-        switch (c) {
+        switch (argv[opti][1]) {
         case 'd':
+            CONSUME_ARG(arg);
             arguments |= 1;
             /* Iterate over the disks of the domain trying to match up the
              * source */
             for (i = 0; i < def->ndisks; i++) {
                 if (STREQ(virDomainDiskGetSource(def->disks[i]),
-                          parser->optarg)) {
+                          arg)) {
                     def->disks[i]->info.bootIndex = i;
                     break;
                 }
             }
             break;
         case 'm':
+            CONSUME_ARG(arg);
             arguments |= 2;
-            if (bhyveParseMemsize(parser->optarg, &memory)) {
+            if (bhyveParseMemsize(arg, &memory)) {
                 virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                                _("Failed to parse memory"));
                 goto error;
@@ -806,6 +810,12 @@ bhyveParseBhyveLoadCommandLine(virDomainDefPtr def,
         }
     }
 
+    if (argc != opti) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("Failed to parse arguments for bhyve command"));
+        goto error;
+    }
+
     if (arguments != 3) {
         /* Set os.bootloader since virDomainDefFormatInternal will only format
          * the bootloader arguments if os->bootloader is set. */
@@ -813,12 +823,6 @@ bhyveParseBhyveLoadCommandLine(virDomainDefPtr def,
            goto error;
 
         def->os.bootloaderArgs = virStringListJoin((const char**) &argv[1], " ");
-    }
-
-    if (argc != parser->optind) {
-        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                       _("Failed to parse arguments for bhyveload command"));
-        goto error;
     }
 
     if (def->name == NULL) {
@@ -834,7 +838,6 @@ bhyveParseBhyveLoadCommandLine(virDomainDefPtr def,
 
     ret = 0;
  error:
-    VIR_FREE(parser);
     return ret;
 }
 
