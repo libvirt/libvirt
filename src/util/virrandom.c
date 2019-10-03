@@ -20,7 +20,6 @@
 
 #include <inttypes.h>
 #include <math.h>
-#include <strings.h>
 #include <time.h>
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -32,7 +31,6 @@
 
 #include "virrandom.h"
 #include "virthread.h"
-#include "count-one-bits.h"
 #include "virutil.h"
 #include "virerror.h"
 #include "virfile.h"
@@ -97,7 +95,7 @@ double virRandom(void)
 uint32_t virRandomInt(uint32_t max)
 {
     if ((max & (max - 1)) == 0)
-        return virRandomBits(ffs(max) - 1);
+        return virRandomBits(__builtin_ffs(max) - 1);
 
     double val = virRandom();
     return val * max;

@@ -27,7 +27,6 @@
 #include "viralloc.h"
 #include "virbuffer.h"
 #include "c-ctype.h"
-#include "count-one-bits.h"
 #include "virstring.h"
 #include "virutil.h"
 #include "virerror.h"
@@ -1028,7 +1027,7 @@ virBitmapNextSetBit(virBitmapPtr bitmap,
     if (bits == 0)
         return -1;
 
-    return ffsl(bits) - 1 + nl * VIR_BITMAP_BITS_PER_UNIT;
+    return __builtin_ffsl(bits) - 1 + nl * VIR_BITMAP_BITS_PER_UNIT;
 }
 
 
@@ -1127,7 +1126,7 @@ virBitmapNextClearBit(virBitmapPtr bitmap,
     if (bits == 0)
         return -1;
 
-    return ffsl(bits) - 1 + nl * VIR_BITMAP_BITS_PER_UNIT;
+    return __builtin_ffsl(bits) - 1 + nl * VIR_BITMAP_BITS_PER_UNIT;
 }
 
 
@@ -1144,7 +1143,7 @@ virBitmapCountBits(virBitmapPtr bitmap)
     size_t ret = 0;
 
     for (i = 0; i < bitmap->map_len; i++)
-        ret += count_one_bits_l(bitmap->map[i]);
+        ret += __builtin_popcountl(bitmap->map[i]);
 
     return ret;
 }

@@ -339,7 +339,7 @@ static int
 virCgroupV2GetAnyController(virCgroupPtr group)
 {
     /* The least significant bit is position 1. */
-    return ffs(group->unified.controllers) - 1;
+    return __builtin_ffs(group->unified.controllers) - 1;
 }
 
 

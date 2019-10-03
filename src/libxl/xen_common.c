@@ -31,7 +31,6 @@
 #include "virconf.h"
 #include "viralloc.h"
 #include "viruuid.h"
-#include "count-one-bits.h"
 #include "xenxs_private.h"
 #include "domain_conf.h"
 #include "virstring.h"

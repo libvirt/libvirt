@@ -555,7 +555,7 @@ vshCmddefGetData(const vshCmdDef *cmd, uint64_t *opts_need_arg,
         return NULL;
 
     /* Grab least-significant set bit */
-    i = ffsl(*opts_need_arg) - 1;
+    i = __builtin_ffsl(*opts_need_arg) - 1;
     opt = &cmd->opts[i];
     if (opt->type != VSH_OT_ARGV)
         *opts_need_arg &= ~(1ULL << i);

@@ -45,7 +45,6 @@
 #include "virstoragefile.h"
 #include "virfile.h"
 #include "virbitmap.h"
-#include "count-one-bits.h"
 #include "secret_conf.h"
 #include "netdev_vport_profile_conf.h"
 #include "netdev_bandwidth_conf.h"

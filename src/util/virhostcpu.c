@@ -44,7 +44,6 @@
 #include "virhostcpupriv.h"
 #include "physmem.h"
 #include "virerror.h"
-#include "count-one-bits.h"
 #include "intprops.h"
 #include "virarch.h"
 #include "virfile.h"

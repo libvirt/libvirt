@@ -29,7 +29,6 @@
 #include "internal.h"
 #include "virbitmap.h"
 #include "virbuffer.h"
-#include "count-one-bits.h"
 #include "datatypes.h"
 #include "domain_conf.h"
 #include "virlog.h"

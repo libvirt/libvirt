@@ -37,7 +37,6 @@
 #include "virhostmem.h"
 #include "physmem.h"
 #include "virerror.h"
-#include "count-one-bits.h"
 #include "virarch.h"
 #include "virfile.h"
 #include "virtypedparam.h"

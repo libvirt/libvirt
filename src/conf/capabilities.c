@@ -21,7 +21,6 @@
 
 #include <config.h>
 
-#include <strings.h>
 #include <unistd.h>
 
 #include "capabilities.h"
@@ -1152,7 +1151,7 @@ virCapabilitiesFormatHostXML(virCapsHostPtr host,
         virBufferAddLit(buf, "<power_management>\n");
         virBufferAdjustIndent(buf, 2);
         while (pm) {
-            int bit = ffs(pm) - 1;
+            int bit = __builtin_ffs(pm) - 1;
             virBufferAsprintf(buf, "<%s/>\n",
                               virCapsHostPMTargetTypeToString(bit));
             pm &= ~(1U << bit);

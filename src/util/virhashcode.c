@@ -28,7 +28,11 @@
 #include <config.h>
 
 #include "virhashcode.h"
-#include "bitrotate.h"
+
+static uint32_t rotl32(uint32_t x, int8_t r)
+{
+    return (x << r) | (x >> (32 - r));
+}
 
 /* slower than original but handles platforms that do only aligned reads */
 static inline uint32_t getblock(const uint8_t *p, int i)
