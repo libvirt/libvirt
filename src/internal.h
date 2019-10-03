@@ -63,7 +63,13 @@
 #include "libvirt/virterror.h"
 
 #include "c-strcase.h"
-#include "ignore-value.h"
+
+/* Merely casting to (void) is not sufficient since the
+ * introduction of the "warn_unused_result" attribute
+ */
+#define ignore_value(x) \
+    (__extension__ ({ __typeof__ (x) __x = (x); (void) __x; }))
+
 
 /* String equality tests, suggested by Jim Meyering. */
 #define STREQ(a, b) (strcmp(a, b) == 0)
