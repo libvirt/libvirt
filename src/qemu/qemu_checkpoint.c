@@ -429,6 +429,34 @@ qemuCheckpointCreate(virQEMUDriverPtr driver,
 }
 
 
+int
+qemuCheckpointCreateFinalize(virQEMUDriverPtr driver,
+                             virDomainObjPtr vm,
+                             virQEMUDriverConfigPtr cfg,
+                             virDomainMomentObjPtr chk,
+                             bool update_current)
+{
+    if (update_current)
+        virDomainCheckpointSetCurrent(vm->checkpoints, chk);
+
+    if (qemuCheckpointWriteMetadata(vm, chk, driver->caps,
+                                    driver->xmlopt,
+                                    cfg->checkpointDir) < 0) {
+        /* if writing of metadata fails, error out rather than trying
+         * to silently carry on without completing the checkpoint */
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unable to save metadata for checkpoint %s"),
+                       chk->def->name);
+        virDomainCheckpointObjListRemove(vm->checkpoints, chk);
+        return -1;
+    }
+
+    virDomainCheckpointLinkParent(vm->checkpoints, chk);
+
+    return 0;
+}
+
+
 virDomainCheckpointPtr
 qemuCheckpointCreateXML(virDomainPtr domain,
                         virDomainObjPtr vm,
@@ -486,22 +514,8 @@ qemuCheckpointCreateXML(virDomainPtr domain,
     if (!chk)
         goto endjob;
 
-    if (update_current)
-        virDomainCheckpointSetCurrent(vm->checkpoints, chk);
-
-    if (qemuCheckpointWriteMetadata(vm, chk, driver->caps,
-                                    driver->xmlopt,
-                                    cfg->checkpointDir) < 0) {
-        /* if writing of metadata fails, error out rather than trying
-         * to silently carry on without completing the checkpoint */
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unable to save metadata for checkpoint %s"),
-                       chk->def->name);
-        virDomainCheckpointObjListRemove(vm->checkpoints, chk);
+    if (qemuCheckpointCreateFinalize(driver, vm, cfg, chk, update_current) < 0)
         goto endjob;
-    }
-
-    virDomainCheckpointLinkParent(vm->checkpoints, chk);
 
     /* If we fail after this point, there's not a whole lot we can do;
      * we've successfully created the checkpoint, so we have to go

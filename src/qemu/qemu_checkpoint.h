@@ -61,3 +61,10 @@ qemuCheckpointCreateCommon(virQEMUDriverPtr driver,
                            virDomainCheckpointDefPtr *def,
                            virJSONValuePtr *actions,
                            virDomainMomentObjPtr *chk);
+
+int
+qemuCheckpointCreateFinalize(virQEMUDriverPtr driver,
+                             virDomainObjPtr vm,
+                             virQEMUDriverConfigPtr cfg,
+                             virDomainMomentObjPtr chk,
+                             bool update_current);
