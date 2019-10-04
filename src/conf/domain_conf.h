@@ -2594,6 +2594,9 @@ struct _virDomainObj {
                                           * restore will be required later */
 };
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainObj, virObjectUnref);
+
+
 typedef bool (*virDomainObjListACLFilter)(virConnectPtr conn,
                                           virDomainDefPtr def);
 

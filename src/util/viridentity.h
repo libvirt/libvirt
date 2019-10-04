@@ -26,6 +26,8 @@
 typedef struct _virIdentity virIdentity;
 typedef virIdentity *virIdentityPtr;
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virIdentity, virObjectUnref);
+
 virIdentityPtr virIdentityGetCurrent(void);
 int virIdentitySetCurrent(virIdentityPtr ident);
 

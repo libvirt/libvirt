@@ -195,6 +195,9 @@ struct _virCaps {
     virCapsStoragePoolPtr *pools;
 };
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCaps, virObjectUnref);
+
+
 struct _virCapsDomainData {
     int ostype;
     int arch;

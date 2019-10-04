@@ -1046,6 +1046,11 @@ BAD:
         g_autoptr, g_auto on an object whose cleanup function
         is declared with the libvirt macros and vice-verca.
       </dd>
+
+      <dt>VIR_AUTOUNREF</dt>
+      <dd>The GLib macros g_autoptr and G_DEFINE_AUTOPTR_CLEANUP_FUNC
+        should be used to manage autoclean of virObject classes.
+        This matches usage with GObject classes.</dd>
     </dl>
 
     <h2><a id="file_handling">File handling</a></h2>

@@ -87,6 +87,9 @@ struct _virDomainSnapshotDef {
     virObjectPtr cookie;
 };
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainSnapshotDef, virObjectUnref);
+
+
 typedef enum {
     VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE = 1 << 0,
     VIR_DOMAIN_SNAPSHOT_PARSE_DISKS    = 1 << 1,

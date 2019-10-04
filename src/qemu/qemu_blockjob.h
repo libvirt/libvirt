@@ -134,6 +134,7 @@ struct _qemuBlockJobData {
     bool invalidData; /* the job data (except name) is not valid */
     bool reconnected; /* internal field for tracking whether job is live after reconnect to qemu */
 };
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuBlockJobData, virObjectUnref);
 
 int
 qemuBlockJobRegister(qemuBlockJobDataPtr job,

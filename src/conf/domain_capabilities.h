@@ -185,6 +185,9 @@ struct _virDomainCaps {
     /* add new domain features here */
 };
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainCaps, virObjectUnref);
+
+
 virDomainCapsPtr virDomainCapsNew(const char *path,
                                   const char *machine,
                                   virArch arch,

@@ -31,6 +31,9 @@ typedef virUSBDevice *virUSBDevicePtr;
 typedef struct _virUSBDeviceList virUSBDeviceList;
 typedef virUSBDeviceList *virUSBDeviceListPtr;
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virUSBDeviceList, virObjectUnref);
+
+
 virUSBDevicePtr virUSBDeviceNew(unsigned int bus,
                                 unsigned int devno,
                                 const char *vroot);

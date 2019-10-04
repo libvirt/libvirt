@@ -20,6 +20,7 @@
 
 #include "internal.h"
 
+#include "virobject.h"
 #include "virbitmap.h"
 #include "virutil.h"
 #include "virenum.h"
@@ -113,6 +114,9 @@ virResctrlInfoGetMemoryBandwidth(virResctrlInfoPtr resctrl,
 /* Alloc-related things */
 typedef struct _virResctrlAlloc virResctrlAlloc;
 typedef virResctrlAlloc *virResctrlAllocPtr;
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virResctrlAlloc, virObjectUnref);
+
 
 typedef int virResctrlAllocForeachCacheCallback(unsigned int level,
                                                 virCacheType type,

@@ -344,6 +344,8 @@ struct _virStorageSource {
     bool hostcdrom; /* backing device is a cdrom */
 };
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virStorageSource, virObjectUnref);
+
 
 #ifndef DEV_BSIZE
 # define DEV_BSIZE 512

@@ -55,6 +55,9 @@ struct _virHostdevManager {
     virMediatedDeviceListPtr activeMediatedHostdevs;
 };
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virHostdevManager, virObjectUnref);
+
+
 virHostdevManagerPtr virHostdevManagerGetDefault(void);
 int
 virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,

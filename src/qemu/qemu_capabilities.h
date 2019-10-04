@@ -535,6 +535,8 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 typedef struct _virQEMUCaps virQEMUCaps;
 typedef virQEMUCaps *virQEMUCapsPtr;
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virQEMUCaps, virObjectUnref);
+
 virQEMUCapsPtr virQEMUCapsNew(void);
 
 void virQEMUCapsSet(virQEMUCapsPtr qemuCaps,

@@ -40,6 +40,9 @@ typedef virMediatedDevice *virMediatedDevicePtr;
 typedef struct _virMediatedDeviceList virMediatedDeviceList;
 typedef virMediatedDeviceList *virMediatedDeviceListPtr;
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virMediatedDeviceList, virObjectUnref);
+
+
 typedef struct _virMediatedDeviceType virMediatedDeviceType;
 typedef virMediatedDeviceType *virMediatedDeviceTypePtr;
 struct _virMediatedDeviceType {

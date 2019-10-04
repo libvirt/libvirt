@@ -548,6 +548,9 @@ struct _virConnect {
     void *userData;         /* the user data */
 };
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virConnect, virObjectUnref);
+
+
 /**
  * _virAdmConnect:
  *
@@ -616,6 +619,9 @@ struct _virNetwork {
     unsigned char uuid[VIR_UUID_BUFLEN]; /* the network unique identifier */
 };
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNetwork, virObjectUnref);
+
+
 /**
 * _virNetworkPort:
 *
@@ -626,6 +632,9 @@ struct _virNetworkPort {
     virNetworkPtr net;                   /* pointer back to the connection */
     unsigned char uuid[VIR_UUID_BUFLEN]; /* the network unique identifier */
 };
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNetworkPort, virObjectUnref);
+
 
 /**
 * _virInterface:
@@ -658,6 +667,9 @@ struct _virStoragePool {
     virFreeCallback privateDataFreeFunc;
 };
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virStoragePool, virObjectUnref);
+
+
 /**
 * _virStorageVol:
 *
@@ -677,6 +689,9 @@ struct _virStorageVol {
     void *privateData;
     virFreeCallback privateDataFreeFunc;
 };
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virStorageVol, virObjectUnref);
+
 
 /**
  * _virNodeDevice:

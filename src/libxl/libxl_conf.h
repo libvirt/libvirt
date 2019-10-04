@@ -102,6 +102,8 @@ struct _libxlDriverConfig {
     size_t nfirmwares;
 };
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(libxlDriverConfig, virObjectUnref);
+
 
 struct _libxlDriverPrivate {
     virMutex lock;

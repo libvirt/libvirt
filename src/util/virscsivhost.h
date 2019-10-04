@@ -30,6 +30,9 @@ typedef virSCSIVHostDevice *virSCSIVHostDevicePtr;
 typedef struct _virSCSIVHostDeviceList virSCSIVHostDeviceList;
 typedef virSCSIVHostDeviceList *virSCSIVHostDeviceListPtr;
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virSCSIVHostDeviceList, virObjectUnref);
+
+
 typedef int (*virSCSIVHostDeviceFileActor)(virSCSIVHostDevicePtr dev,
                                            const char *name, void *opaque);
 
