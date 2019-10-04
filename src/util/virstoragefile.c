@@ -485,8 +485,7 @@ static int
 qcowXGetBackingStore(char **res,
                      int *format,
                      const char *buf,
-                     size_t buf_size,
-                     bool isQCow2 ATTRIBUTE_UNUSED)
+                     size_t buf_size)
 {
     unsigned long long offset;
     unsigned int size;
@@ -572,7 +571,7 @@ qcow1GetBackingStore(char **res,
                      const char *buf,
                      size_t buf_size)
 {
-    return qcowXGetBackingStore(res, format, buf, buf_size, false);
+    return qcowXGetBackingStore(res, format, buf, buf_size);
 }
 
 static int
@@ -581,7 +580,7 @@ qcow2GetBackingStore(char **res,
                      const char *buf,
                      size_t buf_size)
 {
-    return qcowXGetBackingStore(res, format, buf, buf_size, true);
+    return qcowXGetBackingStore(res, format, buf, buf_size);
 }
 
 
