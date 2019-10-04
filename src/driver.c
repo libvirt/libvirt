@@ -29,6 +29,7 @@
 #include "virfile.h"
 #include "virlog.h"
 #include "virmodule.h"
+#include "virstring.h"
 #include "virthread.h"
 #include "configmake.h"
 
@@ -68,6 +69,44 @@ virDriverLoadModule(const char *name,
 
 
 /* XXX unload modules, but we can't until we can unregister libvirt drivers */
+
+/**
+ * virDriverShouldAutostart:
+ * @dir: driver's run state directory (usually /var/run/libvirt/$driver)
+ * @autostart: whether driver should initiate autostart
+ *
+ * Automatic starting of libvirt's objects (e.g. domains, networks, storage
+ * pools, etc.) doesn't play nice with using '--timeout' on daemon's command
+ * line because the objects are attempted to autostart on every start of
+ * corresponding driver/daemon. To resolve this problem, a file is created in
+ * driver's private directory (which doesn't survive host's reboot) and thus
+ * autostart is attempted only once.
+ */
+int
+virDriverShouldAutostart(const char *dir,
+                         bool *autostart)
+{
+    VIR_AUTOFREE(char *) path = NULL;
+
+    *autostart = false;
+
+    if (virAsprintf(&path, "%s/autostarted", dir) < 0)
+        return -1;
+
+    if (virFileExists(path)) {
+        VIR_DEBUG("Autostart file %s exists, skipping autostart", path);
+        return 0;
+    }
+
+    VIR_DEBUG("Autostart file %s does not exist, do autostart", path);
+    *autostart = true;
+
+    if (virFileTouch(path, 0600) < 0)
+        return -1;
+
+    return 0;
+}
+
 
 virThreadLocal connectInterface;
 virThreadLocal connectNetwork;

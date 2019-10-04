@@ -114,6 +114,9 @@ int virDriverLoadModule(const char *name,
                         const char *regfunc,
                         bool required);
 
+int virDriverShouldAutostart(const char *name,
+                             bool *autostart);
+
 virConnectPtr virGetConnectInterface(void);
 virConnectPtr virGetConnectNetwork(void);
 virConnectPtr virGetConnectNWFilter(void);
