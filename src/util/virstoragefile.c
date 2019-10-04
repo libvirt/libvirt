@@ -429,11 +429,11 @@ cowGetBackingStore(char **res,
 static int
 qcow2GetBackingStoreFormat(int *format,
                            const char *buf,
-                           size_t buf_size,
-                           size_t extension_end)
+                           size_t buf_size)
 {
     size_t offset;
     size_t extension_start;
+    size_t extension_end;
     int version = virReadBufInt32BE(buf + QCOWX_HDR_VERSION);
 
     if (version < 2) {
@@ -446,6 +446,37 @@ qcow2GetBackingStoreFormat(int *format,
         extension_start = QCOW2_HDR_TOTAL_SIZE;
     else
         extension_start = virReadBufInt32BE(buf + QCOW2v3_HDR_SIZE);
+
+    /*
+     * Traditionally QCow2 files had a layout of
+     *
+     * [header]
+     * [backingStoreName]
+     *
+     * Although the backingStoreName typically followed
+     * the header immediately, this was not required by
+     * the format. By specifying a higher byte offset for
+     * the backing file offset in the header, it was
+     * possible to leave space between the header and
+     * start of backingStore.
+     *
+     * This hack is now used to store extensions to the
+     * qcow2 format:
+     *
+     * [header]
+     * [extensions]
+     * [backingStoreName]
+     *
+     * Thus the file region to search for extensions is
+     * between the end of the header (QCOW2_HDR_TOTAL_SIZE)
+     * and the start of the backingStoreName (offset)
+     *
+     * for qcow2 v3 images, the length of the header
+     * is stored at QCOW2v3_HDR_SIZE
+     */
+    extension_end = virReadBufInt64BE(buf + QCOWX_HDR_BACKING_FILE_OFFSET);
+    if (extension_end > buf_size)
+        return -1;
 
     /*
      * The extensions take format of
@@ -506,6 +537,7 @@ qcowXGetBackingStore(char **res,
 
     if (buf_size < QCOWX_HDR_BACKING_FILE_OFFSET+8+4)
         return BACKING_STORE_INVALID;
+
     offset = virReadBufInt64BE(buf + QCOWX_HDR_BACKING_FILE_OFFSET);
     if (offset > buf_size)
         return BACKING_STORE_INVALID;
@@ -529,35 +561,7 @@ qcowXGetBackingStore(char **res,
     memcpy(*res, buf + offset, size);
     (*res)[size] = '\0';
 
-    /*
-     * Traditionally QCow2 files had a layout of
-     *
-     * [header]
-     * [backingStoreName]
-     *
-     * Although the backingStoreName typically followed
-     * the header immediately, this was not required by
-     * the format. By specifying a higher byte offset for
-     * the backing file offset in the header, it was
-     * possible to leave space between the header and
-     * start of backingStore.
-     *
-     * This hack is now used to store extensions to the
-     * qcow2 format:
-     *
-     * [header]
-     * [extensions]
-     * [backingStoreName]
-     *
-     * Thus the file region to search for extensions is
-     * between the end of the header (QCOW2_HDR_TOTAL_SIZE)
-     * and the start of the backingStoreName (offset)
-     *
-     * for qcow2 v3 images, the length of the header
-     * is stored at QCOW2v3_HDR_SIZE
-     */
-
-    if (qcow2GetBackingStoreFormat(format, buf, buf_size, offset) < 0)
+    if (qcow2GetBackingStoreFormat(format, buf, buf_size) < 0)
         return BACKING_STORE_INVALID;
 
     return BACKING_STORE_OK;
