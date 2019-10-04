@@ -14643,8 +14643,12 @@ qemuDomainCreateDeviceRecursive(const char *device,
          * proper owner and mode. Bind mount only after that. */
     } else if (isDir) {
         if (create &&
-            virFileMakePathWithMode(devicePath, sb.st_mode) < 0)
+            virFileMakePathWithMode(devicePath, sb.st_mode) < 0) {
+            virReportSystemError(errno,
+                                 _("Unable to make dir %s"),
+                                 devicePath);
             goto cleanup;
+        }
     } else {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("unsupported device type %s 0%o"),
