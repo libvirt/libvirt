@@ -180,9 +180,7 @@ struct FileTypeInfo {
 
 static int cowGetBackingStore(char **, int *,
                               const char *, size_t);
-static int qcow1GetBackingStore(char **, int *,
-                                const char *, size_t);
-static int qcow2GetBackingStore(char **, int *,
+static int qcowXGetBackingStore(char **, int *,
                                 const char *, size_t);
 static int qcow2GetFeatures(virBitmapPtr *features, int format,
                             char *buf, ssize_t len);
@@ -366,14 +364,14 @@ static struct FileTypeInfo const fileTypeInfo[] = {
         LV_BIG_ENDIAN, 4, 4, {1},
         QCOWX_HDR_IMAGE_SIZE, 8, 1,
         qcow1EncryptionInfo,
-        qcow1GetBackingStore, NULL
+        qcowXGetBackingStore, NULL
     },
     [VIR_STORAGE_FILE_QCOW2] = {
         0, "QFI", NULL,
         LV_BIG_ENDIAN, 4, 4, {2, 3},
         QCOWX_HDR_IMAGE_SIZE, 8, 1,
         qcow2EncryptionInfo,
-        qcow2GetBackingStore,
+        qcowXGetBackingStore,
         qcow2GetFeatures
     },
     [VIR_STORAGE_FILE_QED] = {
@@ -562,25 +560,6 @@ qcowXGetBackingStore(char **res,
     }
 
     return BACKING_STORE_OK;
-}
-
-
-static int
-qcow1GetBackingStore(char **res,
-                     int *format,
-                     const char *buf,
-                     size_t buf_size)
-{
-    return qcowXGetBackingStore(res, format, buf, buf_size);
-}
-
-static int
-qcow2GetBackingStore(char **res,
-                     int *format,
-                     const char *buf,
-                     size_t buf_size)
-{
-    return qcowXGetBackingStore(res, format, buf, buf_size);
 }
 
 
