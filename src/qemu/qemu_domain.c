@@ -15311,9 +15311,12 @@ qemuDomainBuildNamespace(virQEMUDriverConfigPtr cfg,
     ret = 0;
  cleanup:
     for (i = 0; i < ndevMountsPath; i++) {
+#if defined(__linux__)
+        umount(devMountsSavePath[i]);
+#endif /* defined(__linux__) */
         /* The path can be either a regular file or a dir. */
         if (virFileIsDir(devMountsSavePath[i]))
-            rmdir(devMountsSavePath[i]);
+            virFileDeleteTree(devMountsSavePath[i]);
         else
             unlink(devMountsSavePath[i]);
     }
