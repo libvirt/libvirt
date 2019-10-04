@@ -578,7 +578,7 @@ qcow1GetBackingStore(char **res,
      * used to store backing format */
     *format = VIR_STORAGE_FILE_AUTO;
     ret = qcowXGetBackingStore(res, NULL, buf, buf_size, false);
-    if (ret == 0 && *buf == '\0')
+    if (ret == BACKING_STORE_OK && *buf == '\0')
         *format = VIR_STORAGE_FILE_NONE;
     return ret;
 }
