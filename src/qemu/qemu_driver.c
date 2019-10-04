@@ -1154,7 +1154,7 @@ qemuStateStop(void)
 /**
  * qemuStateCleanup:
  *
- * Shutdown the QEMU daemon, it will stop all active domains and networks
+ * Release resources allocated by QEMU driver (no domain is shut off though)
  */
 static int
 qemuStateCleanup(void)
