@@ -427,9 +427,9 @@ cowGetBackingStore(char **res,
 
 
 static int
-qcow2GetExtensions(int *format,
-                   const char *buf,
-                   size_t buf_size)
+qcow2GetExtensions(const char *buf,
+                   size_t buf_size,
+                   int *backingFormat)
 {
     size_t offset;
     size_t extension_start;
@@ -509,8 +509,8 @@ qcow2GetExtensions(int *format,
         case QCOW2_HDR_EXTENSION_BACKING_FORMAT:
             if (buf[offset+len] != '\0')
                 break;
-            *format = virStorageFileFormatTypeFromString(buf+offset);
-            if (*format <= VIR_STORAGE_FILE_NONE)
+            *backingFormat = virStorageFileFormatTypeFromString(buf+offset);
+            if (*backingFormat <= VIR_STORAGE_FILE_NONE)
                 return -1;
         }
 
@@ -561,7 +561,7 @@ qcowXGetBackingStore(char **res,
     memcpy(*res, buf + offset, size);
     (*res)[size] = '\0';
 
-    if (qcow2GetExtensions(format, buf, buf_size) < 0)
+    if (qcow2GetExtensions(buf, buf_size, format) < 0)
         return BACKING_STORE_INVALID;
 
     return BACKING_STORE_OK;
