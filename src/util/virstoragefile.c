@@ -503,15 +503,21 @@ qcow2GetExtensions(const char *buf,
             break;
 
         switch (magic) {
-        case QCOW2_HDR_EXTENSION_END:
-            goto done;
+        case QCOW2_HDR_EXTENSION_BACKING_FORMAT: {
+            VIR_AUTOFREE(char *) tmp = NULL;
+            if (VIR_ALLOC_N(tmp, len + 1) < 0)
+                return -1;
+            memcpy(tmp, buf + offset, len);
+            tmp[len] = '\0';
 
-        case QCOW2_HDR_EXTENSION_BACKING_FORMAT:
-            if (buf[offset+len] != '\0')
-                break;
-            *backingFormat = virStorageFileFormatTypeFromString(buf+offset);
+            *backingFormat = virStorageFileFormatTypeFromString(tmp);
             if (*backingFormat <= VIR_STORAGE_FILE_NONE)
                 return -1;
+            break;
+        }
+
+        case QCOW2_HDR_EXTENSION_END:
+            goto done;
         }
 
         offset += len;
