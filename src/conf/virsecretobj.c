@@ -678,43 +678,33 @@ virSecretObjDeleteData(virSecretObjPtr obj)
 int
 virSecretObjSaveConfig(virSecretObjPtr obj)
 {
-    char *xml = NULL;
-    int ret = -1;
+    g_autofree char *xml = NULL;
 
     if (!(xml = virSecretDefFormat(obj->def)))
-        goto cleanup;
+        return -1;
 
     if (virFileRewriteStr(obj->configFile, S_IRUSR | S_IWUSR, xml) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(xml);
-    return ret;
+    return 0;
 }
 
 
 int
 virSecretObjSaveData(virSecretObjPtr obj)
 {
-    char *base64 = NULL;
-    int ret = -1;
+    g_autofree char *base64 = NULL;
 
     if (!obj->value)
         return 0;
 
     if (!(base64 = virStringEncodeBase64(obj->value, obj->value_size)))
-        goto cleanup;
+        return -1;
 
     if (virFileRewriteStr(obj->base64File, S_IRUSR | S_IWUSR, base64) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(base64);
-    return ret;
+    return 0;
 }
 
 
@@ -762,7 +752,8 @@ virSecretObjSetValue(virSecretObjPtr obj,
                      size_t value_size)
 {
     virSecretDefPtr def = obj->def;
-    unsigned char *old_value, *new_value;
+    g_autofree unsigned char *old_value = NULL;
+    g_autofree unsigned char *new_value = NULL;
     size_t old_value_size;
 
     if (VIR_ALLOC_N(new_value, value_size) < 0)
@@ -772,26 +763,24 @@ virSecretObjSetValue(virSecretObjPtr obj,
     old_value_size = obj->value_size;
 
     memcpy(new_value, value, value_size);
-    obj->value = new_value;
+    obj->value = g_steal_pointer(&new_value);
     obj->value_size = value_size;
 
     if (!def->isephemeral && virSecretObjSaveData(obj) < 0)
         goto error;
 
     /* Saved successfully - drop old value */
-    if (old_value) {
+    if (old_value)
         memset(old_value, 0, old_value_size);
-        VIR_FREE(old_value);
-    }
 
     return 0;
 
  error:
     /* Error - restore previous state and free new value */
-    obj->value = old_value;
+    new_value = g_steal_pointer(&obj->value);
+    obj->value = g_steal_pointer(&old_value);
     obj->value_size = old_value_size;
     memset(new_value, 0, value_size);
-    VIR_FREE(new_value);
     return -1;
 }
 
@@ -835,7 +824,8 @@ virSecretLoadValue(virSecretObjPtr obj)
 {
     int ret = -1, fd = -1;
     struct stat st;
-    char *contents = NULL, *value = NULL;
+    g_autofree char *contents = NULL;
+    char *value = NULL;
     size_t value_size;
 
     if ((fd = open(obj->base64File, O_RDONLY)) == -1) {
@@ -892,10 +882,8 @@ virSecretLoadValue(virSecretObjPtr obj)
         memset(value, 0, value_size);
         VIR_FREE(value);
     }
-    if (contents != NULL) {
+    if (contents != NULL)
         memset(contents, 0, st.st_size);
-        VIR_FREE(contents);
-    }
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
