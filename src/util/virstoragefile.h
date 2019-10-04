@@ -302,6 +302,8 @@ struct _virStorageSource {
     /* Name of the child backing store recorded in metadata of the
      * current file.  */
     char *backingStoreRaw;
+    /* Name of the child data file recorded in metadata of the current file. */
+    char *externalDataStoreRaw;
 
     /* metadata that allows identifying given storage source */
     char *nodeformat;  /* name of the format handler object */
