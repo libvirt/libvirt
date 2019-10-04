@@ -507,20 +507,27 @@ cmdDomblkinfo(vshControl *ctl, const vshCmd *cmd)
             protocol = virXPathString("string(./source/@protocol)", ctxt);
             target = virXPathString("string(./target/@dev)", ctxt);
 
-            rc = virDomainGetBlockInfo(dom, target, &info, 0);
+            if (virXPathBoolean("boolean(./source)", ctxt) == 1) {
 
-            if (rc < 0) {
-                /* If protocol is present that's an indication of a networked
-                 * storage device which cannot provide statistics, so generate
-                 * 0 based data and get the next disk. */
-                if (protocol && !active &&
-                    virGetLastErrorCode() == VIR_ERR_INTERNAL_ERROR &&
-                    virGetLastErrorDomain() == VIR_FROM_STORAGE) {
-                    memset(&info, 0, sizeof(info));
-                    vshResetLibvirtError();
-                } else {
-                    goto cleanup;
+                rc = virDomainGetBlockInfo(dom, target, &info, 0);
+
+                if (rc < 0) {
+                    /* If protocol is present that's an indication of a
+                     * networked storage device which cannot provide statistics,
+                     * so generate 0 based data and get the next disk. */
+                    if (protocol && !active &&
+                        virGetLastErrorCode() == VIR_ERR_INTERNAL_ERROR &&
+                        virGetLastErrorDomain() == VIR_FROM_STORAGE) {
+                        memset(&info, 0, sizeof(info));
+                        vshResetLibvirtError();
+                    } else {
+                        goto cleanup;
+                    }
                 }
+            } else {
+                /* if we don't call virDomainGetBlockInfo() who clears 'info'
+                 * we have to do it manually */
+                memset(&info, 0, sizeof(info));
             }
 
             if (!cmdDomblkinfoGet(ctl, &info, &cap, &alloc, &phy, human))
