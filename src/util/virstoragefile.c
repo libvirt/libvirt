@@ -486,7 +486,7 @@ qcowXGetBackingStore(char **res,
                      int *format,
                      const char *buf,
                      size_t buf_size,
-                     bool isQCow2)
+                     bool isQCow2 ATTRIBUTE_UNUSED)
 {
     unsigned long long offset;
     unsigned int size;
@@ -548,8 +548,11 @@ qcowXGetBackingStore(char **res,
      * for qcow2 v3 images, the length of the header
      * is stored at QCOW2v3_HDR_SIZE
      */
-    if (isQCow2) {
-        version = virReadBufInt32BE(buf + QCOWX_HDR_VERSION);
+
+    version = virReadBufInt32BE(buf + QCOWX_HDR_VERSION);
+    if (version >= 2) {
+        /* QCow1 doesn't have the extensions capability
+         * used to store backing format */
         if (version == 2)
             start = QCOW2_HDR_TOTAL_SIZE;
         else
@@ -569,8 +572,6 @@ qcow1GetBackingStore(char **res,
                      const char *buf,
                      size_t buf_size)
 {
-    /* QCow1 doesn't have the extensions capability
-     * used to store backing format */
     return qcowXGetBackingStore(res, format, buf, buf_size, false);
 }
 
