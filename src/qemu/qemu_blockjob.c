@@ -27,6 +27,7 @@
 #include "qemu_block.h"
 #include "qemu_domain.h"
 #include "qemu_alias.h"
+#include "qemu_backup.h"
 
 #include "conf/domain_conf.h"
 #include "conf/domain_event.h"
@@ -1278,10 +1279,70 @@ qemuBlockJobProcessEventConcludedCreate(virQEMUDriverPtr driver,
 
 
 static void
+qemuBlockJobProcessEventConcludedBackup(virQEMUDriverPtr driver,
+                                        virDomainObjPtr vm,
+                                        qemuBlockJobDataPtr job,
+                                        qemuDomainAsyncJob asyncJob,
+                                        qemuBlockjobState newstate,
+                                        unsigned long long progressCurrent,
+                                        unsigned long long progressTotal)
+{
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    uid_t uid;
+    gid_t gid;
+    g_autoptr(qemuBlockStorageSourceAttachData) backend = NULL;
+    g_autoptr(virJSONValue) actions = NULL;
+
+    qemuBackupNotifyBlockjobEnd(vm, job->disk, newstate, progressCurrent, progressTotal);
+
+    if (job->data.backup.store &&
+        !(backend = qemuBlockStorageSourceDetachPrepare(job->data.backup.store, NULL)))
+        return;
+
+    if (job->data.backup.bitmap) {
+        if (!(actions = virJSONValueNewArray()))
+            return;
+
+        if (qemuMonitorTransactionBitmapRemove(actions,
+                                               job->disk->src->nodeformat,
+                                               job->data.backup.bitmap) < 0)
+            return;
+    }
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return;
+
+    if (backend)
+        qemuBlockStorageSourceAttachRollback(qemuDomainGetMonitor(vm), backend);
+
+    if (actions)
+        qemuMonitorTransaction(qemuDomainGetMonitor(vm), &actions);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        return;
+
+    if (job->data.backup.store) {
+        qemuDomainStorageSourceAccessRevoke(driver, vm, job->data.backup.store);
+
+        if (job->data.backup.deleteStore &&
+            job->data.backup.store->type == VIR_STORAGE_TYPE_FILE) {
+            qemuDomainGetImageIds(cfg, vm, job->data.backup.store, NULL, &uid, &gid);
+
+            if (virFileRemove(job->data.backup.store->path, uid, gid) < 0)
+                VIR_WARN("failed to remove scratch file '%s'",
+                         job->data.backup.store->path);
+        }
+    }
+}
+
+
+static void
 qemuBlockJobEventProcessConcludedTransition(qemuBlockJobDataPtr job,
                                             virQEMUDriverPtr driver,
                                             virDomainObjPtr vm,
-                                            qemuDomainAsyncJob asyncJob)
+                                            qemuDomainAsyncJob asyncJob,
+                                            unsigned long long progressCurrent,
+                                            unsigned long long progressTotal)
 {
     bool success = job->newstate == QEMU_BLOCKJOB_STATE_COMPLETED;
 
@@ -1315,6 +1376,9 @@ qemuBlockJobEventProcessConcludedTransition(qemuBlockJobDataPtr job,
         break;
 
     case QEMU_BLOCKJOB_TYPE_BACKUP:
+        qemuBlockJobProcessEventConcludedBackup(driver, vm, job, asyncJob,
+                                                job->newstate, progressCurrent,
+                                                progressTotal);
         break;
 
     case QEMU_BLOCKJOB_TYPE_BROKEN:
@@ -1341,6 +1405,8 @@ qemuBlockJobEventProcessConcluded(qemuBlockJobDataPtr job,
     size_t njobinfo = 0;
     size_t i;
     bool refreshed = false;
+    unsigned long long progressCurrent = 0;
+    unsigned long long progressTotal = 0;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         goto cleanup;
@@ -1352,6 +1418,9 @@ qemuBlockJobEventProcessConcluded(qemuBlockJobDataPtr job,
         for (i = 0; i < njobinfo; i++) {
             if (STRNEQ_NULLABLE(job->name, jobinfo[i]->id))
                 continue;
+
+            progressCurrent = jobinfo[i]->progressCurrent;
+            progressTotal = jobinfo[i]->progressTotal;
 
             job->errmsg = g_strdup(jobinfo[i]->error);
 
@@ -1385,7 +1454,8 @@ qemuBlockJobEventProcessConcluded(qemuBlockJobDataPtr job,
 
     VIR_DEBUG("handling job '%s' state '%d' newstate '%d'", job->name, job->state, job->newstate);
 
-    qemuBlockJobEventProcessConcludedTransition(job, driver, vm, asyncJob);
+    qemuBlockJobEventProcessConcludedTransition(job, driver, vm, asyncJob,
+                                                progressCurrent, progressTotal);
 
     /* unplug the backing chains in case the job inherited them */
     if (!job->disk) {
