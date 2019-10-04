@@ -15176,7 +15176,7 @@ qemuDomainBuildNamespace(virQEMUDriverConfigPtr cfg,
                          virDomainObjPtr vm)
 {
     struct qemuDomainCreateDeviceData data;
-    char *devPath = NULL;
+    const char *devPath = NULL;
     char **devMountsPath = NULL, **devMountsSavePath = NULL;
     size_t ndevMountsPath = 0, i;
     int ret = -1;
