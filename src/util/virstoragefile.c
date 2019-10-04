@@ -427,9 +427,9 @@ cowGetBackingStore(char **res,
 
 
 static int
-qcow2GetBackingStoreFormat(int *format,
-                           const char *buf,
-                           size_t buf_size)
+qcow2GetExtensions(int *format,
+                   const char *buf,
+                   size_t buf_size)
 {
     size_t offset;
     size_t extension_start;
@@ -561,7 +561,7 @@ qcowXGetBackingStore(char **res,
     memcpy(*res, buf + offset, size);
     (*res)[size] = '\0';
 
-    if (qcow2GetBackingStoreFormat(format, buf, buf_size) < 0)
+    if (qcow2GetExtensions(format, buf, buf_size) < 0)
         return BACKING_STORE_INVALID;
 
     return BACKING_STORE_OK;
