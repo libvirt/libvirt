@@ -430,10 +430,22 @@ static int
 qcow2GetBackingStoreFormat(int *format,
                            const char *buf,
                            size_t buf_size,
-                           size_t extension_start,
                            size_t extension_end)
 {
-    size_t offset = extension_start;
+    size_t offset;
+    size_t extension_start;
+    int version = virReadBufInt32BE(buf + QCOWX_HDR_VERSION);
+
+    if (version < 2) {
+        /* QCow1 doesn't have the extensions capability
+         * used to store backing format */
+        return 0;
+    }
+
+    if (version == 2)
+        extension_start = QCOW2_HDR_TOTAL_SIZE;
+    else
+        extension_start = virReadBufInt32BE(buf + QCOW2v3_HDR_SIZE);
 
     /*
      * The extensions take format of
@@ -445,6 +457,7 @@ qcow2GetBackingStoreFormat(int *format,
      * Unknown extensions can be ignored by skipping
      * over "length" bytes in the data stream.
      */
+    offset = extension_start;
     while (offset < (buf_size-8) &&
            offset < (extension_end-8)) {
         unsigned int magic = virReadBufInt32BE(buf + offset);
@@ -487,8 +500,6 @@ qcowXGetBackingStore(char **res,
 {
     unsigned long long offset;
     unsigned int size;
-    unsigned long long start;
-    int version;
 
     *res = NULL;
     *format = VIR_STORAGE_FILE_AUTO;
@@ -546,18 +557,8 @@ qcowXGetBackingStore(char **res,
      * is stored at QCOW2v3_HDR_SIZE
      */
 
-    version = virReadBufInt32BE(buf + QCOWX_HDR_VERSION);
-    if (version >= 2) {
-        /* QCow1 doesn't have the extensions capability
-         * used to store backing format */
-        if (version == 2)
-            start = QCOW2_HDR_TOTAL_SIZE;
-        else
-            start = virReadBufInt32BE(buf + QCOW2v3_HDR_SIZE);
-        if (qcow2GetBackingStoreFormat(format, buf, buf_size,
-                                       start, offset) < 0)
-            return BACKING_STORE_INVALID;
-    }
+    if (qcow2GetBackingStoreFormat(format, buf, buf_size, offset) < 0)
+        return BACKING_STORE_INVALID;
 
     return BACKING_STORE_OK;
 }
