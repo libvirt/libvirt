@@ -715,6 +715,7 @@ networkStateInitialize(bool privileged,
     int ret = VIR_DRV_STATE_INIT_ERROR;
     char *configdir = NULL;
     char *rundir = NULL;
+    bool autostart = true;
 #ifdef WITH_FIREWALLD
     DBusConnection *sysbus = NULL;
 #endif
@@ -815,9 +816,14 @@ networkStateInitialize(bool privileged,
     networkReloadFirewallRules(network_driver, true);
     networkRefreshDaemons(network_driver);
 
-    virNetworkObjListForEach(network_driver->networks,
-                             networkAutostartConfig,
-                             network_driver);
+    if (virDriverShouldAutostart(network_driver->stateDir, &autostart) < 0)
+        goto error;
+
+    if (autostart) {
+        virNetworkObjListForEach(network_driver->networks,
+                                 networkAutostartConfig,
+                                 network_driver);
+    }
 
     network_driver->networkEventState = virObjectEventStateNew();
 

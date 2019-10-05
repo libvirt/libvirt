@@ -673,6 +673,7 @@ qemuStateInitialize(bool privileged,
     gid_t run_gid = -1;
     char *hugepagePath = NULL;
     char *memoryBackingPath = NULL;
+    bool autostart = true;
     size_t i;
 
     if (VIR_ALLOC(qemu_driver) < 0)
@@ -1035,7 +1036,11 @@ qemuStateInitialize(bool privileged,
 
     qemuProcessReconnectAll(qemu_driver);
 
-    qemuAutostartDomains(qemu_driver);
+    if (virDriverShouldAutostart(cfg->stateDir, &autostart) < 0)
+        goto error;
+
+    if (autostart)
+        qemuAutostartDomains(qemu_driver);
 
     return VIR_DRV_STATE_INIT_COMPLETE;
 

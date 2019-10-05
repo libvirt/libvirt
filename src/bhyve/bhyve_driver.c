@@ -1218,6 +1218,8 @@ bhyveStateInitialize(bool privileged,
                      virStateInhibitCallback callback ATTRIBUTE_UNUSED,
                      void *opaque ATTRIBUTE_UNUSED)
 {
+    bool autostart = true;
+
     if (!privileged) {
         VIR_INFO("Not running privileged, disabling driver");
         return VIR_DRV_STATE_INIT_SKIPPED;
@@ -1301,7 +1303,11 @@ bhyveStateInitialize(bool privileged,
 
     virBhyveProcessReconnectAll(bhyve_driver);
 
-    bhyveAutostartDomains(bhyve_driver);
+    if (virDriverShouldAutostart(BHYVE_STATE_DIR, &autostart) < 0)
+        goto cleanup;
+
+    if (autostart)
+        bhyveAutostartDomains(bhyve_driver);
 
     return VIR_DRV_STATE_INIT_COMPLETE;
 
