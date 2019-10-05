@@ -1824,6 +1824,7 @@ virSecuritySELinuxSetImageLabelInternal(virSecurityManagerPtr mgr,
     virSecurityLabelDefPtr secdef;
     virSecurityDeviceLabelDefPtr disk_seclabel;
     virSecurityDeviceLabelDefPtr parent_seclabel = NULL;
+    char *use_label = NULL;
     bool remember;
     int ret;
 
@@ -1858,39 +1859,27 @@ virSecuritySELinuxSetImageLabelInternal(virSecurityManagerPtr mgr,
         if (!disk_seclabel->relabel)
             return 0;
 
-        ret = virSecuritySELinuxSetFilecon(mgr, src->path,
-                                           disk_seclabel->label, remember);
+        use_label = disk_seclabel->label;
     } else if (parent_seclabel && (!parent_seclabel->relabel || parent_seclabel->label)) {
         if (!parent_seclabel->relabel)
             return 0;
 
-        ret = virSecuritySELinuxSetFilecon(mgr, src->path,
-                                           parent_seclabel->label, remember);
+        use_label = parent_seclabel->label;
     } else if (!parent || parent == src) {
         if (src->shared) {
-            ret = virSecuritySELinuxSetFilecon(mgr,
-                                               src->path,
-                                               data->file_context,
-                                               remember);
+            use_label = data->file_context;
         } else if (src->readonly) {
-            ret = virSecuritySELinuxSetFilecon(mgr,
-                                               src->path,
-                                               data->content_context,
-                                               remember);
+            use_label = data->content_context;
         } else if (secdef->imagelabel) {
-            ret = virSecuritySELinuxSetFilecon(mgr,
-                                               src->path,
-                                               secdef->imagelabel,
-                                               remember);
+            use_label = secdef->imagelabel;
         } else {
-            ret = 0;
+            return 0;
         }
     } else {
-        ret = virSecuritySELinuxSetFilecon(mgr,
-                                           src->path,
-                                           data->content_context,
-                                           remember);
+        use_label = data->content_context;
     }
+
+    ret = virSecuritySELinuxSetFilecon(mgr, src->path, use_label, remember);
 
     if (ret == 1 && !disk_seclabel) {
         /* If we failed to set a label, but virt_use_nfs let us
