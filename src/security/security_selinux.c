@@ -1749,10 +1749,10 @@ virSecuritySELinuxRestoreTPMFileLabelInt(virSecurityManagerPtr mgr,
 
 
 static int
-virSecuritySELinuxRestoreImageLabelInt(virSecurityManagerPtr mgr,
-                                       virDomainDefPtr def,
-                                       virStorageSourcePtr src,
-                                       bool migrated)
+virSecuritySELinuxRestoreImageLabelSingle(virSecurityManagerPtr mgr,
+                                          virDomainDefPtr def,
+                                          virStorageSourcePtr src,
+                                          bool migrated)
 {
     virSecurityLabelDefPtr seclabel;
     virSecurityDeviceLabelDefPtr disk_seclabel;
@@ -1801,6 +1801,26 @@ virSecuritySELinuxRestoreImageLabelInt(virSecurityManagerPtr mgr,
     }
 
     return virSecuritySELinuxRestoreFileLabel(mgr, src->path, true);
+}
+
+
+static int
+virSecuritySELinuxRestoreImageLabelInt(virSecurityManagerPtr mgr,
+                                       virDomainDefPtr def,
+                                       virStorageSourcePtr src,
+                                       bool migrated)
+{
+    if (virSecuritySELinuxRestoreImageLabelSingle(mgr, def, src, migrated) < 0)
+        return -1;
+
+    if (src->externalDataStore &&
+        virSecuritySELinuxRestoreImageLabelSingle(mgr,
+                                                  def,
+                                                  src->externalDataStore,
+                                                  migrated) < 0)
+        return -1;
+
+    return 0;
 }
 
 
