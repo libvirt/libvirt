@@ -6696,11 +6696,6 @@ virDomainCreateWithFiles(virDomainPtr domain, unsigned int nfiles,
  * configured to be automatically started when the host
  * machine boots.
  *
- * Please note that this might result in unexpected behaviour if
- * used for some session URIs. Since the session daemon is started
- * with --timeout it comes and goes and as it does so it
- * autostarts domains which might have been shut off recently.
- *
  * Returns -1 in case of error, 0 in case of success
  */
 int
