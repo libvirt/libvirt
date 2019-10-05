@@ -970,7 +970,7 @@ virStorageFileGetEncryptionPayloadOffset(const struct FileEncryptionInfo *info,
  * Note that this function may be called repeatedly on @meta, so it must
  * clean up any existing allocated memory which would be overwritten.
  */
-int
+static int
 virStorageFileGetMetadataInternal(virStorageSourcePtr meta,
                                   char *buf,
                                   size_t len,
