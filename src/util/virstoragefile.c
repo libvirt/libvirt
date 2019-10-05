@@ -3717,38 +3717,38 @@ virStorageSourceNewFromBackingAbsolute(const char *path,
 
 
 /**
- * virStorageSourceNewFromBacking:
+ * virStorageSourceNewFromChild:
  * @parent: storage source parent
- * @backing: returned backing store definition
+ * @child: returned child/backing store definition
+ * @parentRaw: raw child string (backingStoreRaw)
  *
  * Creates a storage source which describes the backing image of @parent and
- * fills it into @backing depending on the 'backingStoreRaw' property of @parent
+ * fills it into @backing depending on the passed parentRaw (backingStoreRaw)
  * and other data. Note that for local storage this function accesses the file
- * to update the actual type of the backing store.
+ * to update the actual type of the child store.
  *
- * Returns 0 on success, 1 if we could parse all location data but the backinig
+ * Returns 0 on success, 1 if we could parse all location data but the child
  * store specification contained other data unrepresentable by libvirt (e.g.
  * inline authentication).
  * In both cases @src is filled. On error -1 is returned @src is NULL and an
  * error is reported.
  */
-int
-virStorageSourceNewFromBacking(virStorageSourcePtr parent,
-                               virStorageSourcePtr *backing)
+static int
+virStorageSourceNewFromChild(virStorageSourcePtr parent,
+                             const char *parentRaw,
+                             virStorageSourcePtr *child)
 {
     struct stat st;
     VIR_AUTOUNREF(virStorageSourcePtr) def = NULL;
     int rc = 0;
 
-    *backing = NULL;
+    *child = NULL;
 
-    if (virStorageIsRelative(parent->backingStoreRaw)) {
-        if (!(def = virStorageSourceNewFromBackingRelative(parent,
-                                                           parent->backingStoreRaw)))
+    if (virStorageIsRelative(parentRaw)) {
+        if (!(def = virStorageSourceNewFromBackingRelative(parent, parentRaw)))
             return -1;
     } else {
-        if ((rc = virStorageSourceNewFromBackingAbsolute(parent->backingStoreRaw,
-                                                         &def)) < 0)
+        if ((rc = virStorageSourceNewFromBackingAbsolute(parentRaw, &def)) < 0)
             return -1;
     }
 
@@ -3768,10 +3768,25 @@ virStorageSourceNewFromBacking(virStorageSourcePtr parent,
     if (virStorageSourceInitChainElement(def, parent, true) < 0)
         return -1;
 
-    def->readonly = true;
     def->detected = true;
 
-    VIR_STEAL_PTR(*backing, def);
+    VIR_STEAL_PTR(*child, def);
+    return rc;
+}
+
+
+int
+virStorageSourceNewFromBacking(virStorageSourcePtr parent,
+                               virStorageSourcePtr *backing)
+{
+    int rc;
+
+    if ((rc = virStorageSourceNewFromChild(parent,
+                                           parent->backingStoreRaw,
+                                           backing)) < 0)
+        return rc;
+
+    (*backing)->readonly = true;
     return rc;
 }
 
