@@ -3800,6 +3800,24 @@ virStorageSourceNewFromBacking(virStorageSourcePtr parent,
 }
 
 
+static int
+virStorageSourceNewFromExternalData(virStorageSourcePtr parent,
+                                    virStorageSourcePtr *externalDataStore)
+{
+    int rc;
+
+    if ((rc = virStorageSourceNewFromChild(parent,
+                                           parent->externalDataStoreRaw,
+                                           externalDataStore)) < 0)
+        return rc;
+
+    /* qcow2 data_file can only be raw */
+    (*externalDataStore)->format = VIR_STORAGE_FILE_RAW;
+    (*externalDataStore)->readonly = parent->readonly;
+    return rc;
+}
+
+
 /**
  * @src: disk source definition structure
  * @fd: file descriptor
@@ -5008,6 +5026,23 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
     }
 
     VIR_STEAL_PTR(src->backingStore, backingStore);
+
+    if (src->externalDataStoreRaw) {
+        VIR_AUTOUNREF(virStorageSourcePtr) externalDataStore = NULL;
+
+        if ((rv = virStorageSourceNewFromExternalData(src,
+                                                      &externalDataStore)) < 0)
+            goto cleanup;
+
+        if (rv == 1) {
+            /* the file would not be usable for VM usage */
+            ret = 0;
+            goto cleanup;
+        }
+
+        VIR_STEAL_PTR(src->externalDataStore, externalDataStore);
+    }
+
     ret = 0;
 
  cleanup:
