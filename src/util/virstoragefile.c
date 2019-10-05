@@ -1061,6 +1061,12 @@ virStorageFileGetMetadataInternal(virStorageSourcePtr meta,
         fileTypeInfo[meta->format].getFeatures(&meta->features, meta->format, buf, len) < 0)
         return -1;
 
+    VIR_FREE(meta->externalDataStoreRaw);
+    if (meta->format == VIR_STORAGE_FILE_QCOW2 &&
+        qcow2GetExtensions(buf, len, NULL, &meta->externalDataStoreRaw) < 0) {
+        return -1;
+    }
+
     VIR_FREE(meta->compat);
     if (meta->format == VIR_STORAGE_FILE_QCOW2 && meta->features &&
         VIR_STRDUP(meta->compat, "1.1") < 0)
