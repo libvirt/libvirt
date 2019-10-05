@@ -2626,7 +2626,7 @@ virStorageSourceNewFromBackingRelative(virStorageSourcePtr parent,
         return NULL;
 
     /* store relative name */
-    if (VIR_STRDUP(def->relPath, parent->backingStoreRaw) < 0)
+    if (VIR_STRDUP(def->relPath, rel) < 0)
         return NULL;
 
     if (!(dirname = mdir_name(parent->path))) {
