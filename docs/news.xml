@@ -39,9 +39,7 @@
      -->
 
 <libvirt>
-  <release version="v5.8.0" date="unreleased">
-    <section title="New features">
-    </section>
+  <release version="v5.8.0" date="2019-10-05">
     <section title="Removed features">
       <change>
         <summary>
@@ -53,10 +51,6 @@
           known user base.
         </description>
       </change>
-    </section>
-    <section title="Improvements">
-    </section>
-    <section title="Bug fixes">
     </section>
   </release>
   <release version="v5.7.0" date="2019-09-03">
