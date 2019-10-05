@@ -292,6 +292,9 @@ struct _virStorageSource {
     /* backing chain of the storage source */
     virStorageSourcePtr backingStore;
 
+    /* external data store storage source */
+    virStorageSourcePtr externalDataStore;
+
     /* metadata for storage driver access to remote and local volumes */
     virStorageDriverDataPtr drv;
 

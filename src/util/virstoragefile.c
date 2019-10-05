@@ -2340,6 +2340,12 @@ virStorageSourceCopy(const virStorageSource *src,
             return NULL;
     }
 
+    if (src->externalDataStore) {
+        if (!(def->externalDataStore = virStorageSourceCopy(src->externalDataStore,
+                                                            true)))
+            return NULL;
+    }
+
     VIR_STEAL_PTR(ret, def);
     return ret;
 }
@@ -2560,6 +2566,9 @@ virStorageSourceClear(virStorageSourcePtr def)
     virStoragePermsFree(def->perms);
     VIR_FREE(def->timestamps);
     VIR_FREE(def->externalDataStoreRaw);
+
+    virObjectUnref(def->externalDataStore);
+    def->externalDataStore = NULL;
 
     virStorageNetHostDefFree(def->nhosts, def->hosts);
     virStorageAuthDefFree(def->auth);
