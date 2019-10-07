@@ -1921,15 +1921,16 @@ virSecuritySELinuxSetImageLabelInternal(virSecurityManagerPtr mgr,
 
 
 static int
-virSecuritySELinuxSetImageLabel(virSecurityManagerPtr mgr,
-                                virDomainDefPtr def,
-                                virStorageSourcePtr src,
-                                virSecurityDomainImageLabelFlags flags)
+virSecuritySELinuxSetImageLabelRelative(virSecurityManagerPtr mgr,
+                                        virDomainDefPtr def,
+                                        virStorageSourcePtr src,
+                                        virStorageSourcePtr parent,
+                                        virSecurityDomainImageLabelFlags flags)
 {
     virStorageSourcePtr n;
 
     for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
-        if (virSecuritySELinuxSetImageLabelInternal(mgr, def, n, src) < 0)
+        if (virSecuritySELinuxSetImageLabelInternal(mgr, def, n, parent) < 0)
             return -1;
 
         if (!(flags & VIR_SECURITY_DOMAIN_IMAGE_LABEL_BACKING_CHAIN))
@@ -1939,6 +1940,15 @@ virSecuritySELinuxSetImageLabel(virSecurityManagerPtr mgr,
     return 0;
 }
 
+
+static int
+virSecuritySELinuxSetImageLabel(virSecurityManagerPtr mgr,
+                                virDomainDefPtr def,
+                                virStorageSourcePtr src,
+                                virSecurityDomainImageLabelFlags flags)
+{
+    return virSecuritySELinuxSetImageLabelRelative(mgr, def, src, src, flags);
+}
 
 struct virSecuritySELinuxMoveImageMetadataData {
     virSecurityManagerPtr mgr;
