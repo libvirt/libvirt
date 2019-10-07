@@ -45,6 +45,21 @@
     <section title="Improvements">
     </section>
     <section title="Bug fixes">
+      <change>
+        <summary>
+          lib: autostart objects exactly once
+        </summary>
+        <description>
+          If libvirtd or any of the sub-daemons is started with socket
+          activation then objects might be autostarted more than once.
+          For instance, if a domain under <code> qemu:///session </code>
+          URI is mark as autostarted and the session daemon is started then the
+          domain is started with it. If user shuts the domain down and the
+          session daemon is started again, the user's wish to keep the
+          domain shut off is ignored and the domain is autostarted again.
+          This is now fixed.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v5.8.0" date="2019-10-05">
