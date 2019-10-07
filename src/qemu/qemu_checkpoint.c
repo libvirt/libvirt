@@ -170,7 +170,7 @@ qemuCheckpointDiscard(virQEMUDriverPtr driver,
                     if (!(arr = virJSONValueNewArray()))
                         return -1;
 
-                    if (virJSONValueArrayAppendString(arr, disk->bitmap) < 0)
+                    if (qemuMonitorTransactionBitmapMergeSourceAddBitmap(arr, node, disk->bitmap) < 0)
                         return -1;
 
                     if (chk == virDomainCheckpointGetCurrent(vm->checkpoints)) {
