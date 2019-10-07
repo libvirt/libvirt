@@ -1851,9 +1851,8 @@ virSecuritySELinuxSetImageLabelInternal(virSecurityManagerPtr mgr,
 
     disk_seclabel = virStorageSourceGetSecurityLabelDef(src,
                                                         SECURITY_SELINUX_NAME);
-    if (parent)
-        parent_seclabel = virStorageSourceGetSecurityLabelDef(parent,
-                                                              SECURITY_SELINUX_NAME);
+    parent_seclabel = virStorageSourceGetSecurityLabelDef(parent,
+                                                          SECURITY_SELINUX_NAME);
 
     if (disk_seclabel && (!disk_seclabel->relabel || disk_seclabel->label)) {
         if (!disk_seclabel->relabel)
@@ -1865,7 +1864,7 @@ virSecuritySELinuxSetImageLabelInternal(virSecurityManagerPtr mgr,
             return 0;
 
         use_label = parent_seclabel->label;
-    } else if (!parent || parent == src) {
+    } else if (parent == src) {
         if (src->shared) {
             use_label = data->file_context;
         } else if (src->readonly) {
