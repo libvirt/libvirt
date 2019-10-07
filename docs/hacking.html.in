@@ -1008,101 +1008,19 @@ BAD:
     </p>
 
     <dl>
+      <dt>VIR_ALLOC, VIR_REALLOC, VIR_RESIZE_N, VIR_EXPAND_N,
+        VIR_SHRINK_N, VIR_FREE, VIR_APPEND_ELEMENT, VIR_INSERT_ELEMENT,
+        VIR_DELETE_ELEMENT</dt>
+      <dd>Prefer the GLib APIs g_new0/g_renew/g_free in most cases.
+        There should rarely be a need to use g_malloc/g_realloc.
+        Instead of using plain C arrays, it is preferrable to use
+        one of the GLib types, GArray, GPtrArray or GByteArray. These
+        all use a struct to track the array memory and size together
+        and efficiently resize. <strong>NEVER MIX</strong> use of the
+        classic libvirt memory allocation APIs and GLib APIs within
+        a single method. Keep the style consistent, converting existing
+        code to GLib style in a separate, prior commit.</dd>
     </dl>
-
-    <h2><a id="memalloc">Low level memory management</a></h2>
-
-    <p>
-      Use of the malloc/free/realloc/calloc APIs is deprecated in the libvirt
-      codebase, because they encourage a number of serious coding bugs and do
-      not enable compile time verification of checks for NULL. Instead of these
-      routines, use the macros from viralloc.h.
-    </p>
-
-    <ul>
-      <li><p>To allocate a single object:</p>
-
-<pre>
-  virDomainPtr domain;
-
-  if (VIR_ALLOC(domain) &lt; 0)
-      return NULL;
-</pre>
-      </li>
-
-      <li><p>To allocate an array of objects:</p>
-<pre>
-  virDomainPtr domains;
-  size_t ndomains = 10;
-
-  if (VIR_ALLOC_N(domains, ndomains) &lt; 0)
-      return NULL;
-</pre>
-      </li>
-
-      <li><p>To allocate an array of object pointers:</p>
-<pre>
-  virDomainPtr *domains;
-  size_t ndomains = 10;
-
-  if (VIR_ALLOC_N(domains, ndomains) &lt; 0)
-      return NULL;
-</pre>
-      </li>
-
-      <li><p>To re-allocate the array of domains to be 1 element
-      longer (however, note that repeatedly expanding an array by 1
-      scales quadratically, so this is recommended only for smaller
-      arrays):</p>
-<pre>
-  virDomainPtr domains;
-  size_t ndomains = 0;
-
-  if (VIR_EXPAND_N(domains, ndomains, 1) &lt; 0)
-      return NULL;
-  domains[ndomains - 1] = domain;
-</pre></li>
-
-      <li><p>To ensure an array has room to hold at least one more
-      element (this approach scales better, but requires tracking
-      allocation separately from usage)</p>
-
-<pre>
-  virDomainPtr domains;
-  size_t ndomains = 0;
-  size_t ndomains_max = 0;
-
-  if (VIR_RESIZE_N(domains, ndomains_max, ndomains, 1) &lt; 0)
-      return NULL;
-  domains[ndomains++] = domain;
-</pre>
-      </li>
-
-      <li><p>To trim an array of domains from its allocated size down
-      to the actual used size:</p>
-
-<pre>
-  virDomainPtr domains;
-  size_t ndomains = x;
-  size_t ndomains_max = y;
-
-  VIR_SHRINK_N(domains, ndomains_max, ndomains_max - ndomains);
-</pre></li>
-
-      <li><p>To free an array of domains:</p>
-<pre>
-  virDomainPtr domains;
-  size_t ndomains = x;
-  size_t ndomains_max = y;
-  size_t i;
-
-  for (i = 0; i &lt; ndomains; i++)
-      VIR_FREE(domains[i]);
-  VIR_FREE(domains);
-  ndomains_max = ndomains = 0;
-</pre>
-      </li>
-    </ul>
 
     <h2><a id="file_handling">File handling</a></h2>
 

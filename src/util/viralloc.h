@@ -24,6 +24,15 @@
 
 #include "internal.h"
 
+/**
+ * DEPRECATION WARNING
+ *
+ * APIs in this file should only be used when modifying existing code.
+ * Consider converting existing code to use the new APIs when touching
+ * it. All new code must use the GLib memory allocation APIs and/or
+ * GLib array data types. See the hacking file for more guidance.
+ */
+
 /* Return 1 if an array of N objects, each of size S, cannot exist due
    to size arithmetic overflow.  S must be positive and N must be
    nonnegative.  This is a macro, not an inline function, so that it
