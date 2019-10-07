@@ -14,8 +14,8 @@ QEMU_AUDIO_DRV=none \
 file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -machine pc-i440fx-4.0,accel=kvm,usb=off,dump-guest-core=off \
 -cpu Skylake-Client-IBRS,ss=on,vmx=on,hypervisor=on,tsc_adjust=on,\
-clflushopt=on,umip=on,ssbd=on,xsaves=on,pdpe1gb=on,skip-l1dfl-vmentry=on,\
-invtsc=on,tsc-frequency=3504000000 \
+clflushopt=on,umip=on,ssbd=on,xsaves=on,pdpe1gb=on,invtsc=on,\
+tsc-frequency=3504000000 \
 -m 214 \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
