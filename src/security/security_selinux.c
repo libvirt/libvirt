@@ -1846,7 +1846,7 @@ virSecuritySELinuxSetImageLabelInternal(virSecurityManagerPtr mgr,
     virSecurityDeviceLabelDefPtr parent_seclabel = NULL;
     char *use_label = NULL;
     bool remember;
-    bool is_toplevel = parent == src;
+    bool is_toplevel = parent == src || parent->externalDataStore == src;
     int ret;
 
     if (!src->path || !virStorageSourceIsLocalStorage(src))
@@ -1931,6 +1931,14 @@ virSecuritySELinuxSetImageLabelRelative(virSecurityManagerPtr mgr,
 
     for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
         if (virSecuritySELinuxSetImageLabelInternal(mgr, def, n, parent) < 0)
+            return -1;
+
+        if (n->externalDataStore &&
+            virSecuritySELinuxSetImageLabelRelative(mgr,
+                                                    def,
+                                                    n->externalDataStore,
+                                                    parent,
+                                                    flags) < 0)
             return -1;
 
         if (!(flags & VIR_SECURITY_DOMAIN_IMAGE_LABEL_BACKING_CHAIN))
