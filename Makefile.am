@@ -19,6 +19,10 @@
 LCOV = lcov
 GENHTML = genhtml
 
+# when building from tarball -Werror isn't auto enabled
+# so force it explicitly
+DISTCHECK_CONFIGURE_FLAGS = --enable-werror
+
 SUBDIRS = . gnulib/lib include/libvirt src tools docs gnulib/tests \
   tests po examples
 
