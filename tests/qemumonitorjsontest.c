@@ -3018,8 +3018,8 @@ testQemuMonitorJSONTransaction(const void *opaque)
         !(mergebitmaps = virJSONValueNewArray()))
         return -1;
 
-    if (virJSONValueArrayAppendString(mergebitmaps, "mergemap1") < 0 ||
-        virJSONValueArrayAppendString(mergebitmaps, "mergemap2") < 0)
+    if (qemuMonitorTransactionBitmapMergeSourceAddBitmap(mergebitmaps, "node1", "bitmap1") < 0 ||
+        qemuMonitorTransactionBitmapMergeSourceAddBitmap(mergebitmaps, "node2", "bitmap2") < 0)
         return -1;
 
     if (qemuMonitorTransactionBitmapAdd(actions, "node1", "bitmap1", true, true) < 0 ||

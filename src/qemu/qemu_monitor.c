@@ -4599,6 +4599,15 @@ qemuMonitorTransactionBitmapMerge(virJSONValuePtr actions,
 
 
 int
+qemuMonitorTransactionBitmapMergeSourceAddBitmap(virJSONValuePtr sources,
+                                                 const char *sourcenode,
+                                                 const char *sourcebitmap)
+{
+    return qemuMonitorJSONTransactionBitmapMergeSourceAddBitmap(sources, sourcenode, sourcebitmap);
+}
+
+
+int
 qemuMonitorTransactionSnapshotLegacy(virJSONValuePtr actions,
                                      const char *device,
                                      const char *path,
