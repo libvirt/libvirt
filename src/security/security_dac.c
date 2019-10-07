@@ -895,9 +895,8 @@ virSecurityDACSetImageLabelInternal(virSecurityManagerPtr mgr,
         return 0;
 
     disk_seclabel = virStorageSourceGetSecurityLabelDef(src, SECURITY_DAC_NAME);
-    if (parent)
-        parent_seclabel = virStorageSourceGetSecurityLabelDef(parent,
-                                                              SECURITY_DAC_NAME);
+    parent_seclabel = virStorageSourceGetSecurityLabelDef(parent,
+                                                          SECURITY_DAC_NAME);
 
     if (disk_seclabel && (!disk_seclabel->relabel || disk_seclabel->label)) {
         if (!disk_seclabel->relabel)
