@@ -192,7 +192,7 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     # Request the gnu99 standard which is the best choice with
     # gcc 4.8.0. Not a warning flag, but the probing mechanism
     # is convenient
-    wantwarn="-std=gnu99"
+    wantwarn="$wantwarn -std=gnu99"
 
     # Check for $CC support of each warning
     for w in $wantwarn; do
