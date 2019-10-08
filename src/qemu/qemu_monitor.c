@@ -810,35 +810,52 @@ qemuMonitorOpen(virDomainObjPtr vm,
                 qemuMonitorCallbacksPtr cb,
                 void *opaque)
 {
-    int fd;
+    int fd = -1;
     bool hasSendFD = false;
-    qemuMonitorPtr ret;
+    qemuMonitorPtr ret = NULL;
 
     timeout += QEMU_DEFAULT_MONITOR_WAIT;
+
+    /* Hold an extra reference because we can't allow 'vm' to be
+     * deleted until the monitor gets its own reference. */
+    virObjectRef(vm);
 
     switch (config->type) {
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         hasSendFD = true;
-        if ((fd = qemuMonitorOpenUnix(config->data.nix.path,
-                                      vm->pid, retry, timeout)) < 0)
-            return NULL;
+        virObjectUnlock(vm);
+        fd = qemuMonitorOpenUnix(config->data.nix.path,
+                                 vm->pid, retry, timeout);
+        virObjectLock(vm);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PTY:
-        if ((fd = qemuMonitorOpenPty(config->data.file.path)) < 0)
-            return NULL;
+        virObjectUnlock(vm);
+        fd = qemuMonitorOpenPty(config->data.file.path);
+        virObjectLock(vm);
         break;
 
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unable to handle monitor type: %s"),
                        virDomainChrTypeToString(config->type));
-        return NULL;
+        break;
+    }
+
+    if (fd < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("domain is not running"));
+        goto cleanup;
     }
 
     ret = qemuMonitorOpenInternal(vm, fd, hasSendFD, cb, opaque);
+ cleanup:
     if (!ret)
         VIR_FORCE_CLOSE(fd);
+    virObjectUnref(vm);
     return ret;
 }
 

@@ -1085,6 +1085,8 @@ qemuMonitorCommonTestNew(virDomainXMLOptionPtr xmlopt,
         test->vm = virDomainObjNew(xmlopt);
         if (!test->vm)
             goto error;
+        if (!(test->vm->def = virDomainDefNew()))
+            goto error;
     }
 
     if (virNetSocketNewListenUNIX(path, 0700, geteuid(), getegid(),

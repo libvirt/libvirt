@@ -1955,13 +1955,8 @@ qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int asyncJob,
      * 1GiB of guest RAM. */
     timeout = vm->def->mem.total_memory / (1024 * 1024);
 
-    /* Hold an extra reference because we can't allow 'vm' to be
-     * deleted until the monitor gets its own reference. */
-    virObjectRef(vm);
-
     ignore_value(virTimeMillisNow(&priv->monStart));
     monConfig = virObjectRef(priv->monConfig);
-    virObjectUnlock(vm);
 
     mon = qemuMonitorOpen(vm,
                           monConfig,
@@ -1978,15 +1973,8 @@ qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int asyncJob,
                                 qemuProcessMonitorLogFree);
     }
 
-    virObjectLock(vm);
     virObjectUnref(monConfig);
-    virObjectUnref(vm);
     priv->monStart = 0;
-
-    if (!virDomainObjIsActive(vm)) {
-        qemuMonitorClose(mon);
-        mon = NULL;
-    }
     priv->mon = mon;
 
     if (qemuSecurityClearSocketLabel(driver->securityManager, vm->def) < 0) {
