@@ -914,9 +914,8 @@ static int
 add_file_path(virDomainDiskDefPtr disk,
               const char *path,
               size_t depth,
-              void *opaque)
+              virBufferPtr buf)
 {
-    virBufferPtr buf = opaque;
     int ret;
 
     if (depth == 0) {
@@ -935,19 +934,9 @@ add_file_path(virDomainDiskDefPtr disk,
 }
 
 
-typedef int (*disk_foreach_iterator)(virDomainDiskDefPtr disk,
-                                     const char *path,
-                                     size_t depth,
-                                     void *opaque);
-
-
-/* Call iter(disk, name, depth, opaque) for each element of disk and
- * its backing chain in the pre-populated disk->src.backingStore.
- */
 static int
-disk_foreach_path(virDomainDiskDefPtr disk,
-                  disk_foreach_iterator iter,
-                  void *opaque)
+disk_add_files(virDomainDiskDefPtr disk,
+               virBufferPtr buf)
 {
     size_t depth = 0;
     virStorageSourcePtr tmp;
@@ -956,7 +945,7 @@ disk_foreach_path(virDomainDiskDefPtr disk,
         /* execute the callback only for local storage */
         if (virStorageSourceIsLocalStorage(tmp) &&
             tmp->path) {
-            if (iter(disk, tmp->path, depth, opaque) < 0)
+            if (add_file_path(disk, tmp->path, depth, buf) < 0)
                 return -1;
         }
 
@@ -1006,7 +995,7 @@ get_files(vahControl * ctl)
 
          /* XXX should handle open errors more careful than just ignoring them.
          */
-        if (disk_foreach_path(disk, add_file_path, &buf) < 0)
+        if (disk_add_files(disk, &buf) < 0)
             goto cleanup;
     }
 
