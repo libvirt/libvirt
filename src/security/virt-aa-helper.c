@@ -939,9 +939,9 @@ add_file_path(virStorageSourcePtr src,
 
 static int
 storage_source_add_files(virStorageSourcePtr src,
-                         virBufferPtr buf)
+                         virBufferPtr buf,
+                         size_t depth)
 {
-    size_t depth = 0;
     virStorageSourcePtr tmp;
 
     for (tmp = src; virStorageSourceIsBacking(tmp); tmp = tmp->backingStore) {
@@ -994,7 +994,7 @@ get_files(vahControl * ctl)
 
          /* XXX should handle open errors more careful than just ignoring them.
          */
-        if (storage_source_add_files(disk->src, &buf) < 0)
+        if (storage_source_add_files(disk->src, &buf, 0) < 0)
             goto cleanup;
     }
 
