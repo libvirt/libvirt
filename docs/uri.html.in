@@ -153,65 +153,270 @@ here</a>.
       <a id="URI_remote">Remote URIs</a>
     </h2>
     <p>
-Remote URIs are formed by taking ordinary local URIs and adding a
-hostname and/or transport name. As a special case, using a URI
-scheme of 'remote', will tell the remote libvirtd server to probe
-for the optimal hypervisor driver. This is equivalent to passing
-a NULL URI for a local connection. For example:
+Remote URIs have the general form ("[...]" meaning an optional part):
+</p>
+    <p><code>driver</code>[<code>+transport</code>]<code>://</code>[<code>username@</code>][<code>hostname</code>][<code>:port</code>]<code>/</code>[<code>path</code>][<code>?extraparameters</code>]
+</p>
+    <p>
+Either the transport or the hostname must be given in order
+to distinguish this from a local URI.
+</p>
+    <p>
+Some examples:
+</p>
+    <ul>
+      <li><code>xen+ssh://rjones@towada/system</code><br/> &#x2014; Connect to a
+remote Xen hypervisor on host <code>towada</code> using ssh transport and ssh
+username <code>rjones</code>.
+</li>
+      <li><code>xen://towada/system</code><br/> &#x2014; Connect to a
+remote Xen hypervisor on host <code>towada</code> using TLS.
+</li>
+      <li><code>xen://towada/system?no_verify=1</code><br/> &#x2014; Connect to a
+remote Xen hypervisor on host <code>towada</code> using TLS.  Do not verify
+the server's certificate.
+</li>
+      <li><code>qemu+unix:///system?socket=/opt/libvirt/run/libvirt/libvirt-sock</code><br/> &#x2014;
+Connect to the local qemu instances over a non-standard
+Unix socket (the full path to the Unix socket is
+supplied explicitly in this case).
+</li>
+      <li><code>test+tcp://localhost:5000/default</code><br/> &#x2014;
+Connect to a libvirtd daemon offering unencrypted TCP/IP connections
+on localhost port 5000 and use the test driver with default
+settings.
+</li>
+<li><code>qemu+libssh2://user@host/system?known_hosts=/home/user/.ssh/known_hosts</code><br/> &#x2014;
+Connect to a remote host using a ssh connection with the libssh2 driver
+and use a different known_hosts file.</li>
+<li><code>qemu+libssh://user@host/system?known_hosts=/home/user/.ssh/known_hosts</code><br/> &#x2014;
+Connect to a remote host using a ssh connection with the libssh driver
+and use a different known_hosts file.</li>
+    </ul>
+    <h3>
+      <a id="Remote_URI_parameters">Extra parameters</a>
+    </h3>
+    <p>
+Extra parameters can be added to remote URIs as part
+of the query string (the part following <q><code>?</code></q>).
+Remote URIs understand the extra parameters shown below.
+Any others are passed unmodified through to the back end.
+Note that parameter values must be
+<a href="http://xmlsoft.org/html/libxml-uri.html#xmlURIEscapeStr">URI-escaped</a>.
 </p>
     <table class="top_table">
       <tr>
-        <th> Local URI </th>
-        <th> Remote URI </th>
+        <th> Name </th>
+        <th> Transports </th>
         <th> Meaning </th>
       </tr>
       <tr>
         <td>
-          <code>xen:///system</code>
+          <code>name</code>
         </td>
         <td>
-          <code>xen://oirase/system</code>
+          <i>any transport</i>
         </td>
-        <td> Connect to the Xen hypervisor running on host <code>oirase</code>
-  using TLS. </td>
+        <td>
+  The name passed to the remote virConnectOpen function.  The
+  name is normally formed by removing transport, hostname, port
+  number, username and extra parameters from the remote URI, but in certain
+  very complex cases it may be better to supply the name explicitly.
+</td>
+      </tr>
+      <tr>
+        <td colspan="2"/>
+        <td> Example: <code>name=qemu:///system</code> </td>
       </tr>
       <tr>
         <td>
-          <code>NULL</code>
+          <code>tls_priority</code>
         </td>
+        <td> tls </td>
         <td>
-          <code>remote://oirase/</code>
-        </td>
-        <td> Connect to the "default" hypervisor running on host <code>oirase</code>
-  using TLS. </td>
+  A vaid GNUTLS priority string
+</td>
+      </tr>
+      <tr>
+        <td colspan="2"/>
+        <td> Example: <code>tls_priority=NORMAL:-VERS-SSL3.0</code> </td>
       </tr>
       <tr>
         <td>
-          <code>xen:///system</code>
+          <code>mode</code>
         </td>
+        <td> unix, ssh, libssh, libssh2 </td>
         <td>
-          <code>xen+ssh://oirase/system</code>
+          <dl>
+            <dt><code>auto</code></dt><dd>automatically determine the daemon</dd>
+            <dt><code>direct</code></dt><dd>connect to per-driver daemons</dd>
+            <dt><code>legacy</code></dt><dd>connect to libvirtd</dd>
+          </dl>
+          Can also be set in <code>libvirt.conf</code> as <code>remote_mode</code>
         </td>
-        <td> Connect to the Xen hypervisor running on host <code>oirase</code>
-  by going over an <code>ssh</code> connection. </td>
+      </tr>
+      <tr>
+        <td colspan="2"/>
+        <td> Example: <code>mode=direct</code> </td>
       </tr>
       <tr>
         <td>
-          <code>test:///default</code>
+          <code>command</code>
         </td>
+        <td> ssh, ext </td>
         <td>
-          <code>test+tcp://oirase/default</code>
+  The external command.  For ext transport this is required.
+  For ssh the default is <code>ssh</code>.
+  The PATH is searched for the command.
+</td>
+      </tr>
+      <tr>
+        <td colspan="2"/>
+        <td> Example: <code>command=/opt/openssh/bin/ssh</code> </td>
+      </tr>
+      <tr>
+        <td>
+          <code>socket</code>
         </td>
-        <td> Connect to the test driver on host <code>oirase</code>
-  using an unsecured TCP connection. </td>
+        <td> unix, ssh, libssh2, libssh </td>
+        <td>
+  The path to the Unix domain socket, which overrides the
+  compiled-in default.  For ssh transport, this is passed to
+  the remote netcat command (see next).
+</td>
+      </tr>
+      <tr>
+        <td colspan="2"/>
+        <td> Example: <code>socket=/opt/libvirt/run/libvirt/libvirt-sock</code> </td>
+      </tr>
+      <tr>
+        <td>
+          <code>netcat</code>
+        </td>
+        <td> ssh, libssh2, libssh </td>
+        <td>
+  The name of the netcat command on the remote machine.
+  The default is <code>nc</code>.  For ssh transport, libvirt
+  constructs an ssh command which looks like:
+
+<pre><i>command</i> -p <i>port</i> [-l <i>username</i>] <i>hostname</i> <i>netcat</i> -U <i>socket</i>
+</pre>
+
+  where <i>port</i>, <i>username</i>, <i>hostname</i> can be
+  specified as part of the remote URI, and <i>command</i>, <i>netcat</i>
+  and <i>socket</i> come from extra parameters (or
+  sensible defaults).
+
+</td>
+      </tr>
+      <tr>
+        <td colspan="2"/>
+        <td> Example: <code>netcat=/opt/netcat/bin/nc</code> </td>
+      </tr>
+
+      <tr>
+        <td>
+          <code>keyfile</code>
+        </td>
+        <td> ssh, libssh2, libssh </td>
+        <td>
+  The name of the private key file to use to authentication to the remote
+  machine.  If this option is not used the default keys are used.
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2"/>
+        <td> Example: <code>keyfile=/root/.ssh/example_key</code> </td>
+      </tr>
+
+      <tr>
+        <td>
+          <code>no_verify</code>
+        </td>
+        <td> ssh, tls </td>
+        <td>
+  SSH: If set to a non-zero value, this disables client's strict host key
+  checking making it auto-accept new host keys.  Existing host keys will
+  still be validated.
+  <br/>
+  <br/>
+  TLS: If set to a non-zero value, this disables client checks of the
+  server's certificate.  Note that to disable server checks of
+  the client's certificate or IP address you must
+  <a href="#Remote_libvirtd_configuration">change the libvirtd
+  configuration</a>.
+</td>
+      </tr>
+      <tr>
+        <td colspan="2"/>
+        <td> Example: <code>no_verify=1</code> </td>
+      </tr>
+      <tr>
+        <td>
+          <code>no_tty</code>
+        </td>
+        <td> ssh </td>
+        <td>
+  If set to a non-zero value, this stops ssh from asking for
+  a password if it cannot log in to the remote machine automatically
+  (eg. using ssh-agent etc.).  Use this when you don't have access
+  to a terminal - for example in graphical programs which use libvirt.
+</td>
+      </tr>
+      <tr>
+        <td colspan="2"/>
+        <td> Example: <code>no_tty=1</code> </td>
+      </tr>
+      <tr>
+        <td>
+          <code>pkipath</code>
+        </td>
+        <td> tls</td>
+        <td>
+          Specifies x509 certificates path for the client. If any of
+          the CA certificate, client certificate, or client key is
+          missing, the connection will fail with a fatal error.
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2"/>
+        <td> Example: <code>pkipath=/tmp/pki/client</code> </td>
+      </tr>
+      <tr>
+        <td>
+          <code>known_hosts</code>
+        </td>
+        <td> libssh2, libssh </td>
+        <td>
+  Path to the known_hosts file to verify the host key against. LibSSH2 and
+  libssh support OpenSSH-style known_hosts files, although LibSSH2 does not
+  support all key types, so using files created by the OpenSSH binary may
+  result into truncating the known_hosts file. Thus, with LibSSH2 it's
+  recommended to use the default known_hosts file is located in libvirt's
+  client local configuration directory e.g.: ~/.config/libvirt/known_hosts.
+  Note: Use absolute paths.
+</td>
+      </tr>
+      <tr>
+        <td colspan="2"/>
+        <td> Example: <code>known_hosts=/root/.ssh/known_hosts</code> </td>
+      </tr>
+      <tr>
+        <td>
+          <code>sshauth</code>
+        </td>
+        <td> libssh2, libssh </td>
+        <td>
+  A comma separated list of authentication methods to use. Default (is
+  "agent,privkey,password,keyboard-interactive". The order of the methods
+  is preserved. Some methods may require additional parameters.
+</td>
+      </tr>
+      <tr>
+        <td colspan="2"/>
+        <td> Example: <code>sshauth=privkey,agent</code> </td>
       </tr>
     </table>
-    <p>
-Remote URIs in libvirt offer a rich syntax and many features.
-We refer you to <a href="remote.html#Remote_URI_reference">the libvirt
-remote URI reference</a> and <a href="remote.html">full documentation
-for libvirt remote support</a>.
-</p>
     <h2>
       <a id="URI_test">test:///... Test URIs</a>
     </h2>
