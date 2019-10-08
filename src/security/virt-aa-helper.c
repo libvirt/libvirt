@@ -911,20 +911,19 @@ file_iterate_pci_cb(virPCIDevicePtr dev ATTRIBUTE_UNUSED,
 }
 
 static int
-add_file_path(virDomainDiskDefPtr disk,
-              const char *path,
+add_file_path(virStorageSourcePtr src,
               size_t depth,
               virBufferPtr buf)
 {
     int ret;
 
     if (depth == 0) {
-        if (disk->src->readonly)
-            ret = vah_add_file(buf, path, "rk");
+        if (src->readonly)
+            ret = vah_add_file(buf, src->path, "rk");
         else
-            ret = vah_add_file(buf, path, "rwk");
+            ret = vah_add_file(buf, src->path, "rwk");
     } else {
-        ret = vah_add_file(buf, path, "rk");
+        ret = vah_add_file(buf, src->path, "rk");
     }
 
     if (ret != 0)
@@ -945,7 +944,7 @@ disk_add_files(virDomainDiskDefPtr disk,
         /* execute the callback only for local storage */
         if (virStorageSourceIsLocalStorage(tmp) &&
             tmp->path) {
-            if (add_file_path(disk, tmp->path, depth, buf) < 0)
+            if (add_file_path(tmp, depth, buf) < 0)
                 return -1;
         }
 
