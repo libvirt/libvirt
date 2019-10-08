@@ -135,112 +135,61 @@ virConnectCacheOnceInit(void)
 
 VIR_ONCE_GLOBAL_INIT(virConnectCache);
 
-virConnectPtr virGetConnectInterface(void)
+static virConnectPtr
+virGetConnectGeneric(virThreadLocalPtr threadPtr, const char *name)
 {
     virConnectPtr conn;
 
     if (virConnectCacheInitialize() < 0)
         return NULL;
 
-    conn = virThreadLocalGet(&connectInterface);
+    conn = virThreadLocalGet(threadPtr);
+
     if (conn) {
-        VIR_DEBUG("Return cached interface connection %p", conn);
+        VIR_DEBUG("Return cached %s connection %p", name, conn);
         virObjectRef(conn);
     } else {
-        conn = virConnectOpen(geteuid() == 0 ? "interface:///system" : "interface:///session");
-        VIR_DEBUG("Opened new interface connection %p", conn);
+        VIR_AUTOFREE(char *) uri = NULL;
+        const char *uriPath = geteuid() == 0 ? "/system" : "/session";
+
+        if (virAsprintf(&uri, "%s://%s", name, uriPath) < 0)
+            return NULL;
+
+        conn = virConnectOpen(uri);
+        VIR_DEBUG("Opened new %s connection %p", name, conn);
     }
     return conn;
+}
+
+
+virConnectPtr virGetConnectInterface(void)
+{
+    return virGetConnectGeneric(&connectInterface, "interface");
 }
 
 virConnectPtr virGetConnectNetwork(void)
 {
-    virConnectPtr conn;
-
-    if (virConnectCacheInitialize() < 0)
-        return NULL;
-
-    conn = virThreadLocalGet(&connectNetwork);
-    if (conn) {
-        VIR_DEBUG("Return cached network connection %p", conn);
-        virObjectRef(conn);
-    } else {
-        conn = virConnectOpen(geteuid() == 0 ? "network:///system" : "network:///session");
-        VIR_DEBUG("Opened new network connection %p", conn);
-    }
-    return conn;
+    return virGetConnectGeneric(&connectNetwork, "network");
 }
 
 virConnectPtr virGetConnectNWFilter(void)
 {
-    virConnectPtr conn;
-
-    if (virConnectCacheInitialize() < 0)
-        return NULL;
-
-    conn = virThreadLocalGet(&connectNWFilter);
-    if (conn) {
-        VIR_DEBUG("Return cached nwfilter connection %p", conn);
-        virObjectRef(conn);
-    } else {
-        conn = virConnectOpen(geteuid() == 0 ? "nwfilter:///system" : "nwfilter:///session");
-        VIR_DEBUG("Opened new nwfilter connection %p", conn);
-    }
-    return conn;
+    return virGetConnectGeneric(&connectNWFilter, "nwfilter");
 }
 
 virConnectPtr virGetConnectNodeDev(void)
 {
-    virConnectPtr conn;
-
-    if (virConnectCacheInitialize() < 0)
-        return NULL;
-
-    conn = virThreadLocalGet(&connectNodeDev);
-    if (conn) {
-        VIR_DEBUG("Return cached nodedev connection %p", conn);
-        virObjectRef(conn);
-    } else {
-        conn = virConnectOpen(geteuid() == 0 ? "nodedev:///system" : "nodedev:///session");
-        VIR_DEBUG("Opened new nodedev connection %p", conn);
-    }
-    return conn;
+    return virGetConnectGeneric(&connectNodeDev, "nodedev");
 }
 
 virConnectPtr virGetConnectSecret(void)
 {
-    virConnectPtr conn;
-
-    if (virConnectCacheInitialize() < 0)
-        return NULL;
-
-    conn = virThreadLocalGet(&connectSecret);
-    if (conn) {
-        VIR_DEBUG("Return cached secret connection %p", conn);
-        virObjectRef(conn);
-    } else {
-        conn = virConnectOpen(geteuid() == 0 ? "secret:///system" : "secret:///session");
-        VIR_DEBUG("Opened new secret connection %p", conn);
-    }
-    return conn;
+    return virGetConnectGeneric(&connectSecret, "secret");
 }
 
 virConnectPtr virGetConnectStorage(void)
 {
-    virConnectPtr conn;
-
-    if (virConnectCacheInitialize() < 0)
-        return NULL;
-
-    conn = virThreadLocalGet(&connectStorage);
-    if (conn) {
-        VIR_DEBUG("Return cached storage connection %p", conn);
-        virObjectRef(conn);
-    } else {
-        conn = virConnectOpen(geteuid() == 0 ? "storage:///system" : "storage:///session");
-        VIR_DEBUG("Opened new storage connection %p", conn);
-    }
-    return conn;
+    return virGetConnectGeneric(&connectStorage, "storage");
 }
 
 
