@@ -29486,48 +29486,6 @@ virDomainUSBDeviceDefForeach(virDomainDefPtr def,
 }
 
 
-/* Call iter(disk, name, depth, opaque) for each element of disk and
- * its backing chain in the pre-populated disk->src.backingStore.
- * ignoreOpenFailure determines whether to warn about a chain that
- * mentions a backing file without also having metadata on that
- * file.  */
-int
-virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
-                            bool ignoreOpenFailure,
-                            virDomainDiskDefPathIterator iter,
-                            void *opaque)
-{
-    size_t depth = 0;
-    virStorageSourcePtr tmp;
-    VIR_AUTOFREE(char *) brokenRaw = NULL;
-
-    if (!ignoreOpenFailure) {
-        if (virStorageFileChainGetBroken(disk->src, &brokenRaw) < 0)
-            return -1;
-
-        if (brokenRaw) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unable to visit backing chain file %s"),
-                           brokenRaw);
-            return -1;
-        }
-    }
-
-    for (tmp = disk->src; virStorageSourceIsBacking(tmp); tmp = tmp->backingStore) {
-        /* execute the callback only for local storage */
-        if (virStorageSourceIsLocalStorage(tmp) &&
-            tmp->path) {
-            if (iter(disk, tmp->path, depth, opaque) < 0)
-                return -1;
-        }
-
-        depth++;
-    }
-
-    return 0;
-}
-
-
 /* Copy src into a new definition; with the quality of the copy
  * depending on the migratable flag (false for transitions between
  * persistent and active, true for transitions across save files or

@@ -334,7 +334,6 @@ virDomainDiskCacheTypeFromString;
 virDomainDiskCacheTypeToString;
 virDomainDiskDefAssignAddress;
 virDomainDiskDefCheckDuplicateInfo;
-virDomainDiskDefForeachPath;
 virDomainDiskDefFree;
 virDomainDiskDefNew;
 virDomainDiskDefParse;

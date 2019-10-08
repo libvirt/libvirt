@@ -3327,22 +3327,12 @@ int virDomainChrDefForeach(virDomainDefPtr def,
                            virDomainChrDefIterator iter,
                            void *opaque);
 
-typedef int (*virDomainDiskDefPathIterator)(virDomainDiskDefPtr disk,
-                                            const char *path,
-                                            size_t depth,
-                                            void *opaque);
-
 typedef int (*virDomainUSBDeviceDefIterator)(virDomainDeviceInfoPtr info,
                                              void *opaque);
 int virDomainUSBDeviceDefForeach(virDomainDefPtr def,
                                  virDomainUSBDeviceDefIterator iter,
                                  void *opaque,
                                  bool skipHubs);
-
-int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
-                                bool ignoreOpenFailure,
-                                virDomainDiskDefPathIterator iter,
-                                void *opaque);
 
 void
 virDomainObjSetState(virDomainObjPtr obj, virDomainState state, int reason)

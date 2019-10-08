@@ -934,6 +934,54 @@ add_file_path(virDomainDiskDefPtr disk,
     return ret;
 }
 
+
+typedef int (*disk_foreach_iterator)(virDomainDiskDefPtr disk,
+                                     const char *path,
+                                     size_t depth,
+                                     void *opaque);
+
+
+/* Call iter(disk, name, depth, opaque) for each element of disk and
+ * its backing chain in the pre-populated disk->src.backingStore.
+ * ignoreOpenFailure determines whether to warn about a chain that
+ * mentions a backing file without also having metadata on that
+ * file.  */
+static int
+disk_foreach_path(virDomainDiskDefPtr disk,
+                  bool ignoreOpenFailure,
+                  disk_foreach_iterator iter,
+                  void *opaque)
+{
+    size_t depth = 0;
+    virStorageSourcePtr tmp;
+    VIR_AUTOFREE(char *) brokenRaw = NULL;
+
+    if (!ignoreOpenFailure) {
+        if (virStorageFileChainGetBroken(disk->src, &brokenRaw) < 0)
+            return -1;
+
+        if (brokenRaw) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unable to visit backing chain file %s"),
+                           brokenRaw);
+            return -1;
+        }
+    }
+
+    for (tmp = disk->src; virStorageSourceIsBacking(tmp); tmp = tmp->backingStore) {
+        /* execute the callback only for local storage */
+        if (virStorageSourceIsLocalStorage(tmp) &&
+            tmp->path) {
+            if (iter(disk, tmp->path, depth, opaque) < 0)
+                return -1;
+        }
+
+        depth++;
+    }
+
+    return 0;
+}
+
 static int
 get_files(vahControl * ctl)
 {
@@ -973,11 +1021,11 @@ get_files(vahControl * ctl)
             virStorageFileGetMetadata(disk->src, -1, -1, false);
 
         /* XXX passing ignoreOpenFailure = true to get back to the behavior
-         * from before using virDomainDiskDefForeachPath. actually we should
+         * from before using disk_foreach_path. actually we should
          * be passing ignoreOpenFailure = false and handle open errors more
          * careful than just ignoring them.
          */
-        if (virDomainDiskDefForeachPath(disk, true, add_file_path, &buf) < 0)
+        if (disk_foreach_path(disk, true, add_file_path, &buf) < 0)
             goto cleanup;
     }
 
