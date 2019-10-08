@@ -61,6 +61,7 @@ EXTRA_DIST = \
   scripts/minimize-po.py \
   scripts/mock-noinline.py \
   scripts/prohibit-duplicate-header.py \
+  scripts/reformat-news.py \
   build-aux/syntax-check.mk \
   build-aux/useless-if-before-free \
   build-aux/vc-list-files \
@@ -75,7 +76,7 @@ pkgconfig_DATA = libvirt.pc libvirt-qemu.pc libvirt-lxc.pc libvirt-admin.pc
 NEWS: \
 	  $(srcdir)/docs/news.xml \
 	  $(srcdir)/docs/news-ascii.xsl \
-	  $(srcdir)/docs/reformat-news.py
+	  $(top_srcdir)/scripts/reformat-news.py
 	$(AM_V_GEN) \
 	if [ -x $(XSLTPROC) ]; then \
 	  $(XSLTPROC) --nonet \
@@ -83,14 +84,14 @@ NEWS: \
 	    $(srcdir)/docs/news.xml \
 	  >$@-tmp \
 	    || { rm -f $@-tmp; exit 1; }; \
-	  $(RUNUTF8) $(PYTHON) $(srcdir)/docs/reformat-news.py $@-tmp >$@ \
+	  $(RUNUTF8) $(PYTHON) $(top_srcdir)/scripts/reformat-news.py $@-tmp >$@ \
 	    || { rm -f $@-tmp; exit 1; }; \
 	  rm -f $@-tmp; \
 	fi
 EXTRA_DIST += \
 	$(srcdir)/docs/news.xml \
 	$(srcdir)/docs/news-ascii.xsl \
-	$(srcdir)/docs/reformat-news.py
+	$(NULL)
 
 rpm: clean
 	@(unset CDPATH ; $(MAKE) dist && rpmbuild -ta $(distdir).tar.xz)
