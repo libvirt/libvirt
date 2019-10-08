@@ -18,6 +18,9 @@
         <dt><a href="remote.html">Remote access</a></dt>
         <dd>Enable remote access over TCP</dd>
 
+        <dt><a href="tlscerts.html">TLS certs</a></dt>
+        <dd>Generate and deploy x509 certificates for TLS</dd>
+
         <dt><a href="auth.html">Authentication</a></dt>
         <dd>Configure authentication for the libvirt daemon</dd>
 
