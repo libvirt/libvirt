@@ -15075,8 +15075,8 @@ qemuDomainCheckCCWS390AddressSupport(const virDomainDef *def,
  * @src: source to start from
  *
  * Prepares various aspects of a storage source belonging to a disk backing
- * chain. This function should be also called for detected backing chain
- * members.
+ * chain based on the disk configuration. This function should be also called
+ * for detected backing chain members.
  */
 void
 qemuDomainPrepareDiskSourceData(virDomainDiskDefPtr disk,
