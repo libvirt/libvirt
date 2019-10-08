@@ -59,6 +59,7 @@ EXTRA_DIST = \
   scripts/genpolkit.py \
   scripts/gensystemtap.py \
   scripts/header-ifdef.py \
+  scripts/hyperv_wmi_generator.py \
   scripts/minimize-po.py \
   scripts/mock-noinline.py \
   scripts/prohibit-duplicate-header.py \

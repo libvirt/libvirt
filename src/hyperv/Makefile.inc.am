@@ -23,7 +23,6 @@ HYPERV_GENERATED_STAMP = .hyperv_wmi_generator.stamp
 
 HYPERV_DRIVER_EXTRA_DIST = \
 	hyperv/hyperv_wmi_generator.input \
-	hyperv/hyperv_wmi_generator.py \
 	$(NULL)
 
 DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(HYPERV_DRIVER_SOURCES))
@@ -38,9 +37,9 @@ BUILT_SOURCES += $(HYPERV_DRIVER_GENERATED)
 $(HYPERV_DRIVER_GENERATED): $(HYPERV_GENERATED_STAMP)
 
 $(HYPERV_GENERATED_STAMP): $(srcdir)/hyperv/hyperv_wmi_generator.input \
-                            $(srcdir)/hyperv/hyperv_wmi_generator.py
+                            $(top_srcdir)/scripts/hyperv_wmi_generator.py
 	$(AM_V_GEN) $(RUNUTF8) $(PYTHON) \
-	  $(srcdir)/hyperv/hyperv_wmi_generator.py $(srcdir) $(builddir) \
+	  $(top_srcdir)/scripts/hyperv_wmi_generator.py $(srcdir) $(builddir) \
 	  && touch $@
 
 CLEANFILES += $(HYPERV_DRIVER_GENERATED) $(HYPERV_GENERATED_STAMP)
