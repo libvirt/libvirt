@@ -15082,6 +15082,9 @@ void
 qemuDomainPrepareDiskSourceData(virDomainDiskDefPtr disk,
                                 virStorageSourcePtr src)
 {
+    if (!disk)
+        return;
+
     /* transfer properties valid only for the top level image */
     if (src == disk->src)
         src->detect_zeroes = disk->detect_zeroes;
