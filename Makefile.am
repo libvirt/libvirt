@@ -55,6 +55,7 @@ EXTRA_DIST = \
   scripts/check-symfile.py \
   scripts/check-symsorting.py \
   scripts/dtrace2systemtap.py \
+  scripts/esx_vi_generator.py \
   scripts/genpolkit.py \
   scripts/gensystemtap.py \
   scripts/header-ifdef.py \
