@@ -917,6 +917,10 @@ add_file_path(virStorageSourcePtr src,
 {
     int ret;
 
+    /* execute the callback only for local storage */
+    if (!src->path || !virStorageSourceIsLocalStorage(src))
+        return 0;
+
     if (depth == 0) {
         if (src->readonly)
             ret = vah_add_file(buf, src->path, "rk");
@@ -941,12 +945,8 @@ disk_add_files(virDomainDiskDefPtr disk,
     virStorageSourcePtr tmp;
 
     for (tmp = disk->src; virStorageSourceIsBacking(tmp); tmp = tmp->backingStore) {
-        /* execute the callback only for local storage */
-        if (virStorageSourceIsLocalStorage(tmp) &&
-            tmp->path) {
-            if (add_file_path(tmp, depth, buf) < 0)
-                return -1;
-        }
+        if (add_file_path(tmp, depth, buf) < 0)
+            return -1;
 
         depth++;
     }
