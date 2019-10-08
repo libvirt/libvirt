@@ -1171,9 +1171,7 @@ qemuDomainCheckCCWS390AddressSupport(const virDomainDef *def,
 
 int
 qemuDomainPrepareDiskSourceData(virDomainDiskDefPtr disk,
-                                virStorageSourcePtr src,
-                                virQEMUDriverConfigPtr cfg,
-                                virQEMUCapsPtr qemuCaps)
+                                virStorageSourcePtr src)
     G_GNUC_WARN_UNUSED_RESULT;
 
 
