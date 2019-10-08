@@ -219,7 +219,7 @@ schemadir = $(pkgdatadir)/schemas
 schema_DATA = $(wildcard $(srcdir)/schemas/*.rng)
 
 EXTRA_DIST= \
-  apibuild.py genaclperms.pl \
+  genaclperms.pl \
   site.xsl subsite.xsl newapi.xsl page.xsl \
   wrapstring.xsl \
   $(dot_html_in) $(gif) $(apipng) \
@@ -333,13 +333,13 @@ python_generated_files = \
 		$(api_DATA) \
 		$(NULL)
 
-APIBUILD=$(srcdir)/apibuild.py
+APIBUILD=$(top_srcdir)/scripts/apibuild.py
 APIBUILD_STAMP=apibuild.py.stamp
 CLEANFILES += $(APIBUILD_STAMP)
 
 $(python_generated_files): $(APIBUILD_STAMP)
 
-$(APIBUILD_STAMP): $(srcdir)/apibuild.py \
+$(APIBUILD_STAMP): $(top_srcdir)/scripts/apibuild.py \
 		$(top_srcdir)/include/libvirt/libvirt.h \
 		$(top_srcdir)/include/libvirt/libvirt-common.h.in \
 		$(top_srcdir)/include/libvirt/libvirt-domain-checkpoint.h \
