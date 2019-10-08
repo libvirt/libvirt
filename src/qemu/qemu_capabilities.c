@@ -546,6 +546,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "query-cpu-model-baseline",
               "query-cpu-model-comparison",
               "ramfb",
+              "machine.pseries.cap-ccf-assist",
     );
 
 
@@ -1442,6 +1443,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsMachinePropsPSeries[] = {
     { "cap-hpt-max-page-size", QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE },
     { "cap-htm", QEMU_CAPS_MACHINE_PSERIES_CAP_HTM },
     { "cap-nested-hv", QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV },
+    { "cap-ccf-assist", QEMU_CAPS_MACHINE_PSERIES_CAP_CCF_ASSIST },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsMachinePropsVirt[] = {
