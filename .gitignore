@@ -233,9 +233,6 @@
 !/tests/virsh-self-test
 !/tests/virt-aa-helper-test
 !/tests/virt-admin-self-test
-/tests/objectlocking
-/tests/objectlocking-files.txt
-/tests/objectlocking.cm[ix]
 /tests/reconnect
 /tests/ssh
 /tests/test_file_access.txt

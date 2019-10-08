@@ -770,18 +770,6 @@ if test "$enable_test_coverage" = yes; then
   WARN_CFLAGS=$save_WARN_CFLAGS
 fi
 
-LIBVIRT_ARG_ENABLE([TEST_LOCKING], [thread locking tests using CIL], [no])
-case "$enable_test_locking" in
-  yes|no) ;;
-  *) AC_MSG_ERROR([bad value ${enable_test_locking} for test-locking option]) ;;
-esac
-
-if test "$enable_test_locking" = "yes"; then
-  LOCK_CHECKING_CFLAGS="-save-temps"
-  AC_SUBST([LOCK_CHECKING_CFLAGS])
-fi
-AM_CONDITIONAL([WITH_CIL],[test "$enable_test_locking" = "yes"])
-
 dnl Cygwin, MinGW and MSVC checks
 LIBVIRT_WIN_CHECK_COMMON
 LIBVIRT_WIN_CHECK_CYGWIN
