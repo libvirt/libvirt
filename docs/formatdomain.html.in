@@ -2059,6 +2059,7 @@
     &lt;tseg unit='MiB'&gt;48&lt;/tseg&gt;
   &lt;/smm&gt;
   &lt;htm state='on'/&gt;
+  &lt;ccf-assist state='on'/&gt;
   &lt;msrs unknown='ignore'/&gt;
 &lt;/features&gt;
 ...</pre>
@@ -2356,6 +2357,14 @@
           not defined, or set to <code>fault</code>, unknown reads and writes
           will not be ignored.
           <span class="since">Since 5.1.0</span> (bhyve only)
+      </dd>
+      <dt><code>ccf-assist</code></dt>
+      <dd>Configure ccf-assist (Count Cache Flush Assist) availability for
+          pSeries guests.
+          Possible values for the <code>state</code> attribute
+          are <code>on</code> and <code>off</code>. If the attribute is not
+          defined, the hypervisor default will be used.
+          <span class="since">Since 5.9.0</span> (QEMU/KVM only)
       </dd>
     </dl>
 

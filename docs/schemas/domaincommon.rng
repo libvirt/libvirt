@@ -5121,6 +5121,11 @@
           <optional>
             <ref name="msrs"/>
           </optional>
+          <optional>
+            <element name="ccf-assist">
+              <ref name="featurestate"/>
+            </element>
+          </optional>
         </interleave>
       </element>
     </optional>

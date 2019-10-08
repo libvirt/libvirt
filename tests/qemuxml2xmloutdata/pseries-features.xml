@@ -14,6 +14,7 @@
     </hpt>
     <htm state='on'/>
     <nested-hv state='off'/>
+    <ccf-assist state='on'/>
   </features>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>

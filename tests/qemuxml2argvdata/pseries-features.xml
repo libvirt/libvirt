@@ -12,6 +12,7 @@
     </hpt>
     <htm state='on'/>
     <nested-hv state='off'/>
+    <ccf-assist state='on'/>
   </features>
   <devices>
     <emulator>/usr/bin/qemu-system-ppc64</emulator>

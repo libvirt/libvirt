@@ -11,7 +11,7 @@ QEMU_AUDIO_DRV=none \
 -name guest \
 -S \
 -machine pseries,accel=tcg,usb=off,dump-guest-core=off,resize-hpt=required,\
-cap-hpt-max-page-size=1048576k,cap-htm=on,cap-nested-hv=off \
+cap-hpt-max-page-size=1048576k,cap-htm=on,cap-nested-hv=off,cap-ccf-assist=on \
 -m 512 \
 -realtime mlock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
