@@ -1941,7 +1941,6 @@ qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int asyncJob,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuMonitorPtr mon = NULL;
     unsigned long long timeout = 0;
-    virDomainChrSourceDefPtr monConfig;
 
     if (qemuSecuritySetDaemonSocketLabel(driver->securityManager, vm->def) < 0) {
         VIR_ERROR(_("Failed to set security context for monitor for %s"),
@@ -1956,10 +1955,9 @@ qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int asyncJob,
     timeout = vm->def->mem.total_memory / (1024 * 1024);
 
     ignore_value(virTimeMillisNow(&priv->monStart));
-    monConfig = virObjectRef(priv->monConfig);
 
     mon = qemuMonitorOpen(vm,
-                          monConfig,
+                          priv->monConfig,
                           retry,
                           timeout,
                           &monitorCallbacks,
@@ -1973,7 +1971,6 @@ qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int asyncJob,
                                 qemuProcessMonitorLogFree);
     }
 
-    virObjectUnref(monConfig);
     priv->monStart = 0;
     priv->mon = mon;
 
