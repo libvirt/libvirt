@@ -222,8 +222,7 @@ testQemuDiskXMLToProps(const void *opaque)
         if (qemuDomainValidateStorageSource(n, data->qemuCaps) < 0)
             goto cleanup;
 
-        if (qemuDomainPrepareDiskSourceData(disk, n) < 0)
-            goto cleanup;
+        qemuDomainPrepareDiskSourceData(disk, n);
 
         if (!(formatProps = qemuBlockStorageSourceGetBlockdevProps(n, n->backingStore)) ||
             !(storageSrcOnlyProps = qemuBlockStorageSourceGetBackendProps(n, false, true, true)) ||
