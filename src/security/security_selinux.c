@@ -23,9 +23,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#if HAVE_SELINUX_LABEL_H
-# include <selinux/label.h>
-#endif
+#include <selinux/label.h>
 
 #include "security_driver.h"
 #include "security_selinux.h"
@@ -62,9 +60,7 @@ struct _virSecuritySELinuxData {
     char *content_context;
     virHashTablePtr mcs;
     bool skipAllLabel;
-#if HAVE_SELINUX_LABEL_H
     struct selabel_handle *label_handle;
-#endif
 };
 
 /* Data structure to pass to various callbacks so we have everything we need */
@@ -640,14 +636,12 @@ virSecuritySELinuxLXCInitialize(virSecurityManagerPtr mgr)
 
     data->skipAllLabel = true;
 
-# if HAVE_SELINUX_LABEL_H
     data->label_handle = selabel_open(SELABEL_CTX_FILE, NULL, 0);
     if (!data->label_handle) {
         virReportSystemError(errno, "%s",
                              _("cannot open SELinux label_handle"));
         return -1;
     }
-# endif
 
     if (!(selinux_conf = virConfReadFile(selinux_lxc_contexts_path(), 0)))
         goto error;
@@ -688,10 +682,8 @@ virSecuritySELinuxLXCInitialize(virSecurityManagerPtr mgr)
     return 0;
 
  error:
-# if HAVE_SELINUX_LABEL_H
     selabel_close(data->label_handle);
     data->label_handle = NULL;
-# endif
     VIR_FREE(data->domain_context);
     VIR_FREE(data->file_context);
     VIR_FREE(data->content_context);
@@ -717,14 +709,12 @@ virSecuritySELinuxQEMUInitialize(virSecurityManagerPtr mgr)
 
     data->skipAllLabel = false;
 
-#if HAVE_SELINUX_LABEL_H
     data->label_handle = selabel_open(SELABEL_CTX_FILE, NULL, 0);
     if (!data->label_handle) {
         virReportSystemError(errno, "%s",
                              _("cannot open SELinux label_handle"));
         return -1;
     }
-#endif
 
     if (virFileReadAll(selinux_virtual_domain_context_path(), MAX_CONTEXT, &(data->domain_context)) < 0) {
         virReportSystemError(errno,
@@ -773,10 +763,8 @@ virSecuritySELinuxQEMUInitialize(virSecurityManagerPtr mgr)
     return 0;
 
  error:
-#if HAVE_SELINUX_LABEL_H
     selabel_close(data->label_handle);
     data->label_handle = NULL;
-#endif
     VIR_FREE(data->domain_context);
     VIR_FREE(data->alt_domain_context);
     VIR_FREE(data->file_context);
@@ -1046,10 +1034,8 @@ virSecuritySELinuxDriverClose(virSecurityManagerPtr mgr)
     if (!data)
         return 0;
 
-#if HAVE_SELINUX_LABEL_H
     if (data->label_handle)
         selabel_close(data->label_handle);
-#endif
 
     virHashFree(data->mcs);
 
@@ -1272,7 +1258,7 @@ virSecuritySELinuxSetFileconImpl(const char *path,
 
     VIR_INFO("Setting SELinux context on '%s' to '%s'", path, tcon);
 
-    if (setfilecon_raw(path, (VIR_SELINUX_CTX_CONST char *)tcon) < 0) {
+    if (setfilecon_raw(path, (const char *)tcon) < 0) {
         int setfilecon_errno = errno;
 
         if (getfilecon_raw(path, &econ) >= 0) {
@@ -1458,13 +1444,9 @@ static int
 getContext(virSecurityManagerPtr mgr G_GNUC_UNUSED,
            const char *newpath, mode_t mode, security_context_t *fcon)
 {
-#if HAVE_SELINUX_LABEL_H
     virSecuritySELinuxDataPtr data = virSecurityManagerGetPrivateData(mgr);
 
     return selabel_lookup_raw(data->label_handle, fcon, newpath, mode);
-#else
-    return matchpathcon(newpath, mode, fcon);
-#endif
 }
 
 

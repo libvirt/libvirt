@@ -13276,7 +13276,7 @@ qemuDomainCreateDeviceRecursive(const char *device,
     }
 
     if (tcon &&
-        lsetfilecon_raw(devicePath, (VIR_SELINUX_CTX_CONST char *)tcon) < 0) {
+        lsetfilecon_raw(devicePath, (const char *)tcon) < 0) {
         VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR
         if (errno != EOPNOTSUPP && errno != ENOTSUP) {
         VIR_WARNINGS_RESET
@@ -14074,7 +14074,7 @@ qemuDomainAttachDeviceMknodHelper(pid_t pid G_GNUC_UNUSED,
 
 # ifdef WITH_SELINUX
     if (data->tcon &&
-        lsetfilecon_raw(data->file, (VIR_SELINUX_CTX_CONST char *)data->tcon) < 0) {
+        lsetfilecon_raw(data->file, (const char *)data->tcon) < 0) {
         VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR
         if (errno != EOPNOTSUPP && errno != ENOTSUP) {
         VIR_WARNINGS_RESET

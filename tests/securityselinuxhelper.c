@@ -27,9 +27,7 @@
 # include <linux/magic.h>
 #endif
 #include <selinux/selinux.h>
-#if HAVE_SELINUX_LABEL_H
-# include <selinux/label.h>
-#endif
+#include <selinux/label.h>
 #include <sys/vfs.h>
 #include <unistd.h>
 #include <sys/xattr.h>
@@ -54,7 +52,6 @@ static const char *(*real_selinux_virtual_image_context_path)(void);
 static const char *(*real_selinux_lxc_contexts_path)(void);
 #endif
 
-#if HAVE_SELINUX_LABEL_H
 static struct selabel_handle *(*real_selabel_open)(unsigned int backend,
                                                   VIR_SELINUX_OPEN_CONST
                                                   struct selinux_opt *opts,
@@ -64,7 +61,6 @@ static int (*real_selabel_lookup_raw)(struct selabel_handle *handle,
                                      security_context_t *con,
                                      const char *key,
                                      int type);
-#endif
 
 static void init_syms(void)
 {
@@ -82,11 +78,9 @@ static void init_syms(void)
     VIR_MOCK_REAL_INIT(selinux_lxc_contexts_path);
 #endif
 
-#if HAVE_SELINUX_LABEL_H
     VIR_MOCK_REAL_INIT(selabel_open);
     VIR_MOCK_REAL_INIT(selabel_close);
     VIR_MOCK_REAL_INIT(selabel_lookup_raw);
-#endif
 }
 
 
@@ -145,7 +139,7 @@ int getpidcon(pid_t pid, security_context_t *context)
     return getpidcon_raw(pid, context);
 }
 
-int setcon_raw(VIR_SELINUX_CTX_CONST char *context)
+int setcon_raw(const char *context)
 {
     if (!is_selinux_enabled()) {
         errno = EINVAL;
@@ -154,13 +148,13 @@ int setcon_raw(VIR_SELINUX_CTX_CONST char *context)
     return setenv("FAKE_SELINUX_CONTEXT", context, 1);
 }
 
-int setcon(VIR_SELINUX_CTX_CONST char *context)
+int setcon(const char *context)
 {
     return setcon_raw(context);
 }
 
 
-int setfilecon_raw(const char *path, VIR_SELINUX_CTX_CONST char *con)
+int setfilecon_raw(const char *path, const char *con)
 {
     const char *constr = con;
     if (STRPREFIX(path, abs_builddir "/securityselinuxlabeldata/nfs/")) {
@@ -171,7 +165,7 @@ int setfilecon_raw(const char *path, VIR_SELINUX_CTX_CONST char *con)
                     constr, strlen(constr), 0);
 }
 
-int setfilecon(const char *path, VIR_SELINUX_CTX_CONST char *con)
+int setfilecon(const char *path, const char *con)
 {
     return setfilecon_raw(path, con);
 }
@@ -292,7 +286,6 @@ const char *selinux_lxc_contexts_path(void)
 }
 #endif
 
-#if HAVE_SELINUX_LABEL_H
 struct selabel_handle *
 selabel_open(unsigned int backend,
              VIR_SELINUX_OPEN_CONST struct selinux_opt *opts,
@@ -335,5 +328,3 @@ int selabel_lookup_raw(struct selabel_handle *handle,
     errno = ENOENT;
     return -1;
 }
-
-#endif

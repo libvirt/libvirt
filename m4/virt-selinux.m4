@@ -27,20 +27,8 @@ AC_DEFUN([LIBVIRT_CHECK_SELINUX],[
                     [fgetfilecon_raw], [selinux/selinux.h])
 
   if test "$with_selinux" = "yes"; then
-    # libselinux changed signatures between 2.2 and 2.3
-    AC_CACHE_CHECK([for selinux setcon parameter type], [lv_cv_setcon_const],
-    [AC_COMPILE_IFELSE(
-      [AC_LANG_PROGRAM(
-         [[
-#include <selinux/selinux.h>
-int setcon(char *context);
-         ]])],
-         [lv_cv_setcon_const=''],
-         [lv_cv_setcon_const='const'])])
-    AC_DEFINE_UNQUOTED([VIR_SELINUX_CTX_CONST], [$lv_cv_setcon_const],
-      [Define to empty or 'const' depending on how SELinux qualifies its
-       security context parameters])
-    # ...and again for 2.5
+    # libselinux changed signatures for 2.5
+    # TODO: Drop once we don't support Ubuntu 16.04
     AC_CACHE_CHECK([for selinux selabel_open parameter type],
                    [lv_cv_selabel_open_const],
     [AC_COMPILE_IFELSE(
@@ -68,10 +56,6 @@ struct selabel_handle *selabel_open(unsigned, struct selinux_opt *, unsigned);
     fi
     AC_MSG_RESULT([$SELINUX_MOUNT])
     AC_DEFINE_UNQUOTED([SELINUX_MOUNT], ["$SELINUX_MOUNT"], [SELinux mount point])
-
-    dnl We prefer to use <selinux/label.h> and selabel_open, but can fall
-    dnl back to matchpathcon for the sake of RHEL 5's version of libselinux.
-    AC_CHECK_HEADERS([selinux/label.h])
   fi
 ])
 
