@@ -31,6 +31,15 @@ typedef virHashAtomic *virHashAtomicPtr;
  */
 typedef void (*virHashDataFree) (void *payload, const void *name);
 /**
+ * virHashDataFreeSimple:
+ * @payload:  the data in the hash
+ * @name:  the name associated
+ *
+ * Callback to free data from a hash.
+ */
+typedef void (*virHashDataFreeSimple) (void *payload);
+
+/**
  * virHashIterator:
  * @payload: the data in the hash
  * @name: the hash key
@@ -104,6 +113,7 @@ virHashAtomicPtr virHashAtomicNew(ssize_t size,
                                   virHashDataFree dataFree);
 virHashTablePtr virHashCreateFull(ssize_t size,
                                   virHashDataFree dataFree,
+                                  virHashDataFreeSimple dataFreeSimple,
                                   virHashKeyCode keyCode,
                                   virHashKeyEqual keyEqual,
                                   virHashKeyCopy keyCopy,

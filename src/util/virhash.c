@@ -56,6 +56,7 @@ struct _virHashTable {
     size_t size;
     size_t nbElems;
     virHashDataFree dataFree;
+    virHashDataFreeSimple dataFreeSimple;
     virHashKeyCode keyCode;
     virHashKeyEqual keyEqual;
     virHashKeyCopy keyCopy;
@@ -133,6 +134,7 @@ virHashComputeKey(const virHashTable *table, const void *name)
  */
 virHashTablePtr virHashCreateFull(ssize_t size,
                                   virHashDataFree dataFree,
+                                  virHashDataFreeSimple dataFreeSimple,
                                   virHashKeyCode keyCode,
                                   virHashKeyEqual keyEqual,
                                   virHashKeyCopy keyCopy,
@@ -149,7 +151,10 @@ virHashTablePtr virHashCreateFull(ssize_t size,
     table->seed = virRandomBits(32);
     table->size = size;
     table->nbElems = 0;
-    table->dataFree = dataFree;
+    if (dataFree)
+        table->dataFree = dataFree;
+    else
+        table->dataFreeSimple = dataFreeSimple;
     table->keyCode = keyCode;
     table->keyEqual = keyEqual;
     table->keyCopy = keyCopy;
@@ -177,6 +182,7 @@ virHashTablePtr virHashCreate(ssize_t size, virHashDataFree dataFree)
 {
     return virHashCreateFull(size,
                              dataFree,
+                             NULL,
                              virHashStrCode,
                              virHashStrEqual,
                              virHashStrCopy,
@@ -298,6 +304,8 @@ virHashFree(virHashTablePtr table)
 
             if (table->dataFree)
                 table->dataFree(iter->payload, iter->name);
+            if (table->dataFreeSimple)
+                table->dataFreeSimple(iter->payload);
             if (table->keyFree)
                 table->keyFree(iter->name);
             VIR_FREE(iter);
@@ -330,6 +338,8 @@ virHashAddOrUpdateEntry(virHashTablePtr table, const void *name,
             if (is_update) {
                 if (table->dataFree)
                     table->dataFree(entry->payload, entry->name);
+                if (table->dataFreeSimple)
+                    table->dataFreeSimple(entry->payload);
                 entry->payload = userdata;
                 return 0;
             } else {
@@ -456,9 +466,12 @@ void *virHashSteal(virHashTablePtr table, const void *name)
     void *data = virHashLookup(table, name);
     if (data) {
         virHashDataFree dataFree = table->dataFree;
+        virHashDataFreeSimple dataFreeSimple = table->dataFreeSimple;
         table->dataFree = NULL;
+        table->dataFreeSimple = NULL;
         virHashRemoveEntry(table, name);
         table->dataFree = dataFree;
+        table->dataFreeSimple = dataFreeSimple;
     }
     return data;
 }
