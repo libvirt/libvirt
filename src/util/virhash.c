@@ -170,6 +170,27 @@ virHashTablePtr virHashCreateFull(ssize_t size,
 
 
 /**
+ * virHashNew:
+ * @dataFree: callback to free data
+ *
+ * Create a new virHashTablePtr.
+ *
+ * Returns the newly created object, or NULL if an error occurred.
+ */
+virHashTablePtr
+virHashNew(virHashDataFreeSimple dataFree)
+{
+    return virHashCreateFull(32,
+                             NULL,
+                             dataFree,
+                             virHashStrCode,
+                             virHashStrEqual,
+                             virHashStrCopy,
+                             virHashStrFree);
+}
+
+
+/**
  * virHashCreate:
  * @size: the size of the hash table
  * @dataFree: callback to free data
