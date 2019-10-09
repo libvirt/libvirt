@@ -30,6 +30,10 @@ def check_file(filename):
         for line in fh:
             lineno = lineno + 1
 
+            # skip non-matching lines early
+            if line[0] != '#':
+                continue
+
             headermatch = re.search(r'''^# *include *[<"]([^>"]*\.h)[">]''', line)
             if headermatch is not None:
                 inc = headermatch.group(1)
