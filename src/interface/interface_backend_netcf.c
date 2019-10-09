@@ -1117,7 +1117,6 @@ static int netcfInterfaceIsActive(virInterfacePtr ifinfo)
     return ret;
 }
 
-#ifdef HAVE_NETCF_TRANSACTIONS
 static int netcfInterfaceChangeBegin(virConnectPtr conn, unsigned int flags)
 {
     int ret;
@@ -1192,7 +1191,6 @@ static int netcfInterfaceChangeRollback(virConnectPtr conn, unsigned int flags)
     virObjectUnlock(driver);
     return ret;
 }
-#endif /* HAVE_NETCF_TRANSACTIONS */
 
 static virInterfaceDriver interfaceDriver = {
     .name = INTERFACE_DRIVER_NAME,
@@ -1209,11 +1207,9 @@ static virInterfaceDriver interfaceDriver = {
     .interfaceCreate = netcfInterfaceCreate, /* 0.7.0 */
     .interfaceDestroy = netcfInterfaceDestroy, /* 0.7.0 */
     .interfaceIsActive = netcfInterfaceIsActive, /* 0.7.3 */
-#ifdef HAVE_NETCF_TRANSACTIONS
     .interfaceChangeBegin = netcfInterfaceChangeBegin, /* 0.9.2 */
     .interfaceChangeCommit = netcfInterfaceChangeCommit, /* 0.9.2 */
     .interfaceChangeRollback = netcfInterfaceChangeRollback, /* 0.9.2 */
-#endif /* HAVE_NETCF_TRANSACTIONS */
 };
 
 

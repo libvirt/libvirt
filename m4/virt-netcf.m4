@@ -18,25 +18,11 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_ARG_NETCF],[
-  LIBVIRT_ARG_WITH_FEATURE([NETCF], [netcf], [check], [0.1.4])
+  LIBVIRT_ARG_WITH_FEATURE([NETCF], [netcf], [check], [0.1.8])
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_NETCF],[
-  LIBVIRT_CHECK_PKG([NETCF], [netcf], [0.1.4])
-
-  if test "$with_netcf" = "yes" ; then
-    old_CFLAGS="$CFLAGS"
-    old_LIBS="$LIBS"
-    CFLAGS="$CFLAGS $NETCF_CFLAGS"
-    LIBS="$LIBS $NETCF_LIBS"
-    AC_CHECK_FUNC([ncf_change_begin], [netcf_transactions=1], [netcf_transactions=0])
-    if test "$netcf_transactions" = "1" ; then
-        AC_DEFINE_UNQUOTED([HAVE_NETCF_TRANSACTIONS], [1],
-          [we have sufficiently new version of netcf for transaction network API])
-    fi
-    CFLAGS="$old_CFLAGS"
-    LIBS="$old_LIBS"
-  fi
+  LIBVIRT_CHECK_PKG([NETCF], [netcf], [0.1.8])
 ])
 
 AC_DEFUN([LIBVIRT_RESULT_NETCF],[
