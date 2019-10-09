@@ -2470,15 +2470,15 @@ virQEMUCapsProbeQMPMachineProps(virQEMUCapsPtr qemuCaps,
 }
 
 
-int
-virQEMUCapsFetchCPUModels(qemuMonitorPtr mon,
-                          virArch arch,
-                          virDomainCapsCPUModelsPtr *cpuModels)
+static int
+virQEMUCapsFetchCPUDefinitions(qemuMonitorPtr mon,
+                               virArch arch,
+                               qemuMonitorCPUDefsPtr *cpuDefs)
 {
     g_autoptr(qemuMonitorCPUDefs) defs = NULL;
     size_t i;
 
-    *cpuModels = NULL;
+    *cpuDefs = NULL;
 
     if (qemuMonitorGetCPUDefinitions(mon, &defs) < 0)
         return -1;
@@ -2506,7 +2506,24 @@ virQEMUCapsFetchCPUModels(qemuMonitorPtr mon,
         }
     }
 
-    if (!(*cpuModels = virQEMUCapsCPUDefsToModels(defs, NULL, NULL)))
+    *cpuDefs = g_steal_pointer(&defs);
+    return 0;
+}
+
+
+int
+virQEMUCapsFetchCPUModels(qemuMonitorPtr mon,
+                          virArch arch,
+                          virDomainCapsCPUModelsPtr *cpuModels)
+{
+    g_autoptr(qemuMonitorCPUDefs) defs = NULL;
+
+    *cpuModels = NULL;
+
+    if (virQEMUCapsFetchCPUDefinitions(mon, arch, &defs) < 0)
+        return -1;
+
+    if (defs && !(*cpuModels = virQEMUCapsCPUDefsToModels(defs, NULL, NULL)))
         return -1;
 
     return 0;
