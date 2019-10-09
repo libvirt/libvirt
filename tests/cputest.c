@@ -542,7 +542,7 @@ cpuTestGetCPUModels(const struct data *data,
     if (!(qemuCaps = cpuTestMakeQEMUCaps(data)))
         return -1;
 
-    *models = virQEMUCapsGetCPUDefinitions(qemuCaps, VIR_DOMAIN_VIRT_KVM, NULL, NULL);
+    *models = virQEMUCapsGetCPUModels(qemuCaps, VIR_DOMAIN_VIRT_KVM, NULL, NULL);
 
     virObjectUnref(qemuCaps);
 

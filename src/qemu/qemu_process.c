@@ -4341,7 +4341,7 @@ qemuProcessFetchCPUDefinitions(virQEMUDriverPtr driver,
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         goto error;
 
-    rc = virQEMUCapsFetchCPUDefinitions(priv->mon, vm->def->os.arch, &models);
+    rc = virQEMUCapsFetchCPUModels(priv->mon, vm->def->os.arch, &models);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
         goto error;
@@ -6057,7 +6057,7 @@ qemuProcessUpdateGuestCPU(virDomainDefPtr def,
                                                  VIR_QEMU_CAPS_HOST_CPU_MIGRATABLE)) < 0)
             return -1;
 
-        cpuModels = virQEMUCapsGetCPUDefinitions(qemuCaps, def->virtType, NULL, NULL);
+        cpuModels = virQEMUCapsGetCPUModels(qemuCaps, def->virtType, NULL, NULL);
 
         if (virCPUTranslate(def->os.arch, def->cpu, cpuModels) < 0)
             return -1;

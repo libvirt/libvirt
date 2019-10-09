@@ -572,13 +572,13 @@ int virQEMUCapsAddCPUDefinitions(virQEMUCapsPtr qemuCaps,
                                  const char **name,
                                  size_t count,
                                  virDomainCapsCPUUsable usable);
-virDomainCapsCPUModelsPtr virQEMUCapsGetCPUDefinitions(virQEMUCapsPtr qemuCaps,
-                                                       virDomainVirtType type,
-                                                       const char **modelWhitelist,
-                                                       const char **modelBlacklist);
-int virQEMUCapsFetchCPUDefinitions(qemuMonitorPtr mon,
-                                   virArch arch,
-                                   virDomainCapsCPUModelsPtr *cpuModels);
+virDomainCapsCPUModelsPtr virQEMUCapsGetCPUModels(virQEMUCapsPtr qemuCaps,
+                                                  virDomainVirtType type,
+                                                  const char **modelWhitelist,
+                                                  const char **modelBlacklist);
+int virQEMUCapsFetchCPUModels(qemuMonitorPtr mon,
+                              virArch arch,
+                              virDomainCapsCPUModelsPtr *cpuModels);
 
 typedef enum {
     /* Host CPU definition reported in domain capabilities. */
