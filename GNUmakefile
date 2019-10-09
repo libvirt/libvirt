@@ -20,6 +20,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+_build-aux ?= build-aux
+_autoreconf ?= autoreconf -v
+
 # If the user runs GNU make but has not yet run ./configure,
 # give them a diagnostic.
 _gl-Makefile := $(wildcard [M]akefile)
@@ -32,15 +35,8 @@ export TAR_OPTIONS = --owner=0 --group=0 --numeric-owner
 ALL_RECURSIVE_TARGETS =
 
 include Makefile
-
-# Some projects override e.g., _autoreconf here.
--include $(srcdir)/cfg.mk
-
-# Allow cfg.mk to override these.
-_build-aux ?= build-aux
-_autoreconf ?= autoreconf -v
-
-include $(srcdir)/maint.mk
+include $(srcdir)/$(_build-aux)/cfg.mk
+include $(srcdir)/$(_build-aux)/maint.mk
 
 # Ensure that $(VERSION) is up to date for dist-related targets, but not
 # for others: rerunning autoreconf and recompiling everything isn't cheap.
@@ -90,13 +86,8 @@ else
 srcdir = .
 
 # The package can override .DEFAULT_GOAL to run actions like autoreconf.
--include ./cfg.mk
-
-# Allow cfg.mk to override these.
-_build-aux ?= build-aux
-_autoreconf ?= autoreconf -v
-
-include ./maint.mk
+include $(srcdir)/$(_build-aux)/cfg.mk
+include $(srcdir)/$(_build-aux)/maint.mk
 
 ifeq ($(.DEFAULT_GOAL),abort-due-to-no-makefile)
 $(MAKECMDGOALS): abort-due-to-no-makefile

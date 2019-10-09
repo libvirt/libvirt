@@ -41,15 +41,15 @@ EXTRA_DIST = \
   libvirt-admin.pc.in \
   Makefile.nonreentrant \
   autogen.sh \
-  cfg.mk \
   GNUmakefile \
-  maint.mk \
   run.in \
   README.md \
   AUTHORS.in \
   build-aux/augeas-gentest.pl \
+  build-aux/cfg.mk \
   build-aux/check-spacing.pl \
   build-aux/header-ifdef.pl \
+  build-aux/maint.mk \
   build-aux/minimize-po.pl \
   build-aux/mock-noinline.pl \
   build-aux/prohibit-duplicate-header.pl \

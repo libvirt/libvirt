@@ -19,7 +19,7 @@
 
 # This is reported not to work with make-3.79.1
 # ME := $(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))
-ME := maint.mk
+ME := $(_build-aux)/maint.mk
 
 # These variables ought to be defined through the configure.ac section
 # of the module description. But some packages import this file directly,
@@ -159,8 +159,7 @@ export LC_ALL = C
 ## Sanity checks.  ##
 ## --------------- ##
 
-ifneq ($(_gl-Makefile),)
-_cfg_mk := $(wildcard $(srcdir)/cfg.mk)
+_cfg_mk := $(wildcard $(srcdir)/$(_build-aux)/cfg.mk)
 
 # Collect the names of rules starting with 'sc_'.
 syntax-check-rules := $(sort $(shell $(SED) -n \
@@ -201,7 +200,6 @@ local-check :=								\
     $(filter-out $(local-checks-to-skip), $(local-checks-available)))
 
 syntax-check: $(local-check)
-endif
 
 # _sc_search_regexp
 #
@@ -906,7 +904,7 @@ endef
 # Don't define macros that we already get from gnulib header files.
 sc_prohibit_always-defined_macros:
 	@if test -d $(gnulib_dir); then					\
-	  case $$(echo all: | $(GREP) -l -f - Makefile) in Makefile);; *) \
+	  case $$(echo all: | $(GREP) -l -f - $(abs_top_builddir)/Makefile) in $(abs_top_builddir)/Makefile);; *) \
 	    echo '$(ME): skipping $@: you lack GNU grep' 1>&2; exit 0;;	\
 	  esac;								\
 	  regex=$$($(def_sym_regex)); export regex;			\
@@ -1429,7 +1427,7 @@ announcement: NEWS ChangeLog $(rel-files)
 release-commit:
 	$(AM_V_GEN)cd $(srcdir)				\
 	  && $(_build-aux)/do-release-commit-and-tag	\
-	       -C $(abs_builddir) $(RELEASE)
+	       -C $(abs_top_builddir) $(RELEASE)
 
 ## ---------------- ##
 ## Updating files.  ##
@@ -1551,7 +1549,7 @@ web-manual:
 	  && { echo define manual_title in cfg.mk 1>&2; exit 1; } || :
 	$(AM_V_at)cd '$(srcdir)/doc'; \
 	  $(SHELL) ../$(_build-aux)/gendocs.sh $(gendocs_options_) \
-	     -o '$(abs_builddir)/doc/manual' \
+	     -o '$(abs_top_builddir)/doc/manual' \
 	     --email $(PACKAGE_BUGREPORT) $(PACKAGE) \
 	    "$(PACKAGE_NAME) - $(manual_title)"
 	$(AM_V_at)echo " *** Upload the doc/manual directory to web-cvs."
@@ -1559,7 +1557,7 @@ web-manual:
 .PHONY: web-manual-update
 web-manual-update:
 	$(AM_V_GEN)cd $(srcdir) \
-	  && $(_build-aux)/gnu-web-doc-update -C $(abs_builddir)
+	  && $(_build-aux)/gnu-web-doc-update -C $(abs_top_builddir)
 
 
 # Code Coverage
@@ -1662,7 +1660,7 @@ _gl_TS_dir ?= src
 ALL_RECURSIVE_TARGETS += sc_tight_scope
 sc_tight_scope: tight-scope.mk
 	@fail=0;							\
-	if ! $(GREP) '^ *export _gl_TS_headers *=' $(srcdir)/cfg.mk	\
+	if ! $(GREP) '^ *export _gl_TS_headers *=' $(_build-aux)/cfg.mk	\
 		> /dev/null						\
 	   && ! $(GREP) -w noinst_HEADERS $(srcdir)/$(_gl_TS_dir)/Makefile.am \
 		> /dev/null 2>&1; then					\
@@ -1670,7 +1668,7 @@ sc_tight_scope: tight-scope.mk
 	else								\
 	    $(MAKE) -s -C $(_gl_TS_dir)					\
 		-f Makefile						\
-		-f $(abs_top_srcdir)/cfg.mk				\
+		-f $(_build-aux)/cfg.mk				\
 		-f $(abs_top_builddir)/$<				\
 	      _gl_tight_scope						\
 		|| fail=1;						\
