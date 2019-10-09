@@ -18,56 +18,22 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_CHECK_LIBNL], [
-  AC_REQUIRE([LIBVIRT_CHECK_NETCF])
   AC_REQUIRE([LIBVIRT_CHECK_MACVTAP])
 
-  LIBNL_REQUIRED="1.1"
   with_libnl=no
 
   if test "$with_linux" = "yes"; then
-    # When linking with netcf, we must ensure that we pick the same version
-    # of libnl that netcf picked.  Prefer libnl-3 unless we can prove
-    # netcf linked against libnl-1, or unless the user set LIBNL_CFLAGS.
-    # (Setting LIBNL_CFLAGS is already used by PKG_CHECK_MODULES to
-    # override any probing, so if it set, you know which libnl is in use.)
-    libnl_ldd=
-    for dir in /usr/lib64 /usr/lib /usr/lib/*-linux-gnu*; do
-      if test -f $dir/libnetcf.so; then
-        libnl_ldd=`(ldd $dir/libnetcf.so) 2>&1`
-        break
-      fi
-    done
-    case $libnl_ldd:${LIBNL_CFLAGS+set} in
-      *libnl-3.so.*:) LIBNL_REQUIRED=3.0 ;;
-    esac
-    case $libnl_ldd:${LIBNL_CFLAGS+set} in
-      *libnl.so.1*:) ;;
-      *)
-        PKG_CHECK_MODULES([LIBNL], [libnl-3.0], [
-          with_libnl=yes
-          AC_DEFINE([HAVE_LIBNL3], [1], [Use libnl-3.0])
-          AC_DEFINE([HAVE_LIBNL], [1], [whether the netlink library is available])
-          PKG_CHECK_MODULES([LIBNL_ROUTE3], [libnl-route-3.0])
-          LIBNL_CFLAGS="$LIBNL_CFLAGS $LIBNL_ROUTE3_CFLAGS"
-          LIBNL_LIBS="$LIBNL_LIBS $LIBNL_ROUTE3_LIBS"
-        ], [:]) ;;
-    esac
-    if test "$with_libnl" = no; then
-      PKG_CHECK_MODULES([LIBNL], [libnl-1 >= $LIBNL_REQUIRED], [
-        with_libnl=yes
-        AC_DEFINE_UNQUOTED([HAVE_LIBNL], [1],
-          [whether the netlink library is available])
-        AC_DEFINE_UNQUOTED([HAVE_LIBNL1], [1],
-          [whether the netlink v1 library is available])
-      ], [
-        if test "$with_macvtap" = "yes"; then
-          if test "$LIBNL_REQUIRED" = "3.0";then
-            AC_MSG_ERROR([libnl3-devel >= $LIBNL_REQUIRED is required for macvtap support])
-          else
-            AC_MSG_ERROR([libnl-devel >= $LIBNL_REQUIRED is required for macvtap support])
-          fi
-        fi
-      ])
+    PKG_CHECK_MODULES([LIBNL], [libnl-3.0], [
+      with_libnl=yes
+      AC_DEFINE([HAVE_LIBNL], [1], [whether the netlink library is available])
+      PKG_CHECK_MODULES([LIBNL_ROUTE], [libnl-route-3.0])
+      LIBNL_CFLAGS="$LIBNL_CFLAGS $LIBNL_ROUTE_CFLAGS"
+      LIBNL_LIBS="$LIBNL_LIBS $LIBNL_ROUTE_LIBS"
+    ], [:])
+  fi
+  if test "$with_libnl" = no; then
+    if test "$with_macvtap" = "yes"; then
+        AC_MSG_ERROR([libnl3-devel is required for macvtap support])
     fi
   fi
   AM_CONDITIONAL([HAVE_LIBNL], [test "$with_libnl" = "yes"])

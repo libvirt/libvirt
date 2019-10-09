@@ -24,15 +24,7 @@
 
 #if defined(__linux__) && defined(HAVE_LIBNL)
 
-/* Work around a bug where older libnl-1 headers expected older gcc
- * semantics of 'extern inline' that conflict with C99 semantics.  */
-# ifdef HAVE_LIBNL1
-#  define inline
-# endif
 # include <netlink/msg.h>
-# ifdef HAVE_LIBNL1
-#  undef inline
-# endif
 
 typedef struct nl_msg virNetlinkMsg;
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNetlinkMsg, nlmsg_free);

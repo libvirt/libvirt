@@ -52,17 +52,10 @@ struct virNetlinkEventHandle {
     int deleted;
 };
 
-# ifdef HAVE_LIBNL1
-#  define virNetlinkAlloc nl_handle_alloc
-#  define virNetlinkSetBufferSize nl_set_buffer_size
-#  define virNetlinkFree nl_handle_destroy
-typedef struct nl_handle virNetlinkHandle;
-# else
-#  define virNetlinkAlloc nl_socket_alloc
-#  define virNetlinkSetBufferSize nl_socket_set_buffer_size
-#  define virNetlinkFree nl_socket_free
+# define virNetlinkAlloc nl_socket_alloc
+# define virNetlinkSetBufferSize nl_socket_set_buffer_size
+# define virNetlinkFree nl_socket_free
 typedef struct nl_sock virNetlinkHandle;
-# endif
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNetlinkHandle, virNetlinkFree);
 
