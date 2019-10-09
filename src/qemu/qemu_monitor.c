@@ -2220,6 +2220,24 @@ qemuMonitorBlockStatsUpdateCapacityBlockdev(qemuMonitorPtr mon,
     return qemuMonitorJSONBlockStatsUpdateCapacityBlockdev(mon, stats);
 }
 
+
+/**
+ * qemuMonitorBlockGetNamedNodeData:
+ * @mon: monitor object
+ *
+ * Uses 'query-named-block-nodes' to retrieve information about individual
+ * storage nodes and returns them in a hash table of qemuBlockNamedNodeDataPtrs
+ * filled with the data. The hash table keys are node names.
+ */
+virHashTablePtr
+qemuMonitorBlockGetNamedNodeData(qemuMonitorPtr mon)
+{
+    QEMU_CHECK_MONITOR_NULL(mon);
+
+    return qemuMonitorJSONBlockGetNamedNodeData(mon);
+}
+
+
 int
 qemuMonitorBlockResize(qemuMonitorPtr mon,
                        const char *device,

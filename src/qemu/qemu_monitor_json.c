@@ -2875,6 +2875,72 @@ qemuMonitorJSONBlockStatsUpdateCapacityBlockdev(qemuMonitorPtr mon,
 }
 
 
+static void
+qemuMonitorJSONBlockNamedNodeDataFree(qemuBlockNamedNodeDataPtr data)
+{
+    g_free(data);
+}
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuBlockNamedNodeData, qemuMonitorJSONBlockNamedNodeDataFree);
+
+
+static int
+qemuMonitorJSONBlockGetNamedNodeDataWorker(size_t pos G_GNUC_UNUSED,
+                                           virJSONValuePtr val,
+                                           void *opaque)
+{
+    virHashTablePtr nodes = opaque;
+    virJSONValuePtr img;
+    const char *nodename;
+    g_autoptr(qemuBlockNamedNodeData) ent = NULL;
+
+    ent = g_new0(qemuBlockNamedNodeData, 1);
+
+    if (!(nodename = virJSONValueObjectGetString(val, "node-name")) ||
+        !(img = virJSONValueObjectGetObject(val, "image")))
+        goto broken;
+
+    if (virJSONValueObjectGetNumberUlong(img, "virtual-size", &ent->capacity) < 0)
+        goto broken;
+
+    /* if actual-size is missing, image is not thin provisioned */
+    if (virJSONValueObjectGetNumberUlong(img, "actual-size", &ent->physical) < 0)
+        ent->physical = ent->capacity;
+
+    if (virHashAddEntry(nodes, nodename, ent) < 0)
+        return -1;
+
+    ent = NULL;
+
+    return 1; /* we don't want to steal the value from the JSON array */
+
+ broken:
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("query-named-block-nodes entry was not in expected format"));
+    return -1;
+}
+
+
+virHashTablePtr
+qemuMonitorJSONBlockGetNamedNodeData(qemuMonitorPtr mon)
+{
+    g_autoptr(virJSONValue) nodes = NULL;
+    g_autoptr(virHashTable) ret = NULL;
+
+    if (!(nodes = qemuMonitorJSONQueryNamedBlockNodes(mon)))
+        return NULL;
+
+    if (!(ret = virHashNew((virHashDataFreeSimple) qemuMonitorJSONBlockNamedNodeDataFree)))
+        return NULL;
+
+    if (virJSONValueArrayForeachSteal(nodes,
+                                      qemuMonitorJSONBlockGetNamedNodeDataWorker,
+                                      ret) < 0)
+        return NULL;
+
+    return g_steal_pointer(&ret);
+}
+
+
 int qemuMonitorJSONBlockResize(qemuMonitorPtr mon,
                                const char *device,
                                const char *nodename,

@@ -676,6 +676,17 @@ int qemuMonitorBlockStatsUpdateCapacityBlockdev(qemuMonitorPtr mon,
                                                 virHashTablePtr stats)
     ATTRIBUTE_NONNULL(2);
 
+
+typedef struct _qemuBlockNamedNodeData qemuBlockNamedNodeData;
+typedef qemuBlockNamedNodeData *qemuBlockNamedNodeDataPtr;
+struct _qemuBlockNamedNodeData {
+    unsigned long long capacity;
+    unsigned long long physical;
+};
+
+virHashTablePtr
+qemuMonitorBlockGetNamedNodeData(qemuMonitorPtr mon);
+
 int qemuMonitorBlockResize(qemuMonitorPtr mon,
                            const char *device,
                            const char *nodename,

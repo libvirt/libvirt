@@ -87,6 +87,9 @@ int qemuMonitorJSONBlockStatsUpdateCapacity(qemuMonitorPtr mon,
 int qemuMonitorJSONBlockStatsUpdateCapacityBlockdev(qemuMonitorPtr mon,
                                                     virHashTablePtr stats);
 
+virHashTablePtr
+qemuMonitorJSONBlockGetNamedNodeData(qemuMonitorPtr mon);
+
 int qemuMonitorJSONBlockResize(qemuMonitorPtr mon,
                                const char *device,
                                const char *nodename,
