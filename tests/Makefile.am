@@ -429,7 +429,8 @@ test_scripts += $(libvirtd_test_scripts)
 
 test_programs += \
 	eventtest \
-	virdrivermoduletest
+	virdrivermoduletest \
+	virdriverconnvalidatetest
 else ! WITH_LIBVIRTD
 EXTRA_DIST += $(libvirtd_test_scripts)
 endif ! WITH_LIBVIRTD
@@ -1481,6 +1482,10 @@ if WITH_LIBVIRTD
 virdrivermoduletest_SOURCES = \
 	virdrivermoduletest.c testutils.h testutils.c
 virdrivermoduletest_LDADD = $(LDADDS)
+
+virdriverconnvalidatetest_SOURCES = \
+	virdriverconnvalidatetest.c testutils.h testutils.c
+virdriverconnvalidatetest_LDADD = $(LDADDS)
 endif WITH_LIBVIRTD
 
 if WITH_LIBVIRTD
