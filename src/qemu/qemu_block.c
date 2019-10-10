@@ -2566,10 +2566,9 @@ qemuBlockStorageSourceCreate(virDomainObjPtr vm,
 
 /**
  * qemuBlockStorageSourceCreateDetectSize:
- * @vm: domain object
+ * @blockNamedNodeData: hash table filled with qemuBlockNamedNodeData
  * @src: storage source to update size/capacity on
  * @templ: storage source template
- * @asyncJob: qemu asynchronous job type
  *
  * When creating a storage source via blockdev-create we need to know the size
  * and capacity of the original volume (e.g. when creating a snapshot or copy).
@@ -2577,28 +2576,13 @@ qemuBlockStorageSourceCreate(virDomainObjPtr vm,
  * to the detected sizes from @templ.
  */
 int
-qemuBlockStorageSourceCreateDetectSize(virDomainObjPtr vm,
+qemuBlockStorageSourceCreateDetectSize(virHashTablePtr blockNamedNodeData,
                                        virStorageSourcePtr src,
-                                       virStorageSourcePtr templ,
-                                       qemuDomainAsyncJob asyncJob)
+                                       virStorageSourcePtr templ)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    g_autoptr(virHashTable) stats = NULL;
-    qemuBlockStatsPtr entry;
-    int rc;
+    qemuBlockNamedNodeDataPtr entry;
 
-    if (!(stats = virHashCreate(10, virHashValueFree)))
-        return -1;
-
-    if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
-        return -1;
-
-    rc = qemuMonitorBlockStatsUpdateCapacityBlockdev(priv->mon, stats);
-
-    if (qemuDomainObjExitMonitor(priv->driver, vm) < 0 || rc < 0)
-        return -1;
-
-    if (!(entry = virHashLookup(stats, templ->nodeformat))) {
+    if (!(entry = virHashLookup(blockNamedNodeData, templ->nodeformat))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to update capacity data for block node '%s'"),
                        templ->nodeformat);

@@ -194,7 +194,6 @@ qemuBlockStorageSourceCreate(virDomainObjPtr vm,
                              qemuDomainAsyncJob asyncJob);
 
 int
-qemuBlockStorageSourceCreateDetectSize(virDomainObjPtr vm,
+qemuBlockStorageSourceCreateDetectSize(virHashTablePtr blockNamedNodeData,
                                        virStorageSourcePtr src,
-                                       virStorageSourcePtr templ,
-                                       qemuDomainAsyncJob asyncJob);
+                                       virStorageSourcePtr templ);

@@ -15246,6 +15246,7 @@ qemuDomainSnapshotDiskPrepareOne(virQEMUDriverPtr driver,
                                  virDomainDiskDefPtr disk,
                                  virDomainSnapshotDiskDefPtr snapdisk,
                                  qemuDomainSnapshotDiskDataPtr dd,
+                                 virHashTablePtr blockNamedNodeData,
                                  bool reuse,
                                  bool blockdev,
                                  qemuDomainAsyncJob asyncJob)
@@ -15349,8 +15350,8 @@ qemuDomainSnapshotDiskPrepareOne(virQEMUDriverPtr driver,
             if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
                 return -1;
         } else {
-            if (qemuBlockStorageSourceCreateDetectSize(vm, dd->src, dd->disk->src,
-                                                       asyncJob) < 0)
+            if (qemuBlockStorageSourceCreateDetectSize(blockNamedNodeData,
+                                                       dd->src, dd->disk->src) < 0)
                 return -1;
 
             if (qemuBlockStorageSourceCreate(vm, dd->src, dd->disk->src,
@@ -15379,6 +15380,7 @@ qemuDomainSnapshotDiskPrepare(virQEMUDriverPtr driver,
                               virQEMUDriverConfigPtr cfg,
                               bool reuse,
                               bool blockdev,
+                              virHashTablePtr blockNamedNodeData,
                               qemuDomainAsyncJob asyncJob,
                               qemuDomainSnapshotDiskDataPtr *rdata,
                               size_t *rndata)
@@ -15398,7 +15400,9 @@ qemuDomainSnapshotDiskPrepare(virQEMUDriverPtr driver,
 
         if (qemuDomainSnapshotDiskPrepareOne(driver, vm, cfg, vm->def->disks[i],
                                              snapdef->disks + i,
-                                             data + ndata++, reuse, blockdev,
+                                             data + ndata++,
+                                             blockNamedNodeData,
+                                             reuse, blockdev,
                                              asyncJob) < 0)
             goto cleanup;
     }
@@ -15489,6 +15493,7 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
     qemuDomainSnapshotDiskDataPtr diskdata = NULL;
     size_t ndiskdata = 0;
     bool blockdev =  virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
+    g_autoptr(virHashTable) blockNamedNodeData = NULL;
 
     if (virDomainObjCheckActive(vm) < 0)
         return -1;
@@ -15496,10 +15501,21 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
     if (!(actions = virJSONValueNewArray()))
         return -1;
 
+    if (blockdev) {
+        if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+            return -1;
+
+        blockNamedNodeData = qemuMonitorBlockGetNamedNodeData(priv->mon);
+
+        if (qemuDomainObjExitMonitor(driver, vm) < 0 || !blockNamedNodeData)
+            return -1;
+    }
+
     /* prepare a list of objects to use in the vm definition so that we don't
      * have to roll back later */
     if (qemuDomainSnapshotDiskPrepare(driver, vm, snap, cfg, reuse, blockdev,
-                                      asyncJob, &diskdata, &ndiskdata) < 0)
+                                      blockNamedNodeData, asyncJob,
+                                      &diskdata, &ndiskdata) < 0)
         goto cleanup;
 
     /* check whether there's anything to do */
@@ -18008,6 +18024,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     g_autoptr(qemuBlockStorageSourceChainData) crdata = NULL;
     virStorageSourcePtr n;
     virStorageSourcePtr mirrorBacking = NULL;
+    g_autoptr(virHashTable) blockNamedNodeData = NULL;
     int rc = 0;
 
     /* Preliminaries: find the disk we are editing, sanity checks */
@@ -18169,7 +18186,13 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
                                                                           priv->qemuCaps)))
                 goto endjob;
         } else {
-            if (qemuBlockStorageSourceCreateDetectSize(vm, mirror, disk->src, QEMU_ASYNC_JOB_NONE) < 0)
+            qemuDomainObjEnterMonitor(driver, vm);
+            blockNamedNodeData = qemuMonitorBlockGetNamedNodeData(priv->mon);
+            if (qemuDomainObjExitMonitor(driver, vm) < 0 || !blockNamedNodeData)
+                goto endjob;
+
+            if (qemuBlockStorageSourceCreateDetectSize(blockNamedNodeData,
+                                                       mirror, disk->src))
                 goto endjob;
 
             if (mirror_shallow) {
