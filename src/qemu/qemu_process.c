@@ -4328,27 +4328,30 @@ qemuProcessUpdateAndVerifyCPU(virQEMUDriverPtr driver,
 }
 
 
-static virDomainCapsCPUModelsPtr
+static int
 qemuProcessFetchCPUDefinitions(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
-                               qemuDomainAsyncJob asyncJob)
+                               qemuDomainAsyncJob asyncJob,
+                               virDomainCapsCPUModelsPtr *cpuModels)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainCapsCPUModelsPtr models = NULL;
+    int rc;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         goto error;
 
-    models = virQEMUCapsFetchCPUDefinitions(priv->mon, vm->def->os.arch);
+    rc = virQEMUCapsFetchCPUDefinitions(priv->mon, vm->def->os.arch, &models);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
         goto error;
 
-    return models;
+    *cpuModels = models;
+    return 0;
 
  error:
     virObjectUnref(models);
-    return NULL;
+    return -1;
 }
 
 
@@ -4373,7 +4376,7 @@ qemuProcessUpdateCPU(virQEMUDriverPtr driver,
     if (qemuProcessUpdateLiveGuestCPU(vm, cpu, disabled) < 0)
         goto cleanup;
 
-    if (!(models = qemuProcessFetchCPUDefinitions(driver, vm, asyncJob)) ||
+    if (qemuProcessFetchCPUDefinitions(driver, vm, asyncJob, &models) < 0 ||
         virCPUTranslate(vm->def->os.arch, vm->def->cpu, models) < 0)
         goto cleanup;
 

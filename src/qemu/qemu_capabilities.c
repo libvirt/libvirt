@@ -2441,17 +2441,26 @@ virQEMUCapsProbeQMPMachineProps(virQEMUCapsPtr qemuCaps,
 }
 
 
-virDomainCapsCPUModelsPtr
+int
 virQEMUCapsFetchCPUDefinitions(qemuMonitorPtr mon,
-                               virArch arch)
+                               virArch arch,
+                               virDomainCapsCPUModelsPtr *cpuModels)
 {
     virDomainCapsCPUModelsPtr models = NULL;
     qemuMonitorCPUDefInfoPtr *cpus = NULL;
     int ncpus = 0;
     size_t i;
+    int ret = -1;
+
+    *cpuModels = NULL;
 
     if ((ncpus = qemuMonitorGetCPUDefinitions(mon, &cpus)) < 0)
-        return NULL;
+        return -1;
+
+    if (ncpus == 0) {
+        ret = 0;
+        goto cleanup;
+    }
 
     /* QEMU 2.11 for Power renamed all CPU models to lower case, we need to
      * translate them back to libvirt's upper case model names. */
@@ -2460,7 +2469,7 @@ virQEMUCapsFetchCPUDefinitions(qemuMonitorPtr mon,
         char **name;
 
         if (virCPUGetModels(arch, &libvirtModels) < 0)
-            goto error;
+            goto cleanup;
 
         for (name = libvirtModels; name && *name; name++) {
             for (i = 0; i < ncpus; i++) {
@@ -2474,7 +2483,7 @@ virQEMUCapsFetchCPUDefinitions(qemuMonitorPtr mon,
     }
 
     if (!(models = virDomainCapsCPUModelsNew(ncpus)))
-        goto error;
+        goto cleanup;
 
     for (i = 0; i < ncpus; i++) {
         virDomainCapsCPUUsable usable = VIR_DOMCAPS_CPU_USABLE_UNKNOWN;
@@ -2486,19 +2495,18 @@ virQEMUCapsFetchCPUDefinitions(qemuMonitorPtr mon,
 
         if (virDomainCapsCPUModelsAddSteal(models, &cpus[i]->name, usable,
                                            &cpus[i]->blockers) < 0)
-            goto error;
+            goto cleanup;
     }
+
+    *cpuModels = g_steal_pointer(&models);
+    ret = 0;
 
  cleanup:
     for (i = 0; i < ncpus; i++)
         qemuMonitorCPUDefInfoFree(cpus[i]);
     VIR_FREE(cpus);
-    return models;
-
- error:
     virObjectUnref(models);
-    models = NULL;
-    goto cleanup;
+    return ret;
 }
 
 
@@ -2512,7 +2520,7 @@ virQEMUCapsProbeQMPCPUDefinitions(virQEMUCapsPtr qemuCaps,
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_DEFINITIONS))
         return 0;
 
-    if (!(models = virQEMUCapsFetchCPUDefinitions(mon, qemuCaps->arch)))
+    if (virQEMUCapsFetchCPUDefinitions(mon, qemuCaps->arch, &models) < 0)
         return -1;
 
     if (tcg || !virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
