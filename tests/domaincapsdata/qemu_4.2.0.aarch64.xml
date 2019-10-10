@@ -59,9 +59,9 @@
       <model usable='unknown'>max</model>
       <model usable='unknown'>cortex-m4</model>
       <model usable='unknown'>pxa270-b0</model>
+      <model usable='unknown'>arm946</model>
       <model usable='unknown'>cortex-m0</model>
       <model usable='unknown'>cortex-r5</model>
-      <model usable='unknown'>arm946</model>
       <model usable='unknown'>pxa270-a1</model>
       <model usable='unknown'>pxa270</model>
     </mode>
