@@ -8654,7 +8654,8 @@ qemuProcessQMPConnectMonitor(qemuProcessQMPPtr proc)
     monConfig.data.nix.listen = false;
 
     if (!(xmlopt = virDomainXMLOptionNew(NULL, NULL, NULL, NULL, NULL)) ||
-        !(proc->vm = virDomainObjNew(xmlopt)))
+        !(proc->vm = virDomainObjNew(xmlopt)) ||
+        !(proc->vm->def = virDomainDefNew()))
         goto cleanup;
 
     proc->vm->pid = proc->pid;
