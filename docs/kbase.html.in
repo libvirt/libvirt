@@ -21,6 +21,10 @@
             capture</a></dt>
         <dd>Comparison between different methods of capturing domain
           state</dd>
+
+        <dt><a href="kbase/rpm-deployment.html">RPM deployment</a></dt>
+        <dd>Explanation of the different RPM packages and illustration of
+          which to pick for installation</dd>
       </dl>
     </div>
 
