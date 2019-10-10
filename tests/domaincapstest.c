@@ -464,6 +464,10 @@ mymain(void)
                  "/usr/bin/qemu-system-ppc64", NULL,
                  "ppc64", VIR_DOMAIN_VIRT_KVM);
 
+    DO_TEST_QEMU("4.2.0", "caps_4.2.0",
+                 "/usr/bin/qemu-system-aarch64", NULL,
+                 "aarch64", VIR_DOMAIN_VIRT_KVM);
+
     virObjectUnref(cfg);
 
     virFileWrapperClearPrefixes();
