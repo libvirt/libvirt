@@ -1,6 +1,6 @@
 # vim: filetype=automake
 
-DRIVER_SOURCES += \
+LOCK_DRIVER_SOURCES = \
 	locking/lock_manager.c \
 	locking/lock_manager.h \
 	locking/lock_driver.h \
@@ -47,6 +47,7 @@ EXTRA_DIST += \
 	$(LOCK_DAEMON_GENERATED) \
 	$(LOCK_DAEMON_SOURCES) \
 	$(LOCK_DRIVER_LOCKD_SOURCES) \
+	$(LOCK_DRIVER_SOURCES) \
 	locking/sanlock.conf \
 	locking/libvirt_sanlock.aug \
 	locking/test_libvirt_sanlock.aug.in \
@@ -85,6 +86,17 @@ VIRTLOCKD_UNIT_FILES_IN = \
 
 SYSTEMD_UNIT_FILES += $(notdir $(VIRTLOCKD_UNIT_FILES_IN:%.in=%))
 SYSTEMD_UNIT_FILES_IN += $(VIRTLOCKD_UNIT_FILES_IN)
+
+noinst_LTLIBRARIES += libvirt_driver_lock.la
+
+libvirt_la_BUILT_LIBADD += libvirt_driver_lock.la
+libvirt_driver_lock_la_SOURCES = \
+	$(LOCK_DRIVER_SOURCES) \
+	$(NULL)
+libvirt_driver_lock_la_CFLAGS = \
+	$(AM_CFLAGS) \
+	-I$(srcdir)/conf \
+	$(NULL)
 
 lockdriverdir = $(libdir)/libvirt/lock-driver
 lockdriver_LTLIBRARIES =
