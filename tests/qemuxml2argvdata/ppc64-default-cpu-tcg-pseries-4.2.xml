@@ -1,0 +1,22 @@
+<domain type='qemu'>
+  <name>guest</name>
+  <uuid>1ccfd97d-5eb4-478a-bbe6-88d254c16db7</uuid>
+  <memory>4194304</memory>
+  <currentMemory>4194304</currentMemory>
+  <vcpu>4</vcpu>
+  <os>
+    <type arch='ppc64' machine='pseries-4.2'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <devices>
+    <emulator>/usr/bin/qemu-system-ppc64</emulator>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source file='/var/lib/libvirt/images/guest.qcow2'/>
+      <target dev='vda' bus='virtio'/>
+    </disk>
+    <console type='pty'/>
+    <memballoon model='virtio'/>
+  </devices>
+</domain>
