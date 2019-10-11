@@ -1341,6 +1341,9 @@ mymain(void)
     DO_TEST_CAPS_VER("cpu-Icelake-Server-pconfig", "3.1.0");
     DO_TEST_CAPS_LATEST("cpu-Icelake-Server-pconfig");
 
+    DO_TEST_CAPS_ARCH_LATEST("aarch64-default-cpu-kvm-virt-4.2", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("aarch64-default-cpu-tcg-virt-4.2", "aarch64");
+
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
 
