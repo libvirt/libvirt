@@ -4465,6 +4465,10 @@ qemuDomainDefVcpusPostParse(virDomainDefPtr def)
 static int
 qemuDomainDefCPUPostParse(virDomainDefPtr def)
 {
+    virCPUFeatureDefPtr sveFeature = NULL;
+    bool sveVectorLengthsProvided = false;
+    size_t i;
+
     if (!def->cpu)
         return 0;
 
@@ -4519,6 +4523,39 @@ qemuDomainDefCPUPostParse(virDomainDefPtr def)
 
         case VIR_CPU_CACHE_MODE_LAST:
             break;
+        }
+    }
+
+    for (i = 0; i < def->cpu->nfeatures; i++) {
+        virCPUFeatureDefPtr feature = &def->cpu->features[i];
+
+        if (STREQ(feature->name, "sve")) {
+            sveFeature = feature;
+        } else if (STRPREFIX(feature->name, "sve")) {
+            sveVectorLengthsProvided = true;
+        }
+    }
+
+    if (sveVectorLengthsProvided) {
+        if (sveFeature) {
+            if (sveFeature->policy == VIR_CPU_FEATURE_DISABLE ||
+                sveFeature->policy == VIR_CPU_FEATURE_FORBID) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("SVE disabled, but SVE vector lengths provided"));
+                return -1;
+            } else {
+                sveFeature->policy = VIR_CPU_FEATURE_REQUIRE;
+            }
+        } else {
+            if (VIR_RESIZE_N(def->cpu->features, def->cpu->nfeatures_max,
+                             def->cpu->nfeatures, 1) < 0) {
+                return -1;
+            }
+
+            def->cpu->features[def->cpu->nfeatures].name = g_strdup("sve");
+            def->cpu->features[def->cpu->nfeatures].policy = VIR_CPU_FEATURE_REQUIRE;
+
+            def->cpu->nfeatures++;
         }
     }
 
