@@ -16905,6 +16905,22 @@ virDomainDiskByName(virDomainDefPtr def,
     return idx < 0 ? NULL : def->disks[idx];
 }
 
+
+virDomainDiskDefPtr
+virDomainDiskByTarget(virDomainDefPtr def,
+                      const char *dst)
+{
+    size_t i;
+
+    for (i = 0; i < def->ndisks; i++) {
+        if (STREQ(def->disks[i]->dst, dst))
+            return def->disks[i];
+    }
+
+    return NULL;
+}
+
+
 int virDomainDiskInsert(virDomainDefPtr def,
                         virDomainDiskDefPtr disk)
 {
