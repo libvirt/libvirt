@@ -703,7 +703,7 @@ static const vshCmdOptDef opts_network_list[] = {
     if (vshCommandOptBool(cmd, NAME)) \
         flags |= (FLAG)
 static bool
-cmdNetworkList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+cmdNetworkList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     virshNetworkListPtr list = NULL;
     size_t i;
@@ -1208,10 +1208,10 @@ VIR_ENUM_IMPL(virshNetworkEventId,
               "lifecycle");
 
 static void
-vshEventLifecyclePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+vshEventLifecyclePrint(virConnectPtr conn G_GNUC_UNUSED,
                        virNetworkPtr net,
                        int event,
-                       int detail ATTRIBUTE_UNUSED,
+                       int detail G_GNUC_UNUSED,
                        void *opaque)
 {
     virshNetEventData *data = opaque;

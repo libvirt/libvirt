@@ -144,8 +144,8 @@ show_version(void)
 
 
 static void
-hideErrorFunc(void *opaque ATTRIBUTE_UNUSED,
-              virErrorPtr err ATTRIBUTE_UNUSED)
+hideErrorFunc(void *opaque G_GNUC_UNUSED,
+              virErrorPtr err G_GNUC_UNUSED)
 {
 }
 

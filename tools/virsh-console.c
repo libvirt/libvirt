@@ -91,7 +91,7 @@ virConsoleOnceInit(void)
 VIR_ONCE_GLOBAL_INIT(virConsole);
 
 static void
-virConsoleHandleSignal(int sig ATTRIBUTE_UNUSED)
+virConsoleHandleSignal(int sig G_GNUC_UNUSED)
 {
 }
 
@@ -232,8 +232,8 @@ virConsoleEventOnStream(virStreamPtr st,
 
 
 static void
-virConsoleEventOnStdin(int watch ATTRIBUTE_UNUSED,
-                       int fd ATTRIBUTE_UNUSED,
+virConsoleEventOnStdin(int watch G_GNUC_UNUSED,
+                       int fd G_GNUC_UNUSED,
                        int events,
                        void *opaque)
 {
@@ -306,7 +306,7 @@ virConsoleEventOnStdin(int watch ATTRIBUTE_UNUSED,
 
 
 static void
-virConsoleEventOnStdout(int watch ATTRIBUTE_UNUSED,
+virConsoleEventOnStdout(int watch G_GNUC_UNUSED,
                         int fd,
                         int events,
                         void *opaque)

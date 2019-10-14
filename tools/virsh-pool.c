@@ -1114,7 +1114,7 @@ static const vshCmdOptDef opts_pool_list[] = {
 };
 
 static bool
-cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+cmdPoolList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     virStoragePoolInfo info;
     size_t i;
@@ -1445,7 +1445,7 @@ static const vshCmdOptDef opts_find_storage_pool_sources_as[] = {
 };
 
 static bool
-cmdPoolDiscoverSourcesAs(vshControl * ctl, const vshCmd * cmd ATTRIBUTE_UNUSED)
+cmdPoolDiscoverSourcesAs(vshControl * ctl, const vshCmd * cmd G_GNUC_UNUSED)
 {
     const char *type = NULL, *host = NULL;
     char *srcSpec = NULL;
@@ -1528,7 +1528,7 @@ static const vshCmdOptDef opts_find_storage_pool_sources[] = {
 };
 
 static bool
-cmdPoolDiscoverSources(vshControl * ctl, const vshCmd * cmd ATTRIBUTE_UNUSED)
+cmdPoolDiscoverSources(vshControl * ctl, const vshCmd * cmd G_GNUC_UNUSED)
 {
     const char *type = NULL, *srcSpecFile = NULL;
     char *srcSpec = NULL, *srcList;
@@ -1918,10 +1918,10 @@ typedef struct virshPoolEventData virshPoolEventData;
 
 
 static void
-vshEventLifecyclePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+vshEventLifecyclePrint(virConnectPtr conn G_GNUC_UNUSED,
                        virStoragePoolPtr pool,
                        int event,
-                       int detail ATTRIBUTE_UNUSED,
+                       int detail G_GNUC_UNUSED,
                        void *opaque)
 {
     virshPoolEventData *data = opaque;
@@ -1951,7 +1951,7 @@ vshEventLifecyclePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static void
-vshEventGenericPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+vshEventGenericPrint(virConnectPtr conn G_GNUC_UNUSED,
                      virStoragePoolPtr pool,
                      void *opaque)
 {
@@ -2126,7 +2126,7 @@ static const vshCmdOptDef opts_pool_capabilities[] = {
 
 static bool
 cmdPoolCapabilities(vshControl *ctl,
-                    const vshCmd *cmd ATTRIBUTE_UNUSED)
+                    const vshCmd *cmd G_GNUC_UNUSED)
 {
     const unsigned int flags = 0; /* No flags so far */
     virshControlPtr priv = ctl->privData;

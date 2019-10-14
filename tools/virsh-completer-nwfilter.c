@@ -27,7 +27,7 @@
 
 char **
 virshNWFilterNameCompleter(vshControl *ctl,
-                           const vshCmd *cmd ATTRIBUTE_UNUSED,
+                           const vshCmd *cmd G_GNUC_UNUSED,
                            unsigned int flags)
 {
     virshControlPtr priv = ctl->privData;
@@ -67,7 +67,7 @@ virshNWFilterNameCompleter(vshControl *ctl,
 
 char **
 virshNWFilterBindingNameCompleter(vshControl *ctl,
-                                  const vshCmd *cmd ATTRIBUTE_UNUSED,
+                                  const vshCmd *cmd G_GNUC_UNUSED,
                                   unsigned int flags)
 {
     virshControlPtr priv = ctl->privData;

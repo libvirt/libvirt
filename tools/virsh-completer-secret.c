@@ -28,7 +28,7 @@
 
 char **
 virshSecretUUIDCompleter(vshControl *ctl,
-                         const vshCmd *cmd ATTRIBUTE_UNUSED,
+                         const vshCmd *cmd G_GNUC_UNUSED,
                          unsigned int flags)
 {
     virshControlPtr priv = ctl->privData;
@@ -68,8 +68,8 @@ virshSecretUUIDCompleter(vshControl *ctl,
 
 
 char **
-virshSecretEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
-                              const vshCmd *cmd ATTRIBUTE_UNUSED,
+virshSecretEventNameCompleter(vshControl *ctl G_GNUC_UNUSED,
+                              const vshCmd *cmd G_GNUC_UNUSED,
                               unsigned int flags)
 {
     size_t i;

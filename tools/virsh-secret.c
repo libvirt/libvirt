@@ -488,7 +488,7 @@ static const vshCmdOptDef opts_secret_list[] = {
 };
 
 static bool
-cmdSecretList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+cmdSecretList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     size_t i;
     virshSecretListPtr list = NULL;
@@ -579,10 +579,10 @@ struct virshSecretEventData {
 typedef struct virshSecretEventData virshSecretEventData;
 
 static void
-vshEventLifecyclePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+vshEventLifecyclePrint(virConnectPtr conn G_GNUC_UNUSED,
                        virSecretPtr secret,
                        int event,
-                       int detail ATTRIBUTE_UNUSED,
+                       int detail G_GNUC_UNUSED,
                        void *opaque)
 {
     virshSecretEventData *data = opaque;
@@ -611,7 +611,7 @@ vshEventLifecyclePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static void
-vshEventGenericPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+vshEventGenericPrint(virConnectPtr conn G_GNUC_UNUSED,
                      virSecretPtr secret,
                      void *opaque)
 {

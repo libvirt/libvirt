@@ -382,7 +382,7 @@ static const vshCmdOptDef opts_node_list_devices[] = {
 };
 
 static bool
-cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     const char *cap_str = NULL;
     size_t i;
@@ -780,10 +780,10 @@ struct virshNodeDeviceEventData {
 typedef struct virshNodeDeviceEventData virshNodeDeviceEventData;
 
 static void
-vshEventLifecyclePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+vshEventLifecyclePrint(virConnectPtr conn G_GNUC_UNUSED,
                        virNodeDevicePtr dev,
                        int event,
-                       int detail ATTRIBUTE_UNUSED,
+                       int detail G_GNUC_UNUSED,
                        void *opaque)
 {
     virshNodeDeviceEventData *data = opaque;
@@ -811,7 +811,7 @@ vshEventLifecyclePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static void
-vshEventGenericPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+vshEventGenericPrint(virConnectPtr conn G_GNUC_UNUSED,
                      virNodeDevicePtr dev,
                      void *opaque)
 {

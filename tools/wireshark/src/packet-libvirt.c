@@ -443,7 +443,7 @@ dissect_libvirt_payload(tvbuff_t *tvb, proto_tree *tree,
 
 static int
 dissect_libvirt_message(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree,
-                        void *opaque ATTRIBUTE_UNUSED)
+                        void *opaque G_GNUC_UNUSED)
 {
     goffset offset;
     guint32 prog, proc, type, serial, status;
@@ -508,14 +508,14 @@ dissect_libvirt_message(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree,
 }
 
 static guint
-get_message_len(packet_info *pinfo ATTRIBUTE_UNUSED, tvbuff_t *tvb, int offset, void *data ATTRIBUTE_UNUSED)
+get_message_len(packet_info *pinfo G_GNUC_UNUSED, tvbuff_t *tvb, int offset, void *data G_GNUC_UNUSED)
 {
     return tvb_get_ntohl(tvb, offset);
 }
 
 static int
 dissect_libvirt(tvbuff_t *tvb, packet_info *pinfo,
-                proto_tree *tree, void *data ATTRIBUTE_UNUSED)
+                proto_tree *tree, void *data G_GNUC_UNUSED)
 {
     /* Another magic const - 4; simply, how much bytes
      * is needed to tell the length of libvirt packet. */

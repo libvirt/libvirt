@@ -112,7 +112,7 @@ vshAdmGetTimeStr(vshControl *ctl, time_t then, char **result)
  * check if the communication channel has not been closed by remote party.
  */
 static void
-vshAdmCatchDisconnect(virAdmConnectPtr conn ATTRIBUTE_UNUSED,
+vshAdmCatchDisconnect(virAdmConnectPtr conn G_GNUC_UNUSED,
                       int reason,
                       void *opaque)
 {
@@ -231,7 +231,7 @@ static const vshCmdInfo info_uri[] = {
 };
 
 static bool
-cmdURI(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+cmdURI(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     char *uri;
     vshAdmControlPtr priv = ctl->privData;
@@ -263,7 +263,7 @@ static const vshCmdInfo info_version[] = {
 };
 
 static bool
-cmdVersion(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+cmdVersion(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     unsigned long libVersion;
     unsigned long long includeVersion;
@@ -373,7 +373,7 @@ static const vshCmdInfo info_srv_list[] = {
 };
 
 static bool
-cmdSrvList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+cmdSrvList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     int nsrvs = 0;
     size_t i;
@@ -1168,7 +1168,7 @@ vshAdmInit(vshControl *ctl)
 }
 
 static void
-vshAdmDeinitTimer(int timer ATTRIBUTE_UNUSED, void *opaque ATTRIBUTE_UNUSED)
+vshAdmDeinitTimer(int timer G_GNUC_UNUSED, void *opaque G_GNUC_UNUSED)
 {
     /* nothing to be done here */
 }
@@ -1256,7 +1256,7 @@ vshAdmUsage(void)
  * Show version and options compiled in
  */
 static void
-vshAdmShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
+vshAdmShowVersion(vshControl *ctl G_GNUC_UNUSED)
 {
     /* FIXME - list a copyright blurb, as in GNU programs?  */
     vshPrint(ctl, _("Virt-admin command line tool of libvirt %s\n"), VERSION);

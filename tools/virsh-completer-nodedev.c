@@ -29,7 +29,7 @@
 
 char **
 virshNodeDeviceNameCompleter(vshControl *ctl,
-                             const vshCmd *cmd ATTRIBUTE_UNUSED,
+                             const vshCmd *cmd G_GNUC_UNUSED,
                              unsigned int flags)
 {
     virshControlPtr priv = ctl->privData;
@@ -68,8 +68,8 @@ virshNodeDeviceNameCompleter(vshControl *ctl,
 
 
 char **
-virshNodeDeviceEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
-                                  const vshCmd *cmd ATTRIBUTE_UNUSED,
+virshNodeDeviceEventNameCompleter(vshControl *ctl G_GNUC_UNUSED,
+                                  const vshCmd *cmd G_GNUC_UNUSED,
                                   unsigned int flags)
 {
     size_t i = 0;

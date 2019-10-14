@@ -51,7 +51,7 @@ virshPagesizeNodeToString(xmlNodePtr node)
 
 char **
 virshAllocpagesPagesizeCompleter(vshControl *ctl,
-                                 const vshCmd *cmd ATTRIBUTE_UNUSED,
+                                 const vshCmd *cmd G_GNUC_UNUSED,
                                  unsigned int flags)
 {
     VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
@@ -107,7 +107,7 @@ virshAllocpagesPagesizeCompleter(vshControl *ctl,
 
 char **
 virshCellnoCompleter(vshControl *ctl,
-                     const vshCmd *cmd ATTRIBUTE_UNUSED,
+                     const vshCmd *cmd G_GNUC_UNUSED,
                      unsigned int flags)
 {
     VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;

@@ -141,7 +141,7 @@ virshDomainState(vshControl *ctl,
 
 
 int
-virshStreamSink(virStreamPtr st ATTRIBUTE_UNUSED,
+virshStreamSink(virStreamPtr st G_GNUC_UNUSED,
                 const char *bytes,
                 size_t nbytes,
                 void *opaque)
@@ -153,7 +153,7 @@ virshStreamSink(virStreamPtr st ATTRIBUTE_UNUSED,
 
 
 int
-virshStreamSource(virStreamPtr st ATTRIBUTE_UNUSED,
+virshStreamSource(virStreamPtr st G_GNUC_UNUSED,
                   char *bytes,
                   size_t nbytes,
                   void *opaque)
@@ -166,7 +166,7 @@ virshStreamSource(virStreamPtr st ATTRIBUTE_UNUSED,
 
 
 int
-virshStreamSourceSkip(virStreamPtr st ATTRIBUTE_UNUSED,
+virshStreamSourceSkip(virStreamPtr st G_GNUC_UNUSED,
                       long long offset,
                       void *opaque)
 {
@@ -182,7 +182,7 @@ virshStreamSourceSkip(virStreamPtr st ATTRIBUTE_UNUSED,
 
 
 int
-virshStreamSkip(virStreamPtr st ATTRIBUTE_UNUSED,
+virshStreamSkip(virStreamPtr st G_GNUC_UNUSED,
                 long long offset,
                 void *opaque)
 {
@@ -200,7 +200,7 @@ virshStreamSkip(virStreamPtr st ATTRIBUTE_UNUSED,
 
 
 int
-virshStreamInData(virStreamPtr st ATTRIBUTE_UNUSED,
+virshStreamInData(virStreamPtr st G_GNUC_UNUSED,
                   int *inData,
                   long long *offset,
                   void *opaque)

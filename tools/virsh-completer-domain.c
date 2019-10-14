@@ -31,7 +31,7 @@
 
 char **
 virshDomainNameCompleter(vshControl *ctl,
-                         const vshCmd *cmd ATTRIBUTE_UNUSED,
+                         const vshCmd *cmd G_GNUC_UNUSED,
                          unsigned int flags)
 {
     virshControlPtr priv = ctl->privData;
@@ -168,8 +168,8 @@ virshDomainDiskTargetCompleter(vshControl *ctl,
 
 
 char **
-virshDomainEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
-                              const vshCmd *cmd ATTRIBUTE_UNUSED,
+virshDomainEventNameCompleter(vshControl *ctl G_GNUC_UNUSED,
+                              const vshCmd *cmd G_GNUC_UNUSED,
                               unsigned int flags)
 {
     size_t i = 0;

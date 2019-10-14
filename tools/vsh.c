@@ -230,8 +230,8 @@ virErrorPtr last_error;
  * Quieten libvirt until we're done with the command.
  */
 void
-vshErrorHandler(void *opaque ATTRIBUTE_UNUSED,
-                virErrorPtr error ATTRIBUTE_UNUSED)
+vshErrorHandler(void *opaque G_GNUC_UNUSED,
+                virErrorPtr error G_GNUC_UNUSED)
 {
     virFreeError(last_error);
     last_error = virSaveLastError();
@@ -1026,7 +1026,7 @@ vshCommandOptULWrap(vshControl *ctl, const vshCmd *cmd,
  * <0 in all other cases (@value untouched)
  */
 int
-vshCommandOptStringQuiet(vshControl *ctl ATTRIBUTE_UNUSED, const vshCmd *cmd,
+vshCommandOptStringQuiet(vshControl *ctl G_GNUC_UNUSED, const vshCmd *cmd,
                          const char *name, const char **value)
 {
     vshCmdOpt *arg;
@@ -1245,7 +1245,7 @@ vshCommandOptBool(const vshCmd *cmd, const char *name)
  * list of supported options in CMD->def->opts.
  */
 const vshCmdOpt *
-vshCommandOptArgv(vshControl *ctl ATTRIBUTE_UNUSED, const vshCmd *cmd,
+vshCommandOptArgv(vshControl *ctl G_GNUC_UNUSED, const vshCmd *cmd,
                   const vshCmdOpt *opt)
 {
     opt = opt ? opt->next : cmd->opts;
@@ -1645,7 +1645,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
 
 static vshCommandToken ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
 vshCommandArgvGetArg(vshControl *ctl, vshCommandParser *parser, char **res,
-                     bool report ATTRIBUTE_UNUSED)
+                     bool report G_GNUC_UNUSED)
 {
     if (parser->arg_pos == parser->arg_end) {
         *res = NULL;
@@ -1897,7 +1897,7 @@ vshPrintExtra(vshControl *ctl, const char *format, ...)
 
 
 void
-vshPrint(vshControl *ctl ATTRIBUTE_UNUSED, const char *format, ...)
+vshPrint(vshControl *ctl G_GNUC_UNUSED, const char *format, ...)
 {
     va_list ap;
     char *str;
@@ -1912,8 +1912,8 @@ vshPrint(vshControl *ctl ATTRIBUTE_UNUSED, const char *format, ...)
 
 
 bool
-vshTTYIsInterruptCharacter(vshControl *ctl ATTRIBUTE_UNUSED,
-                           const char chr ATTRIBUTE_UNUSED)
+vshTTYIsInterruptCharacter(vshControl *ctl G_GNUC_UNUSED,
+                           const char chr G_GNUC_UNUSED)
 {
 #ifndef WIN32
     if (ctl->istty &&
@@ -1933,7 +1933,7 @@ vshTTYAvailable(vshControl *ctl)
 
 
 int
-vshTTYDisableInterrupt(vshControl *ctl ATTRIBUTE_UNUSED)
+vshTTYDisableInterrupt(vshControl *ctl G_GNUC_UNUSED)
 {
 #ifndef WIN32
     struct termios termset = ctl->termattr;
@@ -1957,7 +1957,7 @@ vshTTYDisableInterrupt(vshControl *ctl ATTRIBUTE_UNUSED)
 
 
 int
-vshTTYRestore(vshControl *ctl ATTRIBUTE_UNUSED)
+vshTTYRestore(vshControl *ctl G_GNUC_UNUSED)
 {
 #ifndef WIN32
     if (!ctl->istty)
@@ -1987,8 +1987,8 @@ cfmakeraw(struct termios *attr)
 
 
 int
-vshTTYMakeRaw(vshControl *ctl ATTRIBUTE_UNUSED,
-              bool report_errors ATTRIBUTE_UNUSED)
+vshTTYMakeRaw(vshControl *ctl G_GNUC_UNUSED,
+              bool report_errors G_GNUC_UNUSED)
 {
 #ifndef WIN32
     struct termios rawattr = ctl->termattr;
@@ -2079,9 +2079,9 @@ static struct sigaction vshEventOldAction;
 
 /* Signal handler installed in vshEventStart, removed in vshEventCleanup.  */
 static void
-vshEventInt(int sig ATTRIBUTE_UNUSED,
-            siginfo_t *siginfo ATTRIBUTE_UNUSED,
-            void *context ATTRIBUTE_UNUSED)
+vshEventInt(int sig G_GNUC_UNUSED,
+            siginfo_t *siginfo G_GNUC_UNUSED,
+            void *context G_GNUC_UNUSED)
 {
     char reason = VSH_EVENT_INTERRUPT;
     if (vshEventFd >= 0)
@@ -2091,7 +2091,7 @@ vshEventInt(int sig ATTRIBUTE_UNUSED,
 
 /* Event loop handler used to limit length of waiting for any other event. */
 void
-vshEventTimeout(int timer ATTRIBUTE_UNUSED,
+vshEventTimeout(int timer G_GNUC_UNUSED,
                 void *opaque)
 {
     vshControl *ctl = opaque;
@@ -2410,8 +2410,8 @@ vshAskReedit(vshControl *ctl, const char *msg, bool relax_avail)
 #else /* WIN32 */
 int
 vshAskReedit(vshControl *ctl,
-             const char *msg ATTRIBUTE_UNUSED,
-             bool relax_avail ATTRIBUTE_UNUSED)
+             const char *msg G_GNUC_UNUSED,
+             bool relax_avail G_GNUC_UNUSED)
 {
     vshDebug(ctl, VSH_ERR_WARNING, "%s", _("This function is not "
                                            "supported on WIN32 platform"));
@@ -2907,8 +2907,8 @@ vshReadlineParse(const char *text, int state)
 
 static char **
 vshReadlineCompletion(const char *text,
-                      int start ATTRIBUTE_UNUSED,
-                      int end ATTRIBUTE_UNUSED)
+                      int start G_GNUC_UNUSED,
+                      int end G_GNUC_UNUSED)
 {
     char **matches = (char **) NULL;
 
@@ -3017,7 +3017,7 @@ vshReadlineDeinit(vshControl *ctl)
 }
 
 char *
-vshReadline(vshControl *ctl ATTRIBUTE_UNUSED, const char *prompt)
+vshReadline(vshControl *ctl G_GNUC_UNUSED, const char *prompt)
 {
     return readline(prompt);
 }
@@ -3025,14 +3025,14 @@ vshReadline(vshControl *ctl ATTRIBUTE_UNUSED, const char *prompt)
 #else /* !WITH_READLINE */
 
 static int
-vshReadlineInit(vshControl *ctl ATTRIBUTE_UNUSED)
+vshReadlineInit(vshControl *ctl G_GNUC_UNUSED)
 {
     /* empty */
     return 0;
 }
 
 static void
-vshReadlineDeinit(vshControl *ctl ATTRIBUTE_UNUSED)
+vshReadlineDeinit(vshControl *ctl G_GNUC_UNUSED)
 {
     /* empty */
 }
@@ -3380,7 +3380,7 @@ const vshCmdInfo info_pwd[] = {
 };
 
 bool
-cmdPwd(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+cmdPwd(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     char *cwd;
     bool ret = true;
@@ -3410,7 +3410,7 @@ const vshCmdInfo info_quit[] = {
 };
 
 bool
-cmdQuit(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+cmdQuit(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     ctl->imode = false;
     return true;
@@ -3435,7 +3435,7 @@ const vshCmdInfo info_selftest[] = {
  * the per-command options structure. */
 bool
 cmdSelfTest(vshControl *ctl,
-            const vshCmd *cmd ATTRIBUTE_UNUSED)
+            const vshCmd *cmd G_GNUC_UNUSED)
 {
     const vshCmdGrp *grp;
     const vshCmdDef *def;
@@ -3538,8 +3538,8 @@ cmdComplete(vshControl *ctl, const vshCmd *cmd)
 
 
 bool
-cmdComplete(vshControl *ctl ATTRIBUTE_UNUSED,
-            const vshCmd *cmd ATTRIBUTE_UNUSED)
+cmdComplete(vshControl *ctl G_GNUC_UNUSED,
+            const vshCmd *cmd G_GNUC_UNUSED)
 {
     return false;
 }

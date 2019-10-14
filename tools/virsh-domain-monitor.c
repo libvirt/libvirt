@@ -2169,9 +2169,9 @@ static const vshCmdOptDef opts_domstats[] = {
 
 
 static bool
-virshDomainStatsPrintRecord(vshControl *ctl ATTRIBUTE_UNUSED,
+virshDomainStatsPrintRecord(vshControl *ctl G_GNUC_UNUSED,
                             virDomainStatsRecordPtr record,
-                            bool raw ATTRIBUTE_UNUSED)
+                            bool raw G_GNUC_UNUSED)
 {
     char *param;
     size_t i;

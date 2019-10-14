@@ -28,7 +28,7 @@
 
 char **
 virshNetworkNameCompleter(vshControl *ctl,
-                          const vshCmd *cmd ATTRIBUTE_UNUSED,
+                          const vshCmd *cmd G_GNUC_UNUSED,
                           unsigned int flags)
 {
     virshControlPtr priv = ctl->privData;
@@ -70,8 +70,8 @@ virshNetworkNameCompleter(vshControl *ctl,
 
 
 char **
-virshNetworkEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
-                               const vshCmd *cmd ATTRIBUTE_UNUSED,
+virshNetworkEventNameCompleter(vshControl *ctl G_GNUC_UNUSED,
+                               const vshCmd *cmd G_GNUC_UNUSED,
                                unsigned int flags)
 {
     size_t i = 0;
@@ -97,7 +97,7 @@ virshNetworkEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
 
 char **
 virshNetworkPortUUIDCompleter(vshControl *ctl,
-                              const vshCmd *cmd ATTRIBUTE_UNUSED,
+                              const vshCmd *cmd G_GNUC_UNUSED,
                               unsigned int flags)
 {
     virshControlPtr priv = ctl->privData;

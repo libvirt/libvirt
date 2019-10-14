@@ -1376,7 +1376,7 @@ static const vshCmdOptDef opts_vol_list[] = {
 };
 
 static bool
-cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+cmdVolList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     virStorageVolInfo volumeInfo;
     virStoragePoolPtr pool;

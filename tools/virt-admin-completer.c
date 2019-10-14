@@ -29,7 +29,7 @@
 
 char **
 vshAdmServerCompleter(vshControl *ctl,
-                      const vshCmd *cmd ATTRIBUTE_UNUSED,
+                      const vshCmd *cmd G_GNUC_UNUSED,
                       unsigned int flags)
 {
     vshAdmControlPtr priv = ctl->privData;

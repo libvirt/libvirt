@@ -50,7 +50,7 @@ static const vshCmdInfo info_capabilities[] = {
 };
 
 static bool
-cmdCapabilities(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+cmdCapabilities(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     char *caps;
     virshControlPtr priv = ctl->privData;
@@ -654,7 +654,7 @@ static const vshCmdInfo info_nodeinfo[] = {
 };
 
 static bool
-cmdNodeinfo(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+cmdNodeinfo(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     virNodeInfo info;
     virshControlPtr priv = ctl->privData;
@@ -699,7 +699,7 @@ static const vshCmdOptDef opts_node_cpumap[] = {
 };
 
 static bool
-cmdNodeCpuMap(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+cmdNodeCpuMap(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     int cpu, cpunum;
     unsigned char *cpumap = NULL;
@@ -1029,7 +1029,7 @@ static const vshCmdInfo info_sysinfo[] = {
 };
 
 static bool
-cmdSysinfo(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+cmdSysinfo(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     char *sysinfo;
     virshControlPtr priv = ctl->privData;
@@ -1060,7 +1060,7 @@ static const vshCmdInfo info_hostname[] = {
 };
 
 static bool
-cmdHostname(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+cmdHostname(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     char *hostname;
     virshControlPtr priv = ctl->privData;
@@ -1091,7 +1091,7 @@ static const vshCmdInfo info_uri[] = {
 };
 
 static bool
-cmdURI(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+cmdURI(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     char *uri;
     virshControlPtr priv = ctl->privData;
@@ -1409,7 +1409,7 @@ static const vshCmdOptDef opts_version[] = {
 };
 
 static bool
-cmdVersion(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+cmdVersion(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     unsigned long hvVersion;
     const char *hvType;

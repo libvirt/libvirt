@@ -351,7 +351,7 @@ static const vshCmdOptDef opts_nwfilter_list[] = {
 };
 
 static bool
-cmdNWFilterList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+cmdNWFilterList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     size_t i;
     char uuid[VIR_UUID_STRING_BUFLEN];
@@ -716,7 +716,7 @@ static const vshCmdOptDef opts_nwfilter_binding_list[] = {
 };
 
 static bool
-cmdNWFilterBindingList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+cmdNWFilterBindingList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     size_t i;
     bool ret = false;

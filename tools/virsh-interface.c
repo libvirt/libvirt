@@ -345,7 +345,7 @@ static const vshCmdOptDef opts_interface_list[] = {
 };
 
 static bool
-cmdInterfaceList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+cmdInterfaceList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     bool inactive = vshCommandOptBool(cmd, "inactive");
     bool all = vshCommandOptBool(cmd, "all");
@@ -695,7 +695,7 @@ static const vshCmdOptDef opts_interface_begin[] = {
 };
 
 static bool
-cmdInterfaceBegin(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+cmdInterfaceBegin(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     virshControlPtr priv = ctl->privData;
 
@@ -726,7 +726,7 @@ static const vshCmdOptDef opts_interface_commit[] = {
 };
 
 static bool
-cmdInterfaceCommit(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+cmdInterfaceCommit(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     virshControlPtr priv = ctl->privData;
 
@@ -757,7 +757,7 @@ static const vshCmdOptDef opts_interface_rollback[] = {
 };
 
 static bool
-cmdInterfaceRollback(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+cmdInterfaceRollback(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     virshControlPtr priv = ctl->privData;
 

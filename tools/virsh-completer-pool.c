@@ -29,7 +29,7 @@
 
 char **
 virshStoragePoolNameCompleter(vshControl *ctl,
-                              const vshCmd *cmd ATTRIBUTE_UNUSED,
+                              const vshCmd *cmd G_GNUC_UNUSED,
                               unsigned int flags)
 {
     virshControlPtr priv = ctl->privData;
@@ -71,8 +71,8 @@ virshStoragePoolNameCompleter(vshControl *ctl,
 
 
 char **
-virshPoolEventNameCompleter(vshControl *ctl ATTRIBUTE_UNUSED,
-                            const vshCmd *cmd ATTRIBUTE_UNUSED,
+virshPoolEventNameCompleter(vshControl *ctl G_GNUC_UNUSED,
+                            const vshCmd *cmd G_GNUC_UNUSED,
                             unsigned int flags)
 {
     size_t i = 0;
