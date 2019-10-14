@@ -276,7 +276,7 @@ ppc64MapFree(struct ppc64_map *map)
 }
 
 static int
-ppc64VendorParse(xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
+ppc64VendorParse(xmlXPathContextPtr ctxt G_GNUC_UNUSED,
                  const char *name,
                  void *data)
 {
@@ -678,7 +678,7 @@ virCPUppc64GetHost(virCPUDefPtr cpu,
 
 static int
 virCPUppc64Update(virCPUDefPtr guest,
-                  const virCPUDef *host ATTRIBUTE_UNUSED)
+                  const virCPUDef *host G_GNUC_UNUSED)
 {
     /*
      * - host-passthrough doesn't even get here
@@ -697,9 +697,9 @@ virCPUppc64Update(virCPUDefPtr guest,
 static virCPUDefPtr
 virCPUppc64Baseline(virCPUDefPtr *cpus,
                     unsigned int ncpus,
-                    virDomainCapsCPUModelsPtr models ATTRIBUTE_UNUSED,
-                    const char **features ATTRIBUTE_UNUSED,
-                    bool migratable ATTRIBUTE_UNUSED)
+                    virDomainCapsCPUModelsPtr models G_GNUC_UNUSED,
+                    const char **features G_GNUC_UNUSED,
+                    bool migratable G_GNUC_UNUSED)
 {
     struct ppc64_map *map;
     const struct ppc64_model *model;

@@ -3397,7 +3397,7 @@ virCPUx86FeatureIsMSR(const char *name)
  */
 bool
 virCPUx86FeatureFilterSelectMSR(const char *name,
-                                void *opaque ATTRIBUTE_UNUSED)
+                                void *opaque G_GNUC_UNUSED)
 {
     return virCPUx86FeatureIsMSR(name);
 }
@@ -3413,7 +3413,7 @@ virCPUx86FeatureFilterSelectMSR(const char *name,
  */
 bool
 virCPUx86FeatureFilterDropMSR(const char *name,
-                              void *opaque ATTRIBUTE_UNUSED)
+                              void *opaque G_GNUC_UNUSED)
 {
     return !virCPUx86FeatureIsMSR(name);
 }

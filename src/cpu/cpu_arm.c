@@ -71,10 +71,10 @@ virCPUarmUpdate(virCPUDefPtr guest,
 
 static virCPUDefPtr
 virCPUarmBaseline(virCPUDefPtr *cpus,
-                  unsigned int ncpus ATTRIBUTE_UNUSED,
-                  virDomainCapsCPUModelsPtr models ATTRIBUTE_UNUSED,
-                  const char **features ATTRIBUTE_UNUSED,
-                  bool migratable ATTRIBUTE_UNUSED)
+                  unsigned int ncpus G_GNUC_UNUSED,
+                  virDomainCapsCPUModelsPtr models G_GNUC_UNUSED,
+                  const char **features G_GNUC_UNUSED,
+                  bool migratable G_GNUC_UNUSED)
 {
     virCPUDefPtr cpu = NULL;
 
@@ -91,9 +91,9 @@ virCPUarmBaseline(virCPUDefPtr *cpus,
 }
 
 static virCPUCompareResult
-virCPUarmCompare(virCPUDefPtr host ATTRIBUTE_UNUSED,
-                 virCPUDefPtr cpu ATTRIBUTE_UNUSED,
-                 bool failMessages ATTRIBUTE_UNUSED)
+virCPUarmCompare(virCPUDefPtr host G_GNUC_UNUSED,
+                 virCPUDefPtr cpu G_GNUC_UNUSED,
+                 bool failMessages G_GNUC_UNUSED)
 {
     return VIR_CPU_COMPARE_IDENTICAL;
 }
