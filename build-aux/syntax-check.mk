@@ -370,7 +370,7 @@ sc_flags_usage:
 	  | $(GREP) -c '\(long\|unsigned\) flags')" != 4 && \
 	  { echo '$(ME): new API should use "unsigned int flags"' 1>&2; \
 	    exit 1; } || :
-	@prohibit=' flags ATTRIBUTE_UNUSED' \
+	@prohibit=' flags G_GNUC_UNUSED' \
 	exclude='virSecurityDomainImageLabelFlags' \
 	halt='flags should be checked with virCheckFlags' \
 	  $(_sc_search_regexp)
@@ -620,12 +620,12 @@ sc_prohibit_return_as_function:
 	halt='avoid extra () with return statements' \
 	  $(_sc_search_regexp)
 
-# ATTRIBUTE_UNUSED should only be applied in implementations, not
+# G_GNUC_UNUSED should only be applied in implementations, not
 # header declarations
-sc_avoid_attribute_unused_in_header:
-	@prohibit='^[^#]*ATTRIBUTE_UNUSED([^:]|$$)' \
+sc_avoid_g_gnuc_unused_in_header:
+	@prohibit='^[^#]*G_GNUC_UNUSED([^:]|$$)' \
 	in_vc_files='\.h$$' \
-	halt='use ATTRIBUTE_UNUSED in .c rather than .h files' \
+	halt='use G_GNUC_UNUSED in .c rather than .h files' \
 	  $(_sc_search_regexp)
 
 sc_prohibit_int_index:
@@ -2295,7 +2295,7 @@ exclude_file_name_regexp--sc_prohibit_int_ijk = \
 exclude_file_name_regexp--sc_prohibit_unsigned_pid = \
   ^(include/libvirt/.*\.h|src/(qemu/qemu_driver\.c|driver-hypervisor\.h|libvirt(-[a-z]*)?\.c|.*\.x|util/vir(polkit|systemd)\.c)|tests/virpolkittest\.c|tools/virsh-domain\.c)$$
 
-exclude_file_name_regexp--sc_avoid_attribute_unused_in_header = \
+exclude_file_name_regexp--sc_avoid_g_gnuc_unused_in_header = \
   ^(src/util/virlog\.h|src/network/bridge_driver\.h)$$
 
 exclude_file_name_regexp--sc_prohibit_mixed_case_abbreviations = \
