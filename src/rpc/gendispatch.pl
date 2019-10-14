@@ -487,8 +487,8 @@ elsif ($mode eq "server") {
         my $argtype = $call->{args};
         my $rettype = $call->{ret};
 
-        my $argann = $argtype ne "void" ? "" : " ATTRIBUTE_UNUSED";
-        my $retann = $rettype ne "void" ? "" : " ATTRIBUTE_UNUSED";
+        my $argann = $argtype ne "void" ? "" : " G_GNUC_UNUSED";
+        my $retann = $rettype ne "void" ? "" : " G_GNUC_UNUSED";
 
         # First we print out a function declaration for the
         # real dispatcher body
@@ -1027,9 +1027,9 @@ elsif ($mode eq "server") {
 
         # print functions signature
         print "static int $name(\n";
-        print "    virNetServerPtr server ATTRIBUTE_UNUSED,\n";
+        print "    virNetServerPtr server G_GNUC_UNUSED,\n";
         print "    virNetServerClientPtr client,\n";
-        print "    virNetMessagePtr msg ATTRIBUTE_UNUSED,\n";
+        print "    virNetMessagePtr msg G_GNUC_UNUSED,\n";
         print "    virNetMessageErrorPtr rerr";
         if ($argtype ne "void") {
             print ",\n    $argtype *args";
