@@ -508,8 +508,8 @@ vboxConnectURIProbe(char **uri)
 
 static virDrvOpenStatus
 vboxConnectOpen(virConnectPtr conn,
-                virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                virConfPtr conf ATTRIBUTE_UNUSED,
+                virConnectAuthPtr auth G_GNUC_UNUSED,
+                virConfPtr conf G_GNUC_UNUSED,
                 unsigned int flags)
 {
     vboxDriverPtr driver = NULL;
@@ -541,7 +541,7 @@ static int vboxConnectClose(virConnectPtr conn)
 }
 
 static int
-vboxDomainSave(virDomainPtr dom, const char *path ATTRIBUTE_UNUSED)
+vboxDomainSave(virDomainPtr dom, const char *path G_GNUC_UNUSED)
 {
     vboxDriverPtr data = dom->conn->privateData;
     IConsole *console = NULL;
@@ -557,7 +557,7 @@ vboxDomainSave(virDomainPtr dom, const char *path ATTRIBUTE_UNUSED)
 
     /* VirtualBox currently doesn't support saving to a file
      * at a location other then the machine folder and thus
-     * setting path to ATTRIBUTE_UNUSED for now, will change
+     * setting path to G_GNUC_UNUSED for now, will change
      * this behaviour once get the VirtualBox API in right
      * shape to do this
      */
@@ -607,30 +607,30 @@ static int vboxConnectGetVersion(virConnectPtr conn, unsigned long *version)
     return 0;
 }
 
-static char *vboxConnectGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
+static char *vboxConnectGetHostname(virConnectPtr conn G_GNUC_UNUSED)
 {
     return virGetHostname();
 }
 
-static int vboxConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int vboxConnectIsSecure(virConnectPtr conn G_GNUC_UNUSED)
 {
     /* Driver is using local, non-network based transport */
     return 1;
 }
 
-static int vboxConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int vboxConnectIsEncrypted(virConnectPtr conn G_GNUC_UNUSED)
 {
     /* No encryption is needed, or used on the local transport*/
     return 0;
 }
 
-static int vboxConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int vboxConnectIsAlive(virConnectPtr conn G_GNUC_UNUSED)
 {
     return 1;
 }
 
 static int
-vboxConnectGetMaxVcpus(virConnectPtr conn, const char *type ATTRIBUTE_UNUSED)
+vboxConnectGetMaxVcpus(virConnectPtr conn, const char *type G_GNUC_UNUSED)
 {
     vboxDriverPtr data = conn->privateData;
     PRUint32 maxCPUCount = 0;
@@ -640,7 +640,7 @@ vboxConnectGetMaxVcpus(virConnectPtr conn, const char *type ATTRIBUTE_UNUSED)
         return ret;
 
     /* VirtualBox Supports only hvm and thus the type passed to it
-     * has no meaning, setting it to ATTRIBUTE_UNUSED
+     * has no meaning, setting it to G_GNUC_UNUSED
      */
     ISystemProperties *systemProperties = NULL;
 
@@ -2693,7 +2693,7 @@ static int vboxDomainDestroy(virDomainPtr dom)
     return vboxDomainDestroyFlags(dom, 0);
 }
 
-static char *vboxDomainGetOSType(virDomainPtr dom ATTRIBUTE_UNUSED) {
+static char *vboxDomainGetOSType(virDomainPtr dom G_GNUC_UNUSED) {
     /* Returning "hvm" always as suggested on list, cause
      * this functions seems to be badly named and it
      * is supposed to pass the ABI name and not the domain
@@ -3448,7 +3448,7 @@ vboxDumpDisks(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
 }
 
 static int
-vboxDumpVideo(virDomainDefPtr def, vboxDriverPtr data ATTRIBUTE_UNUSED,
+vboxDumpVideo(virDomainDefPtr def, vboxDriverPtr data G_GNUC_UNUSED,
               IMachine *machine)
 {
     /* dump video options vram/2d/3d/directx/etc. */
@@ -3797,7 +3797,7 @@ vboxDumpNetworks(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine, PRU
 }
 
 static void
-vboxDumpAudio(virDomainDefPtr def, vboxDriverPtr data ATTRIBUTE_UNUSED,
+vboxDumpAudio(virDomainDefPtr def, vboxDriverPtr data G_GNUC_UNUSED,
               IMachine *machine)
 {
     /* dump sound card if active */
@@ -4281,7 +4281,7 @@ static int vboxConnectNumOfDefinedDomains(virConnectPtr conn)
 
 static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
                                       const char *xml,
-                                      int mediaChangeOnly ATTRIBUTE_UNUSED)
+                                      int mediaChangeOnly G_GNUC_UNUSED)
 {
     vboxDriverPtr data = dom->conn->privateData;
     IMachine *machine = NULL;
@@ -7714,14 +7714,14 @@ vboxConnectListAllDomains(virConnectPtr conn,
 #undef MATCH
 
 static int
-vboxNodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED,
+vboxNodeGetInfo(virConnectPtr conn G_GNUC_UNUSED,
                 virNodeInfoPtr nodeinfo)
 {
     return virCapabilitiesGetNodeInfo(nodeinfo);
 }
 
 static int
-vboxNodeGetCellsFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED,
+vboxNodeGetCellsFreeMemory(virConnectPtr conn G_GNUC_UNUSED,
                            unsigned long long *freeMems,
                            int startCell,
                            int maxCells)
@@ -7730,7 +7730,7 @@ vboxNodeGetCellsFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static unsigned long long
-vboxNodeGetFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED)
+vboxNodeGetFreeMemory(virConnectPtr conn G_GNUC_UNUSED)
 {
     unsigned long long freeMem;
     if (virHostMemGetInfo(NULL, &freeMem) < 0)
@@ -7739,7 +7739,7 @@ vboxNodeGetFreeMemory(virConnectPtr conn ATTRIBUTE_UNUSED)
 }
 
 static int
-vboxNodeGetFreePages(virConnectPtr conn ATTRIBUTE_UNUSED,
+vboxNodeGetFreePages(virConnectPtr conn G_GNUC_UNUSED,
                      unsigned int npages,
                      unsigned int *pages,
                      int startCell,
@@ -7753,7 +7753,7 @@ vboxNodeGetFreePages(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static int
-vboxNodeAllocPages(virConnectPtr conn ATTRIBUTE_UNUSED,
+vboxNodeAllocPages(virConnectPtr conn G_GNUC_UNUSED,
                    unsigned int npages,
                    unsigned int *pageSizes,
                    unsigned long long *pageCounts,

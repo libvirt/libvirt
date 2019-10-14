@@ -42,7 +42,7 @@ static vboxUniformedAPI gVBoxAPI;
  * The Storage Functions here on
  */
 
-static int vboxConnectNumOfStoragePools(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int vboxConnectNumOfStoragePools(virConnectPtr conn G_GNUC_UNUSED)
 {
     /** Currently only one pool supported, the default one
      * given by ISystemProperties::defaultHardDiskFolder()
@@ -51,7 +51,7 @@ static int vboxConnectNumOfStoragePools(virConnectPtr conn ATTRIBUTE_UNUSED)
     return 1;
 }
 
-static int vboxConnectListStoragePools(virConnectPtr conn ATTRIBUTE_UNUSED,
+static int vboxConnectListStoragePools(virConnectPtr conn G_GNUC_UNUSED,
                                        char **const names, int nnames)
 {
     int numActive = 0;
