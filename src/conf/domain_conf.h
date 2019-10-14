@@ -3162,7 +3162,6 @@ int virDomainDiskIndexByName(virDomainDefPtr def, const char *name,
 virDomainDiskDefPtr virDomainDiskByName(virDomainDefPtr def,
                                         const char *name,
                                         bool allow_ambiguous);
-const char *virDomainDiskPathByName(virDomainDefPtr, const char *name);
 int virDomainDiskInsert(virDomainDefPtr def,
                         virDomainDiskDefPtr disk)
     G_GNUC_WARN_UNUSED_RESULT;

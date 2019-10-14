@@ -16896,17 +16896,6 @@ virDomainDiskIndexByName(virDomainDefPtr def, const char *name,
     return candidate;
 }
 
-/* Return the path to a disk image if a string identifies at least one
- * disk belonging to the domain (both device strings 'vda' and paths
- * '/path/to/file' are converted into '/path/to/file').  */
-const char *
-virDomainDiskPathByName(virDomainDefPtr def, const char *name)
-{
-    int idx = virDomainDiskIndexByName(def, name, true);
-
-    return idx < 0 ? NULL : virDomainDiskGetSource(def->disks[idx]);
-}
-
 virDomainDiskDefPtr
 virDomainDiskByName(virDomainDefPtr def,
                     const char *name,

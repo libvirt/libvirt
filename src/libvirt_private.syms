@@ -363,7 +363,6 @@ virDomainDiskMirrorStateTypeFromString;
 virDomainDiskMirrorStateTypeToString;
 virDomainDiskModelTypeFromString;
 virDomainDiskModelTypeToString;
-virDomainDiskPathByName;
 virDomainDiskRemove;
 virDomainDiskRemoveByName;
 virDomainDiskSetBlockIOTune;
