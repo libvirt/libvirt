@@ -287,7 +287,7 @@ libxlDoMigrateDstReceive(void *opaque)
 
 static void
 libxlMigrateDstReceive(virNetSocketPtr sock,
-                       int events ATTRIBUTE_UNUSED,
+                       int events G_GNUC_UNUSED,
                        void *opaque)
 {
     libxlMigrationDstArgs *args = opaque;
@@ -979,7 +979,7 @@ libxlDoMigrateSrcP2P(libxlDriverPrivatePtr driver,
                      virConnectPtr sconn,
                      const char *xmlin,
                      virConnectPtr dconn,
-                     const char *dconnuri ATTRIBUTE_UNUSED,
+                     const char *dconnuri G_GNUC_UNUSED,
                      const char *dname,
                      const char *uri,
                      unsigned int flags)
@@ -1152,7 +1152,7 @@ libxlDomainMigrationSrcPerformP2P(libxlDriverPrivatePtr driver,
                                   virConnectPtr sconn,
                                   const char *xmlin,
                                   const char *dconnuri,
-                                  const char *uri_str ATTRIBUTE_UNUSED,
+                                  const char *uri_str G_GNUC_UNUSED,
                                   const char *dname,
                                   unsigned int flags)
 {
@@ -1215,10 +1215,10 @@ libxlDomainMigrationSrcPerformP2P(libxlDriverPrivatePtr driver,
 int
 libxlDomainMigrationSrcPerform(libxlDriverPrivatePtr driver,
                                virDomainObjPtr vm,
-                               const char *dom_xml ATTRIBUTE_UNUSED,
-                               const char *dconnuri ATTRIBUTE_UNUSED,
+                               const char *dom_xml G_GNUC_UNUSED,
+                               const char *dconnuri G_GNUC_UNUSED,
                                const char *uri_str,
-                               const char *dname ATTRIBUTE_UNUSED,
+                               const char *dname G_GNUC_UNUSED,
                                unsigned int flags)
 {
     libxlDomainObjPrivatePtr priv = vm->privateData;

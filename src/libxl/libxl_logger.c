@@ -47,7 +47,7 @@ struct xentoollog_logger_libvirt {
 };
 
 static void
-libxlLoggerFileFree(void *payload, const void *key ATTRIBUTE_UNUSED)
+libxlLoggerFileFree(void *payload, const void *key G_GNUC_UNUSED)
 {
     FILE *file = payload;
     VIR_FORCE_FCLOSE(file);
@@ -114,12 +114,12 @@ libvirt_vmessage(xentoollog_logger *logger_in,
 }
 
 static void
-libvirt_progress(xentoollog_logger *logger_in ATTRIBUTE_UNUSED,
-                 const char *context ATTRIBUTE_UNUSED,
-                 const char *doingwhat ATTRIBUTE_UNUSED,
-                 int percent ATTRIBUTE_UNUSED,
-                 unsigned long done ATTRIBUTE_UNUSED,
-                 unsigned long total ATTRIBUTE_UNUSED)
+libvirt_progress(xentoollog_logger *logger_in G_GNUC_UNUSED,
+                 const char *context G_GNUC_UNUSED,
+                 const char *doingwhat G_GNUC_UNUSED,
+                 int percent G_GNUC_UNUSED,
+                 unsigned long done G_GNUC_UNUSED,
+                 unsigned long total G_GNUC_UNUSED)
 {
     /* This function purposedly does nothing: it's no logging info */
 }

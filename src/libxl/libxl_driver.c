@@ -131,7 +131,7 @@ libxlOSEventHookInfoFree(void *obj)
 }
 
 static void
-libxlFDEventCallback(int watch ATTRIBUTE_UNUSED,
+libxlFDEventCallback(int watch G_GNUC_UNUSED,
                      int fd,
                      int vir_events,
                      void *fd_info)
@@ -185,8 +185,8 @@ libxlFDRegisterEventHook(void *priv,
 }
 
 static int
-libxlFDModifyEventHook(void *priv ATTRIBUTE_UNUSED,
-                       int fd ATTRIBUTE_UNUSED,
+libxlFDModifyEventHook(void *priv G_GNUC_UNUSED,
+                       int fd G_GNUC_UNUSED,
                        void **hndp,
                        short events)
 {
@@ -204,8 +204,8 @@ libxlFDModifyEventHook(void *priv ATTRIBUTE_UNUSED,
 }
 
 static void
-libxlFDDeregisterEventHook(void *priv ATTRIBUTE_UNUSED,
-                           int fd ATTRIBUTE_UNUSED,
+libxlFDDeregisterEventHook(void *priv G_GNUC_UNUSED,
+                           int fd G_GNUC_UNUSED,
                            void *hnd)
 {
     libxlOSEventHookInfoPtr info = hnd;
@@ -214,7 +214,7 @@ libxlFDDeregisterEventHook(void *priv ATTRIBUTE_UNUSED,
 }
 
 static void
-libxlTimerCallback(int timer ATTRIBUTE_UNUSED, void *timer_info)
+libxlTimerCallback(int timer G_GNUC_UNUSED, void *timer_info)
 {
     libxlOSEventHookInfoPtr info = timer_info;
 
@@ -280,9 +280,9 @@ libxlTimeoutRegisterEventHook(void *priv,
  * 2. Timeout deregister hooks will no longer be called.
  */
 static int
-libxlTimeoutModifyEventHook(void *priv ATTRIBUTE_UNUSED,
+libxlTimeoutModifyEventHook(void *priv G_GNUC_UNUSED,
                             void **hndp,
-                            struct timeval abs_t ATTRIBUTE_UNUSED)
+                            struct timeval abs_t G_GNUC_UNUSED)
 {
     libxlOSEventHookInfoPtr info = *hndp;
 
@@ -293,7 +293,7 @@ libxlTimeoutModifyEventHook(void *priv ATTRIBUTE_UNUSED,
 }
 
 static void
-libxlTimeoutDeregisterEventHook(void *priv ATTRIBUTE_UNUSED,
+libxlTimeoutDeregisterEventHook(void *priv G_GNUC_UNUSED,
                                 void *hnd)
 {
     libxlOSEventHookInfoPtr info = hnd;
@@ -649,8 +649,8 @@ libxlAddDom0(libxlDriverPrivatePtr driver)
 
 static int
 libxlStateInitialize(bool privileged,
-                     virStateInhibitCallback callback ATTRIBUTE_UNUSED,
-                     void *opaque ATTRIBUTE_UNUSED)
+                     virStateInhibitCallback callback G_GNUC_UNUSED,
+                     void *opaque G_GNUC_UNUSED)
 {
     libxlDriverConfigPtr cfg;
     char *driverConf = NULL;
@@ -861,8 +861,8 @@ libxlConnectURIProbe(char **uri)
 
 static virDrvOpenStatus
 libxlConnectOpen(virConnectPtr conn,
-                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                 virConfPtr conf ATTRIBUTE_UNUSED,
+                 virConnectAuthPtr auth G_GNUC_UNUSED,
+                 virConfPtr conf G_GNUC_UNUSED,
                  unsigned int flags)
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
@@ -893,7 +893,7 @@ libxlConnectOpen(virConnectPtr conn,
 };
 
 static int
-libxlConnectClose(virConnectPtr conn ATTRIBUTE_UNUSED)
+libxlConnectClose(virConnectPtr conn G_GNUC_UNUSED)
 {
     conn->privateData = NULL;
     return 0;
@@ -957,7 +957,7 @@ libxlConnectGetSysinfo(virConnectPtr conn, unsigned int flags)
 }
 
 static int
-libxlConnectGetMaxVcpus(virConnectPtr conn, const char *type ATTRIBUTE_UNUSED)
+libxlConnectGetMaxVcpus(virConnectPtr conn, const char *type G_GNUC_UNUSED)
 {
     int ret;
     libxlDriverPrivatePtr driver = conn->privateData;
@@ -3613,8 +3613,8 @@ libxlDomainAttachDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
 }
 
 static int
-libxlComparePCIDevice(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                      virDomainDeviceDefPtr device ATTRIBUTE_UNUSED,
+libxlComparePCIDevice(virDomainDefPtr def G_GNUC_UNUSED,
+                      virDomainDeviceDefPtr device G_GNUC_UNUSED,
                       virDomainDeviceInfoPtr info1,
                       void *opaque)
 {
@@ -5483,9 +5483,9 @@ libxlDomainBlockStatsVBD(virDomainObjPtr vm,
 }
 #else
 static int
-libxlDomainBlockStatsVBD(virDomainObjPtr vm ATTRIBUTE_UNUSED,
-                         const char *dev ATTRIBUTE_UNUSED,
-                         libxlBlockStatsPtr stats ATTRIBUTE_UNUSED)
+libxlDomainBlockStatsVBD(virDomainObjPtr vm G_GNUC_UNUSED,
+                         const char *dev G_GNUC_UNUSED,
+                         libxlBlockStatsPtr stats G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                    "%s", _("platform unsupported"));
@@ -5706,7 +5706,7 @@ libxlConnectDomainEventDeregisterAny(virConnectPtr conn, int callbackID)
 
 
 static int
-libxlConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+libxlConnectIsAlive(virConnectPtr conn G_GNUC_UNUSED)
 {
     return 1;
 }
@@ -5986,8 +5986,8 @@ libxlDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
                                        int nparams,
                                        const char *cookiein,
                                        int cookieinlen,
-                                       char **cookieout ATTRIBUTE_UNUSED,
-                                       int *cookieoutlen ATTRIBUTE_UNUSED,
+                                       char **cookieout G_GNUC_UNUSED,
+                                       int *cookieoutlen G_GNUC_UNUSED,
                                        unsigned int flags)
 {
     libxlDriverPrivatePtr driver = dconn->privateData;
@@ -6040,8 +6040,8 @@ libxlDomainMigratePrepare3Params(virConnectPtr dconn,
                                  int nparams,
                                  const char *cookiein,
                                  int cookieinlen,
-                                 char **cookieout ATTRIBUTE_UNUSED,
-                                 int *cookieoutlen ATTRIBUTE_UNUSED,
+                                 char **cookieout G_GNUC_UNUSED,
+                                 int *cookieoutlen G_GNUC_UNUSED,
                                  char **uri_out,
                                  unsigned int flags)
 {
@@ -6094,10 +6094,10 @@ libxlDomainMigratePerform3Params(virDomainPtr dom,
                                  const char *dconnuri,
                                  virTypedParameterPtr params,
                                  int nparams,
-                                 const char *cookiein ATTRIBUTE_UNUSED,
-                                 int cookieinlen ATTRIBUTE_UNUSED,
-                                 char **cookieout ATTRIBUTE_UNUSED,
-                                 int *cookieoutlen ATTRIBUTE_UNUSED,
+                                 const char *cookiein G_GNUC_UNUSED,
+                                 int cookieinlen G_GNUC_UNUSED,
+                                 char **cookieout G_GNUC_UNUSED,
+                                 int *cookieoutlen G_GNUC_UNUSED,
                                  unsigned int flags)
 {
     libxlDriverPrivatePtr driver = dom->conn->privateData;
@@ -6155,10 +6155,10 @@ static virDomainPtr
 libxlDomainMigrateFinish3Params(virConnectPtr dconn,
                                 virTypedParameterPtr params,
                                 int nparams,
-                                const char *cookiein ATTRIBUTE_UNUSED,
-                                int cookieinlen ATTRIBUTE_UNUSED,
-                                char **cookieout ATTRIBUTE_UNUSED,
-                                int *cookieoutlen ATTRIBUTE_UNUSED,
+                                const char *cookiein G_GNUC_UNUSED,
+                                int cookieinlen G_GNUC_UNUSED,
+                                char **cookieout G_GNUC_UNUSED,
+                                int *cookieoutlen G_GNUC_UNUSED,
                                 unsigned int flags,
                                 int cancelled)
 {
@@ -6207,8 +6207,8 @@ static int
 libxlDomainMigrateConfirm3Params(virDomainPtr domain,
                                  virTypedParameterPtr params,
                                  int nparams,
-                                 const char *cookiein ATTRIBUTE_UNUSED,
-                                 int cookieinlen ATTRIBUTE_UNUSED,
+                                 const char *cookiein G_GNUC_UNUSED,
+                                 int cookieinlen G_GNUC_UNUSED,
                                  unsigned int flags,
                                  int cancelled)
 {

@@ -108,7 +108,7 @@ libxlDomainObjFreeJob(libxlDomainObjPrivatePtr priv)
  * successful calls must be followed by EndJob eventually
  */
 int
-libxlDomainObjBeginJob(libxlDriverPrivatePtr driver ATTRIBUTE_UNUSED,
+libxlDomainObjBeginJob(libxlDriverPrivatePtr driver G_GNUC_UNUSED,
                        virDomainObjPtr obj,
                        enum libxlDomainJob job)
 {
@@ -166,7 +166,7 @@ libxlDomainObjBeginJob(libxlDriverPrivatePtr driver ATTRIBUTE_UNUSED,
  * and obj is disposed.
  */
 void
-libxlDomainObjEndJob(libxlDriverPrivatePtr driver ATTRIBUTE_UNUSED,
+libxlDomainObjEndJob(libxlDriverPrivatePtr driver G_GNUC_UNUSED,
                      virDomainObjPtr obj)
 {
     libxlDomainObjPrivatePtr priv = obj->privateData;
@@ -201,7 +201,7 @@ libxlDomainJobUpdateTime(struct libxlDomainJobObj *job)
 }
 
 static void *
-libxlDomainObjPrivateAlloc(void *opaque ATTRIBUTE_UNUSED)
+libxlDomainObjPrivateAlloc(void *opaque G_GNUC_UNUSED)
 {
     libxlDomainObjPrivatePtr priv;
 
@@ -246,7 +246,7 @@ libxlDomainObjPrivateFree(void *data)
 static int
 libxlDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
                               virDomainObjPtr vm,
-                              virDomainDefParserConfigPtr config ATTRIBUTE_UNUSED)
+                              virDomainDefParserConfigPtr config G_GNUC_UNUSED)
 {
     libxlDomainObjPrivatePtr priv = vm->privateData;
 
@@ -278,10 +278,10 @@ virDomainXMLPrivateDataCallbacks libxlDomainXMLPrivateDataCallbacks = {
 static int
 libxlDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                               const virDomainDef *def,
-                              virCapsPtr caps ATTRIBUTE_UNUSED,
-                              unsigned int parseFlags ATTRIBUTE_UNUSED,
-                              void *opaque ATTRIBUTE_UNUSED,
-                              void *parseOpaque ATTRIBUTE_UNUSED)
+                              virCapsPtr caps G_GNUC_UNUSED,
+                              unsigned int parseFlags G_GNUC_UNUSED,
+                              void *opaque G_GNUC_UNUSED,
+                              void *parseOpaque G_GNUC_UNUSED)
 {
     if (dev->type == VIR_DOMAIN_DEVICE_CHR &&
         dev->data.chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
@@ -367,10 +367,10 @@ libxlDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 
 static int
 libxlDomainDefPostParse(virDomainDefPtr def,
-                        virCapsPtr caps ATTRIBUTE_UNUSED,
-                        unsigned int parseFlags ATTRIBUTE_UNUSED,
-                        void *opaque ATTRIBUTE_UNUSED,
-                        void *parseOpaque ATTRIBUTE_UNUSED)
+                        virCapsPtr caps G_GNUC_UNUSED,
+                        unsigned int parseFlags G_GNUC_UNUSED,
+                        void *opaque G_GNUC_UNUSED,
+                        void *parseOpaque G_GNUC_UNUSED)
 {
     /* Xen PV domains always have a PV console, so add one to the domain config
      * via post-parse callback if not explicitly specified in the XML. */
@@ -1255,7 +1255,7 @@ libxlDomainCreateChannelPTY(virDomainDefPtr def, libxl_ctx *ctx)
 #ifdef LIBXL_HAVE_SRM_V2
 # define LIBXL_DOMSTART_RESTORE_VER_ATTR /* empty */
 #else
-# define LIBXL_DOMSTART_RESTORE_VER_ATTR ATTRIBUTE_UNUSED
+# define LIBXL_DOMSTART_RESTORE_VER_ATTR G_GNUC_UNUSED
 #endif
 
 /*
