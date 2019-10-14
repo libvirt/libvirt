@@ -174,7 +174,7 @@ virLockManagerLockDaemonConnectionRegister(virLockManagerPtr lock,
 
 
 static int
-virLockManagerLockDaemonConnectionRestrict(virLockManagerPtr lock ATTRIBUTE_UNUSED,
+virLockManagerLockDaemonConnectionRestrict(virLockManagerPtr lock G_GNUC_UNUSED,
                                            virNetClientPtr client,
                                            virNetClientProgramPtr program,
                                            int *counter)
@@ -621,9 +621,9 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
 
 
 static int virLockManagerLockDaemonAcquire(virLockManagerPtr lock,
-                                           const char *state ATTRIBUTE_UNUSED,
+                                           const char *state G_GNUC_UNUSED,
                                            unsigned int flags,
-                                           virDomainLockFailureAction action ATTRIBUTE_UNUSED,
+                                           virDomainLockFailureAction action G_GNUC_UNUSED,
                                            int *fd)
 {
     virNetClientPtr client = NULL;
@@ -742,7 +742,7 @@ static int virLockManagerLockDaemonRelease(virLockManagerPtr lock,
 }
 
 
-static int virLockManagerLockDaemonInquire(virLockManagerPtr lock ATTRIBUTE_UNUSED,
+static int virLockManagerLockDaemonInquire(virLockManagerPtr lock G_GNUC_UNUSED,
                                            char **state,
                                            unsigned int flags)
 {

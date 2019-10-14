@@ -196,10 +196,10 @@ virLockManagerPluginPtr virLockManagerPluginNew(const char *name,
 }
 #else /* !HAVE_DLFCN_H */
 virLockManagerPluginPtr
-virLockManagerPluginNew(const char *name ATTRIBUTE_UNUSED,
-                        const char *driverName ATTRIBUTE_UNUSED,
-                        const char *configDir ATTRIBUTE_UNUSED,
-                        unsigned int flags_unused ATTRIBUTE_UNUSED)
+virLockManagerPluginNew(const char *name G_GNUC_UNUSED,
+                        const char *driverName G_GNUC_UNUSED,
+                        const char *configDir G_GNUC_UNUSED,
+                        unsigned int flags_unused G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("this platform is missing dlopen"));
@@ -253,7 +253,7 @@ void virLockManagerPluginUnref(virLockManagerPluginPtr plugin)
     VIR_FREE(plugin);
 }
 #else /* !HAVE_DLFCN_H */
-void virLockManagerPluginUnref(virLockManagerPluginPtr plugin ATTRIBUTE_UNUSED)
+void virLockManagerPluginUnref(virLockManagerPluginPtr plugin G_GNUC_UNUSED)
 {
 }
 #endif /* !HAVE_DLFCN_H */

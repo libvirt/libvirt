@@ -62,7 +62,7 @@ virLockDaemonConfigFilePath(bool privileged, char **configfile)
 
 
 virLockDaemonConfigPtr
-virLockDaemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
+virLockDaemonConfigNew(bool privileged G_GNUC_UNUSED)
 {
     virLockDaemonConfigPtr data;
 

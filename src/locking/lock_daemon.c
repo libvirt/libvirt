@@ -140,7 +140,7 @@ virLockDaemonUnlock(virLockDaemonPtr lockd)
 }
 
 static void virLockDaemonLockSpaceDataFree(void *data,
-                                           const void *key ATTRIBUTE_UNUSED)
+                                           const void *key G_GNUC_UNUSED)
 {
     virLockSpaceFree(data);
 }
@@ -209,7 +209,7 @@ virLockDaemonNew(virLockDaemonConfigPtr config, bool privileged)
 
 
 static virNetServerPtr
-virLockDaemonNewServerPostExecRestart(virNetDaemonPtr dmn ATTRIBUTE_UNUSED,
+virLockDaemonNewServerPostExecRestart(virNetDaemonPtr dmn G_GNUC_UNUSED,
                                       const char *name,
                                       virJSONValuePtr object,
                                       void *opaque)
@@ -481,8 +481,8 @@ virLockDaemonUnixSocketPaths(bool privileged,
 
 
 static void
-virLockDaemonErrorHandler(void *opaque ATTRIBUTE_UNUSED,
-                          virErrorPtr err ATTRIBUTE_UNUSED)
+virLockDaemonErrorHandler(void *opaque G_GNUC_UNUSED,
+                          virErrorPtr err G_GNUC_UNUSED)
 {
     /* Don't do anything, since logging infrastructure already
      * took care of reporting the error */
@@ -552,16 +552,16 @@ virLockDaemonVersion(const char *argv0)
 
 static void
 virLockDaemonShutdownHandler(virNetDaemonPtr dmn,
-                             siginfo_t *sig ATTRIBUTE_UNUSED,
-                             void *opaque ATTRIBUTE_UNUSED)
+                             siginfo_t *sig G_GNUC_UNUSED,
+                             void *opaque G_GNUC_UNUSED)
 {
     virNetDaemonQuit(dmn);
 }
 
 static void
 virLockDaemonExecRestartHandler(virNetDaemonPtr dmn,
-                                siginfo_t *sig ATTRIBUTE_UNUSED,
-                                void *opaque ATTRIBUTE_UNUSED)
+                                siginfo_t *sig G_GNUC_UNUSED,
+                                void *opaque G_GNUC_UNUSED)
 {
     execRestart = true;
     virNetDaemonQuit(dmn);
@@ -590,7 +590,7 @@ struct virLockDaemonClientReleaseData {
 
 static int
 virLockDaemonClientReleaseLockspace(void *payload,
-                                    const void *name ATTRIBUTE_UNUSED,
+                                    const void *name G_GNUC_UNUSED,
                                     void *opaque)
 {
     virLockSpacePtr lockspace = payload;
@@ -781,7 +781,7 @@ virLockDaemonClientNewPostExecRestart(virNetServerClientPtr client,
 
 
 static virJSONValuePtr
-virLockDaemonClientPreExecRestart(virNetServerClientPtr client ATTRIBUTE_UNUSED,
+virLockDaemonClientPreExecRestart(virNetServerClientPtr client G_GNUC_UNUSED,
                                   void *opaque)
 {
     virLockDaemonClientPtr priv = opaque;
