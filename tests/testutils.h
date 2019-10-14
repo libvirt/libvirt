@@ -48,9 +48,9 @@ int virTestRun(const char *title,
                const void *data);
 int virTestLoadFile(const char *file, char **buf);
 char *virTestLoadFilePath(const char *p, ...)
-    ATTRIBUTE_SENTINEL;
+    G_GNUC_NULL_TERMINATED;
 virJSONValuePtr virTestLoadFileJSON(const char *p, ...)
-    ATTRIBUTE_SENTINEL;
+    G_GNUC_NULL_TERMINATED;
 
 int virTestCaptureProgramOutput(const char *const argv[], char **buf, int maxlen);
 

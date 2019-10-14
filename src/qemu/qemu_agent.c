@@ -1159,7 +1159,7 @@ qemuAgentCommand(qemuAgentPtr mon,
     return ret;
 }
 
-static virJSONValuePtr ATTRIBUTE_SENTINEL
+static virJSONValuePtr G_GNUC_NULL_TERMINATED
 qemuAgentMakeCommand(const char *cmdname,
                      ...)
 {

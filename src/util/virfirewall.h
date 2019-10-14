@@ -65,7 +65,7 @@ virFirewallRulePtr virFirewallAddRuleFull(virFirewallPtr firewall,
                                           virFirewallQueryCallback cb,
                                           void *opaque,
                                           ...)
-    ATTRIBUTE_SENTINEL;
+    G_GNUC_NULL_TERMINATED;
 
 void virFirewallRemoveRule(virFirewallPtr firewall,
                            virFirewallRulePtr rule);
@@ -88,7 +88,7 @@ void virFirewallRuleAddArgSet(virFirewallPtr firewall,
 void virFirewallRuleAddArgList(virFirewallPtr firewall,
                                virFirewallRulePtr rule,
                                ...)
-    ATTRIBUTE_SENTINEL;
+    G_GNUC_NULL_TERMINATED;
 
 size_t virFirewallRuleGetArgCount(virFirewallRulePtr rule);
 

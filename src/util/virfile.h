@@ -317,7 +317,7 @@ char *virFileFindMountPoint(const char *type);
 /* NB: this should be combined with virFileBuildPath */
 #define virBuildPath(path, ...) \
     virBuildPathInternal(path, __VA_ARGS__, NULL)
-int virBuildPathInternal(char **path, ...) ATTRIBUTE_SENTINEL;
+int virBuildPathInternal(char **path, ...) G_GNUC_NULL_TERMINATED;
 
 int virFilePrintf(FILE *fp, const char *msg, ...)
     ATTRIBUTE_FMT_PRINTF(2, 3);

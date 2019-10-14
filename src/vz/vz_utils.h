@@ -122,7 +122,7 @@ void vzDomObjFree(void *p);
 virDomainObjPtr vzDomObjFromDomain(virDomainPtr domain);
 
 char * vzGetOutput(const char *binary, ...)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_SENTINEL;
+    ATTRIBUTE_NONNULL(1) G_GNUC_NULL_TERMINATED;
 
 vzDriverPtr
 vzGetDriverConnection(void);

@@ -42,7 +42,7 @@ virCommandPtr virCommandNew(const char *binary) ATTRIBUTE_NONNULL(1);
 virCommandPtr virCommandNewArgs(const char *const*args) ATTRIBUTE_NONNULL(1);
 
 virCommandPtr virCommandNewArgList(const char *binary, ...)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_SENTINEL;
+    ATTRIBUTE_NONNULL(1) G_GNUC_NULL_TERMINATED;
 
 virCommandPtr virCommandNewVAList(const char *binary, va_list list)
     ATTRIBUTE_NONNULL(1);
@@ -137,7 +137,7 @@ void virCommandAddArgSet(virCommandPtr cmd,
 
 void virCommandAddArgList(virCommandPtr cmd,
                           ... /* const char *arg, ..., NULL */)
-    ATTRIBUTE_SENTINEL;
+    G_GNUC_NULL_TERMINATED;
 
 void virCommandSetWorkingDirectory(virCommandPtr cmd,
                                    const char *pwd) ATTRIBUTE_NONNULL(2);

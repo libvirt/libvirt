@@ -557,7 +557,7 @@ qemuMonitorJSONMakeCommandInternal(const char *cmdname,
 }
 
 
-static virJSONValuePtr ATTRIBUTE_SENTINEL
+static virJSONValuePtr G_GNUC_NULL_TERMINATED
 qemuMonitorJSONMakeCommand(const char *cmdname,
                            ...)
 {

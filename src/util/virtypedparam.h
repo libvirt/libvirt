@@ -62,7 +62,7 @@ struct _virTypedParameterRemote {
 
 int virTypedParamsValidate(virTypedParameterPtr params, int nparams,
                            /* const char *name, int type ... */ ...)
-    ATTRIBUTE_SENTINEL ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_NULL_TERMINATED ATTRIBUTE_RETURN_CHECK;
 
 bool virTypedParamsCheck(virTypedParameterPtr params,
                          int nparams,

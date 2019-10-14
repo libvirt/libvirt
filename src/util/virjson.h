@@ -48,11 +48,11 @@ void virJSONValueHashFree(void *opaque, const void *name);
 virJSONType virJSONValueGetType(const virJSONValue *value);
 
 int virJSONValueObjectCreate(virJSONValuePtr *obj, ...)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_SENTINEL;
+    ATTRIBUTE_NONNULL(1) G_GNUC_NULL_TERMINATED;
 int virJSONValueObjectCreateVArgs(virJSONValuePtr *obj, va_list args)
     ATTRIBUTE_NONNULL(1);
 int virJSONValueObjectAdd(virJSONValuePtr obj, ...)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_SENTINEL;
+    ATTRIBUTE_NONNULL(1) G_GNUC_NULL_TERMINATED;
 int virJSONValueObjectAddVArgs(virJSONValuePtr obj, va_list args)
     ATTRIBUTE_NONNULL(1);
 

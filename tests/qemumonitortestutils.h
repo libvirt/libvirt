@@ -65,7 +65,7 @@ int qemuMonitorTestAddItemParams(qemuMonitorTestPtr test,
                                  const char *cmdname,
                                  const char *response,
                                  ...)
-    ATTRIBUTE_SENTINEL;
+    G_GNUC_NULL_TERMINATED;
 
 int qemuMonitorTestAddItemExpect(qemuMonitorTestPtr test,
                                  const char *cmdname,

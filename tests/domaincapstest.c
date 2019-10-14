@@ -27,7 +27,7 @@
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 #if WITH_QEMU || WITH_BHYVE
-static int ATTRIBUTE_SENTINEL
+static int G_GNUC_NULL_TERMINATED
 fillStringValues(virDomainCapsStringValuesPtr values, ...)
 {
     int ret = 0;
