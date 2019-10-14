@@ -23,7 +23,7 @@
 uint32_t
 virHashCodeGen(const void *key,
                size_t len,
-               uint32_t seed ATTRIBUTE_UNUSED)
+               uint32_t seed G_GNUC_UNUSED)
 {
     const uint8_t *k = key;
     uint32_t h = 0;

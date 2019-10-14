@@ -90,7 +90,7 @@ static void sigHandler(int sig)
  * we don't want  'shunloadtest' itself to link against
  * libvirt.so. We need to test dlopen()'ing of libvirt.so
  */
-int main(int argc ATTRIBUTE_UNUSED, char **argv)
+int main(int argc G_GNUC_UNUSED, char **argv)
 {
     void (*startup)(void);
     pthread_t t;

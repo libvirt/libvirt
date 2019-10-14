@@ -106,7 +106,7 @@ testSELinuxCheckCon(context_t con,
                     const char *role,
                     const char *type,
                     int sensMin,
-                    int sensMax ATTRIBUTE_UNUSED,
+                    int sensMax G_GNUC_UNUSED,
                     int catMin,
                     int catMax)
 {

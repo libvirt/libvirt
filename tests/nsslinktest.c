@@ -21,8 +21,8 @@
 #include "internal.h"
 #include "libvirt_nss.h"
 
-int main(int argc ATTRIBUTE_UNUSED,
-         char *argv[] ATTRIBUTE_UNUSED)
+int main(int argc G_GNUC_UNUSED,
+         char *argv[] G_GNUC_UNUSED)
 {
     int err, herrno; /* Dummy variables to prevent SIGSEGV */
 

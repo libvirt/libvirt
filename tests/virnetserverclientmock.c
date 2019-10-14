@@ -22,15 +22,15 @@
 #include "virutil.h"
 #include "internal.h"
 
-int virEventAddTimeout(int frequency ATTRIBUTE_UNUSED,
-                       virEventTimeoutCallback cb ATTRIBUTE_UNUSED,
-                       void *opaque ATTRIBUTE_UNUSED,
-                       virFreeCallback ff ATTRIBUTE_UNUSED)
+int virEventAddTimeout(int frequency G_GNUC_UNUSED,
+                       virEventTimeoutCallback cb G_GNUC_UNUSED,
+                       void *opaque G_GNUC_UNUSED,
+                       virFreeCallback ff G_GNUC_UNUSED)
 {
     return 0;
 }
 
-int virNetSocketGetUNIXIdentity(virNetSocketPtr sock ATTRIBUTE_UNUSED,
+int virNetSocketGetUNIXIdentity(virNetSocketPtr sock G_GNUC_UNUSED,
                                 uid_t *uid,
                                 gid_t *gid,
                                 pid_t *pid,
@@ -43,17 +43,17 @@ int virNetSocketGetUNIXIdentity(virNetSocketPtr sock ATTRIBUTE_UNUSED,
     return 0;
 }
 
-char *virGetUserName(uid_t uid ATTRIBUTE_UNUSED)
+char *virGetUserName(uid_t uid G_GNUC_UNUSED)
 {
     return strdup("astrochicken");
 }
 
-char *virGetGroupName(gid_t gid ATTRIBUTE_UNUSED)
+char *virGetGroupName(gid_t gid G_GNUC_UNUSED)
 {
     return strdup("fictionalusers");
 }
 
-int virNetSocketGetSELinuxContext(virNetSocketPtr sock ATTRIBUTE_UNUSED,
+int virNetSocketGetSELinuxContext(virNetSocketPtr sock G_GNUC_UNUSED,
                                   char **context)
 {
     if (!(*context = strdup("foo_u:bar_r:wizz_t:s0-s0:c0.c1023")))

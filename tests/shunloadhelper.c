@@ -30,8 +30,8 @@
 
 #include "internal.h"
 
-static void shunloadError(void *userData ATTRIBUTE_UNUSED,
-                          virErrorPtr error ATTRIBUTE_UNUSED)
+static void shunloadError(void *userData G_GNUC_UNUSED,
+                          virErrorPtr error G_GNUC_UNUSED)
 {
 }
 

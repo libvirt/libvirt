@@ -472,7 +472,7 @@ static const char *testPathCanonicalizeSymlinks[][2] =
 static int
 testPathCanonicalizeReadlink(const char *path,
                              char **linkpath,
-                             void *data ATTRIBUTE_UNUSED)
+                             void *data G_GNUC_UNUSED)
 {
     size_t i;
 

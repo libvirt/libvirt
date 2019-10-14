@@ -33,7 +33,7 @@ static struct testPath paths[] = {
 };
 
 static int
-testParseDatastorePath(const void *data ATTRIBUTE_UNUSED)
+testParseDatastorePath(const void *data G_GNUC_UNUSED)
 {
     int result = 0;
     size_t i;
@@ -121,7 +121,7 @@ static struct testDateTime times[] = {
 };
 
 static int
-testConvertDateTimeToCalendarTime(const void *data ATTRIBUTE_UNUSED)
+testConvertDateTimeToCalendarTime(const void *data G_GNUC_UNUSED)
 {
     size_t i;
     esxVI_DateTime dateTime;
@@ -172,7 +172,7 @@ static struct testDatastoreItem datastoreItems[] = {
 };
 
 static int
-testEscapeDatastoreItem(const void *data ATTRIBUTE_UNUSED)
+testEscapeDatastoreItem(const void *data G_GNUC_UNUSED)
 {
     size_t i;
     char *escaped = NULL;
@@ -212,7 +212,7 @@ static struct testWindows1252ToUTF8 windows1252ToUTF8[] = {
 };
 
 static int
-testConvertWindows1252ToUTF8(const void *data ATTRIBUTE_UNUSED)
+testConvertWindows1252ToUTF8(const void *data G_GNUC_UNUSED)
 {
     size_t i;
     char *utf8 = NULL;

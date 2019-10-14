@@ -55,7 +55,7 @@ testParseFormatVU(const void *opaque)
 
 
 static int
-testVUPrecedence(const void *opaque ATTRIBUTE_UNUSED)
+testVUPrecedence(const void *opaque G_GNUC_UNUSED)
 {
     VIR_AUTOFREE(char *) fakehome = NULL;
     VIR_AUTOSTRINGLIST vuList = NULL;

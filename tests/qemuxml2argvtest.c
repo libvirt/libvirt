@@ -37,10 +37,10 @@
 static virQEMUDriver driver;
 
 static unsigned char *
-fakeSecretGetValue(virSecretPtr obj ATTRIBUTE_UNUSED,
+fakeSecretGetValue(virSecretPtr obj G_GNUC_UNUSED,
                    size_t *value_size,
-                   unsigned int fakeflags ATTRIBUTE_UNUSED,
-                   unsigned int internalFlags ATTRIBUTE_UNUSED)
+                   unsigned int fakeflags G_GNUC_UNUSED,
+                   unsigned int internalFlags G_GNUC_UNUSED)
 {
     char *secret;
     if (VIR_STRDUP(secret, "AQCVn5hO6HzFAhAAq0NCv8jtJcIcE+HOBlMQ1A") < 0)
@@ -199,7 +199,7 @@ fakeStorageVolGetPath(virStorageVolPtr vol)
 
 static char *
 fakeStoragePoolGetXMLDesc(virStoragePoolPtr pool,
-                          unsigned int flags_unused ATTRIBUTE_UNUSED)
+                          unsigned int flags_unused G_GNUC_UNUSED)
 {
     char *xmlpath = NULL;
     char *xmlbuf = NULL;
@@ -278,7 +278,7 @@ fakeNWFilterBindingLookupByPortDev(virConnectPtr conn,
 
 
 static int
-fakeNWFilterBindingDelete(virNWFilterBindingPtr binding ATTRIBUTE_UNUSED)
+fakeNWFilterBindingDelete(virNWFilterBindingPtr binding G_GNUC_UNUSED)
 {
     return 0;
 }

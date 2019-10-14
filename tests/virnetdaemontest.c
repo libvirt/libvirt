@@ -31,8 +31,8 @@ struct testClientPriv {
 
 
 static void *
-testClientNew(virNetServerClientPtr client ATTRIBUTE_UNUSED,
-              void *opaque ATTRIBUTE_UNUSED)
+testClientNew(virNetServerClientPtr client G_GNUC_UNUSED,
+              void *opaque G_GNUC_UNUSED)
 {
     struct testClientPriv *priv;
 
@@ -46,7 +46,7 @@ testClientNew(virNetServerClientPtr client ATTRIBUTE_UNUSED,
 
 
 static virJSONValuePtr
-testClientPreExec(virNetServerClientPtr client ATTRIBUTE_UNUSED,
+testClientPreExec(virNetServerClientPtr client G_GNUC_UNUSED,
                   void *data)
 {
     struct testClientPriv *priv = data;
@@ -237,7 +237,7 @@ struct testExecRestartData {
 };
 
 static virNetServerPtr
-testNewServerPostExecRestart(virNetDaemonPtr dmn ATTRIBUTE_UNUSED,
+testNewServerPostExecRestart(virNetDaemonPtr dmn G_GNUC_UNUSED,
                              const char *name,
                              virJSONValuePtr object,
                              void *opaque)

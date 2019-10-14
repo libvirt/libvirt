@@ -31,7 +31,7 @@
 
 VIR_LOG_INIT("tests.keyfiletest");
 
-static int testParse(const void *args ATTRIBUTE_UNUSED)
+static int testParse(const void *args G_GNUC_UNUSED)
 {
     static const char *cfg1 =
         "# Some config\n"

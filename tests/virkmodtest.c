@@ -36,7 +36,7 @@ struct testInfo {
 # define VIR_FROM_THIS VIR_FROM_NONE
 
 static int
-testKModConfig(const void *args ATTRIBUTE_UNUSED)
+testKModConfig(const void *args G_GNUC_UNUSED)
 {
     int ret = -1;
     char *outbuf = NULL;

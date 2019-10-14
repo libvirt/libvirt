@@ -236,8 +236,8 @@ holesSupported(void)
 #else /* !HAVE_DECL_SEEK_HOLE || !defined(__linux__)*/
 
 static int
-makeSparseFile(const off_t offsets[] ATTRIBUTE_UNUSED,
-               const bool startData ATTRIBUTE_UNUSED)
+makeSparseFile(const off_t offsets[] G_GNUC_UNUSED,
+               const bool startData G_GNUC_UNUSED)
 {
     return -1;
 }
@@ -315,7 +315,7 @@ struct testFileIsSharedFSType {
 };
 
 static int
-testFileIsSharedFSType(const void *opaque ATTRIBUTE_UNUSED)
+testFileIsSharedFSType(const void *opaque G_GNUC_UNUSED)
 {
 #ifndef __linux__
     return EXIT_AM_SKIP;

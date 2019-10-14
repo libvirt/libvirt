@@ -831,9 +831,9 @@ testQemuAgentArbitraryCommand(const void *data)
 
 
 static int
-qemuAgentTimeoutTestMonitorHandler(qemuMonitorTestPtr test ATTRIBUTE_UNUSED,
-                                   qemuMonitorTestItemPtr item ATTRIBUTE_UNUSED,
-                                   const char *cmdstr ATTRIBUTE_UNUSED)
+qemuAgentTimeoutTestMonitorHandler(qemuMonitorTestPtr test G_GNUC_UNUSED,
+                                   qemuMonitorTestItemPtr item G_GNUC_UNUSED,
+                                   const char *cmdstr G_GNUC_UNUSED)
 {
     return 0;
 }

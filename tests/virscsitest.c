@@ -33,7 +33,7 @@ VIR_LOG_INIT("tests.scsitest");
 static char *virscsi_prefix;
 
 static int
-test1(const void *data ATTRIBUTE_UNUSED)
+test1(const void *data G_GNUC_UNUSED)
 {
     char *name = NULL;
     int ret = -1;
@@ -57,7 +57,7 @@ test1(const void *data ATTRIBUTE_UNUSED)
  * details.
  */
 static int
-test2(const void *data ATTRIBUTE_UNUSED)
+test2(const void *data G_GNUC_UNUSED)
 {
     virSCSIDeviceListPtr list = NULL;
     virSCSIDevicePtr dev = NULL;

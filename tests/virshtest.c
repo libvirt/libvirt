@@ -92,7 +92,7 @@ static char *custom_uri;
     "--connect", \
     custom_uri
 
-static int testCompareListDefault(const void *data ATTRIBUTE_UNUSED)
+static int testCompareListDefault(const void *data G_GNUC_UNUSED)
 {
     const char *const argv[] = { VIRSH_DEFAULT, "list", NULL };
     const char *exp = "\
@@ -103,7 +103,7 @@ static int testCompareListDefault(const void *data ATTRIBUTE_UNUSED)
     return testCompareOutputLit(exp, NULL, argv);
 }
 
-static int testCompareListCustom(const void *data ATTRIBUTE_UNUSED)
+static int testCompareListCustom(const void *data G_GNUC_UNUSED)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "list", NULL };
     const char *exp = "\
@@ -115,7 +115,7 @@ static int testCompareListCustom(const void *data ATTRIBUTE_UNUSED)
     return testCompareOutputLit(exp, NULL, argv);
 }
 
-static int testCompareNodeinfoDefault(const void *data ATTRIBUTE_UNUSED)
+static int testCompareNodeinfoDefault(const void *data G_GNUC_UNUSED)
 {
     const char *const argv[] = { VIRSH_DEFAULT, "nodeinfo", NULL };
     const char *exp = "\
@@ -131,7 +131,7 @@ Memory size:         3145728 KiB\n\
     return testCompareOutputLit(exp, NULL, argv);
 }
 
-static int testCompareNodeinfoCustom(const void *data ATTRIBUTE_UNUSED)
+static int testCompareNodeinfoCustom(const void *data G_GNUC_UNUSED)
 {
     const char *const argv[] = {
         VIRSH_CUSTOM,
@@ -151,84 +151,84 @@ Memory size:         8192000 KiB\n\
     return testCompareOutputLit(exp, NULL, argv);
 }
 
-static int testCompareDominfoByID(const void *data ATTRIBUTE_UNUSED)
+static int testCompareDominfoByID(const void *data G_GNUC_UNUSED)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "dominfo", "2", NULL };
     const char *exp = dominfo_fc4;
     return testCompareOutputLit(exp, "\nCPU time:", argv);
 }
 
-static int testCompareDominfoByUUID(const void *data ATTRIBUTE_UNUSED)
+static int testCompareDominfoByUUID(const void *data G_GNUC_UNUSED)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "dominfo", DOM_UUID, NULL };
     const char *exp = dominfo_fc4;
     return testCompareOutputLit(exp, "\nCPU time:", argv);
 }
 
-static int testCompareDominfoByName(const void *data ATTRIBUTE_UNUSED)
+static int testCompareDominfoByName(const void *data G_GNUC_UNUSED)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "dominfo", "fc4", NULL };
     const char *exp = dominfo_fc4;
     return testCompareOutputLit(exp, "\nCPU time:", argv);
 }
 
-static int testCompareDomuuidByID(const void *data ATTRIBUTE_UNUSED)
+static int testCompareDomuuidByID(const void *data G_GNUC_UNUSED)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "domuuid", "2", NULL };
     const char *exp = domuuid_fc4;
     return testCompareOutputLit(exp, NULL, argv);
 }
 
-static int testCompareDomuuidByName(const void *data ATTRIBUTE_UNUSED)
+static int testCompareDomuuidByName(const void *data G_GNUC_UNUSED)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "domuuid", "fc4", NULL };
     const char *exp = domuuid_fc4;
     return testCompareOutputLit(exp, NULL, argv);
 }
 
-static int testCompareDomidByName(const void *data ATTRIBUTE_UNUSED)
+static int testCompareDomidByName(const void *data G_GNUC_UNUSED)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "domid", "fc4", NULL };
     const char *exp = domid_fc4;
     return testCompareOutputLit(exp, NULL, argv);
 }
 
-static int testCompareDomidByUUID(const void *data ATTRIBUTE_UNUSED)
+static int testCompareDomidByUUID(const void *data G_GNUC_UNUSED)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "domid", DOM_UUID, NULL };
     const char *exp = domid_fc4;
     return testCompareOutputLit(exp, NULL, argv);
 }
 
-static int testCompareDomnameByID(const void *data ATTRIBUTE_UNUSED)
+static int testCompareDomnameByID(const void *data G_GNUC_UNUSED)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "domname", "2", NULL };
     const char *exp = domname_fc4;
     return testCompareOutputLit(exp, NULL, argv);
 }
 
-static int testCompareDomnameByUUID(const void *data ATTRIBUTE_UNUSED)
+static int testCompareDomnameByUUID(const void *data G_GNUC_UNUSED)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "domname", DOM_UUID, NULL };
     const char *exp = domname_fc4;
     return testCompareOutputLit(exp, NULL, argv);
 }
 
-static int testCompareDomstateByID(const void *data ATTRIBUTE_UNUSED)
+static int testCompareDomstateByID(const void *data G_GNUC_UNUSED)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "domstate", "2", NULL };
     const char *exp = domstate_fc4;
     return testCompareOutputLit(exp, NULL, argv);
 }
 
-static int testCompareDomstateByUUID(const void *data ATTRIBUTE_UNUSED)
+static int testCompareDomstateByUUID(const void *data G_GNUC_UNUSED)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "domstate", DOM_UUID, NULL };
     const char *exp = domstate_fc4;
     return testCompareOutputLit(exp, NULL, argv);
 }
 
-static int testCompareDomstateByName(const void *data ATTRIBUTE_UNUSED)
+static int testCompareDomstateByName(const void *data G_GNUC_UNUSED)
 {
     const char *const argv[] = { VIRSH_CUSTOM, "domstate", "fc4", NULL };
     const char *exp = domstate_fc4;

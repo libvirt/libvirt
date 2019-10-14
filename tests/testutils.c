@@ -380,9 +380,9 @@ virTestCaptureProgramOutput(const char *const argv[], char **buf, int maxlen)
 }
 #else /* !WIN32 */
 int
-virTestCaptureProgramOutput(const char *const argv[] ATTRIBUTE_UNUSED,
-                            char **buf ATTRIBUTE_UNUSED,
-                            int maxlen ATTRIBUTE_UNUSED)
+virTestCaptureProgramOutput(const char *const argv[] G_GNUC_UNUSED,
+                            char **buf G_GNUC_UNUSED,
+                            int maxlen G_GNUC_UNUSED)
 {
     return -1;
 }
@@ -713,8 +713,8 @@ virTestCompareToString(const char *expect,
 }
 
 static void
-virTestErrorFuncQuiet(void *data ATTRIBUTE_UNUSED,
-                      virErrorPtr err ATTRIBUTE_UNUSED)
+virTestErrorFuncQuiet(void *data G_GNUC_UNUSED,
+                      virErrorPtr err G_GNUC_UNUSED)
 { }
 
 
@@ -733,15 +733,15 @@ struct virtTestLogData {
 static struct virtTestLogData testLog = { VIR_BUFFER_INITIALIZER };
 
 static void
-virtTestLogOutput(virLogSourcePtr source ATTRIBUTE_UNUSED,
-                  virLogPriority priority ATTRIBUTE_UNUSED,
-                  const char *filename ATTRIBUTE_UNUSED,
-                  int lineno ATTRIBUTE_UNUSED,
-                  const char *funcname ATTRIBUTE_UNUSED,
+virtTestLogOutput(virLogSourcePtr source G_GNUC_UNUSED,
+                  virLogPriority priority G_GNUC_UNUSED,
+                  const char *filename G_GNUC_UNUSED,
+                  int lineno G_GNUC_UNUSED,
+                  const char *funcname G_GNUC_UNUSED,
                   const char *timestamp,
-                  virLogMetadataPtr metadata ATTRIBUTE_UNUSED,
+                  virLogMetadataPtr metadata G_GNUC_UNUSED,
                   unsigned int flags,
-                  const char *rawstr ATTRIBUTE_UNUSED,
+                  const char *rawstr G_GNUC_UNUSED,
                   const char *str,
                   void *data)
 {

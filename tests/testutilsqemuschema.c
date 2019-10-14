@@ -157,7 +157,7 @@ testQEMUSchemaValidateObjectMember(const char *key,
 
 
 static int
-testQEMUSchemaValidateObjectMergeVariantMember(size_t pos ATTRIBUTE_UNUSED,
+testQEMUSchemaValidateObjectMergeVariantMember(size_t pos G_GNUC_UNUSED,
                                                virJSONValuePtr item,
                                                void *opaque)
 {
@@ -245,9 +245,9 @@ testQEMUSchemaValidateObjectMergeVariant(virJSONValuePtr root,
 
 
 static int
-testQEMUSchemaValidateObjectMandatoryMember(size_t pos ATTRIBUTE_UNUSED,
+testQEMUSchemaValidateObjectMandatoryMember(size_t pos G_GNUC_UNUSED,
                                             virJSONValuePtr item,
-                                            void *opaque ATTRIBUTE_UNUSED)
+                                            void *opaque G_GNUC_UNUSED)
 {
     struct testQEMUSchemaValidateObjectMemberData *data = opaque;
 

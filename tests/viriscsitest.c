@@ -73,10 +73,10 @@ struct testIscsiadmCbData {
 };
 
 static void testIscsiadmCb(const char *const*args,
-                           const char *const*env ATTRIBUTE_UNUSED,
-                           const char *input ATTRIBUTE_UNUSED,
+                           const char *const*env G_GNUC_UNUSED,
+                           const char *input G_GNUC_UNUSED,
                            char **output,
-                           char **error ATTRIBUTE_UNUSED,
+                           char **error G_GNUC_UNUSED,
                            int *status,
                            void *opaque)
 {

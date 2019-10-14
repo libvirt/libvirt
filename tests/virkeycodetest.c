@@ -33,7 +33,7 @@
 
 VIR_LOG_INIT("tests.keycodetest");
 
-static int testKeycodeMapping(const void *data ATTRIBUTE_UNUSED)
+static int testKeycodeMapping(const void *data G_GNUC_UNUSED)
 {
     int ret = -1;
     int got;
@@ -66,7 +66,7 @@ static int testKeycodeMapping(const void *data ATTRIBUTE_UNUSED)
 }
 
 
-static int testKeycodeStrings(const void *data ATTRIBUTE_UNUSED)
+static int testKeycodeStrings(const void *data G_GNUC_UNUSED)
 {
     int ret = -1;
     int got;

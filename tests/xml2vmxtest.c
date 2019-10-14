@@ -132,8 +132,8 @@ testCompareHelper(const void *data)
 }
 
 static int
-testAutodetectSCSIControllerModel(virDomainDiskDefPtr def ATTRIBUTE_UNUSED,
-                                  int *model, void *opaque ATTRIBUTE_UNUSED)
+testAutodetectSCSIControllerModel(virDomainDiskDefPtr def G_GNUC_UNUSED,
+                                  int *model, void *opaque G_GNUC_UNUSED)
 {
     *model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC;
 
@@ -141,7 +141,7 @@ testAutodetectSCSIControllerModel(virDomainDiskDefPtr def ATTRIBUTE_UNUSED,
 }
 
 static char *
-testFormatVMXFileName(const char *src, void *opaque ATTRIBUTE_UNUSED)
+testFormatVMXFileName(const char *src, void *opaque G_GNUC_UNUSED)
 {
     bool success = false;
     char *copyOfDatastorePath = NULL;

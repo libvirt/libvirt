@@ -27,7 +27,7 @@
 #include "../tools/vsh-table.h"
 
 static int
-testVshTableNew(const void *opaque ATTRIBUTE_UNUSED)
+testVshTableNew(const void *opaque G_GNUC_UNUSED)
 {
     if (vshTableNew(NULL)) {
         fprintf(stderr, "expected failure when passing null to vshTableNew\n");
@@ -38,7 +38,7 @@ testVshTableNew(const void *opaque ATTRIBUTE_UNUSED)
 }
 
 static int
-testVshTableHeader(const void *opaque ATTRIBUTE_UNUSED)
+testVshTableHeader(const void *opaque G_GNUC_UNUSED)
 {
     int ret = 0;
     char *act = NULL;
@@ -76,7 +76,7 @@ testVshTableHeader(const void *opaque ATTRIBUTE_UNUSED)
 }
 
 static int
-testVshTableRowAppend(const void *opaque ATTRIBUTE_UNUSED)
+testVshTableRowAppend(const void *opaque G_GNUC_UNUSED)
 {
     int ret = 0;
 
@@ -112,7 +112,7 @@ testVshTableRowAppend(const void *opaque ATTRIBUTE_UNUSED)
 }
 
 static int
-testUnicode(const void *opaque ATTRIBUTE_UNUSED)
+testUnicode(const void *opaque G_GNUC_UNUSED)
 {
     int ret = 0;
     char *act = NULL;
@@ -144,7 +144,7 @@ testUnicode(const void *opaque ATTRIBUTE_UNUSED)
 
 /* Point of this test is to see how table behaves with right to left writing*/
 static int
-testUnicodeArabic(const void *opaque ATTRIBUTE_UNUSED)
+testUnicodeArabic(const void *opaque G_GNUC_UNUSED)
 {
     int ret = 0;
     char *act = NULL;
@@ -187,7 +187,7 @@ testUnicodeArabic(const void *opaque ATTRIBUTE_UNUSED)
 
 /* Testing zero-width characters by inserting few zero-width spaces */
 static int
-testUnicodeZeroWidthChar(const void *opaque ATTRIBUTE_UNUSED)
+testUnicodeZeroWidthChar(const void *opaque G_GNUC_UNUSED)
 {
     int ret = 0;
     vshTablePtr table = NULL;
@@ -224,7 +224,7 @@ testUnicodeZeroWidthChar(const void *opaque ATTRIBUTE_UNUSED)
 }
 
 static int
-testUnicodeCombiningChar(const void *opaque ATTRIBUTE_UNUSED)
+testUnicodeCombiningChar(const void *opaque G_GNUC_UNUSED)
 {
     int ret = 0;
     vshTablePtr table = NULL;
@@ -253,7 +253,7 @@ testUnicodeCombiningChar(const void *opaque ATTRIBUTE_UNUSED)
 
 /* Testing zero-width characters by inserting few zero-width spaces */
 static int
-testUnicodeNonPrintableChar(const void *opaque ATTRIBUTE_UNUSED)
+testUnicodeNonPrintableChar(const void *opaque G_GNUC_UNUSED)
 {
     int ret = 0;
     vshTablePtr table = NULL;
@@ -281,7 +281,7 @@ testUnicodeNonPrintableChar(const void *opaque ATTRIBUTE_UNUSED)
 }
 
 static int
-testNTables(const void *opaque ATTRIBUTE_UNUSED)
+testNTables(const void *opaque G_GNUC_UNUSED)
 {
     int ret = 0;
     vshTablePtr table1 = NULL;

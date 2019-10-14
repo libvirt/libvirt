@@ -47,7 +47,7 @@ struct findTestInfo {
 
 static int testDeviceFileActor(virUSBDevicePtr dev,
                                const char *path,
-                               void *opaque ATTRIBUTE_UNUSED)
+                               void *opaque G_GNUC_UNUSED)
 {
     char *str = NULL;
     int ret = 0;
@@ -147,7 +147,7 @@ testCheckNdevs(const char* occasion,
 
 
 static int
-testUSBList(const void *opaque ATTRIBUTE_UNUSED)
+testUSBList(const void *opaque G_GNUC_UNUSED)
 {
     virUSBDeviceListPtr list = NULL;
     virUSBDeviceListPtr devlist = NULL;

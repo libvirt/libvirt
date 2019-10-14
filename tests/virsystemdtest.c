@@ -160,7 +160,7 @@ VIR_MOCK_WRAP_RET_ARGS(dbus_connection_send_with_reply_and_block,
 }
 
 
-static int testCreateContainer(const void *opaque ATTRIBUTE_UNUSED)
+static int testCreateContainer(const void *opaque G_GNUC_UNUSED)
 {
     unsigned char uuid[VIR_UUID_BUFLEN] = {
         1, 1, 1, 1,
@@ -183,7 +183,7 @@ static int testCreateContainer(const void *opaque ATTRIBUTE_UNUSED)
     return 0;
 }
 
-static int testTerminateContainer(const void *opaque ATTRIBUTE_UNUSED)
+static int testTerminateContainer(const void *opaque G_GNUC_UNUSED)
 {
     if (virSystemdTerminateMachine("lxc-demo") < 0) {
         fprintf(stderr, "%s", "Failed to terminate LXC machine\n");
@@ -193,7 +193,7 @@ static int testTerminateContainer(const void *opaque ATTRIBUTE_UNUSED)
     return 0;
 }
 
-static int testCreateMachine(const void *opaque ATTRIBUTE_UNUSED)
+static int testCreateMachine(const void *opaque G_GNUC_UNUSED)
 {
     unsigned char uuid[VIR_UUID_BUFLEN] = {
         1, 1, 1, 1,
@@ -216,7 +216,7 @@ static int testCreateMachine(const void *opaque ATTRIBUTE_UNUSED)
     return 0;
 }
 
-static int testTerminateMachine(const void *opaque ATTRIBUTE_UNUSED)
+static int testTerminateMachine(const void *opaque G_GNUC_UNUSED)
 {
     if (virSystemdTerminateMachine("test-qemu-demo") < 0) {
         fprintf(stderr, "%s", "Failed to terminate KVM machine\n");
@@ -226,7 +226,7 @@ static int testTerminateMachine(const void *opaque ATTRIBUTE_UNUSED)
     return 0;
 }
 
-static int testCreateNoSystemd(const void *opaque ATTRIBUTE_UNUSED)
+static int testCreateNoSystemd(const void *opaque G_GNUC_UNUSED)
 {
     unsigned char uuid[VIR_UUID_BUFLEN] = {
         1, 1, 1, 1,
@@ -260,7 +260,7 @@ static int testCreateNoSystemd(const void *opaque ATTRIBUTE_UNUSED)
     return 0;
 }
 
-static int testCreateSystemdNotRunning(const void *opaque ATTRIBUTE_UNUSED)
+static int testCreateSystemdNotRunning(const void *opaque G_GNUC_UNUSED)
 {
     unsigned char uuid[VIR_UUID_BUFLEN] = {
         1, 1, 1, 1,
@@ -294,7 +294,7 @@ static int testCreateSystemdNotRunning(const void *opaque ATTRIBUTE_UNUSED)
     return 0;
 }
 
-static int testCreateBadSystemd(const void *opaque ATTRIBUTE_UNUSED)
+static int testCreateBadSystemd(const void *opaque G_GNUC_UNUSED)
 {
     unsigned char uuid[VIR_UUID_BUFLEN] = {
         1, 1, 1, 1,
@@ -329,7 +329,7 @@ static int testCreateBadSystemd(const void *opaque ATTRIBUTE_UNUSED)
 }
 
 
-static int testCreateNetwork(const void *opaque ATTRIBUTE_UNUSED)
+static int testCreateNetwork(const void *opaque G_GNUC_UNUSED)
 {
     unsigned char uuid[VIR_UUID_BUFLEN] = {
         1, 1, 1, 1,
@@ -358,7 +358,7 @@ static int testCreateNetwork(const void *opaque ATTRIBUTE_UNUSED)
 
 
 static int
-testGetMachineName(const void *opaque ATTRIBUTE_UNUSED)
+testGetMachineName(const void *opaque G_GNUC_UNUSED)
 {
     char *tmp = virSystemdGetMachineNameByPID(1234);
     int ret = -1;
@@ -639,7 +639,7 @@ testActivation(bool useNames)
 
 
 static int
-testActivationEmpty(const void *opaque ATTRIBUTE_UNUSED)
+testActivationEmpty(const void *opaque G_GNUC_UNUSED)
 {
     virSystemdActivationPtr act;
 
@@ -659,14 +659,14 @@ testActivationEmpty(const void *opaque ATTRIBUTE_UNUSED)
 
 
 static int
-testActivationFDNames(const void *opaque ATTRIBUTE_UNUSED)
+testActivationFDNames(const void *opaque G_GNUC_UNUSED)
 {
     return testActivation(true);
 }
 
 
 static int
-testActivationFDAddrs(const void *opaque ATTRIBUTE_UNUSED)
+testActivationFDAddrs(const void *opaque G_GNUC_UNUSED)
 {
     return testActivation(false);
 }

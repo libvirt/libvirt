@@ -131,7 +131,7 @@ testCompareHelper(const void *data)
 }
 
 static char *
-testParseVMXFileName(const char *fileName, void *opaque ATTRIBUTE_UNUSED)
+testParseVMXFileName(const char *fileName, void *opaque G_GNUC_UNUSED)
 {
     char *copyOfFileName = NULL;
     char *tmp = NULL;

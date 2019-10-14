@@ -111,17 +111,17 @@ virTPMCreateCancelPath(const char *devpath)
  * variables that support it.
  */
 unsigned long long
-virMemoryMaxValue(bool capped ATTRIBUTE_UNUSED)
+virMemoryMaxValue(bool capped G_GNUC_UNUSED)
 {
     return LLONG_MAX;
 }
 
 char *
-virSCSIDeviceGetSgName(const char *sysfs_prefix ATTRIBUTE_UNUSED,
-                       const char *adapter ATTRIBUTE_UNUSED,
-                       unsigned int bus ATTRIBUTE_UNUSED,
-                       unsigned int target ATTRIBUTE_UNUSED,
-                       unsigned long long unit ATTRIBUTE_UNUSED)
+virSCSIDeviceGetSgName(const char *sysfs_prefix G_GNUC_UNUSED,
+                       const char *adapter G_GNUC_UNUSED,
+                       unsigned int bus G_GNUC_UNUSED,
+                       unsigned int target G_GNUC_UNUSED,
+                       unsigned long long unit G_GNUC_UNUSED)
 {
     char *ret;
 
@@ -139,10 +139,10 @@ virSCSIVHostOpenVhostSCSI(int *vhostfd)
 
 int
 virNetDevTapCreate(char **ifname,
-                   const char *tunpath ATTRIBUTE_UNUSED,
+                   const char *tunpath G_GNUC_UNUSED,
                    int *tapfd,
                    size_t tapfdSize,
-                   unsigned int flags ATTRIBUTE_UNUSED)
+                   unsigned int flags G_GNUC_UNUSED)
 {
     size_t i;
 
@@ -158,8 +158,8 @@ virNetDevTapCreate(char **ifname,
 }
 
 int
-virNetDevSetMAC(const char *ifname ATTRIBUTE_UNUSED,
-                const virMacAddr *macaddr ATTRIBUTE_UNUSED)
+virNetDevSetMAC(const char *ifname G_GNUC_UNUSED,
+                const virMacAddr *macaddr G_GNUC_UNUSED)
 {
     return 0;
 }
@@ -172,24 +172,24 @@ virNetDevExists(const char *ifname)
 }
 
 
-int virNetDevIPAddrAdd(const char *ifname ATTRIBUTE_UNUSED,
-                       virSocketAddr *addr ATTRIBUTE_UNUSED,
-                       virSocketAddr *peer ATTRIBUTE_UNUSED,
-                       unsigned int prefix ATTRIBUTE_UNUSED)
+int virNetDevIPAddrAdd(const char *ifname G_GNUC_UNUSED,
+                       virSocketAddr *addr G_GNUC_UNUSED,
+                       virSocketAddr *peer G_GNUC_UNUSED,
+                       unsigned int prefix G_GNUC_UNUSED)
 {
     return 0;
 }
 
 int
-virNetDevSetOnline(const char *ifname ATTRIBUTE_UNUSED,
-                   bool online ATTRIBUTE_UNUSED)
+virNetDevSetOnline(const char *ifname G_GNUC_UNUSED,
+                   bool online G_GNUC_UNUSED)
 {
     return 0;
 }
 
 int
-virNetDevRunEthernetScript(const char *ifname ATTRIBUTE_UNUSED,
-                           const char *script ATTRIBUTE_UNUSED)
+virNetDevRunEthernetScript(const char *ifname G_GNUC_UNUSED,
+                           const char *script G_GNUC_UNUSED)
 {
     return 0;
 }
@@ -226,14 +226,14 @@ virCommandPassFD(virCommandPtr cmd,
 }
 
 int
-virNetDevOpenvswitchGetVhostuserIfname(const char *path ATTRIBUTE_UNUSED,
+virNetDevOpenvswitchGetVhostuserIfname(const char *path G_GNUC_UNUSED,
                                        char **ifname)
 {
     return VIR_STRDUP(*ifname, "vhost-user0");
 }
 
 int
-qemuInterfaceOpenVhostNet(virDomainDefPtr def ATTRIBUTE_UNUSED,
+qemuInterfaceOpenVhostNet(virDomainDefPtr def G_GNUC_UNUSED,
                           virDomainNetDefPtr net,
                           int *vhostfd,
                           size_t *vhostfdSize)
@@ -252,7 +252,7 @@ qemuInterfaceOpenVhostNet(virDomainDefPtr def ATTRIBUTE_UNUSED,
 
 
 int
-qemuOpenChrChardevUNIXSocket(const virDomainChrSourceDef *dev ATTRIBUTE_UNUSED)
+qemuOpenChrChardevUNIXSocket(const virDomainChrSourceDef *dev G_GNUC_UNUSED)
 
 {
     /* We need to return an FD number for a UNIX listener socket,
@@ -269,8 +269,8 @@ qemuOpenChrChardevUNIXSocket(const virDomainChrSourceDef *dev ATTRIBUTE_UNUSED)
 
 
 int
-qemuBuildTPMOpenBackendFDs(const char *tpmdev ATTRIBUTE_UNUSED,
-                           const char *cancel_path ATTRIBUTE_UNUSED,
+qemuBuildTPMOpenBackendFDs(const char *tpmdev G_GNUC_UNUSED,
+                           const char *cancel_path G_GNUC_UNUSED,
                            int *tpmfd,
                            int *cancelfd)
 {

@@ -34,7 +34,7 @@
 #define VIR_MOCK_ARGNAME(a, b) b
 #define VIR_MOCK_ARGTYPE(a, b) a
 #define VIR_MOCK_ARGTYPENAME(a, b) a b
-#define VIR_MOCK_ARGTYPENAME_UNUSED(a, b) a b ATTRIBUTE_UNUSED
+#define VIR_MOCK_ARGTYPENAME_UNUSED(a, b) a b G_GNUC_UNUSED
 
 #define VIR_MOCK_GET_ARG2(z, a, b) z(a, b)
 #define VIR_MOCK_GET_ARG3(z, a, b, c) z(a, b)

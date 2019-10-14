@@ -19,19 +19,19 @@ void virMacAddrGenerate(const unsigned char prefix[VIR_MAC_PREFIX_BUFLEN],
     addr->addr[5] = 0;
 }
 
-int virNetDevTapCreateInBridgePort(const char *brname ATTRIBUTE_UNUSED,
+int virNetDevTapCreateInBridgePort(const char *brname G_GNUC_UNUSED,
                                    char **ifname,
-                                   const virMacAddr *macaddr ATTRIBUTE_UNUSED,
-                                   const unsigned char *vmuuid ATTRIBUTE_UNUSED,
-                                   const char *tunpath ATTRIBUTE_UNUSED,
-                                   int *tapfd ATTRIBUTE_UNUSED,
-                                   size_t tapfdSize ATTRIBUTE_UNUSED,
-                                   virNetDevVPortProfilePtr virtPortProfile ATTRIBUTE_UNUSED,
-                                   virNetDevVlanPtr virtVlan ATTRIBUTE_UNUSED,
-                                   virNetDevCoalescePtr coalesce ATTRIBUTE_UNUSED,
-                                   unsigned int mtu ATTRIBUTE_UNUSED,
-                                   unsigned int *actualMTU ATTRIBUTE_UNUSED,
-                                   unsigned int fakeflags ATTRIBUTE_UNUSED)
+                                   const virMacAddr *macaddr G_GNUC_UNUSED,
+                                   const unsigned char *vmuuid G_GNUC_UNUSED,
+                                   const char *tunpath G_GNUC_UNUSED,
+                                   int *tapfd G_GNUC_UNUSED,
+                                   size_t tapfdSize G_GNUC_UNUSED,
+                                   virNetDevVPortProfilePtr virtPortProfile G_GNUC_UNUSED,
+                                   virNetDevVlanPtr virtVlan G_GNUC_UNUSED,
+                                   virNetDevCoalescePtr coalesce G_GNUC_UNUSED,
+                                   unsigned int mtu G_GNUC_UNUSED,
+                                   unsigned int *actualMTU G_GNUC_UNUSED,
+                                   unsigned int fakeflags G_GNUC_UNUSED)
 {
     VIR_FREE(*ifname);
     if (VIR_STRDUP(*ifname, "vnet0") < 0)
@@ -39,7 +39,7 @@ int virNetDevTapCreateInBridgePort(const char *brname ATTRIBUTE_UNUSED,
     return 0;
 }
 
-char *virNetDevTapGetRealDeviceName(char *name ATTRIBUTE_UNUSED)
+char *virNetDevTapGetRealDeviceName(char *name G_GNUC_UNUSED)
 {
     char *fakename;
 
@@ -48,15 +48,15 @@ char *virNetDevTapGetRealDeviceName(char *name ATTRIBUTE_UNUSED)
     return fakename;
 }
 
-int virNetDevSetOnline(const char *ifname ATTRIBUTE_UNUSED,
-                       bool online ATTRIBUTE_UNUSED)
+int virNetDevSetOnline(const char *ifname G_GNUC_UNUSED,
+                       bool online G_GNUC_UNUSED)
 {
     return 0;
 }
 
-int bind(int sockfd ATTRIBUTE_UNUSED,
-         const struct sockaddr *addr ATTRIBUTE_UNUSED,
-         socklen_t addrlen ATTRIBUTE_UNUSED)
+int bind(int sockfd G_GNUC_UNUSED,
+         const struct sockaddr *addr G_GNUC_UNUSED,
+         socklen_t addrlen G_GNUC_UNUSED)
 {
     return 0;
 }

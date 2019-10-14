@@ -302,7 +302,7 @@ mock_chown(const char *path,
 #include "virmockstathelpers.c"
 
 static int
-virMockStatRedirect(const char *path ATTRIBUTE_UNUSED, char **newpath ATTRIBUTE_UNUSED)
+virMockStatRedirect(const char *path G_GNUC_UNUSED, char **newpath G_GNUC_UNUSED)
 {
     return 0;
 }
@@ -364,19 +364,19 @@ close(int fd)
 }
 
 
-int virFileLock(int fd ATTRIBUTE_UNUSED,
-                bool shared ATTRIBUTE_UNUSED,
-                off_t start ATTRIBUTE_UNUSED,
-                off_t len ATTRIBUTE_UNUSED,
-                bool waitForLock ATTRIBUTE_UNUSED)
+int virFileLock(int fd G_GNUC_UNUSED,
+                bool shared G_GNUC_UNUSED,
+                off_t start G_GNUC_UNUSED,
+                off_t len G_GNUC_UNUSED,
+                bool waitForLock G_GNUC_UNUSED)
 {
     return 0;
 }
 
 
-int virFileUnlock(int fd ATTRIBUTE_UNUSED,
-                  off_t start ATTRIBUTE_UNUSED,
-                  off_t len ATTRIBUTE_UNUSED)
+int virFileUnlock(int fd G_GNUC_UNUSED,
+                  off_t start G_GNUC_UNUSED,
+                  off_t len G_GNUC_UNUSED)
 {
     return 0;
 }

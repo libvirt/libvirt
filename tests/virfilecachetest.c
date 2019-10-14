@@ -103,7 +103,7 @@ testFileCacheIsValid(void *data,
 
 
 static void *
-testFileCacheNewData(const char *name ATTRIBUTE_UNUSED,
+testFileCacheNewData(const char *name G_GNUC_UNUSED,
                      void *priv)
 {
     testFileCachePrivPtr testPriv = priv;
@@ -114,8 +114,8 @@ testFileCacheNewData(const char *name ATTRIBUTE_UNUSED,
 
 static void *
 testFileCacheLoadFile(const char *filename,
-                      const char *name ATTRIBUTE_UNUSED,
-                      void *priv ATTRIBUTE_UNUSED)
+                      const char *name G_GNUC_UNUSED,
+                      void *priv G_GNUC_UNUSED)
 {
     testFileCacheObjPtr obj;
     char *data;
@@ -131,8 +131,8 @@ testFileCacheLoadFile(const char *filename,
 
 
 static int
-testFileCacheSaveFile(void *data ATTRIBUTE_UNUSED,
-                      const char *filename ATTRIBUTE_UNUSED,
+testFileCacheSaveFile(void *data G_GNUC_UNUSED,
+                      const char *filename G_GNUC_UNUSED,
                       void *priv)
 {
     testFileCachePrivPtr testPriv = priv;

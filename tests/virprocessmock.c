@@ -22,7 +22,7 @@
 #include "virprocess.h"
 
 int
-virProcessSetMaxMemLock(pid_t pid ATTRIBUTE_UNUSED, unsigned long long bytes ATTRIBUTE_UNUSED)
+virProcessSetMaxMemLock(pid_t pid G_GNUC_UNUSED, unsigned long long bytes G_GNUC_UNUSED)
 {
     return 0;
 }

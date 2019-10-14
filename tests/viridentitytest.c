@@ -36,7 +36,7 @@
 
 VIR_LOG_INIT("tests.identitytest");
 
-static int testIdentityAttrs(const void *data ATTRIBUTE_UNUSED)
+static int testIdentityAttrs(const void *data G_GNUC_UNUSED)
 {
     g_autoptr(virIdentity) ident = virIdentityNew();
     const char *val;
@@ -117,7 +117,7 @@ static int testIdentityGetSystem(const void *data)
     return 0;
 }
 
-static int testSetFakeSELinuxContext(const void *data ATTRIBUTE_UNUSED)
+static int testSetFakeSELinuxContext(const void *data G_GNUC_UNUSED)
 {
 #if WITH_SELINUX
     return setcon_raw((security_context_t)data);
@@ -127,7 +127,7 @@ static int testSetFakeSELinuxContext(const void *data ATTRIBUTE_UNUSED)
 #endif
 }
 
-static int testDisableFakeSELinux(const void *data ATTRIBUTE_UNUSED)
+static int testDisableFakeSELinux(const void *data G_GNUC_UNUSED)
 {
 #if WITH_SELINUX
     return security_disable();

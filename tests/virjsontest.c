@@ -385,7 +385,7 @@ testJSONDeflatten(const void *data)
 
 
 static int
-testJSONEscapeObj(const void *data ATTRIBUTE_UNUSED)
+testJSONEscapeObj(const void *data G_GNUC_UNUSED)
 {
     VIR_AUTOPTR(virJSONValue) json = NULL;
     VIR_AUTOPTR(virJSONValue) nestjson = NULL;
@@ -437,7 +437,7 @@ testJSONEscapeObj(const void *data ATTRIBUTE_UNUSED)
 
 
 static int
-testJSONObjectFormatSteal(const void *opaque ATTRIBUTE_UNUSED)
+testJSONObjectFormatSteal(const void *opaque G_GNUC_UNUSED)
 {
     VIR_AUTOPTR(virJSONValue) a1 = NULL;
     VIR_AUTOPTR(virJSONValue) a2 = NULL;

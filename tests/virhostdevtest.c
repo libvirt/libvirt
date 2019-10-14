@@ -390,7 +390,7 @@ testVirHostdevUpdateActivePCIHostdevs(void)
  *   2. Reattach devices to the host
  */
 static int
-testVirHostdevRoundtripNoGuest(const void *opaque ATTRIBUTE_UNUSED)
+testVirHostdevRoundtripNoGuest(const void *opaque G_GNUC_UNUSED)
 {
     if (testVirHostdevDetachPCINodeDevice() < 0)
         return -1;
@@ -412,7 +412,7 @@ testVirHostdevRoundtripNoGuest(const void *opaque ATTRIBUTE_UNUSED)
  *   4. Reattach devices to the host
  */
 static int
-testVirHostdevRoundtripUnmanaged(const void *opaque ATTRIBUTE_UNUSED)
+testVirHostdevRoundtripUnmanaged(const void *opaque G_GNUC_UNUSED)
 {
     if (testVirHostdevDetachPCINodeDevice() < 0)
         return -1;
@@ -436,7 +436,7 @@ testVirHostdevRoundtripUnmanaged(const void *opaque ATTRIBUTE_UNUSED)
  *   2. Detach devices from the guest as managed
  */
 static int
-testVirHostdevRoundtripManaged(const void *opaque ATTRIBUTE_UNUSED)
+testVirHostdevRoundtripManaged(const void *opaque G_GNUC_UNUSED)
 {
     if (testVirHostdevPreparePCIHostdevs_managed(false) < 0)
         return -1;
@@ -459,7 +459,7 @@ testVirHostdevRoundtripManaged(const void *opaque ATTRIBUTE_UNUSED)
  *   4. Reattach devices to the host
  */
 static int
-testVirHostdevRoundtripMixed(const void *opaque ATTRIBUTE_UNUSED)
+testVirHostdevRoundtripMixed(const void *opaque G_GNUC_UNUSED)
 {
     if (testVirHostdevDetachPCINodeDevice() < 0)
         return -1;
@@ -483,7 +483,7 @@ testVirHostdevRoundtripMixed(const void *opaque ATTRIBUTE_UNUSED)
  *   2. Update list of active devices
  */
 static int
-testVirHostdevOther(const void *opaque ATTRIBUTE_UNUSED)
+testVirHostdevOther(const void *opaque G_GNUC_UNUSED)
 {
     if (testVirHostdevResetPCINodeDevice() < 0)
         return -1;

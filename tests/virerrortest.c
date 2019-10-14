@@ -53,7 +53,7 @@ virErrorTestMsgFormatInfoOne(const char *msg)
 
 
 static int
-virErrorTestMsgs(const void *opaque ATTRIBUTE_UNUSED)
+virErrorTestMsgs(const void *opaque G_GNUC_UNUSED)
 {
     const char *err_noinfo;
     const char *err_info;

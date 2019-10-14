@@ -168,7 +168,7 @@ init_scsihost_sysfs(const char *fakesysfsdir)
 
 /* Test virReadSCSIUniqueId */
 static int
-testVirReadSCSIUniqueId(const void *data ATTRIBUTE_UNUSED)
+testVirReadSCSIUniqueId(const void *data G_GNUC_UNUSED)
 {
     int hostnum, unique_id;
 
@@ -198,7 +198,7 @@ testVirReadSCSIUniqueId(const void *data ATTRIBUTE_UNUSED)
 
 /* Test virSCSIHostFindByPCI */
 static int
-testVirFindSCSIHostByPCI(const void *data ATTRIBUTE_UNUSED)
+testVirFindSCSIHostByPCI(const void *data G_GNUC_UNUSED)
 {
     unsigned int unique_id1 = 1;
     unsigned int unique_id2 = 2;

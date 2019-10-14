@@ -39,7 +39,7 @@ static const char* diskNamesInvalid[] = {
 };
 
 static int
-testIndexToDiskName(const void *data ATTRIBUTE_UNUSED)
+testIndexToDiskName(const void *data G_GNUC_UNUSED)
 {
     size_t i;
     char *diskName = NULL;
@@ -65,7 +65,7 @@ testIndexToDiskName(const void *data ATTRIBUTE_UNUSED)
 
 
 static int
-testDiskNameToIndex(const void *data ATTRIBUTE_UNUSED)
+testDiskNameToIndex(const void *data G_GNUC_UNUSED)
 {
     size_t i;
     int idx;
@@ -95,7 +95,7 @@ testDiskNameToIndex(const void *data ATTRIBUTE_UNUSED)
 
 
 static int
-testDiskNameParse(const void *data ATTRIBUTE_UNUSED)
+testDiskNameParse(const void *data G_GNUC_UNUSED)
 {
     size_t i;
     int idx;
@@ -155,7 +155,7 @@ static struct testVersionString versions[] = {
 };
 
 static int
-testParseVersionString(const void *data ATTRIBUTE_UNUSED)
+testParseVersionString(const void *data G_GNUC_UNUSED)
 {
     int result;
     size_t i;
@@ -205,7 +205,7 @@ static struct testRoundData roundData[] = {
 };
 
 static int
-testRoundValueToPowerOfTwo(const void *data ATTRIBUTE_UNUSED)
+testRoundValueToPowerOfTwo(const void *data G_GNUC_UNUSED)
 {
     unsigned int result;
     size_t i;
@@ -234,7 +234,7 @@ testRoundValueToPowerOfTwo(const void *data ATTRIBUTE_UNUSED)
     }
 
 static int
-testOverflowCheckMacro(const void *data ATTRIBUTE_UNUSED)
+testOverflowCheckMacro(const void *data G_GNUC_UNUSED)
 {
     long long tmp;
     uint8_t luchar;

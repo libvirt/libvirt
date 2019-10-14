@@ -360,8 +360,8 @@ qemuMonitorTestWorker(void *opaque)
 
 
 static void
-qemuMonitorTestFreeTimer(int timer ATTRIBUTE_UNUSED,
-                         void *opaque ATTRIBUTE_UNUSED)
+qemuMonitorTestFreeTimer(int timer G_GNUC_UNUSED,
+                         void *opaque G_GNUC_UNUSED)
 {
     /* nothing to be done here */
 }
@@ -712,7 +712,7 @@ qemuMonitorTestAddItemVerbatim(qemuMonitorTestPtr test,
 
 static int
 qemuMonitorTestProcessGuestAgentSync(qemuMonitorTestPtr test,
-                                     qemuMonitorTestItemPtr item ATTRIBUTE_UNUSED,
+                                     qemuMonitorTestItemPtr item G_GNUC_UNUSED,
                                      const char *cmdstr)
 {
     virJSONValuePtr val = NULL;
@@ -1011,17 +1011,17 @@ qemuMonitorTestAddItemExpect(qemuMonitorTestPtr test,
 
 
 static void
-qemuMonitorTestEOFNotify(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
-                         virDomainObjPtr vm ATTRIBUTE_UNUSED,
-                         void *opaque ATTRIBUTE_UNUSED)
+qemuMonitorTestEOFNotify(qemuMonitorPtr mon G_GNUC_UNUSED,
+                         virDomainObjPtr vm G_GNUC_UNUSED,
+                         void *opaque G_GNUC_UNUSED)
 {
 }
 
 
 static void
-qemuMonitorTestErrorNotify(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
-                           virDomainObjPtr vm ATTRIBUTE_UNUSED,
-                           void *opaque ATTRIBUTE_UNUSED)
+qemuMonitorTestErrorNotify(qemuMonitorPtr mon G_GNUC_UNUSED,
+                           virDomainObjPtr vm G_GNUC_UNUSED,
+                           void *opaque G_GNUC_UNUSED)
 {
 }
 
@@ -1034,8 +1034,8 @@ static qemuMonitorCallbacks qemuMonitorTestCallbacks = {
 
 
 static void
-qemuMonitorTestAgentNotify(qemuAgentPtr agent ATTRIBUTE_UNUSED,
-                           virDomainObjPtr vm ATTRIBUTE_UNUSED)
+qemuMonitorTestAgentNotify(qemuAgentPtr agent G_GNUC_UNUSED,
+                           virDomainObjPtr vm G_GNUC_UNUSED)
 {
 }
 

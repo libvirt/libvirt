@@ -55,7 +55,7 @@ testParseFormatFW(const void *opaque)
 
 
 static int
-testFWPrecedence(const void *opaque ATTRIBUTE_UNUSED)
+testFWPrecedence(const void *opaque G_GNUC_UNUSED)
 {
     VIR_AUTOFREE(char *) fakehome = NULL;
     VIR_AUTOSTRINGLIST fwList = NULL;

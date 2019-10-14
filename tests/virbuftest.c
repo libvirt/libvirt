@@ -52,7 +52,7 @@ static int testBufInfiniteLoop(const void *data)
     return ret;
 }
 
-static int testBufAutoIndent(const void *data ATTRIBUTE_UNUSED)
+static int testBufAutoIndent(const void *data G_GNUC_UNUSED)
 {
     virBuffer bufinit = VIR_BUFFER_INITIALIZER;
     virBufferPtr buf = &bufinit;
@@ -144,7 +144,7 @@ static int testBufAutoIndent(const void *data ATTRIBUTE_UNUSED)
     return ret;
 }
 
-static int testBufTrim(const void *data ATTRIBUTE_UNUSED)
+static int testBufTrim(const void *data G_GNUC_UNUSED)
 {
     virBuffer bufinit = VIR_BUFFER_INITIALIZER;
     virBufferPtr buf = NULL;
@@ -192,7 +192,7 @@ static int testBufTrim(const void *data ATTRIBUTE_UNUSED)
     return ret;
 }
 
-static int testBufAddBuffer(const void *data ATTRIBUTE_UNUSED)
+static int testBufAddBuffer(const void *data G_GNUC_UNUSED)
 {
     virBuffer buf1 = VIR_BUFFER_INITIALIZER;
     virBuffer buf2 = VIR_BUFFER_INITIALIZER;
@@ -304,7 +304,7 @@ static int testBufAddBuffer(const void *data ATTRIBUTE_UNUSED)
 }
 
 static int
-testBufAddBuffer2(const void *opaque ATTRIBUTE_UNUSED)
+testBufAddBuffer2(const void *opaque G_GNUC_UNUSED)
 {
     VIR_AUTOCLEAN(virBuffer) buf1 = VIR_BUFFER_INITIALIZER;
     VIR_AUTOCLEAN(virBuffer) buf2 = VIR_BUFFER_INITIALIZER;
@@ -335,7 +335,7 @@ struct testBufAddStrData {
 };
 
 static int
-testBufAddStr(const void *opaque ATTRIBUTE_UNUSED)
+testBufAddStr(const void *opaque G_GNUC_UNUSED)
 {
     const struct testBufAddStrData *data = opaque;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -368,7 +368,7 @@ testBufAddStr(const void *opaque ATTRIBUTE_UNUSED)
 
 
 static int
-testBufEscapeStr(const void *opaque ATTRIBUTE_UNUSED)
+testBufEscapeStr(const void *opaque G_GNUC_UNUSED)
 {
     const struct testBufAddStrData *data = opaque;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -430,7 +430,7 @@ testBufEscapeRegex(const void *opaque)
 
 
 static int
-testBufSetIndent(const void *opaque ATTRIBUTE_UNUSED)
+testBufSetIndent(const void *opaque G_GNUC_UNUSED)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *actual;
@@ -459,7 +459,7 @@ testBufSetIndent(const void *opaque ATTRIBUTE_UNUSED)
 
 /* Result of this shows up only in valgrind or similar */
 static int
-testBufferAutoclean(const void *opaque ATTRIBUTE_UNUSED)
+testBufferAutoclean(const void *opaque G_GNUC_UNUSED)
 {
     VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 

@@ -47,7 +47,7 @@ VIR_LOG_INIT("tests.dbustest");
         } \
     } while (0)
 
-static int testMessageSimple(const void *args ATTRIBUTE_UNUSED)
+static int testMessageSimple(const void *args G_GNUC_UNUSED)
 {
     DBusMessage *msg = NULL;
     int ret = -1;
@@ -123,7 +123,7 @@ static int testMessageSimple(const void *args ATTRIBUTE_UNUSED)
 }
 
 
-static int testMessageVariant(const void *args ATTRIBUTE_UNUSED)
+static int testMessageVariant(const void *args G_GNUC_UNUSED)
 {
     DBusMessage *msg = NULL;
     int ret = -1;
@@ -172,7 +172,7 @@ static int testMessageVariant(const void *args ATTRIBUTE_UNUSED)
     return ret;
 }
 
-static int testMessageArray(const void *args ATTRIBUTE_UNUSED)
+static int testMessageArray(const void *args G_GNUC_UNUSED)
 {
     DBusMessage *msg = NULL;
     int ret = -1;
@@ -231,7 +231,7 @@ static int testMessageArray(const void *args ATTRIBUTE_UNUSED)
     return ret;
 }
 
-static int testMessageEmptyArrayRef(const void *args ATTRIBUTE_UNUSED)
+static int testMessageEmptyArrayRef(const void *args G_GNUC_UNUSED)
 {
     DBusMessage *msg = NULL;
     int ret = -1;
@@ -275,7 +275,7 @@ static int testMessageEmptyArrayRef(const void *args ATTRIBUTE_UNUSED)
     return ret;
 }
 
-static int testMessageSingleArrayRef(const void *args ATTRIBUTE_UNUSED)
+static int testMessageSingleArrayRef(const void *args G_GNUC_UNUSED)
 {
     DBusMessage *msg = NULL;
     int ret = -1;
@@ -325,7 +325,7 @@ static int testMessageSingleArrayRef(const void *args ATTRIBUTE_UNUSED)
     return ret;
 }
 
-static int testMessageArrayRef(const void *args ATTRIBUTE_UNUSED)
+static int testMessageArrayRef(const void *args G_GNUC_UNUSED)
 {
     DBusMessage *msg = NULL;
     int ret = -1;
@@ -438,7 +438,7 @@ static int testMessageArrayRef(const void *args ATTRIBUTE_UNUSED)
     return ret;
 }
 
-static int testMessageStruct(const void *args ATTRIBUTE_UNUSED)
+static int testMessageStruct(const void *args G_GNUC_UNUSED)
 {
     DBusMessage *msg = NULL;
     int ret = -1;
@@ -514,7 +514,7 @@ static int testMessageStruct(const void *args ATTRIBUTE_UNUSED)
 }
 
 
-static int testMessageDict(const void *args ATTRIBUTE_UNUSED)
+static int testMessageDict(const void *args G_GNUC_UNUSED)
 {
     DBusMessage *msg = NULL;
     int ret = -1;
@@ -583,7 +583,7 @@ static int testMessageDict(const void *args ATTRIBUTE_UNUSED)
     return ret;
 }
 
-static int testMessageDictRef(const void *args ATTRIBUTE_UNUSED)
+static int testMessageDictRef(const void *args G_GNUC_UNUSED)
 {
     DBusMessage *msg = NULL;
     int ret = -1;
@@ -654,7 +654,7 @@ static int testMessageDictRef(const void *args ATTRIBUTE_UNUSED)
     return ret;
 }
 
-static int testMessageEmptyDictRef(const void *args ATTRIBUTE_UNUSED)
+static int testMessageEmptyDictRef(const void *args G_GNUC_UNUSED)
 {
     DBusMessage *msg = NULL;
     int ret = -1;

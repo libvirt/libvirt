@@ -51,9 +51,9 @@ testHashInit(int size)
 }
 
 static int
-testHashCheckForEachCount(void *payload ATTRIBUTE_UNUSED,
-                          const void *name ATTRIBUTE_UNUSED,
-                          void *data ATTRIBUTE_UNUSED)
+testHashCheckForEachCount(void *payload G_GNUC_UNUSED,
+                          const void *name G_GNUC_UNUSED,
+                          void *data G_GNUC_UNUSED)
 {
     size_t *count = data;
     *count += 1;
@@ -110,7 +110,7 @@ testHashGrow(const void *data)
 
 
 static int
-testHashUpdate(const void *data ATTRIBUTE_UNUSED)
+testHashUpdate(const void *data G_GNUC_UNUSED)
 {
     int count = ARRAY_CARDINALITY(uuids) + ARRAY_CARDINALITY(uuids_new);
     virHashTablePtr hash;
@@ -148,7 +148,7 @@ testHashUpdate(const void *data ATTRIBUTE_UNUSED)
 
 
 static int
-testHashRemove(const void *data ATTRIBUTE_UNUSED)
+testHashRemove(const void *data G_GNUC_UNUSED)
 {
     int count = ARRAY_CARDINALITY(uuids) - ARRAY_CARDINALITY(uuids_subset);
     virHashTablePtr hash;
@@ -181,7 +181,7 @@ const int testHashCountRemoveForEachSome =
     ARRAY_CARDINALITY(uuids) - ARRAY_CARDINALITY(uuids_subset);
 
 static int
-testHashRemoveForEachSome(void *payload ATTRIBUTE_UNUSED,
+testHashRemoveForEachSome(void *payload G_GNUC_UNUSED,
                           const void *name,
                           void *data)
 {
@@ -204,7 +204,7 @@ testHashRemoveForEachSome(void *payload ATTRIBUTE_UNUSED,
 const int testHashCountRemoveForEachAll = 0;
 
 static int
-testHashRemoveForEachAll(void *payload ATTRIBUTE_UNUSED,
+testHashRemoveForEachAll(void *payload G_GNUC_UNUSED,
                          const void *name,
                          void *data)
 {
@@ -242,7 +242,7 @@ testHashRemoveForEach(const void *data)
 
 
 static int
-testHashSteal(const void *data ATTRIBUTE_UNUSED)
+testHashSteal(const void *data G_GNUC_UNUSED)
 {
     int count = ARRAY_CARDINALITY(uuids) - ARRAY_CARDINALITY(uuids_subset);
     virHashTablePtr hash;
@@ -272,7 +272,7 @@ testHashSteal(const void *data ATTRIBUTE_UNUSED)
 
 
 static int
-testHashRemoveSetIter(const void *payload ATTRIBUTE_UNUSED,
+testHashRemoveSetIter(const void *payload G_GNUC_UNUSED,
                       const void *name,
                       const void *data)
 {
@@ -296,7 +296,7 @@ testHashRemoveSetIter(const void *payload ATTRIBUTE_UNUSED,
 }
 
 static int
-testHashRemoveSet(const void *data ATTRIBUTE_UNUSED)
+testHashRemoveSet(const void *data G_GNUC_UNUSED)
 {
     virHashTablePtr hash;
     int count = 0;
@@ -332,15 +332,15 @@ testHashRemoveSet(const void *data ATTRIBUTE_UNUSED)
 const int testSearchIndex = ARRAY_CARDINALITY(uuids_subset) / 2;
 
 static int
-testHashSearchIter(const void *payload ATTRIBUTE_UNUSED,
+testHashSearchIter(const void *payload G_GNUC_UNUSED,
                    const void *name,
-                   const void *data ATTRIBUTE_UNUSED)
+                   const void *data G_GNUC_UNUSED)
 {
     return STREQ(uuids_subset[testSearchIndex], name);
 }
 
 static int
-testHashSearch(const void *data ATTRIBUTE_UNUSED)
+testHashSearch(const void *data G_GNUC_UNUSED)
 {
     virHashTablePtr hash;
     void *entry;
@@ -383,7 +383,7 @@ testHashGetItemsCompValue(const virHashKeyValuePair *a,
 }
 
 static int
-testHashGetItems(const void *data ATTRIBUTE_UNUSED)
+testHashGetItems(const void *data G_GNUC_UNUSED)
 {
     virHashTablePtr hash;
     virHashKeyValuePairPtr array = NULL;
@@ -450,7 +450,7 @@ testHashEqualCompValue(const void *value1, const void *value2)
 }
 
 static int
-testHashEqual(const void *data ATTRIBUTE_UNUSED)
+testHashEqual(const void *data G_GNUC_UNUSED)
 {
     virHashTablePtr hash1, hash2 = NULL;
     int ret = -1;

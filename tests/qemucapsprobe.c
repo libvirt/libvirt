@@ -30,7 +30,7 @@
 
 
 static void
-eventLoop(void *opaque ATTRIBUTE_UNUSED)
+eventLoop(void *opaque G_GNUC_UNUSED)
 {
     while (1) {
         if (virEventRunDefaultImpl() < 0) {

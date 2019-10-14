@@ -66,7 +66,7 @@
     "ebtables -t nat -X libvirt-P-vnet0\n"
 
 static int
-testNWFilterEBIPTablesAllTeardown(const void *opaque ATTRIBUTE_UNUSED)
+testNWFilterEBIPTablesAllTeardown(const void *opaque G_GNUC_UNUSED)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *expected =
@@ -130,7 +130,7 @@ testNWFilterEBIPTablesAllTeardown(const void *opaque ATTRIBUTE_UNUSED)
 
 
 static int
-testNWFilterEBIPTablesTearOldRules(const void *opaque ATTRIBUTE_UNUSED)
+testNWFilterEBIPTablesTearOldRules(const void *opaque G_GNUC_UNUSED)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *expected =
@@ -201,7 +201,7 @@ testNWFilterEBIPTablesTearOldRules(const void *opaque ATTRIBUTE_UNUSED)
 
 
 static int
-testNWFilterEBIPTablesRemoveBasicRules(const void *opaque ATTRIBUTE_UNUSED)
+testNWFilterEBIPTablesRemoveBasicRules(const void *opaque G_GNUC_UNUSED)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *expected =
@@ -250,7 +250,7 @@ testNWFilterEBIPTablesRemoveBasicRules(const void *opaque ATTRIBUTE_UNUSED)
 
 
 static int
-testNWFilterEBIPTablesTearNewRules(const void *opaque ATTRIBUTE_UNUSED)
+testNWFilterEBIPTablesTearNewRules(const void *opaque G_GNUC_UNUSED)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *expected =
@@ -284,7 +284,7 @@ testNWFilterEBIPTablesTearNewRules(const void *opaque ATTRIBUTE_UNUSED)
 
 
 static int
-testNWFilterEBIPTablesApplyBasicRules(const void *opaque ATTRIBUTE_UNUSED)
+testNWFilterEBIPTablesApplyBasicRules(const void *opaque G_GNUC_UNUSED)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *expected =
@@ -356,7 +356,7 @@ testNWFilterEBIPTablesApplyBasicRules(const void *opaque ATTRIBUTE_UNUSED)
 
 
 static int
-testNWFilterEBIPTablesApplyDHCPOnlyRules(const void *opaque ATTRIBUTE_UNUSED)
+testNWFilterEBIPTablesApplyDHCPOnlyRules(const void *opaque G_GNUC_UNUSED)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *expected =
@@ -447,7 +447,7 @@ testNWFilterEBIPTablesApplyDHCPOnlyRules(const void *opaque ATTRIBUTE_UNUSED)
 
 
 static int
-testNWFilterEBIPTablesApplyDropAllRules(const void *opaque ATTRIBUTE_UNUSED)
+testNWFilterEBIPTablesApplyDropAllRules(const void *opaque G_GNUC_UNUSED)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *expected =

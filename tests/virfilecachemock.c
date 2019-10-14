@@ -25,7 +25,7 @@
 
 
 int
-unlink(const char *path ATTRIBUTE_UNUSED)
+unlink(const char *path G_GNUC_UNUSED)
 {
     return 0;
 }

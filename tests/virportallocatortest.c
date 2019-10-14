@@ -37,7 +37,7 @@
 
 VIR_LOG_INIT("tests.portallocatortest");
 
-static int testAllocAll(const void *args ATTRIBUTE_UNUSED)
+static int testAllocAll(const void *args G_GNUC_UNUSED)
 {
     virPortAllocatorRangePtr ports = virPortAllocatorRangeNew("test", 5900, 5909);
     int ret = -1;
@@ -109,7 +109,7 @@ static int testAllocAll(const void *args ATTRIBUTE_UNUSED)
 
 
 
-static int testAllocReuse(const void *args ATTRIBUTE_UNUSED)
+static int testAllocReuse(const void *args G_GNUC_UNUSED)
 {
     virPortAllocatorRangePtr ports = virPortAllocatorRangeNew("test", 5900, 5910);
     int ret = -1;

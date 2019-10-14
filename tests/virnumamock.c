@@ -108,7 +108,7 @@ virNumaGetNodeMemory(int node,
 }
 
 int
-virNumaGetDistances(int node ATTRIBUTE_UNUSED,
+virNumaGetDistances(int node G_GNUC_UNUSED,
                     int **distances,
                     int *ndistances)
 {

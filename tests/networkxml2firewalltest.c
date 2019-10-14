@@ -44,13 +44,13 @@
 # endif
 
 static void
-testCommandDryRun(const char *const*args ATTRIBUTE_UNUSED,
-                  const char *const*env ATTRIBUTE_UNUSED,
-                  const char *input ATTRIBUTE_UNUSED,
+testCommandDryRun(const char *const*args G_GNUC_UNUSED,
+                  const char *const*env G_GNUC_UNUSED,
+                  const char *input G_GNUC_UNUSED,
                   char **output,
                   char **error,
                   int *status,
-                  void *opaque ATTRIBUTE_UNUSED)
+                  void *opaque G_GNUC_UNUSED)
 {
     *status = 0;
     ignore_value(VIR_STRDUP_QUIET(*output, ""));

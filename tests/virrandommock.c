@@ -51,7 +51,7 @@ uint64_t virRandomBits(int nbits)
 }
 
 int virRandomGenerateWWN(char **wwn,
-                         const char *virt_type ATTRIBUTE_UNUSED)
+                         const char *virt_type G_GNUC_UNUSED)
 {
     return virAsprintf(wwn, "5100000%09llx",
                        (unsigned long long)virRandomBits(36));

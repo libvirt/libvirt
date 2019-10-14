@@ -68,9 +68,9 @@ int socket(int domain,
     return realsocket(domain, type, protocol);
 }
 
-int bind(int sockfd ATTRIBUTE_UNUSED,
+int bind(int sockfd G_GNUC_UNUSED,
          const struct sockaddr *addr,
-         socklen_t addrlen ATTRIBUTE_UNUSED)
+         socklen_t addrlen G_GNUC_UNUSED)
 {
     struct sockaddr_in saddr;
 

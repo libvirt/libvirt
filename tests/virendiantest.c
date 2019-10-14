@@ -24,7 +24,7 @@
 #include "virendian.h"
 
 static int
-test1(const void *data ATTRIBUTE_UNUSED)
+test1(const void *data G_GNUC_UNUSED)
 {
     /* Regular char should work, even if signed, and even with
      * unaligned access.  */
@@ -65,7 +65,7 @@ test1(const void *data ATTRIBUTE_UNUSED)
 }
 
 static int
-test2(const void *data ATTRIBUTE_UNUSED)
+test2(const void *data G_GNUC_UNUSED)
 {
     /* Unsigned char should work without cast, even if unaligned access.  */
     unsigned char array[] = { 1, 2, 3, 4, 5, 6, 7, 8,

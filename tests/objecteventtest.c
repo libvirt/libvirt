@@ -101,10 +101,10 @@ typedef struct {
 
 
 static int
-domainLifecycleCb(virConnectPtr conn ATTRIBUTE_UNUSED,
-                  virDomainPtr dom ATTRIBUTE_UNUSED,
+domainLifecycleCb(virConnectPtr conn G_GNUC_UNUSED,
+                  virDomainPtr dom G_GNUC_UNUSED,
                   int event,
-                  int detail ATTRIBUTE_UNUSED,
+                  int detail G_GNUC_UNUSED,
                   void *opaque)
 {
     lifecycleEventCounter *counter = opaque;
@@ -130,10 +130,10 @@ domainLifecycleCb(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static void
-networkLifecycleCb(virConnectPtr conn ATTRIBUTE_UNUSED,
-                   virNetworkPtr net ATTRIBUTE_UNUSED,
+networkLifecycleCb(virConnectPtr conn G_GNUC_UNUSED,
+                   virNetworkPtr net G_GNUC_UNUSED,
                    int event,
-                   int detail ATTRIBUTE_UNUSED,
+                   int detail G_GNUC_UNUSED,
                    void* opaque)
 {
     lifecycleEventCounter *counter = opaque;
@@ -149,10 +149,10 @@ networkLifecycleCb(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static void
-storagePoolLifecycleCb(virConnectPtr conn ATTRIBUTE_UNUSED,
-                       virStoragePoolPtr pool ATTRIBUTE_UNUSED,
+storagePoolLifecycleCb(virConnectPtr conn G_GNUC_UNUSED,
+                       virStoragePoolPtr pool G_GNUC_UNUSED,
                        int event,
-                       int detail ATTRIBUTE_UNUSED,
+                       int detail G_GNUC_UNUSED,
                        void* opaque)
 {
     lifecycleEventCounter *counter = opaque;
@@ -172,8 +172,8 @@ storagePoolLifecycleCb(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static void
-storagePoolRefreshCb(virConnectPtr conn ATTRIBUTE_UNUSED,
-                     virStoragePoolPtr pool ATTRIBUTE_UNUSED,
+storagePoolRefreshCb(virConnectPtr conn G_GNUC_UNUSED,
+                     virStoragePoolPtr pool G_GNUC_UNUSED,
                      void* opaque)
 {
     int *counter = opaque;
@@ -182,10 +182,10 @@ storagePoolRefreshCb(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static void
-nodeDeviceLifecycleCb(virConnectPtr conn ATTRIBUTE_UNUSED,
-                      virNodeDevicePtr dev ATTRIBUTE_UNUSED,
+nodeDeviceLifecycleCb(virConnectPtr conn G_GNUC_UNUSED,
+                      virNodeDevicePtr dev G_GNUC_UNUSED,
                       int event,
-                      int detail ATTRIBUTE_UNUSED,
+                      int detail G_GNUC_UNUSED,
                       void* opaque)
 {
     lifecycleEventCounter *counter = opaque;
@@ -824,7 +824,7 @@ testNodeDeviceCreateXML(const void *data)
 }
 
 static void
-timeout(int id ATTRIBUTE_UNUSED, void *opaque ATTRIBUTE_UNUSED)
+timeout(int id G_GNUC_UNUSED, void *opaque G_GNUC_UNUSED)
 {
     fputs("test taking too long; giving up", stderr);
     _exit(EXIT_FAILURE);

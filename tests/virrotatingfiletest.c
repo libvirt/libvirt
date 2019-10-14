@@ -161,7 +161,7 @@ static int testRotatingFileInitFiles(off_t baseSize,
     return 0;
 }
 
-static int testRotatingFileWriterNew(const void *data ATTRIBUTE_UNUSED)
+static int testRotatingFileWriterNew(const void *data G_GNUC_UNUSED)
 {
     virRotatingFileWriterPtr file;
     int ret = -1;
@@ -204,7 +204,7 @@ static int testRotatingFileWriterNew(const void *data ATTRIBUTE_UNUSED)
 }
 
 
-static int testRotatingFileWriterAppend(const void *data ATTRIBUTE_UNUSED)
+static int testRotatingFileWriterAppend(const void *data G_GNUC_UNUSED)
 {
     virRotatingFileWriterPtr file;
     int ret = -1;
@@ -247,7 +247,7 @@ static int testRotatingFileWriterAppend(const void *data ATTRIBUTE_UNUSED)
 }
 
 
-static int testRotatingFileWriterTruncate(const void *data ATTRIBUTE_UNUSED)
+static int testRotatingFileWriterTruncate(const void *data G_GNUC_UNUSED)
 {
     virRotatingFileWriterPtr file;
     int ret = -1;
@@ -290,7 +290,7 @@ static int testRotatingFileWriterTruncate(const void *data ATTRIBUTE_UNUSED)
 }
 
 
-static int testRotatingFileWriterRolloverNone(const void *data ATTRIBUTE_UNUSED)
+static int testRotatingFileWriterRolloverNone(const void *data G_GNUC_UNUSED)
 {
     virRotatingFileWriterPtr file;
     int ret = -1;
@@ -333,7 +333,7 @@ static int testRotatingFileWriterRolloverNone(const void *data ATTRIBUTE_UNUSED)
 }
 
 
-static int testRotatingFileWriterRolloverOne(const void *data ATTRIBUTE_UNUSED)
+static int testRotatingFileWriterRolloverOne(const void *data G_GNUC_UNUSED)
 {
     virRotatingFileWriterPtr file;
     int ret = -1;
@@ -378,7 +378,7 @@ static int testRotatingFileWriterRolloverOne(const void *data ATTRIBUTE_UNUSED)
 }
 
 
-static int testRotatingFileWriterRolloverAppend(const void *data ATTRIBUTE_UNUSED)
+static int testRotatingFileWriterRolloverAppend(const void *data G_GNUC_UNUSED)
 {
     virRotatingFileWriterPtr file;
     int ret = -1;
@@ -421,7 +421,7 @@ static int testRotatingFileWriterRolloverAppend(const void *data ATTRIBUTE_UNUSE
 }
 
 
-static int testRotatingFileWriterRolloverMany(const void *data ATTRIBUTE_UNUSED)
+static int testRotatingFileWriterRolloverMany(const void *data G_GNUC_UNUSED)
 {
     virRotatingFileWriterPtr file;
     int ret = -1;
@@ -470,7 +470,7 @@ static int testRotatingFileWriterRolloverMany(const void *data ATTRIBUTE_UNUSED)
 }
 
 
-static int testRotatingFileWriterRolloverLineBreak(const void *data ATTRIBUTE_UNUSED)
+static int testRotatingFileWriterRolloverLineBreak(const void *data G_GNUC_UNUSED)
 {
     virRotatingFileWriterPtr file;
     int ret = -1;
@@ -512,7 +512,7 @@ static int testRotatingFileWriterRolloverLineBreak(const void *data ATTRIBUTE_UN
 }
 
 
-static int testRotatingFileWriterLargeFile(const void *data ATTRIBUTE_UNUSED)
+static int testRotatingFileWriterLargeFile(const void *data G_GNUC_UNUSED)
 {
     virRotatingFileWriterPtr file;
     int ret = -1;
@@ -554,7 +554,7 @@ static int testRotatingFileWriterLargeFile(const void *data ATTRIBUTE_UNUSED)
 }
 
 
-static int testRotatingFileReaderOne(const void *data ATTRIBUTE_UNUSED)
+static int testRotatingFileReaderOne(const void *data G_GNUC_UNUSED)
 {
     virRotatingFileReaderPtr file;
     int ret = -1;
@@ -586,7 +586,7 @@ static int testRotatingFileReaderOne(const void *data ATTRIBUTE_UNUSED)
     return ret;
 }
 
-static int testRotatingFileReaderAll(const void *data ATTRIBUTE_UNUSED)
+static int testRotatingFileReaderAll(const void *data G_GNUC_UNUSED)
 {
     virRotatingFileReaderPtr file;
     int ret = -1;
@@ -618,7 +618,7 @@ static int testRotatingFileReaderAll(const void *data ATTRIBUTE_UNUSED)
     return ret;
 }
 
-static int testRotatingFileReaderPartial(const void *data ATTRIBUTE_UNUSED)
+static int testRotatingFileReaderPartial(const void *data G_GNUC_UNUSED)
 {
     virRotatingFileReaderPtr file;
     int ret = -1;
@@ -650,7 +650,7 @@ static int testRotatingFileReaderPartial(const void *data ATTRIBUTE_UNUSED)
     return ret;
 }
 
-static int testRotatingFileReaderSeek(const void *data ATTRIBUTE_UNUSED)
+static int testRotatingFileReaderSeek(const void *data G_GNUC_UNUSED)
 {
     virRotatingFileReaderPtr file;
     int ret = -1;

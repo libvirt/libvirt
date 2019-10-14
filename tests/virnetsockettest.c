@@ -154,7 +154,7 @@ testSocketClient(void *opaque)
 
 static void
 testSocketIncoming(virNetSocketPtr sock,
-                   int events ATTRIBUTE_UNUSED,
+                   int events G_GNUC_UNUSED,
                    void *opaque)
 {
     virNetSocketPtr *retsock = opaque;
@@ -305,7 +305,7 @@ testSocketAccept(const void *opaque)
 
 
 #ifndef WIN32
-static int testSocketUNIXAddrs(const void *data ATTRIBUTE_UNUSED)
+static int testSocketUNIXAddrs(const void *data G_GNUC_UNUSED)
 {
     virNetSocketPtr lsock = NULL; /* Listen socket */
     virNetSocketPtr ssock = NULL; /* Server socket */
@@ -393,7 +393,7 @@ static int testSocketUNIXAddrs(const void *data ATTRIBUTE_UNUSED)
     return ret;
 }
 
-static int testSocketCommandNormal(const void *data ATTRIBUTE_UNUSED)
+static int testSocketCommandNormal(const void *data G_GNUC_UNUSED)
 {
     virNetSocketPtr csock = NULL; /* Client socket */
     char buf[100];
@@ -421,7 +421,7 @@ static int testSocketCommandNormal(const void *data ATTRIBUTE_UNUSED)
     return ret;
 }
 
-static int testSocketCommandFail(const void *data ATTRIBUTE_UNUSED)
+static int testSocketCommandFail(const void *data G_GNUC_UNUSED)
 {
     virNetSocketPtr csock = NULL; /* Client socket */
     char buf[100];

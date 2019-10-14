@@ -909,7 +909,7 @@ pci_driver_handle_drivers_probe(const char *path)
 }
 
 static int
-pci_driver_handle_change(int fd ATTRIBUTE_UNUSED, const char *path)
+pci_driver_handle_change(int fd G_GNUC_UNUSED, const char *path)
 {
     int ret;
     const char *file = last_component(path);

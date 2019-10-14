@@ -322,7 +322,7 @@ testFirewallRemoveRule(const void *opaque)
 
 
 static int
-testFirewallManyGroups(const void *opaque ATTRIBUTE_UNUSED)
+testFirewallManyGroups(const void *opaque G_GNUC_UNUSED)
 {
     virBuffer cmdbuf = VIR_BUFFER_INITIALIZER;
     virFirewallPtr fw = NULL;
@@ -395,12 +395,12 @@ testFirewallManyGroups(const void *opaque ATTRIBUTE_UNUSED)
 
 static void
 testFirewallRollbackHook(const char *const*args,
-                         const char *const*env ATTRIBUTE_UNUSED,
-                         const char *input ATTRIBUTE_UNUSED,
-                         char **output ATTRIBUTE_UNUSED,
-                         char **error ATTRIBUTE_UNUSED,
+                         const char *const*env G_GNUC_UNUSED,
+                         const char *input G_GNUC_UNUSED,
+                         char **output G_GNUC_UNUSED,
+                         char **error G_GNUC_UNUSED,
                          int *status,
-                         void *opaque ATTRIBUTE_UNUSED)
+                         void *opaque G_GNUC_UNUSED)
 {
     bool isAdd = false;
     while (*args) {
@@ -416,7 +416,7 @@ testFirewallRollbackHook(const char *const*args,
 }
 
 static int
-testFirewallIgnoreFailGroup(const void *opaque ATTRIBUTE_UNUSED)
+testFirewallIgnoreFailGroup(const void *opaque G_GNUC_UNUSED)
 {
     virBuffer cmdbuf = VIR_BUFFER_INITIALIZER;
     virFirewallPtr fw = NULL;
@@ -491,7 +491,7 @@ testFirewallIgnoreFailGroup(const void *opaque ATTRIBUTE_UNUSED)
 
 
 static int
-testFirewallIgnoreFailRule(const void *opaque ATTRIBUTE_UNUSED)
+testFirewallIgnoreFailRule(const void *opaque G_GNUC_UNUSED)
 {
     virBuffer cmdbuf = VIR_BUFFER_INITIALIZER;
     virFirewallPtr fw = NULL;
@@ -565,7 +565,7 @@ testFirewallIgnoreFailRule(const void *opaque ATTRIBUTE_UNUSED)
 
 
 static int
-testFirewallNoRollback(const void *opaque ATTRIBUTE_UNUSED)
+testFirewallNoRollback(const void *opaque G_GNUC_UNUSED)
 {
     virBuffer cmdbuf = VIR_BUFFER_INITIALIZER;
     virFirewallPtr fw = NULL;
@@ -632,7 +632,7 @@ testFirewallNoRollback(const void *opaque ATTRIBUTE_UNUSED)
 }
 
 static int
-testFirewallSingleRollback(const void *opaque ATTRIBUTE_UNUSED)
+testFirewallSingleRollback(const void *opaque G_GNUC_UNUSED)
 {
     virBuffer cmdbuf = VIR_BUFFER_INITIALIZER;
     virFirewallPtr fw = NULL;
@@ -719,7 +719,7 @@ testFirewallSingleRollback(const void *opaque ATTRIBUTE_UNUSED)
 }
 
 static int
-testFirewallManyRollback(const void *opaque ATTRIBUTE_UNUSED)
+testFirewallManyRollback(const void *opaque G_GNUC_UNUSED)
 {
     virBuffer cmdbuf = VIR_BUFFER_INITIALIZER;
     virFirewallPtr fw = NULL;
@@ -809,7 +809,7 @@ testFirewallManyRollback(const void *opaque ATTRIBUTE_UNUSED)
 }
 
 static int
-testFirewallChainedRollback(const void *opaque ATTRIBUTE_UNUSED)
+testFirewallChainedRollback(const void *opaque G_GNUC_UNUSED)
 {
     virBuffer cmdbuf = VIR_BUFFER_INITIALIZER;
     virFirewallPtr fw = NULL;
@@ -957,12 +957,12 @@ static bool expectedLineError;
 
 static void
 testFirewallQueryHook(const char *const*args,
-                      const char *const*env ATTRIBUTE_UNUSED,
-                      const char *input ATTRIBUTE_UNUSED,
+                      const char *const*env G_GNUC_UNUSED,
+                      const char *input G_GNUC_UNUSED,
                       char **output,
-                      char **error ATTRIBUTE_UNUSED,
+                      char **error G_GNUC_UNUSED,
                       int *status,
-                      void *opaque ATTRIBUTE_UNUSED)
+                      void *opaque G_GNUC_UNUSED)
 {
     if (STREQ(args[0], IPTABLES_PATH) &&
         STREQ(args[1], "-L")) {
@@ -982,7 +982,7 @@ static int
 testFirewallQueryCallback(virFirewallPtr fw,
                           virFirewallLayer layer,
                           const char *const *lines,
-                          void *opaque ATTRIBUTE_UNUSED)
+                          void *opaque G_GNUC_UNUSED)
 {
     size_t i;
     virFirewallAddRule(fw, layer,
@@ -1008,7 +1008,7 @@ testFirewallQueryCallback(virFirewallPtr fw,
 }
 
 static int
-testFirewallQuery(const void *opaque ATTRIBUTE_UNUSED)
+testFirewallQuery(const void *opaque G_GNUC_UNUSED)
 {
     virBuffer cmdbuf = VIR_BUFFER_INITIALIZER;
     virFirewallPtr fw = NULL;

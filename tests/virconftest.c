@@ -72,7 +72,7 @@ static int testConfRoundTrip(const void *opaque)
 }
 
 
-static int testConfMemoryNoNewline(const void *opaque ATTRIBUTE_UNUSED)
+static int testConfMemoryNoNewline(const void *opaque G_GNUC_UNUSED)
 {
     const char *srcdata = \
         "ullong = '123456789'\n" \
@@ -137,7 +137,7 @@ static int testConfMemoryNoNewline(const void *opaque ATTRIBUTE_UNUSED)
 }
 
 
-static int testConfParseInt(const void *opaque ATTRIBUTE_UNUSED)
+static int testConfParseInt(const void *opaque G_GNUC_UNUSED)
 {
     const char *srcdata = \
         "int = -1729\n" \
@@ -285,7 +285,7 @@ static int testConfParseInt(const void *opaque ATTRIBUTE_UNUSED)
     return 0;
 }
 
-static int testConfParseBool(const void *opaque ATTRIBUTE_UNUSED)
+static int testConfParseBool(const void *opaque G_GNUC_UNUSED)
 {
     const char *srcdata = \
         "false = 0\n" \
@@ -346,7 +346,7 @@ static int testConfParseBool(const void *opaque ATTRIBUTE_UNUSED)
 }
 
 
-static int testConfParseString(const void *opaque ATTRIBUTE_UNUSED)
+static int testConfParseString(const void *opaque G_GNUC_UNUSED)
 {
     const char *srcdata = \
         "int = 6963472309248\n" \
@@ -385,7 +385,7 @@ static int testConfParseString(const void *opaque ATTRIBUTE_UNUSED)
 }
 
 
-static int testConfParseStringList(const void *opaque ATTRIBUTE_UNUSED)
+static int testConfParseStringList(const void *opaque G_GNUC_UNUSED)
 {
     const char *srcdata = \
         "string_list = [\"foo\", \"bar\"]\n" \

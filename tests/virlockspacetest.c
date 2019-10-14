@@ -36,7 +36,7 @@ VIR_LOG_INIT("tests.lockspacetest");
 
 #define LOCKSPACE_DIR abs_builddir "/virlockspacedata"
 
-static int testLockSpaceCreate(const void *args ATTRIBUTE_UNUSED)
+static int testLockSpaceCreate(const void *args G_GNUC_UNUSED)
 {
     virLockSpacePtr lockspace;
     int ret = -1;
@@ -58,7 +58,7 @@ static int testLockSpaceCreate(const void *args ATTRIBUTE_UNUSED)
 }
 
 
-static int testLockSpaceResourceLifecycle(const void *args ATTRIBUTE_UNUSED)
+static int testLockSpaceResourceLifecycle(const void *args G_GNUC_UNUSED)
 {
     virLockSpacePtr lockspace;
     int ret = -1;
@@ -92,7 +92,7 @@ static int testLockSpaceResourceLifecycle(const void *args ATTRIBUTE_UNUSED)
 }
 
 
-static int testLockSpaceResourceLockExcl(const void *args ATTRIBUTE_UNUSED)
+static int testLockSpaceResourceLockExcl(const void *args G_GNUC_UNUSED)
 {
     virLockSpacePtr lockspace;
     int ret = -1;
@@ -138,7 +138,7 @@ static int testLockSpaceResourceLockExcl(const void *args ATTRIBUTE_UNUSED)
 }
 
 
-static int testLockSpaceResourceLockExclAuto(const void *args ATTRIBUTE_UNUSED)
+static int testLockSpaceResourceLockExclAuto(const void *args G_GNUC_UNUSED)
 {
     virLockSpacePtr lockspace;
     int ret = -1;
@@ -176,7 +176,7 @@ static int testLockSpaceResourceLockExclAuto(const void *args ATTRIBUTE_UNUSED)
 }
 
 
-static int testLockSpaceResourceLockShr(const void *args ATTRIBUTE_UNUSED)
+static int testLockSpaceResourceLockShr(const void *args G_GNUC_UNUSED)
 {
     virLockSpacePtr lockspace;
     int ret = -1;
@@ -230,7 +230,7 @@ static int testLockSpaceResourceLockShr(const void *args ATTRIBUTE_UNUSED)
 }
 
 
-static int testLockSpaceResourceLockShrAuto(const void *args ATTRIBUTE_UNUSED)
+static int testLockSpaceResourceLockShrAuto(const void *args G_GNUC_UNUSED)
 {
     virLockSpacePtr lockspace;
     int ret = -1;
@@ -290,7 +290,7 @@ static int testLockSpaceResourceLockShrAuto(const void *args ATTRIBUTE_UNUSED)
 }
 
 
-static int testLockSpaceResourceLockPath(const void *args ATTRIBUTE_UNUSED)
+static int testLockSpaceResourceLockPath(const void *args G_GNUC_UNUSED)
 {
     virLockSpacePtr lockspace;
     int ret = -1;

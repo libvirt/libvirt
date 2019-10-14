@@ -81,7 +81,7 @@ testTypedParamsValidate(const void *opaque)
     .nparams = PARAMS_SIZE(__VA_ARGS__),
 
 static int
-testTypedParamsFilter(const void *opaque ATTRIBUTE_UNUSED)
+testTypedParamsFilter(const void *opaque G_GNUC_UNUSED)
 {
     size_t i, nfiltered;
     int rv = -1;
@@ -126,7 +126,7 @@ testTypedParamsFilter(const void *opaque ATTRIBUTE_UNUSED)
 }
 
 static int
-testTypedParamsAddStringList(const void *opaque ATTRIBUTE_UNUSED)
+testTypedParamsAddStringList(const void *opaque G_GNUC_UNUSED)
 {
     int rv = 0;
     virTypedParameterPtr params = NULL;
@@ -151,7 +151,7 @@ testTypedParamsAddStringList(const void *opaque ATTRIBUTE_UNUSED)
 }
 
 static int
-testTypedParamsGetStringList(const void *opaque ATTRIBUTE_UNUSED)
+testTypedParamsGetStringList(const void *opaque G_GNUC_UNUSED)
 {
     size_t i;
     int picked;

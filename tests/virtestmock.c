@@ -198,7 +198,7 @@ int access(const char *path, int mode)
 
 #include "virmockstathelpers.c"
 
-static int virMockStatRedirect(const char *path ATTRIBUTE_UNUSED, char **newpath ATTRIBUTE_UNUSED)
+static int virMockStatRedirect(const char *path G_GNUC_UNUSED, char **newpath G_GNUC_UNUSED)
 {
     return 0;
 }

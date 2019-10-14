@@ -27,8 +27,8 @@
 #ifdef HAVE_SOCKETPAIR
 
 static void *
-testClientNew(virNetServerClientPtr client ATTRIBUTE_UNUSED,
-              void *opaque ATTRIBUTE_UNUSED)
+testClientNew(virNetServerClientPtr client G_GNUC_UNUSED,
+              void *opaque G_GNUC_UNUSED)
 {
     char *dummy;
 
@@ -45,7 +45,7 @@ testClientFree(void *opaque)
     VIR_FREE(opaque);
 }
 
-static int testIdentity(const void *opaque ATTRIBUTE_UNUSED)
+static int testIdentity(const void *opaque G_GNUC_UNUSED)
 {
     int sv[2];
     int ret = -1;

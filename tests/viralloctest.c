@@ -44,7 +44,7 @@ testCheckNonNull(void *t)
 }
 
 static int
-testAllocScalar(const void *opaque ATTRIBUTE_UNUSED)
+testAllocScalar(const void *opaque G_GNUC_UNUSED)
 {
     testDummyStruct *t;
     int ret = -1;
@@ -76,7 +76,7 @@ testAllocScalar(const void *opaque ATTRIBUTE_UNUSED)
 
 
 static int
-testAllocArray(const void *opaque ATTRIBUTE_UNUSED)
+testAllocArray(const void *opaque G_GNUC_UNUSED)
 {
     testDummyStruct *t;
     size_t nt = 10, i;
@@ -111,7 +111,7 @@ testAllocArray(const void *opaque ATTRIBUTE_UNUSED)
 
 
 static int
-testReallocArray(const void *opaque ATTRIBUTE_UNUSED)
+testReallocArray(const void *opaque G_GNUC_UNUSED)
 {
     testDummyStruct *t;
     size_t nt = 10, i;
@@ -185,7 +185,7 @@ testReallocArray(const void *opaque ATTRIBUTE_UNUSED)
 
 
 static int
-testExpandArray(const void *opaque ATTRIBUTE_UNUSED)
+testExpandArray(const void *opaque G_GNUC_UNUSED)
 {
     testDummyStruct *t;
     size_t nt = 10, i;
@@ -265,7 +265,7 @@ testExpandArray(const void *opaque ATTRIBUTE_UNUSED)
 
 
 static int
-testResizeArray(const void *opaque ATTRIBUTE_UNUSED)
+testResizeArray(const void *opaque G_GNUC_UNUSED)
 {
     testDummyStruct *t;
     size_t nt = 10, at, i;
@@ -326,7 +326,7 @@ testResizeArray(const void *opaque ATTRIBUTE_UNUSED)
 
 
 static int
-testInsertArray(const void *opaque ATTRIBUTE_UNUSED)
+testInsertArray(const void *opaque G_GNUC_UNUSED)
 {
     testDummyStruct **t;
     size_t nt = 10, i;
@@ -384,7 +384,7 @@ testInsertArray(const void *opaque ATTRIBUTE_UNUSED)
 
 
 static int
-testDispose(const void *opaque ATTRIBUTE_UNUSED)
+testDispose(const void *opaque G_GNUC_UNUSED)
 {
     int *num = NULL;
     int *nums = NULL;

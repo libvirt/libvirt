@@ -261,7 +261,7 @@ testStrdupLookup2(size_t i)
 }
 
 static int
-testStrdup(const void *data ATTRIBUTE_UNUSED)
+testStrdup(const void *data G_GNUC_UNUSED)
 {
     char *array[] = { NULL, NULL };
     size_t i = 0;
@@ -331,7 +331,7 @@ testStrdup(const void *data ATTRIBUTE_UNUSED)
 }
 
 static int
-testStrndupNegative(const void *opaque ATTRIBUTE_UNUSED)
+testStrndupNegative(const void *opaque G_GNUC_UNUSED)
 {
     int ret = -1;
     char *dst;
@@ -367,7 +367,7 @@ testStrndupNegative(const void *opaque ATTRIBUTE_UNUSED)
 
 
 static int
-testStringSortCompare(const void *opaque ATTRIBUTE_UNUSED)
+testStringSortCompare(const void *opaque G_GNUC_UNUSED)
 {
     const char *randlist[] = {
         "tasty", "astro", "goat", "chicken", "turducken",
@@ -513,7 +513,7 @@ struct stringReplaceData {
 };
 
 static int
-testStringReplace(const void *opaque ATTRIBUTE_UNUSED)
+testStringReplace(const void *opaque G_GNUC_UNUSED)
 {
     const struct stringReplaceData *data = opaque;
     char *result;
@@ -690,7 +690,7 @@ testStringToDouble(const void *opaque)
 /* The point of this test is to check whether all members of the array are
  * freed. The test has to be checked using valgrind. */
 static int
-testVirStringListFreeCount(const void *opaque ATTRIBUTE_UNUSED)
+testVirStringListFreeCount(const void *opaque G_GNUC_UNUSED)
 {
     char **list;
 
