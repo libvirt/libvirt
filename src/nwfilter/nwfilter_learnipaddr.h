@@ -42,7 +42,7 @@ int virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
 bool virNWFilterHasLearnReq(int ifindex);
 int virNWFilterTerminateLearnReq(const char *ifname);
 
-int virNWFilterLockIface(const char *ifname) ATTRIBUTE_RETURN_CHECK;
+int virNWFilterLockIface(const char *ifname) G_GNUC_WARN_UNUSED_RESULT;
 void virNWFilterUnlockIface(const char *ifname);
 
 int virNWFilterLearnInit(void);

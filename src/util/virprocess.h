@@ -50,7 +50,7 @@ void virProcessExitWithStatus(int status) G_GNUC_NORETURN;
 
 int
 virProcessWait(pid_t pid, int *exitstatus, bool raw)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 
 int virProcessKill(pid_t pid, int sig);
 

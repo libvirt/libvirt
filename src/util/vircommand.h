@@ -33,9 +33,9 @@ typedef virCommand *virCommandPtr;
  * call any function that is not async-signal-safe.  */
 typedef int (*virExecHook)(void *data);
 
-pid_t virFork(void) ATTRIBUTE_RETURN_CHECK;
+pid_t virFork(void) G_GNUC_WARN_UNUSED_RESULT;
 
-int virRun(const char *const*argv, int *status) ATTRIBUTE_RETURN_CHECK;
+int virRun(const char *const*argv, int *status) G_GNUC_WARN_UNUSED_RESULT;
 
 virCommandPtr virCommandNew(const char *binary) ATTRIBUTE_NONNULL(1);
 
@@ -172,26 +172,26 @@ void virCommandSetPreExecHook(virCommandPtr cmd,
 void virCommandWriteArgLog(virCommandPtr cmd,
                            int logfd);
 
-char *virCommandToString(virCommandPtr cmd, bool linebreaks) ATTRIBUTE_RETURN_CHECK;
+char *virCommandToString(virCommandPtr cmd, bool linebreaks) G_GNUC_WARN_UNUSED_RESULT;
 
-int virCommandExec(virCommandPtr cmd, gid_t *groups, int ngroups) ATTRIBUTE_RETURN_CHECK;
+int virCommandExec(virCommandPtr cmd, gid_t *groups, int ngroups) G_GNUC_WARN_UNUSED_RESULT;
 
 int virCommandRun(virCommandPtr cmd,
-                  int *exitstatus) ATTRIBUTE_RETURN_CHECK;
+                  int *exitstatus) G_GNUC_WARN_UNUSED_RESULT;
 
 int virCommandRunAsync(virCommandPtr cmd,
-                       pid_t *pid) ATTRIBUTE_RETURN_CHECK;
+                       pid_t *pid) G_GNUC_WARN_UNUSED_RESULT;
 
 int virCommandWait(virCommandPtr cmd,
-                   int *exitstatus) ATTRIBUTE_RETURN_CHECK;
+                   int *exitstatus) G_GNUC_WARN_UNUSED_RESULT;
 
 void virCommandRequireHandshake(virCommandPtr cmd);
 
 int virCommandHandshakeWait(virCommandPtr cmd)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 
 int virCommandHandshakeNotify(virCommandPtr cmd)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 
 void virCommandAbort(virCommandPtr cmd);
 

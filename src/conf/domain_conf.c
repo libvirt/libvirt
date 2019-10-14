@@ -17521,7 +17521,7 @@ virDomainChrFind(virDomainDefPtr def,
 
 /* Return the address within vmdef to be modified when working with a
  * chrdefptr of the given type.  */
-static int ATTRIBUTE_RETURN_CHECK
+static int G_GNUC_WARN_UNUSED_RESULT
 virDomainChrGetDomainPtrsInternal(virDomainDefPtr vmdef,
                                   virDomainChrDeviceType type,
                                   virDomainChrDefPtr ***arrPtr,

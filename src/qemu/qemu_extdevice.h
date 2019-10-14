@@ -28,17 +28,17 @@ int qemuExtDeviceLogCommand(virQEMUDriverPtr driver,
                             virCommandPtr cmd,
                             const char *info)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 
 int qemuExtDevicesPrepareDomain(virQEMUDriverPtr driver,
                                 virDomainObjPtr vm)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 
 int qemuExtDevicesPrepareHost(virQEMUDriverPtr driver,
                               virDomainObjPtr vm)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 
 void qemuExtDevicesCleanupHost(virQEMUDriverPtr driver,
                                virDomainDefPtr def)
@@ -48,7 +48,7 @@ int qemuExtDevicesStart(virQEMUDriverPtr driver,
                         virDomainObjPtr vm,
                         bool incomingMigration)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 
 void qemuExtDevicesStop(virQEMUDriverPtr driver,
                         virDomainObjPtr vm)

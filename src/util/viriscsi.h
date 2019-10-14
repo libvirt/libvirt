@@ -33,18 +33,18 @@ virISCSIConnectionLogin(const char *portal,
                         const char *initiatoriqn,
                         const char *target)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 
 int
 virISCSIConnectionLogout(const char *portal,
                          const char *initiatoriqn,
                          const char *target)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 
 int
 virISCSIRescanLUNs(const char *session)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
 int
 virISCSIScanTargets(const char *portal,
@@ -52,13 +52,13 @@ virISCSIScanTargets(const char *portal,
                     bool persist,
                     size_t *ntargetsret,
                     char ***targetsret)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
 int
 virISCSINodeNew(const char *portal,
                 const char *target)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 
 int
 virISCSINodeUpdate(const char *portal,
@@ -66,4 +66,4 @@ virISCSINodeUpdate(const char *portal,
                    const char *name,
                    const char *value)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-    ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(4) G_GNUC_WARN_UNUSED_RESULT;

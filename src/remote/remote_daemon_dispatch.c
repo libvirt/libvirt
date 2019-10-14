@@ -95,18 +95,18 @@ static virNWFilterBindingPtr get_nonnull_nwfilter_binding(virConnectPtr conn, re
 static virDomainCheckpointPtr get_nonnull_domain_checkpoint(virDomainPtr dom, remote_nonnull_domain_checkpoint checkpoint);
 static virDomainSnapshotPtr get_nonnull_domain_snapshot(virDomainPtr dom, remote_nonnull_domain_snapshot snapshot);
 static virNodeDevicePtr get_nonnull_node_device(virConnectPtr conn, remote_nonnull_node_device dev);
-static int make_nonnull_domain(remote_nonnull_domain *dom_dst, virDomainPtr dom_src) ATTRIBUTE_RETURN_CHECK;
-static int make_nonnull_network(remote_nonnull_network *net_dst, virNetworkPtr net_src) ATTRIBUTE_RETURN_CHECK;
-static int make_nonnull_network_port(remote_nonnull_network_port *port_dst, virNetworkPortPtr port_src) ATTRIBUTE_RETURN_CHECK;
-static int make_nonnull_interface(remote_nonnull_interface *interface_dst, virInterfacePtr interface_src) ATTRIBUTE_RETURN_CHECK;
-static int make_nonnull_storage_pool(remote_nonnull_storage_pool *pool_dst, virStoragePoolPtr pool_src) ATTRIBUTE_RETURN_CHECK;
-static int make_nonnull_storage_vol(remote_nonnull_storage_vol *vol_dst, virStorageVolPtr vol_src) ATTRIBUTE_RETURN_CHECK;
-static int make_nonnull_node_device(remote_nonnull_node_device *dev_dst, virNodeDevicePtr dev_src) ATTRIBUTE_RETURN_CHECK;
-static int make_nonnull_secret(remote_nonnull_secret *secret_dst, virSecretPtr secret_src) ATTRIBUTE_RETURN_CHECK;
-static int make_nonnull_nwfilter(remote_nonnull_nwfilter *net_dst, virNWFilterPtr nwfilter_src) ATTRIBUTE_RETURN_CHECK;
-static int make_nonnull_nwfilter_binding(remote_nonnull_nwfilter_binding *binding_dst, virNWFilterBindingPtr binding_src) ATTRIBUTE_RETURN_CHECK;
-static int make_nonnull_domain_checkpoint(remote_nonnull_domain_checkpoint *checkpoint_dst, virDomainCheckpointPtr checkpoint_src) ATTRIBUTE_RETURN_CHECK;
-static int make_nonnull_domain_snapshot(remote_nonnull_domain_snapshot *snapshot_dst, virDomainSnapshotPtr snapshot_src) ATTRIBUTE_RETURN_CHECK;
+static int make_nonnull_domain(remote_nonnull_domain *dom_dst, virDomainPtr dom_src) G_GNUC_WARN_UNUSED_RESULT;
+static int make_nonnull_network(remote_nonnull_network *net_dst, virNetworkPtr net_src) G_GNUC_WARN_UNUSED_RESULT;
+static int make_nonnull_network_port(remote_nonnull_network_port *port_dst, virNetworkPortPtr port_src) G_GNUC_WARN_UNUSED_RESULT;
+static int make_nonnull_interface(remote_nonnull_interface *interface_dst, virInterfacePtr interface_src) G_GNUC_WARN_UNUSED_RESULT;
+static int make_nonnull_storage_pool(remote_nonnull_storage_pool *pool_dst, virStoragePoolPtr pool_src) G_GNUC_WARN_UNUSED_RESULT;
+static int make_nonnull_storage_vol(remote_nonnull_storage_vol *vol_dst, virStorageVolPtr vol_src) G_GNUC_WARN_UNUSED_RESULT;
+static int make_nonnull_node_device(remote_nonnull_node_device *dev_dst, virNodeDevicePtr dev_src) G_GNUC_WARN_UNUSED_RESULT;
+static int make_nonnull_secret(remote_nonnull_secret *secret_dst, virSecretPtr secret_src) G_GNUC_WARN_UNUSED_RESULT;
+static int make_nonnull_nwfilter(remote_nonnull_nwfilter *net_dst, virNWFilterPtr nwfilter_src) G_GNUC_WARN_UNUSED_RESULT;
+static int make_nonnull_nwfilter_binding(remote_nonnull_nwfilter_binding *binding_dst, virNWFilterBindingPtr binding_src) G_GNUC_WARN_UNUSED_RESULT;
+static int make_nonnull_domain_checkpoint(remote_nonnull_domain_checkpoint *checkpoint_dst, virDomainCheckpointPtr checkpoint_src) G_GNUC_WARN_UNUSED_RESULT;
+static int make_nonnull_domain_snapshot(remote_nonnull_domain_snapshot *snapshot_dst, virDomainSnapshotPtr snapshot_src) G_GNUC_WARN_UNUSED_RESULT;
 
 static int
 remoteSerializeDomainDiskErrors(virDomainDiskErrorPtr errors,

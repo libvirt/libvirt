@@ -36,7 +36,7 @@ storagePoolLookupByTargetPath(virConnectPtr conn,
 
 char *virStoragePoolObjBuildTempFilePath(virStoragePoolObjPtr obj,
                                          virStorageVolDefPtr voldef)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 
 int storageRegister(void);
 int storageRegisterAll(void);

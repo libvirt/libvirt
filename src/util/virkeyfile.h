@@ -33,13 +33,13 @@ virKeyFilePtr virKeyFileNew(void);
 
 int virKeyFileLoadFile(virKeyFilePtr conf,
                        const char *filename)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 
 int virKeyFileLoadData(virKeyFilePtr conf,
                        const char *filename,
                        const char *data,
                        size_t len)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 
 void virKeyFileFree(virKeyFilePtr conf);
 

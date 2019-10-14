@@ -31,7 +31,7 @@
 #include "virautoclean.h"
 
 xmlXPathContextPtr virXMLXPathContextNew(xmlDocPtr xml)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 
 int              virXPathBoolean(const char *xpath,
                                  xmlXPathContextPtr ctxt);
@@ -221,7 +221,7 @@ virXMLFormatElement(virBufferPtr buf,
                     const char *name,
                     virBufferPtr attrBuf,
                     virBufferPtr childBuf)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 
 struct _virXPathContextNodeSave {
     xmlXPathContextPtr ctxt;

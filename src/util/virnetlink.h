@@ -109,7 +109,7 @@ int virNetlinkGetErrorCode(struct nlmsghdr *resp, unsigned int recvbuflen);
 int virNetlinkDumpLink(const char *ifname, int ifindex,
                        void **nlData, struct nlattr **tb,
                        uint32_t src_pid, uint32_t dst_pid)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 int
 virNetlinkGetNeighbor(void **nlData, uint32_t src_pid, uint32_t dst_pid);
 

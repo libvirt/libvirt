@@ -228,7 +228,7 @@ int virPCIGetNetName(const char *device_link_sysfs_path,
 
 int virPCIGetSysfsFile(char *virPCIDeviceName,
                              char **pci_sysfs_device_link)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 
 bool virPCIDeviceAddressIsValid(virPCIDeviceAddressPtr addr,
                                 bool report);

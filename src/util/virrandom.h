@@ -24,5 +24,5 @@ uint64_t virRandomBits(int nbits) ATTRIBUTE_NOINLINE;
 double virRandom(void);
 uint32_t virRandomInt(uint32_t max);
 int virRandomBytes(unsigned char *buf, size_t buflen)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK ATTRIBUTE_NOINLINE;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT ATTRIBUTE_NOINLINE;
 int virRandomGenerateWWN(char **wwn, const char *virt_type) ATTRIBUTE_NOINLINE;

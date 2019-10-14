@@ -86,7 +86,7 @@ int
 libxlDomainObjBeginJob(libxlDriverPrivatePtr driver,
                        virDomainObjPtr obj,
                        enum libxlDomainJob job)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 
 void
 libxlDomainObjEndJob(libxlDriverPrivatePtr driver,
@@ -94,7 +94,7 @@ libxlDomainObjEndJob(libxlDriverPrivatePtr driver,
 
 int
 libxlDomainJobUpdateTime(struct libxlDomainJobObj *job)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 
 char *
 libxlDomainManagedSavePath(libxlDriverPrivatePtr driver,

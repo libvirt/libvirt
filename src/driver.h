@@ -98,15 +98,15 @@ struct _virConnectDriver {
 };
 
 int virRegisterConnectDriver(virConnectDriverPtr driver,
-                             bool setSharedDrivers) ATTRIBUTE_RETURN_CHECK;
-int virRegisterStateDriver(virStateDriverPtr driver) ATTRIBUTE_RETURN_CHECK;
+                             bool setSharedDrivers) G_GNUC_WARN_UNUSED_RESULT;
+int virRegisterStateDriver(virStateDriverPtr driver) G_GNUC_WARN_UNUSED_RESULT;
 
-int virSetSharedInterfaceDriver(virInterfaceDriverPtr driver) ATTRIBUTE_RETURN_CHECK;
-int virSetSharedNetworkDriver(virNetworkDriverPtr driver) ATTRIBUTE_RETURN_CHECK;
-int virSetSharedNodeDeviceDriver(virNodeDeviceDriverPtr driver) ATTRIBUTE_RETURN_CHECK;
-int virSetSharedNWFilterDriver(virNWFilterDriverPtr driver) ATTRIBUTE_RETURN_CHECK;
-int virSetSharedSecretDriver(virSecretDriverPtr driver) ATTRIBUTE_RETURN_CHECK;
-int virSetSharedStorageDriver(virStorageDriverPtr driver) ATTRIBUTE_RETURN_CHECK;
+int virSetSharedInterfaceDriver(virInterfaceDriverPtr driver) G_GNUC_WARN_UNUSED_RESULT;
+int virSetSharedNetworkDriver(virNetworkDriverPtr driver) G_GNUC_WARN_UNUSED_RESULT;
+int virSetSharedNodeDeviceDriver(virNodeDeviceDriverPtr driver) G_GNUC_WARN_UNUSED_RESULT;
+int virSetSharedNWFilterDriver(virNWFilterDriverPtr driver) G_GNUC_WARN_UNUSED_RESULT;
+int virSetSharedSecretDriver(virSecretDriverPtr driver) G_GNUC_WARN_UNUSED_RESULT;
+int virSetSharedStorageDriver(virStorageDriverPtr driver) G_GNUC_WARN_UNUSED_RESULT;
 
 bool virHasDriverForURIScheme(const char *scheme);
 

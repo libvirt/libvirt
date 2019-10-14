@@ -40,26 +40,26 @@ void virTimeFieldsThen(unsigned long long when, struct tm *fields)
 /* These APIs are async signal safe and return -1, setting
  * errno on failure */
 int virTimeMillisNowRaw(unsigned long long *now)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 int virTimeFieldsNowRaw(struct tm *fields)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 int virTimeStringNowRaw(char *buf)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 int virTimeStringThenRaw(unsigned long long when, char *buf)
-    ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 
 /* These APIs are *not* async signal safe and return -1,
  * raising a libvirt error on failure
  */
 int virTimeMillisNow(unsigned long long *now)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 int virTimeFieldsNow(struct tm *fields)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 char *virTimeStringNow(void);
 char *virTimeStringThen(unsigned long long when);
 
 int virTimeLocalOffsetFromUTC(long *offset)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
 typedef struct {
     unsigned long long start_t;

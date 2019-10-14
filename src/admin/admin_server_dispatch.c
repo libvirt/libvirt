@@ -135,7 +135,7 @@ get_nonnull_server(virNetDaemonPtr dmn, admin_nonnull_server srv)
     return virNetDaemonGetServer(dmn, srv.name);
 }
 
-static int ATTRIBUTE_RETURN_CHECK
+static int G_GNUC_WARN_UNUSED_RESULT
 make_nonnull_server(admin_nonnull_server *srv_dst,
                     virNetServerPtr srv_src)
 {

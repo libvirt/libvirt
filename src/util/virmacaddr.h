@@ -54,10 +54,10 @@ const char *virMacAddrFormat(const virMacAddr *addr,
 void virMacAddrGenerate(const unsigned char prefix[VIR_MAC_PREFIX_BUFLEN],
                         virMacAddrPtr addr) ATTRIBUTE_NOINLINE;
 int virMacAddrParse(const char* str,
-                    virMacAddrPtr addr) ATTRIBUTE_RETURN_CHECK;
+                    virMacAddrPtr addr) G_GNUC_WARN_UNUSED_RESULT;
 int virMacAddrParseHex(const char* str,
                        virMacAddrPtr addr)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 bool virMacAddrIsUnicast(const virMacAddr *addr);
 bool virMacAddrIsMulticast(const virMacAddr *addr);
 bool virMacAddrIsBroadcastRaw(const unsigned char s[VIR_MAC_BUFLEN]);

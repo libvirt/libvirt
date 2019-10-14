@@ -92,7 +92,7 @@ int virThreadCreateFull(virThreadPtr thread,
                         virThreadFunc func,
                         const char *funcName,
                         bool worker,
-                        void *opaque) ATTRIBUTE_RETURN_CHECK;
+                        void *opaque) G_GNUC_WARN_UNUSED_RESULT;
 void virThreadSelf(virThreadPtr thread);
 bool virThreadIsSelf(virThreadPtr thread);
 void virThreadJoin(virThreadPtr thread);
@@ -121,17 +121,17 @@ unsigned long long virThreadID(virThreadPtr thread);
  * }
  */
 int virOnce(virOnceControlPtr once, virOnceFunc init)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 
-int virMutexInit(virMutexPtr m) ATTRIBUTE_RETURN_CHECK;
-int virMutexInitRecursive(virMutexPtr m) ATTRIBUTE_RETURN_CHECK;
+int virMutexInit(virMutexPtr m) G_GNUC_WARN_UNUSED_RESULT;
+int virMutexInitRecursive(virMutexPtr m) G_GNUC_WARN_UNUSED_RESULT;
 void virMutexDestroy(virMutexPtr m);
 
 void virMutexLock(virMutexPtr m);
 void virMutexUnlock(virMutexPtr m);
 
 
-int virRWLockInit(virRWLockPtr m) ATTRIBUTE_RETURN_CHECK;
+int virRWLockInit(virRWLockPtr m) G_GNUC_WARN_UNUSED_RESULT;
 void virRWLockDestroy(virRWLockPtr m);
 
 void virRWLockRead(virRWLockPtr m);
@@ -139,7 +139,7 @@ void virRWLockWrite(virRWLockPtr m);
 void virRWLockUnlock(virRWLockPtr m);
 
 
-int virCondInit(virCondPtr c) ATTRIBUTE_RETURN_CHECK;
+int virCondInit(virCondPtr c) G_GNUC_WARN_UNUSED_RESULT;
 int virCondDestroy(virCondPtr c);
 
 /* virCondWait, virCondWaitUntil:
@@ -147,8 +147,8 @@ int virCondDestroy(virCondPtr c);
  * changing value. Therefore in nearly all cases they
  * should be enclosed in a while loop that checks the predicate.
  */
-int virCondWait(virCondPtr c, virMutexPtr m) ATTRIBUTE_RETURN_CHECK;
-int virCondWaitUntil(virCondPtr c, virMutexPtr m, unsigned long long whenms) ATTRIBUTE_RETURN_CHECK;
+int virCondWait(virCondPtr c, virMutexPtr m) G_GNUC_WARN_UNUSED_RESULT;
+int virCondWaitUntil(virCondPtr c, virMutexPtr m, unsigned long long whenms) G_GNUC_WARN_UNUSED_RESULT;
 
 void virCondSignal(virCondPtr c);
 void virCondBroadcast(virCondPtr c);
@@ -156,9 +156,9 @@ void virCondBroadcast(virCondPtr c);
 
 typedef void (*virThreadLocalCleanup)(void *);
 int virThreadLocalInit(virThreadLocalPtr l,
-                       virThreadLocalCleanup c) ATTRIBUTE_RETURN_CHECK;
+                       virThreadLocalCleanup c) G_GNUC_WARN_UNUSED_RESULT;
 void *virThreadLocalGet(virThreadLocalPtr l);
-int virThreadLocalSet(virThreadLocalPtr l, void*) ATTRIBUTE_RETURN_CHECK;
+int virThreadLocalSet(virThreadLocalPtr l, void*) G_GNUC_WARN_UNUSED_RESULT;
 
 
 /**

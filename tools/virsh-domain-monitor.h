@@ -24,6 +24,6 @@
 
 char *virshGetDomainDescription(vshControl *ctl, virDomainPtr dom,
                                 bool title, unsigned int flags)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 
 extern const vshCmdDef domMonitoringCmds[];

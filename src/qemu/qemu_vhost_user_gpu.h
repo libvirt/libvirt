@@ -27,13 +27,13 @@
 int qemuExtVhostUserGPUPrepareDomain(virQEMUDriverPtr driver,
                                      virDomainVideoDefPtr video)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 
 int qemuExtVhostUserGPUStart(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
                              virDomainVideoDefPtr video)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 
 void qemuExtVhostUserGPUStop(virQEMUDriverPtr driver,
                              virDomainObjPtr def,
@@ -46,4 +46,4 @@ qemuExtVhostUserGPUSetupCgroup(virQEMUDriverPtr driver,
                                virDomainVideoDefPtr video,
                                virCgroupPtr cgroup)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;

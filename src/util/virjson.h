@@ -147,7 +147,7 @@ char *virJSONValueToString(virJSONValuePtr object,
 int virJSONValueToBuffer(virJSONValuePtr object,
                          virBufferPtr buf,
                          bool pretty)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 
 typedef int (*virJSONValueObjectIteratorFunc)(const char *key,
                                               virJSONValuePtr value,

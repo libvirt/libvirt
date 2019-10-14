@@ -66,20 +66,20 @@ void virNetMessageQueuePush(virNetMessagePtr *queue,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int virNetMessageEncodeHeader(virNetMessagePtr msg)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 int virNetMessageDecodeLength(virNetMessagePtr msg)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 int virNetMessageDecodeHeader(virNetMessagePtr msg)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
 int virNetMessageEncodePayload(virNetMessagePtr msg,
                                xdrproc_t filter,
                                void *data)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 int virNetMessageDecodePayload(virNetMessagePtr msg,
                                xdrproc_t filter,
                                void *data)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 
 int virNetMessageEncodeNumFDs(virNetMessagePtr msg);
 int virNetMessageDecodeNumFDs(virNetMessagePtr msg);
@@ -87,9 +87,9 @@ int virNetMessageDecodeNumFDs(virNetMessagePtr msg);
 int virNetMessageEncodePayloadRaw(virNetMessagePtr msg,
                                   const char *buf,
                                   size_t len)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 int virNetMessageEncodePayloadEmpty(virNetMessagePtr msg)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
 void virNetMessageSaveError(virNetMessageErrorPtr rerr)
     ATTRIBUTE_NONNULL(1);

@@ -27,11 +27,11 @@
 #include <sys/types.h>
 
 
-int virSetBlocking(int fd, bool blocking) ATTRIBUTE_RETURN_CHECK;
-int virSetNonBlock(int fd) ATTRIBUTE_RETURN_CHECK;
-int virSetInherit(int fd, bool inherit) ATTRIBUTE_RETURN_CHECK;
-int virSetCloseExec(int fd) ATTRIBUTE_RETURN_CHECK;
-int virSetSockReuseAddr(int fd, bool fatal) ATTRIBUTE_RETURN_CHECK;
+int virSetBlocking(int fd, bool blocking) G_GNUC_WARN_UNUSED_RESULT;
+int virSetNonBlock(int fd) G_GNUC_WARN_UNUSED_RESULT;
+int virSetInherit(int fd, bool inherit) G_GNUC_WARN_UNUSED_RESULT;
+int virSetCloseExec(int fd) G_GNUC_WARN_UNUSED_RESULT;
+int virSetSockReuseAddr(int fd, bool fatal) G_GNUC_WARN_UNUSED_RESULT;
 
 int virSetUIDGID(uid_t uid, gid_t gid, gid_t *groups, int ngroups);
 int virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
@@ -42,7 +42,7 @@ void virWaitForDevices(void);
 
 int virScaleInteger(unsigned long long *value, const char *suffix,
                     unsigned long long scale, unsigned long long limit)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
 int virHexToBin(unsigned char c);
 
@@ -50,7 +50,7 @@ int virParseVersionString(const char *str, unsigned long *version,
                           bool allowMissing);
 
 char *virFormatIntDecimal(char *buf, size_t buflen, int val)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
 unsigned long long
 virFormatIntPretty(unsigned long long val,
@@ -108,9 +108,9 @@ char *virGetGroupName(gid_t gid) ATTRIBUTE_NOINLINE;
 int virGetGroupList(uid_t uid, gid_t group, gid_t **groups)
     ATTRIBUTE_NONNULL(3);
 int virGetUserID(const char *name,
-                 uid_t *uid) ATTRIBUTE_RETURN_CHECK;
+                 uid_t *uid) G_GNUC_WARN_UNUSED_RESULT;
 int virGetGroupID(const char *name,
-                  gid_t *gid) ATTRIBUTE_RETURN_CHECK;
+                  gid_t *gid) G_GNUC_WARN_UNUSED_RESULT;
 
 bool virDoesUserExist(const char *name);
 bool virDoesGroupExist(const char *name);

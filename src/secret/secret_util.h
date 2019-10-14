@@ -30,4 +30,4 @@ int virSecretGetSecretString(virConnectPtr conn,
                              uint8_t **ret_secret,
                              size_t *ret_secret_size)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4)
-    ATTRIBUTE_NONNULL(5) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(5) G_GNUC_WARN_UNUSED_RESULT;

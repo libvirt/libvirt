@@ -206,7 +206,7 @@ qemuMigrationSrcToFile(virQEMUDriverPtr driver,
                        int fd,
                        const char *compressor,
                        qemuDomainAsyncJob asyncJob)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 
 int
 qemuMigrationSrcCancel(virQEMUDriverPtr driver,

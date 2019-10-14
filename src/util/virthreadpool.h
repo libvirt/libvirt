@@ -50,7 +50,7 @@ void virThreadPoolFree(virThreadPoolPtr pool);
 int virThreadPoolSendJob(virThreadPoolPtr pool,
                          unsigned int priority,
                          void *jobdata) ATTRIBUTE_NONNULL(1)
-                                        ATTRIBUTE_RETURN_CHECK;
+                                        G_GNUC_WARN_UNUSED_RESULT;
 
 int virThreadPoolSetParameters(virThreadPoolPtr pool,
                                long long int minWorkers,

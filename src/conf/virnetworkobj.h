@@ -202,7 +202,7 @@ virNetworkObjPortForEach(virNetworkObjPtr obj,
 int
 virNetworkObjSaveStatus(const char *statusDir,
                         virNetworkObjPtr net,
-                        virNetworkXMLOptionPtr xmlopt) ATTRIBUTE_RETURN_CHECK;
+                        virNetworkXMLOptionPtr xmlopt) G_GNUC_WARN_UNUSED_RESULT;
 
 int
 virNetworkObjLoadAllConfigs(virNetworkObjListPtr nets,

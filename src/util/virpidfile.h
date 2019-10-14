@@ -30,24 +30,24 @@ char *virPidFileBuildPath(const char *dir,
                           const char *name);
 
 int virPidFileWritePath(const char *path,
-                        pid_t pid) ATTRIBUTE_RETURN_CHECK;
+                        pid_t pid) G_GNUC_WARN_UNUSED_RESULT;
 int virPidFileWrite(const char *dir,
                     const char *name,
-                    pid_t pid) ATTRIBUTE_RETURN_CHECK;
+                    pid_t pid) G_GNUC_WARN_UNUSED_RESULT;
 
 int virPidFileReadPath(const char *path,
-                       pid_t *pid) ATTRIBUTE_RETURN_CHECK;
+                       pid_t *pid) G_GNUC_WARN_UNUSED_RESULT;
 int virPidFileRead(const char *dir,
                    const char *name,
-                   pid_t *pid) ATTRIBUTE_RETURN_CHECK;
+                   pid_t *pid) G_GNUC_WARN_UNUSED_RESULT;
 
 int virPidFileReadPathIfAlive(const char *path,
                               pid_t *pid,
-                              const char *binpath) ATTRIBUTE_RETURN_CHECK;
+                              const char *binpath) G_GNUC_WARN_UNUSED_RESULT;
 int virPidFileReadIfAlive(const char *dir,
                           const char *name,
                           pid_t *pid,
-                          const char *binpath) ATTRIBUTE_RETURN_CHECK;
+                          const char *binpath) G_GNUC_WARN_UNUSED_RESULT;
 
 int virPidFileDeletePath(const char *path);
 int virPidFileDelete(const char *dir,
@@ -56,11 +56,11 @@ int virPidFileDelete(const char *dir,
 
 int virPidFileAcquirePath(const char *path,
                           bool waitForLock,
-                          pid_t pid) ATTRIBUTE_RETURN_CHECK;
+                          pid_t pid) G_GNUC_WARN_UNUSED_RESULT;
 int virPidFileAcquire(const char *dir,
                       const char *name,
                       bool waitForLock,
-                      pid_t pid) ATTRIBUTE_RETURN_CHECK;
+                      pid_t pid) G_GNUC_WARN_UNUSED_RESULT;
 
 int virPidFileReleasePath(const char *path,
                           int fd);

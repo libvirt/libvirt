@@ -99,7 +99,7 @@ int
 virLXCDomainObjBeginJob(virLXCDriverPtr driver,
                        virDomainObjPtr obj,
                        enum virLXCDomainJob job)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 
 void
 virLXCDomainObjEndJob(virLXCDriverPtr driver,

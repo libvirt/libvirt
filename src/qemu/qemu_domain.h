@@ -610,30 +610,30 @@ void qemuDomainEventEmitJobCompleted(virQEMUDriverPtr driver,
 int qemuDomainObjBeginJob(virQEMUDriverPtr driver,
                           virDomainObjPtr obj,
                           qemuDomainJob job)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 int qemuDomainObjBeginAgentJob(virQEMUDriverPtr driver,
                                virDomainObjPtr obj,
                                qemuDomainAgentJob agentJob)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 int qemuDomainObjBeginJobWithAgent(virQEMUDriverPtr driver,
                                    virDomainObjPtr obj,
                                    qemuDomainJob job,
                                    qemuDomainAgentJob agentJob)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 int qemuDomainObjBeginAsyncJob(virQEMUDriverPtr driver,
                                virDomainObjPtr obj,
                                qemuDomainAsyncJob asyncJob,
                                virDomainJobOperation operation,
                                unsigned long apiFlags)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 int qemuDomainObjBeginNestedJob(virQEMUDriverPtr driver,
                                 virDomainObjPtr obj,
                                 qemuDomainAsyncJob asyncJob)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 int qemuDomainObjBeginJobNowait(virQEMUDriverPtr driver,
                                 virDomainObjPtr obj,
                                 qemuDomainJob job)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 
 void qemuDomainObjEndJob(virQEMUDriverPtr driver,
                          virDomainObjPtr obj);
@@ -662,11 +662,11 @@ void qemuDomainObjEnterMonitor(virQEMUDriverPtr driver,
 int qemuDomainObjExitMonitor(virQEMUDriverPtr driver,
                              virDomainObjPtr obj)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 int qemuDomainObjEnterMonitorAsync(virQEMUDriverPtr driver,
                                    virDomainObjPtr obj,
                                    qemuDomainAsyncJob asyncJob)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 
 
 qemuAgentPtr qemuDomainObjEnterAgent(virDomainObjPtr obj)
@@ -679,7 +679,7 @@ void qemuDomainObjEnterRemote(virDomainObjPtr obj)
     ATTRIBUTE_NONNULL(1);
 int qemuDomainObjExitRemote(virDomainObjPtr obj,
                             bool checkActive)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
 virDomainDefPtr qemuDomainDefCopy(virQEMUDriverPtr driver,
                                   virQEMUCapsPtr qemuCaps,
@@ -843,7 +843,7 @@ int qemuDomainDiskGetBackendAlias(virDomainDiskDefPtr disk,
                                   virQEMUCapsPtr qemuCaps,
                                   char **backendAlias)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
-    ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(3) G_GNUC_WARN_UNUSED_RESULT;
 
 int qemuDomainStorageSourceChainAccessAllow(virQEMUDriverPtr driver,
                                             virDomainObjPtr vm,
@@ -1172,7 +1172,7 @@ qemuDomainPrepareDiskSourceData(virDomainDiskDefPtr disk,
                                 virStorageSourcePtr src,
                                 virQEMUDriverConfigPtr cfg,
                                 virQEMUCapsPtr qemuCaps)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 
 
 int
@@ -1220,4 +1220,4 @@ qemuDomainValidateActualNetDef(const virDomainNetDef *net,
 
 int
 qemuDomainSupportsCheckpointsBlockjobs(virDomainObjPtr vm)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;

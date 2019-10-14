@@ -59,38 +59,38 @@ int              iptablesAddForwardAllowOut      (virFirewallPtr fw,
                                                   unsigned int prefix,
                                                   const char *iface,
                                                   const char *physdev)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 int              iptablesRemoveForwardAllowOut   (virFirewallPtr fw,
                                                   virSocketAddr *netaddr,
                                                   unsigned int prefix,
                                                   const char *iface,
                                                   const char *physdev)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 int              iptablesAddForwardAllowRelatedIn(virFirewallPtr fw,
                                                   virSocketAddr *netaddr,
                                                   unsigned int prefix,
                                                   const char *iface,
                                                   const char *physdev)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 int              iptablesRemoveForwardAllowRelatedIn(virFirewallPtr fw,
                                                      virSocketAddr *netaddr,
                                                      unsigned int prefix,
                                                      const char *iface,
                                                      const char *physdev)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 
 int              iptablesAddForwardAllowIn       (virFirewallPtr fw,
                                                   virSocketAddr *netaddr,
                                                   unsigned int prefix,
                                                   const char *iface,
                                                   const char *physdev)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 int              iptablesRemoveForwardAllowIn    (virFirewallPtr fw,
                                                   virSocketAddr *netaddr,
                                                   unsigned int prefix,
                                                   const char *iface,
                                                   const char *physdev)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 
 void             iptablesAddForwardAllowCross    (virFirewallPtr fw,
                                                   virFirewallLayer layer,
@@ -120,7 +120,7 @@ int              iptablesAddForwardMasquerade    (virFirewallPtr fw,
                                                   virSocketAddrRangePtr addr,
                                                   virPortRangePtr port,
                                                   const char *protocol)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 int              iptablesRemoveForwardMasquerade (virFirewallPtr fw,
                                                   virSocketAddr *netaddr,
                                                   unsigned int prefix,
@@ -128,19 +128,19 @@ int              iptablesRemoveForwardMasquerade (virFirewallPtr fw,
                                                   virSocketAddrRangePtr addr,
                                                   virPortRangePtr port,
                                                   const char *protocol)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 int              iptablesAddDontMasquerade       (virFirewallPtr fw,
                                                   virSocketAddr *netaddr,
                                                   unsigned int prefix,
                                                   const char *physdev,
                                                   const char *destaddr)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 int              iptablesRemoveDontMasquerade    (virFirewallPtr fw,
                                                   virSocketAddr *netaddr,
                                                   unsigned int prefix,
                                                   const char *physdev,
                                                   const char *destaddr)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 void             iptablesAddOutputFixUdpChecksum (virFirewallPtr fw,
                                                   const char *iface,
                                                   int port);

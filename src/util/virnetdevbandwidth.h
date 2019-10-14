@@ -42,11 +42,11 @@ int virNetDevBandwidthSet(const char *ifname,
                           virNetDevBandwidthPtr bandwidth,
                           bool hierarchical_class,
                           bool swapped)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 int virNetDevBandwidthClear(const char *ifname);
 int virNetDevBandwidthCopy(virNetDevBandwidthPtr *dest,
                            const virNetDevBandwidth *src)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
 bool virNetDevBandwidthEqual(virNetDevBandwidthPtr a, virNetDevBandwidthPtr b);
 
@@ -56,20 +56,20 @@ int virNetDevBandwidthPlug(const char *brname,
                            virNetDevBandwidthPtr bandwidth,
                            unsigned int id)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 
 int virNetDevBandwidthUnplug(const char *brname,
                              unsigned int id)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
 int virNetDevBandwidthUpdateRate(const char *ifname,
                                  unsigned int id,
                                  virNetDevBandwidthPtr bandwidth,
                                  unsigned long long new_rate)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
 int virNetDevBandwidthUpdateFilter(const char *ifname,
                                    const virMacAddr *ifmac_ptr,
                                    unsigned int id)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;

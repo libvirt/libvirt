@@ -33,9 +33,9 @@ typedef virBitmap *virBitmapPtr;
 /*
  * Allocate a bitmap capable of containing @size bits.
  */
-virBitmapPtr virBitmapNewQuiet(size_t size) ATTRIBUTE_RETURN_CHECK;
-virBitmapPtr virBitmapNew(size_t size) ATTRIBUTE_RETURN_CHECK;
-virBitmapPtr virBitmapNewEmpty(void) ATTRIBUTE_RETURN_CHECK;
+virBitmapPtr virBitmapNewQuiet(size_t size) G_GNUC_WARN_UNUSED_RESULT;
+virBitmapPtr virBitmapNew(size_t size) G_GNUC_WARN_UNUSED_RESULT;
+virBitmapPtr virBitmapNewEmpty(void) G_GNUC_WARN_UNUSED_RESULT;
 
 /*
  * Free previously allocated bitmap
@@ -52,38 +52,38 @@ int virBitmapCopy(virBitmapPtr dst, virBitmapPtr src);
  * Set bit position @b in @bitmap
  */
 int virBitmapSetBit(virBitmapPtr bitmap, size_t b)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
 int virBitmapSetBitExpand(virBitmapPtr bitmap, size_t b)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
 
 /*
  * Clear bit position @b in @bitmap
  */
 int virBitmapClearBit(virBitmapPtr bitmap, size_t b)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
 int virBitmapClearBitExpand(virBitmapPtr bitmap, size_t b)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
 /*
  * Get bit @b in @bitmap. Returns false if b is out of range.
  */
 bool virBitmapIsBitSet(virBitmapPtr bitmap, size_t b)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 /*
  * Get setting of bit position @b in @bitmap and store in @result
  */
 int virBitmapGetBit(virBitmapPtr bitmap, size_t b, bool *result)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) G_GNUC_WARN_UNUSED_RESULT;
 
 virBitmapPtr
 virBitmapNewString(const char *string)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
 char *virBitmapToString(virBitmapPtr bitmap, bool prefix, bool trim)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
 char *virBitmapFormat(virBitmapPtr bitmap);
 

@@ -58,7 +58,7 @@ int virNetDevMacVLanReserveName(const char *name, bool quietfail);
 int virNetDevMacVLanReleaseName(const char *name);
 
 bool virNetDevMacVLanIsMacvtap(const char *ifname)
-   ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK ATTRIBUTE_NOINLINE;
+   ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT ATTRIBUTE_NOINLINE;
 
 int virNetDevMacVLanCreate(const char *ifname,
                            const char *type,
@@ -67,10 +67,10 @@ int virNetDevMacVLanCreate(const char *ifname,
                            uint32_t macvlan_mode,
                            int *retry)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 
 int virNetDevMacVLanDelete(const char *ifname)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
 int virNetDevMacVLanCreateWithVPortProfile(const char *ifname,
                                            const virMacAddr *macaddress,
@@ -86,16 +86,16 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *ifname,
                                            size_t tapfdSize,
                                            unsigned int flags)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(6)
-    ATTRIBUTE_NONNULL(8) ATTRIBUTE_NONNULL(10) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(8) ATTRIBUTE_NONNULL(10) G_GNUC_WARN_UNUSED_RESULT;
 
 int virNetDevMacVLanTapOpen(const char *ifname,
                             int *tapfd,
                             size_t tapfdSize)
    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
-   ATTRIBUTE_RETURN_CHECK;
+   G_GNUC_WARN_UNUSED_RESULT;
 
 int virNetDevMacVLanTapSetup(int *tapfd, size_t tapfdSize, bool vnet_hdr)
-   ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+   ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
 int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname,
                                            const virMacAddr *macaddress,
@@ -104,7 +104,7 @@ int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname,
                                            virNetDevVPortProfilePtr virtPortProfile,
                                            char *stateDir)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-    ATTRIBUTE_NONNULL(6) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(6) G_GNUC_WARN_UNUSED_RESULT;
 
 int virNetDevMacVLanRestartWithVPortProfile(const char *cr_ifname,
                                             const virMacAddr *macaddress,
@@ -113,7 +113,7 @@ int virNetDevMacVLanRestartWithVPortProfile(const char *cr_ifname,
                                             virNetDevVPortProfilePtr virtPortProfile,
                                             virNetDevVPortProfileOp vmOp)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-    ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(4) G_GNUC_WARN_UNUSED_RESULT;
 
 int virNetDevMacVLanVPortProfileRegisterCallback(const char *ifname,
                                                  const virMacAddr *macaddress,
@@ -122,4 +122,4 @@ int virNetDevMacVLanVPortProfileRegisterCallback(const char *ifname,
                                                  virNetDevVPortProfilePtr virtPortProfile,
                                                  virNetDevVPortProfileOp vmOp)
 ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
+ATTRIBUTE_NONNULL(4) G_GNUC_WARN_UNUSED_RESULT;

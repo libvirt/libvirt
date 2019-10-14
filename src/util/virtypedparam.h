@@ -62,7 +62,7 @@ struct _virTypedParameterRemote {
 
 int virTypedParamsValidate(virTypedParameterPtr params, int nparams,
                            /* const char *name, int type ... */ ...)
-    G_GNUC_NULL_TERMINATED ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_NULL_TERMINATED G_GNUC_WARN_UNUSED_RESULT;
 
 bool virTypedParamsCheck(virTypedParameterPtr params,
                          int nparams,
@@ -79,12 +79,12 @@ virTypedParamsFilter(virTypedParameterPtr params,
                      int nparams,
                      const char *name,
                      virTypedParameterPtr **ret)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 
 
 int virTypedParameterAssign(virTypedParameterPtr param, const char *name,
                             int type, /* TYPE arg */ ...)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 
 int virTypedParamsReplaceString(virTypedParameterPtr *params,
                                 int *nparams,
@@ -149,34 +149,34 @@ int virTypedParamListAddInt(virTypedParamListPtr list,
                             int value,
                             const char *namefmt,
                             ...)
-    ATTRIBUTE_FMT_PRINTF(3, 4) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_FMT_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
 int virTypedParamListAddUInt(virTypedParamListPtr list,
                              unsigned int value,
                              const char *namefmt,
                              ...)
-    ATTRIBUTE_FMT_PRINTF(3, 4) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_FMT_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
 int virTypedParamListAddLLong(virTypedParamListPtr list,
                               long long value,
                               const char *namefmt,
                               ...)
-    ATTRIBUTE_FMT_PRINTF(3, 4) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_FMT_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
 int virTypedParamListAddULLong(virTypedParamListPtr list,
                                unsigned long long value,
                                const char *namefmt,
                                ...)
-    ATTRIBUTE_FMT_PRINTF(3, 4) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_FMT_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
 int virTypedParamListAddString(virTypedParamListPtr list,
                                const char *value,
                                const char *namefmt,
                                ...)
-    ATTRIBUTE_FMT_PRINTF(3, 4) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_FMT_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
 int virTypedParamListAddBoolean(virTypedParamListPtr list,
                                 bool value,
                                 const char *namefmt,
                                 ...)
-    ATTRIBUTE_FMT_PRINTF(3, 4) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_FMT_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
 int virTypedParamListAddDouble(virTypedParamListPtr list,
                                double value,
                                const char *namefmt,
                                ...)
-    ATTRIBUTE_FMT_PRINTF(3, 4) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_FMT_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;

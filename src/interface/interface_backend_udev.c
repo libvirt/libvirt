@@ -588,7 +588,7 @@ udevBridgeScanDirFilter(const struct dirent *entry)
 
 static int
 ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK
+ATTRIBUTE_NONNULL(4) G_GNUC_WARN_UNUSED_RESULT
 udevGetIfaceDefBond(struct udev *udev,
                     struct udev_device *dev,
                     const char *name,
@@ -813,7 +813,7 @@ udevGetIfaceDefBond(struct udev *udev,
 
 static int
 ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK
+ATTRIBUTE_NONNULL(4) G_GNUC_WARN_UNUSED_RESULT
 udevGetIfaceDefBridge(struct udev *udev,
                       struct udev_device *dev,
                       const char *name,
@@ -919,7 +919,7 @@ udevGetIfaceDefBridge(struct udev *udev,
 
 static int
 ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK
+ATTRIBUTE_NONNULL(4) G_GNUC_WARN_UNUSED_RESULT
 udevGetIfaceDefVlan(struct udev *udev ATTRIBUTE_UNUSED,
                     struct udev_device *dev ATTRIBUTE_UNUSED,
                     const char *name,

@@ -40,10 +40,10 @@ int qemuTeardownInputCgroup(virDomainObjPtr vm,
                             virDomainInputDefPtr dev);
 int qemuSetupHostdevCgroup(virDomainObjPtr vm,
                            virDomainHostdevDefPtr dev)
-   ATTRIBUTE_RETURN_CHECK;
+   G_GNUC_WARN_UNUSED_RESULT;
 int qemuTeardownHostdevCgroup(virDomainObjPtr vm,
                               virDomainHostdevDefPtr dev)
-   ATTRIBUTE_RETURN_CHECK;
+   G_GNUC_WARN_UNUSED_RESULT;
 int qemuSetupMemoryDevicesCgroup(virDomainObjPtr vm,
                                  virDomainMemoryDefPtr mem);
 int qemuTeardownMemoryDevicesCgroup(virDomainObjPtr vm,

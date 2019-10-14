@@ -45,14 +45,14 @@ virCryptoHashBuf(virCryptoHash hash,
                  const char *input,
                  unsigned char *output)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 
 int
 virCryptoHashString(virCryptoHash hash,
                     const char *input,
                     char **output)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-    ATTRIBUTE_RETURN_CHECK;
+    G_GNUC_WARN_UNUSED_RESULT;
 
 bool virCryptoHaveCipher(virCryptoCipher algorithm);
 
@@ -62,4 +62,4 @@ int virCryptoEncryptData(virCryptoCipher algorithm,
                          uint8_t *data, size_t datalen,
                          uint8_t **ciphertext, size_t *ciphertextlen)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(6)
-    ATTRIBUTE_NONNULL(8) ATTRIBUTE_NONNULL(9) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(8) ATTRIBUTE_NONNULL(9) G_GNUC_WARN_UNUSED_RESULT;
