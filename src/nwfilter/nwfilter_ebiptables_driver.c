@@ -616,9 +616,9 @@ iptablesLinkTmpRootChainsFW(virFirewallPtr fw,
 
 
 static void
-iptablesSetupVirtInPostFW(virFirewallPtr fw ATTRIBUTE_UNUSED,
-                          virFirewallLayer layer ATTRIBUTE_UNUSED,
-                          const char *ifname ATTRIBUTE_UNUSED)
+iptablesSetupVirtInPostFW(virFirewallPtr fw G_GNUC_UNUSED,
+                          virFirewallLayer layer G_GNUC_UNUSED,
+                          const char *ifname G_GNUC_UNUSED)
 {
     virFirewallAddRuleFull(fw, layer,
                            true, NULL, NULL,
@@ -2805,7 +2805,7 @@ static int
 ebtablesRenameTmpSubAndRootChainsQuery(virFirewallPtr fw,
                                        virFirewallLayer layer,
                                        const char *const *lines,
-                                       void *opaque ATTRIBUTE_UNUSED)
+                                       void *opaque G_GNUC_UNUSED)
 {
     size_t i;
     char newchain[MAX_CHAINNAME_LENGTH];
@@ -3759,8 +3759,8 @@ ebiptablesDriverProbeCtdir(void)
 
 
 static int
-ebiptablesDriverProbeStateMatchQuery(virFirewallPtr fw ATTRIBUTE_UNUSED,
-                                     virFirewallLayer layer ATTRIBUTE_UNUSED,
+ebiptablesDriverProbeStateMatchQuery(virFirewallPtr fw G_GNUC_UNUSED,
+                                     virFirewallLayer layer G_GNUC_UNUSED,
                                      const char *const *lines,
                                      void *opaque)
 {

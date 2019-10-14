@@ -661,7 +661,7 @@ virNWFilterSnoopReqUnlock(virNWFilterSnoopReqPtr req)
  * virNWFilterSnoopReqRelease - hash table free function to kill a request
  */
 static void
-virNWFilterSnoopReqRelease(void *req0, const void *name ATTRIBUTE_UNUSED)
+virNWFilterSnoopReqRelease(void *req0, const void *name G_GNUC_UNUSED)
 {
     virNWFilterSnoopReqPtr req = req0;
 
@@ -1826,8 +1826,8 @@ virNWFilterSnoopLeaseFileSave(virNWFilterSnoopIPLeasePtr ipl)
  */
 static int
 virNWFilterSnoopPruneIter(const void *payload,
-                          const void *name ATTRIBUTE_UNUSED,
-                          const void *data ATTRIBUTE_UNUSED)
+                          const void *name G_GNUC_UNUSED,
+                          const void *data G_GNUC_UNUSED)
 {
     virNWFilterSnoopReqPtr req = (virNWFilterSnoopReqPtr)payload;
     bool del_req;
@@ -1856,7 +1856,7 @@ virNWFilterSnoopPruneIter(const void *payload,
  */
 static int
 virNWFilterSnoopSaveIter(void *payload,
-                         const void *name ATTRIBUTE_UNUSED,
+                         const void *name G_GNUC_UNUSED,
                          void *data)
 {
     virNWFilterSnoopReqPtr req = payload;
@@ -2023,8 +2023,8 @@ virNWFilterSnoopJoinThreads(void)
  */
 static int
 virNWFilterSnoopRemAllReqIter(const void *payload,
-                              const void *name ATTRIBUTE_UNUSED,
-                              const void *data ATTRIBUTE_UNUSED)
+                              const void *name G_GNUC_UNUSED,
+                              const void *data G_GNUC_UNUSED)
 {
     virNWFilterSnoopReqPtr req = (virNWFilterSnoopReqPtr)payload;
 
@@ -2200,7 +2200,7 @@ virNWFilterDHCPSnoopInit(void)
 }
 
 void
-virNWFilterDHCPSnoopEnd(const char *ifname ATTRIBUTE_UNUSED)
+virNWFilterDHCPSnoopEnd(const char *ifname G_GNUC_UNUSED)
 {
     return;
 }
@@ -2212,9 +2212,9 @@ virNWFilterDHCPSnoopShutdown(void)
 }
 
 int
-virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver ATTRIBUTE_UNUSED,
-                        virNWFilterBindingDefPtr binding ATTRIBUTE_UNUSED,
-                        virNWFilterDriverStatePtr driver ATTRIBUTE_UNUSED)
+virNWFilterDHCPSnoopReq(virNWFilterTechDriverPtr techdriver G_GNUC_UNUSED,
+                        virNWFilterBindingDefPtr binding G_GNUC_UNUSED,
+                        virNWFilterDriverStatePtr driver G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    _("libvirt was not compiled with libpcap and \""

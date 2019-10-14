@@ -307,7 +307,7 @@ virNWFilterHasLearnReq(int ifindex)
 
 
 static void
-freeLearnReqEntry(void *payload, const void *name ATTRIBUTE_UNUSED)
+freeLearnReqEntry(void *payload, const void *name G_GNUC_UNUSED)
 {
     virNWFilterIPAddrLearnReqFree(payload);
 }
@@ -764,11 +764,11 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
 #else
 
 int
-virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver ATTRIBUTE_UNUSED,
-                          virNWFilterBindingDefPtr binding ATTRIBUTE_UNUSED,
-                          int ifindex ATTRIBUTE_UNUSED,
-                          virNWFilterDriverStatePtr driver ATTRIBUTE_UNUSED,
-                          int howDetect ATTRIBUTE_UNUSED)
+virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver G_GNUC_UNUSED,
+                          virNWFilterBindingDefPtr binding G_GNUC_UNUSED,
+                          int ifindex G_GNUC_UNUSED,
+                          virNWFilterDriverStatePtr driver G_GNUC_UNUSED,
+                          int howDetect G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("IP parameter must be given since libvirt "

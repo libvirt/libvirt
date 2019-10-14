@@ -80,9 +80,9 @@ static void nwfilterDriverUnlock(void)
 #ifdef WITH_FIREWALLD
 
 static DBusHandlerResult
-nwfilterFirewalldDBusFilter(DBusConnection *connection ATTRIBUTE_UNUSED,
+nwfilterFirewalldDBusFilter(DBusConnection *connection G_GNUC_UNUSED,
                             DBusMessage *message,
-                            void *user_data ATTRIBUTE_UNUSED)
+                            void *user_data G_GNUC_UNUSED)
 {
     if (dbus_message_is_signal(message, DBUS_INTERFACE_DBUS,
                                "NameOwnerChanged") ||
@@ -154,7 +154,7 @@ nwfilterDriverRemoveDBusMatches(void)
 }
 
 static int
-nwfilterDriverInstallDBusMatches(DBusConnection *sysbus ATTRIBUTE_UNUSED)
+nwfilterDriverInstallDBusMatches(DBusConnection *sysbus G_GNUC_UNUSED)
 {
     return 0;
 }
@@ -177,8 +177,8 @@ virNWFilterTriggerRebuildImpl(void *opaque)
  */
 static int
 nwfilterStateInitialize(bool privileged,
-                        virStateInhibitCallback callback ATTRIBUTE_UNUSED,
-                        void *opaque ATTRIBUTE_UNUSED)
+                        virStateInhibitCallback callback G_GNUC_UNUSED,
+                        void *opaque G_GNUC_UNUSED)
 {
     DBusConnection *sysbus = NULL;
 
@@ -384,8 +384,8 @@ nwfilterStateCleanup(void)
 
 static virDrvOpenStatus
 nwfilterConnectOpen(virConnectPtr conn,
-                    virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                    virConfPtr conf ATTRIBUTE_UNUSED,
+                    virConnectAuthPtr auth G_GNUC_UNUSED,
+                    virConfPtr conf G_GNUC_UNUSED,
                     unsigned int flags)
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
@@ -409,27 +409,27 @@ nwfilterConnectOpen(virConnectPtr conn,
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-static int nwfilterConnectClose(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int nwfilterConnectClose(virConnectPtr conn G_GNUC_UNUSED)
 {
     return 0;
 }
 
 
-static int nwfilterConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int nwfilterConnectIsSecure(virConnectPtr conn G_GNUC_UNUSED)
 {
     /* Trivially secure, since always inside the daemon */
     return 1;
 }
 
 
-static int nwfilterConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int nwfilterConnectIsEncrypted(virConnectPtr conn G_GNUC_UNUSED)
 {
     /* Not encrypted, but remote driver takes care of that */
     return 0;
 }
 
 
-static int nwfilterConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int nwfilterConnectIsAlive(virConnectPtr conn G_GNUC_UNUSED)
 {
     return 1;
 }

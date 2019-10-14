@@ -140,7 +140,7 @@ struct printString
 
 
 static int
-printString(void *payload ATTRIBUTE_UNUSED, const void *name, void *data)
+printString(void *payload G_GNUC_UNUSED, const void *name, void *data)
 {
     struct printString *ps = data;
 
