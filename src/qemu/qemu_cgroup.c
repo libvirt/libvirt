@@ -285,7 +285,7 @@ qemuTeardownChrSourceCgroup(virDomainObjPtr vm,
 
 
 static int
-qemuSetupChardevCgroupCB(virDomainDefPtr def ATTRIBUTE_UNUSED,
+qemuSetupChardevCgroupCB(virDomainDefPtr def G_GNUC_UNUSED,
                          virDomainChrDefPtr dev,
                          void *opaque)
 {

@@ -51,7 +51,7 @@ qemuBlockNodeNameValidate(const char *nn)
 
 
 static int
-qemuBlockNamedNodesArrayToHash(size_t pos ATTRIBUTE_UNUSED,
+qemuBlockNamedNodesArrayToHash(size_t pos G_GNUC_UNUSED,
                                virJSONValuePtr item,
                                void *opaque)
 {
@@ -93,7 +93,7 @@ VIR_DEFINE_AUTOPTR_FUNC(qemuBlockNodeNameBackingChainData,
 
 static void
 qemuBlockNodeNameBackingChainDataHashEntryFree(void *opaque,
-                                               const void *name ATTRIBUTE_UNUSED)
+                                               const void *name G_GNUC_UNUSED)
 {
     qemuBlockNodeNameBackingChainDataFree(opaque);
 }
@@ -192,7 +192,7 @@ qemuBlockNodeNameGetBackingChainBacking(virJSONValuePtr next,
 
 
 static int
-qemuBlockNodeNameGetBackingChainDisk(size_t pos ATTRIBUTE_UNUSED,
+qemuBlockNodeNameGetBackingChainDisk(size_t pos G_GNUC_UNUSED,
                                      virJSONValuePtr item,
                                      void *opaque)
 {

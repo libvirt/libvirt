@@ -197,7 +197,7 @@ qemuDomainLogContextDispose(void *obj)
 
 const char *
 qemuDomainAsyncJobPhaseToString(qemuDomainAsyncJob job,
-                                int phase ATTRIBUTE_UNUSED)
+                                int phase G_GNUC_UNUSED)
 {
     switch (job) {
     case QEMU_ASYNC_JOB_MIGRATION_OUT:
@@ -1253,7 +1253,7 @@ qemuDomainVsockPrivateNew(void)
 
 
 static void
-qemuDomainVsockPrivateDispose(void *obj ATTRIBUTE_UNUSED)
+qemuDomainVsockPrivateDispose(void *obj G_GNUC_UNUSED)
 {
     qemuDomainVsockPrivatePtr priv = obj;
 
@@ -1333,7 +1333,7 @@ qemuDomainNetworkPrivateNew(void)
 
 
 static void
-qemuDomainNetworkPrivateDispose(void *obj ATTRIBUTE_UNUSED)
+qemuDomainNetworkPrivateDispose(void *obj G_GNUC_UNUSED)
 {
     qemuDomainNetworkPrivatePtr priv = obj;
 
@@ -2076,7 +2076,7 @@ qemuDomainSetPrivatePaths(virQEMUDriverPtr driver,
 
 static void
 dbusVMStateHashFree(void *opaque,
-                    const void *name ATTRIBUTE_UNUSED)
+                    const void *name G_GNUC_UNUSED)
 {
     qemuDBusVMStateFree(opaque);
 }
@@ -2473,7 +2473,7 @@ qemuDomainObjPrivateXMLFormatBlockjobFormatSource(virBufferPtr buf,
 
 static int
 qemuDomainObjPrivateXMLFormatBlockjobIterator(void *payload,
-                                              const void *name ATTRIBUTE_UNUSED,
+                                              const void *name G_GNUC_UNUSED,
                                               void *opaque)
 {
     VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
@@ -4598,7 +4598,7 @@ qemuDomainDefTsegPostParse(virDomainDefPtr def,
 static int
 qemuDomainDefPostParseBasic(virDomainDefPtr def,
                             virCapsPtr caps,
-                            void *opaque ATTRIBUTE_UNUSED)
+                            void *opaque G_GNUC_UNUSED)
 {
     /* check for emulator and create a default one if needed */
     if (!def->emulator &&
@@ -4611,7 +4611,7 @@ qemuDomainDefPostParseBasic(virDomainDefPtr def,
 
 static int
 qemuDomainDefPostParse(virDomainDefPtr def,
-                       virCapsPtr caps ATTRIBUTE_UNUSED,
+                       virCapsPtr caps G_GNUC_UNUSED,
                        unsigned int parseFlags,
                        void *opaque,
                        void *parseOpaque)
@@ -4868,7 +4868,7 @@ qemuDomainValidateCpuCount(const virDomainDef *def,
 
 static int
 qemuDomainDefValidate(const virDomainDef *def,
-                      virCapsPtr caps ATTRIBUTE_UNUSED,
+                      virCapsPtr caps G_GNUC_UNUSED,
                       void *opaque)
 {
     virQEMUDriverPtr driver = opaque;
@@ -5306,7 +5306,7 @@ qemuDomainSmartcardDefValidate(const virDomainSmartcardDef *def)
 
 static int
 qemuDomainRNGDefValidate(const virDomainRNGDef *def,
-                         virQEMUCapsPtr qemuCaps ATTRIBUTE_UNUSED)
+                         virQEMUCapsPtr qemuCaps G_GNUC_UNUSED)
 {
     if (def->backend == VIR_DOMAIN_RNG_BACKEND_EGD &&
         qemuDomainChrSourceDefValidate(def->source.chardev) < 0)
@@ -6879,7 +6879,7 @@ qemuDomainDeviceDefValidateGraphics(const virDomainGraphicsDef *graphics,
 
 static int
 qemuDomainDeviceDefValidateInput(const virDomainInputDef *input,
-                                 const virDomainDef *def ATTRIBUTE_UNUSED,
+                                 const virDomainDef *def G_GNUC_UNUSED,
                                  virQEMUCapsPtr qemuCaps)
 {
     const char *baseName;
@@ -7078,8 +7078,8 @@ qemuDomainDeviceDefValidateIOMMU(const virDomainIOMMUDef *iommu,
 
 static int
 qemuDomainDeviceDefValidateFS(virDomainFSDefPtr fs,
-                              const virDomainDef *def ATTRIBUTE_UNUSED,
-                              virQEMUCapsPtr qemuCaps ATTRIBUTE_UNUSED)
+                              const virDomainDef *def G_GNUC_UNUSED,
+                              virQEMUCapsPtr qemuCaps G_GNUC_UNUSED)
 {
     if (fs->type != VIR_DOMAIN_FS_TYPE_MOUNT) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -7903,7 +7903,7 @@ qemuDomainHostdevDefPostParse(virDomainHostdevDefPtr hostdev,
 static int
 qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                              const virDomainDef *def,
-                             virCapsPtr caps ATTRIBUTE_UNUSED,
+                             virCapsPtr caps G_GNUC_UNUSED,
                              unsigned int parseFlags,
                              void *opaque,
                              void *parseOpaque)
@@ -7989,8 +7989,8 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 
 static int
 qemuDomainDefAssignAddresses(virDomainDef *def,
-                             virCapsPtr caps ATTRIBUTE_UNUSED,
-                             unsigned int parseFlags ATTRIBUTE_UNUSED,
+                             virCapsPtr caps G_GNUC_UNUSED,
+                             unsigned int parseFlags G_GNUC_UNUSED,
                              void *opaque,
                              void *parseOpaque)
 {
@@ -8014,8 +8014,8 @@ qemuDomainDefAssignAddresses(virDomainDef *def,
 
 static int
 qemuDomainPostParseDataAlloc(const virDomainDef *def,
-                             virCapsPtr caps ATTRIBUTE_UNUSED,
-                             unsigned int parseFlags ATTRIBUTE_UNUSED,
+                             virCapsPtr caps G_GNUC_UNUSED,
+                             unsigned int parseFlags G_GNUC_UNUSED,
                              void *opaque,
                              void **parseOpaque)
 {
@@ -9781,7 +9781,7 @@ qemuDomainSnapshotDiscard(virQEMUDriverPtr driver,
 
 /* Hash iterator callback to discard multiple snapshots.  */
 int qemuDomainMomentDiscardAll(void *payload,
-                               const void *name ATTRIBUTE_UNUSED,
+                               const void *name G_GNUC_UNUSED,
                                void *data)
 {
     virDomainMomentObjPtr moment = payload;
@@ -11100,7 +11100,7 @@ qemuDomainGetMemorySizeAlignment(virDomainDefPtr def)
 
 static unsigned long long
 qemuDomainGetMemoryModuleSizeAlignment(const virDomainDef *def,
-                                       const virDomainMemoryDef *mem ATTRIBUTE_UNUSED)
+                                       const virDomainMemoryDef *mem G_GNUC_UNUSED)
 {
     /* PPC requires the memory sizes to be rounded to 256MiB increments, so
      * round them to the size always. */
@@ -13296,7 +13296,7 @@ qemuDomainCreateDevice(const char *device,
 
 static int
 qemuDomainPopulateDevices(virQEMUDriverConfigPtr cfg,
-                          virDomainObjPtr vm ATTRIBUTE_UNUSED,
+                          virDomainObjPtr vm G_GNUC_UNUSED,
                           const struct qemuDomainCreateDeviceData *data)
 {
     const char *const *devices = (const char *const *) cfg->cgroupDeviceACL;
@@ -13358,7 +13358,7 @@ qemuDomainSetupDev(virQEMUDriverConfigPtr cfg,
 
 
 static int
-qemuDomainSetupDisk(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
+qemuDomainSetupDisk(virQEMUDriverConfigPtr cfg G_GNUC_UNUSED,
                     virDomainDiskDefPtr disk,
                     const struct qemuDomainCreateDeviceData *data)
 {
@@ -13409,7 +13409,7 @@ qemuDomainSetupAllDisks(virQEMUDriverConfigPtr cfg,
 
 
 static int
-qemuDomainSetupHostdev(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
+qemuDomainSetupHostdev(virQEMUDriverConfigPtr cfg G_GNUC_UNUSED,
                        virDomainHostdevDefPtr dev,
                        const struct qemuDomainCreateDeviceData *data)
 {
@@ -13454,7 +13454,7 @@ qemuDomainSetupAllHostdevs(virQEMUDriverConfigPtr cfg,
 
 
 static int
-qemuDomainSetupMemory(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
+qemuDomainSetupMemory(virQEMUDriverConfigPtr cfg G_GNUC_UNUSED,
                       virDomainMemoryDefPtr mem,
                       const struct qemuDomainCreateDeviceData *data)
 {
@@ -13485,7 +13485,7 @@ qemuDomainSetupAllMemories(virQEMUDriverConfigPtr cfg,
 
 
 static int
-qemuDomainSetupChardev(virDomainDefPtr def ATTRIBUTE_UNUSED,
+qemuDomainSetupChardev(virDomainDefPtr def G_GNUC_UNUSED,
                        virDomainChrDefPtr dev,
                        void *opaque)
 {
@@ -13505,7 +13505,7 @@ qemuDomainSetupChardev(virDomainDefPtr def ATTRIBUTE_UNUSED,
 
 
 static int
-qemuDomainSetupAllChardevs(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
+qemuDomainSetupAllChardevs(virQEMUDriverConfigPtr cfg G_GNUC_UNUSED,
                            virDomainObjPtr vm,
                            const struct qemuDomainCreateDeviceData *data)
 {
@@ -13523,7 +13523,7 @@ qemuDomainSetupAllChardevs(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
 
 
 static int
-qemuDomainSetupTPM(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
+qemuDomainSetupTPM(virQEMUDriverConfigPtr cfg G_GNUC_UNUSED,
                    virDomainObjPtr vm,
                    const struct qemuDomainCreateDeviceData *data)
 {
@@ -13553,7 +13553,7 @@ qemuDomainSetupTPM(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
 
 
 static int
-qemuDomainSetupGraphics(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
+qemuDomainSetupGraphics(virQEMUDriverConfigPtr cfg G_GNUC_UNUSED,
                         virDomainGraphicsDefPtr gfx,
                         const struct qemuDomainCreateDeviceData *data)
 {
@@ -13587,7 +13587,7 @@ qemuDomainSetupAllGraphics(virQEMUDriverConfigPtr cfg,
 
 
 static int
-qemuDomainSetupInput(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
+qemuDomainSetupInput(virQEMUDriverConfigPtr cfg G_GNUC_UNUSED,
                      virDomainInputDefPtr input,
                      const struct qemuDomainCreateDeviceData *data)
 {
@@ -13620,7 +13620,7 @@ qemuDomainSetupAllInputs(virQEMUDriverConfigPtr cfg,
 
 
 static int
-qemuDomainSetupRNG(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
+qemuDomainSetupRNG(virQEMUDriverConfigPtr cfg G_GNUC_UNUSED,
                    virDomainRNGDefPtr rng,
                    const struct qemuDomainCreateDeviceData *data)
 {
@@ -13660,7 +13660,7 @@ qemuDomainSetupAllRNGs(virQEMUDriverConfigPtr cfg,
 
 
 static int
-qemuDomainSetupLoader(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
+qemuDomainSetupLoader(virQEMUDriverConfigPtr cfg G_GNUC_UNUSED,
                       virDomainObjPtr vm,
                       const struct qemuDomainCreateDeviceData *data)
 {
@@ -13699,7 +13699,7 @@ qemuDomainSetupLoader(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
 
 
 static int
-qemuDomainSetupLaunchSecurity(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
+qemuDomainSetupLaunchSecurity(virQEMUDriverConfigPtr cfg G_GNUC_UNUSED,
                               virDomainObjPtr vm,
                               const struct qemuDomainCreateDeviceData *data)
 {
@@ -13890,7 +13890,7 @@ qemuDomainCreateNamespace(virQEMUDriverPtr driver,
 
 
 void
-qemuDomainDestroyNamespace(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+qemuDomainDestroyNamespace(virQEMUDriverPtr driver G_GNUC_UNUSED,
                            virDomainObjPtr vm)
 {
     if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
@@ -13899,7 +13899,7 @@ qemuDomainDestroyNamespace(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
 
 bool
-qemuDomainNamespaceAvailable(qemuDomainNamespace ns ATTRIBUTE_UNUSED)
+qemuDomainNamespaceAvailable(qemuDomainNamespace ns G_GNUC_UNUSED)
 {
 #if !defined(__linux__)
     /* Namespaces are Linux specific. */
@@ -13943,7 +13943,7 @@ struct qemuDomainAttachDeviceMknodData {
 /* Our way of creating devices is highly linux specific */
 #if defined(__linux__)
 static int
-qemuDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
+qemuDomainAttachDeviceMknodHelper(pid_t pid G_GNUC_UNUSED,
                                   void *opaque)
 {
     struct qemuDomainAttachDeviceMknodData *data = opaque;
@@ -14232,12 +14232,12 @@ qemuDomainAttachDeviceMknodRecursive(virQEMUDriverPtr driver,
 
 
 static int
-qemuDomainAttachDeviceMknodRecursive(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
-                                     virDomainObjPtr vm ATTRIBUTE_UNUSED,
-                                     const char *file ATTRIBUTE_UNUSED,
-                                     char * const *devMountsPath ATTRIBUTE_UNUSED,
-                                     size_t ndevMountsPath ATTRIBUTE_UNUSED,
-                                     unsigned int ttl ATTRIBUTE_UNUSED)
+qemuDomainAttachDeviceMknodRecursive(virQEMUDriverPtr driver G_GNUC_UNUSED,
+                                     virDomainObjPtr vm G_GNUC_UNUSED,
+                                     const char *file G_GNUC_UNUSED,
+                                     char * const *devMountsPath G_GNUC_UNUSED,
+                                     size_t ndevMountsPath G_GNUC_UNUSED,
+                                     unsigned int ttl G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Namespaces are not supported on this platform."));
@@ -14264,7 +14264,7 @@ qemuDomainAttachDeviceMknod(virQEMUDriverPtr driver,
 
 
 static int
-qemuDomainDetachDeviceUnlinkHelper(pid_t pid ATTRIBUTE_UNUSED,
+qemuDomainDetachDeviceUnlinkHelper(pid_t pid G_GNUC_UNUSED,
                                    void *opaque)
 {
     const char *path = opaque;
@@ -14281,7 +14281,7 @@ qemuDomainDetachDeviceUnlinkHelper(pid_t pid ATTRIBUTE_UNUSED,
 
 
 static int
-qemuDomainDetachDeviceUnlink(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+qemuDomainDetachDeviceUnlink(virQEMUDriverPtr driver G_GNUC_UNUSED,
                              virDomainObjPtr vm,
                              const char *file,
                              char * const *devMountsPath,
@@ -14448,8 +14448,8 @@ qemuDomainNamespaceSetupDisk(virDomainObjPtr vm,
 
 
 int
-qemuDomainNamespaceTeardownDisk(virDomainObjPtr vm ATTRIBUTE_UNUSED,
-                                virStorageSourcePtr src ATTRIBUTE_UNUSED)
+qemuDomainNamespaceTeardownDisk(virDomainObjPtr vm G_GNUC_UNUSED,
+                                virStorageSourcePtr src G_GNUC_UNUSED)
 {
     /* While in hotplug case we create the whole backing chain,
      * here we must limit ourselves. The disk we want to remove
@@ -14703,7 +14703,7 @@ qemuDomainDiskLookupByNodename(virDomainDefPtr def,
  */
 char *
 qemuDomainDiskBackingStoreGetName(virDomainDiskDefPtr disk,
-                                  virStorageSourcePtr src ATTRIBUTE_UNUSED,
+                                  virStorageSourcePtr src G_GNUC_UNUSED,
                                   unsigned int idx)
 {
     char *ret = NULL;
@@ -14797,7 +14797,7 @@ qemuDomainSaveCookieNew(virDomainObjPtr vm)
 
 
 static int
-qemuDomainSaveCookieParse(xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
+qemuDomainSaveCookieParse(xmlXPathContextPtr ctxt G_GNUC_UNUSED,
                           virObjectPtr *obj)
 {
     qemuDomainSaveCookiePtr cookie = NULL;
@@ -15493,7 +15493,7 @@ qemuDomainPausedReasonToSuspendedEvent(virDomainPausedReason reason)
 
 static int
 qemuDomainDefHasManagedPRBlockjobIterator(void *payload,
-                                          const void *name ATTRIBUTE_UNUSED,
+                                          const void *name G_GNUC_UNUSED,
                                           void *opaque)
 {
     qemuBlockJobDataPtr job = payload;

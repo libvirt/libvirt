@@ -1346,7 +1346,7 @@ struct virQEMUDriverSearchDomcapsData {
 
 static int
 virQEMUDriverSearchDomcaps(const void *payload,
-                           const void *name ATTRIBUTE_UNUSED,
+                           const void *name G_GNUC_UNUSED,
                            const void *opaque)
 {
     virDomainCapsPtr domCaps = (virDomainCapsPtr) payload;
@@ -1551,7 +1551,7 @@ qemuSharedDeviceEntryDomainExists(qemuSharedDeviceEntryPtr entry,
 }
 
 void
-qemuSharedDeviceEntryFree(void *payload, const void *name ATTRIBUTE_UNUSED)
+qemuSharedDeviceEntryFree(void *payload, const void *name G_GNUC_UNUSED)
 {
     qemuSharedDeviceEntryPtr entry = payload;
     size_t i;

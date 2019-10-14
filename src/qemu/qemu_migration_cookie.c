@@ -228,7 +228,7 @@ qemuMigrationCookieGraphicsSpiceAlloc(virQEMUDriverPtr driver,
 
 
 static qemuMigrationCookieNetworkPtr
-qemuMigrationCookieNetworkAlloc(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+qemuMigrationCookieNetworkAlloc(virQEMUDriverPtr driver G_GNUC_UNUSED,
                                 virDomainDefPtr def)
 {
     qemuMigrationCookieNetworkPtr mig;

@@ -1774,7 +1774,7 @@ qemuMigrationSrcGraphicsRelocate(virQEMUDriverPtr driver,
 
 
 static int
-qemuMigrationDstOPDRelocate(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+qemuMigrationDstOPDRelocate(virQEMUDriverPtr driver G_GNUC_UNUSED,
                             virDomainObjPtr vm,
                             qemuMigrationCookiePtr cookie)
 {
@@ -5492,7 +5492,7 @@ qemuMigrationJobFinish(virQEMUDriverPtr driver, virDomainObjPtr vm)
 
 static void
 qemuMigrationDstErrorFree(void *data,
-                       const void *name ATTRIBUTE_UNUSED)
+                       const void *name G_GNUC_UNUSED)
 {
     virErrorPtr err = data;
     virFreeError(err);

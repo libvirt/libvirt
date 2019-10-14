@@ -4195,8 +4195,8 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
 }
 
 
-static int qemuComparePCIDevice(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                                virDomainDeviceDefPtr device ATTRIBUTE_UNUSED,
+static int qemuComparePCIDevice(virDomainDefPtr def G_GNUC_UNUSED,
+                                virDomainDeviceDefPtr device G_GNUC_UNUSED,
                                 virDomainDeviceInfoPtr info1,
                                 void *opaque)
 {

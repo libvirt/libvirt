@@ -2109,7 +2109,7 @@ qemuMonitorBlockIOStatusToError(const char *status)
 
 
 static void
-qemuDomainDiskInfoFree(void *value, const void *name ATTRIBUTE_UNUSED)
+qemuDomainDiskInfoFree(void *value, const void *name G_GNUC_UNUSED)
 {
     struct qemuDomainDiskInfo *info = value;
 
@@ -2763,7 +2763,7 @@ qemuMonitorQueryRxFilter(qemuMonitorPtr mon, const char *alias,
 
 void
 qemuMonitorChardevInfoFree(void *data,
-                           const void *name ATTRIBUTE_UNUSED)
+                           const void *name G_GNUC_UNUSED)
 {
     qemuMonitorChardevInfoPtr info = data;
 

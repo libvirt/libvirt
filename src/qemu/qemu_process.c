@@ -180,7 +180,7 @@ qemuProcessHandleAgentEOF(qemuAgentPtr agent,
  * allowed
  */
 static void
-qemuProcessHandleAgentError(qemuAgentPtr agent ATTRIBUTE_UNUSED,
+qemuProcessHandleAgentError(qemuAgentPtr agent G_GNUC_UNUSED,
                             virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv;
@@ -339,7 +339,7 @@ qemuProcessHandleMonitorEOF(qemuMonitorPtr mon,
  * allowed
  */
 static void
-qemuProcessHandleMonitorError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuProcessHandleMonitorError(qemuMonitorPtr mon G_GNUC_UNUSED,
                               virDomainObjPtr vm,
                               void *opaque)
 {
@@ -401,7 +401,7 @@ qemuProcessFindDomainDiskByAliasOrQOM(virDomainObjPtr vm,
 
 
 static int
-qemuProcessHandleReset(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuProcessHandleReset(qemuMonitorPtr mon G_GNUC_UNUSED,
                        virDomainObjPtr vm,
                        void *opaque)
 {
@@ -543,7 +543,7 @@ qemuProcessShutdownOrReboot(virQEMUDriverPtr driver,
 
 
 static int
-qemuProcessHandleEvent(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuProcessHandleEvent(qemuMonitorPtr mon G_GNUC_UNUSED,
                        virDomainObjPtr vm,
                        const char *eventName,
                        long long seconds,
@@ -569,7 +569,7 @@ qemuProcessHandleEvent(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 
 static int
-qemuProcessHandleShutdown(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuProcessHandleShutdown(qemuMonitorPtr mon G_GNUC_UNUSED,
                           virDomainObjPtr vm,
                           virTristateBool guest_initiated,
                           void *opaque)
@@ -641,7 +641,7 @@ qemuProcessHandleShutdown(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 
 static int
-qemuProcessHandleStop(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuProcessHandleStop(qemuMonitorPtr mon G_GNUC_UNUSED,
                       virDomainObjPtr vm,
                       void *opaque)
 {
@@ -702,7 +702,7 @@ qemuProcessHandleStop(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 
 static int
-qemuProcessHandleResume(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuProcessHandleResume(qemuMonitorPtr mon G_GNUC_UNUSED,
                         virDomainObjPtr vm,
                         void *opaque)
 {
@@ -746,7 +746,7 @@ qemuProcessHandleResume(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 }
 
 static int
-qemuProcessHandleRTCChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuProcessHandleRTCChange(qemuMonitorPtr mon G_GNUC_UNUSED,
                            virDomainObjPtr vm,
                            long long offset,
                            void *opaque)
@@ -791,7 +791,7 @@ qemuProcessHandleRTCChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 
 static int
-qemuProcessHandleWatchdog(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuProcessHandleWatchdog(qemuMonitorPtr mon G_GNUC_UNUSED,
                           virDomainObjPtr vm,
                           int action,
                           void *opaque)
@@ -853,7 +853,7 @@ qemuProcessHandleWatchdog(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 
 static int
-qemuProcessHandleIOError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuProcessHandleIOError(qemuMonitorPtr mon G_GNUC_UNUSED,
                          virDomainObjPtr vm,
                          const char *diskAlias,
                          const char *nodename,
@@ -924,7 +924,7 @@ qemuProcessHandleIOError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 }
 
 static int
-qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuProcessHandleBlockJob(qemuMonitorPtr mon G_GNUC_UNUSED,
                           virDomainObjPtr vm,
                           const char *diskAlias,
                           int type,
@@ -990,7 +990,7 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 
 static int
-qemuProcessHandleJobStatusChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuProcessHandleJobStatusChange(qemuMonitorPtr mon G_GNUC_UNUSED,
                                  virDomainObjPtr vm,
                                  const char *jobname,
                                  int status,
@@ -1052,7 +1052,7 @@ qemuProcessHandleJobStatusChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 
 static int
-qemuProcessHandleGraphics(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuProcessHandleGraphics(qemuMonitorPtr mon G_GNUC_UNUSED,
                           virDomainObjPtr vm,
                           int phase,
                           int localFamily,
@@ -1138,7 +1138,7 @@ qemuProcessHandleGraphics(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 }
 
 static int
-qemuProcessHandleTrayChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuProcessHandleTrayChange(qemuMonitorPtr mon G_GNUC_UNUSED,
                             virDomainObjPtr vm,
                             const char *devAlias,
                             const char *devid,
@@ -1176,7 +1176,7 @@ qemuProcessHandleTrayChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 }
 
 static int
-qemuProcessHandlePMWakeup(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuProcessHandlePMWakeup(qemuMonitorPtr mon G_GNUC_UNUSED,
                           virDomainObjPtr vm,
                           void *opaque)
 {
@@ -1215,7 +1215,7 @@ qemuProcessHandlePMWakeup(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 }
 
 static int
-qemuProcessHandlePMSuspend(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuProcessHandlePMSuspend(qemuMonitorPtr mon G_GNUC_UNUSED,
                            virDomainObjPtr vm,
                            void *opaque)
 {
@@ -1257,7 +1257,7 @@ qemuProcessHandlePMSuspend(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 }
 
 static int
-qemuProcessHandleBalloonChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuProcessHandleBalloonChange(qemuMonitorPtr mon G_GNUC_UNUSED,
                                virDomainObjPtr vm,
                                unsigned long long actual,
                                void *opaque)
@@ -1284,7 +1284,7 @@ qemuProcessHandleBalloonChange(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 }
 
 static int
-qemuProcessHandlePMSuspendDisk(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuProcessHandlePMSuspendDisk(qemuMonitorPtr mon G_GNUC_UNUSED,
                                virDomainObjPtr vm,
                                void *opaque)
 {
@@ -1328,7 +1328,7 @@ qemuProcessHandlePMSuspendDisk(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 
 static int
-qemuProcessHandleGuestPanic(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuProcessHandleGuestPanic(qemuMonitorPtr mon G_GNUC_UNUSED,
                             virDomainObjPtr vm,
                             qemuMonitorEventPanicInfoPtr info,
                             void *opaque)
@@ -1363,7 +1363,7 @@ qemuProcessHandleGuestPanic(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 
 int
-qemuProcessHandleDeviceDeleted(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuProcessHandleDeviceDeleted(qemuMonitorPtr mon G_GNUC_UNUSED,
                                virDomainObjPtr vm,
                                const char *devAlias,
                                void *opaque)
@@ -1461,7 +1461,7 @@ qemuProcessHandleDeviceDeleted(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
  *  devices.
  */
 static int
-qemuProcessHandleAcpiOstInfo(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuProcessHandleAcpiOstInfo(qemuMonitorPtr mon G_GNUC_UNUSED,
                              virDomainObjPtr vm,
                              const char *alias,
                              const char *slotType,
@@ -1501,7 +1501,7 @@ qemuProcessHandleAcpiOstInfo(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 
 static int
-qemuProcessHandleBlockThreshold(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuProcessHandleBlockThreshold(qemuMonitorPtr mon G_GNUC_UNUSED,
                                 virDomainObjPtr vm,
                                 const char *nodename,
                                 unsigned long long threshold,
@@ -1541,7 +1541,7 @@ qemuProcessHandleBlockThreshold(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 
 static int
-qemuProcessHandleNicRxFilterChanged(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuProcessHandleNicRxFilterChanged(qemuMonitorPtr mon G_GNUC_UNUSED,
                                     virDomainObjPtr vm,
                                     const char *devAlias,
                                     void *opaque)
@@ -1579,7 +1579,7 @@ qemuProcessHandleNicRxFilterChanged(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 
 static int
-qemuProcessHandleSerialChanged(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuProcessHandleSerialChanged(qemuMonitorPtr mon G_GNUC_UNUSED,
                                virDomainObjPtr vm,
                                const char *devAlias,
                                bool connected,
@@ -1619,9 +1619,9 @@ qemuProcessHandleSerialChanged(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 
 static int
-qemuProcessHandleSpiceMigrated(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuProcessHandleSpiceMigrated(qemuMonitorPtr mon G_GNUC_UNUSED,
                                virDomainObjPtr vm,
-                               void *opaque ATTRIBUTE_UNUSED)
+                               void *opaque G_GNUC_UNUSED)
 {
     qemuDomainObjPrivatePtr priv;
 
@@ -1646,7 +1646,7 @@ qemuProcessHandleSpiceMigrated(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 
 static int
-qemuProcessHandleMigrationStatus(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuProcessHandleMigrationStatus(qemuMonitorPtr mon G_GNUC_UNUSED,
                                  virDomainObjPtr vm,
                                  int status,
                                  void *opaque)
@@ -1699,7 +1699,7 @@ qemuProcessHandleMigrationStatus(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 
 static int
-qemuProcessHandleMigrationPass(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuProcessHandleMigrationPass(qemuMonitorPtr mon G_GNUC_UNUSED,
                                virDomainObjPtr vm,
                                int pass,
                                void *opaque)
@@ -1728,12 +1728,12 @@ qemuProcessHandleMigrationPass(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 
 static int
-qemuProcessHandleDumpCompleted(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuProcessHandleDumpCompleted(qemuMonitorPtr mon G_GNUC_UNUSED,
                                virDomainObjPtr vm,
                                int status,
                                qemuMonitorDumpStatsPtr stats,
                                const char *error,
-                               void *opaque ATTRIBUTE_UNUSED)
+                               void *opaque G_GNUC_UNUSED)
 {
     qemuDomainObjPrivatePtr priv;
 
@@ -1767,7 +1767,7 @@ qemuProcessHandleDumpCompleted(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 
 static int
-qemuProcessHandlePRManagerStatusChanged(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuProcessHandlePRManagerStatusChanged(qemuMonitorPtr mon G_GNUC_UNUSED,
                                         virDomainObjPtr vm,
                                         const char *prManager,
                                         bool connected,
@@ -1821,7 +1821,7 @@ qemuProcessHandlePRManagerStatusChanged(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 
 static int
-qemuProcessHandleRdmaGidStatusChanged(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuProcessHandleRdmaGidStatusChanged(qemuMonitorPtr mon G_GNUC_UNUSED,
                                       virDomainObjPtr vm,
                                       const char *netdev,
                                       bool gid_status,
@@ -2088,7 +2088,7 @@ qemuProcessReportLogError(qemuDomainLogContextPtr logCtxt,
 
 
 static void
-qemuProcessMonitorReportLogError(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuProcessMonitorReportLogError(qemuMonitorPtr mon G_GNUC_UNUSED,
                                  const char *msg,
                                  void *opaque)
 {
@@ -2568,7 +2568,7 @@ qemuProcessInitCpuAffinity(virDomainObjPtr vm)
 }
 #else /* !defined(HAVE_SCHED_GETAFFINITY) && !defined(HAVE_BSD_CPU_AFFINITY) */
 static int
-qemuProcessInitCpuAffinity(virDomainObjPtr vm ATTRIBUTE_UNUSED)
+qemuProcessInitCpuAffinity(virDomainObjPtr vm G_GNUC_UNUSED)
 {
     return 0;
 }
@@ -3013,9 +3013,9 @@ qemuProcessInitPasswords(virQEMUDriverPtr driver,
 
 
 static int
-qemuProcessPrepareChardevDevice(virDomainDefPtr def ATTRIBUTE_UNUSED,
+qemuProcessPrepareChardevDevice(virDomainDefPtr def G_GNUC_UNUSED,
                                 virDomainChrDefPtr dev,
-                                void *opaque ATTRIBUTE_UNUSED)
+                                void *opaque G_GNUC_UNUSED)
 {
     int fd;
     if (dev->source->type != VIR_DOMAIN_CHR_TYPE_FILE)
@@ -3036,9 +3036,9 @@ qemuProcessPrepareChardevDevice(virDomainDefPtr def ATTRIBUTE_UNUSED,
 
 
 static int
-qemuProcessCleanupChardevDevice(virDomainDefPtr def ATTRIBUTE_UNUSED,
+qemuProcessCleanupChardevDevice(virDomainDefPtr def G_GNUC_UNUSED,
                                 virDomainChrDefPtr dev,
-                                void *opaque ATTRIBUTE_UNUSED)
+                                void *opaque G_GNUC_UNUSED)
 {
     if (dev->source->type == VIR_DOMAIN_CHR_TYPE_UNIX &&
         dev->source->data.nix.listen &&
@@ -5048,7 +5048,7 @@ qemuProcessSetupGraphics(virQEMUDriverPtr driver,
 static int
 qemuProcessSetupRawIO(virQEMUDriverPtr driver,
                       virDomainObjPtr vm,
-                      virCommandPtr cmd ATTRIBUTE_UNUSED)
+                      virCommandPtr cmd G_GNUC_UNUSED)
 {
     bool rawio = false;
     size_t i;
@@ -8377,9 +8377,9 @@ qemuProcessReconnectAll(virQEMUDriverPtr driver)
 }
 
 
-static void virQEMUCapsMonitorNotify(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
-                                     virDomainObjPtr vm ATTRIBUTE_UNUSED,
-                                     void *opaque ATTRIBUTE_UNUSED)
+static void virQEMUCapsMonitorNotify(qemuMonitorPtr mon G_GNUC_UNUSED,
+                                     virDomainObjPtr vm G_GNUC_UNUSED,
+                                     void *opaque G_GNUC_UNUSED)
 {
 }
 

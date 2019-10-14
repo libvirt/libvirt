@@ -502,7 +502,7 @@ struct virQEMUCheckpointReparent {
 
 static int
 qemuCheckpointReparentChildren(void *payload,
-                               const void *name ATTRIBUTE_UNUSED,
+                               const void *name G_GNUC_UNUSED,
                                void *data)
 {
     virDomainMomentObjPtr moment = payload;

@@ -163,8 +163,8 @@ qemuDomainAssignVirtioSerialAddresses(virDomainDefPtr def)
 
 
 static int
-qemuDomainSpaprVIOFindByReg(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                            virDomainDeviceDefPtr device ATTRIBUTE_UNUSED,
+qemuDomainSpaprVIOFindByReg(virDomainDefPtr def G_GNUC_UNUSED,
+                            virDomainDeviceDefPtr device G_GNUC_UNUSED,
                             virDomainDeviceInfoPtr info, void *opaque)
 {
     virDomainDeviceInfoPtr target = opaque;
@@ -422,8 +422,8 @@ qemuDomainAssignS390Addresses(virDomainDefPtr def,
 
 
 static int
-qemuDomainHasVirtioMMIODevicesCallback(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                                       virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
+qemuDomainHasVirtioMMIODevicesCallback(virDomainDefPtr def G_GNUC_UNUSED,
+                                       virDomainDeviceDefPtr dev G_GNUC_UNUSED,
                                        virDomainDeviceInfoPtr info,
                                        void *opaque)
 {
@@ -1079,7 +1079,7 @@ qemuDomainFillDevicePCIConnectFlagsIterInit(virDomainDefPtr def,
  * Always returns 0 - there is no failure.
  */
 static int
-qemuDomainFillDevicePCIConnectFlagsIter(virDomainDefPtr def ATTRIBUTE_UNUSED,
+qemuDomainFillDevicePCIConnectFlagsIter(virDomainDefPtr def G_GNUC_UNUSED,
                                         virDomainDeviceDefPtr dev,
                                         virDomainDeviceInfoPtr info,
                                         void *opaque)
@@ -1135,7 +1135,7 @@ qemuDomainFillAllPCIConnectFlags(virDomainDefPtr def,
  * Always returns 0 - there is no failure.
  */
 static int
-qemuDomainFillDevicePCIExtensionFlagsIter(virDomainDefPtr def ATTRIBUTE_UNUSED,
+qemuDomainFillDevicePCIExtensionFlagsIter(virDomainDefPtr def G_GNUC_UNUSED,
                                           virDomainDeviceDefPtr dev,
                                           virDomainDeviceInfoPtr info,
                                           void *opaque)
@@ -1184,8 +1184,8 @@ qemuDomainFillAllPCIExtensionFlags(virDomainDefPtr def,
  * Return: 0 if the isolation group is not used by the device, <1 otherwise.
  */
 static int
-qemuDomainFindUnusedIsolationGroupIter(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                                       virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
+qemuDomainFindUnusedIsolationGroupIter(virDomainDefPtr def G_GNUC_UNUSED,
+                                       virDomainDeviceDefPtr dev G_GNUC_UNUSED,
                                        virDomainDeviceInfoPtr info,
                                        void *opaque)
 {
@@ -1353,8 +1353,8 @@ qemuDomainFillDeviceIsolationGroup(virDomainDefPtr def,
 static int
 qemuDomainFillDeviceIsolationGroupIter(virDomainDefPtr def,
                                        virDomainDeviceDefPtr dev,
-                                       virDomainDeviceInfoPtr info ATTRIBUTE_UNUSED,
-                                       void *opaque ATTRIBUTE_UNUSED)
+                                       virDomainDeviceInfoPtr info G_GNUC_UNUSED,
+                                       void *opaque G_GNUC_UNUSED)
 {
     return qemuDomainFillDeviceIsolationGroup(def, dev);
 }
@@ -1476,8 +1476,8 @@ qemuDomainPCIAddressReserveNextAddr(virDomainPCIAddressSetPtr addrs,
 
 
 static int
-qemuDomainAssignPCIAddressExtension(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                                    virDomainDeviceDefPtr device ATTRIBUTE_UNUSED,
+qemuDomainAssignPCIAddressExtension(virDomainDefPtr def G_GNUC_UNUSED,
+                                    virDomainDeviceDefPtr device G_GNUC_UNUSED,
                                     virDomainDeviceInfoPtr info,
                                     void *opaque)
 {
@@ -1494,7 +1494,7 @@ qemuDomainAssignPCIAddressExtension(virDomainDefPtr def ATTRIBUTE_UNUSED,
 }
 
 static int
-qemuDomainCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
+qemuDomainCollectPCIAddress(virDomainDefPtr def G_GNUC_UNUSED,
                             virDomainDeviceDefPtr device,
                             virDomainDeviceInfoPtr info,
                             void *opaque)
@@ -1586,7 +1586,7 @@ qemuDomainCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
 }
 
 static int
-qemuDomainCollectPCIAddressExtension(virDomainDefPtr def ATTRIBUTE_UNUSED,
+qemuDomainCollectPCIAddressExtension(virDomainDefPtr def G_GNUC_UNUSED,
                                      virDomainDeviceDefPtr device,
                                      virDomainDeviceInfoPtr info,
                                      void *opaque)
@@ -2964,7 +2964,7 @@ qemuDomainAssignUSBPorts(virDomainUSBAddressSetPtr addrs,
 
 
 static int
-qemuDomainAssignUSBPortsCounter(virDomainDeviceInfoPtr info ATTRIBUTE_UNUSED,
+qemuDomainAssignUSBPortsCounter(virDomainDeviceInfoPtr info G_GNUC_UNUSED,
                                 void *opaque)
 {
     struct qemuAssignUSBIteratorInfo *data = opaque;

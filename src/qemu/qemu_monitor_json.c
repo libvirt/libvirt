@@ -750,22 +750,22 @@ static void qemuMonitorJSONHandleShutdown(qemuMonitorPtr mon, virJSONValuePtr da
     qemuMonitorEmitShutdown(mon, guest_initiated);
 }
 
-static void qemuMonitorJSONHandleReset(qemuMonitorPtr mon, virJSONValuePtr data ATTRIBUTE_UNUSED)
+static void qemuMonitorJSONHandleReset(qemuMonitorPtr mon, virJSONValuePtr data G_GNUC_UNUSED)
 {
     qemuMonitorEmitReset(mon);
 }
 
-static void qemuMonitorJSONHandlePowerdown(qemuMonitorPtr mon, virJSONValuePtr data ATTRIBUTE_UNUSED)
+static void qemuMonitorJSONHandlePowerdown(qemuMonitorPtr mon, virJSONValuePtr data G_GNUC_UNUSED)
 {
     qemuMonitorEmitPowerdown(mon);
 }
 
-static void qemuMonitorJSONHandleStop(qemuMonitorPtr mon, virJSONValuePtr data ATTRIBUTE_UNUSED)
+static void qemuMonitorJSONHandleStop(qemuMonitorPtr mon, virJSONValuePtr data G_GNUC_UNUSED)
 {
     qemuMonitorEmitStop(mon);
 }
 
-static void qemuMonitorJSONHandleResume(qemuMonitorPtr mon, virJSONValuePtr data ATTRIBUTE_UNUSED)
+static void qemuMonitorJSONHandleResume(qemuMonitorPtr mon, virJSONValuePtr data G_GNUC_UNUSED)
 {
     qemuMonitorEmitResume(mon);
 }
@@ -1230,14 +1230,14 @@ qemuMonitorJSONHandleTrayChange(qemuMonitorPtr mon,
 
 static void
 qemuMonitorJSONHandlePMWakeup(qemuMonitorPtr mon,
-                              virJSONValuePtr data ATTRIBUTE_UNUSED)
+                              virJSONValuePtr data G_GNUC_UNUSED)
 {
     qemuMonitorEmitPMWakeup(mon);
 }
 
 static void
 qemuMonitorJSONHandlePMSuspend(qemuMonitorPtr mon,
-                               virJSONValuePtr data ATTRIBUTE_UNUSED)
+                               virJSONValuePtr data G_GNUC_UNUSED)
 {
     qemuMonitorEmitPMSuspend(mon);
 }
@@ -1281,7 +1281,7 @@ qemuMonitorJSONHandleBalloonChange(qemuMonitorPtr mon,
 
 static void
 qemuMonitorJSONHandlePMSuspendDisk(qemuMonitorPtr mon,
-                                   virJSONValuePtr data ATTRIBUTE_UNUSED)
+                                   virJSONValuePtr data G_GNUC_UNUSED)
 {
     qemuMonitorEmitPMSuspendDisk(mon);
 }
@@ -1337,7 +1337,7 @@ qemuMonitorJSONHandleSerialChange(qemuMonitorPtr mon,
 
 static void
 qemuMonitorJSONHandleSpiceMigrated(qemuMonitorPtr mon,
-                                   virJSONValuePtr data ATTRIBUTE_UNUSED)
+                                   virJSONValuePtr data G_GNUC_UNUSED)
 {
     qemuMonitorEmitSpiceMigrated(mon);
 }
@@ -2829,7 +2829,7 @@ qemuMonitorJSONBlockStatsUpdateCapacity(qemuMonitorPtr mon,
 
 
 static int
-qemuMonitorJSONBlockStatsUpdateCapacityBlockdevWorker(size_t pos ATTRIBUTE_UNUSED,
+qemuMonitorJSONBlockStatsUpdateCapacityBlockdevWorker(size_t pos G_GNUC_UNUSED,
                                                       virJSONValuePtr val,
                                                       void *opaque)
 {

@@ -471,7 +471,7 @@ virQEMUQAPISchemaPathExists(const char *query,
 }
 
 static int
-virQEMUQAPISchemaEntryProcess(size_t pos ATTRIBUTE_UNUSED,
+virQEMUQAPISchemaEntryProcess(size_t pos G_GNUC_UNUSED,
                               virJSONValuePtr item,
                               void *opaque)
 {

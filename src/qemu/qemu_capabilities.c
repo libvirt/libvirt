@@ -4112,7 +4112,7 @@ virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps)
 static int
 virQEMUCapsSaveFile(void *data,
                     const char *filename,
-                    void *privData ATTRIBUTE_UNUSED)
+                    void *privData G_GNUC_UNUSED)
 {
     virQEMUCapsPtr qemuCaps = data;
     char *xml = NULL;
@@ -4940,7 +4940,7 @@ virQEMUCapsCacheLookupCopy(virFileCachePtr cache,
 
 static int
 virQEMUCapsCompareArch(const void *payload,
-                       const void *name ATTRIBUTE_UNUSED,
+                       const void *name G_GNUC_UNUSED,
                        const void *opaque)
 {
     struct virQEMUCapsSearchData *data = (struct virQEMUCapsSearchData *)opaque;

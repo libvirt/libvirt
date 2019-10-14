@@ -7815,9 +7815,9 @@ qemuBuildMemoryDeviceCommandLine(virCommandPtr cmd,
 
 
 static int
-qemuBuildGraphicsSDLCommandLine(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
+qemuBuildGraphicsSDLCommandLine(virQEMUDriverConfigPtr cfg G_GNUC_UNUSED,
                                 virCommandPtr cmd,
-                                virQEMUCapsPtr qemuCaps ATTRIBUTE_UNUSED,
+                                virQEMUCapsPtr qemuCaps G_GNUC_UNUSED,
                                 virDomainGraphicsDefPtr graphics)
 {
     VIR_AUTOCLEAN(virBuffer) opt = VIR_BUFFER_INITIALIZER;
@@ -8243,7 +8243,7 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
 
 
 static int
-qemuBuildGraphicsEGLHeadlessCommandLine(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
+qemuBuildGraphicsEGLHeadlessCommandLine(virQEMUDriverConfigPtr cfg G_GNUC_UNUSED,
                                         virCommandPtr cmd,
                                         virQEMUCapsPtr qemuCaps,
                                         virDomainGraphicsDefPtr graphics)
@@ -10180,7 +10180,7 @@ qemuBuildCommandLineValidate(virQEMUDriverPtr driver,
 static int
 qemuBuildSeccompSandboxCommandLine(virCommandPtr cmd,
                                    virQEMUDriverConfigPtr cfg,
-                                   virQEMUCapsPtr qemuCaps ATTRIBUTE_UNUSED)
+                                   virQEMUCapsPtr qemuCaps G_GNUC_UNUSED)
 {
     if (cfg->seccompSandbox == 0) {
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SECCOMP_SANDBOX))
