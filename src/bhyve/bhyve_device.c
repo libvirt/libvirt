@@ -31,8 +31,8 @@
 VIR_LOG_INIT("bhyve.bhyve_device");
 
 static int
-bhyveCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                       virDomainDeviceDefPtr device ATTRIBUTE_UNUSED,
+bhyveCollectPCIAddress(virDomainDefPtr def G_GNUC_UNUSED,
+                       virDomainDeviceDefPtr device G_GNUC_UNUSED,
                        virDomainDeviceInfoPtr info,
                        void *opaque)
 {

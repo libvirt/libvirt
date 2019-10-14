@@ -191,8 +191,8 @@ bhyveConnectURIProbe(char **uri)
 
 static virDrvOpenStatus
 bhyveConnectOpen(virConnectPtr conn,
-                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                 virConfPtr conf ATTRIBUTE_UNUSED,
+                 virConnectAuthPtr auth G_GNUC_UNUSED,
+                 virConfPtr conf G_GNUC_UNUSED,
                  unsigned int flags)
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
@@ -1049,7 +1049,7 @@ bhyveDomainShutdown(virDomainPtr dom)
 
 static int
 bhyveDomainOpenConsole(virDomainPtr dom,
-                       const char *dev_name ATTRIBUTE_UNUSED,
+                       const char *dev_name G_GNUC_UNUSED,
                        virStreamPtr st,
                        unsigned int flags)
 {
@@ -1215,8 +1215,8 @@ bhyveStateCleanup(void)
 
 static int
 bhyveStateInitialize(bool privileged,
-                     virStateInhibitCallback callback ATTRIBUTE_UNUSED,
-                     void *opaque ATTRIBUTE_UNUSED)
+                     virStateInhibitCallback callback G_GNUC_UNUSED,
+                     void *opaque G_GNUC_UNUSED)
 {
     bool autostart = true;
 
@@ -1550,20 +1550,20 @@ bhyveConnectGetType(virConnectPtr conn)
     return "BHYVE";
 }
 
-static int bhyveConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int bhyveConnectIsAlive(virConnectPtr conn G_GNUC_UNUSED)
 {
     return 1;
 }
 
 static int
-bhyveConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+bhyveConnectIsSecure(virConnectPtr conn G_GNUC_UNUSED)
 {
     /* Trivially secure, since always inside the daemon */
     return 1;
 }
 
 static int
-bhyveConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+bhyveConnectIsEncrypted(virConnectPtr conn G_GNUC_UNUSED)
 {
     /* Not encrypted, but remote driver takes care of that */
     return 0;

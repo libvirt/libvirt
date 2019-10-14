@@ -263,7 +263,7 @@ bhyveCommandLineToArgv(const char *nativeConfig,
 
 static int
 bhyveParseBhyveLPCArg(virDomainDefPtr def,
-                      unsigned caps ATTRIBUTE_UNUSED,
+                      unsigned caps G_GNUC_UNUSED,
                       const char *arg)
 {
     /* -l emulation[,config] */
@@ -414,7 +414,7 @@ bhyveParsePCISlot(const char *slotdef,
 
 static int
 bhyveParsePCIDisk(virDomainDefPtr def,
-                  unsigned caps ATTRIBUTE_UNUSED,
+                  unsigned caps G_GNUC_UNUSED,
                   unsigned pcislot,
                   unsigned pcibus,
                   unsigned function,
@@ -487,7 +487,7 @@ bhyveParsePCIDisk(virDomainDefPtr def,
 static int
 bhyveParsePCINet(virDomainDefPtr def,
                  virDomainXMLOptionPtr xmlopt,
-                 unsigned caps ATTRIBUTE_UNUSED,
+                 unsigned caps G_GNUC_UNUSED,
                  unsigned pcislot,
                  unsigned pcibus,
                  unsigned function,
@@ -843,7 +843,7 @@ bhyveParseBhyveLoadCommandLine(virDomainDefPtr def,
 
 static int
 bhyveParseCustomLoaderCommandLine(virDomainDefPtr def,
-                                  int argc ATTRIBUTE_UNUSED,
+                                  int argc G_GNUC_UNUSED,
                                   char **argv)
 {
     if (!argv)

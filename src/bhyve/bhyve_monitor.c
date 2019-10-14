@@ -44,7 +44,7 @@ struct _bhyveMonitor {
 };
 
 static void
-bhyveMonitorIO(int watch, int kq, int events ATTRIBUTE_UNUSED, void *opaque)
+bhyveMonitorIO(int watch, int kq, int events G_GNUC_UNUSED, void *opaque)
 {
     const struct timespec zerowait = { 0, 0 };
     virDomainObjPtr vm = opaque;

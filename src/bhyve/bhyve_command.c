@@ -286,7 +286,7 @@ bhyveBuildUSBControllerArgStr(const virDomainDef *def,
 }
 
 static int
-bhyveBuildVirtIODiskArgStr(const virDomainDef *def ATTRIBUTE_UNUSED,
+bhyveBuildVirtIODiskArgStr(const virDomainDef *def G_GNUC_UNUSED,
                      virDomainDiskDefPtr disk,
                      virCommandPtr cmd)
 {
@@ -319,7 +319,7 @@ bhyveBuildVirtIODiskArgStr(const virDomainDef *def ATTRIBUTE_UNUSED,
 }
 
 static int
-bhyveBuildLPCArgStr(const virDomainDef *def ATTRIBUTE_UNUSED,
+bhyveBuildLPCArgStr(const virDomainDef *def G_GNUC_UNUSED,
                     virCommandPtr cmd)
 {
     virCommandAddArgList(cmd, "-s", "1,lpc", NULL);
@@ -643,7 +643,7 @@ virBhyveProcessBuildBhyveCmd(virConnectPtr conn,
 }
 
 virCommandPtr
-virBhyveProcessBuildDestroyCmd(bhyveConnPtr driver ATTRIBUTE_UNUSED,
+virBhyveProcessBuildDestroyCmd(bhyveConnPtr driver G_GNUC_UNUSED,
                                virDomainDefPtr def)
 {
     virCommandPtr cmd = virCommandNew(BHYVECTL);

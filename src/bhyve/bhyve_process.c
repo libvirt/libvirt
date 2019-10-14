@@ -55,7 +55,7 @@ VIR_LOG_INIT("bhyve.bhyve_process");
 
 static void
 bhyveProcessAutoDestroy(virDomainObjPtr vm,
-                        virConnectPtr conn ATTRIBUTE_UNUSED,
+                        virConnectPtr conn G_GNUC_UNUSED,
                         void *opaque)
 {
     bhyveConnPtr driver = opaque;

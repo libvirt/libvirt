@@ -32,7 +32,7 @@
 VIR_LOG_INIT("bhyve.bhyve_domain");
 
 static void *
-bhyveDomainObjPrivateAlloc(void *opaque ATTRIBUTE_UNUSED)
+bhyveDomainObjPrivateAlloc(void *opaque G_GNUC_UNUSED)
 {
     bhyveDomainObjPrivatePtr priv;
 
@@ -74,10 +74,10 @@ bhyveDomainDefNeedsISAController(virDomainDefPtr def)
 
 static int
 bhyveDomainDefPostParse(virDomainDefPtr def,
-                        virCapsPtr caps ATTRIBUTE_UNUSED,
-                        unsigned int parseFlags ATTRIBUTE_UNUSED,
-                        void *opaque ATTRIBUTE_UNUSED,
-                        void *parseOpaque ATTRIBUTE_UNUSED)
+                        virCapsPtr caps G_GNUC_UNUSED,
+                        unsigned int parseFlags G_GNUC_UNUSED,
+                        void *opaque G_GNUC_UNUSED,
+                        void *parseOpaque G_GNUC_UNUSED)
 {
     /* Add an implicit PCI root controller */
     if (virDomainDefMaybeAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 0,
@@ -90,7 +90,7 @@ bhyveDomainDefPostParse(virDomainDefPtr def,
 static int
 bhyveDomainDiskDefAssignAddress(bhyveConnPtr driver,
                                 virDomainDiskDefPtr def,
-                                const virDomainDef *vmdef ATTRIBUTE_UNUSED)
+                                const virDomainDef *vmdef G_GNUC_UNUSED)
 {
     int idx = virDiskNameToIndex(def->dst);
 
@@ -122,10 +122,10 @@ bhyveDomainDiskDefAssignAddress(bhyveConnPtr driver,
 static int
 bhyveDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                               const virDomainDef *def,
-                              virCapsPtr caps ATTRIBUTE_UNUSED,
-                              unsigned int parseFlags ATTRIBUTE_UNUSED,
+                              virCapsPtr caps G_GNUC_UNUSED,
+                              unsigned int parseFlags G_GNUC_UNUSED,
                               void *opaque,
-                              void *parseOpaque ATTRIBUTE_UNUSED)
+                              void *parseOpaque G_GNUC_UNUSED)
 {
     bhyveConnPtr driver = opaque;
 
@@ -156,10 +156,10 @@ bhyveDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 
 static int
 bhyveDomainDefAssignAddresses(virDomainDef *def,
-                              virCapsPtr caps ATTRIBUTE_UNUSED,
-                              unsigned int parseFlags ATTRIBUTE_UNUSED,
-                              void *opaque ATTRIBUTE_UNUSED,
-                              void *parseOpaque ATTRIBUTE_UNUSED)
+                              virCapsPtr caps G_GNUC_UNUSED,
+                              unsigned int parseFlags G_GNUC_UNUSED,
+                              void *opaque G_GNUC_UNUSED,
+                              void *parseOpaque G_GNUC_UNUSED)
 {
     if (bhyveDomainAssignAddresses(def, NULL) < 0)
         return -1;
