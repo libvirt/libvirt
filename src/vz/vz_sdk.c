@@ -3083,7 +3083,7 @@ static int prlsdkApplyGraphicsParams(PRL_HANDLE sdkdom,
     return ret;
 }
 
-static int prlsdkApplyVideoParams(PRL_HANDLE sdkdom ATTRIBUTE_UNUSED, virDomainDefPtr def)
+static int prlsdkApplyVideoParams(PRL_HANDLE sdkdom G_GNUC_UNUSED, virDomainDefPtr def)
 {
     PRL_RESULT pret;
 
@@ -3283,8 +3283,8 @@ static int prlsdkConfigureGateways(PRL_HANDLE sdknet, virDomainNetDefPtr net)
     return ret;
 }
 
-static int prlsdkConfigureNet(vzDriverPtr driver ATTRIBUTE_UNUSED,
-                              virDomainObjPtr dom ATTRIBUTE_UNUSED,
+static int prlsdkConfigureNet(vzDriverPtr driver G_GNUC_UNUSED,
+                              virDomainObjPtr dom G_GNUC_UNUSED,
                               PRL_HANDLE sdkdom,
                               virDomainNetDefPtr net,
                               bool isCt, bool create)
@@ -3665,7 +3665,7 @@ prlsdkAttachDevice(vzDriverPtr driver,
 }
 
 int
-prlsdkDetachDevice(vzDriverPtr driver ATTRIBUTE_UNUSED,
+prlsdkDetachDevice(vzDriverPtr driver G_GNUC_UNUSED,
                    virDomainObjPtr dom,
                    virDomainDeviceDefPtr dev)
 {

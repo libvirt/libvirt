@@ -243,10 +243,10 @@ vzDomainDefAddDefaultInputDevices(virDomainDefPtr def)
 
 static int
 vzDomainDefPostParse(virDomainDefPtr def,
-                     virCapsPtr caps ATTRIBUTE_UNUSED,
-                     unsigned int parseFlags ATTRIBUTE_UNUSED,
-                     void *opaque ATTRIBUTE_UNUSED,
-                     void *parseOpaque ATTRIBUTE_UNUSED)
+                     virCapsPtr caps G_GNUC_UNUSED,
+                     unsigned int parseFlags G_GNUC_UNUSED,
+                     void *opaque G_GNUC_UNUSED,
+                     void *parseOpaque G_GNUC_UNUSED)
 {
     if (vzDomainDefAddDefaultInputDevices(def) < 0)
         return -1;
@@ -256,7 +256,7 @@ vzDomainDefPostParse(virDomainDefPtr def,
 
 static int
 vzDomainDefValidate(const virDomainDef *def,
-                    virCapsPtr caps ATTRIBUTE_UNUSED,
+                    virCapsPtr caps G_GNUC_UNUSED,
                     void *opaque)
 {
     if (vzCheckUnsupportedControllers(def, opaque) < 0)
@@ -268,10 +268,10 @@ vzDomainDefValidate(const virDomainDef *def,
 static int
 vzDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                            const virDomainDef *def,
-                           virCapsPtr caps ATTRIBUTE_UNUSED,
-                           unsigned int parseFlags ATTRIBUTE_UNUSED,
-                           void *opaque ATTRIBUTE_UNUSED,
-                           void *parseOpaque ATTRIBUTE_UNUSED)
+                           virCapsPtr caps G_GNUC_UNUSED,
+                           unsigned int parseFlags G_GNUC_UNUSED,
+                           void *opaque G_GNUC_UNUSED,
+                           void *parseOpaque G_GNUC_UNUSED)
 {
     if (dev->type == VIR_DOMAIN_DEVICE_NET &&
         (dev->data.net->type == VIR_DOMAIN_NET_TYPE_NETWORK ||
@@ -286,7 +286,7 @@ vzDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 static int
 vzDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                           const virDomainDef *def,
-                          void *opaque ATTRIBUTE_UNUSED)
+                          void *opaque G_GNUC_UNUSED)
 {
     if (dev->type == VIR_DOMAIN_DEVICE_DISK)
         return vzCheckUnsupportedDisk(def, dev->data.disk, opaque);
@@ -346,8 +346,8 @@ vzDriverObjNew(void)
 
 static virDrvOpenStatus
 vzConnectOpen(virConnectPtr conn,
-              virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-              virConfPtr conf ATTRIBUTE_UNUSED,
+              virConnectAuthPtr auth G_GNUC_UNUSED,
+              virConfPtr conf G_GNUC_UNUSED,
               unsigned int flags)
 {
     vzDriverPtr driver = NULL;
@@ -898,19 +898,19 @@ vzNodeGetInfo(virConnectPtr conn,
     return virCapabilitiesGetNodeInfo(nodeinfo);
 }
 
-static int vzConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int vzConnectIsEncrypted(virConnectPtr conn G_GNUC_UNUSED)
 {
     /* Encryption is not relevant / applicable to way we talk to PCS */
     return 0;
 }
 
-static int vzConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int vzConnectIsSecure(virConnectPtr conn G_GNUC_UNUSED)
 {
     /* We run CLI tools directly so this is secure */
     return 1;
 }
 
-static int vzConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int vzConnectIsAlive(virConnectPtr conn G_GNUC_UNUSED)
 {
     return 1;
 }
@@ -2967,8 +2967,8 @@ static int
 vzDomainMigratePrepare3Params(virConnectPtr conn,
                               virTypedParameterPtr params,
                               int nparams,
-                              const char *cookiein ATTRIBUTE_UNUSED,
-                              int cookieinlen ATTRIBUTE_UNUSED,
+                              const char *cookiein G_GNUC_UNUSED,
+                              int cookieinlen G_GNUC_UNUSED,
                               char **cookieout,
                               int *cookieoutlen,
                               char **uri_out,
@@ -3030,7 +3030,7 @@ vzDomainMigratePrepare3Params(virConnectPtr conn,
 }
 
 static int
-vzConnectSupportsFeature(virConnectPtr conn ATTRIBUTE_UNUSED, int feature)
+vzConnectSupportsFeature(virConnectPtr conn G_GNUC_UNUSED, int feature)
 {
     if (virConnectSupportsFeatureEnsureACL(conn) < 0)
         return -1;
@@ -3262,8 +3262,8 @@ vzDomainMigratePerform3Params(virDomainPtr domain,
                               int nparams,
                               const char *cookiein,
                               int cookieinlen,
-                              char **cookieout ATTRIBUTE_UNUSED,
-                              int *cookieoutlen ATTRIBUTE_UNUSED,
+                              char **cookieout G_GNUC_UNUSED,
+                              int *cookieoutlen G_GNUC_UNUSED,
                               unsigned int flags)
 {
     int ret = -1;
@@ -3298,10 +3298,10 @@ static virDomainPtr
 vzDomainMigrateFinish3Params(virConnectPtr dconn,
                              virTypedParameterPtr params,
                              int nparams,
-                             const char *cookiein ATTRIBUTE_UNUSED,
-                             int cookieinlen ATTRIBUTE_UNUSED,
-                             char **cookieout ATTRIBUTE_UNUSED,
-                             int *cookieoutlen ATTRIBUTE_UNUSED,
+                             const char *cookiein G_GNUC_UNUSED,
+                             int cookieinlen G_GNUC_UNUSED,
+                             char **cookieout G_GNUC_UNUSED,
+                             int *cookieoutlen G_GNUC_UNUSED,
                              unsigned int flags,
                              int cancelled)
 {
@@ -3344,13 +3344,13 @@ vzDomainMigrateFinish3Params(virConnectPtr dconn,
 }
 
 static int
-vzDomainMigrateConfirm3Params(virDomainPtr domain ATTRIBUTE_UNUSED,
+vzDomainMigrateConfirm3Params(virDomainPtr domain G_GNUC_UNUSED,
                               virTypedParameterPtr params,
                               int nparams,
-                              const char *cookiein ATTRIBUTE_UNUSED,
-                              int cookieinlen ATTRIBUTE_UNUSED,
+                              const char *cookiein G_GNUC_UNUSED,
+                              int cookieinlen G_GNUC_UNUSED,
                               unsigned int flags,
-                              int cancelled ATTRIBUTE_UNUSED)
+                              int cancelled G_GNUC_UNUSED)
 {
     virCheckFlags(VZ_MIGRATION_FLAGS, -1);
 
@@ -4114,8 +4114,8 @@ vzStateCleanup(void)
 
 static int
 vzStateInitialize(bool privileged,
-                  virStateInhibitCallback callback ATTRIBUTE_UNUSED,
-                  void *opaque ATTRIBUTE_UNUSED)
+                  virStateInhibitCallback callback G_GNUC_UNUSED,
+                  void *opaque G_GNUC_UNUSED)
 {
     if (!privileged)
         return VIR_DRV_STATE_INIT_SKIPPED;
