@@ -628,6 +628,12 @@ sc_avoid_g_gnuc_unused_in_header:
 	halt='use G_GNUC_UNUSED in .c rather than .h files' \
 	  $(_sc_search_regexp)
 
+sc_prohibit_attribute_macros:
+	@prohibit='ATTRIBUTE_(UNUSED|NORETURN|SENTINEL|RETURN_CHECK)' \
+	in_vc_files='\.[ch]$$' \
+	halt='use GLib macros: G_GNUC_{UNUSED,NORETURN,NULL_TERMINATED,WARN_UNUSED_RESULT}' \
+	  $(_sc_search_regexp)
+
 sc_prohibit_int_index:
 	@prohibit='\<(int|unsigned)\s*\*?index\>(\s|,|;)' \
 	halt='use different name than 'index' for declaration' \
