@@ -2859,9 +2859,6 @@ void virDomainDiskSetFormat(virDomainDiskDefPtr def, int format);
 virDomainControllerDefPtr
 virDomainDeviceFindSCSIController(const virDomainDef *def,
                                   virDomainDeviceInfoPtr info);
-virDomainDiskDefPtr virDomainDiskFindByBusAndDst(virDomainDefPtr def,
-                                                 int bus,
-                                                 char *dst);
 
 virDomainControllerDefPtr virDomainControllerDefNew(virDomainControllerType type);
 void virDomainControllerDefFree(virDomainControllerDefPtr def);

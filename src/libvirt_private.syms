@@ -346,7 +346,6 @@ virDomainDiskDiscardTypeToString;
 virDomainDiskEmptySource;
 virDomainDiskErrorPolicyTypeFromString;
 virDomainDiskErrorPolicyTypeToString;
-virDomainDiskFindByBusAndDst;
 virDomainDiskGeometryTransTypeFromString;
 virDomainDiskGeometryTransTypeToString;
 virDomainDiskGetDetectZeroesMode;

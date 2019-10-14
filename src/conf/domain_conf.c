@@ -8541,27 +8541,6 @@ virDomainDeviceFindSCSIController(const virDomainDef *def,
     return NULL;
 }
 
-virDomainDiskDefPtr
-virDomainDiskFindByBusAndDst(virDomainDefPtr def,
-                             int bus,
-                             char *dst)
-{
-    size_t i;
-
-    if (!dst)
-        return NULL;
-
-    for (i = 0; i < def->ndisks; i++) {
-        if (def->disks[i]->bus == bus &&
-            STREQ(def->disks[i]->dst, dst)) {
-            return def->disks[i];
-        }
-    }
-
-    return NULL;
-}
-
-
 int
 virDomainDiskDefAssignAddress(virDomainXMLOptionPtr xmlopt,
                               virDomainDiskDefPtr def,
