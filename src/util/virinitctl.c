@@ -189,8 +189,8 @@ const char *virInitctlFifos[] = {
   NULL
 };
 
-int virInitctlSetRunLevel(const char *fifo ATTRIBUTE_UNUSED,
-                          virInitctlRunLevel level ATTRIBUTE_UNUSED)
+int virInitctlSetRunLevel(const char *fifo G_GNUC_UNUSED,
+                          virInitctlRunLevel level G_GNUC_UNUSED)
 {
     virReportUnsupportedError();
     return -1;

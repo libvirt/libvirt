@@ -173,8 +173,8 @@ virMediatedDeviceNew(const char *uuidstr, virMediatedDeviceModelType model)
 #else
 
 virMediatedDevicePtr
-virMediatedDeviceNew(const char *uuidstr ATTRIBUTE_UNUSED,
-                     virMediatedDeviceModelType model ATTRIBUTE_UNUSED)
+virMediatedDeviceNew(const char *uuidstr G_GNUC_UNUSED,
+                     virMediatedDeviceModelType model G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("mediated devices are not supported on non-linux "

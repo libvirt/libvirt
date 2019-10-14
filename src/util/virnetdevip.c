@@ -802,8 +802,8 @@ virNetDevIPRouteAdd(const char *ifname,
 
 /* return after DAD finishes for all known IPv6 addresses or an error */
 int
-virNetDevIPWaitDadFinish(virSocketAddrPtr *addrs ATTRIBUTE_UNUSED,
-                         size_t count ATTRIBUTE_UNUSED)
+virNetDevIPWaitDadFinish(virSocketAddrPtr *addrs G_GNUC_UNUSED,
+                         size_t count G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to wait for IPv6 DAD on this platform"));
@@ -862,8 +862,8 @@ virNetDevGetIPv4AddressIoctl(const char *ifname,
 #else /* ! SIOCGIFADDR */
 
 static int
-virNetDevGetIPv4AddressIoctl(const char *ifname ATTRIBUTE_UNUSED,
-                             virSocketAddrPtr addr ATTRIBUTE_UNUSED)
+virNetDevGetIPv4AddressIoctl(const char *ifname G_GNUC_UNUSED,
+                             virSocketAddrPtr addr G_GNUC_UNUSED)
 {
     return -2;
 }
@@ -931,8 +931,8 @@ virNetDevGetifaddrsAddress(const char *ifname,
 #else  /* ! HAVE_GETIFADDRS */
 
 static int
-virNetDevGetifaddrsAddress(const char *ifname ATTRIBUTE_UNUSED,
-                           virSocketAddrPtr addr ATTRIBUTE_UNUSED)
+virNetDevGetifaddrsAddress(const char *ifname G_GNUC_UNUSED,
+                           virSocketAddrPtr addr G_GNUC_UNUSED)
 {
     return -2;
 }

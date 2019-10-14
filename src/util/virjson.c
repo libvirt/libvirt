@@ -432,7 +432,7 @@ virJSONValueFree(virJSONValuePtr value)
 
 void
 virJSONValueHashFree(void *opaque,
-                     const void *name ATTRIBUTE_UNUSED)
+                     const void *name G_GNUC_UNUSED)
 {
     virJSONValueFree(opaque);
 }
@@ -2001,7 +2001,7 @@ virJSONValueToBuffer(virJSONValuePtr object,
 
 #else
 virJSONValuePtr
-virJSONValueFromString(const char *jsonstring ATTRIBUTE_UNUSED)
+virJSONValueFromString(const char *jsonstring G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("No JSON parser implementation is available"));
@@ -2010,9 +2010,9 @@ virJSONValueFromString(const char *jsonstring ATTRIBUTE_UNUSED)
 
 
 int
-virJSONValueToBuffer(virJSONValuePtr object ATTRIBUTE_UNUSED,
-                     virBufferPtr buf ATTRIBUTE_UNUSED,
-                     bool pretty ATTRIBUTE_UNUSED)
+virJSONValueToBuffer(virJSONValuePtr object G_GNUC_UNUSED,
+                     virBufferPtr buf G_GNUC_UNUSED,
+                     bool pretty G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("No JSON parser implementation is available"));

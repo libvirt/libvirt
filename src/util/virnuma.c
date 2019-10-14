@@ -77,8 +77,8 @@ virNumaGetAutoPlacementAdvice(unsigned short vcpus,
 }
 #else /* !HAVE_NUMAD */
 char *
-virNumaGetAutoPlacementAdvice(unsigned short vcpus ATTRIBUTE_UNUSED,
-                              unsigned long long balloon ATTRIBUTE_UNUSED)
+virNumaGetAutoPlacementAdvice(unsigned short vcpus G_GNUC_UNUSED,
+                              unsigned long long balloon G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                    _("numad is not available on this host"));
@@ -345,7 +345,7 @@ virNumaNodesetToCPUset(virBitmapPtr nodeset,
 #else /* !WITH_NUMACTL */
 
 int
-virNumaSetupMemoryPolicy(virDomainNumatuneMemMode mode ATTRIBUTE_UNUSED,
+virNumaSetupMemoryPolicy(virDomainNumatuneMemMode mode G_GNUC_UNUSED,
                          virBitmapPtr nodeset)
 {
     if (!virNumaNodesetIsAvailable(nodeset))
@@ -371,7 +371,7 @@ virNumaGetMaxNode(void)
 
 
 int
-virNumaGetNodeMemory(int node ATTRIBUTE_UNUSED,
+virNumaGetNodeMemory(int node G_GNUC_UNUSED,
                      unsigned long long *memsize,
                      unsigned long long *memfree)
 {
@@ -387,7 +387,7 @@ virNumaGetNodeMemory(int node ATTRIBUTE_UNUSED,
 
 
 int
-virNumaGetNodeCPUs(int node ATTRIBUTE_UNUSED,
+virNumaGetNodeCPUs(int node G_GNUC_UNUSED,
                    virBitmapPtr *cpus)
 {
     *cpus = NULL;
@@ -398,7 +398,7 @@ virNumaGetNodeCPUs(int node ATTRIBUTE_UNUSED,
 }
 
 int
-virNumaNodesetToCPUset(virBitmapPtr nodeset ATTRIBUTE_UNUSED,
+virNumaNodesetToCPUset(virBitmapPtr nodeset G_GNUC_UNUSED,
                        virBitmapPtr *cpuset)
 {
     *cpuset = NULL;
@@ -513,7 +513,7 @@ virNumaNodeIsAvailable(int node)
 
 
 int
-virNumaGetDistances(int node ATTRIBUTE_UNUSED,
+virNumaGetDistances(int node G_GNUC_UNUSED,
                     int **distances,
                     int *ndistances)
 {
@@ -965,11 +965,11 @@ virNumaSetPagePoolSize(int node,
 
 #else /* #ifdef __linux__ */
 int
-virNumaGetPageInfo(int node ATTRIBUTE_UNUSED,
-                   unsigned int page_size ATTRIBUTE_UNUSED,
-                   unsigned long long huge_page_sum ATTRIBUTE_UNUSED,
-                   unsigned long long *page_avail ATTRIBUTE_UNUSED,
-                   unsigned long long *page_free ATTRIBUTE_UNUSED)
+virNumaGetPageInfo(int node G_GNUC_UNUSED,
+                   unsigned int page_size G_GNUC_UNUSED,
+                   unsigned long long huge_page_sum G_GNUC_UNUSED,
+                   unsigned long long *page_avail G_GNUC_UNUSED,
+                   unsigned long long *page_free G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                    _("page info is not supported on this platform"));
@@ -978,11 +978,11 @@ virNumaGetPageInfo(int node ATTRIBUTE_UNUSED,
 
 
 int
-virNumaGetPages(int node ATTRIBUTE_UNUSED,
-                unsigned int **pages_size ATTRIBUTE_UNUSED,
-                unsigned long long **pages_avail ATTRIBUTE_UNUSED,
-                unsigned long long **pages_free ATTRIBUTE_UNUSED,
-                size_t *npages ATTRIBUTE_UNUSED)
+virNumaGetPages(int node G_GNUC_UNUSED,
+                unsigned int **pages_size G_GNUC_UNUSED,
+                unsigned long long **pages_avail G_GNUC_UNUSED,
+                unsigned long long **pages_free G_GNUC_UNUSED,
+                size_t *npages G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                    _("page info is not supported on this platform"));
@@ -991,10 +991,10 @@ virNumaGetPages(int node ATTRIBUTE_UNUSED,
 
 
 int
-virNumaSetPagePoolSize(int node ATTRIBUTE_UNUSED,
-                       unsigned int page_size ATTRIBUTE_UNUSED,
-                       unsigned long long page_count ATTRIBUTE_UNUSED,
-                       bool add ATTRIBUTE_UNUSED)
+virNumaSetPagePoolSize(int node G_GNUC_UNUSED,
+                       unsigned int page_size G_GNUC_UNUSED,
+                       unsigned long long page_count G_GNUC_UNUSED,
+                       bool add G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                    _("page pool allocation is not supported on this platform"));

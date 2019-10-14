@@ -595,7 +595,7 @@ dnsmasqDelete(const dnsmasqContext *ctx)
  * Reloads all the configurations associated to a context
  */
 int
-dnsmasqReload(pid_t pid ATTRIBUTE_UNUSED)
+dnsmasqReload(pid_t pid G_GNUC_UNUSED)
 {
 #ifndef WIN32
     if (kill(pid, SIGHUP) != 0) {

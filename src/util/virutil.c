@@ -102,7 +102,7 @@ int virSetInherit(int fd, bool inherit)
 
 #else /* WIN32 */
 
-int virSetInherit(int fd ATTRIBUTE_UNUSED, bool inherit ATTRIBUTE_UNUSED)
+int virSetInherit(int fd G_GNUC_UNUSED, bool inherit G_GNUC_UNUSED)
 {
     /* FIXME: Currently creating child processes is not supported on
      * Win32, so there is no point in failing calls that are only relevant
@@ -129,7 +129,7 @@ int virSetCloseExec(int fd)
 }
 
 #ifdef WIN32
-int virSetSockReuseAddr(int fd ATTRIBUTE_UNUSED, bool fatal ATTRIBUTE_UNUSED)
+int virSetSockReuseAddr(int fd G_GNUC_UNUSED, bool fatal G_GNUC_UNUSED)
 {
     /*
      * SO_REUSEADDR on Windows is actually akin to SO_REUSEPORT
@@ -1032,8 +1032,8 @@ virGetGroupList(uid_t uid, gid_t gid, gid_t **list)
  * failure (the original system error remains in errno).
  */
 int
-virSetUIDGID(uid_t uid, gid_t gid, gid_t *groups ATTRIBUTE_UNUSED,
-             int ngroups ATTRIBUTE_UNUSED)
+virSetUIDGID(uid_t uid, gid_t gid, gid_t *groups G_GNUC_UNUSED,
+             int ngroups G_GNUC_UNUSED)
 {
     if (gid != (gid_t)-1 && setregid(gid, gid) < 0) {
         virReportSystemError(errno,
@@ -1063,7 +1063,7 @@ virSetUIDGID(uid_t uid, gid_t gid, gid_t *groups ATTRIBUTE_UNUSED,
 #else /* ! HAVE_GETPWUID_R */
 
 int
-virGetGroupList(uid_t uid ATTRIBUTE_UNUSED, gid_t gid ATTRIBUTE_UNUSED,
+virGetGroupList(uid_t uid G_GNUC_UNUSED, gid_t gid G_GNUC_UNUSED,
                 gid_t **list)
 {
     *list = NULL;
@@ -1071,13 +1071,13 @@ virGetGroupList(uid_t uid ATTRIBUTE_UNUSED, gid_t gid ATTRIBUTE_UNUSED,
 }
 
 bool
-virDoesUserExist(const char *name ATTRIBUTE_UNUSED)
+virDoesUserExist(const char *name G_GNUC_UNUSED)
 {
     return false;
 }
 
 bool
-virDoesGroupExist(const char *name ATTRIBUTE_UNUSED)
+virDoesGroupExist(const char *name G_GNUC_UNUSED)
 {
     return false;
 }
@@ -1129,7 +1129,7 @@ virGetWin32DirectoryRoot(char **path)
 
 
 char *
-virGetUserDirectoryByUID(uid_t uid ATTRIBUTE_UNUSED)
+virGetUserDirectoryByUID(uid_t uid G_GNUC_UNUSED)
 {
     /* Since Windows lacks setuid binaries, and since we already fake
      * geteuid(), we can safely assume that this is only called when
@@ -1180,7 +1180,7 @@ virGetUserDirectoryByUID(uid_t uid ATTRIBUTE_UNUSED)
 }
 
 char *
-virGetUserShell(uid_t uid ATTRIBUTE_UNUSED)
+virGetUserShell(uid_t uid G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("virGetUserShell is not available"));
@@ -1226,7 +1226,7 @@ virGetUserRuntimeDirectory(void)
 
 # else /* !HAVE_GETPWUID_R && !WIN32 */
 char *
-virGetUserDirectoryByUID(uid_t uid ATTRIBUTE_UNUSED)
+virGetUserDirectoryByUID(uid_t uid G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("virGetUserDirectory is not available"));
@@ -1235,7 +1235,7 @@ virGetUserDirectoryByUID(uid_t uid ATTRIBUTE_UNUSED)
 }
 
 char *
-virGetUserShell(uid_t uid ATTRIBUTE_UNUSED)
+virGetUserShell(uid_t uid G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("virGetUserShell is not available"));
@@ -1272,7 +1272,7 @@ virGetUserRuntimeDirectory(void)
 # endif /* ! HAVE_GETPWUID_R && ! WIN32 */
 
 char *
-virGetUserName(uid_t uid ATTRIBUTE_UNUSED)
+virGetUserName(uid_t uid G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("virGetUserName is not available"));
@@ -1280,8 +1280,8 @@ virGetUserName(uid_t uid ATTRIBUTE_UNUSED)
     return NULL;
 }
 
-int virGetUserID(const char *name ATTRIBUTE_UNUSED,
-                 uid_t *uid ATTRIBUTE_UNUSED)
+int virGetUserID(const char *name G_GNUC_UNUSED,
+                 uid_t *uid G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("virGetUserID is not available"));
@@ -1290,8 +1290,8 @@ int virGetUserID(const char *name ATTRIBUTE_UNUSED,
 }
 
 
-int virGetGroupID(const char *name ATTRIBUTE_UNUSED,
-                  gid_t *gid ATTRIBUTE_UNUSED)
+int virGetGroupID(const char *name G_GNUC_UNUSED,
+                  gid_t *gid G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("virGetGroupID is not available"));
@@ -1300,10 +1300,10 @@ int virGetGroupID(const char *name ATTRIBUTE_UNUSED,
 }
 
 int
-virSetUIDGID(uid_t uid ATTRIBUTE_UNUSED,
-             gid_t gid ATTRIBUTE_UNUSED,
-             gid_t *groups ATTRIBUTE_UNUSED,
-             int ngroups ATTRIBUTE_UNUSED)
+virSetUIDGID(uid_t uid G_GNUC_UNUSED,
+             gid_t gid G_GNUC_UNUSED,
+             gid_t *groups G_GNUC_UNUSED,
+             int ngroups G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("virSetUIDGID is not available"));
@@ -1311,7 +1311,7 @@ virSetUIDGID(uid_t uid ATTRIBUTE_UNUSED,
 }
 
 char *
-virGetGroupName(gid_t gid ATTRIBUTE_UNUSED)
+virGetGroupName(gid_t gid G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("virGetGroupName is not available"));
@@ -1471,8 +1471,8 @@ virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
 
 int
 virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
-                     unsigned long long capBits ATTRIBUTE_UNUSED,
-                     bool clearExistingCaps ATTRIBUTE_UNUSED)
+                     unsigned long long capBits G_GNUC_UNUSED,
+                     bool clearExistingCaps G_GNUC_UNUSED)
 {
     return virSetUIDGID(uid, gid, groups, ngroups);
 }
@@ -1512,7 +1512,7 @@ virIsDevMapperDevice(const char *dev_name)
     return false;
 }
 #else
-bool virIsDevMapperDevice(const char *dev_name ATTRIBUTE_UNUSED)
+bool virIsDevMapperDevice(const char *dev_name G_GNUC_UNUSED)
 {
     return false;
 }
@@ -1562,9 +1562,9 @@ virGetDeviceID(const char *path, int *maj, int *min)
 }
 #else
 int
-virGetDeviceID(const char *path ATTRIBUTE_UNUSED,
-               int *maj ATTRIBUTE_UNUSED,
-               int *min ATTRIBUTE_UNUSED)
+virGetDeviceID(const char *path G_GNUC_UNUSED,
+               int *maj G_GNUC_UNUSED,
+               int *min G_GNUC_UNUSED)
 {
     return -ENOSYS;
 }

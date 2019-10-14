@@ -211,7 +211,7 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
  *
  * Returns 0 in case of success or -1 in case of failure.
  */
-int virNetDevOpenvswitchRemovePort(const char *brname ATTRIBUTE_UNUSED, const char *ifname)
+int virNetDevOpenvswitchRemovePort(const char *brname G_GNUC_UNUSED, const char *ifname)
 {
     VIR_AUTOPTR(virCommand) cmd = NULL;
 

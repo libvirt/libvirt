@@ -1359,26 +1359,26 @@ virNetDevVPortProfileDisassociate(const char *macvtap_ifname,
 }
 
 #else /* ! WITH_VIRTUALPORT */
-int virNetDevVPortProfileAssociate(const char *macvtap_ifname ATTRIBUTE_UNUSED,
-                                   const virNetDevVPortProfile *virtPort ATTRIBUTE_UNUSED,
-                                   const virMacAddr *macvtap_macaddr ATTRIBUTE_UNUSED,
-                                   const char *linkdev ATTRIBUTE_UNUSED,
-                                   int vf ATTRIBUTE_UNUSED,
-                                   const unsigned char *vmuuid ATTRIBUTE_UNUSED,
-                                   virNetDevVPortProfileOp vmOp ATTRIBUTE_UNUSED,
-                                   bool setlink_only ATTRIBUTE_UNUSED)
+int virNetDevVPortProfileAssociate(const char *macvtap_ifname G_GNUC_UNUSED,
+                                   const virNetDevVPortProfile *virtPort G_GNUC_UNUSED,
+                                   const virMacAddr *macvtap_macaddr G_GNUC_UNUSED,
+                                   const char *linkdev G_GNUC_UNUSED,
+                                   int vf G_GNUC_UNUSED,
+                                   const unsigned char *vmuuid G_GNUC_UNUSED,
+                                   virNetDevVPortProfileOp vmOp G_GNUC_UNUSED,
+                                   bool setlink_only G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Virtual port profile association not supported on this platform"));
     return -1;
 }
 
-int virNetDevVPortProfileDisassociate(const char *macvtap_ifname ATTRIBUTE_UNUSED,
-                                      const virNetDevVPortProfile *virtPort ATTRIBUTE_UNUSED,
-                                      const virMacAddr *macvtap_macaddr ATTRIBUTE_UNUSED,
-                                      const char *linkdev ATTRIBUTE_UNUSED,
-                                      int vf ATTRIBUTE_UNUSED,
-                                      virNetDevVPortProfileOp vmOp ATTRIBUTE_UNUSED)
+int virNetDevVPortProfileDisassociate(const char *macvtap_ifname G_GNUC_UNUSED,
+                                      const virNetDevVPortProfile *virtPort G_GNUC_UNUSED,
+                                      const virMacAddr *macvtap_macaddr G_GNUC_UNUSED,
+                                      const char *linkdev G_GNUC_UNUSED,
+                                      int vf G_GNUC_UNUSED,
+                                      virNetDevVPortProfileOp vmOp G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Virtual port profile association not supported on this platform"));

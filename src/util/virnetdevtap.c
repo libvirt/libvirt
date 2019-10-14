@@ -62,7 +62,7 @@ VIR_LOG_INIT("util.netdevtap");
  * Returns 0 if the interface name is successfully queried, -1 otherwise
  */
 int
-virNetDevTapGetName(int tapfd ATTRIBUTE_UNUSED, char **ifname ATTRIBUTE_UNUSED)
+virNetDevTapGetName(int tapfd G_GNUC_UNUSED, char **ifname G_GNUC_UNUSED)
 {
 #ifdef TUNGETIFF
     struct ifreq ifr;
@@ -92,7 +92,7 @@ virNetDevTapGetName(int tapfd ATTRIBUTE_UNUSED, char **ifname ATTRIBUTE_UNUSED)
  * found.
  */
 char*
-virNetDevTapGetRealDeviceName(char *ifname ATTRIBUTE_UNUSED)
+virNetDevTapGetRealDeviceName(char *ifname G_GNUC_UNUSED)
 {
 #ifdef IFDATA_DRIVERNAME
     int ifindex = 0;
@@ -356,10 +356,10 @@ int virNetDevTapDelete(const char *ifname,
 }
 #elif defined(SIOCIFCREATE2) && defined(SIOCIFDESTROY) && defined(IF_MAXUNIT)
 int virNetDevTapCreate(char **ifname,
-                       const char *tunpath ATTRIBUTE_UNUSED,
+                       const char *tunpath G_GNUC_UNUSED,
                        int *tapfd,
                        size_t tapfdSize,
-                       unsigned int flags ATTRIBUTE_UNUSED)
+                       unsigned int flags G_GNUC_UNUSED)
 {
     int s;
     struct ifreq ifr;
@@ -439,7 +439,7 @@ int virNetDevTapCreate(char **ifname,
 }
 
 int virNetDevTapDelete(const char *ifname,
-                       const char *tunpath ATTRIBUTE_UNUSED)
+                       const char *tunpath G_GNUC_UNUSED)
 {
     int s;
     struct ifreq ifr;
@@ -462,18 +462,18 @@ int virNetDevTapDelete(const char *ifname,
 }
 
 #else
-int virNetDevTapCreate(char **ifname ATTRIBUTE_UNUSED,
-                       const char *tunpath ATTRIBUTE_UNUSED,
-                       int *tapfd ATTRIBUTE_UNUSED,
-                       size_t tapfdSize ATTRIBUTE_UNUSED,
-                       unsigned int flags ATTRIBUTE_UNUSED)
+int virNetDevTapCreate(char **ifname G_GNUC_UNUSED,
+                       const char *tunpath G_GNUC_UNUSED,
+                       int *tapfd G_GNUC_UNUSED,
+                       size_t tapfdSize G_GNUC_UNUSED,
+                       unsigned int flags G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to create TAP devices on this platform"));
     return -1;
 }
-int virNetDevTapDelete(const char *ifname ATTRIBUTE_UNUSED,
-                       const char *tunpath ATTRIBUTE_UNUSED)
+int virNetDevTapDelete(const char *ifname G_GNUC_UNUSED,
+                       const char *tunpath G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to delete TAP devices on this platform"));
@@ -891,9 +891,9 @@ virNetDevTapInterfaceStats(const char *ifname,
 }
 #else
 int
-virNetDevTapInterfaceStats(const char *ifname ATTRIBUTE_UNUSED,
-                           virDomainInterfaceStatsPtr stats ATTRIBUTE_UNUSED,
-                           bool swapped ATTRIBUTE_UNUSED)
+virNetDevTapInterfaceStats(const char *ifname G_GNUC_UNUSED,
+                           virDomainInterfaceStatsPtr stats G_GNUC_UNUSED,
+                           bool swapped G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                    _("interface stats not implemented on this platform"));

@@ -96,7 +96,7 @@ virCgroupV2Available(void)
 
 static bool
 virCgroupV2ValidateMachineGroup(virCgroupPtr group,
-                                const char *name ATTRIBUTE_UNUSED,
+                                const char *name G_GNUC_UNUSED,
                                 const char *drivername,
                                 const char *machinename)
 {
@@ -181,7 +181,7 @@ virCgroupV2CopyPlacement(virCgroupPtr group,
 static int
 virCgroupV2DetectMounts(virCgroupPtr group,
                         const char *mntType,
-                        const char *mntOpts ATTRIBUTE_UNUSED,
+                        const char *mntOpts G_GNUC_UNUSED,
                         const char *mntDir)
 {
     if (STRNEQ(mntType, "cgroup2"))
@@ -227,7 +227,7 @@ virCgroupV2DetectPlacement(virCgroupPtr group,
 
 static int
 virCgroupV2ValidatePlacement(virCgroupPtr group,
-                             pid_t pid ATTRIBUTE_UNUSED)
+                             pid_t pid G_GNUC_UNUSED)
 {
     if (!group->unified.placement) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -587,7 +587,7 @@ static int
 virCgroupV2SetOwner(virCgroupPtr cgroup,
                     uid_t uid,
                     gid_t gid,
-                    int controllers ATTRIBUTE_UNUSED)
+                    int controllers G_GNUC_UNUSED)
 {
     VIR_AUTOFREE(char *) base = NULL;
 
@@ -1725,15 +1725,15 @@ virCgroupV2GetCpusetMems(virCgroupPtr group,
 
 
 static int
-virCgroupV2SetCpusetMemoryMigrate(virCgroupPtr group ATTRIBUTE_UNUSED,
-                                  bool migrate ATTRIBUTE_UNUSED)
+virCgroupV2SetCpusetMemoryMigrate(virCgroupPtr group G_GNUC_UNUSED,
+                                  bool migrate G_GNUC_UNUSED)
 {
     return 0;
 }
 
 
 static int
-virCgroupV2GetCpusetMemoryMigrate(virCgroupPtr group ATTRIBUTE_UNUSED,
+virCgroupV2GetCpusetMemoryMigrate(virCgroupPtr group G_GNUC_UNUSED,
                                   bool *migrate)
 {
     *migrate = true;

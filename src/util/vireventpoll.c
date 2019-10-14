@@ -674,10 +674,10 @@ int virEventPollRunOnce(void)
 }
 
 
-static void virEventPollHandleWakeup(int watch ATTRIBUTE_UNUSED,
+static void virEventPollHandleWakeup(int watch G_GNUC_UNUSED,
                                      int fd,
-                                     int events ATTRIBUTE_UNUSED,
-                                     void *opaque ATTRIBUTE_UNUSED)
+                                     int events G_GNUC_UNUSED,
+                                     void *opaque G_GNUC_UNUSED)
 {
     char c;
     virMutexLock(&eventLoop.lock);

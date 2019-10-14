@@ -71,16 +71,16 @@ virFCReadRportValue(const char *rport,
 #else
 
 bool
-virFCIsCapableRport(const char *rport ATTRIBUTE_UNUSED)
+virFCIsCapableRport(const char *rport G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return false;
 }
 
 int
-virFCReadRportValue(const char *rport ATTRIBUTE_UNUSED,
-                    const char *entry ATTRIBUTE_UNUSED,
-                    char **result ATTRIBUTE_UNUSED)
+virFCReadRportValue(const char *rport G_GNUC_UNUSED,
+                    const char *entry G_GNUC_UNUSED,
+                    char **result G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return -1;

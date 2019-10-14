@@ -467,8 +467,8 @@ virVHBAGetHostByFabricWWN(const char *sysfs_prefix,
 #else
 
 bool
-virVHBAPathExists(const char *sysfs_prefix ATTRIBUTE_UNUSED,
-                  int host ATTRIBUTE_UNUSED)
+virVHBAPathExists(const char *sysfs_prefix G_GNUC_UNUSED,
+                  int host G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return false;
@@ -476,8 +476,8 @@ virVHBAPathExists(const char *sysfs_prefix ATTRIBUTE_UNUSED,
 
 
 bool
-virVHBAIsVportCapable(const char *sysfs_prefix ATTRIBUTE_UNUSED,
-                      int host ATTRIBUTE_UNUSED)
+virVHBAIsVportCapable(const char *sysfs_prefix G_GNUC_UNUSED,
+                      int host G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return false;
@@ -485,9 +485,9 @@ virVHBAIsVportCapable(const char *sysfs_prefix ATTRIBUTE_UNUSED,
 
 
 char *
-virVHBAGetConfig(const char *sysfs_prefix ATTRIBUTE_UNUSED,
-                 int host ATTRIBUTE_UNUSED,
-                 const char *entry ATTRIBUTE_UNUSED)
+virVHBAGetConfig(const char *sysfs_prefix G_GNUC_UNUSED,
+                 int host G_GNUC_UNUSED,
+                 const char *entry G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return NULL;
@@ -495,7 +495,7 @@ virVHBAGetConfig(const char *sysfs_prefix ATTRIBUTE_UNUSED,
 
 
 char *
-virVHBAFindVportHost(const char *sysfs_prefix ATTRIBUTE_UNUSED)
+virVHBAFindVportHost(const char *sysfs_prefix G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return NULL;
@@ -503,10 +503,10 @@ virVHBAFindVportHost(const char *sysfs_prefix ATTRIBUTE_UNUSED)
 
 
 int
-virVHBAManageVport(const int parent_host ATTRIBUTE_UNUSED,
-                   const char *wwpn ATTRIBUTE_UNUSED,
-                   const char *wwnn ATTRIBUTE_UNUSED,
-                   int operation ATTRIBUTE_UNUSED)
+virVHBAManageVport(const int parent_host G_GNUC_UNUSED,
+                   const char *wwpn G_GNUC_UNUSED,
+                   const char *wwnn G_GNUC_UNUSED,
+                   int operation G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return -1;
@@ -514,9 +514,9 @@ virVHBAManageVport(const int parent_host ATTRIBUTE_UNUSED,
 
 
 char *
-virVHBAGetHostByWWN(const char *sysfs_prefix ATTRIBUTE_UNUSED,
-                    const char *wwnn ATTRIBUTE_UNUSED,
-                    const char *wwpn ATTRIBUTE_UNUSED)
+virVHBAGetHostByWWN(const char *sysfs_prefix G_GNUC_UNUSED,
+                    const char *wwnn G_GNUC_UNUSED,
+                    const char *wwpn G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return NULL;
@@ -524,8 +524,8 @@ virVHBAGetHostByWWN(const char *sysfs_prefix ATTRIBUTE_UNUSED,
 
 
 char *
-virVHBAGetHostByFabricWWN(const char *sysfs_prefix ATTRIBUTE_UNUSED,
-                          const char *fabric_wwn ATTRIBUTE_UNUSED)
+virVHBAGetHostByFabricWWN(const char *sysfs_prefix G_GNUC_UNUSED,
+                          const char *fabric_wwn G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return NULL;

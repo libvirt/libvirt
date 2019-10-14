@@ -584,7 +584,7 @@ virSocketAddrGetPort(virSocketAddrPtr addr)
  * address of type AF_UNIX;
  */
 char *
-virSocketAddrGetPath(virSocketAddrPtr addr ATTRIBUTE_UNUSED)
+virSocketAddrGetPath(virSocketAddrPtr addr G_GNUC_UNUSED)
 {
 #ifndef WIN32
     char *path = NULL;

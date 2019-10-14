@@ -209,12 +209,12 @@ virPolkitAgentCreate(void)
 
 #else /* ! WITH_POLKIT */
 
-int virPolkitCheckAuth(const char *actionid ATTRIBUTE_UNUSED,
-                       pid_t pid ATTRIBUTE_UNUSED,
-                       unsigned long long startTime ATTRIBUTE_UNUSED,
-                       uid_t uid ATTRIBUTE_UNUSED,
-                       const char **details ATTRIBUTE_UNUSED,
-                       bool allowInteraction ATTRIBUTE_UNUSED)
+int virPolkitCheckAuth(const char *actionid G_GNUC_UNUSED,
+                       pid_t pid G_GNUC_UNUSED,
+                       unsigned long long startTime G_GNUC_UNUSED,
+                       uid_t uid G_GNUC_UNUSED,
+                       const char **details G_GNUC_UNUSED,
+                       bool allowInteraction G_GNUC_UNUSED)
 {
     VIR_ERROR(_("Polkit auth attempted, even though polkit is not available"));
     virReportError(VIR_ERR_AUTH_FAILED, "%s",
@@ -224,7 +224,7 @@ int virPolkitCheckAuth(const char *actionid ATTRIBUTE_UNUSED,
 
 
 void
-virPolkitAgentDestroy(virPolkitAgentPtr agent ATTRIBUTE_UNUSED)
+virPolkitAgentDestroy(virPolkitAgentPtr agent G_GNUC_UNUSED)
 {
     return; /* do nothing */
 }

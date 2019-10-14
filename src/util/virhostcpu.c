@@ -910,13 +910,13 @@ virHostCPUStatsAssign(virNodeCPUStatsPtr param,
 
 
 int
-virHostCPUGetInfo(virArch hostarch ATTRIBUTE_UNUSED,
-                  unsigned int *cpus ATTRIBUTE_UNUSED,
-                  unsigned int *mhz ATTRIBUTE_UNUSED,
-                  unsigned int *nodes ATTRIBUTE_UNUSED,
-                  unsigned int *sockets ATTRIBUTE_UNUSED,
-                  unsigned int *cores ATTRIBUTE_UNUSED,
-                  unsigned int *threads ATTRIBUTE_UNUSED)
+virHostCPUGetInfo(virArch hostarch G_GNUC_UNUSED,
+                  unsigned int *cpus G_GNUC_UNUSED,
+                  unsigned int *mhz G_GNUC_UNUSED,
+                  unsigned int *nodes G_GNUC_UNUSED,
+                  unsigned int *sockets G_GNUC_UNUSED,
+                  unsigned int *cores G_GNUC_UNUSED,
+                  unsigned int *threads G_GNUC_UNUSED)
 {
 #ifdef __linux__
     int ret = -1;
@@ -984,9 +984,9 @@ virHostCPUGetInfo(virArch hostarch ATTRIBUTE_UNUSED,
 
 
 int
-virHostCPUGetStats(int cpuNum ATTRIBUTE_UNUSED,
-                   virNodeCPUStatsPtr params ATTRIBUTE_UNUSED,
-                   int *nparams ATTRIBUTE_UNUSED,
+virHostCPUGetStats(int cpuNum G_GNUC_UNUSED,
+                   virNodeCPUStatsPtr params G_GNUC_UNUSED,
+                   int *nparams G_GNUC_UNUSED,
                    unsigned int flags)
 {
     virCheckFlags(0, -1);
@@ -1160,7 +1160,7 @@ virHostCPUGetThreadsPerSubcore(virArch arch)
 /* Fallback for nodeGetThreadsPerSubcore() used when KVM headers
  * are not available on the system */
 int
-virHostCPUGetThreadsPerSubcore(virArch arch ATTRIBUTE_UNUSED)
+virHostCPUGetThreadsPerSubcore(virArch arch G_GNUC_UNUSED)
 {
     return 0;
 }
@@ -1389,8 +1389,8 @@ virHostCPUGetTscInfo(void)
 #else
 
 int
-virHostCPUGetMSR(unsigned long index ATTRIBUTE_UNUSED,
-                 uint64_t *msr ATTRIBUTE_UNUSED)
+virHostCPUGetMSR(unsigned long index G_GNUC_UNUSED,
+                 uint64_t *msr G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Reading MSRs is not supported on this platform"));

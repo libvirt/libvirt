@@ -703,7 +703,7 @@ virXPathNodeSet(const char *xpath,
  * This version is heavily based on xmlParserPrintFileContextInternal from libxml2.
  */
 static void
-catchXMLError(void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
+catchXMLError(void *ctx, const char *msg G_GNUC_UNUSED, ...)
 {
     xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
 
@@ -1246,8 +1246,8 @@ static void catchRNGError(void *ctx,
 }
 
 
-static void ignoreRNGError(void *ctx ATTRIBUTE_UNUSED,
-                           const char *msg ATTRIBUTE_UNUSED,
+static void ignoreRNGError(void *ctx G_GNUC_UNUSED,
+                           const char *msg G_GNUC_UNUSED,
                            ...)
 {}
 

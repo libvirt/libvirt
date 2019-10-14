@@ -714,15 +714,15 @@ virLogStackTraceToFd(int fd)
 }
 
 static void
-virLogOutputToFd(virLogSourcePtr source ATTRIBUTE_UNUSED,
-                 virLogPriority priority ATTRIBUTE_UNUSED,
-                 const char *filename ATTRIBUTE_UNUSED,
-                 int linenr ATTRIBUTE_UNUSED,
-                 const char *funcname ATTRIBUTE_UNUSED,
+virLogOutputToFd(virLogSourcePtr source G_GNUC_UNUSED,
+                 virLogPriority priority G_GNUC_UNUSED,
+                 const char *filename G_GNUC_UNUSED,
+                 int linenr G_GNUC_UNUSED,
+                 const char *funcname G_GNUC_UNUSED,
                  const char *timestamp,
-                 virLogMetadataPtr metadata ATTRIBUTE_UNUSED,
+                 virLogMetadataPtr metadata G_GNUC_UNUSED,
                  unsigned int flags,
-                 const char *rawstr ATTRIBUTE_UNUSED,
+                 const char *rawstr G_GNUC_UNUSED,
                  const char *str,
                  void *data)
 {
@@ -820,17 +820,17 @@ virLogPrioritySyslog(virLogPriority priority)
 
 #if HAVE_SYSLOG_H
 static void
-virLogOutputToSyslog(virLogSourcePtr source ATTRIBUTE_UNUSED,
+virLogOutputToSyslog(virLogSourcePtr source G_GNUC_UNUSED,
                      virLogPriority priority,
-                     const char *filename ATTRIBUTE_UNUSED,
-                     int linenr ATTRIBUTE_UNUSED,
-                     const char *funcname ATTRIBUTE_UNUSED,
-                     const char *timestamp ATTRIBUTE_UNUSED,
-                     virLogMetadataPtr metadata ATTRIBUTE_UNUSED,
+                     const char *filename G_GNUC_UNUSED,
+                     int linenr G_GNUC_UNUSED,
+                     const char *funcname G_GNUC_UNUSED,
+                     const char *timestamp G_GNUC_UNUSED,
+                     virLogMetadataPtr metadata G_GNUC_UNUSED,
                      unsigned int flags,
-                     const char *rawstr ATTRIBUTE_UNUSED,
+                     const char *rawstr G_GNUC_UNUSED,
                      const char *str,
-                     void *data ATTRIBUTE_UNUSED)
+                     void *data G_GNUC_UNUSED)
 {
     virCheckFlags(VIR_LOG_STACK_TRACE,);
 
@@ -841,7 +841,7 @@ static char *current_ident;
 
 
 static void
-virLogCloseSyslog(void *data ATTRIBUTE_UNUSED)
+virLogCloseSyslog(void *data G_GNUC_UNUSED)
 {
     closelog();
     VIR_FREE(current_ident);
@@ -973,11 +973,11 @@ virLogOutputToJournald(virLogSourcePtr source,
                        const char *filename,
                        int linenr,
                        const char *funcname,
-                       const char *timestamp ATTRIBUTE_UNUSED,
+                       const char *timestamp G_GNUC_UNUSED,
                        virLogMetadataPtr metadata,
                        unsigned int flags,
                        const char *rawstr,
-                       const char *str ATTRIBUTE_UNUSED,
+                       const char *str G_GNUC_UNUSED,
                        void *data)
 {
     virCheckFlags(VIR_LOG_STACK_TRACE,);
@@ -1133,7 +1133,7 @@ int virLogPriorityFromSyslog(int priority)
 }
 
 #else /* HAVE_SYSLOG_H */
-int virLogPriorityFromSyslog(int priority ATTRIBUTE_UNUSED)
+int virLogPriorityFromSyslog(int priority G_GNUC_UNUSED)
 {
     return VIR_LOG_ERROR;
 }

@@ -68,12 +68,12 @@ struct _virLogSource {
 };
 
 /*
- * ATTRIBUTE_UNUSED is to make gcc keep quiet if all the
+ * G_GNUC_UNUSED is to make gcc keep quiet if all the
  * log statements in a file are conditionally disabled
  * at compile time due to configure options.
  */
 #define VIR_LOG_INIT(n) \
-    static ATTRIBUTE_UNUSED virLogSource virLogSelf = { \
+    static G_GNUC_UNUSED virLogSource virLogSelf = { \
         .name = "" n "", \
         .priority = VIR_LOG_ERROR, \
         .serial = 0, \

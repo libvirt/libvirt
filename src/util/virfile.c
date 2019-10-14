@@ -106,7 +106,7 @@ int virFileClose(int *fdptr, virFileCloseFlags flags)
                 if (!(flags & VIR_FILE_CLOSE_IGNORE_EBADF))
                     VIR_WARN("Tried to close invalid fd %d", *fdptr);
             } else {
-                char ebuf[1024] ATTRIBUTE_UNUSED;
+                char ebuf[1024] G_GNUC_UNUSED;
                 VIR_DEBUG("Failed to close fd %d: %s",
                           *fdptr, virStrerror(errno, ebuf, sizeof(ebuf)));
             }
@@ -304,9 +304,9 @@ virFileWrapperFdNew(int *fd, const char *name, unsigned int flags)
 }
 #else
 virFileWrapperFdPtr
-virFileWrapperFdNew(int *fd ATTRIBUTE_UNUSED,
-                    const char *name ATTRIBUTE_UNUSED,
-                    unsigned int fdflags ATTRIBUTE_UNUSED)
+virFileWrapperFdNew(int *fd G_GNUC_UNUSED,
+                    const char *name G_GNUC_UNUSED,
+                    unsigned int fdflags G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("virFileWrapperFd unsupported on this platform"));
@@ -469,27 +469,27 @@ int virFileFlock(int fd, bool lock, bool shared)
 
 #else
 
-int virFileLock(int fd ATTRIBUTE_UNUSED,
-                bool shared ATTRIBUTE_UNUSED,
-                off_t start ATTRIBUTE_UNUSED,
-                off_t len ATTRIBUTE_UNUSED,
-                bool waitForLock ATTRIBUTE_UNUSED)
+int virFileLock(int fd G_GNUC_UNUSED,
+                bool shared G_GNUC_UNUSED,
+                off_t start G_GNUC_UNUSED,
+                off_t len G_GNUC_UNUSED,
+                bool waitForLock G_GNUC_UNUSED)
 {
     return -ENOSYS;
 }
 
 
-int virFileUnlock(int fd ATTRIBUTE_UNUSED,
-                  off_t start ATTRIBUTE_UNUSED,
-                  off_t len ATTRIBUTE_UNUSED)
+int virFileUnlock(int fd G_GNUC_UNUSED,
+                  off_t start G_GNUC_UNUSED,
+                  off_t len G_GNUC_UNUSED)
 {
     return -ENOSYS;
 }
 
 
-int virFileFlock(int fd ATTRIBUTE_UNUSED,
-                 bool lock ATTRIBUTE_UNUSED,
-                 bool shared ATTRIBUTE_UNUSED)
+int virFileFlock(int fd G_GNUC_UNUSED,
+                 bool lock G_GNUC_UNUSED,
+                 bool shared G_GNUC_UNUSED)
 {
     errno = ENOSYS;
     return -1;
@@ -960,7 +960,7 @@ int virFileNBDDeviceAssociate(const char *file,
 #else /* __linux__ */
 
 int virFileLoopDeviceAssociate(const char *file,
-                               char **dev ATTRIBUTE_UNUSED)
+                               char **dev G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS,
                          _("Unable to associate file %s with loop device"),
@@ -970,9 +970,9 @@ int virFileLoopDeviceAssociate(const char *file,
 }
 
 int virFileNBDDeviceAssociate(const char *file,
-                              virStorageFileFormat fmt ATTRIBUTE_UNUSED,
-                              bool readonly ATTRIBUTE_UNUSED,
-                              char **dev ATTRIBUTE_UNUSED)
+                              virStorageFileFormat fmt G_GNUC_UNUSED,
+                              bool readonly G_GNUC_UNUSED,
+                              char **dev G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS,
                          _("Unable to associate file %s with NBD device"),
@@ -1113,9 +1113,9 @@ safezero_posix_fallocate(int fd, off_t offset, off_t len)
 }
 #else /* !HAVE_POSIX_FALLOCATE */
 static int
-safezero_posix_fallocate(int fd ATTRIBUTE_UNUSED,
-                         off_t offset ATTRIBUTE_UNUSED,
-                         off_t len ATTRIBUTE_UNUSED)
+safezero_posix_fallocate(int fd G_GNUC_UNUSED,
+                         off_t offset G_GNUC_UNUSED,
+                         off_t len G_GNUC_UNUSED)
 {
     return -2;
 }
@@ -1131,9 +1131,9 @@ safezero_sys_fallocate(int fd,
 }
 #else /* !HAVE_SYS_SYSCALL_H || !defined(SYS_fallocate) */
 static int
-safezero_sys_fallocate(int fd ATTRIBUTE_UNUSED,
-                       off_t offset ATTRIBUTE_UNUSED,
-                       off_t len ATTRIBUTE_UNUSED)
+safezero_sys_fallocate(int fd G_GNUC_UNUSED,
+                       off_t offset G_GNUC_UNUSED,
+                       off_t len G_GNUC_UNUSED)
 {
     return -2;
 }
@@ -1175,9 +1175,9 @@ safezero_mmap(int fd, off_t offset, off_t len)
 }
 #else /* !HAVE_MMAP */
 static int
-safezero_mmap(int fd ATTRIBUTE_UNUSED,
-              off_t offset ATTRIBUTE_UNUSED,
-              off_t len ATTRIBUTE_UNUSED)
+safezero_mmap(int fd G_GNUC_UNUSED,
+              off_t offset G_GNUC_UNUSED,
+              off_t len G_GNUC_UNUSED)
 {
     return -2;
 }
@@ -1281,7 +1281,7 @@ virFileFindMountPoint(const char *type)
 #else /* defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R */
 
 char *
-virFileFindMountPoint(const char *type ATTRIBUTE_UNUSED)
+virFileFindMountPoint(const char *type G_GNUC_UNUSED)
 {
     errno = ENOSYS;
 
@@ -2043,11 +2043,11 @@ virFileGetMountSubtreeImpl(const char *mtabpath,
 }
 #else /* ! defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R */
 static int
-virFileGetMountSubtreeImpl(const char *mtabpath ATTRIBUTE_UNUSED,
-                           const char *prefix ATTRIBUTE_UNUSED,
-                           char ***mountsret ATTRIBUTE_UNUSED,
-                           size_t *nmountsret ATTRIBUTE_UNUSED,
-                           bool reverse ATTRIBUTE_UNUSED)
+virFileGetMountSubtreeImpl(const char *mtabpath G_GNUC_UNUSED,
+                           const char *prefix G_GNUC_UNUSED,
+                           char ***mountsret G_GNUC_UNUSED,
+                           size_t *nmountsret G_GNUC_UNUSED,
+                           bool reverse G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to determine mount table on this platform"));
@@ -2803,8 +2803,8 @@ virDirCreate(const char *path,
 int
 virFileAccessibleAs(const char *path,
                     int mode,
-                    uid_t uid ATTRIBUTE_UNUSED,
-                    gid_t gid ATTRIBUTE_UNUSED)
+                    uid_t uid G_GNUC_UNUSED,
+                    gid_t gid G_GNUC_UNUSED)
 {
     VIR_WARN("Ignoring uid/gid due to WIN32");
 
@@ -2813,12 +2813,12 @@ virFileAccessibleAs(const char *path,
 
 /* return -errno on failure, or 0 on success */
 int
-virFileOpenAs(const char *path ATTRIBUTE_UNUSED,
-              int openflags ATTRIBUTE_UNUSED,
-              mode_t mode ATTRIBUTE_UNUSED,
-              uid_t uid ATTRIBUTE_UNUSED,
-              gid_t gid ATTRIBUTE_UNUSED,
-              unsigned int flags_unused ATTRIBUTE_UNUSED)
+virFileOpenAs(const char *path G_GNUC_UNUSED,
+              int openflags G_GNUC_UNUSED,
+              mode_t mode G_GNUC_UNUSED,
+              uid_t uid G_GNUC_UNUSED,
+              gid_t gid G_GNUC_UNUSED,
+              unsigned int flags_unused G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("virFileOpenAs is not implemented for WIN32"));
@@ -2827,11 +2827,11 @@ virFileOpenAs(const char *path ATTRIBUTE_UNUSED,
 }
 
 int
-virDirCreate(const char *path ATTRIBUTE_UNUSED,
-             mode_t mode ATTRIBUTE_UNUSED,
-             uid_t uid ATTRIBUTE_UNUSED,
-             gid_t gid ATTRIBUTE_UNUSED,
-             unsigned int flags_unused ATTRIBUTE_UNUSED)
+virDirCreate(const char *path G_GNUC_UNUSED,
+             mode_t mode G_GNUC_UNUSED,
+             uid_t uid G_GNUC_UNUSED,
+             gid_t gid G_GNUC_UNUSED,
+             unsigned int flags_unused G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("virDirCreate is not implemented for WIN32"));
@@ -2841,8 +2841,8 @@ virDirCreate(const char *path ATTRIBUTE_UNUSED,
 
 int
 virFileRemove(const char *path,
-              uid_t uid ATTRIBUTE_UNUSED,
-              gid_t gid ATTRIBUTE_UNUSED)
+              uid_t uid G_GNUC_UNUSED,
+              gid_t gid G_GNUC_UNUSED)
 {
     if (unlink(path) < 0) {
         virReportSystemError(errno, _("Unable to unlink path '%s'"),
@@ -3198,9 +3198,9 @@ virFileOpenTty(int *ttymaster, char **ttyName, int rawmode)
 }
 #else /* WIN32 */
 int
-virFileOpenTty(int *ttymaster ATTRIBUTE_UNUSED,
-               char **ttyName ATTRIBUTE_UNUSED,
-               int rawmode ATTRIBUTE_UNUSED)
+virFileOpenTty(int *ttymaster G_GNUC_UNUSED,
+               char **ttyName G_GNUC_UNUSED,
+               int rawmode G_GNUC_UNUSED)
 {
     /* mingw completely lacks pseudo-terminals, and the gnulib
      * replacements are not (yet) license compatible.  */
@@ -3741,16 +3741,16 @@ virFileFindHugeTLBFS(virHugeTLBFSPtr *ret_fs,
 
 #else /* defined __linux__ */
 
-int virFileIsSharedFSType(const char *path ATTRIBUTE_UNUSED,
-                          int fstypes ATTRIBUTE_UNUSED)
+int virFileIsSharedFSType(const char *path G_GNUC_UNUSED,
+                          int fstypes G_GNUC_UNUSED)
 {
     /* XXX implement me :-) */
     return 0;
 }
 
 int
-virFileGetHugepageSize(const char *path ATTRIBUTE_UNUSED,
-                       unsigned long long *size ATTRIBUTE_UNUSED)
+virFileGetHugepageSize(const char *path G_GNUC_UNUSED,
+                       unsigned long long *size G_GNUC_UNUSED)
 {
     /* XXX implement me :-) */
     virReportUnsupportedError();
@@ -3758,8 +3758,8 @@ virFileGetHugepageSize(const char *path ATTRIBUTE_UNUSED,
 }
 
 int
-virFileFindHugeTLBFS(virHugeTLBFSPtr *ret_fs ATTRIBUTE_UNUSED,
-                     size_t *ret_nfs ATTRIBUTE_UNUSED)
+virFileFindHugeTLBFS(virHugeTLBFSPtr *ret_fs G_GNUC_UNUSED,
+                     size_t *ret_nfs G_GNUC_UNUSED)
 {
     /* XXX implement me :-) */
     virReportUnsupportedError();
@@ -3874,8 +3874,8 @@ virFileMoveMount(const char *src,
 #else /* !defined(__linux__) || !defined(HAVE_SYS_MOUNT_H) */
 
 int
-virFileSetupDev(const char *path ATTRIBUTE_UNUSED,
-                const char *mount_options ATTRIBUTE_UNUSED)
+virFileSetupDev(const char *path G_GNUC_UNUSED,
+                const char *mount_options G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("mount is not supported on this platform."));
@@ -3884,8 +3884,8 @@ virFileSetupDev(const char *path ATTRIBUTE_UNUSED,
 
 
 int
-virFileBindMountDevice(const char *src ATTRIBUTE_UNUSED,
-                       const char *dst ATTRIBUTE_UNUSED)
+virFileBindMountDevice(const char *src G_GNUC_UNUSED,
+                       const char *dst G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("mount is not supported on this platform."));
@@ -3894,8 +3894,8 @@ virFileBindMountDevice(const char *src ATTRIBUTE_UNUSED,
 
 
 int
-virFileMoveMount(const char *src ATTRIBUTE_UNUSED,
-                 const char *dst ATTRIBUTE_UNUSED)
+virFileMoveMount(const char *src G_GNUC_UNUSED,
+                 const char *dst G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("mount move is not supported on this platform."));
@@ -3937,8 +3937,8 @@ virFileFreeACLs(void **acl)
 #else /* !defined(HAVE_SYS_ACL_H) */
 
 int
-virFileGetACLs(const char *file ATTRIBUTE_UNUSED,
-               void **acl ATTRIBUTE_UNUSED)
+virFileGetACLs(const char *file G_GNUC_UNUSED,
+               void **acl G_GNUC_UNUSED)
 {
     errno = ENOTSUP;
     return -1;
@@ -3946,8 +3946,8 @@ virFileGetACLs(const char *file ATTRIBUTE_UNUSED,
 
 
 int
-virFileSetACLs(const char *file ATTRIBUTE_UNUSED,
-               void *acl ATTRIBUTE_UNUSED)
+virFileSetACLs(const char *file G_GNUC_UNUSED,
+               void *acl G_GNUC_UNUSED)
 {
     errno = ENOTSUP;
     return -1;
@@ -4140,9 +4140,9 @@ virFileInData(int fd,
 #else /* !HAVE_DECL_SEEK_HOLE */
 
 int
-virFileInData(int fd ATTRIBUTE_UNUSED,
-              int *inData ATTRIBUTE_UNUSED,
-              long long *length ATTRIBUTE_UNUSED)
+virFileInData(int fd G_GNUC_UNUSED,
+              int *inData G_GNUC_UNUSED,
+              long long *length G_GNUC_UNUSED)
 {
     errno = ENOSYS;
     virReportSystemError(errno, "%s",
@@ -4497,9 +4497,9 @@ virFileRemoveXAttr(const char *path,
 #else /* !HAVE_LIBATTR */
 
 int
-virFileGetXAttrQuiet(const char *path ATTRIBUTE_UNUSED,
-                     const char *name ATTRIBUTE_UNUSED,
-                     char **value ATTRIBUTE_UNUSED)
+virFileGetXAttrQuiet(const char *path G_GNUC_UNUSED,
+                     const char *name G_GNUC_UNUSED,
+                     char **value G_GNUC_UNUSED)
 {
     errno = ENOSYS;
     return -1;
@@ -4508,7 +4508,7 @@ virFileGetXAttrQuiet(const char *path ATTRIBUTE_UNUSED,
 int
 virFileSetXAttr(const char *path,
                 const char *name,
-                const char *value ATTRIBUTE_UNUSED)
+                const char *value G_GNUC_UNUSED)
 {
     errno = ENOSYS;
     virReportSystemError(errno,

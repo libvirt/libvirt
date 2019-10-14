@@ -259,36 +259,36 @@ virSCSIHostGetNameByParentaddr(unsigned int domain,
 #else
 
 int
-virSCSIHostGetUniqueId(const char *sysfs_prefix ATTRIBUTE_UNUSED,
-                       int host ATTRIBUTE_UNUSED)
+virSCSIHostGetUniqueId(const char *sysfs_prefix G_GNUC_UNUSED,
+                       int host G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return -1;
 }
 
 char *
-virSCSIHostFindByPCI(const char *sysfs_prefix ATTRIBUTE_UNUSED,
-                     const char *parentaddr ATTRIBUTE_UNUSED,
-                     unsigned int unique_id ATTRIBUTE_UNUSED)
+virSCSIHostFindByPCI(const char *sysfs_prefix G_GNUC_UNUSED,
+                     const char *parentaddr G_GNUC_UNUSED,
+                     unsigned int unique_id G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return NULL;
 }
 
 int
-virSCSIHostGetNumber(const char *adapter_name ATTRIBUTE_UNUSED,
-                     unsigned int *result ATTRIBUTE_UNUSED)
+virSCSIHostGetNumber(const char *adapter_name G_GNUC_UNUSED,
+                     unsigned int *result G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return -1;
 }
 
 char *
-virSCSIHostGetNameByParentaddr(unsigned int domain ATTRIBUTE_UNUSED,
-                               unsigned int bus ATTRIBUTE_UNUSED,
-                               unsigned int slot ATTRIBUTE_UNUSED,
-                               unsigned int function ATTRIBUTE_UNUSED,
-                               unsigned int unique_id ATTRIBUTE_UNUSED)
+virSCSIHostGetNameByParentaddr(unsigned int domain G_GNUC_UNUSED,
+                               unsigned int bus G_GNUC_UNUSED,
+                               unsigned int slot G_GNUC_UNUSED,
+                               unsigned int function G_GNUC_UNUSED,
+                               unsigned int unique_id G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
     return NULL;

@@ -289,8 +289,8 @@ static int virFDStreamUpdateCallback(virStreamPtr stream, int events)
     return ret;
 }
 
-static void virFDStreamEvent(int watch ATTRIBUTE_UNUSED,
-                             int fd ATTRIBUTE_UNUSED,
+static void virFDStreamEvent(int watch G_GNUC_UNUSED,
+                             int fd G_GNUC_UNUSED,
                              int events,
                              void *opaque)
 {
@@ -1212,9 +1212,9 @@ int virFDStreamConnectUNIX(virStreamPtr st,
     return -1;
 }
 #else
-int virFDStreamConnectUNIX(virStreamPtr st ATTRIBUTE_UNUSED,
-                           const char *path ATTRIBUTE_UNUSED,
-                           bool abstract ATTRIBUTE_UNUSED)
+int virFDStreamConnectUNIX(virStreamPtr st G_GNUC_UNUSED,
+                           const char *path G_GNUC_UNUSED,
+                           bool abstract G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("UNIX domain sockets are not supported on this platform"));

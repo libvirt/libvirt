@@ -174,7 +174,7 @@ virLockSpaceResourceNew(virLockSpacePtr lockspace,
              * one that now exists on the filesystem
              */
             if (stat(res->path, &a) < 0) {
-                char ebuf[1024] ATTRIBUTE_UNUSED;
+                char ebuf[1024] G_GNUC_UNUSED;
                 VIR_DEBUG("Resource '%s' disappeared: %s",
                           res->path, virStrerror(errno, ebuf, sizeof(ebuf)));
                 VIR_FORCE_CLOSE(res->fd);
@@ -232,7 +232,7 @@ virLockSpaceResourceNew(virLockSpacePtr lockspace,
 }
 
 
-static void virLockSpaceResourceDataFree(void *opaque, const void *name ATTRIBUTE_UNUSED)
+static void virLockSpaceResourceDataFree(void *opaque, const void *name G_GNUC_UNUSED)
 {
     virLockSpaceResourcePtr res = opaque;
     virLockSpaceResourceFree(res);
@@ -712,7 +712,7 @@ struct virLockSpaceRemoveData {
 
 static int
 virLockSpaceRemoveResourcesForOwner(const void *payload,
-                                    const void *name ATTRIBUTE_UNUSED,
+                                    const void *name G_GNUC_UNUSED,
                                     const void *opaque)
 {
     virLockSpaceResourcePtr res = (virLockSpaceResourcePtr)payload;

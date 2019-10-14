@@ -245,9 +245,9 @@ virHostMemGetStatsLinux(FILE *meminfo,
 
 
 int
-virHostMemGetStats(int cellNum ATTRIBUTE_UNUSED,
-                   virNodeMemoryStatsPtr params ATTRIBUTE_UNUSED,
-                   int *nparams ATTRIBUTE_UNUSED,
+virHostMemGetStats(int cellNum G_GNUC_UNUSED,
+                   virNodeMemoryStatsPtr params G_GNUC_UNUSED,
+                   int *nparams G_GNUC_UNUSED,
                    unsigned int flags)
 {
     virCheckFlags(0, -1);
@@ -364,8 +364,8 @@ virHostMemParametersAreAllSupported(virTypedParameterPtr params,
 #endif
 
 int
-virHostMemSetParameters(virTypedParameterPtr params ATTRIBUTE_UNUSED,
-                        int nparams ATTRIBUTE_UNUSED,
+virHostMemSetParameters(virTypedParameterPtr params G_GNUC_UNUSED,
+                        int nparams G_GNUC_UNUSED,
                         unsigned int flags)
 {
     virCheckFlags(0, -1);
@@ -449,8 +449,8 @@ virHostMemGetParameterValue(const char *field,
 
 #define NODE_MEMORY_PARAMETERS_NUM 8
 int
-virHostMemGetParameters(virTypedParameterPtr params ATTRIBUTE_UNUSED,
-                        int *nparams ATTRIBUTE_UNUSED,
+virHostMemGetParameters(virTypedParameterPtr params G_GNUC_UNUSED,
+                        int *nparams G_GNUC_UNUSED,
                         unsigned int flags)
 {
     virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
@@ -595,7 +595,7 @@ virHostMemGetParameters(virTypedParameterPtr params ATTRIBUTE_UNUSED,
 static int
 virHostMemGetCellsFreeFake(unsigned long long *freeMems,
                            int startCell,
-                           int maxCells ATTRIBUTE_UNUSED)
+                           int maxCells G_GNUC_UNUSED)
 {
     double avail = physmem_available();
 

@@ -52,8 +52,8 @@ static virClassPtr virMacMapClass;
 
 static int
 virMacMapHashFree(void *payload,
-                  const void *name ATTRIBUTE_UNUSED,
-                  void *opaque ATTRIBUTE_UNUSED)
+                  const void *name G_GNUC_UNUSED,
+                  void *opaque G_GNUC_UNUSED)
 {
     virStringListFree(payload);
     return 0;

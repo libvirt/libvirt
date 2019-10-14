@@ -45,8 +45,8 @@ virVsockSetGuestCidQuiet(int fd,
 
 #else
 static int
-virVsockSetGuestCidQuiet(int fd ATTRIBUTE_UNUSED,
-                         unsigned int guest_cid ATTRIBUTE_UNUSED)
+virVsockSetGuestCidQuiet(int fd G_GNUC_UNUSED,
+                         unsigned int guest_cid G_GNUC_UNUSED)
 {
     errno = ENOSYS;
     return -1;

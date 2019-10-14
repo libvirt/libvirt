@@ -276,8 +276,8 @@ virNodeSuspendSupportsTargetPMUtils(unsigned int target, bool *supported)
 }
 #else /* ! WITH_PM_UTILS */
 static int
-virNodeSuspendSupportsTargetPMUtils(unsigned int target ATTRIBUTE_UNUSED,
-                                    bool *supported ATTRIBUTE_UNUSED)
+virNodeSuspendSupportsTargetPMUtils(unsigned int target G_GNUC_UNUSED,
+                                    bool *supported G_GNUC_UNUSED)
 {
     return -2;
 }

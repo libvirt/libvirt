@@ -816,8 +816,8 @@ virNetlinkCallbackDataFree(virNetlinkCallbackDataPtr calld)
  * data, and the opaque object itself.
  */
 static void
-virNetDevMacVLanVPortProfileDestroyCallback(int watch ATTRIBUTE_UNUSED,
-                                            const virMacAddr *macaddr ATTRIBUTE_UNUSED,
+virNetDevMacVLanVPortProfileDestroyCallback(int watch G_GNUC_UNUSED,
+                                            const virMacAddr *macaddr G_GNUC_UNUSED,
                                             void *opaque)
 {
     virNetlinkCallbackDataFree((virNetlinkCallbackDataPtr)opaque);
@@ -1178,36 +1178,26 @@ int virNetDevMacVLanRestartWithVPortProfile(const char *cr_ifname,
 }
 
 #else /* ! WITH_MACVTAP */
-bool virNetDevMacVLanIsMacvtap(const char *ifname ATTRIBUTE_UNUSED)
+bool virNetDevMacVLanIsMacvtap(const char *ifname G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Cannot create macvlan devices on this platform"));
     return false;
 }
 
-int virNetDevMacVLanCreate(const char *ifname ATTRIBUTE_UNUSED,
-                           const char *type ATTRIBUTE_UNUSED,
-                           const virMacAddr *macaddress ATTRIBUTE_UNUSED,
-                           const char *srcdev ATTRIBUTE_UNUSED,
-                           uint32_t macvlan_mode ATTRIBUTE_UNUSED,
-                           int *retry ATTRIBUTE_UNUSED)
+int virNetDevMacVLanCreate(const char *ifname G_GNUC_UNUSED,
+                           const char *type G_GNUC_UNUSED,
+                           const virMacAddr *macaddress G_GNUC_UNUSED,
+                           const char *srcdev G_GNUC_UNUSED,
+                           uint32_t macvlan_mode G_GNUC_UNUSED,
+                           int *retry G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Cannot create macvlan devices on this platform"));
     return -1;
 }
 
-int virNetDevMacVLanDelete(const char *ifname ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s",
-                         _("Cannot create macvlan devices on this platform"));
-    return -1;
-}
-
-int
-virNetDevMacVLanTapOpen(const char *ifname ATTRIBUTE_UNUSED,
-                        int *tapfd ATTRIBUTE_UNUSED,
-                        size_t tapfdSize ATTRIBUTE_UNUSED)
+int virNetDevMacVLanDelete(const char *ifname G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Cannot create macvlan devices on this platform"));
@@ -1215,79 +1205,89 @@ virNetDevMacVLanTapOpen(const char *ifname ATTRIBUTE_UNUSED,
 }
 
 int
-virNetDevMacVLanTapSetup(int *tapfd ATTRIBUTE_UNUSED,
-                         size_t tapfdSize ATTRIBUTE_UNUSED,
-                         bool vnet_hdr ATTRIBUTE_UNUSED)
+virNetDevMacVLanTapOpen(const char *ifname G_GNUC_UNUSED,
+                        int *tapfd G_GNUC_UNUSED,
+                        size_t tapfdSize G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Cannot create macvlan devices on this platform"));
     return -1;
 }
 
-int virNetDevMacVLanCreateWithVPortProfile(const char *ifname ATTRIBUTE_UNUSED,
-                                           const virMacAddr *macaddress ATTRIBUTE_UNUSED,
-                                           const char *linkdev ATTRIBUTE_UNUSED,
-                                           virNetDevMacVLanMode mode ATTRIBUTE_UNUSED,
-                                           virNetDevVlanPtr vlan ATTRIBUTE_UNUSED,
-                                           const unsigned char *vmuuid ATTRIBUTE_UNUSED,
-                                           virNetDevVPortProfilePtr virtPortProfile ATTRIBUTE_UNUSED,
-                                           char **res_ifname ATTRIBUTE_UNUSED,
-                                           virNetDevVPortProfileOp vmop ATTRIBUTE_UNUSED,
-                                           char *stateDir ATTRIBUTE_UNUSED,
-                                           int *tapfd ATTRIBUTE_UNUSED,
-                                           size_t tapfdSize ATTRIBUTE_UNUSED,
-                                           unsigned int unused_flags ATTRIBUTE_UNUSED)
+int
+virNetDevMacVLanTapSetup(int *tapfd G_GNUC_UNUSED,
+                         size_t tapfdSize G_GNUC_UNUSED,
+                         bool vnet_hdr G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Cannot create macvlan devices on this platform"));
     return -1;
 }
 
-int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname ATTRIBUTE_UNUSED,
-                                           const virMacAddr *macaddress ATTRIBUTE_UNUSED,
-                                           const char *linkdev ATTRIBUTE_UNUSED,
-                                           int mode ATTRIBUTE_UNUSED,
-                                           virNetDevVPortProfilePtr virtPortProfile ATTRIBUTE_UNUSED,
-                                           char *stateDir ATTRIBUTE_UNUSED)
+int virNetDevMacVLanCreateWithVPortProfile(const char *ifname G_GNUC_UNUSED,
+                                           const virMacAddr *macaddress G_GNUC_UNUSED,
+                                           const char *linkdev G_GNUC_UNUSED,
+                                           virNetDevMacVLanMode mode G_GNUC_UNUSED,
+                                           virNetDevVlanPtr vlan G_GNUC_UNUSED,
+                                           const unsigned char *vmuuid G_GNUC_UNUSED,
+                                           virNetDevVPortProfilePtr virtPortProfile G_GNUC_UNUSED,
+                                           char **res_ifname G_GNUC_UNUSED,
+                                           virNetDevVPortProfileOp vmop G_GNUC_UNUSED,
+                                           char *stateDir G_GNUC_UNUSED,
+                                           int *tapfd G_GNUC_UNUSED,
+                                           size_t tapfdSize G_GNUC_UNUSED,
+                                           unsigned int unused_flags G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Cannot create macvlan devices on this platform"));
     return -1;
 }
 
-int virNetDevMacVLanRestartWithVPortProfile(const char *cr_ifname ATTRIBUTE_UNUSED,
-                                            const virMacAddr *macaddress ATTRIBUTE_UNUSED,
-                                            const char *linkdev ATTRIBUTE_UNUSED,
-                                            const unsigned char *vmuuid ATTRIBUTE_UNUSED,
-                                            virNetDevVPortProfilePtr virtPortProfile ATTRIBUTE_UNUSED,
-                                            virNetDevVPortProfileOp vmOp ATTRIBUTE_UNUSED)
+int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname G_GNUC_UNUSED,
+                                           const virMacAddr *macaddress G_GNUC_UNUSED,
+                                           const char *linkdev G_GNUC_UNUSED,
+                                           int mode G_GNUC_UNUSED,
+                                           virNetDevVPortProfilePtr virtPortProfile G_GNUC_UNUSED,
+                                           char *stateDir G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Cannot create macvlan devices on this platform"));
     return -1;
 }
 
-int virNetDevMacVLanVPortProfileRegisterCallback(const char *ifname ATTRIBUTE_UNUSED,
-                                                 const virMacAddr *macaddress ATTRIBUTE_UNUSED,
-                                                 const char *linkdev ATTRIBUTE_UNUSED,
-                                                 const unsigned char *vmuuid ATTRIBUTE_UNUSED,
-                                                 virNetDevVPortProfilePtr virtPortProfile ATTRIBUTE_UNUSED,
-                                                 virNetDevVPortProfileOp vmOp ATTRIBUTE_UNUSED)
+int virNetDevMacVLanRestartWithVPortProfile(const char *cr_ifname G_GNUC_UNUSED,
+                                            const virMacAddr *macaddress G_GNUC_UNUSED,
+                                            const char *linkdev G_GNUC_UNUSED,
+                                            const unsigned char *vmuuid G_GNUC_UNUSED,
+                                            virNetDevVPortProfilePtr virtPortProfile G_GNUC_UNUSED,
+                                            virNetDevVPortProfileOp vmOp G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Cannot create macvlan devices on this platform"));
     return -1;
 }
 
-int virNetDevMacVLanReleaseName(const char *name ATTRIBUTE_UNUSED)
+int virNetDevMacVLanVPortProfileRegisterCallback(const char *ifname G_GNUC_UNUSED,
+                                                 const virMacAddr *macaddress G_GNUC_UNUSED,
+                                                 const char *linkdev G_GNUC_UNUSED,
+                                                 const unsigned char *vmuuid G_GNUC_UNUSED,
+                                                 virNetDevVPortProfilePtr virtPortProfile G_GNUC_UNUSED,
+                                                 virNetDevVPortProfileOp vmOp G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Cannot create macvlan devices on this platform"));
     return -1;
 }
 
-int virNetDevMacVLanReserveName(const char *name ATTRIBUTE_UNUSED,
-                                bool quietFail ATTRIBUTE_UNUSED)
+int virNetDevMacVLanReleaseName(const char *name G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Cannot create macvlan devices on this platform"));
+    return -1;
+}
+
+int virNetDevMacVLanReserveName(const char *name G_GNUC_UNUSED,
+                                bool quietFail G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Cannot create macvlan devices on this platform"));

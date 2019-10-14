@@ -38,11 +38,11 @@
 
 #ifdef WITH_DEVMAPPER
 static void
-virDevMapperDummyLogger(int level ATTRIBUTE_UNUSED,
-                        const char *file ATTRIBUTE_UNUSED,
-                        int line ATTRIBUTE_UNUSED,
-                        int dm_errno ATTRIBUTE_UNUSED,
-                        const char *fmt ATTRIBUTE_UNUSED,
+virDevMapperDummyLogger(int level G_GNUC_UNUSED,
+                        const char *file G_GNUC_UNUSED,
+                        int line G_GNUC_UNUSED,
+                        int dm_errno G_GNUC_UNUSED,
+                        const char *fmt G_GNUC_UNUSED,
                         ...)
 {
     return;
@@ -198,8 +198,8 @@ virDevMapperGetTargets(const char *path,
 #else /* ! WITH_DEVMAPPER */
 
 int
-virDevMapperGetTargets(const char *path ATTRIBUTE_UNUSED,
-                       char ***devPaths ATTRIBUTE_UNUSED)
+virDevMapperGetTargets(const char *path G_GNUC_UNUSED,
+                       char ***devPaths G_GNUC_UNUSED)
 {
     errno = ENOSYS;
     return -1;

@@ -1414,7 +1414,7 @@ int virStorageFileGetLVMKey(const char *path,
 }
 #else
 int virStorageFileGetLVMKey(const char *path,
-                            char **key ATTRIBUTE_UNUSED)
+                            char **key G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, _("Unable to get LVM key for %s"), path);
     return -1;
@@ -1439,7 +1439,7 @@ int virStorageFileGetLVMKey(const char *path,
 int
 virStorageFileGetSCSIKey(const char *path,
                          char **key,
-                         bool ignoreError ATTRIBUTE_UNUSED)
+                         bool ignoreError G_GNUC_UNUSED)
 {
     int status;
     VIR_AUTOPTR(virCommand) cmd = NULL;
@@ -1474,7 +1474,7 @@ virStorageFileGetSCSIKey(const char *path,
 }
 #else
 int virStorageFileGetSCSIKey(const char *path,
-                             char **key ATTRIBUTE_UNUSED,
+                             char **key G_GNUC_UNUSED,
                              bool ignoreError)
 {
     if (!ignoreError)
@@ -1551,8 +1551,8 @@ virStorageFileGetNPIVKey(const char *path,
     return 0;
 }
 #else
-int virStorageFileGetNPIVKey(const char *path ATTRIBUTE_UNUSED,
-                             char **key ATTRIBUTE_UNUSED)
+int virStorageFileGetNPIVKey(const char *path G_GNUC_UNUSED,
+                             char **key G_GNUC_UNUSED)
 {
     return -1;
 }
@@ -3218,7 +3218,7 @@ virStorageSourceParseBackingJSONSocketAddress(virStorageNetHostDefPtr host,
 static int
 virStorageSourceParseBackingJSONGluster(virStorageSourcePtr src,
                                         virJSONValuePtr json,
-                                        int opaque ATTRIBUTE_UNUSED)
+                                        int opaque G_GNUC_UNUSED)
 {
     const char *uri = virJSONValueObjectGetString(json, "filename");
     const char *volume = virJSONValueObjectGetString(json, "volume");
@@ -3272,7 +3272,7 @@ virStorageSourceParseBackingJSONGluster(virStorageSourcePtr src,
 static int
 virStorageSourceParseBackingJSONiSCSI(virStorageSourcePtr src,
                                       virJSONValuePtr json,
-                                      int opaque ATTRIBUTE_UNUSED)
+                                      int opaque G_GNUC_UNUSED)
 {
     const char *transport = virJSONValueObjectGetString(json, "transport");
     const char *portal = virJSONValueObjectGetString(json, "portal");
@@ -3343,7 +3343,7 @@ virStorageSourceParseBackingJSONiSCSI(virStorageSourcePtr src,
 static int
 virStorageSourceParseBackingJSONNbd(virStorageSourcePtr src,
                                     virJSONValuePtr json,
-                                    int opaque ATTRIBUTE_UNUSED)
+                                    int opaque G_GNUC_UNUSED)
 {
     const char *path = virJSONValueObjectGetString(json, "path");
     const char *host = virJSONValueObjectGetString(json, "host");
@@ -3393,7 +3393,7 @@ virStorageSourceParseBackingJSONNbd(virStorageSourcePtr src,
 static int
 virStorageSourceParseBackingJSONSheepdog(virStorageSourcePtr src,
                                          virJSONValuePtr json,
-                                         int opaque ATTRIBUTE_UNUSED)
+                                         int opaque G_GNUC_UNUSED)
 {
     const char *filename;
     const char *vdi = virJSONValueObjectGetString(json, "vdi");
@@ -3437,7 +3437,7 @@ virStorageSourceParseBackingJSONSheepdog(virStorageSourcePtr src,
 static int
 virStorageSourceParseBackingJSONSSH(virStorageSourcePtr src,
                                     virJSONValuePtr json,
-                                    int opaque ATTRIBUTE_UNUSED)
+                                    int opaque G_GNUC_UNUSED)
 {
     const char *path = virJSONValueObjectGetString(json, "path");
     const char *host = virJSONValueObjectGetString(json, "host");
@@ -3480,7 +3480,7 @@ virStorageSourceParseBackingJSONSSH(virStorageSourcePtr src,
 static int
 virStorageSourceParseBackingJSONRBD(virStorageSourcePtr src,
                                     virJSONValuePtr json,
-                                    int opaque ATTRIBUTE_UNUSED)
+                                    int opaque G_GNUC_UNUSED)
 {
     const char *filename;
     const char *pool = virJSONValueObjectGetString(json, "pool");
@@ -3535,7 +3535,7 @@ virStorageSourceParseBackingJSONRBD(virStorageSourcePtr src,
 static int
 virStorageSourceParseBackingJSONRaw(virStorageSourcePtr src,
                                     virJSONValuePtr json,
-                                    int opaque ATTRIBUTE_UNUSED)
+                                    int opaque G_GNUC_UNUSED)
 {
     /* There are no interesting attributes in raw driver.
      * Treat it as pass-through.
@@ -3547,7 +3547,7 @@ virStorageSourceParseBackingJSONRaw(virStorageSourcePtr src,
 static int
 virStorageSourceParseBackingJSONVxHS(virStorageSourcePtr src,
                                      virJSONValuePtr json,
-                                     int opaque ATTRIBUTE_UNUSED)
+                                     int opaque G_GNUC_UNUSED)
 {
     const char *vdisk_id = virJSONValueObjectGetString(json, "vdisk-id");
     virJSONValuePtr server = virJSONValueObjectGetObject(json, "server");

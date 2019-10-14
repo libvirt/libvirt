@@ -2663,7 +2663,7 @@ virPCIGetMdevTypes(const char *sysfspath,
 static const char *unsupported = N_("not supported on non-linux platforms");
 
 virPCIDeviceAddressPtr
-virPCIGetDeviceAddressFromSysfsLink(const char *device_link ATTRIBUTE_UNUSED)
+virPCIGetDeviceAddressFromSysfsLink(const char *device_link G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return NULL;
@@ -2671,34 +2671,34 @@ virPCIGetDeviceAddressFromSysfsLink(const char *device_link ATTRIBUTE_UNUSED)
 
 
 int
-virPCIGetPhysicalFunction(const char *vf_sysfs_path ATTRIBUTE_UNUSED,
-                          virPCIDeviceAddressPtr *pf ATTRIBUTE_UNUSED)
+virPCIGetPhysicalFunction(const char *vf_sysfs_path G_GNUC_UNUSED,
+                          virPCIDeviceAddressPtr *pf G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
 }
 
 int
-virPCIGetVirtualFunctions(const char *sysfs_path ATTRIBUTE_UNUSED,
-                          virPCIDeviceAddressPtr **virtual_functions ATTRIBUTE_UNUSED,
-                          size_t *num_virtual_functions ATTRIBUTE_UNUSED,
-                          unsigned int *max_virtual_functions ATTRIBUTE_UNUSED)
+virPCIGetVirtualFunctions(const char *sysfs_path G_GNUC_UNUSED,
+                          virPCIDeviceAddressPtr **virtual_functions G_GNUC_UNUSED,
+                          size_t *num_virtual_functions G_GNUC_UNUSED,
+                          unsigned int *max_virtual_functions G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
 }
 
 int
-virPCIIsVirtualFunction(const char *vf_sysfs_device_link ATTRIBUTE_UNUSED)
+virPCIIsVirtualFunction(const char *vf_sysfs_device_link G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
 }
 
 int
-virPCIGetVirtualFunctionIndex(const char *pf_sysfs_device_link ATTRIBUTE_UNUSED,
-                              const char *vf_sysfs_device_link ATTRIBUTE_UNUSED,
-                              int *vf_index ATTRIBUTE_UNUSED)
+virPCIGetVirtualFunctionIndex(const char *pf_sysfs_device_link G_GNUC_UNUSED,
+                              const char *vf_sysfs_device_link G_GNUC_UNUSED,
+                              int *vf_index G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
@@ -2706,36 +2706,36 @@ virPCIGetVirtualFunctionIndex(const char *pf_sysfs_device_link ATTRIBUTE_UNUSED,
 }
 
 int
-virPCIGetSysfsFile(char *virPCIDeviceName ATTRIBUTE_UNUSED,
-                   char **pci_sysfs_device_link ATTRIBUTE_UNUSED)
+virPCIGetSysfsFile(char *virPCIDeviceName G_GNUC_UNUSED,
+                   char **pci_sysfs_device_link G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
 }
 
 int
-virPCIDeviceAddressGetSysfsFile(virPCIDeviceAddressPtr dev ATTRIBUTE_UNUSED,
-                                char **pci_sysfs_device_link ATTRIBUTE_UNUSED)
+virPCIDeviceAddressGetSysfsFile(virPCIDeviceAddressPtr dev G_GNUC_UNUSED,
+                                char **pci_sysfs_device_link G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
 }
 
 int
-virPCIGetNetName(const char *device_link_sysfs_path ATTRIBUTE_UNUSED,
-                 size_t idx ATTRIBUTE_UNUSED,
-                 char *physPortID ATTRIBUTE_UNUSED,
-                 char **netname ATTRIBUTE_UNUSED)
+virPCIGetNetName(const char *device_link_sysfs_path G_GNUC_UNUSED,
+                 size_t idx G_GNUC_UNUSED,
+                 char *physPortID G_GNUC_UNUSED,
+                 char **netname G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
 }
 
 int
-virPCIGetVirtualFunctionInfo(const char *vf_sysfs_device_path ATTRIBUTE_UNUSED,
-                             int pfNetDevIdx ATTRIBUTE_UNUSED,
-                             char **pfname ATTRIBUTE_UNUSED,
-                             int *vf_index ATTRIBUTE_UNUSED)
+virPCIGetVirtualFunctionInfo(const char *vf_sysfs_device_path G_GNUC_UNUSED,
+                             int pfNetDevIdx G_GNUC_UNUSED,
+                             char **pfname G_GNUC_UNUSED,
+                             int *vf_index G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
@@ -2743,8 +2743,8 @@ virPCIGetVirtualFunctionInfo(const char *vf_sysfs_device_path ATTRIBUTE_UNUSED,
 
 
 ssize_t
-virPCIGetMdevTypes(const char *sysfspath ATTRIBUTE_UNUSED,
-                   virMediatedDeviceTypePtr **types ATTRIBUTE_UNUSED)
+virPCIGetMdevTypes(const char *sysfspath G_GNUC_UNUSED,
+                   virMediatedDeviceTypePtr **types G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;

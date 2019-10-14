@@ -265,7 +265,7 @@ static int virKeyFileParse(virKeyFilePtr conf,
 }
 
 
-static void virKeyFileEntryFree(void *payload, const void *name ATTRIBUTE_UNUSED)
+static void virKeyFileEntryFree(void *payload, const void *name G_GNUC_UNUSED)
 {
     virHashFree(payload);
 }

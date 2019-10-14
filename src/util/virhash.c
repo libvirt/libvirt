@@ -105,7 +105,7 @@ static void virHashStrFree(void *name)
 
 
 void
-virHashValueFree(void *value, const void *name ATTRIBUTE_UNUSED)
+virHashValueFree(void *value, const void *name G_GNUC_UNUSED)
 {
     VIR_FREE(value);
 }
@@ -640,9 +640,9 @@ virHashRemoveSet(virHashTablePtr table,
 }
 
 static int
-_virHashRemoveAllIter(const void *payload ATTRIBUTE_UNUSED,
-                      const void *name ATTRIBUTE_UNUSED,
-                      const void *data ATTRIBUTE_UNUSED)
+_virHashRemoveAllIter(const void *payload G_GNUC_UNUSED,
+                      const void *name G_GNUC_UNUSED,
+                      const void *data G_GNUC_UNUSED)
 {
     return 1;
 }

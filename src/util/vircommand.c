@@ -437,7 +437,7 @@ virExecCommon(virCommandPtr cmd, gid_t *groups, int ngroups)
  * onto child process (well, the one we will exec soon since this
  * is called from the child). */
 static int
-virCommandMassCloseGetFDsLinux(virCommandPtr cmd ATTRIBUTE_UNUSED,
+virCommandMassCloseGetFDsLinux(virCommandPtr cmd G_GNUC_UNUSED,
                                virBitmapPtr fds)
 {
     DIR *dp = NULL;
@@ -474,7 +474,7 @@ virCommandMassCloseGetFDsLinux(virCommandPtr cmd ATTRIBUTE_UNUSED,
 # else /* !__linux__ */
 
 static int
-virCommandMassCloseGetFDsGeneric(virCommandPtr cmd ATTRIBUTE_UNUSED,
+virCommandMassCloseGetFDsGeneric(virCommandPtr cmd G_GNUC_UNUSED,
                                  virBitmapPtr fds)
 {
     virBitmapSetAll(fds);
@@ -847,7 +847,7 @@ virRun(const char *const*argv, int *status)
 #else /* WIN32 */
 
 int
-virRun(const char *const *argv ATTRIBUTE_UNUSED,
+virRun(const char *const *argv G_GNUC_UNUSED,
        int *status)
 {
     if (status)
@@ -859,7 +859,7 @@ virRun(const char *const *argv ATTRIBUTE_UNUSED,
 }
 
 static int
-virExec(virCommandPtr cmd ATTRIBUTE_UNUSED)
+virExec(virCommandPtr cmd G_GNUC_UNUSED)
 {
     /* XXX: Some day we can implement pieces of virCommand/virExec on
      * top of _spawn() or CreateProcess(), but we can't implement
@@ -1187,7 +1187,7 @@ virCommandAllowCap(virCommandPtr cmd,
  */
 void
 virCommandSetSELinuxLabel(virCommandPtr cmd,
-                          const char *label ATTRIBUTE_UNUSED)
+                          const char *label G_GNUC_UNUSED)
 {
     if (!cmd || cmd->has_error)
         return;
@@ -1212,7 +1212,7 @@ virCommandSetSELinuxLabel(virCommandPtr cmd,
  */
 void
 virCommandSetAppArmorProfile(virCommandPtr cmd,
-                             const char *profile ATTRIBUTE_UNUSED)
+                             const char *profile G_GNUC_UNUSED)
 {
     if (!cmd || cmd->has_error)
         return;
@@ -1779,9 +1779,9 @@ virCommandSetSendBuffer(virCommandPtr cmd,
 
 int
 virCommandSetSendBuffer(virCommandPtr cmd,
-                        int fd ATTRIBUTE_UNUSED,
-                        unsigned char *buffer ATTRIBUTE_UNUSED,
-                        size_t buflen ATTRIBUTE_UNUSED)
+                        int fd G_GNUC_UNUSED,
+                        unsigned char *buffer G_GNUC_UNUSED,
+                        size_t buflen G_GNUC_UNUSED)
 {
     if (!cmd || cmd->has_error)
         return -1;
@@ -2355,8 +2355,8 @@ int virCommandExec(virCommandPtr cmd, gid_t *groups, int ngroups)
     return -1;
 }
 #else
-int virCommandExec(virCommandPtr cmd ATTRIBUTE_UNUSED, gid_t *groups ATTRIBUTE_UNUSED,
-                   int ngroups ATTRIBUTE_UNUSED)
+int virCommandExec(virCommandPtr cmd G_GNUC_UNUSED, gid_t *groups G_GNUC_UNUSED,
+                   int ngroups G_GNUC_UNUSED)
 {
     /* Mingw execve() has a broken signature. Disable this
      * function until gnulib fixes the signature, since we
@@ -2795,7 +2795,7 @@ virCommandAbort(virCommandPtr cmd)
 }
 #else /* WIN32 */
 void
-virCommandAbort(virCommandPtr cmd ATTRIBUTE_UNUSED)
+virCommandAbort(virCommandPtr cmd G_GNUC_UNUSED)
 {
     /* Mingw lacks WNOHANG and kill().  But since we haven't ported
      * virExec to mingw yet, there's no process to be killed,
@@ -3317,14 +3317,14 @@ virCommandRunNul(virCommandPtr cmd,
 #else /* WIN32 */
 
 int
-virCommandRunRegex(virCommandPtr cmd ATTRIBUTE_UNUSED,
-                   int nregex ATTRIBUTE_UNUSED,
-                   const char **regex ATTRIBUTE_UNUSED,
-                   int *nvars ATTRIBUTE_UNUSED,
-                   virCommandRunRegexFunc func ATTRIBUTE_UNUSED,
-                   void *data ATTRIBUTE_UNUSED,
-                   const char *prefix ATTRIBUTE_UNUSED,
-                   int *exitstatus ATTRIBUTE_UNUSED)
+virCommandRunRegex(virCommandPtr cmd G_GNUC_UNUSED,
+                   int nregex G_GNUC_UNUSED,
+                   const char **regex G_GNUC_UNUSED,
+                   int *nvars G_GNUC_UNUSED,
+                   virCommandRunRegexFunc func G_GNUC_UNUSED,
+                   void *data G_GNUC_UNUSED,
+                   const char *prefix G_GNUC_UNUSED,
+                   int *exitstatus G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    _("%s not implemented on Win32"), __FUNCTION__);
@@ -3332,10 +3332,10 @@ virCommandRunRegex(virCommandPtr cmd ATTRIBUTE_UNUSED,
 }
 
 int
-virCommandRunNul(virCommandPtr cmd ATTRIBUTE_UNUSED,
-                 size_t n_columns ATTRIBUTE_UNUSED,
-                 virCommandRunNulFunc func ATTRIBUTE_UNUSED,
-                 void *data ATTRIBUTE_UNUSED)
+virCommandRunNul(virCommandPtr cmd G_GNUC_UNUSED,
+                 size_t n_columns G_GNUC_UNUSED,
+                 virCommandRunNulFunc func G_GNUC_UNUSED,
+                 void *data G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    _("%s not implemented on Win32"), __FUNCTION__);

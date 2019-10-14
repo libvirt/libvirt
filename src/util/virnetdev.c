@@ -175,8 +175,8 @@ virNetDevSetupControl(const char *ifname,
 }
 #else /* !HAVE_STRUCT_IFREQ */
 int
-virNetDevSetupControl(const char *ifname ATTRIBUTE_UNUSED,
-                      void *ifr ATTRIBUTE_UNUSED)
+virNetDevSetupControl(const char *ifname G_GNUC_UNUSED,
+                      void *ifr G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Network device configuration is not supported "
@@ -330,8 +330,8 @@ virNetDevSetMACInternal(const char *ifname,
 
 static int
 virNetDevSetMACInternal(const char *ifname,
-                        const virMacAddr *macaddr ATTRIBUTE_UNUSED,
-                        bool quiet ATTRIBUTE_UNUSED)
+                        const virMacAddr *macaddr G_GNUC_UNUSED,
+                        bool quiet G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS,
                          _("Cannot set interface MAC on '%s'"),
@@ -383,7 +383,7 @@ int virNetDevGetMAC(const char *ifname,
 }
 #else
 int virNetDevGetMAC(const char *ifname,
-                    virMacAddrPtr macaddr ATTRIBUTE_UNUSED)
+                    virMacAddrPtr macaddr G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS,
                          _("Cannot get interface MAC on '%s'"),
@@ -461,7 +461,7 @@ int virNetDevSetMTU(const char *ifname, int mtu)
     return 0;
 }
 #else
-int virNetDevSetMTU(const char *ifname, int mtu ATTRIBUTE_UNUSED)
+int virNetDevSetMTU(const char *ifname, int mtu G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS,
                          _("Cannot set interface MTU on '%s'"),
@@ -637,8 +637,8 @@ virNetDevSetIFFlag(const char *ifname, int flag, bool val)
 #else
 static int
 virNetDevSetIFFlag(const char *ifname,
-                   int flag ATTRIBUTE_UNUSED,
-                   bool val ATTRIBUTE_UNUSED)
+                   int flag G_GNUC_UNUSED,
+                   bool val G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS,
                          _("Cannot set interface flags on '%s'"),
@@ -743,8 +743,8 @@ virNetDevGetIFFlag(const char *ifname, int flag, bool *val)
 #else
 static int
 virNetDevGetIFFlag(const char *ifname,
-                   int flag ATTRIBUTE_UNUSED,
-                   bool *val ATTRIBUTE_UNUSED)
+                   int flag G_GNUC_UNUSED,
+                   bool *val G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS,
                          _("Cannot get interface flags on '%s'"),
@@ -895,8 +895,8 @@ int virNetDevGetIndex(const char *ifname, int *ifindex)
     return 0;
 }
 #else /* ! SIOCGIFINDEX */
-int virNetDevGetIndex(const char *ifname ATTRIBUTE_UNUSED,
-                      int *ifindex ATTRIBUTE_UNUSED)
+int virNetDevGetIndex(const char *ifname G_GNUC_UNUSED,
+                      int *ifindex G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to get interface index on this platform"));
@@ -944,8 +944,8 @@ virNetDevGetMaster(const char *ifname, char **master)
 
 
 int
-virNetDevGetMaster(const char *ifname ATTRIBUTE_UNUSED,
-                   char **master ATTRIBUTE_UNUSED)
+virNetDevGetMaster(const char *ifname G_GNUC_UNUSED,
+                   char **master G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("Unable to get device master from netlink on this platform"));
@@ -987,8 +987,8 @@ int virNetDevGetVLanID(const char *ifname, int *vlanid)
     return 0;
 }
 #else /* ! SIOCGIFVLAN */
-int virNetDevGetVLanID(const char *ifname ATTRIBUTE_UNUSED,
-                       int *vlanid ATTRIBUTE_UNUSED)
+int virNetDevGetVLanID(const char *ifname G_GNUC_UNUSED,
+                       int *vlanid G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to get VLAN on this platform"));
@@ -1052,9 +1052,9 @@ int virNetDevValidateConfig(const char *ifname,
     return 1;
 }
 #else
-int virNetDevValidateConfig(const char *ifname ATTRIBUTE_UNUSED,
-                            const virMacAddr *macaddr ATTRIBUTE_UNUSED,
-                            int ifindex ATTRIBUTE_UNUSED)
+int virNetDevValidateConfig(const char *ifname G_GNUC_UNUSED,
+                            const virMacAddr *macaddr G_GNUC_UNUSED,
+                            int ifindex G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to check interface config on this platform"));
@@ -1461,7 +1461,7 @@ virNetDevGetVirtualFunctionInfo(const char *vfname, char **pfname,
 
 #else /* !__linux__ */
 int
-virNetDevGetPhysPortID(const char *ifname ATTRIBUTE_UNUSED,
+virNetDevGetPhysPortID(const char *ifname G_GNUC_UNUSED,
                        char **physPortID)
 {
     /* this actually should never be called, and is just here to
@@ -1472,11 +1472,11 @@ virNetDevGetPhysPortID(const char *ifname ATTRIBUTE_UNUSED,
 }
 
 int
-virNetDevGetVirtualFunctions(const char *pfname ATTRIBUTE_UNUSED,
-                             char ***vfname ATTRIBUTE_UNUSED,
-                             virPCIDeviceAddressPtr **virt_fns ATTRIBUTE_UNUSED,
-                             size_t *n_vfname ATTRIBUTE_UNUSED,
-                             unsigned int *max_vfs ATTRIBUTE_UNUSED)
+virNetDevGetVirtualFunctions(const char *pfname G_GNUC_UNUSED,
+                             char ***vfname G_GNUC_UNUSED,
+                             virPCIDeviceAddressPtr **virt_fns G_GNUC_UNUSED,
+                             size_t *n_vfname G_GNUC_UNUSED,
+                             unsigned int *max_vfs G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to get virtual functions on this platform"));
@@ -1484,7 +1484,7 @@ virNetDevGetVirtualFunctions(const char *pfname ATTRIBUTE_UNUSED,
 }
 
 int
-virNetDevIsVirtualFunction(const char *ifname ATTRIBUTE_UNUSED)
+virNetDevIsVirtualFunction(const char *ifname G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to check virtual function status on this platform"));
@@ -1492,9 +1492,9 @@ virNetDevIsVirtualFunction(const char *ifname ATTRIBUTE_UNUSED)
 }
 
 int
-virNetDevGetVirtualFunctionIndex(const char *pfname ATTRIBUTE_UNUSED,
-                                 const char *vfname ATTRIBUTE_UNUSED,
-                                 int *vf_index ATTRIBUTE_UNUSED)
+virNetDevGetVirtualFunctionIndex(const char *pfname G_GNUC_UNUSED,
+                                 const char *vfname G_GNUC_UNUSED,
+                                 int *vf_index G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to get virtual function index on this platform"));
@@ -1502,8 +1502,8 @@ virNetDevGetVirtualFunctionIndex(const char *pfname ATTRIBUTE_UNUSED,
 }
 
 int
-virNetDevGetPhysicalFunction(const char *ifname ATTRIBUTE_UNUSED,
-                             char **pfname ATTRIBUTE_UNUSED)
+virNetDevGetPhysicalFunction(const char *ifname G_GNUC_UNUSED,
+                             char **pfname G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to get physical function status on this platform"));
@@ -1511,9 +1511,9 @@ virNetDevGetPhysicalFunction(const char *ifname ATTRIBUTE_UNUSED,
 }
 
 int
-virNetDevPFGetVF(const char *pfname ATTRIBUTE_UNUSED,
-                 int vf ATTRIBUTE_UNUSED,
-                 char **vfname ATTRIBUTE_UNUSED)
+virNetDevPFGetVF(const char *pfname G_GNUC_UNUSED,
+                 int vf G_GNUC_UNUSED,
+                 char **vfname G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to get virtual function name on this platform"));
@@ -1521,9 +1521,9 @@ virNetDevPFGetVF(const char *pfname ATTRIBUTE_UNUSED,
 }
 
 int
-virNetDevGetVirtualFunctionInfo(const char *vfname ATTRIBUTE_UNUSED,
-                                char **pfname ATTRIBUTE_UNUSED,
-                                int *vf ATTRIBUTE_UNUSED)
+virNetDevGetVirtualFunctionInfo(const char *vfname G_GNUC_UNUSED,
+                                char **pfname G_GNUC_UNUSED,
+                                int *vf G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to get virtual function info on this platform"));
@@ -1531,9 +1531,9 @@ virNetDevGetVirtualFunctionInfo(const char *vfname ATTRIBUTE_UNUSED,
 }
 
 int
-virNetDevSysfsFile(char **pf_sysfs_device_link ATTRIBUTE_UNUSED,
-                   const char *ifname ATTRIBUTE_UNUSED,
-                   const char *file ATTRIBUTE_UNUSED)
+virNetDevSysfsFile(char **pf_sysfs_device_link G_GNUC_UNUSED,
+                   const char *ifname G_GNUC_UNUSED,
+                   const char *file G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to get sysfs info on this platform"));
@@ -2372,10 +2372,10 @@ virNetDevSetNetConfig(const char *linkdev, int vf,
 
 
 int
-virNetDevSaveNetConfig(const char *linkdev ATTRIBUTE_UNUSED,
-                       int vf ATTRIBUTE_UNUSED,
-                       const char *stateDir ATTRIBUTE_UNUSED,
-                       bool saveVlan ATTRIBUTE_UNUSED)
+virNetDevSaveNetConfig(const char *linkdev G_GNUC_UNUSED,
+                       int vf G_GNUC_UNUSED,
+                       const char *stateDir G_GNUC_UNUSED,
+                       bool saveVlan G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to save net device config on this platform"));
@@ -2384,12 +2384,12 @@ virNetDevSaveNetConfig(const char *linkdev ATTRIBUTE_UNUSED,
 
 
 int
-virNetDevReadNetConfig(const char *linkdev ATTRIBUTE_UNUSED,
-                       int vf ATTRIBUTE_UNUSED,
-                       const char *stateDir ATTRIBUTE_UNUSED,
-                       virMacAddrPtr *adminMAC ATTRIBUTE_UNUSED,
-                       virNetDevVlanPtr *vlan ATTRIBUTE_UNUSED,
-                       virMacAddrPtr *MAC ATTRIBUTE_UNUSED)
+virNetDevReadNetConfig(const char *linkdev G_GNUC_UNUSED,
+                       int vf G_GNUC_UNUSED,
+                       const char *stateDir G_GNUC_UNUSED,
+                       virMacAddrPtr *adminMAC G_GNUC_UNUSED,
+                       virNetDevVlanPtr *vlan G_GNUC_UNUSED,
+                       virMacAddrPtr *MAC G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to read net device config on this platform"));
@@ -2398,12 +2398,12 @@ virNetDevReadNetConfig(const char *linkdev ATTRIBUTE_UNUSED,
 
 
 int
-virNetDevSetNetConfig(const char *linkdev ATTRIBUTE_UNUSED,
-                      int vf ATTRIBUTE_UNUSED,
-                      const virMacAddr *adminMAC ATTRIBUTE_UNUSED,
-                      virNetDevVlanPtr vlan ATTRIBUTE_UNUSED,
-                      const virMacAddr *MAC ATTRIBUTE_UNUSED,
-                      bool setVlan ATTRIBUTE_UNUSED)
+virNetDevSetNetConfig(const char *linkdev G_GNUC_UNUSED,
+                      int vf G_GNUC_UNUSED,
+                      const virMacAddr *adminMAC G_GNUC_UNUSED,
+                      virNetDevVlanPtr vlan G_GNUC_UNUSED,
+                      const virMacAddr *MAC G_GNUC_UNUSED,
+                      bool setVlan G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to set net device config on this platform"));
@@ -2576,8 +2576,8 @@ int virNetDevAddMulti(const char *ifname,
     return 0;
 }
 #else
-int virNetDevAddMulti(const char *ifname ATTRIBUTE_UNUSED,
-                      virMacAddrPtr macaddr ATTRIBUTE_UNUSED)
+int virNetDevAddMulti(const char *ifname G_GNUC_UNUSED,
+                      virMacAddrPtr macaddr G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to add address to interface "
@@ -2621,8 +2621,8 @@ int virNetDevDelMulti(const char *ifname,
     return 0;
 }
 #else
-int virNetDevDelMulti(const char *ifname ATTRIBUTE_UNUSED,
-                      virMacAddrPtr macaddr ATTRIBUTE_UNUSED)
+int virNetDevDelMulti(const char *ifname G_GNUC_UNUSED,
+                      virMacAddrPtr macaddr G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to delete address from interface "
@@ -3222,8 +3222,8 @@ virNetDevSwitchdevFeature(const char *ifname,
 }
 # else
 static int
-virNetDevSwitchdevFeature(const char *ifname ATTRIBUTE_UNUSED,
-                          virBitmapPtr *out ATTRIBUTE_UNUSED)
+virNetDevSwitchdevFeature(const char *ifname G_GNUC_UNUSED,
+                          virBitmapPtr *out G_GNUC_UNUSED)
 {
     return 0;
 }
@@ -3273,9 +3273,9 @@ virNetDevGetEthtoolGFeatures(virBitmapPtr bitmap,
 }
 # else
 static int
-virNetDevGetEthtoolGFeatures(virBitmapPtr bitmap ATTRIBUTE_UNUSED,
-                             int fd ATTRIBUTE_UNUSED,
-                             struct ifreq *ifr ATTRIBUTE_UNUSED)
+virNetDevGetEthtoolGFeatures(virBitmapPtr bitmap G_GNUC_UNUSED,
+                             int fd G_GNUC_UNUSED,
+                             struct ifreq *ifr G_GNUC_UNUSED)
 {
     return 0;
 }
@@ -3432,8 +3432,8 @@ virNetDevGetFeatures(const char *ifname,
 }
 #else
 int
-virNetDevGetFeatures(const char *ifname ATTRIBUTE_UNUSED,
-                     virBitmapPtr *out ATTRIBUTE_UNUSED)
+virNetDevGetFeatures(const char *ifname G_GNUC_UNUSED,
+                     virBitmapPtr *out G_GNUC_UNUSED)
 {
     VIR_DEBUG("Getting network device features on %s is not implemented on this platform",
               ifname);

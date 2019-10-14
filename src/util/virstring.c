@@ -630,7 +630,7 @@ virLocaleRevert(virLocale *oldlocale)
 }
 
 static void
-virLocaleFixupRadix(char **strp ATTRIBUTE_UNUSED)
+virLocaleFixupRadix(char **strp G_GNUC_UNUSED)
 {
 }
 
@@ -639,13 +639,13 @@ virLocaleFixupRadix(char **strp ATTRIBUTE_UNUSED)
 typedef int virLocale;
 
 static int
-virLocaleSetRaw(virLocale *oldlocale ATTRIBUTE_UNUSED)
+virLocaleSetRaw(virLocale *oldlocale G_GNUC_UNUSED)
 {
     return 0;
 }
 
 static void
-virLocaleRevert(virLocale *oldlocale ATTRIBUTE_UNUSED)
+virLocaleRevert(virLocale *oldlocale G_GNUC_UNUSED)
 {
 }
 

@@ -54,7 +54,7 @@ static int auditfd = -1;
 #endif
 static bool auditlog;
 
-int virAuditOpen(unsigned int audit_level ATTRIBUTE_UNUSED)
+int virAuditOpen(unsigned int audit_level G_GNUC_UNUSED)
 {
 #if WITH_AUDIT
     if ((auditfd = audit_open()) < 0) {
@@ -91,9 +91,9 @@ void virAuditSend(virLogSourcePtr source,
                   const char *filename,
                   size_t linenr,
                   const char *funcname,
-                  const char *clienttty ATTRIBUTE_UNUSED,
-                  const char *clientaddr ATTRIBUTE_UNUSED,
-                  virAuditRecordType type ATTRIBUTE_UNUSED, bool success,
+                  const char *clienttty G_GNUC_UNUSED,
+                  const char *clientaddr G_GNUC_UNUSED,
+                  virAuditRecordType type G_GNUC_UNUSED, bool success,
                   const char *fmt, ...)
 {
     VIR_AUTOFREE(char *) str = NULL;

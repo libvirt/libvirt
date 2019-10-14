@@ -2802,10 +2802,10 @@ virCgroupAvailable(void)
 
 
 int
-virCgroupNewPartition(const char *path ATTRIBUTE_UNUSED,
-                      bool create ATTRIBUTE_UNUSED,
-                      int controllers ATTRIBUTE_UNUSED,
-                      virCgroupPtr *group ATTRIBUTE_UNUSED)
+virCgroupNewPartition(const char *path G_GNUC_UNUSED,
+                      bool create G_GNUC_UNUSED,
+                      int controllers G_GNUC_UNUSED,
+                      virCgroupPtr *group G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
@@ -2814,7 +2814,7 @@ virCgroupNewPartition(const char *path ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupNewSelf(virCgroupPtr *group ATTRIBUTE_UNUSED)
+virCgroupNewSelf(virCgroupPtr *group G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
@@ -2823,11 +2823,11 @@ virCgroupNewSelf(virCgroupPtr *group ATTRIBUTE_UNUSED)
 
 
 int
-virCgroupNewDomainPartition(virCgroupPtr partition ATTRIBUTE_UNUSED,
-                            const char *driver ATTRIBUTE_UNUSED,
-                            const char *name ATTRIBUTE_UNUSED,
-                            bool create ATTRIBUTE_UNUSED,
-                            virCgroupPtr *group ATTRIBUTE_UNUSED)
+virCgroupNewDomainPartition(virCgroupPtr partition G_GNUC_UNUSED,
+                            const char *driver G_GNUC_UNUSED,
+                            const char *name G_GNUC_UNUSED,
+                            bool create G_GNUC_UNUSED,
+                            virCgroupPtr *group G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
@@ -2836,11 +2836,11 @@ virCgroupNewDomainPartition(virCgroupPtr partition ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupNewThread(virCgroupPtr domain ATTRIBUTE_UNUSED,
-                   virCgroupThreadName nameval ATTRIBUTE_UNUSED,
-                   int id ATTRIBUTE_UNUSED,
-                   bool create ATTRIBUTE_UNUSED,
-                   virCgroupPtr *group ATTRIBUTE_UNUSED)
+virCgroupNewThread(virCgroupPtr domain G_GNUC_UNUSED,
+                   virCgroupThreadName nameval G_GNUC_UNUSED,
+                   int id G_GNUC_UNUSED,
+                   bool create G_GNUC_UNUSED,
+                   virCgroupPtr *group G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
@@ -2849,9 +2849,9 @@ virCgroupNewThread(virCgroupPtr domain ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupNewDetect(pid_t pid ATTRIBUTE_UNUSED,
-                   int controllers ATTRIBUTE_UNUSED,
-                   virCgroupPtr *group ATTRIBUTE_UNUSED)
+virCgroupNewDetect(pid_t pid G_GNUC_UNUSED,
+                   int controllers G_GNUC_UNUSED,
+                   virCgroupPtr *group G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
@@ -2860,12 +2860,12 @@ virCgroupNewDetect(pid_t pid ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupNewDetectMachine(const char *name ATTRIBUTE_UNUSED,
-                          const char *drivername ATTRIBUTE_UNUSED,
-                          pid_t pid ATTRIBUTE_UNUSED,
-                          int controllers ATTRIBUTE_UNUSED,
-                          char *machinename ATTRIBUTE_UNUSED,
-                          virCgroupPtr *group ATTRIBUTE_UNUSED)
+virCgroupNewDetectMachine(const char *name G_GNUC_UNUSED,
+                          const char *drivername G_GNUC_UNUSED,
+                          pid_t pid G_GNUC_UNUSED,
+                          int controllers G_GNUC_UNUSED,
+                          char *machinename G_GNUC_UNUSED,
+                          virCgroupPtr *group G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
@@ -2873,7 +2873,7 @@ virCgroupNewDetectMachine(const char *name ATTRIBUTE_UNUSED,
 }
 
 
-int virCgroupTerminateMachine(const char *name ATTRIBUTE_UNUSED)
+int virCgroupTerminateMachine(const char *name G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
@@ -2882,18 +2882,18 @@ int virCgroupTerminateMachine(const char *name ATTRIBUTE_UNUSED)
 
 
 int
-virCgroupNewMachine(const char *name ATTRIBUTE_UNUSED,
-                    const char *drivername ATTRIBUTE_UNUSED,
-                    const unsigned char *uuid ATTRIBUTE_UNUSED,
-                    const char *rootdir ATTRIBUTE_UNUSED,
-                    pid_t pidleader ATTRIBUTE_UNUSED,
-                    bool isContainer ATTRIBUTE_UNUSED,
-                    size_t nnicindexes ATTRIBUTE_UNUSED,
-                    int *nicindexes ATTRIBUTE_UNUSED,
-                    const char *partition ATTRIBUTE_UNUSED,
-                    int controllers ATTRIBUTE_UNUSED,
-                    unsigned int maxthreads ATTRIBUTE_UNUSED,
-                    virCgroupPtr *group ATTRIBUTE_UNUSED)
+virCgroupNewMachine(const char *name G_GNUC_UNUSED,
+                    const char *drivername G_GNUC_UNUSED,
+                    const unsigned char *uuid G_GNUC_UNUSED,
+                    const char *rootdir G_GNUC_UNUSED,
+                    pid_t pidleader G_GNUC_UNUSED,
+                    bool isContainer G_GNUC_UNUSED,
+                    size_t nnicindexes G_GNUC_UNUSED,
+                    int *nicindexes G_GNUC_UNUSED,
+                    const char *partition G_GNUC_UNUSED,
+                    int controllers G_GNUC_UNUSED,
+                    unsigned int maxthreads G_GNUC_UNUSED,
+                    virCgroupPtr *group G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
@@ -2910,18 +2910,18 @@ virCgroupNewIgnoreError(void)
 
 
 bool
-virCgroupHasController(virCgroupPtr cgroup ATTRIBUTE_UNUSED,
-                       int controller ATTRIBUTE_UNUSED)
+virCgroupHasController(virCgroupPtr cgroup G_GNUC_UNUSED,
+                       int controller G_GNUC_UNUSED)
 {
     return false;
 }
 
 
 int
-virCgroupPathOfController(virCgroupPtr group ATTRIBUTE_UNUSED,
-                          unsigned int controller ATTRIBUTE_UNUSED,
-                          const char *key ATTRIBUTE_UNUSED,
-                          char **path ATTRIBUTE_UNUSED)
+virCgroupPathOfController(virCgroupPtr group G_GNUC_UNUSED,
+                          unsigned int controller G_GNUC_UNUSED,
+                          const char *key G_GNUC_UNUSED,
+                          char **path G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
@@ -2930,8 +2930,8 @@ virCgroupPathOfController(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupAddProcess(virCgroupPtr group ATTRIBUTE_UNUSED,
-                    pid_t pid ATTRIBUTE_UNUSED)
+virCgroupAddProcess(virCgroupPtr group G_GNUC_UNUSED,
+                    pid_t pid G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
@@ -2940,8 +2940,8 @@ virCgroupAddProcess(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupAddMachineProcess(virCgroupPtr group ATTRIBUTE_UNUSED,
-                           pid_t pid ATTRIBUTE_UNUSED)
+virCgroupAddMachineProcess(virCgroupPtr group G_GNUC_UNUSED,
+                           pid_t pid G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
@@ -2950,8 +2950,8 @@ virCgroupAddMachineProcess(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupAddThread(virCgroupPtr group ATTRIBUTE_UNUSED,
-                   pid_t pid ATTRIBUTE_UNUSED)
+virCgroupAddThread(virCgroupPtr group G_GNUC_UNUSED,
+                   pid_t pid G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
@@ -2960,11 +2960,11 @@ virCgroupAddThread(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupGetBlkioIoServiced(virCgroupPtr group ATTRIBUTE_UNUSED,
-                            long long *bytes_read ATTRIBUTE_UNUSED,
-                            long long *bytes_write ATTRIBUTE_UNUSED,
-                            long long *requests_read ATTRIBUTE_UNUSED,
-                            long long *requests_write ATTRIBUTE_UNUSED)
+virCgroupGetBlkioIoServiced(virCgroupPtr group G_GNUC_UNUSED,
+                            long long *bytes_read G_GNUC_UNUSED,
+                            long long *bytes_write G_GNUC_UNUSED,
+                            long long *requests_read G_GNUC_UNUSED,
+                            long long *requests_write G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
@@ -2973,12 +2973,12 @@ virCgroupGetBlkioIoServiced(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupGetBlkioIoDeviceServiced(virCgroupPtr group ATTRIBUTE_UNUSED,
-                                  const char *path ATTRIBUTE_UNUSED,
-                                  long long *bytes_read ATTRIBUTE_UNUSED,
-                                  long long *bytes_write ATTRIBUTE_UNUSED,
-                                  long long *requests_read ATTRIBUTE_UNUSED,
-                                  long long *requests_write ATTRIBUTE_UNUSED)
+virCgroupGetBlkioIoDeviceServiced(virCgroupPtr group G_GNUC_UNUSED,
+                                  const char *path G_GNUC_UNUSED,
+                                  long long *bytes_read G_GNUC_UNUSED,
+                                  long long *bytes_write G_GNUC_UNUSED,
+                                  long long *requests_read G_GNUC_UNUSED,
+                                  long long *requests_write G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
@@ -2987,8 +2987,8 @@ virCgroupGetBlkioIoDeviceServiced(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupSetBlkioWeight(virCgroupPtr group ATTRIBUTE_UNUSED,
-                        unsigned int weight ATTRIBUTE_UNUSED)
+virCgroupSetBlkioWeight(virCgroupPtr group G_GNUC_UNUSED,
+                        unsigned int weight G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
@@ -2997,8 +2997,8 @@ virCgroupSetBlkioWeight(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupGetBlkioWeight(virCgroupPtr group ATTRIBUTE_UNUSED,
-                        unsigned int *weight ATTRIBUTE_UNUSED)
+virCgroupGetBlkioWeight(virCgroupPtr group G_GNUC_UNUSED,
+                        unsigned int *weight G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
@@ -3007,9 +3007,9 @@ virCgroupGetBlkioWeight(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupSetBlkioDeviceWeight(virCgroupPtr group ATTRIBUTE_UNUSED,
-                              const char *path ATTRIBUTE_UNUSED,
-                              unsigned int weight ATTRIBUTE_UNUSED)
+virCgroupSetBlkioDeviceWeight(virCgroupPtr group G_GNUC_UNUSED,
+                              const char *path G_GNUC_UNUSED,
+                              unsigned int weight G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3017,9 +3017,9 @@ virCgroupSetBlkioDeviceWeight(virCgroupPtr group ATTRIBUTE_UNUSED,
 }
 
 int
-virCgroupSetBlkioDeviceReadIops(virCgroupPtr group ATTRIBUTE_UNUSED,
-                                const char *path ATTRIBUTE_UNUSED,
-                                unsigned int riops ATTRIBUTE_UNUSED)
+virCgroupSetBlkioDeviceReadIops(virCgroupPtr group G_GNUC_UNUSED,
+                                const char *path G_GNUC_UNUSED,
+                                unsigned int riops G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3027,9 +3027,9 @@ virCgroupSetBlkioDeviceReadIops(virCgroupPtr group ATTRIBUTE_UNUSED,
 }
 
 int
-virCgroupSetBlkioDeviceWriteIops(virCgroupPtr group ATTRIBUTE_UNUSED,
-                                 const char *path ATTRIBUTE_UNUSED,
-                                 unsigned int wiops ATTRIBUTE_UNUSED)
+virCgroupSetBlkioDeviceWriteIops(virCgroupPtr group G_GNUC_UNUSED,
+                                 const char *path G_GNUC_UNUSED,
+                                 unsigned int wiops G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3037,9 +3037,9 @@ virCgroupSetBlkioDeviceWriteIops(virCgroupPtr group ATTRIBUTE_UNUSED,
 }
 
 int
-virCgroupSetBlkioDeviceReadBps(virCgroupPtr group ATTRIBUTE_UNUSED,
-                               const char *path ATTRIBUTE_UNUSED,
-                               unsigned long long rbps ATTRIBUTE_UNUSED)
+virCgroupSetBlkioDeviceReadBps(virCgroupPtr group G_GNUC_UNUSED,
+                               const char *path G_GNUC_UNUSED,
+                               unsigned long long rbps G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3047,9 +3047,9 @@ virCgroupSetBlkioDeviceReadBps(virCgroupPtr group ATTRIBUTE_UNUSED,
 }
 
 int
-virCgroupSetBlkioDeviceWriteBps(virCgroupPtr group ATTRIBUTE_UNUSED,
-                                const char *path ATTRIBUTE_UNUSED,
-                                unsigned long long wbps ATTRIBUTE_UNUSED)
+virCgroupSetBlkioDeviceWriteBps(virCgroupPtr group G_GNUC_UNUSED,
+                                const char *path G_GNUC_UNUSED,
+                                unsigned long long wbps G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3057,9 +3057,9 @@ virCgroupSetBlkioDeviceWriteBps(virCgroupPtr group ATTRIBUTE_UNUSED,
 }
 
 int
-virCgroupGetBlkioDeviceWeight(virCgroupPtr group ATTRIBUTE_UNUSED,
-                              const char *path ATTRIBUTE_UNUSED,
-                              unsigned int *weight ATTRIBUTE_UNUSED)
+virCgroupGetBlkioDeviceWeight(virCgroupPtr group G_GNUC_UNUSED,
+                              const char *path G_GNUC_UNUSED,
+                              unsigned int *weight G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3067,9 +3067,9 @@ virCgroupGetBlkioDeviceWeight(virCgroupPtr group ATTRIBUTE_UNUSED,
 }
 
 int
-virCgroupGetBlkioDeviceReadIops(virCgroupPtr group ATTRIBUTE_UNUSED,
-                                const char *path ATTRIBUTE_UNUSED,
-                                unsigned int *riops ATTRIBUTE_UNUSED)
+virCgroupGetBlkioDeviceReadIops(virCgroupPtr group G_GNUC_UNUSED,
+                                const char *path G_GNUC_UNUSED,
+                                unsigned int *riops G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3077,9 +3077,9 @@ virCgroupGetBlkioDeviceReadIops(virCgroupPtr group ATTRIBUTE_UNUSED,
 }
 
 int
-virCgroupGetBlkioDeviceWriteIops(virCgroupPtr group ATTRIBUTE_UNUSED,
-                                 const char *path ATTRIBUTE_UNUSED,
-                                 unsigned int *wiops ATTRIBUTE_UNUSED)
+virCgroupGetBlkioDeviceWriteIops(virCgroupPtr group G_GNUC_UNUSED,
+                                 const char *path G_GNUC_UNUSED,
+                                 unsigned int *wiops G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3087,9 +3087,9 @@ virCgroupGetBlkioDeviceWriteIops(virCgroupPtr group ATTRIBUTE_UNUSED,
 }
 
 int
-virCgroupGetBlkioDeviceReadBps(virCgroupPtr group ATTRIBUTE_UNUSED,
-                               const char *path ATTRIBUTE_UNUSED,
-                               unsigned long long *rbps ATTRIBUTE_UNUSED)
+virCgroupGetBlkioDeviceReadBps(virCgroupPtr group G_GNUC_UNUSED,
+                               const char *path G_GNUC_UNUSED,
+                               unsigned long long *rbps G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3097,9 +3097,9 @@ virCgroupGetBlkioDeviceReadBps(virCgroupPtr group ATTRIBUTE_UNUSED,
 }
 
 int
-virCgroupGetBlkioDeviceWriteBps(virCgroupPtr group ATTRIBUTE_UNUSED,
-                                const char *path ATTRIBUTE_UNUSED,
-                                unsigned long long *wbps ATTRIBUTE_UNUSED)
+virCgroupGetBlkioDeviceWriteBps(virCgroupPtr group G_GNUC_UNUSED,
+                                const char *path G_GNUC_UNUSED,
+                                unsigned long long *wbps G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3107,23 +3107,8 @@ virCgroupGetBlkioDeviceWriteBps(virCgroupPtr group ATTRIBUTE_UNUSED,
 }
 
 int
-virCgroupSetMemory(virCgroupPtr group ATTRIBUTE_UNUSED,
-                   unsigned long long kb ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s",
-                         _("Control groups not supported on this platform"));
-    return -1;
-}
-
-
-int
-virCgroupGetMemoryStat(virCgroupPtr group ATTRIBUTE_UNUSED,
-                       unsigned long long *cache ATTRIBUTE_UNUSED,
-                       unsigned long long *activeAnon ATTRIBUTE_UNUSED,
-                       unsigned long long *inactiveAnon ATTRIBUTE_UNUSED,
-                       unsigned long long *activeFile ATTRIBUTE_UNUSED,
-                       unsigned long long *inactiveFile ATTRIBUTE_UNUSED,
-                       unsigned long long *unevictable ATTRIBUTE_UNUSED)
+virCgroupSetMemory(virCgroupPtr group G_GNUC_UNUSED,
+                   unsigned long long kb G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3132,8 +3117,13 @@ virCgroupGetMemoryStat(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupGetMemoryUsage(virCgroupPtr group ATTRIBUTE_UNUSED,
-                        unsigned long *kb ATTRIBUTE_UNUSED)
+virCgroupGetMemoryStat(virCgroupPtr group G_GNUC_UNUSED,
+                       unsigned long long *cache G_GNUC_UNUSED,
+                       unsigned long long *activeAnon G_GNUC_UNUSED,
+                       unsigned long long *inactiveAnon G_GNUC_UNUSED,
+                       unsigned long long *activeFile G_GNUC_UNUSED,
+                       unsigned long long *inactiveFile G_GNUC_UNUSED,
+                       unsigned long long *unevictable G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3142,8 +3132,8 @@ virCgroupGetMemoryUsage(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupSetMemoryHardLimit(virCgroupPtr group ATTRIBUTE_UNUSED,
-                            unsigned long long kb ATTRIBUTE_UNUSED)
+virCgroupGetMemoryUsage(virCgroupPtr group G_GNUC_UNUSED,
+                        unsigned long *kb G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3152,8 +3142,8 @@ virCgroupSetMemoryHardLimit(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupGetMemoryHardLimit(virCgroupPtr group ATTRIBUTE_UNUSED,
-                            unsigned long long *kb ATTRIBUTE_UNUSED)
+virCgroupSetMemoryHardLimit(virCgroupPtr group G_GNUC_UNUSED,
+                            unsigned long long kb G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3162,8 +3152,8 @@ virCgroupGetMemoryHardLimit(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupSetMemorySoftLimit(virCgroupPtr group ATTRIBUTE_UNUSED,
-                            unsigned long long kb ATTRIBUTE_UNUSED)
+virCgroupGetMemoryHardLimit(virCgroupPtr group G_GNUC_UNUSED,
+                            unsigned long long *kb G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3172,8 +3162,8 @@ virCgroupSetMemorySoftLimit(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupGetMemorySoftLimit(virCgroupPtr group ATTRIBUTE_UNUSED,
-                            unsigned long long *kb ATTRIBUTE_UNUSED)
+virCgroupSetMemorySoftLimit(virCgroupPtr group G_GNUC_UNUSED,
+                            unsigned long long kb G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3182,8 +3172,8 @@ virCgroupGetMemorySoftLimit(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupSetMemSwapHardLimit(virCgroupPtr group ATTRIBUTE_UNUSED,
-                             unsigned long long kb ATTRIBUTE_UNUSED)
+virCgroupGetMemorySoftLimit(virCgroupPtr group G_GNUC_UNUSED,
+                            unsigned long long *kb G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3192,8 +3182,8 @@ virCgroupSetMemSwapHardLimit(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupGetMemSwapHardLimit(virCgroupPtr group ATTRIBUTE_UNUSED,
-                             unsigned long long *kb ATTRIBUTE_UNUSED)
+virCgroupSetMemSwapHardLimit(virCgroupPtr group G_GNUC_UNUSED,
+                             unsigned long long kb G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3202,8 +3192,8 @@ virCgroupGetMemSwapHardLimit(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupGetMemSwapUsage(virCgroupPtr group ATTRIBUTE_UNUSED,
-                         unsigned long long *kb ATTRIBUTE_UNUSED)
+virCgroupGetMemSwapHardLimit(virCgroupPtr group G_GNUC_UNUSED,
+                             unsigned long long *kb G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3212,8 +3202,8 @@ virCgroupGetMemSwapUsage(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupSetCpusetMems(virCgroupPtr group ATTRIBUTE_UNUSED,
-                       const char *mems ATTRIBUTE_UNUSED)
+virCgroupGetMemSwapUsage(virCgroupPtr group G_GNUC_UNUSED,
+                         unsigned long long *kb G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3222,8 +3212,8 @@ virCgroupSetCpusetMems(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupGetCpusetMems(virCgroupPtr group ATTRIBUTE_UNUSED,
-                       char **mems ATTRIBUTE_UNUSED)
+virCgroupSetCpusetMems(virCgroupPtr group G_GNUC_UNUSED,
+                       const char *mems G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3232,8 +3222,8 @@ virCgroupGetCpusetMems(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupSetCpusetMemoryMigrate(virCgroupPtr group ATTRIBUTE_UNUSED,
-                                bool migrate ATTRIBUTE_UNUSED)
+virCgroupGetCpusetMems(virCgroupPtr group G_GNUC_UNUSED,
+                       char **mems G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3242,8 +3232,8 @@ virCgroupSetCpusetMemoryMigrate(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupGetCpusetMemoryMigrate(virCgroupPtr group ATTRIBUTE_UNUSED,
-                                bool *migrate ATTRIBUTE_UNUSED)
+virCgroupSetCpusetMemoryMigrate(virCgroupPtr group G_GNUC_UNUSED,
+                                bool migrate G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3252,8 +3242,8 @@ virCgroupGetCpusetMemoryMigrate(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupSetCpusetCpus(virCgroupPtr group ATTRIBUTE_UNUSED,
-                       const char *cpus ATTRIBUTE_UNUSED)
+virCgroupGetCpusetMemoryMigrate(virCgroupPtr group G_GNUC_UNUSED,
+                                bool *migrate G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3262,25 +3252,8 @@ virCgroupSetCpusetCpus(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupGetCpusetCpus(virCgroupPtr group ATTRIBUTE_UNUSED,
-                       char **cpus ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s",
-                         _("Control groups not supported on this platform"));
-    return -1;
-}
-
-int
-virCgroupAllowAllDevices(virCgroupPtr group ATTRIBUTE_UNUSED,
-                         int perms ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s",
-                         _("Control groups not supported on this platform"));
-    return -1;
-}
-
-int
-virCgroupDenyAllDevices(virCgroupPtr group ATTRIBUTE_UNUSED)
+virCgroupSetCpusetCpus(virCgroupPtr group G_GNUC_UNUSED,
+                       const char *cpus G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3289,11 +3262,25 @@ virCgroupDenyAllDevices(virCgroupPtr group ATTRIBUTE_UNUSED)
 
 
 int
-virCgroupAllowDevice(virCgroupPtr group ATTRIBUTE_UNUSED,
-                     char type ATTRIBUTE_UNUSED,
-                     int major ATTRIBUTE_UNUSED,
-                     int minor ATTRIBUTE_UNUSED,
-                     int perms ATTRIBUTE_UNUSED)
+virCgroupGetCpusetCpus(virCgroupPtr group G_GNUC_UNUSED,
+                       char **cpus G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+int
+virCgroupAllowAllDevices(virCgroupPtr group G_GNUC_UNUSED,
+                         int perms G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+int
+virCgroupDenyAllDevices(virCgroupPtr group G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3302,10 +3289,11 @@ virCgroupAllowDevice(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupAllowDevicePath(virCgroupPtr group ATTRIBUTE_UNUSED,
-                         const char *path ATTRIBUTE_UNUSED,
-                         int perms ATTRIBUTE_UNUSED,
-                         bool ignoreEaccess ATTRIBUTE_UNUSED)
+virCgroupAllowDevice(virCgroupPtr group G_GNUC_UNUSED,
+                     char type G_GNUC_UNUSED,
+                     int major G_GNUC_UNUSED,
+                     int minor G_GNUC_UNUSED,
+                     int perms G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3314,11 +3302,10 @@ virCgroupAllowDevicePath(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupDenyDevice(virCgroupPtr group ATTRIBUTE_UNUSED,
-                    char type ATTRIBUTE_UNUSED,
-                    int major ATTRIBUTE_UNUSED,
-                    int minor ATTRIBUTE_UNUSED,
-                    int perms ATTRIBUTE_UNUSED)
+virCgroupAllowDevicePath(virCgroupPtr group G_GNUC_UNUSED,
+                         const char *path G_GNUC_UNUSED,
+                         int perms G_GNUC_UNUSED,
+                         bool ignoreEaccess G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3327,10 +3314,11 @@ virCgroupDenyDevice(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupDenyDevicePath(virCgroupPtr group ATTRIBUTE_UNUSED,
-                        const char *path ATTRIBUTE_UNUSED,
-                        int perms ATTRIBUTE_UNUSED,
-                        bool ignoreEacces ATTRIBUTE_UNUSED)
+virCgroupDenyDevice(virCgroupPtr group G_GNUC_UNUSED,
+                    char type G_GNUC_UNUSED,
+                    int major G_GNUC_UNUSED,
+                    int minor G_GNUC_UNUSED,
+                    int perms G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3339,8 +3327,10 @@ virCgroupDenyDevicePath(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupSetCpuShares(virCgroupPtr group ATTRIBUTE_UNUSED,
-                      unsigned long long shares ATTRIBUTE_UNUSED)
+virCgroupDenyDevicePath(virCgroupPtr group G_GNUC_UNUSED,
+                        const char *path G_GNUC_UNUSED,
+                        int perms G_GNUC_UNUSED,
+                        bool ignoreEacces G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3349,8 +3339,8 @@ virCgroupSetCpuShares(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupGetCpuShares(virCgroupPtr group ATTRIBUTE_UNUSED,
-                      unsigned long long *shares ATTRIBUTE_UNUSED)
+virCgroupSetCpuShares(virCgroupPtr group G_GNUC_UNUSED,
+                      unsigned long long shares G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3359,8 +3349,8 @@ virCgroupGetCpuShares(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupSetCpuCfsPeriod(virCgroupPtr group ATTRIBUTE_UNUSED,
-                         unsigned long long cfs_period ATTRIBUTE_UNUSED)
+virCgroupGetCpuShares(virCgroupPtr group G_GNUC_UNUSED,
+                      unsigned long long *shares G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3369,8 +3359,8 @@ virCgroupSetCpuCfsPeriod(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupGetCpuCfsPeriod(virCgroupPtr group ATTRIBUTE_UNUSED,
-                         unsigned long long *cfs_period ATTRIBUTE_UNUSED)
+virCgroupSetCpuCfsPeriod(virCgroupPtr group G_GNUC_UNUSED,
+                         unsigned long long cfs_period G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3379,8 +3369,8 @@ virCgroupGetCpuCfsPeriod(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupSetCpuCfsQuota(virCgroupPtr group ATTRIBUTE_UNUSED,
-                        long long cfs_quota ATTRIBUTE_UNUSED)
+virCgroupGetCpuCfsPeriod(virCgroupPtr group G_GNUC_UNUSED,
+                         unsigned long long *cfs_period G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3389,7 +3379,17 @@ virCgroupSetCpuCfsQuota(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupRemove(virCgroupPtr group ATTRIBUTE_UNUSED)
+virCgroupSetCpuCfsQuota(virCgroupPtr group G_GNUC_UNUSED,
+                        long long cfs_quota G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
+virCgroupRemove(virCgroupPtr group G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
                          _("Control groups not supported on this platform"));
@@ -3398,8 +3398,8 @@ virCgroupRemove(virCgroupPtr group ATTRIBUTE_UNUSED)
 
 
 int
-virCgroupKillRecursive(virCgroupPtr group ATTRIBUTE_UNUSED,
-                       int signum ATTRIBUTE_UNUSED)
+virCgroupKillRecursive(virCgroupPtr group G_GNUC_UNUSED,
+                       int signum G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3408,7 +3408,7 @@ virCgroupKillRecursive(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupKillPainfully(virCgroupPtr group ATTRIBUTE_UNUSED)
+virCgroupKillPainfully(virCgroupPtr group G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3417,8 +3417,8 @@ virCgroupKillPainfully(virCgroupPtr group ATTRIBUTE_UNUSED)
 
 
 int
-virCgroupGetCpuCfsQuota(virCgroupPtr group ATTRIBUTE_UNUSED,
-                        long long *cfs_quota ATTRIBUTE_UNUSED)
+virCgroupGetCpuCfsQuota(virCgroupPtr group G_GNUC_UNUSED,
+                        long long *cfs_quota G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3427,8 +3427,8 @@ virCgroupGetCpuCfsQuota(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupGetCpuacctUsage(virCgroupPtr group ATTRIBUTE_UNUSED,
-                         unsigned long long *usage ATTRIBUTE_UNUSED)
+virCgroupGetCpuacctUsage(virCgroupPtr group G_GNUC_UNUSED,
+                         unsigned long long *usage G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3437,8 +3437,8 @@ virCgroupGetCpuacctUsage(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupGetCpuacctPercpuUsage(virCgroupPtr group ATTRIBUTE_UNUSED,
-                               char **usage ATTRIBUTE_UNUSED)
+virCgroupGetCpuacctPercpuUsage(virCgroupPtr group G_GNUC_UNUSED,
+                               char **usage G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3447,9 +3447,9 @@ virCgroupGetCpuacctPercpuUsage(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupGetCpuacctStat(virCgroupPtr group ATTRIBUTE_UNUSED,
-                        unsigned long long *user ATTRIBUTE_UNUSED,
-                        unsigned long long *sys ATTRIBUTE_UNUSED)
+virCgroupGetCpuacctStat(virCgroupPtr group G_GNUC_UNUSED,
+                        unsigned long long *user G_GNUC_UNUSED,
+                        unsigned long long *sys G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3458,9 +3458,9 @@ virCgroupGetCpuacctStat(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupGetDomainTotalCpuStats(virCgroupPtr group ATTRIBUTE_UNUSED,
-                                virTypedParameterPtr params ATTRIBUTE_UNUSED,
-                                int nparams ATTRIBUTE_UNUSED)
+virCgroupGetDomainTotalCpuStats(virCgroupPtr group G_GNUC_UNUSED,
+                                virTypedParameterPtr params G_GNUC_UNUSED,
+                                int nparams G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3469,8 +3469,8 @@ virCgroupGetDomainTotalCpuStats(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupSetFreezerState(virCgroupPtr group ATTRIBUTE_UNUSED,
-                         const char *state ATTRIBUTE_UNUSED)
+virCgroupSetFreezerState(virCgroupPtr group G_GNUC_UNUSED,
+                         const char *state G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3479,8 +3479,8 @@ virCgroupSetFreezerState(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupGetFreezerState(virCgroupPtr group ATTRIBUTE_UNUSED,
-                         char **state ATTRIBUTE_UNUSED)
+virCgroupGetFreezerState(virCgroupPtr group G_GNUC_UNUSED,
+                         char **state G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3489,9 +3489,9 @@ virCgroupGetFreezerState(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupBindMount(virCgroupPtr group ATTRIBUTE_UNUSED,
-                   const char *oldroot ATTRIBUTE_UNUSED,
-                   const char *mountopts ATTRIBUTE_UNUSED)
+virCgroupBindMount(virCgroupPtr group G_GNUC_UNUSED,
+                   const char *oldroot G_GNUC_UNUSED,
+                   const char *mountopts G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3500,7 +3500,7 @@ virCgroupBindMount(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 bool
-virCgroupSupportsCpuBW(virCgroupPtr cgroup ATTRIBUTE_UNUSED)
+virCgroupSupportsCpuBW(virCgroupPtr cgroup G_GNUC_UNUSED)
 {
     VIR_DEBUG("Control groups not supported on this platform");
     return false;
@@ -3508,12 +3508,12 @@ virCgroupSupportsCpuBW(virCgroupPtr cgroup ATTRIBUTE_UNUSED)
 
 
 int
-virCgroupGetPercpuStats(virCgroupPtr group ATTRIBUTE_UNUSED,
-                        virTypedParameterPtr params ATTRIBUTE_UNUSED,
-                        unsigned int nparams ATTRIBUTE_UNUSED,
-                        int start_cpu ATTRIBUTE_UNUSED,
-                        unsigned int ncpus ATTRIBUTE_UNUSED,
-                        virBitmapPtr guestvcpus ATTRIBUTE_UNUSED)
+virCgroupGetPercpuStats(virCgroupPtr group G_GNUC_UNUSED,
+                        virTypedParameterPtr params G_GNUC_UNUSED,
+                        unsigned int nparams G_GNUC_UNUSED,
+                        int start_cpu G_GNUC_UNUSED,
+                        unsigned int ncpus G_GNUC_UNUSED,
+                        virBitmapPtr guestvcpus G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3522,10 +3522,10 @@ virCgroupGetPercpuStats(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
-virCgroupSetOwner(virCgroupPtr cgroup ATTRIBUTE_UNUSED,
-                  uid_t uid ATTRIBUTE_UNUSED,
-                  gid_t gid ATTRIBUTE_UNUSED,
-                  int controllers ATTRIBUTE_UNUSED)
+virCgroupSetOwner(virCgroupPtr cgroup G_GNUC_UNUSED,
+                  uid_t uid G_GNUC_UNUSED,
+                  gid_t gid G_GNUC_UNUSED,
+                  int controllers G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3533,8 +3533,8 @@ virCgroupSetOwner(virCgroupPtr cgroup ATTRIBUTE_UNUSED,
 }
 
 int
-virCgroupHasEmptyTasks(virCgroupPtr cgroup ATTRIBUTE_UNUSED,
-                       int controller ATTRIBUTE_UNUSED)
+virCgroupHasEmptyTasks(virCgroupPtr cgroup G_GNUC_UNUSED,
+                       int controller G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3542,7 +3542,7 @@ virCgroupHasEmptyTasks(virCgroupPtr cgroup ATTRIBUTE_UNUSED,
 }
 
 bool
-virCgroupControllerAvailable(int controller ATTRIBUTE_UNUSED)
+virCgroupControllerAvailable(int controller G_GNUC_UNUSED)
 {
     return false;
 }

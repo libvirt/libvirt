@@ -421,7 +421,7 @@ virCgroupV1StealPlacement(virCgroupPtr group)
 static int
 virCgroupV1DetectControllers(virCgroupPtr group,
                              int controllers,
-                             virCgroupPtr parent ATTRIBUTE_UNUSED)
+                             virCgroupPtr parent G_GNUC_UNUSED)
 {
     size_t i;
     size_t j;
