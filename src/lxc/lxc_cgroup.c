@@ -272,7 +272,7 @@ struct _virLXCCgroupDevicePolicy {
 
 
 int
-virLXCSetupHostUSBDeviceCgroup(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
+virLXCSetupHostUSBDeviceCgroup(virUSBDevicePtr dev G_GNUC_UNUSED,
                                const char *path,
                                void *opaque)
 {
@@ -288,7 +288,7 @@ virLXCSetupHostUSBDeviceCgroup(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
 
 
 int
-virLXCTeardownHostUSBDeviceCgroup(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
+virLXCTeardownHostUSBDeviceCgroup(virUSBDevicePtr dev G_GNUC_UNUSED,
                                   const char *path,
                                   void *opaque)
 {

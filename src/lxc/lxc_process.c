@@ -720,7 +720,7 @@ static void virLXCProcessMonitorEOFNotify(virLXCMonitorPtr mon,
     virObjectEventStateQueue(driver->domainEventState, event);
 }
 
-static void virLXCProcessMonitorExitNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED,
+static void virLXCProcessMonitorExitNotify(virLXCMonitorPtr mon G_GNUC_UNUSED,
                                            virLXCMonitorExitStatus status,
                                            virDomainObjPtr vm)
 {
@@ -779,7 +779,7 @@ virLXCProcessGetNsInode(pid_t pid,
 
 /* XXX a little evil */
 extern virLXCDriverPtr lxc_driver;
-static void virLXCProcessMonitorInitNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED,
+static void virLXCProcessMonitorInitNotify(virLXCMonitorPtr mon G_GNUC_UNUSED,
                                            pid_t initpid,
                                            virDomainObjPtr vm)
 {

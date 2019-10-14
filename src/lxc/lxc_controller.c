@@ -150,7 +150,7 @@ static void virLXCControllerFree(virLXCControllerPtr ctrl);
 static int virLXCControllerEventSendInit(virLXCControllerPtr ctrl,
                                          pid_t initpid);
 
-static void virLXCControllerQuitTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
+static void virLXCControllerQuitTimer(int timer G_GNUC_UNUSED, void *opaque)
 {
     virLXCControllerPtr ctrl = opaque;
 
@@ -1027,7 +1027,7 @@ static virMutex lock = VIR_MUTEX_INITIALIZER;
 
 
 static void virLXCControllerSignalChildIO(virNetDaemonPtr dmn,
-                                          siginfo_t *info ATTRIBUTE_UNUSED,
+                                          siginfo_t *info G_GNUC_UNUSED,
                                           void *opaque)
 {
     virLXCControllerPtr ctrl = opaque;

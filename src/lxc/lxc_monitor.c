@@ -81,8 +81,8 @@ static virNetClientProgramEvent virLXCMonitorEvents[] = {
 
 
 static void
-virLXCMonitorHandleEventExit(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                             virNetClientPtr client ATTRIBUTE_UNUSED,
+virLXCMonitorHandleEventExit(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                             virNetClientPtr client G_GNUC_UNUSED,
                              void *evdata, void *opaque)
 {
     virLXCMonitorPtr mon = opaque;
@@ -95,8 +95,8 @@ virLXCMonitorHandleEventExit(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
 
 
 static void
-virLXCMonitorHandleEventInit(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                             virNetClientPtr client ATTRIBUTE_UNUSED,
+virLXCMonitorHandleEventInit(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                             virNetClientPtr client G_GNUC_UNUSED,
                              void *evdata, void *opaque)
 {
     virLXCMonitorPtr mon = opaque;
@@ -108,8 +108,8 @@ virLXCMonitorHandleEventInit(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
 }
 
 
-static void virLXCMonitorEOFNotify(virNetClientPtr client ATTRIBUTE_UNUSED,
-                                   int reason ATTRIBUTE_UNUSED,
+static void virLXCMonitorEOFNotify(virNetClientPtr client G_GNUC_UNUSED,
+                                   int reason G_GNUC_UNUSED,
                                    void *opaque)
 {
     virLXCMonitorPtr mon = opaque;

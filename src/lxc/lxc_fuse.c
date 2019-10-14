@@ -82,8 +82,8 @@ static int lxcProcGetattr(const char *path, struct stat *stbuf)
 
 static int lxcProcReaddir(const char *path, void *buf,
                           fuse_fill_dir_t filler,
-                          off_t offset ATTRIBUTE_UNUSED,
-                          struct fuse_file_info *fi ATTRIBUTE_UNUSED)
+                          off_t offset G_GNUC_UNUSED,
+                          struct fuse_file_info *fi G_GNUC_UNUSED)
 {
     if (STRNEQ(path, "/"))
         return -ENOENT;
@@ -95,8 +95,8 @@ static int lxcProcReaddir(const char *path, void *buf,
     return 0;
 }
 
-static int lxcProcOpen(const char *path ATTRIBUTE_UNUSED,
-                       struct fuse_file_info *fi ATTRIBUTE_UNUSED)
+static int lxcProcOpen(const char *path G_GNUC_UNUSED,
+                       struct fuse_file_info *fi G_GNUC_UNUSED)
 {
     if (STRNEQ(path, fuse_meminfo_path))
         return -ENOENT;
@@ -240,11 +240,11 @@ static int lxcProcReadMeminfo(char *hostpath, virDomainDefPtr def,
     return res;
 }
 
-static int lxcProcRead(const char *path ATTRIBUTE_UNUSED,
-                       char *buf ATTRIBUTE_UNUSED,
-                       size_t size ATTRIBUTE_UNUSED,
-                       off_t offset ATTRIBUTE_UNUSED,
-                       struct fuse_file_info *fi ATTRIBUTE_UNUSED)
+static int lxcProcRead(const char *path G_GNUC_UNUSED,
+                       char *buf G_GNUC_UNUSED,
+                       size_t size G_GNUC_UNUSED,
+                       off_t offset G_GNUC_UNUSED,
+                       struct fuse_file_info *fi G_GNUC_UNUSED)
 {
     int res = -ENOENT;
     char *hostpath = NULL;
@@ -376,18 +376,18 @@ void lxcFreeFuse(virLXCFusePtr *f)
     }
 }
 #else
-int lxcSetupFuse(virLXCFusePtr *f ATTRIBUTE_UNUSED,
-                  virDomainDefPtr def ATTRIBUTE_UNUSED)
+int lxcSetupFuse(virLXCFusePtr *f G_GNUC_UNUSED,
+                  virDomainDefPtr def G_GNUC_UNUSED)
 {
     return 0;
 }
 
-int lxcStartFuse(virLXCFusePtr f ATTRIBUTE_UNUSED)
+int lxcStartFuse(virLXCFusePtr f G_GNUC_UNUSED)
 {
     return 0;
 }
 
-void lxcFreeFuse(virLXCFusePtr *f ATTRIBUTE_UNUSED)
+void lxcFreeFuse(virLXCFusePtr *f G_GNUC_UNUSED)
 {
 }
 #endif

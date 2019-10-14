@@ -84,7 +84,7 @@ virLXCDomainObjFreeJob(virLXCDomainObjPrivatePtr priv)
  * Successful calls must be followed by EndJob eventually.
  */
 int
-virLXCDomainObjBeginJob(virLXCDriverPtr driver ATTRIBUTE_UNUSED,
+virLXCDomainObjBeginJob(virLXCDriverPtr driver G_GNUC_UNUSED,
                        virDomainObjPtr obj,
                        enum virLXCDomainJob job)
 {
@@ -136,7 +136,7 @@ virLXCDomainObjBeginJob(virLXCDriverPtr driver ATTRIBUTE_UNUSED,
  * earlier virLXCDomainBeginJob() call
  */
 void
-virLXCDomainObjEndJob(virLXCDriverPtr driver ATTRIBUTE_UNUSED,
+virLXCDomainObjEndJob(virLXCDriverPtr driver G_GNUC_UNUSED,
                      virDomainObjPtr obj)
 {
     virLXCDomainObjPrivatePtr priv = obj->privateData;
@@ -151,7 +151,7 @@ virLXCDomainObjEndJob(virLXCDriverPtr driver ATTRIBUTE_UNUSED,
 
 
 static void *
-virLXCDomainObjPrivateAlloc(void *opaque ATTRIBUTE_UNUSED)
+virLXCDomainObjPrivateAlloc(void *opaque G_GNUC_UNUSED)
 {
     virLXCDomainObjPrivatePtr priv;
 
@@ -326,7 +326,7 @@ virLXCDomainObjPrivateXMLFormat(virBufferPtr buf,
 static int
 virLXCDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
                                virDomainObjPtr vm,
-                               virDomainDefParserConfigPtr config ATTRIBUTE_UNUSED)
+                               virDomainDefParserConfigPtr config G_GNUC_UNUSED)
 {
     virLXCDomainObjPrivatePtr priv = vm->privateData;
     long long thepid;
@@ -352,9 +352,9 @@ virDomainXMLPrivateDataCallbacks virLXCDriverPrivateDataCallbacks = {
 static int
 virLXCDomainDefPostParse(virDomainDefPtr def,
                          virCapsPtr caps,
-                         unsigned int parseFlags ATTRIBUTE_UNUSED,
-                         void *opaque ATTRIBUTE_UNUSED,
-                         void *parseOpaque ATTRIBUTE_UNUSED)
+                         unsigned int parseFlags G_GNUC_UNUSED,
+                         void *opaque G_GNUC_UNUSED,
+                         void *parseOpaque G_GNUC_UNUSED)
 {
     /* check for emulator and create a default one if needed */
     if (!def->emulator &&
@@ -367,11 +367,11 @@ virLXCDomainDefPostParse(virDomainDefPtr def,
 
 static int
 virLXCDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
-                               const virDomainDef *def ATTRIBUTE_UNUSED,
-                               virCapsPtr caps ATTRIBUTE_UNUSED,
-                               unsigned int parseFlags ATTRIBUTE_UNUSED,
-                               void *opaque ATTRIBUTE_UNUSED,
-                               void *parseOpaque ATTRIBUTE_UNUSED)
+                               const virDomainDef *def G_GNUC_UNUSED,
+                               virCapsPtr caps G_GNUC_UNUSED,
+                               unsigned int parseFlags G_GNUC_UNUSED,
+                               void *opaque G_GNUC_UNUSED,
+                               void *parseOpaque G_GNUC_UNUSED)
 {
     if (dev->type == VIR_DOMAIN_DEVICE_CHR &&
         dev->data.chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
@@ -415,7 +415,7 @@ struct _lxcDomainInitctlCallbackData {
 
 
 static int
-lxcDomainInitctlCallback(pid_t pid ATTRIBUTE_UNUSED,
+lxcDomainInitctlCallback(pid_t pid G_GNUC_UNUSED,
                          void *opaque)
 {
     lxcDomainInitctlCallbackData *data = opaque;

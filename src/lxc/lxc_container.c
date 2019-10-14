@@ -1035,8 +1035,8 @@ static int lxcContainerMountProcFuse(virDomainDefPtr def,
     return ret;
 }
 #else
-static int lxcContainerMountProcFuse(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                                     const char *stateDir ATTRIBUTE_UNUSED)
+static int lxcContainerMountProcFuse(virDomainDefPtr def G_GNUC_UNUSED,
+                                     const char *stateDir G_GNUC_UNUSED)
 {
     return 0;
 }
@@ -1305,7 +1305,7 @@ lxcContainerMountDetectFilesystem(const char *src, char **type)
 }
 #else /* ! WITH_BLKID */
 static int
-lxcContainerMountDetectFilesystem(const char *src ATTRIBUTE_UNUSED,
+lxcContainerMountDetectFilesystem(const char *src G_GNUC_UNUSED,
                                   char **type)
 {
     /* No libblkid, so just return success with no detected type */
@@ -2083,8 +2083,8 @@ static int lxcContainerDropCapabilities(virDomainDefPtr def,
     return 0;
 }
 #else
-static int lxcContainerDropCapabilities(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                                        bool keepReboot ATTRIBUTE_UNUSED)
+static int lxcContainerDropCapabilities(virDomainDefPtr def G_GNUC_UNUSED,
+                                        bool keepReboot G_GNUC_UNUSED)
 {
     VIR_WARN("libcap-ng support not compiled in, unable to clear capabilities");
     return 0;

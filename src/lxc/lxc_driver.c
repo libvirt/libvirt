@@ -133,8 +133,8 @@ lxcConnectURIProbe(char **uri)
 
 
 static virDrvOpenStatus lxcConnectOpen(virConnectPtr conn,
-                                       virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                                       virConfPtr conf ATTRIBUTE_UNUSED,
+                                       virConnectAuthPtr auth G_GNUC_UNUSED,
+                                       virConfPtr conf G_GNUC_UNUSED,
                                        unsigned int flags)
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
@@ -174,21 +174,21 @@ static int lxcConnectClose(virConnectPtr conn)
 }
 
 
-static int lxcConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int lxcConnectIsSecure(virConnectPtr conn G_GNUC_UNUSED)
 {
     /* Trivially secure, since always inside the daemon */
     return 1;
 }
 
 
-static int lxcConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int lxcConnectIsEncrypted(virConnectPtr conn G_GNUC_UNUSED)
 {
     /* Not encrypted, but remote driver takes care of that */
     return 0;
 }
 
 
-static int lxcConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int lxcConnectIsAlive(virConnectPtr conn G_GNUC_UNUSED)
 {
     return 1;
 }
@@ -1536,8 +1536,8 @@ lxcSecurityInit(virLXCDriverConfigPtr cfg)
 
 
 static int lxcStateInitialize(bool privileged,
-                              virStateInhibitCallback callback ATTRIBUTE_UNUSED,
-                              void *opaque ATTRIBUTE_UNUSED)
+                              virStateInhibitCallback callback G_GNUC_UNUSED,
+                              void *opaque G_GNUC_UNUSED)
 {
     virCapsPtr caps = NULL;
     virLXCDriverConfigPtr cfg = NULL;
@@ -3577,7 +3577,7 @@ struct lxcDomainAttachDeviceMknodData {
 };
 
 static int
-lxcDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
+lxcDomainAttachDeviceMknodHelper(pid_t pid G_GNUC_UNUSED,
                                  void *opaque)
 {
     struct lxcDomainAttachDeviceMknodData *data = opaque;
@@ -3685,7 +3685,7 @@ lxcDomainAttachDeviceMknod(virLXCDriverPtr driver,
 
 
 static int
-lxcDomainAttachDeviceUnlinkHelper(pid_t pid ATTRIBUTE_UNUSED,
+lxcDomainAttachDeviceUnlinkHelper(pid_t pid G_GNUC_UNUSED,
                                   void *opaque)
 {
     const char *path = opaque;
