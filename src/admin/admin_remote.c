@@ -76,7 +76,7 @@ make_nonnull_client(admin_nonnull_client *client_dst,
 }
 
 static int
-callFull(virAdmConnectPtr conn ATTRIBUTE_UNUSED,
+callFull(virAdmConnectPtr conn G_GNUC_UNUSED,
          remoteAdminPrivPtr priv,
          int *fdin,
          size_t fdinlen,
@@ -130,7 +130,7 @@ call(virAdmConnectPtr conn,
 #include "admin_client.h"
 
 static void
-remoteAdminClientCloseFunc(virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteAdminClientCloseFunc(virNetClientPtr client G_GNUC_UNUSED,
                            int reason,
                            void *opaque)
 {

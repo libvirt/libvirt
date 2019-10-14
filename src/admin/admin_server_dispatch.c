@@ -60,7 +60,7 @@ remoteAdmClientFree(void *data)
 }
 
 void *
-remoteAdmClientNew(virNetServerClientPtr client ATTRIBUTE_UNUSED,
+remoteAdmClientNew(virNetServerClientPtr client G_GNUC_UNUSED,
                    void *opaque)
 {
     struct daemonAdmClientPrivate *priv;
@@ -107,14 +107,14 @@ remoteAdmClientNew(virNetServerClientPtr client ATTRIBUTE_UNUSED,
 }
 
 void *remoteAdmClientNewPostExecRestart(virNetServerClientPtr client,
-                                        virJSONValuePtr object ATTRIBUTE_UNUSED,
+                                        virJSONValuePtr object G_GNUC_UNUSED,
                                         void *opaque)
 {
     return remoteAdmClientNew(client, opaque);
 }
 
-virJSONValuePtr remoteAdmClientPreExecRestart(virNetServerClientPtr client ATTRIBUTE_UNUSED,
-                                              void *data ATTRIBUTE_UNUSED)
+virJSONValuePtr remoteAdmClientPreExecRestart(virNetServerClientPtr client G_GNUC_UNUSED,
+                                              void *data G_GNUC_UNUSED)
 {
     virJSONValuePtr object = virJSONValueNewObject();
 
@@ -162,9 +162,9 @@ make_nonnull_client(admin_nonnull_client *clt_dst,
 
 /* Functions */
 static int
-adminDispatchConnectOpen(virNetServerPtr server ATTRIBUTE_UNUSED,
+adminDispatchConnectOpen(virNetServerPtr server G_GNUC_UNUSED,
                          virNetServerClientPtr client,
-                         virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                         virNetMessagePtr msg G_GNUC_UNUSED,
                          virNetMessageErrorPtr rerr,
                          struct admin_connect_open_args *args)
 {
@@ -188,17 +188,17 @@ adminDispatchConnectOpen(virNetServerPtr server ATTRIBUTE_UNUSED,
 }
 
 static int
-adminDispatchConnectClose(virNetServerPtr server ATTRIBUTE_UNUSED,
+adminDispatchConnectClose(virNetServerPtr server G_GNUC_UNUSED,
                           virNetServerClientPtr client,
-                          virNetMessagePtr msg ATTRIBUTE_UNUSED,
-                          virNetMessageErrorPtr rerr ATTRIBUTE_UNUSED)
+                          virNetMessagePtr msg G_GNUC_UNUSED,
+                          virNetMessageErrorPtr rerr G_GNUC_UNUSED)
 {
     virNetServerClientDelayedClose(client);
     return 0;
 }
 
 static int
-adminConnectGetLibVersion(virNetDaemonPtr dmn ATTRIBUTE_UNUSED,
+adminConnectGetLibVersion(virNetDaemonPtr dmn G_GNUC_UNUSED,
                           unsigned long long *libVer)
 {
     if (libVer)
@@ -216,9 +216,9 @@ adminGetConn(virNetServerClientPtr client)
 }
 
 static int
-adminDispatchServerGetThreadpoolParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
+adminDispatchServerGetThreadpoolParameters(virNetServerPtr server G_GNUC_UNUSED,
                                            virNetServerClientPtr client,
-                                           virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                           virNetMessagePtr msg G_GNUC_UNUSED,
                                            virNetMessageErrorPtr rerr,
                                            struct admin_server_get_threadpool_parameters_args *args,
                                            struct admin_server_get_threadpool_parameters_ret *ret)
@@ -254,9 +254,9 @@ adminDispatchServerGetThreadpoolParameters(virNetServerPtr server ATTRIBUTE_UNUS
 }
 
 static int
-adminDispatchServerSetThreadpoolParameters(virNetServerPtr server ATTRIBUTE_UNUSED,
+adminDispatchServerSetThreadpoolParameters(virNetServerPtr server G_GNUC_UNUSED,
                                            virNetServerClientPtr client,
-                                           virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                           virNetMessagePtr msg G_GNUC_UNUSED,
                                            virNetMessageErrorPtr rerr,
                                            struct admin_server_set_threadpool_parameters_args *args)
 {
@@ -297,9 +297,9 @@ adminDispatchServerSetThreadpoolParameters(virNetServerPtr server ATTRIBUTE_UNUS
 }
 
 static int
-adminDispatchClientGetInfo(virNetServerPtr server ATTRIBUTE_UNUSED,
+adminDispatchClientGetInfo(virNetServerPtr server G_GNUC_UNUSED,
                            virNetServerClientPtr client,
-                           virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                           virNetMessagePtr msg G_GNUC_UNUSED,
                            virNetMessageErrorPtr rerr,
                            struct admin_client_get_info_args *args,
                            struct admin_client_get_info_ret *ret)
@@ -349,10 +349,10 @@ adminDispatchClientGetInfo(virNetServerPtr server ATTRIBUTE_UNUSED,
 }
 
 static int
-adminDispatchServerGetClientLimits(virNetServerPtr server ATTRIBUTE_UNUSED,
+adminDispatchServerGetClientLimits(virNetServerPtr server G_GNUC_UNUSED,
                                    virNetServerClientPtr client,
-                                   virNetMessagePtr msg ATTRIBUTE_UNUSED,
-                                   virNetMessageErrorPtr rerr ATTRIBUTE_UNUSED,
+                                   virNetMessagePtr msg G_GNUC_UNUSED,
+                                   virNetMessageErrorPtr rerr G_GNUC_UNUSED,
                                    admin_server_get_client_limits_args *args,
                                    admin_server_get_client_limits_ret *ret)
 {
@@ -386,10 +386,10 @@ adminDispatchServerGetClientLimits(virNetServerPtr server ATTRIBUTE_UNUSED,
 }
 
 static int
-adminDispatchServerSetClientLimits(virNetServerPtr server ATTRIBUTE_UNUSED,
+adminDispatchServerSetClientLimits(virNetServerPtr server G_GNUC_UNUSED,
                                    virNetServerClientPtr client,
-                                   virNetMessagePtr msg ATTRIBUTE_UNUSED,
-                                   virNetMessageErrorPtr rerr ATTRIBUTE_UNUSED,
+                                   virNetMessagePtr msg G_GNUC_UNUSED,
+                                   virNetMessageErrorPtr rerr G_GNUC_UNUSED,
                                    admin_server_set_client_limits_args *args)
 {
     int rv = -1;
@@ -455,7 +455,7 @@ adminConnectGetLoggingFilters(char **filters, unsigned int flags)
 }
 
 static int
-adminConnectSetLoggingOutputs(virNetDaemonPtr dmn ATTRIBUTE_UNUSED,
+adminConnectSetLoggingOutputs(virNetDaemonPtr dmn G_GNUC_UNUSED,
                               const char *outputs,
                               unsigned int flags)
 {
@@ -465,7 +465,7 @@ adminConnectSetLoggingOutputs(virNetDaemonPtr dmn ATTRIBUTE_UNUSED,
 }
 
 static int
-adminConnectSetLoggingFilters(virNetDaemonPtr dmn ATTRIBUTE_UNUSED,
+adminConnectSetLoggingFilters(virNetDaemonPtr dmn G_GNUC_UNUSED,
                               const char *filters,
                               unsigned int flags)
 {
@@ -475,9 +475,9 @@ adminConnectSetLoggingFilters(virNetDaemonPtr dmn ATTRIBUTE_UNUSED,
 }
 
 static int
-adminDispatchConnectGetLoggingOutputs(virNetServerPtr server ATTRIBUTE_UNUSED,
-                                      virNetServerClientPtr client ATTRIBUTE_UNUSED,
-                                      virNetMessagePtr msg ATTRIBUTE_UNUSED,
+adminDispatchConnectGetLoggingOutputs(virNetServerPtr server G_GNUC_UNUSED,
+                                      virNetServerClientPtr client G_GNUC_UNUSED,
+                                      virNetMessagePtr msg G_GNUC_UNUSED,
                                       virNetMessageErrorPtr rerr,
                                       admin_connect_get_logging_outputs_args *args,
                                       admin_connect_get_logging_outputs_ret *ret)
@@ -497,9 +497,9 @@ adminDispatchConnectGetLoggingOutputs(virNetServerPtr server ATTRIBUTE_UNUSED,
 }
 
 static int
-adminDispatchConnectGetLoggingFilters(virNetServerPtr server ATTRIBUTE_UNUSED,
-                                      virNetServerClientPtr client ATTRIBUTE_UNUSED,
-                                      virNetMessagePtr msg ATTRIBUTE_UNUSED,
+adminDispatchConnectGetLoggingFilters(virNetServerPtr server G_GNUC_UNUSED,
+                                      virNetServerClientPtr client G_GNUC_UNUSED,
+                                      virNetMessagePtr msg G_GNUC_UNUSED,
                                       virNetMessageErrorPtr rerr,
                                       admin_connect_get_logging_filters_args *args,
                                       admin_connect_get_logging_filters_ret *ret)
