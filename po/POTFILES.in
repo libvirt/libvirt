@@ -250,6 +250,7 @@
 @SRCDIR@/src/util/virhostcpu.c
 @SRCDIR@/src/util/virhostdev.c
 @SRCDIR@/src/util/virhostmem.c
+@SRCDIR@/src/util/virhostuptime.c
 @SRCDIR@/src/util/viridentity.c
 @SRCDIR@/src/util/virinitctl.c
 @SRCDIR@/src/util/viriptables.c
