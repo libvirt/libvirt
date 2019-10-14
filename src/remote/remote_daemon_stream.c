@@ -284,7 +284,7 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
  * -1 on fatal client error
  */
 static int
-daemonStreamFilter(virNetServerClientPtr client ATTRIBUTE_UNUSED,
+daemonStreamFilter(virNetServerClientPtr client G_GNUC_UNUSED,
                    virNetMessagePtr msg,
                    void *opaque)
 {

@@ -236,9 +236,9 @@ static int remoteSplitURIScheme(virURIPtr uri,
 
 
 static int
-remoteStateInitialize(bool privileged ATTRIBUTE_UNUSED,
-                      virStateInhibitCallback callback ATTRIBUTE_UNUSED,
-                      void *opaque ATTRIBUTE_UNUSED)
+remoteStateInitialize(bool privileged G_GNUC_UNUSED,
+                      virStateInhibitCallback callback G_GNUC_UNUSED,
+                      void *opaque G_GNUC_UNUSED)
 {
     /* Mark that we're inside the daemon so we can avoid
      * re-entering ourselves
@@ -249,21 +249,21 @@ remoteStateInitialize(bool privileged ATTRIBUTE_UNUSED,
 
 
 static void
-remoteDomainBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventLifecycle(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                virNetClientPtr client G_GNUC_UNUSED,
                                 void *evdata, void *opaque);
 static void
-remoteDomainBuildEventCallbackLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                        virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventCallbackLifecycle(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                        virNetClientPtr client G_GNUC_UNUSED,
                                         void *evdata, void *opaque);
 
 static void
-remoteDomainBuildEventReboot(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                             virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventReboot(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                             virNetClientPtr client G_GNUC_UNUSED,
                              void *evdata, void *opaque);
 static void
-remoteDomainBuildEventCallbackReboot(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                     virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventCallbackReboot(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                     virNetClientPtr client G_GNUC_UNUSED,
                                      void *evdata, void *opaque);
 
 static void
@@ -432,38 +432,38 @@ remoteDomainBuildEventCallbackMetadataChange(virNetClientProgramPtr prog,
                                              void *evdata, void *opaque);
 
 static void
-remoteNetworkBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                 virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteNetworkBuildEventLifecycle(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                 virNetClientPtr client G_GNUC_UNUSED,
                                  void *evdata, void *opaque);
 
 static void
-remoteStoragePoolBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                     virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteStoragePoolBuildEventLifecycle(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                     virNetClientPtr client G_GNUC_UNUSED,
                                      void *evdata, void *opaque);
 
 static void
-remoteStoragePoolBuildEventRefresh(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                   virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteStoragePoolBuildEventRefresh(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                   virNetClientPtr client G_GNUC_UNUSED,
                                    void *evdata, void *opaque);
 
 static void
-remoteNodeDeviceBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                    virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteNodeDeviceBuildEventLifecycle(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                    virNetClientPtr client G_GNUC_UNUSED,
                                     void *evdata, void *opaque);
 
 static void
-remoteNodeDeviceBuildEventUpdate(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                 virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteNodeDeviceBuildEventUpdate(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                 virNetClientPtr client G_GNUC_UNUSED,
                                  void *evdata, void *opaque);
 
 static void
-remoteSecretBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteSecretBuildEventLifecycle(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                virNetClientPtr client G_GNUC_UNUSED,
                                 void *evdata, void *opaque);
 
 static void
-remoteSecretBuildEventValueChanged(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                   virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteSecretBuildEventValueChanged(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                   virNetClientPtr client G_GNUC_UNUSED,
                                    void *evdata, void *opaque);
 
 static void
@@ -472,8 +472,8 @@ remoteDomainBuildEventBlockThreshold(virNetClientProgramPtr prog,
                                      void *evdata, void *opaque);
 
 static void
-remoteConnectNotifyEventConnectionClosed(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                         virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteConnectNotifyEventConnectionClosed(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                         virNetClientPtr client G_GNUC_UNUSED,
                                          void *evdata, void *opaque);
 
 static virNetClientProgramEvent remoteEvents[] = {
@@ -685,8 +685,8 @@ static virNetClientProgramEvent remoteEvents[] = {
 };
 
 static void
-remoteConnectNotifyEventConnectionClosed(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                         virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteConnectNotifyEventConnectionClosed(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                         virNetClientPtr client G_GNUC_UNUSED,
                                          void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -697,8 +697,8 @@ remoteConnectNotifyEventConnectionClosed(virNetClientProgramPtr prog ATTRIBUTE_U
 }
 
 static void
-remoteDomainBuildQemuMonitorEvent(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                  virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildQemuMonitorEvent(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                  virNetClientPtr client G_GNUC_UNUSED,
                                   void *evdata, void *opaque);
 
 static virNetClientProgramEvent qemuEvents[] = {
@@ -716,7 +716,7 @@ enum virDrvOpenRemoteFlags {
 
 
 static void
-remoteClientCloseFunc(virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteClientCloseFunc(virNetClientPtr client G_GNUC_UNUSED,
                       int reason,
                       void *opaque)
 {
@@ -939,7 +939,7 @@ doRemoteOpen(virConnectPtr conn,
              struct private_data *priv,
              const char *driver_str,
              const char *transport_str,
-             virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+             virConnectAuthPtr auth G_GNUC_UNUSED,
              virConfPtr conf,
              unsigned int flags)
 {
@@ -3841,7 +3841,7 @@ remoteNodeDeviceReset(virNodeDevicePtr dev)
 
 static int
 remoteAuthenticate(virConnectPtr conn, struct private_data *priv,
-                   virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                   virConnectAuthPtr auth G_GNUC_UNUSED,
                    const char *authtype)
 {
     struct remote_auth_list_ret ret;
@@ -4485,7 +4485,7 @@ remoteAuthSASL(virConnectPtr conn, struct private_data *priv,
 
 static int
 remoteAuthPolkit(virConnectPtr conn, struct private_data *priv,
-                 virConnectAuthPtr auth ATTRIBUTE_UNUSED)
+                 virConnectAuthPtr auth G_GNUC_UNUSED)
 {
     remote_auth_polkit_ret ret;
     VIR_DEBUG("Client initialize PolicyKit authentication");
@@ -4631,8 +4631,8 @@ remoteDomainBuildEventLifecycleHelper(virConnectPtr conn,
     virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
 }
 static void
-remoteDomainBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventLifecycle(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                virNetClientPtr client G_GNUC_UNUSED,
                                 void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -4640,8 +4640,8 @@ remoteDomainBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     remoteDomainBuildEventLifecycleHelper(conn, msg, -1);
 }
 static void
-remoteDomainBuildEventCallbackLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                        virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventCallbackLifecycle(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                        virNetClientPtr client G_GNUC_UNUSED,
                                         void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -4669,8 +4669,8 @@ remoteDomainBuildEventRebootHelper(virConnectPtr conn,
     virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
 }
 static void
-remoteDomainBuildEventReboot(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                             virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventReboot(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                             virNetClientPtr client G_GNUC_UNUSED,
                              void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -4678,8 +4678,8 @@ remoteDomainBuildEventReboot(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     remoteDomainBuildEventRebootHelper(conn, msg, -1);
 }
 static void
-remoteDomainBuildEventCallbackReboot(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                     virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventCallbackReboot(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                     virNetClientPtr client G_GNUC_UNUSED,
                                      void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -4706,8 +4706,8 @@ remoteDomainBuildEventRTCChangeHelper(virConnectPtr conn,
     virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
 }
 static void
-remoteDomainBuildEventRTCChange(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventRTCChange(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                virNetClientPtr client G_GNUC_UNUSED,
                                 void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -4715,8 +4715,8 @@ remoteDomainBuildEventRTCChange(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     remoteDomainBuildEventRTCChangeHelper(conn, msg, -1);
 }
 static void
-remoteDomainBuildEventCallbackRTCChange(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                        virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventCallbackRTCChange(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                        virNetClientPtr client G_GNUC_UNUSED,
                                         void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -4743,8 +4743,8 @@ remoteDomainBuildEventWatchdogHelper(virConnectPtr conn,
     virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
 }
 static void
-remoteDomainBuildEventWatchdog(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                               virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventWatchdog(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                               virNetClientPtr client G_GNUC_UNUSED,
                                void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -4752,8 +4752,8 @@ remoteDomainBuildEventWatchdog(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     remoteDomainBuildEventWatchdogHelper(conn, msg, -1);
 }
 static void
-remoteDomainBuildEventCallbackWatchdog(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                       virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventCallbackWatchdog(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                       virNetClientPtr client G_GNUC_UNUSED,
                                        void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -4783,8 +4783,8 @@ remoteDomainBuildEventIOErrorHelper(virConnectPtr conn,
     virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
 }
 static void
-remoteDomainBuildEventIOError(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                              virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventIOError(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                              virNetClientPtr client G_GNUC_UNUSED,
                               void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -4792,8 +4792,8 @@ remoteDomainBuildEventIOError(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     remoteDomainBuildEventIOErrorHelper(conn, msg, -1);
 }
 static void
-remoteDomainBuildEventCallbackIOError(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                      virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventCallbackIOError(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                      virNetClientPtr client G_GNUC_UNUSED,
                                       void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -4825,8 +4825,8 @@ remoteDomainBuildEventIOErrorReasonHelper(virConnectPtr conn,
     virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
 }
 static void
-remoteDomainBuildEventIOErrorReason(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                    virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventIOErrorReason(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                    virNetClientPtr client G_GNUC_UNUSED,
                                     void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -4834,8 +4834,8 @@ remoteDomainBuildEventIOErrorReason(virNetClientProgramPtr prog ATTRIBUTE_UNUSED
     remoteDomainBuildEventIOErrorReasonHelper(conn, msg, -1);
 }
 static void
-remoteDomainBuildEventCallbackIOErrorReason(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                            virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventCallbackIOErrorReason(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                            virNetClientPtr client G_GNUC_UNUSED,
                                             void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -4864,8 +4864,8 @@ remoteDomainBuildEventBlockJobHelper(virConnectPtr conn,
     virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
 }
 static void
-remoteDomainBuildEventBlockJob(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                               virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventBlockJob(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                               virNetClientPtr client G_GNUC_UNUSED,
                                void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -4873,8 +4873,8 @@ remoteDomainBuildEventBlockJob(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     remoteDomainBuildEventBlockJobHelper(conn, msg, -1);
 }
 static void
-remoteDomainBuildEventCallbackBlockJob(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                       virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventCallbackBlockJob(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                       virNetClientPtr client G_GNUC_UNUSED,
                                        void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -4882,8 +4882,8 @@ remoteDomainBuildEventCallbackBlockJob(virNetClientProgramPtr prog ATTRIBUTE_UNU
     remoteDomainBuildEventBlockJobHelper(conn, &msg->msg, msg->callbackID);
 }
 static void
-remoteDomainBuildEventBlockJob2(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventBlockJob2(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                virNetClientPtr client G_GNUC_UNUSED,
                                 void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -4981,8 +4981,8 @@ remoteDomainBuildEventGraphicsHelper(virConnectPtr conn,
     return;
 }
 static void
-remoteDomainBuildEventGraphics(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                               virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventGraphics(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                               virNetClientPtr client G_GNUC_UNUSED,
                                void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -4990,8 +4990,8 @@ remoteDomainBuildEventGraphics(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     remoteDomainBuildEventGraphicsHelper(conn, msg, -1);
 }
 static void
-remoteDomainBuildEventCallbackGraphics(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                       virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventCallbackGraphics(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                       virNetClientPtr client G_GNUC_UNUSED,
                                        void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -5019,8 +5019,8 @@ remoteDomainBuildEventControlErrorHelper(virConnectPtr conn,
     virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
 }
 static void
-remoteDomainBuildEventControlError(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                   virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventControlError(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                   virNetClientPtr client G_GNUC_UNUSED,
                                    void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -5028,8 +5028,8 @@ remoteDomainBuildEventControlError(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     remoteDomainBuildEventControlErrorHelper(conn, msg, -1);
 }
 static void
-remoteDomainBuildEventCallbackControlError(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                           virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventCallbackControlError(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                           virNetClientPtr client G_GNUC_UNUSED,
                                            void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -5062,8 +5062,8 @@ remoteDomainBuildEventDiskChangeHelper(virConnectPtr conn,
     virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
 }
 static void
-remoteDomainBuildEventDiskChange(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                 virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventDiskChange(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                 virNetClientPtr client G_GNUC_UNUSED,
                                  void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -5071,8 +5071,8 @@ remoteDomainBuildEventDiskChange(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     remoteDomainBuildEventDiskChangeHelper(conn, msg, -1);
 }
 static void
-remoteDomainBuildEventCallbackDiskChange(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                         virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventCallbackDiskChange(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                         virNetClientPtr client G_GNUC_UNUSED,
                                          void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -5103,8 +5103,8 @@ remoteDomainBuildEventTrayChangeHelper(virConnectPtr conn,
     virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
 }
 static void
-remoteDomainBuildEventTrayChange(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                 virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventTrayChange(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                 virNetClientPtr client G_GNUC_UNUSED,
                                  void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -5112,8 +5112,8 @@ remoteDomainBuildEventTrayChange(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     remoteDomainBuildEventTrayChangeHelper(conn, msg, -1);
 }
 static void
-remoteDomainBuildEventCallbackTrayChange(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                         virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventCallbackTrayChange(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                         virNetClientPtr client G_GNUC_UNUSED,
                                          void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -5142,8 +5142,8 @@ remoteDomainBuildEventPMWakeupHelper(virConnectPtr conn,
     virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
 }
 static void
-remoteDomainBuildEventPMWakeup(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                               virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventPMWakeup(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                               virNetClientPtr client G_GNUC_UNUSED,
                                void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -5151,8 +5151,8 @@ remoteDomainBuildEventPMWakeup(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     remoteDomainBuildEventPMWakeupHelper(conn, msg, -1, 0);
 }
 static void
-remoteDomainBuildEventCallbackPMWakeup(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                       virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventCallbackPMWakeup(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                       virNetClientPtr client G_GNUC_UNUSED,
                                        void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -5182,8 +5182,8 @@ remoteDomainBuildEventPMSuspendHelper(virConnectPtr conn,
     virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
 }
 static void
-remoteDomainBuildEventPMSuspend(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventPMSuspend(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                virNetClientPtr client G_GNUC_UNUSED,
                                 void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -5191,8 +5191,8 @@ remoteDomainBuildEventPMSuspend(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     remoteDomainBuildEventPMSuspendHelper(conn, msg, -1, 0);
 }
 static void
-remoteDomainBuildEventCallbackPMSuspend(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                        virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventCallbackPMSuspend(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                        virNetClientPtr client G_GNUC_UNUSED,
                                         void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -5221,8 +5221,8 @@ remoteDomainBuildEventBalloonChangeHelper(virConnectPtr conn,
     virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
 }
 static void
-remoteDomainBuildEventBalloonChange(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                    virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventBalloonChange(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                    virNetClientPtr client G_GNUC_UNUSED,
                                     void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -5230,8 +5230,8 @@ remoteDomainBuildEventBalloonChange(virNetClientProgramPtr prog ATTRIBUTE_UNUSED
     remoteDomainBuildEventBalloonChangeHelper(conn, msg, -1);
 }
 static void
-remoteDomainBuildEventCallbackBalloonChange(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                            virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventCallbackBalloonChange(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                            virNetClientPtr client G_GNUC_UNUSED,
                                             void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -5261,8 +5261,8 @@ remoteDomainBuildEventPMSuspendDiskHelper(virConnectPtr conn,
     virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
 }
 static void
-remoteDomainBuildEventPMSuspendDisk(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                    virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventPMSuspendDisk(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                    virNetClientPtr client G_GNUC_UNUSED,
                                     void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -5270,8 +5270,8 @@ remoteDomainBuildEventPMSuspendDisk(virNetClientProgramPtr prog ATTRIBUTE_UNUSED
     remoteDomainBuildEventPMSuspendDiskHelper(conn, msg, -1, 0);
 }
 static void
-remoteDomainBuildEventCallbackPMSuspendDisk(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                            virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventCallbackPMSuspendDisk(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                            virNetClientPtr client G_GNUC_UNUSED,
                                             void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -5301,8 +5301,8 @@ remoteDomainBuildEventDeviceRemovedHelper(virConnectPtr conn,
     virObjectEventStateQueueRemote(priv->eventState, event, callbackID);
 }
 static void
-remoteDomainBuildEventDeviceRemoved(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                    virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventDeviceRemoved(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                    virNetClientPtr client G_GNUC_UNUSED,
                                     void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -5310,8 +5310,8 @@ remoteDomainBuildEventDeviceRemoved(virNetClientProgramPtr prog ATTRIBUTE_UNUSED
     remoteDomainBuildEventDeviceRemovedHelper(conn, msg, -1);
 }
 static void
-remoteDomainBuildEventCallbackDeviceRemoved(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                            virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventCallbackDeviceRemoved(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                            virNetClientPtr client G_GNUC_UNUSED,
                                             void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -5320,8 +5320,8 @@ remoteDomainBuildEventCallbackDeviceRemoved(virNetClientProgramPtr prog ATTRIBUT
 }
 
 static void
-remoteDomainBuildEventCallbackDeviceAdded(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                          virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventCallbackDeviceAdded(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                          virNetClientPtr client G_GNUC_UNUSED,
                                           void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -5343,8 +5343,8 @@ remoteDomainBuildEventCallbackDeviceAdded(virNetClientProgramPtr prog ATTRIBUTE_
 
 
 static void
-remoteDomainBuildEventCallbackDeviceRemovalFailed(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                                  virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventCallbackDeviceRemovalFailed(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                                  virNetClientPtr client G_GNUC_UNUSED,
                                                   void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -5364,8 +5364,8 @@ remoteDomainBuildEventCallbackDeviceRemovalFailed(virNetClientProgramPtr prog AT
 }
 
 static void
-remoteDomainBuildEventCallbackTunable(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                      virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventCallbackTunable(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                      virNetClientPtr client G_GNUC_UNUSED,
                                       void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -5397,8 +5397,8 @@ remoteDomainBuildEventCallbackTunable(virNetClientProgramPtr prog ATTRIBUTE_UNUS
 
 
 static void
-remoteDomainBuildEventCallbackAgentLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                             virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventCallbackAgentLifecycle(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                             virNetClientPtr client G_GNUC_UNUSED,
                                              void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -5420,8 +5420,8 @@ remoteDomainBuildEventCallbackAgentLifecycle(virNetClientProgramPtr prog ATTRIBU
 
 
 static void
-remoteDomainBuildEventCallbackMigrationIteration(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                                 virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventCallbackMigrationIteration(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                                 virNetClientPtr client G_GNUC_UNUSED,
                                                  void *evdata,
                                                  void *opaque)
 {
@@ -5443,8 +5443,8 @@ remoteDomainBuildEventCallbackMigrationIteration(virNetClientProgramPtr prog ATT
 
 
 static void
-remoteDomainBuildEventCallbackJobCompleted(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                           virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventCallbackJobCompleted(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                           virNetClientPtr client G_GNUC_UNUSED,
                                            void *evdata,
                                            void *opaque)
 {
@@ -5476,8 +5476,8 @@ remoteDomainBuildEventCallbackJobCompleted(virNetClientProgramPtr prog ATTRIBUTE
 
 
 static void
-remoteDomainBuildEventCallbackMetadataChange(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                             virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventCallbackMetadataChange(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                             virNetClientPtr client G_GNUC_UNUSED,
                                              void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -5498,8 +5498,8 @@ remoteDomainBuildEventCallbackMetadataChange(virNetClientProgramPtr prog ATTRIBU
 
 
 static void
-remoteNetworkBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                 virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteNetworkBuildEventLifecycle(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                 virNetClientPtr client G_GNUC_UNUSED,
                                  void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -5520,8 +5520,8 @@ remoteNetworkBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
 }
 
 static void
-remoteStoragePoolBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                     virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteStoragePoolBuildEventLifecycle(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                     virNetClientPtr client G_GNUC_UNUSED,
                                      void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -5542,8 +5542,8 @@ remoteStoragePoolBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSE
 }
 
 static void
-remoteStoragePoolBuildEventRefresh(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                   virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteStoragePoolBuildEventRefresh(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                   virNetClientPtr client G_GNUC_UNUSED,
                                    void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -5563,8 +5563,8 @@ remoteStoragePoolBuildEventRefresh(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
 }
 
 static void
-remoteNodeDeviceBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                    virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteNodeDeviceBuildEventLifecycle(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                    virNetClientPtr client G_GNUC_UNUSED,
                                     void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -5585,8 +5585,8 @@ remoteNodeDeviceBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED
 }
 
 static void
-remoteNodeDeviceBuildEventUpdate(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                 virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteNodeDeviceBuildEventUpdate(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                 virNetClientPtr client G_GNUC_UNUSED,
                                  void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -5606,8 +5606,8 @@ remoteNodeDeviceBuildEventUpdate(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
 }
 
 static void
-remoteSecretBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteSecretBuildEventLifecycle(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                virNetClientPtr client G_GNUC_UNUSED,
                                 void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -5628,8 +5628,8 @@ remoteSecretBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
 }
 
 static void
-remoteSecretBuildEventValueChanged(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                   virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteSecretBuildEventValueChanged(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                   virNetClientPtr client G_GNUC_UNUSED,
                                    void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -5649,8 +5649,8 @@ remoteSecretBuildEventValueChanged(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
 }
 
 static void
-remoteDomainBuildQemuMonitorEvent(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                  virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildQemuMonitorEvent(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                  virNetClientPtr client G_GNUC_UNUSED,
                                   void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -5709,8 +5709,8 @@ remoteSecretGetValue(virSecretPtr secret, size_t *value_size,
 
 
 static void
-remoteDomainBuildEventBlockThreshold(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
-                                     virNetClientPtr client ATTRIBUTE_UNUSED,
+remoteDomainBuildEventBlockThreshold(virNetClientProgramPtr prog G_GNUC_UNUSED,
+                                     virNetClientPtr client G_GNUC_UNUSED,
                                      void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
@@ -5862,7 +5862,7 @@ struct remoteStreamCallbackData {
     virFreeCallback ff;
 };
 
-static void remoteStreamEventCallback(virNetClientStreamPtr stream ATTRIBUTE_UNUSED,
+static void remoteStreamEventCallback(virNetClientStreamPtr stream G_GNUC_UNUSED,
                                       int events,
                                       void *opaque)
 {
@@ -6769,7 +6769,7 @@ remoteDomainGetDiskErrors(virDomainPtr dom,
  * send that to the server and wait for reply
  */
 static int
-callFull(virConnectPtr conn ATTRIBUTE_UNUSED,
+callFull(virConnectPtr conn G_GNUC_UNUSED,
          struct private_data *priv,
          unsigned int flags,
          int *fdin,

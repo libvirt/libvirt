@@ -100,7 +100,7 @@ daemonConfigFilePath(bool privileged, char **configfile)
 }
 
 struct daemonConfig*
-daemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
+daemonConfigNew(bool privileged G_GNUC_UNUSED)
 {
     struct daemonConfig *data;
 
