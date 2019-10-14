@@ -157,7 +157,7 @@ void networkPreReloadFirewallRules(virNetworkDriverStatePtr driver, bool startup
 }
 
 
-void networkPostReloadFirewallRules(bool startup ATTRIBUTE_UNUSED)
+void networkPostReloadFirewallRules(bool startup G_GNUC_UNUSED)
 {
     iptablesSetDeletePrivate(true);
 }

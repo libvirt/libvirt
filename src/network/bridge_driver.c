@@ -662,7 +662,7 @@ networkAutostartConfig(virNetworkObjPtr obj,
 
 #ifdef WITH_FIREWALLD
 static DBusHandlerResult
-firewalld_dbus_filter_bridge(DBusConnection *connection ATTRIBUTE_UNUSED,
+firewalld_dbus_filter_bridge(DBusConnection *connection G_GNUC_UNUSED,
                              DBusMessage *message,
                              void *user_data)
 {
@@ -709,8 +709,8 @@ firewalld_dbus_filter_bridge(DBusConnection *connection ATTRIBUTE_UNUSED,
  */
 static int
 networkStateInitialize(bool privileged,
-                       virStateInhibitCallback callback ATTRIBUTE_UNUSED,
-                       void *opaque ATTRIBUTE_UNUSED)
+                       virStateInhibitCallback callback G_GNUC_UNUSED,
+                       void *opaque G_GNUC_UNUSED)
 {
     int ret = VIR_DRV_STATE_INIT_ERROR;
     char *configdir = NULL;
@@ -932,8 +932,8 @@ networkStateCleanup(void)
 
 static virDrvOpenStatus
 networkConnectOpen(virConnectPtr conn,
-                   virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                   virConfPtr conf ATTRIBUTE_UNUSED,
+                   virConnectAuthPtr auth G_GNUC_UNUSED,
+                   virConfPtr conf G_GNUC_UNUSED,
                    unsigned int flags)
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
@@ -955,27 +955,27 @@ networkConnectOpen(virConnectPtr conn,
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-static int networkConnectClose(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int networkConnectClose(virConnectPtr conn G_GNUC_UNUSED)
 {
     return 0;
 }
 
 
-static int networkConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int networkConnectIsSecure(virConnectPtr conn G_GNUC_UNUSED)
 {
     /* Trivially secure, since always inside the daemon */
     return 1;
 }
 
 
-static int networkConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int networkConnectIsEncrypted(virConnectPtr conn G_GNUC_UNUSED)
 {
     /* Not encrypted, but remote driver takes care of that */
     return 0;
 }
 
 
-static int networkConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int networkConnectIsAlive(virConnectPtr conn G_GNUC_UNUSED)
 {
     return 1;
 }
@@ -1131,7 +1131,7 @@ networkDnsmasqConfContents(virNetworkObjPtr obj,
                            const char *pidfile,
                            char **configstr,
                            dnsmasqContext *dctx,
-                           dnsmasqCapsPtr caps ATTRIBUTE_UNUSED)
+                           dnsmasqCapsPtr caps G_GNUC_UNUSED)
 {
     virNetworkDefPtr def = virNetworkObjGetDef(obj);
     virBuffer configbuf = VIR_BUFFER_INITIALIZER;
@@ -2213,7 +2213,7 @@ networkRefreshDaemons(virNetworkDriverStatePtr driver)
 
 static int
 networkReloadFirewallRulesHelper(virNetworkObjPtr obj,
-                                 void *opaque ATTRIBUTE_UNUSED)
+                                 void *opaque G_GNUC_UNUSED)
 {
     virNetworkDefPtr def;
 
@@ -2760,7 +2760,7 @@ networkStartNetworkBridge(virNetworkObjPtr obj)
 
 
 static int
-networkShutdownNetworkBridge(virNetworkObjPtr obj ATTRIBUTE_UNUSED)
+networkShutdownNetworkBridge(virNetworkObjPtr obj G_GNUC_UNUSED)
 {
     virNetworkDefPtr def = virNetworkObjGetDef(obj);
 
@@ -2900,7 +2900,7 @@ networkStartNetworkExternal(virNetworkObjPtr obj)
 
 
 static int
-networkShutdownNetworkExternal(virNetworkObjPtr obj ATTRIBUTE_UNUSED)
+networkShutdownNetworkExternal(virNetworkObjPtr obj G_GNUC_UNUSED)
 {
     /* put anything here that needs to be done each time a network of
      * type BRIDGE, PRIVATE, VEPA, HOSTDEV or PASSTHROUGH is shutdown. On
