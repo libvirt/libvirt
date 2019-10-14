@@ -414,7 +414,7 @@ virNetLibsshAuthenticatePrivkeyCb(const char *prompt,
                                   char *buf,
                                   size_t len,
                                   int echo,
-                                  int verify ATTRIBUTE_UNUSED,
+                                  int verify G_GNUC_UNUSED,
                                   void *userdata)
 {
     virNetLibsshSessionPtr sess = userdata;

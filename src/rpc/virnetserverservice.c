@@ -66,7 +66,7 @@ VIR_ONCE_GLOBAL_INIT(virNetServerService);
 
 
 static void virNetServerServiceAccept(virNetSocketPtr sock,
-                                      int events ATTRIBUTE_UNUSED,
+                                      int events G_GNUC_UNUSED,
                                       void *opaque)
 {
     virNetServerServicePtr svc = opaque;

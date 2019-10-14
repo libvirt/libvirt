@@ -115,8 +115,8 @@ virNetTLSContextCheckCertFile(const char *type, const char *file, bool allowMiss
 }
 
 
-static void virNetTLSLog(int level ATTRIBUTE_UNUSED,
-                         const char *str ATTRIBUTE_UNUSED)
+static void virNetTLSLog(int level G_GNUC_UNUSED,
+                         const char *str G_GNUC_UNUSED)
 {
     VIR_DEBUG("%d %s", level, str);
 }

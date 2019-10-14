@@ -148,7 +148,7 @@ virKeepAliveTimerInternal(virKeepAlivePtr ka,
 
 
 static void
-virKeepAliveTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
+virKeepAliveTimer(int timer G_GNUC_UNUSED, void *opaque)
 {
     virKeepAlivePtr ka = opaque;
     virNetMessagePtr msg = NULL;

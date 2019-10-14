@@ -98,7 +98,7 @@ virNetClientStreamEventTimerUpdate(virNetClientStreamPtr st)
 
 
 static void
-virNetClientStreamEventTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
+virNetClientStreamEventTimer(int timer G_GNUC_UNUSED, void *opaque)
 {
     virNetClientStreamPtr st = opaque;
     int events = 0;
@@ -688,7 +688,7 @@ virNetClientStreamSendHole(virNetClientStreamPtr st,
 
 
 int
-virNetClientStreamRecvHole(virNetClientPtr client ATTRIBUTE_UNUSED,
+virNetClientStreamRecvHole(virNetClientPtr client G_GNUC_UNUSED,
                            virNetClientStreamPtr st,
                            long long *length)
 {

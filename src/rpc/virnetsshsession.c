@@ -191,10 +191,10 @@ virNetSSHSessionAuthMethodNew(virNetSSHSessionPtr sess)
 
 /* keyboard interactive authentication callback */
 static void
-virNetSSHKbIntCb(const char *name ATTRIBUTE_UNUSED,
-                 int name_len ATTRIBUTE_UNUSED,
-                 const char *instruction ATTRIBUTE_UNUSED,
-                 int instruction_len ATTRIBUTE_UNUSED,
+virNetSSHKbIntCb(const char *name G_GNUC_UNUSED,
+                 int name_len G_GNUC_UNUSED,
+                 const char *instruction G_GNUC_UNUSED,
+                 int instruction_len G_GNUC_UNUSED,
                  int num_prompts,
                  const LIBSSH2_USERAUTH_KBDINT_PROMPT *prompts,
                  LIBSSH2_USERAUTH_KBDINT_RESPONSE *responses,

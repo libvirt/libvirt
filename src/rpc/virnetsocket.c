@@ -530,11 +530,11 @@ int virNetSocketNewListenUNIX(const char *path,
     return -1;
 }
 #else
-int virNetSocketNewListenUNIX(const char *path ATTRIBUTE_UNUSED,
-                              mode_t mask ATTRIBUTE_UNUSED,
-                              uid_t user ATTRIBUTE_UNUSED,
-                              gid_t grp ATTRIBUTE_UNUSED,
-                              virNetSocketPtr *retsock ATTRIBUTE_UNUSED)
+int virNetSocketNewListenUNIX(const char *path G_GNUC_UNUSED,
+                              mode_t mask G_GNUC_UNUSED,
+                              uid_t user G_GNUC_UNUSED,
+                              gid_t grp G_GNUC_UNUSED,
+                              virNetSocketPtr *retsock G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("UNIX sockets are not supported on this platform"));
@@ -777,10 +777,10 @@ int virNetSocketNewConnectUNIX(const char *path,
     return ret;
 }
 #else
-int virNetSocketNewConnectUNIX(const char *path ATTRIBUTE_UNUSED,
-                               bool spawnDaemon ATTRIBUTE_UNUSED,
-                               const char *binary ATTRIBUTE_UNUSED,
-                               virNetSocketPtr *retsock ATTRIBUTE_UNUSED)
+int virNetSocketNewConnectUNIX(const char *path G_GNUC_UNUSED,
+                               bool spawnDaemon G_GNUC_UNUSED,
+                               const char *binary G_GNUC_UNUSED,
+                               virNetSocketPtr *retsock G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("UNIX sockets are not supported on this platform"));
@@ -845,8 +845,8 @@ int virNetSocketNewConnectCommand(virCommandPtr cmd,
     return -1;
 }
 #else
-int virNetSocketNewConnectCommand(virCommandPtr cmd ATTRIBUTE_UNUSED,
-                                  virNetSocketPtr *retsock ATTRIBUTE_UNUSED)
+int virNetSocketNewConnectCommand(virCommandPtr cmd G_GNUC_UNUSED,
+                                  virNetSocketPtr *retsock G_GNUC_UNUSED)
 {
     virReportSystemError(errno, "%s",
                          _("Tunnelling sockets not supported on this platform"));
@@ -1052,18 +1052,18 @@ virNetSocketNewConnectLibSSH2(const char *host,
 }
 #else
 int
-virNetSocketNewConnectLibSSH2(const char *host ATTRIBUTE_UNUSED,
-                              const char *port ATTRIBUTE_UNUSED,
-                              int family ATTRIBUTE_UNUSED,
-                              const char *username ATTRIBUTE_UNUSED,
-                              const char *privkey ATTRIBUTE_UNUSED,
-                              const char *knownHosts ATTRIBUTE_UNUSED,
-                              const char *knownHostsVerify ATTRIBUTE_UNUSED,
-                              const char *authMethods ATTRIBUTE_UNUSED,
-                              const char *command ATTRIBUTE_UNUSED,
-                              virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                              virURIPtr uri ATTRIBUTE_UNUSED,
-                              virNetSocketPtr *retsock ATTRIBUTE_UNUSED)
+virNetSocketNewConnectLibSSH2(const char *host G_GNUC_UNUSED,
+                              const char *port G_GNUC_UNUSED,
+                              int family G_GNUC_UNUSED,
+                              const char *username G_GNUC_UNUSED,
+                              const char *privkey G_GNUC_UNUSED,
+                              const char *knownHosts G_GNUC_UNUSED,
+                              const char *knownHostsVerify G_GNUC_UNUSED,
+                              const char *authMethods G_GNUC_UNUSED,
+                              const char *command G_GNUC_UNUSED,
+                              virConnectAuthPtr auth G_GNUC_UNUSED,
+                              virURIPtr uri G_GNUC_UNUSED,
+                              virNetSocketPtr *retsock G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("libssh2 transport support was not enabled"));
@@ -1189,18 +1189,18 @@ virNetSocketNewConnectLibssh(const char *host,
 }
 #else
 int
-virNetSocketNewConnectLibssh(const char *host ATTRIBUTE_UNUSED,
-                             const char *port ATTRIBUTE_UNUSED,
-                             int family ATTRIBUTE_UNUSED,
-                             const char *username ATTRIBUTE_UNUSED,
-                             const char *privkey ATTRIBUTE_UNUSED,
-                             const char *knownHosts ATTRIBUTE_UNUSED,
-                             const char *knownHostsVerify ATTRIBUTE_UNUSED,
-                             const char *authMethods ATTRIBUTE_UNUSED,
-                             const char *command ATTRIBUTE_UNUSED,
-                             virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                             virURIPtr uri ATTRIBUTE_UNUSED,
-                             virNetSocketPtr *retsock ATTRIBUTE_UNUSED)
+virNetSocketNewConnectLibssh(const char *host G_GNUC_UNUSED,
+                             const char *port G_GNUC_UNUSED,
+                             int family G_GNUC_UNUSED,
+                             const char *username G_GNUC_UNUSED,
+                             const char *privkey G_GNUC_UNUSED,
+                             const char *knownHosts G_GNUC_UNUSED,
+                             const char *knownHostsVerify G_GNUC_UNUSED,
+                             const char *authMethods G_GNUC_UNUSED,
+                             const char *command G_GNUC_UNUSED,
+                             virConnectAuthPtr auth G_GNUC_UNUSED,
+                             virURIPtr uri G_GNUC_UNUSED,
+                             virNetSocketPtr *retsock G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("libssh transport support was not enabled"));
@@ -1602,11 +1602,11 @@ int virNetSocketGetUNIXIdentity(virNetSocketPtr sock,
     return ret;
 }
 #else
-int virNetSocketGetUNIXIdentity(virNetSocketPtr sock ATTRIBUTE_UNUSED,
-                                uid_t *uid ATTRIBUTE_UNUSED,
-                                gid_t *gid ATTRIBUTE_UNUSED,
-                                pid_t *pid ATTRIBUTE_UNUSED,
-                                unsigned long long *timestamp ATTRIBUTE_UNUSED)
+int virNetSocketGetUNIXIdentity(virNetSocketPtr sock G_GNUC_UNUSED,
+                                uid_t *uid G_GNUC_UNUSED,
+                                gid_t *gid G_GNUC_UNUSED,
+                                pid_t *pid G_GNUC_UNUSED,
+                                unsigned long long *timestamp G_GNUC_UNUSED)
 {
     /* XXX Many more OS support UNIX socket credentials we could port to. See dbus ....*/
     virReportSystemError(ENOSYS, "%s",
@@ -1645,7 +1645,7 @@ int virNetSocketGetSELinuxContext(virNetSocketPtr sock,
     return ret;
 }
 #else
-int virNetSocketGetSELinuxContext(virNetSocketPtr sock ATTRIBUTE_UNUSED,
+int virNetSocketGetSELinuxContext(virNetSocketPtr sock G_GNUC_UNUSED,
                                   char **context)
 {
     *context = NULL;
@@ -1725,7 +1725,7 @@ void virNetSocketSetSASLSession(virNetSocketPtr sock,
 #endif
 
 
-bool virNetSocketHasCachedData(virNetSocketPtr sock ATTRIBUTE_UNUSED)
+bool virNetSocketHasCachedData(virNetSocketPtr sock G_GNUC_UNUSED)
 {
     bool hasCached = false;
     virObjectLock(sock);
@@ -1780,7 +1780,7 @@ static ssize_t virNetSocketLibsshWrite(virNetSocketPtr sock,
 }
 #endif
 
-bool virNetSocketHasPendingData(virNetSocketPtr sock ATTRIBUTE_UNUSED)
+bool virNetSocketHasPendingData(virNetSocketPtr sock G_GNUC_UNUSED)
 {
     bool hasPending = false;
     virObjectLock(sock);
@@ -2178,8 +2178,8 @@ int virNetSocketAccept(virNetSocketPtr sock, virNetSocketPtr *clientsock)
 }
 
 
-static void virNetSocketEventHandle(int watch ATTRIBUTE_UNUSED,
-                                    int fd ATTRIBUTE_UNUSED,
+static void virNetSocketEventHandle(int watch G_GNUC_UNUSED,
+                                    int fd G_GNUC_UNUSED,
                                     int events,
                                     void *opaque)
 {

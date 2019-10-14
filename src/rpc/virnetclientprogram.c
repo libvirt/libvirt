@@ -85,7 +85,7 @@ virNetClientProgramPtr virNetClientProgramNew(unsigned program,
 }
 
 
-void virNetClientProgramDispose(void *obj ATTRIBUTE_UNUSED)
+void virNetClientProgramDispose(void *obj G_GNUC_UNUSED)
 {
 }
 
@@ -113,7 +113,7 @@ int virNetClientProgramMatches(virNetClientProgramPtr prog,
 
 
 static int
-virNetClientProgramDispatchError(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+virNetClientProgramDispatchError(virNetClientProgramPtr prog G_GNUC_UNUSED,
                                  virNetMessagePtr msg)
 {
     virNetMessageError err;

@@ -184,7 +184,7 @@ int virNetSASLContextCheckIdentity(virNetSASLContextPtr ctxt,
 }
 
 
-virNetSASLSessionPtr virNetSASLSessionNewClient(virNetSASLContextPtr ctxt ATTRIBUTE_UNUSED,
+virNetSASLSessionPtr virNetSASLSessionNewClient(virNetSASLContextPtr ctxt G_GNUC_UNUSED,
                                                 const char *service,
                                                 const char *hostname,
                                                 const char *localAddr,
@@ -222,7 +222,7 @@ virNetSASLSessionPtr virNetSASLSessionNewClient(virNetSASLContextPtr ctxt ATTRIB
     return NULL;
 }
 
-virNetSASLSessionPtr virNetSASLSessionNewServer(virNetSASLContextPtr ctxt ATTRIBUTE_UNUSED,
+virNetSASLSessionPtr virNetSASLSessionNewServer(virNetSASLContextPtr ctxt G_GNUC_UNUSED,
                                                 const char *service,
                                                 const char *localAddr,
                                                 const char *remoteAddr)
@@ -697,7 +697,7 @@ ssize_t virNetSASLSessionDecode(virNetSASLSessionPtr sasl,
     return ret;
 }
 
-void virNetSASLContextDispose(void *obj ATTRIBUTE_UNUSED)
+void virNetSASLContextDispose(void *obj G_GNUC_UNUSED)
 {
     return;
 }

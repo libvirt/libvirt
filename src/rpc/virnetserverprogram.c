@@ -574,6 +574,6 @@ int virNetServerProgramSendStreamHole(virNetServerProgramPtr prog,
 }
 
 
-void virNetServerProgramDispose(void *obj ATTRIBUTE_UNUSED)
+void virNetServerProgramDispose(void *obj G_GNUC_UNUSED)
 {
 }
