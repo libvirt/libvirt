@@ -1441,7 +1441,7 @@ testDriverCloseInternal(testDriverPtr driver)
 static virDrvOpenStatus
 testConnectOpen(virConnectPtr conn,
                 virConnectAuthPtr auth,
-                virConfPtr conf ATTRIBUTE_UNUSED,
+                virConfPtr conf G_GNUC_UNUSED,
                 unsigned int flags)
 {
     int ret;
@@ -1484,42 +1484,42 @@ testConnectClose(virConnectPtr conn)
 }
 
 
-static int testConnectGetVersion(virConnectPtr conn ATTRIBUTE_UNUSED,
+static int testConnectGetVersion(virConnectPtr conn G_GNUC_UNUSED,
                                  unsigned long *hvVer)
 {
     *hvVer = 2;
     return 0;
 }
 
-static char *testConnectGetHostname(virConnectPtr conn ATTRIBUTE_UNUSED)
+static char *testConnectGetHostname(virConnectPtr conn G_GNUC_UNUSED)
 {
     return virGetHostname();
 }
 
 
-static int testConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int testConnectIsSecure(virConnectPtr conn G_GNUC_UNUSED)
 {
     return 1;
 }
 
-static int testConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int testConnectIsEncrypted(virConnectPtr conn G_GNUC_UNUSED)
 {
     return 0;
 }
 
-static int testConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int testConnectIsAlive(virConnectPtr conn G_GNUC_UNUSED)
 {
     return 1;
 }
 
-static int testConnectGetMaxVcpus(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                  const char *type ATTRIBUTE_UNUSED)
+static int testConnectGetMaxVcpus(virConnectPtr conn G_GNUC_UNUSED,
+                                  const char *type G_GNUC_UNUSED)
 {
     return 32;
 }
 
 static char *
-testConnectBaselineCPU(virConnectPtr conn ATTRIBUTE_UNUSED,
+testConnectBaselineCPU(virConnectPtr conn G_GNUC_UNUSED,
                        const char **xmlCPUs,
                        unsigned int ncpus,
                        unsigned int flags)
@@ -1570,7 +1570,7 @@ static char *testConnectGetCapabilities(virConnectPtr conn)
 }
 
 static char *
-testConnectGetSysinfo(virConnectPtr conn ATTRIBUTE_UNUSED,
+testConnectGetSysinfo(virConnectPtr conn G_GNUC_UNUSED,
                       unsigned int flags)
 {
     char *ret;
@@ -1590,14 +1590,14 @@ testConnectGetSysinfo(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static const char *
-testConnectGetType(virConnectPtr conn ATTRIBUTE_UNUSED)
+testConnectGetType(virConnectPtr conn G_GNUC_UNUSED)
 {
     return "TEST";
 }
 
 
 static int
-testConnectSupportsFeature(virConnectPtr conn ATTRIBUTE_UNUSED,
+testConnectSupportsFeature(virConnectPtr conn G_GNUC_UNUSED,
                            int feature)
 {
     switch ((virDrvFeature) feature) {
@@ -1662,7 +1662,7 @@ static int testDomainIsPersistent(virDomainPtr dom)
     return ret;
 }
 
-static int testDomainIsUpdated(virDomainPtr dom ATTRIBUTE_UNUSED)
+static int testDomainIsUpdated(virDomainPtr dom G_GNUC_UNUSED)
 {
     return 0;
 }
@@ -1723,8 +1723,8 @@ testDomainCreateXML(virConnectPtr conn, const char *xml,
 static virDomainPtr
 testDomainCreateXMLWithFiles(virConnectPtr conn,
                              const char *xml,
-                             unsigned int nfiles ATTRIBUTE_UNUSED,
-                             int *files ATTRIBUTE_UNUSED,
+                             unsigned int nfiles G_GNUC_UNUSED,
+                             int *files G_GNUC_UNUSED,
                              unsigned int flags)
 {
     return testDomainCreateXML(conn, xml, flags);
@@ -2557,7 +2557,7 @@ testDomainCoreDump(virDomainPtr domain,
 
 
 static char *
-testDomainGetOSType(virDomainPtr dom ATTRIBUTE_UNUSED)
+testDomainGetOSType(virDomainPtr dom G_GNUC_UNUSED)
 {
     char *ret;
 
@@ -2567,8 +2567,8 @@ testDomainGetOSType(virDomainPtr dom ATTRIBUTE_UNUSED)
 
 
 static int
-testDomainGetLaunchSecurityInfo(virDomainPtr domain ATTRIBUTE_UNUSED,
-                                virTypedParameterPtr *params ATTRIBUTE_UNUSED,
+testDomainGetLaunchSecurityInfo(virDomainPtr domain G_GNUC_UNUSED,
+                                virTypedParameterPtr *params G_GNUC_UNUSED,
                                 int *nparams,
                                 unsigned int flags)
 {
@@ -2898,8 +2898,8 @@ testDomainSetVcpusFlags(virDomainPtr domain, unsigned int nrCpus,
 
 static int
 testDomainSetUserPassword(virDomainPtr dom,
-                          const char *user ATTRIBUTE_UNUSED,
-                          const char *password ATTRIBUTE_UNUSED,
+                          const char *user G_GNUC_UNUSED,
+                          const char *password G_GNUC_UNUSED,
                           unsigned int flags)
 {
     int ret = -1;
@@ -4282,8 +4282,8 @@ static int testNodeGetCellsFreeMemory(virConnectPtr conn,
 #define TEST_NB_CPU_STATS 4
 
 static int
-testNodeGetCPUStats(virConnectPtr conn ATTRIBUTE_UNUSED,
-                    int cpuNum ATTRIBUTE_UNUSED,
+testNodeGetCPUStats(virConnectPtr conn G_GNUC_UNUSED,
+                    int cpuNum G_GNUC_UNUSED,
                     virNodeCPUStatsPtr params,
                     int *nparams,
                     unsigned int flags)
@@ -4343,10 +4343,10 @@ testNodeGetFreeMemory(virConnectPtr conn)
 }
 
 static int
-testNodeGetFreePages(virConnectPtr conn ATTRIBUTE_UNUSED,
+testNodeGetFreePages(virConnectPtr conn G_GNUC_UNUSED,
                      unsigned int npages,
-                     unsigned int *pages ATTRIBUTE_UNUSED,
-                     int startCell ATTRIBUTE_UNUSED,
+                     unsigned int *pages G_GNUC_UNUSED,
+                     int startCell G_GNUC_UNUSED,
                      unsigned int cellCount,
                      unsigned long long *counts,
                      unsigned int flags)
@@ -4410,8 +4410,8 @@ static int testDomainCreate(virDomainPtr domain)
 
 
 static int testDomainCreateWithFiles(virDomainPtr domain,
-                                     unsigned int nfiles ATTRIBUTE_UNUSED,
-                                     int *files ATTRIBUTE_UNUSED,
+                                     unsigned int nfiles G_GNUC_UNUSED,
+                                     int *files G_GNUC_UNUSED,
                                      unsigned int flags)
 {
     return testDomainCreateWithFlags(domain, flags);
@@ -4607,7 +4607,7 @@ testDomainFSThaw(virDomainPtr dom,
 static int
 testDomainFSTrim(virDomainPtr dom,
                  const char *mountPoint,
-                 unsigned long long minimum ATTRIBUTE_UNUSED,
+                 unsigned long long minimum G_GNUC_UNUSED,
                  unsigned int flags)
 {
     virDomainObjPtr vm;
@@ -4881,7 +4881,7 @@ testDomainGetPerfEvents(virDomainPtr dom,
 }
 
 
-static char *testDomainGetSchedulerType(virDomainPtr domain ATTRIBUTE_UNUSED,
+static char *testDomainGetSchedulerType(virDomainPtr domain G_GNUC_UNUSED,
                                         int *nparams)
 {
     char *type = NULL;
@@ -6340,7 +6340,7 @@ testStoragePoolCreate(virStoragePoolPtr pool,
 
 
 static char *
-testConnectFindStoragePoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
+testConnectFindStoragePoolSources(virConnectPtr conn G_GNUC_UNUSED,
                                   const char *type,
                                   const char *srcSpec,
                                   unsigned int flags)
@@ -6575,8 +6575,8 @@ testStoragePoolBuild(virStoragePoolPtr pool,
 
 static int
 testDestroyVport(testDriverPtr privconn,
-                 const char *wwnn ATTRIBUTE_UNUSED,
-                 const char *wwpn ATTRIBUTE_UNUSED)
+                 const char *wwnn G_GNUC_UNUSED,
+                 const char *wwpn G_GNUC_UNUSED)
 {
     virNodeDeviceObjPtr obj = NULL;
     virObjectEventPtr event = NULL;
@@ -7790,7 +7790,7 @@ static int testConnectListAllDomains(virConnectPtr conn,
 }
 
 static int
-testNodeGetCPUMap(virConnectPtr conn ATTRIBUTE_UNUSED,
+testNodeGetCPUMap(virConnectPtr conn G_GNUC_UNUSED,
                   unsigned char **cpumap,
                   unsigned int *online,
                   unsigned int flags)
@@ -7810,9 +7810,9 @@ testNodeGetCPUMap(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static char *
-testDomainScreenshot(virDomainPtr dom ATTRIBUTE_UNUSED,
+testDomainScreenshot(virDomainPtr dom G_GNUC_UNUSED,
                      virStreamPtr st,
-                     unsigned int screen ATTRIBUTE_UNUSED,
+                     unsigned int screen G_GNUC_UNUSED,
                      unsigned int flags)
 {
     char *ret = NULL;
@@ -7855,7 +7855,7 @@ testDomainInjectNMI(virDomainPtr domain,
 static int
 testDomainSendKey(virDomainPtr domain,
                   unsigned int codeset,
-                  unsigned int holdtime ATTRIBUTE_UNUSED,
+                  unsigned int holdtime G_GNUC_UNUSED,
                   unsigned int *keycodes,
                   int nkeycodes,
                   unsigned int flags)
@@ -7891,7 +7891,7 @@ testDomainSendKey(virDomainPtr domain,
 
 
 static int
-testConnectGetCPUModelNames(virConnectPtr conn ATTRIBUTE_UNUSED,
+testConnectGetCPUModelNames(virConnectPtr conn G_GNUC_UNUSED,
                             const char *archName,
                             char ***models,
                             unsigned int flags)
@@ -8672,7 +8672,7 @@ struct _testMomentRemoveData {
 
 static int
 testDomainSnapshotDiscardAll(void *payload,
-                             const void *name ATTRIBUTE_UNUSED,
+                             const void *name G_GNUC_UNUSED,
                              void *data)
 {
     virDomainMomentObjPtr snap = payload;
@@ -8692,7 +8692,7 @@ struct _testMomentReparentData {
 
 static int
 testDomainMomentReparentChildren(void *payload,
-                                 const void *name ATTRIBUTE_UNUSED,
+                                 const void *name G_GNUC_UNUSED,
                                  void *data)
 {
     virDomainMomentObjPtr moment = payload;
@@ -8989,7 +8989,7 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
 
 static int
 testDomainCheckpointDiscardAll(void *payload,
-                               const void *name ATTRIBUTE_UNUSED,
+                               const void *name G_GNUC_UNUSED,
                                void *data)
 {
     virDomainMomentObjPtr chk = payload;
