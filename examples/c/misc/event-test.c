@@ -21,17 +21,17 @@
 # define verify(cond)
 #endif
 
-#ifndef ATTRIBUTE_UNUSED
-# define ATTRIBUTE_UNUSED __attribute__((__unused__))
+#ifndef G_GNUC_UNUSED
+# define G_GNUC_UNUSED __attribute__((__unused__))
 #endif
 
 int run = 1;
 
 /* Callback functions */
 static void
-connectClose(virConnectPtr conn ATTRIBUTE_UNUSED,
+connectClose(virConnectPtr conn G_GNUC_UNUSED,
              int reason,
-             void *opaque ATTRIBUTE_UNUSED)
+             void *opaque G_GNUC_UNUSED)
 {
     run = 0;
 
@@ -404,11 +404,11 @@ secretEventToString(int event)
 
 
 static int
-myDomainEventCallback1(virConnectPtr conn ATTRIBUTE_UNUSED,
+myDomainEventCallback1(virConnectPtr conn G_GNUC_UNUSED,
                        virDomainPtr dom,
                        int event,
                        int detail,
-                       void *opaque ATTRIBUTE_UNUSED)
+                       void *opaque G_GNUC_UNUSED)
 {
     printf("%s EVENT: Domain %s(%d) %s %s\n", __func__, virDomainGetName(dom),
            virDomainGetID(dom), eventToString(event),
@@ -418,11 +418,11 @@ myDomainEventCallback1(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-myDomainEventCallback2(virConnectPtr conn ATTRIBUTE_UNUSED,
+myDomainEventCallback2(virConnectPtr conn G_GNUC_UNUSED,
                        virDomainPtr dom,
                        int event,
                        int detail,
-                       void *opaque ATTRIBUTE_UNUSED)
+                       void *opaque G_GNUC_UNUSED)
 {
     printf("%s EVENT: Domain %s(%d) %s %s\n", __func__, virDomainGetName(dom),
            virDomainGetID(dom), eventToString(event),
@@ -432,9 +432,9 @@ myDomainEventCallback2(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-myDomainEventRebootCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+myDomainEventRebootCallback(virConnectPtr conn G_GNUC_UNUSED,
                             virDomainPtr dom,
-                            void *opaque ATTRIBUTE_UNUSED)
+                            void *opaque G_GNUC_UNUSED)
 {
     printf("%s EVENT: Domain %s(%d) rebooted\n", __func__, virDomainGetName(dom),
            virDomainGetID(dom));
@@ -444,10 +444,10 @@ myDomainEventRebootCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-myDomainEventRTCChangeCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+myDomainEventRTCChangeCallback(virConnectPtr conn G_GNUC_UNUSED,
                                virDomainPtr dom,
                                long long offset,
-                               void *opaque ATTRIBUTE_UNUSED)
+                               void *opaque G_GNUC_UNUSED)
 {
     printf("%s EVENT: Domain %s(%d) rtc change %" PRIdMAX "\n",
            __func__, virDomainGetName(dom), virDomainGetID(dom),
@@ -458,10 +458,10 @@ myDomainEventRTCChangeCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-myDomainEventBalloonChangeCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+myDomainEventBalloonChangeCallback(virConnectPtr conn G_GNUC_UNUSED,
                                    virDomainPtr dom,
                                    unsigned long long actual,
-                                   void *opaque ATTRIBUTE_UNUSED)
+                                   void *opaque G_GNUC_UNUSED)
 {
     printf("%s EVENT: Domain %s(%d) balloon change %" PRIuMAX "KB\n",
            __func__, virDomainGetName(dom), virDomainGetID(dom), (uintmax_t)actual);
@@ -471,10 +471,10 @@ myDomainEventBalloonChangeCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-myDomainEventWatchdogCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+myDomainEventWatchdogCallback(virConnectPtr conn G_GNUC_UNUSED,
                               virDomainPtr dom,
                               int action,
-                              void *opaque ATTRIBUTE_UNUSED)
+                              void *opaque G_GNUC_UNUSED)
 {
     printf("%s EVENT: Domain %s(%d) watchdog action=%d\n", __func__,
            virDomainGetName(dom), virDomainGetID(dom), action);
@@ -484,12 +484,12 @@ myDomainEventWatchdogCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-myDomainEventIOErrorCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+myDomainEventIOErrorCallback(virConnectPtr conn G_GNUC_UNUSED,
                              virDomainPtr dom,
                              const char *srcPath,
                              const char *devAlias,
                              int action,
-                             void *opaque ATTRIBUTE_UNUSED)
+                             void *opaque G_GNUC_UNUSED)
 {
     printf("%s EVENT: Domain %s(%d) io error path=%s alias=%s action=%d\n",
            __func__, virDomainGetName(dom), virDomainGetID(dom),
@@ -500,13 +500,13 @@ myDomainEventIOErrorCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-myDomainEventIOErrorReasonCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+myDomainEventIOErrorReasonCallback(virConnectPtr conn G_GNUC_UNUSED,
                                    virDomainPtr dom,
                                    const char *srcPath,
                                    const char *devAlias,
                                    int action,
                                    const char *reason,
-                                   void *opaque ATTRIBUTE_UNUSED)
+                                   void *opaque G_GNUC_UNUSED)
 {
     printf("%s EVENT: Domain %s(%d) io error (reason) path=%s alias=%s "
            "action=%d reason=%s\n",
@@ -539,14 +539,14 @@ graphicsPhaseToStr(int phase)
 
 
 static int
-myDomainEventGraphicsCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+myDomainEventGraphicsCallback(virConnectPtr conn G_GNUC_UNUSED,
                               virDomainPtr dom,
                               int phase,
                               virDomainEventGraphicsAddressPtr local,
                               virDomainEventGraphicsAddressPtr remote,
                               const char *authScheme,
                               virDomainEventGraphicsSubjectPtr subject,
-                              void *opaque ATTRIBUTE_UNUSED)
+                              void *opaque G_GNUC_UNUSED)
 {
     size_t i;
     printf("%s EVENT: Domain %s(%d) graphics ", __func__, virDomainGetName(dom),
@@ -572,9 +572,9 @@ myDomainEventGraphicsCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-myDomainEventControlErrorCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+myDomainEventControlErrorCallback(virConnectPtr conn G_GNUC_UNUSED,
                                   virDomainPtr dom,
-                                  void *opaque ATTRIBUTE_UNUSED)
+                                  void *opaque G_GNUC_UNUSED)
 {
     printf("%s EVENT: Domain %s(%d) control error\n", __func__,
            virDomainGetName(dom), virDomainGetID(dom));
@@ -601,13 +601,13 @@ diskChangeReasonToStr(int reason)
 
 
 static int
-myDomainEventDiskChangeCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+myDomainEventDiskChangeCallback(virConnectPtr conn G_GNUC_UNUSED,
                                 virDomainPtr dom,
                                 const char *oldSrcPath,
                                 const char *newSrcPath,
                                 const char *devAlias,
                                 int reason,
-                                void *opaque ATTRIBUTE_UNUSED)
+                                void *opaque G_GNUC_UNUSED)
 {
     printf("%s EVENT: Domain %s(%d) disk change oldSrcPath: %s newSrcPath: %s "
            "devAlias: %s reason: %s\n",
@@ -635,11 +635,11 @@ trayChangeReasonToStr(int reason)
 
 
 static int
-myDomainEventTrayChangeCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+myDomainEventTrayChangeCallback(virConnectPtr conn G_GNUC_UNUSED,
                                 virDomainPtr dom,
                                 const char *devAlias,
                                 int reason,
-                                void *opaque ATTRIBUTE_UNUSED)
+                                void *opaque G_GNUC_UNUSED)
 {
     printf("%s EVENT: Domain %s(%d) removable disk's tray change devAlias: %s "
            "reason: %s\n",
@@ -650,10 +650,10 @@ myDomainEventTrayChangeCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-myDomainEventPMWakeupCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+myDomainEventPMWakeupCallback(virConnectPtr conn G_GNUC_UNUSED,
                               virDomainPtr dom,
-                              int reason ATTRIBUTE_UNUSED,
-                              void *opaque ATTRIBUTE_UNUSED)
+                              int reason G_GNUC_UNUSED,
+                              void *opaque G_GNUC_UNUSED)
 {
     printf("%s EVENT: Domain %s(%d) system pmwakeup\n",
            __func__, virDomainGetName(dom), virDomainGetID(dom));
@@ -662,10 +662,10 @@ myDomainEventPMWakeupCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-myDomainEventPMSuspendCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+myDomainEventPMSuspendCallback(virConnectPtr conn G_GNUC_UNUSED,
                                virDomainPtr dom,
-                               int reason ATTRIBUTE_UNUSED,
-                               void *opaque ATTRIBUTE_UNUSED)
+                               int reason G_GNUC_UNUSED,
+                               void *opaque G_GNUC_UNUSED)
 {
     printf("%s EVENT: Domain %s(%d) system pmsuspend\n",
            __func__, virDomainGetName(dom), virDomainGetID(dom));
@@ -674,10 +674,10 @@ myDomainEventPMSuspendCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-myDomainEventPMSuspendDiskCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+myDomainEventPMSuspendDiskCallback(virConnectPtr conn G_GNUC_UNUSED,
                                    virDomainPtr dom,
-                                   int reason ATTRIBUTE_UNUSED,
-                                   void *opaque ATTRIBUTE_UNUSED)
+                                   int reason G_GNUC_UNUSED,
+                                   void *opaque G_GNUC_UNUSED)
 {
     printf("%s EVENT: Domain %s(%d) system pmsuspend-disk\n",
            __func__, virDomainGetName(dom), virDomainGetID(dom));
@@ -686,10 +686,10 @@ myDomainEventPMSuspendDiskCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-myDomainEventDeviceRemovedCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+myDomainEventDeviceRemovedCallback(virConnectPtr conn G_GNUC_UNUSED,
                                    virDomainPtr dom,
                                    const char *devAlias,
-                                   void *opaque ATTRIBUTE_UNUSED)
+                                   void *opaque G_GNUC_UNUSED)
 {
     printf("%s EVENT: Domain %s(%d) device removed: %s\n",
            __func__, virDomainGetName(dom), virDomainGetID(dom), devAlias);
@@ -698,11 +698,11 @@ myDomainEventDeviceRemovedCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-myNetworkEventCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+myNetworkEventCallback(virConnectPtr conn G_GNUC_UNUSED,
                        virNetworkPtr dom,
                        int event,
                        int detail,
-                       void *opaque ATTRIBUTE_UNUSED)
+                       void *opaque G_GNUC_UNUSED)
 {
     printf("%s EVENT: Network %s %s %d\n", __func__, virNetworkGetName(dom),
            networkEventToString(event), detail);
@@ -710,11 +710,11 @@ myNetworkEventCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 static int
-myStoragePoolEventCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+myStoragePoolEventCallback(virConnectPtr conn G_GNUC_UNUSED,
                            virStoragePoolPtr pool,
                            int event,
                            int detail,
-                           void *opaque ATTRIBUTE_UNUSED)
+                           void *opaque G_GNUC_UNUSED)
 {
     printf("%s EVENT: Storage pool %s %s %d\n", __func__,
            virStoragePoolGetName(pool),
@@ -725,9 +725,9 @@ myStoragePoolEventCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-myStoragePoolEventRefreshCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+myStoragePoolEventRefreshCallback(virConnectPtr conn G_GNUC_UNUSED,
                                   virStoragePoolPtr pool,
-                                  void *opaque ATTRIBUTE_UNUSED)
+                                  void *opaque G_GNUC_UNUSED)
 {
     printf("%s EVENT: Storage pool %s refresh\n", __func__,
            virStoragePoolGetName(pool));
@@ -736,11 +736,11 @@ myStoragePoolEventRefreshCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-myNodeDeviceEventCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+myNodeDeviceEventCallback(virConnectPtr conn G_GNUC_UNUSED,
                           virNodeDevicePtr dev,
                           int event,
                           int detail,
-                          void *opaque ATTRIBUTE_UNUSED)
+                          void *opaque G_GNUC_UNUSED)
 {
     printf("%s EVENT: Node device %s %s %d\n", __func__,
            virNodeDeviceGetName(dev),
@@ -751,9 +751,9 @@ myNodeDeviceEventCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-myNodeDeviceEventUpdateCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+myNodeDeviceEventUpdateCallback(virConnectPtr conn G_GNUC_UNUSED,
                                 virNodeDevicePtr dev,
-                                void *opaque ATTRIBUTE_UNUSED)
+                                void *opaque G_GNUC_UNUSED)
 {
     printf("%s EVENT: Node device %s update\n", __func__,
            virNodeDeviceGetName(dev));
@@ -762,11 +762,11 @@ myNodeDeviceEventUpdateCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-mySecretEventCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+mySecretEventCallback(virConnectPtr conn G_GNUC_UNUSED,
                       virSecretPtr secret,
                       int event,
                       int detail,
-                      void *opaque ATTRIBUTE_UNUSED)
+                      void *opaque G_GNUC_UNUSED)
 {
     char uuid[VIR_UUID_STRING_BUFLEN];
     virSecretGetUUIDString(secret, uuid);
@@ -779,9 +779,9 @@ mySecretEventCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-mySecretEventValueChanged(virConnectPtr conn ATTRIBUTE_UNUSED,
+mySecretEventValueChanged(virConnectPtr conn G_GNUC_UNUSED,
                           virSecretPtr secret,
-                          void *opaque ATTRIBUTE_UNUSED)
+                          void *opaque G_GNUC_UNUSED)
 {
     char uuid[VIR_UUID_STRING_BUFLEN];
     virSecretGetUUIDString(secret, uuid);
@@ -829,11 +829,11 @@ eventTypedParamsPrint(virTypedParameterPtr params,
 
 
 static int
-myDomainEventTunableCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+myDomainEventTunableCallback(virConnectPtr conn G_GNUC_UNUSED,
                              virDomainPtr dom,
                              virTypedParameterPtr params,
                              int nparams,
-                             void *opaque ATTRIBUTE_UNUSED)
+                             void *opaque G_GNUC_UNUSED)
 {
     printf("%s EVENT: Domain %s(%d) tunable updated:\n",
            __func__, virDomainGetName(dom), virDomainGetID(dom));
@@ -845,11 +845,11 @@ myDomainEventTunableCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-myDomainEventAgentLifecycleCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+myDomainEventAgentLifecycleCallback(virConnectPtr conn G_GNUC_UNUSED,
                                     virDomainPtr dom,
                                     int state,
                                     int reason,
-                                    void *opaque ATTRIBUTE_UNUSED)
+                                    void *opaque G_GNUC_UNUSED)
 {
     printf("%s EVENT: Domain %s(%d) guest agent state changed: %s reason: %s\n",
            __func__, virDomainGetName(dom), virDomainGetID(dom),
@@ -861,10 +861,10 @@ myDomainEventAgentLifecycleCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-myDomainEventDeviceAddedCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+myDomainEventDeviceAddedCallback(virConnectPtr conn G_GNUC_UNUSED,
                                  virDomainPtr dom,
                                  const char *devAlias,
-                                 void *opaque ATTRIBUTE_UNUSED)
+                                 void *opaque G_GNUC_UNUSED)
 {
     printf("%s EVENT: Domain %s(%d) device added: %s\n",
            __func__, virDomainGetName(dom), virDomainGetID(dom), devAlias);
@@ -922,7 +922,7 @@ blockJobStatusToStr(int status)
 
 
 static int
-myDomainEventBlockJobCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+myDomainEventBlockJobCallback(virConnectPtr conn G_GNUC_UNUSED,
                               virDomainPtr dom,
                               const char *disk,
                               int type,
@@ -940,13 +940,13 @@ myDomainEventBlockJobCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-myDomainEventBlockThresholdCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+myDomainEventBlockThresholdCallback(virConnectPtr conn G_GNUC_UNUSED,
                                     virDomainPtr dom,
                                     const char *dev,
                                     const char *path,
                                     unsigned long long threshold,
                                     unsigned long long excess,
-                                    void *opaque ATTRIBUTE_UNUSED)
+                                    void *opaque G_GNUC_UNUSED)
 {
     /* Casts to uint64_t to work around mingw not knowing %lld */
     printf("%s EVENT: Domain %s(%d) block threshold callback dev '%s'(%s), "
@@ -958,10 +958,10 @@ myDomainEventBlockThresholdCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-myDomainEventMigrationIterationCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+myDomainEventMigrationIterationCallback(virConnectPtr conn G_GNUC_UNUSED,
                                         virDomainPtr dom,
                                         int iteration,
-                                        void *opaque ATTRIBUTE_UNUSED)
+                                        void *opaque G_GNUC_UNUSED)
 {
     printf("%s EVENT: Domain %s(%d) migration iteration '%d'\n",
            __func__, virDomainGetName(dom), virDomainGetID(dom), iteration);
@@ -970,11 +970,11 @@ myDomainEventMigrationIterationCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-myDomainEventJobCompletedCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+myDomainEventJobCompletedCallback(virConnectPtr conn G_GNUC_UNUSED,
                                   virDomainPtr dom,
                                   virTypedParameterPtr params,
                                   int nparams,
-                                  void *opaque ATTRIBUTE_UNUSED)
+                                  void *opaque G_GNUC_UNUSED)
 {
     printf("%s EVENT: Domain %s(%d) job completed:\n",
            __func__, virDomainGetName(dom), virDomainGetID(dom));
@@ -986,10 +986,10 @@ myDomainEventJobCompletedCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
-myDomainEventDeviceRemovalFailedCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+myDomainEventDeviceRemovalFailedCallback(virConnectPtr conn G_GNUC_UNUSED,
                                          virDomainPtr dom,
                                          const char *devAlias,
-                                         void *opaque ATTRIBUTE_UNUSED)
+                                         void *opaque G_GNUC_UNUSED)
 {
     printf("%s EVENT: Domain %s(%d) device removal failed: %s\n",
            __func__, virDomainGetName(dom), virDomainGetID(dom), devAlias);
@@ -1018,11 +1018,11 @@ metadataTypeToStr(int status)
 }
 
 static int
-myDomainEventMetadataChangeCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+myDomainEventMetadataChangeCallback(virConnectPtr conn G_GNUC_UNUSED,
                                     virDomainPtr dom,
                                     int type,
                                     const char *nsuri,
-                                    void *opaque ATTRIBUTE_UNUSED)
+                                    void *opaque G_GNUC_UNUSED)
 {
     const char *typestr = metadataTypeToStr(type);
     printf("%s EVENT: Domain %s(%d) metadata type: %s (%s)\n",
