@@ -37,8 +37,8 @@ VIR_LOG_INIT("logging.log_daemon_dispatch");
 #include "log_daemon_dispatch_stubs.h"
 
 static int
-virLogManagerProtocolDispatchDomainOpenLogFile(virNetServerPtr server ATTRIBUTE_UNUSED,
-                                               virNetServerClientPtr client ATTRIBUTE_UNUSED,
+virLogManagerProtocolDispatchDomainOpenLogFile(virNetServerPtr server G_GNUC_UNUSED,
+                                               virNetServerClientPtr client G_GNUC_UNUSED,
                                                virNetMessagePtr msg,
                                                virNetMessageErrorPtr rerr,
                                                virLogManagerProtocolDomainOpenLogFileArgs *args,
@@ -76,9 +76,9 @@ virLogManagerProtocolDispatchDomainOpenLogFile(virNetServerPtr server ATTRIBUTE_
 
 
 static int
-virLogManagerProtocolDispatchDomainGetLogFilePosition(virNetServerPtr server ATTRIBUTE_UNUSED,
-                                                      virNetServerClientPtr client ATTRIBUTE_UNUSED,
-                                                      virNetMessagePtr msg ATTRIBUTE_UNUSED,
+virLogManagerProtocolDispatchDomainGetLogFilePosition(virNetServerPtr server G_GNUC_UNUSED,
+                                                      virNetServerClientPtr client G_GNUC_UNUSED,
+                                                      virNetMessagePtr msg G_GNUC_UNUSED,
                                                       virNetMessageErrorPtr rerr,
                                                       virLogManagerProtocolDomainGetLogFilePositionArgs *args,
                                                       virLogManagerProtocolDomainGetLogFilePositionRet *ret)
@@ -106,9 +106,9 @@ virLogManagerProtocolDispatchDomainGetLogFilePosition(virNetServerPtr server ATT
 
 
 static int
-virLogManagerProtocolDispatchDomainReadLogFile(virNetServerPtr server ATTRIBUTE_UNUSED,
-                                               virNetServerClientPtr client ATTRIBUTE_UNUSED,
-                                               virNetMessagePtr msg ATTRIBUTE_UNUSED,
+virLogManagerProtocolDispatchDomainReadLogFile(virNetServerPtr server G_GNUC_UNUSED,
+                                               virNetServerClientPtr client G_GNUC_UNUSED,
+                                               virNetMessagePtr msg G_GNUC_UNUSED,
                                                virNetMessageErrorPtr rerr,
                                                virLogManagerProtocolDomainReadLogFileArgs *args,
                                                virLogManagerProtocolDomainReadLogFileRet *ret)
@@ -144,9 +144,9 @@ virLogManagerProtocolDispatchDomainReadLogFile(virNetServerPtr server ATTRIBUTE_
 
 
 static int
-virLogManagerProtocolDispatchDomainAppendLogFile(virNetServerPtr server ATTRIBUTE_UNUSED,
-                                                 virNetServerClientPtr client ATTRIBUTE_UNUSED,
-                                                 virNetMessagePtr msg ATTRIBUTE_UNUSED,
+virLogManagerProtocolDispatchDomainAppendLogFile(virNetServerPtr server G_GNUC_UNUSED,
+                                                 virNetServerClientPtr client G_GNUC_UNUSED,
+                                                 virNetMessagePtr msg G_GNUC_UNUSED,
                                                  virNetMessageErrorPtr rerr,
                                                  virLogManagerProtocolDomainAppendLogFileArgs *args,
                                                  virLogManagerProtocolDomainAppendLogFileRet *ret)

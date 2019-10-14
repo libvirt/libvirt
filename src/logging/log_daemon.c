@@ -422,8 +422,8 @@ virLogDaemonUnixSocketPaths(bool privileged,
 
 
 static void
-virLogDaemonErrorHandler(void *opaque ATTRIBUTE_UNUSED,
-                         virErrorPtr err ATTRIBUTE_UNUSED)
+virLogDaemonErrorHandler(void *opaque G_GNUC_UNUSED,
+                         virErrorPtr err G_GNUC_UNUSED)
 {
     /* Don't do anything, since logging infrastructure already
      * took care of reporting the error */
@@ -487,16 +487,16 @@ virLogDaemonVersion(const char *argv0)
 
 static void
 virLogDaemonShutdownHandler(virNetDaemonPtr dmn,
-                            siginfo_t *sig ATTRIBUTE_UNUSED,
-                            void *opaque ATTRIBUTE_UNUSED)
+                            siginfo_t *sig G_GNUC_UNUSED,
+                            void *opaque G_GNUC_UNUSED)
 {
     virNetDaemonQuit(dmn);
 }
 
 static void
 virLogDaemonExecRestartHandler(virNetDaemonPtr dmn,
-                               siginfo_t *sig ATTRIBUTE_UNUSED,
-                               void *opaque ATTRIBUTE_UNUSED)
+                               siginfo_t *sig G_GNUC_UNUSED,
+                               void *opaque G_GNUC_UNUSED)
 {
     execRestart = true;
     virNetDaemonQuit(dmn);
@@ -593,7 +593,7 @@ virLogDaemonClientNew(virNetServerClientPtr client,
 
 static void *
 virLogDaemonClientNewPostExecRestart(virNetServerClientPtr client,
-                                     virJSONValuePtr object ATTRIBUTE_UNUSED,
+                                     virJSONValuePtr object G_GNUC_UNUSED,
                                      void *opaque)
 {
     virLogDaemonClientPtr priv = virLogDaemonClientNew(client, opaque);
@@ -606,8 +606,8 @@ virLogDaemonClientNewPostExecRestart(virNetServerClientPtr client,
 
 
 static virJSONValuePtr
-virLogDaemonClientPreExecRestart(virNetServerClientPtr client ATTRIBUTE_UNUSED,
-                                 void *opaque ATTRIBUTE_UNUSED)
+virLogDaemonClientPreExecRestart(virNetServerClientPtr client G_GNUC_UNUSED,
+                                 void *opaque G_GNUC_UNUSED)
 {
     virJSONValuePtr object = virJSONValueNewObject();
 

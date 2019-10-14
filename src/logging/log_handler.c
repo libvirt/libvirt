@@ -566,9 +566,9 @@ virLogHandlerDomainReadLogFile(virLogHandlerPtr handler,
 
 int
 virLogHandlerDomainAppendLogFile(virLogHandlerPtr handler,
-                                 const char *driver ATTRIBUTE_UNUSED,
-                                 const unsigned char *domuuid ATTRIBUTE_UNUSED,
-                                 const char *domname ATTRIBUTE_UNUSED,
+                                 const char *driver G_GNUC_UNUSED,
+                                 const unsigned char *domuuid G_GNUC_UNUSED,
+                                 const char *domname G_GNUC_UNUSED,
                                  const char *path,
                                  const char *message,
                                  unsigned int flags)
