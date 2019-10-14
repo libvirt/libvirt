@@ -71,8 +71,6 @@ admin_included_files = {
 }
 
 ignored_words = {
-  "ATTRIBUTE_UNUSED": (0, "macro keyword"),
-  "ATTRIBUTE_SENTINEL": (0, "macro keyword"),
   "G_GNUC_UNUSED": (0, "macro keyword"),
   "G_GNUC_NULL_TERMINATED": (0, "macro keyword"),
   "VIR_DEPRECATED": (0, "macro keyword"),

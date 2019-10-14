@@ -94,33 +94,6 @@
 #define ARRAY_CARDINALITY(Array) (sizeof(Array) / sizeof(*(Array)))
 
 /**
- * ATTRIBUTE_UNUSED:
- *
- * Macro to flag consciously unused parameters to functions
- */
-#ifndef ATTRIBUTE_UNUSED
-# define ATTRIBUTE_UNUSED __attribute__((__unused__))
-#endif
-
-/**
- * ATTRIBUTE_NORETURN:
- *
- * Macro to indicate that a function won't return to the caller
- */
-#ifndef ATTRIBUTE_NORETURN
-# define ATTRIBUTE_NORETURN __attribute__((__noreturn__))
-#endif
-
-/**
- * ATTRIBUTE_SENTINEL:
- *
- * Macro to check for NULL-terminated varargs lists
- */
-#ifndef ATTRIBUTE_SENTINEL
-# define ATTRIBUTE_SENTINEL __attribute__((__sentinel__))
-#endif
-
-/**
  * ATTRIBUTE_NOINLINE:
  *
  * Force compiler not to inline a method. Should be used if
@@ -148,10 +121,6 @@
 #  define ATTRIBUTE_FMT_PRINTF(fmtpos, argpos) \
        __attribute__((__format__ (__printf__, fmtpos, argpos)))
 # endif
-#endif
-
-#ifndef ATTRIBUTE_RETURN_CHECK
-# define ATTRIBUTE_RETURN_CHECK __attribute__((__warn_unused_result__))
 #endif
 
 /**
