@@ -175,7 +175,7 @@ runIO(const char *path, int fd, int oflags)
 
 static const char *program_name;
 
-ATTRIBUTE_NORETURN static void
+G_GNUC_NORETURN static void
 usage(int status)
 {
     if (status) {

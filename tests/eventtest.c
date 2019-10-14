@@ -158,7 +158,7 @@ static pthread_cond_t eventThreadJobCond = PTHREAD_COND_INITIALIZER;
 static int eventThreadJobDone;
 
 
-ATTRIBUTE_NORETURN static void *eventThreadLoop(void *data ATTRIBUTE_UNUSED) {
+G_GNUC_NORETURN static void *eventThreadLoop(void *data ATTRIBUTE_UNUSED) {
     while (1) {
         pthread_mutex_lock(&eventThreadMutex);
         while (!eventThreadRunOnce)

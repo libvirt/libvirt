@@ -1214,7 +1214,7 @@ virProcessSetupPrivateMountNS(void)
 #endif /* !defined(HAVE_SYS_MOUNT_H) || !defined(HAVE_UNSHARE) */
 
 #if defined(__linux__)
-ATTRIBUTE_NORETURN static int
+G_GNUC_NORETURN static int
 virProcessDummyChild(void *argv ATTRIBUTE_UNUSED)
 {
     _exit(0);

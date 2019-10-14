@@ -116,7 +116,7 @@ static int lxcContainerMountFSBlock(virDomainFSDefPtr fs,
  * in a child pid namespace if container reboot support exists.
  * Otherwise, it will either succeed or return -EPERM.
  */
-ATTRIBUTE_NORETURN static int
+G_GNUC_NORETURN static int
 lxcContainerRebootChild(void *argv)
 {
     int *cmd = argv;

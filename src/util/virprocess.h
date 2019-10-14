@@ -46,7 +46,7 @@ virProcessTranslateStatus(int status);
 void
 virProcessAbort(pid_t pid);
 
-void virProcessExitWithStatus(int status) ATTRIBUTE_NORETURN;
+void virProcessExitWithStatus(int status) G_GNUC_NORETURN;
 
 int
 virProcessWait(pid_t pid, int *exitstatus, bool raw)
