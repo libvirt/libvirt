@@ -520,7 +520,7 @@ dev_refresh(const char *udi)
 }
 
 static void
-device_added(LibHalContext *ctx ATTRIBUTE_UNUSED,
+device_added(LibHalContext *ctx G_GNUC_UNUSED,
              const char *udi)
 {
     VIR_DEBUG("%s", hal_name(udi));
@@ -529,7 +529,7 @@ device_added(LibHalContext *ctx ATTRIBUTE_UNUSED,
 
 
 static void
-device_removed(LibHalContext *ctx ATTRIBUTE_UNUSED,
+device_removed(LibHalContext *ctx G_GNUC_UNUSED,
                const char *udi)
 {
     const char *name = hal_name(udi);
@@ -565,7 +565,7 @@ device_cap_added(LibHalContext *ctx,
 
 
 static void
-device_cap_lost(LibHalContext *ctx ATTRIBUTE_UNUSED,
+device_cap_lost(LibHalContext *ctx G_GNUC_UNUSED,
                 const char *udi,
                 const char *cap)
 {
@@ -577,11 +577,11 @@ device_cap_lost(LibHalContext *ctx ATTRIBUTE_UNUSED,
 
 
 static void
-device_prop_modified(LibHalContext *ctx ATTRIBUTE_UNUSED,
+device_prop_modified(LibHalContext *ctx G_GNUC_UNUSED,
                      const char *udi,
                      const char *key,
-                     dbus_bool_t is_removed ATTRIBUTE_UNUSED,
-                     dbus_bool_t is_added ATTRIBUTE_UNUSED)
+                     dbus_bool_t is_removed G_GNUC_UNUSED,
+                     dbus_bool_t is_added G_GNUC_UNUSED)
 {
     const char *name = hal_name(udi);
     VIR_DEBUG("%s %s", name, key);
@@ -591,9 +591,9 @@ device_prop_modified(LibHalContext *ctx ATTRIBUTE_UNUSED,
 
 
 static int
-nodeStateInitialize(bool privileged ATTRIBUTE_UNUSED,
-                    virStateInhibitCallback callback ATTRIBUTE_UNUSED,
-                    void *opaque ATTRIBUTE_UNUSED)
+nodeStateInitialize(bool privileged G_GNUC_UNUSED,
+                    virStateInhibitCallback callback G_GNUC_UNUSED,
+                    void *opaque G_GNUC_UNUSED)
 {
     LibHalContext *hal_ctx = NULL;
     char **udi = NULL;

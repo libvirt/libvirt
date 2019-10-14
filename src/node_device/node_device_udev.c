@@ -606,7 +606,7 @@ udevProcessNetworkInterface(struct udev_device *device,
 
 
 static int
-udevProcessSCSIHost(struct udev_device *device ATTRIBUTE_UNUSED,
+udevProcessSCSIHost(struct udev_device *device G_GNUC_UNUSED,
                     virNodeDeviceDefPtr def)
 {
     virNodeDevCapSCSIHostPtr scsi_host = &def->caps->data.scsi_host;
@@ -654,7 +654,7 @@ udevProcessSCSITarget(struct udev_device *device,
 
 
 static int
-udevGetSCSIType(virNodeDeviceDefPtr def ATTRIBUTE_UNUSED,
+udevGetSCSIType(virNodeDeviceDefPtr def G_GNUC_UNUSED,
                 unsigned int type,
                 char **typestring)
 {
@@ -714,7 +714,7 @@ udevGetSCSIType(virNodeDeviceDefPtr def ATTRIBUTE_UNUSED,
 
 
 static int
-udevProcessSCSIDevice(struct udev_device *device ATTRIBUTE_UNUSED,
+udevProcessSCSIDevice(struct udev_device *device G_GNUC_UNUSED,
                       virNodeDeviceDefPtr def)
 {
     int ret = -1;
@@ -1578,7 +1578,7 @@ udevEventMonitorSanityCheck(udevEventDataPtr priv,
  * would still come into play.
  */
 static void
-udevEventHandleThread(void *opaque ATTRIBUTE_UNUSED)
+udevEventHandleThread(void *opaque G_GNUC_UNUSED)
 {
     udevEventDataPtr priv = driver->privateData;
     struct udev_device *device = NULL;
@@ -1645,10 +1645,10 @@ udevEventHandleThread(void *opaque ATTRIBUTE_UNUSED)
 
 
 static void
-udevEventHandleCallback(int watch ATTRIBUTE_UNUSED,
+udevEventHandleCallback(int watch G_GNUC_UNUSED,
                         int fd,
-                        int events ATTRIBUTE_UNUSED,
-                        void *data ATTRIBUTE_UNUSED)
+                        int events G_GNUC_UNUSED,
+                        void *data G_GNUC_UNUSED)
 {
     udevEventDataPtr priv = driver->privateData;
 
@@ -1783,7 +1783,7 @@ nodeStateInitializeEnumerate(void *opaque)
 
 
 static int
-udevPCITranslateInit(bool privileged ATTRIBUTE_UNUSED)
+udevPCITranslateInit(bool privileged G_GNUC_UNUSED)
 {
 #if defined __s390__ || defined __s390x_
     /* On s390(x) system there is no PCI bus.
@@ -1808,8 +1808,8 @@ udevPCITranslateInit(bool privileged ATTRIBUTE_UNUSED)
 
 static int
 nodeStateInitialize(bool privileged,
-                    virStateInhibitCallback callback ATTRIBUTE_UNUSED,
-                    void *opaque ATTRIBUTE_UNUSED)
+                    virStateInhibitCallback callback G_GNUC_UNUSED,
+                    void *opaque G_GNUC_UNUSED)
 {
     udevEventDataPtr priv = NULL;
     struct udev *udev = NULL;

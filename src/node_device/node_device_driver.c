@@ -46,8 +46,8 @@ virNodeDeviceDriverStatePtr driver;
 
 virDrvOpenStatus
 nodeConnectOpen(virConnectPtr conn,
-                virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                virConfPtr conf ATTRIBUTE_UNUSED,
+                virConnectAuthPtr auth G_GNUC_UNUSED,
+                virConfPtr conf G_GNUC_UNUSED,
                 unsigned int flags)
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
@@ -69,27 +69,27 @@ nodeConnectOpen(virConnectPtr conn,
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-int nodeConnectClose(virConnectPtr conn ATTRIBUTE_UNUSED)
+int nodeConnectClose(virConnectPtr conn G_GNUC_UNUSED)
 {
     return 0;
 }
 
 
-int nodeConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+int nodeConnectIsSecure(virConnectPtr conn G_GNUC_UNUSED)
 {
     /* Trivially secure, since always inside the daemon */
     return 1;
 }
 
 
-int nodeConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+int nodeConnectIsEncrypted(virConnectPtr conn G_GNUC_UNUSED)
 {
     /* Not encrypted, but remote driver takes care of that */
     return 0;
 }
 
 
-int nodeConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+int nodeConnectIsAlive(virConnectPtr conn G_GNUC_UNUSED)
 {
     return 1;
 }
@@ -142,7 +142,7 @@ nodeDeviceUpdateDriverName(virNodeDeviceDefPtr def)
 #else
 /* XXX: Implement me for non-linux */
 static int
-nodeDeviceUpdateDriverName(virNodeDeviceDefPtr def ATTRIBUTE_UNUSED)
+nodeDeviceUpdateDriverName(virNodeDeviceDefPtr def G_GNUC_UNUSED)
 {
     return 0;
 }
