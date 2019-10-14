@@ -7978,12 +7978,9 @@ qemuDomainChangeDiskLive(virDomainObjPtr vm,
     virDomainDeviceDef oldDev = { .type = dev->type };
     int ret = -1;
 
-    if (!(orig_disk = virDomainDiskFindByBusAndDst(vm->def,
-                                                   disk->bus, disk->dst))) {
+    if (!(orig_disk = virDomainDiskByTarget(vm->def, disk->dst))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("No device with bus '%s' and target '%s'"),
-                       virDomainDiskBusTypeToString(disk->bus),
-                       disk->dst);
+                       _("disk '%s' not found"), disk->dst);
         goto cleanup;
     }
 

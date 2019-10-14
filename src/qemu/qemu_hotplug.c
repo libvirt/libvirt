@@ -1092,7 +1092,7 @@ qemuDomainAttachDeviceDiskLive(virQEMUDriverPtr driver,
      * for devices supporting media changes */
     if ((disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM ||
          disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) &&
-        (orig_disk = virDomainDiskFindByBusAndDst(vm->def, disk->bus, disk->dst))) {
+        (orig_disk = virDomainDiskByTarget(vm->def, disk->dst))) {
         if (qemuDomainChangeEjectableMedia(driver, vm, orig_disk,
                                            disk->src, false) < 0)
             return -1;
