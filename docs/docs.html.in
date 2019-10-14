@@ -18,6 +18,9 @@
         <dt><a href="migration.html">Migration</a></dt>
         <dd>Migrating guests between machines</dd>
 
+        <dt><a href="daemons.html">Daemons</a></dt>
+        <dd>Overview of the daemons provided by libvirt</dd>
+
         <dt><a href="remote.html">Remote access</a></dt>
         <dd>Enable remote access over TCP</dd>
 
