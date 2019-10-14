@@ -197,7 +197,7 @@ virSecretObjListFindByUUID(virSecretObjListPtr secrets,
 
 static int
 virSecretObjSearchName(const void *payload,
-                       const void *name ATTRIBUTE_UNUSED,
+                       const void *name G_GNUC_UNUSED,
                        const void *opaque)
 {
     virSecretObjPtr obj = (virSecretObjPtr) payload;
@@ -410,7 +410,7 @@ struct virSecretCountData {
 
 static int
 virSecretObjListNumOfSecretsCallback(void *payload,
-                                     const void *name ATTRIBUTE_UNUSED,
+                                     const void *name G_GNUC_UNUSED,
                                      void *opaque)
 {
     struct virSecretCountData *data = opaque;
@@ -443,7 +443,7 @@ struct virSecretListData {
 
 static int
 virSecretObjListGetUUIDsCallback(void *payload,
-                                 const void *name ATTRIBUTE_UNUSED,
+                                 const void *name G_GNUC_UNUSED,
                                  void *opaque)
 {
     struct virSecretListData *data = opaque;
@@ -537,7 +537,7 @@ struct _virSecretObjListExportData {
 
 static int
 virSecretObjListExportCallback(void *payload,
-                               const void *name ATTRIBUTE_UNUSED,
+                               const void *name G_GNUC_UNUSED,
                                void *opaque)
 {
     virSecretObjListExportDataPtr data = opaque;

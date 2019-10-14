@@ -690,7 +690,7 @@ virDomainCapsDeviceRNGDefValidate(virDomainCapsPtr const caps,
 int
 virDomainCapsDeviceDefValidate(virDomainCapsPtr const caps,
                                const virDomainDeviceDef *dev,
-                               const virDomainDef *def ATTRIBUTE_UNUSED)
+                               const virDomainDef *def G_GNUC_UNUSED)
 {
     int ret = 0;
 

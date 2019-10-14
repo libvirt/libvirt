@@ -1485,8 +1485,8 @@ virCapabilitiesGetNodeInfo(virNodeInfoPtr nodeinfo)
 
 /* returns 1 on success, 0 if the detection failed and -1 on hard error */
 static int
-virCapabilitiesFillCPUInfo(int cpu_id ATTRIBUTE_UNUSED,
-                           virCapsHostNUMACellCPUPtr cpu ATTRIBUTE_UNUSED)
+virCapabilitiesFillCPUInfo(int cpu_id G_GNUC_UNUSED,
+                           virCapsHostNUMACellCPUPtr cpu G_GNUC_UNUSED)
 {
 #ifdef __linux__
     cpu->id = cpu_id;
@@ -1592,7 +1592,7 @@ virCapabilitiesInitNUMAFake(virCapsPtr caps)
     int ncpus;
     int s, c, t;
     int id, cid;
-    int onlinecpus ATTRIBUTE_UNUSED;
+    int onlinecpus G_GNUC_UNUSED;
     bool tmp;
 
     if (virCapabilitiesGetNodeInfo(&nodeinfo) < 0)

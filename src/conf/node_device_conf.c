@@ -2619,21 +2619,21 @@ virNodeDeviceGetPCIDynamicCaps(const char *sysfsPath,
 #else
 
 int
-virNodeDeviceGetSCSIHostCaps(virNodeDevCapSCSIHostPtr scsi_host ATTRIBUTE_UNUSED)
+virNodeDeviceGetSCSIHostCaps(virNodeDevCapSCSIHostPtr scsi_host G_GNUC_UNUSED)
 {
     return -1;
 }
 
 int
-virNodeDeviceGetPCIDynamicCaps(const char *sysfsPath ATTRIBUTE_UNUSED,
-                               virNodeDevCapPCIDevPtr pci_dev ATTRIBUTE_UNUSED)
+virNodeDeviceGetPCIDynamicCaps(const char *sysfsPath G_GNUC_UNUSED,
+                               virNodeDevCapPCIDevPtr pci_dev G_GNUC_UNUSED)
 {
     return -1;
 }
 
 
-int virNodeDeviceGetSCSITargetCaps(const char *sysfsPath ATTRIBUTE_UNUSED,
-                                   virNodeDevCapSCSITargetPtr scsi_target ATTRIBUTE_UNUSED)
+int virNodeDeviceGetSCSITargetCaps(const char *sysfsPath G_GNUC_UNUSED,
+                                   virNodeDevCapSCSITargetPtr scsi_target G_GNUC_UNUSED)
 {
     return -1;
 }

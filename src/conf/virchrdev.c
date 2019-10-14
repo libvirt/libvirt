@@ -195,12 +195,12 @@ static void virChrdevLockFileRemove(const char *dev)
 }
 #else /* #ifdef VIR_CHRDEV_LOCK_FILE_PATH */
 /* file locking for character devices is disabled */
-static int virChrdevLockFileCreate(const char *dev ATTRIBUTE_UNUSED)
+static int virChrdevLockFileCreate(const char *dev G_GNUC_UNUSED)
 {
     return 0;
 }
 
-static void virChrdevLockFileRemove(const char *dev ATTRIBUTE_UNUSED)
+static void virChrdevLockFileRemove(const char *dev G_GNUC_UNUSED)
 {
     return;
 }
@@ -245,7 +245,7 @@ static void virChrdevFDStreamCloseCbFree(void *opaque)
  * @st Pointer to stream being closed.
  * @opaque Domain's device information structure.
  */
-static void virChrdevFDStreamCloseCb(virStreamPtr st ATTRIBUTE_UNUSED,
+static void virChrdevFDStreamCloseCb(virStreamPtr st G_GNUC_UNUSED,
                                       void *opaque)
 {
     virChrdevStreamInfoPtr priv = opaque;
@@ -291,8 +291,8 @@ virChrdevsPtr virChrdevAlloc(void)
  * Helper to clear stream callbacks when freeing the hash
  */
 static int virChrdevFreeClearCallbacks(void *payload,
-                                       const void *name ATTRIBUTE_UNUSED,
-                                       void *data ATTRIBUTE_UNUSED)
+                                       const void *name G_GNUC_UNUSED,
+                                       void *data G_GNUC_UNUSED)
 {
     virStreamPtr st = payload;
 

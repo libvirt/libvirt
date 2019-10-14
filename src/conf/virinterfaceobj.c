@@ -161,7 +161,7 @@ struct _virInterfaceObjFindMACData {
 
 static int
 virInterfaceObjListFindByMACStringCb(void *payload,
-                                     const void *name ATTRIBUTE_UNUSED,
+                                     const void *name G_GNUC_UNUSED,
                                      void *opaque)
 {
     virInterfaceObjPtr obj = payload;
@@ -273,7 +273,7 @@ struct _virInterfaceObjListExportData {
 
 static int
 virInterfaceObjListExportCallback(void *payload,
-                                  const void *name ATTRIBUTE_UNUSED,
+                                  const void *name G_GNUC_UNUSED,
                                   void *opaque)
 {
     virInterfaceObjListExportDataPtr data = opaque;
@@ -366,7 +366,7 @@ struct _virInterfaceObjListCloneData {
 
 static int
 virInterfaceObjListCloneCb(void *payload,
-                           const void *name ATTRIBUTE_UNUSED,
+                           const void *name G_GNUC_UNUSED,
                            void *opaque)
 {
     virInterfaceObjPtr srcObj = payload;
@@ -485,7 +485,7 @@ struct _virInterfaceObjNumOfInterfacesData {
 
 static int
 virInterfaceObjListNumOfInterfacesCb(void *payload,
-                                     const void *name ATTRIBUTE_UNUSED,
+                                     const void *name G_GNUC_UNUSED,
                                      void *opaque)
 {
     virInterfaceObjPtr obj = payload;
@@ -527,7 +527,7 @@ struct _virInterfaceObjGetNamesData {
 
 static int
 virInterfaceObjListGetNamesCb(void *payload,
-                              const void *name ATTRIBUTE_UNUSED,
+                              const void *name G_GNUC_UNUSED,
                               void *opaque)
 {
     virInterfaceObjPtr obj = payload;

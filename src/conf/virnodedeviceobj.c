@@ -199,7 +199,7 @@ virNodeDeviceObjListSearch(virNodeDeviceObjListPtr devs,
 
 static int
 virNodeDeviceObjListFindBySysfsPathCallback(const void *payload,
-                                            const void *name ATTRIBUTE_UNUSED,
+                                            const void *name G_GNUC_UNUSED,
                                             const void *opaque)
 {
     virNodeDeviceObjPtr obj = (virNodeDeviceObjPtr) payload;
@@ -256,7 +256,7 @@ struct virNodeDeviceObjListFindByWWNsData {
 
 static int
 virNodeDeviceObjListFindByWWNsCallback(const void *payload,
-                                       const void *name ATTRIBUTE_UNUSED,
+                                       const void *name G_GNUC_UNUSED,
                                        const void *opaque)
 {
     virNodeDeviceObjPtr obj = (virNodeDeviceObjPtr) payload;
@@ -292,7 +292,7 @@ virNodeDeviceObjListFindByWWNs(virNodeDeviceObjListPtr devs,
 
 static int
 virNodeDeviceObjListFindByFabricWWNCallback(const void *payload,
-                                            const void *name ATTRIBUTE_UNUSED,
+                                            const void *name G_GNUC_UNUSED,
                                             const void *opaque)
 {
     virNodeDeviceObjPtr obj = (virNodeDeviceObjPtr) payload;
@@ -322,7 +322,7 @@ virNodeDeviceObjListFindByFabricWWN(virNodeDeviceObjListPtr devs,
 
 static int
 virNodeDeviceObjListFindByCapCallback(const void *payload,
-                                      const void *name ATTRIBUTE_UNUSED,
+                                      const void *name G_GNUC_UNUSED,
                                       const void *opaque)
 {
     virNodeDeviceObjPtr obj = (virNodeDeviceObjPtr) payload;
@@ -354,7 +354,7 @@ struct virNodeDeviceObjListFindSCSIHostByWWNsData {
 
 static int
 virNodeDeviceObjListFindSCSIHostByWWNsCallback(const void *payload,
-                                               const void *name ATTRIBUTE_UNUSED,
+                                               const void *name G_GNUC_UNUSED,
                                                const void *opaque)
 {
     virNodeDeviceObjPtr obj = (virNodeDeviceObjPtr) payload;
@@ -694,7 +694,7 @@ struct virNodeDeviceCountData {
 
 static int
 virNodeDeviceObjListNumOfDevicesCallback(void *payload,
-                                         const void *name ATTRIBUTE_UNUSED,
+                                         const void *name G_GNUC_UNUSED,
                                          void *opaque)
 {
     virNodeDeviceObjPtr obj = payload;
@@ -742,7 +742,7 @@ struct virNodeDeviceGetNamesData {
 
 static int
 virNodeDeviceObjListGetNamesCallback(void *payload,
-                                     const void *name ATTRIBUTE_UNUSED,
+                                     const void *name G_GNUC_UNUSED,
                                      void *opaque)
 {
     virNodeDeviceObjPtr obj = payload;
@@ -852,7 +852,7 @@ struct _virNodeDeviceObjListExportData {
 
 static int
 virNodeDeviceObjListExportCallback(void *payload,
-                                   const void *name ATTRIBUTE_UNUSED,
+                                   const void *name G_GNUC_UNUSED,
                                    void *opaque)
 {
     virNodeDeviceObjPtr obj = payload;

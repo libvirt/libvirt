@@ -48,7 +48,7 @@ virDomainCheckpointAssignDef(virDomainCheckpointObjListPtr checkpoints,
 
 
 static bool
-virDomainCheckpointFilter(virDomainMomentObjPtr obj ATTRIBUTE_UNUSED,
+virDomainCheckpointFilter(virDomainMomentObjPtr obj G_GNUC_UNUSED,
                           unsigned int flags)
 {
     /* For now, we have no further filters than what the common code handles. */

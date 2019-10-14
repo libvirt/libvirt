@@ -421,7 +421,7 @@ struct _virStoragePoolObjListForEachData {
 
 static int
 virStoragePoolObjListForEachCb(void *payload,
-                               const void *name ATTRIBUTE_UNUSED,
+                               const void *name G_GNUC_UNUSED,
                                void *opaque)
 {
     virStoragePoolObjPtr obj = payload;
@@ -477,7 +477,7 @@ struct _virStoragePoolObjListSearchData {
 
 static int
 virStoragePoolObjListSearchCb(const void *payload,
-                              const void *name ATTRIBUTE_UNUSED,
+                              const void *name G_GNUC_UNUSED,
                               const void *opaque)
 {
     virStoragePoolObjPtr obj = (virStoragePoolObjPtr) payload;
@@ -728,7 +728,7 @@ struct _virStoragePoolObjForEachVolData {
 
 static int
 virStoragePoolObjForEachVolumeCb(void *payload,
-                                 const void *name ATTRIBUTE_UNUSED,
+                                 const void *name G_GNUC_UNUSED,
                                  void *opaque)
 {
     int ret = 0;
@@ -767,7 +767,7 @@ struct _virStoragePoolObjSearchVolData {
 
 static int
 virStoragePoolObjSearchVolumeCb(const void *payload,
-                                const void *name ATTRIBUTE_UNUSED,
+                                const void *name G_GNUC_UNUSED,
                                 const void *opaque)
 {
     virStorageVolObjPtr volobj = (virStorageVolObjPtr) payload;
@@ -864,7 +864,7 @@ struct _virStorageVolObjCountData {
 
 static int
 virStoragePoolObjNumOfVolumesCb(void *payload,
-                                const void *name ATTRIBUTE_UNUSED,
+                                const void *name G_GNUC_UNUSED,
                                 void *opaque)
 {
     virStorageVolObjPtr volobj = payload;
@@ -913,7 +913,7 @@ struct _virStorageVolObjNameData {
 
 static int
 virStoragePoolObjVolumeGetNamesCb(void *payload,
-                                  const void *name ATTRIBUTE_UNUSED,
+                                  const void *name G_GNUC_UNUSED,
                                   void *opaque)
 {
     virStorageVolObjPtr volobj = payload;
@@ -987,7 +987,7 @@ struct _virStoragePoolObjVolumeListExportData {
 
 static int
 virStoragePoolObjVolumeListExportCallback(void *payload,
-                                          const void *name ATTRIBUTE_UNUSED,
+                                          const void *name G_GNUC_UNUSED,
                                           void *opaque)
 {
     virStorageVolObjPtr volobj = payload;
@@ -1437,7 +1437,7 @@ struct _virStoragePoolObjFindDuplicateData {
 
 static int
 virStoragePoolObjSourceFindDuplicateCb(const void *payload,
-                                       const void *name ATTRIBUTE_UNUSED,
+                                       const void *name G_GNUC_UNUSED,
                                        const void *opaque)
 {
     virStoragePoolObjPtr obj = (virStoragePoolObjPtr) payload;
@@ -1847,7 +1847,7 @@ struct _virStoragePoolCountData {
 
 static int
 virStoragePoolObjNumOfStoragePoolsCb(void *payload,
-                                     const void *name ATTRIBUTE_UNUSED,
+                                     const void *name G_GNUC_UNUSED,
                                      void *opaque)
 {
     virStoragePoolObjPtr obj = payload;
@@ -1899,7 +1899,7 @@ struct _virStoragePoolNameData {
 
 static int
 virStoragePoolObjGetNamesCb(void *payload,
-                            const void *name ATTRIBUTE_UNUSED,
+                            const void *name G_GNUC_UNUSED,
                             void *opaque)
 {
     virStoragePoolObjPtr obj = payload;
@@ -2046,7 +2046,7 @@ struct _virStoragePoolObjListExportData {
 
 static int
 virStoragePoolObjListExportCallback(void *payload,
-                                    const void *name ATTRIBUTE_UNUSED,
+                                    const void *name G_GNUC_UNUSED,
                                     void *opaque)
 {
     virStoragePoolObjPtr obj = payload;

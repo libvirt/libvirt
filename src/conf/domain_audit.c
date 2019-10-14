@@ -59,7 +59,7 @@ virDomainAuditGetRdev(const char *path)
 }
 #else
 static char *
-virDomainAuditGetRdev(const char *path ATTRIBUTE_UNUSED)
+virDomainAuditGetRdev(const char *path G_GNUC_UNUSED)
 {
     return NULL;
 }

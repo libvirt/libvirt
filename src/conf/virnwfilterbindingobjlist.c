@@ -345,7 +345,7 @@ struct virNWFilterBindingListIterData {
 
 static int
 virNWFilterBindingObjListHelper(void *payload,
-                                const void *name ATTRIBUTE_UNUSED,
+                                const void *name G_GNUC_UNUSED,
                                 void *opaque)
 {
     struct virNWFilterBindingListIterData *data = opaque;
@@ -379,7 +379,7 @@ struct virNWFilterBindingListData {
 
 static int
 virNWFilterBindingObjListCollectIterator(void *payload,
-                                         const void *name ATTRIBUTE_UNUSED,
+                                         const void *name G_GNUC_UNUSED,
                                          void *opaque)
 {
     struct virNWFilterBindingListData *data = opaque;

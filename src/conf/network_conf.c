@@ -76,7 +76,7 @@ VIR_ENUM_IMPL(virNetworkTaint,
 static virClassPtr virNetworkXMLOptionClass;
 
 static void
-virNetworkXMLOptionDispose(void *obj ATTRIBUTE_UNUSED)
+virNetworkXMLOptionDispose(void *obj G_GNUC_UNUSED)
 {
     return;
 }
@@ -2418,7 +2418,7 @@ virNetworkForwardNatDefFormat(virBufferPtr buf,
 int
 virNetworkDefFormatBuf(virBufferPtr buf,
                        const virNetworkDef *def,
-                       virNetworkXMLOptionPtr xmlopt ATTRIBUTE_UNUSED,
+                       virNetworkXMLOptionPtr xmlopt G_GNUC_UNUSED,
                        unsigned int flags)
 {
     const unsigned char *uuid;
@@ -2812,11 +2812,11 @@ virNetworkDefUpdateCheckElementName(virNetworkDefPtr def,
 
 static int
 virNetworkDefUpdateBridge(virNetworkDefPtr def,
-                          unsigned int command ATTRIBUTE_UNUSED,
-                          int parentIndex ATTRIBUTE_UNUSED,
-                          xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
+                          unsigned int command G_GNUC_UNUSED,
+                          int parentIndex G_GNUC_UNUSED,
+                          xmlXPathContextPtr ctxt G_GNUC_UNUSED,
                           /* virNetworkUpdateFlags */
-                          unsigned int fflags ATTRIBUTE_UNUSED)
+                          unsigned int fflags G_GNUC_UNUSED)
 {
     virNetworkDefUpdateNoSupport(def, "bridge");
     return -1;
@@ -2825,11 +2825,11 @@ virNetworkDefUpdateBridge(virNetworkDefPtr def,
 
 static int
 virNetworkDefUpdateDomain(virNetworkDefPtr def,
-                          unsigned int command ATTRIBUTE_UNUSED,
-                          int parentIndex ATTRIBUTE_UNUSED,
-                          xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
+                          unsigned int command G_GNUC_UNUSED,
+                          int parentIndex G_GNUC_UNUSED,
+                          xmlXPathContextPtr ctxt G_GNUC_UNUSED,
                           /* virNetworkUpdateFlags */
-                          unsigned int fflags ATTRIBUTE_UNUSED)
+                          unsigned int fflags G_GNUC_UNUSED)
 {
     virNetworkDefUpdateNoSupport(def, "domain");
     return -1;
@@ -2838,11 +2838,11 @@ virNetworkDefUpdateDomain(virNetworkDefPtr def,
 
 static int
 virNetworkDefUpdateIP(virNetworkDefPtr def,
-                      unsigned int command ATTRIBUTE_UNUSED,
-                      int parentIndex ATTRIBUTE_UNUSED,
-                      xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
+                      unsigned int command G_GNUC_UNUSED,
+                      int parentIndex G_GNUC_UNUSED,
+                      xmlXPathContextPtr ctxt G_GNUC_UNUSED,
                       /* virNetworkUpdateFlags */
-                      unsigned int fflags ATTRIBUTE_UNUSED)
+                      unsigned int fflags G_GNUC_UNUSED)
 {
     virNetworkDefUpdateNoSupport(def, "ip");
     return -1;
@@ -2919,7 +2919,7 @@ virNetworkDefUpdateIPDHCPHost(virNetworkDefPtr def,
                               int parentIndex,
                               xmlXPathContextPtr ctxt,
                               /* virNetworkUpdateFlags */
-                              unsigned int fflags ATTRIBUTE_UNUSED)
+                              unsigned int fflags G_GNUC_UNUSED)
 {
     size_t i;
     int ret = -1;
@@ -3059,7 +3059,7 @@ virNetworkDefUpdateIPDHCPRange(virNetworkDefPtr def,
                                int parentIndex,
                                xmlXPathContextPtr ctxt,
                                /* virNetworkUpdateFlags */
-                               unsigned int fflags ATTRIBUTE_UNUSED)
+                               unsigned int fflags G_GNUC_UNUSED)
 {
     size_t i;
     int ret = -1;
@@ -3157,11 +3157,11 @@ virNetworkDefUpdateIPDHCPRange(virNetworkDefPtr def,
 
 static int
 virNetworkDefUpdateForward(virNetworkDefPtr def,
-                           unsigned int command ATTRIBUTE_UNUSED,
-                           int parentIndex ATTRIBUTE_UNUSED,
-                           xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
+                           unsigned int command G_GNUC_UNUSED,
+                           int parentIndex G_GNUC_UNUSED,
+                           xmlXPathContextPtr ctxt G_GNUC_UNUSED,
                            /* virNetworkUpdateFlags */
-                           unsigned int fflags ATTRIBUTE_UNUSED)
+                           unsigned int fflags G_GNUC_UNUSED)
 {
     virNetworkDefUpdateNoSupport(def, "forward");
     return -1;
@@ -3171,10 +3171,10 @@ virNetworkDefUpdateForward(virNetworkDefPtr def,
 static int
 virNetworkDefUpdateForwardInterface(virNetworkDefPtr def,
                                     unsigned int command,
-                                    int parentIndex ATTRIBUTE_UNUSED,
+                                    int parentIndex G_GNUC_UNUSED,
                                     xmlXPathContextPtr ctxt,
                                     /* virNetworkUpdateFlags */
-                                    unsigned int fflags ATTRIBUTE_UNUSED)
+                                    unsigned int fflags G_GNUC_UNUSED)
 {
     size_t i;
     int ret = -1;
@@ -3265,11 +3265,11 @@ virNetworkDefUpdateForwardInterface(virNetworkDefPtr def,
 
 static int
 virNetworkDefUpdateForwardPF(virNetworkDefPtr def,
-                             unsigned int command ATTRIBUTE_UNUSED,
-                             int parentIndex ATTRIBUTE_UNUSED,
-                             xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
+                             unsigned int command G_GNUC_UNUSED,
+                             int parentIndex G_GNUC_UNUSED,
+                             xmlXPathContextPtr ctxt G_GNUC_UNUSED,
                              /* virNetworkUpdateFlags */
-                             unsigned int fflags ATTRIBUTE_UNUSED)
+                             unsigned int fflags G_GNUC_UNUSED)
 {
     virNetworkDefUpdateNoSupport(def, "forward pf");
     return -1;
@@ -3279,10 +3279,10 @@ virNetworkDefUpdateForwardPF(virNetworkDefPtr def,
 static int
 virNetworkDefUpdatePortGroup(virNetworkDefPtr def,
                              unsigned int command,
-                             int parentIndex ATTRIBUTE_UNUSED,
+                             int parentIndex G_GNUC_UNUSED,
                              xmlXPathContextPtr ctxt,
                              /* virNetworkUpdateFlags */
-                             unsigned int fflags ATTRIBUTE_UNUSED)
+                             unsigned int fflags G_GNUC_UNUSED)
 {
     size_t i;
     int foundName = -1, foundDefault = -1;
@@ -3373,11 +3373,11 @@ virNetworkDefUpdatePortGroup(virNetworkDefPtr def,
 
 static int
 virNetworkDefUpdateDNSHost(virNetworkDefPtr def,
-                           unsigned int command ATTRIBUTE_UNUSED,
-                           int parentIndex ATTRIBUTE_UNUSED,
-                           xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
+                           unsigned int command G_GNUC_UNUSED,
+                           int parentIndex G_GNUC_UNUSED,
+                           xmlXPathContextPtr ctxt G_GNUC_UNUSED,
                            /* virNetworkUpdateFlags */
-                           unsigned int fflags ATTRIBUTE_UNUSED)
+                           unsigned int fflags G_GNUC_UNUSED)
 {
     size_t i, j, k;
     int foundIdx = -1, ret = -1;
@@ -3468,11 +3468,11 @@ virNetworkDefUpdateDNSHost(virNetworkDefPtr def,
 
 static int
 virNetworkDefUpdateDNSSrv(virNetworkDefPtr def,
-                          unsigned int command ATTRIBUTE_UNUSED,
-                          int parentIndex ATTRIBUTE_UNUSED,
-                          xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
+                          unsigned int command G_GNUC_UNUSED,
+                          int parentIndex G_GNUC_UNUSED,
+                          xmlXPathContextPtr ctxt G_GNUC_UNUSED,
                           /* virNetworkUpdateFlags */
-                          unsigned int fflags ATTRIBUTE_UNUSED)
+                          unsigned int fflags G_GNUC_UNUSED)
 {
     size_t i;
     int foundIdx = -1, ret = -1;
@@ -3555,11 +3555,11 @@ virNetworkDefUpdateDNSSrv(virNetworkDefPtr def,
 
 static int
 virNetworkDefUpdateDNSTxt(virNetworkDefPtr def,
-                          unsigned int command ATTRIBUTE_UNUSED,
-                          int parentIndex ATTRIBUTE_UNUSED,
-                          xmlXPathContextPtr ctxt ATTRIBUTE_UNUSED,
+                          unsigned int command G_GNUC_UNUSED,
+                          int parentIndex G_GNUC_UNUSED,
+                          xmlXPathContextPtr ctxt G_GNUC_UNUSED,
                           /* virNetworkUpdateFlags */
-                          unsigned int fflags ATTRIBUTE_UNUSED)
+                          unsigned int fflags G_GNUC_UNUSED)
 {
     int foundIdx, ret = -1;
     virNetworkDNSDefPtr dns = &def->dns;

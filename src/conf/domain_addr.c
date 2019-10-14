@@ -1301,8 +1301,8 @@ virDomainPCIAddressReserveNextAddr(virDomainPCIAddressSetPtr addrs,
 
 
 static int
-virDomainPCIAddressSetMultiIter(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                                virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
+virDomainPCIAddressSetMultiIter(virDomainDefPtr def G_GNUC_UNUSED,
+                                virDomainDeviceDefPtr dev G_GNUC_UNUSED,
                                 virDomainDeviceInfoPtr info,
                                 void *data)
 {
@@ -1335,9 +1335,9 @@ virDomainPCIAddressSetMultiIter(virDomainDefPtr def ATTRIBUTE_UNUSED,
 
 static int
 virDomainPCIAddressSetAllMultiIter(virDomainDefPtr def,
-                                   virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
+                                   virDomainDeviceDefPtr dev G_GNUC_UNUSED,
                                    virDomainDeviceInfoPtr info,
-                                   void *data ATTRIBUTE_UNUSED)
+                                   void *data G_GNUC_UNUSED)
 {
     virPCIDeviceAddressPtr testAddr;
 
@@ -1463,8 +1463,8 @@ virDomainCCWAddressAssign(virDomainDeviceInfoPtr dev,
 }
 
 static int ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
-virDomainCCWAddressAllocate(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                            virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
+virDomainCCWAddressAllocate(virDomainDefPtr def G_GNUC_UNUSED,
+                            virDomainDeviceDefPtr dev G_GNUC_UNUSED,
                             virDomainDeviceInfoPtr info,
                             void *data)
 {
@@ -1472,8 +1472,8 @@ virDomainCCWAddressAllocate(virDomainDefPtr def ATTRIBUTE_UNUSED,
 }
 
 static int ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
-virDomainCCWAddressValidate(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                            virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
+virDomainCCWAddressValidate(virDomainDefPtr def G_GNUC_UNUSED,
+                            virDomainDeviceDefPtr dev G_GNUC_UNUSED,
                             virDomainDeviceInfoPtr info,
                             void *data)
 {
@@ -1682,8 +1682,8 @@ virDomainVirtioSerialAddrSetFree(virDomainVirtioSerialAddrSetPtr addrs)
  * opaque should be the address set
  */
 static int ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
-virDomainVirtioSerialAddrReserve(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                                 virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
+virDomainVirtioSerialAddrReserve(virDomainDefPtr def G_GNUC_UNUSED,
+                                 virDomainDeviceDefPtr dev G_GNUC_UNUSED,
                                  virDomainDeviceInfoPtr info,
                                  void *data)
 {
@@ -2422,7 +2422,7 @@ virDomainUSBAddressAssign(virDomainUSBAddressSetPtr addrs,
 
 int
 virDomainUSBAddressPresent(virDomainDeviceInfoPtr info,
-                           void *data ATTRIBUTE_UNUSED)
+                           void *data G_GNUC_UNUSED)
 {
     if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB &&
         virDomainUSBAddressPortIsValid(info->addr.usb.port))

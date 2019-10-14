@@ -2227,7 +2227,7 @@ virDomainEventStateDeregister(virConnectPtr conn,
  * event should be dispatched.
  */
 static bool
-virDomainQemuMonitorEventFilter(virConnectPtr conn ATTRIBUTE_UNUSED,
+virDomainQemuMonitorEventFilter(virConnectPtr conn G_GNUC_UNUSED,
                                 virObjectEventPtr event,
                                 void *opaque)
 {

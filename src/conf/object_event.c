@@ -543,7 +543,7 @@ static void virObjectEventStateFlush(virObjectEventStatePtr state);
  * flush the callback queue.
  */
 static void
-virObjectEventTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
+virObjectEventTimer(int timer G_GNUC_UNUSED, void *opaque)
 {
     virObjectEventStatePtr state = opaque;
 

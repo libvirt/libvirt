@@ -4073,8 +4073,8 @@ virDomainDeviceSetData(virDomainDeviceDefPtr device,
 
 
 static int
-virDomainDefHasDeviceAddressIterator(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                                     virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
+virDomainDefHasDeviceAddressIterator(virDomainDefPtr def G_GNUC_UNUSED,
+                                     virDomainDeviceDefPtr dev G_GNUC_UNUSED,
                                      virDomainDeviceInfoPtr info,
                                      void *opaque)
 {
@@ -5191,8 +5191,8 @@ virDomainVsockDefPostParse(virDomainVsockDefPtr vsock)
 static int
 virDomainDeviceDefPostParseCommon(virDomainDeviceDefPtr dev,
                                   const virDomainDef *def,
-                                  virCapsPtr caps ATTRIBUTE_UNUSED,
-                                  unsigned int parseFlags ATTRIBUTE_UNUSED,
+                                  virCapsPtr caps G_GNUC_UNUSED,
+                                  unsigned int parseFlags G_GNUC_UNUSED,
                                   virDomainXMLOptionPtr xmlopt)
 {
     int ret = -1;
@@ -5509,7 +5509,7 @@ struct virDomainDefPostParseDeviceIteratorData {
 static int
 virDomainDefPostParseDeviceIterator(virDomainDefPtr def,
                                     virDomainDeviceDefPtr dev,
-                                    virDomainDeviceInfoPtr info ATTRIBUTE_UNUSED,
+                                    virDomainDeviceInfoPtr info G_GNUC_UNUSED,
                                     void *opaque)
 {
     struct virDomainDefPostParseDeviceIteratorData *data = opaque;
@@ -5579,8 +5579,8 @@ virDomainDefPostParseCPU(virDomainDefPtr def)
 
 
 static int
-virDomainDefCollectBootOrder(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                             virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
+virDomainDefCollectBootOrder(virDomainDefPtr def G_GNUC_UNUSED,
+                             virDomainDeviceDefPtr dev G_GNUC_UNUSED,
                              virDomainDeviceInfoPtr info,
                              void *data)
 {
@@ -6612,7 +6612,7 @@ virDomainDeviceDefValidate(const virDomainDeviceDef *dev,
 static int
 virDomainDefValidateDeviceIterator(virDomainDefPtr def,
                                    virDomainDeviceDefPtr dev,
-                                   virDomainDeviceInfoPtr info ATTRIBUTE_UNUSED,
+                                   virDomainDeviceInfoPtr info G_GNUC_UNUSED,
                                    void *opaque)
 {
     struct virDomainDefPostParseDeviceIteratorData *data = opaque;
@@ -7461,7 +7461,7 @@ virDomainDeviceAliasIsUserAlias(const char *aliasStr)
  * @param node XML nodeset to parse for device address definition
  */
 static int
-virDomainDeviceInfoParseXML(virDomainXMLOptionPtr xmlopt ATTRIBUTE_UNUSED,
+virDomainDeviceInfoParseXML(virDomainXMLOptionPtr xmlopt G_GNUC_UNUSED,
                             xmlNodePtr node,
                             virDomainDeviceInfoPtr info,
                             unsigned int flags)
@@ -8506,7 +8506,7 @@ virDomainNetDefCoalesceFormatXML(virBufferPtr buf,
 
 
 static int
-virDomainHostdevDefParseXMLCaps(xmlNodePtr node ATTRIBUTE_UNUSED,
+virDomainHostdevDefParseXMLCaps(xmlNodePtr node G_GNUC_UNUSED,
                                 xmlXPathContextPtr ctxt,
                                 const char *type,
                                 virDomainHostdevDefPtr def)
@@ -29065,8 +29065,8 @@ struct _virDomainCompatibleDeviceData {
 };
 
 static int
-virDomainDeviceInfoCheckBootIndex(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                                  virDomainDeviceDefPtr device ATTRIBUTE_UNUSED,
+virDomainDeviceInfoCheckBootIndex(virDomainDefPtr def G_GNUC_UNUSED,
+                                  virDomainDeviceDefPtr device G_GNUC_UNUSED,
                                   virDomainDeviceInfoPtr info,
                                   void *opaque)
 {
@@ -30114,7 +30114,7 @@ typedef struct {
 } virDomainDefFindDeviceCallbackData;
 
 static int
-virDomainDefFindDeviceCallback(virDomainDefPtr def ATTRIBUTE_UNUSED,
+virDomainDefFindDeviceCallback(virDomainDefPtr def G_GNUC_UNUSED,
                                virDomainDeviceDefPtr dev,
                                virDomainDeviceInfoPtr info,
                                void *opaque)
@@ -31034,7 +31034,7 @@ virDomainNetNotifyActualDevice(virConnectPtr conn,
 
 int
 virDomainNetReleaseActualDevice(virConnectPtr conn,
-                                virDomainDefPtr dom ATTRIBUTE_UNUSED,
+                                virDomainDefPtr dom G_GNUC_UNUSED,
                                 virDomainNetDefPtr iface)
 {
     virNetworkPtr net = NULL;

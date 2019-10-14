@@ -263,7 +263,7 @@ virDomainMomentAssignDef(virDomainMomentObjListPtr moments,
 
 static void
 virDomainMomentObjListDataFree(void *payload,
-                               const void *name ATTRIBUTE_UNUSED)
+                               const void *name G_GNUC_UNUSED)
 {
     virDomainMomentObjPtr obj = payload;
 
@@ -310,7 +310,7 @@ struct virDomainMomentNameData {
 
 
 static int virDomainMomentObjListCopyNames(void *payload,
-                                           const void *name ATTRIBUTE_UNUSED,
+                                           const void *name G_GNUC_UNUSED,
                                            void *opaque)
 {
     virDomainMomentObjPtr obj = payload;
@@ -497,7 +497,7 @@ struct moment_set_relation {
 };
 static int
 virDomainMomentSetRelations(void *payload,
-                            const void *name ATTRIBUTE_UNUSED,
+                            const void *name G_GNUC_UNUSED,
                             void *data)
 {
     virDomainMomentObjPtr obj = payload;
