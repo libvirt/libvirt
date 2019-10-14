@@ -318,8 +318,7 @@ qemuMigrationDstPrecreateStorage(virDomainObjPtr vm,
         VIR_DEBUG("Looking up disk target '%s' (capacity=%llu)",
                   nbd->disks[i].target, nbd->disks[i].capacity);
 
-        if (!(disk = virDomainDiskByName(vm->def, nbd->disks[i].target,
-                                         false))) {
+        if (!(disk = virDomainDiskByTarget(vm->def, nbd->disks[i].target))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unable to find disk by target: %s"),
                            nbd->disks[i].target);

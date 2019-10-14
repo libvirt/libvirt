@@ -599,7 +599,7 @@ qemuBlockJobRewriteConfigDiskSource(virDomainObjPtr vm,
     if (!vm->newDef)
         return;
 
-    if (!(persistDisk = virDomainDiskByName(vm->newDef, disk->dst, false)))
+    if (!(persistDisk = virDomainDiskByTarget(vm->newDef, disk->dst)))
         return;
 
     if (!virStorageSourceIsSameLocation(disk->src, persistDisk->src))
@@ -837,7 +837,7 @@ qemuBlockJobGetConfigDisk(virDomainObjPtr vm,
 
     disksrc = disk->src;
 
-    if (!(ret = virDomainDiskByName(vm->newDef, disk->dst, false)))
+    if (!(ret = virDomainDiskByTarget(vm->newDef, disk->dst)))
         return NULL;
 
     cfgsrc = ret->src;
@@ -882,7 +882,7 @@ qemuBlockJobClearConfigChain(virDomainObjPtr vm,
     if (!vm->newDef || !disk)
         return;
 
-    if (!(cfgdisk = virDomainDiskByName(vm->newDef, disk->dst, false)))
+    if (!(cfgdisk = virDomainDiskByTarget(vm->newDef, disk->dst)))
         return;
 
     if (!virStorageSourceIsSameLocation(disk->src, cfgdisk->src))
