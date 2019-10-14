@@ -81,7 +81,7 @@ virStorageBackendZFSVolModeNeeded(void)
 }
 
 static int
-virStorageBackendZFSCheckPool(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
+virStorageBackendZFSCheckPool(virStoragePoolObjPtr pool G_GNUC_UNUSED,
                               bool *isActive)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
@@ -218,7 +218,7 @@ virStorageBackendZFSFindVols(virStoragePoolObjPtr pool,
 }
 
 static int
-virStorageBackendZFSRefreshPool(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED)
+virStorageBackendZFSRefreshPool(virStoragePoolObjPtr pool G_GNUC_UNUSED)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     char *zpool_props = NULL;

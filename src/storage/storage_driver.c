@@ -132,7 +132,7 @@ virStoragePoolUpdateInactive(virStoragePoolObjPtr obj)
 
 static void
 storagePoolUpdateStateCallback(virStoragePoolObjPtr obj,
-                               const void *opaque ATTRIBUTE_UNUSED)
+                               const void *opaque G_GNUC_UNUSED)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(obj);
     bool active = false;
@@ -191,7 +191,7 @@ storagePoolUpdateAllState(void)
 
 static void
 storageDriverAutostartCallback(virStoragePoolObjPtr obj,
-                               const void *opaque ATTRIBUTE_UNUSED)
+                               const void *opaque G_GNUC_UNUSED)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(obj);
     virStorageBackendPtr backend;
@@ -253,8 +253,8 @@ storageDriverAutostart(void)
  */
 static int
 storageStateInitialize(bool privileged,
-                       virStateInhibitCallback callback ATTRIBUTE_UNUSED,
-                       void *opaque ATTRIBUTE_UNUSED)
+                       virStateInhibitCallback callback G_GNUC_UNUSED,
+                       void *opaque G_GNUC_UNUSED)
 {
     VIR_AUTOFREE(char *) configdir = NULL;
     VIR_AUTOFREE(char *) rundir = NULL;
@@ -404,8 +404,8 @@ storageStateCleanup(void)
 
 static virDrvOpenStatus
 storageConnectOpen(virConnectPtr conn,
-                   virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                   virConfPtr conf ATTRIBUTE_UNUSED,
+                   virConnectAuthPtr auth G_GNUC_UNUSED,
+                   virConfPtr conf G_GNUC_UNUSED,
                    unsigned int flags)
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
@@ -427,27 +427,27 @@ storageConnectOpen(virConnectPtr conn,
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-static int storageConnectClose(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int storageConnectClose(virConnectPtr conn G_GNUC_UNUSED)
 {
     return 0;
 }
 
 
-static int storageConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int storageConnectIsSecure(virConnectPtr conn G_GNUC_UNUSED)
 {
     /* Trivially secure, since always inside the daemon */
     return 1;
 }
 
 
-static int storageConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int storageConnectIsEncrypted(virConnectPtr conn G_GNUC_UNUSED)
 {
     /* Not encrypted, but remote driver takes care of that */
     return 0;
 }
 
 
-static int storageConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int storageConnectIsAlive(virConnectPtr conn G_GNUC_UNUSED)
 {
     return 1;
 }
@@ -2377,7 +2377,7 @@ virStorageVolPoolRefreshThread(void *opaque)
  * @opaque Buffer to hold the pool name to be refreshed
  */
 static void
-virStorageVolFDStreamCloseCb(virStreamPtr st ATTRIBUTE_UNUSED,
+virStorageVolFDStreamCloseCb(virStreamPtr st G_GNUC_UNUSED,
                              void *opaque)
 {
     virThread thread;

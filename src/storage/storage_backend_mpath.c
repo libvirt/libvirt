@@ -233,7 +233,7 @@ virStorageBackendGetMaps(virStoragePoolObjPtr pool)
 }
 
 static int
-virStorageBackendMpathCheckPool(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
+virStorageBackendMpathCheckPool(virStoragePoolObjPtr pool G_GNUC_UNUSED,
                                 bool *isActive)
 {
     *isActive = virFileExists("/dev/mapper") ||

@@ -106,7 +106,7 @@ virStorageDriverLoadBackendModule(const char *name,
         return -1
 
 int
-virStorageBackendDriversRegister(bool allbackends ATTRIBUTE_UNUSED)
+virStorageBackendDriversRegister(bool allbackends G_GNUC_UNUSED)
 {
 #if WITH_STORAGE_DIR || WITH_STORAGE_FS
     VIR_STORAGE_BACKEND_REGISTER(virStorageBackendFsRegister, "fs");

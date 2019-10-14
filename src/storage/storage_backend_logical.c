@@ -543,7 +543,7 @@ virStorageBackendLogicalGetPoolSources(virStoragePoolSourceListPtr sourceList)
 
 
 static char *
-virStorageBackendLogicalFindPoolSources(const char *srcSpec ATTRIBUTE_UNUSED,
+virStorageBackendLogicalFindPoolSources(const char *srcSpec G_GNUC_UNUSED,
                                         unsigned int flags)
 {
     virStoragePoolSourceList sourceList;
@@ -837,7 +837,7 @@ virStorageBackendLogicalDeletePool(virStoragePoolObjPtr pool,
 
 
 static int
-virStorageBackendLogicalDeleteVol(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
+virStorageBackendLogicalDeleteVol(virStoragePoolObjPtr pool G_GNUC_UNUSED,
                                   virStorageVolDefPtr vol,
                                   unsigned int flags)
 {

@@ -41,7 +41,7 @@ VIR_LOG_INIT("storage.storage_backend_disk");
 
 static bool
 virStorageVolPartFindExtended(virStorageVolDefPtr def,
-                              const void *opaque ATTRIBUTE_UNUSED)
+                              const void *opaque G_GNUC_UNUSED)
 {
     if (def->source.partType == VIR_STORAGE_VOL_DISK_TYPE_EXTENDED)
         return true;
@@ -286,7 +286,7 @@ struct virStorageBackendDiskPoolVolData {
 };
 
 static int
-virStorageBackendDiskMakeVol(size_t ntok ATTRIBUTE_UNUSED,
+virStorageBackendDiskMakeVol(size_t ntok G_GNUC_UNUSED,
                              char **const groups,
                              void *opaque)
 {
@@ -391,7 +391,7 @@ virStorageBackendDiskReadPartitions(virStoragePoolObjPtr pool,
 }
 
 static int
-virStorageBackendDiskMakePoolGeometry(size_t ntok ATTRIBUTE_UNUSED,
+virStorageBackendDiskMakePoolGeometry(size_t ntok G_GNUC_UNUSED,
                                       char **const groups,
                                       void *data)
 {

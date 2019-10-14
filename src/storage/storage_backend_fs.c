@@ -438,8 +438,8 @@ virStorageBackendExecuteMKFS(const char *device,
 }
 #else /* #ifdef MKFS */
 static int
-virStorageBackendExecuteMKFS(const char *device ATTRIBUTE_UNUSED,
-                             const char *format ATTRIBUTE_UNUSED)
+virStorageBackendExecuteMKFS(const char *device G_GNUC_UNUSED,
+                             const char *format G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    _("mkfs is not supported on this platform: "

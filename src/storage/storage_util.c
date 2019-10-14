@@ -113,8 +113,8 @@ reflinkCloneFile(int dest_fd, int src_fd)
 }
 #else
 static inline int
-reflinkCloneFile(int dest_fd ATTRIBUTE_UNUSED,
-                 int src_fd ATTRIBUTE_UNUSED)
+reflinkCloneFile(int dest_fd G_GNUC_UNUSED,
+                 int src_fd G_GNUC_UNUSED)
 {
     errno = ENOTSUP;
     return -1;
@@ -236,7 +236,7 @@ virStorageBackendCopyToFD(virStorageVolDefPtr vol,
 }
 
 static int
-storageBackendCreateBlockFrom(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
+storageBackendCreateBlockFrom(virStoragePoolObjPtr pool G_GNUC_UNUSED,
                               virStorageVolDefPtr vol,
                               virStorageVolDefPtr inputvol,
                               unsigned int flags)
@@ -591,7 +591,7 @@ virStorageBackendCreateExecCommand(virStoragePoolObjPtr pool,
 /* Create ploop directory with ploop image and DiskDescriptor.xml
  * if function fails to create image file the directory will be deleted.*/
 static int
-storageBackendCreatePloop(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
+storageBackendCreatePloop(virStoragePoolObjPtr pool G_GNUC_UNUSED,
                           virStorageVolDefPtr vol,
                           virStorageVolDefPtr inputvol,
                           unsigned int flags)
@@ -2136,7 +2136,7 @@ virStorageBackendVolBuildFromLocal(virStoragePoolObjPtr pool,
  * Remove a volume - no support for BLOCK and NETWORK yet
  */
 int
-virStorageBackendVolDeleteLocal(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
+virStorageBackendVolDeleteLocal(virStoragePoolObjPtr pool G_GNUC_UNUSED,
                                 virStorageVolDefPtr vol,
                                 unsigned int flags)
 {
@@ -2237,7 +2237,7 @@ storageBackendLoadDefaultSecrets(virStorageVolDefPtr vol)
  * Update info about a volume's capacity/allocation
  */
 int
-virStorageBackendVolRefreshLocal(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
+virStorageBackendVolRefreshLocal(virStoragePoolObjPtr pool G_GNUC_UNUSED,
                                  virStorageVolDefPtr vol)
 {
     int ret;
@@ -2407,7 +2407,7 @@ storageBackendPloopHasSnapshots(char *path)
 
 
 int
-virStorageBackendVolUploadLocal(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
+virStorageBackendVolUploadLocal(virStoragePoolObjPtr pool G_GNUC_UNUSED,
                                 virStorageVolDefPtr vol,
                                 virStreamPtr stream,
                                 unsigned long long offset,
@@ -2448,7 +2448,7 @@ virStorageBackendVolUploadLocal(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
 }
 
 int
-virStorageBackendVolDownloadLocal(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
+virStorageBackendVolDownloadLocal(virStoragePoolObjPtr pool G_GNUC_UNUSED,
                                   virStorageVolDefPtr vol,
                                   virStreamPtr stream,
                                   unsigned long long offset,
@@ -2716,7 +2716,7 @@ storageBackendVolWipePloop(virStorageVolDefPtr vol,
 
 
 int
-virStorageBackendVolWipeLocal(virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
+virStorageBackendVolWipeLocal(virStoragePoolObjPtr pool G_GNUC_UNUSED,
                               virStorageVolDefPtr vol,
                               unsigned int algorithm,
                               unsigned int flags)
@@ -3145,9 +3145,9 @@ virStorageBackendBLKIDFindEmpty(const char *device,
 #else /* #if WITH_BLKID */
 
 static int
-virStorageBackendBLKIDFindEmpty(const char *device ATTRIBUTE_UNUSED,
-                                const char *format ATTRIBUTE_UNUSED,
-                                bool writelabel ATTRIBUTE_UNUSED)
+virStorageBackendBLKIDFindEmpty(const char *device G_GNUC_UNUSED,
+                                const char *format G_GNUC_UNUSED,
+                                bool writelabel G_GNUC_UNUSED)
 {
     return -2;
 }
@@ -3303,9 +3303,9 @@ virStorageBackendPARTEDValidLabel(const char *device,
 #else
 
 static int
-virStorageBackendPARTEDValidLabel(const char *device ATTRIBUTE_UNUSED,
-                                  const char *format ATTRIBUTE_UNUSED,
-                                  bool writelabel ATTRIBUTE_UNUSED)
+virStorageBackendPARTEDValidLabel(const char *device G_GNUC_UNUSED,
+                                  const char *format G_GNUC_UNUSED,
+                                  bool writelabel G_GNUC_UNUSED)
 {
     return -2;
 }
@@ -3658,7 +3658,7 @@ virStorageBackendSCSISerial(const char *dev,
  */
 static int
 virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
-                            uint32_t host ATTRIBUTE_UNUSED,
+                            uint32_t host G_GNUC_UNUSED,
                             uint32_t bus,
                             uint32_t target,
                             uint32_t lun,
@@ -3750,7 +3750,7 @@ virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
 
 static int
 getNewStyleBlockDevice(const char *lun_path,
-                       const char *block_name ATTRIBUTE_UNUSED,
+                       const char *block_name G_GNUC_UNUSED,
                        char **block_device)
 {
     DIR *block_dir = NULL;
@@ -3788,7 +3788,7 @@ getNewStyleBlockDevice(const char *lun_path,
 
 
 static int
-getOldStyleBlockDevice(const char *lun_path ATTRIBUTE_UNUSED,
+getOldStyleBlockDevice(const char *lun_path G_GNUC_UNUSED,
                        const char *block_name,
                        char **block_device)
 {
