@@ -276,7 +276,7 @@ esxStoragePoolRefresh(virStoragePoolPtr pool,
 
 
 static int
-esxStoragePoolGetInfo(virStoragePoolPtr pool ATTRIBUTE_UNUSED,
+esxStoragePoolGetInfo(virStoragePoolPtr pool G_GNUC_UNUSED,
                       virStoragePoolInfoPtr info)
 {
     /* These fields are not valid for iSCSI pool */
@@ -582,8 +582,8 @@ esxStorageVolLookupByKey(virConnectPtr conn, const char *key)
 
 
 static virStorageVolPtr
-esxStorageVolCreateXML(virStoragePoolPtr pool ATTRIBUTE_UNUSED,
-                       const char *xmldesc ATTRIBUTE_UNUSED,
+esxStorageVolCreateXML(virStoragePoolPtr pool G_GNUC_UNUSED,
+                       const char *xmldesc G_GNUC_UNUSED,
                        unsigned int flags)
 {
     virCheckFlags(0, NULL);
@@ -597,9 +597,9 @@ esxStorageVolCreateXML(virStoragePoolPtr pool ATTRIBUTE_UNUSED,
 
 
 static virStorageVolPtr
-esxStorageVolCreateXMLFrom(virStoragePoolPtr pool ATTRIBUTE_UNUSED,
-                           const char *xmldesc ATTRIBUTE_UNUSED,
-                           virStorageVolPtr sourceVolume ATTRIBUTE_UNUSED,
+esxStorageVolCreateXMLFrom(virStoragePoolPtr pool G_GNUC_UNUSED,
+                           const char *xmldesc G_GNUC_UNUSED,
+                           virStorageVolPtr sourceVolume G_GNUC_UNUSED,
                            unsigned int flags)
 {
     virCheckFlags(0, NULL);
@@ -733,7 +733,7 @@ esxStorageVolGetXMLDesc(virStorageVolPtr volume,
 
 
 static int
-esxStorageVolDelete(virStorageVolPtr volume ATTRIBUTE_UNUSED,
+esxStorageVolDelete(virStorageVolPtr volume G_GNUC_UNUSED,
                     unsigned int flags)
 {
     virCheckFlags(0, -1);
@@ -747,7 +747,7 @@ esxStorageVolDelete(virStorageVolPtr volume ATTRIBUTE_UNUSED,
 
 
 static int
-esxStorageVolWipe(virStorageVolPtr volume ATTRIBUTE_UNUSED,
+esxStorageVolWipe(virStorageVolPtr volume G_GNUC_UNUSED,
                   unsigned int flags)
 {
     virCheckFlags(0, -1);

@@ -117,7 +117,7 @@ esxConnectListStoragePools(virConnectPtr conn, char **const names, int maxnames)
 
 
 static int
-esxConnectNumOfDefinedStoragePools(virConnectPtr conn ATTRIBUTE_UNUSED)
+esxConnectNumOfDefinedStoragePools(virConnectPtr conn G_GNUC_UNUSED)
 {
     /* ESX storage pools are always active */
     return 0;
@@ -126,9 +126,9 @@ esxConnectNumOfDefinedStoragePools(virConnectPtr conn ATTRIBUTE_UNUSED)
 
 
 static int
-esxConnectListDefinedStoragePools(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                  char **const names ATTRIBUTE_UNUSED,
-                                  int maxnames ATTRIBUTE_UNUSED)
+esxConnectListDefinedStoragePools(virConnectPtr conn G_GNUC_UNUSED,
+                                  char **const names G_GNUC_UNUSED,
+                                  int maxnames G_GNUC_UNUSED)
 {
     /* ESX storage pools are always active */
     return 0;
@@ -251,7 +251,7 @@ esxStoragePoolGetXMLDesc(virStoragePoolPtr pool, unsigned int flags)
 
 
 static int
-esxStoragePoolGetAutostart(virStoragePoolPtr pool ATTRIBUTE_UNUSED,
+esxStoragePoolGetAutostart(virStoragePoolPtr pool G_GNUC_UNUSED,
                            int *autostart)
 {
     /* ESX storage pools are always active */
@@ -263,7 +263,7 @@ esxStoragePoolGetAutostart(virStoragePoolPtr pool ATTRIBUTE_UNUSED,
 
 
 static int
-esxStoragePoolSetAutostart(virStoragePoolPtr pool ATTRIBUTE_UNUSED,
+esxStoragePoolSetAutostart(virStoragePoolPtr pool G_GNUC_UNUSED,
                            int autostart)
 {
     /* Just accept autostart activation, but fail on autostart deactivation */
@@ -500,7 +500,7 @@ esxStorageVolGetPath(virStorageVolPtr volume)
 
 
 static int
-esxStoragePoolIsActive(virStoragePoolPtr pool ATTRIBUTE_UNUSED)
+esxStoragePoolIsActive(virStoragePoolPtr pool G_GNUC_UNUSED)
 {
     /* ESX storage pools are always active */
     return 1;
@@ -509,7 +509,7 @@ esxStoragePoolIsActive(virStoragePoolPtr pool ATTRIBUTE_UNUSED)
 
 
 static int
-esxStoragePoolIsPersistent(virStoragePoolPtr pool ATTRIBUTE_UNUSED)
+esxStoragePoolIsPersistent(virStoragePoolPtr pool G_GNUC_UNUSED)
 {
     /* ESX has no concept of transient pools, so all of them are persistent */
     return 1;

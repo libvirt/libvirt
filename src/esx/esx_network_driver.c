@@ -115,7 +115,7 @@ esxConnectListNetworks(virConnectPtr conn, char **const names, int maxnames)
 
 
 static int
-esxConnectNumOfDefinedNetworks(virConnectPtr conn ATTRIBUTE_UNUSED)
+esxConnectNumOfDefinedNetworks(virConnectPtr conn G_GNUC_UNUSED)
 {
     /* ESX networks are always active */
     return 0;
@@ -124,9 +124,9 @@ esxConnectNumOfDefinedNetworks(virConnectPtr conn ATTRIBUTE_UNUSED)
 
 
 static int
-esxConnectListDefinedNetworks(virConnectPtr conn ATTRIBUTE_UNUSED,
-                              char **const names ATTRIBUTE_UNUSED,
-                              int maxnames ATTRIBUTE_UNUSED)
+esxConnectListDefinedNetworks(virConnectPtr conn G_GNUC_UNUSED,
+                              char **const names G_GNUC_UNUSED,
+                              int maxnames G_GNUC_UNUSED)
 {
     /* ESX networks are always active */
     return 0;
@@ -823,7 +823,7 @@ esxNetworkGetXMLDesc(virNetworkPtr network_, unsigned int flags)
 
 
 static int
-esxNetworkGetAutostart(virNetworkPtr network ATTRIBUTE_UNUSED,
+esxNetworkGetAutostart(virNetworkPtr network G_GNUC_UNUSED,
                        int *autostart)
 {
     /* ESX networks are always active */
@@ -835,7 +835,7 @@ esxNetworkGetAutostart(virNetworkPtr network ATTRIBUTE_UNUSED,
 
 
 static int
-esxNetworkSetAutostart(virNetworkPtr network ATTRIBUTE_UNUSED,
+esxNetworkSetAutostart(virNetworkPtr network G_GNUC_UNUSED,
                        int autostart)
 {
     /* Just accept autostart activation, but fail on autostart deactivation */
@@ -853,7 +853,7 @@ esxNetworkSetAutostart(virNetworkPtr network ATTRIBUTE_UNUSED,
 
 
 static int
-esxNetworkIsActive(virNetworkPtr network ATTRIBUTE_UNUSED)
+esxNetworkIsActive(virNetworkPtr network G_GNUC_UNUSED)
 {
     /* ESX networks are always active */
     return 1;
@@ -862,7 +862,7 @@ esxNetworkIsActive(virNetworkPtr network ATTRIBUTE_UNUSED)
 
 
 static int
-esxNetworkIsPersistent(virNetworkPtr network ATTRIBUTE_UNUSED)
+esxNetworkIsPersistent(virNetworkPtr network G_GNUC_UNUSED)
 {
     /* ESX has no concept of transient networks, so all of them are persistent */
     return 1;

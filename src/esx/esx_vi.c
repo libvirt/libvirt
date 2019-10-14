@@ -64,7 +64,7 @@ VIR_LOG_INIT("esx.esx_vi");
     void \
     esxVI_##_type##_Free(esxVI_##_type **ptrptr) \
     { \
-        esxVI_##_type *item ATTRIBUTE_UNUSED; \
+        esxVI_##_type *item G_GNUC_UNUSED; \
  \
         if (!ptrptr || !(*ptrptr)) { \
             return; \
@@ -167,8 +167,8 @@ esxVI_CURL_WriteBuffer(char *data, size_t size, size_t nmemb, void *userdata)
 
 #if ESX_VI__CURL__ENABLE_DEBUG_OUTPUT
 static int
-esxVI_CURL_Debug(CURL *curl ATTRIBUTE_UNUSED, curl_infotype type,
-                 char *info, size_t size, void *userdata ATTRIBUTE_UNUSED)
+esxVI_CURL_Debug(CURL *curl G_GNUC_UNUSED, curl_infotype type,
+                 char *info, size_t size, void *userdata G_GNUC_UNUSED)
 {
     char *buffer = NULL;
 
@@ -475,8 +475,8 @@ esxVI_CURL_Upload(esxVI_CURL *curl, const char *url, const char *content)
  */
 
 static void
-esxVI_SharedCURL_Lock(CURL *handle ATTRIBUTE_UNUSED, curl_lock_data data,
-                      curl_lock_access access_ ATTRIBUTE_UNUSED, void *userptr)
+esxVI_SharedCURL_Lock(CURL *handle G_GNUC_UNUSED, curl_lock_data data,
+                      curl_lock_access access_ G_GNUC_UNUSED, void *userptr)
 {
     size_t i;
     esxVI_SharedCURL *shared = userptr;
@@ -503,7 +503,7 @@ esxVI_SharedCURL_Lock(CURL *handle ATTRIBUTE_UNUSED, curl_lock_data data,
 }
 
 static void
-esxVI_SharedCURL_Unlock(CURL *handle ATTRIBUTE_UNUSED, curl_lock_data data,
+esxVI_SharedCURL_Unlock(CURL *handle G_GNUC_UNUSED, curl_lock_data data,
                         void *userptr)
 {
     size_t i;
@@ -649,10 +649,10 @@ esxVI_SharedCURL_Remove(esxVI_SharedCURL *shared, esxVI_CURL *curl)
 #if ESX_EMULATE_CURL_MULTI_WAIT
 
 static int
-esxVI_MultiCURL_SocketCallback(CURL *handle ATTRIBUTE_UNUSED,
+esxVI_MultiCURL_SocketCallback(CURL *handle G_GNUC_UNUSED,
                                curl_socket_t fd, int action,
                                void *callback_opaque,
-                               void *socket_opaque ATTRIBUTE_UNUSED)
+                               void *socket_opaque G_GNUC_UNUSED)
 {
     esxVI_MultiCURL *multi = callback_opaque;
     size_t i;
@@ -695,8 +695,8 @@ esxVI_MultiCURL_SocketCallback(CURL *handle ATTRIBUTE_UNUSED,
 }
 
 static int
-esxVI_MultiCURL_TimerCallback(CURLM *handle ATTRIBUTE_UNUSED,
-                              long timeout_ms ATTRIBUTE_UNUSED,
+esxVI_MultiCURL_TimerCallback(CURLM *handle G_GNUC_UNUSED,
+                              long timeout_ms G_GNUC_UNUSED,
                               void *callback_opaque)
 {
     esxVI_MultiCURL *multi = callback_opaque;

@@ -107,7 +107,7 @@ esxConnectListInterfaces(virConnectPtr conn, char **const names, int maxnames)
 
 
 static int
-esxConnectNumOfDefinedInterfaces(virConnectPtr conn ATTRIBUTE_UNUSED)
+esxConnectNumOfDefinedInterfaces(virConnectPtr conn G_GNUC_UNUSED)
 {
     /* ESX interfaces are always active */
     return 0;
@@ -116,9 +116,9 @@ esxConnectNumOfDefinedInterfaces(virConnectPtr conn ATTRIBUTE_UNUSED)
 
 
 static int
-esxConnectListDefinedInterfaces(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                char **const names ATTRIBUTE_UNUSED,
-                                int maxnames ATTRIBUTE_UNUSED)
+esxConnectListDefinedInterfaces(virConnectPtr conn G_GNUC_UNUSED,
+                                char **const names G_GNUC_UNUSED,
+                                int maxnames G_GNUC_UNUSED)
 {
     /* ESX interfaces are always active */
     return 0;
@@ -250,7 +250,7 @@ esxInterfaceGetXMLDesc(virInterfacePtr iface, unsigned int flags)
 
 
 static int
-esxInterfaceIsActive(virInterfacePtr iface ATTRIBUTE_UNUSED)
+esxInterfaceIsActive(virInterfacePtr iface G_GNUC_UNUSED)
 {
     /* ESX interfaces are always active */
     return 1;

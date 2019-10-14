@@ -58,7 +58,7 @@ VIR_LOG_INIT("esx.esx_vi_types");
     void \
     esxVI_##_type##_Free(esxVI_##_type **ptrptr) \
     { \
-        esxVI_##_type *item ATTRIBUTE_UNUSED; \
+        esxVI_##_type *item G_GNUC_UNUSED; \
  \
         if (!ptrptr || !(*ptrptr)) { \
             return; \
@@ -185,7 +185,7 @@ VIR_LOG_INIT("esx.esx_vi_types");
     esxVI_##_type##_Cast##_dest_extra##FromAnyType(esxVI_AnyType *anyType, \
                                                    _dest_type **ptrptr) \
     { \
-        _dest_type *item ATTRIBUTE_UNUSED; \
+        _dest_type *item G_GNUC_UNUSED; \
  \
         if (!anyType || !ptrptr || *ptrptr) { \
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s", \

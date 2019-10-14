@@ -825,7 +825,7 @@ esxConnectToVCenter(esxPrivate *priv,
  */
 static virDrvOpenStatus
 esxConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
-               virConfPtr conf ATTRIBUTE_UNUSED,
+               virConfPtr conf G_GNUC_UNUSED,
                unsigned int flags)
 {
     virDrvOpenStatus result = VIR_DRV_OPEN_ERROR;
@@ -1097,7 +1097,7 @@ esxConnectSupportsFeature(virConnectPtr conn, int feature)
 
 
 static const char *
-esxConnectGetType(virConnectPtr conn ATTRIBUTE_UNUSED)
+esxConnectGetType(virConnectPtr conn G_GNUC_UNUSED)
 {
     return "ESX";
 }
@@ -1852,7 +1852,7 @@ esxDomainDestroy(virDomainPtr dom)
 
 
 static char *
-esxDomainGetOSType(virDomainPtr domain ATTRIBUTE_UNUSED)
+esxDomainGetOSType(virDomainPtr domain G_GNUC_UNUSED)
 {
     char *osType;
 
@@ -3450,7 +3450,7 @@ esxDomainSetAutostart(virDomainPtr domain, int autostart)
  *   SharesLevel 'low', 'normal' and 'high'.
  */
 static char *
-esxDomainGetSchedulerType(virDomainPtr domain ATTRIBUTE_UNUSED, int *nparams)
+esxDomainGetSchedulerType(virDomainPtr domain G_GNUC_UNUSED, int *nparams)
 {
     char *type;
 
@@ -3736,13 +3736,13 @@ esxDomainSetSchedulerParameters(virDomainPtr domain,
 
 static int
 esxDomainMigratePrepare(virConnectPtr dconn,
-                        char **cookie ATTRIBUTE_UNUSED,
-                        int *cookielen ATTRIBUTE_UNUSED,
-                        const char *uri_in ATTRIBUTE_UNUSED,
+                        char **cookie G_GNUC_UNUSED,
+                        int *cookielen G_GNUC_UNUSED,
+                        const char *uri_in G_GNUC_UNUSED,
                         char **uri_out,
                         unsigned long flags,
-                        const char *dname ATTRIBUTE_UNUSED,
-                        unsigned long resource ATTRIBUTE_UNUSED)
+                        const char *dname G_GNUC_UNUSED,
+                        unsigned long resource G_GNUC_UNUSED)
 {
     esxPrivate *priv = dconn->privateData;
 
@@ -3763,12 +3763,12 @@ esxDomainMigratePrepare(virConnectPtr dconn,
 
 static int
 esxDomainMigratePerform(virDomainPtr domain,
-                        const char *cookie ATTRIBUTE_UNUSED,
-                        int cookielen ATTRIBUTE_UNUSED,
+                        const char *cookie G_GNUC_UNUSED,
+                        int cookielen G_GNUC_UNUSED,
                         const char *uri,
                         unsigned long flags,
                         const char *dname,
-                        unsigned long bandwidth ATTRIBUTE_UNUSED)
+                        unsigned long bandwidth G_GNUC_UNUSED)
 {
     int result = -1;
     esxPrivate *priv = domain->conn->privateData;
@@ -3906,9 +3906,9 @@ esxDomainMigratePerform(virDomainPtr domain,
 
 static virDomainPtr
 esxDomainMigrateFinish(virConnectPtr dconn, const char *dname,
-                       const char *cookie ATTRIBUTE_UNUSED,
-                       int cookielen ATTRIBUTE_UNUSED,
-                       const char *uri ATTRIBUTE_UNUSED,
+                       const char *cookie G_GNUC_UNUSED,
+                       int cookielen G_GNUC_UNUSED,
+                       const char *uri G_GNUC_UNUSED,
                        unsigned long flags)
 {
     virCheckFlags(ESX_MIGRATION_FLAGS, NULL);
@@ -4060,7 +4060,7 @@ esxDomainIsPersistent(virDomainPtr domain)
 
 
 static int
-esxDomainIsUpdated(virDomainPtr domain ATTRIBUTE_UNUSED)
+esxDomainIsUpdated(virDomainPtr domain G_GNUC_UNUSED)
 {
     /* ESX domains never have a persistent state that differs from
      * current state.  However, we do want to check for existence.  */
