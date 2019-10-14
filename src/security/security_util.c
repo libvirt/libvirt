@@ -59,7 +59,7 @@ VIR_LOG_INIT("security.security_util");
 #endif
 
 static char *
-virSecurityGetAttrName(const char *name ATTRIBUTE_UNUSED)
+virSecurityGetAttrName(const char *name G_GNUC_UNUSED)
 {
     char *ret = NULL;
 #ifdef XATTR_NAMESPACE
@@ -74,7 +74,7 @@ virSecurityGetAttrName(const char *name ATTRIBUTE_UNUSED)
 
 
 static char *
-virSecurityGetRefCountAttrName(const char *name ATTRIBUTE_UNUSED)
+virSecurityGetRefCountAttrName(const char *name G_GNUC_UNUSED)
 {
     char *ret = NULL;
 #ifdef XATTR_NAMESPACE
@@ -98,7 +98,7 @@ virSecurityGetTimestampAttrName(const char *name)
 }
 #else /* !XATTR_NAMESPACE */
 static char *
-virSecurityGetTimestampAttrName(const char *name ATTRIBUTE_UNUSED)
+virSecurityGetTimestampAttrName(const char *name G_GNUC_UNUSED)
 {
     errno = ENOSYS;
     virReportSystemError(errno, "%s",

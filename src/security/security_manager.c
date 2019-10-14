@@ -823,7 +823,7 @@ virSecurityManagerCheckChardevLabel(virSecurityManagerPtr mgr,
 
 
 static int
-virSecurityManagerCheckChardevCallback(virDomainDefPtr def ATTRIBUTE_UNUSED,
+virSecurityManagerCheckChardevCallback(virDomainDefPtr def G_GNUC_UNUSED,
                                        virDomainChrDefPtr dev,
                                        void *opaque)
 {
@@ -1286,7 +1286,7 @@ cmpstringp(const void *p1, const void *p2)
  *          NULL on failure.
  */
 virSecurityManagerMetadataLockStatePtr
-virSecurityManagerMetadataLock(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+virSecurityManagerMetadataLock(virSecurityManagerPtr mgr G_GNUC_UNUSED,
                                const char **paths,
                                size_t npaths)
 {
@@ -1391,7 +1391,7 @@ virSecurityManagerMetadataLock(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 
 
 void
-virSecurityManagerMetadataUnlock(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+virSecurityManagerMetadataUnlock(virSecurityManagerPtr mgr G_GNUC_UNUSED,
                                  virSecurityManagerMetadataLockStatePtr *state)
 {
     size_t i;

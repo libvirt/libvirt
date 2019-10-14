@@ -896,7 +896,7 @@ vah_add_file_chardev(virBufferPtr buf,
 }
 
 static int
-file_iterate_hostdev_cb(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
+file_iterate_hostdev_cb(virUSBDevicePtr dev G_GNUC_UNUSED,
                         const char *file, void *opaque)
 {
     virBufferPtr buf = opaque;
@@ -904,7 +904,7 @@ file_iterate_hostdev_cb(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
 }
 
 static int
-file_iterate_pci_cb(virPCIDevicePtr dev ATTRIBUTE_UNUSED,
+file_iterate_pci_cb(virPCIDevicePtr dev G_GNUC_UNUSED,
                     const char *file, void *opaque)
 {
     virBufferPtr buf = opaque;

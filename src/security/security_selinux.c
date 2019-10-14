@@ -250,7 +250,7 @@ static int virSecuritySELinuxRestoreFileLabel(virSecurityManagerPtr mgr,
  *         -1 otherwise.
  */
 static int
-virSecuritySELinuxTransactionRun(pid_t pid ATTRIBUTE_UNUSED,
+virSecuritySELinuxTransactionRun(pid_t pid G_GNUC_UNUSED,
                                  void *opaque)
 {
     virSecuritySELinuxContextListPtr list = opaque;
@@ -702,7 +702,7 @@ virSecuritySELinuxLXCInitialize(virSecurityManagerPtr mgr)
 }
 #else
 static int
-virSecuritySELinuxLXCInitialize(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
+virSecuritySELinuxLXCInitialize(virSecurityManagerPtr mgr G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("libselinux does not support LXC contexts path"));
@@ -1070,13 +1070,13 @@ virSecuritySELinuxDriverClose(virSecurityManagerPtr mgr)
 
 
 static const char *
-virSecuritySELinuxGetModel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
+virSecuritySELinuxGetModel(virSecurityManagerPtr mgr G_GNUC_UNUSED)
 {
     return SECURITY_SELINUX_NAME;
 }
 
 static const char *
-virSecuritySELinuxGetDOI(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
+virSecuritySELinuxGetDOI(virSecurityManagerPtr mgr G_GNUC_UNUSED)
 {
     /*
      * Where will the DOI come from?  SELinux configuration, or qemu
@@ -1149,7 +1149,7 @@ virSecuritySELinuxTransactionStart(virSecurityManagerPtr mgr)
  *         -1 otherwise.
  */
 static int
-virSecuritySELinuxTransactionCommit(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+virSecuritySELinuxTransactionCommit(virSecurityManagerPtr mgr G_GNUC_UNUSED,
                                     pid_t pid,
                                     bool lock)
 {
@@ -1199,7 +1199,7 @@ virSecuritySELinuxTransactionCommit(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
  * Cancels and frees any out standing transaction.
  */
 static void
-virSecuritySELinuxTransactionAbort(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
+virSecuritySELinuxTransactionAbort(virSecurityManagerPtr mgr G_GNUC_UNUSED)
 {
     virSecuritySELinuxContextListPtr list;
 
@@ -1213,8 +1213,8 @@ virSecuritySELinuxTransactionAbort(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
 }
 
 static int
-virSecuritySELinuxGetProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                                  virDomainDefPtr def ATTRIBUTE_UNUSED,
+virSecuritySELinuxGetProcessLabel(virSecurityManagerPtr mgr G_GNUC_UNUSED,
+                                  virDomainDefPtr def G_GNUC_UNUSED,
                                   pid_t pid,
                                   virSecurityLabelPtr sec)
 {
@@ -1462,7 +1462,7 @@ virSecuritySELinuxFSetFilecon(int fd, char *tcon)
 
 /* Set fcon to the appropriate label for path and mode, or return -1.  */
 static int
-getContext(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+getContext(virSecurityManagerPtr mgr G_GNUC_UNUSED,
            const char *newpath, mode_t mode, security_context_t *fcon)
 {
 #if HAVE_SELINUX_LABEL_H
@@ -1828,7 +1828,7 @@ static int
 virSecuritySELinuxRestoreImageLabel(virSecurityManagerPtr mgr,
                                     virDomainDefPtr def,
                                     virStorageSourcePtr src,
-                                    virSecurityDomainImageLabelFlags flags ATTRIBUTE_UNUSED)
+                                    virSecurityDomainImageLabelFlags flags G_GNUC_UNUSED)
 {
     return virSecuritySELinuxRestoreImageLabelInt(mgr, def, src, false);
 }
@@ -1966,7 +1966,7 @@ struct virSecuritySELinuxMoveImageMetadataData {
 
 
 static int
-virSecuritySELinuxMoveImageMetadataHelper(pid_t pid ATTRIBUTE_UNUSED,
+virSecuritySELinuxMoveImageMetadataHelper(pid_t pid G_GNUC_UNUSED,
                                           void *opaque)
 {
     struct virSecuritySELinuxMoveImageMetadataData *data = opaque;
@@ -2029,14 +2029,14 @@ virSecuritySELinuxSetHostdevLabelHelper(const char *file, void *opaque)
 }
 
 static int
-virSecuritySELinuxSetPCILabel(virPCIDevicePtr dev ATTRIBUTE_UNUSED,
+virSecuritySELinuxSetPCILabel(virPCIDevicePtr dev G_GNUC_UNUSED,
                               const char *file, void *opaque)
 {
     return virSecuritySELinuxSetHostdevLabelHelper(file, opaque);
 }
 
 static int
-virSecuritySELinuxSetUSBLabel(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
+virSecuritySELinuxSetUSBLabel(virUSBDevicePtr dev G_GNUC_UNUSED,
                               const char *file, void *opaque)
 {
     return virSecuritySELinuxSetHostdevLabelHelper(file, opaque);
@@ -2067,7 +2067,7 @@ virSecuritySELinuxSetSCSILabel(virSCSIDevicePtr dev,
 }
 
 static int
-virSecuritySELinuxSetHostLabel(virSCSIVHostDevicePtr dev ATTRIBUTE_UNUSED,
+virSecuritySELinuxSetHostLabel(virSCSIVHostDevicePtr dev G_GNUC_UNUSED,
                                const char *file, void *opaque)
 {
     return virSecuritySELinuxSetHostdevLabelHelper(file, opaque);
@@ -2272,7 +2272,7 @@ virSecuritySELinuxSetHostdevLabel(virSecurityManagerPtr mgr,
 }
 
 static int
-virSecuritySELinuxRestorePCILabel(virPCIDevicePtr dev ATTRIBUTE_UNUSED,
+virSecuritySELinuxRestorePCILabel(virPCIDevicePtr dev G_GNUC_UNUSED,
                                   const char *file,
                                   void *opaque)
 {
@@ -2282,7 +2282,7 @@ virSecuritySELinuxRestorePCILabel(virPCIDevicePtr dev ATTRIBUTE_UNUSED,
 }
 
 static int
-virSecuritySELinuxRestoreUSBLabel(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
+virSecuritySELinuxRestoreUSBLabel(virUSBDevicePtr dev G_GNUC_UNUSED,
                                   const char *file,
                                   void *opaque)
 {
@@ -2309,7 +2309,7 @@ virSecuritySELinuxRestoreSCSILabel(virSCSIDevicePtr dev,
 }
 
 static int
-virSecuritySELinuxRestoreHostLabel(virSCSIVHostDevicePtr dev ATTRIBUTE_UNUSED,
+virSecuritySELinuxRestoreHostLabel(virSCSIVHostDevicePtr dev G_GNUC_UNUSED,
                                    const char *file,
                                    void *opaque)
 {
@@ -2672,7 +2672,7 @@ struct _virSecuritySELinuxChardevCallbackData {
 
 static int
 virSecuritySELinuxRestoreSecurityChardevCallback(virDomainDefPtr def,
-                                                 virDomainChrDefPtr dev ATTRIBUTE_UNUSED,
+                                                 virDomainChrDefPtr dev G_GNUC_UNUSED,
                                                  void *opaque)
 {
     struct _virSecuritySELinuxChardevCallbackData *data = opaque;
@@ -2874,7 +2874,7 @@ virSecuritySELinuxRestoreSavedStateLabel(virSecurityManagerPtr mgr,
 
 
 static int
-virSecuritySELinuxVerify(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+virSecuritySELinuxVerify(virSecurityManagerPtr mgr G_GNUC_UNUSED,
                          virDomainDefPtr def)
 {
     virSecurityLabelDefPtr secdef;
@@ -2903,7 +2903,7 @@ virSecuritySELinuxVerify(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 }
 
 static int
-virSecuritySELinuxSetProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+virSecuritySELinuxSetProcessLabel(virSecurityManagerPtr mgr G_GNUC_UNUSED,
                                   virDomainDefPtr def)
 {
     /* TODO: verify DOI */
@@ -2936,7 +2936,7 @@ virSecuritySELinuxSetProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 }
 
 static int
-virSecuritySELinuxSetChildProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+virSecuritySELinuxSetChildProcessLabel(virSecurityManagerPtr mgr G_GNUC_UNUSED,
                                        virDomainDefPtr def,
                                        virCommandPtr cmd)
 {
@@ -2964,7 +2964,7 @@ virSecuritySELinuxSetChildProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSE
 }
 
 static int
-virSecuritySELinuxSetDaemonSocketLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+virSecuritySELinuxSetDaemonSocketLabel(virSecurityManagerPtr mgr G_GNUC_UNUSED,
                                        virDomainDefPtr def)
 {
     /* TODO: verify DOI */
@@ -3014,7 +3014,7 @@ virSecuritySELinuxSetDaemonSocketLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSE
 }
 
 static int
-virSecuritySELinuxSetSocketLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+virSecuritySELinuxSetSocketLabel(virSecurityManagerPtr mgr G_GNUC_UNUSED,
                                  virDomainDefPtr vm)
 {
     virSecurityLabelDefPtr secdef;
@@ -3052,7 +3052,7 @@ virSecuritySELinuxSetSocketLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 }
 
 static int
-virSecuritySELinuxClearSocketLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+virSecuritySELinuxClearSocketLabel(virSecurityManagerPtr mgr G_GNUC_UNUSED,
                                    virDomainDefPtr def)
 {
     /* TODO: verify DOI */
@@ -3085,7 +3085,7 @@ virSecuritySELinuxClearSocketLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 
 static int
 virSecuritySELinuxSetSecurityChardevCallback(virDomainDefPtr def,
-                                             virDomainChrDefPtr dev ATTRIBUTE_UNUSED,
+                                             virDomainChrDefPtr dev G_GNUC_UNUSED,
                                              void *opaque)
 {
     struct _virSecuritySELinuxChardevCallbackData *data = opaque;
@@ -3134,7 +3134,7 @@ virSecuritySELinuxSetAllLabel(virSecurityManagerPtr mgr,
                               virDomainDefPtr def,
                               const char *stdin_path,
                               bool chardevStdioLogd,
-                              bool migrated ATTRIBUTE_UNUSED)
+                              bool migrated G_GNUC_UNUSED)
 {
     size_t i;
     virSecuritySELinuxDataPtr data = virSecurityManagerGetPrivateData(mgr);
@@ -3236,7 +3236,7 @@ virSecuritySELinuxSetAllLabel(virSecurityManagerPtr mgr,
 }
 
 static int
-virSecuritySELinuxSetImageFDLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+virSecuritySELinuxSetImageFDLabel(virSecurityManagerPtr mgr G_GNUC_UNUSED,
                                   virDomainDefPtr def,
                                   int fd)
 {
@@ -3380,7 +3380,7 @@ static int
 virSecuritySELinuxDomainSetPathLabel(virSecurityManagerPtr mgr,
                                      virDomainDefPtr def,
                                      const char *path,
-                                     bool allowSubtree ATTRIBUTE_UNUSED)
+                                     bool allowSubtree G_GNUC_UNUSED)
 {
     virSecurityLabelDefPtr seclabel;
 

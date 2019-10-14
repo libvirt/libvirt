@@ -76,13 +76,13 @@ virSecurityStackGetPrimary(virSecurityManagerPtr mgr)
 }
 
 static virSecurityDriverStatus
-virSecurityStackProbe(const char *virtDriver ATTRIBUTE_UNUSED)
+virSecurityStackProbe(const char *virtDriver G_GNUC_UNUSED)
 {
     return SECURITY_DRIVER_ENABLE;
 }
 
 static int
-virSecurityStackOpen(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
+virSecurityStackOpen(virSecurityManagerPtr mgr G_GNUC_UNUSED)
 {
     return 0;
 }
@@ -603,8 +603,8 @@ virSecurityStackSetTapFDLabel(virSecurityManagerPtr mgr,
 }
 
 static char *
-virSecurityStackGetMountOptions(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                                virDomainDefPtr vm ATTRIBUTE_UNUSED)
+virSecurityStackGetMountOptions(virSecurityManagerPtr mgr G_GNUC_UNUSED,
+                                virDomainDefPtr vm G_GNUC_UNUSED)
 {
     return NULL;
 }

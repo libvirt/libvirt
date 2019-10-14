@@ -216,7 +216,7 @@ static int virSecurityDACRestoreFileLabelInternal(virSecurityManagerPtr mgr,
  *         -1 otherwise.
  */
 static int
-virSecurityDACTransactionRun(pid_t pid ATTRIBUTE_UNUSED,
+virSecurityDACTransactionRun(pid_t pid G_GNUC_UNUSED,
                              void *opaque)
 {
     virSecurityDACChownListPtr list = opaque;
@@ -432,7 +432,7 @@ virSecurityDACGetImageIds(virSecurityLabelDefPtr seclabel,
  *          -1 on failure
  */
 static int
-virSecurityDACRememberLabel(virSecurityDACDataPtr priv ATTRIBUTE_UNUSED,
+virSecurityDACRememberLabel(virSecurityDACDataPtr priv G_GNUC_UNUSED,
                             const char *path,
                             uid_t uid,
                             gid_t gid)
@@ -466,7 +466,7 @@ virSecurityDACRememberLabel(virSecurityDACDataPtr priv ATTRIBUTE_UNUSED,
  *         -1 on failure (@uid and @gid not touched)
  */
 static int
-virSecurityDACRecallLabel(virSecurityDACDataPtr priv ATTRIBUTE_UNUSED,
+virSecurityDACRecallLabel(virSecurityDACDataPtr priv G_GNUC_UNUSED,
                           const char *path,
                           uid_t *uid,
                           gid_t *gid)
@@ -492,13 +492,13 @@ virSecurityDACRecallLabel(virSecurityDACDataPtr priv ATTRIBUTE_UNUSED,
 }
 
 static virSecurityDriverStatus
-virSecurityDACProbe(const char *virtDriver ATTRIBUTE_UNUSED)
+virSecurityDACProbe(const char *virtDriver G_GNUC_UNUSED)
 {
     return SECURITY_DRIVER_ENABLE;
 }
 
 static int
-virSecurityDACOpen(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
+virSecurityDACOpen(virSecurityManagerPtr mgr G_GNUC_UNUSED)
 {
     if (virThreadLocalInit(&chownList,
                            virSecurityDACChownListFree) < 0) {
@@ -521,13 +521,13 @@ virSecurityDACClose(virSecurityManagerPtr mgr)
 
 
 static const char *
-virSecurityDACGetModel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
+virSecurityDACGetModel(virSecurityManagerPtr mgr G_GNUC_UNUSED)
 {
     return SECURITY_DAC_NAME;
 }
 
 static const char *
-virSecurityDACGetDOI(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
+virSecurityDACGetDOI(virSecurityManagerPtr mgr G_GNUC_UNUSED)
 {
     return "0";
 }
@@ -609,7 +609,7 @@ virSecurityDACTransactionStart(virSecurityManagerPtr mgr)
  *         -1 otherwise.
  */
 static int
-virSecurityDACTransactionCommit(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+virSecurityDACTransactionCommit(virSecurityManagerPtr mgr G_GNUC_UNUSED,
                                 pid_t pid,
                                 bool lock)
 {
@@ -659,7 +659,7 @@ virSecurityDACTransactionCommit(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
  * Cancels and frees any out standing transaction.
  */
 static void
-virSecurityDACTransactionAbort(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
+virSecurityDACTransactionAbort(virSecurityManagerPtr mgr G_GNUC_UNUSED)
 {
     virSecurityDACChownListPtr list;
 
@@ -1051,7 +1051,7 @@ static int
 virSecurityDACRestoreImageLabel(virSecurityManagerPtr mgr,
                                 virDomainDefPtr def,
                                 virStorageSourcePtr src,
-                                virSecurityDomainImageLabelFlags flags ATTRIBUTE_UNUSED)
+                                virSecurityDomainImageLabelFlags flags G_GNUC_UNUSED)
 {
     return virSecurityDACRestoreImageLabelInt(mgr, def, src, false);
 }
@@ -1065,7 +1065,7 @@ struct virSecurityDACMoveImageMetadataData {
 
 
 static int
-virSecurityDACMoveImageMetadataHelper(pid_t pid ATTRIBUTE_UNUSED,
+virSecurityDACMoveImageMetadataHelper(pid_t pid G_GNUC_UNUSED,
                                       void *opaque)
 {
     struct virSecurityDACMoveImageMetadataData *data = opaque;
@@ -1137,7 +1137,7 @@ virSecurityDACSetHostdevLabelHelper(const char *file,
 
 
 static int
-virSecurityDACSetPCILabel(virPCIDevicePtr dev ATTRIBUTE_UNUSED,
+virSecurityDACSetPCILabel(virPCIDevicePtr dev G_GNUC_UNUSED,
                           const char *file,
                           void *opaque)
 {
@@ -1146,7 +1146,7 @@ virSecurityDACSetPCILabel(virPCIDevicePtr dev ATTRIBUTE_UNUSED,
 
 
 static int
-virSecurityDACSetUSBLabel(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
+virSecurityDACSetUSBLabel(virUSBDevicePtr dev G_GNUC_UNUSED,
                           const char *file,
                           void *opaque)
 {
@@ -1155,7 +1155,7 @@ virSecurityDACSetUSBLabel(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
 
 
 static int
-virSecurityDACSetSCSILabel(virSCSIDevicePtr dev ATTRIBUTE_UNUSED,
+virSecurityDACSetSCSILabel(virSCSIDevicePtr dev G_GNUC_UNUSED,
                            const char *file,
                            void *opaque)
 {
@@ -1164,7 +1164,7 @@ virSecurityDACSetSCSILabel(virSCSIDevicePtr dev ATTRIBUTE_UNUSED,
 
 
 static int
-virSecurityDACSetHostLabel(virSCSIVHostDevicePtr dev ATTRIBUTE_UNUSED,
+virSecurityDACSetHostLabel(virSCSIVHostDevicePtr dev G_GNUC_UNUSED,
                            const char *file,
                            void *opaque)
 {
@@ -1305,7 +1305,7 @@ virSecurityDACSetHostdevLabel(virSecurityManagerPtr mgr,
 
 
 static int
-virSecurityDACRestorePCILabel(virPCIDevicePtr dev ATTRIBUTE_UNUSED,
+virSecurityDACRestorePCILabel(virPCIDevicePtr dev G_GNUC_UNUSED,
                               const char *file,
                               void *opaque)
 {
@@ -1315,7 +1315,7 @@ virSecurityDACRestorePCILabel(virPCIDevicePtr dev ATTRIBUTE_UNUSED,
 
 
 static int
-virSecurityDACRestoreUSBLabel(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
+virSecurityDACRestoreUSBLabel(virUSBDevicePtr dev G_GNUC_UNUSED,
                               const char *file,
                               void *opaque)
 {
@@ -1325,7 +1325,7 @@ virSecurityDACRestoreUSBLabel(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
 
 
 static int
-virSecurityDACRestoreSCSILabel(virSCSIDevicePtr dev ATTRIBUTE_UNUSED,
+virSecurityDACRestoreSCSILabel(virSCSIDevicePtr dev G_GNUC_UNUSED,
                                const char *file,
                                void *opaque)
 {
@@ -1335,7 +1335,7 @@ virSecurityDACRestoreSCSILabel(virSCSIDevicePtr dev ATTRIBUTE_UNUSED,
 
 
 static int
-virSecurityDACRestoreHostLabel(virSCSIVHostDevicePtr dev ATTRIBUTE_UNUSED,
+virSecurityDACRestoreHostLabel(virSCSIVHostDevicePtr dev G_GNUC_UNUSED,
                                const char *file,
                                void *opaque)
 {
@@ -1577,7 +1577,7 @@ virSecurityDACSetChardevLabel(virSecurityManagerPtr mgr,
 
 static int
 virSecurityDACRestoreChardevLabelHelper(virSecurityManagerPtr mgr,
-                                        virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                        virDomainDefPtr def G_GNUC_UNUSED,
                                         virDomainChrSourceDefPtr dev_source,
                                         bool chardevStdioLogd,
                                         bool recall)
@@ -1671,7 +1671,7 @@ struct _virSecuritySELinuxChardevCallbackData {
 
 static int
 virSecurityDACRestoreChardevCallback(virDomainDefPtr def,
-                                     virDomainChrDefPtr dev ATTRIBUTE_UNUSED,
+                                     virDomainChrDefPtr dev G_GNUC_UNUSED,
                                      void *opaque)
 {
     struct _virSecuritySELinuxChardevCallbackData *data = opaque;
@@ -1765,9 +1765,9 @@ virSecurityDACSetGraphicsLabel(virSecurityManagerPtr mgr,
 
 
 static int
-virSecurityDACRestoreGraphicsLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                               virDomainDefPtr def ATTRIBUTE_UNUSED,
-                               virDomainGraphicsDefPtr gfx ATTRIBUTE_UNUSED)
+virSecurityDACRestoreGraphicsLabel(virSecurityManagerPtr mgr G_GNUC_UNUSED,
+                               virDomainDefPtr def G_GNUC_UNUSED,
+                               virDomainGraphicsDefPtr gfx G_GNUC_UNUSED)
 
 {
     /* The only graphics labelling we do is dependent on mountNamespaces,
@@ -1816,7 +1816,7 @@ virSecurityDACSetInputLabel(virSecurityManagerPtr mgr,
 
 static int
 virSecurityDACRestoreInputLabel(virSecurityManagerPtr mgr,
-                                virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                virDomainDefPtr def G_GNUC_UNUSED,
                                 virDomainInputDefPtr input)
 {
     int ret = -1;
@@ -1840,7 +1840,7 @@ virSecurityDACRestoreInputLabel(virSecurityManagerPtr mgr,
 
 static int
 virSecurityDACRestoreMemoryLabel(virSecurityManagerPtr mgr,
-                                 virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                 virDomainDefPtr def G_GNUC_UNUSED,
                                  virDomainMemoryDefPtr mem)
 {
     int ret = -1;
@@ -1862,8 +1862,8 @@ virSecurityDACRestoreMemoryLabel(virSecurityManagerPtr mgr,
 
 
 static int
-virSecurityDACRestoreSEVLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                              virDomainDefPtr def ATTRIBUTE_UNUSED)
+virSecurityDACRestoreSEVLabel(virSecurityManagerPtr mgr G_GNUC_UNUSED,
+                              virDomainDefPtr def G_GNUC_UNUSED)
 {
     /* we only label /dev/sev when running with namespaces, so we don't need to
      * restore anything */
@@ -1972,7 +1972,7 @@ virSecurityDACRestoreAllLabel(virSecurityManagerPtr mgr,
 
 static int
 virSecurityDACSetChardevCallback(virDomainDefPtr def,
-                                 virDomainChrDefPtr dev ATTRIBUTE_UNUSED,
+                                 virDomainChrDefPtr dev G_GNUC_UNUSED,
                                  void *opaque)
 {
     struct _virSecuritySELinuxChardevCallbackData *data = opaque;
@@ -2052,9 +2052,9 @@ virSecurityDACSetSEVLabel(virSecurityManagerPtr mgr,
 static int
 virSecurityDACSetAllLabel(virSecurityManagerPtr mgr,
                           virDomainDefPtr def,
-                          const char *stdin_path ATTRIBUTE_UNUSED,
+                          const char *stdin_path G_GNUC_UNUSED,
                           bool chardevStdioLogd,
-                          bool migrated ATTRIBUTE_UNUSED)
+                          bool migrated G_GNUC_UNUSED)
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityLabelDefPtr secdef;
@@ -2182,7 +2182,7 @@ virSecurityDACSetSavedStateLabel(virSecurityManagerPtr mgr,
 
 static int
 virSecurityDACRestoreSavedStateLabel(virSecurityManagerPtr mgr,
-                                     virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                     virDomainDefPtr def G_GNUC_UNUSED,
                                      const char *savefile)
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
@@ -2245,8 +2245,8 @@ virSecurityDACSetChildProcessLabel(virSecurityManagerPtr mgr,
 
 
 static int
-virSecurityDACVerify(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                     virDomainDefPtr def ATTRIBUTE_UNUSED)
+virSecurityDACVerify(virSecurityManagerPtr mgr G_GNUC_UNUSED,
+                     virDomainDefPtr def G_GNUC_UNUSED)
 {
     return 0;
 }
@@ -2321,16 +2321,16 @@ virSecurityDACGenLabel(virSecurityManagerPtr mgr,
 }
 
 static int
-virSecurityDACReleaseLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                           virDomainDefPtr def ATTRIBUTE_UNUSED)
+virSecurityDACReleaseLabel(virSecurityManagerPtr mgr G_GNUC_UNUSED,
+                           virDomainDefPtr def G_GNUC_UNUSED)
 {
     return 0;
 }
 
 static int
-virSecurityDACReserveLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                           virDomainDefPtr def ATTRIBUTE_UNUSED,
-                           pid_t pid ATTRIBUTE_UNUSED)
+virSecurityDACReserveLabel(virSecurityManagerPtr mgr G_GNUC_UNUSED,
+                           virDomainDefPtr def G_GNUC_UNUSED,
+                           pid_t pid G_GNUC_UNUSED)
 {
     return 0;
 }
@@ -2392,8 +2392,8 @@ virSecurityDACGetProcessLabelInternal(pid_t pid,
 }
 #else
 static int
-virSecurityDACGetProcessLabelInternal(pid_t pid ATTRIBUTE_UNUSED,
-                                      virSecurityLabelPtr seclabel ATTRIBUTE_UNUSED)
+virSecurityDACGetProcessLabelInternal(pid_t pid G_GNUC_UNUSED,
+                                      virSecurityLabelPtr seclabel G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Cannot get process uid and gid on this platform"));
@@ -2402,7 +2402,7 @@ virSecurityDACGetProcessLabelInternal(pid_t pid ATTRIBUTE_UNUSED,
 #endif
 
 static int
-virSecurityDACGetProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+virSecurityDACGetProcessLabel(virSecurityManagerPtr mgr G_GNUC_UNUSED,
                               virDomainDefPtr def,
                               pid_t pid,
                               virSecurityLabelPtr seclabel)
@@ -2427,54 +2427,54 @@ virSecurityDACGetProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
 }
 
 static int
-virSecurityDACSetDaemonSocketLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                                   virDomainDefPtr vm ATTRIBUTE_UNUSED)
+virSecurityDACSetDaemonSocketLabel(virSecurityManagerPtr mgr G_GNUC_UNUSED,
+                                   virDomainDefPtr vm G_GNUC_UNUSED)
 {
     return 0;
 }
 
 
 static int
-virSecurityDACSetSocketLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                             virDomainDefPtr def ATTRIBUTE_UNUSED)
+virSecurityDACSetSocketLabel(virSecurityManagerPtr mgr G_GNUC_UNUSED,
+                             virDomainDefPtr def G_GNUC_UNUSED)
 {
     return 0;
 }
 
 
 static int
-virSecurityDACClearSocketLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                               virDomainDefPtr def ATTRIBUTE_UNUSED)
+virSecurityDACClearSocketLabel(virSecurityManagerPtr mgr G_GNUC_UNUSED,
+                               virDomainDefPtr def G_GNUC_UNUSED)
 {
     return 0;
 }
 
 static int
-virSecurityDACSetImageFDLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                              virDomainDefPtr def ATTRIBUTE_UNUSED,
-                              int fd ATTRIBUTE_UNUSED)
+virSecurityDACSetImageFDLabel(virSecurityManagerPtr mgr G_GNUC_UNUSED,
+                              virDomainDefPtr def G_GNUC_UNUSED,
+                              int fd G_GNUC_UNUSED)
 {
     return 0;
 }
 
 static int
-virSecurityDACSetTapFDLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                            virDomainDefPtr def ATTRIBUTE_UNUSED,
-                            int fd ATTRIBUTE_UNUSED)
+virSecurityDACSetTapFDLabel(virSecurityManagerPtr mgr G_GNUC_UNUSED,
+                            virDomainDefPtr def G_GNUC_UNUSED,
+                            int fd G_GNUC_UNUSED)
 {
     return 0;
 }
 
 static char *
-virSecurityDACGetMountOptions(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                              virDomainDefPtr vm ATTRIBUTE_UNUSED)
+virSecurityDACGetMountOptions(virSecurityManagerPtr mgr G_GNUC_UNUSED,
+                              virDomainDefPtr vm G_GNUC_UNUSED)
 {
     return NULL;
 }
 
 static const char *
 virSecurityDACGetBaseLabel(virSecurityManagerPtr mgr,
-                           int virt ATTRIBUTE_UNUSED)
+                           int virt G_GNUC_UNUSED)
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     return priv->baselabel;
@@ -2484,7 +2484,7 @@ static int
 virSecurityDACDomainSetPathLabel(virSecurityManagerPtr mgr,
                                  virDomainDefPtr def,
                                  const char *path,
-                                 bool allowSubtree ATTRIBUTE_UNUSED)
+                                 bool allowSubtree G_GNUC_UNUSED)
 {
     virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
     virSecurityLabelDefPtr seclabel;
