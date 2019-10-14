@@ -93,7 +93,7 @@ vmwareDomObjFromDomain(struct vmware_driver *driver,
 
 
 static void *
-vmwareDataAllocFunc(void *opaque ATTRIBUTE_UNUSED)
+vmwareDataAllocFunc(void *opaque G_GNUC_UNUSED)
 {
     vmwareDomainPtr dom;
 
@@ -116,22 +116,22 @@ vmwareDataFreeFunc(void *data)
 }
 
 static int
-vmwareDomainDefPostParse(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                         virCapsPtr caps ATTRIBUTE_UNUSED,
-                         unsigned int parseFlags ATTRIBUTE_UNUSED,
-                         void *opaque ATTRIBUTE_UNUSED,
-                         void *parseOpaque ATTRIBUTE_UNUSED)
+vmwareDomainDefPostParse(virDomainDefPtr def G_GNUC_UNUSED,
+                         virCapsPtr caps G_GNUC_UNUSED,
+                         unsigned int parseFlags G_GNUC_UNUSED,
+                         void *opaque G_GNUC_UNUSED,
+                         void *parseOpaque G_GNUC_UNUSED)
 {
     return 0;
 }
 
 static int
-vmwareDomainDeviceDefPostParse(virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
-                               const virDomainDef *def ATTRIBUTE_UNUSED,
-                               virCapsPtr caps ATTRIBUTE_UNUSED,
-                               unsigned int parseFlags ATTRIBUTE_UNUSED,
-                               void *opaque ATTRIBUTE_UNUSED,
-                               void *parseOpaque ATTRIBUTE_UNUSED)
+vmwareDomainDeviceDefPostParse(virDomainDeviceDefPtr dev G_GNUC_UNUSED,
+                               const virDomainDef *def G_GNUC_UNUSED,
+                               virCapsPtr caps G_GNUC_UNUSED,
+                               unsigned int parseFlags G_GNUC_UNUSED,
+                               void *opaque G_GNUC_UNUSED,
+                               void *parseOpaque G_GNUC_UNUSED)
 {
     return 0;
 }
@@ -153,8 +153,8 @@ vmwareDomainXMLConfigInit(void)
 
 static virDrvOpenStatus
 vmwareConnectOpen(virConnectPtr conn,
-                  virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                  virConfPtr conf ATTRIBUTE_UNUSED,
+                  virConnectAuthPtr auth G_GNUC_UNUSED,
+                  virConfPtr conf G_GNUC_UNUSED,
                   unsigned int flags)
 {
     struct vmware_driver *driver;
@@ -258,7 +258,7 @@ vmwareConnectClose(virConnectPtr conn)
 }
 
 static const char *
-vmwareConnectGetType(virConnectPtr conn ATTRIBUTE_UNUSED)
+vmwareConnectGetType(virConnectPtr conn G_GNUC_UNUSED)
 {
     return "VMware";
 }
@@ -1103,7 +1103,7 @@ vmwareDomainGetState(virDomainPtr dom,
 }
 
 static int
-vmwareConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+vmwareConnectIsAlive(virConnectPtr conn G_GNUC_UNUSED)
 {
     return 1;
 }

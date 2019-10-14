@@ -1127,7 +1127,7 @@ hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
 }
 
 void
-hypervFreeObject(hypervPrivate *priv ATTRIBUTE_UNUSED, hypervObject *object)
+hypervFreeObject(hypervPrivate *priv G_GNUC_UNUSED, hypervObject *object)
 {
     hypervObject *next;
 #if WS_SERIALIZER_FREE_MEM_WORKS

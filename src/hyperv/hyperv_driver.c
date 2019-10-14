@@ -118,7 +118,7 @@ hypervInitConnection(virConnectPtr conn, hypervPrivate *priv,
 
 static virDrvOpenStatus
 hypervConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
-                  virConfPtr conf ATTRIBUTE_UNUSED,
+                  virConfPtr conf G_GNUC_UNUSED,
                   unsigned int flags)
 {
     virDrvOpenStatus result = VIR_DRV_OPEN_ERROR;
@@ -194,7 +194,7 @@ hypervConnectClose(virConnectPtr conn)
 
 
 static const char *
-hypervConnectGetType(virConnectPtr conn ATTRIBUTE_UNUSED)
+hypervConnectGetType(virConnectPtr conn G_GNUC_UNUSED)
 {
     return "Hyper-V";
 }
@@ -598,7 +598,7 @@ hypervDomainDestroy(virDomainPtr domain)
 
 
 static char *
-hypervDomainGetOSType(virDomainPtr domain ATTRIBUTE_UNUSED)
+hypervDomainGetOSType(virDomainPtr domain G_GNUC_UNUSED)
 {
     char *osType;
 
@@ -1100,7 +1100,7 @@ hypervDomainIsActive(virDomainPtr domain)
 
 
 static int
-hypervDomainIsPersistent(virDomainPtr domain ATTRIBUTE_UNUSED)
+hypervDomainIsPersistent(virDomainPtr domain G_GNUC_UNUSED)
 {
     /* Hyper-V has no concept of transient domains, so all of them are persistent */
     return 1;
@@ -1109,7 +1109,7 @@ hypervDomainIsPersistent(virDomainPtr domain ATTRIBUTE_UNUSED)
 
 
 static int
-hypervDomainIsUpdated(virDomainPtr domain ATTRIBUTE_UNUSED)
+hypervDomainIsUpdated(virDomainPtr domain G_GNUC_UNUSED)
 {
     return 0;
 }
@@ -1607,7 +1607,7 @@ static virHypervisorDriver hypervHypervisorDriver = {
 
 static void
 hypervDebugHandler(const char *message, debug_level_e level,
-                   void *user_data ATTRIBUTE_UNUSED)
+                   void *user_data G_GNUC_UNUSED)
 {
     switch (level) {
       case DEBUG_LEVEL_ERROR:

@@ -1070,23 +1070,23 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
 
 
 static int
-phypDomainDefPostParse(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                       virCapsPtr caps ATTRIBUTE_UNUSED,
-                       unsigned int parseFlags ATTRIBUTE_UNUSED,
-                       void *opaque ATTRIBUTE_UNUSED,
-                       void *parseOpaque ATTRIBUTE_UNUSED)
+phypDomainDefPostParse(virDomainDefPtr def G_GNUC_UNUSED,
+                       virCapsPtr caps G_GNUC_UNUSED,
+                       unsigned int parseFlags G_GNUC_UNUSED,
+                       void *opaque G_GNUC_UNUSED,
+                       void *parseOpaque G_GNUC_UNUSED)
 {
     return 0;
 }
 
 
 static int
-phypDomainDeviceDefPostParse(virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
-                             const virDomainDef *def ATTRIBUTE_UNUSED,
-                             virCapsPtr caps ATTRIBUTE_UNUSED,
-                             unsigned int parseFlags ATTRIBUTE_UNUSED,
-                             void *opaque ATTRIBUTE_UNUSED,
-                             void *parseOpaque ATTRIBUTE_UNUSED)
+phypDomainDeviceDefPostParse(virDomainDeviceDefPtr dev G_GNUC_UNUSED,
+                             const virDomainDef *def G_GNUC_UNUSED,
+                             virCapsPtr caps G_GNUC_UNUSED,
+                             unsigned int parseFlags G_GNUC_UNUSED,
+                             void *opaque G_GNUC_UNUSED,
+                             void *parseOpaque G_GNUC_UNUSED)
 {
     return 0;
 }
@@ -1102,7 +1102,7 @@ virDomainDefParserConfig virPhypDriverDomainDefParserConfig = {
 static virDrvOpenStatus
 phypConnectOpen(virConnectPtr conn,
                 virConnectAuthPtr auth,
-                virConfPtr conf ATTRIBUTE_UNUSED,
+                virConfPtr conf G_GNUC_UNUSED,
                 unsigned int flags)
 {
     LIBSSH2_SESSION *session = NULL;
@@ -1223,7 +1223,7 @@ phypConnectClose(virConnectPtr conn)
 
 
 static int
-phypConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+phypConnectIsEncrypted(virConnectPtr conn G_GNUC_UNUSED)
 {
     /* Phyp uses an SSH tunnel, so is always encrypted */
     return 1;
@@ -1231,7 +1231,7 @@ phypConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
 
 
 static int
-phypConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+phypConnectIsSecure(virConnectPtr conn G_GNUC_UNUSED)
 {
     /* Phyp uses an SSH tunnel, so is always secure */
     return 1;
@@ -1254,7 +1254,7 @@ phypConnectIsAlive(virConnectPtr conn)
 
 
 static int
-phypDomainIsUpdated(virDomainPtr conn ATTRIBUTE_UNUSED)
+phypDomainIsUpdated(virDomainPtr conn G_GNUC_UNUSED)
 {
     return 0;
 }
@@ -1420,7 +1420,7 @@ phypGetRemoteSlot(virConnectPtr conn, const char *managed_system,
 
 /* XXX - is this needed? */
 static char *phypGetBackingDevice(virConnectPtr, const char *, char *)
-    ATTRIBUTE_UNUSED;
+    G_GNUC_UNUSED;
 static char *
 phypGetBackingDevice(virConnectPtr conn, const char *managed_system,
                      char *lpar_name)
@@ -3059,7 +3059,7 @@ phypGetLparState(virConnectPtr conn, unsigned int lpar_id)
 }
 
 /* XXX - is this needed? */
-static int phypDiskType(virConnectPtr, char *) ATTRIBUTE_UNUSED;
+static int phypDiskType(virConnectPtr, char *) G_GNUC_UNUSED;
 static int
 phypDiskType(virConnectPtr conn, char *backing_device)
 {

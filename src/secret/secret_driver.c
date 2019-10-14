@@ -452,8 +452,8 @@ secretStateCleanup(void)
 
 static int
 secretStateInitialize(bool privileged,
-                      virStateInhibitCallback callback ATTRIBUTE_UNUSED,
-                      void *opaque ATTRIBUTE_UNUSED)
+                      virStateInhibitCallback callback G_GNUC_UNUSED,
+                      void *opaque G_GNUC_UNUSED)
 {
     if (VIR_ALLOC(driver) < 0)
         return VIR_DRV_STATE_INIT_ERROR;
@@ -539,8 +539,8 @@ secretStateReload(void)
 
 static virDrvOpenStatus
 secretConnectOpen(virConnectPtr conn,
-                  virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                  virConfPtr conf ATTRIBUTE_UNUSED,
+                  virConnectAuthPtr auth G_GNUC_UNUSED,
+                  virConfPtr conf G_GNUC_UNUSED,
                   unsigned int flags)
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
@@ -562,27 +562,27 @@ secretConnectOpen(virConnectPtr conn,
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-static int secretConnectClose(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int secretConnectClose(virConnectPtr conn G_GNUC_UNUSED)
 {
     return 0;
 }
 
 
-static int secretConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int secretConnectIsSecure(virConnectPtr conn G_GNUC_UNUSED)
 {
     /* Trivially secure, since always inside the daemon */
     return 1;
 }
 
 
-static int secretConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int secretConnectIsEncrypted(virConnectPtr conn G_GNUC_UNUSED)
 {
     /* Not encrypted, but remote driver takes care of that */
     return 0;
 }
 
 
-static int secretConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int secretConnectIsAlive(virConnectPtr conn G_GNUC_UNUSED)
 {
     return 1;
 }

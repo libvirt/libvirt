@@ -537,7 +537,7 @@ vmwareExtractPid(const char * vmxPath)
 }
 
 char *
-vmwareCopyVMXFileName(const char *datastorePath, void *opaque ATTRIBUTE_UNUSED)
+vmwareCopyVMXFileName(const char *datastorePath, void *opaque G_GNUC_UNUSED)
 {
     char *path;
 

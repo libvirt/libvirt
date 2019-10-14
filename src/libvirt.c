@@ -113,7 +113,7 @@ static virNWFilterDriverPtr virSharedNWFilterDriver;
 static int
 virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
                               unsigned int ncred,
-                              void *cbdata ATTRIBUTE_UNUSED)
+                              void *cbdata G_GNUC_UNUSED)
 {
     size_t i;
 
@@ -354,9 +354,9 @@ BOOL WINAPI
 DllMain(HINSTANCE instance, DWORD reason, LPVOID ignore);
 
 BOOL WINAPI
-DllMain(HINSTANCE instance ATTRIBUTE_UNUSED,
+DllMain(HINSTANCE instance G_GNUC_UNUSED,
         DWORD reason,
-        LPVOID ignore ATTRIBUTE_UNUSED)
+        LPVOID ignore G_GNUC_UNUSED)
 {
     switch (reason) {
     case DLL_PROCESS_ATTACH:
@@ -772,7 +772,7 @@ virStateStop(void)
  *       @typeVer have the format major * 1,000,000 + minor * 1,000 + release.
  */
 int
-virGetVersion(unsigned long *libVer, const char *type ATTRIBUTE_UNUSED,
+virGetVersion(unsigned long *libVer, const char *type G_GNUC_UNUSED,
               unsigned long *typeVer)
 {
     if (virInitialize() < 0)

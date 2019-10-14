@@ -920,8 +920,8 @@ udevGetIfaceDefBridge(struct udev *udev,
 static int
 ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
 ATTRIBUTE_NONNULL(4) G_GNUC_WARN_UNUSED_RESULT
-udevGetIfaceDefVlan(struct udev *udev ATTRIBUTE_UNUSED,
-                    struct udev_device *dev ATTRIBUTE_UNUSED,
+udevGetIfaceDefVlan(struct udev *udev G_GNUC_UNUSED,
+                    struct udev_device *dev G_GNUC_UNUSED,
                     const char *name,
                     virInterfaceDef *ifacedef)
 {
@@ -1169,8 +1169,8 @@ udevStateCleanup(void);
 
 static int
 udevStateInitialize(bool privileged,
-                    virStateInhibitCallback callback ATTRIBUTE_UNUSED,
-                    void *opaque ATTRIBUTE_UNUSED)
+                    virStateInhibitCallback callback G_GNUC_UNUSED,
+                    void *opaque G_GNUC_UNUSED)
 {
     int ret = VIR_DRV_STATE_INIT_ERROR;
 
@@ -1238,8 +1238,8 @@ udevStateCleanup(void)
 
 static virDrvOpenStatus
 udevConnectOpen(virConnectPtr conn,
-                virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                virConfPtr conf ATTRIBUTE_UNUSED,
+                virConnectAuthPtr auth G_GNUC_UNUSED,
+                virConfPtr conf G_GNUC_UNUSED,
                 unsigned int flags)
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
@@ -1261,27 +1261,27 @@ udevConnectOpen(virConnectPtr conn,
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-static int udevConnectClose(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int udevConnectClose(virConnectPtr conn G_GNUC_UNUSED)
 {
     return 0;
 }
 
 
-static int udevConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int udevConnectIsSecure(virConnectPtr conn G_GNUC_UNUSED)
 {
     /* Trivially secure, since always inside the daemon */
     return 1;
 }
 
 
-static int udevConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int udevConnectIsEncrypted(virConnectPtr conn G_GNUC_UNUSED)
 {
     /* Not encrypted, but remote driver takes care of that */
     return 0;
 }
 
 
-static int udevConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int udevConnectIsAlive(virConnectPtr conn G_GNUC_UNUSED)
 {
     return 1;
 }

@@ -529,22 +529,22 @@ VIR_ENUM_IMPL(virVMXControllerModelSCSI,
  */
 
 static int
-virVMXDomainDefPostParse(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                         virCapsPtr caps ATTRIBUTE_UNUSED,
-                         unsigned int parseFlags ATTRIBUTE_UNUSED,
-                         void *opaque ATTRIBUTE_UNUSED,
-                         void *parseOpaque ATTRIBUTE_UNUSED)
+virVMXDomainDefPostParse(virDomainDefPtr def G_GNUC_UNUSED,
+                         virCapsPtr caps G_GNUC_UNUSED,
+                         unsigned int parseFlags G_GNUC_UNUSED,
+                         void *opaque G_GNUC_UNUSED,
+                         void *parseOpaque G_GNUC_UNUSED)
 {
     return 0;
 }
 
 static int
-virVMXDomainDevicesDefPostParse(virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
-                                const virDomainDef *def ATTRIBUTE_UNUSED,
-                                virCapsPtr caps ATTRIBUTE_UNUSED,
-                                unsigned int parseFlags ATTRIBUTE_UNUSED,
-                                void *opaque ATTRIBUTE_UNUSED,
-                                void *parseOpaque ATTRIBUTE_UNUSED)
+virVMXDomainDevicesDefPostParse(virDomainDeviceDefPtr dev G_GNUC_UNUSED,
+                                const virDomainDef *def G_GNUC_UNUSED,
+                                virCapsPtr caps G_GNUC_UNUSED,
+                                unsigned int parseFlags G_GNUC_UNUSED,
+                                void *opaque G_GNUC_UNUSED,
+                                void *parseOpaque G_GNUC_UNUSED)
 {
     return 0;
 }
@@ -1238,7 +1238,7 @@ struct virVMXConfigScanResults {
 
 static int
 virVMXConfigScanResultsCollector(const char* name,
-                                 virConfValuePtr value ATTRIBUTE_UNUSED,
+                                 virConfValuePtr value G_GNUC_UNUSED,
                                  void *opaque)
 {
     struct virVMXConfigScanResults *results = opaque;

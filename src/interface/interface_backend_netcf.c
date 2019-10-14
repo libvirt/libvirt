@@ -89,8 +89,8 @@ virNetcfDriverStateDispose(void *obj)
 
 static int
 netcfStateInitialize(bool privileged,
-                     virStateInhibitCallback callback ATTRIBUTE_UNUSED,
-                     void *opaque ATTRIBUTE_UNUSED)
+                     virStateInhibitCallback callback G_GNUC_UNUSED,
+                     void *opaque G_GNUC_UNUSED)
 {
     if (virNetcfDriverStateInitialize() < 0)
         return VIR_DRV_STATE_INIT_ERROR;
@@ -188,8 +188,8 @@ netcfStateReload(void)
 
 static virDrvOpenStatus
 netcfConnectOpen(virConnectPtr conn,
-                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
-                 virConfPtr conf ATTRIBUTE_UNUSED,
+                 virConnectAuthPtr auth G_GNUC_UNUSED,
+                 virConfPtr conf G_GNUC_UNUSED,
                  unsigned int flags)
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
@@ -211,27 +211,27 @@ netcfConnectOpen(virConnectPtr conn,
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-static int netcfConnectClose(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int netcfConnectClose(virConnectPtr conn G_GNUC_UNUSED)
 {
     return 0;
 }
 
 
-static int netcfConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int netcfConnectIsSecure(virConnectPtr conn G_GNUC_UNUSED)
 {
     /* Trivially secure, since always inside the daemon */
     return 1;
 }
 
 
-static int netcfConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int netcfConnectIsEncrypted(virConnectPtr conn G_GNUC_UNUSED)
 {
     /* Not encrypted, but remote driver takes care of that */
     return 0;
 }
 
 
-static int netcfConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+static int netcfConnectIsAlive(virConnectPtr conn G_GNUC_UNUSED)
 {
     return 1;
 }
