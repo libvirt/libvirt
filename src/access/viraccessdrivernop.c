@@ -23,101 +23,101 @@
 #include "access/viraccessdrivernop.h"
 
 static int
-virAccessDriverNopCheckConnect(virAccessManagerPtr manager ATTRIBUTE_UNUSED,
-                               const char *driverName ATTRIBUTE_UNUSED,
-                               virAccessPermConnect perm ATTRIBUTE_UNUSED)
+virAccessDriverNopCheckConnect(virAccessManagerPtr manager G_GNUC_UNUSED,
+                               const char *driverName G_GNUC_UNUSED,
+                               virAccessPermConnect perm G_GNUC_UNUSED)
 {
     return 1; /* Allow */
 }
 
 static int
-virAccessDriverNopCheckDomain(virAccessManagerPtr manager ATTRIBUTE_UNUSED,
-                              const char *driverName ATTRIBUTE_UNUSED,
-                              virDomainDefPtr domain ATTRIBUTE_UNUSED,
-                              virAccessPermDomain perm ATTRIBUTE_UNUSED)
+virAccessDriverNopCheckDomain(virAccessManagerPtr manager G_GNUC_UNUSED,
+                              const char *driverName G_GNUC_UNUSED,
+                              virDomainDefPtr domain G_GNUC_UNUSED,
+                              virAccessPermDomain perm G_GNUC_UNUSED)
 {
     return 1; /* Allow */
 }
 
 static int
-virAccessDriverNopCheckInterface(virAccessManagerPtr manager ATTRIBUTE_UNUSED,
-                                 const char *driverName ATTRIBUTE_UNUSED,
-                                 virInterfaceDefPtr iface ATTRIBUTE_UNUSED,
-                                 virAccessPermInterface perm ATTRIBUTE_UNUSED)
+virAccessDriverNopCheckInterface(virAccessManagerPtr manager G_GNUC_UNUSED,
+                                 const char *driverName G_GNUC_UNUSED,
+                                 virInterfaceDefPtr iface G_GNUC_UNUSED,
+                                 virAccessPermInterface perm G_GNUC_UNUSED)
 {
     return 1; /* Allow */
 }
 
 static int
-virAccessDriverNopCheckNetwork(virAccessManagerPtr manager ATTRIBUTE_UNUSED,
-                               const char *driverName ATTRIBUTE_UNUSED,
-                               virNetworkDefPtr network ATTRIBUTE_UNUSED,
-                               virAccessPermNetwork perm ATTRIBUTE_UNUSED)
+virAccessDriverNopCheckNetwork(virAccessManagerPtr manager G_GNUC_UNUSED,
+                               const char *driverName G_GNUC_UNUSED,
+                               virNetworkDefPtr network G_GNUC_UNUSED,
+                               virAccessPermNetwork perm G_GNUC_UNUSED)
 {
     return 1; /* Allow */
 }
 
 static int
-virAccessDriverNopCheckNetworkPort(virAccessManagerPtr manager ATTRIBUTE_UNUSED,
-                                   const char *driverName ATTRIBUTE_UNUSED,
-                                   virNetworkDefPtr network ATTRIBUTE_UNUSED,
-                                   virNetworkPortDefPtr port ATTRIBUTE_UNUSED,
-                                   virAccessPermNetworkPort perm ATTRIBUTE_UNUSED)
+virAccessDriverNopCheckNetworkPort(virAccessManagerPtr manager G_GNUC_UNUSED,
+                                   const char *driverName G_GNUC_UNUSED,
+                                   virNetworkDefPtr network G_GNUC_UNUSED,
+                                   virNetworkPortDefPtr port G_GNUC_UNUSED,
+                                   virAccessPermNetworkPort perm G_GNUC_UNUSED)
 {
     return 1; /* Allow */
 }
 
 static int
-virAccessDriverNopCheckNodeDevice(virAccessManagerPtr manager ATTRIBUTE_UNUSED,
-                                  const char *driverName ATTRIBUTE_UNUSED,
-                                  virNodeDeviceDefPtr nodedev ATTRIBUTE_UNUSED,
-                                  virAccessPermNodeDevice perm ATTRIBUTE_UNUSED)
+virAccessDriverNopCheckNodeDevice(virAccessManagerPtr manager G_GNUC_UNUSED,
+                                  const char *driverName G_GNUC_UNUSED,
+                                  virNodeDeviceDefPtr nodedev G_GNUC_UNUSED,
+                                  virAccessPermNodeDevice perm G_GNUC_UNUSED)
 {
     return 1; /* Allow */
 }
 
 static int
-virAccessDriverNopCheckNWFilter(virAccessManagerPtr manager ATTRIBUTE_UNUSED,
-                                const char *driverName ATTRIBUTE_UNUSED,
-                                virNWFilterDefPtr nwfilter ATTRIBUTE_UNUSED,
-                                virAccessPermNWFilter perm ATTRIBUTE_UNUSED)
+virAccessDriverNopCheckNWFilter(virAccessManagerPtr manager G_GNUC_UNUSED,
+                                const char *driverName G_GNUC_UNUSED,
+                                virNWFilterDefPtr nwfilter G_GNUC_UNUSED,
+                                virAccessPermNWFilter perm G_GNUC_UNUSED)
 {
     return 1; /* Allow */
 }
 
 static int
-virAccessDriverNopCheckNWFilterBinding(virAccessManagerPtr manager ATTRIBUTE_UNUSED,
-                                       const char *driverName ATTRIBUTE_UNUSED,
-                                       virNWFilterBindingDefPtr binding ATTRIBUTE_UNUSED,
-                                       virAccessPermNWFilterBinding perm ATTRIBUTE_UNUSED)
+virAccessDriverNopCheckNWFilterBinding(virAccessManagerPtr manager G_GNUC_UNUSED,
+                                       const char *driverName G_GNUC_UNUSED,
+                                       virNWFilterBindingDefPtr binding G_GNUC_UNUSED,
+                                       virAccessPermNWFilterBinding perm G_GNUC_UNUSED)
 {
     return 1; /* Allow */
 }
 
 static int
-virAccessDriverNopCheckSecret(virAccessManagerPtr manager ATTRIBUTE_UNUSED,
-                              const char *driverName ATTRIBUTE_UNUSED,
-                              virSecretDefPtr secret ATTRIBUTE_UNUSED,
-                              virAccessPermSecret perm ATTRIBUTE_UNUSED)
+virAccessDriverNopCheckSecret(virAccessManagerPtr manager G_GNUC_UNUSED,
+                              const char *driverName G_GNUC_UNUSED,
+                              virSecretDefPtr secret G_GNUC_UNUSED,
+                              virAccessPermSecret perm G_GNUC_UNUSED)
 {
     return 1; /* Allow */
 }
 
 static int
-virAccessDriverNopCheckStoragePool(virAccessManagerPtr manager ATTRIBUTE_UNUSED,
-                                   const char *driverName ATTRIBUTE_UNUSED,
-                                   virStoragePoolDefPtr pool ATTRIBUTE_UNUSED,
-                                   virAccessPermStoragePool perm ATTRIBUTE_UNUSED)
+virAccessDriverNopCheckStoragePool(virAccessManagerPtr manager G_GNUC_UNUSED,
+                                   const char *driverName G_GNUC_UNUSED,
+                                   virStoragePoolDefPtr pool G_GNUC_UNUSED,
+                                   virAccessPermStoragePool perm G_GNUC_UNUSED)
 {
     return 1; /* Allow */
 }
 
 static int
-virAccessDriverNopCheckStorageVol(virAccessManagerPtr manager ATTRIBUTE_UNUSED,
-                                  const char *driverName ATTRIBUTE_UNUSED,
-                                  virStoragePoolDefPtr pool ATTRIBUTE_UNUSED,
-                                  virStorageVolDefPtr vol ATTRIBUTE_UNUSED,
-                                  virAccessPermStorageVol perm ATTRIBUTE_UNUSED)
+virAccessDriverNopCheckStorageVol(virAccessManagerPtr manager G_GNUC_UNUSED,
+                                  const char *driverName G_GNUC_UNUSED,
+                                  virStoragePoolDefPtr pool G_GNUC_UNUSED,
+                                  virStorageVolDefPtr vol G_GNUC_UNUSED,
+                                  virAccessPermStorageVol perm G_GNUC_UNUSED)
 {
     return 1; /* Allow */
 }

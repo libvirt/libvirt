@@ -47,7 +47,7 @@ struct _virAccessDriverPolkitPrivate {
 };
 
 
-static void virAccessDriverPolkitCleanup(virAccessManagerPtr manager ATTRIBUTE_UNUSED)
+static void virAccessDriverPolkitCleanup(virAccessManagerPtr manager G_GNUC_UNUSED)
 {
 }
 
@@ -120,7 +120,7 @@ virAccessDriverPolkitGetCaller(const char *actionid,
 
 
 static int
-virAccessDriverPolkitCheck(virAccessManagerPtr manager ATTRIBUTE_UNUSED,
+virAccessDriverPolkitCheck(virAccessManagerPtr manager G_GNUC_UNUSED,
                            const char *typename,
                            const char *permname,
                            const char **attrs)
