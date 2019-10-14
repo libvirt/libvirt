@@ -1338,13 +1338,6 @@ libxlDomainStart(libxlDriverPrivatePtr driver,
                                   NULL) < 0)
         goto cleanup;
 
-    if (virDomainLockProcessResume(driver->lockManager,
-                                  "xen:///system",
-                                  vm,
-                                  priv->lockState) < 0)
-        goto cleanup;
-    VIR_FREE(priv->lockState);
-
     if (libxlNetworkPrepareDevices(vm->def) < 0)
         goto cleanup_dom;
 
@@ -1426,6 +1419,13 @@ libxlDomainStart(libxlDriverPrivatePtr driver,
     config_json = libxl_domain_config_to_json(cfg->ctx, &d_config);
 
     libxlLoggerOpenFile(cfg->logger, domid, vm->def->name, config_json);
+
+    if (virDomainLockProcessResume(driver->lockManager,
+                                  "xen:///system",
+                                  vm,
+                                  priv->lockState) < 0)
+        goto destroy_dom;
+    VIR_FREE(priv->lockState);
 
     /* Always enable domain death events */
     if (libxl_evenable_domain_death(cfg->ctx, vm->def->id, 0, &priv->deathW))

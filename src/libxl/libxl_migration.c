@@ -1237,20 +1237,16 @@ libxlDomainMigrationSrcPerform(libxlDriverPrivatePtr driver,
     sockfd = virNetSocketDupFD(sock, true);
     virObjectUnref(sock);
 
-    if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) < 0)
-        VIR_WARN("Unable to release lease on %s", vm->def->name);
-    VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
-
     /* suspend vm and send saved data to dst through socket fd */
     virObjectUnlock(vm);
     ret = libxlDoMigrateSrcSend(driver, vm, flags, sockfd);
     virObjectLock(vm);
 
-    if (ret < 0) {
-        virDomainLockProcessResume(driver->lockManager,
-                                   "xen:///system",
-                                   vm,
-                                   priv->lockState);
+    if (ret == 0) {
+        if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) < 0)
+            VIR_WARN("Unable to release lease on %s", vm->def->name);
+        VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
+    } else {
         /*
          * Confirm phase will not be executed if perform fails. End the
          * job started in begin phase.
