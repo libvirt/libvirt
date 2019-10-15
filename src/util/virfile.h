@@ -378,7 +378,7 @@ int virFileInData(int fd,
                   int *inData,
                   long long *length);
 
-VIR_DEFINE_AUTOPTR_FUNC(virFileWrapperFd, virFileWrapperFdFree);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virFileWrapperFd, virFileWrapperFdFree);
 
 int virFileGetXAttr(const char *path,
                     const char *name,

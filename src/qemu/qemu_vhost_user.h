@@ -31,7 +31,7 @@ typedef qemuVhostUser *qemuVhostUserPtr;
 void
 qemuVhostUserFree(qemuVhostUserPtr fw);
 
-VIR_DEFINE_AUTOPTR_FUNC(qemuVhostUser, qemuVhostUserFree);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuVhostUser, qemuVhostUserFree);
 
 qemuVhostUserPtr
 qemuVhostUserParse(const char *path);

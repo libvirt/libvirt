@@ -478,6 +478,6 @@ VIR_ENUM_DECL(virStoragePartedFs);
                  VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_AUTOSTART  | \
                  VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_POOL_TYPE)
 
-VIR_DEFINE_AUTOPTR_FUNC(virStoragePoolSource, virStoragePoolSourceFree);
-VIR_DEFINE_AUTOPTR_FUNC(virStoragePoolDef, virStoragePoolDefFree);
-VIR_DEFINE_AUTOPTR_FUNC(virStorageVolDef, virStorageVolDefFree);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virStoragePoolSource, virStoragePoolSourceFree);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virStoragePoolDef, virStoragePoolDefFree);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virStorageVolDef, virStorageVolDefFree);

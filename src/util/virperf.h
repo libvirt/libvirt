@@ -82,4 +82,4 @@ int virPerfReadEvent(virPerfPtr perf,
                      virPerfEventType type,
                      uint64_t *value);
 
-VIR_DEFINE_AUTOPTR_FUNC(virPerf, virPerfFree);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virPerf, virPerfFree);

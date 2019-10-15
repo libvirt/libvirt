@@ -186,7 +186,7 @@ qemuFirmwareOSInterfaceFree(qemuFirmwareOSInterface *interfaces)
 }
 
 
-VIR_DEFINE_AUTOPTR_FUNC(qemuFirmwareOSInterface, qemuFirmwareOSInterfaceFree);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuFirmwareOSInterface, qemuFirmwareOSInterfaceFree);
 
 
 static void
@@ -251,7 +251,7 @@ qemuFirmwareTargetFree(qemuFirmwareTargetPtr target)
 }
 
 
-VIR_DEFINE_AUTOPTR_FUNC(qemuFirmwareTarget, qemuFirmwareTargetFree);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuFirmwareTarget, qemuFirmwareTargetFree);
 
 
 static void
@@ -261,7 +261,7 @@ qemuFirmwareFeatureFree(qemuFirmwareFeature *features)
 }
 
 
-VIR_DEFINE_AUTOPTR_FUNC(qemuFirmwareFeature, qemuFirmwareFeatureFree);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuFirmwareFeature, qemuFirmwareFeatureFree);
 
 
 void

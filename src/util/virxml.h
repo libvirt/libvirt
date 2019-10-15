@@ -247,8 +247,8 @@ G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(virXPathContextNodeSave, virXPathContextNodeRes
                                                           .node = _ctxt->node}; \
     ignore_value(&_ctxt ## CtxtSave)
 
-VIR_DEFINE_AUTOPTR_FUNC(xmlDoc, xmlFreeDoc);
-VIR_DEFINE_AUTOPTR_FUNC(xmlXPathContext, xmlXPathFreeContext);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(xmlDoc, xmlFreeDoc);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(xmlXPathContext, xmlXPathFreeContext);
 
 typedef int (*virXMLNamespaceParse)(xmlXPathContextPtr ctxt, void **nsdata);
 typedef void (*virXMLNamespaceFree)(void *nsdata);

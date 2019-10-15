@@ -122,7 +122,7 @@ virNetDevMcastEntryFree(virNetDevMcastEntryPtr entry)
     VIR_FREE(entry);
 }
 
-VIR_DEFINE_AUTOPTR_FUNC(virNetDevMcastEntry, virNetDevMcastEntryFree);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNetDevMcastEntry, virNetDevMcastEntryFree);
 
 typedef struct _virNetDevMcastList virNetDevMcastList;
 typedef virNetDevMcastList *virNetDevMcastListPtr;

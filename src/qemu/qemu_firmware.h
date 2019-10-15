@@ -32,7 +32,7 @@ typedef qemuFirmware *qemuFirmwarePtr;
 void
 qemuFirmwareFree(qemuFirmwarePtr fw);
 
-VIR_DEFINE_AUTOPTR_FUNC(qemuFirmware, qemuFirmwareFree);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuFirmware, qemuFirmwareFree);
 
 qemuFirmwarePtr
 qemuFirmwareParse(const char *path);

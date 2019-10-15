@@ -43,7 +43,7 @@ typedef virDomain virshDomain;
 
 void
 virshDomainFree(virDomainPtr dom);
-VIR_DEFINE_AUTOPTR_FUNC(virshDomain, virshDomainFree);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virshDomain, virshDomainFree);
 
 void
 virshDomainCheckpointFree(virDomainCheckpointPtr chk);

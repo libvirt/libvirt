@@ -35,7 +35,7 @@ struct _virSecretDef {
 };
 
 void virSecretDefFree(virSecretDefPtr def);
-VIR_DEFINE_AUTOPTR_FUNC(virSecretDef, virSecretDefFree);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virSecretDef, virSecretDefFree);
 
 virSecretDefPtr virSecretDefParseString(const char *xml);
 virSecretDefPtr virSecretDefParseFile(const char *filename);

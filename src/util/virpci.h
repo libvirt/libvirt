@@ -274,6 +274,6 @@ ssize_t virPCIGetMdevTypes(const char *sysfspath,
 
 void virPCIDeviceAddressFree(virPCIDeviceAddressPtr address);
 
-VIR_DEFINE_AUTOPTR_FUNC(virPCIDevice, virPCIDeviceFree);
-VIR_DEFINE_AUTOPTR_FUNC(virPCIDeviceAddress, virPCIDeviceAddressFree);
-VIR_DEFINE_AUTOPTR_FUNC(virPCIEDeviceInfo, virPCIEDeviceInfoFree);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virPCIDevice, virPCIDeviceFree);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virPCIDeviceAddress, virPCIDeviceAddressFree);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virPCIEDeviceInfo, virPCIEDeviceInfoFree);

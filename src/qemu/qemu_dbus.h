@@ -39,4 +39,4 @@ int qemuDBusVMStateAdd(virQEMUDriverPtr driver, virDomainObjPtr vm,
 void qemuDBusVMStateRemove(virQEMUDriverPtr driver, virDomainObjPtr vm,
                            const char *id, bool hot);
 
-VIR_DEFINE_AUTOPTR_FUNC(qemuDBusVMState, qemuDBusVMStateFree);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuDBusVMState, qemuDBusVMStateFree);

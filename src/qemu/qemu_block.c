@@ -87,7 +87,7 @@ qemuBlockNodeNameBackingChainDataFree(qemuBlockNodeNameBackingChainDataPtr data)
     VIR_FREE(data);
 }
 
-VIR_DEFINE_AUTOPTR_FUNC(qemuBlockNodeNameBackingChainData,
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuBlockNodeNameBackingChainData,
                         qemuBlockNodeNameBackingChainDataFree);
 
 

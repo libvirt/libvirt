@@ -101,4 +101,4 @@ qemuMonitorPtr qemuMonitorTestGetMonitor(qemuMonitorTestPtr test);
 qemuAgentPtr qemuMonitorTestGetAgent(qemuMonitorTestPtr test);
 virDomainObjPtr qemuMonitorTestGetDomainObj(qemuMonitorTestPtr test);
 
-VIR_DEFINE_AUTOPTR_FUNC(qemuMonitorTest, qemuMonitorTestFree);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuMonitorTest, qemuMonitorTestFree);

@@ -93,7 +93,7 @@ qemuMigrationParamsNew(void);
 
 void
 qemuMigrationParamsFree(qemuMigrationParamsPtr migParams);
-VIR_DEFINE_AUTOPTR_FUNC(qemuMigrationParams, qemuMigrationParamsFree);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuMigrationParams, qemuMigrationParamsFree);
 
 int
 qemuMigrationParamsApply(virQEMUDriverPtr driver,

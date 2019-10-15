@@ -1343,7 +1343,7 @@ int qemuMonitorGetCurrentMachineInfo(qemuMonitorPtr mon,
                                      qemuMonitorCurrentMachineInfoPtr info);
 void qemuMonitorJobInfoFree(qemuMonitorJobInfoPtr job);
 
-VIR_DEFINE_AUTOPTR_FUNC(qemuMonitorJobInfo, qemuMonitorJobInfoFree);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuMonitorJobInfo, qemuMonitorJobInfoFree);
 
 int qemuMonitorGetJobInfo(qemuMonitorPtr mon,
                           qemuMonitorJobInfoPtr **jobs,

@@ -163,4 +163,4 @@ int virSocketAddrPTRDomain(const virSocketAddr *addr,
 
 void virSocketAddrFree(virSocketAddrPtr addr);
 
-VIR_DEFINE_AUTOPTR_FUNC(virSocketAddr, virSocketAddrFree);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virSocketAddr, virSocketAddrFree);

@@ -219,4 +219,4 @@ int virCommandRunNul(virCommandPtr cmd,
                      virCommandRunNulFunc func,
                      void *data);
 
-VIR_DEFINE_AUTOPTR_FUNC(virCommand, virCommandFree);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCommand, virCommandFree);

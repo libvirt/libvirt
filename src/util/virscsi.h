@@ -95,4 +95,4 @@ void virSCSIDeviceListDel(virSCSIDeviceListPtr list,
 virSCSIDevicePtr virSCSIDeviceListFind(virSCSIDeviceListPtr list,
                                        virSCSIDevicePtr dev);
 
-VIR_DEFINE_AUTOPTR_FUNC(virSCSIDevice, virSCSIDeviceFree);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virSCSIDevice, virSCSIDeviceFree);

@@ -116,7 +116,7 @@ qemuVhostUserGPUFeatureFree(qemuVhostUserGPUFeature *features)
 }
 
 
-VIR_DEFINE_AUTOPTR_FUNC(qemuVhostUserGPUFeature, qemuVhostUserGPUFeatureFree);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuVhostUserGPUFeature, qemuVhostUserGPUFeatureFree);
 
 
 void

@@ -77,4 +77,4 @@ void qemuSlirpStop(qemuSlirpPtr slirp,
 
 int qemuSlirpGetFD(qemuSlirpPtr slirp);
 
-VIR_DEFINE_AUTOPTR_FUNC(qemuSlirp, qemuSlirpFree);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuSlirp, qemuSlirpFree);

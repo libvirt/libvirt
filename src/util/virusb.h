@@ -98,4 +98,4 @@ void virUSBDeviceListDel(virUSBDeviceListPtr list,
 virUSBDevicePtr virUSBDeviceListFind(virUSBDeviceListPtr list,
                                      virUSBDevicePtr dev);
 
-VIR_DEFINE_AUTOPTR_FUNC(virUSBDevice, virUSBDeviceFree);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virUSBDevice, virUSBDeviceFree);

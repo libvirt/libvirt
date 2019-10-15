@@ -64,7 +64,7 @@ typedef struct nl_handle virNetlinkHandle;
 typedef struct nl_sock virNetlinkHandle;
 # endif
 
-VIR_DEFINE_AUTOPTR_FUNC(virNetlinkHandle, virNetlinkFree);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNetlinkHandle, virNetlinkFree);
 
 typedef struct _virNetlinkEventSrvPrivate virNetlinkEventSrvPrivate;
 typedef virNetlinkEventSrvPrivate *virNetlinkEventSrvPrivatePtr;

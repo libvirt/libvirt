@@ -104,7 +104,7 @@ struct qemuBlockStorageSourceAttachData {
 void
 qemuBlockStorageSourceAttachDataFree(qemuBlockStorageSourceAttachDataPtr data);
 
-VIR_DEFINE_AUTOPTR_FUNC(qemuBlockStorageSourceAttachData,
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuBlockStorageSourceAttachData,
                         qemuBlockStorageSourceAttachDataFree);
 
 qemuBlockStorageSourceAttachDataPtr
@@ -156,7 +156,7 @@ qemuBlockStorageSourceChainDetach(qemuMonitorPtr mon,
                                   qemuBlockStorageSourceChainDataPtr data);
 
 
-VIR_DEFINE_AUTOPTR_FUNC(qemuBlockStorageSourceChainData,
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuBlockStorageSourceChainData,
                         qemuBlockStorageSourceChainDataFree);
 
 int

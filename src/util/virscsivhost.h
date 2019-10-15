@@ -63,4 +63,4 @@ void virSCSIVHostDeviceGetUsedBy(virSCSIVHostDevicePtr dev,
 void virSCSIVHostDeviceFree(virSCSIVHostDevicePtr dev);
 int virSCSIVHostOpenVhostSCSI(int *vhostfd) G_GNUC_NO_INLINE;
 
-VIR_DEFINE_AUTOPTR_FUNC(virSCSIVHostDevice, virSCSIVHostDeviceFree);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virSCSIVHostDevice, virSCSIVHostDeviceFree);
