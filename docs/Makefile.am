@@ -315,7 +315,7 @@ $(APIBUILD_STAMP): $(srcdir)/apibuild.py \
 		$(top_srcdir)/src/libvirt-stream.c \
 		$(top_srcdir)/src/libvirt-lxc.c \
 		$(top_srcdir)/src/libvirt-qemu.c \
-		$(top_srcdir)/src/libvirt-admin.c \
+		$(top_srcdir)/src/admin/libvirt-admin.c \
 		$(top_srcdir)/src/util/virerror.c \
 		$(top_srcdir)/src/util/virevent.c \
 		$(top_srcdir)/src/util/virtypedparam-public.c

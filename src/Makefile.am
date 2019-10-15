@@ -65,6 +65,7 @@ MAINTAINERCLEANFILES =
 nodist_conf_DATA =
 DRIVER_SOURCE_FILES =
 STATEFUL_DRIVER_SOURCE_FILES =
+lib_LTLIBRARIES =
 noinst_LTLIBRARIES =
 mod_LTLIBRARIES =
 INSTALL_DATA_DIRS =
@@ -145,12 +146,12 @@ SECDRIVER_LIBS += $(APPARMOR_LIBS)
 endif WITH_SECDRIVER_APPARMOR
 
 
-lib_LTLIBRARIES = libvirt.la libvirt-qemu.la libvirt-lxc.la
+lib_LTLIBRARIES += libvirt.la libvirt-qemu.la libvirt-lxc.la
 
 moddir = $(libdir)/libvirt/connection-driver
 
 confdir = $(sysconfdir)/libvirt
-conf_DATA += libvirt.conf libvirt-admin.conf
+conf_DATA += libvirt.conf
 
 CLEANFILES += $(nodist_conf_DATA)
 BUILT_SOURCES += $(nodist_conf_DATA)
@@ -276,19 +277,12 @@ if WITH_LINUX
 check-symfile: libvirt.syms libvirt.la
 	$(AM_V_GEN)$(PERL) $(srcdir)/check-symfile.pl libvirt.syms \
 	  .libs/libvirt.so
-check-admin-symfile: libvirt_admin.syms libvirt-admin.la
-	$(AM_V_GEN)$(PERL) $(srcdir)/check-symfile.pl libvirt_admin.syms \
-	  .libs/libvirt-admin.so
 else ! WITH_LINUX
 check-symfile:
-check-admin-symfile:
 endif ! WITH_LINUX
 check-symsorting:
 	$(AM_V_GEN)$(PERL) $(srcdir)/check-symsorting.pl \
 		$(srcdir) $(SYM_FILES)
-check-admin-symsorting:
-	$(AM_V_GEN)$(PERL) $(srcdir)/check-symsorting.pl \
-		$(srcdir) $(ADMIN_SYM_FILES)
 EXTRA_DIST += check-symfile.pl check-symsorting.pl
 
 # Keep this list synced with RPC_PROBE_FILES
@@ -339,7 +333,6 @@ check-drivername:
 	$(AM_V_GEN)$(PERL) $(srcdir)/check-drivername.pl \
 		$(srcdir)/driver.h \
 		$(srcdir)/libvirt_public.syms \
-		$(srcdir)/libvirt_admin_public.syms \
 		$(srcdir)/libvirt_qemu.syms \
 		$(srcdir)/libvirt_lxc.syms
 
@@ -366,7 +359,7 @@ EXTRA_DIST += check-driverimpls.pl check-aclrules.pl check-aclperms.pl
 
 check-local: check-protocol check-symfile check-symsorting \
 	check-drivername check-driverimpls check-aclrules \
-	check-aclperms check-admin-symfile check-admin-symsorting
+	check-aclperms check-admin
 .PHONY: check-protocol $(PROTOCOL_STRUCTS:structs=struct)
 
 
@@ -393,7 +386,6 @@ SYM_FILES += $(USED_SYM_FILES)
 USED_SYM_FILES += $(srcdir)/libvirt_private.syms
 GENERATED_SYM_FILES += \
 	libvirt.syms libvirt.def libvirt_qemu.def libvirt_lxc.def \
-	libvirt_admin.syms libvirt_admin.def \
 	$(NULL)
 
 
@@ -480,9 +472,7 @@ EXTRA_DIST += \
 	libvirt_public.syms \
 	libvirt_lxc.syms \
 	libvirt_qemu.syms \
-	libvirt_admin_public.syms \
 	$(SYM_FILES) \
-	$(ADMIN_SYM_FILES) \
 	$(NULL)
 
 BUILT_SOURCES += $(GENERATED_SYM_FILES)
@@ -508,69 +498,6 @@ libvirt.syms: libvirt_public.syms $(USED_SYM_FILES) \
 	    -e 's/[	 ]*\(.*\)\;/    \1/g' $^ >> $@-tmp && \
 	chmod a-w $@-tmp && \
 	mv $@-tmp $@
-
-libvirt_admin.syms: libvirt_admin_public.syms $(ADMIN_SYM_FILES) \
-		$(top_builddir)/config.status
-	$(AM_V_GEN)rm -f $@-tmp $@ ; \
-	printf '# WARNING: generated from the following:\n# $^\n\n' >$@-tmp && \
-	cat $(srcdir)/libvirt_admin_public.syms >>$@-tmp && \
-	printf '\n\n# Private symbols\n\n' >>$@-tmp && \
-	printf 'LIBVIRT_ADMIN_PRIVATE_$(VERSION) {\n\n'  >>$@-tmp && \
-	printf 'global:\n\n' >>$@-tmp && \
-	cat $(ADMIN_SYM_FILES) >>$@-tmp && \
-	printf '\n\nlocal:\n*;\n\n};' >>$@-tmp && \
-	chmod a-w $@-tmp && \
-	mv $@-tmp libvirt_admin.syms
-
-
-lib_LTLIBRARIES += libvirt-admin.la
-libvirt_admin_la_SOURCES = \
-		libvirt-admin.c \
-		$(ADMIN_PROTOCOL_GENERATED) \
-		$(DATATYPES_SOURCES)
-
-libvirt_admin_la_LDFLAGS = \
-		$(VERSION_SCRIPT_FLAGS)$(LIBVIRT_ADMIN_SYMBOL_FILE) \
-		-version-info $(LIBVIRT_VERSION_INFO) \
-		$(LIBVIRT_NODELETE) \
-		$(AM_LDFLAGS) \
-		$(NULL)
-
-libvirt_admin_la_LIBADD = \
-		libvirt.la \
-		$(CYGWIN_EXTRA_LIBADD)
-
-libvirt_admin_la_CFLAGS = \
-		$(AM_CFLAGS) \
-		-I$(srcdir)/remote \
-		-I$(srcdir)/rpc \
-		-I$(srcdir)/admin
-
-libvirt_admin_la_CFLAGS += \
-		$(XDR_CFLAGS) \
-		$(CAPNG_CFLAGS) \
-		$(YAJL_CFLAGS) \
-		$(SSH2_CFLAGS) \
-		$(SASL_CFLAGS) \
-		$(GNUTLS_CFLAGS) \
-		$(LIBSSH_CFLAGS)
-
-libvirt_admin_la_LIBADD += \
-		$(CAPNG_LIBS) \
-		$(YAJL_LIBS) \
-		$(DEVMAPPER_LIBS) \
-		$(LIBXML_LIBS) \
-		$(GLIB_LIBS) \
-		$(SSH2_LIBS) \
-		$(SASL_LIBS) \
-		$(GNUTLS_LIBS) \
-		$(LIBSSH_LIBS)
-
-ADMIN_SYM_FILES = $(srcdir)/libvirt_admin_private.syms
-
-if WITH_DTRACE_PROBES
-libvirt_admin_la_LIBADD += libvirt_probes.lo
-endif WITH_DTRACE_PROBES
 
 # Empty source list - it merely links a bunch of convenience libs together
 libvirt_la_SOURCES =

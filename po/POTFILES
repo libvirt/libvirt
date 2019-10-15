@@ -5,6 +5,7 @@ src/access/viraccessmanager.c
 src/admin/admin_server.c
 src/admin/admin_server_dispatch.c
 src/admin/admin_server_dispatch_stubs.h
+src/admin/libvirt-admin.c
 src/bhyve/bhyve_capabilities.c
 src/bhyve/bhyve_command.c
 src/bhyve/bhyve_device.c
@@ -68,7 +69,6 @@ src/hyperv/hyperv_wmi.c
 src/interface/interface_backend_netcf.c
 src/interface/interface_backend_udev.c
 src/internal.h
-src/libvirt-admin.c
 src/libvirt-domain-checkpoint.c
 src/libvirt-domain-snapshot.c
 src/libvirt-domain.c

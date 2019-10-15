@@ -40,10 +40,80 @@ libvirt_driver_admin_la_CFLAGS += \
 	$(NULL)
 endif WITH_SASL
 
-# admin/admin_remote.c is being included in libvirt-admin.c, so we
-# need to include it in the dist
-EXTRA_DIST += admin/admin_remote.c
+GENERATED_SYM_FILES += admin/libvirt_admin.syms admin/libvirt_admin.def
 
+ADMIN_SYM_FILES = $(srcdir)/admin/libvirt_admin_private.syms
+
+# admin/admin_remote.c is being included in admin/libvirt-admin.c, so we
+# need to include it in the dist
+EXTRA_DIST += \
+	admin/admin_remote.c \
+	admin/libvirt_admin_public.syms \
+	$(ADMIN_SYM_FILES) \
+	$(NULL)
+
+conf_DATA += admin/libvirt-admin.conf
+
+lib_LTLIBRARIES += libvirt-admin.la
+
+libvirt_admin_la_SOURCES = \
+	admin/libvirt-admin.c \
+	$(ADMIN_PROTOCOL_GENERATED) \
+	$(DATATYPES_SOURCES)
+
+libvirt_admin_la_LDFLAGS = \
+	$(VERSION_SCRIPT_FLAGS)$(LIBVIRT_ADMIN_SYMBOL_FILE) \
+	-version-info $(LIBVIRT_VERSION_INFO) \
+	$(LIBVIRT_NODELETE) \
+	$(AM_LDFLAGS) \
+	$(NULL)
+
+libvirt_admin_la_LIBADD = \
+	libvirt.la \
+	$(CYGWIN_EXTRA_LIBADD) \
+	$(CAPNG_LIBS) \
+	$(YAJL_LIBS) \
+	$(DEVMAPPER_LIBS) \
+	$(LIBXML_LIBS) \
+	$(GLIB_LIBS) \
+	$(SSH2_LIBS) \
+	$(SASL_LIBS) \
+	$(GNUTLS_LIBS) \
+	$(LIBSSH_LIBS)
+
+if WITH_DTRACE_PROBES
+libvirt_admin_la_LIBADD += libvirt_probes.lo
+endif WITH_DTRACE_PROBES
+
+libvirt_admin_la_CFLAGS = \
+	$(AM_CFLAGS) \
+	-I$(srcdir)/remote \
+	-I$(srcdir)/rpc \
+	$(XDR_CFLAGS) \
+	$(CAPNG_CFLAGS) \
+	$(YAJL_CFLAGS) \
+	$(SSH2_CFLAGS) \
+	$(SASL_CFLAGS) \
+	$(GNUTLS_CFLAGS) \
+	$(LIBSSH_CFLAGS)
+
+if WITH_LINUX
+check-admin-symfile: admin/libvirt_admin.syms libvirt-admin.la
+	$(AM_V_GEN)$(PERL) $(srcdir)/check-symfile.pl admin/libvirt_admin.syms \
+		.libs/libvirt-admin.so
+else ! WITH_LINUX
+check-admin-symfile:
+endif ! WITH_LINUX
+
+check-admin-symsorting:
+	$(AM_V_GEN)$(PERL) $(srcdir)/check-symsorting.pl \
+		$(srcdir) $(ADMIN_SYM_FILES)
+
+check-admin-drivername:
+	$(AM_V_GEN)$(PERL) $(srcdir)/check-drivername.pl \
+		$(srcdir)/admin/libvirt_admin_public.syms
+
+check-admin: check-admin-symfile check-admin-symsorting check-admin-drivername
 
 admin/admin_client.h: $(srcdir)/rpc/gendispatch.pl \
 		$(ADMIN_PROTOCOL) Makefile.am
@@ -56,3 +126,16 @@ admin/admin_server_dispatch_stubs.h: $(srcdir)/rpc/gendispatch.pl \
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=server \
 	  admin ADMIN $(ADMIN_PROTOCOL) \
 	  > $(srcdir)/admin/admin_server_dispatch_stubs.h
+
+admin/libvirt_admin.syms: admin/libvirt_admin_public.syms $(ADMIN_SYM_FILES) \
+		$(top_builddir)/config.status
+	$(AM_V_GEN)rm -f $@-tmp $@ ; \
+	printf '# WARNING: generated from the following:\n# $^\n\n' >$@-tmp && \
+	cat $(srcdir)/admin/libvirt_admin_public.syms >>$@-tmp && \
+	printf '\n\n# Private symbols\n\n' >>$@-tmp && \
+	printf 'LIBVIRT_ADMIN_PRIVATE_$(VERSION) {\n\n'  >>$@-tmp && \
+	printf 'global:\n\n' >>$@-tmp && \
+	cat $(ADMIN_SYM_FILES) >>$@-tmp && \
+	printf '\n\nlocal:\n*;\n\n};' >>$@-tmp && \
+	chmod a-w $@-tmp && \
+	mv $@-tmp admin/libvirt_admin.syms

@@ -19,7 +19,7 @@ dnl
 
 AC_DEFUN([LIBVIRT_WIN_CHECK_SYMBOLS], [
   LIBVIRT_SYMBOL_FILE=libvirt.syms
-  LIBVIRT_ADMIN_SYMBOL_FILE=libvirt_admin.syms
+  LIBVIRT_ADMIN_SYMBOL_FILE=admin/libvirt_admin.syms
   LIBVIRT_LXC_SYMBOL_FILE='$(srcdir)/libvirt_lxc.syms'
   LIBVIRT_QEMU_SYMBOL_FILE='$(srcdir)/libvirt_qemu.syms'
   case "$host" in
@@ -28,7 +28,7 @@ AC_DEFUN([LIBVIRT_WIN_CHECK_SYMBOLS], [
       # from libvirt.syms and passes libvirt.def instead of libvirt.syms to the
       # linker
       LIBVIRT_SYMBOL_FILE=libvirt.def
-      LIBVIRT_ADMIN_SYMBOL_FILE=libvirt_admin.def
+      LIBVIRT_ADMIN_SYMBOL_FILE=admin/libvirt_admin.def
       LIBVIRT_LXC_SYMBOL_FILE=libvirt_lxc.def
       LIBVIRT_QEMU_SYMBOL_FILE=libvirt_qemu.def
       ;;

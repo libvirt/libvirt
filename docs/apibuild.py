@@ -67,7 +67,7 @@ lxc_included_files = {
 
 admin_included_files = {
   "libvirt-admin.h": "header with admin specific API definitions",
-  "libvirt-admin.c": "Implementations for the admin specific APIs",
+  "admin/libvirt-admin.c": "Implementations for the admin specific APIs",
 }
 
 ignored_words = {
@@ -2549,6 +2549,7 @@ class app:
             if not quiet:
                 print("Rebuilding API description for %s" % name)
             dirs = [srcdir + "/../src",
+                    srcdir + "/../src/admin",
                     srcdir + "/../src/util",
                     srcdir + "/../include/libvirt"]
             if (builddir and
