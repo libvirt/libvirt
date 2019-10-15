@@ -510,7 +510,7 @@ ppc64Compute(virCPUDefPtr host,
                 ret = tmp;
                 goto cleanup;
             }
-            ATTRIBUTE_FALLTHROUGH;
+            G_GNUC_FALLTHROUGH;
 
         case VIR_CPU_MODE_HOST_PASSTHROUGH:
             /* host-model and host-passthrough:

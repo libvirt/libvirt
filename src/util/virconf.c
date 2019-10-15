@@ -984,7 +984,7 @@ int virConfGetValueStringList(virConfPtr conf,
             }
             break;
         }
-        ATTRIBUTE_FALLTHROUGH;
+        G_GNUC_FALLTHROUGH;
 
     case VIR_CONF_LLONG:
     case VIR_CONF_ULLONG:

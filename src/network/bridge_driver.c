@@ -2961,7 +2961,7 @@ networkStartNetwork(virNetworkDriverStatePtr driver,
          * VIR_NETWORK_FORWARD_BRIDGE with no bridge device defined
          * (since that is macvtap bridge mode).
          */
-        ATTRIBUTE_FALLTHROUGH;
+        G_GNUC_FALLTHROUGH;
 
     case VIR_NETWORK_FORWARD_PRIVATE:
     case VIR_NETWORK_FORWARD_VEPA:
@@ -3048,7 +3048,7 @@ networkShutdownNetwork(virNetworkDriverStatePtr driver,
          * VIR_NETWORK_FORWARD_BRIDGE with no bridge device defined
          * (since that is macvtap bridge mode).
          */
-        ATTRIBUTE_FALLTHROUGH;
+        G_GNUC_FALLTHROUGH;
 
     case VIR_NETWORK_FORWARD_PRIVATE:
     case VIR_NETWORK_FORWARD_VEPA:
@@ -3433,7 +3433,7 @@ networkValidate(virNetworkDriverStatePtr driver,
         if (def->bridge != NULL)
             bandwidthAllowed = true;
 
-        ATTRIBUTE_FALLTHROUGH;
+        G_GNUC_FALLTHROUGH;
 
     case VIR_NETWORK_FORWARD_PRIVATE:
     case VIR_NETWORK_FORWARD_VEPA:
@@ -4710,7 +4710,7 @@ networkAllocatePort(virNetworkObjPtr obj,
         /* intentionally fall through to the direct case for
          * VIR_NETWORK_FORWARD_BRIDGE with no bridge device defined
          */
-        ATTRIBUTE_FALLTHROUGH;
+        G_GNUC_FALLTHROUGH;
 
     case VIR_NETWORK_FORWARD_PRIVATE:
     case VIR_NETWORK_FORWARD_VEPA:

@@ -1159,7 +1159,7 @@ doRemoteOpen(virConnectPtr conn,
         if (!priv->tls)
             goto failed;
         priv->is_secure = 1;
-        ATTRIBUTE_FALLTHROUGH;
+        G_GNUC_FALLTHROUGH;
 #else
         (void)tls_priority;
         (void)sanity;

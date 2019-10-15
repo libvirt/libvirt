@@ -7254,7 +7254,7 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
                  * early instead of erroring out */
                 break;
             }
-            ATTRIBUTE_FALLTHROUGH;
+            G_GNUC_FALLTHROUGH;
 
         case VIR_GIC_VERSION_3:
         case VIR_GIC_VERSION_HOST:
@@ -9053,7 +9053,7 @@ qemuBuildShmemCommandLine(virLogManagerPtr logManager,
         virCommandAddArg(cmd, "-object");
         virCommandAddArgBuffer(cmd, &buf);
 
-        ATTRIBUTE_FALLTHROUGH;
+        G_GNUC_FALLTHROUGH;
     case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM_DOORBELL:
         devstr = qemuBuildShmemDevStr(def, shmem, qemuCaps);
         break;

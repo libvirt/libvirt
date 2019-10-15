@@ -4811,7 +4811,7 @@ qemuProcessGetNetworkAddress(const char *netname,
          * fall through if netdef->bridge wasn't set, since that is
          * macvtap bridge mode network.
          */
-        ATTRIBUTE_FALLTHROUGH;
+        G_GNUC_FALLTHROUGH;
 
     case VIR_NETWORK_FORWARD_PRIVATE:
     case VIR_NETWORK_FORWARD_VEPA:

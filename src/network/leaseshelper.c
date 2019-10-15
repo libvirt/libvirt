@@ -193,7 +193,7 @@ main(int argc, char **argv)
         if (!lease_new)
             break;
 
-        ATTRIBUTE_FALLTHROUGH;
+        G_GNUC_FALLTHROUGH;
     case VIR_LEASE_ACTION_DEL:
         /* Delete the corresponding lease, if it already exists */
         delete = true;
@@ -230,7 +230,7 @@ main(int argc, char **argv)
         }
         lease_new = NULL;
 
-        ATTRIBUTE_FALLTHROUGH;
+        G_GNUC_FALLTHROUGH;
     case VIR_LEASE_ACTION_DEL:
         if (!(leases_str = virJSONValueToString(leases_array_new, true))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

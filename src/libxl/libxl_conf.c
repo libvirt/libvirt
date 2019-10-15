@@ -1346,7 +1346,7 @@ libxlMakeNic(virDomainDefPtr def,
             if (VIR_STRDUP(x_nic->bridge,
                            virBufferCurrentContent(&buf)) < 0)
                 goto cleanup;
-            ATTRIBUTE_FALLTHROUGH;
+            G_GNUC_FALLTHROUGH;
         case VIR_DOMAIN_NET_TYPE_ETHERNET:
             if (VIR_STRDUP(x_nic->script, script) < 0)
                 goto cleanup;

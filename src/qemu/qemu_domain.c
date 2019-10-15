@@ -209,7 +209,7 @@ qemuDomainAsyncJobPhaseToString(qemuDomainAsyncJob job,
     case QEMU_ASYNC_JOB_SNAPSHOT:
     case QEMU_ASYNC_JOB_START:
     case QEMU_ASYNC_JOB_NONE:
-        ATTRIBUTE_FALLTHROUGH;
+        G_GNUC_FALLTHROUGH;
     case QEMU_ASYNC_JOB_LAST:
         break;
     }
@@ -234,7 +234,7 @@ qemuDomainAsyncJobPhaseFromString(qemuDomainAsyncJob job,
     case QEMU_ASYNC_JOB_SNAPSHOT:
     case QEMU_ASYNC_JOB_START:
     case QEMU_ASYNC_JOB_NONE:
-        ATTRIBUTE_FALLTHROUGH;
+        G_GNUC_FALLTHROUGH;
     case QEMU_ASYNC_JOB_LAST:
         break;
     }
@@ -3102,7 +3102,7 @@ qemuDomainObjPrivateXMLParseBlockjobDataSpecific(qemuBlockJobDataPtr job,
             if (!job->data.commit.topparent)
                 goto broken;
 
-            ATTRIBUTE_FALLTHROUGH;
+            G_GNUC_FALLTHROUGH;
         case QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT:
             qemuDomainObjPrivateXMLParseBlockjobNodename(job,
                                                          "string(./top/@node)",

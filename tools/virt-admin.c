@@ -1329,7 +1329,7 @@ vshAdmParseArgv(vshControl *ctl, int argc, char **argv)
                 puts(VERSION);
                 exit(EXIT_SUCCESS);
             }
-            ATTRIBUTE_FALLTHROUGH;
+            G_GNUC_FALLTHROUGH;
         case 'V':
             vshAdmShowVersion(ctl);
             exit(EXIT_SUCCESS);

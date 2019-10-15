@@ -582,7 +582,7 @@ qemuMigrationSrcNBDCopyCancelled(virDomainObjPtr vm,
                 qemuMigrationNBDReportMirrorError(job, disk->dst);
                 failed = true;
             }
-            ATTRIBUTE_FALLTHROUGH;
+            G_GNUC_FALLTHROUGH;
         case VIR_DOMAIN_BLOCK_JOB_CANCELED:
         case VIR_DOMAIN_BLOCK_JOB_COMPLETED:
             diskPriv->migrating = false;
@@ -656,7 +656,7 @@ qemuMigrationSrcNBDCopyCancelOne(virQEMUDriverPtr driver,
             qemuMigrationNBDReportMirrorError(job, disk->dst);
             goto cleanup;
         }
-        ATTRIBUTE_FALLTHROUGH;
+        G_GNUC_FALLTHROUGH;
     case VIR_DOMAIN_BLOCK_JOB_COMPLETED:
         ret = 1;
         goto cleanup;

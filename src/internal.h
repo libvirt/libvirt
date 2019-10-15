@@ -137,16 +137,17 @@
 
 /**
  *
- * ATTRIBUTE_FALLTHROUGH
+ * G_GNUC_FALLTHROUGH
  *
  * silence the compiler warning when falling through a switch case
  *
+ * TODO: Remove after upgrading to GLib >= 2.60
  */
-#ifndef ATTRIBUTE_FALLTHROUGH
+#ifndef G_GNUC_FALLTHROUGH
 # if __GNUC_PREREQ (7, 0)
-#  define ATTRIBUTE_FALLTHROUGH __attribute__((fallthrough))
+#  define G_GNUC_FALLTHROUGH __attribute__((fallthrough))
 # else
-#  define ATTRIBUTE_FALLTHROUGH do {} while(0)
+#  define G_GNUC_FALLTHROUGH do {} while(0)
 # endif
 #endif
 

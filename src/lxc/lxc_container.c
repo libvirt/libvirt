@@ -2044,7 +2044,7 @@ static int lxcContainerDropCapabilities(virDomainDefPtr def,
             default: /* User specified capabilities to drop */
                 toDrop = (state == VIR_TRISTATE_SWITCH_OFF);
             }
-            ATTRIBUTE_FALLTHROUGH;
+            G_GNUC_FALLTHROUGH;
 
         case VIR_DOMAIN_CAPABILITIES_POLICY_ALLOW:
             if (policy == VIR_DOMAIN_CAPABILITIES_POLICY_ALLOW)

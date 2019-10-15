@@ -2596,14 +2596,14 @@ virshBlockJobInfo(vshControl *ctl,
             switch (last_error->code) {
             case VIR_ERR_INVALID_ARG:
                 priv->blockJobNoBytes = true;
-                ATTRIBUTE_FALLTHROUGH;
+                G_GNUC_FALLTHROUGH;
             case VIR_ERR_OVERFLOW:
                 if (!bytes && !raw) {
                     /* try again with MiB/s, unless forcing bytes */
                     vshResetLibvirtError();
                     break;
                 }
-                ATTRIBUTE_FALLTHROUGH;
+                G_GNUC_FALLTHROUGH;
             default:
                 goto cleanup;
             }

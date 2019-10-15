@@ -487,7 +487,7 @@ virISCSIScanTargets(const char *portal,
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("no iSCSI interface defined for IQN %s"),
                            initiatoriqn);
-            ATTRIBUTE_FALLTHROUGH;
+            G_GNUC_FALLTHROUGH;
         case IQN_ERROR:
         default:
             return -1;

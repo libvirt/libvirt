@@ -17486,7 +17486,7 @@ virDomainChrEquals(virDomainChrDefPtr src,
         if (src->targetType != tgt->targetType)
             return false;
 
-        ATTRIBUTE_FALLTHROUGH;
+        G_GNUC_FALLTHROUGH;
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE:
     case VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL:
@@ -20290,7 +20290,7 @@ virDomainDefParseXML(xmlDocPtr xml,
                 def->apic_eoi = eoi;
                 VIR_FREE(tmp);
             }
-            ATTRIBUTE_FALLTHROUGH;
+            G_GNUC_FALLTHROUGH;
         case VIR_DOMAIN_FEATURE_ACPI:
         case VIR_DOMAIN_FEATURE_PAE:
         case VIR_DOMAIN_FEATURE_VIRIDIAN:
@@ -31205,7 +31205,7 @@ virDomainNetResolveActualType(virDomainNetDefPtr iface)
         /* intentionally fall through to the direct case for
          * VIR_NETWORK_FORWARD_BRIDGE with no bridge device defined
          */
-        ATTRIBUTE_FALLTHROUGH;
+        G_GNUC_FALLTHROUGH;
 
     case VIR_NETWORK_FORWARD_PRIVATE:
     case VIR_NETWORK_FORWARD_VEPA:
@@ -31471,7 +31471,7 @@ virDomainDiskTranslateSourcePool(virDomainDiskDefPtr def)
        case VIR_STORAGE_SOURCE_POOL_MODE_DEFAULT:
        case VIR_STORAGE_SOURCE_POOL_MODE_LAST:
            def->src->srcpool->mode = VIR_STORAGE_SOURCE_POOL_MODE_HOST;
-           ATTRIBUTE_FALLTHROUGH;
+           G_GNUC_FALLTHROUGH;
        case VIR_STORAGE_SOURCE_POOL_MODE_HOST:
            def->src->srcpool->actualtype = VIR_STORAGE_TYPE_BLOCK;
            if (!(def->src->path = virStorageVolGetPath(vol)))

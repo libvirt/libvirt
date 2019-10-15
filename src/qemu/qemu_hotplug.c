@@ -2957,7 +2957,7 @@ qemuDomainAttachShmemDevice(virQEMUDriverPtr driver,
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("live attach of shmem model '%s' is not supported"),
                        virDomainShmemModelTypeToString(shmem->model));
-        ATTRIBUTE_FALLTHROUGH;
+        G_GNUC_FALLTHROUGH;
     case VIR_DOMAIN_SHMEM_MODEL_LAST:
         return -1;
     }
@@ -5454,7 +5454,7 @@ qemuDomainDetachPrepShmem(virDomainObjPtr vm,
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("live detach of shmem model '%s' is not supported"),
                        virDomainShmemModelTypeToString(shmem->model));
-        ATTRIBUTE_FALLTHROUGH;
+        G_GNUC_FALLTHROUGH;
     case VIR_DOMAIN_SHMEM_MODEL_LAST:
         return -1;
     }

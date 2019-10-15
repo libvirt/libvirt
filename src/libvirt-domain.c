@@ -8037,7 +8037,7 @@ virDomainSetMetadata(virDomainPtr domain,
                                   "newlines"));
             goto error;
         }
-        ATTRIBUTE_FALLTHROUGH;
+        G_GNUC_FALLTHROUGH;
     case VIR_DOMAIN_METADATA_DESCRIPTION:
         virCheckNullArgGoto(uri, error);
         virCheckNullArgGoto(key, error);

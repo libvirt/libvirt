@@ -1984,7 +1984,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt,
                            def->name);
             goto error;
         }
-        ATTRIBUTE_FALLTHROUGH;
+        G_GNUC_FALLTHROUGH;
 
     case VIR_NETWORK_FORWARD_BRIDGE:
         if (def->delay || stp || def->bridgeZone) {

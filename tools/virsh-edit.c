@@ -137,7 +137,7 @@ do {
                 relax_avail = false;
                 goto redefine;
             }
-            ATTRIBUTE_FALLTHROUGH;
+            G_GNUC_FALLTHROUGH;
 #endif
 
         default:
