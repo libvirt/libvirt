@@ -9,7 +9,7 @@
 #include <libvirt/libvirt.h>
 #include <libvirt/virterror.h>
 
-#define ARRAY_CARDINALITY(Array) (sizeof(Array) / sizeof(*(Array)))
+#define G_N_ELEMENTS(Array) (sizeof(Array) / sizeof(*(Array)))
 #define STREQ(a, b) (strcmp(a, b) == 0)
 #define NULLSTR(s) ((s) ? (s) : "<null>")
 
@@ -1135,10 +1135,10 @@ struct secretEventData secretEvents[] = {
 };
 
 /* make sure that the events are kept in sync */
-verify(ARRAY_CARDINALITY(domainEvents) == VIR_DOMAIN_EVENT_ID_LAST);
-verify(ARRAY_CARDINALITY(storagePoolEvents) == VIR_STORAGE_POOL_EVENT_ID_LAST);
-verify(ARRAY_CARDINALITY(nodeDeviceEvents) == VIR_NODE_DEVICE_EVENT_ID_LAST);
-verify(ARRAY_CARDINALITY(secretEvents) == VIR_SECRET_EVENT_ID_LAST);
+verify(G_N_ELEMENTS(domainEvents) == VIR_DOMAIN_EVENT_ID_LAST);
+verify(G_N_ELEMENTS(storagePoolEvents) == VIR_STORAGE_POOL_EVENT_ID_LAST);
+verify(G_N_ELEMENTS(nodeDeviceEvents) == VIR_NODE_DEVICE_EVENT_ID_LAST);
+verify(G_N_ELEMENTS(secretEvents) == VIR_SECRET_EVENT_ID_LAST);
 
 int
 main(int argc, char **argv)
@@ -1190,7 +1190,7 @@ main(int argc, char **argv)
                                                  strdup("callback 1"), myFreeFunc);
 
     /* register common domain callbacks */
-    for (i = 0; i < ARRAY_CARDINALITY(domainEvents); i++) {
+    for (i = 0; i < G_N_ELEMENTS(domainEvents); i++) {
         struct domainEventData *event = domainEvents + i;
 
         event->id = virConnectDomainEventRegisterAny(dconn, NULL,
@@ -1212,7 +1212,7 @@ main(int argc, char **argv)
                                                       strdup("net callback"), myFreeFunc);
 
     /* register common storage pool callbacks */
-    for (i = 0; i < ARRAY_CARDINALITY(storagePoolEvents); i++) {
+    for (i = 0; i < G_N_ELEMENTS(storagePoolEvents); i++) {
         struct storagePoolEventData *event = storagePoolEvents + i;
 
         event->id = virConnectStoragePoolEventRegisterAny(dconn, NULL,
@@ -1228,7 +1228,7 @@ main(int argc, char **argv)
     }
 
     /* register common node device callbacks */
-    for (i = 0; i < ARRAY_CARDINALITY(nodeDeviceEvents); i++) {
+    for (i = 0; i < G_N_ELEMENTS(nodeDeviceEvents); i++) {
         struct nodeDeviceEventData *event = nodeDeviceEvents + i;
 
         event->id = virConnectNodeDeviceEventRegisterAny(dconn, NULL,
@@ -1244,7 +1244,7 @@ main(int argc, char **argv)
     }
 
     /* register common secret callbacks */
-    for (i = 0; i < ARRAY_CARDINALITY(secretEvents); i++) {
+    for (i = 0; i < G_N_ELEMENTS(secretEvents); i++) {
         struct secretEventData *event = secretEvents + i;
 
         event->id = virConnectSecretEventRegisterAny(dconn, NULL,
@@ -1282,27 +1282,27 @@ main(int argc, char **argv)
 
 
     printf("Deregistering domain event callbacks\n");
-    for (i = 0; i < ARRAY_CARDINALITY(domainEvents); i++) {
+    for (i = 0; i < G_N_ELEMENTS(domainEvents); i++) {
         if (domainEvents[i].id > 0)
             virConnectDomainEventDeregisterAny(dconn, domainEvents[i].id);
     }
 
 
     printf("Deregistering storage pool event callbacks\n");
-    for (i = 0; i < ARRAY_CARDINALITY(storagePoolEvents); i++) {
+    for (i = 0; i < G_N_ELEMENTS(storagePoolEvents); i++) {
         if (storagePoolEvents[i].id > 0)
             virConnectStoragePoolEventDeregisterAny(dconn, storagePoolEvents[i].id);
     }
 
 
     printf("Deregistering node device event callbacks\n");
-    for (i = 0; i < ARRAY_CARDINALITY(nodeDeviceEvents); i++) {
+    for (i = 0; i < G_N_ELEMENTS(nodeDeviceEvents); i++) {
         if (nodeDeviceEvents[i].id > 0)
             virConnectNodeDeviceEventDeregisterAny(dconn, nodeDeviceEvents[i].id);
     }
 
     printf("Deregistering secret event callbacks\n");
-    for (i = 0; i < ARRAY_CARDINALITY(secretEvents); i++) {
+    for (i = 0; i < G_N_ELEMENTS(secretEvents); i++) {
         if (secretEvents[i].id > 0)
             virConnectSecretEventDeregisterAny(dconn, secretEvents[i].id);
     }
