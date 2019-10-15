@@ -3234,7 +3234,7 @@ qemuBuildControllersCommandLine(virCommandPtr cmd,
         VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL,
     };
 
-    for (i = 0; i < ARRAY_CARDINALITY(contOrder); i++) {
+    for (i = 0; i < G_N_ELEMENTS(contOrder); i++) {
         if (qemuBuildControllersByTypeCommandLine(cmd, def, qemuCaps, contOrder[i]) < 0)
             return -1;
     }

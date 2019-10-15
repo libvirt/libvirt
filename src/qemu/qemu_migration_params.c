@@ -214,7 +214,7 @@ static const qemuMigrationParamType qemuMigrationParamTypes[] = {
     [QEMU_MIGRATION_PARAM_MAX_POSTCOPY_BANDWIDTH] = QEMU_MIGRATION_PARAM_TYPE_ULL,
     [QEMU_MIGRATION_PARAM_MULTIFD_CHANNELS] = QEMU_MIGRATION_PARAM_TYPE_INT,
 };
-verify(ARRAY_CARDINALITY(qemuMigrationParamTypes) == QEMU_MIGRATION_PARAM_LAST);
+verify(G_N_ELEMENTS(qemuMigrationParamTypes) == QEMU_MIGRATION_PARAM_LAST);
 
 
 virBitmapPtr
@@ -226,7 +226,7 @@ qemuMigrationParamsGetAlwaysOnCaps(qemuMigrationParty party)
     if (!(caps = virBitmapNew(QEMU_MIGRATION_CAP_LAST)))
         return NULL;
 
-    for (i = 0; i < ARRAY_CARDINALITY(qemuMigrationParamsAlwaysOn); i++) {
+    for (i = 0; i < G_N_ELEMENTS(qemuMigrationParamsAlwaysOn); i++) {
         if (!(qemuMigrationParamsAlwaysOn[i].party & party))
             continue;
 
@@ -500,7 +500,7 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
     if (!(migParams = qemuMigrationParamsNew()))
         return NULL;
 
-    for (i = 0; i < ARRAY_CARDINALITY(qemuMigrationParamsFlagMap); i++) {
+    for (i = 0; i < G_N_ELEMENTS(qemuMigrationParamsFlagMap); i++) {
         qemuMigrationCapability cap = qemuMigrationParamsFlagMap[i].cap;
 
         if (qemuMigrationParamsFlagMap[i].party & party &&
@@ -511,7 +511,7 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
         }
     }
 
-    for (i = 0; i < ARRAY_CARDINALITY(qemuMigrationParamsTPMap); i++) {
+    for (i = 0; i < G_N_ELEMENTS(qemuMigrationParamsTPMap); i++) {
         const qemuMigrationParamsTPMapItem *item = &qemuMigrationParamsTPMap[i];
 
         if (!(item->party & party))
@@ -590,7 +590,7 @@ qemuMigrationParamsDump(qemuMigrationParamsPtr migParams,
             return -1;
     }
 
-    for (i = 0; i < ARRAY_CARDINALITY(qemuMigrationParamsTPMap); i++) {
+    for (i = 0; i < G_N_ELEMENTS(qemuMigrationParamsTPMap); i++) {
         const qemuMigrationParamsTPMapItem *item = &qemuMigrationParamsTPMap[i];
 
         if (!(item->party & QEMU_MIGRATION_DESTINATION))
@@ -1149,7 +1149,7 @@ qemuMigrationParamsCheck(virQEMUDriverPtr driver,
         }
     }
 
-    for (i = 0; i < ARRAY_CARDINALITY(qemuMigrationParamsAlwaysOn); i++) {
+    for (i = 0; i < G_N_ELEMENTS(qemuMigrationParamsAlwaysOn); i++) {
         cap = qemuMigrationParamsAlwaysOn[i].cap;
 
         if (qemuMigrationParamsAlwaysOn[i].party & party &&

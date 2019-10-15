@@ -43,7 +43,7 @@ testReadConfigParam(const void *data G_GNUC_UNUSED)
     if (virAsprintf(&conf, "%s/openvzutilstest.conf", abs_srcdir) < 0)
         return -1;
 
-    for (i = 0; i < ARRAY_CARDINALITY(configParams); ++i) {
+    for (i = 0; i < G_N_ELEMENTS(configParams); ++i) {
         if (openvzReadConfigParam(conf, configParams[i].param,
                                   &value) != configParams[i].ret) {
             goto cleanup;

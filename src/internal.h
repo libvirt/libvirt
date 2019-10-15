@@ -91,7 +91,6 @@
     ((a) ? !(b) || STRNEQ((a), (b)) : !!(b))
 
 #define NUL_TERMINATE(buf) do { (buf)[sizeof(buf)-1] = '\0'; } while (0)
-#define ARRAY_CARDINALITY(Array) (sizeof(Array) / sizeof(*(Array)))
 
 /**
  * G_GNUC_NO_INLINE:

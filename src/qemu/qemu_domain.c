@@ -11712,7 +11712,7 @@ ppc64VFIODeviceIsNV2Bridge(const char *device)
                                   "ibm,nvlink-speed", "memory-region"};
     size_t i;
 
-    for (i = 0; i < ARRAY_CARDINALITY(nvlink2Files); i++) {
+    for (i = 0; i < G_N_ELEMENTS(nvlink2Files); i++) {
         VIR_AUTOFREE(char *) file = NULL;
 
         if ((virAsprintf(&file, "/sys/bus/pci/devices/%s/of_node/%s",

@@ -3149,7 +3149,7 @@ static void qemuMigrationSrcIOFunc(void *arg)
         fds[0].events = fds[1].events = POLLIN;
         fds[0].revents = fds[1].revents = 0;
 
-        ret = poll(fds, ARRAY_CARDINALITY(fds), timeout);
+        ret = poll(fds, G_N_ELEMENTS(fds), timeout);
 
         if (ret < 0) {
             if (errno == EAGAIN || errno == EINTR)
@@ -4395,7 +4395,7 @@ static int virConnectCredType[] = {
 
 static virConnectAuth virConnectAuthConfig = {
     .credtype = virConnectCredType,
-    .ncredtype = ARRAY_CARDINALITY(virConnectCredType),
+    .ncredtype = G_N_ELEMENTS(virConnectCredType),
 };
 
 

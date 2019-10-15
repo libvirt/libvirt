@@ -253,7 +253,7 @@ virNetlinkSendRequest(struct nl_msg *nl_msg, uint32_t src_pid,
     fds[0].fd = fd;
     fds[0].events = POLLIN;
 
-    n = poll(fds, ARRAY_CARDINALITY(fds), NETLINK_ACK_TIMEOUT_S);
+    n = poll(fds, G_N_ELEMENTS(fds), NETLINK_ACK_TIMEOUT_S);
     if (n <= 0) {
         if (n < 0)
             virReportSystemError(errno, "%s",

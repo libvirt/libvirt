@@ -66,7 +66,7 @@ testVUPrecedence(const void *opaque G_GNUC_UNUSED)
         SYSCONFDIR "/qemu/vhost-user/40-gpu.json",
         PREFIX "/share/qemu/vhost-user/60-gpu.json",
     };
-    const size_t nexpected = ARRAY_CARDINALITY(expected);
+    const size_t nexpected = G_N_ELEMENTS(expected);
 
     if (VIR_STRDUP(fakehome, abs_srcdir "/qemuvhostuserdata/home/user/.config") < 0)
         return -1;

@@ -178,7 +178,7 @@ virFirewallValidateBackend(virFirewallBackend backend)
         };
         size_t i;
 
-        for (i = 0; i < ARRAY_CARDINALITY(commands); i++) {
+        for (i = 0; i < G_N_ELEMENTS(commands); i++) {
             if (!virFileIsExecutable(commands[i])) {
                 virReportSystemError(errno,
                                      _("direct firewall backend requested, but %s is not available"),

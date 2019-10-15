@@ -376,7 +376,7 @@ mymain(void)
 # define DO_TEST_MOUNT_SUBTREE(name, path, prefix, mounts, rev) \
     do { \
         struct testFileGetMountSubtreeData data = { \
-            path, prefix, mounts, ARRAY_CARDINALITY(mounts), rev \
+            path, prefix, mounts, G_N_ELEMENTS(mounts), rev \
         }; \
         if (virTestRun(name, testFileGetMountSubtree, &data) < 0) \
             ret = -1; \

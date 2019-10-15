@@ -316,43 +316,43 @@ testAddCPUModels(virQEMUCapsPtr caps, bool skipLegacy)
 
     if (ARCH_IS_X86(arch)) {
         if (virQEMUCapsAddCPUDefinitions(caps, VIR_DOMAIN_VIRT_KVM, x86Models,
-                                         ARRAY_CARDINALITY(x86Models),
+                                         G_N_ELEMENTS(x86Models),
                                          VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0 ||
             virQEMUCapsAddCPUDefinitions(caps, VIR_DOMAIN_VIRT_QEMU, x86Models,
-                                         ARRAY_CARDINALITY(x86Models),
+                                         G_N_ELEMENTS(x86Models),
                                          VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0)
             return -1;
 
         if (!skipLegacy) {
             if (virQEMUCapsAddCPUDefinitions(caps, VIR_DOMAIN_VIRT_KVM,
                                              x86LegacyModels,
-                                             ARRAY_CARDINALITY(x86LegacyModels),
+                                             G_N_ELEMENTS(x86LegacyModels),
                                              VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0 ||
                 virQEMUCapsAddCPUDefinitions(caps, VIR_DOMAIN_VIRT_QEMU,
                                              x86LegacyModels,
-                                             ARRAY_CARDINALITY(x86LegacyModels),
+                                             G_N_ELEMENTS(x86LegacyModels),
                                              VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0)
                 return -1;
         }
     } else if (ARCH_IS_ARM(arch)) {
         if (virQEMUCapsAddCPUDefinitions(caps, VIR_DOMAIN_VIRT_KVM, armModels,
-                                         ARRAY_CARDINALITY(armModels),
+                                         G_N_ELEMENTS(armModels),
                                          VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0 ||
             virQEMUCapsAddCPUDefinitions(caps, VIR_DOMAIN_VIRT_QEMU, armModels,
-                                         ARRAY_CARDINALITY(armModels),
+                                         G_N_ELEMENTS(armModels),
                                          VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0)
             return -1;
     } else if (ARCH_IS_PPC64(arch)) {
         if (virQEMUCapsAddCPUDefinitions(caps, VIR_DOMAIN_VIRT_KVM, ppc64Models,
-                                         ARRAY_CARDINALITY(ppc64Models),
+                                         G_N_ELEMENTS(ppc64Models),
                                          VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0 ||
             virQEMUCapsAddCPUDefinitions(caps, VIR_DOMAIN_VIRT_QEMU, ppc64Models,
-                                         ARRAY_CARDINALITY(ppc64Models),
+                                         G_N_ELEMENTS(ppc64Models),
                                          VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0)
             return -1;
     } else if (ARCH_IS_S390(arch)) {
         if (virQEMUCapsAddCPUDefinitions(caps, VIR_DOMAIN_VIRT_KVM, s390xModels,
-                                         ARRAY_CARDINALITY(s390xModels),
+                                         G_N_ELEMENTS(s390xModels),
                                          VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0)
             return -1;
     }

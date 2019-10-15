@@ -313,7 +313,7 @@ static void testRemoveCommonRules(char *rules)
     size_t i;
     char *offset = rules;
 
-    for (i = 0; i < ARRAY_CARDINALITY(commonRules); i++) {
+    for (i = 0; i < G_N_ELEMENTS(commonRules); i++) {
         char *tmp = strstr(offset, commonRules[i]);
         size_t len = strlen(commonRules[i]);
         if (tmp) {

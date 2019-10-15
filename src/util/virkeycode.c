@@ -54,19 +54,19 @@ static const unsigned short *virKeymapValues[VIR_KEYCODE_SET_LAST] = {
     [VIR_KEYCODE_SET_QNUM] = virKeyCodeTable_qnum,
 };
 
-#define VIR_KEYMAP_ENTRY_MAX ARRAY_CARDINALITY(virKeyCodeTable_linux)
+#define VIR_KEYMAP_ENTRY_MAX G_N_ELEMENTS(virKeyCodeTable_linux)
 
-verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyCodeTable_atset1));
-verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyCodeTable_atset2));
-verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyCodeTable_atset3));
-verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyCodeTable_osx));
-verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyCodeTable_xtkbd));
-verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyCodeTable_usb));
-verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyCodeTable_win32));
-verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyCodeTable_qnum));
-verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyNameTable_linux));
-verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyNameTable_osx));
-verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyNameTable_win32));
+verify(VIR_KEYMAP_ENTRY_MAX == G_N_ELEMENTS(virKeyCodeTable_atset1));
+verify(VIR_KEYMAP_ENTRY_MAX == G_N_ELEMENTS(virKeyCodeTable_atset2));
+verify(VIR_KEYMAP_ENTRY_MAX == G_N_ELEMENTS(virKeyCodeTable_atset3));
+verify(VIR_KEYMAP_ENTRY_MAX == G_N_ELEMENTS(virKeyCodeTable_osx));
+verify(VIR_KEYMAP_ENTRY_MAX == G_N_ELEMENTS(virKeyCodeTable_xtkbd));
+verify(VIR_KEYMAP_ENTRY_MAX == G_N_ELEMENTS(virKeyCodeTable_usb));
+verify(VIR_KEYMAP_ENTRY_MAX == G_N_ELEMENTS(virKeyCodeTable_win32));
+verify(VIR_KEYMAP_ENTRY_MAX == G_N_ELEMENTS(virKeyCodeTable_qnum));
+verify(VIR_KEYMAP_ENTRY_MAX == G_N_ELEMENTS(virKeyNameTable_linux));
+verify(VIR_KEYMAP_ENTRY_MAX == G_N_ELEMENTS(virKeyNameTable_osx));
+verify(VIR_KEYMAP_ENTRY_MAX == G_N_ELEMENTS(virKeyNameTable_win32));
 
 VIR_ENUM_IMPL(virKeycodeSet,
               VIR_KEYCODE_SET_LAST,

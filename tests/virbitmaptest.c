@@ -188,7 +188,7 @@ test4(const void *data G_GNUC_UNUSED)
     virBitmapPtr bitmap = NULL;
     ssize_t i, j;
 
-    if (ARRAY_CARDINALITY(bitsPos) + ARRAY_CARDINALITY(bitsPosInv) != size)
+    if (G_N_ELEMENTS(bitsPos) + G_N_ELEMENTS(bitsPosInv) != size)
         goto error;
 
     /* 0. empty set */
@@ -243,7 +243,7 @@ test4(const void *data G_GNUC_UNUSED)
     j = 0;
     i = -1;
 
-    while (j < ARRAY_CARDINALITY(bitsPos)) {
+    while (j < G_N_ELEMENTS(bitsPos)) {
         i = virBitmapNextSetBit(bitmap, i);
         if (i != bitsPos[j++])
             goto error;
@@ -260,7 +260,7 @@ test4(const void *data G_GNUC_UNUSED)
     j = 0;
     i = -1;
 
-    while (j < ARRAY_CARDINALITY(bitsPosInv)) {
+    while (j < G_N_ELEMENTS(bitsPosInv)) {
         i = virBitmapNextClearBit(bitmap, i);
         if (i != bitsPosInv[j++])
             goto error;
@@ -680,7 +680,7 @@ test13(const void *opaque G_GNUC_UNUSED)
     size_t i = 0;
     int ret = -1;
 
-    for (i = 0; i < ARRAY_CARDINALITY(strings); i++) {
+    for (i = 0; i < G_N_ELEMENTS(strings); i++) {
         map = virBitmapNewString(strings[i]);
         str = virBitmapToString(map, false, true);
 

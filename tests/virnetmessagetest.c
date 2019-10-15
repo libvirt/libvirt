@@ -61,7 +61,7 @@ static int testMessageHeaderEncode(const void *args G_GNUC_UNUSED)
     if (virNetMessageEncodeHeader(msg) < 0)
         goto cleanup;
 
-    if (ARRAY_CARDINALITY(expect) != msg->bufferOffset) {
+    if (G_N_ELEMENTS(expect) != msg->bufferOffset) {
         VIR_DEBUG("Expect message offset %zu got %zu",
                   sizeof(expect), msg->bufferOffset);
         goto cleanup;
@@ -253,7 +253,7 @@ static int testMessagePayloadEncode(const void *args G_GNUC_UNUSED)
     if (virNetMessageEncodePayload(msg, (xdrproc_t)xdr_virNetMessageError, &err) < 0)
         goto cleanup;
 
-    if (ARRAY_CARDINALITY(expect) != msg->bufferLength) {
+    if (G_N_ELEMENTS(expect) != msg->bufferLength) {
         VIR_DEBUG("Expect message length %zu got %zu",
                   sizeof(expect), msg->bufferLength);
         goto cleanup;
@@ -495,7 +495,7 @@ static int testMessagePayloadStreamEncode(const void *args G_GNUC_UNUSED)
     if (virNetMessageEncodePayloadRaw(msg, stream, strlen(stream)) < 0)
         goto cleanup;
 
-    if (ARRAY_CARDINALITY(expect) != msg->bufferLength) {
+    if (G_N_ELEMENTS(expect) != msg->bufferLength) {
         VIR_DEBUG("Expect message length %zu got %zu",
                   sizeof(expect), msg->bufferLength);
         goto cleanup;

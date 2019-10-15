@@ -68,7 +68,7 @@ struct _virCPUx86Feature {
     { \
         .name = (char *) Name, \
         .data = { \
-            .len = ARRAY_CARDINALITY(Name ## _data), \
+            .len = G_N_ELEMENTS(Name ## _data), \
             .items = Name ## _data, \
         } \
     }
@@ -364,7 +364,7 @@ static virCPUx86FeaturePtr
 x86FeatureFindInternal(const char *name)
 {
     size_t i;
-    size_t count = ARRAY_CARDINALITY(x86_kvm_features);
+    size_t count = G_N_ELEMENTS(x86_kvm_features);
 
     for (i = 0; i < count; i++) {
         if (STREQ(x86_kvm_features[i].name, name))
@@ -1757,7 +1757,7 @@ x86Compute(virCPUDefPtr host,
     if (cpu->arch != VIR_ARCH_NONE) {
         bool found = false;
 
-        for (i = 0; i < ARRAY_CARDINALITY(archs); i++) {
+        for (i = 0; i < G_N_ELEMENTS(archs); i++) {
             if (archs[i] == cpu->arch) {
                 found = true;
                 break;
@@ -3422,7 +3422,7 @@ virCPUx86FeatureFilterDropMSR(const char *name,
 struct cpuArchDriver cpuDriverX86 = {
     .name = "x86",
     .arch = archs,
-    .narch = ARRAY_CARDINALITY(archs),
+    .narch = G_N_ELEMENTS(archs),
     .compare    = virCPUx86Compare,
     .decode     = x86DecodeCPUData,
     .encode     = x86Encode,

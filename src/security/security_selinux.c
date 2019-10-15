@@ -1974,7 +1974,7 @@ virSecuritySELinuxMoveImageMetadataHelper(pid_t pid G_GNUC_UNUSED,
     virSecurityManagerMetadataLockStatePtr state;
     int ret;
 
-    if (!(state = virSecurityManagerMetadataLock(data->mgr, paths, ARRAY_CARDINALITY(paths))))
+    if (!(state = virSecurityManagerMetadataLock(data->mgr, paths, G_N_ELEMENTS(paths))))
         return -1;
 
     ret = virSecurityMoveRememberedLabel(SECURITY_SELINUX_NAME, data->src, data->dst);

@@ -547,7 +547,7 @@ ESX_VI__TEMPLATE__FREE(SharedCURL,
     if (item->handle)
         curl_share_cleanup(item->handle);
 
-    for (i = 0; i < ARRAY_CARDINALITY(item->locks); ++i)
+    for (i = 0; i < G_N_ELEMENTS(item->locks); ++i)
         virMutexDestroy(&item->locks[i]);
 })
 
@@ -587,7 +587,7 @@ esxVI_SharedCURL_Add(esxVI_SharedCURL *shared, esxVI_CURL *curl)
         curl_share_setopt(shared->handle, CURLSHOPT_SHARE,
                           CURL_LOCK_DATA_DNS);
 
-        for (i = 0; i < ARRAY_CARDINALITY(shared->locks); ++i) {
+        for (i = 0; i < G_N_ELEMENTS(shared->locks); ++i) {
             if (virMutexInit(&shared->locks[i]) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Could not initialize a CURL (share) mutex"));

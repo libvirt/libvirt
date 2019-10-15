@@ -823,7 +823,7 @@ bool lxcIsBasicMountLocation(const char *path)
 {
     size_t i;
 
-    for (i = 0; i < ARRAY_CARDINALITY(lxcBasicMounts); i++) {
+    for (i = 0; i < G_N_ELEMENTS(lxcBasicMounts); i++) {
         if (STREQ(path, lxcBasicMounts[i].dst))
             return true;
     }
@@ -900,7 +900,7 @@ static int lxcContainerMountBasicFS(bool userns_enabled,
 
     VIR_DEBUG("Mounting basic filesystems");
 
-    for (i = 0; i < ARRAY_CARDINALITY(lxcBasicMounts); i++) {
+    for (i = 0; i < G_N_ELEMENTS(lxcBasicMounts); i++) {
         bool bindOverReadonly;
         virLXCBasicMountInfo const *mnt = &lxcBasicMounts[i];
 
@@ -1126,7 +1126,7 @@ static int lxcContainerSetupDevices(char **ttyPaths, size_t nttyPaths)
         { "/proc/self/fd", "/dev/fd" },
     };
 
-    for (i = 0; i < ARRAY_CARDINALITY(links); i++) {
+    for (i = 0; i < G_N_ELEMENTS(links); i++) {
         if (symlink(links[i].src, links[i].dst) < 0) {
             virReportSystemError(errno,
                                  _("Failed to symlink device %s to %s"),

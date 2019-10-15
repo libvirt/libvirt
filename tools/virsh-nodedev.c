@@ -846,7 +846,7 @@ virshNodeDeviceEventCallback virshNodeDeviceEventCallbacks[] = {
       VIR_NODE_DEVICE_EVENT_CALLBACK(vshEventLifecyclePrint), },
     { "update", vshEventGenericPrint, }
 };
-verify(VIR_NODE_DEVICE_EVENT_ID_LAST == ARRAY_CARDINALITY(virshNodeDeviceEventCallbacks));
+verify(VIR_NODE_DEVICE_EVENT_ID_LAST == G_N_ELEMENTS(virshNodeDeviceEventCallbacks));
 
 
 static const vshCmdInfo info_node_device_event[] = {

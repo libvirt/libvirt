@@ -730,7 +730,7 @@ virCgroupV2GetBlkioIoServiced(virCgroupPtr group,
     }
 
     /* sum up all entries of the same kind, from all devices */
-    for (i = 0; i < ARRAY_CARDINALITY(value_names); i++) {
+    for (i = 0; i < G_N_ELEMENTS(value_names); i++) {
         p1 = str1;
 
         while ((p1 = strstr(p1, value_names[i]))) {
@@ -799,7 +799,7 @@ virCgroupV2GetBlkioIoDeviceServiced(virCgroupPtr group,
         return -1;
     }
 
-    for (i = 0; i < ARRAY_CARDINALITY(value_names); i++) {
+    for (i = 0; i < G_N_ELEMENTS(value_names); i++) {
         if (!(p1 = strstr(p1, value_names[i]))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Cannot find byte '%s' stats for block device '%s'"),

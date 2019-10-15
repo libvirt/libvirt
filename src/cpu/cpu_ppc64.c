@@ -452,7 +452,7 @@ ppc64Compute(virCPUDefPtr host,
     if (cpu->arch != VIR_ARCH_NONE) {
         bool found = false;
 
-        for (i = 0; i < ARRAY_CARDINALITY(archs); i++) {
+        for (i = 0; i < G_N_ELEMENTS(archs); i++) {
             if (archs[i] == cpu->arch) {
                 found = true;
                 break;
@@ -824,7 +824,7 @@ virCPUppc64DriverGetModels(char ***models)
 struct cpuArchDriver cpuDriverPPC64 = {
     .name       = "ppc64",
     .arch       = archs,
-    .narch      = ARRAY_CARDINALITY(archs),
+    .narch      = G_N_ELEMENTS(archs),
     .compare    = virCPUppc64Compare,
     .decode     = ppc64DriverDecode,
     .encode     = NULL,

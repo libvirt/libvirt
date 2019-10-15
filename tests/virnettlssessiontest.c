@@ -456,7 +456,7 @@ mymain(void)
 
     testTLSWriteCertChain("cacertchain-sess.pem",
                           certchain,
-                          ARRAY_CARDINALITY(certchain));
+                          G_N_ELEMENTS(certchain));
 
     DO_SESS_TEST("cacertchain-sess.pem", servercertlevel3areq.filename, clientcertlevel2breq.filename,
                  false, false, "libvirt.org", NULL);

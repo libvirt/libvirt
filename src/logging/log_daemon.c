@@ -266,7 +266,7 @@ virLogDaemonNewPostExecRestart(virJSONValuePtr object, bool privileged,
     }
 
     if (!(logd->dmn = virNetDaemonNewPostExecRestart(child,
-                                                     ARRAY_CARDINALITY(serverNames),
+                                                     G_N_ELEMENTS(serverNames),
                                                      serverNames,
                                                      virLogDaemonNewServerPostExecRestart,
                                                      (void*)(intptr_t)(privileged ? 0x1 : 0x0))))
@@ -1090,7 +1090,7 @@ int main(int argc, char **argv) {
         }
 
         if (virSystemdGetActivation(actmap,
-                                    ARRAY_CARDINALITY(actmap),
+                                    G_N_ELEMENTS(actmap),
                                     &act) < 0) {
             ret = VIR_LOG_DAEMON_ERR_NETWORK;
             goto cleanup;

@@ -250,7 +250,7 @@ xenTranslateCPUFeature(const char *feature_name, bool from_libxl)
     };
     size_t i;
 
-    for (i = 0; i < ARRAY_CARDINALITY(translation_table); i++)
+    for (i = 0; i < G_N_ELEMENTS(translation_table); i++)
         if (STREQ(translation_table[i][from_libxl], feature_name))
             return translation_table[i][!from_libxl];
     return feature_name;

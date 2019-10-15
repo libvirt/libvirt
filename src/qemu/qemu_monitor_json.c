@@ -200,7 +200,7 @@ qemuMonitorJSONIOProcessEvent(qemuMonitorPtr mon,
     qemuMonitorEmitEvent(mon, type, seconds, micros, details);
     VIR_FREE(details);
 
-    handler = bsearch(type, eventHandlers, ARRAY_CARDINALITY(eventHandlers),
+    handler = bsearch(type, eventHandlers, G_N_ELEMENTS(eventHandlers),
                       sizeof(eventHandlers[0]), qemuMonitorEventCompare);
     if (handler) {
         VIR_DEBUG("handle %s handler=%p data=%p", type,

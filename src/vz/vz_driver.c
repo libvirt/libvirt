@@ -122,11 +122,11 @@ vzBuildCapabilities(void)
     if (virCapabilitiesInitCaches(caps) < 0)
         goto error;
 
-    verify(ARRAY_CARDINALITY(archs) == ARRAY_CARDINALITY(emulators));
+    verify(G_N_ELEMENTS(archs) == G_N_ELEMENTS(emulators));
 
-    for (i = 0; i < ARRAY_CARDINALITY(ostypes); i++)
-        for (j = 0; j < ARRAY_CARDINALITY(archs); j++)
-            for (k = 0; k < ARRAY_CARDINALITY(emulators); k++)
+    for (i = 0; i < G_N_ELEMENTS(ostypes); i++)
+        for (j = 0; j < G_N_ELEMENTS(archs); j++)
+            for (k = 0; k < G_N_ELEMENTS(emulators); k++)
                 if (vzCapsAddGuestDomain(caps, ostypes[i], archs[j],
                                          emulators[k], virt_types[k]) < 0)
                     goto error;

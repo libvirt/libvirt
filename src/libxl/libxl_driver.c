@@ -5339,7 +5339,7 @@ libxlDiskPathToID(const char *virtpath)
     fmt = id = -1;
 
     /* Find any disk prefixes we know about */
-    for (i = 0; i < ARRAY_CARDINALITY(drive_prefix); i++) {
+    for (i = 0; i < G_N_ELEMENTS(drive_prefix); i++) {
         if (STRPREFIX(virtpath, drive_prefix[i]) &&
             !virDiskNameParse(virtpath, &disk, &partition)) {
             fmt = i;

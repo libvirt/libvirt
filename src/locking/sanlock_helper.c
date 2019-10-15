@@ -63,7 +63,7 @@ main(int argc, char **argv)
     };
     virConnectAuth auth = {
         .credtype = authTypes,
-        .ncredtype = ARRAY_CARDINALITY(authTypes),
+        .ncredtype = G_N_ELEMENTS(authTypes),
         .cb = authCallback,
     };
 

@@ -182,7 +182,7 @@ vmwareConnectOpen(virConnectPtr conn,
      * the VMware hypervisor. We look this up first since we use it
      * for auto detection of the backend
      */
-    for (i = 0; i < ARRAY_CARDINALITY(vmrun_candidates); i++) {
+    for (i = 0; i < G_N_ELEMENTS(vmrun_candidates); i++) {
         vmrun = virFindFileInPath(vmrun_candidates[i]);
         if (vmrun == NULL)
             continue;

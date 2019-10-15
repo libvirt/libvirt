@@ -340,7 +340,7 @@ static int testCreateNetwork(const void *opaque G_GNUC_UNUSED)
     int nicindexes[] = {
         2, 1729, 87539319,
     };
-    size_t nnicindexes = ARRAY_CARDINALITY(nicindexes);
+    size_t nnicindexes = G_N_ELEMENTS(nicindexes);
     if (virSystemdCreateMachine("demo",
                                 "lxc",
                                 uuid,
@@ -586,7 +586,7 @@ testActivation(bool useNames)
     map[1].family = AF_INET;
     map[1].port = virNetSocketGetPort(sockIP[0]);
 
-    if (virSystemdGetActivation(map, ARRAY_CARDINALITY(map), &act) < 0)
+    if (virSystemdGetActivation(map, G_N_ELEMENTS(map), &act) < 0)
         goto cleanup;
 
     if (act == NULL) {

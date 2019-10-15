@@ -219,7 +219,7 @@ int main(int argc, char **argv) {
     ret = EXIT_SUCCESS;
 
  cleanup:
-    for (i = 0; i < ARRAY_CARDINALITY(buffers); i++)
+    for (i = 0; i < G_N_ELEMENTS(buffers); i++)
         free(buffers[i]);
     fclose(log);
     free(newenv);

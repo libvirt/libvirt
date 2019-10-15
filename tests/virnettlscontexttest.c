@@ -562,7 +562,7 @@ mymain(void)
 
     testTLSWriteCertChain("cacertchain-ctx.pem",
                           certchain,
-                          ARRAY_CARDINALITY(certchain));
+                          G_N_ELEMENTS(certchain));
 
     DO_CTX_TEST(true, "cacertchain-ctx.pem", servercertlevel3areq.filename, false);
     DO_CTX_TEST(false, "cacertchain-ctx.pem", clientcertlevel2breq.filename, false);

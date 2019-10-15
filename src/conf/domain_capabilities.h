@@ -215,7 +215,7 @@ virDomainCapsCPUModelsGet(virDomainCapsCPUModelsPtr cpuModels,
 #define VIR_DOMAIN_CAPS_ENUM_SET(capsEnum, ...) \
     do { \
         unsigned int __values[] = {__VA_ARGS__}; \
-        size_t __nvalues = ARRAY_CARDINALITY(__values); \
+        size_t __nvalues = G_N_ELEMENTS(__values); \
         virDomainCapsEnumSet(&(capsEnum), #capsEnum, \
                              __nvalues, __values); \
     } while (0)

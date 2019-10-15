@@ -43,8 +43,8 @@ static virCPUDef cpuDefaultData = {
     .sockets = 1,
     .cores = 2,
     .threads = 1,
-    .nfeatures = ARRAY_CARDINALITY(cpuDefaultFeatures),
-    .nfeatures_max = ARRAY_CARDINALITY(cpuDefaultFeatures),
+    .nfeatures = G_N_ELEMENTS(cpuDefaultFeatures),
+    .nfeatures_max = G_N_ELEMENTS(cpuDefaultFeatures),
     .features = cpuDefaultFeatures,
 };
 
@@ -82,8 +82,8 @@ static virCPUDef cpuHaswellData = {
     .sockets = 1,
     .cores = 2,
     .threads = 2,
-    .nfeatures = ARRAY_CARDINALITY(cpuHaswellFeatures),
-    .nfeatures_max = ARRAY_CARDINALITY(cpuHaswellFeatures),
+    .nfeatures = G_N_ELEMENTS(cpuHaswellFeatures),
+    .nfeatures_max = G_N_ELEMENTS(cpuHaswellFeatures),
     .features = cpuHaswellFeatures,
 };
 

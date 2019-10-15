@@ -205,7 +205,7 @@ VBoxCGlueInit(unsigned int *version)
     }
 
     /* Try the known locations. */
-    for (i = 0; i < ARRAY_CARDINALITY(knownDirs); ++i) {
+    for (i = 0; i < G_N_ELEMENTS(knownDirs); ++i) {
         if (tryLoadOne(knownDirs[i], true, true, version) >= 0)
             return 0;
     }

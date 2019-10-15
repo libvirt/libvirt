@@ -2320,7 +2320,7 @@ testQemuMonitorJSONqemuMonitorJSONSendKey(const void *opaque)
         return -1;
 
     if (qemuMonitorJSONSendKey(qemuMonitorTestGetMonitor(test),
-                               0, keycodes, ARRAY_CARDINALITY(keycodes)) < 0)
+                               0, keycodes, G_N_ELEMENTS(keycodes)) < 0)
         return -1;
 
     return 0;
@@ -2349,7 +2349,7 @@ testQemuMonitorJSONqemuMonitorJSONSendKeyHoldtime(const void *opaque)
 
     if (qemuMonitorJSONSendKey(qemuMonitorTestGetMonitor(test),
                                31337, keycodes,
-                               ARRAY_CARDINALITY(keycodes)) < 0)
+                               G_N_ELEMENTS(keycodes)) < 0)
         return -1;
 
     return 0;

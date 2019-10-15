@@ -362,7 +362,7 @@ gather_capability(LibHalContext *ctx, const char *udi,
 {
     caps_tbl_entry *entry;
 
-    entry = bsearch(&cap_name, caps_tbl, ARRAY_CARDINALITY(caps_tbl),
+    entry = bsearch(&cap_name, caps_tbl, G_N_ELEMENTS(caps_tbl),
                     sizeof(caps_tbl[0]), cmpstringp);
 
     if (entry) {
@@ -604,7 +604,7 @@ nodeStateInitialize(bool privileged G_GNUC_UNUSED,
     DBusError err;
 
     /* Ensure caps_tbl is sorted by capability name */
-    qsort(caps_tbl, ARRAY_CARDINALITY(caps_tbl), sizeof(caps_tbl[0]),
+    qsort(caps_tbl, G_N_ELEMENTS(caps_tbl), sizeof(caps_tbl[0]),
           cmpstringp);
 
     if (VIR_ALLOC(driver) < 0)

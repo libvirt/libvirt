@@ -118,7 +118,7 @@ static virAccessDriverPtr accessDrivers[] = {
 static virAccessDriverPtr virAccessManagerFindDriver(const char *name)
 {
     size_t i;
-    for (i = 0; i < ARRAY_CARDINALITY(accessDrivers); i++) {
+    for (i = 0; i < G_N_ELEMENTS(accessDrivers); i++) {
         if (STREQ(name, accessDrivers[i]->name))
             return accessDrivers[i];
     }

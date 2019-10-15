@@ -99,7 +99,7 @@ static const char * failMessages[] = {
     N_("NOTE"),
 };
 
-verify(ARRAY_CARDINALITY(failMessages) == VIR_HOST_VALIDATE_LAST);
+verify(G_N_ELEMENTS(failMessages) == VIR_HOST_VALIDATE_LAST);
 
 static const char *failEscapeCodes[] = {
     "\033[31m",
@@ -107,7 +107,7 @@ static const char *failEscapeCodes[] = {
     "\033[34m",
 };
 
-verify(ARRAY_CARDINALITY(failEscapeCodes) == VIR_HOST_VALIDATE_LAST);
+verify(G_N_ELEMENTS(failEscapeCodes) == VIR_HOST_VALIDATE_LAST);
 
 void virHostMsgFail(virHostValidateLevel level,
                     const char *format,

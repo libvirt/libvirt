@@ -1292,7 +1292,7 @@ elsif ($mode eq "server") {
         print "{ $comment\n   ${name},\n   $arglen,\n   (xdrproc_t)$argfilter,\n   $retlen,\n   (xdrproc_t)$retfilter,\n   true,\n   $priority\n},\n";
     }
     print "};\n";
-    print "size_t ${structprefix}NProcs = ARRAY_CARDINALITY(${structprefix}Procs);\n";
+    print "size_t ${structprefix}NProcs = G_N_ELEMENTS(${structprefix}Procs);\n";
 }
 
 # Bodies for client functions ("remote_client_bodies.h").

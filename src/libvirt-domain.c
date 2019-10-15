@@ -3323,7 +3323,7 @@ virDomainMigrateUnmanagedProto2(virDomainPtr domain,
     unsigned long long bandwidth = 0;
 
     if (!virTypedParamsCheck(params, nparams, compatParams,
-                             ARRAY_CARDINALITY(compatParams))) {
+                             G_N_ELEMENTS(compatParams))) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("Some parameters are not supported by migration "
                          "protocol 2"));
@@ -3372,7 +3372,7 @@ virDomainMigrateUnmanagedProto3(virDomainPtr domain,
     unsigned long long bandwidth = 0;
 
     if (!virTypedParamsCheck(params, nparams, compatParams,
-                             ARRAY_CARDINALITY(compatParams))) {
+                             G_N_ELEMENTS(compatParams))) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("Some parameters are not supported by migration "
                          "protocol 3"));
@@ -3933,7 +3933,7 @@ virDomainMigrate3(virDomainPtr domain,
     }
 
     if (!virTypedParamsCheck(params, nparams, compatParams,
-                             ARRAY_CARDINALITY(compatParams))) {
+                             G_N_ELEMENTS(compatParams))) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("Migration APIs with extensible parameters are not "
                          "supported but extended parameters were passed"));

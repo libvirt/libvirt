@@ -357,7 +357,7 @@ virQEMUQAPISchemaTraverse(const char *baseName,
     if (!(metatype = virJSONValueObjectGetString(cur, "meta-type")))
         return -2;
 
-    for (i = 0; i < ARRAY_CARDINALITY(traverseMetaType); i++) {
+    for (i = 0; i < G_N_ELEMENTS(traverseMetaType); i++) {
         if (STREQ(metatype, traverseMetaType[i].metatype))
             return traverseMetaType[i].func(cur, ctxt);
     }

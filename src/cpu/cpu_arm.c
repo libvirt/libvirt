@@ -101,7 +101,7 @@ virCPUarmCompare(virCPUDefPtr host G_GNUC_UNUSED,
 struct cpuArchDriver cpuDriverArm = {
     .name = "arm",
     .arch = archs,
-    .narch = ARRAY_CARDINALITY(archs),
+    .narch = G_N_ELEMENTS(archs),
     .compare = virCPUarmCompare,
     .decode = NULL,
     .encode = NULL,

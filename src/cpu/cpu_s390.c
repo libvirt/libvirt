@@ -114,7 +114,7 @@ virCPUs390ValidateFeatures(virCPUDefPtr cpu)
 struct cpuArchDriver cpuDriverS390 = {
     .name = "s390",
     .arch = archs,
-    .narch = ARRAY_CARDINALITY(archs),
+    .narch = G_N_ELEMENTS(archs),
     .compare    = virCPUs390Compare,
     .decode     = NULL,
     .encode     = NULL,

@@ -47,7 +47,7 @@ struct virHashInfo {
 };
 
 
-verify(ARRAY_CARDINALITY(hashinfo) == VIR_CRYPTO_HASH_LAST);
+verify(G_N_ELEMENTS(hashinfo) == VIR_CRYPTO_HASH_LAST);
 
 ssize_t
 virCryptoHashBuf(virCryptoHash hash,

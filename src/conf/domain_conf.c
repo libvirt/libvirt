@@ -29809,7 +29809,7 @@ virDomainNetSetModelString(virDomainNetDefPtr net,
     if (!model)
         return 0;
 
-    for (i = 0; i < ARRAY_CARDINALITY(virDomainNetModelTypeList); i++) {
+    for (i = 0; i < G_N_ELEMENTS(virDomainNetModelTypeList); i++) {
         if (STRCASEEQ(virDomainNetModelTypeList[i], model)) {
             net->model = i;
             return 0;

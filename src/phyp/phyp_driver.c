@@ -127,7 +127,7 @@ waitsocket(int socket_fd, LIBSSH2_SESSION * session)
     if (dir & LIBSSH2_SESSION_BLOCK_OUTBOUND)
         fds[0].events |= POLLOUT;
 
-    return poll(fds, ARRAY_CARDINALITY(fds), -1);
+    return poll(fds, G_N_ELEMENTS(fds), -1);
 }
 
 /* this function is the layer that manipulates the ssh channel itself

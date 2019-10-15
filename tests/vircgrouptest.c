@@ -825,7 +825,7 @@ testCgroupGetMemoryStat(const void *args G_GNUC_UNUSED)
         "inactive_file",
         "unevictable"
     };
-    unsigned long long values[ARRAY_CARDINALITY(expected_values)];
+    unsigned long long values[G_N_ELEMENTS(expected_values)];
 
     if ((rv = virCgroupNewPartition("/virtualmachines", true,
                                     (1 << VIR_CGROUP_CONTROLLER_MEMORY),
@@ -842,7 +842,7 @@ testCgroupGetMemoryStat(const void *args G_GNUC_UNUSED)
         goto cleanup;
     }
 
-    for (i = 0; i < ARRAY_CARDINALITY(expected_values); i++) {
+    for (i = 0; i < G_N_ELEMENTS(expected_values); i++) {
         /* NB: virCgroupGetMemoryStat returns a KiB scaled value */
         if ((expected_values[i] >> 10) != values[i]) {
             fprintf(stderr,
@@ -879,7 +879,7 @@ static int testCgroupGetBlkioIoServiced(const void *args G_GNUC_UNUSED)
         "requests read",
         "requests written"
     };
-    long long values[ARRAY_CARDINALITY(expected_values)];
+    long long values[G_N_ELEMENTS(expected_values)];
 
     if ((rv = virCgroupNewPartition("/virtualmachines", true,
                                     (1 << VIR_CGROUP_CONTROLLER_BLKIO),
@@ -895,7 +895,7 @@ static int testCgroupGetBlkioIoServiced(const void *args G_GNUC_UNUSED)
         goto cleanup;
     }
 
-    for (i = 0; i < ARRAY_CARDINALITY(expected_values); i++) {
+    for (i = 0; i < G_N_ELEMENTS(expected_values); i++) {
         if (expected_values[i] != values[i]) {
             fprintf(stderr,
                     "Wrong value for %s from virCgroupBlkioIoServiced (expected %lld)\n",
@@ -934,7 +934,7 @@ static int testCgroupGetBlkioIoDeviceServiced(const void *args G_GNUC_UNUSED)
         "requests read",
         "requests written"
     };
-    long long values[ARRAY_CARDINALITY(expected_values0)];
+    long long values[G_N_ELEMENTS(expected_values0)];
 
     if ((rv = virCgroupNewPartition("/virtualmachines", true,
                                     (1 << VIR_CGROUP_CONTROLLER_BLKIO),
@@ -951,7 +951,7 @@ static int testCgroupGetBlkioIoDeviceServiced(const void *args G_GNUC_UNUSED)
         goto cleanup;
     }
 
-    for (i = 0; i < ARRAY_CARDINALITY(expected_values0); i++) {
+    for (i = 0; i < G_N_ELEMENTS(expected_values0); i++) {
         if (expected_values0[i] != values[i]) {
             fprintf(stderr,
                     "Wrong value for %s from virCgroupGetBlkioIoDeviceServiced (expected %lld)\n",
@@ -968,7 +968,7 @@ static int testCgroupGetBlkioIoDeviceServiced(const void *args G_GNUC_UNUSED)
         goto cleanup;
     }
 
-    for (i = 0; i < ARRAY_CARDINALITY(expected_values1); i++) {
+    for (i = 0; i < G_N_ELEMENTS(expected_values1); i++) {
         if (expected_values1[i] != values[i]) {
             fprintf(stderr,
                     "Wrong value for %s from virCgroupGetBlkioIoDeviceServiced (expected %lld)\n",

@@ -64,7 +64,7 @@ virTPMCreateCancelPath(const char *devpath)
         dev = strrchr(devpath, '/');
         if (dev) {
             dev++;
-            for (i = 0; i < ARRAY_CARDINALITY(prefix); i++) {
+            for (i = 0; i < G_N_ELEMENTS(prefix); i++) {
                 if (virAsprintf(&path, "/sys/class/%s%s/device/cancel",
                                 prefix[i], dev) < 0)
                      goto cleanup;
@@ -290,7 +290,7 @@ virTPMEmulatorInit(void)
 
     virMutexLock(&swtpm_tools_lock);
 
-    for (i = 0; i < ARRAY_CARDINALITY(prgs); i++) {
+    for (i = 0; i < G_N_ELEMENTS(prgs); i++) {
         VIR_AUTOFREE(char *) path = NULL;
         bool findit = *prgs[i].path == NULL;
         struct stat statbuf;

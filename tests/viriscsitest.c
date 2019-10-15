@@ -343,7 +343,7 @@ mymain(void)
         .fake_cmd_output = "iscsiadm_sendtargets",
         .portal = "10.20.30.40:3260,1",
         .expected_targets = targets,
-        .nexpected = ARRAY_CARDINALITY(targets),
+        .nexpected = G_N_ELEMENTS(targets),
     };
     if (virTestRun("ISCSI scan targets", testISCSIScanTargets, &infoTargets) < 0)
         rv = -1;

@@ -386,7 +386,7 @@ int virDiskNameParse(const char *name, int *disk, int *partition)
     static char const* const drive_prefix[] = {"fd", "hd", "vd", "sd", "xvd", "ubd"};
     size_t i;
 
-    for (i = 0; i < ARRAY_CARDINALITY(drive_prefix); i++) {
+    for (i = 0; i < G_N_ELEMENTS(drive_prefix); i++) {
         if (STRPREFIX(name, drive_prefix[i])) {
             ptr = name + strlen(drive_prefix[i]);
             break;
@@ -1108,7 +1108,7 @@ virGetWin32DirectoryRoot(char **path)
 
     *path = NULL;
 
-    if (GetWindowsDirectory(windowsdir, ARRAY_CARDINALITY(windowsdir))) {
+    if (GetWindowsDirectory(windowsdir, G_N_ELEMENTS(windowsdir))) {
         const char *tmp;
         /* Usually X:\Windows, but in terminal server environments
          * might be an UNC path, AFAIK.

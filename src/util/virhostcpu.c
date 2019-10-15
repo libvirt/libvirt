@@ -168,7 +168,7 @@ virHostCPUGetStatsFreeBSD(int cpuNum,
         }
 
         param->value = 0;
-        for (j = 0; j < ARRAY_CARDINALITY(cpu_map[i].idx); j++)
+        for (j = 0; j < G_N_ELEMENTS(cpu_map[i].idx); j++)
             param->value += cpu_times[offset + cpu_map[i].idx[j]] * TICK_TO_NSEC;
     }
 

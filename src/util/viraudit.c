@@ -133,7 +133,7 @@ void virAuditSend(virLogSourcePtr source,
             [VIR_AUDIT_RECORD_RESOURCE] = AUDIT_VIRT_RESOURCE,
         };
 
-        if (type >= ARRAY_CARDINALITY(record_types) || record_types[type] == 0)
+        if (type >= G_N_ELEMENTS(record_types) || record_types[type] == 0)
             VIR_WARN("Unknown audit record type %d", type);
         else if (audit_log_user_message(auditfd, record_types[type], str, NULL,
                                         clientaddr, clienttty, success) < 0) {

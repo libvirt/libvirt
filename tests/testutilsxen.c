@@ -29,7 +29,7 @@ testXLInitCaps(void)
 
     caps->host.cpu = virCPUDefCopy(&cpuDefaultData);
 
-    nmachines = ARRAY_CARDINALITY(x86_machines);
+    nmachines = G_N_ELEMENTS(x86_machines);
     if ((machines = virCapabilitiesAllocMachines(x86_machines, nmachines)) == NULL)
         goto cleanup;
     if ((guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM,
@@ -42,7 +42,7 @@ testXLInitCaps(void)
     if (virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_XEN, NULL,
                                       NULL, 0, NULL) == NULL)
         goto cleanup;
-    nmachines = ARRAY_CARDINALITY(xen_machines);
+    nmachines = G_N_ELEMENTS(xen_machines);
     if ((machines = virCapabilitiesAllocMachines(xen_machines, nmachines)) == NULL)
         goto cleanup;
 
@@ -57,7 +57,7 @@ testXLInitCaps(void)
     if (virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_XEN, NULL,
                                       NULL, 0, NULL) == NULL)
         goto cleanup;
-    nmachines = ARRAY_CARDINALITY(pvh_machines);
+    nmachines = G_N_ELEMENTS(pvh_machines);
     if ((machines = virCapabilitiesAllocMachines(pvh_machines, nmachines)) == NULL)
         goto cleanup;
 

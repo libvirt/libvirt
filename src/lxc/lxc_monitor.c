@@ -171,7 +171,7 @@ virLXCMonitorPtr virLXCMonitorNew(virDomainObjPtr vm,
     if (!(mon->program = virNetClientProgramNew(VIR_LXC_MONITOR_PROGRAM,
                                                 VIR_LXC_MONITOR_PROGRAM_VERSION,
                                                 virLXCMonitorEvents,
-                                                ARRAY_CARDINALITY(virLXCMonitorEvents),
+                                                G_N_ELEMENTS(virLXCMonitorEvents),
                                                 mon)))
         goto error;
 

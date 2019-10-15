@@ -519,9 +519,9 @@ valid_path(const char *path, const bool readonly)
         "/etc/libvirt-sandbox/services/"   /* for virt-sandbox service config */
     };
 
-    const int nropaths = ARRAY_CARDINALITY(restricted);
-    const int nrwpaths = ARRAY_CARDINALITY(restricted_rw);
-    const int nopaths = ARRAY_CARDINALITY(override);
+    const int nropaths = G_N_ELEMENTS(restricted);
+    const int nrwpaths = G_N_ELEMENTS(restricted_rw);
+    const int nopaths = G_N_ELEMENTS(override);
 
     if (path == NULL) {
         vah_error(NULL, 0, _("bad pathname"));

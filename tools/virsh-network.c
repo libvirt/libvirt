@@ -1242,7 +1242,7 @@ virshNetworkEventCallback virshNetworkEventCallbacks[] = {
     { "lifecycle",
       VIR_NETWORK_EVENT_CALLBACK(vshEventLifecyclePrint), },
 };
-verify(VIR_NETWORK_EVENT_ID_LAST == ARRAY_CARDINALITY(virshNetworkEventCallbacks));
+verify(VIR_NETWORK_EVENT_ID_LAST == G_N_ELEMENTS(virshNetworkEventCallbacks));
 
 static const vshCmdInfo info_network_event[] = {
     {.name = "help",

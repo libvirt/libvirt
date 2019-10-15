@@ -479,7 +479,7 @@ learnIPAddressThread(void *arg)
     pcap_freecode(&fp);
 
     while (req->status == 0 && vmaddr == 0) {
-        int n = poll(fds, ARRAY_CARDINALITY(fds), PKT_TIMEOUT_MS);
+        int n = poll(fds, G_N_ELEMENTS(fds), PKT_TIMEOUT_MS);
 
         if (threadsTerminate || req->terminate) {
             req->status = ECANCELED;

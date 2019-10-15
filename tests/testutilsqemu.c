@@ -53,11 +53,11 @@ static virCapsGuestMachinePtr *testQemuAllocMachines(int *nmachines)
     };
 
     machines = virCapabilitiesAllocMachines(x86_machines,
-                                            ARRAY_CARDINALITY(x86_machines));
+                                            G_N_ELEMENTS(x86_machines));
     if (machines == NULL)
         return NULL;
 
-    *nmachines = ARRAY_CARDINALITY(x86_machines);
+    *nmachines = G_N_ELEMENTS(x86_machines);
 
     return machines;
 }
@@ -78,7 +78,7 @@ static virCapsGuestMachinePtr *testQemuAllocNewerMachines(int *nmachines)
         return NULL;
 
     machines = virCapabilitiesAllocMachines(x86_machines,
-                                            ARRAY_CARDINALITY(x86_machines));
+                                            G_N_ELEMENTS(x86_machines));
     if (machines == NULL) {
         VIR_FREE(canonical);
         return NULL;
@@ -86,7 +86,7 @@ static virCapsGuestMachinePtr *testQemuAllocNewerMachines(int *nmachines)
 
     machines[1]->canonical = canonical;
 
-    *nmachines = ARRAY_CARDINALITY(x86_machines);
+    *nmachines = G_N_ELEMENTS(x86_machines);
 
     return machines;
 }
@@ -304,7 +304,7 @@ static int testQemuAddRISCV32Guest(virCapsPtr caps)
                                    "sifive_e",
                                    "virt",
                                    "sifive_u" };
-    static const int nmachines = ARRAY_CARDINALITY(names);
+    static const int nmachines = G_N_ELEMENTS(names);
     virCapsGuestMachinePtr *machines = NULL;
     virCapsGuestPtr guest;
 
@@ -335,7 +335,7 @@ static int testQemuAddRISCV64Guest(virCapsPtr caps)
                                    "sifive_e",
                                    "virt",
                                    "sifive_u" };
-    static const int nmachines = ARRAY_CARDINALITY(names);
+    static const int nmachines = G_N_ELEMENTS(names);
     virCapsGuestMachinePtr *machines = NULL;
     virCapsGuestPtr guest;
 
@@ -367,14 +367,14 @@ static int testQemuAddS390Guest(virCapsPtr caps)
     virCapsGuestPtr guest;
 
     machines = virCapabilitiesAllocMachines(s390_machines,
-                                            ARRAY_CARDINALITY(s390_machines));
+                                            G_N_ELEMENTS(s390_machines));
     if (!machines)
         goto error;
 
     guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_S390X,
                                     QEMUBinList[TEST_UTILS_QEMU_BIN_S390X],
                                     NULL,
-                                    ARRAY_CARDINALITY(s390_machines),
+                                    G_N_ELEMENTS(s390_machines),
                                     machines);
     if (!guest)
         goto error;
@@ -388,7 +388,7 @@ static int testQemuAddS390Guest(virCapsPtr caps)
     return 0;
 
  error:
-    virCapabilitiesFreeMachines(machines, ARRAY_CARDINALITY(s390_machines));
+    virCapabilitiesFreeMachines(machines, G_N_ELEMENTS(s390_machines));
     return -1;
 }
 
@@ -399,14 +399,14 @@ static int testQemuAddArm6Guest(virCapsPtr caps)
     virCapsGuestPtr guest;
 
     capsmachines = virCapabilitiesAllocMachines(machines,
-                                                ARRAY_CARDINALITY(machines));
+                                                G_N_ELEMENTS(machines));
     if (!capsmachines)
         goto error;
 
     guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_ARMV6L,
                                     QEMUBinList[TEST_UTILS_QEMU_BIN_ARM],
                                     NULL,
-                                    ARRAY_CARDINALITY(machines),
+                                    G_N_ELEMENTS(machines),
                                     capsmachines);
     if (!guest)
         goto error;
@@ -420,7 +420,7 @@ static int testQemuAddArm6Guest(virCapsPtr caps)
     return 0;
 
  error:
-    virCapabilitiesFreeMachines(capsmachines, ARRAY_CARDINALITY(machines));
+    virCapabilitiesFreeMachines(capsmachines, G_N_ELEMENTS(machines));
     return -1;
 }
 
@@ -433,14 +433,14 @@ static int testQemuAddArm7Guest(virCapsPtr caps)
     virCapsGuestPtr guest;
 
     capsmachines = virCapabilitiesAllocMachines(machines,
-                                                ARRAY_CARDINALITY(machines));
+                                                G_N_ELEMENTS(machines));
     if (!capsmachines)
         goto error;
 
     guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_ARMV7L,
                                     QEMUBinList[TEST_UTILS_QEMU_BIN_ARM],
                                     NULL,
-                                    ARRAY_CARDINALITY(machines),
+                                    G_N_ELEMENTS(machines),
                                     capsmachines);
     if (!guest)
         goto error;
@@ -454,7 +454,7 @@ static int testQemuAddArm7Guest(virCapsPtr caps)
     return 0;
 
  error:
-    virCapabilitiesFreeMachines(capsmachines, ARRAY_CARDINALITY(machines));
+    virCapabilitiesFreeMachines(capsmachines, G_N_ELEMENTS(machines));
     return -1;
 }
 
@@ -465,14 +465,14 @@ static int testQemuAddAARCH64Guest(virCapsPtr caps)
     virCapsGuestPtr guest;
 
     capsmachines = virCapabilitiesAllocMachines(machines,
-                                                ARRAY_CARDINALITY(machines));
+                                                G_N_ELEMENTS(machines));
     if (!capsmachines)
         goto error;
 
     guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_AARCH64,
                                     QEMUBinList[TEST_UTILS_QEMU_BIN_AARCH64],
                                     NULL,
-                                    ARRAY_CARDINALITY(machines),
+                                    G_N_ELEMENTS(machines),
                                     capsmachines);
     if (!guest)
         goto error;
@@ -486,7 +486,7 @@ static int testQemuAddAARCH64Guest(virCapsPtr caps)
     return 0;
 
  error:
-    virCapabilitiesFreeMachines(capsmachines, ARRAY_CARDINALITY(machines));
+    virCapabilitiesFreeMachines(capsmachines, G_N_ELEMENTS(machines));
     return -1;
 }
 
@@ -669,7 +669,7 @@ int qemuTestCapsCacheInsert(virFileCachePtr cache,
             return -ENOMEM;
     }
 
-    for (i = 0; i < ARRAY_CARDINALITY(QEMUBinList); i++) {
+    for (i = 0; i < G_N_ELEMENTS(QEMUBinList); i++) {
         virObjectRef(tmpCaps);
         if (virFileCacheInsertData(cache, QEMUBinList[i], tmpCaps) < 0) {
             virObjectUnref(tmpCaps);
@@ -884,7 +884,7 @@ testQemuGetLatestCaps(void)
 
     VIR_TEST_VERBOSE("");
 
-    for (i = 0; i < ARRAY_CARDINALITY(archs); ++i) {
+    for (i = 0; i < G_N_ELEMENTS(archs); ++i) {
         char *cap = testQemuGetLatestCapsForArch(archs[i], "xml");
 
         if (!cap || virHashAddEntry(capslatest, archs[i], cap) < 0)

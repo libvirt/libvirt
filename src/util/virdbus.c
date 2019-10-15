@@ -305,7 +305,7 @@ static const char virDBusBasicTypes[] = {
 
 static bool virDBusIsBasicType(char c)
 {
-    return !!memchr(virDBusBasicTypes, c, ARRAY_CARDINALITY(virDBusBasicTypes));
+    return !!memchr(virDBusBasicTypes, c, G_N_ELEMENTS(virDBusBasicTypes));
 }
 
 /*

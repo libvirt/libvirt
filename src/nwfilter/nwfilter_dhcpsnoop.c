@@ -1382,7 +1382,7 @@ virNWFilterDHCPSnoopThread(void *req0)
     virNWFilterSnoopReqLock(req);
 
     if (req->binding->portdevname && req->threadkey) {
-        for (i = 0; i < ARRAY_CARDINALITY(pcapConf); i++) {
+        for (i = 0; i < G_N_ELEMENTS(pcapConf); i++) {
             pcapConf[i].handle =
                 virNWFilterSnoopDHCPOpen(req->binding->portdevname,
                                          &req->binding->mac,
@@ -1419,7 +1419,7 @@ virNWFilterDHCPSnoopThread(void *req0)
 
     while (!error) {
         if (virNWFilterSnoopAdjustPoll(pcapConf,
-                                       ARRAY_CARDINALITY(pcapConf),
+                                       G_N_ELEMENTS(pcapConf),
                                        fds, &pollTo) < 0) {
             break;
         }
@@ -1428,7 +1428,7 @@ virNWFilterDHCPSnoopThread(void *req0)
         if (pollTo < 0 || pollTo > SNOOP_POLL_MAX_TIMEOUT_MS)
             pollTo = SNOOP_POLL_MAX_TIMEOUT_MS;
 
-        n = poll(fds, ARRAY_CARDINALITY(fds), pollTo);
+        n = poll(fds, G_N_ELEMENTS(fds), pollTo);
 
         if (n < 0) {
             if (errno != EAGAIN && errno != EINTR)
@@ -1445,7 +1445,7 @@ virNWFilterDHCPSnoopThread(void *req0)
             req->jobCompletionStatus != 0)
             goto exit;
 
-        for (i = 0; n > 0 && i < ARRAY_CARDINALITY(fds); i++) {
+        for (i = 0; n > 0 && i < G_N_ELEMENTS(fds); i++) {
             if (!fds[i].revents)
                 continue;
 
@@ -1567,7 +1567,7 @@ virNWFilterDHCPSnoopThread(void *req0)
 
     VIR_FREE(threadkey);
 
-    for (i = 0; i < ARRAY_CARDINALITY(pcapConf); i++) {
+    for (i = 0; i < G_N_ELEMENTS(pcapConf); i++) {
         if (pcapConf[i].handle)
             pcap_close(pcapConf[i].handle);
     }

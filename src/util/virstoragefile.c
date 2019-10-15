@@ -387,7 +387,7 @@ static struct FileTypeInfo const fileTypeInfo[] = {
         4+4+4, 8, 512, NULL, vmdk4GetBackingStore, NULL
     },
 };
-verify(ARRAY_CARDINALITY(fileTypeInfo) == VIR_STORAGE_FILE_LAST);
+verify(G_N_ELEMENTS(fileTypeInfo) == VIR_STORAGE_FILE_LAST);
 
 
 /* qcow2 compatible features in the order they appear on-disk */
@@ -401,7 +401,7 @@ enum qcow2CompatibleFeature {
 static const int qcow2CompatibleFeatureArray[] = {
     VIR_STORAGE_FILE_FEATURE_LAZY_REFCOUNTS,
 };
-verify(ARRAY_CARDINALITY(qcow2CompatibleFeatureArray) ==
+verify(G_N_ELEMENTS(qcow2CompatibleFeatureArray) ==
        QCOW2_COMPATIBLE_FEATURE_LAST);
 
 static int
@@ -3640,7 +3640,7 @@ virStorageSourceParseBackingJSONInternal(virStorageSourcePtr src,
         return -1;
     }
 
-    for (i = 0; i < ARRAY_CARDINALITY(jsonParsers); i++) {
+    for (i = 0; i < G_N_ELEMENTS(jsonParsers); i++) {
         if (STREQ(drvname, jsonParsers[i].drvname))
             return jsonParsers[i].func(src, file, jsonParsers[i].opaque);
     }

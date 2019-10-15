@@ -85,7 +85,7 @@ static int testRotatingFileReaderAssertBufferContent(const char *buf,
     char bytes[] = { FILEBYTE, FILEBYTE0, FILEBYTE1 };
     size_t total = 0;
 
-    if (nregions > ARRAY_CARDINALITY(bytes)) {
+    if (nregions > G_N_ELEMENTS(bytes)) {
         fprintf(stderr, "Too many regions %zu\n", nregions);
         return -1;
     }
@@ -573,7 +573,7 @@ static int testRotatingFileReaderOne(const void *data G_GNUC_UNUSED)
         goto cleanup;
 
     if (testRotatingFileReaderAssertBufferContent(buf, got,
-                                                  ARRAY_CARDINALITY(regions),
+                                                  G_N_ELEMENTS(regions),
                                                   regions) < 0)
         goto cleanup;
 
@@ -605,7 +605,7 @@ static int testRotatingFileReaderAll(const void *data G_GNUC_UNUSED)
         goto cleanup;
 
     if (testRotatingFileReaderAssertBufferContent(buf, got,
-                                                  ARRAY_CARDINALITY(regions),
+                                                  G_N_ELEMENTS(regions),
                                                   regions) < 0)
         goto cleanup;
 
@@ -637,7 +637,7 @@ static int testRotatingFileReaderPartial(const void *data G_GNUC_UNUSED)
         goto cleanup;
 
     if (testRotatingFileReaderAssertBufferContent(buf, got,
-                                                  ARRAY_CARDINALITY(regions),
+                                                  G_N_ELEMENTS(regions),
                                                   regions) < 0)
         goto cleanup;
 
@@ -678,7 +678,7 @@ static int testRotatingFileReaderSeek(const void *data G_GNUC_UNUSED)
         goto cleanup;
 
     if (testRotatingFileReaderAssertBufferContent(buf, got,
-                                                  ARRAY_CARDINALITY(regions),
+                                                  G_N_ELEMENTS(regions),
                                                   regions) < 0)
         goto cleanup;
 

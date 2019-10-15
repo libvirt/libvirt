@@ -131,7 +131,7 @@ virDomainSnapshotObjListGetNames(virDomainSnapshotObjListPtr snapshots,
     };
     size_t i;
 
-    for (i = 0; i < ARRAY_CARDINALITY(map); i++) {
+    for (i = 0; i < G_N_ELEMENTS(map); i++) {
         if (flags & map[i].snap_flag) {
             flags &= ~map[i].snap_flag;
             moment_flags |= map[i].moment_flag;

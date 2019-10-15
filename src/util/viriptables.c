@@ -144,11 +144,11 @@ iptablesSetupPrivateChains(virFirewallLayer layer)
     bool changed = false;
     iptablesGlobalChainData data[] = {
         { layer, "filter",
-          filter_chains, ARRAY_CARDINALITY(filter_chains), &changed },
+          filter_chains, G_N_ELEMENTS(filter_chains), &changed },
         { layer, "nat",
-          natmangle_chains, ARRAY_CARDINALITY(natmangle_chains), &changed },
+          natmangle_chains, G_N_ELEMENTS(natmangle_chains), &changed },
         { layer, "mangle",
-          natmangle_chains, ARRAY_CARDINALITY(natmangle_chains), &changed },
+          natmangle_chains, G_N_ELEMENTS(natmangle_chains), &changed },
     };
     size_t i;
 
@@ -156,7 +156,7 @@ iptablesSetupPrivateChains(virFirewallLayer layer)
 
     virFirewallStartTransaction(fw, 0);
 
-    for (i = 0; i < ARRAY_CARDINALITY(data); i++)
+    for (i = 0; i < G_N_ELEMENTS(data); i++)
         virFirewallAddRuleFull(fw, data[i].layer,
                                false, iptablesPrivateChainCreate,
                                &(data[i]), "--table", data[i].table,

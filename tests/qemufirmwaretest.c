@@ -68,7 +68,7 @@ testFWPrecedence(const void *opaque G_GNUC_UNUSED)
         PREFIX "/share/qemu/firmware/61-ovmf.json",
         PREFIX "/share/qemu/firmware/70-aavmf.json",
     };
-    const size_t nexpected = ARRAY_CARDINALITY(expected);
+    const size_t nexpected = G_N_ELEMENTS(expected);
 
     if (VIR_STRDUP(fakehome, abs_srcdir "/qemufirmwaredata/home/user/.config") < 0)
         return -1;
@@ -236,7 +236,7 @@ mymain(void)
     do { \
         unsigned int interfaces[] = {__VA_ARGS__}; \
         struct supportedData data = {machine, arch, secure, fwlist, \
-                                     interfaces, ARRAY_CARDINALITY(interfaces)}; \
+                                     interfaces, G_N_ELEMENTS(interfaces)}; \
         if (virTestRun("QEMU FW SUPPORTED " machine " " #arch, \
                        testSupportedFW, &data) < 0) \
             ret = -1; \

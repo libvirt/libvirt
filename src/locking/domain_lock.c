@@ -50,7 +50,7 @@ static int virDomainLockManagerAddLease(virLockManagerPtr lock,
           .value = { .str = lease->lockspace },
         },
     };
-    size_t nparams = ARRAY_CARDINALITY(lparams);
+    size_t nparams = G_N_ELEMENTS(lparams);
     if (!lease->lockspace)
         nparams--;
 
@@ -137,7 +137,7 @@ static virLockManagerPtr virDomainLockManagerNew(virLockManagerPluginPtr plugin,
 
     if (!(lock = virLockManagerNew(virLockManagerPluginGetDriver(plugin),
                                    VIR_LOCK_MANAGER_OBJECT_TYPE_DOMAIN,
-                                   ARRAY_CARDINALITY(params),
+                                   G_N_ELEMENTS(params),
                                    params,
                                    flags)))
         goto error;

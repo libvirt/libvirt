@@ -325,7 +325,7 @@ testStrdup(const void *data G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    for (i = 0; i < ARRAY_CARDINALITY(array); i++)
+    for (i = 0; i < G_N_ELEMENTS(array); i++)
         VIR_FREE(array[i]);
     return ret;
 }
@@ -384,12 +384,12 @@ testStringSortCompare(const void *opaque G_GNUC_UNUSED)
     int ret = -1;
     size_t i;
 
-    qsort(randlist, ARRAY_CARDINALITY(randlist), sizeof(randlist[0]),
+    qsort(randlist, G_N_ELEMENTS(randlist), sizeof(randlist[0]),
           virStringSortCompare);
-    qsort(randrlist, ARRAY_CARDINALITY(randrlist), sizeof(randrlist[0]),
+    qsort(randrlist, G_N_ELEMENTS(randrlist), sizeof(randrlist[0]),
           virStringSortRevCompare);
 
-    for (i = 0; i < ARRAY_CARDINALITY(randlist); i++) {
+    for (i = 0; i < G_N_ELEMENTS(randlist); i++) {
         if (STRNEQ(randlist[i], sortlist[i])) {
             fprintf(stderr, "sortlist[%zu] '%s' != randlist[%zu] '%s'\n",
                     i, sortlist[i], i, randlist[i]);

@@ -44,7 +44,7 @@ testIndexToDiskName(const void *data G_GNUC_UNUSED)
     size_t i;
     char *diskName = NULL;
 
-    for (i = 0; i < ARRAY_CARDINALITY(diskNames); ++i) {
+    for (i = 0; i < G_N_ELEMENTS(diskNames); ++i) {
         VIR_FREE(diskName);
 
         diskName = virIndexToDiskName(i, "sd");
@@ -102,7 +102,7 @@ testDiskNameParse(const void *data G_GNUC_UNUSED)
     int partition;
     struct testDiskName *disk = NULL;
 
-    for (i = 0; i < ARRAY_CARDINALITY(diskNamesPart); ++i) {
+    for (i = 0; i < G_N_ELEMENTS(diskNamesPart); ++i) {
         disk = &diskNamesPart[i];
         if (virDiskNameParse(disk->name, &idx, &partition))
             return -1;
@@ -120,7 +120,7 @@ testDiskNameParse(const void *data G_GNUC_UNUSED)
         }
     }
 
-    for (i = 0; i < ARRAY_CARDINALITY(diskNamesInvalid); ++i) {
+    for (i = 0; i < G_N_ELEMENTS(diskNamesInvalid); ++i) {
         if (!virDiskNameParse(diskNamesInvalid[i], &idx, &partition)) {
             VIR_TEST_DEBUG("Should Fail [%s]", diskNamesInvalid[i]);
             return -1;
@@ -161,7 +161,7 @@ testParseVersionString(const void *data G_GNUC_UNUSED)
     size_t i;
     unsigned long version;
 
-    for (i = 0; i < ARRAY_CARDINALITY(versions); ++i) {
+    for (i = 0; i < G_N_ELEMENTS(versions); ++i) {
         result = virParseVersionString(versions[i].string, &version,
                                        versions[i].allowMissing);
 
@@ -210,7 +210,7 @@ testRoundValueToPowerOfTwo(const void *data G_GNUC_UNUSED)
     unsigned int result;
     size_t i;
 
-    for (i = 0; i < ARRAY_CARDINALITY(roundData); i++) {
+    for (i = 0; i < G_N_ELEMENTS(roundData); i++) {
         result = VIR_ROUND_UP_POWER_OF_TWO(roundData[i].input);
         if (roundData[i].output != result) {
             VIR_TEST_DEBUG("\nInput number [%u]", roundData[i].input);

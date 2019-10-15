@@ -214,7 +214,7 @@ virCommandPassFD(virCommandPtr cmd,
 {
     size_t i;
 
-    for (i = 0; i < ARRAY_CARDINALITY(testCommandPassSafeFDs); i++) {
+    for (i = 0; i < G_N_ELEMENTS(testCommandPassSafeFDs); i++) {
         if (testCommandPassSafeFDs[i] == fd) {
             if (!real_virCommandPassFD)
                 VIR_MOCK_REAL_INIT(virCommandPassFD);

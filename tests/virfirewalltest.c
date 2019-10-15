@@ -991,7 +991,7 @@ testFirewallQueryCallback(virFirewallPtr fw,
                        "--jump", "REJECT", NULL);
 
     for (i = 0; lines[i] != NULL; i++) {
-        if (expectedLineNum >= ARRAY_CARDINALITY(expectedLines)) {
+        if (expectedLineNum >= G_N_ELEMENTS(expectedLines)) {
             expectedLineError = true;
             break;
         }

@@ -74,7 +74,7 @@ testTypedParamsValidate(const void *opaque)
 }
 
 #define PARAMS_ARRAY(...) ((virTypedParameter[]){ __VA_ARGS__ })
-#define PARAMS_SIZE(...) ARRAY_CARDINALITY(PARAMS_ARRAY(__VA_ARGS__))
+#define PARAMS_SIZE(...) G_N_ELEMENTS(PARAMS_ARRAY(__VA_ARGS__))
 
 #define PARAMS(...) \
     .params  = PARAMS_ARRAY(__VA_ARGS__), \
@@ -96,7 +96,7 @@ testTypedParamsFilter(const void *opaque G_GNUC_UNUSED)
     virTypedParameterPtr *filtered = NULL;
 
 
-    nfiltered = virTypedParamsFilter(params, ARRAY_CARDINALITY(params),
+    nfiltered = virTypedParamsFilter(params, G_N_ELEMENTS(params),
                                      "foo", &filtered);
     if (nfiltered != 3)
         goto cleanup;
@@ -108,7 +108,7 @@ testTypedParamsFilter(const void *opaque G_GNUC_UNUSED)
     VIR_FREE(filtered);
     filtered = NULL;
 
-    nfiltered = virTypedParamsFilter(params, ARRAY_CARDINALITY(params),
+    nfiltered = virTypedParamsFilter(params, G_N_ELEMENTS(params),
                                      "bar", &filtered);
 
     if (nfiltered != 2)
@@ -175,7 +175,7 @@ testTypedParamsGetStringList(const void *opaque G_GNUC_UNUSED)
     };
 
     picked = virTypedParamsGetStringList(params,
-                                         ARRAY_CARDINALITY(params),
+                                         G_N_ELEMENTS(params),
                                          "bar",
                                          &strings);
 

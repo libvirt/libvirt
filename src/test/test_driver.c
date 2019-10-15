@@ -332,7 +332,7 @@ testBuildCapabilities(virConnectPtr conn)
             goto error;
     }
 
-    for (i = 0; i < ARRAY_CARDINALITY(guest_types); i++) {
+    for (i = 0; i < G_N_ELEMENTS(guest_types); i++) {
         if ((guest = virCapabilitiesAddGuest(caps,
                                              guest_types[i],
                                              VIR_ARCH_I686,

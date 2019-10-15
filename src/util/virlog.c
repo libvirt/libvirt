@@ -702,7 +702,7 @@ virLogStackTraceToFd(int fd)
     const char *msg = "Stack trace not available on this platform\n";
 
 #define STRIP_DEPTH 3
-    size = backtrace(array, ARRAY_CARDINALITY(array));
+    size = backtrace(array, G_N_ELEMENTS(array));
     if (size) {
         backtrace_symbols_fd(array +  STRIP_DEPTH, size - STRIP_DEPTH, fd);
         ignore_value(safewrite(fd, "\n", 1));
@@ -1004,9 +1004,9 @@ virLogOutputToJournald(virLogSourcePtr source,
     struct journalState state;
 
     state.iov = iov;
-    state.iov_end = iov + ARRAY_CARDINALITY(iov);
+    state.iov_end = iov + G_N_ELEMENTS(iov);
     state.bufs = iov_bufs;
-    state.bufs_end = iov_bufs + ARRAY_CARDINALITY(iov_bufs);
+    state.bufs_end = iov_bufs + G_N_ELEMENTS(iov_bufs);
 
     journalAddString(&state, "MESSAGE", rawstr);
     journalAddInt(&state, "PRIORITY",

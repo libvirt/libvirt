@@ -1313,103 +1313,103 @@ typedef int (*virQEMUCapsObjectTypePropsCB)(qemuMonitorPtr mon,
 
 static virQEMUCapsObjectTypeProps virQEMUCapsDeviceProps[] = {
     { "virtio-blk-pci", virQEMUCapsDevicePropsVirtioBlk,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVirtioBlk),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsVirtioBlk),
       -1 },
     { "virtio-net-pci", virQEMUCapsDevicePropsVirtioNet,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVirtioNet),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsVirtioNet),
       QEMU_CAPS_DEVICE_VIRTIO_NET },
     { "virtio-scsi-pci", virQEMUCapsDevicePropsVirtioSCSI,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVirtioSCSI),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsVirtioSCSI),
       QEMU_CAPS_VIRTIO_SCSI },
     { "virtio-blk-ccw", virQEMUCapsDevicePropsVirtioBlk,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVirtioBlk),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsVirtioBlk),
       QEMU_CAPS_VIRTIO_CCW },
     { "virtio-net-ccw", virQEMUCapsDevicePropsVirtioNet,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVirtioNet),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsVirtioNet),
       QEMU_CAPS_DEVICE_VIRTIO_NET },
     { "virtio-scsi-ccw", virQEMUCapsDevicePropsVirtioSCSI,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVirtioSCSI),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsVirtioSCSI),
       QEMU_CAPS_VIRTIO_SCSI },
     { "virtio-blk-s390", virQEMUCapsDevicePropsVirtioBlk,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVirtioBlk),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsVirtioBlk),
       QEMU_CAPS_VIRTIO_S390 },
     { "virtio-net-s390", virQEMUCapsDevicePropsVirtioNet,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVirtioNet),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsVirtioNet),
       QEMU_CAPS_DEVICE_VIRTIO_NET },
     { "vfio-pci", virQEMUCapsDevicePropsVfioPCI,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVfioPCI),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsVfioPCI),
       QEMU_CAPS_DEVICE_VFIO_PCI },
     { "scsi-hd", virQEMUCapsDevicePropsSCSIDisk,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsSCSIDisk),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsSCSIDisk),
       -1 },
     { "ide-hd", virQEMUCapsDevicePropsIDEDrive,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsIDEDrive),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsIDEDrive),
       -1 },
     { "PIIX4_PM", virQEMUCapsDevicePropsPiix4PM,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsPiix4PM),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsPiix4PM),
       -1 },
     { "usb-redir", virQEMUCapsDevicePropsUSBRedir,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsUSBRedir),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsUSBRedir),
       QEMU_CAPS_USB_REDIR },
     { "i440FX-pcihost", virQEMUCapsDevicePropsI440FXPCIHost,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsI440FXPCIHost),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsI440FXPCIHost),
       -1 },
     { "q35-pcihost", virQEMUCapsDevicePropsQ35PCIHost,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsQ35PCIHost),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsQ35PCIHost),
       -1 },
     { "usb-storage", virQEMUCapsDevicePropsUSBStorage,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsUSBStorage),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsUSBStorage),
       QEMU_CAPS_DEVICE_USB_STORAGE },
     { "kvm-pit", virQEMUCapsDevicePropsKVMPit,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsKVMPit),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsKVMPit),
       -1 },
     { "VGA", virQEMUCapsDevicePropsVGA,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVGA),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsVGA),
       QEMU_CAPS_DEVICE_VGA },
     { "vmware-svga", virQEMUCapsDevicePropsVmwareSvga,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVmwareSvga),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsVmwareSvga),
       QEMU_CAPS_DEVICE_VMWARE_SVGA },
     { "qxl", virQEMUCapsDevicePropsQxl,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsQxl),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsQxl),
       QEMU_CAPS_DEVICE_QXL },
     { "virtio-gpu-pci", virQEMUCapsDevicePropsVirtioGpu,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVirtioGpu),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsVirtioGpu),
       QEMU_CAPS_DEVICE_VIRTIO_GPU },
     { "virtio-gpu-device", virQEMUCapsDevicePropsVirtioGpu,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVirtioGpu),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsVirtioGpu),
       QEMU_CAPS_DEVICE_VIRTIO_GPU },
     { "ICH9-LPC", virQEMUCapsDevicePropsICH9,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsICH9),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsICH9),
       -1 },
     { "virtio-balloon-pci", virQEMUCapsDevicePropsVirtioBalloon,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVirtioBalloon),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsVirtioBalloon),
       -1 },
     { "virtio-balloon-ccw", virQEMUCapsDevicePropsVirtioBalloon,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVirtioBalloon),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsVirtioBalloon),
       -1 },
     { "virtio-balloon-device", virQEMUCapsDevicePropsVirtioBalloon,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVirtioBalloon),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsVirtioBalloon),
       -1 },
     { "nec-usb-xhci", virQEMUCapsDevicePropsUSBNECXHCI,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsUSBNECXHCI),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsUSBNECXHCI),
       QEMU_CAPS_NEC_USB_XHCI },
     { "intel-iommu", virQEMUCapsDevicePropsIntelIOMMU,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsIntelIOMMU),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsIntelIOMMU),
       QEMU_CAPS_DEVICE_INTEL_IOMMU },
     { "spapr-pci-host-bridge", virQEMUCapsDevicePropsSpaprPCIHostBridge,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsSpaprPCIHostBridge),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsSpaprPCIHostBridge),
       QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE },
     { "virtio-gpu-ccw", virQEMUCapsDevicePropsVirtioGpu,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsVirtioGpu),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsVirtioGpu),
       QEMU_CAPS_DEVICE_VIRTIO_GPU_CCW },
     { "virtual-css-bridge", virQEMUCapsObjectPropsVirtualCSSBridge,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtualCSSBridge),
+      G_N_ELEMENTS(virQEMUCapsObjectPropsVirtualCSSBridge),
       QEMU_CAPS_CCW },
     { "mch", virQEMUCapsDevicePropsMCH,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsMCH),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsMCH),
       QEMU_CAPS_DEVICE_MCH },
     { "nvdimm", virQEMUCapsDevicePropsNVDIMM,
-      ARRAY_CARDINALITY(virQEMUCapsDevicePropsNVDIMM),
+      G_N_ELEMENTS(virQEMUCapsDevicePropsNVDIMM),
       QEMU_CAPS_DEVICE_NVDIMM },
 };
 
@@ -1429,13 +1429,13 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsMaxX86CPU[] = {
 
 static virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
     { "memory-backend-file", virQEMUCapsObjectPropsMemoryBackendFile,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsMemoryBackendFile),
+      G_N_ELEMENTS(virQEMUCapsObjectPropsMemoryBackendFile),
       QEMU_CAPS_OBJECT_MEMORY_FILE },
     { "memory-backend-memfd", virQEMUCapsObjectPropsMemoryBackendMemfd,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsMemoryBackendMemfd),
+      G_N_ELEMENTS(virQEMUCapsObjectPropsMemoryBackendMemfd),
       QEMU_CAPS_OBJECT_MEMORY_MEMFD },
     { "max-x86_64-cpu", virQEMUCapsObjectPropsMaxX86CPU,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsMaxX86CPU),
+      G_N_ELEMENTS(virQEMUCapsObjectPropsMaxX86CPU),
       QEMU_CAPS_X86_MAX_CPU },
 };
 
@@ -1452,10 +1452,10 @@ static struct virQEMUCapsStringFlags virQEMUCapsMachinePropsVirt[] = {
 
 static virQEMUCapsObjectTypeProps virQEMUCapsMachineProps[] = {
     { "pseries", virQEMUCapsMachinePropsPSeries,
-      ARRAY_CARDINALITY(virQEMUCapsMachinePropsPSeries),
+      G_N_ELEMENTS(virQEMUCapsMachinePropsPSeries),
       -1 },
     { "virt", virQEMUCapsMachinePropsVirt,
-      ARRAY_CARDINALITY(virQEMUCapsMachinePropsVirt),
+      G_N_ELEMENTS(virQEMUCapsMachinePropsVirt),
       -1 },
 };
 
@@ -2171,7 +2171,7 @@ virQEMUCapsProbeQMPCommands(virQEMUCapsPtr qemuCaps,
         return -1;
 
     virQEMUCapsProcessStringFlags(qemuCaps,
-                                  ARRAY_CARDINALITY(virQEMUCapsCommands),
+                                  G_N_ELEMENTS(virQEMUCapsCommands),
                                   virQEMUCapsCommands,
                                   ncommands, commands);
     virStringListFreeCount(commands, ncommands);
@@ -2201,7 +2201,7 @@ virQEMUCapsProbeQMPEvents(virQEMUCapsPtr qemuCaps,
         return -1;
 
     virQEMUCapsProcessStringFlags(qemuCaps,
-                                  ARRAY_CARDINALITY(virQEMUCapsEvents),
+                                  G_N_ELEMENTS(virQEMUCapsEvents),
                                   virQEMUCapsEvents,
                                   nevents, events);
     virStringListFreeCount(events, nevents);
@@ -2249,7 +2249,7 @@ virQEMUCapsProbeQMPDevices(virQEMUCapsPtr qemuCaps,
     if ((nvalues = qemuMonitorGetObjectTypes(mon, &values)) < 0)
         return -1;
     virQEMUCapsProcessStringFlags(qemuCaps,
-                                  ARRAY_CARDINALITY(virQEMUCapsObjectTypes),
+                                  G_N_ELEMENTS(virQEMUCapsObjectTypes),
                                   virQEMUCapsObjectTypes,
                                   nvalues, values);
     virStringListFreeCount(values, nvalues);
@@ -2257,7 +2257,7 @@ virQEMUCapsProbeQMPDevices(virQEMUCapsPtr qemuCaps,
     if (virQEMUCapsProbeQMPGenericProps(qemuCaps,
                                         mon,
                                         virQEMUCapsDeviceProps,
-                                        ARRAY_CARDINALITY(virQEMUCapsDeviceProps),
+                                        G_N_ELEMENTS(virQEMUCapsDeviceProps),
                                         qemuMonitorGetDeviceProps) < 0)
         return -1;
 
@@ -2265,7 +2265,7 @@ virQEMUCapsProbeQMPDevices(virQEMUCapsPtr qemuCaps,
         virQEMUCapsProbeQMPGenericProps(qemuCaps,
                                         mon,
                                         virQEMUCapsObjectProps,
-                                        ARRAY_CARDINALITY(virQEMUCapsObjectProps),
+                                        G_N_ELEMENTS(virQEMUCapsObjectProps),
                                         qemuMonitorGetObjectProps) < 0)
         return -1;
 
@@ -2330,7 +2330,7 @@ static const char *preferredMachines[] =
     "sim", /* VIR_ARCH_XTENSA */
     "sim", /* VIR_ARCH_XTENSAEB */
 };
-verify(ARRAY_CARDINALITY(preferredMachines) == VIR_ARCH_LAST);
+verify(G_N_ELEMENTS(preferredMachines) == VIR_ARCH_LAST);
 
 
 static int
@@ -2412,7 +2412,7 @@ virQEMUCapsProbeQMPMachineProps(virQEMUCapsPtr qemuCaps,
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_QOM_LIST_PROPERTIES))
         return 0;
 
-    for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsMachineProps); i++) {
+    for (i = 0; i < G_N_ELEMENTS(virQEMUCapsMachineProps); i++) {
         virQEMUCapsObjectTypeProps props = virQEMUCapsMachineProps[i];
         const char *canon = virQEMUCapsGetCanonicalMachine(qemuCaps, props.type);
         VIR_AUTOFREE(char *) type = NULL;
@@ -2717,7 +2717,7 @@ virQEMUCapsProbeQMPTPM(virQEMUCapsPtr qemuCaps,
         return -1;
 
     if (nentries > 0) {
-        for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsTPMModelsToCaps); i++) {
+        for (i = 0; i < G_N_ELEMENTS(virQEMUCapsTPMModelsToCaps); i++) {
             const char *needle = virDomainTPMModelTypeToString(
                 virQEMUCapsTPMModelsToCaps[i].type);
             if (virStringListHasString((const char **)entries, needle))
@@ -2731,7 +2731,7 @@ virQEMUCapsProbeQMPTPM(virQEMUCapsPtr qemuCaps,
         return -1;
 
     if (nentries > 0) {
-        for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsTPMTypesToCaps); i++) {
+        for (i = 0; i < G_N_ELEMENTS(virQEMUCapsTPMTypesToCaps); i++) {
             const char *needle = virDomainTPMBackendTypeToString(
                 virQEMUCapsTPMTypesToCaps[i].type);
             if (virStringListHasString((const char **)entries, needle))
@@ -2808,7 +2808,7 @@ virQEMUCapsProbeQMPCommandLine(virQEMUCapsPtr qemuCaps,
     char **values;
     size_t i, j;
 
-    for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsCommandLine); i++) {
+    for (i = 0; i < G_N_ELEMENTS(virQEMUCapsCommandLine); i++) {
         if ((nvalues = qemuMonitorGetCommandLineOptionParameters(mon,
                                                                  virQEMUCapsCommandLine[i].option,
                                                                  &values,
@@ -2841,7 +2841,7 @@ virQEMUCapsProbeQMPMigrationCapabilities(virQEMUCapsPtr qemuCaps,
         return -1;
 
     virQEMUCapsProcessStringFlags(qemuCaps,
-                                  ARRAY_CARDINALITY(virQEMUCapsMigration),
+                                  G_N_ELEMENTS(virQEMUCapsMigration),
                                   virQEMUCapsMigration,
                                   ncaps, caps);
     virStringListFreeCount(caps, ncaps);
@@ -4155,7 +4155,7 @@ virQEMUCapsKVMSupportsNesting(void)
     int rc;
     size_t i;
 
-    for (i = 0; i < ARRAY_CARDINALITY(kmod); i++) {
+    for (i = 0; i < G_N_ELEMENTS(kmod); i++) {
         VIR_FREE(value);
         rc = virFileReadValueString(&value, "/sys/module/%s/parameters/nested",
                                     kmod[i]);
@@ -4513,7 +4513,7 @@ virQEMUCapsProbeQMPSchemaCapabilities(virQEMUCapsPtr qemuCaps,
         return -1;
     schemareply = NULL;
 
-    for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsQMPSchemaQueries); i++) {
+    for (i = 0; i < G_N_ELEMENTS(virQEMUCapsQMPSchemaQueries); i++) {
         entry = virQEMUCapsQMPSchemaQueries + i;
 
         if (virQEMUQAPISchemaPathExists(entry->value, schema))
@@ -4521,7 +4521,7 @@ virQEMUCapsProbeQMPSchemaCapabilities(virQEMUCapsPtr qemuCaps,
     }
 
     /* probe also for basic event support */
-    for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsEvents); i++) {
+    for (i = 0; i < G_N_ELEMENTS(virQEMUCapsEvents); i++) {
         entry = virQEMUCapsEvents + i;
 
         if (virQEMUQAPISchemaPathExists(entry->value, schema))
@@ -4816,7 +4816,7 @@ struct virQEMUCapsMachineTypeFilter {
 
 static const struct virQEMUCapsMachineTypeFilter virQEMUCapsMachineFilter[] = {
     /* { "blah", virQEMUCapsMachineBLAHFilter,
-         ARRAY_CARDINALITY(virQEMUCapsMachineBLAHFilter) }, */
+         G_N_ELEMENTS(virQEMUCapsMachineBLAHFilter) }, */
     { "", NULL, 0 },
 };
 
@@ -4830,7 +4830,7 @@ virQEMUCapsFilterByMachineType(virQEMUCapsPtr qemuCaps,
     if (!machineType)
         return;
 
-    for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsMachineFilter); i++) {
+    for (i = 0; i < G_N_ELEMENTS(virQEMUCapsMachineFilter); i++) {
         const struct virQEMUCapsMachineTypeFilter *filter = &virQEMUCapsMachineFilter[i];
         size_t j;
 
@@ -4977,8 +4977,8 @@ virQEMUCapsCacheLookupByArch(virFileCachePtr cache,
 
     priv->microcodeVersion = virHostCPUGetMicrocodeVersion();
 
-    for (i = 0; i < ARRAY_CARDINALITY(binaryFilters); i++) {
-        for (j = 0; j < ARRAY_CARDINALITY(archs); j++) {
+    for (i = 0; i < G_N_ELEMENTS(binaryFilters); i++) {
+        for (j = 0; j < G_N_ELEMENTS(archs); j++) {
             struct virQEMUCapsSearchData data = {
                 .arch = archs[j],
                 .binaryFilter = binaryFilters[i],

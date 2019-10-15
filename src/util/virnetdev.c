@@ -3050,7 +3050,7 @@ virNetDevGetEthtoolFeatures(virBitmapPtr bitmap,
     };
 # endif
 
-    for (i = 0; i < ARRAY_CARDINALITY(ethtool_cmds); i++) {
+    for (i = 0; i < G_N_ELEMENTS(ethtool_cmds); i++) {
         cmd.cmd = ethtool_cmds[i].cmd;
         if (virNetDevFeatureAvailable(fd, ifr, &cmd))
             ignore_value(virBitmapSetBit(bitmap, ethtool_cmds[i].feat));
@@ -3059,7 +3059,7 @@ virNetDevGetEthtoolFeatures(virBitmapPtr bitmap,
 # if HAVE_DECL_ETHTOOL_GFLAGS
     cmd.cmd = ETHTOOL_GFLAGS;
     if (virNetDevFeatureAvailable(fd, ifr, &cmd)) {
-        for (i = 0; i < ARRAY_CARDINALITY(flags); i++) {
+        for (i = 0; i < G_N_ELEMENTS(flags); i++) {
             if (cmd.data & flags[i].cmd)
                 ignore_value(virBitmapSetBit(bitmap, flags[i].feat));
         }

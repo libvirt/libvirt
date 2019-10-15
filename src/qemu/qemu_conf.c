@@ -1280,7 +1280,7 @@ virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver)
             VIR_STRDUP(sm->doi, doi) < 0)
             return NULL;
 
-        for (j = 0; j < ARRAY_CARDINALITY(virtTypes); j++) {
+        for (j = 0; j < G_N_ELEMENTS(virtTypes); j++) {
             lbl = qemuSecurityGetBaseLabel(sec_managers[i], virtTypes[j]);
             type = virDomainVirtTypeToString(virtTypes[j]);
             if (lbl &&

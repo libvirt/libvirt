@@ -1551,7 +1551,7 @@ virNodeGetCPUMap(virConnectPtr conn,
  * Example how to use this API:
  *
  *   unsigned int pages[] = { 4, 2048, 1048576}
- *   unsigned int npages = ARRAY_CARDINALITY(pages);
+ *   unsigned int npages = G_N_ELEMENTS(pages);
  *   int startcell = 0;
  *   unsigned int cellcount = 2;
  *

@@ -1313,7 +1313,7 @@ doRemoteOpen(virConnectPtr conn,
     if (!(priv->remoteProgram = virNetClientProgramNew(REMOTE_PROGRAM,
                                                        REMOTE_PROTOCOL_VERSION,
                                                        remoteEvents,
-                                                       ARRAY_CARDINALITY(remoteEvents),
+                                                       G_N_ELEMENTS(remoteEvents),
                                                        conn)))
         goto failed;
     if (!(priv->lxcProgram = virNetClientProgramNew(LXC_PROGRAM,
@@ -1325,7 +1325,7 @@ doRemoteOpen(virConnectPtr conn,
     if (!(priv->qemuProgram = virNetClientProgramNew(QEMU_PROGRAM,
                                                      QEMU_PROTOCOL_VERSION,
                                                      qemuEvents,
-                                                     ARRAY_CARDINALITY(qemuEvents),
+                                                     G_N_ELEMENTS(qemuEvents),
                                                      conn)))
         goto failed;
 
@@ -6596,7 +6596,7 @@ remoteDomainOpenGraphics(virDomainPtr dom,
     remote_domain_open_graphics_args args;
     struct private_data *priv = dom->conn->privateData;
     int fdin[] = { fd };
-    size_t fdinlen = ARRAY_CARDINALITY(fdin);
+    size_t fdinlen = G_N_ELEMENTS(fdin);
 
     remoteDriverLock(priv);
 

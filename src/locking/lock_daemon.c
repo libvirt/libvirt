@@ -314,7 +314,7 @@ virLockDaemonNewPostExecRestart(virJSONValuePtr object, bool privileged)
     }
 
     if (!(lockd->dmn = virNetDaemonNewPostExecRestart(child,
-                                                      ARRAY_CARDINALITY(serverNames),
+                                                      G_N_ELEMENTS(serverNames),
                                                       serverNames,
                                                       virLockDaemonNewServerPostExecRestart,
                                                       (void*)(intptr_t)(privileged ? 0x1 : 0x0))))
@@ -1317,7 +1317,7 @@ int main(int argc, char **argv) {
         }
 
         if (virSystemdGetActivation(actmap,
-                                    ARRAY_CARDINALITY(actmap),
+                                    G_N_ELEMENTS(actmap),
                                     &act) < 0) {
             ret = VIR_LOCK_DAEMON_ERR_NETWORK;
             goto cleanup;

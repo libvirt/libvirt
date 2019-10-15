@@ -168,7 +168,7 @@ static struct virPerfEventAttr attrs[] = {
         .attrConfig = PERF_COUNT_SW_EMULATION_FAULTS
     },
 };
-verify(ARRAY_CARDINALITY(attrs) == VIR_PERF_EVENT_LAST);
+verify(G_N_ELEMENTS(attrs) == VIR_PERF_EVENT_LAST);
 typedef struct virPerfEventAttr *virPerfEventAttrPtr;
 
 

@@ -81,7 +81,7 @@ static const struct virArchData {
     { "xtensaeb",     32, VIR_ARCH_BIG_ENDIAN },
 };
 
-verify(ARRAY_CARDINALITY(virArchData) == VIR_ARCH_LAST);
+verify(G_N_ELEMENTS(virArchData) == VIR_ARCH_LAST);
 
 
 /**

@@ -264,7 +264,7 @@ qemuAgentIOProcessEvent(qemuAgentPtr mon,
     }
 
 /*
-    for (i = 0; i < ARRAY_CARDINALITY(eventHandlers); i++) {
+    for (i = 0; i < G_N_ELEMENTS(eventHandlers); i++) {
         if (STREQ(eventHandlers[i].type, type)) {
             virJSONValuePtr data = virJSONValueObjectGet(obj, "data");
             VIR_DEBUG("handle %s handler=%p data=%p", type,

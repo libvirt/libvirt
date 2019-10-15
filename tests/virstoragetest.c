@@ -478,7 +478,7 @@ testPathCanonicalizeReadlink(const char *path,
 
     *linkpath = NULL;
 
-    for (i = 0; i < ARRAY_CARDINALITY(testPathCanonicalizeSymlinks); i++) {
+    for (i = 0; i < G_N_ELEMENTS(testPathCanonicalizeSymlinks); i++) {
         if (STREQ(path, testPathCanonicalizeSymlinks[i][0])) {
             if (VIR_STRDUP(*linkpath, testPathCanonicalizeSymlinks[i][1]) < 0)
                 return -1;
@@ -519,9 +519,9 @@ testPathRelativePrepare(void)
 {
     size_t i;
 
-    for (i = 0; i < ARRAY_CARDINALITY(backingchain); i++) {
+    for (i = 0; i < G_N_ELEMENTS(backingchain); i++) {
         backingchain[i].type = VIR_STORAGE_TYPE_FILE;
-        if (i < ARRAY_CARDINALITY(backingchain) - 1)
+        if (i < G_N_ELEMENTS(backingchain) - 1)
             backingchain[i].backingStore = &backingchain[i + 1];
         else
             backingchain[i].backingStore = NULL;
@@ -681,7 +681,7 @@ mymain(void)
         data = (struct testChainData){ \
             start, format, { __VA_ARGS__ }, 0, flags, \
         }; \
-        for (i = 0; i < ARRAY_CARDINALITY(data.files); i++) \
+        for (i = 0; i < G_N_ELEMENTS(data.files); i++) \
             if (data.files[i]) \
                 data.nfiles++; \
         if (virTestRun(virTestCounterNext(), \

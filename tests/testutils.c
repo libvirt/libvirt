@@ -1193,7 +1193,7 @@ virTestCounterReset(const char *prefix)
 const char
 *virTestCounterNext(void)
 {
-    size_t len = ARRAY_CARDINALITY(virtTestCounterStr);
+    size_t len = G_N_ELEMENTS(virtTestCounterStr);
 
     /* calculate length of the rest of the string */
     len -= (virtTestCounterPrefixEndOffset - virtTestCounterStr);

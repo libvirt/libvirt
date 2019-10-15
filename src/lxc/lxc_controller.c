@@ -1521,7 +1521,7 @@ static int virLXCControllerPopulateDevices(virLXCControllerPtr ctrl)
         goto cleanup;
 
     /* Populate /dev/ with a few important bits */
-    for (i = 0; i < ARRAY_CARDINALITY(devs); i++) {
+    for (i = 0; i < G_N_ELEMENTS(devs); i++) {
         if (virAsprintf(&path, "/%s/%s.dev/%s",
                         LXC_STATE_DIR, ctrl->def->name, devs[i].path) < 0)
             goto cleanup;

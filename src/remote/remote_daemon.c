@@ -419,7 +419,7 @@ daemonSetupNetworking(virNetServerPtr srv,
         return -1;
 #endif /* ! WITH_IP */
 
-    if (virSystemdGetActivation(actmap, ARRAY_CARDINALITY(actmap), &act) < 0)
+    if (virSystemdGetActivation(actmap, G_N_ELEMENTS(actmap), &act) < 0)
         return -1;
 
 #ifdef WITH_IP
@@ -955,7 +955,7 @@ daemonUsage(const char *argv0, bool privileged)
     fprintf(stderr, "\n");
 
     fprintf(stderr, "%s\n", _("Options:"));
-    for (i = 0; i < ARRAY_CARDINALITY(opthelp); i++)
+    for (i = 0; i < G_N_ELEMENTS(opthelp); i++)
         fprintf(stderr, "  %-22s %s\n", opthelp[i].opts,
                 _(opthelp[i].help));
     fprintf(stderr, "\n");

@@ -134,11 +134,11 @@ libxlCapsNodeData(virCPUDefPtr cpu, libxl_hwcap hwcap,
     if (!(cpudata = virCPUDataNew(cpu->arch)))
         goto error;
 
-    ncaps = ARRAY_CARDINALITY(cpuid);
+    ncaps = G_N_ELEMENTS(cpuid);
     if (libxlCapsAddCPUID(cpudata, cpuid, ncaps) < 0)
         goto error;
 
-    ncaps = ARRAY_CARDINALITY(cpuid_ver1);
+    ncaps = G_N_ELEMENTS(cpuid_ver1);
     if (version > LIBXL_HWCAP_V0 &&
         libxlCapsAddCPUID(cpudata, cpuid_ver1, ncaps) < 0)
         goto error;
@@ -471,7 +471,7 @@ libxlCapsInitGuests(libxl_ctx *ctx, virCapsPtr caps)
             }
 
             /* Too many arch flavours - highly unlikely ! */
-            if (i >= ARRAY_CARDINALITY(guest_archs))
+            if (i >= G_N_ELEMENTS(guest_archs))
                 continue;
             /* Didn't find a match, so create a new one */
             if (i == nr_guest_archs)
@@ -500,7 +500,7 @@ libxlCapsInitGuests(libxl_ctx *ctx, virCapsPtr caps)
 #ifdef HAVE_XEN_PVH
             if (hvm && i == nr_guest_archs-1) {
                 /* Ensure we have not exhausted the guest_archs array */
-                if (nr_guest_archs >= ARRAY_CARDINALITY(guest_archs))
+                if (nr_guest_archs >= G_N_ELEMENTS(guest_archs))
                     continue;
                 i = nr_guest_archs;
                 nr_guest_archs++;

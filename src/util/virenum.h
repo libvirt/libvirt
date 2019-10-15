@@ -34,15 +34,15 @@ virEnumToString(const char * const *types,
     static const char *const name ## TypeList[] = { __VA_ARGS__ }; \
     const char *name ## TypeToString(int type) { \
         return virEnumToString(name ## TypeList, \
-                               ARRAY_CARDINALITY(name ## TypeList), \
+                               G_N_ELEMENTS(name ## TypeList), \
                                type); \
     } \
     int name ## TypeFromString(const char *type) { \
         return virEnumFromString(name ## TypeList, \
-                                 ARRAY_CARDINALITY(name ## TypeList), \
+                                 G_N_ELEMENTS(name ## TypeList), \
                                  type); \
     } \
-    verify(ARRAY_CARDINALITY(name ## TypeList) == lastVal)
+    verify(G_N_ELEMENTS(name ## TypeList) == lastVal)
 
 #define VIR_ENUM_DECL(name) \
     const char *name ## TypeToString(int type); \

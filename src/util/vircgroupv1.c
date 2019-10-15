@@ -555,7 +555,7 @@ virCgroupV1CpuSetInherit(virCgroupPtr parent,
     };
 
     VIR_DEBUG("Setting up inheritance %s -> %s", parent->path, group->path);
-    for (i = 0; i < ARRAY_CARDINALITY(inherit_values); i++) {
+    for (i = 0; i < G_N_ELEMENTS(inherit_values); i++) {
         VIR_AUTOFREE(char *) value = NULL;
 
         if (virCgroupGetValueStr(parent,
@@ -1065,7 +1065,7 @@ virCgroupV1GetBlkioIoServiced(virCgroupPtr group,
         return -1;
 
     /* sum up all entries of the same kind, from all devices */
-    for (i = 0; i < ARRAY_CARDINALITY(value_names); i++) {
+    for (i = 0; i < G_N_ELEMENTS(value_names); i++) {
         p1 = str1;
         p2 = str2;
 
@@ -1171,7 +1171,7 @@ virCgroupV1GetBlkioIoDeviceServiced(virCgroupPtr group,
         return -1;
     }
 
-    for (i = 0; i < ARRAY_CARDINALITY(value_names); i++) {
+    for (i = 0; i < G_N_ELEMENTS(value_names); i++) {
         if (!(p1 = strstr(p1, value_names[i]))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Cannot find byte %sstats for block device '%s'"),

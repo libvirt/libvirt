@@ -628,7 +628,7 @@ int virProcessGetNamespaces(pid_t pid,
     *nfdlist = 0;
     *fdlist = NULL;
 
-    for (i = 0; i < ARRAY_CARDINALITY(ns); i++) {
+    for (i = 0; i < G_N_ELEMENTS(ns); i++) {
         int fd;
         VIR_AUTOFREE(char *) nsfile = NULL;
 

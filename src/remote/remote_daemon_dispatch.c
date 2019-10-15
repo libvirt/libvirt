@@ -1493,7 +1493,7 @@ static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventBlockThreshold),
 };
 
-verify(ARRAY_CARDINALITY(domainEventCallbacks) == VIR_DOMAIN_EVENT_ID_LAST);
+verify(G_N_ELEMENTS(domainEventCallbacks) == VIR_DOMAIN_EVENT_ID_LAST);
 
 static int
 remoteRelayNetworkEventLifecycle(virConnectPtr conn,
@@ -1536,7 +1536,7 @@ static virConnectNetworkEventGenericCallback networkEventCallbacks[] = {
     VIR_NETWORK_EVENT_CALLBACK(remoteRelayNetworkEventLifecycle),
 };
 
-verify(ARRAY_CARDINALITY(networkEventCallbacks) == VIR_NETWORK_EVENT_ID_LAST);
+verify(G_N_ELEMENTS(networkEventCallbacks) == VIR_NETWORK_EVENT_ID_LAST);
 
 static int
 remoteRelayStoragePoolEventLifecycle(virConnectPtr conn,
@@ -1615,7 +1615,7 @@ static virConnectStoragePoolEventGenericCallback storageEventCallbacks[] = {
     VIR_STORAGE_POOL_EVENT_CALLBACK(remoteRelayStoragePoolEventRefresh),
 };
 
-verify(ARRAY_CARDINALITY(storageEventCallbacks) == VIR_STORAGE_POOL_EVENT_ID_LAST);
+verify(G_N_ELEMENTS(storageEventCallbacks) == VIR_STORAGE_POOL_EVENT_ID_LAST);
 
 static int
 remoteRelayNodeDeviceEventLifecycle(virConnectPtr conn,
@@ -1694,7 +1694,7 @@ static virConnectNodeDeviceEventGenericCallback nodeDeviceEventCallbacks[] = {
     VIR_NODE_DEVICE_EVENT_CALLBACK(remoteRelayNodeDeviceEventUpdate),
 };
 
-verify(ARRAY_CARDINALITY(nodeDeviceEventCallbacks) == VIR_NODE_DEVICE_EVENT_ID_LAST);
+verify(G_N_ELEMENTS(nodeDeviceEventCallbacks) == VIR_NODE_DEVICE_EVENT_ID_LAST);
 
 static int
 remoteRelaySecretEventLifecycle(virConnectPtr conn,
@@ -1773,7 +1773,7 @@ static virConnectSecretEventGenericCallback secretEventCallbacks[] = {
     VIR_SECRET_EVENT_CALLBACK(remoteRelaySecretEventValueChanged),
 };
 
-verify(ARRAY_CARDINALITY(secretEventCallbacks) == VIR_SECRET_EVENT_ID_LAST);
+verify(G_N_ELEMENTS(secretEventCallbacks) == VIR_SECRET_EVENT_ID_LAST);
 
 static void
 remoteRelayDomainQemuMonitorEvent(virConnectPtr conn,
@@ -2176,7 +2176,7 @@ remoteDispatchProbeURI(bool readonly,
         };
         ssize_t i;
 
-        for (i = 0; i < (ssize_t) ARRAY_CARDINALITY(drivers) && !*probeduri; i++) {
+        for (i = 0; i < (ssize_t) G_N_ELEMENTS(drivers) && !*probeduri; i++) {
             VIR_AUTOFREE(char *) daemonname = NULL;
             VIR_AUTOFREE(char *) daemonpath = NULL;
 
@@ -2222,7 +2222,7 @@ remoteDispatchProbeURI(bool readonly,
         };
         ssize_t i;
 
-        for (i = 0; i < (ssize_t) ARRAY_CARDINALITY(drivers) && !*probeduri; i++) {
+        for (i = 0; i < (ssize_t) G_N_ELEMENTS(drivers) && !*probeduri; i++) {
             VIR_AUTOFREE(char *) sockname = NULL;
 
             if (virAsprintf(&sockname, "%s/libvirt/virt%sd-%s",

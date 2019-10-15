@@ -309,7 +309,7 @@ static virStoragePoolTypeInfoPtr
 virStoragePoolTypeInfoLookup(int type)
 {
     size_t i;
-    for (i = 0; i < ARRAY_CARDINALITY(poolTypeInfo); i++)
+    for (i = 0; i < G_N_ELEMENTS(poolTypeInfo); i++)
         if (poolTypeInfo[i].poolType == type)
             return &poolTypeInfo[i];
 

@@ -368,7 +368,7 @@ virNetClientFindDefaultSshKey(const char *homedir, char **retPath)
 
     const char *keys[] = { "identity", "id_dsa", "id_ecdsa", "id_ed25519", "id_rsa" };
 
-    for (i = 0; i < ARRAY_CARDINALITY(keys); ++i) {
+    for (i = 0; i < G_N_ELEMENTS(keys); ++i) {
         int ret = virNetClientCheckKeyExists(homedir, keys[i], retPath);
         if (ret != 0)
             return ret;
@@ -939,7 +939,7 @@ int virNetClientSetTLSSession(virNetClientPtr client,
         ignore_value(pthread_sigmask(SIG_BLOCK, &blockedsigs, &oldmask));
 
     repoll:
-        ret = poll(fds, ARRAY_CARDINALITY(fds), -1);
+        ret = poll(fds, G_N_ELEMENTS(fds), -1);
         if (ret < 0 && (errno == EAGAIN || errno == EINTR))
             goto repoll;
 
@@ -963,7 +963,7 @@ int virNetClientSetTLSSession(virNetClientPtr client,
     ignore_value(pthread_sigmask(SIG_BLOCK, &blockedsigs, &oldmask));
 
     repoll2:
-    ret = poll(fds, ARRAY_CARDINALITY(fds), -1);
+    ret = poll(fds, G_N_ELEMENTS(fds), -1);
     if (ret < 0 && (errno == EAGAIN || errno == EINTR))
         goto repoll2;
 
@@ -1682,7 +1682,7 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
         ignore_value(pthread_sigmask(SIG_BLOCK, &blockedsigs, &oldmask));
 
     repoll:
-        ret = poll(fds, ARRAY_CARDINALITY(fds), timeout);
+        ret = poll(fds, G_N_ELEMENTS(fds), timeout);
         if (ret < 0 && (errno == EAGAIN || errno == EINTR))
             goto repoll;
 

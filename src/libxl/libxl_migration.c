@@ -860,7 +860,7 @@ static void libxlTunnel3MigrationSrcFunc(void *arg)
 
         fds[0].events = POLLIN;
         fds[0].revents = 0;
-        ret = poll(fds, ARRAY_CARDINALITY(fds), timeout);
+        ret = poll(fds, G_N_ELEMENTS(fds), timeout);
         if (ret < 0) {
             if (errno == EAGAIN || errno == EINTR)
                 continue;
@@ -1138,7 +1138,7 @@ static int virConnectCredType[] = {
 
 static virConnectAuth virConnectAuthConfig = {
     .credtype = virConnectCredType,
-    .ncredtype = ARRAY_CARDINALITY(virConnectCredType),
+    .ncredtype = G_N_ELEMENTS(virConnectCredType),
 };
 
 /* On P2P mode there is only the Perform3 phase and we need to handle

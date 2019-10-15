@@ -57,7 +57,7 @@ cpuGetSubDriver(virArch arch)
         return NULL;
     }
 
-    for (i = 0; i < ARRAY_CARDINALITY(drivers); i++) {
+    for (i = 0; i < G_N_ELEMENTS(drivers); i++) {
         for (j = 0; j < drivers[i]->narch; j++) {
             if (arch == drivers[i]->arch[j])
                 return drivers[i];
@@ -76,7 +76,7 @@ cpuGetSubDriverByName(const char *name)
 {
     size_t i;
 
-    for (i = 0; i < ARRAY_CARDINALITY(drivers); i++) {
+    for (i = 0; i < G_N_ELEMENTS(drivers); i++) {
         if (STREQ_NULLABLE(name, drivers[i]->name))
             return drivers[i];
     }

@@ -96,7 +96,7 @@ VIR_MOCK_WRAP_RET_ARGS(dbus_connection_send_with_reply_and_block,
             is_authorized = 0;
             is_challenge = 0;
             retdetails = retdetailscancelled;
-            retdetailslen = ARRAY_CARDINALITY(retdetailscancelled) / 2;
+            retdetailslen = G_N_ELEMENTS(retdetailscancelled) / 2;
         } else if (STREQ(actionid, "org.libvirt.test.details")) {
             size_t i;
             is_authorized = 0;
