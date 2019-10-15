@@ -769,7 +769,7 @@ virTypedParamListStealParams(virTypedParamListPtr list,
 }
 
 
-static int ATTRIBUTE_FMT_PRINTF(2, 0)
+static int G_GNUC_PRINTF(2, 0)
 virTypedParamSetNameVPrintf(virTypedParameterPtr par,
                             const char *fmt,
                             va_list ap)

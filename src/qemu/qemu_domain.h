@@ -739,7 +739,7 @@ qemuDomainLogContextPtr qemuDomainLogContextNew(virQEMUDriverPtr driver,
                                                 virDomainObjPtr vm,
                                                 qemuDomainLogContextMode mode);
 int qemuDomainLogContextWrite(qemuDomainLogContextPtr ctxt,
-                              const char *fmt, ...) ATTRIBUTE_FMT_PRINTF(2, 3);
+                              const char *fmt, ...) G_GNUC_PRINTF(2, 3);
 ssize_t qemuDomainLogContextRead(qemuDomainLogContextPtr ctxt,
                                  char **msg);
 int qemuDomainLogContextGetWriteFD(qemuDomainLogContextPtr ctxt);
@@ -750,7 +750,7 @@ virLogManagerPtr qemuDomainLogContextGetManager(qemuDomainLogContextPtr ctxt);
 int qemuDomainLogAppendMessage(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                const char *fmt,
-                               ...) ATTRIBUTE_FMT_PRINTF(3, 4);
+                               ...) G_GNUC_PRINTF(3, 4);
 
 const char *qemuFindQemuImgBinary(virQEMUDriverPtr driver);
 

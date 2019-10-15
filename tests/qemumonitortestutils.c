@@ -183,7 +183,7 @@ qemuMonitorTestAddInvalidCommandResponse(qemuMonitorTestPtr test,
 }
 
 
-int ATTRIBUTE_FMT_PRINTF(2, 3)
+int G_GNUC_PRINTF(2, 3)
 qemuMonitorReportError(qemuMonitorTestPtr test, const char *errmsg, ...)
 {
     va_list msgargs;

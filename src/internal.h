@@ -106,26 +106,6 @@
 #endif
 
 /**
- * ATTRIBUTE_FMT_PRINTF
- *
- * Macro used to check printf like functions, if compiling
- * with gcc.
- *
- * We use gnulib which guarantees we always have GNU style
- * printf format specifiers even on broken Win32 platforms
- * hence we have to force 'gnu_printf' for new GCC
- */
-#ifndef ATTRIBUTE_FMT_PRINTF
-# ifndef __clang__
-#  define ATTRIBUTE_FMT_PRINTF(fmtpos, argpos) \
-       __attribute__((__format__ (__gnu_printf__, fmtpos, argpos)))
-# else
-#  define ATTRIBUTE_FMT_PRINTF(fmtpos, argpos) \
-       __attribute__((__format__ (__printf__, fmtpos, argpos)))
-# endif
-#endif
-
-/**
  * ATTRIBUTE_PACKED
  *
  * force a structure to be packed, i.e. not following architecture and

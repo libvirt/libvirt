@@ -320,7 +320,7 @@ char *virFileFindMountPoint(const char *type);
 int virBuildPathInternal(char **path, ...) G_GNUC_NULL_TERMINATED;
 
 int virFilePrintf(FILE *fp, const char *msg, ...)
-    ATTRIBUTE_FMT_PRINTF(2, 3);
+    G_GNUC_PRINTF(2, 3);
 
 typedef struct _virHugeTLBFS virHugeTLBFS;
 typedef virHugeTLBFS *virHugeTLBFSPtr;
@@ -361,15 +361,15 @@ int virFileCopyACLs(const char *src,
 int virFileComparePaths(const char *p1, const char *p2);
 
 int virFileReadValueInt(int *value, const char *format, ...)
- ATTRIBUTE_FMT_PRINTF(2, 3);
+ G_GNUC_PRINTF(2, 3);
 int virFileReadValueUint(unsigned int *value, const char *format, ...)
- ATTRIBUTE_FMT_PRINTF(2, 3);
+ G_GNUC_PRINTF(2, 3);
 int virFileReadValueBitmap(virBitmapPtr *value, const char *format, ...)
- ATTRIBUTE_FMT_PRINTF(2, 3);
+ G_GNUC_PRINTF(2, 3);
 int virFileReadValueScaledInt(unsigned long long *value, const char *format, ...)
- ATTRIBUTE_FMT_PRINTF(2, 3);
+ G_GNUC_PRINTF(2, 3);
 int virFileReadValueString(char **value, const char *format, ...)
- ATTRIBUTE_FMT_PRINTF(2, 3);
+ G_GNUC_PRINTF(2, 3);
 
 int virFileWaitForExists(const char *path, size_t ms, size_t tries);
 

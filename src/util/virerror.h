@@ -42,7 +42,7 @@ void virRaiseErrorFull(const char *filename,
                        int int1,
                        int int2,
                        const char *fmt, ...)
-    ATTRIBUTE_FMT_PRINTF(12, 13);
+    G_GNUC_PRINTF(12, 13);
 
 void virRaiseErrorObject(const char *filename,
                          const char *funcname,
@@ -54,7 +54,7 @@ void virReportErrorHelper(int domcode, int errcode,
                           const char *funcname,
                           size_t linenr,
                           const char *fmt, ...)
-  ATTRIBUTE_FMT_PRINTF(6, 7);
+  G_GNUC_PRINTF(6, 7);
 
 void virReportSystemErrorFull(int domcode,
                               int theerrno,
@@ -62,7 +62,7 @@ void virReportSystemErrorFull(int domcode,
                               const char *funcname,
                               size_t linenr,
                               const char *fmt, ...)
-    ATTRIBUTE_FMT_PRINTF(6, 7);
+    G_GNUC_PRINTF(6, 7);
 
 #define virReportSystemError(theerrno, fmt,...) \
     virReportSystemErrorFull(VIR_FROM_THIS, \
@@ -207,6 +207,6 @@ void virErrorPreserveLast(virErrorPtr *saveerr);
 void virErrorRestore(virErrorPtr *savederr);
 
 void virLastErrorPrefixMessage(const char *fmt, ...)
-    ATTRIBUTE_FMT_PRINTF(1, 2);
+    G_GNUC_PRINTF(1, 2);
 
 VIR_DEFINE_AUTOPTR_FUNC(virError, virFreeError);

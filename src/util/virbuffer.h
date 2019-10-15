@@ -73,9 +73,9 @@ void virBufferAdd(virBufferPtr buf, const char *str, int len);
 void virBufferAddBuffer(virBufferPtr buf, virBufferPtr toadd);
 void virBufferAddChar(virBufferPtr buf, char c);
 void virBufferAsprintf(virBufferPtr buf, const char *format, ...)
-  ATTRIBUTE_FMT_PRINTF(2, 3);
+  G_GNUC_PRINTF(2, 3);
 void virBufferVasprintf(virBufferPtr buf, const char *format, va_list ap)
-  ATTRIBUTE_FMT_PRINTF(2, 0);
+  G_GNUC_PRINTF(2, 0);
 void virBufferStrcat(virBufferPtr buf, ...)
   G_GNUC_NULL_TERMINATED;
 void virBufferStrcatVArgs(virBufferPtr buf, va_list ap);

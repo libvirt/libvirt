@@ -54,7 +54,7 @@ libxlLoggerFileFree(void *payload, const void *key G_GNUC_UNUSED)
     file = NULL;
 }
 
-ATTRIBUTE_FMT_PRINTF(5, 0) static void
+G_GNUC_PRINTF(5, 0) static void
 libvirt_vmessage(xentoollog_logger *logger_in,
                  xentoollog_level level,
                  int errnoval,

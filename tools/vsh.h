@@ -240,11 +240,11 @@ struct _vshCmdGrp {
 };
 
 void vshError(vshControl *ctl, const char *format, ...)
-    ATTRIBUTE_FMT_PRINTF(2, 3);
+    G_GNUC_PRINTF(2, 3);
 void vshOpenLogFile(vshControl *ctl);
 void vshOutputLogFile(vshControl *ctl, int log_level, const char *format,
                       va_list ap)
-    ATTRIBUTE_FMT_PRINTF(3, 0);
+    G_GNUC_PRINTF(3, 0);
 void vshCloseLogFile(vshControl *ctl);
 
 const char *vshCmddefGetInfo(const vshCmdDef *cmd, const char *info);
@@ -302,14 +302,14 @@ bool vshCommandArgvParse(vshControl *ctl, int nargs, char **argv);
 int vshCommandOptTimeoutToMs(vshControl *ctl, const vshCmd *cmd, int *timeout);
 
 void vshPrint(vshControl *ctl, const char *format, ...)
-    ATTRIBUTE_FMT_PRINTF(2, 3);
+    G_GNUC_PRINTF(2, 3);
 void vshPrintExtra(vshControl *ctl, const char *format, ...)
-    ATTRIBUTE_FMT_PRINTF(2, 3);
+    G_GNUC_PRINTF(2, 3);
 bool vshInit(vshControl *ctl, const vshCmdGrp *groups, const vshCmdDef *set);
 bool vshInitReload(vshControl *ctl);
 void vshDeinit(vshControl *ctl);
 void vshDebug(vshControl *ctl, int level, const char *format, ...)
-    ATTRIBUTE_FMT_PRINTF(3, 4);
+    G_GNUC_PRINTF(3, 4);
 
 /* User visible sort, so we want locale-specific case comparison.  */
 #define vshStrcasecmp(S1, S2) strcasecmp(S1, S2)

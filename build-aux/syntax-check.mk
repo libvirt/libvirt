@@ -629,7 +629,7 @@ sc_avoid_g_gnuc_unused_in_header:
 	  $(_sc_search_regexp)
 
 sc_prohibit_attribute_macros:
-	@prohibit='ATTRIBUTE_(UNUSED|NORETURN|SENTINEL|RETURN_CHECK|NOINLINE)' \
+	@prohibit='ATTRIBUTE_(UNUSED|NORETURN|SENTINEL|RETURN_CHECK|NOINLINE|FMT_PRINTF)' \
 	in_vc_files='\.[ch]$$' \
 	halt='use GLib macros: G_GNUC_<ATTRIBUTE_SUFFIX> for most' \
 	  $(_sc_search_regexp)

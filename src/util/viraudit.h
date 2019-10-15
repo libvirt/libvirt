@@ -39,7 +39,7 @@ void virAuditSend(virLogSourcePtr source,
                   const char *clienttty, const char *clientaddr,
                   virAuditRecordType type, bool success,
                   const char *fmt, ...)
-    ATTRIBUTE_FMT_PRINTF(9, 10);
+    G_GNUC_PRINTF(9, 10);
 
 char *virAuditEncode(const char *key, const char *value);
 

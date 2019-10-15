@@ -206,7 +206,7 @@ void virLogMessage(virLogSourcePtr source,
                    int linenr,
                    const char *funcname,
                    virLogMetadataPtr metadata,
-                   const char *fmt, ...) ATTRIBUTE_FMT_PRINTF(7, 8);
+                   const char *fmt, ...) G_GNUC_PRINTF(7, 8);
 void virLogVMessage(virLogSourcePtr source,
                     virLogPriority priority,
                     const char *filename,
@@ -214,7 +214,7 @@ void virLogVMessage(virLogSourcePtr source,
                     const char *funcname,
                     virLogMetadataPtr metadata,
                     const char *fmt,
-                    va_list vargs) ATTRIBUTE_FMT_PRINTF(7, 0);
+                    va_list vargs) G_GNUC_PRINTF(7, 0);
 
 bool virLogProbablyLogMessage(const char *str);
 virLogOutputPtr virLogOutputNew(virLogOutputFunc f,

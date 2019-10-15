@@ -78,7 +78,7 @@ void virFirewallRuleAddArg(virFirewallPtr firewall,
 void virFirewallRuleAddArgFormat(virFirewallPtr firewall,
                                  virFirewallRulePtr rule,
                                  const char *fmt, ...)
-    ATTRIBUTE_NONNULL(3) ATTRIBUTE_FMT_PRINTF(3, 4);
+    ATTRIBUTE_NONNULL(3) G_GNUC_PRINTF(3, 4);
 
 void virFirewallRuleAddArgSet(virFirewallPtr firewall,
                               virFirewallRulePtr rule,

@@ -98,7 +98,7 @@ void virCommandNonblockingFDs(virCommandPtr cmd);
 void virCommandRawStatus(virCommandPtr cmd);
 
 void virCommandAddEnvFormat(virCommandPtr cmd, const char *format, ...)
-    ATTRIBUTE_NONNULL(2) ATTRIBUTE_FMT_PRINTF(2, 3);
+    ATTRIBUTE_NONNULL(2) G_GNUC_PRINTF(2, 3);
 
 void virCommandAddEnvPair(virCommandPtr cmd,
                           const char *name,
@@ -125,7 +125,7 @@ void virCommandAddArgBuffer(virCommandPtr cmd,
 
 void virCommandAddArgFormat(virCommandPtr cmd,
                             const char *format, ...)
-    ATTRIBUTE_NONNULL(2) ATTRIBUTE_FMT_PRINTF(2, 3);
+    ATTRIBUTE_NONNULL(2) G_GNUC_PRINTF(2, 3);
 
 void virCommandAddArgPair(virCommandPtr cmd,
                           const char *name,

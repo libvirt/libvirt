@@ -48,12 +48,12 @@ void virHostMsgSetQuiet(bool quietFlag);
 
 void virHostMsgCheck(const char *prefix,
                      const char *format,
-                     ...) ATTRIBUTE_FMT_PRINTF(2, 3);
+                     ...) G_GNUC_PRINTF(2, 3);
 
 void virHostMsgPass(void);
 void virHostMsgFail(virHostValidateLevel level,
                     const char *format,
-                    ...) ATTRIBUTE_FMT_PRINTF(2, 3);
+                    ...) G_GNUC_PRINTF(2, 3);
 
 int virHostValidateDeviceExists(const char *hvname,
                                 const char *dev_name,

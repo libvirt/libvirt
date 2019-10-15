@@ -149,34 +149,34 @@ int virTypedParamListAddInt(virTypedParamListPtr list,
                             int value,
                             const char *namefmt,
                             ...)
-    ATTRIBUTE_FMT_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
+    G_GNUC_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
 int virTypedParamListAddUInt(virTypedParamListPtr list,
                              unsigned int value,
                              const char *namefmt,
                              ...)
-    ATTRIBUTE_FMT_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
+    G_GNUC_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
 int virTypedParamListAddLLong(virTypedParamListPtr list,
                               long long value,
                               const char *namefmt,
                               ...)
-    ATTRIBUTE_FMT_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
+    G_GNUC_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
 int virTypedParamListAddULLong(virTypedParamListPtr list,
                                unsigned long long value,
                                const char *namefmt,
                                ...)
-    ATTRIBUTE_FMT_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
+    G_GNUC_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
 int virTypedParamListAddString(virTypedParamListPtr list,
                                const char *value,
                                const char *namefmt,
                                ...)
-    ATTRIBUTE_FMT_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
+    G_GNUC_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
 int virTypedParamListAddBoolean(virTypedParamListPtr list,
                                 bool value,
                                 const char *namefmt,
                                 ...)
-    ATTRIBUTE_FMT_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
+    G_GNUC_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
 int virTypedParamListAddDouble(virTypedParamListPtr list,
                                double value,
                                const char *namefmt,
                                ...)
-    ATTRIBUTE_FMT_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;
+    G_GNUC_PRINTF(3, 4) G_GNUC_WARN_UNUSED_RESULT;

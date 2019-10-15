@@ -81,7 +81,7 @@ testEventResultCallback(const void *opaque)
 }
 
 static void
-ATTRIBUTE_FMT_PRINTF(3, 4)
+G_GNUC_PRINTF(3, 4)
 testEventReport(const char *name, bool failed, const char *msg, ...)
 {
     va_list vargs;
