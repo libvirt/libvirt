@@ -135,6 +135,13 @@
 # endif
 #endif
 
+/**
+ *
+ * ATTRIBUTE_FALLTHROUGH
+ *
+ * silence the compiler warning when falling through a switch case
+ *
+ */
 #ifndef ATTRIBUTE_FALLTHROUGH
 # if __GNUC_PREREQ (7, 0)
 #  define ATTRIBUTE_FALLTHROUGH __attribute__((fallthrough))
