@@ -8103,6 +8103,7 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
 {
     virDomainDiskDefPtr disk;
     virDomainNetDefPtr net;
+    virDomainSoundDefPtr sound;
     virDomainHostdevDefPtr hostdev;
     virDomainLeaseDefPtr lease;
     virDomainControllerDefPtr controller;
@@ -8135,6 +8136,13 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
         if (virDomainNetInsert(vmdef, net))
             return -1;
         dev->data.net = NULL;
+        break;
+
+    case VIR_DOMAIN_DEVICE_SOUND:
+        sound = dev->data.sound;
+        if (VIR_APPEND_ELEMENT(vmdef->sounds, vmdef->nsounds, sound) < 0)
+            return -1;
+        dev->data.sound = NULL;
         break;
 
     case VIR_DOMAIN_DEVICE_HOSTDEV:
@@ -8271,7 +8279,6 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
         vmdef->vsock = g_steal_pointer(&dev->data.vsock);
         break;
 
-    case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_VIDEO:
     case VIR_DOMAIN_DEVICE_GRAPHICS:
     case VIR_DOMAIN_DEVICE_HUB:
