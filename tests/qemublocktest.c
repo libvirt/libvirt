@@ -48,7 +48,7 @@ testBackingXMLjsonXML(const void *args)
     const struct testBackingXMLjsonXMLdata *data = args;
     VIR_AUTOPTR(xmlDoc) xml = NULL;
     VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
-    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     VIR_AUTOPTR(virJSONValue) backendprops = NULL;
     VIR_AUTOPTR(virJSONValue) wrapper = NULL;
     VIR_AUTOFREE(char *) propsstr = NULL;
@@ -401,8 +401,8 @@ testQemuImageCreate(const void *opaque)
     VIR_AUTOPTR(virJSONValue) protocolprops = NULL;
     VIR_AUTOPTR(virJSONValue) formatprops = NULL;
     VIR_AUTOUNREF(virStorageSourcePtr) src = NULL;
-    VIR_AUTOCLEAN(virBuffer) debug = VIR_BUFFER_INITIALIZER;
-    VIR_AUTOCLEAN(virBuffer) actualbuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) debug = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) actualbuf = VIR_BUFFER_INITIALIZER;
     VIR_AUTOFREE(char *) jsonprotocol = NULL;
     VIR_AUTOFREE(char *) jsonformat = NULL;
     VIR_AUTOFREE(char *) actual = NULL;
@@ -482,7 +482,7 @@ static int
 testQemuDiskXMLToPropsValidateFileSrcOnly(const void *opaque)
 {
     struct testQemuDiskXMLToJSONData *data = (void *) opaque;
-    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     VIR_AUTOFREE(char *) jsonpath = NULL;
     VIR_AUTOFREE(char *) actual = NULL;
     size_t i;

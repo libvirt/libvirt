@@ -302,7 +302,7 @@ qemuMonitorJSONCommandWithFd(qemuMonitorPtr mon,
 {
     int ret = -1;
     qemuMonitorMessage msg;
-    VIR_AUTOCLEAN(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
     char *id = NULL;
 
     *reply = NULL;

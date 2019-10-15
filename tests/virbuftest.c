@@ -306,8 +306,8 @@ static int testBufAddBuffer(const void *data G_GNUC_UNUSED)
 static int
 testBufAddBuffer2(const void *opaque G_GNUC_UNUSED)
 {
-    VIR_AUTOCLEAN(virBuffer) buf1 = VIR_BUFFER_INITIALIZER;
-    VIR_AUTOCLEAN(virBuffer) buf2 = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf1 = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf2 = VIR_BUFFER_INITIALIZER;
 
     /* Intent of this test is to demonstrate a memleak that happen with
      * virBufferAddBuffer */
@@ -461,7 +461,7 @@ testBufSetIndent(const void *opaque G_GNUC_UNUSED)
 static int
 testBufferAutoclean(const void *opaque G_GNUC_UNUSED)
 {
-    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     virBufferAddLit(&buf, "test test test\n");
     return 0;

@@ -290,7 +290,7 @@ qemuFirmwareInterfaceParse(const char *path,
 {
     virJSONValuePtr interfacesJSON;
     VIR_AUTOPTR(qemuFirmwareOSInterface) interfaces = NULL;
-    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t ninterfaces;
     size_t i;
 

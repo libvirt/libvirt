@@ -2025,7 +2025,7 @@ char *
 virJSONValueToString(virJSONValuePtr object,
                      bool pretty)
 {
-    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (virJSONValueToBuffer(object, &buf, pretty) < 0)
         return NULL;

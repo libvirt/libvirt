@@ -610,7 +610,7 @@ static int
 testBackingParse(const void *args)
 {
     const struct testBackingParseData *data = args;
-    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     VIR_AUTOFREE(char *) xml = NULL;
     VIR_AUTOUNREF(virStorageSourcePtr) src = NULL;
     int rc;

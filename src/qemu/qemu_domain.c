@@ -2301,7 +2301,7 @@ static int
 qemuStorageSourcePrivateDataFormat(virStorageSourcePtr src,
                                    virBufferPtr buf)
 {
-    VIR_AUTOCLEAN(virBuffer) tmp = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) tmp = VIR_BUFFER_INITIALIZER;
     qemuDomainStorageSourcePrivatePtr srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
     int ret = -1;
 
@@ -2447,8 +2447,8 @@ qemuDomainObjPrivateXMLFormatBlockjobFormatSource(virBufferPtr buf,
                                                   virDomainXMLOptionPtr xmlopt,
                                                   bool chain)
 {
-    VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
-    VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
     unsigned int xmlflags = VIR_DOMAIN_DEF_FORMAT_STATUS;
 
     virBufferSetChildIndent(&childBuf, buf);
@@ -2476,9 +2476,9 @@ qemuDomainObjPrivateXMLFormatBlockjobIterator(void *payload,
                                               const void *name G_GNUC_UNUSED,
                                               void *opaque)
 {
-    VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
-    VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
-    VIR_AUTOCLEAN(virBuffer) chainsBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) chainsBuf = VIR_BUFFER_INITIALIZER;
     qemuBlockJobDataPtr job = payload;
     const char *state = qemuBlockjobStateTypeToString(job->state);
     const char *newstate = NULL;
@@ -2571,8 +2571,8 @@ qemuDomainObjPrivateXMLFormatBlockjobs(virBufferPtr buf,
                                        virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
-    VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
     bool bj = qemuDomainHasBlockjob(vm, false);
     struct qemuDomainPrivateBlockJobFormatData iterdata = { priv->driver->xmlopt,
                                                             &childBuf };
@@ -2616,8 +2616,8 @@ qemuDomainObjPrivateXMLFormatNBDMigrationSource(virBufferPtr buf,
                                                 virStorageSourcePtr src,
                                                 virDomainXMLOptionPtr xmlopt)
 {
-    VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
-    VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
     int ret = -1;
 
     virBufferSetChildIndent(&childBuf, buf);
@@ -2645,8 +2645,8 @@ qemuDomainObjPrivateXMLFormatNBDMigration(virBufferPtr buf,
                                           virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
-    VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
     size_t i;
     virDomainDiskDefPtr disk;
     qemuDomainDiskPrivatePtr diskPriv;
@@ -2683,8 +2683,8 @@ qemuDomainObjPrivateXMLFormatJob(virBufferPtr buf,
                                  virDomainObjPtr vm,
                                  qemuDomainObjPrivatePtr priv)
 {
-    VIR_AUTOCLEAN(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
-    VIR_AUTOCLEAN(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
     qemuDomainJob job = priv->job.active;
     int ret = -1;
 

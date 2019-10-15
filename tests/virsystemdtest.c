@@ -554,7 +554,7 @@ testActivation(bool useNames)
     int *fds = NULL;
     size_t nfds = 0;
     VIR_AUTOPTR(virSystemdActivation) act = NULL;
-    VIR_AUTOCLEAN(virBuffer) names = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) names = VIR_BUFFER_INITIALIZER;
 
     virBufferAddLit(&names, "demo-unix.socket");
 

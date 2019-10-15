@@ -511,7 +511,7 @@ qemuMonitorTestProcessCommandDefaultValidate(qemuMonitorTestPtr test,
                                              const char *cmdname,
                                              virJSONValuePtr args)
 {
-    VIR_AUTOCLEAN(virBuffer) debug = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) debug = VIR_BUFFER_INITIALIZER;
     virJSONValuePtr schemaroot;
     VIR_AUTOPTR(virJSONValue) emptyargs = NULL;
     VIR_AUTOFREE(char *) schemapath = NULL;

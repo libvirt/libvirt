@@ -2373,7 +2373,7 @@ xenFormatVfb(virConfPtr conf, virDomainDefPtr def)
 static int
 xenFormatSound(virConfPtr conf, virDomainDefPtr def)
 {
-    VIR_AUTOCLEAN(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char * model;
     VIR_AUTOFREE(char *) str = NULL;
     size_t i;
