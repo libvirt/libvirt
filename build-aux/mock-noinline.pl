@@ -40,7 +40,7 @@ sub scan_annotations {
     while (<FH>) {
         if (/^\s*(\w+)\(/ || /^(?:\w+\*?\s+)+(?:\*\s*)?(\w+)\(/) {
             my $name = $1;
-            if ($name !~ /ATTRIBUTE/) {
+            if ($name !~ /(?:G_GNUC|ATTRIBUTE)/) {
                 $func = $name;
             }
         } elsif (/^\s*$/) {
