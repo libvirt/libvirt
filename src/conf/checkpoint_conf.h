@@ -57,6 +57,7 @@ struct _virDomainCheckpointDef {
     virDomainCheckpointDiskDef *disks;
 };
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainCheckpointDef, virObjectUnref);
 
 typedef enum {
     VIR_DOMAIN_CHECKPOINT_PARSE_REDEFINE = 1 << 0,
