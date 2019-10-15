@@ -326,6 +326,7 @@ mymain(void)
     DO_TEST("qemu-ns-no-env", NONE);
     DO_TEST("disk-aio", NONE);
     DO_TEST("disk-cdrom", NONE);
+    DO_TEST_CAPS_LATEST("disk-cdrom-empty-network-invalid");
     DO_TEST("disk-cdrom-bus-other", NONE);
     DO_TEST("disk-floppy", NONE);
     DO_TEST("disk-usb-device", NONE);
