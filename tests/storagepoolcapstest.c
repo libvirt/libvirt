@@ -54,7 +54,7 @@ test_virStoragePoolCapsFormat(const void *opaque)
     struct test_virStoragePoolCapsFormatData *data =
         (struct test_virStoragePoolCapsFormatData *) opaque;
     virCapsPtr driverCaps = data->driverCaps;
-    VIR_AUTOUNREF(virStoragePoolCapsPtr) poolCaps = NULL;
+    g_autoptr(virStoragePoolCaps) poolCaps = NULL;
     g_autofree char *path = NULL;
     g_autofree char *poolCapsXML = NULL;
 
@@ -81,8 +81,8 @@ static int
 mymain(void)
 {
     int ret = 0;
-    VIR_AUTOUNREF(virCapsPtr) fullCaps = NULL;
-    VIR_AUTOUNREF(virCapsPtr) fsCaps = NULL;
+    g_autoptr(virCaps) fullCaps = NULL;
+    g_autoptr(virCaps) fsCaps = NULL;
 
 #define DO_TEST(Filename, DriverCaps) \
     do { \

@@ -240,7 +240,7 @@ qemuSlirpStop(qemuSlirpPtr slirp,
               virDomainNetDefPtr net,
               bool hot)
 {
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autofree char *pidfile = NULL;
     g_autofree char *dbus_path = NULL;
     g_autofree char *id = qemuSlirpGetDBusVMStateId(net);
@@ -296,7 +296,7 @@ qemuSlirpStart(qemuSlirpPtr slirp,
                bool hotplug,
                bool incoming)
 {
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autoptr(virCommand) cmd = NULL;
     g_autofree char *pidfile = NULL;
     g_autofree char *dbus_path = NULL;

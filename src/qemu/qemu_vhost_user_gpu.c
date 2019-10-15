@@ -105,7 +105,7 @@ int qemuExtVhostUserGPUStart(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
                              virDomainVideoDefPtr video)
 {
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autofree char *shortname = NULL;
     g_autofree char *pidfile = NULL;
     g_autoptr(virCommand) cmd = NULL;
@@ -209,7 +209,7 @@ void qemuExtVhostUserGPUStop(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
                              virDomainVideoDefPtr video)
 {
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autofree char *pidfile = NULL;
     g_autofree char *shortname = NULL;
     virErrorPtr orig_err;
@@ -252,7 +252,7 @@ qemuExtVhostUserGPUSetupCgroup(virQEMUDriverPtr driver,
                                virDomainVideoDefPtr video,
                                virCgroupPtr cgroup)
 {
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autofree char *shortname = NULL;
     int rc;
     pid_t pid;

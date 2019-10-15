@@ -584,7 +584,7 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
                                virStorageSourcePtr newsrc,
                                bool force)
 {
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virStorageSourcePtr oldsrc = disk->src;
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
@@ -676,7 +676,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     g_autofree char *devstr = NULL;
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autoptr(virJSONValue) corProps = NULL;
     g_autofree char *corAlias = NULL;
     bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
@@ -1147,7 +1147,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     bool iface_connected = false;
     virDomainNetType actualType;
     virNetDevBandwidthPtr actualBandwidth;
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     virDomainCCWAddressSetPtr ccwaddrs = NULL;
     size_t i;
     g_autofree char *charDevAlias = NULL;
@@ -1543,7 +1543,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
     bool teardowndevice = false;
     bool teardownmemlock = false;
     int backend;
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     unsigned int flags = 0;
 
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0)
@@ -1767,7 +1767,7 @@ qemuDomainAddChardevTLSObjects(virQEMUDriverPtr driver,
                                const char **secAlias)
 {
     int ret = -1;
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainChrSourcePrivatePtr chrSourcePriv;
     qemuDomainSecretInfoPtr secinfo = NULL;
@@ -1823,7 +1823,7 @@ qemuDomainDelChardevTLSObjects(virQEMUDriverPtr driver,
                                virDomainChrSourceDefPtr dev,
                                const char *inAlias)
 {
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivatePtr priv = vm->privateData;
     g_autofree char *tlsAlias = NULL;
     g_autofree char *secAlias = NULL;
@@ -2333,7 +2333,7 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virErrorPtr orig_err;
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     unsigned long long oldmem = virDomainDefGetMemoryTotal(vm->def);
     unsigned long long newmem = oldmem + mem->size;
     g_autofree char *devstr = NULL;
@@ -3301,7 +3301,7 @@ qemuDomainAttachLease(virQEMUDriverPtr driver,
                       virDomainLeaseDefPtr lease)
 {
     int ret = -1;
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
 
     if (virDomainLeaseInsertPreAlloc(vm->def) < 0)
         goto cleanup;
@@ -4012,7 +4012,7 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
                          virDomainGraphicsDefPtr dev)
 {
     virDomainGraphicsDefPtr olddev = qemuDomainFindGraphics(vm, dev);
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     const char *type = virDomainGraphicsTypeToString(dev->type);
     size_t i;
     int ret = -1;
@@ -4555,7 +4555,7 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
                           virDomainNetDefPtr net)
 {
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivatePtr priv = vm->privateData;
     g_autofree char *hostnet_name = NULL;
     g_autofree char *charDevAlias = NULL;
@@ -6306,7 +6306,7 @@ qemuDomainSetVcpusInternal(virQEMUDriverPtr driver,
                            unsigned int nvcpus,
                            bool hotpluggable)
 {
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     virBitmapPtr vcpumap = NULL;
     bool enable;
     int ret = -1;
@@ -6501,7 +6501,7 @@ qemuDomainSetVcpuInternal(virQEMUDriverPtr driver,
                           virBitmapPtr map,
                           bool state)
 {
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     virBitmapPtr livevcpus = NULL;
     int ret = -1;
 

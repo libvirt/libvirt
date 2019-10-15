@@ -105,7 +105,7 @@ qemuDriverUnlock(virQEMUDriverPtr driver)
 
 virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
 {
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = NULL;
+    g_autoptr(virQEMUDriverConfig) cfg = NULL;
 
     if (virQEMUConfigInitialize() < 0)
         return NULL;
@@ -1243,7 +1243,7 @@ virQEMUDriverCreateXMLConf(virQEMUDriverPtr driver)
 virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver)
 {
     size_t i, j;
-    VIR_AUTOUNREF(virCapsPtr) caps = NULL;
+    g_autoptr(virCaps) caps = NULL;
     g_autofree virSecurityManagerPtr *sec_managers = NULL;
     /* Security driver data */
     const char *doi, *model, *lbl, *type;
@@ -1379,9 +1379,9 @@ virQEMUDriverGetDomainCapabilities(virQEMUDriverPtr driver,
                                    virArch arch,
                                    virDomainVirtType virttype)
 {
-    VIR_AUTOUNREF(virDomainCapsPtr) domCaps = NULL;
-    VIR_AUTOUNREF(virCapsPtr) caps = NULL;
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virDomainCaps) domCaps = NULL;
+    g_autoptr(virCaps) caps = NULL;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     virHashTablePtr domCapsCache = virQEMUCapsGetDomainCapsCache(qemuCaps);
     struct virQEMUDriverSearchDomcapsData data = {
         .path = virQEMUCapsGetBinary(qemuCaps),

@@ -8558,7 +8558,7 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
     bool update_current = true;
     bool redefine = flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE;
     unsigned int parse_flags = VIR_DOMAIN_SNAPSHOT_PARSE_DISKS;
-    VIR_AUTOUNREF(virDomainSnapshotDefPtr) def = NULL;
+    g_autoptr(virDomainSnapshotDef) def = NULL;
 
     /*
      * DISK_ONLY: Not implemented yet
@@ -9042,7 +9042,7 @@ testDomainCheckpointCreateXML(virDomainPtr domain,
     bool update_current = true;
     bool redefine = flags & VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE;
     unsigned int parse_flags = 0;
-    VIR_AUTOUNREF(virDomainCheckpointDefPtr) def = NULL;
+    g_autoptr(virDomainCheckpointDef) def = NULL;
 
     virCheckFlags(VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE |
                   VIR_DOMAIN_CHECKPOINT_CREATE_QUIESCE, NULL);

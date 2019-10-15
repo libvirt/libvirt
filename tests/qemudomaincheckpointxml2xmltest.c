@@ -41,7 +41,7 @@ testCompareXMLToXMLFiles(const char *inxml,
     g_autofree char *inXmlData = NULL;
     g_autofree char *outXmlData = NULL;
     g_autofree char *actual = NULL;
-    VIR_AUTOUNREF(virDomainCheckpointDefPtr) def = NULL;
+    g_autoptr(virDomainCheckpointDef) def = NULL;
 
     if (flags & TEST_REDEFINE)
         parseflags |= VIR_DOMAIN_CHECKPOINT_PARSE_REDEFINE;

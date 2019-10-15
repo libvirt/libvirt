@@ -6753,7 +6753,7 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
                         virQEMUCapsPtr qemuCaps)
 {
     size_t i;
-    VIR_AUTOUNREF(virCapsPtr) caps = NULL;
+    g_autoptr(virCaps) caps = NULL;
     virCPUDefPtr cpu = def->cpu;
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
@@ -8337,7 +8337,7 @@ qemuInterfaceVhostuserConnect(virQEMUDriverPtr driver,
                               virQEMUCapsPtr qemuCaps,
                               char **chardev)
 {
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
 
     switch ((virDomainChrType)net->data.vhostuser->type) {
     case VIR_DOMAIN_CHR_TYPE_UNIX:
@@ -10277,7 +10277,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     size_t i;
     char uuid[VIR_UUID_STRING_BUFLEN];
     g_autoptr(virCommand) cmd = NULL;
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     unsigned int bootHostdevNet = 0;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDefPtr def = vm->def;

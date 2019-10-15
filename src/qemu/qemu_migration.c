@@ -797,7 +797,7 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriverPtr driver,
     g_autoptr(qemuBlockStorageSourceAttachData) data = NULL;
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     int mon_ret = 0;
-    VIR_AUTOUNREF(virStorageSourcePtr) copysrc = NULL;
+    g_autoptr(virStorageSource) copysrc = NULL;
 
     VIR_DEBUG("starting blockdev mirror for disk=%s to host=%s", diskAlias, host);
 
@@ -991,7 +991,7 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriverPtr driver,
     unsigned long long mirror_speed = speed;
     bool mirror_shallow = *migrate_flags & QEMU_MONITOR_MIGRATE_NON_SHARED_INC;
     int rv;
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
 
     VIR_DEBUG("Starting drive mirrors for domain %s", vm->def->name);
 

@@ -1129,7 +1129,7 @@ static virStorageSourcePtr
 virStorageFileMetadataNew(const char *path,
                           int format)
 {
-    VIR_AUTOUNREF(virStorageSourcePtr) def = NULL;
+    g_autoptr(virStorageSource) def = NULL;
     virStorageSourcePtr ret = NULL;
 
     if (!(def = virStorageSourceNew()))
@@ -1219,7 +1219,7 @@ virStorageFileGetMetadataFromFD(const char *path,
     struct stat sb;
     int dummy;
     g_autofree char *buf = NULL;
-    VIR_AUTOUNREF(virStorageSourcePtr) meta = NULL;
+    g_autoptr(virStorageSource) meta = NULL;
 
     if (!backingFormat)
         backingFormat = &dummy;
@@ -2251,7 +2251,7 @@ virStorageSourceCopy(const virStorageSource *src,
                      bool backingChain)
 {
     virStorageSourcePtr ret = NULL;
-    VIR_AUTOUNREF(virStorageSourcePtr) def = NULL;
+    g_autoptr(virStorageSource) def = NULL;
 
     if (!(def = virStorageSourceNew()))
         return NULL;
@@ -2629,7 +2629,7 @@ virStorageSourceNewFromBackingRelative(virStorageSourcePtr parent,
 {
     virStorageSourcePtr ret = NULL;
     g_autofree char *dirname = NULL;
-    VIR_AUTOUNREF(virStorageSourcePtr) def = NULL;
+    g_autoptr(virStorageSource) def = NULL;
 
     if (!(def = virStorageSourceNew()))
         return NULL;
@@ -3681,7 +3681,7 @@ virStorageSourceNewFromBackingAbsolute(const char *path,
 {
     const char *json;
     int rc = 0;
-    VIR_AUTOUNREF(virStorageSourcePtr) def = NULL;
+    g_autoptr(virStorageSource) def = NULL;
 
     *src = NULL;
 
@@ -3748,7 +3748,7 @@ virStorageSourceNewFromChild(virStorageSourcePtr parent,
                              virStorageSourcePtr *child)
 {
     struct stat st;
-    VIR_AUTOUNREF(virStorageSourcePtr) def = NULL;
+    g_autoptr(virStorageSource) def = NULL;
     int rc = 0;
 
     *child = NULL;
@@ -3948,7 +3948,7 @@ virStorageSourceUpdateCapacity(virStorageSourcePtr src,
                                bool probe)
 {
     int format = src->format;
-    VIR_AUTOUNREF(virStorageSourcePtr) meta = NULL;
+    g_autoptr(virStorageSource) meta = NULL;
 
     /* Raw files: capacity is physical size.  For all other files: if
      * the metadata has a capacity, use that, otherwise fall back to
@@ -4943,7 +4943,7 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
     int backingFormat;
     int rv;
     g_autofree char *buf = NULL;
-    VIR_AUTOUNREF(virStorageSourcePtr) backingStore = NULL;
+    g_autoptr(virStorageSource) backingStore = NULL;
 
     VIR_DEBUG("path=%s format=%d uid=%u gid=%u",
               src->path, src->format,
@@ -5028,7 +5028,7 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
     VIR_STEAL_PTR(src->backingStore, backingStore);
 
     if (src->externalDataStoreRaw) {
-        VIR_AUTOUNREF(virStorageSourcePtr) externalDataStore = NULL;
+        g_autoptr(virStorageSource) externalDataStore = NULL;
 
         if ((rv = virStorageSourceNewFromExternalData(src,
                                                       &externalDataStore)) < 0)
@@ -5121,7 +5121,7 @@ virStorageFileGetBackingStoreStr(virStorageSourcePtr src,
     ssize_t headerLen;
     int rv;
     g_autofree char *buf = NULL;
-    VIR_AUTOUNREF(virStorageSourcePtr) tmp = NULL;
+    g_autoptr(virStorageSource) tmp = NULL;
 
     *backing = NULL;
 

@@ -144,7 +144,7 @@ virHostdevManagerDispose(void *obj)
 static virHostdevManagerPtr
 virHostdevManagerNew(void)
 {
-    VIR_AUTOUNREF(virHostdevManagerPtr) hostdevMgr = NULL;
+    g_autoptr(virHostdevManager) hostdevMgr = NULL;
     bool privileged = geteuid() == 0;
 
     if (!(hostdevMgr = virObjectNew(virHostdevManagerClass)))
@@ -264,7 +264,7 @@ virHostdevGetPCIHostDevice(const virDomainHostdevDef *hostdev,
 static virPCIDeviceListPtr
 virHostdevGetPCIHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
 {
-    VIR_AUTOUNREF(virPCIDeviceListPtr) pcidevs = NULL;
+    g_autoptr(virPCIDeviceList) pcidevs = NULL;
     size_t i;
 
     if (!(pcidevs = virPCIDeviceListNew()))
@@ -713,7 +713,7 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr mgr,
                             int nhostdevs,
                             unsigned int flags)
 {
-    VIR_AUTOUNREF(virPCIDeviceListPtr) pcidevs = NULL;
+    g_autoptr(virPCIDeviceList) pcidevs = NULL;
     int last_processed_hostdev_vf = -1;
     size_t i;
     int ret = -1;
@@ -985,7 +985,7 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr mgr,
                              int nhostdevs,
                              const char *oldStateDir)
 {
-    VIR_AUTOUNREF(virPCIDeviceListPtr) pcidevs = NULL;
+    g_autoptr(virPCIDeviceList) pcidevs = NULL;
     size_t i;
 
     if (!nhostdevs)
@@ -1386,7 +1386,7 @@ virHostdevFindUSBDevice(virDomainHostdevDefPtr hostdev,
      * automatically found before.
      */
     if (vendor) {
-        VIR_AUTOUNREF(virUSBDeviceListPtr) devs = NULL;
+        g_autoptr(virUSBDeviceList) devs = NULL;
 
         rc = virUSBDeviceFindByVendor(vendor, product, NULL, mandatory, &devs);
         if (rc < 0) {
@@ -1442,7 +1442,7 @@ virHostdevPrepareUSBDevices(virHostdevManagerPtr mgr,
                             unsigned int flags)
 {
     size_t i;
-    VIR_AUTOUNREF(virUSBDeviceListPtr) list = NULL;
+    g_autoptr(virUSBDeviceList) list = NULL;
     virUSBDevicePtr tmp;
     bool coldBoot = !!(flags & VIR_HOSTDEV_COLD_BOOT);
 
@@ -1537,7 +1537,7 @@ virHostdevPrepareSCSIDevices(virHostdevManagerPtr mgr,
 {
     size_t i, j;
     int count;
-    VIR_AUTOUNREF(virSCSIDeviceListPtr) list = NULL;
+    g_autoptr(virSCSIDeviceList) list = NULL;
     virSCSIDevicePtr tmp;
 
     if (!nhostdevs)
@@ -1632,7 +1632,7 @@ virHostdevPrepareSCSIVHostDevices(virHostdevManagerPtr mgr,
                                   virDomainHostdevDefPtr *hostdevs,
                                   int nhostdevs)
 {
-    VIR_AUTOUNREF(virSCSIVHostDeviceListPtr) list = NULL;
+    g_autoptr(virSCSIVHostDeviceList) list = NULL;
     virSCSIVHostDevicePtr tmp;
     size_t i, j;
 
@@ -1718,7 +1718,7 @@ virHostdevPrepareMediatedDevices(virHostdevManagerPtr mgr,
                                  int nhostdevs)
 {
     size_t i;
-    VIR_AUTOUNREF(virMediatedDeviceListPtr) list = NULL;
+    g_autoptr(virMediatedDeviceList) list = NULL;
 
     if (!nhostdevs)
         return 0;

@@ -54,8 +54,8 @@ testBackingXMLjsonXML(const void *args)
     g_autofree char *propsstr = NULL;
     g_autofree char *protocolwrapper = NULL;
     g_autofree char *actualxml = NULL;
-    VIR_AUTOUNREF(virStorageSourcePtr) xmlsrc = NULL;
-    VIR_AUTOUNREF(virStorageSourcePtr) jsonsrc = NULL;
+    g_autoptr(virStorageSource) xmlsrc = NULL;
+    g_autoptr(virStorageSource) jsonsrc = NULL;
 
     if (!(xmlsrc = virStorageSourceNew()))
         return -1;
@@ -400,7 +400,7 @@ testQemuImageCreate(const void *opaque)
     struct testQemuImageCreateData *data = (void *) opaque;
     g_autoptr(virJSONValue) protocolprops = NULL;
     g_autoptr(virJSONValue) formatprops = NULL;
-    VIR_AUTOUNREF(virStorageSourcePtr) src = NULL;
+    g_autoptr(virStorageSource) src = NULL;
     g_auto(virBuffer) debug = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) actualbuf = VIR_BUFFER_INITIALIZER;
     g_autofree char *jsonprotocol = NULL;

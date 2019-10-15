@@ -936,7 +936,7 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon G_GNUC_UNUSED,
     virQEMUDriverPtr driver = opaque;
     struct qemuProcessEvent *processEvent = NULL;
     virDomainDiskDefPtr disk;
-    VIR_AUTOUNREF(qemuBlockJobDataPtr) job = NULL;
+    g_autoptr(qemuBlockJobData) job = NULL;
     char *data = NULL;
 
     virObjectLock(vm);
@@ -5537,7 +5537,7 @@ static int
 qemuProcessStartUpdateCustomCaps(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(priv->driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
     qemuDomainXmlNsDefPtr nsdef = vm->def->namespaceData;
     char **next;
     int tmp;

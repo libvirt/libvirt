@@ -255,7 +255,7 @@ qemuSecurityChownCallback(const virStorageSource *src,
     int save_errno = 0;
     int ret = -1;
     int rv;
-    VIR_AUTOUNREF(virStorageSourcePtr) cpy = NULL;
+    g_autoptr(virStorageSource) cpy = NULL;
 
     rv = virStorageFileSupportsSecurityDriver(src);
     if (rv <= 0)
@@ -4804,7 +4804,7 @@ processBlockJobEvent(virQEMUDriverPtr driver,
                      int status)
 {
     virDomainDiskDefPtr disk;
-    VIR_AUTOUNREF(qemuBlockJobDataPtr) job = NULL;
+    g_autoptr(qemuBlockJobData) job = NULL;
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         return;
@@ -13695,7 +13695,7 @@ qemuConnectCompareHypervisorCPU(virConnectPtr conn,
 {
     int ret = VIR_CPU_COMPARE_ERROR;
     virQEMUDriverPtr driver = conn->privateData;
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     virQEMUCapsPtr qemuCaps = NULL;
     bool failIncompatible;
     virCPUDefPtr hvCPU;
@@ -13908,7 +13908,7 @@ qemuConnectBaselineHypervisorCPU(virConnectPtr conn,
                                  unsigned int flags)
 {
     virQEMUDriverPtr driver = conn->privateData;
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     virCPUDefPtr *cpus = NULL;
     virQEMUCapsPtr qemuCaps = NULL;
     virArch arch;
@@ -15458,7 +15458,7 @@ qemuDomainSnapshotDiskPrepareOne(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *backingStoreStr;
     virDomainDiskDefPtr persistdisk;
-    VIR_AUTOUNREF(virStorageSourcePtr) terminator = NULL;
+    g_autoptr(virStorageSource) terminator = NULL;
     bool supportsCreate;
     bool supportsBacking;
     int rc;
@@ -15968,7 +15968,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     virCapsPtr caps = NULL;
     qemuDomainObjPrivatePtr priv;
     virDomainSnapshotState state;
-    VIR_AUTOUNREF(virDomainSnapshotDefPtr) def = NULL;
+    g_autoptr(virDomainSnapshotDef) def = NULL;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE |
                   VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT |
@@ -17970,7 +17970,7 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom,
     virDomainDiskDefPtr disk;
     int ret = -1;
     qemuMonitorBlockJobInfo rawInfo;
-    VIR_AUTOUNREF(qemuBlockJobDataPtr) job = NULL;
+    g_autoptr(qemuBlockJobData) job = NULL;
 
     virCheckFlags(VIR_DOMAIN_BLOCK_JOB_INFO_BANDWIDTH_BYTES, -1);
 
@@ -18214,13 +18214,13 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     virDomainDiskDefPtr disk = NULL;
     int ret = -1;
     bool need_unlink = false;
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     const char *format = NULL;
     bool mirror_reuse = !!(flags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT);
     bool mirror_shallow = !!(flags & VIR_DOMAIN_BLOCK_COPY_SHALLOW);
     bool existing = mirror_reuse;
     qemuBlockJobDataPtr job = NULL;
-    VIR_AUTOUNREF(virStorageSourcePtr) mirror = mirrorsrc;
+    g_autoptr(virStorageSource) mirror = mirrorsrc;
     bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
     bool mirror_initialized = false;
     g_autoptr(qemuBlockStorageSourceChainData) data = NULL;
@@ -18493,7 +18493,7 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
     virDomainObjPtr vm;
     int ret = -1;
     unsigned long long speed = bandwidth;
-    VIR_AUTOUNREF(virStorageSourcePtr) dest = NULL;
+    g_autoptr(virStorageSource) dest = NULL;
 
     virCheckFlags(VIR_DOMAIN_BLOCK_REBASE_SHALLOW |
                   VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT |
@@ -18698,7 +18698,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
     g_autofree char *backingPath = NULL;
     unsigned long long speed = bandwidth;
     qemuBlockJobDataPtr job = NULL;
-    VIR_AUTOUNREF(virStorageSourcePtr) mirror = NULL;
+    g_autoptr(virStorageSource) mirror = NULL;
     const char *nodetop = NULL;
     const char *nodebase = NULL;
     bool persistjob = false;
@@ -20693,7 +20693,7 @@ qemuDomainGetResctrlMonData(virQEMUDriverPtr driver,
     virDomainResctrlDefPtr resctrl = NULL;
     virQEMUResctrlMonDataPtr res = NULL;
     char **features = NULL;
-    VIR_AUTOUNREF(virCapsPtr) caps = NULL;
+    g_autoptr(virCaps) caps = NULL;
     size_t i = 0;
     size_t j = 0;
 

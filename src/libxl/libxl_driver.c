@@ -6539,7 +6539,7 @@ libxlDomainSetMetadata(virDomainPtr dom,
                        unsigned int flags)
 {
     libxlDriverPrivatePtr driver = dom->conn->privateData;
-    VIR_AUTOUNREF(libxlDriverConfigPtr) cfg = libxlDriverConfigGet(driver);
+    g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
     virDomainObjPtr vm = NULL;
     int ret = -1;
 

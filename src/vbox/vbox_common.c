@@ -5477,7 +5477,7 @@ vboxDomainSnapshotCreateXML(virDomainPtr dom,
     virDomainSnapshotPtr ret = NULL;
     unsigned int parse_flags = (VIR_DOMAIN_SNAPSHOT_PARSE_DISKS |
                                 VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE);
-    VIR_AUTOUNREF(virDomainSnapshotDefPtr) def = NULL;
+    g_autoptr(virDomainSnapshotDef) def = NULL;
 
     if (!data->vboxObj)
         return ret;
@@ -6199,7 +6199,7 @@ static char *vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *ret = NULL;
     virDomainDefPtr defdom;
-    VIR_AUTOUNREF(virDomainSnapshotDefPtr) def = NULL;
+    g_autoptr(virDomainSnapshotDef) def = NULL;
 
     if (!data->vboxObj)
         return ret;

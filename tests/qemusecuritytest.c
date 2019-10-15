@@ -40,7 +40,7 @@ prepareObjects(virQEMUDriverPtr driver,
                virDomainObjPtr *vm_ret)
 {
     qemuDomainObjPrivatePtr priv;
-    VIR_AUTOUNREF(virDomainObjPtr) vm = NULL;
+    g_autoptr(virDomainObj) vm = NULL;
     g_autofree char *filename = NULL;
     g_autofree char *domxml = NULL;
     g_autofree char *latestCapsFile = NULL;
@@ -84,7 +84,7 @@ static int
 testDomain(const void *opaque)
 {
     const struct testData *data = opaque;
-    VIR_AUTOUNREF(virDomainObjPtr) vm = NULL;
+    g_autoptr(virDomainObj) vm = NULL;
     VIR_AUTOSTRINGLIST notRestored = NULL;
     size_t i;
     int ret = -1;

@@ -1785,7 +1785,7 @@ static virDomainVcpuDefPtr
 virDomainVcpuDefNew(virDomainXMLOptionPtr xmlopt)
 {
     virDomainVcpuDefPtr ret = NULL;
-    VIR_AUTOUNREF(virObjectPtr) priv = NULL;
+    g_autoptr(virObject) priv = NULL;
 
     if (xmlopt && xmlopt->privateData.vcpuNew &&
         !(priv = xmlopt->privateData.vcpuNew()))
@@ -9276,7 +9276,7 @@ virDomainStorageSourceParseBase(const char *type,
                                 const char *format,
                                 const char *index)
 {
-    VIR_AUTOUNREF(virStorageSourcePtr) src = NULL;
+    g_autoptr(virStorageSource) src = NULL;
     virStorageSourcePtr ret = NULL;
 
     if (!(src = virStorageSourceNew()))
@@ -9402,7 +9402,7 @@ virDomainDiskBackingStoreParse(xmlXPathContextPtr ctxt,
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
     xmlNodePtr source;
-    VIR_AUTOUNREF(virStorageSourcePtr) backingStore = NULL;
+    g_autoptr(virStorageSource) backingStore = NULL;
     g_autofree char *type = NULL;
     g_autofree char *format = NULL;
     g_autofree char *idx = NULL;
@@ -19526,7 +19526,7 @@ virDomainCachetuneDefParse(virDomainDefPtr def,
     int ret = -1;
     g_autoptr(virBitmap) vcpus = NULL;
     g_autofree xmlNodePtr *nodes = NULL;
-    VIR_AUTOUNREF(virResctrlAllocPtr) alloc = NULL;
+    g_autoptr(virResctrlAlloc) alloc = NULL;
 
     ctxt->node = node;
 
@@ -19724,7 +19724,7 @@ virDomainMemorytuneDefParse(virDomainDefPtr def,
     virDomainResctrlDefPtr resctrl = NULL;
     g_autoptr(virBitmap) vcpus = NULL;
     g_autofree xmlNodePtr *nodes = NULL;
-    VIR_AUTOUNREF(virResctrlAllocPtr) alloc = NULL;
+    g_autoptr(virResctrlAlloc) alloc = NULL;
     ssize_t i = 0;
     int n;
 
@@ -30936,9 +30936,9 @@ virDomainNetCreatePort(virConnectPtr conn,
                        unsigned int flags)
 {
     virErrorPtr save_err;
-    VIR_AUTOUNREF(virNetworkPtr) net = NULL;
+    g_autoptr(virNetwork) net = NULL;
     g_autoptr(virNetworkPortDef) portdef = NULL;
-    VIR_AUTOUNREF(virNetworkPortPtr) port = NULL;
+    g_autoptr(virNetworkPort) port = NULL;
     g_autofree char *portxml = NULL;
 
     if (!(net = virNetworkLookupByName(conn, iface->data.network.name)))
@@ -31156,8 +31156,8 @@ virDomainNetResolveActualType(virDomainNetDefPtr iface)
     virNetworkDefPtr def = NULL;
     int ret = -1;
     g_autofree char *xml = NULL;
-    VIR_AUTOUNREF(virConnectPtr) conn = NULL;
-    VIR_AUTOUNREF(virNetworkPtr) net = NULL;
+    g_autoptr(virConnect) conn = NULL;
+    g_autoptr(virNetwork) net = NULL;
 
     if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
         return iface->type;
@@ -31344,9 +31344,9 @@ virDomainDiskTranslateSourcePool(virDomainDiskDefPtr def)
     virStorageVolInfo info;
     g_autoptr(virStoragePoolDef) pooldef = NULL;
     g_autofree char *poolxml = NULL;
-    VIR_AUTOUNREF(virConnectPtr) conn = NULL;
-    VIR_AUTOUNREF(virStoragePoolPtr) pool = NULL;
-    VIR_AUTOUNREF(virStorageVolPtr) vol = NULL;
+    g_autoptr(virConnect) conn = NULL;
+    g_autoptr(virStoragePool) pool = NULL;
+    g_autoptr(virStorageVol) vol = NULL;
 
     if (def->src->type != VIR_STORAGE_TYPE_VOLUME)
         return 0;

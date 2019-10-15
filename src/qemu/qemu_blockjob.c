@@ -103,7 +103,7 @@ qemuBlockJobDataPtr
 qemuBlockJobDataNew(qemuBlockJobType type,
                     const char *name)
 {
-    VIR_AUTOUNREF(qemuBlockJobDataPtr) job = NULL;
+    g_autoptr(qemuBlockJobData) job = NULL;
 
     if (qemuBlockJobDataInitialize() < 0)
         return NULL;
@@ -206,7 +206,7 @@ qemuBlockJobDiskNew(virDomainObjPtr vm,
                     qemuBlockJobType type,
                     const char *jobname)
 {
-    VIR_AUTOUNREF(qemuBlockJobDataPtr) job = NULL;
+    g_autoptr(qemuBlockJobData) job = NULL;
 
     if (!(job = qemuBlockJobDataNew(type, jobname)))
         return NULL;
@@ -224,7 +224,7 @@ qemuBlockJobDiskNewPull(virDomainObjPtr vm,
                         virStorageSourcePtr base)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    VIR_AUTOUNREF(qemuBlockJobDataPtr) job = NULL;
+    g_autoptr(qemuBlockJobData) job = NULL;
     g_autofree char *jobname = NULL;
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
@@ -255,7 +255,7 @@ qemuBlockJobDiskNewCommit(virDomainObjPtr vm,
                           virStorageSourcePtr base)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    VIR_AUTOUNREF(qemuBlockJobDataPtr) job = NULL;
+    g_autoptr(qemuBlockJobData) job = NULL;
     g_autofree char *jobname = NULL;
     qemuBlockJobType jobtype = QEMU_BLOCKJOB_TYPE_COMMIT;
 
@@ -290,7 +290,7 @@ qemuBlockJobNewCreate(virDomainObjPtr vm,
                       virStorageSourcePtr chain,
                       bool storage)
 {
-    VIR_AUTOUNREF(qemuBlockJobDataPtr) job = NULL;
+    g_autoptr(qemuBlockJobData) job = NULL;
     g_autofree char *jobname = NULL;
     const char *nodename = src->nodeformat;
 
@@ -323,7 +323,7 @@ qemuBlockJobDiskNewCopy(virDomainObjPtr vm,
                         bool reuse)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    VIR_AUTOUNREF(qemuBlockJobDataPtr) job = NULL;
+    g_autoptr(qemuBlockJobData) job = NULL;
     g_autofree char *jobname = NULL;
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
@@ -595,7 +595,7 @@ qemuBlockJobRewriteConfigDiskSource(virDomainObjPtr vm,
                                     virStorageSourcePtr newsrc)
 {
     virDomainDiskDefPtr persistDisk = NULL;
-    VIR_AUTOUNREF(virStorageSourcePtr) copy = NULL;
+    g_autoptr(virStorageSource) copy = NULL;
     virStorageSourcePtr n;
 
     if (!vm->newDef)

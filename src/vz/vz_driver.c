@@ -2595,7 +2595,7 @@ vzDomainSnapshotCreateXML(virDomainPtr domain,
     virDomainSnapshotObjListPtr snapshots = NULL;
     virDomainMomentObjPtr current;
     bool job = false;
-    VIR_AUTOUNREF(virDomainSnapshotDefPtr) def = NULL;
+    g_autoptr(virDomainSnapshotDef) def = NULL;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_CREATE_VALIDATE, NULL);
 

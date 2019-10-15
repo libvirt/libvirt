@@ -1028,7 +1028,7 @@ qemuFirmwareEnableFeatures(virQEMUDriverPtr driver,
                            virDomainDefPtr def,
                            const qemuFirmware *fw)
 {
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     const qemuFirmwareMappingFlash *flash = &fw->mapping.data.flash;
     const qemuFirmwareMappingKernel *kernel = &fw->mapping.data.kernel;
     const qemuFirmwareMappingMemory *memory = &fw->mapping.data.memory;

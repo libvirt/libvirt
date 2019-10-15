@@ -86,7 +86,7 @@ testStorageFileGetMetadata(const char *path,
 {
     struct stat st;
     virStorageSourcePtr ret = NULL;
-    VIR_AUTOUNREF(virStorageSourcePtr) def = NULL;
+    g_autoptr(virStorageSource) def = NULL;
 
     if (!(def = virStorageSourceNew()))
         return NULL;
@@ -278,7 +278,7 @@ testStorageChain(const void *args)
     const struct testChainData *data = args;
     virStorageSourcePtr elt;
     size_t i = 0;
-    VIR_AUTOUNREF(virStorageSourcePtr) meta = NULL;
+    g_autoptr(virStorageSource) meta = NULL;
     g_autofree char *broken = NULL;
 
     meta = testStorageFileGetMetadata(data->start, data->format, -1, -1);
@@ -612,7 +612,7 @@ testBackingParse(const void *args)
     const struct testBackingParseData *data = args;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *xml = NULL;
-    VIR_AUTOUNREF(virStorageSourcePtr) src = NULL;
+    g_autoptr(virStorageSource) src = NULL;
     int rc;
     int erc = data->rv;
 
@@ -664,7 +664,7 @@ mymain(void)
     virStorageSourcePtr chain2; /* short for chain->backingStore */
     virStorageSourcePtr chain3; /* short for chain2->backingStore */
     g_autoptr(virCommand) cmd = NULL;
-    VIR_AUTOUNREF(virStorageSourcePtr) chain = NULL;
+    g_autoptr(virStorageSource) chain = NULL;
 
     if (storageRegisterAll() < 0)
        return EXIT_FAILURE;

@@ -3015,7 +3015,7 @@ qemuDomainObjPrivateXMLParseBlockjobChain(xmlNodePtr node,
     g_autofree char *format = NULL;
     g_autofree char *type = NULL;
     g_autofree char *index = NULL;
-    VIR_AUTOUNREF(virStorageSourcePtr) src = NULL;
+    g_autoptr(virStorageSource) src = NULL;
     xmlNodePtr sourceNode;
     unsigned int xmlflags = VIR_DOMAIN_DEF_PARSE_STATUS;
 
@@ -3161,7 +3161,7 @@ qemuDomainObjPrivateXMLParseBlockjobData(virDomainObjPtr vm,
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
     virDomainDiskDefPtr disk = NULL;
-    VIR_AUTOUNREF(qemuBlockJobDataPtr) job = NULL;
+    g_autoptr(qemuBlockJobData) job = NULL;
     g_autofree char *name = NULL;
     g_autofree char *typestr = NULL;
     int type;
@@ -3313,7 +3313,7 @@ qemuDomainObjPrivateXMLParseJobNBDSource(xmlNodePtr node,
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     g_autofree char *format = NULL;
     g_autofree char *type = NULL;
-    VIR_AUTOUNREF(virStorageSourcePtr) migrSource = NULL;
+    g_autoptr(virStorageSource) migrSource = NULL;
     xmlNodePtr sourceNode;
 
     ctxt->node = node;
@@ -8083,7 +8083,7 @@ void
 qemuDomainSaveConfig(virDomainObjPtr obj)
 {
     virQEMUDriverPtr driver = QEMU_DOMAIN_PRIVATE(obj)->driver;
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = NULL;
+    g_autoptr(virQEMUDriverConfig) cfg = NULL;
     virDomainDefPtr def = NULL;
 
     if (virDomainObjIsActive(obj))
@@ -8911,7 +8911,7 @@ qemuDomainDefFormatBufInternal(virQEMUDriverPtr driver,
         def->cpu &&
         (def->cpu->mode != VIR_CPU_MODE_CUSTOM ||
          def->cpu->model)) {
-        VIR_AUTOUNREF(virQEMUCapsPtr) qCaps = NULL;
+        g_autoptr(virQEMUCaps) qCaps = NULL;
 
         if (qemuCaps) {
             qCaps = virObjectRef(qemuCaps);
@@ -10263,7 +10263,7 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
                              virStorageSourcePtr disksrc,
                              bool report_broken)
 {
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     virStorageSourcePtr src; /* iterator for the backing chain declared in XML */
     virStorageSourcePtr n; /* iterator for the backing chain detected from disk */
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -10442,7 +10442,7 @@ qemuDomainStorageSourceAccessModify(virQEMUDriverPtr driver,
                                     virStorageSourcePtr src,
                                     qemuDomainStorageSourceAccessFlags flags)
 {
-    VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     const char *srcstr = NULLSTR(src->path);
     int ret = -1;
     virErrorPtr orig_err = NULL;
