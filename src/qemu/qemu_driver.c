@@ -7828,6 +7828,7 @@ qemuDomainUndefineFlags(virDomainPtr dom,
     int nsnapshots;
     int ncheckpoints;
     virQEMUDriverConfigPtr cfg = NULL;
+    g_autofree char *nvram_path = NULL;
 
     virCheckFlags(VIR_DOMAIN_UNDEFINE_MANAGED_SAVE |
                   VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA |
@@ -7905,14 +7906,21 @@ qemuDomainUndefineFlags(virDomainPtr dom,
         }
     }
 
-    if (vm->def->os.loader &&
-        vm->def->os.loader->nvram &&
-        virFileExists(vm->def->os.loader->nvram)) {
+    if (vm->def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_EFI) {
+        if (qemuDomainNVRAMPathFormat(cfg, vm->def, &nvram_path) < 0)
+            goto endjob;
+    } else {
+        if (vm->def->os.loader &&
+            VIR_STRDUP(nvram_path, vm->def->os.loader->nvram) < 0)
+            goto endjob;
+    }
+
+    if (nvram_path && virFileExists(nvram_path)) {
         if ((flags & VIR_DOMAIN_UNDEFINE_NVRAM)) {
-            if (unlink(vm->def->os.loader->nvram) < 0) {
+            if (unlink(nvram_path) < 0) {
                 virReportSystemError(errno,
                                      _("failed to remove nvram: %s"),
-                                     vm->def->os.loader->nvram);
+                                     nvram_path);
                 goto endjob;
             }
         } else if (!(flags & VIR_DOMAIN_UNDEFINE_KEEP_NVRAM)) {

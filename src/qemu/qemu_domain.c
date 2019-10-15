@@ -15442,15 +15442,23 @@ qemuDomainDiskIsMissingLocalOptional(virDomainDiskDefPtr disk)
 
 
 int
+qemuDomainNVRAMPathFormat(virQEMUDriverConfigPtr cfg,
+                            virDomainDefPtr def,
+                            char **path)
+{
+    return virAsprintf(path, "%s/%s_VARS.fd", cfg->nvramDir, def->name);
+}
+
+
+int
 qemuDomainNVRAMPathGenerate(virQEMUDriverConfigPtr cfg,
                             virDomainDefPtr def)
 {
     if (def->os.loader &&
         def->os.loader->type == VIR_DOMAIN_LOADER_TYPE_PFLASH &&
-        def->os.loader->readonly == VIR_TRISTATE_SWITCH_ON &&
+        def->os.loader->readonly == VIR_TRISTATE_BOOL_YES &&
         !def->os.loader->nvram) {
-        return virAsprintf(&def->os.loader->nvram, "%s/%s_VARS.fd",
-                           cfg->nvramDir, def->name);
+        return qemuDomainNVRAMPathFormat(cfg, def, &def->os.loader->nvram);
     }
 
     return 0;
