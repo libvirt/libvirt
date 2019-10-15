@@ -1396,6 +1396,8 @@ virQEMUDriverGetDomainCapabilities(virQEMUDriverPtr driver,
     domCaps = virHashSearch(domCapsCache,
                             virQEMUDriverSearchDomcaps, &data, NULL);
     if (!domCaps) {
+        g_autofree char *key = NULL;
+
         /* hash miss, build new domcaps */
         if (!(domCaps = virDomainCapsNew(data.path, data.machine,
                                          data.arch, data.virttype)))
@@ -1406,7 +1408,14 @@ virQEMUDriverGetDomainCapabilities(virQEMUDriverPtr driver,
                                       cfg->firmwares, cfg->nfirmwares) < 0)
             return NULL;
 
-        if (virHashAddEntry(domCapsCache, machine, domCaps) < 0)
+        if (virAsprintf(&key, "%d:%d:%s:%s",
+                        data.arch,
+                        data.virttype,
+                        NULLSTR(data.machine),
+                        NULLSTR(data.path)) < 0)
+            return NULL;
+
+        if (virHashAddEntry(domCapsCache, key, domCaps) < 0)
             return NULL;
     }
 
