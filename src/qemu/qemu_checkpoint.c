@@ -84,9 +84,9 @@ qemuCheckpointWriteMetadata(virDomainObjPtr vm,
 {
     unsigned int flags = VIR_DOMAIN_CHECKPOINT_FORMAT_SECURE;
     virDomainCheckpointDefPtr def = virDomainCheckpointObjGetDef(checkpoint);
-    VIR_AUTOFREE(char *) newxml = NULL;
-    VIR_AUTOFREE(char *) chkDir = NULL;
-    VIR_AUTOFREE(char *) chkFile = NULL;
+    g_autofree char *newxml = NULL;
+    g_autofree char *chkDir = NULL;
+    g_autofree char *chkFile = NULL;
 
     newxml = virDomainCheckpointDefFormat(def, caps, xmlopt, flags);
     if (newxml == NULL)
@@ -119,7 +119,7 @@ qemuCheckpointDiscard(virQEMUDriverPtr driver,
     virDomainCheckpointDefPtr parentdef = NULL;
     size_t i, j;
     VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
-    VIR_AUTOFREE(char *) chkFile = NULL;
+    g_autofree char *chkFile = NULL;
 
     if (!metadata_only && !virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",

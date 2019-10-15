@@ -1129,7 +1129,7 @@ qemuMonitorUpdateVideoMemorySize(qemuMonitorPtr mon,
                                  const char *videoName)
 {
     int rc = -1;
-    VIR_AUTOFREE(char *) path = NULL;
+    g_autofree char *path = NULL;
 
     QEMU_CHECK_MONITOR(mon);
 
@@ -1159,7 +1159,7 @@ qemuMonitorUpdateVideoVram64Size(qemuMonitorPtr mon,
                                  const char *videoName)
 {
     int rc = -1;
-    VIR_AUTOFREE(char *) path = NULL;
+    g_autofree char *path = NULL;
 
     QEMU_CHECK_MONITOR(mon);
 

@@ -66,8 +66,8 @@ virCgroupV2Available(void)
         return false;
 
     while (getmntent_r(mounts, &entry, buf, sizeof(buf)) != NULL) {
-        VIR_AUTOFREE(char *) contFile = NULL;
-        VIR_AUTOFREE(char *) contStr = NULL;
+        g_autofree char *contFile = NULL;
+        g_autofree char *contStr = NULL;
 
         if (STRNEQ(entry.mnt_type, "cgroup2"))
             continue;
@@ -100,8 +100,8 @@ virCgroupV2ValidateMachineGroup(virCgroupPtr group,
                                 const char *drivername,
                                 const char *machinename)
 {
-    VIR_AUTOFREE(char *) partmachinename = NULL;
-    VIR_AUTOFREE(char *) scopename = NULL;
+    g_autofree char *partmachinename = NULL;
+    g_autofree char *scopename = NULL;
     char *tmp;
 
     if (virAsprintf(&partmachinename, "%s.libvirt-%s", machinename,
@@ -255,8 +255,8 @@ virCgroupV2ParseControllersFile(virCgroupPtr group,
                                 virCgroupPtr parent)
 {
     int rc;
-    VIR_AUTOFREE(char *) contStr = NULL;
-    VIR_AUTOFREE(char *) contFile = NULL;
+    g_autofree char *contStr = NULL;
+    g_autofree char *contFile = NULL;
     char **contList = NULL;
     char **tmp;
 
@@ -379,8 +379,8 @@ virCgroupV2EnableController(virCgroupPtr group,
                             int controller,
                             bool report)
 {
-    VIR_AUTOFREE(char *) val = NULL;
-    VIR_AUTOFREE(char *) path = NULL;
+    g_autofree char *val = NULL;
+    g_autofree char *path = NULL;
 
     if (virAsprintf(&val, "+%s",
                     virCgroupV2ControllerTypeToString(controller)) < 0) {
@@ -413,7 +413,7 @@ virCgroupV2MakeGroup(virCgroupPtr parent,
                      bool create,
                      unsigned int flags)
 {
-    VIR_AUTOFREE(char *) path = NULL;
+    g_autofree char *path = NULL;
     int controller;
 
     if (flags & VIR_CGROUP_SYSTEMD) {
@@ -490,7 +490,7 @@ virCgroupV2MakeGroup(virCgroupPtr parent,
 static int
 virCgroupV2Remove(virCgroupPtr group)
 {
-    VIR_AUTOFREE(char *) grppath = NULL;
+    g_autofree char *grppath = NULL;
     int controller;
 
     /* Don't delete the root group, if we accidentally
@@ -525,7 +525,7 @@ virCgroupV2HasEmptyTasks(virCgroupPtr cgroup,
                          int controller)
 {
     int ret = -1;
-    VIR_AUTOFREE(char *) content = NULL;
+    g_autofree char *content = NULL;
 
     ret = virCgroupGetValueStr(cgroup, controller, "cgroup.procs", &content);
 
@@ -556,8 +556,8 @@ virCgroupV2BindMount(virCgroupPtr group,
                      const char *oldroot,
                      const char *mountopts)
 {
-    VIR_AUTOFREE(char *) opts = NULL;
-    VIR_AUTOFREE(char *) src = NULL;
+    g_autofree char *opts = NULL;
+    g_autofree char *src = NULL;
 
     VIR_DEBUG("Mounting cgroups at '%s'", group->unified.mountPoint);
 
@@ -589,7 +589,7 @@ virCgroupV2SetOwner(virCgroupPtr cgroup,
                     gid_t gid,
                     int controllers G_GNUC_UNUSED)
 {
-    VIR_AUTOFREE(char *) base = NULL;
+    g_autofree char *base = NULL;
 
     if (virAsprintf(&base, "%s%s", cgroup->unified.mountPoint,
                     cgroup->unified.placement) < 0) {
@@ -613,8 +613,8 @@ static int
 virCgroupV2SetBlkioWeight(virCgroupPtr group,
                           unsigned int weight)
 {
-    VIR_AUTOFREE(char *) path = NULL;
-    VIR_AUTOFREE(char *) value = NULL;
+    g_autofree char *path = NULL;
+    g_autofree char *value = NULL;
     const char *format = "%u";
 
     if (virCgroupV2PathOfController(group, VIR_CGROUP_CONTROLLER_BLKIO,
@@ -649,8 +649,8 @@ static int
 virCgroupV2GetBlkioWeight(virCgroupPtr group,
                           unsigned int *weight)
 {
-    VIR_AUTOFREE(char *) path = NULL;
-    VIR_AUTOFREE(char *) value = NULL;
+    g_autofree char *path = NULL;
+    g_autofree char *value = NULL;
     char *tmp;
 
     if (virCgroupV2PathOfController(group, VIR_CGROUP_CONTROLLER_BLKIO,
@@ -701,7 +701,7 @@ virCgroupV2GetBlkioIoServiced(virCgroupPtr group,
                               long long *requests_write)
 {
     long long stats_val;
-    VIR_AUTOFREE(char *) str1 = NULL;
+    g_autofree char *str1 = NULL;
     char *p1;
     size_t i;
 
@@ -765,8 +765,8 @@ virCgroupV2GetBlkioIoDeviceServiced(virCgroupPtr group,
                                     long long *requests_read,
                                     long long *requests_write)
 {
-    VIR_AUTOFREE(char *) str1 = NULL;
-    VIR_AUTOFREE(char *) str2 = NULL;
+    g_autofree char *str1 = NULL;
+    g_autofree char *str2 = NULL;
     char *p1;
     size_t i;
 
@@ -825,9 +825,9 @@ virCgroupV2SetBlkioDeviceWeight(virCgroupPtr group,
                                 const char *devPath,
                                 unsigned int weight)
 {
-    VIR_AUTOFREE(char *) path = NULL;
-    VIR_AUTOFREE(char *) str = NULL;
-    VIR_AUTOFREE(char *) blkstr = NULL;
+    g_autofree char *path = NULL;
+    g_autofree char *str = NULL;
+    g_autofree char *blkstr = NULL;
 
     if (!(blkstr = virCgroupGetBlockDevString(devPath)))
         return -1;
@@ -855,9 +855,9 @@ virCgroupV2GetBlkioDeviceWeight(virCgroupPtr group,
                                 const char *devPath,
                                 unsigned int *weight)
 {
-    VIR_AUTOFREE(char *) path = NULL;
-    VIR_AUTOFREE(char *) str = NULL;
-    VIR_AUTOFREE(char *) value = NULL;
+    g_autofree char *path = NULL;
+    g_autofree char *str = NULL;
+    g_autofree char *value = NULL;
     char *tmp;
 
     if (virCgroupV2PathOfController(group, VIR_CGROUP_CONTROLLER_BLKIO,
@@ -895,8 +895,8 @@ virCgroupV2SetBlkioDeviceReadIops(virCgroupPtr group,
                                   const char *path,
                                   unsigned int riops)
 {
-    VIR_AUTOFREE(char *) str = NULL;
-    VIR_AUTOFREE(char *) blkstr = NULL;
+    g_autofree char *str = NULL;
+    g_autofree char *blkstr = NULL;
 
     if (!(blkstr = virCgroupGetBlockDevString(path)))
         return -1;
@@ -921,8 +921,8 @@ virCgroupV2GetBlkioDeviceReadIops(virCgroupPtr group,
                                   const char *path,
                                   unsigned int *riops)
 {
-    VIR_AUTOFREE(char *) str = NULL;
-    VIR_AUTOFREE(char *) value = NULL;
+    g_autofree char *str = NULL;
+    g_autofree char *value = NULL;
     const char *name = "riops=";
     char *tmp;
 
@@ -966,8 +966,8 @@ virCgroupV2SetBlkioDeviceWriteIops(virCgroupPtr group,
                                    const char *path,
                                    unsigned int wiops)
 {
-    VIR_AUTOFREE(char *) str = NULL;
-    VIR_AUTOFREE(char *) blkstr = NULL;
+    g_autofree char *str = NULL;
+    g_autofree char *blkstr = NULL;
 
     if (!(blkstr = virCgroupGetBlockDevString(path)))
         return -1;
@@ -992,8 +992,8 @@ virCgroupV2GetBlkioDeviceWriteIops(virCgroupPtr group,
                                    const char *path,
                                    unsigned int *wiops)
 {
-    VIR_AUTOFREE(char *) str = NULL;
-    VIR_AUTOFREE(char *) value = NULL;
+    g_autofree char *str = NULL;
+    g_autofree char *value = NULL;
     const char *name = "wiops=";
     char *tmp;
 
@@ -1037,8 +1037,8 @@ virCgroupV2SetBlkioDeviceReadBps(virCgroupPtr group,
                                  const char *path,
                                  unsigned long long rbps)
 {
-    VIR_AUTOFREE(char *) str = NULL;
-    VIR_AUTOFREE(char *) blkstr = NULL;
+    g_autofree char *str = NULL;
+    g_autofree char *blkstr = NULL;
 
     if (!(blkstr = virCgroupGetBlockDevString(path)))
         return -1;
@@ -1063,8 +1063,8 @@ virCgroupV2GetBlkioDeviceReadBps(virCgroupPtr group,
                                  const char *path,
                                  unsigned long long *rbps)
 {
-    VIR_AUTOFREE(char *) str = NULL;
-    VIR_AUTOFREE(char *) value = NULL;
+    g_autofree char *str = NULL;
+    g_autofree char *value = NULL;
     const char *name = "rbps=";
     char *tmp;
 
@@ -1108,8 +1108,8 @@ virCgroupV2SetBlkioDeviceWriteBps(virCgroupPtr group,
                                   const char *path,
                                   unsigned long long wbps)
 {
-    VIR_AUTOFREE(char *) str = NULL;
-    VIR_AUTOFREE(char *) blkstr = NULL;
+    g_autofree char *str = NULL;
+    g_autofree char *blkstr = NULL;
 
     if (!(blkstr = virCgroupGetBlockDevString(path)))
         return -1;
@@ -1134,8 +1134,8 @@ virCgroupV2GetBlkioDeviceWriteBps(virCgroupPtr group,
                                   const char *path,
                                   unsigned long long *wbps)
 {
-    VIR_AUTOFREE(char *) str = NULL;
-    VIR_AUTOFREE(char *) value = NULL;
+    g_autofree char *str = NULL;
+    g_autofree char *value = NULL;
     const char *name = "wbps=";
     char *tmp;
 
@@ -1210,7 +1210,7 @@ virCgroupV2GetMemoryStat(virCgroupPtr group,
                          unsigned long long *inactiveFile,
                          unsigned long long *unevictable)
 {
-    VIR_AUTOFREE(char *) stat = NULL;
+    g_autofree char *stat = NULL;
     char *line = NULL;
     unsigned long long cacheVal = 0;
     unsigned long long activeAnonVal = 0;
@@ -1306,7 +1306,7 @@ static int
 virCgroupV2GetMemoryHardLimit(virCgroupPtr group,
                               unsigned long long *kb)
 {
-    VIR_AUTOFREE(char *) value = NULL;
+    g_autofree char *value = NULL;
     unsigned long long max;
 
     if (virCgroupGetValueStr(group,
@@ -1366,7 +1366,7 @@ static int
 virCgroupV2GetMemorySoftLimit(virCgroupPtr group,
                               unsigned long long *kb)
 {
-    VIR_AUTOFREE(char *) value = NULL;
+    g_autofree char *value = NULL;
     unsigned long long high;
 
     if (virCgroupGetValueStr(group,
@@ -1425,7 +1425,7 @@ static int
 virCgroupV2GetMemSwapHardLimit(virCgroupPtr group,
                                unsigned long long *kb)
 {
-    VIR_AUTOFREE(char *) value = NULL;
+    g_autofree char *value = NULL;
     unsigned long long max;
 
     if (virCgroupGetValueStr(group,
@@ -1493,8 +1493,8 @@ static int
 virCgroupV2SetCpuCfsPeriod(virCgroupPtr group,
                            unsigned long long cfs_period)
 {
-    VIR_AUTOFREE(char *) value = NULL;
-    VIR_AUTOFREE(char *) str = NULL;
+    g_autofree char *value = NULL;
+    g_autofree char *str = NULL;
     char *tmp;
 
     /* The cfs_period should be greater or equal than 1ms, and less or equal
@@ -1531,7 +1531,7 @@ static int
 virCgroupV2GetCpuCfsPeriod(virCgroupPtr group,
                            unsigned long long *cfs_period)
 {
-    VIR_AUTOFREE(char *) str = NULL;
+    g_autofree char *str = NULL;
     char *tmp;
 
     if (virCgroupGetValueStr(group, VIR_CGROUP_CONTROLLER_CPU,
@@ -1585,7 +1585,7 @@ static int
 virCgroupV2GetCpuCfsQuota(virCgroupPtr group,
                           long long *cfs_quota)
 {
-    VIR_AUTOFREE(char *) str = NULL;
+    g_autofree char *str = NULL;
     char *tmp;
 
     if (virCgroupGetValueStr(group, VIR_CGROUP_CONTROLLER_CPU,
@@ -1611,7 +1611,7 @@ virCgroupV2GetCpuCfsQuota(virCgroupPtr group,
 static bool
 virCgroupV2SupportsCpuBW(virCgroupPtr cgroup)
 {
-    VIR_AUTOFREE(char *) path = NULL;
+    g_autofree char *path = NULL;
 
     if (virCgroupV2PathOfController(cgroup, VIR_CGROUP_CONTROLLER_CPU,
                                     "cpu.max", &path) < 0) {
@@ -1627,7 +1627,7 @@ static int
 virCgroupV2GetCpuacctUsage(virCgroupPtr group,
                            unsigned long long *usage)
 {
-    VIR_AUTOFREE(char *) str = NULL;
+    g_autofree char *str = NULL;
     char *tmp;
 
     if (virCgroupGetValueStr(group, VIR_CGROUP_CONTROLLER_CPUACCT,
@@ -1659,7 +1659,7 @@ virCgroupV2GetCpuacctStat(virCgroupPtr group,
                           unsigned long long *user,
                           unsigned long long *sys)
 {
-    VIR_AUTOFREE(char *) str = NULL;
+    g_autofree char *str = NULL;
     char *tmp;
     unsigned long long userVal = 0;
     unsigned long long sysVal = 0;

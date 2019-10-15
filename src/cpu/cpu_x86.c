@@ -1350,7 +1350,7 @@ x86ModelParseAncestor(virCPUx86ModelPtr model,
                       xmlXPathContextPtr ctxt,
                       virCPUx86MapPtr map)
 {
-    VIR_AUTOFREE(char *) name = NULL;
+    g_autofree char *name = NULL;
     virCPUx86ModelPtr ancestor;
     int rc;
 
@@ -1385,7 +1385,7 @@ static int
 x86ModelParseSignatures(virCPUx86ModelPtr model,
                         xmlXPathContextPtr ctxt)
 {
-    VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
     xmlNodePtr root = ctxt->node;
     size_t i;
     int n;
@@ -1436,7 +1436,7 @@ x86ModelParseVendor(virCPUx86ModelPtr model,
                     xmlXPathContextPtr ctxt,
                     virCPUx86MapPtr map)
 {
-    VIR_AUTOFREE(char *) vendor = NULL;
+    g_autofree char *vendor = NULL;
     int rc;
 
     if ((rc = virXPathBoolean("boolean(./vendor)", ctxt)) <= 0)
@@ -1466,7 +1466,7 @@ x86ModelParseFeatures(virCPUx86ModelPtr model,
                       xmlXPathContextPtr ctxt,
                       virCPUx86MapPtr map)
 {
-    VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
     size_t i;
     int n;
 
@@ -1474,7 +1474,7 @@ x86ModelParseFeatures(virCPUx86ModelPtr model,
         return n;
 
     for (i = 0; i < n; i++) {
-        VIR_AUTOFREE(char *) ftname = NULL;
+        g_autofree char *ftname = NULL;
         virCPUx86FeaturePtr feature;
 
         if (!(ftname = virXMLPropString(nodes[i], "name"))) {
@@ -2120,7 +2120,7 @@ x86Decode(virCPUDefPtr cpu,
     virCPUx86Data features = VIR_CPU_X86_DATA_INIT;
     virCPUx86VendorPtr vendor;
     virDomainCapsCPUModelPtr hvModel = NULL;
-    VIR_AUTOFREE(char *) sigs = NULL;
+    g_autofree char *sigs = NULL;
     uint32_t signature;
     ssize_t i;
     int rc;

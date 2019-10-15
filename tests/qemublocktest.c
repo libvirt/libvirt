@@ -51,9 +51,9 @@ testBackingXMLjsonXML(const void *args)
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     VIR_AUTOPTR(virJSONValue) backendprops = NULL;
     VIR_AUTOPTR(virJSONValue) wrapper = NULL;
-    VIR_AUTOFREE(char *) propsstr = NULL;
-    VIR_AUTOFREE(char *) protocolwrapper = NULL;
-    VIR_AUTOFREE(char *) actualxml = NULL;
+    g_autofree char *propsstr = NULL;
+    g_autofree char *protocolwrapper = NULL;
+    g_autofree char *actualxml = NULL;
     VIR_AUTOUNREF(virStorageSourcePtr) xmlsrc = NULL;
     VIR_AUTOUNREF(virStorageSourcePtr) jsonsrc = NULL;
 
@@ -366,7 +366,7 @@ testQemuImageCreateLoadDiskXML(const char *name,
     VIR_AUTOPTR(xmlDoc) doc = NULL;
     VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
     xmlNodePtr node;
-    VIR_AUTOFREE(char *) xmlpath = NULL;
+    g_autofree char *xmlpath = NULL;
     virStorageSourcePtr ret = NULL;
 
     if (virAsprintf(&xmlpath, "%s%s.xml",
@@ -403,10 +403,10 @@ testQemuImageCreate(const void *opaque)
     VIR_AUTOUNREF(virStorageSourcePtr) src = NULL;
     g_auto(virBuffer) debug = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) actualbuf = VIR_BUFFER_INITIALIZER;
-    VIR_AUTOFREE(char *) jsonprotocol = NULL;
-    VIR_AUTOFREE(char *) jsonformat = NULL;
-    VIR_AUTOFREE(char *) actual = NULL;
-    VIR_AUTOFREE(char *) jsonpath = NULL;
+    g_autofree char *jsonprotocol = NULL;
+    g_autofree char *jsonformat = NULL;
+    g_autofree char *actual = NULL;
+    g_autofree char *jsonpath = NULL;
 
     if (!(src = testQemuImageCreateLoadDiskXML(data->name, data->driver->xmlopt)))
         return -1;
@@ -438,7 +438,7 @@ testQemuImageCreate(const void *opaque)
 
         if (testQEMUSchemaValidate(formatprops, data->schemaroot, data->schema,
                                    &debug) < 0) {
-            VIR_AUTOFREE(char *) debugmsg = virBufferContentAndReset(&debug);
+            g_autofree char *debugmsg = virBufferContentAndReset(&debug);
             VIR_TEST_VERBOSE("blockdev-create format json does not conform to QAPI schema");
             VIR_TEST_DEBUG("json:\n%s\ndoes not match schema. Debug output:\n %s",
                            jsonformat, NULLSTR(debugmsg));
@@ -453,7 +453,7 @@ testQemuImageCreate(const void *opaque)
 
         if (testQEMUSchemaValidate(protocolprops, data->schemaroot, data->schema,
                                    &debug) < 0) {
-            VIR_AUTOFREE(char *) debugmsg = virBufferContentAndReset(&debug);
+            g_autofree char *debugmsg = virBufferContentAndReset(&debug);
             VIR_TEST_VERBOSE("blockdev-create protocol json does not conform to QAPI schema");
             VIR_TEST_DEBUG("json:\n%s\ndoes not match schema. Debug output:\n %s",
                            jsonprotocol, NULLSTR(debugmsg));
@@ -483,8 +483,8 @@ testQemuDiskXMLToPropsValidateFileSrcOnly(const void *opaque)
 {
     struct testQemuDiskXMLToJSONData *data = (void *) opaque;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    VIR_AUTOFREE(char *) jsonpath = NULL;
-    VIR_AUTOFREE(char *) actual = NULL;
+    g_autofree char *jsonpath = NULL;
+    g_autofree char *actual = NULL;
     size_t i;
 
     if (data->fail)
@@ -495,7 +495,7 @@ testQemuDiskXMLToPropsValidateFileSrcOnly(const void *opaque)
         return -1;
 
     for (i = 0; i < data->npropssrc; i++) {
-        VIR_AUTOFREE(char *) jsonstr = NULL;
+        g_autofree char *jsonstr = NULL;
 
         if (!(jsonstr = virJSONValueToString(data->propssrc[i], true)))
             return -1;

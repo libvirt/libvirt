@@ -104,8 +104,8 @@ int virAuthConfigLookup(virAuthConfigPtr auth,
                         const char *credname,
                         const char **value)
 {
-    VIR_AUTOFREE(char *) authgroup = NULL;
-    VIR_AUTOFREE(char *) credgroup = NULL;
+    g_autofree char *authgroup = NULL;
+    g_autofree char *credgroup = NULL;
     const char *authcred;
 
     *value = NULL;

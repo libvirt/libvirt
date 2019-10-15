@@ -177,7 +177,7 @@ virPerfRdtAttrInit(void)
 {
     char *tmp = NULL;
     unsigned int attr_type = 0;
-    VIR_AUTOFREE(char *) buf = NULL;
+    g_autofree char *buf = NULL;
 
     if (virFileReadAllQuiet("/sys/devices/intel_cqm/type", 10, &buf) < 0)
         return -1;
@@ -221,7 +221,7 @@ virPerfEventEnable(virPerfPtr perf,
     }
 
     if (type == VIR_PERF_EVENT_CMT) {
-        VIR_AUTOFREE(char *) buf = NULL;
+        g_autofree char *buf = NULL;
 
         if (virFileReadAll("/sys/devices/intel_cqm/events/llc_occupancy.scale",
                            10, &buf) < 0)

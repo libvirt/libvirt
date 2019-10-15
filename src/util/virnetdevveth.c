@@ -42,7 +42,7 @@ virMutex virNetDevVethCreateMutex = VIR_MUTEX_INITIALIZER;
 static int virNetDevVethExists(int devNum)
 {
     int ret;
-    VIR_AUTOFREE(char *) path = NULL;
+    g_autofree char *path = NULL;
 
     if (virAsprintf(&path, SYSFS_NET_DIR "vnet%d/", devNum) < 0)
         return -1;
@@ -118,8 +118,8 @@ int virNetDevVethCreate(char** veth1, char** veth2)
 #define MAX_VETH_RETRIES 10
 
     for (i = 0; i < MAX_VETH_RETRIES; i++) {
-        VIR_AUTOFREE(char *) veth1auto = NULL;
-        VIR_AUTOFREE(char *) veth2auto = NULL;
+        g_autofree char *veth1auto = NULL;
+        g_autofree char *veth2auto = NULL;
         VIR_AUTOPTR(virCommand) cmd = NULL;
 
         int status;

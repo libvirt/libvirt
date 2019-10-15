@@ -1525,7 +1525,7 @@ qemuDomainCollectPCIAddress(virDomainDefPtr def G_GNUC_UNUSED,
      * inappropriate address types.
      */
     if (!info->pciConnectFlags) {
-        VIR_AUTOFREE(char *) addrStr = virPCIDeviceAddressAsString(&info->addr.pci);
+        g_autofree char *addrStr = virPCIDeviceAddressAsString(&info->addr.pci);
 
         VIR_WARN("qemuDomainDeviceCalculatePCIConnectFlags() thinks that the "
                  "device with PCI address %s should not have a PCI address",
@@ -1723,7 +1723,7 @@ qemuDomainValidateDevicePCISlotsPIIX3(virDomainDefPtr def,
     size_t i;
     virPCIDeviceAddress tmp_addr;
     bool qemuDeviceVideoUsable = virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
-    VIR_AUTOFREE(char *) addrStr = NULL;
+    g_autofree char *addrStr = NULL;
     virDomainPCIConnectFlags flags = (VIR_PCI_CONNECT_HOTPLUGGABLE
                                       | VIR_PCI_CONNECT_TYPE_PCI_DEVICE);
 
@@ -1864,7 +1864,7 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDefPtr def,
     size_t i;
     virPCIDeviceAddress tmp_addr;
     bool qemuDeviceVideoUsable = virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
-    VIR_AUTOFREE(char *) addrStr = NULL;
+    g_autofree char *addrStr = NULL;
     virDomainPCIConnectFlags flags = VIR_PCI_CONNECT_TYPE_PCIE_DEVICE;
 
     for (i = 0; i < def->ncontrollers; i++) {

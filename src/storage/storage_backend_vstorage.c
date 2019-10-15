@@ -38,9 +38,9 @@ static int
 virStorageBackendVzPoolStart(virStoragePoolObjPtr pool)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
-    VIR_AUTOFREE(char *) grp_name = NULL;
-    VIR_AUTOFREE(char *) usr_name = NULL;
-    VIR_AUTOFREE(char *) mode = NULL;
+    g_autofree char *grp_name = NULL;
+    g_autofree char *usr_name = NULL;
+    g_autofree char *mode = NULL;
     VIR_AUTOPTR(virCommand) cmd = NULL;
     int ret;
 
@@ -88,7 +88,7 @@ virStorageBackendVzIsMounted(virStoragePoolObjPtr pool)
     FILE *mtab;
     struct mntent ent;
     char buf[1024];
-    VIR_AUTOFREE(char *) cluster = NULL;
+    g_autofree char *cluster = NULL;
 
     if (virAsprintf(&cluster, "vstorage://%s", def->source.name) < 0)
         return -1;

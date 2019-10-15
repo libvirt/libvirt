@@ -179,7 +179,7 @@ virHostdevManagerNew(void)
             return NULL;
         }
     } else {
-        VIR_AUTOFREE(char *) rundir = NULL;
+        g_autofree char *rundir = NULL;
         mode_t old_umask;
 
         if (!(rundir = virGetUserRuntimeDirectory()))
@@ -306,7 +306,7 @@ virHostdevPCISysfsPath(virDomainHostdevDefPtr hostdev,
 static int
 virHostdevIsVirtualFunction(virDomainHostdevDefPtr hostdev)
 {
-    VIR_AUTOFREE(char *) sysfs_path = NULL;
+    g_autofree char *sysfs_path = NULL;
 
     if (virHostdevPCISysfsPath(hostdev, &sysfs_path) < 0)
         return -1;
@@ -321,7 +321,7 @@ virHostdevNetDevice(virDomainHostdevDefPtr hostdev,
                     char **linkdev,
                     int *vf)
 {
-    VIR_AUTOFREE(char *) sysfs_path = NULL;
+    g_autofree char *sysfs_path = NULL;
 
     if (virHostdevPCISysfsPath(hostdev, &sysfs_path) < 0)
         return -1;
@@ -447,7 +447,7 @@ static int
 virHostdevSaveNetConfig(virDomainHostdevDefPtr hostdev,
                         const char *stateDir)
 {
-    VIR_AUTOFREE(char *) linkdev = NULL;
+    g_autofree char *linkdev = NULL;
     int vf = -1;
 
     if (!virHostdevIsPCINetDevice(hostdev) ||
@@ -486,7 +486,7 @@ static int
 virHostdevSetNetConfig(virDomainHostdevDefPtr hostdev,
                        const unsigned char *uuid)
 {
-    VIR_AUTOFREE(char *) linkdev = NULL;
+    g_autofree char *linkdev = NULL;
     virNetDevVlanPtr vlan;
     virNetDevVPortProfilePtr virtPort;
     int vf = -1;
@@ -534,9 +534,9 @@ virHostdevRestoreNetConfig(virDomainHostdevDefPtr hostdev,
                            const char *stateDir,
                            const char *oldStateDir)
 {
-    VIR_AUTOFREE(char *) linkdev = NULL;
-    VIR_AUTOFREE(virMacAddrPtr) MAC = NULL;
-    VIR_AUTOFREE(virMacAddrPtr) adminMAC = NULL;
+    g_autofree char *linkdev = NULL;
+    g_autofree virMacAddrPtr MAC = NULL;
+    g_autofree virMacAddrPtr adminMAC = NULL;
     VIR_AUTOPTR(virNetDevVlan) vlan = NULL;
     virNetDevVPortProfilePtr virtPort;
     int vf = -1;
@@ -804,8 +804,8 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr mgr,
                                    mgr->inactivePCIHostdevs) < 0)
                 goto reattachdevs;
         } else {
-            VIR_AUTOFREE(char *) driverPath = NULL;
-            VIR_AUTOFREE(char *) driverName = NULL;
+            g_autofree char *driverPath = NULL;
+            g_autofree char *driverName = NULL;
             int stub;
 
             /* Unmanaged devices should already have been marked as

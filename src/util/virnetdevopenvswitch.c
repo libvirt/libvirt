@@ -142,10 +142,10 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
     char ifuuidstr[VIR_UUID_STRING_BUFLEN];
     char vmuuidstr[VIR_UUID_STRING_BUFLEN];
     VIR_AUTOPTR(virCommand) cmd = NULL;
-    VIR_AUTOFREE(char *) attachedmac_ex_id = NULL;
-    VIR_AUTOFREE(char *) ifaceid_ex_id = NULL;
-    VIR_AUTOFREE(char *) profile_ex_id = NULL;
-    VIR_AUTOFREE(char *) vmid_ex_id = NULL;
+    g_autofree char *attachedmac_ex_id = NULL;
+    g_autofree char *ifaceid_ex_id = NULL;
+    g_autofree char *profile_ex_id = NULL;
+    g_autofree char *vmid_ex_id = NULL;
 
     virMacAddrFormat(macaddr, macaddrstr);
     virUUIDFormat(ovsport->interfaceID, ifuuidstr);
@@ -387,7 +387,7 @@ virNetDevOpenvswitchInterfaceStats(const char *ifname,
                                    virDomainInterfaceStatsPtr stats)
 {
     VIR_AUTOPTR(virCommand) cmd = NULL;
-    VIR_AUTOFREE(char *) output = NULL;
+    g_autofree char *output = NULL;
 
     cmd = virCommandNew(OVSVSCTL);
     virNetDevOpenvswitchAddTimeout(cmd);

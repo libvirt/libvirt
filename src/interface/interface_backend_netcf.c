@@ -105,7 +105,7 @@ netcfStateInitialize(bool privileged,
                         "%s/libvirt/interface", RUNSTATEDIR) < 0)
             goto error;
     } else {
-        VIR_AUTOFREE(char *) rundir = NULL;
+        g_autofree char *rundir = NULL;
 
         if (!(rundir = virGetUserRuntimeDirectory()))
             goto error;

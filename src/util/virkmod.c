@@ -146,8 +146,8 @@ bool
 virKModIsBlacklisted(const char *module)
 {
     size_t i;
-    VIR_AUTOFREE(char *) drvblklst = NULL;
-    VIR_AUTOFREE(char *) outbuf = NULL;
+    g_autofree char *drvblklst = NULL;
+    g_autofree char *outbuf = NULL;
 
     if (virAsprintfQuiet(&drvblklst, "blacklist %s\n", module) < 0)
         return false;

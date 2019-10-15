@@ -1833,7 +1833,7 @@ nodeStateInitialize(bool privileged,
                         "%s/libvirt/nodedev", RUNSTATEDIR) < 0)
             goto cleanup;
     } else {
-        VIR_AUTOFREE(char *) rundir = NULL;
+        g_autofree char *rundir = NULL;
 
         if (!(rundir = virGetUserRuntimeDirectory()))
             goto cleanup;

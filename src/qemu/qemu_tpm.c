@@ -280,7 +280,7 @@ qemuTPMEmulatorGetPid(const char *swtpmStateDir,
                       pid_t *pid)
 {
     int ret;
-    VIR_AUTOFREE(char *) swtpm = virTPMGetSwtpm();
+    g_autofree char *swtpm = virTPMGetSwtpm();
     char *pidfile = qemuTPMEmulatorCreatePidFilename(swtpmStateDir,
                                                      shortName);
     if (!pidfile)
@@ -399,7 +399,7 @@ qemuTPMSetupEncryption(const unsigned char *secretuuid,
     int ret = -1;
     int pipefd[2] = { -1, -1 };
     virConnectPtr conn;
-    VIR_AUTOFREE(uint8_t *) secret = NULL;
+    g_autofree uint8_t *secret = NULL;
     size_t secret_len;
     virSecretLookupTypeDef seclookupdef = {
          .type = VIR_SECRET_LOOKUP_TYPE_UUID,
@@ -475,7 +475,7 @@ qemuTPMEmulatorRunSetup(const char *storagepath,
     int ret = -1;
     char uuid[VIR_UUID_STRING_BUFLEN];
     char *vmid = NULL;
-    VIR_AUTOFREE(char *)swtpm_setup = virTPMGetSwtpmSetup();
+    g_autofree char *swtpm_setup = virTPMGetSwtpmSetup();
     VIR_AUTOCLOSE pwdfile_fd = -1;
 
     if (!swtpm_setup)
@@ -597,7 +597,7 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDefPtr tpm,
     virCommandPtr cmd = NULL;
     bool created = false;
     char *pidfile;
-    VIR_AUTOFREE(char *) swtpm = virTPMGetSwtpm();
+    g_autofree char *swtpm = virTPMGetSwtpm();
     VIR_AUTOCLOSE pwdfile_fd = -1;
     VIR_AUTOCLOSE migpwdfile_fd = -1;
     const unsigned char *secretuuid = NULL;
@@ -713,7 +713,7 @@ qemuTPMEmulatorStop(const char *swtpmStateDir,
     virCommandPtr cmd;
     char *pathname;
     char *errbuf = NULL;
-    VIR_AUTOFREE(char *) swtpm_ioctl = virTPMGetSwtpmIoctl();
+    g_autofree char *swtpm_ioctl = virTPMGetSwtpmIoctl();
 
     if (!swtpm_ioctl)
         return;

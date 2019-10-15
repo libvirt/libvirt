@@ -162,9 +162,9 @@ static int
 virSecurityValidateTimestamp(const char *name,
                              const char *path)
 {
-    VIR_AUTOFREE(char *) expected_timestamp = NULL;
-    VIR_AUTOFREE(char *) timestamp_name = NULL;
-    VIR_AUTOFREE(char *) value = NULL;
+    g_autofree char *expected_timestamp = NULL;
+    g_autofree char *timestamp_name = NULL;
+    g_autofree char *value = NULL;
 
     if (!(expected_timestamp = virSecurityGetTimestamp()) ||
         !(timestamp_name = virSecurityGetTimestampAttrName(name)))
@@ -208,8 +208,8 @@ static int
 virSecurityAddTimestamp(const char *name,
                         const char *path)
 {
-    VIR_AUTOFREE(char *) timestamp_name = NULL;
-    VIR_AUTOFREE(char *) timestamp_value = NULL;
+    g_autofree char *timestamp_name = NULL;
+    g_autofree char *timestamp_value = NULL;
 
     if (!(timestamp_value = virSecurityGetTimestamp()) ||
         !(timestamp_name = virSecurityGetTimestampAttrName(name)))
@@ -223,7 +223,7 @@ static int
 virSecurityRemoveTimestamp(const char *name,
                            const char *path)
 {
-    VIR_AUTOFREE(char *) timestamp_name = NULL;
+    g_autofree char *timestamp_name = NULL;
 
     if (!(timestamp_name = virSecurityGetTimestampAttrName(name)))
         return -1;
@@ -265,9 +265,9 @@ virSecurityGetRememberedLabel(const char *name,
                               const char *path,
                               char **label)
 {
-    VIR_AUTOFREE(char *) ref_name = NULL;
-    VIR_AUTOFREE(char *) attr_name = NULL;
-    VIR_AUTOFREE(char *) value = NULL;
+    g_autofree char *ref_name = NULL;
+    g_autofree char *attr_name = NULL;
+    g_autofree char *value = NULL;
     unsigned int refcount = 0;
 
     *label = NULL;
@@ -363,9 +363,9 @@ virSecuritySetRememberedLabel(const char *name,
                               const char *path,
                               const char *label)
 {
-    VIR_AUTOFREE(char *) ref_name = NULL;
-    VIR_AUTOFREE(char *) attr_name = NULL;
-    VIR_AUTOFREE(char *) value = NULL;
+    g_autofree char *ref_name = NULL;
+    g_autofree char *attr_name = NULL;
+    g_autofree char *value = NULL;
     unsigned int refcount = 0;
 
     if (!(ref_name = virSecurityGetRefCountAttrName(name)))
@@ -448,12 +448,12 @@ virSecurityMoveRememberedLabel(const char *name,
                                const char *src,
                                const char *dst)
 {
-    VIR_AUTOFREE(char *) ref_name = NULL;
-    VIR_AUTOFREE(char *) ref_value = NULL;
-    VIR_AUTOFREE(char *) attr_name = NULL;
-    VIR_AUTOFREE(char *) attr_value = NULL;
-    VIR_AUTOFREE(char *) timestamp_name = NULL;
-    VIR_AUTOFREE(char *) timestamp_value = NULL;
+    g_autofree char *ref_name = NULL;
+    g_autofree char *ref_value = NULL;
+    g_autofree char *attr_name = NULL;
+    g_autofree char *attr_value = NULL;
+    g_autofree char *timestamp_name = NULL;
+    g_autofree char *timestamp_value = NULL;
 
     if (!(ref_name = virSecurityGetRefCountAttrName(name)) ||
         !(attr_name = virSecurityGetAttrName(name)) ||

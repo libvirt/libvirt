@@ -6960,8 +6960,8 @@ virshVcpuPinQuery(vshControl *ctl,
             goto cleanup;
 
         for (i = 0; i < ncpus; i++) {
-            VIR_AUTOFREE(char *) pinInfo = NULL;
-            VIR_AUTOFREE(char *) vcpuStr = NULL;
+            g_autofree char *pinInfo = NULL;
+            g_autofree char *vcpuStr = NULL;
             if (got_vcpu && i != vcpu)
                 continue;
 
@@ -7583,8 +7583,8 @@ cmdIOThreadInfo(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     for (i = 0; i < niothreads; i++) {
-        VIR_AUTOFREE(char *) pinInfo = NULL;
-        VIR_AUTOFREE(char *) iothreadIdStr = NULL;
+        g_autofree char *pinInfo = NULL;
+        g_autofree char *iothreadIdStr = NULL;
 
         if (virAsprintf(&iothreadIdStr, "%u", info[i]->iothread_id) < 0)
             goto cleanup;
@@ -9507,8 +9507,8 @@ static bool
 cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
 {
     VIR_AUTOPTR(virshDomain) dom = NULL;
-    VIR_AUTOFREE(char *) monitor_cmd = NULL;
-    VIR_AUTOFREE(char *) result = NULL;
+    g_autofree char *monitor_cmd = NULL;
+    g_autofree char *result = NULL;
     unsigned int flags = 0;
     const vshCmdOpt *opt = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -13999,7 +13999,7 @@ cmdDomFSInfo(vshControl *ctl, const vshCmd *cmd)
 
         for (i = 0; i < ninfos; i++) {
             virBuffer targetsBuff = VIR_BUFFER_INITIALIZER;
-            VIR_AUTOFREE(char *) targets = NULL;
+            g_autofree char *targets = NULL;
 
             for (j = 0; j < info[i]->ndevAlias; j++)
                 virBufferAsprintf(&targetsBuff, "%s,", info[i]->devAlias[j]);

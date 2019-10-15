@@ -521,7 +521,7 @@ cmdSecretList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
         const char *usageStr = virSecretUsageTypeToString(usageType);
         char uuid[VIR_UUID_STRING_BUFLEN];
         virBuffer buf = VIR_BUFFER_INITIALIZER;
-        VIR_AUTOFREE(char *) usage = NULL;
+        g_autofree char *usage = NULL;
 
         if (virSecretGetUUIDString(sec, uuid) < 0) {
             vshError(ctl, "%s", _("Failed to get uuid of secret"));

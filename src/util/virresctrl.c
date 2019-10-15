@@ -2539,7 +2539,7 @@ int
 virResctrlMonitorDeterminePath(virResctrlMonitorPtr monitor,
                                const char *machinename)
 {
-    VIR_AUTOFREE(char *) parentpath = NULL;
+    g_autofree char *parentpath = NULL;
 
     if (!monitor) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

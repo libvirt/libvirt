@@ -46,8 +46,8 @@ testGlusterExtractPoolSources(const void *opaque)
                                     };
     size_t i;
     int ret = -1;
-    VIR_AUTOFREE(char *) srcxmldata = NULL;
-    VIR_AUTOFREE(char *) actual = NULL;
+    g_autofree char *srcxmldata = NULL;
+    g_autofree char *actual = NULL;
 
     if (virTestLoadFile(data->srcxml, &srcxmldata) < 0)
         goto cleanup;

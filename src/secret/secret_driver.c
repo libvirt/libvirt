@@ -476,8 +476,8 @@ secretStateInitialize(bool privileged,
                         "%s/libvirt/secrets", RUNSTATEDIR) < 0)
             goto error;
     } else {
-        VIR_AUTOFREE(char *) rundir = NULL;
-        VIR_AUTOFREE(char *) cfgdir = NULL;
+        g_autofree char *rundir = NULL;
+        g_autofree char *cfgdir = NULL;
 
         if (!(cfgdir = virGetUserConfigDirectory()))
             goto error;

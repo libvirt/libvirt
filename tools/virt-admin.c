@@ -396,7 +396,7 @@ cmdSrvList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
         goto cleanup;
 
     for (i = 0; i < nsrvs; i++) {
-        VIR_AUTOFREE(char *) idStr = NULL;
+        g_autofree char *idStr = NULL;
         if (virAsprintf(&idStr, "%zu", i) < 0)
             goto cleanup;
 
@@ -650,8 +650,8 @@ cmdSrvClientsList(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     for (i = 0; i < nclts; i++) {
-        VIR_AUTOFREE(char *) timestr = NULL;
-        VIR_AUTOFREE(char *) idStr = NULL;
+        g_autofree char *timestr = NULL;
+        g_autofree char *idStr = NULL;
         virAdmClientPtr client = clts[i];
         id = virAdmClientGetID(client);
         transport = virAdmClientGetTransport(client);

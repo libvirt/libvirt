@@ -180,7 +180,7 @@ xenConfigCopyStringOpt(virConfPtr conf, const char *name, char **value)
 static int
 xenConfigGetUUID(virConfPtr conf, const char *name, unsigned char *uuid)
 {
-    VIR_AUTOFREE(char *) string = NULL;
+    g_autofree char *string = NULL;
     int rc;
 
     if (!uuid || !name || !conf) {
@@ -339,9 +339,9 @@ xenParseTimeOffset(virConfPtr conf, virDomainDefPtr def)
 static int
 xenParseEventsActions(virConfPtr conf, virDomainDefPtr def)
 {
-    VIR_AUTOFREE(char *) on_poweroff = NULL;
-    VIR_AUTOFREE(char *) on_reboot = NULL;
-    VIR_AUTOFREE(char *) on_crash = NULL;
+    g_autofree char *on_poweroff = NULL;
+    g_autofree char *on_reboot = NULL;
+    g_autofree char *on_crash = NULL;
 
     if (xenConfigGetString(conf, "on_poweroff", &on_poweroff, "destroy") < 0)
         return -1;
@@ -504,8 +504,8 @@ xenParseCPUFeatures(virConfPtr conf,
                     virDomainXMLOptionPtr xmlopt)
 {
     unsigned long count = 0;
-    VIR_AUTOFREE(char *) cpus = NULL;
-    VIR_AUTOFREE(char *) tsc_mode = NULL;
+    g_autofree char *cpus = NULL;
+    g_autofree char *tsc_mode = NULL;
     int val = 0;
     virDomainTimerDefPtr timer;
 
@@ -915,7 +915,7 @@ xenParseCharDev(virConfPtr conf, virDomainDefPtr def, const char *nativeFormat)
     virDomainChrDefPtr chr = NULL;
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
-        VIR_AUTOFREE(char *) parallel = NULL;
+        g_autofree char *parallel = NULL;
         int rc;
 
         if (xenConfigGetString(conf, "parallel", &parallel, NULL) < 0)
@@ -960,7 +960,7 @@ xenParseCharDev(virConfPtr conf, virDomainDefPtr def, const char *nativeFormat)
                     goto cleanup;
             }
         } else {
-            VIR_AUTOFREE(char *) serial = NULL;
+            g_autofree char *serial = NULL;
 
             if (xenHandleConfGetValueStringListErrors(rc) < 0)
                 goto cleanup;
@@ -1428,7 +1428,7 @@ xenParseSxprSound(virDomainDefPtr def,
 static int
 xenParseEmulatedDevices(virConfPtr conf, virDomainDefPtr def)
 {
-    VIR_AUTOFREE(char *) str = NULL;
+    g_autofree char *str = NULL;
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         if (xenConfigGetString(conf, "soundhw", &str, NULL) < 0)
@@ -1447,7 +1447,7 @@ static int
 xenParseGeneralMeta(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
 {
     virCapsDomainDataPtr capsdata = NULL;
-    VIR_AUTOFREE(char *) str = NULL;
+    g_autofree char *str = NULL;
     int ret = -1;
 
     if (xenConfigCopyString(conf, "name", &def->name) < 0)
@@ -2375,7 +2375,7 @@ xenFormatSound(virConfPtr conf, virDomainDefPtr def)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char * model;
-    VIR_AUTOFREE(char *) str = NULL;
+    g_autofree char *str = NULL;
     size_t i;
 
     if (def->os.type != VIR_DOMAIN_OSTYPE_HVM ||

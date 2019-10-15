@@ -34,8 +34,8 @@ static int
 testInterfaceParseStats(const void *opaque)
 {
     const InterfaceParseStatsData *data = opaque;
-    VIR_AUTOFREE(char *) filename = NULL;
-    VIR_AUTOFREE(char *) buf = NULL;
+    g_autofree char *filename = NULL;
+    g_autofree char *buf = NULL;
     virDomainInterfaceStatsStruct actual;
 
     if (virAsprintf(&filename, "%s/virnetdevopenvswitchdata/%s",

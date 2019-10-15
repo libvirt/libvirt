@@ -41,7 +41,7 @@ xenParseXMOS(virConfPtr conf, virDomainDefPtr def)
     size_t i;
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
-        VIR_AUTOFREE(char *) boot = NULL;
+        g_autofree char *boot = NULL;
 
         if (VIR_ALLOC(def->os.loader) < 0 ||
             xenConfigCopyString(conf, "kernel", &def->os.loader->path) < 0)
@@ -69,8 +69,8 @@ xenParseXMOS(virConfPtr conf, virDomainDefPtr def)
             def->os.nBootDevs++;
         }
     } else {
-        VIR_AUTOFREE(char *) extra = NULL;
-        VIR_AUTOFREE(char *) root = NULL;
+        g_autofree char *extra = NULL;
+        g_autofree char *root = NULL;
 
         if (xenConfigCopyStringOpt(conf, "bootloader", &def->os.bootloader) < 0)
             return -1;
@@ -415,7 +415,7 @@ xenFormatXMDisks(virConfPtr conf, virDomainDefPtr def)
 static int
 xenParseXMInputDevs(virConfPtr conf, virDomainDefPtr def)
 {
-    VIR_AUTOFREE(char *) str = NULL;
+    g_autofree char *str = NULL;
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         if (xenConfigGetString(conf, "usbdevice", &str, NULL) < 0)

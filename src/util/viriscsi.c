@@ -88,7 +88,7 @@ virISCSIGetSession(const char *devpath,
         .devpath = devpath,
     };
     int exitstatus = 0;
-    VIR_AUTOFREE(char *) error = NULL;
+    g_autofree char *error = NULL;
 
     VIR_AUTOPTR(virCommand) cmd = virCommandNewArgList(ISCSIADM, "--mode",
                                                        "session", NULL);
@@ -122,9 +122,9 @@ virStorageBackendIQNFound(const char *initiatoriqn,
 {
     int ret = IQN_ERROR;
     char *line = NULL;
-    VIR_AUTOFREE(char *) outbuf = NULL;
-    VIR_AUTOFREE(char *) iface = NULL;
-    VIR_AUTOFREE(char *) iqn = NULL;
+    g_autofree char *outbuf = NULL;
+    g_autofree char *iface = NULL;
+    g_autofree char *iqn = NULL;
     VIR_AUTOPTR(virCommand) cmd = virCommandNewArgList(ISCSIADM,
                                                        "--mode", "iface", NULL);
 
@@ -208,8 +208,8 @@ virStorageBackendCreateIfaceIQN(const char *initiatoriqn,
                                 char **ifacename)
 {
     int exitstatus = -1;
-    VIR_AUTOFREE(char *) iface_name = NULL;
-    VIR_AUTOFREE(char *) temp_ifacename = NULL;
+    g_autofree char *iface_name = NULL;
+    g_autofree char *temp_ifacename = NULL;
     VIR_AUTOPTR(virCommand) cmd = NULL;
 
     if (virAsprintf(&temp_ifacename,
@@ -286,7 +286,7 @@ virISCSIConnection(const char *portal,
         NULL
     };
     VIR_AUTOPTR(virCommand) cmd = NULL;
-    VIR_AUTOFREE(char *) ifacename = NULL;
+    g_autofree char *ifacename = NULL;
 
     cmd = virCommandNewArgs(baseargv);
     virCommandAddArgSet(cmd, extraargv);
@@ -369,7 +369,7 @@ virISCSIGetTargets(char **const groups,
                    void *data)
 {
     struct virISCSITargetList *list = data;
-    VIR_AUTOFREE(char *) target = NULL;
+    g_autofree char *target = NULL;
 
     if (VIR_STRDUP(target, groups[1]) < 0)
         return -1;
@@ -471,7 +471,7 @@ virISCSIScanTargets(const char *portal,
                     size_t *ntargets,
                     char ***targets)
 {
-    VIR_AUTOFREE(char *) ifacename = NULL;
+    g_autofree char *ifacename = NULL;
 
     if (ntargets)
         *ntargets = 0;

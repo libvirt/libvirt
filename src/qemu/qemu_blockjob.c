@@ -225,7 +225,7 @@ qemuBlockJobDiskNewPull(virDomainObjPtr vm,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     VIR_AUTOUNREF(qemuBlockJobDataPtr) job = NULL;
-    VIR_AUTOFREE(char *) jobname = NULL;
+    g_autofree char *jobname = NULL;
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
         if (virAsprintf(&jobname, "pull-%s-%s", disk->dst, disk->src->nodeformat) < 0)
@@ -256,7 +256,7 @@ qemuBlockJobDiskNewCommit(virDomainObjPtr vm,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     VIR_AUTOUNREF(qemuBlockJobDataPtr) job = NULL;
-    VIR_AUTOFREE(char *) jobname = NULL;
+    g_autofree char *jobname = NULL;
     qemuBlockJobType jobtype = QEMU_BLOCKJOB_TYPE_COMMIT;
 
     if (topparent == NULL)
@@ -291,7 +291,7 @@ qemuBlockJobNewCreate(virDomainObjPtr vm,
                       bool storage)
 {
     VIR_AUTOUNREF(qemuBlockJobDataPtr) job = NULL;
-    VIR_AUTOFREE(char *) jobname = NULL;
+    g_autofree char *jobname = NULL;
     const char *nodename = src->nodeformat;
 
     if (storage)
@@ -324,7 +324,7 @@ qemuBlockJobDiskNewCopy(virDomainObjPtr vm,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     VIR_AUTOUNREF(qemuBlockJobDataPtr) job = NULL;
-    VIR_AUTOFREE(char *) jobname = NULL;
+    g_autofree char *jobname = NULL;
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
         if (virAsprintf(&jobname, "copy-%s-%s", disk->dst, disk->src->nodeformat) < 0)

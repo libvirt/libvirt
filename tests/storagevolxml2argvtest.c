@@ -46,7 +46,7 @@ testCompareXMLToArgvFiles(bool shouldFail,
     int ret = -1;
     virStoragePoolDefPtr def = NULL;
     virStoragePoolObjPtr obj = NULL;
-    VIR_AUTOFREE(char *) actualCmdline = NULL;
+    g_autofree char *actualCmdline = NULL;
     VIR_AUTOPTR(virStorageVolDef) vol = NULL;
     VIR_AUTOPTR(virStorageVolDef) inputvol = NULL;
     VIR_AUTOPTR(virStoragePoolDef) inputpool = NULL;
@@ -108,7 +108,7 @@ testCompareXMLToArgvFiles(bool shouldFail,
                 goto cleanup;
         } else {
             char *createCmdline = actualCmdline;
-            VIR_AUTOFREE(char *) cvtCmdline = NULL;
+            g_autofree char *cvtCmdline = NULL;
             int rc;
 
             if (!(cvtCmdline = virCommandToString(cmd, false)))
@@ -156,11 +156,11 @@ static int
 testCompareXMLToArgvHelper(const void *data)
 {
     const struct testInfo *info = data;
-    VIR_AUTOFREE(char *) poolxml = NULL;
-    VIR_AUTOFREE(char *) inputpoolxml = NULL;
-    VIR_AUTOFREE(char *) volxml = NULL;
-    VIR_AUTOFREE(char *) inputvolxml = NULL;
-    VIR_AUTOFREE(char *) cmdline = NULL;
+    g_autofree char *poolxml = NULL;
+    g_autofree char *inputpoolxml = NULL;
+    g_autofree char *volxml = NULL;
+    g_autofree char *inputvolxml = NULL;
+    g_autofree char *cmdline = NULL;
 
     if (info->inputvol &&
         virAsprintf(&inputvolxml, "%s/storagevolxml2xmlin/%s.xml",

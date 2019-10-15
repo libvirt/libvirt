@@ -137,7 +137,7 @@ static int
 virStorageBackendSheepdogRefreshAllVol(virStoragePoolObjPtr pool)
 {
     size_t i;
-    VIR_AUTOFREE(char *) output = NULL;
+    g_autofree char *output = NULL;
     VIR_AUTOSTRINGLIST lines = NULL;
     VIR_AUTOSTRINGLIST cells = NULL;
     VIR_AUTOPTR(virCommand) cmd = NULL;
@@ -176,7 +176,7 @@ virStorageBackendSheepdogRefreshAllVol(virStoragePoolObjPtr pool)
 static int
 virStorageBackendSheepdogRefreshPool(virStoragePoolObjPtr pool)
 {
-    VIR_AUTOFREE(char *) output = NULL;
+    g_autofree char *output = NULL;
     VIR_AUTOPTR(virCommand) cmd = NULL;
 
     cmd = virCommandNewArgList(SHEEPDOGCLI, "node", "info", "-r", NULL);

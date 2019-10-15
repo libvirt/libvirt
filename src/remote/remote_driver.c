@@ -771,7 +771,7 @@ remoteGetUNIXSocketHelper(remoteDriverTransport transport,
                           unsigned int flags)
 {
     char *sockname = NULL;
-    VIR_AUTOFREE(char *) userdir = NULL;
+    g_autofree char *userdir = NULL;
 
     if (flags & VIR_DRV_OPEN_REMOTE_USER) {
         if (transport != REMOTE_DRIVER_TRANSPORT_UNIX) {
@@ -817,10 +817,10 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
                     unsigned int flags)
 {
     char *sock_name = NULL;
-    VIR_AUTOFREE(char *) direct_daemon = NULL;
-    VIR_AUTOFREE(char *) legacy_daemon = NULL;
-    VIR_AUTOFREE(char *) direct_sock_name = NULL;
-    VIR_AUTOFREE(char *) legacy_sock_name = NULL;
+    g_autofree char *direct_daemon = NULL;
+    g_autofree char *legacy_daemon = NULL;
+    g_autofree char *direct_sock_name = NULL;
+    g_autofree char *legacy_sock_name = NULL;
 
     if (driver &&
         virAsprintf(&direct_daemon, "virt%sd", driver) < 0)
@@ -945,23 +945,23 @@ doRemoteOpen(virConnectPtr conn,
 {
     int transport;
 #ifndef WIN32
-    VIR_AUTOFREE(char *) daemonPath = NULL;
+    g_autofree char *daemonPath = NULL;
 #endif
-    VIR_AUTOFREE(char *) tls_priority = NULL;
-    VIR_AUTOFREE(char *) name = NULL;
-    VIR_AUTOFREE(char *) command = NULL;
-    VIR_AUTOFREE(char *) sockname = NULL;
-    VIR_AUTOFREE(char *) netcat = NULL;
-    VIR_AUTOFREE(char *) port = NULL;
-    VIR_AUTOFREE(char *) authtype = NULL;
-    VIR_AUTOFREE(char *) username = NULL;
-    VIR_AUTOFREE(char *) pkipath = NULL;
-    VIR_AUTOFREE(char *) keyfile = NULL;
-    VIR_AUTOFREE(char *) sshauth = NULL;
-    VIR_AUTOFREE(char *) knownHostsVerify = NULL;
-    VIR_AUTOFREE(char *) knownHosts = NULL;
-    VIR_AUTOFREE(char *) mode_str = NULL;
-    VIR_AUTOFREE(char *) daemon_name = NULL;
+    g_autofree char *tls_priority = NULL;
+    g_autofree char *name = NULL;
+    g_autofree char *command = NULL;
+    g_autofree char *sockname = NULL;
+    g_autofree char *netcat = NULL;
+    g_autofree char *port = NULL;
+    g_autofree char *authtype = NULL;
+    g_autofree char *username = NULL;
+    g_autofree char *pkipath = NULL;
+    g_autofree char *keyfile = NULL;
+    g_autofree char *sshauth = NULL;
+    g_autofree char *knownHostsVerify = NULL;
+    g_autofree char *knownHosts = NULL;
+    g_autofree char *mode_str = NULL;
+    g_autofree char *daemon_name = NULL;
     bool sanity = true;
     bool verify = true;
 #ifndef WIN32

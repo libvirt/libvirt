@@ -17,12 +17,12 @@ static int
 testParseFormatVU(const void *opaque)
 {
     const char *filename = opaque;
-    VIR_AUTOFREE(char *) path = NULL;
+    g_autofree char *path = NULL;
     VIR_AUTOPTR(qemuVhostUser) vu = NULL;
-    VIR_AUTOFREE(char *) buf = NULL;
+    g_autofree char *buf = NULL;
     VIR_AUTOPTR(virJSONValue) json = NULL;
-    VIR_AUTOFREE(char *) expected = NULL;
-    VIR_AUTOFREE(char *) actual = NULL;
+    g_autofree char *expected = NULL;
+    g_autofree char *actual = NULL;
 
     if (virAsprintf(&path, "%s/qemuvhostuserdata/%s",
                     abs_srcdir, filename) < 0)
@@ -57,7 +57,7 @@ testParseFormatVU(const void *opaque)
 static int
 testVUPrecedence(const void *opaque G_GNUC_UNUSED)
 {
-    VIR_AUTOFREE(char *) fakehome = NULL;
+    g_autofree char *fakehome = NULL;
     VIR_AUTOSTRINGLIST vuList = NULL;
     size_t nvuList;
     size_t i;

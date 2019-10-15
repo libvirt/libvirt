@@ -504,7 +504,7 @@ void virFirewallRuleAddArgFormat(virFirewallPtr firewall,
                                  virFirewallRulePtr rule,
                                  const char *fmt, ...)
 {
-    VIR_AUTOFREE(char *) arg = NULL;
+    g_autofree char *arg = NULL;
     va_list list;
 
     VIR_FIREWALL_RULE_RETURN_IF_ERROR(firewall, rule);
@@ -668,7 +668,7 @@ virFirewallApplyRuleDirect(virFirewallRulePtr rule,
     const char *bin = virFirewallLayerCommandTypeToString(rule->layer);
     VIR_AUTOPTR(virCommand) cmd = NULL;
     int status;
-    VIR_AUTOFREE(char *) error = NULL;
+    g_autofree char *error = NULL;
 
     if (!bin) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -692,7 +692,7 @@ virFirewallApplyRuleDirect(virFirewallRulePtr rule,
         if (ignoreErrors) {
             VIR_DEBUG("Ignoring error running command");
         } else {
-            VIR_AUTOFREE(char *) args = virCommandToString(cmd, false);
+            g_autofree char *args = virCommandToString(cmd, false);
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to apply firewall rules %s: %s"),
                            NULLSTR(args), NULLSTR(error));
@@ -719,8 +719,8 @@ virFirewallApplyRule(virFirewallPtr firewall,
                      virFirewallRulePtr rule,
                      bool ignoreErrors)
 {
-    VIR_AUTOFREE(char *) output = NULL;
-    VIR_AUTOFREE(char *) str = virFirewallRuleToString(rule);
+    g_autofree char *output = NULL;
+    g_autofree char *str = virFirewallRuleToString(rule);
     VIR_AUTOSTRINGLIST lines = NULL;
     VIR_INFO("Applying rule '%s'", NULLSTR(str));
 

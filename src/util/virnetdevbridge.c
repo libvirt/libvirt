@@ -120,7 +120,7 @@ static int virNetDevBridgeSet(const char *brname,
                               int fd,                 /* control socket */
                               struct ifreq *ifr)      /* pre-filled bridge name */
 {
-    VIR_AUTOFREE(char *) path = NULL;
+    g_autofree char *path = NULL;
 
     if (virAsprintf(&path, SYSFS_NET_DIR "%s/bridge/%s", brname, paramname) < 0)
         return -1;
@@ -162,14 +162,14 @@ static int virNetDevBridgeGet(const char *brname,
                               unsigned long *value)   /* current value */
 {
     struct ifreq ifr;
-    VIR_AUTOFREE(char *) path = NULL;
+    g_autofree char *path = NULL;
     VIR_AUTOCLOSE fd = -1;
 
     if (virAsprintf(&path, SYSFS_NET_DIR "%s/bridge/%s", brname, paramname) < 0)
         return -1;
 
     if (virFileExists(path)) {
-        VIR_AUTOFREE(char *) valuestr = NULL;
+        g_autofree char *valuestr = NULL;
 
         if (virFileReadAll(path, INT_BUFSIZE_BOUND(unsigned long),
                            &valuestr) < 0)
@@ -219,7 +219,7 @@ virNetDevBridgePortSet(const char *brname,
 {
     char valuestr[INT_BUFSIZE_BOUND(value)];
     int ret = -1;
-    VIR_AUTOFREE(char *) path = NULL;
+    g_autofree char *path = NULL;
 
     snprintf(valuestr, sizeof(valuestr), "%lu", value);
 
@@ -248,8 +248,8 @@ virNetDevBridgePortGet(const char *brname,
                        const char *paramname,
                        unsigned long *value)
 {
-    VIR_AUTOFREE(char *) path = NULL;
-    VIR_AUTOFREE(char *) valuestr = NULL;
+    g_autofree char *path = NULL;
+    g_autofree char *valuestr = NULL;
 
     if (virAsprintf(&path, SYSFS_NET_DIR "%s/brif/%s/%s",
                     brname, ifname, paramname) < 0)
@@ -953,7 +953,7 @@ virNetDevBridgeFDBAddDel(const virMacAddr *mac, const char *ifname,
     unsigned int recvbuflen;
     struct ndmsg ndm = { .ndm_family = PF_BRIDGE, .ndm_state = NUD_NOARP };
     VIR_AUTOPTR(virNetlinkMsg) nl_msg = NULL;
-    VIR_AUTOFREE(struct nlmsghdr *) resp = NULL;
+    g_autofree struct nlmsghdr *resp = NULL;
 
     if (virNetDevGetIndex(ifname, &ndm.ndm_ifindex) < 0)
         return -1;

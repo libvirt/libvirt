@@ -38,7 +38,7 @@
 bool
 virFCIsCapableRport(const char *rport)
 {
-    VIR_AUTOFREE(char *) path = NULL;
+    g_autofree char *path = NULL;
 
     if (virBuildPath(&path, SYSFS_FC_RPORT_PATH, rport) < 0)
         return false;
@@ -51,7 +51,7 @@ virFCReadRportValue(const char *rport,
                     const char *entry,
                     char **result)
 {
-    VIR_AUTOFREE(char *) buf = NULL;
+    g_autofree char *buf = NULL;
     char *p = NULL;
 
     if (virFileReadValueString(&buf, "%s/%s/%s",

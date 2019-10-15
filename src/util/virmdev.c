@@ -76,8 +76,8 @@ static int
 virMediatedDeviceGetSysfsDeviceAPI(virMediatedDevicePtr dev,
                                    char **device_api)
 {
-    VIR_AUTOFREE(char *) buf = NULL;
-    VIR_AUTOFREE(char *) file = NULL;
+    g_autofree char *buf = NULL;
+    g_autofree char *file = NULL;
     char *tmp = NULL;
 
     if (virAsprintf(&file, "%s/mdev_type/device_api", dev->path) < 0)
@@ -108,7 +108,7 @@ static int
 virMediatedDeviceCheckModel(virMediatedDevicePtr dev,
                             virMediatedDeviceModelType model)
 {
-    VIR_AUTOFREE(char *) dev_api = NULL;
+    g_autofree char *dev_api = NULL;
     int actual_model;
 
     if (virMediatedDeviceGetSysfsDeviceAPI(dev, &dev_api) < 0)
@@ -142,7 +142,7 @@ virMediatedDeviceNew(const char *uuidstr, virMediatedDeviceModelType model)
 {
     virMediatedDevicePtr ret = NULL;
     VIR_AUTOPTR(virMediatedDevice) dev = NULL;
-    VIR_AUTOFREE(char *) sysfspath = NULL;
+    g_autofree char *sysfspath = NULL;
 
     if (!(sysfspath = virMediatedDeviceGetSysfsPath(uuidstr)))
         return NULL;
@@ -210,9 +210,9 @@ virMediatedDeviceGetPath(virMediatedDevicePtr dev)
 char *
 virMediatedDeviceGetIOMMUGroupDev(const char *uuidstr)
 {
-    VIR_AUTOFREE(char *) result_path = NULL;
-    VIR_AUTOFREE(char *) iommu_path = NULL;
-    VIR_AUTOFREE(char *) dev_path = virMediatedDeviceGetSysfsPath(uuidstr);
+    g_autofree char *result_path = NULL;
+    g_autofree char *iommu_path = NULL;
+    g_autofree char *dev_path = virMediatedDeviceGetSysfsPath(uuidstr);
     char *vfio_path = NULL;
 
     if (!dev_path)
@@ -241,7 +241,7 @@ virMediatedDeviceGetIOMMUGroupDev(const char *uuidstr)
 int
 virMediatedDeviceGetIOMMUGroupNum(const char *uuidstr)
 {
-    VIR_AUTOFREE(char *) vfio_path = NULL;
+    g_autofree char *vfio_path = NULL;
     char *group_num_str = NULL;
     unsigned int group_num = -1;
 

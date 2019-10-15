@@ -145,7 +145,7 @@ virMockStatRedirect(const char *path, char **newpath)
 
 FILE *fopen(const char *path, const char *mode)
 {
-    VIR_AUTOFREE(char *) newpath = NULL;
+    g_autofree char *newpath = NULL;
 
     PATH_OVERRIDE(newpath, path);
 
@@ -154,7 +154,7 @@ FILE *fopen(const char *path, const char *mode)
 
 int access(const char *path, int mode)
 {
-    VIR_AUTOFREE(char *) newpath = NULL;
+    g_autofree char *newpath = NULL;
 
     PATH_OVERRIDE(newpath, path);
 
@@ -168,7 +168,7 @@ int _open(const char *path, int flags, ...)
 int open(const char *path, int flags, ...)
 # endif
 {
-    VIR_AUTOFREE(char *) newpath = NULL;
+    g_autofree char *newpath = NULL;
     va_list ap;
     mode_t mode = 0;
 
@@ -188,7 +188,7 @@ int open(const char *path, int flags, ...)
 
 DIR *opendir(const char *path)
 {
-    VIR_AUTOFREE(char *) newpath = NULL;
+    g_autofree char *newpath = NULL;
 
     PATH_OVERRIDE(newpath, path);
 
@@ -197,7 +197,7 @@ DIR *opendir(const char *path)
 
 int execv(const char *path, char *const argv[])
 {
-    VIR_AUTOFREE(char *) newpath = NULL;
+    g_autofree char *newpath = NULL;
 
     PATH_OVERRIDE(newpath, path);
 
@@ -206,7 +206,7 @@ int execv(const char *path, char *const argv[])
 
 int execve(const char *path, char *const argv[], char *const envp[])
 {
-    VIR_AUTOFREE(char *) newpath = NULL;
+    g_autofree char *newpath = NULL;
 
     PATH_OVERRIDE(newpath, path);
 

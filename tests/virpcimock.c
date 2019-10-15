@@ -182,7 +182,7 @@ make_file(const char *path,
           ssize_t len)
 {
     int fd = -1;
-    VIR_AUTOFREE(char *) filepath = NULL;
+    g_autofree char *filepath = NULL;
     if (value && len == -1)
         len = strlen(value);
 
@@ -202,7 +202,7 @@ static void
 make_dir(const char *path,
          const char *name)
 {
-    VIR_AUTOFREE(char *) dirpath = NULL;
+    g_autofree char *dirpath = NULL;
 
     if (virAsprintfQuiet(&dirpath, "%s/%s", path, name) < 0)
         ABORT_OOM();
@@ -216,7 +216,7 @@ make_symlink(const char *path,
           const char *name,
           const char *target)
 {
-    VIR_AUTOFREE(char *) filepath = NULL;
+    g_autofree char *filepath = NULL;
 
     if (virAsprintfQuiet(&filepath, "%s/%s", path, name) < 0)
         ABORT_OOM();
@@ -233,7 +233,7 @@ pci_read_file(const char *path,
 {
     int ret = -1;
     int fd = -1;
-    VIR_AUTOFREE(char *) newpath = NULL;
+    g_autofree char *newpath = NULL;
 
     if (virAsprintfQuiet(&newpath, "%s/%s", fakerootdir, path) < 0) {
         errno = ENOMEM;
@@ -394,7 +394,7 @@ pci_device_get_path(const struct pciDevice *dev,
 {
     char *ret = NULL;
     const char *prefix = "";
-    VIR_AUTOFREE(char *) devid = NULL;
+    g_autofree char *devid = NULL;
 
     if (faked)
         prefix = fakerootdir;
@@ -424,7 +424,7 @@ pci_device_create_iommu(const struct pciDevice *dev,
                         const char *devid)
 {
     struct pciIommuGroup *iommuGroup;
-    VIR_AUTOFREE(char *) iommuPath = NULL;
+    g_autofree char *iommuPath = NULL;
     char tmp[256];
     size_t i;
 
@@ -467,12 +467,12 @@ static void
 pci_device_new_from_stub(const struct pciDevice *data)
 {
     struct pciDevice *dev;
-    VIR_AUTOFREE(char *) devpath = NULL;
-    VIR_AUTOFREE(char *) devsympath = NULL;
-    VIR_AUTOFREE(char *) id = NULL;
-    VIR_AUTOFREE(char *) devid = NULL;
+    g_autofree char *devpath = NULL;
+    g_autofree char *devsympath = NULL;
+    g_autofree char *id = NULL;
+    g_autofree char *devid = NULL;
     char *c;
-    VIR_AUTOFREE(char *) configSrc = NULL;
+    g_autofree char *configSrc = NULL;
     char tmp[256];
     struct stat sb;
     bool configSrcExists = false;
@@ -516,7 +516,7 @@ pci_device_new_from_stub(const struct pciDevice *data)
          * file, and parallel VPATH builds must not stomp on the
          * original; besides, 'make distcheck' requires the original
          * to be read-only */
-        VIR_AUTOFREE(char *) buf = NULL;
+        g_autofree char *buf = NULL;
         ssize_t len;
 
         if ((len = virFileReadAll(configSrc, 4096, &buf)) < 0)
@@ -624,7 +624,7 @@ pci_device_autobind(struct pciDevice *dev)
 static int
 pci_vfio_release_iommu(struct pciDevice *device)
 {
-    VIR_AUTOFREE(char *) vfiopath = NULL;
+    g_autofree char *vfiopath = NULL;
     size_t i = 0;
 
     for (i = 0; i < npciIommuGroups; i++) {
@@ -658,7 +658,7 @@ pci_vfio_release_iommu(struct pciDevice *device)
 static int
 pci_vfio_lock_iommu(struct pciDevice *device)
 {
-    VIR_AUTOFREE(char *) vfiopath = NULL;
+    g_autofree char *vfiopath = NULL;
     int ret = -1;
     size_t i = 0;
     int fd = -1;
@@ -722,7 +722,7 @@ pci_driver_new(const char *name, ...)
     struct pciDriver *driver;
     va_list args;
     int vendor, device;
-    VIR_AUTOFREE(char *) driverpath = NULL;
+    g_autofree char *driverpath = NULL;
 
     if (VIR_ALLOC_QUIET(driver) < 0 ||
         VIR_STRDUP_QUIET(driver->name, name) < 0 ||
@@ -793,7 +793,7 @@ pci_driver_find_by_path(const char *path)
 static struct pciDriver *
 pci_driver_find_by_driver_override(struct pciDevice *dev)
 {
-    VIR_AUTOFREE(char *) path = NULL;
+    g_autofree char *path = NULL;
     char tmp[32];
     size_t i;
 
@@ -817,9 +817,9 @@ static int
 pci_driver_bind(struct pciDriver *driver,
                 struct pciDevice *dev)
 {
-    VIR_AUTOFREE(char *) devid = NULL;
-    VIR_AUTOFREE(char *) devpath = NULL;
-    VIR_AUTOFREE(char *) driverpath = NULL;
+    g_autofree char *devid = NULL;
+    g_autofree char *devpath = NULL;
+    g_autofree char *driverpath = NULL;
 
     if (dev->driver) {
         /* Device already bound */
@@ -862,9 +862,9 @@ static int
 pci_driver_unbind(struct pciDriver *driver,
                   struct pciDevice *dev)
 {
-    VIR_AUTOFREE(char *) devid = NULL;
-    VIR_AUTOFREE(char *) devpath = NULL;
-    VIR_AUTOFREE(char *) driverpath = NULL;
+    g_autofree char *devid = NULL;
+    g_autofree char *devpath = NULL;
+    g_autofree char *driverpath = NULL;
 
     if (dev->driver != driver) {
         /* Device not bound to the @driver */
@@ -985,7 +985,7 @@ init_syms(void)
 static void
 init_env(void)
 {
-    VIR_AUTOFREE(char *) tmp = NULL;
+    g_autofree char *tmp = NULL;
 
     if (!(fakerootdir = getenv("LIBVIRT_FAKE_ROOT_DIR")))
         ABORT("Missing LIBVIRT_FAKE_ROOT_DIR env variable\n");
@@ -1064,7 +1064,7 @@ init_env(void)
 int
 access(const char *path, int mode)
 {
-    VIR_AUTOFREE(char *) newpath = NULL;
+    g_autofree char *newpath = NULL;
 
     init_syms();
 
@@ -1089,7 +1089,7 @@ int
 open(const char *path, int flags, ...)
 {
     int ret;
-    VIR_AUTOFREE(char *) newpath = NULL;
+    g_autofree char *newpath = NULL;
 
     init_syms();
 
@@ -1128,7 +1128,7 @@ __open_2(const char *path, int flags);
 int
 __open_2(const char *path, int flags)
 {
-    VIR_AUTOFREE(char *) newpath = NULL;
+    g_autofree char *newpath = NULL;
     int ret;
 
     init_syms();
@@ -1153,7 +1153,7 @@ __open_2(const char *path, int flags)
 DIR *
 opendir(const char *path)
 {
-    VIR_AUTOFREE(char *) newpath = NULL;
+    g_autofree char *newpath = NULL;
 
     init_syms();
 
@@ -1174,7 +1174,7 @@ close(int fd)
 char *
 virFileCanonicalizePath(const char *path)
 {
-    VIR_AUTOFREE(char *) newpath = NULL;
+    g_autofree char *newpath = NULL;
 
     init_syms();
 

@@ -181,8 +181,8 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
             virGetGroupID("tss", &cfg->swtpm_group) < 0)
             cfg->swtpm_group = 0; /* fall back to root */
     } else {
-        VIR_AUTOFREE(char *) rundir = NULL;
-        VIR_AUTOFREE(char *) cachedir = NULL;
+        g_autofree char *rundir = NULL;
+        g_autofree char *cachedir = NULL;
 
         cachedir = virGetUserCacheDirectory();
         if (!cachedir)
@@ -618,8 +618,8 @@ virQEMUDriverConfigLoadProcessEntry(virQEMUDriverConfigPtr cfg,
                                     virConfPtr conf)
 {
     VIR_AUTOSTRINGLIST hugetlbfs = NULL;
-    VIR_AUTOFREE(char *) stdioHandler = NULL;
-    VIR_AUTOFREE(char *) corestr = NULL;
+    g_autofree char *stdioHandler = NULL;
+    g_autofree char *corestr = NULL;
     size_t i;
 
     if (virConfGetValueStringList(conf, "hugetlbfs_mount", true,
@@ -848,8 +848,8 @@ virQEMUDriverConfigLoadSecurityEntry(virQEMUDriverConfigPtr cfg,
 {
     VIR_AUTOSTRINGLIST controllers = NULL;
     VIR_AUTOSTRINGLIST namespaces = NULL;
-    VIR_AUTOFREE(char *) user = NULL;
-    VIR_AUTOFREE(char *) group = NULL;
+    g_autofree char *user = NULL;
+    g_autofree char *group = NULL;
     size_t i, j;
 
     if (virConfGetValueStringList(conf, "security_driver", true, &cfg->securityDriverNames) < 0)
@@ -967,8 +967,8 @@ static int
 virQEMUDriverConfigLoadSWTPMEntry(virQEMUDriverConfigPtr cfg,
                                   virConfPtr conf)
 {
-    VIR_AUTOFREE(char *) swtpm_user = NULL;
-    VIR_AUTOFREE(char *) swtpm_group = NULL;
+    g_autofree char *swtpm_user = NULL;
+    g_autofree char *swtpm_group = NULL;
 
     if (virConfGetValueString(conf, "swtpm_user", &swtpm_user) < 0)
         return -1;
@@ -1244,7 +1244,7 @@ virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver)
 {
     size_t i, j;
     VIR_AUTOUNREF(virCapsPtr) caps = NULL;
-    VIR_AUTOFREE(virSecurityManagerPtr) *sec_managers = NULL;
+    g_autofree virSecurityManagerPtr *sec_managers = NULL;
     /* Security driver data */
     const char *doi, *model, *lbl, *type;
     const int virtTypes[] = {VIR_DOMAIN_VIRT_KVM,
@@ -1457,8 +1457,8 @@ qemuCheckUnprivSGIO(virHashTablePtr sharedDevices,
                     const char *device_path,
                     int sgio)
 {
-    VIR_AUTOFREE(char *) sysfs_path = NULL;
-    VIR_AUTOFREE(char *) key = NULL;
+    g_autofree char *sysfs_path = NULL;
+    g_autofree char *key = NULL;
     int val;
 
     if (!(sysfs_path = virGetUnprivSGIOSysfsPath(device_path, NULL)))
@@ -1637,7 +1637,7 @@ qemuSharedDiskAddRemoveInternal(virQEMUDriverPtr driver,
                                 const char *name,
                                 bool addDisk)
 {
-    VIR_AUTOFREE(char *) key = NULL;
+    g_autofree char *key = NULL;
     int ret = -1;
 
     if (virStorageSourceIsEmpty(disk->src) ||
@@ -1701,7 +1701,7 @@ qemuGetHostdevPath(virDomainHostdevDefPtr hostdev)
 {
     virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
     virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
-    VIR_AUTOFREE(char *) dev_name = NULL;
+    g_autofree char *dev_name = NULL;
     char *dev_path = NULL;
 
     if (!(dev_name = virSCSIDeviceGetDevName(NULL,
@@ -1722,8 +1722,8 @@ qemuSharedHostdevAddRemoveInternal(virQEMUDriverPtr driver,
                                    const char *name,
                                    bool addDevice)
 {
-    VIR_AUTOFREE(char *) dev_path = NULL;
-    VIR_AUTOFREE(char *) key = NULL;
+    g_autofree char *dev_path = NULL;
+    g_autofree char *key = NULL;
     int ret = -1;
 
     if (!qemuIsSharedHostdev(hostdev))
@@ -1816,7 +1816,7 @@ qemuSetUnprivSGIO(virDomainDeviceDefPtr dev)
 {
     virDomainDiskDefPtr disk = NULL;
     virDomainHostdevDefPtr hostdev = NULL;
-    VIR_AUTOFREE(char *) sysfs_path = NULL;
+    g_autofree char *sysfs_path = NULL;
     const char *path = NULL;
     int val = -1;
 
@@ -1899,8 +1899,8 @@ char *
 qemuGetDomainHugepagePath(const virDomainDef *def,
                           virHugeTLBFSPtr hugepage)
 {
-    VIR_AUTOFREE(char *) base = qemuGetBaseHugepagePath(hugepage);
-    VIR_AUTOFREE(char *) domPath = virDomainDefGetShortName(def);
+    g_autofree char *base = qemuGetBaseHugepagePath(hugepage);
+    g_autofree char *domPath = virDomainDefGetShortName(def);
     char *ret = NULL;
 
     if (base && domPath)
@@ -1965,8 +1965,8 @@ qemuGetMemoryBackingDomainPath(const virDomainDef *def,
                                virQEMUDriverConfigPtr cfg,
                                char **path)
 {
-    VIR_AUTOFREE(char *) shortName = NULL;
-    VIR_AUTOFREE(char *) base = NULL;
+    g_autofree char *shortName = NULL;
+    g_autofree char *base = NULL;
 
     if (!(shortName = virDomainDefGetShortName(def)) ||
         qemuGetMemoryBackingBasePath(cfg, &base) < 0 ||
@@ -1995,7 +1995,7 @@ qemuGetMemoryBackingPath(const virDomainDef *def,
                          const char *alias,
                          char **memPath)
 {
-    VIR_AUTOFREE(char *) domainPath = NULL;
+    g_autofree char *domainPath = NULL;
 
     if (!alias) {
         /* This should never happen (TM) */

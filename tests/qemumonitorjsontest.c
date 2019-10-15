@@ -2949,10 +2949,10 @@ testQueryJobs(const void *opaque)
 {
     const struct testQueryJobsData *data = opaque;
     qemuMonitorTestPtr test = qemuMonitorTestNewSimple(data->xmlopt);
-    VIR_AUTOFREE(char *) filenameJSON = NULL;
-    VIR_AUTOFREE(char *) fileJSON = NULL;
-    VIR_AUTOFREE(char *) filenameResult = NULL;
-    VIR_AUTOFREE(char *) actual = NULL;
+    g_autofree char *filenameJSON = NULL;
+    g_autofree char *fileJSON = NULL;
+    g_autofree char *filenameResult = NULL;
+    g_autofree char *actual = NULL;
     qemuMonitorJobInfoPtr *jobs = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     size_t njobs = 0;

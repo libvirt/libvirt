@@ -118,7 +118,7 @@ testPrepImages(void)
     int ret = EXIT_FAILURE;
     bool compat = false;
     VIR_AUTOPTR(virCommand) cmd = NULL;
-    VIR_AUTOFREE(char *) buf = NULL;
+    g_autofree char *buf = NULL;
 
     qemuimg = virFindFileInPath("qemu-img");
     if (!qemuimg)
@@ -279,7 +279,7 @@ testStorageChain(const void *args)
     virStorageSourcePtr elt;
     size_t i = 0;
     VIR_AUTOUNREF(virStorageSourcePtr) meta = NULL;
-    VIR_AUTOFREE(char *) broken = NULL;
+    g_autofree char *broken = NULL;
 
     meta = testStorageFileGetMetadata(data->start, data->format, -1, -1);
     if (!meta) {
@@ -315,8 +315,8 @@ testStorageChain(const void *args)
 
     elt = meta;
     while (virStorageSourceIsBacking(elt)) {
-        VIR_AUTOFREE(char *) expect = NULL;
-        VIR_AUTOFREE(char *) actual = NULL;
+        g_autofree char *expect = NULL;
+        g_autofree char *actual = NULL;
 
         if (i == data->nfiles) {
             fprintf(stderr, "probed chain was too long\n");
@@ -495,7 +495,7 @@ static int
 testPathCanonicalize(const void *args)
 {
     const struct testPathCanonicalizeData *data = args;
-    VIR_AUTOFREE(char *) canon = NULL;
+    g_autofree char *canon = NULL;
 
     canon = virStorageFileCanonicalizePath(data->path,
                                            testPathCanonicalizeReadlink,
@@ -579,7 +579,7 @@ static int
 testPathRelative(const void *args)
 {
     const struct testPathRelativeBacking *data = args;
-    VIR_AUTOFREE(char *) actual = NULL;
+    g_autofree char *actual = NULL;
 
     if (virStorageFileGetRelativeBackingPath(data->top,
                                              data->base,
@@ -611,7 +611,7 @@ testBackingParse(const void *args)
 {
     const struct testBackingParseData *data = args;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    VIR_AUTOFREE(char *) xml = NULL;
+    g_autofree char *xml = NULL;
     VIR_AUTOUNREF(virStorageSourcePtr) src = NULL;
     int rc;
     int erc = data->rv;

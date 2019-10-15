@@ -18,7 +18,7 @@
 static int
 testCompareXMLToXMLFiles(const char *inxml, const char *outxml)
 {
-    VIR_AUTOFREE(char *) actual = NULL;
+    g_autofree char *actual = NULL;
     VIR_AUTOPTR(virStoragePoolDef) dev = NULL;
 
     if (!(dev = virStoragePoolDefParseFile(inxml)))
@@ -36,8 +36,8 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml)
 static int
 testCompareXMLToXMLHelper(const void *data)
 {
-    VIR_AUTOFREE(char *) inxml = NULL;
-    VIR_AUTOFREE(char *) outxml = NULL;
+    g_autofree char *inxml = NULL;
+    g_autofree char *outxml = NULL;
 
     if (virAsprintf(&inxml, "%s/storagepoolxml2xmlin/%s.xml",
                     abs_srcdir, (const char*)data) < 0 ||

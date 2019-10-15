@@ -38,9 +38,9 @@ testCompareXMLToXMLFiles(const char *inxml,
 {
     unsigned int parseflags = 0;
     unsigned int formatflags = VIR_DOMAIN_CHECKPOINT_FORMAT_SECURE;
-    VIR_AUTOFREE(char *) inXmlData = NULL;
-    VIR_AUTOFREE(char *) outXmlData = NULL;
-    VIR_AUTOFREE(char *) actual = NULL;
+    g_autofree char *inXmlData = NULL;
+    g_autofree char *outXmlData = NULL;
+    g_autofree char *actual = NULL;
     VIR_AUTOUNREF(virDomainCheckpointDefPtr) def = NULL;
 
     if (flags & TEST_REDEFINE)

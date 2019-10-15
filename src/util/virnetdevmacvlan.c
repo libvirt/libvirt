@@ -289,7 +289,7 @@ bool
 virNetDevMacVLanIsMacvtap(const char *ifname)
 {
     int ifindex;
-    VIR_AUTOFREE(char *) tapname = NULL;
+    g_autofree char *tapname = NULL;
 
     if (virNetDevGetIndex(ifname, &ifindex) < 0)
         return false;
@@ -388,7 +388,7 @@ virNetDevMacVLanTapOpen(const char *ifname,
     int ret = -1;
     int ifindex;
     size_t i = 0;
-    VIR_AUTOFREE(char *) tapname = NULL;
+    g_autofree char *tapname = NULL;
 
     if (virNetDevGetIndex(ifname, &ifindex) < 0)
         return -1;

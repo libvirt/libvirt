@@ -100,7 +100,7 @@ static char *
 virFileCacheGetFileName(virFileCachePtr cache,
                         const char *name)
 {
-    VIR_AUTOFREE(char *) namehash = NULL;
+    g_autofree char *namehash = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     if (virCryptoHashString(VIR_CRYPTO_HASH_SHA256, name, &namehash) < 0)
@@ -130,7 +130,7 @@ virFileCacheLoad(virFileCachePtr cache,
                  const char *name,
                  void **data)
 {
-    VIR_AUTOFREE(char *) file = NULL;
+    g_autofree char *file = NULL;
     int ret = -1;
     void *loadData = NULL;
 
@@ -182,7 +182,7 @@ virFileCacheSave(virFileCachePtr cache,
                  const char *name,
                  void *data)
 {
-    VIR_AUTOFREE(char *) file = NULL;
+    g_autofree char *file = NULL;
 
     if (!(file = virFileCacheGetFileName(cache, name)))
         return -1;
@@ -335,7 +335,7 @@ virFileCacheLookupByFunc(virFileCachePtr cache,
                          const void *iterData)
 {
     void *data = NULL;
-    VIR_AUTOFREE(char *) name = NULL;
+    g_autofree char *name = NULL;
 
     virObjectLock(cache);
 

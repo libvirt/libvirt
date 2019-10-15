@@ -393,7 +393,7 @@ int virNetDevTapCreate(char **ifname,
     if (strstr(*ifname, "%d") != NULL) {
         size_t i;
         for (i = 0; i <= IF_MAXUNIT; i++) {
-            VIR_AUTOFREE(char *) newname = NULL;
+            g_autofree char *newname = NULL;
 
             if (virAsprintf(&newname, *ifname, i) < 0)
                 goto cleanup;
@@ -415,7 +415,7 @@ int virNetDevTapCreate(char **ifname,
     }
 
     if (tapfd) {
-        VIR_AUTOFREE(char *) dev_path = NULL;
+        g_autofree char *dev_path = NULL;
         if (virAsprintf(&dev_path, "/dev/%s", ifr.ifr_name) < 0)
             goto cleanup;
 
@@ -580,7 +580,7 @@ virNetDevTapReattachBridge(const char *tapname,
                            unsigned int *actualMTU)
 {
     bool useOVS = false;
-    VIR_AUTOFREE(char *) master = NULL;
+    g_autofree char *master = NULL;
 
     if (virNetDevGetMaster(tapname, &master) < 0)
         return -1;

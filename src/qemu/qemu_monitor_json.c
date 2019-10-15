@@ -2527,7 +2527,7 @@ static qemuBlockStatsPtr
 qemuMonitorJSONBlockStatsCollectData(virJSONValuePtr dev,
                                      int *nstats)
 {
-    VIR_AUTOFREE(qemuBlockStatsPtr) bstats = NULL;
+    g_autofree qemuBlockStatsPtr bstats = NULL;
     virJSONValuePtr parent;
     virJSONValuePtr parentstats;
     virJSONValuePtr stats;
@@ -2601,11 +2601,11 @@ qemuMonitorJSONGetOneBlockStatsInfo(virJSONValuePtr dev,
                                     virHashTablePtr hash,
                                     bool backingChain)
 {
-    VIR_AUTOFREE(qemuBlockStatsPtr) bstats = NULL;
+    g_autofree qemuBlockStatsPtr bstats = NULL;
     int nstats = 0;
     const char *qdevname = NULL;
     const char *nodename = NULL;
-    VIR_AUTOFREE(char *) devicename = NULL;
+    g_autofree char *devicename = NULL;
     virJSONValuePtr backing;
 
     if (dev_name &&

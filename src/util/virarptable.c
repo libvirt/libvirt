@@ -66,7 +66,7 @@ virArpTableGet(void)
 {
     int num = 0;
     int msglen;
-    VIR_AUTOFREE(void *) nlData = NULL;
+    g_autofree void *nlData = NULL;
     virArpTablePtr table = NULL;
     struct nlmsghdr* nh;
     struct rtattr * tb[NDA_MAX+1];
@@ -113,7 +113,7 @@ virArpTableGet(void)
             continue;
 
         if (tb[NDA_DST]) {
-            VIR_AUTOFREE(char *) ipstr = NULL;
+            g_autofree char *ipstr = NULL;
             virSocketAddr virAddr;
             if (VIR_REALLOC_N(table->t, num + 1) < 0)
                 goto cleanup;

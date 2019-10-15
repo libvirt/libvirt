@@ -211,7 +211,7 @@ lxcSetRootfs(virDomainDefPtr def,
              virConfPtr properties)
 {
     int type = VIR_DOMAIN_FS_TYPE_MOUNT;
-    VIR_AUTOFREE(char *) value = NULL;
+    g_autofree char *value = NULL;
 
     if (virConfGetValueString(properties, "lxc.rootfs.path", &value) <= 0) {
         virResetLastError();
@@ -756,7 +756,7 @@ lxcConvertNetworkSettings(virDomainDefPtr def, virConfPtr properties)
 static int
 lxcCreateConsoles(virDomainDefPtr def, virConfPtr properties)
 {
-    VIR_AUTOFREE(char *) value = NULL;
+    g_autofree char *value = NULL;
     int nbttys = 0;
     virDomainChrDefPtr console;
     size_t i;
@@ -841,7 +841,7 @@ lxcIdmapWalkCallback(const char *name, virConfValuePtr value, void *data)
 static int
 lxcSetMemTune(virDomainDefPtr def, virConfPtr properties)
 {
-    VIR_AUTOFREE(char *) value = NULL;
+    g_autofree char *value = NULL;
     unsigned long long size = 0;
 
     if (virConfGetValueString(properties,
@@ -877,7 +877,7 @@ lxcSetMemTune(virDomainDefPtr def, virConfPtr properties)
 static int
 lxcSetCpuTune(virDomainDefPtr def, virConfPtr properties)
 {
-    VIR_AUTOFREE(char *) value = NULL;
+    g_autofree char *value = NULL;
 
     if (virConfGetValueString(properties, "lxc.cgroup.cpu.shares",
                               &value) > 0) {
@@ -911,7 +911,7 @@ lxcSetCpuTune(virDomainDefPtr def, virConfPtr properties)
 static int
 lxcSetCpusetTune(virDomainDefPtr def, virConfPtr properties)
 {
-    VIR_AUTOFREE(char *) value = NULL;
+    g_autofree char *value = NULL;
     virBitmapPtr nodeset = NULL;
 
     if (virConfGetValueString(properties, "lxc.cgroup.cpuset.cpus",
@@ -1033,7 +1033,7 @@ lxcBlkioDeviceWalkCallback(const char *name, virConfValuePtr value, void *data)
 static int
 lxcSetBlkioTune(virDomainDefPtr def, virConfPtr properties)
 {
-    VIR_AUTOFREE(char *) value = NULL;
+    g_autofree char *value = NULL;
 
     if (virConfGetValueString(properties, "lxc.cgroup.blkio.weight",
                               &value) > 0) {
@@ -1053,7 +1053,7 @@ lxcSetBlkioTune(virDomainDefPtr def, virConfPtr properties)
 static void
 lxcSetCapDrop(virDomainDefPtr def, virConfPtr properties)
 {
-    VIR_AUTOFREE(char *) value = NULL;
+    g_autofree char *value = NULL;
     char **toDrop = NULL;
     const char *capString;
     size_t i;
@@ -1080,7 +1080,7 @@ lxcParseConfigString(const char *config,
 {
     virDomainDefPtr vmdef = NULL;
     VIR_AUTOPTR(virConf) properties = NULL;
-    VIR_AUTOFREE(char *) value = NULL;
+    g_autofree char *value = NULL;
 
     if (!(properties = virConfReadString(config, VIR_CONF_FLAG_LXC_FORMAT)))
         return NULL;

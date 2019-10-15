@@ -55,8 +55,8 @@ test_virStoragePoolCapsFormat(const void *opaque)
         (struct test_virStoragePoolCapsFormatData *) opaque;
     virCapsPtr driverCaps = data->driverCaps;
     VIR_AUTOUNREF(virStoragePoolCapsPtr) poolCaps = NULL;
-    VIR_AUTOFREE(char *) path = NULL;
-    VIR_AUTOFREE(char *) poolCapsXML = NULL;
+    g_autofree char *path = NULL;
+    g_autofree char *poolCapsXML = NULL;
 
 
     if (!(poolCaps = virStoragePoolCapsNew(driverCaps)))

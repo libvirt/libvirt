@@ -2177,8 +2177,8 @@ remoteDispatchProbeURI(bool readonly,
         ssize_t i;
 
         for (i = 0; i < (ssize_t) G_N_ELEMENTS(drivers) && !*probeduri; i++) {
-            VIR_AUTOFREE(char *) daemonname = NULL;
-            VIR_AUTOFREE(char *) daemonpath = NULL;
+            g_autofree char *daemonname = NULL;
+            g_autofree char *daemonpath = NULL;
 
             if (virAsprintf(&daemonname, "virt%sd", drivers[i]) < 0)
                 return -1;
@@ -2223,7 +2223,7 @@ remoteDispatchProbeURI(bool readonly,
         ssize_t i;
 
         for (i = 0; i < (ssize_t) G_N_ELEMENTS(drivers) && !*probeduri; i++) {
-            VIR_AUTOFREE(char *) sockname = NULL;
+            g_autofree char *sockname = NULL;
 
             if (virAsprintf(&sockname, "%s/libvirt/virt%sd-%s",
                             RUNSTATEDIR, drivers[i],
@@ -2262,7 +2262,7 @@ remoteDispatchConnectOpen(virNetServerPtr server G_GNUC_UNUSED,
 {
     const char *name;
 #ifdef VIRTPROXYD
-    VIR_AUTOFREE(char *) probeduri = NULL;
+    g_autofree char *probeduri = NULL;
 #endif
     unsigned int flags;
     struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);

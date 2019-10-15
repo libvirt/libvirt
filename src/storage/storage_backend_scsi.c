@@ -56,7 +56,7 @@ static int
 virStorageBackendSCSITriggerRescan(uint32_t host)
 {
     VIR_AUTOCLOSE fd = -1;
-    VIR_AUTOFREE(char *) path = NULL;
+    g_autofree char *path = NULL;
 
     VIR_DEBUG("Triggering rescan of host %d", host);
 
@@ -238,8 +238,8 @@ checkParent(const char *name,
     unsigned int host_num;
     bool retval = false;
     virConnectPtr conn = NULL;
-    VIR_AUTOFREE(char *) scsi_host_name = NULL;
-    VIR_AUTOFREE(char *) vhba_parent = NULL;
+    g_autofree char *scsi_host_name = NULL;
+    g_autofree char *vhba_parent = NULL;
 
     VIR_DEBUG("name=%s, parent_name=%s", name, parent_name);
 
@@ -290,7 +290,7 @@ createVport(virStoragePoolDefPtr def,
 {
     virStoragePoolFCRefreshInfoPtr cbdata = NULL;
     virThread thread;
-    VIR_AUTOFREE(char *) name = NULL;
+    g_autofree char *name = NULL;
 
     VIR_DEBUG("configFile='%s' parent='%s', wwnn='%s' wwpn='%s'",
               NULLSTR(configFile), NULLSTR(fchost->parent),
@@ -355,8 +355,8 @@ virStorageBackendSCSICheckPool(virStoragePoolObjPtr pool,
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     unsigned int host;
-    VIR_AUTOFREE(char *) path = NULL;
-    VIR_AUTOFREE(char *) name = NULL;
+    g_autofree char *path = NULL;
+    g_autofree char *name = NULL;
 
     *isActive = false;
 
@@ -390,7 +390,7 @@ virStorageBackendSCSIRefreshPool(virStoragePoolObjPtr pool)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     unsigned int host;
-    VIR_AUTOFREE(char *) name = NULL;
+    g_autofree char *name = NULL;
 
     def->allocation = def->capacity = def->available = 0;
 

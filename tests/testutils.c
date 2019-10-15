@@ -688,8 +688,8 @@ int
 virTestCompareToULL(unsigned long long expect,
                     unsigned long long actual)
 {
-    VIR_AUTOFREE(char *) expectStr = NULL;
-    VIR_AUTOFREE(char *) actualStr = NULL;
+    g_autofree char *expectStr = NULL;
+    g_autofree char *actualStr = NULL;
 
     if (virAsprintf(&expectStr, "%llu", expect) < 0)
         return -1;

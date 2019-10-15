@@ -249,7 +249,7 @@ virStorageBackendFileSystemIsMounted(virStoragePoolObjPtr pool)
     struct mntent ent;
     char buf[1024];
     int rc1, rc2;
-    VIR_AUTOFREE(char *) src = NULL;
+    g_autofree char *src = NULL;
 
     if ((mtab = fopen(_PATH_MOUNTED, "r")) == NULL) {
         virReportSystemError(errno,
@@ -298,7 +298,7 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     int rc;
-    VIR_AUTOFREE(char *) src = NULL;
+    g_autofree char *src = NULL;
     VIR_AUTOPTR(virCommand) cmd = NULL;
 
     if (virStorageBackendFileSystemIsValid(pool) < 0)
@@ -576,7 +576,7 @@ virStoragePoolDefFSNamespaceParse(xmlXPathContextPtr ctxt,
     int nnodes;
     size_t i;
     int ret = -1;
-    VIR_AUTOFREE(xmlNodePtr *)nodes = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
 
     nnodes = virXPathNodeSet("./fs:mount_opts/fs:option", ctxt, &nodes);
     if (nnodes < 0)

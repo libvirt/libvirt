@@ -535,10 +535,10 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
     virStoragePoolOptionsPtr options;
     int n;
     VIR_AUTOPTR(virStorageAuthDef) authdef = NULL;
-    VIR_AUTOFREE(char *) port = NULL;
-    VIR_AUTOFREE(char *) ver = NULL;
-    VIR_AUTOFREE(xmlNodePtr *) nodeset = NULL;
-    VIR_AUTOFREE(char *) sourcedir = NULL;
+    g_autofree char *port = NULL;
+    g_autofree char *ver = NULL;
+    g_autofree xmlNodePtr *nodeset = NULL;
+    g_autofree char *sourcedir = NULL;
 
     relnode = ctxt->node;
     ctxt->node = node;
@@ -554,7 +554,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
     }
 
     if (options->formatFromString) {
-        VIR_AUTOFREE(char *) format = NULL;
+        g_autofree char *format = NULL;
 
         format = virXPathString("string(./format/@type)", ctxt);
         if (format == NULL)
@@ -607,7 +607,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
         goto cleanup;
 
     for (i = 0; i < nsource; i++) {
-        VIR_AUTOFREE(char *) partsep = NULL;
+        g_autofree char *partsep = NULL;
         virStoragePoolSourceDevice dev = { .path = NULL };
         dev.path = virXMLPropString(nodeset[i], "path");
 
@@ -731,7 +731,7 @@ virStorageDefParsePerms(xmlXPathContextPtr ctxt,
     int ret = -1;
     xmlNodePtr relnode;
     xmlNodePtr node;
-    VIR_AUTOFREE(char *) mode = NULL;
+    g_autofree char *mode = NULL;
 
     node = virXPathNode(permxpath, ctxt);
     if (node == NULL) {
@@ -802,8 +802,8 @@ static int
 virStoragePoolDefRefreshParse(xmlXPathContextPtr ctxt,
                               virStoragePoolDefPtr def)
 {
-    VIR_AUTOFREE(virStoragePoolDefRefreshPtr) refresh = NULL;
-    VIR_AUTOFREE(char *) allocation = NULL;
+    g_autofree virStoragePoolDefRefreshPtr refresh = NULL;
+    g_autofree char *allocation = NULL;
     int tmp;
 
     allocation = virXPathString("string(./refresh/volume/@allocation)", ctxt);
@@ -850,9 +850,9 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
     virStoragePoolDefPtr ret = NULL;
     xmlNodePtr source_node;
     VIR_AUTOPTR(virStoragePoolDef) def = NULL;
-    VIR_AUTOFREE(char *) type = NULL;
-    VIR_AUTOFREE(char *) uuid = NULL;
-    VIR_AUTOFREE(char *) target_path = NULL;
+    g_autofree char *type = NULL;
+    g_autofree char *uuid = NULL;
+    g_autofree char *target_path = NULL;
 
     if (VIR_ALLOC(def) < 0)
         return NULL;
@@ -1279,12 +1279,12 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
     size_t i;
     int n;
     VIR_AUTOPTR(virStorageVolDef) def = NULL;
-    VIR_AUTOFREE(char *) type = NULL;
-    VIR_AUTOFREE(char *) allocation = NULL;
-    VIR_AUTOFREE(char *) capacity = NULL;
-    VIR_AUTOFREE(char *) unit = NULL;
-    VIR_AUTOFREE(char *) backingStore = NULL;
-    VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
+    g_autofree char *type = NULL;
+    g_autofree char *allocation = NULL;
+    g_autofree char *capacity = NULL;
+    g_autofree char *unit = NULL;
+    g_autofree char *backingStore = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
 
     virCheckFlags(VIR_VOL_XML_PARSE_NO_CAPACITY |
                   VIR_VOL_XML_PARSE_OPT_CAPACITY, NULL);
@@ -1328,7 +1328,7 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
         backingStore = NULL;
 
         if (options->formatFromString) {
-            VIR_AUTOFREE(char *) format = NULL;
+            g_autofree char *format = NULL;
 
             format = virXPathString("string(./backingStore/format/@type)", ctxt);
             if (format == NULL)
@@ -1375,7 +1375,7 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
 
     def->target.path = virXPathString("string(./target/path)", ctxt);
     if (options->formatFromString) {
-        VIR_AUTOFREE(char *) format = NULL;
+        g_autofree char *format = NULL;
 
         format = virXPathString("string(./target/format/@type)", ctxt);
         if (format == NULL)
@@ -1708,7 +1708,7 @@ virStoragePoolSaveState(const char *stateFile,
                         virStoragePoolDefPtr def)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    VIR_AUTOFREE(char *) xml = NULL;
+    g_autofree char *xml = NULL;
 
     virBufferAddLit(&buf, "<poolstate>\n");
     virBufferAdjustIndent(&buf, 2);
@@ -1736,7 +1736,7 @@ int
 virStoragePoolSaveConfig(const char *configFile,
                          virStoragePoolDefPtr def)
 {
-    VIR_AUTOFREE(char *) xml = NULL;
+    g_autofree char *xml = NULL;
 
     if (!(xml = virStoragePoolDefFormat(def))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

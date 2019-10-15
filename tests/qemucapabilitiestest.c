@@ -183,8 +183,8 @@ doCapsTest(const char *base,
            void *opaque)
 {
     testQemuDataPtr data = (testQemuDataPtr) opaque;
-    VIR_AUTOFREE(char *) title = NULL;
-    VIR_AUTOFREE(char *) copyTitle = NULL;
+    g_autofree char *title = NULL;
+    g_autofree char *copyTitle = NULL;
 
     if (virAsprintf(&title, "%s (%s)", base, archName) < 0 ||
         virAsprintf(&copyTitle, "copy %s (%s)", base, archName) < 0) {

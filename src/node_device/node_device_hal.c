@@ -622,7 +622,7 @@ nodeStateInitialize(bool privileged G_GNUC_UNUSED,
                         "%s/libvirt/nodedev", RUNSTATEDIR) < 0)
             goto failure;
     } else {
-        VIR_AUTOFREE(char *) rundir = NULL;
+        g_autofree char *rundir = NULL;
 
         if (!(rundir = virGetUserRuntimeDirectory()))
             goto failure;

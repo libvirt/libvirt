@@ -158,7 +158,7 @@ virProcessAbort(pid_t pid)
     int saved_errno;
     int ret;
     int status;
-    VIR_AUTOFREE(char *) tmp = NULL;
+    g_autofree char *tmp = NULL;
 
     if (pid <= 0)
         return;
@@ -237,7 +237,7 @@ virProcessWait(pid_t pid, int *exitstatus, bool raw)
 {
     int ret;
     int status;
-    VIR_AUTOFREE(char *) st = NULL;
+    g_autofree char *st = NULL;
 
     if (pid <= 0) {
         if (pid != -1)
@@ -581,7 +581,7 @@ int virProcessGetPids(pid_t pid, size_t *npids, pid_t **pids)
     DIR *dir = NULL;
     int value;
     struct dirent *ent;
-    VIR_AUTOFREE(char *) taskPath = NULL;
+    g_autofree char *taskPath = NULL;
 
     *npids = 0;
     *pids = NULL;
@@ -630,7 +630,7 @@ int virProcessGetNamespaces(pid_t pid,
 
     for (i = 0; i < G_N_ELEMENTS(ns); i++) {
         int fd;
-        VIR_AUTOFREE(char *) nsfile = NULL;
+        g_autofree char *nsfile = NULL;
 
         if (virAsprintf(&nsfile, "/proc/%llu/ns/%s",
                         (long long) pid,
@@ -950,8 +950,8 @@ int virProcessGetStartTime(pid_t pid,
 {
     char *tmp;
     int len;
-    VIR_AUTOFREE(char *) filename = NULL;
-    VIR_AUTOFREE(char *) buf = NULL;
+    g_autofree char *filename = NULL;
+    g_autofree char *buf = NULL;
     VIR_AUTOSTRINGLIST tokens = NULL;
 
     if (virAsprintf(&filename, "/proc/%llu/stat", (long long) pid) < 0)
@@ -1052,7 +1052,7 @@ static int virProcessNamespaceHelper(pid_t pid G_GNUC_UNUSED,
     virProcessNamespaceHelperData *data = opaque;
     int fd = -1;
     int ret = -1;
-    VIR_AUTOFREE(char *) path = NULL;
+    g_autofree char *path = NULL;
 
     if (virAsprintf(&path, "/proc/%lld/ns/mnt", (long long) data->pid) < 0)
         goto cleanup;
@@ -1157,7 +1157,7 @@ virProcessRunInFork(virProcessForkCallback cb,
         _exit(ret < 0 ? EXIT_CANCELED : ret);
     } else {
         int status;
-        VIR_AUTOFREE(char *) buf = NULL;
+        g_autofree char *buf = NULL;
 
         VIR_FORCE_CLOSE(errfd[1]);
         ignore_value(virFileReadHeaderFD(errfd[0], 1024, &buf));
@@ -1237,7 +1237,7 @@ virProcessNamespaceAvailable(unsigned int ns)
     int cpid;
     char *childStack;
     int stacksize = getpagesize() * 4;
-    VIR_AUTOFREE(char *)stack = NULL;
+    g_autofree char *stack = NULL;
 
     if (ns & VIR_PROCESS_NAMESPACE_MNT)
         flags |= CLONE_NEWNS;

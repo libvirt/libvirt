@@ -154,7 +154,7 @@ static int
 networkDnsmasqDefNamespaceParseOptions(networkDnsmasqXmlNsDefPtr nsdef,
                                        xmlXPathContextPtr ctxt)
 {
-    VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
     ssize_t nnodes;
     size_t i;
 
@@ -676,9 +676,9 @@ firewalld_dbus_filter_bridge(DBusConnection *connection G_GNUC_UNUSED,
     } else if (dbus_message_is_signal(message,
                                       DBUS_INTERFACE_DBUS, "NameOwnerChanged")) {
 
-        VIR_AUTOFREE(char *) name = NULL;
-        VIR_AUTOFREE(char *) old_owner = NULL;
-        VIR_AUTOFREE(char *) new_owner = NULL;
+        g_autofree char *name = NULL;
+        g_autofree char *old_owner = NULL;
+        g_autofree char *new_owner = NULL;
 
         if (virDBusMessageDecode(message, "sss", &name, &old_owner, &new_owner) < 0) {
             VIR_WARN("Failed to decode DBus NameOwnerChanged message");
@@ -1470,7 +1470,7 @@ networkDnsmasqConfContents(virNetworkObjPtr obj,
             } else {
                 /* IPv4 - dnsmasq requires a netmask rather than prefix */
                 virSocketAddr netmask;
-                VIR_AUTOFREE(char *) netmaskStr = NULL;
+                g_autofree char *netmaskStr = NULL;
 
                 if (virSocketAddrPrefixToNetmask(prefix, &netmask, AF_INET) < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,

@@ -85,7 +85,7 @@ virFirewallDGetVersion(unsigned long *version)
     int ret = -1;
     DBusConnection *sysbus = virDBusGetSystemBus();
     DBusMessage *reply = NULL;
-    VIR_AUTOFREE(char *) versionStr = NULL;
+    g_autofree char *versionStr = NULL;
 
     if (!sysbus)
         return -1;
@@ -132,7 +132,7 @@ virFirewallDGetBackend(void)
     DBusConnection *sysbus = virDBusGetSystemBus();
     DBusMessage *reply = NULL;
     virError error;
-    VIR_AUTOFREE(char *) backendStr = NULL;
+    g_autofree char *backendStr = NULL;
     int backend = -1;
 
     if (!sysbus)

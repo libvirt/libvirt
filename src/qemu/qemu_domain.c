@@ -3012,9 +3012,9 @@ qemuDomainObjPrivateXMLParseBlockjobChain(xmlNodePtr node,
 
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
-    VIR_AUTOFREE(char *) format = NULL;
-    VIR_AUTOFREE(char *) type = NULL;
-    VIR_AUTOFREE(char *) index = NULL;
+    g_autofree char *format = NULL;
+    g_autofree char *type = NULL;
+    g_autofree char *index = NULL;
     VIR_AUTOUNREF(virStorageSourcePtr) src = NULL;
     xmlNodePtr sourceNode;
     unsigned int xmlflags = VIR_DOMAIN_DEF_PARSE_STATUS;
@@ -3049,7 +3049,7 @@ qemuDomainObjPrivateXMLParseBlockjobNodename(qemuBlockJobDataPtr job,
                                              virStorageSourcePtr *src,
                                              xmlXPathContextPtr ctxt)
 {
-    VIR_AUTOFREE(char *) nodename = NULL;
+    g_autofree char *nodename = NULL;
 
     *src = NULL;
 
@@ -3080,8 +3080,8 @@ qemuDomainObjPrivateXMLParseBlockjobDataSpecific(qemuBlockJobDataPtr job,
                                                  xmlXPathContextPtr ctxt,
                                                  virDomainXMLOptionPtr xmlopt)
 {
-    VIR_AUTOFREE(char *) createmode = NULL;
-    VIR_AUTOFREE(char *) shallownew = NULL;
+    g_autofree char *createmode = NULL;
+    g_autofree char *shallownew = NULL;
     xmlNodePtr tmp;
 
     switch ((qemuBlockJobType) job->type) {
@@ -3162,14 +3162,14 @@ qemuDomainObjPrivateXMLParseBlockjobData(virDomainObjPtr vm,
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
     virDomainDiskDefPtr disk = NULL;
     VIR_AUTOUNREF(qemuBlockJobDataPtr) job = NULL;
-    VIR_AUTOFREE(char *) name = NULL;
-    VIR_AUTOFREE(char *) typestr = NULL;
+    g_autofree char *name = NULL;
+    g_autofree char *typestr = NULL;
     int type;
-    VIR_AUTOFREE(char *) statestr = NULL;
+    g_autofree char *statestr = NULL;
     int state = QEMU_BLOCKJOB_STATE_FAILED;
-    VIR_AUTOFREE(char *) diskdst = NULL;
-    VIR_AUTOFREE(char *) newstatestr = NULL;
-    VIR_AUTOFREE(char *) mirror = NULL;
+    g_autofree char *diskdst = NULL;
+    g_autofree char *newstatestr = NULL;
+    g_autofree char *mirror = NULL;
     int newstate = -1;
     bool invalidData = false;
     xmlNodePtr tmp;
@@ -3245,9 +3245,9 @@ qemuDomainObjPrivateXMLParseBlockjobs(virDomainObjPtr vm,
                                       qemuDomainObjPrivatePtr priv,
                                       xmlXPathContextPtr ctxt)
 {
-    VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
     ssize_t nnodes = 0;
-    VIR_AUTOFREE(char *) active = NULL;
+    g_autofree char *active = NULL;
     int tmp;
     size_t i;
 
@@ -3311,8 +3311,8 @@ qemuDomainObjPrivateXMLParseJobNBDSource(xmlNodePtr node,
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-    VIR_AUTOFREE(char *) format = NULL;
-    VIR_AUTOFREE(char *) type = NULL;
+    g_autofree char *format = NULL;
+    g_autofree char *type = NULL;
     VIR_AUTOUNREF(virStorageSourcePtr) migrSource = NULL;
     xmlNodePtr sourceNode;
 
@@ -3469,7 +3469,7 @@ qemuDomainObjPrivateXMLParseSlirpFeatures(xmlNodePtr featuresNode,
                                           qemuSlirpPtr slirp)
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
-    VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
     size_t i;
     int n;
 
@@ -3482,7 +3482,7 @@ qemuDomainObjPrivateXMLParseSlirpFeatures(xmlNodePtr featuresNode,
     }
 
     for (i = 0; i < n; i++) {
-        VIR_AUTOFREE(char *) str = virXMLPropString(nodes[i], "name");
+        g_autofree char *str = virXMLPropString(nodes[i], "name");
         int feature;
 
         if (!str)
@@ -3646,8 +3646,8 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
         goto error;
     }
     for (i = 0; i < n; i++) {
-        VIR_AUTOFREE(char *) alias = virXMLPropString(nodes[i], "alias");
-        VIR_AUTOFREE(char *) pid = virXMLPropString(nodes[i], "pid");
+        g_autofree char *alias = virXMLPropString(nodes[i], "alias");
+        g_autofree char *pid = virXMLPropString(nodes[i], "pid");
         VIR_AUTOPTR(qemuSlirp) slirp = qemuSlirpNew();
         virDomainDeviceDef dev;
 
@@ -3778,7 +3778,7 @@ static int
 qemuDomainDefNamespaceParseCommandlineArgs(qemuDomainXmlNsDefPtr nsdef,
                                            xmlXPathContextPtr ctxt)
 {
-    VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
     ssize_t nnodes;
     size_t i;
 
@@ -3826,7 +3826,7 @@ static int
 qemuDomainDefNamespaceParseCommandlineEnv(qemuDomainXmlNsDefPtr nsdef,
                                           xmlXPathContextPtr ctxt)
 {
-    VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
     ssize_t nnodes;
     size_t i;
 
@@ -3863,9 +3863,9 @@ static int
 qemuDomainDefNamespaceParseCaps(qemuDomainXmlNsDefPtr nsdef,
                                 xmlXPathContextPtr ctxt)
 {
-    VIR_AUTOFREE(xmlNodePtr *) nodesadd = NULL;
+    g_autofree xmlNodePtr *nodesadd = NULL;
     ssize_t nnodesadd;
-    VIR_AUTOFREE(xmlNodePtr *) nodesdel = NULL;
+    g_autofree xmlNodePtr *nodesdel = NULL;
     ssize_t nnodesdel;
     size_t i;
 
@@ -9820,8 +9820,8 @@ qemuDomainRemoveInactiveCommon(virQEMUDriverPtr driver,
                                virDomainObjPtr vm)
 {
     virQEMUDriverConfigPtr cfg;
-    VIR_AUTOFREE(char *) snapDir = NULL;
-    VIR_AUTOFREE(char *) chkDir = NULL;
+    g_autofree char *snapDir = NULL;
+    g_autofree char *chkDir = NULL;
 
     cfg = virQEMUDriverGetConfig(driver);
 
@@ -11713,7 +11713,7 @@ ppc64VFIODeviceIsNV2Bridge(const char *device)
     size_t i;
 
     for (i = 0; i < G_N_ELEMENTS(nvlink2Files); i++) {
-        VIR_AUTOFREE(char *) file = NULL;
+        g_autofree char *file = NULL;
 
         if ((virAsprintf(&file, "/sys/bus/pci/devices/%s/of_node/%s",
                          device, nvlink2Files[i])) < 0)
@@ -11766,7 +11766,7 @@ getPPC64MemLockLimitBytes(virDomainDefPtr def)
 
             pciAddr = &dev->source.subsys.u.pci.addr;
             if (virPCIDeviceAddressIsValid(pciAddr, false)) {
-                VIR_AUTOFREE(char *) pciAddrStr = NULL;
+                g_autofree char *pciAddrStr = NULL;
 
                 pciAddrStr = virPCIDeviceAddressAsString(pciAddr);
                 if (ppc64VFIODeviceIsNV2Bridge(pciAddrStr)) {

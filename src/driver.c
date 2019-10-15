@@ -86,7 +86,7 @@ int
 virDriverShouldAutostart(const char *dir,
                          bool *autostart)
 {
-    VIR_AUTOFREE(char *) path = NULL;
+    g_autofree char *path = NULL;
 
     *autostart = false;
 
@@ -149,7 +149,7 @@ virGetConnectGeneric(virThreadLocalPtr threadPtr, const char *name)
         VIR_DEBUG("Return cached %s connection %p", name, conn);
         virObjectRef(conn);
     } else {
-        VIR_AUTOFREE(char *) uri = NULL;
+        g_autofree char *uri = NULL;
         const char *uriPath = geteuid() == 0 ? "/system" : "/session";
 
         if (virAsprintf(&uri, "%s://%s", name, uriPath) < 0)

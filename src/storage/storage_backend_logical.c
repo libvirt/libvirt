@@ -128,9 +128,9 @@ virStorageBackendLogicalParseVolExtents(virStorageVolDefPtr vol,
     int err, nvars;
     unsigned long long offset, size, length;
     virStorageVolSourceExtent extent;
-    VIR_AUTOFREE(char *) regex = NULL;
-    VIR_AUTOFREE(regex_t *) reg = NULL;
-    VIR_AUTOFREE(regmatch_t *) vars = NULL;
+    g_autofree char *regex = NULL;
+    g_autofree regex_t *reg = NULL;
+    g_autofree regmatch_t *vars = NULL;
 
     memset(&extent, 0, sizeof(extent));
 
@@ -208,7 +208,7 @@ virStorageBackendLogicalParseVolExtents(virStorageVolDefPtr vol,
     for (i = 0; i < nextents; i++) {
         size_t j;
         int len;
-        VIR_AUTOFREE(char *) offset_str = NULL;
+        g_autofree char *offset_str = NULL;
 
         j = (i * 2) + 1;
         len = vars[j].rm_eo - vars[j].rm_so;
@@ -463,8 +463,8 @@ virStorageBackendLogicalFindPoolSourcesFunc(char **const groups,
     size_t i;
     virStoragePoolSourceDevicePtr dev;
     virStoragePoolSource *thisSource;
-    VIR_AUTOFREE(char *) pvname = NULL;
-    VIR_AUTOFREE(char *) vgname = NULL;
+    g_autofree char *pvname = NULL;
+    g_autofree char *vgname = NULL;
 
     if (VIR_STRDUP(pvname, groups[0]) < 0 ||
         VIR_STRDUP(vgname, groups[1]) < 0)

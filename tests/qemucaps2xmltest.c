@@ -100,7 +100,7 @@ testGetCaps(char *capsData, const testQemuData *data)
     virQEMUCapsPtr qemuCaps = NULL;
     virCapsPtr caps = NULL;
     virArch arch = virArchFromString(data->archName);
-    VIR_AUTOFREE(char *) binary = NULL;
+    g_autofree char *binary = NULL;
 
     if (virAsprintf(&binary, "/usr/bin/qemu-system-%s", data->archName) < 0)
         goto error;
@@ -179,7 +179,7 @@ doCapsTest(const char *base,
            void *opaque)
 {
     testQemuDataPtr data = (testQemuDataPtr) opaque;
-    VIR_AUTOFREE(char *) title = NULL;
+    g_autofree char *title = NULL;
 
     if (virAsprintf(&title, "%s (%s)", base, archName) < 0)
         return -1;

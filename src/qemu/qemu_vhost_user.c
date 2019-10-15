@@ -182,7 +182,7 @@ qemuVhostUserBinaryParse(const char *path,
 qemuVhostUserPtr
 qemuVhostUserParse(const char *path)
 {
-    VIR_AUTOFREE(char *) cont = NULL;
+    g_autofree char *cont = NULL;
     VIR_AUTOPTR(virJSONValue) doc = NULL;
     VIR_AUTOPTR(qemuVhostUser) vu = NULL;
     qemuVhostUserPtr ret = NULL;
@@ -351,7 +351,7 @@ qemuVhostUserFillDomainGPU(virQEMUDriverPtr driver,
 
     for (i = 0; i < nvus; i++) {
         VIR_AUTOPTR(virJSONValue) doc = NULL;
-        VIR_AUTOFREE(char *) output = NULL;
+        g_autofree char *output = NULL;
         VIR_AUTOPTR(virCommand) cmd = NULL;
 
         vu = vus[i];

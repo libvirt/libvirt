@@ -5508,7 +5508,7 @@ qemuProcessStartValidate(virQEMUDriverPtr driver,
                 return -1;
 
             if (n > 0) {
-                VIR_AUTOFREE(char *) str = NULL;
+                g_autofree char *str = NULL;
 
                 str = virStringListJoin((const char **)features, ", ");
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,

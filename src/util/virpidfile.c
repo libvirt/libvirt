@@ -97,7 +97,7 @@ int virPidFileWrite(const char *dir,
                     const char *name,
                     pid_t pid)
 {
-    VIR_AUTOFREE(char *) pidfile = NULL;
+    g_autofree char *pidfile = NULL;
 
     if (name == NULL || dir == NULL)
         return -EINVAL;
@@ -159,7 +159,7 @@ int virPidFileRead(const char *dir,
                    const char *name,
                    pid_t *pid)
 {
-    VIR_AUTOFREE(char *) pidfile = NULL;
+    g_autofree char *pidfile = NULL;
 
     *pid = 0;
 
@@ -204,10 +204,10 @@ int virPidFileReadPathIfAlive(const char *path,
     const char deletedText[] = " (deleted)";
     size_t deletedTextLen = strlen(deletedText);
     pid_t retPid;
-    VIR_AUTOFREE(char *) procPath = NULL;
-    VIR_AUTOFREE(char *) procLink = NULL;
-    VIR_AUTOFREE(char *) resolvedBinPath = NULL;
-    VIR_AUTOFREE(char *) resolvedProcLink = NULL;
+    g_autofree char *procPath = NULL;
+    g_autofree char *procLink = NULL;
+    g_autofree char *resolvedBinPath = NULL;
+    g_autofree char *resolvedProcLink = NULL;
 
     /* only set this at the very end on success */
     *pid = -1;
@@ -300,7 +300,7 @@ int virPidFileReadIfAlive(const char *dir,
                           pid_t *pid,
                           const char *binpath)
 {
-    VIR_AUTOFREE(char *) pidfile = NULL;
+    g_autofree char *pidfile = NULL;
 
     if (name == NULL || dir == NULL)
         return -EINVAL;
@@ -326,7 +326,7 @@ int virPidFileDeletePath(const char *pidfile)
 int virPidFileDelete(const char *dir,
                      const char *name)
 {
-    VIR_AUTOFREE(char *) pidfile = NULL;
+    g_autofree char *pidfile = NULL;
 
     if (name == NULL || dir == NULL)
         return -EINVAL;
@@ -426,7 +426,7 @@ int virPidFileAcquire(const char *dir,
                       bool waitForLock,
                       pid_t pid)
 {
-    VIR_AUTOFREE(char *) pidfile = NULL;
+    g_autofree char *pidfile = NULL;
 
     if (name == NULL || dir == NULL)
         return -EINVAL;
@@ -465,7 +465,7 @@ int virPidFileRelease(const char *dir,
                       const char *name,
                       int fd)
 {
-    VIR_AUTOFREE(char *) pidfile = NULL;
+    g_autofree char *pidfile = NULL;
 
     if (name == NULL || dir == NULL)
         return -EINVAL;
@@ -483,7 +483,7 @@ virPidFileConstructPath(bool privileged,
                         const char *progname,
                         char **pidfile)
 {
-    VIR_AUTOFREE(char *) rundir = NULL;
+    g_autofree char *rundir = NULL;
 
     if (privileged) {
         /*

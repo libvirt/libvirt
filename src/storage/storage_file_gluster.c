@@ -261,7 +261,7 @@ virStorageFileBackendGlusterReadlinkCallback(const char *path,
     size_t bufsiz = 0;
     ssize_t ret;
     struct stat st;
-    VIR_AUTOFREE(char *) buf = NULL;
+    g_autofree char *buf = NULL;
 
     *linkpath = NULL;
 
@@ -301,7 +301,7 @@ static const char *
 virStorageFileBackendGlusterGetUniqueIdentifier(virStorageSourcePtr src)
 {
     virStorageFileBackendGlusterPrivPtr priv = src->drv->priv;
-    VIR_AUTOFREE(char *) filePath = NULL;
+    g_autofree char *filePath = NULL;
 
     if (priv->canonpath)
         return priv->canonpath;

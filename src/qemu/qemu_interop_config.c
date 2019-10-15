@@ -48,8 +48,8 @@ qemuBuildFileList(virHashTablePtr files, const char *dir)
         return 0;
 
     while ((rc = virDirRead(dirp, &ent, dir)) > 0) {
-        VIR_AUTOFREE(char *) filename = NULL;
-        VIR_AUTOFREE(char *) path = NULL;
+        g_autofree char *filename = NULL;
+        g_autofree char *path = NULL;
         struct stat sb;
 
         if (STRPREFIX(ent->d_name, "."))
@@ -100,11 +100,11 @@ qemuInteropFetchConfigs(const char *name,
                         bool privileged)
 {
     VIR_AUTOPTR(virHashTable) files = NULL;
-    VIR_AUTOFREE(char *) homeConfig = NULL;
-    VIR_AUTOFREE(char *) xdgConfig = NULL;
-    VIR_AUTOFREE(char *) sysLocation = virFileBuildPath(QEMU_SYSTEM_LOCATION, name, NULL);
-    VIR_AUTOFREE(char *) etcLocation = virFileBuildPath(QEMU_ETC_LOCATION, name, NULL);
-    VIR_AUTOFREE(virHashKeyValuePairPtr) pairs = NULL;
+    g_autofree char *homeConfig = NULL;
+    g_autofree char *xdgConfig = NULL;
+    g_autofree char *sysLocation = virFileBuildPath(QEMU_SYSTEM_LOCATION, name, NULL);
+    g_autofree char *etcLocation = virFileBuildPath(QEMU_ETC_LOCATION, name, NULL);
+    g_autofree virHashKeyValuePairPtr pairs = NULL;
     virHashKeyValuePairPtr tmp = NULL;
 
     *configs = NULL;
@@ -119,7 +119,7 @@ qemuInteropFetchConfigs(const char *name,
             return -1;
 
         if (!xdgConfig) {
-            VIR_AUTOFREE(char *) home = virGetUserDirectory();
+            g_autofree char *home = virGetUserDirectory();
 
             if (!home)
                 return -1;

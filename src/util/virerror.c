@@ -1481,8 +1481,8 @@ virLastErrorPrefixMessage(const char *fmt, ...)
 {
     int save_errno = errno;
     virErrorPtr err = virGetLastError();
-    VIR_AUTOFREE(char *) fmtmsg = NULL;
-    VIR_AUTOFREE(char *) newmsg = NULL;
+    g_autofree char *fmtmsg = NULL;
+    g_autofree char *newmsg = NULL;
     va_list args;
 
     if (!err)

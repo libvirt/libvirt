@@ -64,9 +64,9 @@ extern int xlu_disk_parse(XLU_Config *cfg,
 static int xenParseCmdline(virConfPtr conf, char **r_cmdline)
 {
     char *cmdline = NULL;
-    VIR_AUTOFREE(char *) root = NULL;
-    VIR_AUTOFREE(char *) extra = NULL;
-    VIR_AUTOFREE(char *) buf = NULL;
+    g_autofree char *root = NULL;
+    g_autofree char *extra = NULL;
+    g_autofree char *buf = NULL;
 
     if (xenConfigGetString(conf, "cmdline", &buf, NULL) < 0)
         return -1;
@@ -105,8 +105,8 @@ xenParseXLOS(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
     size_t i;
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
-        VIR_AUTOFREE(char *) bios = NULL;
-        VIR_AUTOFREE(char *) boot = NULL;
+        g_autofree char *bios = NULL;
+        g_autofree char *boot = NULL;
         int val = 0;
 
         if (xenConfigGetString(conf, "bios", &bios, NULL) < 0)
@@ -259,7 +259,7 @@ xenTranslateCPUFeature(const char *feature_name, bool from_libxl)
 static int
 xenParseXLCPUID(virConfPtr conf, virDomainDefPtr def)
 {
-    VIR_AUTOFREE(char *) cpuid_str = NULL;
+    g_autofree char *cpuid_str = NULL;
     char **cpuid_pairs = NULL;
     char **name_and_value = NULL;
     size_t i;

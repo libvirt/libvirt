@@ -257,8 +257,8 @@ virNumaGetNodeCPUs(int node,
     int max_n_cpus = virNumaGetMaxCPUs();
     int mask_n_bytes = max_n_cpus / 8;
     size_t i;
-    VIR_AUTOFREE(unsigned long *) mask = NULL;
-    VIR_AUTOFREE(unsigned long *) allonesmask = NULL;
+    g_autofree unsigned long *mask = NULL;
+    g_autofree unsigned long *allonesmask = NULL;
     VIR_AUTOPTR(virBitmap) cpumap = NULL;
 
     *cpus = NULL;
@@ -612,8 +612,8 @@ virNumaGetHugePageInfo(int node,
                        unsigned long long *page_free)
 {
     char *end;
-    VIR_AUTOFREE(char *) path = NULL;
-    VIR_AUTOFREE(char *) buf = NULL;
+    g_autofree char *path = NULL;
+    g_autofree char *buf = NULL;
 
     if (page_avail) {
         if (virNumaGetHugePageInfoPath(&path, node,
@@ -762,10 +762,10 @@ virNumaGetPages(int node,
     bool exchange;
     long system_page_size;
     unsigned long long huge_page_sum = 0;
-    VIR_AUTOFREE(char *) path = NULL;
-    VIR_AUTOFREE(unsigned int *) tmp_size = NULL;
-    VIR_AUTOFREE(unsigned long long *) tmp_avail = NULL;
-    VIR_AUTOFREE(unsigned long long *) tmp_free = NULL;
+    g_autofree char *path = NULL;
+    g_autofree unsigned int *tmp_size = NULL;
+    g_autofree unsigned long long *tmp_avail = NULL;
+    g_autofree unsigned long long *tmp_free = NULL;
 
     /* sysconf() returns page size in bytes,
      * but we are storing the page size in kibibytes. */
@@ -881,8 +881,8 @@ virNumaSetPagePoolSize(int node,
 {
     char *end;
     unsigned long long nr_count;
-    VIR_AUTOFREE(char *) nr_path = NULL;
-    VIR_AUTOFREE(char *) nr_buf =  NULL;
+    g_autofree char *nr_path = NULL;
+    g_autofree char *nr_buf =  NULL;
 
     if (page_size == virGetSystemPageSizeKB()) {
         /* Special case as kernel handles system pages

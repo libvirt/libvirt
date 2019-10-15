@@ -502,7 +502,7 @@ virJSONValueNewNumber(const char *data)
 virJSONValuePtr
 virJSONValueNewNumberInt(int data)
 {
-    VIR_AUTOFREE(char *) str = NULL;
+    g_autofree char *str = NULL;
     if (virAsprintf(&str, "%i", data) < 0)
         return NULL;
     return virJSONValueNewNumber(str);
@@ -512,7 +512,7 @@ virJSONValueNewNumberInt(int data)
 virJSONValuePtr
 virJSONValueNewNumberUint(unsigned int data)
 {
-    VIR_AUTOFREE(char *) str = NULL;
+    g_autofree char *str = NULL;
     if (virAsprintf(&str, "%u", data) < 0)
         return NULL;
     return virJSONValueNewNumber(str);
@@ -522,7 +522,7 @@ virJSONValueNewNumberUint(unsigned int data)
 virJSONValuePtr
 virJSONValueNewNumberLong(long long data)
 {
-    VIR_AUTOFREE(char *) str = NULL;
+    g_autofree char *str = NULL;
     if (virAsprintf(&str, "%lld", data) < 0)
         return NULL;
     return virJSONValueNewNumber(str);
@@ -532,7 +532,7 @@ virJSONValueNewNumberLong(long long data)
 virJSONValuePtr
 virJSONValueNewNumberUlong(unsigned long long data)
 {
-    VIR_AUTOFREE(char *) str = NULL;
+    g_autofree char *str = NULL;
     if (virAsprintf(&str, "%llu", data) < 0)
         return NULL;
     return virJSONValueNewNumber(str);
@@ -542,7 +542,7 @@ virJSONValueNewNumberUlong(unsigned long long data)
 virJSONValuePtr
 virJSONValueNewNumberDouble(double data)
 {
-    VIR_AUTOFREE(char *) str = NULL;
+    g_autofree char *str = NULL;
     if (virDoubleToStr(&str, data) < 0)
         return NULL;
     return virJSONValueNewNumber(str);
@@ -1215,7 +1215,7 @@ virJSONValueGetArrayAsBitmap(const virJSONValue *val,
 {
     virJSONValuePtr elem;
     size_t i;
-    VIR_AUTOFREE(unsigned long long *) elems = NULL;
+    g_autofree unsigned long long *elems = NULL;
     unsigned long long maxelem = 0;
 
     *bitmap = NULL;

@@ -26,8 +26,8 @@ testCompareXMLToArgvFiles(bool shouldFail,
     virStoragePoolDefPtr def = NULL;
     virStoragePoolObjPtr pool = NULL;
     const char *defTypeStr;
-    VIR_AUTOFREE(char *) actualCmdline = NULL;
-    VIR_AUTOFREE(char *) src = NULL;
+    g_autofree char *actualCmdline = NULL;
+    g_autofree char *src = NULL;
     VIR_AUTOPTR(virCommand) cmd = NULL;
 
     if (!(def = virStoragePoolDefParseFile(poolxml)))
@@ -105,8 +105,8 @@ static int
 testCompareXMLToArgvHelper(const void *data)
 {
     const struct testInfo *info = data;
-    VIR_AUTOFREE(char *) poolxml = NULL;
-    VIR_AUTOFREE(char *) cmdline = NULL;
+    g_autofree char *poolxml = NULL;
+    g_autofree char *cmdline = NULL;
 
     if (virAsprintf(&poolxml, "%s/storagepoolxml2xmlin/%s.xml",
                     abs_srcdir, info->pool) < 0)

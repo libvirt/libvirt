@@ -98,7 +98,7 @@ virDomainCheckpointDiskDefParseXML(xmlNodePtr node,
                                    xmlXPathContextPtr ctxt,
                                    virDomainCheckpointDiskDefPtr def)
 {
-    VIR_AUTOFREE(char *) checkpoint = NULL;
+    g_autofree char *checkpoint = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
 
     ctxt->node = node;
@@ -133,7 +133,7 @@ virDomainCheckpointDefParse(xmlXPathContextPtr ctxt,
     size_t i;
     int n;
     char *tmp;
-    VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
     VIR_AUTOUNREF(virDomainCheckpointDefPtr) def = NULL;
 
     if (!(def = virDomainCheckpointDefNew()))
@@ -210,7 +210,7 @@ virDomainCheckpointDefParseNode(xmlDocPtr xml,
                                 unsigned int flags)
 {
     VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
-    VIR_AUTOFREE(char *) schema = NULL;
+    g_autofree char *schema = NULL;
 
     if (!virXMLNodeNameEqual(root, "domaincheckpoint")) {
         virReportError(VIR_ERR_XML_ERROR, "%s", _("domaincheckpoint"));

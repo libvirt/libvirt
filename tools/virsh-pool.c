@@ -2130,7 +2130,7 @@ cmdPoolCapabilities(vshControl *ctl,
 {
     const unsigned int flags = 0; /* No flags so far */
     virshControlPtr priv = ctl->privData;
-    VIR_AUTOFREE(char *) caps = NULL;
+    g_autofree char *caps = NULL;
 
     caps = virConnectGetStoragePoolCapabilities(priv->conn, flags);
     if (!caps) {

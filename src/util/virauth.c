@@ -43,7 +43,7 @@ virAuthGetConfigFilePathURI(virURIPtr uri,
 {
     size_t i;
     const char *authenv = getenv("LIBVIRT_AUTH_FILE");
-    VIR_AUTOFREE(char *) userdir = NULL;
+    g_autofree char *userdir = NULL;
 
     *path = NULL;
 
@@ -145,7 +145,7 @@ virAuthGetUsernamePath(const char *path,
 {
     unsigned int ncred;
     virConnectCredential cred;
-    VIR_AUTOFREE(char *) prompt = NULL;
+    g_autofree char *prompt = NULL;
     char *ret = NULL;
 
     if (virAuthGetCredential(servicename, hostname, "username", path, &ret) < 0)
@@ -210,7 +210,7 @@ virAuthGetUsername(virConnectPtr conn,
                    const char *defaultUsername,
                    const char *hostname)
 {
-    VIR_AUTOFREE(char *) path = NULL;
+    g_autofree char *path = NULL;
 
     if (virAuthGetConfigFilePath(conn, &path) < 0)
         return NULL;
@@ -229,7 +229,7 @@ virAuthGetPasswordPath(const char *path,
 {
     unsigned int ncred;
     virConnectCredential cred;
-    VIR_AUTOFREE(char *) prompt = NULL;
+    g_autofree char *prompt = NULL;
     char *ret = NULL;
 
     if (virAuthGetCredential(servicename, hostname, "password", path, &ret) < 0)
@@ -292,7 +292,7 @@ virAuthGetPassword(virConnectPtr conn,
                    const char *username,
                    const char *hostname)
 {
-    VIR_AUTOFREE(char *) path = NULL;
+    g_autofree char *path = NULL;
 
     if (virAuthGetConfigFilePath(conn, &path) < 0)
         return NULL;

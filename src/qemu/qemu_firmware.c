@@ -545,7 +545,7 @@ qemuFirmwareTargetParse(const char *path,
 
         for (j = 0; j < nmachines; j++) {
             virJSONValuePtr machine = virJSONValueArrayGet(machines, j);
-            VIR_AUTOFREE(char *) machineStr = NULL;
+            g_autofree char *machineStr = NULL;
 
             if (VIR_STRDUP(machineStr, virJSONValueGetString(machine)) < 0)
                 goto cleanup;
@@ -618,7 +618,7 @@ qemuFirmwareFeatureParse(const char *path,
 qemuFirmwarePtr
 qemuFirmwareParse(const char *path)
 {
-    VIR_AUTOFREE(char *) cont = NULL;
+    g_autofree char *cont = NULL;
     VIR_AUTOPTR(virJSONValue) doc = NULL;
     VIR_AUTOPTR(qemuFirmware) fw = NULL;
     qemuFirmwarePtr ret = NULL;

@@ -499,7 +499,7 @@ virSocketAddrFormatFull(const virSocketAddr *addr,
     }
 
     if (withService) {
-        VIR_AUTOFREE(char *) ipv6_host = NULL;
+        g_autofree char *ipv6_host = NULL;
         /* sasl_new_client demands the socket address to be in an odd format:
          * a.b.c.d;port or e:f:g:h:i:j:k:l;port, so use square brackets for
          * IPv6 only if no separator is passed to the function
@@ -841,9 +841,9 @@ virSocketAddrGetRange(virSocketAddrPtr start, virSocketAddrPtr end,
     int ret = 0;
     size_t i;
     virSocketAddr netmask;
-    VIR_AUTOFREE(char *) startStr = NULL;
-    VIR_AUTOFREE(char *) endStr = NULL;
-    VIR_AUTOFREE(char *) netStr = NULL;
+    g_autofree char *startStr = NULL;
+    g_autofree char *endStr = NULL;
+    g_autofree char *netStr = NULL;
 
     if (start == NULL || end == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,

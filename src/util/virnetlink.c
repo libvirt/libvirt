@@ -296,7 +296,7 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
             .nl_groups = 0,
     };
     struct pollfd fds[1];
-    VIR_AUTOFREE(struct nlmsghdr *) temp_resp = NULL;
+    g_autofree struct nlmsghdr *temp_resp = NULL;
     VIR_AUTOPTR(virNetlinkHandle) nlhandle = NULL;
     int len = 0;
 
@@ -345,7 +345,7 @@ virNetlinkDumpCommand(struct nl_msg *nl_msg,
         return -1;
 
     while (!end) {
-        VIR_AUTOFREE(struct nlmsghdr *) resp = NULL;
+        g_autofree struct nlmsghdr *resp = NULL;
 
         len = nl_recv(nlhandle, &nladdr, (unsigned char **)&resp, NULL);
         VIR_WARNINGS_NO_CAST_ALIGN
@@ -397,7 +397,7 @@ virNetlinkDumpLink(const char *ifname, int ifindex,
     };
     unsigned int recvbuflen;
     VIR_AUTOPTR(virNetlinkMsg) nl_msg = NULL;
-    VIR_AUTOFREE(struct nlmsghdr *) resp = NULL;
+    g_autofree struct nlmsghdr *resp = NULL;
 
     if (ifname && ifindex <= 0 && virNetDevGetIndex(ifname, &ifindex) < 0)
         return -1;
@@ -508,7 +508,7 @@ virNetlinkNewLink(const char *ifname,
     unsigned int buflen;
     struct ifinfomsg ifinfo = { .ifi_family = AF_UNSPEC };
     VIR_AUTOPTR(virNetlinkMsg) nl_msg = NULL;
-    VIR_AUTOFREE(struct nlmsghdr *) resp = NULL;
+    g_autofree struct nlmsghdr *resp = NULL;
 
     *error = 0;
 
@@ -614,7 +614,7 @@ virNetlinkDelLink(const char *ifname, virNetlinkDelLinkFallback fallback)
     struct ifinfomsg ifinfo = { .ifi_family = AF_UNSPEC };
     unsigned int recvbuflen;
     VIR_AUTOPTR(virNetlinkMsg) nl_msg = NULL;
-    VIR_AUTOFREE(struct nlmsghdr *) resp = NULL;
+    g_autofree struct nlmsghdr *resp = NULL;
 
     nl_msg = nlmsg_alloc_simple(RTM_DELLINK,
                                 NLM_F_REQUEST | NLM_F_CREATE | NLM_F_EXCL);
@@ -698,7 +698,7 @@ virNetlinkGetNeighbor(void **nlData, uint32_t src_pid, uint32_t dst_pid)
     };
     unsigned int recvbuflen;
     VIR_AUTOPTR(virNetlinkMsg) nl_msg = NULL;
-    VIR_AUTOFREE(struct nlmsghdr *) resp = NULL;
+    g_autofree struct nlmsghdr *resp = NULL;
 
     nl_msg = nlmsg_alloc_simple(RTM_GETNEIGH, NLM_F_DUMP | NLM_F_REQUEST);
     if (!nl_msg) {
@@ -848,7 +848,7 @@ virNetlinkEventCallback(int watch,
     size_t i;
     int length;
     bool handled = false;
-    VIR_AUTOFREE(struct nlmsghdr *) msg = NULL;
+    g_autofree struct nlmsghdr *msg = NULL;
 
     length = nl_recv(srv->netlinknh, &peer,
                      (unsigned char **)&msg, &creds);

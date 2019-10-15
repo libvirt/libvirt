@@ -437,7 +437,7 @@ virDomainSnapshotDefParseNode(xmlDocPtr xml,
     }
 
     if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_VALIDATE) {
-        VIR_AUTOFREE(char *) schema = NULL;
+        g_autofree char *schema = NULL;
 
         schema = virFileFindResource("domainsnapshot.rng",
                                      abs_top_srcdir "/docs/schemas",

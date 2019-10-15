@@ -202,7 +202,7 @@ testDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
     int tmp, n;
     size_t i;
     unsigned int tmpuint;
-    VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
 
     if (VIR_ALLOC(nsdata) < 0)
         return -1;
@@ -753,7 +753,7 @@ testParseXMLDocFromFile(xmlNodePtr node, const char *file, const char *type)
     xmlNodePtr ret = NULL;
     xmlDocPtr doc = NULL;
     char *absFile = NULL;
-    VIR_AUTOFREE(char *) relFile = NULL;
+    g_autofree char *relFile = NULL;
 
     if ((relFile = virXMLPropString(node, "file"))) {
         absFile = testBuildFilename(file, relFile);
@@ -787,7 +787,7 @@ testParseNodeInfo(virNodeInfoPtr nodeInfo, xmlXPathContextPtr ctxt)
 {
     long l;
     int ret;
-    VIR_AUTOFREE(char *) str = NULL;
+    g_autofree char *str = NULL;
 
     ret = virXPathLong("string(/node/cpu/nodes[1])", ctxt, &l);
     if (ret == 0) {
@@ -935,7 +935,7 @@ testParseDomains(testDriverPtr privconn,
     int num, ret = -1;
     size_t i;
     virDomainObjPtr obj = NULL;
-    VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
 
     num = virXPathNodeSet("/node/domain", ctxt, &nodes);
     if (num < 0)
@@ -997,7 +997,7 @@ testParseNetworks(testDriverPtr privconn,
     int num;
     size_t i;
     virNetworkObjPtr obj;
-    VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
 
     num = virXPathNodeSet("/node/network", ctxt, &nodes);
     if (num < 0)
@@ -1034,7 +1034,7 @@ testParseInterfaces(testDriverPtr privconn,
     int num;
     size_t i;
     virInterfaceObjPtr obj;
-    VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
 
     num = virXPathNodeSet("/node/interface", ctxt, &nodes);
     if (num < 0)
@@ -1073,8 +1073,8 @@ testOpenVolumesForPool(const char *file,
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(obj);
     size_t i;
     int num;
-    VIR_AUTOFREE(char *) vol_xpath = NULL;
-    VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
+    g_autofree char *vol_xpath = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
     VIR_AUTOPTR(virStorageVolDef) volDef = NULL;
 
     /* Find storage volumes */
@@ -1123,7 +1123,7 @@ testParseStorage(testDriverPtr privconn,
     int num;
     size_t i;
     virStoragePoolObjPtr obj;
-    VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
 
     num = virXPathNodeSet("/node/pool", ctxt, &nodes);
     if (num < 0)
@@ -1172,7 +1172,7 @@ testParseNodedevs(testDriverPtr privconn,
     int num;
     size_t i;
     virNodeDeviceObjPtr obj;
-    VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
 
     num = virXPathNodeSet("/node/device", ctxt, &nodes);
     if (num < 0)
@@ -1207,7 +1207,7 @@ testParseAuthUsers(testDriverPtr privconn,
 {
     int num;
     size_t i;
-    VIR_AUTOFREE(xmlNodePtr *) nodes = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
 
     num = virXPathNodeSet("/node/auth/user", ctxt, &nodes);
     if (num < 0)
@@ -1218,7 +1218,7 @@ testParseAuthUsers(testDriverPtr privconn,
         return -1;
 
     for (i = 0; i < num; i++) {
-        VIR_AUTOFREE(char *) username = NULL;
+        g_autofree char *username = NULL;
 
         ctxt->node = nodes[i];
         username = virXPathString("string(.)", ctxt);
@@ -1382,8 +1382,8 @@ testConnectAuthenticate(virConnectPtr conn,
     testDriverPtr privconn = conn->privateData;
     int ret = -1;
     ssize_t i;
-    VIR_AUTOFREE(char *) username = NULL;
-    VIR_AUTOFREE(char *) password = NULL;
+    g_autofree char *username = NULL;
+    g_autofree char *password = NULL;
 
     virObjectLock(privconn);
     if (privconn->numAuths == 0) {
@@ -2182,7 +2182,7 @@ testDomainSaveImageWrite(testDriverPtr driver,
 {
     int len;
     int fd = -1;
-    VIR_AUTOFREE(char *) xml = NULL;
+    g_autofree char *xml = NULL;
 
     xml = virDomainDefFormat(def, driver->caps, VIR_DOMAIN_DEF_FORMAT_SECURE);
 
@@ -2260,7 +2260,7 @@ testDomainSaveImageOpen(testDriverPtr driver,
     int fd = -1;
     int len;
     virDomainDefPtr def = NULL;
-    VIR_AUTOFREE(char *) xml = NULL;
+    g_autofree char *xml = NULL;
 
     if ((fd = open(path, O_RDONLY)) < 0) {
         virReportSystemError(errno, _("cannot read domain image '%s'"), path);
@@ -3095,7 +3095,7 @@ testDomainRenameCallback(virDomainObjPtr privdom,
     virObjectEventPtr event_new = NULL;
     virObjectEventPtr event_old = NULL;
     int ret = -1;
-    VIR_AUTOFREE(char *) new_dom_name = NULL;
+    g_autofree char *new_dom_name = NULL;
 
     virCheckFlags(0, -1);
 
@@ -3412,7 +3412,7 @@ testDomainGetNumaParameters(virDomainPtr dom,
     virDomainObjPtr vm = NULL;
     virDomainDefPtr def = NULL;
     virDomainNumatuneMemMode mode = VIR_DOMAIN_NUMATUNE_MEM_STRICT;
-    VIR_AUTOFREE(char *) nodeset = NULL;
+    g_autofree char *nodeset = NULL;
     int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
@@ -7435,7 +7435,7 @@ testNodeDeviceMockCreateVport(testDriverPtr driver,
     virNodeDeviceObjPtr obj = NULL, objcopy = NULL;
     virNodeDeviceDefPtr objdef;
     virObjectEventPtr event = NULL;
-    VIR_AUTOFREE(char *) xml = NULL;
+    g_autofree char *xml = NULL;
 
     /* In the real code, we'd call virVHBAManageVport which would take the
      * wwnn/wwpn from the input XML in order to call the "vport_create"
@@ -7514,8 +7514,8 @@ testNodeDeviceCreateXML(virConnectPtr conn,
     virNodeDevicePtr dev = NULL, ret = NULL;
     virNodeDeviceObjPtr obj = NULL;
     virNodeDeviceDefPtr objdef;
-    VIR_AUTOFREE(char *) wwnn = NULL;
-    VIR_AUTOFREE(char *) wwpn = NULL;
+    g_autofree char *wwnn = NULL;
+    g_autofree char *wwpn = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -7568,8 +7568,8 @@ testNodeDeviceDestroy(virNodeDevicePtr dev)
     virNodeDeviceObjPtr parentobj = NULL;
     virNodeDeviceDefPtr def;
     virObjectEventPtr event = NULL;
-    VIR_AUTOFREE(char *) wwnn = NULL;
-    VIR_AUTOFREE(char *) wwpn = NULL;
+    g_autofree char *wwnn = NULL;
+    g_autofree char *wwpn = NULL;
 
     if (!(obj = testNodeDeviceObjFindByName(driver, dev->name)))
         return -1;

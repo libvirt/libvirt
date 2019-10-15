@@ -613,7 +613,7 @@ static void virEventPollCleanupHandles(void)
  */
 int virEventPollRunOnce(void)
 {
-    VIR_AUTOFREE(struct pollfd *) fds = NULL;
+    g_autofree struct pollfd *fds = NULL;
     int ret, timeout, nfds;
 
     virMutexLock(&eventLoop.lock);

@@ -216,7 +216,7 @@ virFileWrapperFdNew(int *fd, const char *name, unsigned int flags)
     bool output = false;
     int pipefd[2] = { -1, -1 };
     int mode = -1;
-    VIR_AUTOFREE(char *) iohelper_path = NULL;
+    g_autofree char *iohelper_path = NULL;
 
     if (!flags) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -504,7 +504,7 @@ virFileRewrite(const char *path,
                virFileRewriteFunc rewrite,
                const void *opaque)
 {
-    VIR_AUTOFREE(char *) newfile = NULL;
+    g_autofree char *newfile = NULL;
     int fd = -1;
     int ret = -1;
 
@@ -772,7 +772,7 @@ int virFileLoopDeviceAssociate(const char *file,
     int lofd = -1;
     int fsfd = -1;
     struct loop_info64 lo;
-    VIR_AUTOFREE(char *) loname = NULL;
+    g_autofree char *loname = NULL;
     int ret = -1;
 
     if ((lofd = virFileLoopDeviceOpen(&loname)) < 0)
@@ -832,7 +832,7 @@ int virFileLoopDeviceAssociate(const char *file,
 static int
 virFileNBDDeviceIsBusy(const char *dev_name)
 {
-    VIR_AUTOFREE(char *) path = NULL;
+    g_autofree char *path = NULL;
 
     if (virAsprintf(&path, SYSFS_BLOCK_DIR "/%s/pid",
                     dev_name) < 0)
@@ -892,7 +892,7 @@ virFileNBDLoadDriver(void)
                          "administratively prohibited"));
         return false;
     } else {
-        VIR_AUTOFREE(char *) errbuf = NULL;
+        g_autofree char *errbuf = NULL;
 
         if ((errbuf = virKModLoad(NBD_DRIVER, true))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -908,8 +908,8 @@ int virFileNBDDeviceAssociate(const char *file,
                               bool readonly,
                               char **dev)
 {
-    VIR_AUTOFREE(char *) nbddev = NULL;
-    VIR_AUTOFREE(char *) qemunbd = NULL;
+    g_autofree char *nbddev = NULL;
+    g_autofree char *qemunbd = NULL;
     VIR_AUTOPTR(virCommand) cmd = NULL;
     const char *fmtstr = NULL;
 
@@ -1010,7 +1010,7 @@ int virFileDeleteTree(const char *dir)
         return -1;
 
     while ((direrr = virDirRead(dh, &de, dir)) > 0) {
-        VIR_AUTOFREE(char *) filepath = NULL;
+        g_autofree char *filepath = NULL;
         struct stat sb;
 
         if (virAsprintf(&filepath, "%s/%s",
@@ -1187,7 +1187,7 @@ static int
 safezero_slow(int fd, off_t offset, off_t len)
 {
     int r;
-    VIR_AUTOFREE(char *) buf = NULL;
+    g_autofree char *buf = NULL;
     unsigned long long remain, bytes;
 
     if (lseek(fd, offset, SEEK_SET) < 0)
@@ -1546,7 +1546,7 @@ virFileRelLinkPointsTo(const char *directory,
                        const char *checkLink,
                        const char *checkDest)
 {
-    VIR_AUTOFREE(char *) candidate = NULL;
+    g_autofree char *candidate = NULL;
 
     if (*checkLink == '/')
         return virFileLinkPointsTo(checkLink, checkDest);
@@ -1905,7 +1905,7 @@ virFileIsExecutable(const char *file)
  */
 int virFileIsMountPoint(const char *file)
 {
-    VIR_AUTOFREE(char *) parent = NULL;
+    g_autofree char *parent = NULL;
     int ret;
     struct stat sb1, sb2;
 
@@ -2114,7 +2114,7 @@ virFileAccessibleAs(const char *path, int mode,
 {
     pid_t pid = 0;
     int status, ret = 0;
-    VIR_AUTOFREE(gid_t *) groups = NULL;
+    g_autofree gid_t *groups = NULL;
     int ngroups;
 
     if (uid == geteuid() &&
@@ -2226,7 +2226,7 @@ virFileOpenForked(const char *path, int openflags, mode_t mode,
     int recvfd_errno = 0;
     int fd = -1;
     int pair[2] = { -1, -1 };
-    VIR_AUTOFREE(gid_t *) groups = NULL;
+    g_autofree gid_t *groups = NULL;
     int ngroups;
     bool created = false;
 
@@ -2514,7 +2514,7 @@ virFileRemove(const char *path,
 {
     pid_t pid;
     int status = 0, ret = 0;
-    VIR_AUTOFREE(gid_t *) groups = NULL;
+    g_autofree gid_t *groups = NULL;
     int ngroups;
 
     if (!virFileRemoveNeedsSetuid(path, uid, gid)) {
@@ -2675,7 +2675,7 @@ virDirCreate(const char *path,
     struct stat st;
     pid_t pid;
     int status = 0, ret = 0;
-    VIR_AUTOFREE(gid_t *) groups = NULL;
+    g_autofree gid_t *groups = NULL;
     int ngroups;
     bool created = false;
 
@@ -2984,7 +2984,7 @@ int virFileChownFiles(const char *name,
         return -1;
 
     while ((direrr = virDirRead(dir, &ent, name)) > 0) {
-        VIR_AUTOFREE(char *) path = NULL;
+        g_autofree char *path = NULL;
 
         if (virAsprintf(&path, "%s/%s", name, ent->d_name) < 0)
             goto cleanup;
@@ -3068,7 +3068,7 @@ int
 virFileMakePathWithMode(const char *path,
                         mode_t mode)
 {
-    VIR_AUTOFREE(char *) tmp = NULL;
+    g_autofree char *tmp = NULL;
 
     if (VIR_STRDUP(tmp, path) < 0) {
         errno = ENOMEM;
@@ -3083,7 +3083,7 @@ int
 virFileMakeParentPath(const char *path)
 {
     char *p;
-    VIR_AUTOFREE(char *) tmp = NULL;
+    g_autofree char *tmp = NULL;
 
     VIR_DEBUG("path=%s", path);
 
@@ -3132,7 +3132,7 @@ virFileOpenTty(int *ttymaster, char **ttyName, int rawmode)
      * doesn't have to worry about that mess?  */
     int ret = -1;
     int slave = -1;
-    VIR_AUTOFREE(char *) name = NULL;
+    g_autofree char *name = NULL;
 
     /* Unfortunately, we can't use the name argument of openpty, since
      * there is no guarantee on how large the buffer has to be.
@@ -3296,7 +3296,7 @@ virFileAbsPath(const char *path, char **abspath)
         if (VIR_STRDUP(*abspath, path) < 0)
             return -1;
     } else {
-        VIR_AUTOFREE(char *) buf = getcwd(NULL, 0);
+        g_autofree char *buf = getcwd(NULL, 0);
 
         if (buf == NULL)
             return -1;
@@ -3402,7 +3402,7 @@ virFileRemoveLastComponent(char *path)
 int virFilePrintf(FILE *fp, const char *msg, ...)
 {
     va_list vargs;
-    VIR_AUTOFREE(char *) str = NULL;
+    g_autofree char *str = NULL;
     int ret;
 
     va_start(vargs, msg);
@@ -3534,7 +3534,7 @@ int
 virFileIsSharedFSType(const char *path,
                       int fstypes)
 {
-    VIR_AUTOFREE(char *) dirpath = NULL;
+    g_autofree char *dirpath = NULL;
     char *p = NULL;
     struct statfs sb;
     int statfs_ret;
@@ -3650,7 +3650,7 @@ virFileGetHugepageSize(const char *path,
 static int
 virFileGetDefaultHugepageSize(unsigned long long *size)
 {
-    VIR_AUTOFREE(char *) meminfo = NULL;
+    g_autofree char *meminfo = NULL;
     char *c;
     char *n;
     char *unit;
@@ -3999,8 +3999,8 @@ virFileCopyACLs(const char *src,
 int
 virFileComparePaths(const char *p1, const char *p2)
 {
-    VIR_AUTOFREE(char *) res1 = NULL;
-    VIR_AUTOFREE(char *) res2 = NULL;
+    g_autofree char *res1 = NULL;
+    g_autofree char *res2 = NULL;
 
     /* Assume p1 and p2 are symlinks, so try to resolve and canonicalize them.
      * Canonicalization fails for example on file systems names like 'proc' or
@@ -4166,8 +4166,8 @@ virFileInData(int fd G_GNUC_UNUSED,
 int
 virFileReadValueInt(int *value, const char *format, ...)
 {
-    VIR_AUTOFREE(char *) str = NULL;
-    VIR_AUTOFREE(char *) path = NULL;
+    g_autofree char *str = NULL;
+    g_autofree char *path = NULL;
     va_list ap;
 
     va_start(ap, format);
@@ -4209,8 +4209,8 @@ virFileReadValueInt(int *value, const char *format, ...)
 int
 virFileReadValueUint(unsigned int *value, const char *format, ...)
 {
-    VIR_AUTOFREE(char *) str = NULL;
-    VIR_AUTOFREE(char *) path = NULL;
+    g_autofree char *str = NULL;
+    g_autofree char *path = NULL;
     va_list ap;
 
     va_start(ap, format);
@@ -4252,8 +4252,8 @@ virFileReadValueUint(unsigned int *value, const char *format, ...)
 int
 virFileReadValueScaledInt(unsigned long long *value, const char *format, ...)
 {
-    VIR_AUTOFREE(char *) str = NULL;
-    VIR_AUTOFREE(char *) path = NULL;
+    g_autofree char *str = NULL;
+    g_autofree char *path = NULL;
     char *endp = NULL;
     va_list ap;
 
@@ -4299,8 +4299,8 @@ virFileReadValueScaledInt(unsigned long long *value, const char *format, ...)
 int
 virFileReadValueBitmap(virBitmapPtr *value, const char *format, ...)
 {
-    VIR_AUTOFREE(char *) str = NULL;
-    VIR_AUTOFREE(char *) path = NULL;
+    g_autofree char *str = NULL;
+    g_autofree char *path = NULL;
     va_list ap;
 
     va_start(ap, format);
@@ -4341,7 +4341,7 @@ int
 virFileReadValueString(char **value, const char *format, ...)
 {
     int ret;
-    VIR_AUTOFREE(char *) path = NULL;
+    g_autofree char *path = NULL;
     va_list ap;
 
     va_start(ap, format);

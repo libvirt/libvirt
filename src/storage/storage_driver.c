@@ -137,7 +137,7 @@ storagePoolUpdateStateCallback(virStoragePoolObjPtr obj,
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(obj);
     bool active = false;
     virStorageBackendPtr backend;
-    VIR_AUTOFREE(char *) stateFile = NULL;
+    g_autofree char *stateFile = NULL;
 
     if ((backend = virStorageBackendForType(def->type)) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -215,7 +215,7 @@ storageDriverAutostartCallback(virStoragePoolObjPtr obj,
     }
 
     if (started) {
-        VIR_AUTOFREE(char *) stateFile = NULL;
+        g_autofree char *stateFile = NULL;
 
         stateFile = virFileBuildPath(driver->stateDir, def->name, ".xml");
         if (!stateFile ||
@@ -256,8 +256,8 @@ storageStateInitialize(bool privileged,
                        virStateInhibitCallback callback G_GNUC_UNUSED,
                        void *opaque G_GNUC_UNUSED)
 {
-    VIR_AUTOFREE(char *) configdir = NULL;
-    VIR_AUTOFREE(char *) rundir = NULL;
+    g_autofree char *configdir = NULL;
+    g_autofree char *rundir = NULL;
     bool autostart = true;
 
     if (VIR_ALLOC(driver) < 0)
@@ -739,7 +739,7 @@ storagePoolCreateXML(virConnectPtr conn,
     virObjectEventPtr event = NULL;
     unsigned int build_flags = 0;
     VIR_AUTOPTR(virStoragePoolDef) newDef = NULL;
-    VIR_AUTOFREE(char *) stateFile = NULL;
+    g_autofree char *stateFile = NULL;
 
     virCheckFlags(VIR_STORAGE_POOL_CREATE_WITH_BUILD |
                   VIR_STORAGE_POOL_CREATE_WITH_BUILD_OVERWRITE |
@@ -939,7 +939,7 @@ storagePoolCreate(virStoragePoolPtr pool,
     virObjectEventPtr event = NULL;
     int ret = -1;
     unsigned int build_flags = 0;
-    VIR_AUTOFREE(char *) stateFile = NULL;
+    g_autofree char *stateFile = NULL;
     bool restoreStarting = false;
 
     virCheckFlags(VIR_STORAGE_POOL_CREATE_WITH_BUILD |
@@ -1091,7 +1091,7 @@ storagePoolDestroy(virStoragePoolPtr pool)
     virStorageBackendPtr backend;
     virObjectEventPtr event = NULL;
     int ret = -1;
-    VIR_AUTOFREE(char *) stateFile = NULL;
+    g_autofree char *stateFile = NULL;
 
     if (!(obj = storagePoolObjFindByUUID(pool->uuid, pool->name)))
         goto cleanup;
@@ -1162,7 +1162,7 @@ storagePoolDelete(virStoragePoolPtr pool,
     virStorageBackendPtr backend;
     virObjectEventPtr event = NULL;
     int ret = -1;
-    VIR_AUTOFREE(char *) stateFile = NULL;
+    g_autofree char *stateFile = NULL;
 
     if (!(obj = virStoragePoolObjFromStoragePool(pool)))
         return -1;
@@ -1231,7 +1231,7 @@ storagePoolRefresh(virStoragePoolPtr pool,
     virStoragePoolObjPtr obj;
     virStoragePoolDefPtr def;
     virStorageBackendPtr backend;
-    VIR_AUTOFREE(char *) stateFile = NULL;
+    g_autofree char *stateFile = NULL;
     int ret = -1;
     virObjectEventPtr event = NULL;
 
@@ -1632,7 +1632,7 @@ storageVolLookupByPathCallback(virStoragePoolObjPtr obj,
 {
     struct storageVolLookupData *data = (struct storageVolLookupData *)opaque;
     virStoragePoolDefPtr def;
-    VIR_AUTOFREE(char *) stable_path = NULL;
+    g_autofree char *stable_path = NULL;
 
     if (!virStoragePoolObjIsActive(obj))
         return false;
@@ -1740,7 +1740,7 @@ storagePoolLookupByTargetPath(virConnectPtr conn,
     virStoragePoolObjPtr obj;
     virStoragePoolDefPtr def;
     virStoragePoolPtr pool = NULL;
-    VIR_AUTOFREE(char *) cleanpath = NULL;
+    g_autofree char *cleanpath = NULL;
 
     cleanpath = virFileSanitizePath(path);
     if (!cleanpath)
@@ -2296,8 +2296,8 @@ static int
 virStorageBackendPloopRestoreDesc(char *path)
 {
     VIR_AUTOPTR(virCommand) cmd = NULL;
-    VIR_AUTOFREE(char *) refresh_tool = NULL;
-    VIR_AUTOFREE(char *) desc = NULL;
+    g_autofree char *refresh_tool = NULL;
+    g_autofree char *desc = NULL;
 
     if (virAsprintf(&desc, "%s/DiskDescriptor.xml", path) < 0)
         return -1;

@@ -656,8 +656,8 @@ static int
 cpuTestCompareSignature(const struct data *data,
                         virCPUDataPtr hostData)
 {
-    VIR_AUTOFREE(char *) result = NULL;
-    VIR_AUTOFREE(char *) sigStr = NULL;
+    g_autofree char *result = NULL;
+    g_autofree char *sigStr = NULL;
     unsigned long signature;
     unsigned int family;
     unsigned int model;

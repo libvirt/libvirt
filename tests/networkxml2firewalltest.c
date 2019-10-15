@@ -144,8 +144,8 @@ static int
 mymain(void)
 {
     int ret = 0;
-    VIR_AUTOFREE(char *)basefile = NULL;
-    VIR_AUTOFREE(char *)baseargs = NULL;
+    g_autofree char *basefile = NULL;
+    g_autofree char *baseargs = NULL;
 
 # define DO_TEST(name) \
     do { \

@@ -869,7 +869,7 @@ qemuMigrationSrcNBDStorageCopyDriveMirror(virQEMUDriverPtr driver,
                                           unsigned long long mirror_speed,
                                           bool mirror_shallow)
 {
-    VIR_AUTOFREE(char *) nbd_dest = NULL;
+    g_autofree char *nbd_dest = NULL;
     int mon_ret;
 
     if (strchr(host, ':')) {

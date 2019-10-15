@@ -547,11 +547,11 @@ virExec(virCommandPtr cmd)
     int childin = cmd->infd;
     int childout = -1;
     int childerr = -1;
-    VIR_AUTOFREE(char *) binarystr = NULL;
+    g_autofree char *binarystr = NULL;
     const char *binary = NULL;
     int ret;
     struct sigaction waxon, waxoff;
-    VIR_AUTOFREE(gid_t *) groups = NULL;
+    g_autofree gid_t *groups = NULL;
     int ngroups;
 
     if (cmd->args[0][0] != '/') {
@@ -2170,7 +2170,7 @@ virCommandProcessIO(virCommandPtr cmd)
     size_t inlen = 0, outlen = 0, errlen = 0;
     size_t inoff = 0;
     int ret = 0;
-    VIR_AUTOFREE(struct pollfd *) fds = NULL;
+    g_autofree struct pollfd *fds = NULL;
 
     if (dryRunBuffer || dryRunCallback) {
         VIR_DEBUG("Dry run requested, skipping I/O processing");
@@ -2541,7 +2541,7 @@ int
 virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
 {
     int ret = -1;
-    VIR_AUTOFREE(char *) str = NULL;
+    g_autofree char *str = NULL;
     size_t i;
     bool synchronous = false;
     int infd[2] = {-1, -1};
@@ -2757,8 +2757,8 @@ virCommandWait(virCommandPtr cmd, int *exitstatus)
         if (exitstatus && (cmd->rawStatus || WIFEXITED(status))) {
             *exitstatus = cmd->rawStatus ? status : WEXITSTATUS(status);
         } else if (status) {
-            VIR_AUTOFREE(char *) str = virCommandToString(cmd, false);
-            VIR_AUTOFREE(char *) st = virProcessTranslateStatus(status);
+            g_autofree char *str = virCommandToString(cmd, false);
+            g_autofree char *st = virProcessTranslateStatus(status);
             bool haveErrMsg = cmd->errbuf && *cmd->errbuf && (*cmd->errbuf)[0];
 
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2885,7 +2885,7 @@ int virCommandHandshakeWait(virCommandPtr cmd)
         return -1;
     }
     if (c != '1') {
-        VIR_AUTOFREE(char *) msg = NULL;
+        g_autofree char *msg = NULL;
         ssize_t len;
         if (VIR_ALLOC_N(msg, 1024) < 0) {
             VIR_FORCE_CLOSE(cmd->handshakeWait[0]);
@@ -3021,7 +3021,7 @@ virCommandFree(virCommandPtr cmd)
  * combination with virCommandRunAsync():
  *
  *      VIR_AUTOPTR(virCommand) cmd = virCommandNew*(...);
- *      VIR_AUTOFREE(char *) buf = NULL;
+ *      g_autofree char *buf = NULL;
  *
  *      ...
  *
@@ -3133,11 +3133,11 @@ virCommandRunRegex(virCommandPtr cmd,
 {
     int err;
     regex_t *reg;
-    VIR_AUTOFREE(regmatch_t *) vars = NULL;
+    g_autofree regmatch_t *vars = NULL;
     size_t i, j, k;
     int totgroups = 0, ngroup = 0, maxvars = 0;
     char **groups;
-    VIR_AUTOFREE(char *) outbuf = NULL;
+    g_autofree char *outbuf = NULL;
     VIR_AUTOSTRINGLIST lines = NULL;
     int ret = -1;
 

@@ -132,7 +132,7 @@ virCgroupPartitionNeedsEscaping(const char *path)
 {
     FILE *fp = NULL;
     int ret = 0;
-    VIR_AUTOFREE(char *) line = NULL;
+    g_autofree char *line = NULL;
     size_t buflen;
 
     /* If it starts with 'cgroup.' or a '_' of any
@@ -284,7 +284,7 @@ virCgroupDetectPlacement(virCgroupPtr group,
     FILE *mapping  = NULL;
     char line[1024];
     int ret = -1;
-    VIR_AUTOFREE(char *) procfile = NULL;
+    g_autofree char *procfile = NULL;
 
     VIR_DEBUG("Detecting placement for pid %lld path %s",
               (long long) pid, path);
@@ -508,7 +508,7 @@ virCgroupSetValueStr(virCgroupPtr group,
                      const char *key,
                      const char *value)
 {
-    VIR_AUTOFREE(char *) keypath = NULL;
+    g_autofree char *keypath = NULL;
 
     if (virCgroupPathOfController(group, controller, key, &keypath) < 0)
         return -1;
@@ -523,7 +523,7 @@ virCgroupGetValueStr(virCgroupPtr group,
                      const char *key,
                      char **value)
 {
-    VIR_AUTOFREE(char *) keypath = NULL;
+    g_autofree char *keypath = NULL;
 
     if (virCgroupPathOfController(group, controller, key, &keypath) < 0)
         return -1;
@@ -537,7 +537,7 @@ virCgroupGetValueForBlkDev(const char *str,
                            const char *path,
                            char **value)
 {
-    VIR_AUTOFREE(char *) prefix = NULL;
+    g_autofree char *prefix = NULL;
     char **lines = NULL;
     int ret = -1;
 
@@ -563,7 +563,7 @@ virCgroupSetValueU64(virCgroupPtr group,
                      const char *key,
                      unsigned long long int value)
 {
-    VIR_AUTOFREE(char *) strval = NULL;
+    g_autofree char *strval = NULL;
 
     if (virAsprintf(&strval, "%llu", value) < 0)
         return -1;
@@ -578,7 +578,7 @@ virCgroupSetValueI64(virCgroupPtr group,
                      const char *key,
                      long long int value)
 {
-    VIR_AUTOFREE(char *) strval = NULL;
+    g_autofree char *strval = NULL;
 
     if (virAsprintf(&strval, "%lld", value) < 0)
         return -1;
@@ -593,7 +593,7 @@ virCgroupGetValueI64(virCgroupPtr group,
                      const char *key,
                      long long int *value)
 {
-    VIR_AUTOFREE(char *) strval = NULL;
+    g_autofree char *strval = NULL;
 
     if (virCgroupGetValueStr(group, controller, key, &strval) < 0)
         return -1;
@@ -615,7 +615,7 @@ virCgroupGetValueU64(virCgroupPtr group,
                      const char *key,
                      unsigned long long int *value)
 {
-    VIR_AUTOFREE(char *) strval = NULL;
+    g_autofree char *strval = NULL;
 
     if (virCgroupGetValueStr(group, controller, key, &strval) < 0)
         return -1;
@@ -842,8 +842,8 @@ virCgroupNewPartition(const char *path,
                       virCgroupPtr *group)
 {
     int ret = -1;
-    VIR_AUTOFREE(char *) parentPath = NULL;
-    VIR_AUTOFREE(char *) newPath = NULL;
+    g_autofree char *parentPath = NULL;
+    g_autofree char *newPath = NULL;
     virCgroupPtr parent = NULL;
     VIR_DEBUG("path=%s create=%d controllers=%x",
               path, create, controllers);
@@ -920,7 +920,7 @@ virCgroupNewDomainPartition(virCgroupPtr partition,
                             bool create,
                             virCgroupPtr *group)
 {
-    VIR_AUTOFREE(char *)grpname = NULL;
+    g_autofree char *grpname = NULL;
 
     if (virAsprintf(&grpname, "%s.libvirt-%s",
                     name, driver) < 0)
@@ -970,7 +970,7 @@ virCgroupNewThread(virCgroupPtr domain,
                    bool create,
                    virCgroupPtr *group)
 {
-    VIR_AUTOFREE(char *) name = NULL;
+    g_autofree char *name = NULL;
     int controllers;
 
     switch (nameval) {
@@ -1123,7 +1123,7 @@ virCgroupNewMachineSystemd(const char *name,
 {
     int rv;
     virCgroupPtr init;
-    VIR_AUTOFREE(char *) path = NULL;
+    g_autofree char *path = NULL;
     size_t i;
 
     VIR_DEBUG("Trying to setup machine '%s' via systemd", name);
@@ -2061,7 +2061,7 @@ virCgroupGetPercpuVcpuSum(virCgroupPtr group,
     virCgroupPtr group_vcpu = NULL;
 
     while ((i = virBitmapNextSetBit(guestvcpus, i)) >= 0) {
-        VIR_AUTOFREE(char *) buf = NULL;
+        g_autofree char *buf = NULL;
         char *pos;
         unsigned long long tmp;
         ssize_t j;
@@ -2127,8 +2127,8 @@ virCgroupGetPercpuStats(virCgroupPtr group,
     size_t i;
     int need_cpus, total_cpus;
     char *pos;
-    VIR_AUTOFREE(char *) buf = NULL;
-    VIR_AUTOFREE(unsigned long long *) sum_cpu_time = NULL;
+    g_autofree char *buf = NULL;
+    g_autofree unsigned long long *sum_cpu_time = NULL;
     virTypedParameterPtr ent;
     int param_idx;
     unsigned long long cpu_time;
@@ -2359,7 +2359,7 @@ virCgroupRemoveRecursively(char *grppath)
     /* This is best-effort cleanup: we want to log failures with just
      * VIR_ERROR instead of normal virReportError */
     while ((direrr = virDirRead(grpdir, &ent, NULL)) > 0) {
-        VIR_AUTOFREE(char *) path = NULL;
+        g_autofree char *path = NULL;
 
         if (ent->d_type != DT_DIR) continue;
 
@@ -2429,7 +2429,7 @@ virCgroupKillInternal(virCgroupPtr group,
 {
     int ret = -1;
     bool killedAny = false;
-    VIR_AUTOFREE(char *) keypath = NULL;
+    g_autofree char *keypath = NULL;
     bool done = false;
     FILE *fp = NULL;
     VIR_DEBUG("group=%p path=%s signum=%d pids=%p",
@@ -2532,7 +2532,7 @@ virCgroupKillRecursiveInternal(virCgroupPtr group,
     int ret = -1;
     int rc;
     bool killedAny = false;
-    VIR_AUTOFREE(char *) keypath = NULL;
+    g_autofree char *keypath = NULL;
     DIR *dp = NULL;
     virCgroupPtr subgroup = NULL;
     struct dirent *ent;

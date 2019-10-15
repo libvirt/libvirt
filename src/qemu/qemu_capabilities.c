@@ -2415,7 +2415,7 @@ virQEMUCapsProbeQMPMachineProps(virQEMUCapsPtr qemuCaps,
     for (i = 0; i < G_N_ELEMENTS(virQEMUCapsMachineProps); i++) {
         virQEMUCapsObjectTypeProps props = virQEMUCapsMachineProps[i];
         const char *canon = virQEMUCapsGetCanonicalMachine(qemuCaps, props.type);
-        VIR_AUTOFREE(char *) type = NULL;
+        g_autofree char *type = NULL;
 
         if (!virQEMUCapsIsMachineSupported(qemuCaps, canon))
             continue;
@@ -4151,7 +4151,7 @@ virQEMUCapsKVMSupportsNesting(void)
 {
     static char const * const kmod[] = {"kvm_intel", "kvm_amd",
                                         "kvm_hv", "kvm"};
-    VIR_AUTOFREE(char *) value = NULL;
+    g_autofree char *value = NULL;
     int rc;
     size_t i;
 
@@ -4541,7 +4541,7 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
                           qemuMonitorPtr mon)
 {
     int major, minor, micro;
-    VIR_AUTOFREE(char *) package = NULL;
+    g_autofree char *package = NULL;
 
     /* @mon is supposed to be locked by callee */
 

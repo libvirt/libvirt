@@ -965,7 +965,7 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
     int gic = GIC_NONE;
     char *capsarch = NULL;
     char *capsver = NULL;
-    VIR_AUTOFREE(char *) capsfile = NULL;
+    g_autofree char *capsfile = NULL;
     int flag;
     int ret = -1;
 

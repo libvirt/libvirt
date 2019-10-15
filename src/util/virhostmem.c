@@ -255,7 +255,7 @@ virHostMemGetStats(int cellNum G_GNUC_UNUSED,
 #ifdef __linux__
     {
         int ret;
-        VIR_AUTOFREE(char *) meminfo_path = NULL;
+        g_autofree char *meminfo_path = NULL;
         FILE *meminfo;
         int max_node;
 
@@ -312,8 +312,8 @@ virHostMemGetStats(int cellNum G_GNUC_UNUSED,
 static int
 virHostMemSetParameterValue(virTypedParameterPtr param)
 {
-    VIR_AUTOFREE(char *) path = NULL;
-    VIR_AUTOFREE(char *) strval = NULL;
+    g_autofree char *path = NULL;
+    g_autofree char *strval = NULL;
     int rc = -1;
 
     char *field = strchr(param->field, '_');
@@ -341,7 +341,7 @@ virHostMemParametersAreAllSupported(virTypedParameterPtr params,
     size_t i;
 
     for (i = 0; i < nparams; i++) {
-        VIR_AUTOFREE(char *) path = NULL;
+        g_autofree char *path = NULL;
         virTypedParameterPtr param = &params[i];
 
         char *field = strchr(param->field, '_');
@@ -408,8 +408,8 @@ static int
 virHostMemGetParameterValue(const char *field,
                             void *value)
 {
-    VIR_AUTOFREE(char *) path = NULL;
-    VIR_AUTOFREE(char *) buf = NULL;
+    g_autofree char *path = NULL;
+    g_autofree char *buf = NULL;
     char *tmp = NULL;
     int rc = -1;
 

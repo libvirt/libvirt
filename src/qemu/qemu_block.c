@@ -279,7 +279,7 @@ qemuBlockDiskDetectNodes(virDomainDiskDefPtr disk,
 {
     qemuBlockNodeNameBackingChainDataPtr entry = NULL;
     virStorageSourcePtr src = disk->src;
-    VIR_AUTOFREE(char *) alias = NULL;
+    g_autofree char *alias = NULL;
     int ret = -1;
 
     /* don't attempt the detection if the top level already has node names */
@@ -473,7 +473,7 @@ qemuBlockStorageSourceBuildJSONSocketAddress(virStorageNetHostDefPtr host,
     VIR_AUTOPTR(virJSONValue) server = NULL;
     const char *transport;
     const char *field;
-    VIR_AUTOFREE(char *) port = NULL;
+    g_autofree char *port = NULL;
 
     switch ((virStorageNetHostTransport) host->transport) {
     case VIR_STORAGE_NET_HOST_TRANS_TCP:
@@ -567,7 +567,7 @@ static virJSONValuePtr
 qemuBlockStorageSourceBuildJSONInetSocketAddress(virStorageNetHostDefPtr host)
 {
     virJSONValuePtr ret = NULL;
-    VIR_AUTOFREE(char *) port = NULL;
+    g_autofree char *port = NULL;
 
     if (host->transport != VIR_STORAGE_NET_HOST_TRANS_TCP) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -697,7 +697,7 @@ qemuBlockStorageSourceGetCURLProps(virStorageSourcePtr src,
     const char *username = NULL;
     virJSONValuePtr ret = NULL;
     VIR_AUTOPTR(virURI) uri = NULL;
-    VIR_AUTOFREE(char *) uristr = NULL;
+    g_autofree char *uristr = NULL;
 
     /**
      * Common options:
@@ -738,11 +738,11 @@ qemuBlockStorageSourceGetISCSIProps(virStorageSourcePtr src,
                                     bool onlytarget)
 {
     qemuDomainStorageSourcePrivatePtr srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
-    VIR_AUTOFREE(char *) target = NULL;
+    g_autofree char *target = NULL;
     char *lunStr = NULL;
     char *username = NULL;
     char *objalias = NULL;
-    VIR_AUTOFREE(char *) portal = NULL;
+    g_autofree char *portal = NULL;
     unsigned int lun = 0;
     virJSONValuePtr ret = NULL;
 
@@ -1870,8 +1870,8 @@ qemuBlockSnapshotAddLegacy(virJSONValuePtr actions,
                            bool reuse)
 {
     const char *format = virStorageFileFormatTypeToString(newsrc->format);
-    VIR_AUTOFREE(char *) device = NULL;
-    VIR_AUTOFREE(char *) source = NULL;
+    g_autofree char *device = NULL;
+    g_autofree char *source = NULL;
 
     if (!(device = qemuAliasDiskDriveFromDisk(disk)))
         return -1;
@@ -1930,7 +1930,7 @@ qemuBlockGetBackingStoreString(virStorageSourcePtr src)
     int actualType = virStorageSourceGetActualType(src);
     VIR_AUTOPTR(virJSONValue) backingProps = NULL;
     VIR_AUTOPTR(virURI) uri = NULL;
-    VIR_AUTOFREE(char *) backingJSON = NULL;
+    g_autofree char *backingJSON = NULL;
     char *ret = NULL;
 
     if (virStorageSourceIsLocalStorage(src)) {
@@ -1989,7 +1989,7 @@ qemuBlockStorageSourceCreateAddBacking(virStorageSourcePtr backing,
                                        virJSONValuePtr props,
                                        bool format)
 {
-    VIR_AUTOFREE(char *) backingFileStr = NULL;
+    g_autofree char *backingFileStr = NULL;
     const char *backingFormatStr = NULL;
 
     if (!virStorageSourceIsBacking(backing))
@@ -2046,7 +2046,7 @@ qemuBlockStorageSourceCreateGetEncryptionLUKS(virStorageSourcePtr src,
 {
     qemuDomainStorageSourcePrivatePtr srcpriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
     VIR_AUTOPTR(virJSONValue) props = NULL;
-    VIR_AUTOFREE(char *) cipheralg = NULL;
+    g_autofree char *cipheralg = NULL;
     const char *keysecret = NULL;
 
     if (srcpriv &&

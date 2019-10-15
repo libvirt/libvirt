@@ -731,11 +731,11 @@ cmdDomiflist(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     for (i = 0; i < ninterfaces; i++) {
-        VIR_AUTOFREE(char *) type = NULL;
-        VIR_AUTOFREE(char *) source = NULL;
-        VIR_AUTOFREE(char *) target = NULL;
-        VIR_AUTOFREE(char *) model = NULL;
-        VIR_AUTOFREE(char *) mac = NULL;
+        g_autofree char *type = NULL;
+        g_autofree char *source = NULL;
+        g_autofree char *target = NULL;
+        g_autofree char *model = NULL;
+        g_autofree char *mac = NULL;
 
         ctxt->node = interfaces[i];
         type = virXPathString("string(./@type)", ctxt);

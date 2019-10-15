@@ -41,9 +41,9 @@ prepareObjects(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv;
     VIR_AUTOUNREF(virDomainObjPtr) vm = NULL;
-    VIR_AUTOFREE(char *) filename = NULL;
-    VIR_AUTOFREE(char *) domxml = NULL;
-    VIR_AUTOFREE(char *) latestCapsFile = NULL;
+    g_autofree char *filename = NULL;
+    g_autofree char *domxml = NULL;
+    g_autofree char *latestCapsFile = NULL;
 
     if (virAsprintf(&filename, "%s/qemuxml2argvdata/%s.xml", abs_srcdir, xmlname) < 0)
         return -1;

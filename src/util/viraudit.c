@@ -96,7 +96,7 @@ void virAuditSend(virLogSourcePtr source,
                   virAuditRecordType type G_GNUC_UNUSED, bool success,
                   const char *fmt, ...)
 {
-    VIR_AUTOFREE(char *) str = NULL;
+    g_autofree char *str = NULL;
     va_list args;
 
     /* Duplicate later checks, to short circuit & avoid printf overhead

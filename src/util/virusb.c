@@ -86,8 +86,8 @@ static int virUSBSysReadFile(const char *f_name, const char *d_name,
                              int base, unsigned int *value)
 {
     int tmp;
-    VIR_AUTOFREE(char *) buf = NULL;
-    VIR_AUTOFREE(char *) filename = NULL;
+    g_autofree char *buf = NULL;
+    g_autofree char *filename = NULL;
     char *ignore = NULL;
 
     tmp = virAsprintf(&filename, USB_SYSFS "/devices/%s/%s", d_name, f_name);

@@ -99,7 +99,7 @@ qemuSlirpNewForHelper(const char *helper)
 {
     VIR_AUTOPTR(qemuSlirp) slirp = NULL;
     VIR_AUTOPTR(virCommand) cmd = NULL;
-    VIR_AUTOFREE(char *) output = NULL;
+    g_autofree char *output = NULL;
     VIR_AUTOPTR(virJSONValue) doc = NULL;
     virJSONValuePtr featuresJSON;
     size_t i, nfeatures;
@@ -150,8 +150,8 @@ qemuSlirpCreatePidFilename(virQEMUDriverConfigPtr cfg,
                            const virDomainDef *def,
                            const char *alias)
 {
-    VIR_AUTOFREE(char *) shortName = NULL;
-    VIR_AUTOFREE(char *) name = NULL;
+    g_autofree char *shortName = NULL;
+    g_autofree char *name = NULL;
 
     if (!(shortName = virDomainDefGetShortName(def)) ||
         virAsprintf(&name, "%s-%s-slirp", shortName, alias) < 0)
@@ -221,7 +221,7 @@ qemuSlirpGetDBusPath(virQEMUDriverConfigPtr cfg,
                      const virDomainDef *def,
                      const char *alias)
 {
-    VIR_AUTOFREE(char *) shortName = NULL;
+    g_autofree char *shortName = NULL;
     char *path = NULL;
 
     if (!(shortName = virDomainDefGetShortName(def)) ||
@@ -241,9 +241,9 @@ qemuSlirpStop(qemuSlirpPtr slirp,
               bool hot)
 {
     VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
-    VIR_AUTOFREE(char *) pidfile = NULL;
-    VIR_AUTOFREE(char *) dbus_path = NULL;
-    VIR_AUTOFREE(char *) id = qemuSlirpGetDBusVMStateId(net);
+    g_autofree char *pidfile = NULL;
+    g_autofree char *dbus_path = NULL;
+    g_autofree char *id = qemuSlirpGetDBusVMStateId(net);
     virErrorPtr orig_err;
     pid_t pid;
     int rc;
@@ -298,10 +298,10 @@ qemuSlirpStart(qemuSlirpPtr slirp,
 {
     VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
     VIR_AUTOPTR(virCommand) cmd = NULL;
-    VIR_AUTOFREE(char *) pidfile = NULL;
-    VIR_AUTOFREE(char *) dbus_path = NULL;
-    VIR_AUTOFREE(char *) dbus_addr = NULL;
-    VIR_AUTOFREE(char *) id = NULL;
+    g_autofree char *pidfile = NULL;
+    g_autofree char *dbus_path = NULL;
+    g_autofree char *dbus_addr = NULL;
+    g_autofree char *id = NULL;
     size_t i;
     const unsigned long long timeout = 5 * 1000; /* ms */
     pid_t pid = (pid_t) -1;
@@ -334,7 +334,7 @@ qemuSlirpStart(qemuSlirpPtr slirp,
 
     for (i = 0; i < net->guestIP.nips; i++) {
         const virNetDevIPAddr *ip = net->guestIP.ips[i];
-        VIR_AUTOFREE(char *) addr = NULL;
+        g_autofree char *addr = NULL;
         const char *opt = "";
 
         if (!(addr = virSocketAddrFormat(&ip->address)))
@@ -350,7 +350,7 @@ qemuSlirpStart(qemuSlirpPtr slirp,
         if (ip->prefix) {
             if (VIR_SOCKET_ADDR_IS_FAMILY(&ip->address, AF_INET)) {
                 virSocketAddr netmask;
-                VIR_AUTOFREE(char *) netmaskStr = NULL;
+                g_autofree char *netmaskStr = NULL;
 
                 if (virSocketAddrPrefixToNetmask(ip->prefix, &netmask, AF_INET) < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,

@@ -199,7 +199,7 @@ int _stat(const char *path, struct stat *sb)
 int stat(const char *path, struct stat *sb)
 # endif
 {
-    VIR_AUTOFREE(char *) newpath = NULL;
+    g_autofree char *newpath = NULL;
 
     virMockStatInit();
 
@@ -216,7 +216,7 @@ int stat(const char *path, struct stat *sb)
 #ifdef MOCK_STAT64
 int stat64(const char *path, struct stat64 *sb)
 {
-    VIR_AUTOFREE(char *) newpath = NULL;
+    g_autofree char *newpath = NULL;
 
     virMockStatInit();
 
@@ -234,7 +234,7 @@ int stat64(const char *path, struct stat64 *sb)
 int
 __xstat(int ver, const char *path, struct stat *sb)
 {
-    VIR_AUTOFREE(char *) newpath = NULL;
+    g_autofree char *newpath = NULL;
 
     virMockStatInit();
 
@@ -252,7 +252,7 @@ __xstat(int ver, const char *path, struct stat *sb)
 int
 __xstat64(int ver, const char *path, struct stat64 *sb)
 {
-    VIR_AUTOFREE(char *) newpath = NULL;
+    g_autofree char *newpath = NULL;
 
     virMockStatInit();
 
@@ -275,7 +275,7 @@ int
 lstat(const char *path, struct stat *sb)
 # endif
 {
-    VIR_AUTOFREE(char *) newpath = NULL;
+    g_autofree char *newpath = NULL;
 
     virMockStatInit();
 
@@ -293,7 +293,7 @@ lstat(const char *path, struct stat *sb)
 int
 lstat64(const char *path, struct stat64 *sb)
 {
-    VIR_AUTOFREE(char *) newpath = NULL;
+    g_autofree char *newpath = NULL;
 
     virMockStatInit();
 
@@ -311,7 +311,7 @@ lstat64(const char *path, struct stat64 *sb)
 int
 __lxstat(int ver, const char *path, struct stat *sb)
 {
-    VIR_AUTOFREE(char *) newpath = NULL;
+    g_autofree char *newpath = NULL;
 
     virMockStatInit();
 
@@ -329,7 +329,7 @@ __lxstat(int ver, const char *path, struct stat *sb)
 int
 __lxstat64(int ver, const char *path, struct stat64 *sb)
 {
-    VIR_AUTOFREE(char *) newpath = NULL;
+    g_autofree char *newpath = NULL;
 
     virMockStatInit();
 

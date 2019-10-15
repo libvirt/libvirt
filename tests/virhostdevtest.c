@@ -499,7 +499,7 @@ static int
 mymain(void)
 {
     int ret = 0;
-    VIR_AUTOFREE(char *) fakerootdir = NULL;
+    g_autofree char *fakerootdir = NULL;
 
     if (VIR_STRDUP_QUIET(fakerootdir, FAKEROOTDIRTEMPLATE) < 0) {
         fprintf(stderr, "Out of memory\n");

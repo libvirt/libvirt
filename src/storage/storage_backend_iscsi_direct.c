@@ -423,7 +423,7 @@ virISCSIDirectUpdateTargets(struct iscsi_context *iscsi,
     }
 
     for (tmp_addr = addr; tmp_addr; tmp_addr = tmp_addr->next) {
-        VIR_AUTOFREE(char *) target = NULL;
+        g_autofree char *target = NULL;
 
         if (VIR_STRDUP(target, tmp_addr->target_name) < 0)
             goto cleanup;
@@ -490,7 +490,7 @@ virStorageBackendISCSIDirectFindPoolSources(const char *srcSpec,
         .nsources = 0,
         .sources = NULL
     };
-    VIR_AUTOFREE(char *) portal = NULL;
+    g_autofree char *portal = NULL;
     VIR_AUTOPTR(virStoragePoolSource) source = NULL;
 
     virCheckFlags(0, NULL);
@@ -560,7 +560,7 @@ virStorageBackendISCSIDirectSetConnection(virStoragePoolObjPtr pool,
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     struct iscsi_context *iscsi = NULL;
-    VIR_AUTOFREE(char *) portal = NULL;
+    g_autofree char *portal = NULL;
 
     if (!(iscsi = virISCSIDirectCreateContext(def->source.initiator.iqn)))
         goto error;
@@ -590,7 +590,7 @@ virStorageBackendISCSIDirectRefreshPool(virStoragePoolObjPtr pool)
 {
     struct iscsi_context *iscsi = NULL;
     int ret = -1;
-    VIR_AUTOFREE(char *) portal = NULL;
+    g_autofree char *portal = NULL;
 
     if (!(iscsi = virStorageBackendISCSIDirectSetConnection(pool, &portal)))
         return -1;
@@ -626,7 +626,7 @@ virStorageBackendISCSIDirectVolWipeZero(virStorageVolDefPtr vol,
     struct scsi_task *task = NULL;
     int lun = 0;
     int ret = -1;
-    VIR_AUTOFREE(unsigned char *) data = NULL;
+    g_autofree unsigned char *data = NULL;
 
     if (virStorageBackendISCSIDirectGetLun(vol, &lun) < 0)
         return ret;

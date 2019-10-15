@@ -43,8 +43,8 @@ qemuExtDeviceLogCommand(virQEMUDriverPtr driver,
                         virCommandPtr cmd,
                         const char *info)
 {
-    VIR_AUTOFREE(char *) timestamp = virTimeStringNow();
-    VIR_AUTOFREE(char *) cmds = virCommandToString(cmd, false);
+    g_autofree char *timestamp = virTimeStringNow();
+    g_autofree char *cmds = virCommandToString(cmd, false);
 
     if (!timestamp || !cmds)
         return -1;

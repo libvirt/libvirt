@@ -122,7 +122,7 @@ getSocketPath(virURIPtr uri)
     }
 
     if (!sock_path) {
-        VIR_AUTOFREE(char *) sockbase = NULL;
+        g_autofree char *sockbase = NULL;
         bool legacy = false;
 
         if (!uri->scheme) {

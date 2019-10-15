@@ -52,7 +52,7 @@ static int
 virStorageBackendZFSVolModeNeeded(void)
 {
     int ret = -1, exit_code = -1;
-    VIR_AUTOFREE(char *) error = NULL;
+    g_autofree char *error = NULL;
     VIR_AUTOPTR(virCommand) cmd = NULL;
 
     /* 'zfs get' without arguments prints out
@@ -85,7 +85,7 @@ virStorageBackendZFSCheckPool(virStoragePoolObjPtr pool G_GNUC_UNUSED,
                               bool *isActive)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
-    VIR_AUTOFREE(char *) devpath = NULL;
+    g_autofree char *devpath = NULL;
 
     if (virAsprintf(&devpath, "/dev/zvol/%s",
                     def->source.name) < 0)
@@ -179,7 +179,7 @@ virStorageBackendZFSFindVols(virStoragePoolObjPtr pool,
     size_t i;
     VIR_AUTOSTRINGLIST lines = NULL;
     VIR_AUTOPTR(virCommand) cmd = NULL;
-    VIR_AUTOFREE(char *) volumes_list = NULL;
+    g_autofree char *volumes_list = NULL;
 
     /**
      * $ zfs list -Hp -t volume -o name,volsize -r test

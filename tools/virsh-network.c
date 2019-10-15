@@ -1434,7 +1434,7 @@ cmdNetworkDHCPLeases(vshControl *ctl, const vshCmd *cmd)
 
     for (i = 0; i < nleases; i++) {
         const char *typestr = NULL;
-        VIR_AUTOFREE(char *) cidr_format = NULL;
+        g_autofree char *cidr_format = NULL;
         virNetworkDHCPLeasePtr lease = leases[i];
         time_t expirytime_tmp = lease->expirytime;
         struct tm ts;

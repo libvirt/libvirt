@@ -4921,7 +4921,7 @@ processRdmaGidStatusChangedEvent(virDomainObjPtr vm,
 {
     unsigned int prefix_len;
     virSocketAddr addr;
-    VIR_AUTOFREE(char *) addrStr = NULL;
+    g_autofree char *addrStr = NULL;
     int rc;
 
     if (!virDomainObjIsActive(vm))
@@ -7520,7 +7520,7 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
     for (i = 0; i < vm->def->nnets; i++) {
         virDomainNetDefPtr net = vm->def->nets[i];
         unsigned int bootIndex = net->info.bootIndex;
-        VIR_AUTOFREE(char *) model = NULL;
+        g_autofree char *model = NULL;
         virMacAddr mac = net->mac;
         char *script = net->script;
 
@@ -15777,14 +15777,14 @@ qemuDomainSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
     bool resume = false;
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    VIR_AUTOFREE(char *) xml = NULL;
+    g_autofree char *xml = NULL;
     virDomainSnapshotDefPtr snapdef = virDomainSnapshotObjGetDef(snap);
     bool memory = snapdef->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
     bool memory_unlink = false;
     int thaw = 0; /* 1 if freeze succeeded, -1 if freeze failed */
     bool pmsuspended = false;
     int compressed;
-    VIR_AUTOFREE(char *) compressedpath = NULL;
+    g_autofree char *compressedpath = NULL;
     virQEMUSaveDataPtr data = NULL;
 
     /* If quiesce was requested, then issue a freeze command, and a
@@ -17682,8 +17682,8 @@ qemuDomainBlockPullCommon(virDomainObjPtr vm,
     virDomainDiskDefPtr disk;
     virStorageSourcePtr baseSource = NULL;
     unsigned int baseIndex = 0;
-    VIR_AUTOFREE(char *) basePath = NULL;
-    VIR_AUTOFREE(char *) backingPath = NULL;
+    g_autofree char *basePath = NULL;
+    g_autofree char *backingPath = NULL;
     unsigned long long speed = bandwidth;
     qemuBlockJobDataPtr job = NULL;
     bool persistjob = false;
@@ -18693,9 +18693,9 @@ qemuDomainBlockCommit(virDomainPtr dom,
     unsigned int baseIndex = 0;
     virStorageSourcePtr top_parent = NULL;
     bool clean_access = false;
-    VIR_AUTOFREE(char *) topPath = NULL;
-    VIR_AUTOFREE(char *) basePath = NULL;
-    VIR_AUTOFREE(char *) backingPath = NULL;
+    g_autofree char *topPath = NULL;
+    g_autofree char *basePath = NULL;
+    g_autofree char *backingPath = NULL;
     unsigned long long speed = bandwidth;
     qemuBlockJobDataPtr job = NULL;
     VIR_AUTOUNREF(virStorageSourcePtr) mirror = NULL;
@@ -21585,7 +21585,7 @@ qemuDomainGetStats(virConnectPtr conn,
                    virDomainStatsRecordPtr *record,
                    unsigned int flags)
 {
-    VIR_AUTOFREE(virDomainStatsRecordPtr) tmp = NULL;
+    g_autofree virDomainStatsRecordPtr tmp = NULL;
     VIR_AUTOPTR(virTypedParamList) params = NULL;
     size_t i;
 
@@ -22841,7 +22841,7 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
     qemuAgentPtr agent;
     int ret = -1;
     int maxparams = 0;
-    VIR_AUTOFREE(char *) hostname = NULL;
+    g_autofree char *hostname = NULL;
     unsigned int supportedTypes = types;
     int rc;
 

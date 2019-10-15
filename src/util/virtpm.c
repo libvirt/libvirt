@@ -173,7 +173,7 @@ virTPMExecGetCaps(virCommandPtr cmd,
 {
     int exitstatus;
     virBitmapPtr bitmap;
-    VIR_AUTOFREE(char *) outbuf = NULL;
+    g_autofree char *outbuf = NULL;
     VIR_AUTOPTR(virJSONValue) json = NULL;
     virJSONValuePtr featureList;
     virJSONValuePtr item;
@@ -291,7 +291,7 @@ virTPMEmulatorInit(void)
     virMutexLock(&swtpm_tools_lock);
 
     for (i = 0; i < G_N_ELEMENTS(prgs); i++) {
-        VIR_AUTOFREE(char *) path = NULL;
+        g_autofree char *path = NULL;
         bool findit = *prgs[i].path == NULL;
         struct stat statbuf;
         char *tmp;

@@ -21,10 +21,10 @@ testJSONFromFile(const void *data)
 {
     const struct testInfo *info = data;
     VIR_AUTOPTR(virJSONValue) injson = NULL;
-    VIR_AUTOFREE(char *) infile = NULL;
-    VIR_AUTOFREE(char *) indata = NULL;
-    VIR_AUTOFREE(char *) outfile = NULL;
-    VIR_AUTOFREE(char *) actual = NULL;
+    g_autofree char *infile = NULL;
+    g_autofree char *indata = NULL;
+    g_autofree char *outfile = NULL;
+    g_autofree char *actual = NULL;
 
     if (virAsprintf(&infile, "%s/virjsondata/parse-%s-in.json",
                     abs_srcdir, info->name) < 0 ||
@@ -68,7 +68,7 @@ testJSONFromString(const void *data)
     const struct testInfo *info = data;
     VIR_AUTOPTR(virJSONValue) json = NULL;
     const char *expectstr = info->expect ? info->expect : info->doc;
-    VIR_AUTOFREE(char *) formatted = NULL;
+    g_autofree char *formatted = NULL;
 
     json = virJSONValueFromString(info->doc);
 
@@ -109,10 +109,10 @@ testJSONAddRemove(const void *data)
     const struct testInfo *info = data;
     VIR_AUTOPTR(virJSONValue) json = NULL;
     VIR_AUTOPTR(virJSONValue) name = NULL;
-    VIR_AUTOFREE(char *) infile = NULL;
-    VIR_AUTOFREE(char *) indata = NULL;
-    VIR_AUTOFREE(char *) outfile = NULL;
-    VIR_AUTOFREE(char *) actual = NULL;
+    g_autofree char *infile = NULL;
+    g_autofree char *indata = NULL;
+    g_autofree char *outfile = NULL;
+    g_autofree char *actual = NULL;
 
     if (virAsprintf(&infile, "%s/virjsondata/add-remove-%s-in.json",
                     abs_srcdir, info->name) < 0 ||
@@ -180,7 +180,7 @@ testJSONLookup(const void *data)
     const struct testInfo *info = data;
     VIR_AUTOPTR(virJSONValue) json = NULL;
     virJSONValuePtr value = NULL;
-    VIR_AUTOFREE(char *) result = NULL;
+    g_autofree char *result = NULL;
     int rc;
     int number;
     const char *str;
@@ -281,8 +281,8 @@ testJSONCopy(const void *data)
     const struct testInfo *info = data;
     VIR_AUTOPTR(virJSONValue) json = NULL;
     VIR_AUTOPTR(virJSONValue) jsonCopy = NULL;
-    VIR_AUTOFREE(char *) result = NULL;
-    VIR_AUTOFREE(char *) resultCopy = NULL;
+    g_autofree char *result = NULL;
+    g_autofree char *resultCopy = NULL;
 
     json = virJSONValueFromString(info->doc);
     if (!json) {
@@ -345,10 +345,10 @@ testJSONDeflatten(const void *data)
     const struct testInfo *info = data;
     VIR_AUTOPTR(virJSONValue) injson = NULL;
     VIR_AUTOPTR(virJSONValue) deflattened = NULL;
-    VIR_AUTOFREE(char *) infile = NULL;
-    VIR_AUTOFREE(char *) indata = NULL;
-    VIR_AUTOFREE(char *) outfile = NULL;
-    VIR_AUTOFREE(char *) actual = NULL;
+    g_autofree char *infile = NULL;
+    g_autofree char *indata = NULL;
+    g_autofree char *outfile = NULL;
+    g_autofree char *actual = NULL;
 
     if (virAsprintf(&infile, "%s/virjsondata/deflatten-%s-in.json",
                     abs_srcdir, info->name) < 0 ||
@@ -390,8 +390,8 @@ testJSONEscapeObj(const void *data G_GNUC_UNUSED)
     VIR_AUTOPTR(virJSONValue) json = NULL;
     VIR_AUTOPTR(virJSONValue) nestjson = NULL;
     VIR_AUTOPTR(virJSONValue) parsejson = NULL;
-    VIR_AUTOFREE(char *) neststr = NULL;
-    VIR_AUTOFREE(char *) result = NULL;
+    g_autofree char *neststr = NULL;
+    g_autofree char *result = NULL;
     const char *parsednestedstr;
 
     if (virJSONValueObjectCreate(&nestjson,
