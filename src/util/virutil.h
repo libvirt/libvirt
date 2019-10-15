@@ -103,8 +103,8 @@ char *virGetUserConfigDirectory(void);
 char *virGetUserCacheDirectory(void);
 char *virGetUserRuntimeDirectory(void);
 char *virGetUserShell(uid_t uid);
-char *virGetUserName(uid_t uid) ATTRIBUTE_NOINLINE;
-char *virGetGroupName(gid_t gid) ATTRIBUTE_NOINLINE;
+char *virGetUserName(uid_t uid) G_GNUC_NO_INLINE;
+char *virGetGroupName(gid_t gid) G_GNUC_NO_INLINE;
 int virGetGroupList(uid_t uid, gid_t group, gid_t **groups)
     ATTRIBUTE_NONNULL(3);
 int virGetUserID(const char *name,
@@ -138,16 +138,16 @@ int virParseOwnershipIds(const char *label, uid_t *uidPtr, gid_t *gidPtr);
 time_t virGetSelfLastChanged(void);
 void virUpdateSelfLastChanged(const char *path);
 
-long virGetSystemPageSize(void) ATTRIBUTE_NOINLINE;
-long virGetSystemPageSizeKB(void) ATTRIBUTE_NOINLINE;
+long virGetSystemPageSize(void) G_GNUC_NO_INLINE;
+long virGetSystemPageSizeKB(void) G_GNUC_NO_INLINE;
 
 unsigned long long virMemoryLimitTruncate(unsigned long long value);
 bool virMemoryLimitIsSet(unsigned long long value);
-unsigned long long virMemoryMaxValue(bool ulong) ATTRIBUTE_NOINLINE;
+unsigned long long virMemoryMaxValue(bool ulong) G_GNUC_NO_INLINE;
 
 bool virHostHasIOMMU(void);
 
-char *virHostGetDRMRenderNode(void) ATTRIBUTE_NOINLINE;
+char *virHostGetDRMRenderNode(void) G_GNUC_NO_INLINE;
 
 /**
  * VIR_ASSIGN_IS_OVERFLOW:

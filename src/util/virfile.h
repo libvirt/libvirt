@@ -114,9 +114,9 @@ int virFileWrapperFdClose(virFileWrapperFdPtr dfd);
 void virFileWrapperFdFree(virFileWrapperFdPtr dfd);
 
 int virFileLock(int fd, bool shared, off_t start, off_t len, bool waitForLock)
-    ATTRIBUTE_NOINLINE;
+    G_GNUC_NO_INLINE;
 int virFileUnlock(int fd, off_t start, off_t len)
-    ATTRIBUTE_NOINLINE;
+    G_GNUC_NO_INLINE;
 
 int virFileFlock(int fd, bool lock, bool shared);
 
@@ -199,7 +199,7 @@ void virFileActivateDirOverrideForLib(void);
 
 off_t virFileLength(const char *path, int fd) ATTRIBUTE_NONNULL(1);
 bool virFileIsDir (const char *file) ATTRIBUTE_NONNULL(1);
-bool virFileExists(const char *file) ATTRIBUTE_NONNULL(1) ATTRIBUTE_NOINLINE;
+bool virFileExists(const char *file) ATTRIBUTE_NONNULL(1) G_GNUC_NO_INLINE;
 bool virFileIsExecutable(const char *file) ATTRIBUTE_NONNULL(1);
 bool virFileIsRegular(const char *file) ATTRIBUTE_NONNULL(1);
 
@@ -231,7 +231,7 @@ int virFileGetMountReverseSubtree(const char *mtabpath,
                                   size_t *nmountsret) G_GNUC_WARN_UNUSED_RESULT;
 
 char *virFileSanitizePath(const char *path);
-char *virFileCanonicalizePath(const char *path) ATTRIBUTE_NOINLINE;
+char *virFileCanonicalizePath(const char *path) G_GNUC_NO_INLINE;
 
 enum {
     VIR_FILE_OPEN_NONE        = 0,
@@ -383,18 +383,18 @@ VIR_DEFINE_AUTOPTR_FUNC(virFileWrapperFd, virFileWrapperFdFree);
 int virFileGetXAttr(const char *path,
                     const char *name,
                     char **value)
-    ATTRIBUTE_NOINLINE;
+    G_GNUC_NO_INLINE;
 
 int virFileGetXAttrQuiet(const char *path,
                          const char *name,
                          char **value)
-    ATTRIBUTE_NOINLINE;
+    G_GNUC_NO_INLINE;
 
 int virFileSetXAttr(const char *path,
                     const char *name,
                     const char *value)
-    ATTRIBUTE_NOINLINE;
+    G_GNUC_NO_INLINE;
 
 int virFileRemoveXAttr(const char *path,
                        const char *name)
-    ATTRIBUTE_NOINLINE;
+    G_GNUC_NO_INLINE;

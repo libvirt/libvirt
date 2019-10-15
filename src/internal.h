@@ -94,13 +94,15 @@
 #define ARRAY_CARDINALITY(Array) (sizeof(Array) / sizeof(*(Array)))
 
 /**
- * ATTRIBUTE_NOINLINE:
+ * G_GNUC_NO_INLINE:
  *
  * Force compiler not to inline a method. Should be used if
  * the method need to be overridable by test mocks.
+ *
+ * TODO: Remove after upgrading to GLib >= 2.58
  */
-#ifndef ATTRIBUTE_NOINLINE
-# define ATTRIBUTE_NOINLINE __attribute__((__noinline__))
+#ifndef G_GNUC_NO_INLINE
+# define G_GNUC_NO_INLINE __attribute__((__noinline__))
 #endif
 
 /**

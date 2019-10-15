@@ -75,7 +75,7 @@ int virProcessGetNamespaces(pid_t pid,
 int virProcessSetNamespaces(size_t nfdlist,
                             int *fdlist);
 
-int virProcessSetMaxMemLock(pid_t pid, unsigned long long bytes) ATTRIBUTE_NOINLINE;
+int virProcessSetMaxMemLock(pid_t pid, unsigned long long bytes) G_GNUC_NO_INLINE;
 int virProcessSetMaxProcesses(pid_t pid, unsigned int procs);
 int virProcessSetMaxFiles(pid_t pid, unsigned int files);
 int virProcessSetMaxCoreSize(pid_t pid, unsigned long long bytes);
@@ -108,7 +108,7 @@ typedef int (*virProcessForkCallback)(pid_t ppid,
 
 int virProcessRunInFork(virProcessForkCallback cb,
                         void *opaque)
-    ATTRIBUTE_NOINLINE;
+    G_GNUC_NO_INLINE;
 
 int virProcessSetupPrivateMountNS(void);
 

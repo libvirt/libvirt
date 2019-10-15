@@ -20,7 +20,7 @@
 
 #pragma once
 
-char *virTPMCreateCancelPath(const char *devpath) ATTRIBUTE_NOINLINE;
+char *virTPMCreateCancelPath(const char *devpath) G_GNUC_NO_INLINE;
 
 char *virTPMGetSwtpm(void);
 char *virTPMGetSwtpmSetup(void);

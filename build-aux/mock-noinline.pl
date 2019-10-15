@@ -46,7 +46,7 @@ sub scan_annotations {
         } elsif (/^\s*$/) {
             $func = undef;
         }
-        if (/ATTRIBUTE_NOINLINE/) {
+        if (/G_GNUC_NO_INLINE/) {
             if (defined $func) {
                 $noninlined{$func} = 1;
             }

@@ -83,7 +83,7 @@ virQEMUCapsGetCPUModelX86Data(virQEMUCapsPtr qemuCaps,
 
 virCPUDefPtr
 virQEMUCapsProbeHostCPU(virArch hostArch,
-                        virDomainCapsCPUModelsPtr models) ATTRIBUTE_NOINLINE;
+                        virDomainCapsCPUModelsPtr models) G_GNUC_NO_INLINE;
 
 void
 virQEMUCapsSetGICCapabilities(virQEMUCapsPtr qemuCaps,

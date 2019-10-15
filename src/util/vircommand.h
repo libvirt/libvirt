@@ -58,7 +58,7 @@ typedef enum {
 
 void virCommandPassFD(virCommandPtr cmd,
                       int fd,
-                      unsigned int flags) ATTRIBUTE_NOINLINE;
+                      unsigned int flags) G_GNUC_NO_INLINE;
 
 int virCommandPassFDGetFDIndex(virCommandPtr cmd,
                                int fd);

@@ -30,4 +30,4 @@
 #include "internal.h"
 
 uint32_t virHashCodeGen(const void *key, size_t len, uint32_t seed)
-    ATTRIBUTE_NOINLINE;
+    G_GNUC_NO_INLINE;

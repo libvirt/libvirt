@@ -44,7 +44,7 @@ bool virHostCPUHasBitmap(void);
 virBitmapPtr virHostCPUGetPresentBitmap(void);
 virBitmapPtr virHostCPUGetOnlineBitmap(void);
 int virHostCPUGetCount(void);
-int virHostCPUGetThreadsPerSubcore(virArch arch) ATTRIBUTE_NOINLINE;
+int virHostCPUGetThreadsPerSubcore(virArch arch) G_GNUC_NO_INLINE;
 
 int virHostCPUGetMap(unsigned char **cpumap,
                      unsigned int *online,
@@ -57,7 +57,7 @@ int virHostCPUGetInfo(virArch hostarch,
                       unsigned int *cores,
                       unsigned int *threads);
 
-int virHostCPUGetKVMMaxVCPUs(void) ATTRIBUTE_NOINLINE;
+int virHostCPUGetKVMMaxVCPUs(void) G_GNUC_NO_INLINE;
 
 int virHostCPUStatsAssign(virNodeCPUStatsPtr param,
                           const char *name,

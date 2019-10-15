@@ -34,7 +34,7 @@ int virNetDevTapCreate(char **ifname,
                        int *tapfd,
                        size_t tapfdSize,
                        unsigned int flags)
-    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT ATTRIBUTE_NOINLINE;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT G_GNUC_NO_INLINE;
 
 int virNetDevTapDelete(const char *ifname,
                        const char *tunpath)
@@ -44,7 +44,7 @@ int virNetDevTapGetName(int tapfd, char **ifname)
     ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 
 char* virNetDevTapGetRealDeviceName(char *ifname)
-      ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT ATTRIBUTE_NOINLINE;
+      ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT G_GNUC_NO_INLINE;
 
 typedef enum {
    VIR_NETDEV_TAP_CREATE_NONE = 0,
@@ -96,7 +96,7 @@ int virNetDevTapCreateInBridgePort(const char *brname,
                                    unsigned int *actualMTU,
                                    unsigned int flags)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-    G_GNUC_WARN_UNUSED_RESULT ATTRIBUTE_NOINLINE;
+    G_GNUC_WARN_UNUSED_RESULT G_GNUC_NO_INLINE;
 
 int virNetDevTapInterfaceStats(const char *ifname,
                                virDomainInterfaceStatsPtr stats,

@@ -24,4 +24,4 @@
 
 int
 virHostGetBootTime(unsigned long long *when)
-    ATTRIBUTE_NOINLINE;
+    G_GNUC_NO_INLINE;

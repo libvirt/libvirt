@@ -136,10 +136,10 @@ int virNetSocketGetUNIXIdentity(virNetSocketPtr sock,
                                 gid_t *gid,
                                 pid_t *pid,
                                 unsigned long long *timestamp)
-    ATTRIBUTE_NOINLINE;
+    G_GNUC_NO_INLINE;
 int virNetSocketGetSELinuxContext(virNetSocketPtr sock,
                                   char **context)
-    ATTRIBUTE_NOINLINE;
+    G_GNUC_NO_INLINE;
 
 int virNetSocketSetBlocking(virNetSocketPtr sock,
                             bool blocking);

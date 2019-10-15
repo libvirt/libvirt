@@ -61,6 +61,6 @@ void virSCSIVHostDeviceGetUsedBy(virSCSIVHostDevicePtr dev,
                                  const char **drv_name,
                                  const char **dom_name);
 void virSCSIVHostDeviceFree(virSCSIVHostDevicePtr dev);
-int virSCSIVHostOpenVhostSCSI(int *vhostfd) ATTRIBUTE_NOINLINE;
+int virSCSIVHostOpenVhostSCSI(int *vhostfd) G_GNUC_NO_INLINE;
 
 VIR_DEFINE_AUTOPTR_FUNC(virSCSIVHostDevice, virSCSIVHostDeviceFree);

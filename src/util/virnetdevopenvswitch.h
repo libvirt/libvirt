@@ -62,7 +62,7 @@ int virNetDevOpenvswitchInterfaceGetMaster(const char *ifname, char **master)
 
 int virNetDevOpenvswitchGetVhostuserIfname(const char *path,
                                            char **ifname)
-    ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT ATTRIBUTE_NOINLINE;
+    ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT G_GNUC_NO_INLINE;
 
 int virNetDevOpenvswitchUpdateVlan(const char *ifname,
                                    virNetDevVlanPtr virtVlan)
