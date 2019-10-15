@@ -10126,6 +10126,10 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
     }
 
+    /* Reset def->src->type in case when 'source' was not present */
+    if (!source)
+        def->src->type = VIR_STORAGE_TYPE_FILE;
+
     /* Only CDROM and Floppy devices are allowed missing source path
      * to indicate no media present. LUN is for raw access CD-ROMs
      * that are not attached to a physical device presently */
