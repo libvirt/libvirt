@@ -1283,7 +1283,7 @@ int main(int argc, char **argv) {
      * (but still need to add @lockProgram into @srv). rv == 0 means that no
      * saved state is present, therefore initialize from scratch here. */
     if (rv == 0) {
-        VIR_AUTOPTR(virSystemdActivation) act = NULL;
+        g_autoptr(virSystemdActivation) act = NULL;
         virSystemdActivationMap actmap[] = {
             { .name = "virtlockd.socket", .family = AF_UNIX, .path = sock_file },
             { .name = "virtlockd-admin.socket", .family = AF_UNIX, .path = admin_sock_file },

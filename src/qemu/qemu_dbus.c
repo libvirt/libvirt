@@ -37,7 +37,7 @@ VIR_LOG_INIT("qemu.dbus");
 qemuDBusVMStatePtr
 qemuDBusVMStateNew(const char *id, const char *addr)
 {
-    VIR_AUTOPTR(qemuDBusVMState) self = NULL;
+    g_autoptr(qemuDBusVMState) self = NULL;
 
     if (VIR_ALLOC(self) < 0)
         return NULL;

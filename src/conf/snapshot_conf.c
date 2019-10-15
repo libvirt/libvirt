@@ -429,7 +429,7 @@ virDomainSnapshotDefParseNode(xmlDocPtr xml,
                               bool *current,
                               unsigned int flags)
 {
-    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
 
     if (!virXMLNodeNameEqual(root, "domainsnapshot")) {
         virReportError(VIR_ERR_XML_ERROR, "%s", _("domainsnapshot"));

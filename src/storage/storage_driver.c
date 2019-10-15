@@ -738,7 +738,7 @@ storagePoolCreateXML(virConnectPtr conn,
     virStorageBackendPtr backend;
     virObjectEventPtr event = NULL;
     unsigned int build_flags = 0;
-    VIR_AUTOPTR(virStoragePoolDef) newDef = NULL;
+    g_autoptr(virStoragePoolDef) newDef = NULL;
     g_autofree char *stateFile = NULL;
 
     virCheckFlags(VIR_STORAGE_POOL_CREATE_WITH_BUILD |
@@ -825,7 +825,7 @@ storagePoolDefineXML(virConnectPtr conn,
     virStoragePoolDefPtr def;
     virStoragePoolPtr pool = NULL;
     virObjectEventPtr event = NULL;
-    VIR_AUTOPTR(virStoragePoolDef) newDef = NULL;
+    g_autoptr(virStoragePoolDef) newDef = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -1908,7 +1908,7 @@ storageVolCreateXML(virStoragePoolPtr pool,
     virStoragePoolDefPtr def;
     virStorageBackendPtr backend;
     virStorageVolPtr vol = NULL, newvol = NULL;
-    VIR_AUTOPTR(virStorageVolDef) voldef = NULL;
+    g_autoptr(virStorageVolDef) voldef = NULL;
 
     virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA, NULL);
 
@@ -2047,7 +2047,7 @@ storageVolCreateXMLFrom(virStoragePoolPtr pool,
     virStorageVolPtr newvol = NULL;
     virStorageVolPtr vol = NULL;
     int buildret;
-    VIR_AUTOPTR(virStorageVolDef) voldef = NULL;
+    g_autoptr(virStorageVolDef) voldef = NULL;
 
     virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA |
                   VIR_STORAGE_VOL_CREATE_REFLINK,
@@ -2295,7 +2295,7 @@ virStorageVolPoolRefreshDataFree(void *opaque)
 static int
 virStorageBackendPloopRestoreDesc(char *path)
 {
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     g_autofree char *refresh_tool = NULL;
     g_autofree char *desc = NULL;
 

@@ -360,7 +360,7 @@ virStorageBackendDiskReadPartitions(virStoragePoolObjPtr pool,
         .vol = vol,
     };
     g_autofree char *parthelper_path = NULL;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     if (!(parthelper_path = virFileFindResource("libvirt_parthelper",
                                                 abs_top_builddir "/src",
@@ -414,7 +414,7 @@ virStorageBackendDiskReadGeometry(virStoragePoolObjPtr pool)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     g_autofree char *parthelper_path = NULL;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     if (!(parthelper_path = virFileFindResource("libvirt_parthelper",
                                                 abs_top_builddir "/src",
@@ -492,7 +492,7 @@ virStorageBackendDiskBuildPool(virStoragePoolObjPtr pool,
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     int format = def->source.format;
     const char *fmt;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     int ret = -1;
 
     virCheckFlags(VIR_STORAGE_POOL_BUILD_OVERWRITE |
@@ -774,7 +774,7 @@ virStorageBackendDiskDeleteVol(virStoragePoolObjPtr pool,
     char *srcname = last_component(src_path);
     bool isDevMapperDevice;
     g_autofree char *devpath = NULL;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     virCheckFlags(0, -1);
 
@@ -856,7 +856,7 @@ virStorageBackendDiskCreateVol(virStoragePoolObjPtr pool,
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     virErrorPtr save_err;
     g_autofree char *partFormat = NULL;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     cmd = virCommandNewArgList(PARTED,
                                def->source.devices[0].path,

@@ -113,7 +113,7 @@ virFirewallCheckUpdateLock(bool *lockflag,
                            const char *const*args)
 {
     int status; /* Ignore failed commands without logging them */
-    VIR_AUTOPTR(virCommand) cmd = virCommandNewArgs(args);
+    g_autoptr(virCommand) cmd = virCommandNewArgs(args);
     if (virCommandRun(cmd, &status) < 0 || status) {
         VIR_INFO("locking not supported by %s", args[0]);
     } else {
@@ -666,7 +666,7 @@ virFirewallApplyRuleDirect(virFirewallRulePtr rule,
 {
     size_t i;
     const char *bin = virFirewallLayerCommandTypeToString(rule->layer);
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     int status;
     g_autofree char *error = NULL;
 
@@ -838,7 +838,7 @@ virFirewallApply(virFirewallPtr firewall)
         if (virFirewallApplyGroup(firewall, i) < 0) {
             VIR_DEBUG("Rolling back groups up to %zu for %p", i, firewall);
             size_t first = i;
-            VIR_AUTOPTR(virError) saved_error = virSaveLastError();
+            g_autoptr(virError) saved_error = virSaveLastError();
 
             /*
              * Look at any inheritance markers to figure out

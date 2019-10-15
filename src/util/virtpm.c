@@ -174,7 +174,7 @@ virTPMExecGetCaps(virCommandPtr cmd,
     int exitstatus;
     virBitmapPtr bitmap;
     g_autofree char *outbuf = NULL;
-    VIR_AUTOPTR(virJSONValue) json = NULL;
+    g_autoptr(virJSONValue) json = NULL;
     virJSONValuePtr featureList;
     virJSONValuePtr item;
     size_t idx;
@@ -234,7 +234,7 @@ static virBitmapPtr
 virTPMGetCaps(TypeFromStringFn typeFromStringFn,
                   const char *exec, const char *param1)
 {
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     if (!(cmd = virCommandNew(exec)))
         return NULL;

@@ -2681,7 +2681,7 @@ libxlConnectDomainXMLFromNative(virConnectPtr conn,
     libxlDriverPrivatePtr driver = conn->privateData;
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
     virDomainDefPtr def = NULL;
-    VIR_AUTOPTR(virConf) conf = NULL;
+    g_autoptr(virConf) conf = NULL;
     char *xml = NULL;
 
     virCheckFlags(0, NULL);
@@ -2731,7 +2731,7 @@ libxlConnectDomainXMLToNative(virConnectPtr conn, const char * nativeFormat,
     libxlDriverPrivatePtr driver = conn->privateData;
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
     virDomainDefPtr def = NULL;
-    VIR_AUTOPTR(virConf) conf = NULL;
+    g_autoptr(virConf) conf = NULL;
     int len = MAX_CONFIG_SIZE;
     char *ret = NULL;
 

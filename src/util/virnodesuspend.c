@@ -239,7 +239,7 @@ int virNodeSuspend(unsigned int target,
 static int
 virNodeSuspendSupportsTargetPMUtils(unsigned int target, bool *supported)
 {
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     g_autofree char *binary = NULL;
     int status;
 

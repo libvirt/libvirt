@@ -41,7 +41,7 @@ virStorageBackendVzPoolStart(virStoragePoolObjPtr pool)
     g_autofree char *grp_name = NULL;
     g_autofree char *usr_name = NULL;
     g_autofree char *mode = NULL;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     int ret;
 
     /* Check the permissions */
@@ -122,7 +122,7 @@ virStorageBackendVzPoolStop(virStoragePoolObjPtr pool)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     int rc;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     /* Short-circuit if already unmounted */
     if ((rc = virStorageBackendVzIsMounted(pool)) != 1)

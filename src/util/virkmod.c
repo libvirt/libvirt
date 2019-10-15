@@ -28,7 +28,7 @@
 static int
 doModprobe(const char *opts, const char *module, char **outbuf, char **errbuf)
 {
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     cmd = virCommandNew(MODPROBE);
     if (opts)
@@ -49,7 +49,7 @@ doModprobe(const char *opts, const char *module, char **outbuf, char **errbuf)
 static int
 doRmmod(const char *module, char **errbuf)
 {
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     cmd = virCommandNewArgList(RMMOD, module, NULL);
     virCommandSetErrorBuffer(cmd, errbuf);

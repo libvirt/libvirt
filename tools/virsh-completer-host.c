@@ -54,11 +54,11 @@ virshAllocpagesPagesizeCompleter(vshControl *ctl,
                                  const vshCmd *cmd G_GNUC_UNUSED,
                                  unsigned int flags)
 {
-    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     virshControlPtr priv = ctl->privData;
     unsigned int npages = 0;
     g_autofree xmlNodePtr *pages = NULL;
-    VIR_AUTOPTR(xmlDoc) doc = NULL;
+    g_autoptr(xmlDoc) doc = NULL;
     size_t i = 0;
     const char *cellnum = NULL;
     bool cellno = vshCommandOptBool(cmd, "cellno");
@@ -110,11 +110,11 @@ virshCellnoCompleter(vshControl *ctl,
                      const vshCmd *cmd G_GNUC_UNUSED,
                      unsigned int flags)
 {
-    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     virshControlPtr priv = ctl->privData;
     unsigned int ncells = 0;
     g_autofree xmlNodePtr *cells = NULL;
-    VIR_AUTOPTR(xmlDoc) doc = NULL;
+    g_autoptr(xmlDoc) doc = NULL;
     size_t i = 0;
     g_autofree char *cap_xml = NULL;
     char **ret = NULL;

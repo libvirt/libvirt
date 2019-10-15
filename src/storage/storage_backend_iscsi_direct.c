@@ -307,7 +307,7 @@ virISCSIDirectRefreshVol(virStoragePoolObjPtr pool,
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     uint32_t block_size;
     uint64_t nb_block;
-    VIR_AUTOPTR(virStorageVolDef) vol = NULL;
+    g_autoptr(virStorageVolDef) vol = NULL;
 
     if (virISCSIDirectTestUnitReady(iscsi, lun) < 0)
         return -1;
@@ -491,7 +491,7 @@ virStorageBackendISCSIDirectFindPoolSources(const char *srcSpec,
         .sources = NULL
     };
     g_autofree char *portal = NULL;
-    VIR_AUTOPTR(virStoragePoolSource) source = NULL;
+    g_autoptr(virStoragePoolSource) source = NULL;
 
     virCheckFlags(0, NULL);
 

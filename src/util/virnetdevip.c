@@ -166,8 +166,8 @@ virNetDevIPAddrAdd(const char *ifname,
                    unsigned int prefix)
 {
     unsigned int recvbuflen;
-    VIR_AUTOPTR(virNetlinkMsg) nlmsg = NULL;
-    VIR_AUTOPTR(virSocketAddr) broadcast = NULL;
+    g_autoptr(virNetlinkMsg) nlmsg = NULL;
+    g_autoptr(virSocketAddr) broadcast = NULL;
     g_autofree struct nlmsghdr *resp = NULL;
     g_autofree char *ipStr = NULL;
     g_autofree char *peerStr = NULL;
@@ -239,7 +239,7 @@ virNetDevIPAddrDel(const char *ifname,
                    unsigned int prefix)
 {
     unsigned int recvbuflen;
-    VIR_AUTOPTR(virNetlinkMsg) nlmsg = NULL;
+    g_autoptr(virNetlinkMsg) nlmsg = NULL;
     g_autofree struct nlmsghdr *resp = NULL;
 
     if (!(nlmsg = virNetDevCreateNetlinkAddressMessage(RTM_DELADDR, ifname,
@@ -289,7 +289,7 @@ virNetDevIPRouteAdd(const char *ifname,
     int errCode;
     virSocketAddr defaultAddr;
     virSocketAddrPtr actualAddr;
-    VIR_AUTOPTR(virNetlinkMsg) nlmsg = NULL;
+    g_autoptr(virNetlinkMsg) nlmsg = NULL;
     g_autofree char *toStr = NULL;
     g_autofree char *viaStr = NULL;
     g_autofree struct nlmsghdr *resp = NULL;
@@ -431,7 +431,7 @@ virNetDevIPWaitDadFinish(virSocketAddrPtr *addrs, size_t count)
     unsigned int recvbuflen;
     bool dad = true;
     time_t max_time = time(NULL) + VIR_DAD_WAIT_TIMEOUT;
-    VIR_AUTOPTR(virNetlinkMsg) nlmsg = NULL;
+    g_autoptr(virNetlinkMsg) nlmsg = NULL;
 
     if (!(nlmsg = nlmsg_alloc_simple(RTM_GETADDR,
                                      NLM_F_REQUEST | NLM_F_DUMP))) {
@@ -620,7 +620,7 @@ virNetDevIPCheckIPv6Forwarding(void)
         .devices = NULL,
         .ndevices = 0
     };
-    VIR_AUTOPTR(virNetlinkMsg) nlmsg = NULL;
+    g_autoptr(virNetlinkMsg) nlmsg = NULL;
 
 
     /* Prepare the request message */
@@ -688,7 +688,7 @@ virNetDevIPAddrAdd(const char *ifname,
                    unsigned int prefix)
 {
     virSocketAddr broadcast;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     g_autofree char *addrstr = NULL;
     g_autofree char *bcaststr = NULL;
     g_autofree char *peerstr = NULL;
@@ -743,7 +743,7 @@ virNetDevIPAddrDel(const char *ifname,
                    virSocketAddr *addr,
                    unsigned int prefix)
 {
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     g_autofree char *addrstr = NULL;
 
     if (!(addrstr = virSocketAddrFormat(addr)))
@@ -778,7 +778,7 @@ virNetDevIPRouteAdd(const char *ifname,
                     virSocketAddrPtr gateway,
                     unsigned int metric)
 {
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     g_autofree char *addrstr = NULL;
     g_autofree char *gatewaystr = NULL;
 

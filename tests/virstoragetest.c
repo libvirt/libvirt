@@ -117,7 +117,7 @@ testPrepImages(void)
 {
     int ret = EXIT_FAILURE;
     bool compat = false;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     g_autofree char *buf = NULL;
 
     qemuimg = virFindFileInPath("qemu-img");
@@ -663,7 +663,7 @@ mymain(void)
     struct testBackingParseData data5;
     virStorageSourcePtr chain2; /* short for chain->backingStore */
     virStorageSourcePtr chain3; /* short for chain2->backingStore */
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     VIR_AUTOUNREF(virStorageSourcePtr) chain = NULL;
 
     if (storageRegisterAll() < 0)

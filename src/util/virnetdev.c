@@ -2726,7 +2726,7 @@ static int virNetDevGetMcastList(const char *ifname,
     char *buf = NULL;
     char *next = NULL;
     int ret = -1, len;
-    VIR_AUTOPTR(virNetDevMcastEntry) entry = NULL;
+    g_autoptr(virNetDevMcastEntry) entry = NULL;
 
     mcast->entries = NULL;
     mcast->nentries = 0;

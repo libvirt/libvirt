@@ -1199,7 +1199,7 @@ char *
 virBitmapDataFormat(const void *data,
                     int len)
 {
-    VIR_AUTOPTR(virBitmap) map = NULL;
+    g_autoptr(virBitmap) map = NULL;
 
     if (!(map = virBitmapNewData(data, len)))
         return NULL;

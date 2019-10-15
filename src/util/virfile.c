@@ -910,7 +910,7 @@ int virFileNBDDeviceAssociate(const char *file,
 {
     g_autofree char *nbddev = NULL;
     g_autofree char *qemunbd = NULL;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     const char *fmtstr = NULL;
 
     if (!virFileNBDLoadDriver())

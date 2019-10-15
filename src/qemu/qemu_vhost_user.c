@@ -183,8 +183,8 @@ qemuVhostUserPtr
 qemuVhostUserParse(const char *path)
 {
     g_autofree char *cont = NULL;
-    VIR_AUTOPTR(virJSONValue) doc = NULL;
-    VIR_AUTOPTR(qemuVhostUser) vu = NULL;
+    g_autoptr(virJSONValue) doc = NULL;
+    g_autoptr(qemuVhostUser) vu = NULL;
     qemuVhostUserPtr ret = NULL;
 
     if (virFileReadAll(path, DOCUMENT_SIZE, &cont) < 0)
@@ -214,7 +214,7 @@ qemuVhostUserParse(const char *path)
 char *
 qemuVhostUserFormat(qemuVhostUserPtr vu)
 {
-    VIR_AUTOPTR(virJSONValue) doc = NULL;
+    g_autoptr(virJSONValue) doc = NULL;
 
     if (!vu)
         return NULL;
@@ -285,7 +285,7 @@ qemuVhostUserGPUFillCapabilities(qemuVhostUserPtr vu,
     virJSONValuePtr featuresJSON;
     size_t nfeatures;
     size_t i;
-    VIR_AUTOPTR(qemuVhostUserGPUFeature) features = NULL;
+    g_autoptr(qemuVhostUserGPUFeature) features = NULL;
 
     if (!(featuresJSON = virJSONValueObjectGetArray(doc, "features"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -350,9 +350,9 @@ qemuVhostUserFillDomainGPU(virQEMUDriverPtr driver,
         goto end;
 
     for (i = 0; i < nvus; i++) {
-        VIR_AUTOPTR(virJSONValue) doc = NULL;
+        g_autoptr(virJSONValue) doc = NULL;
         g_autofree char *output = NULL;
-        VIR_AUTOPTR(virCommand) cmd = NULL;
+        g_autoptr(virCommand) cmd = NULL;
 
         vu = vus[i];
         if (vu->type != QEMU_VHOST_USER_TYPE_GPU)

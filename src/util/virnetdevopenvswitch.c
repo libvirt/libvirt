@@ -141,7 +141,7 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
     char macaddrstr[VIR_MAC_STRING_BUFLEN];
     char ifuuidstr[VIR_UUID_STRING_BUFLEN];
     char vmuuidstr[VIR_UUID_STRING_BUFLEN];
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     g_autofree char *attachedmac_ex_id = NULL;
     g_autofree char *ifaceid_ex_id = NULL;
     g_autofree char *profile_ex_id = NULL;
@@ -213,7 +213,7 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
  */
 int virNetDevOpenvswitchRemovePort(const char *brname G_GNUC_UNUSED, const char *ifname)
 {
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     cmd = virCommandNew(OVSVSCTL);
     virNetDevOpenvswitchAddTimeout(cmd);
@@ -240,7 +240,7 @@ int virNetDevOpenvswitchRemovePort(const char *brname G_GNUC_UNUSED, const char 
 int virNetDevOpenvswitchGetMigrateData(char **migrate, const char *ifname)
 {
     size_t len;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     cmd = virCommandNew(OVSVSCTL);
     virNetDevOpenvswitchAddTimeout(cmd);
@@ -276,7 +276,7 @@ int virNetDevOpenvswitchGetMigrateData(char **migrate, const char *ifname)
  */
 int virNetDevOpenvswitchSetMigrateData(char *migrate, const char *ifname)
 {
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     if (!migrate) {
         VIR_DEBUG("No OVS port data for interface %s", ifname);
@@ -315,7 +315,7 @@ int
 virNetDevOpenvswitchInterfaceParseStats(const char *json,
                                         virDomainInterfaceStatsPtr stats)
 {
-    VIR_AUTOPTR(virJSONValue) jsonStats = NULL;
+    g_autoptr(virJSONValue) jsonStats = NULL;
     virJSONValuePtr jsonMap = NULL;
     size_t i;
 
@@ -386,7 +386,7 @@ int
 virNetDevOpenvswitchInterfaceStats(const char *ifname,
                                    virDomainInterfaceStatsPtr stats)
 {
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     g_autofree char *output = NULL;
 
     cmd = virCommandNew(OVSVSCTL);
@@ -504,7 +504,7 @@ virNetDevOpenvswitchGetVhostuserIfname(const char *path,
     size_t ntokens = 0;
     int status;
     int ret = -1;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     /* Openvswitch vhostuser path are hardcoded to
      * /<runstatedir>/openvswitch/<ifname>
@@ -550,7 +550,7 @@ virNetDevOpenvswitchGetVhostuserIfname(const char *path,
 int virNetDevOpenvswitchUpdateVlan(const char *ifname,
                                    virNetDevVlanPtr virtVlan)
 {
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     cmd = virCommandNew(OVSVSCTL);
     virNetDevOpenvswitchAddTimeout(cmd);

@@ -47,10 +47,10 @@ testCompareXMLToArgvFiles(bool shouldFail,
     virStoragePoolDefPtr def = NULL;
     virStoragePoolObjPtr obj = NULL;
     g_autofree char *actualCmdline = NULL;
-    VIR_AUTOPTR(virStorageVolDef) vol = NULL;
-    VIR_AUTOPTR(virStorageVolDef) inputvol = NULL;
-    VIR_AUTOPTR(virStoragePoolDef) inputpool = NULL;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virStorageVolDef) vol = NULL;
+    g_autoptr(virStorageVolDef) inputvol = NULL;
+    g_autoptr(virStoragePoolDef) inputpool = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     if (!(def = virStoragePoolDefParseFile(poolxml)))
         goto cleanup;

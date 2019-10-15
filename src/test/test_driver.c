@@ -1075,7 +1075,7 @@ testOpenVolumesForPool(const char *file,
     int num;
     g_autofree char *vol_xpath = NULL;
     g_autofree xmlNodePtr *nodes = NULL;
-    VIR_AUTOPTR(virStorageVolDef) volDef = NULL;
+    g_autoptr(virStorageVolDef) volDef = NULL;
 
     /* Find storage volumes */
     if (virAsprintf(&vol_xpath, "/node/pool[%d]/volume", objidx) < 0)
@@ -6347,7 +6347,7 @@ testConnectFindStoragePoolSources(virConnectPtr conn G_GNUC_UNUSED,
 {
     int pool_type;
     char *ret = NULL;
-    VIR_AUTOPTR(virStoragePoolSource) source = NULL;
+    g_autoptr(virStoragePoolSource) source = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -6428,7 +6428,7 @@ testStoragePoolCreateXML(virConnectPtr conn,
     virStoragePoolDefPtr def;
     virStoragePoolPtr pool = NULL;
     virObjectEventPtr event = NULL;
-    VIR_AUTOPTR(virStoragePoolDef) newDef = NULL;
+    g_autoptr(virStoragePoolDef) newDef = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -6491,7 +6491,7 @@ testStoragePoolDefineXML(virConnectPtr conn,
     virStoragePoolDefPtr def;
     virStoragePoolPtr pool = NULL;
     virObjectEventPtr event = NULL;
-    VIR_AUTOPTR(virStoragePoolDef) newDef = NULL;
+    g_autoptr(virStoragePoolDef) newDef = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -6994,7 +6994,7 @@ testStorageVolCreateXML(virStoragePoolPtr pool,
     virStoragePoolObjPtr obj;
     virStoragePoolDefPtr def;
     virStorageVolPtr ret = NULL;
-    VIR_AUTOPTR(virStorageVolDef) privvol = NULL;
+    g_autoptr(virStorageVolDef) privvol = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -7054,7 +7054,7 @@ testStorageVolCreateXMLFrom(virStoragePoolPtr pool,
     virStoragePoolDefPtr def;
     virStorageVolDefPtr origvol = NULL;
     virStorageVolPtr ret = NULL;
-    VIR_AUTOPTR(virStorageVolDef) privvol = NULL;
+    g_autoptr(virStorageVolDef) privvol = NULL;
 
     virCheckFlags(0, NULL);
 

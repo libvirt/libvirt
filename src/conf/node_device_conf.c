@@ -2052,7 +2052,7 @@ virNodeDeviceDefParseNode(xmlDocPtr xml,
                           int create,
                           const char *virt_type)
 {
-    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
 
     if (!virXMLNodeNameEqual(root, "device")) {
         virReportError(VIR_ERR_XML_ERROR,

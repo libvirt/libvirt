@@ -1580,7 +1580,7 @@ static int
 virQEMUCapsSEVInfoCopy(virSEVCapabilityPtr *dst,
                        virSEVCapabilityPtr src)
 {
-    VIR_AUTOPTR(virSEVCapability) tmp = NULL;
+    g_autoptr(virSEVCapability) tmp = NULL;
 
     if (VIR_ALLOC(tmp) < 0 ||
         VIR_STRDUP(tmp->pdh, src->pdh) < 0 ||
@@ -3576,7 +3576,7 @@ virQEMUCapsCachePrivFree(void *privData)
 static int
 virQEMUCapsParseSEVInfo(virQEMUCapsPtr qemuCaps, xmlXPathContextPtr ctxt)
 {
-    VIR_AUTOPTR(virSEVCapability) sev = NULL;
+    g_autoptr(virSEVCapability) sev = NULL;
 
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SEV_GUEST))
         return 0;
@@ -5583,7 +5583,7 @@ virQEMUCapsFillDomainFeatureSEVCaps(virQEMUCapsPtr qemuCaps,
                                     virDomainCapsPtr domCaps)
 {
     virSEVCapability *cap = qemuCaps->sevCapabilities;
-    VIR_AUTOPTR(virSEVCapability) sev = NULL;
+    g_autoptr(virSEVCapability) sev = NULL;
 
     if (!cap)
         return 0;

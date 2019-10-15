@@ -297,7 +297,7 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
     };
     struct pollfd fds[1];
     g_autofree struct nlmsghdr *temp_resp = NULL;
-    VIR_AUTOPTR(virNetlinkHandle) nlhandle = NULL;
+    g_autoptr(virNetlinkHandle) nlhandle = NULL;
     int len = 0;
 
     memset(fds, 0, sizeof(fds));
@@ -338,7 +338,7 @@ virNetlinkDumpCommand(struct nl_msg *nl_msg,
             .nl_pid    = dst_pid,
             .nl_groups = 0,
     };
-    VIR_AUTOPTR(virNetlinkHandle) nlhandle = NULL;
+    g_autoptr(virNetlinkHandle) nlhandle = NULL;
 
     if (!(nlhandle = virNetlinkSendRequest(nl_msg, src_pid, nladdr,
                                            protocol, groups)))
@@ -396,7 +396,7 @@ virNetlinkDumpLink(const char *ifname, int ifindex,
         .ifi_index  = ifindex
     };
     unsigned int recvbuflen;
-    VIR_AUTOPTR(virNetlinkMsg) nl_msg = NULL;
+    g_autoptr(virNetlinkMsg) nl_msg = NULL;
     g_autofree struct nlmsghdr *resp = NULL;
 
     if (ifname && ifindex <= 0 && virNetDevGetIndex(ifname, &ifindex) < 0)
@@ -507,7 +507,7 @@ virNetlinkNewLink(const char *ifname,
     struct nlattr *infodata = NULL;
     unsigned int buflen;
     struct ifinfomsg ifinfo = { .ifi_family = AF_UNSPEC };
-    VIR_AUTOPTR(virNetlinkMsg) nl_msg = NULL;
+    g_autoptr(virNetlinkMsg) nl_msg = NULL;
     g_autofree struct nlmsghdr *resp = NULL;
 
     *error = 0;
@@ -613,7 +613,7 @@ virNetlinkDelLink(const char *ifname, virNetlinkDelLinkFallback fallback)
     struct nlmsgerr *err;
     struct ifinfomsg ifinfo = { .ifi_family = AF_UNSPEC };
     unsigned int recvbuflen;
-    VIR_AUTOPTR(virNetlinkMsg) nl_msg = NULL;
+    g_autoptr(virNetlinkMsg) nl_msg = NULL;
     g_autofree struct nlmsghdr *resp = NULL;
 
     nl_msg = nlmsg_alloc_simple(RTM_DELLINK,
@@ -697,7 +697,7 @@ virNetlinkGetNeighbor(void **nlData, uint32_t src_pid, uint32_t dst_pid)
         .ndm_family = AF_UNSPEC,
     };
     unsigned int recvbuflen;
-    VIR_AUTOPTR(virNetlinkMsg) nl_msg = NULL;
+    g_autoptr(virNetlinkMsg) nl_msg = NULL;
     g_autofree struct nlmsghdr *resp = NULL;
 
     nl_msg = nlmsg_alloc_simple(RTM_GETNEIGH, NLM_F_DUMP | NLM_F_REQUEST);

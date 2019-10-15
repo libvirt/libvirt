@@ -797,7 +797,7 @@ qemuBlockJobEventProcessConcludedRemoveChain(virQEMUDriverPtr driver,
                                              qemuDomainAsyncJob asyncJob,
                                              virStorageSourcePtr chain)
 {
-    VIR_AUTOPTR(qemuBlockStorageSourceChainData) data = NULL;
+    g_autoptr(qemuBlockStorageSourceChainData) data = NULL;
 
     if (!(data = qemuBlockStorageSourceChainDetachPrepareBlockdev(chain)))
         return;
@@ -1212,7 +1212,7 @@ qemuBlockJobProcessEventConcludedCreate(virQEMUDriverPtr driver,
                                         qemuBlockJobDataPtr job,
                                         qemuDomainAsyncJob asyncJob)
 {
-    VIR_AUTOPTR(qemuBlockStorageSourceAttachData) backend = NULL;
+    g_autoptr(qemuBlockStorageSourceAttachData) backend = NULL;
 
     /* if there is a synchronous client waiting for this job that means that
      * it will handle further hotplug of the created volume and also that

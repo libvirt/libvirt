@@ -111,7 +111,7 @@ virAuthGetCredential(const char *servicename,
                      const char *path,
                      char **value)
 {
-    VIR_AUTOPTR(virAuthConfig) config = NULL;
+    g_autoptr(virAuthConfig) config = NULL;
     const char *tmp;
 
     *value = NULL;

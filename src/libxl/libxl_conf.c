@@ -1868,7 +1868,7 @@ libxlDriverConfigGet(libxlDriverPrivatePtr driver)
 int libxlDriverConfigLoadFile(libxlDriverConfigPtr cfg,
                               const char *filename)
 {
-    VIR_AUTOPTR(virConf) conf = NULL;
+    g_autoptr(virConf) conf = NULL;
 
     /* defaults for keepalive messages */
     cfg->keepAliveInterval = 5;

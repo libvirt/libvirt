@@ -14487,7 +14487,7 @@ qemuDomainMigrateSetMaxSpeed(virDomainPtr dom,
     virDomainObjPtr vm;
     qemuDomainObjPrivatePtr priv;
     bool postcopy = !!(flags & VIR_DOMAIN_MIGRATE_MAX_SPEED_POSTCOPY);
-    VIR_AUTOPTR(qemuMigrationParams) migParams = NULL;
+    g_autoptr(qemuMigrationParams) migParams = NULL;
     unsigned long long max;
     int ret = -1;
 
@@ -14565,7 +14565,7 @@ qemuDomainMigrationGetPostcopyBandwidth(virQEMUDriverPtr driver,
                                         virDomainObjPtr vm,
                                         unsigned long *bandwidth)
 {
-    VIR_AUTOPTR(qemuMigrationParams) migParams = NULL;
+    g_autoptr(qemuMigrationParams) migParams = NULL;
     unsigned long long bw;
     int rc;
     int ret = -1;
@@ -15687,7 +15687,7 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
                                    qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    VIR_AUTOPTR(virJSONValue) actions = NULL;
+    g_autoptr(virJSONValue) actions = NULL;
     int rc;
     int ret = -1;
     size_t i;
@@ -18223,8 +18223,8 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     VIR_AUTOUNREF(virStorageSourcePtr) mirror = mirrorsrc;
     bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
     bool mirror_initialized = false;
-    VIR_AUTOPTR(qemuBlockStorageSourceChainData) data = NULL;
-    VIR_AUTOPTR(qemuBlockStorageSourceChainData) crdata = NULL;
+    g_autoptr(qemuBlockStorageSourceChainData) data = NULL;
+    g_autoptr(qemuBlockStorageSourceChainData) crdata = NULL;
     virStorageSourcePtr n;
     virStorageSourcePtr mirrorBacking = NULL;
     int rc = 0;
@@ -21586,7 +21586,7 @@ qemuDomainGetStats(virConnectPtr conn,
                    unsigned int flags)
 {
     g_autofree virDomainStatsRecordPtr tmp = NULL;
-    VIR_AUTOPTR(virTypedParamList) params = NULL;
+    g_autoptr(virTypedParamList) params = NULL;
     size_t i;
 
     if (VIR_ALLOC(params) < 0)

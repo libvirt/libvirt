@@ -1887,7 +1887,7 @@ virNetworkObjLoadAllPorts(virNetworkObjPtr net,
     int ret = -1;
     int rc;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-    VIR_AUTOPTR(virNetworkPortDef) portdef = NULL;
+    g_autoptr(virNetworkPortDef) portdef = NULL;
 
     if (!(dir = virNetworkObjGetPortStatusDir(net, stateDir)))
         goto cleanup;

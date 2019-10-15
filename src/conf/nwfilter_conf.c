@@ -2746,7 +2746,7 @@ virNWFilterDefPtr
 virNWFilterDefParseNode(xmlDocPtr xml,
                         xmlNodePtr root)
 {
-    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
 
     if (STRNEQ((const char *)root->name, "filter")) {
         virReportError(VIR_ERR_XML_ERROR,

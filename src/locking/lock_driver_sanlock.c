@@ -119,7 +119,7 @@ static int
 virLockManagerSanlockLoadConfig(virLockManagerSanlockDriverPtr driver,
                                 const char *configFile)
 {
-    VIR_AUTOPTR(virConf) conf = NULL;
+    g_autoptr(virConf) conf = NULL;
     int ret = -1;
     char *user = NULL;
     char *group = NULL;

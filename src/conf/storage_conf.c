@@ -534,7 +534,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
     size_t i;
     virStoragePoolOptionsPtr options;
     int n;
-    VIR_AUTOPTR(virStorageAuthDef) authdef = NULL;
+    g_autoptr(virStorageAuthDef) authdef = NULL;
     g_autofree char *port = NULL;
     g_autofree char *ver = NULL;
     g_autofree xmlNodePtr *nodeset = NULL;
@@ -695,10 +695,10 @@ virStoragePoolSourcePtr
 virStoragePoolDefParseSourceString(const char *srcSpec,
                                    int pool_type)
 {
-    VIR_AUTOPTR(xmlDoc) doc = NULL;
+    g_autoptr(xmlDoc) doc = NULL;
     xmlNodePtr node = NULL;
-    VIR_AUTOPTR(xmlXPathContext) xpath_ctxt = NULL;
-    VIR_AUTOPTR(virStoragePoolSource) def = NULL;
+    g_autoptr(xmlXPathContext) xpath_ctxt = NULL;
+    g_autoptr(virStoragePoolSource) def = NULL;
 
     if (!(doc = virXMLParseStringCtxt(srcSpec,
                                       _("(storage_source_specification)"),
@@ -849,7 +849,7 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
     virStoragePoolOptionsPtr options;
     virStoragePoolDefPtr ret = NULL;
     xmlNodePtr source_node;
-    VIR_AUTOPTR(virStoragePoolDef) def = NULL;
+    g_autoptr(virStoragePoolDef) def = NULL;
     g_autofree char *type = NULL;
     g_autofree char *uuid = NULL;
     g_autofree char *target_path = NULL;
@@ -1007,7 +1007,7 @@ virStoragePoolDefPtr
 virStoragePoolDefParseNode(xmlDocPtr xml,
                            xmlNodePtr root)
 {
-    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
 
     if (!virXMLNodeNameEqual(root, "pool")) {
         virReportError(VIR_ERR_XML_ERROR,
@@ -1278,7 +1278,7 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
     xmlNodePtr node;
     size_t i;
     int n;
-    VIR_AUTOPTR(virStorageVolDef) def = NULL;
+    g_autoptr(virStorageVolDef) def = NULL;
     g_autofree char *type = NULL;
     g_autofree char *allocation = NULL;
     g_autofree char *capacity = NULL;
@@ -1444,7 +1444,7 @@ virStorageVolDefParseNode(virStoragePoolDefPtr pool,
                           xmlNodePtr root,
                           unsigned int flags)
 {
-    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
 
     if (!virXMLNodeNameEqual(root, "volume")) {
         virReportError(VIR_ERR_XML_ERROR,

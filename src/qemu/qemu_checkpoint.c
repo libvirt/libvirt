@@ -159,7 +159,7 @@ qemuCheckpointDiscard(virQEMUDriverPtr driver,
                 parentdef = virDomainCheckpointObjGetDef(moment);
                 for (j = 0; j < parentdef->ndisks; j++) {
                     virDomainCheckpointDiskDef *disk2;
-                    VIR_AUTOPTR(virJSONValue) arr = NULL;
+                    g_autoptr(virJSONValue) arr = NULL;
 
                     disk2 = &parentdef->disks[j];
                     if (STRNEQ(disk->name, disk2->name) ||
@@ -356,7 +356,7 @@ qemuCheckpointCreateXML(virDomainPtr domain,
     virDomainMomentObjPtr other = NULL;
     VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = NULL;
     VIR_AUTOUNREF(virCapsPtr) caps = NULL;
-    VIR_AUTOPTR(virJSONValue) actions = NULL;
+    g_autoptr(virJSONValue) actions = NULL;
     int ret;
     VIR_AUTOUNREF(virDomainCheckpointDefPtr) def = NULL;
 

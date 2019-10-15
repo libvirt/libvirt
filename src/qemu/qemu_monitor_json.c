@@ -2679,7 +2679,7 @@ qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorPtr mon,
     int nstats = 0;
     int rc;
     size_t i;
-    VIR_AUTOPTR(virJSONValue) devices = NULL;
+    g_autoptr(virJSONValue) devices = NULL;
 
     if (!(devices = qemuMonitorJSONQueryBlockstats(mon)))
         return -1;
@@ -4347,8 +4347,8 @@ qemuMonitorJSONDriveMirror(qemuMonitorPtr mon,
                            bool shallow,
                            bool reuse)
 {
-    VIR_AUTOPTR(virJSONValue) cmd = NULL;
-    VIR_AUTOPTR(virJSONValue) reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
 
     cmd = qemuMonitorJSONMakeCommand("drive-mirror",
                                      "s:device", device,
@@ -4381,8 +4381,8 @@ qemuMonitorJSONBlockdevMirror(qemuMonitorPtr mon,
                               unsigned long long buf_size,
                               bool shallow)
 {
-    VIR_AUTOPTR(virJSONValue) cmd = NULL;
-    VIR_AUTOPTR(virJSONValue) reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
     virTristateBool autofinalize = VIR_TRISTATE_BOOL_ABSENT;
     virTristateBool autodismiss = VIR_TRISTATE_BOOL_ABSENT;
 
@@ -5023,8 +5023,8 @@ int
 qemuMonitorJSONJobDismiss(qemuMonitorPtr mon,
                           const char *jobname)
 {
-    VIR_AUTOPTR(virJSONValue) cmd = NULL;
-    VIR_AUTOPTR(virJSONValue) reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("job-dismiss",
                                            "s:id", jobname,
@@ -5046,8 +5046,8 @@ qemuMonitorJSONJobCancel(qemuMonitorPtr mon,
                          const char *jobname,
                          bool quiet)
 {
-    VIR_AUTOPTR(virJSONValue) cmd = NULL;
-    VIR_AUTOPTR(virJSONValue) reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("job-cancel",
                                            "s:id", jobname,
@@ -5073,8 +5073,8 @@ int
 qemuMonitorJSONJobComplete(qemuMonitorPtr mon,
                            const char *jobname)
 {
-    VIR_AUTOPTR(virJSONValue) cmd = NULL;
-    VIR_AUTOPTR(virJSONValue) reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("job-complete",
                                            "s:id", jobname,
@@ -5808,9 +5808,9 @@ qemuMonitorJSONGetCPUModelExpansion(qemuMonitorPtr mon,
                                     bool fail_no_props,
                                     qemuMonitorCPUModelInfoPtr *model_info)
 {
-    VIR_AUTOPTR(virJSONValue) model = NULL;
-    VIR_AUTOPTR(virJSONValue) cmd = NULL;
-    VIR_AUTOPTR(virJSONValue) reply = NULL;
+    g_autoptr(virJSONValue) model = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
     virJSONValuePtr data;
     virJSONValuePtr cpu_model;
     virJSONValuePtr cpu_props = NULL;
@@ -5883,10 +5883,10 @@ qemuMonitorJSONGetCPUModelBaseline(qemuMonitorPtr mon,
                                    virCPUDefPtr cpu_b,
                                    qemuMonitorCPUModelInfoPtr *baseline)
 {
-    VIR_AUTOPTR(virJSONValue) model_a = NULL;
-    VIR_AUTOPTR(virJSONValue) model_b = NULL;
-    VIR_AUTOPTR(virJSONValue) cmd = NULL;
-    VIR_AUTOPTR(virJSONValue) reply = NULL;
+    g_autoptr(virJSONValue) model_a = NULL;
+    g_autoptr(virJSONValue) model_b = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
     virJSONValuePtr data;
     virJSONValuePtr cpu_model;
     virJSONValuePtr cpu_props = NULL;
@@ -5925,10 +5925,10 @@ qemuMonitorJSONGetCPUModelComparison(qemuMonitorPtr mon,
                                      virCPUDefPtr cpu_b,
                                      char **result)
 {
-    VIR_AUTOPTR(virJSONValue) model_a = NULL;
-    VIR_AUTOPTR(virJSONValue) model_b = NULL;
-    VIR_AUTOPTR(virJSONValue) cmd = NULL;
-    VIR_AUTOPTR(virJSONValue) reply = NULL;
+    g_autoptr(virJSONValue) model_a = NULL;
+    g_autoptr(virJSONValue) model_b = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
     const char *data_result;
     virJSONValuePtr data;
 
@@ -6468,8 +6468,8 @@ qemuMonitorJSONGetStringListProperty(qemuMonitorPtr mon,
                                      const char *property,
                                      char ***strList)
 {
-    VIR_AUTOPTR(virJSONValue) cmd = NULL;
-    VIR_AUTOPTR(virJSONValue) reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
     VIR_AUTOSTRINGLIST list = NULL;
     virJSONValuePtr data;
     size_t n;
@@ -6959,7 +6959,7 @@ qemuMonitorJSONGetSEVCapabilities(qemuMonitorPtr mon,
     const char *cert_chain = NULL;
     unsigned int cbitpos;
     unsigned int reduced_phys_bits;
-    VIR_AUTOPTR(virSEVCapability) capability = NULL;
+    g_autoptr(virSEVCapability) capability = NULL;
 
     *capabilities = NULL;
 
@@ -7750,8 +7750,8 @@ static int
 qemuMonitorJSONGetCPUProperties(qemuMonitorPtr mon,
                                 char ***props)
 {
-    VIR_AUTOPTR(virJSONValue) cmd = NULL;
-    VIR_AUTOPTR(virJSONValue) reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
 
     *props = NULL;
 
@@ -8699,8 +8699,8 @@ qemuMonitorJSONBlockdevCreate(qemuMonitorPtr mon,
                               const char *jobname,
                               virJSONValuePtr props)
 {
-    VIR_AUTOPTR(virJSONValue) cmd = NULL;
-    VIR_AUTOPTR(virJSONValue) reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
 
     cmd = qemuMonitorJSONMakeCommand("blockdev-create",
                                      "s:job-id", jobname,
@@ -9292,7 +9292,7 @@ qemuMonitorJSONGetJobInfoOne(virJSONValuePtr data)
     const char *status = virJSONValueObjectGetString(data, "status");
     const char *errmsg = virJSONValueObjectGetString(data, "error");
     int tmp;
-    VIR_AUTOPTR(qemuMonitorJobInfo) job = NULL;
+    g_autoptr(qemuMonitorJobInfo) job = NULL;
     qemuMonitorJobInfoPtr ret = NULL;
 
     if (VIR_ALLOC(job) < 0)
@@ -9323,8 +9323,8 @@ qemuMonitorJSONGetJobInfo(qemuMonitorPtr mon,
                           size_t *njobs)
 {
     virJSONValuePtr data;
-    VIR_AUTOPTR(virJSONValue) cmd = NULL;
-    VIR_AUTOPTR(virJSONValue) reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
     size_t i;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("query-jobs", NULL)))

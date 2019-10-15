@@ -1079,7 +1079,7 @@ lxcParseConfigString(const char *config,
                      virDomainXMLOptionPtr xmlopt)
 {
     virDomainDefPtr vmdef = NULL;
-    VIR_AUTOPTR(virConf) properties = NULL;
+    g_autoptr(virConf) properties = NULL;
     g_autofree char *value = NULL;
 
     if (!(properties = virConfReadString(config, VIR_CONF_FLAG_LXC_FORMAT)))

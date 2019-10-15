@@ -209,7 +209,7 @@ virDomainCheckpointDefParseNode(xmlDocPtr xml,
                                 void *parseOpaque,
                                 unsigned int flags)
 {
-    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     g_autofree char *schema = NULL;
 
     if (!virXMLNodeNameEqual(root, "domaincheckpoint")) {

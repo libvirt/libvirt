@@ -70,7 +70,7 @@ int
 virBhyveLoadDriverConfig(virBhyveDriverConfigPtr cfg,
                          const char *filename)
 {
-    VIR_AUTOPTR(virConf) conf = NULL;
+    g_autoptr(virConf) conf = NULL;
 
     if (access(filename, R_OK) == -1) {
         VIR_INFO("Could not read bhyve config file %s", filename);

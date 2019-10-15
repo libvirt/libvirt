@@ -49,7 +49,7 @@ virStorageBackendLogicalSetActive(virStoragePoolObjPtr pool,
                                   bool on)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     int ret;
 
     cmd = virStorageBackendLogicalChangeCmd(VGCHANGE, def, on);
@@ -71,7 +71,7 @@ virStorageBackendLogicalSetActive(virStoragePoolObjPtr pool,
 static void
 virStorageBackendLogicalRemoveDevice(const char *path)
 {
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     cmd = virCommandNewArgList(PVREMOVE, path, NULL);
     if (virCommandRun(cmd, NULL) < 0)
@@ -89,7 +89,7 @@ virStorageBackendLogicalRemoveDevice(const char *path)
 static int
 virStorageBackendLogicalInitializeDevice(const char *path)
 {
-    VIR_AUTOPTR(virCommand) pvcmd = NULL;
+    g_autoptr(virCommand) pvcmd = NULL;
 
     /*
      * LVM requires that the first sector is blanked if using
@@ -421,7 +421,7 @@ virStorageBackendLogicalFindLVs(virStoragePoolObjPtr pool,
         .pool = pool,
         .vol = vol,
     };
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     cmd = virCommandNewArgList(LVS,
                                "--separator", "#",
@@ -520,7 +520,7 @@ virStorageBackendLogicalGetPoolSources(virStoragePoolSourceListPtr sourceList)
     int vars[] = {
         2
     };
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     /*
      * NOTE: ignoring errors here; this is just to "touch" any logical volumes
@@ -702,7 +702,7 @@ virStorageBackendLogicalBuildPool(virStoragePoolObjPtr pool,
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     int ret = -1;
     size_t i = 0;
-    VIR_AUTOPTR(virCommand) vgcmd = NULL;
+    g_autoptr(virCommand) vgcmd = NULL;
 
     virCheckFlags(VIR_STORAGE_POOL_BUILD_OVERWRITE |
                   VIR_STORAGE_POOL_BUILD_NO_OVERWRITE, ret);
@@ -765,7 +765,7 @@ virStorageBackendLogicalRefreshPool(virStoragePoolObjPtr pool)
         2
     };
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     virWaitForDevices();
 
@@ -817,7 +817,7 @@ virStorageBackendLogicalDeletePool(virStoragePoolObjPtr pool,
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     size_t i;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     virCheckFlags(0, -1);
 
@@ -841,8 +841,8 @@ virStorageBackendLogicalDeleteVol(virStoragePoolObjPtr pool G_GNUC_UNUSED,
                                   virStorageVolDefPtr vol,
                                   unsigned int flags)
 {
-    VIR_AUTOPTR(virCommand) lvchange_cmd = NULL;
-    VIR_AUTOPTR(virCommand) lvremove_cmd = NULL;
+    g_autoptr(virCommand) lvchange_cmd = NULL;
+    g_autoptr(virCommand) lvremove_cmd = NULL;
 
     virCheckFlags(0, -1);
 
@@ -869,7 +869,7 @@ virStorageBackendLogicalLVCreate(virStorageVolDefPtr vol,
                                  virStoragePoolDefPtr def)
 {
     unsigned long long capacity = vol->target.capacity;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     if (vol->target.encryption &&
         vol->target.encryption->format != VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {

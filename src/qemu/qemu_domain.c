@@ -3648,7 +3648,7 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     for (i = 0; i < n; i++) {
         g_autofree char *alias = virXMLPropString(nodes[i], "alias");
         g_autofree char *pid = virXMLPropString(nodes[i], "pid");
-        VIR_AUTOPTR(qemuSlirp) slirp = qemuSlirpNew();
+        g_autoptr(qemuSlirp) slirp = qemuSlirpNew();
         virDomainDeviceDef dev;
 
         if (!alias || !pid || !slirp ||

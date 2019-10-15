@@ -1275,7 +1275,7 @@ virVMXParseConfig(virVMXContext *ctx,
                   const char *vmx)
 {
     bool success = false;
-    VIR_AUTOPTR(virConf) conf = NULL;
+    g_autoptr(virConf) conf = NULL;
     char *encoding = NULL;
     char *utf8;
     virDomainDefPtr def = NULL;

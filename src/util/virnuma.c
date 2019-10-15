@@ -57,7 +57,7 @@ char *
 virNumaGetAutoPlacementAdvice(unsigned short vcpus,
                               unsigned long long balloon)
 {
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     char *output = NULL;
 
     cmd = virCommandNewArgList(NUMAD, "-w", NULL);
@@ -259,7 +259,7 @@ virNumaGetNodeCPUs(int node,
     size_t i;
     g_autofree unsigned long *mask = NULL;
     g_autofree unsigned long *allonesmask = NULL;
-    VIR_AUTOPTR(virBitmap) cpumap = NULL;
+    g_autoptr(virBitmap) cpumap = NULL;
 
     *cpus = NULL;
 
@@ -312,7 +312,7 @@ int
 virNumaNodesetToCPUset(virBitmapPtr nodeset,
                        virBitmapPtr *cpuset)
 {
-    VIR_AUTOPTR(virBitmap) allNodesCPUs = NULL;
+    g_autoptr(virBitmap) allNodesCPUs = NULL;
     size_t nodesetSize;
     size_t i;
 
@@ -325,7 +325,7 @@ virNumaNodesetToCPUset(virBitmapPtr nodeset,
     nodesetSize = virBitmapSize(nodeset);
 
     for (i = 0; i < nodesetSize; i++) {
-        VIR_AUTOPTR(virBitmap) nodeCPUs = NULL;
+        g_autoptr(virBitmap) nodeCPUs = NULL;
 
         if (!virBitmapIsBitSet(nodeset, i))
             continue;

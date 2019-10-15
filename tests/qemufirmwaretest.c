@@ -18,9 +18,9 @@ testParseFormatFW(const void *opaque)
 {
     const char *filename = opaque;
     g_autofree char *path = NULL;
-    VIR_AUTOPTR(qemuFirmware) fw = NULL;
+    g_autoptr(qemuFirmware) fw = NULL;
     g_autofree char *buf = NULL;
-    VIR_AUTOPTR(virJSONValue) json = NULL;
+    g_autoptr(virJSONValue) json = NULL;
     g_autofree char *expected = NULL;
     g_autofree char *actual = NULL;
 

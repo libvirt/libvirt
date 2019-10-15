@@ -33,7 +33,7 @@ static int testConfRoundTrip(const void *opaque)
 {
     const char *name = opaque;
     int ret = -1;
-    VIR_AUTOPTR(virConf) conf = NULL;
+    g_autoptr(virConf) conf = NULL;
     int len = 10000;
     char *buffer = NULL;
     char *srcfile = NULL;
@@ -79,7 +79,7 @@ static int testConfMemoryNoNewline(const void *opaque G_GNUC_UNUSED)
         "string = 'foo'\n" \
         "uint = 12345";
 
-    VIR_AUTOPTR(virConf) conf = virConfReadString(srcdata, 0);
+    g_autoptr(virConf) conf = virConfReadString(srcdata, 0);
     int ret = -1;
     virConfValuePtr val;
     unsigned long long llvalue;
@@ -148,7 +148,7 @@ static int testConfParseInt(const void *opaque G_GNUC_UNUSED)
         "ssize_t = -87539319\n" \
         "string = \"foo\"\n";
 
-    VIR_AUTOPTR(virConf) conf = virConfReadString(srcdata, 0);
+    g_autoptr(virConf) conf = virConfReadString(srcdata, 0);
     int iv;
     unsigned int ui;
     size_t s;
@@ -293,7 +293,7 @@ static int testConfParseBool(const void *opaque G_GNUC_UNUSED)
         "int = 6963472309248\n" \
         "string = \"foo\"\n";
 
-    VIR_AUTOPTR(virConf) conf = virConfReadString(srcdata, 0);
+    g_autoptr(virConf) conf = virConfReadString(srcdata, 0);
     bool f = true;
     bool t = false;
 
@@ -353,7 +353,7 @@ static int testConfParseString(const void *opaque G_GNUC_UNUSED)
         "string = \"foo\"\n";
 
     int ret = -1;
-    VIR_AUTOPTR(virConf) conf = virConfReadString(srcdata, 0);
+    g_autoptr(virConf) conf = virConfReadString(srcdata, 0);
     char *str = NULL;
 
     if (!conf)
@@ -392,7 +392,7 @@ static int testConfParseStringList(const void *opaque G_GNUC_UNUSED)
         "string = \"foo\"\n";
 
     int ret = -1;
-    VIR_AUTOPTR(virConf) conf = virConfReadString(srcdata, 0);
+    g_autoptr(virConf) conf = virConfReadString(srcdata, 0);
     char **str = NULL;
 
     if (!conf)

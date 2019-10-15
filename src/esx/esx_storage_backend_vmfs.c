@@ -851,7 +851,7 @@ esxStorageVolCreateXML(virStoragePoolPtr pool,
     char *taskInfoErrorMessage = NULL;
     char *uuid_string = NULL;
     char *key = NULL;
-    VIR_AUTOPTR(virStorageVolDef) def = NULL;
+    g_autoptr(virStorageVolDef) def = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -1067,7 +1067,7 @@ esxStorageVolCreateXMLFrom(virStoragePoolPtr pool,
     char *taskInfoErrorMessage = NULL;
     char *uuid_string = NULL;
     char *key = NULL;
-    VIR_AUTOPTR(virStorageVolDef) def = NULL;
+    g_autoptr(virStorageVolDef) def = NULL;
 
     virCheckFlags(0, NULL);
 

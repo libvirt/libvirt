@@ -2517,7 +2517,7 @@ qemuProcessGetAllCpuAffinity(virBitmapPtr *cpumapRet)
 static int
 qemuProcessInitCpuAffinity(virDomainObjPtr vm)
 {
-    VIR_AUTOPTR(virBitmap) cpumapToSet = NULL;
+    g_autoptr(virBitmap) cpumapToSet = NULL;
     virDomainNumatuneMemMode mem_mode;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
@@ -2644,7 +2644,7 @@ qemuProcessSetupPid(virDomainObjPtr vm,
     virDomainNumatuneMemMode mem_mode;
     virCgroupPtr cgroup = NULL;
     virBitmapPtr use_cpumask = NULL;
-    VIR_AUTOPTR(virBitmap) hostcpumap = NULL;
+    g_autoptr(virBitmap) hostcpumap = NULL;
     char *mem_mask = NULL;
     int ret = -1;
 

@@ -1965,8 +1965,8 @@ phypStorageVolCreateXML(virStoragePoolPtr pool,
     virStorageVolPtr vol = NULL;
     virStorageVolPtr dup_vol = NULL;
     char *key = NULL;
-    VIR_AUTOPTR(virStorageVolDef) voldef = NULL;
-    VIR_AUTOPTR(virStoragePoolDef) spdef = NULL;
+    g_autoptr(virStorageVolDef) voldef = NULL;
+    g_autoptr(virStoragePoolDef) spdef = NULL;
 
     if (VIR_ALLOC(spdef) < 0)
         return NULL;

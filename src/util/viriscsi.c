@@ -90,7 +90,7 @@ virISCSIGetSession(const char *devpath,
     int exitstatus = 0;
     g_autofree char *error = NULL;
 
-    VIR_AUTOPTR(virCommand) cmd = virCommandNewArgList(ISCSIADM, "--mode",
+    g_autoptr(virCommand) cmd = virCommandNewArgList(ISCSIADM, "--mode",
                                                        "session", NULL);
     virCommandSetErrorBuffer(cmd, &error);
 
@@ -125,7 +125,7 @@ virStorageBackendIQNFound(const char *initiatoriqn,
     g_autofree char *outbuf = NULL;
     g_autofree char *iface = NULL;
     g_autofree char *iqn = NULL;
-    VIR_AUTOPTR(virCommand) cmd = virCommandNewArgList(ISCSIADM,
+    g_autoptr(virCommand) cmd = virCommandNewArgList(ISCSIADM,
                                                        "--mode", "iface", NULL);
 
     *ifacename = NULL;
@@ -210,7 +210,7 @@ virStorageBackendCreateIfaceIQN(const char *initiatoriqn,
     int exitstatus = -1;
     g_autofree char *iface_name = NULL;
     g_autofree char *temp_ifacename = NULL;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     if (virAsprintf(&temp_ifacename,
                     "libvirt-iface-%08llx",
@@ -285,7 +285,7 @@ virISCSIConnection(const char *portal,
         "--targetname", target,
         NULL
     };
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     g_autofree char *ifacename = NULL;
 
     cmd = virCommandNewArgs(baseargv);
@@ -349,7 +349,7 @@ virISCSIConnectionLogout(const char *portal,
 int
 virISCSIRescanLUNs(const char *session)
 {
-    VIR_AUTOPTR(virCommand) cmd = virCommandNewArgList(ISCSIADM,
+    g_autoptr(virCommand) cmd = virCommandNewArgList(ISCSIADM,
                                                        "--mode", "session",
                                                        "-r", session,
                                                        "-R",
@@ -404,7 +404,7 @@ virISCSIScanTargetsInternal(const char *portal,
     int vars[] = { 2 };
     struct virISCSITargetList list;
     size_t i;
-    VIR_AUTOPTR(virCommand) cmd = virCommandNewArgList(ISCSIADM,
+    g_autoptr(virCommand) cmd = virCommandNewArgList(ISCSIADM,
                                                        "--mode", "discovery",
                                                        "--type", "sendtargets",
                                                        "--portal", portal,
@@ -519,7 +519,7 @@ int
 virISCSINodeNew(const char *portal,
                 const char *target)
 {
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     int status;
 
     cmd = virCommandNewArgList(ISCSIADM,
@@ -553,7 +553,7 @@ virISCSINodeUpdate(const char *portal,
                    const char *name,
                    const char *value)
 {
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     int status;
 
     cmd = virCommandNewArgList(ISCSIADM,

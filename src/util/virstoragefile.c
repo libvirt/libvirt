@@ -1369,7 +1369,7 @@ int virStorageFileGetLVMKey(const char *path,
      */
     int status;
     int ret = -1;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     cmd = virCommandNewArgList(LVS, "--noheadings",
                                "--unbuffered", "--nosuffix",
@@ -1442,7 +1442,7 @@ virStorageFileGetSCSIKey(const char *path,
                          bool ignoreError G_GNUC_UNUSED)
 {
     int status;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     cmd = virCommandNewArgList("/lib/udev/scsi_id",
                                "--replace-whitespace",
@@ -1510,7 +1510,7 @@ virStorageFileGetNPIVKey(const char *path,
     const char *serial;
     const char *port;
     g_autofree char *outbuf = NULL;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     cmd = virCommandNewArgList("/lib/udev/scsi_id",
                                "--replace-whitespace",
@@ -1852,7 +1852,7 @@ virStorageAuthDefPtr
 virStorageAuthDefCopy(const virStorageAuthDef *src)
 {
     virStorageAuthDefPtr ret = NULL;
-    VIR_AUTOPTR(virStorageAuthDef) authdef = NULL;
+    g_autoptr(virStorageAuthDef) authdef = NULL;
 
     if (VIR_ALLOC(authdef) < 0)
         return NULL;
@@ -1879,7 +1879,7 @@ virStorageAuthDefParse(xmlNodePtr node,
     xmlNodePtr saveNode = ctxt->node;
     virStorageAuthDefPtr ret = NULL;
     xmlNodePtr secretnode = NULL;
-    VIR_AUTOPTR(virStorageAuthDef) authdef = NULL;
+    g_autoptr(virStorageAuthDef) authdef = NULL;
     g_autofree char *authtype = NULL;
 
     ctxt->node = node;
@@ -2680,7 +2680,7 @@ static int
 virStorageSourceParseBackingURI(virStorageSourcePtr src,
                                 const char *uristr)
 {
-    VIR_AUTOPTR(virURI) uri = NULL;
+    g_autoptr(virURI) uri = NULL;
     const char *path = NULL;
     VIR_AUTOSTRINGLIST scheme = NULL;
 
@@ -2829,7 +2829,7 @@ virStorageSourceParseRBDColonString(const char *rbdstr,
 {
     char *p, *e, *next;
     g_autofree char *options = NULL;
-    VIR_AUTOPTR(virStorageAuthDef) authdef = NULL;
+    g_autoptr(virStorageAuthDef) authdef = NULL;
 
     /* optionally skip the "rbd:" prefix if provided */
     if (STRPREFIX(rbdstr, "rbd:"))
@@ -3615,7 +3615,7 @@ static int
 virStorageSourceParseBackingJSONInternal(virStorageSourcePtr src,
                                          virJSONValuePtr json)
 {
-    VIR_AUTOPTR(virJSONValue) deflattened = NULL;
+    g_autoptr(virJSONValue) deflattened = NULL;
     virJSONValuePtr file;
     const char *drvname;
     size_t i;
@@ -3656,7 +3656,7 @@ static int
 virStorageSourceParseBackingJSON(virStorageSourcePtr src,
                                  const char *json)
 {
-    VIR_AUTOPTR(virJSONValue) root = NULL;
+    g_autoptr(virJSONValue) root = NULL;
 
     if (!(root = virJSONValueFromString(json)))
         return -1;

@@ -1000,7 +1000,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
                                 const char *filename,
                                 bool privileged)
 {
-    VIR_AUTOPTR(virConf) conf = NULL;
+    g_autoptr(virConf) conf = NULL;
 
     /* Just check the file is readable before opening it, otherwise
      * libvirt emits an error.

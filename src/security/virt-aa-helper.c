@@ -170,7 +170,7 @@ parserCommand(const char *profile_name, const char cmd)
         const char * const argv[] = {
             "/sbin/apparmor_parser", flag, profile, NULL
         };
-        VIR_AUTOPTR(virCommand) command = virCommandNewArgs(argv);
+        g_autoptr(virCommand) command = virCommandNewArgs(argv);
 
         virCommandRawStatus(command);
         if ((ret = virCommandRun(command, &status)) != 0 ||

@@ -952,7 +952,7 @@ virNetDevBridgeFDBAddDel(const virMacAddr *mac, const char *ifname,
     struct nlmsgerr *err;
     unsigned int recvbuflen;
     struct ndmsg ndm = { .ndm_family = PF_BRIDGE, .ndm_state = NUD_NOARP };
-    VIR_AUTOPTR(virNetlinkMsg) nl_msg = NULL;
+    g_autoptr(virNetlinkMsg) nl_msg = NULL;
     g_autofree struct nlmsghdr *resp = NULL;
 
     if (virNetDevGetIndex(ifname, &ndm.ndm_ifindex) < 0)

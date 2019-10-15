@@ -2043,8 +2043,8 @@ qemuAgentGetFSInfoInternal(qemuAgentPtr mon,
 {
     size_t i;
     int ret = -1;
-    VIR_AUTOPTR(virJSONValue) cmd = NULL;
-    VIR_AUTOPTR(virJSONValue) reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
     virJSONValuePtr data;
     size_t ndata = 0;
     qemuAgentFSInfoPtr *info_ret = NULL;
@@ -2550,8 +2550,8 @@ qemuAgentGetUsers(qemuAgentPtr mon,
                   int *nparams,
                   int *maxparams)
 {
-    VIR_AUTOPTR(virJSONValue) cmd = NULL;
-    VIR_AUTOPTR(virJSONValue) reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
     virJSONValuePtr data = NULL;
     size_t ndata;
     size_t i;
@@ -2642,8 +2642,8 @@ qemuAgentGetOSInfo(qemuAgentPtr mon,
                    int *nparams,
                    int *maxparams)
 {
-    VIR_AUTOPTR(virJSONValue) cmd = NULL;
-    VIR_AUTOPTR(virJSONValue) reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
     virJSONValuePtr data = NULL;
 
     if (!(cmd = qemuAgentMakeCommand("guest-get-osinfo", NULL)))
@@ -2696,8 +2696,8 @@ qemuAgentGetTimezone(qemuAgentPtr mon,
                      int *nparams,
                      int *maxparams)
 {
-    VIR_AUTOPTR(virJSONValue) cmd = NULL;
-    VIR_AUTOPTR(virJSONValue) reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
     virJSONValuePtr data = NULL;
     const char *name;
     int offset;

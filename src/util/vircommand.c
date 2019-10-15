@@ -488,7 +488,7 @@ virCommandMassClose(virCommandPtr cmd,
                     int childout,
                     int childerr)
 {
-    VIR_AUTOPTR(virBitmap) fds = NULL;
+    g_autoptr(virBitmap) fds = NULL;
     int openmax = sysconf(_SC_OPEN_MAX);
     int fd = -1;
 
@@ -839,7 +839,7 @@ virExec(virCommandPtr cmd)
 int
 virRun(const char *const*argv, int *status)
 {
-    VIR_AUTOPTR(virCommand) cmd = virCommandNewArgs(argv);
+    g_autoptr(virCommand) cmd = virCommandNewArgs(argv);
 
     return virCommandRun(cmd, status);
 }
@@ -3020,7 +3020,7 @@ virCommandFree(virCommandPtr cmd)
  * This requests asynchronous string IO on @cmd. It is useful in
  * combination with virCommandRunAsync():
  *
- *      VIR_AUTOPTR(virCommand) cmd = virCommandNew*(...);
+ *      g_autoptr(virCommand) cmd = virCommandNew*(...);
  *      g_autofree char *buf = NULL;
  *
  *      ...

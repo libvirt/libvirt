@@ -56,7 +56,7 @@ virQEMUBuildCommandLineJSONArrayBitmap(const char *key,
 {
     ssize_t pos = -1;
     ssize_t end;
-    VIR_AUTOPTR(virBitmap) bitmap = NULL;
+    g_autoptr(virBitmap) bitmap = NULL;
 
     if (virJSONValueGetArrayAsBitmap(array, &bitmap) < 0)
         return -1;

@@ -414,7 +414,7 @@ vboxStorageVolCreateXML(virStoragePoolPtr pool,
     PRUint32 variant = HardDiskVariant_Standard;
     resultCodeUnion resultCode;
     virStorageVolPtr ret = NULL;
-    VIR_AUTOPTR(virStorageVolDef) def = NULL;
+    g_autoptr(virStorageVolDef) def = NULL;
 
     if (!data->vboxObj)
         return ret;

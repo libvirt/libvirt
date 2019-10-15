@@ -161,7 +161,7 @@ virStorageBackendISCSIFindPoolSources(const char *srcSpec,
         .sources = NULL
     };
     g_autofree char *portal = NULL;
-    VIR_AUTOPTR(virStoragePoolSource) source = NULL;
+    g_autoptr(virStoragePoolSource) source = NULL;
 
     virCheckFlags(0, NULL);
 

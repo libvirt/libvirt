@@ -81,7 +81,7 @@ static virLockManagerLockDaemonDriverPtr driver;
 
 static int virLockManagerLockDaemonLoadConfig(const char *configFile)
 {
-    VIR_AUTOPTR(virConf) conf = NULL;
+    g_autoptr(virConf) conf = NULL;
 
     if (access(configFile, R_OK) == -1) {
         if (errno != ENOENT) {

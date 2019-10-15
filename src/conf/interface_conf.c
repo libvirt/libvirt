@@ -819,7 +819,7 @@ virInterfaceDefPtr
 virInterfaceDefParseNode(xmlDocPtr xml,
                          xmlNodePtr root)
 {
-    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
 
     if (!virXMLNodeNameEqual(root, "interface")) {
         virReportError(VIR_ERR_XML_ERROR,

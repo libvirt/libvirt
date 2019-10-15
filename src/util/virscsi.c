@@ -183,7 +183,7 @@ virSCSIDeviceNew(const char *sysfs_prefix,
                  bool readonly,
                  bool shareable)
 {
-    VIR_AUTOPTR(virSCSIDevice) dev = NULL;
+    g_autoptr(virSCSIDevice) dev = NULL;
     virSCSIDevicePtr ret = NULL;
     g_autofree char *sg = NULL;
     g_autofree char *vendor_path = NULL;
@@ -273,7 +273,7 @@ virSCSIDeviceSetUsedBy(virSCSIDevicePtr dev,
                        const char *drvname,
                        const char *domname)
 {
-    VIR_AUTOPTR(virUsedByInfo) copy = NULL;
+    g_autoptr(virUsedByInfo) copy = NULL;
 
     if (VIR_ALLOC(copy) < 0)
         return -1;
@@ -440,7 +440,7 @@ virSCSIDeviceListDel(virSCSIDeviceListPtr list,
                 virSCSIDeviceUsedByInfoFree(dev->used_by[i]);
                 VIR_DELETE_ELEMENT(dev->used_by, i, dev->n_used_by);
             } else {
-                VIR_AUTOPTR(virSCSIDevice) tmp = NULL;
+                g_autoptr(virSCSIDevice) tmp = NULL;
                 tmp = virSCSIDeviceListSteal(list, dev);
             }
             break;

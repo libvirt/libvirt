@@ -99,7 +99,7 @@ qemuInteropFetchConfigs(const char *name,
                         char ***configs,
                         bool privileged)
 {
-    VIR_AUTOPTR(virHashTable) files = NULL;
+    g_autoptr(virHashTable) files = NULL;
     g_autofree char *homeConfig = NULL;
     g_autofree char *xdgConfig = NULL;
     g_autofree char *sysLocation = virFileBuildPath(QEMU_SYSTEM_LOCATION, name, NULL);

@@ -141,7 +141,7 @@ virMediatedDevicePtr
 virMediatedDeviceNew(const char *uuidstr, virMediatedDeviceModelType model)
 {
     virMediatedDevicePtr ret = NULL;
-    VIR_AUTOPTR(virMediatedDevice) dev = NULL;
+    g_autoptr(virMediatedDevice) dev = NULL;
     g_autofree char *sysfspath = NULL;
 
     if (!(sysfspath = virMediatedDeviceGetSysfsPath(uuidstr)))
@@ -495,7 +495,7 @@ int
 virMediatedDeviceTypeReadAttrs(const char *sysfspath,
                                virMediatedDeviceTypePtr *type)
 {
-    VIR_AUTOPTR(virMediatedDeviceType) tmp = NULL;
+    g_autoptr(virMediatedDeviceType) tmp = NULL;
 
 #define MDEV_GET_SYSFS_ATTR(attr, dst, cb, optional) \
     do { \

@@ -28,7 +28,7 @@ testCompareXMLToArgvFiles(bool shouldFail,
     const char *defTypeStr;
     g_autofree char *actualCmdline = NULL;
     g_autofree char *src = NULL;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     if (!(def = virStoragePoolDefParseFile(poolxml)))
         goto cleanup;

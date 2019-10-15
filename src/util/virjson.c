@@ -2050,7 +2050,7 @@ char *
 virJSONStringReformat(const char *jsonstr,
                       bool pretty)
 {
-    VIR_AUTOPTR(virJSONValue) json = NULL;
+    g_autoptr(virJSONValue) json = NULL;
 
     if (!(json = virJSONValueFromString(jsonstr)))
         return NULL;
@@ -2144,7 +2144,7 @@ virJSONValueObjectDeflattenWorker(const char *key,
 virJSONValuePtr
 virJSONValueObjectDeflatten(virJSONValuePtr json)
 {
-    VIR_AUTOPTR(virJSONValue) deflattened = NULL;
+    g_autoptr(virJSONValue) deflattened = NULL;
     virJSONValuePtr ret = NULL;
 
     if (!(deflattened = virJSONValueNewObject()))

@@ -1624,7 +1624,7 @@ virStoragePoolObjLoad(virStoragePoolObjListPtr pools,
                       const char *autostartLink)
 {
     virStoragePoolObjPtr obj;
-    VIR_AUTOPTR(virStoragePoolDef) def = NULL;
+    g_autoptr(virStoragePoolDef) def = NULL;
 
     if (!(def = virStoragePoolDefParseFile(path)))
         return NULL;
@@ -1671,7 +1671,7 @@ virStoragePoolObjLoadState(virStoragePoolObjListPtr pools,
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
     xmlNodePtr node = NULL;
-    VIR_AUTOPTR(virStoragePoolDef) def = NULL;
+    g_autoptr(virStoragePoolDef) def = NULL;
 
     if (!(stateFile = virFileBuildPath(stateDir, name, ".xml")))
         return NULL;

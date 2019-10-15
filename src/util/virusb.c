@@ -120,7 +120,7 @@ virUSBDeviceSearch(unsigned int vendor,
     struct dirent *de;
     virUSBDeviceListPtr list = NULL;
     virUSBDeviceListPtr ret = NULL;
-    VIR_AUTOPTR(virUSBDevice) usb = NULL;
+    g_autoptr(virUSBDevice) usb = NULL;
     int direrr;
 
     if (!(list = virUSBDeviceListNew()))

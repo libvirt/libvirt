@@ -46,11 +46,11 @@ static int
 testBackingXMLjsonXML(const void *args)
 {
     const struct testBackingXMLjsonXMLdata *data = args;
-    VIR_AUTOPTR(xmlDoc) xml = NULL;
-    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    VIR_AUTOPTR(virJSONValue) backendprops = NULL;
-    VIR_AUTOPTR(virJSONValue) wrapper = NULL;
+    g_autoptr(virJSONValue) backendprops = NULL;
+    g_autoptr(virJSONValue) wrapper = NULL;
     g_autofree char *propsstr = NULL;
     g_autofree char *protocolwrapper = NULL;
     g_autofree char *actualxml = NULL;
@@ -193,7 +193,7 @@ testQemuDiskXMLToProps(const void *opaque)
     virStorageSourcePtr n;
     virJSONValuePtr formatProps = NULL;
     virJSONValuePtr storageProps = NULL;
-    VIR_AUTOPTR(virJSONValue) storageSrcOnlyProps = NULL;
+    g_autoptr(virJSONValue) storageSrcOnlyProps = NULL;
     char *xmlpath = NULL;
     char *xmlstr = NULL;
     int ret = -1;
@@ -363,8 +363,8 @@ testQemuImageCreateLoadDiskXML(const char *name,
 
 {
     virDomainSnapshotDiskDefPtr diskdef = NULL;
-    VIR_AUTOPTR(xmlDoc) doc = NULL;
-    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
+    g_autoptr(xmlDoc) doc = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     xmlNodePtr node;
     g_autofree char *xmlpath = NULL;
     virStorageSourcePtr ret = NULL;
@@ -398,8 +398,8 @@ static int
 testQemuImageCreate(const void *opaque)
 {
     struct testQemuImageCreateData *data = (void *) opaque;
-    VIR_AUTOPTR(virJSONValue) protocolprops = NULL;
-    VIR_AUTOPTR(virJSONValue) formatprops = NULL;
+    g_autoptr(virJSONValue) protocolprops = NULL;
+    g_autoptr(virJSONValue) formatprops = NULL;
     VIR_AUTOUNREF(virStorageSourcePtr) src = NULL;
     g_auto(virBuffer) debug = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) actualbuf = VIR_BUFFER_INITIALIZER;

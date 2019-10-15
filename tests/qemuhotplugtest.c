@@ -591,7 +591,7 @@ testQemuHotplugCpuIndividual(const void *opaque)
 static int
 mymain(void)
 {
-    VIR_AUTOPTR(virHashTable) qmpschema = NULL;
+    g_autoptr(virHashTable) qmpschema = NULL;
     int ret = 0;
     struct qemuHotplugTestData data = {0};
     struct testQemuHotplugCpuParams cpudata;

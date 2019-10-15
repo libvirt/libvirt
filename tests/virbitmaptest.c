@@ -745,9 +745,9 @@ static int
 test15(const void *opaque)
 {
     const struct testBinaryOpData *data = opaque;
-    VIR_AUTOPTR(virBitmap) amap = NULL;
-    VIR_AUTOPTR(virBitmap) bmap = NULL;
-    VIR_AUTOPTR(virBitmap) resmap = NULL;
+    g_autoptr(virBitmap) amap = NULL;
+    g_autoptr(virBitmap) bmap = NULL;
+    g_autoptr(virBitmap) resmap = NULL;
 
     if (!(amap = virBitmapParseUnlimited(data->a)) ||
         !(bmap = virBitmapParseUnlimited(data->b)) ||

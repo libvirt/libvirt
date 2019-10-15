@@ -46,7 +46,7 @@ virStorageBackendMpathNewVol(virStoragePoolObjPtr pool,
                              const char *dev)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
-    VIR_AUTOPTR(virStorageVolDef) vol = NULL;
+    g_autoptr(virStorageVolDef) vol = NULL;
 
     if (VIR_ALLOC(vol) < 0)
         return -1;

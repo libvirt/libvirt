@@ -401,7 +401,7 @@ daemonConfigLoadFile(struct daemonConfig *data,
                      const char *filename,
                      bool allow_missing)
 {
-    VIR_AUTOPTR(virConf) conf = NULL;
+    g_autoptr(virConf) conf = NULL;
 
     if (allow_missing &&
         access(filename, R_OK) == -1 &&
@@ -419,7 +419,7 @@ int daemonConfigLoadData(struct daemonConfig *data,
                          const char *filename,
                          const char *filedata)
 {
-    VIR_AUTOPTR(virConf) conf = NULL;
+    g_autoptr(virConf) conf = NULL;
 
     conf = virConfReadString(filedata, 0);
     if (!conf)

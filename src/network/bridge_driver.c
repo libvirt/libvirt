@@ -5566,7 +5566,7 @@ networkPortCreateXML(virNetworkPtr net,
     virNetworkDriverStatePtr driver = networkGetDriver();
     virNetworkObjPtr obj;
     virNetworkDefPtr def;
-    VIR_AUTOPTR(virNetworkPortDef) portdef = NULL;
+    g_autoptr(virNetworkPortDef) portdef = NULL;
     virNetworkPortPtr ret = NULL;
     int rc;
 

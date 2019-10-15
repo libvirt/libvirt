@@ -250,7 +250,7 @@ virSCSIVHostDeviceGetPath(virSCSIVHostDevicePtr dev)
 virSCSIVHostDevicePtr
 virSCSIVHostDeviceNew(const char *name)
 {
-    VIR_AUTOPTR(virSCSIVHostDevice) dev = NULL;
+    g_autoptr(virSCSIVHostDevice) dev = NULL;
     virSCSIVHostDevicePtr ret = NULL;
 
     if (VIR_ALLOC(dev) < 0)

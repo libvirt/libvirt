@@ -2000,7 +2000,7 @@ virDomainDefGetVcpuPinInfoHelper(virDomainDefPtr def,
 {
     int maxvcpus = virDomainDefGetVcpusMax(def);
     size_t i;
-    VIR_AUTOPTR(virBitmap) allcpumap = NULL;
+    g_autoptr(virBitmap) allcpumap = NULL;
 
     if (hostcpus < 0)
         return -1;
@@ -3188,7 +3188,7 @@ virDomainIOThreadIDDefArrayInit(virDomainDefPtr def,
     size_t i;
     ssize_t nxt = -1;
     virDomainIOThreadIDDefPtr iothrid = NULL;
-    VIR_AUTOPTR(virBitmap) thrmap = NULL;
+    g_autoptr(virBitmap) thrmap = NULL;
 
     /* Same value (either 0 or some number), then we have none to fill in or
      * the iothreadid array was filled from the XML
@@ -7974,7 +7974,7 @@ virDomainHostdevSubsysSCSIiSCSIDefParseXML(xmlNodePtr sourcenode,
     int auth_secret_usage = -1;
     xmlNodePtr cur;
     virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &def->u.iscsi;
-    VIR_AUTOPTR(virStorageAuthDef) authdef = NULL;
+    g_autoptr(virStorageAuthDef) authdef = NULL;
 
     /* For the purposes of command line creation, this needs to look
      * like a disk storage source */
@@ -9954,7 +9954,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
     bool source = false;
     virStorageEncryptionPtr encryption = NULL;
-    VIR_AUTOPTR(virStorageAuthDef) authdef = NULL;
+    g_autoptr(virStorageAuthDef) authdef = NULL;
     g_autofree char *tmp = NULL;
     g_autofree char *snapshot = NULL;
     g_autofree char *rawio = NULL;
@@ -16392,9 +16392,9 @@ virDomainDeviceDefParse(const char *xmlStr,
                         void *parseOpaque,
                         unsigned int flags)
 {
-    VIR_AUTOPTR(xmlDoc) xml = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
     xmlNodePtr node;
-    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     g_autofree virDomainDeviceDefPtr dev = NULL;
     char *netprefix;
 
@@ -16570,8 +16570,8 @@ virDomainDiskDefParse(const char *xmlStr,
                       virDomainXMLOptionPtr xmlopt,
                       unsigned int flags)
 {
-    VIR_AUTOPTR(xmlDoc) xml = NULL;
-    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     virSecurityLabelDefPtr *seclabels = NULL;
     size_t nseclabels = 0;
 
@@ -18321,7 +18321,7 @@ virDomainIOThreadPinDefParseXML(xmlNodePtr node,
     virDomainIOThreadIDDefPtr iothrid;
     unsigned int iothreadid;
     g_autofree char *tmp = NULL;
-    VIR_AUTOPTR(virBitmap) cpumask = NULL;
+    g_autoptr(virBitmap) cpumask = NULL;
 
     if (!(tmp = virXMLPropString(node, "iothread"))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -18386,7 +18386,7 @@ virDomainEmulatorPinDefParseXML(xmlNodePtr node)
 {
     virBitmapPtr ret = NULL;
     g_autofree char *tmp = NULL;
-    VIR_AUTOPTR(virBitmap) def = NULL;
+    g_autoptr(virBitmap) def = NULL;
 
     if (!(tmp = virXMLPropString(node, "cpuset"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -18790,7 +18790,7 @@ virDomainThreadSchedParseHelper(xmlNodePtr node,
     virDomainThreadSchedParamPtr sched = NULL;
     virProcessSchedPolicy policy = 0;
     int priority = 0;
-    VIR_AUTOPTR(virBitmap) map = NULL;
+    g_autoptr(virBitmap) map = NULL;
 
     if (!(map = virDomainSchedulerParse(node, name, &policy, &priority)))
         return -1;
@@ -19524,7 +19524,7 @@ virDomainCachetuneDefParse(virDomainDefPtr def,
     ssize_t i = 0;
     int n;
     int ret = -1;
-    VIR_AUTOPTR(virBitmap) vcpus = NULL;
+    g_autoptr(virBitmap) vcpus = NULL;
     g_autofree xmlNodePtr *nodes = NULL;
     VIR_AUTOUNREF(virResctrlAllocPtr) alloc = NULL;
 
@@ -19722,7 +19722,7 @@ virDomainMemorytuneDefParse(virDomainDefPtr def,
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
     virDomainResctrlDefPtr resctrl = NULL;
-    VIR_AUTOPTR(virBitmap) vcpus = NULL;
+    g_autoptr(virBitmap) vcpus = NULL;
     g_autofree xmlNodePtr *nodes = NULL;
     VIR_AUTOUNREF(virResctrlAllocPtr) alloc = NULL;
     ssize_t i = 0;
@@ -21662,8 +21662,8 @@ virDomainDefParseNode(xmlDocPtr xml,
                       void *parseOpaque,
                       unsigned int flags)
 {
-    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
-    VIR_AUTOPTR(virDomainDef) def = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
+    g_autoptr(virDomainDef) def = NULL;
 
     if (!(ctxt = virXMLXPathContextNew(xml)))
         return NULL;
@@ -21692,7 +21692,7 @@ virDomainObjParseNode(xmlDocPtr xml,
                       virDomainXMLOptionPtr xmlopt,
                       unsigned int flags)
 {
-    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
 
     if (!virXMLNodeNameEqual(root, "domstatus")) {
         virReportError(VIR_ERR_XML_ERROR,
@@ -30634,7 +30634,7 @@ virNetworkPortDefPtr
 virDomainNetDefToNetworkPort(virDomainDefPtr dom,
                              virDomainNetDefPtr iface)
 {
-    VIR_AUTOPTR(virNetworkPortDef) port = NULL;
+    g_autoptr(virNetworkPortDef) port = NULL;
 
     if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -30793,7 +30793,7 @@ virDomainNetDefActualToNetworkPort(virDomainDefPtr dom,
                                    virDomainNetDefPtr iface)
 {
     virDomainActualNetDefPtr actual;
-    VIR_AUTOPTR(virNetworkPortDef) port = NULL;
+    g_autoptr(virNetworkPortDef) port = NULL;
 
     if (!iface->data.network.actual) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -30937,7 +30937,7 @@ virDomainNetCreatePort(virConnectPtr conn,
 {
     virErrorPtr save_err;
     VIR_AUTOUNREF(virNetworkPtr) net = NULL;
-    VIR_AUTOPTR(virNetworkPortDef) portdef = NULL;
+    g_autoptr(virNetworkPortDef) portdef = NULL;
     VIR_AUTOUNREF(virNetworkPortPtr) port = NULL;
     g_autofree char *portxml = NULL;
 
@@ -31342,7 +31342,7 @@ int
 virDomainDiskTranslateSourcePool(virDomainDiskDefPtr def)
 {
     virStorageVolInfo info;
-    VIR_AUTOPTR(virStoragePoolDef) pooldef = NULL;
+    g_autoptr(virStoragePoolDef) pooldef = NULL;
     g_autofree char *poolxml = NULL;
     VIR_AUTOUNREF(virConnectPtr) conn = NULL;
     VIR_AUTOUNREF(virStoragePoolPtr) pool = NULL;

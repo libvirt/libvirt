@@ -108,7 +108,7 @@ int qemuExtVhostUserGPUStart(virQEMUDriverPtr driver,
     VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
     g_autofree char *shortname = NULL;
     g_autofree char *pidfile = NULL;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     int pair[2] = { -1, -1 };
     int cmdret = 0, rc;
     int exitstatus = 0;

@@ -131,8 +131,8 @@ virSecretDefParseUsage(xmlXPathContextPtr ctxt,
 static virSecretDefPtr
 secretXMLParseNode(xmlDocPtr xml, xmlNodePtr root)
 {
-    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
-    VIR_AUTOPTR(virSecretDef) def = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
+    g_autoptr(virSecretDef) def = NULL;
     g_autofree char *prop = NULL;
     g_autofree char *uuidstr = NULL;
 

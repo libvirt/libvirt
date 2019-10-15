@@ -1056,7 +1056,7 @@ int main(int argc, char **argv) {
      * scratch if rv == 0
      */
     if (rv == 0) {
-        VIR_AUTOPTR(virSystemdActivation) act = NULL;
+        g_autoptr(virSystemdActivation) act = NULL;
         virSystemdActivationMap actmap[] = {
             { .name = "virtlogd.socket", .family = AF_UNIX, .path = sock_file },
             { .name = "virtlogd-admin.socket", .family = AF_UNIX, .path = admin_sock_file },

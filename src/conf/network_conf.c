@@ -2114,7 +2114,7 @@ virNetworkDefParseNode(xmlDocPtr xml,
                        xmlNodePtr root,
                        virNetworkXMLOptionPtr xmlopt)
 {
-    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
 
     if (!virXMLNodeNameEqual(root, "network")) {
         virReportError(VIR_ERR_XML_ERROR,
@@ -3635,8 +3635,8 @@ virNetworkDefUpdateSection(virNetworkDefPtr def,
                            const char *xml,
                            unsigned int flags)  /* virNetworkUpdateFlags */
 {
-    VIR_AUTOPTR(xmlDoc) doc = NULL;
-    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
+    g_autoptr(xmlDoc) doc = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
 
     if (!(doc = virXMLParseStringCtxt(xml, _("network_update_xml"), &ctxt)))
         return -1;

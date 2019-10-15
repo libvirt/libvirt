@@ -8645,7 +8645,7 @@ static const vshCmdOptDef opts_inject_nmi[] = {
 static bool
 cmdInjectNMI(vshControl *ctl, const vshCmd *cmd)
 {
-    VIR_AUTOPTR(virshDomain) dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -8832,7 +8832,7 @@ static int getSignalNumber(vshControl *ctl, const char *signame)
 static bool
 cmdSendProcessSignal(vshControl *ctl, const vshCmd *cmd)
 {
-    VIR_AUTOPTR(virshDomain) dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     const char *signame;
     long long pid_value;
     int signum;
@@ -9506,7 +9506,7 @@ static const vshCmdOptDef opts_qemu_monitor_command[] = {
 static bool
 cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
 {
-    VIR_AUTOPTR(virshDomain) dom = NULL;
+    g_autoptr(virshDomain) dom = NULL;
     g_autofree char *monitor_cmd = NULL;
     g_autofree char *result = NULL;
     unsigned int flags = 0;

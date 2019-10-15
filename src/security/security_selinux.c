@@ -637,7 +637,7 @@ virSecuritySELinuxGenNewContext(const char *basecontext,
 static int
 virSecuritySELinuxLXCInitialize(virSecurityManagerPtr mgr)
 {
-    VIR_AUTOPTR(virConf) selinux_conf = NULL;
+    g_autoptr(virConf) selinux_conf = NULL;
     virSecuritySELinuxDataPtr data = virSecurityManagerGetPrivateData(mgr);
 
     data->skipAllLabel = true;

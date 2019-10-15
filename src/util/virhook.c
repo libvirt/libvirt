@@ -241,7 +241,7 @@ virHookCall(int driver,
 {
     int ret;
     g_autofree char *path = NULL;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     const char *drvstr;
     const char *opstr;
     const char *subopstr;

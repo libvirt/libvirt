@@ -460,7 +460,7 @@ virPCIDeviceIterDevices(virPCIDeviceIterPredicate predicate,
 
     while ((ret = virDirRead(dir, &entry, PCI_SYSFS "devices")) > 0) {
         unsigned int domain, bus, slot, function;
-        VIR_AUTOPTR(virPCIDevice) check = NULL;
+        g_autoptr(virPCIDevice) check = NULL;
         char *tmp;
 
         /* expected format: <domain>:<bus>:<slot>.<function> */
@@ -782,8 +782,8 @@ virPCIDeviceTrySecondaryBusReset(virPCIDevicePtr dev,
                                  int cfgfd,
                                  virPCIDeviceList *inactiveDevs)
 {
-    VIR_AUTOPTR(virPCIDevice) parent = NULL;
-    VIR_AUTOPTR(virPCIDevice) conflict = NULL;
+    g_autoptr(virPCIDevice) parent = NULL;
+    g_autoptr(virPCIDevice) conflict = NULL;
     uint8_t config_space[PCI_CONF_LEN];
     uint16_t ctl;
     int ret = -1;
@@ -1370,7 +1370,7 @@ virPCIDeviceNew(unsigned int domain,
                 unsigned int slot,
                 unsigned int function)
 {
-    VIR_AUTOPTR(virPCIDevice) dev = NULL;
+    g_autoptr(virPCIDevice) dev = NULL;
     g_autofree char *vendor = NULL;
     g_autofree char *product = NULL;
 
@@ -1624,7 +1624,7 @@ virPCIDeviceListAdd(virPCIDeviceListPtr list,
 int
 virPCIDeviceListAddCopy(virPCIDeviceListPtr list, virPCIDevicePtr dev)
 {
-    VIR_AUTOPTR(virPCIDevice) copy = virPCIDeviceCopy(dev);
+    g_autoptr(virPCIDevice) copy = virPCIDeviceCopy(dev);
 
     if (!copy)
         return -1;
@@ -1834,7 +1834,7 @@ static int
 virPCIDeviceGetIOMMUGroupAddOne(virPCIDeviceAddressPtr newDevAddr, void *opaque)
 {
     virPCIDeviceListPtr groupList = opaque;
-    VIR_AUTOPTR(virPCIDevice) newDev = NULL;
+    g_autoptr(virPCIDevice) newDev = NULL;
 
     if (!(newDev = virPCIDeviceNew(newDevAddr->domain, newDevAddr->bus,
                                    newDevAddr->slot, newDevAddr->function)))
@@ -2057,7 +2057,7 @@ virPCIDeviceDownstreamLacksACS(virPCIDevicePtr dev)
 static int
 virPCIDeviceIsBehindSwitchLackingACS(virPCIDevicePtr dev)
 {
-    VIR_AUTOPTR(virPCIDevice) parent = NULL;
+    g_autoptr(virPCIDevice) parent = NULL;
 
     if (virPCIDeviceGetParent(dev, &parent) < 0)
         return -1;
@@ -2081,7 +2081,7 @@ virPCIDeviceIsBehindSwitchLackingACS(virPCIDevicePtr dev)
      * parent can be found
      */
     do {
-        VIR_AUTOPTR(virPCIDevice) tmp = NULL;
+        g_autoptr(virPCIDevice) tmp = NULL;
         int acs;
         int ret;
 
@@ -2616,7 +2616,7 @@ virPCIGetMdevTypes(const char *sysfspath,
     DIR *dir = NULL;
     struct dirent *entry;
     g_autofree char *types_path = NULL;
-    VIR_AUTOPTR(virMediatedDeviceType) mdev_type = NULL;
+    g_autoptr(virMediatedDeviceType) mdev_type = NULL;
     virMediatedDeviceTypePtr *mdev_types = NULL;
     size_t ntypes = 0;
     size_t i;

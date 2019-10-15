@@ -109,7 +109,7 @@ virStorageBackendFileSystemNetFindNFSPoolSources(virNetfsDiscoverState *state)
         1
     };
 
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     cmd = virCommandNewArgList(SHOWMOUNT,
                                "--no-headers",
@@ -139,7 +139,7 @@ virStorageBackendFileSystemNetFindPoolSources(const char *srcSpec,
     size_t i;
     int retNFS = -1;
     int retGluster = 0;
-    VIR_AUTOPTR(virStoragePoolSource) source = NULL;
+    g_autoptr(virStoragePoolSource) source = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -299,7 +299,7 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool)
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     int rc;
     g_autofree char *src = NULL;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     if (virStorageBackendFileSystemIsValid(pool) < 0)
         return -1;
@@ -365,7 +365,7 @@ virStorageBackendFileSystemStop(virStoragePoolObjPtr pool)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     int rc;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     if (virStorageBackendFileSystemIsValid(pool) < 0)
         return -1;
@@ -413,7 +413,7 @@ static int
 virStorageBackendExecuteMKFS(const char *device,
                              const char *format)
 {
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     cmd = virCommandNewArgList(MKFS, "-t", format, NULL);
 

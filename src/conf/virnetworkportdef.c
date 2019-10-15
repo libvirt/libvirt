@@ -75,7 +75,7 @@ virNetworkPortDefFree(virNetworkPortDefPtr def)
 static virNetworkPortDefPtr
 virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
 {
-    VIR_AUTOPTR(virNetworkPortDef) def = NULL;
+    g_autoptr(virNetworkPortDef) def = NULL;
     g_autofree char *uuid = NULL;
     xmlNodePtr virtPortNode;
     xmlNodePtr vlanNode;

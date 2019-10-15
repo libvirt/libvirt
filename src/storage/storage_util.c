@@ -598,7 +598,7 @@ storageBackendCreatePloop(virStoragePoolObjPtr pool G_GNUC_UNUSED,
 {
     int ret = -1;
     bool created = false;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     g_autofree char *create_tool = NULL;
 
     virCheckFlags(0, -1);
@@ -667,7 +667,7 @@ static int
 storagePloopResize(virStorageVolDefPtr vol,
                    unsigned long long capacity)
 {
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     g_autofree char *resize_tool = NULL;
 
     resize_tool = virFindFileInPath("ploop");
@@ -1285,7 +1285,7 @@ storageBackendDoCreateQemuImg(virStoragePoolObjPtr pool,
                               const char *inputSecretPath,
                               virStorageVolEncryptConvertStep convertStep)
 {
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     cmd = virStorageBackendCreateQemuImgCmdFromVol(pool, vol, inputvol,
                                                    flags, create_tool,
@@ -2261,7 +2261,7 @@ storageBackendResizeQemuImg(virStoragePoolObjPtr pool,
     int ret = -1;
     const char *type;
     virStorageEncryptionPtr enc = vol->target.encryption;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     g_autofree char *img_tool = NULL;
     g_autofree char *secretPath = NULL;
     g_autofree char *secretAlias = NULL;
@@ -2381,7 +2381,7 @@ static int
 storageBackendPloopHasSnapshots(char *path)
 {
     char *snap_tool = NULL;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     g_autofree char *output = NULL;
 
     snap_tool = virFindFileInPath("ploop");
@@ -2595,7 +2595,7 @@ storageBackendVolWipeLocalFile(const char *path,
     const char *alg_char = NULL;
     struct stat st;
     VIR_AUTOCLOSE fd = -1;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     fd = open(path, O_RDWR);
     if (fd == -1) {
@@ -2672,7 +2672,7 @@ static int
 storageBackendVolWipePloop(virStorageVolDefPtr vol,
                            unsigned int algorithm)
 {
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     g_autofree char *target_path = NULL;
     g_autofree char *disk_desc = NULL;
     g_autofree char *create_tool = NULL;
@@ -2913,7 +2913,7 @@ virStorageBackendFindGlusterPoolSources(const char *host,
                                         bool report)
 {
     int rc;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     g_autofree char *glusterpath = NULL;
     g_autofree char *outbuf = NULL;
 
@@ -3181,7 +3181,7 @@ virStorageBackendPARTEDFindLabel(const char *device,
     };
     char *start, *end;
     int ret = VIR_STORAGE_PARTED_ERROR;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     g_autofree char *output = NULL;
     g_autofree char *error = NULL;
 
@@ -3527,7 +3527,7 @@ virStorageBackendRefreshLocal(virStoragePoolObjPtr pool)
     struct stat statbuf;
     int direrr;
     int ret = -1;
-    VIR_AUTOPTR(virStorageVolDef) vol = NULL;
+    g_autoptr(virStorageVolDef) vol = NULL;
     VIR_AUTOCLOSE fd = -1;
     VIR_AUTOUNREF(virStorageSourcePtr) target = NULL;
 
@@ -3666,7 +3666,7 @@ virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     int retval = -1;
-    VIR_AUTOPTR(virStorageVolDef) vol = NULL;
+    g_autoptr(virStorageVolDef) vol = NULL;
     g_autofree char *devpath = NULL;
 
     /* Check if the pool is using a stable target path. The call to

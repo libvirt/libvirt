@@ -731,7 +731,7 @@ qemuBuildObjectSecretCommandLine(virCommandPtr cmd,
                                  qemuDomainSecretInfoPtr secinfo)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    VIR_AUTOPTR(virJSONValue) props = NULL;
+    g_autoptr(virJSONValue) props = NULL;
 
     if (qemuBuildSecretInfoProps(secinfo, &props) < 0)
         return -1;
@@ -922,7 +922,7 @@ qemuBuildTLSx509CommandLine(virCommandPtr cmd,
                             virQEMUCapsPtr qemuCaps)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    VIR_AUTOPTR(virJSONValue) props = NULL;
+    g_autoptr(virJSONValue) props = NULL;
 
     if (qemuBuildTLSx509BackendProps(tlspath, isListen, verifypeer, alias,
                                      certEncSecretAlias, qemuCaps, &props) < 0)
@@ -942,7 +942,7 @@ static char *
 qemuBuildNetworkDriveURI(virStorageSourcePtr src,
                          qemuDomainSecretInfoPtr secinfo)
 {
-    VIR_AUTOPTR(virURI) uri = NULL;
+    g_autoptr(virURI) uri = NULL;
 
     if (!(uri = qemuBlockStorageSourceGetURI(src)))
         return NULL;
@@ -1557,7 +1557,7 @@ qemuDiskSourceNeedsProps(virStorageSourcePtr src,
 static virJSONValuePtr
 qemuDiskSourceGetProps(virStorageSourcePtr src)
 {
-    VIR_AUTOPTR(virJSONValue) props = NULL;
+    g_autoptr(virJSONValue) props = NULL;
     virJSONValuePtr ret;
 
     if (!(props = qemuBlockStorageSourceGetBackendProps(src, true, false, false)))
@@ -1600,7 +1600,7 @@ qemuBuildDriveSourceStr(virDomainDiskDefPtr disk,
     qemuDomainStorageSourcePrivatePtr srcpriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(disk->src);
     qemuDomainSecretInfoPtr secinfo = NULL;
     qemuDomainSecretInfoPtr encinfo = NULL;
-    VIR_AUTOPTR(virJSONValue) srcprops = NULL;
+    g_autoptr(virJSONValue) srcprops = NULL;
     g_autofree char *source = NULL;
     bool rawluks = false;
 
@@ -2477,8 +2477,8 @@ qemuBuildDiskSourceCommandLine(virCommandPtr cmd,
                                virDomainDiskDefPtr disk,
                                virQEMUCapsPtr qemuCaps)
 {
-    VIR_AUTOPTR(qemuBlockStorageSourceChainData) data = NULL;
-    VIR_AUTOPTR(virJSONValue) copyOnReadProps = NULL;
+    g_autoptr(qemuBlockStorageSourceChainData) data = NULL;
+    g_autoptr(virJSONValue) copyOnReadProps = NULL;
     g_autofree char *copyOnReadPropsStr = NULL;
     size_t i;
 
@@ -3330,7 +3330,7 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
     bool prealloc = false;
     virBitmapPtr nodemask = NULL;
     int rc;
-    VIR_AUTOPTR(virJSONValue) props = NULL;
+    g_autoptr(virJSONValue) props = NULL;
     bool nodeSpecified = virDomainNumatuneNodeSpecified(def->numa, mem->targetNode);
     unsigned long long pagesize = mem->pagesize;
     bool needHugepage = !!pagesize;
@@ -3584,7 +3584,7 @@ qemuBuildMemoryCellBackendStr(virDomainDefPtr def,
                               qemuDomainObjPrivatePtr priv,
                               virBufferPtr buf)
 {
-    VIR_AUTOPTR(virJSONValue) props = NULL;
+    g_autoptr(virJSONValue) props = NULL;
     g_autofree char *alias = NULL;
     int rc;
     virDomainMemoryDef mem = { 0 };
@@ -3616,7 +3616,7 @@ qemuBuildMemoryDimmBackendStr(virBufferPtr buf,
                               virQEMUDriverConfigPtr cfg,
                               qemuDomainObjPrivatePtr priv)
 {
-    VIR_AUTOPTR(virJSONValue) props = NULL;
+    g_autoptr(virJSONValue) props = NULL;
     g_autofree char *alias = NULL;
 
     if (!mem->info.alias) {
@@ -4933,7 +4933,7 @@ qemuBuildSCSIiSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *netsource = NULL;
-    VIR_AUTOPTR(virJSONValue) srcprops = NULL;
+    g_autoptr(virJSONValue) srcprops = NULL;
     virDomainHostdevSubsysSCSIPtr scsisrc = &dev->source.subsys.u.scsi;
     virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &scsisrc->u.iscsi;
     qemuDomainStorageSourcePrivatePtr srcPriv =
@@ -5887,7 +5887,7 @@ qemuBuildRNGCommandLine(virLogManagerPtr logManager,
     size_t i;
 
     for (i = 0; i < def->nrngs; i++) {
-        VIR_AUTOPTR(virJSONValue) props = NULL;
+        g_autoptr(virJSONValue) props = NULL;
         virBuffer buf = VIR_BUFFER_INITIALIZER;
         virDomainRNGDefPtr rng = def->rngs[i];
         g_autofree char *chardev = NULL;
@@ -9000,7 +9000,7 @@ qemuBuildShmemCommandLine(virLogManagerPtr logManager,
                           virQEMUCapsPtr qemuCaps,
                           bool chardevStdioLogd)
 {
-    VIR_AUTOPTR(virJSONValue) memProps = NULL;
+    g_autoptr(virJSONValue) memProps = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *devstr = NULL;
     g_autofree char *chardev = NULL;
@@ -9991,7 +9991,7 @@ qemuBuildManagedPRCommandLine(virCommandPtr cmd,
                               qemuDomainObjPrivatePtr priv)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    VIR_AUTOPTR(virJSONValue) props = NULL;
+    g_autoptr(virJSONValue) props = NULL;
 
     if (!virDomainDefHasManagedPR(def))
         return 0;
@@ -10050,7 +10050,7 @@ qemuBuildDBusVMStateCommandLineEach(void *payload,
     qemuBuildDBusVMStateCommandLineData *data = user_data;
     qemuDBusVMStatePtr vms = payload;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    VIR_AUTOPTR(virJSONValue) props = NULL;
+    g_autoptr(virJSONValue) props = NULL;
 
     if (!(props = qemuBuildDBusVMStateInfoProps(id, vms->addr)))
         return -1;
@@ -10276,7 +10276,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
 {
     size_t i;
     char uuid[VIR_UUID_STRING_BUFLEN];
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
     unsigned int bootHostdevNet = 0;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -10715,7 +10715,7 @@ virJSONValuePtr
 qemuBuildHotpluggableCPUProps(const virDomainVcpuDef *vcpu)
 {
     qemuDomainVcpuPrivatePtr vcpupriv = QEMU_DOMAIN_VCPU_PRIVATE(vcpu);
-    VIR_AUTOPTR(virJSONValue) ret = NULL;
+    g_autoptr(virJSONValue) ret = NULL;
 
     if (!(ret = virJSONValueCopy(vcpupriv->props)))
         return NULL;
@@ -10741,7 +10741,7 @@ qemuBlockStorageSourceAttachDataPtr
 qemuBuildStorageSourceAttachPrepareDrive(virDomainDiskDefPtr disk,
                                          virQEMUCapsPtr qemuCaps)
 {
-    VIR_AUTOPTR(qemuBlockStorageSourceAttachData) data = NULL;
+    g_autoptr(qemuBlockStorageSourceAttachData) data = NULL;
     qemuBlockStorageSourceAttachDataPtr ret = NULL;
 
     if (VIR_ALLOC(data) < 0)
@@ -10809,8 +10809,8 @@ qemuBlockStorageSourceChainDataPtr
 qemuBuildStorageSourceChainAttachPrepareDrive(virDomainDiskDefPtr disk,
                                               virQEMUCapsPtr qemuCaps)
 {
-    VIR_AUTOPTR(qemuBlockStorageSourceAttachData) elem = NULL;
-    VIR_AUTOPTR(qemuBlockStorageSourceChainData) data = NULL;
+    g_autoptr(qemuBlockStorageSourceAttachData) elem = NULL;
+    g_autoptr(qemuBlockStorageSourceChainData) data = NULL;
 
     if (VIR_ALLOC(data) < 0)
         return NULL;
@@ -10834,7 +10834,7 @@ qemuBuildStorageSourceChainAttachPrepareBlockdevOne(qemuBlockStorageSourceChainD
                                                     virStorageSourcePtr backingStore,
                                                     virQEMUCapsPtr qemuCaps)
 {
-    VIR_AUTOPTR(qemuBlockStorageSourceAttachData) elem = NULL;
+    g_autoptr(qemuBlockStorageSourceAttachData) elem = NULL;
 
     if (!(elem = qemuBlockStorageSourceAttachPrepareBlockdev(src, backingStore, true)))
         return -1;
@@ -10861,7 +10861,7 @@ qemuBlockStorageSourceChainDataPtr
 qemuBuildStorageSourceChainAttachPrepareBlockdev(virStorageSourcePtr top,
                                                  virQEMUCapsPtr qemuCaps)
 {
-    VIR_AUTOPTR(qemuBlockStorageSourceChainData) data = NULL;
+    g_autoptr(qemuBlockStorageSourceChainData) data = NULL;
     virStorageSourcePtr n;
 
     if (VIR_ALLOC(data) < 0)
@@ -10892,7 +10892,7 @@ qemuBuildStorageSourceChainAttachPrepareBlockdevTop(virStorageSourcePtr top,
                                                     virStorageSourcePtr backingStore,
                                                     virQEMUCapsPtr qemuCaps)
 {
-    VIR_AUTOPTR(qemuBlockStorageSourceChainData) data = NULL;
+    g_autoptr(qemuBlockStorageSourceChainData) data = NULL;
 
     if (VIR_ALLOC(data) < 0)
         return NULL;

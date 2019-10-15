@@ -49,7 +49,7 @@ virLeaseReadCustomLeaseFile(virJSONValuePtr leases_array_new,
                             char **server_duid)
 {
     g_autofree char *lease_entries = NULL;
-    VIR_AUTOPTR(virJSONValue) leases_array = NULL;
+    g_autoptr(virJSONValue) leases_array = NULL;
     long long expirytime;
     int custom_lease_file_len = 0;
     virJSONValuePtr lease_tmp = NULL;
@@ -212,7 +212,7 @@ virLeaseNew(virJSONValuePtr *lease_ret,
             const char *iaid,
             const char *server_duid)
 {
-    VIR_AUTOPTR(virJSONValue) lease_new = NULL;
+    g_autoptr(virJSONValue) lease_new = NULL;
     const char *exptime_tmp = getenv("DNSMASQ_LEASE_EXPIRES");
     long long expirytime = 0;
     g_autofree char *exptime = NULL;

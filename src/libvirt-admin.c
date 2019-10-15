@@ -222,7 +222,7 @@ virAdmConnectOpen(const char *name, unsigned int flags)
     char *sock_path = NULL;
     char *alias = NULL;
     virAdmConnectPtr conn = NULL;
-    VIR_AUTOPTR(virConf) conf = NULL;
+    g_autoptr(virConf) conf = NULL;
     char *uristr = NULL;
 
     if (virAdmInitialize() < 0)

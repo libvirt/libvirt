@@ -152,7 +152,7 @@ hideErrorFunc(void *opaque G_GNUC_UNUSED,
 int
 main(int argc, char **argv)
 {
-    VIR_AUTOPTR(virConf) conf = NULL;
+    g_autoptr(virConf) conf = NULL;
     const char *login_shell_path = conf_file;
     pid_t cpid = -1;
     int ret = EXIT_CANCELED;

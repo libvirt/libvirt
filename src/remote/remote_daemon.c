@@ -400,7 +400,7 @@ daemonSetupNetworking(virNetServerPtr srv,
     int unix_sock_rw_mask = 0;
     int unix_sock_adm_mask = 0;
     int ret = -1;
-    VIR_AUTOPTR(virSystemdActivation) act = NULL;
+    g_autoptr(virSystemdActivation) act = NULL;
     virSystemdActivationMap actmap[] = {
         { .name = DAEMON_NAME ".socket", .family = AF_UNIX, .path = sock_path },
         { .name = DAEMON_NAME "-ro.socket", .family = AF_UNIX, .path = sock_path_ro },

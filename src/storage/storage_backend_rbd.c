@@ -720,7 +720,7 @@ virStorageBackendRBDRefreshPool(virStoragePoolObjPtr pool)
         goto cleanup;
 
     for (i = 0; names[i] != NULL; i++) {
-        VIR_AUTOPTR(virStorageVolDef) vol = NULL;
+        g_autoptr(virStorageVolDef) vol = NULL;
 
         if (VIR_ALLOC(vol) < 0)
             goto cleanup;

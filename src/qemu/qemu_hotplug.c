@@ -422,7 +422,7 @@ qemuDomainAttachDBusVMState(virQEMUDriverPtr driver,
                             qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    VIR_AUTOPTR(virJSONValue) props = NULL;
+    g_autoptr(virJSONValue) props = NULL;
     int ret;
 
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DBUS_VMSTATE)) {
@@ -505,8 +505,8 @@ qemuDomainChangeMediaBlockdev(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-    VIR_AUTOPTR(qemuBlockStorageSourceChainData) newbackend = NULL;
-    VIR_AUTOPTR(qemuBlockStorageSourceChainData) oldbackend = NULL;
+    g_autoptr(qemuBlockStorageSourceChainData) newbackend = NULL;
+    g_autoptr(qemuBlockStorageSourceChainData) oldbackend = NULL;
     g_autofree char *nodename = NULL;
     int rc;
 
@@ -672,12 +672,12 @@ qemuDomainAttachDiskGeneric(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
                             virDomainDiskDefPtr disk)
 {
-    VIR_AUTOPTR(qemuBlockStorageSourceChainData) data = NULL;
+    g_autoptr(qemuBlockStorageSourceChainData) data = NULL;
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     g_autofree char *devstr = NULL;
     VIR_AUTOUNREF(virQEMUDriverConfigPtr) cfg = virQEMUDriverGetConfig(driver);
-    VIR_AUTOPTR(virJSONValue) corProps = NULL;
+    g_autoptr(virJSONValue) corProps = NULL;
     g_autofree char *corAlias = NULL;
     bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
 
@@ -4232,7 +4232,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
                            virDomainDiskDefPtr disk)
 {
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-    VIR_AUTOPTR(qemuBlockStorageSourceChainData) diskBackend = NULL;
+    g_autoptr(qemuBlockStorageSourceChainData) diskBackend = NULL;
     virDomainDeviceDef dev;
     size_t i;
     qemuDomainObjPrivatePtr priv = vm->privateData;

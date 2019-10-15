@@ -856,7 +856,7 @@ virConnectOpenInternal(const char *name,
     size_t i;
     int res;
     virConnectPtr ret;
-    VIR_AUTOPTR(virConf) conf = NULL;
+    g_autoptr(virConf) conf = NULL;
     char *uristr = NULL;
 
     ret = virGetConnect();

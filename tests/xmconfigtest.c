@@ -41,7 +41,7 @@ static int
 testCompareParseXML(const char *xmcfg, const char *xml)
 {
     char *gotxmcfgData = NULL;
-    VIR_AUTOPTR(virConf) conf = NULL;
+    g_autoptr(virConf) conf = NULL;
     int ret = -1;
     virConnectPtr conn = NULL;
     int wrote = 4096;
@@ -87,7 +87,7 @@ testCompareFormatXML(const char *xmcfg, const char *xml)
 {
     char *xmcfgData = NULL;
     char *gotxml = NULL;
-    VIR_AUTOPTR(virConf) conf = NULL;
+    g_autoptr(virConf) conf = NULL;
     int ret = -1;
     virDomainDefPtr def = NULL;
 

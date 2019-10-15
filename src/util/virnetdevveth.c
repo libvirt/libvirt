@@ -120,7 +120,7 @@ int virNetDevVethCreate(char** veth1, char** veth2)
     for (i = 0; i < MAX_VETH_RETRIES; i++) {
         g_autofree char *veth1auto = NULL;
         g_autofree char *veth2auto = NULL;
-        VIR_AUTOPTR(virCommand) cmd = NULL;
+        g_autoptr(virCommand) cmd = NULL;
 
         int status;
         if (!*veth1) {
@@ -195,7 +195,7 @@ int virNetDevVethCreate(char** veth1, char** veth2)
 int virNetDevVethDelete(const char *veth)
 {
     int status;
-    VIR_AUTOPTR(virCommand) cmd = virCommandNewArgList("ip", "link",
+    g_autoptr(virCommand) cmd = virCommandNewArgList("ip", "link",
                                                        "del", veth, NULL);
 
     if (virCommandRun(cmd, &status) < 0)

@@ -252,7 +252,7 @@ int
 virLXCLoadDriverConfig(virLXCDriverConfigPtr cfg,
                        const char *filename)
 {
-    VIR_AUTOPTR(virConf) conf = NULL;
+    g_autoptr(virConf) conf = NULL;
 
     /* Avoid error from non-existent or unreadable file. */
     if (access(filename, R_OK) == -1)

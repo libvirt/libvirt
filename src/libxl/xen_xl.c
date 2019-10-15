@@ -2205,7 +2205,7 @@ xenFormatXLDomainChannels(virConfPtr conf, virDomainDefPtr def)
 virConfPtr
 xenFormatXL(virDomainDefPtr def, virConnectPtr conn)
 {
-    VIR_AUTOPTR(virConf) conf = NULL;
+    g_autoptr(virConf) conf = NULL;
 
     if (!(conf = virConfNew()))
         return NULL;

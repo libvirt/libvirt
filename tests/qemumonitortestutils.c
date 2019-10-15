@@ -513,7 +513,7 @@ qemuMonitorTestProcessCommandDefaultValidate(qemuMonitorTestPtr test,
 {
     g_auto(virBuffer) debug = VIR_BUFFER_INITIALIZER;
     virJSONValuePtr schemaroot;
-    VIR_AUTOPTR(virJSONValue) emptyargs = NULL;
+    g_autoptr(virJSONValue) emptyargs = NULL;
     g_autofree char *schemapath = NULL;
 
     if (!test->qapischema)
@@ -568,7 +568,7 @@ qemuMonitorTestProcessCommandDefault(qemuMonitorTestPtr test,
                                      const char *cmdstr)
 {
     struct qemuMonitorTestHandlerData *data = item->opaque;
-    VIR_AUTOPTR(virJSONValue) val = NULL;
+    g_autoptr(virJSONValue) val = NULL;
     virJSONValuePtr cmdargs = NULL;
     const char *cmdname;
     int rc;
@@ -624,7 +624,7 @@ qemuMonitorTestProcessCommandVerbatim(qemuMonitorTestPtr test,
     struct qemuMonitorTestHandlerData *data = item->opaque;
     g_autofree char *reformatted = NULL;
     g_autofree char *errmsg = NULL;
-    VIR_AUTOPTR(virJSONValue) json = NULL;
+    g_autoptr(virJSONValue) json = NULL;
     virJSONValuePtr cmdargs;
     const char *cmdname;
     int ret = -1;

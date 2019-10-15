@@ -238,7 +238,7 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
     glfs_fd_t *fd = NULL;
     ssize_t len;
     int backingFormat;
-    VIR_AUTOPTR(virStorageVolDef) vol = NULL;
+    g_autoptr(virStorageVolDef) vol = NULL;
     VIR_AUTOUNREF(virStorageSourcePtr) meta = NULL;
     g_autofree char *header = NULL;
 
@@ -478,7 +478,7 @@ virStorageBackendGlusterFindPoolSources(const char *srcSpec,
     char *ret = NULL;
     int rc;
     size_t i;
-    VIR_AUTOPTR(virStoragePoolSource) source = NULL;
+    g_autoptr(virStoragePoolSource) source = NULL;
 
     virCheckFlags(0, NULL);
 

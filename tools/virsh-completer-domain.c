@@ -82,8 +82,8 @@ virshDomainInterfaceCompleter(vshControl *ctl,
                               unsigned int flags)
 {
     virshControlPtr priv = ctl->privData;
-    VIR_AUTOPTR(xmlDoc) xmldoc = NULL;
-    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
+    g_autoptr(xmlDoc) xmldoc = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     int ninterfaces;
     g_autofree xmlNodePtr *interfaces = NULL;
     size_t i;
@@ -133,8 +133,8 @@ virshDomainDiskTargetCompleter(vshControl *ctl,
                                unsigned int flags)
 {
     virshControlPtr priv = ctl->privData;
-    VIR_AUTOPTR(xmlDoc) xmldoc = NULL;
-    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
+    g_autoptr(xmlDoc) xmldoc = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     g_autofree xmlNodePtr *disks = NULL;
     int ndisks;
     size_t i;
@@ -199,8 +199,8 @@ virshDomainInterfaceStateCompleter(vshControl *ctl,
     virshControlPtr priv = ctl->privData;
     const char *iface = NULL;
     char **ret = NULL;
-    VIR_AUTOPTR(xmlDoc) xml = NULL;
-    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     virMacAddr macaddr;
     char macstr[VIR_MAC_STRING_BUFLEN] = "";
     int ninterfaces;
@@ -260,8 +260,8 @@ virshDomainDeviceAliasCompleter(vshControl *ctl,
                                 unsigned int flags)
 {
     virshControlPtr priv = ctl->privData;
-    VIR_AUTOPTR(xmlDoc) xmldoc = NULL;
-    VIR_AUTOPTR(xmlXPathContext) ctxt = NULL;
+    g_autoptr(xmlDoc) xmldoc = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
     int naliases;
     g_autofree xmlNodePtr *aliases = NULL;
     size_t i;

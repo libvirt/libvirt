@@ -53,7 +53,7 @@ virStorageBackendZFSVolModeNeeded(void)
 {
     int ret = -1, exit_code = -1;
     g_autofree char *error = NULL;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     /* 'zfs get' without arguments prints out
      * usage information to stderr, including
@@ -178,7 +178,7 @@ virStorageBackendZFSFindVols(virStoragePoolObjPtr pool,
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     size_t i;
     VIR_AUTOSTRINGLIST lines = NULL;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     g_autofree char *volumes_list = NULL;
 
     /**
@@ -223,7 +223,7 @@ virStorageBackendZFSRefreshPool(virStoragePoolObjPtr pool G_GNUC_UNUSED)
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     char *zpool_props = NULL;
     size_t i;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     VIR_AUTOSTRINGLIST lines = NULL;
     VIR_AUTOSTRINGLIST tokens = NULL;
 
@@ -297,7 +297,7 @@ virStorageBackendZFSCreateVol(virStoragePoolObjPtr pool,
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     int ret = -1;
     int volmode_needed = -1;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     if (vol->target.encryption != NULL) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -366,7 +366,7 @@ virStorageBackendZFSDeleteVol(virStoragePoolObjPtr pool,
                               unsigned int flags)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
-    VIR_AUTOPTR(virCommand) destroy_cmd = NULL;
+    g_autoptr(virCommand) destroy_cmd = NULL;
 
     virCheckFlags(0, -1);
 
@@ -384,7 +384,7 @@ virStorageBackendZFSBuildPool(virStoragePoolObjPtr pool,
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     size_t i;
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     int ret = -1;
 
     virCheckFlags(0, -1);
@@ -413,7 +413,7 @@ virStorageBackendZFSDeletePool(virStoragePoolObjPtr pool,
                                unsigned int flags)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
-    VIR_AUTOPTR(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     virCheckFlags(0, -1);
 
