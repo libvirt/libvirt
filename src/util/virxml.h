@@ -28,7 +28,6 @@
 #include <libxml/relaxng.h>
 
 #include "virbuffer.h"
-#include "virautoclean.h"
 
 xmlXPathContextPtr virXMLXPathContextNew(xmlDocPtr xml)
     G_GNUC_WARN_UNUSED_RESULT;

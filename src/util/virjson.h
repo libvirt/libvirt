@@ -25,7 +25,6 @@
 #include "internal.h"
 #include "virbitmap.h"
 #include "virbuffer.h"
-#include "virautoclean.h"
 
 #include <stdarg.h>
 

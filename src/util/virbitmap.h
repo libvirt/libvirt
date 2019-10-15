@@ -22,7 +22,6 @@
 #pragma once
 
 #include "internal.h"
-#include "virautoclean.h"
 
 #include <sys/types.h>
 

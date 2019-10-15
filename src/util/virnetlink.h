@@ -21,7 +21,6 @@
 
 #include "internal.h"
 #include "virmacaddr.h"
-#include "virautoclean.h"
 
 #if defined(__linux__) && defined(HAVE_LIBNL)
 

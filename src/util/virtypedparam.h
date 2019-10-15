@@ -24,7 +24,6 @@
 #include "internal.h"
 #include "virutil.h"
 #include "virenum.h"
-#include "virautoclean.h"
 
 /**
  * VIR_TYPED_PARAM_MULTIPLE:

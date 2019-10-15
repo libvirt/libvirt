@@ -23,7 +23,6 @@
 #include <stdarg.h>
 
 #include "internal.h"
-#include "virautoclean.h"
 
 
 /**

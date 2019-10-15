@@ -19,7 +19,6 @@
 #pragma once
 
 #include "virsocketaddr.h"
-#include "virautoclean.h"
 
 typedef struct _virNetDevIPAddr virNetDevIPAddr;
 typedef virNetDevIPAddr *virNetDevIPAddrPtr;

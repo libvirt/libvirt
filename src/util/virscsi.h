@@ -22,7 +22,6 @@
 
 #include "internal.h"
 #include "virobject.h"
-#include "virautoclean.h"
 
 typedef struct _virSCSIDevice virSCSIDevice;
 typedef virSCSIDevice *virSCSIDevicePtr;

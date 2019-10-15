@@ -24,7 +24,6 @@
 
 #include "internal.h"
 #include "virconf.h"
-#include "virautoclean.h"
 
 typedef struct _virURI virURI;
 typedef virURI *virURIPtr;

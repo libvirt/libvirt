@@ -29,7 +29,6 @@
 #include "device_conf.h"
 #include "object_event.h"
 #include "storage_adapter_conf.h"
-#include "virautoclean.h"
 #include "virenum.h"
 #include "virxml.h"
 

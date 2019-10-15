@@ -22,7 +22,6 @@
 
 #include "internal.h"
 #include "domain_conf.h"
-#include "virautoclean.h"
 #include "virenum.h"
 
 typedef const char * (*virDomainCapsValToStr)(int value);

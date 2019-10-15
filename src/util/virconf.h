@@ -22,7 +22,6 @@
 
 #include "virutil.h"
 #include "virenum.h"
-#include "virautoclean.h"
 
 /**
  * virConfType:

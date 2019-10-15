@@ -29,7 +29,6 @@
 #include "virstorageencryption.h"
 #include "virutil.h"
 #include "virsecret.h"
-#include "virautoclean.h"
 #include "virenum.h"
 
 /* Minimum header size required to probe all known formats with

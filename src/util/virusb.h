@@ -22,7 +22,6 @@
 
 #include "internal.h"
 #include "virobject.h"
-#include "virautoclean.h"
 
 #define USB_DEVFS "/dev/bus/usb/"
 

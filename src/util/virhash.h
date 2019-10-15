@@ -9,8 +9,6 @@
 
 #pragma once
 
-#include "virautoclean.h"
-
 /*
  * The hash table.
  */

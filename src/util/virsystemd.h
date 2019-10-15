@@ -22,7 +22,6 @@
 #pragma once
 
 #include "internal.h"
-#include "virautoclean.h"
 
 typedef struct _virSystemdActivation virSystemdActivation;
 typedef virSystemdActivation *virSystemdActivationPtr;

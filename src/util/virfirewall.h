@@ -21,7 +21,6 @@
 #pragma once
 
 #include "internal.h"
-#include "virautoclean.h"
 
 typedef struct _virFirewall virFirewall;
 typedef virFirewall *virFirewallPtr;
