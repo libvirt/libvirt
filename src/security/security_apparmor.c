@@ -798,7 +798,7 @@ AppArmorSetSecurityImageLabel(virSecurityManagerPtr mgr,
         return -1;
     }
 
-    return reload_profile(mgr, def, src->path, false);
+    return reload_profile(mgr, def, src->path, true);
 }
 
 static int
