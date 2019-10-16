@@ -95,18 +95,20 @@ vahDeinit(vahControl * ctl)
 static void
 vah_usage(void)
 {
-    printf(_("\n%s [options] [< def.xml]\n\n"
-            "  Options:\n"
+    printf(_("\n%s mode [options] [extra file] [< def.xml]\n\n"
+            "  Modes:\n"
             "    -a | --add                     load profile\n"
             "    -c | --create                  create profile from template\n"
-            "    -d | --dryrun                  dry run\n"
             "    -D | --delete                  unload and delete profile\n"
-            "    -f | --add-file <file>         add file to profile\n"
-            "    -F | --append-file <file>      append file to profile\n"
             "    -r | --replace                 reload profile\n"
             "    -R | --remove                  unload profile\n"
-            "    -h | --help                    this help\n"
+            "  Options:\n"
+            "    -d | --dryrun                  dry run\n"
             "    -u | --uuid <uuid>             uuid (profile name)\n"
+            "    -h | --help                    this help\n"
+            "  Extra File:\n"
+            "    -f | --add-file <file>         add file to a profile generated from XML\n"
+            "    -F | --append-file <file>      append file to an existing profile\n"
             "\n"), progname);
 
     puts(_("This command is intended to be used by libvirtd "
