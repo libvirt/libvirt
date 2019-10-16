@@ -778,8 +778,6 @@ AppArmorSetSecurityImageLabel(virSecurityManagerPtr mgr,
                               virStorageSourcePtr src,
                               virSecurityDomainImageLabelFlags flags G_GNUC_UNUSED)
 {
-    int rc = -1;
-    char *profile_name = NULL;
     virSecurityLabelDefPtr secdef;
 
     if (!src->path || !virStorageSourceIsLocalStorage(src))
@@ -789,36 +787,18 @@ AppArmorSetSecurityImageLabel(virSecurityManagerPtr mgr,
     if (!secdef || !secdef->relabel)
         return 0;
 
-    if (secdef->imagelabel) {
-        /* if the device doesn't exist, error out */
-        if (!virFileExists(src->path)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("\'%s\' does not exist"),
-                           src->path);
-            return -1;
-        }
+    if (!secdef->imagelabel)
+        return 0;
 
-        if ((profile_name = get_profile_name(def)) == NULL)
-            return -1;
-
-        /* update the profile only if it is loaded */
-        if (profile_loaded(secdef->imagelabel) >= 0) {
-            if (load_profile(mgr, secdef->imagelabel, def,
-                             src->path, false) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("cannot update AppArmor profile "
-                                 "\'%s\'"),
-                               secdef->imagelabel);
-                goto cleanup;
-            }
-        }
+    /* if the device doesn't exist, error out */
+    if (!virFileExists(src->path)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("\'%s\' does not exist"),
+                       src->path);
+        return -1;
     }
-    rc = 0;
 
- cleanup:
-    VIR_FREE(profile_name);
-
-    return rc;
+    return reload_profile(mgr, def, src->path, false);
 }
 
 static int
