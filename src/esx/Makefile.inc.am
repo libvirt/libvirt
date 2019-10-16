@@ -63,8 +63,8 @@ $(ESX_DRIVER_GENERATED): $(ESX_GENERATED_STAMP)
 
 $(ESX_GENERATED_STAMP): $(srcdir)/esx/esx_vi_generator.input \
                          $(srcdir)/esx/esx_vi_generator.py
-	$(AM_V_GEN)srcdir=$(srcdir) $(RUNUTF8) $(PYTHON) \
-		$(srcdir)/esx/esx_vi_generator.py && touch $@
+	$(AM_V_GEN) $(RUNUTF8) $(PYTHON) \
+		$(srcdir)/esx/esx_vi_generator.py $(srcdir) $(builddir) && touch $@
 
 MAINTAINERCLEANFILES += $(ESX_DRIVER_GENERATED) $(ESX_GENERATED_STAMP)
 
@@ -81,6 +81,7 @@ libvirt_la_BUILT_LIBADD += libvirt_driver_esx.la
 libvirt_driver_esx_la_CFLAGS = \
 	$(CURL_CFLAGS) \
 	-I$(srcdir)/conf \
+	-I$(builddir)/esx \
 	-I$(srcdir)/vmx \
 	$(AM_CFLAGS) \
 	$(NULL)

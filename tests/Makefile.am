@@ -756,6 +756,9 @@ esxutilstest_SOURCES = \
 	esxutilstest.c \
 	testutils.c testutils.h
 esxutilstest_LDADD = $(LDADDS)
+esxutilstest_CFLAGS = \
+	-I$(top_builddir)/src/esx \
+	$(AM_CFLAGS)
 else ! WITH_ESX
 EXTRA_DIST += esxutilstest.c
 endif ! WITH_ESX

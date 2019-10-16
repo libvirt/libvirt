@@ -1379,14 +1379,11 @@ additional_object_features = {
 
 removed_object_features = {}
 
+if len(sys.argv) != 3:
+    report_error("usage: %s srcdir builddir" % sys.argv[0])
 
-
-if "srcdir" in os.environ:
-    input_filename = os.path.join(os.environ["srcdir"], "esx/esx_vi_generator.input")
-    output_dirname = os.path.join(os.environ["srcdir"], "esx")
-else:
-    input_filename = os.path.join(os.getcwd(), "esx_vi_generator.input")
-    output_dirname = os.getcwd()
+input_filename = os.path.join(sys.argv[1], "esx/esx_vi_generator.input")
+output_dirname = os.path.join(sys.argv[2], "esx")
 
 
 
