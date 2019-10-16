@@ -42,6 +42,7 @@ VIR_LOG_INIT("storage.storage_backend_fs");
 #if WITH_STORAGE_FS
 
 # include <mntent.h>
+# include <paths.h>
 
 struct _virNetfsDiscoverState {
     const char *host;

@@ -7,6 +7,7 @@
 #include "virlog.h"
 #include "virstring.h"
 #include <mntent.h>
+#include <paths.h>
 #include <pwd.h>
 #include <grp.h>
 #include "storage_util.h"
