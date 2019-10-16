@@ -1008,28 +1008,32 @@ BAD:
     </p>
 
     <dl>
-      <dt>VIR_ALLOC, VIR_REALLOC, VIR_RESIZE_N, VIR_EXPAND_N,
-        VIR_SHRINK_N, VIR_FREE, VIR_APPEND_ELEMENT, VIR_INSERT_ELEMENT,
-        VIR_DELETE_ELEMENT</dt>
-      <dd>Prefer the GLib APIs g_new0/g_renew/g_free in most cases.
-        There should rarely be a need to use g_malloc/g_realloc.
+      <dt><code>VIR_ALLOC</code>, <code>VIR_REALLOC</code>,
+        <code>VIR_RESIZE_N</code>, <code>VIR_EXPAND_N</code>,
+        <code>VIR_SHRINK_N</code>, <code>VIR_FREE</code>,
+        <code>VIR_APPEND_ELEMENT</code>, <code>VIR_INSERT_ELEMENT</code>,
+        <code>VIR_DELETE_ELEMENT</code></dt>
+    <dd>Prefer the GLib APIs <code>g_new0</code>/<code>g_renew</code>/
+        <code>g_free</code> in most cases. There should rarely be a need
+        to use <code>g_malloc</code>/<code>g_realloc</code>.
         Instead of using plain C arrays, it is preferrable to use
-        one of the GLib types, GArray, GPtrArray or GByteArray. These
+        one of the GLib types, <code>GArray</code>, <code>GPtrArray</code>
+        or <code>GByteArray</code>. These
         all use a struct to track the array memory and size together
         and efficiently resize. <strong>NEVER MIX</strong> use of the
         classic libvirt memory allocation APIs and GLib APIs within
         a single method. Keep the style consistent, converting existing
         code to GLib style in a separate, prior commit.</dd>
 
-      <dt>VIR_STRDUP, VIR_STRNDUP</dt>
-      <dd>Prefer the GLib APIs g_strdup and g_strndup.</dd>
+      <dt><code>VIR_STRDUP</code>, <code>VIR_STRNDUP</code></dt>
+      <dd>Prefer the GLib APIs <code>g_strdup</code> and <code>g_strndup</code>.</dd>
 
-      <dt>virAsprintf, virVasprintf</dt>
-      <dd>The GLib APIs g_strdup_printf / g_strdup_vprint should be used
-        instead. Don't use g_vasprintf unless having the string length
+      <dt><code>virAsprintf</code>, <code>virVasprintf</code></dt>
+      <dd>The GLib APIs <code>g_strdup_printf</code> / <code>g_strdup_vprint</code> should be used
+        instead. Don't use <code>g_vasprintf</code> unless having the string length
         returned is unavoidable.</dd>
 
-      <dt>virStrerror</dt>
+      <dt><code>virStrerror</code></dt>
       <dd>The GLib <code>g_strerror()</code> function should be used instead,
         which has a simpler calling convention as an added benefit.</dd>
     </dl>
@@ -1038,26 +1042,27 @@ BAD:
       The following libvirt APIs have been deleted already:
     </p>
     <dl>
-      <dt>VIR_AUTOPTR, VIR_AUTOCLEAN, VIR_AUTOFREE</dt>
-      <dd>The GLib macros g_autoptr, g_auto and g_autofree must be used
+      <dt><code>VIR_AUTOPTR</code>, <code>VIR_AUTOCLEAN</code>, <code>VIR_AUTOFREE</code></dt>
+      <dd>The GLib macros <code>g_autoptr</code>, <code>g_auto</code> and
+        <code>g_autofree</code> must be used
         instead in all new code. In existing code, the GLib macros must
         never be mixed with libvirt macros within a method, nor should
-        they be mixed with VIR_FREE. If introducing GLib macros to an
+        they be mixed with <code>VIR_FREE</code>. If introducing GLib macros to an
         existing method, any use of libvirt macros must be converted
         in an independent commit.
       </dd>
 
-      <dt>VIR_DEFINE_AUTOPTR_FUNC, VIR_DEFINE_AUTOCLEAN_FUNC</dt>
-      <dd>The GLib macros G_DEFINE_AUTOPTR_CLEANUP_FUNC and
-        G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC must be used in all
+      <dt><code>VIR_DEFINE_AUTOPTR_FUNC</code>, <code>VIR_DEFINE_AUTOCLEAN_FUNC</code></dt>
+      <dd>The GLib macros <code>G_DEFINE_AUTOPTR_CLEANUP_FUNC</code> and
+        <code>G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC</code> must be used in all
         new code. Existing code should be converted to the
         new macros where relevant. It is permissible to use
-        g_autoptr, g_auto on an object whose cleanup function
+        <code>g_autoptr</code>, <code>g_auto</code> on an object whose cleanup function
         is declared with the libvirt macros and vice-verca.
       </dd>
 
-      <dt>VIR_AUTOUNREF</dt>
-      <dd>The GLib macros g_autoptr and G_DEFINE_AUTOPTR_CLEANUP_FUNC
+      <dt><code>VIR_AUTOUNREF</code></dt>
+      <dd>The GLib macros <code>g_autoptr</code> and <code>G_DEFINE_AUTOPTR_CLEANUP_FUNC</code>
         should be used to manage autoclean of virObject classes.
         This matches usage with GObject classes.</dd>
     </dl>
