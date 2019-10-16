@@ -8441,7 +8441,7 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
             }
 
             VIR_FREE(desc);
-            VIR_STEAL_PTR(desc, desc_edited);
+            desc = g_steal_pointer(&desc_edited);
         }
 
         if (virDomainSetMetadata(dom, type, desc, NULL, NULL, flags) < 0) {

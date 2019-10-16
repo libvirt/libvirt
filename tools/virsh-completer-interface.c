@@ -57,7 +57,7 @@ virshInterfaceNameCompleter(vshControl *ctl,
             goto cleanup;
     }
 
-    VIR_STEAL_PTR(ret, tmp);
+    ret = g_steal_pointer(&tmp);
 
  cleanup:
     for (i = 0; i < nifaces; i++)

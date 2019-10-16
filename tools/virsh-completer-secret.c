@@ -57,7 +57,7 @@ virshSecretUUIDCompleter(vshControl *ctl,
             goto cleanup;
     }
 
-    VIR_STEAL_PTR(ret, tmp);
+    ret = g_steal_pointer(&tmp);
 
  cleanup:
     for (i = 0; i < nsecrets; i++)
@@ -86,6 +86,6 @@ virshSecretEventNameCompleter(vshControl *ctl G_GNUC_UNUSED,
             return NULL;
     }
 
-    VIR_STEAL_PTR(ret, tmp);
+    ret = g_steal_pointer(&tmp);
     return ret;
 }

@@ -2796,7 +2796,7 @@ vshCompleterFilter(char ***list,
             continue;
         }
 
-        VIR_STEAL_PTR(newList[newList_len], (*list)[i]);
+        newList[newList_len] = g_steal_pointer(&(*list)[i]);
         newList_len++;
     }
 

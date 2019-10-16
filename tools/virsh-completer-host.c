@@ -100,7 +100,7 @@ virshAllocpagesPagesizeCompleter(vshControl *ctl,
             return NULL;
     }
 
-    VIR_STEAL_PTR(ret, tmp);
+    ret = g_steal_pointer(&tmp);
     return ret;
 }
 
@@ -143,6 +143,6 @@ virshCellnoCompleter(vshControl *ctl,
             return NULL;
     }
 
-    VIR_STEAL_PTR(ret, tmp);
+    ret = g_steal_pointer(&tmp);
     return ret;
 }

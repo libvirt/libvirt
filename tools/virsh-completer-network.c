@@ -59,7 +59,7 @@ virshNetworkNameCompleter(vshControl *ctl,
             goto cleanup;
     }
 
-    VIR_STEAL_PTR(ret, tmp);
+    ret = g_steal_pointer(&tmp);
 
  cleanup:
     for (i = 0; i < nnets; i++)
@@ -88,7 +88,7 @@ virshNetworkEventNameCompleter(vshControl *ctl G_GNUC_UNUSED,
             goto cleanup;
     }
 
-    VIR_STEAL_PTR(ret, tmp);
+    ret = g_steal_pointer(&tmp);
 
  cleanup:
     return ret;

@@ -62,7 +62,7 @@ virshSnapshotNameCompleter(vshControl *ctl,
             goto cleanup;
     }
 
-    VIR_STEAL_PTR(ret, tmp);
+    ret = g_steal_pointer(&tmp);
 
  cleanup:
     virshDomainFree(dom);

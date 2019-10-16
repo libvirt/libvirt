@@ -66,7 +66,7 @@ virshDomainNameCompleter(vshControl *ctl,
             goto cleanup;
     }
 
-    VIR_STEAL_PTR(ret, tmp);
+    ret = g_steal_pointer(&tmp);
 
  cleanup:
     for (i = 0; i < ndomains; i++)
@@ -122,7 +122,7 @@ virshDomainInterfaceCompleter(vshControl *ctl,
             return NULL;
     }
 
-    VIR_STEAL_PTR(ret, tmp);
+    ret = g_steal_pointer(&tmp);
     return ret;
 }
 
@@ -162,7 +162,7 @@ virshDomainDiskTargetCompleter(vshControl *ctl,
             return NULL;
     }
 
-    VIR_STEAL_PTR(ret, tmp);
+    ret = g_steal_pointer(&tmp);
     return ret;
 }
 
@@ -186,7 +186,7 @@ virshDomainEventNameCompleter(vshControl *ctl G_GNUC_UNUSED,
             return NULL;
     }
 
-    VIR_STEAL_PTR(ret, tmp);
+    ret = g_steal_pointer(&tmp);
     return ret;
 }
 
@@ -249,7 +249,7 @@ virshDomainInterfaceStateCompleter(vshControl *ctl,
             return NULL;
     }
 
-    VIR_STEAL_PTR(ret, tmp);
+    ret = g_steal_pointer(&tmp);
     return ret;
 }
 
@@ -292,7 +292,7 @@ virshDomainDeviceAliasCompleter(vshControl *ctl,
             return NULL;
     }
 
-    VIR_STEAL_PTR(ret, tmp);
+    ret = g_steal_pointer(&tmp);
     return ret;
 }
 
