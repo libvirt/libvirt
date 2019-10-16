@@ -8445,7 +8445,7 @@ qemuProcessQMPFree(qemuProcessQMPPtr proc)
     VIR_FREE(proc->monpath);
     VIR_FREE(proc->monarg);
     VIR_FREE(proc->pidfile);
-    VIR_FREE(proc->stderr);
+    VIR_FREE(proc->stdErr);
     VIR_FREE(proc);
 }
 
@@ -8598,7 +8598,7 @@ qemuProcessQMPLaunch(qemuProcessQMPPtr proc)
     virCommandSetGID(proc->cmd, proc->runGid);
     virCommandSetUID(proc->cmd, proc->runUid);
 
-    virCommandSetErrorBuffer(proc->cmd, &(proc->stderr));
+    virCommandSetErrorBuffer(proc->cmd, &(proc->stdErr));
 
     if (virCommandRun(proc->cmd, &status) < 0)
         goto cleanup;
@@ -8608,7 +8608,7 @@ qemuProcessQMPLaunch(qemuProcessQMPPtr proc)
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to start QEMU binary %s for probing: %s"),
                        proc->binary,
-                       proc->stderr ? proc->stderr : _("unknown error"));
+                       proc->stdErr ? proc->stdErr : _("unknown error"));
         goto cleanup;
     }
 
@@ -8687,7 +8687,7 @@ qemuProcessQMPConnectMonitor(qemuProcessQMPPtr proc)
  *   ** Send QMP Queries to QEMU using monitor (proc->mon) **
  *   qemuProcessQMPFree(proc);
  *
- * Process error output (proc->stderr) remains available in qemuProcessQMP
+ * Process error output (proc->stdErr) remains available in qemuProcessQMP
  * struct until qemuProcessQMPFree is called.
  */
 int
