@@ -488,17 +488,3 @@ void virDisposeString(char **strptr)
  */
 #define VIR_DISPOSE(ptr) virDispose(1 ? (void *) &(ptr) : (ptr), 1, \
                                     sizeof(*(ptr)), NULL)
-
-
-/**
- * VIR_AUTOFREE:
- * @type: type of the variable to be freed automatically
- *
- * DEPRECATED: use g_autofree for new code. See HACKING
- * for further guidance.
- *
- * Macro to automatically free the memory allocated to
- * the variable declared with it by calling virFree
- * when the variable goes out of scope.
- */
-#define VIR_AUTOFREE(type) g_autofree type
