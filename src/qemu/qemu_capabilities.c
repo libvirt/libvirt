@@ -5167,8 +5167,10 @@ virQEMUCapsInitQMPVersionCaps(virQEMUCapsPtr qemuCaps)
 void
 virQEMUCapsInitProcessCapsInterlock(virQEMUCapsPtr qemuCaps)
 {
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV))
-        virQEMUCapsClear(qemuCaps, QEMU_CAPS_INCREMENTAL_BACKUP);
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV) &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV_REOPEN) &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING))
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_INCREMENTAL_BACKUP);
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_USB_STORAGE) &&
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_STORAGE_WERROR)) {
