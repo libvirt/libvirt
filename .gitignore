@@ -41,6 +41,4 @@ Makefile.in
 # libvirt related ignores
 /build/
 /ci/scratch/
-/src/remote/*_client_bodies.h
-/src/remote/*_stubs.h
 tags

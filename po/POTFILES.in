@@ -3,6 +3,8 @@
 @BUILDDIR@/src/access/viraccessapicheckqemu.c
 @BUILDDIR@/src/admin/admin_client.h
 @BUILDDIR@/src/admin/admin_server_dispatch_stubs.h
+@BUILDDIR@/src/remote/remote_client_bodies.h
+@BUILDDIR@/src/remote/remote_daemon_dispatch_stubs.h
 @SRCDIR@/gnulib/lib/gai_strerror.c
 @SRCDIR@/gnulib/lib/regcomp.c
 @SRCDIR@/src/access/viraccessdriverpolkit.c
@@ -167,11 +169,9 @@
 @SRCDIR@/src/qemu/qemu_tpm.c
 @SRCDIR@/src/qemu/qemu_vhost_user.c
 @SRCDIR@/src/qemu/qemu_vhost_user_gpu.c
-@SRCDIR@/src/remote/remote_client_bodies.h
 @SRCDIR@/src/remote/remote_daemon.c
 @SRCDIR@/src/remote/remote_daemon_config.c
 @SRCDIR@/src/remote/remote_daemon_dispatch.c
-@SRCDIR@/src/remote/remote_daemon_dispatch_stubs.h
 @SRCDIR@/src/remote/remote_daemon_stream.c
 @SRCDIR@/src/remote/remote_driver.c
 @SRCDIR@/src/rpc/virkeepalive.c

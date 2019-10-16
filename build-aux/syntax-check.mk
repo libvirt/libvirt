@@ -1976,8 +1976,6 @@ po_file ?= $(srcdir)/po/POTFILES.in
 generated_files = \
   $(builddir)/src/*.[ch] \
   $(builddir)/src/*/*.[ch] \
-  $(srcdir)/src/*/{remote,qemu,lxc}_daemon_dispatch_stubs.h \
-  $(srcdir)/src/remote/*_client_bodies.h \
   $(srcdir)/gnulib/lib/*.[ch]
 
 _gl_translatable_string_re ?= \b(N?_|gettext *)\([^)"]*("|$$)
