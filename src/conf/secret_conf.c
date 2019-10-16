@@ -193,7 +193,7 @@ secretXMLParseNode(xmlDocPtr xml, xmlNodePtr root)
         && virSecretDefParseUsage(ctxt, def) < 0)
         return NULL;
 
-    VIR_RETURN_PTR(def);
+    return g_steal_pointer(&def);
 }
 
 static virSecretDefPtr

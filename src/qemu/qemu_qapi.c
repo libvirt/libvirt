@@ -512,5 +512,5 @@ virQEMUQAPISchemaConvert(virJSONValuePtr schemareply)
                                       schema) < 0)
         return NULL;
 
-    VIR_RETURN_PTR(schema);
+    return g_steal_pointer(&schema);
 }

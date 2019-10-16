@@ -118,7 +118,7 @@ qemuBlockJobDataNew(qemuBlockJobType type,
     job->newstate = -1;
     job->type = type;
 
-    VIR_RETURN_PTR(job);
+    return g_steal_pointer(&job);
 }
 
 
@@ -214,7 +214,7 @@ qemuBlockJobDiskNew(virDomainObjPtr vm,
     if (qemuBlockJobRegister(job, vm, disk, true) < 0)
         return NULL;
 
-    VIR_RETURN_PTR(job);
+    return g_steal_pointer(&job);
 }
 
 
@@ -243,7 +243,7 @@ qemuBlockJobDiskNewPull(virDomainObjPtr vm,
     if (qemuBlockJobRegister(job, vm, disk, true) < 0)
         return NULL;
 
-    VIR_RETURN_PTR(job);
+    return g_steal_pointer(&job);
 }
 
 
@@ -280,7 +280,7 @@ qemuBlockJobDiskNewCommit(virDomainObjPtr vm,
     if (qemuBlockJobRegister(job, vm, disk, true) < 0)
         return NULL;
 
-    VIR_RETURN_PTR(job);
+    return g_steal_pointer(&job);
 }
 
 
@@ -311,7 +311,7 @@ qemuBlockJobNewCreate(virDomainObjPtr vm,
     if (qemuBlockJobRegister(job, vm, NULL, true) < 0)
         return NULL;
 
-    VIR_RETURN_PTR(job);
+    return g_steal_pointer(&job);
 }
 
 
@@ -345,7 +345,7 @@ qemuBlockJobDiskNewCopy(virDomainObjPtr vm,
     if (qemuBlockJobRegister(job, vm, disk, true) < 0)
         return NULL;
 
-    VIR_RETURN_PTR(job);
+    return g_steal_pointer(&job);
 }
 
 

@@ -616,5 +616,5 @@ xenFormatXM(virConnectPtr conn,
     if (xenFormatXMInputDevs(conf, def) < 0)
         return NULL;
 
-    VIR_RETURN_PTR(conf);
+    return g_steal_pointer(&conf);
 }

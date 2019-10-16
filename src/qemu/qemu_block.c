@@ -255,7 +255,7 @@ qemuBlockNodeNameGetBackingChain(virJSONValuePtr namednodes,
                                       &data) < 0)
         return NULL;
 
-    VIR_RETURN_PTR(disks);
+    return g_steal_pointer(&disks);
 }
 
 
@@ -380,7 +380,7 @@ qemuBlockGetNodeData(virJSONValuePtr data)
                                       qemuBlockNamedNodesArrayToHash, nodedata) < 0)
         return NULL;
 
-    VIR_RETURN_PTR(nodedata);
+    return g_steal_pointer(&nodedata);
 }
 
 
@@ -449,7 +449,7 @@ qemuBlockStorageSourceGetURI(virStorageSourcePtr src)
     if (VIR_STRDUP(uri->server, src->hosts->name) < 0)
         return NULL;
 
-    VIR_RETURN_PTR(uri);
+    return g_steal_pointer(&uri);
 }
 
 
@@ -514,7 +514,7 @@ qemuBlockStorageSourceBuildJSONSocketAddress(virStorageNetHostDefPtr host,
         return NULL;
     }
 
-    VIR_RETURN_PTR(server);
+    return g_steal_pointer(&server);
 }
 
 
@@ -550,7 +550,7 @@ qemuBlockStorageSourceBuildHostsJSONSocketAddress(virStorageSourcePtr src,
         server = NULL;
     }
 
-    VIR_RETURN_PTR(servers);
+    return g_steal_pointer(&servers);
 }
 
 
@@ -617,7 +617,7 @@ qemuBlockStorageSourceBuildHostsJSONInetSocketAddress(virStorageSourcePtr src)
         server = NULL;
     }
 
-    VIR_RETURN_PTR(servers);
+    return g_steal_pointer(&servers);
 }
 
 
@@ -649,7 +649,7 @@ qemuBlockStorageSourceGetGlusterProps(virStorageSourcePtr src,
         virJSONValueObjectAdd(props, "u:debug", src->debugLevel, NULL) < 0)
         return NULL;
 
-    VIR_RETURN_PTR(props);
+    return g_steal_pointer(&props);
 }
 
 
@@ -989,7 +989,7 @@ qemuBlockStorageSourceGetVvfatProps(virStorageSourcePtr src,
         virJSONValueObjectAdd(ret, "b:rw", !src->readonly, NULL) < 0)
         return NULL;
 
-    VIR_RETURN_PTR(ret);
+    return g_steal_pointer(&ret);
 }
 
 
@@ -1162,7 +1162,7 @@ qemuBlockStorageSourceGetBackendProps(virStorageSourcePtr src,
         }
     }
 
-    VIR_RETURN_PTR(fileprops);
+    return g_steal_pointer(&fileprops);
 }
 
 
@@ -1315,7 +1315,7 @@ qemuBlockStorageSourceGetBlockdevFormatCommonProps(virStorageSourcePtr src)
     if (qemuBlockStorageSourceGetBlockdevGetCacheProps(src, props) < 0)
         return NULL;
 
-    VIR_RETURN_PTR(props);
+    return g_steal_pointer(&props);
 }
 
 
@@ -1387,7 +1387,7 @@ qemuBlockStorageSourceGetBlockdevFormatProps(virStorageSourcePtr src)
         virJSONValueObjectAdd(props, "s:driver", driver, NULL) < 0)
         return NULL;
 
-    VIR_RETURN_PTR(props);
+    return g_steal_pointer(&props);
 }
 
 
@@ -1435,7 +1435,7 @@ qemuBlockStorageSourceGetBlockdevProps(virStorageSourcePtr src,
         }
     }
 
-    VIR_RETURN_PTR(props);
+    return g_steal_pointer(&props);
 }
 
 
@@ -1496,7 +1496,7 @@ qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSourcePtr src,
     data->storageNodeName = src->nodestorage;
     data->formatNodeName = src->nodeformat;
 
-    VIR_RETURN_PTR(data);
+    return g_steal_pointer(&data);
 }
 
 
@@ -1753,7 +1753,7 @@ qemuBlockStorageSourceChainDetachPrepareBlockdev(virStorageSourcePtr src)
             return NULL;
     }
 
-    VIR_RETURN_PTR(data);
+    return g_steal_pointer(&data);
 }
 
 
@@ -1781,7 +1781,7 @@ qemuBlockStorageSourceChainDetachPrepareDrive(virStorageSourcePtr src,
     if (VIR_APPEND_ELEMENT(data->srcdata, data->nsrcdata, backend) < 0)
         return NULL;
 
-    VIR_RETURN_PTR(data);
+    return g_steal_pointer(&data);
 }
 
 

@@ -718,7 +718,7 @@ virStoragePoolDefParseSourceString(const char *srcSpec,
                                      node) < 0)
         return NULL;
 
-    VIR_RETURN_PTR(def);
+    return g_steal_pointer(&def);
 }
 
 

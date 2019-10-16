@@ -302,7 +302,7 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
                              &cfg->nfirmwares) < 0)
         return NULL;
 
-    VIR_RETURN_PTR(cfg);
+    return g_steal_pointer(&cfg);
 }
 
 
@@ -1292,7 +1292,7 @@ virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver)
                   "DOI \"%s\"", model, doi);
     }
 
-    VIR_RETURN_PTR(caps);
+    return g_steal_pointer(&caps);
 }
 
 
@@ -1411,7 +1411,7 @@ virQEMUDriverGetDomainCapabilities(virQEMUDriverPtr driver,
     }
 
     virObjectRef(domCaps);
-    VIR_RETURN_PTR(domCaps);
+    return g_steal_pointer(&domCaps);
 }
 
 

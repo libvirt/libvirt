@@ -200,7 +200,7 @@ virHostdevManagerNew(void)
         umask(old_umask);
     }
 
-    VIR_RETURN_PTR(hostdevMgr);
+    return g_steal_pointer(&hostdevMgr);
 }
 
 virHostdevManagerPtr
@@ -285,7 +285,7 @@ virHostdevGetPCIHostDeviceList(virDomainHostdevDefPtr *hostdevs, int nhostdevs)
         pci = NULL;
     }
 
-    VIR_RETURN_PTR(pcidevs);
+    return g_steal_pointer(&pcidevs);
 }
 
 static int

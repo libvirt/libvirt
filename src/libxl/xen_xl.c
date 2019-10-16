@@ -2247,5 +2247,5 @@ xenFormatXL(virDomainDefPtr def, virConnectPtr conn)
     if (xenFormatXLDomainChannels(conf, def) < 0)
         return NULL;
 
-    VIR_RETURN_PTR(conf);
+    return g_steal_pointer(&conf);
 }

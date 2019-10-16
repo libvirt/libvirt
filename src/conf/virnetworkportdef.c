@@ -253,7 +253,7 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
         return NULL;
     }
 
-    VIR_RETURN_PTR(def);
+    return g_steal_pointer(&def);
 }
 
 

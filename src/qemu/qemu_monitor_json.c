@@ -2568,7 +2568,7 @@ qemuMonitorJSONBlockStatsCollectData(virJSONValuePtr dev,
             bstats->wr_highest_offset_valid = true;
     }
 
-    VIR_RETURN_PTR(bstats);
+    return g_steal_pointer(&bstats);
 }
 
 

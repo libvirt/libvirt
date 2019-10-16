@@ -3039,7 +3039,7 @@ qemuDomainObjPrivateXMLParseBlockjobChain(xmlNodePtr node,
     if (virDomainDiskBackingStoreParse(ctxt, src, xmlflags, xmlopt) < 0)
         return NULL;
 
-    VIR_RETURN_PTR(src);
+    return g_steal_pointer(&src);
 }
 
 

@@ -90,7 +90,7 @@ qemuSlirpNew(void)
     slirp->pid = (pid_t)-1;
     slirp->fd[0] = slirp->fd[1] = -1;
 
-    VIR_RETURN_PTR(slirp);
+    return g_steal_pointer(&slirp);
 }
 
 
@@ -141,7 +141,7 @@ qemuSlirpNewForHelper(const char *helper)
         qemuSlirpSetFeature(slirp, tmp);
     }
 
-    VIR_RETURN_PTR(slirp);
+    return g_steal_pointer(&slirp);
 }
 
 

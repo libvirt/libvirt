@@ -16560,7 +16560,7 @@ virDomainDeviceDefParse(const char *xmlStr,
     if (virDomainDeviceDefValidate(dev, def, flags, xmlopt) < 0)
         return NULL;
 
-    VIR_RETURN_PTR(dev);
+    return g_steal_pointer(&dev);
 }
 
 
@@ -21681,7 +21681,7 @@ virDomainDefParseNode(xmlDocPtr xml,
     if (virDomainDefValidate(def, caps, flags, xmlopt) < 0)
         return NULL;
 
-    VIR_RETURN_PTR(def);
+    return g_steal_pointer(&def);
 }
 
 
@@ -30672,7 +30672,7 @@ virDomainNetDefToNetworkPort(virDomainDefPtr dom,
 
     port->trustGuestRxFilters = iface->trustGuestRxFilters;
 
-    VIR_RETURN_PTR(port);
+    return g_steal_pointer(&port);
 }
 
 int
@@ -30925,7 +30925,7 @@ virDomainNetDefActualToNetworkPort(virDomainDefPtr dom,
     port->class_id = actual->class_id;
     port->trustGuestRxFilters = actual->trustGuestRxFilters;
 
-    VIR_RETURN_PTR(port);
+    return g_steal_pointer(&port);
 }
 
 

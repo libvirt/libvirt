@@ -662,7 +662,7 @@ qemuInterfacePrepareSlirp(virQEMUDriverPtr driver,
             return NULL;
     }
 
-    VIR_RETURN_PTR(slirp);
+    return g_steal_pointer(&slirp);
 }
 
 

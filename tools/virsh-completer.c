@@ -126,5 +126,5 @@ virshCommaStringListComplete(const char *input,
         nret++;
     }
 
-    VIR_RETURN_PTR(ret);
+    return g_steal_pointer(&ret);
 }

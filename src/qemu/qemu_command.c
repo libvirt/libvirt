@@ -10535,7 +10535,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
         cfg->logTimestamp)
         virCommandAddArgList(cmd, "-msg", "timestamp=on", NULL);
 
-    VIR_RETURN_PTR(cmd);
+    return g_steal_pointer(&cmd);
 }
 
 
@@ -10724,7 +10724,7 @@ qemuBuildHotpluggableCPUProps(const virDomainVcpuDef *vcpu)
         virJSONValueObjectPrependString(ret, "driver", vcpupriv->type) < 0)
         return NULL;
 
-    VIR_RETURN_PTR(ret);
+    return g_steal_pointer(&ret);
 }
 
 
@@ -10824,7 +10824,7 @@ qemuBuildStorageSourceChainAttachPrepareDrive(virDomainDiskDefPtr disk,
     if (VIR_APPEND_ELEMENT(data->srcdata, data->nsrcdata, elem) < 0)
         return NULL;
 
-    VIR_RETURN_PTR(data);
+    return g_steal_pointer(&data);
 }
 
 
@@ -10874,7 +10874,7 @@ qemuBuildStorageSourceChainAttachPrepareBlockdev(virStorageSourcePtr top,
             return NULL;
     }
 
-    VIR_RETURN_PTR(data);
+    return g_steal_pointer(&data);
 }
 
 
@@ -10901,5 +10901,5 @@ qemuBuildStorageSourceChainAttachPrepareBlockdevTop(virStorageSourcePtr top,
                                                             qemuCaps) < 0)
         return NULL;
 
-    VIR_RETURN_PTR(data);
+    return g_steal_pointer(&data);
 }

@@ -1419,7 +1419,7 @@ virPCIDeviceNew(unsigned int domain,
 
     VIR_DEBUG("%s %s: initialized", dev->id, dev->name);
 
-    VIR_RETURN_PTR(dev);
+    return g_steal_pointer(&dev);
 }
 
 
