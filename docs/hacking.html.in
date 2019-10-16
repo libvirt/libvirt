@@ -1066,6 +1066,19 @@ BAD:
         should be used to manage autoclean of virObject classes.
         This matches usage with GObject classes.</dd>
     </dl>
+    <table class="top_table">
+        <tr><th>deleted version</th><th>GLib version</th><th>Notes</th></tr>
+        <tr><td><code>VIR_AUTOPTR</code></td><td><code>g_autoptr</code></td><td></td></tr>
+        <tr><td><code>VIR_AUTOCLEAN</code></td><td><code>g_auto</code></td><td></td></tr>
+        <tr><td><code>VIR_AUTOFREE</code></td><td><code>g_autofree</code></td><td>The GLib version does not use parentheses</td></tr>
+        <tr><td><code>VIR_AUTOUNREF</code></td><td><code>g_autoptr</code></td><td>The cleanup function needs to be defined</td></tr>
+        <tr><td><code>VIR_DEFINE_AUTOPTR_FUNC</code></td><td><code>G_DEFINE_AUTOPTR_CLEANUP_FUNC</code></td><td></td></tr>
+        <tr><td><code>VIR_DEFINE_AUTOCLEAN_FUNC</code></td><td><code>G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC</code></td><td></td></tr>
+        <tr><td><code>VIR_STEAL_PTR</code></td><td><code>g_steal_pointer</code></td>
+            <td><code>a = f(&amp;b)</code> instead of <code>f(a, b)</code></td></tr>
+        <tr><td><code>VIR_RETURN_PTR</code></td><td><code>return g_steal_pointer</code></td><td></td></tr>
+    </table>
+
 
     <h2><a id="file_handling">File handling</a></h2>
 
