@@ -280,7 +280,7 @@ locking/lock_daemon_dispatch_stubs.h: $(LOCK_PROTOCOL) \
 		$(srcdir)/rpc/gendispatch.pl Makefile.am
 	$(AM_V_GEN)perl -w $(srcdir)/rpc/gendispatch.pl --mode=server \
 	    virLockSpaceProtocol VIR_LOCK_SPACE_PROTOCOL \
-	    $(LOCK_PROTOCOL) > $(srcdir)/locking/lock_daemon_dispatch_stubs.h
+	    $(LOCK_PROTOCOL) > locking/lock_daemon_dispatch_stubs.h
 
 
 virtlockd.service: locking/virtlockd.service.in $(top_builddir)/config.status

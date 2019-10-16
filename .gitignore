@@ -41,7 +41,6 @@ Makefile.in
 # libvirt related ignores
 /build/
 /ci/scratch/
-/src/locking/lock_daemon_dispatch_stubs.h
 /src/logging/log_daemon_dispatch_stubs.h
 /src/lxc/lxc_controller_dispatch.h
 /src/lxc/lxc_monitor_dispatch.h
