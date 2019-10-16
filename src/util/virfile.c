@@ -4437,7 +4437,7 @@ virFileGetXAttrQuiet(const char *path,
         break;
     }
 
-    VIR_STEAL_PTR(*value, buf);
+    *value = g_steal_pointer(&buf);
     ret = 0;
  cleanup:
     VIR_FREE(buf);

@@ -156,7 +156,7 @@ virMediatedDeviceNew(const char *uuidstr, virMediatedDeviceModelType model)
     if (VIR_ALLOC(dev) < 0)
         return NULL;
 
-    VIR_STEAL_PTR(dev->path, sysfspath);
+    dev->path = g_steal_pointer(&sysfspath);
 
     /* Check whether the user-provided model corresponds with the actually
      * supported mediated device's API.
@@ -165,7 +165,7 @@ virMediatedDeviceNew(const char *uuidstr, virMediatedDeviceModelType model)
         return NULL;
 
     dev->model = model;
-    VIR_STEAL_PTR(ret, dev);
+    ret = g_steal_pointer(&dev);
 
     return ret;
 }
@@ -521,7 +521,7 @@ virMediatedDeviceTypeReadAttrs(const char *sysfspath,
 
 #undef MDEV_GET_SYSFS_ATTR
 
-    VIR_STEAL_PTR(*type, tmp);
+    *type = g_steal_pointer(&tmp);
 
     return 0;
 }

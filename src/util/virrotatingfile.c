@@ -406,7 +406,7 @@ virRotatingFileWriterRollover(virRotatingFileWriterPtr file)
             }
 
             VIR_FREE(nextpath);
-            VIR_STEAL_PTR(nextpath, thispath);
+            nextpath = g_steal_pointer(&thispath);
         }
     }
 

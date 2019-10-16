@@ -761,7 +761,7 @@ virTypedParamListStealParams(virTypedParamListPtr list,
 {
     size_t ret = list->npar;
 
-    VIR_STEAL_PTR(*params, list->par);
+    *params = g_steal_pointer(&list->par);
     list->npar = 0;
     list->par_alloc = 0;
 

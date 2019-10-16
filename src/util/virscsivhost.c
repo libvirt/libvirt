@@ -269,7 +269,7 @@ virSCSIVHostDeviceNew(const char *name)
 
     VIR_DEBUG("%s: initialized", dev->name);
 
-    VIR_STEAL_PTR(ret, dev);
+    ret = g_steal_pointer(&dev);
 
     return ret;
 }

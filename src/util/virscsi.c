@@ -238,7 +238,7 @@ virSCSIDeviceNew(const char *sysfs_prefix,
     if (virAsprintf(&dev->id, "%s:%s", vendor, model) < 0)
         return NULL;
 
-    VIR_STEAL_PTR(ret, dev);
+    ret = g_steal_pointer(&dev);
     return ret;
 }
 

@@ -610,7 +610,7 @@ virResctrlGetCacheInfo(virResctrlInfoPtr resctrl,
             goto cleanup;
         }
 
-        VIR_STEAL_PTR(i_level->types[type], i_type);
+        i_level->types[type] = g_steal_pointer(&i_type);
     }
 
     ret = 0;
@@ -666,7 +666,7 @@ virResctrlGetMemoryBandwidthInfo(virResctrlInfoPtr resctrl)
     if (rv < 0)
         goto cleanup;
 
-    VIR_STEAL_PTR(resctrl->membw_info, i_membw);
+    resctrl->membw_info = g_steal_pointer(&i_membw);
     ret = 0;
  cleanup:
     VIR_FREE(i_membw);
@@ -748,8 +748,8 @@ virResctrlGetMonitorInfo(virResctrlInfoPtr resctrl)
     VIR_DEBUG("Resctrl supported %zd monitoring features", nfeatures);
 
     info_monitor->nfeatures = nfeatures;
-    VIR_STEAL_PTR(info_monitor->features, features);
-    VIR_STEAL_PTR(resctrl->monitor_info, info_monitor);
+    info_monitor->features = g_steal_pointer(&features);
+    resctrl->monitor_info = g_steal_pointer(&info_monitor);
 
     ret = 0;
  cleanup:
@@ -1025,7 +1025,7 @@ virResctrlInfoGetMonitorPrefix(virResctrlInfoPtr resctrl,
         goto cleanup;
     }
 
-    VIR_STEAL_PTR(*monitor, mon);
+    *monitor = g_steal_pointer(&mon);
  cleanup:
     virResctrlInfoMonFree(mon);
     return ret;

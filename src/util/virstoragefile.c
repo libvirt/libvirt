@@ -1141,7 +1141,7 @@ virStorageFileMetadataNew(const char *path,
     if (VIR_STRDUP(def->path, path) < 0)
         return NULL;
 
-    VIR_STEAL_PTR(ret, def);
+    ret = g_steal_pointer(&def);
     return ret;
 }
 
@@ -1240,7 +1240,7 @@ virStorageFileGetMetadataFromFD(const char *path,
          * update the metadata.*/
         meta->type = VIR_STORAGE_TYPE_DIR;
         meta->format = VIR_STORAGE_FILE_DIR;
-        VIR_STEAL_PTR(ret, meta);
+        ret = g_steal_pointer(&meta);
         return ret;
     }
 
@@ -1262,7 +1262,7 @@ virStorageFileGetMetadataFromFD(const char *path,
     else if (S_ISBLK(sb.st_mode))
         meta->type = VIR_STORAGE_TYPE_BLOCK;
 
-    VIR_STEAL_PTR(ret, meta);
+    ret = g_steal_pointer(&meta);
     return ret;
 }
 
@@ -1867,7 +1867,7 @@ virStorageAuthDefCopy(const virStorageAuthDef *src)
     if (virSecretLookupDefCopy(&authdef->seclookupdef, &src->seclookupdef) < 0)
         return NULL;
 
-    VIR_STEAL_PTR(ret, authdef);
+    ret = g_steal_pointer(&authdef);
     return ret;
 }
 
@@ -1924,7 +1924,7 @@ virStorageAuthDefParse(xmlNodePtr node,
     if (virSecretLookupParseSecret(secretnode, &authdef->seclookupdef) < 0)
         goto cleanup;
 
-    VIR_STEAL_PTR(ret, authdef);
+    ret = g_steal_pointer(&authdef);
 
  cleanup:
     ctxt->node = saveNode;
@@ -2028,8 +2028,8 @@ virStoragePRDefParseXML(xmlXPathContextPtr ctxt)
         goto cleanup;
     }
 
-    VIR_STEAL_PTR(prd->path, path);
-    VIR_STEAL_PTR(ret, prd);
+    prd->path = g_steal_pointer(&path);
+    ret = g_steal_pointer(&prd);
 
  cleanup:
     virStoragePRDefFree(prd);
@@ -2113,7 +2113,7 @@ virStoragePRDefCopy(virStoragePRDefPtr src)
         VIR_STRDUP(copy->mgralias, src->mgralias) < 0)
         goto cleanup;
 
-    VIR_STEAL_PTR(ret, copy);
+    ret = g_steal_pointer(&copy);
 
  cleanup:
     virStoragePRDefFree(copy);
@@ -2346,7 +2346,7 @@ virStorageSourceCopy(const virStorageSource *src,
             return NULL;
     }
 
-    VIR_STEAL_PTR(ret, def);
+    ret = g_steal_pointer(&def);
     return ret;
 }
 
@@ -2671,7 +2671,7 @@ virStorageSourceNewFromBackingRelative(virStorageSourcePtr parent,
         def->type = VIR_STORAGE_TYPE_FILE;
     }
 
-    VIR_STEAL_PTR(ret, def);
+    ret = g_steal_pointer(&def);
     return ret;
 }
 
@@ -2854,7 +2854,7 @@ virStorageSourceParseRBDColonString(const char *rbdstr,
 
     /* pool vs. image name */
     if ((p = strchr(src->path, '/'))) {
-        VIR_STEAL_PTR(src->volume, src->path);
+        src->volume = g_steal_pointer(&src->path);
         if (VIR_STRDUP(src->path, p + 1) < 0)
             return -1;
         *p = '\0';
@@ -2897,7 +2897,7 @@ virStorageSourceParseRBDColonString(const char *rbdstr,
             if (VIR_STRDUP(authdef->secrettype,
                            virSecretUsageTypeToString(VIR_SECRET_USAGE_TYPE_CEPH)) < 0)
                 return -1;
-            VIR_STEAL_PTR(src->auth, authdef);
+            src->auth = g_steal_pointer(&authdef);
             src->authInherited = true;
 
             /* Cannot formulate a secretType (eg, usage or uuid) given
@@ -3720,7 +3720,7 @@ virStorageSourceNewFromBackingAbsolute(const char *path,
         }
     }
 
-    VIR_STEAL_PTR(*src, def);
+    *src = g_steal_pointer(&def);
     return rc;
 }
 
@@ -3779,7 +3779,7 @@ virStorageSourceNewFromChild(virStorageSourcePtr parent,
 
     def->detected = true;
 
-    VIR_STEAL_PTR(*child, def);
+    *child = g_steal_pointer(&def);
     return rc;
 }
 
@@ -4266,7 +4266,7 @@ virStorageFileGetRelativeBackingPath(virStorageSourcePtr top,
         return -1;
     }
 
-    VIR_STEAL_PTR(*relpath, path);
+    *relpath = g_steal_pointer(&path);
     return 0;
 }
 
@@ -5025,7 +5025,7 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
             goto cleanup;
     }
 
-    VIR_STEAL_PTR(src->backingStore, backingStore);
+    src->backingStore = g_steal_pointer(&backingStore);
 
     if (src->externalDataStoreRaw) {
         g_autoptr(virStorageSource) externalDataStore = NULL;
@@ -5040,7 +5040,7 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
             goto cleanup;
         }
 
-        VIR_STEAL_PTR(src->externalDataStore, externalDataStore);
+        src->externalDataStore = g_steal_pointer(&externalDataStore);
     }
 
     ret = 0;
@@ -5150,6 +5150,6 @@ virStorageFileGetBackingStoreStr(virStorageSourcePtr src,
     if (virStorageFileGetMetadataInternal(tmp, buf, headerLen, NULL) < 0)
         return -1;
 
-    VIR_STEAL_PTR(*backing, tmp->backingStoreRaw);
+    *backing = g_steal_pointer(&tmp->backingStoreRaw);
     return 0;
 }

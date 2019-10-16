@@ -178,7 +178,7 @@ virStorageBackendIQNFound(const char *initiatoriqn,
             goto cleanup;
 
         if (STREQ(iqn, initiatoriqn)) {
-            VIR_STEAL_PTR(*ifacename, iface);
+            *ifacename = g_steal_pointer(&iface);
 
             VIR_DEBUG("Found interface '%s' with IQN '%s'", *ifacename, iqn);
             break;
@@ -266,7 +266,7 @@ virStorageBackendCreateIfaceIQN(const char *initiatoriqn,
                   iface_name, initiatoriqn);
     }
 
-    VIR_STEAL_PTR(*ifacename, iface_name);
+    *ifacename = g_steal_pointer(&iface_name);
 
     return 0;
 }

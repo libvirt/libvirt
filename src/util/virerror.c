@@ -1497,7 +1497,7 @@ virLastErrorPrefixMessage(const char *fmt, ...)
         goto cleanup;
 
     VIR_FREE(err->message);
-    VIR_STEAL_PTR(err->message, newmsg);
+    err->message = g_steal_pointer(&newmsg);
 
  cleanup:
     va_end(args);

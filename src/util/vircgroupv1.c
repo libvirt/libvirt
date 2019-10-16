@@ -264,7 +264,7 @@ virCgroupV1ResolveMountLink(const char *mntDir,
             VIR_WARN("Expecting a symlink at %s for controller %s",
                      linkSrc, typeStr);
         } else {
-            VIR_STEAL_PTR(controller->linkPoint, linkSrc);
+            controller->linkPoint = g_steal_pointer(&linkSrc);
         }
     }
 
@@ -412,7 +412,7 @@ virCgroupV1StealPlacement(virCgroupPtr group)
 {
     char *ret = NULL;
 
-    VIR_STEAL_PTR(ret, group->legacy[VIR_CGROUP_CONTROLLER_SYSTEMD].placement);
+    ret = g_steal_pointer(&group->legacy[VIR_CGROUP_CONTROLLER_SYSTEMD].placement);
 
     return ret;
 }

@@ -880,7 +880,7 @@ virJSONValueObjectSteal(virJSONValuePtr object,
 
     for (i = 0; i < object->data.object.npairs; i++) {
         if (STREQ(object->data.object.pairs[i].key, key)) {
-            VIR_STEAL_PTR(obj, object->data.object.pairs[i].value);
+            obj = g_steal_pointer(&object->data.object.pairs[i].value);
             VIR_FREE(object->data.object.pairs[i].key);
             VIR_DELETE_ELEMENT(object->data.object.pairs, i,
                                object->data.object.npairs);
@@ -2155,7 +2155,7 @@ virJSONValueObjectDeflatten(virJSONValuePtr json)
                                           deflattened) < 0)
         return NULL;
 
-    VIR_STEAL_PTR(ret, deflattened);
+    ret = g_steal_pointer(&deflattened);
 
     return ret;
 }

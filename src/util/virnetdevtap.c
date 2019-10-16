@@ -399,7 +399,7 @@ int virNetDevTapCreate(char **ifname,
                 goto cleanup;
 
             if (virNetDevExists(newname) == 0) {
-                VIR_STEAL_PTR(newifname, newname);
+                newifname = g_steal_pointer(&newname);
                 break;
             }
         }

@@ -150,7 +150,7 @@ virDevMapperGetTargetsImpl(const char *path,
     if (virStringListMerge(&devPaths, &recursiveDevPaths) < 0)
         goto cleanup;
 
-    VIR_STEAL_PTR(*devPaths_ret, devPaths);
+    *devPaths_ret = g_steal_pointer(&devPaths);
     ret = 0;
  cleanup:
     virStringListFree(recursiveDevPaths);

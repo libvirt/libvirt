@@ -169,7 +169,7 @@ virFileCacheLoad(virFileCachePtr cache,
     VIR_DEBUG("Loaded cached data '%s' for '%s'", file, name);
 
     ret = 1;
-    VIR_STEAL_PTR(*data, loadData);
+    *data = g_steal_pointer(&loadData);
 
  cleanup:
     virObjectUnref(loadData);

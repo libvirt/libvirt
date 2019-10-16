@@ -489,7 +489,7 @@ virPCIDeviceIterDevices(virPCIDeviceIterPredicate predicate,
             break;
         } else if (rc == 1) {
             VIR_DEBUG("%s %s: iter matched on %s", dev->id, dev->name, check->name);
-            VIR_STEAL_PTR(*matched, check);
+            *matched = g_steal_pointer(&check);
             ret = 1;
             break;
         }
@@ -2648,7 +2648,7 @@ virPCIGetMdevTypes(const char *sysfspath,
     if (dirret < 0)
         goto cleanup;
 
-    VIR_STEAL_PTR(*types, mdev_types);
+    *types = g_steal_pointer(&mdev_types);
     ret = ntypes;
     ntypes = 0;
  cleanup:

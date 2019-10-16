@@ -310,7 +310,7 @@ virStorageEncryptionParseNode(xmlNodePtr node,
         }
     }
 
-    VIR_STEAL_PTR(ret, encdef);
+    ret = g_steal_pointer(&encdef);
 
  cleanup:
     VIR_FREE(format_str);

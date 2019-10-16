@@ -244,7 +244,7 @@ virCgroupV2StealPlacement(virCgroupPtr group)
 {
     char *ret;
 
-    VIR_STEAL_PTR(ret, group->unified.placement);
+    ret = g_steal_pointer(&group->unified.placement);
 
     return ret;
 }

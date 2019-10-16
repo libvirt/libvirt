@@ -762,7 +762,7 @@ virDBusMessageIterEncode(DBusMessageIter *rootiter,
                 goto cleanup;
             }
             VIR_FREE(contsig);
-            VIR_STEAL_PTR(iter, newiter);
+            iter = g_steal_pointer(&newiter);
             types = t + 1;
             nstruct = skiplen;
             narray = (size_t)va_arg(args, int);
@@ -788,7 +788,7 @@ virDBusMessageIterEncode(DBusMessageIter *rootiter,
                 VIR_FREE(newiter);
                 goto cleanup;
             }
-            VIR_STEAL_PTR(iter, newiter);
+            iter = g_steal_pointer(&newiter);
             types = vsig;
             nstruct = strlen(types);
             narray = (size_t)-1;
@@ -819,7 +819,7 @@ virDBusMessageIterEncode(DBusMessageIter *rootiter,
                 goto cleanup;
             }
             VIR_FREE(contsig);
-            VIR_STEAL_PTR(iter, newiter);
+            iter = g_steal_pointer(&newiter);
             types = t + 1;
             nstruct = skiplen - 2;
             narray = (size_t)-1;
@@ -1056,7 +1056,7 @@ virDBusMessageIterDecode(DBusMessageIter *rootiter,
                                      nstruct, narray) < 0)
                 goto cleanup;
             VIR_FREE(contsig);
-            VIR_STEAL_PTR(iter, newiter);
+            iter = g_steal_pointer(&newiter);
             types = t + 1;
             nstruct = skiplen;
             if (arrayref) {
@@ -1086,7 +1086,7 @@ virDBusMessageIterDecode(DBusMessageIter *rootiter,
                 VIR_DEBUG("Push failed");
                 goto cleanup;
             }
-            VIR_STEAL_PTR(iter, newiter);
+            iter = g_steal_pointer(&newiter);
             types = vsig;
             nstruct = strlen(types);
             narray = (size_t)-1;
@@ -1113,7 +1113,7 @@ virDBusMessageIterDecode(DBusMessageIter *rootiter,
                                      nstruct, narray) < 0)
                 goto cleanup;
             VIR_FREE(contsig);
-            VIR_STEAL_PTR(iter, newiter);
+            iter = g_steal_pointer(&newiter);
             types = t + 1;
             nstruct = skiplen - 2;
             narray = (size_t)-1;

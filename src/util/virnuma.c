@@ -293,7 +293,7 @@ virNumaGetNodeCPUs(int node,
         }
     }
 
-    VIR_STEAL_PTR(*cpus, cpumap);
+    *cpus = g_steal_pointer(&cpumap);
     return ncpus;
 }
 # undef MASK_CPU_ISSET
@@ -337,7 +337,7 @@ virNumaNodesetToCPUset(virBitmapPtr nodeset,
             return -1;
     }
 
-    VIR_STEAL_PTR(*cpuset, allNodesCPUs);
+    *cpuset = g_steal_pointer(&allNodesCPUs);
 
     return 0;
 }

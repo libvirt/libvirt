@@ -317,7 +317,7 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
         return -1;
     }
 
-    VIR_STEAL_PTR(*resp, temp_resp);
+    *resp = g_steal_pointer(&temp_resp);
     *respbuflen = len;
     return 0;
 }
@@ -466,7 +466,7 @@ virNetlinkDumpLink(const char *ifname, int ifindex,
         goto malformed_resp;
     }
 
-    VIR_STEAL_PTR(*nlData, resp);
+    *nlData = g_steal_pointer(&resp);
     return 0;
 
  malformed_resp:
@@ -737,7 +737,7 @@ virNetlinkGetNeighbor(void **nlData, uint32_t src_pid, uint32_t dst_pid)
         goto malformed_resp;
     }
 
-    VIR_STEAL_PTR(*nlData, resp);
+    *nlData = g_steal_pointer(&resp);
     return recvbuflen;
 
  malformed_resp:
