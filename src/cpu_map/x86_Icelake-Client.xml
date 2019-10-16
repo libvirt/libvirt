@@ -42,8 +42,6 @@
     <feature name='msr'/>
     <feature name='mtrr'/>
     <feature name='nx'/>
-    <!-- 'ospke' is a dynamic feature and cannot be enabled manually
-         see QEMU's commit 9ccb9784b57 for more details -->
     <feature name='pae'/>
     <feature name='pat'/>
     <feature name='pcid'/>
