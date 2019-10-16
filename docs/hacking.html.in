@@ -1029,6 +1029,15 @@ BAD:
         instead. Don't use g_vasprintf unless having the string length
         returned is unavoidable.</dd>
 
+      <dt>virStrerror</dt>
+      <dd>The GLib <code>g_strerror()</code> function should be used instead,
+        which has a simpler calling convention as an added benefit.</dd>
+    </dl>
+
+    <p>
+      The following libvirt APIs have been deleted already:
+    </p>
+    <dl>
       <dt>VIR_AUTOPTR, VIR_AUTOCLEAN, VIR_AUTOFREE</dt>
       <dd>The GLib macros g_autoptr, g_auto and g_autofree must be used
         instead in all new code. In existing code, the GLib macros must
@@ -1051,10 +1060,6 @@ BAD:
       <dd>The GLib macros g_autoptr and G_DEFINE_AUTOPTR_CLEANUP_FUNC
         should be used to manage autoclean of virObject classes.
         This matches usage with GObject classes.</dd>
-
-      <dt>virStrerror</dt>
-      <dd>The GLib g_strerror() function should be used instead,
-        which has a simpler calling convention as an added benefit.</dd>
     </dl>
 
     <h2><a id="file_handling">File handling</a></h2>
