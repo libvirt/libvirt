@@ -127,7 +127,7 @@ logging/log_daemon_dispatch_stubs.h: $(LOG_PROTOCOL) \
 		$(srcdir)/rpc/gendispatch.pl Makefile.am
 	$(AM_V_GEN)perl -w $(srcdir)/rpc/gendispatch.pl --mode=server \
 	    virLogManagerProtocol VIR_LOG_MANAGER_PROTOCOL \
-	    $(LOG_PROTOCOL) > $(srcdir)/logging/log_daemon_dispatch_stubs.h
+	    $(LOG_PROTOCOL) > logging/log_daemon_dispatch_stubs.h
 
 virtlogd.8.in: logging/virtlogd.pod
 	$(AM_V_GEN)$(POD2MAN) --section=8 $< $@-t1 && \
