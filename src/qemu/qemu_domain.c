@@ -2608,6 +2608,18 @@ qemuDomainObjPrivateXMLFormatBlockjobIterator(void *payload,
             break;
 
         case QEMU_BLOCKJOB_TYPE_BACKUP:
+            virBufferEscapeString(&childBuf, "<bitmap name='%s'/>\n", job->data.backup.bitmap);
+            if (job->data.backup.store) {
+                if (qemuDomainObjPrivateXMLFormatBlockjobFormatSource(&childBuf,
+                                                                      "store",
+                                                                      job->data.backup.store,
+                                                                      data->xmlopt,
+                                                                      false) < 0)
+                    return -1;
+
+                if (job->data.backup.deleteStore)
+                    virBufferAddLit(&childBuf, "<deleteStore/>\n");
+            }
             break;
 
         case QEMU_BLOCKJOB_TYPE_BROKEN:
@@ -3202,6 +3214,15 @@ qemuDomainObjPrivateXMLParseBlockjobDataSpecific(qemuBlockJobDataPtr job,
             break;
 
         case QEMU_BLOCKJOB_TYPE_BACKUP:
+            job->data.backup.bitmap =  virXPathString("string(./bitmap/@name)", ctxt);
+
+            if (!(tmp = virXPathNode("./store", ctxt)) ||
+                !(job->data.backup.store = qemuDomainObjPrivateXMLParseBlockjobChain(tmp, ctxt, xmlopt)))
+                goto broken;
+
+            if (virXPathNode("./deleteStore", ctxt))
+                job->data.backup.deleteStore = true;
+
             break;
 
         case QEMU_BLOCKJOB_TYPE_BROKEN:

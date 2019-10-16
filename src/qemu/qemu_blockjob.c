@@ -78,6 +78,11 @@ qemuBlockJobDataDisposeJobdata(qemuBlockJobDataPtr job)
 {
     if (job->type == QEMU_BLOCKJOB_TYPE_CREATE)
         virObjectUnref(job->data.create.src);
+
+    if (job->type == QEMU_BLOCKJOB_TYPE_BACKUP) {
+        virObjectUnref(job->data.backup.store);
+        g_free(job->data.backup.bitmap);
+    }
 }
 
 
@@ -364,6 +369,34 @@ qemuBlockJobDiskNewCopy(virDomainObjPtr vm,
         job->data.copy.shallownew = true;
 
     if (qemuBlockJobRegister(job, vm, disk, true) < 0)
+        return NULL;
+
+    return g_steal_pointer(&job);
+}
+
+
+qemuBlockJobDataPtr
+qemuBlockJobDiskNewBackup(virDomainObjPtr vm,
+                          virDomainDiskDefPtr disk,
+                          virStorageSourcePtr store,
+                          bool deleteStore,
+                          const char *bitmap)
+{
+    g_autoptr(qemuBlockJobData) job = NULL;
+    g_autofree char *jobname = NULL;
+
+    jobname = g_strdup_printf("backup-%s-%s", disk->dst, disk->src->nodeformat);
+
+    if (!(job = qemuBlockJobDataNew(QEMU_BLOCKJOB_TYPE_BACKUP, jobname)))
+        return NULL;
+
+    job->data.backup.bitmap = g_strdup(bitmap);
+    job->data.backup.store = virObjectRef(store);
+    job->data.backup.deleteStore = deleteStore;
+
+    /* backup jobs are usually started in bulk by transaction so the caller
+     * shall save the status XML */
+    if (qemuBlockJobRegister(job, vm, disk, false) < 0)
         return NULL;
 
     return g_steal_pointer(&job);
