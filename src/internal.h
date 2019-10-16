@@ -214,18 +214,6 @@
     } while (0)
 
 /**
- * VIR_STEAL_PTR:
- *
- * Steals pointer passed as second argument into the first argument. Second
- * argument must not have side effects.
- */
-#define VIR_STEAL_PTR(a, b) \
-    do { \
-        (a) = (b); \
-        (b) = NULL; \
-    } while (0)
-
-/**
  * virCheckFlags:
  * @supported: an OR'ed set of supported flags
  * @retval: return value in case unsupported flags were passed
