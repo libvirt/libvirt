@@ -226,21 +226,6 @@
     } while (0)
 
 /**
- * VIR_RETURN_PTR:
- * @ret: pointer to return
- *
- * Returns value of @ret while clearing @ret. This ensures that pointers
- * freed by using VIR_AUTOPTR can be easily passed back to the caller without
- * any temporary variable. @ptr is evaluated more than once.
- */
-#define VIR_RETURN_PTR(ptr) \
-    do { \
-        typeof(ptr) virTemporaryReturnPointer = (ptr); \
-        (ptr) = NULL; \
-        return virTemporaryReturnPointer; \
-    } while (0)
-
-/**
  * virCheckFlags:
  * @supported: an OR'ed set of supported flags
  * @retval: return value in case unsupported flags were passed
