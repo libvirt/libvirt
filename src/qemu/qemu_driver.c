@@ -386,11 +386,9 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
                        void *data)
 {
     char *baseDir = (char *)data;
-    char *snapDir = NULL;
+    g_autofree char *snapDir = NULL;
     DIR *dir = NULL;
     struct dirent *entry;
-    char *xmlStr;
-    char *fullpath;
     virDomainSnapshotDefPtr def = NULL;
     virDomainMomentObjPtr snap = NULL;
     virDomainMomentObjPtr current = NULL;
@@ -399,7 +397,7 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
                           VIR_DOMAIN_SNAPSHOT_PARSE_DISKS |
                           VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL);
     int ret = -1;
-    virCapsPtr caps = NULL;
+    g_autoptr(virCaps) caps = NULL;
     int direrr;
     qemuDomainObjPrivatePtr priv;
 
@@ -425,6 +423,9 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
         goto cleanup;
 
     while ((direrr = virDirRead(dir, &entry, NULL)) > 0) {
+        g_autofree char *xmlStr = NULL;
+        g_autofree char *fullpath = NULL;
+
         /* NB: ignoring errors, so one malformed config doesn't
            kill the whole process */
         VIR_INFO("Loading snapshot file '%s'", entry->d_name);
@@ -440,7 +441,6 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
             virReportSystemError(errno,
                                  _("Failed to read snapshot file %s"),
                                  fullpath);
-            VIR_FREE(fullpath);
             continue;
         }
 
@@ -453,8 +453,6 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to parse snapshot XML from file '%s'"),
                            fullpath);
-            VIR_FREE(fullpath);
-            VIR_FREE(xmlStr);
             continue;
         }
 
@@ -468,9 +466,6 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
                                vm->def->name);
             current = snap;
         }
-
-        VIR_FREE(fullpath);
-        VIR_FREE(xmlStr);
     }
     if (direrr < 0)
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -497,8 +492,6 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
     ret = 0;
  cleanup:
     VIR_DIR_CLOSE(dir);
-    VIR_FREE(snapDir);
-    virObjectUnref(caps);
     virObjectUnlock(vm);
     return ret;
 }
@@ -509,17 +502,15 @@ qemuDomainCheckpointLoad(virDomainObjPtr vm,
                          void *data)
 {
     char *baseDir = (char *)data;
-    char *chkDir = NULL;
+    g_autofree char *chkDir = NULL;
     DIR *dir = NULL;
     struct dirent *entry;
-    char *xmlStr;
-    char *fullpath;
     virDomainCheckpointDefPtr def = NULL;
     virDomainMomentObjPtr chk = NULL;
     virDomainMomentObjPtr current = NULL;
     unsigned int flags = VIR_DOMAIN_CHECKPOINT_PARSE_REDEFINE;
     int ret = -1;
-    virCapsPtr caps = NULL;
+    g_autoptr(virCaps) caps = NULL;
     int direrr;
     qemuDomainObjPrivatePtr priv;
 
@@ -544,6 +535,9 @@ qemuDomainCheckpointLoad(virDomainObjPtr vm,
         goto cleanup;
 
     while ((direrr = virDirRead(dir, &entry, NULL)) > 0) {
+        g_autofree char *xmlStr = NULL;
+        g_autofree char *fullpath = NULL;
+
         /* NB: ignoring errors, so one malformed config doesn't
            kill the whole process */
         VIR_INFO("Loading checkpoint file '%s'", entry->d_name);
@@ -559,7 +553,6 @@ qemuDomainCheckpointLoad(virDomainObjPtr vm,
             virReportSystemError(errno,
                                  _("Failed to read checkpoint file %s"),
                                  fullpath);
-            VIR_FREE(fullpath);
             continue;
         }
 
@@ -572,8 +565,6 @@ qemuDomainCheckpointLoad(virDomainObjPtr vm,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to parse checkpoint XML from file '%s'"),
                            fullpath);
-            VIR_FREE(fullpath);
-            VIR_FREE(xmlStr);
             virObjectUnref(def);
             continue;
         }
@@ -581,9 +572,6 @@ qemuDomainCheckpointLoad(virDomainObjPtr vm,
         chk = virDomainCheckpointAssignDef(vm->checkpoints, def);
         if (chk == NULL)
             virObjectUnref(def);
-
-        VIR_FREE(fullpath);
-        VIR_FREE(xmlStr);
     }
     if (direrr < 0)
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -608,8 +596,6 @@ qemuDomainCheckpointLoad(virDomainObjPtr vm,
     ret = 0;
  cleanup:
     VIR_DIR_CLOSE(dir);
-    VIR_FREE(chkDir);
-    virObjectUnref(caps);
     virObjectUnlock(vm);
     return ret;
 }
@@ -667,12 +653,11 @@ qemuStateInitialize(bool privileged,
                     virStateInhibitCallback callback,
                     void *opaque)
 {
-    char *driverConf = NULL;
+    g_autofree char *driverConf = NULL;
     virQEMUDriverConfigPtr cfg;
     uid_t run_uid = -1;
     gid_t run_gid = -1;
-    char *hugepagePath = NULL;
-    char *memoryBackingPath = NULL;
+    g_autofree char *memoryBackingPath = NULL;
     bool autostart = true;
     size_t i;
 
@@ -713,7 +698,6 @@ qemuStateInitialize(bool privileged,
 
     if (virQEMUDriverConfigLoadFile(cfg, driverConf, privileged) < 0)
         goto error;
-    VIR_FREE(driverConf);
 
     if (virQEMUDriverConfigValidate(cfg) < 0)
         goto error;
@@ -837,7 +821,7 @@ qemuStateInitialize(bool privileged,
         goto error;
 
     if (privileged) {
-        char *channeldir;
+        g_autofree char *channeldir = NULL;
 
         if (chown(cfg->libDir, cfg->user, cfg->group) < 0) {
             virReportSystemError(errno,
@@ -890,10 +874,8 @@ qemuStateInitialize(bool privileged,
                                  _("unable to set ownership of '%s' to %d:%d"),
                                  channeldir, (int)cfg->user,
                                  (int)cfg->group);
-            VIR_FREE(channeldir);
             goto error;
         }
-        VIR_FREE(channeldir);
         if (chown(cfg->channelTargetDir, cfg->user, cfg->group) < 0) {
             virReportSystemError(errno,
                                  _("unable to set ownership of '%s' to %d:%d"),
@@ -944,6 +926,8 @@ qemuStateInitialize(bool privileged,
      * it, since we can't assume the root mount point has permissions that
      * will let our spawned QEMU instances use it. */
     for (i = 0; i < cfg->nhugetlbfs; i++) {
+        g_autofree char *hugepagePath = NULL;
+
         hugepagePath = qemuGetBaseHugepagePath(&cfg->hugetlbfs[i]);
 
         if (!hugepagePath)
@@ -959,7 +943,6 @@ qemuStateInitialize(bool privileged,
             virFileUpdatePerm(cfg->hugetlbfs[i].mnt_dir,
                               0, S_IXGRP | S_IXOTH) < 0)
             goto error;
-        VIR_FREE(hugepagePath);
     }
 
     if (qemuGetMemoryBackingBasePath(cfg, &memoryBackingPath) < 0)
@@ -976,7 +959,6 @@ qemuStateInitialize(bool privileged,
         virFileUpdatePerm(memoryBackingPath,
                           0, S_IXGRP | S_IXOTH) < 0)
         goto error;
-    VIR_FREE(memoryBackingPath);
 
     if (!(qemu_driver->closeCallbacks = virCloseCallbacksNew()))
         goto error;
@@ -1045,9 +1027,6 @@ qemuStateInitialize(bool privileged,
     return VIR_DRV_STATE_INIT_COMPLETE;
 
  error:
-    VIR_FREE(driverConf);
-    VIR_FREE(hugepagePath);
-    VIR_FREE(memoryBackingPath);
     qemuStateCleanup();
     return VIR_DRV_STATE_INIT_ERROR;
 }
