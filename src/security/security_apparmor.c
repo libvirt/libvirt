@@ -275,16 +275,11 @@ reload_profile(virSecurityManagerPtr mgr,
                const char *fn,
                bool append)
 {
-    int rc = -1;
-    char *profile_name = NULL;
     virSecurityLabelDefPtr secdef = virDomainDefGetSecurityLabelDef(
                                                 def, SECURITY_APPARMOR_NAME);
 
     if (!secdef || !secdef->relabel)
         return 0;
-
-    if ((profile_name = get_profile_name(def)) == NULL)
-        return rc;
 
     /* Update the profile only if it is loaded */
     if (profile_loaded(secdef->imagelabel) >= 0) {
@@ -293,15 +288,10 @@ reload_profile(virSecurityManagerPtr mgr,
                            _("cannot update AppArmor profile "
                              "\'%s\'"),
                            secdef->imagelabel);
-            goto cleanup;
+            return -1;
         }
     }
-
-    rc = 0;
- cleanup:
-    VIR_FREE(profile_name);
-
-    return rc;
+    return 0;
 }
 
 static int
