@@ -392,7 +392,7 @@ qemuDomainObjRestoreJob(virDomainObjPtr obj,
     job->asyncJob = priv->job.asyncJob;
     job->asyncOwner = priv->job.asyncOwner;
     job->phase = priv->job.phase;
-    VIR_STEAL_PTR(job->migParams, priv->job.migParams);
+    job->migParams = g_steal_pointer(&priv->job.migParams);
     job->apiFlags = priv->job.apiFlags;
 
     qemuDomainObjResetJob(priv);
@@ -2230,7 +2230,7 @@ qemuStorageSourcePrivateDataAssignSecinfo(qemuDomainSecretInfoPtr *secinfo,
     }
 
     if ((*secinfo)->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES)
-        VIR_STEAL_PTR((*secinfo)->s.aes.alias, *alias);
+        (*secinfo)->s.aes.alias = g_steal_pointer(&*alias);
 
     return 0;
 }
@@ -3345,7 +3345,7 @@ qemuDomainObjPrivateXMLParseJobNBDSource(xmlNodePtr node,
                                     VIR_DOMAIN_DEF_PARSE_STATUS, xmlopt) < 0)
         return -1;
 
-    VIR_STEAL_PTR(diskPriv->migrSource, migrSource);
+    diskPriv->migrSource = g_steal_pointer(&migrSource);
     return 0;
 }
 
@@ -3608,7 +3608,7 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
             }
         }
 
-        VIR_STEAL_PTR(priv->qemuCaps, qemuCaps);
+        priv->qemuCaps = g_steal_pointer(&qemuCaps);
     }
     VIR_FREE(nodes);
 
@@ -3665,7 +3665,7 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
         if (qemuDomainObjPrivateXMLParseSlirpFeatures(nodes[i], ctxt, slirp) < 0)
             goto error;
 
-        VIR_STEAL_PTR(QEMU_DOMAIN_NETWORK_PRIVATE(dev.data.net)->slirp, slirp);
+        QEMU_DOMAIN_NETWORK_PRIVATE(dev.data.net)->slirp = g_steal_pointer(&slirp);
     }
     VIR_FREE(nodes);
 
@@ -3920,7 +3920,7 @@ qemuDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
 
     if (nsdata->num_args > 0 || nsdata->num_env > 0 ||
         nsdata->ncapsadd > 0 || nsdata->ncapsdel > 0)
-        VIR_STEAL_PTR(*data, nsdata);
+        *data = g_steal_pointer(&nsdata);
 
     ret = 0;
 
@@ -12206,11 +12206,11 @@ qemuDomainRefreshVcpuInfo(virQEMUDriverPtr driver,
         vcpupriv->node_id = info[i].node_id;
         vcpupriv->vcpus = info[i].vcpus;
         VIR_FREE(vcpupriv->type);
-        VIR_STEAL_PTR(vcpupriv->type, info[i].type);
+        vcpupriv->type = g_steal_pointer(&info[i].type);
         VIR_FREE(vcpupriv->alias);
-        VIR_STEAL_PTR(vcpupriv->alias, info[i].alias);
+        vcpupriv->alias = g_steal_pointer(&info[i].alias);
         virJSONValueFree(vcpupriv->props);
-        VIR_STEAL_PTR(vcpupriv->props, info[i].props);
+        vcpupriv->props = g_steal_pointer(&info[i].props);
         vcpupriv->enable_id = info[i].id;
         vcpupriv->qemu_id = info[i].qemu_id;
 
@@ -13178,7 +13178,7 @@ qemuDomainCreateDeviceRecursive(const char *device,
             }
             VIR_FREE(devTmp);
             VIR_FREE(target);
-            VIR_STEAL_PTR(target, tmp);
+            target = g_steal_pointer(&tmp);
         }
 
         if (qemuDomainCreateDeviceRecursive(target, data,
@@ -14157,7 +14157,7 @@ qemuDomainAttachDeviceMknodRecursive(virQEMUDriverPtr driver,
             }
             VIR_FREE(fileTmp);
             VIR_FREE(target);
-            VIR_STEAL_PTR(target, tmp);
+            target = g_steal_pointer(&tmp);
         }
 
         data.target = target;
@@ -14944,12 +14944,12 @@ qemuDomainFixupCPUs(virDomainObjPtr vm,
 
     if (fixedCPU) {
         virCPUDefFree(vm->def->cpu);
-        VIR_STEAL_PTR(vm->def->cpu, fixedCPU);
+        vm->def->cpu = g_steal_pointer(&fixedCPU);
     }
 
     if (fixedOrig) {
         virCPUDefFree(*origCPU);
-        VIR_STEAL_PTR(*origCPU, fixedOrig);
+        *origCPU = g_steal_pointer(&fixedOrig);
     }
 
     ret = 0;

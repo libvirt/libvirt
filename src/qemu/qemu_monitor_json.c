@@ -1940,7 +1940,7 @@ qemuMonitorJSONExtractCPUInfo(virJSONValuePtr data,
             qemuMonitorJSONExtractCPUS390Info(entry, cpus + i);
     }
 
-    VIR_STEAL_PTR(*entries, cpus);
+    *entries = g_steal_pointer(&cpus);
     *nentries = ncpus;
     ret = 0;
 
@@ -5791,7 +5791,7 @@ qemuMonitorJSONParseCPUModel(const char *cpu_name,
             goto cleanup;
     }
 
-    VIR_STEAL_PTR(*model_info, machine_model);
+    *model_info = g_steal_pointer(&machine_model);
     ret = 0;
 
  cleanup:
@@ -6508,7 +6508,7 @@ qemuMonitorJSONGetStringListProperty(qemuMonitorPtr mon,
             return -1;
     }
 
-    VIR_STEAL_PTR(*strList, list);
+    *strList = g_steal_pointer(&list);
     return n;
 }
 
@@ -7021,7 +7021,7 @@ qemuMonitorJSONGetSEVCapabilities(qemuMonitorPtr mon,
 
     capability->cbitpos = cbitpos;
     capability->reduced_phys_bits = reduced_phys_bits;
-    VIR_STEAL_PTR(*capabilities, capability);
+    *capabilities = g_steal_pointer(&capability);
     ret = 1;
  cleanup:
     virJSONValueFree(cmd);
@@ -7867,9 +7867,9 @@ qemuMonitorJSONGetGuestCPU(qemuMonitorPtr mon,
         qemuMonitorJSONGetCPUDataDisabled(mon, translate, opaque, cpuDisabled) < 0)
         goto cleanup;
 
-    VIR_STEAL_PTR(*enabled, cpuEnabled);
+    *enabled = g_steal_pointer(&cpuEnabled);
     if (disabled)
-        VIR_STEAL_PTR(*disabled, cpuDisabled);
+        *disabled = g_steal_pointer(&cpuDisabled);
 
     ret = 0;
 
@@ -8571,7 +8571,7 @@ qemuMonitorJSONGetHotpluggableCPUs(qemuMonitorPtr mon,
 
     qsort(info, ninfo, sizeof(*info), qemuMonitorQueryHotpluggableCpusEntrySort);
 
-    VIR_STEAL_PTR(*entries, info);
+    *entries = g_steal_pointer(&info);
     *nentries = ninfo;
     ret = 0;
 
@@ -9312,7 +9312,7 @@ qemuMonitorJSONGetJobInfoOne(virJSONValuePtr data)
         VIR_STRDUP(job->error, errmsg) < 0)
         return NULL;
 
-    VIR_STEAL_PTR(ret, job);
+    ret = g_steal_pointer(&job);
     return ret;
 }
 

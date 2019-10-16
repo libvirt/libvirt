@@ -2903,7 +2903,7 @@ virQEMUSaveDataNew(char *domXML,
     if (VIR_ALLOC(data) < 0)
         return NULL;
 
-    VIR_STEAL_PTR(data->xml, domXML);
+    data->xml = g_steal_pointer(&domXML);
 
     if (cookieObj &&
         !(data->cookie = virSaveCookieFormat((virObjectPtr) cookieObj,
@@ -5732,7 +5732,7 @@ qemuDomainGetIOThreadsLive(virQEMUDriverPtr driver,
         virBitmapFree(map);
     }
 
-    VIR_STEAL_PTR(*info, info_ret);
+    *info = g_steal_pointer(&info_ret);
     ret = niothreads;
 
  endjob:
@@ -6745,9 +6745,9 @@ qemuDomainSaveImageUpdateDef(virQEMUDriverPtr driver,
         virFreeError(err);
 
         /* use the user provided XML */
-        VIR_STEAL_PTR(ret, newdef);
+        ret = g_steal_pointer(&newdef);
     } else {
-        VIR_STEAL_PTR(ret, newdef_migr);
+        ret = g_steal_pointer(&newdef_migr);
     }
 
  cleanup:
@@ -8425,7 +8425,7 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
                            _("domain already has a watchdog"));
             return -1;
         }
-        VIR_STEAL_PTR(vmdef->watchdog, dev->data.watchdog);
+        vmdef->watchdog = g_steal_pointer(&dev->data.watchdog);
         break;
 
     case VIR_DOMAIN_DEVICE_INPUT:
@@ -8439,7 +8439,7 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
                            _("domain already has a vsock device"));
             return -1;
         }
-        VIR_STEAL_PTR(vmdef->vsock, dev->data.vsock);
+        vmdef->vsock = g_steal_pointer(&dev->data.vsock);
         break;
 
     case VIR_DOMAIN_DEVICE_SOUND:
@@ -12765,7 +12765,7 @@ qemuDomainMigratePerform(virDomainPtr dom,
         goto cleanup;
 
     if (flags & VIR_MIGRATE_PEER2PEER)
-        VIR_STEAL_PTR(dconnuri, uri);
+        dconnuri = g_steal_pointer(&uri);
 
     /* Do not output cookies in v2 protocol, since the cookie
      * length was not sufficiently large, causing failures
@@ -13819,8 +13819,8 @@ qemuConnectStealCPUModelFromInfo(virCPUDefPtr dst,
 
     virCPUDefFreeModel(dst);
 
-    VIR_STEAL_PTR(info, *src);
-    VIR_STEAL_PTR(dst->model, info->name);
+    info = g_steal_pointer(&*src);
+    dst->model = g_steal_pointer(&info->name);
 
     for (i = 0; i < info->nprops; i++) {
         char *name = info->props[i].name;
@@ -13888,7 +13888,7 @@ qemuConnectCPUModelBaseline(virQEMUCapsPtr qemuCaps,
             goto cleanup;
     }
 
-    VIR_STEAL_PTR(ret, baseline);
+    ret = g_steal_pointer(&baseline);
 
  cleanup:
     qemuProcessQMPFree(proc);
@@ -15506,7 +15506,7 @@ qemuDomainSnapshotDiskPrepareOne(virQEMUDriverPtr driver,
                     return -1;
                 if (backingStoreStr != NULL) {
                     if (virStorageIsRelative(backingStoreStr))
-                        VIR_STEAL_PTR(dd->relPath, backingStoreStr);
+                        dd->relPath = g_steal_pointer(&backingStoreStr);
                     else
                         VIR_FREE(backingStoreStr);
                 }
@@ -15609,7 +15609,7 @@ qemuDomainSnapshotDiskPrepare(virQEMUDriverPtr driver,
             goto cleanup;
     }
 
-    VIR_STEAL_PTR(*rdata, data);
+    *rdata = g_steal_pointer(&data);
     *rndata = ndata;
     ret = 0;
 
@@ -15662,17 +15662,17 @@ qemuDomainSnapshotDiskUpdateSource(virQEMUDriverPtr driver,
     /* the old disk image is now readonly */
     dd->disk->src->readonly = true;
 
-    VIR_STEAL_PTR(dd->disk->src->relPath, dd->relPath);
-    VIR_STEAL_PTR(dd->src->backingStore, dd->disk->src);
-    VIR_STEAL_PTR(dd->disk->src, dd->src);
+    dd->disk->src->relPath = g_steal_pointer(&dd->relPath);
+    dd->src->backingStore = g_steal_pointer(&dd->disk->src);
+    dd->disk->src = g_steal_pointer(&dd->src);
 
     /* fix numbering of disks */
     if (!blockdev)
         qemuDomainSnapshotDiskUpdateSourceRenumber(dd->disk->src);
 
     if (dd->persistdisk) {
-        VIR_STEAL_PTR(dd->persistsrc->backingStore, dd->persistdisk->src);
-        VIR_STEAL_PTR(dd->persistdisk->src, dd->persistsrc);
+        dd->persistsrc->backingStore = g_steal_pointer(&dd->persistdisk->src);
+        dd->persistdisk->src = g_steal_pointer(&dd->persistsrc);
     }
 }
 
@@ -16765,7 +16765,7 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             if (!inactiveConfig)
                 goto endjob;
         } else {
-            VIR_STEAL_PTR(inactiveConfig, config);
+            inactiveConfig = g_steal_pointer(&config);
         }
     }
 
@@ -16872,7 +16872,7 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             }
             if (config) {
                 virCPUDefFree(priv->origCPU);
-                VIR_STEAL_PTR(priv->origCPU, origCPU);
+                priv->origCPU = g_steal_pointer(&origCPU);
             }
 
             if (cookie && !cookie->slirpHelper)
@@ -18462,7 +18462,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     /* Update vm in place to match changes.  */
     need_unlink = false;
     virStorageFileDeinit(mirror);
-    VIR_STEAL_PTR(disk->mirror, mirror);
+    disk->mirror = g_steal_pointer(&mirror);
     disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_COPY;
     qemuBlockJobStarted(job, vm);
 
@@ -18634,7 +18634,7 @@ qemuDomainBlockCopy(virDomainPtr dom, const char *disk, const char *destxml,
                                           VIR_DOMAIN_DEF_PARSE_DISK_SOURCE)))
         goto cleanup;
 
-    VIR_STEAL_PTR(dest, diskdef->src);
+    dest = g_steal_pointer(&diskdef->src);
 
     ret = qemuDomainBlockCopyCommon(vm, dom->conn, disk, dest, bandwidth,
                                     granularity, buf_size, flags, false);
@@ -18890,7 +18890,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
     }
 
     if (mirror) {
-        VIR_STEAL_PTR(disk->mirror, mirror);
+        disk->mirror = g_steal_pointer(&mirror);
         disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT;
     }
     qemuBlockJobStarted(job, vm);
@@ -21608,7 +21608,7 @@ qemuDomainGetStats(virConnectPtr conn,
         return -1;
 
     tmp->nparams = virTypedParamListStealParams(params, &tmp->params);
-    VIR_STEAL_PTR(*record, tmp);
+    *record = g_steal_pointer(&tmp);
     return 0;
 }
 
@@ -21916,7 +21916,7 @@ qemuGetDHCPInterfaces(virDomainPtr dom,
         VIR_FREE(leases);
     }
 
-    VIR_STEAL_PTR(*ifaces, ifaces_ret);
+    *ifaces = g_steal_pointer(&ifaces_ret);
     rv = ifaces_count;
 
  cleanup:
@@ -21984,7 +21984,7 @@ qemuARPGetInterfaces(virDomainObjPtr vm,
         }
     }
 
-    VIR_STEAL_PTR(*ifaces, ifaces_ret);
+    *ifaces = g_steal_pointer(&ifaces_ret);
     ret = ifaces_count;
 
  cleanup:
@@ -22700,7 +22700,7 @@ qemuGetSEVInfoToParams(virQEMUCapsPtr qemuCaps,
                     sev->reduced_phys_bits) < 0)
         goto cleanup;
 
-    VIR_STEAL_PTR(*params, sevParams);
+    *params = g_steal_pointer(&sevParams);
     *nparams = n;
     return 0;
 

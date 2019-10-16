@@ -1852,7 +1852,7 @@ qemuProcessHandleRdmaGidStatusChanged(qemuMonitorPtr mon G_GNUC_UNUSED,
 
     processEvent->eventType = QEMU_PROCESS_EVENT_RDMA_GID_STATUS_CHANGED;
     processEvent->vm = virObjectRef(vm);
-    VIR_STEAL_PTR(processEvent->data, info);
+    processEvent->data = g_steal_pointer(&info);
 
     if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
         qemuProcessEventFree(processEvent);
@@ -4313,7 +4313,7 @@ qemuProcessUpdateLiveGuestCPU(virDomainObjPtr vm,
          * get the original CPU via migration, restore, or snapshot revert.
          */
         if (!priv->origCPU && !virCPUDefIsEqual(def->cpu, orig, false))
-            VIR_STEAL_PTR(priv->origCPU, orig);
+            priv->origCPU = g_steal_pointer(&orig);
 
         def->cpu->check = VIR_CPU_CHECK_FULL;
     }
@@ -5680,7 +5680,7 @@ qemuProcessInit(virQEMUDriverPtr driver,
         if (qemuDomainSetPrivatePaths(driver, vm) < 0)
             goto stop;
 
-        VIR_STEAL_PTR(priv->origCPU, origCPU);
+        priv->origCPU = g_steal_pointer(&origCPU);
     }
 
     ret = 0;
@@ -6187,7 +6187,7 @@ qemuProcessPrepareDomainNUMAPlacement(virDomainObjPtr vm,
 
     virBitmapIntersect(numadNodeset, hostMemoryNodeset);
 
-    VIR_STEAL_PTR(priv->autoNodeset, numadNodeset);
+    priv->autoNodeset = g_steal_pointer(&numadNodeset);
 
     ret = 0;
 
@@ -8488,7 +8488,7 @@ qemuProcessQMPNew(const char *binary,
     proc->runGid = runGid;
     proc->forceTCG = forceTCG;
 
-    VIR_STEAL_PTR(ret, proc);
+    ret = g_steal_pointer(&proc);
 
  cleanup:
     qemuProcessQMPFree(proc);

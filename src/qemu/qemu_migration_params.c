@@ -1335,7 +1335,7 @@ qemuMigrationParamsParse(xmlXPathContextPtr ctxt,
             break;
 
         case QEMU_MIGRATION_PARAM_TYPE_STRING:
-            VIR_STEAL_PTR(pv->value.s, value);
+            pv->value.s = g_steal_pointer(&value);
             break;
         }
 
@@ -1351,7 +1351,7 @@ qemuMigrationParamsParse(xmlXPathContextPtr ctxt,
         VIR_FREE(value);
     }
 
-    VIR_STEAL_PTR(*migParams, params);
+    *migParams = g_steal_pointer(&params);
     ret = 0;
 
  cleanup:

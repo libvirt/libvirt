@@ -1183,7 +1183,7 @@ qemuMigrationCookieCapsXMLParse(xmlXPathContextPtr ctxt)
         VIR_FREE(automatic);
     }
 
-    VIR_STEAL_PTR(ret, caps);
+    ret = g_steal_pointer(&caps);
 
  cleanup:
     qemuMigrationCookieCapsFree(caps);

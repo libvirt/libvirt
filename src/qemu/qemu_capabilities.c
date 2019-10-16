@@ -1590,7 +1590,7 @@ virQEMUCapsSEVInfoCopy(virSEVCapabilityPtr *dst,
     tmp->cbitpos = src->cbitpos;
     tmp->reduced_phys_bits = src->reduced_phys_bits;
 
-    VIR_STEAL_PTR(*dst, tmp);
+    *dst = g_steal_pointer(&tmp);
     return 0;
 }
 
@@ -2666,7 +2666,7 @@ virQEMUCapsGetCPUFeatures(virQEMUCapsPtr qemuCaps,
             goto cleanup;
     }
 
-    VIR_STEAL_PTR(*features, list);
+    *features = g_steal_pointer(&list);
     if (migratable && !modelInfo->migratability)
         ret = 1;
     else
@@ -3105,7 +3105,7 @@ virQEMUCapsGetCPUModelX86Data(virQEMUCapsPtr qemuCaps,
     if (virCPUx86DataSetSignature(data, sigFamily, sigModel, sigStepping) < 0)
         goto cleanup;
 
-    VIR_STEAL_PTR(ret, data);
+    ret = g_steal_pointer(&data);
 
  cleanup:
     virCPUDataFree(data);
@@ -3620,7 +3620,7 @@ virQEMUCapsParseSEVInfo(virQEMUCapsPtr qemuCaps, xmlXPathContextPtr ctxt)
         return -1;
     }
 
-    VIR_STEAL_PTR(qemuCaps->sevCapabilities, sev);
+    qemuCaps->sevCapabilities = g_steal_pointer(&sev);
     return 0;
 }
 
@@ -4561,7 +4561,7 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
     }
 
     qemuCaps->version = major * 1000000 + minor * 1000 + micro;
-    VIR_STEAL_PTR(qemuCaps->package, package);
+    qemuCaps->package = g_steal_pointer(&package);
     qemuCaps->usedQMP = true;
 
     if (virQEMUCapsInitQMPArch(qemuCaps, mon) < 0)
@@ -5112,7 +5112,7 @@ virQEMUCapsCacheLookupDefault(virFileCachePtr cache,
     if (retMachine)
         *retMachine = machine;
 
-    VIR_STEAL_PTR(ret, qemuCaps);
+    ret = g_steal_pointer(&qemuCaps);
 
  cleanup:
     virObjectUnref(qemuCaps);
@@ -5599,7 +5599,7 @@ virQEMUCapsFillDomainFeatureSEVCaps(virQEMUCapsPtr qemuCaps,
 
     sev->cbitpos = cap->cbitpos;
     sev->reduced_phys_bits = cap->reduced_phys_bits;
-    VIR_STEAL_PTR(domCaps->sev, sev);
+    domCaps->sev = g_steal_pointer(&sev);
 
     return 0;
 }

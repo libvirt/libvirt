@@ -3274,7 +3274,7 @@ qemuDomainAttachVsockDevice(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    VIR_STEAL_PTR(vm->def->vsock, vsock);
+    vm->def->vsock = g_steal_pointer(&vsock);
 
     ret = 0;
 
@@ -6444,7 +6444,7 @@ qemuDomainFilterHotplugVcpuEntities(virDomainDefPtr def,
         }
     }
 
-    VIR_STEAL_PTR(ret, map);
+    ret = g_steal_pointer(&map);
 
  cleanup:
     virBitmapFree(map);

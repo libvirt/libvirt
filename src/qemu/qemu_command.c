@@ -10751,7 +10751,7 @@ qemuBuildStorageSourceAttachPrepareDrive(virDomainDiskDefPtr disk,
         !(data->driveAlias = qemuAliasDiskDriveFromDisk(disk)))
         return NULL;
 
-    VIR_STEAL_PTR(ret, data);
+    ret = g_steal_pointer(&data);
 
     return ret;
 }

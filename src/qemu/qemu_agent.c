@@ -2163,7 +2163,7 @@ qemuAgentGetFSInfoInternal(qemuAgentPtr mon,
             goto cleanup;
     }
 
-    VIR_STEAL_PTR(*info, info_ret);
+    *info = g_steal_pointer(&info_ret);
     ret = ndata;
 
  cleanup:
@@ -2200,7 +2200,7 @@ qemuAgentGetFSInfo(qemuAgentPtr mon,
             goto cleanup;
     }
 
-    VIR_STEAL_PTR(*info, info_ret);
+    *info = g_steal_pointer(&info_ret);
     ret = nfs;
 
  cleanup:
@@ -2485,7 +2485,7 @@ qemuAgentGetInterfaces(qemuAgentPtr mon,
         iface->naddrs = addrs_count;
     }
 
-    VIR_STEAL_PTR(*ifaces, ifaces_ret);
+    *ifaces = g_steal_pointer(&ifaces_ret);
     ret = ifaces_count;
 
  cleanup:

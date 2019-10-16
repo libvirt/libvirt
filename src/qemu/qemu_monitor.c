@@ -1826,10 +1826,10 @@ qemuMonitorGetCPUInfoHotplug(struct qemuMonitorQueryHotpluggableCpusEntry *hotpl
         vcpus[mastervcpu].thread_id = hotplugvcpus[i].thread_id;
         vcpus[mastervcpu].node_id = hotplugvcpus[i].node_id;
         vcpus[mastervcpu].vcpus = hotplugvcpus[i].vcpus;
-        VIR_STEAL_PTR(vcpus[mastervcpu].qom_path, hotplugvcpus[i].qom_path);
-        VIR_STEAL_PTR(vcpus[mastervcpu].alias, hotplugvcpus[i].alias);
-        VIR_STEAL_PTR(vcpus[mastervcpu].type, hotplugvcpus[i].type);
-        VIR_STEAL_PTR(vcpus[mastervcpu].props, hotplugvcpus[i].props);
+        vcpus[mastervcpu].qom_path = g_steal_pointer(&hotplugvcpus[i].qom_path);
+        vcpus[mastervcpu].alias = g_steal_pointer(&hotplugvcpus[i].alias);
+        vcpus[mastervcpu].type = g_steal_pointer(&hotplugvcpus[i].type);
+        vcpus[mastervcpu].props = g_steal_pointer(&hotplugvcpus[i].props);
         vcpus[mastervcpu].id = hotplugvcpus[i].enable_id;
 
         /* copy state information to slave vcpus */
@@ -1922,7 +1922,7 @@ qemuMonitorGetCPUInfo(qemuMonitorPtr mon,
 
     if (rc < 0) {
         if (!hotplug && rc == -2) {
-            VIR_STEAL_PTR(*vcpus, info);
+            *vcpus = g_steal_pointer(&info);
             ret = 0;
         }
 
@@ -1939,7 +1939,7 @@ qemuMonitorGetCPUInfo(qemuMonitorPtr mon,
         qemuMonitorGetCPUInfoLegacy(cpuentries, ncpuentries, info, maxvcpus);
     }
 
-    VIR_STEAL_PTR(*vcpus, info);
+    *vcpus = g_steal_pointer(&info);
     ret = 0;
 
  cleanup:
@@ -2997,7 +2997,7 @@ qemuMonitorAddObject(qemuMonitorPtr mon,
     *props = NULL;
 
     if (alias)
-        VIR_STEAL_PTR(*alias, tmp);
+        *alias = g_steal_pointer(&tmp);
 
  cleanup:
     VIR_FREE(tmp);
@@ -4447,7 +4447,7 @@ qemuMonitorGetPRManagerInfo(qemuMonitorPtr mon,
     if (qemuMonitorJSONGetPRManagerInfo(mon, info) < 0)
         goto cleanup;
 
-    VIR_STEAL_PTR(*retinfo, info);
+    *retinfo = g_steal_pointer(&info);
     ret = 0;
  cleanup:
     virHashFree(info);

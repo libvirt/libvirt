@@ -627,7 +627,7 @@ qemuBlockJobRewriteConfigDiskSource(virDomainObjPtr vm,
     }
 
     virObjectUnref(persistDisk->src);
-    VIR_STEAL_PTR(persistDisk->src, copy);
+    persistDisk->src = g_steal_pointer(&copy);
 }
 
 
@@ -1148,13 +1148,13 @@ qemuBlockJobProcessEventConcludedCopyPivot(virQEMUDriverPtr driver,
      * inherit the rest of the chain */
     if (job->data.copy.shallownew &&
         !virStorageSourceIsBacking(job->disk->mirror->backingStore))
-        VIR_STEAL_PTR(job->disk->mirror->backingStore, job->disk->src->backingStore);
+        job->disk->mirror->backingStore = g_steal_pointer(&job->disk->src->backingStore);
 
     qemuBlockJobRewriteConfigDiskSource(vm, job->disk, job->disk->mirror);
 
     qemuBlockJobEventProcessConcludedRemoveChain(driver, vm, asyncJob, job->disk->src);
     virObjectUnref(job->disk->src);
-    VIR_STEAL_PTR(job->disk->src, job->disk->mirror);
+    job->disk->src = g_steal_pointer(&job->disk->mirror);
 }
 
 

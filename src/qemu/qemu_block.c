@@ -184,8 +184,8 @@ qemuBlockNodeNameGetBackingChainBacking(virJSONValuePtr next,
                                                 &backingdata) < 0)
         return -1;
 
-    VIR_STEAL_PTR(data->backing, backingdata);
-    VIR_STEAL_PTR(*nodenamedata, data);
+    data->backing = g_steal_pointer(&backingdata);
+    *nodenamedata = g_steal_pointer(&data);
 
     return 0;
 }
@@ -1675,7 +1675,7 @@ qemuBlockStorageSourceDetachPrepare(virStorageSourcePtr src,
         goto cleanup;
 
     if (driveAlias) {
-        VIR_STEAL_PTR(data->driveAlias, driveAlias);
+        data->driveAlias = g_steal_pointer(&driveAlias);
         data->driveAdded = true;
     } else {
         data->formatNodeName = src->nodeformat;
@@ -1704,7 +1704,7 @@ qemuBlockStorageSourceDetachPrepare(virStorageSourcePtr src,
             goto cleanup;
     }
 
-    VIR_STEAL_PTR(ret, data);
+    ret = g_steal_pointer(&data);
 
  cleanup:
     VIR_FREE(driveAlias);
@@ -2035,7 +2035,7 @@ qemuBlockStorageSourceCreateGetFormatPropsGeneric(virStorageSourcePtr src,
         qemuBlockStorageSourceCreateAddBacking(backing, props, false) < 0)
         return -1;
 
-    VIR_STEAL_PTR(*retprops, props);
+    *retprops = g_steal_pointer(&props);
     return 0;
 }
 
@@ -2076,7 +2076,7 @@ qemuBlockStorageSourceCreateGetEncryptionLUKS(virStorageSourcePtr src,
             return -1;
     }
 
-    VIR_STEAL_PTR(*luksProps, props);
+    *luksProps = g_steal_pointer(&props);
     return 0;
 }
 
@@ -2097,7 +2097,7 @@ qemuBlockStorageSourceCreateGetFormatPropsLUKS(virStorageSourcePtr src,
                               NULL) < 0)
         return -1;
 
-    VIR_STEAL_PTR(*props, luksprops);
+    *props = g_steal_pointer(&luksprops);
     return 0;
 }
 
@@ -2155,7 +2155,7 @@ qemuBlockStorageSourceCreateGetFormatPropsQcow2(virStorageSourcePtr src,
         qemuBlockStorageSourceCreateAddEncryptionQcow(src, qcow2props) < 0)
         return -1;
 
-    VIR_STEAL_PTR(*props, qcow2props);
+    *props = g_steal_pointer(&qcow2props);
     return 0;
 }
 
@@ -2178,7 +2178,7 @@ qemuBlockStorageSourceCreateGetFormatPropsQcow(virStorageSourcePtr src,
         qemuBlockStorageSourceCreateAddEncryptionQcow(src, qcowprops) < 0)
         return -1;
 
-    VIR_STEAL_PTR(*props, qcowprops);
+    *props = g_steal_pointer(&qcowprops);
     return 0;
 }
 
@@ -2200,7 +2200,7 @@ qemuBlockStorageSourceCreateGetFormatPropsQed(virStorageSourcePtr src,
     if (qemuBlockStorageSourceCreateAddBacking(backing, qedprops, true) < 0)
         return -1;
 
-    VIR_STEAL_PTR(*props, qedprops);
+    *props = g_steal_pointer(&qedprops);
     return 0;
 }
 

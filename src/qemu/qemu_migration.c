@@ -854,7 +854,7 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriverPtr driver,
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || mon_ret < 0)
         return -1;
 
-    VIR_STEAL_PTR(diskPriv->migrSource, copysrc);
+    diskPriv->migrSource = g_steal_pointer(&copysrc);
 
     return 0;
 }
@@ -3671,7 +3671,7 @@ qemuMigrationSrcRun(virQEMUDriverPtr driver,
     if (iothread) {
         qemuMigrationIOThreadPtr io;
 
-        VIR_STEAL_PTR(io, iothread);
+        io = g_steal_pointer(&iothread);
         if (qemuMigrationSrcStopTunnel(io, false) < 0)
             goto error;
     }
@@ -4150,7 +4150,7 @@ qemuMigrationSrcPerformPeer2Peer3(virQEMUDriverPtr driver,
                           VIR_MIGRATE_AUTO_CONVERGE);
 
     VIR_DEBUG("Prepare3 %p", dconn);
-    VIR_STEAL_PTR(cookiein, cookieout);
+    cookiein = g_steal_pointer(&cookieout);
     cookieinlen = cookieoutlen;
     cookieoutlen = 0;
     if (flags & VIR_MIGRATE_TUNNELLED) {
@@ -4218,7 +4218,7 @@ qemuMigrationSrcPerformPeer2Peer3(virQEMUDriverPtr driver,
     VIR_DEBUG("Perform3 %p uri=%s", sconn, NULLSTR(uri));
     qemuMigrationJobSetPhase(driver, vm, QEMU_MIGRATION_PHASE_PERFORM3);
     VIR_FREE(cookiein);
-    VIR_STEAL_PTR(cookiein, cookieout);
+    cookiein = g_steal_pointer(&cookieout);
     cookieinlen = cookieoutlen;
     cookieoutlen = 0;
     if (flags & VIR_MIGRATE_TUNNELLED) {
@@ -4259,7 +4259,7 @@ qemuMigrationSrcPerformPeer2Peer3(virQEMUDriverPtr driver,
      */
     VIR_DEBUG("Finish3 %p ret=%d", dconn, ret);
     VIR_FREE(cookiein);
-    VIR_STEAL_PTR(cookiein, cookieout);
+    cookiein = g_steal_pointer(&cookieout);
     cookieinlen = cookieoutlen;
     cookieoutlen = 0;
 
@@ -4339,7 +4339,7 @@ qemuMigrationSrcPerformPeer2Peer3(virQEMUDriverPtr driver,
      */
     VIR_DEBUG("Confirm3 %p cancelled=%d vm=%p", sconn, cancelled, vm);
     VIR_FREE(cookiein);
-    VIR_STEAL_PTR(cookiein, cookieout);
+    cookiein = g_steal_pointer(&cookieout);
     cookieinlen = cookieoutlen;
     cookieoutlen = 0;
     ret = qemuMigrationSrcConfirmPhase(driver, vm,
@@ -5170,7 +5170,7 @@ qemuMigrationDstFinish(virQEMUDriverPtr driver,
 
     if (dom) {
         if (jobInfo) {
-            VIR_STEAL_PTR(priv->job.completed, jobInfo);
+            priv->job.completed = g_steal_pointer(&jobInfo);
             priv->job.completed->status = QEMU_DOMAIN_JOB_STATUS_COMPLETED;
             priv->job.completed->statsType = QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION;
         }

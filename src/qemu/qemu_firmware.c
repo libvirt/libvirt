@@ -325,7 +325,7 @@ qemuFirmwareInterfaceParse(const char *path,
     VIR_DEBUG("firmware description path '%s' supported interfaces: %s",
               path, NULLSTR_MINUS(virBufferCurrentContent(&buf)));
 
-    VIR_STEAL_PTR(fw->interfaces, interfaces);
+    fw->interfaces = g_steal_pointer(&interfaces);
     fw->ninterfaces = ninterfaces;
     return 0;
 }
@@ -553,10 +553,10 @@ qemuFirmwareTargetParse(const char *path,
             VIR_APPEND_ELEMENT_INPLACE(t->machines, t->nmachines, machineStr);
         }
 
-        VIR_STEAL_PTR(targets[i], t);
+        targets[i] = g_steal_pointer(&t);
     }
 
-    VIR_STEAL_PTR(fw->targets, targets);
+    fw->targets = g_steal_pointer(&targets);
     fw->ntargets = ntargets;
     ntargets = 0;
     ret = 0;
@@ -606,7 +606,7 @@ qemuFirmwareFeatureParse(const char *path,
         features[i] = tmp;
     }
 
-    VIR_STEAL_PTR(fw->features, features);
+    fw->features = g_steal_pointer(&features);
     fw->nfeatures = nfeatures;
     return 0;
 }
@@ -648,7 +648,7 @@ qemuFirmwareParse(const char *path)
     if (qemuFirmwareFeatureParse(path, doc, fw) < 0)
         return NULL;
 
-    VIR_STEAL_PTR(ret, fw);
+    ret = g_steal_pointer(&fw);
     return ret;
 }
 
@@ -698,7 +698,7 @@ qemuFirmwareFlashFileFormat(qemuFirmwareFlashFile flash)
                                        flash.format) < 0)
         return NULL;
 
-    VIR_STEAL_PTR(ret, json);
+    ret = g_steal_pointer(&json);
     return ret;
 }
 
@@ -1203,9 +1203,9 @@ qemuFirmwareFetchParsedConfigs(bool privileged,
             goto error;
     }
 
-    VIR_STEAL_PTR(*firmwaresRet, firmwares);
+    *firmwaresRet = g_steal_pointer(&firmwares);
     if (pathsRet)
-        VIR_STEAL_PTR(*pathsRet, paths);
+        *pathsRet = g_steal_pointer(&paths);
     return npaths;
 
  error:

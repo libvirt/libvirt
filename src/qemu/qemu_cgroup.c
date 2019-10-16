@@ -1335,7 +1335,7 @@ qemuCgroupEmulatorAllNodesAllow(virCgroupPtr cgroup,
         virCgroupSetCpusetMems(data->emulatorCgroup, all_nodes_str) < 0)
         goto cleanup;
 
-    VIR_STEAL_PTR(*retData, data);
+    *retData = g_steal_pointer(&data);
     ret = 0;
 
  cleanup:

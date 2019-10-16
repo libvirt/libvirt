@@ -206,7 +206,7 @@ qemuVhostUserParse(const char *path)
     if (qemuVhostUserBinaryParse(path, doc, vu) < 0)
         return NULL;
 
-    VIR_STEAL_PTR(ret, vu);
+    ret = g_steal_pointer(&vu);
     return ret;
 }
 
@@ -264,9 +264,9 @@ qemuVhostUserFetchParsedConfigs(bool privileged,
             goto error;
     }
 
-    VIR_STEAL_PTR(*vhostuserRet, vus);
+    *vhostuserRet = g_steal_pointer(&vus);
     if (pathsRet)
-        VIR_STEAL_PTR(*pathsRet, paths);
+        *pathsRet = g_steal_pointer(&paths);
     return npaths;
 
  error:
@@ -313,7 +313,7 @@ qemuVhostUserGPUFillCapabilities(qemuVhostUserPtr vu,
         features[i] = tmp;
     }
 
-    VIR_STEAL_PTR(gpu->features, features);
+    gpu->features = g_steal_pointer(&features);
     gpu->nfeatures = nfeatures;
 
     return 0;
