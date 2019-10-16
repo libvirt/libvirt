@@ -394,11 +394,11 @@ GENERATED_SYM_FILES += \
 
 %protocol.c: %protocol.x %protocol.h $(srcdir)/rpc/genprotocol.pl
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/genprotocol.pl $(RPCGEN) -c \
-	       $< $(srcdir)/$(subst $(srcdir)/,,$@)
+	       $< $(subst $(srcdir)/,,$@)
 
 %protocol.h: %protocol.x $(srcdir)/rpc/genprotocol.pl
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/genprotocol.pl $(RPCGEN) -h \
-	       $< $(srcdir)/$(subst $(srcdir)/,,$@)
+	       $< $(subst $(srcdir)/,,$@)
 
 check-local: check-augeas
 

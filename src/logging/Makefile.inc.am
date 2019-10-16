@@ -67,6 +67,8 @@ libvirt_driver_log_la_SOURCES = \
 	$(LOG_DRIVER_SOURCES) \
 	$(NULL)
 libvirt_driver_log_la_CFLAGS = \
+	-I$(builddir)/logging \
+	-I$(builddir)/rpc \
 	$(AM_CFLAGS) \
 	$(XDR_CFLAGS) \
 	$(NULL)
@@ -82,6 +84,8 @@ virtlogd_SOURCES = \
 		$(LOG_DAEMON_GENERATED) \
 		$(NULL)
 virtlogd_CFLAGS = \
+		-I$(builddir)/logging \
+		-I$(builddir)/rpc \
 		$(AM_CFLAGS) \
 		$(PIE_CFLAGS) \
 		$(XDR_CFLAGS) \

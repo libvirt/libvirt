@@ -109,6 +109,9 @@ lockd_la_SOURCES = \
 	$(NULL)
 lockd_la_CFLAGS = \
 	-I$(srcdir)/conf \
+	-I$(srcdir)/locking \
+	-I$(builddir)/locking \
+	-I$(builddir)/rpc \
 	$(XDR_CFLAGS) \
 	$(AM_CFLAGS) \
 	$(NULL)
@@ -146,6 +149,9 @@ virtlockd_SOURCES = \
 	$(LOCK_DAEMON_GENERATED) \
 	$(NULL)
 virtlockd_CFLAGS = \
+	-I$(srcdir)/locking \
+	-I$(builddir)/locking \
+	-I$(builddir)/rpc \
 	$(AM_CFLAGS) \
 	$(PIE_CFLAGS) \
 	$(XDR_CFLAGS) \

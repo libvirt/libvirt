@@ -50,6 +50,8 @@ REMOTE_DAEMON_CFLAGS = \
 	-I$(srcdir)/access \
 	-I$(srcdir)/conf \
 	-I$(srcdir)/rpc \
+	-I$(builddir)/rpc \
+	-I$(builddir)/remote \
 	$(NULL)
 
 REMOTE_DAEMON_LD_FLAGS = \
@@ -174,6 +176,8 @@ libvirt_driver_remote_la_CFLAGS = \
 	$(XDR_CFLAGS) \
 	-I$(srcdir)/conf \
 	-I$(srcdir)/rpc \
+	-I$(builddir)/rpc \
+	-I$(builddir)/remote \
 	$(AM_CFLAGS) \
 	$(NULL)
 libvirt_driver_remote_la_LDFLAGS = $(AM_LDFLAGS)

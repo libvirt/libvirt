@@ -1980,7 +1980,6 @@ generated_files = \
   $(srcdir)/src/admin/admin_server_dispatch_stubs.h \
   $(srcdir)/src/lxc/{lxc_monitor,lxc_controller}_dispatch.h \
   $(srcdir)/src/remote/*_client_bodies.h \
-  $(srcdir)/src/*/*_protocol.[ch] \
   $(srcdir)/gnulib/lib/*.[ch]
 
 _gl_translatable_string_re ?= \b(N?_|gettext *)\([^)"]*("|$$)

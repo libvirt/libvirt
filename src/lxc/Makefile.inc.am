@@ -95,6 +95,8 @@ libvirt_driver_lxc_impl_la_CFLAGS = \
 	$(XDR_CFLAGS) \
 	-I$(srcdir)/access \
 	-I$(srcdir)/conf \
+	-I$(builddir)/lxc \
+	-I$(builddir)/rpc \
 	$(AM_CFLAGS) \
 	$(NULL)
 libvirt_driver_lxc_impl_la_LIBADD = \
@@ -199,6 +201,8 @@ endif WITH_DTRACE_PROBES
 libvirt_lxc_LDADD += $(SECDRIVER_LIBS)
 libvirt_lxc_CFLAGS = \
 	-I$(srcdir)/conf \
+	-I$(builddir)/lxc \
+	-I$(builddir)/rpc \
 	$(AM_CFLAGS) \
 	$(PIE_CFLAGS) \
 	$(CAPNG_CFLAGS) \
