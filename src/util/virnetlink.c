@@ -541,9 +541,14 @@ virNetlinkNewLink(const char *ifname,
     NETLINK_MSG_NEST_END(nl_msg, linkinfo);
 
     if (extra_args) {
-        NETLINK_MSG_PUT(nl_msg, IFLA_LINK,
+        if (extra_args->ifindex) {
+            NETLINK_MSG_PUT(nl_msg, IFLA_LINK,
                         sizeof(uint32_t), extra_args->ifindex);
-        NETLINK_MSG_PUT(nl_msg, IFLA_ADDRESS, VIR_MAC_BUFLEN, extra_args->mac);
+        }
+        if (extra_args->mac) {
+            NETLINK_MSG_PUT(nl_msg, IFLA_ADDRESS,
+                            VIR_MAC_BUFLEN, extra_args->mac);
+        }
     }
 
     if (virNetlinkCommand(nl_msg, &resp, &buflen, 0, 0, NETLINK_ROUTE, 0) < 0)
