@@ -185,14 +185,14 @@ virCPUDefStealModel(virCPUDefPtr dst,
     char *vendor_id = NULL;
 
     if (keepVendor) {
-        VIR_STEAL_PTR(vendor, dst->vendor);
-        VIR_STEAL_PTR(vendor_id, dst->vendor_id);
+        vendor = g_steal_pointer(&dst->vendor);
+        vendor_id = g_steal_pointer(&dst->vendor_id);
     }
 
     virCPUDefFreeModel(dst);
 
-    VIR_STEAL_PTR(dst->model, src->model);
-    VIR_STEAL_PTR(dst->features, src->features);
+    dst->model = g_steal_pointer(&src->model);
+    dst->features = g_steal_pointer(&src->features);
     dst->microcodeVersion = src->microcodeVersion;
     dst->nfeatures_max = src->nfeatures_max;
     src->nfeatures_max = 0;
@@ -203,8 +203,8 @@ virCPUDefStealModel(virCPUDefPtr dst,
         dst->vendor = vendor;
         dst->vendor_id = vendor_id;
     } else {
-        VIR_STEAL_PTR(dst->vendor, src->vendor);
-        VIR_STEAL_PTR(dst->vendor_id, src->vendor_id);
+        dst->vendor = g_steal_pointer(&src->vendor);
+        dst->vendor_id = g_steal_pointer(&src->vendor_id);
     }
 }
 
@@ -465,7 +465,7 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
                 tsc->scaling = scaling;
             }
 
-            VIR_STEAL_PTR(def->tsc, tsc);
+            def->tsc = g_steal_pointer(&tsc);
         }
     }
 
@@ -644,7 +644,7 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
         def->cache->mode = mode;
     }
 
-    VIR_STEAL_PTR(*cpu, def);
+    *cpu = g_steal_pointer(&def);
     ret = 0;
 
  cleanup:
@@ -987,7 +987,7 @@ virCPUDefCheckFeatures(virCPUDefPtr cpu,
         }
     }
 
-    VIR_STEAL_PTR(*features, list);
+    *features = g_steal_pointer(&list);
     return n;
 }
 

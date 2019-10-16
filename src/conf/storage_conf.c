@@ -659,7 +659,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
             goto cleanup;
         }
 
-        VIR_STEAL_PTR(source->auth, authdef);
+        source->auth = g_steal_pointer(&authdef);
     }
 
     /* Option protocol version string (NFSvN) */
@@ -822,7 +822,7 @@ virStoragePoolDefRefreshParse(xmlXPathContextPtr ctxt,
         return -1;
 
     refresh->volume.allocation = tmp;
-    VIR_STEAL_PTR(def->refresh, refresh);
+    def->refresh = g_steal_pointer(&refresh);
     return 0;
 }
 
@@ -998,7 +998,7 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
             return NULL;
     }
 
-    VIR_STEAL_PTR(ret, def);
+    ret = g_steal_pointer(&def);
     return ret;
 }
 
@@ -1433,7 +1433,7 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
         VIR_FREE(nodes);
     }
 
-    VIR_STEAL_PTR(ret, def);
+    ret = g_steal_pointer(&def);
     return ret;
 }
 

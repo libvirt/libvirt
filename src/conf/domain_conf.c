@@ -1379,7 +1379,7 @@ virDomainKeyWrapDefParseXML(virDomainDefPtr def, xmlXPathContextPtr ctxt)
     }
 
     if (keywrap->aes || keywrap->dea)
-        VIR_STEAL_PTR(def->keywrap, keywrap);
+        def->keywrap = g_steal_pointer(&keywrap);
 
     return 0;
 }
@@ -1794,7 +1794,7 @@ virDomainVcpuDefNew(virDomainXMLOptionPtr xmlopt)
     if (VIR_ALLOC(ret) < 0)
         return NULL;
 
-    VIR_STEAL_PTR(ret->privateData, priv);
+    ret->privateData = g_steal_pointer(&priv);
 
     return ret;
 }
@@ -2362,7 +2362,7 @@ virDomainVsockDefNew(virDomainXMLOptionPtr xmlopt)
         !(vsock->privateData = xmlopt->privateData.vsockNew()))
         goto cleanup;
 
-    VIR_STEAL_PTR(ret, vsock);
+    ret = g_steal_pointer(&vsock);
  cleanup:
     virDomainVsockDefFree(vsock);
     return ret;
@@ -4938,7 +4938,7 @@ virDomainPostParseCheckISCSIPath(char **srcpath)
     if (virAsprintf(&path, "%s/0", *srcpath) < 0)
         return -1;
     VIR_FREE(*srcpath);
-    VIR_STEAL_PTR(*srcpath, path);
+    *srcpath = g_steal_pointer(&path);
     return 0;
 }
 
@@ -5660,10 +5660,10 @@ virDomainDefPostParseVideo(virDomainDefPtr def,
         /* we don't want to format any values we automatically fill in for
          * videos into the XML, so clear them, but retain any user-assigned
          * alias */
-        VIR_STEAL_PTR(alias, def->videos[0]->info.alias);
+        alias = g_steal_pointer(&def->videos[0]->info.alias);
         virDomainVideoDefClear(def->videos[0]);
         def->videos[0]->type = VIR_DOMAIN_VIDEO_TYPE_NONE;
-        VIR_STEAL_PTR(def->videos[0]->info.alias, alias);
+        def->videos[0]->info.alias = g_steal_pointer(&alias);
     } else {
         virDomainDeviceDef device = {
             .type = VIR_DOMAIN_DEVICE_VIDEO,
@@ -6527,7 +6527,7 @@ virDomainDefValidateAliases(const virDomainDef *def,
         goto cleanup;
 
     if (aliases)
-        VIR_STEAL_PTR(*aliases, data.aliases);
+        *aliases = g_steal_pointer(&data.aliases);
 
     ret = 0;
  cleanup:
@@ -7511,7 +7511,7 @@ virDomainDeviceInfoParseXML(virDomainXMLOptionPtr xmlopt G_GNUC_UNUSED,
             (xmlopt->config.features & VIR_DOMAIN_DEF_FEATURE_USER_ALIAS &&
              virDomainDeviceAliasIsUserAlias(aliasStr) &&
              strspn(aliasStr, USER_ALIAS_CHARS) == strlen(aliasStr)))
-            VIR_STEAL_PTR(info->alias, aliasStr);
+            info->alias = g_steal_pointer(&aliasStr);
     }
 
     if (master) {
@@ -8030,7 +8030,7 @@ virDomainHostdevSubsysSCSIiSCSIDefParseXML(xmlNodePtr sourcenode,
                                authdef->secrettype);
                 return -1;
             }
-            VIR_STEAL_PTR(iscsisrc->src->auth, authdef);
+            iscsisrc->src->auth = g_steal_pointer(&authdef);
         }
         cur = cur->next;
     }
@@ -8096,7 +8096,7 @@ virDomainHostdevSubsysSCSIVHostDefParseXML(xmlNodePtr sourcenode,
             virReportError(VIR_ERR_XML_ERROR, "%s", _("malformed 'wwpn' value"));
             return -1;
         }
-        VIR_STEAL_PTR(hostsrc->wwpn, wwpn);
+        hostsrc->wwpn = g_steal_pointer(&wwpn);
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_HOST_PROTOCOL_TYPE_NONE:
     case VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_HOST_PROTOCOL_TYPE_LAST:
@@ -8389,7 +8389,7 @@ virDomainNetIPParseXML(xmlNodePtr node)
         return NULL;
     }
 
-    VIR_STEAL_PTR(ret, ip);
+    ret = g_steal_pointer(&ip);
     return ret;
 }
 
@@ -8803,7 +8803,7 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
             goto error;
         }
 
-        VIR_STEAL_PTR(seclabel->label, p);
+        seclabel->label = g_steal_pointer(&p);
     }
 
     /* Only parse imagelabel, if requested live XML with relabeling */
@@ -8817,14 +8817,14 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
                            "%s", _("security imagelabel is missing"));
             goto error;
         }
-        VIR_STEAL_PTR(seclabel->imagelabel, p);
+        seclabel->imagelabel = g_steal_pointer(&p);
     }
 
     /* Only parse baselabel for dynamic label type */
     if (seclabel->type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
         p = virXPathStringLimit("string(./baselabel[1])",
                                 VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
-        VIR_STEAL_PTR(seclabel->baselabel, p);
+        seclabel->baselabel = g_steal_pointer(&p);
     }
 
     return seclabel;
@@ -9105,9 +9105,9 @@ virDomainLeaseDefParseXML(xmlNodePtr node)
         goto error;
     }
 
-    VIR_STEAL_PTR(def->key, key);
-    VIR_STEAL_PTR(def->lockspace, lockspace);
-    VIR_STEAL_PTR(def->path, path);
+    def->key = g_steal_pointer(&key);
+    def->lockspace = g_steal_pointer(&lockspace);
+    def->path = g_steal_pointer(&path);
 
  cleanup:
     return def;
@@ -9156,7 +9156,7 @@ virDomainDiskSourcePoolDefParse(xmlNodePtr node,
         goto cleanup;
     }
 
-    VIR_STEAL_PTR(*srcpool, source);
+    *srcpool = g_steal_pointer(&source);
     ret = 0;
 
  cleanup:
@@ -9305,7 +9305,7 @@ virDomainStorageSourceParseBase(const char *type,
         return NULL;
     }
 
-    VIR_STEAL_PTR(ret, src);
+    ret = g_steal_pointer(&src);
     return ret;
 }
 
@@ -9442,7 +9442,7 @@ virDomainDiskBackingStoreParse(xmlXPathContextPtr ctxt,
         virDomainDiskBackingStoreParse(ctxt, backingStore, flags, xmlopt) < 0)
         return -1;
 
-    VIR_STEAL_PTR(src->backingStore, backingStore);
+    src->backingStore = g_steal_pointer(&backingStore);
 
     return 0;
 }
@@ -10343,16 +10343,16 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         def->startupPolicy = val;
     }
 
-    VIR_STEAL_PTR(def->dst, target);
+    def->dst = g_steal_pointer(&target);
     if (authdef)
-        VIR_STEAL_PTR(def->src->auth, authdef);
+        def->src->auth = g_steal_pointer(&authdef);
     if (encryption)
-        VIR_STEAL_PTR(def->src->encryption, encryption);
-    VIR_STEAL_PTR(def->domain_name, domain_name);
-    VIR_STEAL_PTR(def->serial, serial);
-    VIR_STEAL_PTR(def->wwn, wwn);
-    VIR_STEAL_PTR(def->vendor, vendor);
-    VIR_STEAL_PTR(def->product, product);
+        def->src->encryption = g_steal_pointer(&encryption);
+    def->domain_name = g_steal_pointer(&domain_name);
+    def->serial = g_steal_pointer(&serial);
+    def->wwn = g_steal_pointer(&wwn);
+    def->vendor = g_steal_pointer(&vendor);
+    def->product = g_steal_pointer(&product);
 
     if (virDomainDiskBackingStoreParse(ctxt, def->src, flags, xmlopt) < 0)
         goto error;
@@ -11179,8 +11179,8 @@ virDomainFSDefParseXML(virDomainXMLOptionPtr xmlopt,
             goto error;
     }
 
-    VIR_STEAL_PTR(def->src->path, source);
-    VIR_STEAL_PTR(def->dst, target);
+    def->src->path = g_steal_pointer(&source);
+    def->dst = g_steal_pointer(&target);
 
     if (virDomainDeviceInfoParseXML(xmlopt, node, &def->info, flags) < 0)
         goto error;
@@ -11358,7 +11358,7 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
     if (vlanNode && virNetDevVlanParse(vlanNode, ctxt, &actual->vlan) < 0)
         goto error;
 
-    VIR_STEAL_PTR(*def, actual);
+    *def = g_steal_pointer(&actual);
     ret = 0;
  error:
     virDomainActualNetDefFree(actual);
@@ -11762,9 +11762,9 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
             goto error;
         }
 
-        VIR_STEAL_PTR(def->data.network.name, network);
-        VIR_STEAL_PTR(def->data.network.portgroup, portgroup);
-        VIR_STEAL_PTR(def->data.network.actual, actual);
+        def->data.network.name = g_steal_pointer(&network);
+        def->data.network.portgroup = g_steal_pointer(&portgroup);
+        def->data.network.actual = g_steal_pointer(&actual);
         break;
 
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
@@ -11810,7 +11810,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
             goto error;
 
         def->data.vhostuser->type = VIR_DOMAIN_CHR_TYPE_UNIX;
-        VIR_STEAL_PTR(def->data.vhostuser->data.nix.path, vhostuser_path);
+        def->data.vhostuser->data.nix.path = g_steal_pointer(&vhostuser_path);
 
         if (STREQ(vhostuser_mode, "server")) {
             def->data.vhostuser->data.nix.listen = true;
@@ -11839,7 +11839,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                              "specified with <interface type='bridge'/>"));
             goto error;
         }
-        VIR_STEAL_PTR(def->data.bridge.brname, bridge);
+        def->data.bridge.brname = g_steal_pointer(&bridge);
         break;
 
     case VIR_DOMAIN_NET_TYPE_CLIENT:
@@ -11869,7 +11869,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                 goto error;
             }
         } else {
-            VIR_STEAL_PTR(def->data.socket.address, address);
+            def->data.socket.address = g_steal_pointer(&address);
         }
 
         if (def->type != VIR_DOMAIN_NET_TYPE_UDP)
@@ -11894,7 +11894,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                              "specified with socket interface"));
             goto error;
         } else {
-            VIR_STEAL_PTR(def->data.socket.localaddr, localaddr);
+            def->data.socket.localaddr = g_steal_pointer(&localaddr);
         }
         break;
 
@@ -11905,7 +11905,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                              "with <interface type='internal'/>"));
             goto error;
         }
-        VIR_STEAL_PTR(def->data.internal.name, internal);
+        def->data.internal.name = g_steal_pointer(&internal);
         break;
 
     case VIR_DOMAIN_NET_TYPE_DIRECT:
@@ -11927,7 +11927,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
             def->data.direct.mode = VIR_NETDEV_MACVLAN_MODE_VEPA;
         }
 
-        VIR_STEAL_PTR(def->data.direct.linkdev, dev);
+        def->data.direct.linkdev = g_steal_pointer(&dev);
 
         if (ifname &&
             flags & VIR_DOMAIN_DEF_PARSE_INACTIVE &&
@@ -11990,15 +11990,15 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     }
 
     if (script != NULL)
-        VIR_STEAL_PTR(def->script, script);
+        def->script = g_steal_pointer(&script);
     if (domain_name != NULL)
-        VIR_STEAL_PTR(def->domain_name, domain_name);
+        def->domain_name = g_steal_pointer(&domain_name);
     if (ifname != NULL)
-        VIR_STEAL_PTR(def->ifname, ifname);
+        def->ifname = g_steal_pointer(&ifname);
     if (ifname_guest != NULL)
-        VIR_STEAL_PTR(def->ifname_guest, ifname_guest);
+        def->ifname_guest = g_steal_pointer(&ifname_guest);
     if (ifname_guest_actual != NULL)
-        VIR_STEAL_PTR(def->ifname_guest_actual, ifname_guest_actual);
+        def->ifname_guest_actual = g_steal_pointer(&ifname_guest_actual);
 
     if (def->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
         virDomainNetIsVirtioModel(def)) {
@@ -12198,7 +12198,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                 def->driver.virtio.guest.ufo = val;
             }
         }
-        VIR_STEAL_PTR(def->backend.vhost, vhost_path);
+        def->backend.vhost = g_steal_pointer(&vhost_path);
     }
 
     def->linkstate = VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DEFAULT;
@@ -12216,8 +12216,8 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         case VIR_DOMAIN_NET_TYPE_ETHERNET:
         case VIR_DOMAIN_NET_TYPE_NETWORK:
         case VIR_DOMAIN_NET_TYPE_BRIDGE:
-            VIR_STEAL_PTR(def->filter, filter);
-            VIR_STEAL_PTR(def->filterparams, filterparams);
+            def->filter = g_steal_pointer(&filter);
+            def->filterparams = g_steal_pointer(&filterparams);
             break;
         case VIR_DOMAIN_NET_TYPE_USER:
         case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
@@ -13213,7 +13213,7 @@ virDomainTPMDefParseXML(virDomainXMLOptionPtr xmlopt,
         path = virXPathString("string(./backend/device/@path)", ctxt);
         if (!path && VIR_STRDUP(path, VIR_DOMAIN_TPM_DEFAULT_DEVICE) < 0)
             goto error;
-        VIR_STEAL_PTR(def->data.passthrough.source.data.file.path, path);
+        def->data.passthrough.source.data.file.path = g_steal_pointer(&path);
         def->data.passthrough.source.type = VIR_DOMAIN_CHR_TYPE_DEV;
         break;
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
@@ -13751,7 +13751,7 @@ virDomainGraphicsListenDefParseXML(virDomainGraphicsListenDefPtr def,
         }
 
         if (!address)
-            VIR_STEAL_PTR(address, addressCompat);
+            address = g_steal_pointer(&addressCompat);
     }
 
     if (def->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET) {
@@ -13764,14 +13764,14 @@ virDomainGraphicsListenDefParseXML(virDomainGraphicsListenDefPtr def,
         }
 
         if (!socketPath)
-            VIR_STEAL_PTR(socketPath, socketCompat);
+            socketPath = g_steal_pointer(&socketCompat);
     }
 
     if (address && address[0] &&
         (def->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS ||
          (def->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK &&
           !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)))) {
-        VIR_STEAL_PTR(def->address, address);
+        def->address = g_steal_pointer(&address);
     }
 
     if (network && network[0]) {
@@ -13781,7 +13781,7 @@ virDomainGraphicsListenDefParseXML(virDomainGraphicsListenDefPtr def,
                              "type 'network'"));
             goto error;
         }
-        VIR_STEAL_PTR(def->network, network);
+        def->network = g_steal_pointer(&network);
     }
 
     if (socketPath && socketPath[0]) {
@@ -13791,7 +13791,7 @@ virDomainGraphicsListenDefParseXML(virDomainGraphicsListenDefPtr def,
                              "type 'socket'"));
             goto error;
         }
-        VIR_STEAL_PTR(def->socket, socketPath);
+        def->socket = g_steal_pointer(&socketPath);
     }
 
     if (fromConfig &&
@@ -13870,7 +13870,7 @@ virDomainGraphicsListensParseXML(virDomainGraphicsDefPtr def,
 
     if (socketPath) {
         newListen.type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET;
-        VIR_STEAL_PTR(newListen.socket, socketPath);
+        newListen.socket = g_steal_pointer(&socketPath);
     } else {
         newListen.type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS;
         newListen.address = virXMLPropString(node, "listen");
@@ -14348,7 +14348,7 @@ virDomainGraphicsDefParseXMLSpice(virDomainGraphicsDefPtr def,
                 }
 
                 def->data.spice.gl = enableVal;
-                VIR_STEAL_PTR(def->data.spice.rendernode, rendernode);
+                def->data.spice.rendernode = g_steal_pointer(&rendernode);
 
             } else if (virXMLNodeNameEqual(cur, "mouse")) {
                 int modeVal;
@@ -14921,7 +14921,7 @@ virDomainShmemDefParseXML(virDomainXMLOptionPtr xmlopt,
         goto cleanup;
 
 
-    VIR_STEAL_PTR(ret, def);
+    ret = g_steal_pointer(&def);
  cleanup:
     virDomainShmemDefFree(def);
     return ret;
@@ -14981,7 +14981,7 @@ virSysinfoBIOSParseXML(xmlNodePtr node,
         def = NULL;
     }
 
-    VIR_STEAL_PTR(*bios, def);
+    *bios = g_steal_pointer(&def);
     ret = 0;
  cleanup:
     virSysinfoBIOSDefFree(def);
@@ -15057,7 +15057,7 @@ virSysinfoSystemParseXML(xmlNodePtr node,
         def = NULL;
     }
 
-    VIR_STEAL_PTR(*sysdef, def);
+    *sysdef = g_steal_pointer(&def);
     ret = 0;
  cleanup:
     virSysinfoSystemDefFree(def);
@@ -15108,7 +15108,7 @@ virSysinfoBaseBoardParseXML(xmlXPathContextPtr ctxt,
         }
     }
 
-    VIR_STEAL_PTR(*baseBoard, boards);
+    *baseBoard = g_steal_pointer(&boards);
     *nbaseBoard = nboards;
     ret = 0;
  cleanup:
@@ -15146,7 +15146,7 @@ virSysinfoOEMStringsParseXML(xmlNodePtr node,
     for (i = 0; i < nstrings; i++)
         def->values[i] = virXMLNodeContentString(strings[i]);
 
-    VIR_STEAL_PTR(*oem, def);
+    *oem = g_steal_pointer(&def);
     ret = 0;
  cleanup:
     virSysinfoOEMStringsDefFree(def);
@@ -15191,7 +15191,7 @@ virSysinfoChassisParseXML(xmlNodePtr node,
         def = NULL;
     }
 
-    VIR_STEAL_PTR(*chassisdef, def);
+    *chassisdef = g_steal_pointer(&def);
     ret = 0;
  cleanup:
     virSysinfoChassisDefFree(def);
@@ -16315,7 +16315,7 @@ virDomainIOMMUDefParseXML(xmlNodePtr node,
         }
     }
 
-    VIR_STEAL_PTR(ret, iommu);
+    ret = g_steal_pointer(&iommu);
 
  cleanup:
     return ret;
@@ -16378,7 +16378,7 @@ virDomainVsockDefParseXML(virDomainXMLOptionPtr xmlopt,
     if (virDomainDeviceInfoParseXML(xmlopt, node, &vsock->info, flags) < 0)
         goto cleanup;
 
-    VIR_STEAL_PTR(ret, vsock);
+    ret = g_steal_pointer(&vsock);
 
  cleanup:
     return ret;
@@ -18372,7 +18372,7 @@ virDomainIOThreadPinDefParseXML(xmlNodePtr node,
         return -1;
     }
 
-    VIR_STEAL_PTR(iothrid->cpumask, cpumask);
+    iothrid->cpumask = g_steal_pointer(&cpumask);
     return 0;
 }
 
@@ -18403,7 +18403,7 @@ virDomainEmulatorPinDefParseXML(xmlNodePtr node)
         return NULL;
     }
 
-    VIR_STEAL_PTR(ret, def);
+    ret = g_steal_pointer(&def);
     return ret;
 }
 
@@ -18738,7 +18738,7 @@ virDomainEmulatorSchedParse(xmlNodePtr node,
                                            &sched->priority) < 0)
         return -1;
 
-    VIR_STEAL_PTR(def->cputune.emulatorsched, sched);
+    def->cputune.emulatorsched = g_steal_pointer(&sched);
     return 0;
 }
 
@@ -19506,7 +19506,7 @@ virDomainResctrlNew(xmlNodePtr node,
 
     resctrl->alloc = virObjectRef(alloc);
 
-    VIR_STEAL_PTR(ret, resctrl);
+    ret = g_steal_pointer(&resctrl);
  cleanup:
     virDomainResctrlDefFree(resctrl);
     return ret;
@@ -30529,7 +30529,7 @@ virDomainDiskSetBlockIOTune(virDomainDiskDefPtr disk,
 
     VIR_FREE(disk->blkdeviotune.group_name);
     disk->blkdeviotune = *info;
-    VIR_STEAL_PTR(disk->blkdeviotune.group_name, tmp_group);
+    disk->blkdeviotune.group_name = g_steal_pointer(&tmp_group);
 
     return 0;
 }

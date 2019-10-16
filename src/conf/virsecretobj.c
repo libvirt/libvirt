@@ -393,7 +393,7 @@ virSecretObjListAdd(virSecretObjListPtr secrets,
         virObjectRef(obj);
     }
 
-    VIR_STEAL_PTR(ret, obj);
+    ret = g_steal_pointer(&obj);
 
  cleanup:
     virSecretObjEndAPI(&obj);

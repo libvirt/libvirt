@@ -1115,7 +1115,7 @@ virStoragePoolObjIsDuplicate(virStoragePoolObjListPtr pools,
             }
         }
 
-        VIR_STEAL_PTR(*objRet, obj);
+        *objRet = g_steal_pointer(&obj);
         ret = 1;
     } else {
         /* UUID does not match, but if a name matches, refuse it */
@@ -1540,7 +1540,7 @@ virStoragePoolObjAssignDef(virStoragePoolObjPtr obj,
     } else {
         if (!obj->newDef &&
             flags & VIR_STORAGE_POOL_OBJ_LIST_ADD_LIVE)
-            VIR_STEAL_PTR(obj->newDef, obj->def);
+            obj->newDef = g_steal_pointer(&obj->def);
 
         virStoragePoolDefFree(obj->def);
         obj->def = def;

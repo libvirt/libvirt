@@ -229,10 +229,10 @@ virDomainCapsCPUModelsAddSteal(virDomainCapsCPUModelsPtr cpuModels,
         return -1;
 
     cpuModels->models[cpuModels->nmodels].usable = usable;
-    VIR_STEAL_PTR(cpuModels->models[cpuModels->nmodels].name, *name);
+    cpuModels->models[cpuModels->nmodels].name = g_steal_pointer(&*name);
 
     if (blockers)
-        VIR_STEAL_PTR(cpuModels->models[cpuModels->nmodels].blockers, *blockers);
+        cpuModels->models[cpuModels->nmodels].blockers = g_steal_pointer(&*blockers);
 
     cpuModels->nmodels++;
     return 0;

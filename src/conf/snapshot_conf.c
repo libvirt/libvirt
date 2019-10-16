@@ -362,7 +362,7 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
                          "disk-only snapshot"));
         goto cleanup;
     }
-    VIR_STEAL_PTR(def->file, memoryFile);
+    def->file = g_steal_pointer(&memoryFile);
 
     /* verify that memory path is absolute */
     if (def->file && def->file[0] != '/') {
@@ -407,7 +407,7 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
     if (!offline && virSaveCookieParse(ctxt, &def->cookie, saveCookie) < 0)
         goto cleanup;
 
-    VIR_STEAL_PTR(ret, def);
+    ret = g_steal_pointer(&def);
 
  cleanup:
     VIR_FREE(creation);
@@ -543,7 +543,7 @@ virDomainSnapshotRedefineValidate(virDomainSnapshotDefPtr def,
                     return -1;
             } else {
                 /* Transfer the domain def */
-                VIR_STEAL_PTR(def->parent.dom, otherdef->parent.dom);
+                def->parent.dom = g_steal_pointer(&otherdef->parent.dom);
             }
         }
     }
@@ -1008,7 +1008,7 @@ virDomainSnapshotRedefinePrep(virDomainObjPtr vm,
                                           flags) < 0) {
         /* revert any stealing of the snapshot domain definition */
         if (check_if_stolen && def->parent.dom && !otherdef->parent.dom)
-            VIR_STEAL_PTR(otherdef->parent.dom, def->parent.dom);
+            otherdef->parent.dom = g_steal_pointer(&def->parent.dom);
         return -1;
     }
     if (other) {

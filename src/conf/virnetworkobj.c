@@ -620,7 +620,7 @@ virNetworkObjAssignDefLocked(virNetworkObjListPtr nets,
         obj->persistent = !(flags & VIR_NETWORK_OBJ_LIST_ADD_LIVE);
     }
 
-    VIR_STEAL_PTR(ret, obj);
+    ret = g_steal_pointer(&obj);
 
  cleanup:
     virNetworkObjEndAPI(&obj);

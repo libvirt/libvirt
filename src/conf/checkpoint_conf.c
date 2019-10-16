@@ -197,7 +197,7 @@ virDomainCheckpointDefParse(xmlXPathContextPtr ctxt,
             return NULL;
     }
 
-    VIR_STEAL_PTR(ret, def);
+    ret = g_steal_pointer(&def);
     return ret;
 }
 

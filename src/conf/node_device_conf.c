@@ -2354,7 +2354,7 @@ virNodeDeviceCapsListExport(virNodeDeviceDefPtr def,
 #undef MAYBE_ADD_CAP
 
     if (want_list)
-        VIR_STEAL_PTR(*list, tmp);
+        *list = g_steal_pointer(&tmp);
     ret = ncaps;
  cleanup:
     VIR_FREE(tmp);
@@ -2386,18 +2386,18 @@ virNodeDeviceGetSCSIHostCaps(virNodeDevCapSCSIHostPtr scsi_host)
             goto cleanup;
         }
         VIR_FREE(scsi_host->wwpn);
-        VIR_STEAL_PTR(scsi_host->wwpn, tmp);
+        scsi_host->wwpn = g_steal_pointer(&tmp);
 
         if (!(tmp = virVHBAGetConfig(NULL, scsi_host->host, "node_name"))) {
             VIR_WARN("Failed to read WWNN for host%d", scsi_host->host);
             goto cleanup;
         }
         VIR_FREE(scsi_host->wwnn);
-        VIR_STEAL_PTR(scsi_host->wwnn, tmp);
+        scsi_host->wwnn = g_steal_pointer(&tmp);
 
         if ((tmp = virVHBAGetConfig(NULL, scsi_host->host, "fabric_name"))) {
             VIR_FREE(scsi_host->fabric_wwn);
-            VIR_STEAL_PTR(scsi_host->fabric_wwn, tmp);
+            scsi_host->fabric_wwn = g_steal_pointer(&tmp);
         }
     }
 
@@ -2466,7 +2466,7 @@ virNodeDeviceGetSCSITargetCaps(const char *sysfsPath,
         goto cleanup;
 
     VIR_FREE(scsi_target->rport);
-    VIR_STEAL_PTR(scsi_target->rport, rport);
+    scsi_target->rport = g_steal_pointer(&rport);
 
     if (virFCReadRportValue(scsi_target->rport, "port_name",
                             &scsi_target->wwpn) < 0) {
@@ -2591,7 +2591,7 @@ virNodeDeviceGetPCIMdevTypesCaps(const char *sysfspath,
     if (rc <= 0)
         return rc;
 
-    VIR_STEAL_PTR(pci_dev->mdev_types, types);
+    pci_dev->mdev_types = g_steal_pointer(&types);
     pci_dev->nmdev_types = rc;
     pci_dev->flags |= VIR_NODE_DEV_CAP_FLAG_PCI_MDEV;
 
