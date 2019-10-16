@@ -1057,7 +1057,7 @@ qemuStateReload(void)
         return 0;
 
     if (!(caps = virQEMUDriverGetCapabilities(qemu_driver, false)))
-        goto cleanup;
+        return 0;
 
     cfg = virQEMUDriverGetConfig(qemu_driver);
     virDomainObjListLoadAllConfigs(qemu_driver->domains,
@@ -1065,7 +1065,6 @@ qemuStateReload(void)
                                    cfg->autostartDir, false,
                                    caps, qemu_driver->xmlopt,
                                    qemuNotifyLoadDomain, qemu_driver);
- cleanup:
     return 0;
 }
 
@@ -1181,18 +1180,15 @@ static int
 qemuConnectURIProbe(char **uri)
 {
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
-    int ret = -1;
 
     if (qemu_driver == NULL)
         return 0;
 
     cfg = virQEMUDriverGetConfig(qemu_driver);
     if (VIR_STRDUP(*uri, cfg->uri) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static virDrvOpenStatus qemuConnectOpen(virConnectPtr conn,
@@ -1335,20 +1331,15 @@ qemuConnectGetMaxVcpus(virConnectPtr conn G_GNUC_UNUSED, const char *type)
 
 static char *qemuConnectGetCapabilities(virConnectPtr conn) {
     virQEMUDriverPtr driver = conn->privateData;
-    char *xml = NULL;
     g_autoptr(virCaps) caps = NULL;
 
     if (virConnectGetCapabilitiesEnsureACL(conn) < 0)
         return NULL;
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, true)))
-        goto cleanup;
+        return NULL;
 
-    xml = virCapabilitiesFormatXML(caps);
-
- cleanup:
-
-    return xml;
+    return virCapabilitiesFormatXML(caps);
 }
 
 
@@ -1691,7 +1682,6 @@ static int qemuDomainIsUpdated(virDomainPtr dom)
 static int qemuConnectGetVersion(virConnectPtr conn, unsigned long *version)
 {
     virQEMUDriverPtr driver = conn->privateData;
-    int ret = -1;
     unsigned int qemuVersion = 0;
     g_autoptr(virCaps) caps = NULL;
 
@@ -1699,18 +1689,15 @@ static int qemuConnectGetVersion(virConnectPtr conn, unsigned long *version)
         return -1;
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
+        return -1;
 
     if (virQEMUCapsGetDefaultVersion(caps,
                                      driver->qemuCapsCache,
                                      &qemuVersion) < 0)
-        goto cleanup;
+        return -1;
 
     *version = qemuVersion;
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -2902,7 +2889,6 @@ virQEMUSaveDataWrite(virQEMUSaveDataPtr data,
     size_t len;
     size_t xml_len;
     size_t cookie_len = 0;
-    int ret = -1;
     size_t zerosLen = 0;
     g_autofree char *zeros = NULL;
 
@@ -2916,12 +2902,12 @@ virQEMUSaveDataWrite(virQEMUSaveDataPtr data,
         if (len > header->data_len) {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                            _("new xml too large to fit in file"));
-            goto cleanup;
+            return -1;
         }
 
         zerosLen = header->data_len - len;
         if (VIR_ALLOC_N(zeros, zerosLen) < 0)
-            goto cleanup;
+            return -1;
     } else {
         header->data_len = len;
     }
@@ -2933,14 +2919,14 @@ virQEMUSaveDataWrite(virQEMUSaveDataPtr data,
         virReportSystemError(errno,
                              _("failed to write header to domain save file '%s'"),
                              path);
-        goto cleanup;
+        return -1;
     }
 
     if (safewrite(fd, data->xml, xml_len) != xml_len) {
         virReportSystemError(errno,
                              _("failed to write domain xml to '%s'"),
                              path);
-        goto cleanup;
+        return -1;
     }
 
     if (data->cookie &&
@@ -2948,20 +2934,17 @@ virQEMUSaveDataWrite(virQEMUSaveDataPtr data,
         virReportSystemError(errno,
                              _("failed to write cookie to '%s'"),
                              path);
-        goto cleanup;
+        return -1;
     }
 
     if (safewrite(fd, zeros, zerosLen) != zerosLen) {
         virReportSystemError(errno,
                              _("failed to write padding to '%s'"),
                              path);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -3031,7 +3014,6 @@ qemuOpenFile(virQEMUDriverPtr driver,
              int oflags,
              bool *needUnlink)
 {
-    int ret = -1;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     uid_t user = cfg->user;
     gid_t group = cfg->group;
@@ -3043,13 +3025,10 @@ qemuOpenFile(virQEMUDriverPtr driver,
         (seclabel = virDomainDefGetSecurityLabelDef(vm->def, "dac")) != NULL &&
         seclabel->label != NULL &&
         (virParseOwnershipIds(seclabel->label, &user, &group) < 0))
-        goto cleanup;
+        return -1;
 
-    ret = qemuOpenFileAs(user, group, dynamicOwnership,
-                         path, oflags, needUnlink);
-
- cleanup:
-    return ret;
+    return qemuOpenFileAs(user, group, dynamicOwnership,
+                          path, oflags, needUnlink);
 }
 
 static int
@@ -4182,14 +4161,13 @@ doCoreDumpToAutoDumpPath(virQEMUDriverPtr driver,
     g_autofree char *dumpfile = getAutoDumpPath(driver, vm);
 
     if (!dumpfile)
-        goto cleanup;
+        return -1;
 
     flags |= cfg->autoDumpBypassCache ? VIR_DUMP_BYPASS_CACHE: 0;
     if ((ret = doCoreDump(driver, vm, dumpfile, flags,
                           VIR_DOMAIN_CORE_DUMP_FORMAT_RAW)) < 0)
         virReportError(VIR_ERR_OPERATION_FAILED,
                        "%s", _("Dump failed"));
- cleanup:
     return ret;
 }
 
@@ -4985,19 +4963,18 @@ qemuDomainSetVcpusMax(virQEMUDriverPtr driver,
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     unsigned int topologycpus;
-    int ret = -1;
 
     if (def) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("maximum vcpu count of a live domain can't be modified"));
-        goto cleanup;
+        return -1;
     }
 
     if (virDomainNumaGetCPUCountTotal(persistentDef->numa) > nvcpus) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("Number of CPUs in <numa> exceeds the desired "
                          "maximum vcpu count"));
-        goto cleanup;
+        return -1;
     }
 
     if (virDomainDefGetVcpusTopology(persistentDef, &topologycpus) == 0 &&
@@ -5006,22 +4983,19 @@ qemuDomainSetVcpusMax(virQEMUDriverPtr driver,
          * setting may be corrected via this API */
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("CPU topology doesn't match the desired vcpu count"));
-        goto cleanup;
+        return -1;
     }
 
     /* ordering information may become invalid, thus clear it */
     virDomainDefVcpuOrderClear(persistentDef);
 
     if (virDomainDefSetVcpusMax(persistentDef, nvcpus, driver->xmlopt) < 0)
-        goto cleanup;
+        return -1;
 
     if (virDomainSaveConfig(cfg->configDir, driver->caps, persistentDef) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -6247,7 +6221,7 @@ qemuDomainChgIOThread(virQEMUDriverPtr driver,
     priv = vm->privateData;
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
-        goto cleanup;
+        return -1;
 
     if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto endjob;
@@ -6335,7 +6309,6 @@ qemuDomainChgIOThread(virQEMUDriverPtr driver,
  endjob:
     qemuDomainObjEndJob(driver, vm);
 
- cleanup:
     return ret;
 }
 
@@ -6562,29 +6535,27 @@ static int qemuNodeGetSecurityModel(virConnectPtr conn,
 {
     virQEMUDriverPtr driver = conn->privateData;
     char *p;
-    int ret = 0;
     g_autoptr(virCaps) caps = NULL;
 
     memset(secmodel, 0, sizeof(*secmodel));
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
+        return 0;
 
     if (virNodeGetSecurityModelEnsureACL(conn) < 0)
-        goto cleanup;
+        return 0;
 
     /* We treat no driver as success, but simply return no data in *secmodel */
     if (caps->host.nsecModels == 0 ||
         caps->host.secModels[0].model == NULL)
-        goto cleanup;
+        return 0;
 
     p = caps->host.secModels[0].model;
     if (strlen(p) >= VIR_SECURITY_MODEL_BUFLEN-1) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("security model string exceeds max %d bytes"),
                        VIR_SECURITY_MODEL_BUFLEN-1);
-        ret = -1;
-        goto cleanup;
+        return -1;
     }
     strcpy(secmodel->model, p);
 
@@ -6593,13 +6564,11 @@ static int qemuNodeGetSecurityModel(virConnectPtr conn,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("security DOI string exceeds max %d bytes"),
                        VIR_SECURITY_DOI_BUFLEN-1);
-        ret = -1;
-        goto cleanup;
+        return -1;
     }
     strcpy(secmodel->doi, p);
 
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -7507,7 +7476,7 @@ qemuDomainObjStart(virConnectPtr conn,
     managed_save = qemuDomainManagedSavePath(driver, vm);
 
     if (!managed_save)
-        goto cleanup;
+        return ret;
 
     if (virFileExists(managed_save)) {
         if (force_boot) {
@@ -7515,7 +7484,7 @@ qemuDomainObjStart(virConnectPtr conn,
                 virReportSystemError(errno,
                                      _("cannot remove managed save file %s"),
                                      managed_save);
-                goto cleanup;
+                return ret;
             }
             vm->hasManagedSave = false;
         } else {
@@ -7531,11 +7500,11 @@ qemuDomainObjStart(virConnectPtr conn,
                 else
                     vm->hasManagedSave = false;
 
-                goto cleanup;
+                return ret;
             } else if (ret < 0) {
                 VIR_WARN("Unable to restore from managed state %s. "
                          "Maybe the file is corrupted?", managed_save);
-                goto cleanup;
+                return ret;
             } else {
                 VIR_WARN("Ignoring incomplete managed state %s", managed_save);
                 priv->job.current->operation = op;
@@ -7562,7 +7531,6 @@ qemuDomainObjStart(virConnectPtr conn,
         }
     }
 
- cleanup:
     return ret;
 }
 
@@ -13471,7 +13439,6 @@ qemuConnectCompareCPU(virConnectPtr conn,
                       unsigned int flags)
 {
     virQEMUDriverPtr driver = conn->privateData;
-    int ret = VIR_CPU_COMPARE_ERROR;
     g_autoptr(virCaps) caps = NULL;
     bool failIncompatible;
 
@@ -13479,18 +13446,15 @@ qemuConnectCompareCPU(virConnectPtr conn,
                   VIR_CPU_COMPARE_ERROR);
 
     if (virConnectCompareCPUEnsureACL(conn) < 0)
-        goto cleanup;
+        return VIR_CPU_COMPARE_ERROR;
 
     failIncompatible = !!(flags & VIR_CONNECT_COMPARE_CPU_FAIL_INCOMPATIBLE);
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
+        return VIR_CPU_COMPARE_ERROR;
 
-    ret = virCPUCompareXML(caps->host.arch, caps->host.cpu,
-                           xmlDesc, failIncompatible);
-
- cleanup:
-    return ret;
+    return virCPUCompareXML(caps->host.arch, caps->host.cpu,
+                            xmlDesc, failIncompatible);
 }
 
 
@@ -20405,17 +20369,16 @@ qemuConnectGetDomainCapabilities(virConnectPtr conn,
                                  const char *virttype_str,
                                  unsigned int flags)
 {
-    char *ret = NULL;
     virQEMUDriverPtr driver = conn->privateData;
     g_autoptr(virQEMUCaps) qemuCaps = NULL;
     virArch arch;
     virDomainVirtType virttype;
     g_autoptr(virDomainCaps) domCaps = NULL;
 
-    virCheckFlags(0, ret);
+    virCheckFlags(0, NULL);
 
     if (virConnectGetDomainCapabilitiesEnsureACL(conn) < 0)
-        return ret;
+        return NULL;
 
     qemuCaps = virQEMUCapsCacheLookupDefault(driver->qemuCapsCache,
                                              emulatorbin,
@@ -20424,16 +20387,14 @@ qemuConnectGetDomainCapabilities(virConnectPtr conn,
                                              machine,
                                              &arch, &virttype, &machine);
     if (!qemuCaps)
-        goto cleanup;
+        return NULL;
 
     if (!(domCaps = virQEMUDriverGetDomainCapabilities(driver,
                                                        qemuCaps, machine,
                                                        arch, virttype)))
-        goto cleanup;
+        return NULL;
 
-    ret = virDomainCapsFormat(domCaps);
- cleanup:
-    return ret;
+    return virDomainCapsFormat(domCaps);
 }
 
 
@@ -21100,7 +21061,6 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDefPtr disk,
     const char *frontendalias;
     const char *backendalias;
     const char *backendstoragealias;
-    int ret = -1;
 
     /*
      * This helps to keep logs clean from error messages on getting stats
@@ -21127,7 +21087,7 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDefPtr disk,
             /* alias may be NULL if the VM is not running */
             if (disk->info.alias &&
                 !(alias = qemuDomainStorageAlias(disk->info.alias, n->id)))
-                goto cleanup;
+                return -1;
 
             qemuDomainGetStatsOneBlockRefreshNamed(n, alias, stats, nodestats);
 
@@ -21137,24 +21097,24 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDefPtr disk,
         }
 
         if (qemuDomainGetStatsBlockExportHeader(disk, n, *recordnr, params) < 0)
-            goto cleanup;
+            return -1;
 
         /* The following stats make sense only for the frontend device */
         if (n == disk->src) {
             if (qemuDomainGetStatsBlockExportFrontend(frontendalias, stats, *recordnr,
                                                       params) < 0)
-                goto cleanup;
+                return -1;
         }
 
         if (qemuDomainGetStatsOneBlock(driver, cfg, dom, params,
                                        backendalias, n, *recordnr,
                                        stats) < 0)
-            goto cleanup;
+            return -1;
 
         if (qemuDomainGetStatsBlockExportBackendStorage(backendstoragealias,
                                                         stats, *recordnr,
                                                         params) < 0)
-            goto cleanup;
+            return -1;
 
         (*recordnr)++;
 
@@ -21162,10 +21122,7 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDefPtr disk,
             break;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -22527,31 +22484,26 @@ qemuNodeGetSEVInfo(virConnectPtr conn,
                    unsigned int flags)
 {
     virQEMUDriverPtr driver = conn->privateData;
-    int ret = -1;
     g_autoptr(virQEMUCaps) qemucaps = NULL;
 
     if (virNodeGetSevInfoEnsureACL(conn) < 0)
-        return ret;
+        return -1;
 
     qemucaps = virQEMUCapsCacheLookupByArch(driver->qemuCapsCache,
                                             virArchFromHost());
     if (!qemucaps)
-        goto cleanup;
+        return -1;
 
     if (!virQEMUCapsGet(qemucaps, QEMU_CAPS_SEV_GUEST)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("QEMU does not support SEV guest"));
-        goto cleanup;
+        return -1;
     }
 
     if (qemuGetSEVInfoToParams(qemucaps, params, nparams, flags) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-
-    return ret;
+    return 0;
 }
 
 
