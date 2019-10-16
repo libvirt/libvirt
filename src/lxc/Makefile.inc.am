@@ -252,13 +252,13 @@ lxc/lxc_monitor_dispatch.h: $(srcdir)/rpc/gendispatch.pl \
 		$(LXC_MONITOR_PROTOCOL) Makefile.am
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=client \
 	  virLXCMonitor VIR_LXC_MONITOR $(LXC_MONITOR_PROTOCOL) > \
-	  $(srcdir)/lxc/lxc_monitor_dispatch.h
+	  lxc/lxc_monitor_dispatch.h
 
 lxc/lxc_controller_dispatch.h: $(srcdir)/rpc/gendispatch.pl \
 		$(REMOTE_PROTOCOL) Makefile.am
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=server \
 	  virLXCMonitor VIR_LXC_MONITOR $(LXC_MONITOR_PROTOCOL) > \
-	  $(srcdir)/lxc/lxc_controller_dispatch.h
+	  lxc/lxc_controller_dispatch.h
 
 .PHONY: \
 	install-data-lxc \
