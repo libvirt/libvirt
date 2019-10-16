@@ -41,8 +41,8 @@ $(HYPERV_DRIVER_GENERATED): $(HYPERV_GENERATED_STAMP)
 
 $(HYPERV_GENERATED_STAMP): $(srcdir)/hyperv/hyperv_wmi_generator.input \
                             $(srcdir)/hyperv/hyperv_wmi_generator.py
-	$(AM_V_GEN)srcdir=$(srcdir) $(RUNUTF8) $(PYTHON) \
-	  $(srcdir)/hyperv/hyperv_wmi_generator.py \
+	$(AM_V_GEN) $(RUNUTF8) $(PYTHON) \
+	  $(srcdir)/hyperv/hyperv_wmi_generator.py $(srcdir) $(builddir) \
 	  && touch $@
 
 MAINTAINERCLEANFILES += $(HYPERV_DRIVER_GENERATED) $(HYPERV_GENERATED_STAMP)
@@ -53,6 +53,7 @@ libvirt_la_BUILT_LIBADD += libvirt_driver_hyperv.la
 libvirt_driver_hyperv_la_CFLAGS = \
 	$(OPENWSMAN_CFLAGS) \
 	-I$(srcdir)/conf \
+	-I$(builddir)/hyperv \
 	$(AM_CFLAGS) \
 	$(NULL)
 libvirt_driver_hyperv_la_LDFLAGS = $(AM_LDFLAGS)

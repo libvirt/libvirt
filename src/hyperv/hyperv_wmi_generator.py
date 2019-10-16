@@ -454,12 +454,11 @@ def parse_class(block):
 
 
 def main():
-    if "srcdir" in os.environ:
-        input_filename = os.path.join(os.environ["srcdir"], "hyperv/hyperv_wmi_generator.input")
-        output_dirname = os.path.join(os.environ["srcdir"], "hyperv")
-    else:
-        input_filename = os.path.join(os.getcwd(), "hyperv_wmi_generator.input")
-        output_dirname = os.getcwd()
+    if len(sys.argv) != 3:
+        report_error("usage: %s srcdir builddir" % sys.argv[0])
+
+    input_filename = os.path.join(sys.argv[1], "hyperv", "hyperv_wmi_generator.input")
+    output_dirname = os.path.join(sys.argv[2], "hyperv")
 
     classes_typedef = open_and_print(os.path.join(output_dirname, "hyperv_wmi_classes.generated.typedef"))
     classes_header = open_and_print(os.path.join(output_dirname, "hyperv_wmi_classes.generated.h"))
