@@ -599,7 +599,7 @@ virStoragePoolDefFSNamespaceParse(xmlXPathContextPtr ctxt,
         cmdopts->noptions++;
     }
 
-    VIR_STEAL_PTR(*data, cmdopts);
+    *data = g_steal_pointer(&cmdopts);
     ret = 0;
 
  cleanup:

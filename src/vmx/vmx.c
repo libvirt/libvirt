@@ -1486,7 +1486,7 @@ virVMXParseConfig(virVMXContext *ctx,
         cpu->cores = coresPerSocket;
         cpu->threads = 1;
 
-        VIR_STEAL_PTR(def->cpu, cpu);
+        def->cpu = g_steal_pointer(&cpu);
     }
 
     /* vmx:sched.cpu.affinity -> def:cpumask */

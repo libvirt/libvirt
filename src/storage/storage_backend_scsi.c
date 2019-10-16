@@ -335,7 +335,7 @@ createVport(virStoragePoolDefPtr def,
      */
     if (VIR_ALLOC(cbdata) == 0) {
         memcpy(cbdata->pool_uuid, def->uuid, VIR_UUID_BUFLEN);
-        VIR_STEAL_PTR(cbdata->fchost_name, name);
+        cbdata->fchost_name = g_steal_pointer(&name);
 
         if (virThreadCreate(&thread, false, virStoragePoolFCRefreshThread,
                             cbdata) < 0) {

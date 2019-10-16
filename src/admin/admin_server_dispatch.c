@@ -490,7 +490,7 @@ adminDispatchConnectGetLoggingOutputs(virNetServerPtr server G_GNUC_UNUSED,
         return -1;
     }
 
-    VIR_STEAL_PTR(ret->outputs, outputs);
+    ret->outputs = g_steal_pointer(&outputs);
     ret->noutputs = noutputs;
 
     return 0;

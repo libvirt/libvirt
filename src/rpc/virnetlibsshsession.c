@@ -1063,7 +1063,7 @@ virNetLibsshSessionAuthAddPrivKeyAuth(virNetLibsshSessionPtr sess,
         goto error;
     }
 
-    VIR_STEAL_PTR(auth->password, pass);
+    auth->password = g_steal_pointer(&pass);
     auth->filename = file;
     auth->method = VIR_NET_LIBSSH_AUTH_PRIVKEY;
     auth->ssh_flags = SSH_AUTH_METHOD_PUBLICKEY;

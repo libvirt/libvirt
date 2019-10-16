@@ -3696,7 +3696,7 @@ vboxDumpNetwork(vboxDriverPtr data, INetworkAdapter *adapter)
         gVBoxAPI.UINetworkAdapter.GetBridgedInterface(adapter, &utf16);
 
         VBOX_UTF16_TO_UTF8(utf16, &utf8);
-        VIR_STEAL_PTR(net->data.bridge.brname, utf8);
+        net->data.bridge.brname = g_steal_pointer(&utf8);
         VBOX_UTF16_FREE(utf16);
         break;
 
@@ -3706,7 +3706,7 @@ vboxDumpNetwork(vboxDriverPtr data, INetworkAdapter *adapter)
         gVBoxAPI.UINetworkAdapter.GetInternalNetwork(adapter, &utf16);
 
         VBOX_UTF16_TO_UTF8(utf16, &utf8);
-        VIR_STEAL_PTR(net->data.internal.name, utf8);
+        net->data.internal.name = g_steal_pointer(&utf8);
         VBOX_UTF16_FREE(utf16);
         break;
 
@@ -3716,7 +3716,7 @@ vboxDumpNetwork(vboxDriverPtr data, INetworkAdapter *adapter)
         gVBoxAPI.UINetworkAdapter.GetHostOnlyInterface(adapter, &utf16);
 
         VBOX_UTF16_TO_UTF8(utf16, &utf8);
-        VIR_STEAL_PTR(net->data.network.name, utf8);
+        net->data.network.name = g_steal_pointer(&utf8);
         VBOX_UTF16_FREE(utf16);
         break;
 

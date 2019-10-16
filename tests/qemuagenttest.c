@@ -230,8 +230,8 @@ testQemuAgentGetFSInfoCommon(virDomainXMLOptionPtr xmlopt,
                                "   \"disk\": [], \"type\": \"xfs\"}]}") < 0)
                                goto cleanup;
 
-    VIR_STEAL_PTR(*test, ret_test);
-    VIR_STEAL_PTR(*def, ret_def);
+    *test = g_steal_pointer(&ret_test);
+    *def = g_steal_pointer(&ret_def);
     ret = 0;
 
  cleanup:

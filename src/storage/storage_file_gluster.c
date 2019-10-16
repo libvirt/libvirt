@@ -291,7 +291,7 @@ virStorageFileBackendGlusterReadlinkCallback(const char *path,
 
     buf[ret] = '\0';
 
-    VIR_STEAL_PTR(*linkpath, buf);
+    *linkpath = g_steal_pointer(&buf);
 
     return 0;
 }

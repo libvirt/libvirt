@@ -96,7 +96,7 @@ virSecurityManagerNewDriver(virSecurityDriverPtr drv,
     mgr->drv = drv;
     mgr->flags = flags;
     mgr->virtDriver = virtDriver;
-    VIR_STEAL_PTR(mgr->privateData, privateData);
+    mgr->privateData = g_steal_pointer(&privateData);
 
     if (drv->open(mgr) < 0)
         goto error;
@@ -1378,7 +1378,7 @@ virSecurityManagerMetadataLock(virSecurityManagerPtr mgr G_GNUC_UNUSED,
     if (VIR_ALLOC(ret) < 0)
         goto cleanup;
 
-    VIR_STEAL_PTR(ret->fds, fds);
+    ret->fds = g_steal_pointer(&fds);
     ret->nfds = nfds;
     nfds = 0;
 

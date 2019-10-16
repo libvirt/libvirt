@@ -463,7 +463,7 @@ static int virLockManagerLockDaemonNew(virLockManagerPtr lock,
         goto cleanup;
     }
 
-    VIR_STEAL_PTR(lock->privateData, priv);
+    lock->privateData = g_steal_pointer(&priv);
     ret = 0;
  cleanup:
     virLockManagerLockDaemonPrivateFree(priv);
@@ -601,8 +601,8 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
     if (VIR_EXPAND_N(priv->resources, priv->nresources, 1) < 0)
         goto cleanup;
 
-    VIR_STEAL_PTR(priv->resources[priv->nresources-1].lockspace, newLockspace);
-    VIR_STEAL_PTR(priv->resources[priv->nresources-1].name, newName);
+    priv->resources[priv->nresources-1].lockspace = g_steal_pointer(&newLockspace);
+    priv->resources[priv->nresources-1].name = g_steal_pointer(&newName);
 
     if (flags & VIR_LOCK_MANAGER_RESOURCE_SHARED)
         priv->resources[priv->nresources-1].flags |=

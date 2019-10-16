@@ -2862,11 +2862,11 @@ virStorageUtilGlusterExtractPoolSources(const char *host,
 
         if (pooltype == VIR_STORAGE_POOL_NETFS) {
             src->format = VIR_STORAGE_POOL_NETFS_GLUSTERFS;
-            VIR_STEAL_PTR(src->dir, volname);
+            src->dir = g_steal_pointer(&volname);
         } else if (pooltype == VIR_STORAGE_POOL_GLUSTER) {
             if (VIR_STRDUP(src->dir, "/") < 0)
                 goto cleanup;
-            VIR_STEAL_PTR(src->name, volname);
+            src->name = g_steal_pointer(&volname);
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("unsupported gluster lookup"));
@@ -3450,11 +3450,11 @@ storageBackendProbeTarget(virStorageSourcePtr target,
     }
 
     virBitmapFree(target->features);
-    VIR_STEAL_PTR(target->features, meta->features);
+    target->features = g_steal_pointer(&meta->features);
 
     if (meta->compat) {
         VIR_FREE(target->compat);
-        VIR_STEAL_PTR(target->compat, meta->compat);
+        target->compat = g_steal_pointer(&meta->compat);
     }
 
     return 0;

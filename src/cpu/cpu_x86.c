@@ -2218,8 +2218,8 @@ x86Decode(virCPUDefPtr cpu,
     VIR_DEBUG("Using CPU model %s (signatures %s) for CPU with signature %06lx",
               model->name, NULLSTR(sigs), (unsigned long)signature);
 
-    VIR_STEAL_PTR(cpu->model, cpuModel->model);
-    VIR_STEAL_PTR(cpu->features, cpuModel->features);
+    cpu->model = g_steal_pointer(&cpuModel->model);
+    cpu->features = g_steal_pointer(&cpuModel->features);
     cpu->nfeatures = cpuModel->nfeatures;
     cpuModel->nfeatures = 0;
     cpu->nfeatures_max = cpuModel->nfeatures_max;

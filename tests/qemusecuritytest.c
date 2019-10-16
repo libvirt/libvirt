@@ -75,7 +75,7 @@ prepareObjects(virQEMUDriverPtr driver,
                                             0)))
         return -1;
 
-    VIR_STEAL_PTR(*vm_ret, vm);
+    *vm_ret = g_steal_pointer(&vm);
     return 0;
 }
 

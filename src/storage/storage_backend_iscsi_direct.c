@@ -432,7 +432,7 @@ virISCSIDirectUpdateTargets(struct iscsi_context *iscsi,
             goto cleanup;
     }
 
-    VIR_STEAL_PTR(*targets, tmp_targets);
+    *targets = g_steal_pointer(&tmp_targets);
     *ntargets = tmp_ntargets;
     tmp_ntargets = 0;
 
@@ -574,7 +574,7 @@ virStorageBackendISCSIDirectSetConnection(virStoragePoolObjPtr pool,
         goto error;
 
     if (portalRet)
-        VIR_STEAL_PTR(*portalRet, portal);
+        *portalRet = g_steal_pointer(&portal);
 
  cleanup:
     return iscsi;

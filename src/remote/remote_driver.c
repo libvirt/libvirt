@@ -858,8 +858,8 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
 
     switch ((remoteDriverMode)mode) {
     case REMOTE_DRIVER_MODE_LEGACY:
-        VIR_STEAL_PTR(sock_name, legacy_sock_name);
-        VIR_STEAL_PTR(*daemon, legacy_daemon);
+        sock_name = g_steal_pointer(&legacy_sock_name);
+        *daemon = g_steal_pointer(&legacy_daemon);
         break;
 
     case REMOTE_DRIVER_MODE_DIRECT:
@@ -876,8 +876,8 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
             return NULL;
         }
 
-        VIR_STEAL_PTR(sock_name, direct_sock_name);
-        VIR_STEAL_PTR(*daemon, direct_daemon);
+        sock_name = g_steal_pointer(&direct_sock_name);
+        *daemon = g_steal_pointer(&direct_daemon);
         break;
 
     case REMOTE_DRIVER_MODE_AUTO:

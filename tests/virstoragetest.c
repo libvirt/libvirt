@@ -108,7 +108,7 @@ testStorageFileGetMetadata(const char *path,
     if (virStorageFileGetMetadata(def, uid, gid, false) < 0)
         return NULL;
 
-    VIR_STEAL_PTR(ret, def);
+    ret = g_steal_pointer(&def);
     return ret;
 }
 

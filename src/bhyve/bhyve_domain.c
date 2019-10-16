@@ -223,7 +223,7 @@ bhyveDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
         cmd->num_args++;
     }
 
-    VIR_STEAL_PTR(*data, cmd);
+    *data = g_steal_pointer(&cmd);
     ret = 0;
 
  cleanup:

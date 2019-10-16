@@ -387,7 +387,7 @@ testQemuImageCreateLoadDiskXML(const char *name,
     if (virDomainSnapshotDiskDefParseXML(node, ctxt, diskdef,
                                          VIR_DOMAIN_DEF_PARSE_STATUS,
                                          xmlopt) == 0)
-        VIR_STEAL_PTR(ret, diskdef->src);
+        ret = g_steal_pointer(&diskdef->src);
 
     virDomainSnapshotDiskDefFree(diskdef);
     return ret;

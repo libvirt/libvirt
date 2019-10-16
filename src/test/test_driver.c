@@ -1229,7 +1229,7 @@ testParseAuthUsers(testDriverPtr privconn,
         }
         /* This field is optional. */
         privconn->auths[i].password = virXMLPropString(nodes[i], "password");
-        VIR_STEAL_PTR(privconn->auths[i].username, username);
+        privconn->auths[i].username = g_steal_pointer(&username);
     }
 
     return 0;
@@ -2304,7 +2304,7 @@ testDomainSaveImageOpen(testDriverPtr driver,
                                         VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
         goto error;
 
-    VIR_STEAL_PTR(*ret_def, def);
+    *ret_def = g_steal_pointer(&def);
     return fd;
 
  error:
@@ -3114,7 +3114,7 @@ testDomainRenameCallback(virDomainObjPtr privdom,
 
     /* Switch name in domain definition. */
     VIR_FREE(privdom->def->name);
-    VIR_STEAL_PTR(privdom->def->name, new_dom_name);
+    privdom->def->name = g_steal_pointer(&new_dom_name);
 
     event_new = virDomainEventLifecycleNewFromObj(privdom,
                                                   VIR_DOMAIN_EVENT_DEFINED,
@@ -3529,18 +3529,18 @@ testDomainSetInterfaceParameters(virDomainPtr dom,
         VIR_FREE(bandwidth->out);
 
     if (!net->bandwidth) {
-        VIR_STEAL_PTR(net->bandwidth, bandwidth);
+        net->bandwidth = g_steal_pointer(&bandwidth);
     } else {
         if (bandwidth->in) {
             VIR_FREE(net->bandwidth->in);
-            VIR_STEAL_PTR(net->bandwidth->in, bandwidth->in);
+            net->bandwidth->in = g_steal_pointer(&bandwidth->in);
         } else if (inboundSpecified) {
             /* if we got here it means user requested @inbound to be cleared */
             VIR_FREE(net->bandwidth->in);
         }
         if (bandwidth->out) {
             VIR_FREE(net->bandwidth->out);
-            VIR_STEAL_PTR(net->bandwidth->out, bandwidth->out);
+            net->bandwidth->out = g_steal_pointer(&bandwidth->out);
         } else if (outboundSpecified) {
             /* if we got here it means user requested @outbound to be cleared */
             VIR_FREE(net->bandwidth->out);
@@ -4754,7 +4754,7 @@ testDomainGetFSInfo(virDomainPtr dom,
 
             info_ret[0]->ndevAlias = info_ret[1]->ndevAlias = 1;
 
-            VIR_STEAL_PTR(*info, info_ret);
+            *info = g_steal_pointer(&info_ret);
 
             ret = 2;
             goto cleanup;
@@ -4869,7 +4869,7 @@ testDomainGetPerfEvents(virDomainPtr dom,
             goto cleanup;
     }
 
-    VIR_STEAL_PTR(*params, par);
+    *params = g_steal_pointer(&par);
     *nparams = npar;
     npar = 0;
 
@@ -5130,7 +5130,7 @@ testDomainInterfaceAddresses(virDomainPtr dom,
         VIR_APPEND_ELEMENT_INPLACE(ifaces_ret, ifaces_count, iface);
     }
 
-    VIR_STEAL_PTR(*ifaces, ifaces_ret);
+    *ifaces = g_steal_pointer(&ifaces_ret);
     ret = ifaces_count;
 
  cleanup:
@@ -7550,7 +7550,7 @@ testNodeDeviceCreateXML(virConnectPtr conn,
     if (VIR_STRDUP(dev->parentName, def->parent) < 0)
         goto cleanup;
 
-    VIR_STEAL_PTR(ret, dev);
+    ret = g_steal_pointer(&dev);
 
  cleanup:
     virNodeDeviceObjEndAPI(&obj);

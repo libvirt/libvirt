@@ -482,7 +482,7 @@ virStorageBackendLogicalFindPoolSourcesFunc(char **const groups,
         if (!(thisSource = virStoragePoolSourceListNewSource(sourceList)))
             return -1;
 
-        VIR_STEAL_PTR(thisSource->name, vgname);
+        thisSource->name = g_steal_pointer(&vgname);
     }
 
     if (VIR_REALLOC_N(thisSource->devices, thisSource->ndevice + 1) != 0)
@@ -493,7 +493,7 @@ virStorageBackendLogicalFindPoolSourcesFunc(char **const groups,
     thisSource->format = VIR_STORAGE_POOL_LOGICAL_LVM2;
 
     memset(dev, 0, sizeof(*dev));
-    VIR_STEAL_PTR(dev->path, pvname);
+    dev->path = g_steal_pointer(&pvname);
 
     return 0;
 }

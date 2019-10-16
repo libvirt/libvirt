@@ -2023,7 +2023,7 @@ storageVolCreateXML(virStoragePoolPtr pool,
 
     VIR_INFO("Creating volume '%s' in storage pool '%s'",
              newvol->name, def->name);
-    VIR_STEAL_PTR(vol, newvol);
+    vol = g_steal_pointer(&newvol);
     voldef = NULL;
 
  cleanup:
@@ -2215,7 +2215,7 @@ storageVolCreateXMLFrom(virStoragePoolPtr pool,
 
     VIR_INFO("Creating volume '%s' in storage pool '%s'",
              newvol->name, def->name);
-    VIR_STEAL_PTR(vol, newvol);
+    vol = g_steal_pointer(&newvol);
     voldef = NULL;
 
  cleanup:

@@ -194,7 +194,7 @@ networkDnsmasqDefNamespaceParse(xmlXPathContextPtr ctxt,
         goto cleanup;
 
     if (nsdata->noptions > 0)
-        VIR_STEAL_PTR(*data, nsdata);
+        *data = g_steal_pointer(&nsdata);
 
     ret = 0;
 

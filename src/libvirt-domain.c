@@ -3047,7 +3047,7 @@ virDomainMigrateVersion3Full(virDomainPtr domain,
                           VIR_MIGRATE_AUTO_CONVERGE);
 
     VIR_DEBUG("Prepare3 %p flags=0x%x", dconn, destflags);
-    VIR_STEAL_PTR(cookiein, cookieout);
+    cookiein = g_steal_pointer(&cookieout);
     cookieinlen = cookieoutlen;
     cookieoutlen = 0;
     if (useParams) {
@@ -3111,7 +3111,7 @@ virDomainMigrateVersion3Full(virDomainPtr domain,
      */
     VIR_DEBUG("Perform3 %p uri=%s", domain->conn, uri);
     VIR_FREE(cookiein);
-    VIR_STEAL_PTR(cookiein, cookieout);
+    cookiein = g_steal_pointer(&cookieout);
     cookieinlen = cookieoutlen;
     cookieoutlen = 0;
     /* dconnuri not relevant in non-P2P modes, so left NULL here */
@@ -3149,7 +3149,7 @@ virDomainMigrateVersion3Full(virDomainPtr domain,
      */
     VIR_DEBUG("Finish3 %p ret=%d", dconn, ret);
     VIR_FREE(cookiein);
-    VIR_STEAL_PTR(cookiein, cookieout);
+    cookiein = g_steal_pointer(&cookieout);
     cookieinlen = cookieoutlen;
     cookieoutlen = 0;
     if (useParams) {
@@ -3225,7 +3225,7 @@ virDomainMigrateVersion3Full(virDomainPtr domain,
     if (notify_source) {
         VIR_DEBUG("Confirm3 %p ret=%d domain=%p", domain->conn, ret, domain);
         VIR_FREE(cookiein);
-        VIR_STEAL_PTR(cookiein, cookieout);
+        cookiein = g_steal_pointer(&cookieout);
         cookieinlen = cookieoutlen;
         cookieoutlen = 0;
         if (useParams) {

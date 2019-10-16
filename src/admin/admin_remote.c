@@ -451,7 +451,7 @@ remoteAdminConnectGetLoggingOutputs(virAdmConnectPtr conn,
         goto done;
 
     if (outputs)
-        VIR_STEAL_PTR(*outputs, ret.outputs);
+        *outputs = g_steal_pointer(&ret.outputs);
 
     rv = ret.noutputs;
     xdr_free((xdrproc_t) xdr_admin_connect_get_logging_outputs_ret, (char *) &ret);

@@ -1306,7 +1306,7 @@ xenParseVif(char *entry, const char *vif_typename)
         net->bandwidth = bandwidth;
     }
 
-    VIR_STEAL_PTR(ret, net);
+    ret = g_steal_pointer(&net);
 
  cleanup:
     virDomainNetDefFree(net);

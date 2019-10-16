@@ -228,7 +228,7 @@ secretDefineXML(virConnectPtr conn,
     if (!(obj = virSecretObjListAdd(driver->secrets, def,
                                     driver->configDir, &backup)))
         goto cleanup;
-    VIR_STEAL_PTR(objDef, def);
+    objDef = g_steal_pointer(&def);
 
     if (!objDef->isephemeral) {
         if (backup && backup->isephemeral) {
@@ -269,7 +269,7 @@ secretDefineXML(virConnectPtr conn,
      * the backup; otherwise, this is a new secret, thus remove it. */
     if (backup) {
         virSecretObjSetDef(obj, backup);
-        VIR_STEAL_PTR(def, objDef);
+        def = g_steal_pointer(&objDef);
     } else {
         virSecretObjListRemove(driver->secrets, obj);
         virObjectUnref(obj);

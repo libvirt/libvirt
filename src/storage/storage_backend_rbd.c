@@ -129,7 +129,7 @@ virStoragePoolDefRBDNamespaceParse(xmlXPathContextPtr ctxt,
         cmdopts->noptions++;
     }
 
-    VIR_STEAL_PTR(*data, cmdopts);
+    *data = g_steal_pointer(&cmdopts);
     ret = 0;
 
  cleanup:
@@ -617,7 +617,7 @@ virStorageBackendRBDGetVolNames(virStorageBackendRBDStatePtr ptr)
     nnames = nimages;
 
     for (i = 0; i < nimages; i++)
-        VIR_STEAL_PTR(names[i], images[i].name);
+        names[i] = g_steal_pointer(&images[i].name);
 
     return names;
 
@@ -725,7 +725,7 @@ virStorageBackendRBDRefreshPool(virStoragePoolObjPtr pool)
         if (VIR_ALLOC(vol) < 0)
             goto cleanup;
 
-        VIR_STEAL_PTR(vol->name, names[i]);
+        vol->name = g_steal_pointer(&names[i]);
 
         r = volStorageBackendRBDRefreshVolInfo(vol, pool, ptr);
 
