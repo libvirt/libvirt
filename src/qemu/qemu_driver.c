@@ -4607,7 +4607,6 @@ processNicRxFilterChangedEvent(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                const char *devAlias)
 {
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDeviceDef dev;
     virDomainNetDefPtr def;
@@ -4706,7 +4705,6 @@ processNicRxFilterChangedEvent(virQEMUDriverPtr driver,
  cleanup:
     virNetDevRxFilterFree(hostFilter);
     virNetDevRxFilterFree(guestFilter);
-    virObjectUnref(cfg);
 }
 
 
@@ -7483,12 +7481,9 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
     virCommandPtr cmd = NULL;
     char *ret = NULL;
     size_t i;
-    virQEMUDriverConfigPtr cfg;
     virCapsPtr caps = NULL;
 
     virCheckFlags(0, NULL);
-
-    cfg = virQEMUDriverGetConfig(driver);
 
     if (virConnectDomainXMLToNativeEnsureACL(conn) < 0)
         goto cleanup;
@@ -7549,7 +7544,6 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
     virCommandFree(cmd);
     virObjectUnref(vm);
     virObjectUnref(caps);
-    virObjectUnref(cfg);
     return ret;
 }
 
