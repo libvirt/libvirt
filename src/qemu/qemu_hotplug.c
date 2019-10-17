@@ -1545,13 +1545,13 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
     unsigned int flags = 0;
 
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0)
-        goto cleanup;
+        return -1;
 
     if (!cfg->relaxedACS)
         flags |= VIR_HOSTDEV_STRICT_ACS_CHECK;
     if (qemuHostdevPreparePCIDevices(driver, vm->def->name, vm->def->uuid,
                                      &hostdev, 1, priv->qemuCaps, flags) < 0)
-        goto cleanup;
+        return -1;
 
     /* this could have been changed by qemuHostdevPreparePCIDevices */
     backend = hostdev->source.subsys.u.pci.backend;
@@ -1655,7 +1655,6 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
 
     qemuHostdevReAttachPCIDevices(driver, vm->def->name, &hostdev, 1);
 
- cleanup:
     return -1;
 }
 
@@ -3299,23 +3298,19 @@ qemuDomainAttachLease(virQEMUDriverPtr driver,
                       virDomainObjPtr vm,
                       virDomainLeaseDefPtr lease)
 {
-    int ret = -1;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
 
     if (virDomainLeaseInsertPreAlloc(vm->def) < 0)
-        goto cleanup;
+        return -1;
 
     if (virDomainLockLeaseAttach(driver->lockManager, cfg->uri,
                                  vm, lease) < 0) {
         virDomainLeaseInsertPreAlloced(vm->def, NULL);
-        goto cleanup;
+        return -1;
     }
 
     virDomainLeaseInsertPreAlloced(vm->def, lease);
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -3330,7 +3325,7 @@ qemuDomainChangeNetBridge(virDomainObjPtr vm,
 
     if (!oldbridge || !newbridge) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Missing bridge name"));
-        goto cleanup;
+        return ret;
     }
 
     VIR_DEBUG("Change bridge for interface %s: %s -> %s",
@@ -3339,7 +3334,7 @@ qemuDomainChangeNetBridge(virDomainObjPtr vm,
     if (virNetDevExists(newbridge) != 1) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("bridge %s doesn't exist"), newbridge);
-        goto cleanup;
+        return ret;
     }
 
     ret = virNetDevBridgeRemovePort(oldbridge, olddev->ifname);
@@ -3363,12 +3358,10 @@ qemuDomainChangeNetBridge(virDomainObjPtr vm,
                            _("unable to recover former state by adding port "
                              "to bridge %s"), oldbridge);
         }
-        goto cleanup;
+        return ret;
     }
     /* caller will replace entire olddev with newdev in domain nets list */
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
@@ -4016,14 +4009,14 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
         virReportError(VIR_ERR_DEVICE_MISSING,
                        _("cannot find existing graphics device to modify of "
                          "type '%s'"), type);
-        goto cleanup;
+        return ret;
     }
 
     if (dev->nListens != olddev->nListens) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("cannot change the number of listen addresses "
                          "on '%s' graphics"), type);
-        goto cleanup;
+        return ret;
     }
 
     for (i = 0; i < dev->nListens; i++) {
@@ -4034,7 +4027,7 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                            _("cannot change the type of listen address "
                              "on '%s' graphics"), type);
-            goto cleanup;
+            return ret;
         }
 
         switch (newlisten->type) {
@@ -4043,7 +4036,7 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
                 virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                                _("cannot change listen address setting "
                                  "on '%s' graphics"), type);
-                goto cleanup;
+                return ret;
             }
 
             break;
@@ -4053,7 +4046,7 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
                 virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                                _("cannot change listen address setting "
                                  "on '%s' graphics"), type);
-                goto cleanup;
+                return ret;
             }
 
             break;
@@ -4063,7 +4056,7 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
                 virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                                _("cannot change listen socket setting "
                                  "on '%s' graphics"), type);
-                goto cleanup;
+                return ret;
             }
             break;
 
@@ -4081,12 +4074,12 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
              (olddev->data.vnc.port != dev->data.vnc.port))) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("cannot change port settings on vnc graphics"));
-            goto cleanup;
+            return ret;
         }
         if (STRNEQ_NULLABLE(olddev->data.vnc.keymap, dev->data.vnc.keymap)) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("cannot change keymap setting on vnc graphics"));
-            goto cleanup;
+            return ret;
         }
 
         /* If a password lifetime was, or is set, or action if connected has
@@ -4105,7 +4098,7 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
                                                     cfg->vncPassword,
                                                     QEMU_ASYNC_JOB_NONE);
             if (ret < 0)
-                goto cleanup;
+                return ret;
 
             /* Steal the new dev's  char * reference */
             VIR_FREE(olddev->data.vnc.auth.passwd);
@@ -4127,13 +4120,13 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
              (olddev->data.spice.tlsPort != dev->data.spice.tlsPort))) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("cannot change port settings on spice graphics"));
-            goto cleanup;
+            return ret;
         }
         if (STRNEQ_NULLABLE(olddev->data.spice.keymap,
                             dev->data.spice.keymap)) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                             _("cannot change keymap setting on spice graphics"));
-            goto cleanup;
+            return ret;
         }
 
         /* We must reset the password if it has changed but also if:
@@ -4157,7 +4150,7 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
                                                     QEMU_ASYNC_JOB_NONE);
 
             if (ret < 0)
-                goto cleanup;
+                return ret;
 
             /* Steal the new dev's char * reference */
             VIR_FREE(olddev->data.spice.auth.passwd);
@@ -4185,7 +4178,6 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
         break;
     }
 
- cleanup:
     return ret;
 }
 
