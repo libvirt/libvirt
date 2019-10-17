@@ -1155,7 +1155,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     bool charDevPlugged = false;
     bool netdevPlugged = false;
     g_autofree char *netdev_name = NULL;
-    virConnectPtr conn = NULL;
+    g_autoptr(virConnect) conn = NULL;
     virErrorPtr save_err = NULL;
 
     /* preallocate new slot for device */
@@ -1497,7 +1497,6 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     }
     VIR_FREE(vhostfd);
     VIR_FREE(vhostfdName);
-    virObjectUnref(conn);
     virDomainCCWAddressSetFree(ccwaddrs);
     VIR_FORCE_CLOSE(slirpfd);
 
@@ -3475,7 +3474,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
     bool needVlanUpdate = false;
     int ret = -1;
     int changeidx = -1;
-    virConnectPtr conn = NULL;
+    g_autoptr(virConnect) conn = NULL;
     virErrorPtr save_err = NULL;
 
     if ((changeidx = virDomainNetFindIdx(vm->def, newdev)) < 0)
@@ -3917,7 +3916,6 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
      */
     if (newdev && newdev->type == VIR_DOMAIN_NET_TYPE_NETWORK && conn)
         virDomainNetReleaseActualDevice(conn, vm->def, newdev);
-    virObjectUnref(conn);
     virErrorRestore(&save_err);
 
     return ret;
@@ -4524,13 +4522,11 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
 
     if (net) {
         if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
-            virConnectPtr conn = virGetConnectNetwork();
-            if (conn) {
+            g_autoptr(virConnect) conn = virGetConnectNetwork();
+            if (conn)
                 virDomainNetReleaseActualDevice(conn, vm->def, net);
-                virObjectUnref(conn);
-            } else {
+            else
                 VIR_WARN("Unable to release network device '%s'", NULLSTR(net->ifname));
-            }
         }
         virDomainNetDefFree(net);
     }
@@ -4630,13 +4626,11 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
     qemuDomainNetDeviceVportRemove(net);
 
     if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
-        virConnectPtr conn = virGetConnectNetwork();
-        if (conn) {
+        g_autoptr(virConnect) conn = virGetConnectNetwork();
+        if (conn)
             virDomainNetReleaseActualDevice(conn, vm->def, net);
-            virObjectUnref(conn);
-        } else {
+        else
             VIR_WARN("Unable to release network device '%s'", NULLSTR(net->ifname));
-        }
     }
     virDomainNetDefFree(net);
     return 0;
