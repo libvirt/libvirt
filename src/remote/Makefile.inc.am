@@ -179,6 +179,10 @@ libvirt_driver_remote_la_CFLAGS = \
 libvirt_driver_remote_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_remote_la_SOURCES = $(REMOTE_DRIVER_SOURCES)
 
+if WITH_DTRACE_PROBES
+nodist_libvirt_driver_remote_la_SOURCES = libvirt_probes.h
+endif WITH_DTRACE_PROBES
+
 if WITH_SASL
 libvirt_driver_remote_la_CFLAGS += \
 	$(SASL_CFLAGS) \

@@ -529,9 +529,6 @@ if WITH_DTRACE_PROBES
 libvirt_la_BUILT_LIBADD += libvirt_probes.lo
 libvirt_la_DEPENDENCIES += libvirt_probes.lo libvirt_probes.o
 nodist_libvirt_la_SOURCES = libvirt_probes.h
-if WITH_REMOTE
-nodist_libvirt_driver_remote_la_SOURCES = libvirt_probes.h
-endif WITH_REMOTE
 DTRACE2SYSTEMTAP_FLAGS = --with-modules
 
 BUILT_SOURCES += libvirt_probes.h libvirt_probes.stp libvirt_functions.stp
