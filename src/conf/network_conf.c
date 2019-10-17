@@ -1682,9 +1682,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt,
      */
     ipv6nogwStr = virXPathString("string(./@ipv6)", ctxt);
     if (ipv6nogwStr) {
-        if (STREQ(ipv6nogwStr, "yes")) {
-            def->ipv6nogw = true;
-        } else if (STRNEQ(ipv6nogwStr, "no")) {
+        if (virStringParseYesNo(ipv6nogwStr, &def->ipv6nogw) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("Invalid ipv6 setting '%s' in network '%s'"),
                            ipv6nogwStr, def->name);
