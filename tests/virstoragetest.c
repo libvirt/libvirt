@@ -85,7 +85,6 @@ testStorageFileGetMetadata(const char *path,
                            uid_t uid, gid_t gid)
 {
     struct stat st;
-    virStorageSourcePtr ret = NULL;
     g_autoptr(virStorageSource) def = NULL;
 
     if (!(def = virStorageSourceNew()))
@@ -107,8 +106,7 @@ testStorageFileGetMetadata(const char *path,
     if (virStorageFileGetMetadata(def, uid, gid, false) < 0)
         return NULL;
 
-    ret = g_steal_pointer(&def);
-    return ret;
+    return g_steal_pointer(&def);
 }
 
 static int

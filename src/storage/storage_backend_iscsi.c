@@ -227,7 +227,6 @@ virStorageBackendISCSICheckPool(virStoragePoolObjPtr pool,
                                 bool *isActive)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
-    int ret = -1;
     g_autofree char *session = NULL;
 
     *isActive = false;
@@ -253,9 +252,7 @@ virStorageBackendISCSICheckPool(virStoragePoolObjPtr pool,
 
     if ((session = virStorageBackendISCSISession(pool, true)))
         *isActive = true;
-    ret = 0;
-
-    return ret;
+    return 0;
 }
 
 

@@ -3165,7 +3165,6 @@ phypDomainLookupByName(virConnectPtr conn, const char *lpar_name)
 {
     phyp_driverPtr phyp_driver = conn->privateData;
     LIBSSH2_SESSION *session = phyp_driver->session;
-    virDomainPtr dom = NULL;
     int lpar_id = 0;
     char *managed_system = phyp_driver->managed_system;
     unsigned char lpar_uuid[VIR_UUID_BUFLEN];
@@ -3177,9 +3176,7 @@ phypDomainLookupByName(virConnectPtr conn, const char *lpar_name)
     if (phypGetLparUUID(lpar_uuid, lpar_id, conn) == -1)
         return NULL;
 
-    dom = virGetDomain(conn, lpar_name, lpar_uuid, lpar_id);
-
-    return dom;
+    return virGetDomain(conn, lpar_name, lpar_uuid, lpar_id);
 }
 
 static virDomainPtr

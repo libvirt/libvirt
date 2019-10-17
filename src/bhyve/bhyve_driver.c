@@ -630,30 +630,24 @@ static int
 bhyveConnectListDomains(virConnectPtr conn, int *ids, int maxids)
 {
     bhyveConnPtr privconn = conn->privateData;
-    int n;
 
     if (virConnectListDomainsEnsureACL(conn) < 0)
         return -1;
 
-    n = virDomainObjListGetActiveIDs(privconn->domains, ids, maxids,
-                                     virConnectListDomainsCheckACL, conn);
-
-    return n;
+    return virDomainObjListGetActiveIDs(privconn->domains, ids, maxids,
+                                        virConnectListDomainsCheckACL, conn);
 }
 
 static int
 bhyveConnectNumOfDomains(virConnectPtr conn)
 {
     bhyveConnPtr privconn = conn->privateData;
-    int count;
 
     if (virConnectNumOfDomainsEnsureACL(conn) < 0)
         return -1;
 
-    count = virDomainObjListNumOfDomains(privconn->domains, true,
-                                         virConnectNumOfDomainsCheckACL, conn);
-
-    return count;
+    return virDomainObjListNumOfDomains(privconn->domains, true,
+                                        virConnectNumOfDomainsCheckACL, conn);
 }
 
 static int
@@ -661,31 +655,28 @@ bhyveConnectListDefinedDomains(virConnectPtr conn, char **const names,
                                int maxnames)
 {
     bhyveConnPtr privconn = conn->privateData;
-    int n;
 
     if (virConnectListDefinedDomainsEnsureACL(conn) < 0)
         return -1;
 
     memset(names, 0, sizeof(*names) * maxnames);
-    n = virDomainObjListGetInactiveNames(privconn->domains, names,
-                                         maxnames, virConnectListDefinedDomainsCheckACL, conn);
-
-    return n;
+    return virDomainObjListGetInactiveNames(privconn->domains, names,
+                                            maxnames,
+                                            virConnectListDefinedDomainsCheckACL,
+                                            conn);
 }
 
 static int
 bhyveConnectNumOfDefinedDomains(virConnectPtr conn)
 {
     bhyveConnPtr privconn = conn->privateData;
-    int count;
 
     if (virConnectNumOfDefinedDomainsEnsureACL(conn) < 0)
         return -1;
 
-    count = virDomainObjListNumOfDomains(privconn->domains, false,
-                                         virConnectNumOfDefinedDomainsCheckACL, conn);
-
-    return count;
+    return virDomainObjListNumOfDomains(privconn->domains, false,
+                                        virConnectNumOfDefinedDomainsCheckACL,
+                                        conn);
 }
 
 static char *
@@ -771,17 +762,14 @@ bhyveConnectListAllDomains(virConnectPtr conn,
                            unsigned int flags)
 {
     bhyveConnPtr privconn = conn->privateData;
-    int ret = -1;
 
     virCheckFlags(VIR_CONNECT_LIST_DOMAINS_FILTERS_ALL, -1);
 
     if (virConnectListAllDomainsEnsureACL(conn) < 0)
         return -1;
 
-    ret = virDomainObjListExport(privconn->domains, conn, domains,
-                                 virConnectListAllDomainsCheckACL, flags);
-
-    return ret;
+    return virDomainObjListExport(privconn->domains, conn, domains,
+                                  virConnectListAllDomainsCheckACL, flags);
 }
 
 static virDomainPtr

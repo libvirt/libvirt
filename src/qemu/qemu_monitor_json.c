@@ -9325,7 +9325,6 @@ qemuMonitorJSONGetJobInfoOne(virJSONValuePtr data)
     const char *errmsg = virJSONValueObjectGetString(data, "error");
     int tmp;
     g_autoptr(qemuMonitorJobInfo) job = NULL;
-    qemuMonitorJobInfoPtr ret = NULL;
 
     if (VIR_ALLOC(job) < 0)
         return NULL;
@@ -9343,8 +9342,7 @@ qemuMonitorJSONGetJobInfoOne(virJSONValuePtr data)
     job->id = g_strdup(id);
     job->error = g_strdup(errmsg);
 
-    ret = g_steal_pointer(&job);
-    return ret;
+    return g_steal_pointer(&job);
 }
 
 

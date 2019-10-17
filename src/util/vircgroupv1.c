@@ -401,11 +401,7 @@ virCgroupV1ValidatePlacement(virCgroupPtr group,
 static char *
 virCgroupV1StealPlacement(virCgroupPtr group)
 {
-    char *ret = NULL;
-
-    ret = g_steal_pointer(&group->legacy[VIR_CGROUP_CONTROLLER_SYSTEMD].placement);
-
-    return ret;
+    return g_steal_pointer(&group->legacy[VIR_CGROUP_CONTROLLER_SYSTEMD].placement);
 }
 
 

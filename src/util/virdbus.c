@@ -1177,15 +1177,12 @@ virDBusMessageEncodeArgs(DBusMessage* msg,
                          va_list args)
 {
     DBusMessageIter iter;
-    int ret = -1;
 
     memset(&iter, 0, sizeof(iter));
 
     dbus_message_iter_init_append(msg, &iter);
 
-    ret = virDBusMessageIterEncode(&iter, types, args);
-
-    return ret;
+    return virDBusMessageIterEncode(&iter, types, args);
 }
 
 

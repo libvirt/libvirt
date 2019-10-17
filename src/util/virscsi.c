@@ -184,7 +184,6 @@ virSCSIDeviceNew(const char *sysfs_prefix,
                  bool shareable)
 {
     g_autoptr(virSCSIDevice) dev = NULL;
-    virSCSIDevicePtr ret = NULL;
     g_autofree char *sg = NULL;
     g_autofree char *vendor_path = NULL;
     g_autofree char *model_path = NULL;
@@ -238,8 +237,7 @@ virSCSIDeviceNew(const char *sysfs_prefix,
     if (virAsprintf(&dev->id, "%s:%s", vendor, model) < 0)
         return NULL;
 
-    ret = g_steal_pointer(&dev);
-    return ret;
+    return g_steal_pointer(&dev);
 }
 
 static void

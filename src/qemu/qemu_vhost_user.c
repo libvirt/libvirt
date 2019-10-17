@@ -184,7 +184,6 @@ qemuVhostUserParse(const char *path)
     g_autofree char *cont = NULL;
     g_autoptr(virJSONValue) doc = NULL;
     g_autoptr(qemuVhostUser) vu = NULL;
-    qemuVhostUserPtr ret = NULL;
 
     if (virFileReadAll(path, DOCUMENT_SIZE, &cont) < 0)
         return NULL;
@@ -205,8 +204,7 @@ qemuVhostUserParse(const char *path)
     if (qemuVhostUserBinaryParse(path, doc, vu) < 0)
         return NULL;
 
-    ret = g_steal_pointer(&vu);
-    return ret;
+    return g_steal_pointer(&vu);
 }
 
 

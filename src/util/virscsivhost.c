@@ -249,7 +249,6 @@ virSCSIVHostDevicePtr
 virSCSIVHostDeviceNew(const char *name)
 {
     g_autoptr(virSCSIVHostDevice) dev = NULL;
-    virSCSIVHostDevicePtr ret = NULL;
 
     if (VIR_ALLOC(dev) < 0)
         return NULL;
@@ -262,9 +261,7 @@ virSCSIVHostDeviceNew(const char *name)
 
     VIR_DEBUG("%s: initialized", dev->name);
 
-    ret = g_steal_pointer(&dev);
-
-    return ret;
+    return g_steal_pointer(&dev);
 }
 
 

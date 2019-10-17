@@ -8322,7 +8322,6 @@ static virNetDevIPAddrPtr
 virDomainNetIPParseXML(xmlNodePtr node)
 {
     /* Parse the prefix in every case */
-    virNetDevIPAddrPtr ret = NULL;
     unsigned int prefixValue = 0;
     int family = AF_UNSPEC;
     g_autofree virNetDevIPAddrPtr ip = NULL;
@@ -8374,8 +8373,7 @@ virDomainNetIPParseXML(xmlNodePtr node)
         return NULL;
     }
 
-    ret = g_steal_pointer(&ip);
-    return ret;
+    return g_steal_pointer(&ip);
 }
 
 
@@ -9239,7 +9237,6 @@ virDomainStorageSourceParseBase(const char *type,
                                 const char *index)
 {
     g_autoptr(virStorageSource) src = NULL;
-    virStorageSourcePtr ret = NULL;
 
     if (!(src = virStorageSourceNew()))
         return NULL;
@@ -9267,8 +9264,7 @@ virDomainStorageSourceParseBase(const char *type,
         return NULL;
     }
 
-    ret = g_steal_pointer(&src);
-    return ret;
+    return g_steal_pointer(&src);
 }
 
 
@@ -18368,7 +18364,6 @@ virDomainIOThreadPinDefParseXML(xmlNodePtr node,
 static virBitmapPtr
 virDomainEmulatorPinDefParseXML(xmlNodePtr node)
 {
-    virBitmapPtr ret = NULL;
     g_autofree char *tmp = NULL;
     g_autoptr(virBitmap) def = NULL;
 
@@ -18387,8 +18382,7 @@ virDomainEmulatorPinDefParseXML(xmlNodePtr node)
         return NULL;
     }
 
-    ret = g_steal_pointer(&def);
-    return ret;
+    return g_steal_pointer(&def);
 }
 
 

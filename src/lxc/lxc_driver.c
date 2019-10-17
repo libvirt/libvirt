@@ -348,59 +348,49 @@ static int lxcDomainIsUpdated(virDomainPtr dom)
 static int lxcConnectListDomains(virConnectPtr conn, int *ids, int nids)
 {
     virLXCDriverPtr driver = conn->privateData;
-    int n;
 
     if (virConnectListDomainsEnsureACL(conn) < 0)
         return -1;
 
-    n = virDomainObjListGetActiveIDs(driver->domains, ids, nids,
-                                     virConnectListDomainsCheckACL, conn);
-
-    return n;
+    return virDomainObjListGetActiveIDs(driver->domains, ids, nids,
+                                        virConnectListDomainsCheckACL, conn);
 }
 
 static int lxcConnectNumOfDomains(virConnectPtr conn)
 {
     virLXCDriverPtr driver = conn->privateData;
-    int n;
 
     if (virConnectNumOfDomainsEnsureACL(conn) < 0)
         return -1;
 
-    n = virDomainObjListNumOfDomains(driver->domains, true,
-                                     virConnectNumOfDomainsCheckACL, conn);
-
-    return n;
+    return virDomainObjListNumOfDomains(driver->domains, true,
+                                        virConnectNumOfDomainsCheckACL, conn);
 }
 
 static int lxcConnectListDefinedDomains(virConnectPtr conn,
                                         char **const names, int nnames)
 {
     virLXCDriverPtr driver = conn->privateData;
-    int n;
 
     if (virConnectListDefinedDomainsEnsureACL(conn) < 0)
         return -1;
 
-    n = virDomainObjListGetInactiveNames(driver->domains, names, nnames,
-                                         virConnectListDefinedDomainsCheckACL, conn);
-
-    return n;
+    return virDomainObjListGetInactiveNames(driver->domains, names, nnames,
+                                            virConnectListDefinedDomainsCheckACL,
+                                            conn);
 }
 
 
 static int lxcConnectNumOfDefinedDomains(virConnectPtr conn)
 {
     virLXCDriverPtr driver = conn->privateData;
-    int n;
 
     if (virConnectNumOfDefinedDomainsEnsureACL(conn) < 0)
         return -1;
 
-    n = virDomainObjListNumOfDomains(driver->domains, false,
-                                     virConnectNumOfDefinedDomainsCheckACL, conn);
-
-    return n;
+    return virDomainObjListNumOfDomains(driver->domains, false,
+                                        virConnectNumOfDefinedDomainsCheckACL,
+                                        conn);
 }
 
 
@@ -3254,16 +3244,14 @@ lxcConnectListAllDomains(virConnectPtr conn,
                   unsigned int flags)
 {
     virLXCDriverPtr driver = conn->privateData;
-    int ret = -1;
 
     virCheckFlags(VIR_CONNECT_LIST_DOMAINS_FILTERS_ALL, -1);
 
     if (virConnectListAllDomainsEnsureACL(conn) < 0)
         return -1;
 
-    ret = virDomainObjListExport(driver->domains, conn, domains,
-                                 virConnectListAllDomainsCheckACL, flags);
-    return ret;
+    return virDomainObjListExport(driver->domains, conn, domains,
+                                  virConnectListAllDomainsCheckACL, flags);
 }
 
 

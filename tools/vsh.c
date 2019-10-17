@@ -2898,10 +2898,7 @@ vshReadlineCompletion(const char *text,
                       int start G_GNUC_UNUSED,
                       int end G_GNUC_UNUSED)
 {
-    char **matches = (char **) NULL;
-
-    matches = rl_completion_matches(text, vshReadlineParse);
-    return matches;
+    return rl_completion_matches(text, vshReadlineParse);
 }
 
 

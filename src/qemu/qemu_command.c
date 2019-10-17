@@ -698,20 +698,16 @@ int
 qemuBuildSecretInfoProps(qemuDomainSecretInfoPtr secinfo,
                          virJSONValuePtr *propsret)
 {
-    int ret = -1;
     g_autofree char *keyid = NULL;
 
     if (!(keyid = qemuDomainGetMasterKeyAlias()))
         return -1;
 
-    ret = qemuMonitorCreateObjectProps(propsret,
-                                       "secret", secinfo->s.aes.alias,
-                                       "s:data", secinfo->s.aes.ciphertext,
-                                       "s:keyid", keyid,
-                                       "s:iv", secinfo->s.aes.iv,
-                                       "s:format", "base64", NULL);
-
-    return ret;
+    return qemuMonitorCreateObjectProps(propsret, "secret",
+                                        secinfo->s.aes.alias, "s:data",
+                                        secinfo->s.aes.ciphertext, "s:keyid",
+                                        keyid, "s:iv", secinfo->s.aes.iv,
+                                        "s:format", "base64", NULL);
 }
 
 
@@ -10743,7 +10739,6 @@ qemuBuildStorageSourceAttachPrepareDrive(virDomainDiskDefPtr disk,
                                          virQEMUCapsPtr qemuCaps)
 {
     g_autoptr(qemuBlockStorageSourceAttachData) data = NULL;
-    qemuBlockStorageSourceAttachDataPtr ret = NULL;
 
     if (VIR_ALLOC(data) < 0)
         return NULL;
@@ -10752,9 +10747,7 @@ qemuBuildStorageSourceAttachPrepareDrive(virDomainDiskDefPtr disk,
         !(data->driveAlias = qemuAliasDiskDriveFromDisk(disk)))
         return NULL;
 
-    ret = g_steal_pointer(&data);
-
-    return ret;
+    return g_steal_pointer(&data);
 }
 
 

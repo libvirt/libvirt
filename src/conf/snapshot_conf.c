@@ -113,13 +113,10 @@ virDomainSnapshotDiskDefFree(virDomainSnapshotDiskDefPtr disk)
 virDomainSnapshotDefPtr
 virDomainSnapshotDefNew(void)
 {
-    virDomainSnapshotDefPtr def;
-
     if (virDomainSnapshotInitialize() < 0)
         return NULL;
 
-    def = virObjectNew(virDomainSnapshotDefClass);
-    return def;
+    return virObjectNew(virDomainSnapshotDefClass);
 }
 
 static void

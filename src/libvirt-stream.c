@@ -520,11 +520,8 @@ virStreamInData(virStreamPtr stream,
     virCheckNonNullArgReturn(data, -1);
     virCheckNonNullArgReturn(length, -1);
 
-    if (stream->driver->streamInData) {
-        int ret;
-        ret = (stream->driver->streamInData)(stream, data, length);
-        return ret;
-    }
+    if (stream->driver->streamInData)
+        return (stream->driver->streamInData)(stream, data, length);
 
     virReportUnsupportedError();
     return -1;

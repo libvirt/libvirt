@@ -616,7 +616,6 @@ qemuFirmwareParse(const char *path)
     g_autofree char *cont = NULL;
     g_autoptr(virJSONValue) doc = NULL;
     g_autoptr(qemuFirmware) fw = NULL;
-    qemuFirmwarePtr ret = NULL;
 
     if (virFileReadAll(path, DOCUMENT_SIZE, &cont) < 0)
         return NULL;
@@ -643,8 +642,7 @@ qemuFirmwareParse(const char *path)
     if (qemuFirmwareFeatureParse(path, doc, fw) < 0)
         return NULL;
 
-    ret = g_steal_pointer(&fw);
-    return ret;
+    return g_steal_pointer(&fw);
 }
 
 

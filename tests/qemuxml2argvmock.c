@@ -198,10 +198,7 @@ virNetDevRunEthernetScript(const char *ifname G_GNUC_UNUSED,
 char *
 virHostGetDRMRenderNode(void)
 {
-    char *dst = NULL;
-
-    dst = g_strdup("/dev/dri/foo");
-    return dst;
+    return g_strdup("/dev/dri/foo");
 }
 
 static void (*real_virCommandPassFD)(virCommandPtr cmd, int fd, unsigned int flags);

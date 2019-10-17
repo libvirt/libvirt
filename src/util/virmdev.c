@@ -140,7 +140,6 @@ virMediatedDeviceCheckModel(virMediatedDevicePtr dev,
 virMediatedDevicePtr
 virMediatedDeviceNew(const char *uuidstr, virMediatedDeviceModelType model)
 {
-    virMediatedDevicePtr ret = NULL;
     g_autoptr(virMediatedDevice) dev = NULL;
     g_autofree char *sysfspath = NULL;
 
@@ -165,9 +164,7 @@ virMediatedDeviceNew(const char *uuidstr, virMediatedDeviceModelType model)
         return NULL;
 
     dev->model = model;
-    ret = g_steal_pointer(&dev);
-
-    return ret;
+    return g_steal_pointer(&dev);
 }
 
 #else

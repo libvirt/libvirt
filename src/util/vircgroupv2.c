@@ -243,11 +243,7 @@ virCgroupV2ValidatePlacement(virCgroupPtr group,
 static char *
 virCgroupV2StealPlacement(virCgroupPtr group)
 {
-    char *ret;
-
-    ret = g_steal_pointer(&group->unified.placement);
-
-    return ret;
+    return g_steal_pointer(&group->unified.placement);
 }
 
 

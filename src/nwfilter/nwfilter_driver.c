@@ -704,19 +704,13 @@ nwfilterConnectListAllNWFilterBindings(virConnectPtr conn,
                                        virNWFilterBindingPtr **bindings,
                                        unsigned int flags)
 {
-    int ret;
-
     virCheckFlags(0, -1);
 
     if (virConnectListAllNWFilterBindingsEnsureACL(conn) < 0)
         return -1;
 
-    ret = virNWFilterBindingObjListExport(driver->bindings,
-                                          conn,
-                                          bindings,
-                                          virConnectListAllNWFilterBindingsCheckACL);
-
-    return ret;
+    return virNWFilterBindingObjListExport(driver->bindings, conn, bindings,
+                                           virConnectListAllNWFilterBindingsCheckACL);
 }
 
 

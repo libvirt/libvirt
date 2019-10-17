@@ -846,7 +846,6 @@ virStoragePoolDefPtr
 virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
 {
     virStoragePoolOptionsPtr options;
-    virStoragePoolDefPtr ret = NULL;
     xmlNodePtr source_node;
     g_autoptr(virStoragePoolDef) def = NULL;
     g_autofree char *type = NULL;
@@ -995,8 +994,7 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
             return NULL;
     }
 
-    ret = g_steal_pointer(&def);
-    return ret;
+    return g_steal_pointer(&def);
 }
 
 
@@ -1270,7 +1268,6 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
                          xmlXPathContextPtr ctxt,
                          unsigned int flags)
 {
-    virStorageVolDefPtr ret = NULL;
     virStorageVolOptionsPtr options;
     xmlNodePtr node;
     size_t i;
@@ -1430,8 +1427,7 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
         VIR_FREE(nodes);
     }
 
-    ret = g_steal_pointer(&def);
-    return ret;
+    return g_steal_pointer(&def);
 }
 
 
@@ -1689,14 +1685,11 @@ virStoragePoolSaveXML(const char *path,
                       const char *xml)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-    int ret = -1;
 
     virUUIDFormat(def->uuid, uuidstr);
-    ret = virXMLSaveFile(path,
-                         virXMLPickShellSafeComment(def->name, uuidstr),
-                         "pool-edit", xml);
-
-    return ret;
+    return virXMLSaveFile(path,
+                          virXMLPickShellSafeComment(def->name, uuidstr),
+                          "pool-edit", xml);
 }
 
 

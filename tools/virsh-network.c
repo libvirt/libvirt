@@ -1384,8 +1384,6 @@ static const vshCmdOptDef opts_network_dhcp_leases[] = {
 static int
 virshNetworkDHCPLeaseSorter(const void *a, const void *b)
 {
-    int rv = -1;
-
     virNetworkDHCPLeasePtr *lease1 = (virNetworkDHCPLeasePtr *) a;
     virNetworkDHCPLeasePtr *lease2 = (virNetworkDHCPLeasePtr *) b;
 
@@ -1395,8 +1393,7 @@ virshNetworkDHCPLeaseSorter(const void *a, const void *b)
     if (!*lease1)
         return *lease2 != NULL;
 
-    rv = vshStrcasecmp((*lease1)->mac, (*lease2)->mac);
-    return rv;
+    return vshStrcasecmp((*lease1)->mac, (*lease2)->mac);
 }
 
 static bool

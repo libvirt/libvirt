@@ -1711,29 +1711,23 @@ static char *qemuConnectGetHostname(virConnectPtr conn)
 static int qemuConnectListDomains(virConnectPtr conn, int *ids, int nids)
 {
     virQEMUDriverPtr driver = conn->privateData;
-    int n;
 
     if (virConnectListDomainsEnsureACL(conn) < 0)
         return -1;
 
-    n = virDomainObjListGetActiveIDs(driver->domains, ids, nids,
-                                     virConnectListDomainsCheckACL, conn);
-
-    return n;
+    return virDomainObjListGetActiveIDs(driver->domains, ids, nids,
+                                        virConnectListDomainsCheckACL, conn);
 }
 
 static int qemuConnectNumOfDomains(virConnectPtr conn)
 {
     virQEMUDriverPtr driver = conn->privateData;
-    int n;
 
     if (virConnectNumOfDomainsEnsureACL(conn) < 0)
         return -1;
 
-    n = virDomainObjListNumOfDomains(driver->domains, true,
-                                     virConnectNumOfDomainsCheckACL, conn);
-
-    return n;
+    return virDomainObjListNumOfDomains(driver->domains, true,
+                                        virConnectNumOfDomainsCheckACL, conn);
 }
 
 
@@ -4079,7 +4073,6 @@ static char *
 getAutoDumpPath(virQEMUDriverPtr driver,
                 virDomainObjPtr vm)
 {
-    char *dumpfile = NULL;
     g_autofree char *domname = virDomainDefGetShortName(vm->def);
     char timestr[100];
     struct tm time_info;
@@ -4094,9 +4087,7 @@ getAutoDumpPath(virQEMUDriverPtr driver,
     localtime_r(&curtime, &time_info);
     strftime(timestr, sizeof(timestr), "%Y-%m-%d-%H:%M:%S", &time_info);
 
-    dumpfile = g_strdup_printf("%s/%s-%s", cfg->autoDumpPath, domname, timestr);
-
-    return dumpfile;
+    return g_strdup_printf("%s/%s-%s", cfg->autoDumpPath, domname, timestr);
 }
 
 static void

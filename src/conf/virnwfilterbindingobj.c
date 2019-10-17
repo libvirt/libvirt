@@ -91,10 +91,7 @@ virNWFilterBindingObjSetDef(virNWFilterBindingObjPtr obj,
 virNWFilterBindingDefPtr
 virNWFilterBindingObjStealDef(virNWFilterBindingObjPtr obj)
 {
-    virNWFilterBindingDefPtr def;
-
-    def = g_steal_pointer(&obj->def);
-    return def;
+    return g_steal_pointer(&obj->def);
 }
 
 

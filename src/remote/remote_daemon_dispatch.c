@@ -7492,10 +7492,7 @@ get_nonnull_storage_pool(virConnectPtr conn, remote_nonnull_storage_pool pool)
 static virStorageVolPtr
 get_nonnull_storage_vol(virConnectPtr conn, remote_nonnull_storage_vol vol)
 {
-    virStorageVolPtr ret;
-    ret = virGetStorageVol(conn, vol.pool, vol.name, vol.key,
-                           NULL, NULL);
-    return ret;
+    return virGetStorageVol(conn, vol.pool, vol.name, vol.key, NULL, NULL);
 }
 
 static virSecretPtr

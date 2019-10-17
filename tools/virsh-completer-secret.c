@@ -73,7 +73,6 @@ virshSecretEventNameCompleter(vshControl *ctl G_GNUC_UNUSED,
                               unsigned int flags)
 {
     size_t i;
-    char **ret = NULL;
     VIR_AUTOSTRINGLIST tmp = NULL;
 
     virCheckFlags(0, NULL);
@@ -84,6 +83,5 @@ virshSecretEventNameCompleter(vshControl *ctl G_GNUC_UNUSED,
     for (i = 0; i < VIR_SECRET_EVENT_ID_LAST; i++)
         tmp[i] = g_strdup(virshSecretEventCallbacks[i].name);
 
-    ret = g_steal_pointer(&tmp);
-    return ret;
+    return g_steal_pointer(&tmp);
 }

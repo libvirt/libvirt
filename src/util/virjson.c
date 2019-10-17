@@ -2138,7 +2138,6 @@ virJSONValuePtr
 virJSONValueObjectDeflatten(virJSONValuePtr json)
 {
     g_autoptr(virJSONValue) deflattened = NULL;
-    virJSONValuePtr ret = NULL;
 
     if (!(deflattened = virJSONValueNewObject()))
         return NULL;
@@ -2148,7 +2147,5 @@ virJSONValueObjectDeflatten(virJSONValuePtr json)
                                           deflattened) < 0)
         return NULL;
 
-    ret = g_steal_pointer(&deflattened);
-
-    return ret;
+    return g_steal_pointer(&deflattened);
 }

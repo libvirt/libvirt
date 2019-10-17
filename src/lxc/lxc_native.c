@@ -703,7 +703,6 @@ static int
 lxcConvertNetworkSettings(virDomainDefPtr def, virConfPtr properties)
 {
     int status;
-    int result = -1;
     size_t i;
     lxcNetworkParseData data = {def, NULL, NULL, NULL, NULL,
                                 NULL, NULL, NULL, NULL, 0,
@@ -727,9 +726,7 @@ lxcConvertNetworkSettings(virDomainDefPtr def, virConfPtr properties)
         /* When no network type is provided LXC only adds loopback */
         def->features[VIR_DOMAIN_FEATURE_PRIVNET] = VIR_TRISTATE_SWITCH_ON;
     }
-    result = 0;
-
-    return result;
+    return 0;
 
  error:
     for (i = 0; i < data.nips; i++)

@@ -1009,30 +1009,24 @@ static int
 libxlConnectListDomains(virConnectPtr conn, int *ids, int nids)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
-    int n;
 
     if (virConnectListDomainsEnsureACL(conn) < 0)
         return -1;
 
-    n = virDomainObjListGetActiveIDs(driver->domains, ids, nids,
-                                     virConnectListDomainsCheckACL, conn);
-
-    return n;
+    return virDomainObjListGetActiveIDs(driver->domains, ids, nids,
+                                        virConnectListDomainsCheckACL, conn);
 }
 
 static int
 libxlConnectNumOfDomains(virConnectPtr conn)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
-    int n;
 
     if (virConnectNumOfDomainsEnsureACL(conn) < 0)
         return -1;
 
-    n = virDomainObjListNumOfDomains(driver->domains, true,
-                                     virConnectNumOfDomainsCheckACL, conn);
-
-    return n;
+    return virDomainObjListNumOfDomains(driver->domains, true,
+                                        virConnectNumOfDomainsCheckACL, conn);
 }
 
 static virDomainPtr
@@ -2776,29 +2770,26 @@ libxlConnectListDefinedDomains(virConnectPtr conn,
                                char **const names, int nnames)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
-    int n;
 
     if (virConnectListDefinedDomainsEnsureACL(conn) < 0)
         return -1;
 
-    n = virDomainObjListGetInactiveNames(driver->domains, names, nnames,
-                                         virConnectListDefinedDomainsCheckACL, conn);
-    return n;
+    return virDomainObjListGetInactiveNames(driver->domains, names, nnames,
+                                            virConnectListDefinedDomainsCheckACL,
+                                            conn);
 }
 
 static int
 libxlConnectNumOfDefinedDomains(virConnectPtr conn)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
-    int n;
 
     if (virConnectNumOfDefinedDomainsEnsureACL(conn) < 0)
         return -1;
 
-    n = virDomainObjListNumOfDomains(driver->domains, false,
-                                     virConnectNumOfDefinedDomainsCheckACL,
-                                     conn);
-    return n;
+    return virDomainObjListNumOfDomains(driver->domains, false,
+                                        virConnectNumOfDefinedDomainsCheckACL,
+                                        conn);
 }
 
 static int
@@ -5715,17 +5706,14 @@ libxlConnectListAllDomains(virConnectPtr conn,
                            unsigned int flags)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
-    int ret = -1;
 
     virCheckFlags(VIR_CONNECT_LIST_DOMAINS_FILTERS_ALL, -1);
 
     if (virConnectListAllDomainsEnsureACL(conn) < 0)
         return -1;
 
-    ret = virDomainObjListExport(driver->domains, conn, domains,
-                                 virConnectListAllDomainsCheckACL, flags);
-
-    return ret;
+    return virDomainObjListExport(driver->domains, conn, domains,
+                                  virConnectListAllDomainsCheckACL, flags);
 }
 
 /* Which features are supported by this driver? */

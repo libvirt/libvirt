@@ -1128,7 +1128,6 @@ virStorageFileMetadataNew(const char *path,
                           int format)
 {
     g_autoptr(virStorageSource) def = NULL;
-    virStorageSourcePtr ret = NULL;
 
     if (!(def = virStorageSourceNew()))
         return NULL;
@@ -1138,8 +1137,7 @@ virStorageFileMetadataNew(const char *path,
 
     def->path = g_strdup(path);
 
-    ret = g_steal_pointer(&def);
-    return ret;
+    return g_steal_pointer(&def);
 }
 
 
@@ -1211,7 +1209,6 @@ virStorageFileGetMetadataFromFD(const char *path,
                                 int *backingFormat)
 
 {
-    virStorageSourcePtr ret = NULL;
     ssize_t len = VIR_STORAGE_MAX_HEADER;
     struct stat sb;
     int dummy;
@@ -1237,8 +1234,7 @@ virStorageFileGetMetadataFromFD(const char *path,
          * update the metadata.*/
         meta->type = VIR_STORAGE_TYPE_DIR;
         meta->format = VIR_STORAGE_FILE_DIR;
-        ret = g_steal_pointer(&meta);
-        return ret;
+        return g_steal_pointer(&meta);
     }
 
     if (lseek(fd, 0, SEEK_SET) == (off_t)-1) {
@@ -1259,8 +1255,7 @@ virStorageFileGetMetadataFromFD(const char *path,
     else if (S_ISBLK(sb.st_mode))
         meta->type = VIR_STORAGE_TYPE_BLOCK;
 
-    ret = g_steal_pointer(&meta);
-    return ret;
+    return g_steal_pointer(&meta);
 }
 
 
@@ -1843,7 +1838,6 @@ virStorageAuthDefFree(virStorageAuthDefPtr authdef)
 virStorageAuthDefPtr
 virStorageAuthDefCopy(const virStorageAuthDef *src)
 {
-    virStorageAuthDefPtr ret = NULL;
     g_autoptr(virStorageAuthDef) authdef = NULL;
 
     if (VIR_ALLOC(authdef) < 0)
@@ -1857,8 +1851,7 @@ virStorageAuthDefCopy(const virStorageAuthDef *src)
     if (virSecretLookupDefCopy(&authdef->seclookupdef, &src->seclookupdef) < 0)
         return NULL;
 
-    ret = g_steal_pointer(&authdef);
-    return ret;
+    return g_steal_pointer(&authdef);
 }
 
 
@@ -2228,7 +2221,6 @@ virStorageSourcePtr
 virStorageSourceCopy(const virStorageSource *src,
                      bool backingChain)
 {
-    virStorageSourcePtr ret = NULL;
     g_autoptr(virStorageSource) def = NULL;
 
     if (!(def = virStorageSourceNew()))
@@ -2323,8 +2315,7 @@ virStorageSourceCopy(const virStorageSource *src,
             return NULL;
     }
 
-    ret = g_steal_pointer(&def);
-    return ret;
+    return g_steal_pointer(&def);
 }
 
 
@@ -2604,7 +2595,6 @@ static virStorageSourcePtr
 virStorageSourceNewFromBackingRelative(virStorageSourcePtr parent,
                                        const char *rel)
 {
-    virStorageSourcePtr ret = NULL;
     g_autofree char *dirname = NULL;
     g_autoptr(virStorageSource) def = NULL;
 
@@ -2646,8 +2636,7 @@ virStorageSourceNewFromBackingRelative(virStorageSourcePtr parent,
         def->type = VIR_STORAGE_TYPE_FILE;
     }
 
-    ret = g_steal_pointer(&def);
-    return ret;
+    return g_steal_pointer(&def);
 }
 
 

@@ -73,13 +73,10 @@ virDomainCheckpointDiskDefClear(virDomainCheckpointDiskDefPtr disk)
 virDomainCheckpointDefPtr
 virDomainCheckpointDefNew(void)
 {
-    virDomainCheckpointDefPtr def;
-
     if (virDomainCheckpointInitialize() < 0)
         return NULL;
 
-    def = virObjectNew(virDomainCheckpointDefClass);
-    return def;
+    return virObjectNew(virDomainCheckpointDefClass);
 }
 
 static void
