@@ -84,7 +84,6 @@ EXTRA_DIST = \
 	bash-completion/vsh \
 	libvirt_recover_xattrs.sh \
 	$(PODFILES) \
-	$(MANINFILES) \
 	$(NULL)
 
 
