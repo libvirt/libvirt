@@ -20,7 +20,7 @@ virincdir = $(includedir)/libvirt
 
 allheaders = $(wildcard $(srcdir)/*.h)
 virinc_HEADERS = $(filter-out $(srcdir)/libvirt-common.h, $(allheaders))
-virinc_HEADERS += libvirt-common.h
+nodist_virinc_HEADERS = libvirt-common.h
 
 EXTRA_DIST = libvirt-common.h.in
 
