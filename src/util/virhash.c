@@ -445,6 +445,26 @@ virHashAtomicUpdate(virHashAtomicPtr table,
 }
 
 
+static virHashEntryPtr
+virHashGetEntry(const virHashTable *table,
+                const void *name)
+{
+    size_t key;
+    virHashEntryPtr entry;
+
+    if (!table || !name)
+        return NULL;
+
+    key = virHashComputeKey(table, name);
+    for (entry = table->table[key]; entry; entry = entry->next) {
+        if (table->keyEqual(entry->name, name))
+            return entry;
+    }
+
+    return NULL;
+}
+
+
 /**
  * virHashLookup:
  * @table: the hash table
@@ -457,18 +477,29 @@ virHashAtomicUpdate(virHashAtomicPtr table,
 void *
 virHashLookup(const virHashTable *table, const void *name)
 {
-    size_t key;
-    virHashEntryPtr entry;
+    virHashEntryPtr entry = virHashGetEntry(table, name);
 
-    if (!table || !name)
+    if (!entry)
         return NULL;
 
-    key = virHashComputeKey(table, name);
-    for (entry = table->table[key]; entry; entry = entry->next) {
-        if (table->keyEqual(entry->name, name))
-            return entry->payload;
-    }
-    return NULL;
+    return entry->payload;
+}
+
+
+/**
+ * virHashHasEntry:
+ * @table: the hash table
+ * @name: the name of the userdata
+ *
+ * Find whether entry specified by @name exists.
+ *
+ * Returns true if the entry exists and false otherwise
+ */
+bool
+virHashHasEntry(const virHashTable *table,
+                const void *name)
+{
+    return !!virHashGetEntry(table, name);
 }
 
 

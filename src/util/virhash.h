@@ -150,6 +150,7 @@ ssize_t virHashRemoveAll(virHashTablePtr table);
  * Retrieve the userdata.
  */
 void *virHashLookup(const virHashTable *table, const void *name);
+bool virHashHasEntry(const virHashTable *table, const void *name);
 
 /*
  * Retrieve & remove the userdata.
