@@ -931,6 +931,7 @@ get_files(vahControl * ctl)
     int rc = -1;
     size_t i;
     char *uuid;
+    char *mem_path = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     bool needsVfio = false, needsvhost = false, needsgl = false;
 
@@ -1194,6 +1195,37 @@ get_files(vahControl * ctl)
         }
     }
 
+    for (i = 0; i < ctl->def->nshmems; i++) {
+        virDomainShmemDef *shmem = ctl->def->shmems[i];
+        /* explicit server paths can be on any model to overwrites defaults.
+         * When the server path is enabled, use it - otherwise fallback to
+         * model dependent defaults. */
+        if (shmem->server.enabled &&
+            shmem->server.chr.data.nix.path) {
+                if (vah_add_file(&buf, shmem->server.chr.data.nix.path,
+                        "rw") != 0)
+                    goto cleanup;
+        } else {
+            switch (shmem->model) {
+            case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM_PLAIN:
+                /* until exposed, recreate qemuBuildShmemBackendMemProps */
+                mem_path = g_strdup_printf("/dev/shm/%s", shmem->name);
+                break;
+            case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM_DOORBELL:
+            case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM:
+                 /* until exposed, recreate qemuDomainPrepareShmemChardev */
+                mem_path = g_strdup_printf("/var/lib/libvirt/shmem-%s-sock",
+                               shmem->name);
+                break;
+            }
+            if (mem_path != NULL) {
+                if (vah_add_file(&buf, mem_path, "rw") != 0)
+                    goto cleanup;
+            }
+        }
+    }
+
+
     if (ctl->def->tpm) {
         char *shortName = NULL;
         const char *tpmpath = NULL;
@@ -1288,6 +1320,7 @@ get_files(vahControl * ctl)
     ctl->files = virBufferContentAndReset(&buf);
 
  cleanup:
+    VIR_FREE(mem_path);
     VIR_FREE(uuid);
     return rc;
 }
