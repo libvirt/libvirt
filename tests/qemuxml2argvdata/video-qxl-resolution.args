@@ -28,5 +28,5 @@ server,nowait \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \
 -device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
 -device qxl-vga,id=video0,ram_size=67108864,vram_size=67108864,vgamem_mb=8,\
-bus=pci.0,addr=0x2 \
+xres=1280,yres=720,bus=pci.0,addr=0x2 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

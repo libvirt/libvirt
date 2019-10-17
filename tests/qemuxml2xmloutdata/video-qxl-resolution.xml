@@ -30,7 +30,9 @@
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
     <video>
-      <model type='qxl' ram='65536' vram='65536' vgamem='8192' heads='1' primary='yes'/>
+      <model type='qxl' ram='65536' vram='65536' vgamem='8192' heads='1' primary='yes'>
+        <resolution x='1280' y='720'/>
+      </model>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </video>
     <memballoon model='virtio'>

@@ -5774,6 +5774,17 @@ qemuDomainDeviceDefValidateVideo(const virDomainVideoDef *video)
         }
     }
 
+    if (video->type != VIR_DOMAIN_VIDEO_TYPE_VGA &&
+        video->type != VIR_DOMAIN_VIDEO_TYPE_QXL &&
+        video->type != VIR_DOMAIN_VIDEO_TYPE_VIRTIO &&
+        video->type != VIR_DOMAIN_VIDEO_TYPE_BOCHS) {
+        if (video->res) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("model resolution is not supported"));
+            return -1;
+        }
+    }
+
     if (video->type == VIR_DOMAIN_VIDEO_TYPE_VGA ||
         video->type == VIR_DOMAIN_VIDEO_TYPE_VMVGA) {
         if (video->vram && video->vram < 1024) {

@@ -4598,6 +4598,11 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
             virBufferAsprintf(&buf, ",vgamem=%uk", video->vram);
     }
 
+    if (video->res && video->res->x && video->res->y) {
+        /* QEMU accepts resolution xres and yres. */
+        virBufferAsprintf(&buf, ",xres=%u,yres=%u", video->res->x, video->res->y);
+    }
+
     if (qemuBuildDeviceAddressStr(&buf, def, &video->info, qemuCaps) < 0)
         return NULL;
 
