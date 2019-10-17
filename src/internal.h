@@ -64,6 +64,7 @@
 #include "libvirt/virterror.h"
 
 #include "c-strcase.h"
+#include "glibcompat.h"
 
 /* Merely casting to (void) is not sufficient since the
  * introduction of the "warn_unused_result" attribute

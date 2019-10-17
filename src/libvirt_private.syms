@@ -1485,6 +1485,11 @@ virSecurityManagerTransactionStart;
 virSecurityManagerVerify;
 
 
+# util/glibcompat.h
+vir_g_strdup_printf;
+vir_g_strdup_vprintf;
+
+
 # util/viralloc.h
 virAlloc;
 virAllocN;
