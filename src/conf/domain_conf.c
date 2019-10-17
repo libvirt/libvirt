@@ -15345,6 +15345,52 @@ virDomainVideoAccelDefParseXML(xmlNodePtr node)
     return def;
 }
 
+static virDomainVideoResolutionDefPtr
+virDomainVideoResolutionDefParseXML(xmlNodePtr node)
+{
+    xmlNodePtr cur;
+    virDomainVideoResolutionDefPtr def;
+    g_autofree char *x = NULL;
+    g_autofree char *y = NULL;
+
+    cur = node->children;
+    while (cur != NULL) {
+        if (cur->type == XML_ELEMENT_NODE) {
+            if (!x && !y &&
+                virXMLNodeNameEqual(cur, "resolution")) {
+                x = virXMLPropString(cur, "x");
+                y = virXMLPropString(cur, "y");
+            }
+        }
+        cur = cur->next;
+    }
+
+    if (!x || !y)
+        return NULL;
+
+    if (VIR_ALLOC(def) < 0)
+        goto cleanup;
+
+    if (x) {
+        if (virStrToLong_uip(x, NULL, 10, &def->x) < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("cannot parse video x-resolution '%s'"), x);
+            goto cleanup;
+        }
+    }
+
+    if (y) {
+        if (virStrToLong_uip(y, NULL, 10, &def->y) < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("cannot parse video y-resolution '%s'"), y);
+            goto cleanup;
+        }
+    }
+
+ cleanup:
+    return def;
+}
+
 static virDomainVideoDriverDefPtr
 virDomainVideoDriverDefParseXML(xmlNodePtr node)
 {
@@ -15424,6 +15470,7 @@ virDomainVideoDefParseXML(virDomainXMLOptionPtr xmlopt,
                 }
 
                 def->accel = virDomainVideoAccelDefParseXML(cur);
+                def->res = virDomainVideoResolutionDefParseXML(cur);
             }
             if (virXMLNodeNameEqual(cur, "driver")) {
                 if (virDomainVirtioOptionsParseXML(cur, &def->virtio) < 0)
@@ -26515,6 +26562,18 @@ virDomainVideoAccelDefFormat(virBufferPtr buf,
     virBufferAddLit(buf, "/>\n");
 }
 
+static void
+virDomainVideoResolutionDefFormat(virBufferPtr buf,
+                                  virDomainVideoResolutionDefPtr def)
+{
+    virBufferAddLit(buf, "<resolution");
+    if (def->x && def->y) {
+        virBufferAsprintf(buf, " x='%u' y='%u'",
+                          def->x, def->y);
+    }
+    virBufferAddLit(buf, "/>\n");
+}
+
 static int
 virDomainVideoDefFormat(virBufferPtr buf,
                         virDomainVideoDefPtr def,
@@ -26562,11 +26621,13 @@ virDomainVideoDefFormat(virBufferPtr buf,
         virBufferAsprintf(buf, " heads='%u'", def->heads);
     if (def->primary)
         virBufferAddLit(buf, " primary='yes'");
-    if (def->accel) {
+    if (def->accel || def->res) {
         virBufferAddLit(buf, ">\n");
         virBufferAdjustIndent(buf, 2);
         if (def->accel)
             virDomainVideoAccelDefFormat(buf, def->accel);
+        if (def->res)
+            virDomainVideoResolutionDefFormat(buf, def->res);
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</model>\n");
     } else {

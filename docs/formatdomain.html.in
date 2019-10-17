@@ -7077,7 +7077,10 @@ qemu-kvm -net nic,model=? /dev/null
           <code>vgamem</code> (<span class="since">since 1.2.11</span>) to set
           the size of VGA framebuffer for fallback mode of QXL device.
           Attribute <code>vram64</code> (<span class="since">since 1.3.3</span>)
-          extends secondary bar and makes it addressable as 64bit memory.
+          extends secondary bar and makes it addressable as 64bit memory. For
+          resolution settings, there are <code>x</code> and <code>y</code>
+          (<span class="since">since 5.9.0</span>) optional attributes to set
+          minimum resolution for model.
         </p>
       </dd>
 

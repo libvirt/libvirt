@@ -3656,6 +3656,16 @@
               </optional>
             </element>
           </optional>
+          <optional>
+            <element name="resolution">
+              <attribute name="x">
+                <ref name="unsignedInt"/>
+              </attribute>
+              <attribute name="y">
+                <ref name="unsignedInt"/>
+              </attribute>
+            </element>
+          </optional>
         </element>
       </optional>
       <optional>

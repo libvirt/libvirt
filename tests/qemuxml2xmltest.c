@@ -1210,6 +1210,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_QXL);
     DO_TEST("video-qxl-heads", NONE);
     DO_TEST("video-qxl-noheads", NONE);
+    DO_TEST("video-qxl-resolution", NONE);
     DO_TEST("video-virtio-gpu-secondary", NONE);
     DO_TEST("video-virtio-gpu-ccw",
             QEMU_CAPS_CCW,

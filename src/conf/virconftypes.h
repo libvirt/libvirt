@@ -324,6 +324,9 @@ typedef virDomainVcpuDef *virDomainVcpuDefPtr;
 typedef struct _virDomainVideoAccelDef virDomainVideoAccelDef;
 typedef virDomainVideoAccelDef *virDomainVideoAccelDefPtr;
 
+typedef struct _virDomainVideoResolutionDef virDomainVideoResolutionDef;
+typedef virDomainVideoResolutionDef *virDomainVideoResolutionDefPtr;
+
 typedef struct _virDomainVideoDef virDomainVideoDef;
 typedef virDomainVideoDef *virDomainVideoDefPtr;
 

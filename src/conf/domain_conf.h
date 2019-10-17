@@ -1421,6 +1421,10 @@ struct _virDomainVideoAccelDef {
     char *rendernode;
 };
 
+struct _virDomainVideoResolutionDef {
+    unsigned int x;
+    unsigned int y;
+};
 
 struct _virDomainVideoDriverDef {
    virDomainVideoVGAConf vgaconf;
@@ -1438,6 +1442,7 @@ struct _virDomainVideoDef {
     unsigned int heads;
     bool primary;
     virDomainVideoAccelDefPtr accel;
+    virDomainVideoResolutionDefPtr res;
     virDomainVideoDriverDefPtr driver;
     virDomainDeviceInfo info;
     virDomainVirtioOptionsPtr virtio;
