@@ -10,9 +10,9 @@
 # Piotr Drąg <piotrdrag@gmail.com>, 2016. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.6.0\n"
+"Project-Id-Version: libvirt 5.9.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-30 11:31+0100\n"
+"POT-Creation-Date: 2019-10-18 13:39+0100\n"
 "PO-Revision-Date: 2016-09-16 11:27+0000\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish (http://www.transifex.com/projects/p/fedora/language/"
@@ -115,10 +115,6 @@ msgstr "brak właściwości „type” w %s"
 #, c-format
 msgid "%s not implemented on Win32"
 msgstr "%s jest niezaimplementowane w systemach Win32"
-
-#, c-format
-msgid "%s takes no options"
-msgstr "%s nie przyjmuje opcji"
 
 #, c-format
 msgid ""
@@ -508,12 +504,6 @@ msgstr "Nie można usunąć określenia domeny przejściowej"
 
 msgid "Cannot unshare mount namespace"
 msgstr "Nie można usunąć współdzielenia przestrzeni nazw montowania"
-
-msgid "Capabilities not available"
-msgstr "Możliwości są niedostępne"
-
-msgid "Capabilities not found"
-msgstr "Nie odnaleziono możliwości"
 
 msgid "Capacity"
 msgstr "Pojemność"
@@ -954,33 +944,6 @@ msgstr "Nie można sprawdzić adresu dysku"
 msgid "Could not wipe volume: %s"
 msgstr "Nie można wyczyścić woluminu: %s"
 
-msgid "Couldn't fetch Domain Information"
-msgstr "Nie można pobrać informacji o domenie"
-
-msgid "Couldn't fetch Node Information"
-msgstr "Nie można pobrać informacji o węźle"
-
-msgid "Couldn't get VM information from XML"
-msgstr "Nie można uzyskać informacji o maszynie wirtualnej z XML"
-
-msgid "Couldn't get VM record"
-msgstr "Nie można uzyskać wpisu maszyny wirtualnej"
-
-msgid "Couldn't get host metrics"
-msgstr "Nie można uzyskać metryki gospodarza"
-
-msgid "Couldn't get host metrics - memory information"
-msgstr "Nie można uzyskać metryki gospodarza — informacji o pamięci"
-
-msgid "Couldn't get the Domain Pointer"
-msgstr "Nie można uzyskać wskaźnika domeny"
-
-msgid "Couldn't get version info"
-msgstr "Nie można uzyskać informacji o wersji"
-
-msgid "Couldn't parse version info"
-msgstr "Nie można przetworzyć informacji o wersji"
-
 #, c-format
 msgid "Couldn't read volume target path '%s'"
 msgstr "Nie można odczytać ścieżki docelowej woluminu „%s”"
@@ -1230,12 +1193,6 @@ msgstr "Domena „%s” jest już uruchomiona"
 msgid "Domain '%s' sysinfo are not available"
 msgstr "Informacje o systemie domeny „%s” nie są dostępne"
 
-msgid "Domain Pointer is invalid"
-msgstr "Wskaźnik domeny jest nieprawidłowy"
-
-msgid "Domain Pointer not valid"
-msgstr "Wskaźnik domeny nie jest prawidłowy"
-
 msgid ""
 "Domain XML doesn't contain any disks, cannot deduce datastore and path for "
 "VMX file"
@@ -1289,9 +1246,6 @@ msgstr "Domena nie została uśpiona lub wyłączona"
 msgid "Domain name contains invalid escape sequence"
 msgstr "Nazwa domeny zawiera nieprawidłową sekwencję sterującą"
 
-msgid "Domain name is not unique"
-msgstr "Nazwa domeny nie jest unikalna"
-
 msgid "Domain not found"
 msgstr "Nie odnaleziono domeny"
 
@@ -1313,9 +1267,6 @@ msgstr "Nie odnaleziono migawki domeny"
 #, c-format
 msgid "Domain snapshot not found: %s"
 msgstr "Nie odnaleziono migawki domeny: %s"
-
-msgid "DomainID can't fit in 32 bits"
-msgstr "Identyfikator domeny nie może zmieścić się w 32 bitach"
 
 msgid "Driver state initialization failed"
 msgstr "Zainicjowanie stanu sterownika się nie powiodło"
@@ -1578,23 +1529,8 @@ msgstr "Indeks kontrolera FDC %d jest spoza zakresu [0]"
 msgid "FDC unit index %d out of [0..1] range"
 msgstr "Indeks jednostki FDC %d jest spoza zakresu [0...1]"
 
-#, c-format
-msgid "Failed opening %s"
-msgstr "Otwarcie %s się nie powiodło"
-
-#, c-format
-msgid "Failed to add PCI device ID '%s' to %s"
-msgstr "Dodanie identyfikatora urządzenia PCI „%s” do „%s” się nie powiodło"
-
-#, c-format
-msgid "Failed to add slot for PCI device '%s' to %s"
-msgstr "Dodanie gniazda dla urządzenia PCI „%s” do %s się nie powiodło"
-
 msgid "Failed to allocate XML buffer"
 msgstr "Przydzielenie bufora XML się nie powiodło"
-
-msgid "Failed to allocate memory"
-msgstr "Przydzielenie pamięci się nie powiodło"
 
 msgid "Failed to allocate memory for path"
 msgstr "Przydzielenie pamięci dla ścieżki się nie powiodło"
@@ -1629,10 +1565,6 @@ msgstr "Automatyczne uruchomienie maszyny wirtualnej „%s” się nie powiodło
 msgid "Failed to autostart storage pool '%s': %s"
 msgstr ""
 "Automatyczne uruchomienie puli pamięci masowej „%s” się nie powiodło: %s"
-
-#, c-format
-msgid "Failed to bind PCI device '%s' to %s"
-msgstr "Dowiązanie urządzenia PCI „%s” do „%s” się nie powiodło"
 
 #, c-format
 msgid "Failed to build path for %s hook"
@@ -2151,10 +2083,6 @@ msgid "Failed to register xml namespace '%s'"
 msgstr "Zarejestrowanie przestrzeni nazw XML „%s” się nie powiodło"
 
 #, c-format
-msgid "Failed to remove PCI ID '%s' from %s"
-msgstr "Usunięcie identyfikatora PCI „%s” z %s się nie powiodło"
-
-#, c-format
 msgid "Failed to remove managed save image for domain %s"
 msgstr "Usunięcie obrazu zarządzanego zapisu dla domeny %s się nie powiodło"
 
@@ -2278,10 +2206,6 @@ msgstr "Przełączenie montowania roota do trybu podrzędnego się nie powiodło
 #, c-format
 msgid "Failed to take snapshot: %s"
 msgstr "Wykonanie migawki się nie powiodło: %s"
-
-#, c-format
-msgid "Failed to trigger a re-probe for PCI device '%s'"
-msgstr "Rozpoczęcie ponownego wykrycia urządzenia PCI „%s” się nie powiodło"
 
 #, c-format
 msgid "Failed to truncate volume with path '%s' to %ju bytes"
@@ -2643,9 +2567,6 @@ msgstr "Nieprawidłowy ciąg producenta procesora „%s”"
 
 msgid "Invalid argument"
 msgstr "nieprawidłowy parametr"
-
-msgid "Invalid base64 data"
-msgstr "Nieprawidłowe dane base64"
 
 #, c-format
 msgid "Invalid bridge mac address '%s' in network '%s'"
@@ -3455,11 +3376,6 @@ msgstr ""
 "Parametr zapytania „no_verify” ma nieoczekiwaną wartość „%s” (powinna "
 "wynosić 0 lub 1)"
 
-msgid "Query parameter 'no_verify' has unexpected value (should be 0 or 1)"
-msgstr ""
-"Parametr zapytania „no_verify” ma nieoczekiwaną wartość (powinna wynosić 0 "
-"lub 1)"
-
 #, c-format
 msgid ""
 "Query parameter 'proxy' contains unexpected type '%s' (should be (http|"
@@ -3721,9 +3637,6 @@ msgstr ""
 #, c-format
 msgid "Serial port index %d out of [0..3] range"
 msgstr "Indeks portu szeregowego %d jest spoza zakresu [0...3]"
-
-msgid "Server name not in URI"
-msgstr "Brak nazwy serwera w adresie URI"
 
 msgid "Set a secret value."
 msgstr "Ustawia wartość sekretu."
@@ -4044,10 +3957,6 @@ msgstr "Nie można ustalić rozmiaru sps pamięci masowej."
 msgid "Unable to determine storage sps's source adapter."
 msgstr "Nie można ustalić adaptera źródłowego sps pamięci masowej."
 
-#, c-format
-msgid "Unable to exec shell %s"
-msgstr "Nie można wykonać powłoki %s"
-
 msgid "Unable to find 'cpuacct' cgroups controller mount"
 msgstr "Nie można odnaleźć punktu montowania kontrolera cgroups „cpuacct”"
 
@@ -4062,9 +3971,6 @@ msgstr "Nie można sformatować portu guestfwd"
 
 msgid "Unable to generate random uuid."
 msgstr "Nie można utworzyć losowego UUID."
-
-msgid "Unable to get Host CPU set"
-msgstr "Nie można uzyskać ustawienia procesora gospodarza"
 
 msgid "Unable to get VIOS name"
 msgstr "Nie można uzyskać nazwy VIOS"
@@ -4083,9 +3989,6 @@ msgstr "Nie można uzyskać stanu domeny"
 
 msgid "Unable to get free slot number"
 msgstr "Nie można uzyskać numeru wolnego gniazda"
-
-msgid "Unable to get host metric Information"
-msgstr "Nie można uzyskać informacji metrycznych o gospodarzu"
 
 msgid "Unable to get memory parameters"
 msgstr "Nie można uzyskać parametrów pamięci"
@@ -4132,13 +4035,6 @@ msgstr "Nie można otworzyć ścieżki do monitora %s"
 #, c-format
 msgid "Unable to open stream for '%s'"
 msgstr "Nie można otworzyć strumienia dla „%s”"
-
-#, c-format
-msgid "Unable to parse devaddr parameter '%s'"
-msgstr "Nie można przetworzyć parametru devaddr „%s”"
-
-msgid "Unable to parse given mac address"
-msgstr "Nie można przetworzyć podanego adresu MAC"
 
 msgid "Unable to parse integer parameter"
 msgstr "Nie można przetworzyć parametru liczby całkowitej"
@@ -6440,10 +6336,6 @@ msgid "guestfwd channel only supports IPv4 addresses"
 msgstr "kanał guestfwd obsługuje tylko adresy IPv4"
 
 #, c-format
-msgid "host pci device %.4x:%.2x:%.2x.%.1x not found"
-msgstr "nie odnaleziono urządzenia PCI gospodarza %.4x:%.2x:%.2x.%.1x"
-
-#, c-format
 msgid "host reports map buffer length exceeds maximum: %d > %d"
 msgstr ""
 "gospodarz zgłasza, że długość mapy buforów wirtualnych procesorów przekracza "
@@ -6646,10 +6538,6 @@ msgstr "nieprawidłowe określenie maszyny wirtualnej"
 #, c-format
 msgid "invalid XML length: %d"
 msgstr "nieprawidłowa długość XML: %d"
-
-#, c-format
-msgid "invalid base64 in '%s'"
-msgstr "nieprawidłowe base64 w „%s”"
 
 msgid "invalid catchup limit"
 msgstr "nieprawidłowe ograniczenie dociągnięcia"
@@ -8431,14 +8319,6 @@ msgstr ""
 "nieoczekiwana ścieżka URI OpenVZ „%s”, należy wypróbować openvz:///system"
 
 #, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///session"
-msgstr "nieoczekiwana ścieżka URI QEMU „%s”, należy wypróbować qemu:///session"
-
-#, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///system"
-msgstr "nieoczekiwana ścieżka URI QEMU „%s”, należy wypróbować qemu:///system"
-
-#, c-format
 msgid "unexpected accessmode %d"
 msgstr "nieoczekiwany tryb dostępu %d"
 
@@ -8727,17 +8607,6 @@ msgstr "nieznany tryb wejścia/wyjścia dysku „%s”"
 #, c-format
 msgid "unknown disk type '%s'"
 msgstr "nieznany typ dysku „%s”"
-
-#, c-format
-msgid "unknown driver path '%s' specified (try vbox:///session)"
-msgstr ""
-"podano nieznaną ścieżkę do sterownika „%s” (należy wypróbować vbox:///"
-"session)"
-
-#, c-format
-msgid "unknown driver path '%s' specified (try vbox:///system)"
-msgstr ""
-"podano nieznaną ścieżkę do sterownika „%s” (należy wypróbować vbox:///system)"
 
 msgid "unknown error"
 msgstr "nieznany błąd"

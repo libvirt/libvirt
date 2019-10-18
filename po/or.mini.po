@@ -9,9 +9,9 @@
 # Manoj Kumar Giri <mgiri@redhat.com>, 2013
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.6.0\n"
+"Project-Id-Version: libvirt 5.9.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-30 11:31+0100\n"
+"POT-Creation-Date: 2019-10-18 13:39+0100\n"
 "PO-Revision-Date: 2015-02-27 04:59+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Oriya (http://www.transifex.com/projects/p/libvirt/language/"
@@ -51,43 +51,6 @@ msgid ""
 "  Default paths:\n"
 "\n"
 "    Configuration file (unless overridden by -f):\n"
-"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
-"\n"
-"    Sockets:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
-"\n"
-"    TLS:\n"
-"      CA certificate:     $HOME/.pki/libvirt/cacert.pem\n"
-"      Server certificate: $HOME/.pki/libvirt/servercert.pem\n"
-"      Server private key: $HOME/.pki/libvirt/serverkey.pem\n"
-"\n"
-"    PID file:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
-"\n"
-msgstr ""
-"\n"
-"  ପୂର୍ବନିର୍ଦ୍ଧାରିତ ପଥଗୁଡ଼ିକ:\n"
-"\n"
-"    ସଂରଚନା ଫାଇଲ (ଯଦି -f ଦ୍ୱାରା ନବଲିଖିତ ହୋଇନଥାଏ):\n"
-"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
-"\n"
-"    ସକେଟଗୁଡ଼ିକ:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
-"\n"
-"    TLS:\n"
-"      CA ପ୍ରମାଣପତ୍ର:     $HOME/.pki/libvirt/cacert.pem\n"
-"      Server certificate: $HOME/.pki/libvirt/servercert.pem\n"
-"      ସର୍ଭର ବ୍ୟକ୍ତିଗତ କି: $HOME/.pki/libvirt/serverkey.pem\n"
-"\n"
-"    PID ଫାଇଲ:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
-"\n"
-
-msgid ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
 "      $XDG_CONFIG_HOME/libvirt/virtlockd.conf\n"
 "\n"
 "    Sockets:\n"
@@ -108,74 +71,6 @@ msgstr ""
 "\n"
 "    PID ଫାଇଲ:\n"
 "      $XDG_RUNTIME_DIR/libvirt/virtlockd.pid\n"
-"\n"
-
-#, c-format
-msgid ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
-"      %s\n"
-"\n"
-"    Sockets:\n"
-"      %s\n"
-"      %s\n"
-"\n"
-"    TLS:\n"
-"      CA certificate:     %s\n"
-"      Server certificate: %s\n"
-"      Server private key: %s\n"
-"\n"
-"    PID file (unless overridden by -p):\n"
-"      %s/run/libvirtd.pid\n"
-"\n"
-msgstr ""
-"\n"
-"  ପୂର୍ବନିର୍ଦ୍ଧାରିତ ପଥଗୁଡ଼ିକ:\n"
-"\n"
-"    ସଂରଚନା ଫାଇଲ ( -f ଦ୍ୱାରା ନବଲିଖିତ ହୋଇନଥିଲେ):\n"
-"      %s\n"
-"\n"
-"    ସକେଟଗୁଡ଼ିକ:\n"
-"      %s\n"
-"      %s\n"
-"\n"
-"    TLS:\n"
-"      CA ପ୍ରମାଣପତ୍ର:     %s\n"
-"      ସର୍ଭର ପ୍ରମାଣପତ୍ର: %s\n"
-"      ସର୍ଭର ବ୍ୟକ୍ତିଗତ କି: %s\n"
-"\n"
-"    PID ଫାଇଲ ( -p ଦ୍ୱାରା ନବଲିଖିତ ହୋଇନଥିଲେ):\n"
-"      %s/run/libvirtd.pid\n"
-"\n"
-
-#, c-format
-msgid ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
-"      %s/libvirt/virtlockd.conf\n"
-"\n"
-"    Sockets:\n"
-"      %s/run/libvirt/virtlockd-sock\n"
-"\n"
-"    PID file (unless overridden by -p):\n"
-"      %s/run/virtlockd.pid\n"
-"\n"
-msgstr ""
-"\n"
-"  ପୂର୍ବନିର୍ଦ୍ଧାରିତ ପଥଗୁଡ଼ିକ:\n"
-"\n"
-"    ବିନ୍ୟାସ ଫାଇଲ (ଯଦି -f ଦ୍ୱାରା ଉଲ୍ଲେଖ ହୋଇନଥାଏ):\n"
-"      %s/libvirt/virtlockd.conf\n"
-"\n"
-"    ସକେଟଗୁଡ଼ିକ:\n"
-"      %s/run/libvirt/virtlockd-sock\n"
-"\n"
-"    PID ଫାଇଲ (ଯଦି -p ଦ୍ୱାରା ଉଲ୍ଲେଖ ହୋଇନଥାଏ):\n"
-"      %s/run/virtlockd.pid\n"
 "\n"
 
 msgid ""
@@ -273,40 +168,6 @@ msgid ""
 msgstr ""
 "\n"
 "ଡମେନ %s ସ୍ଥିତିକୁ libvirt ଦ୍ୱାରା ସଂରକ୍ଷଣ କରାଯାଇଛି\n"
-
-#, c-format
-msgid ""
-"\n"
-"Usage:\n"
-"  %s [options]\n"
-"\n"
-"Options:\n"
-"  -h | --help            Display program help:\n"
-"  -v | --verbose         Verbose messages.\n"
-"  -d | --daemon          Run as a daemon & write PID file.\n"
-"  -l | --listen          Listen for TCP/IP connections.\n"
-"  -t | --timeout <secs>  Exit after timeout period.\n"
-"  -f | --config <file>   Configuration file.\n"
-"  -V | --version         Display version information.\n"
-"  -p | --pid-file <file> Change name of PID file.\n"
-"\n"
-"libvirt management daemon:\n"
-msgstr ""
-"\n"
-"ବ୍ୟବହାର ବିଧି:\n"
-"  %s [options]\n"
-"\n"
-"ବିକଳ୍ପଗୁଡ଼ିକ:\n"
-"  -h | --help            Display program help:\n"
-"  -v | --verbose         Verbose messages.\n"
-"  -d | --daemon          Run as a daemon & write PID file.\n"
-"  -l | --listen          Listen for TCP/IP connections.\n"
-"  -t | --timeout <secs>  Exit after timeout period.\n"
-"  -f | --config <file>   Configuration file.\n"
-"  -V | --version         Display version information.\n"
-"  -p | --pid-file <file> Change name of PID file.\n"
-"\n"
-"libvirt management daemon:\n"
 
 #, c-format
 msgid ""
@@ -1598,12 +1459,6 @@ msgstr "ସମାନ୍ତରାଳ/ କ୍ରମିକ ଉପକରଣଗୁଡ
 msgid "Cannot use volume path '%s'"
 msgstr "ଭଲ୍ୟୁମ ପଥ '%s' କୁ ବ୍ୟବହାର କରିପାରିବେ ନାହିଁ"
 
-msgid "Capabilities not available"
-msgstr "ଦକ୍ଷତା ଉପଲବ୍ଧ ନାହିଁ"
-
-msgid "Capabilities not found"
-msgstr "ଦକ୍ଷତା ମିଳିଲା ନାହିଁ"
-
 msgid "Capacity"
 msgstr "କ୍ଷମତା"
 
@@ -2423,33 +2278,6 @@ msgstr "ଭଲ୍ୟୁମକୁ ସଫା  କରିପାରିଲା ନା�
 msgid "Could not write to stream"
 msgstr "ଧାରାରେ ଲେଖିପାରିଲା ନାହିଁ"
 
-msgid "Couldn't fetch Domain Information"
-msgstr "ଡମେନ ସୂଚନାକୁ କାଢ଼ିପାରିଲା ନାହିଁ"
-
-msgid "Couldn't fetch Node Information"
-msgstr "ନୋଡ ସୂଚନା ପାଇଲା ନାହିଁ"
-
-msgid "Couldn't get VM information from XML"
-msgstr "XML ରୁ VM ବିବରଣୀ ପାଇଲା ନାହିଁ"
-
-msgid "Couldn't get VM record"
-msgstr "VM ବିବରଣୀ ପାଇଲା ନାହିଁ"
-
-msgid "Couldn't get host metrics"
-msgstr "ହୋଷ୍ଟ ମେଟ୍ରିକ ପାଇଲା ନାହିଁ"
-
-msgid "Couldn't get host metrics - memory information"
-msgstr "ହୋଷ୍ଟ ମେଟ୍ରିକ ପାଇଲା ନାହିଁ- ସ୍ମୃତିସ୍ଥାନ ସୂଚନା"
-
-msgid "Couldn't get the Domain Pointer"
-msgstr "ଡମେନ ସୂଚକକୁ ପାଇଲା ନାହିଁ"
-
-msgid "Couldn't get version info"
-msgstr "ସଂସ୍କରଣ ସୂଚନାକୁ କାଢିପାରିଲା ନାହିଁ"
-
-msgid "Couldn't parse version info"
-msgstr "ସଂସ୍କରଣ ସୂଚନାକୁ ବିଶ୍ଳେଷଣ କରିପାରିଲା ନାହିଁ"
-
 #, c-format
 msgid "Couldn't read volume target path '%s'"
 msgstr "ଆକାର ଲକ୍ଷ୍ୟ ପଥ '%s'କୁ ପଢ଼ିପାରିବେ ନାହିଁ"
@@ -2849,12 +2677,6 @@ msgstr "ପରିସର %s ଟି ପୂର୍ବରୁ ଚାଲୁଅଛି"
 msgid "Domain '%s' sysinfo are not available"
 msgstr "ଡମେନ '%s' sysinfo ଗୁଡ଼ିକ ଉପଲବ୍ଧ ନାହିଁ"
 
-msgid "Domain Pointer is invalid"
-msgstr "ଡମେନ ସୂଚକଟି ଅବୈଧ ଅଟେ"
-
-msgid "Domain Pointer not valid"
-msgstr "ଡମେନ ସୂଚକ ବୈଧ ନୁହଁ"
-
 msgid ""
 "Domain XML doesn't contain any disks, cannot deduce datastore and path for "
 "VMX file"
@@ -2926,9 +2748,6 @@ msgstr "ଡମେନକୁ ନିଲମ୍ବିତ ରଖାଯାଇ ନାହ
 msgid "Domain name contains invalid escape sequence"
 msgstr "ଡମେନ ନାମ ଅବୈଧ ଏସ୍କେପ କ୍ରମ ଧାରଣ କରିଥାଏ"
 
-msgid "Domain name is not unique"
-msgstr "ଡମେନ ନାମଟି ଅନନ୍ୟ ନୁହଁ"
-
 msgid "Domain not found"
 msgstr "ପରିସର ମିଳିଲା ନାହିଁ"
 
@@ -2968,9 +2787,6 @@ msgstr "ଡମେନ ଶୀର୍ଷକରେ ନୂତନ ଧାଡ଼ି ନ�
 
 msgid "Domain:"
 msgstr "ପରିସର:"
-
-msgid "DomainID can't fit in 32 bits"
-msgstr "DomainID 32 ବିଟରେ ଖାପ ଖାଉନାହିଁ"
 
 msgid "Done.\n"
 msgstr "ସମାପ୍ତ।\n"
@@ -3274,10 +3090,6 @@ msgid "Failed"
 msgstr "ବିଫଳ ହୋଇଛି"
 
 #, c-format
-msgid "Failed opening %s"
-msgstr "%s କୁ ଖୋଲିବାରେ ବିଫଳ"
-
-#, c-format
 msgid "Failed set TLS x509 credentials: %s"
 msgstr "TLS x509 ଅଧିକାର ସେଟ କରିବାରେ ବିଫଳ: %s"
 
@@ -3293,10 +3105,6 @@ msgid "Failed to acquire pid file '%s'"
 msgstr "pid ଫାଇଲ '%s'କୁ ପାଇବାରେ ବିଫଳ"
 
 #, c-format
-msgid "Failed to add PCI device ID '%s' to %s"
-msgstr "PCI ଉପକରଣ ID '%s' କୁ %s ଥିରେ ଯୋଗ କରିବାରେ ବିଫଳ"
-
-#, c-format
 msgid "Failed to add capability %s: %d"
 msgstr "କ୍ଷମତା %s ଯୋଗ କରିବାରେ ବିଫଳ: %d"
 
@@ -3307,18 +3115,11 @@ msgid "Failed to add signal handle watch"
 msgstr "ସଂକେତ ନିୟନ୍ତ୍ରଣ ଘଡ଼ି ଯୋଗ କରିବାରେ ବିଫଳ"
 
 #, c-format
-msgid "Failed to add slot for PCI device '%s' to %s"
-msgstr "PCI ଉପକରଣ '%s' ରୁ %s କୁ ପାଇଁ ସ୍ଲଟ ଯୋଗ କରିବାରେ ବିଫଳ"
-
-#, c-format
 msgid "Failed to allocate PCI device list: %s"
 msgstr "PCI ଉପକରଣ ତାଲିକାକୁ ବାଣ୍ଟିବାରେ ବିଫଳ: %s"
 
 msgid "Failed to allocate XML buffer"
 msgstr "XML ବଫର ବାଣ୍ଟିବାରେ ବିଫଳ"
-
-msgid "Failed to allocate memory"
-msgstr "ସ୍ମୃତି ବାଣ୍ଟିବାରେ ବିଫଳ"
 
 msgid "Failed to allocate memory for path"
 msgstr "ପଥ ପାଇଁ ସ୍ମୃତି ବାଣ୍ଟିବାରେ ବିଫଳ"
@@ -3335,9 +3136,6 @@ msgstr "ସୁରକ୍ଷା ମଡେଲ ବଣ୍ଟନ କରିବାରେ
 
 msgid "Failed to allocate tty"
 msgstr "tty କୁ ବାଣ୍ଟିବାରେ ବିଫଳ"
-
-msgid "Failed to allocate xen session"
-msgstr "xen ଅଧିବେଶନକୁ ବାଣ୍ଟିବାରେ ବିଫଳ"
 
 #, c-format
 msgid "Failed to apply capabilities: %d"
@@ -3371,10 +3169,6 @@ msgstr "ସଂରକ୍ଷଣ ପୁଲ '%s' କୁ ସ୍ୱୟଂଚାଳି�
 
 msgid "Failed to begin network config change transaction"
 msgstr "ନେଟୱର୍କ ବିନ୍ୟାସ ପରିବର୍ତ୍ତନ ସ୍ଥାନାନ୍ତରଣକୁ ଆରମ୍ଭ କରିବାରେ ବିଫଳ"
-
-#, c-format
-msgid "Failed to bind PCI device '%s' to %s"
-msgstr "PCI ଉପକରଣ '%s' କୁ %s ଥିରେ ବାନ୍ଧିବାରେ ବିଫଳ"
 
 #, c-format
 msgid "Failed to bind mount directory %s to %s"
@@ -3504,9 +3298,6 @@ msgstr "SASL ଗ୍ରାହକ ପ୍ରସଙ୍ଗ ନିର୍ମାଣ କ�
 
 msgid "Failed to create XML"
 msgstr "XML ସୃଷ୍ଟି କରିବାରେ ବିଫଳ"
-
-msgid "Failed to create XML conf object"
-msgstr "XML conf ବସ୍ତୁକୁ ସୃଷ୍ଟି କରିବାରେ ବିଫଳ"
 
 msgid "Failed to create XML config object"
 msgstr "XML ବିନ୍ୟାସ ବସ୍ତୁକୁ ସୃଷ୍ଟି କରିବାରେ ବିଫଳ"
@@ -4282,10 +4073,6 @@ msgid "Failed to release port %d"
 msgstr "ପୋର୍ଟ  %d କୁ ଖୋଲିବାରେ ବିଫଳ"
 
 #, c-format
-msgid "Failed to remove PCI ID '%s' from %s"
-msgstr "PCI ID '%s' କୁ %s ରୁ କାଢ଼ିବାରେ ବିଫଳ"
-
-#, c-format
 msgid "Failed to remove capability %s: %d"
 msgstr "କ୍ଷମତା %s ବାହାର କରିବାରେ ବିଫଳ: %d"
 
@@ -4563,10 +4350,6 @@ msgstr "ଆଶୁଚିତ୍ର ନେବାରେ ବିଫଳ: %s"
 #, c-format
 msgid "Failed to terminate process %lld with SIG%s"
 msgstr "%lld କାର୍ଯ୍ୟକୁ SIG%s ସହିତ ବନ୍ଦ କରିବାରେ ବିଫଳ"
-
-#, c-format
-msgid "Failed to trigger a re-probe for PCI device '%s'"
-msgstr "PCI ଉପକରଣ '%s' ପାଇଁ ଗୋଟିଏ ପୁନଃ-ଅନ୍ୱେଷଣକୁ ଆରମ୍ଭ କରିବାରେ ବିଫଳ"
 
 #, c-format
 msgid "Failed to truncate file '%s'"
@@ -5163,13 +4946,6 @@ msgstr "ଅବୈଧ ବୈଧିକରଣ ପଦ୍ଧତି: '%s'"
 
 msgid "Invalid back reference"
 msgstr "ଅବୈଧ  ପଛୁଆ ସନ୍ଦର୍ଭ"
-
-msgid "Invalid base64 data"
-msgstr "ଅବୈଧ base64 ଗୁପ୍ତ ତଥ୍ୟ"
-
-#, c-format
-msgid "Invalid boolean value for field '%s'"
-msgstr "ସ୍ଥାନ '%s' ପାଇଁ ଅବୈଧ ବୁଲିଆନ ମୂଲ୍ୟ"
 
 #, c-format
 msgid "Invalid bridge mac address '%s' in network '%s'"
@@ -6089,10 +5865,6 @@ msgid "Multiqueue devices are not supported on this system"
 msgstr "Multiqueue ଉପକରଣଗୁଡ଼ିକ ଏହି ତନ୍ତ୍ର ଉପରେ ସହାୟତା ପ୍ରାପ୍ତ ନୁହଁ"
 
 #, c-format
-msgid "Multiqueue network is not supported for: %s"
-msgstr "ଏହା ପାଇଁ ମଲଟିକ୍ୟୁ ନେଟୱର୍କ ସହାୟତା ପ୍ରାପ୍ତ ନୁହଁ: %s"
-
-#, c-format
 msgid "Must use --rename or --clone to change %s to %s"
 msgstr ""
 "--rename କିମ୍ବା --clone କୁ %s ରୁ %s କୁ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ନିଶ୍ଚିତ ଭାବରେ ବ୍ୟବହାର କରନ୍ତୁ"
@@ -6109,10 +5881,6 @@ msgstr "NULL NetworkDef"
 #, c-format
 msgid "NULL string parameter '%s'"
 msgstr "NULL ବାକ୍ୟଖଣ୍ଡ ପ୍ରାଚଳ '%s'"
-
-#, c-format
-msgid "NULL value for field '%s'"
-msgstr "ସ୍ଥାନ '%s' ପାଇଁ ଶୂନ୍ୟ ମୂଲ୍ୟ"
 
 msgid "NUMA cell number"
 msgstr "NUMA କକ୍ଷ ସଂଖ୍ୟା"
@@ -6312,9 +6080,6 @@ msgstr "କୌଣସି JSON ବିଶ୍ଳେଷକ କାର୍ଯ୍ୟକ�
 msgid "No PCI buses available"
 msgstr "କୌଣସି PCI ପରିପଥ ଉପଲବ୍ଧ ନାହିଁ"
 
-msgid "No UNIX process ID available"
-msgstr "କୌଣସି UNIX କାର୍ଯ୍ୟ ID ଉପଲବ୍ଧ ନାହିଁ"
-
 #, c-format
 msgid "No active operation on device: %s"
 msgstr "ଉପକରଣ ଉପରେ କୌଣସି ସକ୍ରିୟ ପ୍ରୟୋଗ ନାହିଁ: %s"
@@ -6436,9 +6201,6 @@ msgstr "କୌଣସି qemu ପରିବେଶ ନାମ ଉଲ୍ଲେଖ ହ
 #, c-format
 msgid "No source device specified when formatting pool '%s'"
 msgstr "ପୁଲ  '%s' କୁ ଫର୍‌ମାଟ୍‌ କରିବା ସମୟରେ କୌଣସି ଉତ୍ସ ଉପକରଣ ଉଲ୍ଲେଖ ହୋଇନାହିଁ"
-
-msgid "No statedir specified"
-msgstr "କୌଣସି statedir ଉଲ୍ଲେଖ ହୋଇ ନାହିଁ"
 
 #, c-format
 msgid "No storage volume with key or path '%s'"
@@ -7330,9 +7092,6 @@ msgstr "ଅତିଥିରେ ପ୍ରକ୍ରିୟାଗୁଡ଼ିକ ପ�
 msgid "Serial port index %d out of [0..3] range"
 msgstr "କ୍ରମିକ ପୋର୍ଟ ଅନୁକ୍ରମଣିକା %d ସୀମା [0..3] ବାହାରେ"
 
-msgid "Server name not in URI"
-msgstr "ସର୍ଭର ନାମ URI ରେ ନାହିଁ"
-
 msgid "Servname not supported for ai_socktype"
 msgstr "ai_socktype ପାଇଁ Servname କୁ ସହାୟତା ନାହିଁ"
 
@@ -7739,13 +7498,6 @@ msgstr "ଲକ୍ଷ୍ଯସ୍ଥଳ ନିୟନ୍ତ୍ରକ ପ୍ରକ�
 #, c-format
 msgid "Target controller vectors %d does not match source %d"
 msgstr "ଲକ୍ଷ୍ଯସ୍ଥଳ ନିୟନ୍ତ୍ରକ ଭେକ୍ଟର %d ଉତ୍ସ %d ସହିତ ମିଶୁ ନାହିଁ"
-
-#, c-format
-msgid ""
-"Target device PCI address %04x:%02x:%02x.%02x does not match source %04x:"
-"%02x:%02x.%02x"
-msgstr ""
-"ଲକ୍ଷ୍ଯସ୍ଥଳ ଉପକରଣ PCI ଠିକଣା %04x:%02x:%02x.%02x ଉତ୍ସ%04x:%02x:%02x.%02x ସହିତ ମିଶି ନଥାଏ"
 
 #, c-format
 msgid "Target device address type %s does not match source %s"
@@ -8189,10 +7941,6 @@ msgstr "%s ପାଇଁ ଅତ୍ୟଧିକ ଫାଇଲତନ୍ତ୍ର ମ
 #, c-format
 msgid "Too many interfaces '%d' for limit '%d'"
 msgstr "ଅତ୍ଯଧିକ ଅନ୍ତରାପୃଷ୍ଠ '%d' ସିମୀତ '%d' ପାଇଁ"
-
-#, c-format
-msgid "Too many job stats '%d' for limit '%d'"
-msgstr "ଅତ୍ଯଧିକ କାର୍ଯ୍ୟ ପରିସଂଖ୍ୟାନ '%d' ସିମୀତ '%d' ପାଇଁ"
 
 #, c-format
 msgid "Too many migration parameters '%d' for limit '%d'"
@@ -8718,9 +8466,6 @@ msgstr "DBus ଅଧିବେଶନ ବସ ସଂଯୋଗ ପାଇବାରେ 
 msgid "Unable to get DBus system bus connection: %s"
 msgstr "DBus ତନ୍ତ୍ର ବସ ସଂଯୋଗ ପାଇବାରେ ଅସମର୍ଥ: %s"
 
-msgid "Unable to get Host CPU set"
-msgstr "ହୋଷ୍ଟ CPUକୁ ପାଇବାରେ ଅସମର୍ଥ"
-
 #, c-format
 msgid "Unable to get STP delay on %s on this platform"
 msgstr "ଏହି ପ୍ଲାଟଫର୍ମରେ %s ଉପରେ STP ବିଳମ୍ବକୁ ପାଇବାରେ ଅସମର୍ଥ"
@@ -8808,9 +8553,6 @@ msgstr "ହାର୍ଡ ଡିସ୍କ id ପାଇବାରେ ଅସମର୍
 #, c-format
 msgid "Unable to get hardDisk Id, rc=%08x"
 msgstr "ହାର୍ଡ ଡିସ୍କ Id ପାଇବାରେ ଅସମର୍ଥ, rc=%08x"
-
-msgid "Unable to get host metric Information"
-msgstr "ହୋଷ୍ଟ ମେଟ୍ରିକ ସୂଚନା ପାଇବାରେ ଅସମର୍ଥ"
 
 #, c-format
 msgid "Unable to get index for interface %s"
@@ -9072,13 +8814,6 @@ msgstr "ଶ୍ରେଣୀ id '%s' କୁ ବିଶ୍ଳେଷଣରେ ଅସ�
 #, c-format
 msgid "Unable to parse current SELinux context '%s'"
 msgstr "ପ୍ରଚଳିତ SELinux ପ୍ରସଙ୍ଗ '%s' କୁ ବିଶ୍ଳେଷଣ କରିବାରେ ଅସମର୍ଥ"
-
-#, c-format
-msgid "Unable to parse devaddr parameter '%s'"
-msgstr "devaddr ପ୍ରାଚଳ '%s' କୁ ବିଶ୍ଳେଷଣ କରିବାରେ ଅସମର୍ଥ"
-
-msgid "Unable to parse given mac address"
-msgstr "ପ୍ରଦତ୍ତ mac ଠିକଣାକୁ ବିଶ୍ଳେଷଣ କରିବାରେ ଅସମର୍ଥ"
 
 msgid "Unable to parse integer parameter"
 msgstr "ଗଣନ ସଂଖ୍ୟା ପ୍ରାଚଳକୁ ବିଶ୍ଳେଷଣ କରିବାରେ ଅସମର୍ଥ"
@@ -9344,9 +9079,6 @@ msgstr "ବନ୍ଧନ ଲକ୍ଷ୍ଯସ୍ଥଳ %s କୁ ଆରମ୍ଭ
 #, c-format
 msgid "Unable to truncate %s"
 msgstr "%s କୁ ଯୋଡ଼ିବାରେ ଅସମର୍ଥ"
-
-msgid "Unable to unescape command"
-msgstr "ନିର୍ଦ୍ଦେଶକୁ unescape କରିବାରେ ଅସମର୍ଥ"
 
 #, c-format
 msgid "Unable to unregister machine, rc=%08x"
@@ -10973,10 +10705,6 @@ msgid "cannot halt after transient domain snapshot"
 msgstr "ଅସ୍ଥାୟୀ ଡମେନ ଆଶୁଚିତ୍ର ପରେ ଅଟକି ପାରିବେ ନାହିଁ"
 
 #, c-format
-msgid "cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"
-msgstr "ଏକାଧିକ କାର୍ଯ୍ୟ ବିଶିଷ୍ଟ PCI ଉପକରଣକୁ ହଟ ଅନପ୍ଲଗ କରିପାରିବେ ନାହିଁ: %.4x:%.2x:%.2x.%.1x"
-
-#, c-format
 msgid "cannot initialize cert object: %s"
 msgstr "ପ୍ରମାଣପତ୍ର ବସ୍ତୁକୁ ଆରମ୍ଭ କରିପାରିବେ ନାହିଁ: %s"
 
@@ -12223,10 +11951,6 @@ msgid "dev->name buffer overflow: %.3d:%.3d"
 msgstr "dev->name ବଫର ଅତିପ୍ରବାହ: %.3d:%.3d"
 
 #, c-format
-msgid "dev->name buffer overflow: %.4x:%.2x:%.2x.%.1x"
-msgstr "dev->name buffer overflow: %.4x:%.2x:%.2x.%.1x"
-
-#, c-format
 msgid "device %s is not a PCI device"
 msgstr "ଉପକରଣ %s ଟି ଗୋଟିଏ PCI ଯନ୍ତ୍ର ନୁହଁ"
 
@@ -13471,9 +13195,6 @@ msgstr "ଫାଇଲ '%s' କୁ ଲେଖିବାରେ ବିଫଳ"
 msgid "fatal signal %d"
 msgstr "ମାରାତ୍ମକ ସଂକେତ %d"
 
-msgid "fd and fdset must be valid"
-msgstr "fd ଏବଂ fdset ନିଶ୍ଚିତ ଭାବରେ ବୈଧ"
-
 msgid "fd must be valid"
 msgstr "fd ନିଶ୍ଚିତ ଭାବରେ ବୈଧ ଅଟେ"
 
@@ -13733,10 +13454,6 @@ msgid "host device already exists"
 msgstr "ହୋଷ୍ଟ ଉପକରଣ ପୂର୍ବରୁ ଅବସ୍ଥିତ"
 
 #, c-format
-msgid "host pci device %.4x:%.2x:%.2x.%.1x not found"
-msgstr "ଆଧାର pci ଉପକରଣ %.4x:%.2x:%.2x.%.1x ମିଳିଲା ନାହିଁ"
-
-#, c-format
 msgid "host reports map buffer length exceeds maximum: %d > %d"
 msgstr "ଆଧାର ଖବରର ମ୍ୟାପ ବଫର ସର୍ବାଧିକ ଲମ୍ବକୁ ଅତିକ୍ରମ କରିଛି: %d > %d"
 
@@ -13849,9 +13566,6 @@ msgstr "ଉପଲବ୍ଧ ହେଲେ ସଂଯୋଗ URI ରେ ପ୍ରବ�
 #, c-format
 msgid "incomplete metadata in '%s'"
 msgstr "'%s' ରେ ଅସମ୍ପୂର୍ଣ୍ଣ ଅଧିତଥ୍ୟ"
-
-msgid "incomplete return information"
-msgstr "ଅସମ୍ପୂର୍ଣ୍ଣ ଫେରସ୍ତ ସୂଚନା"
 
 #, c-format
 msgid "incomplete save header in '%s'"
@@ -14122,10 +13836,6 @@ msgstr "ଅବୈଧ ସ୍ବତନ୍ତ୍ରଚର ଦିଆଯାଇଛି"
 #, c-format
 msgid "invalid argument: %s"
 msgstr "ଅବୈଧ ସ୍ବତନ୍ତ୍ରଚର: %s"
-
-#, c-format
-msgid "invalid base64 in '%s'"
-msgstr "'%s' ରେ ଅବୈଧ base64"
 
 msgid "invalid catchup limit"
 msgstr "ଅବୈଧ ଧାରଣ ସୀମା"
@@ -14520,10 +14230,6 @@ msgstr "ଡିସ୍କ '%s'କୁ libxenlight ସଂଲଗ୍ନ କରିବ�
 
 msgid "libxenlight failed to attach network device"
 msgstr "libxenlight ନେଟୱର୍କ ଉପକରଣକୁ ସଂଲଗ୍ନ କରିବାରେ ବିଫଳ"
-
-#, c-format
-msgid "libxenlight failed to attach pci device %.4x:%.2x:%.2x.%.1x"
-msgstr "libxenlight  pci ଉପକରଣ %.4x:%.2x:%.2x.%.1x କୁ ସଂଲଗ୍ନ କରିବାରେ ବିଫଳ"
 
 #, c-format
 msgid "libxenlight failed to change media for disk '%s'"
@@ -17209,10 +16915,6 @@ msgid "target of disk device"
 msgstr "ଡିସ୍କ ଉପକରଣର ଲକ୍ଷ୍ଯ"
 
 #, c-format
-msgid "target pci device %.4x:%.2x:%.2x.%.1x already exists"
-msgstr "ଲକ୍ଷ୍ଯ pci ଉପକରଣ %.4x:%.2x:%.2x.%.1x ପୂର୍ବରୁ ଅବସ୍ଥିତ"
-
-#, c-format
 msgid "target type must be specified for %s device"
 msgstr "%s ଉପକରଣ ପାଇଁ ଲକ୍ଷ୍ଯ ସ୍ଥାନ ପ୍ରକାର ଉଲ୍ଲେଖ କରାଯିବା ଉଚିତ"
 
@@ -17306,10 +17008,6 @@ msgstr "ଏହି ନେଟୱାର୍କ ପୂର୍ବରୁ ରହିଛି
 
 msgid "this platform is missing dlopen"
 msgstr "ଏହି ପ୍ଲାଟଫର୍ମରେ dlopen ନାହିଁ"
-
-#, c-format
-msgid "this qemu doesn't support RNG device type '%s'"
-msgstr "ଏହି qemu RNG ଉପକରଣ ପ୍ରକାର '%s' କୁ ସହାୟତା କରିନଥାଏ"
 
 msgid "this qemu doesn't support the rng-egd backend"
 msgstr "ଏହି qemu rng-egd ପୃଷ୍ଠଭୂମିକୁ ସହାୟତା କରିନଥାଏ"
@@ -17751,14 +17449,6 @@ msgstr "ଅପ୍ରତ୍ୟାଶିତ %s କାର୍ଯ୍ୟ: %d"
 #, c-format
 msgid "unexpected OpenVZ URI path '%s', try openvz:///system"
 msgstr "ଅପ୍ରତ୍ୟାଶିତ OpenVZ URI ପଥ '%s', openvz:///system କୁ ଚେଷ୍ଟାକରନ୍ତୁ"
-
-#, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///session"
-msgstr "ଅପ୍ରତ୍ୟାଶିତ QEMU URI ପଥ '%s', qemu:///session କୁ ଚେଷ୍ଟାକରନ୍ତୁ"
-
-#, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///system"
-msgstr "ଅପ୍ରତ୍ୟାଶିତ QEMU URI ପଥ '%s', qemu:///system କୁ ଚେଷ୍ଟାକରନ୍ତୁ"
 
 #, c-format
 msgid ""
@@ -18288,14 +17978,6 @@ msgstr "ଅଜଣା ଡ୍ରାଇଭର ଶୈଳୀ ମୂଲ୍ୟ '%s'"
 #, c-format
 msgid "unknown driver name '%s'"
 msgstr "ଅଜଣା ଡ୍ରାଇଭର ନାମ '%s'"
-
-#, c-format
-msgid "unknown driver path '%s' specified (try vbox:///session)"
-msgstr "ଅଜଣା ଡ୍ରାଇଭର ପଥ '%s' କୁ ଉଲ୍ଲେଖ କରାଯାଇଛି (vbox:///session କୁ ଚେଷ୍ଟାକରନ୍ତୁ)"
-
-#, c-format
-msgid "unknown driver path '%s' specified (try vbox:///system)"
-msgstr "ଅଜଣା ଡ୍ରାଇଭର ପଥ '%s' ଉଲ୍ଲେଖ କରାଯାଇଛି (vbox:///system କୁ ଚେଷ୍ଟାକରନ୍ତୁ)"
 
 #, c-format
 msgid "unknown enable value '%s'"

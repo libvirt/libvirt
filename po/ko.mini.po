@@ -13,9 +13,9 @@
 # Seong-ho Cho <darkcircle.0426@gmail.com>, 2014
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.6.0\n"
+"Project-Id-Version: libvirt 5.9.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-30 11:31+0100\n"
+"POT-Creation-Date: 2019-10-18 13:39+0100\n"
 "PO-Revision-Date: 2015-02-27 07:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Korean (http://www.transifex.com/projects/p/libvirt/language/"
@@ -42,43 +42,6 @@ msgid ""
 msgstr ""
 "\n"
 "  설명\n"
-
-msgid ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
-"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
-"\n"
-"    Sockets:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
-"\n"
-"    TLS:\n"
-"      CA certificate:     $HOME/.pki/libvirt/cacert.pem\n"
-"      Server certificate: $HOME/.pki/libvirt/servercert.pem\n"
-"      Server private key: $HOME/.pki/libvirt/serverkey.pem\n"
-"\n"
-"    PID file:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
-"\n"
-msgstr ""
-"\n"
-"  기본 경로:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
-"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
-"\n"
-"    Sockets:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
-"\n"
-"    TLS:\n"
-"      CA certificate:     $HOME/.pki/libvirt/cacert.pem\n"
-"      Server certificate: $HOME/.pki/libvirt/servercert.pem\n"
-"      Server private key: $HOME/.pki/libvirt/serverkey.pem\n"
-"\n"
-"    PID file:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
-"\n"
 
 msgid ""
 "\n"
@@ -2150,23 +2113,8 @@ msgstr "실패 "
 msgid "Failed"
 msgstr "실패"
 
-#, c-format
-msgid "Failed opening %s"
-msgstr "%s 열기 실패 "
-
-#, c-format
-msgid "Failed to add PCI device ID '%s' to %s"
-msgstr "PCI 장치 ID '%s'를 %s에 부착하는 데 실패"
-
-#, c-format
-msgid "Failed to add slot for PCI device '%s' to %s"
-msgstr "PCI 장치 '%s'(%s에 대한)에 슬롯을 추가하는 데 실패"
-
 msgid "Failed to allocate XML buffer"
 msgstr "XML 버퍼 할당에 실패"
-
-msgid "Failed to allocate memory"
-msgstr "메모리 할당 실패"
 
 msgid "Failed to allocate memory for path"
 msgstr "경로의 메모리를 할당하는데 실패 "
@@ -2201,10 +2149,6 @@ msgstr "인터페이스 부착 실패"
 #, c-format
 msgid "Failed to autostart VM '%s': %s"
 msgstr "VM '%s'의 autostart 실패: %s"
-
-#, c-format
-msgid "Failed to bind PCI device '%s' to %s"
-msgstr "PCI 장치 '%s'를 %s에 바인드하는 데 실패"
 
 #, c-format
 msgid "Failed to bind mount directory %s to %s"
@@ -2797,10 +2741,6 @@ msgid "Failed to release lock"
 msgstr "잠금을 해제하는데 실패했습니다 "
 
 #, c-format
-msgid "Failed to remove PCI ID '%s' from %s"
-msgstr "PIC ID '%s'를 %s에서 제거하는 데 실패했습니다"
-
-#, c-format
 msgid "Failed to reset PCI device: %s"
 msgstr "PCI 장치를 리셋하는 데 실패: %s"
 
@@ -2943,10 +2883,6 @@ msgstr "루트 마운트를 슬레이브 모드로 전환하는 데 실패"
 #, c-format
 msgid "Failed to symlink device %s to %s"
 msgstr "%s에 %s 장치를 심볼릭 링크하는데 실패했습니다 "
-
-#, c-format
-msgid "Failed to trigger a re-probe for PCI device '%s'"
-msgstr "PCI 장치 '%s'를 다시 감지하도록 하는 데 실패했습니다"
 
 #, c-format
 msgid "Failed to truncate volume with path '%s' to 0 bytes"
@@ -3346,9 +3282,6 @@ msgstr "잘못된 인수"
 
 msgid "Invalid back reference"
 msgstr "잘못된 역 참조"
-
-msgid "Invalid base64 data"
-msgstr "잘못된 base64 데이터"
 
 #, c-format
 msgid "Invalid bridge mac address '%s' in network '%s'"
@@ -4063,9 +3996,6 @@ msgstr "호스트 '%s'의 IP 주소를 찾을 수 없음: %s"
 
 msgid "No JSON parser implementation is available"
 msgstr "구현된 JSON 구문분석기가 없습니다"
-
-msgid "No UNIX process ID available"
-msgstr "사용 가능한 UNIX 프로세스 ID가 없음"
 
 msgid "No address associated with hostname"
 msgstr "호스트 이름과 연관된 주소가 없음 "
@@ -4947,14 +4877,6 @@ msgid "Target controller vectors %d does not match source %d"
 msgstr "대상 컨트롤러 벡터 %d가 소스 %d와 일치하지 않음"
 
 #, c-format
-msgid ""
-"Target device PCI address %04x:%02x:%02x.%02x does not match source %04x:"
-"%02x:%02x.%02x"
-msgstr ""
-"대상 장치 PCI 주소 %04x:%02x:%02x.%02x는 소스  %04x:%02x:%02x.%02x와 일치하"
-"지 않음"
-
-#, c-format
 msgid "Target device address type %s does not match source %s"
 msgstr "대상 장치 주소 유형 %s은 소스 %s와 일치하지 않음 "
 
@@ -5556,10 +5478,6 @@ msgstr "기본 SELinux 문맥 '%s'을 구문 분석할 수 없음 "
 #, c-format
 msgid "Unable to parse class id '%s'"
 msgstr "클래스 ID '%s'를 구문 분석할 수 없습니다"
-
-#, c-format
-msgid "Unable to parse devaddr parameter '%s'"
-msgstr "devaddr 매개변수 '%s'를 구문분석 할 수 없음"
 
 #, c-format
 msgid "Unable to parse link speed: %s"
@@ -7955,10 +7873,6 @@ msgid "host CPU vendor does not match required CPU vendor %s"
 msgstr "호스트 CPU 벤더가 필요한 CPU 벤더 %s와 일치하지 않습니다 "
 
 #, c-format
-msgid "host pci device %.4x:%.2x:%.2x.%.1x not found"
-msgstr "호스트 pic 장치 %.4x:%.2x:%.2x.%.1x를 찾을 수 없음"
-
-#, c-format
 msgid "host reports map buffer length exceeds maximum: %d > %d"
 msgstr "호스트가 최대 길이를 초과하는 맵 버퍼 길이를 보고함: %d > %d"
 
@@ -8235,10 +8149,6 @@ msgstr "잘못된 인수가 제공됨 "
 #, c-format
 msgid "invalid argument: %s"
 msgstr "잘못된 인수: %s"
-
-#, c-format
-msgid "invalid base64 in '%s'"
-msgstr "'%s' 안에 잘못된  base64"
 
 msgid "invalid catchup limit"
 msgstr "잘못된 catchup limit입니다"
@@ -10557,10 +10467,6 @@ msgid "unable to set tty attributes: %s"
 msgstr "tty 특성을 설정하는 데 실패: %s"
 
 #, c-format
-msgid "unable to visit backing chain file %s"
-msgstr "백업 체인 파일 %s을 찾을 수 없습니다 "
-
-#, c-format
 msgid "unable to write data to '%s'"
 msgstr "'%s'에 데이터를 작성할 수 없음"
 
@@ -10602,14 +10508,6 @@ msgstr "예기치 못한 %s 작업: %d"
 #, c-format
 msgid "unexpected OpenVZ URI path '%s', try openvz:///system"
 msgstr "예기치 못한 OpenVZ URI 경로 '%s', openvz:///system을 시도하십시오"
-
-#, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///session"
-msgstr "예기치 못한 QEMU URI 경로 '%s', qemu:///session을 시도"
-
-#, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///system"
-msgstr "예기치 못한 QEMU URI 경로 '%s', qemu:///system을 시도"
 
 #, c-format
 msgid "unexpected accessmode %d"
@@ -11053,18 +10951,6 @@ msgstr "알 수 없는 드라이버 형식 값 '%s'"
 #, c-format
 msgid "unknown driver name '%s'"
 msgstr "알 수 없는 드라이버 이름 '%s'"
-
-#, c-format
-msgid "unknown driver path '%s' specified (try vbox:///session)"
-msgstr ""
-"알려지지 않은 드라이버 경로 '%s'가 지정되었습니다 (vbox:///session을 시도해 "
-"보십시오.)"
-
-#, c-format
-msgid "unknown driver path '%s' specified (try vbox:///system)"
-msgstr ""
-"알려지지 않은 드라이버 경로 '%s'가 지정되었습니다 (vbox:///system을 시도해 보"
-"십시오.)"
 
 msgid "unknown error"
 msgstr "알 수 없는 오류"

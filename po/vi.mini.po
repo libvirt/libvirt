@@ -6,9 +6,9 @@
 # Daniel  <veillard@redhat.com>, 2011.
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.6.0\n"
+"Project-Id-Version: libvirt 5.9.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-30 11:31+0100\n"
+"POT-Creation-Date: 2019-10-18 13:39+0100\n"
 "PO-Revision-Date: 2015-03-05 01:32+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/projects/p/fedora/"
@@ -400,12 +400,6 @@ msgstr "Không thể hủy định miền tạm thời"
 msgid "Cannot unshare mount namespace"
 msgstr "Không thể tắt chia sẻ không gian tên lắp"
 
-msgid "Capabilities not available"
-msgstr "Các khả năng không sẵn có"
-
-msgid "Capabilities not found"
-msgstr "Các khả năng không tìm thấy"
-
 msgid "Capacity"
 msgstr "Dung lượng"
 
@@ -712,33 +706,6 @@ msgstr "Không thể đặt thư mục nguồn cho hệ thống tập tin"
 msgid "Could not verify disk address"
 msgstr "Không thể kiểm tra địa chỉ đĩa"
 
-msgid "Couldn't fetch Domain Information"
-msgstr "Không thể lấy Thông tin Miền"
-
-msgid "Couldn't fetch Node Information"
-msgstr "Không thể lấy Thông tin Nút"
-
-msgid "Couldn't get VM information from XML"
-msgstr "Không thể lấy thông tin máy ảo từ XML"
-
-msgid "Couldn't get VM record"
-msgstr "Không thể lấy bản ghi máy ảo"
-
-msgid "Couldn't get host metrics"
-msgstr "Không thể lấy mê tric máy chủ"
-
-msgid "Couldn't get host metrics - memory information"
-msgstr "Không thể lấy mê tric máy chủ - thông tin bộ nhớ"
-
-msgid "Couldn't get the Domain Pointer"
-msgstr "Không thể lấy Con trỏ Miền"
-
-msgid "Couldn't get version info"
-msgstr "Không thể lấy thông tin phiên bản"
-
-msgid "Couldn't parse version info"
-msgstr "Không thể phân tích thông tin phiên bản"
-
 #, c-format
 msgid "Couldn't read volume target path '%s'"
 msgstr "Không thể đọc đường dẫn đích ổ '%s'"
@@ -974,12 +941,6 @@ msgstr "Miền %s đã bỏ đánh dấu tự khởi động\n"
 msgid "Domain '%s' is already running"
 msgstr "Miền '%s' đã đang chạy"
 
-msgid "Domain Pointer is invalid"
-msgstr "Con trỏ Miền không hợp lệ"
-
-msgid "Domain Pointer not valid"
-msgstr "Con trỏ miền không hợp lệ"
-
 msgid ""
 "Domain XML doesn't contain any disks, cannot deduce datastore and path for "
 "VMX file"
@@ -1024,9 +985,6 @@ msgstr "Miền không bị ngưng hay tắt"
 msgid "Domain name contains invalid escape sequence"
 msgstr "Tên miền chứa dãy thoát không hợp lệ"
 
-msgid "Domain name is not unique"
-msgstr "Tên miền không độc nhất"
-
 msgid "Domain not found"
 msgstr "Miền không tìm thấy"
 
@@ -1048,9 +1006,6 @@ msgstr "Ảnh chụp miền không tìm thấy"
 #, c-format
 msgid "Domain snapshot not found: %s"
 msgstr "Ảnh chụp miền không tìm thấy: %s"
-
-msgid "DomainID can't fit in 32 bits"
-msgstr "DomainID không vừa trong 32 bit"
 
 msgid "Driver state initialization failed"
 msgstr "Khởi chạy trạng thái trình điều khiển thất bại"
@@ -1299,23 +1254,8 @@ msgstr "Chỉ mục bộ điều khiển FDC %d vượt miền [0]"
 msgid "FDC unit index %d out of [0..1] range"
 msgstr "Chỉ mục đơn vị FDC %d vượt miền [0..1]"
 
-#, c-format
-msgid "Failed opening %s"
-msgstr "Thất bại khi mở %s"
-
-#, c-format
-msgid "Failed to add PCI device ID '%s' to %s"
-msgstr "Thất bại khi thêm ID thiết bị PCI '%s' vào %s"
-
-#, c-format
-msgid "Failed to add slot for PCI device '%s' to %s"
-msgstr "Thất bại khi thêm khe cho thiết bị PCI '%s' vào %s"
-
 msgid "Failed to allocate XML buffer"
 msgstr "Thất bại khi cấp phát bộ đệm XML"
-
-msgid "Failed to allocate memory"
-msgstr "Thất bại khi cấp phát bộ nhớ"
 
 msgid "Failed to allocate memory for path"
 msgstr "Thất bại khi cấp phát bộ nhớ cho đường dẫn"
@@ -1348,10 +1288,6 @@ msgstr "Thất bại khi tự khởi động VM '%s': %s"
 #, c-format
 msgid "Failed to autostart storage pool '%s': %s"
 msgstr "Thất bại khi tự khởi chạy pool lưu trữ '%s': %s"
-
-#, c-format
-msgid "Failed to bind PCI device '%s' to %s"
-msgstr "Thất bại khi gắn kết thiết bị PCI '%s' vào %s"
 
 #, c-format
 msgid "Failed to build path for %s hook"
@@ -1822,10 +1758,6 @@ msgid "Failed to register xml namespace '%s'"
 msgstr "Thất bại khi đăng ký namespace xml '%s'"
 
 #, c-format
-msgid "Failed to remove PCI ID '%s' from %s"
-msgstr "Thất bại khi gỡ bỏ ID PCI '%s' từ %s"
-
-#, c-format
 msgid "Failed to remove managed save image for domain %s"
 msgstr "Thất bại khi gỡ bỏ ảnh lưu cho miền %s"
 
@@ -1938,10 +1870,6 @@ msgstr "Thất bại khi chuyển lắp root vào chế độ slave"
 #, c-format
 msgid "Failed to take snapshot: %s"
 msgstr "Thất bại khi tạo ảnh chụp: %s"
-
-#, c-format
-msgid "Failed to trigger a re-probe for PCI device '%s'"
-msgstr "Thất bại khi bật một re-probe cho thiết bị PCI '%s'"
 
 #, c-format
 msgid "Failed to truncate volume with path '%s' to %ju bytes"
@@ -2243,9 +2171,6 @@ msgstr "Chuỗi nhà cung cấp CPU không hợp lệ '%s'"
 
 msgid "Invalid argument"
 msgstr "Tham số không hợp lệ"
-
-msgid "Invalid base64 data"
-msgstr "dữ liệu base64 không hợp lệ"
 
 #, c-format
 msgid "Invalid bus type '%s' for disk"
@@ -2979,10 +2904,6 @@ msgid ""
 msgstr ""
 "Tham số truy vấn 'no_verify' có giá trị không mong đợi '%s' (nên là 0 hoặc 1)"
 
-msgid "Query parameter 'no_verify' has unexpected value (should be 0 or 1)"
-msgstr ""
-"Tham số truy vấn 'no_verify' có giá trị không mong muốn (nên là 0 hoặc 1)"
-
 #, c-format
 msgid ""
 "Query parameter 'proxy' contains unexpected type '%s' (should be (http|"
@@ -3216,9 +3137,6 @@ msgstr "Mẫu bảo mật:"
 #, c-format
 msgid "Serial port index %d out of [0..3] range"
 msgstr "Chỉ mục cổng nối tiếp %d vượt miền [0..3]"
-
-msgid "Server name not in URI"
-msgstr "Tên phục vụ không trong URI"
 
 msgid "Set a secret value."
 msgstr "Đặt một giá trị bí mật"
@@ -3478,9 +3396,6 @@ msgstr "Không thể định dạng cổng guestfwd"
 msgid "Unable to generate random uuid."
 msgstr "Không thể tạo uuid ngẫu nhiên."
 
-msgid "Unable to get Host CPU set"
-msgstr "Không thể lấy tập hợp CPU máy chủ"
-
 msgid "Unable to get VIOS name"
 msgstr "Không thể lấy tên VIOS"
 
@@ -3492,9 +3407,6 @@ msgstr "Không thể lấy trạng thái miền"
 
 msgid "Unable to get free slot number"
 msgstr "Không thể lấy số khe rảnh"
-
-msgid "Unable to get host metric Information"
-msgstr "Không thể lấy thông tin mê tric máy chủ"
 
 msgid "Unable to get memory parameters"
 msgstr "Không thể lấy các thông số bộ nhớ"
@@ -3525,13 +3437,6 @@ msgstr "Không thể mở /proc/mounts"
 #, c-format
 msgid "Unable to open monitor path %s"
 msgstr "Không thể mở đường dẫn bộ theo dõi %s"
-
-#, c-format
-msgid "Unable to parse devaddr parameter '%s'"
-msgstr "Không thể phân tích tham số devaddr '%s'"
-
-msgid "Unable to parse given mac address"
-msgstr "Không thể phân tích địa chỉ mac đã cho"
 
 #, c-format
 msgid "Unable to pre-create chardev file '%s'"
@@ -5393,10 +5298,6 @@ msgid "guestfwd channel only supports IPv4 addresses"
 msgstr "kênh guestfwd chỉ hỗ trợ các địa chỉ IPv4"
 
 #, c-format
-msgid "host pci device %.4x:%.2x:%.2x.%.1x not found"
-msgstr "thiết bị pci chủ %.4x:%.2x:%.2x.%.1x không tìm thấy"
-
-#, c-format
 msgid "host reports map buffer length exceeds maximum: %d > %d"
 msgstr "máy chủ báo cáo độ dài bộ đệm bản độ vượt quá lớn nhất: %d > %d"
 
@@ -5579,10 +5480,6 @@ msgstr "ID nhà cung cấp USB không hợp lệ được cung cấp cho '%s'"
 #, c-format
 msgid "invalid XML length: %d"
 msgstr "độ dài XML không hợp lệ: %d"
-
-#, c-format
-msgid "invalid base64 in '%s'"
-msgstr "base64 không hợp lệ '%s'"
 
 msgid "invalid catchup limit"
 msgstr "giới hạn catchup không hợp lệ"
@@ -7072,14 +6969,6 @@ msgid "unexpected OpenVZ URI path '%s', try openvz:///system"
 msgstr "đường dẫn URI OpenVZ '%s' không mong đợi, thử openvz://system"
 
 #, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///session"
-msgstr "đường dẫn URI QEMU '%s' không mong đợi, thử qemu:///session"
-
-#, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///system"
-msgstr "đường dẫn URI QEMU '%s' không mong đợi, thử qemu:///system"
-
-#, c-format
 msgid "unexpected accessmode %d"
 msgstr "accessmode không mong đợi %d"
 
@@ -7349,16 +7238,6 @@ msgstr "chính sách lỗi đĩa không rõ '%s'"
 #, c-format
 msgid "unknown disk type '%s'"
 msgstr "kiểu đĩa không rõ '%s'"
-
-#, c-format
-msgid "unknown driver path '%s' specified (try vbox:///session)"
-msgstr ""
-"không có đường dẫn trình điều khiển '%s' được chỉ định (thử vbox:///session)"
-
-#, c-format
-msgid "unknown driver path '%s' specified (try vbox:///system)"
-msgstr ""
-"không có đường dẫn trình điều khiển '%s' được chỉ định (thử vbox:///system)"
 
 msgid "unknown error"
 msgstr "lỗi không rõ"

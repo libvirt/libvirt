@@ -17,9 +17,9 @@
 # Tomoyuki KATO <tomo@dream.daynight.jp>, 2011-2014
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.6.0\n"
+"Project-Id-Version: libvirt 5.9.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-30 11:31+0100\n"
+"POT-Creation-Date: 2019-10-18 13:39+0100\n"
 "PO-Revision-Date: 2015-02-23 06:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/libvirt/"
@@ -59,43 +59,6 @@ msgid ""
 "  Default paths:\n"
 "\n"
 "    Configuration file (unless overridden by -f):\n"
-"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
-"\n"
-"    Sockets:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
-"\n"
-"    TLS:\n"
-"      CA certificate:     $HOME/.pki/libvirt/cacert.pem\n"
-"      Server certificate: $HOME/.pki/libvirt/servercert.pem\n"
-"      Server private key: $HOME/.pki/libvirt/serverkey.pem\n"
-"\n"
-"    PID file:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
-"\n"
-msgstr ""
-"\n"
-"  標準のパス:\n"
-"\n"
-"    設定ファイル (-f により上書きしない場合):\n"
-"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
-"\n"
-"    ソケット:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
-"\n"
-"    TLS:\n"
-"      CA 証明書:     $HOME/.pki/libvirt/cacert.pem\n"
-"      サーバー証明書: $HOME/.pki/libvirt/servercert.pem\n"
-"      サーバー秘密鍵: $HOME/.pki/libvirt/serverkey.pem\n"
-"\n"
-"    PID ファイル:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
-"\n"
-
-msgid ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
 "      $XDG_CONFIG_HOME/libvirt/virtlockd.conf\n"
 "\n"
 "    Sockets:\n"
@@ -116,74 +79,6 @@ msgstr ""
 "\n"
 "    PID ファイル:\n"
 "      $XDG_RUNTIME_DIR/libvirt/virtlockd.pid\n"
-"\n"
-
-#, c-format
-msgid ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
-"      %s\n"
-"\n"
-"    Sockets:\n"
-"      %s\n"
-"      %s\n"
-"\n"
-"    TLS:\n"
-"      CA certificate:     %s\n"
-"      Server certificate: %s\n"
-"      Server private key: %s\n"
-"\n"
-"    PID file (unless overridden by -p):\n"
-"      %s/run/libvirtd.pid\n"
-"\n"
-msgstr ""
-"\n"
-"  標準のパス:\n"
-"\n"
-"    設定ファイル (-f により上書きされていない場合):\n"
-"      %s\n"
-"\n"
-"    ソケット:\n"
-"      %s\n"
-"      %s\n"
-"\n"
-"    TLS:\n"
-"      CA 証明書:     %s\n"
-"      サーバー証明書: %s\n"
-"      サーバー秘密鍵: %s\n"
-"\n"
-"    PID ファイル (-p により上書きされていない場合):\n"
-"      %s/run/libvirtd.pid\n"
-"\n"
-
-#, c-format
-msgid ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
-"      %s/libvirt/virtlockd.conf\n"
-"\n"
-"    Sockets:\n"
-"      %s/run/libvirt/virtlockd-sock\n"
-"\n"
-"    PID file (unless overridden by -p):\n"
-"      %s/run/virtlockd.pid\n"
-"\n"
-msgstr ""
-"\n"
-"  標準のパス:\n"
-"\n"
-"    設定ファイル (-f により上書きされない場合):\n"
-"      %s/libvirt/virtlockd.conf\n"
-"\n"
-"    ソケット:\n"
-"      %s/run/libvirt/virtlockd-sock\n"
-"\n"
-"    PID ファイル (-p により上書きされない場合):\n"
-"      %s/run/virtlockd.pid\n"
 "\n"
 
 msgid ""
@@ -233,40 +128,6 @@ msgid ""
 msgstr ""
 "\n"
 "ドメイン %s の状態が libvirt により保存されました\n"
-
-#, c-format
-msgid ""
-"\n"
-"Usage:\n"
-"  %s [options]\n"
-"\n"
-"Options:\n"
-"  -h | --help            Display program help:\n"
-"  -v | --verbose         Verbose messages.\n"
-"  -d | --daemon          Run as a daemon & write PID file.\n"
-"  -l | --listen          Listen for TCP/IP connections.\n"
-"  -t | --timeout <secs>  Exit after timeout period.\n"
-"  -f | --config <file>   Configuration file.\n"
-"  -V | --version         Display version information.\n"
-"  -p | --pid-file <file> Change name of PID file.\n"
-"\n"
-"libvirt management daemon:\n"
-msgstr ""
-"\n"
-"使用法:\n"
-"  %s [options]\n"
-"\n"
-"オプション:\n"
-"  -h | --help            このプログラムのヘルプの表示\n"
-"  -v | --verbose         冗長なメッセージ\n"
-"  -d | --daemon          デーモン実行 & PID ファイルの書き込み\n"
-"  -l | --listen          TCP/IP 接続のリッスン\n"
-"  -t | --timeout <secs>  タイムアウト期間後の終了\n"
-"  -f | --config <file>   設定ファイル\n"
-"  -V | --version         バージョン情報の表示\n"
-"  -p | --pid-file <file> PID ファイル名の変更\n"
-"\n"
-"libvirt 管理デーモン:\n"
 
 msgid "  NAME\n"
 msgstr "  名前\n"
@@ -380,10 +241,6 @@ msgid "%s length greater than maximum: %d > %d"
 msgstr "%s の長さが最大値よりも大きいです: %d > %d"
 
 #, c-format
-msgid "%s must be run by non root users"
-msgstr "%s は root 以外のユーザーで実行する必要があります"
-
-#, c-format
 msgid "%s not implemented on Win32"
 msgstr "%s Win32 上で実装されていません"
 
@@ -402,10 +259,6 @@ msgstr "%s オブジェクトが無効な動的形式を持ちます"
 #, c-format
 msgid "%s object is missing the required '%s' property"
 msgstr "%s オブジェクトは必要な '%s' プロパティがありません"
-
-#, c-format
-msgid "%s takes no options"
-msgstr "%s はオプションをとりません"
 
 #, c-format
 msgid "%s uri uuid action\n"
@@ -1258,10 +1111,6 @@ msgstr "メモリーを割り当てられません"
 msgid "Can't connect to $uri. Skipping."
 msgstr "$uri に接続できません。飛ばします。"
 
-#, c-format
-msgid "Can't create %s container: %s"
-msgstr "%s コンテナーを作成できません: %s"
-
 msgid "Can't create initial configuration"
 msgstr "初期設定を作成できません"
 
@@ -1768,12 +1617,6 @@ msgstr "パラレル/シリアルデバイスに対して virtio serial を使�
 msgid "Cannot write data"
 msgstr "データを書き込みできません"
 
-msgid "Capabilities not available"
-msgstr "ケイパビリティが利用可能ではありません"
-
-msgid "Capabilities not found"
-msgstr "ケイパビリティが見つかりません"
-
 msgid "Capacity"
 msgstr "容量"
 
@@ -1980,20 +1823,6 @@ msgstr ""
 #, c-format
 msgid "Connected to domain %s\n"
 msgstr "ドメイン %s に接続しました\n"
-
-msgid ""
-"Connecting to session instance without socket path is not supported by the "
-"libssh2 connection driver"
-msgstr ""
-"libssh2 接続ドライバーではソケットパスを使用しないセッションインスタンスへの"
-"接続は対応していません"
-
-msgid ""
-"Connecting to session instance without socket path is not supported by the "
-"ssh connection driver"
-msgstr ""
-"ssh 接続ドライバーではソケットパスを使用しないセッションインスタンスへの接続"
-"は対応していません"
 
 msgid "Constant pages:"
 msgstr "不変ページ:"
@@ -2715,33 +2544,6 @@ msgstr "ストリームに書き込みできません"
 msgid "Couldn't create lock file for device '%s' in path '%s'"
 msgstr "デバイス '%s' 向けロックファイルをパス '%s' に作成できませんでした"
 
-msgid "Couldn't fetch Domain Information"
-msgstr "ドメイン情報を取り出せませんでした"
-
-msgid "Couldn't fetch Node Information"
-msgstr "ノード情報を取り出せませんでした"
-
-msgid "Couldn't get VM information from XML"
-msgstr "XML から VM 情報を取得できませんでした"
-
-msgid "Couldn't get VM record"
-msgstr "VM レコードを取得できませんでした"
-
-msgid "Couldn't get host metrics"
-msgstr "ホストメトリクスを取得できませんでした"
-
-msgid "Couldn't get host metrics - memory information"
-msgstr "ホストメトリクス・メモリー情報を取得できませんでした"
-
-msgid "Couldn't get the Domain Pointer"
-msgstr "ドメインポインターを取得できませんでした"
-
-msgid "Couldn't get version info"
-msgstr "バージョン情報を取得できませんでした"
-
-msgid "Couldn't parse version info"
-msgstr "バージョン情報を構文解析できませんでした"
-
 #, c-format
 msgid "Couldn't read volume target path '%s'"
 msgstr "ボリュームターゲットパス '%s' を読み込めません"
@@ -3163,12 +2965,6 @@ msgstr "ドメイン '%s' はすでに実行中です"
 msgid "Domain '%s' sysinfo are not available"
 msgstr "ドメイン '%s' のシステム情報が利用可能ではありません"
 
-msgid "Domain Pointer is invalid"
-msgstr "ドメインポインターが無効です"
-
-msgid "Domain Pointer not valid"
-msgstr "ドメインのポインターが有効ではありません"
-
 msgid ""
 "Domain XML doesn't contain any disks, cannot deduce datastore and path for "
 "VMX file"
@@ -3252,9 +3048,6 @@ msgstr "ドメインが休止状態または電源オフ状態にありません
 msgid "Domain name contains invalid escape sequence"
 msgstr "ドメイン名が無効なエスケープシーケンスを含んでいます"
 
-msgid "Domain name is not unique"
-msgstr "ドメイン名が一意ではありません"
-
 msgid "Domain not found"
 msgstr "ドメインが見つかりません"
 
@@ -3303,9 +3096,6 @@ msgstr "ドメインのタイトルに改行を含めることはできません
 
 msgid "Domain:"
 msgstr "ドメイン:"
-
-msgid "DomainID can't fit in 32 bits"
-msgstr "DomainID が 32 ビットに収まりません"
 
 msgid "Done.\n"
 msgstr "完了。\n"
@@ -3679,10 +3469,6 @@ msgid "Failed"
 msgstr "失敗"
 
 #, c-format
-msgid "Failed opening %s"
-msgstr "%s のオープンに失敗しました"
-
-#, c-format
 msgid "Failed set TLS x509 credentials: %s"
 msgstr "TLS X.509 認証情報の設定に失敗しました: %s"
 
@@ -3703,10 +3489,6 @@ msgstr ""
 "IP アドレス %s をインターフェース %s の IP アドレスキャッシュに追加できません"
 "でした"
 
-#, c-format
-msgid "Failed to add PCI device ID '%s' to %s"
-msgstr "PCI デバイス ID '%s' を %s  に追加するのに失敗"
-
 msgid "Failed to add netlink event handle watch"
 msgstr "ネットリンクのイベントハンドラーのウォッチを追加できませんでした"
 
@@ -3714,18 +3496,11 @@ msgid "Failed to add signal handle watch"
 msgstr "シグナルハンドルウォッチの追加に失敗しました"
 
 #, c-format
-msgid "Failed to add slot for PCI device '%s' to %s"
-msgstr "PCI デバイス '%s' 用のスロットを %s  へ追加するのに失敗"
-
-#, c-format
 msgid "Failed to allocate PCI device list: %s"
 msgstr "PCI デバイス一覧の割り当てに失敗しました: %s"
 
 msgid "Failed to allocate XML buffer"
 msgstr "XML バッファの割り当てに失敗しました"
-
-msgid "Failed to allocate memory"
-msgstr "メモリーの割り当てに失敗しました"
 
 msgid "Failed to allocate memory for path"
 msgstr "パスのメモリーの割り当てに失敗しました"
@@ -3744,9 +3519,6 @@ msgstr "セキュリティモデルの割り当てに失敗しました"
 
 msgid "Failed to allocate tty"
 msgstr "TTY の割り当てに失敗しました"
-
-msgid "Failed to allocate xen session"
-msgstr "Xen セッションの割り当てに失敗しました"
 
 #, c-format
 msgid "Failed to apply capabilities: %d"
@@ -3776,10 +3548,6 @@ msgstr "ストレージプール '%s' の自動起動に失敗しました: %s"
 
 msgid "Failed to begin network config change transaction"
 msgstr "ネットワーク設定変更トランザクションを開始できませんでした"
-
-#, c-format
-msgid "Failed to bind PCI device '%s' to %s"
-msgstr "PCI デバイス '%s' を %s にバインドするのに失敗"
 
 #, c-format
 msgid "Failed to bind mount directory %s to %s"
@@ -3922,9 +3690,6 @@ msgstr "SASL クライアントコンテキストの作成に失敗しました:
 
 msgid "Failed to create XML"
 msgstr "XML の作成に失敗しました"
-
-msgid "Failed to create XML conf object"
-msgstr "XML 設定オブジェクトの作成に失敗しました"
 
 msgid "Failed to create XML config object"
 msgstr "XML 設定オブジェクトの作成に失敗しました"
@@ -4760,10 +4525,6 @@ msgstr "ロックの開放に失敗しました"
 msgid "Failed to release port %d"
 msgstr "ポート %d の開放に失敗しました"
 
-#, c-format
-msgid "Failed to remove PCI ID '%s' from %s"
-msgstr "%s から PCI ID '%s' の削除に失敗しました"
-
 msgid "Failed to remove domain managed save image"
 msgstr "ドメインの管理保存イメージの削除に失敗しました"
 
@@ -4774,10 +4535,6 @@ msgstr "管理保存ファイル '%s' の削除に失敗しました"
 #, c-format
 msgid "Failed to remove managed save image for domain %s"
 msgstr "ドメイン %s の管理保存イメージの削除に失敗しました"
-
-#, c-format
-msgid "Failed to remove slot for PCI device '%s' from %s"
-msgstr "PCI デバイス '%s' のスロットを %s から削除できませんでした"
 
 #, c-format
 msgid "Failed to remove storage volume '%s'(%s)"
@@ -5054,10 +4811,6 @@ msgstr "スナップショットの取得に失敗しました: %s"
 #, c-format
 msgid "Failed to terminate process %lld with SIG%s"
 msgstr "プロセス %lld を SIG%s で終了に失敗しました"
-
-#, c-format
-msgid "Failed to trigger a re-probe for PCI device '%s'"
-msgstr "PCI デバイス '%s' 用の再プローブのトリガに失敗"
 
 #, c-format
 msgid "Failed to truncate file '%s'"
@@ -5837,13 +5590,6 @@ msgstr "無効な認証方式: '%s'"
 msgid "Invalid back reference"
 msgstr "無効な逆参照"
 
-msgid "Invalid base64 data"
-msgstr "無効な BASE64 データ"
-
-#, c-format
-msgid "Invalid boolean value for field '%s'"
-msgstr "項目 '%s' に対する無効な論理値"
-
 #, c-format
 msgid "Invalid bridge mac address '%s' in network '%s'"
 msgstr "無効なブリッジ MAC アドレス '%s' がネットワーク '%s' にあります"
@@ -6164,12 +5910,6 @@ msgstr ""
 "ることは無効です"
 
 #, c-format
-msgid "Invalid type '%s' requested for parameter '%s', actual type is '%s'"
-msgstr ""
-"無効な形式 '%s' がパラメーター '%s' に対して要求されました、実際の形式は "
-"'%s' です"
-
-#, c-format
 msgid ""
 "Invalid use of 'floor' on interface with MAC address %s - network '%s' has "
 "no inbound QoS set"
@@ -6180,26 +5920,6 @@ msgstr ""
 #, c-format
 msgid "Invalid value '%s' for VMX entry '%s'"
 msgstr "無効な値 '%s' が VMX エントリー '%s' にあります"
-
-#, c-format
-msgid "Invalid value for field '%s': expected double"
-msgstr "項目 '%s' に対する無効な値: double 型が期待されます"
-
-#, c-format
-msgid "Invalid value for field '%s': expected int"
-msgstr "項目 '%s' に対する無効な値: int 型が期待されます"
-
-#, c-format
-msgid "Invalid value for field '%s': expected long long"
-msgstr "項目 '%s' に対する無効な値: long long 型が期待されます"
-
-#, c-format
-msgid "Invalid value for field '%s': expected unsigned int"
-msgstr "項目 '%s' に対する無効な値: 符号なし int 型が期待されます"
-
-#, c-format
-msgid "Invalid value for field '%s': expected unsigned long long"
-msgstr "項目 '%s' に対する無効な値: 符号なし long long 型が期待されます"
 
 msgid "Invalid value for number of CPUs to show"
 msgstr "表示する CPU 数の無効な値"
@@ -6927,10 +6647,6 @@ msgid "Multiqueue devices are not supported on this system"
 msgstr "マルチキューデバイスはこのシステムにおいてサポートされません"
 
 #, c-format
-msgid "Multiqueue network is not supported for: %s"
-msgstr "マルチキューネットワークは次に対してサポートされません: %s"
-
-#, c-format
 msgid "Must use --rename or --clone to change %s to %s"
 msgstr ""
 "%s を %s に変更するには --rename または --clone を使用しなければいけません"
@@ -6947,10 +6663,6 @@ msgstr "空の NetworkDef"
 #, c-format
 msgid "NULL string parameter '%s'"
 msgstr "NULL 文字列パラメーター '%s'"
-
-#, c-format
-msgid "NULL value for field '%s'"
-msgstr "項目 '%s' の値が空白です"
 
 msgid "NUMA cell number"
 msgstr "NUMA セル番号"
@@ -7158,9 +6870,6 @@ msgstr "JSON パーサーが利用できません"
 
 msgid "No PCI buses available"
 msgstr "利用可能な PCI バスがありません"
-
-msgid "No UNIX process ID available"
-msgstr "利用可能な UNIX プロセス ID がありません"
 
 #, c-format
 msgid "No active operation on device: %s"
@@ -7460,9 +7169,6 @@ msgstr "function=0 を持つ PCI デバイスアドレスのみがサポート�
 
 msgid "Only PTY console types are supported"
 msgstr "PTY 形式のみがサポートされます"
-
-msgid "Only Unix socket URI transport is allowed in setuid mode"
-msgstr "Unix ソケット URI 転送のみが setuid モードでサポートされます"
 
 msgid "Only bridged veth devices can be detached"
 msgstr "ブリッジされた仮想ネットワークデバイスのみ切断できます"
@@ -7974,11 +7680,6 @@ msgstr ""
 "問い合わせパラメーター 'no_verify' が期待されない値 '%s' を持ちます (0 また"
 "は 1 でなければいけません)"
 
-msgid "Query parameter 'no_verify' has unexpected value (should be 0 or 1)"
-msgstr ""
-"問い合わせパラメーター 'no_verify' が予期しない値を持ちます（0 か 1 が期待さ"
-"れます）"
-
 #, c-format
 msgid ""
 "Query parameter 'proxy' contains unexpected type '%s' (should be (http|"
@@ -8478,9 +8179,6 @@ msgstr "ファイルディスクリプターの送信はこのソケットにお
 #, c-format
 msgid "Serial port index %d out of [0..3] range"
 msgstr "シリアルポートのインデックス %d が [0..3] の範囲にありません"
-
-msgid "Server name not in URI"
-msgstr "URI にサーバー名がありません"
 
 msgid "Servname not supported for ai_socktype"
 msgstr "Servname は ai_socktype に対してサポートされません"
@@ -8998,14 +8696,6 @@ msgid "Target controller vectors %d does not match source %d"
 msgstr "ターゲットコントローラーのベクター %d がソースの %d と一致しません"
 
 #, c-format
-msgid ""
-"Target device PCI address %04x:%02x:%02x.%02x does not match source %04x:"
-"%02x:%02x.%02x"
-msgstr ""
-"ターゲットデバイスの PCI アドレス %04x:%02x:%02x.%02x がソースの %04x:%02x:"
-"%02x.%02x と一致しません"
-
-#, c-format
 msgid "Target device address type %s does not match source %s"
 msgstr "ターゲットのデバイスアドレス形式 %s がソースの %s と一致しません"
 
@@ -9484,10 +9174,6 @@ msgid "Too many interfaces '%d' for limit '%d'"
 msgstr "インターフェース '%d' が制限値 '%d' に対して多すぎます"
 
 #, c-format
-msgid "Too many job stats '%d' for limit '%d'"
-msgstr "ジョブ統計 '%d' が制限値 '%d' に対して多すぎます"
-
-#, c-format
 msgid "Too many migration parameters '%d' for limit '%d'"
 msgstr "マイグレーションのパラメーター '%d' が制限値 '%d' に対して多すぎます"
 
@@ -9738,10 +9424,6 @@ msgid "Unable to change to root dir"
 msgstr "root ディレクトリーを変更できません"
 
 #, c-format
-msgid "Unable to chdir(%s)"
-msgstr "chdir(%s) できません"
-
-#, c-format
 msgid "Unable to check interface %s"
 msgstr "インターフェース %s をチェックできません"
 
@@ -9965,10 +9647,6 @@ msgstr "メッセージペイロードをエンコードできません"
 msgid "Unable to encode number of FDs"
 msgstr "ファイル記述子数をエンコードできません"
 
-#, c-format
-msgid "Unable to exec shell %s"
-msgstr "シェル %s を実行できません"
-
 msgid "Unable to find 'cpuacct' cgroups controller mount"
 msgstr "'cpuacct' cgroup コントローラーのマウントを確認できません"
 
@@ -10026,9 +9704,6 @@ msgstr "DBus セッションのバス接続を取得できません: %s"
 #, c-format
 msgid "Unable to get DBus system bus connection: %s"
 msgstr "DBus システムバス接続を取得できません: %s"
-
-msgid "Unable to get Host CPU set"
-msgstr "ホスト CPU セットを取得できません"
 
 #, c-format
 msgid "Unable to get LVM key for %s"
@@ -10090,9 +9765,6 @@ msgstr "ioctl 経由で空き loop デバイスを取得できません"
 
 msgid "Unable to get free slot number"
 msgstr "空いているスロット番号を取得できません"
-
-msgid "Unable to get host metric Information"
-msgstr "ホストメトリクス情報を取得できません"
 
 #, c-format
 msgid "Unable to get index for interface %s"
@@ -10329,13 +10001,6 @@ msgstr "クラス ID '%s' を構文解析できません"
 #, c-format
 msgid "Unable to parse current SELinux context '%s'"
 msgstr "現在の SELinux コンテキスト '%s' を構文解析できません"
-
-#, c-format
-msgid "Unable to parse devaddr parameter '%s'"
-msgstr "devaddr パラメーター '%s' の構文解析ができません"
-
-msgid "Unable to parse given mac address"
-msgstr "与えられた MAC アドレスを構文解析できません"
 
 msgid "Unable to parse integer parameter"
 msgstr "整数値のパラメーターを構文解析できませんでした"
@@ -10617,13 +10282,6 @@ msgstr "バインドターゲット %s の統計を取得できません"
 #, c-format
 msgid "Unable to truncate %s"
 msgstr "%s を切り詰められません"
-
-msgid "Unable to unescape command"
-msgstr "コマンドをエスケープ解除できません"
-
-#, c-format
-msgid "Unable to use MAC address starting with reserved value 0xFE - '%s' - "
-msgstr "予約値 0xFE から始まる MAC アドレスを使用できません - '%s' - "
 
 #, c-format
 msgid "Unable to verify TLS peer: %s"
@@ -11810,12 +11468,6 @@ msgstr "ブート順序 '%s' が複数のデバイスに使用されています
 msgid "booted"
 msgstr "起動済み"
 
-msgid ""
-"booting from assigned devices is only supported for PCI, USB and SCSI devices"
-msgstr ""
-"予約済みデバイスからのブートは PCI、USB および SCSI デバイスに対してのみサ"
-"ポートされます"
-
 #, c-format
 msgid "bridge %s doesn't exist"
 msgstr "ブリッジ %s が存在しません"
@@ -12293,11 +11945,6 @@ msgstr "一時ドメインのスナップショット後に停止できません
 
 msgid "cannot halt after transient domain snapshot"
 msgstr "一時ドメインのスナップショット後に停止できません"
-
-#, c-format
-msgid "cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"
-msgstr ""
-"マルチファンクション PCI デバイスを活性抜線できません: %.4x:%.2x:%.2x.%.1x"
 
 #, c-format
 msgid "cannot initialize cert object: %s"
@@ -13629,10 +13276,6 @@ msgid "dev->name buffer overflow: %.3d:%.3d"
 msgstr "dev->name バッファオーバーフロー: %.3d:%.3d"
 
 #, c-format
-msgid "dev->name buffer overflow: %.4x:%.2x:%.2x.%.1x"
-msgstr "dev->name バッファーオーバーフロー: %.4x:%.2x:%.2x.%.1x"
-
-#, c-format
 msgid "device %s iommu_group symlink %s has invalid group number %s"
 msgstr ""
 "デバイス %s iommu_group のシンボリックリンク %s に無効なグループ番号 %s が含"
@@ -14886,9 +14529,6 @@ msgstr "ファイル '%s' の書き込みに失敗しました"
 msgid "fatal signal %d"
 msgstr "致命的なシグナル %d"
 
-msgid "fd and fdset must be valid"
-msgstr "fd および fdset が有効である必要があります"
-
 msgid "fd must be valid"
 msgstr "ファイルディスクリプターが有効である必要があります"
 
@@ -15193,10 +14833,6 @@ msgid "host isn't capable of IPv6"
 msgstr "ホストが IPv6 に対応していません"
 
 #, c-format
-msgid "host pci device %.4x:%.2x:%.2x.%.1x not found"
-msgstr "ホスト pci デバイス %.4x:%.2x:%.2x.%.1x は見付かりません"
-
-#, c-format
 msgid "host reports map buffer length exceeds maximum: %d > %d"
 msgstr "ホスト報告のマップバッファ長は最大限を越えています: %d > %d"
 
@@ -15299,9 +14935,6 @@ msgstr "利用可能ならば、接続 URI の中にパスワードを含めま�
 #, c-format
 msgid "incomplete metadata in '%s'"
 msgstr "'%s' にあるメタデータが不完全です"
-
-msgid "incomplete return information"
-msgstr "不完全な返り情報"
 
 #, c-format
 msgid "incomplete save header in '%s'"
@@ -15557,10 +15190,6 @@ msgstr "無効な引数が与えられました"
 #, c-format
 msgid "invalid argument: %s"
 msgstr "無効な引数: %s"
-
-#, c-format
-msgid "invalid base64 in '%s'"
-msgstr "'%s' に無効な Base64 があります"
 
 msgid "invalid catchup limit"
 msgstr "無効な catchup limit です"
@@ -15940,9 +15569,6 @@ msgid "libvirt-guests is configured not to start any guests on boot"
 msgstr ""
 "libvirt-guests はシステム起動時にあらゆるゲストを立ち上げるように設定されてい"
 "ません"
-
-msgid "libvirt.so is not safe to use from setuid programs"
-msgstr "libvirt.so を setuid プログラムから使用することは危険です"
 
 msgid "libvirtd quit during handshake"
 msgstr "libvirtd がハンドシェーク中に終了しました"
@@ -19011,10 +18637,6 @@ msgstr "このネットワークはすでに存在しています"
 msgid "this platform is missing dlopen"
 msgstr "このプラットフォームは dlopen がありません"
 
-#, c-format
-msgid "this qemu doesn't support RNG device type '%s'"
-msgstr "この QEMU  RNG デバイス種別 '%s' をサポートしません"
-
 msgid "this qemu doesn't support the rng-egd backend"
 msgstr "この QEMU は rng-egd バックエンドをサポートしません"
 
@@ -19417,10 +19039,6 @@ msgid "unable to unload already unloaded profile"
 msgstr "すでにアップロードされたプロファイルをアンロードできません"
 
 #, c-format
-msgid "unable to visit backing chain file %s"
-msgstr "バッキングチェインファイル %s を参照できません"
-
-#, c-format
 msgid "unable to wait for process %lld"
 msgstr "プロセス %lld を待ち合わせできません"
 
@@ -19478,14 +19096,6 @@ msgstr "予期しない %s アクション: %d"
 #, c-format
 msgid "unexpected OpenVZ URI path '%s', try openvz:///system"
 msgstr "期待値 OpenVZ URI パス '%s' 、openvz :///system を試して下さい"
-
-#, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///session"
-msgstr "予期しない QEMU URI パス '%s'、qemu:///session を試して下さい"
-
-#, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///system"
-msgstr "予期しない QEMU URI パス '%s'、qemu:///system を試して下さい"
 
 #, c-format
 msgid ""
@@ -20001,18 +19611,6 @@ msgstr "不明なドライバー形式値 '%s'"
 #, c-format
 msgid "unknown driver name '%s'"
 msgstr "不明なドライバー名 '%s'"
-
-#, c-format
-msgid "unknown driver path '%s' specified (try vbox:///session)"
-msgstr ""
-"不明なドライバーパス  '%s' が指定されています（vbox:///session を試してくださ"
-"い）"
-
-#, c-format
-msgid "unknown driver path '%s' specified (try vbox:///system)"
-msgstr ""
-"不明なドライバーパス '%s' が指定されています（vbox:///system を試してくださ"
-"い）"
 
 msgid "unknown error"
 msgstr "不明なエラー"

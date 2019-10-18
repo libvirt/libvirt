@@ -18,9 +18,9 @@
 # Di Wei <dwlinux@outlook.com>, 2019. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.6.0\n"
+"Project-Id-Version: libvirt 5.9.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-30 11:31+0100\n"
+"POT-Creation-Date: 2019-10-18 13:39+0100\n"
 "PO-Revision-Date: 2019-03-29 03:37+0000\n"
 "Last-Translator: Di Wei <dwlinux@outlook.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/projects/p/libvirt/"
@@ -60,43 +60,6 @@ msgid ""
 "  Default paths:\n"
 "\n"
 "    Configuration file (unless overridden by -f):\n"
-"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
-"\n"
-"    Sockets:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
-"\n"
-"    TLS:\n"
-"      CA certificate:     $HOME/.pki/libvirt/cacert.pem\n"
-"      Server certificate: $HOME/.pki/libvirt/servercert.pem\n"
-"      Server private key: $HOME/.pki/libvirt/serverkey.pem\n"
-"\n"
-"    PID file:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
-"\n"
-msgstr ""
-"\n"
-"  默认路径：\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
-"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
-"\n"
-"    Sockets:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
-"\n"
-"    TLS:\n"
-"      CA certificate:     $HOME/.pki/libvirt/cacert.pem\n"
-"      Server certificate: $HOME/.pki/libvirt/servercert.pem\n"
-"      Server private key: $HOME/.pki/libvirt/serverkey.pem\n"
-"\n"
-"    PID file:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
-"\n"
-
-msgid ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
 "      $XDG_CONFIG_HOME/libvirt/virtlockd.conf\n"
 "\n"
 "    Sockets:\n"
@@ -117,74 +80,6 @@ msgstr ""
 "\n"
 "    PID 文件：\n"
 "      $XDG_RUNTIME_DIR/libvirt/virtlockd.pid\n"
-"\n"
-
-#, c-format
-msgid ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
-"      %s\n"
-"\n"
-"    Sockets:\n"
-"      %s\n"
-"      %s\n"
-"\n"
-"    TLS:\n"
-"      CA certificate:     %s\n"
-"      Server certificate: %s\n"
-"      Server private key: %s\n"
-"\n"
-"    PID file (unless overridden by -p):\n"
-"      %s/run/libvirtd.pid\n"
-"\n"
-msgstr ""
-"\n"
-"  默认路径：\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
-"      %s\n"
-"\n"
-"    Sockets:\n"
-"      %s\n"
-"      %s\n"
-"\n"
-"    TLS:\n"
-"      CA certificate:     %s\n"
-"      Server certificate: %s\n"
-"      Server private key: %s\n"
-"\n"
-"    PID file (unless overridden by -p):\n"
-"      %s/run/libvirtd.pid\n"
-"\n"
-
-#, c-format
-msgid ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
-"      %s/libvirt/virtlockd.conf\n"
-"\n"
-"    Sockets:\n"
-"      %s/run/libvirt/virtlockd-sock\n"
-"\n"
-"    PID file (unless overridden by -p):\n"
-"      %s/run/virtlockd.pid\n"
-"\n"
-msgstr ""
-"\n"
-"  默认路径：\n"
-"\n"
-"    配置文件（除非使用 -f 覆盖）：\n"
-"      %s/libvirt/virtlockd.conf\n"
-"\n"
-"    套接字：\n"
-"      %s/run/libvirt/virtlockd-sock\n"
-"\n"
-"    PID 文件（除非使用 -p 覆盖）：\n"
-"      %s/run/virtlockd.pid\n"
 "\n"
 
 msgid ""
@@ -321,64 +216,6 @@ msgid ""
 msgstr ""
 "\n"
 "由 libvirt 保存的域 %s 状态\n"
-
-#, c-format
-msgid ""
-"\n"
-"Usage:\n"
-"  %s [option]\n"
-"\n"
-"Options:\n"
-"  -h | --help            Display program help\n"
-"  -V | --version         Display program version\n"
-"  -c CMD                 Run CMD via shell\n"
-"\n"
-"libvirt login shell\n"
-msgstr ""
-"\n"
-"用法:\n"
-"  %s [选项]\n"
-"\n"
-"选项:\n"
-"  -h | --help            显示帮助信息\n"
-"  -V | --version         显示版本信息\n"
-"  -c CMD                 通过shell运行CMD\n"
-"\n"
-"libvirt 登录 shell\n"
-
-#, c-format
-msgid ""
-"\n"
-"Usage:\n"
-"  %s [options]\n"
-"\n"
-"Options:\n"
-"  -h | --help            Display program help:\n"
-"  -v | --verbose         Verbose messages.\n"
-"  -d | --daemon          Run as a daemon & write PID file.\n"
-"  -l | --listen          Listen for TCP/IP connections.\n"
-"  -t | --timeout <secs>  Exit after timeout period.\n"
-"  -f | --config <file>   Configuration file.\n"
-"  -V | --version         Display version information.\n"
-"  -p | --pid-file <file> Change name of PID file.\n"
-"\n"
-"libvirt management daemon:\n"
-msgstr ""
-"\n"
-"用法：\n"
-"  %s [options]\n"
-"\n"
-"Options:\n"
-"  -h | --help            Display program help:\n"
-"  -v | --verbose         Verbose messages.\n"
-"  -d | --daemon          Run as a daemon & write PID file.\n"
-"  -l | --listen          Listen for TCP/IP connections.\n"
-"  -t | --timeout <secs>  Exit after timeout period.\n"
-"  -f | --config <file>   Configuration file.\n"
-"  -V | --version         Display version information.\n"
-"  -p | --pid-file <file> Change name of PID file.\n"
-"\n"
-"libvirt management daemon:\n"
 
 #, c-format
 msgid ""
@@ -548,16 +385,8 @@ msgid "%s module is not loaded, "
 msgstr "未加载%s模块， "
 
 #, c-format
-msgid "%s must be run by non root users"
-msgstr "不能以root用户身份执行%s命令"
-
-#, c-format
 msgid "%s not implemented on Win32"
 msgstr "在 Win32 中没有使用 %s"
-
-#, c-format
-msgid "%s not matched against 'allowed_users' in %s"
-msgstr "%s 未在 %s 的列表'allowed_users' 中"
 
 #, c-format
 msgid "%s not parseable"
@@ -582,10 +411,6 @@ msgid ""
 msgstr ""
 "附带端口说明的 %s 规则需要协议说明，该协议可以是 tcp(6)、udp(17)、dccp(33) 或"
 "者 sctp(132) 之一"
-
-#, c-format
-msgid "%s takes no options"
-msgstr "%s 未获取到参数"
 
 #, c-format
 msgid "%s uri uuid action\n"
@@ -847,10 +672,6 @@ msgstr "'%s' 不适用于内存"
 #, c-format
 msgid "'%s' missing in guest-get-fsinfo 'disk' data"
 msgstr "guest-get-fsinfo 'disk' 数据缺少 '%s'"
-
-#, c-format
-msgid "'%s' missing in guest-get-fsinfo 'pci-address' data"
-msgstr "guest-get-fsinfo 'pci-address' 数据缺少 '%s'"
 
 #, c-format
 msgid "':' not allowed in RBD source volume name '%s'"
@@ -1178,9 +999,6 @@ msgstr "分配："
 
 msgid "An error occurred, but the cause is unknown"
 msgstr "出错，但原因不明。"
-
-msgid "An explicit URI must be provided when setuid"
-msgstr "执行 setuid 时必须明确提供 URI"
 
 msgid "An explicit disk format must be specified"
 msgstr "必须明确指定磁盘格式"
@@ -1586,10 +1404,6 @@ msgstr "无法更改域状态。"
 #, sh-format
 msgid "Can't connect to $uri. Skipping."
 msgstr "无法连接到 $uri。跳过。"
-
-#, c-format
-msgid "Can't create %s container: %s"
-msgstr "不能创建容器 %s : %s"
 
 msgid "Can't create initial configuration"
 msgstr "无法生成初始配置"
@@ -2119,12 +1933,6 @@ msgstr "无法写入数据"
 msgid "Cannot write device.map '%s'"
 msgstr "无法写入 device.map '%s'"
 
-msgid "Capabilities not available"
-msgstr "不可用的功能"
-
-msgid "Capabilities not found"
-msgstr "未找到功能"
-
 msgid "Capacity"
 msgstr "容量"
 
@@ -2370,16 +2178,6 @@ msgstr "连接到域 %s\n"
 
 msgid "Connected to the admin server"
 msgstr "已连接到admin server"
-
-msgid ""
-"Connecting to session instance without socket path is not supported by the "
-"libssh2 connection driver"
-msgstr "libssh2 连接驱动程序不支持在没有套接字路径的情况下连接到会话实例"
-
-msgid ""
-"Connecting to session instance without socket path is not supported by the "
-"ssh connection driver"
-msgstr "ssh 连接驱动程序不支持在没有套接字路径的情况下连接到会话实例"
 
 msgid "Constant pages:"
 msgstr "常数页："
@@ -3120,33 +2918,6 @@ msgstr "无法写入流"
 msgid "Couldn't create lock file for device '%s' in path '%s'"
 msgstr "无法为设备 '%s' 在路径 '%s' 中生成锁定文件"
 
-msgid "Couldn't fetch Domain Information"
-msgstr "无法提取域信息"
-
-msgid "Couldn't fetch Node Information"
-msgstr "无法提取节点信息"
-
-msgid "Couldn't get VM information from XML"
-msgstr "无法从 XML 中获取 VM 记录"
-
-msgid "Couldn't get VM record"
-msgstr "无法获取 VM 记录"
-
-msgid "Couldn't get host metrics"
-msgstr "无法获取主机度量"
-
-msgid "Couldn't get host metrics - memory information"
-msgstr "无法获取主机度量 - 内存信息"
-
-msgid "Couldn't get the Domain Pointer"
-msgstr "无法获取域指针"
-
-msgid "Couldn't get version info"
-msgstr "无法获取版本信息"
-
-msgid "Couldn't parse version info"
-msgstr "无法解析版本信息"
-
 #, c-format
 msgid "Couldn't read volume target path '%s'"
 msgstr "无法读取卷目标路径 '%s'"
@@ -3597,12 +3368,6 @@ msgstr "域 '%s' 已经运行"
 msgid "Domain '%s' sysinfo are not available"
 msgstr "域 '%s' sysinfo 不可用"
 
-msgid "Domain Pointer is invalid"
-msgstr "域指针无效"
-
-msgid "Domain Pointer not valid"
-msgstr "域指针无效"
-
 msgid ""
 "Domain XML doesn't contain any disks, cannot deduce datastore and path for "
 "VMX file"
@@ -3683,9 +3448,6 @@ msgstr "没有挂起或者关闭域"
 msgid "Domain name contains invalid escape sequence"
 msgstr "郁闷包含无效换码顺序"
 
-msgid "Domain name is not unique"
-msgstr "域名不是唯一的"
-
 msgid "Domain not found"
 msgstr "未找到域"
 
@@ -3733,9 +3495,6 @@ msgstr "域标题不能包含换行符"
 
 msgid "Domain:"
 msgstr "域："
-
-msgid "DomainID can't fit in 32 bits"
-msgstr "DomainID 超过 32 字节"
 
 msgid "Done.\n"
 msgstr "完成。\n"
@@ -4109,10 +3868,6 @@ msgid "Failed"
 msgstr "已失败"
 
 #, c-format
-msgid "Failed opening %s"
-msgstr "打开 %s 失败"
-
-#, c-format
 msgid "Failed set TLS x509 credentials: %s"
 msgstr "设定 TLS x509 凭据失败：%s"
 
@@ -4135,10 +3890,6 @@ msgid "Failed to add IP address %s to IP address cache for interface %s"
 msgstr "无法为接口 %s 在 IP 地址缓存中添加 IP 地址 %s"
 
 #, c-format
-msgid "Failed to add PCI device ID '%s' to %s"
-msgstr "将 PCI 设备 ID '%s' 添加到 %s 失败"
-
-#, c-format
 msgid "Failed to add capability %s: %d"
 msgstr "添加功能 %s 失败：%d"
 
@@ -4149,18 +3900,11 @@ msgid "Failed to add signal handle watch"
 msgstr "添加信号处理观察失败"
 
 #, c-format
-msgid "Failed to add slot for PCI device '%s' to %s"
-msgstr "为 PCI 设备 '%s' 在 %s 添加插槽失败"
-
-#, c-format
 msgid "Failed to allocate PCI device list: %s"
 msgstr "分配 PCI 设备列表失败：%s"
 
 msgid "Failed to allocate XML buffer"
 msgstr "分配 XML 缓冲失败"
-
-msgid "Failed to allocate memory"
-msgstr "分配内存失败"
 
 msgid "Failed to allocate memory for path"
 msgstr "为路径分配内存失败"
@@ -4177,9 +3921,6 @@ msgstr "分配安全模式失败"
 
 msgid "Failed to allocate tty"
 msgstr "分配 tty 失败"
-
-msgid "Failed to allocate xen session"
-msgstr "分配 xen 会话失败"
 
 #, c-format
 msgid "Failed to apply capabilities: %d"
@@ -4213,10 +3954,6 @@ msgstr "启动网络配置更改事务失败"
 #, c-format
 msgid "Failed to bind %s to new root %s"
 msgstr "将 %s 捆绑至新的 root  %s 失败"
-
-#, c-format
-msgid "Failed to bind PCI device '%s' to %s"
-msgstr "将 PCI 设备 ID '%s' 绑定到 %s 失败"
 
 #, c-format
 msgid "Failed to bind mount directory %s to %s"
@@ -4362,9 +4099,6 @@ msgstr "创建 SASL 客户端环境失败：%d（%s）"
 
 msgid "Failed to create XML"
 msgstr "创建XML失败"
-
-msgid "Failed to create XML conf object"
-msgstr "创建 XML 配置对象失败"
 
 msgid "Failed to create XML config object"
 msgstr "创建 XML 配置对象失败"
@@ -4795,10 +4529,6 @@ msgstr "初始化 libssh2 会话失败"
 msgid "Failed to initialize libvirt"
 msgstr "初始化 libvirt 失败"
 
-#, c-format
-msgid "Failed to initialize libvirt error handling"
-msgstr "初始化libvirt失败"
-
 msgid "Failed to initialize mutex"
 msgstr "初始化互斥锁失败"
 
@@ -5187,10 +4917,6 @@ msgid "Failed to release port %d"
 msgstr "释放端口 %d 失败"
 
 #, c-format
-msgid "Failed to remove PCI ID '%s' from %s"
-msgstr "从 %s 中删除 PCI ID '%s' 失败"
-
-#, c-format
 msgid "Failed to remove capability %s: %d"
 msgstr "移除功能 %s 失败：%d"
 
@@ -5204,10 +4930,6 @@ msgstr "删除管理的保存文件 '%s' 失败"
 #, c-format
 msgid "Failed to remove managed save image for domain %s"
 msgstr "从域 %s 中删除管理保存映像失败"
-
-#, c-format
-msgid "Failed to remove slot for PCI device '%s' from %s"
-msgstr "从 %s 中的 PCI 设备 '%s' 删除插槽失败"
 
 #, c-format
 msgid "Failed to remove storage volume '%s'(%s)"
@@ -5480,10 +5202,6 @@ msgstr "提取快照失败：%s"
 #, c-format
 msgid "Failed to terminate process %lld with SIG%s"
 msgstr "进程 %lld 无法使用 SIG%s 终止"
-
-#, c-format
-msgid "Failed to trigger a re-probe for PCI device '%s'"
-msgstr "为 PCI 设备 '%s' 激发重新探测失败"
 
 #, c-format
 msgid "Failed to truncate file '%s'"
@@ -6267,13 +5985,6 @@ msgstr "无效认证方法：'%s'"
 msgid "Invalid back reference"
 msgstr "无效向后引用"
 
-msgid "Invalid base64 data"
-msgstr "无效 base64 数据"
-
-#, c-format
-msgid "Invalid boolean value for field '%s'"
-msgstr "字段 '%s' 的无效布尔值"
-
 #, c-format
 msgid "Invalid bridge mac address '%s' in network '%s'"
 msgstr "网络 '%s' 中的无效桥接 mac 地址 '%s'"
@@ -6621,10 +6332,6 @@ msgid "Invalid trustGuestRxFilters setting '%s' in portgroup"
 msgstr "portgroup 中的无效 trustGuestRxFilters 设置 '%s'"
 
 #, c-format
-msgid "Invalid type '%s' requested for parameter '%s', actual type is '%s'"
-msgstr "参数 '%s' 的无效所需类型 '%s'，应为 '%s'。"
-
-#, c-format
 msgid ""
 "Invalid use of 'floor' on interface with MAC address %s - network '%s' has "
 "no inbound QoS set"
@@ -6641,26 +6348,6 @@ msgstr "元素或属性 '%s' 的无效值 '%s'"
 
 msgid "Invalid value for element priority"
 msgstr "元素优先级的无效值"
-
-#, c-format
-msgid "Invalid value for field '%s': expected double"
-msgstr "字段 '%s' 的无效值：应为 double"
-
-#, c-format
-msgid "Invalid value for field '%s': expected int"
-msgstr "字段 '%s' 的无效值：应为 int"
-
-#, c-format
-msgid "Invalid value for field '%s': expected long long"
-msgstr "字段 '%s' 的无效值：应为 long long"
-
-#, c-format
-msgid "Invalid value for field '%s': expected unsigned int"
-msgstr "字段 '%s' 的无效值：应为未签署的 int"
-
-#, c-format
-msgid "Invalid value for field '%s': expected unsigned long long"
-msgstr "字段 '%s' 的无效值：应为未签名的 long long"
 
 msgid "Invalid value for number of CPUs to show"
 msgstr "要显示 CPU 数的无效值"
@@ -7427,10 +7114,6 @@ msgid "Multiqueue devices are not supported on this system"
 msgstr "在这个系统中部支持多队列设备"
 
 #, c-format
-msgid "Multiqueue network is not supported for: %s"
-msgstr "%s 不支持多队列网络"
-
-#, c-format
 msgid "Must use --rename or --clone to change %s to %s"
 msgstr "必须红烧鱼 --rename 或者 --clone 将 %s 改为 %s"
 
@@ -7446,10 +7129,6 @@ msgstr "NULL NetworkDef"
 #, c-format
 msgid "NULL string parameter '%s'"
 msgstr "NULL 字符串参数 '%s'"
-
-#, c-format
-msgid "NULL value for field '%s'"
-msgstr "字段 '%s' 的 NULL 值"
 
 #, c-format
 msgid "NUMA cell %d has no vCPUs assigned"
@@ -7660,12 +7339,6 @@ msgstr "没有可用 PCI 总线"
 
 msgid "No UNIX caller UID available"
 msgstr "没有可用 UNIX 主叫方 UID"
-
-msgid "No UNIX process ID available"
-msgstr "没有可用 UNIX 进程 ID"
-
-msgid "No UNIX process start time available"
-msgstr "没有可用 UNIX 进程启动时间"
 
 #, c-format
 msgid "No active operation on device: %s"
@@ -8484,9 +8157,6 @@ msgid ""
 "Query parameter 'no_verify' has unexpected value '%s' (should be 0 or 1)"
 msgstr "查询参数 'no_verify' 包含意外值 '%s' (应为 0 或者 1)"
 
-msgid "Query parameter 'no_verify' has unexpected value (should be 0 or 1)"
-msgstr "查询参数 'no_verify' 有意外值（应为 0 或者 1） "
-
 #, c-format
 msgid ""
 "Query parameter 'proxy' contains unexpected type '%s' (should be (http|"
@@ -8991,9 +8661,6 @@ msgstr "这个插槽不支持发送文件描述符"
 msgid "Serial port index %d out of [0..3] range"
 msgstr "串口索引 %d 超出范围 [0..3] "
 
-msgid "Server name not in URI"
-msgstr "URI 中没有服务器名称"
-
 msgid "Server to alter the client-related configuration limits on."
 msgstr "指明要修改哪个server的可接入的client的数量"
 
@@ -9069,10 +8736,6 @@ msgstr "lun 设备不支持设定 wwn"
 
 msgid "Shared memory:\n"
 msgstr "共享内存：\n"
-
-#, c-format
-msgid "Shell '%s' should have absolute path"
-msgstr "应该以绝对路径方式运行shell '%s' "
 
 msgid "Show block device errors"
 msgstr "显示块设备错误"
@@ -9532,12 +9195,6 @@ msgstr "目标控制器类型 %s 与源 %s 不匹配"
 #, c-format
 msgid "Target controller vectors %d does not match source %d"
 msgstr "目标控制器矢量 %d 与源 %d 不匹配"
-
-#, c-format
-msgid ""
-"Target device PCI address %04x:%02x:%02x.%02x does not match source %04x:"
-"%02x:%02x.%02x"
-msgstr "目标设备 PCI 地址 %04x:%02x:%02x.%02x 与源 %04x:%02x:%02x.%02x 不匹配"
 
 #, c-format
 msgid "Target device address type %s does not match source %s"
@@ -10064,10 +9721,6 @@ msgid "Too many interfaces '%d' for limit '%d'"
 msgstr "接口个数 '%d' 已超过限制 '%d'"
 
 #, c-format
-msgid "Too many job stats '%d' for limit '%d'"
-msgstr "任务统计数 '%d' 已超过限制 '%d'"
-
-#, c-format
 msgid "Too many migration parameters '%d' for limit '%d'"
 msgstr "迁移参数个数 '%d' 已超过限制 '%d'"
 
@@ -10358,10 +10011,6 @@ msgid "Unable to change to root dir"
 msgstr "不能更改 root 目录"
 
 #, c-format
-msgid "Unable to chdir(%s)"
-msgstr "调用函数chdir(%s)失败"
-
-#, c-format
 msgid "Unable to check interface %s"
 msgstr "无法检查接口 %s"
 
@@ -10591,10 +10240,6 @@ msgstr "无法编码信息净负荷"
 msgid "Unable to encode number of FDs"
 msgstr "无法对 FD 号进行编码"
 
-#, c-format
-msgid "Unable to exec shell %s"
-msgstr "运行shell %s 失败"
-
 msgid "Unable to find 'cpuacct' cgroups controller mount"
 msgstr "无法找到 'cpuacct' cgroups 控制器挂载"
 
@@ -10651,9 +10296,6 @@ msgstr "无法获取 DBus 会话总线连接：%s"
 #, c-format
 msgid "Unable to get DBus system bus connection: %s"
 msgstr "无法获取 DBus 系统总线连接：%s"
-
-msgid "Unable to get Host CPU set"
-msgstr "无法获取主机 CPU 设置"
 
 #, c-format
 msgid "Unable to get LVM key for %s"
@@ -10718,9 +10360,6 @@ msgstr "无法获取域状态"
 
 msgid "Unable to get free slot number"
 msgstr "无法获得剩余插槽数"
-
-msgid "Unable to get host metric Information"
-msgstr "无法获取主机度量信息"
 
 #, c-format
 msgid "Unable to get index for interface %s"
@@ -10963,13 +10602,6 @@ msgstr "无法解析等级 id '%s'"
 #, c-format
 msgid "Unable to parse current SELinux context '%s'"
 msgstr "无法解析当前进程上下文 '%s'"
-
-#, c-format
-msgid "Unable to parse devaddr parameter '%s'"
-msgstr "无法解析设备地址参数 '%s'"
-
-msgid "Unable to parse given mac address"
-msgstr "无法解析给定的 mac 地址"
 
 msgid "Unable to parse integer parameter"
 msgstr "无法解析整数参数"
@@ -11271,13 +10903,6 @@ msgstr "无法解冻所有进程"
 #, c-format
 msgid "Unable to truncate %s"
 msgstr "无法截取 %s"
-
-msgid "Unable to unescape command"
-msgstr "无法取消退出命令"
-
-#, c-format
-msgid "Unable to use MAC address starting with reserved value 0xFE - '%s' - "
-msgstr "无法使用以保留值 0xFE 开始的 MAC 地址 - '%s' - "
 
 #, c-format
 msgid "Unable to verify TLS peer: %s"
@@ -12569,10 +12194,6 @@ msgstr "在一个以上设备中采用引导顺序 '%s'"
 msgid "booted"
 msgstr "已引导"
 
-msgid ""
-"booting from assigned devices is only supported for PCI, USB and SCSI devices"
-msgstr "只有 PCI、USB、和 SCSI 设备支持从分配的设备引导"
-
 #, c-format
 msgid "bridge %s doesn't exist"
 msgstr "桥接 %s 不存在"
@@ -13067,10 +12688,6 @@ msgstr "无法在临时域提取快照后停止"
 
 msgid "cannot halt after transient domain snapshot"
 msgstr "无法停止临时域快照"
-
-#, c-format
-msgid "cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"
-msgstr "无法热插拔多功能 PCI 设备：%.4x:%.2x:%.2x.%.1x"
 
 #, c-format
 msgid "cannot initialize cert object: %s"
@@ -14450,10 +14067,6 @@ msgid "dev->name buffer overflow: %.3d:%.3d"
 msgstr "dev-> 名称缓存溢出：%.3d:%.3d"
 
 #, c-format
-msgid "dev->name buffer overflow: %.4x:%.2x:%.2x.%.1x"
-msgstr "dev->name 缓存溢出: %.4x:%.2x:%.2x.%.1x"
-
-#, c-format
 msgid "device %s iommu_group symlink %s has invalid group number %s"
 msgstr "设备 %s iommu_group 符号链接 %s 包含无效组群数 %s"
 
@@ -15793,9 +15406,6 @@ msgstr "写入文件 '%s' 失败"
 msgid "fatal signal %d"
 msgstr "严重错误信号 %d"
 
-msgid "fd and fdset must be valid"
-msgstr "fd 和 feset 必须有效"
-
 msgid "fd must be valid"
 msgstr "fd 必须有效"
 
@@ -16123,10 +15733,6 @@ msgid "host device already exists"
 msgstr "主机设备已存在"
 
 #, c-format
-msgid "host pci device %.4x:%.2x:%.2x.%.1x not found"
-msgstr "未找到主机 pci 设备 %.4x:%.2x:%.2x.%.1x"
-
-#, c-format
 msgid "host reports map buffer length exceeds maximum: %d > %d"
 msgstr "主机报告映像缓冲长度超过最大值：%d > %d"
 
@@ -16239,9 +15845,6 @@ msgstr "包括 XML 转储中与安全性相关的信息"
 
 msgid "includes the password into the connection URI if available"
 msgstr "如可用，则包括连接 URI 的密码。"
-
-msgid "incomplete return information"
-msgstr "不完整的返回信息"
 
 #, c-format
 msgid "incomplete save header in '%s'"
@@ -16542,10 +16145,6 @@ msgstr "提供的参数无效"
 #, c-format
 msgid "invalid argument: %s"
 msgstr "无效参数：%s"
-
-#, c-format
-msgid "invalid base64 in '%s'"
-msgstr "'%s' 中无效的 base64"
 
 msgid "invalid catchup limit"
 msgstr "无效 catchup 极限"
@@ -16974,9 +16573,6 @@ msgstr "libvirt 与 libpcap 和 \" 不兼容"
 msgid "libvirt-guests is configured not to start any guests on boot"
 msgstr "将 libvirt-guests 配置未在引导时启动任意虚拟机"
 
-msgid "libvirt.so is not safe to use from setuid programs"
-msgstr "在 setuid 程序中使用 libvirt.so 不安全"
-
 msgid "libvirtd quit during handshake"
 msgstr "握手过程中 libvirt 退出"
 
@@ -16997,10 +16593,6 @@ msgstr "libxenlight 附加磁盘 '%s' 失败"
 
 msgid "libxenlight failed to attach network device"
 msgstr "libxenlight 无法附加网络设备"
-
-#, c-format
-msgid "libxenlight failed to attach pci device %.4x:%.2x:%.2x.%.1x"
-msgstr "libxenlight 无法附加 pci 设备 %.4x:%.2x:%.2x.%.1x"
 
 #, c-format
 msgid "libxenlight failed to change media for disk '%s'"
@@ -20043,10 +19635,6 @@ msgid "target of disk device"
 msgstr "磁盘设备目标"
 
 #, c-format
-msgid "target pci device %.4x:%.2x:%.2x.%.1x already exists"
-msgstr "目标 pci 设备 %.4x:%.2x:%.2x.%.1x 已存在"
-
-#, c-format
 msgid "target type must be specified for %s device"
 msgstr "必须为 %s 设备指定目标类型"
 
@@ -20206,10 +19794,6 @@ msgstr "这个网络已存在"
 
 msgid "this platform is missing dlopen"
 msgstr "这个平台缺少 dlopen"
-
-#, c-format
-msgid "this qemu doesn't support RNG device type '%s'"
-msgstr "这个 qemu 不支持 RNG 设备类型 '%s'"
 
 msgid "this qemu doesn't support the rng-egd backend"
 msgstr "这个 qumu 不支持 rng-egd 后端"
@@ -20633,10 +20217,6 @@ msgid "unable to unload already unloaded profile"
 msgstr "无法载入已载入的侧写"
 
 #, c-format
-msgid "unable to visit backing chain file %s"
-msgstr "无法访问后端链文件 %s"
-
-#, c-format
 msgid "unable to wait for process %lld"
 msgstr "无法等待进程 %lld"
 
@@ -20694,14 +20274,6 @@ msgstr "意外 %s 动作：%d"
 #, c-format
 msgid "unexpected OpenVZ URI path '%s', try openvz:///system"
 msgstr "意外 OpenVZ URI 路径 '%s'，尝试 openvz:///system"
-
-#, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///session"
-msgstr "应为 QEMU URI 路径 '%s'，尝试 qemu:///session"
-
-#, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///system"
-msgstr "应为 QEMU URI 路径 '%s'，尝试 qemu:///system"
 
 #, c-format
 msgid "unexpected accessmode %d"
@@ -21232,14 +20804,6 @@ msgstr "未知驱动程序格式值 '%s'"
 #, c-format
 msgid "unknown driver name '%s'"
 msgstr "未知驱动程序名称 '%s'"
-
-#, c-format
-msgid "unknown driver path '%s' specified (try vbox:///session)"
-msgstr "指定未知驱动程序路径 '%s'  (尝试：vbox:///session)"
-
-#, c-format
-msgid "unknown driver path '%s' specified (try vbox:///system)"
-msgstr "指定未知驱动程序路径 '%s'  (尝试：vbox:///systme)"
 
 #, c-format
 msgid "unknown enable value '%s'"

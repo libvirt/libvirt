@@ -10,9 +10,9 @@
 # Silvio Pierro <perplesso82@gmail.com>, 2009
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.6.0\n"
+"Project-Id-Version: libvirt 5.9.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-30 11:31+0100\n"
+"POT-Creation-Date: 2019-10-18 13:39+0100\n"
 "PO-Revision-Date: 2015-02-27 05:14+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Italian (http://www.transifex.com/projects/p/libvirt/language/"
@@ -956,15 +956,8 @@ msgstr "La tipologia deve iniziare con 'ArrayOf' ma trovato '%s'"
 msgid "FAIL"
 msgstr "FAIL"
 
-#, c-format
-msgid "Failed opening %s"
-msgstr "Impossibile aprire %s"
-
 msgid "Failed to allocate XML buffer"
 msgstr "Impossibile assegnare il buffer XML"
-
-msgid "Failed to allocate memory"
-msgstr "Impossibile allocare memoria"
 
 msgid "Failed to allocate tty"
 msgstr "Errore durante l'allocazione di tty"
@@ -2489,10 +2482,6 @@ msgstr "Impossibile aprire il percorso %s del monitor"
 msgid "Unable to open stream for '%s'"
 msgstr "Impossibile aprire uno stream per '%s'"
 
-#, c-format
-msgid "Unable to parse devaddr parameter '%s'"
-msgstr "Impossibile analizzare il parametro devaddr '%s'"
-
 msgid "Unable to put monitor into non-blocking mode"
 msgstr "Impossibile impostare il monitor in modalità non-blocking"
 
@@ -3814,10 +3803,6 @@ msgstr "il canale guestfwd non definisce una porta target"
 
 msgid "guestfwd channel only supports IPv4 addresses"
 msgstr "il canale guestfd supporta solo indirizzi IPv4"
-
-#, c-format
-msgid "host pci device %.4x:%.2x:%.2x.%.1x not found"
-msgstr "dispositivo pci host %.4x:%.2x:%.2x.%.1x non trovato"
 
 #, c-format
 msgid "host reports map buffer length exceeds maximum: %d > %d"
@@ -5175,14 +5160,6 @@ msgstr "architettura hardware indefinita"
 #, c-format
 msgid "unexpected OpenVZ URI path '%s', try openvz:///system"
 msgstr "percorso URI OpenVZ '%s' non previsto, prova openvz:///system"
-
-#, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///session"
-msgstr "percorso '%s' URI QEMU non pevisto, provare qemu:///session"
-
-#, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///system"
-msgstr "percorso '%s' URI QEMU non pevisto, provare qemu:///system"
 
 #, c-format
 msgid "unexpected accessmode %d"

@@ -9,9 +9,9 @@
 # readmanr <robert_readman@hotmail.com>, 2013
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.6.0\n"
+"Project-Id-Version: libvirt 5.9.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-30 11:31+0100\n"
+"POT-Creation-Date: 2019-10-18 13:39+0100\n"
 "PO-Revision-Date: 2015-02-24 06:05+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: English (United Kingdom) (http://www.transifex.com/projects/p/"
@@ -51,43 +51,6 @@ msgid ""
 "  Default paths:\n"
 "\n"
 "    Configuration file (unless overridden by -f):\n"
-"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
-"\n"
-"    Sockets:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
-"\n"
-"    TLS:\n"
-"      CA certificate:     $HOME/.pki/libvirt/cacert.pem\n"
-"      Server certificate: $HOME/.pki/libvirt/servercert.pem\n"
-"      Server private key: $HOME/.pki/libvirt/serverkey.pem\n"
-"\n"
-"    PID file:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
-"\n"
-msgstr ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
-"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
-"\n"
-"    Sockets:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
-"\n"
-"    TLS:\n"
-"      CA certificate:     $HOME/.pki/libvirt/cacert.pem\n"
-"      Server certificate: $HOME/.pki/libvirt/servercert.pem\n"
-"      Server private key: $HOME/.pki/libvirt/serverkey.pem\n"
-"\n"
-"    PID file:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
-"\n"
-
-msgid ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
 "      $XDG_CONFIG_HOME/libvirt/virtlockd.conf\n"
 "\n"
 "    Sockets:\n"
@@ -108,74 +71,6 @@ msgstr ""
 "\n"
 "    PID file:\n"
 "      $XDG_RUNTIME_DIR/libvirt/virtlockd.pid\n"
-"\n"
-
-#, c-format
-msgid ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
-"      %s\n"
-"\n"
-"    Sockets:\n"
-"      %s\n"
-"      %s\n"
-"\n"
-"    TLS:\n"
-"      CA certificate:     %s\n"
-"      Server certificate: %s\n"
-"      Server private key: %s\n"
-"\n"
-"    PID file (unless overridden by -p):\n"
-"      %s/run/libvirtd.pid\n"
-"\n"
-msgstr ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
-"      %s\n"
-"\n"
-"    Sockets:\n"
-"      %s\n"
-"      %s\n"
-"\n"
-"    TLS:\n"
-"      CA certificate:     %s\n"
-"      Server certificate: %s\n"
-"      Server private key: %s\n"
-"\n"
-"    PID file (unless overridden by -p):\n"
-"      %s/run/libvirtd.pid\n"
-"\n"
-
-#, c-format
-msgid ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
-"      %s/libvirt/virtlockd.conf\n"
-"\n"
-"    Sockets:\n"
-"      %s/run/libvirt/virtlockd-sock\n"
-"\n"
-"    PID file (unless overridden by -p):\n"
-"      %s/run/virtlockd.pid\n"
-"\n"
-msgstr ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
-"      %s/libvirt/virtlockd.conf\n"
-"\n"
-"    Sockets:\n"
-"      %s/run/libvirt/virtlockd-sock\n"
-"\n"
-"    PID file (unless overridden by -p):\n"
-"      %s/run/virtlockd.pid\n"
 "\n"
 
 msgid ""
@@ -225,40 +120,6 @@ msgid ""
 msgstr ""
 "\n"
 "Domain %s state saved by libvirt\n"
-
-#, c-format
-msgid ""
-"\n"
-"Usage:\n"
-"  %s [options]\n"
-"\n"
-"Options:\n"
-"  -h | --help            Display program help:\n"
-"  -v | --verbose         Verbose messages.\n"
-"  -d | --daemon          Run as a daemon & write PID file.\n"
-"  -l | --listen          Listen for TCP/IP connections.\n"
-"  -t | --timeout <secs>  Exit after timeout period.\n"
-"  -f | --config <file>   Configuration file.\n"
-"  -V | --version         Display version information.\n"
-"  -p | --pid-file <file> Change name of PID file.\n"
-"\n"
-"libvirt management daemon:\n"
-msgstr ""
-"\n"
-"Usage:\n"
-"  %s [options]\n"
-"\n"
-"Options:\n"
-"  -h | --help            Display program help:\n"
-"  -v | --verbose         Verbose messages.\n"
-"  -d | --daemon          Run as a daemon & write PID file.\n"
-"  -l | --listen          Listen for TCP/IP connections.\n"
-"  -t | --timeout <secs>  Exit after timeout period.\n"
-"  -f | --config <file>   Configuration file.\n"
-"  -V | --version         Display version information.\n"
-"  -p | --pid-file <file> Change name of PID file.\n"
-"\n"
-"libvirt management daemon:\n"
 
 msgid "  NAME\n"
 msgstr "  NAME\n"
@@ -362,16 +223,8 @@ msgid "%s length greater than maximum: %d > %d"
 msgstr "%s length greater than maximum: %d > %d"
 
 #, c-format
-msgid "%s must be run by non root users"
-msgstr "%s must be run by non root users"
-
-#, c-format
 msgid "%s not implemented on Win32"
 msgstr "%s not implemented on Win32"
-
-#, c-format
-msgid "%s not matched against 'allowed_users' in %s"
-msgstr "%s not matched against 'allowed_users' in %s"
 
 #, c-format
 msgid "%s not parseable"
@@ -388,10 +241,6 @@ msgstr "%s object has invalid dynamic type"
 #, c-format
 msgid "%s object is missing the required '%s' property"
 msgstr "%s object is missing the required '%s' property"
-
-#, c-format
-msgid "%s takes no options"
-msgstr "%s takes no options"
 
 #, c-format
 msgid "%s uri uuid action\n"
@@ -1207,10 +1056,6 @@ msgstr "Can't allocate memory"
 msgid "Can't connect to $uri. Skipping."
 msgstr "Can't connect to $uri. Skipping."
 
-#, c-format
-msgid "Can't create %s container: %s"
-msgstr "Can't create %s container: %s"
-
 msgid "Can't create initial configuration"
 msgstr "Can't create initial configuration"
 
@@ -1708,12 +1553,6 @@ msgstr "Cannot use virtio serial for parallel/serial devices"
 msgid "Cannot write data"
 msgstr "Cannot write data"
 
-msgid "Capabilities not available"
-msgstr "Capabilities not available"
-
-msgid "Capabilities not found"
-msgstr "Capabilities not found"
-
 msgid "Capacity"
 msgstr "Capacity"
 
@@ -1919,20 +1758,6 @@ msgstr ""
 #, c-format
 msgid "Connected to domain %s\n"
 msgstr "Connected to domain %s\n"
-
-msgid ""
-"Connecting to session instance without socket path is not supported by the "
-"libssh2 connection driver"
-msgstr ""
-"Connecting to session instance without socket path is not supported by the "
-"libssh2 connection driver"
-
-msgid ""
-"Connecting to session instance without socket path is not supported by the "
-"ssh connection driver"
-msgstr ""
-"Connecting to session instance without socket path is not supported by the "
-"ssh connection driver"
 
 msgid "Constant pages:"
 msgstr "Constant pages:"
@@ -2654,33 +2479,6 @@ msgstr "Could not write to stream"
 msgid "Couldn't create lock file for device '%s' in path '%s'"
 msgstr "Couldn't create lock file for device '%s' in path '%s'"
 
-msgid "Couldn't fetch Domain Information"
-msgstr "Couldn't fetch Domain Information"
-
-msgid "Couldn't fetch Node Information"
-msgstr "Couldn't fetch Node Information"
-
-msgid "Couldn't get VM information from XML"
-msgstr "Couldn't get VM information from XML"
-
-msgid "Couldn't get VM record"
-msgstr "Couldn't get VM record"
-
-msgid "Couldn't get host metrics"
-msgstr "Couldn't get host metrics"
-
-msgid "Couldn't get host metrics - memory information"
-msgstr "Couldn't get host metrics - memory information"
-
-msgid "Couldn't get the Domain Pointer"
-msgstr "Couldn't get the Domain Pointer"
-
-msgid "Couldn't get version info"
-msgstr "Couldn't get version info"
-
-msgid "Couldn't parse version info"
-msgstr "Couldn't parse version info"
-
 #, c-format
 msgid "Couldn't read volume target path '%s'"
 msgstr "Couldn't read volume target path '%s'"
@@ -3102,12 +2900,6 @@ msgstr "Domain '%s' is already running"
 msgid "Domain '%s' sysinfo are not available"
 msgstr "Domain '%s' sysinfo are not available"
 
-msgid "Domain Pointer is invalid"
-msgstr "Domain Pointer is invalid"
-
-msgid "Domain Pointer not valid"
-msgstr "Domain Pointer not valid"
-
 msgid ""
 "Domain XML doesn't contain any disks, cannot deduce datastore and path for "
 "VMX file"
@@ -3187,9 +2979,6 @@ msgstr "Domain is not suspended or powered off"
 msgid "Domain name contains invalid escape sequence"
 msgstr "Domain name contains invalid escape sequence"
 
-msgid "Domain name is not unique"
-msgstr "Domain name is not unique"
-
 msgid "Domain not found"
 msgstr "Domain not found"
 
@@ -3238,9 +3027,6 @@ msgstr "Domain title can't contain newlines"
 
 msgid "Domain:"
 msgstr "Domain:"
-
-msgid "DomainID can't fit in 32 bits"
-msgstr "DomainID can't fit in 32 bits"
 
 msgid "Done.\n"
 msgstr "Done.\n"
@@ -3594,10 +3380,6 @@ msgid "Failed"
 msgstr "Failed"
 
 #, c-format
-msgid "Failed opening %s"
-msgstr "Failed opening %s"
-
-#, c-format
 msgid "Failed set TLS x509 credentials: %s"
 msgstr "Failed set TLS x509 credentials: %s"
 
@@ -3612,10 +3394,6 @@ msgstr "Failed to acquire pid file '%s'"
 msgid "Failed to add IP address %s to IP address cache for interface %s"
 msgstr "Failed to add IP address %s to IP address cache for interface %s"
 
-#, c-format
-msgid "Failed to add PCI device ID '%s' to %s"
-msgstr "Failed to add PCI device ID '%s' to %s"
-
 msgid "Failed to add netlink event handle watch"
 msgstr "Failed to add netlink event handle watch"
 
@@ -3623,18 +3401,11 @@ msgid "Failed to add signal handle watch"
 msgstr "Failed to add signal handle watch"
 
 #, c-format
-msgid "Failed to add slot for PCI device '%s' to %s"
-msgstr "Failed to add slot for PCI device '%s' to %s"
-
-#, c-format
 msgid "Failed to allocate PCI device list: %s"
 msgstr "Failed to allocate PCI device list: %s"
 
 msgid "Failed to allocate XML buffer"
 msgstr "Failed to allocate XML buffer"
-
-msgid "Failed to allocate memory"
-msgstr "Failed to allocate memory"
 
 msgid "Failed to allocate memory for path"
 msgstr "Failed to allocate memory for path"
@@ -3651,9 +3422,6 @@ msgstr "Failed to allocate security model"
 
 msgid "Failed to allocate tty"
 msgstr "Failed to allocate tty"
-
-msgid "Failed to allocate xen session"
-msgstr "Failed to allocate xen session"
 
 #, c-format
 msgid "Failed to apply capabilities: %d"
@@ -3683,10 +3451,6 @@ msgstr "Failed to autostart storage pool '%s': %s"
 
 msgid "Failed to begin network config change transaction"
 msgstr "Failed to begin network config change transaction"
-
-#, c-format
-msgid "Failed to bind PCI device '%s' to %s"
-msgstr "Failed to bind PCI device '%s' to %s"
 
 #, c-format
 msgid "Failed to bind mount directory %s to %s"
@@ -3829,9 +3593,6 @@ msgstr "Failed to create SASL client context: %d (%s)"
 
 msgid "Failed to create XML"
 msgstr "Failed to create XML"
-
-msgid "Failed to create XML conf object"
-msgstr "Failed to create XML conf object"
 
 msgid "Failed to create XML config object"
 msgstr "Failed to create XML config object"
@@ -4629,10 +4390,6 @@ msgstr "Failed to release lock"
 msgid "Failed to release port %d"
 msgstr "Failed to release port %d"
 
-#, c-format
-msgid "Failed to remove PCI ID '%s' from %s"
-msgstr "Failed to remove PCI ID '%s' from %s"
-
 msgid "Failed to remove domain managed save image"
 msgstr "Failed to remove domain managed save image"
 
@@ -4643,10 +4400,6 @@ msgstr "Failed to remove managed save file '%s'"
 #, c-format
 msgid "Failed to remove managed save image for domain %s"
 msgstr "Failed to remove managed save image for domain %s"
-
-#, c-format
-msgid "Failed to remove slot for PCI device '%s' from %s"
-msgstr "Failed to remove slot for PCI device '%s' from %s"
 
 #, c-format
 msgid "Failed to remove storage volume '%s'(%s)"
@@ -4904,10 +4657,6 @@ msgstr "Failed to take snapshot: %s"
 #, c-format
 msgid "Failed to terminate process %lld with SIG%s"
 msgstr "Failed to terminate process %lld with SIG%s"
-
-#, c-format
-msgid "Failed to trigger a re-probe for PCI device '%s'"
-msgstr "Failed to trigger a re-probe for PCI device '%s'"
 
 #, c-format
 msgid "Failed to truncate file '%s'"
@@ -5675,13 +5424,6 @@ msgstr "Invalid authentication method: '%s'"
 msgid "Invalid back reference"
 msgstr "Invalid back reference"
 
-msgid "Invalid base64 data"
-msgstr "Invalid base64 data"
-
-#, c-format
-msgid "Invalid boolean value for field '%s'"
-msgstr "Invalid boolean value for field '%s'"
-
 #, c-format
 msgid "Invalid bridge mac address '%s' in network '%s'"
 msgstr "Invalid bridge mac address '%s' in network '%s'"
@@ -6011,10 +5753,6 @@ msgstr ""
 "definition"
 
 #, c-format
-msgid "Invalid type '%s' requested for parameter '%s', actual type is '%s'"
-msgstr "Invalid type '%s' requested for parameter '%s', actual type is '%s'"
-
-#, c-format
 msgid ""
 "Invalid use of 'floor' on interface with MAC address %s - network '%s' has "
 "no inbound QoS set"
@@ -6025,26 +5763,6 @@ msgstr ""
 #, c-format
 msgid "Invalid value '%s' for VMX entry '%s'"
 msgstr "Invalid value '%s' for VMX entry '%s'"
-
-#, c-format
-msgid "Invalid value for field '%s': expected double"
-msgstr "Invalid value for field '%s': expected double"
-
-#, c-format
-msgid "Invalid value for field '%s': expected int"
-msgstr "Invalid value for field '%s': expected int"
-
-#, c-format
-msgid "Invalid value for field '%s': expected long long"
-msgstr "Invalid value for field '%s': expected long long"
-
-#, c-format
-msgid "Invalid value for field '%s': expected unsigned int"
-msgstr "Invalid value for field '%s': expected unsigned int"
-
-#, c-format
-msgid "Invalid value for field '%s': expected unsigned long long"
-msgstr "Invalid value for field '%s': expected unsigned long long"
 
 msgid "Invalid value for number of CPUs to show"
 msgstr "Invalid value for number of CPUs to show"
@@ -6753,10 +6471,6 @@ msgid "Multiqueue devices are not supported on this system"
 msgstr "Multiqueue devices are not supported on this system"
 
 #, c-format
-msgid "Multiqueue network is not supported for: %s"
-msgstr "Multiqueue network is not supported for: %s"
-
-#, c-format
 msgid "Must use --rename or --clone to change %s to %s"
 msgstr "Must use --rename or --clone to change %s to %s"
 
@@ -6772,10 +6486,6 @@ msgstr "NULL NetworkDef"
 #, c-format
 msgid "NULL string parameter '%s'"
 msgstr "NULL string parameter '%s'"
-
-#, c-format
-msgid "NULL value for field '%s'"
-msgstr "NULL value for field '%s'"
 
 msgid "NUMA cell number"
 msgstr "NUMA cell number"
@@ -6971,12 +6681,6 @@ msgstr "No PCI buses available"
 
 msgid "No UNIX caller UID available"
 msgstr "No UNIX caller UID available"
-
-msgid "No UNIX process ID available"
-msgstr "No UNIX process ID available"
-
-msgid "No UNIX process start time available"
-msgstr "No UNIX process start time available"
 
 #, c-format
 msgid "No active operation on device: %s"
@@ -7759,9 +7463,6 @@ msgid ""
 msgstr ""
 "Query parameter 'no_verify' has unexpected value '%s' (should be 0 or 1)"
 
-msgid "Query parameter 'no_verify' has unexpected value (should be 0 or 1)"
-msgstr "Query parameter 'no_verify' has unexpected value (should be 0 or 1)"
-
 #, c-format
 msgid ""
 "Query parameter 'proxy' contains unexpected type '%s' (should be (http|"
@@ -8249,9 +7950,6 @@ msgstr "Sending file descriptors is not supported on this socket"
 #, c-format
 msgid "Serial port index %d out of [0..3] range"
 msgstr "Serial port index %d out of [0..3] range"
-
-msgid "Server name not in URI"
-msgstr "Server name not in URI"
 
 msgid "Servname not supported for ai_socktype"
 msgstr "Servname not supported for ai_socktype"
@@ -8765,14 +8463,6 @@ msgid "Target controller vectors %d does not match source %d"
 msgstr "Target controller vectors %d does not match source %d"
 
 #, c-format
-msgid ""
-"Target device PCI address %04x:%02x:%02x.%02x does not match source %04x:"
-"%02x:%02x.%02x"
-msgstr ""
-"Target device PCI address %04x:%02x:%02x.%02x does not match source %04x:"
-"%02x:%02x.%02x"
-
-#, c-format
 msgid "Target device address type %s does not match source %s"
 msgstr "Target device address type %s does not match source %s"
 
@@ -9249,10 +8939,6 @@ msgid "Too many interfaces '%d' for limit '%d'"
 msgstr "Too many interfaces '%d' for limit '%d'"
 
 #, c-format
-msgid "Too many job stats '%d' for limit '%d'"
-msgstr "Too many job stats '%d' for limit '%d'"
-
-#, c-format
 msgid "Too many migration parameters '%d' for limit '%d'"
 msgstr "Too many migration parameters '%d' for limit '%d'"
 
@@ -9503,10 +9189,6 @@ msgid "Unable to change to root dir"
 msgstr "Unable to change to root dir"
 
 #, c-format
-msgid "Unable to chdir(%s)"
-msgstr "Unable to chdir(%s)"
-
-#, c-format
 msgid "Unable to check interface %s"
 msgstr "Unable to check interface %s"
 
@@ -9727,10 +9409,6 @@ msgstr "Unable to encode message payload"
 msgid "Unable to encode number of FDs"
 msgstr "Unable to encode number of FDs"
 
-#, c-format
-msgid "Unable to exec shell %s"
-msgstr "Unable to exec shell %s"
-
 msgid "Unable to find 'cpuacct' cgroups controller mount"
 msgstr "Unable to find 'cpuacct' cgroups controller mount"
 
@@ -9784,9 +9462,6 @@ msgstr "Unable to get DBus session bus connection: %s"
 #, c-format
 msgid "Unable to get DBus system bus connection: %s"
 msgstr "Unable to get DBus system bus connection: %s"
-
-msgid "Unable to get Host CPU set"
-msgstr "Unable to get Host CPU set"
 
 #, c-format
 msgid "Unable to get LVM key for %s"
@@ -9848,9 +9523,6 @@ msgstr "Unable to get free loop device via ioctl"
 
 msgid "Unable to get free slot number"
 msgstr "Unable to get free slot number"
-
-msgid "Unable to get host metric Information"
-msgstr "Unable to get host metric Information"
 
 #, c-format
 msgid "Unable to get index for interface %s"
@@ -10086,13 +9758,6 @@ msgstr "Unable to parse class id '%s'"
 #, c-format
 msgid "Unable to parse current SELinux context '%s'"
 msgstr "Unable to parse current SELinux context '%s'"
-
-#, c-format
-msgid "Unable to parse devaddr parameter '%s'"
-msgstr "Unable to parse devaddr parameter '%s'"
-
-msgid "Unable to parse given mac address"
-msgstr "Unable to parse given mac address"
 
 msgid "Unable to parse integer parameter"
 msgstr "Unable to parse integer parameter"
@@ -10371,13 +10036,6 @@ msgstr "Unable to stat bind target %s"
 #, c-format
 msgid "Unable to truncate %s"
 msgstr "Unable to truncate %s"
-
-msgid "Unable to unescape command"
-msgstr "Unable to unescape command"
-
-#, c-format
-msgid "Unable to use MAC address starting with reserved value 0xFE - '%s' - "
-msgstr "Unable to use MAC address starting with reserved value 0xFE - '%s' - "
 
 #, c-format
 msgid "Unable to verify TLS peer: %s"
@@ -11533,11 +11191,6 @@ msgstr "boot order '%s' used for more than one device"
 msgid "booted"
 msgstr "booted"
 
-msgid ""
-"booting from assigned devices is only supported for PCI, USB and SCSI devices"
-msgstr ""
-"booting from assigned devices is only supported for PCI, USB and SCSI devices"
-
 #, c-format
 msgid "bridge %s doesn't exist"
 msgstr "bridge %s doesn't exist"
@@ -12004,10 +11657,6 @@ msgstr "cannot halt after snapshot of transient domain"
 
 msgid "cannot halt after transient domain snapshot"
 msgstr "cannot halt after transient domain snapshot"
-
-#, c-format
-msgid "cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"
-msgstr "cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"
 
 #, c-format
 msgid "cannot initialize cert object: %s"
@@ -13334,10 +12983,6 @@ msgid "dev->name buffer overflow: %.3d:%.3d"
 msgstr "dev->name buffer overflow: %.3d:%.3d"
 
 #, c-format
-msgid "dev->name buffer overflow: %.4x:%.2x:%.2x.%.1x"
-msgstr "dev->name buffer overflow: %.4x:%.2x:%.2x.%.1x"
-
-#, c-format
 msgid "device %s iommu_group symlink %s has invalid group number %s"
 msgstr "device %s iommu_group symlink %s has invalid group number %s"
 
@@ -14537,9 +14182,6 @@ msgstr "failed writing to file '%s'"
 msgid "fatal signal %d"
 msgstr "fatal signal %d"
 
-msgid "fd and fdset must be valid"
-msgstr "fd and fdset must be valid"
-
 msgid "fd must be valid"
 msgstr "fd must be valid"
 
@@ -14819,10 +14461,6 @@ msgid "host device already exists"
 msgstr "host device already exists"
 
 #, c-format
-msgid "host pci device %.4x:%.2x:%.2x.%.1x not found"
-msgstr "host pci device %.4x:%.2x:%.2x.%.1x not found"
-
-#, c-format
 msgid "host reports map buffer length exceeds maximum: %d > %d"
 msgstr "host reports map buffer length exceeds maximum: %d > %d"
 
@@ -14923,9 +14561,6 @@ msgstr "includes the password into the connection URI if available"
 #, c-format
 msgid "incomplete metadata in '%s'"
 msgstr "incomplete metadata in '%s'"
-
-msgid "incomplete return information"
-msgstr "incomplete return information"
 
 #, c-format
 msgid "incomplete save header in '%s'"
@@ -15178,10 +14813,6 @@ msgstr "invalid argument supplied"
 #, c-format
 msgid "invalid argument: %s"
 msgstr "invalid argument: %s"
-
-#, c-format
-msgid "invalid base64 in '%s'"
-msgstr "invalid base64 in '%s'"
 
 msgid "invalid catchup limit"
 msgstr "invalid catchup limit"
@@ -18565,10 +18196,6 @@ msgstr "this network exists already"
 msgid "this platform is missing dlopen"
 msgstr "this platform is missing dlopen"
 
-#, c-format
-msgid "this qemu doesn't support RNG device type '%s'"
-msgstr "this qemu doesn't support RNG device type '%s'"
-
 msgid "this qemu doesn't support the rng-egd backend"
 msgstr "this qemu doesn't support the rng-egd backend"
 
@@ -18953,10 +18580,6 @@ msgid "unable to unload already unloaded profile"
 msgstr "unable to unload already unloaded profile"
 
 #, c-format
-msgid "unable to visit backing chain file %s"
-msgstr "unable to visit backing chain file %s"
-
-#, c-format
 msgid "unable to wait for process %lld"
 msgstr "unable to wait for process %lld"
 
@@ -19014,14 +18637,6 @@ msgstr "unexpected %s action: %d"
 #, c-format
 msgid "unexpected OpenVZ URI path '%s', try openvz:///system"
 msgstr "unexpected OpenVZ URI path '%s', try openvz:///system"
-
-#, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///session"
-msgstr "unexpected QEMU URI path '%s', try qemu:///session"
-
-#, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///system"
-msgstr "unexpected QEMU URI path '%s', try qemu:///system"
 
 #, c-format
 msgid "unexpected accessmode %d"
@@ -19519,14 +19134,6 @@ msgstr "unknown driver format value '%s'"
 #, c-format
 msgid "unknown driver name '%s'"
 msgstr "unknown driver name '%s'"
-
-#, c-format
-msgid "unknown driver path '%s' specified (try vbox:///session)"
-msgstr "unknown driver path '%s' specified (try vbox:///session)"
-
-#, c-format
-msgid "unknown driver path '%s' specified (try vbox:///system)"
-msgstr "unknown driver path '%s' specified (try vbox:///system)"
 
 msgid "unknown error"
 msgstr "unknown error"

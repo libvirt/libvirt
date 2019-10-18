@@ -13,9 +13,9 @@
 # Jaswinder Singh <jsingh@redhat.com>, 2007,2009-2010,2012
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.6.0\n"
+"Project-Id-Version: libvirt 5.9.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-30 11:31+0100\n"
+"POT-Creation-Date: 2019-10-18 13:39+0100\n"
 "PO-Revision-Date: 2015-03-01 05:31+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Panjabi (Punjabi) (http://www.transifex.com/projects/p/"
@@ -55,43 +55,6 @@ msgid ""
 "  Default paths:\n"
 "\n"
 "    Configuration file (unless overridden by -f):\n"
-"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
-"\n"
-"    Sockets:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
-"\n"
-"    TLS:\n"
-"      CA certificate:     $HOME/.pki/libvirt/cacert.pem\n"
-"      Server certificate: $HOME/.pki/libvirt/servercert.pem\n"
-"      Server private key: $HOME/.pki/libvirt/serverkey.pem\n"
-"\n"
-"    PID file:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
-"\n"
-msgstr ""
-"\n"
-"  ਮੂਲ ਰਾਹ:\n"
-"\n"
-"    ਸੰਰਚਨਾ ਫਾਈਲ (ਜਦੋਂ ਤੱਕ ਕਿ -f ਦੁਆਰਾ ਮੁੜ ਨਹੀਂ ਲਿਖੀ ਜਾਂਦੀ):\n"
-"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
-"\n"
-"    ਸਾਕੇਟਾਂ:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
-"\n"
-"    TLS:\n"
-"      CA ਪ੍ਰਮਾਣ-ਪੱਤਰ:     $HOME/.pki/libvirt/cacert.pem\n"
-"      ਸਰਵਰ ਪ੍ਰਮਾਣ-ਪੱਤਰ: $HOME/.pki/libvirt/servercert.pem\n"
-"      ਸਰਵਰ ਨਿੱਜੀ ਚਾਬੀ: $HOME/.pki/libvirt/serverkey.pem\n"
-"\n"
-"    PID ਫਾਈਲ:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
-"\n"
-
-msgid ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
 "      $XDG_CONFIG_HOME/libvirt/virtlockd.conf\n"
 "\n"
 "    Sockets:\n"
@@ -112,34 +75,6 @@ msgstr ""
 "\n"
 "    PID ਫਾਈਲ:\n"
 "      $XDG_RUNTIME_DIR/libvirt/virtlockd.pid\n"
-"\n"
-
-#, c-format
-msgid ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
-"      %s/libvirt/virtlockd.conf\n"
-"\n"
-"    Sockets:\n"
-"      %s/run/libvirt/virtlockd-sock\n"
-"\n"
-"    PID file (unless overridden by -p):\n"
-"      %s/run/virtlockd.pid\n"
-"\n"
-msgstr ""
-"\n"
-"  ਮੂਲ ਰਾਹ:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
-"      %s/libvirt/virtlockd.conf\n"
-"\n"
-"    ਸਾਕੇਟਾਂ:\n"
-"      %s/run/libvirt/virtlockd-sock\n"
-"\n"
-"    PID ਫਾਈਲ (unless overridden by -p):\n"
-"      %s/run/virtlockd.pid\n"
 "\n"
 
 msgid ""
@@ -189,40 +124,6 @@ msgid ""
 msgstr ""
 "\n"
 "ਡੋਮੇਨ %s ਸਟੇਟ libvirt ਦੁਆਰਾ ਸੰਭਾਲਿਆ ਗਿਆ ਹੈ\n"
-
-#, c-format
-msgid ""
-"\n"
-"Usage:\n"
-"  %s [options]\n"
-"\n"
-"Options:\n"
-"  -h | --help            Display program help:\n"
-"  -v | --verbose         Verbose messages.\n"
-"  -d | --daemon          Run as a daemon & write PID file.\n"
-"  -l | --listen          Listen for TCP/IP connections.\n"
-"  -t | --timeout <secs>  Exit after timeout period.\n"
-"  -f | --config <file>   Configuration file.\n"
-"  -V | --version         Display version information.\n"
-"  -p | --pid-file <file> Change name of PID file.\n"
-"\n"
-"libvirt management daemon:\n"
-msgstr ""
-"\n"
-"ਵਰਤੋਂ:\n"
-"  %s [options]\n"
-"\n"
-"ਚੋਣਾਂ:\n"
-"  -h | --help            Display program help:\n"
-"  -v | --verbose         Verbose messages.\n"
-"  -d | --daemon          Run as a daemon & write PID file.\n"
-"  -l | --listen          Listen for TCP/IP connections.\n"
-"  -t | --timeout <secs>  Exit after timeout period.\n"
-"  -f | --config <file>   Configuration file.\n"
-"  -V | --version         Display version information.\n"
-"  -p | --pid-file <file> Change name of PID file.\n"
-"\n"
-"libvirt ਪ੍ਰਬੰਧਕੀ ਡੈਮਨ:\n"
 
 msgid "  NAME\n"
 msgstr "  ਵੇਰਵਾ\n"
@@ -1613,12 +1514,6 @@ msgstr "ਪੈਰਲਲ ਜੰਤਰਾਂ ਨੂੰ ਖੋਲ ਨਹੀਂ ਸ�
 msgid "Cannot write data"
 msgstr "ਡਾਟਾ ਨਹੀਂ ਭੇਜ ਸਕਦਾ"
 
-msgid "Capabilities not available"
-msgstr "ਸਮਰੱਥਾ ਉਪਲੱਬਧ ਨਹੀਂ ਹੈ"
-
-msgid "Capabilities not found"
-msgstr "ਸਮਰੱਥਾ ਨਹੀਂ ਲੱਭੀ"
-
 msgid "Capacity"
 msgstr "ਸਮਰੱਥਾ"
 
@@ -1817,16 +1712,6 @@ msgstr "ਲੋਕਲ ਹਾਈਪਰਵੀਜ਼ਰ ਨਾਲ ਜੁੜੋ। �
 #, c-format
 msgid "Connected to domain %s\n"
 msgstr "ਡੋਮੇਨ %s ਨਾਲ ਜੁੜੋ\n"
-
-msgid ""
-"Connecting to session instance without socket path is not supported by the "
-"libssh2 connection driver"
-msgstr "ਸੈਸ਼ਨ ਨਮੂਨੇ ਨਾਲ ਬਿਨਾਂ ਸਾਕੇਟ ਰਾਹ ਤੋਂ ਜੁੜਨਾ libssh2 ਸੰਪਰਕ ਚਾਲਕ ਦੁਆਰਾ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
-
-msgid ""
-"Connecting to session instance without socket path is not supported by the "
-"ssh connection driver"
-msgstr "ਸੈਸ਼ਨ ਨਮੂਨੇ ਨਾਲ ਬਿਨਾਂ ਸਾਕੇਟ ਰਾਹ ਤੋਂ ਜੁੜਨਾ ssh ਸੰਪਰਕ ਚਾਲਕ ਦੁਆਰਾ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
 
 msgid "Constant pages:"
 msgstr "ਸਥਿਰ ਸਫ੍ਹੇ:"
@@ -2538,33 +2423,6 @@ msgstr "ਸਟਰੀਮ ਤੇ ਲਿਖ ਨਹੀਂ ਸਕਿਆ"
 msgid "Couldn't create lock file for device '%s' in path '%s'"
 msgstr "ਯੰਤਰ '%s' ਲਈ '%s' ਰਾਹ ਵਿੱਚ ਤਾਲਾ ਫਾਈਲ ਨਹੀਂ ਬਣਾ ਸਕਿਆ"
 
-msgid "Couldn't fetch Domain Information"
-msgstr "ਡੋਮੇਨ ਜਾਣਕਾਰੀ ਨਹੀਂ ਲੈ ਸਕਿਆ"
-
-msgid "Couldn't fetch Node Information"
-msgstr "ਨੋਡ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਫੇਲ"
-
-msgid "Couldn't get VM information from XML"
-msgstr "VM ਜਾਣਕਾਰੀ XML ਤੋਂ ਲੈ ਨਹੀਂ ਸਕਿਆ"
-
-msgid "Couldn't get VM record"
-msgstr "VM ਰਿਕਾਰਡ ਨਹੀਂ ਲੈ ਸਕਿਆ"
-
-msgid "Couldn't get host metrics"
-msgstr "ਮੌਜੂਦਾ ਸਮਾਂ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕਰ ਸਕਿਆ"
-
-msgid "Couldn't get host metrics - memory information"
-msgstr "ਹੋਸਟ ਮੈਟਰਿਕਸ ਪਤਾ ਨਹੀਂ ਕਰ ਸਕਿਆ - ਮੈਮੋਕੀ ਜਾਣਕਾਰੀ"
-
-msgid "Couldn't get the Domain Pointer"
-msgstr "ਡੋਮੇਨ ਪੁਆਂਇਟ ਨਹੀਂ ਲੈ ਸਕਿਆ"
-
-msgid "Couldn't get version info"
-msgstr "ਵਰਜਨ ਜਾਣਕਾਰੀ ਪਤਾ ਨਹੀਂ ਕਰ ਸਕਿਆ"
-
-msgid "Couldn't parse version info"
-msgstr "ਵਰਜਨ ਜਾਣਕਾਰੀ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਿਆ"
-
 #, c-format
 msgid "Couldn't read volume target path '%s'"
 msgstr "ਵਾਲੀਅਮ ਟਾਰਗਿਟ ਮਾਰਗ '%s' ਨੂੰ ਪੜ ਨਹੀਂ ਸਕਿਆ"
@@ -2973,12 +2831,6 @@ msgstr "ਡੋਮੇਨ '%s' ਪਹਿਲਾਂ ਹੀ ਚੱਲ ਰਿਹਾ �
 msgid "Domain '%s' sysinfo are not available"
 msgstr "ਡੋਮੇਨ '%s' sysinfo ਉਪਲੱਬਧ ਨਹੀਂ ਹਨ"
 
-msgid "Domain Pointer is invalid"
-msgstr "ਡੋਮੇਨ ਪੁਆਂਇਟਰ ਗਲਤ ਹੈ"
-
-msgid "Domain Pointer not valid"
-msgstr "ਡੋਮੇਨ ਪੁਆਂਇਟਰ ਯੋਗ ਨਹੀਂ ਹੈ"
-
 msgid ""
 "Domain XML doesn't contain any disks, cannot deduce datastore and path for "
 "VMX file"
@@ -3055,9 +2907,6 @@ msgstr "ਡੋਮੇਨ ਮੁਅੱਤਲ ਜਾਂ ਬੰਦ ਨਹੀਂ ਕ�
 msgid "Domain name contains invalid escape sequence"
 msgstr "ਡੋਮੇਨ ਨਾਂ ਵਿੱਚ ਗਲਤ ਅਸਕੇਪ ਅੱਖਰ ਹਨ"
 
-msgid "Domain name is not unique"
-msgstr "ਡੋਮੇਨ ਨਾਂ ਵੱਖਰਾ ਨਹੀਂ ਹੈ"
-
 msgid "Domain not found"
 msgstr "ਡੋਮੇਨ ਨਹੀਂ ਲੱਭਿਆ"
 
@@ -3105,9 +2954,6 @@ msgstr "ਡੋਮੇਨ ਟਾਈਟਲ ਵਿੱਚ ਨਵੀਂ-ਲਾਈਨ �
 
 msgid "Domain:"
 msgstr "ਡੋਮੇਨ:"
-
-msgid "DomainID can't fit in 32 bits"
-msgstr "DomainID ਨੂੰ 32 ਬਿੱਟਾਂ ਵਿੱਚ ਫਿੱਟ ਨਹੀਂ ਹੋ ਸਕਦੀ"
 
 msgid "Done.\n"
 msgstr "ਕਰ ਦਿੱਤਾ।\n"
@@ -3463,10 +3309,6 @@ msgid "Failed"
 msgstr "ਫੇਲ੍ਹ"
 
 #, c-format
-msgid "Failed opening %s"
-msgstr "%s ਨੂੰ ਖੋਲਣ ਵਿੱਚ ਫੇਲ"
-
-#, c-format
 msgid "Failed set TLS x509 credentials: %s"
 msgstr "TLS x509 ਕਰੀਡੈਂਸ਼ਲ ਸੈੱਟ ਕਰਨ ਤੋਂ ਫੇਲ: %s"
 
@@ -3481,10 +3323,6 @@ msgstr "pid ਫਾਇਲ '%s' ਪ੍ਰਾਪਤੀ ਫੇਲ"
 msgid "Failed to add IP address %s to IP address cache for interface %s"
 msgstr "IP ਐਡਰੈੱਸ %s ਨੂੰ IP ਐਡਰੈੱਸ ਕੈਸ਼ੇ ਵਿੱਚ ਜੋੜਨ ਤੋਂ ਫੇਲ ਇੰਟਰਫੇਸ %s ਲਈ"
 
-#, c-format
-msgid "Failed to add PCI device ID '%s' to %s"
-msgstr "PCI ਜੰਤਰ ID '%s'  ਨੂੰ %s ਵਿੱਚ ਜੋੜਨ ਤੋਂ ਫੇਲ"
-
 msgid "Failed to add netlink event handle watch"
 msgstr "ਸਰਵਰ ਘਟਨਾ ਕਾਲਬੈਕ ਜੋੜਨ ਵਿੱਚ ਫੇਲ"
 
@@ -3492,18 +3330,11 @@ msgid "Failed to add signal handle watch"
 msgstr "ਸਿਗਨਲ ਪਾਈਪ ਤੋਂ ਪੜ੍ਹਨ ਲਈ ਅਸਫ਼ਲ"
 
 #, c-format
-msgid "Failed to add slot for PCI device '%s' to %s"
-msgstr "PCI ਜੰਤਰ '%s' ਲਈ ਸਲਾਟ ਨੂੰ %s ਵਿੱਚ ਜੋੜਨ ਤੋਂ ਫੇਲ"
-
-#, c-format
 msgid "Failed to allocate PCI device list: %s"
 msgstr "PCI ਯੰਤਰ ਸੂਚੀ ਨਿਯਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ: %s"
 
 msgid "Failed to allocate XML buffer"
 msgstr "XML ਬਫਰ ਨਿਰਧਾਰਤ ਕਰਨ ਲਈ ਫੇਲ"
-
-msgid "Failed to allocate memory"
-msgstr "ਮੈਮੋਰੀ ਨਿਰਧਾਰਤ ਕਰਨ ਲਈ ਅਸਫ਼ਲ"
 
 msgid "Failed to allocate memory for path"
 msgstr "ਮਾਰਗ ਲਈ ਮੈਮੋਰੀ ਨਿਰਧਾਰਨ ਫੇਲ ਹੋਇਆ"
@@ -3520,9 +3351,6 @@ msgstr "ਸੁਰੱਖਿਆ ਮਾਡਲ ਨੂੰ ਨਿਰਧਾਰਤ ਕ�
 
 msgid "Failed to allocate tty"
 msgstr "tty ਨਿਰਧਾਰਤ ਕਰਨ ਵਿੱਚ ਫੇਲ"
-
-msgid "Failed to allocate xen session"
-msgstr "ਮੈਮੋਰੀ ਨਿਰਧਾਰਤ ਕਰਨ ਲਈ ਅਸਫ਼ਲ"
 
 #, c-format
 msgid "Failed to apply capabilities: %d"
@@ -3552,10 +3380,6 @@ msgstr "ਸਟੋਰੇਜ਼ ਪੂਲ '%s' ਨੂੰ ਆਟੋਸਟਾਰਟ ਕ
 
 msgid "Failed to begin network config change transaction"
 msgstr "ਨੈੱਟਵਰਕ ਸੰਰਚਨਾ ਤਬਦੀਲੀ ਟਰਾਂਜੈਕਸ਼ਨ ਸ਼ੁਰੂ ਕਰਨ ਤੋਂ ਫੇਲ"
-
-#, c-format
-msgid "Failed to bind PCI device '%s' to %s"
-msgstr "PCI ਜੰਤਰ '%s' ਨੂੰ %s ਵਿੱਚ ਬਾਈਂਡ ਕਰਨ ਤੋਂ ਫੇਲ"
 
 #, c-format
 msgid "Failed to bind mount directory %s to %s"
@@ -3695,9 +3519,6 @@ msgstr "SASL ਕਲਾਂਈਟ ਪ੍ਰਸੰਗ ਬਣਾਉਣ ਵਿੱਚ 
 
 msgid "Failed to create XML"
 msgstr "XML ਬਣਾਉਣ ਲਈ ਫੇਲ"
-
-msgid "Failed to create XML conf object"
-msgstr "XML ਸੰਰਚਨਾ ਆਬਜੈਕਟ ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ"
 
 msgid "Failed to create XML config object"
 msgstr "XML config ਆਬਜੈਕਟ ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ"
@@ -4487,10 +4308,6 @@ msgstr "ਸਾਕਟ ਬਣਾਉਣ ਲਈ ਅਸਫ਼ਲ"
 msgid "Failed to release port %d"
 msgstr "ਪੋਰਟ %d ਨੂੰ ਛੱਡਣ ਵਿੱਚ ਅਸਫਲ"
 
-#, c-format
-msgid "Failed to remove PCI ID '%s' from %s"
-msgstr "PCI ID '%s' ਨੂੰ %s ਤੋਂ ਹਟਾਉਣ ਲਈ ਫੇਲ"
-
 msgid "Failed to remove domain managed save image"
 msgstr "ਡੋਮੇਨ ਸੰਭਾਲਣ ਵਾਲੀ ਫਾਇਲ ਬਣਾਉਣ ਤੋਂ ਫੇਲ"
 
@@ -4501,10 +4318,6 @@ msgstr "ਪ੍ਰਬੰਧਿਤ ਸੰਭਾਲ ਫਾਈਲ '%s' ਨੂੰ ਹ
 #, c-format
 msgid "Failed to remove managed save image for domain %s"
 msgstr "ਡੋਮੇਨ %s ਲਈ ਪਰਬੰਧ ਕੀਤੇ ਸੰਭਾਲ ਈਮੇਜ਼ ਨੂੰ ਹਟਾਉਣ ਵਿੱਚ ਫੇਲ ਹੋਇਆ"
-
-#, c-format
-msgid "Failed to remove slot for PCI device '%s' from %s"
-msgstr "PCI ਜੰਤਰ '%s' ਲਈ ਸਲਾਟ ਨੂੰ %s ਤੋਂ ਹਟਾਉਣ ਤੋਂ ਫੇਲ"
 
 #, c-format
 msgid "Failed to remove storage volume '%s'(%s)"
@@ -4759,10 +4572,6 @@ msgstr "ਸਨੈਪਸ਼ਾਟ ਲੈਣ ਵਿੱਚ ਫੇਲ: %s"
 #, c-format
 msgid "Failed to terminate process %lld with SIG%s"
 msgstr "ਕਾਰਵਾਈ %lld  ਨੂੰ SIG%s ਨਾਲ ਰੋਕਣ ਵਿੱਚ ਅਸਫਲ"
-
-#, c-format
-msgid "Failed to trigger a re-probe for PCI device '%s'"
-msgstr "ਇੱਕ ਮੁੜ-ਜਾਂਚ ਨੂੰ PCI ਜੰਤਰ '%s' ਲਈ ਟਰਿੱਗਰ ਨਹੀਂ ਕਰ ਸਕਿਆ"
 
 #, c-format
 msgid "Failed to truncate file '%s'"
@@ -5485,13 +5294,6 @@ msgstr "ਪ੍ਰਮਾਣਿਕਤਾ ਫੇਲ ਹੋਈ: '%s'"
 msgid "Invalid back reference"
 msgstr "ਗਲਤ ਪਿੱਛੇ ਹਵਾਲਾ"
 
-msgid "Invalid base64 data"
-msgstr "ਗਲਤ base64 ਡਾਟਾ"
-
-#, c-format
-msgid "Invalid boolean value for field '%s'"
-msgstr "'%s' ਖੇਤਰ ਲਈ ਅਯੋਗ ਬੂਲੀਅਨ ਮੁੱਲ"
-
 #, c-format
 msgid "Invalid bridge mac address '%s' in network '%s'"
 msgstr "ਅਯੋਗ '%s' ਪੁਲ਼ ਮੈਕ ਪਤਾ '%s' ਨੈੱਟਵਰਕ ਵਿੱਚ"
@@ -5790,10 +5592,6 @@ msgid ""
 msgstr "MAC ਪਤਾ '%s' ਨੈੱਟਵਰਕ '%s' IPv6 ਸਥਿਰ ਮੇਜਬਾਨ ਪਰਿਭਾਸ਼ਾ ਵਿੱਚ ਦਰਸਾਉਣ ਲਈ ਅਢੁਕਵਾਂ "
 
 #, c-format
-msgid "Invalid type '%s' requested for parameter '%s', actual type is '%s'"
-msgstr "ਅਢੁਕਵੀਂ ਕਿਸਮ '%s' ਦੀ ਬੇਨਤੀ ਪੈਰਾਮੀਟਰ '%s' ਲਈ ਕੀਤੀ ਗਈ, ਅਸਲ ਕਿਸਮ '%s' ਹੈ"
-
-#, c-format
 msgid ""
 "Invalid use of 'floor' on interface with MAC address %s - network '%s' has "
 "no inbound QoS set"
@@ -5804,26 +5602,6 @@ msgstr ""
 #, c-format
 msgid "Invalid value '%s' for VMX entry '%s'"
 msgstr "ਗਲਤ ਮੁੱਲ '%s' VMX ਐਂਟਰੀ '%s' ਲਈ"
-
-#, c-format
-msgid "Invalid value for field '%s': expected double"
-msgstr "'%s' ਖੇਤਰ ਲਈ ਅਯੋਗ ਮੁੱਲ: double ਦੀ ਆਸ ਸੀ"
-
-#, c-format
-msgid "Invalid value for field '%s': expected int"
-msgstr "'%s' ਖੇਤਰ ਲਈ ਅਯੋਗ ਮੁੱਲ: int ਦੀ ਆਸ ਸੀ"
-
-#, c-format
-msgid "Invalid value for field '%s': expected long long"
-msgstr "'%s' ਖੇਤਰ ਲਈ ਅਯੋਗ ਮੁੱਲ: long long ਦੀ ਆਸ ਸੀ"
-
-#, c-format
-msgid "Invalid value for field '%s': expected unsigned int"
-msgstr "'%s' ਖੇਤਰ ਲਈ ਅਯੋਗ ਮੁੱਲ: unsigned int ਦੀ ਆਸ ਸੀ"
-
-#, c-format
-msgid "Invalid value for field '%s': expected unsigned long long"
-msgstr "'%s' ਖੇਤਰ ਲਈ ਅਯੋਗ ਮੁੱਲ: unsigned long long ਦੀ ਆਸ ਸੀ"
 
 msgid "Invalid value for number of CPUs to show"
 msgstr "ਵਿਖਾਏ ਜਾਣ ਵਾਲੇ CPU-ਆਂ ਦੀ ਗਿਣਤੀ ਦਾ ਅਢੁਕਵਾਂ ਮੁੱਲ"
@@ -6513,10 +6291,6 @@ msgid "Multiqueue devices are not supported on this system"
 msgstr "ਬਹੁ-ਕਤਾਰੀ ਯੰਤਰ ਇਸ ਸਿਸਟਮ ਤੇ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ"
 
 #, c-format
-msgid "Multiqueue network is not supported for: %s"
-msgstr "Multiqueue ਨੈੱਟਵਰਕ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ ਇਸ ਲਈ: %s"
-
-#, c-format
 msgid "Must use --rename or --clone to change %s to %s"
 msgstr "%s ਨੂੰ %s ਵਿੱਚ ਬਦਲਣ ਲਈ --rename ਜਾਂ --clone ਜਰੂਰ ਵਰਤੋ"
 
@@ -6532,10 +6306,6 @@ msgstr "NULL NetworkDef"
 #, c-format
 msgid "NULL string parameter '%s'"
 msgstr "NULL ਸਤਰ ਪੈਰਾਮੀਟਰ '%s'"
-
-#, c-format
-msgid "NULL value for field '%s'"
-msgstr "'%s' ਖੇਤਰ ਲਈ NULL ਮੁੱਲ"
 
 msgid "NUMA cell number"
 msgstr "NUMA ਸੈੱਲ ਨੰਬਰ"
@@ -6729,9 +6499,6 @@ msgstr "ਕੋਈ JSON ਪਾਰਸਰ ਸਥਾਪਨ ਉਪਲੱਬਧ ਨਹ
 
 msgid "No PCI buses available"
 msgstr "ਕੋਈ PCI ਬਸਾਂ ਉਪਲੱਬਧ ਨਹੀਂ ਹਨ"
-
-msgid "No UNIX process ID available"
-msgstr "ਕੋਈ UNIX ਕਾਰਵਾਈ ID ਉਪਲੱਬਧ ਨਹੀਂ"
 
 #, c-format
 msgid "No active operation on device: %s"
@@ -7486,9 +7253,6 @@ msgid ""
 "Query parameter 'no_verify' has unexpected value '%s' (should be 0 or 1)"
 msgstr "ਕਿਊਰੀ ਪੈਰਾਮੀਟਰ 'no_verify' ਦਾ ਅਣਜਾਣ ਮੁੱਲ '%s' ਹੈ (0 ਜਾਂ 1 ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ)"
 
-msgid "Query parameter 'no_verify' has unexpected value (should be 0 or 1)"
-msgstr "Query parameter 'no_verify' has unexpected value (should be 0 or 1)"
-
 #, c-format
 msgid ""
 "Query parameter 'proxy' contains unexpected type '%s' (should be (http|"
@@ -7964,9 +7728,6 @@ msgstr "ਇਸ ਪਲੇਟਫਾਰਮ ਤੇ ਕਾਰਜ CPU affinity ਨੂ�
 #, c-format
 msgid "Serial port index %d out of [0..3] range"
 msgstr "ਸੀਰੀਅਲ ਪੋਰਟ ਸੂਚੀ %d [0..3] ਰੇਂਜ ਤੋਂ ਬਾਹਰ ਹੈ"
-
-msgid "Server name not in URI"
-msgstr "ਸਰਵਰ ਨਾਂ URI ਵਿੱਚ ਨਹੀਂ ਹੈ"
 
 msgid "Servname not supported for ai_socktype"
 msgstr "Servname ਨੂੰ ai_socktype ਲਈ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
@@ -8456,14 +8217,6 @@ msgstr "ਪੂਲ ਕਿਸਮ %s ਸਰੋਤ ਡਾਇਰੈਕਟਰੀ ਨ�
 #, c-format
 msgid "Target controller vectors %d does not match source %d"
 msgstr "ਟਾਰਗਿਟ ਕੰਟਰੋਲਰ ਵੈਕਟਰ %d ਸਰੋਤ %d ਨਾਲ ਮੇਲ ਨਹੀਂ ਖਾਂਦੀਆਂ"
-
-#, c-format
-msgid ""
-"Target device PCI address %04x:%02x:%02x.%02x does not match source %04x:"
-"%02x:%02x.%02x"
-msgstr ""
-"ਟਾਰਗਿਟ ਜੰਤਰ PCI ਐਡਰੈੱਸ %04x:%02x:%02x.%02x ਸਰੋਤ %04x:%02x:%02x.%02x ਨਾਲ ਮੇਲ ਨਹੀਂ "
-"ਖਾਂਦਾ ਹੈ"
 
 #, c-format
 msgid "Target device address type %s does not match source %s"
@@ -9414,9 +9167,6 @@ msgstr "DBus ਸੈਸ਼ਨ ਬਸ ਸੰਪਰਕ ਪ੍ਰਾਪਤ ਕਰਨ �
 msgid "Unable to get DBus system bus connection: %s"
 msgstr "DBus ਸਿਸਟਮ ਬੱਸ ਕੁਨੈਕਸ਼ਨ ਪ੍ਰਾਪਤ ਕਰਨ ਤੋਂ ਅਸਮਰਥ: %s"
 
-msgid "Unable to get Host CPU set"
-msgstr "ਹੋਸਟ CPU ਸੈੱਟ ਪ੍ਰਾਪਤ ਕਰਨ ਤੋਂ ਅਸਮਰਥ"
-
 #, c-format
 msgid "Unable to get LVM key for %s"
 msgstr "%s ਲਈ LVM ਕੁੰਜੀ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕਰ ਸਕਦਾ"
@@ -9474,9 +9224,6 @@ msgstr "ਡੋਮੇਨ ਸਥਿਤੀ ਲੈਣ ਲਈ ਫੇਲ"
 
 msgid "Unable to get free slot number"
 msgstr "ਫਰੀ ਸਲਾਟ ਗਿਣਤੀ ਪਤਾ ਕਰਨ ਤੋਂ ਫੇਲ"
-
-msgid "Unable to get host metric Information"
-msgstr "ਇੰਟਰਫੇਸ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਫੇਲ"
 
 #, c-format
 msgid "Unable to get index for interface %s"
@@ -9705,13 +9452,6 @@ msgstr "ਸ਼੍ਰੇਣੀ id '%s' ਨੂੰ ਪਾਰਸ ਕਰਨ ਤੋਂ �
 #, c-format
 msgid "Unable to parse current SELinux context '%s'"
 msgstr "ਮੌਜੂਦਾ SELinux ਕੰਟੈਕਸਟ '%s' ਪਾਰਸ ਕਰਨ ਤੋਂ ਅਸਮਰਥ"
-
-#, c-format
-msgid "Unable to parse devaddr parameter '%s'"
-msgstr "devaddr ਪੈਰਾਮੀਟਰ '%s' ਨੂੰ ਪਾਰਸ ਕਰਨ ਲਈ ਫੇਲ"
-
-msgid "Unable to parse given mac address"
-msgstr "ਮੈਕ ਐਜਰੈੱਸ ਨੂੰ ਪਾਰਸ ਕਰਨ ਵਿੱਚ ਫੇਲ"
 
 msgid "Unable to parse integer parameter"
 msgstr "ਪੂਰਨ ਅੰਕ ਪੈਰਾਮੀਟਰ ਨੂੰ ਪਾਰਸ ਕਰਨ ਲਈ ਫੇਲ"
@@ -9990,13 +9730,6 @@ msgstr "ਗਿਸਟ ਚਾਲੂ ਕਰਨ ਵਿੱਚ ਫੇਲ %s"
 #, c-format
 msgid "Unable to truncate %s"
 msgstr "%s ਨੂੰ ਟਰੰਕੇਟ ਕਰਨ ਤੋਂ ਅਸਮਰਥ"
-
-msgid "Unable to unescape command"
-msgstr "ਕਮਾਂਡ unescape ਕਰਨ ਤੋਂ ਅਮਸਰਥ"
-
-#, c-format
-msgid "Unable to use MAC address starting with reserved value 0xFE - '%s' - "
-msgstr "MAC ਪਤਾ ਵਰਤਣ ਤੋਂ ਅਸਮਰੱਥ ਜਿਹੜਾ ਵਰਤਦਾ ਹੈ ਰਾਖਵਾਂ ਮੁੱਲ 0xFE - '%s' - "
 
 #, c-format
 msgid "Unable to verify TLS peer: %s"
@@ -11142,10 +10875,6 @@ msgstr "ਬੂਟ ਤਰਤੀਬ '%s' ਇੱਕ ਤੋਂ ਵੱਧ ਯੰਤ�
 msgid "booted"
 msgstr "ਚਾਲੂ ਕੀਤਾ"
 
-msgid ""
-"booting from assigned devices is only supported for PCI, USB and SCSI devices"
-msgstr "ਨਿਰਧਾਰਤ ਯੰਤਰਾਂ ਤੋਂ ਬੂਟਿੰਗ ਸਿਰਫ PCI, USB ਅਤੇ SCSI ਯੰਤਰਾਂ ਲਈ ਹੀ ਸਮਰਥਿਤ ਹੈ"
-
 #, c-format
 msgid "bridge %s doesn't exist"
 msgstr "ਬਰਿੱਜ %s ਮੌਜੂਦ ਨਹੀਂ ਹੈ"
@@ -11605,10 +11334,6 @@ msgstr "ਟਰਾਂਜ਼ੀਐਂਟ ਡੋਮੇਨ ਲਈ ਆਟੋਸਟਾਰ
 
 msgid "cannot halt after transient domain snapshot"
 msgstr "ਟਰਾਂਜ਼ੀਐਂਟ ਡੋਮੇਨ ਨਾ-ਪਰਭਾਸ਼ਿਤ ਨਹੀਂ ਕਰ ਸਕਦਾ"
-
-#, c-format
-msgid "cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"
-msgstr "cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"
 
 #, c-format
 msgid "cannot initialize cert object: %s"
@@ -12916,10 +12641,6 @@ msgid "dev->name buffer overflow: %.3d:%.3d"
 msgstr "dev->ਨਾਂ ਬਫਰ ਉਪਰੋਂ ਵਗਿਆ: %.3d:%.3d"
 
 #, c-format
-msgid "dev->name buffer overflow: %.4x:%.2x:%.2x.%.1x"
-msgstr "dev->name ਬਫ਼ਰ overflow: %.4x:%.2x:%.2x.%.1x"
-
-#, c-format
 msgid "device %s iommu_group symlink %s has invalid group number %s"
 msgstr "ਯੰਤਰ %s iommu_group symlink %s ਕੋਲ ਅਢੁਕਵਾਂ ਸਮੂਹ ਅੰਕ %s ਹੈ"
 
@@ -14073,9 +13794,6 @@ msgstr "ਫਾਇਲ '%s' ਵਿੱਚ ਲਿਖਣ ਤੋਂ ਫੇਲ"
 msgid "fatal signal %d"
 msgstr "ਘਾਤਕ ਇਸ਼ਾਰਾ %d"
 
-msgid "fd and fdset must be valid"
-msgstr "fd ਅਤੇ fdset ਲਾਜਮੀ ਢੁਕਵੇਂ ਹੋਣ"
-
 msgid "fd must be valid"
 msgstr "fd ਦਾ ਯੋਗ ਹੋਣਾ ਜਰੂਰੀ ਹੈ"
 
@@ -14351,10 +14069,6 @@ msgid "host device already exists"
 msgstr "ਮੇਜਬਾਨ ਯੰਤਰ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ"
 
 #, c-format
-msgid "host pci device %.4x:%.2x:%.2x.%.1x not found"
-msgstr "host pci device %.4x:%.2x:%.2x.%.1x not found"
-
-#, c-format
 msgid "host reports map buffer length exceeds maximum: %d > %d"
 msgstr "ਮੇਜ਼ਬਾਨ ਨੇ ਰਿਪੋਰਟ ਕੀਤੀ ਹੈ ਕਿ ਮੈਪ ਬਫਰ ਲੰਬਾਈ ਅਧਿਕਤਮ ਤੋਂ ਜਿਆਦਾ ਹੈ: %d > %d"
 
@@ -14450,9 +14164,6 @@ msgstr "XML ਡੰਪ ਵਿੱਚ ਸੁਰੱਖਿਆ ਅਨੁਕੂਲ ਜ�
 
 msgid "includes the password into the connection URI if available"
 msgstr "ਜੇ ਉਪਲੱਬਧ ਹੈ ਤਾਂ ਸੰਪਰਕ URI ਵਿੱਚ ਗੁਪਤ-ਸ਼ਬਦ ਸ਼ਾਮਿਲ ਕਰਦਾ ਹੈ"
-
-msgid "incomplete return information"
-msgstr "ਅਧੂਰੀ ਵਾਪਸੀ ਜਾਣਕਾਰੀ"
 
 #, c-format
 msgid "incomplete save header in '%s'"
@@ -14699,10 +14410,6 @@ msgstr "ਇਸ ਵਿੱਚ ਗਲਤ ਮੁੱਲ"
 #, c-format
 msgid "invalid argument: %s"
 msgstr "ਗਲਤ ਆਰਗੂਮੈਂਟ: %s"
-
-#, c-format
-msgid "invalid base64 in '%s'"
-msgstr "'%s' ਗਲਤ base64"
 
 msgid "invalid catchup limit"
 msgstr "ਗਲਤ ਕੈਚਅੱਪ ਸੀਮਾ"
@@ -17992,10 +17699,6 @@ msgstr "ਇਹ ਨੈੱਟਵਰਕ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ �
 msgid "this platform is missing dlopen"
 msgstr "ਇਸ ਮੰਚ ਵਿੱਚੋਂ dlopen ਗੁੰਮ ਹੈ"
 
-#, c-format
-msgid "this qemu doesn't support RNG device type '%s'"
-msgstr "ਇਹ qemu RNG ਯੰਤਰ ਕਿਸਮ '%s' ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ"
-
 msgid "this qemu doesn't support the rng-egd backend"
 msgstr "ਇਹ qemu rng-egd  ਬੈਕਐੰਡ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ"
 
@@ -18374,10 +18077,6 @@ msgid "unable to unload already unloaded profile"
 msgstr "ਪਹਿਲਾਂ ਹੀ ਅਨਲੋਡ ਕੀਤੇ ਜਾ ਚੁੱਕੇ ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਅਨਲੋਡ ਕਰਨੋਂ ਅਸਮਰੱਥ"
 
 #, c-format
-msgid "unable to visit backing chain file %s"
-msgstr "ਬੈਕਿੰਗ ਲੜੀ ਫਾਈਲ %s ਤੇ ਪਹੁੰਚਣ ਤੋਂ ਅਸਮਰੱਥ"
-
-#, c-format
 msgid "unable to wait for process %lld"
 msgstr "ਕਾਰਜ %lld ਦੀ ਉਡੀਕ ਕਰਨ ਤੋਂ ਅਸਮਰਥ"
 
@@ -18435,14 +18134,6 @@ msgstr "ਅਣਕਿਆਸੀ %s ਕਾਰਵਾਈ: %d"
 #, c-format
 msgid "unexpected OpenVZ URI path '%s', try openvz:///system"
 msgstr "ਅਚਾਨਕ OpenVZ URI ਮਾਰਗ '%s', try openvz:///system"
-
-#, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///session"
-msgstr "ਅਚਾਨਕ QEMU URI ਟਿਕਾਣਾ '%s', qemu:///session ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ"
-
-#, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///system"
-msgstr "ਅਚਾਨਕ QEMU URI ਮਾਰਗ '%s', try qemu:///system"
 
 #, c-format
 msgid "unexpected accessmode %d"
@@ -18932,14 +18623,6 @@ msgstr "ਅਣਜਾਣ ਚਾਲਕ ਫਾਰਮੈਟ ਮੁੱਲ '%s'"
 #, c-format
 msgid "unknown driver name '%s'"
 msgstr "ਅਣਪਛਾਤਾ ਚਾਲਕ ਨਾਂ '%s'"
-
-#, c-format
-msgid "unknown driver path '%s' specified (try vbox:///session)"
-msgstr "ਅਣਜਾਣ ਡਰਾਈਵਰ ਮਾਰਗ '%s' ਦਿੱਤਾ ਹੈ (vbox:///session ਦੀ ਕੋਸ਼ਿਸ ਕਰੋ)"
-
-#, c-format
-msgid "unknown driver path '%s' specified (try vbox:///system)"
-msgstr "ਅਣਜਾਣ ਡਰਾਈਵਰ ਮਾਰਗ '%s' ਦਿੱਤਾ ਹੈ (vbox:///system ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ)"
 
 msgid "unknown error"
 msgstr "ਅਣਜਾਣ ਗਲਤੀ"

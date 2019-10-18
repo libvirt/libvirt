@@ -11,10 +11,10 @@
 # sandeeps <sshedmak@redhat.com>, 2013-2014
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.6.0\n"
+"Project-Id-Version: libvirt 5.9.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-30 11:31+0100\n"
-"PO-Revision-Date: 2015-02-27 01:03+0000\n"
+"POT-Creation-Date: 2019-10-18 13:39+0100\n"
+"PO-Revision-Date: 2015-02-27 12:59+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Marathi (http://www.transifex.com/projects/p/libvirt/language/"
 "mr/)\n"
@@ -53,43 +53,6 @@ msgid ""
 "  Default paths:\n"
 "\n"
 "    Configuration file (unless overridden by -f):\n"
-"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
-"\n"
-"    Sockets:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
-"\n"
-"    TLS:\n"
-"      CA certificate:     $HOME/.pki/libvirt/cacert.pem\n"
-"      Server certificate: $HOME/.pki/libvirt/servercert.pem\n"
-"      Server private key: $HOME/.pki/libvirt/serverkey.pem\n"
-"\n"
-"    PID file:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
-"\n"
-msgstr ""
-"\n"
-"  पूर्वनिर्धारित मार्ग:\n"
-"\n"
-"    संरचना फाइल (-f तर्फे खोडून पुनः लिहेपर्यंत):\n"
-"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
-"\n"
-"    सॉकेट्स:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
-"\n"
-"    TLS:\n"
-"      CA सर्टिफिकेट:     $HOME/.pki/libvirt/cacert.pem\n"
-"      सर्व्हर सर्टिफिकेट: $HOME/.pki/libvirt/servercert.pem\n"
-"      सर्व्हर प्राइव्हेट कि: $HOME/.pki/libvirt/serverkey.pem\n"
-"\n"
-"    PID फाइल:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
-"\n"
-
-msgid ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
 "      $XDG_CONFIG_HOME/libvirt/virtlockd.conf\n"
 "\n"
 "    Sockets:\n"
@@ -110,74 +73,6 @@ msgstr ""
 "\n"
 "    PID फाइल:\n"
 "      $XDG_RUNTIME_DIR/libvirt/virtlockd.pid\n"
-"\n"
-
-#, c-format
-msgid ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
-"      %s\n"
-"\n"
-"    Sockets:\n"
-"      %s\n"
-"      %s\n"
-"\n"
-"    TLS:\n"
-"      CA certificate:     %s\n"
-"      Server certificate: %s\n"
-"      Server private key: %s\n"
-"\n"
-"    PID file (unless overridden by -p):\n"
-"      %s/run/libvirtd.pid\n"
-"\n"
-msgstr ""
-"\n"
-"  पूर्वनिर्धारित मार्ग:\n"
-"\n"
-"    संरचना फाइल (-f मार्फत खोडून पुन्हा लिहले असेपर्यंत):\n"
-"      %s\n"
-"\n"
-"    सॉकेट्स:\n"
-"      %s\n"
-"      %s\n"
-"\n"
-"    TLS:\n"
-"      CA प्रमाणपत्र:     %s\n"
-"      सर्व्हर प्रमाणपत्र: %s\n"
-"      सर्व्हर प्राइवेट कि: %s\n"
-"\n"
-"    PID फाइल (-p मार्फत खोडून पुन्हा लिहले असेपर्यंत):\n"
-"      %s/run/libvirtd.pid\n"
-"\n"
-
-#, c-format
-msgid ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
-"      %s/libvirt/virtlockd.conf\n"
-"\n"
-"    Sockets:\n"
-"      %s/run/libvirt/virtlockd-sock\n"
-"\n"
-"    PID file (unless overridden by -p):\n"
-"      %s/run/virtlockd.pid\n"
-"\n"
-msgstr ""
-"\n"
-"  पूर्वनिर्धारित मार्ग:\n"
-"\n"
-"    संरचना फाइल (-f तर्फे खोडून लिहेपर्यंत):\n"
-"      %s/libvirt/virtlockd.conf\n"
-"\n"
-"    सॉकेट्स:\n"
-"      %s/run/libvirt/virtlockd-sock\n"
-"\n"
-"    PID फाइल (-p तर्फे खोडून लिहेपर्यंत):\n"
-"      %s/run/virtlockd.pid\n"
 "\n"
 
 msgid ""
@@ -275,40 +170,6 @@ msgid ""
 msgstr ""
 "\n"
 "डोमेन %s स्तर libvirt तर्फे साठवले गेले\n"
-
-#, c-format
-msgid ""
-"\n"
-"Usage:\n"
-"  %s [options]\n"
-"\n"
-"Options:\n"
-"  -h | --help            Display program help:\n"
-"  -v | --verbose         Verbose messages.\n"
-"  -d | --daemon          Run as a daemon & write PID file.\n"
-"  -l | --listen          Listen for TCP/IP connections.\n"
-"  -t | --timeout <secs>  Exit after timeout period.\n"
-"  -f | --config <file>   Configuration file.\n"
-"  -V | --version         Display version information.\n"
-"  -p | --pid-file <file> Change name of PID file.\n"
-"\n"
-"libvirt management daemon:\n"
-msgstr ""
-"\n"
-"वापर:\n"
-"  %s [पर्याय]\n"
-"\n"
-"पर्याय:\n"
-"  -h | --help            प्रोग्राम मदत दाखवा:\n"
-"  -v | --verbose         मजकूर संदेश.\n"
-"  -d | --daemon          डिमन म्हणून चालवा आणि PID फाइल लिहा.\n"
-"  -l | --listen          TCP/IP जोडणीकरिता ऐका.\n"
-"  -t | --timeout <secs>  टाइमआउट कालावधी नंतर बाहेर पडा.\n"
-"  -f | --config <file>   संरचना फाइल.\n"
-"  -V | --version         आवृत्ती माहिती दाखवा.\n"
-"  -p | --pid-file <file> PID फाइलचे नाव बदलवा.\n"
-"\n"
-"libvirt व्यवस्थापन डिमन:\n"
 
 #, c-format
 msgid ""
@@ -472,20 +333,12 @@ msgid "%s length greater than maximum: %d > %d"
 msgstr "%s लांबी कमाल पेक्षा जास्त आहे: %d > %d"
 
 #, c-format
-msgid "%s must be run by non root users"
-msgstr "%s ला फक्त विना रूट वापरकर्त्यांनीच चालविले पाहिजे"
-
-#, c-format
 msgid "%s not found in %s"
 msgstr "%s आढळले नाही, %s अंतर्गत"
 
 #, c-format
 msgid "%s not implemented on Win32"
 msgstr "%s Win32 वर लागू केले नाही"
-
-#, c-format
-msgid "%s not matched against 'allowed_users' in %s"
-msgstr "%s यास 'allowed_users' विरूद्ध जुळले नाही, %s अंतर्गत"
 
 #, c-format
 msgid "%s not parseable"
@@ -510,10 +363,6 @@ msgid ""
 msgstr ""
 "पोर्ट निर्देशनसह %s नियमला प्रोटोकॉल निर्देशन आवश्यक आहे, प्रोटोकॉलचे प्रकार एकतर "
 "tcp(6), udp(17), dccp(33), किंवा sctp(132) असू शकते"
-
-#, c-format
-msgid "%s takes no options"
-msgstr "%s कोणतेही पर्याय स्वीकारत नाही"
 
 #, c-format
 msgid "%s uri uuid action\n"
@@ -1009,9 +858,6 @@ msgstr "वाटप:"
 msgid "An error occurred, but the cause is unknown"
 msgstr "त्रुटी आढळली, परंतु कारण अपरिचीत आहे"
 
-msgid "An explicit URI must be provided when setuid"
-msgstr "setuid केल्यानंतर एक्सप्लिसिट URI पुरवले पाहिजे"
-
 msgid "An explicit disk format must be specified"
 msgstr "वेगळे डिस्क रूपण निर्देशीत करणे आवश्यक"
 
@@ -1408,10 +1254,6 @@ msgstr "मेमरिचे वाटप करण्यास अपयशी
 #, sh-format
 msgid "Can't connect to $uri. Skipping."
 msgstr "$uri सह जोडणी अशक्य. वगळत आहे."
-
-#, c-format
-msgid "Can't create %s container: %s"
-msgstr "%s कंटेनर: %s चे निर्माण अशक्य"
 
 msgid "Can't create initial configuration"
 msgstr "प्रारंभीक संरचना निर्माण करतेवेळी त्रुटी"
@@ -2015,12 +1857,6 @@ msgstr "वॉल्युम मार्ग '%s' चा वापर अशक
 msgid "Cannot write data"
 msgstr "डाटा लिहणे अशक्य"
 
-msgid "Capabilities not available"
-msgstr "क्षमता अनुपलब्ध"
-
-msgid "Capabilities not found"
-msgstr "क्षमता आढळले नाही"
-
 msgid "Capacity"
 msgstr "क्षमता"
 
@@ -2235,16 +2071,6 @@ msgstr "स्थानिक हायपरवाइजरला जोडा.
 #, c-format
 msgid "Connected to domain %s\n"
 msgstr "क्षेत्र %s शी जुळले आहे\n"
-
-msgid ""
-"Connecting to session instance without socket path is not supported by the "
-"libssh2 connection driver"
-msgstr "विना सॉकेट मार्ग सत्र घटनाशी जोडणी libssh2 जोडणी ड्राइव्हरतर्फे समर्थीत नाही"
-
-msgid ""
-"Connecting to session instance without socket path is not supported by the "
-"ssh connection driver"
-msgstr "विना सॉकेट मार्ग सत्र घटनाशी जोडणी ssh जोडणी ड्राइव्हरतर्फे समर्थीत नाही"
 
 msgid "Constant pages:"
 msgstr "काँस्टंट पान:"
@@ -2971,33 +2797,6 @@ msgstr "स्ट्रिमकरिता लिहणे अशक्य"
 msgid "Couldn't create lock file for device '%s' in path '%s'"
 msgstr "साधन '%s' करिता मार्ग '%s'मध्ये लॉक फाइलचे निर्माण अशक्य"
 
-msgid "Couldn't fetch Domain Information"
-msgstr "डोमेन माहिती प्राप्त करण्यास अशक्य"
-
-msgid "Couldn't fetch Node Information"
-msgstr "नोड माहिती प्राप्त करणे अशक्य"
-
-msgid "Couldn't get VM information from XML"
-msgstr "XML पासून VM माहिती प्राप्त करणे अशक्य"
-
-msgid "Couldn't get VM record"
-msgstr "VM रेकॉर्ड प्राप्त करणे अशक्य"
-
-msgid "Couldn't get host metrics"
-msgstr "होस्ट मेट्रिक्स् प्राप्त करणे अशक्य"
-
-msgid "Couldn't get host metrics - memory information"
-msgstr "होस्ट मेट्रिक्स् - मेमरि माहिती प्राप्त करणे अशक्य"
-
-msgid "Couldn't get the Domain Pointer"
-msgstr "डोमेन पॉइंटर प्राप्त करणे अशक्य"
-
-msgid "Couldn't get version info"
-msgstr "आवृत्ती माहिती प्राप्त करणे अशक्य"
-
-msgid "Couldn't parse version info"
-msgstr "आवृत्ती माहिती वाचणे अशक्य"
-
 #, c-format
 msgid "Couldn't read volume target path '%s'"
 msgstr "खंड लक्ष्य मार्ग '%s' वाचणे अशक्य"
@@ -3459,12 +3258,6 @@ msgstr "डोमेन '%s' sysinfo उपलब्ध नाही"
 msgid "Domain Events"
 msgstr "डोमेन इव्हेंट्स"
 
-msgid "Domain Pointer is invalid"
-msgstr "डोमेन पॉइंटर वैध नाही"
-
-msgid "Domain Pointer not valid"
-msgstr "डोमेन पॉइंटर वैध नाही"
-
 msgid ""
 "Domain XML doesn't contain any disks, cannot deduce datastore and path for "
 "VMX file"
@@ -3546,9 +3339,6 @@ msgstr "डोमेन सस्पेंड किंवा बंद के�
 msgid "Domain name contains invalid escape sequence"
 msgstr "डोमेन नावात अवैध एस्केप अनुक्रम समाविष्टीत"
 
-msgid "Domain name is not unique"
-msgstr "डोमेन नाव एकमेव नाही"
-
 msgid "Domain not found"
 msgstr "क्षेत्र आढळले नाही"
 
@@ -3602,9 +3392,6 @@ msgstr "डोमेन शीर्षक यशस्वीरित्या 
 
 msgid "Domain:"
 msgstr "डोमेन:"
-
-msgid "DomainID can't fit in 32 bits"
-msgstr "DomainID 32 बिट्स्मध्ये बसत नाही"
 
 msgid "Done.\n"
 msgstr "पूर्ण झाले.\n"
@@ -4012,10 +3799,6 @@ msgid "Failed"
 msgstr "अपयशी"
 
 #, c-format
-msgid "Failed opening %s"
-msgstr "%s उघडणे अशक्य"
-
-#, c-format
 msgid "Failed set TLS x509 credentials: %s"
 msgstr "TLS x509 श्रेय: %s ठरवण्यास अपयशी"
 
@@ -4035,10 +3818,6 @@ msgid "Failed to add IP address %s to IP address cache for interface %s"
 msgstr "IP पत्ता %s ला इंटरफेस %s करिता, IP पत्ता कॅशेकरिता समाविष्ट करण्यास अपयशी"
 
 #, c-format
-msgid "Failed to add PCI device ID '%s' to %s"
-msgstr "PCI साधन ID '%s' %s करिता समावेष करण्यास अपयशी"
-
-#, c-format
 msgid "Failed to add capability %s: %d"
 msgstr "क्षमता %s: %d समाविष्ट करण्यास अपयशी"
 
@@ -4047,10 +3826,6 @@ msgstr "netlink इव्हेंट हँडल वॉच् समावि�
 
 msgid "Failed to add signal handle watch"
 msgstr "सिग्नल हँडल वॉच् समाविष्ट करण्यास अपयशी"
-
-#, c-format
-msgid "Failed to add slot for PCI device '%s' to %s"
-msgstr "%2$s करिता PCI साधन '%1$s' साठी स्लॉट समावेष करण्यास अपयशी"
 
 #, c-format
 msgid "Failed to allocate PCI device list: %s"
@@ -4062,9 +3837,6 @@ msgstr "XML बफरचे वाटप करण्यास अपयशी"
 #, c-format
 msgid "Failed to allocate free veth pair after %d attempts"
 msgstr "%d प्रयत्नांनंतर मोकळी veth जोड वाटप करण्यास अपयशी"
-
-msgid "Failed to allocate memory"
-msgstr "स्मृती वाटण्यास अपयशी"
 
 msgid "Failed to allocate memory for path"
 msgstr "मार्गकरिता मेमरिचे वाटप करण्यास अपयशी"
@@ -4081,9 +3853,6 @@ msgstr "सुरक्षा मॉडलचे वाटप अपयशी"
 
 msgid "Failed to allocate tty"
 msgstr "tty चे वाटप करण्यास अपयशी"
-
-msgid "Failed to allocate xen session"
-msgstr "xen सत्राचे वाटप करण्यास अपयशी"
 
 #, c-format
 msgid "Failed to apply capabilities: %d"
@@ -4121,10 +3890,6 @@ msgstr "नेटवर्क काँफिग बदल ट्रांजॅ
 #, c-format
 msgid "Failed to bind %s to new root %s"
 msgstr "बाइंड %s ला नवीन रूट %s करिता बाइंड करण्यास अपयशी"
-
-#, c-format
-msgid "Failed to bind PCI device '%s' to %s"
-msgstr "PCI साधन '%s' ला %s शी बांधणी करण्यास अपयशी"
 
 #, c-format
 msgid "Failed to bind mount directory %s to %s"
@@ -4274,9 +4039,6 @@ msgstr "SASL क्लाएंट संदर्भ निर्माण क�
 
 msgid "Failed to create XML"
 msgstr "XML निर्माण करण्यास अपयशी"
-
-msgid "Failed to create XML conf object"
-msgstr "XML काँफ ऑब्जेक्टचे निर्माण अपयशी"
 
 msgid "Failed to create XML config object"
 msgstr "XML संरचना ऑब्जेक्ट निर्माण अपयशी"
@@ -4743,10 +4505,6 @@ msgstr "libssh2 सत्र सुरू करण्यास अपयशी"
 msgid "Failed to initialize libvirt"
 msgstr "libvirt सुरू करण्यास अपयशी"
 
-#, c-format
-msgid "Failed to initialize libvirt error handling"
-msgstr "libvirt त्रुटी हाताळणी सुरू करण्यास अपयशी"
-
 msgid "Failed to initialize mutex"
 msgstr "म्युटेक्स् सुरू करण्यास अपयशी"
 
@@ -5140,10 +4898,6 @@ msgid "Failed to release port %d"
 msgstr "पोर्ट %dचा वापर बंद करण्यास अपयशी"
 
 #, c-format
-msgid "Failed to remove PCI ID '%s' from %s"
-msgstr "%2$s पासून PCI ID '%1$s' काढून टाकण्यास अपयशी"
-
-#, c-format
 msgid "Failed to remove capability %s: %d"
 msgstr "क्षमता %s: %d काढून टाकण्यास अपयशी"
 
@@ -5157,10 +4911,6 @@ msgstr "व्यवस्थापीत सेव्ह फाइ '%s' का�
 #, c-format
 msgid "Failed to remove managed save image for domain %s"
 msgstr "डोमेन %s करिता व्यवस्थापीत प्रतिमा साठवा काढून टाकण्यास अपयशी"
-
-#, c-format
-msgid "Failed to remove slot for PCI device '%s' from %s"
-msgstr "PCI साधन '%s' साठी स्लॉट काढून टाकण्यास अपयशी, %s पासून"
 
 #, c-format
 msgid "Failed to remove storage volume '%s'(%s)"
@@ -5448,10 +5198,6 @@ msgstr "स्नॅपशॉट: %s घेण्यास अपयशी"
 #, c-format
 msgid "Failed to terminate process %lld with SIG%s"
 msgstr "प्रोसेस %lld ला SIG%sसह बंद करण्यास अपयशी"
-
-#, c-format
-msgid "Failed to trigger a re-probe for PCI device '%s'"
-msgstr "PCI साधन '%s' करिता पुन्ह तपासणी बनवण्यास अपयशी"
 
 #, c-format
 msgid "Failed to truncate file '%s'"
@@ -6289,13 +6035,6 @@ msgstr "अवैध ओळख पटवण्याची पद्धत: '%s'
 msgid "Invalid back reference"
 msgstr "अवैध बॅक संदर्भ"
 
-msgid "Invalid base64 data"
-msgstr "अवैध base64 डाटा"
-
-#, c-format
-msgid "Invalid boolean value for field '%s'"
-msgstr "क्षेत्र '%s' करिता अवैध बूलियन मूल्य"
-
 #, c-format
 msgid "Invalid bridge mac address '%s' in network '%s'"
 msgstr "अवैध ब्रिज मॅक पत्ता '%s', नेटवर्क '%s' मध्ये"
@@ -6653,10 +6392,6 @@ msgid ""
 msgstr "MAC पत्ता '%s' निर्देशीत करणे अवैध, नेटवर्क '%s' IPv6 स्टॅटिक यजमान वर्णनमध्ये"
 
 #, c-format
-msgid "Invalid type '%s' requested for parameter '%s', actual type is '%s'"
-msgstr "घटक '%2$s'करिता अवैध प्रकार '%1$s'साठी विनंती केली, प्रत्यक्ष प्रकार '%3$s' आहे"
-
-#, c-format
 msgid ""
 "Invalid use of 'floor' on interface with MAC address %s - network '%s' has "
 "no inbound QoS set"
@@ -6671,26 +6406,6 @@ msgstr "अवैध मूल्य '%s', '%s' करिता"
 #, c-format
 msgid "Invalid value '%s' for VMX entry '%s'"
 msgstr "VMX नोंदणी '%2$s' करिता अवैध मूल्य '%1$s'"
-
-#, c-format
-msgid "Invalid value for field '%s': expected double"
-msgstr "क्षेत्र '%s' करिता अवैध मूल्य: double अपेक्षित"
-
-#, c-format
-msgid "Invalid value for field '%s': expected int"
-msgstr "क्षेत्र '%s' करिता अवैध मूल्य: int अपेक्षित"
-
-#, c-format
-msgid "Invalid value for field '%s': expected long long"
-msgstr "क्षेत्र '%s' करिता अवैध मूल्य: long long अपेक्षित"
-
-#, c-format
-msgid "Invalid value for field '%s': expected unsigned int"
-msgstr "क्षेत्र '%s' करिता अवैध मूल्य: unsigned int अपेक्षित"
-
-#, c-format
-msgid "Invalid value for field '%s': expected unsigned long long"
-msgstr "क्षेत्र '%s' करिता अवैध मूल्य: unsigned long long अपेक्षित"
 
 msgid "Invalid value for number of CPUs to show"
 msgstr "दाखवण्याजोगी CPUकरिता अवैध मूल्य"
@@ -6744,9 +6459,6 @@ msgstr "जॉब प्रकार:"
 
 msgid "Just a hint to ignore contiguous free ranges smaller than this (Bytes)"
 msgstr "यापेक्षा (बाइट्स) लहान सतत मोकळ्या व्याप्तिकडे दुर्लक्ष करण्यासाठी टिप"
-
-msgid "KVM device assignment is currently not supported on this system"
-msgstr "KVM साधन वाटप आत्ता या प्रणालीवर समर्थीत नाही"
 
 msgid "Kernel does not provide mount namespace"
 msgstr "कर्नल माउंट नेमस्पेस पुरवत नाही"
@@ -7504,10 +7216,6 @@ msgid "Multiqueue devices are not supported on this system"
 msgstr "मल्टिक्युउ साधने ह्या प्रणालीवर समर्थीत नाही"
 
 #, c-format
-msgid "Multiqueue network is not supported for: %s"
-msgstr "मल्टिक्युउ नेटवर्क: %sकरिता समर्थीत नाही"
-
-#, c-format
 msgid "Must use --rename or --clone to change %s to %s"
 msgstr "%s ला %s करिता बदलण्यासाठी --rename किंवा --clone याचा वापर करा"
 
@@ -7523,10 +7231,6 @@ msgstr "NULL NetworkDef"
 #, c-format
 msgid "NULL string parameter '%s'"
 msgstr "NULL स्ट्रिंग घटक '%s'"
-
-#, c-format
-msgid "NULL value for field '%s'"
-msgstr "क्षेत्र '%s' करिता NULL मूल्य़"
 
 msgid "NUMA cell number"
 msgstr "NUMA कक्ष क्रमांक"
@@ -7755,9 +7459,6 @@ msgstr "JSON पार्सर लागूकरण उपलब्ध ना�
 msgid "No PCI buses available"
 msgstr "PCI बस अनुपलब्ध"
 
-msgid "No UNIX process ID available"
-msgstr "UNIX प्रोसेस ID अनुपलब्ध"
-
 #, c-format
 msgid "No active operation on device: %s"
 msgstr "साधन: %s करिता सक्रीय ऑपरेशन आढले नाही"
@@ -7908,9 +7609,6 @@ msgstr "'%s' करिता सॉकेट पत्ता आढळले न
 #, c-format
 msgid "No source device specified when formatting pool '%s'"
 msgstr "पूल '%s' रूपण करतेवेळी सोअर्स् साधन निर्देशीत करणे अशक्य"
-
-msgid "No statedir specified"
-msgstr "statedir निर्देशीत केले नाही"
 
 #, c-format
 msgid "No storage volume with key or path '%s'"
@@ -8104,9 +7802,6 @@ msgstr "फक्त function=0 सह PCI उपकरण पत्ते स�
 
 msgid "Only PTY console types are supported"
 msgstr "फक्त PTY कंसोर प्रकार समर्थीत आहेत"
-
-msgid "Only Unix socket URI transport is allowed in setuid mode"
-msgstr "setuid मोडमध्ये फक्त Unix सॉकेट URI ट्रांस्पोर्ट स्वीकारले जाते"
 
 msgid "Only bridged veth devices can be detached"
 msgstr "फक्त ब्रिज्ड veth साधनाला विलग करणे शक्य आहे"
@@ -8633,9 +8328,6 @@ msgid ""
 "Query parameter 'no_verify' has unexpected value '%s' (should be 0 or 1)"
 msgstr "चौकशी घटक 'no_verify' कडे अनपेक्षित मूल्य '%s' आढळले (0 किंवा 1 असायला हवे)"
 
-msgid "Query parameter 'no_verify' has unexpected value (should be 0 or 1)"
-msgstr "चौकशी घटक 'no_verify' कडे अनपेक्षित मूल्य (0 किंवा 1 पाहिजे) आढळले"
-
 #, c-format
 msgid ""
 "Query parameter 'proxy' contains unexpected type '%s' (should be (http|"
@@ -9146,9 +8838,6 @@ msgstr "ह्या सॉकेटवर फाइल डिस्क्रि
 #, c-format
 msgid "Serial port index %d out of [0..3] range"
 msgstr "सिरिअल पोर्ट इंडेक्स् %d [0..3] व्याप्तिच्या बाहेर आहे"
-
-msgid "Server name not in URI"
-msgstr "सर्व्हरचे नाव URI मध्ये आढळले नाही"
 
 msgid "Servname not supported for ai_socktype"
 msgstr "ai_socktype करिता Servname समर्थीत नाही"
@@ -9704,13 +9393,6 @@ msgid "Target controller vectors %d does not match source %d"
 msgstr "लक्ष्य कंट्रोलर वेक्टर्स् %d स्रोत %d सह जुळत नाही"
 
 #, c-format
-msgid ""
-"Target device PCI address %04x:%02x:%02x.%02x does not match source %04x:"
-"%02x:%02x.%02x"
-msgstr ""
-"लक्ष्य साधन PCI पत्ता %04x:%02x:%02x.%02x स्रोत %04x:%02x:%02x.%02x सह जुळत नाही"
-
-#, c-format
 msgid "Target device address type %s does not match source %s"
 msgstr "लक्ष्य साधन पत्ता प्रकार %s स्रोत %s सह जुळत नाही"
 
@@ -10248,10 +9930,6 @@ msgid "Too many interfaces '%d' for limit '%d'"
 msgstr "एकापेक्षा जास्त संवाद '%d', मर्यादा '%d' करिता"
 
 #, c-format
-msgid "Too many job stats '%d' for limit '%d'"
-msgstr "एकापेक्षा जास्त जॉब आकडेवारि '%d', मर्यादा '%d' करिता"
-
-#, c-format
 msgid "Too many migration parameters '%d' for limit '%d'"
 msgstr "एकापेक्षा जास्त माइग्रेशन बाबी '%d', मर्यादा '%d' करिता"
 
@@ -10558,10 +10236,6 @@ msgid "Unable to change to root dir"
 msgstr "रूट dir करिता बदल करणे अशक्य"
 
 #, c-format
-msgid "Unable to chdir(%s)"
-msgstr "chdir(%s) अशक्य"
-
-#, c-format
 msgid "Unable to check interface %s"
 msgstr "इंटरफेस %s तपासणे अशक्य"
 
@@ -10832,10 +10506,6 @@ msgstr "FDची संख्या एंकोड करण्यास अश
 msgid "Unable to enter mount namespace"
 msgstr "माउंट नेमस्पेसमध्ये जाणे अशक्य"
 
-#, c-format
-msgid "Unable to exec shell %s"
-msgstr "शेल %s exec करण्यास अशक्य"
-
 msgid "Unable to find 'cpuacct' cgroups controller mount"
 msgstr "'cpuacct' cgroups कंट्रोलर माउंट शोधण अशक्य"
 
@@ -10923,9 +10593,6 @@ msgstr "DBus सत्र बस जोडणी: %s प्राप्ति �
 #, c-format
 msgid "Unable to get DBus system bus connection: %s"
 msgstr "DBus प्रणाली बस जोडणी: %s प्राप्त करणे अशक्य"
-
-msgid "Unable to get Host CPU set"
-msgstr "यजमान CPU संच प्राप्त करणे अशक्य"
 
 #, c-format
 msgid "Unable to get LVM key for %s"
@@ -11022,9 +10689,6 @@ msgstr "हार्ड डिस्क id ची प्राप्ति अ�
 #, c-format
 msgid "Unable to get hardDisk Id, rc=%08x"
 msgstr "हार्डडिस्क Id प्राप्ति अशक्य, rc=%08x"
-
-msgid "Unable to get host metric Information"
-msgstr "यजमान मेट्रिक माहिती प्राप्त करणे अशक्य"
 
 #, c-format
 msgid "Unable to get index for interface %s"
@@ -11321,13 +10985,6 @@ msgstr "क्लास id '%s' वाचणे अशक्य"
 #, c-format
 msgid "Unable to parse current SELinux context '%s'"
 msgstr "सध्याचे SELinux संदर्भ '%s' वाचण्यास अशक्य"
-
-#, c-format
-msgid "Unable to parse devaddr parameter '%s'"
-msgstr "devaddr घटक '%s' वाचण्यास अपयशी"
-
-msgid "Unable to parse given mac address"
-msgstr "दिलेले mac पत्ता वाचणे अशक्य"
 
 msgid "Unable to parse integer parameter"
 msgstr "इंटिजर बाब वाचणे अशक्य"
@@ -11666,16 +11323,9 @@ msgstr "फाइलप्रणाल्यांना थॉ करणे अ
 msgid "Unable to truncate %s"
 msgstr "%s ला ट्रंकेट करणे अशक्य"
 
-msgid "Unable to unescape command"
-msgstr "unescape आदेश अशक्य"
-
 #, c-format
 msgid "Unable to unregister machine, rc=%08x"
 msgstr "मशीन नोंदणी अशक्य करणे शक्य नाही, rc=%08x"
-
-#, c-format
-msgid "Unable to use MAC address starting with reserved value 0xFE - '%s' - "
-msgstr "आरक्षित मूल्य 0xFE - '%s' - सह सुरू होणाऱ्या MAC पत्ताचा वापर अशक्य"
 
 #, c-format
 msgid "Unable to verify TLS peer: %s"
@@ -13045,10 +12695,6 @@ msgstr "बूट क्रमवारि '%s', एकापेक्षाज�
 msgid "booted"
 msgstr "बूट केले"
 
-msgid ""
-"booting from assigned devices is only supported for PCI, USB and SCSI devices"
-msgstr "PCI, USB व SCSI साधनांकरिताच वाटप केलेल्या साधनांपासून बूट करणे समर्थीत आहे"
-
 #, c-format
 msgid "bridge %s doesn't exist"
 msgstr "ब्रिज %s अस्तित्वात नाही"
@@ -13586,10 +13232,6 @@ msgstr "ट्रांजिएंट डोमेनच्या स्नॅ�
 
 msgid "cannot halt after transient domain snapshot"
 msgstr "ट्रांजिएंट डोमेन स्नॅपशॉट नंतर थांबवणे अशक्य"
-
-#, c-format
-msgid "cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"
-msgstr "मल्टिफंक्शन PCI साधनाला हॉट प्लग अशक्य करणे अशक्य: %.4x:%.2x:%.2x.%.1x"
 
 #, c-format
 msgid "cannot initialize cert object: %s"
@@ -15023,10 +14665,6 @@ msgstr "dev->id बफर ओव्हरफ्लो: %s %s"
 #, c-format
 msgid "dev->name buffer overflow: %.3d:%.3d"
 msgstr "dev->name बफर ओव्हरफ्लो: %.3d:%.3d"
-
-#, c-format
-msgid "dev->name buffer overflow: %.4x:%.2x:%.2x.%.1x"
-msgstr "dev->name बफर ओव्हरफ्लो: %.4x:%.2x:%.2x.%.1x"
 
 #, c-format
 msgid "device %s iommu_group symlink %s has invalid group number %s"
@@ -16535,9 +16173,6 @@ msgstr "फाइल '%s' करिता लिहण्यास अपयश�
 msgid "fatal signal %d"
 msgstr "सदोषीत सिग्नल %d"
 
-msgid "fd and fdset must be valid"
-msgstr "fd व fdset वैध पाहिजे"
-
 msgid "fd must be valid"
 msgstr "fd वैध असायला हवे"
 
@@ -16909,10 +16544,6 @@ msgid "host isn't capable of IPv6"
 msgstr "यजमानमध्ये IPv6 ची क्षमता नाही"
 
 #, c-format
-msgid "host pci device %.4x:%.2x:%.2x.%.1x not found"
-msgstr "यजमान pci उपकरण %.4x:%.2x:%.2x.%.1x आढळले नाही"
-
-#, c-format
 msgid "host reports map buffer length exceeds maximum: %d > %d"
 msgstr "यजमान तपशील मॅफ बफरची लांबी कमाल पेक्षा जास्त आहे असे दर्शविते: %d > %d"
 
@@ -17075,9 +16706,6 @@ msgstr "या QEMU बाइनरिसह येणारे RDMA माइ�
 #, c-format
 msgid "incomplete metadata in '%s'"
 msgstr "'%s' अंतर्गत अपूर्ण मेटाडाटा"
-
-msgid "incomplete return information"
-msgstr "अपूर्ण रिटर्न माहिती"
 
 #, c-format
 msgid "incomplete save header in '%s'"
@@ -17404,10 +17032,6 @@ msgstr "अवैध घटक: %s"
 #, c-format
 msgid "invalid backing protocol '%s'"
 msgstr "अवैध बॅकिंग प्रोटोकॉल '%s'"
-
-#, c-format
-msgid "invalid base64 in '%s'"
-msgstr "'%s' मधील अवैध base64"
 
 msgid "invalid catchup limit"
 msgstr "अवैध catchup मर्यादा"
@@ -17856,9 +17480,6 @@ msgstr "libvirt libpcap व सह कंपाइल केले जात न
 msgid "libvirt-guests is configured not to start any guests on boot"
 msgstr "libvirt-guests ला बूटवर कोणतेहि अतिथी सुरू न करण्यास संरचीत केले आहे"
 
-msgid "libvirt.so is not safe to use from setuid programs"
-msgstr "setuid प्रोग्राम्सकरिता libvirt.so वापरकरिता सुरक्षित नाही"
-
 msgid "libvirtd quit during handshake"
 msgstr "हँडशेकवेळी libvirtd पासून बाहेर पडा"
 
@@ -17879,10 +17500,6 @@ msgstr "डिस्क '%s' करिता libxenlight डिस्क जो�
 
 msgid "libxenlight failed to attach network device"
 msgstr "नेटवर्क साधन जोडण्याकरिता libxenlight अपयशी"
-
-#, c-format
-msgid "libxenlight failed to attach pci device %.4x:%.2x:%.2x.%.1x"
-msgstr "pci साधन %.4x:%.2x:%.2x.%.1x जोडण्याकरिता libxenlight अपयशी"
 
 #, c-format
 msgid "libxenlight failed to change media for disk '%s'"
@@ -19115,10 +18732,6 @@ msgstr "मध्यस्थी SSF %d जास्त सक्षम आढ�
 #, c-format
 msgid "negotiation SSF %d was not strong enough"
 msgstr "मध्यस्थी SSF %d अपेक्षीतरित्या सक्षम आढळे नाही"
-
-msgid ""
-"neither VFIO nor KVM device assignment is currently supported on this system"
-msgstr "या प्रणालीवरील सध्या VFIO किंवा KVM साधन वाटप समर्थीत नाही"
 
 msgid "netdir"
 msgstr "netdir"
@@ -21304,10 +20917,6 @@ msgid "target of disk device"
 msgstr "डीस्क साधनाचे लक्ष्य"
 
 #, c-format
-msgid "target pci device %.4x:%.2x:%.2x.%.1x already exists"
-msgstr "लक्ष्य pci साधन %.4x:%.2x:%.2x.%.1x आधिपासूनच अस्तित्वात आहे"
-
-#, c-format
 msgid "target type must be specified for %s device"
 msgstr "%s साधनकरिता लक्ष्य प्रकार निर्देशीत करणे आवश्यक"
 
@@ -21493,10 +21102,6 @@ msgstr "हा नेटवर्क पहिलेपासूनच अस्
 
 msgid "this platform is missing dlopen"
 msgstr "ह्या प्लॅटफॉर्ममध्ये dlopen आढळले नाही"
-
-#, c-format
-msgid "this qemu doesn't support RNG device type '%s'"
-msgstr "हे qemu RNG साधन प्रकार '%s'करिता समर्थन पुरवत नाही"
 
 msgid "this qemu doesn't support the rng-egd backend"
 msgstr "हे qemu rng-egd बॅकएंडकरिता समर्थन पुरवत नाही"
@@ -21989,10 +21594,6 @@ msgid "unable to unload already unloaded profile"
 msgstr "आधिपासूनच लोडअशक्य केलेले प्रोफाइल लोडअशक्य करण्यास अशक्य"
 
 #, c-format
-msgid "unable to visit backing chain file %s"
-msgstr "बॅकिंग चेन फाइल %s करिता भेट देणे अशक्य"
-
-#, c-format
 msgid "unable to wait for process %lld"
 msgstr "प्रोसेस %lld करिता प्रतिक्षा करण्यास अशक्य"
 
@@ -22053,14 +21654,6 @@ msgstr "अनपेक्षीत %s कृती: %d"
 #, c-format
 msgid "unexpected OpenVZ URI path '%s', try openvz:///system"
 msgstr "अनपेक्षीत OpenVZ URI मार्ग '%s', openvz:///system वापरून पहा"
-
-#, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///session"
-msgstr "अनपेक्षीत QEMU URI मार्ग '%s', qemu:///session वापरुन पहा"
-
-#, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///system"
-msgstr "अनपेक्षीत QEMU URI मार्ग'%s', qemu:///system वापरून पहा"
 
 #, c-format
 msgid ""
@@ -22626,14 +22219,6 @@ msgstr "अपरिचीत ड्राइव्हर रूपण मूल
 #, c-format
 msgid "unknown driver name '%s'"
 msgstr "अपरिचीत ड्राइव्हर नाव '%s'"
-
-#, c-format
-msgid "unknown driver path '%s' specified (try vbox:///session)"
-msgstr "अपरिचीत ड्राइवर मार्ग '%s' निश्चित केले (vbox:///session वापरून पहा)"
-
-#, c-format
-msgid "unknown driver path '%s' specified (try vbox:///system)"
-msgstr "अपरिचीत ड्राइवर मार्ग '%s' निश्चित केले (vbox:///system वापरून पहा)"
 
 #, c-format
 msgid "unknown dumpformat '%d'"

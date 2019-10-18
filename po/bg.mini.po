@@ -7,9 +7,9 @@
 # Miroslav Ivanov <kiro.kopeleto@gmail.com>, 2007.
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.6.0\n"
+"Project-Id-Version: libvirt 5.9.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-30 11:31+0100\n"
+"POT-Creation-Date: 2019-10-18 13:39+0100\n"
 "PO-Revision-Date: 2015-02-26 07:16+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Bulgarian (http://www.transifex.com/projects/p/fedora/"
@@ -228,9 +228,6 @@ msgstr "Не е открит домейна: %s"
 #, c-format
 msgid "Domain restored from %s\n"
 msgstr "Домейна бе възстановен от %s\n"
-
-msgid "Failed to allocate memory"
-msgstr "Неуспешно заделяне на памет"
 
 #, c-format
 msgid "Failed to attach device from %s"

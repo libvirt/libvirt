@@ -8,9 +8,9 @@
 # runab <runab@redhat.com>, 2006-2010
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.6.0\n"
+"Project-Id-Version: libvirt 5.9.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-30 11:31+0100\n"
+"POT-Creation-Date: 2019-10-18 13:39+0100\n"
 "PO-Revision-Date: 2015-02-26 07:10+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Bengali (India) (http://www.transifex.com/projects/p/libvirt/"
@@ -37,43 +37,6 @@ msgid ""
 msgstr ""
 "\n"
 "  DESCRIPTION\n"
-
-msgid ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
-"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
-"\n"
-"    Sockets:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
-"\n"
-"    TLS:\n"
-"      CA certificate:     $HOME/.pki/libvirt/cacert.pem\n"
-"      Server certificate: $HOME/.pki/libvirt/servercert.pem\n"
-"      Server private key: $HOME/.pki/libvirt/serverkey.pem\n"
-"\n"
-"    PID file:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
-"\n"
-msgstr ""
-"\n"
-"  ডিফল্ট পাথ:\n"
-"\n"
-"    কনফিগারেশন ফাইল (-f দ্বারা ওভার-রাইড না হলে):\n"
-"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
-"\n"
-"    সকেট:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
-"\n"
-"    TLS:\n"
-"      CA সার্টিফিকেট:     $HOME/.pki/libvirt/cacert.pem\n"
-"      সার্ভার সার্টিফিকেট: $HOME/.pki/libvirt/servercert.pem\n"
-"      সার্ভার ব্যক্তিগত কী: $HOME/.pki/libvirt/serverkey.pem\n"
-"\n"
-"    PID ফাইল:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
-"\n"
 
 msgid ""
 "\n"
@@ -1198,19 +1161,8 @@ msgstr "সর্বাধিক iface সীমা %d অতিক্রান�
 msgid "Failed"
 msgstr "বিফল"
 
-#, c-format
-msgid "Failed to add PCI device ID '%s' to %s"
-msgstr "PCI ডিভাইসের ID '%s', %s-এ যোগ করতে ব্যর্থ"
-
-#, c-format
-msgid "Failed to add slot for PCI device '%s' to %s"
-msgstr "PCI ডিভাইস '%s'-র জন্য %s-র মধ্যে স্লট যোগ করতে ব্যর্থ"
-
 msgid "Failed to allocate XML buffer"
 msgstr "XML বাফার বরাদ্দ করতে ব্যর্থ"
-
-msgid "Failed to allocate memory"
-msgstr "মেমরি বরাদ্দ করতে ব্যর্থ"
 
 msgid "Failed to allocate tty"
 msgstr "tty বরাদ্দ করতে ব্যর্থ"
@@ -1232,10 +1184,6 @@ msgstr "ইন্টারফেস সংযুক্ত করতে ব্য
 #, c-format
 msgid "Failed to autostart VM '%s': %s"
 msgstr "VM '%s' autostart করতে ব্যর্থ: %s"
-
-#, c-format
-msgid "Failed to bind PCI device '%s' to %s"
-msgstr "PCI ডিভাইস '%s'-কে %s-এ বাইন্ড করতে ব্যর্থ"
 
 msgid "Failed to build pidfile path."
 msgstr "pidfile পাথ নির্মাণ করতে ব্যর্থ"
@@ -1631,10 +1579,6 @@ msgid "Failed to register shutdown timeout"
 msgstr "বন্ধ করার সময়সীমা ধার্য করতে ব্যর্থ"
 
 #, c-format
-msgid "Failed to remove PCI ID '%s' from %s"
-msgstr "PCI ID '%s'-কে %s থেকে মুছে ফেলতে ব্যর্থ"
-
-#, c-format
 msgid "Failed to reset PCI device: %s"
 msgstr "PCI ডিভাইস পুনরায় নির্ধারণ করতে ব্যর্থ: %s"
 
@@ -1720,10 +1664,6 @@ msgstr "ডোমেইন %s সাসপেন্ড অবস্থায় স
 
 msgid "Failed to switch root mount into slave mode"
 msgstr "root মাউন্টকে স্লেভ মোডে পরিবর্তন করতে ব্যর্থ"
-
-#, c-format
-msgid "Failed to trigger a re-probe for PCI device '%s'"
-msgstr "PCI ডিভাইস '%s'-র জন্য পুনরায় অনুসন্ধান কর্ম আরম্ভ করতে ব্যর্থ"
 
 #, c-format
 msgid "Failed to truncate volume with path '%s' to 0 bytes"
@@ -1953,9 +1893,6 @@ msgstr "অবৈধ আর্গুমেন্ট"
 
 msgid "Invalid back reference"
 msgstr "অবৈধ ব্যাক রেফারেন্স"
-
-msgid "Invalid base64 data"
-msgstr "অবৈধ base64 তথ্য"
 
 #, c-format
 msgid "Invalid bridge mac address '%s' in network '%s'"
@@ -2496,9 +2433,6 @@ msgstr "সকেট ইন্টার-ফেসের সাথে <source> 'p
 
 msgid "No JSON parser implementation is available"
 msgstr "কোনো JSON পার্সারের বাস্তবায়ন উপলব্ধ নেই"
-
-msgid "No UNIX process ID available"
-msgstr "কোনো UNIX প্রক্রিয়া অাইডি উপলব্ধ নয়"
 
 msgid "No address associated with hostname"
 msgstr "হোস্টনামের সংগে কোনো ঠিকানা সংশ্লিষ্ট নেই"
@@ -3154,14 +3088,6 @@ msgid "Target controller vectors %d does not match source %d"
 msgstr "টার্গেট কন্ট্রোলার ভেক্টর %d %d সোর্সের সংগে মেলে না"
 
 #, c-format
-msgid ""
-"Target device PCI address %04x:%02x:%02x.%02x does not match source %04x:"
-"%02x:%02x.%02x"
-msgstr ""
-"টার্গেট ডিভাইস PCI ঠিকানা %04x:%02x:%02x.%02x সোর্স %04x:%02x:%02x.%02x এর "
-"সংগে মেলে না"
-
-#, c-format
 msgid "Target device address type %s does not match source %s"
 msgstr "টার্গেট ডিভাইস ঠিকানা ধরন %s %s সোর্সের সংগে মেলে না"
 
@@ -3518,10 +3444,6 @@ msgstr "মনিটর পাথ %s খুলতে ব্যর্থ"
 #, c-format
 msgid "Unable to parse class id '%s'"
 msgstr "ক্লাস অাইডি পার্জ করতে ব্যর্থ '%s'"
-
-#, c-format
-msgid "Unable to parse devaddr parameter '%s'"
-msgstr "devaddr পরামিতি '%s' পার্স করতে ব্যর্থ"
 
 msgid "Unable to put monitor into non-blocking mode"
 msgstr "নন-ব্লকিং মোডে মনিটর স্থাপন করতে ব্যর্থ"
@@ -5314,10 +5236,6 @@ msgid "host CPU vendor does not match required CPU vendor %s"
 msgstr "হোস্ট CPU ভেন্ডার vendor does not match required CPU vendor %s"
 
 #, c-format
-msgid "host pci device %.4x:%.2x:%.2x.%.1x not found"
-msgstr "হোস্ট pci ডিভাইস %.4x:%.2x:%.2x.%.1x পাওয়া যায়নি"
-
-#, c-format
 msgid "host reports map buffer length exceeds maximum: %d > %d"
 msgstr "হোস্ট দ্বারা চিহ্নিত ম্যাপ বাফারের দৈর্ঘ্য সর্বাধিক মাপের চেয়ে বেশি: %d > %d"
 
@@ -5552,10 +5470,6 @@ msgstr "XML-র দৈর্ঘ্য বৈধ নয়: %d"
 
 msgid "invalid argument supplied"
 msgstr "অবৈধ অার্গুমেন্ট সরবরাহ করা হয়েছে"
-
-#, c-format
-msgid "invalid base64 in '%s'"
-msgstr "%s-র মধ্যে অবৈধ base64"
 
 msgid "invalid catchup limit"
 msgstr "অবৈধ catchup সীমা"
@@ -7276,10 +7190,6 @@ msgstr "নিরাপত্তার কনটেক্সট '%s', '%s'-র �
 msgid "unable to set tty attributes: %s"
 msgstr "tty-র বৈশিষ্ট্য নির্ধারণ করতে ব্যর্থ: %s"
 
-#, c-format
-msgid "unable to visit backing chain file %s"
-msgstr "%s ব্যাকিং চেন ফাইলে পৌঁছাতে ব্যর্থ"
-
 msgid "undefine VM on source"
 msgstr "উৎসস্থলের মধ্যে VM-র ব্যাখ্যা বাতিল করুন"
 
@@ -7305,14 +7215,6 @@ msgstr "অপ্রত্যাশিত %s কাজ: %d"
 #, c-format
 msgid "unexpected OpenVZ URI path '%s', try openvz:///system"
 msgstr "অপ্রত্যাশিত OpenVZ URI পাথ '%s', openvz:///system প্রচেষ্টা করুন"
-
-#, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///session"
-msgstr "অপ্রত্যাশিত QEMU URI পাথ '%s', qemu:///session প্রচেষ্টা করুন"
-
-#, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///system"
-msgstr "অপ্রত্যাশিত QEMU URI পাথ '%s', qemu:///system প্রচেষ্টা করুন"
 
 #, c-format
 msgid "unexpected accessmode %d"
@@ -7732,14 +7634,6 @@ msgstr "অজানা ধরনের ডিস্ক '%s'"
 #, c-format
 msgid "unknown driver format value '%s'"
 msgstr "অজানা ড্রাইভার ফর্ম্যাট মান '%s'"
-
-#, c-format
-msgid "unknown driver path '%s' specified (try vbox:///session)"
-msgstr "ড্রাইভারের অজানা পাথ '%s' উল্লিখিত হয়েছে (vbox:///session প্রয়োগ করুন)"
-
-#, c-format
-msgid "unknown driver path '%s' specified (try vbox:///system)"
-msgstr "ড্রাইভারের অজানা পাথ '%s' উল্লিখিত হয়েছে (vbox:///system প্রয়োগ করুন)"
 
 msgid "unknown error"
 msgstr "অজানা ত্রুটি"

@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-30 11:31+0100\n"
+"POT-Creation-Date: 2019-10-18 13:39+0100\n"
 "PO-Revision-Date: 2018-03-10 04:16+0000\n"
 "Last-Translator: Javier Blanco <javi.deb@gmail.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/libvirt/language/"
@@ -67,43 +67,6 @@ msgid ""
 "  Default paths:\n"
 "\n"
 "    Configuration file (unless overridden by -f):\n"
-"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
-"\n"
-"    Sockets:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
-"\n"
-"    TLS:\n"
-"      CA certificate:     $HOME/.pki/libvirt/cacert.pem\n"
-"      Server certificate: $HOME/.pki/libvirt/servercert.pem\n"
-"      Server private key: $HOME/.pki/libvirt/serverkey.pem\n"
-"\n"
-"    PID file:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
-"\n"
-msgstr ""
-"\n"
-"  Rutas predeterminadas:\n"
-"\n"
-"   Archivo de configuración (a menos que sea sobrescrito por -f):\n"
-"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
-"\n"
-"    Conectores:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
-"\n"
-"    TLS:\n"
-"      Certificado CA:     $HOME/.pki/libvirt/cacert.pem\n"
-"      Certificado de servidor: $HOME/.pki/libvirt/servercert.pem\n"
-"      Llave privada de servidor: $HOME/.pki/libvirt/serverkey.pem\n"
-"\n"
-"    Archivo PID:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
-"\n"
-
-msgid ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
 "      $XDG_CONFIG_HOME/libvirt/virtlockd.conf\n"
 "\n"
 "    Sockets:\n"
@@ -124,34 +87,6 @@ msgstr ""
 "\n"
 "    Archivo PID:\n"
 "      $XDG_RUNTIME_DIR/libvirt/virtlockd.pid\n"
-"\n"
-
-#, c-format
-msgid ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
-"      %s/libvirt/virtlockd.conf\n"
-"\n"
-"    Sockets:\n"
-"      %s/run/libvirt/virtlockd-sock\n"
-"\n"
-"    PID file (unless overridden by -p):\n"
-"      %s/run/virtlockd.pid\n"
-"\n"
-msgstr ""
-"\n"
-"  Rutas predeterminadas:\n"
-"\n"
-"    Archivo de configuración (a menos que sea sobrescrito por -f):\n"
-"      %s/libvirt/virtlockd.conf\n"
-"\n"
-"    Conectores:\n"
-"      %s/run/libvirt/virtlockd-sock\n"
-"\n"
-"    Archivo PID (a menos que sea sobrescrito por -p):\n"
-"      %s/run/virtlockd.pid\n"
 "\n"
 
 msgid ""
@@ -1662,12 +1597,6 @@ msgstr "No  puede usar serial virtio para dispositivos paralelos o seriales"
 msgid "Cannot write data"
 msgstr "No se pueden escribir datos"
 
-msgid "Capabilities not available"
-msgstr "No se encuentran disponibles la capacidades"
-
-msgid "Capabilities not found"
-msgstr "No han sido encontradas capacidades"
-
 msgid "Capacity"
 msgstr "Capacidad"
 
@@ -1880,20 +1809,6 @@ msgstr ""
 #, c-format
 msgid "Connected to domain %s\n"
 msgstr "Conectado con el dominio %s\n"
-
-msgid ""
-"Connecting to session instance without socket path is not supported by the "
-"libssh2 connection driver"
-msgstr ""
-"El controlador de conexión libssh2  no admite la conexión a la instancia de "
-"sesión sin ruta de socket"
-
-msgid ""
-"Connecting to session instance without socket path is not supported by the "
-"ssh connection driver"
-msgstr ""
-"El controlador de conexión ssh  no admite la conexión a instancia de sesión "
-"sin ruta de socket"
 
 msgid "Constant pages:"
 msgstr "Páginas constantes:"
@@ -2628,33 +2543,6 @@ msgstr "No se pudo escribir a flujo"
 msgid "Couldn't create lock file for device '%s' in path '%s'"
 msgstr "No se pudo crear archivo de cerrojo para dispositivo '%s' en ruta '%s'"
 
-msgid "Couldn't fetch Domain Information"
-msgstr "No se pudo obtener información de dominio"
-
-msgid "Couldn't fetch Node Information"
-msgstr "No se pudo obtener información de nodo"
-
-msgid "Couldn't get VM information from XML"
-msgstr "No se pudo obtener información de MV desde XML"
-
-msgid "Couldn't get VM record"
-msgstr "No se pudo obtener registro MV"
-
-msgid "Couldn't get host metrics"
-msgstr "No se pudo obtener métricas del equipo"
-
-msgid "Couldn't get host metrics - memory information"
-msgstr "No se pudo obtener métricas del equipo - información de memoria"
-
-msgid "Couldn't get the Domain Pointer"
-msgstr "No se pudo obtener el puntero del dominio"
-
-msgid "Couldn't get version info"
-msgstr "No se pudo extraer información de versión"
-
-msgid "Couldn't parse version info"
-msgstr "No es posible analizar información de versión"
-
 #, c-format
 msgid "Couldn't read volume target path '%s'"
 msgstr "No se ha podido leer  la ruta de destino '%s'"
@@ -3098,12 +2986,6 @@ msgstr "El dominio '%s' ya se encuentra en ejecución"
 msgid "Domain '%s' sysinfo are not available"
 msgstr "Dominio '%s' sysinfo no está disponible"
 
-msgid "Domain Pointer is invalid"
-msgstr "El puntero del dominio es inválido"
-
-msgid "Domain Pointer not valid"
-msgstr "El puntero del dominio no es válido"
-
 msgid ""
 "Domain XML doesn't contain any disks, cannot deduce datastore and path for "
 "VMX file"
@@ -3190,9 +3072,6 @@ msgstr "El dominio no se encuentra ni suspendido ni apagado"
 msgid "Domain name contains invalid escape sequence"
 msgstr "Nombre de dominio contiene secuencia de escape inválida"
 
-msgid "Domain name is not unique"
-msgstr "El nombre del dominio no es único"
-
 msgid "Domain not found"
 msgstr "No se encontró el dominio"
 
@@ -3241,9 +3120,6 @@ msgstr "Título de dominio no puede contener nuevas líneas"
 
 msgid "Domain:"
 msgstr "Dominio:"
-
-msgid "DomainID can't fit in 32 bits"
-msgstr "DomainID no cabe en 32 bits"
 
 msgid "Done.\n"
 msgstr "Listo.\n"
@@ -3623,10 +3499,6 @@ msgid "Failed"
 msgstr "Falló"
 
 #, c-format
-msgid "Failed opening %s"
-msgstr "Falló al abrir %s"
-
-#, c-format
 msgid "Failed set TLS x509 credentials: %s"
 msgstr "No se pudieron definir credenciales de TLS x509: %s"
 
@@ -3642,10 +3514,6 @@ msgid "Failed to add IP address %s to IP address cache for interface %s"
 msgstr ""
 "No se pudo añadir dirección IP %s para cache de dirección IP para interfaz %s"
 
-#, c-format
-msgid "Failed to add PCI device ID '%s' to %s"
-msgstr "Falló al añadir ID de dispositivo PCI '%s' en %s"
-
 msgid "Failed to add netlink event handle watch"
 msgstr "Falló al añadir vigilante de manipulador de evento de netlink"
 
@@ -3653,18 +3521,11 @@ msgid "Failed to add signal handle watch"
 msgstr "No se  pudo añadir señal "
 
 #, c-format
-msgid "Failed to add slot for PCI device '%s' to %s"
-msgstr "Falló al añadir slot para dispositivo PCI '%s' hacia %s"
-
-#, c-format
 msgid "Failed to allocate PCI device list: %s"
 msgstr "No se pudo asignar lista de dispositivo PCI: %s"
 
 msgid "Failed to allocate XML buffer"
 msgstr "Falló la asignación del búfer XML"
-
-msgid "Failed to allocate memory"
-msgstr "Falló al asignar la memoria"
 
 msgid "Failed to allocate memory for path"
 msgstr "Fallo al intentar alojar memoria para la ruta"
@@ -3682,9 +3543,6 @@ msgstr "No se pudo asignar modelo de seguridad"
 
 msgid "Failed to allocate tty"
 msgstr "Falló al alojar tty"
-
-msgid "Failed to allocate xen session"
-msgstr "Falló al asignar sesión XEN"
 
 #, c-format
 msgid "Failed to apply capabilities: %d"
@@ -3714,10 +3572,6 @@ msgstr "Falló al iniciar automáticamente el grupo de almacenamiento '%s': %s"
 
 msgid "Failed to begin network config change transaction"
 msgstr "Falló al iniciar transacción de cambio de network config"
-
-#, c-format
-msgid "Failed to bind PCI device '%s' to %s"
-msgstr "Falló al asociar dispositivo PCI '%s' con %s"
 
 #, c-format
 msgid "Failed to bind mount directory %s to %s"
@@ -3859,9 +3713,6 @@ msgstr "Falló la creación del contexto de cliente SASL: %d (%s)"
 
 msgid "Failed to create XML"
 msgstr "Falló al crear XML"
-
-msgid "Failed to create XML conf object"
-msgstr "No se pudo crear objeto config XML"
 
 msgid "Failed to create XML config object"
 msgstr "No se pudo crear objeto config XML"
@@ -4668,10 +4519,6 @@ msgstr "Falló al emitir cerrojo"
 msgid "Failed to release port %d"
 msgstr "No se pudo lanzar puerto %d"
 
-#, c-format
-msgid "Failed to remove PCI ID '%s' from %s"
-msgstr "Falló al eliminar ID de PCI '%s' de %s"
-
 msgid "Failed to remove domain managed save image"
 msgstr ""
 "No se pudo retirar la imagen de almacenamiento administrado de  dominio"
@@ -4685,10 +4532,6 @@ msgid "Failed to remove managed save image for domain %s"
 msgstr ""
 "Falló al eliminar una imagen de almacenamiento administrado para el dominio "
 "%s"
-
-#, c-format
-msgid "Failed to remove slot for PCI device '%s' from %s"
-msgstr "Falló al retirar ranura para  dispositivo PCI '%s' de %s"
 
 #, c-format
 msgid "Failed to remove storage volume '%s'(%s)"
@@ -4952,10 +4795,6 @@ msgstr "falló al intentar tomar una instantánea: %s"
 #, c-format
 msgid "Failed to terminate process %lld with SIG%s"
 msgstr "No se pudo terminar el proceso %lld con SIG%s"
-
-#, c-format
-msgid "Failed to trigger a re-probe for PCI device '%s'"
-msgstr "Falló al desencadenar una nueva comprobación del dispositivo PCI '%s'"
 
 #, c-format
 msgid "Failed to truncate file '%s'"
@@ -5722,13 +5561,6 @@ msgstr "Método de autenticación no válido: '%s'"
 msgid "Invalid back reference"
 msgstr "Referencia inversa inválida"
 
-msgid "Invalid base64 data"
-msgstr "Datos base64 inválidos"
-
-#, c-format
-msgid "Invalid boolean value for field '%s'"
-msgstr "Valor booleano inválido para campo '%s'"
-
 #, c-format
 msgid "Invalid bridge mac address '%s' in network '%s'"
 msgstr "dirección de puente mac '%s' no válida en la red '%s'"
@@ -6037,11 +5869,6 @@ msgstr ""
 "IPv6 '%s'"
 
 #, c-format
-msgid "Invalid type '%s' requested for parameter '%s', actual type is '%s'"
-msgstr ""
-"Tipo solicitado '%s' no es válido para el parámetro '%s', tipo actual es '%s'"
-
-#, c-format
 msgid ""
 "Invalid use of 'floor' on interface with MAC address %s - network '%s' has "
 "no inbound QoS set"
@@ -6056,26 +5883,6 @@ msgstr "Valor '%s' no válido parea la entrada VMX '%s'"
 #, c-format
 msgid "Invalid value '%s' for element or attribute '%s'"
 msgstr "Valor '%s' no válido para elemento o atributo '%s'"
-
-#, c-format
-msgid "Invalid value for field '%s': expected double"
-msgstr "Valor inválido para campo '%s': se esperaba double"
-
-#, c-format
-msgid "Invalid value for field '%s': expected int"
-msgstr "Valor inválido para campo '%s': se esperaba int"
-
-#, c-format
-msgid "Invalid value for field '%s': expected long long"
-msgstr "Valor inválido para campo '%s': se esperaba long long"
-
-#, c-format
-msgid "Invalid value for field '%s': expected unsigned int"
-msgstr "Valor inválido para campo '%s': se esperaba sin firma int "
-
-#, c-format
-msgid "Invalid value for field '%s': expected unsigned long long"
-msgstr "Valor inválido para campo '%s': se esperaba sin firma long long "
 
 msgid "Invalid value for number of CPUs to show"
 msgstr "Valor para número de CPU a mostrar es inválido"
@@ -6796,10 +6603,6 @@ msgid "Multiqueue devices are not supported on this system"
 msgstr "Dispositivos Multiqueue no tienen soporte en este sistema"
 
 #, c-format
-msgid "Multiqueue network is not supported for: %s"
-msgstr "Red Multiqueue no tiene soporte para: %s"
-
-#, c-format
 msgid "Must use --rename or --clone to change %s to %s"
 msgstr "Debe usar --rename o --clone para cambiar %s a %s"
 
@@ -6815,10 +6618,6 @@ msgstr "NULL NetworkDef"
 #, c-format
 msgid "NULL string parameter '%s'"
 msgstr "Parámetro de cadena NULL '%s'"
-
-#, c-format
-msgid "NULL value for field '%s'"
-msgstr "valor NULL para campo '%s'"
 
 msgid "NUMA cell number"
 msgstr "número de celda NUMA"
@@ -7029,12 +6828,6 @@ msgstr "No existe disponible una implementación para analizador JSON"
 
 msgid "No PCI buses available"
 msgstr "No hay buses PCI disponibles"
-
-msgid "No UNIX process ID available"
-msgstr "No hay ID de proceso UNIX disponible"
-
-msgid "No UNIX process start time available"
-msgstr "No hay un tiempo de inicio de proceso UNIX disponible"
 
 #, c-format
 msgid "No active operation on device: %s"
@@ -7834,11 +7627,6 @@ msgstr ""
 "El parámetro de consulta 'no_verify' posee un valor '%s' no esperado "
 "(debería ser 0 ó 1)"
 
-msgid "Query parameter 'no_verify' has unexpected value (should be 0 or 1)"
-msgstr ""
-"El parámetro de consulta 'no_verify' posee un valor no esperado (debería ser "
-"0 o 1)"
-
 #, c-format
 msgid ""
 "Query parameter 'proxy' contains unexpected type '%s' (should be (http|"
@@ -8343,9 +8131,6 @@ msgstr "El envío de descriptores de archivo no tiene soporte en este socket"
 #, c-format
 msgid "Serial port index %d out of [0..3] range"
 msgstr "Indice %d del puerto serial fuera de [0..3] rango "
-
-msgid "Server name not in URI"
-msgstr "No se encuentra el nombre del servidor en URI"
 
 msgid "Servname not supported for ai_socktype"
 msgstr "Nombre de servidor no soportado por ai_socktype"
@@ -8856,14 +8641,6 @@ msgstr "El tipo de controlador elegido %s no coincide con la fuente %s"
 #, c-format
 msgid "Target controller vectors %d does not match source %d"
 msgstr "Los vectores del controlador elegido %d no coinciden con la fuente %d"
-
-#, c-format
-msgid ""
-"Target device PCI address %04x:%02x:%02x.%02x does not match source %04x:"
-"%02x:%02x.%02x"
-msgstr ""
-"La dirección PCI del dispositivo elegido %04x:%02x:%02x.%02x no coincide con "
-"la fuente %04x:%02x:%02x.%02x"
 
 #, c-format
 msgid "Target device address type %s does not match source %s"
@@ -9908,9 +9685,6 @@ msgstr "No se puede obtener conexión Bus de sesión DBus: %s"
 msgid "Unable to get DBus system bus connection: %s"
 msgstr "No se puede obtener conexión  de sistema DBus: %s "
 
-msgid "Unable to get Host CPU set"
-msgstr "No es posible obtener conjunto de CPU del equipo"
-
 #, c-format
 msgid "Unable to get LVM key for %s"
 msgstr "No se  puede obtener llave LVM para %s"
@@ -9968,9 +9742,6 @@ msgstr "No es posible obtener estado del dominio"
 
 msgid "Unable to get free slot number"
 msgstr "No es posible obtener la cantidad de slots libres"
-
-msgid "Unable to get host metric Information"
-msgstr "No es posible obtener información de la métrica del equipo"
 
 #, c-format
 msgid "Unable to get index for interface %s"
@@ -10200,13 +9971,6 @@ msgstr "No se puede leer ID clase '%s'"
 #, c-format
 msgid "Unable to parse current SELinux context '%s'"
 msgstr "No se puede leer contexto SELinux actual '%s'"
-
-#, c-format
-msgid "Unable to parse devaddr parameter '%s'"
-msgstr "No es posible analizar parámetro devaddr '%s'"
-
-msgid "Unable to parse given mac address"
-msgstr "No es posible analizar la dirección mac ofrecida"
 
 msgid "Unable to parse integer parameter"
 msgstr "No se pudo leer el parámetro entero"
@@ -10492,14 +10256,6 @@ msgstr "No se puede 'stat bind' target %s"
 #, c-format
 msgid "Unable to truncate %s"
 msgstr "No es posible truncar %s"
-
-msgid "Unable to unescape command"
-msgstr "No se  pudo 'unescape' el comando"
-
-#, c-format
-msgid "Unable to use MAC address starting with reserved value 0xFE - '%s' - "
-msgstr ""
-"No se puede usar dirección MAC que inicia con valor reservado 0xFE - '%s' - "
 
 #, c-format
 msgid "Unable to verify TLS peer: %s"
@@ -11681,12 +11437,6 @@ msgstr "orden de arranque '%s' se utiliza más que una de dispositivo"
 msgid "booted"
 msgstr "iniciado"
 
-msgid ""
-"booting from assigned devices is only supported for PCI, USB and SCSI devices"
-msgstr ""
-"Arranque desde dispositivos asignados solo tiene soporte para dispositivos "
-"PCI, USB y SCSI"
-
 #, c-format
 msgid "bridge %s doesn't exist"
 msgstr "puente %s no existe"
@@ -12167,12 +11917,6 @@ msgstr "No se puede deterne después de toma de pantalla de dominio transitorio"
 
 msgid "cannot halt after transient domain snapshot"
 msgstr "No se puede detener la toma de pantalla de dominio transitorio"
-
-#, c-format
-msgid "cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"
-msgstr ""
-"No se puede desconectar en caliente dispositivo multifunción PCI:  %.4x:%.2x:"
-"%.2x.%.1x"
 
 #, c-format
 msgid "cannot initialize cert object: %s"
@@ -13518,10 +13262,6 @@ msgid "dev->name buffer overflow: %.3d:%.3d"
 msgstr "dev->desbordamiento de búfer: %.3d:%.3d"
 
 #, c-format
-msgid "dev->name buffer overflow: %.4x:%.2x:%.2x.%.1x"
-msgstr "dev->desbordamiento de nombre de búfer: %.4x:%.2x:%.2x.%.1x"
-
-#, c-format
 msgid "device %s iommu_group symlink %s has invalid group number %s"
 msgstr ""
 "dispositivo %s iommu_group symlink %s  tiene número de grupo inválido %s"
@@ -14724,9 +14464,6 @@ msgstr "Falló al escribir en el archivo '%s'"
 msgid "fatal signal %d"
 msgstr "Señal fatal %d"
 
-msgid "fd and fdset must be valid"
-msgstr "fd y fdset deben ser válidos"
-
 msgid "fd must be valid"
 msgstr "fd debe ser válido"
 
@@ -15012,10 +14749,6 @@ msgid "host device already exists"
 msgstr "Dispositivo de host ya existe"
 
 #, c-format
-msgid "host pci device %.4x:%.2x:%.2x.%.1x not found"
-msgstr "dispositivo de host pci %.4x:%.2x:%.2x.%.1x no se encontró"
-
-#, c-format
 msgid "host reports map buffer length exceeds maximum: %d > %d"
 msgstr ""
 "el host reporta que la longitud del buffer del mapa es mayor que la "
@@ -15116,9 +14849,6 @@ msgstr "incluye información de seguridad importante en la descarga XML"
 
 msgid "includes the password into the connection URI if available"
 msgstr "Incluye la contraseña en la conexión URI si está disponible"
-
-msgid "incomplete return information"
-msgstr "información de retorno incompleta"
 
 #, c-format
 msgid "incomplete save header in '%s'"
@@ -15373,10 +15103,6 @@ msgstr "Argumento proporcionado inválido"
 #, c-format
 msgid "invalid argument: %s"
 msgstr "Argumento inválido: %s"
-
-#, c-format
-msgid "invalid base64 in '%s'"
-msgstr "base64 inválida en '%s' "
 
 msgid "invalid catchup limit"
 msgstr "Límite de recuperación inválido"
@@ -18836,10 +18562,6 @@ msgstr "esta red ya existe"
 msgid "this platform is missing dlopen"
 msgstr "Falta dlopen en esta plataforma"
 
-#, c-format
-msgid "this qemu doesn't support RNG device type '%s'"
-msgstr "Este QEMU no soporta el tipo de dispositivo RNG '%s'"
-
 msgid "this qemu doesn't support the rng-egd backend"
 msgstr "Este QEMU no soporta el segundo plano de rng-egd"
 
@@ -19229,10 +18951,6 @@ msgid "unable to unload already unloaded profile"
 msgstr "no se pudo descargar a un perfil que ya ha sido descargado "
 
 #, c-format
-msgid "unable to visit backing chain file %s"
-msgstr "No se  puede visitar archivo de cadena de respaldo %s"
-
-#, c-format
 msgid "unable to wait for process %lld"
 msgstr "No es posible esperar proceso %lld"
 
@@ -19294,14 +19012,6 @@ msgstr "Acción %s inesperada: %d"
 #, c-format
 msgid "unexpected OpenVZ URI path '%s', try openvz:///system"
 msgstr "ruta '%s' URI de OpenVZ inesperado, intente openvz:///system"
-
-#, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///session"
-msgstr "ruta QEMU URI '%s' inesperada, intente qemu:///session"
-
-#, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///system"
-msgstr "ruta QEMU URI '%s' inesperada, intente qemu:///system "
 
 #, c-format
 msgid "unexpected accessmode %d"
@@ -19792,16 +19502,6 @@ msgstr "Se desconoce valor de formato de controlador '%s'"
 #, c-format
 msgid "unknown driver name '%s'"
 msgstr "Nombre de controlador desconocido '%s' "
-
-#, c-format
-msgid "unknown driver path '%s' specified (try vbox:///session)"
-msgstr ""
-"ruta '%s' de controlador especificado desconocido (intente vbox:///session) "
-
-#, c-format
-msgid "unknown driver path '%s' specified (try vbox:///system)"
-msgstr ""
-"ruta '%s' de controlador especificado desconocido (intente vbox:///system)"
 
 msgid "unknown error"
 msgstr "error desconocido"

@@ -19,13 +19,14 @@
 # Sam Friedmann <sam.friedmann@redhat.com>, 2013
 # Stéphane Aulery <lkppo@free.fr>, 2012
 # Thomas Canniot <thomas.canniot@laposte.net>, 2007
+# Jean-Baptiste Holcroft <jean-baptiste@holcroft.fr>, 2019. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.6.0\n"
+"Project-Id-Version: libvirt 5.9.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-30 11:31+0100\n"
-"PO-Revision-Date: 2015-02-26 09:47+0000\n"
-"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
+"POT-Creation-Date: 2019-10-18 13:39+0100\n"
+"PO-Revision-Date: 2019-08-30 08:18+0000\n"
+"Last-Translator: Jean-Baptiste Holcroft <jean-baptiste@holcroft.fr>\n"
 "Language-Team: French <trans-fr@lists.fedoraproject.org>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -52,43 +53,6 @@ msgstr ""
 
 msgid ""
 "\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
-"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
-"\n"
-"    Sockets:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
-"\n"
-"    TLS:\n"
-"      CA certificate:     $HOME/.pki/libvirt/cacert.pem\n"
-"      Server certificate: $HOME/.pki/libvirt/servercert.pem\n"
-"      Server private key: $HOME/.pki/libvirt/serverkey.pem\n"
-"\n"
-"    PID file:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
-"\n"
-msgstr ""
-"\n"
-"  Chemins par défaut :\n"
-"\n"
-"    Fichier de configuration (sauf si remplacé par -f) :\n"
-"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
-"\n"
-"    Sockets :\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
-"\n"
-"    TLS:\n"
-"      Certificat CA :     $HOME/.pki/libvirt/cacert.pem\n"
-"      Certificat du serveur : $HOME/.pki/libvirt/servercert.pem\n"
-"      Clé privée du serveur : $HOME/.pki/libvirt/serverkey.pem\n"
-"\n"
-"    Fichier PID :\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
-"\n"
-
-msgid ""
-"\n"
 "  OPTIONS\n"
 msgstr ""
 "\n"
@@ -111,6 +75,10 @@ msgstr ""
 "(Temps : %.3f ms)\n"
 "\n"
 
+#, c-format
+msgid "    Bandwidth limit: %llu bytes/s (%-.3lf %s/s)"
+msgstr "    Limite de bande passante : %llu bytes/s (%-.3lf %s/s)"
+
 msgid "  NAME\n"
 msgstr "  NOM\n"
 
@@ -127,12 +95,28 @@ msgid " Storage:"
 msgstr "Stockage :"
 
 #, c-format
+msgid ""
+" type=%s\n"
+" bandwidth=%lu\n"
+" cur=%llu\n"
+" end=%llu\n"
+msgstr ""
+" type=%s\n"
+" bandwidth=%lu\n"
+" cur=%llu\n"
+" end=%llu\n"
+
+#, c-format
 msgid "%6s: Checking %-60s: "
 msgstr "%6s : Vérification %-60s : "
 
 #, c-format
 msgid "%s\n"
 msgstr "%s\n"
+
+#, c-format
+msgid "%s not found in %s"
+msgstr "%s non trouvé dans %s"
 
 #, c-format
 msgid ""
@@ -167,8 +151,16 @@ msgid "%s: error: unable to determine if daemon is running: %s\n"
 msgstr "%s : erreur : impossible de déterminer si le daemon fonctionne : %s\n"
 
 #, c-format
+msgid "%s: failed to read temporary file: %s"
+msgstr "%s : impossible d'écrire dans le fichier temporaire : %s"
+
+#, c-format
 msgid "%s: failed to write log file: %s"
 msgstr "%s : impossible d'écrire dans le fichier journal : %s"
+
+#, c-format
+msgid "%s: initialization failed"
+msgstr "%s : l'initialisation a échoué"
 
 #, c-format
 msgid "%s: initialization failed\n"
@@ -197,6 +189,10 @@ msgstr ""
 #, c-format
 msgid "%s:%zu: %s '%s'"
 msgstr "%s:%zu: %s '%s'"
+
+#, c-format
+msgid "'%s' denied access"
+msgstr "« %s » accès refusé"
 
 #, c-format
 msgid "'%s' does not exist"
@@ -228,17 +224,104 @@ msgstr ""
 msgid "'queues' attribute must be positive number: %s"
 msgstr "l'attribut « queues » doit être un nombre positif : %s"
 
+msgid "(CPU_definition)"
+msgstr "(CPU_definition)"
+
+msgid "(_migration_cookie)"
+msgstr "(_migration_cookie)"
+
+msgid "(bridge interface definition)"
+msgstr "(domainCapabilities)"
+
+msgid "(capabilities)"
+msgstr "(domainCapabilities)"
+
+msgid "(definition_of_secret)"
+msgstr "(domainCapabilities)"
+
 msgid "(device_definition)"
 msgstr "(device_definition)"
+
+msgid "(disk_definition)"
+msgstr "(disk_definition)"
+
+msgid "(domainCapabilities)"
+msgstr "(domainCapabilities)"
+
+msgid "(domain_checkpoint)"
+msgstr "(domainCapabilities)"
 
 msgid "(domain_definition)"
 msgstr "(domain_definition)"
 
+msgid "(domain_snapshot)"
+msgstr "(domain_snapshot)"
+
+msgid "(esx execute response)"
+msgstr "(esx execute response)"
+
+msgid "(gluster_cli_output)"
+msgstr "(gluster_cli_output)"
+
+msgid "(interface definition)"
+msgstr "(définition de l'interface)"
+
+msgid "(interface_definition)"
+msgstr "(interface_definition)"
+
+msgid "(libxl_migration_cookie)"
+msgstr "(libxl_migration_cookie)"
+
+msgid "(metadata_xml)"
+msgstr "(metadata_xml)"
+
+msgid "(network status)"
+msgstr "(network status)"
+
+msgid "(network_definition)"
+msgstr "(network_definition)"
+
+msgid "(node_device_definition)"
+msgstr "(node_device_definition)"
+
+msgid "(none)"
+msgstr "(none)"
+
+msgid "(nwfilter_definition)"
+msgstr "(nwfilter_definition)"
+
+msgid "(pool state)"
+msgstr "(pool state)"
+
+msgid "(qemu_migration_cookie)"
+msgstr "(qemu_migration_cookie)"
+
 msgid "(re)connect to hypervisor"
 msgstr "(re)connecter à l'hyperviseur"
 
+msgid "(save cookie)"
+msgstr "(save cookie)"
+
+msgid "(snapshot_tree)"
+msgstr "(snapshot_tree)"
+
+msgid "(storage_pool_definition)"
+msgstr "(storage_pool_definition)"
+
+msgid "(storage_source_specification)"
+msgstr "(storage_source_specification)"
+
+msgid "(storage_volume_definition)"
+msgstr "(storage_volume_definition)"
+
+msgid "(test driver)"
+msgstr "(test driver)"
+
 msgid "(volume_definition)"
 msgstr "(volume_definition)"
+
+msgid "-"
+msgstr "-"
 
 #, c-format
 msgid "--%s <number>"
@@ -247,6 +330,12 @@ msgstr "--%s <nombre>"
 #, c-format
 msgid "--%s <string>"
 msgstr "--%s <chaîne>"
+
+msgid "------------------------------"
+msgstr "------------------------------"
+
+msgid "-------------------------------------------------"
+msgstr "-------------------------------------------------"
 
 #, c-format
 msgid "<virtualport> element unsupported for <interface type='%s'>"
@@ -332,6 +421,9 @@ msgstr "La taille du périphérique bloc « %s » a été modifiée"
 
 msgid "Build a given pool."
 msgstr "Construire le pool indiqué."
+
+msgid "CPU Affinity"
+msgstr "CPU Affinity"
 
 msgid "CPU Affinity:"
 msgstr "Affinité CPU :"
@@ -421,11 +513,62 @@ msgstr ""
 msgid "Cannot find security driver '%s'"
 msgstr "Pilote de sécurité « %s » introuvable"
 
+msgid "Cannot parse <HardDisk> 'format' attribute"
+msgstr "Impossible d'analyser l'attribut « format » <HardDisk>"
+
+msgid "Cannot parse <HardDisk> 'location' attribute"
+msgstr "Impossible d'analyser l'attribut « location » <HardDisk>"
+
+msgid "Cannot parse <HardDisk> 'uuid' attribute"
+msgstr "Impossible d'analyser l'attribut « uuid » <HardDisk>"
+
+msgid "Cannot parse <Machine> 'currentSnapshot' attribute"
+msgstr "Impossible d'analyser l'attribut « currentSnapshot » <Machine>"
+
+msgid "Cannot parse <Machine> 'lastStateChange' attribute"
+msgstr "Impossible d'analyser l'attribut « lastStateChange » <Machine>"
+
+msgid "Cannot parse <Machine> 'name' attribute"
+msgstr "Impossible d'analyser l'attribut « name » <Machine>"
+
+msgid "Cannot parse <Machine> 'snapshotFolder' attribute"
+msgstr "Impossible d'analyser l'attribut « snapshotFolder » <Machine>"
+
+msgid "Cannot parse <Machine> 'uuid' attribute"
+msgstr "Impossible d'analyser l'attribut « uuid » <Machine>"
+
+msgid "Cannot parse <Machine> <Hardware> node"
+msgstr "Impossible d'analyser le nœud <Machine> <Hardware>"
+
+msgid "Cannot parse <Machine> <MediaRegistry> node"
+msgstr "Impossible d'analyser le nœud <Machine> <MediaRegistry>"
+
+msgid "Cannot parse <Machine> <StorageControllers> node"
+msgstr "Impossible d'analyser le nœud <Machine> <StorageControllers>"
+
+msgid "Cannot parse <Snapshot> 'name' attribute"
+msgstr "Impossible d'analyser l'attribut « name » <Snapshot>"
+
+msgid "Cannot parse <Snapshot> 'timeStamp' attribute"
+msgstr "Impossible d'analyser l'attribut « timeStamp » <Snapshot>"
+
+msgid "Cannot parse <Snapshot> 'uuid' attribute"
+msgstr "Impossible d'analyser l'attribut « uuid » <Snapshot>"
+
+msgid "Cannot parse <Snapshot> <Hardware> node"
+msgstr "Impossible d'analyser le nœud <Snapshot> <Hardware>"
+
+msgid "Cannot parse <Snapshot> <StorageControllers> node"
+msgstr "Impossible d'analyser le nœud <Snapshot> <StorageControllers>"
+
+msgid "Cannot parse <VirtualBox> <Machine> node"
+msgstr "Impossible d'analyser le nœud <VirtualBox> <Machine>"
+
 msgid "Cannot parse <address> 'bus' attribute"
-msgstr "Impossible d'analyser l'attribut « bus » <address>"
+msgstr "Impossible d'analyser l'attribut « bus » <address>"
 
 msgid "Cannot parse <address> 'controller' attribute"
-msgstr "Impossible d'analyser l'attribut « controller » <address> "
+msgstr "Impossible d'analyser l'attribut « controller » <address>"
 
 msgid "Cannot parse <address> 'cssid' attribute"
 msgstr "Impossible d'analyser l'attribut « cssid » <address>"
@@ -434,10 +577,19 @@ msgid "Cannot parse <address> 'devno' attribute"
 msgstr "Impossible d'analyser l'attribut « devno » <address>"
 
 msgid "Cannot parse <address> 'domain' attribute"
-msgstr "Impossible d'analyser l'attribut « domain » <address>"
+msgstr "Impossible d'analyser l'attribut « domain » <address>"
+
+msgid "Cannot parse <address> 'fid' attribute"
+msgstr "Impossible d'analyser l'attribut « fid » <address>"
 
 msgid "Cannot parse <address> 'function' attribute"
 msgstr "Impossible d'analyser l'attribut « function » <address>"
+
+msgid "Cannot parse <address> 'iobase' attribute"
+msgstr "Impossible d'analyser l'attribut « iobase » <address>"
+
+msgid "Cannot parse <address> 'irq' attribute"
+msgstr "Impossible d'analyser l'attribut « irq » <address>"
 
 msgid "Cannot parse <address> 'port' attribute"
 msgstr "Impossible d'analyser l'attribut « port » <address>"
@@ -454,8 +606,15 @@ msgstr "Impossible d'analyser l'attribut « ssid » <address>"
 msgid "Cannot parse <address> 'target' attribute"
 msgstr "Impossible d'analyser l'attribut « target » <address>"
 
+msgid "Cannot parse <address> 'uid' attribute"
+msgstr "Impossible d'analyser l'attribut « uid » <address>"
+
 msgid "Cannot parse <address> 'unit' attribute"
 msgstr "Impossible d'analyser l'attribut « unit » <address>"
+
+msgid "Cannot parse <local> 'port' attribute with socket interface"
+msgstr ""
+"Impossible d'analyser l'attribut « port » <local> avec une interface socket"
 
 msgid "Cannot parse <master> 'startport' attribute"
 msgstr "Impossible d'analyser l'attribut « startport » <master>"
@@ -481,9 +640,17 @@ msgid "Cannot parse controller index %s"
 msgstr "Impossible d'analyser l'index de contrôleur %s"
 
 #, c-format
+msgid "Cannot remove state PID file %s"
+msgstr "Impossible de supprimer le fichier d'état PID %s"
+
+#, c-format
 msgid "Cannot specify a label if relabelling is turned off. model=%s"
 msgstr ""
 "Impossible de spécifier une étiquette si le réétiquetage est éteint. model=%s"
+
+#, c-format
+msgid "Cannot write device.map '%s'"
+msgstr "Impossible d'écrire device.map « %s »"
 
 msgid "Capacity:"
 msgstr "Capacité :"
@@ -547,17 +714,52 @@ msgstr "Impossible d'analyser l'UUID depuis '%s'"
 msgid "Could not set UUID"
 msgstr "Impossible de sélectionner l'UUID"
 
+msgid "Create a checkpoint from XML"
+msgstr "Créer un point de passage depuis le XML"
+
+msgid "Create a checkpoint from XML for use in future incremental backups"
+msgstr ""
+"Créer un point de passage depuis le XML pour l'utiliser dans les prochaines "
+"sauvegardes incrémentales"
+
 msgid "Create a domain."
 msgstr "Créer un domaine"
+
+msgid "Create a network port."
+msgstr "Créer un port réseau."
 
 msgid "Create a network."
 msgstr "Créer un réseau"
 
+msgid "Create a new network filter binding."
+msgstr "Créer une nouvelle liaison de filtre réseau."
+
 msgid "Create a pool."
 msgstr "Créer un pool"
 
+msgid "Create a restore point for interfaces settings"
+msgstr "Créer un point de restauration pour les paramètres de l'interface"
+
+msgid "Create a snapshot (disk and RAM) from XML"
+msgstr "Créer un instantané (disque et RAM) depuis le XML"
+
+msgid "Create a snapshot (disk and RAM) from arguments"
+msgstr "Créer un instantané (disque et RAM) depuis les paramètres"
+
+msgid "Create a snapshot from XML"
+msgstr "Créer un instantané depuis le XML"
+
+msgid "Create a snapshot from a set of args"
+msgstr "Créer un instantané depuis un ensemble de drapeaux."
+
+msgid "Create a vol from an existing volume."
+msgstr "Créer un volume depuis un volume existant."
+
 msgid "Create a vol."
 msgstr "Créer un volume."
+
+msgid "Created"
+msgstr "Créé"
 
 msgid "Define a domain."
 msgstr "Définir un domaine"
@@ -665,9 +867,6 @@ msgstr "L'initialisation de l'état du pilote a échouée"
 msgid "FAIL"
 msgstr "FAIL"
 
-msgid "Failed to allocate memory"
-msgstr "Impossible d'allouer de la mémoire"
-
 #, c-format
 msgid "Failed to attach device from %s"
 msgstr "Impossible d'attacher le périphérique depuis %s"
@@ -675,6 +874,9 @@ msgstr "Impossible d'attacher le périphérique depuis %s"
 #, c-format
 msgid "Failed to autostart VM '%s': %s"
 msgstr "Impossible de démarrer automatiquement la VM « %s » : %s"
+
+msgid "Failed to build pidfile path"
+msgstr "Échec de la construction du chemin pidfile"
 
 #, c-format
 msgid "Failed to build pool %s"
@@ -949,6 +1151,10 @@ msgstr "Élément « CPU feature policy » invalide"
 
 msgid "Invalid CPU topology"
 msgstr "Élément « CPU topology » invalide"
+
+#, c-format
+msgid "Invalid PID %d for VM"
+msgstr "PID invalide %d pour la VM"
 
 #, c-format
 msgid "Invalid USB Class code %s"
@@ -1264,8 +1470,8 @@ msgstr ""
 msgid "No <source> 'port' attribute specified with socket interface"
 msgstr "Aucun attribut <source> « port » spécifié avec l'interface du socket"
 
-msgid "No UNIX process ID available"
-msgstr "Aucun ID de processus UNIX disponible"
+msgid "No UNIX caller UID available"
+msgstr "Aucun ID d'appelant UNIX n'est disponible"
 
 msgid "No address associated with hostname"
 msgstr "Aucune adresse associée avec le nom d'hôte"
@@ -1276,6 +1482,10 @@ msgstr "Aucune donnée fournie à l'élément <initarg>"
 #, c-format
 msgid "No domain with UUID %s"
 msgstr "Aucun domaine avec l'UUID %s"
+
+#, c-format
+msgid "No domain with matching ID '%d'"
+msgstr "Aucun domaine ne correspond avec l'ID « %d »"
 
 #, c-format
 msgid "No domain with matching uuid '%s'"
@@ -1436,6 +1646,10 @@ msgstr "Rafraichir le pool indiqué."
 msgid "Regular expression too big"
 msgstr "Expression rationnelle trop grande"
 
+#, c-format
+msgid "Release %s %o failed"
+msgstr "La version %s %o a échoué"
+
 msgid "Request canceled"
 msgstr "Requête annulée"
 
@@ -1450,6 +1664,9 @@ msgstr "Restaurer un domaine."
 
 msgid "Resume a previously suspended domain."
 msgstr "Réactiver un domaine précédemment suspendu"
+
+msgid "Retrieve threadpool attributes from a server. "
+msgstr "récupère les attributs du groupe d'unités d'exécution du serveur. "
 
 msgid "Returns basic information about the domain virtual CPUs."
 msgstr ""
@@ -1497,6 +1714,13 @@ msgstr "Exécution de l'hyperviseur : %s %d.%d.%d\n"
 
 msgid "Scheduler"
 msgstr "Planificateur"
+
+msgid "Server to alter threadpool attributes on."
+msgstr ""
+"Serveur sur lequel modifier les attributs du groupe d'unités d'exécution."
+
+msgid "Server to retrieve threadpool attributes from."
+msgstr "Serveur de récupération des attributs du groupe d'unités d'exécution."
 
 msgid "Servname not supported for ai_socktype"
 msgstr "Servname n'est pas pris en charge pour ai_socktype"
@@ -1656,14 +1880,6 @@ msgstr "Le type de contrôleur cible %s ne correspond pas à la source %s"
 msgid "Target controller vectors %d does not match source %d"
 msgstr ""
 "Les vecteurs de contrôleurs cibles %d ne correspondent pas à la source %d"
-
-#, c-format
-msgid ""
-"Target device PCI address %04x:%02x:%02x.%02x does not match source %04x:"
-"%02x:%02x.%02x"
-msgstr ""
-"L'adresse PCI du périphérique cible %04x:%02x:%02x.%02x ne correspond pas à "
-"la source %04x:%02x:%02x.%02x"
 
 #, c-format
 msgid "Target device address type %s does not match source %s"
@@ -1833,6 +2049,13 @@ msgstr "Total"
 msgid "Trailing backslash"
 msgstr "Barre oblique inverse à la fin"
 
+msgid ""
+"Tune threadpool attributes on a server. See OPTIONS for currently supported "
+"attributes."
+msgstr ""
+"Régler les attributs groupe du d'unités d'exécution sur un serveur. Lisez "
+"les OPTIONS pour les attributs actuellement supportés."
+
 msgid "Type:"
 msgstr "Type :"
 
@@ -1857,11 +2080,17 @@ msgstr "UUID :"
 msgid "Unable to change MaxMemorySize"
 msgstr "Impossible de modifier MaxMemorySize"
 
+msgid "Unable to create kqueue"
+msgstr "Impossible de créer la kqueue"
+
 msgid "Unable to format guestfwd port"
 msgstr "Impossible de formater le port guestfwd"
 
 msgid "Unable to generate random uuid."
 msgstr "Impossible de générer un UUID aléatoire."
+
+msgid "Unable to get Capabilities"
+msgstr "Impossible d'obtenir les capacités"
 
 msgid "Unable to initialize certificate"
 msgstr "Impossible d'initialiser le certificat"
@@ -1879,9 +2108,14 @@ msgstr "Impossible d'obtenir l'UUID de l'hôte"
 msgid "Unable to parse class id '%s'"
 msgstr "Impossible d'analyser l'ID de classe « %s »"
 
-#, c-format
-msgid "Unable to parse devaddr parameter '%s'"
-msgstr "Impossible d'analyser le paramètre devaddr « %s »"
+msgid "Unable to query kqueue"
+msgstr "Impossible d'interroger la kqueue"
+
+msgid "Unable to register process kevent"
+msgstr "Impossible d'enregistrer le processus kevent"
+
+msgid "Unable to retrieve threadpool parameters"
+msgstr "Impossible de récupérer les paramètres groupe d'unités d'exécution"
 
 msgid "Undefine the configuration for an inactive pool."
 msgstr "Supprimer la configuration d'un pool inactif"
@@ -1984,6 +2218,9 @@ msgstr "« ( » ou « \\( » non fermé"
 msgid "Unmatched ) or \\)"
 msgstr "« ) » ou « \\) » non ouvert"
 
+msgid "Unmatched [, [^, [:, [., or [="
+msgstr "[, [^, [:, [., ou [= non fermé"
+
 msgid "Unmatched \\{"
 msgstr "« { » non fermé"
 
@@ -1994,6 +2231,10 @@ msgstr "Mode de placement du CPU « %s » non-pris en charge"
 #, c-format
 msgid "Unsupported NUMA memory tuning mode '%s'"
 msgstr "Mode de réglage de la mémoire NUMA « %s » non-pris en charge"
+
+#, c-format
+msgid "Unsupported config type %s"
+msgstr "Le type de configuration %s n'est pas pris en charge"
 
 msgid "Upgrade to a kernel supporting namespaces"
 msgstr "Mise à jour vers un noyau prenant en charges les espaces de nommages"
@@ -2089,6 +2330,9 @@ msgstr "démarrer automatiquement un pool"
 
 msgid "balloon memory must contain model name"
 msgstr "la mémoire ballon doit contenir le nom du modèle"
+
+msgid "bhyve state driver is not active"
+msgstr "le pilote d'état bhyve n'est pas actif"
 
 msgid "block"
 msgstr "bloc"
@@ -2431,6 +2675,9 @@ msgstr "le constructeur de disque fait plus de 8 caractères"
 
 msgid "disk vendor is not printable string"
 msgstr "le constructeur de disque n'est pas une chaîne imprimable"
+
+msgid "display"
+msgstr "affichage"
 
 msgid "display available free memory for the NUMA cell."
 msgstr "afficher la quantité de mémoire disponible pour les cellules NUMA."
@@ -3159,6 +3406,9 @@ msgstr "aucun nom d'utilisateur client n'a été trouvé"
 msgid "no config file for %s"
 msgstr "aucun fichier de configuration pour %s"
 
+msgid "no console devices available"
+msgstr "Aucun périphérique console n'est disponible"
+
 msgid "no domain config"
 msgstr "pas de configuration de domaine"
 
@@ -3215,6 +3465,9 @@ msgstr "un seul périphérique TPM est pris en charge"
 msgid "only a single nvram device is supported"
 msgstr "un seul périphérique nvram est pris en charge"
 
+msgid "only nmdm console types are supported"
+msgstr "seuls des types de console nmdm sont pris en charge"
+
 msgid "only one TPM backend is supported"
 msgstr "un seul arrière-plan TPM est pris en charge"
 
@@ -3229,6 +3482,9 @@ msgstr "un seul élément de ressources est pris en charge"
 
 msgid "only one set of redirection filter rule is supported"
 msgstr "un seul ensemble de règles de filtre de redirection est pris en charge"
+
+msgid "only two serial ports are supported"
+msgstr "seuls deux ports série sont pris en charge"
 
 msgid "operation failed"
 msgstr "opération échouée"
@@ -3517,6 +3773,9 @@ msgstr "Impossible de créer le répertoire d'exécution %s : %s"
 msgid "unable to generate uuid"
 msgstr "impossible de générer l'UUID"
 
+msgid "unable to init mutex"
+msgstr "Impossible d'initialiser le mutex"
+
 #, c-format
 msgid "unable to parse mac address '%s'"
 msgstr "impossible d'analyser l'adresse mac « %s »"
@@ -3693,6 +3952,10 @@ msgstr "mode d'accès '%s' inconnu"
 #, c-format
 msgid "unknown address type '%s'"
 msgstr "type d'adresse '%s' inconnue"
+
+#, c-format
+msgid "unknown architecture: %s"
+msgstr "architecture inconnue : %s"
 
 #, c-format
 msgid "unknown auth type '%s'"
@@ -4005,12 +4268,22 @@ msgid "unknown video model '%s'"
 msgstr "modèle vidéo « %s » inconnu"
 
 #, c-format
+msgid "unknown virttype: %s"
+msgstr "virttype inconnu : %s"
+
+#, c-format
 msgid "unknown vnc display sharing policy '%s'"
 msgstr "politique de partage de l'affichage vnc « %s » inconnue"
 
 #, c-format
 msgid "unsupported HyperV Enlightenment feature: %s"
 msgstr "fonctionnalité HyperV Enlightenment non-prise en charge : %s"
+
+msgid "unsupported disk device"
+msgstr "périphérique disque non pris en charge"
+
+msgid "unsupported disk type"
+msgstr "type de disque non pris en charge"
 
 #, c-format
 msgid "unsupported element '%s' of 'origstates'"
@@ -4111,3 +4384,10 @@ msgstr "où enregistrer les données"
 #, c-format
 msgid "xen bus does not support %s input device"
 msgstr "le bus xen ne prend pas en charge le périphérique d'entrée %s"
+
+msgid "yes"
+msgstr "Oui"
+
+#, c-format
+msgid "{[--%s] <string>}..."
+msgstr "{[--%s] <string>}..."

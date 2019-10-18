@@ -8,9 +8,9 @@
 # Teguh DC <dheche@songolimo.net>, 2007.
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.6.0\n"
+"Project-Id-Version: libvirt 5.9.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-30 11:31+0100\n"
+"POT-Creation-Date: 2019-10-18 13:39+0100\n"
 "PO-Revision-Date: 2015-02-27 05:03+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Indonesian (http://www.transifex.com/projects/p/libvirt/"
@@ -116,9 +116,6 @@ msgstr "Domain tidak ditemukan"
 #, c-format
 msgid "Domain not found: %s"
 msgstr "Domain tidak ditemukan: %s"
-
-msgid "Failed to allocate memory"
-msgstr "Gagal mengalokasikan memory"
 
 #, c-format
 msgid "Failed to attach device from %s"

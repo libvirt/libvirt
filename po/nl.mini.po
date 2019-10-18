@@ -9,9 +9,9 @@
 # Richard E. van der Luit <nippur@fedoraproject.org>, 2013
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.6.0\n"
+"Project-Id-Version: libvirt 5.9.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-30 11:31+0100\n"
+"POT-Creation-Date: 2019-10-18 13:39+0100\n"
 "PO-Revision-Date: 2015-02-26 09:23+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/fedora/language/"
@@ -481,12 +481,6 @@ msgstr "Kan overgang domeinn niet on-definiëren "
 msgid "Cannot unshare mount namespace"
 msgstr "Kan deling van aankoppel naam ruimte niet opheffen"
 
-msgid "Capabilities not available"
-msgstr "Mogelijkheden niet beschikbaar"
-
-msgid "Capabilities not found"
-msgstr "Mogelijkheden niet gevonden"
-
 msgid "Capacity"
 msgstr "Capaciteit"
 
@@ -925,33 +919,6 @@ msgstr "Kan schijf adres niet verifiëren"
 msgid "Could not wipe volume: %s"
 msgstr "Kon volume niet schoonmaken: %s"
 
-msgid "Couldn't fetch Domain Information"
-msgstr "Kon domein informatie niet ophalen"
-
-msgid "Couldn't fetch Node Information"
-msgstr "Kon node informatie niet ophalen"
-
-msgid "Couldn't get VM information from XML"
-msgstr "Kon VM informatie niet uit XML krijgen"
-
-msgid "Couldn't get VM record"
-msgstr "Kon VM record niet krijgen"
-
-msgid "Couldn't get host metrics"
-msgstr "Kon host metriek niet krijgen"
-
-msgid "Couldn't get host metrics - memory information"
-msgstr "Kon host metriek niet krijgen - geheugen informatie"
-
-msgid "Couldn't get the Domain Pointer"
-msgstr "Kon domein aanwijzer niet krijgen"
-
-msgid "Couldn't get version info"
-msgstr "Kon versie info niet krijgen"
-
-msgid "Couldn't parse version info"
-msgstr "Kon versie info niet ontleden"
-
 #, c-format
 msgid "Couldn't read volume target path '%s'"
 msgstr "Kon volume doel pad '%s' niet lezen"
@@ -1197,12 +1164,6 @@ msgstr "Domein '%s' is al actief"
 msgid "Domain '%s' sysinfo are not available"
 msgstr "Domein '%s' sysinfo is niet beschikbaar"
 
-msgid "Domain Pointer is invalid"
-msgstr "Domein aanwijzer is ongeldig"
-
-msgid "Domain Pointer not valid"
-msgstr "Domein aanwijzer is ongeldig"
-
 msgid ""
 "Domain XML doesn't contain any disks, cannot deduce datastore and path for "
 "VMX file"
@@ -1255,9 +1216,6 @@ msgstr "Domein is niet onderbroken of uitgeschakeld"
 msgid "Domain name contains invalid escape sequence"
 msgstr "Domein naam bevat een ongeldige escape reeks"
 
-msgid "Domain name is not unique"
-msgstr "Domein naam is niet uniek"
-
 msgid "Domain not found"
 msgstr "Domein niet gevonden"
 
@@ -1279,9 +1237,6 @@ msgstr "Domein snapshot niet gevonden"
 #, c-format
 msgid "Domain snapshot not found: %s"
 msgstr "Domein snapshot niet gevonden: %s"
-
-msgid "DomainID can't fit in 32 bits"
-msgstr "Domein ID past niet in 32 bits"
 
 msgid "Driver state initialization failed"
 msgstr "Driver toestand initialisatie mislukte"
@@ -1534,23 +1489,8 @@ msgstr "FDC controller index %d is buiten [0] reeks"
 msgid "FDC unit index %d out of [0..1] range"
 msgstr "FDC unit index %d is buiten [0..1] reeks"
 
-#, c-format
-msgid "Failed opening %s"
-msgstr "Openen van %s mislukte"
-
-#, c-format
-msgid "Failed to add PCI device ID '%s' to %s"
-msgstr "Toevoegen van PCI apparaat ID '%s' naar %s mislukte"
-
-#, c-format
-msgid "Failed to add slot for PCI device '%s' to %s"
-msgstr "Toevoegen van sleuf voor PCI apparaat '%s' aan %s mislukte"
-
 msgid "Failed to allocate XML buffer"
 msgstr "Toewijzen van XML buffer mislukte"
-
-msgid "Failed to allocate memory"
-msgstr "Toewijzen van geheugen mislukte"
 
 msgid "Failed to allocate memory for path"
 msgstr "Toewijzen van geheugen voor pad mislukte"
@@ -1583,10 +1523,6 @@ msgstr "Autostart VM '%s' mislukte: %s"
 #, c-format
 msgid "Failed to autostart storage pool '%s': %s"
 msgstr "Autostart van opslag pool '%s' mislukte: %s"
-
-#, c-format
-msgid "Failed to bind PCI device '%s' to %s"
-msgstr "Binden van PCI apparaat '%s' aan %s mislukte"
 
 #, c-format
 msgid "Failed to build path for %s hook"
@@ -2078,10 +2014,6 @@ msgid "Failed to register xml namespace '%s'"
 msgstr "Registratie van xml naam ruimte '%s' mislukte"
 
 #, c-format
-msgid "Failed to remove PCI ID '%s' from %s"
-msgstr "Verwijderen van PCI ID '%s' uit %s mislukte"
-
-#, c-format
 msgid "Failed to remove managed save image for domain %s"
 msgstr "Verwijderen van beheerde opslag image voor domein %s mislukte"
 
@@ -2201,10 +2133,6 @@ msgstr "Root aankoppeling omschakelen naar slaaf mode mislukte"
 #, c-format
 msgid "Failed to take snapshot: %s"
 msgstr "Snapshot maken mislukte: %s"
-
-#, c-format
-msgid "Failed to trigger a re-probe for PCI device '%s'"
-msgstr "Starten van opnieuw zoeken naar PCI apparaat '%s' mislukte"
 
 #, c-format
 msgid "Failed to truncate volume with path '%s' to %ju bytes"
@@ -2548,9 +2476,6 @@ msgstr "Ongeldige CPU leverancier tekenreeks '%s'"
 
 msgid "Invalid argument"
 msgstr "Ongeldig argument"
-
-msgid "Invalid base64 data"
-msgstr "Ongeldige base64 data"
 
 #, c-format
 msgid "Invalid bridge mac address '%s' in network '%s'"
@@ -3341,10 +3266,6 @@ msgid ""
 msgstr ""
 "Vraag parameter 'no_verify' heeft onverwachte waarde '%s' (moet 0 of 1 zijn)"
 
-msgid "Query parameter 'no_verify' has unexpected value (should be 0 or 1)"
-msgstr ""
-"Vraag parameter 'no_verify' heeft onverwachte waarde (moet 0 of 1 zijn)"
-
 #, c-format
 msgid ""
 "Query parameter 'proxy' contains unexpected type '%s' (should be (http|"
@@ -3606,9 +3527,6 @@ msgstr ""
 #, c-format
 msgid "Serial port index %d out of [0..3] range"
 msgstr "Seriële poort index %d is buiten [0..3] reeks"
-
-msgid "Server name not in URI"
-msgstr "Server naam is niet in URI"
 
 msgid "Set a secret value."
 msgstr "Stel een geheim waarde in."
@@ -3909,9 +3827,6 @@ msgstr "Kan guestfwd poort niet formatteren"
 msgid "Unable to generate random uuid."
 msgstr "Kan geen willekeurige uuid genereren"
 
-msgid "Unable to get Host CPU set"
-msgstr "Kon host CPU instelling niet krijgen"
-
 msgid "Unable to get VIOS name"
 msgstr "Kan VIOS naam niet krijgen"
 
@@ -3923,9 +3838,6 @@ msgstr "Kan domein status niet krijgen"
 
 msgid "Unable to get free slot number"
 msgstr "Kan geen vrije sleuf nummer krijgen"
-
-msgid "Unable to get host metric Information"
-msgstr "Kon kost metrische informatie niet krijgen"
 
 msgid "Unable to get memory parameters"
 msgstr "Kan geheugen parameters niet verkrijgen"
@@ -3966,13 +3878,6 @@ msgstr "Kon monitor pad %s niet openen"
 #, c-format
 msgid "Unable to open stream for '%s'"
 msgstr "Kan stream niet openen voor '%s'"
-
-#, c-format
-msgid "Unable to parse devaddr parameter '%s'"
-msgstr "Kan devaddr parameter '%s' niet ontleden"
-
-msgid "Unable to parse given mac address"
-msgstr "Kan gegeven mac adres niet ontleden"
 
 #, c-format
 msgid "Unable to pre-create chardev file '%s'"
@@ -6155,10 +6060,6 @@ msgid "guestfwd channel only supports IPv4 addresses"
 msgstr "guestfwd kanaal ondersteunt alleen IPv4 adressen"
 
 #, c-format
-msgid "host pci device %.4x:%.2x:%.2x.%.1x not found"
-msgstr "host pci apparaat %.4x:%.2x:%.2x.%.1x niet gevonden"
-
-#, c-format
 msgid "host reports map buffer length exceeds maximum: %d > %d"
 msgstr "host rapporteert dat kaart buffer lengte overschrijdt maximum: %d > %d"
 
@@ -6354,10 +6255,6 @@ msgstr "ongeldige VM definitie"
 #, c-format
 msgid "invalid XML length: %d"
 msgstr "ongeldige XML lengte: %d"
-
-#, c-format
-msgid "invalid base64 in '%s'"
-msgstr "ongeldige base64 in '%s'"
 
 msgid "invalid catchup limit"
 msgstr "ongeldige catchup limiet"
@@ -8055,14 +7952,6 @@ msgid "unexpected OpenVZ URI path '%s', try openvz:///system"
 msgstr "onverwacht OpenVZ URI pad '%s', probeer openvz:///system"
 
 #, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///session"
-msgstr "onverwacht QEMU URI pad '%s', probeer qemu:///session"
-
-#, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///system"
-msgstr "onverwacht QEMU URI pad '%s', probeer qemu:///system"
-
-#, c-format
 msgid "unexpected accessmode %d"
 msgstr "onverwachte toegangsmode %d"
 
@@ -8351,14 +8240,6 @@ msgstr "onbekende schijf io mode '%s'"
 #, c-format
 msgid "unknown disk type '%s'"
 msgstr "onbekend schijf type '%s'"
-
-#, c-format
-msgid "unknown driver path '%s' specified (try vbox:///session)"
-msgstr "onbekend driver pad '%s' gespecificeerd (probeer vbox:///session)"
-
-#, c-format
-msgid "unknown driver path '%s' specified (try vbox:///system)"
-msgstr "onbekend driver pad '%s' gespecificeerd (probeer vbox:///system)"
 
 msgid "unknown error"
 msgstr "onbekende fout"

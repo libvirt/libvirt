@@ -17,9 +17,9 @@
 # sandeep shedmake <sandeep.shedmake@gmail.com>, 2007
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.6.0\n"
+"Project-Id-Version: libvirt 5.9.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-30 11:31+0100\n"
+"POT-Creation-Date: 2019-10-18 13:39+0100\n"
 "PO-Revision-Date: 2015-02-23 12:39+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Hindi (http://www.transifex.com/projects/p/fedora/language/"
@@ -52,43 +52,6 @@ msgid ""
 "  Default paths:\n"
 "\n"
 "    Configuration file (unless overridden by -f):\n"
-"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
-"\n"
-"    Sockets:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
-"\n"
-"    TLS:\n"
-"      CA certificate:     $HOME/.pki/libvirt/cacert.pem\n"
-"      Server certificate: $HOME/.pki/libvirt/servercert.pem\n"
-"      Server private key: $HOME/.pki/libvirt/serverkey.pem\n"
-"\n"
-"    PID file:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
-"\n"
-msgstr ""
-"\n"
-"   तयशुदा पथ:\n"
-"\n"
-"    विन्यास फ़ाइल (unless overridden by -f):\n"
-"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
-"\n"
-"    सॉकेट:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
-"\n"
-"    TLS:\n"
-"      सीए प्रमाणपत्र:     $HOME/.pki/libvirt/cacert.pem\n"
-"      सर्वर प्रमाणपत्र: $HOME/.pki/libvirt/servercert.pem\n"
-"      सर्वर निजी कुंजी: $HOME/.pki/libvirt/serverkey.pem\n"
-"\n"
-"    PID फ़ाइल:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
-"\n"
-
-msgid ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
 "      $XDG_CONFIG_HOME/libvirt/virtlockd.conf\n"
 "\n"
 "    Sockets:\n"
@@ -109,34 +72,6 @@ msgstr ""
 "\n"
 "   फ़ाइल:\n"
 "      $XDG_RUNTIME_DIR/libvirt/virtlockd.pid\n"
-"\n"
-
-#, c-format
-msgid ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
-"      %s/libvirt/virtlockd.conf\n"
-"\n"
-"    Sockets:\n"
-"      %s/run/libvirt/virtlockd-sock\n"
-"\n"
-"    PID file (unless overridden by -p):\n"
-"      %s/run/virtlockd.pid\n"
-"\n"
-msgstr ""
-"\n"
-"  तयशुदा पथ:\n"
-"\n"
-"    विन्यास फाइल (unless overridden by -f):\n"
-"      %s/libvirt/virtlockd.conf\n"
-"\n"
-"    सॉकेट:\n"
-"      %s/run/libvirt/virtlockd-sock\n"
-"\n"
-"    PID फ़ाइल (unless overridden by -p):\n"
-"      %s/run/virtlockd.pid\n"
 "\n"
 
 msgid ""
@@ -2171,10 +2106,6 @@ msgstr "FAIL"
 msgid "Failed"
 msgstr "असफल"
 
-#, c-format
-msgid "Failed opening %s"
-msgstr "%s खोलने में विफल "
-
 msgid "Failed to acquire lock"
 msgstr "ताला पाने में असफल"
 
@@ -2182,19 +2113,8 @@ msgstr "ताला पाने में असफल"
 msgid "Failed to add IP address %s to IP address cache for interface %s"
 msgstr "अंतराफलक %s के लिए आई पी पते कैश को आई पी पता %s से जोड़ने में विफल"
 
-#, c-format
-msgid "Failed to add PCI device ID '%s' to %s"
-msgstr "PCI युक्ति ID '%s' को %s में जोड़ने में विफल"
-
-#, c-format
-msgid "Failed to add slot for PCI device '%s' to %s"
-msgstr "PCI युक्ति '%s' के लिए %s में  स्लॉट जोड़ने में विफल"
-
 msgid "Failed to allocate XML buffer"
 msgstr "XML बफर आबंटित करने में विफल"
-
-msgid "Failed to allocate memory"
-msgstr "स्मृति संभाजित करने में विफल"
 
 msgid "Failed to allocate memory for path"
 msgstr "पथ के लिए स्मृति संभाजित करने में विफल"
@@ -2227,10 +2147,6 @@ msgstr "VM '%s' ऑटोस्टार्ट में विफल: %s"
 #, c-format
 msgid "Failed to autostart storage pool '%s': %s"
 msgstr "भंडारण पूल को स्वतः शुरू करने में '% s' करने में असफ़ल: %s"
-
-#, c-format
-msgid "Failed to bind PCI device '%s' to %s"
-msgstr "PCI युक्ति '%s' को %s में बाइंड करने में विफल"
 
 #, c-format
 msgid "Failed to bind mount directory %s to %s"
@@ -2815,10 +2731,6 @@ msgstr "xml namespace '%s' पंजीकरण विफल"
 msgid "Failed to release lock"
 msgstr "लॉक जारी करने में विफल"
 
-#, c-format
-msgid "Failed to remove PCI ID '%s' from %s"
-msgstr "PCI ID '%s' को %s से हटाने में विफल"
-
 msgid "Failed to remove domain managed save image"
 msgstr "छवि सहेजने में प्रबंधित डोमेन को हटाने में विफल"
 
@@ -2967,10 +2879,6 @@ msgstr " %s को सांकेतिकलिंक %s उपकरण स�
 #, c-format
 msgid "Failed to take snapshot: %s"
 msgstr "तस्वीर लेने में विफल: %s"
-
-#, c-format
-msgid "Failed to trigger a re-probe for PCI device '%s'"
-msgstr "PCI युक्ति '%s' के लिए फिर जाँच को ट्रिगर करने में विफल"
 
 #, c-format
 msgid "Failed to truncate volume with path '%s' to %ju bytes"
@@ -3357,9 +3265,6 @@ msgstr "अवैध तर्क"
 
 msgid "Invalid back reference"
 msgstr "अवैध बैक संदर्भ"
-
-msgid "Invalid base64 data"
-msgstr "अवैध base64 आँकड़ा"
 
 #, c-format
 msgid "Invalid bridge mac address '%s' in network '%s'"
@@ -4176,9 +4081,6 @@ msgstr "होस्ट '%s' के लिये कोई IP पता नह�
 
 msgid "No JSON parser implementation is available"
 msgstr "कोई JSON पार्सर कार्यान्वयन उपलब्ध नहीं है"
-
-msgid "No UNIX process ID available"
-msgstr "कोई यूनिक्स प्रक्रिया आईडी उपलब्ध नहीं"
 
 #, c-format
 msgid "No active operation on device: %s"
@@ -5142,13 +5044,6 @@ msgid "Target controller vectors %d does not match source %d"
 msgstr "लक्ष्य नियंत्रक सदिश %d का मेल स्रोत %d से नहीं है"
 
 #, c-format
-msgid ""
-"Target device PCI address %04x:%02x:%02x.%02x does not match source %04x:"
-"%02x:%02x.%02x"
-msgstr ""
-"लक्ष्य युक्ति PCI पता %04x:%02x:%02x.%02x का मेल स्रोत %04x:%02x:%02x.%02x से नहीं है"
-
-#, c-format
 msgid "Target device address type %s does not match source %s"
 msgstr "लक्ष्य युक्ति पता प्रकार %s का मेल स्रोत %s से नहीं है"
 
@@ -5879,10 +5774,6 @@ msgstr "Peer2peer उत्प्रवासन यूआरआइ ओवरर
 #, c-format
 msgid "Unable to parse class id '%s'"
 msgstr "वर्ग आईडी '%s' के विश्लेषण में असमर्थ"
-
-#, c-format
-msgid "Unable to parse devaddr parameter '%s'"
-msgstr "devaddr पैरामीटर '%s' को विश्लेषित करने में असमर्थ"
 
 #, c-format
 msgid "Unable to parse lock state %s"
@@ -7034,10 +6925,6 @@ msgstr "vCPU स्थापन व pCPU समय नहीं पा सकत
 
 msgid "cannot halt after transient domain snapshot"
 msgstr "अस्थायी डोमेन स्नैपशॉट को रोक नहीं सकते"
-
-#, c-format
-msgid "cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"
-msgstr "गर्म multifunction PCI डिवाइस अनप्लग नहीं कर सकते है: %.4x:%.2x:%.2x.%.1x"
 
 #, c-format
 msgid "cannot initialize cert object: %s"
@@ -8796,10 +8683,6 @@ msgid "host device already exists"
 msgstr "होस्ट के युक्ति पहले से मौजूद है"
 
 #, c-format
-msgid "host pci device %.4x:%.2x:%.2x.%.1x not found"
-msgstr "होस्ट pci युक्ति %.4x:%.2x:%.2x.%.1x नहीं मिला"
-
-#, c-format
 msgid "host reports map buffer length exceeds maximum: %d > %d"
 msgstr "मेजबान ने नक्शा बफर को रिपोर्ट किया जो अधिकतम से अधिक है: %d > %d"
 
@@ -8875,9 +8758,6 @@ msgstr "निष्क्रिय"
 
 msgid "include security sensitive information in XML dump"
 msgstr "XML डंप में सुरक्षा संवेदनशील सूचना शामिल करें"
-
-msgid "incomplete return information"
-msgstr "अपूर्ण वापसी सूचना"
 
 #, c-format
 msgid "incomplete save header in '%s'"
@@ -9093,10 +8973,6 @@ msgstr "अवैध तर्क की आपूर्ति"
 #, c-format
 msgid "invalid argument: %s"
 msgstr "अवैध आर्गुमेंट. %s"
-
-#, c-format
-msgid "invalid base64 in '%s'"
-msgstr "'%s' में अवैध base64"
 
 msgid "invalid catchup limit"
 msgstr "अवैध catchup सीमा"
@@ -11425,10 +11301,6 @@ msgstr "डिस्क %s के लिए स्टेट करने मे�
 msgid "unable to unload already unloaded profile"
 msgstr "पहले से ही अनलोड किये गयें प्रोफाइल को खाली करने में असमर्थ"
 
-#, c-format
-msgid "unable to visit backing chain file %s"
-msgstr "समर्थन श्रृंखला फ़ाइल %s यात्रा करने में असमर्थ"
-
 msgid "unable to write to child input"
 msgstr "बच्चे को इनपुट के लिए लिखने में असमर्थ"
 
@@ -11457,14 +11329,6 @@ msgstr "अप्रत्याशित %s क्रिया: %d"
 #, c-format
 msgid "unexpected OpenVZ URI path '%s', try openvz:///system"
 msgstr "अप्रत्याशित OpenVZ URI path '%s', try openvz:///system"
-
-#, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///session"
-msgstr "अप्रत्याशित QEMU URI पथ '%s', qemu:///session आजमाएँ"
-
-#, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///system"
-msgstr "अप्रत्याशित QEMU URI पथ '%s', qemu:///system आजमाएँ"
 
 #, c-format
 msgid "unexpected accessmode %d"
@@ -11901,14 +11765,6 @@ msgstr "अज्ञात डिस्क प्रकार '%s'"
 #, c-format
 msgid "unknown driver format value '%s'"
 msgstr "अज्ञात ड्राइवर स्वरूप मान '%s'"
-
-#, c-format
-msgid "unknown driver path '%s' specified (try vbox:///session)"
-msgstr "अज्ञात ड्राइवर पथ '%s' निर्दिष्ट (try vbox:///session)"
-
-#, c-format
-msgid "unknown driver path '%s' specified (try vbox:///system)"
-msgstr "अज्ञात ड्राइवर पथ '%s' निर्दिष्ट (try vbox:///system)"
 
 msgid "unknown error"
 msgstr "अज्ञात त्रुटि"

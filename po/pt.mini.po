@@ -7,9 +7,9 @@
 # pmdaniel <danielthpro@gmail.com>, 2013
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.6.0\n"
+"Project-Id-Version: libvirt 5.9.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-30 11:31+0100\n"
+"POT-Creation-Date: 2019-10-18 13:39+0100\n"
 "PO-Revision-Date: 2015-02-24 02:16+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Portuguese <trans-pt@lists.fedoraproject.org>\n"
@@ -231,9 +231,6 @@ msgstr "O domínio não foi encontrado: %s"
 #, c-format
 msgid "Domain restored from %s\n"
 msgstr "O domínio foi reposto a partir do %s\n"
-
-msgid "Failed to allocate memory"
-msgstr "Não foi possível reservar memória"
 
 #, c-format
 msgid "Failed to attach device from %s"

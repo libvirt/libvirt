@@ -9,9 +9,9 @@
 # Sree Ganesh <sthottem@redhat.com>, 2006
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.6.0\n"
+"Project-Id-Version: libvirt 5.9.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-30 11:31+0100\n"
+"POT-Creation-Date: 2019-10-18 13:39+0100\n"
 "PO-Revision-Date: 2015-03-05 07:40+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Telugu (http://www.transifex.com/projects/p/libvirt/language/"
@@ -51,43 +51,6 @@ msgid ""
 "  Default paths:\n"
 "\n"
 "    Configuration file (unless overridden by -f):\n"
-"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
-"\n"
-"    Sockets:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
-"\n"
-"    TLS:\n"
-"      CA certificate:     $HOME/.pki/libvirt/cacert.pem\n"
-"      Server certificate: $HOME/.pki/libvirt/servercert.pem\n"
-"      Server private key: $HOME/.pki/libvirt/serverkey.pem\n"
-"\n"
-"    PID file:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
-"\n"
-msgstr ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
-"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
-"\n"
-"    Sockets:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
-"\n"
-"    TLS:\n"
-"      CA certificate:     $HOME/.pki/libvirt/cacert.pem\n"
-"      Server certificate: $HOME/.pki/libvirt/servercert.pem\n"
-"      Server private key: $HOME/.pki/libvirt/serverkey.pem\n"
-"\n"
-"    PID file:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
-"\n"
-
-msgid ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
 "      $XDG_CONFIG_HOME/libvirt/virtlockd.conf\n"
 "\n"
 "    Sockets:\n"
@@ -108,34 +71,6 @@ msgstr ""
 "\n"
 "    పిఐడి ఫైలు:\n"
 "      $XDG_RUNTIME_DIR/libvirt/virtlockd.pid\n"
-"\n"
-
-#, c-format
-msgid ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
-"      %s/libvirt/virtlockd.conf\n"
-"\n"
-"    Sockets:\n"
-"      %s/run/libvirt/virtlockd-sock\n"
-"\n"
-"    PID file (unless overridden by -p):\n"
-"      %s/run/virtlockd.pid\n"
-"\n"
-msgstr ""
-"\n"
-"  అప్రమేయ పాత్‌లు:\n"
-"\n"
-"    ఆకృతీకరణ ఫైలు ( -f చే వోవర్‌రిడెన్ కానంతవరకు):\n"
-"      %s/libvirt/virtlockd.conf\n"
-"\n"
-"    సాకెట్లు:\n"
-"      %s/run/libvirt/virtlockd-sock\n"
-"\n"
-"    పిఐడి ఫైలు (-pచే వోవర్‌రిడెన్ కానంతవరకు):\n"
-"      %s/run/virtlockd.pid\n"
 "\n"
 
 msgid ""
@@ -1569,12 +1504,6 @@ msgstr "పార్లల్/సీరియల్ పరికరాల కొ
 msgid "Cannot write data"
 msgstr "దత్తాంశం వ్రాయలేదు"
 
-msgid "Capabilities not available"
-msgstr "సామర్ధ్యాలు అందుబాటులోలేవు"
-
-msgid "Capabilities not found"
-msgstr "సామర్ధ్యాలు కనబడలేదు"
-
 msgid "Capacity"
 msgstr "సామర్ధ్యము"
 
@@ -1774,17 +1703,6 @@ msgstr "స్థానిక అధిప్రతికి అనుసంధ�
 #, c-format
 msgid "Connected to domain %s\n"
 msgstr "డొమైన్ %sకు అనుసంధానమైంది\n"
-
-msgid ""
-"Connecting to session instance without socket path is not supported by the "
-"libssh2 connection driver"
-msgstr ""
-"సెషన్ ఇన్‌స్టాన్సుకు సాకెట్ పాత్ లేకుండా అనుసంధానమగుట libssh2 అనుసంధాన డ్రైవర్ చేత తోడ్పాటునీయబడదు"
-
-msgid ""
-"Connecting to session instance without socket path is not supported by the "
-"ssh connection driver"
-msgstr "సెషన్ ఇన్‌స్టాన్సుకు సాకెట్ పాత్ లేకుండా అనుసంధానమగుట ssh అనుసంధాన డ్రైవర్ చేత తోడ్పాటునీయబడదు"
 
 msgid "Constant pages:"
 msgstr "స్థిరమైన పేజీలు:"
@@ -2494,33 +2412,6 @@ msgstr "స్ట్రీమ్‌కు వ్రాయలేక పోయి�
 msgid "Couldn't create lock file for device '%s' in path '%s'"
 msgstr "పరికరం '%s' కొరకు లాక్ ఫైలును పాత్ '%s' నందు సృష్టించలేకపోయింది"
 
-msgid "Couldn't fetch Domain Information"
-msgstr "డొమైన్ సమాచారం పొందలేక పోయింది"
-
-msgid "Couldn't fetch Node Information"
-msgstr "నోడ్ సమాచారం పొందలేక పోయింది"
-
-msgid "Couldn't get VM information from XML"
-msgstr "XML నుండి VM సమాచారం పొందలేక పోయింది"
-
-msgid "Couldn't get VM record"
-msgstr "VM రికార్డ్ పొందలేకపోయింది"
-
-msgid "Couldn't get host metrics"
-msgstr "అతిధేయ మెట్రిక్స్ పొందలేక పోయింది"
-
-msgid "Couldn't get host metrics - memory information"
-msgstr "అతిధేయ మెట్రిక్స్ పొందలేక పోయింది - మెమొరీ సమాచారం"
-
-msgid "Couldn't get the Domain Pointer"
-msgstr "డొమైన్ సూచకి పొందలేకపోయింది"
-
-msgid "Couldn't get version info"
-msgstr "వర్షన్ సమాచారం పొందలేక పోయింది"
-
-msgid "Couldn't parse version info"
-msgstr "వర్షన్ సమాచారం పార్స్ చేయలేక పోయింది"
-
 #, c-format
 msgid "Couldn't read volume target path '%s'"
 msgstr "వాల్యూమ్ లక్ష్యపు పాత్‌ '%s'ను చదువలేక పోయింది"
@@ -2928,12 +2819,6 @@ msgstr "డొమైన్ '%s' యిప్పటికే నడుచుచ�
 msgid "Domain '%s' sysinfo are not available"
 msgstr "డొమైన్ '%s' sysinfo అందుబాటులో లేదు"
 
-msgid "Domain Pointer is invalid"
-msgstr "డొమైన్ సూచకి చెల్లనిది"
-
-msgid "Domain Pointer not valid"
-msgstr "డొమైన్ సూచకి చెల్లనిది"
-
 msgid ""
 "Domain XML doesn't contain any disks, cannot deduce datastore and path for "
 "VMX file"
@@ -3009,9 +2894,6 @@ msgstr "డొమైన్ సస్పెంట్ కాలేదు లేద
 msgid "Domain name contains invalid escape sequence"
 msgstr "డొమైన్ పేరు చెల్లని ఎస్కేప్ వరుసను కలిగివుంది"
 
-msgid "Domain name is not unique"
-msgstr "డొమైన్ పేరు చెల్లనిది"
-
 msgid "Domain not found"
 msgstr "డొమైన్ కనపడలేదు"
 
@@ -3059,9 +2941,6 @@ msgstr "డొమైన్ శీర్షిక కొత్తవరుసల�
 
 msgid "Domain:"
 msgstr "డొమైన్:"
-
-msgid "DomainID can't fit in 32 bits"
-msgstr "32 బిట్స్ నందు డొమైన్ఐడి ఇమడదు"
 
 msgid "Done.\n"
 msgstr "అయినది.\n"
@@ -3411,10 +3290,6 @@ msgid "Failed"
 msgstr "విఫలమైనది"
 
 #, c-format
-msgid "Failed opening %s"
-msgstr "%s తెరుచుటకు విఫలమైంది"
-
-#, c-format
 msgid "Failed set TLS x509 credentials: %s"
 msgstr "TLS x509 ఆనవాళ్ళు అమర్చుటకు విఫలమైంది: %s"
 
@@ -3429,10 +3304,6 @@ msgstr "pid ఫైల్ '%s' పొందుటకు విఫలమైంద�
 msgid "Failed to add IP address %s to IP address cache for interface %s"
 msgstr "ఐపి చిరునామా %s ను ఐపి చిరునామా క్యాచీకు ఇంటర్ఫేస్ %s కొరకు జతచేయటలో విఫలమైంది"
 
-#, c-format
-msgid "Failed to add PCI device ID '%s' to %s"
-msgstr "PCI పరికరము ID '%s'ను %sకు జతచేయుటలో విఫలమైంది"
-
 msgid "Failed to add netlink event handle watch"
 msgstr "నెట్‌లింక్ ఈవెంట్ హాండిల్ వాచ్ జతచేయుటకు విఫలమైంది"
 
@@ -3440,18 +3311,11 @@ msgid "Failed to add signal handle watch"
 msgstr "సంకేతం సంభాలన వాచ్‌ను జతచేయుటకు విఫలమైంది"
 
 #, c-format
-msgid "Failed to add slot for PCI device '%s' to %s"
-msgstr "PCI పరికరముకు స్లాట్‌ను '%s'నుండి %sకు జతచేయుటలో విఫలమైంది"
-
-#, c-format
 msgid "Failed to allocate PCI device list: %s"
 msgstr "PCI పరికర జాబితా కేటాయించుటకు విఫలమైంది: %s"
 
 msgid "Failed to allocate XML buffer"
 msgstr "XML బఫర్‌ను కేటాయించుటలే విఫలమైంది"
-
-msgid "Failed to allocate memory"
-msgstr "మెమొరీ కేటాయించటంలో విఫలమైంది"
 
 msgid "Failed to allocate memory for path"
 msgstr "పాత్ కొరకు మెమొరీ కేటాయించుటకు విఫలమైంది"
@@ -3468,9 +3332,6 @@ msgstr "రక్షణ రీతి కేటాయించుటకు వి
 
 msgid "Failed to allocate tty"
 msgstr "tty కేటాయించుటలో విఫలమైంది"
-
-msgid "Failed to allocate xen session"
-msgstr "xen సెషన్ కేటాయించుటకు విఫలమైంది"
 
 #, c-format
 msgid "Failed to apply capabilities: %d"
@@ -3500,10 +3361,6 @@ msgstr "నిల్వ పూల్ '%s' స్వయంచాలక ప్ర�
 
 msgid "Failed to begin network config change transaction"
 msgstr "నెట్వర్కు ఆకృతీకరణ మార్చే వ్యవహారం ప్రారంభించుటకు విఫలమైంది"
-
-#, c-format
-msgid "Failed to bind PCI device '%s' to %s"
-msgstr "PCI పరికరము '%s' నుండి %sకు బందనం చేయుటలో విఫలమైంది"
 
 #, c-format
 msgid "Failed to bind mount directory %s to %s"
@@ -3643,9 +3500,6 @@ msgstr "SASL కక్షిదారి సందర్భమును సృ�
 
 msgid "Failed to create XML"
 msgstr "XML సృష్టించుటలో విఫలమైంది"
-
-msgid "Failed to create XML conf object"
-msgstr "XML ఆకృతీకరణ ఆబ్జక్టు సృష్టించుటకు విఫలమైంది"
 
 msgid "Failed to create XML config object"
 msgstr "XML ఆకృతీకరణ ఆబ్జక్టు సృష్టించుటకు విఫలమైంది"
@@ -4435,10 +4289,6 @@ msgstr "లాక్ విడుదలకు విఫలమైంది"
 msgid "Failed to release port %d"
 msgstr "పోర్ట్ %d విడుదల చేయుటకు విఫలమైంది"
 
-#, c-format
-msgid "Failed to remove PCI ID '%s' from %s"
-msgstr "PCI ID '%s'ను %sనుండి తీసివేయుటలో విఫలమైంది"
-
 msgid "Failed to remove domain managed save image"
 msgstr "డొమైన్ యొక్క నిర్వాహిత దాపు చిత్రం తీసివేతలో వైఫల్యం"
 
@@ -4449,10 +4299,6 @@ msgstr "నిర్వాహిత దాపు ఫైల్ '%s' తీసి�
 #, c-format
 msgid "Failed to remove managed save image for domain %s"
 msgstr "డొమైన్ %s కొరకు నిర్వాహిత దాపు చిత్రం తొలగింపునకు విఫలమైంది"
-
-#, c-format
-msgid "Failed to remove slot for PCI device '%s' from %s"
-msgstr "PCI పరికరం '%s' కొరకు %s  నుండి స్లాట్ తీసివేయుటకు విఫలమైంది"
 
 #, c-format
 msgid "Failed to remove storage volume '%s'(%s)"
@@ -4707,10 +4553,6 @@ msgstr "స్నాప్‌షాట్ తీసుకొనుటకు వ�
 #, c-format
 msgid "Failed to terminate process %lld with SIG%s"
 msgstr "ప్రోసెస్ %lld ను SIG%s తో అంతంచేయుటకు విఫలమైంది"
-
-#, c-format
-msgid "Failed to trigger a re-probe for PCI device '%s'"
-msgstr "PCI పరికరము '%s'కు తిరిగి-ప్రోబ్ చేయుటకు ట్రిగ్గర్ చేయుటలో విఫలమైంది"
 
 #, c-format
 msgid "Failed to truncate file '%s'"
@@ -5430,13 +5272,6 @@ msgstr "చెల్లని ధృవీకరణ పద్దతి: '%s'"
 msgid "Invalid back reference"
 msgstr "చెల్లని బాక్ రిఫరెన్స్"
 
-msgid "Invalid base64 data"
-msgstr "చెల్లని base64 డాటా"
-
-#, c-format
-msgid "Invalid boolean value for field '%s'"
-msgstr "క్షేత్రం '%s' కొరకు చెల్లని బూలియన్ విలువ"
-
 #, c-format
 msgid "Invalid bridge mac address '%s' in network '%s'"
 msgstr "చెల్లని బ్రిడ్జ్ mac చిరునామా '%s' నెట్వర్క్ '%s' నందు"
@@ -5734,10 +5569,6 @@ msgid ""
 msgstr "MAC చిరునామా '%s' ను నెట్వర్కు '%s' IPv6 స్టాటిక్ అతిధేయ నిర్వచనం నందు తెలుపుట చెల్లదు"
 
 #, c-format
-msgid "Invalid type '%s' requested for parameter '%s', actual type is '%s'"
-msgstr "చెల్లని రకం '%s' పారామితి '%s' కొరకు అభ్యర్ధించినది, యథార్ధ రకం '%s'"
-
-#, c-format
 msgid ""
 "Invalid use of 'floor' on interface with MAC address %s - network '%s' has "
 "no inbound QoS set"
@@ -5748,26 +5579,6 @@ msgstr ""
 #, c-format
 msgid "Invalid value '%s' for VMX entry '%s'"
 msgstr "చెల్లని విలువ '%s' VMX ప్రవేశం '%s' కొరకు"
-
-#, c-format
-msgid "Invalid value for field '%s': expected double"
-msgstr "క్షేత్రం '%s' కొరకు చెల్లని విలువ: కావలసింది double"
-
-#, c-format
-msgid "Invalid value for field '%s': expected int"
-msgstr "క్షేత్రం '%s' కొరకు చెల్లని విలువ: కావలసింది int"
-
-#, c-format
-msgid "Invalid value for field '%s': expected long long"
-msgstr "క్షేత్రం '%s' కొరకు చెల్లని విలువ: కావలసింది long long"
-
-#, c-format
-msgid "Invalid value for field '%s': expected unsigned int"
-msgstr "క్షేత్రం '%s' కొరకు చెల్లని విలువ: కావలసింది unsigned int"
-
-#, c-format
-msgid "Invalid value for field '%s': expected unsigned long long"
-msgstr "క్షేత్రం '%s' కొరకు చెల్లని విలువ: కావలసింది unsigned long long"
 
 msgid "Invalid value for number of CPUs to show"
 msgstr "ఎన్ని CPU లు చూపాలి అనే సంఖ్యకు చెల్లని విలువ"
@@ -6461,10 +6272,6 @@ msgid "Multiqueue devices are not supported on this system"
 msgstr "ఈ వ్యవస్థపైన మల్టీక్యూ పరికరాలు తోడ్పాటునీయవు"
 
 #, c-format
-msgid "Multiqueue network is not supported for: %s"
-msgstr "మల్టీక్యూ నెట్వర్కు దీని కొరకు తోడ్పాటునీయదు: %s"
-
-#, c-format
 msgid "Must use --rename or --clone to change %s to %s"
 msgstr "%s ను %s కు మార్చుటకు తప్పకుండా --rename లేదా --clone వుపయోగించాలి"
 
@@ -6480,10 +6287,6 @@ msgstr "NULL NetworkDef"
 #, c-format
 msgid "NULL string parameter '%s'"
 msgstr "NULL స్ట్రింగ్ పారామితి '%s'"
-
-#, c-format
-msgid "NULL value for field '%s'"
-msgstr "క్షేత్రం '%s' కొరకు NULL విలువ"
 
 msgid "NUMA cell number"
 msgstr "NUMA సెల్ సంఖ్య"
@@ -6673,9 +6476,6 @@ msgstr "ఎటువంటి JSON పార్శర్ అభివృద్�
 
 msgid "No PCI buses available"
 msgstr "ఏ PCI బస్‌లు అందుబాటులో లేవు"
-
-msgid "No UNIX process ID available"
-msgstr "ఏ యునిక్స్ క్రమణం ఐడి అందుబాటులో లేదు"
 
 #, c-format
 msgid "No active operation on device: %s"
@@ -7427,9 +7227,6 @@ msgid ""
 "Query parameter 'no_verify' has unexpected value '%s' (should be 0 or 1)"
 msgstr "క్వరీ పారామితి 'no_verify' అనుకోని విలువ '%s' కలిగివుంది (0 లేదా 1 అయివుండాలి)"
 
-msgid "Query parameter 'no_verify' has unexpected value (should be 0 or 1)"
-msgstr "క్వరీ పారామితి 'no_verify' అనునది అనుకోని విలువ కలిగివుంది (0 లేదా 1 కావాలి)"
-
 #, c-format
 msgid ""
 "Query parameter 'proxy' contains unexpected type '%s' (should be (http|"
@@ -7907,9 +7704,6 @@ msgstr "ఈ సాకెట్ పైన ఫైల్ వివరణిలన�
 msgid "Serial port index %d out of [0..3] range"
 msgstr "వరుస పోర్టు విషయసూచి %d అనునది [0..3] విస్తృతి దాటివుంది"
 
-msgid "Server name not in URI"
-msgstr "సేవిక పేరు URI నందు లేదు"
-
 msgid "Servname not supported for ai_socktype"
 msgstr "ai_socktype కు సేవాపేరు తోడ్పాటునీయదు"
 
@@ -8386,14 +8180,6 @@ msgstr "లక్ష్యపు నియంత్రిక రకం %s మూ
 #, c-format
 msgid "Target controller vectors %d does not match source %d"
 msgstr "లక్ష్యపు నియంత్రిక శీర్షాలు %d మూలం  %d తో సరిపోలడంలేదు"
-
-#, c-format
-msgid ""
-"Target device PCI address %04x:%02x:%02x.%02x does not match source %04x:"
-"%02x:%02x.%02x"
-msgstr ""
-"లక్ష్యపు పరికరం PCI చిరునామా %04x:%02x:%02x.%02x మూలం %04x:%02x:%02x.%02x తో "
-"సరిపోలడంలేదు"
 
 #, c-format
 msgid "Target device address type %s does not match source %s"
@@ -9343,9 +9129,6 @@ msgstr "DBus సెషన్ బస్ అనుసంధానం పొంద�
 msgid "Unable to get DBus system bus connection: %s"
 msgstr "DBus సిస్టమ్ బస్ అనుసంధానం పొందలేక పోయింది: %s"
 
-msgid "Unable to get Host CPU set"
-msgstr "అతిధేయ CPU సమితి పొందలేదు"
-
 #, c-format
 msgid "Unable to get LVM key for %s"
 msgstr "%s కొరకు LVM కీ పొందలేదు"
@@ -9403,9 +9186,6 @@ msgstr "డొమైన్ స్థితిని పొందలేక పో
 
 msgid "Unable to get free slot number"
 msgstr "ఖాళీ స్లాట్ సంఖ్య పొందలేదు"
-
-msgid "Unable to get host metric Information"
-msgstr "అతిధేయ మెట్రిక్ సమాచారం పొందలేక పోయింది"
 
 #, c-format
 msgid "Unable to get index for interface %s"
@@ -9634,13 +9414,6 @@ msgstr "క్లాస్ ఐడి '%s' పార్స్ చేయలేక 
 #, c-format
 msgid "Unable to parse current SELinux context '%s'"
 msgstr "ప్రస్తుత SELinux సందర్భము '%s' ను పార్శ్ చేయలేదు"
-
-#, c-format
-msgid "Unable to parse devaddr parameter '%s'"
-msgstr "devaddr పారామితి '%s'ను పార్శ్ చేయలేక పోయింది"
-
-msgid "Unable to parse given mac address"
-msgstr "ఇచ్చిన mac చిరునామా పార్స్ చేయలేదు"
 
 msgid "Unable to parse integer parameter"
 msgstr "పూర్ణాంకం పారామితి పార్స్ చేయలేదు"
@@ -9919,13 +9692,6 @@ msgstr "లక్ష్యం %s స్టాట్ బైండ్‌కు చ
 #, c-format
 msgid "Unable to truncate %s"
 msgstr "%s ట్రంకేట్ చేయలేకపోయింది"
-
-msgid "Unable to unescape command"
-msgstr "ఆదేశం అన్‌ఎస్కేప్ చేయలేక పోయింది"
-
-#, c-format
-msgid "Unable to use MAC address starting with reserved value 0xFE - '%s' - "
-msgstr "రిజర్వుడ్ విలువ 0xFE తో ప్రారంభమగు MAC చిరునామా వుపయోగించలేదు - '%s' - "
 
 #, c-format
 msgid "Unable to verify TLS peer: %s"
@@ -11068,11 +10834,6 @@ msgstr "బూట్ క్రమం '%s' వొక పరికరం కన్
 msgid "booted"
 msgstr "బూటైన"
 
-msgid ""
-"booting from assigned devices is only supported for PCI, USB and SCSI devices"
-msgstr ""
-"అప్పగించిన పరికరాలనుండి బూట్ అగుట PCI, USB మరియు SCSI పరికరాలకు మాత్రమే తోడ్పాటునిచ్చును "
-
 #, c-format
 msgid "bridge %s doesn't exist"
 msgstr "బ్రిడ్జ్ %s లేదు"
@@ -11532,10 +11293,6 @@ msgstr "అస్థిర డొమైన్ యొక్క స్నాప్
 
 msgid "cannot halt after transient domain snapshot"
 msgstr "అస్థిర డొమైన్ స్నాప్‌షాట్ తరువాత హాల్ట్ చేయలేదు"
-
-#, c-format
-msgid "cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"
-msgstr "మల్టీఫంక్షన్ PCI పరికరం హాట్ అన్‌ప్లగ్ చేయలేదు: %.4x:%.2x:%.2x.%.1x"
 
 #, c-format
 msgid "cannot initialize cert object: %s"
@@ -12834,10 +12591,6 @@ msgid "dev->name buffer overflow: %.3d:%.3d"
 msgstr "dev->name బఫర్ overflow: %.3d:%.3d"
 
 #, c-format
-msgid "dev->name buffer overflow: %.4x:%.2x:%.2x.%.1x"
-msgstr "dev->name బఫర్ దాటినది: %.4x:%.2x:%.2x.%.1x"
-
-#, c-format
 msgid "device %s iommu_group symlink %s has invalid group number %s"
 msgstr "పరికరం %s iommu_group సిమ్‌లింక్ %s అనునది చెల్లని సమూహ సంఖ్య %s"
 
@@ -13991,9 +13744,6 @@ msgstr "ఫైలు '%s'కు వ్రాయుటలో విఫలమై�
 msgid "fatal signal %d"
 msgstr "ఫాటల్ సంకేతం %d"
 
-msgid "fd and fdset must be valid"
-msgstr "fd మరియు fdset తప్పకుండా చెల్లునది కావాలి"
-
 msgid "fd must be valid"
 msgstr "fd తప్పకుండా చెల్లునది కావాలి"
 
@@ -14269,10 +14019,6 @@ msgid "host device already exists"
 msgstr "అతిధేయ పరికరం యిప్పటికే వుంది"
 
 #, c-format
-msgid "host pci device %.4x:%.2x:%.2x.%.1x not found"
-msgstr "హోస్టు pci పరికరము %.4x:%.2x:%.2x.%.1x కనుగొనబడలేదు"
-
-#, c-format
 msgid "host reports map buffer length exceeds maximum: %d > %d"
 msgstr "హోస్టు నివేదికల మాప్ బఫర్ పొడవు గరిష్టమును మించుతుంది: %d > %d"
 
@@ -14368,9 +14114,6 @@ msgstr "XML డంప్‌నందు రక్షణ సున్నితమ
 
 msgid "includes the password into the connection URI if available"
 msgstr "అందుబాటులోవుంటే అనుసంధానం URI నకు సంకేతపదం చేర్చును"
-
-msgid "incomplete return information"
-msgstr "అసంపూర్ణ తిప్పియిచ్చు సమాచారం"
 
 #, c-format
 msgid "incomplete save header in '%s'"
@@ -14619,10 +14362,6 @@ msgstr "చెల్లని ఆర్గుమెంట్ అందివ్�
 #, c-format
 msgid "invalid argument: %s"
 msgstr "చెల్లని ఆర్గుమెంట్: %s"
-
-#, c-format
-msgid "invalid base64 in '%s'"
-msgstr "'%s' నందు చెల్లని base64"
 
 msgid "invalid catchup limit"
 msgstr "చెల్లని క్యాచప్ పరిమితి"
@@ -17901,10 +17640,6 @@ msgstr "ఈ నెట్వర్కు ఇప్పటికే ఉంది"
 msgid "this platform is missing dlopen"
 msgstr "ఈ ప్లాట్‌ఫాం dlopen కలిగిలేదు"
 
-#, c-format
-msgid "this qemu doesn't support RNG device type '%s'"
-msgstr "ఈ qemu అనునది RNG పరికర రకం '%s' కు తోడ్పాటునీయదు"
-
 msgid "this qemu doesn't support the rng-egd backend"
 msgstr "ఈ qemu అనునది rng-egd బ్యాకెండ్‌కు తోడ్పాటునీయదు"
 
@@ -18283,10 +18018,6 @@ msgid "unable to unload already unloaded profile"
 msgstr "ఇప్పటికే అన్‌లోడ్ చేసిన ప్రొఫైల్‌ను అన్‌లోడ్ చేయలేదు"
 
 #, c-format
-msgid "unable to visit backing chain file %s"
-msgstr "బాకింగ్ చైన్ ఫైల్ %s దర్శించలేకపోయింది"
-
-#, c-format
 msgid "unable to wait for process %lld"
 msgstr "ప్రోసెస్ %lld కొరకు వేచివుండలేదు"
 
@@ -18344,14 +18075,6 @@ msgstr "అనుకోని %s చర్య: %d"
 #, c-format
 msgid "unexpected OpenVZ URI path '%s', try openvz:///system"
 msgstr "అనుకోని OpenVZ URI పాత్ '%s', openvz:///system ప్రయత్నించుము"
-
-#, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///session"
-msgstr "అనుకోని QEMU URI పాత్ '%s', qemu:///session ప్రయత్నించుము"
-
-#, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///system"
-msgstr "అనుకోని QEMU URI పాత్ '%s',  qemu:///system ప్రయత్నించుము"
 
 #, c-format
 msgid "unexpected accessmode %d"
@@ -18840,14 +18563,6 @@ msgstr "తెలియని డ్రైవర్ ఫార్మాట్ వ
 #, c-format
 msgid "unknown driver name '%s'"
 msgstr "తెలియని డ్రైవర్ పేరు '%s'"
-
-#, c-format
-msgid "unknown driver path '%s' specified (try vbox:///session)"
-msgstr "తెలియని డ్రైవర్ పాత్ '%s' తెలుపబడింది (vbox:///session ప్రయత్నించండి)"
-
-#, c-format
-msgid "unknown driver path '%s' specified (try vbox:///system)"
-msgstr "తెలియని డ్రైవర్ పాత్ '%s' తెలుపబడింది ( vbox:///system ప్రయత్నించండి)"
 
 msgid "unknown error"
 msgstr "తెలియని దోషము"

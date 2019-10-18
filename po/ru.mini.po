@@ -16,9 +16,9 @@
 # yuliya <ypoyarko@redhat.com>, 2016. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.6.0\n"
+"Project-Id-Version: libvirt 5.9.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-07-30 11:31+0100\n"
+"POT-Creation-Date: 2019-10-18 13:39+0100\n"
 "PO-Revision-Date: 2016-03-31 11:42+0000\n"
 "Last-Translator: yuliya <ypoyarko@redhat.com>\n"
 "Language-Team: Russian (http://www.transifex.com/projects/p/libvirt/language/"
@@ -60,43 +60,6 @@ msgid ""
 "  Default paths:\n"
 "\n"
 "    Configuration file (unless overridden by -f):\n"
-"      $XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
-"\n"
-"    Sockets:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
-"\n"
-"    TLS:\n"
-"      CA certificate:     $HOME/.pki/libvirt/cacert.pem\n"
-"      Server certificate: $HOME/.pki/libvirt/servercert.pem\n"
-"      Server private key: $HOME/.pki/libvirt/serverkey.pem\n"
-"\n"
-"    PID file:\n"
-"      $XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
-"\n"
-msgstr ""
-"\n"
-"Стандартные пути:\n"
-"\n"
-"Файл конфигурации (если не переопределен с помощью -f):\n"
-"$XDG_CONFIG_HOME/libvirt/libvirtd.conf\n"
-"\n"
-"Сокеты:\n"
-"$XDG_RUNTIME_DIR/libvirt/libvirt-sock\n"
-"\n"
-"TLS:\n"
-"Сертификат CA:     $HOME/.pki/libvirt/cacert.pem\n"
-"Сертификат сервера: $HOME/.pki/libvirt/servercert.pem\n"
-"Закрытый ключ сервера: $HOME/.pki/libvirt/serverkey.pem\n"
-"\n"
-"Файл PID:\n"
-"$XDG_RUNTIME_DIR/libvirt/libvirtd.pid\n"
-"\n"
-
-msgid ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
 "      $XDG_CONFIG_HOME/libvirt/virtlockd.conf\n"
 "\n"
 "    Sockets:\n"
@@ -117,74 +80,6 @@ msgstr ""
 "\n"
 "Файл PID:\n"
 "$XDG_RUNTIME_DIR/libvirt/virtlockd.pid\n"
-"\n"
-
-#, c-format
-msgid ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
-"      %s\n"
-"\n"
-"    Sockets:\n"
-"      %s\n"
-"      %s\n"
-"\n"
-"    TLS:\n"
-"      CA certificate:     %s\n"
-"      Server certificate: %s\n"
-"      Server private key: %s\n"
-"\n"
-"    PID file (unless overridden by -p):\n"
-"      %s/run/libvirtd.pid\n"
-"\n"
-msgstr ""
-"\n"
-"Стандартные пути:\n"
-"\n"
-"Файл конфигурации (если не переопределен с помощью -f):\n"
-"%s\n"
-"\n"
-"Сокеты:\n"
-"%s\n"
-"%s\n"
-"\n"
-"TLS:\n"
-"Cертификат CA:     %s\n"
-"Сертификат сервера: %s\n"
-"Закрытый ключ сервера: %s\n"
-"\n"
-"Файл PID  (если не переопределен с помощью  -p):\n"
-"%s\n"
-"\n"
-
-#, c-format
-msgid ""
-"\n"
-"  Default paths:\n"
-"\n"
-"    Configuration file (unless overridden by -f):\n"
-"      %s/libvirt/virtlockd.conf\n"
-"\n"
-"    Sockets:\n"
-"      %s/run/libvirt/virtlockd-sock\n"
-"\n"
-"    PID file (unless overridden by -p):\n"
-"      %s/run/virtlockd.pid\n"
-"\n"
-msgstr ""
-"\n"
-" Список стандартных путей:\n"
-"\n"
-" Файл конфигурации (если не переопределен с помощью -f):\n"
-"  %s/libvirt/virtlockd.conf\n"
-"\n"
-" Сокеты:\n"
-"  %s/run/libvirt/virtlockd-sock\n"
-"\n"
-" Файл PID (если не переопределен с помощью -p):\n"
-"  %s/run/virtlockd.pid\n"
 "\n"
 
 msgid ""
@@ -288,39 +183,6 @@ msgid ""
 msgstr ""
 "\n"
 "Состояние домена %s сохранено средствами libvirt\n"
-
-#, c-format
-msgid ""
-"\n"
-"Usage:\n"
-"  %s [options]\n"
-"\n"
-"Options:\n"
-"  -h | --help            Display program help:\n"
-"  -v | --verbose         Verbose messages.\n"
-"  -d | --daemon          Run as a daemon & write PID file.\n"
-"  -l | --listen          Listen for TCP/IP connections.\n"
-"  -t | --timeout <secs>  Exit after timeout period.\n"
-"  -f | --config <file>   Configuration file.\n"
-"  -V | --version         Display version information.\n"
-"  -p | --pid-file <file> Change name of PID file.\n"
-"\n"
-"libvirt management daemon:\n"
-msgstr ""
-"\n"
-"Формат:\n"
-"  %s [параметры]\n"
-"\n"
-"Параметры:\n"
-"  -v | --verbose         подробный вывод.\n"
-"  -d | --daemon          выполнение в режиме службы и запись в файл PID.\n"
-"  -l | --listen          прослушивание  соединений TCP/IP.\n"
-"  -t | --timeout <сек.>  выход после истечения периода ожидания.\n"
-"  -f | --config <файл>   файл конфигурации.\n"
-"     | --version         версия программы.\n"
-"  -p | --pid-file <файл> изменение имени файла PID.\n"
-"\n"
-"служба управления libvirt:\n"
 
 #, c-format
 msgid ""
@@ -912,9 +774,6 @@ msgstr "Выделение:"
 
 msgid "An error occurred, but the cause is unknown"
 msgstr "Произошла ошибка (неизвестная причина)."
-
-msgid "An explicit URI must be provided when setuid"
-msgstr "При использовании setuid необходимо явно указать URI"
 
 msgid "An explicit disk format must be specified"
 msgstr "Необходимо явно определить формат диска"
@@ -1781,12 +1640,6 @@ msgstr "Ошибка записи данных"
 #, c-format
 msgid "Cannot write device.map '%s'"
 msgstr "Не удалось записать device.map «%s»"
-
-msgid "Capabilities not available"
-msgstr "Не удалось получить список возможностей"
-
-msgid "Capabilities not found"
-msgstr "записей характеристик не обнаружено"
 
 msgid "Capacity cannot be empty."
 msgstr "Необходимо определить емкость."
@@ -2657,33 +2510,6 @@ msgstr "Ошибка записи в поток"
 msgid "Couldn't create lock file for device '%s' in path '%s'"
 msgstr "Не удалось создать файл блокировки для устройства «%s» в  «%s»"
 
-msgid "Couldn't fetch Domain Information"
-msgstr "Не удалось получить информацию о домене"
-
-msgid "Couldn't fetch Node Information"
-msgstr "Не удалось получить информацию об узле"
-
-msgid "Couldn't get VM information from XML"
-msgstr "Не удалось получить информацию о виртуальной машине из XML"
-
-msgid "Couldn't get VM record"
-msgstr "Не удалось получить запись виртуальной машины"
-
-msgid "Couldn't get host metrics"
-msgstr "Не удалось получить статистику хоста"
-
-msgid "Couldn't get host metrics - memory information"
-msgstr "Не удалось получить статистику памяти хоста"
-
-msgid "Couldn't get the Domain Pointer"
-msgstr "Не удалось получить указатель домена"
-
-msgid "Couldn't get version info"
-msgstr "Не удалось определить версию"
-
-msgid "Couldn't parse version info"
-msgstr "Не удалось получить версию"
-
 #, c-format
 msgid "Couldn't read volume target path '%s'"
 msgstr "Не удалось прочитать путь к целевому тому: «%s»"
@@ -3093,12 +2919,6 @@ msgstr "Sysinfo домена «%s» отсутствует"
 msgid "Domain Events"
 msgstr "События доменов"
 
-msgid "Domain Pointer is invalid"
-msgstr "Недопустимый указатель домена"
-
-msgid "Domain Pointer not valid"
-msgstr "Недопустимый указатель домена"
-
 msgid ""
 "Domain XML doesn't contain any disks, cannot deduce datastore and path for "
 "VMX file"
@@ -3175,9 +2995,6 @@ msgstr "Домен приостановлен или выключен"
 msgid "Domain name contains invalid escape sequence"
 msgstr "Имя домена содержит недопустимую управляющую последовательность"
 
-msgid "Domain name is not unique"
-msgstr "Имя домена не является уникальным"
-
 msgid "Domain not found"
 msgstr "Домен не найден"
 
@@ -3232,9 +3049,6 @@ msgstr "Заголовок домена обновлен"
 
 msgid "Domain:"
 msgstr "Домен:"
-
-msgid "DomainID can't fit in 32 bits"
-msgstr "Длина DomainID выходит за пределы 32 бит"
 
 msgid "Done.\n"
 msgstr "Завершено.\n"
@@ -3623,10 +3437,6 @@ msgid "Failed"
 msgstr "Ошибка"
 
 #, c-format
-msgid "Failed opening %s"
-msgstr "Не удалось открыть %s"
-
-#, c-format
 msgid "Failed set TLS x509 credentials: %s"
 msgstr "Не удалось установить учетные данные x509 TLS: %s"
 
@@ -3641,19 +3451,8 @@ msgstr "Не удалось получить файл PID «%s»"
 msgid "Failed to add IP address %s to IP address cache for interface %s"
 msgstr "Не удалось добавить %s в кэш адресов IP интерфейса %s"
 
-#, c-format
-msgid "Failed to add PCI device ID '%s' to %s"
-msgstr "Не удалось добавить идентификатор PCI-устройства «%s» в %s"
-
-#, c-format
-msgid "Failed to add slot for PCI device '%s' to %s"
-msgstr "Не удалось добавить слот для PCI-устройства «%s» в %s"
-
 msgid "Failed to allocate XML buffer"
 msgstr "Не удалось выделить буфер XML"
-
-msgid "Failed to allocate memory"
-msgstr "Не удалось выделить память"
 
 msgid "Failed to allocate memory for path"
 msgstr "Не удалось выделить память для пути"
@@ -3664,9 +3463,6 @@ msgstr "Не удалось выделить память для каталог�
 
 msgid "Failed to allocate tty"
 msgstr "Не удалось выделить tty"
-
-msgid "Failed to allocate xen session"
-msgstr "Не удалось создать сеанс xen"
 
 #, c-format
 msgid "Failed to apply capabilities: %d"
@@ -3689,10 +3485,6 @@ msgstr "Не удалось автоматически запустить вир
 #, c-format
 msgid "Failed to autostart storage pool '%s': %s"
 msgstr "Не удалось автоматически запустить пул «%s»: %s"
-
-#, c-format
-msgid "Failed to bind PCI device '%s' to %s"
-msgstr "Не удалось привязать PCI-устройство «%s» к %s"
 
 #, c-format
 msgid "Failed to bind mount directory %s to %s"
@@ -3826,9 +3618,6 @@ msgstr "Не удалось создать контекст клиента SASL:
 
 msgid "Failed to create XML"
 msgstr "Не удалось создать XML"
-
-msgid "Failed to create XML conf object"
-msgstr "Не удалось создать объект конфигурации XML"
 
 msgid "Failed to create XML config object"
 msgstr "Не удалось создать объект конфигурации"
@@ -4585,10 +4374,6 @@ msgstr ""
 msgid "Failed to release port %d"
 msgstr "Не удалось освободить порт %d"
 
-#, c-format
-msgid "Failed to remove PCI ID '%s' from %s"
-msgstr "Ошибка удаления PCI ID «%s» из %s"
-
 msgid "Failed to remove domain managed save image"
 msgstr "Ошибка удаления служебного образа памяти домена"
 
@@ -4599,10 +4384,6 @@ msgstr "Ошибка удаления файла «%s»"
 #, c-format
 msgid "Failed to remove managed save image for domain %s"
 msgstr "Ошибка удаления образа домена %s"
-
-#, c-format
-msgid "Failed to remove slot for PCI device '%s' from %s"
-msgstr "Не удалось удалить слот для PCI-устройства «%s» в %s"
 
 #, c-format
 msgid "Failed to remove storage volume '%s'(%s)"
@@ -4850,10 +4631,6 @@ msgstr "Не удалось создать снимок: %s"
 #, c-format
 msgid "Failed to terminate process %lld with SIG%s"
 msgstr "Не удалось прервать выполнение процесса %lld с SIG%s"
-
-#, c-format
-msgid "Failed to trigger a re-probe for PCI device '%s'"
-msgstr "Не удалось включить повторную проверку PCI-устройства «%s»"
 
 #, c-format
 msgid "Failed to undefine bridge interface %s"
@@ -5579,13 +5356,6 @@ msgstr "Недопустимый метод аутентификации:  «%s�
 msgid "Invalid back reference"
 msgstr "Недопустимая обратная ссылка"
 
-msgid "Invalid base64 data"
-msgstr "Недопустимые данные base64"
-
-#, c-format
-msgid "Invalid boolean value for field '%s'"
-msgstr "Недопустимое логическое значение поля «%s»"
-
 #, c-format
 msgid "Invalid bridge mac address '%s' in network '%s'"
 msgstr "Недопустимый MAC-адрес моста «%s» в сети «%s»"
@@ -5910,10 +5680,6 @@ msgstr ""
 "сети «%s» "
 
 #, c-format
-msgid "Invalid type '%s' requested for parameter '%s', actual type is '%s'"
-msgstr "Запрошен недопустимый тип («%s») параметра «%s». Ожидается «%s»."
-
-#, c-format
 msgid ""
 "Invalid use of 'floor' on interface with MAC address %s - network '%s' has "
 "no inbound QoS set"
@@ -5928,26 +5694,6 @@ msgstr "Недопустимое значение «%s» для «%s»"
 #, c-format
 msgid "Invalid value '%s' for VMX entry '%s'"
 msgstr "Недопустимое значение «%s» для записи VMX «%s»"
-
-#, c-format
-msgid "Invalid value for field '%s': expected double"
-msgstr "Недопустимое значение поля «%s», ожидается двойное число"
-
-#, c-format
-msgid "Invalid value for field '%s': expected int"
-msgstr "Недопустимое значение поля «%s», ожидается целое число"
-
-#, c-format
-msgid "Invalid value for field '%s': expected long long"
-msgstr "Недопустимое значение поля «%s», ожидается длинное число"
-
-#, c-format
-msgid "Invalid value for field '%s': expected unsigned int"
-msgstr "Недопустимое значение поля «%s», ожидается целое число без знака"
-
-#, c-format
-msgid "Invalid value for field '%s': expected unsigned long long"
-msgstr "Недопустимое значение поля «%s», ожидается длинное число без знака"
 
 msgid "Invalid value for number of CPUs to show"
 msgstr "Недопустимое количество анализируемых процессоров"
@@ -6608,10 +6354,6 @@ msgstr "NULL NetworkDef"
 msgid "NULL string parameter '%s'"
 msgstr "Параметр «%s» имеет значение NULL."
 
-#, c-format
-msgid "NULL value for field '%s'"
-msgstr "Поле «%s» содержит NULL"
-
 msgid "NUMA cell number"
 msgstr "номер ячейки NUMA"
 
@@ -6808,12 +6550,6 @@ msgstr "Нет доступных реализаций для разбора JSO
 
 msgid "No PCI buses available"
 msgstr "Нет шин PCI"
-
-msgid "No UNIX process ID available"
-msgstr "Нет идентификатора процесса UNIX"
-
-msgid "No UNIX process start time available"
-msgstr "Нет данных о времени начала процесса UNIX"
 
 msgid "No address associated with hostname"
 msgstr "С этим именем узла не связан ни один адрес"
@@ -7518,9 +7254,6 @@ msgid ""
 msgstr ""
 "Неожиданное значение параметра «no_verify»: «%s» (должно быть 0 или 1)."
 
-msgid "Query parameter 'no_verify' has unexpected value (should be 0 or 1)"
-msgstr "Недопустимое значение параметра «no_verify» (должно быть 0 или 1)."
-
 #, c-format
 msgid ""
 "Query parameter 'proxy' contains unexpected type '%s' (should be (http|"
@@ -7942,9 +7675,6 @@ msgstr "Позволяет отправить сигналы процессам 
 #, c-format
 msgid "Serial port index %d out of [0..3] range"
 msgstr "Индекс последовательного порта %d выходит за пределы диапазона [0...3]"
-
-msgid "Server name not in URI"
-msgstr "Имя сервера не содержит URI"
 
 msgid "Servname not supported for ai_socktype"
 msgstr "ai_socktype не поддерживает servname"
@@ -8393,14 +8123,6 @@ msgstr "%s не соответствует типу исходного конт�
 #, c-format
 msgid "Target controller vectors %d does not match source %d"
 msgstr "%d не соответствует числу векторов исходного контроллера %d"
-
-#, c-format
-msgid ""
-"Target device PCI address %04x:%02x:%02x.%02x does not match source %04x:"
-"%02x:%02x.%02x"
-msgstr ""
-"PCI-адрес %04x:%02x:%02x.%02x не соответствует адресу исходного устройства "
-"%04x:%02x:%02x.%02x"
 
 #, c-format
 msgid "Target device address type %s does not match source %s"
@@ -9399,9 +9121,6 @@ msgstr "Не удалось получить подключение к шине 
 msgid "Unable to get DBus system bus connection: %s"
 msgstr "Не удалось получить подключение системной шины DBus: %s"
 
-msgid "Unable to get Host CPU set"
-msgstr "Не удалось получить список процессоров хоста"
-
 #, c-format
 msgid "Unable to get LVM key for %s"
 msgstr "Не удалось получить ключ LVM для %s"
@@ -9497,9 +9216,6 @@ msgstr "Не удалось получить идентификатор жест
 #, c-format
 msgid "Unable to get hardDisk Id, rc=%08x"
 msgstr "Не удалось получить идентификатор жесткого диска, rc=%08x"
-
-msgid "Unable to get host metric Information"
-msgstr "Не удалось получить статистику хоста"
 
 #, c-format
 msgid "Unable to get index for interface %s"
@@ -9761,13 +9477,6 @@ msgstr "Не удалось выполнить разбор идентифика
 msgid "Unable to parse current SELinux context '%s'"
 msgstr "Не удалось выполнить разбор текущего контекста SELinux «%s»"
 
-#, c-format
-msgid "Unable to parse devaddr parameter '%s'"
-msgstr "Не удалось разобрать параметр devaddr «%s»"
-
-msgid "Unable to parse given mac address"
-msgstr "Не удалось разобрать MAC-адрес"
-
 msgid "Unable to parse integer parameter"
 msgstr "Не удалось извлечь целое значение"
 
@@ -10018,11 +9727,6 @@ msgstr "Не удалось усечь %s"
 #, c-format
 msgid "Unable to unregister machine, rc=%08x"
 msgstr "Не удалось отменить регистрацию машины, rc=%08x"
-
-#, c-format
-msgid "Unable to use MAC address starting with reserved value 0xFE - '%s' - "
-msgstr ""
-"МАС-адрес  «%s» не может начинаться с зарезервированного значения  0xFE."
 
 #, c-format
 msgid ""
@@ -11157,10 +10861,6 @@ msgstr "порядок загрузки «%s» используется для �
 
 msgid "booted"
 msgstr "загружен"
-
-msgid ""
-"booting from assigned devices is only supported for PCI, USB and SCSI devices"
-msgstr "загрузка допускается только с устройств PCI, USB и SCSI "
 
 #, c-format
 msgid "bridge %s doesn't exist"
@@ -12792,10 +12492,6 @@ msgid "dev->name buffer overflow: %.3d:%.3d"
 msgstr "переполнение буфера dev->name: %.3d:%.3d"
 
 #, c-format
-msgid "dev->name buffer overflow: %.4x:%.2x:%.2x.%.1x"
-msgstr "переполнение буфера dev->name: %.4x:%.2x:%.2x.%.1x"
-
-#, c-format
 msgid "device %s iommu_group symlink %s has invalid group number %s"
 msgstr ""
 "Устройство %s: символьная ссылка iommu_group %s содержит недопустимый номер "
@@ -14252,10 +13948,6 @@ msgid "host doesn't support passthrough of host PCI devices"
 msgstr "хост не поддерживает проброс устройств PCI"
 
 #, c-format
-msgid "host pci device %.4x:%.2x:%.2x.%.1x not found"
-msgstr "PCI-устройство узла %.4x:%.2x:%.2x.%.1x не найдено"
-
-#, c-format
 msgid "host reports map buffer length exceeds maximum: %d > %d"
 msgstr "длина буфера соответствий превышает максимально допустимую: %d > %d"
 
@@ -14663,10 +14355,6 @@ msgstr "Недопустимый аргумент"
 msgid "invalid argument: %s"
 msgstr "недопустимый аргумент: %s"
 
-#, c-format
-msgid "invalid base64 in '%s'"
-msgstr "недопустимое значение base64 в «%s»"
-
 msgid "invalid catchup limit"
 msgstr "недопустимое значение «limit» в строке «catchup»"
 
@@ -15018,11 +14706,6 @@ msgstr "libvirt не был скомпилирован с помощью libpcap
 
 msgid "libvirt-guests is configured not to start any guests on boot"
 msgstr "Настройки libvirt-guests не разрешают запуск гостей при загрузке"
-
-msgid "libvirt.so is not safe to use from setuid programs"
-msgstr ""
-"libvirt.so не может безопасно использоваться из программ с установленным "
-"битом setuid"
 
 msgid "libvirtd quit during handshake"
 msgstr "libvirtd завершил работу во время приветствия"
@@ -17965,10 +17648,6 @@ msgstr "сеть уже существует"
 msgid "this platform is missing dlopen"
 msgstr "эта платформа не поддерживает dlopen"
 
-#, c-format
-msgid "this qemu doesn't support RNG device type '%s'"
-msgstr "QEMU не поддерживает устройства RNG типа «%s»"
-
 msgid "this qemu doesn't support the rng-random backend"
 msgstr "QEMU не поддерживает rng-random"
 
@@ -18354,10 +18033,6 @@ msgstr "не удалось собрать статистику для диск�
 msgid "unable to unload already unloaded profile"
 msgstr "невозможно выгрузить уже выгруженный профиль"
 
-#, c-format
-msgid "unable to visit backing chain file %s"
-msgstr "не удалось получить файл резервной цепочки %s"
-
 msgid "unable to wait on console condition"
 msgstr "не удалось дождаться выполнения условия в консоли"
 
@@ -18406,14 +18081,6 @@ msgstr "непредвиденное действие %s: %d"
 #, c-format
 msgid "unexpected OpenVZ URI path '%s', try openvz:///system"
 msgstr "непредвиденный путь OpenVZ «%s» (попробуйте openvz:///system)"
-
-#, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///session"
-msgstr "Непредвиденный URI-путь QEMU: «%s» (попробуйте qemu:///session)"
-
-#, c-format
-msgid "unexpected QEMU URI path '%s', try qemu:///system"
-msgstr "Непредвиденный URI-путь QEMU: «%s» (попробуйте qemu:///system)"
 
 #, c-format
 msgid ""
@@ -18906,14 +18573,6 @@ msgstr "неизвестный формат драйвера: «%s»"
 #, c-format
 msgid "unknown driver name '%s'"
 msgstr "Неизвестное имя драйвера «%s»"
-
-#, c-format
-msgid "unknown driver path '%s' specified (try vbox:///session)"
-msgstr "неизвестный путь к драйверу «%s» (попробуйте vbox:///session)"
-
-#, c-format
-msgid "unknown driver path '%s' specified (try vbox:///system)"
-msgstr "неизвестный путь к драйверу «%s» (попробуйте vbox:///system)"
 
 msgid "unknown error"
 msgstr "неизвестная ошибка"
