@@ -1379,12 +1379,12 @@ BAD:
       Whenever you add a new printf-style function, i.e., one with a format
       string argument and following "..." in its prototype, be sure to use
       gcc's printf attribute directive in the prototype.  For example, here's
-      the one for virAsprintf, in util.h:
+      the one for virCommandAddEnvFormat in vircommand.h:
     </p>
 
 <pre>
-  int virAsprintf(char **strp, const char *fmt, ...)
-      ATTRIBUTE_FORMAT(printf, 2, 3);
+  void virCommandAddEnvFormat(virCommandPtr cmd, const char *format, ...)
+      G_GNUC_PRINTF(2, 3);
 </pre>
 
     <p>
