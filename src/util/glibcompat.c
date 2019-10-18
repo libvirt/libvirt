@@ -18,6 +18,8 @@
 
 #include <config.h>
 
+#include <stdlib.h>
+
 #include "glibcompat.h"
 
 #undef g_strdup_printf
