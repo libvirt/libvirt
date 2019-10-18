@@ -1553,6 +1553,10 @@ int foo()
         fixes for documentation and code comments can be managed
         in the same way, but still make sure they get reviewed if non-trivial.
       </li>
+      <li>(ir)regular pulls from other repositories or automated updates, such
+        as the .gnulib submodule updates, pulling in new translations or updating
+        the container images for the CI system
+      </li>
     </ul>
   </body>
 </html>
