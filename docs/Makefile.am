@@ -211,6 +211,15 @@ manpages_rst += \
   $(manpages7_rst) \
   $(manpages8_rst) \
   $(NULL)
+if WITH_LIBVIRTD
+manpages8_rst += \
+  manpages/libvirtd.rst \
+  $(NULL)
+else ! WITH_LIBVIRTD
+manpages_rst += \
+  manpages/libvirtd.rst \
+  $(NULL)
+endif ! WITH_LIBVIRTD
 manpages_rst_html_in = \
   $(manpages_rst:%.rst=%.html.in)
 manpages_html = \

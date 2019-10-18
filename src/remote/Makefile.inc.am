@@ -91,9 +91,6 @@ LOGROTATE_FILES_IN += \
 
 SYSCONF_FILES += remote/libvirtd.sysconf
 
-PODFILES += remote/libvirtd.pod
-MANINFILES += libvirtd.8.in
-
 LIBVIRTD_SOCKET_UNIT_FILES_IN = \
 	remote/libvirtd.socket.in \
 	remote/libvirtd-ro.socket.in \
@@ -226,8 +223,6 @@ CLEANFILES += \
 	remote/libvirtd.aug \
 	remote/virtproxyd.aug \
 	$(NULL)
-
-man8_MANS += libvirtd.8
 
 libvirtd_SOURCES = $(REMOTE_DAEMON_SOURCES)
 
@@ -462,13 +457,3 @@ remote/qemu_daemon_dispatch_stubs.h: $(srcdir)/rpc/gendispatch.pl \
 	$(AM_V_GEN)$(PERL) -w $(top_srcdir)/src/rpc/gendispatch.pl \
 	  --mode=server qemu QEMU $(QEMU_PROTOCOL) \
 	  > remote/qemu_daemon_dispatch_stubs.h
-
-libvirtd.8.in: remote/libvirtd.pod
-	$(AM_V_GEN)$(POD2MAN) --section=8 $< $@-t1 && \
-	if grep 'POD ERROR' $@-t1; then rm $@-t1; exit 1; fi && \
-	sed \
-		-e 's|SYSCONFDIR|\@sysconfdir\@|g' \
-		-e 's|RUNSTATEDIR|\@runstatedir\@|g' \
-		< $@-t1 > $@-t2 && \
-	rm -f $@-t1 && \
-	mv $@-t2 $@
