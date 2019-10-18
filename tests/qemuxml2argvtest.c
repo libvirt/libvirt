@@ -3014,6 +3014,9 @@ mymain(void)
     DO_TEST_CAPS_LATEST("vhost-user-vga");
     DO_TEST_CAPS_LATEST("vhost-user-gpu-secondary");
 
+    DO_TEST_CAPS_VER("cpu-Icelake-Server-pconfig", "3.1.0");
+    DO_TEST_CAPS_LATEST("cpu-Icelake-Server-pconfig");
+
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
 
