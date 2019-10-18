@@ -70,12 +70,6 @@ CLEANFILES += \
 RPC_PROBE_FILES += $(srcdir)/locking/lock_protocol.x
 SYSCONF_FILES += locking/virtlockd.sysconf
 
-PODFILES += locking/virtlockd.pod
-MANINFILES += virtlockd.8.in
-
-CLEANFILES += $(man8_MANS)
-MAINTAINERCLEANFILES += $(MANINFILES)
-
 VIRTLOCKD_UNIT_FILES_IN = \
 	locking/virtlockd.service.in \
 	locking/virtlockd.socket.in \
@@ -218,8 +212,6 @@ libvirt_sanlock_helper_LDFLAGS = \
 libvirt_sanlock_helper_LDADD = libvirt.la
 endif WITH_SANLOCK
 
-man8_MANS += virtlockd.8
-
 conf_DATA += locking/virtlockd.conf
 
 augeas_DATA += locking/virtlockd.aug
@@ -294,13 +286,3 @@ virtlockd.socket: locking/virtlockd.socket.in $(top_builddir)/config.status
 virtlockd-admin.socket: locking/virtlockd-admin.socket.in \
                         $(top_builddir)/config.status
 	$(AM_V_GEN)sed $(COMMON_UNIT_VARS) $< > $@-t && mv $@-t $@
-
-virtlockd.8.in: locking/virtlockd.pod
-	$(AM_V_GEN)$(POD2MAN) --section=8 $< $@-t1 && \
-	if grep 'POD ERROR' $@-t1; then rm $@-t1; exit 1; fi && \
-	sed \
-		-e 's|SYSCONFDIR|\@sysconfdir\@|g' \
-		-e 's|RUNSTATEDIR|\@runstatedir\@|g' \
-		< $@-t1 > $@-t2 && \
-	rm -f $@-t1 && \
-	mv $@-t2 $@
