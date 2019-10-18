@@ -985,6 +985,25 @@ BAD:
       it points to, or it is aliased to another pointer that is.
     </p>
 
+    <h2><a id="attribute_annotations">Attribute annotations</a></h2>
+    <p>
+      Use the following annotations to help the compiler and/or static
+      analysis tools understand the code better:
+    </p>
+
+    <table class="top_table">
+        <tr><th>Macro</th><th>Meaning</th></tr>
+        <tr><td><code>ATTRIBUTE_NONNULL</code></td><td>passing NULL for this parameter is not allowed</td></tr>
+        <tr><td><code>ATTRIBUTE_PACKED</code></td><td>force a structure to be packed</td></tr>
+        <tr><td><code>G_GNUC_FALLTHROUGH</code></td><td>allow code reuse by multiple switch cases</td></tr>
+        <tr><td><code>G_GNUC_NO_INLINE</code></td><td>the function is mocked in the test suite</td></tr>
+        <tr><td><code>G_GNUC_NORETURN</code></td><td>the function never returns</td></tr>
+        <tr><td><code>G_GNUC_NULL_TERMINATED</code></td><td>last parameter must be NULL</td></tr>
+        <tr><td><code>G_GNUC_PRINTF</code></td><td>validate that the formatting string matches parameters</td></tr>
+        <tr><td><code>G_GNUC_UNUSED</code></td><td>parameter is unused in this implementation of the function</td></tr>
+        <tr><td><code>G_GNUC_WARN_UNUSED_RESULT</code></td><td>the return value must be checked</td></tr>
+    </table>
+
     <h2><a id="glib">Adoption of GLib APIs</a></h2>
 
     <p>
