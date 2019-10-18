@@ -473,10 +473,6 @@ void *_vshCalloc(vshControl *ctl, size_t nmemb, size_t sz,
 #define vshCalloc(_ctl, _nmemb, _sz) \
     _vshCalloc(_ctl, _nmemb, _sz, __FILE__, __LINE__)
 
-char *_vshStrdup(vshControl *ctl, const char *s, const char *filename,
-                 int line);
-#define vshStrdup(_ctl, _s)    _vshStrdup(_ctl, _s, __FILE__, __LINE__)
-
 /* Macros to help dealing with mutually exclusive options. */
 
 /* VSH_EXCLUSIVE_OPTIONS_EXPR:

@@ -142,18 +142,6 @@ _vshCalloc(vshControl *ctl, size_t nmemb, size_t size, const char *filename,
     exit(EXIT_FAILURE);
 }
 
-char *
-_vshStrdup(vshControl *ctl, const char *s, const char *filename, int line)
-{
-    char *x;
-
-    if (VIR_STRDUP(x, s) >= 0)
-        return x;
-    vshError(ctl, _("%s: %d: failed to allocate %lu bytes"),
-             filename, line, (unsigned long)strlen(s));
-    exit(EXIT_FAILURE);
-}
-
 int
 vshNameSorter(const void *a, const void *b)
 {
