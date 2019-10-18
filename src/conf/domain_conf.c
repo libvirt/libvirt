@@ -6134,6 +6134,28 @@ virDomainRedirdevDefValidate(const virDomainDef *def,
 }
 
 
+int
+virDomainActualNetDefValidate(const virDomainNetDef *net G_GNUC_UNUSED)
+{
+    /* Unlike virDomainNetDefValidate(), which is a static function
+     * called internally to this file, virDomainActualNetDefValidate()
+     * is a public function that can be called from a hypervisor after
+     * it has completely setup the NetDef for use by a domain,
+     * including possibly allocating a port from the network driver
+     * (which could change the effective/"actual" type of the NetDef,
+     * thus changing what should/shouldn't be allowed by validation).
+     *
+     * This function should contain validations not specific to a
+     * particular hypervisor (e.g. whether or not specifying bandwidth
+     * is allowed for a type of interface), but *not*
+     * hypervisor-specific things.
+     */
+
+    return 0;
+
+}
+
+
 static int
 virDomainNetDefValidate(const virDomainNetDef *net)
 {

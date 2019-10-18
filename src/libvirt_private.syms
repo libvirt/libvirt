@@ -211,6 +211,7 @@ virDiskNameParse;
 virDiskNameToBusDeviceIndex;
 virDiskNameToIndex;
 virDomainActualNetDefFree;
+virDomainActualNetDefValidate;
 virDomainBlockedReasonTypeFromString;
 virDomainBlockedReasonTypeToString;
 virDomainBootTypeFromString;

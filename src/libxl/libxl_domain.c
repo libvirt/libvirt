@@ -1057,6 +1057,10 @@ libxlNetworkPrepareDevices(virDomainDefPtr def)
                 goto cleanup;
         }
 
+        /* final validation now that actual type is known */
+        if (virDomainActualNetDefValidate(net) < 0)
+            return -1;
+
         actualType = virDomainNetGetActualType(net);
         if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV &&
             net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {

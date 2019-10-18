@@ -2803,6 +2803,9 @@ int virDomainDefValidate(virDomainDefPtr def,
                          unsigned int parseFlags,
                          virDomainXMLOptionPtr xmlopt);
 
+int
+virDomainActualNetDefValidate(const virDomainNetDef *net);
+
 static inline bool
 virDomainObjIsActive(virDomainObjPtr dom)
 {
