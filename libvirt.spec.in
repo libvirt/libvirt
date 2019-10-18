@@ -265,6 +265,8 @@ BuildRequires: automake
 BuildRequires: gettext-devel
 BuildRequires: libtool
 BuildRequires: /usr/bin/pod2man
+# Replace with python3-docutils when we drop py2 support
+BuildRequires: /usr/bin/rst2html
 %endif
 BuildRequires: gcc
 BuildRequires: git

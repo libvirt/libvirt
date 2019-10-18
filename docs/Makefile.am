@@ -173,14 +173,26 @@ gif = \
 
 internals_html_in = \
   $(patsubst $(srcdir)/%,%,$(wildcard $(srcdir)/internals/*.html.in))
-internals_html = $(internals_html_in:%.html.in=%.html)
+kbase_rst = \
+  $(patsubst $(srcdir)/%,%,$(wildcard $(srcdir)/kbase/*.rst))
+kbase_rst_html_in = \
+  $(kbase_rst:%.rst=%.html.in)
+internals_html = \
+  $(internals_html_in:%.html.in=%.html) \
+  $(internals_rst_html_in:%.html.in=%.html)
 
 internalsdir = $(HTML_DIR)/internals
 internals_DATA = $(internals_html)
 
 kbase_html_in = \
   $(patsubst $(srcdir)/%,%,$(wildcard $(srcdir)/kbase/*.html.in))
-kbase_html = $(kbase_html_in:%.html.in=%.html)
+kbase_rst = \
+  $(patsubst $(srcdir)/%,%,$(wildcard $(srcdir)/kbase/*.rst))
+kbase_rst_html_in = \
+  $(kbase_rst:%.rst=%.html.in)
+kbase_html = \
+  $(kbase_html_in:%.html.in=%.html) \
+  $(kbase_rst_html_in:%.html.in=%.html)
 
 kbasedir = $(HTML_DIR)/kbase
 kbase_DATA = $(kbase_html)
@@ -191,9 +203,14 @@ dot_html_generated_in = \
   news.html.in
 dot_html_in = \
   $(notdir $(wildcard $(srcdir)/*.html.in))
+dot_rst = \
+  $(notdir $(wildcard $(srcdir)/*.rst))
+dot_rst_html_in = \
+  $(dot_rst:%.rst=%.html)
 dot_html = \
   $(dot_html_generated_in:%.html.in=%.html) \
-  $(dot_html_in:%.html.in=%.html)
+  $(dot_html_in:%.html.in=%.html) \
+  $(dot_rst_html_in:%.html.in=%.html)
 
 htmldir = $(HTML_DIR)
 html_DATA = $(css) $(png) $(gif) $(dot_html)
@@ -222,11 +239,11 @@ EXTRA_DIST= \
   genaclperms.pl \
   site.xsl subsite.xsl newapi.xsl page.xsl \
   wrapstring.xsl \
-  $(dot_html_in) $(gif) $(apipng) \
+  $(dot_html_in) $(dot_rst) $(gif) $(apipng) \
   $(fig) $(png) $(css) \
   $(javascript) $(logofiles) \
-  $(internals_html_in) $(fonts) \
-  $(kbase_html_in) \
+  $(internals_html_in) $(internals_rst) $(fonts) \
+  $(kbase_html_in) $(kbase_rst) \
   aclperms.htmlinc \
   hvsupport.pl \
   $(schema_DATA)
@@ -280,6 +297,10 @@ EXTRA_DIST += \
 
 %.png: %.fig
 	convert -rotate 90 $< $@
+
+%.html.in: %.rst
+	$(AM_V_GEN)$(MKDIR_P) `dirname $@` && \
+	  $(RST2HTML) $< > $@
 
 %.html.tmp: %.html.in site.xsl subsite.xsl page.xsl \
 		$(acl_generated)

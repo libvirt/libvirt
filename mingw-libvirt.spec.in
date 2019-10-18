@@ -82,6 +82,7 @@ BuildRequires: automake
 BuildRequires: gettext-devel
 BuildRequires: libtool
 %endif
+BuildRequires: python3-docutils
 
 BuildRequires: mingw32-libssh2
 BuildRequires: mingw64-libssh2
