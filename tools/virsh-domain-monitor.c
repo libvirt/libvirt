@@ -420,17 +420,16 @@ static const vshCmdOptDef opts_domblkinfo[] = {
 };
 
 static bool
-cmdDomblkinfoGet(vshControl *ctl,
-                 const virDomainBlockInfo *info,
+cmdDomblkinfoGet(const virDomainBlockInfo *info,
                  char **cap,
                  char **alloc,
                  char **phy,
                  bool human)
 {
     if (info->capacity == 0 && info->allocation == 0 && info->physical == 0) {
-        *cap = vshStrdup(ctl, "-");
-        *alloc = vshStrdup(ctl, "-");
-        *phy = vshStrdup(ctl, "-");
+        *cap = g_strdup("-");
+        *alloc = g_strdup("-");
+        *phy = g_strdup("-");
     } else if (!human) {
         if (virAsprintf(cap, "%llu", info->capacity) < 0 ||
             virAsprintf(alloc, "%llu", info->allocation) < 0 ||
@@ -530,7 +529,7 @@ cmdDomblkinfo(vshControl *ctl, const vshCmd *cmd)
                 memset(&info, 0, sizeof(info));
             }
 
-            if (!cmdDomblkinfoGet(ctl, &info, &cap, &alloc, &phy, human))
+            if (!cmdDomblkinfoGet(&info, &cap, &alloc, &phy, human))
                 goto cleanup;
             if (vshTableRowAppend(table, target, cap, alloc, phy, NULL) < 0)
                 goto cleanup;
@@ -545,7 +544,7 @@ cmdDomblkinfo(vshControl *ctl, const vshCmd *cmd)
         if (virDomainGetBlockInfo(dom, device, &info, 0) < 0)
             goto cleanup;
 
-        if (!cmdDomblkinfoGet(ctl, &info, &cap, &alloc, &phy, human))
+        if (!cmdDomblkinfoGet(&info, &cap, &alloc, &phy, human))
             goto cleanup;
         vshPrint(ctl, "%-15s %s\n", _("Capacity:"), cap);
         vshPrint(ctl, "%-15s %s\n", _("Allocation:"), alloc);
