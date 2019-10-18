@@ -139,6 +139,7 @@
     <video supported='yes'>
       <enum name='modelType'>
         <value>virtio</value>
+        <value>none</value>
       </enum>
     </video>
     <hostdev supported='yes'>

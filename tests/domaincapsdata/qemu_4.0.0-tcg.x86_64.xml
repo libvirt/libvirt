@@ -142,6 +142,7 @@
         <value>vmvga</value>
         <value>qxl</value>
         <value>virtio</value>
+        <value>none</value>
         <value>bochs</value>
         <value>ramfb</value>
       </enum>

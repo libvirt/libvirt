@@ -66,6 +66,7 @@
         <value>cirrus</value>
         <value>vmvga</value>
         <value>virtio</value>
+        <value>none</value>
         <value>bochs</value>
       </enum>
     </video>

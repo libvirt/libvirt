@@ -132,6 +132,7 @@
         <value>vmvga</value>
         <value>qxl</value>
         <value>virtio</value>
+        <value>none</value>
       </enum>
     </video>
     <hostdev supported='yes'>

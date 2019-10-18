@@ -92,6 +92,7 @@
         <value>cirrus</value>
         <value>vmvga</value>
         <value>qxl</value>
+        <value>none</value>
       </enum>
     </video>
     <hostdev supported='yes'>

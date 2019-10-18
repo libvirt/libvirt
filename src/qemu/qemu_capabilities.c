@@ -5380,6 +5380,7 @@ virQEMUCapsFillDomainDeviceVideoCaps(virQEMUCapsPtr qemuCaps,
     dev->supported = VIR_TRISTATE_BOOL_YES;
     dev->modelType.report = true;
 
+    VIR_DOMAIN_CAPS_ENUM_SET(dev->modelType, VIR_DOMAIN_VIDEO_TYPE_NONE);
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VGA))
         VIR_DOMAIN_CAPS_ENUM_SET(dev->modelType, VIR_DOMAIN_VIDEO_TYPE_VGA);
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_CIRRUS_VGA))

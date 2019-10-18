@@ -65,6 +65,7 @@
         <value>vga</value>
         <value>cirrus</value>
         <value>virtio</value>
+        <value>none</value>
         <value>bochs</value>
       </enum>
     </video>
