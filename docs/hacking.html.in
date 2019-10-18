@@ -1072,6 +1072,18 @@ BAD:
         <tr><td><code>VIR_FREE</code></td><td><code>g_free</code></td>
             <td><code>g_free</code> does not zero the pointer</td></tr>
     </table>
+
+    <p>String allocation macros and functions:</p>
+    <table class="top_table">
+        <tr><th>deprecated version</th><th>GLib version</th><th>Notes</th></tr>
+        <tr><td><code>VIR_STRDUP</code></td><td><code>g_strdup</code></td><td></td></tr>
+        <tr><td><code>VIR_STRNDUP</code></td><td><code>g_strndup</code></td><td></td></tr>
+        <tr><td><code>virAsprintf</code></td><td><code>g_strdup_printf</code></td><td></td></tr>
+        <tr><td><code>virVasprintf</code></td><td><code>g_strdup_vprint</code></td>
+            <td>use <code>g_vasprintf</code> if you really need to know the returned length</td></tr>
+        <tr><td><code>virStrerror</code></td><td><code>g_strerror</code></td>
+            <td>the error strings are cached globally so no need to free it</td></tr>
+    </table>
     </dl>
 
     <p>
