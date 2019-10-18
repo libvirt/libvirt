@@ -197,6 +197,54 @@ kbase_html = \
 kbasedir = $(HTML_DIR)/kbase
 kbase_DATA = $(kbase_html)
 
+manpages_rst = \
+  manpages/index.rst \
+  $(NULL)
+manpages1_rst = \
+  $(NULL)
+manpages7_rst = \
+  $(NULL)
+manpages8_rst = \
+  $(NULL)
+manpages_rst += \
+  $(manpages1_rst) \
+  $(manpages7_rst) \
+  $(manpages8_rst) \
+  $(NULL)
+manpages_rst_html_in = \
+  $(manpages_rst:%.rst=%.html.in)
+manpages_html = \
+  $(manpages_rst_html_in:%.html.in=%.html)
+
+man1_MANS = $(manpages1_rst:%.rst=%.1)
+man7_MANS = $(manpages7_rst:%.rst=%.7)
+man8_MANS = $(manpages8_rst:%.rst=%.8)
+
+%.1: %.rst
+	$(AM_V_GEN)$(MKDIR_P) `dirname $@` && \
+	   grep -v '^\.\. contents::' < $< | \
+	   sed -e 's|SYSCONFDIR|$(sysconfdir)|g' \
+	       -e 's|RUNSTATEDIR|$(runstatedir)|g' | \
+	   $(RST2MAN) > $@
+
+%.7: %.rst
+	$(AM_V_GEN)$(MKDIR_P) `dirname $@` && \
+	   grep -v '^\.\. contents::' < $< | \
+	   sed -e 's|SYSCONFDIR|$(sysconfdir)|g' \
+	       -e 's|RUNSTATEDIR|$(runstatedir)|g' | \
+	   $(RST2MAN) > $@
+
+%.8: %.rst
+	$(AM_V_GEN)$(MKDIR_P) `dirname $@` && \
+	   grep -v '^\.\. contents::' < $< | \
+	   sed -e 's|SYSCONFDIR|$(sysconfdir)|g' \
+	       -e 's|RUNSTATEDIR|$(runstatedir)|g' | \
+	   $(RST2MAN) > $@
+
+
+manpagesdir = $(HTML_DIR)/manpages
+manpages_DATA = $(manpages_html)
+
 # Generate hvsupport.html and news.html first, since they take one extra step.
 dot_html_generated_in = \
   hvsupport.html.in \
@@ -244,6 +292,7 @@ EXTRA_DIST= \
   $(javascript) $(logofiles) \
   $(internals_html_in) $(internals_rst) $(fonts) \
   $(kbase_html_in) $(kbase_rst) \
+  $(manpages_rst) \
   aclperms.htmlinc \
   hvsupport.pl \
   $(schema_DATA)
@@ -262,6 +311,10 @@ CLEANFILES = \
   $(apilxchtml) \
   $(internals_html) \
   $(kbase_html) \
+  $(manpages_html) \
+  $(man1_MANS) \
+  $(man7_MANS) \
+  $(man8_MANS) \
   $(api_DATA) \
   $(dot_html_generated_in) \
   aclperms.htmlinc
@@ -297,6 +350,13 @@ EXTRA_DIST += \
 
 %.png: %.fig
 	convert -rotate 90 $< $@
+
+manpages/%.html.in: manpages/%.rst
+	$(AM_V_GEN)$(MKDIR_P) `dirname $@` && \
+	 grep -v '^:Manual ' < $< | \
+	  sed -e 's|SYSCONFDIR|$(sysconfdir)|g' \
+	     -e 's|RUNSTATEDIR|$(runstatedir)|g' | \
+	  $(RST2HTML) > $@
 
 %.html.in: %.rst
 	$(AM_V_GEN)$(MKDIR_P) `dirname $@` && \

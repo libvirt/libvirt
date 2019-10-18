@@ -9,6 +9,9 @@
         <dt><a href="apps.html">Applications</a></dt>
         <dd>Applications known to use libvirt</dd>
 
+        <dt><a href="manpages/index.html">Manual pages</a></dt>
+        <dd>Manual pages for libvirt tools / daemons</dd>
+
         <dt><a href="windows.html">Windows</a></dt>
         <dd>Downloads for Windows</dd>
 
