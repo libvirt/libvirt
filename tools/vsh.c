@@ -1644,7 +1644,9 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
  */
 
 static vshCommandToken ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-vshCommandArgvGetArg(vshControl *ctl, vshCommandParser *parser, char **res,
+vshCommandArgvGetArg(vshControl *ctl,
+                     vshCommandParser *parser,
+                     char **res,
                      bool report G_GNUC_UNUSED)
 {
     if (parser->arg_pos == parser->arg_end) {
