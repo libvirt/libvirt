@@ -2454,7 +2454,7 @@ virQEMUCapsFetchCPUDefinitions(qemuMonitorPtr mon,
 
     /* QEMU 2.11 for Power renamed all CPU models to lower case, we need to
      * translate them back to libvirt's upper case model names. */
-    if (ARCH_IS_PPC(arch)) {
+    if (ARCH_IS_PPC64(arch)) {
         VIR_AUTOSTRINGLIST libvirtModels = NULL;
         char **name;
 
