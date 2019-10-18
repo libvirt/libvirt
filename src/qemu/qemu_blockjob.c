@@ -82,8 +82,8 @@ qemuBlockJobDataDispose(void *obj)
     if (job->type == QEMU_BLOCKJOB_TYPE_CREATE)
         virObjectUnref(job->data.create.src);
 
-    VIR_FREE(job->name);
-    VIR_FREE(job->errmsg);
+    g_free(job->name);
+    g_free(job->errmsg);
 }
 
 
