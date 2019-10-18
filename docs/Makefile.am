@@ -197,6 +197,10 @@ kbase_html = \
 kbasedir = $(HTML_DIR)/kbase
 kbase_DATA = $(kbase_html)
 
+# Sync with src/util/
+KEYCODES = linux osx atset1 atset2 atset3 xtkbd usb win32 qnum
+KEYNAMES = linux osx win32
+
 manpages_rst = \
   manpages/index.rst \
   $(NULL)
@@ -207,6 +211,8 @@ manpages1_rst = \
   manpages/virsh.rst \
   $(NULL)
 manpages7_rst = \
+  $(KEYCODES:%=manpages/virkeycode-%.rst) \
+  $(KEYNAMES:%=manpages/virkeyname-%.rst) \
   $(NULL)
 manpages8_rst = \
   manpages/virt-sanlock-cleanup.rst \
@@ -269,6 +275,29 @@ man8_MANS = $(manpages8_rst:%.rst=%.8)
 	       -e 's|RUNSTATEDIR|$(runstatedir)|g' | \
 	   $(RST2MAN) > $@
 
+manpages/virkeycode-%.rst: $(top_srcdir)/src/keycodemapdb/data/keymaps.csv \
+		$(top_srcdir)/src/keycodemapdb/tools/keymap-gen Makefile.am
+	$(AM_V_GEN)export NAME=`echo $@ | \
+		sed -e 's,manpages/virkeycode-,,' -e 's,\.rst,,'` && \
+		$(MKDIR_P) manpages/ && \
+		$(RUNUTF8) $(PYTHON) $(top_srcdir)/src/keycodemapdb/tools/keymap-gen \
+		code-docs \
+		--lang rst \
+		--title "virkeycode-$$NAME" \
+		--subtitle "Key code values for $$NAME" \
+		$(top_srcdir)/src/keycodemapdb/data/keymaps.csv $$NAME > $@
+
+manpages/virkeyname-%.rst: $(top_srcdir)/src/keycodemapdb/data/keymaps.csv \
+		$(top_srcdir)/src/keycodemapdb/tools/keymap-gen Makefile.am
+	$(AM_V_GEN)export NAME=`echo $@ | \
+		sed -e 's,manpages/virkeyname-,,' -e 's,\.rst,,'` && \
+		$(MKDIR_P) manpages/ && \
+		$(RUNUTF8) $(PYTHON) $(top_srcdir)/src/keycodemapdb/tools/keymap-gen \
+		name-docs \
+		--lang rst \
+		--title "virkeyname-$$NAME" \
+		--subtitle "Key name values for $$NAME" \
+		$(top_srcdir)/src/keycodemapdb/data/keymaps.csv $$NAME > $@
 
 manpagesdir = $(HTML_DIR)/manpages
 manpages_DATA = $(manpages_html)
@@ -342,6 +371,7 @@ CLEANFILES = \
   $(manpages_html) \
   $(man1_MANS) \
   $(man7_MANS) \
+  $(manpages7_rst) \
   $(man8_MANS) \
   $(api_DATA) \
   $(dot_html_generated_in) \

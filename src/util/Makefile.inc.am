@@ -242,7 +242,7 @@ EXTRA_DIST += \
 	$(srcdir)/keycodemapdb/tools/keymap-gen \
 	$(NULL)
 
-
+# Sync with docs/
 KEYCODES = linux osx atset1 atset2 atset3 xtkbd usb win32 qnum
 KEYNAMES = linux osx win32
 
@@ -251,15 +251,8 @@ KEYTABLES = \
 	$(KEYNAMES:%=util/virkeynametable_%.h) \
 	$(NULL)
 
-KEYPODS = $(KEYCODES:%=util/virkeycode-%.pod) \
-	  $(KEYNAMES:%=util/virkeyname-%.pod)
-KEYMANS = $(KEYPODS:%.pod=%.7)
-
-man7_MANS += $(KEYMANS)
-
 BUILT_SOURCES += $(KEYTABLES)
 CLEANFILES += $(KEYTABLES)
-CLEANFILES += $(KEYMANS) $(KEYPODS)
 
 UTIL_IO_HELPER_SOURCES = util/iohelper.c
 
@@ -323,37 +316,3 @@ util/virkeynametable_%.h: $(srcdir)/keycodemapdb/data/keymaps.csv \
 			name-table --lang stdc --varname virKeyNameTable_$$NAME \
 			$(srcdir)/keycodemapdb/data/keymaps.csv $$NAME > $@-tmp && \
 		mv $@-tmp $@ || rm -f $@-tmp
-
-util/virkeycode-%.pod: $(srcdir)/keycodemapdb/data/keymaps.csv \
-			$(srcdir)/keycodemapdb/tools/keymap-gen Makefile.am
-	$(AM_V_GEN)export NAME=`echo $@ | sed -e 's,util/virkeycode-,,' \
-					      -e 's,\.pod,,'` && \
-		$(MKDIR_P) util/ && \
-		$(RUNUTF8) $(PYTHON) $(srcdir)/keycodemapdb/tools/keymap-gen \
-		code-docs --lang pod \
-		--title "virkeycode-$$NAME" \
-		--subtitle "Key code values for $$NAME" \
-		$(srcdir)/keycodemapdb/data/keymaps.csv $$NAME > \
-			$@-tmp && mv $@-tmp $@ || rm $@-tmp
-
-util/virkeyname-%.pod: $(srcdir)/keycodemapdb/data/keymaps.csv \
-			$(srcdir)/keycodemapdb/tools/keymap-gen Makefile.am
-	$(AM_V_GEN)export NAME=`echo $@ | sed -e 's,util/virkeyname-,,' \
-					      -e 's,\.pod,,'` && \
-		$(MKDIR_P) util/ && \
-		$(RUNUTF8) $(PYTHON) $(srcdir)/keycodemapdb/tools/keymap-gen \
-		name-docs --lang pod \
-		--title "virkeyname-$$NAME" \
-		--subtitle "Key name values for $$NAME" \
-		$(srcdir)/keycodemapdb/data/keymaps.csv $$NAME > \
-			$@-tmp && mv $@-tmp $@ || rm $@-tmp
-
-util/virkey%.7: util/virkey%.pod
-	$(AM_V_GEN)$(POD2MAN) --section=7 $< $@-t1 && \
-	if grep 'POD ERROR' $@-t1; then rm $@-t1; exit 1; fi && \
-	sed \
-		-e 's|SYSCONFDIR|\@sysconfdir\@|g' \
-		-e 's|LOCALSTATEDIR|\@localstatedir\@|g' \
-		< $@-t1 > $@-t2 && \
-	rm -f $@-t1 && \
-	mv $@-t2 $@
