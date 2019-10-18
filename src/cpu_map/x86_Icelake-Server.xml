@@ -54,7 +54,6 @@
     <feature name='pat'/>
     <feature name='pcid'/>
     <feature name='pclmuldq'/>
-    <feature name='pconfig'/>
     <feature name='pdpe1gb'/>
     <feature name='pge'/>
     <feature name='pku'/>

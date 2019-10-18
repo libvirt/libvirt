@@ -13,5 +13,4 @@
   <feature policy='require' name='ibrs-all'/>
   <feature policy='require' name='skip-l1dfl-vmentry'/>
   <feature policy='disable' name='intel-pt'/>
-  <feature policy='disable' name='pconfig'/>
 </cpu>

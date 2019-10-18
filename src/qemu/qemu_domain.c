@@ -8910,6 +8910,26 @@ qemuDomainDefCopy(virQEMUDriverPtr driver,
 }
 
 
+int
+qemuDomainMakeCPUMigratable(virCPUDefPtr cpu)
+{
+    if (cpu->mode == VIR_CPU_MODE_CUSTOM &&
+        STREQ_NULLABLE(cpu->model, "Icelake-Server")) {
+        /* Originally Icelake-Server CPU model contained pconfig CPU feature.
+         * It was never actually enabled and thus it was removed. To enable
+         * migration to QEMU 3.1.0 (with both new and old libvirt), we
+         * explicitly disable pconfig in migration XML (otherwise old libvirt
+         * would think it was implicitly enabled on the source). New libvirt
+         * will drop it from the XML before starting the domain on new QEMU.
+         */
+        if (virCPUDefUpdateFeature(cpu, "pconfig", VIR_CPU_FEATURE_DISABLE) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
 static int
 qemuDomainDefFormatBufInternal(virQEMUDriverPtr driver,
                                virQEMUCapsPtr qemuCaps,
@@ -9092,6 +9112,9 @@ qemuDomainDefFormatBufInternal(virQEMUDriverPtr driver,
             if (!(def->cpu = virCPUDefCopy(origCPU)))
                 goto cleanup;
         }
+
+        if (qemuDomainMakeCPUMigratable(def->cpu) < 0)
+            goto cleanup;
     }
 
  format:
