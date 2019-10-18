@@ -2551,7 +2551,7 @@ class app:
                     srcdir + "/../src/util",
                     srcdir + "/../include/libvirt",
                     builddir + "/../include/libvirt"]
-            builder = docBuilder(name, srcdir, dirs, [])
+            builder = docBuilder(name, builddir, dirs, [])
         else:
             self.warning("rebuild() failed, unable to guess the module")
             return None

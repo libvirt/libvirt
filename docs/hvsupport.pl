@@ -5,23 +5,24 @@ use warnings;
 
 use File::Find;
 
-die "syntax: $0 SRCDIR\n" unless int(@ARGV) == 1;
+die "syntax: $0 SRCDIR BUILDDIR\n" unless int(@ARGV) == 2;
 
 my $srcdir = shift @ARGV;
+my $builddir = shift @ARGV;
 
-my $symslibvirt = "$srcdir/libvirt_public.syms";
-my $symsqemu = "$srcdir/libvirt_qemu.syms";
-my $symslxc = "$srcdir/libvirt_lxc.syms";
+my $symslibvirt = "$srcdir/src/libvirt_public.syms";
+my $symsqemu = "$srcdir/src/libvirt_qemu.syms";
+my $symslxc = "$srcdir/src/libvirt_lxc.syms";
 my @drivertable = (
-    "$srcdir/driver-hypervisor.h",
-    "$srcdir/driver-interface.h",
-    "$srcdir/driver-network.h",
-    "$srcdir/driver-nodedev.h",
-    "$srcdir/driver-nwfilter.h",
-    "$srcdir/driver-secret.h",
-    "$srcdir/driver-state.h",
-    "$srcdir/driver-storage.h",
-    "$srcdir/driver-stream.h",
+    "$srcdir/src/driver-hypervisor.h",
+    "$srcdir/src/driver-interface.h",
+    "$srcdir/src/driver-network.h",
+    "$srcdir/src/driver-nodedev.h",
+    "$srcdir/src/driver-nwfilter.h",
+    "$srcdir/src/driver-secret.h",
+    "$srcdir/src/driver-state.h",
+    "$srcdir/src/driver-storage.h",
+    "$srcdir/src/driver-stream.h",
     );
 
 my %groupheaders = (
@@ -38,10 +39,10 @@ my %groupheaders = (
 my @srcs;
 find({
     wanted => sub {
-        if (m!$srcdir/.*/\w+_(driver|common|tmpl|monitor|hal|udev)\.c$!) {
+        if (m!$srcdir/src/.*/\w+_(driver|common|tmpl|monitor|hal|udev)\.c$!) {
             push @srcs, $_ if $_ !~ /vbox_driver\.c/;
         }
-    }, no_chdir => 1}, $srcdir);
+    }, no_chdir => 1}, "$srcdir/src");
 
 # Map API functions to the header and documentation files they're in
 # so that we can generate proper hyperlinks to their documentation.
@@ -120,13 +121,13 @@ sub parseSymsFile {
 
 my %apis;
 # Get the list of all public APIs and their corresponding version
-parseSymsFile(\%apis, "LIBVIRT", $symslibvirt, "$srcdir/../docs/libvirt-api.xml");
+parseSymsFile(\%apis, "LIBVIRT", $symslibvirt, "$builddir/docs/libvirt-api.xml");
 
 # And the same for the QEMU specific APIs
-parseSymsFile(\%apis, "LIBVIRT_QEMU", $symsqemu, "$srcdir/../docs/libvirt-qemu-api.xml");
+parseSymsFile(\%apis, "LIBVIRT_QEMU", $symsqemu, "$builddir/docs/libvirt-qemu-api.xml");
 
 # And the same for the LXC specific APIs
-parseSymsFile(\%apis, "LIBVIRT_LXC", $symslxc, "$srcdir/../docs/libvirt-lxc-api.xml");
+parseSymsFile(\%apis, "LIBVIRT_LXC", $symslxc, "$builddir/docs/libvirt-lxc-api.xml");
 
 
 # Some special things which aren't public APIs,
