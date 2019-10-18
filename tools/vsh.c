@@ -176,7 +176,7 @@ int
 vshStringToArray(const char *str,
                  char ***array)
 {
-    char *str_copied = vshStrdup(NULL, str);
+    char *str_copied = g_strdup(str);
     char *str_tok = NULL;
     char *tmp;
     unsigned int nstr_tokens = 0;
@@ -214,10 +214,10 @@ vshStringToArray(const char *str,
             continue;
         }
         *tmp++ = '\0';
-        arr[nstr_tokens++] = vshStrdup(NULL, str_tok);
+        arr[nstr_tokens++] = g_strdup(str_tok);
         str_tok = tmp;
     }
-    arr[nstr_tokens++] = vshStrdup(NULL, str_tok);
+    arr[nstr_tokens++] = g_strdup(str_tok);
 
     *array = arr;
     VIR_FREE(str_copied);
@@ -1451,7 +1451,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
                 /* aliases need to be resolved to the actual commands */
                 if (cmd->flags & VSH_CMD_FLAG_ALIAS) {
                     VIR_FREE(tkdata);
-                    tkdata = vshStrdup(ctl, cmd->alias);
+                    tkdata = g_strdup(cmd->alias);
                     cmd = vshCmddefSearch(tkdata);
                 }
                 if (vshCmddefOptParse(cmd, &opts_need_arg,
@@ -1472,7 +1472,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
 
                 if (optstr) {
                     *optstr = '\0'; /* convert the '=' to '\0' */
-                    optstr = vshStrdup(ctl, optstr + 1);
+                    optstr = g_strdup(optstr + 1);
                 }
                 /* Special case 'help' to ignore all spurious options */
                 if (!(opt = vshCmddefGetOption(ctl, cmd, tkdata + 2,
@@ -1582,7 +1582,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
                 vshCommandOptFree(first);
                 first = vshMalloc(ctl, sizeof(vshCmdOpt));
                 first->def = help->opts;
-                first->data = vshStrdup(ctl, cmd->name);
+                first->data = g_strdup(cmd->name);
                 first->next = NULL;
 
                 cmd = help;
@@ -1686,7 +1686,7 @@ vshCommandStringGetArg(vshControl *ctl, vshCommandParser *parser, char **res,
     bool double_quote = false;
     int sz = 0;
     char *p = parser->pos;
-    char *q = vshStrdup(ctl, p);
+    char *q = g_strdup(p);
 
     *res = q;
 
@@ -1834,11 +1834,11 @@ vshGetTypedParamValue(vshControl *ctl, virTypedParameterPtr item)
         break;
 
     case VIR_TYPED_PARAM_BOOLEAN:
-        str = vshStrdup(ctl, item->value.b ? _("yes") : _("no"));
+        str = g_strdup(item->value.b ? _("yes") : _("no"));
         break;
 
     case VIR_TYPED_PARAM_STRING:
-        str = vshStrdup(ctl, item->value.s);
+        str = g_strdup(item->value.s);
         break;
 
     default:
@@ -2668,7 +2668,7 @@ vshReadlineCommandGenerator(const char *text)
                         virStringListFree(ret);
                         return NULL;
                     }
-                    ret[ret_size] = vshStrdup(NULL, name);
+                    ret[ret_size] = g_strdup(name);
                     ret_size++;
                     /* Terminate the string list properly. */
                     ret[ret_size] = NULL;
@@ -2820,7 +2820,7 @@ vshReadlineParse(const char *text, int state)
     char *ret = NULL;
 
     if (!state) {
-        char *buf = vshStrdup(NULL, rl_line_buffer);
+        char *buf = g_strdup(rl_line_buffer);
 
         vshCommandFree(partial);
         partial = NULL;
@@ -2882,7 +2882,7 @@ vshReadlineParse(const char *text, int state)
     }
 
     if (list) {
-        ret = vshStrdup(NULL, list[list_index]);
+        ret = g_strdup(list[list_index]);
         list_index++;
     }
 
@@ -3055,7 +3055,7 @@ vshReadline(vshControl *ctl, const char *prompt)
     if (len > 0 && r[len-1] == '\n')
         r[len-1] = '\0';
 
-    return vshStrdup(ctl, r);
+    return g_strdup(r);
 }
 
 #endif /* !WITH_READLINE */
@@ -3095,7 +3095,7 @@ vshInitDebug(vshControl *ctl)
         /* log file not set from cmdline */
         debugEnv = getenv(env);
         if (debugEnv && *debugEnv) {
-            ctl->logfile = vshStrdup(ctl, debugEnv);
+            ctl->logfile = g_strdup(debugEnv);
             vshOpenLogFile(ctl);
         }
         VIR_FREE(env);
@@ -3345,7 +3345,7 @@ cmdEcho(vshControl *ctl, const vshCmd *cmd)
             }
             str = virBufferContentAndReset(&xmlbuf);
         } else {
-            str = vshStrdup(ctl, arg);
+            str = g_strdup(arg);
         }
 
         if (shell)

@@ -73,7 +73,7 @@ virshGetDomainDescription(vshControl *ctl, virDomainPtr dom, bool title,
         int errCode = virGetLastErrorCode();
 
         if (errCode == VIR_ERR_NO_DOMAIN_METADATA) {
-            desc = vshStrdup(ctl, "");
+            desc = g_strdup("");
             vshResetLibvirtError();
             return desc;
         }
@@ -92,7 +92,7 @@ virshGetDomainDescription(vshControl *ctl, virDomainPtr dom, bool title,
         desc = virXPathString("string(./description[1])", ctxt);
 
     if (!desc)
-        desc = vshStrdup(ctl, "");
+        desc = g_strdup("");
 
  cleanup:
     xmlXPathFreeContext(ctxt);
@@ -2419,7 +2419,7 @@ cmdDomIfAddr(vshControl *ctl, const vshCmd *cmd)
             ip_addr_str = virBufferContentAndReset(&buf);
 
             if (!ip_addr_str)
-                ip_addr_str = vshStrdup(ctl, "");
+                ip_addr_str = g_strdup("");
 
             /* Don't repeat interface name */
             if (full || !j)

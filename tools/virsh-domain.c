@@ -5085,7 +5085,7 @@ cmdSchedInfoUpdate(vshControl *ctl, const vshCmd *cmd,
     int rv;
 
     while ((opt = vshCommandOptArgv(ctl, cmd, opt))) {
-        set_field = vshStrdup(ctl, opt->data);
+        set_field = g_strdup(opt->data);
         if (!(set_val = strchr(set_field, '='))) {
             vshError(ctl, "%s", _("Invalid syntax for --set, "
                                   "expecting name=value"));
@@ -11481,7 +11481,7 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
                 VIR_FREE(listen_addr);
 
                 if (uri) {
-                    listen_addr = vshStrdup(ctl, uri->server);
+                    listen_addr = g_strdup(uri->server);
                     virURIFree(uri);
                 }
             }

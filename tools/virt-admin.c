@@ -343,7 +343,7 @@ cmdConnect(vshControl *ctl, const vshCmd *cmd)
 
     if (name) {
         VIR_FREE(ctl->connname);
-        ctl->connname = vshStrdup(ctl, name);
+        ctl->connname = g_strdup(name);
     }
 
     vshAdmReconnect(ctl);
@@ -1295,7 +1295,7 @@ vshAdmParseArgv(vshControl *ctl, int argc, char **argv)
         switch (arg) {
         case 'c':
             VIR_FREE(ctl->connname);
-            ctl->connname = vshStrdup(ctl, optarg);
+            ctl->connname = g_strdup(optarg);
             break;
         case 'd':
             if (virStrToLong_i(optarg, NULL, 10, &debug) < 0) {
@@ -1315,7 +1315,7 @@ vshAdmParseArgv(vshControl *ctl, int argc, char **argv)
             break;
         case 'l':
             vshCloseLogFile(ctl);
-            ctl->logfile = vshStrdup(ctl, optarg);
+            ctl->logfile = g_strdup(optarg);
             vshOpenLogFile(ctl);
             break;
         case 'q':

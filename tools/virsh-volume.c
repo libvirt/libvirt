@@ -1413,22 +1413,21 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
         /* Retrieve the volume path */
         if ((volInfoTexts[i].path = virStorageVolGetPath(vol)) == NULL) {
             /* Something went wrong retrieving a volume path, cope with it */
-            volInfoTexts[i].path = vshStrdup(ctl, _("unknown"));
+            volInfoTexts[i].path = g_strdup(_("unknown"));
         }
 
         /* If requested, retrieve volume type and sizing information */
         if (details) {
             if (virStorageVolGetInfo(vol, &volumeInfo) != 0) {
                 /* Something went wrong retrieving volume info, cope with it */
-                volInfoTexts[i].allocation = vshStrdup(ctl, _("unknown"));
-                volInfoTexts[i].capacity = vshStrdup(ctl, _("unknown"));
-                volInfoTexts[i].type = vshStrdup(ctl, _("unknown"));
+                volInfoTexts[i].allocation = g_strdup(_("unknown"));
+                volInfoTexts[i].capacity = g_strdup(_("unknown"));
+                volInfoTexts[i].type = g_strdup(_("unknown"));
             } else {
                 /* Convert the returned volume info into output strings */
 
                 /* Volume type */
-                volInfoTexts[i].type = vshStrdup(ctl,
-                                                 virshVolumeTypeToString(volumeInfo.type));
+                volInfoTexts[i].type = g_strdup(virshVolumeTypeToString(volumeInfo.type));
 
                 val = vshPrettyCapacity(volumeInfo.capacity, &unit);
                 if (virAsprintf(&volInfoTexts[i].capacity,

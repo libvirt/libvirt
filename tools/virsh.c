@@ -236,7 +236,7 @@ virshReconnect(vshControl *ctl, const char *name, bool readonly, bool force)
     } else {
         if (name) {
             VIR_FREE(ctl->connname);
-            ctl->connname = vshStrdup(ctl, name);
+            ctl->connname = g_strdup(name);
         }
 
         priv->readonly = readonly;
@@ -677,7 +677,7 @@ virshParseArgv(vshControl *ctl, int argc, char **argv)
         switch (arg) {
         case 'c':
             VIR_FREE(ctl->connname);
-            ctl->connname = vshStrdup(ctl, optarg);
+            ctl->connname = g_strdup(optarg);
             break;
         case 'd':
             if (virStrToLong_i(optarg, NULL, 10, &debug) < 0) {
@@ -742,7 +742,7 @@ virshParseArgv(vshControl *ctl, int argc, char **argv)
             break;
         case 'l':
             vshCloseLogFile(ctl);
-            ctl->logfile = vshStrdup(ctl, optarg);
+            ctl->logfile = g_strdup(optarg);
             vshOpenLogFile(ctl);
             break;
         case 'q':
@@ -906,8 +906,7 @@ main(int argc, char **argv)
     }
 
     if (!ctl->connname)
-        ctl->connname = vshStrdup(ctl,
-                                  getenv("VIRSH_DEFAULT_CONNECT_URI"));
+        ctl->connname = g_strdup(getenv("VIRSH_DEFAULT_CONNECT_URI"));
 
     if (!ctl->imode) {
         ret = vshCommandRun(ctl, ctl->cmd);

@@ -477,13 +477,12 @@ cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
         struct virshNodeList arrays = { names, parents };
 
         for (i = 0; i < list->ndevices; i++)
-            names[i] = vshStrdup(ctl, virNodeDeviceGetName(list->devices[i]));
+            names[i] = g_strdup(virNodeDeviceGetName(list->devices[i]));
 
         for (i = 0; i < list->ndevices; i++) {
             virNodeDevicePtr dev = list->devices[i];
             if (STRNEQ(names[i], "computer")) {
-                const char *parent = virNodeDeviceGetParent(dev);
-                parents[i] = parent ? vshStrdup(ctl, parent) : NULL;
+                parents[i] = g_strdup(virNodeDeviceGetParent(dev));
             } else {
                 parents[i] = NULL;
             }

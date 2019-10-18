@@ -197,7 +197,7 @@ cmdSnapshotCreate(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "xmlfile", &from) < 0)
         goto cleanup;
     if (!from) {
-        buffer = vshStrdup(ctl, "<domainsnapshot/>");
+        buffer = g_strdup("<domainsnapshot/>");
     } else {
         if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0) {
             vshSaveLibvirtError();
@@ -755,7 +755,7 @@ virshGetSnapshotParent(vshControl *ctl, virDomainSnapshotPtr snapshot,
         parent = virDomainSnapshotGetParent(snapshot, 0);
         if (parent) {
             /* API works, and virDomainSnapshotGetName will succeed */
-            *parent_name = vshStrdup(ctl, virDomainSnapshotGetName(parent));
+            *parent_name = g_strdup(virDomainSnapshotGetName(parent));
             ret = 0;
             goto cleanup;
         }
@@ -1236,7 +1236,7 @@ virshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
                                                        count - 1, flags);
             if (count >= 0) {
                 count++;
-                names[0] = vshStrdup(ctl, fromname);
+                names[0] = g_strdup(fromname);
             }
         } else {
             count = virDomainSnapshotListChildrenNames(from, names,
