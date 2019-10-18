@@ -340,35 +340,37 @@ mymain(void)
     DO_TEST("disk-mirror-old", NONE);
     DO_TEST("disk-mirror", NONE);
     DO_TEST("disk-active-commit", NONE);
-    DO_TEST("graphics-listen-network", NONE);
-    DO_TEST("graphics-vnc", NONE);
-    DO_TEST("graphics-vnc-websocket", NONE);
-    DO_TEST("graphics-vnc-sasl", NONE);
-    DO_TEST("graphics-vnc-tls", NONE);
-    DO_TEST("graphics-vnc-no-listen-attr", NONE);
-    DO_TEST("graphics-vnc-remove-generated-socket", NONE);
+    DO_TEST("graphics-listen-network", QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST("graphics-vnc", QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST("graphics-vnc-websocket", QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST("graphics-vnc-sasl", QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST("graphics-vnc-tls", QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST("graphics-vnc-no-listen-attr", QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST("graphics-vnc-remove-generated-socket", QEMU_CAPS_DEVICE_CIRRUS_VGA);
     cfg->vncAutoUnixSocket = true;
-    DO_TEST("graphics-vnc-auto-socket-cfg", NONE);
+    DO_TEST("graphics-vnc-auto-socket-cfg", QEMU_CAPS_DEVICE_CIRRUS_VGA);
     cfg->vncAutoUnixSocket = false;
-    DO_TEST("graphics-vnc-socket", NONE);
-    DO_TEST("graphics-vnc-auto-socket", NONE);
+    DO_TEST("graphics-vnc-socket", QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST("graphics-vnc-auto-socket", QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST("graphics-vnc-egl-headless",
-            QEMU_CAPS_EGL_HEADLESS);
+            QEMU_CAPS_DEVICE_CIRRUS_VGA, QEMU_CAPS_EGL_HEADLESS);
 
-    DO_TEST("graphics-sdl", NONE);
-    DO_TEST("graphics-sdl-fullscreen", NONE);
-    DO_TEST("graphics-spice", NONE);
-    DO_TEST("graphics-spice-compression", NONE);
-    DO_TEST("graphics-spice-qxl-vga", NONE);
-    DO_TEST("graphics-spice-socket", NONE);
-    DO_TEST("graphics-spice-auto-socket", NONE);
+    DO_TEST("graphics-sdl", QEMU_CAPS_DEVICE_VGA);
+    DO_TEST("graphics-sdl-fullscreen", QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST("graphics-spice", QEMU_CAPS_DEVICE_QXL);
+    DO_TEST("graphics-spice-compression", QEMU_CAPS_DEVICE_QXL);
+    DO_TEST("graphics-spice-qxl-vga", QEMU_CAPS_DEVICE_QXL);
+    DO_TEST("graphics-spice-socket", QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST("graphics-spice-auto-socket", QEMU_CAPS_DEVICE_CIRRUS_VGA);
     cfg->spiceAutoUnixSocket = true;
-    DO_TEST("graphics-spice-auto-socket-cfg", NONE);
+    DO_TEST("graphics-spice-auto-socket-cfg", QEMU_CAPS_DEVICE_CIRRUS_VGA);
     cfg->spiceAutoUnixSocket = false;
     DO_TEST("graphics-spice-egl-headless",
+            QEMU_CAPS_DEVICE_QXL,
             QEMU_CAPS_EGL_HEADLESS);
 
     DO_TEST("graphics-egl-headless-rendernode",
+            QEMU_CAPS_DEVICE_CIRRUS_VGA,
             QEMU_CAPS_EGL_HEADLESS,
             QEMU_CAPS_EGL_HEADLESS_RENDERNODE);
 
@@ -400,15 +402,15 @@ mymain(void)
     DO_TEST("sound", NONE);
     DO_TEST("sound-device", NONE);
     DO_TEST("watchdog", NONE);
-    DO_TEST("net-bandwidth", NONE);
-    DO_TEST("net-bandwidth2", NONE);
+    DO_TEST("net-bandwidth", QEMU_CAPS_DEVICE_VGA);
+    DO_TEST("net-bandwidth2", QEMU_CAPS_DEVICE_VGA);
     DO_TEST("net-mtu", NONE);
     DO_TEST("net-coalesce", NONE);
     DO_TEST("net-many-models", NONE);
 
     DO_TEST("serial-tcp-tlsx509-chardev", NONE);
     DO_TEST("serial-tcp-tlsx509-chardev-notls", NONE);
-    DO_TEST("serial-spiceport", NONE);
+    DO_TEST("serial-spiceport", QEMU_CAPS_DEVICE_QXL);
     DO_TEST("serial-spiceport-nospice", NONE);
     DO_TEST("console-compat", NONE);
     DO_TEST("console-compat2", NONE);
@@ -438,7 +440,9 @@ mymain(void)
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_ZPCI);
     DO_TEST("hostdev-mdev-precreated", NONE);
-    DO_TEST("hostdev-mdev-display", QEMU_CAPS_VFIO_PCI_DISPLAY);
+    DO_TEST("hostdev-mdev-display",
+            QEMU_CAPS_DEVICE_QXL,
+            QEMU_CAPS_VFIO_PCI_DISPLAY);
     DO_TEST("pci-rom", NONE);
     DO_TEST("pci-rom-disabled", NONE);
     DO_TEST("pci-rom-disabled-invalid", NONE);
@@ -478,7 +482,7 @@ mymain(void)
     DO_TEST("event_idx", NONE);
     DO_TEST("vhost_queues", NONE);
     DO_TEST("interface-driver", NONE);
-    DO_TEST("interface-server", NONE);
+    DO_TEST("interface-server", QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST("virtio-lun", NONE);
 
     DO_TEST("usb-none", NONE);
@@ -526,7 +530,7 @@ mymain(void)
     DO_TEST("seclabel-dynamic-none", NONE);
     DO_TEST("seclabel-device-multiple", NONE);
     DO_TEST_FULL("seclabel-dynamic-none-relabel", WHEN_INACTIVE,
-                 ARG_QEMU_CAPS, NONE);
+                 ARG_QEMU_CAPS, QEMU_CAPS_DEVICE_CIRRUS_VGA, NONE);
     DO_TEST("numad-static-vcpu-no-numatune", NONE);
 
     DO_TEST("disk-scsi-lun-passthrough-sgio",
@@ -641,8 +645,8 @@ mymain(void)
             QEMU_CAPS_SCSI_LSI);
     DO_TEST("console-virtio", NONE);
     DO_TEST("serial-target-port-auto", NONE);
-    DO_TEST("graphics-listen-network2", NONE);
-    DO_TEST("graphics-spice-timeout", NONE);
+    DO_TEST("graphics-listen-network2", QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST("graphics-spice-timeout", QEMU_CAPS_DEVICE_VGA);
     DO_TEST("numad-auto-vcpu-no-numatune", NONE);
     DO_TEST("numad-auto-memory-vcpu-no-cpuset-and-placement", NONE);
     DO_TEST("numad-auto-memory-vcpu-cpuset", NONE);
@@ -671,7 +675,7 @@ mymain(void)
     DO_TEST("pci-autoadd-idx",
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_CIRRUS_VGA);
-    DO_TEST("pci-autofill-addr", NONE);
+    DO_TEST("pci-autofill-addr", QEMU_CAPS_DEVICE_CIRRUS_VGA);
 
     DO_TEST("q35",
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
@@ -1139,10 +1143,16 @@ mymain(void)
     DO_TEST("memory-hotplug-nvdimm-readonly", NONE);
     DO_TEST("net-udp", NONE);
 
-    DO_TEST("video-virtio-gpu-device", NONE);
-    DO_TEST("video-virtio-gpu-virgl", NONE);
-    DO_TEST("video-virtio-gpu-spice-gl", NONE);
-    DO_TEST("video-virtio-gpu-sdl-gl", NONE);
+    DO_TEST("video-virtio-gpu-device", QEMU_CAPS_DEVICE_VIRTIO_GPU);
+    DO_TEST("video-virtio-gpu-virgl",
+            QEMU_CAPS_DEVICE_VIRTIO_GPU,
+            QEMU_CAPS_VIRTIO_GPU_VIRGL);
+    DO_TEST("video-virtio-gpu-spice-gl",
+            QEMU_CAPS_DEVICE_VIRTIO_GPU,
+            QEMU_CAPS_VIRTIO_GPU_VIRGL);
+    DO_TEST("video-virtio-gpu-sdl-gl",
+            QEMU_CAPS_DEVICE_VIRTIO_GPU,
+            QEMU_CAPS_VIRTIO_GPU_VIRGL);
 
     DO_TEST("virtio-input",
             QEMU_CAPS_VIRTIO_KEYBOARD,
@@ -1166,7 +1176,8 @@ mymain(void)
             QEMU_CAPS_OBJECT_RNG_RANDOM,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
             QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM,
-            QEMU_CAPS_VIRTIO_PCI_ATS);
+            QEMU_CAPS_VIRTIO_PCI_ATS,
+            QEMU_CAPS_DEVICE_VHOST_USER_GPU);
 
     DO_TEST("fd-memory-numa-topology", QEMU_CAPS_OBJECT_MEMORY_FILE,
             QEMU_CAPS_KVM);
@@ -1192,10 +1203,10 @@ mymain(void)
             QEMU_CAPS_VNC,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
             QEMU_CAPS_DEVICE_QXL);
-    DO_TEST("video-qxl-heads", NONE);
-    DO_TEST("video-qxl-noheads", NONE);
-    DO_TEST("video-qxl-resolution", NONE);
-    DO_TEST("video-virtio-gpu-secondary", NONE);
+    DO_TEST("video-qxl-heads", QEMU_CAPS_DEVICE_QXL);
+    DO_TEST("video-qxl-noheads", QEMU_CAPS_DEVICE_QXL);
+    DO_TEST("video-qxl-resolution", QEMU_CAPS_DEVICE_QXL);
+    DO_TEST("video-virtio-gpu-secondary", QEMU_CAPS_DEVICE_VIRTIO_GPU);
     DO_TEST("video-virtio-gpu-ccw",
             QEMU_CAPS_CCW,
             QEMU_CAPS_DEVICE_VIRTIO_GPU,
@@ -1242,7 +1253,9 @@ mymain(void)
     DO_TEST("pseries-cpu-exact",
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
 
-    DO_TEST("user-aliases", QEMU_CAPS_QCOW2_LUKS);
+    DO_TEST("user-aliases",
+            QEMU_CAPS_DEVICE_CIRRUS_VGA,
+            QEMU_CAPS_QCOW2_LUKS);
     DO_TEST("input-virtio-ccw",
             QEMU_CAPS_CCW,
             QEMU_CAPS_VIRTIO_KEYBOARD,

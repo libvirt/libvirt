@@ -329,6 +329,7 @@ mymain(void)
 {
     int ret = 0;
     int rc = testUserXattrEnabled();
+    g_autoptr(virQEMUCaps) qemuCaps = NULL;
 
     if (rc < 0)
         return EXIT_FAILURE;
@@ -344,6 +345,14 @@ mymain(void)
     }
 
     if (qemuTestDriverInit(&driver) < 0)
+        return EXIT_FAILURE;
+
+    if (!(qemuCaps = virQEMUCapsNew()))
+        return EXIT_FAILURE;
+
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEVICE_CIRRUS_VGA);
+
+    if (qemuTestCapsCacheInsert(driver.qemuCapsCache, qemuCaps) < 0)
         return EXIT_FAILURE;
 
 #define DO_TEST_LABELING(name) \
