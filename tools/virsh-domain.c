@@ -8523,7 +8523,7 @@ static const vshCmdOptDef opts_metadata[] = {
 
 /* helper to add new metadata using the --edit option */
 static char *
-virshDomainGetEditMetadata(vshControl *ctl,
+virshDomainGetEditMetadata(vshControl *ctl G_GNUC_UNUSED,
                            virDomainPtr dom,
                            const char *uri,
                            unsigned int flags)
@@ -8533,7 +8533,7 @@ virshDomainGetEditMetadata(vshControl *ctl,
     if (!(ret = virDomainGetMetadata(dom, VIR_DOMAIN_METADATA_ELEMENT,
                                      uri, flags))) {
         vshResetLibvirtError();
-        ret = vshStrdup(ctl, "\n");
+        ret = g_strdup("\n");
     }
 
     return ret;
