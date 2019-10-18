@@ -959,7 +959,7 @@ qemuProcessHandleBlockJob(qemuMonitorPtr mon G_GNUC_UNUSED,
         /* We have a SYNC API waiting for this event, dispatch it back */
         job->newstate = status;
         VIR_FREE(job->errmsg);
-        ignore_value(VIR_STRDUP_QUIET(job->errmsg, error));
+        job->errmsg = g_strdup(error);
         virDomainObjBroadcast(vm);
     } else {
         /* there is no waiting SYNC API, dispatch the update to a thread */
@@ -1749,11 +1749,11 @@ qemuProcessHandleDumpCompleted(qemuMonitorPtr mon G_GNUC_UNUSED,
     }
     priv->job.dumpCompleted = true;
     priv->job.current->stats.dump = *stats;
-    ignore_value(VIR_STRDUP_QUIET(priv->job.error, error));
+    priv->job.error = g_strdup(error);
 
     /* Force error if extracting the DUMP_COMPLETED status failed */
     if (!error && status < 0) {
-        ignore_value(VIR_STRDUP_QUIET(priv->job.error, virGetLastErrorMessage()));
+        priv->job.error = g_strdup(virGetLastErrorMessage());
         priv->job.current->stats.dump.status = QEMU_MONITOR_DUMP_STATUS_FAILED;
     }
 
@@ -3407,20 +3407,20 @@ qemuProcessUpdateState(virQEMUDriverPtr driver, virDomainObjPtr vm)
           oldReason == VIR_DOMAIN_PAUSED_STARTING_UP))) {
         newState = VIR_DOMAIN_RUNNING;
         newReason = VIR_DOMAIN_RUNNING_BOOTED;
-        ignore_value(VIR_STRDUP_QUIET(msg, "finished booting"));
+        msg = g_strdup("finished booting");
     } else if (state == VIR_DOMAIN_PAUSED && running) {
         newState = VIR_DOMAIN_RUNNING;
         newReason = VIR_DOMAIN_RUNNING_UNPAUSED;
-        ignore_value(VIR_STRDUP_QUIET(msg, "was unpaused"));
+        msg = g_strdup("was unpaused");
     } else if (state == VIR_DOMAIN_RUNNING && !running) {
         if (reason == VIR_DOMAIN_PAUSED_SHUTTING_DOWN) {
             newState = VIR_DOMAIN_SHUTDOWN;
             newReason = VIR_DOMAIN_SHUTDOWN_UNKNOWN;
-            ignore_value(VIR_STRDUP_QUIET(msg, "shutdown"));
+            msg = g_strdup("shutdown");
         } else if (reason == VIR_DOMAIN_PAUSED_CRASHED) {
             newState = VIR_DOMAIN_CRASHED;
             newReason = VIR_DOMAIN_CRASHED_PANICKED;
-            ignore_value(VIR_STRDUP_QUIET(msg, "crashed"));
+            msg = g_strdup("crashed");
         } else {
             newState = VIR_DOMAIN_PAUSED;
             newReason = reason;

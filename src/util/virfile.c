@@ -1264,7 +1264,7 @@ virFileFindMountPoint(const char *type)
 
     while (getmntent_r(f, &mb, mntbuf, sizeof(mntbuf))) {
         if (STREQ(mb.mnt_type, type)) {
-            ignore_value(VIR_STRDUP_QUIET(ret, mb.mnt_dir));
+            ret = g_strdup(mb.mnt_dir);
             goto cleanup;
         }
     }
@@ -1667,7 +1667,7 @@ virFindFileInPath(const char *file)
     if (IS_ABSOLUTE_FILE_NAME(file)) {
         char *ret = NULL;
         if (virFileIsExecutable(file))
-            ignore_value(VIR_STRDUP_QUIET(ret, file));
+            ret = g_strdup(file);
         return ret;
     }
 

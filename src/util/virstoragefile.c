@@ -1711,7 +1711,7 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
                 if (*parent && virStorageSourceIsLocalStorage(*parent))
                     parentDir = mdir_name((*parent)->path);
                 else
-                    ignore_value(VIR_STRDUP_QUIET(parentDir, "."));
+                    parentDir = g_strdup(".");
 
                 if (!parentDir) {
                     virReportOOMError();

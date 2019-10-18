@@ -190,7 +190,7 @@ canonicalize_file_name(const char *path)
         if ((p = STRSKIP(path, "/some/symlink")))
             ignore_value(virAsprintfQuiet(&ret, "/gluster%s", p));
         else
-            ignore_value(VIR_STRDUP_QUIET(ret, path));
+            ret = g_strdup(path);
 
         return ret;
     }

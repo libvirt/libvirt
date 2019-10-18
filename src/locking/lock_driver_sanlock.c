@@ -101,7 +101,7 @@ virLockManagerSanlockError(int err,
 {
     if (err <= -200) {
 #if HAVE_SANLOCK_STRERROR
-        ignore_value(VIR_STRDUP_QUIET(*message, sanlock_strerror(err)));
+        *message = g_strdup(sanlock_strerror(err));
 #else
         ignore_value(virAsprintfQuiet(message, _("sanlock error %d"), err));
 #endif

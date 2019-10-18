@@ -523,7 +523,7 @@ virGetHostnameImpl(bool quiet)
          * string as-is; it's up to callers to check whether "localhost"
          * is allowed.
          */
-        ignore_value(VIR_STRDUP_QUIET(result, hostname));
+        result = g_strdup(hostname);
         goto cleanup;
     }
 
@@ -539,7 +539,7 @@ virGetHostnameImpl(bool quiet)
         if (!quiet)
             VIR_WARN("getaddrinfo failed for '%s': %s",
                      hostname, gai_strerror(r));
-        ignore_value(VIR_STRDUP_QUIET(result, hostname));
+        result = g_strdup(hostname);
         goto cleanup;
     }
 
@@ -552,10 +552,10 @@ virGetHostnameImpl(bool quiet)
          * localhost.  Ignore the canonicalized name and just return the
          * original hostname
          */
-        ignore_value(VIR_STRDUP_QUIET(result, hostname));
+        result = g_strdup(hostname);
     else
         /* Caller frees this string. */
-        ignore_value(VIR_STRDUP_QUIET(result, info->ai_canonname));
+        result = g_strdup(info->ai_canonname);
 
     freeaddrinfo(info);
 
