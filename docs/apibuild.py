@@ -2543,25 +2543,15 @@ class app:
         builder = None
         srcdir = os.path.abspath((os.environ["srcdir"]))
         builddir = os.path.abspath((os.environ["builddir"]))
-        if srcdir == builddir:
-            builddir = None
         if glob.glob(srcdir + "/../src/libvirt.c") != []:
             if not quiet:
                 print("Rebuilding API description for %s" % name)
             dirs = [srcdir + "/../src",
                     srcdir + "/../src/admin",
                     srcdir + "/../src/util",
-                    srcdir + "/../include/libvirt"]
-            if (builddir and
-                not os.path.exists(srcdir + "/../include/libvirt/libvirt-common.h")):
-                dirs.append(builddir + "/../include/libvirt")
+                    srcdir + "/../include/libvirt",
+                    builddir + "/../include/libvirt"]
             builder = docBuilder(name, srcdir, dirs, [])
-        elif glob.glob("src/libvirt.c") != []:
-            if not quiet:
-                print("Rebuilding API description for %s" % name)
-            builder = docBuilder(name, srcdir,
-                                 ["src", "src/util", "include/libvirt"],
-                                 [])
         else:
             self.warning("rebuild() failed, unable to guess the module")
             return None
