@@ -53,11 +53,9 @@ ICON_FILES = \
 	virsh_win_icon.rc
 
 PODFILES = \
-	virsh.pod \
 	$(NULL)
 
 MANINFILES = \
-	virsh.1.in \
 	$(NULL)
 
 EXTRA_DIST = \
@@ -85,8 +83,7 @@ conf_DATA =
 bin_SCRIPTS = virt-xml-validate virt-pki-validate
 bin_PROGRAMS = virsh virt-admin
 libexec_SCRIPTS = libvirt-guests.sh
-man1_MANS = \
-		virsh.1
+man1_MANS =
 
 if WITH_SANLOCK
 sbin_SCRIPTS = virt-sanlock-cleanup
