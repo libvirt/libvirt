@@ -1447,11 +1447,16 @@ BAD:
       single label at the end of the function.  It's almost always ok
       to use this style.  In particular, if the cleanup code only
       involves free'ing memory, then having multiple labels is
-      overkill.  VIR_FREE() and every function named XXXFree() in
-      libvirt is required to handle NULL as its arg.  Thus you can
+      overkill.  g_free() and most of the functions named XXXFree() in
+      libvirt is required to handle NULL as its arg. This does not
+      apply to libvirt's public APIs. Thus you can
       safely call free on all the variables even if they were not yet
       allocated (yes they have to have been initialized to NULL).
       This is much simpler and clearer than having multiple labels.
+      Note that most of libvirt's type declarations can be marked with
+      either <code>g_autofree</code> or <code>g_autoptr</code> which uses
+      the compiler's <code>__attribute__((cleanup))</code> that calls
+      the appropriate free function when the variable goes out of scope.
     </p>
 
     <p>
