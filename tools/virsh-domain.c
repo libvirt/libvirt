@@ -8806,27 +8806,21 @@ static int getSignalNumber(vshControl *ctl, const char *signame)
 {
     size_t i;
     int signum;
-    char *str = vshStrdup(ctl, signame);
+    g_autofree char *str = vshStrdup(ctl, signame);
     char *p = str;
 
     for (i = 0; signame[i]; i++)
         p[i] = c_tolower(signame[i]);
 
     if (virStrToLong_i(p, NULL, 10, &signum) >= 0)
-        goto cleanup;
+        return signum;
 
     if (STRPREFIX(p, "sig_"))
         p += 4;
     else if (STRPREFIX(p, "sig"))
         p += 3;
 
-    if ((signum = virDomainProcessSignalTypeFromString(p)) >= 0)
-        goto cleanup;
-
-    signum = -1;
- cleanup:
-    VIR_FREE(str);
-    return signum;
+    return virDomainProcessSignalTypeFromString(p);
 }
 
 static bool
