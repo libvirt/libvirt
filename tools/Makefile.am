@@ -54,13 +54,11 @@ ICON_FILES = \
 
 PODFILES = \
 	virt-admin.pod \
-	virt-login-shell.pod \
 	virsh.pod \
 	$(NULL)
 
 MANINFILES = \
 	virt-admin.1.in \
-	virt-login-shell.1.in \
 	virsh.1.in \
 	$(NULL)
 
@@ -102,7 +100,6 @@ if WITH_LOGIN_SHELL
 conf_DATA += virt-login-shell.conf
 bin_PROGRAMS += virt-login-shell
 libexec_PROGRAMS = virt-login-shell-helper
-man1_MANS += virt-login-shell.1
 endif WITH_LOGIN_SHELL
 
 if WITH_HOST_VALIDATE

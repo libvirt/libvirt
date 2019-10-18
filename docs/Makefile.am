@@ -232,6 +232,11 @@ if WITH_HOST_VALIDATE
 else ! WITH_HOST_VALIDATE
   manpages_rst += manpages/virt-host-validate.rst
 endif ! WITH_HOST_VALIDATE
+if WITH_LOGIN_SHELL
+  manpages1_rst += manpages/virt-login-shell.rst
+else ! WITH_LOGIN_SHELL
+  manpages_rst += manpages/virt-login-shell.rst
+endif ! WITH_LOGIN_SHELL
 manpages_rst_html_in = \
   $(manpages_rst:%.rst=%.html.in)
 manpages_html = \
