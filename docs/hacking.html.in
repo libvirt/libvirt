@@ -1051,6 +1051,27 @@ BAD:
       <dt><code>virStrerror</code></dt>
       <dd>The GLib <code>g_strerror()</code> function should be used instead,
         which has a simpler calling convention as an added benefit.</dd>
+
+    <table class="top_table">
+        <tr><th>deprecated version</th><th>GLib version</th><th>Notes</th></tr>
+        <tr><td><code>VIR_ALLOC(var)</code></td><td><code>g_new0(var_t, 1)</code></td>
+            <td>the type needs to be passed explicitly</td></tr>
+        <tr><td><code>VIR_ALLOC_N</code></td><td><code>g_new0(var_t, n)</code></td><td></td></tr>
+        <tr><td><code>VIR_REALLOC_N</code></td><td><code>g_renew(var_t, ptr, n)</code></td>
+            <td>the newly added memory is not zeroed</td></tr>
+        <tr><td><code>VIR_EXPAND_N</code></td><td><code>g_renew(var_t, ptr, n)</code></td>
+            <td>zero the new memory manually or use an array type</td></tr>
+        <tr><td><code>VIR_SHRINK_N</code></td><td>g_renew(var_t, ptr, n)</td>
+            <td></td></tr>
+        <tr><td><code>VIR_APPEND_ELEMENT</code></td><td><code>g_array_append_val</code></td>
+            <td><code>g_ptr_array_add</code> or <code>g_byte_array_append</code></td></tr>
+        <tr><td><code>VIR_INSERT_ELEMENT</code></td><td><code>g_array_insert_val</code></td>
+            <td><code>g_ptr_array_insert</code></td></tr>
+        <tr><td><code>VIR_DELETE_ELEMENT</code></td><td><code>g_array_remove_index</code></td>
+            <td><code>g_ptr_array_remove_index</code> or <code>g_byte_array_remove_index</code></td></tr>
+        <tr><td><code>VIR_FREE</code></td><td><code>g_free</code></td>
+            <td><code>g_free</code> does not zero the pointer</td></tr>
+    </table>
     </dl>
 
     <p>
