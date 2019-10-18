@@ -17,3 +17,4 @@ Tools
 * `virt-xml-validate(1) <virt-xml-validate.html>`__ - validate libvirt XML files against a schema
 * `virt-sanlock-cleanup(8) <virt-sanlock-cleanup.html>`__ - remove stale sanlock resource lease files
 * `virt-login-shell(1) <virt-login-shell.html>`__ - tool to execute a shell within a container
+* `virt-admin(1) <virt-admin.html>`__ - daemon administration interface
