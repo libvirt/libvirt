@@ -6047,6 +6047,26 @@ qemuProcessSetupHotpluggableVcpus(virQEMUDriverPtr driver,
 }
 
 
+static bool
+qemuProcessDropUnknownCPUFeatures(const char *name,
+                                  virCPUFeaturePolicy policy,
+                                  void *opaque)
+{
+    const char **features = opaque;
+
+    if (policy != VIR_CPU_FEATURE_DISABLE &&
+        policy != VIR_CPU_FEATURE_FORBID)
+        return true;
+
+    if (virStringListHasString(features, name))
+        return true;
+
+    /* Features unknown to QEMU are implicitly disabled, we can just drop them
+     * from the definition. */
+    return false;
+}
+
+
 static int
 qemuProcessUpdateGuestCPU(virDomainDefPtr def,
                           virQEMUCapsPtr qemuCaps,
@@ -6111,6 +6131,18 @@ qemuProcessUpdateGuestCPU(virDomainDefPtr def,
     if (virCPUDefFilterFeatures(def->cpu, virQEMUCapsCPUFilterFeatures,
                                 &def->os.arch) < 0)
         return -1;
+
+    if (ARCH_IS_X86(def->os.arch)) {
+        VIR_AUTOSTRINGLIST features = NULL;
+
+        if (virQEMUCapsGetCPUFeatures(qemuCaps, def->virtType, false, &features) < 0)
+            return -1;
+
+        if (features &&
+            virCPUDefFilterFeatures(def->cpu, qemuProcessDropUnknownCPUFeatures,
+                                    features) < 0)
+            return -1;
+    }
 
     return 0;
 }
