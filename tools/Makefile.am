@@ -54,7 +54,6 @@ ICON_FILES = \
 
 PODFILES = \
 	virt-admin.pod \
-	virt-host-validate.pod \
 	virt-login-shell.pod \
 	virt-pki-validate.pod \
 	virt-sanlock-cleanup.pod \
@@ -64,7 +63,6 @@ PODFILES = \
 
 MANINFILES = \
 	virt-admin.1.in \
-	virt-host-validate.1.in \
 	virt-login-shell.1.in \
 	virt-pki-validate.1.in \
 	virt-sanlock-cleanup.8.in \
@@ -118,7 +116,6 @@ endif WITH_LOGIN_SHELL
 
 if WITH_HOST_VALIDATE
 bin_PROGRAMS += virt-host-validate
-man1_MANS += virt-host-validate.1
 endif WITH_HOST_VALIDATE
 
 virt-xml-validate: virt-xml-validate.in Makefile

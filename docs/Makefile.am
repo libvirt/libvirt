@@ -224,6 +224,11 @@ manpages_rst += \
   manpages/virtlogd.rst \
   $(NULL)
 endif ! WITH_LIBVIRTD
+if WITH_HOST_VALIDATE
+  manpages1_rst += manpages/virt-host-validate.rst
+else ! WITH_HOST_VALIDATE
+  manpages_rst += manpages/virt-host-validate.rst
+endif ! WITH_HOST_VALIDATE
 manpages_rst_html_in = \
   $(manpages_rst:%.rst=%.html.in)
 manpages_html = \
