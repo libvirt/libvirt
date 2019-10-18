@@ -126,6 +126,7 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     dontwarn="$dontwarn -Wunused-macros"
     dontwarn="$dontwarn -Woverlength-strings"
     dontwarn="$dontwarn -Wstack-protector"
+    dontwarn="$dontwarn -Wsuggest-attribute=malloc"
 
     # Get all possible GCC warnings
     gl_MANYWARN_ALL_GCC([maybewarn])
