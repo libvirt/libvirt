@@ -651,7 +651,7 @@ endif WITH_LIBVIRTD
 %.8: %.8.in $(top_srcdir)/configure.ac
 	$(AM_V_GEN)sed \
 		-e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
-		-e 's|[@]localstatedir[@]|$(localstatedir)|g' \
+		-e 's|[@]runstatedir[@]|$(runstatedir)|g' \
 		< $< > $@-t && \
 	mv $@-t $@
 

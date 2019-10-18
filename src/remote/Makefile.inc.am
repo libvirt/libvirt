@@ -468,7 +468,7 @@ libvirtd.8.in: remote/libvirtd.pod
 	if grep 'POD ERROR' $@-t1; then rm $@-t1; exit 1; fi && \
 	sed \
 		-e 's|SYSCONFDIR|\@sysconfdir\@|g' \
-		-e 's|LOCALSTATEDIR|\@localstatedir\@|g' \
+		-e 's|RUNSTATEDIR|\@runstatedir\@|g' \
 		< $@-t1 > $@-t2 && \
 	rm -f $@-t1 && \
 	mv $@-t2 $@
