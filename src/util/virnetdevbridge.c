@@ -379,7 +379,8 @@ virNetDevBridgePortSetUnicastFlood(const char *brname G_GNUC_UNUSED,
  */
 #if defined(HAVE_STRUCT_IFREQ) && defined(SIOCBRADDBR)
 static int
-virNetDevBridgeCreateWithIoctl(const char *brname)
+virNetDevBridgeCreateWithIoctl(const char *brname,
+                               const virMacAddr *mac)
 {
     VIR_AUTOCLOSE fd = -1;
 
@@ -392,22 +393,36 @@ virNetDevBridgeCreateWithIoctl(const char *brname)
         return -1;
     }
 
+    if (virNetDevSetMAC(brname, mac) < 0) {
+        virErrorPtr savederr;
+
+        virErrorPreserveLast(&savederr);
+        ignore_value(ioctl(fd, SIOCBRDELBR, brname));
+        virErrorRestore(&savederr);
+        return -1;
+    }
+
     return 0;
 }
 #endif
 
 #if defined(__linux__) && defined(HAVE_LIBNL)
 int
-virNetDevBridgeCreate(const char *brname)
+virNetDevBridgeCreate(const char *brname,
+                      const virMacAddr *mac)
 {
     /* use a netlink RTM_NEWLINK message to create the bridge */
     int error = 0;
+    virNetlinkNewLinkData data = {
+        .mac = mac,
+    };
 
-    if (virNetlinkNewLink(brname, "bridge", NULL, &error) < 0) {
+
+    if (virNetlinkNewLink(brname, "bridge", &data, &error) < 0) {
 # if defined(HAVE_STRUCT_IFREQ) && defined(SIOCBRADDBR)
         if (error == -EOPNOTSUPP) {
             /* fallback to ioctl if netlink doesn't support creating bridges */
-            return virNetDevBridgeCreateWithIoctl(brname);
+            return virNetDevBridgeCreateWithIoctl(brname, mac);
         }
 # endif
         if (error < 0)
@@ -423,15 +438,17 @@ virNetDevBridgeCreate(const char *brname)
 
 #elif defined(HAVE_STRUCT_IFREQ) && defined(SIOCBRADDBR)
 int
-virNetDevBridgeCreate(const char *brname)
+virNetDevBridgeCreate(const char *brname,
+                      const virMacAddr *mac)
 {
-    return virNetDevBridgeCreateWithIoctl(brname);
+    return virNetDevBridgeCreateWithIoctl(brname, mac);
 }
 
 
 #elif defined(HAVE_STRUCT_IFREQ) && defined(SIOCIFCREATE2)
 int
-virNetDevBridgeCreate(const char *brname)
+virNetDevBridgeCreate(const char *brname,
+                      const virMacAddr *mac)
 {
     struct ifreq ifr;
     VIR_AUTOCLOSE s = -1;
@@ -448,10 +465,21 @@ virNetDevBridgeCreate(const char *brname)
     if (virNetDevSetName(ifr.ifr_name, brname) == -1)
         return -1;
 
+    if (virNetDevSetMAC(brname, mac) < 0) {
+        virErrorPtr savederr;
+
+        virErrorPreserveLast(&savederr);
+        ignore_value(virNetDevBridgeDelete(brname));
+        virErrorRestore(&savederr);
+        return -1;
+    }
+
     return 0;
 }
 #else
-int virNetDevBridgeCreate(const char *brname)
+int
+virNetDevBridgeCreate(const char *brname,
+                      const virMacAddr *mac G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS,
                          _("Unable to create bridge %s"), brname);

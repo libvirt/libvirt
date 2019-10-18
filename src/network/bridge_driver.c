@@ -2485,7 +2485,7 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
                        def->name);
         return -1;
     }
-    if (virNetDevBridgeCreate(def->bridge) < 0)
+    if (virNetDevBridgeCreate(def->bridge, &def->mac) < 0)
         return -1;
 
     if (def->mac_specified) {
