@@ -5210,46 +5210,6 @@ qemuProcessStartValidateGraphics(virDomainObjPtr vm)
 
 
 static int
-qemuProcessStartValidateVideo(virDomainObjPtr vm,
-                              virQEMUCapsPtr qemuCaps)
-{
-    size_t i;
-    virDomainVideoDefPtr video;
-
-    for (i = 0; i < vm->def->nvideos; i++) {
-        video = vm->def->videos[i];
-
-        if (video->backend != VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER) {
-            if ((video->type == VIR_DOMAIN_VIDEO_TYPE_VGA &&
-                 !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VGA)) ||
-                (video->type == VIR_DOMAIN_VIDEO_TYPE_CIRRUS &&
-                 !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_CIRRUS_VGA)) ||
-                (video->type == VIR_DOMAIN_VIDEO_TYPE_VMVGA &&
-                 !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VMWARE_SVGA)) ||
-                (video->type == VIR_DOMAIN_VIDEO_TYPE_QXL &&
-                 !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QXL)) ||
-                (video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO &&
-                 !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_GPU)) ||
-                (video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO &&
-                 video->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
-                 !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_GPU_CCW)) ||
-                (video->type == VIR_DOMAIN_VIDEO_TYPE_BOCHS &&
-                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_BOCHS_DISPLAY)) ||
-                (video->type == VIR_DOMAIN_VIDEO_TYPE_RAMFB &&
-                 !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_RAMFB))) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("this QEMU does not support '%s' video device"),
-                               virDomainVideoTypeToString(video->type));
-                return -1;
-            }
-        }
-    }
-
-    return 0;
-}
-
-
-static int
 qemuProcessStartValidateIOThreads(virDomainObjPtr vm,
                                   virQEMUCapsPtr qemuCaps)
 {
@@ -5431,9 +5391,6 @@ qemuProcessStartValidate(virQEMUDriverPtr driver,
         return -1;
 
     if (qemuProcessStartValidateGraphics(vm) < 0)
-        return -1;
-
-    if (qemuProcessStartValidateVideo(vm, qemuCaps) < 0)
         return -1;
 
     if (qemuProcessStartValidateIOThreads(vm, qemuCaps) < 0)

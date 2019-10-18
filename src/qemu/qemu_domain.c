@@ -5710,28 +5710,9 @@ static int
 qemuDomainDeviceDefValidateVideo(const virDomainVideoDef *video,
                                  virQEMUCapsPtr qemuCaps)
 {
-    switch ((virDomainVideoType) video->type) {
-    case VIR_DOMAIN_VIDEO_TYPE_NONE:
+    /* there's no properties to validate for NONE video devices */
+    if (video->type == VIR_DOMAIN_VIDEO_TYPE_NONE)
         return 0;
-    case VIR_DOMAIN_VIDEO_TYPE_XEN:
-    case VIR_DOMAIN_VIDEO_TYPE_VBOX:
-    case VIR_DOMAIN_VIDEO_TYPE_PARALLELS:
-    case VIR_DOMAIN_VIDEO_TYPE_GOP:
-    case VIR_DOMAIN_VIDEO_TYPE_DEFAULT:
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("video type '%s' is not supported with QEMU"),
-                       virDomainVideoTypeToString(video->type));
-        return -1;
-    case VIR_DOMAIN_VIDEO_TYPE_VGA:
-    case VIR_DOMAIN_VIDEO_TYPE_CIRRUS:
-    case VIR_DOMAIN_VIDEO_TYPE_VMVGA:
-    case VIR_DOMAIN_VIDEO_TYPE_QXL:
-    case VIR_DOMAIN_VIDEO_TYPE_VIRTIO:
-    case VIR_DOMAIN_VIDEO_TYPE_BOCHS:
-    case VIR_DOMAIN_VIDEO_TYPE_RAMFB:
-    case VIR_DOMAIN_VIDEO_TYPE_LAST:
-        break;
-    }
 
     if (!video->primary &&
         video->type != VIR_DOMAIN_VIDEO_TYPE_QXL &&

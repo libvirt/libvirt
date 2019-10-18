@@ -711,6 +711,20 @@ virDomainCapsDeviceRNGDefValidate(const virDomainCaps *caps,
 }
 
 
+static int
+virDomainCapsDeviceVideoDefValidate(const virDomainCaps *caps,
+                                    const virDomainVideoDef *dev)
+{
+    if (ENUM_VALUE_MISSING(caps->video.modelType, dev->type)) {
+        ENUM_VALUE_ERROR("video model",
+                         virDomainVideoTypeToString(dev->type));
+        return -1;
+    }
+
+    return 0;
+}
+
+
 int
 virDomainCapsDeviceDefValidate(const virDomainCaps *caps,
                                const virDomainDeviceDef *dev,
@@ -722,6 +736,9 @@ virDomainCapsDeviceDefValidate(const virDomainCaps *caps,
     case VIR_DOMAIN_DEVICE_RNG:
         ret = virDomainCapsDeviceRNGDefValidate(caps, dev->data.rng);
         break;
+    case VIR_DOMAIN_DEVICE_VIDEO:
+        ret = virDomainCapsDeviceVideoDefValidate(caps, dev->data.video);
+        break;
 
     case VIR_DOMAIN_DEVICE_DISK:
     case VIR_DOMAIN_DEVICE_REDIRDEV:
@@ -730,7 +747,6 @@ virDomainCapsDeviceDefValidate(const virDomainCaps *caps,
     case VIR_DOMAIN_DEVICE_CHR:
     case VIR_DOMAIN_DEVICE_SMARTCARD:
     case VIR_DOMAIN_DEVICE_HOSTDEV:
-    case VIR_DOMAIN_DEVICE_VIDEO:
     case VIR_DOMAIN_DEVICE_MEMORY:
     case VIR_DOMAIN_DEVICE_VSOCK:
     case VIR_DOMAIN_DEVICE_INPUT:
