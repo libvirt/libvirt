@@ -160,7 +160,7 @@ char *virStringListJoin(const char **strings,
         return NULL;
     ret = virBufferContentAndReset(&buf);
     if (!ret)
-        ignore_value(VIR_STRDUP(ret, ""));
+        ret = g_strdup("");
     return ret;
 }
 

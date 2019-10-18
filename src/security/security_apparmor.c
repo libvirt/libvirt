@@ -1158,7 +1158,7 @@ AppArmorGetMountOptions(virSecurityManagerPtr mgr G_GNUC_UNUSED,
 {
     char *opts;
 
-    ignore_value(VIR_STRDUP(opts, ""));
+    opts = g_strdup("");
     return opts;
 }
 

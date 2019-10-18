@@ -157,7 +157,7 @@ virSCSIHostFindByPCI(const char *sysfs_prefix,
             continue;
         }
 
-        ignore_value(VIR_STRDUP(ret, entry->d_name));
+        ret = g_strdup(entry->d_name);
         break;
     }
 

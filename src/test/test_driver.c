@@ -725,7 +725,7 @@ static char *testBuildFilename(const char *relativeTo,
     if (!filename || filename[0] == '\0')
         return NULL;
     if (filename[0] == '/') {
-        ignore_value(VIR_STRDUP(ret, filename));
+        ret = g_strdup(filename);
         return ret;
     }
 
@@ -742,7 +742,7 @@ static char *testBuildFilename(const char *relativeTo,
         strcat(absFile, filename);
         return absFile;
     } else {
-        ignore_value(VIR_STRDUP(ret, filename));
+        ret = g_strdup(filename);
         return ret;
     }
 }
@@ -1585,7 +1585,7 @@ testConnectGetSysinfo(virConnectPtr conn G_GNUC_UNUSED,
 
     virCheckFlags(0, NULL);
 
-    ignore_value(VIR_STRDUP(ret, sysinfo));
+    ret = g_strdup(sysinfo);
     return ret;
 }
 
@@ -2561,7 +2561,7 @@ testDomainGetOSType(virDomainPtr dom G_GNUC_UNUSED)
 {
     char *ret;
 
-    ignore_value(VIR_STRDUP(ret, "linux"));
+    ret = g_strdup("linux");
     return ret;
 }
 
@@ -4889,7 +4889,7 @@ static char *testDomainGetSchedulerType(virDomainPtr domain G_GNUC_UNUSED,
     if (nparams)
         *nparams = 1;
 
-    ignore_value(VIR_STRDUP(type, "fair"));
+    type = g_strdup("fair");
 
     return type;
 }
@@ -5611,7 +5611,7 @@ testNetworkGetBridgeName(virNetworkPtr net)
         goto cleanup;
     }
 
-    ignore_value(VIR_STRDUP(bridge, def->bridge));
+    bridge = g_strdup(def->bridge);
 
  cleanup:
     virNetworkObjEndAPI(&obj);
@@ -6367,7 +6367,7 @@ testConnectFindStoragePoolSources(virConnectPtr conn G_GNUC_UNUSED,
     switch (pool_type) {
 
     case VIR_STORAGE_POOL_LOGICAL:
-        ignore_value(VIR_STRDUP(ret, defaultPoolSourcesLogicalXML));
+        ret = g_strdup(defaultPoolSourcesLogicalXML);
         return ret;
 
     case VIR_STORAGE_POOL_NETFS:
@@ -7241,7 +7241,7 @@ testStorageVolGetPath(virStorageVolPtr vol)
     if (!(privvol = testStorageVolDefFindByName(obj, vol->name)))
         goto cleanup;
 
-    ignore_value(VIR_STRDUP(ret, privvol->target.path));
+    ret = g_strdup(privvol->target.path);
 
  cleanup:
     virStoragePoolObjEndAPI(&obj);
@@ -7362,7 +7362,7 @@ testNodeDeviceGetParent(virNodeDevicePtr dev)
     def = virNodeDeviceObjGetDef(obj);
 
     if (def->parent) {
-        ignore_value(VIR_STRDUP(ret, def->parent));
+        ret = g_strdup(def->parent);
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("no parent for this device"));

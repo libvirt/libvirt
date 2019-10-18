@@ -843,7 +843,7 @@ static char *vboxStorageVolGetPath(virStorageVolPtr vol)
     if (!hddLocationUtf8)
         goto cleanup;
 
-    ignore_value(VIR_STRDUP(ret, hddLocationUtf8));
+    ret = g_strdup(hddLocationUtf8);
 
     VIR_DEBUG("Storage Volume Name: %s", vol->name);
     VIR_DEBUG("Storage Volume Path: %s", hddLocationUtf8);

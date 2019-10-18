@@ -1215,7 +1215,7 @@ mymain(void)
 
     driver.config->vncSASL = 1;
     VIR_FREE(driver.config->vncSASLdir);
-    ignore_value(VIR_STRDUP(driver.config->vncSASLdir, "/root/.sasl2"));
+    driver.config->vncSASLdir = g_strdup("/root/.sasl2");
     DO_TEST("graphics-vnc-sasl", QEMU_CAPS_VNC, QEMU_CAPS_DEVICE_CIRRUS_VGA);
     driver.config->vncTLS = 1;
     driver.config->vncTLSx509verify = 1;
@@ -1247,7 +1247,7 @@ mymain(void)
     DO_TEST("graphics-spice-no-args",
             QEMU_CAPS_SPICE, QEMU_CAPS_DEVICE_CIRRUS_VGA);
     driver.config->spiceSASL = 1;
-    ignore_value(VIR_STRDUP(driver.config->spiceSASLdir, "/root/.sasl2"));
+    driver.config->spiceSASLdir = g_strdup("/root/.sasl2");
     DO_TEST("graphics-spice-sasl",
             QEMU_CAPS_SPICE,
             QEMU_CAPS_DEVICE_QXL);

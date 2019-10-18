@@ -1841,7 +1841,7 @@ qemuMigrationDstGetURI(const char *migrateFrom,
     if (STREQ(migrateFrom, "stdio"))
         ignore_value(virAsprintf(&uri, "fd:%d", migrateFd));
     else
-        ignore_value(VIR_STRDUP(uri, migrateFrom));
+        uri = g_strdup(migrateFrom);
 
     return uri;
 }

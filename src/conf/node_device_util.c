@@ -54,7 +54,7 @@ virNodeDeviceGetParentName(virConnectPtr conn,
         return NULL;
     }
 
-    ignore_value(VIR_STRDUP(parent, virNodeDeviceGetParent(device)));
+    parent = g_strdup(virNodeDeviceGetParent(device));
     virObjectUnref(device);
 
     return parent;

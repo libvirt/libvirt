@@ -184,7 +184,7 @@ getAdapterName(virStorageAdapterPtr adapter)
                                                         unique_id)))
                 return NULL;
         } else {
-            ignore_value(VIR_STRDUP(name, scsi_host->name));
+            name = g_strdup(scsi_host->name);
         }
     } else if (adapter->type == VIR_STORAGE_ADAPTER_TYPE_FC_HOST) {
         virStorageAdapterFCHostPtr fchost = &adapter->data.fchost;

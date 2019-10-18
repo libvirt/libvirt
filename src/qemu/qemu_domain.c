@@ -10197,7 +10197,7 @@ qemuDomainStorageAlias(const char *device, int depth)
     device = qemuAliasDiskDriveSkipPrefix(device);
 
     if (!depth)
-        ignore_value(VIR_STRDUP(alias, device));
+        alias = g_strdup(device);
     else
         ignore_value(virAsprintf(&alias, "%s.%d", device, depth));
     return alias;
@@ -14719,7 +14719,7 @@ qemuDomainDiskBackingStoreGetName(virDomainDiskDefPtr disk,
     if (idx)
         ignore_value(virAsprintf(&ret, "%s[%d]", disk->dst, idx));
     else
-        ignore_value(VIR_STRDUP(ret, disk->dst));
+        ret = g_strdup(disk->dst);
 
     return ret;
 }

@@ -766,7 +766,7 @@ esxStorageVolGetPath(virStorageVolPtr volume)
 {
     char *path;
 
-    ignore_value(VIR_STRDUP(path, volume->name));
+    path = g_strdup(volume->name);
     return path;
 }
 

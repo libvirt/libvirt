@@ -714,7 +714,7 @@ static char *virGetGroupEnt(gid_t gid)
         return NULL;
     }
 
-    ignore_value(VIR_STRDUP(ret, gr->gr_name));
+    ret = g_strdup(gr->gr_name);
     VIR_FREE(strbuf);
     return ret;
 }

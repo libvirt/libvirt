@@ -836,7 +836,7 @@ char *virNetDevGetName(int ifindex)
         goto cleanup;
     }
 
-   ignore_value(VIR_STRDUP(ifname, name));
+   ifname = g_strdup(name);
 
  cleanup:
      return ifname;

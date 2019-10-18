@@ -127,7 +127,7 @@ virSCSIDeviceGetSgName(const char *sysfs_prefix,
 
     while (virDirRead(dir, &entry, path) > 0) {
         /* Assume a single directory entry */
-        ignore_value(VIR_STRDUP(sg, entry->d_name));
+        sg = g_strdup(entry->d_name);
         break;
     }
 
@@ -165,7 +165,7 @@ virSCSIDeviceGetDevName(const char *sysfs_prefix,
         goto cleanup;
 
     while (virDirRead(dir, &entry, path) > 0) {
-        ignore_value(VIR_STRDUP(name, entry->d_name));
+        name = g_strdup(entry->d_name);
         break;
     }
 

@@ -552,7 +552,7 @@ virSecuritySELinuxContextAddRange(security_context_t src,
         goto cleanup;
     }
 
-    ignore_value(VIR_STRDUP(ret, str));
+    ret = g_strdup(str);
 
  cleanup:
     if (srccon) context_free(srccon);

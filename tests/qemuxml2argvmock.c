@@ -101,7 +101,7 @@ virTPMCreateCancelPath(const char *devpath)
     char *path;
     (void)devpath;
 
-    ignore_value(VIR_STRDUP(path, "/sys/class/misc/tpm0/device/cancel"));
+    path = g_strdup("/sys/class/misc/tpm0/device/cancel");
 
     return path;
 }
@@ -125,7 +125,7 @@ virSCSIDeviceGetSgName(const char *sysfs_prefix G_GNUC_UNUSED,
 {
     char *ret;
 
-    ignore_value(VIR_STRDUP(ret, "sg0"));
+    ret = g_strdup("sg0");
     return ret;
 }
 
@@ -199,7 +199,7 @@ virHostGetDRMRenderNode(void)
 {
     char *dst = NULL;
 
-    ignore_value(VIR_STRDUP(dst, "/dev/dri/foo"));
+    dst = g_strdup("/dev/dri/foo");
     return dst;
 }
 

@@ -2281,7 +2281,7 @@ static char *qemuDomainGetOSType(virDomainPtr dom) {
     if (virDomainGetOSTypeEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    ignore_value(VIR_STRDUP(type, virDomainOSTypeToString(vm->def->os.type)));
+    type = g_strdup(virDomainOSTypeToString(vm->def->os.type));
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -4062,7 +4062,7 @@ qemuDomainScreenshot(virDomainPtr dom,
         goto endjob;
     }
 
-    ignore_value(VIR_STRDUP(ret, "image/x-portable-pixmap"));
+    ret = g_strdup("image/x-portable-pixmap");
 
  endjob:
     VIR_FORCE_CLOSE(tmp_fd);
@@ -9236,7 +9236,7 @@ static char *qemuDomainGetSchedulerType(virDomainPtr dom,
     if (!virDomainObjIsActive(vm)) {
         if (nparams)
             *nparams = 9;
-        ignore_value(VIR_STRDUP(ret, "posix"));
+        ret = g_strdup("posix");
         goto cleanup;
     }
 
@@ -9253,7 +9253,7 @@ static char *qemuDomainGetSchedulerType(virDomainPtr dom,
             *nparams = 1;
     }
 
-    ignore_value(VIR_STRDUP(ret, "posix"));
+    ret = g_strdup("posix");
 
  cleanup:
     virDomainObjEndAPI(&vm);

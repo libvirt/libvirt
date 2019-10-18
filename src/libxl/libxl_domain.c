@@ -1132,10 +1132,8 @@ libxlConsoleCallback(libxl_ctx *ctx, libxl_event *ev, void *for_callback)
                                         &console);
             if (!ret) {
                 VIR_FREE(chr->source->data.file.path);
-                if (console && console[0] != '\0') {
-                    ignore_value(VIR_STRDUP(chr->source->data.file.path,
-                                            console));
-                }
+                if (console && console[0] != '\0')
+                    chr->source->data.file.path = g_strdup(console);
             }
             VIR_FREE(console);
         }
@@ -1153,10 +1151,8 @@ libxlConsoleCallback(libxl_ctx *ctx, libxl_event *ev, void *for_callback)
                                         &console);
             if (!ret) {
                 VIR_FREE(chr->source->data.file.path);
-                if (console && console[0] != '\0') {
-                    ignore_value(VIR_STRDUP(chr->source->data.file.path,
-                                            console));
-                }
+                if (console && console[0] != '\0')
+                    chr->source->data.file.path = g_strdup(console);
             }
             VIR_FREE(console);
         }
@@ -1242,8 +1238,7 @@ libxlDomainCreateChannelPTY(virDomainDefPtr def, libxl_ctx *ctx)
         if (!ret && channelinfo.u.pty.path &&
             *channelinfo.u.pty.path != '\0') {
                 VIR_FREE(chr->source->data.file.path);
-                ignore_value(VIR_STRDUP(chr->source->data.file.path,
-                                        channelinfo.u.pty.path));
+                chr->source->data.file.path = g_strdup(channelinfo.u.pty.path);
             }
     }
 

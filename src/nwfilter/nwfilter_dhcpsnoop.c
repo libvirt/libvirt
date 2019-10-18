@@ -1395,7 +1395,7 @@ virNWFilterDHCPSnoopThread(void *req0)
             fds[i].fd = pcap_fileno(pcapConf[i].handle);
         }
         tmp = virNetDevGetIndex(req->binding->portdevname, &ifindex);
-        ignore_value(VIR_STRDUP(threadkey, req->threadkey));
+        threadkey = g_strdup(req->threadkey);
         worker = virThreadPoolNew(1, 1, 0,
                                   virNWFilterDHCPDecodeWorker,
                                   req);

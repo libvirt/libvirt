@@ -767,7 +767,7 @@ virTestLogContentAndReset(void)
         return NULL;
     ret = virBufferContentAndReset(&testLog.buf);
     if (!ret)
-        ignore_value(VIR_STRDUP(ret, ""));
+        ret = g_strdup("");
     return ret;
 }
 

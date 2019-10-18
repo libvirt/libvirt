@@ -148,7 +148,7 @@ virVHBAGetConfig(const char *sysfs_prefix,
     else
         p = buf;
 
-    ignore_value(VIR_STRDUP(result, p));
+    result = g_strdup(p);
 
  cleanup:
     VIR_FREE(sysfs_path);
@@ -222,7 +222,7 @@ virVHBAFindVportHost(const char *sysfs_prefix)
         if ((strlen(max_vports) >= strlen(vports)) ||
             ((strlen(max_vports) == strlen(vports)) &&
              strcmp(max_vports, vports) > 0)) {
-            ignore_value(VIR_STRDUP(ret, entry->d_name));
+            ret = g_strdup(entry->d_name);
             goto cleanup;
         }
 
@@ -403,7 +403,7 @@ virVHBAGetHostByWWN(const char *sysfs_prefix,
         if (rc == 0)
             continue;
 
-        ignore_value(VIR_STRDUP(ret, entry->d_name));
+        ret = g_strdup(entry->d_name);
         break;
     }
 
@@ -454,7 +454,7 @@ virVHBAGetHostByFabricWWN(const char *sysfs_prefix,
         if (rc == 0)
             continue;
 
-        ignore_value(VIR_STRDUP(ret, entry->d_name));
+        ret = g_strdup(entry->d_name);
         break;
     }
 

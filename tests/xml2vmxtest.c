@@ -175,7 +175,7 @@ testFormatVMXFileName(const char *src, void *opaque G_GNUC_UNUSED)
             goto cleanup;
     } else if (STRPREFIX(src, "/")) {
         /* Found absolute path */
-        ignore_value(VIR_STRDUP(absolutePath, src));
+        absolutePath = g_strdup(src);
     } else {
         /* Found relative path, this is not supported */
         goto cleanup;

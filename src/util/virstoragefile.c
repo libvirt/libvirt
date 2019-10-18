@@ -4014,7 +4014,7 @@ virStorageFileCanonicalizeFormatPath(char **components,
 
     /* if the output string is empty just return an empty string */
     if (!(ret = virBufferContentAndReset(&buf)))
-        ignore_value(VIR_STRDUP(ret, ""));
+        ret = g_strdup("");
 
     return ret;
 }

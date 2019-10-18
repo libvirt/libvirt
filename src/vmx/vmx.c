@@ -3595,7 +3595,7 @@ virVMXFormatDisk(virVMXContext *ctx, virDomainDiskDefPtr def,
 
             fileName = ctx->formatFileName(src, ctx->opaque);
         } else if (def->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
-            ignore_value(VIR_STRDUP(fileName, "emptyBackingString"));
+            fileName = g_strdup("emptyBackingString");
         }
 
         if (fileName == NULL)

@@ -75,7 +75,7 @@ virTPMCreateCancelPath(const char *devpath)
                 VIR_FREE(path);
             }
             if (!path)
-                ignore_value(VIR_STRDUP(path, "/dev/null"));
+                path = g_strdup("/dev/null");
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("TPM device path %s is invalid"), devpath);
@@ -116,7 +116,7 @@ virTPMGetSwtpm(void)
         return NULL;
 
     virMutexLock(&swtpm_tools_lock);
-    ignore_value(VIR_STRDUP(s, swtpm_path));
+    s = g_strdup(swtpm_path);
     virMutexUnlock(&swtpm_tools_lock);
 
     return s;
@@ -131,7 +131,7 @@ virTPMGetSwtpmSetup(void)
         return NULL;
 
     virMutexLock(&swtpm_tools_lock);
-    ignore_value(VIR_STRDUP(s, swtpm_setup));
+    s = g_strdup(swtpm_setup);
     virMutexUnlock(&swtpm_tools_lock);
 
     return s;
@@ -146,7 +146,7 @@ virTPMGetSwtpmIoctl(void)
         return NULL;
 
     virMutexLock(&swtpm_tools_lock);
-    ignore_value(VIR_STRDUP(s, swtpm_ioctl));
+    s = g_strdup(swtpm_ioctl);
     virMutexUnlock(&swtpm_tools_lock);
 
     return s;

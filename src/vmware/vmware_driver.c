@@ -844,7 +844,7 @@ vmwareDomainGetOSType(virDomainPtr dom)
     if (!(vm = vmwareDomObjFromDomain(driver, dom->uuid)))
         return NULL;
 
-    ignore_value(VIR_STRDUP(ret, virDomainOSTypeToString(vm->def->os.type)));
+    ret = g_strdup(virDomainOSTypeToString(vm->def->os.type));
 
     virDomainObjEndAPI(&vm);
     return ret;

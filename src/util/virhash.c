@@ -94,7 +94,7 @@ static bool virHashStrEqual(const void *namea, const void *nameb)
 static void *virHashStrCopy(const void *name)
 {
     char *ret;
-    ignore_value(VIR_STRDUP(ret, name));
+    ret = g_strdup(name);
     return ret;
 }
 

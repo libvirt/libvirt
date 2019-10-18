@@ -373,7 +373,7 @@ static char *openvzDomainGetOSType(virDomainPtr dom)
     if (!(vm = openvzDomObjFromDomain(driver, dom->uuid)))
         return NULL;
 
-    ignore_value(VIR_STRDUP(ret, virDomainOSTypeToString(vm->def->os.type)));
+    ret = g_strdup(virDomainOSTypeToString(vm->def->os.type));
 
     virDomainObjEndAPI(&vm);
     return ret;
@@ -716,7 +716,7 @@ openvzGenerateContainerVethName(int veid)
 
     /* try to get line "^NETIF=..." from config */
     if (openvzReadVPSConfigParam(veid, "NETIF", &temp) <= 0) {
-        ignore_value(VIR_STRDUP(name, "eth0"));
+        name = g_strdup("eth0");
     } else {
         char *saveptr = NULL;
         char *s;

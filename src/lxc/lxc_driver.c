@@ -1792,7 +1792,7 @@ static char *lxcDomainGetSchedulerType(virDomainPtr dom,
     if (!virDomainObjIsActive(vm)) {
         if (nparams)
             *nparams = 3;
-        ignore_value(VIR_STRDUP(ret, "posix"));
+        ret = g_strdup("posix");
         goto cleanup;
     }
 
@@ -1809,7 +1809,7 @@ static char *lxcDomainGetSchedulerType(virDomainPtr dom,
             *nparams = 1;
     }
 
-    ignore_value(VIR_STRDUP(ret, "posix"));
+    ret = g_strdup("posix");
 
  cleanup:
     virDomainObjEndAPI(&vm);

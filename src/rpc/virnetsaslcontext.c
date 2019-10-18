@@ -415,7 +415,7 @@ char *virNetSASLSessionListMechanisms(virNetSASLSessionPtr sasl)
                        _("no SASL mechanisms are available"));
         goto cleanup;
     }
-    ignore_value(VIR_STRDUP(ret, mechlist));
+    ret = g_strdup(mechlist);
 
  cleanup:
     virObjectUnlock(sasl);

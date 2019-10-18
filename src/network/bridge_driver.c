@@ -4190,7 +4190,7 @@ networkGetBridgeName(virNetworkPtr net)
         goto cleanup;
     }
 
-    ignore_value(VIR_STRDUP(bridge, def->bridge));
+    bridge = g_strdup(def->bridge);
 
  cleanup:
     virNetworkObjEndAPI(&obj);

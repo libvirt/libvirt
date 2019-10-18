@@ -194,7 +194,7 @@ virTypedParameterToString(virTypedParameterPtr param)
         ignore_value(virAsprintf(&value, "%d", param->value.b));
         break;
     case VIR_TYPED_PARAM_STRING:
-        ignore_value(VIR_STRDUP(value, param->value.s));
+        value = g_strdup(param->value.s);
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,

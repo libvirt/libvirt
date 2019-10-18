@@ -2701,7 +2701,7 @@ static char *vboxDomainGetOSType(virDomainPtr dom G_GNUC_UNUSED) {
      */
     char *osType;
 
-    ignore_value(VIR_STRDUP(osType, "hvm"));
+    osType = g_strdup("hvm");
     return osType;
 }
 

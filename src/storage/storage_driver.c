@@ -1657,7 +1657,7 @@ storageVolLookupByPathCallback(virStoragePoolObjPtr obj,
         case VIR_STORAGE_POOL_SHEEPDOG:
         case VIR_STORAGE_POOL_ZFS:
         case VIR_STORAGE_POOL_LAST:
-            ignore_value(VIR_STRDUP(stable_path, data->path));
+            stable_path = g_strdup(data->path);
             break;
     }
 
@@ -2760,7 +2760,7 @@ storageVolGetPath(virStorageVolPtr vol)
                                       voldef) < 0)
         goto cleanup;
 
-    ignore_value(VIR_STRDUP(ret, voldef->target.path));
+    ret = g_strdup(voldef->target.path);
 
  cleanup:
     virStoragePoolObjEndAPI(&obj);

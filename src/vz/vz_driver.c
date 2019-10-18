@@ -677,7 +677,7 @@ vzDomainGetOSType(virDomainPtr domain)
     if (virDomainGetOSTypeEnsureACL(domain->conn, dom->def) < 0)
         goto cleanup;
 
-    ignore_value(VIR_STRDUP(ret, virDomainOSTypeToString(dom->def->os.type)));
+    ret = g_strdup(virDomainOSTypeToString(dom->def->os.type));
 
  cleanup:
     virDomainObjEndAPI(&dom);

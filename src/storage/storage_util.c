@@ -1986,7 +1986,7 @@ virStorageBackendStablePath(virStoragePoolObjPtr pool,
      * the original non-stable dev path
      */
 
-    ignore_value(VIR_STRDUP(stablepath, devpath));
+    stablepath = g_strdup(devpath);
 
     return stablepath;
 }
@@ -3641,7 +3641,7 @@ virStorageBackendSCSISerial(const char *dev,
     if (rc == -2)
         return NULL;
 
-    ignore_value(VIR_STRDUP(serial, dev));
+    serial = g_strdup(dev);
     return serial;
 }
 

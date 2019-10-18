@@ -343,7 +343,7 @@ virStorageBackendSheepdogRefreshVol(virStoragePoolObjPtr pool,
         return -1;
 
     VIR_FREE(vol->target.path);
-    ignore_value(VIR_STRDUP(vol->target.path, vol->name));
+    vol->target.path = g_strdup(vol->name);
 
     return 0;
 }

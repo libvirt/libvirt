@@ -4607,7 +4607,7 @@ libxlDomainGetSchedulerType(virDomainPtr dom, int *nparams)
         goto cleanup;
     }
 
-    ignore_value(VIR_STRDUP(ret, name));
+    ret = g_strdup(name);
 
  cleanup:
     virDomainObjEndAPI(&vm);

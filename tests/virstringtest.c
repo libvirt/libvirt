@@ -697,9 +697,9 @@ testVirStringListFreeCount(const void *opaque G_GNUC_UNUSED)
     if (VIR_ALLOC_N(list, 4) < 0)
         return -1;
 
-    ignore_value(VIR_STRDUP(list[0], "test1"));
-    ignore_value(VIR_STRDUP(list[2], "test2"));
-    ignore_value(VIR_STRDUP(list[3], "test3"));
+    list[0] = g_strdup("test1");
+    list[2] = g_strdup("test2");
+    list[3] = g_strdup("test3");
 
     virStringListFreeCount(list, 4);
 

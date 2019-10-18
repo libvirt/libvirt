@@ -221,7 +221,7 @@ hypervConnectGetHostname(virConnectPtr conn)
         goto cleanup;
     }
 
-    ignore_value(VIR_STRDUP(hostname, computerSystem->data.common->DNSHostName));
+    hostname = g_strdup(computerSystem->data.common->DNSHostName);
 
  cleanup:
     hypervFreeObject(priv, (hypervObject *)computerSystem);
@@ -602,7 +602,7 @@ hypervDomainGetOSType(virDomainPtr domain G_GNUC_UNUSED)
 {
     char *osType;
 
-    ignore_value(VIR_STRDUP(osType, "hvm"));
+    osType = g_strdup("hvm");
     return osType;
 }
 

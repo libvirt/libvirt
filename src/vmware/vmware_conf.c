@@ -541,6 +541,6 @@ vmwareCopyVMXFileName(const char *datastorePath, void *opaque G_GNUC_UNUSED)
 {
     char *path;
 
-    ignore_value(VIR_STRDUP(path, datastorePath));
+    path = g_strdup(datastorePath);
     return path;
 }

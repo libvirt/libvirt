@@ -87,9 +87,9 @@ static void testIscsiadmCb(const char *const*args,
         args[2] && STREQ(args[2], "session") &&
         args[3] == NULL) {
         if (data->output_version)
-            ignore_value(VIR_STRDUP(*output, iscsiadmSessionOutputNonFlash));
+            *output = g_strdup(iscsiadmSessionOutputNonFlash);
         else
-            ignore_value(VIR_STRDUP(*output, iscsiadmSessionOutput));
+            *output = g_strdup(iscsiadmSessionOutput);
     } else if (args[0] && STREQ(args[0], ISCSIADM) &&
                args[1] && STREQ(args[1], "--mode") &&
                args[2] && STREQ(args[2], "discovery") &&
@@ -100,7 +100,7 @@ static void testIscsiadmCb(const char *const*args,
                args[7] && STREQ(args[7], "--op") &&
                args[8] && STREQ(args[8], "nonpersistent") &&
                args[9] == NULL) {
-        ignore_value(VIR_STRDUP(*output, iscsiadmSendtargetsOutput));
+        *output = g_strdup(iscsiadmSendtargetsOutput);
     } else if (args[0] && STREQ(args[0], ISCSIADM) &&
                args[1] && STREQ(args[1], "--mode") &&
                args[2] && STREQ(args[2], "node") &&
@@ -125,9 +125,9 @@ static void testIscsiadmCb(const char *const*args,
                args[2] && STREQ(args[2], "iface") &&
                args[3] == NULL) {
         if (data->iface_created)
-            ignore_value(VIR_STRDUP(*output, iscsiadmIfaceIfaceOutput));
+            *output = g_strdup(iscsiadmIfaceIfaceOutput);
         else
-            ignore_value(VIR_STRDUP(*output, iscsiadmIfaceDefaultOutput));
+            *output = g_strdup(iscsiadmIfaceDefaultOutput);
     } else if (args[0] && STREQ(args[0], ISCSIADM) &&
                args[1] && STREQ(args[1], "--mode") &&
                args[2] && STREQ(args[2], "iface") &&
@@ -171,7 +171,7 @@ static void testIscsiadmCb(const char *const*args,
                args[8] && STREQ(args[8], "libvirt-iface-03020100") &&
                args[9] == NULL &&
                data->iface_created) {
-        ignore_value(VIR_STRDUP(*output, iscsiadmSendtargetsOutput));
+        *output = g_strdup(iscsiadmSendtargetsOutput);
     } else if (args[0] && STREQ(args[0], ISCSIADM) &&
                args[1] && STREQ(args[1], "--mode") &&
                args[2] && STREQ(args[2], "node") &&

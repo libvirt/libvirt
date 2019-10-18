@@ -665,34 +665,34 @@ udevGetSCSIType(virNodeDeviceDefPtr def G_GNUC_UNUSED,
 
     switch (type) {
     case TYPE_DISK:
-        ignore_value(VIR_STRDUP(*typestring, "disk"));
+        *typestring = g_strdup("disk");
         break;
     case TYPE_TAPE:
-        ignore_value(VIR_STRDUP(*typestring, "tape"));
+        *typestring = g_strdup("tape");
         break;
     case TYPE_PROCESSOR:
-        ignore_value(VIR_STRDUP(*typestring, "processor"));
+        *typestring = g_strdup("processor");
         break;
     case TYPE_WORM:
-        ignore_value(VIR_STRDUP(*typestring, "worm"));
+        *typestring = g_strdup("worm");
         break;
     case TYPE_ROM:
-        ignore_value(VIR_STRDUP(*typestring, "cdrom"));
+        *typestring = g_strdup("cdrom");
         break;
     case TYPE_SCANNER:
-        ignore_value(VIR_STRDUP(*typestring, "scanner"));
+        *typestring = g_strdup("scanner");
         break;
     case TYPE_MOD:
-        ignore_value(VIR_STRDUP(*typestring, "mod"));
+        *typestring = g_strdup("mod");
         break;
     case TYPE_MEDIUM_CHANGER:
-        ignore_value(VIR_STRDUP(*typestring, "changer"));
+        *typestring = g_strdup("changer");
         break;
     case TYPE_ENCLOSURE:
-        ignore_value(VIR_STRDUP(*typestring, "enclosure"));
+        *typestring = g_strdup("enclosure");
         break;
     case TYPE_RAID:
-        ignore_value(VIR_STRDUP(*typestring, "raid"));
+        *typestring = g_strdup("raid");
         break;
     case TYPE_NO_LUN:
     default:

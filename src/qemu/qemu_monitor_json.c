@@ -6719,7 +6719,7 @@ qemuMonitorJSONGetTargetArch(qemuMonitorPtr mon)
         goto cleanup;
     }
 
-    ignore_value(VIR_STRDUP(ret, arch));
+    ret = g_strdup(arch);
 
  cleanup:
     virJSONValueFree(cmd);

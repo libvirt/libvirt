@@ -418,7 +418,7 @@ virBitmapFormat(virBitmapPtr bitmap)
 
     if (!bitmap || (cur = virBitmapNextSetBit(bitmap, -1)) < 0) {
         char *ret;
-        ignore_value(VIR_STRDUP(ret, ""));
+        ret = g_strdup("");
         return ret;
     }
 

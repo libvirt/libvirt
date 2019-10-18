@@ -91,7 +91,7 @@ virXPathString(const char *xpath,
         xmlXPathFreeObject(obj);
         return NULL;
     }
-    ignore_value(VIR_STRDUP(ret, (char *) obj->stringval));
+    ret = g_strdup((char *)obj->stringval);
     xmlXPathFreeObject(obj);
     return ret;
 }
@@ -995,7 +995,7 @@ virXMLNodeToString(xmlDocPtr doc,
         goto cleanup;
     }
 
-    ignore_value(VIR_STRDUP(ret, (const char *)xmlBufferContent(xmlbuf)));
+    ret = g_strdup((const char *)xmlBufferContent(xmlbuf));
 
  cleanup:
     xmlBufferFree(xmlbuf);

@@ -1934,7 +1934,7 @@ qemuBlockGetBackingStoreString(virStorageSourcePtr src)
     char *ret = NULL;
 
     if (virStorageSourceIsLocalStorage(src)) {
-        ignore_value(VIR_STRDUP(ret, src->path));
+        ret = g_strdup(src->path);
         return ret;
     }
 
