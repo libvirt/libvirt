@@ -5707,7 +5707,8 @@ qemuDomainDeviceDefValidateHostdev(const virDomainHostdevDef *hostdev,
 
 
 static int
-qemuDomainDeviceDefValidateVideo(const virDomainVideoDef *video)
+qemuDomainDeviceDefValidateVideo(const virDomainVideoDef *video,
+                                 virQEMUCapsPtr qemuCaps)
 {
     switch ((virDomainVideoType) video->type) {
     case VIR_DOMAIN_VIDEO_TYPE_NONE:
@@ -5794,6 +5795,15 @@ qemuDomainDeviceDefValidateVideo(const virDomainVideoDef *video)
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            "%s", _("value for 'vram' must be at least "
                                    "1 MiB (1024 KiB)"));
+            return -1;
+        }
+    }
+
+    if (video->backend == VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER) {
+        if (video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VHOST_USER_GPU)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("this QEMU does not support 'vhost-user' video device"));
             return -1;
         }
     }
@@ -7259,7 +7269,7 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
         break;
 
     case VIR_DOMAIN_DEVICE_VIDEO:
-        ret = qemuDomainDeviceDefValidateVideo(dev->data.video);
+        ret = qemuDomainDeviceDefValidateVideo(dev->data.video, qemuCaps);
         break;
 
     case VIR_DOMAIN_DEVICE_DISK:

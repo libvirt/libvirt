@@ -5219,14 +5219,7 @@ qemuProcessStartValidateVideo(virDomainObjPtr vm,
     for (i = 0; i < vm->def->nvideos; i++) {
         video = vm->def->videos[i];
 
-        if (video->backend == VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER) {
-            if (video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO &&
-                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VHOST_USER_GPU)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("this QEMU does not support 'vhost-user' video device"));
-                return -1;
-            }
-        } else {
+        if (video->backend != VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER) {
             if ((video->type == VIR_DOMAIN_VIDEO_TYPE_VGA &&
                  !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VGA)) ||
                 (video->type == VIR_DOMAIN_VIDEO_TYPE_CIRRUS &&
