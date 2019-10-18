@@ -13,3 +13,4 @@ Tools
 =====
 
 * `virt-host-validate(1) <virt-host-validate.html>`__ - validate host virtualization setup
+* `virt-pki-validate(1) <virt-pki-validate.html>`__ - validate libvirt PKI files are configured correctly

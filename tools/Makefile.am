@@ -55,7 +55,6 @@ ICON_FILES = \
 PODFILES = \
 	virt-admin.pod \
 	virt-login-shell.pod \
-	virt-pki-validate.pod \
 	virt-sanlock-cleanup.pod \
 	virt-xml-validate.pod \
 	virsh.pod \
@@ -64,7 +63,6 @@ PODFILES = \
 MANINFILES = \
 	virt-admin.1.in \
 	virt-login-shell.1.in \
-	virt-pki-validate.1.in \
 	virt-sanlock-cleanup.8.in \
 	virt-xml-validate.1.in \
 	virsh.1.in \
@@ -96,7 +94,6 @@ bin_SCRIPTS = virt-xml-validate virt-pki-validate
 bin_PROGRAMS = virsh virt-admin
 libexec_SCRIPTS = libvirt-guests.sh
 man1_MANS = \
-		virt-pki-validate.1 \
 		virt-xml-validate.1 \
 		virsh.1 \
 		virt-admin.1
