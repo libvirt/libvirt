@@ -5989,8 +5989,9 @@ qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
 
     if ((rc = qemuDomainWaitForDeviceRemoval(vm)) <= 0) {
         if (rc == 0)
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("vcpu unplug request timed out"));
+            virReportError(VIR_ERR_OPERATION_TIMEOUT, "%s",
+                           _("vcpu unplug request timed out. Unplug result "
+                             "must be manually inspected in the domain"));
 
         goto cleanup;
     }
