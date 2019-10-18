@@ -55,14 +55,12 @@ ICON_FILES = \
 PODFILES = \
 	virt-admin.pod \
 	virt-login-shell.pod \
-	virt-sanlock-cleanup.pod \
 	virsh.pod \
 	$(NULL)
 
 MANINFILES = \
 	virt-admin.1.in \
 	virt-login-shell.1.in \
-	virt-sanlock-cleanup.8.in \
 	virsh.1.in \
 	$(NULL)
 
@@ -97,7 +95,6 @@ man1_MANS = \
 
 if WITH_SANLOCK
 sbin_SCRIPTS = virt-sanlock-cleanup
-man8_MANS = virt-sanlock-cleanup.8
 DISTCLEANFILES += virt-sanlock-cleanup
 endif WITH_SANLOCK
 

@@ -207,6 +207,7 @@ manpages1_rst = \
 manpages7_rst = \
   $(NULL)
 manpages8_rst = \
+  manpages/virt-sanlock-cleanup.rst \
   $(NULL)
 manpages_rst += \
   $(manpages1_rst) \
