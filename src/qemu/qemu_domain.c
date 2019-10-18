@@ -7225,7 +7225,7 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
     if ((ret = qemuDomainDeviceDefValidateAddress(dev, qemuCaps)) < 0)
         goto cleanup;
 
-    if (virDomainCapsDeviceDefValidate(domCaps, dev, def) < 0)
+    if ((ret = virDomainCapsDeviceDefValidate(domCaps, dev, def)) < 0)
         goto cleanup;
 
     switch ((virDomainDeviceType)dev->type) {
