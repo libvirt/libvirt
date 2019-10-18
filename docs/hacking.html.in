@@ -141,14 +141,7 @@
       </li>
 
       <li><p>Run the automated tests on your code before submitting any changes.
-          In particular, configure with compile warnings set to
-          -Werror.  This is done automatically for a git checkout; from a
-          tarball, use:</p>
-<pre>
-  ./configure --enable-werror
-</pre>
-        <p>
-          and run the tests:
+          That is:
         </p>
 <pre>
   make check
@@ -1474,14 +1467,7 @@ int foo()
       how things work, it's better
       to wait for a more authoritative feedback though. Before committing, please
       also rebuild locally, run 'make check syntax-check', and make sure you
-      don't raise errors. Try to look for warnings too; for example,
-      configure with
-    </p>
-<pre>
-  --enable-compile-warnings=error
-</pre>
-    <p>
-      which adds -Werror to compile flags, so no warnings get missed
+      don't raise errors.
     </p>
 
     <p>
