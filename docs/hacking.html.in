@@ -1106,7 +1106,7 @@ BAD:
         new code. Existing code should be converted to the
         new macros where relevant. It is permissible to use
         <code>g_autoptr</code>, <code>g_auto</code> on an object whose cleanup function
-        is declared with the libvirt macros and vice-verca.
+        is declared with the libvirt macros and vice-versa.
       </dd>
 
       <dt><code>VIR_AUTOUNREF</code></dt>
