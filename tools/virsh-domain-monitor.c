@@ -421,11 +421,11 @@ static const vshCmdOptDef opts_domblkinfo[] = {
 
 static bool
 cmdDomblkinfoGet(vshControl *ctl,
-                   const virDomainBlockInfo *info,
-                   char **cap,
-                   char **alloc,
-                   char **phy,
-                   bool human)
+                 const virDomainBlockInfo *info,
+                 char **cap,
+                 char **alloc,
+                 char **phy,
+                 bool human)
 {
     if (info->capacity == 0 && info->allocation == 0 && info->physical == 0) {
         *cap = vshStrdup(ctl, "-");
