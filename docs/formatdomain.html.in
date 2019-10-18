@@ -4847,6 +4847,14 @@
           <a href="#elementsGraphics">graphical framebuffer</a> in order to
           use this attribute, currently only supported with VNC, Spice and
           egl-headless graphics devices.
+
+          <span class="since">Since version 5.10.0</span>, there is an optional
+          <code>ramfb</code> attribute for devices with
+          <code>model='vfio-pci'</code>. Supported values are either
+          <code>on</code> or <code>off</code> (default is 'off').  When
+          enabled, this attribute provides a memory framebuffer device to the
+          guest.  This framebuffer will be used as a boot display when a vgpu
+          device is the primary display.
           <p>
             Note: There are also some implications on the usage of guest's
             address type depending on the <code>model</code> attribute,

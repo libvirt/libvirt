@@ -4780,6 +4780,11 @@
       </choice>
     </attribute>
     <optional>
+      <attribute name="ramfb">
+        <ref name="virOnOff"/>
+      </attribute>
+    </optional>
+    <optional>
       <attribute name="display">
         <ref name="virOnOff"/>
       </attribute>

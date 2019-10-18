@@ -1605,6 +1605,7 @@ mymain(void)
     DO_TEST_PARSE_ERROR("hostdev-mdev-display-missing-graphics",
             QEMU_CAPS_DEVICE_VFIO_PCI,
             QEMU_CAPS_VFIO_PCI_DISPLAY);
+    DO_TEST_CAPS_LATEST("hostdev-mdev-display-ramfb");
     DO_TEST_PARSE_ERROR("hostdev-vfio-zpci-wrong-arch",
                         QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("hostdev-vfio-zpci",

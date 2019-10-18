@@ -5329,6 +5329,19 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
 }
 
 
+static const char *
+qemuBuildHostdevMdevModelTypeString(virDomainHostdevSubsysMediatedDevPtr mdev)
+{
+    /* when the 'ramfb' attribute is set, we must use the nohotplug variant
+     * rather than 'vfio-pci' */
+    if (mdev->model == VIR_MDEV_MODEL_TYPE_VFIO_PCI &&
+        mdev->ramfb == VIR_TRISTATE_SWITCH_ON)
+        return "vfio-pci-nohotplug";
+
+    return virMediatedDeviceModelTypeToString(mdev->model);
+}
+
+
 char *
 qemuBuildHostdevMediatedDevStr(const virDomainDef *def,
                                virDomainHostdevDefPtr dev,
@@ -5342,7 +5355,7 @@ qemuBuildHostdevMediatedDevStr(const virDomainDef *def,
     if (!(mdevPath = virMediatedDeviceGetSysfsPath(mdevsrc->uuidstr)))
         return NULL;
 
-    dev_str = virMediatedDeviceModelTypeToString(mdevsrc->model);
+    dev_str = qemuBuildHostdevMdevModelTypeString(mdevsrc);
 
     if (!dev_str)
         return NULL;
@@ -5359,6 +5372,10 @@ qemuBuildHostdevMediatedDevStr(const virDomainDef *def,
 
     if (dev->info->bootIndex)
         virBufferAsprintf(&buf, ",bootindex=%u", dev->info->bootIndex);
+
+    if (mdevsrc->ramfb == VIR_TRISTATE_SWITCH_ON)
+        virBufferAsprintf(&buf, ",ramfb=%s",
+                          virTristateSwitchTypeToString(mdevsrc->ramfb));
 
     return virBufferContentAndReset(&buf);
 }

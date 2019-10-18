@@ -8135,6 +8135,7 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
     g_autofree char *backendStr = NULL;
     g_autofree char *model = NULL;
     g_autofree char *display = NULL;
+    g_autofree char *ramfb = NULL;
 
     /* @managed can be read from the xml document - it is always an
      * attribute of the toplevel element, no matter what type of
@@ -8148,6 +8149,7 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
     rawio = virXMLPropString(node, "rawio");
     model = virXMLPropString(node, "model");
     display = virXMLPropString(node, "display");
+    ramfb = virXMLPropString(node, "ramfb");
 
     /* @type is passed in from the caller rather than read from the
      * xml document, because it is specified in different places for
@@ -8254,6 +8256,15 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
                            _("unknown value '%s' for <hostdev> attribute "
                              "'display'"),
                            display);
+            return -1;
+        }
+
+        if (ramfb &&
+            (mdevsrc->ramfb = virTristateSwitchTypeFromString(ramfb)) <= 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("unknown value '%s' for <hostdev> attribute "
+                             "'ramfb'"),
+                           ramfb);
             return -1;
         }
     }
