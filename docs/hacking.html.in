@@ -1073,6 +1073,14 @@ BAD:
         <tr><td><code>VIR_STEAL_PTR</code></td><td><code>g_steal_pointer</code></td>
             <td><code>a = f(&amp;b)</code> instead of <code>f(a, b)</code></td></tr>
         <tr><td><code>VIR_RETURN_PTR</code></td><td><code>return g_steal_pointer</code></td><td></td></tr>
+        <tr><td><code>ARRAY_CARDINALITY</code></td><td><code>G_N_ELEMENTS</code></td><td></td></tr>
+        <tr><td><code>ATTRIBUTE_FALLTHROUGH</code></td><td><code>G_GNUC_FALLTHROUGH</code></td><td></td></tr>
+        <tr><td><code>ATTRIBUTE_FMT_PRINTF</code></td><td><code>G_GNUC_PRINTF</code></td><td></td></tr>
+        <tr><td><code>ATTRIBUTE_NOINLINE</code></td><td><code>G_GNUC_NO_INLINE</code></td><td></td></tr>
+        <tr><td><code>ATTRIBUTE_NORETURN</code></td><td><code>G_GNUC_NORETURN</code></td><td></td></tr>
+        <tr><td><code>ATTRIBUTE_RETURN_CHECK</code></td><td><code>G_GNUC_WARN_UNUSED_RESULT</code></td><td></td></tr>
+        <tr><td><code>ATTRIBUTE_SENTINEL</code></td><td><code>G_GNUC_NULL_TERMINATED</code></td><td></td></tr>
+        <tr><td><code>ATTRIBUTE_UNUSED</code></td><td><code>G_GNUC_UNUSED</code></td><td></td></tr>
     </table>
 
 
