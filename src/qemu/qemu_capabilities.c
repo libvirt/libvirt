@@ -3735,9 +3735,8 @@ virQEMUCapsLoadCache(virArch hostArch,
 
     if (virXPathBoolean("boolean(./package)", ctxt) > 0) {
         qemuCaps->package = virXPathString("string(./package)", ctxt);
-        if (!qemuCaps->package &&
-            VIR_STRDUP(qemuCaps->package, "") < 0)
-            goto cleanup;
+        if (!qemuCaps->package)
+            qemuCaps->package = g_strdup("");
     }
 
     if (virXPathBoolean("boolean(./kernelVersion)", ctxt) > 0) {

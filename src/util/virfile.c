@@ -4008,12 +4008,12 @@ virFileComparePaths(const char *p1, const char *p2)
      * comparison.
      */
     ignore_value(virFileResolveLink(p1, &res1));
-    if (!res1 && VIR_STRDUP(res1, p1) < 0)
-        return -1;
+    if (!res1)
+        res1 = g_strdup(p1);
 
     ignore_value(virFileResolveLink(p2, &res2));
-    if (!res2 && VIR_STRDUP(res2, p2) < 0)
-        return -1;
+    if (!res2)
+        res2 = g_strdup(p2);
 
     return STREQ_NULLABLE(res1, res2);
 }

@@ -2659,8 +2659,8 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
                                   true) < 0)
             goto cleanup;
 
-        if (!networkName && VIR_STRDUP(networkName, "") < 0)
-            goto cleanup;
+        if (!networkName)
+            networkName = g_strdup("");
     }
 
     /* vmx:vnet -> def:data.ifname */

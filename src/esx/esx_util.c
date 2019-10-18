@@ -156,9 +156,8 @@ esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURIPtr uri)
     if (VIR_STRDUP((*parsedUri)->path, uri->path) < 0)
         goto cleanup;
 
-    if (!(*parsedUri)->transport &&
-        VIR_STRDUP((*parsedUri)->transport, "https") < 0)
-        goto cleanup;
+    if (!(*parsedUri)->transport)
+        (*parsedUri)->transport = g_strdup("https");
 
     result = 0;
 

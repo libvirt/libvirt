@@ -106,12 +106,8 @@ virLeaseReadCustomLeaseFile(virJSONValuePtr leases_array_new,
             /* This is an ipv6 lease */
             if ((server_duid_tmp
                  = virJSONValueObjectGetString(lease_tmp, "server-duid"))) {
-                if (!*server_duid && VIR_STRDUP(*server_duid, server_duid_tmp) < 0) {
-                    /* Control reaches here when the 'action' is not for an
-                     * ipv6 lease or, for some weird reason the env var
-                     * DNSMASQ_SERVER_DUID wasn't set*/
-                    return -1;
-                }
+                if (!*server_duid)
+                    *server_duid = g_strdup(server_duid_tmp);
             } else {
                 /* Inject server-duid into those ipv6 leases which
                  * didn't have it previously, for example, those

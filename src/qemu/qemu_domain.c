@@ -13339,9 +13339,8 @@ qemuDomainSetupDev(virQEMUDriverConfigPtr cfg,
 
     mount_options = qemuSecurityGetMountOptions(mgr, vm->def);
 
-    if (!mount_options &&
-        VIR_STRDUP(mount_options, "") < 0)
-        goto cleanup;
+    if (!mount_options)
+        mount_options = g_strdup("");
 
     /*
      * tmpfs is limited to 64kb, since we only have device nodes in there

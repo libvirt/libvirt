@@ -1414,8 +1414,8 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
         if ((n = virXPathNodeSet("./target/features/*", ctxt, &nodes)) < 0)
             return NULL;
 
-        if (!def->target.compat && VIR_STRDUP(def->target.compat, "1.1") < 0)
-            return NULL;
+        if (!def->target.compat)
+            def->target.compat = g_strdup("1.1");
 
         if (!(def->target.features = virBitmapNew(VIR_STORAGE_FILE_FEATURE_LAST)))
             return NULL;

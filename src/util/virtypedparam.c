@@ -240,8 +240,8 @@ virTypedParameterAssignValueVArgs(virTypedParameterPtr param,
             param->value.s = va_arg(ap, char *);
         }
 
-        if (!param->value.s && VIR_STRDUP(param->value.s, "") < 0)
-            return -1;
+        if (!param->value.s)
+            param->value.s = g_strdup("");
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,

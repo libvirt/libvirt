@@ -100,10 +100,8 @@ fillQemuCaps(virDomainCapsPtr domCaps,
             goto cleanup;
     }
 
-    if (!domCaps->machine &&
-        VIR_STRDUP(domCaps->machine,
-                   virQEMUCapsGetPreferredMachine(qemuCaps)) < 0)
-        goto cleanup;
+    if (!domCaps->machine)
+        domCaps->machine = g_strdup(virQEMUCapsGetPreferredMachine(qemuCaps));
 
     if (virQEMUCapsFillDomainCaps(caps, domCaps, qemuCaps,
                                   false,

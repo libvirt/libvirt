@@ -136,8 +136,8 @@ virStorageBackendZFSParseVol(virStoragePoolObjPtr pool,
             goto cleanup;
     }
 
-    if (!volume->key && VIR_STRDUP(volume->key, tokens[0]) < 0)
-        goto cleanup;
+    if (!volume->key)
+        volume->key = g_strdup(tokens[0]);
 
     if (volume->target.path == NULL) {
         if (virAsprintf(&volume->target.path, "%s/%s",

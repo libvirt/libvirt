@@ -2493,10 +2493,8 @@ virPCIGetNetName(const char *device_link_sysfs_path,
                  * needed because some NIC drivers (e.g. i40e)
                  * implement phys_port_id for PFs, but not for VFs
                  */
-                if (!firstEntryName &&
-                    VIR_STRDUP(firstEntryName, entry->d_name) < 0) {
-                    goto cleanup;
-                }
+                if (!firstEntryName)
+                    firstEntryName = g_strdup(entry->d_name);
 
                 continue;
             }

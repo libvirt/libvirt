@@ -325,8 +325,8 @@ virStorageBackendLogicalMakeVol(char **const groups,
         vol->target.backingStore->type = VIR_STORAGE_TYPE_BLOCK;
     }
 
-    if (!vol->key && VIR_STRDUP(vol->key, groups[2]) < 0)
-        goto cleanup;
+    if (!vol->key)
+        vol->key = g_strdup(groups[2]);
 
     if (virStorageBackendUpdateVolInfo(vol, false,
                                        VIR_STORAGE_VOL_OPEN_DEFAULT, 0) < 0)

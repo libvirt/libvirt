@@ -459,8 +459,8 @@ AppArmorGenSecurityLabel(virSecurityManagerPtr mgr G_GNUC_UNUSED,
     if (VIR_STRDUP(secdef->imagelabel, profile_name) < 0)
         goto err;
 
-    if (!secdef->model && VIR_STRDUP(secdef->model, SECURITY_APPARMOR_NAME) < 0)
-        goto err;
+    if (!secdef->model)
+        secdef->model = g_strdup(SECURITY_APPARMOR_NAME);
 
     /* Now that we have a label, load the profile into the kernel. */
     if (load_profile(mgr, secdef->label, def, NULL, false) < 0) {

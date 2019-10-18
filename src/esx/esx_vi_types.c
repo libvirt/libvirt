@@ -1034,8 +1034,8 @@ esxVI_AnyType_Deserialize(xmlNodePtr node, esxVI_AnyType **anyType)
     (*anyType)->value =
       (char *)xmlNodeListGetString(node->doc, node->children, 1);
 
-    if (!(*anyType)->value && VIR_STRDUP((*anyType)->value, "") < 0)
-        goto failure;
+    if (!(*anyType)->value)
+        (*anyType)->value = g_strdup("");
 
 #define _DESERIALIZE_NUMBER(_type, _xsdType, _name, _min, _max) \
         do { \

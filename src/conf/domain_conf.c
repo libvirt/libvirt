@@ -13140,8 +13140,8 @@ virDomainTPMDefParseXML(virDomainXMLOptionPtr xmlopt,
     switch (def->type) {
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
         path = virXPathString("string(./backend/device/@path)", ctxt);
-        if (!path && VIR_STRDUP(path, VIR_DOMAIN_TPM_DEFAULT_DEVICE) < 0)
-            goto error;
+        if (!path)
+            path = g_strdup(VIR_DOMAIN_TPM_DEFAULT_DEVICE);
         def->data.passthrough.source.data.file.path = g_steal_pointer(&path);
         def->data.passthrough.source.type = VIR_DOMAIN_CHR_TYPE_DEV;
         break;

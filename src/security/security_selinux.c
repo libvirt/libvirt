@@ -938,9 +938,8 @@ virSecuritySELinuxGenLabel(virSecurityManagerPtr mgr,
     if (!seclabel->imagelabel)
         goto cleanup;
 
-    if (!seclabel->model &&
-        VIR_STRDUP(seclabel->model, SECURITY_SELINUX_NAME) < 0)
-        goto cleanup;
+    if (!seclabel->model)
+        seclabel->model = g_strdup(SECURITY_SELINUX_NAME);
 
     rc = 0;
 
@@ -3368,8 +3367,8 @@ virSecuritySELinuxGetSecurityMountOptions(virSecurityManagerPtr mgr,
             return NULL;
     }
 
-    if (!opts && VIR_STRDUP(opts, "") < 0)
-        return NULL;
+    if (!opts)
+        opts = g_strdup("");
 
     VIR_DEBUG("imageLabel=%s opts=%s",
               secdef ? secdef->imagelabel : "(null)", opts);

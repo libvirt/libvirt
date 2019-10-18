@@ -1247,8 +1247,8 @@ doRemoteOpen(virConnectPtr conn,
         break;
 
     case REMOTE_DRIVER_TRANSPORT_SSH:
-        if (!command && VIR_STRDUP(command, "ssh") < 0)
-            goto failed;
+        if (!command)
+            command = g_strdup("ssh");
 
         if (!(priv->client = virNetClientNewSSH(priv->hostname,
                                                 port,

@@ -1100,8 +1100,8 @@ testOpenVolumesForPool(const char *file,
                 return -1;
         }
 
-        if (!volDef->key && VIR_STRDUP(volDef->key, volDef->target.path) < 0)
-            return -1;
+        if (!volDef->key)
+            volDef->key = g_strdup(volDef->target.path);
 
         if (virStoragePoolObjAddVol(obj, volDef) < 0)
             return -1;

@@ -1307,8 +1307,8 @@ udevSetParent(struct udev_device *device,
 
     } while (def->parent == NULL && parent_device != NULL);
 
-    if (!def->parent && VIR_STRDUP(def->parent, "computer") < 0)
-        goto cleanup;
+    if (!def->parent)
+        def->parent = g_strdup("computer");
 
     ret = 0;
 
