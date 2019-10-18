@@ -44,8 +44,6 @@ CLEANFILES += \
 	$(LOG_DAEMON_GENERATED) \
 	$(NULL)
 
-PODFILES += logging/virtlogd.pod
-MANINFILES += virtlogd.8.in
 SYSCONF_FILES += logging/virtlogd.sysconf
 
 VIRTLOGD_UNIT_FILES_IN = \
@@ -76,7 +74,6 @@ libvirt_driver_log_la_CFLAGS = \
 if WITH_LIBVIRTD
 sbin_PROGRAMS += virtlogd
 
-man8_MANS += virtlogd.8
 
 virtlogd_SOURCES = \
 		$(LOG_DAEMON_SOURCES) \
@@ -130,16 +127,6 @@ logging/log_daemon_dispatch_stubs.h: $(LOG_PROTOCOL) \
 	$(AM_V_GEN)perl -w $(srcdir)/rpc/gendispatch.pl --mode=server \
 	    virLogManagerProtocol VIR_LOG_MANAGER_PROTOCOL \
 	    $(LOG_PROTOCOL) > logging/log_daemon_dispatch_stubs.h
-
-virtlogd.8.in: logging/virtlogd.pod
-	$(AM_V_GEN)$(POD2MAN) --section=8 $< $@-t1 && \
-	if grep 'POD ERROR' $@-t1; then rm $@-t1; exit 1; fi && \
-	sed \
-		-e 's|SYSCONFDIR|\@sysconfdir\@|g' \
-		-e 's|RUNSTATEDIR|\@runstatedir\@|g' \
-		< $@-t1 > $@-t2 && \
-	rm -f $@-t1 && \
-	mv $@-t2 $@
 
 virtlogd.service: logging/virtlogd.service.in $(top_builddir)/config.status
 	$(AM_V_GEN)sed $(COMMON_UNIT_VARS) $< > $@-t && mv $@-t $@

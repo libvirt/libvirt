@@ -215,11 +215,13 @@ if WITH_LIBVIRTD
 manpages8_rst += \
   manpages/libvirtd.rst \
   manpages/virtlockd.rst \
+  manpages/virtlogd.rst \
   $(NULL)
 else ! WITH_LIBVIRTD
 manpages_rst += \
   manpages/libvirtd.rst \
   manpages/virtlockd.rst \
+  manpages/virtlogd.rst \
   $(NULL)
 endif ! WITH_LIBVIRTD
 manpages_rst_html_in = \
