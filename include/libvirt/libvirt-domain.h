@@ -2460,6 +2460,9 @@ typedef enum {
      * exists as long as sync is active */
     VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT = 4,
 
+    /* Backup (virDomainBackupBegin) */
+    VIR_DOMAIN_BLOCK_JOB_TYPE_BACKUP = 5,
+
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_BLOCK_JOB_TYPE_LAST
 # endif

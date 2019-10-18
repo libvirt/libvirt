@@ -1147,6 +1147,8 @@ qemuMonitorJSONHandleBlockJobImpl(qemuMonitorPtr mon,
         type = VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT;
     else if (STREQ(type_str, "mirror"))
         type = VIR_DOMAIN_BLOCK_JOB_TYPE_COPY;
+    else if (STREQ(type_str, "backup"))
+        type = VIR_DOMAIN_BLOCK_JOB_TYPE_BACKUP;
 
     switch ((virConnectDomainEventBlockJobStatus) event) {
     case VIR_DOMAIN_BLOCK_JOB_COMPLETED:
@@ -4844,6 +4846,8 @@ qemuMonitorJSONParseBlockJobInfo(virHashTablePtr blockJobs,
         info->type = VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT;
     else if (STREQ(type, "mirror"))
         info->type = VIR_DOMAIN_BLOCK_JOB_TYPE_COPY;
+    else if (STREQ(type, "backup"))
+        info->type = VIR_DOMAIN_BLOCK_JOB_TYPE_BACKUP;
     else
         info->type = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
 

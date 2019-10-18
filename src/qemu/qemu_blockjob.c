@@ -65,6 +65,7 @@ VIR_ENUM_IMPL(qemuBlockjob,
               "copy",
               "commit",
               "active-commit",
+              "backup",
               "",
               "create",
               "broken");
@@ -1280,6 +1281,8 @@ qemuBlockJobEventProcessConcludedTransition(qemuBlockJobDataPtr job,
             qemuBlockJobProcessEventConcludedCopyAbort(driver, vm, job, asyncJob);
         break;
 
+    case QEMU_BLOCKJOB_TYPE_BACKUP:
+        break;
 
     case QEMU_BLOCKJOB_TYPE_BROKEN:
     case QEMU_BLOCKJOB_TYPE_NONE:
