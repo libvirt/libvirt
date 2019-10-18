@@ -8802,11 +8802,11 @@ VIR_ENUM_IMPL(virDomainProcessSignal,
               "rt23",   "rt24", "rt25",  "rt26", "rt27", /* 55-59 */
               "rt28",   "rt29", "rt30",  "rt31", "rt32"); /* 60-64 */
 
-static int getSignalNumber(vshControl *ctl, const char *signame)
+static int getSignalNumber(const char *signame)
 {
     size_t i;
     int signum;
-    g_autofree char *str = vshStrdup(ctl, signame);
+    g_autofree char *str = g_strdup(signame);
     char *p = str;
 
     for (i = 0; signame[i]; i++)
@@ -8840,7 +8840,7 @@ cmdSendProcessSignal(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "signame", &signame) < 0)
         return false;
 
-    if ((signum = getSignalNumber(ctl, signame)) < 0) {
+    if ((signum = getSignalNumber(signame)) < 0) {
         vshError(ctl, _("malformed signal name: %s"), signame);
         return false;
     }
