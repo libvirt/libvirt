@@ -179,12 +179,13 @@
 
         <p>
           When debugging failures during development, it is possible
-          to focus in on just the failing subtests by using TESTS and
-          VIR_TEST_RANGE:
+          to focus in on just the failing subtests by using
+          VIR_TEST_RANGE. I.e. to run all tests from 3 to 20 with the
+          exception of tests 6 and 16, use:
         </p>
 
 <pre>
-  make check VIR_TEST_DEBUG=1 VIR_TEST_RANGE=3-5 TESTS=qemuxml2argvtest
+  VIR_TEST_DEBUG=1 VIR_TEST_RANGE=3-5,7-20,^16 ./run tests/qemuxml2argvtest
 </pre>
 
         <p>
