@@ -140,6 +140,7 @@
         <value>qxl</value>
         <value>virtio</value>
         <value>bochs</value>
+        <value>ramfb</value>
       </enum>
     </video>
     <hostdev supported='yes'>

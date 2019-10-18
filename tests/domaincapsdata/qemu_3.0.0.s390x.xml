@@ -158,6 +158,7 @@
     <video supported='yes'>
       <enum name='modelType'>
         <value>virtio</value>
+        <value>ramfb</value>
       </enum>
     </video>
     <hostdev supported='yes'>
