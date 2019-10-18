@@ -7209,8 +7209,8 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
 {
     int ret = 0;
     virQEMUDriverPtr driver = opaque;
-    virQEMUCapsPtr qemuCaps = NULL;
-    virDomainCapsPtr domCaps = NULL;
+    g_autoptr(virQEMUCaps) qemuCaps = NULL;
+    g_autoptr(virDomainCaps) domCaps = NULL;
 
     if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache,
                                             def->emulator)))
@@ -7220,13 +7220,13 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                                                        def->os.machine,
                                                        def->os.arch,
                                                        def->virtType)))
-        goto cleanup;
+        return -1;
 
     if ((ret = qemuDomainDeviceDefValidateAddress(dev, qemuCaps)) < 0)
-        goto cleanup;
+        return ret;
 
     if ((ret = virDomainCapsDeviceDefValidate(domCaps, dev, def)) < 0)
-        goto cleanup;
+        return ret;
 
     switch ((virDomainDeviceType)dev->type) {
     case VIR_DOMAIN_DEVICE_NET:
@@ -7312,9 +7312,6 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
         break;
     }
 
- cleanup:
-    virObjectUnref(qemuCaps);
-    virObjectUnref(domCaps);
     return ret;
 }
 
