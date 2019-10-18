@@ -1290,7 +1290,11 @@ BAD:
     <p>
       If there is a need for complex string concatenations, avoid using
       the usual sequence of malloc/strcpy/strcat/snprintf functions and
-      make use of the virBuffer API described in virbuffer.h
+      make use of either the
+      <a href="https://developer.gnome.org/glib/stable/glib-Strings.html">GString</a>
+      type from GLib or the virBuffer API.
+      If formatting XML or QEMU command line is needed, use the virBuffer
+      API described in virbuffer.h, since it has helper functions for those.
     </p>
 
     <p>Typical usage is as follows:</p>
@@ -1299,12 +1303,14 @@ BAD:
   char *
   somefunction(...)
   {
-     virBuffer buf = VIR_BUFFER_INITIALIZER;
+     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
      ...
 
      virBufferAddLit(&amp;buf, "&lt;domain&gt;\n");
      virBufferAsprintf(&amp;buf, "  &lt;memory&gt;%d&lt;/memory&gt;\n", memory);
+     if (some_error)
+         return NULL; /* g_auto will free the memory used so far */
      ...
      virBufferAddLit(&amp;buf, "&lt;/domain&gt;\n");
 
@@ -1388,12 +1394,10 @@ BAD:
     </p>
 
     <p>
-      When printing to a string, consider using virBuffer for
-      incremental allocations, virAsprintf for a one-shot allocation,
-      and snprintf for fixed-width buffers.  Do not use sprintf, even
-      if you can prove the buffer won't overflow, since gnulib does
-      not provide the same portability guarantees for sprintf as it
-      does for snprintf.
+      When printing to a string, consider using GString or virBuffer for
+      incremental allocations, g_strdup_printf for a one-shot allocation,
+      and g_snprintf for fixed-width buffers.  Only use g_sprintf,
+      if you can prove the buffer won't overflow.
     </p>
 
     <h2><a id="errors">Error message format</a></h2>
