@@ -1,14 +1,27 @@
-=head1 NAME
+=================
+virt-xml-validate
+=================
 
-virt-xml-validate - validate libvirt XML files against a schema
+-------------------------------------------
+validate libvirt XML files against a schema
+-------------------------------------------
 
-=head1 SYNOPSIS
+:Manual section: 1
+:Manual group: Virtualization Support
 
-B<virt-xml-validate> I<XML-FILE> [I<SCHEMA-NAME>]
+.. contents::
 
-B<virt-xml-validate> I<OPTION>
+SYNOPSIS
+========
 
-=head1 DESCRIPTION
+
+``virt-xml-validate`` *XML-FILE* [*SCHEMA-NAME*]
+
+``virt-xml-validate`` *OPTION*
+
+
+DESCRIPTION
+===========
 
 Validates a libvirt XML for compliance with the published schema.
 The first compulsory argument is the path to the XML file to be
@@ -18,98 +31,110 @@ from the name of the root element in the XML document.
 
 Valid schema names currently include
 
-=over 4
-
-=item C<domainsnapshot>
+- ``domainsnapshot``
 
 The schema for the XML format used by domain snapshot configuration
 
-=item C<domain>
+- ``domain``
 
 The schema for the XML format used by guest domains configuration
 
-=item C<network>
+- ``network``
 
 The schema for the XML format used by virtual network configuration
 
-=item C<storagepool>
+- ``storagepool``
 
 The schema for the XML format used by storage pool configuration
 
-=item C<storagevol>
+- ``storagevol``
 
 The schema for the XML format used by storage volume descriptions
 
-=item C<nodedev>
+- ``nodedev``
 
 The schema for the XML format used by node device descriptions
 
-=item C<capability>
+- ``capability``
 
 The schema for the XML format used to declare driver capabilities
 
-=item C<nwfilter>
+- ``nwfilter``
 
 The schema for the XML format used by network traffic filters
 
-=item C<nwfilterbinding>
+- ``nwfilterbinding``
 
 The schema for XML format used by network filter bindings.
 
-=item C<secret>
+- ``secret``
 
 The schema for the XML format used by secrets descriptions
 
-=item C<interface>
+- ``interface``
 
 The schema for the XML format used by physical host interfaces
 
-=back
 
-=head1 OPTIONS
+OPTIONS
+=======
 
-=over
-
-=item B<-h, --help>
+``-h``, ``--help``
 
 Display command line help usage then exit.
 
-=item B<-V, --version>
+``-V``, ``--version``
 
 Display version information then exit.
 
-=back
 
-=head1 EXIT STATUS
+EXIT STATUS
+===========
 
 Upon successful validation, an exit status of 0 will be set. Upon
 failure a non-zero status will be set.
 
-=head1 AUTHOR
 
-Daniel P.Berrange
+AUTHOR
+======
 
-=head1 BUGS
+Daniel P. Berrangé
 
-Report any bugs discovered to the libvirt community via the
-mailing list L<https://libvirt.org/contact.html> or bug tracker
-L<https://libvirt.org/bugs.html>.
-Alternatively report bugs to your software distributor / vendor.
 
-=head1 COPYRIGHT
+BUGS
+====
+
+Please report all bugs you discover.  This should be done via either:
+
+#. the mailing list
+
+   `https://libvirt.org/contact.html <https://libvirt.org/contact.html>`_
+
+#. the bug tracker
+
+   `https://libvirt.org/bugs.html <https://libvirt.org/bugs.html>`_
+
+Alternatively, you may report bugs to your software distributor / vendor.
+
+
+COPYRIGHT
+=========
 
 Copyright (C) 2009-2013 by Red Hat, Inc.
-Copyright (C) 2009 by Daniel P. Berrange
+Copyright (C) 2009 by Daniel P. Berrangé
 
-=head1 LICENSE
 
-virt-xml-validate is distributed under the terms of the GNU GPL v2+.
+LICENSE
+=======
+
+``virt-xml-validate`` is distributed under the terms of the GNU GPL v2+.
 This is free software; see the source for copying conditions. There
 is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE
 
-=head1 SEE ALSO
 
-L<virsh(1)>, online XML format descriptions L<https://libvirt.org/format.html>
+SEE ALSO
+========
 
-=cut
+virsh(1), `online XML format descriptions <https://libvirt.org/format.html>`_,
+`https://libvirt.org/ <https://libvirt.org/>`_

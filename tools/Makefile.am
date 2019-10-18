@@ -56,7 +56,6 @@ PODFILES = \
 	virt-admin.pod \
 	virt-login-shell.pod \
 	virt-sanlock-cleanup.pod \
-	virt-xml-validate.pod \
 	virsh.pod \
 	$(NULL)
 
@@ -64,7 +63,6 @@ MANINFILES = \
 	virt-admin.1.in \
 	virt-login-shell.1.in \
 	virt-sanlock-cleanup.8.in \
-	virt-xml-validate.1.in \
 	virsh.1.in \
 	$(NULL)
 
@@ -94,7 +92,6 @@ bin_SCRIPTS = virt-xml-validate virt-pki-validate
 bin_PROGRAMS = virsh virt-admin
 libexec_SCRIPTS = libvirt-guests.sh
 man1_MANS = \
-		virt-xml-validate.1 \
 		virsh.1 \
 		virt-admin.1
 

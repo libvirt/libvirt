@@ -202,6 +202,7 @@ manpages_rst = \
   $(NULL)
 manpages1_rst = \
   manpages/virt-pki-validate.rst \
+  manpages/virt-xml-validate.rst \
   $(NULL)
 manpages7_rst = \
   $(NULL)
