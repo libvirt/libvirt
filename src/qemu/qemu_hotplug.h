@@ -161,3 +161,5 @@ int qemuDomainDetachDBusVMState(virQEMUDriverPtr driver,
                                 virDomainObjPtr vm,
                                 const char *id,
                                 qemuDomainAsyncJob asyncJob);
+
+unsigned long long qemuDomainGetUnplugTimeout(virDomainObjPtr vm);

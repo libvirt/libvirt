@@ -224,6 +224,7 @@ test_libraries = libshunload.la \
 	libvirhostcpumock.la \
 	libdomaincapsmock.la \
 	libvirfilecachemock.la \
+	libqemuhotplugmock.la \
 	$(NULL)
 
 if WITH_REMOTE
@@ -566,6 +567,11 @@ libqemucpumock_la_SOURCES = \
 libqemucpumock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
 libqemucpumock_la_LIBADD = $(MOCKLIBS_LIBS)
 
+libqemuhotplugmock_la_SOURCES = \
+	qemuhotplugmock.c
+libqemuhotplugmock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
+libqemuhotplugmock_la_LIBADD = $(MOCKLIBS_LIBS)
+
 qemuxml2argvtest_SOURCES = \
 	qemuxml2argvtest.c testutilsqemu.c testutilsqemu.h \
 	testutils.c testutils.h \
@@ -643,7 +649,11 @@ qemuhotplugtest_SOURCES = \
 	testutils.c testutils.h \
 	testutilsqemu.c testutilsqemu.h \
 	$(NULL)
-qemuhotplugtest_LDADD = libqemumonitortestutils.la $(qemu_LDADDS)
+qemuhotplugtest_LDADD = \
+	libqemutestdriver.la \
+	libqemumonitortestutils.la \
+	$(qemu_LDADDS) \
+	$(NULL)
 
 qemublocktest_SOURCES = \
 	qemublocktest.c \
@@ -717,6 +727,7 @@ EXTRA_DIST += qemuxml2argvtest.c qemuxml2xmltest.c \
 	qemusecuritymock.c \
 	qemufirmwaretest.c \
 	qemuvhostusertest.c \
+	qemuhotplugmock.c \
 	$(QEMUMONITORTESTUTILS_SOURCES)
 endif ! WITH_QEMU
 

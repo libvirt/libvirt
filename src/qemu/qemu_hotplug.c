@@ -63,6 +63,13 @@ VIR_LOG_INIT("qemu.qemu_hotplug");
 
 #define CHANGE_MEDIA_TIMEOUT 5000
 
+/* Timeout in miliseconds for device removal. PPC64 domains
+ * can experience a bigger delay in unplug operations during
+ * heavy guest activity (vcpu being the most notable case), thus
+ * the timeout for PPC64 is also bigger. */
+#define QEMU_UNPLUG_TIMEOUT 1000ull * 5
+#define QEMU_UNPLUG_TIMEOUT_PPC64 1000ull * 10
+
 /* Wait up to 5 seconds for device removal to finish. */
 unsigned long long qemuDomainRemoveDeviceWaitTime = 1000ull * 5;
 
@@ -5094,6 +5101,17 @@ qemuDomainResetDeviceRemoval(virDomainObjPtr vm)
     priv->unplug.eventSeen = false;
 }
 
+
+unsigned long long
+qemuDomainGetUnplugTimeout(virDomainObjPtr vm)
+{
+    if (qemuDomainIsPSeries(vm->def))
+        return QEMU_UNPLUG_TIMEOUT_PPC64;
+
+    return QEMU_UNPLUG_TIMEOUT;
+}
+
+
 /* Returns:
  *  -1 Unplug of the device failed
  *
@@ -5112,7 +5130,7 @@ qemuDomainWaitForDeviceRemoval(virDomainObjPtr vm)
 
     if (virTimeMillisNow(&until) < 0)
         return 1;
-    until += qemuDomainRemoveDeviceWaitTime;
+    until += qemuDomainGetUnplugTimeout(vm);
 
     while (priv->unplug.alias) {
         if ((rc = virDomainObjWaitUntil(vm, until)) == 1)
