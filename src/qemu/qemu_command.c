@@ -256,13 +256,13 @@ qemuVirCommandGetFDSet(virCommandPtr cmd, int fd)
     char *result = NULL;
     int idx = virCommandPassFDGetFDIndex(cmd, fd);
 
-    if (idx >= 0) {
-        ignore_value(virAsprintf(&result, "set=%d,fd=%d", idx, fd));
-    } else {
+    if (idx < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("file descriptor %d has not been transferred"), fd);
+        return NULL;
     }
 
+    ignore_value(virAsprintf(&result, "set=%d,fd=%d", idx, fd));
     return result;
 }
 
@@ -283,12 +283,13 @@ qemuVirCommandGetDevSet(virCommandPtr cmd, int fd)
     char *result = NULL;
     int idx = virCommandPassFDGetFDIndex(cmd, fd);
 
-    if (idx >= 0) {
-        ignore_value(virAsprintf(&result, "/dev/fdset/%d", idx));
-    } else {
+    if (idx < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("file descriptor %d has not been transferred"), fd);
+        return NULL;
     }
+
+    ignore_value(virAsprintf(&result, "/dev/fdset/%d", idx));
     return result;
 }
 
