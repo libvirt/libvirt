@@ -2139,15 +2139,10 @@ virDomainDiskGetSource(virDomainDiskDef const *def)
 int
 virDomainDiskSetSource(virDomainDiskDefPtr def, const char *src)
 {
-    int ret;
-    char *tmp = def->src->path;
-
-    ret = VIR_STRDUP(def->src->path, src);
-    if (ret < 0)
-        def->src->path = tmp;
-    else
-        VIR_FREE(tmp);
-    return ret;
+    char *tmp = g_strdup(src);
+    g_free(def->src->path);
+    def->src->path = tmp;
+    return 0;
 }
 
 
@@ -2174,15 +2169,10 @@ virDomainDiskGetDriver(const virDomainDiskDef *def)
 int
 virDomainDiskSetDriver(virDomainDiskDefPtr def, const char *name)
 {
-    int ret;
-    char *tmp = def->driverName;
-
-    ret = VIR_STRDUP(def->driverName, name);
-    if (ret < 0)
-        def->driverName = tmp;
-    else
-        VIR_FREE(tmp);
-    return ret;
+    char *tmp = g_strdup(name);
+    g_free(def->driverName);
+    def->driverName = tmp;
+    return 0;
 }
 
 
