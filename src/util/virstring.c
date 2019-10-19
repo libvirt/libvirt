@@ -703,23 +703,25 @@ virStrToDouble(char const *s,
  *
  * converts double to string with C locale (thread-safe).
  *
- * Returns -1 on error, size of the string otherwise.
+ * Returns: 0 on success, -1 otherwise.
  */
 int
 virDoubleToStr(char **strp, double number)
 {
     virLocale oldlocale;
-    int ret = -1;
+    int rc;
 
     if (virLocaleSetRaw(&oldlocale) < 0)
         return -1;
 
-    ret = virAsprintf(strp, "%lf", number);
+    rc = virAsprintf(strp, "%lf", number);
 
     virLocaleRevert(&oldlocale);
     virLocaleFixupRadix(strp);
 
-    return ret;
+    if (rc < 0)
+        return -1;
+    return 0;
 }
 
 

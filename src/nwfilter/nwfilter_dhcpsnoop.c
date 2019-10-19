@@ -1766,13 +1766,12 @@ virNWFilterSnoopLeaseFileWrite(int lfd, const char *ifkey,
     }
 
     /* time intf ip dhcpserver */
-    len = virAsprintf(&lbuf, "%u %s %s %s\n", ipl->timeout,
-                      ifkey, ipstr, dhcpstr);
-
-    if (len < 0) {
+    if (virAsprintf(&lbuf, "%u %s %s %s\n", ipl->timeout,
+                    ifkey, ipstr, dhcpstr) < 0) {
         ret = -1;
         goto cleanup;
     }
+    len = strlen(lbuf);
 
     if (safewrite(lfd, lbuf, len) != len) {
         virReportSystemError(errno, "%s", _("lease file write failed"));

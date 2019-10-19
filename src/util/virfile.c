@@ -3394,12 +3394,13 @@ int virFilePrintf(FILE *fp, const char *msg, ...)
 {
     va_list vargs;
     g_autofree char *str = NULL;
-    int ret;
+    int ret = -1;
 
     va_start(vargs, msg);
 
-    if ((ret = virVasprintf(&str, msg, vargs)) < 0)
+    if (virVasprintf(&str, msg, vargs) < 0)
         goto cleanup;
+    ret = strlen(str);
 
     if (fwrite(str, 1, ret, fp) != ret) {
         virReportSystemError(errno, "%s",
