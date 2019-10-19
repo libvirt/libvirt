@@ -475,10 +475,9 @@ libxlDomainShutdownThread(void *opaque)
     libxlDriverPrivatePtr driver = shutdown_info->driver;
     virObjectEventPtr dom_event = NULL;
     libxl_shutdown_reason xl_reason = ev->u.domain_shutdown.shutdown_reason;
-    libxlDriverConfigPtr cfg;
+    g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
     libxl_domain_config d_config;
 
-    cfg = libxlDriverConfigGet(driver);
     libxl_domain_config_init(&d_config);
 
     vm = virDomainObjListFindByID(driver->domains, ev->domid);
@@ -600,7 +599,6 @@ libxlDomainShutdownThread(void *opaque)
     libxl_event_free(cfg->ctx, ev);
     VIR_FREE(shutdown_info);
     libxl_domain_config_dispose(&d_config);
-    virObjectUnref(cfg);
 }
 
 static void
@@ -611,10 +609,8 @@ libxlDomainDeathThread(void *opaque)
     libxl_event *ev = shutdown_info->event;
     libxlDriverPrivatePtr driver = shutdown_info->driver;
     virObjectEventPtr dom_event = NULL;
-    libxlDriverConfigPtr cfg;
+    g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
     libxlDomainObjPrivatePtr priv;
-
-    cfg = libxlDriverConfigGet(driver);
 
     vm = virDomainObjListFindByID(driver->domains, ev->domid);
     if (!vm) {
@@ -647,7 +643,6 @@ libxlDomainDeathThread(void *opaque)
     virObjectEventStateQueue(driver->domainEventState, dom_event);
     libxl_event_free(cfg->ctx, ev);
     VIR_FREE(shutdown_info);
-    virObjectUnref(cfg);
 }
 
 
@@ -661,7 +656,7 @@ libxlDomainEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
     libxl_shutdown_reason xl_reason = event->u.domain_shutdown.shutdown_reason;
     struct libxlShutdownThreadInfo *shutdown_info = NULL;
     virThread thread;
-    libxlDriverConfigPtr cfg;
+    g_autoptr(libxlDriverConfig) cfg = NULL;
     int ret = -1;
 
     if (event->type != LIBXL_EVENT_TYPE_DOMAIN_SHUTDOWN &&
@@ -710,7 +705,6 @@ libxlDomainEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
     cfg = libxlDriverConfigGet(driver);
     /* Cast away any const */
     libxl_event_free(cfg->ctx, (libxl_event *)event);
-    virObjectUnref(cfg);
     VIR_FREE(shutdown_info);
 }
 
@@ -718,10 +712,9 @@ char *
 libxlDomainManagedSavePath(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
 {
     char *ret;
-    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
+    g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
 
     ignore_value(virAsprintf(&ret, "%s/%s.save", cfg->saveDir, vm->def->name));
-    virObjectUnref(cfg);
     return ret;
 }
 
@@ -808,7 +801,7 @@ int
 libxlDomainDestroyInternal(libxlDriverPrivatePtr driver,
                            virDomainObjPtr vm)
 {
-    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
+    g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
     libxlDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
 
@@ -825,7 +818,6 @@ libxlDomainDestroyInternal(libxlDriverPrivatePtr driver,
     if (ret)
         priv->ignoreDeathEvent = false;
 
-    virObjectUnref(cfg);
     return ret;
 }
 
@@ -839,7 +831,7 @@ libxlDomainCleanup(libxlDriverPrivatePtr driver,
                    virDomainObjPtr vm)
 {
     libxlDomainObjPrivatePtr priv = vm->privateData;
-    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
+    g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
     int vnc_port;
     char *file;
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
@@ -931,7 +923,6 @@ libxlDomainCleanup(libxlDriverPrivatePtr driver,
     }
 
     virDomainObjRemoveTransientDef(vm);
-    virObjectUnref(cfg);
     virObjectUnref(conn);
 }
 
@@ -944,7 +935,7 @@ int
 libxlDomainAutoCoreDump(libxlDriverPrivatePtr driver,
                         virDomainObjPtr vm)
 {
-    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
+    g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
     time_t curtime = time(NULL);
     char timestr[100];
     struct tm time_info;
@@ -969,7 +960,6 @@ libxlDomainAutoCoreDump(libxlDriverPrivatePtr driver,
 
  cleanup:
     VIR_FREE(dumpfile);
-    virObjectUnref(cfg);
 
     return ret;
 }
@@ -977,7 +967,7 @@ libxlDomainAutoCoreDump(libxlDriverPrivatePtr driver,
 int
 libxlDomainSetVcpuAffinities(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
 {
-    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
+    g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
     virDomainVcpuDefPtr vcpu;
     libxl_bitmap map;
     virBitmapPtr cpumask = NULL;
@@ -1014,7 +1004,6 @@ libxlDomainSetVcpuAffinities(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
 
  cleanup:
     libxl_bitmap_dispose(&map);
-    virObjectUnref(cfg);
     return ret;
 }
 
@@ -1275,7 +1264,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver,
     char *managed_save_path = NULL;
     int managed_save_fd = -1;
     libxlDomainObjPrivatePtr priv = vm->privateData;
-    libxlDriverConfigPtr cfg;
+    g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
     libxl_asyncprogress_how aop_console_how;
     libxl_domain_restore_params params;
@@ -1288,7 +1277,6 @@ libxlDomainStart(libxlDriverPrivatePtr driver,
 
     libxl_domain_config_init(&d_config);
 
-    cfg = libxlDriverConfigGet(driver);
     /* If there is a managed saved state restore it instead of starting
      * from scratch. The old state is removed once the restoring succeeded. */
     if (restore_fd < 0) {
@@ -1528,7 +1516,6 @@ libxlDomainStart(libxlDriverPrivatePtr driver,
     VIR_FREE(managed_save_path);
     virDomainDefFree(def);
     VIR_FORCE_CLOSE(managed_save_fd);
-    virObjectUnref(cfg);
     return ret;
 }
 
@@ -1558,7 +1545,7 @@ libxlDomainDefCheckABIStability(libxlDriverPrivatePtr driver,
 {
     virDomainDefPtr migratableDefSrc = NULL;
     virDomainDefPtr migratableDefDst = NULL;
-    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
+    g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
     bool ret = false;
 
     if (!(migratableDefSrc = virDomainDefCopy(src, cfg->caps, driver->xmlopt, NULL, true)) ||
@@ -1572,6 +1559,5 @@ libxlDomainDefCheckABIStability(libxlDriverPrivatePtr driver,
  cleanup:
     virDomainDefFree(migratableDefSrc);
     virDomainDefFree(migratableDefDst);
-    virObjectUnref(cfg);
     return ret;
 }
