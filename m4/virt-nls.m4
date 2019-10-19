@@ -26,7 +26,7 @@ AC_DEFUN([LIBVIRT_CHECK_NLS],[
   then
     AC_CHECK_FUNC([gettext], [], [
       AC_CHECK_LIB([intl], [gettext], [], [
-        if test "x$enable_nls" == "xcheck"
+        if test "x$enable_nls" = "xcheck"
 	then
 	  enable_nls=no
 	else
@@ -39,7 +39,7 @@ AC_DEFUN([LIBVIRT_CHECK_NLS],[
   if test "x$enable_nls" != "xno"
   then
     AC_CHECK_HEADERS([libintl.h], [enable_nls=yes],[
-      if test "x$enable_nls" == "xcheck"
+      if test "x$enable_nls" = "xcheck"
       then
         enable_nls=no
       else
