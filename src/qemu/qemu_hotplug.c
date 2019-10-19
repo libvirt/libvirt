@@ -1181,6 +1181,17 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     if (qemuAssignDeviceNetAlias(vm->def, net, -1) < 0)
         goto cleanup;
 
+    if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+        /* This is really a "smart hostdev", so it should be attached
+         * as a hostdev (the hostdev code will reach over into the
+         * netdev-specific code as appropriate), then also added to
+         * the nets list (see cleanup:) if successful.
+         */
+        ret = qemuDomainAttachHostDevice(driver, vm,
+                                         virDomainNetGetActualHostdev(net));
+        goto cleanup;
+    }
+
     if (qemuDomainIsS390CCW(vm->def) &&
         net->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_CCW)) {
@@ -1260,17 +1271,6 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
             goto cleanup;
         break;
 
-    case VIR_DOMAIN_NET_TYPE_HOSTDEV:
-        /* This is really a "smart hostdev", so it should be attached
-         * as a hostdev (the hostdev code will reach over into the
-         * netdev-specific code as appropriate), then also added to
-         * the nets list (see cleanup:) if successful.
-         */
-        ret = qemuDomainAttachHostDevice(driver, vm,
-                                         virDomainNetGetActualHostdev(net));
-        goto cleanup;
-        break;
-
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
         queueSize = net->driver.virtio.queues;
         if (!queueSize)
@@ -1311,6 +1311,10 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
             if (virAsprintf(&slirpfdName, "slirpfd-%s", net->info.alias) < 0)
                 goto cleanup;
         }
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+        /* hostdev interfaces were handled earlier in this function */
         break;
 
     case VIR_DOMAIN_NET_TYPE_SERVER:
