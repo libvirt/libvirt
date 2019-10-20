@@ -130,8 +130,8 @@ virSecuritySELinuxContextListAppend(virSecuritySELinuxContextListPtr list,
     if (VIR_ALLOC(item) < 0)
         return -1;
 
-    if (VIR_STRDUP(item->path, path) < 0 || VIR_STRDUP(item->tcon, tcon) < 0)
-        goto cleanup;
+    item->path = g_strdup(path);
+    item->tcon = g_strdup(tcon);
 
     item->remember = remember;
     item->restore = restore;
@@ -444,8 +444,7 @@ virSecuritySELinuxMCSGetProcessRange(char **sens,
     if (!(contextRange = context_range_get(ourContext)))
         contextRange = "s0";
 
-    if (VIR_STRDUP(*sens, contextRange) < 0)
-        goto cleanup;
+    *sens = g_strdup(contextRange);
 
     /* Find and blank out the category part (if any) */
     tmp = strchr(*sens, ':');
@@ -622,8 +621,7 @@ virSecuritySELinuxGenNewContext(const char *basecontext,
                              _("Unable to format SELinux context"));
         goto cleanup;
     }
-    if (VIR_STRDUP(ret, str) < 0)
-        goto cleanup;
+    ret = g_strdup(str);
     VIR_DEBUG("Generated context '%s'",  ret);
  cleanup:
     freecon(ourSecContext);
@@ -740,8 +738,7 @@ virSecuritySELinuxQEMUInitialize(virSecurityManagerPtr mgr)
         *ptr = '\0';
         ptr++;
         if (*ptr != '\0') {
-            if (VIR_STRDUP(data->alt_domain_context, ptr) < 0)
-                goto error;
+            data->alt_domain_context = g_strdup(ptr);
             ptr = strchrnul(data->alt_domain_context, '\n');
             if (ptr && *ptr == '\n')
                 *ptr = '\0';
@@ -761,8 +758,7 @@ virSecuritySELinuxQEMUInitialize(virSecurityManagerPtr mgr)
     ptr = strchrnul(data->file_context, '\n');
     if (ptr && *ptr == '\n') {
         *ptr = '\0';
-        if (VIR_STRDUP(data->content_context, ptr + 1) < 0)
-            goto error;
+        data->content_context = g_strdup(ptr + 1);
         ptr = strchrnul(data->content_context, '\n');
         if (ptr && *ptr == '\n')
             *ptr = '\0';
@@ -868,8 +864,7 @@ virSecuritySELinuxGenLabel(virSecurityManagerPtr mgr,
             virReportSystemError(errno, "%s", _("unable to get selinux context range"));
             goto cleanup;
         }
-        if (VIR_STRDUP(mcs, range) < 0)
-            goto cleanup;
+        mcs = g_strdup(range);
         break;
 
     case VIR_DOMAIN_SECLABEL_DYNAMIC:
@@ -919,8 +914,7 @@ virSecuritySELinuxGenLabel(virSecurityManagerPtr mgr,
                                                  &catMax) < 0)
             goto cleanup;
 
-        if (VIR_STRDUP(mcs, sens) < 0)
-            goto cleanup;
+        mcs = g_strdup(sens);
 
         break;
 
@@ -2214,8 +2208,7 @@ virSecuritySELinuxSetHostdevCapsLabel(virSecurityManagerPtr mgr,
                             dev->source.caps.u.storage.block) < 0)
                 return -1;
         } else {
-            if (VIR_STRDUP(path, dev->source.caps.u.storage.block) < 0)
-                return -1;
+            path = g_strdup(dev->source.caps.u.storage.block);
         }
         ret = virSecuritySELinuxSetFilecon(mgr, path, secdef->imagelabel, true);
         VIR_FREE(path);
@@ -2228,8 +2221,7 @@ virSecuritySELinuxSetHostdevCapsLabel(virSecurityManagerPtr mgr,
                             dev->source.caps.u.misc.chardev) < 0)
                 return -1;
         } else {
-            if (VIR_STRDUP(path, dev->source.caps.u.misc.chardev) < 0)
-                return -1;
+            path = g_strdup(dev->source.caps.u.misc.chardev);
         }
         ret = virSecuritySELinuxSetFilecon(mgr, path, secdef->imagelabel, true);
         VIR_FREE(path);
@@ -2449,8 +2441,7 @@ virSecuritySELinuxRestoreHostdevCapsLabel(virSecurityManagerPtr mgr,
                             dev->source.caps.u.storage.block) < 0)
                 return -1;
         } else {
-            if (VIR_STRDUP(path, dev->source.caps.u.storage.block) < 0)
-                return -1;
+            path = g_strdup(dev->source.caps.u.storage.block);
         }
         ret = virSecuritySELinuxRestoreFileLabel(mgr, path, true);
         VIR_FREE(path);
@@ -2463,8 +2454,7 @@ virSecuritySELinuxRestoreHostdevCapsLabel(virSecurityManagerPtr mgr,
                             dev->source.caps.u.misc.chardev) < 0)
                 return -1;
         } else {
-            if (VIR_STRDUP(path, dev->source.caps.u.misc.chardev) < 0)
-                return -1;
+            path = g_strdup(dev->source.caps.u.misc.chardev);
         }
         ret = virSecuritySELinuxRestoreFileLabel(mgr, path, true);
         VIR_FREE(path);
@@ -3335,8 +3325,7 @@ virSecuritySELinuxGenImageLabel(virSecurityManagerPtr mgr,
         }
         range = context_range_get(ctx);
         if (range) {
-            if (VIR_STRDUP(mcs, range) < 0)
-                goto cleanup;
+            mcs = g_strdup(range);
             if (!(label = virSecuritySELinuxGenNewContext(data->file_context,
                                                           mcs, true)))
                 goto cleanup;

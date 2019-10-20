@@ -452,12 +452,10 @@ AppArmorGenSecurityLabel(virSecurityManagerPtr mgr G_GNUC_UNUSED,
     if ((profile_name = get_profile_name(def)) == NULL)
         return rc;
 
-    if (VIR_STRDUP(secdef->label, profile_name) < 0)
-        goto cleanup;
+    secdef->label = g_strdup(profile_name);
 
     /* set imagelabel the same as label (but we won't use it) */
-    if (VIR_STRDUP(secdef->imagelabel, profile_name) < 0)
-        goto err;
+    secdef->imagelabel = g_strdup(profile_name);
 
     if (!secdef->model)
         secdef->model = g_strdup(SECURITY_APPARMOR_NAME);

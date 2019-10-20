@@ -772,8 +772,7 @@ vah_add_path(virBufferPtr buf, const char *path, const char *perms, bool recursi
      * 3. re-combine the realpath with the remaining suffix
      * Note: A totally non existent path is used as-is
      */
-     if (VIR_STRDUP_QUIET(pathdir, path) < 0)
-         goto cleanup;
+     pathdir = g_strdup(path);
      while (!virFileExists(pathdir)) {
          if ((pathtmp = mdir_name(pathdir)) == NULL)
              goto cleanup;
@@ -783,11 +782,9 @@ vah_add_path(virBufferPtr buf, const char *path, const char *perms, bool recursi
 
     if (strlen(pathdir) == 1) {
         /* nothing of the path does exist yet */
-        if (VIR_STRDUP_QUIET(tmp, path) < 0)
-            goto cleanup;
+        tmp = g_strdup(path);
     } else {
-        if (VIR_STRDUP_QUIET(pathtmp, path+strlen(pathdir)) < 0)
-            goto cleanup;
+        pathtmp = g_strdup(path + strlen(pathdir));
         if ((pathreal = realpath(pathdir, NULL)) == NULL) {
             vah_error(NULL, 0, pathdir);
             vah_error(NULL, 0, _("could not find realpath"));
@@ -797,8 +794,7 @@ vah_add_path(virBufferPtr buf, const char *path, const char *perms, bool recursi
             goto cleanup;
     }
 
-    if (VIR_STRDUP_QUIET(perms_new, perms) < 0)
-        goto cleanup;
+    perms_new = g_strdup(perms);
 
     if (strchr(perms_new, 'w') != NULL) {
         readonly = false;
@@ -1367,8 +1363,7 @@ vahParseArgv(vahControl * ctl, int argc, char **argv)
                 break;
             case 'f':
             case 'F':
-                if (VIR_STRDUP_QUIET(ctl->newfile, optarg) < 0)
-                    vah_error(ctl, 1, _("could not allocate memory for disk"));
+                ctl->newfile = g_strdup(optarg);
                 ctl->append = arg == 'F';
                 break;
             case 'h':

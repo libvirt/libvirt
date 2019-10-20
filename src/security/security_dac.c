@@ -111,8 +111,7 @@ virSecurityDACChownListAppend(virSecurityDACChownListPtr list,
     if (VIR_ALLOC(item) < 0)
         return -1;
 
-    if (VIR_STRDUP(tmp, path) < 0)
-        goto cleanup;
+    tmp = g_strdup(path);
 
     item->path = tmp;
     item->src = src;
@@ -2311,11 +2310,8 @@ virSecurityDACGenLabel(virSecurityManagerPtr mgr,
         return rc;
     }
 
-    if (seclabel->relabel && !seclabel->imagelabel &&
-        VIR_STRDUP(seclabel->imagelabel, seclabel->label) < 0) {
-        VIR_FREE(seclabel->label);
-        return rc;
-    }
+    if (seclabel->relabel && !seclabel->imagelabel)
+        seclabel->imagelabel = g_strdup(seclabel->label);
 
     return 0;
 }
