@@ -104,8 +104,7 @@ vshTableRowNew(const char *arg, va_list ap)
     while (arg) {
         char *tmp = NULL;
 
-        if (VIR_STRDUP(tmp, arg) < 0)
-            goto error;
+        tmp = g_strdup(arg);
 
         if (VIR_APPEND_ELEMENT(row->cells, row->ncells, tmp) < 0) {
             VIR_FREE(tmp);

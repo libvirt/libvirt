@@ -100,8 +100,7 @@ virshCommaStringListComplete(const char *input,
     if (input) {
         char *comma = NULL;
 
-        if (VIR_STRDUP(inputCopy, input) < 0)
-            return NULL;
+        inputCopy = g_strdup(input);
 
         if ((comma = strrchr(inputCopy, ',')))
             *comma = '\0';
@@ -119,9 +118,10 @@ virshCommaStringListComplete(const char *input,
         if (virStringListHasString((const char **)inputList, options[i]))
             continue;
 
-        if ((inputCopy && virAsprintf(&ret[nret], "%s,%s", inputCopy, options[i]) < 0) ||
-            (!inputCopy && VIR_STRDUP(ret[nret], options[i]) < 0))
+        if (inputCopy && virAsprintf(&ret[nret], "%s,%s", inputCopy, options[i]) < 0)
             return NULL;
+        if (!inputCopy)
+            ret[nret] = g_strdup(options[i]);
 
         nret++;
     }

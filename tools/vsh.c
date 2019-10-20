@@ -495,8 +495,7 @@ vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
                    opt->help = "string=value": treat boolean flag as
                    alias of option and its default value */
                 sa_assert(!alias);
-                if (VIR_STRDUP(alias, opt->help) < 0)
-                    goto cleanup;
+                alias = g_strdup(opt->help);
                 name = alias;
                 if ((value = strchr(name, '='))) {
                     *value = '\0';
@@ -506,8 +505,7 @@ vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
                                      opt->name);
                         goto cleanup;
                     }
-                    if (VIR_STRDUP(*optstr, value + 1) < 0)
-                        goto cleanup;
+                    *optstr = g_strdup(value + 1);
                 }
                 continue;
             }
@@ -3500,9 +3498,8 @@ cmdComplete(vshControl *ctl, const vshCmd *cmd)
 
     vshReadlineInit(ctl);
 
-    if (!(rl_line_buffer = virBufferContentAndReset(&buf)) &&
-        VIR_STRDUP(rl_line_buffer, "") < 0)
-        goto cleanup;
+    if (!(rl_line_buffer = virBufferContentAndReset(&buf)))
+        rl_line_buffer = g_strdup("");
 
     /* rl_point is current cursor position in rl_line_buffer.
      * In our case it's at the end of the whole line. */

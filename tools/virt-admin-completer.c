@@ -53,8 +53,7 @@ vshAdmServerCompleter(vshControl *ctl,
     for (i = 0; i < nsrvs; i++) {
         const char *name = virAdmServerGetName(srvs[i]);
 
-        if (VIR_STRDUP(ret[i], name) < 0)
-            goto error;
+        ret[i] = g_strdup(name);
 
         virAdmServerFree(srvs[i]);
     }

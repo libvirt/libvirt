@@ -53,8 +53,7 @@ virshNodeDeviceNameCompleter(vshControl *ctl,
     for (i = 0; i < ndevs; i++) {
         const char *name = virNodeDeviceGetName(devs[i]);
 
-        if (VIR_STRDUP(tmp[i], name) < 0)
-            goto cleanup;
+        tmp[i] = g_strdup(name);
     }
 
     ret = g_steal_pointer(&tmp);
@@ -81,10 +80,8 @@ virshNodeDeviceEventNameCompleter(vshControl *ctl G_GNUC_UNUSED,
     if (VIR_ALLOC_N(tmp, VIR_NODE_DEVICE_EVENT_ID_LAST + 1) < 0)
         return NULL;
 
-    for (i = 0; i < VIR_NODE_DEVICE_EVENT_ID_LAST; i++) {
-        if (VIR_STRDUP(tmp[i], virshNodeDeviceEventCallbacks[i].name) < 0)
-            return NULL;
-    }
+    for (i = 0; i < VIR_NODE_DEVICE_EVENT_ID_LAST; i++)
+        tmp[i] = g_strdup(virshNodeDeviceEventCallbacks[i].name);
 
     ret = g_steal_pointer(&tmp);
     return ret;
@@ -108,10 +105,8 @@ virshNodeDeviceCapabilityNameCompleter(vshControl *ctl,
     if (VIR_ALLOC_N(tmp, VIR_NODE_DEV_CAP_LAST + 1) < 0)
         return NULL;
 
-    for (i = 0; i < VIR_NODE_DEV_CAP_LAST; i++) {
-        if (VIR_STRDUP(tmp[i], virNodeDevCapTypeToString(i)) < 0)
-            return NULL;
-    }
+    for (i = 0; i < VIR_NODE_DEV_CAP_LAST; i++)
+        tmp[i] = g_strdup(virNodeDevCapTypeToString(i));
 
     return virshCommaStringListComplete(cap_str, (const char **)tmp);
 }

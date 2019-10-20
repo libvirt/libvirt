@@ -62,8 +62,7 @@ virshDomainNameCompleter(vshControl *ctl,
     for (i = 0; i < ndomains; i++) {
         const char *name = virDomainGetName(domains[i]);
 
-        if (VIR_STRDUP(tmp[i], name) < 0)
-            goto cleanup;
+        tmp[i] = g_strdup(name);
     }
 
     ret = g_steal_pointer(&tmp);
@@ -181,10 +180,8 @@ virshDomainEventNameCompleter(vshControl *ctl G_GNUC_UNUSED,
     if (VIR_ALLOC_N(tmp, VIR_DOMAIN_EVENT_ID_LAST + 1) < 0)
         return NULL;
 
-    for (i = 0; i < VIR_DOMAIN_EVENT_ID_LAST; i++) {
-        if (VIR_STRDUP(tmp[i], virshDomainEventCallbacks[i].name) < 0)
-            return NULL;
-    }
+    for (i = 0; i < VIR_DOMAIN_EVENT_ID_LAST; i++)
+        tmp[i] = g_strdup(virshDomainEventCallbacks[i].name);
 
     ret = g_steal_pointer(&tmp);
     return ret;
@@ -242,11 +239,9 @@ virshDomainInterfaceStateCompleter(vshControl *ctl,
 
     if ((state = virXPathString("string(./link/@state)", ctxt)) &&
         STREQ(state, "down")) {
-        if (VIR_STRDUP(tmp[0], "up") < 0)
-            return NULL;
+        tmp[0] = g_strdup("up");
     } else {
-        if (VIR_STRDUP(tmp[0], "down") < 0)
-            return NULL;
+        tmp[0] = g_strdup("down");
     }
 
     ret = g_steal_pointer(&tmp);

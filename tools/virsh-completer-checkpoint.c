@@ -56,8 +56,7 @@ virshCheckpointNameCompleter(vshControl *ctl,
     for (i = 0; i < ncheckpoints; i++) {
         const char *name = virDomainCheckpointGetName(checkpoints[i]);
 
-        if (VIR_STRDUP(ret[i], name) < 0)
-            goto error;
+        ret[i] = g_strdup(name);
 
         virshDomainCheckpointFree(checkpoints[i]);
     }

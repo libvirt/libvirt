@@ -58,8 +58,7 @@ virshSnapshotNameCompleter(vshControl *ctl,
     for (i = 0; i < nsnapshots; i++) {
         const char *name = virDomainSnapshotGetName(snapshots[i]);
 
-        if (VIR_STRDUP(tmp[i], name) < 0)
-            goto cleanup;
+        tmp[i] = g_strdup(name);
     }
 
     ret = g_steal_pointer(&tmp);

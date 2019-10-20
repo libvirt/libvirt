@@ -51,8 +51,7 @@ virshNWFilterNameCompleter(vshControl *ctl,
     for (i = 0; i < nnwfilters; i++) {
         const char *name = virNWFilterGetName(nwfilters[i]);
 
-        if (VIR_STRDUP(tmp[i], name) < 0)
-            goto cleanup;
+        tmp[i] = g_strdup(name);
     }
 
     ret = g_steal_pointer(&tmp);
@@ -91,8 +90,7 @@ virshNWFilterBindingNameCompleter(vshControl *ctl,
     for (i = 0; i < nbindings; i++) {
         const char *name = virNWFilterBindingGetPortDev(bindings[i]);
 
-        if (VIR_STRDUP(tmp[i], name) < 0)
-            goto cleanup;
+        tmp[i] = g_strdup(name);
     }
 
     ret = g_steal_pointer(&tmp);

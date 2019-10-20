@@ -53,8 +53,7 @@ virshInterfaceNameCompleter(vshControl *ctl,
     for (i = 0; i < nifaces; i++) {
         const char *name = virInterfaceGetName(ifaces[i]);
 
-        if (VIR_STRDUP(tmp[i], name) < 0)
-            goto cleanup;
+        tmp[i] = g_strdup(name);
     }
 
     ret = g_steal_pointer(&tmp);

@@ -102,10 +102,7 @@ static int virLoginShellGetShellArgv(virConfPtr conf,
     if (rv == 0) {
         if (VIR_ALLOC_N(*shargv, 2) < 0)
             return -1;
-        if (VIR_STRDUP((*shargv)[0], "/bin/sh") < 0) {
-            VIR_FREE(*shargv);
-            return -1;
-        }
+        (*shargv)[0] = g_strdup("/bin/sh");
         *shargvlen = 1;
     } else {
         *shargvlen = virStringListLength((const char *const *)shargv);
@@ -347,10 +344,8 @@ main(int argc, char **argv)
     if (cmdstr) {
         if (VIR_REALLOC_N(shargv, shargvlen + 3) < 0)
             goto cleanup;
-        if (VIR_STRDUP(shargv[shargvlen++], "-c") < 0)
-            goto cleanup;
-        if (VIR_STRDUP(shargv[shargvlen++], cmdstr) < 0)
-            goto cleanup;
+        shargv[shargvlen++] = g_strdup("-c");
+        shargv[shargvlen++] = g_strdup(cmdstr);
         shargv[shargvlen] = NULL;
     }
 
@@ -366,15 +361,13 @@ main(int argc, char **argv)
         goto cleanup;
     }
     tmp = strrchr(shcmd, '/');
-    if (VIR_STRDUP(shargv[0], tmp) < 0)
-        goto cleanup;
+    shargv[0] = g_strdup(tmp);
     shargv[0][0] = '-';
 
     /* We're duping the string because the clearenv()
      * call will shortly release the pointer we get
      * back from getenv() right here */
-    if (VIR_STRDUP(term, getenv("TERM")) < 0)
-        goto cleanup;
+    term = g_strdup(getenv("TERM"));
 
     /* A fork is required to create new process in correct pid namespace.  */
     if ((cpid = virFork()) < 0)
