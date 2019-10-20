@@ -420,8 +420,7 @@ virSysinfoParseARMProcessor(const char *base, virSysinfoDefPtr ret)
                         cur, eol - cur) < 0)
             goto error;
 
-        if (VIR_STRDUP(processor->processor_type, processor_type) < 0)
-            goto error;
+        processor->processor_type = g_strdup(processor_type);
 
         base = cur;
     }
@@ -558,8 +557,7 @@ virSysinfoParseS390Processor(const char *base, virSysinfoDefPtr ret)
         if (VIR_EXPAND_N(ret->processor, ret->nprocessor, 1) < 0)
             goto error;
         processor = &ret->processor[ret->nprocessor - 1];
-        if (VIR_STRDUP(processor->processor_manufacturer, manufacturer) < 0)
-            goto error;
+        processor->processor_manufacturer = g_strdup(manufacturer);
         if (!virSysinfoParseS390Delimited(procline, "version",
                                           &processor->processor_version,
                                           '=', ',') ||

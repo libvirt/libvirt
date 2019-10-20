@@ -111,15 +111,9 @@ virPortAllocatorRangeNew(const char *name,
 
     range->start = start;
     range->end = end;
-
-    if (VIR_STRDUP(range->name, name) < 0)
-        goto error;
+    range->name = g_strdup(name);
 
     return range;
-
- error:
-    virPortAllocatorRangeFree(range);
-    return NULL;
 }
 
 void

@@ -1145,10 +1145,7 @@ virNetDevVPortProfileOp8021Qbh(const char *ifname,
             goto cleanup;
         }
     } else {
-        if (VIR_STRDUP(physfndev, ifname) < 0) {
-            rc = -1;
-            goto cleanup;
-        }
+        physfndev = g_strdup(ifname);
     }
 
     rc = virNetDevGetIndex(physfndev, &ifindex);

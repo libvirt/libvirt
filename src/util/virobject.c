@@ -188,8 +188,7 @@ virClassNew(virClassPtr parent,
                        _("too many object classes defined"));
         goto error;
     }
-    if (VIR_STRDUP(klass->name, name) < 0)
-        goto error;
+    klass->name = g_strdup(name);
     klass->objectSize = objectSize;
     klass->dispose = dispose;
 

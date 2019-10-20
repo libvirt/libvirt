@@ -55,8 +55,7 @@ virSecretLookupDefCopy(virSecretLookupTypeDefPtr dst,
     if (dst->type == VIR_SECRET_LOOKUP_TYPE_UUID) {
         memcpy(dst->u.uuid, src->u.uuid, VIR_UUID_BUFLEN);
     } else if (dst->type == VIR_SECRET_LOOKUP_TYPE_USAGE) {
-        if (VIR_STRDUP(dst->u.usage, src->u.usage) < 0)
-            return -1;
+        dst->u.usage = g_strdup(src->u.usage);
     }
     return 0;
 }

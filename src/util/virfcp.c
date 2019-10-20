@@ -62,8 +62,7 @@ virFCReadRportValue(const char *rport,
     if ((p = strchr(buf, '\n')))
         *p = '\0';
 
-    if (VIR_STRDUP(*result, buf) < 0)
-        return -1;
+    *result = g_strdup(buf);
 
     return 0;
 }

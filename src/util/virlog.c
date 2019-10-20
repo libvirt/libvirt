@@ -840,8 +840,7 @@ virLogNewOutputToSyslog(virLogPriority priority,
          * rather than copying @ident, syslog uses caller's reference instead
          */
         VIR_FREE(current_ident);
-        if (VIR_STRDUP(current_ident, ident) < 0)
-            return NULL;
+        current_ident = g_strdup(ident);
 
         openlog(current_ident, 0, 0);
     }
@@ -1331,8 +1330,7 @@ virLogOutputNew(virLogOutputFunc f,
             return NULL;
         }
 
-        if (VIR_STRDUP(ndup, name) < 0)
-            return NULL;
+        ndup = g_strdup(name);
     }
 
     if (VIR_ALLOC(ret) < 0) {
@@ -1466,10 +1464,7 @@ virLogDefineOutputs(virLogOutputPtr *outputs, size_t noutputs)
          * holding the lock so it's safe to call openlog and change the message
          * tag
          */
-        if (VIR_STRDUP_QUIET(tmp, outputs[id]->name) < 0) {
-            virLogUnlock();
-            return -1;
-        }
+        tmp = g_strdup(outputs[id]->name);
         VIR_FREE(current_ident);
         current_ident = tmp;
         openlog(current_ident, 0, 0);

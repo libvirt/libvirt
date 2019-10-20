@@ -127,8 +127,7 @@ virLockSpaceResourceNew(virLockSpacePtr lockspace,
     res->fd = -1;
     res->flags = flags;
 
-    if (VIR_STRDUP(res->name, resname) < 0)
-        goto error;
+    res->name = g_strdup(resname);
 
     if (!(res->path = virLockSpaceGetResourcePath(lockspace, resname)))
         goto error;
@@ -255,8 +254,7 @@ virLockSpacePtr virLockSpaceNew(const char *directory)
         return NULL;
     }
 
-    if (VIR_STRDUP(lockspace->dir, directory) < 0)
-        goto error;
+    lockspace->dir = g_strdup(directory);
 
     if (!(lockspace->resources = virHashCreate(VIR_LOCKSPACE_TABLE_SIZE,
                                                virLockSpaceResourceDataFree)))
@@ -313,8 +311,7 @@ virLockSpacePtr virLockSpaceNewPostExecRestart(virJSONValuePtr object)
 
     if (virJSONValueObjectHasKey(object, "directory")) {
         const char *dir = virJSONValueObjectGetString(object, "directory");
-        if (VIR_STRDUP(lockspace->dir, dir) < 0)
-            goto error;
+        lockspace->dir = g_strdup(dir);
     }
 
     if (!(resources = virJSONValueObjectGet(object, "resources"))) {
@@ -347,10 +344,7 @@ virLockSpacePtr virLockSpaceNewPostExecRestart(virJSONValuePtr object)
             virLockSpaceResourceFree(res);
             goto error;
         }
-        if (VIR_STRDUP(res->name, tmp) < 0) {
-            virLockSpaceResourceFree(res);
-            goto error;
-        }
+        res->name = g_strdup(tmp);
 
         if (!(tmp = virJSONValueObjectGetString(child, "path"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -358,10 +352,7 @@ virLockSpacePtr virLockSpaceNewPostExecRestart(virJSONValuePtr object)
             virLockSpaceResourceFree(res);
             goto error;
         }
-        if (VIR_STRDUP(res->path, tmp) < 0) {
-            virLockSpaceResourceFree(res);
-            goto error;
-        }
+        res->path = g_strdup(tmp);
         if (virJSONValueObjectGetNumberInt(child, "fd", &res->fd) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing resource fd in JSON document"));

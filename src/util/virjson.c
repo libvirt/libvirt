@@ -450,10 +450,7 @@ virJSONValueNewString(const char *data)
         return NULL;
 
     val->type = VIR_JSON_TYPE_STRING;
-    if (VIR_STRDUP(val->data.string, data) < 0) {
-        VIR_FREE(val);
-        return NULL;
-    }
+    val->data.string = g_strdup(data);
 
     return val;
 }
@@ -490,10 +487,7 @@ virJSONValueNewNumber(const char *data)
         return NULL;
 
     val->type = VIR_JSON_TYPE_NUMBER;
-    if (VIR_STRDUP(val->data.number, data) < 0) {
-        VIR_FREE(val);
-        return NULL;
-    }
+    val->data.number = g_strdup(data);
 
     return val;
 }
@@ -626,8 +620,7 @@ virJSONValueObjectInsert(virJSONValuePtr object,
         return -1;
     }
 
-    if (VIR_STRDUP(pair.key, key) < 0)
-        return -1;
+    pair.key = g_strdup(key);
 
     if (prepend) {
         ret = VIR_INSERT_ELEMENT(object->data.object.pairs, 0,

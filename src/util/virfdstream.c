@@ -1302,17 +1302,15 @@ virFDStreamOpenFileInternal(virStreamPtr st,
         if ((oflags & O_ACCMODE) == O_RDONLY) {
             threadData->fdin = fd;
             threadData->fdout = pipefds[1];
-            if (VIR_STRDUP(threadData->fdinname, path) < 0 ||
-                VIR_STRDUP(threadData->fdoutname, "pipe") < 0)
-                goto error;
+            threadData->fdinname = g_strdup(path);
+            threadData->fdoutname = g_strdup("pipe");
             tmpfd = pipefds[0];
             threadData->doRead = true;
         } else {
             threadData->fdin = pipefds[0];
             threadData->fdout = fd;
-            if (VIR_STRDUP(threadData->fdinname, "pipe") < 0 ||
-                VIR_STRDUP(threadData->fdoutname, path) < 0)
-                goto error;
+            threadData->fdinname = g_strdup("pipe");
+            threadData->fdoutname = g_strdup(path);
             tmpfd = pipefds[1];
             threadData->doRead = false;
         }

@@ -308,8 +308,7 @@ int virSystemdCreateMachine(const char *name,
         if (!(slicename = virSystemdMakeSliceName(partition)))
              goto cleanup;
     } else {
-        if (VIR_STRDUP(slicename, "") < 0)
-            goto cleanup;
+        slicename = g_strdup("");
     }
 
     /*

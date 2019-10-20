@@ -836,14 +836,12 @@ virNetDevMacVLanVPortProfileRegisterCallback(const char *ifname,
     if (virtPortProfile && virNetlinkEventServiceIsRunning(NETLINK_ROUTE)) {
         if (VIR_ALLOC(calld) < 0)
             goto error;
-        if (VIR_STRDUP(calld->cr_ifname, ifname) < 0)
-            goto error;
+        calld->cr_ifname = g_strdup(ifname);
         if (VIR_ALLOC(calld->virtPortProfile) < 0)
             goto error;
         memcpy(calld->virtPortProfile, virtPortProfile, sizeof(*virtPortProfile));
         virMacAddrSet(&calld->macaddress, macaddress);
-        if (VIR_STRDUP(calld->linkdev, linkdev) < 0)
-            goto error;
+        calld->linkdev = g_strdup(linkdev);
         memcpy(calld->vmuuid, vmuuid, sizeof(calld->vmuuid));
 
         calld->vmOp = vmOp;
@@ -1044,11 +1042,9 @@ virNetDevMacVLanCreateWithVPortProfile(const char *ifnameRequested,
         if (virNetDevMacVLanTapSetup(tapfd, tapfdSize, vnet_hdr) < 0)
             goto disassociate_exit;
 
-        if (VIR_STRDUP(*ifnameResult, ifnameCreated) < 0)
-            goto disassociate_exit;
+        *ifnameResult = g_strdup(ifnameCreated);
     } else {
-        if (VIR_STRDUP(*ifnameResult, ifnameCreated) < 0)
-            goto disassociate_exit;
+        *ifnameResult = g_strdup(ifnameCreated);
     }
 
     if (vmOp == VIR_NETDEV_VPORT_PROFILE_OP_CREATE ||

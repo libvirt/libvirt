@@ -277,9 +277,8 @@ virSCSIDeviceSetUsedBy(virSCSIDevicePtr dev,
 
     if (VIR_ALLOC(copy) < 0)
         return -1;
-    if (VIR_STRDUP(copy->drvname, drvname) < 0 ||
-        VIR_STRDUP(copy->domname, domname) < 0)
-        return -1;
+    copy->drvname = g_strdup(drvname);
+    copy->domname = g_strdup(domname);
 
     if (VIR_APPEND_ELEMENT(dev->used_by, dev->n_used_by, copy) < 0)
         return -1;

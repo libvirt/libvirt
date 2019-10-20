@@ -58,11 +58,12 @@ virSecurityLabelDefNew(const char *model)
 {
     virSecurityLabelDefPtr seclabel = NULL;
 
-    if (VIR_ALLOC(seclabel) < 0 ||
-        VIR_STRDUP(seclabel->model, model) < 0) {
+    if (VIR_ALLOC(seclabel) < 0) {
         virSecurityLabelDefFree(seclabel);
         return NULL;
     }
+
+    seclabel->model = g_strdup(model);
 
     seclabel->relabel = true;
 
@@ -74,11 +75,12 @@ virSecurityDeviceLabelDefNew(const char *model)
 {
     virSecurityDeviceLabelDefPtr seclabel = NULL;
 
-    if (VIR_ALLOC(seclabel) < 0 ||
-        VIR_STRDUP(seclabel->model, model) < 0) {
+    if (VIR_ALLOC(seclabel) < 0) {
         virSecurityDeviceLabelDefFree(seclabel);
         seclabel = NULL;
     }
+
+    seclabel->model = g_strdup(model);
 
     return seclabel;
 }
@@ -95,13 +97,8 @@ virSecurityDeviceLabelDefCopy(const virSecurityDeviceLabelDef *src)
     ret->relabel = src->relabel;
     ret->labelskip = src->labelskip;
 
-    if (VIR_STRDUP(ret->model, src->model) < 0 ||
-        VIR_STRDUP(ret->label, src->label) < 0)
-        goto error;
+    ret->model = g_strdup(src->model);
+    ret->label = g_strdup(src->label);
 
     return ret;
-
- error:
-    virSecurityDeviceLabelDefFree(ret);
-    return NULL;
 }

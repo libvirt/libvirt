@@ -79,9 +79,8 @@ virFirmwareParse(const char *str, virFirmwarePtr firmware)
         goto cleanup;
     }
 
-    if (VIR_STRDUP(firmware->name, token[0]) < 0 ||
-        VIR_STRDUP(firmware->nvram, token[1]) < 0)
-        goto cleanup;
+    firmware->name = g_strdup(token[0]);
+    firmware->nvram = g_strdup(token[1]);
 
     ret = 0;
  cleanup:
@@ -122,9 +121,8 @@ virFirmwareParseList(const char *list,
 
             if (VIR_ALLOC(fws[j]) < 0)
                 goto cleanup;
-            if (VIR_STRDUP(fws[j]->name, token[2 * j]) < 0 ||
-                VIR_STRDUP(fws[j]->nvram, token[2 * j + 1]) < 0)
-                goto cleanup;
+            fws[j]->name = g_strdup(token[2 * j]);
+            fws[j]->nvram = g_strdup(token[2 * j + 1]);
         }
     }
 

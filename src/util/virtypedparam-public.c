@@ -104,8 +104,7 @@ virTypedParameterAssignFromStr(virTypedParameterPtr param,
         }
         break;
     case VIR_TYPED_PARAM_STRING:
-        if (VIR_STRDUP(param->value.s, val) < 0)
-            return -1;
+        param->value.s = g_strdup(val);
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -736,8 +735,7 @@ virTypedParamsAddString(virTypedParameterPtr *params,
         goto error;
     *maxparams = max;
 
-    if (VIR_STRDUP(str, value) < 0)
-        goto error;
+    str = g_strdup(value);
 
     if (virTypedParameterAssign(*params + n, name,
                                 VIR_TYPED_PARAM_STRING, str) < 0) {

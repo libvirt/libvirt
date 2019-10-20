@@ -379,10 +379,8 @@ virUSBDeviceSetUsedBy(virUSBDevicePtr dev,
 {
     VIR_FREE(dev->used_by_drvname);
     VIR_FREE(dev->used_by_domname);
-    if (VIR_STRDUP(dev->used_by_drvname, drv_name) < 0)
-        return -1;
-    if (VIR_STRDUP(dev->used_by_domname, dom_name) < 0)
-        return -1;
+    dev->used_by_drvname = g_strdup(drv_name);
+    dev->used_by_domname = g_strdup(dom_name);
 
     return 0;
 }

@@ -1010,8 +1010,7 @@ virDBusMessageIterDecode(DBusMessageIter *rootiter,
                 }
                 char *s;
                 dbus_message_iter_get_basic(iter, &s);
-                if (VIR_STRDUP(*x, s) < 0)
-                    goto cleanup;
+                *x = g_strdup(s);
                 VIR_DEBUG("Read basic type 'char *' varg 'char **'"
                           "' val '%s'", *x);
             } while (0);
@@ -1573,10 +1572,8 @@ virDBusCall(DBusConnection *conn,
             error->level = VIR_ERR_ERROR;
             error->code = VIR_ERR_DBUS_SERVICE;
             error->domain = VIR_FROM_DBUS;
-            if (VIR_STRDUP(error->message, localerror.message) < 0)
-                goto cleanup;
-            if (VIR_STRDUP(error->str1, localerror.name) < 0)
-                goto cleanup;
+            error->message = g_strdup(localerror.message);
+            error->str1 = g_strdup(localerror.name);
             ret = 0;
         } else {
             virReportError(VIR_ERR_DBUS_SERVICE, _("%s: %s"), member,

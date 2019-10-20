@@ -481,8 +481,7 @@ virSocketAddrFormatFull(const virSocketAddr *addr,
                             separator ? separator : ":") < 0)
                 return NULL;
         } else {
-            if (VIR_STRDUP(addrstr, VIR_LOOPBACK_IPV4_ADDR) < 0)
-                return NULL;
+            addrstr = g_strdup(VIR_LOOPBACK_IPV4_ADDR);
         }
         return addrstr;
     }
@@ -515,8 +514,7 @@ virSocketAddrFormatFull(const virSocketAddr *addr,
             return NULL;
         }
     } else {
-        if (VIR_STRDUP(addrstr, host) < 0)
-            return NULL;
+        addrstr = g_strdup(host);
     }
 
     return addrstr;

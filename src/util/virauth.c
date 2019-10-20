@@ -51,8 +51,7 @@ virAuthGetConfigFilePathURI(virURIPtr uri,
 
     if (authenv) {
         VIR_DEBUG("Using path from env '%s'", authenv);
-        if (VIR_STRDUP(*path, authenv) < 0)
-            return -1;
+        *path = g_strdup(authenv);
         return 0;
     }
 
@@ -61,8 +60,7 @@ virAuthGetConfigFilePathURI(virURIPtr uri,
             if (STREQ_NULLABLE(uri->params[i].name, "authfile") &&
                 uri->params[i].value) {
                 VIR_DEBUG("Using path from URI '%s'", uri->params[i].value);
-                if (VIR_STRDUP(*path, uri->params[i].value) < 0)
-                    return -1;
+                *path = g_strdup(uri->params[i].value);
                 return 0;
             }
         }
@@ -80,8 +78,7 @@ virAuthGetConfigFilePathURI(virURIPtr uri,
 
     VIR_FREE(*path);
 
-    if (VIR_STRDUP(*path, SYSCONFDIR "/libvirt/auth.conf") < 0)
-        return -1;
+    *path = g_strdup(SYSCONFDIR "/libvirt/auth.conf");
 
     VIR_DEBUG("Checking for readability of '%s'", *path);
     if (access(*path, R_OK) == 0)
@@ -129,8 +126,7 @@ virAuthGetCredential(const char *servicename,
                             &tmp) < 0)
         return -1;
 
-    if (VIR_STRDUP(*value, tmp) < 0)
-        return -1;
+    *value = g_strdup(tmp);
 
     return 0;
 }

@@ -207,14 +207,10 @@ virCopyError(virErrorPtr from,
     to->code = from->code;
     to->domain = from->domain;
     to->level = from->level;
-    if (VIR_STRDUP_QUIET(to->message, from->message) < 0)
-        ret = -1;
-    if (VIR_STRDUP_QUIET(to->str1, from->str1) < 0)
-        ret = -1;
-    if (VIR_STRDUP_QUIET(to->str2, from->str2) < 0)
-        ret = -1;
-    if (VIR_STRDUP_QUIET(to->str3, from->str3) < 0)
-        ret = -1;
+    to->message = g_strdup(from->message);
+    to->str1 = g_strdup(from->str1);
+    to->str2 = g_strdup(from->str2);
+    to->str3 = g_strdup(from->str3);
     to->int1 = from->int1;
     to->int2 = from->int2;
     /*

@@ -127,8 +127,7 @@ virArpTableGet(void)
             virAddr.data.inet4.sin_addr = *(struct in_addr *)addr;
             ipstr = virSocketAddrFormat(&virAddr);
 
-            if (VIR_STRDUP(table->t[num].ipaddr, ipstr) < 0)
-                goto cleanup;
+            table->t[num].ipaddr = g_strdup(ipstr);
         }
 
         if (tb[NDA_LLADDR]) {
@@ -140,8 +139,7 @@ virArpTableGet(void)
 
             virMacAddrFormat(&macaddr, ifmac);
 
-            if (VIR_STRDUP(table->t[num].mac, ifmac) < 0)
-                goto cleanup;
+            table->t[num].mac = g_strdup(ifmac);
 
             num++;
         }

@@ -268,8 +268,7 @@ virHostMemGetStats(int cellNum G_GNUC_UNUSED,
             cellNum = VIR_NODE_MEMORY_STATS_ALL_CELLS;
 
         if (cellNum == VIR_NODE_MEMORY_STATS_ALL_CELLS) {
-            if (VIR_STRDUP(meminfo_path, MEMINFO_PATH) < 0)
-                return -1;
+            meminfo_path = g_strdup(MEMINFO_PATH);
         } else {
             if ((max_node = virNumaGetMaxNode()) < 0)
                 return -1;

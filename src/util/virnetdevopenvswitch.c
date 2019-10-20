@@ -529,8 +529,7 @@ virNetDevOpenvswitchGetVhostuserIfname(const char *path,
         goto cleanup;
     }
 
-    if (VIR_STRDUP(*ifname, tmpIfname) < 0)
-        goto cleanup;
+    *ifname = g_strdup(tmpIfname);
     ret = 1;
 
  cleanup:

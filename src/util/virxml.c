@@ -1260,8 +1260,7 @@ virXMLValidatorInit(const char *schemafile)
     if (VIR_ALLOC(validator) < 0)
         return NULL;
 
-    if (VIR_STRDUP(validator->schemafile, schemafile) < 0)
-        goto error;
+    validator->schemafile = g_strdup(schemafile);
 
     if (!(validator->rngParser =
           xmlRelaxNGNewParserCtxt(validator->schemafile))) {

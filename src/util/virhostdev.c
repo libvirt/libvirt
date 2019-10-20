@@ -169,8 +169,7 @@ virHostdevManagerNew(void)
         return NULL;
 
     if (privileged) {
-        if (VIR_STRDUP(hostdevMgr->stateDir, HOSTDEV_STATE_DIR) < 0)
-            return NULL;
+        hostdevMgr->stateDir = g_strdup(HOSTDEV_STATE_DIR);
 
         if (virFileMakePath(hostdevMgr->stateDir) < 0) {
             virReportError(VIR_ERR_OPERATION_FAILED,

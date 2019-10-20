@@ -234,8 +234,7 @@ virTypedParameterAssignValueVArgs(virTypedParameterPtr param,
         break;
     case VIR_TYPED_PARAM_STRING:
         if (copystr) {
-            if (VIR_STRDUP(param->value.s, va_arg(ap, char *)) < 0)
-                return -1;
+            param->value.s = g_strdup(va_arg(ap, char *));
         } else {
             param->value.s = va_arg(ap, char *);
         }
@@ -337,8 +336,7 @@ virTypedParamsReplaceString(virTypedParameterPtr *params,
         param = *params + n - 1;
     }
 
-    if (VIR_STRDUP(str, value) < 0)
-        goto error;
+    str = g_strdup(value);
 
     if (virTypedParameterAssign(param, name,
                                 VIR_TYPED_PARAM_STRING, str) < 0) {
@@ -374,11 +372,7 @@ virTypedParamsCopy(virTypedParameterPtr *dst,
         ignore_value(virStrcpyStatic((*dst)[i].field, src[i].field));
         (*dst)[i].type = src[i].type;
         if (src[i].type == VIR_TYPED_PARAM_STRING) {
-            if (VIR_STRDUP((*dst)[i].value.s, src[i].value.s) < 0) {
-                virTypedParamsFree(*dst, i - 1);
-                *dst = NULL;
-                return -1;
-            }
+            (*dst)[i].value.s = g_strdup(src[i].value.s);
         } else {
             (*dst)[i].value = src[i].value;
         }
@@ -613,9 +607,7 @@ virTypedParamsDeserialize(virTypedParameterRemotePtr remote_params,
                 remote_param->value.remote_typed_param_value.b;
             break;
         case VIR_TYPED_PARAM_STRING:
-            if (VIR_STRDUP(param->value.s,
-                           remote_param->value.remote_typed_param_value.s) < 0)
-                goto cleanup;
+            param->value.s = g_strdup(remote_param->value.remote_typed_param_value.s);
             break;
         default:
             virReportError(VIR_ERR_RPC, _("unknown parameter type: %d"),
@@ -699,8 +691,7 @@ virTypedParamsSerialize(virTypedParameterPtr params,
 
         /* This will be either freed by virNetServerDispatchCall or call(),
          * depending on the calling side, i.e. server or client */
-        if (VIR_STRDUP(val->field, param->field) < 0)
-            goto cleanup;
+        val->field = g_strdup(param->field);
         val->value.type = param->type;
         switch (param->type) {
         case VIR_TYPED_PARAM_INT:
@@ -722,8 +713,7 @@ virTypedParamsSerialize(virTypedParameterPtr params,
             val->value.remote_typed_param_value.b = param->value.b;
             break;
         case VIR_TYPED_PARAM_STRING:
-            if (VIR_STRDUP(val->value.remote_typed_param_value.s, param->value.s) < 0)
-                goto cleanup;
+            val->value.remote_typed_param_value.s = g_strdup(param->value.s);
             break;
         default:
             virReportError(VIR_ERR_RPC, _("unknown parameter type: %d"),

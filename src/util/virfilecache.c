@@ -245,11 +245,9 @@ virFileCacheNew(const char *dir,
     if (!(cache->table = virHashCreate(10, virObjectFreeHashData)))
         goto cleanup;
 
-    if (VIR_STRDUP(cache->dir, dir) < 0)
-        goto cleanup;
+    cache->dir = g_strdup(dir);
 
-    if (VIR_STRDUP(cache->suffix, suffix) < 0)
-        goto cleanup;
+    cache->suffix = g_strdup(suffix);
 
     cache->handlers = *handlers;
 

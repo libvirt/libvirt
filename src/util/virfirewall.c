@@ -323,8 +323,7 @@ void virFirewallFree(virFirewallPtr firewall)
                          rule->argsLen, 1) < 0) \
             goto no_memory; \
  \
-        if (VIR_STRDUP(rule->args[rule->argsLen++], str) < 0) \
-            goto no_memory; \
+        rule->args[rule->argsLen++] = g_strdup(str); \
     } while (0)
 
 static virFirewallRulePtr
