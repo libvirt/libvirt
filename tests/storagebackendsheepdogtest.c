@@ -63,8 +63,7 @@ test_node_info_parser(const void *opaque)
     if (!(pool = virStoragePoolDefParseFile(data->poolxml)))
         return -1;
 
-    if (VIR_STRDUP(output, test.output) < 0)
-        return -1;
+    output = g_strdup(test.output);
 
     if (virStorageBackendSheepdogParseNodeInfo(pool, output) !=
         test.expected_return)
@@ -95,8 +94,7 @@ test_vdi_list_parser(const void *opaque)
     if (!(vol = virStorageVolDefParseFile(pool, data->volxml, 0)))
         return -1;
 
-    if (VIR_STRDUP(output, test.output) < 0)
-        return -1;
+    output = g_strdup(test.output);
 
     if (virStorageBackendSheepdogParseVdiList(vol, output) !=
         test.expected_return)

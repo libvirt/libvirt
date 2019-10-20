@@ -63,8 +63,7 @@ testCompareXMLToXMLFiles(const char *inxml,
     if (flags & TEST_PARENT) {
         if (def->parent.parent_name)
             return -1;
-        if (VIR_STRDUP(def->parent.parent_name, "1525111885") < 0)
-            return -1;
+        def->parent.parent_name = g_strdup("1525111885");
     }
     if (flags & TEST_VDA_BITMAP) {
         virDomainCheckpointDiskDefPtr disk;
@@ -76,13 +75,11 @@ testCompareXMLToXMLFiles(const char *inxml,
             return -1;
         if (!disk->name) {
             disk->type = VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP;
-            if (VIR_STRDUP(disk->name, "vda") < 0)
-                return -1;
+            disk->name = g_strdup("vda");
         } else if (STRNEQ(disk->name, "vda")) {
             return -1;
         }
-        if (VIR_STRDUP(disk->bitmap, def->parent.name) < 0)
-            return -1;
+        disk->bitmap = g_strdup(def->parent.name);
     }
     if (flags & TEST_SIZE) {
         def->disks[0].size = 1048576;

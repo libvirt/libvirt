@@ -62,8 +62,7 @@ getrealpath(char **newpath,
             return -1;
         }
     } else {
-        if (VIR_STRDUP_QUIET(*newpath, path) < 0)
-            return -1;
+        *newpath = g_strdup(path);
     }
 
     return 0;

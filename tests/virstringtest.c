@@ -718,8 +718,7 @@ static int testStripIPv6Brackets(const void *args)
     int ret = -1;
     char *res = NULL;
 
-    if (VIR_STRDUP(res, data->string) < 0)
-        goto cleanup;
+    res = g_strdup(data->string);
 
     virStringStripIPv6Brackets(res);
 
@@ -742,8 +741,7 @@ static int testStripControlChars(const void *args)
     int ret = -1;
     char *res = NULL;
 
-    if (VIR_STRDUP(res, data->string) < 0)
-        goto cleanup;
+    res = g_strdup(data->string);
 
     virStringStripControlChars(res);
 
@@ -772,8 +770,7 @@ static int testFilterChars(const void *args)
     int ret = -1;
     char *res = NULL;
 
-    if (VIR_STRDUP(res, data->string) < 0)
-        goto cleanup;
+    res = g_strdup(data->string);
 
     virStringFilterChars(res, data->valid);
 

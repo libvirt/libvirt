@@ -43,8 +43,7 @@ fakeSecretGetValue(virSecretPtr obj G_GNUC_UNUSED,
                    unsigned int internalFlags G_GNUC_UNUSED)
 {
     char *secret;
-    if (VIR_STRDUP(secret, "AQCVn5hO6HzFAhAAq0NCv8jtJcIcE+HOBlMQ1A") < 0)
-        return NULL;
+    secret = g_strdup("AQCVn5hO6HzFAhAAq0NCv8jtJcIcE+HOBlMQ1A");
     *value_size = strlen(secret);
     return (unsigned char *) secret;
 }
@@ -517,9 +516,7 @@ testCompareXMLToArgv(const void *data)
         switch (vm->def->tpm->type) {
         case VIR_DOMAIN_TPM_TYPE_EMULATOR:
             VIR_FREE(vm->def->tpm->data.emulator.source.data.file.path);
-            if (VIR_STRDUP(vm->def->tpm->data.emulator.source.data.file.path,
-                           "/dev/test") < 0)
-                goto cleanup;
+            vm->def->tpm->data.emulator.source.data.file.path = g_strdup("/dev/test");
             vm->def->tpm->data.emulator.source.type = VIR_DOMAIN_CHR_TYPE_FILE;
             break;
         case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
@@ -620,10 +617,7 @@ mymain(void)
     char *fakerootdir;
     virHashTablePtr capslatest = NULL;
 
-    if (VIR_STRDUP_QUIET(fakerootdir, FAKEROOTDIRTEMPLATE) < 0) {
-        fprintf(stderr, "Out of memory\n");
-        abort();
-    }
+    fakerootdir = g_strdup(FAKEROOTDIRTEMPLATE);
 
     if (!mkdtemp(fakerootdir)) {
         fprintf(stderr, "Cannot create fakerootdir");
@@ -648,43 +642,33 @@ mymain(void)
     driver.privileged = true;
 
     VIR_FREE(driver.config->defaultTLSx509certdir);
-    if (VIR_STRDUP_QUIET(driver.config->defaultTLSx509certdir, "/etc/pki/qemu") < 0)
-        return EXIT_FAILURE;
+    driver.config->defaultTLSx509certdir = g_strdup("/etc/pki/qemu");
     VIR_FREE(driver.config->vncTLSx509certdir);
-    if (VIR_STRDUP_QUIET(driver.config->vncTLSx509certdir, "/etc/pki/libvirt-vnc") < 0)
-        return EXIT_FAILURE;
+    driver.config->vncTLSx509certdir = g_strdup("/etc/pki/libvirt-vnc");
     VIR_FREE(driver.config->spiceTLSx509certdir);
-    if (VIR_STRDUP_QUIET(driver.config->spiceTLSx509certdir, "/etc/pki/libvirt-spice") < 0)
-        return EXIT_FAILURE;
+    driver.config->spiceTLSx509certdir = g_strdup("/etc/pki/libvirt-spice");
     VIR_FREE(driver.config->chardevTLSx509certdir);
-    if (VIR_STRDUP_QUIET(driver.config->chardevTLSx509certdir, "/etc/pki/libvirt-chardev") < 0)
-        return EXIT_FAILURE;
+    driver.config->chardevTLSx509certdir = g_strdup("/etc/pki/libvirt-chardev");
     VIR_FREE(driver.config->vxhsTLSx509certdir);
-    if (VIR_STRDUP_QUIET(driver.config->vxhsTLSx509certdir, "/etc/pki/libvirt-vxhs/dummy,path") < 0)
-        return EXIT_FAILURE;
+    driver.config->vxhsTLSx509certdir = g_strdup("/etc/pki/libvirt-vxhs/dummy,path");
     VIR_FREE(driver.config->nbdTLSx509certdir);
-    if (VIR_STRDUP_QUIET(driver.config->nbdTLSx509certdir, "/etc/pki/libvirt-nbd/dummy,path") < 0)
-        return EXIT_FAILURE;
+    driver.config->nbdTLSx509certdir = g_strdup("/etc/pki/libvirt-nbd/dummy,path");
 
     VIR_FREE(driver.config->hugetlbfs);
     if (VIR_ALLOC_N(driver.config->hugetlbfs, 2) < 0)
         return EXIT_FAILURE;
     driver.config->nhugetlbfs = 2;
-    if (VIR_STRDUP(driver.config->hugetlbfs[0].mnt_dir, "/dev/hugepages2M") < 0 ||
-        VIR_STRDUP(driver.config->hugetlbfs[1].mnt_dir, "/dev/hugepages1G") < 0)
-        return EXIT_FAILURE;
+    driver.config->hugetlbfs[0].mnt_dir = g_strdup("/dev/hugepages2M");
+    driver.config->hugetlbfs[1].mnt_dir = g_strdup("/dev/hugepages1G");
     driver.config->hugetlbfs[0].size = 2048;
     driver.config->hugetlbfs[0].deflt = true;
     driver.config->hugetlbfs[1].size = 1048576;
     driver.config->spiceTLS = 1;
-    if (VIR_STRDUP_QUIET(driver.config->spicePassword, "123456") < 0)
-        return EXIT_FAILURE;
+    driver.config->spicePassword = g_strdup("123456");
     VIR_FREE(driver.config->memoryBackingDir);
-    if (VIR_STRDUP_QUIET(driver.config->memoryBackingDir, "/var/lib/libvirt/qemu/ram") < 0)
-        return EXIT_FAILURE;
+    driver.config->memoryBackingDir = g_strdup("/var/lib/libvirt/qemu/ram");
     VIR_FREE(driver.config->nvramDir);
-    if (VIR_STRDUP(driver.config->nvramDir, "/var/lib/libvirt/qemu/nvram") < 0)
-        return EXIT_FAILURE;
+    driver.config->nvramDir = g_strdup("/var/lib/libvirt/qemu/nvram");
 
     capslatest = testQemuGetLatestCaps();
     if (!capslatest)
@@ -1222,9 +1206,7 @@ mymain(void)
     DO_TEST("graphics-vnc-tls", QEMU_CAPS_VNC, QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST_CAPS_VER("graphics-vnc-tls", "2.4.0");
     DO_TEST_CAPS_LATEST("graphics-vnc-tls");
-    if (VIR_STRDUP_QUIET(driver.config->vncTLSx509secretUUID,
-                         "6fd3f62d-9fe7-4a4e-a869-7acd6376d8ea") < 0)
-        return EXIT_FAILURE;
+    driver.config->vncTLSx509secretUUID = g_strdup("6fd3f62d-9fe7-4a4e-a869-7acd6376d8ea");
     DO_TEST_CAPS_LATEST("graphics-vnc-tls-secret");
     VIR_FREE(driver.config->vncTLSx509secretUUID);
     driver.config->vncSASL = driver.config->vncTLSx509verify = driver.config->vncTLS = 0;
@@ -1407,11 +1389,8 @@ mymain(void)
             QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_OBJECT_TLS_CREDS_X509);
     VIR_FREE(driver.config->chardevTLSx509certdir);
-    if (VIR_STRDUP_QUIET(driver.config->chardevTLSx509certdir, "/etc/pki/libvirt-chardev") < 0)
-        return EXIT_FAILURE;
-    if (VIR_STRDUP_QUIET(driver.config->chardevTLSx509secretUUID,
-                         "6fd3f62d-9fe7-4a4e-a869-7acd6376d8ea") < 0)
-        return EXIT_FAILURE;
+    driver.config->chardevTLSx509certdir = g_strdup("/etc/pki/libvirt-chardev");
+    driver.config->chardevTLSx509secretUUID = g_strdup("6fd3f62d-9fe7-4a4e-a869-7acd6376d8ea");
     DO_TEST("serial-tcp-tlsx509-secret-chardev",
             QEMU_CAPS_OBJECT_SECRET,
             QEMU_CAPS_DEVICE_ISA_SERIAL,

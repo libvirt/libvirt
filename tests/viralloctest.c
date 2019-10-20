@@ -409,8 +409,7 @@ testDispose(const void *opaque G_GNUC_UNUSED)
 
     VIR_DISPOSE_N(nums, nnums);
 
-    if (VIR_STRDUP(str, "test") < 0)
-        return -1;
+    str = g_strdup("test");
 
     VIR_DISPOSE_STRING(str);
 

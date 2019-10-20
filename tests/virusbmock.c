@@ -56,8 +56,8 @@ static char *get_fake_path(const char *real_path)
     if ((p = STRSKIP(real_path, USB_SYSFS)) &&
         virAsprintfQuiet(&path, "%s/%s/%s", abs_srcdir, FAKE_USB_SYSFS, p) < 0)
         goto error;
-    else if (!p && VIR_STRDUP_QUIET(path, real_path) < 0)
-        goto error;
+    else if (!p)
+        path = g_strdup(real_path);
 
     return path;
 

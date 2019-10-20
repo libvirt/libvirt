@@ -36,11 +36,11 @@ fillStringValues(virDomainCapsStringValuesPtr values, ...)
 
     va_start(list, values);
     while ((str = va_arg(list, const char *))) {
-        if (VIR_REALLOC_N(values->values, values->nvalues + 1) < 0 ||
-            VIR_STRDUP(values->values[values->nvalues], str) < 0) {
+        if (VIR_REALLOC_N(values->values, values->nvalues + 1) < 0) {
             ret = -1;
             break;
         }
+        values->values[values->nvalues] = g_strdup(str);
         values->nvalues++;
     }
     va_end(list);
@@ -95,9 +95,7 @@ fillQemuCaps(virDomainCapsPtr domCaps,
 
     if (machine) {
         VIR_FREE(domCaps->machine);
-        if (VIR_STRDUP(domCaps->machine,
-                       virQEMUCapsGetCanonicalMachine(qemuCaps, machine)) < 0)
-            goto cleanup;
+        domCaps->machine = g_strdup(virQEMUCapsGetCanonicalMachine(qemuCaps, machine));
     }
 
     if (!domCaps->machine)
@@ -153,9 +151,8 @@ fillXenCaps(virDomainCapsPtr domCaps)
 
     if (VIR_ALLOC(firmwares[0]) < 0 || VIR_ALLOC(firmwares[1]) < 0)
         goto cleanup;
-    if (VIR_STRDUP(firmwares[0]->name, "/usr/lib/xen/boot/hvmloader") < 0 ||
-        VIR_STRDUP(firmwares[1]->name, "/usr/lib/xen/boot/ovmf.bin") < 0)
-        goto cleanup;
+    firmwares[0]->name = g_strdup("/usr/lib/xen/boot/hvmloader");
+    firmwares[1]->name = g_strdup("/usr/lib/xen/boot/ovmf.bin");
 
     if (libxlMakeDomainCapabilities(domCaps, firmwares, 2) < 0)
         goto cleanup;

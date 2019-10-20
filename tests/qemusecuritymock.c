@@ -146,8 +146,7 @@ virFileGetXAttrQuiet(const char *path,
         goto cleanup;
     }
 
-    if (VIR_STRDUP(*value, val) < 0)
-        goto cleanup;
+    *value = g_strdup(val);
 
     ret = 0;
  cleanup:
@@ -194,8 +193,7 @@ int virFileSetXAttr(const char *path,
     char *val;
 
     key = get_key(path, name);
-    if (VIR_STRDUP(val, value) < 0)
-        return -1;
+    val = g_strdup(value);
 
     virMutexLock(&m);
     init_syms();

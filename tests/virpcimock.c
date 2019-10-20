@@ -289,8 +289,7 @@ getrealpath(char **newpath,
             return -1;
         }
     } else {
-        if (VIR_STRDUP_QUIET(*newpath, path) < 0)
-            return -1;
+        *newpath = g_strdup(path);
     }
 
     return 0;
@@ -324,12 +323,12 @@ add_fd(int fd, const char *path)
               fd, path, cb.fd, cb.path);
     }
 
-    if (VIR_REALLOC_N_QUIET(callbacks, nCallbacks + 1) < 0 ||
-        VIR_STRDUP_QUIET(callbacks[nCallbacks].path, path) < 0) {
+    if (VIR_REALLOC_N_QUIET(callbacks, nCallbacks + 1) < 0) {
         errno = ENOMEM;
         goto cleanup;
     }
 
+    callbacks[nCallbacks].path = g_strdup(path);
     callbacks[nCallbacks++].fd = fd;
     ret = 0;
  cleanup:
@@ -477,9 +476,10 @@ pci_device_new_from_stub(const struct pciDevice *data)
     struct stat sb;
     bool configSrcExists = false;
 
-    if (!(devid = pci_address_format(&data->addr)) ||
-        VIR_STRDUP_QUIET(id, devid) < 0)
+    if (!(devid = pci_address_format(&data->addr)))
         ABORT_OOM();
+
+    id = g_strdup(devid);
 
     /* Replace ':' with '-' to create the config filename from the
      * device ID. The device ID cannot be used directly as filename
@@ -724,9 +724,10 @@ pci_driver_new(const char *name, ...)
     int vendor, device;
     g_autofree char *driverpath = NULL;
 
-    if (VIR_ALLOC_QUIET(driver) < 0 ||
-        VIR_STRDUP_QUIET(driver->name, name) < 0 ||
-        !(driverpath = pci_driver_get_path(driver, NULL, true)))
+    if (VIR_ALLOC_QUIET(driver) < 0)
+        ABORT_OOM();
+    driver->name = g_strdup(name);
+    if (!(driverpath = pci_driver_get_path(driver, NULL, true)))
         ABORT_OOM();
 
     if (virFileMakePath(driverpath) < 0)

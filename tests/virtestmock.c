@@ -122,8 +122,7 @@ checkPath(const char *path,
     } else {
         /* Yeah, our worst nightmares just became true. Path does
          * not exist. Cut off the last component and retry. */
-        if (VIR_STRDUP_QUIET(crippledPath, relPath ? relPath : path) < 0)
-            goto error;
+        crippledPath = g_strdup(relPath ? relPath : path);
 
         virFileRemoveLastComponent(crippledPath);
 

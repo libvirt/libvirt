@@ -686,10 +686,7 @@ static int test17(const void *unused G_GNUC_UNUSED)
         goto cleanup;
     }
     VIR_FREE(outbuf);
-    if (VIR_STRDUP(outbuf, "should not be leaked") < 0) {
-        puts("test framework failure");
-        goto cleanup;
-    }
+    outbuf = g_strdup("should not be leaked");
 
     virCommandSetErrorBuffer(cmd, &errbuf);
     if (errbuf != NULL) {

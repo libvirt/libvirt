@@ -102,8 +102,7 @@ testStorageFileGetMetadata(const char *path,
         }
     }
 
-    if (VIR_STRDUP(def->path, path) < 0)
-        return NULL;
+    def->path = g_strdup(path);
 
     if (virStorageFileGetMetadata(def, uid, gid, false) < 0)
         return NULL;
@@ -480,8 +479,7 @@ testPathCanonicalizeReadlink(const char *path,
 
     for (i = 0; i < G_N_ELEMENTS(testPathCanonicalizeSymlinks); i++) {
         if (STREQ(path, testPathCanonicalizeSymlinks[i][0])) {
-            if (VIR_STRDUP(*linkpath, testPathCanonicalizeSymlinks[i][1]) < 0)
-                return -1;
+            *linkpath = g_strdup(testPathCanonicalizeSymlinks[i][1]);
 
             return 0;
         }

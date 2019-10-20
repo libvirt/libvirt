@@ -71,14 +71,9 @@ testFileCacheObjNew(const char *data)
     if (!(obj = virObjectNew(testFileCacheObjClass)))
         return NULL;
 
-    if (VIR_STRDUP(obj->data, data) < 0)
-        goto error;
+    obj->data = g_strdup(data);
 
     return obj;
-
- error:
-    virObjectUnref(obj);
-    return NULL;
 }
 
 

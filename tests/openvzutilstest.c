@@ -99,9 +99,10 @@ testReadNetworkConf(const void *data G_GNUC_UNUSED)
         "  </devices>\n"
         "</domain>\n";
 
-    if (!(def = virDomainDefNew()) ||
-        VIR_STRDUP(def->os.init, "/sbin/init") < 0)
+    if (!(def = virDomainDefNew()))
         goto cleanup;
+
+    def->os.init = g_strdup("/sbin/init");
 
     def->virtType = VIR_DOMAIN_VIRT_OPENVZ;
     def->os.type = VIR_DOMAIN_OSTYPE_EXE;

@@ -61,10 +61,7 @@ mymain(void)
     char *fakerootdir;
     virQEMUCapsPtr qemuCaps = NULL;
 
-    if (VIR_STRDUP_QUIET(fakerootdir, FAKEROOTDIRTEMPLATE) < 0) {
-        fprintf(stderr, "Out of memory\n");
-        abort();
-    }
+    fakerootdir = g_strdup(FAKEROOTDIRTEMPLATE);
 
     if (!mkdtemp(fakerootdir)) {
         fprintf(stderr, "Cannot create fakerootdir");

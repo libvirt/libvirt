@@ -144,10 +144,7 @@ testSELinuxLoadFileList(const char *testname,
                         abs_builddir, line) < 0)
             goto cleanup;
         if (*tmp != '\0' && *tmp != '\n') {
-            if (VIR_STRDUP(context, tmp) < 0) {
-                VIR_FREE(file);
-                goto cleanup;
-            }
+            context = g_strdup(tmp);
 
             tmp = strchr(context, '\n');
             if (tmp)
@@ -270,8 +267,7 @@ testSELinuxCheckLabels(testSELinuxFile *files, size_t nfiles)
             if (errno == ENODATA) {
                 /* nothing to do */
             } else if (errno == EOPNOTSUPP) {
-                if (VIR_STRDUP(ctx, "EOPNOTSUPP") < 0)
-                    return -1;
+                ctx = g_strdup("EOPNOTSUPP");
             } else {
                 virReportSystemError(errno,
                                      "Cannot read label on %s",

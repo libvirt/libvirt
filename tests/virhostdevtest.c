@@ -117,8 +117,7 @@ myInit(void)
         goto cleanup;
     if ((mgr->activeSCSIHostdevs = virSCSIDeviceListNew()) == NULL)
         goto cleanup;
-    if (VIR_STRDUP(mgr->stateDir, TEST_STATE_DIR) < 0)
-        goto cleanup;
+    mgr->stateDir = g_strdup(TEST_STATE_DIR);
     if (virFileMakePath(mgr->stateDir) < 0)
         goto cleanup;
 
@@ -501,10 +500,7 @@ mymain(void)
     int ret = 0;
     g_autofree char *fakerootdir = NULL;
 
-    if (VIR_STRDUP_QUIET(fakerootdir, FAKEROOTDIRTEMPLATE) < 0) {
-        fprintf(stderr, "Out of memory\n");
-        abort();
-    }
+    fakerootdir = g_strdup(FAKEROOTDIRTEMPLATE);
 
     if (!mkdtemp(fakerootdir)) {
         fprintf(stderr, "Cannot create fakerootdir");

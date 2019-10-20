@@ -2165,8 +2165,7 @@ testQemuMonitorJSONqemuMonitorJSONSetBlockIoThrottle(const void *opaque)
         return -1;
 
     expectedInfo = (virDomainBlockIoTuneInfo) {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, NULL, 15, 16, 17, 18, 19, 20};
-    if (VIR_STRDUP(expectedInfo.group_name, "group14") < 0)
-        return -1;
+    expectedInfo.group_name = g_strdup("group14");
 
     if (qemuMonitorTestAddItem(test, "query-block", queryBlockReply) < 0 ||
         qemuMonitorTestAddItemParams(test, "block_set_io_throttle",

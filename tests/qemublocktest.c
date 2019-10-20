@@ -161,8 +161,7 @@ testQemuDiskXMLToJSONFakeSecrets(virStorageSourcePtr src)
             return -1;
 
         srcpriv->secinfo->type = VIR_DOMAIN_SECRET_INFO_TYPE_AES;
-        if (VIR_STRDUP(srcpriv->secinfo->s.aes.username, src->auth->username) < 0)
-            return -1;
+        srcpriv->secinfo->s.aes.username = g_strdup(src->auth->username);
 
         if (virAsprintf(&srcpriv->secinfo->s.aes.alias, "%s-secalias",
                         NULLSTR(src->nodestorage)) < 0)

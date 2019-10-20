@@ -68,8 +68,7 @@ testVUPrecedence(const void *opaque G_GNUC_UNUSED)
     };
     const size_t nexpected = G_N_ELEMENTS(expected);
 
-    if (VIR_STRDUP(fakehome, abs_srcdir "/qemuvhostuserdata/home/user/.config") < 0)
-        return -1;
+    fakehome = g_strdup(abs_srcdir "/qemuvhostuserdata/home/user/.config");
 
     setenv("XDG_CONFIG_HOME", fakehome, 1);
 

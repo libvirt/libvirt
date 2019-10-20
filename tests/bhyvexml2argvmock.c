@@ -34,8 +34,7 @@ int virNetDevTapCreateInBridgePort(const char *brname G_GNUC_UNUSED,
                                    unsigned int fakeflags G_GNUC_UNUSED)
 {
     VIR_FREE(*ifname);
-    if (VIR_STRDUP(*ifname, "vnet0") < 0)
-        return -1;
+    *ifname = g_strdup("vnet0");
     return 0;
 }
 
@@ -43,8 +42,7 @@ char *virNetDevTapGetRealDeviceName(char *name G_GNUC_UNUSED)
 {
     char *fakename;
 
-    if (VIR_STRDUP(fakename, "faketapdev") < 0)
-        return NULL;
+    fakename = g_strdup("faketapdev");
     return fakename;
 }
 

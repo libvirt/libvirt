@@ -58,9 +58,7 @@ testCompareXMLtoXMLFiles(const char *xml)
     int ret = -1;
     virVBoxSnapshotConfMachinePtr machine = NULL;
 
-    if (VIR_STRDUP(pathResult,
-                   abs_builddir "/vboxsnapshotxmldata/testResult.vbox") < 0)
-        return -1;
+    pathResult = g_strdup(abs_builddir "/vboxsnapshotxmldata/testResult.vbox");
 
     if (virFileMakePath(abs_builddir "/vboxsnapshotxmldata") < 0)
         goto cleanup;

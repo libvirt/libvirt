@@ -222,10 +222,7 @@ mymain(void)
 
     VIR_FREE(virscsi_prefix);
 
-    if (VIR_STRDUP(virscsi_prefix, tmpdir) < 0) {
-        ret = -1;
-        goto cleanup;
-    }
+    virscsi_prefix = g_strdup(tmpdir);
 
     if (virTestRun("test1", test1, NULL) < 0)
         ret = -1;

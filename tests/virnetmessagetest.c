@@ -228,14 +228,15 @@ static int testMessagePayloadEncode(const void *args G_GNUC_UNUSED)
     err.level = VIR_ERR_ERROR;
 
     if (VIR_ALLOC(err.message) < 0 ||
-        VIR_STRDUP(*err.message, "Hello World") < 0 ||
         VIR_ALLOC(err.str1) < 0 ||
-        VIR_STRDUP(*err.str1, "One") < 0 ||
         VIR_ALLOC(err.str2) < 0 ||
-        VIR_STRDUP(*err.str2, "Two") < 0 ||
-        VIR_ALLOC(err.str3) < 0 ||
-        VIR_STRDUP(*err.str3, "Three") < 0)
+        VIR_ALLOC(err.str3) < 0)
         goto cleanup;
+
+    *err.message = g_strdup("Hello World");
+    *err.str1 = g_strdup("One");
+    *err.str2 = g_strdup("Two");
+    *err.str3 = g_strdup("Three");
 
     err.int1 = 1;
     err.int2 = 2;

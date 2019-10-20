@@ -961,19 +961,17 @@ testFirewallQueryHook(const char *const*args,
                       const char *input G_GNUC_UNUSED,
                       char **output,
                       char **error G_GNUC_UNUSED,
-                      int *status,
+                      int *status G_GNUC_UNUSED,
                       void *opaque G_GNUC_UNUSED)
 {
     if (STREQ(args[0], IPTABLES_PATH) &&
         STREQ(args[1], "-L")) {
-        if (VIR_STRDUP(*output, TEST_FILTER_TABLE_LIST) < 0)
-            *status = 127;
+        *output = g_strdup(TEST_FILTER_TABLE_LIST);
     } else if (STREQ(args[0], IPTABLES_PATH) &&
                STREQ(args[1], "-t") &&
                STREQ(args[2], "nat") &&
                STREQ(args[3], "-L")) {
-        if (VIR_STRDUP(*output, TEST_NAT_TABLE_LIST) < 0)
-            *status = 127;
+        *output = g_strdup(TEST_NAT_TABLE_LIST);
     }
 }
 

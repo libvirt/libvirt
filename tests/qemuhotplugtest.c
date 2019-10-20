@@ -597,10 +597,7 @@ mymain(void)
     struct testQemuHotplugCpuParams cpudata;
     char *fakerootdir;
 
-    if (VIR_STRDUP_QUIET(fakerootdir, FAKEROOTDIRTEMPLATE) < 0) {
-        fprintf(stderr, "Out of memory\n");
-        abort();
-    }
+    fakerootdir = g_strdup(FAKEROOTDIRTEMPLATE);
 
     if (!mkdtemp(fakerootdir)) {
         fprintf(stderr, "Cannot create fakerootdir");
@@ -622,8 +619,7 @@ mymain(void)
     VIR_FREE(driver.config->spiceListen);
     VIR_FREE(driver.config->vncListen);
     /* some dummy values from 'config file' */
-    if (VIR_STRDUP_QUIET(driver.config->spicePassword, "123456") < 0)
-        return EXIT_FAILURE;
+    driver.config->spicePassword = g_strdup("123456");
 
     if (!(driver.domainEventState = virObjectEventStateNew()))
         return EXIT_FAILURE;

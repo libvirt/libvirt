@@ -77,17 +77,14 @@ testBuildDomainDef(bool dynamic,
     if (VIR_ALLOC(secdef) < 0)
         goto error;
 
-    if (VIR_STRDUP(secdef->model, "selinux") < 0)
-        goto error;
+    secdef->model = g_strdup("selinux");
 
     secdef->type = dynamic ? VIR_DOMAIN_SECLABEL_DYNAMIC : VIR_DOMAIN_SECLABEL_STATIC;
-    if (label &&
-        VIR_STRDUP(secdef->label, label) < 0)
-        goto error;
+    if (label)
+        secdef->label = g_strdup(label);
 
-    if (baselabel &&
-        VIR_STRDUP(secdef->baselabel, baselabel) < 0)
-        goto error;
+    if (baselabel)
+        secdef->baselabel = g_strdup(baselabel);
 
     def->seclabels[0] = secdef;
     def->nseclabels++;

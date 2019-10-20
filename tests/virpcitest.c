@@ -328,10 +328,7 @@ mymain(void)
     int ret = 0;
     char *fakerootdir;
 
-    if (VIR_STRDUP_QUIET(fakerootdir, FAKEROOTDIRTEMPLATE) < 0) {
-        VIR_TEST_DEBUG("Out of memory");
-        abort();
-    }
+    fakerootdir = g_strdup(FAKEROOTDIRTEMPLATE);
 
     if (!mkdtemp(fakerootdir)) {
         VIR_TEST_DEBUG("Cannot create fakerootdir");

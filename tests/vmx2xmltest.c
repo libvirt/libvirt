@@ -142,8 +142,7 @@ testParseVMXFileName(const char *fileName, void *opaque G_GNUC_UNUSED)
 
     if (STRPREFIX(fileName, "/vmfs/volumes/")) {
         /* Found absolute path referencing a file inside a datastore */
-        if (VIR_STRDUP(copyOfFileName, fileName) < 0)
-            goto cleanup;
+        copyOfFileName = g_strdup(fileName);
 
         /* Expected format: '/vmfs/volumes/<datastore>/<path>' */
         if ((tmp = STRSKIP(copyOfFileName, "/vmfs/volumes/")) == NULL ||

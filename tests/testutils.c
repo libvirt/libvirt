@@ -816,8 +816,7 @@ virTestSetEnvPath(void)
             virAsprintf(&new_path, "%s:%s", abs_builddir, path) < 0)
             goto cleanup;
     } else {
-        if (VIR_STRDUP(new_path, abs_builddir) < 0)
-            goto cleanup;
+        new_path = g_strdup(abs_builddir);
     }
 
     if (new_path &&
