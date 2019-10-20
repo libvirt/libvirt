@@ -205,8 +205,7 @@ nwfilterStateInitialize(bool privileged,
 
     nwfilterDriverLock();
 
-    if (VIR_STRDUP(driver->stateDir, RUNSTATEDIR "/libvirt/nwfilter") < 0)
-        goto error;
+    driver->stateDir = g_strdup(RUNSTATEDIR "/libvirt/nwfilter");
 
     if (virFileMakePathWithMode(driver->stateDir, S_IRWXU) < 0) {
         virReportSystemError(errno, _("cannot create state directory '%s'"),
@@ -252,8 +251,7 @@ nwfilterStateInitialize(bool privileged,
         goto error;
     }
 
-    if (VIR_STRDUP(driver->configDir, SYSCONFDIR "/libvirt/nwfilter") < 0)
-        goto error;
+    driver->configDir = g_strdup(SYSCONFDIR "/libvirt/nwfilter");
 
     if (virFileMakePathWithMode(driver->configDir, S_IRWXU) < 0) {
         virReportSystemError(errno, _("cannot create config directory '%s'"),
@@ -261,8 +259,7 @@ nwfilterStateInitialize(bool privileged,
         goto error;
     }
 
-    if (VIR_STRDUP(driver->bindingDir, RUNSTATEDIR "/libvirt/nwfilter-binding") < 0)
-        goto error;
+    driver->bindingDir = g_strdup(RUNSTATEDIR "/libvirt/nwfilter-binding");
 
     if (virFileMakePathWithMode(driver->bindingDir, S_IRWXU) < 0) {
         virReportSystemError(errno, _("cannot create config directory '%s'"),

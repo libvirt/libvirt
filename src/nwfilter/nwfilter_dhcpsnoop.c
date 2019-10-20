@@ -1093,8 +1093,7 @@ virNWFilterSnoopDHCPOpen(const char *ifname, virMacAddr *mac,
          * generate much more traffic than if we filtered by VM and
          * braodcast MAC as well
          */
-        if (VIR_STRDUP(ext_filter, filter) < 0)
-            return NULL;
+        ext_filter = g_strdup(filter);
     }
 
     handle = pcap_create(ifname, pcap_errbuf);
