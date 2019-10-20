@@ -290,8 +290,7 @@ virGetDomain(virConnectPtr conn,
     if (!(ret = virObjectNew(virDomainClass)))
         goto error;
 
-    if (VIR_STRDUP(ret->name, name) < 0)
-        goto error;
+    ret->name = g_strdup(name);
 
     ret->conn = virObjectRef(conn);
     ret->id = id;
@@ -354,8 +353,7 @@ virGetNetwork(virConnectPtr conn, const char *name, const unsigned char *uuid)
     if (!(ret = virObjectNew(virNetworkClass)))
         goto error;
 
-    if (VIR_STRDUP(ret->name, name) < 0)
-        goto error;
+    ret->name = g_strdup(name);
 
     ret->conn = virObjectRef(conn);
     memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
@@ -477,9 +475,8 @@ virGetInterface(virConnectPtr conn, const char *name, const char *mac)
     if (!(ret = virObjectNew(virInterfaceClass)))
         goto error;
 
-    if (VIR_STRDUP(ret->name, name) < 0 ||
-        VIR_STRDUP(ret->mac, mac) < 0)
-        goto error;
+    ret->name = g_strdup(name);
+    ret->mac = g_strdup(mac);
 
     ret->conn = virObjectRef(conn);
 
@@ -542,8 +539,7 @@ virGetStoragePool(virConnectPtr conn, const char *name,
     if (!(ret = virObjectNew(virStoragePoolClass)))
         goto error;
 
-    if (VIR_STRDUP(ret->name, name) < 0)
-        goto error;
+    ret->name = g_strdup(name);
 
     ret->conn = virObjectRef(conn);
     memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
@@ -618,10 +614,9 @@ virGetStorageVol(virConnectPtr conn, const char *pool, const char *name,
     if (!(ret = virObjectNew(virStorageVolClass)))
         goto error;
 
-    if (VIR_STRDUP(ret->pool, pool) < 0 ||
-        VIR_STRDUP(ret->name, name) < 0 ||
-        VIR_STRDUP(ret->key, key) < 0)
-        goto error;
+    ret->pool = g_strdup(pool);
+    ret->name = g_strdup(name);
+    ret->key = g_strdup(key);
 
     ret->conn = virObjectRef(conn);
 
@@ -687,8 +682,7 @@ virGetNodeDevice(virConnectPtr conn, const char *name)
     if (!(ret = virObjectNew(virNodeDeviceClass)))
         goto error;
 
-    if (VIR_STRDUP(ret->name, name) < 0)
-        goto error;
+    ret->name = g_strdup(name);
 
     ret->conn = virObjectRef(conn);
     return ret;
@@ -749,8 +743,7 @@ virGetSecret(virConnectPtr conn, const unsigned char *uuid,
 
     memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
     ret->usageType = usageType;
-    if (VIR_STRDUP(ret->usageID, NULLSTR_EMPTY(usageID)) < 0)
-        goto error;
+    ret->usageID = g_strdup(NULLSTR_EMPTY(usageID));
 
     ret->conn = virObjectRef(conn);
 
@@ -859,8 +852,7 @@ virGetNWFilter(virConnectPtr conn, const char *name,
     if (!(ret = virObjectNew(virNWFilterClass)))
         goto error;
 
-    if (VIR_STRDUP(ret->name, name) < 0)
-        goto error;
+    ret->name = g_strdup(name);
 
     memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
 
@@ -924,11 +916,9 @@ virGetNWFilterBinding(virConnectPtr conn, const char *portdev,
     if (!(ret = virObjectNew(virNWFilterBindingClass)))
         goto error;
 
-    if (VIR_STRDUP(ret->portdev, portdev) < 0)
-        goto error;
+    ret->portdev = g_strdup(portdev);
 
-    if (VIR_STRDUP(ret->filtername, filtername) < 0)
-        goto error;
+    ret->filtername = g_strdup(filtername);
 
     ret->conn = virObjectRef(conn);
 
@@ -987,8 +977,7 @@ virGetDomainCheckpoint(virDomainPtr domain,
 
     if (!(ret = virObjectNew(virDomainCheckpointClass)))
         goto error;
-    if (VIR_STRDUP(ret->name, name) < 0)
-        goto error;
+    ret->name = g_strdup(name);
 
     ret->domain = virObjectRef(domain);
 
@@ -1044,8 +1033,7 @@ virGetDomainSnapshot(virDomainPtr domain, const char *name)
 
     if (!(ret = virObjectNew(virDomainSnapshotClass)))
         goto error;
-    if (VIR_STRDUP(ret->name, name) < 0)
-        goto error;
+    ret->name = g_strdup(name);
 
     ret->domain = virObjectRef(domain);
 
@@ -1192,8 +1180,7 @@ virAdmGetServer(virAdmConnectPtr conn, const char *name)
 
     if (!(ret = virObjectNew(virAdmServerClass)))
         goto error;
-    if (VIR_STRDUP(ret->name, name) < 0)
-        goto error;
+    ret->name = g_strdup(name);
 
     ret->conn = virObjectRef(conn);
 
