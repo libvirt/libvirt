@@ -239,16 +239,14 @@ virLogHandlerLogFilePostExecRestart(virLogHandlerPtr handler,
                        _("Missing 'driver' in JSON document"));
         goto error;
     }
-    if (VIR_STRDUP(file->driver, tmp) < 0)
-        goto error;
+    file->driver = g_strdup(tmp);
 
     if ((tmp = virJSONValueObjectGetString(object, "domname")) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Missing 'domname' in JSON document"));
         goto error;
     }
-    if (VIR_STRDUP(file->domname, tmp) < 0)
-        goto error;
+    file->domname = g_strdup(tmp);
 
     if ((domuuid = virJSONValueObjectGetString(object, "domuuid")) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -402,9 +400,8 @@ virLogHandlerDomainOpenLogFile(virLogHandlerPtr handler,
     file->pipefd = pipefd[0];
     pipefd[0] = -1;
     memcpy(file->domuuid, domuuid, VIR_UUID_BUFLEN);
-    if (VIR_STRDUP(file->driver, driver) < 0 ||
-        VIR_STRDUP(file->domname, domname) < 0)
-        goto error;
+    file->driver = g_strdup(driver);
+    file->domname = g_strdup(domname);
 
     if ((file->file = virRotatingFileWriterNew(path,
                                                handler->max_size,

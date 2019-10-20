@@ -45,8 +45,7 @@ virLogManagerDaemonPath(bool privileged)
 {
     char *path;
     if (privileged) {
-        if (VIR_STRDUP(path, RUNSTATEDIR "/libvirt/virtlogd-sock") < 0)
-            return NULL;
+        path = g_strdup(RUNSTATEDIR "/libvirt/virtlogd-sock");
     } else {
         char *rundir = NULL;
 

@@ -40,8 +40,7 @@ int
 virLogDaemonConfigFilePath(bool privileged, char **configfile)
 {
     if (privileged) {
-        if (VIR_STRDUP(*configfile, SYSCONFDIR "/libvirt/virtlogd.conf") < 0)
-            goto error;
+        *configfile = g_strdup(SYSCONFDIR "/libvirt/virtlogd.conf");
     } else {
         char *configdir = NULL;
 
