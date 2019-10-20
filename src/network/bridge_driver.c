@@ -739,19 +739,12 @@ networkStateInitialize(bool privileged,
      * /etc/libvirt/... && /var/(run|lib)/libvirt/... (system/privileged).
      */
     if (privileged) {
-        if (VIR_STRDUP(network_driver->networkConfigDir,
-                       SYSCONFDIR "/libvirt/qemu/networks") < 0 ||
-            VIR_STRDUP(network_driver->networkAutostartDir,
-                       SYSCONFDIR "/libvirt/qemu/networks/autostart") < 0 ||
-            VIR_STRDUP(network_driver->stateDir,
-                       RUNSTATEDIR "/libvirt/network") < 0 ||
-            VIR_STRDUP(network_driver->pidDir,
-                       RUNSTATEDIR "/libvirt/network") < 0 ||
-            VIR_STRDUP(network_driver->dnsmasqStateDir,
-                       LOCALSTATEDIR "/lib/libvirt/dnsmasq") < 0 ||
-            VIR_STRDUP(network_driver->radvdStateDir,
-                       LOCALSTATEDIR "/lib/libvirt/radvd") < 0)
-            goto error;
+        network_driver->networkConfigDir = g_strdup(SYSCONFDIR "/libvirt/qemu/networks");
+        network_driver->networkAutostartDir = g_strdup(SYSCONFDIR "/libvirt/qemu/networks/autostart");
+        network_driver->stateDir = g_strdup(RUNSTATEDIR "/libvirt/network");
+        network_driver->pidDir = g_strdup(RUNSTATEDIR "/libvirt/network");
+        network_driver->dnsmasqStateDir = g_strdup(LOCALSTATEDIR "/lib/libvirt/dnsmasq");
+        network_driver->radvdStateDir = g_strdup(LOCALSTATEDIR "/lib/libvirt/radvd");
     } else {
         configdir = virGetUserConfigDirectory();
         rundir = virGetUserRuntimeDirectory();
@@ -2817,8 +2810,7 @@ networkCreateInterfacePool(virNetworkDefPtr netdef)
         case VIR_NETWORK_FORWARD_VEPA:
         case VIR_NETWORK_FORWARD_PASSTHROUGH:
             if (thisName) {
-                if (VIR_STRDUP(thisIf->device.dev, thisName) < 0)
-                    goto cleanup;
+                thisIf->device.dev = g_strdup(thisName);
                 thisIf->type = VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV;
                 netdef->forward.nifs++;
             } else {
@@ -4437,19 +4429,14 @@ networkGetDHCPLeases(virNetworkPtr net,
                 }
             }
 
-            if ((VIR_STRDUP(lease->mac, mac_tmp) < 0) ||
-                (VIR_STRDUP(lease->ipaddr, ip_tmp) < 0) ||
-                (VIR_STRDUP(lease->iface, def->bridge) < 0))
-                goto error;
+            lease->mac = g_strdup(mac_tmp);
+            lease->ipaddr = g_strdup(ip_tmp);
+            lease->iface = g_strdup(def->bridge);
 
             /* Fields that can be NULL */
-            if ((VIR_STRDUP(lease->iaid,
-                            virJSONValueObjectGetString(lease_tmp, "iaid")) < 0) ||
-                (VIR_STRDUP(lease->clientid,
-                            virJSONValueObjectGetString(lease_tmp, "client-id")) < 0) ||
-                (VIR_STRDUP(lease->hostname,
-                            virJSONValueObjectGetString(lease_tmp, "hostname")) < 0))
-                goto error;
+            lease->iaid = g_strdup(virJSONValueObjectGetString(lease_tmp, "iaid"));
+            lease->clientid = g_strdup(virJSONValueObjectGetString(lease_tmp, "client-id"));
+            lease->hostname = g_strdup(virJSONValueObjectGetString(lease_tmp, "hostname"));
 
             if (VIR_INSERT_ELEMENT(leases_ret, nleases, nleases, lease) < 0)
                 goto error;
@@ -4622,8 +4609,7 @@ networkAllocatePort(virNetworkObjPtr obj,
          */
         port->plugtype = VIR_NETWORK_PORT_PLUG_TYPE_NETWORK;
 
-        if (VIR_STRDUP(port->plug.bridge.brname, netdef->bridge) < 0)
-            goto cleanup;
+        port->plug.bridge.brname = g_strdup(netdef->bridge);
         port->plug.bridge.macTableManager = netdef->macTableManager;
 
         if (port->virtPortProfile) {
@@ -4686,8 +4672,7 @@ networkAllocatePort(virNetworkObjPtr obj,
              */
 
             port->plugtype = VIR_NETWORK_PORT_PLUG_TYPE_BRIDGE;
-            if (VIR_STRDUP(port->plug.bridge.brname, netdef->bridge) < 0)
-                goto cleanup;
+            port->plug.bridge.brname = g_strdup(netdef->bridge);
             port->plug.bridge.macTableManager = netdef->macTableManager;
 
             if (port->virtPortProfile) {
@@ -4791,9 +4776,7 @@ networkAllocatePort(virNetworkObjPtr obj,
                                netdef->name);
                 goto cleanup;
             }
-            if (VIR_STRDUP(port->plug.direct.linkdev,
-                           dev->device.dev) < 0)
-                goto cleanup;
+            port->plug.direct.linkdev = g_strdup(dev->device.dev);
         }
         break;
 

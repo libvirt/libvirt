@@ -151,16 +151,14 @@ main(int argc, char **argv)
         clientid = argv[2];
     }
 
-    if (VIR_STRDUP(server_duid, getenv("DNSMASQ_SERVER_DUID")) < 0)
-        goto cleanup;
+    server_duid = g_strdup(getenv("DNSMASQ_SERVER_DUID"));
 
     if (virAsprintf(&custom_lease_file,
                     LOCALSTATEDIR "/lib/libvirt/dnsmasq/%s.status",
                     interface) < 0)
         goto cleanup;
 
-    if (VIR_STRDUP(pid_file, RUNSTATEDIR "/leaseshelper.pid") < 0)
-        goto cleanup;
+    pid_file = g_strdup(RUNSTATEDIR "/leaseshelper.pid");
 
     /* Try to claim the pidfile, exiting if we can't */
     if ((pid_file_fd = virPidFileAcquirePath(pid_file, false, getpid())) < 0)
