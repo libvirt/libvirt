@@ -89,17 +89,10 @@ udevGetMinimalDefForDevice(struct udev_device *dev)
     if (VIR_ALLOC(def) < 0)
         return NULL;
 
-    if (VIR_STRDUP(def->name, udev_device_get_sysname(dev)) < 0)
-        goto cleanup;
-
-    if (VIR_STRDUP(def->mac, udev_device_get_sysattr_value(dev, "address")) < 0)
-        goto cleanup;
+    def->name = g_strdup(udev_device_get_sysname(dev));
+    def->mac = g_strdup(udev_device_get_sysattr_value(dev, "address"));
 
     return def;
-
- cleanup:
-    virInterfaceDefFree(def);
-    return NULL;
 }
 
 
@@ -236,11 +229,7 @@ udevListInterfacesByStatus(virConnectPtr conn,
 
         def = udevGetMinimalDefForDevice(dev);
         if (filter(conn, def)) {
-            if (VIR_STRDUP(names[count], udev_device_get_sysname(dev)) < 0) {
-                udev_device_unref(dev);
-                virInterfaceDefFree(def);
-                goto error;
-            }
+            names[count] = g_strdup(udev_device_get_sysname(dev));
             count++;
         }
         udev_device_unref(dev);
@@ -755,8 +744,7 @@ udevGetIfaceDefBond(struct udev *udev,
                 _("Could not retrieve 'bonding/arp_ip_target' for '%s'"), name);
         goto error;
     }
-    if (VIR_STRDUP(ifacedef->data.bond.target, tmp_str) < 0)
-        goto error;
+    ifacedef->data.bond.target = g_strdup(tmp_str);
 
     /* Slaves of the bond */
     /* Get each slave in the bond */
@@ -837,8 +825,7 @@ udevGetIfaceDefBridge(struct udev *udev,
         goto error;
     }
 
-    if (VIR_STRDUP(ifacedef->data.bridge.delay, tmp_str) < 0)
-        goto error;
+    ifacedef->data.bridge.delay = g_strdup(tmp_str);
 
     /* Retrieve Spanning Tree State. Valid values = -1, 0, 1 */
     tmp_str = udev_device_get_sysattr_value(dev, "bridge/stp_state");
@@ -1001,8 +988,7 @@ udevGetIfaceDef(struct udev *udev, const char *name)
 
     /* Clear our structure and set safe defaults */
     ifacedef->startmode = VIR_INTERFACE_START_UNSPECIFIED;
-    if (VIR_STRDUP(ifacedef->name, name) < 0)
-        goto error;
+    ifacedef->name = g_strdup(name);
 
     /* Lookup the device we've been asked about */
     dev = udev_device_new_from_subsystem_sysname(udev, "net", name);
@@ -1013,9 +999,7 @@ udevGetIfaceDef(struct udev *udev, const char *name)
     }
 
     /* MAC address */
-    if (VIR_STRDUP(ifacedef->mac,
-                   udev_device_get_sysattr_value(dev, "address")) < 0)
-        goto error;
+    ifacedef->mac = g_strdup(udev_device_get_sysattr_value(dev, "address"));
 
     /* Link state and speed */
     if (virNetDevGetLinkInfo(ifacedef->name, &ifacedef->lnk) < 0)

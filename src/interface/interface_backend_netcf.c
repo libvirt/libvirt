@@ -251,17 +251,10 @@ netcfGetMinimalDefForDevice(struct netcf_if *iface)
     if (VIR_ALLOC(def) < 0)
         return NULL;
 
-    if (VIR_STRDUP(def->name, ncf_if_name(iface)) < 0)
-        goto cleanup;
-
-    if (VIR_STRDUP(def->mac, ncf_if_mac_string(iface)) < 0)
-        goto cleanup;
+    def->name = g_strdup(ncf_if_name(iface));
+    def->mac = g_strdup(ncf_if_mac_string(iface));
 
     return def;
-
- cleanup:
-    virInterfaceDefFree(def);
-    return NULL;
 }
 
 
