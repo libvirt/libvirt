@@ -1522,11 +1522,8 @@ virNetworkObjListGetHelper(void *payload,
 
     if ((data->active && virNetworkObjIsActive(obj)) ||
         (!data->active && !virNetworkObjIsActive(obj))) {
-        if (data->names &&
-            VIR_STRDUP(data->names[data->nnames], obj->def->name) < 0) {
-            data->error = true;
-            goto cleanup;
-        }
+        if (data->names)
+            data->names[data->nnames] = g_strdup(obj->def->name);
         data->nnames++;
     }
 

@@ -437,8 +437,7 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
 
     if (key) {
         cb->key_filter = true;
-        if (VIR_STRDUP(cb->key, key) < 0)
-            goto cleanup;
+        cb->key = g_strdup(key);
     }
     cb->filter = filter;
     cb->filter_opaque = filter_opaque;
@@ -623,11 +622,8 @@ virObjectEventNew(virClassPtr klass,
     event->eventID = eventID;
     event->remoteID = -1;
 
-    if (VIR_STRDUP(event->meta.name, name) < 0 ||
-        VIR_STRDUP(event->meta.key, key) < 0) {
-        virObjectUnref(event);
-        return NULL;
-    }
+    event->meta.name = g_strdup(name);
+    event->meta.key = g_strdup(key);
     event->meta.id = id;
     if (uuid)
         memcpy(event->meta.uuid, uuid, VIR_UUID_BUFLEN);

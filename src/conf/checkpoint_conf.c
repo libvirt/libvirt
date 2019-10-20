@@ -275,8 +275,7 @@ virDomainCheckpointDefAssignBitmapNames(virDomainCheckpointDefPtr def)
             disk->bitmap)
             continue;
 
-        if (VIR_STRDUP(disk->bitmap, def->parent.name) < 0)
-            return -1;
+        disk->bitmap = g_strdup(def->parent.name);
     }
 
     return 0;
@@ -365,8 +364,7 @@ virDomainCheckpointAlignDisks(virDomainCheckpointDefPtr def)
 
         if (STRNEQ(disk->name, def->parent.dom->disks[idx]->dst)) {
             VIR_FREE(disk->name);
-            if (VIR_STRDUP(disk->name, def->parent.dom->disks[idx]->dst) < 0)
-                goto cleanup;
+            disk->name = g_strdup(def->parent.dom->disks[idx]->dst);
         }
     }
 
@@ -382,8 +380,7 @@ virDomainCheckpointAlignDisks(virDomainCheckpointDefPtr def)
         if (virBitmapIsBitSet(map, i))
             continue;
         disk = &def->disks[ndisks++];
-        if (VIR_STRDUP(disk->name, def->parent.dom->disks[i]->dst) < 0)
-            goto cleanup;
+        disk->name = g_strdup(def->parent.dom->disks[i]->dst);
         disk->idx = i;
 
         /* Don't checkpoint empty or readonly drives */

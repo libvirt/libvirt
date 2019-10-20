@@ -1944,8 +1944,7 @@ virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,
             goto error;
         }
     } else {
-        if (VIR_STRDUP(def->name, "new device") < 0)
-            goto error;
+        def->name = g_strdup("new device");
     }
 
     def->sysfs_path = virXPathString("string(./path[1])", ctxt);
@@ -2122,12 +2121,8 @@ virNodeDeviceGetWWNs(virNodeDeviceDefPtr def,
     while (cap != NULL) {
         if (cap->data.type == VIR_NODE_DEV_CAP_SCSI_HOST &&
             cap->data.scsi_host.flags & VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST) {
-            if (VIR_STRDUP(*wwnn, cap->data.scsi_host.wwnn) < 0 ||
-                VIR_STRDUP(*wwpn, cap->data.scsi_host.wwpn) < 0) {
-                /* Free the other one, if allocated... */
-                VIR_FREE(*wwnn);
-                goto cleanup;
-            }
+            *wwnn = g_strdup(cap->data.scsi_host.wwnn);
+            *wwpn = g_strdup(cap->data.scsi_host.wwpn);
             break;
         }
 
@@ -2459,8 +2454,7 @@ virNodeDeviceGetSCSITargetCaps(const char *sysfsPath,
     if (!(dir = mdir_name(sysfsPath)))
         return -1;
 
-    if (VIR_STRDUP(rport, last_component(dir)) < 0)
-        goto cleanup;
+    rport = g_strdup(last_component(dir));
 
     if (!virFCIsCapableRport(rport))
         goto cleanup;

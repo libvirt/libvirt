@@ -124,16 +124,12 @@ virDomainCapsNew(const char *path,
     if (!(caps = virObjectLockableNew(virDomainCapsClass)))
         return NULL;
 
-    if (VIR_STRDUP(caps->path, path) < 0 ||
-        VIR_STRDUP(caps->machine, machine) < 0)
-        goto error;
+    caps->path = g_strdup(path);
+    caps->machine = g_strdup(machine);
     caps->arch = arch;
     caps->virttype = virttype;
 
     return caps;
- error:
-    virObjectUnref(caps);
-    return NULL;
 }
 
 

@@ -753,12 +753,9 @@ virDomainEventIOErrorNewFromDomImpl(int event,
         return NULL;
 
     ev->action = action;
-    if (VIR_STRDUP(ev->srcPath, srcPath) < 0 ||
-        VIR_STRDUP(ev->devAlias, devAlias) < 0 ||
-        VIR_STRDUP(ev->reason, reason) < 0) {
-        virObjectUnref(ev);
-        ev = NULL;
-    }
+    ev->srcPath = g_strdup(srcPath);
+    ev->devAlias = g_strdup(devAlias);
+    ev->reason = g_strdup(reason);
 
     return (virObjectEventPtr)ev;
 }
@@ -782,12 +779,9 @@ virDomainEventIOErrorNewFromObjImpl(int event,
         return NULL;
 
     ev->action = action;
-    if (VIR_STRDUP(ev->srcPath, srcPath) < 0 ||
-        VIR_STRDUP(ev->devAlias, devAlias) < 0 ||
-        VIR_STRDUP(ev->reason, reason) < 0) {
-        virObjectUnref(ev);
-        ev = NULL;
-    }
+    ev->srcPath = g_strdup(srcPath);
+    ev->devAlias = g_strdup(devAlias);
+    ev->reason = g_strdup(reason);
 
     return (virObjectEventPtr)ev;
 }
@@ -858,10 +852,7 @@ virDomainEventGraphicsNewFromDom(virDomainPtr dom,
         return NULL;
 
     ev->phase = phase;
-    if (VIR_STRDUP(ev->authScheme, authScheme) < 0) {
-        virObjectUnref(ev);
-        return NULL;
-    }
+    ev->authScheme = g_strdup(authScheme);
     ev->local = local;
     ev->remote = remote;
     ev->subject = subject;
@@ -889,10 +880,7 @@ virDomainEventGraphicsNewFromObj(virDomainObjPtr obj,
         return NULL;
 
     ev->phase = phase;
-    if (VIR_STRDUP(ev->authScheme, authScheme) < 0) {
-        virObjectUnref(ev);
-        return NULL;
-    }
+    ev->authScheme = g_strdup(authScheme);
     ev->local = local;
     ev->remote = remote;
     ev->subject = subject;
@@ -919,10 +907,7 @@ virDomainEventBlockJobNew(int event,
                                  id, name, uuid)))
         return NULL;
 
-    if (VIR_STRDUP(ev->disk, disk) < 0) {
-        virObjectUnref(ev);
-        return NULL;
-    }
+    ev->disk = g_strdup(disk);
     ev->type = type;
     ev->status = status;
 
@@ -1024,22 +1009,13 @@ virDomainEventDiskChangeNew(int id,
                                  id, name, uuid)))
         return NULL;
 
-    if (VIR_STRDUP(ev->devAlias, devAlias) < 0)
-        goto error;
-
-    if (VIR_STRDUP(ev->oldSrcPath, oldSrcPath) < 0)
-        goto error;
-
-    if (VIR_STRDUP(ev->newSrcPath, newSrcPath) < 0)
-        goto error;
+    ev->devAlias = g_strdup(devAlias);
+    ev->oldSrcPath = g_strdup(oldSrcPath);
+    ev->newSrcPath = g_strdup(newSrcPath);
 
     ev->reason = reason;
 
     return (virObjectEventPtr)ev;
-
- error:
-    virObjectUnref(ev);
-    return NULL;
 }
 
 virObjectEventPtr
@@ -1083,16 +1059,11 @@ virDomainEventTrayChangeNew(int id,
                                  id, name, uuid)))
         return NULL;
 
-    if (VIR_STRDUP(ev->devAlias, devAlias) < 0)
-        goto error;
+    ev->devAlias = g_strdup(devAlias);
 
     ev->reason = reason;
 
     return (virObjectEventPtr)ev;
-
- error:
-    virObjectUnref(ev);
-    return NULL;
 }
 
 virObjectEventPtr
@@ -1275,14 +1246,9 @@ virDomainEventDeviceRemovedNew(int id,
                                  id, name, uuid)))
         return NULL;
 
-    if (VIR_STRDUP(ev->devAlias, devAlias) < 0)
-        goto error;
+    ev->devAlias = g_strdup(devAlias);
 
     return (virObjectEventPtr)ev;
-
- error:
-    virObjectUnref(ev);
-    return NULL;
 }
 
 virObjectEventPtr
@@ -1317,14 +1283,9 @@ virDomainEventDeviceAddedNew(int id,
                                  id, name, uuid)))
         return NULL;
 
-    if (VIR_STRDUP(ev->devAlias, devAlias) < 0)
-        goto error;
+    ev->devAlias = g_strdup(devAlias);
 
     return (virObjectEventPtr)ev;
-
- error:
-    virObjectUnref(ev);
-    return NULL;
 }
 
 virObjectEventPtr
@@ -1360,14 +1321,9 @@ virDomainEventDeviceRemovalFailedNew(int id,
                                  id, name, uuid)))
         return NULL;
 
-    if (VIR_STRDUP(ev->devAlias, devAlias) < 0)
-        goto error;
+    ev->devAlias = g_strdup(devAlias);
 
     return (virObjectEventPtr)ev;
-
- error:
-    virObjectUnref(ev);
-    return NULL;
 }
 
 virObjectEventPtr
@@ -1587,14 +1543,10 @@ virDomainEventMetadataChangeNew(int id,
         return NULL;
 
     ev->type = type;
-    if (nsuri && VIR_STRDUP(ev->nsuri, nsuri) < 0)
-        goto error;
+    if (nsuri)
+        ev->nsuri = g_strdup(nsuri);
 
     return (virObjectEventPtr)ev;
-
- error:
-    virObjectUnref(ev);
-    return NULL;
 }
 
 virObjectEventPtr
@@ -1635,11 +1587,8 @@ virDomainEventBlockThresholdNew(int id,
                                  id, name, uuid)))
         return NULL;
 
-    if (VIR_STRDUP(ev->dev, dev) < 0 ||
-        VIR_STRDUP(ev->path, path) < 0) {
-        virObjectUnref(ev);
-        return NULL;
-    }
+    ev->dev = g_strdup(dev);
+    ev->path = g_strdup(path);
     ev->threshold = threshold;
     ev->excess = excess;
 
@@ -1986,12 +1935,13 @@ virDomainQemuMonitorEventNew(int id,
         return NULL;
 
     /* event is mandatory, details are optional */
-    if (VIR_STRDUP(ev->event, event) <= 0)
+    if (!event)
         goto error;
+
+    ev->event = g_strdup(event);
     ev->seconds = seconds;
     ev->micros = micros;
-    if (VIR_STRDUP(ev->details, details) < 0)
-        goto error;
+    ev->details = g_strdup(details);
 
     return (virObjectEventPtr)ev;
 
@@ -2318,9 +2268,8 @@ virDomainQemuMonitorEventStateRegisterID(virConnectPtr conn,
                 VIR_FREE(data);
                 return -1;
             }
-        } else if (VIR_STRDUP(data->event, event) < 0) {
-            VIR_FREE(data);
-            return -1;
+        } else {
+            data->event = g_strdup(event);
         }
     }
     data->opaque = opaque;

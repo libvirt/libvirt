@@ -53,8 +53,7 @@ virNWFilterIPAddrMapAddIPAddr(const char *ifname, char *addr)
     char *addrCopy;
     virNWFilterVarValuePtr val;
 
-    if (VIR_STRDUP(addrCopy, addr) < 0)
-        return -1;
+    addrCopy = g_strdup(addr);
 
     virMutexLock(&ipAddressMapLock);
 

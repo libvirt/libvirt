@@ -328,11 +328,8 @@ static int virDomainMomentObjListCopyNames(void *payload,
     if (!data->filter(obj, data->filter_flags))
         return 0;
 
-    if (data->names && data->count < data->maxnames &&
-        VIR_STRDUP(data->names[data->count], obj->def->name) < 0) {
-        data->error = true;
-        return 0;
-    }
+    if (data->names && data->count < data->maxnames)
+        data->names[data->count] = g_strdup(obj->def->name);
     data->count++;
     return 0;
 }

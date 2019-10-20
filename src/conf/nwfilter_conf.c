@@ -2674,9 +2674,7 @@ virNWFilterDefParseXML(xmlXPathContextPtr ctxt)
         }
         chain = NULL;
     } else {
-        if (VIR_STRDUP(ret->chainsuffix,
-                       virNWFilterChainSuffixTypeToString(VIR_NWFILTER_CHAINSUFFIX_ROOT)) < 0)
-            goto cleanup;
+        ret->chainsuffix = g_strdup(virNWFilterChainSuffixTypeToString(VIR_NWFILTER_CHAINSUFFIX_ROOT));
     }
 
     uuid = virXPathString("string(./uuid)", ctxt);

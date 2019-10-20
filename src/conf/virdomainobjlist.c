@@ -440,8 +440,7 @@ virDomainObjListRename(virDomainObjListPtr doms,
         return ret;
     }
 
-    if (VIR_STRDUP(old_name, dom->def->name) < 0)
-        return ret;
+    old_name = g_strdup(dom->def->name);
 
     /* doms and dom locks must be attained in right order thus relock dom. */
     /* dom reference is touched for the benefit of those callers that
@@ -761,11 +760,10 @@ virDomainObjListCopyInactiveNames(void *payload,
         !data->filter(data->conn, obj->def))
         goto cleanup;
     if (!virDomainObjIsActive(obj) && data->numnames < data->maxnames) {
-        if (VIR_STRDUP(data->names[data->numnames], obj->def->name) < 0)
-            data->oom = 1;
-        else
-            data->numnames++;
+        data->names[data->numnames] = g_strdup(obj->def->name);
+        data->numnames++;
     }
+
  cleanup:
     virObjectUnlock(obj);
     return 0;

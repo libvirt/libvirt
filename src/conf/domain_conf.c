@@ -2548,30 +2548,19 @@ virDomainChrSourceDefCopy(virDomainChrSourceDefPtr dest,
     case VIR_DOMAIN_CHR_TYPE_PIPE:
         if (src->type == VIR_DOMAIN_CHR_TYPE_FILE)
             dest->data.file.append = src->data.file.append;
-        if (VIR_STRDUP(dest->data.file.path, src->data.file.path) < 0)
-            return -1;
+        dest->data.file.path = g_strdup(src->data.file.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UDP:
-        if (VIR_STRDUP(dest->data.udp.bindHost, src->data.udp.bindHost) < 0)
-            return -1;
-
-        if (VIR_STRDUP(dest->data.udp.bindService, src->data.udp.bindService) < 0)
-            return -1;
-
-        if (VIR_STRDUP(dest->data.udp.connectHost, src->data.udp.connectHost) < 0)
-            return -1;
-
-        if (VIR_STRDUP(dest->data.udp.connectService, src->data.udp.connectService) < 0)
-            return -1;
+        dest->data.udp.bindHost = g_strdup(src->data.udp.bindHost);
+        dest->data.udp.bindService = g_strdup(src->data.udp.bindService);
+        dest->data.udp.connectHost = g_strdup(src->data.udp.connectHost);
+        dest->data.udp.connectService = g_strdup(src->data.udp.connectService);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_TCP:
-        if (VIR_STRDUP(dest->data.tcp.host, src->data.tcp.host) < 0)
-            return -1;
-
-        if (VIR_STRDUP(dest->data.tcp.service, src->data.tcp.service) < 0)
-            return -1;
+        dest->data.tcp.host = g_strdup(src->data.tcp.host);
+        dest->data.tcp.service = g_strdup(src->data.tcp.service);
 
         dest->data.tcp.haveTLS = src->data.tcp.haveTLS;
         dest->data.tcp.tlsFromConfig = src->data.tcp.tlsFromConfig;
@@ -2581,18 +2570,15 @@ virDomainChrSourceDefCopy(virDomainChrSourceDefPtr dest,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
-        if (VIR_STRDUP(dest->data.nix.path, src->data.nix.path) < 0)
-            return -1;
+        dest->data.nix.path = g_strdup(src->data.nix.path);
 
         dest->data.nix.reconnect.enabled = src->data.nix.reconnect.enabled;
         dest->data.nix.reconnect.timeout = src->data.nix.reconnect.timeout;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_NMDM:
-        if (VIR_STRDUP(dest->data.nmdm.master, src->data.nmdm.master) < 0)
-            return -1;
-        if (VIR_STRDUP(dest->data.nmdm.slave, src->data.nmdm.slave) < 0)
-            return -1;
+        dest->data.nmdm.master = g_strdup(src->data.nmdm.master);
+        dest->data.nmdm.slave = g_strdup(src->data.nmdm.slave);
 
         break;
     }
@@ -5066,8 +5052,7 @@ virDomainRNGDefPostParse(virDomainRNGDefPtr rng)
     /* set default path for virtio-rng "random" backend to /dev/random */
     if (rng->backend == VIR_DOMAIN_RNG_BACKEND_RANDOM &&
         !rng->source.file) {
-        if (VIR_STRDUP(rng->source.file, "/dev/random") < 0)
-            return -1;
+        rng->source.file = g_strdup("/dev/random");
     }
 
     return 0;
@@ -8854,8 +8839,7 @@ virSecurityLabelDefsParseXML(virDomainDefPtr def,
             /* Copy model from host. */
             VIR_DEBUG("Found seclabel without a model, using '%s'",
                       host->secModels[0].model);
-            if (VIR_STRDUP(def->seclabels[0]->model, host->secModels[0].model) < 0)
-                goto error;
+            def->seclabels[0]->model = g_strdup(host->secModels[0].model);
 
             if (STREQ(def->seclabels[0]->model, "none") &&
                 flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) {
@@ -9188,8 +9172,7 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
 
         src->volume = src->path;
 
-        if (VIR_STRDUP(src->path, tmp + 1) < 0)
-            return -1;
+        src->path = g_strdup(tmp + 1);
 
         tmp[0] = '\0';
     }
@@ -11244,9 +11227,8 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
          */
         addrtype = virXPathString("string(./source/address/@type)", ctxt);
         /* if not explicitly stated, source/vendor implies usb device */
-        if (!addrtype && virXPathNode("./source/vendor", ctxt) &&
-            VIR_STRDUP(addrtype, "usb") < 0)
-            goto error;
+        if (!addrtype && virXPathNode("./source/vendor", ctxt))
+            addrtype = g_strdup("usb");
         hostdev->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
         if (virDomainHostdevDefParseXMLSubsys(node, ctxt, addrtype,
                                               hostdev, flags) < 0) {
@@ -11877,9 +11859,8 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
          */
         addrtype = virXPathString("string(./source/address/@type)", ctxt);
         /* if not explicitly stated, source/vendor implies usb device */
-        if (!addrtype && virXPathNode("./source/vendor", ctxt) &&
-            VIR_STRDUP(addrtype, "usb") < 0)
-            goto error;
+        if (!addrtype && virXPathNode("./source/vendor", ctxt))
+            addrtype = g_strdup("usb");
         hostdev->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
         if (virDomainHostdevDefParseXMLSubsys(node, ctxt, addrtype,
                                               hostdev, flags) < 0) {
@@ -14972,8 +14953,7 @@ virSysinfoSystemParseXML(xmlNodePtr node,
          * properly so that it's used correctly later.
          */
         virUUIDFormat(uuidbuf, uuidstr);
-        if (VIR_STRDUP(def->uuid, uuidstr) < 0)
-            goto cleanup;
+        def->uuid = g_strdup(uuidstr);
     }
     def->sku =
         virXPathString("string(entry[@name='sku'])", ctxt);
@@ -17986,8 +17966,7 @@ virDomainDefGetDefaultEmulator(virDomainDefPtr def,
             def->os.arch, def->virtType, NULL, NULL)))
         return NULL;
 
-    if (VIR_STRDUP(retemu, capsdata->emulator) < 0)
-        return NULL;
+    retemu = g_strdup(capsdata->emulator);
 
     return retemu;
 }
@@ -19011,9 +18990,7 @@ virDomainDefParseBootOptions(virDomainDefPtr def,
                                _("No data supplied for <initarg> element"));
                 return -1;
             }
-            if (VIR_STRDUP(def->os.initargv[i],
-                           (const char*) nodes[i]->children->content) < 0)
-                return -1;
+            def->os.initargv[i] = g_strdup((const char *)nodes[i]->children->content);
         }
         def->os.initargv[n] = NULL;
         VIR_FREE(nodes);
@@ -19042,9 +19019,7 @@ virDomainDefParseBootOptions(virDomainDefPtr def,
                 return -1;
 
             def->os.initenv[i]->name = name;
-            if (VIR_STRDUP(def->os.initenv[i]->value,
-                           (const char*) nodes[i]->children->content) < 0)
-                return -1;
+            def->os.initenv[i]->value = g_strdup((const char *)nodes[i]->children->content);
         }
         def->os.initenv[n] = NULL;
         VIR_FREE(nodes);
@@ -19407,8 +19382,7 @@ virDomainResctrlMonDefParse(virDomainDefPtr def,
         if (rv == 1) {
             const char *alloc_id = virResctrlAllocGetID(resctrl->alloc);
 
-            if (VIR_STRDUP(id, alloc_id) < 0)
-                goto cleanup;
+            id = g_strdup(alloc_id);
         } else {
             if (!(tmp = virBitmapFormat(domresmon->vcpus)))
                 goto cleanup;
@@ -19633,9 +19607,8 @@ virDomainDefParseCaps(virDomainDefPtr def,
     } else {
         if (!def->os.arch)
             def->os.arch = capsdata->arch;
-        if ((!def->os.machine &&
-             VIR_STRDUP(def->os.machine, capsdata->machinetype) < 0))
-            return -1;
+        if (!def->os.machine)
+            def->os.machine = g_strdup(capsdata->machinetype);
     }
 
     return 0;
@@ -29809,8 +29782,7 @@ virDomainNetSetModelString(virDomainNetDefPtr net,
         return -1;
     }
 
-    if (VIR_STRDUP(net->modelstr, model) < 0)
-        return -1;
+    net->modelstr = g_strdup(model);
     return 0;
 }
 
@@ -29847,8 +29819,7 @@ virDomainGraphicsListenAppendAddress(virDomainGraphicsDefPtr def,
 
     glisten.type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS;
 
-    if (VIR_STRDUP(glisten.address, address) < 0)
-        goto error;
+    glisten.address = g_strdup(address);
 
     if (VIR_APPEND_ELEMENT_COPY(def->listens, def->nListens, glisten) < 0)
         goto error;
@@ -29870,8 +29841,7 @@ virDomainGraphicsListenAppendSocket(virDomainGraphicsDefPtr def,
 
     glisten.type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET;
 
-    if (VIR_STRDUP(glisten.socket, socketPath) < 0)
-        goto error;
+    glisten.socket = g_strdup(socketPath);
 
     if (VIR_APPEND_ELEMENT_COPY(def->listens, def->nListens, glisten) < 0)
         goto error;
@@ -30165,13 +30135,11 @@ virDomainObjGetMetadata(virDomainObjPtr vm,
 
     switch ((virDomainMetadataType) type) {
     case VIR_DOMAIN_METADATA_DESCRIPTION:
-        if (VIR_STRDUP(ret, def->description) < 0)
-            return NULL;
+        ret = g_strdup(def->description);
         break;
 
     case VIR_DOMAIN_METADATA_TITLE:
-        if (VIR_STRDUP(ret, def->title) < 0)
-            return NULL;
+        ret = g_strdup(def->title);
         break;
 
     case VIR_DOMAIN_METADATA_ELEMENT:
@@ -30216,16 +30184,16 @@ virDomainDefSetMetadata(virDomainDefPtr def,
 
     switch ((virDomainMetadataType) type) {
     case VIR_DOMAIN_METADATA_DESCRIPTION:
-        if (STRNEQ_NULLABLE(metadata, "") && VIR_STRDUP(tmp, metadata) < 0)
-            goto cleanup;
+        if (STRNEQ_NULLABLE(metadata, ""))
+            tmp = g_strdup(metadata);
 
         VIR_FREE(def->description);
         def->description = tmp;
         break;
 
     case VIR_DOMAIN_METADATA_TITLE:
-        if (STRNEQ_NULLABLE(metadata, "") && VIR_STRDUP(tmp, metadata) < 0)
-            goto cleanup;
+        if (STRNEQ_NULLABLE(metadata, ""))
+            tmp = g_strdup(metadata);
 
         VIR_FREE(def->title);
         def->title = tmp;
@@ -30511,8 +30479,7 @@ virDomainDiskSetBlockIOTune(virDomainDiskDefPtr disk,
 {
     char *tmp_group = NULL;
 
-    if (VIR_STRDUP(tmp_group, info->group_name) < 0)
-        return -1;
+    tmp_group = g_strdup(info->group_name);
 
     VIR_FREE(disk->blkdeviotune.group_name);
     disk->blkdeviotune = *info;
@@ -30640,11 +30607,9 @@ virDomainNetDefToNetworkPort(virDomainDefPtr dom,
     }
 
     memcpy(port->owneruuid, dom->uuid, VIR_UUID_BUFLEN);
-    if (VIR_STRDUP(port->ownername, dom->name) < 0)
-        return NULL;
+    port->ownername = g_strdup(dom->name);
 
-    if (VIR_STRDUP(port->group, iface->data.network.portgroup) < 0)
-        return NULL;
+    port->group = g_strdup(iface->data.network.portgroup);
 
     memcpy(&port->mac, &iface->mac, VIR_MAC_BUFLEN);
 
@@ -30684,25 +30649,19 @@ virDomainNetDefActualFromNetworkPort(virDomainNetDefPtr iface,
 
     case VIR_NETWORK_PORT_PLUG_TYPE_NETWORK:
         actual->type = VIR_DOMAIN_NET_TYPE_NETWORK;
-        if (VIR_STRDUP(actual->data.bridge.brname,
-                       port->plug.bridge.brname) < 0)
-            goto error;
+        actual->data.bridge.brname = g_strdup(port->plug.bridge.brname);
         actual->data.bridge.macTableManager = port->plug.bridge.macTableManager;
         break;
 
     case VIR_NETWORK_PORT_PLUG_TYPE_BRIDGE:
         actual->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
-        if (VIR_STRDUP(actual->data.bridge.brname,
-                       port->plug.bridge.brname) < 0)
-            goto error;
+        actual->data.bridge.brname = g_strdup(port->plug.bridge.brname);
         actual->data.bridge.macTableManager = port->plug.bridge.macTableManager;
         break;
 
     case VIR_NETWORK_PORT_PLUG_TYPE_DIRECT:
         actual->type = VIR_DOMAIN_NET_TYPE_DIRECT;
-        if (VIR_STRDUP(actual->data.direct.linkdev,
-                       port->plug.direct.linkdev) < 0)
-            goto error;
+        actual->data.direct.linkdev = g_strdup(port->plug.direct.linkdev);
         actual->data.direct.mode = port->plug.direct.mode;
         break;
 
@@ -30810,36 +30769,28 @@ virDomainNetDefActualToNetworkPort(virDomainDefPtr dom,
     }
 
     memcpy(port->owneruuid, dom->uuid, VIR_UUID_BUFLEN);
-    if (VIR_STRDUP(port->ownername, dom->name) < 0)
-        return NULL;
+    port->ownername = g_strdup(dom->name);
 
-    if (VIR_STRDUP(port->group, iface->data.network.portgroup) < 0)
-        return NULL;
+    port->group = g_strdup(iface->data.network.portgroup);
 
     memcpy(&port->mac, &iface->mac, VIR_MAC_BUFLEN);
 
     switch (virDomainNetGetActualType(iface)) {
     case VIR_DOMAIN_NET_TYPE_NETWORK:
         port->plugtype = VIR_NETWORK_PORT_PLUG_TYPE_NETWORK;
-        if (VIR_STRDUP(port->plug.bridge.brname,
-                       actual->data.bridge.brname) < 0)
-            return NULL;
+        port->plug.bridge.brname = g_strdup(actual->data.bridge.brname);
         port->plug.bridge.macTableManager = actual->data.bridge.macTableManager;
         break;
 
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
         port->plugtype = VIR_NETWORK_PORT_PLUG_TYPE_BRIDGE;
-        if (VIR_STRDUP(port->plug.bridge.brname,
-                       actual->data.bridge.brname) < 0)
-            return NULL;
+        port->plug.bridge.brname = g_strdup(actual->data.bridge.brname);
         port->plug.bridge.macTableManager = actual->data.bridge.macTableManager;
         break;
 
     case VIR_DOMAIN_NET_TYPE_DIRECT:
         port->plugtype = VIR_NETWORK_PORT_PLUG_TYPE_DIRECT;
-        if (VIR_STRDUP(port->plug.direct.linkdev,
-                       actual->data.direct.linkdev) < 0)
-            return NULL;
+        port->plug.direct.linkdev = g_strdup(actual->data.direct.linkdev);
         port->plug.direct.mode = actual->data.direct.mode;
         break;
 
@@ -31235,8 +31186,7 @@ virDomainDiskAddISCSIPoolSourceHost(virDomainDiskDefPtr def,
     if (VIR_ALLOC_N(def->src->hosts, def->src->nhosts) < 0)
         goto cleanup;
 
-    if (VIR_STRDUP(def->src->hosts[0].name, pooldef->source.hosts[0].name) < 0)
-        goto cleanup;
+    def->src->hosts[0].name = g_strdup(pooldef->source.hosts[0].name);
 
     def->src->hosts[0].port = pooldef->source.hosts[0].port ?
         pooldef->source.hosts[0].port : 3260;
@@ -31308,8 +31258,7 @@ virDomainDiskTranslateISCSIDirect(virDomainDiskDefPtr def,
     if (def->src->auth && !def->src->auth->secrettype) {
         const char *secrettype =
             virSecretUsageTypeToString(VIR_SECRET_USAGE_TYPE_ISCSI);
-        if (VIR_STRDUP(def->src->auth->secrettype, secrettype) < 0)
-            return -1;
+        def->src->auth->secrettype = g_strdup(secrettype);
     }
 
     if (virDomainDiskAddISCSIPoolSourceHost(def, pooldef) < 0)

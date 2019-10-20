@@ -421,22 +421,13 @@ virNWFilterObjListGetNames(virNWFilterObjListPtr nwfilters,
         virNWFilterObjLock(obj);
         def = obj->def;
         if (!filter || filter(conn, def)) {
-            if (VIR_STRDUP(names[nnames], def->name) < 0) {
-                virNWFilterObjUnlock(obj);
-                goto failure;
-            }
+            names[nnames] = g_strdup(def->name);
             nnames++;
         }
         virNWFilterObjUnlock(obj);
     }
 
     return nnames;
-
- failure:
-    while (--nnames >= 0)
-        VIR_FREE(names[nnames]);
-
-    return -1;
 }
 
 

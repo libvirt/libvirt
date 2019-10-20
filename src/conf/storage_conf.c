@@ -640,9 +640,8 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
     if (sourcedir)
         source->dir = virFileSanitizePath(sourcedir);
     /* In gluster, a missing dir defaults to "/" */
-    if (!source->dir && pool_type == VIR_STORAGE_POOL_GLUSTER &&
-        VIR_STRDUP(source->dir, "/") < 0)
-        goto cleanup;
+    if (!source->dir && pool_type == VIR_STORAGE_POOL_GLUSTER)
+        source->dir = g_strdup("/");
 
     if ((adapternode = virXPathNode("./adapter", ctxt))) {
         if (virStorageAdapterParseXML(&source->adapter, adapternode, ctxt) < 0)
@@ -885,9 +884,8 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
 
     def->name = virXPathString("string(./name)", ctxt);
     if (def->name == NULL &&
-        options->flags & VIR_STORAGE_POOL_SOURCE_NAME &&
-        VIR_STRDUP(def->name, def->source.name) < 0)
-        return NULL;
+        options->flags & VIR_STORAGE_POOL_SOURCE_NAME)
+        def->name = g_strdup(def->source.name);
 
     if (def->name == NULL) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -934,8 +932,7 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
     if (options->flags & VIR_STORAGE_POOL_SOURCE_NAME) {
         if (def->source.name == NULL) {
             /* source name defaults to pool name */
-            if (VIR_STRDUP(def->source.name, def->name) < 0)
-                return NULL;
+            def->source.name = g_strdup(def->name);
         }
     }
 

@@ -47,22 +47,18 @@ virNWFilterBindingDefForNet(const char *vmname,
     if (VIR_ALLOC(ret) < 0)
         return NULL;
 
-    if (VIR_STRDUP(ret->ownername, vmname) < 0)
-        goto error;
+    ret->ownername = g_strdup(vmname);
 
     memcpy(ret->owneruuid, vmuuid, sizeof(ret->owneruuid));
 
-    if (VIR_STRDUP(ret->portdevname, net->ifname) < 0)
-        goto error;
+    ret->portdevname = g_strdup(net->ifname);
 
-    if (net->type == VIR_DOMAIN_NET_TYPE_DIRECT &&
-        VIR_STRDUP(ret->linkdevname, net->data.direct.linkdev) < 0)
-        goto error;
+    if (net->type == VIR_DOMAIN_NET_TYPE_DIRECT)
+        ret->linkdevname = g_strdup(net->data.direct.linkdev);
 
     ret->mac = net->mac;
 
-    if (VIR_STRDUP(ret->filter, net->filter) < 0)
-        goto error;
+    ret->filter = g_strdup(net->filter);
 
     if (!(ret->filterparams = virNWFilterHashTableCreate(0)))
         goto error;

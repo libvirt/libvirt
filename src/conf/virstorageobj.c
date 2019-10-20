@@ -931,12 +931,8 @@ virStoragePoolObjVolumeGetNamesCb(void *payload,
         !data->filter(data->conn, data->pooldef, volobj->voldef))
         goto cleanup;
 
-    if (data->names) {
-        if (VIR_STRDUP(data->names[data->nnames], volobj->voldef->name) < 0) {
-            data->error = true;
-            goto cleanup;
-        }
-    }
+    if (data->names)
+        data->names[data->nnames] = g_strdup(volobj->voldef->name);
 
     data->nnames++;
 
@@ -1642,17 +1638,9 @@ virStoragePoolObjLoad(virStoragePoolObjListPtr pools,
     def = NULL;
 
     VIR_FREE(obj->configFile);  /* for driver reload */
-    if (VIR_STRDUP(obj->configFile, path) < 0) {
-        virStoragePoolObjRemove(pools, obj);
-        virStoragePoolObjEndAPI(&obj);
-        return NULL;
-    }
+    obj->configFile = g_strdup(path);
     VIR_FREE(obj->autostartLink); /* for driver reload */
-    if (VIR_STRDUP(obj->autostartLink, autostartLink) < 0) {
-        virStoragePoolObjRemove(pools, obj);
-        virStoragePoolObjEndAPI(&obj);
-        return NULL;
-    }
+    obj->autostartLink = g_strdup(autostartLink);
 
     obj->autostart = virFileLinkPointsTo(obj->autostartLink,
                                          obj->configFile);
@@ -1919,12 +1907,8 @@ virStoragePoolObjGetNamesCb(void *payload,
     if (data->wantActive != virStoragePoolObjIsActive(obj))
         goto cleanup;
 
-    if (data->names) {
-        if (VIR_STRDUP(data->names[data->nnames], obj->def->name) < 0) {
-            data->error = true;
-            goto cleanup;
-        }
-    }
+    if (data->names)
+        data->names[data->nnames] = g_strdup(obj->def->name);
 
     data->nnames++;
 

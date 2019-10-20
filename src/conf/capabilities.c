@@ -288,8 +288,7 @@ virCapabilitiesAddHostFeature(virCapsPtr caps,
                      caps->host.nfeatures, 1) < 0)
         return -1;
 
-    if (VIR_STRDUP(caps->host.features[caps->host.nfeatures], name) < 0)
-        return -1;
+    caps->host.features[caps->host.nfeatures] = g_strdup(name);
     caps->host.nfeatures++;
 
     return 0;
@@ -310,8 +309,7 @@ virCapabilitiesAddHostMigrateTransport(virCapsPtr caps,
                      caps->host.nmigrateTrans, 1) < 0)
         return -1;
 
-    if (VIR_STRDUP(caps->host.migrateTrans[caps->host.nmigrateTrans], name) < 0)
-        return -1;
+    caps->host.migrateTrans[caps->host.nmigrateTrans] = g_strdup(name);
     caps->host.nmigrateTrans++;
 
     return 0;
@@ -328,8 +326,7 @@ int
 virCapabilitiesSetNetPrefix(virCapsPtr caps,
                             const char *prefix)
 {
-    if (VIR_STRDUP(caps->host.netprefix, prefix) < 0)
-        return -1;
+    caps->host.netprefix = g_strdup(prefix);
 
     return 0;
 }
@@ -423,11 +420,11 @@ virCapabilitiesAllocMachines(const char *const *names, int nnames)
         return NULL;
 
     for (i = 0; i < nnames; i++) {
-        if (VIR_ALLOC(machines[i]) < 0 ||
-            VIR_STRDUP(machines[i]->name, names[i]) < 0) {
+        if (VIR_ALLOC(machines[i]) < 0) {
             virCapabilitiesFreeMachines(machines, nnames);
             return NULL;
         }
+        machines[i]->name = g_strdup(names[i]);
     }
 
     return machines;
@@ -486,9 +483,8 @@ virCapabilitiesAddGuest(virCapsPtr caps,
     guest->arch.id = arch;
     guest->arch.wordsize = virArchGetWordSize(arch);
 
-    if (VIR_STRDUP(guest->arch.defaultInfo.emulator, emulator) < 0 ||
-        VIR_STRDUP(guest->arch.defaultInfo.loader, loader) < 0)
-        goto error;
+    guest->arch.defaultInfo.emulator = g_strdup(emulator);
+    guest->arch.defaultInfo.loader = g_strdup(loader);
 
     if (VIR_RESIZE_N(caps->guests, caps->nguests_max,
                      caps->nguests, 1) < 0)
@@ -534,9 +530,8 @@ virCapabilitiesAddGuestDomain(virCapsGuestPtr guest,
         goto error;
 
     dom->type = hvtype;
-    if (VIR_STRDUP(dom->info.emulator, emulator) < 0 ||
-        VIR_STRDUP(dom->info.loader, loader) < 0)
-        goto error;
+    dom->info.emulator = g_strdup(emulator);
+    dom->info.loader = g_strdup(loader);
 
     if (VIR_RESIZE_N(guest->arch.domains, guest->arch.ndomains_max,
                      guest->arch.ndomains, 1) < 0)
@@ -577,8 +572,7 @@ virCapabilitiesAddGuestFeature(virCapsGuestPtr guest,
     if (VIR_ALLOC(feature) < 0)
         goto no_memory;
 
-    if (VIR_STRDUP(feature->name, name) < 0)
-        goto no_memory;
+    feature->name = g_strdup(name);
     feature->defaultOn = defaultOn;
     feature->toggle = toggle;
 
@@ -612,11 +606,8 @@ virCapabilitiesHostSecModelAddBaseLabel(virCapsHostSecModelPtr secmodel,
     if (type == NULL || label == NULL)
         return -1;
 
-    if (VIR_STRDUP(t, type) < 0)
-        goto no_memory;
-
-    if (VIR_STRDUP(l, label) < 0)
-        goto no_memory;
+    t = g_strdup(type);
+    l = g_strdup(label);
 
     if (VIR_EXPAND_N(secmodel->labels, secmodel->nlabels, 1) < 0)
         goto no_memory;

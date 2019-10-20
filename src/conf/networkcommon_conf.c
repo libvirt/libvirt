@@ -47,8 +47,7 @@ virNetDevIPRouteCreate(const char *errorDetail,
     if (VIR_ALLOC(def) < 0)
         return NULL;
 
-    if (VIR_STRDUP(def->family, family) < 0)
-        goto error;
+    def->family = g_strdup(family);
 
     def->prefix = prefix;
     def->has_prefix = hasPrefix;

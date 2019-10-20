@@ -73,8 +73,7 @@ static char *virChrdevLockFilePath(const char *dev)
     char *filename;
     char *p;
 
-    if (VIR_STRDUP(devCopy, dev) < 0)
-        goto cleanup;
+    devCopy = g_strdup(dev);
 
     /* skip the leading "/dev/" */
     filename = STRSKIP(devCopy, "/dev");
@@ -407,8 +406,7 @@ int virChrdevOpen(virChrdevsPtr devs,
     added = true;
 
     cbdata->devs = devs;
-    if (VIR_STRDUP(cbdata->path, path) < 0)
-        goto error;
+    cbdata->path = g_strdup(path);
 
     /* open the character device */
     switch (source->type) {

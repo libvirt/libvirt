@@ -136,11 +136,12 @@ virCPUDefCopyModelFilter(virCPUDefPtr dst,
     size_t i;
     size_t n;
 
-    if (VIR_STRDUP(dst->model, src->model) < 0 ||
-        VIR_STRDUP(dst->vendor, src->vendor) < 0 ||
-        VIR_STRDUP(dst->vendor_id, src->vendor_id) < 0 ||
-        VIR_ALLOC_N(dst->features, src->nfeatures) < 0)
+    if (VIR_ALLOC_N(dst->features, src->nfeatures) < 0)
         return -1;
+
+    dst->model = g_strdup(src->model);
+    dst->vendor = g_strdup(src->vendor);
+    dst->vendor_id = g_strdup(src->vendor_id);
     dst->microcodeVersion = src->microcodeVersion;
     dst->nfeatures_max = src->nfeatures;
     dst->nfeatures = 0;
@@ -161,8 +162,7 @@ virCPUDefCopyModelFilter(virCPUDefPtr dst,
             dst->features[n].policy = src->features[i].policy;
         }
 
-        if (VIR_STRDUP(dst->features[n].name, src->features[i].name) < 0)
-            return -1;
+        dst->features[n].name = g_strdup(src->features[i].name);
     }
 
     return 0;
@@ -896,8 +896,7 @@ virCPUDefUpdateFeatureInternal(virCPUDefPtr def,
                      def->nfeatures, 1) < 0)
         return -1;
 
-    if (VIR_STRDUP(def->features[def->nfeatures].name, name) < 0)
-        return -1;
+    def->features[def->nfeatures].name = g_strdup(name);
 
     def->features[def->nfeatures].policy = policy;
     def->nfeatures++;

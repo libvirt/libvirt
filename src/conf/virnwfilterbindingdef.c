@@ -54,21 +54,17 @@ virNWFilterBindingDefCopy(virNWFilterBindingDefPtr src)
     if (VIR_ALLOC(ret) < 0)
         return NULL;
 
-    if (VIR_STRDUP(ret->ownername, src->ownername) < 0)
-        goto error;
+    ret->ownername = g_strdup(src->ownername);
 
     memcpy(ret->owneruuid, src->owneruuid, sizeof(ret->owneruuid));
 
-    if (VIR_STRDUP(ret->portdevname, src->portdevname) < 0)
-        goto error;
+    ret->portdevname = g_strdup(src->portdevname);
 
-    if (VIR_STRDUP(ret->linkdevname, src->linkdevname) < 0)
-        goto error;
+    ret->linkdevname = g_strdup(src->linkdevname);
 
     ret->mac = src->mac;
 
-    if (VIR_STRDUP(ret->filter, src->filter) < 0)
-        goto error;
+    ret->filter = g_strdup(src->filter);
 
     if (!(ret->filterparams = virNWFilterHashTableCreate(0)))
         goto error;

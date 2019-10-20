@@ -612,8 +612,7 @@ virDomainSnapshotDefAssignExternalNames(virDomainSnapshotDefPtr def)
             return -1;
         }
 
-        if (VIR_STRDUP(tmppath, origpath) < 0)
-            return -1;
+        tmppath = g_strdup(origpath);
 
         /* drop suffix of the file name */
         if ((tmp = strrchr(tmppath, '.')) && !strchr(tmp, '/'))
@@ -741,8 +740,7 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
         }
         if (STRNEQ(disk->name, def->parent.dom->disks[idx]->dst)) {
             VIR_FREE(disk->name);
-            if (VIR_STRDUP(disk->name, def->parent.dom->disks[idx]->dst) < 0)
-                goto cleanup;
+            disk->name = g_strdup(def->parent.dom->disks[idx]->dst);
         }
     }
 
@@ -760,8 +758,7 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDefPtr def,
         disk = &def->disks[ndisks++];
         if (!(disk->src = virStorageSourceNew()))
             goto cleanup;
-        if (VIR_STRDUP(disk->name, def->parent.dom->disks[i]->dst) < 0)
-            goto cleanup;
+        disk->name = g_strdup(def->parent.dom->disks[i]->dst);
         disk->idx = i;
 
         /* Don't snapshot empty drives */

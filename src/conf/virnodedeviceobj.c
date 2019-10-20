@@ -761,14 +761,10 @@ virNodeDeviceObjListGetNamesCallback(void *payload,
 
     if ((!filter || filter(data->conn, def)) &&
         (!data->matchstr || virNodeDeviceObjHasCapStr(obj, data->matchstr))) {
-        if (VIR_STRDUP(data->names[data->nnames], def->name) < 0) {
-            data->error = true;
-            goto cleanup;
-        }
+        data->names[data->nnames] = g_strdup(def->name);
         data->nnames++;
      }
 
- cleanup:
     virObjectUnlock(obj);
     return 0;
 }
@@ -869,12 +865,12 @@ virNodeDeviceObjListExportCallback(void *payload,
     if ((!data->filter || data->filter(data->conn, def)) &&
         virNodeDeviceObjMatch(obj, data->flags)) {
         if (data->devices) {
-            if (!(device = virGetNodeDevice(data->conn, def->name)) ||
-                VIR_STRDUP(device->parentName, def->parent) < 0) {
+            if (!(device = virGetNodeDevice(data->conn, def->name))) {
                 virObjectUnref(device);
                 data->error = true;
                 goto cleanup;
             }
+            device->parentName = g_strdup(def->parent);
             data->devices[data->ndevices] = device;
         }
         data->ndevices++;

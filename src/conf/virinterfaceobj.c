@@ -176,14 +176,10 @@ virInterfaceObjListFindByMACStringCb(void *payload,
     virObjectLock(obj);
 
     if (STRCASEEQ(obj->def->mac, data->matchStr)) {
-        if (VIR_STRDUP(data->names[data->nnames], obj->def->name) < 0) {
-            data->error = true;
-            goto cleanup;
-        }
+        data->names[data->nnames] = g_strdup(obj->def->name);
         data->nnames++;
     }
 
- cleanup:
     virObjectUnlock(obj);
     return 0;
 }
@@ -544,10 +540,7 @@ virInterfaceObjListGetNamesCb(void *payload,
     if (data->wantActive != virInterfaceObjIsActive(obj))
         goto cleanup;
 
-    if (VIR_STRDUP(data->names[data->nnames], obj->def->name) < 0) {
-        data->error = true;
-        goto cleanup;
-    }
+    data->names[data->nnames] = g_strdup(obj->def->name);
 
     data->nnames++;
 

@@ -414,16 +414,10 @@ virDomainAuditHostdev(virDomainObjPtr vm, virDomainHostdevDefPtr hostdev,
             break;
         }
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
-            if (VIR_STRDUP_QUIET(address, hostsrc->wwpn) < 0) {
-                VIR_WARN("OOM while encoding audit message");
-                goto cleanup;
-            }
+            address = g_strdup(hostsrc->wwpn);
             break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
-            if (VIR_STRDUP_QUIET(address, mdevsrc->uuidstr) < 0) {
-                VIR_WARN("OOM while encoding audit message");
-                goto cleanup;
-            }
+            address = g_strdup(mdevsrc->uuidstr);
             break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
         default:
@@ -518,10 +512,7 @@ virDomainAuditRedirdev(virDomainObjPtr vm, virDomainRedirdevDefPtr redirdev,
 
     switch (redirdev->bus) {
     case VIR_DOMAIN_REDIRDEV_BUS_USB:
-        if (VIR_STRDUP_QUIET(address, "USB redirdev") < 0) {
-            VIR_WARN("OOM while encoding audit message");
-            goto cleanup;
-        }
+        address = g_strdup("USB redirdev");
         break;
     default:
         VIR_WARN("Unexpected redirdev bus while encoding audit message: %d",

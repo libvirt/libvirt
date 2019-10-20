@@ -85,8 +85,7 @@ virNodeDeviceCreateVport(virStorageAdapterFCHostPtr fchost)
               NULLSTR(fchost->parent), fchost->wwnn, fchost->wwpn);
 
     if (fchost->parent) {
-        if (VIR_STRDUP(parent_hoststr, fchost->parent) < 0)
-            goto cleanup;
+        parent_hoststr = g_strdup(fchost->parent);
     } else if (fchost->parent_wwnn && fchost->parent_wwpn) {
         if (!(parent_hoststr = virVHBAGetHostByWWN(NULL, fchost->parent_wwnn,
                                                    fchost->parent_wwpn))) {
