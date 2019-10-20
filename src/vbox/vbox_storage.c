@@ -56,9 +56,10 @@ static int vboxConnectListStoragePools(virConnectPtr conn G_GNUC_UNUSED,
 {
     int numActive = 0;
 
-    if (nnames > 0 &&
-        VIR_STRDUP(names[numActive], "default-pool") > 0)
+    if (nnames > 0) {
+        names[numActive] = g_strdup("default-pool");
         numActive++;
+    }
     return numActive;
 }
 
@@ -167,8 +168,8 @@ vboxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names, int nname
             continue;
 
         VIR_DEBUG("nnames[%d]: %s", numActive, nameUtf8);
-        if (VIR_STRDUP(names[numActive], nameUtf8) > 0)
-            numActive++;
+        names[numActive] = g_strdup(nameUtf8);
+        numActive++;
 
         VBOX_UTF8_FREE(nameUtf8);
     }
@@ -770,11 +771,9 @@ static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
     if (NS_FAILED(rc))
         goto cleanup;
 
-    if (VIR_STRDUP(def.name, vol->name) < 0)
-        goto cleanup;
+    def.name = g_strdup(vol->name);
 
-    if (VIR_STRDUP(def.key, vol->key) < 0)
-        goto cleanup;
+    def.key = g_strdup(vol->key);
 
     rc = gVBoxAPI.UIMedium.GetFormat(hardDisk, &hddFormatUtf16);
     if (NS_FAILED(rc))

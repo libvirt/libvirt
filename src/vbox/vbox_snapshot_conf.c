@@ -74,8 +74,7 @@ virVBoxSnapshotConfCreateVBoxSnapshotConfHardDiskPtr(xmlNodePtr diskNode,
                        _("Cannot parse <HardDisk> 'uuid' attribute"));
         goto cleanup;
     }
-    if (VIR_STRDUP(hardDisk->uuid, searchTabResult[0]) < 0)
-        goto cleanup;
+    hardDisk->uuid = g_strdup(searchTabResult[0]);
 
     location = virXMLPropString(diskNode, "location");
     if (location == NULL) {
@@ -87,11 +86,9 @@ virVBoxSnapshotConfCreateVBoxSnapshotConfHardDiskPtr(xmlNodePtr diskNode,
         /*The location is a relative path, so we must change it into an absolute one. */
         if (virAsprintf(&tmp, "%s%s", machineLocation, location) < 0)
             goto cleanup;
-        if (VIR_STRDUP(hardDisk->location, tmp) < 0)
-            goto cleanup;
+        hardDisk->location = g_strdup(tmp);
     } else {
-        if (VIR_STRDUP(hardDisk->location, location) < 0)
-            goto cleanup;
+        hardDisk->location = g_strdup(location);
     }
     hardDisk->format = virXMLPropString(diskNode, "format");
     if (hardDisk->format == NULL) {
@@ -208,8 +205,7 @@ virVBoxSnapshotConfRetrieveSnapshot(xmlNodePtr snapshotNode,
                        _("Cannot parse <Snapshot> 'uuid' attribute"));
         goto cleanup;
     }
-    if (VIR_STRDUP(snapshot->uuid, searchTabResult[0]) < 0)
-        goto cleanup;
+    snapshot->uuid = g_strdup(searchTabResult[0]);
 
     snapshot->name = virXMLPropString(snapshotNode, "name");
     if (snapshot->name == NULL) {
@@ -662,8 +658,7 @@ virVBoxSnapshotConfLoadVboxFile(const char *filePath,
                            _("Cannot parse <Machine> 'currentSnapshot' attribute"));
             goto cleanup;
         }
-        if (VIR_STRDUP(machineDescription->currentSnapshot, searchResultTab[0]) < 0)
-            goto cleanup;
+        machineDescription->currentSnapshot = g_strdup(searchResultTab[0]);
     }
 
     machineDescription->snapshotFolder = virXMLPropString(machineNode, "snapshotFolder");

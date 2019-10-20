@@ -96,8 +96,7 @@ tryLoadOne(const char *dir, bool setAppHome, bool ignoreMissing,
             return -1;
         }
     } else {
-        if (VIR_STRDUP(name, DYNLIB_NAME) < 0)
-            return -1;
+        name = g_strdup(DYNLIB_NAME);
     }
 
     /*

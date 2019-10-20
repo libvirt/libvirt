@@ -132,8 +132,8 @@ static int vboxConnectListNetworks(virConnectPtr conn, char **const names, int n
         VBOX_UTF16_TO_UTF8(nameUtf16, &nameUtf8);
 
         VIR_DEBUG("nnames[%d]: %s", ret, nameUtf8);
-        if (VIR_STRDUP(names[ret], nameUtf8) >= 0)
-            ret++;
+        names[ret] = g_strdup(nameUtf8);
+        ret++;
 
         VBOX_UTF8_FREE(nameUtf8);
         VBOX_UTF16_FREE(nameUtf16);
@@ -234,8 +234,8 @@ static int vboxConnectListDefinedNetworks(virConnectPtr conn, char **const names
         VBOX_UTF16_TO_UTF8(nameUtf16, &nameUtf8);
 
         VIR_DEBUG("nnames[%d]: %s", ret, nameUtf8);
-        if (VIR_STRDUP(names[ret], nameUtf8) >= 0)
-            ret++;
+        names[ret] = g_strdup(nameUtf8);
+        ret++;
 
         VBOX_UTF8_FREE(nameUtf8);
         VBOX_UTF16_FREE(nameUtf16);
@@ -806,8 +806,7 @@ static char *vboxNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
     if (interfaceType != HostNetworkInterfaceType_HostOnly)
         goto cleanup;
 
-    if (VIR_STRDUP(def->name, network->name) < 0)
-        goto cleanup;
+    def->name = g_strdup(network->name);
 
     rc = gVBoxAPI.UIHNInterface.GetId(networkInterface, &vboxnet0IID);
     if (NS_FAILED(rc))
@@ -861,30 +860,26 @@ static char *vboxNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
 
         ipdef->nhosts = 1;
         if (VIR_ALLOC_N(ipdef->hosts, ipdef->nhosts) >= 0) {
-            if (VIR_STRDUP(ipdef->hosts[0].name, network->name) < 0) {
-                VIR_FREE(ipdef->hosts);
-                ipdef->nhosts = 0;
-            } else {
-                PRUnichar *macAddressUtf16 = NULL;
-                PRUnichar *ipAddressUtf16 = NULL;
-                bool errorOccurred = false;
+            PRUnichar *macAddressUtf16 = NULL;
+            PRUnichar *ipAddressUtf16 = NULL;
+            bool errorOccurred = false;
 
-                gVBoxAPI.UIHNInterface.GetHardwareAddress(networkInterface, &macAddressUtf16);
-                gVBoxAPI.UIHNInterface.GetIPAddress(networkInterface, &ipAddressUtf16);
+            ipdef->hosts[0].name = g_strdup(network->name);
+            gVBoxAPI.UIHNInterface.GetHardwareAddress(networkInterface, &macAddressUtf16);
+            gVBoxAPI.UIHNInterface.GetIPAddress(networkInterface, &ipAddressUtf16);
 
-                VBOX_UTF16_TO_UTF8(macAddressUtf16, &ipdef->hosts[0].mac);
+            VBOX_UTF16_TO_UTF8(macAddressUtf16, &ipdef->hosts[0].mac);
 
-                if (vboxSocketParseAddrUtf16(data, ipAddressUtf16,
-                                             &ipdef->hosts[0].ip) < 0) {
-                    errorOccurred = true;
-                }
-
-                VBOX_UTF16_FREE(macAddressUtf16);
-                VBOX_UTF16_FREE(ipAddressUtf16);
-
-                if (errorOccurred)
-                    goto cleanup;
+            if (vboxSocketParseAddrUtf16(data, ipAddressUtf16,
+                                         &ipdef->hosts[0].ip) < 0) {
+                errorOccurred = true;
             }
+
+            VBOX_UTF16_FREE(macAddressUtf16);
+            VBOX_UTF16_FREE(ipAddressUtf16);
+
+            if (errorOccurred)
+                goto cleanup;
         } else {
             ipdef->nhosts = 0;
         }
