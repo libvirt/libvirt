@@ -139,8 +139,7 @@ static int G_GNUC_WARN_UNUSED_RESULT
 make_nonnull_server(admin_nonnull_server *srv_dst,
                     virNetServerPtr srv_src)
 {
-    if (VIR_STRDUP(srv_dst->name, virNetServerGetName(srv_src)) < 0)
-        return -1;
+    srv_dst->name = g_strdup(virNetServerGetName(srv_src));
     return 0;
 }
 

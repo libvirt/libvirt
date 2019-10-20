@@ -447,8 +447,7 @@ vmwareDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
         goto cleanup;
 
     pDomain = vm->privateData;
-    if (VIR_STRDUP(pDomain->vmxPath, vmxPath) < 0)
-        goto cleanup;
+    pDomain->vmxPath = g_strdup(vmxPath);
 
     vmwareDomainConfigDisplay(pDomain, vmdef);
 
@@ -708,8 +707,7 @@ vmwareDomainCreateXML(virConnectPtr conn, const char *xml,
         goto cleanup;
 
     pDomain = vm->privateData;
-    if (VIR_STRDUP(pDomain->vmxPath, vmxPath) < 0)
-        goto cleanup;
+    pDomain->vmxPath = g_strdup(vmxPath);
 
     vmwareDomainConfigDisplay(pDomain, vmdef);
     vmdef = NULL;

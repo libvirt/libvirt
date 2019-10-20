@@ -175,8 +175,7 @@ vmwareLoadDomains(struct vmware_driver *driver)
 
         pDomain = vm->privateData;
 
-        if (VIR_STRDUP(pDomain->vmxPath, vmxPath) < 0)
-            goto cleanup;
+        pDomain->vmxPath = g_strdup(vmxPath);
 
         vmwareDomainConfigDisplay(pDomain, vmdef);
 
@@ -354,14 +353,10 @@ vmwareParsePath(const char *path, char **directory, char **filename)
 
         if (VIR_STRNDUP(*directory, path, separator - path - 1) < 0)
             goto error;
-        if (VIR_STRDUP(*filename, separator) < 0) {
-            VIR_FREE(*directory);
-            goto error;
-        }
+        *filename = g_strdup(separator);
 
     } else {
-        if (VIR_STRDUP(*filename, path) < 0)
-            goto error;
+        *filename = g_strdup(path);
     }
 
     return 0;

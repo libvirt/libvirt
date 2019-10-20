@@ -348,8 +348,7 @@ openvzReadFSConf(virDomainDefPtr def,
             goto error;
 
         fs->type = VIR_DOMAIN_FS_TYPE_TEMPLATE;
-        if (VIR_STRDUP(fs->src->path, temp) < 0)
-            goto error;
+        fs->src->path = g_strdup(temp);
     } else {
         /* OSTEMPLATE was not found, VE was booted from a private dir directly */
         ret = openvzReadVPSConfigParam(veid, "VE_PRIVATE", &temp);
@@ -373,8 +372,7 @@ openvzReadFSConf(virDomainDefPtr def,
         VIR_FREE(veid_str);
     }
 
-    if (VIR_STRDUP(fs->dst, "/") < 0)
-        goto error;
+    fs->dst = g_strdup("/");
 
     param = "DISKSPACE";
     ret = openvzReadVPSConfigParam(veid, param, &temp);
@@ -549,8 +547,7 @@ int openvzLoadDomains(struct openvz_driver *driver)
         }
 
         def->os.type = VIR_DOMAIN_OSTYPE_EXE;
-        if (VIR_STRDUP(def->os.init, "/sbin/init") < 0)
-            goto cleanup;
+        def->os.init = g_strdup("/sbin/init");
 
         ret = openvzReadVPSConfigParam(veid, "CPUS", &temp);
         if (ret < 0) {
@@ -727,10 +724,7 @@ openvzReadConfigParam(const char *conf_file, const char *param, char **value)
         saveptr = NULL;
         if ((token = strtok_r(sf, "\"\t\n", &saveptr)) != NULL) {
             VIR_FREE(*value);
-            if (VIR_STRDUP(*value, token) < 0) {
-                err = 1;
-                break;
-            }
+            *value = g_strdup(token);
             /* keep going - last entry wins */
         }
     }

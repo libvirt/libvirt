@@ -946,8 +946,7 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
         goto err;
 
     if (conn->uri->user != NULL) {
-        if (VIR_STRDUP(username, conn->uri->user) < 0)
-            goto err;
+        username = g_strdup(conn->uri->user);
     } else {
         if (!(username = virAuthGetUsername(conn, auth, "ssh", NULL,
                                             conn->uri->server)))
@@ -1124,9 +1123,7 @@ phypConnectOpen(virConnectPtr conn,
 
     if (conn->uri->path[0] != '\0') {
         /* need to shift one byte in order to remove the first "/" of URI component */
-        if (VIR_STRDUP(managed_system,
-                       conn->uri->path + (conn->uri->path[0] == '/')) < 0)
-            goto failure;
+        managed_system = g_strdup(conn->uri->path + (conn->uri->path[0] == '/'));
 
         /* here we are handling only the first component of the path,
          * so skipping the second:
@@ -1465,8 +1462,7 @@ phypGetBackingDevice(virConnectPtr conn, const char *managed_system,
         else
             goto cleanup;
 
-        if (VIR_STRDUP(backing_device, char_ptr) < 0)
-            goto cleanup;
+        backing_device = g_strdup(char_ptr);
     } else {
         backing_device = g_steal_pointer(&ret);
     }
@@ -2228,8 +2224,7 @@ phypStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
         goto cleanup;
     }
 
-    if (VIR_STRDUP(voldef.key, vol->key) < 0)
-        goto cleanup;
+    voldef.key = g_strdup(vol->key);
 
     voldef.type = VIR_STORAGE_POOL_LOGICAL;
 
@@ -2338,8 +2333,7 @@ phypStoragePoolListVolumes(virStoragePoolPtr pool, char **const volumes,
 
             if (char_ptr) {
                 *char_ptr = '\0';
-                if (VIR_STRDUP(volumes[got++], volumes_list) < 0)
-                    goto cleanup;
+                volumes[got++] = g_strdup(volumes_list);
                 char_ptr++;
                 volumes_list = char_ptr;
             } else {
@@ -2532,8 +2526,7 @@ phypConnectListStoragePools(virConnectPtr conn, char **const pools, int npools)
 
             if (char_ptr) {
                 *char_ptr = '\0';
-                if (VIR_STRDUP(pools[got++], storage_pools) < 0)
-                    goto cleanup;
+                pools[got++] = g_strdup(storage_pools);
                 char_ptr++;
                 storage_pools = char_ptr;
             } else {
@@ -2985,8 +2978,7 @@ phypConnectListInterfaces(virConnectPtr conn, char **const names, int nnames)
 
         if (char_ptr) {
             *char_ptr = '\0';
-            if (VIR_STRDUP(names[got++], networks) < 0)
-                goto cleanup;
+            names[got++] = g_strdup(networks);
             char_ptr++;
             networks = char_ptr;
         } else {
@@ -3146,8 +3138,7 @@ phypConnectListDefinedDomains(virConnectPtr conn, char **const names, int nnames
 
             if (char_ptr) {
                 *char_ptr = '\0';
-                if (VIR_STRDUP(names[got++], domains) < 0)
-                    goto cleanup;
+                names[got++] = g_strdup(domains);
                 char_ptr++;
                 domains = char_ptr;
             } else {

@@ -173,10 +173,7 @@ virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
         }
 
         if (cred[i].type != VIR_CRED_EXTERNAL) {
-            if (VIR_STRDUP(cred[i].result,
-                           STREQ(bufptr, "") && cred[i].defresult ?
-                           cred[i].defresult : bufptr) < 0)
-                return -1;
+            cred[i].result = g_strdup(STREQ(bufptr, "") && cred[i].defresult ? cred[i].defresult : bufptr);
             cred[i].resultlen = strlen(cred[i].result);
         }
     }
@@ -803,8 +800,7 @@ virConnectGetDefaultURI(virConfPtr conf,
     const char *defname = getenv("LIBVIRT_DEFAULT_URI");
     if (defname && *defname) {
         VIR_DEBUG("Using LIBVIRT_DEFAULT_URI '%s'", defname);
-        if (VIR_STRDUP(*name, defname) < 0)
-            goto cleanup;
+        *name = g_strdup(defname);
     } else {
         if (virConfGetValueString(conf, "uri_default", name) < 0)
             goto cleanup;
@@ -885,8 +881,7 @@ virConnectOpenInternal(const char *name,
      * if detectable.
      */
     if (name) {
-        if (VIR_STRDUP(uristr, name) < 0)
-            goto failed;
+        uristr = g_strdup(name);
     } else {
         if (virConnectGetDefaultURI(conf, &uristr) < 0)
             goto failed;
@@ -924,9 +919,8 @@ virConnectOpenInternal(const char *name,
 
         /* Avoid need for drivers to worry about NULLs, as
          * no one needs to distinguish "" vs NULL */
-        if (ret->uri->path == NULL &&
-            VIR_STRDUP(ret->uri->path, "") < 0)
-            goto failed;
+        if (ret->uri->path == NULL)
+            ret->uri->path = g_strdup("");
 
         VIR_DEBUG("Split \"%s\" to URI components:\n"
                   "  scheme %s\n"

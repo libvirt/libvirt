@@ -501,8 +501,7 @@ prlsdkUUIDParse(const char *uuidstr, unsigned char *uuid)
     virCheckNonNullArgGoto(uuidstr, error);
     virCheckNonNullArgGoto(uuid, error);
 
-    if (VIR_STRDUP(tmp, uuidstr) < 0)
-        goto error;
+    tmp = g_strdup(uuidstr);
 
     tmp[strlen(tmp) - 1] = '\0';
 
@@ -774,10 +773,8 @@ prlsdkGetFSInfo(PRL_HANDLE prldisk,
         fs->type = VIR_DOMAIN_FS_TYPE_VOLUME;
         if (VIR_ALLOC(fs->src->srcpool) < 0)
             goto cleanup;
-        if (VIR_STRDUP(fs->src->srcpool->pool, matches[1]) < 0)
-            goto cleanup;
-        if (VIR_STRDUP(fs->src->srcpool->volume, matches[2]) < 0)
-            goto cleanup;
+        fs->src->srcpool->pool = g_strdup(matches[1]);
+        fs->src->srcpool->volume = g_strdup(matches[2]);
         VIR_FREE(buf);
     } else {
         fs->type = VIR_DOMAIN_FS_TYPE_FILE;
@@ -1054,9 +1051,7 @@ prlsdkGetNetInfo(PRL_HANDLE netAdapter, virDomainNetDefPtr net, bool isCt)
          * always up */
         net->linkstate = VIR_DOMAIN_NET_INTERFACE_LINK_STATE_UP;
         net->type = VIR_DOMAIN_NET_TYPE_NETWORK;
-        if (VIR_STRDUP(net->data.network.name,
-                       PARALLELS_DOMAIN_ROUTED_NETWORK_NAME) < 0)
-            goto cleanup;
+        net->data.network.name = g_strdup(PARALLELS_DOMAIN_ROUTED_NETWORK_NAME);
         return 0;
     }
 
@@ -1078,9 +1073,7 @@ prlsdkGetNetInfo(PRL_HANDLE netAdapter, virDomainNetDefPtr net, bool isCt)
 
     if (emulatedType == PNA_ROUTED) {
         net->type = VIR_DOMAIN_NET_TYPE_NETWORK;
-        if (VIR_STRDUP(net->data.network.name,
-                       PARALLELS_DOMAIN_ROUTED_NETWORK_NAME) < 0)
-            goto cleanup;
+        net->data.network.name = g_strdup(PARALLELS_DOMAIN_ROUTED_NETWORK_NAME);
     } else {
         char *netid =
               prlsdkGetStringParamVar(PrlVmDevNet_GetVirtualNetworkId,
@@ -1224,8 +1217,7 @@ prlsdkGetSerialInfo(PRL_HANDLE serialPort, virDomainChrDefPtr chr)
             goto cleanup;
         if (!(uri = virURIParse(uristr)))
             goto cleanup;
-        if (VIR_STRDUP(chr->source->data.tcp.host, uri->server) < 0)
-            goto cleanup;
+        chr->source->data.tcp.host = g_strdup(uri->server);
         if (virAsprintf(&chr->source->data.tcp.service, "%d", uri->port) < 0)
             goto cleanup;
         chr->source->data.tcp.listen = socket_mode == PSP_SERIAL_SOCKET_SERVER;
@@ -1236,12 +1228,10 @@ prlsdkGetSerialInfo(PRL_HANDLE serialPort, virDomainChrDefPtr chr)
             goto cleanup;
         if (!(uri = virURIParse(uristr)))
             goto cleanup;
-        if (VIR_STRDUP(chr->source->data.udp.bindHost, uri->server) < 0)
-            goto cleanup;
+        chr->source->data.udp.bindHost = g_strdup(uri->server);
         if (virAsprintf(&chr->source->data.udp.bindService, "%d", uri->port) < 0)
             goto cleanup;
-        if (VIR_STRDUP(chr->source->data.udp.connectHost, uri->server) < 0)
-            goto cleanup;
+        chr->source->data.udp.connectHost = g_strdup(uri->server);
         if (virAsprintf(&chr->source->data.udp.connectService, "%d", uri->port) < 0)
             goto cleanup;
         break;
@@ -1526,8 +1516,7 @@ prlsdkConvertDomainType(PRL_HANDLE sdkdom, virDomainDefPtr def)
         break;
     case PVT_CT:
         def->os.type = VIR_DOMAIN_OSTYPE_EXE;
-        if (VIR_STRDUP(def->os.init, "/sbin/init") < 0)
-            return -1;
+        def->os.init = g_strdup("/sbin/init");
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,

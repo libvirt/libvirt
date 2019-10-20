@@ -118,10 +118,8 @@ openvzDomainDefPostParse(virDomainDefPtr def,
                          void *parseOpaque G_GNUC_UNUSED)
 {
     /* fill the init path */
-    if (def->os.type == VIR_DOMAIN_OSTYPE_EXE && !def->os.init) {
-        if (VIR_STRDUP(def->os.init, "/sbin/init") < 0)
-            return -1;
-    }
+    if (def->os.type == VIR_DOMAIN_OSTYPE_EXE && !def->os.init)
+        def->os.init = g_strdup("/sbin/init");
 
     return 0;
 }
@@ -780,8 +778,7 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
         /* if net is ethernet and the user has specified guest interface name,
          * let's use it; otherwise generate a new one */
         if (net->ifname_guest) {
-            if (VIR_STRDUP(guest_ifname, net->ifname_guest) < 0)
-                goto cleanup;
+            guest_ifname = g_strdup(net->ifname_guest);
         } else {
             guest_ifname = openvzGenerateContainerVethName(veid);
             if (guest_ifname == NULL) {
@@ -1507,8 +1504,7 @@ static int openvzConnectListDefinedDomains(virConnectPtr conn G_GNUC_UNUSED,
             continue;
         }
         snprintf(vpsname, sizeof(vpsname), "%d", veid);
-        if (VIR_STRDUP(names[got], vpsname) < 0)
-            goto out;
+        names[got] = g_strdup(vpsname);
         got ++;
     }
 

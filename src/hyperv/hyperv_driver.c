@@ -149,8 +149,7 @@ hypervConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
 
     /* Request credentials */
     if (conn->uri->user != NULL) {
-        if (VIR_STRDUP(username, conn->uri->user) < 0)
-            goto cleanup;
+        username = g_strdup(conn->uri->user);
     } else {
         if (!(username = virAuthGetUsername(conn, auth, "hyperv",
                                             "administrator",
@@ -846,13 +845,10 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
         return NULL;
     }
 
-    if (VIR_STRDUP(def->name, computerSystem->data.common->ElementName) < 0)
-        goto cleanup;
+    def->name = g_strdup(computerSystem->data.common->ElementName);
 
     if (priv->wmiVersion == HYPERV_WMI_VERSION_V1) {
-        if (VIR_STRDUP(def->description,
-                       virtualSystemSettingData->data.v1->Notes) < 0)
-            goto cleanup;
+        def->description = g_strdup(virtualSystemSettingData->data.v1->Notes);
     } else if (priv->wmiVersion == HYPERV_WMI_VERSION_V2 &&
                virtualSystemSettingData->data.v2->Notes.data != NULL) {
         char **notes = (char **)virtualSystemSettingData->data.v2->Notes.data;
@@ -935,8 +931,7 @@ hypervConnectListDefinedDomains(virConnectPtr conn, char **const names, int maxn
 
     for (computerSystem = computerSystemList; computerSystem != NULL;
          computerSystem = computerSystem->next) {
-        if (VIR_STRDUP(names[count], computerSystem->data.common->ElementName) < 0)
-            goto cleanup;
+        names[count] = g_strdup(computerSystem->data.common->ElementName);
 
         ++count;
 

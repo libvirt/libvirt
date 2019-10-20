@@ -112,8 +112,7 @@ getSocketPath(virURIPtr uri)
 
         if (STREQ(param->name, "socket")) {
             VIR_FREE(sock_path);
-            if (VIR_STRDUP(sock_path, param->value) < 0)
-                goto error;
+            sock_path = g_strdup(param->value);
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unknown URI parameter '%s'"), param->name);
@@ -140,8 +139,7 @@ getSocketPath(virURIPtr uri)
         }
 
         if (legacy) {
-            if (VIR_STRDUP(sockbase, "libvirt-admin-sock") < 0)
-                goto error;
+            sockbase = g_strdup("libvirt-admin-sock");
         } else {
             if (virAsprintf(&sockbase, "%s-admin-sock", uri->scheme) < 0)
                 goto error;
@@ -177,8 +175,7 @@ virAdmGetDefaultURI(virConfPtr conf, char **uristr)
 {
     const char *defname = getenv("LIBVIRT_ADMIN_DEFAULT_URI");
     if (defname && *defname) {
-        if (VIR_STRDUP(*uristr, defname) < 0)
-            return -1;
+        *uristr = g_strdup(defname);
         VIR_DEBUG("Using LIBVIRT_ADMIN_DEFAULT_URI '%s'", *uristr);
     } else {
         if (virConfGetValueString(conf, "uri_default", uristr) < 0)
@@ -194,11 +191,9 @@ virAdmGetDefaultURI(virConfPtr conf, char **uristr)
              * 'libvirtd:///session' depending on the process's EUID.
              */
             if (geteuid() == 0) {
-                if (VIR_STRDUP(*uristr, "libvirtd:///system") < 0)
-                    return -1;
+                *uristr = g_strdup("libvirtd:///system");
             } else {
-                if (VIR_STRDUP(*uristr, "libvirtd:///session") < 0)
-                    return -1;
+                *uristr = g_strdup("libvirtd:///session");
             }
         }
     }
@@ -238,8 +233,7 @@ virAdmConnectOpen(const char *name, unsigned int flags)
         goto error;
 
     if (name) {
-        if (VIR_STRDUP(uristr, name) < 0)
-            goto error;
+        uristr = g_strdup(name);
     } else {
         if (virAdmGetDefaultURI(conf, &uristr) < 0)
             goto error;

@@ -3015,8 +3015,7 @@ vzDomainMigratePrepare3Params(virConnectPtr conn,
 
     if (dname) {
         VIR_FREE(def->name);
-        if (VIR_STRDUP(def->name, dname) < 0)
-            goto cleanup;
+        def->name = g_strdup(dname);
     }
 
     if (virDomainMigratePrepare3ParamsEnsureACL(conn, def) < 0)
