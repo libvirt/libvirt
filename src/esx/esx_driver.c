@@ -177,8 +177,7 @@ esxParseVMXFileName(const char *fileName, void *opaque)
             while (*tmp == '/' || *tmp == '\\')
                 ++tmp;
 
-            if (VIR_STRDUP(strippedFileName, tmp) < 0)
-                goto cleanup;
+            strippedFileName = g_strdup(tmp);
 
             tmp = strippedFileName;
 
@@ -199,8 +198,7 @@ esxParseVMXFileName(const char *fileName, void *opaque)
 
         /* Fallback to direct datastore name match */
         if (!result && STRPREFIX(fileName, "/vmfs/volumes/")) {
-            if (VIR_STRDUP(copyOfFileName, fileName) < 0)
-                goto cleanup;
+            copyOfFileName = g_strdup(fileName);
 
             /* Expected format: '/vmfs/volumes/<datastore>/<path>' */
             if (!(tmp = STRSKIP(copyOfFileName, "/vmfs/volumes/")) ||
@@ -235,8 +233,7 @@ esxParseVMXFileName(const char *fileName, void *opaque)
         /* If it's an absolute path outside of a datastore just use it as is */
         if (!result && *fileName == '/') {
             /* FIXME: need to deal with Windows paths here too */
-            if (VIR_STRDUP(result, fileName) < 0)
-                goto cleanup;
+            result = g_strdup(fileName);
         }
 
         if (!result) {
@@ -334,8 +331,7 @@ esxFormatVMXFileName(const char *fileName, void *opaque)
         result = virBufferContentAndReset(&buffer);
     } else if (*fileName == '/') {
         /* FIXME: need to deal with Windows paths here too */
-        if (VIR_STRDUP(result, fileName) < 0)
-            goto cleanup;
+        result = g_strdup(fileName);
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not handle file name '%s'"), fileName);
@@ -632,8 +628,7 @@ esxConnectToHost(esxPrivate *priv,
         return -1;
 
     if (conn->uri->user) {
-        if (VIR_STRDUP(username, conn->uri->user) < 0)
-            goto cleanup;
+        username = g_strdup(conn->uri->user);
     } else {
         if (!(username = virAuthGetUsername(conn, auth, "esx", "root",
                                             conn->uri->server)))
@@ -683,8 +678,7 @@ esxConnectToHost(esxPrivate *priv,
     if (inMaintenanceMode == esxVI_Boolean_True)
         VIR_WARN("The server is in maintenance mode");
 
-    if (VIR_STRDUP(*vCenterIPAddress, *vCenterIPAddress) < 0)
-        goto cleanup;
+    *vCenterIPAddress = g_strdup(*vCenterIPAddress);
 
     result = 0;
 
@@ -724,8 +718,7 @@ esxConnectToVCenter(esxPrivate *priv,
         return -1;
 
     if (conn->uri->user) {
-        if (VIR_STRDUP(username, conn->uri->user) < 0)
-            goto cleanup;
+        username = g_strdup(conn->uri->user);
     } else {
         if (!(username = virAuthGetUsername(conn, auth, "esx", "administrator",
                                             hostname)))
@@ -1169,19 +1162,13 @@ esxConnectGetHostname(virConnectPtr conn)
     }
 
     if (!domainName || strlen(domainName) < 1) {
-        if (VIR_STRDUP(complete, hostName) < 0)
-            goto cleanup;
+        complete = g_strdup(hostName);
     } else {
         if (virAsprintf(&complete, "%s.%s", hostName, domainName) < 0)
             goto cleanup;
     }
 
  cleanup:
-    /*
-     * If we goto cleanup in case of an error then complete is still NULL,
-     * either VIR_STRDUP returned -1 or virAsprintf failed. When virAsprintf
-     * fails it guarantees setting complete to NULL
-     */
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&hostSystem);
 
@@ -2431,8 +2418,7 @@ esxDomainScreenshot(virDomainPtr domain, virStreamPtr stream,
 
     url = virBufferContentAndReset(&buffer);
 
-    if (VIR_STRDUP(mimeType, "image/png") < 0)
-        goto cleanup;
+    mimeType = g_strdup("image/png");
 
     if (esxStreamOpenDownload(stream, priv, url, 0, 0) < 0) {
         VIR_FREE(mimeType);
@@ -3454,8 +3440,7 @@ esxDomainGetSchedulerType(virDomainPtr domain G_GNUC_UNUSED, int *nparams)
 {
     char *type;
 
-    if (VIR_STRDUP(type, "allocation") < 0)
-        return NULL;
+    type = g_strdup("allocation");
 
     if (nparams)
         *nparams = 3; /* reservation, limit, shares */

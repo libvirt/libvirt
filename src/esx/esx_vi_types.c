@@ -951,10 +951,8 @@ esxVI_AnyType_DeepCopy(esxVI_AnyType **dest, esxVI_AnyType *src)
 
     (*dest)->type = src->type;
 
-    if (VIR_STRDUP((*dest)->other, src->other) < 0 ||
-        VIR_STRDUP((*dest)->value, src->value) < 0) {
-        goto failure;
-    }
+    (*dest)->other = g_strdup(src->other);
+    (*dest)->value = g_strdup(src->value);
 
     switch ((int)src->type) {
       case esxVI_Type_Boolean:
@@ -1153,8 +1151,7 @@ esxVI_String_AppendValueToList(esxVI_String **stringList, const char *value)
     if (esxVI_String_Alloc(&string) < 0)
         return -1;
 
-    if (VIR_STRDUP(string->value, value) < 0)
-        goto failure;
+    string->value = g_strdup(value);
 
     if (esxVI_String_AppendToList(stringList, string) < 0)
         goto failure;
@@ -1275,8 +1272,10 @@ esxVI_String_DeserializeValue(xmlNodePtr node, char **value)
     ESX_VI_CHECK_ARG_LIST(value);
 
     *value = (char *)xmlNodeListGetString(node->doc, node->children, 1);
+    if (!*value)
+        *value = g_strdup("");
 
-    return *value ? 0 : VIR_STRDUP(*value, "");
+    return 0;
 }
 
 

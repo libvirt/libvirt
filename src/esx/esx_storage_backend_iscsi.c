@@ -127,8 +127,7 @@ esxConnectListStoragePools(virConnectPtr conn, char **const names,
      */
     for (target = hostInternetScsiHba->configuredStaticTarget;
          target && count < maxnames; target = target->_next) {
-        if (VIR_STRDUP(names[count], target->iScsiName) < 0)
-            goto cleanup;
+        names[count] = g_strdup(target->iScsiName);
 
         ++count;
     }
@@ -406,8 +405,7 @@ esxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names,
              hostScsiTopologyLun && count < maxnames;
              hostScsiTopologyLun = hostScsiTopologyLun->_next) {
             if (STREQ(hostScsiTopologyLun->scsiLun, scsiLun->key)) {
-                if (VIR_STRDUP(names[count], scsiLun->deviceName) < 0)
-                    goto cleanup;
+                names[count] = g_strdup(scsiLun->deviceName);
 
                 ++count;
             }
@@ -705,8 +703,7 @@ esxStorageVolGetXMLDesc(virStorageVolPtr volume,
 
     virUUIDFormat(md5, uuid_string);
 
-    if (VIR_STRDUP(def.key, uuid_string) < 0)
-        goto cleanup;
+    def.key = g_strdup(uuid_string);
 
     /* iSCSI LUN exposes a block device */
     def.type = VIR_STORAGE_VOL_BLOCK;

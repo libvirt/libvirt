@@ -59,8 +59,7 @@ esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURIPtr uri)
         if (STRCASEEQ(queryParam->name, "transport")) {
             VIR_FREE((*parsedUri)->transport);
 
-            if (VIR_STRDUP((*parsedUri)->transport, queryParam->value) < 0)
-                goto cleanup;
+            (*parsedUri)->transport = g_strdup(queryParam->value);
 
             if (STRNEQ((*parsedUri)->transport, "http") &&
                 STRNEQ((*parsedUri)->transport, "https")) {
@@ -73,8 +72,7 @@ esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURIPtr uri)
         } else if (STRCASEEQ(queryParam->name, "vcenter")) {
             VIR_FREE((*parsedUri)->vCenter);
 
-            if (VIR_STRDUP((*parsedUri)->vCenter, queryParam->value) < 0)
-                goto cleanup;
+            (*parsedUri)->vCenter = g_strdup(queryParam->value);
         } else if (STRCASEEQ(queryParam->name, "no_verify")) {
             if (virStrToLong_i(queryParam->value, NULL, 10, &noVerify) < 0 ||
                 (noVerify != 0 && noVerify != 1)) {
@@ -123,8 +121,7 @@ esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURIPtr uri)
                 tmp = queryParam->value;
             }
 
-            if (VIR_STRDUP((*parsedUri)->proxy_hostname, tmp) < 0)
-                goto cleanup;
+            (*parsedUri)->proxy_hostname = g_strdup(tmp);
 
             if ((tmp = strchr((*parsedUri)->proxy_hostname, ':'))) {
                 if (tmp == (*parsedUri)->proxy_hostname) {
@@ -153,8 +150,7 @@ esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURIPtr uri)
         }
     }
 
-    if (VIR_STRDUP((*parsedUri)->path, uri->path) < 0)
-        goto cleanup;
+    (*parsedUri)->path = g_strdup(uri->path);
 
     if (!(*parsedUri)->transport)
         (*parsedUri)->transport = g_strdup("https");
@@ -226,8 +222,7 @@ esxUtil_ParseDatastorePath(const char *datastorePath, char **datastoreName,
         return -1;
     }
 
-    if (VIR_STRDUP(copyOfDatastorePath, datastorePath) < 0)
-        goto cleanup;
+    copyOfDatastorePath = g_strdup(datastorePath);
 
     /* Expected format: '[<datastore>] <path>' where <path> is optional */
     if (!(tmp = STRSKIP(copyOfDatastorePath, "[")) || *tmp == ']' ||
@@ -238,10 +233,8 @@ esxUtil_ParseDatastorePath(const char *datastorePath, char **datastoreName,
         goto cleanup;
     }
 
-    if (datastoreName &&
-        VIR_STRDUP(*datastoreName, preliminaryDatastoreName) < 0) {
-        goto cleanup;
-    }
+    if (datastoreName)
+        *datastoreName = g_strdup(preliminaryDatastoreName);
 
     preliminaryDirectoryAndFileName = strtok_r(NULL, "", &saveptr);
 
@@ -252,10 +245,8 @@ esxUtil_ParseDatastorePath(const char *datastorePath, char **datastoreName,
           strspn(preliminaryDirectoryAndFileName, " ");
     }
 
-    if (directoryAndFileName &&
-        VIR_STRDUP(*directoryAndFileName, preliminaryDirectoryAndFileName) < 0) {
-        goto cleanup;
-    }
+    if (directoryAndFileName)
+        *directoryAndFileName = g_strdup(preliminaryDirectoryAndFileName);
 
     if (directoryName) {
         /* Split <path> into <directory>/<file> and remove /<file> */
@@ -264,8 +255,7 @@ esxUtil_ParseDatastorePath(const char *datastorePath, char **datastoreName,
         if (tmp)
             *tmp = '\0';
 
-        if (VIR_STRDUP(*directoryName, preliminaryDirectoryAndFileName) < 0)
-            goto cleanup;
+        *directoryName = g_strdup(preliminaryDirectoryAndFileName);
     }
 
     result = 0;
@@ -447,8 +437,7 @@ esxUtil_EscapeDatastoreItem(const char *string)
     char *escaped1;
     char *escaped2 = NULL;
 
-    if (VIR_STRDUP(replaced, string) < 0)
-        return NULL;
+    replaced = g_strdup(string);
 
     esxUtil_ReplaceSpecialWindowsPathChars(replaced);
 

@@ -66,12 +66,10 @@ esxConnectNumOfInterfaces(virConnectPtr conn)
 static int
 esxConnectListInterfaces(virConnectPtr conn, char **const names, int maxnames)
 {
-    bool success = false;
     esxPrivate *priv = conn->privateData;
     esxVI_PhysicalNic *physicalNicList = NULL;
     esxVI_PhysicalNic *physicalNic = NULL;
     int count = 0;
-    size_t i;
 
     if (maxnames == 0)
         return 0;
@@ -83,20 +81,9 @@ esxConnectListInterfaces(virConnectPtr conn, char **const names, int maxnames)
 
     for (physicalNic = physicalNicList; physicalNic;
          physicalNic = physicalNic->_next) {
-        if (VIR_STRDUP(names[count], physicalNic->device) < 0)
-            goto cleanup;
+        names[count] = g_strdup(physicalNic->device);
 
         ++count;
-    }
-
-    success = true;
-
- cleanup:
-    if (! success) {
-        for (i = 0; i < count; ++i)
-            VIR_FREE(names[i]);
-
-        count = -1;
     }
 
     esxVI_PhysicalNic_Free(&physicalNicList);

@@ -166,8 +166,7 @@ esxConnectListStoragePools(virConnectPtr conn, char **const names,
                     goto cleanup;
                 }
 
-                if (VIR_STRDUP(names[count], dynamicProperty->val->string) < 0)
-                    goto cleanup;
+                names[count] = g_strdup(dynamicProperty->val->string);
 
                 ++count;
                 break;
@@ -605,8 +604,7 @@ esxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names,
         for (fileInfo = searchResults->file; fileInfo;
              fileInfo = fileInfo->_next) {
             if (length < 1) {
-                if (VIR_STRDUP(names[count], fileInfo->path) < 0)
-                    goto cleanup;
+                names[count] = g_strdup(fileInfo->path);
             } else if (virAsprintf(&names[count], "%s/%s", directoryAndFileName,
                                    fileInfo->path) < 0) {
                 goto cleanup;
@@ -774,8 +772,7 @@ esxStorageVolLookupByKey(virConnectPtr conn, const char *key)
                 VIR_FREE(datastorePath);
 
                 if (length < 1) {
-                    if (VIR_STRDUP(volumeName, fileInfo->path) < 0)
-                        goto cleanup;
+                    volumeName = g_strdup(fileInfo->path);
                 } else if (virAsprintf(&volumeName, "%s/%s",
                                        directoryAndFileName,
                                        fileInfo->path) < 0) {
@@ -1005,8 +1002,7 @@ esxStorageVolCreateXML(virStoragePoolPtr pool,
                 goto cleanup;
         } else {
             /* Fall back to the path as key */
-            if (VIR_STRDUP(key, datastorePath) < 0)
-                goto cleanup;
+            key = g_strdup(datastorePath);
         }
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1191,8 +1187,7 @@ esxStorageVolCreateXMLFrom(virStoragePoolPtr pool,
                 goto cleanup;
         } else {
             /* Fall back to the path as key */
-            if (VIR_STRDUP(key, datastorePath) < 0)
-                goto cleanup;
+            key = g_strdup(datastorePath);
         }
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
