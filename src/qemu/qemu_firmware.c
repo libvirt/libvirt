@@ -346,8 +346,7 @@ qemuFirmwareFlashFileParse(const char *path,
         return -1;
     }
 
-    if (VIR_STRDUP(flash->filename, filename) < 0)
-        return -1;
+    flash->filename = g_strdup(filename);
 
     if (!(format = virJSONValueObjectGetString(doc, "format"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -356,8 +355,7 @@ qemuFirmwareFlashFileParse(const char *path,
         return -1;
     }
 
-    if (VIR_STRDUP(flash->format, format) < 0)
-        return -1;
+    flash->format = g_strdup(format);
 
     return 0;
 }
@@ -408,8 +406,7 @@ qemuFirmwareMappingKernelParse(const char *path,
                        path);
     }
 
-    if (VIR_STRDUP(kernel->filename, filename) < 0)
-        return -1;
+    kernel->filename = g_strdup(filename);
 
     return 0;
 }
@@ -428,8 +425,7 @@ qemuFirmwareMappingMemoryParse(const char *path,
                        path);
     }
 
-    if (VIR_STRDUP(memory->filename, filename) < 0)
-        return -1;
+    memory->filename = g_strdup(filename);
 
     return 0;
 }
@@ -547,8 +543,7 @@ qemuFirmwareTargetParse(const char *path,
             virJSONValuePtr machine = virJSONValueArrayGet(machines, j);
             g_autofree char *machineStr = NULL;
 
-            if (VIR_STRDUP(machineStr, virJSONValueGetString(machine)) < 0)
-                goto cleanup;
+            machineStr = g_strdup(virJSONValueGetString(machine));
 
             VIR_APPEND_ELEMENT_INPLACE(t->machines, t->nmachines, machineStr);
         }
@@ -1051,9 +1046,7 @@ qemuFirmwareEnableFeatures(virQEMUDriverPtr driver,
         }
 
         VIR_FREE(def->os.loader->path);
-        if (VIR_STRDUP(def->os.loader->path,
-                       flash->executable.filename) < 0)
-            return -1;
+        def->os.loader->path = g_strdup(flash->executable.filename);
 
         if (STRNEQ(flash->nvram_template.format, "raw")) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
@@ -1063,9 +1056,7 @@ qemuFirmwareEnableFeatures(virQEMUDriverPtr driver,
         }
 
         VIR_FREE(def->os.loader->templt);
-        if (VIR_STRDUP(def->os.loader->templt,
-                       flash->nvram_template.filename) < 0)
-            return -1;
+        def->os.loader->templt = g_strdup(flash->nvram_template.filename);
 
         if (qemuDomainNVRAMPathGenerate(cfg, def) < 0)
             return -1;
@@ -1077,8 +1068,7 @@ qemuFirmwareEnableFeatures(virQEMUDriverPtr driver,
 
     case QEMU_FIRMWARE_DEVICE_KERNEL:
         VIR_FREE(def->os.kernel);
-        if (VIR_STRDUP(def->os.kernel, kernel->filename) < 0)
-            return -1;
+        def->os.kernel = g_strdup(kernel->filename);
 
         VIR_DEBUG("decided on kernel '%s'",
                   def->os.kernel);
@@ -1090,8 +1080,7 @@ qemuFirmwareEnableFeatures(virQEMUDriverPtr driver,
             return -1;
 
         def->os.loader->type = VIR_DOMAIN_LOADER_TYPE_ROM;
-        if (VIR_STRDUP(def->os.loader->path, memory->filename) < 0)
-            return -1;
+        def->os.loader->path = g_strdup(memory->filename);
 
         VIR_DEBUG("decided on loader '%s'",
                   def->os.loader->path);
@@ -1400,12 +1389,15 @@ qemuFirmwareGetSupported(const char *machine,
                     break;
             }
 
-            if (j == *nfws &&
-                (VIR_ALLOC(tmp) < 0 ||
-                 VIR_STRDUP(tmp->name, fwpath) < 0 ||
-                 VIR_STRDUP(tmp->nvram, nvrampath) < 0 ||
-                 VIR_APPEND_ELEMENT(*fws, *nfws, tmp) < 0))
-                return -1;
+            if (j == *nfws) {
+                if (VIR_ALLOC(tmp) < 0)
+                    return -1;
+
+                tmp->name = g_strdup(fwpath);
+                tmp->nvram = g_strdup(nvrampath);
+                if (VIR_APPEND_ELEMENT(*fws, *nfws, tmp) < 0)
+                    return -1;
+            }
         }
     }
 

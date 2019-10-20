@@ -1750,8 +1750,7 @@ qemuAgentGetHostname(qemuAgentPtr mon,
         goto cleanup;
     }
 
-    if (VIR_STRDUP(*hostname, result) < 0)
-        goto cleanup;
+    *hostname = g_strdup(result);
 
     ret = 0;
 
@@ -1911,11 +1910,12 @@ qemuAgentFSInfoToPublic(qemuAgentFSInfoPtr agent)
     virDomainFSInfoPtr ret = NULL;
     size_t i;
 
-    if (VIR_ALLOC(ret) < 0 ||
-        VIR_STRDUP(ret->mountpoint, agent->mountpoint) < 0 ||
-        VIR_STRDUP(ret->name, agent->name) < 0 ||
-        VIR_STRDUP(ret->fstype, agent->fstype) < 0)
+    if (VIR_ALLOC(ret) < 0)
         goto error;
+
+    ret->mountpoint = g_strdup(agent->mountpoint);
+    ret->name = g_strdup(agent->name);
+    ret->fstype = g_strdup(agent->fstype);
 
     if (agent->disks &&
         VIR_ALLOC_N(ret->devAlias, agent->ndisks) < 0)
@@ -1923,10 +1923,8 @@ qemuAgentFSInfoToPublic(qemuAgentFSInfoPtr agent)
 
     ret->ndevAlias = agent->ndisks;
 
-    for (i = 0; i < ret->ndevAlias; i++) {
-        if (VIR_STRDUP(ret->devAlias[i], agent->disks[i]->alias) < 0)
-            goto error;
-    }
+    for (i = 0; i < ret->ndevAlias; i++)
+        ret->devAlias[i] = g_strdup(agent->disks[i]->alias);
 
     return ret;
 
@@ -1980,15 +1978,11 @@ qemuAgentGetFSInfoInternalDisk(virJSONValuePtr jsondisks,
             return -1;
         disk = fsinfo->disks[i];
 
-        if ((val = virJSONValueObjectGetString(jsondisk, "serial"))) {
-            if (VIR_STRDUP(disk->serial, val) < 0)
-                return -1;
-        }
+        if ((val = virJSONValueObjectGetString(jsondisk, "serial")))
+            disk->serial = g_strdup(val);
 
-        if ((val = virJSONValueObjectGetString(jsondisk, "dev"))) {
-            if (VIR_STRDUP(disk->devnode, val) < 0)
-                return -1;
-        }
+        if ((val = virJSONValueObjectGetString(jsondisk, "dev")))
+            disk->devnode = g_strdup(val);
 
 #define GET_DISK_ADDR(jsonObject, var, name) \
         do { \
@@ -2025,8 +2019,7 @@ qemuAgentGetFSInfoInternalDisk(virJSONValuePtr jsondisks,
                                                unit)))
             continue;
 
-        if (VIR_STRDUP(disk->alias, diskDef->dst) < 0)
-            return -1;
+        disk->alias = g_strdup(diskDef->dst);
     }
 
     return 0;
@@ -2106,8 +2099,7 @@ qemuAgentGetFSInfoInternal(qemuAgentPtr mon,
             goto cleanup;
         }
 
-        if (VIR_STRDUP(info_ret[i]->mountpoint, result) < 0)
-            goto cleanup;
+        info_ret[i]->mountpoint = g_strdup(result);
 
         if (!(result = virJSONValueObjectGetString(entry, "name"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2115,8 +2107,7 @@ qemuAgentGetFSInfoInternal(qemuAgentPtr mon,
             goto cleanup;
         }
 
-        if (VIR_STRDUP(info_ret[i]->name, result) < 0)
-            goto cleanup;
+        info_ret[i]->name = g_strdup(result);
 
         if (!(result = virJSONValueObjectGetString(entry, "type"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2124,8 +2115,7 @@ qemuAgentGetFSInfoInternal(qemuAgentPtr mon,
             goto cleanup;
         }
 
-        if (VIR_STRDUP(info_ret[i]->fstype, result) < 0)
-            goto cleanup;
+        info_ret[i]->fstype = g_strdup(result);
 
 
         /* 'used-bytes' and 'total-bytes' were added in qemu-ga 3.0 */
@@ -2404,12 +2394,10 @@ qemuAgentGetInterfaces(qemuAgentPtr mon,
             iface = ifaces_ret[ifaces_count - 1];
             iface->naddrs = 0;
 
-            if (VIR_STRDUP(iface->name, ifname_s) < 0)
-                goto error;
+            iface->name = g_strdup(ifname_s);
 
             hwaddr = virJSONValueObjectGetString(tmp_iface, "hardware-address");
-            if (VIR_STRDUP(iface->hwaddr, hwaddr) < 0)
-                goto error;
+            iface->hwaddr = g_strdup(hwaddr);
         }
 
         /* Has to be freed for each interface. */
@@ -2471,8 +2459,7 @@ qemuAgentGetInterfaces(qemuAgentPtr mon,
                                  " field for interface '%s'"), name);
                 goto error;
             }
-            if (VIR_STRDUP(ip_addr->addr, addr) < 0)
-                goto error;
+            ip_addr->addr = g_strdup(addr);
 
             if (virJSONValueObjectGetNumberUint(ip_addr_obj, "prefix",
                                                 &ip_addr->prefix) < 0) {

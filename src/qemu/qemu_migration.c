@@ -192,8 +192,7 @@ qemuMigrationDstPrecreateDisk(virConnectPtr conn,
             return 0;
         }
 
-        if (VIR_STRDUP(basePath, disk->src->path) < 0)
-            goto cleanup;
+        basePath = g_strdup(disk->src->path);
 
         if (!(volName = strrchr(basePath, '/'))) {
             virReportError(VIR_ERR_INVALID_ARG,
@@ -808,8 +807,7 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriverPtr driver,
     if (!(copysrc->backingStore = virStorageSourceNew()))
         return -1;
 
-    if (VIR_STRDUP(copysrc->path, diskAlias) < 0)
-        return -1;
+    copysrc->path = g_strdup(diskAlias);
 
     if (VIR_ALLOC_N(copysrc->hosts, 1) < 0)
         return -1;
@@ -817,11 +815,9 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriverPtr driver,
     copysrc->nhosts = 1;
     copysrc->hosts->transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
     copysrc->hosts->port = port;
-    if (VIR_STRDUP(copysrc->hosts->name, host) < 0)
-        return -1;
+    copysrc->hosts->name = g_strdup(host);
 
-    if (VIR_STRDUP(copysrc->tlsAlias, tlsAlias) < 0)
-        return -1;
+    copysrc->tlsAlias = g_strdup(tlsAlias);
 
     if (virAsprintf(&copysrc->nodestorage, "migration-%s-storage", disk->dst) < 0 ||
         virAsprintf(&copysrc->nodeformat, "migration-%s-format", disk->dst) < 0)
@@ -2218,8 +2214,7 @@ qemuMigrationDstPrepare(virDomainObjPtr vm,
     char *migrateFrom = NULL;
 
     if (tunnel) {
-        if (VIR_STRDUP(migrateFrom, "stdio") < 0)
-            goto cleanup;
+        migrateFrom = g_strdup("stdio");
     } else {
         bool encloseAddress = false;
         bool hostIPv6Capable = false;
@@ -2434,8 +2429,7 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
     *def = NULL;
 
     priv = vm->privateData;
-    if (VIR_STRDUP(priv->origname, origname) < 0)
-        goto cleanup;
+    priv->origname = g_strdup(origname);
 
     if (taint_hook) {
         /* Domain XML has been altered by a hook script. */
@@ -2780,8 +2774,7 @@ qemuMigrationDstPrepareDirect(virQEMUDriverPtr driver,
             if (virSocketAddrNumericFamily(migrateHost) == AF_INET6)
                 encloseAddress = true;
 
-            if (VIR_STRDUP(hostname, migrateHost) < 0)
-                goto cleanup;
+            hostname = g_strdup(migrateHost);
         } else {
             if ((hostname = virGetHostname()) == NULL)
                 goto cleanup;
@@ -2902,10 +2895,7 @@ qemuMigrationAnyPrepareDef(virQEMUDriverPtr driver,
 
     if (dname) {
         name = def->name;
-        if (VIR_STRDUP(def->name, dname) < 0) {
-            virDomainDefFree(def);
-            def = NULL;
-        }
+        def->name = g_strdup(dname);
     }
 
  cleanup:

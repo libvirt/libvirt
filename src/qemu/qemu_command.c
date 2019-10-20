@@ -799,8 +799,7 @@ qemuBuildGeneralSecinfoURI(virURIPtr uri,
                             secinfo->s.plain.secret) < 0)
                 return -1;
         } else {
-            if (VIR_STRDUP(uri->user, secinfo->s.plain.username) < 0)
-                return -1;
+            uri->user = g_strdup(secinfo->s.plain.username);
         }
         break;
 
@@ -1135,8 +1134,7 @@ qemuGetDriveSourceString(virStorageSourcePtr src,
     case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_FILE:
     case VIR_STORAGE_TYPE_DIR:
-        if (VIR_STRDUP(*source, src->path) < 0)
-            return -1;
+        *source = g_strdup(src->path);
 
         break;
 
@@ -2053,8 +2051,7 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
              * ourselves especially for cases when -blockdev will be used */
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_DISK_DEVICE_ID)) {
                 if (disk->serial) {
-                    if (VIR_STRDUP(scsiVPDDeviceId, disk->serial) < 0)
-                        goto error;
+                    scsiVPDDeviceId = g_strdup(disk->serial);
                 } else {
                     if (!(scsiVPDDeviceId = qemuAliasDiskDriveFromDisk(disk)))
                         goto error;
@@ -3449,8 +3446,7 @@ qemuBuildMemoryBackendProps(virJSONValuePtr *backendProps,
         def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_FILE) {
 
         if (mem->nvdimmPath) {
-            if (VIR_STRDUP(memPath, mem->nvdimmPath) < 0)
-                return -1;
+            memPath = g_strdup(mem->nvdimmPath);
             if (!priv->memPrealloc)
                 prealloc = true;
         } else if (useHugepage) {
@@ -7044,8 +7040,7 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
             return -1;
         }
 
-        if (VIR_STRDUP(cpu, default_model) < 0)
-            return -1;
+        cpu = g_strdup(default_model);
     }
 
     if (cpu) {

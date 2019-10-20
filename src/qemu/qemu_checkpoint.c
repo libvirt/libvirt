@@ -409,9 +409,8 @@ qemuCheckpointCreateXML(virDomainPtr domain,
 
     other = virDomainCheckpointGetCurrent(vm->checkpoints);
     if (other) {
-        if (!redefine &&
-            VIR_STRDUP(chk->def->parent_name, other->def->name) < 0)
-            goto endjob;
+        if (!redefine)
+            chk->def->parent_name = g_strdup(other->def->name);
     }
 
     /* actually do the checkpoint */
@@ -513,11 +512,8 @@ qemuCheckpointReparentChildren(void *payload,
 
     VIR_FREE(moment->def->parent_name);
 
-    if (rep->parent->def &&
-        VIR_STRDUP(moment->def->parent_name, rep->parent->def->name) < 0) {
-        rep->err = -1;
-        return 0;
-    }
+    if (rep->parent->def)
+        moment->def->parent_name = g_strdup(rep->parent->def->name);
 
     rep->err = qemuCheckpointWriteMetadata(rep->vm, moment, rep->caps,
                                            rep->xmlopt, rep->dir);

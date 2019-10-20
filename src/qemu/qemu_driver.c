@@ -1185,8 +1185,7 @@ qemuConnectURIProbe(char **uri)
         return 0;
 
     cfg = virQEMUDriverGetConfig(qemu_driver);
-    if (VIR_STRDUP(*uri, cfg->uri) < 0)
-        return -1;
+    *uri = g_strdup(cfg->uri);
 
     return 0;
 }
@@ -7383,8 +7382,7 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
         virMacAddr mac = net->mac;
         char *script = net->script;
 
-        if (VIR_STRDUP(model, virDomainNetGetModelString(net)) < 0)
-            goto cleanup;
+        model = g_strdup(virDomainNetGetModelString(net));
 
         net->script = NULL;
 
@@ -7761,9 +7759,8 @@ qemuDomainUndefineFlags(virDomainPtr dom,
         if (qemuDomainNVRAMPathFormat(cfg, vm->def, &nvram_path) < 0)
             goto endjob;
     } else {
-        if (vm->def->os.loader &&
-            VIR_STRDUP(nvram_path, vm->def->os.loader->nvram) < 0)
-            goto endjob;
+        if (vm->def->os.loader)
+            nvram_path = g_strdup(vm->def->os.loader->nvram);
     }
 
     if (nvram_path && virFileExists(nvram_path)) {
@@ -14639,10 +14636,7 @@ qemuDomainSnapshotCreateInactiveExternal(virQEMUDriverPtr driver,
 
         if (snapdisk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
             VIR_FREE(defdisk->src->path);
-            if (VIR_STRDUP(defdisk->src->path, snapdisk->src->path) < 0) {
-                /* we cannot rollback here in a sane way */
-                goto cleanup;
-            }
+            defdisk->src->path = g_strdup(snapdisk->src->path);
             defdisk->src->format = snapdisk->src->format;
 
             if (virDomainSaveConfig(cfg->configDir, driver->caps, vm->def) < 0)
@@ -15968,9 +15962,8 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
 
     current = virDomainSnapshotGetCurrent(vm->snapshots);
     if (current) {
-        if (!redefine &&
-            VIR_STRDUP(snap->def->parent_name, current->def->name) < 0)
-                goto endjob;
+        if (!redefine)
+            snap->def->parent_name = g_strdup(current->def->name);
     }
 
     /* actually do the snapshot */
@@ -16902,11 +16895,8 @@ qemuDomainMomentReparentChildren(void *payload,
 
     VIR_FREE(moment->def->parent_name);
 
-    if (rep->parent->def &&
-        VIR_STRDUP(moment->def->parent_name, rep->parent->def->name) < 0) {
-        rep->err = -1;
-        return 0;
-    }
+    if (rep->parent->def)
+        moment->def->parent_name = g_strdup(rep->parent->def->name);
 
     rep->err = rep->writeMetadata(rep->vm, moment, rep->caps, rep->xmlopt,
                                   rep->dir);
@@ -18316,8 +18306,7 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
         goto cleanup;
     dest->type = (flags & VIR_DOMAIN_BLOCK_REBASE_COPY_DEV) ?
         VIR_STORAGE_TYPE_BLOCK : VIR_STORAGE_TYPE_FILE;
-    if (VIR_STRDUP(dest->path, base) < 0)
-        goto cleanup;
+    dest->path = g_strdup(base);
     if (flags & VIR_DOMAIN_BLOCK_REBASE_COPY_RAW)
         dest->format = VIR_STORAGE_FILE_RAW;
 
@@ -18896,9 +18885,8 @@ qemuDomainSetBlockIoTuneDefaults(virDomainBlockIoTuneInfoPtr newinfo,
 
     if (!(set_fields & QEMU_BLOCK_IOTUNE_SET_SIZE_IOPS))
         newinfo->size_iops_sec = oldinfo->size_iops_sec;
-    if (!(set_fields & QEMU_BLOCK_IOTUNE_SET_GROUP_NAME) &&
-        VIR_STRDUP(newinfo->group_name, oldinfo->group_name) < 0)
-        return -1;
+    if (!(set_fields & QEMU_BLOCK_IOTUNE_SET_GROUP_NAME))
+        newinfo->group_name = g_strdup(oldinfo->group_name);
 
     /* The length field is handled a bit differently. If not defined/set,
      * QEMU will default these to 0 or 1 depending on whether something in
@@ -19076,8 +19064,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
 
         /* NB: Cannot use macro since this is a value.s not a value.ul */
         if (STREQ(param->field, VIR_DOMAIN_BLOCK_IOTUNE_GROUP_NAME)) {
-            if (VIR_STRDUP(info.group_name, param->value.s) < 0)
-                goto endjob;
+            info.group_name = g_strdup(param->value.s);
             set_fields |= QEMU_BLOCK_IOTUNE_SET_GROUP_NAME;
             if (virTypedParamsAddString(&eventParams, &eventNparams,
                                         &eventMaxparams,
@@ -19374,8 +19361,7 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
 
         /* Group name needs to be copied since qemuMonitorGetBlockIoThrottle
          * allocates it as well */
-        if (VIR_STRDUP(reply.group_name, disk->blkdeviotune.group_name) < 0)
-            goto endjob;
+        reply.group_name = g_strdup(disk->blkdeviotune.group_name);
     }
 
 #define BLOCK_IOTUNE_ASSIGN(name, var) \
@@ -19493,8 +19479,7 @@ qemuDomainGetDiskErrors(virDomainPtr dom,
             if (n == nerrors)
                 break;
 
-            if (VIR_STRDUP(errors[n].disk, disk->dst) < 0)
-                goto endjob;
+            errors[n].disk = g_strdup(disk->dst);
             errors[n].error = info->io_status;
             n++;
         }
@@ -20521,8 +20506,7 @@ qemuDomainGetResctrlMonData(virQEMUDriverPtr driver,
             if (!(res->vcpus = virBitmapFormat(domresmon->vcpus)))
                 goto error;
 
-            if (VIR_STRDUP(res->name, virResctrlMonitorGetID(monitor)) < 0)
-                goto error;
+            res->name = g_strdup(virResctrlMonitorGetID(monitor));
 
             if (virResctrlMonitorGetStats(monitor, (const char **)features,
                                           &res->stats, &res->nstats) < 0)
@@ -21667,19 +21651,16 @@ qemuGetDHCPInterfaces(virDomainPtr dom,
             if (VIR_ALLOC_N(iface->addrs, iface->naddrs) < 0)
                 goto error;
 
-            if (VIR_STRDUP(iface->name, vm->def->nets[i]->ifname) < 0)
-                goto error;
+            iface->name = g_strdup(vm->def->nets[i]->ifname);
 
-            if (VIR_STRDUP(iface->hwaddr, macaddr) < 0)
-                goto error;
+            iface->hwaddr = g_strdup(macaddr);
         }
 
         for (j = 0; j < n_leases; j++) {
             virNetworkDHCPLeasePtr lease = leases[j];
             virDomainIPAddressPtr ip_addr = &iface->addrs[j];
 
-            if (VIR_STRDUP(ip_addr->addr, lease->ipaddr) < 0)
-                goto error;
+            ip_addr->addr = g_strdup(lease->ipaddr);
 
             ip_addr->type = lease->type;
             ip_addr->prefix = lease->prefix;
@@ -21739,18 +21720,15 @@ qemuARPGetInterfaces(virDomainObjPtr vm,
                 if (VIR_ALLOC(iface) < 0)
                     goto cleanup;
 
-                if (VIR_STRDUP(iface->name, vm->def->nets[i]->ifname) < 0)
-                    goto cleanup;
+                iface->name = g_strdup(vm->def->nets[i]->ifname);
 
-                if (VIR_STRDUP(iface->hwaddr, macaddr) < 0)
-                    goto cleanup;
+                iface->hwaddr = g_strdup(macaddr);
 
                 if (VIR_ALLOC(iface->addrs) < 0)
                     goto cleanup;
                 iface->naddrs = 1;
 
-                if (VIR_STRDUP(iface->addrs->addr, entry.ipaddr) < 0)
-                    goto cleanup;
+                iface->addrs->addr = g_strdup(entry.ipaddr);
 
                 if (VIR_APPEND_ELEMENT(ifaces_ret, ifaces_count, iface) < 0)
                     goto cleanup;
@@ -21851,8 +21829,7 @@ qemuDomainRenameCallback(virDomainObjPtr vm,
 
     cfg = virQEMUDriverGetConfig(driver);
 
-    if (VIR_STRDUP(new_dom_name, new_name) < 0)
-        goto cleanup;
+    new_dom_name = g_strdup(new_name);
 
     if (!(new_dom_cfg_file = virDomainConfigFile(cfg->configDir,
                                                  new_dom_name)) ||
@@ -22324,8 +22301,7 @@ qemuDomainSetBlockThreshold(virDomainPtr dom,
         goto endjob;
     }
 
-    if (VIR_STRDUP(nodename, src->nodestorage) < 0)
-        goto endjob;
+    nodename = g_strdup(src->nodestorage);
 
     qemuDomainObjEnterMonitor(driver, vm);
     rc = qemuMonitorSetBlockThreshold(priv->mon, nodename, threshold);

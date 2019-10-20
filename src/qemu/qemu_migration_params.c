@@ -658,8 +658,7 @@ qemuMigrationParamsFromJSON(virJSONValuePtr params)
 
         case QEMU_MIGRATION_PARAM_TYPE_STRING:
             if ((str = virJSONValueObjectGetString(params, name))) {
-                if (VIR_STRDUP(pv->value.s, str) < 0)
-                    goto error;
+                pv->value.s = g_strdup(str);
                 pv->set = true;
             }
             break;
@@ -667,10 +666,6 @@ qemuMigrationParamsFromJSON(virJSONValuePtr params)
     }
 
     return migParams;
-
- error:
-    qemuMigrationParamsFree(migParams);
-    return NULL;
 }
 
 
@@ -875,8 +870,7 @@ qemuMigrationParamsSetString(qemuMigrationParamsPtr migParams,
     if (qemuMigrationParamsCheckType(param, QEMU_MIGRATION_PARAM_TYPE_STRING) < 0)
         return -1;
 
-    if (VIR_STRDUP(migParams->params[param].value.s, value) < 0)
-        return -1;
+    migParams->params[param].value.s = g_strdup(value);
 
     migParams->params[param].set = true;
 

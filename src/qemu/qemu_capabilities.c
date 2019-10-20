@@ -793,10 +793,8 @@ virQEMUCapsInitGuest(virCapsPtr caps,
 
     /* RHEL doesn't follow the usual naming for QEMU binaries and ships
      * a single binary named qemu-kvm outside of $PATH instead */
-    if (virQEMUCapsGuestIsNative(hostarch, guestarch) && !binary) {
-        if (VIR_STRDUP(binary, "/usr/libexec/qemu-kvm") < 0)
-            return -1;
-    }
+    if (virQEMUCapsGuestIsNative(hostarch, guestarch) && !binary)
+        binary = g_strdup("/usr/libexec/qemu-kvm");
 
     /* Ignore binary if extracting version info fails */
     if (binary) {
@@ -1582,10 +1580,11 @@ virQEMUCapsSEVInfoCopy(virSEVCapabilityPtr *dst,
 {
     g_autoptr(virSEVCapability) tmp = NULL;
 
-    if (VIR_ALLOC(tmp) < 0 ||
-        VIR_STRDUP(tmp->pdh, src->pdh) < 0 ||
-        VIR_STRDUP(tmp->cert_chain, src->cert_chain) < 0)
+    if (VIR_ALLOC(tmp) < 0)
         return -1;
+
+    tmp->pdh = g_strdup(src->pdh);
+    tmp->cert_chain = g_strdup(src->cert_chain);
 
     tmp->cbitpos = src->cbitpos;
     tmp->reduced_phys_bits = src->reduced_phys_bits;
@@ -1606,8 +1605,7 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
     ret->usedQMP = qemuCaps->usedQMP;
     ret->kvmSupportsNesting = qemuCaps->kvmSupportsNesting;
 
-    if (VIR_STRDUP(ret->binary, qemuCaps->binary) < 0)
-        goto error;
+    ret->binary = g_strdup(qemuCaps->binary);
 
     ret->ctime = qemuCaps->ctime;
 
@@ -1617,11 +1615,8 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
     ret->kvmVersion = qemuCaps->kvmVersion;
     ret->microcodeVersion = qemuCaps->microcodeVersion;
 
-    if (VIR_STRDUP(ret->package, qemuCaps->package) < 0)
-        goto error;
-
-    if (VIR_STRDUP(ret->kernelVersion, qemuCaps->kernelVersion) < 0)
-        goto error;
+    ret->package = g_strdup(qemuCaps->package);
+    ret->kernelVersion = g_strdup(qemuCaps->kernelVersion);
 
     ret->arch = qemuCaps->arch;
 
@@ -1645,9 +1640,8 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
         goto error;
     ret->nmachineTypes = qemuCaps->nmachineTypes;
     for (i = 0; i < qemuCaps->nmachineTypes; i++) {
-        if (VIR_STRDUP(ret->machineTypes[i].name, qemuCaps->machineTypes[i].name) < 0 ||
-            VIR_STRDUP(ret->machineTypes[i].alias, qemuCaps->machineTypes[i].alias) < 0)
-            goto error;
+        ret->machineTypes[i].name = g_strdup(qemuCaps->machineTypes[i].name);
+        ret->machineTypes[i].alias = g_strdup(qemuCaps->machineTypes[i].alias);
         ret->machineTypes[i].maxCpus = qemuCaps->machineTypes[i].maxCpus;
         ret->machineTypes[i].hotplugCpus = qemuCaps->machineTypes[i].hotplugCpus;
         ret->machineTypes[i].qemuDefault = qemuCaps->machineTypes[i].qemuDefault;
@@ -1999,12 +1993,10 @@ int virQEMUCapsGetMachineTypesCaps(virQEMUCapsPtr qemuCaps,
             goto error;
         (*machines)[i] = mach;
         if (qemuCaps->machineTypes[i].alias) {
-            if (VIR_STRDUP(mach->name, qemuCaps->machineTypes[i].alias) < 0 ||
-                VIR_STRDUP(mach->canonical, qemuCaps->machineTypes[i].name) < 0)
-                goto error;
+            mach->name = g_strdup(qemuCaps->machineTypes[i].alias);
+            mach->canonical = g_strdup(qemuCaps->machineTypes[i].name);
         } else {
-            if (VIR_STRDUP(mach->name, qemuCaps->machineTypes[i].name) < 0)
-                goto error;
+            mach->name = g_strdup(qemuCaps->machineTypes[i].name);
         }
         mach->maxCpus = qemuCaps->machineTypes[i].maxCpus;
     }
@@ -2039,8 +2031,7 @@ int virQEMUCapsGetMachineTypesCaps(virQEMUCapsPtr qemuCaps,
                 VIR_FREE(mach);
                 goto error;
             }
-            if (VIR_STRDUP(mach->name, machine->canonical) < 0)
-                goto error;
+            mach->name = g_strdup(machine->canonical);
             mach->maxCpus = machine->maxCpus;
             i++;
         }
@@ -2358,9 +2349,8 @@ virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
 
         mach = &(qemuCaps->machineTypes[qemuCaps->nmachineTypes++]);
 
-        if (VIR_STRDUP(mach->alias, machines[i]->alias) < 0 ||
-            VIR_STRDUP(mach->name, machines[i]->name) < 0)
-            goto cleanup;
+        mach->alias = g_strdup(machines[i]->alias);
+        mach->name = g_strdup(machines[i]->name);
 
         mach->maxCpus = machines[i]->maxCpus;
         mach->hotplugCpus = machines[i]->hotplugCpus;
@@ -2467,8 +2457,7 @@ virQEMUCapsFetchCPUDefinitions(qemuMonitorPtr mon,
                     continue;
 
                 VIR_FREE(cpus[i]->name);
-                if (VIR_STRDUP(cpus[i]->name, *name) < 0)
-                    goto error;
+                cpus[i]->name = g_strdup(*name);
             }
         }
     }
@@ -2550,8 +2539,10 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCapsPtr qemuCaps,
         model = "host";
     }
 
-    if (VIR_ALLOC(cpu) < 0 || VIR_STRDUP(cpu->model, model) < 0)
+    if (VIR_ALLOC(cpu) < 0)
         goto cleanup;
+
+    cpu->model = g_strdup(model);
 
     /* Some x86_64 features defined in cpu_map.xml use spelling which differ
      * from the one preferred by QEMU. Static expansion would give us only the
@@ -2661,9 +2652,7 @@ virQEMUCapsGetCPUFeatures(virQEMUCapsPtr qemuCaps,
         if (migratable && prop->migratable == VIR_TRISTATE_BOOL_NO)
             continue;
 
-        if (VIR_STRDUP(list[n++],
-                       virQEMUCapsCPUFeatureFromQEMU(qemuCaps, prop->name)) < 0)
-            goto cleanup;
+        list[n++] = g_strdup(virQEMUCapsCPUFeatureFromQEMU(qemuCaps, prop->name));
     }
 
     *features = g_steal_pointer(&list);
@@ -2672,7 +2661,6 @@ virQEMUCapsGetCPUFeatures(virQEMUCapsPtr qemuCaps,
     else
         ret = 0;
 
- cleanup:
     virStringListFree(list);
     return ret;
 }
@@ -3022,8 +3010,8 @@ virQEMUCapsInitCPUModelS390(virQEMUCapsPtr qemuCaps,
         return 2;
     }
 
-    if (VIR_STRDUP(cpu->model, modelInfo->name) < 0 ||
-        VIR_ALLOC_N(cpu->features, modelInfo->nprops) < 0)
+    cpu->model = g_strdup(modelInfo->name);
+    if (VIR_ALLOC_N(cpu->features, modelInfo->nprops) < 0)
         return -1;
 
     cpu->nfeatures_max = modelInfo->nprops;
@@ -3037,8 +3025,7 @@ virQEMUCapsInitCPUModelS390(virQEMUCapsPtr qemuCaps,
         if (prop->type != QEMU_MONITOR_CPU_PROPERTY_BOOLEAN)
             continue;
 
-        if (VIR_STRDUP(feature->name, name) < 0)
-            return -1;
+        feature->name = g_strdup(name);
 
         if (!prop->value.boolean ||
             (migratable && prop->migratable == VIR_TRISTATE_BOOL_NO))
@@ -4715,8 +4702,7 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
     if (!(qemuCaps = virQEMUCapsNew()))
         goto error;
 
-    if (VIR_STRDUP(qemuCaps->binary, binary) < 0)
-        goto error;
+    qemuCaps->binary = g_strdup(binary);
 
     /* We would also want to check faccessat if we cared about ACLs,
      * but we don't.  */
@@ -4749,8 +4735,7 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM)) {
         qemuCaps->microcodeVersion = microcodeVersion;
 
-        if (VIR_STRDUP(qemuCaps->kernelVersion, kernelVersion) < 0)
-            goto error;
+        qemuCaps->kernelVersion = g_strdup(kernelVersion);
 
         qemuCaps->kvmSupportsNesting = virQEMUCapsKVMSupportsNesting();
     }
@@ -4791,8 +4776,7 @@ virQEMUCapsLoadFile(const char *filename,
     if (!qemuCaps)
         return NULL;
 
-    if (VIR_STRDUP(qemuCaps->binary, binary) < 0)
-        goto error;
+    qemuCaps->binary = g_strdup(binary);
 
     if (virQEMUCapsLoadCache(priv->hostArch, qemuCaps, filename) < 0)
         goto error;
@@ -4875,8 +4859,7 @@ virQEMUCapsCacheNew(const char *libDir,
         goto error;
     virFileCacheSetPriv(cache, priv);
 
-    if (VIR_STRDUP(priv->libDir, libDir) < 0)
-        goto error;
+    priv->libDir = g_strdup(libDir);
 
     priv->hostArch = virArchFromHost();
 
@@ -5192,9 +5175,7 @@ virQEMUCapsFillDomainLoaderCaps(virDomainCapsLoaderPtr capsLoader,
         if (j != capsLoader->values.nvalues)
             continue;
 
-        if (VIR_STRDUP(capsLoader->values.values[capsLoader->values.nvalues],
-                       filename) < 0)
-            return -1;
+        capsLoader->values.values[capsLoader->values.nvalues] = g_strdup(filename);
         capsLoader->values.nvalues++;
     }
 
@@ -5590,11 +5571,9 @@ virQEMUCapsFillDomainFeatureSEVCaps(virQEMUCapsPtr qemuCaps,
     if (VIR_ALLOC(sev) < 0)
         return -1;
 
-    if (VIR_STRDUP(sev->pdh, cap->pdh) < 0)
-        return -1;
+    sev->pdh = g_strdup(cap->pdh);
 
-    if (VIR_STRDUP(sev->cert_chain, cap->cert_chain) < 0)
-        return -1;
+    sev->cert_chain = g_strdup(cap->cert_chain);
 
     sev->cbitpos = cap->cbitpos;
     sev->reduced_phys_bits = cap->reduced_phys_bits;

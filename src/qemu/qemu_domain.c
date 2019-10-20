@@ -1407,14 +1407,12 @@ qemuDomainSecretPlainSetup(qemuDomainSecretInfoPtr secinfo,
         return -1;
 
     secinfo->type = VIR_DOMAIN_SECRET_INFO_TYPE_PLAIN;
-    if (VIR_STRDUP(secinfo->s.plain.username, username) < 0)
-        goto cleanup;
+    secinfo->s.plain.username = g_strdup(username);
 
     ret = virSecretGetSecretString(conn, seclookupdef, usageType,
                                    &secinfo->s.plain.secret,
                                    &secinfo->s.plain.secretlen);
 
- cleanup:
     virObjectUnref(conn);
     return ret;
 }
@@ -1456,8 +1454,7 @@ qemuDomainSecretAESSetup(qemuDomainObjPrivatePtr priv,
         return -1;
 
     secinfo->type = VIR_DOMAIN_SECRET_INFO_TYPE_AES;
-    if (VIR_STRDUP(secinfo->s.aes.username, username) < 0)
-        goto cleanup;
+    secinfo->s.aes.username = g_strdup(username);
 
     if (!(secinfo->s.aes.alias = qemuDomainGetSecretAESAlias(srcalias, isLuks)))
         goto cleanup;
@@ -1865,8 +1862,7 @@ qemuDomainSecretGraphicsPrepare(virQEMUDriverConfigPtr cfg,
     if (!cfg->vncTLS)
         return 0;
 
-    if (VIR_STRDUP(gfxPriv->tlsAlias, "vnc-tls-creds0") < 0)
-        return -1;
+    gfxPriv->tlsAlias = g_strdup("vnc-tls-creds0");
 
     if (cfg->vncTLSx509secretUUID) {
         gfxPriv->secinfo = qemuDomainSecretInfoTLSNew(priv, gfxPriv->tlsAlias,
@@ -4352,8 +4348,7 @@ qemuCanonicalizeMachine(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
 
     if (STRNEQ(canon, def->os.machine)) {
         char *tmp;
-        if (VIR_STRDUP(tmp, canon) < 0)
-            return -1;
+        tmp = g_strdup(canon);
         VIR_FREE(def->os.machine);
         def->os.machine = tmp;
     }
@@ -10409,8 +10404,7 @@ qemuDomainDiskGetBackendAlias(virDomainDiskDefPtr disk,
     else
         nodename = disk->src->nodeformat;
 
-    if (VIR_STRDUP(*backendAlias, nodename) < 0)
-        return -1;
+    *backendAlias = g_strdup(nodename);
 
     return 0;
 }
@@ -12507,10 +12501,8 @@ qemuProcessPrepareStorageSourceTLSVxhs(virStorageSourcePtr src,
         src->tlsFromConfig = true;
     }
 
-    if (src->haveTLS == VIR_TRISTATE_BOOL_YES) {
-        if (VIR_STRDUP(src->tlsCertdir, cfg->vxhsTLSx509certdir) < 0)
-            return -1;
-    }
+    if (src->haveTLS == VIR_TRISTATE_BOOL_YES)
+        src->tlsCertdir = g_strdup(cfg->vxhsTLSx509certdir);
 
     return 0;
 }
@@ -12536,8 +12528,7 @@ qemuProcessPrepareStorageSourceTLSNBD(virStorageSourcePtr src,
             return -1;
         }
 
-        if (VIR_STRDUP(src->tlsCertdir, cfg->nbdTLSx509certdir) < 0)
-            return -1;
+        src->tlsCertdir = g_strdup(cfg->nbdTLSx509certdir);
     }
 
     return 0;
@@ -12876,15 +12867,14 @@ qemuDomainGetHostdevPath(virDomainDefPtr def,
             toAlloc = 2;
 
         if (VIR_ALLOC_N(tmpPaths, toAlloc) < 0 ||
-            VIR_ALLOC_N(tmpPerms, toAlloc) < 0 ||
-            VIR_STRDUP(tmpPaths[0], tmpPath) < 0)
+            VIR_ALLOC_N(tmpPerms, toAlloc) < 0)
             goto cleanup;
+        tmpPaths[0] = g_strdup(tmpPath);
         tmpNpaths = toAlloc;
         tmpPerms[0] = perm;
 
         if (includeVFIO) {
-            if (VIR_STRDUP(tmpPaths[1], QEMU_DEV_VFIO) < 0)
-                goto cleanup;
+            tmpPaths[1] = g_strdup(QEMU_DEV_VFIO);
             tmpPerms[1] = VIR_CGROUP_DEVICE_RW;
         }
     }
@@ -13174,8 +13164,7 @@ qemuDomainCreateDeviceRecursive(const char *device,
         if (IS_RELATIVE_FILE_NAME(target)) {
             char *c = NULL, *tmp = NULL, *devTmp = NULL;
 
-            if (VIR_STRDUP(devTmp, device) < 0)
-                goto cleanup;
+            devTmp = g_strdup(device);
 
             if ((c = strrchr(devTmp, '/')))
                 *(c + 1) = '\0';
@@ -14152,8 +14141,7 @@ qemuDomainAttachDeviceMknodRecursive(virQEMUDriverPtr driver,
         if (IS_RELATIVE_FILE_NAME(target)) {
             char *c = NULL, *tmp = NULL, *fileTmp = NULL;
 
-            if (VIR_STRDUP(fileTmp, file) < 0)
-                goto cleanup;
+            fileTmp = g_strdup(file);
 
             if ((c = strrchr(fileTmp, '/')))
                 *(c + 1) = '\0';
@@ -14438,10 +14426,11 @@ qemuDomainNamespaceSetupDisk(virDomainObjPtr vm,
     }
 
     /* qemu-pr-helper might require access to /dev/mapper/control. */
-    if (src->pr &&
-        (VIR_STRDUP(dmPath, QEMU_DEVICE_MAPPER_CONTROL_PATH) < 0 ||
-         VIR_APPEND_ELEMENT_COPY(paths, npaths, dmPath) < 0))
-        goto cleanup;
+    if (src->pr) {
+        dmPath = g_strdup(QEMU_DEVICE_MAPPER_CONTROL_PATH);
+        if (VIR_APPEND_ELEMENT_COPY(paths, npaths, dmPath) < 0)
+            goto cleanup;
+    }
 
     if (qemuDomainNamespaceMknodPaths(vm, paths, npaths) < 0)
         goto cleanup;
@@ -15116,8 +15105,7 @@ qemuDomainPrepareStorageSourcePR(virStorageSourcePtr src,
         VIR_FREE(src->pr->path);
         if (!(src->pr->path = qemuDomainGetManagedPRSocketPath(priv)))
             return -1;
-        if (VIR_STRDUP(src->pr->mgralias, qemuDomainGetManagedPRAlias()) < 0)
-            return -1;
+        src->pr->mgralias = g_strdup(qemuDomainGetManagedPRAlias());
     } else {
         if (!(src->pr->mgralias = qemuDomainGetUnmanagedPRAlias(parentalias)))
             return -1;

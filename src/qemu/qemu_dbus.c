@@ -42,11 +42,8 @@ qemuDBusVMStateNew(const char *id, const char *addr)
     if (VIR_ALLOC(self) < 0)
         return NULL;
 
-    if (VIR_STRDUP(self->id, id) < 0)
-        return NULL;
-
-    if (VIR_STRDUP(self->addr, addr) < 0)
-        return NULL;
+    self->id = g_strdup(id);
+    self->addr = g_strdup(addr);
 
     return g_steal_pointer(&self);
 }

@@ -138,8 +138,7 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
                         "%s/log/swtpm/libvirt/qemu", LOCALSTATEDIR) < 0)
             return NULL;
 
-        if (VIR_STRDUP(cfg->configBaseDir, SYSCONFDIR "/libvirt") < 0)
-            return NULL;
+        cfg->configBaseDir = g_strdup(SYSCONFDIR "/libvirt");
 
         if (virAsprintf(&cfg->stateDir,
                       "%s/libvirt/qemu", RUNSTATEDIR) < 0)
@@ -242,15 +241,10 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
      * This will then be used as a fallback if the service specific
      * directory doesn't exist (although we don't check if this exists).
      */
-    if (VIR_STRDUP(cfg->defaultTLSx509certdir,
-                   SYSCONFDIR "/pki/qemu") < 0)
-        return NULL;
+    cfg->defaultTLSx509certdir = g_strdup(SYSCONFDIR "/pki/qemu");
 
-    if (VIR_STRDUP(cfg->vncListen, VIR_LOOPBACK_IPV4_ADDR) < 0)
-        return NULL;
-
-    if (VIR_STRDUP(cfg->spiceListen, VIR_LOOPBACK_IPV4_ADDR) < 0)
-        return NULL;
+    cfg->vncListen = g_strdup(VIR_LOOPBACK_IPV4_ADDR);
+    cfg->spiceListen = g_strdup(VIR_LOOPBACK_IPV4_ADDR);
 
     cfg->remotePortMin = QEMU_REMOTE_PORT_MIN;
     cfg->remotePortMax = QEMU_REMOTE_PORT_MAX;
@@ -271,10 +265,9 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
             return NULL;
     }
 
-    if (VIR_STRDUP(cfg->bridgeHelperName, QEMU_BRIDGE_HELPER) < 0 ||
-        VIR_STRDUP(cfg->prHelperName, QEMU_PR_HELPER) < 0 ||
-        VIR_STRDUP(cfg->slirpHelperName, QEMU_SLIRP_HELPER) < 0)
-        return NULL;
+    cfg->bridgeHelperName = g_strdup(QEMU_BRIDGE_HELPER);
+    cfg->prHelperName = g_strdup(QEMU_PR_HELPER);
+    cfg->slirpHelperName = g_strdup(QEMU_SLIRP_HELPER);
 
     cfg->clearEmulatorCapabilities = true;
 
@@ -386,10 +379,9 @@ virQEMUDriverConfigHugeTLBFSInit(virHugeTLBFSPtr hugetlbfs,
                                  const char *path,
                                  bool deflt)
 {
-    if (VIR_STRDUP(hugetlbfs->mnt_dir, path) < 0 ||
-        virFileGetHugepageSize(path, &hugetlbfs->size) < 0) {
+    hugetlbfs->mnt_dir = g_strdup(path);
+    if (virFileGetHugepageSize(path, &hugetlbfs->size) < 0)
         return -1;
-    }
 
     hugetlbfs->deflt = deflt;
     return 0;
@@ -1151,10 +1143,7 @@ virQEMUDriverConfigSetDefaults(virQEMUDriverConfigPtr cfg)
         if (!cfg->val## TLSx509certdir && \
             !cfg->val## TLSx509secretUUID && \
             cfg->defaultTLSx509secretUUID) { \
-            if (VIR_STRDUP(cfg->val## TLSx509secretUUID, \
-                           cfg->defaultTLSx509secretUUID) < 0) { \
-                return -1; \
-            } \
+            cfg->val## TLSx509secretUUID = g_strdup(cfg->defaultTLSx509secretUUID); \
         } \
     } while (0)
 
@@ -1176,15 +1165,9 @@ virQEMUDriverConfigSetDefaults(virQEMUDriverConfigPtr cfg)
         if (cfg->val ## TLSx509certdir) \
             break; \
         if (virFileExists(SYSCONFDIR "/pki/libvirt-"#val)) { \
-            if (VIR_STRDUP(cfg->val ## TLSx509certdir, \
-                           SYSCONFDIR "/pki/libvirt-"#val) < 0) { \
-                return -1; \
-            } \
+            cfg->val ## TLSx509certdir = g_strdup(SYSCONFDIR "/pki/libvirt-"#val); \
         } else { \
-            if (VIR_STRDUP(cfg->val ## TLSx509certdir, \
-                           cfg->defaultTLSx509certdir) < 0) { \
-                return -1; \
-            } \
+            cfg->val ## TLSx509certdir = g_strdup(cfg->defaultTLSx509certdir); \
         } \
     } while (0)
 
@@ -1276,9 +1259,8 @@ virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver)
         virCapsHostSecModelPtr sm = &caps->host.secModels[i];
         doi = qemuSecurityGetDOI(sec_managers[i]);
         model = qemuSecurityGetModel(sec_managers[i]);
-        if (VIR_STRDUP(sm->model, model) < 0 ||
-            VIR_STRDUP(sm->doi, doi) < 0)
-            return NULL;
+        sm->model = g_strdup(model);
+        sm->doi = g_strdup(doi);
 
         for (j = 0; j < G_N_ELEMENTS(virtTypes); j++) {
             lbl = qemuSecurityGetBaseLabel(sec_managers[i], virtTypes[j]);
@@ -1587,18 +1569,19 @@ qemuSharedDeviceEntryInsert(virQEMUDriverPtr driver,
          * recorded in the table.
          */
         if (!qemuSharedDeviceEntryDomainExists(entry, name, NULL)) {
-            if (VIR_EXPAND_N(entry->domains, entry->ref, 1) < 0 ||
-                VIR_STRDUP(entry->domains[entry->ref - 1], name) < 0) {
+            if (VIR_EXPAND_N(entry->domains, entry->ref, 1) < 0) {
                 /* entry is owned by the hash table here */
                 entry = NULL;
                 goto error;
             }
+            entry->domains[entry->ref - 1] = g_strdup(name);
         }
     } else {
         if (VIR_ALLOC(entry) < 0 ||
-            VIR_ALLOC_N(entry->domains, 1) < 0 ||
-            VIR_STRDUP(entry->domains[0], name) < 0)
+            VIR_ALLOC_N(entry->domains, 1) < 0)
             goto error;
+
+        entry->domains[0] = g_strdup(name);
 
         entry->ref = 1;
 

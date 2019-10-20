@@ -933,10 +933,7 @@ qemuInitCgroup(virDomainObjPtr vm,
         if (VIR_ALLOC(res) < 0)
             goto cleanup;
 
-        if (VIR_STRDUP(res->partition, "/machine") < 0) {
-            VIR_FREE(res);
-            goto cleanup;
-        }
+        res->partition = g_strdup("/machine");
 
         vm->def->resource = res;
     }

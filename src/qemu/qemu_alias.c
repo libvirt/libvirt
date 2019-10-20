@@ -231,8 +231,7 @@ qemuAssignDeviceDiskAlias(virDomainDefPtr def,
         case VIR_DOMAIN_DISK_BUS_IDE:
         case VIR_DOMAIN_DISK_BUS_SATA:
         case VIR_DOMAIN_DISK_BUS_SCSI:
-            if (VIR_STRDUP(diskPriv->qomName, disk->info.alias) < 0)
-                return -1;
+            diskPriv->qomName = g_strdup(disk->info.alias);
             break;
 
         case VIR_DOMAIN_DISK_BUS_VIRTIO:
@@ -543,8 +542,7 @@ qemuAssignDeviceWatchdogAlias(virDomainWatchdogDefPtr watchdog)
     if (watchdog->info.alias)
         return 0;
 
-    if (VIR_STRDUP(watchdog->info.alias, "watchdog0") < 0)
-        return -1;
+    watchdog->info.alias = g_strdup("watchdog0");
 
     return 0;
 }
@@ -579,8 +577,7 @@ qemuAssignDeviceVsockAlias(virDomainVsockDefPtr vsock)
 {
     if (vsock->info.alias)
         return 0;
-    if (VIR_STRDUP(vsock->info.alias, "vsock0") < 0)
-        return -1;
+    vsock->info.alias = g_strdup("vsock0");
 
     return 0;
 }

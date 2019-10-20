@@ -172,8 +172,7 @@ qemuVhostUserBinaryParse(const char *path,
     VIR_DEBUG("vhost-user description path '%s' binary : %s",
               path, binary);
 
-    if (VIR_STRDUP(vu->binary, binary) < 0)
-        return -1;
+    vu->binary = g_strdup(binary);
 
     return 0;
 }
@@ -389,8 +388,7 @@ qemuVhostUserFillDomainGPU(virQEMUDriverPtr driver,
             goto end;
 
         VIR_FREE(video->driver->vhost_user_binary);
-        if (VIR_STRDUP(video->driver->vhost_user_binary, vu->binary) < 0)
-            goto end;
+        video->driver->vhost_user_binary = g_strdup(vu->binary);
 
         break;
     }

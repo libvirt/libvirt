@@ -214,8 +214,7 @@ qemuMigrationCookieGraphicsSpiceAlloc(virQEMUDriverPtr driver,
         !(mig->tlsSubject = qemuDomainExtractTLSSubject(cfg->spiceTLSx509certdir)))
         goto error;
 
-    if (VIR_STRDUP(mig->listen, listenAddr) < 0)
-        goto error;
+    mig->listen = g_strdup(listenAddr);
 
     virObjectUnref(cfg);
     return mig;
@@ -293,8 +292,7 @@ qemuMigrationCookieNew(const virDomainDef *def,
         name = origname;
     else
         name = def->name;
-    if (VIR_STRDUP(mig->name, name) < 0)
-        goto error;
+    mig->name = g_strdup(name);
     memcpy(mig->uuid, def->uuid, VIR_UUID_BUFLEN);
 
     if (!(mig->localHostname = virGetHostname()))
@@ -380,17 +378,13 @@ qemuMigrationCookieAddLockstate(qemuMigrationCookiePtr mig,
     }
 
     if (virDomainObjGetState(dom, NULL) == VIR_DOMAIN_PAUSED) {
-        if (VIR_STRDUP(mig->lockState, priv->lockState) < 0)
-            return -1;
+        mig->lockState = g_strdup(priv->lockState);
     } else {
         if (virDomainLockProcessInquire(driver->lockManager, dom, &mig->lockState) < 0)
             return -1;
     }
 
-    if (VIR_STRDUP(mig->lockDriver, virLockManagerPluginGetName(driver->lockManager)) < 0) {
-        VIR_FREE(mig->lockState);
-        return -1;
-    }
+    mig->lockDriver = g_strdup(virLockManagerPluginGetName(driver->lockManager));
 
     mig->flags |= QEMU_MIGRATION_COOKIE_LOCKSTATE;
     mig->flagsMandatory |= QEMU_MIGRATION_COOKIE_LOCKSTATE;
@@ -498,9 +492,7 @@ qemuMigrationCookieAddNBD(qemuMigrationCookiePtr mig,
             !(entry = virHashLookup(stats, disk->info.alias)))
             continue;
 
-        if (VIR_STRDUP(mig->nbd->disks[mig->nbd->ndisks].target,
-                       disk->dst) < 0)
-            goto cleanup;
+        mig->nbd->disks[mig->nbd->ndisks].target = g_strdup(disk->dst);
         mig->nbd->disks[mig->nbd->ndisks].capacity = entry->capacity;
         mig->nbd->ndisks++;
     }
@@ -1516,8 +1508,7 @@ qemuMigrationEatCookie(virQEMUDriverPtr driver,
         mig->persistent &&
         STRNEQ(def->name, mig->persistent->name)) {
         VIR_FREE(mig->persistent->name);
-        if (VIR_STRDUP(mig->persistent->name, def->name) < 0)
-            goto error;
+        mig->persistent->name = g_strdup(def->name);
     }
 
     if (mig->flags & QEMU_MIGRATION_COOKIE_LOCKSTATE) {

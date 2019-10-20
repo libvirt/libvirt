@@ -4243,8 +4243,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
 
 
     if (blockdev) {
-        if (VIR_STRDUP(corAlias, diskPriv->nodeCopyOnRead) < 0)
-            goto cleanup;
+        corAlias = g_strdup(diskPriv->nodeCopyOnRead);
 
         if (diskPriv->blockjob) {
             /* the block job keeps reference to the disk chain */
@@ -4987,10 +4986,8 @@ qemuDomainRemoveDevice(virQEMUDriverPtr driver,
      * save the alias to use when sending a DEVICE_REMOVED event after
      * all other teardown is complete
      */
-    if ((info = virDomainDeviceGetInfo(dev)) &&
-        VIR_STRDUP(alias, info->alias) < 0) {
-        return -1;
-    }
+    if ((info = virDomainDeviceGetInfo(dev)))
+        alias = g_strdup(info->alias);
     info = NULL;
 
     switch ((virDomainDeviceType)dev->type) {

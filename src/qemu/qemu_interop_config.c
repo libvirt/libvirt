@@ -55,8 +55,7 @@ qemuBuildFileList(virHashTablePtr files, const char *dir)
         if (STRPREFIX(ent->d_name, "."))
             continue;
 
-        if (VIR_STRDUP(filename, ent->d_name) < 0)
-            goto cleanup;
+        filename = g_strdup(ent->d_name);
 
         if (virAsprintf(&path, "%s/%s", dir, filename) < 0)
             goto cleanup;
@@ -115,8 +114,7 @@ qemuInteropFetchConfigs(const char *name,
          * much sense to parse files in root's home directory. It
          * makes sense only for session daemon which runs under
          * regular user. */
-        if (VIR_STRDUP(xdgConfig, getenv("XDG_CONFIG_HOME")) < 0)
-            return -1;
+        xdgConfig = g_strdup(getenv("XDG_CONFIG_HOME"));
 
         if (!xdgConfig) {
             g_autofree char *home = virGetUserDirectory();

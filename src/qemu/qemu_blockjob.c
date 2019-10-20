@@ -111,8 +111,7 @@ qemuBlockJobDataNew(qemuBlockJobType type,
     if (!(job = virObjectNew(qemuBlockJobDataClass)))
         return NULL;
 
-    if (VIR_STRDUP(job->name, name) < 0)
-        return NULL;
+    job->name = g_strdup(name);
 
     job->state = QEMU_BLOCKJOB_STATE_NEW;
     job->newstate = -1;
@@ -483,8 +482,7 @@ qemuBlockJobRefreshJobs(virQEMUDriverPtr driver,
                  * execute the finishing steps */
                 job->newstate = job->state;
             } else if (newstate == QEMU_BLOCKJOB_STATE_CONCLUDED) {
-                if (VIR_STRDUP(job->errmsg, jobinfo[i]->error) < 0)
-                    goto cleanup;
+                job->errmsg = g_strdup(jobinfo[i]->error);
 
                 if (job->errmsg)
                     job->newstate = QEMU_BLOCKJOB_STATE_FAILED;
@@ -1357,8 +1355,7 @@ qemuBlockJobEventProcessConcluded(qemuBlockJobDataPtr job,
             if (STRNEQ_NULLABLE(job->name, jobinfo[i]->id))
                 continue;
 
-            if (VIR_STRDUP(job->errmsg, jobinfo[i]->error) < 0)
-                rc = -1;
+            job->errmsg = g_strdup(jobinfo[i]->error);
 
             if (job->errmsg)
                 job->newstate = QEMU_BLOCKJOB_STATE_FAILED;
