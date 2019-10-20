@@ -502,7 +502,8 @@ vboxAttachStorageControllers(virDomainDefPtr def,
 static int
 vboxConnectURIProbe(char **uri)
 {
-    return VIR_STRDUP(*uri, geteuid() ? "vbox:///session" : "vbox:///system");
+    *uri = g_strdup(geteuid() ? "vbox:///session" : "vbox:///system");
+    return 1;
 }
 
 

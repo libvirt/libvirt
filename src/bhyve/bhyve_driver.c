@@ -185,7 +185,8 @@ bhyveConnectURIProbe(char **uri)
     if (bhyve_driver == NULL)
         return 0;
 
-    return VIR_STRDUP(*uri, "bhyve:///system");
+    *uri = g_strdup("bhyve:///system");
+    return 1;
 }
 
 

@@ -1317,7 +1317,8 @@ openvzConnectURIProbe(char **uri)
     if (access("/proc/vz", W_OK) < 0)
         return 0;
 
-    return VIR_STRDUP(*uri, "openvz:///system");
+    *uri = g_strdup("openvz:///system");
+    return 1;
 }
 
 

@@ -128,7 +128,8 @@ lxcConnectURIProbe(char **uri)
     if (lxc_driver == NULL)
         return 0;
 
-    return VIR_STRDUP(*uri, "lxc:///system");
+    *uri = g_strdup("lxc:///system");
+    return 1;
 }
 
 

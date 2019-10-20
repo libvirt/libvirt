@@ -855,7 +855,8 @@ libxlConnectURIProbe(char **uri)
     if (libxl_driver == NULL)
         return 0;
 
-    return VIR_STRDUP(*uri, "xen:///system");
+    *uri = g_strdup("xen:///system");
+    return 1;
 }
 
 
