@@ -94,8 +94,7 @@ libxlMigrationCookieNew(virDomainObjPtr dom)
     if (VIR_ALLOC(mig) < 0)
         goto error;
 
-    if (VIR_STRDUP(mig->name, dom->def->name) < 0)
-        goto error;
+    mig->name = g_strdup(dom->def->name);
 
     memcpy(mig->uuid, dom->def->uuid, VIR_UUID_BUFLEN);
 
@@ -462,10 +461,7 @@ libxlDomainMigrationDstPrepareDef(libxlDriverPrivatePtr driver,
 
     if (dname) {
         name = def->name;
-        if (VIR_STRDUP(def->name, dname) < 0) {
-            virDomainDefFree(def);
-            def = NULL;
-        }
+        def->name = g_strdup(dname);
     }
 
  cleanup:

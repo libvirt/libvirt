@@ -615,9 +615,7 @@ libxlMakeDomainOSCaps(const char *machine,
         return -1;
 
     for (i = 0; i < nfirmwares; i++) {
-        if (VIR_STRDUP(capsLoader->values.values[capsLoader->values.nvalues],
-                       firmwares[i]->name) < 0)
-            return -1;
+        capsLoader->values.values[capsLoader->values.nvalues] = g_strdup(firmwares[i]->name);
         capsLoader->values.nvalues++;
     }
 

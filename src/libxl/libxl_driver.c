@@ -610,8 +610,7 @@ libxlAddDom0(libxlDriverPrivatePtr driver)
 
     def->id = 0;
     def->virtType = VIR_DOMAIN_VIRT_XEN;
-    if (VIR_STRDUP(def->name, "Domain-0") < 0)
-        goto cleanup;
+    def->name = g_strdup("Domain-0");
 
     def->os.type = VIR_DOMAIN_OSTYPE_XEN;
 
@@ -1577,8 +1576,7 @@ libxlDomainGetOSType(virDomainPtr dom)
     if (virDomainGetOSTypeEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (VIR_STRDUP(type, virDomainOSTypeToString(vm->def->os.type)) < 0)
-        goto cleanup;
+    type = g_strdup(virDomainOSTypeToString(vm->def->os.type));
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -5438,8 +5436,7 @@ libxlDomainBlockStatsVBD(virDomainObjPtr vm,
 
     size = libxlDiskSectorSize(vm->def->id, devno);
 
-    if (VIR_STRDUP(stats->backend, "vbd") < 0)
-        return ret;
+    stats->backend = g_strdup("vbd");
 
     if (virAsprintf(&path, "/sys/bus/xen-backend/devices/vbd-%d-%d/statistics",
                     vm->def->id, devno) < 0)
@@ -6306,19 +6303,16 @@ libxlGetDHCPInterfaces(virDomainPtr dom,
             if (VIR_ALLOC_N(iface->addrs, iface->naddrs) < 0)
                 goto error;
 
-            if (VIR_STRDUP(iface->name, vm->def->nets[i]->ifname) < 0)
-                goto cleanup;
+            iface->name = g_strdup(vm->def->nets[i]->ifname);
 
-            if (VIR_STRDUP(iface->hwaddr, macaddr) < 0)
-                goto cleanup;
+            iface->hwaddr = g_strdup(macaddr);
         }
 
         for (j = 0; j < n_leases; j++) {
             virNetworkDHCPLeasePtr lease = leases[j];
             virDomainIPAddressPtr ip_addr = &iface->addrs[j];
 
-            if (VIR_STRDUP(ip_addr->addr, lease->ipaddr) < 0)
-                goto cleanup;
+            ip_addr->addr = g_strdup(lease->ipaddr);
 
             ip_addr->type = lease->type;
             ip_addr->prefix = lease->prefix;

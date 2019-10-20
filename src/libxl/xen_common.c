@@ -236,8 +236,7 @@ xenConfigGetString(virConfPtr conf,
         return -1;
 
     if (rc == 0 || !string) {
-        if (VIR_STRDUP(*value, def) < 0)
-            return -1;
+        *value = g_strdup(def);
     } else {
         *value = string;
     }
@@ -277,10 +276,7 @@ xenConfigSetString(virConfPtr conf, const char *setting, const char *str)
 
     value->type = VIR_CONF_STRING;
     value->next = NULL;
-    if (VIR_STRDUP(value->str, str) < 0) {
-        VIR_FREE(value);
-        return -1;
-    }
+    value->str = g_strdup(str);
 
     return virConfSetValue(conf, setting, value);
 }
@@ -702,14 +698,11 @@ xenParseVfb(virConfPtr conf, virDomainDefPtr def)
                         if (STREQ(key + 10, "1"))
                             graphics->data.vnc.autoport = true;
                     } else if (STRPREFIX(key, "vnclisten=")) {
-                        if (VIR_STRDUP(listenAddr, key+10) < 0)
-                            goto cleanup;
+                        listenAddr = g_strdup(key + 10);
                     } else if (STRPREFIX(key, "vncpasswd=")) {
-                        if (VIR_STRDUP(graphics->data.vnc.auth.passwd, key + 10) < 0)
-                            goto cleanup;
+                        graphics->data.vnc.auth.passwd = g_strdup(key + 10);
                     } else if (STRPREFIX(key, "keymap=")) {
-                        if (VIR_STRDUP(graphics->data.vnc.keymap, key + 7) < 0)
-                            goto cleanup;
+                        graphics->data.vnc.keymap = g_strdup(key + 7);
                     } else if (STRPREFIX(key, "vncdisplay=")) {
                         if (virStrToLong_i(key + 11, NULL, 10,
                                            &graphics->data.vnc.port) < 0) {
@@ -722,11 +715,9 @@ xenParseVfb(virConfPtr conf, virDomainDefPtr def)
                     }
                 } else {
                     if (STRPREFIX(key, "display=")) {
-                        if (VIR_STRDUP(graphics->data.sdl.display, key + 8) < 0)
-                            goto cleanup;
+                        graphics->data.sdl.display = g_strdup(key + 8);
                     } else if (STRPREFIX(key, "xauthority=")) {
-                        if (VIR_STRDUP(graphics->data.sdl.xauth, key + 11) < 0)
-                            goto cleanup;
+                        graphics->data.sdl.xauth = g_strdup(key + 11);
                     }
                 }
 
@@ -786,8 +777,7 @@ xenParseSxprChar(const char *value,
 
     if (value[0] == '/') {
         def->source->type = VIR_DOMAIN_CHR_TYPE_DEV;
-        if (VIR_STRDUP(def->source->data.file.path, value) < 0)
-            goto error;
+        def->source->data.file.path = g_strdup(value);
     } else {
         if ((tmp = strchr(value, ':')) != NULL) {
             *tmp = '\0';
@@ -808,14 +798,12 @@ xenParseSxprChar(const char *value,
 
     switch (def->source->type) {
     case VIR_DOMAIN_CHR_TYPE_PTY:
-        if (VIR_STRDUP(def->source->data.file.path, tty) < 0)
-            goto error;
+        def->source->data.file.path = g_strdup(tty);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
     case VIR_DOMAIN_CHR_TYPE_PIPE:
-        if (VIR_STRDUP(def->source->data.file.path, value) < 0)
-            goto error;
+        def->source->data.file.path = g_strdup(value);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_TCP:
@@ -877,11 +865,9 @@ xenParseSxprChar(const char *value,
                             offset2 + 1, offset3 - offset2 - 1) < 0)
                 goto error;
 
-            if (VIR_STRDUP(def->source->data.udp.bindService, offset3 + 1) < 0)
-                goto error;
+            def->source->data.udp.bindService = g_strdup(offset3 + 1);
         } else {
-            if (VIR_STRDUP(def->source->data.udp.connectService, offset + 1) < 0)
-                goto error;
+            def->source->data.udp.connectService = g_strdup(offset + 1);
         }
     }
     break;
@@ -1034,10 +1020,7 @@ xenParseVifBridge(virDomainNetDefPtr net, char *bridge)
         if (!vlanstr_list)
             return -1;
 
-        if (VIR_STRDUP(net->data.bridge.brname, vlanstr_list[0]) < 0) {
-            virStringListFree(vlanstr_list);
-            return -1;
-        }
+        net->data.bridge.brname = g_strdup(vlanstr_list[0]);
 
         for (i = 1; vlanstr_list[i]; i++)
             nvlans++;
@@ -1065,8 +1048,7 @@ xenParseVifBridge(virDomainNetDefPtr net, char *bridge)
         return 0;
     } else {
         /* 'bridge' string only contains the bridge name */
-        if (VIR_STRDUP(net->data.bridge.brname, bridge) < 0)
-            return -1;
+        net->data.bridge.brname = g_strdup(bridge);
     }
 
     return 0;
@@ -1086,8 +1068,7 @@ xenParseSxprVifRate(const char *rate, unsigned long long *kbytes_per_sec)
     unsigned long long tmp;
     int ret = -1;
 
-    if (VIR_STRDUP(trate, rate) < 0)
-        return -1;
+    trate = g_strdup(rate);
 
     p = strchr(trate, '@');
     if (p != NULL)
@@ -1271,9 +1252,8 @@ xenParseVif(char *entry, const char *vif_typename)
         virStringListFree(ip_list);
     }
 
-    if (script && script[0] &&
-        VIR_STRDUP(net->script, script) < 0)
-        goto cleanup;
+    if (script && script[0])
+        net->script = g_strdup(script);
 
     if (model[0]) {
         if (virDomainNetSetModelString(net, model) < 0)
@@ -1283,9 +1263,8 @@ xenParseVif(char *entry, const char *vif_typename)
             net->model = VIR_DOMAIN_NET_MODEL_NETFRONT;
     }
 
-    if (vifname[0] &&
-        VIR_STRDUP(net->ifname, vifname) < 0)
-        goto cleanup;
+    if (vifname[0])
+        net->ifname = g_strdup(vifname);
 
     if (rate[0]) {
         virNetDevBandwidthPtr bandwidth;
@@ -1482,8 +1461,7 @@ xenParseGeneralMeta(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
         goto out;
 
     def->os.arch = capsdata->arch;
-    if (VIR_STRDUP(def->os.machine, capsdata->machinetype) < 0)
-        goto out;
+    def->os.machine = g_strdup(capsdata->machinetype);
 
     ret = 0;
  out:

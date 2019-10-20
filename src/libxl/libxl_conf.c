@@ -162,8 +162,7 @@ libxlMakeDomCreateInfo(libxl_ctx *ctx,
         c_info->type = LIBXL_DOMAIN_TYPE_PV;
     }
 
-    if (VIR_STRDUP(c_info->name, def->name) < 0)
-        goto error;
+    c_info->name = g_strdup(def->name);
 
     if (def->nseclabels &&
         def->seclabels[0]->type == VIR_DOMAIN_SECLABEL_STATIC) {
@@ -208,8 +207,7 @@ libxlMakeChrdevStr(virDomainChrDefPtr def, char **buf)
     case VIR_DOMAIN_CHR_TYPE_STDIO:
     case VIR_DOMAIN_CHR_TYPE_VC:
     case VIR_DOMAIN_CHR_TYPE_PTY:
-        if (VIR_STRDUP(*buf, type) < 0)
-            return -1;
+        *buf = g_strdup(type);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
@@ -219,8 +217,7 @@ libxlMakeChrdevStr(virDomainChrDefPtr def, char **buf)
         break;
 
     case VIR_DOMAIN_CHR_TYPE_DEV:
-        if (VIR_STRDUP(*buf, srcdef->data.file.path) < 0)
-            return -1;
+        *buf = g_strdup(srcdef->data.file.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UDP: {
@@ -507,9 +504,8 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
                           VIR_TRISTATE_SWITCH_ON);
 
         /* copy SLIC table path to acpi_firmware */
-        if (def->os.slic_table &&
-                VIR_STRDUP(b_info->u.hvm.acpi_firmware, def->os.slic_table) < 0)
-            return -1;
+        if (def->os.slic_table)
+            b_info->u.hvm.acpi_firmware = g_strdup(def->os.slic_table);
 
         if (def->nsounds > 0) {
             /*
@@ -518,9 +514,7 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
              */
             virDomainSoundDefPtr snd = def->sounds[0];
 
-            if (VIR_STRDUP(b_info->u.hvm.soundhw,
-                           virDomainSoundModelTypeToString(snd->model)) < 0)
-                return -1;
+            b_info->u.hvm.soundhw = g_strdup(virDomainSoundModelTypeToString(snd->model));
         }
 
         for (i = 0; i < def->os.nBootDevs; i++) {
@@ -546,16 +540,12 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
         } else {
             bootorder[def->os.nBootDevs] = '\0';
         }
-        if (VIR_STRDUP(b_info->u.hvm.boot, bootorder) < 0)
-            return -1;
+        b_info->u.hvm.boot = g_strdup(bootorder);
 
 #ifdef LIBXL_HAVE_BUILDINFO_KERNEL
-        if (VIR_STRDUP(b_info->cmdline, def->os.cmdline) < 0)
-            return -1;
-        if (VIR_STRDUP(b_info->kernel, def->os.kernel) < 0)
-            return -1;
-        if (VIR_STRDUP(b_info->ramdisk, def->os.initrd) < 0)
-            return -1;
+        b_info->cmdline = g_strdup(def->os.cmdline);
+        b_info->kernel = g_strdup(def->os.kernel);
+        b_info->ramdisk = g_strdup(def->os.initrd);
 #endif
 
         /*
@@ -587,8 +577,7 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
             }
 
             VIR_FREE(b_info->device_model);
-            if (VIR_STRDUP(b_info->device_model, def->emulator) < 0)
-                return -1;
+            b_info->device_model = g_strdup(def->emulator);
 
             b_info->device_model_version = libxlDomainGetEmulatorType(def);
         }
@@ -658,13 +647,11 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
             switch (def->inputs[i]->type) {
                 case VIR_DOMAIN_INPUT_TYPE_MOUSE:
                     VIR_FREE(*usbdevice);
-                    if (VIR_STRDUP(*usbdevice, "mouse") < 0)
-                        return -1;
+                    *usbdevice = g_strdup("mouse");
                     break;
                 case VIR_DOMAIN_INPUT_TYPE_TABLET:
                     VIR_FREE(*usbdevice);
-                    if (VIR_STRDUP(*usbdevice, "tablet") < 0)
-                        return -1;
+                    *usbdevice = g_strdup("tablet");
                     break;
                 default:
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -682,15 +669,11 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
         }
 #endif
     } else if (pvh) {
-        if (VIR_STRDUP(b_info->cmdline, def->os.cmdline) < 0)
-            return -1;
-        if (VIR_STRDUP(b_info->kernel, def->os.kernel) < 0)
-            return -1;
-        if (VIR_STRDUP(b_info->ramdisk, def->os.initrd) < 0)
-            return -1;
+        b_info->cmdline = g_strdup(def->os.cmdline);
+        b_info->kernel = g_strdup(def->os.kernel);
+        b_info->ramdisk = g_strdup(def->os.initrd);
 #ifdef LIBXL_HAVE_BUILDINFO_BOOTLOADER
-        if (VIR_STRDUP(b_info->bootloader, def->os.bootloader) < 0)
-            return -1;
+        b_info->bootloader = g_strdup(def->os.bootloader);
         if (def->os.bootloaderArgs) {
             if (!(b_info->bootloader_args =
                   virStringSplit(def->os.bootloaderArgs, " \t\n", 0)))
@@ -703,27 +686,22 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
          * if bootloader is not specified AND direct kernel boot is not specified.
          */
         if (def->os.bootloader) {
-            if (VIR_STRDUP(b_info->u.pv.bootloader, def->os.bootloader) < 0)
-                return -1;
+            b_info->u.pv.bootloader = g_strdup(def->os.bootloader);
         } else if (def->os.kernel == NULL) {
-            if (VIR_STRDUP(b_info->u.pv.bootloader, LIBXL_BOOTLOADER_PATH) < 0)
-                return -1;
+            b_info->u.pv.bootloader = g_strdup(LIBXL_BOOTLOADER_PATH);
         }
         if (def->os.bootloaderArgs) {
             if (!(b_info->u.pv.bootloader_args =
                   virStringSplit(def->os.bootloaderArgs, " \t\n", 0)))
                 return -1;
         }
-        if (VIR_STRDUP(b_info->u.pv.cmdline, def->os.cmdline) < 0)
-            return -1;
+        b_info->u.pv.cmdline = g_strdup(def->os.cmdline);
         if (def->os.kernel) {
-            /* libxl_init_build_info() sets VIR_STRDUP(kernel.path, "hvmloader") */
+            /* libxl_init_build_info() sets kernel.path = g_strdup("hvmloader") */
             VIR_FREE(b_info->u.pv.kernel);
-            if (VIR_STRDUP(b_info->u.pv.kernel, def->os.kernel) < 0)
-                return -1;
+            b_info->u.pv.kernel = g_strdup(def->os.kernel);
         }
-        if (VIR_STRDUP(b_info->u.pv.ramdisk, def->os.initrd) < 0)
-            return -1;
+        b_info->u.pv.ramdisk = g_strdup(def->os.initrd);
     }
 
     /* only the 'xen' balloon device model is supported */
@@ -1036,12 +1014,10 @@ libxlMakeDisk(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
         if (libxlMakeNetworkDiskSrc(l_disk->src, &x_disk->pdev_path) < 0)
             return -1;
     } else {
-        if (VIR_STRDUP(x_disk->pdev_path, virDomainDiskGetSource(l_disk)) < 0)
-        return -1;
+        x_disk->pdev_path = g_strdup(virDomainDiskGetSource(l_disk));
     }
 
-    if (VIR_STRDUP(x_disk->vdev, l_disk->dst) < 0)
-        return -1;
+    x_disk->vdev = g_strdup(l_disk->dst);
 
     if (driver) {
         if (STREQ(driver, "tap") || STREQ(driver, "tap2")) {
@@ -1159,8 +1135,7 @@ libxlMakeDisk(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
 
     if (l_disk->domain_name) {
 #ifdef LIBXL_HAVE_DEVICE_BACKEND_DOMNAME
-        if (VIR_STRDUP(x_disk->backend_domname, l_disk->domain_name) < 0)
-            return -1;
+        x_disk->backend_domname = g_strdup(l_disk->domain_name);
 #else
         virReportError(VIR_ERR_XML_DETAIL, "%s",
                 _("this version of libxenlight does not "
@@ -1289,8 +1264,7 @@ libxlMakeNic(virDomainDefPtr def,
                              "Xen PV(H) domains"));
             return -1;
         }
-        if (VIR_STRDUP(x_nic->model, virDomainNetGetModelString(l_nic)) < 0)
-            goto cleanup;
+        x_nic->model = g_strdup(virDomainNetGetModelString(l_nic));
         if (l_nic->model == VIR_DOMAIN_NET_MODEL_NETFRONT)
             x_nic->nictype = LIBXL_NIC_TYPE_VIF;
         else
@@ -1302,8 +1276,7 @@ libxlMakeNic(virDomainDefPtr def,
             x_nic->nictype = LIBXL_NIC_TYPE_VIF;
     }
 
-    if (VIR_STRDUP(x_nic->ifname, l_nic->ifname) < 0)
-        goto cleanup;
+    x_nic->ifname = g_strdup(l_nic->ifname);
 
     port_profile = virDomainNetGetActualVirtPortProfile(l_nic);
     virt_vlan = virDomainNetGetActualVlan(l_nic);
@@ -1343,13 +1316,10 @@ libxlMakeNic(virDomainDefPtr def,
             }
             if (virBufferCheckError(&buf) < 0)
                 goto cleanup;
-            if (VIR_STRDUP(x_nic->bridge,
-                           virBufferCurrentContent(&buf)) < 0)
-                goto cleanup;
+            x_nic->bridge = g_strdup(virBufferCurrentContent(&buf));
             G_GNUC_FALLTHROUGH;
         case VIR_DOMAIN_NET_TYPE_ETHERNET:
-            if (VIR_STRDUP(x_nic->script, script) < 0)
-                goto cleanup;
+            x_nic->script = g_strdup(script);
             if (l_nic->guestIP.nips > 0) {
                 x_nic->ip = xenMakeIPList(&l_nic->guestIP);
                 if (!x_nic->ip)
@@ -1394,8 +1364,7 @@ libxlMakeNic(virDomainDefPtr def,
 
     if (l_nic->domain_name) {
 #ifdef LIBXL_HAVE_DEVICE_BACKEND_DOMNAME
-        if (VIR_STRDUP(x_nic->backend_domname, l_nic->domain_name) < 0)
-            goto cleanup;
+        x_nic->backend_domname = g_strdup(l_nic->domain_name);
 #else
         virReportError(VIR_ERR_XML_DETAIL, "%s",
                 _("this version of libxenlight does not "
@@ -1508,10 +1477,8 @@ libxlMakeVfb(virPortAllocatorRangePtr graphicsports,
             libxl_defbool_set(&x_vfb->sdl.enable, 1);
             libxl_defbool_set(&x_vfb->vnc.enable, 0);
             libxl_defbool_set(&x_vfb->sdl.opengl, 0);
-            if (VIR_STRDUP(x_vfb->sdl.display, l_vfb->data.sdl.display) < 0)
-                return -1;
-            if (VIR_STRDUP(x_vfb->sdl.xauthority, l_vfb->data.sdl.xauth) < 0)
-                return -1;
+            x_vfb->sdl.display = g_strdup(l_vfb->data.sdl.display);
+            x_vfb->sdl.xauthority = g_strdup(l_vfb->data.sdl.xauth);
             break;
         case  VIR_DOMAIN_GRAPHICS_TYPE_VNC:
             libxl_defbool_set(&x_vfb->vnc.enable, 1);
@@ -1528,20 +1495,16 @@ libxlMakeVfb(virPortAllocatorRangePtr graphicsports,
 
             if ((glisten = virDomainGraphicsGetListen(l_vfb, 0))) {
                 if (glisten->address) {
-                    /* libxl_device_vfb_init() does VIR_STRDUP("127.0.0.1") */
+                    /* libxl_device_vfb_init() does g_strdup("127.0.0.1") */
                     VIR_FREE(x_vfb->vnc.listen);
-                    if (VIR_STRDUP(x_vfb->vnc.listen, glisten->address) < 0)
-                        return -1;
+                    x_vfb->vnc.listen = g_strdup(glisten->address);
                 } else {
-                    if (VIR_STRDUP(glisten->address, VIR_LOOPBACK_IPV4_ADDR) < 0)
-                        return -1;
+                    glisten->address = g_strdup(VIR_LOOPBACK_IPV4_ADDR);
                 }
             }
 
-            if (VIR_STRDUP(x_vfb->vnc.passwd, l_vfb->data.vnc.auth.passwd) < 0)
-                return -1;
-            if (VIR_STRDUP(x_vfb->keymap, l_vfb->data.vnc.keymap) < 0)
-                return -1;
+            x_vfb->vnc.passwd = g_strdup(l_vfb->data.vnc.auth.passwd);
+            x_vfb->keymap = g_strdup(l_vfb->data.vnc.keymap);
             break;
 
         case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
@@ -1642,22 +1605,17 @@ libxlMakeBuildInfoVfb(virPortAllocatorRangePtr graphicsports,
 
         if ((glisten = virDomainGraphicsGetListen(l_vfb, 0))) {
             if (glisten->address) {
-                if (VIR_STRDUP(b_info->u.hvm.spice.host, glisten->address) < 0)
-                    return -1;
+                b_info->u.hvm.spice.host = g_strdup(glisten->address);
             } else {
-                if (VIR_STRDUP(b_info->u.hvm.spice.host, VIR_LOOPBACK_IPV4_ADDR) < 0 ||
-                    VIR_STRDUP(glisten->address, VIR_LOOPBACK_IPV4_ADDR) < 0)
-                    return -1;
+                b_info->u.hvm.spice.host = g_strdup(VIR_LOOPBACK_IPV4_ADDR);
+                glisten->address = g_strdup(VIR_LOOPBACK_IPV4_ADDR);
             }
         }
 
-        if (VIR_STRDUP(b_info->u.hvm.keymap, l_vfb->data.spice.keymap) < 0)
-            return -1;
+        b_info->u.hvm.keymap = g_strdup(l_vfb->data.spice.keymap);
 
         if (l_vfb->data.spice.auth.passwd) {
-            if (VIR_STRDUP(b_info->u.hvm.spice.passwd,
-                           l_vfb->data.spice.auth.passwd) < 0)
-                return -1;
+            b_info->u.hvm.spice.passwd = g_strdup(l_vfb->data.spice.auth.passwd);
             libxl_defbool_set(&b_info->u.hvm.spice.disable_ticketing, false);
         } else {
             libxl_defbool_set(&b_info->u.hvm.spice.disable_ticketing, true);
@@ -1693,10 +1651,8 @@ libxlMakeBuildInfoVfb(virPortAllocatorRangePtr graphicsports,
 
     if (libxl_defbool_val(x_vfb.vnc.enable)) {
         libxl_defbool_set(&b_info->u.hvm.vnc.enable, true);
-        if (VIR_STRDUP(b_info->u.hvm.vnc.listen, x_vfb.vnc.listen) < 0)
-            return -1;
-        if (VIR_STRDUP(b_info->u.hvm.vnc.passwd, x_vfb.vnc.passwd) < 0)
-            return -1;
+        b_info->u.hvm.vnc.listen = g_strdup(x_vfb.vnc.listen);
+        b_info->u.hvm.vnc.passwd = g_strdup(x_vfb.vnc.passwd);
         b_info->u.hvm.vnc.display = x_vfb.vnc.display;
         libxl_defbool_set(&b_info->u.hvm.vnc.findunused,
                           libxl_defbool_val(x_vfb.vnc.findunused));
@@ -1704,14 +1660,11 @@ libxlMakeBuildInfoVfb(virPortAllocatorRangePtr graphicsports,
         libxl_defbool_set(&b_info->u.hvm.sdl.enable, true);
         libxl_defbool_set(&b_info->u.hvm.sdl.opengl,
                           libxl_defbool_val(x_vfb.sdl.opengl));
-        if (VIR_STRDUP(b_info->u.hvm.sdl.display, x_vfb.sdl.display) < 0)
-            return -1;
-        if (VIR_STRDUP(b_info->u.hvm.sdl.xauthority, x_vfb.sdl.xauthority) < 0)
-            return -1;
+        b_info->u.hvm.sdl.display = g_strdup(x_vfb.sdl.display);
+        b_info->u.hvm.sdl.xauthority = g_strdup(x_vfb.sdl.xauthority);
     }
 
-    if (VIR_STRDUP(b_info->u.hvm.keymap, x_vfb.keymap) < 0)
-        return -1;
+    b_info->u.hvm.keymap = g_strdup(x_vfb.keymap);
 
     return 0;
 }
@@ -1766,24 +1719,15 @@ libxlDriverConfigNew(void)
     if (!(cfg = virObjectNew(libxlDriverConfigClass)))
         return NULL;
 
-    if (VIR_STRDUP(cfg->configBaseDir, LIBXL_CONFIG_BASE_DIR) < 0)
-        goto error;
-    if (VIR_STRDUP(cfg->configDir, LIBXL_CONFIG_DIR) < 0)
-        goto error;
-    if (VIR_STRDUP(cfg->autostartDir, LIBXL_AUTOSTART_DIR) < 0)
-        goto error;
-    if (VIR_STRDUP(cfg->logDir, LIBXL_LOG_DIR) < 0)
-        goto error;
-    if (VIR_STRDUP(cfg->stateDir, LIBXL_STATE_DIR) < 0)
-        goto error;
-    if (VIR_STRDUP(cfg->libDir, LIBXL_LIB_DIR) < 0)
-        goto error;
-    if (VIR_STRDUP(cfg->saveDir, LIBXL_SAVE_DIR) < 0)
-        goto error;
-    if (VIR_STRDUP(cfg->autoDumpDir, LIBXL_DUMP_DIR) < 0)
-        goto error;
-    if (VIR_STRDUP(cfg->channelDir, LIBXL_CHANNEL_DIR) < 0)
-        goto error;
+    cfg->configBaseDir = g_strdup(LIBXL_CONFIG_BASE_DIR);
+    cfg->configDir = g_strdup(LIBXL_CONFIG_DIR);
+    cfg->autostartDir = g_strdup(LIBXL_AUTOSTART_DIR);
+    cfg->logDir = g_strdup(LIBXL_LOG_DIR);
+    cfg->stateDir = g_strdup(LIBXL_STATE_DIR);
+    cfg->libDir = g_strdup(LIBXL_LIB_DIR);
+    cfg->saveDir = g_strdup(LIBXL_SAVE_DIR);
+    cfg->autoDumpDir = g_strdup(LIBXL_DUMP_DIR);
+    cfg->channelDir = g_strdup(LIBXL_CHANNEL_DIR);
 
     if (virFileMakePath(cfg->logDir) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1832,9 +1776,7 @@ libxlDriverConfigNew(void)
     cfg->nfirmwares = 1;
     if (VIR_ALLOC(cfg->firmwares[0]) < 0)
         goto error;
-    if (VIR_STRDUP(cfg->firmwares[0]->name,
-                   LIBXL_FIRMWARE_DIR "/ovmf.bin") < 0)
-        goto error;
+    cfg->firmwares[0]->name = g_strdup(LIBXL_FIRMWARE_DIR "/ovmf.bin");
 #endif
 
     /* Always add hvmloader to firmwares */
@@ -1843,9 +1785,7 @@ libxlDriverConfigNew(void)
     cfg->nfirmwares++;
     if (VIR_ALLOC(cfg->firmwares[cfg->nfirmwares - 1]) < 0)
         goto error;
-    if (VIR_STRDUP(cfg->firmwares[cfg->nfirmwares - 1]->name,
-                   LIBXL_FIRMWARE_DIR "/hvmloader") < 0)
-        goto error;
+    cfg->firmwares[cfg->nfirmwares - 1]->name = g_strdup(LIBXL_FIRMWARE_DIR "/hvmloader");
 
     return cfg;
 
@@ -2027,9 +1967,7 @@ libxlMakeChannel(virDomainChrDefPtr l_channel,
         break;
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         x_channel->connection = LIBXL_CHANNEL_CONNECTION_SOCKET;
-        if (VIR_STRDUP(x_channel->u.socket.path,
-                       l_channel->source->data.nix.path) < 0)
-            return -1;
+        x_channel->u.socket.path = g_strdup(l_channel->source->data.nix.path);
         break;
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -2043,8 +1981,7 @@ libxlMakeChannel(virDomainChrDefPtr l_channel,
         return -1;
     }
 
-    if (VIR_STRDUP(x_channel->name, l_channel->target.name) < 0)
-        return -1;
+    x_channel->name = g_strdup(l_channel->target.name);
 
     return 0;
 }

@@ -78,8 +78,7 @@ static int xenParseCmdline(virConfPtr conf, char **r_cmdline)
         return -1;
 
     if (buf) {
-        if (VIR_STRDUP(cmdline, buf) < 0)
-            return -1;
+        cmdline = g_strdup(buf);
         if (root || extra)
             VIR_WARN("ignoring root= and extra= in favour of cmdline=");
     } else {
@@ -90,8 +89,7 @@ static int xenParseCmdline(virConfPtr conf, char **r_cmdline)
             if (virAsprintf(&cmdline, "root=%s", root) < 0)
                 return -1;
         } else if (extra) {
-            if (VIR_STRDUP(cmdline, extra) < 0)
-                return -1;
+            cmdline = g_strdup(extra);
         }
     }
 
@@ -119,17 +117,14 @@ xenParseXLOS(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
             def->os.loader->type = VIR_DOMAIN_LOADER_TYPE_PFLASH;
             def->os.loader->readonly = VIR_TRISTATE_BOOL_YES;
 
-            if (VIR_STRDUP(def->os.loader->path,
-                           LIBXL_FIRMWARE_DIR "/ovmf.bin") < 0)
-                return -1;
+            def->os.loader->path = g_strdup(LIBXL_FIRMWARE_DIR "/ovmf.bin");
         } else {
             for (i = 0; i < caps->nguests; i++) {
                 if (caps->guests[i]->ostype == VIR_DOMAIN_OSTYPE_HVM &&
                     caps->guests[i]->arch.id == def->os.arch) {
-                    if (VIR_ALLOC(def->os.loader) < 0 ||
-                        VIR_STRDUP(def->os.loader->path,
-                                   caps->guests[i]->arch.defaultInfo.loader) < 0)
+                    if (VIR_ALLOC(def->os.loader) < 0)
                         return -1;
+                    def->os.loader->path = g_strdup(caps->guests[i]->arch.defaultInfo.loader);
                 }
             }
         }
@@ -538,8 +533,7 @@ xenParseXLVnuma(virConfPtr conf,
                         }
 
                         VIR_FREE(tmp);
-                        if (VIR_STRDUP(tmp, vtoken) < 0)
-                            goto cleanup;
+                        tmp = g_strdup(vtoken);
 
                         virStringListFree(token);
                         if (!(token = virStringSplitCount(tmp, ",", 0, &ndistances)))
@@ -736,8 +730,7 @@ xenParseXLDisk(virConfPtr conf, virDomainDefPtr def)
             if (xenParseXLDiskSrc(disk, libxldisk->pdev_path) < 0)
                 goto fail;
 
-            if (VIR_STRDUP(disk->dst, libxldisk->vdev) < 0)
-                goto fail;
+            disk->dst = g_strdup(libxldisk->vdev);
 
             disk->src->readonly = !libxldisk->readwrite;
             disk->removable = libxldisk->removable;
@@ -1376,8 +1369,7 @@ xenFormatXLCPUID(virConfPtr conf, virDomainDefPtr def)
     if (VIR_ALLOC_N(cpuid_pairs, def->cpu->nfeatures + 2) < 0)
         return -1;
 
-    if (VIR_STRDUP(cpuid_pairs[0], "host") < 0)
-        goto cleanup;
+    cpuid_pairs[0] = g_strdup("host");
 
     j = 1;
     for (i = 0; i < def->cpu->nfeatures; i++) {
@@ -1659,8 +1651,7 @@ xenFormatXLDiskSrc(virStorageSourcePtr src, char **srcstr)
     case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_FILE:
     case VIR_STORAGE_TYPE_DIR:
-        if (VIR_STRDUP(*srcstr, src->path) < 0)
-            return -1;
+        *srcstr = g_strdup(src->path);
         break;
 
     case VIR_STORAGE_TYPE_NETWORK:
@@ -1947,8 +1938,7 @@ xenFormatXLInputDevs(virConfPtr conf, virDomainDefPtr def)
                     lastdev = lastdev->next;
                 }
                 lastdev->type = VIR_CONF_STRING;
-                if (VIR_STRDUP(lastdev->str, devtype) < 0)
-                    goto error;
+                lastdev->str = g_strdup(devtype);
             }
         }
         if (usbdevices->list != NULL) {
