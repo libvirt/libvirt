@@ -146,7 +146,8 @@ static int
 virCgroupV2CopyMounts(virCgroupPtr group,
                       virCgroupPtr parent)
 {
-    return VIR_STRDUP(group->unified.mountPoint, parent->unified.mountPoint);
+    group->unified.mountPoint = g_strdup(parent->unified.mountPoint);
+    return 0;
 }
 
 
@@ -189,7 +190,8 @@ virCgroupV2DetectMounts(virCgroupPtr group,
 
     VIR_FREE(group->unified.mountPoint);
 
-    return VIR_STRDUP(group->unified.mountPoint, mntDir);
+    group->unified.mountPoint = g_strdup(mntDir);
+    return 0;
 }
 
 

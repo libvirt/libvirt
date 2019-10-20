@@ -1206,10 +1206,8 @@ esxVI_String_DeepCopyValue(char **dest, const char *src)
 {
     ESX_VI_CHECK_ARG_LIST(dest);
 
-    if (!src)
-        return 0;
-
-    return VIR_STRDUP(*dest, src);
+    *dest = g_strdup(src);
+    return 0;
 }
 
 /* esxVI_String_CastFromAnyType */

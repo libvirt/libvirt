@@ -4468,7 +4468,8 @@ int
 virStorageSourceInitiatorCopy(virStorageSourceInitiatorDefPtr dest,
                               const virStorageSourceInitiatorDef *src)
 {
-    return VIR_STRDUP(dest->iqn, src->iqn);
+    dest->iqn = g_strdup(src->iqn);
+    return 0;
 }
 
 void

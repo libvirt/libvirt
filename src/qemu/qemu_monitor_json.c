@@ -5957,7 +5957,8 @@ qemuMonitorJSONGetCPUModelComparison(qemuMonitorPtr mon,
         return -1;
     }
 
-    return VIR_STRDUP(*result, data_result);
+    *result = g_strdup(data_result);
+    return 0;
 }
 
 

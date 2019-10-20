@@ -350,7 +350,8 @@ virURIFindAliasMatch(char *const*aliases, const char *alias,
             STREQLEN(*aliases, alias, alias_len)) {
             VIR_DEBUG("Resolved alias '%s' to '%s'",
                       alias, offset+1);
-            return VIR_STRDUP(*uri, offset+1);
+            *uri = g_strdup(offset + 1);
+            return 0;
         }
 
         aliases++;

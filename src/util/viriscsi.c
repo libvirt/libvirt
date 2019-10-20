@@ -60,8 +60,10 @@ virISCSIExtractSession(char **const groups,
     struct virISCSISessionData *data = opaque;
 
     if (!data->session &&
-        STREQ(groups[1], data->devpath))
-        return VIR_STRDUP(data->session, groups[0]);
+        STREQ(groups[1], data->devpath)) {
+        data->session = g_strdup(groups[0]);
+        return 0;
+    }
     return 0;
 }
 

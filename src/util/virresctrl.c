@@ -1388,7 +1388,8 @@ virResctrlSetID(char **resctrlid,
         return -1;
     }
 
-    return VIR_STRDUP(*resctrlid, id);
+    *resctrlid = g_strdup(id);
+    return 0;
 }
 
 

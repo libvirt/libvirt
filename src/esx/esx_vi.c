@@ -2388,7 +2388,8 @@ esxVI_GetVirtualMachineMORef(esxVI_ObjectContent *virtualMachine,
         if (virtualMachine->obj &&
             STREQ(virtualMachine->obj->type, "VirtualMachine") &&
             virtualMachine->obj->value) {
-            return VIR_STRDUP(*moref, virtualMachine->obj->value);
+            *moref = g_strdup(virtualMachine->obj->value);
+            return 0;
         }
     }
     return -1;

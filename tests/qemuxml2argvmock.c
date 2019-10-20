@@ -153,7 +153,8 @@ virNetDevTapCreate(char **ifname,
         return 0;
     } else {
         VIR_FREE(*ifname);
-        return VIR_STRDUP(*ifname, "vnet0");
+        *ifname = g_strdup("vnet0");
+        return 0;
     }
 }
 
@@ -229,7 +230,8 @@ int
 virNetDevOpenvswitchGetVhostuserIfname(const char *path G_GNUC_UNUSED,
                                        char **ifname)
 {
-    return VIR_STRDUP(*ifname, "vhost-user0");
+    *ifname = g_strdup("vhost-user0");
+    return 1;
 }
 
 int

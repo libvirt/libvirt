@@ -111,7 +111,8 @@ int getcon_raw(security_context_t *context)
         errno = EINVAL;
         return -1;
     }
-    return VIR_STRDUP_QUIET(*context, getenv("FAKE_SELINUX_CONTEXT"));
+    *context = g_strdup(getenv("FAKE_SELINUX_CONTEXT"));
+    return 0;
 }
 
 int getcon(security_context_t *context)
@@ -135,7 +136,8 @@ int getpidcon_raw(pid_t pid, security_context_t *context)
         errno = EINVAL;
         return -1;
     }
-    return VIR_STRDUP_QUIET(*context, getenv("FAKE_SELINUX_CONTEXT"));
+    *context = g_strdup(getenv("FAKE_SELINUX_CONTEXT"));
+    return 0;
 }
 
 int getpidcon(pid_t pid, security_context_t *context)

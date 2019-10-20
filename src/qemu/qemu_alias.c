@@ -134,7 +134,8 @@ qemuAssignDeviceControllerAlias(virDomainDefPtr domainDef,
              * hardcoded the name of their single PCI controller as
              * "pci".
              */
-            return VIR_STRDUP(controller->info.alias, "pci");
+            controller->info.alias = g_strdup("pci");
+            return 0;
         } else if (controller->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT) {
             /* The pcie-root controller on Q35 machinetypes uses a
              * different naming convention ("pcie.0"), because it is
@@ -153,18 +154,24 @@ qemuAssignDeviceControllerAlias(virDomainDefPtr domainDef,
          * controller hardcoded with id "ide"
          */
         if (qemuDomainHasBuiltinIDE(domainDef) &&
-            controller->idx == 0)
-            return VIR_STRDUP(controller->info.alias, "ide");
+            controller->idx == 0) {
+            controller->info.alias = g_strdup("ide");
+            return 0;
+        }
     } else if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SATA) {
         /* for any Q35 machine, the first SATA controller is the
          * integrated one, and it too is hardcoded with id "ide"
          */
-        if (qemuDomainIsQ35(domainDef) && controller->idx == 0)
-            return VIR_STRDUP(controller->info.alias, "ide");
+        if (qemuDomainIsQ35(domainDef) && controller->idx == 0) {
+            controller->info.alias = g_strdup("ide");
+            return 0;
+        }
     } else if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_USB) {
         /* first USB device is "usb", others are normal "usb%d" */
-        if (controller->idx == 0)
-            return VIR_STRDUP(controller->info.alias, "usb");
+        if (controller->idx == 0) {
+            controller->info.alias = g_strdup("usb");
+            return 0;
+        }
     }
     /* all other controllers use the default ${type}${index} naming
      * scheme for alias/id.

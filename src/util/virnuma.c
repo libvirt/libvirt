@@ -579,7 +579,8 @@ static int
 virNumaGetHugePageInfoDir(char **path, int node)
 {
     if (node == -1) {
-        return VIR_STRDUP(*path, HUGEPAGES_SYSTEM_PREFIX);
+        *path = g_strdup(HUGEPAGES_SYSTEM_PREFIX);
+        return 0;
     } else {
         return virAsprintf(path,
                            HUGEPAGES_NUMA_PREFIX "node%d/hugepages/",

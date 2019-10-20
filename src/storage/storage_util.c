@@ -2072,7 +2072,8 @@ virStorageBackendVolCreateLocal(virStoragePoolObjPtr pool,
     }
 
     VIR_FREE(vol->key);
-    return VIR_STRDUP(vol->key, vol->target.path);
+    vol->key = g_strdup(vol->target.path);
+    return 0;
 }
 
 
