@@ -219,10 +219,7 @@ static int remoteSplitURIScheme(virURIPtr uri,
         return -1;
 
     if (p) {
-        if (VIR_STRDUP(*transport, p + 1) < 0) {
-            VIR_FREE(*driver);
-            return -1;
-        }
+        *transport = g_strdup(p + 1);
 
         p = *transport;
         while (*p) {
@@ -744,8 +741,7 @@ remoteConnectSupportsFeatureUnlocked(virConnectPtr conn,
 #define EXTRACT_URI_ARG_STR(ARG_NAME, ARG_VAR) \
     if (STRCASEEQ(var->name, ARG_NAME)) { \
         VIR_FREE(ARG_VAR); \
-        if (VIR_STRDUP(ARG_VAR, var->value) < 0) \
-            goto failed; \
+        ARG_VAR = g_strdup(var->value); \
         var->ignore = 1; \
         continue; \
     }
@@ -826,8 +822,7 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
         virAsprintf(&direct_daemon, "virt%sd", driver) < 0)
         return NULL;
 
-    if (VIR_STRDUP(legacy_daemon, "libvirtd") < 0)
-        return NULL;
+    legacy_daemon = g_strdup("libvirtd");
 
     if (driver &&
         !(direct_sock_name = remoteGetUNIXSocketHelper(transport, direct_daemon, flags)))
@@ -1011,20 +1006,15 @@ doRemoteOpen(virConnectPtr conn,
         if (virAsprintf(&port, "%d", conn->uri->port) < 0)
             goto failed;
     } else if (transport == REMOTE_DRIVER_TRANSPORT_TLS) {
-        if (VIR_STRDUP(port, LIBVIRTD_TLS_PORT) < 0)
-            goto failed;
+        port = g_strdup(LIBVIRTD_TLS_PORT);
     } else if (transport == REMOTE_DRIVER_TRANSPORT_TCP) {
-        if (VIR_STRDUP(port, LIBVIRTD_TCP_PORT) < 0)
-            goto failed;
+        port = g_strdup(LIBVIRTD_TCP_PORT);
     } /* Port not used for unix, ext., default for ssh */
 
-    if (VIR_STRDUP(priv->hostname,
-                   conn->uri && conn->uri->server ?
-                   conn->uri->server : "localhost") < 0)
-        goto failed;
+    priv->hostname = g_strdup(conn->uri && conn->uri->server ? conn->uri->server : "localhost");
 
-    if (conn->uri && VIR_STRDUP(username, conn->uri->user) < 0)
-        goto failed;
+    if (conn->uri)
+        username = g_strdup(conn->uri->user);
 
     /* Get the variables from the query string.
      * Then we need to reconstruct the query string (because
@@ -1070,8 +1060,7 @@ doRemoteOpen(virConnectPtr conn,
                 (STREQ(conn->uri->scheme, "remote") ||
                  STRPREFIX(conn->uri->scheme, "remote+"))) {
                 /* Allow remote serve to probe */
-                if (VIR_STRDUP(name, "") < 0)
-                    goto failed;
+                name = g_strdup("");
             } else {
                 virURI tmpuri = {
                     .scheme = (char *)driver_str,
@@ -1090,8 +1079,7 @@ doRemoteOpen(virConnectPtr conn,
         }
     } else {
         /* Probe URI server side */
-        if (VIR_STRDUP(name, "") < 0)
-            goto failed;
+        name = g_strdup("");
     }
 
     if (conf && !mode_str &&
@@ -1934,8 +1922,7 @@ remoteDeserializeDomainDiskErrors(remote_domain_disk_error *ret_errors_val,
     }
 
     for (i = 0; i < ret_errors_len; i++) {
-        if (VIR_STRDUP(errors[i].disk, ret_errors_val[i].disk) < 0)
-            goto error;
+        errors[i].disk = g_strdup(ret_errors_val[i].disk);
         errors[i].error = ret_errors_val[i].error;
     }
 
@@ -4924,16 +4911,14 @@ remoteDomainBuildEventGraphicsHelper(virConnectPtr conn,
     if (VIR_ALLOC(localAddr) < 0)
         goto error;
     localAddr->family = msg->local.family;
-    if (VIR_STRDUP(localAddr->service, msg->local.service) < 0 ||
-        VIR_STRDUP(localAddr->node, msg->local.node) < 0)
-        goto error;
+    localAddr->service = g_strdup(msg->local.service);
+    localAddr->node = g_strdup(msg->local.node);
 
     if (VIR_ALLOC(remoteAddr) < 0)
         goto error;
     remoteAddr->family = msg->remote.family;
-    if (VIR_STRDUP(remoteAddr->service, msg->remote.service) < 0 ||
-        VIR_STRDUP(remoteAddr->node, msg->remote.node) < 0)
-        goto error;
+    remoteAddr->service = g_strdup(msg->remote.service);
+    remoteAddr->node = g_strdup(msg->remote.node);
 
     if (VIR_ALLOC(subject) < 0)
         goto error;
@@ -4941,9 +4926,8 @@ remoteDomainBuildEventGraphicsHelper(virConnectPtr conn,
         goto error;
     subject->nidentity = msg->subject.subject_len;
     for (i = 0; i < subject->nidentity; i++) {
-        if (VIR_STRDUP(subject->identities[i].type, msg->subject.subject_val[i].type) < 0 ||
-            VIR_STRDUP(subject->identities[i].name, msg->subject.subject_val[i].name) < 0)
-            goto error;
+        subject->identities[i].type = g_strdup(msg->subject.subject_val[i].type);
+        subject->identities[i].name = g_strdup(msg->subject.subject_val[i].name);
     }
 
     event = virDomainEventGraphicsNewFromDom(dom,
@@ -6158,12 +6142,10 @@ remoteDomainQemuMonitorCommand(virDomainPtr domain, const char *cmd,
              (xdrproc_t) xdr_qemu_domain_monitor_command_ret, (char *) &ret) == -1)
         goto done;
 
-    if (VIR_STRDUP(*result, ret.result) < 0)
-        goto cleanup;
+    *result = g_strdup(ret.result);
 
     rv = 0;
 
- cleanup:
     xdr_free((xdrproc_t) xdr_qemu_domain_monitor_command_ret, (char *) &ret);
 
  done:
@@ -7658,45 +7640,35 @@ remoteSerializeDHCPLease(virNetworkDHCPLeasePtr lease_dst, remote_network_dhcp_l
     lease_dst->type = lease_src->type;
     lease_dst->prefix = lease_src->prefix;
 
-    if (VIR_STRDUP(lease_dst->iface, lease_src->iface) < 0)
-        goto error;
+    lease_dst->iface = g_strdup(lease_src->iface);
 
-    if (VIR_STRDUP(lease_dst->ipaddr, lease_src->ipaddr) < 0)
-        goto error;
+    lease_dst->ipaddr = g_strdup(lease_src->ipaddr);
 
     if (lease_src->mac) {
-        if (VIR_STRDUP(lease_dst->mac, *lease_src->mac) < 0)
-            goto error;
+        lease_dst->mac = g_strdup(*lease_src->mac);
     } else {
         lease_src->mac = NULL;
     }
 
     if (lease_src->iaid) {
-        if (VIR_STRDUP(lease_dst->iaid, *lease_src->iaid) < 0)
-            goto error;
+        lease_dst->iaid = g_strdup(*lease_src->iaid);
     } else {
         lease_src->iaid = NULL;
     }
 
     if (lease_src->hostname) {
-        if (VIR_STRDUP(lease_dst->hostname, *lease_src->hostname) < 0)
-            goto error;
+        lease_dst->hostname = g_strdup(*lease_src->hostname);
     } else {
         lease_src->hostname = NULL;
     }
 
     if (lease_src->clientid) {
-        if (VIR_STRDUP(lease_dst->clientid, *lease_src->clientid) < 0)
-            goto error;
+        lease_dst->clientid = g_strdup(*lease_src->clientid);
     } else {
         lease_src->clientid = NULL;
     }
 
     return 0;
-
- error:
-    virNetworkDHCPLeaseFree(lease_dst);
-    return -1;
 }
 
 
@@ -7953,14 +7925,11 @@ remoteDomainGetFSInfo(virDomainPtr dom,
             if (VIR_ALLOC(info_ret[i]) < 0)
                 goto cleanup;
 
-            if (VIR_STRDUP(info_ret[i]->mountpoint, src->mountpoint) < 0)
-                goto cleanup;
+            info_ret[i]->mountpoint = g_strdup(src->mountpoint);
 
-            if (VIR_STRDUP(info_ret[i]->name, src->name) < 0)
-                goto cleanup;
+            info_ret[i]->name = g_strdup(src->name);
 
-            if (VIR_STRDUP(info_ret[i]->fstype, src->fstype) < 0)
-                goto cleanup;
+            info_ret[i]->fstype = g_strdup(src->fstype);
 
             len = src->dev_aliases.dev_aliases_len;
             info_ret[i]->ndevAlias = len;
@@ -7968,11 +7937,8 @@ remoteDomainGetFSInfo(virDomainPtr dom,
                 VIR_ALLOC_N(info_ret[i]->devAlias, len) < 0)
                 goto cleanup;
 
-            for (j = 0; j < len; j++) {
-                if (VIR_STRDUP(info_ret[i]->devAlias[j],
-                               src->dev_aliases.dev_aliases_val[j]) < 0)
-                    goto cleanup;
-            }
+            for (j = 0; j < len; j++)
+                info_ret[i]->devAlias[j] = g_strdup(src->dev_aliases.dev_aliases_val[j]);
         }
 
         *info = info_ret;
@@ -8047,12 +8013,10 @@ remoteDomainInterfaceAddresses(virDomainPtr dom,
 
         iface = ifaces_ret[i];
 
-        if (VIR_STRDUP(iface->name, iface_ret->name) < 0)
-            goto cleanup;
+        iface->name = g_strdup(iface_ret->name);
 
-        if (iface_ret->hwaddr &&
-            VIR_STRDUP(iface->hwaddr, *iface_ret->hwaddr) < 0)
-            goto cleanup;
+        if (iface_ret->hwaddr)
+            iface->hwaddr = g_strdup(*iface_ret->hwaddr);
 
         if (iface_ret->addrs.addrs_len > REMOTE_DOMAIN_IP_ADDR_MAX) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -8072,8 +8036,7 @@ remoteDomainInterfaceAddresses(virDomainPtr dom,
                 remote_domain_ip_addr *ip_addr_ret =
                     &(iface_ret->addrs.addrs_val[j]);
 
-                if (VIR_STRDUP(ip_addr->addr, ip_addr_ret->addr) < 0)
-                    goto cleanup;
+                ip_addr->addr = g_strdup(ip_addr_ret->addr);
 
                 ip_addr->prefix = ip_addr_ret->prefix;
                 ip_addr->type = ip_addr_ret->type;
@@ -8170,8 +8133,7 @@ remoteDomainRename(virDomainPtr dom, const char *new_name, unsigned int flags)
     remote_domain_rename_ret ret;
     char *tmp = NULL;
 
-    if (VIR_STRDUP(tmp, new_name) < 0)
-        return -1;
+    tmp = g_strdup(new_name);
 
     remoteDriverLock(priv);
 

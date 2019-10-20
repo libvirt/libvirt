@@ -77,9 +77,7 @@ int
 daemonConfigFilePath(bool privileged, char **configfile)
 {
     if (privileged) {
-        if (VIR_STRDUP(*configfile,
-                       SYSCONFDIR "/libvirt/" DAEMON_NAME ".conf") < 0)
-            goto error;
+        *configfile = g_strdup(SYSCONFDIR "/libvirt/" DAEMON_NAME ".conf");
     } else {
         char *configdir = NULL;
 
@@ -115,9 +113,8 @@ daemonConfigNew(bool privileged G_GNUC_UNUSED)
 # endif /* ! LIBVIRTD */
     data->listen_tcp = 0;
 
-    if (VIR_STRDUP(data->tls_port, LIBVIRTD_TLS_PORT) < 0 ||
-        VIR_STRDUP(data->tcp_port, LIBVIRTD_TCP_PORT) < 0)
-        goto error;
+    data->tls_port = g_strdup(LIBVIRTD_TLS_PORT);
+    data->tcp_port = g_strdup(LIBVIRTD_TCP_PORT);
 #endif /* !WITH_IP */
 
     /* Only default to PolicyKit if running as root */
@@ -133,11 +130,9 @@ daemonConfigNew(bool privileged G_GNUC_UNUSED)
     }
 #endif
 
-    if (VIR_STRDUP(data->unix_sock_rw_perms,
-                   data->auth_unix_rw == REMOTE_AUTH_POLKIT ? "0777" : "0700") < 0 ||
-        VIR_STRDUP(data->unix_sock_ro_perms, "0777") < 0 ||
-        VIR_STRDUP(data->unix_sock_admin_perms, "0700") < 0)
-        goto error;
+    data->unix_sock_rw_perms = g_strdup(data->auth_unix_rw == REMOTE_AUTH_POLKIT ? "0777" : "0700");
+    data->unix_sock_ro_perms = g_strdup("0777");
+    data->unix_sock_admin_perms = g_strdup("0700");
 
 #ifdef WITH_IP
 # if WITH_SASL
@@ -176,10 +171,6 @@ daemonConfigNew(bool privileged G_GNUC_UNUSED)
     data->ovs_timeout = VIR_NETDEV_OVS_DEFAULT_TIMEOUT;
 
     return data;
-
- error:
-    daemonConfigFree(data);
-    return NULL;
 }
 
 void
@@ -266,8 +257,7 @@ daemonConfigLoadOptions(struct daemonConfig *data,
      */
     if (data->auth_unix_rw == REMOTE_AUTH_POLKIT) {
         VIR_FREE(data->unix_sock_rw_perms);
-        if (VIR_STRDUP(data->unix_sock_rw_perms, "0777") < 0)
-            goto error;
+        data->unix_sock_rw_perms = g_strdup("0777");
     }
 #endif
     if (remoteConfigGetAuth(conf, filename, "auth_unix_ro", &data->auth_unix_ro) < 0)

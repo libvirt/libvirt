@@ -509,9 +509,8 @@ remoteRelayDomainEventIOError(virConnectPtr conn,
 
     /* build return data */
     memset(&data, 0, sizeof(data));
-    if (VIR_STRDUP(data.srcPath, srcPath) < 0 ||
-        VIR_STRDUP(data.devAlias, devAlias) < 0)
-        goto error;
+    data.srcPath = g_strdup(srcPath);
+    data.devAlias = g_strdup(devAlias);
     if (make_nonnull_domain(&data.dom, dom) < 0)
         goto error;
     data.action = action;
@@ -559,10 +558,9 @@ remoteRelayDomainEventIOErrorReason(virConnectPtr conn,
 
     /* build return data */
     memset(&data, 0, sizeof(data));
-    if (VIR_STRDUP(data.srcPath, srcPath) < 0 ||
-        VIR_STRDUP(data.devAlias, devAlias) < 0 ||
-        VIR_STRDUP(data.reason, reason) < 0)
-        goto error;
+    data.srcPath = g_strdup(srcPath);
+    data.devAlias = g_strdup(devAlias);
+    data.reason = g_strdup(reason);
     data.action = action;
 
     if (make_nonnull_domain(&data.dom, dom) < 0)
@@ -623,21 +621,23 @@ remoteRelayDomainEventGraphics(virConnectPtr conn,
     data.phase = phase;
     data.local.family = local->family;
     data.remote.family = remote->family;
-    if (VIR_STRDUP(data.authScheme, authScheme) < 0 ||
-        VIR_STRDUP(data.local.node, local->node) < 0 ||
-        VIR_STRDUP(data.local.service, local->service) < 0 ||
-        VIR_STRDUP(data.remote.node, remote->node) < 0 ||
-        VIR_STRDUP(data.remote.service, remote->service) < 0)
-        goto error;
+    data.authScheme = g_strdup(authScheme);
+
+    data.local.node = g_strdup(local->node);
+
+    data.local.service = g_strdup(local->service);
+
+    data.remote.node = g_strdup(remote->node);
+
+    data.remote.service = g_strdup(remote->service);
 
     data.subject.subject_len = subject->nidentity;
     if (VIR_ALLOC_N(data.subject.subject_val, data.subject.subject_len) < 0)
         goto error;
 
     for (i = 0; i < data.subject.subject_len; i++) {
-        if (VIR_STRDUP(data.subject.subject_val[i].type, subject->identities[i].type) < 0 ||
-            VIR_STRDUP(data.subject.subject_val[i].name, subject->identities[i].name) < 0)
-            goto error;
+        data.subject.subject_val[i].type = g_strdup(subject->identities[i].type);
+        data.subject.subject_val[i].name = g_strdup(subject->identities[i].name);
     }
     if (make_nonnull_domain(&data.dom, dom) < 0)
         goto error;
@@ -683,8 +683,7 @@ remoteRelayDomainEventBlockJob(virConnectPtr conn,
 
     /* build return data */
     memset(&data, 0, sizeof(data));
-    if (VIR_STRDUP(data.path, path) < 0)
-        return -1;
+    data.path = g_strdup(path);
     data.type = type;
     data.status = status;
     if (make_nonnull_domain(&data.dom, dom) < 0)
@@ -776,18 +775,19 @@ remoteRelayDomainEventDiskChange(virConnectPtr conn,
 
     /* build return data */
     memset(&data, 0, sizeof(data));
-    if (oldSrcPath &&
-        ((VIR_ALLOC(data.oldSrcPath) < 0) ||
-         VIR_STRDUP(*(data.oldSrcPath), oldSrcPath) < 0))
-        goto error;
+    if (oldSrcPath) {
+        if (VIR_ALLOC(data.oldSrcPath) < 0)
+            goto error;
+        *(data.oldSrcPath) = g_strdup(oldSrcPath);
+    }
 
-    if (newSrcPath &&
-        ((VIR_ALLOC(data.newSrcPath) < 0) ||
-         VIR_STRDUP(*(data.newSrcPath), newSrcPath) < 0))
-        goto error;
+    if (newSrcPath) {
+        if (VIR_ALLOC(data.newSrcPath) < 0)
+            goto error;
+        *(data.newSrcPath) = g_strdup(newSrcPath);
+    }
 
-    if (VIR_STRDUP(data.devAlias, devAlias) < 0)
-        goto error;
+    data.devAlias = g_strdup(devAlias);
     data.reason = reason;
 
     if (make_nonnull_domain(&data.dom, dom) < 0)
@@ -835,8 +835,7 @@ remoteRelayDomainEventTrayChange(virConnectPtr conn,
     /* build return data */
     memset(&data, 0, sizeof(data));
 
-    if (VIR_STRDUP(data.devAlias, devAlias) < 0)
-        return -1;
+    data.devAlias = g_strdup(devAlias);
     data.reason = reason;
 
     if (make_nonnull_domain(&data.dom, dom) < 0)
@@ -1052,8 +1051,7 @@ remoteRelayDomainEventDeviceRemoved(virConnectPtr conn,
     /* build return data */
     memset(&data, 0, sizeof(data));
 
-    if (VIR_STRDUP(data.devAlias, devAlias) < 0)
-        return -1;
+    data.devAlias = g_strdup(devAlias);
 
     if (make_nonnull_domain(&data.dom, dom) < 0)
         goto error;
@@ -1103,8 +1101,7 @@ remoteRelayDomainEventBlockJob2(virConnectPtr conn,
     /* build return data */
     memset(&data, 0, sizeof(data));
     data.callbackID = callback->callbackID;
-    if (VIR_STRDUP(data.dst, dst) < 0)
-        return -1;
+    data.dst = g_strdup(dst);
     data.type = type;
     data.status = status;
     if (make_nonnull_domain(&data.dom, dom) < 0)
@@ -1228,8 +1225,7 @@ remoteRelayDomainEventDeviceAdded(virConnectPtr conn,
     /* build return data */
     memset(&data, 0, sizeof(data));
 
-    if (VIR_STRDUP(data.devAlias, devAlias) < 0)
-        return -1;
+    data.devAlias = g_strdup(devAlias);
 
     if (make_nonnull_domain(&data.dom, dom) < 0)
         goto error;
@@ -1352,8 +1348,7 @@ remoteRelayDomainEventDeviceRemovalFailed(virConnectPtr conn,
     /* build return data */
     memset(&data, 0, sizeof(data));
 
-    if (VIR_STRDUP(data.devAlias, devAlias) < 0)
-        return -1;
+    data.devAlias = g_strdup(devAlias);
 
     if (make_nonnull_domain(&data.dom, dom) < 0)
         goto error;
@@ -1395,9 +1390,9 @@ remoteRelayDomainEventMetadataChange(virConnectPtr conn,
 
     data.type = type;
     if (nsuri) {
-        if (VIR_ALLOC(data.nsuri) < 0 ||
-            VIR_STRDUP(*(data.nsuri), nsuri) < 0)
+        if (VIR_ALLOC(data.nsuri) < 0)
             goto error;
+        *(data.nsuri) = g_strdup(nsuri);
     }
 
     if (make_nonnull_domain(&data.dom, dom) < 0)
@@ -1440,12 +1435,11 @@ remoteRelayDomainEventBlockThreshold(virConnectPtr conn,
     /* build return data */
     memset(&data, 0, sizeof(data));
     data.callbackID = callback->callbackID;
-    if (VIR_STRDUP(data.dev, dev) < 0)
-        goto error;
+    data.dev = g_strdup(dev);
     if (path) {
-        if (VIR_ALLOC(data.path) < 0 ||
-            VIR_STRDUP(*(data.path), path) < 0)
+        if (VIR_ALLOC(data.path) < 0)
             goto error;
+        *(data.path) = g_strdup(path);
     }
     data.threshold = threshold;
     data.excess = excess;
@@ -1798,14 +1792,14 @@ remoteRelayDomainQemuMonitorEvent(virConnectPtr conn,
     /* build return data */
     memset(&data, 0, sizeof(data));
     data.callbackID = callback->callbackID;
-    if (VIR_STRDUP(data.event, event) < 0)
-        goto error;
+    data.event = g_strdup(event);
     data.seconds = seconds;
     data.micros = micros;
-    if (details &&
-        ((VIR_ALLOC(data.details) < 0) ||
-         VIR_STRDUP(*(data.details), details) < 0))
-        goto error;
+    if (details) {
+        if (VIR_ALLOC(data.details) < 0)
+            goto error;
+        *(data.details) = g_strdup(details);
+    }
     if (make_nonnull_domain(&data.dom, dom) < 0)
         goto error;
 
@@ -2886,11 +2880,7 @@ remoteDispatchDomainGetSecurityLabelList(virNetServerPtr server G_GNUC_UNUSED,
     for (i = 0; i < len; i++) {
         size_t label_len = strlen(seclabels[i].label) + 1;
         remote_domain_get_security_label_ret *cur = &ret->labels.labels_val[i];
-        if (VIR_STRDUP(cur->label.label_val, seclabels[i].label) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("failed to copy security label"));
-            goto cleanup;
-        }
+        cur->label.label_val = g_strdup(seclabels[i].label);
         cur->label.label_len = label_len;
         cur->enforcing = seclabels[i].enforcing;
     }
@@ -3560,8 +3550,7 @@ remoteDispatchNodeGetCPUStats(virNetServerPtr server G_GNUC_UNUSED,
 
     for (i = 0; i < nparams; ++i) {
         /* remoteDispatchClientRequest will free this: */
-        if (VIR_STRDUP(ret->params.params_val[i].field, params[i].field) < 0)
-            goto cleanup;
+        ret->params.params_val[i].field = g_strdup(params[i].field);
 
         ret->params.params_val[i].value = params[i].value;
     }
@@ -3629,8 +3618,7 @@ remoteDispatchNodeGetMemoryStats(virNetServerPtr server G_GNUC_UNUSED,
 
     for (i = 0; i < nparams; ++i) {
         /* remoteDispatchClientRequest will free this: */
-        if (VIR_STRDUP(ret->params.params_val[i].field, params[i].field) < 0)
-            goto cleanup;
+        ret->params.params_val[i].field = g_strdup(params[i].field);
 
         ret->params.params_val[i].value = params[i].value;
     }
@@ -4365,9 +4353,9 @@ remoteDispatchNodeDeviceGetParent(virNetServerPtr server G_GNUC_UNUSED,
         ret->parentName = NULL;
     } else {
         /* remoteDispatchClientRequest will free this. */
-        if (VIR_ALLOC(ret->parentName) < 0 ||
-            VIR_STRDUP(*(ret->parentName), parent) < 0)
+        if (VIR_ALLOC(ret->parentName) < 0)
             goto cleanup;
+        *(ret->parentName) = g_strdup(parent);
     }
 
     rv = 0;
@@ -6907,29 +6895,28 @@ remoteSerializeDHCPLease(remote_network_dhcp_lease *lease_dst, virNetworkDHCPLea
     lease_dst->type = lease_src->type;
     lease_dst->prefix = lease_src->prefix;
 
-    if (VIR_STRDUP(lease_dst->iface, lease_src->iface) < 0 ||
-        VIR_STRDUP(lease_dst->ipaddr, lease_src->ipaddr) < 0)
-        goto error;
+    lease_dst->iface = g_strdup(lease_src->iface);
+    lease_dst->ipaddr = g_strdup(lease_src->ipaddr);
 
     if (lease_src->mac) {
-        if (VIR_ALLOC(mac_tmp) < 0 ||
-            VIR_STRDUP(*mac_tmp, lease_src->mac) < 0)
+        if (VIR_ALLOC(mac_tmp) < 0)
             goto error;
+        *mac_tmp = g_strdup(lease_src->mac);
     }
     if (lease_src->iaid) {
-        if (VIR_ALLOC(iaid_tmp) < 0 ||
-            VIR_STRDUP(*iaid_tmp, lease_src->iaid) < 0)
+        if (VIR_ALLOC(iaid_tmp) < 0)
             goto error;
+        *iaid_tmp = g_strdup(lease_src->iaid);
     }
     if (lease_src->hostname) {
-        if (VIR_ALLOC(hostname_tmp) < 0 ||
-            VIR_STRDUP(*hostname_tmp, lease_src->hostname) < 0)
+        if (VIR_ALLOC(hostname_tmp) < 0)
             goto error;
+        *hostname_tmp = g_strdup(lease_src->hostname);
     }
     if (lease_src->clientid) {
-        if (VIR_ALLOC(clientid_tmp) < 0 ||
-            VIR_STRDUP(*clientid_tmp, lease_src->clientid) < 0)
+        if (VIR_ALLOC(clientid_tmp) < 0)
             goto error;
+        *clientid_tmp = g_strdup(lease_src->clientid);
     }
 
     lease_dst->mac = mac_tmp;
@@ -7188,14 +7175,11 @@ remoteDispatchDomainGetFSInfo(virNetServerPtr server G_GNUC_UNUSED,
 
         for (i = 0; i < ninfo; i++) {
             dst = &ret->info.info_val[i];
-            if (VIR_STRDUP(dst->mountpoint, info[i]->mountpoint) < 0)
-                goto cleanup;
+            dst->mountpoint = g_strdup(info[i]->mountpoint);
 
-            if (VIR_STRDUP(dst->name, info[i]->name) < 0)
-                goto cleanup;
+            dst->name = g_strdup(info[i]->name);
 
-            if (VIR_STRDUP(dst->fstype, info[i]->fstype) < 0)
-                goto cleanup;
+            dst->fstype = g_strdup(info[i]->fstype);
 
             ndisk = info[i]->ndevAlias;
             if (ndisk > REMOTE_DOMAIN_FSINFO_DISKS_MAX) {
@@ -7209,11 +7193,8 @@ remoteDispatchDomainGetFSInfo(virNetServerPtr server G_GNUC_UNUSED,
                 if (VIR_ALLOC_N(dst->dev_aliases.dev_aliases_val, ndisk) < 0)
                     goto cleanup;
 
-                for (j = 0; j < ndisk; j++) {
-                    if (VIR_STRDUP(dst->dev_aliases.dev_aliases_val[j],
-                                   info[i]->devAlias[j]) < 0)
-                        goto cleanup;
-                }
+                for (j = 0; j < ndisk; j++)
+                    dst->dev_aliases.dev_aliases_val[j] = g_strdup(info[i]->devAlias[j]);
 
                 dst->dev_aliases.dev_aliases_len = ndisk;
             } else {
@@ -7281,13 +7262,13 @@ remoteSerializeDomainInterface(virDomainInterfacePtr *ifaces,
         virDomainInterfacePtr iface = ifaces[i];
         remote_domain_interface *iface_ret = &(ret->ifaces.ifaces_val[i]);
 
-        if ((VIR_STRDUP(iface_ret->name, iface->name)) < 0)
-            goto cleanup;
+        iface_ret->name = g_strdup(iface->name);
 
-        if (iface->hwaddr &&
-            (VIR_ALLOC(iface_ret->hwaddr) < 0 ||
-             VIR_STRDUP(*iface_ret->hwaddr, iface->hwaddr) < 0))
-            goto cleanup;
+        if (iface->hwaddr) {
+            if (VIR_ALLOC(iface_ret->hwaddr) < 0)
+                goto cleanup;
+            *iface_ret->hwaddr = g_strdup(iface->hwaddr);
+        }
 
         if (iface->naddrs > REMOTE_DOMAIN_IP_ADDR_MAX) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -7307,8 +7288,7 @@ remoteSerializeDomainInterface(virDomainInterfacePtr *ifaces,
             remote_domain_ip_addr *ip_addr_ret =
                 &(iface_ret->addrs.addrs_val[j]);
 
-            if (VIR_STRDUP(ip_addr_ret->addr, ip_addr->addr) < 0)
-                goto cleanup;
+            ip_addr_ret->addr = g_strdup(ip_addr->addr);
 
             ip_addr_ret->prefix = ip_addr->prefix;
             ip_addr_ret->type = ip_addr->type;
@@ -7559,8 +7539,7 @@ static int
 make_nonnull_domain(remote_nonnull_domain *dom_dst, virDomainPtr dom_src)
 {
     dom_dst->id = dom_src->id;
-    if (VIR_STRDUP(dom_dst->name, dom_src->name) < 0)
-        return -1;
+    dom_dst->name = g_strdup(dom_src->name);
     memcpy(dom_dst->uuid, dom_src->uuid, VIR_UUID_BUFLEN);
     return 0;
 }
@@ -7568,8 +7547,7 @@ make_nonnull_domain(remote_nonnull_domain *dom_dst, virDomainPtr dom_src)
 static int
 make_nonnull_network(remote_nonnull_network *net_dst, virNetworkPtr net_src)
 {
-    if (VIR_STRDUP(net_dst->name, net_src->name) < 0)
-        return -1;
+    net_dst->name = g_strdup(net_src->name);
     memcpy(net_dst->uuid, net_src->uuid, VIR_UUID_BUFLEN);
     return 0;
 }
@@ -7577,8 +7555,7 @@ make_nonnull_network(remote_nonnull_network *net_dst, virNetworkPtr net_src)
 static int
 make_nonnull_network_port(remote_nonnull_network_port *port_dst, virNetworkPortPtr port_src)
 {
-    if (VIR_STRDUP(port_dst->net.name, port_src->net->name) < 0)
-        return -1;
+    port_dst->net.name = g_strdup(port_src->net->name);
     memcpy(port_dst->net.uuid, port_src->net->uuid, VIR_UUID_BUFLEN);
     memcpy(port_dst->uuid, port_src->uuid, VIR_UUID_BUFLEN);
     return 0;
@@ -7588,20 +7565,15 @@ static int
 make_nonnull_interface(remote_nonnull_interface *interface_dst,
                        virInterfacePtr interface_src)
 {
-    if (VIR_STRDUP(interface_dst->name, interface_src->name) < 0)
-        return -1;
-    if (VIR_STRDUP(interface_dst->mac, interface_src->mac) < 0) {
-        VIR_FREE(interface_dst->name);
-        return -1;
-    }
+    interface_dst->name = g_strdup(interface_src->name);
+    interface_dst->mac = g_strdup(interface_src->mac);
     return 0;
 }
 
 static int
 make_nonnull_storage_pool(remote_nonnull_storage_pool *pool_dst, virStoragePoolPtr pool_src)
 {
-    if (VIR_STRDUP(pool_dst->name, pool_src->name) < 0)
-        return -1;
+    pool_dst->name = g_strdup(pool_src->name);
     memcpy(pool_dst->uuid, pool_src->uuid, VIR_UUID_BUFLEN);
     return 0;
 }
@@ -7609,25 +7581,16 @@ make_nonnull_storage_pool(remote_nonnull_storage_pool *pool_dst, virStoragePoolP
 static int
 make_nonnull_storage_vol(remote_nonnull_storage_vol *vol_dst, virStorageVolPtr vol_src)
 {
-    if (VIR_STRDUP(vol_dst->pool, vol_src->pool) < 0)
-        return -1;
-    if (VIR_STRDUP(vol_dst->name, vol_src->name) < 0) {
-        VIR_FREE(vol_dst->pool);
-        return -1;
-    }
-    if (VIR_STRDUP(vol_dst->key, vol_src->key) < 0) {
-        VIR_FREE(vol_dst->pool);
-        VIR_FREE(vol_dst->name);
-        return -1;
-    }
+    vol_dst->pool = g_strdup(vol_src->pool);
+    vol_dst->name = g_strdup(vol_src->name);
+    vol_dst->key = g_strdup(vol_src->key);
     return 0;
 }
 
 static int
 make_nonnull_node_device(remote_nonnull_node_device *dev_dst, virNodeDevicePtr dev_src)
 {
-    if (VIR_STRDUP(dev_dst->name, dev_src->name) < 0)
-        return -1;
+    dev_dst->name = g_strdup(dev_src->name);
     return 0;
 }
 
@@ -7636,16 +7599,14 @@ make_nonnull_secret(remote_nonnull_secret *secret_dst, virSecretPtr secret_src)
 {
     memcpy(secret_dst->uuid, secret_src->uuid, VIR_UUID_BUFLEN);
     secret_dst->usageType = secret_src->usageType;
-    if (VIR_STRDUP(secret_dst->usageID, secret_src->usageID) < 0)
-        return -1;
+    secret_dst->usageID = g_strdup(secret_src->usageID);
     return 0;
 }
 
 static int
 make_nonnull_nwfilter(remote_nonnull_nwfilter *nwfilter_dst, virNWFilterPtr nwfilter_src)
 {
-    if (VIR_STRDUP(nwfilter_dst->name, nwfilter_src->name) < 0)
-        return -1;
+    nwfilter_dst->name = g_strdup(nwfilter_src->name);
     memcpy(nwfilter_dst->uuid, nwfilter_src->uuid, VIR_UUID_BUFLEN);
     return 0;
 }
@@ -7653,20 +7614,15 @@ make_nonnull_nwfilter(remote_nonnull_nwfilter *nwfilter_dst, virNWFilterPtr nwfi
 static int
 make_nonnull_nwfilter_binding(remote_nonnull_nwfilter_binding *binding_dst, virNWFilterBindingPtr binding_src)
 {
-    if (VIR_STRDUP(binding_dst->portdev, binding_src->portdev) < 0)
-        return -1;
-    if (VIR_STRDUP(binding_dst->filtername, binding_src->filtername) < 0) {
-        VIR_FREE(binding_dst->portdev);
-        return -1;
-    }
+    binding_dst->portdev = g_strdup(binding_src->portdev);
+    binding_dst->filtername = g_strdup(binding_src->filtername);
     return 0;
 }
 
 static int
 make_nonnull_domain_checkpoint(remote_nonnull_domain_checkpoint *checkpoint_dst, virDomainCheckpointPtr checkpoint_src)
 {
-    if (VIR_STRDUP(checkpoint_dst->name, checkpoint_src->name) < 0)
-        return -1;
+    checkpoint_dst->name = g_strdup(checkpoint_src->name);
     if (make_nonnull_domain(&checkpoint_dst->dom, checkpoint_src->domain) < 0) {
         VIR_FREE(checkpoint_dst->name);
         return -1;
@@ -7677,8 +7633,7 @@ make_nonnull_domain_checkpoint(remote_nonnull_domain_checkpoint *checkpoint_dst,
 static int
 make_nonnull_domain_snapshot(remote_nonnull_domain_snapshot *snapshot_dst, virDomainSnapshotPtr snapshot_src)
 {
-    if (VIR_STRDUP(snapshot_dst->name, snapshot_src->name) < 0)
-        return -1;
+    snapshot_dst->name = g_strdup(snapshot_src->name);
     if (make_nonnull_domain(&snapshot_dst->dom, snapshot_src->domain) < 0) {
         VIR_FREE(snapshot_dst->name);
         return -1;
@@ -7699,8 +7654,7 @@ remoteSerializeDomainDiskErrors(virDomainDiskErrorPtr errors,
         goto error;
 
     for (i = 0; i < nerrors; i++) {
-        if (VIR_STRDUP(val[i].disk, errors[i].disk) < 0)
-            goto error;
+        val[i].disk = g_strdup(errors[i].disk);
         val[i].error = errors[i].error;
     }
 

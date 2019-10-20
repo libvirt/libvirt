@@ -1100,18 +1100,12 @@ int main(int argc, char **argv) {
 
         case 'p':
             VIR_FREE(pid_file);
-            if (VIR_STRDUP_QUIET(pid_file, optarg) < 0) {
-                VIR_ERROR(_("Can't allocate memory"));
-                exit(EXIT_FAILURE);
-            }
+            pid_file = g_strdup(optarg);
             break;
 
         case 'f':
             VIR_FREE(remote_config_file);
-            if (VIR_STRDUP_QUIET(remote_config_file, optarg) < 0) {
-                VIR_ERROR(_("Can't allocate memory"));
-                exit(EXIT_FAILURE);
-            }
+            remote_config_file = g_strdup(optarg);
             break;
 
         case 'V':
@@ -1222,10 +1216,7 @@ int main(int argc, char **argv) {
 
     /* Ensure the rundir exists (on tmpfs on some systems) */
     if (privileged) {
-        if (VIR_STRDUP_QUIET(run_dir, RUNSTATEDIR "/libvirt") < 0) {
-            VIR_ERROR(_("Can't allocate memory"));
-            goto cleanup;
-        }
+        run_dir = g_strdup(RUNSTATEDIR "/libvirt");
     } else {
         run_dir = virGetUserRuntimeDirectory();
 
