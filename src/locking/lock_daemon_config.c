@@ -39,8 +39,7 @@ int
 virLockDaemonConfigFilePath(bool privileged, char **configfile)
 {
     if (privileged) {
-        if (VIR_STRDUP(*configfile, SYSCONFDIR "/libvirt/virtlockd.conf") < 0)
-            goto error;
+        *configfile = g_strdup(SYSCONFDIR "/libvirt/virtlockd.conf");
     } else {
         char *configdir = NULL;
 

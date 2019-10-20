@@ -120,8 +120,7 @@ static char *virLockManagerLockDaemonPath(bool privileged)
 {
     char *path;
     if (privileged) {
-        if (VIR_STRDUP(path, RUNSTATEDIR "/libvirt/virtlockd-sock") < 0)
-            return NULL;
+        path = g_strdup(RUNSTATEDIR "/libvirt/virtlockd-sock");
     } else {
         char *rundir = NULL;
 
@@ -422,8 +421,7 @@ static int virLockManagerLockDaemonNew(virLockManagerPtr lock,
             if (STREQ(params[i].key, "uuid")) {
                 memcpy(priv->uuid, params[i].value.uuid, VIR_UUID_BUFLEN);
             } else if (STREQ(params[i].key, "name")) {
-                if (VIR_STRDUP(priv->name, params[i].value.str) < 0)
-                    goto cleanup;
+                priv->name = g_strdup(params[i].value.str);
             } else if (STREQ(params[i].key, "id")) {
                 priv->id = params[i].value.iv;
             } else if (STREQ(params[i].key, "pid")) {
@@ -515,8 +513,7 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
 
             if (newName) {
                 VIR_DEBUG("Got an LVM UUID %s for %s", newName, name);
-                if (VIR_STRDUP(newLockspace, driver->lvmLockSpaceDir) < 0)
-                    goto cleanup;
+                newLockspace = g_strdup(driver->lvmLockSpaceDir);
                 autoCreate = true;
                 break;
             }
@@ -532,8 +529,7 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
 
             if (newName) {
                 VIR_DEBUG("Got an SCSI ID %s for %s", newName, name);
-                if (VIR_STRDUP(newLockspace, driver->scsiLockSpaceDir) < 0)
-                    goto cleanup;
+                newLockspace = g_strdup(driver->scsiLockSpaceDir);
                 autoCreate = true;
                 break;
             }
@@ -542,17 +538,14 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
         }
 
         if (driver->fileLockSpaceDir) {
-            if (VIR_STRDUP(newLockspace, driver->fileLockSpaceDir) < 0)
-                goto cleanup;
+            newLockspace = g_strdup(driver->fileLockSpaceDir);
             if (virCryptoHashString(VIR_CRYPTO_HASH_SHA256, name, &newName) < 0)
                 goto cleanup;
             autoCreate = true;
             VIR_DEBUG("Using indirect lease %s for %s", newName, name);
         } else {
-            if (VIR_STRDUP(newLockspace, "") < 0)
-                goto cleanup;
-            if (VIR_STRDUP(newName, name) < 0)
-                goto cleanup;
+            newLockspace = g_strdup("");
+            newName = g_strdup(name);
             VIR_DEBUG("Using direct lease for %s", name);
         }
 
@@ -587,8 +580,7 @@ static int virLockManagerLockDaemonAddResource(virLockManagerPtr lock,
         if (virAsprintf(&newLockspace, "%s/%s",
                         path, lockspace) < 0)
             goto cleanup;
-        if (VIR_STRDUP(newName, name) < 0)
-            goto cleanup;
+        newName = g_strdup(name);
 
     }   break;
     default:

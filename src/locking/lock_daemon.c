@@ -447,9 +447,8 @@ virLockDaemonUnixSocketPaths(bool privileged,
                              char **adminSockfile)
 {
     if (privileged) {
-        if (VIR_STRDUP(*sockfile, RUNSTATEDIR "/libvirt/virtlockd-sock") < 0 ||
-            VIR_STRDUP(*adminSockfile, RUNSTATEDIR "/libvirt/virtlockd-admin-sock") < 0)
-            goto error;
+        *sockfile = g_strdup(RUNSTATEDIR "/libvirt/virtlockd-sock");
+        *adminSockfile = g_strdup(RUNSTATEDIR "/libvirt/virtlockd-admin-sock");
     } else {
         char *rundir = NULL;
         mode_t old_umask;
@@ -760,8 +759,7 @@ virLockDaemonClientNewPostExecRestart(virNetServerClientPtr client,
                        _("Missing ownerName data in JSON document"));
         goto error;
     }
-    if (VIR_STRDUP(priv->ownerName, ownerName) < 0)
-        goto error;
+    priv->ownerName = g_strdup(ownerName);
     if (!(ownerUUID = virJSONValueObjectGetString(object, "ownerUUID"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Missing ownerUUID data in JSON document"));
@@ -831,8 +829,7 @@ virLockDaemonExecRestartStatePath(bool privileged,
                                   char **state_file)
 {
     if (privileged) {
-        if (VIR_STRDUP(*state_file, RUNSTATEDIR "/virtlockd-restart-exec.json") < 0)
-            goto error;
+        *state_file = g_strdup(RUNSTATEDIR "/virtlockd-restart-exec.json");
     } else {
         char *rundir = NULL;
         mode_t old_umask;
@@ -1162,14 +1159,12 @@ int main(int argc, char **argv) {
 
         case 'p':
             VIR_FREE(pid_file);
-            if (VIR_STRDUP_QUIET(pid_file, optarg) < 0)
-                goto no_memory;
+            pid_file = g_strdup(optarg);
             break;
 
         case 'f':
             VIR_FREE(remote_config_file);
-            if (VIR_STRDUP_QUIET(remote_config_file, optarg) < 0)
-                goto no_memory;
+            remote_config_file = g_strdup(optarg);
             break;
 
         case 'V':
@@ -1247,8 +1242,7 @@ int main(int argc, char **argv) {
 
     /* Ensure the rundir exists (on tmpfs on some systems) */
     if (privileged) {
-        if (VIR_STRDUP_QUIET(run_dir, RUNSTATEDIR "/libvirt") < 0)
-            goto no_memory;
+        run_dir = g_strdup(RUNSTATEDIR "/libvirt");
     } else {
         if (!(run_dir = virGetUserRuntimeDirectory())) {
             VIR_ERROR(_("Can't determine user directory"));
@@ -1448,8 +1442,4 @@ int main(int argc, char **argv) {
     VIR_FREE(run_dir);
     virLockDaemonConfigFree(config);
     return ret;
-
- no_memory:
-    VIR_ERROR(_("Can't allocate memory"));
-    exit(EXIT_FAILURE);
 }

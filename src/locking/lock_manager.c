@@ -179,8 +179,7 @@ virLockManagerPluginPtr virLockManagerPluginNew(const char *name,
     plugin->driver = driver;
     plugin->handle = handle;
     plugin->refs = 1;
-    if (VIR_STRDUP(plugin->name, name) < 0)
-        goto cleanup;
+    plugin->name = g_strdup(name);
 
     VIR_FREE(configFile);
     VIR_FREE(modfile);

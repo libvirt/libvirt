@@ -440,10 +440,7 @@ static int virLockManagerSanlockInit(unsigned int version,
     driver->io_timeout = 0;
     driver->user = (uid_t) -1;
     driver->group = (gid_t) -1;
-    if (VIR_STRDUP(driver->autoDiskLeasePath, LOCALSTATEDIR "/lib/libvirt/sanlock") < 0) {
-        VIR_FREE(driver);
-        goto error;
-    }
+    driver->autoDiskLeasePath = g_strdup(LOCALSTATEDIR "/lib/libvirt/sanlock");
 
     if (virLockManagerSanlockLoadConfig(driver, configFile) < 0)
         goto error;
@@ -514,8 +511,7 @@ static int virLockManagerSanlockNew(virLockManagerPtr lock,
         if (STREQ(param->key, "uuid")) {
             memcpy(priv->vm_uuid, param->value.uuid, 16);
         } else if (STREQ(param->key, "name")) {
-            if (VIR_STRDUP(priv->vm_name, param->value.str) < 0)
-                goto error;
+            priv->vm_name = g_strdup(param->value.str);
         } else if (STREQ(param->key, "pid")) {
             priv->vm_pid = param->value.iv;
         } else if (STREQ(param->key, "id")) {
@@ -540,10 +536,6 @@ static int virLockManagerSanlockNew(virLockManagerPtr lock,
 
     lock->privateData = priv;
     return 0;
-
- error:
-    VIR_FREE(priv);
-    return -1;
 }
 
 static void virLockManagerSanlockFree(virLockManagerPtr lock)

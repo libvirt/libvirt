@@ -277,8 +277,7 @@ virLockSpaceProtocolDispatchRegister(virNetServerPtr server G_GNUC_UNUSED,
         goto cleanup;
     }
 
-    if (VIR_STRDUP(priv->ownerName, args->owner.name) < 0)
-        goto cleanup;
+    priv->ownerName = g_strdup(args->owner.name);
     memcpy(priv->ownerUUID, args->owner.uuid, VIR_UUID_BUFLEN);
     priv->ownerId = args->owner.id;
     priv->ownerPid = args->owner.pid;
