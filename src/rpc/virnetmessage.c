@@ -523,28 +523,22 @@ void virNetMessageSaveError(virNetMessageErrorPtr rerr)
     if (verr) {
         rerr->code = verr->code;
         rerr->domain = verr->domain;
-        if (verr->message && VIR_ALLOC(rerr->message) == 0 &&
-            VIR_STRDUP_QUIET(*rerr->message, verr->message) < 0)
-            VIR_FREE(rerr->message);
+        if (verr->message && VIR_ALLOC(rerr->message) == 0)
+            *rerr->message = g_strdup(verr->message);
         rerr->level = verr->level;
-        if (verr->str1 && VIR_ALLOC(rerr->str1) == 0 &&
-            VIR_STRDUP_QUIET(*rerr->str1, verr->str1) < 0)
-            VIR_FREE(rerr->str1);
-        if (verr->str2 && VIR_ALLOC(rerr->str2) == 0 &&
-            VIR_STRDUP_QUIET(*rerr->str2, verr->str2) < 0)
-            VIR_FREE(rerr->str2);
-        if (verr->str3 && VIR_ALLOC(rerr->str3) == 0 &&
-            VIR_STRDUP_QUIET(*rerr->str3, verr->str3) < 0)
-            VIR_FREE(rerr->str3);
+        if (verr->str1 && VIR_ALLOC(rerr->str1) == 0)
+            *rerr->str1 = g_strdup(verr->str1);
+        if (verr->str2 && VIR_ALLOC(rerr->str2) == 0)
+            *rerr->str2 = g_strdup(verr->str2);
+        if (verr->str3 && VIR_ALLOC(rerr->str3) == 0)
+            *rerr->str3 = g_strdup(verr->str3);
         rerr->int1 = verr->int1;
         rerr->int2 = verr->int2;
     } else {
         rerr->code = VIR_ERR_INTERNAL_ERROR;
         rerr->domain = VIR_FROM_RPC;
-        if (VIR_ALLOC_QUIET(rerr->message) == 0 &&
-            VIR_STRDUP_QUIET(*rerr->message,
-                             _("Library function returned error but did not set virError")) < 0)
-            VIR_FREE(rerr->message);
+        if (VIR_ALLOC_QUIET(rerr->message) == 0)
+            *rerr->message = g_strdup(_("Library function returned error but did not set virError"));
         rerr->level = VIR_ERR_ERROR;
     }
 }

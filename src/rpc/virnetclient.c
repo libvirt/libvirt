@@ -316,8 +316,7 @@ static virNetClientPtr virNetClientNew(virNetSocketPtr sock,
     client->wakeupSendFD = wakeupFD[1];
     wakeupFD[0] = wakeupFD[1] = -1;
 
-    if (VIR_STRDUP(client->hostname, hostname) < 0)
-        goto error;
+    client->hostname = g_strdup(hostname);
 
     PROBE(RPC_CLIENT_NEW,
           "client=%p sock=%p",
@@ -454,8 +453,7 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
 
     /* Use default paths for known hosts an public keys if not provided */
     if (knownHostsPath) {
-        if (VIR_STRDUP(knownhosts, knownHostsPath) < 0)
-            goto cleanup;
+        knownhosts = g_strdup(knownHostsPath);
     } else {
         confdir = virGetUserConfigDirectory();
         if (confdir) {
@@ -466,8 +464,7 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
     }
 
     if (privkeyPath) {
-        if (VIR_STRDUP(privkey, privkeyPath) < 0)
-            goto cleanup;
+        privkey = g_strdup(privkeyPath);
     } else {
         homedir = virGetUserDirectory();
         if (homedir) {
@@ -565,8 +562,7 @@ virNetClientPtr virNetClientNewLibssh(const char *host,
 
     /* Use default paths for known hosts an public keys if not provided */
     if (knownHostsPath) {
-        if (VIR_STRDUP(knownhosts, knownHostsPath) < 0)
-            goto cleanup;
+        knownhosts = g_strdup(knownHostsPath);
     } else {
         confdir = virGetUserConfigDirectory();
         if (confdir) {
@@ -576,8 +572,7 @@ virNetClientPtr virNetClientNewLibssh(const char *host,
     }
 
     if (privkeyPath) {
-        if (VIR_STRDUP(privkey, privkeyPath) < 0)
-            goto cleanup;
+        privkey = g_strdup(privkeyPath);
     } else {
         homedir = virGetUserDirectory();
         if (homedir) {

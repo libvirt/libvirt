@@ -232,10 +232,7 @@ virNetSSHKbIntCb(const char *name G_GNUC_UNUSED,
     /* fill data structures for auth callback */
     for (i = 0; i < num_prompts; i++) {
         char *prompt;
-        if (VIR_STRDUP(prompt, prompts[i].text) < 0) {
-            priv->authCbErr = VIR_NET_SSH_AUTHCB_OOM;
-            goto cleanup;
-        }
+        prompt = g_strdup(prompts[i].text);
         askcred[i].prompt = prompt;
 
         /* remove colon and trailing spaces from prompts, as default behavior
@@ -1018,8 +1015,7 @@ virNetSSHSessionAuthAddPasswordAuth(virNetSSHSessionPtr sess,
                                             "ssh", NULL, sess->hostname)))
             goto error;
     } else {
-        if (VIR_STRDUP(user, username) < 0)
-            goto error;
+        user = g_strdup(username);
     }
 
     virObjectLock(sess);
@@ -1055,8 +1051,7 @@ virNetSSHSessionAuthAddAgentAuth(virNetSSHSessionPtr sess,
 
     virObjectLock(sess);
 
-    if (VIR_STRDUP(user, username) < 0)
-        goto error;
+    user = g_strdup(username);
 
     if (!(auth = virNetSSHSessionAuthMethodNew(sess)))
         goto error;
@@ -1094,10 +1089,9 @@ virNetSSHSessionAuthAddPrivKeyAuth(virNetSSHSessionPtr sess,
 
     virObjectLock(sess);
 
-    if (VIR_STRDUP(user, username) < 0 ||
-        VIR_STRDUP(file, keyfile) < 0 ||
-        VIR_STRDUP(pass, password) < 0)
-        goto error;
+    user = g_strdup(username);
+    file = g_strdup(keyfile);
+    pass = g_strdup(password);
 
     if (!(auth = virNetSSHSessionAuthMethodNew(sess)))
         goto error;
@@ -1135,8 +1129,7 @@ virNetSSHSessionAuthAddKeyboardAuth(virNetSSHSessionPtr sess,
 
     virObjectLock(sess);
 
-    if (VIR_STRDUP(user, username) < 0)
-        goto error;
+    user = g_strdup(username);
 
     if (!(auth = virNetSSHSessionAuthMethodNew(sess)))
         goto error;
@@ -1164,8 +1157,7 @@ virNetSSHSessionSetChannelCommand(virNetSSHSessionPtr sess,
 
     VIR_FREE(sess->channelCommand);
 
-    if (VIR_STRDUP(sess->channelCommand, command) < 0)
-        ret = -1;
+    sess->channelCommand = g_strdup(command);
 
     virObjectUnlock(sess);
     return ret;
@@ -1188,8 +1180,7 @@ virNetSSHSessionSetHostKeyVerification(virNetSSHSessionPtr sess,
 
     VIR_FREE(sess->hostname);
 
-    if (VIR_STRDUP(sess->hostname, hostname) < 0)
-        goto error;
+    sess->hostname = g_strdup(hostname);
 
     /* load the known hosts file */
     if (hostsfile) {
@@ -1213,8 +1204,7 @@ virNetSSHSessionSetHostKeyVerification(virNetSSHSessionPtr sess,
         /* set filename only if writing to the known hosts file is requested */
         if (!(flags & VIR_NET_SSH_HOSTKEY_FILE_READONLY)) {
             VIR_FREE(sess->knownHostsFile);
-            if (VIR_STRDUP(sess->knownHostsFile, hostsfile) < 0)
-                goto error;
+            sess->knownHostsFile = g_strdup(hostsfile);
         }
     }
 

@@ -702,8 +702,7 @@ static virNetTLSContextPtr virNetTLSContextNew(const char *cacert,
     if (!(ctxt = virObjectLockableNew(virNetTLSContextClass)))
         return NULL;
 
-    if (VIR_STRDUP(ctxt->priority, priority) < 0)
-        goto error;
+    ctxt->priority = g_strdup(priority);
 
     err = gnutls_certificate_allocate_credentials(&ctxt->x509cred);
     if (err) {
@@ -863,23 +862,19 @@ static int virNetTLSContextLocateCredentials(const char *pkipath,
      */
     if (!*cacert) {
         VIR_DEBUG("Using default TLS CA certificate path");
-        if (VIR_STRDUP(*cacert, LIBVIRT_CACERT) < 0)
-            goto error;
+        *cacert = g_strdup(LIBVIRT_CACERT);
     }
 
     if (!*cacrl) {
         VIR_DEBUG("Using default TLS CA revocation list path");
-        if (VIR_STRDUP(*cacrl, LIBVIRT_CACRL) < 0)
-            goto error;
+        *cacrl = g_strdup(LIBVIRT_CACRL);
     }
 
     if (!*key && !*cert) {
         VIR_DEBUG("Using default TLS key/certificate path");
-        if (VIR_STRDUP(*key, isServer ? LIBVIRT_SERVERKEY : LIBVIRT_CLIENTKEY) < 0)
-            goto error;
+        *key = g_strdup(isServer ? LIBVIRT_SERVERKEY : LIBVIRT_CLIENTKEY);
 
-        if (VIR_STRDUP(*cert, isServer ? LIBVIRT_SERVERCERT : LIBVIRT_CLIENTCERT) < 0)
-            goto error;
+        *cert = g_strdup(isServer ? LIBVIRT_SERVERCERT : LIBVIRT_CLIENTCERT);
     }
 
     VIR_FREE(user_pki_path);
@@ -1058,8 +1053,7 @@ static int virNetTLSContextValidCertificate(virNetTLSContextPtr ctxt,
                                "[session]", gnutls_strerror(ret));
                 goto authfail;
             }
-            if (VIR_STRDUP(sess->x509dname, dname) < 0)
-                goto authfail;
+            sess->x509dname = g_strdup(dname);
             VIR_DEBUG("Peer DN is %s", dname);
 
             if (virNetTLSContextCheckCertDN(cert, "[session]", sess->hostname, dname,
@@ -1195,8 +1189,7 @@ virNetTLSSessionPtr virNetTLSSessionNew(virNetTLSContextPtr ctxt,
     if (!(sess = virObjectLockableNew(virNetTLSSessionClass)))
         return NULL;
 
-    if (VIR_STRDUP(sess->hostname, hostname) < 0)
-        goto error;
+    sess->hostname = g_strdup(hostname);
 
     if ((err = gnutls_init(&sess->session,
                            ctxt->isServer ? GNUTLS_SERVER : GNUTLS_CLIENT)) != 0) {

@@ -365,8 +365,7 @@ virNetServerPtr virNetServerNew(const char *name,
                                           srv)))
         goto error;
 
-    if (VIR_STRDUP(srv->name, name) < 0)
-        goto error;
+    srv->name = g_strdup(name);
 
     srv->next_client_id = next_client_id;
     srv->nclients_max = max_clients;

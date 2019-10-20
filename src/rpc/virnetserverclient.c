@@ -1665,8 +1665,7 @@ virNetServerClientGetInfo(virNetServerClientPtr client,
         goto cleanup;
     }
 
-    if (VIR_STRDUP(*sock_addr, addr) < 0)
-        goto cleanup;
+    *sock_addr = g_strdup(addr);
 
     if (!client->identity) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
