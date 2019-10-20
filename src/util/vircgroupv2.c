@@ -159,8 +159,7 @@ virCgroupV2CopyPlacement(virCgroupPtr group,
     VIR_DEBUG("group=%p path=%s parent=%p", group, path, parent);
 
     if (path[0] == '/') {
-        if (VIR_STRDUP(group->unified.placement, path) < 0)
-            return -1;
+        group->unified.placement = g_strdup(path);
     } else {
         /*
          * parent == "/" + path="" => "/"

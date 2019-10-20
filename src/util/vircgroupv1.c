@@ -175,13 +175,9 @@ virCgroupV1CopyMounts(virCgroupPtr group,
         if (!parent->legacy[i].mountPoint)
             continue;
 
-        if (VIR_STRDUP(group->legacy[i].mountPoint,
-                       parent->legacy[i].mountPoint) < 0)
-            return -1;
+        group->legacy[i].mountPoint = g_strdup(parent->legacy[i].mountPoint);
 
-        if (VIR_STRDUP(group->legacy[i].linkPoint,
-                       parent->legacy[i].linkPoint) < 0)
-            return -1;
+        group->legacy[i].linkPoint = g_strdup(parent->legacy[i].linkPoint);
     }
     return 0;
 }
@@ -201,8 +197,7 @@ virCgroupV1CopyPlacement(virCgroupPtr group,
             continue;
 
         if (path[0] == '/') {
-            if (VIR_STRDUP(group->legacy[i].placement, path) < 0)
-                return -1;
+            group->legacy[i].placement = g_strdup(path);
         } else {
             /*
              * parent == "/" + path="" => "/"
@@ -233,8 +228,7 @@ virCgroupV1ResolveMountLink(const char *mntDir,
     char *dirName;
     struct stat sb;
 
-    if (VIR_STRDUP(tmp, mntDir) < 0)
-        return -1;
+    tmp = g_strdup(mntDir);
 
     dirName = strrchr(tmp, '/');
     if (!dirName) {
@@ -325,8 +319,7 @@ virCgroupV1DetectMounts(virCgroupPtr group,
 
             VIR_FREE(controller->mountPoint);
             VIR_FREE(controller->linkPoint);
-            if (VIR_STRDUP(controller->mountPoint, mntDir) < 0)
-                return -1;
+            controller->mountPoint = g_strdup(mntDir);
 
             /* If it is a co-mount it has a filename like "cpu,cpuacct"
              * and we must identify the symlink path */
@@ -359,9 +352,7 @@ virCgroupV1DetectPlacement(virCgroupPtr group,
              * selfpath == "/libvirt.service" + path == "foo" -> "/libvirt.service/foo"
              */
             if (i == VIR_CGROUP_CONTROLLER_SYSTEMD) {
-                if (VIR_STRDUP(group->legacy[i].placement,
-                               selfpath) < 0)
-                    return -1;
+                group->legacy[i].placement = g_strdup(selfpath);
             } else {
                 if (virAsprintf(&group->legacy[i].placement,
                                 "%s%s%s", selfpath,
@@ -1791,12 +1782,14 @@ virCgroupV1AllowDevice(virCgroupPtr group,
     g_autofree char *majorstr = NULL;
     g_autofree char *minorstr = NULL;
 
-    if ((major < 0 && VIR_STRDUP(majorstr, "*") < 0) ||
-        (major >= 0 && virAsprintf(&majorstr, "%i", major) < 0))
+    if (major < 0)
+        majorstr = g_strdup("*");
+    if (major >= 0 && virAsprintf(&majorstr, "%i", major) < 0)
         return -1;
 
-    if ((minor < 0 && VIR_STRDUP(minorstr, "*") < 0) ||
-        (minor >= 0 && virAsprintf(&minorstr, "%i", minor) < 0))
+    if (minor < 0)
+        minorstr = g_strdup("*");
+    if (minor >= 0 && virAsprintf(&minorstr, "%i", minor) < 0)
         return -1;
 
     if (virAsprintf(&devstr, "%c %s:%s %s", type, majorstr, minorstr,
@@ -1824,12 +1817,14 @@ virCgroupV1DenyDevice(virCgroupPtr group,
     g_autofree char *majorstr = NULL;
     g_autofree char *minorstr = NULL;
 
-    if ((major < 0 && VIR_STRDUP(majorstr, "*") < 0) ||
-        (major >= 0 && virAsprintf(&majorstr, "%i", major) < 0))
+    if (major < 0)
+        majorstr = g_strdup("*");
+    if (major >= 0 && virAsprintf(&majorstr, "%i", major) < 0)
         return -1;
 
-    if ((minor < 0 && VIR_STRDUP(minorstr, "*") < 0) ||
-        (minor >= 0 && virAsprintf(&minorstr, "%i", minor) < 0))
+    if (minor < 0)
+        minorstr = g_strdup("*");
+    if (minor >= 0 && virAsprintf(&minorstr, "%i", minor) < 0)
         return -1;
 
     if (virAsprintf(&devstr, "%c %s:%s %s", type, majorstr, minorstr,

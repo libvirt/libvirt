@@ -289,8 +289,7 @@ virCgroupDetectPlacement(virCgroupPtr group,
     VIR_DEBUG("Detecting placement for pid %lld path %s",
               (long long) pid, path);
     if (pid == -1) {
-        if (VIR_STRDUP(procfile, "/proc/self/cgroup") < 0)
-            goto cleanup;
+        procfile = g_strdup("/proc/self/cgroup");
     } else {
         if (virAsprintf(&procfile, "/proc/%lld/cgroup",
                         (long long) pid) < 0)
@@ -547,8 +546,7 @@ virCgroupGetValueForBlkDev(const char *str,
     if (!(lines = virStringSplit(str, "\n", -1)))
         goto error;
 
-    if (VIR_STRDUP(*value, virStringListGetFirstWithPrefix(lines, prefix)) < 0)
-        goto error;
+    *value = g_strdup(virStringListGetFirstWithPrefix(lines, prefix));
 
     ret = 0;
  error:
@@ -682,8 +680,7 @@ virCgroupNew(pid_t pid,
         goto error;
 
     if (path[0] == '/' || !parent) {
-        if (VIR_STRDUP((*group)->path, path) < 0)
-            goto error;
+        (*group)->path = g_strdup(path);
     } else {
         if (virAsprintf(&(*group)->path, "%s%s%s",
                         parent->path,
@@ -863,8 +860,7 @@ virCgroupNewPartition(const char *path,
 
     if (STRNEQ(newPath, "/")) {
         char *tmp;
-        if (VIR_STRDUP(parentPath, newPath) < 0)
-            goto cleanup;
+        parentPath = g_strdup(newPath);
 
         tmp = strrchr(parentPath, '/');
         tmp++;
@@ -979,8 +975,7 @@ virCgroupNewThread(virCgroupPtr domain,
             return -1;
         break;
     case VIR_CGROUP_THREAD_EMULATOR:
-        if (VIR_STRDUP(name, "emulator") < 0)
-            return -1;
+        name = g_strdup("emulator");
         break;
     case VIR_CGROUP_THREAD_IOTHREAD:
         if (virAsprintf(&name, "iothread%d", id) < 0)
