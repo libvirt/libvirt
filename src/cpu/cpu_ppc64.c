@@ -188,8 +188,7 @@ ppc64ModelCopy(const struct ppc64_model *model)
     if (VIR_ALLOC(copy) < 0)
         goto error;
 
-    if (VIR_STRDUP(copy->name, model->name) < 0)
-        goto error;
+    copy->name = g_strdup(model->name);
 
     if (ppc64DataCopy(&copy->data, &model->data) < 0)
         goto error;
@@ -287,8 +286,7 @@ ppc64VendorParse(xmlXPathContextPtr ctxt G_GNUC_UNUSED,
     if (VIR_ALLOC(vendor) < 0)
         return -1;
 
-    if (VIR_STRDUP(vendor->name, name) < 0)
-        goto cleanup;
+    vendor->name = g_strdup(name);
 
     if (ppc64VendorFind(map, vendor->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -324,8 +322,7 @@ ppc64ModelParse(xmlXPathContextPtr ctxt,
     if (VIR_ALLOC(model) < 0)
         goto cleanup;
 
-    if (VIR_STRDUP(model->name, name) < 0)
-        goto cleanup;
+    model->name = g_strdup(name);
 
     if (ppc64ModelFind(map, model->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -620,10 +617,9 @@ ppc64DriverDecode(virCPUDefPtr cpu,
         goto cleanup;
     }
 
-    if (VIR_STRDUP(cpu->model, model->name) < 0 ||
-        (model->vendor && VIR_STRDUP(cpu->vendor, model->vendor->name) < 0)) {
-        goto cleanup;
-    }
+    cpu->model = g_strdup(model->name);
+    if (model->vendor)
+        cpu->vendor = g_strdup(model->vendor->name);
 
     ret = 0;
 
@@ -765,12 +761,13 @@ virCPUppc64Baseline(virCPUDefPtr *cpus,
         }
     }
 
-    if (VIR_ALLOC(cpu) < 0 ||
-        VIR_STRDUP(cpu->model, model->name) < 0)
+    if (VIR_ALLOC(cpu) < 0)
         goto error;
 
-    if (vendor && VIR_STRDUP(cpu->vendor, vendor->name) < 0)
-        goto error;
+    cpu->model = g_strdup(model->name);
+
+    if (vendor)
+        cpu->vendor = g_strdup(vendor->name);
 
     cpu->type = VIR_CPU_TYPE_GUEST;
     cpu->match = VIR_CPU_MATCH_EXACT;
@@ -801,10 +798,8 @@ virCPUppc64DriverGetModels(char ***models)
         if (VIR_ALLOC_N(*models, map->nmodels + 1) < 0)
             goto error;
 
-        for (i = 0; i < map->nmodels; i++) {
-            if (VIR_STRDUP((*models)[i], map->models[i]->name) < 0)
-                goto error;
-        }
+        for (i = 0; i < map->nmodels; i++)
+            (*models)[i] = g_strdup(map->models[i]->name);
     }
 
     ret = map->nmodels;

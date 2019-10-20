@@ -78,11 +78,12 @@ virCPUarmBaseline(virCPUDefPtr *cpus,
 {
     virCPUDefPtr cpu = NULL;
 
-    if (VIR_ALLOC(cpu) < 0 ||
-        VIR_STRDUP(cpu->model, cpus[0]->model) < 0) {
+    if (VIR_ALLOC(cpu) < 0) {
         virCPUDefFree(cpu);
         return NULL;
     }
+
+    cpu->model = g_strdup(cpus[0]->model);
 
     cpu->type = VIR_CPU_TYPE_GUEST;
     cpu->match = VIR_CPU_MATCH_EXACT;
