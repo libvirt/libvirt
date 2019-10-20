@@ -2331,7 +2331,7 @@ virStorageSourceCopy(const virStorageSource *src,
         !(def->pr = virStoragePRDefCopy(src->pr)))
         return NULL;
 
-    if (virStorageSourceInitiatorCopy(&def->initiator, &src->initiator))
+    if (virStorageSourceInitiatorCopy(&def->initiator, &src->initiator) < 0)
         return NULL;
 
     if (backingChain && src->backingStore) {
