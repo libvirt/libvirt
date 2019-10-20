@@ -101,12 +101,11 @@ virStorageEncryptionInfoDefCopy(const virStorageEncryptionInfoDef *src,
                                 virStorageEncryptionInfoDefPtr dst)
 {
     dst->cipher_size = src->cipher_size;
-    if (VIR_STRDUP(dst->cipher_name, src->cipher_name) < 0 ||
-        VIR_STRDUP(dst->cipher_mode, src->cipher_mode) < 0 ||
-        VIR_STRDUP(dst->cipher_hash, src->cipher_hash) < 0 ||
-        VIR_STRDUP(dst->ivgen_name, src->ivgen_name) < 0 ||
-        VIR_STRDUP(dst->ivgen_hash, src->ivgen_hash) < 0)
-        return -1;
+    dst->cipher_name = g_strdup(src->cipher_name);
+    dst->cipher_mode = g_strdup(src->cipher_mode);
+    dst->cipher_hash = g_strdup(src->cipher_hash);
+    dst->ivgen_name = g_strdup(src->ivgen_name);
+    dst->ivgen_hash = g_strdup(src->ivgen_hash);
 
     return 0;
 }
