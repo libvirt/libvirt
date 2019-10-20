@@ -856,8 +856,9 @@ static int lxcContainerSetReadOnly(void)
             lxcIsBasicMountLocation(mntent.mnt_dir))
             continue;
 
-        if (VIR_STRDUP(tmp, mntent.mnt_dir) < 0 ||
-            VIR_APPEND_ELEMENT(mounts, nmounts, tmp) < 0) {
+        tmp = g_strdup(mntent.mnt_dir);
+
+        if (VIR_APPEND_ELEMENT(mounts, nmounts, tmp) < 0) {
             VIR_FREE(tmp);
             goto cleanup;
         }
@@ -910,12 +911,10 @@ static int lxcContainerMountBasicFS(bool userns_enabled,
          */
         if (userns_enabled && netns_disabled &&
             STREQ(mnt->src, "sysfs")) {
-            if (VIR_STRDUP(mnt_src, "/sys") < 0)
-                goto cleanup;
+            mnt_src = g_strdup("/sys");
             mnt_mflags = MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_RDONLY|MS_BIND;
         } else {
-            if (VIR_STRDUP(mnt_src, mnt->src) < 0)
-                goto cleanup;
+            mnt_src = g_strdup(mnt->src);
             mnt_mflags = mnt->mflags;
         }
 
@@ -1292,8 +1291,7 @@ lxcContainerMountDetectFilesystem(const char *src, char **type)
         goto cleanup;
     }
 
-    if (VIR_STRDUP(*type, data) < 0)
-        goto cleanup;
+    *type = g_strdup(data);
 
  done:
     ret = 0;
@@ -1633,8 +1631,7 @@ int lxcContainerSetupHostdevCapsMakePath(const char *dev)
     int ret = -1;
     char *dir, *tmp;
 
-    if (VIR_STRDUP(dir, dev) < 0)
-        return -1;
+    dir = g_strdup(dev);
 
     if ((tmp = strrchr(dir, '/'))) {
         *tmp = '\0';
@@ -2166,8 +2163,7 @@ static int lxcContainerSetHostname(virDomainDefPtr def)
     char *hostname = NULL;
 
     /* Filter the VM name to get a valid hostname */
-    if (VIR_STRDUP(name, def->name) < 0)
-        goto cleanup;
+    name = g_strdup(def->name);
 
     /* RFC 1123 allows 0-9 digits as a first character in hostname */
     virStringFilterChars(name, hostname_validchars);

@@ -628,8 +628,7 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
 
         (*veths)[i] = veth;
 
-        if (VIR_STRDUP(def->nets[i]->ifname_guest_actual, veth) < 0)
-            goto cleanup;
+        def->nets[i]->ifname_guest_actual = g_strdup(veth);
 
         /* Make sure all net definitions will have a name in the container */
         if (!net->ifname_guest) {
@@ -1156,9 +1155,8 @@ virLXCProcessEnsureRootFS(virDomainObjPtr vm)
 
     root->type = VIR_DOMAIN_FS_TYPE_MOUNT;
 
-    if (VIR_STRDUP(root->src->path, "/") < 0 ||
-        VIR_STRDUP(root->dst, "/") < 0)
-        goto error;
+    root->src->path = g_strdup("/");
+    root->dst = g_strdup("/");
 
     if (VIR_INSERT_ELEMENT(vm->def->fss,
                            0,
@@ -1266,10 +1264,7 @@ int virLXCProcessStart(virConnectPtr conn,
         if (VIR_ALLOC(res) < 0)
             goto cleanup;
 
-        if (VIR_STRDUP(res->partition, "/machine") < 0) {
-            VIR_FREE(res);
-            goto cleanup;
-        }
+        res->partition = g_strdup("/machine");
 
         vm->def->resource = res;
     }

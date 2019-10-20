@@ -172,8 +172,7 @@ static virLXCControllerPtr virLXCControllerNew(const char *name)
     ctrl->timerShutdown = -1;
     ctrl->firstClient = true;
 
-    if (VIR_STRDUP(ctrl->name, name) < 0)
-        goto error;
+    ctrl->name = g_strdup(name);
 
     if (!(caps = virLXCDriverCapsInit(NULL)))
         goto error;
@@ -1643,8 +1642,7 @@ virLXCControllerSetupHostdevCapsStorage(virDomainDefPtr vmDef,
         goto cleanup;
     }
 
-    if (VIR_STRDUP(path, dev) < 0)
-        goto cleanup;
+    path = g_strdup(dev);
 
     while (*(path + len) == '/')
         len++;
@@ -1722,8 +1720,7 @@ virLXCControllerSetupHostdevCapsMisc(virDomainDefPtr vmDef,
         goto cleanup;
     }
 
-    if (VIR_STRDUP(path, dev) < 0)
-        goto cleanup;
+    path = g_strdup(dev);
 
     while (*(path + len) == '/')
         len++;
@@ -2534,8 +2531,7 @@ int main(int argc, char *argv[])
         case 'v':
             if (VIR_REALLOC_N(veths, nveths+1) < 0)
                 goto cleanup;
-            if (VIR_STRDUP(veths[nveths++], optarg) < 0)
-                goto cleanup;
+            veths[nveths++] = g_strdup(optarg);
             break;
 
         case 'c':

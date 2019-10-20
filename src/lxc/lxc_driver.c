@@ -617,8 +617,7 @@ static char *lxcDomainGetOSType(virDomainPtr dom)
     if (virDomainGetOSTypeEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (VIR_STRDUP(ret, virDomainOSTypeToString(vm->def->os.type)) < 0)
-        goto cleanup;
+    ret = g_strdup(virDomainOSTypeToString(vm->def->os.type));
 
  cleanup:
     virDomainObjEndAPI(&vm);

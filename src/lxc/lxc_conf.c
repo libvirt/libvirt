@@ -150,10 +150,8 @@ virCapsPtr virLXCDriverCapsInit(virLXCDriverPtr driver)
         if (VIR_ALLOC(caps->host.secModels) < 0)
             goto error;
         caps->host.nsecModels = 1;
-        if (VIR_STRDUP(caps->host.secModels[0].model, model) < 0)
-            goto error;
-        if (VIR_STRDUP(caps->host.secModels[0].doi, doi) < 0)
-            goto error;
+        caps->host.secModels[0].model = g_strdup(model);
+        caps->host.secModels[0].doi = g_strdup(doi);
         if (label &&
             virCapabilitiesHostSecModelAddBaseLabel(&caps->host.secModels[0],
                                                     type,
@@ -233,19 +231,12 @@ virLXCDriverConfigNew(void)
     cfg->securityRequireConfined = false;
 
     /* Set the container configuration directory */
-    if (VIR_STRDUP(cfg->configDir, LXC_CONFIG_DIR) < 0)
-        goto error;
-    if (VIR_STRDUP(cfg->stateDir, LXC_STATE_DIR) < 0)
-        goto error;
-    if (VIR_STRDUP(cfg->logDir, LXC_LOG_DIR) < 0)
-        goto error;
-    if (VIR_STRDUP(cfg->autostartDir, LXC_AUTOSTART_DIR) < 0)
-        goto error;
+    cfg->configDir = g_strdup(LXC_CONFIG_DIR);
+    cfg->stateDir = g_strdup(LXC_STATE_DIR);
+    cfg->logDir = g_strdup(LXC_LOG_DIR);
+    cfg->autostartDir = g_strdup(LXC_AUTOSTART_DIR);
 
     return cfg;
- error:
-    virObjectUnref(cfg);
-    return NULL;
 }
 
 int
