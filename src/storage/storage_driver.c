@@ -272,13 +272,9 @@ storageStateInitialize(bool privileged,
         goto error;
 
     if (privileged) {
-        if (VIR_STRDUP(driver->configDir,
-                       SYSCONFDIR "/libvirt/storage") < 0 ||
-            VIR_STRDUP(driver->autostartDir,
-                       SYSCONFDIR "/libvirt/storage/autostart") < 0 ||
-            VIR_STRDUP(driver->stateDir,
-                       RUNSTATEDIR "/libvirt/storage") < 0)
-            goto error;
+        driver->configDir = g_strdup(SYSCONFDIR "/libvirt/storage");
+        driver->autostartDir = g_strdup(SYSCONFDIR "/libvirt/storage/autostart");
+        driver->stateDir = g_strdup(RUNSTATEDIR "/libvirt/storage");
     } else {
         configdir = virGetUserConfigDirectory();
         rundir = virGetUserRuntimeDirectory();
@@ -2442,12 +2438,11 @@ storageVolUpload(virStorageVolPtr vol,
      * interaction and we can just lookup the backend in the callback
      * routine in order to call the refresh API.
      */
-    if (VIR_ALLOC(cbdata) < 0 ||
-        VIR_STRDUP(cbdata->pool_name, def->name) < 0)
+    if (VIR_ALLOC(cbdata) < 0)
         goto cleanup;
-    if (voldef->type == VIR_STORAGE_VOL_PLOOP &&
-        VIR_STRDUP(cbdata->vol_path, voldef->target.path) < 0)
-        goto cleanup;
+    cbdata->pool_name = g_strdup(def->name);
+    if (voldef->type == VIR_STORAGE_VOL_PLOOP)
+        cbdata->vol_path = g_strdup(voldef->target.path);
 
     virStoragePoolObjIncrAsyncjobs(obj);
     voldef->in_use++;

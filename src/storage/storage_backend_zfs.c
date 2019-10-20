@@ -132,8 +132,7 @@ virStorageBackendZFSParseVol(virStoragePoolObjPtr pool,
         is_new_vol = true;
         volume->type = VIR_STORAGE_VOL_BLOCK;
 
-        if (VIR_STRDUP(volume->name, vol_name) < 0)
-            goto cleanup;
+        volume->name = g_strdup(vol_name);
     }
 
     if (!volume->key)
@@ -313,8 +312,7 @@ virStorageBackendZFSCreateVol(virStoragePoolObjPtr pool,
                     def->target.path, vol->name) < 0)
         return -1;
 
-    if (VIR_STRDUP(vol->key, vol->target.path) < 0)
-        goto cleanup;
+    vol->key = g_strdup(vol->target.path);
 
     volmode_needed = virStorageBackendZFSVolModeNeeded();
     if (volmode_needed < 0)

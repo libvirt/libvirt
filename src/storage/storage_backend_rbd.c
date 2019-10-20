@@ -660,8 +660,7 @@ virStorageBackendRBDGetVolNames(virStorageBackendRBDStatePtr ptr)
         if (STREQ(name, ""))
             break;
 
-        if (VIR_STRDUP(namedup, name) < 0)
-            goto error;
+        namedup = g_strdup(name);
 
         if (VIR_APPEND_ELEMENT(names, nnames, namedup) < 0)
             goto error;

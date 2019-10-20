@@ -286,8 +286,7 @@ virStorageBackendLogicalMakeVol(char **const groups,
         is_new_vol = true;
         vol->type = VIR_STORAGE_VOL_BLOCK;
 
-        if (VIR_STRDUP(vol->name, groups[0]) < 0)
-            goto cleanup;
+        vol->name = g_strdup(groups[0]);
 
     }
 
@@ -466,9 +465,8 @@ virStorageBackendLogicalFindPoolSourcesFunc(char **const groups,
     g_autofree char *pvname = NULL;
     g_autofree char *vgname = NULL;
 
-    if (VIR_STRDUP(pvname, groups[0]) < 0 ||
-        VIR_STRDUP(vgname, groups[1]) < 0)
-        return -1;
+    pvname = g_strdup(groups[0]);
+    vgname = g_strdup(groups[1]);
 
     thisSource = NULL;
     for (i = 0; i < sourceList->nsources; i++) {

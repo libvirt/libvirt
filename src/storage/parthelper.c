@@ -91,8 +91,7 @@ int main(int argc, char **argv)
             partsep = "p";
         else
             partsep = "";
-        if (VIR_STRDUP_QUIET(canonical_path, path) < 0)
-            return 2;
+        canonical_path = g_strdup(path);
     } else {
         if (virFileResolveLink(path, &canonical_path) != 0)
             return 2;

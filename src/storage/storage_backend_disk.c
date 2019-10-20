@@ -75,13 +75,11 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
         addVol = true;
         if (VIR_ALLOC(vol) < 0)
             return -1;
-        if (VIR_STRDUP(vol->name, partname) < 0)
-            goto error;
+        vol->name = g_strdup(partname);
     }
 
     if (vol->target.path == NULL) {
-        if (VIR_STRDUP(devpath, groups[0]) < 0)
-            goto error;
+        devpath = g_strdup(groups[0]);
 
         /* Now figure out the stable path
          *
@@ -129,8 +127,7 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
 
     if (vol->key == NULL) {
         /* XXX base off a unique key of the underlying disk */
-        if (VIR_STRDUP(vol->key, vol->target.path) < 0)
-            goto error;
+        vol->key = g_strdup(vol->target.path);
     }
 
     if (vol->source.extents == NULL) {
@@ -152,9 +149,7 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
             goto error;
         }
 
-        if (VIR_STRDUP(vol->source.extents[0].path,
-                       def->source.devices[0].path) < 0)
-            goto error;
+        vol->source.extents[0].path = g_strdup(def->source.devices[0].path);
     }
 
     /* set partition type */
@@ -602,8 +597,7 @@ virStorageBackendDiskPartFormat(virStoragePoolObjPtr pool,
                                    _("extended partition already exists"));
                     return -1;
             }
-            if (VIR_STRDUP(*partFormat, partedFormat) < 0)
-                return -1;
+            *partFormat = g_strdup(partedFormat);
         } else {
             /* create primary partition as long as it is possible
                and after that check if an extended partition exists
@@ -636,8 +630,7 @@ virStorageBackendDiskPartFormat(virStoragePoolObjPtr pool,
             }
         }
     } else {
-        if (VIR_STRDUP(*partFormat, "primary") < 0)
-            return -1;
+        *partFormat = g_strdup("primary");
     }
     return 0;
 }

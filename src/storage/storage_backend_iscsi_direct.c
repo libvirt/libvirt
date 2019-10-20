@@ -425,8 +425,7 @@ virISCSIDirectUpdateTargets(struct iscsi_context *iscsi,
     for (tmp_addr = addr; tmp_addr; tmp_addr = tmp_addr->next) {
         g_autofree char *target = NULL;
 
-        if (VIR_STRDUP(target, tmp_addr->target_name) < 0)
-            goto cleanup;
+        target = g_strdup(tmp_addr->target_name);
 
         if (VIR_APPEND_ELEMENT(tmp_targets, tmp_ntargets, target) < 0)
             goto cleanup;

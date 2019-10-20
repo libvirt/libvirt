@@ -81,9 +81,8 @@ virStorageBackendFileSystemNetFindPoolSourcesFunc(char **const groups,
         goto cleanup;
     src->nhost = 1;
 
-    if (VIR_STRDUP(src->hosts[0].name, state->host) < 0 ||
-        VIR_STRDUP(src->dir, path) < 0)
-        goto cleanup;
+    src->hosts[0].name = g_strdup(state->host);
+    src->dir = g_strdup(path);
     src->format = VIR_STORAGE_POOL_NETFS_NFS;
 
     ret = 0;

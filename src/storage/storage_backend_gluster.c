@@ -100,8 +100,7 @@ virStorageBackendGlusterOpen(virStoragePoolObjPtr pool)
     if (VIR_ALLOC(ret) < 0)
         return NULL;
 
-    if (VIR_STRDUP(ret->volname, name) < 0)
-        goto error;
+    ret->volname = g_strdup(name);
     if (virAsprintf(&ret->dir, "%s%s", dir ? dir : "/",
                     trailing_slash ? "" : "/") < 0)
         goto error;
@@ -110,10 +109,8 @@ virStorageBackendGlusterOpen(virStoragePoolObjPtr pool)
      * extended to allow alternate transport */
     if (VIR_ALLOC(ret->uri) < 0)
         goto error;
-    if (VIR_STRDUP(ret->uri->scheme, "gluster") < 0)
-        goto error;
-    if (VIR_STRDUP(ret->uri->server, def->source.hosts[0].name) < 0)
-        goto error;
+    ret->uri->scheme = g_strdup("gluster");
+    ret->uri->server = g_strdup(def->source.hosts[0].name);
     if (virAsprintf(&ret->uri->path, "/%s%s", ret->volname, ret->dir) < 0)
         goto error;
     ret->uri->port = def->source.hosts[0].port;
@@ -196,8 +193,7 @@ virStorageBackendGlusterSetMetadata(virStorageBackendGlusterStatePtr state,
 
     if (name) {
         VIR_FREE(vol->name);
-        if (VIR_STRDUP(vol->name, name) < 0)
-            return -1;
+        vol->name = g_strdup(name);
     }
 
     if (virAsprintf(&path, "%s%s%s", state->volname, state->dir,
@@ -218,8 +214,7 @@ virStorageBackendGlusterSetMetadata(virStorageBackendGlusterStatePtr state,
     state->uri->path = tmp;
 
     /* the path is unique enough to serve as a volume key */
-    if (VIR_STRDUP(vol->key, vol->target.path) < 0)
-        return -1;
+    vol->key = g_strdup(vol->target.path);
 
     return 0;
 }

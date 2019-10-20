@@ -1874,10 +1874,7 @@ virStorageBackendUpdateVolTargetInfoFD(virStorageSourcePtr target,
                 return -1;
             }
         } else {
-            if (VIR_STRDUP(target->perms->label, filecon) < 0) {
-                freecon(filecon);
-                return -1;
-            }
+            target->perms->label = g_strdup(filecon);
             freecon(filecon);
         }
     }
@@ -2758,8 +2755,7 @@ virStorageBackendBuildLocal(virStoragePoolObjPtr pool)
     unsigned int dir_create_flags;
     g_autofree char *parent = NULL;
 
-    if (VIR_STRDUP(parent, def->target.path) < 0)
-        return -1;
+    parent = g_strdup(def->target.path);
     if (!(p = strrchr(parent, '/'))) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("path '%s' is not absolute"),
@@ -2865,8 +2861,7 @@ virStorageUtilGlusterExtractPoolSources(const char *host,
             src->format = VIR_STORAGE_POOL_NETFS_GLUSTERFS;
             src->dir = g_steal_pointer(&volname);
         } else if (pooltype == VIR_STORAGE_POOL_GLUSTER) {
-            if (VIR_STRDUP(src->dir, "/") < 0)
-                goto cleanup;
+            src->dir = g_strdup("/");
             src->name = g_steal_pointer(&volname);
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2878,8 +2873,7 @@ virStorageUtilGlusterExtractPoolSources(const char *host,
             goto cleanup;
         src->nhost = 1;
 
-        if (VIR_STRDUP(src->hosts[0].name, host) < 0)
-            goto cleanup;
+        src->hosts[0].name = g_strdup(host);
     }
 
     ret = nnodes;
@@ -3547,16 +3541,14 @@ virStorageBackendRefreshLocal(virStoragePoolObjPtr pool)
         if (VIR_ALLOC(vol) < 0)
             goto cleanup;
 
-        if (VIR_STRDUP(vol->name, ent->d_name) < 0)
-            goto cleanup;
+        vol->name = g_strdup(ent->d_name);
 
         vol->type = VIR_STORAGE_VOL_FILE;
         if (virAsprintf(&vol->target.path, "%s/%s",
                         def->target.path, vol->name) < 0)
             goto cleanup;
 
-        if (VIR_STRDUP(vol->key, vol->target.path) < 0)
-            goto cleanup;
+        vol->key = g_strdup(vol->target.path);
 
         if ((err = virStorageBackendRefreshVolTargetUpdate(vol)) < 0) {
             if (err == -2) {
@@ -3615,8 +3607,7 @@ virStorageBackendRefreshLocal(virStoragePoolObjPtr pool)
     def->target.perms.uid = target->perms->uid;
     def->target.perms.gid = target->perms->gid;
     VIR_FREE(def->target.perms.label);
-    if (VIR_STRDUP(def->target.perms.label, target->perms->label) < 0)
-        goto cleanup;
+    def->target.perms.label = g_strdup(target->perms->label);
 
     ret = 0;
  cleanup:
@@ -3769,8 +3760,7 @@ getNewStyleBlockDevice(const char *lun_path,
         goto cleanup;
 
     while ((direrr = virDirRead(block_dir, &block_dirent, block_path)) > 0) {
-        if (VIR_STRDUP(*block_device, block_dirent->d_name) < 0)
-            goto cleanup;
+        *block_device = g_strdup(block_dirent->d_name);
 
         VIR_DEBUG("Block device is '%s'", *block_device);
 
@@ -3805,8 +3795,7 @@ getOldStyleBlockDevice(const char *lun_path G_GNUC_UNUSED,
         goto cleanup;
     } else {
         blockp++;
-        if (VIR_STRDUP(*block_device, blockp) < 0)
-            goto cleanup;
+        *block_device = g_strdup(blockp);
 
         VIR_DEBUG("Block device is '%s'", *block_device);
     }
@@ -4096,8 +4085,7 @@ virStorageBackendFileSystemGetPoolSource(virStoragePoolObjPtr pool)
                 return NULL;
         }
     } else {
-        if (VIR_STRDUP(src, def->source.devices[0].path) < 0)
-            return NULL;
+        src = g_strdup(def->source.devices[0].path);
     }
     return src;
 }

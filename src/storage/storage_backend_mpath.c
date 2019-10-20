@@ -65,8 +65,7 @@ virStorageBackendMpathNewVol(virStoragePoolObjPtr pool,
     }
 
     /* XXX should use logical unit's UUID instead */
-    if (VIR_STRDUP(vol->key, vol->target.path) < 0)
-        return -1;
+    vol->key = g_strdup(vol->target.path);
 
     if (virStoragePoolObjAddVol(pool, vol) < 0)
         return -1;

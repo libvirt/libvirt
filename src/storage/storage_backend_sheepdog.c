@@ -118,8 +118,10 @@ virStorageBackendSheepdogAddVolume(virStoragePoolObjPtr pool, const char *diskIn
         return -1;
     }
 
-    if (VIR_ALLOC(vol) < 0 || VIR_STRDUP(vol->name, diskInfo) < 0)
+    if (VIR_ALLOC(vol) < 0)
         return -1;
+
+    vol->name = g_strdup(diskInfo);
 
     vol->type = VIR_STORAGE_VOL_NETWORK;
 
@@ -229,8 +231,7 @@ virStorageBackendSheepdogCreateVol(virStoragePoolObjPtr pool,
         return -1;
 
     VIR_FREE(vol->target.path);
-    if (VIR_STRDUP(vol->target.path, vol->name) < 0)
-        return -1;
+    vol->target.path = g_strdup(vol->name);
 
     return 0;
 }
