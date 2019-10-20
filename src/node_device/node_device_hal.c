@@ -461,14 +461,10 @@ dev_create(const char *udi)
     if (VIR_ALLOC(def) < 0)
         goto failure;
 
-    if (VIR_STRDUP(def->name, name) < 0)
-        goto failure;
+    def->name = g_strdup(name);
 
     if (get_str_prop(ctx, udi, "info.parent", &parent_key) == 0) {
-        if (VIR_STRDUP(def->parent, hal_name(parent_key)) < 0) {
-            VIR_FREE(parent_key);
-            goto failure;
-        }
+        def->parent = g_strdup(hal_name(parent_key));
         VIR_FREE(parent_key);
     }
 

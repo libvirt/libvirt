@@ -130,8 +130,8 @@ nodeDeviceUpdateDriverName(virNodeDeviceDefPtr def)
     }
 
     p = strrchr(devpath, '/');
-    if (p && VIR_STRDUP(def->driver, p + 1) < 0)
-        goto cleanup;
+    if (p)
+        def->driver = g_strdup(p + 1);
     ret = 0;
 
  cleanup:
@@ -242,12 +242,8 @@ nodeDeviceLookupByName(virConnectPtr conn,
     if (virNodeDeviceLookupByNameEnsureACL(conn, def) < 0)
         goto cleanup;
 
-    if ((device = virGetNodeDevice(conn, name))) {
-        if (VIR_STRDUP(device->parentName, def->parent) < 0) {
-            virObjectUnref(device);
-            device = NULL;
-        }
-    }
+    if ((device = virGetNodeDevice(conn, name)))
+        device->parentName = g_strdup(def->parent);
 
  cleanup:
     virNodeDeviceObjEndAPI(&obj);
@@ -276,12 +272,8 @@ nodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
     if (virNodeDeviceLookupSCSIHostByWWNEnsureACL(conn, def) < 0)
         goto cleanup;
 
-    if ((device = virGetNodeDevice(conn, def->name))) {
-        if (VIR_STRDUP(device->parentName, def->parent) < 0) {
-            virObjectUnref(device);
-            device = NULL;
-        }
-    }
+    if ((device = virGetNodeDevice(conn, def->name)))
+        device->parentName = g_strdup(def->parent);
 
  cleanup:
     virNodeDeviceObjEndAPI(&obj);
@@ -335,8 +327,7 @@ nodeDeviceGetParent(virNodeDevicePtr device)
         goto cleanup;
 
     if (def->parent) {
-        if (VIR_STRDUP(ret, def->parent) < 0)
-            goto cleanup;
+        ret = g_strdup(def->parent);
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("no parent for this device"));
@@ -396,10 +387,8 @@ nodeDeviceListCaps(virNodeDevicePtr device,
     if (ncaps > maxnames)
         ncaps = maxnames;
 
-    for (i = 0; i < ncaps; i++) {
-        if (VIR_STRDUP(names[i], virNodeDevCapTypeToString(list[i])) < 0)
-            goto cleanup;
-    }
+    for (i = 0; i < ncaps; i++)
+        names[i] = g_strdup(virNodeDevCapTypeToString(list[i]));
 
     ret = ncaps;
 
@@ -546,8 +535,7 @@ nodeDeviceDestroy(virNodeDevicePtr device)
      * event which would essentially free the existing @def (obj->def) and
      * replace it with something new, we need to grab the parent field
      * and then find the parent obj in order to manage the vport */
-    if (VIR_STRDUP(parent, def->parent) < 0)
-        goto cleanup;
+    parent = g_strdup(def->parent);
 
     virNodeDeviceObjEndAPI(&obj);
 
