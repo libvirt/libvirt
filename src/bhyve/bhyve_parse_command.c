@@ -299,16 +299,8 @@ bhyveParseBhyveLPCArg(virDomainDefPtr def,
                 goto error;
         }
 
-        if (VIR_STRDUP(chr->source->data.nmdm.master, param) < 0) {
-            virDomainChrDefFree(chr);
-            goto error;
-        }
-
-        if (VIR_STRDUP(chr->source->data.nmdm.slave, chr->source->data.file.path)
-            < 0) {
-            virDomainChrDefFree(chr);
-            goto error;
-        }
+        chr->source->data.nmdm.master = g_strdup(param);
+        chr->source->data.nmdm.slave = g_strdup(chr->source->data.file.path);
 
         /* If the last character of the master is 'A', the slave will be 'B'
          * and vice versa */
@@ -456,13 +448,11 @@ bhyveParsePCIDisk(virDomainDefPtr def,
     if (bus == VIR_DOMAIN_DISK_BUS_VIRTIO) {
         idx = *nvirtiodisk;
         *nvirtiodisk += 1;
-        if (VIR_STRDUP(disk->dst, "vda") < 0)
-            goto error;
+        disk->dst = g_strdup("vda");
     } else if (bus == VIR_DOMAIN_DISK_BUS_SATA) {
         idx = *nahcidisk;
         *nahcidisk += 1;
-        if (VIR_STRDUP(disk->dst, "sda") < 0)
-            goto error;
+        disk->dst = g_strdup("sda");
     }
 
     if (idx > 'z' - 'a') {
@@ -507,8 +497,7 @@ bhyveParsePCINet(virDomainDefPtr def,
      * guess the actual bridge name from the command line,
      * try to come up with some reasonable defaults */
     net->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
-    if (VIR_STRDUP(net->data.bridge.brname, "virbr0") < 0)
-        goto error;
+    net->data.bridge.brname = g_strdup("virbr0");
 
     net->model = model;
     net->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
@@ -738,8 +727,7 @@ bhyveParseBhyveCommandLine(virDomainDefPtr def,
     }
 
     if (def->name == NULL) {
-        if (VIR_STRDUP(def->name, argv[argc]) < 0)
-            goto error;
+        def->name = g_strdup(argv[argc]);
     } else if (STRNEQ(def->name, argv[argc])) {
         /* the vm name of the loader and the bhyverun command differ, throw an
          * error here */
@@ -819,15 +807,12 @@ bhyveParseBhyveLoadCommandLine(virDomainDefPtr def,
     if (arguments != 3) {
         /* Set os.bootloader since virDomainDefFormatInternal will only format
          * the bootloader arguments if os->bootloader is set. */
-        if (VIR_STRDUP(def->os.bootloader, argv[0]) < 0)
-           goto error;
-
+        def->os.bootloader = g_strdup(argv[0]);
         def->os.bootloaderArgs = virStringListJoin((const char**) &argv[1], " ");
     }
 
     if (def->name == NULL) {
-        if (VIR_STRDUP(def->name, argv[argc]) < 0)
-            goto error;
+        def->name = g_strdup(argv[argc]);
     } else if (STRNEQ(def->name, argv[argc])) {
         /* the vm name of the loader and the bhyverun command differ, throw an
          * error here */
@@ -849,9 +834,7 @@ bhyveParseCustomLoaderCommandLine(virDomainDefPtr def,
     if (!argv)
         goto error;
 
-    if (VIR_STRDUP(def->os.bootloader, argv[0]) < 0)
-       goto error;
-
+    def->os.bootloader = g_strdup(argv[0]);
     def->os.bootloaderArgs = virStringListJoin((const char**) &argv[1], " ");
 
     return 0;
