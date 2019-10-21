@@ -995,7 +995,7 @@ networkKillDaemon(pid_t pid,
                          daemonName, pid, networkName, signame,
                          virStrerror(errno, ebuf, sizeof(ebuf)));
             }
-            goto cleanup;
+            return ret;
         }
         /* NB: since networks have no reference count like
          * domains, there is no safe way to unlock the network
@@ -1017,7 +1017,6 @@ networkKillDaemon(pid_t pid,
     VIR_WARN("Timed out waiting after SIG%s to %s process %d "
              "(network '%s')",
              signame, daemonName, pid, networkName);
- cleanup:
     return ret;
 }
 
@@ -3167,19 +3166,15 @@ networkConnectListAllNetworks(virConnectPtr conn,
                               unsigned int flags)
 {
     virNetworkDriverStatePtr driver = networkGetDriver();
-    int ret = -1;
 
     virCheckFlags(VIR_CONNECT_LIST_NETWORKS_FILTERS_ALL, -1);
 
     if (virConnectListAllNetworksEnsureACL(conn) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = virNetworkObjListExport(conn, driver->networks, nets,
-                                  virConnectListAllNetworksCheckACL,
-                                  flags);
-
- cleanup:
-    return ret;
+    return virNetworkObjListExport(conn, driver->networks, nets,
+                                   virConnectListAllNetworksCheckACL,
+                                   flags);
 }
 
 
@@ -3195,14 +3190,13 @@ networkConnectNetworkEventRegisterAny(virConnectPtr conn,
     int ret = -1;
 
     if (virConnectNetworkEventRegisterAnyEnsureACL(conn) < 0)
-        goto cleanup;
+        return -1;
 
     if (virNetworkEventStateRegisterID(conn, driver->networkEventState,
                                        net, eventID, callback,
                                        opaque, freecb, &ret) < 0)
         ret = -1;
 
- cleanup:
     return ret;
 }
 
@@ -3212,20 +3206,16 @@ networkConnectNetworkEventDeregisterAny(virConnectPtr conn,
                                         int callbackID)
 {
     virNetworkDriverStatePtr driver = networkGetDriver();
-    int ret = -1;
 
     if (virConnectNetworkEventDeregisterAnyEnsureACL(conn) < 0)
-        goto cleanup;
+        return -1;
 
     if (virObjectEventStateDeregisterID(conn,
                                         driver->networkEventState,
                                         callbackID, true) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -3328,24 +3318,20 @@ static int
 networkBridgeNameValidate(virNetworkObjListPtr nets,
                           virNetworkDefPtr def)
 {
-    int ret = -1;
-
     if (def->bridge && !strstr(def->bridge, "%d")) {
         if (virNetworkObjBridgeInUse(nets, def->bridge, def->name)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("bridge name '%s' already in use."),
                            def->bridge);
-            goto cleanup;
+            return -1;
         }
     } else {
         /* Allocate a bridge name */
         if (networkFindUnusedBridgeName(nets, def) < 0)
-            goto cleanup;
+            return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -4498,7 +4484,6 @@ networkAllocatePort(virNetworkObjPtr obj,
     virPortGroupDefPtr portgroup = NULL;
     virNetworkForwardIfDefPtr dev = NULL;
     size_t i;
-    int ret = -1;
     virNetDevVPortProfilePtr portprofile = NULL;
 
     netdef = virNetworkObjGetDef(obj);
@@ -4508,7 +4493,7 @@ networkAllocatePort(virNetworkObjPtr obj,
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("network '%s' is not active"),
                        netdef->name);
-        goto cleanup;
+        return -1;
     }
 
     VIR_DEBUG("Interface port group %s", port->group);
@@ -4522,7 +4507,7 @@ networkAllocatePort(virNetworkObjPtr obj,
         if (portgroup && portgroup->bandwidth &&
             virNetDevBandwidthCopy(&port->bandwidth,
                                    portgroup->bandwidth) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (port->vlan.nTags == 0) {
@@ -4533,7 +4518,7 @@ networkAllocatePort(virNetworkObjPtr obj,
             vlan = &netdef->vlan;
 
         if (vlan && virNetDevVlanCopy(&port->vlan, vlan) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (!port->trustGuestRxFilters) {
@@ -4551,7 +4536,7 @@ networkAllocatePort(virNetworkObjPtr obj,
                                     netdef->virtPortProfile,
                                     portgroup
                                     ? portgroup->virtPortProfile : NULL) < 0) {
-                goto cleanup;
+                return -1;
     }
     if (portprofile) {
         VIR_FREE(port->virtPortProfile);
@@ -4579,18 +4564,18 @@ networkAllocatePort(virNetworkObjPtr obj,
                              "'%s' which uses IP forwarding"),
                            virNetDevVPortTypeToString(port->virtPortProfile->virtPortType),
                            netdef->name);
-            goto cleanup;
+            return -1;
         }
 
         if (networkPlugBandwidth(obj, &port->mac, port->bandwidth, &port->class_id) < 0)
-            goto cleanup;
+            return -1;
         break;
 
     case VIR_NETWORK_FORWARD_HOSTDEV: {
         port->plugtype = VIR_NETWORK_PORT_PLUG_TYPE_HOSTDEV_PCI;
 
         if (networkCreateInterfacePool(netdef) < 0)
-            goto cleanup;
+            return -1;
 
         /* pick first dev with 0 connections */
         for (i = 0; i < netdef->forward.nifs; i++) {
@@ -4604,7 +4589,7 @@ networkAllocatePort(virNetworkObjPtr obj,
                            _("network '%s' requires exclusive access "
                              "to interfaces, but none are available"),
                            netdef->name);
-            goto cleanup;
+            return -1;
         }
         port->plug.hostdevpci.addr = dev->device.pci;
         port->plug.hostdevpci.driver = netdef->forward.driverName;
@@ -4620,7 +4605,7 @@ networkAllocatePort(virNetworkObjPtr obj,
                                  "via PCI passthrough"),
                                virNetDevVPortTypeToString(port->virtPortProfile->virtPortType),
                                netdef->name);
-                goto cleanup;
+                return -1;
             }
         }
         break;
@@ -4644,12 +4629,12 @@ networkAllocatePort(virNetworkObjPtr obj,
                                      "'%s' which uses a bridge device"),
                                    virNetDevVPortTypeToString(port->virtPortProfile->virtPortType),
                                    netdef->name);
-                    goto cleanup;
+                    return -1;
                 }
             }
 
             if (networkPlugBandwidth(obj, &port->mac, port->bandwidth, &port->class_id) < 0)
-                goto cleanup;
+                return -1;
             break;
         }
 
@@ -4683,7 +4668,7 @@ networkAllocatePort(virNetworkObjPtr obj,
                                  "'%s' which uses a macvtap device"),
                                virNetDevVPortTypeToString(port->virtPortProfile->virtPortType),
                                netdef->name);
-                goto cleanup;
+                return -1;
             }
         }
 
@@ -4695,12 +4680,12 @@ networkAllocatePort(virNetworkObjPtr obj,
                            _("network '%s' uses a direct mode, but "
                              "has no forward dev and no interface pool"),
                            netdef->name);
-            goto cleanup;
+            return -1;
         } else {
             /* pick an interface from the pool */
 
             if (networkCreateInterfacePool(netdef) < 0)
-                goto cleanup;
+                return -1;
 
             /* PASSTHROUGH mode, and PRIVATE Mode + 802.1Qbh both
              * require exclusive access to a device, so current
@@ -4735,7 +4720,7 @@ networkAllocatePort(virNetworkObjPtr obj,
                                _("network '%s' requires exclusive access "
                                  "to interfaces, but none are available"),
                                netdef->name);
-                goto cleanup;
+                return -1;
             }
             port->plug.direct.linkdev = g_strdup(dev->device.dev);
         }
@@ -4744,15 +4729,15 @@ networkAllocatePort(virNetworkObjPtr obj,
     case VIR_NETWORK_FORWARD_LAST:
     default:
         virReportEnumRangeError(virNetworkForwardType, netdef->forward.type);
-        goto cleanup;
+        return -1;
     }
 
     if (virNetworkObjMacMgrAdd(obj, driver->dnsmasqStateDir,
                                port->ownername, &port->mac) < 0)
-        goto cleanup;
+        return -1;
 
     if (virNetDevVPortProfileCheckComplete(port->virtPortProfile, true) < 0)
-        goto cleanup;
+        return -1;
 
     /* make sure that everything now specified for the device is
      * actually supported on this type of network. NB: network,
@@ -4777,7 +4762,7 @@ networkAllocatePort(virNetworkObjPtr obj,
                              "is requesting a vlan tag, but that is not "
                              "supported for this type of network"),
                            netdef->name);
-            goto cleanup;
+            return -1;
         }
     }
 
@@ -4788,7 +4773,7 @@ networkAllocatePort(virNetworkObjPtr obj,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("bandwidth settings are not supported "
                          "for hostdev interfaces"));
-        goto cleanup;
+        return -1;
     }
 
     netdef->connections++;
@@ -4802,15 +4787,13 @@ networkAllocatePort(virNetworkObjPtr obj,
         netdef->connections--;
         if (dev)
             dev->connections--;
-        goto cleanup;
+        return -1;
     }
     networkLogAllocation(netdef, dev, &port->mac, true);
 
     VIR_DEBUG("Port allocated");
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -4830,7 +4813,6 @@ networkNotifyPort(virNetworkObjPtr obj,
     virNetworkDefPtr netdef;
     virNetworkForwardIfDefPtr dev = NULL;
     size_t i;
-    int ret = -1;
 
     netdef = virNetworkObjGetDef(obj);
 
@@ -4838,14 +4820,14 @@ networkNotifyPort(virNetworkObjPtr obj,
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("network '%s' is not active"),
                        netdef->name);
-        goto cleanup;
+        return -1;
     }
 
     switch (port->plugtype) {
     case VIR_NETWORK_PORT_PLUG_TYPE_NONE:
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unexpectedly got a network port without a plug"));
-        goto cleanup;
+        return -1;
 
     case VIR_NETWORK_PORT_PLUG_TYPE_NETWORK:
     case VIR_NETWORK_PORT_PLUG_TYPE_BRIDGE:
@@ -4853,13 +4835,13 @@ networkNotifyPort(virNetworkObjPtr obj,
         if (!netdef->bridge) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Unexpectedly got a network port without a network bridge"));
-            goto cleanup;
+            return -1;
         }
         break;
 
     case VIR_NETWORK_PORT_PLUG_TYPE_DIRECT:
         if (networkCreateInterfacePool(netdef) < 0)
-            goto cleanup;
+            return -1;
 
         /* find the matching interface and increment its connections */
         for (i = 0; i < netdef->forward.nifs; i++) {
@@ -4878,7 +4860,7 @@ networkNotifyPort(virNetworkObjPtr obj,
                              "in use by network port '%s'"),
                            netdef->name, port->plug.direct.linkdev,
                            port->uuid);
-            goto cleanup;
+            return -1;
         }
 
         /* PASSTHROUGH mode and PRIVATE Mode + 802.1Qbh both require
@@ -4894,14 +4876,14 @@ networkNotifyPort(virNetworkObjPtr obj,
                            _("network '%s' claims dev='%s' is already in "
                              "use by a different port"),
                            netdef->name, port->plug.direct.linkdev);
-            goto cleanup;
+            return -1;
         }
         break;
 
     case VIR_NETWORK_PORT_PLUG_TYPE_HOSTDEV_PCI:
 
         if (networkCreateInterfacePool(netdef) < 0)
-            goto cleanup;
+            return -1;
 
         /* find the matching interface and increment its connections */
         for (i = 0; i < netdef->forward.nifs; i++) {
@@ -4923,7 +4905,7 @@ networkNotifyPort(virNetworkObjPtr obj,
                            port->plug.hostdevpci.addr.bus,
                            port->plug.hostdevpci.addr.slot,
                            port->plug.hostdevpci.addr.function);
-            goto cleanup;
+            return -1;
         }
 
         /* PASSTHROUGH mode, PRIVATE Mode + 802.1Qbh, and hostdev (PCI
@@ -4939,7 +4921,7 @@ networkNotifyPort(virNetworkObjPtr obj,
                            netdef->name,
                            dev->device.pci.domain, dev->device.pci.bus,
                            dev->device.pci.slot, dev->device.pci.function);
-            goto cleanup;
+            return -1;
         }
 
         break;
@@ -4947,7 +4929,7 @@ networkNotifyPort(virNetworkObjPtr obj,
     case VIR_NETWORK_PORT_PLUG_TYPE_LAST:
     default:
         virReportEnumRangeError(virNetworkPortPlugType, port->plugtype);
-        goto cleanup;
+        return -1;
     }
 
     netdef->connections++;
@@ -4960,13 +4942,11 @@ networkNotifyPort(virNetworkObjPtr obj,
         if (dev)
             dev->connections--;
         netdef->connections--;
-        goto cleanup;
+        return -1;
     }
     networkLogAllocation(netdef, dev, &port->mac, true);
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -4989,7 +4969,6 @@ networkReleasePort(virNetworkObjPtr obj,
     virNetworkDefPtr netdef;
     virNetworkForwardIfDefPtr dev = NULL;
     size_t i;
-    int ret = -1;
 
     netdef = virNetworkObjGetDef(obj);
 
@@ -5002,7 +4981,7 @@ networkReleasePort(virNetworkObjPtr obj,
     case VIR_NETWORK_PORT_PLUG_TYPE_BRIDGE:
         if (networkUnplugBandwidth(obj, port->bandwidth,
                                    &port->class_id) < 0)
-            goto cleanup;
+            return -1;
         break;
 
     case VIR_NETWORK_PORT_PLUG_TYPE_DIRECT:
@@ -5011,7 +4990,7 @@ networkReleasePort(virNetworkObjPtr obj,
                            _("network '%s' uses a direct mode, but "
                              "has no forward dev and no interface pool"),
                            netdef->name);
-            goto cleanup;
+            return -1;
         }
 
         for (i = 0; i < netdef->forward.nifs; i++) {
@@ -5028,7 +5007,7 @@ networkReleasePort(virNetworkObjPtr obj,
                            _("network '%s' doesn't have dev='%s' "
                              "in use by domain"),
                            netdef->name, port->plug.direct.linkdev);
-            goto cleanup;
+            return -1;
         }
         break;
 
@@ -5038,7 +5017,7 @@ networkReleasePort(virNetworkObjPtr obj,
                            _("network '%s' uses a hostdev mode, but "
                              "has no forward dev and no interface pool"),
                            netdef->name);
-            goto cleanup;
+            return -1;
         }
 
         for (i = 0; i < netdef->forward.nifs; i++) {
@@ -5060,14 +5039,14 @@ networkReleasePort(virNetworkObjPtr obj,
                            port->plug.hostdevpci.addr.bus,
                            port->plug.hostdevpci.addr.slot,
                            port->plug.hostdevpci.addr.function);
-            goto cleanup;
+            return -1;
         }
         break;
 
     case VIR_NETWORK_PORT_PLUG_TYPE_LAST:
     default:
         virReportEnumRangeError(virNetworkPortPlugType, port->plugtype);
-        goto cleanup;
+        return -1;
     }
 
     virNetworkObjMacMgrDel(obj, driver->dnsmasqStateDir, port->ownername, &port->mac);
@@ -5080,9 +5059,7 @@ networkReleasePort(virNetworkObjPtr obj,
                    VIR_HOOK_SUBOP_BEGIN);
     networkLogAllocation(netdef, dev, &port->mac, false);
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -5113,7 +5090,6 @@ networkCheckBandwidth(virNetworkObjPtr obj,
                       virMacAddrPtr ifaceMac,
                       unsigned long long *new_rate)
 {
-    int ret = -1;
     virNetworkDefPtr def = virNetworkObjGetDef(obj);
     virNetDevBandwidthPtr netBand = def->bandwidth;
     unsigned long long tmp_floor_sum = virNetworkObjGetFloorSum(obj);
@@ -5162,7 +5138,7 @@ networkCheckBandwidth(virNetworkObjPtr obj,
                            tmp_floor_sum,
                            netBand->in->peak,
                            def->name);
-            goto cleanup;
+            return -1;
         }
     } else if (tmp_floor_sum > netBand->in->average) {
         /* tmp_floor_sum can be between 'average' and 'peak' iff 'peak' is set.
@@ -5176,15 +5152,13 @@ networkCheckBandwidth(virNetworkObjPtr obj,
                        tmp_floor_sum,
                        netBand->in->average,
                        def->name);
-        goto cleanup;
+        return -1;
     }
 
     if (new_rate)
         *new_rate = tmp_new_rate;
-    ret = 0;
 
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -5227,20 +5201,19 @@ networkPlugBandwidthImpl(virNetworkObjPtr obj,
     unsigned long long tmp_floor_sum = virNetworkObjGetFloorSum(obj);
     ssize_t next_id = 0;
     int plug_ret;
-    int ret = -1;
 
     /* generate new class_id */
     if ((next_id = networkNextClassID(obj)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not generate next class ID"));
-        goto cleanup;
+        return -1;
     }
 
     plug_ret = virNetDevBandwidthPlug(def->bridge, def->bandwidth,
                                       mac, ifaceBand, next_id);
     if (plug_ret < 0) {
         ignore_value(virNetDevBandwidthUnplug(def->bridge, next_id));
-        goto cleanup;
+        return -1;
     }
 
     /* QoS was set, generate new class ID */
@@ -5255,7 +5228,7 @@ networkPlugBandwidthImpl(virNetworkObjPtr obj,
         virNetworkObjSetFloorSum(obj, tmp_floor_sum);
         *class_id = 0;
         ignore_value(virNetDevBandwidthUnplug(def->bridge, next_id));
-        goto cleanup;
+        return -1;
     }
     /* update rate for non guaranteed NICs */
     new_rate -= tmp_floor_sum;
@@ -5264,9 +5237,7 @@ networkPlugBandwidthImpl(virNetworkObjPtr obj,
         VIR_WARN("Unable to update rate for 1:2 class on %s bridge",
                  def->bridge);
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -5276,7 +5247,6 @@ networkPlugBandwidth(virNetworkObjPtr obj,
                      virNetDevBandwidthPtr ifaceBand,
                      unsigned int *class_id)
 {
-    int ret = -1;
     int plug_ret;
     unsigned long long new_rate = 0;
     char ifmac[VIR_MAC_STRING_BUFLEN];
@@ -5284,24 +5254,19 @@ networkPlugBandwidth(virNetworkObjPtr obj,
     if ((plug_ret = networkCheckBandwidth(obj, ifaceBand, NULL,
                                           mac, &new_rate)) < 0) {
         /* helper reported error */
-        goto cleanup;
+        return -1;
     }
 
-    if (plug_ret > 0) {
+    if (plug_ret > 0)
         /* no QoS needs to be set; claim success */
-        ret = 0;
-        goto cleanup;
-    }
+        return 0;
 
     virMacAddrFormat(mac, ifmac);
 
     if (networkPlugBandwidthImpl(obj, mac, ifaceBand, class_id, new_rate) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -5321,7 +5286,7 @@ networkUnplugBandwidth(virNetworkObjPtr obj,
         if (!def->bandwidth || !def->bandwidth->in) {
             VIR_WARN("Network %s has no bandwidth but unplug requested",
                      def->name);
-            goto cleanup;
+            return 0;
         }
         /* we must remove class from bridge */
         new_rate = def->bandwidth->in->average;
@@ -5331,7 +5296,7 @@ networkUnplugBandwidth(virNetworkObjPtr obj,
 
         ret = virNetDevBandwidthUnplug(def->bridge, *class_id);
         if (ret < 0)
-            goto cleanup;
+            return ret;
         /* update sum of 'floor'-s of attached NICs */
         tmp_floor_sum -= ifaceBand->in->floor;
         virNetworkObjSetFloorSum(obj, tmp_floor_sum);
@@ -5344,7 +5309,7 @@ networkUnplugBandwidth(virNetworkObjPtr obj,
             tmp_floor_sum += ifaceBand->in->floor;
             virNetworkObjSetFloorSum(obj, tmp_floor_sum);
             ignore_value(virBitmapSetBit(classIdMap, *class_id));
-            goto cleanup;
+            return ret;
         }
         /* update rate for non guaranteed NICs */
         new_rate -= tmp_floor_sum;
@@ -5356,7 +5321,6 @@ networkUnplugBandwidth(virNetworkObjPtr obj,
         *class_id = 0;
     }
 
- cleanup:
     return ret;
 }
 
