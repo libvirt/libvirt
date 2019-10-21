@@ -608,20 +608,15 @@ static int
 secretConnectSecretEventDeregisterAny(virConnectPtr conn,
                                       int callbackID)
 {
-    int ret = -1;
-
     if (virConnectSecretEventDeregisterAnyEnsureACL(conn) < 0)
-        goto cleanup;
+        return -1;
 
     if (virObjectEventStateDeregisterID(conn,
                                         driver->secretEventState,
                                         callbackID, true) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
