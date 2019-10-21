@@ -393,7 +393,6 @@ daemonSetupNetworking(virNetServerPtr srv,
     int unix_sock_ro_mask = 0;
     int unix_sock_rw_mask = 0;
     int unix_sock_adm_mask = 0;
-    int ret = -1;
     g_autoptr(virSystemdActivation) act = NULL;
     virSystemdActivationMap actmap[] = {
         { .name = DAEMON_NAME ".socket", .family = AF_UNIX, .path = sock_path },
@@ -447,22 +446,22 @@ daemonSetupNetworking(virNetServerPtr srv,
 
     if (config->unix_sock_group) {
         if (virGetGroupID(config->unix_sock_group, &unix_sock_gid) < 0)
-            return ret;
+            return -1;
     }
 
     if (virStrToLong_i(config->unix_sock_ro_perms, NULL, 8, &unix_sock_ro_mask) != 0) {
         VIR_ERROR(_("Failed to parse mode '%s'"), config->unix_sock_ro_perms);
-        goto cleanup;
+        return -1;
     }
 
     if (virStrToLong_i(config->unix_sock_admin_perms, NULL, 8, &unix_sock_adm_mask) != 0) {
         VIR_ERROR(_("Failed to parse mode '%s'"), config->unix_sock_admin_perms);
-        goto cleanup;
+        return -1;
     }
 
     if (virStrToLong_i(config->unix_sock_rw_perms, NULL, 8, &unix_sock_rw_mask) != 0) {
         VIR_ERROR(_("Failed to parse mode '%s'"), config->unix_sock_rw_perms);
-        goto cleanup;
+        return -1;
     }
 
     if (virNetServerAddServiceUNIX(srv,
@@ -476,7 +475,7 @@ daemonSetupNetworking(virNetServerPtr srv,
                                    false,
                                    config->max_queued_clients,
                                    config->max_client_requests) < 0)
-        goto cleanup;
+        return -1;
     if (sock_path_ro &&
         virNetServerAddServiceUNIX(srv,
                                    act,
@@ -489,7 +488,7 @@ daemonSetupNetworking(virNetServerPtr srv,
                                    true,
                                    config->max_queued_clients,
                                    config->max_client_requests) < 0)
-        goto cleanup;
+        return -1;
 
     if (sock_path_adm &&
         virNetServerAddServiceUNIX(srvAdm,
@@ -503,7 +502,7 @@ daemonSetupNetworking(virNetServerPtr srv,
                                    false,
                                    config->admin_max_queued_clients,
                                    config->admin_max_client_requests) < 0)
-        goto cleanup;
+        return -1;
 
 #ifdef WITH_IP
     if (((ipsock && config->listen_tcp) || act) &&
@@ -518,7 +517,7 @@ daemonSetupNetworking(virNetServerPtr srv,
                                   false,
                                   config->max_queued_clients,
                                   config->max_client_requests) < 0)
-        goto cleanup;
+        return -1;
 
     if (((ipsock && config->listen_tls) || (act && virSystemdActivationHasName(act, DAEMON_NAME "-tls.socket")))) {
         virNetTLSContextPtr ctxt = NULL;
@@ -529,17 +528,17 @@ daemonSetupNetworking(virNetServerPtr srv,
             if (!config->ca_file) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("No CA certificate path set to match server key/cert"));
-                goto cleanup;
+                return -1;
             }
             if (!config->cert_file) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("No server certificate path set to match server key"));
-                goto cleanup;
+                return -1;
             }
             if (!config->key_file) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("No server key path set to match server cert"));
-                goto cleanup;
+                return -1;
             }
             VIR_DEBUG("Using CA='%s' cert='%s' key='%s'",
                       config->ca_file, config->cert_file, config->key_file);
@@ -551,7 +550,7 @@ daemonSetupNetworking(virNetServerPtr srv,
                                                    config->tls_priority,
                                                    config->tls_no_sanity_certificate ? false : true,
                                                    config->tls_no_verify_certificate ? false : true)))
-                goto cleanup;
+                return -1;
         } else {
             if (!(ctxt = virNetTLSContextNewServerPath(NULL,
                                                        !privileged,
@@ -559,7 +558,7 @@ daemonSetupNetworking(virNetServerPtr srv,
                                                        config->tls_priority,
                                                        config->tls_no_sanity_certificate ? false : true,
                                                        config->tls_no_verify_certificate ? false : true)))
-                goto cleanup;
+                return -1;
         }
 
         VIR_DEBUG("Registering TLS socket %s:%s",
@@ -576,7 +575,7 @@ daemonSetupNetworking(virNetServerPtr srv,
                                       config->max_queued_clients,
                                       config->max_client_requests) < 0) {
             virObjectUnref(ctxt);
-            goto cleanup;
+            return -1;
         }
         virObjectUnref(ctxt);
     }
@@ -584,19 +583,16 @@ daemonSetupNetworking(virNetServerPtr srv,
 
     if (act &&
         virSystemdActivationComplete(act) < 0)
-        goto cleanup;
+        return -1;
 
 #if WITH_SASL
     if (virNetServerNeedsAuth(srv, REMOTE_AUTH_SASL) &&
         !(saslCtxt = virNetSASLContextNewServer(
               (const char *const*)config->sasl_allowed_username_list)))
-        goto cleanup;
+        return -1;
 #endif
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 

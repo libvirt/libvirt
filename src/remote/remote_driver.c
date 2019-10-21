@@ -4176,20 +4176,18 @@ static int remoteAuthInteract(virConnectPtr conn,
                               struct remoteAuthInteractState *state,
                               virConnectAuthPtr auth)
 {
-    int ret = -1;
-
     VIR_DEBUG("Starting SASL interaction");
     remoteAuthInteractStateClear(state, false);
 
     /* Fills state->interact with any values from the auth config file */
     if (remoteAuthFillFromConfig(conn, state) < 0)
-        goto cleanup;
+        return -1;
 
     /* Populates state->cred for anything not found in the auth config */
     if (remoteAuthMakeCredentials(state->interact, &state->cred, &state->ncred) < 0) {
         virReportError(VIR_ERR_AUTH_FAILED, "%s",
                        _("Failed to make auth credentials"));
-        goto cleanup;
+        return -1;
     }
 
     /* If there was anything not in the auth config, we need to
@@ -4200,13 +4198,13 @@ static int remoteAuthInteract(virConnectPtr conn,
         if (!auth || !auth->cb) {
             virReportError(VIR_ERR_AUTH_FAILED, "%s",
                            _("No authentication callback available"));
-            goto cleanup;
+            return -1;
         }
 
         if ((*(auth->cb))(state->cred, state->ncred, auth->cbdata) < 0) {
             virReportError(VIR_ERR_AUTH_FAILED, "%s",
                            _("Failed to collect auth credentials"));
-            goto cleanup;
+            return -1;
         }
 
         /* Copy user's responses from cred into interact */
@@ -4221,10 +4219,7 @@ static int remoteAuthInteract(virConnectPtr conn,
      * of this method, rather than the end.
      */
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
