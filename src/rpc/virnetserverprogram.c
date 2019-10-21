@@ -312,10 +312,8 @@ int virNetServerProgramDispatch(virNetServerProgramPtr prog,
         /* Send a dummy reply to free up 'msg' & unblock client rx */
         virNetMessageClear(msg);
         msg->header.type = VIR_NET_REPLY;
-        if (virNetServerClientSendMessage(client, msg) < 0) {
-            ret = -1;
-            goto cleanup;
-        }
+        if (virNetServerClientSendMessage(client, msg) < 0)
+            return -1;
         ret = 0;
         break;
 
@@ -340,14 +338,11 @@ int virNetServerProgramDispatch(virNetServerProgramPtr prog,
         /* Send a dummy reply to free up 'msg' & unblock client rx */
         virNetMessageClear(msg);
         msg->header.type = VIR_NET_REPLY;
-        if (virNetServerClientSendMessage(client, msg) < 0) {
-            ret = -1;
-            goto cleanup;
-        }
+        if (virNetServerClientSendMessage(client, msg) < 0)
+            return -1;
         ret = 0;
     }
 
- cleanup:
     return ret;
 }
 

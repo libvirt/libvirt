@@ -610,12 +610,11 @@ static int virNetTLSContextLoadCredentials(virNetTLSContextPtr ctxt,
                                            const char *cert,
                                            const char *key)
 {
-    int ret = -1;
     int err;
 
     if (cacert && cacert[0] != '\0') {
         if (virNetTLSContextCheckCertFile("CA certificate", cacert, false) < 0)
-            goto cleanup;
+            return -1;
 
         VIR_DEBUG("loading CA cert from %s", cacert);
         err = gnutls_certificate_set_x509_trust_file(ctxt->x509cred,
@@ -625,14 +624,14 @@ static int virNetTLSContextLoadCredentials(virNetTLSContextPtr ctxt,
             virReportError(VIR_ERR_SYSTEM_ERROR,
                            _("Unable to set x509 CA certificate: %s: %s"),
                            cacert, gnutls_strerror(err));
-            goto cleanup;
+            return -1;
         }
     }
 
     if (cacrl && cacrl[0] != '\0') {
         int rv;
         if ((rv = virNetTLSContextCheckCertFile("CA revocation list", cacrl, true)) < 0)
-            goto cleanup;
+            return -1;
 
         if (rv == 0) {
             VIR_DEBUG("loading CRL from %s", cacrl);
@@ -643,7 +642,7 @@ static int virNetTLSContextLoadCredentials(virNetTLSContextPtr ctxt,
                 virReportError(VIR_ERR_SYSTEM_ERROR,
                                _("Unable to set x509 certificate revocation list: %s: %s"),
                                cacrl, gnutls_strerror(err));
-                goto cleanup;
+                return -1;
             }
         } else {
             VIR_DEBUG("Skipping non-existent CA CRL %s", cacrl);
@@ -653,10 +652,10 @@ static int virNetTLSContextLoadCredentials(virNetTLSContextPtr ctxt,
     if (cert && cert[0] != '\0' && key && key[0] != '\0') {
         int rv;
         if ((rv = virNetTLSContextCheckCertFile("certificate", cert, !isServer)) < 0)
-            goto cleanup;
+            return -1;
         if (rv == 0 &&
             (rv = virNetTLSContextCheckCertFile("private key", key, !isServer)) < 0)
-            goto cleanup;
+            return -1;
 
         if (rv == 0) {
             VIR_DEBUG("loading cert and key from %s and %s", cert, key);
@@ -668,7 +667,7 @@ static int virNetTLSContextLoadCredentials(virNetTLSContextPtr ctxt,
                 virReportError(VIR_ERR_SYSTEM_ERROR,
                                _("Unable to set x509 key and certificate: %s, %s: %s"),
                                key, cert, gnutls_strerror(err));
-                goto cleanup;
+                return -1;
             }
         } else {
             VIR_DEBUG("Skipping non-existent cert %s key %s on client",
@@ -676,10 +675,7 @@ static int virNetTLSContextLoadCredentials(virNetTLSContextPtr ctxt,
         }
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 

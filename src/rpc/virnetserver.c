@@ -109,7 +109,6 @@ static int virNetServerProcessMsg(virNetServerPtr srv,
                                   virNetServerProgramPtr prog,
                                   virNetMessagePtr msg)
 {
-    int ret = -1;
     if (!prog) {
         /* Only send back an error for type == CALL. Other
          * message types are not expecting replies, so we
@@ -120,7 +119,7 @@ static int virNetServerProcessMsg(virNetServerPtr srv,
             if (virNetServerProgramUnknownError(client,
                                                 msg,
                                                 &msg->header) < 0)
-                goto cleanup;
+                return -1;
         } else {
             VIR_INFO("Dropping client message, unknown program %d version %d type %d proc %d",
                      msg->header.prog, msg->header.vers,
@@ -129,22 +128,18 @@ static int virNetServerProcessMsg(virNetServerPtr srv,
             virNetMessageClear(msg);
             msg->header.type = VIR_NET_REPLY;
             if (virNetServerClientSendMessage(client, msg) < 0)
-                goto cleanup;
+                return -1;
         }
-        goto done;
+        return 0;
     }
 
     if (virNetServerProgramDispatch(prog,
                                     srv,
                                     client,
                                     msg) < 0)
-        goto cleanup;
+        return -1;
 
- done:
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 static void virNetServerHandleJob(void *jobOpaque, void *opaque)

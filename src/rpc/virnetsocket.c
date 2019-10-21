@@ -159,7 +159,6 @@ int virNetSocketCheckProtocols(bool *hasIPv4,
     struct ifaddrs *ifaddr = NULL, *ifa;
     struct addrinfo hints;
     struct addrinfo *ai = NULL;
-    int ret = -1;
     int gaierr;
 
     memset(&hints, 0, sizeof(hints));
@@ -169,7 +168,7 @@ int virNetSocketCheckProtocols(bool *hasIPv4,
     if (getifaddrs(&ifaddr) < 0) {
         virReportSystemError(errno, "%s",
                              _("Cannot get host interface addresses"));
-        goto cleanup;
+        return -1;
     }
 
     for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) {
@@ -197,7 +196,7 @@ int virNetSocketCheckProtocols(bool *hasIPv4,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Cannot resolve ::1 address: %s"),
                            gai_strerror(gaierr));
-            goto cleanup;
+            return -1;
         }
     }
 
@@ -205,9 +204,7 @@ int virNetSocketCheckProtocols(bool *hasIPv4,
 
     VIR_DEBUG("Protocols: v4 %d v6 %d", *hasIPv4, *hasIPv6);
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 #else
     *hasIPv4 = *hasIPv6 = false;
     virReportError(VIR_ERR_NO_SUPPORT, "%s",
