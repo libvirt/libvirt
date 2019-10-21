@@ -36,7 +36,6 @@ bhyveCollectPCIAddress(virDomainDefPtr def G_GNUC_UNUSED,
                        virDomainDeviceInfoPtr info,
                        void *opaque)
 {
-    int ret = -1;
     if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE)
         return 0;
 
@@ -56,12 +55,10 @@ bhyveCollectPCIAddress(virDomainDefPtr def G_GNUC_UNUSED,
 
     if (virDomainPCIAddressReserveAddr(addrs, addr,
                                        VIR_PCI_CONNECT_TYPE_PCI_DEVICE, 0) < 0) {
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 virDomainPCIAddressSetPtr
@@ -169,13 +166,11 @@ int bhyveDomainAssignPCIAddresses(virDomainDefPtr def,
     virDomainPCIAddressSetPtr addrs = NULL;
     bhyveDomainObjPrivatePtr priv = NULL;
 
-    int ret = -1;
-
     if (!(addrs = bhyveDomainPCIAddressSetCreate(def, 1)))
-        goto cleanup;
+        return -1;
 
     if (bhyveAssignDevicePCISlots(def, addrs) < 0)
-        goto cleanup;
+        return -1;
 
     if (obj && obj->privateData) {
         priv = obj->privateData;
@@ -188,10 +183,7 @@ int bhyveDomainAssignPCIAddresses(virDomainDefPtr def,
         }
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 int bhyveDomainAssignAddresses(virDomainDefPtr def, virDomainObjPtr obj)
