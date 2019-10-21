@@ -1331,7 +1331,7 @@ virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
                      unsigned long long capBits, bool clearExistingCaps)
 {
     size_t i;
-    int capng_ret, ret = -1;
+    int capng_ret;
     bool need_setgid = false;
     bool need_setuid = false;
     bool need_setpcap = false;
@@ -1383,7 +1383,7 @@ virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
     if (prctl(PR_SET_KEEPCAPS, 1, 0, 0, 0)) {
         virReportSystemError(errno, "%s",
                              _("prctl failed to set KEEPCAPS"));
-        goto cleanup;
+        return -1;
     }
 
     /* Change to the temp capabilities */
@@ -1401,18 +1401,18 @@ virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot apply process capabilities %d"), capng_ret);
-            goto cleanup;
+            return -1;
         }
     }
 
     if (virSetUIDGID(uid, gid, groups, ngroups) < 0)
-        goto cleanup;
+        return -1;
 
     /* Tell it we are done keeping capabilities */
     if (prctl(PR_SET_KEEPCAPS, 0, 0, 0, 0)) {
         virReportSystemError(errno, "%s",
                              _("prctl failed to reset KEEPCAPS"));
-        goto cleanup;
+        return -1;
     }
 
 # ifdef PR_CAP_AMBIENT
@@ -1430,7 +1430,7 @@ virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
                                      _("prctl failed to enable '%s' in the "
                                        "AMBIENT set"),
                                      capstr);
-                goto cleanup;
+                return -1;
             }
         }
     }
@@ -1454,13 +1454,10 @@ virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
     if (((capng_ret = capng_apply(CAPNG_SELECT_CAPS)) < 0)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("cannot apply process capabilities %d"), capng_ret);
-        ret = -1;
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 #else

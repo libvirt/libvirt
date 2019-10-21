@@ -601,11 +601,10 @@ vmdk4GetBackingStore(char **res,
     static const char prefix[] = "parentFileNameHint=\"";
     char *start, *end;
     size_t len;
-    int ret = BACKING_STORE_ERROR;
     g_autofree char *desc = NULL;
 
     if (VIR_ALLOC_N(desc, VIR_STORAGE_MAX_HEADER) < 0)
-        goto cleanup;
+        return BACKING_STORE_ERROR;
 
     *res = NULL;
     /*
@@ -617,10 +616,9 @@ vmdk4GetBackingStore(char **res,
      */
     *format = VIR_STORAGE_FILE_AUTO;
 
-    if (buf_size <= 0x200) {
-        ret = BACKING_STORE_INVALID;
-        goto cleanup;
-    }
+    if (buf_size <= 0x200)
+        return BACKING_STORE_INVALID;
+
     len = buf_size - 0x200;
     if (len > VIR_STORAGE_MAX_HEADER)
         len = VIR_STORAGE_MAX_HEADER;
@@ -629,27 +627,21 @@ vmdk4GetBackingStore(char **res,
     start = strstr(desc, prefix);
     if (start == NULL) {
         *format = VIR_STORAGE_FILE_NONE;
-        ret = BACKING_STORE_OK;
-        goto cleanup;
+        return BACKING_STORE_OK;
     }
     start += strlen(prefix);
     end = strchr(start, '"');
-    if (end == NULL) {
-        ret = BACKING_STORE_INVALID;
-        goto cleanup;
-    }
+    if (end == NULL)
+        return BACKING_STORE_INVALID;
+
     if (end == start) {
         *format = VIR_STORAGE_FILE_NONE;
-        ret = BACKING_STORE_OK;
-        goto cleanup;
+        return BACKING_STORE_OK;
     }
     *end = '\0';
     *res = g_strdup(start);
 
-    ret = BACKING_STORE_OK;
-
- cleanup:
-    return ret;
+    return BACKING_STORE_OK;
 }
 
 static int
@@ -2382,20 +2374,15 @@ virStorageSourceInitChainElement(virStorageSourcePtr newelem,
                                  virStorageSourcePtr old,
                                  bool transferLabels)
 {
-    int ret = -1;
-
     if (transferLabels &&
         !newelem->seclabels &&
         virStorageSourceSeclabelsCopy(newelem, old) < 0)
-        goto cleanup;
+        return -1;
 
     newelem->shared = old->shared;
     newelem->readonly = old->readonly;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -3426,7 +3413,6 @@ virStorageSourceParseBackingJSONRBD(virStorageSourcePtr src,
     virJSONValuePtr servers = virJSONValueObjectGetArray(json, "server");
     size_t nservers;
     size_t i;
-    int ret = -1;
 
     src->type = VIR_STORAGE_TYPE_NETWORK;
     src->protocol = VIR_STORAGE_NET_PROTOCOL_RBD;
@@ -3451,20 +3437,18 @@ virStorageSourceParseBackingJSONRBD(virStorageSourcePtr src,
         nservers = virJSONValueArraySize(servers);
 
         if (VIR_ALLOC_N(src->hosts, nservers) < 0)
-            goto cleanup;
+            return -1;
 
         src->nhosts = nservers;
 
         for (i = 0; i < nservers; i++) {
             if (virStorageSourceParseBackingJSONInetSocketAddress(src->hosts + i,
                                                                   virJSONValueArrayGet(servers, i)) < 0)
-                goto cleanup;
+                return -1;
         }
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int

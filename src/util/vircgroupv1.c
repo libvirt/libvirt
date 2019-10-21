@@ -696,7 +696,6 @@ virCgroupV1AddTask(virCgroupPtr group,
                    pid_t pid,
                    unsigned int flags)
 {
-    int ret = -1;
     size_t i;
 
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
@@ -712,12 +711,10 @@ virCgroupV1AddTask(virCgroupPtr group,
             continue;
 
         if (virCgroupSetValueI64(group, i, "tasks", pid) < 0)
-            goto cleanup;
+            return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -1818,18 +1815,13 @@ static int
 virCgroupV1AllowAllDevices(virCgroupPtr group,
                            int perms)
 {
-    int ret = -1;
-
     if (virCgroupV1AllowDevice(group, 'b', -1, -1, perms) < 0)
-        goto cleanup;
+        return -1;
 
     if (virCgroupV1AllowDevice(group, 'c', -1, -1, perms) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 

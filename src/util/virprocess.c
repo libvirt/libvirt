@@ -349,7 +349,6 @@ int
 virProcessKillPainfullyDelay(pid_t pid, bool force, unsigned int extradelay)
 {
     size_t i;
-    int ret = -1;
     /* This is in 1/5th seconds since polling is on a 0.2s interval */
     unsigned int polldelay = (force ? 200 : 75) + (extradelay*5);
     const char *signame = "TERM";
@@ -393,10 +392,9 @@ virProcessKillPainfullyDelay(pid_t pid, bool force, unsigned int extradelay)
                 virReportSystemError(errno,
                                      _("Failed to terminate process %lld with SIG%s"),
                                      (long long)pid, signame);
-                goto cleanup;
+                return -1;
             }
-            ret = signum == SIGTERM ? 0 : 1;
-            goto cleanup; /* process is dead */
+            return signum == SIGTERM ? 0 : 1;
         }
 
         g_usleep(200 * 1000);
@@ -406,8 +404,7 @@ virProcessKillPainfullyDelay(pid_t pid, bool force, unsigned int extradelay)
                          _("Failed to terminate process %lld with SIG%s"),
                          (long long)pid, signame);
 
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -1177,23 +1174,19 @@ virProcessRunInFork(virProcessForkCallback cb,
 int
 virProcessSetupPrivateMountNS(void)
 {
-    int ret = -1;
-
     if (unshare(CLONE_NEWNS) < 0) {
         virReportSystemError(errno, "%s",
                              _("Cannot unshare mount namespace"));
-        goto cleanup;
+        return -1;
     }
 
     if (mount("", "/", "none", MS_SLAVE|MS_REC, NULL) < 0) {
         virReportSystemError(errno, "%s",
                              _("Failed to switch root mount into slave mode"));
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 #else /* !defined(HAVE_SYS_MOUNT_H) || !defined(HAVE_UNSHARE) */

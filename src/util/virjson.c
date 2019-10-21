@@ -160,7 +160,6 @@ virJSONValueObjectAddVArgs(virJSONValuePtr obj,
 {
     char type;
     char *key;
-    int ret = -1;
     int rc;
 
     while ((key = va_arg(args, char *)) != NULL) {
@@ -169,7 +168,7 @@ virJSONValueObjectAddVArgs(virJSONValuePtr obj,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("argument key '%s' is too short, missing type prefix"),
                            key);
-            goto cleanup;
+            return -1;
         }
 
         type = key[0];
@@ -187,7 +186,7 @@ virJSONValueObjectAddVArgs(virJSONValuePtr obj,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("argument key '%s' must not have null value"),
                                key);
-                goto cleanup;
+                return -1;
             }
             rc = virJSONValueObjectAppendString(obj, key, val);
         }   break;
@@ -202,7 +201,7 @@ virJSONValueObjectAddVArgs(virJSONValuePtr obj,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("argument key '%s' must not be negative"),
                                key);
-                goto cleanup;
+                return -1;
             }
 
             if (!val && (type == 'z' || type == 'y'))
@@ -231,7 +230,7 @@ virJSONValueObjectAddVArgs(virJSONValuePtr obj,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("argument key '%s' must not be negative"),
                                key);
-                goto cleanup;
+                return -1;
             }
 
             if (!val && (type == 'Z' || type == 'Y'))
@@ -296,7 +295,7 @@ virJSONValueObjectAddVArgs(virJSONValuePtr obj,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("argument key '%s' must not have null value"),
                                key);
-                goto cleanup;
+                return -1;
             }
 
             if ((rc = virJSONValueObjectAppend(obj, key, *val)) == 0)
@@ -315,11 +314,11 @@ virJSONValueObjectAddVArgs(virJSONValuePtr obj,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("argument key '%s' must not have null value"),
                                key);
-                goto cleanup;
+                return -1;
             }
 
             if (!(jsonMap = virJSONValueNewArrayFromBitmap(map)))
-                goto cleanup;
+                return -1;
 
             if ((rc = virJSONValueObjectAppend(obj, key, jsonMap)) < 0)
                 virJSONValueFree(jsonMap);
@@ -328,23 +327,18 @@ virJSONValueObjectAddVArgs(virJSONValuePtr obj,
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unsupported data type '%c' for arg '%s'"), type, key - 2);
-            goto cleanup;
+            return -1;
         }
 
         if (rc < 0)
-            goto cleanup;
+            return -1;
     }
 
     /* verify that we added at least one key-value pair */
-    if (virJSONValueObjectKeysNumber(obj) == 0) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (virJSONValueObjectKeysNumber(obj) == 0)
+        return 0;
 
-    ret = 1;
-
- cleanup:
-    return ret;
+    return 1;
 }
 
 

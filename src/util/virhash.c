@@ -646,15 +646,13 @@ virHashForEach(virHashTablePtr table, virHashIterator iter, void *data)
             ret = iter(entry->payload, entry->name, data);
 
             if (ret < 0)
-                goto cleanup;
+                return ret;
 
             entry = next;
         }
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 

@@ -3598,27 +3598,25 @@ int
 virFileGetHugepageSize(const char *path,
                        unsigned long long *size)
 {
-    int ret = -1;
     struct statfs fs;
 
     if (statfs(path, &fs) < 0) {
         virReportSystemError(errno,
                              _("cannot determine filesystem for '%s'"),
                              path);
-        goto cleanup;
+        return -1;
     }
 
     if (fs.f_type != HUGETLBFS_MAGIC) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("not a hugetlbfs mount: '%s'"),
                        path);
-        goto cleanup;
+        return -1;
     }
 
     *size = fs.f_bsize / 1024; /* we are storing size in KiB */
-    ret = 0;
- cleanup:
-    return ret;
+
+    return 0;
 }
 
 # define PROC_MEMINFO "/proc/meminfo"
@@ -3790,12 +3788,11 @@ virFileSetupDev(const char *path,
 {
     const unsigned long mount_flags = MS_NOSUID;
     const char *mount_fs = "tmpfs";
-    int ret = -1;
 
     if (virFileMakePath(path) < 0) {
         virReportSystemError(errno,
                              _("Failed to make path %s"), path);
-        goto cleanup;
+        return -1;
     }
 
     VIR_DEBUG("Mount devfs on %s type=tmpfs flags=0x%lx, opts=%s",
@@ -3804,12 +3801,10 @@ virFileSetupDev(const char *path,
         virReportSystemError(errno,
                              _("Failed to mount devfs on %s type %s (%s)"),
                              path, mount_fs, mount_options);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 

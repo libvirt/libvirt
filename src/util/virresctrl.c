@@ -871,7 +871,6 @@ virResctrlInfoGetCache(virResctrlInfoPtr resctrl,
     virResctrlInfoPerLevelPtr i_level = NULL;
     virResctrlInfoPerTypePtr i_type = NULL;
     size_t i = 0;
-    int ret = -1;
 
     if (virResctrlInfoIsEmpty(resctrl))
         return 0;
@@ -928,14 +927,12 @@ virResctrlInfoGetCache(virResctrlInfoPtr resctrl,
         memcpy((*controls)[*ncontrols - 1], &i_type->control, sizeof(i_type->control));
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
  error:
     while (*ncontrols)
         VIR_FREE((*controls)[--*ncontrols]);
     VIR_FREE(*controls);
-    goto cleanup;
+    return -1;
 }
 
 

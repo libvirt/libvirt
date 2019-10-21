@@ -85,22 +85,18 @@ virMacMapAddLocked(virMacMapPtr mgr,
                    const char *domain,
                    const char *mac)
 {
-    int ret = -1;
     char **macsList = NULL;
 
     if ((macsList = virHashLookup(mgr->macs, domain)) &&
         virStringListHasString((const char**) macsList, mac)) {
-        ret = 0;
-        goto cleanup;
+        return 0;
     }
 
     if (virStringListAdd(&macsList, mac) < 0 ||
         virHashUpdateEntry(mgr->macs, domain, macsList) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 

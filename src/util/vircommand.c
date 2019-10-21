@@ -417,8 +417,6 @@ virCommandHandshakeChild(virCommandPtr cmd)
 static int
 virExecCommon(virCommandPtr cmd, gid_t *groups, int ngroups)
 {
-    int ret = -1;
-
     if (cmd->uid != (uid_t)-1 || cmd->gid != (gid_t)-1 ||
         cmd->capabilities || (cmd->flags & VIR_EXEC_CLEAR_CAPS)) {
         VIR_DEBUG("Setting child uid:gid to %d:%d with caps %llx",
@@ -426,7 +424,7 @@ virExecCommon(virCommandPtr cmd, gid_t *groups, int ngroups)
         if (virSetUIDGIDWithCaps(cmd->uid, cmd->gid, groups, ngroups,
                                  cmd->capabilities,
                                  !!(cmd->flags & VIR_EXEC_CLEAR_CAPS)) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (cmd->pwd) {
@@ -434,13 +432,10 @@ virExecCommon(virCommandPtr cmd, gid_t *groups, int ngroups)
         if (chdir(cmd->pwd) < 0) {
             virReportSystemError(errno,
                                  _("Unable to change to %s"), cmd->pwd);
-            goto cleanup;
+            return -1;
         }
     }
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 # ifdef __linux__

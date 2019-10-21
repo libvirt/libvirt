@@ -773,7 +773,6 @@ virHostCPUGetStatsLinux(FILE *procstat,
                         virNodeCPUStatsPtr params,
                         int *nparams)
 {
-    int ret = -1;
     char line[1024];
     unsigned long long usr, ni, sys, idle, iowait;
     unsigned long long irq, softirq, steal, guest, guest_nice;
@@ -782,15 +781,14 @@ virHostCPUGetStatsLinux(FILE *procstat,
     if ((*nparams) == 0) {
         /* Current number of cpu stats supported by linux */
         *nparams = LINUX_NB_CPU_STATS;
-        ret = 0;
-        goto cleanup;
+        return 0;
     }
 
     if ((*nparams) != LINUX_NB_CPU_STATS) {
         virReportInvalidArg(*nparams,
                             _("nparams in %s must be equal to %d"),
                             __FUNCTION__, LINUX_NB_CPU_STATS);
-        goto cleanup;
+        return -1;
     }
 
     if (cpuNum == VIR_NODE_CPU_STATS_ALL_CPUS) {
@@ -813,22 +811,21 @@ virHostCPUGetStatsLinux(FILE *procstat,
 
             if (virHostCPUStatsAssign(&params[0], VIR_NODE_CPU_STATS_KERNEL,
                                       (sys + irq + softirq) * TICK_TO_NSEC) < 0)
-                goto cleanup;
+                return -1;
 
             if (virHostCPUStatsAssign(&params[1], VIR_NODE_CPU_STATS_USER,
                                       (usr + ni) * TICK_TO_NSEC) < 0)
-                goto cleanup;
+                return -1;
 
             if (virHostCPUStatsAssign(&params[2], VIR_NODE_CPU_STATS_IDLE,
                                       idle * TICK_TO_NSEC) < 0)
-                goto cleanup;
+                return -1;
 
             if (virHostCPUStatsAssign(&params[3], VIR_NODE_CPU_STATS_IOWAIT,
                                       iowait * TICK_TO_NSEC) < 0)
-                goto cleanup;
+                return -1;
 
-            ret = 0;
-            goto cleanup;
+            return 0;
         }
     }
 
@@ -836,8 +833,7 @@ virHostCPUGetStatsLinux(FILE *procstat,
                         _("Invalid cpuNum in %s"),
                         __FUNCTION__);
 
- cleanup:
-    return ret;
+    return 0;
 }
 
 

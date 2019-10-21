@@ -80,7 +80,6 @@ struct virHostdevIsPCINodeDeviceUsedData {
 static int virHostdevIsPCINodeDeviceUsed(virPCIDeviceAddressPtr devAddr, void *opaque)
 {
     virPCIDevicePtr actual;
-    int ret = -1;
     struct virHostdevIsPCINodeDeviceUsedData *helperData = opaque;
 
     actual = virPCIDeviceListFindByIDs(helperData->mgr->activePCIHostdevs,
@@ -106,12 +105,10 @@ static int virHostdevIsPCINodeDeviceUsed(virPCIDeviceAddressPtr devAddr, void *o
             virReportError(VIR_ERR_OPERATION_INVALID,
                            _("PCI device %s is in use"),
                            virPCIDeviceGetName(actual));
-        goto cleanup;
+        return -1;
     }
  iommu_owner:
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int virHostdevManagerOnceInit(void)
