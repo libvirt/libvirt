@@ -4825,7 +4825,6 @@ int prlsdkMigrate(virDomainObjPtr dom, virURIPtr uri,
                   const char *dname,
                   unsigned int flags)
 {
-    int ret = -1;
     vzDomObjPtr privdom = dom->privateData;
     PRL_HANDLE job = PRL_INVALID_HANDLE;
     char uuidstr[VIR_UUID_STRING_BRACED_BUFLEN];
@@ -4845,12 +4844,9 @@ int prlsdkMigrate(virDomainObjPtr dom, virURIPtr uri,
                                     );
 
     if (PRL_FAILED(waitDomainJob(job, dom)))
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 int prlsdkSetCpuCount(virDomainObjPtr dom, unsigned int count)
