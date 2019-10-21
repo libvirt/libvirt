@@ -336,7 +336,7 @@ createRawFile(int fd, virStorageVolDefPtr vol,
         virReportSystemError(errno,
                              _("cannot extend file '%s'"),
                              vol->target.path);
-        goto cleanup;
+        return ret;
     }
 
 /* Avoid issues with older kernel's <linux/fs.h> namespace pollution. */
@@ -356,7 +356,7 @@ createRawFile(int fd, virStorageVolDefPtr vol,
             virReportSystemError(errno,
                                  _("cannot allocate %llu bytes in file '%s'"),
                                  vol->target.allocation, vol->target.path);
-            goto cleanup;
+            return ret;
         }
     }
 #endif
@@ -368,7 +368,7 @@ createRawFile(int fd, virStorageVolDefPtr vol,
          * been able to allocate the required space. */
         if ((ret = virStorageBackendCopyToFD(vol, inputvol, fd, &remain,
                                              !need_alloc, reflink_copy)) < 0)
-            goto cleanup;
+            return ret;
 
         /* If the new allocation is greater than the original capacity,
          * but fallocate failed, fill the rest with zeroes.
@@ -381,7 +381,7 @@ createRawFile(int fd, virStorageVolDefPtr vol,
             ret = -errno;
             virReportSystemError(errno, _("cannot fill file '%s'"),
                                  vol->target.path);
-            goto cleanup;
+            return ret;
         }
     }
 
@@ -389,10 +389,9 @@ createRawFile(int fd, virStorageVolDefPtr vol,
         ret = -errno;
         virReportSystemError(errno, _("cannot sync data to file '%s'"),
                              vol->target.path);
-        goto cleanup;
+        return ret;
     }
 
- cleanup:
     return ret;
 }
 
@@ -3747,7 +3746,6 @@ getOldStyleBlockDevice(const char *lun_path G_GNUC_UNUSED,
                        char **block_device)
 {
     char *blockp = NULL;
-    int retval = -1;
 
     /* old-style; just parse out the sd */
     if (!(blockp = strrchr(block_name, ':'))) {
@@ -3755,7 +3753,7 @@ getOldStyleBlockDevice(const char *lun_path G_GNUC_UNUSED,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to parse block name %s"),
                        block_name);
-        goto cleanup;
+        return -1;
     } else {
         blockp++;
         *block_device = g_strdup(blockp);
@@ -3763,9 +3761,7 @@ getOldStyleBlockDevice(const char *lun_path G_GNUC_UNUSED,
         VIR_DEBUG("Block device is '%s'", *block_device);
     }
 
-    retval = 0;
- cleanup:
-    return retval;
+    return 0;
 }
 
 

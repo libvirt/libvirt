@@ -621,7 +621,6 @@ storageConnectFindStoragePoolSources(virConnectPtr conn,
 {
     int backend_type;
     virStorageBackendPtr backend;
-    char *ret = NULL;
 
     if (virConnectFindStoragePoolSourcesEnsureACL(conn) < 0)
         return NULL;
@@ -630,24 +629,21 @@ storageConnectFindStoragePoolSources(virConnectPtr conn,
     if (backend_type < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unknown storage pool type %s"), type);
-        goto cleanup;
+        return NULL;
     }
 
     backend = virStorageBackendForType(backend_type);
     if (backend == NULL)
-        goto cleanup;
+        return NULL;
 
     if (!backend->findPoolSources) {
         virReportError(VIR_ERR_NO_SUPPORT,
                        _("pool type '%s' does not support source "
                          "discovery"), type);
-        goto cleanup;
+        return NULL;
     }
 
-    ret = backend->findPoolSources(srcSpec, flags);
-
- cleanup:
-    return ret;
+    return backend->findPoolSources(srcSpec, flags);
 }
 
 
@@ -1771,25 +1767,22 @@ storageVolDeleteInternal(virStorageBackendPtr backend,
                          bool updateMeta)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(obj);
-    int ret = -1;
 
     if (!backend->deleteVol) {
         virReportError(VIR_ERR_NO_SUPPORT,
                        "%s", _("storage pool does not support vol deletion"));
 
-        goto cleanup;
+        return -1;
     }
 
     if (backend->deleteVol(obj, voldef, flags) < 0)
-        goto cleanup;
+        return -1;
 
     /* The disk backend updated the pool data including removing the
      * voldef from the pool (for both the deleteVol and the createVol
      * failure path. */
-    if (def->type == VIR_STORAGE_POOL_DISK) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (def->type == VIR_STORAGE_POOL_DISK)
+        return 0;
 
     /* Update pool metadata - don't update meta data from error paths
      * in this module since the allocation/available weren't adjusted yet.
@@ -1801,10 +1794,8 @@ storageVolDeleteInternal(virStorageBackendPtr backend,
     }
 
     virStoragePoolObjRemoveVol(obj, voldef);
-    ret = 0;
 
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -2797,20 +2788,15 @@ static int
 storageConnectStoragePoolEventDeregisterAny(virConnectPtr conn,
                                             int callbackID)
 {
-    int ret = -1;
-
     if (virConnectStoragePoolEventDeregisterAnyEnsureACL(conn) < 0)
-        goto cleanup;
+        return -1;
 
     if (virObjectEventStateDeregisterID(conn,
                                         driver->storageEventState,
                                         callbackID, true) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 

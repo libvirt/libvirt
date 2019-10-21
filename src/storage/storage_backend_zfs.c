@@ -68,16 +68,13 @@ virStorageBackendZFSVolModeNeeded(void)
     if ((ret < 0) || (exit_code != 2)) {
         VIR_WARN("Command 'zfs get' either failed "
                  "to run or exited with unexpected status");
-        goto cleanup;
+        return ret;
     }
 
     if (strstr(error, " volmode "))
-        ret = 1;
+        return 1;
     else
-        ret = 0;
-
- cleanup:
-    return ret;
+        return 0;
 }
 
 static int
@@ -291,7 +288,6 @@ virStorageBackendZFSCreateVol(virStoragePoolObjPtr pool,
                               virStorageVolDefPtr vol)
 {
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
-    int ret = -1;
     int volmode_needed = -1;
     g_autoptr(virCommand) cmd = NULL;
 
@@ -311,7 +307,7 @@ virStorageBackendZFSCreateVol(virStoragePoolObjPtr pool,
 
     volmode_needed = virStorageBackendZFSVolModeNeeded();
     if (volmode_needed < 0)
-        goto cleanup;
+        return -1;
     /**
      * $ zfs create -o volmode=dev -V 10240K test/volname
      * $ zfs create -o volmode=dev -s -V 10240K test/volname
@@ -342,15 +338,12 @@ virStorageBackendZFSCreateVol(virStoragePoolObjPtr pool,
     virCommandAddArgFormat(cmd, "%s/%s", def->source.name, vol->name);
 
     if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (virStorageBackendZFSFindVols(pool, vol) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
-
+    return 0;
 }
 
 static int
