@@ -485,7 +485,6 @@ lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
                                       size_t nveths,
                                       char **veths)
 {
-    int ret = -1;
     size_t i;
     const char *newname;
     virDomainNetDefPtr netDef;
@@ -494,18 +493,18 @@ lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
 
     for (i = 0; i < nveths; i++) {
         if (!(netDef = lxcContainerGetNetDef(vmDef, veths[i])))
-            goto cleanup;
+            return -1;
 
         newname = netDef->ifname_guest;
         if (!newname) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing device name for container-side veth"));
-            goto cleanup;
+            return -1;
         }
 
         VIR_DEBUG("Renaming %s to %s", veths[i], newname);
         if (virNetDevSetName(veths[i], newname) < 0)
-            goto cleanup;
+            return -1;
 
         /* Only enable this device if there is a reason to do so (either
          * at least one IP was specified, or link state was set to up in
@@ -515,22 +514,20 @@ lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
             netDef->linkstate == VIR_DOMAIN_NET_INTERFACE_LINK_STATE_UP) {
             VIR_DEBUG("Enabling %s", newname);
             if (virNetDevSetOnline(newname, true) < 0)
-                goto cleanup;
+                return -1;
         }
 
         /* set IP addresses and routes */
         if (virNetDevIPInfoAddToDev(newname, &netDef->guestIP) < 0)
-            goto cleanup;
+            return -1;
     }
 
     /* enable lo device only if there were other net devices */
     if ((veths || privNet) &&
         virNetDevSetOnline("lo", true) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 

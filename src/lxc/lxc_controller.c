@@ -358,7 +358,6 @@ static int virLXCControllerValidateNICs(virLXCControllerPtr ctrl)
 static int virLXCControllerGetNICIndexes(virLXCControllerPtr ctrl)
 {
     size_t i;
-    int ret = -1;
 
     /* Gather the ifindexes of the "parent" veths for all interfaces
      * implemented with a veth pair. These will be used when calling
@@ -383,11 +382,11 @@ static int virLXCControllerGetNICIndexes(virLXCControllerPtr ctrl)
                 continue;
             if (virNetDevGetIndex(ctrl->def->nets[i]->ifname,
                                   &nicindex) < 0)
-                goto cleanup;
+                return -1;
             if (VIR_EXPAND_N(ctrl->nicindexes,
                              ctrl->nnicindexes,
                              1) < 0)
-                goto cleanup;
+                return -1;
             VIR_DEBUG("Index %d for %s", nicindex,
                       ctrl->def->nets[i]->ifname);
             ctrl->nicindexes[ctrl->nnicindexes-1] = nicindex;
@@ -407,17 +406,15 @@ static int virLXCControllerGetNICIndexes(virLXCControllerPtr ctrl)
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unsupported net type %s"),
                            virDomainNetTypeToString(actualType));
-            goto cleanup;
+            return -1;
         case VIR_DOMAIN_NET_TYPE_LAST:
         default:
             virReportEnumRangeError(virDomainNetType, actualType);
-            goto cleanup;
+            return -1;
         }
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -606,7 +603,6 @@ static int virLXCControllerAppendNBDPids(virLXCControllerPtr ctrl,
 static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
 {
     size_t i;
-    int ret = -1;
 
     VIR_DEBUG("Setting up loop devices for filesystems");
 
@@ -631,33 +627,33 @@ static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("fs format %s is not supported"),
                                virStorageFileFormatTypeToString(fs->format));
-                goto cleanup;
+                return -1;
             }
 
             fd = virLXCControllerSetupLoopDeviceFS(fs);
             if (fd < 0)
-                goto cleanup;
+                return -1;
 
             VIR_DEBUG("Saving loop fd %d", fd);
             if (VIR_EXPAND_N(ctrl->loopDevFds, ctrl->nloopDevs, 1) < 0) {
                 VIR_FORCE_CLOSE(fd);
-                goto cleanup;
+                return -1;
             }
             ctrl->loopDevFds[ctrl->nloopDevs - 1] = fd;
         } else if (fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_NBD) {
             if (virLXCControllerSetupNBDDeviceFS(fs) < 0)
-                goto cleanup;
+                return -1;
 
             /* The NBD device will be cleaned up while the cgroup will end.
              * For this we need to remember the qemu-nbd pid and add it to
              * the cgroup*/
             if (virLXCControllerAppendNBDPids(ctrl, fs->src->path) < 0)
-                goto cleanup;
+                return -1;
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("fs driver %s is not supported"),
                            virDomainFSDriverTypeToString(fs->fsdriver));
-            goto cleanup;
+            return -1;
         }
     }
 
@@ -685,7 +681,7 @@ static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("disk format %s is not supported"),
                                virStorageFileFormatTypeToString(format));
-                goto cleanup;
+                return -1;
             }
 
             /* We treat 'none' as meaning 'raw' since we
@@ -694,12 +690,12 @@ static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
              */
             fd = virLXCControllerSetupLoopDeviceDisk(disk);
             if (fd < 0)
-                goto cleanup;
+                return -1;
 
             VIR_DEBUG("Saving loop fd %d", fd);
             if (VIR_EXPAND_N(ctrl->loopDevFds, ctrl->nloopDevs, 1) < 0) {
                 VIR_FORCE_CLOSE(fd);
-                goto cleanup;
+                return -1;
             }
             ctrl->loopDevFds[ctrl->nloopDevs - 1] = fd;
         } else if (!driver || STREQ(driver, "nbd")) {
@@ -708,29 +704,27 @@ static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("Disk cache mode %s is not supported"),
                                virDomainDiskCacheTypeToString(disk->cachemode));
-                goto cleanup;
+                return -1;
             }
             if (virLXCControllerSetupNBDDeviceDisk(disk) < 0)
-                goto cleanup;
+                return -1;
 
             /* The NBD device will be cleaned up while the cgroup will end.
              * For this we need to remember the qemu-nbd pid and add it to
              * the cgroup*/
             if (virLXCControllerAppendNBDPids(ctrl, virDomainDiskGetSource(disk)) < 0)
-                goto cleanup;
+                return -1;
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("disk driver %s is not supported"),
                            driver);
-            goto cleanup;
+            return -1;
         }
     }
 
     VIR_DEBUG("Setup all loop devices");
-    ret = 0;
 
- cleanup:
-    return ret;
+    return 0;
 }
 
 

@@ -280,7 +280,6 @@ virLXCProcessSetupInterfaceTap(virDomainDefPtr vm,
                                virDomainNetDefPtr net,
                                const char *brname)
 {
-    char *ret = NULL;
     char *parentVeth;
     char *containerVeth = NULL;
     virNetDevVPortProfilePtr vport = virDomainNetGetActualVirtPortProfile(net);
@@ -288,45 +287,42 @@ virLXCProcessSetupInterfaceTap(virDomainDefPtr vm,
     VIR_DEBUG("calling vethCreate()");
     parentVeth = net->ifname;
     if (virNetDevVethCreate(&parentVeth, &containerVeth) < 0)
-        goto cleanup;
+        return NULL;
     VIR_DEBUG("parentVeth: %s, containerVeth: %s", parentVeth, containerVeth);
 
     if (net->ifname == NULL)
         net->ifname = parentVeth;
 
     if (virNetDevSetMAC(containerVeth, &net->mac) < 0)
-        goto cleanup;
+        return NULL;
 
     if (brname) {
         if (vport && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH) {
             if (virNetDevOpenvswitchAddPort(brname, parentVeth, &net->mac, vm->uuid,
                                             vport, virDomainNetGetActualVlan(net)) < 0)
-                goto cleanup;
+                return NULL;
         } else {
             if (virNetDevBridgeAddPort(brname, parentVeth) < 0)
-                goto cleanup;
+                return NULL;
         }
     }
 
     if (virNetDevSetOnline(parentVeth, true) < 0)
-        goto cleanup;
+        return NULL;
 
     if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_ETHERNET) {
         /* Set IP info for the host side, but only if the type is
          * 'ethernet'.
          */
         if (virNetDevIPInfoAddToDev(parentVeth, &net->hostIP) < 0)
-            goto cleanup;
+            return NULL;
     }
 
     if (net->filter &&
         virDomainConfNWFilterInstantiate(vm->name, vm->uuid, net, false) < 0)
-        goto cleanup;
+        return NULL;
 
-    ret = containerVeth;
-
- cleanup:
-    return ret;
+    return containerVeth;
 }
 
 
@@ -1032,7 +1028,6 @@ virLXCProcessReadLogOutputData(virDomainObjPtr vm,
 {
     int retries = 10;
     int got = 0;
-    int ret = -1;
     char *filter_next = buf;
 
     buf[0] = '\0';
@@ -1052,7 +1047,7 @@ virLXCProcessReadLogOutputData(virDomainObjPtr vm,
         if (bytes < 0) {
             virReportSystemError(errno, "%s",
                                  _("Failure while reading log output"));
-            goto cleanup;
+            return -1;
         }
 
         got += bytes;
@@ -1074,13 +1069,11 @@ virLXCProcessReadLogOutputData(virDomainObjPtr vm,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Out of space while reading log output: %s"),
                            buf);
-            goto cleanup;
+            return -1;
         }
 
-        if (isdead) {
-            ret = got;
-            goto cleanup;
-        }
+        if (isdead)
+            return got;
 
         g_usleep(100*1000);
         retries--;
@@ -1090,8 +1083,7 @@ virLXCProcessReadLogOutputData(virDomainObjPtr vm,
                    _("Timed out while reading log output: %s"),
                    buf);
 
- cleanup:
-    return ret;
+    return -1;
 }
 
 

@@ -37,29 +37,25 @@ VIR_LOG_INIT("lxc.lxc_cgroup");
 static int virLXCCgroupSetupCpuTune(virDomainDefPtr def,
                                     virCgroupPtr cgroup)
 {
-    int ret = -1;
-
     if (def->cputune.sharesSpecified) {
         unsigned long long val;
         if (virCgroupSetCpuShares(cgroup, def->cputune.shares) < 0)
-            goto cleanup;
+            return -1;
 
         if (virCgroupGetCpuShares(cgroup, &val) < 0)
-            goto cleanup;
+            return -1;
         def->cputune.shares = val;
     }
 
     if (def->cputune.quota != 0 &&
         virCgroupSetCpuCfsQuota(cgroup, def->cputune.quota) < 0)
-        goto cleanup;
+        return -1;
 
     if (def->cputune.period != 0 &&
         virCgroupSetCpuCfsPeriod(cgroup, def->cputune.period) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -159,26 +155,22 @@ static int virLXCCgroupSetupBlkioTune(virDomainDefPtr def,
 static int virLXCCgroupSetupMemTune(virDomainDefPtr def,
                                     virCgroupPtr cgroup)
 {
-    int ret = -1;
-
     if (virCgroupSetMemory(cgroup, virDomainDefGetMemoryInitial(def)) < 0)
-        goto cleanup;
+        return -1;
 
     if (virMemoryLimitIsSet(def->mem.hard_limit))
         if (virCgroupSetMemoryHardLimit(cgroup, def->mem.hard_limit) < 0)
-            goto cleanup;
+            return -1;
 
     if (virMemoryLimitIsSet(def->mem.soft_limit))
         if (virCgroupSetMemorySoftLimit(cgroup, def->mem.soft_limit) < 0)
-            goto cleanup;
+            return -1;
 
     if (virMemoryLimitIsSet(def->mem.swap_hard_limit))
         if (virCgroupSetMemSwapHardLimit(cgroup, def->mem.swap_hard_limit) < 0)
-            goto cleanup;
+            return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -306,7 +298,6 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
                                       virCgroupPtr cgroup)
 {
     int capMknod = def->caps_features[VIR_DOMAIN_PROCES_CAPS_FEATURE_MKNOD];
-    int ret = -1;
     size_t i;
     static virLXCCgroupDevicePolicy devices[] = {
         {'c', LXC_DEV_MAJ_MEMORY, LXC_DEV_MIN_NULL},
@@ -320,13 +311,13 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
         {0,   0, 0}};
 
     if (virCgroupDenyAllDevices(cgroup) < 0)
-        goto cleanup;
+        return -1;
 
     /* white list mknod if CAP_MKNOD has to be kept */
     if (capMknod == VIR_TRISTATE_SWITCH_ON) {
         if (virCgroupAllowAllDevices(cgroup,
                                     VIR_CGROUP_DEVICE_MKNOD) < 0)
-            goto cleanup;
+            return -1;
     }
 
     for (i = 0; devices[i].type != 0; i++) {
@@ -336,7 +327,7 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
                                  dev->major,
                                  dev->minor,
                                  VIR_CGROUP_DEVICE_RWM) < 0)
-            goto cleanup;
+            return -1;
     }
 
     VIR_DEBUG("Allowing any disk block devs");
@@ -351,7 +342,7 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
                                       VIR_CGROUP_DEVICE_READ :
                                       VIR_CGROUP_DEVICE_RW) |
                                      VIR_CGROUP_DEVICE_MKNOD, false) < 0)
-            goto cleanup;
+            return -1;
     }
 
     VIR_DEBUG("Allowing any filesystem block devs");
@@ -364,7 +355,7 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
                                      def->fss[i]->readonly ?
                                      VIR_CGROUP_DEVICE_READ :
                                      VIR_CGROUP_DEVICE_RW, false) < 0)
-            goto cleanup;
+            return -1;
     }
 
     VIR_DEBUG("Allowing any hostdev block devs");
@@ -382,12 +373,12 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
 
             if ((usb = virUSBDeviceNew(usbsrc->bus, usbsrc->device,
                                        NULL)) == NULL)
-                goto cleanup;
+                return -1;
 
             if (virUSBDeviceFileIterate(usb, virLXCSetupHostUSBDeviceCgroup,
                                         cgroup) < 0) {
                 virUSBDeviceFree(usb);
-                goto cleanup;
+                return -1;
             }
             virUSBDeviceFree(usb);
             break;
@@ -398,14 +389,14 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
                                              hostdev->source.caps.u.storage.block,
                                              VIR_CGROUP_DEVICE_RW |
                                              VIR_CGROUP_DEVICE_MKNOD, false) < 0)
-                    goto cleanup;
+                    return -1;
                 break;
             case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_MISC:
                 if (virCgroupAllowDevicePath(cgroup,
                                              hostdev->source.caps.u.misc.chardev,
                                              VIR_CGROUP_DEVICE_RW |
                                              VIR_CGROUP_DEVICE_MKNOD, false) < 0)
-                    goto cleanup;
+                    return -1;
                 break;
             default:
                 break;
@@ -417,13 +408,11 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
 
     if (virCgroupAllowDevice(cgroup, 'c', LXC_DEV_MAJ_PTY, -1,
                              VIR_CGROUP_DEVICE_RWM) < 0)
-        goto cleanup;
+        return -1;
 
     VIR_DEBUG("Device whitelist complete");
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -481,25 +470,20 @@ int virLXCCgroupSetup(virDomainDefPtr def,
                       virCgroupPtr cgroup,
                       virBitmapPtr nodemask)
 {
-    int ret = -1;
-
     if (virLXCCgroupSetupCpuTune(def, cgroup) < 0)
-        goto cleanup;
+        return -1;
 
     if (virLXCCgroupSetupCpusetTune(def, cgroup, nodemask) < 0)
-        goto cleanup;
+        return -1;
 
     if (virLXCCgroupSetupBlkioTune(def, cgroup) < 0)
-        goto cleanup;
+        return -1;
 
     if (virLXCCgroupSetupMemTune(def, cgroup) < 0)
-        goto cleanup;
+        return -1;
 
     if (virLXCCgroupSetupDeviceACL(def, cgroup) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
