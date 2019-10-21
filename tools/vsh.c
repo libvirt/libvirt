@@ -3028,7 +3028,8 @@ vshReadlineDeinit(vshControl *ctl G_GNUC_UNUSED)
 }
 
 char *
-vshReadline(vshControl *ctl, const char *prompt)
+vshReadline(vshControl *ctl G_GNUC_UNUSED,
+            const char *prompt)
 {
     char line[1024];
     char *r;
