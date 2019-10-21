@@ -86,7 +86,6 @@ parse_argv(int argc, char *argv[],
            const char **dom_name,
            unsigned int *seconds)
 {
-    int ret = -1;
     int arg;
     unsigned long val;
     char *p;
@@ -116,12 +115,12 @@ parse_argv(int argc, char *argv[],
             val = strtoul(optarg, &p, 10);
             if (errno || *p || p == optarg) {
                 ERROR("Invalid number: '%s'", optarg);
-                goto cleanup;
+                return -1;
             }
             *seconds = val;
             if (*seconds != val) {
                 ERROR("Integer overflow: %ld", val);
-                goto cleanup;
+                return -1;
             }
             break;
         case ':':
@@ -142,9 +141,7 @@ parse_argv(int argc, char *argv[],
     if (argc > optind)
         *dom_name = argv[optind];
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
