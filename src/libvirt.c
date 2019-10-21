@@ -796,22 +796,19 @@ static int
 virConnectGetDefaultURI(virConfPtr conf,
                         char **name)
 {
-    int ret = -1;
     const char *defname = getenv("LIBVIRT_DEFAULT_URI");
     if (defname && *defname) {
         VIR_DEBUG("Using LIBVIRT_DEFAULT_URI '%s'", defname);
         *name = g_strdup(defname);
     } else {
         if (virConfGetValueString(conf, "uri_default", name) < 0)
-            goto cleanup;
+            return -1;
 
         if (*name)
             VIR_DEBUG("Using config file uri '%s'", *name);
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
