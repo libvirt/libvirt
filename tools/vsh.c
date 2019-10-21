@@ -2514,7 +2514,6 @@ vshTreePrintInternal(vshControl *ctl,
 {
     size_t i;
     int nextlastdev = -1;
-    int ret = -1;
     const char *dev = (lookup)(devid, false, opaque);
 
     /* Print this device, with indent if not at root */
@@ -2548,7 +2547,7 @@ vshTreePrintInternal(vshControl *ctl,
             vshTreePrintInternal(ctl, lookup, opaque,
                                  num_devices, i, nextlastdev,
                                  false, indent) < 0)
-            goto cleanup;
+            return -1;
     }
     virBufferTrim(indent, "  ", -1);
 
@@ -2559,9 +2558,8 @@ vshTreePrintInternal(vshControl *ctl,
 
     if (!root)
         virBufferTrim(indent, NULL, 2);
-    ret = 0;
- cleanup:
-    return ret;
+
+    return 0;
 }
 
 int

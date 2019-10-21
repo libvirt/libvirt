@@ -74,21 +74,17 @@ virshNetworkEventNameCompleter(vshControl *ctl G_GNUC_UNUSED,
                                unsigned int flags)
 {
     size_t i = 0;
-    char **ret = NULL;
     VIR_AUTOSTRINGLIST tmp = NULL;
 
     virCheckFlags(0, NULL);
 
     if (VIR_ALLOC_N(tmp, VIR_NETWORK_EVENT_ID_LAST + 1) < 0)
-        goto cleanup;
+        return NULL;
 
     for (i = 0; i < VIR_NETWORK_EVENT_ID_LAST; i++)
         tmp[i] = g_strdup(virshNetworkEventCallbacks[i].name);
 
-    ret = g_steal_pointer(&tmp);
-
- cleanup:
-    return ret;
+    return g_steal_pointer(&tmp);
 }
 
 
