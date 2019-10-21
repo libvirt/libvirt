@@ -3059,18 +3059,17 @@ virNetworkDefUpdateIPDHCPRange(virNetworkDefPtr def,
                                unsigned int fflags G_GNUC_UNUSED)
 {
     size_t i;
-    int ret = -1;
     virNetworkIPDefPtr ipdef = virNetworkIPDefByIndex(def, parentIndex);
     virSocketAddrRange range;
 
     memset(&range, 0, sizeof(range));
 
     if (virNetworkDefUpdateCheckElementName(def, ctxt->node, "range") < 0)
-        goto cleanup;
+        return -1;
 
     /* ipdef is the ip element that needs its range array updated */
     if (!ipdef)
-        goto cleanup;
+        return -1;
 
     /* parse the xml into a virSocketAddrRange */
     if (command == VIR_NETWORK_UPDATE_COMMAND_MODIFY) {
@@ -3078,18 +3077,18 @@ virNetworkDefUpdateIPDHCPRange(virNetworkDefPtr def,
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("dhcp ranges cannot be modified, "
                          "only added or deleted"));
-        goto cleanup;
+        return -1;
     }
 
     if (virSocketAddrRangeParseXML(def->name, ipdef, ctxt->node, &range) < 0)
-        goto cleanup;
+        return -1;
 
     if (VIR_SOCKET_ADDR_FAMILY(&ipdef->address)
         != VIR_SOCKET_ADDR_FAMILY(&range.start)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("the address family of a dhcp range must match "
                          "the address family of the dhcp element's parent"));
-        goto cleanup;
+        return -1;
     }
 
     /* check if an entry with same name/address/ip already exists */
@@ -3104,7 +3103,7 @@ virNetworkDefUpdateIPDHCPRange(virNetworkDefPtr def,
         (command == VIR_NETWORK_UPDATE_COMMAND_ADD_LAST)) {
 
         if (virNetworkDefUpdateCheckMultiDHCP(def, ipdef) < 0)
-            goto cleanup;
+            return -1;
 
         if (i < ipdef->nranges) {
             char *startip = virSocketAddrFormat(&range.start);
@@ -3119,7 +3118,7 @@ virNetworkDefUpdateIPDHCPRange(virNetworkDefPtr def,
                            endip ? endip : "unknown");
             VIR_FREE(startip);
             VIR_FREE(endip);
-            goto cleanup;
+            return -1;
         }
 
         /* add to beginning/end of list */
@@ -3127,14 +3126,14 @@ virNetworkDefUpdateIPDHCPRange(virNetworkDefPtr def,
                                command == VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST
                                ? 0 : ipdef->nranges,
                                ipdef->nranges, range) < 0)
-            goto cleanup;
+            return -1;
     } else if (command == VIR_NETWORK_UPDATE_COMMAND_DELETE) {
 
         if (i == ipdef->nranges) {
             virReportError(VIR_ERR_OPERATION_INVALID,
                            _("couldn't locate a matching dhcp range entry "
                              "in network '%s'"), def->name);
-            goto cleanup;
+            return -1;
         }
 
         /* remove it */
@@ -3143,12 +3142,10 @@ virNetworkDefUpdateIPDHCPRange(virNetworkDefPtr def,
 
     } else {
         virNetworkDefUpdateUnknownCommand(command);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 

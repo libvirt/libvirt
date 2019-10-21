@@ -732,14 +732,13 @@ virSecretObjGetValue(virSecretObjPtr obj)
         virUUIDFormat(def->uuid, uuidstr);
         virReportError(VIR_ERR_NO_SECRET,
                        _("secret '%s' does not have a value"), uuidstr);
-        goto cleanup;
+        return NULL;
     }
 
     if (VIR_ALLOC_N(ret, obj->value_size) < 0)
-        goto cleanup;
+        return NULL;
     memcpy(ret, obj->value, obj->value_size);
 
- cleanup:
     return ret;
 }
 

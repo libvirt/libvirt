@@ -2085,13 +2085,11 @@ virNWFilterIncludeParse(xmlNodePtr cur)
     if (!ret->params)
         goto err_exit;
 
- cleanup:
     return ret;
 
  err_exit:
     virNWFilterIncludeDefFree(ret);
-    ret = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 

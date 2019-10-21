@@ -390,24 +390,22 @@ int virDomainNumatuneGetMode(virDomainNumaPtr numatune,
                              int cellid,
                              virDomainNumatuneMemMode *mode)
 {
-    int ret = -1;
     virDomainNumatuneMemMode tmp_mode;
 
     if (!numatune)
-        return ret;
+        return -1;
 
     if (virDomainNumatuneNodeSpecified(numatune, cellid))
         tmp_mode = numatune->mem_nodes[cellid].mode;
     else if (numatune->memory.specified)
         tmp_mode = numatune->memory.mode;
     else
-        goto cleanup;
+        return -1;
 
     if (mode)
         *mode = tmp_mode;
-    ret = 0;
- cleanup:
-    return ret;
+
+    return 0;
 }
 
 virBitmapPtr
@@ -498,8 +496,6 @@ virDomainNumatuneSet(virDomainNumaPtr numa,
                      int mode,
                      virBitmapPtr nodeset)
 {
-    int ret = -1;
-
     /* No need to do anything in this case */
     if (mode == -1 && placement == -1 && !nodeset)
         return 0;
@@ -517,7 +513,7 @@ virDomainNumatuneSet(virDomainNumaPtr numa,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unsupported numatune mode '%d'"),
                        mode);
-        goto cleanup;
+        return -1;
     }
 
     if (placement != -1 &&
@@ -525,7 +521,7 @@ virDomainNumatuneSet(virDomainNumaPtr numa,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unsupported numatune placement '%d'"),
                        mode);
-        goto cleanup;
+        return -1;
     }
 
     if (mode != -1)
@@ -534,7 +530,7 @@ virDomainNumatuneSet(virDomainNumaPtr numa,
     if (nodeset) {
         virBitmapFree(numa->memory.nodeset);
         if (!(numa->memory.nodeset = virBitmapNewCopy(nodeset)))
-            goto cleanup;
+            return -1;
         if (placement == -1)
             placement = VIR_DOMAIN_NUMATUNE_PLACEMENT_STATIC;
     }
@@ -551,7 +547,7 @@ virDomainNumatuneSet(virDomainNumaPtr numa,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("nodeset for NUMA memory tuning must be set "
                          "if 'placement' is 'static'"));
-        goto cleanup;
+        return -1;
     }
 
     /* setting nodeset when placement auto is invalid */
@@ -566,10 +562,7 @@ virDomainNumatuneSet(virDomainNumaPtr numa,
 
     numa->memory.specified = true;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 static bool

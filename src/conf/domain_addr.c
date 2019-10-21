@@ -1789,7 +1789,6 @@ virDomainVirtioSerialAddrNext(virDomainDefPtr def,
                               virDomainDeviceVirtioSerialAddress *addr,
                               bool allowZero)
 {
-    int ret = -1;
     ssize_t port, startPort = 0;
     ssize_t i;
     unsigned int controller;
@@ -1801,7 +1800,7 @@ virDomainVirtioSerialAddrNext(virDomainDefPtr def,
     if (addrs->ncontrollers == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("no virtio-serial controllers are available"));
-        goto cleanup;
+        return -1;
     }
 
     for (i = 0; i < addrs->ncontrollers; i++) {
@@ -1818,7 +1817,7 @@ virDomainVirtioSerialAddrNext(virDomainDefPtr def,
 
             if (idx == -1) {
                 if (virDomainVirtioSerialAddrSetAutoaddController(def, addrs, i) < 0)
-                    goto cleanup;
+                    return -1;
                 controller = i;
                 port = startPort + 1;
                 goto success;
@@ -1829,8 +1828,7 @@ virDomainVirtioSerialAddrNext(virDomainDefPtr def,
     virReportError(VIR_ERR_XML_ERROR, "%s",
                    _("Unable to find a free virtio-serial port"));
 
- cleanup:
-    return ret;
+    return -1;
 
  success:
     addr->bus = 0;
@@ -1838,8 +1836,7 @@ virDomainVirtioSerialAddrNext(virDomainDefPtr def,
     addr->controller = controller;
     VIR_DEBUG("Found free virtio serial controller %u port %u", addr->controller,
               addr->port);
-    ret = 0;
-    goto cleanup;
+    return 0;
 }
 
 static int
@@ -1880,7 +1877,6 @@ virDomainVirtioSerialAddrAssign(virDomainDefPtr def,
                                 bool allowZero,
                                 bool portOnly)
 {
-    int ret = -1;
     virDomainDeviceInfo nfo = { 0 };
     virDomainDeviceInfoPtr ptr = allowZero ? &nfo : info;
 
@@ -1889,20 +1885,17 @@ virDomainVirtioSerialAddrAssign(virDomainDefPtr def,
     if (portOnly) {
         if (virDomainVirtioSerialAddrNextFromController(addrs,
                                                         &ptr->addr.vioserial) < 0)
-            goto cleanup;
+            return -1;
     } else {
         if (virDomainVirtioSerialAddrNext(def, addrs, &ptr->addr.vioserial,
                                           allowZero) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (virDomainVirtioSerialAddrReserve(NULL, NULL, ptr, addrs) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 /* virDomainVirtioSerialAddrAutoAssign

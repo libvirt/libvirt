@@ -343,17 +343,14 @@ int
 virStoragePoolOptionsPoolTypeSetXMLNamespace(int type,
                                              virXMLNamespacePtr ns)
 {
-    int ret = -1;
     virStoragePoolTypeInfoPtr backend = virStoragePoolTypeInfoLookup(type);
 
     if (!backend)
-        goto cleanup;
+        return -1;
 
     backend->poolOptions.ns = *ns;
-    ret = 0;
 
- cleanup:
-    return ret;
+    return 0;
 }
 
 

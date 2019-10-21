@@ -766,14 +766,13 @@ virNetworkObjConfigChangeSetup(virNetworkObjPtr obj,
                                unsigned int flags)
 {
     bool isActive;
-    int ret = -1;
 
     isActive = virNetworkObjIsActive(obj);
 
     if (!isActive && (flags & VIR_NETWORK_UPDATE_AFFECT_LIVE)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("network is not running"));
-        goto cleanup;
+        return -1;
     }
 
     if (flags & VIR_NETWORK_UPDATE_AFFECT_CONFIG) {
@@ -781,18 +780,16 @@ virNetworkObjConfigChangeSetup(virNetworkObjPtr obj,
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("cannot change persistent config of a "
                              "transient network"));
-            goto cleanup;
+            return -1;
         }
         /* this should already have been done by the driver, but do it
          * anyway just in case.
          */
         if (isActive && (virNetworkObjSetDefTransient(obj, false, xmlopt) < 0))
-            goto cleanup;
+            return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -1673,10 +1670,9 @@ virNetworkObjLookupPort(virNetworkObjPtr net,
         virReportError(VIR_ERR_NO_NETWORK_PORT,
                        _("Network port with UUID %s does not exist"),
                        uuidstr);
-        goto cleanup;
+        return NULL;
     }
 
- cleanup:
     return ret;
 }
 

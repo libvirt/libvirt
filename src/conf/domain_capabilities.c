@@ -288,7 +288,6 @@ virDomainCapsEnumSet(virDomainCapsEnumPtr capsEnum,
                      size_t nvalues,
                      unsigned int *values)
 {
-    int ret = -1;
     size_t i;
 
     for (i = 0; i < nvalues; i++) {
@@ -300,15 +299,13 @@ virDomainCapsEnumSet(virDomainCapsEnumPtr capsEnum,
                            _("integer overflow on %s. Please contact the "
                              "libvirt development team at libvir-list@redhat.com"),
                            capsEnumName);
-            goto cleanup;
+            return -1;
         }
 
         capsEnum->values |= val;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -325,19 +322,15 @@ virDomainCapsEnumFormat(virBufferPtr buf,
                         const char *capsEnumName,
                         virDomainCapsValToStr valToStr)
 {
-    int ret = -1;
     size_t i;
 
-    if (!capsEnum->report) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (!capsEnum->report)
+        return 0;
 
     virBufferAsprintf(buf, "<enum name='%s'", capsEnumName);
     if (!capsEnum->values) {
         virBufferAddLit(buf, "/>\n");
-        ret = 0;
-        goto cleanup;
+        return 0;
     }
     virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 2);
@@ -354,9 +347,7 @@ virDomainCapsEnumFormat(virBufferPtr buf,
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</enum>\n");
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
