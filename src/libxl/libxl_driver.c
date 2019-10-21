@@ -4054,7 +4054,6 @@ libxlDomainUpdateDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
 {
     virDomainDiskDefPtr orig;
     virDomainDiskDefPtr disk;
-    int ret = -1;
 
     switch (dev->type) {
         case VIR_DOMAIN_DEVICE_DISK:
@@ -4062,31 +4061,28 @@ libxlDomainUpdateDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
             if (!(orig = virDomainDiskByTarget(vmdef, disk->dst))) {
                 virReportError(VIR_ERR_INVALID_ARG,
                                _("target %s doesn't exist."), disk->dst);
-                goto cleanup;
+                return -1;
             }
             if (!(orig->device == VIR_DOMAIN_DISK_DEVICE_CDROM)) {
                 virReportError(VIR_ERR_INVALID_ARG, "%s",
                                _("this disk doesn't support update"));
-                goto cleanup;
+                return -1;
             }
 
             if (virDomainDiskSetSource(orig, virDomainDiskGetSource(disk)) < 0)
-                goto cleanup;
+                return -1;
             virDomainDiskSetType(orig, virDomainDiskGetType(disk));
             virDomainDiskSetFormat(orig, virDomainDiskGetFormat(disk));
             if (virDomainDiskSetDriver(orig, virDomainDiskGetDriver(disk)) < 0)
-                goto cleanup;
+                return -1;
             break;
         default:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("persistent update of device is not supported"));
-            goto cleanup;
+            return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
