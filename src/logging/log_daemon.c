@@ -405,11 +405,8 @@ virLogDaemonUnixSocketPaths(bool privileged,
         }
         umask(old_umask);
 
-        if (virAsprintf(sockfile, "%s/virtlogd-sock", rundir) < 0 ||
-            virAsprintf(adminSockfile, "%s/virtlogd-admin-sock", rundir) < 0) {
-            VIR_FREE(rundir);
-            goto error;
-        }
+        *sockfile = g_strdup_printf("%s/virtlogd-sock", rundir);
+        *adminSockfile = g_strdup_printf("%s/virtlogd-admin-sock", rundir);
 
         VIR_FREE(rundir);
     }
@@ -429,7 +426,7 @@ virLogDaemonErrorHandler(void *opaque G_GNUC_UNUSED,
 }
 
 
-static int
+static void
 virLogDaemonSetupLogging(virLogDaemonConfigPtr config,
                          bool privileged,
                          bool verbose,
@@ -466,13 +463,10 @@ virLogDaemonSetupLogging(virLogDaemonConfigPtr config,
     /* Define the default output. This is only applied if there was no setting
      * from either the config or the environment.
      */
-    if (virLogSetDefaultOutput("virtlogd", godaemon, privileged) < 0)
-        return -1;
+    virLogSetDefaultOutput("virtlogd", godaemon, privileged);
 
     if (virLogGetNbOutputs() == 0)
         virLogSetOutputs(virLogGetDefaultOutput());
-
-    return 0;
 }
 
 
@@ -638,10 +632,7 @@ virLogDaemonExecRestartStatePath(bool privileged,
         }
         umask(old_umask);
 
-        if (virAsprintf(state_file, "%s/virtlogd-restart-exec.json", rundir) < 0) {
-            VIR_FREE(rundir);
-            goto error;
-        }
+        *state_file = g_strdup_printf("%s/virtlogd-restart-exec.json", rundir);
 
         VIR_FREE(rundir);
     }
@@ -658,7 +649,7 @@ virLogDaemonGetExecRestartMagic(void)
 {
     char *ret;
 
-    ignore_value(virAsprintf(&ret, "%lld", (long long int)getpid()));
+    ret = g_strdup_printf("%lld", (long long int)getpid());
     return ret;
 }
 
@@ -980,10 +971,7 @@ int main(int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
 
-    if (virLogDaemonSetupLogging(config, privileged, verbose, godaemon) < 0) {
-        VIR_ERROR(_("Can't initialize logging"));
-        exit(EXIT_FAILURE);
-    }
+    virLogDaemonSetupLogging(config, privileged, verbose, godaemon);
 
     if (!pid_file &&
         virPidFileConstructPath(privileged,
