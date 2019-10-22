@@ -1056,8 +1056,7 @@ qemuFirmwareEnableFeatures(virQEMUDriverPtr driver,
         VIR_FREE(def->os.loader->templt);
         def->os.loader->templt = g_strdup(flash->nvram_template.filename);
 
-        if (qemuDomainNVRAMPathGenerate(cfg, def) < 0)
-            return -1;
+        qemuDomainNVRAMPathGenerate(cfg, def);
 
         VIR_DEBUG("decided on firmware '%s' varstore template '%s'",
                   def->os.loader->path,

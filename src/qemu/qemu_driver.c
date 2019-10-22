@@ -942,8 +942,7 @@ qemuStateInitialize(bool privileged,
             goto error;
     }
 
-    if (qemuGetMemoryBackingBasePath(cfg, &memoryBackingPath) < 0)
-        goto error;
+    qemuGetMemoryBackingBasePath(cfg, &memoryBackingPath);
 
     if (virFileMakePath(memoryBackingPath) < 0) {
         virReportSystemError(errno,
@@ -7745,8 +7744,7 @@ qemuDomainUndefineFlags(virDomainPtr dom,
     }
 
     if (vm->def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_EFI) {
-        if (qemuDomainNVRAMPathFormat(cfg, vm->def, &nvram_path) < 0)
-            goto endjob;
+        qemuDomainNVRAMPathFormat(cfg, vm->def, &nvram_path);
     } else {
         if (vm->def->os.loader)
             nvram_path = g_strdup(vm->def->os.loader->nvram);

@@ -98,10 +98,8 @@ VIR_LOG_INIT("qemu.qemu_process");
  * qemuProcessRemoveDomainStatus
  *
  * remove all state files of a domain from statedir
- *
- * Returns 0 on success
  */
-static int
+static void
 qemuProcessRemoveDomainStatus(virQEMUDriverPtr driver,
                               virDomainObjPtr vm)
 {
@@ -109,10 +107,8 @@ qemuProcessRemoveDomainStatus(virQEMUDriverPtr driver,
     char *file = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    int ret = -1;
 
-    if (virAsprintf(&file, "%s/%s.xml", cfg->stateDir, vm->def->name) < 0)
-        goto cleanup;
+    file = g_strdup_printf("%s/%s.xml", cfg->stateDir, vm->def->name);
 
     if (unlink(file) < 0 && errno != ENOENT && errno != ENOTDIR)
         VIR_WARN("Failed to remove domain XML for %s: %s",
@@ -125,10 +121,7 @@ qemuProcessRemoveDomainStatus(virQEMUDriverPtr driver,
         VIR_WARN("Failed to remove PID file for %s: %s",
                  vm->def->name, virStrerror(errno, ebuf, sizeof(ebuf)));
 
-    ret = 0;
- cleanup:
     virObjectUnref(cfg);
-    return ret;
 }
 
 
@@ -2105,8 +2098,7 @@ qemuProcessLookupPTYs(virDomainChrDefPtr *devices,
             qemuMonitorChardevInfoPtr entry;
 
             VIR_FREE(id);
-            if (virAsprintf(&id, "char%s", chr->info.alias) < 0)
-                return -1;
+            id = g_strdup_printf("char%s", chr->info.alias);
 
             entry = virHashLookup(info, id);
             if (!entry || !entry->ptyPath) {
@@ -2175,7 +2167,7 @@ qemuProcessFindCharDevicePTYsMonitor(virDomainObjPtr vm,
 }
 
 
-static int
+static void
 qemuProcessRefreshChannelVirtioState(virQEMUDriverPtr driver,
                                      virDomainObjPtr vm,
                                      virHashTablePtr info,
@@ -2186,7 +2178,6 @@ qemuProcessRefreshChannelVirtioState(virQEMUDriverPtr driver,
     qemuMonitorChardevInfoPtr entry;
     virObjectEventPtr event = NULL;
     char *id = NULL;
-    int ret = -1;
 
     if (booted)
         agentReason = VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_DOMAIN_STARTED;
@@ -2196,8 +2187,7 @@ qemuProcessRefreshChannelVirtioState(virQEMUDriverPtr driver,
         if (chr->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO) {
 
             VIR_FREE(id);
-            if (virAsprintf(&id, "char%s", chr->info.alias) < 0)
-                goto cleanup;
+            id = g_strdup_printf("char%s", chr->info.alias);
 
             /* port state not reported */
             if (!(entry = virHashLookup(info, id)) ||
@@ -2214,10 +2204,7 @@ qemuProcessRefreshChannelVirtioState(virQEMUDriverPtr driver,
         }
     }
 
-    ret = 0;
- cleanup:
     VIR_FREE(id);
-    return ret;
 }
 
 
@@ -2240,7 +2227,8 @@ qemuRefreshVirtioChannelState(virQEMUDriverPtr driver,
     if (ret < 0)
         goto cleanup;
 
-    ret = qemuProcessRefreshChannelVirtioState(driver, vm, info, false);
+    qemuProcessRefreshChannelVirtioState(driver, vm, info, false);
+    ret = 0;
 
  cleanup:
     virHashFree(info);
@@ -2405,9 +2393,7 @@ qemuProcessWaitForMonitor(virQEMUDriverPtr driver,
         if ((ret = qemuProcessFindCharDevicePTYsMonitor(vm, info)) < 0)
             goto cleanup;
 
-        if ((ret = qemuProcessRefreshChannelVirtioState(driver, vm, info,
-                                                        true)) < 0)
-            goto cleanup;
+         qemuProcessRefreshChannelVirtioState(driver, vm, info, true);
     }
 
  cleanup:
@@ -3208,9 +3194,7 @@ qemuProcessPrepareMonitorChr(virDomainChrSourceDefPtr monConfig,
     monConfig->type = VIR_DOMAIN_CHR_TYPE_UNIX;
     monConfig->data.nix.listen = true;
 
-    if (virAsprintf(&monConfig->data.nix.path, "%s/monitor.sock",
-                    domainDir) < 0)
-        return -1;
+    monConfig->data.nix.path = g_strdup_printf("%s/monitor.sock", domainDir);
     return 0;
 }
 
@@ -3416,8 +3400,8 @@ qemuProcessUpdateState(virQEMUDriverPtr driver, virDomainObjPtr vm)
         } else {
             newState = VIR_DOMAIN_PAUSED;
             newReason = reason;
-            ignore_value(virAsprintf(&msg, "was paused (%s)",
-                                 virDomainPausedReasonTypeToString(reason)));
+            msg = g_strdup_printf("was paused (%s)",
+                                  virDomainPausedReasonTypeToString(reason));
         }
     }
 
@@ -4082,9 +4066,7 @@ qemuProcessVerifyHypervFeatures(virDomainDefPtr def,
         if (def->hyperv_features[i] != VIR_TRISTATE_SWITCH_ON)
             continue;
 
-        if (virAsprintf(&cpuFeature, "hv-%s",
-                        virDomainHypervTypeToString(i)) < 0)
-            return -1;
+        cpuFeature = g_strdup_printf("hv-%s", virDomainHypervTypeToString(i));
 
         rc = virCPUDataCheckFeature(cpu, cpuFeature);
         VIR_FREE(cpuFeature);
@@ -4916,9 +4898,8 @@ qemuProcessGraphicsSetupListen(virQEMUDriverPtr driver,
                  * default instead of tcp listen. */
                 if (useSocket) {
                     memset(glisten, 0, sizeof(virDomainGraphicsListenDef));
-                    if (virAsprintf(&glisten->socket, "%s/%s.sock",
-                                    priv->libDir, type) < 0)
-                        goto cleanup;
+                    glisten->socket = g_strdup_printf("%s/%s.sock", priv->libDir,
+                                                      type);
                     glisten->fromConfig = true;
                     glisten->type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET;
                 } else if (listenAddr) {
@@ -4939,9 +4920,8 @@ qemuProcessGraphicsSetupListen(virQEMUDriverPtr driver,
 
         case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET:
             if (!glisten->socket) {
-                if (virAsprintf(&glisten->socket, "%s/%s.sock",
-                                priv->libDir, type) < 0)
-                    goto cleanup;
+                glisten->socket = g_strdup_printf("%s/%s.sock", priv->libDir,
+                                                  type);
                 glisten->autoGenerated = true;
             }
             break;
@@ -6018,8 +5998,7 @@ qemuProcessSetupHotpluggableVcpus(virQEMUDriverPtr driver,
 
         if (vcpu->hotpluggable == VIR_TRISTATE_BOOL_YES && vcpu->online &&
             vcpupriv->vcpus != 0) {
-            if (virAsprintf(&vcpupriv->alias, "vcpu%zu", i) < 0)
-                goto cleanup;
+            vcpupriv->alias = g_strdup_printf("vcpu%zu", i);
 
             if (VIR_APPEND_ELEMENT(bootHotplug, nbootHotplug, vcpu) < 0)
                 goto cleanup;
@@ -6370,10 +6349,8 @@ qemuProcessPrepareDomain(virQEMUDriverPtr driver,
     if (qemuProcessUpdateGuestCPU(vm->def, priv->qemuCaps, caps, flags) < 0)
         goto cleanup;
 
-    for (i = 0; i < vm->def->nshmems; i++) {
-        if (qemuDomainPrepareShmemChardev(vm->def->shmems[i]) < 0)
-            goto cleanup;
-    }
+    for (i = 0; i < vm->def->nshmems; i++)
+        qemuDomainPrepareShmemChardev(vm->def->shmems[i]);
 
     ret = 0;
  cleanup:
@@ -8497,8 +8474,7 @@ qemuProcessQMPInit(qemuProcessQMPPtr proc)
 
     VIR_DEBUG("proc=%p, emulator=%s", proc, proc->binary);
 
-    if (virAsprintf(&template, "%s/qmp-XXXXXX", proc->libDir) < 0)
-        goto cleanup;
+    template = g_strdup_printf("%s/qmp-XXXXXX", proc->libDir);
 
     if (!(proc->uniqDir = mkdtemp(template))) {
         virReportSystemError(errno,
@@ -8511,20 +8487,16 @@ qemuProcessQMPInit(qemuProcessQMPPtr proc)
     if (qemuProcessQEMULabelUniqPath(proc) < 0)
         goto cleanup;
 
-    if (virAsprintf(&proc->monpath, "%s/%s", proc->uniqDir,
-                    "qmp.monitor") < 0)
-        goto cleanup;
+    proc->monpath = g_strdup_printf("%s/%s", proc->uniqDir, "qmp.monitor");
 
-    if (virAsprintf(&proc->monarg, "unix:%s,server,nowait", proc->monpath) < 0)
-        goto cleanup;
+    proc->monarg = g_strdup_printf("unix:%s,server,nowait", proc->monpath);
 
     /*
      * Normally we'd use runDir for pid files, but because we're using
      * -daemonize we need QEMU to be allowed to create them, rather
      * than libvirtd. So we're using libDir which QEMU can write to
      */
-    if (virAsprintf(&proc->pidfile, "%s/%s", proc->uniqDir, "qmp.pid") < 0)
-        goto cleanup;
+    proc->pidfile = g_strdup_printf("%s/%s", proc->uniqDir, "qmp.pid");
 
     ret = 0;
 

@@ -961,7 +961,7 @@ qemuMonitorNextCommandID(qemuMonitorPtr mon)
 {
     char *id;
 
-    ignore_value(virAsprintf(&id, "libvirt-%d", ++mon->nextSerial));
+    id = g_strdup_printf("libvirt-%d", ++mon->nextSerial);
     return id;
 }
 
@@ -2560,11 +2560,8 @@ qemuMonitorMigrateToHost(qemuMonitorPtr mon,
     QEMU_CHECK_MONITOR(mon);
 
     if (strchr(hostname, ':')) {
-        if (virAsprintf(&uri, "%s:[%s]:%d", protocol, hostname, port) < 0)
-            return -1;
-    } else if (virAsprintf(&uri, "%s:%s:%d", protocol, hostname, port) < 0) {
-        return -1;
-    }
+        uri = g_strdup_printf("%s:[%s]:%d", protocol, hostname, port);
+    } else uri = g_strdup_printf("%s:%s:%d", protocol, hostname, port);
 
     ret = qemuMonitorJSONMigrate(mon, flags, uri);
 
@@ -4249,20 +4246,19 @@ qemuMonitorGuestPanicEventInfoFormatMsg(qemuMonitorEventPanicInfoPtr info)
 
     switch (info->type) {
     case QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_HYPERV:
-        ignore_value(virAsprintf(&ret,
-                                 "hyper-v: arg1='0x%llx', arg2='0x%llx', "
-                                 "arg3='0x%llx', arg4='0x%llx', arg5='0x%llx'",
-                                 info->data.hyperv.arg1, info->data.hyperv.arg2,
-                                 info->data.hyperv.arg3, info->data.hyperv.arg4,
-                                 info->data.hyperv.arg5));
+        ret = g_strdup_printf("hyper-v: arg1='0x%llx', arg2='0x%llx', "
+                              "arg3='0x%llx', arg4='0x%llx', arg5='0x%llx'",
+                              info->data.hyperv.arg1, info->data.hyperv.arg2,
+                              info->data.hyperv.arg3, info->data.hyperv.arg4,
+                              info->data.hyperv.arg5);
         break;
     case QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_S390:
-        ignore_value(virAsprintf(&ret, "s390: core='%d' psw-mask='0x%016llx' "
-                                 "psw-addr='0x%016llx' reason='%s'",
-                                 info->data.s390.core,
-                                 info->data.s390.psw_mask,
-                                 info->data.s390.psw_addr,
-                                 info->data.s390.reason));
+        ret = g_strdup_printf("s390: core='%d' psw-mask='0x%016llx' "
+                              "psw-addr='0x%016llx' reason='%s'",
+                              info->data.s390.core,
+                              info->data.s390.psw_mask,
+                              info->data.s390.psw_addr,
+                              info->data.s390.reason);
         break;
     case QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_NONE:
     case QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_LAST:

@@ -916,10 +916,8 @@ qemuAgentGuestSync(qemuAgentPtr mon)
     if (virTimeMillisNow(&id) < 0)
         return -1;
 
-    if (virAsprintf(&sync_msg.txBuffer,
-                    "{\"execute\":\"guest-sync\", "
-                    "\"arguments\":{\"id\":%llu}}\n", id) < 0)
-        return -1;
+    sync_msg.txBuffer = g_strdup_printf("{\"execute\":\"guest-sync\", "
+                                        "\"arguments\":{\"id\":%llu}}\n", id);
 
     sync_msg.txLength = strlen(sync_msg.txBuffer);
     sync_msg.sync = true;
@@ -1120,8 +1118,7 @@ qemuAgentCommand(qemuAgentPtr mon,
 
     if (!(cmdstr = virJSONValueToString(cmd, false)))
         goto cleanup;
-    if (virAsprintf(&msg.txBuffer, "%s" LINE_ENDING, cmdstr) < 0)
-        goto cleanup;
+    msg.txBuffer = g_strdup_printf("%s" LINE_ENDING, cmdstr);
     msg.txLength = strlen(msg.txBuffer);
 
     VIR_DEBUG("Send command '%s' for write, seconds = %d", cmdstr, seconds);

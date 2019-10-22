@@ -78,9 +78,7 @@ qemuTPMCreateEmulatorStoragePath(const char *swtpmStorageDir,
         return NULL;
     }
 
-    ignore_value(virAsprintf(&path, "%s/%s/%s", swtpmStorageDir, uuidstr,
-                             dir));
-
+    path = g_strdup_printf("%s/%s/%s", swtpmStorageDir, uuidstr, dir);
     return path;
 }
 
@@ -208,8 +206,7 @@ qemuTPMCreateEmulatorSocket(const char *swtpmStateDir,
 {
     char *path = NULL;
 
-    ignore_value(virAsprintf(&path, "%s/%s-swtpm.sock", swtpmStateDir,
-                             shortName));
+    path = g_strdup_printf("%s/%s-swtpm.sock", swtpmStateDir, shortName);
 
     return path;
 }
@@ -252,8 +249,7 @@ qemuTPMEmulatorCreatePidFilename(const char *swtpmStateDir,
     char *pidfile = NULL;
     char *devicename = NULL;
 
-    if (virAsprintf(&devicename, "%s-swtpm", shortName) < 0)
-        return NULL;
+    devicename = g_strdup_printf("%s-swtpm", shortName);
 
     pidfile = virPidFileBuildPath(swtpmStateDir, devicename);
 
@@ -335,10 +331,8 @@ qemuTPMEmulatorPrepareHost(virDomainTPMDefPtr tpm,
         goto cleanup;
 
     /* create logfile name ... */
-    if (!tpm->data.emulator.logfile &&
-        virAsprintf(&tpm->data.emulator.logfile, "%s/%s-swtpm.log",
-                    logDir, vmname) < 0)
-        goto cleanup;
+    if (!tpm->data.emulator.logfile)
+        tpm->data.emulator.logfile = g_strdup_printf("%s/%s-swtpm.log", logDir, vmname);
 
     if (!virFileExists(tpm->data.emulator.logfile) &&
         virFileTouch(tpm->data.emulator.logfile, 0644) < 0) {
@@ -492,8 +486,7 @@ qemuTPMEmulatorRunSetup(const char *storagepath,
         goto cleanup;
 
     virUUIDFormat(vmuuid, uuid);
-    if (virAsprintf(&vmid, "%s:%s", vmname, uuid) < 0)
-        goto cleanup;
+    vmid = g_strdup_printf("%s:%s", vmname, uuid);
 
     virCommandSetUID(cmd, swtpm_user);
     virCommandSetGID(cmd, swtpm_group);

@@ -364,9 +364,8 @@ qemuCreateInBridgePortWithHelper(virQEMUDriverConfigPtr cfg,
             goto cleanup;
         virCommandAbort(cmd);
 
-        if (errbuf && *errbuf &&
-            virAsprintf(&errstr, "\nstderr=%s", errbuf) < 0)
-            goto cleanup;
+        if (errbuf && *errbuf)
+            errstr = g_strdup_printf("\nstderr=%s", errbuf);
 
         virReportError(VIR_ERR_INTERNAL_ERROR,
             _("%s: failed to communicate with bridge helper: %s%s"),

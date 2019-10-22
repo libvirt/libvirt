@@ -818,9 +818,8 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriverPtr driver,
 
     copysrc->tlsAlias = g_strdup(tlsAlias);
 
-    if (virAsprintf(&copysrc->nodestorage, "migration-%s-storage", disk->dst) < 0 ||
-        virAsprintf(&copysrc->nodeformat, "migration-%s-format", disk->dst) < 0)
-        return -1;
+    copysrc->nodestorage = g_strdup_printf("migration-%s-storage", disk->dst);
+    copysrc->nodeformat = g_strdup_printf("migration-%s-format", disk->dst);
 
     /* Migration via blockdev-mirror was supported sooner than the auto-read-only
      * feature was added to qemu */
@@ -865,13 +864,11 @@ qemuMigrationSrcNBDStorageCopyDriveMirror(virQEMUDriverPtr driver,
     int mon_ret;
 
     if (strchr(host, ':')) {
-        if (virAsprintf(&nbd_dest, "nbd:[%s]:%d:exportname=%s",
-                        host, port, diskAlias) < 0)
-            return -1;
+        nbd_dest = g_strdup_printf("nbd:[%s]:%d:exportname=%s", host, port,
+                                   diskAlias);
     } else {
-        if (virAsprintf(&nbd_dest, "nbd:%s:%d:exportname=%s",
-                        host, port, diskAlias) < 0)
-            return -1;
+        nbd_dest = g_strdup_printf("nbd:%s:%d:exportname=%s", host, port,
+                                   diskAlias);
     }
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm,
@@ -1834,7 +1831,7 @@ qemuMigrationDstGetURI(const char *migrateFrom,
     char *uri = NULL;
 
     if (STREQ(migrateFrom, "stdio"))
-        ignore_value(virAsprintf(&uri, "fd:%d", migrateFd));
+        uri = g_strdup_printf("fd:%d", migrateFd);
     else
         uri = g_strdup(migrateFrom);
 
@@ -2258,9 +2255,7 @@ qemuMigrationDstPrepare(virDomainObjPtr vm,
             incFormat = "%s:[%s]:%d";
         else
             incFormat = "%s:%s:%d";
-        if (virAsprintf(&migrateFrom, incFormat,
-                        protocol, listenAddress, port) < 0)
-            goto cleanup;
+        migrateFrom = g_strdup_printf(incFormat, protocol, listenAddress, port);
     }
 
     inc = qemuProcessIncomingDefNew(priv->qemuCaps, listenAddress,
@@ -2700,8 +2695,7 @@ qemuMigrationAnyParseURI(const char *uri, bool *wellFormed)
     /* For compatibility reasons tcp://... URIs are sent as tcp:...
      * We need to transform them to a well-formed URI before parsing. */
     if (STRPREFIX(uri, "tcp:") && !STRPREFIX(uri + 4, "//")) {
-        if (virAsprintf(&tmp, "tcp://%s", uri + 4) < 0)
-            return NULL;
+        tmp = g_strdup_printf("tcp://%s", uri + 4);
         uri = tmp;
     }
 
@@ -2796,8 +2790,7 @@ qemuMigrationDstPrepareDirect(virQEMUDriverPtr driver,
         else
             incFormat = "%s:%s:%d";
 
-        if (virAsprintf(uri_out, incFormat, "tcp", hostname, port) < 0)
-            goto cleanup;
+        *uri_out = g_strdup_printf(incFormat, "tcp", hostname, port);
     } else {
         bool well_formed_uri;
 
@@ -2835,8 +2828,7 @@ qemuMigrationDstPrepareDirect(virQEMUDriverPtr driver,
                 if (!(*uri_out = virURIFormat(uri)))
                     goto cleanup;
             } else {
-                if (virAsprintf(uri_out, "%s:%d", uri_in, port) < 0)
-                    goto cleanup;
+                *uri_out = g_strdup_printf("%s:%d", uri_in, port);
             }
         } else {
             port = uri->port;
@@ -3302,8 +3294,7 @@ qemuMigrationSrcConnect(virQEMUDriverPtr driver,
     int ret = -1;
 
     host = spec->dest.host.name;
-    if (virAsprintf(&port, "%d", spec->dest.host.port) < 0)
-        return -1;
+    port = g_strdup_printf("%d", spec->dest.host.port);
 
     spec->destType = MIGRATION_DEST_FD;
     spec->dest.fd.qemu = -1;

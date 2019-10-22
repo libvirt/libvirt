@@ -57,8 +57,7 @@ qemuBuildFileList(virHashTablePtr files, const char *dir)
 
         filename = g_strdup(ent->d_name);
 
-        if (virAsprintf(&path, "%s/%s", dir, filename) < 0)
-            goto cleanup;
+        path = g_strdup_printf("%s/%s", dir, filename);
 
         if (stat(path, &sb) < 0) {
             virReportSystemError(errno, _("Unable to access %s"), path);
@@ -122,12 +121,10 @@ qemuInteropFetchConfigs(const char *name,
             if (!home)
                 return -1;
 
-            if (virAsprintf(&xdgConfig, "%s/.config", home) < 0)
-                return -1;
+            xdgConfig = g_strdup_printf("%s/.config", home);
         }
 
-        if (virAsprintf(&homeConfig, "%s/qemu/%s", xdgConfig, name) < 0)
-            return -1;
+        homeConfig = g_strdup_printf("%s/qemu/%s", xdgConfig, name);
     }
 
     if (!(files = virHashCreate(10, virHashValueFree)))

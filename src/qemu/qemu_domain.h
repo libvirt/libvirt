@@ -1054,7 +1054,7 @@ void qemuDomainPrepareChardevSource(virDomainDefPtr def,
                                     virQEMUDriverConfigPtr cfg)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-int qemuDomainPrepareShmemChardev(virDomainShmemDefPtr shmem)
+void  qemuDomainPrepareShmemChardev(virDomainShmemDefPtr shmem)
     ATTRIBUTE_NONNULL(1);
 
 bool qemuDomainVcpuHotplugIsInOrder(virDomainDefPtr def)
@@ -1206,12 +1206,12 @@ qemuDomainIsUsingNoShutdown(qemuDomainObjPrivatePtr priv);
 bool
 qemuDomainDiskIsMissingLocalOptional(virDomainDiskDefPtr disk);
 
-int
+void
 qemuDomainNVRAMPathFormat(virQEMUDriverConfigPtr cfg,
                             virDomainDefPtr def,
                             char **path);
 
-int
+void
 qemuDomainNVRAMPathGenerate(virQEMUDriverConfigPtr cfg,
                             virDomainDefPtr def);
 

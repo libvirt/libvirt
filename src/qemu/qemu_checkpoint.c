@@ -92,16 +92,14 @@ qemuCheckpointWriteMetadata(virDomainObjPtr vm,
     if (newxml == NULL)
         return -1;
 
-    if (virAsprintf(&chkDir, "%s/%s", checkpointDir, vm->def->name) < 0)
-        return -1;
+    chkDir = g_strdup_printf("%s/%s", checkpointDir, vm->def->name);
     if (virFileMakePath(chkDir) < 0) {
         virReportSystemError(errno, _("cannot create checkpoint directory '%s'"),
                              chkDir);
         return -1;
     }
 
-    if (virAsprintf(&chkFile, "%s/%s.xml", chkDir, def->parent.name) < 0)
-        return -1;
+    chkFile = g_strdup_printf("%s/%s.xml", chkDir, def->parent.name);
 
     return virXMLSaveFile(chkFile, NULL, "checkpoint-edit", newxml);
 }
@@ -127,9 +125,8 @@ qemuCheckpointDiscard(virQEMUDriverPtr driver,
         return -1;
     }
 
-    if (virAsprintf(&chkFile, "%s/%s/%s.xml", cfg->checkpointDir,
-                    vm->def->name, chk->def->name) < 0)
-        return -1;
+    chkFile = g_strdup_printf("%s/%s/%s.xml", cfg->checkpointDir, vm->def->name,
+                              chk->def->name);
 
     if (!metadata_only) {
         qemuDomainObjPrivatePtr priv = vm->privateData;

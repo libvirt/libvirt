@@ -47,8 +47,7 @@ qemuVhostUserGPUCreatePidFilename(const char *stateDir,
 {
     g_autofree char *devicename = NULL;
 
-    if (virAsprintf(&devicename, "%s-%s-vhost-user-gpu", shortName, alias) < 0)
-        return NULL;
+    devicename = g_strdup_printf("%s-%s-vhost-user-gpu", shortName, alias);
 
     return virPidFileBuildPath(stateDir, devicename);
 }

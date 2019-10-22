@@ -262,7 +262,7 @@ qemuVirCommandGetFDSet(virCommandPtr cmd, int fd)
         return NULL;
     }
 
-    ignore_value(virAsprintf(&result, "set=%d,fd=%d", idx, fd));
+    result = g_strdup_printf("set=%d,fd=%d", idx, fd);
     return result;
 }
 
@@ -289,7 +289,7 @@ qemuVirCommandGetDevSet(virCommandPtr cmd, int fd)
         return NULL;
     }
 
-    ignore_value(virAsprintf(&result, "/dev/fdset/%d", idx));
+    result = g_strdup_printf("/dev/fdset/%d", idx);
     return result;
 }
 
@@ -791,10 +791,8 @@ qemuBuildGeneralSecinfoURI(virURIPtr uri,
                                _("found non printable characters in secret"));
                 return -1;
             }
-            if (virAsprintf(&uri->user, "%s:%s",
-                            secinfo->s.plain.username,
-                            secinfo->s.plain.secret) < 0)
-                return -1;
+            uri->user = g_strdup_printf("%s:%s", secinfo->s.plain.username,
+                                        secinfo->s.plain.secret);
         } else {
             uri->user = g_strdup(secinfo->s.plain.username);
         }
@@ -943,9 +941,8 @@ qemuBuildNetworkDriveURI(virStorageSourcePtr src,
     if (!(uri = qemuBlockStorageSourceGetURI(src)))
         return NULL;
 
-    if (src->hosts->socket &&
-        virAsprintf(&uri->query, "socket=%s", src->hosts->socket) < 0)
-        return NULL;
+    if (src->hosts->socket)
+        uri->query = g_strdup_printf("socket=%s", src->hosts->socket);
 
     if (qemuBuildGeneralSecinfoURI(uri, secinfo) < 0)
         return NULL;
@@ -1031,13 +1028,10 @@ qemuBuildNetworkDriveStr(virStorageSourcePtr src,
             }
 
             if (src->nhosts == 0) {
-                if (virAsprintf(&ret, "sheepdog:%s", src->path) < 0)
-                    return NULL;
+                ret = g_strdup_printf("sheepdog:%s", src->path);
             } else if (src->nhosts == 1) {
-                if (virAsprintf(&ret, "sheepdog:%s:%u:%s",
-                                src->hosts->name, src->hosts->port,
-                                src->path) < 0)
-                    return NULL;
+                ret = g_strdup_printf("sheepdog:%s:%u:%s", src->hosts->name,
+                                      src->hosts->port, src->path);
             } else {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("protocol 'sheepdog' accepts up to one host"));
@@ -2356,18 +2350,16 @@ qemuBuildFloppyCommandLineControllerOptions(virCommandPtr cmd,
         else
             driveLetter = 'A';
 
-        if (bootindex &&
-            virAsprintf(&bootindexStr, "bootindex%c=%u", driveLetter, bootindex) < 0)
-            return -1;
+        if (bootindex)
+            bootindexStr = g_strdup_printf("bootindex%c=%u", driveLetter, bootindex);
 
         /* with -blockdev we setup the floppy device and it's backend with -device */
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV)) {
             if (qemuDomainDiskGetBackendAlias(disk, qemuCaps, &backendAlias) < 0)
                 return -1;
 
-            if (backendAlias &&
-                virAsprintf(&backendStr, "drive%c=%s", driveLetter, backendAlias) < 0)
-                return -1;
+            if (backendAlias)
+                backendStr = g_strdup_printf("drive%c=%s", driveLetter, backendAlias);
         }
 
         if (!explicitfdc) {
@@ -3560,8 +3552,7 @@ qemuBuildMemoryCellBackendStr(virDomainDefPtr def,
     unsigned long long memsize = virDomainNumaGetNodeMemorySize(def->numa,
                                                                 cell);
 
-    if (virAsprintf(&alias, "ram-node%zu", cell) < 0)
-        return -1;
+    alias = g_strdup_printf("ram-node%zu", cell);
 
     mem.size = memsize;
     mem.targetNode = cell;
@@ -3594,8 +3585,7 @@ qemuBuildMemoryDimmBackendStr(virBufferPtr buf,
         return -1;
     }
 
-    if (virAsprintf(&alias, "mem%s", mem->info.alias) < 0)
-        return -1;
+    alias = g_strdup_printf("mem%s", mem->info.alias);
 
     if (qemuBuildMemoryBackendProps(&props, alias, cfg,
                                     priv, def, mem, true) < 0)
@@ -3676,14 +3666,13 @@ qemuBuildLegacyNicStr(virDomainNetDefPtr net)
     char macaddr[VIR_MAC_STRING_BUFLEN];
     const char *netmodel = virDomainNetGetModelString(net);
 
-    ignore_value(virAsprintf(&str,
-                             "nic,macaddr=%s,netdev=host%s%s%s%s%s",
-                             virMacAddrFormat(&net->mac, macaddr),
-                             net->info.alias,
-                             netmodel ? ",model=" : "",
-                             NULLSTR_EMPTY(netmodel),
-                             (net->info.alias ? ",id=" : ""),
-                             NULLSTR_EMPTY(net->info.alias)));
+    str = g_strdup_printf("nic,macaddr=%s,netdev=host%s%s%s%s%s",
+                          virMacAddrFormat(&net->mac, macaddr),
+                          net->info.alias,
+                          netmodel ? ",model=" : "",
+                          NULLSTR_EMPTY(netmodel),
+                          (net->info.alias ? ",id=" : ""),
+                          NULLSTR_EMPTY(net->info.alias));
     return str;
 }
 
@@ -4654,8 +4643,7 @@ qemuBuildVhostUserChardevStr(const char *alias,
         return NULL;
     }
 
-    if (virAsprintf(&chardev, "socket,id=chr-vu-%s,fd=%d", alias, *fd) < 0)
-        return NULL;
+    chardev = g_strdup_printf("socket,id=chr-vu-%s,fd=%d", alias, *fd);
 
     virCommandPassFD(cmd, *fd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
     *fd = -1;
@@ -5473,10 +5461,7 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
                 if (virSCSIVHostOpenVhostSCSI(&vhostfd) < 0)
                     return -1;
 
-                if (virAsprintf(&vhostfdName, "%d", vhostfd) < 0) {
-                    VIR_FORCE_CLOSE(vhostfd);
-                    return -1;
-                }
+                vhostfdName = g_strdup_printf("%d", vhostfd);
 
                 virCommandPassFD(cmd, vhostfd,
                                  VIR_COMMAND_PASS_FD_CLOSE_PARENT);
@@ -5706,8 +5691,7 @@ qemuBuildRNGBackendProps(virDomainRNGDefPtr rng,
     g_autofree char *objAlias = NULL;
     g_autofree char *charBackendAlias = NULL;
 
-    if (virAsprintf(&objAlias, "obj%s", rng->info.alias) < 0)
-        return -1;
+    objAlias = g_strdup_printf("obj%s", rng->info.alias);
 
     switch ((virDomainRNGBackend) rng->backend) {
     case VIR_DOMAIN_RNG_BACKEND_RANDOM:
@@ -8469,8 +8453,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
         int slirpfd = qemuSlirpGetFD(slirp);
         virCommandPassFD(cmd, slirpfd,
                          VIR_COMMAND_PASS_FD_CLOSE_PARENT);
-        if (virAsprintf(&slirpfdName, "%d", slirpfd) < 0)
-            goto cleanup;
+        slirpfdName = g_strdup_printf("%d", slirpfd);
     }
 
 
@@ -8478,16 +8461,14 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
         if (qemuSecuritySetTapFDLabel(driver->securityManager,
                                       def, tapfd[i]) < 0)
             goto cleanup;
-        if (virAsprintf(&tapfdName[i], "%d", tapfd[i]) < 0)
-            goto cleanup;
+        tapfdName[i] = g_strdup_printf("%d", tapfd[i]);
         virCommandPassFD(cmd, tapfd[i],
                          VIR_COMMAND_PASS_FD_CLOSE_PARENT);
         tapfd[i] = -1;
     }
 
     for (i = 0; i < vhostfdSize; i++) {
-        if (virAsprintf(&vhostfdName[i], "%d", vhostfd[i]) < 0)
-            goto cleanup;
+        vhostfdName[i] = g_strdup_printf("%d", vhostfd[i]);
         virCommandPassFD(cmd, vhostfd[i],
                          VIR_COMMAND_PASS_FD_CLOSE_PARENT);
         vhostfd[i] = -1;
@@ -8857,11 +8838,9 @@ qemuBuildShmemBackendMemProps(virDomainShmemDefPtr shmem)
     g_autofree char *mem_path = NULL;
     virJSONValuePtr ret = NULL;
 
-    if (virAsprintf(&mem_path, "/dev/shm/%s", shmem->name) < 0)
-        return NULL;
+    mem_path = g_strdup_printf("/dev/shm/%s", shmem->name);
 
-    if (virAsprintf(&mem_alias, "shmmem-%s", shmem->info.alias) < 0)
-        return NULL;
+    mem_alias = g_strdup_printf("shmmem-%s", shmem->info.alias);
 
     qemuMonitorCreateObjectProps(&ret, "memory-backend-file", mem_alias,
                                  "s:mem-path", mem_path,
@@ -9585,9 +9564,8 @@ qemuBuildTPMBackendStr(const virDomainDef *def,
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
         virBufferAddLit(&buf, ",chardev=chrtpm");
 
-        if (virAsprintf(chardev, "socket,id=chrtpm,path=%s",
-                        tpm->data.emulator.source.data.nix.path) < 0)
-            return NULL;
+        *chardev = g_strdup_printf("socket,id=chrtpm,path=%s",
+                                   tpm->data.emulator.source.data.nix.path);
 
         break;
     case VIR_DOMAIN_TPM_TYPE_LAST:
@@ -9669,15 +9647,13 @@ qemuBuildSEVCommandLine(virDomainObjPtr vm, virCommandPtr cmd,
     virBufferAsprintf(&buf, ",policy=0x%x", sev->policy);
 
     if (sev->dh_cert) {
-        if (virAsprintf(&path, "%s/dh_cert.base64", priv->libDir) < 0)
-            return -1;
+        path = g_strdup_printf("%s/dh_cert.base64", priv->libDir);
         virBufferAsprintf(&buf, ",dh-cert-file=%s", path);
         VIR_FREE(path);
     }
 
     if (sev->session) {
-        if (virAsprintf(&path, "%s/session.base64", priv->libDir) < 0)
-            return -1;
+        path = g_strdup_printf("%s/session.base64", priv->libDir);
         virBufferAsprintf(&buf, ",session-file=%s", path);
         VIR_FREE(path);
     }
@@ -10468,9 +10444,8 @@ static int
 qemuBuildParallelChrDeviceStr(char **deviceStr,
                               virDomainChrDefPtr chr)
 {
-    if (virAsprintf(deviceStr, "isa-parallel,chardev=char%s,id=%s",
-                    chr->info.alias, chr->info.alias) < 0)
-        return -1;
+    *deviceStr = g_strdup_printf("isa-parallel,chardev=char%s,id=%s",
+                                 chr->info.alias, chr->info.alias);
     return 0;
 }
 
@@ -10491,10 +10466,8 @@ qemuBuildChannelChrDeviceStr(char **deviceStr,
             return ret;
         port = virSocketAddrGetPort(chr->target.addr);
 
-        if (virAsprintf(deviceStr,
-                        "user,guestfwd=tcp:%s:%i-chardev:char%s,id=%s",
-                        addr, port, chr->info.alias, chr->info.alias) < 0)
-            return -1;
+        *deviceStr = g_strdup_printf("user,guestfwd=tcp:%s:%i-chardev:char%s,id=%s",
+                                     addr, port, chr->info.alias, chr->info.alias);
         break;
 
     case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:

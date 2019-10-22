@@ -154,8 +154,7 @@ qemuDomainDetachZPCIDevice(qemuMonitorPtr mon,
 {
     g_autofree char *zpciAlias = NULL;
 
-    if (virAsprintf(&zpciAlias, "zpci%d", info->addr.pci.zpci.uid) < 0)
-        return -1;
+    zpciAlias = g_strdup_printf("zpci%d", info->addr.pci.zpci.uid);
 
     if (qemuMonitorDelDevice(mon, zpciAlias) < 0)
         return -1;
@@ -1308,8 +1307,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
             }
 
             slirpfd = qemuSlirpGetFD(slirp);
-            if (virAsprintf(&slirpfdName, "slirpfd-%s", net->info.alias) < 0)
-                goto cleanup;
+            slirpfdName = g_strdup_printf("slirpfd-%s", net->info.alias);
         }
         break;
 
@@ -1361,15 +1359,11 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
         VIR_ALLOC_N(vhostfdName, vhostfdSize) < 0)
         goto cleanup;
 
-    for (i = 0; i < tapfdSize; i++) {
-        if (virAsprintf(&tapfdName[i], "fd-%s%zu", net->info.alias, i) < 0)
-            goto cleanup;
-    }
+    for (i = 0; i < tapfdSize; i++)
+        tapfdName[i] = g_strdup_printf("fd-%s%zu", net->info.alias, i);
 
-    for (i = 0; i < vhostfdSize; i++) {
-        if (virAsprintf(&vhostfdName[i], "vhostfd-%s%zu", net->info.alias, i) < 0)
-            goto cleanup;
-    }
+    for (i = 0; i < vhostfdSize; i++)
+        vhostfdName[i] = g_strdup_printf("vhostfd-%s%zu", net->info.alias, i);
 
     if (!(netstr = qemuBuildHostNetStr(net,
                                        tapfdName, tapfdSize,
@@ -1512,19 +1506,18 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
         goto cleanup;
 
     virErrorPreserveLast(&originalError);
-    if (virAsprintf(&netdev_name, "host%s", net->info.alias) >= 0) {
-        if (QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp)
-            qemuSlirpStop(QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp, vm, driver, net, true);
-        qemuDomainObjEnterMonitor(driver, vm);
-        if (charDevPlugged &&
-            qemuMonitorDetachCharDev(priv->mon, charDevAlias) < 0)
-            VIR_WARN("Failed to remove associated chardev %s", charDevAlias);
-        if (netdevPlugged &&
-            qemuMonitorRemoveNetdev(priv->mon, netdev_name) < 0)
-            VIR_WARN("Failed to remove network backend for netdev %s",
-                     netdev_name);
-        ignore_value(qemuDomainObjExitMonitor(driver, vm));
-    }
+    netdev_name = g_strdup_printf("host%s", net->info.alias);
+    if (QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp)
+        qemuSlirpStop(QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp, vm, driver, net, true);
+    qemuDomainObjEnterMonitor(driver, vm);
+    if (charDevPlugged &&
+        qemuMonitorDetachCharDev(priv->mon, charDevAlias) < 0)
+        VIR_WARN("Failed to remove associated chardev %s", charDevAlias);
+    if (netdevPlugged &&
+        qemuMonitorRemoveNetdev(priv->mon, netdev_name) < 0)
+        VIR_WARN("Failed to remove network backend for netdev %s",
+                 netdev_name);
+    ignore_value(qemuDomainObjExitMonitor(driver, vm));
     virErrorRestore(&originalError);
     goto cleanup;
 }
@@ -2364,8 +2357,7 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     if (qemuAssignDeviceMemoryAlias(vm->def, mem, priv->memAliasOrderMismatch) < 0)
         goto cleanup;
 
-    if (virAsprintf(&objalias, "mem%s", mem->info.alias) < 0)
-        goto cleanup;
+    objalias = g_strdup_printf("mem%s", mem->info.alias);
 
     if (!(devstr = qemuBuildMemoryDeviceStr(mem, priv)))
         goto cleanup;
@@ -2711,8 +2703,7 @@ qemuDomainAttachSCSIVHostDevice(virQEMUDriverPtr driver,
     if (virSCSIVHostOpenVhostSCSI(&vhostfd) < 0)
         goto cleanup;
 
-    if (virAsprintf(&vhostfdName, "vhostfd-%d", vhostfd) < 0)
-        goto cleanup;
+    vhostfdName = g_strdup_printf("vhostfd-%d", vhostfd);
 
     if (hostdev->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
         if (qemuDomainIsS390CCW(vm->def) &&
@@ -2969,8 +2960,7 @@ qemuDomainAttachShmemDevice(virQEMUDriverPtr driver,
     if (qemuAssignDeviceShmemAlias(vm->def, shmem, -1) < 0)
         return -1;
 
-    if (qemuDomainPrepareShmemChardev(shmem) < 0)
-        return -1;
+    qemuDomainPrepareShmemChardev(shmem);
 
     if (VIR_REALLOC_N(vm->def->shmems, vm->def->nshmems + 1) < 0)
         return -1;
@@ -2984,8 +2974,7 @@ qemuDomainAttachShmemDevice(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (shmem->server.enabled) {
-        if (virAsprintf(&charAlias, "char%s", shmem->info.alias) < 0)
-            goto cleanup;
+        charAlias = g_strdup_printf("char%s", shmem->info.alias);
     } else {
         if (!(props = qemuBuildShmemBackendMemProps(shmem)))
             goto cleanup;
@@ -3257,8 +3246,7 @@ qemuDomainAttachVsockDevice(virQEMUDriverPtr driver,
     if (qemuProcessOpenVhostVsock(vsock) < 0)
         goto cleanup;
 
-    if (virAsprintf(&fdname, "%s%u", fdprefix, vsockPriv->vhostfd) < 0)
-        goto cleanup;
+    fdname = g_strdup_printf("%s%u", fdprefix, vsockPriv->vhostfd);
 
     if (!(devstr = qemuBuildVsockDevStr(vm->def, vsock, priv->qemuCaps, fdprefix)))
         goto cleanup;
@@ -3991,8 +3979,7 @@ qemuDomainChangeGraphicsPasswords(virQEMUDriverPtr driver,
         (auth->expires && auth->validTo <= now)) {
         expire = "now";
     } else if (auth->expires) {
-        if (virAsprintf(&validTo, "%lu", (unsigned long)auth->validTo) < 0)
-            goto end_job;
+        validTo = g_strdup_printf("%lu", (unsigned long)auth->validTo);
         expire = validTo;
     } else {
         expire = "never";
@@ -4347,8 +4334,7 @@ qemuDomainRemoveMemoryDevice(virQEMUDriverPtr driver,
     VIR_DEBUG("Removing memory device %s from domain %p %s",
               mem->info.alias, vm, vm->def->name);
 
-    if (virAsprintf(&backendAlias, "mem%s", mem->info.alias) < 0)
-        return -1;
+    backendAlias = g_strdup_printf("mem%s", mem->info.alias);
 
     qemuDomainObjEnterMonitor(driver, vm);
     rc = qemuMonitorDelObject(priv->mon, backendAlias);
@@ -4566,8 +4552,8 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
     VIR_DEBUG("Removing network interface %s from domain %p %s",
               net->info.alias, vm, vm->def->name);
 
-    if (virAsprintf(&hostnet_name, "host%s", net->info.alias) < 0 ||
-        !(charDevAlias = qemuAliasChardevFromDevAlias(net->info.alias)))
+    hostnet_name = g_strdup_printf("host%s", net->info.alias);
+    if (!(charDevAlias = qemuAliasChardevFromDevAlias(net->info.alias)))
         return -1;
 
     if (virDomainNetGetActualBandwidth(net) &&
@@ -4721,8 +4707,7 @@ qemuDomainRemoveRNGDevice(virQEMUDriverPtr driver,
               rng->info.alias, vm, vm->def->name);
 
 
-    if (virAsprintf(&objAlias, "obj%s", rng->info.alias) < 0)
-        return -1;
+    objAlias = g_strdup_printf("obj%s", rng->info.alias);
 
     if (!(charAlias = qemuAliasChardevFromDevAlias(rng->info.alias)))
         return -1;
@@ -4781,11 +4766,9 @@ qemuDomainRemoveShmemDevice(virQEMUDriverPtr driver,
               shmem->info.alias, vm, vm->def->name);
 
     if (shmem->server.enabled) {
-        if (virAsprintf(&charAlias, "char%s", shmem->info.alias) < 0)
-            return -1;
+        charAlias = g_strdup_printf("char%s", shmem->info.alias);
     } else {
-        if (virAsprintf(&memAlias, "shmmem-%s", shmem->info.alias) < 0)
-            return -1;
+        memAlias = g_strdup_printf("shmmem-%s", shmem->info.alias);
     }
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -6026,8 +6009,7 @@ qemuDomainHotplugAddVcpu(virQEMUDriverPtr driver,
     size_t i;
 
     if (newhotplug) {
-        if (virAsprintf(&vcpupriv->alias, "vcpu%u", vcpu) < 0)
-            goto cleanup;
+        vcpupriv->alias = g_strdup_printf("vcpu%u", vcpu);
 
         if (!(vcpuprops = qemuBuildHotpluggableCPUProps(vcpuinfo)))
             goto cleanup;

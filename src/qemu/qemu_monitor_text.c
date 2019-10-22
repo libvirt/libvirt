@@ -42,8 +42,7 @@ int qemuMonitorTextAddDrive(qemuMonitorPtr mon,
 
     /* 'dummy' here is just a placeholder since there is no PCI
      * address required when attaching drives to a controller */
-    if (virAsprintf(&cmd, "drive_add dummy %s", drivestr) < 0)
-        goto cleanup;
+    cmd = g_strdup_printf("drive_add dummy %s", drivestr);
 
     if (qemuMonitorJSONHumanCommand(mon, cmd, &reply) < 0)
         goto cleanup;
@@ -92,8 +91,7 @@ int qemuMonitorTextDriveDel(qemuMonitorPtr mon,
     char *reply = NULL;
     int ret = -1;
 
-    if (virAsprintf(&cmd, "drive_del %s", drivestr) < 0)
-        goto cleanup;
+    cmd = g_strdup_printf("drive_del %s", drivestr);
 
     if (qemuMonitorJSONHumanCommand(mon, cmd, &reply) < 0)
         goto cleanup;
@@ -131,8 +129,7 @@ qemuMonitorTextCreateSnapshot(qemuMonitorPtr mon,
     char *reply = NULL;
     int ret = -1;
 
-    if (virAsprintf(&cmd, "savevm \"%s\"", name) < 0)
-        goto cleanup;
+    cmd = g_strdup_printf("savevm \"%s\"", name);
 
     if (qemuMonitorJSONHumanCommand(mon, cmd, &reply))
         goto cleanup;
@@ -166,8 +163,7 @@ int qemuMonitorTextLoadSnapshot(qemuMonitorPtr mon, const char *name)
     int ret = -1;
     char *safename;
 
-    if (virAsprintf(&cmd, "loadvm \"%s\"", name) < 0)
-        goto cleanup;
+    cmd = g_strdup_printf("loadvm \"%s\"", name);
 
     if (qemuMonitorJSONHumanCommand(mon, cmd, &reply))
         goto cleanup;
@@ -210,8 +206,7 @@ int qemuMonitorTextDeleteSnapshot(qemuMonitorPtr mon, const char *name)
     char *reply = NULL;
     int ret = -1;
 
-    if (virAsprintf(&cmd, "delvm \"%s\"", name) < 0)
-        goto cleanup;
+    cmd = g_strdup_printf("delvm \"%s\"", name);
     if (qemuMonitorJSONHumanCommand(mon, cmd, &reply))
         goto cleanup;
 

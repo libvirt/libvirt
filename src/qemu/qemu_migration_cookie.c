@@ -141,8 +141,7 @@ qemuDomainExtractTLSSubject(const char *certdir)
     int ret;
     size_t subjectlen;
 
-    if (virAsprintf(&certfile, "%s/server-cert.pem", certdir) < 0)
-        goto error;
+    certfile = g_strdup_printf("%s/server-cert.pem", certdir);
 
     if (virFileReadAll(certfile, 8192, &pemdata) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
