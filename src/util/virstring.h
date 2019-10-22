@@ -217,15 +217,6 @@ size_t virStringListLength(const char * const *strings);
  */
 #define virVasprintf(strp, fmt, list) virVasprintfInternal(strp, fmt, list)
 
-/**
- * virVasprintfQuiet
- *
- * Like glibc's vasprintf but aborts on OOM.
- *
- * Returns number of bytes printed on success, aborts on OOM
- */
-#define virVasprintfQuiet(strp, fmt, list) virVasprintf(strp, fmt, list)
-
 int virStringSortCompare(const void *a, const void *b);
 int virStringSortRevCompare(const void *a, const void *b);
 int virStringToUpper(char **dst, const char *src);
