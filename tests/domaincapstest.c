@@ -267,6 +267,36 @@ test_virDomainCapsFormat(const void *opaque)
 }
 
 static int
+doTestQemu(const char *partialName,
+           const char *capsName,
+           const char *emulator,
+           const char *machine,
+           const char *arch,
+           virDomainVirtType type,
+           void *opaque)
+{
+    g_autofree char *name = NULL;
+
+    name = g_strdup_printf("qemu_%s.%s", partialName, arch);
+
+    struct testData data = {
+        .name = name,
+        .emulator = emulator,
+        .machine = machine,
+        .arch = arch,
+        .type = type,
+        .capsType = CAPS_QEMU,
+        .capsName = capsName,
+        .capsOpaque = opaque,
+    };
+
+    if (virTestRun(name, test_virDomainCapsFormat, &data) < 0)
+        return -1;
+
+    return 0;
+}
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -298,26 +328,8 @@ mymain(void)
 
 #define DO_TEST_QEMU(Name, CapsName, Emulator, Machine, Arch, Type) \
     do { \
-        char *name = NULL; \
-        if (virAsprintf(&name, "qemu_%s.%s", \
-                        Name, \
-                        Arch) < 0) { \
+        if (doTestQemu(Name, CapsName, Emulator, Machine, Arch, Type, cfg) < 0) \
             ret = -1; \
-            break; \
-        } \
-        struct testData data = { \
-            .name = name, \
-            .emulator = Emulator, \
-            .machine = Machine, \
-            .arch = Arch, \
-            .type = Type, \
-            .capsType = CAPS_QEMU, \
-            .capsName = CapsName, \
-            .capsOpaque = cfg, \
-        }; \
-        if (virTestRun(name, test_virDomainCapsFormat, &data) < 0) \
-            ret = -1; \
-        VIR_FREE(name); \
     } while (0)
 
 #define DO_TEST_LIBXL(Name, Emulator, Machine, Arch, Type) \
