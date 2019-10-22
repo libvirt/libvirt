@@ -594,8 +594,7 @@ virLogVMessage(virLogSourcePtr source,
     /*
      * serialize the error message, add level and timestamp
      */
-    if (virVasprintfQuiet(&str, fmt, vargs) < 0)
-        goto cleanup;
+    str = g_strdup_vprintf(fmt, vargs);
 
     virLogFormatString(&msg, linenr, funcname, priority, str);
 

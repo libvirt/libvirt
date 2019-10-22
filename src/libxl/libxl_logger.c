@@ -74,8 +74,7 @@ libvirt_vmessage(xentoollog_logger *logger_in,
     if (level < lg->minLevel)
         return;
 
-    if (virVasprintf(&message, format, args) < 0)
-        return;
+    message = g_strdup_vprintf(format, args);
 
     /* Should we print to a domain-specific log file? */
     if ((start = strstr(message, ": Domain ")) &&

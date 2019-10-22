@@ -830,7 +830,7 @@ virRaiseErrorFull(const char *filename,
     } else {
         va_list ap;
         va_start(ap, fmt);
-        ignore_value(virVasprintfQuiet(&str, fmt, ap));
+        str = g_strdup_vprintf(fmt, ap);
         va_end(ap);
     }
 
@@ -1484,16 +1484,13 @@ virLastErrorPrefixMessage(const char *fmt, ...)
         return;
 
     va_start(args, fmt);
-
-    if (virVasprintfQuiet(&fmtmsg, fmt, args) < 0)
-        goto cleanup;
+    fmtmsg = g_strdup_vprintf(fmt, args);
+    va_end(args);
 
     newmsg = g_strdup_printf("%s: %s", fmtmsg, err->message);
 
     VIR_FREE(err->message);
     err->message = g_steal_pointer(&newmsg);
 
- cleanup:
-    va_end(args);
     errno = save_errno;
 }

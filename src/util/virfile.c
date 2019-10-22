@@ -3374,9 +3374,9 @@ virFileRemoveLastComponent(char *path)
 /**
  * virFilePrintf:
  *
- * A replacement for fprintf() which uses virVasprintf to
- * ensure that portable string format placeholders can be
- * used, since gnulib's fprintf() replacement is not
+ * A replacement for fprintf() which uses g_strdup_vprintf
+ * to ensure that portable string format placeholders can
+ * be used, since gnulib's fprintf() replacement is not
  * LGPLV2+ compatible
  */
 int virFilePrintf(FILE *fp, const char *msg, ...)
@@ -3387,8 +3387,7 @@ int virFilePrintf(FILE *fp, const char *msg, ...)
 
     va_start(vargs, msg);
 
-    if (virVasprintf(&str, msg, vargs) < 0)
-        goto cleanup;
+    str = g_strdup_vprintf(msg, vargs);
     ret = strlen(str);
 
     if (fwrite(str, 1, ret, fp) != ret) {
@@ -3397,7 +3396,6 @@ int virFilePrintf(FILE *fp, const char *msg, ...)
         ret = -1;
     }
 
- cleanup:
     va_end(vargs);
 
     return ret;
@@ -4149,10 +4147,7 @@ virFileReadValueInt(int *value, const char *format, ...)
     va_list ap;
 
     va_start(ap, format);
-    if (virVasprintf(&path, format, ap) < 0) {
-        va_end(ap);
-        return -1;
-    }
+    path = g_strdup_vprintf(format, ap);
     va_end(ap);
 
     if (!virFileExists(path))
@@ -4192,10 +4187,7 @@ virFileReadValueUint(unsigned int *value, const char *format, ...)
     va_list ap;
 
     va_start(ap, format);
-    if (virVasprintf(&path, format, ap) < 0) {
-        va_end(ap);
-        return -1;
-    }
+    path = g_strdup_vprintf(format, ap);
     va_end(ap);
 
     if (!virFileExists(path))
@@ -4236,10 +4228,7 @@ virFileReadValueScaledInt(unsigned long long *value, const char *format, ...)
     va_list ap;
 
     va_start(ap, format);
-    if (virVasprintf(&path, format, ap) < 0) {
-        va_end(ap);
-        return -1;
-    }
+    path = g_strdup_vprintf(format, ap);
     va_end(ap);
 
     if (!virFileExists(path))
@@ -4282,10 +4271,7 @@ virFileReadValueBitmap(virBitmapPtr *value, const char *format, ...)
     va_list ap;
 
     va_start(ap, format);
-    if (virVasprintf(&path, format, ap) < 0) {
-        va_end(ap);
-        return -1;
-    }
+    path = g_strdup_vprintf(format, ap);
     va_end(ap);
 
     if (!virFileExists(path))
@@ -4323,10 +4309,7 @@ virFileReadValueString(char **value, const char *format, ...)
     va_list ap;
 
     va_start(ap, format);
-    if (virVasprintf(&path, format, ap) < 0) {
-        va_end(ap);
-        return -1;
-    }
+    path = g_strdup_vprintf(format, ap);
     va_end(ap);
 
     if (!virFileExists(path))
