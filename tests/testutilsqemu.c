@@ -906,6 +906,12 @@ testQemuCapsIterate(const char *suffix,
     if (!callback)
         return 0;
 
+    /* Validate suffix */
+    if (!STRPREFIX(suffix, ".")) {
+        VIR_TEST_VERBOSE("malformed suffix '%s'", suffix);
+        goto cleanup;
+    }
+
     if (virDirOpen(&dir, TEST_QEMU_CAPS_PATH) < 0)
         goto cleanup;
 
