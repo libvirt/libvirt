@@ -84,8 +84,7 @@ virVBoxSnapshotConfCreateVBoxSnapshotConfHardDiskPtr(xmlNodePtr diskNode,
     }
     if (location[0] != '/') {
         /*The location is a relative path, so we must change it into an absolute one. */
-        if (virAsprintf(&tmp, "%s%s", machineLocation, location) < 0)
-            goto cleanup;
+        tmp = g_strdup_printf("%s%s", machineLocation, location);
         hardDisk->location = g_strdup(tmp);
     } else {
         hardDisk->location = g_strdup(location);
@@ -331,8 +330,7 @@ virVBoxSnapshotConfCreateHardDiskNode(virVBoxSnapshotConfHardDiskPtr hardDisk)
     size_t i = 0;
     char *uuid = NULL;
     xmlNodePtr ret = xmlNewNode(NULL, BAD_CAST "HardDisk");
-    if (virAsprintf(&uuid, "{%s}", hardDisk->uuid) < 0)
-        goto cleanup;
+    uuid = g_strdup_printf("{%s}", hardDisk->uuid);
 
     if (xmlNewProp(ret, BAD_CAST "uuid", BAD_CAST uuid) == NULL)
         goto cleanup;
@@ -378,8 +376,7 @@ virVBoxSnapshotConfSerializeSnapshot(xmlNodePtr node,
     char **secondRegex = NULL;
     int secondRegexResult = 0;
 
-    if (virAsprintf(&uuid, "{%s}", snapshot->uuid) < 0)
-        goto cleanup;
+    uuid = g_strdup_printf("{%s}", snapshot->uuid);
 
     if (xmlNewProp(node, BAD_CAST "uuid", BAD_CAST uuid) == NULL)
         goto cleanup;
@@ -400,8 +397,7 @@ virVBoxSnapshotConfSerializeSnapshot(xmlNodePtr node,
         goto cleanup;
     if (secondRegexResult < 1)
         goto cleanup;
-    if (virAsprintf(&timeStamp, "%sT%sZ", firstRegex[0], secondRegex[0]) < 0)
-        goto cleanup;
+    timeStamp = g_strdup_printf("%sT%sZ", firstRegex[0], secondRegex[0]);
 
     if (xmlNewProp(node, BAD_CAST "timeStamp", BAD_CAST timeStamp) == NULL)
         goto cleanup;
@@ -1073,8 +1069,7 @@ virVBoxSnapshotConfSaveVboxFile(virVBoxSnapshotConfMachinePtr machine,
     }
 
     if (machine->currentSnapshot != NULL) {
-        if (virAsprintf(&currentSnapshot, "{%s}", machine->currentSnapshot) < 0)
-            goto cleanup;
+        currentSnapshot = g_strdup_printf("{%s}", machine->currentSnapshot);
         if (!xmlNewProp(machineNode, BAD_CAST "currentSnapshot", BAD_CAST currentSnapshot)) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Error in xmlNewProp"));
@@ -1111,8 +1106,7 @@ virVBoxSnapshotConfSaveVboxFile(virVBoxSnapshotConfMachinePtr machine,
     if (secondRegexResult < 1)
         goto cleanup;
 
-    if (virAsprintf(&timeStamp, "%sT%sZ", firstRegex[0], secondRegex[0]) < 0)
-        goto cleanup;
+    timeStamp = g_strdup_printf("%sT%sZ", firstRegex[0], secondRegex[0]);
     if (!xmlNewProp(machineNode, BAD_CAST "lastStateChange", BAD_CAST timeStamp)) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Error in xmlNewProp"));

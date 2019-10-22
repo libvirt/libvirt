@@ -525,8 +525,8 @@ vboxComInitialize_v2(const char *pszVirtualBoxIID, IVirtualBox **ppVirtualBox,
 
     CoInitialize(NULL);
 
-    if (virAsprintf(&mbsVirtualBoxIID, "{%s}", pszVirtualBoxIID) < 0 ||
-        virAsprintf(&mbsSessionIID, "{%s}", pszSessionIID) < 0)
+    mbsVirtualBoxIID = g_strdup_printf("{%s}", pszVirtualBoxIID);
+    mbsSessionIID = g_strdup_printf("{%s}", pszSessionIID)
         goto cleanup;
 
     if (vboxUtf8ToUtf16(mbsVirtualBoxIID, &wcsVirtualBoxIID) < 0 ||

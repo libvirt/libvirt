@@ -613,29 +613,23 @@ _virtualboxCreateMachine(vboxDriverPtr data, virDomainDefPtr def, IMachine **mac
 {
     vboxIID iid = VBOX_IID_INITIALIZER;
     PRUnichar *machineNameUtf16 = NULL;
+    char *createFlags = NULL;
+    PRUnichar *createFlagsUtf16 = NULL;
     nsresult rc = -1;
 
     VBOX_UTF8_TO_UTF16(def->name, &machineNameUtf16);
     vboxIIDFromUUID(&iid, def->uuid);
-    {
-        char *createFlags = NULL;
-        PRUnichar *createFlagsUtf16 = NULL;
-
-        if (virAsprintf(&createFlags,
-                        "UUID=%s,forceOverwrite=0", uuidstr) < 0)
-            goto cleanup;
-        VBOX_UTF8_TO_UTF16(createFlags, &createFlagsUtf16);
-        rc = data->vboxObj->vtbl->CreateMachine(data->vboxObj,
-                                                NULL,
-                                                machineNameUtf16,
-                                                0,
-                                                nsnull,
-                                                nsnull,
-                                                createFlagsUtf16,
-                                                machine);
- cleanup:
-        VIR_FREE(createFlags);
-    }
+    createFlags = g_strdup_printf("UUID=%s,forceOverwrite=0", uuidstr);
+    VBOX_UTF8_TO_UTF16(createFlags, &createFlagsUtf16);
+    rc = data->vboxObj->vtbl->CreateMachine(data->vboxObj,
+                                            NULL,
+                                            machineNameUtf16,
+                                            0,
+                                            nsnull,
+                                            nsnull,
+                                            createFlagsUtf16,
+                                            machine);
+    VIR_FREE(createFlags);
     VBOX_UTF16_FREE(machineNameUtf16);
     vboxIIDUnalloc(&iid);
     return rc;
