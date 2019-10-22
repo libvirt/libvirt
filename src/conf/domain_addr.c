@@ -1388,10 +1388,10 @@ virDomainCCWAddressAsString(virDomainDeviceCCWAddressPtr addr)
 {
     char *addrstr = NULL;
 
-    ignore_value(virAsprintf(&addrstr, "%x.%x.%04x",
-                             addr->cssid,
-                             addr->ssid,
-                             addr->devno));
+    addrstr = g_strdup_printf("%x.%x.%04x",
+                              addr->cssid,
+                              addr->ssid,
+                              addr->devno);
     return addrstr;
 }
 

@@ -4952,8 +4952,7 @@ virDomainPostParseCheckISCSIPath(char **srcpath)
     if (strchr(*srcpath, '/'))
         return 0;
 
-    if (virAsprintf(&path, "%s/0", *srcpath) < 0)
-        return -1;
+    path = g_strdup_printf("%s/0", *srcpath);
     VIR_FREE(*srcpath);
     *srcpath = g_steal_pointer(&path);
     return 0;
@@ -5614,8 +5613,7 @@ virDomainDefCollectBootOrder(virDomainDefPtr def G_GNUC_UNUSED,
          */
         return 0;
     }
-    if (virAsprintf(&order, "%u", info->bootIndex) < 0)
-        return -1;
+    order = g_strdup_printf("%u", info->bootIndex);
 
     if (virHashLookup(bootHash, order)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -10158,9 +10156,8 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
 
     if (!target && !(flags & VIR_DOMAIN_DEF_PARSE_DISK_SOURCE)) {
         if (def->src->srcpool) {
-            if (virAsprintf(&tmp, "pool = '%s', volume = '%s'",
-                def->src->srcpool->pool, def->src->srcpool->volume) < 0)
-                goto error;
+            tmp = g_strdup_printf("pool = '%s', volume = '%s'",
+                                  def->src->srcpool->pool, def->src->srcpool->volume);
 
             virReportError(VIR_ERR_NO_TARGET, "%s", tmp);
             VIR_FREE(tmp);
@@ -10357,8 +10354,7 @@ virDomainParseScaledValue(const char *xpath,
     g_autofree char *bytes_str = NULL;
 
     *val = 0;
-    if (virAsprintf(&xpath_full, "string(%s)", xpath) < 0)
-        return -1;
+    xpath_full = g_strdup_printf("string(%s)", xpath);
 
     bytes_str = virXPathString(xpath_full, ctxt);
     if (!bytes_str) {
@@ -10378,11 +10374,10 @@ virDomainParseScaledValue(const char *xpath,
         return -1;
     }
 
-    if ((units_xpath &&
-         virAsprintf(&xpath_full, "string(%s)", units_xpath) < 0) ||
-        (!units_xpath &&
-         virAsprintf(&xpath_full, "string(%s/@unit)", xpath) < 0))
-        return -1;
+    if (units_xpath)
+         xpath_full = g_strdup_printf("string(%s)", units_xpath);
+    else
+         xpath_full = g_strdup_printf("string(%s/@unit)", xpath);
     unit = virXPathString(xpath_full, ctxt);
 
     if (virScaleInteger(&bytes, unit, scale, max) < 0)
@@ -19409,8 +19404,7 @@ virDomainResctrlMonDefParse(virDomainDefPtr def,
             if (!(tmp = virBitmapFormat(domresmon->vcpus)))
                 goto cleanup;
 
-            if (virAsprintf(&id, "vcpus_%s", tmp) < 0)
-                goto cleanup;
+            id = g_strdup_printf("vcpus_%s", tmp);
         }
 
         virResctrlMonitorSetAlloc(domresmon->instance, resctrl->alloc);
@@ -19460,8 +19454,7 @@ virDomainResctrlNew(xmlNodePtr node,
          * directory, so it's nice to have it named appropriately.  For now it's
          * 'vcpus_...' but it's designed in order for it to be changeable in the
          * future (it's part of the status XML). */
-        if (virAsprintf(&alloc_id, "vcpus_%s", vcpus_str) < 0)
-            goto cleanup;
+        alloc_id = g_strdup_printf("vcpus_%s", vcpus_str);
     }
 
     if (virResctrlAllocSetID(alloc, alloc_id) < 0)
@@ -24062,10 +24055,8 @@ virDomainDiskSourceFormatNetwork(virBufferPtr attrBuf,
     virBufferAsprintf(attrBuf, " protocol='%s'",
                       virStorageNetProtocolTypeToString(src->protocol));
 
-    if (src->volume) {
-        if (virAsprintf(&path, "%s/%s", src->volume, src->path) < 0)
-            return -1;
-    }
+    if (src->volume)
+        path = g_strdup_printf("%s/%s", src->volume, src->path);
 
     virBufferEscapeString(attrBuf, " name='%s'", path ? path : src->path);
 
@@ -29196,7 +29187,7 @@ char
 {
     char *ret;
 
-    ignore_value(virAsprintf(&ret, "%s/%s.xml", dir, name));
+    ret = g_strdup_printf("%s/%s.xml", dir, name);
     return ret;
 }
 
@@ -30346,8 +30337,7 @@ virDomainDefGetShortName(const virDomainDef *def)
     len = mbstowcs(NULL, def->name, 0);
     if ((len == (size_t) -1 && errno == EILSEQ) ||
         len == strlen(def->name)) {
-        ignore_value(virAsprintf(&ret, "%d-%.*s", def->id,
-                                 VIR_DOMAIN_SHORT_NAME_MAX, def->name));
+        ret = g_strdup_printf("%d-%.*s", def->id, VIR_DOMAIN_SHORT_NAME_MAX, def->name);
         return ret;
     }
 
@@ -30383,7 +30373,7 @@ virDomainDefGetShortName(const virDomainDef *def)
         return NULL;
     }
 
-    ignore_value(virAsprintf(&ret, "%d-%s", def->id, shortname));
+    ret = g_strdup_printf("%d-%s", def->id, shortname);
     return ret;
 }
 
@@ -31184,10 +31174,8 @@ virDomainDiskAddISCSIPoolSourceHost(virDomainDiskDefPtr def,
     }
 
     /* iscsi pool has only one source device path */
-    if (virAsprintf(&def->src->path, "%s/%s",
-                    pooldef->source.devices[0].path,
-                    tokens[3]) < 0)
-        goto cleanup;
+    def->src->path = g_strdup_printf("%s/%s", pooldef->source.devices[0].path,
+                                     tokens[3]);
 
     /* Storage pool have not supported these 2 attributes yet,
      * use the defaults.

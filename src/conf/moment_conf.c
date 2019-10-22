@@ -77,9 +77,8 @@ virDomainMomentDefPostParse(virDomainMomentDefPtr def)
 
     gettimeofday(&tv, NULL);
 
-    if (!def->name &&
-        virAsprintf(&def->name, "%lld", (long long)tv.tv_sec) < 0)
-        return -1;
+    if (!def->name)
+        def->name = g_strdup_printf("%lld", (long long)tv.tv_sec);
 
     def->creationTime = tv.tv_sec;
     return 0;

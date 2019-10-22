@@ -2753,7 +2753,7 @@ virNetworkConfigFile(const char *dir,
 {
     char *ret = NULL;
 
-    ignore_value(virAsprintf(&ret, "%s/%s.xml", dir, name));
+    ret = g_strdup_printf("%s/%s.xml", dir, name);
     return ret;
 }
 
