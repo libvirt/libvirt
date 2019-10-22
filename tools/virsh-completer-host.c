@@ -44,8 +44,7 @@ virshPagesizeNodeToString(xmlNodePtr node)
     if (virScaleInteger(&byteval, unit, 1024, UINT_MAX) < 0)
         return NULL;
     size = vshPrettyCapacity(byteval, &suffix);
-    if (virAsprintf(&ret, "%.0f%s", size, suffix) < 0)
-        return NULL;
+    ret = g_strdup_printf("%.0f%s", size, suffix);
     return ret;
 }
 
@@ -78,13 +77,10 @@ virshAllocpagesPagesizeCompleter(vshControl *ctl,
         return NULL;
 
     if (cellno && vshCommandOptStringQuiet(ctl, cmd, "cellno", &cellnum) > 0) {
-        if (virAsprintf(&path,
-                        "/capabilities/host/topology/cells/cell[@id=\"%s\"]/pages",
-                        cellnum) < 0)
-            return NULL;
+        path = g_strdup_printf("/capabilities/host/topology/cells/cell[@id=\"%s\"]/pages",
+                               cellnum);
     } else {
-        if (virAsprintf(&path, "/capabilities/host/cpu/pages") < 0)
-            return NULL;
+        path = g_strdup("/capabilities/host/cpu/pages");
     }
 
     npages = virXPathNodeSet(path, ctxt, &pages);

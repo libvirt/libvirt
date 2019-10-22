@@ -1140,8 +1140,7 @@ vshExtractCPUDefXMLs(vshControl *ctl,
     else
         doc = buffer;
 
-    if (virAsprintf(&xmlStr, "<container>%s</container>", doc) < 0)
-        goto error;
+    xmlStr = g_strdup_printf("<container>%s</container>", doc);
 
     if (!(xml = virXMLParseStringCtxt(xmlStr, xmlFile, &ctxt)))
         goto error;

@@ -118,9 +118,9 @@ virshCommaStringListComplete(const char *input,
         if (virStringListHasString((const char **)inputList, options[i]))
             continue;
 
-        if (inputCopy && virAsprintf(&ret[nret], "%s,%s", inputCopy, options[i]) < 0)
-            return NULL;
-        if (!inputCopy)
+        if (inputCopy)
+            ret[nret] = g_strdup_printf("%s,%s", inputCopy, options[i]);
+        else
             ret[nret] = g_strdup(options[i]);
 
         nret++;

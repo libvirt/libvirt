@@ -893,11 +893,12 @@ cmdInterfaceBridge(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if (stp &&
-        ((virAsprintf(&delay_str, "%d", delay) < 0) ||
-         !xmlSetProp(br_node, BAD_CAST "delay", BAD_CAST delay_str))) {
-        vshError(ctl, _("Failed to set bridge delay %d in xml document"), delay);
-        goto cleanup;
+    if (stp) {
+        delay_str = g_strdup_printf("%d", delay);
+        if (!xmlSetProp(br_node, BAD_CAST "delay", BAD_CAST delay_str)) {
+            vshError(ctl, _("Failed to set bridge delay %d in xml document"), delay);
+            goto cleanup;
+        }
     }
 
     /* Change the type of the outer/master interface to "bridge" and the

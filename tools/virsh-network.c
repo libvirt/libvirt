@@ -1444,8 +1444,7 @@ cmdNetworkDHCPLeases(vshControl *ctl, const vshCmd *cmd)
         else if (lease->type == VIR_IP_ADDR_TYPE_IPV6)
             typestr = "ipv6";
 
-        ignore_value(virAsprintf(&cidr_format, "%s/%d",
-                                 lease->ipaddr, lease->prefix));
+        cidr_format = g_strdup_printf("%s/%d", lease->ipaddr, lease->prefix);
 
         if (vshTableRowAppend(table,
                               expirytime,

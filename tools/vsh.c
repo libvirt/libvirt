@@ -1787,28 +1787,27 @@ vshCommandOptTimeoutToMs(vshControl *ctl, const vshCmd *cmd, int *timeout)
 char *
 vshGetTypedParamValue(vshControl *ctl, virTypedParameterPtr item)
 {
-    int ret = 0;
     char *str = NULL;
 
     switch (item->type) {
     case VIR_TYPED_PARAM_INT:
-        ret = virAsprintf(&str, "%d", item->value.i);
+        str = g_strdup_printf("%d", item->value.i);
         break;
 
     case VIR_TYPED_PARAM_UINT:
-        ret = virAsprintf(&str, "%u", item->value.ui);
+        str = g_strdup_printf("%u", item->value.ui);
         break;
 
     case VIR_TYPED_PARAM_LLONG:
-        ret = virAsprintf(&str, "%lld", item->value.l);
+        str = g_strdup_printf("%lld", item->value.l);
         break;
 
     case VIR_TYPED_PARAM_ULLONG:
-        ret = virAsprintf(&str, "%llu", item->value.ul);
+        str = g_strdup_printf("%llu", item->value.ul);
         break;
 
     case VIR_TYPED_PARAM_DOUBLE:
-        ret = virAsprintf(&str, "%f", item->value.d);
+        str = g_strdup_printf("%f", item->value.d);
         break;
 
     case VIR_TYPED_PARAM_BOOLEAN:
@@ -1823,7 +1822,7 @@ vshGetTypedParamValue(vshControl *ctl, virTypedParameterPtr item)
         vshError(ctl, _("unimplemented parameter type %d"), item->type);
     }
 
-    if (ret < 0) {
+    if (!str) {
         vshError(ctl, "%s", _("Out of memory"));
         exit(EXIT_FAILURE);
     }
@@ -2408,10 +2407,7 @@ vshEditWriteToTempFile(vshControl *ctl, const char *doc)
 
     tmpdir = getenv("TMPDIR");
     if (!tmpdir) tmpdir = "/tmp";
-    if (virAsprintf(&ret, "%s/virshXXXXXX.xml", tmpdir) < 0) {
-        vshError(ctl, "%s", _("out of memory"));
-        return NULL;
-    }
+    ret = g_strdup_printf("%s/virshXXXXXX.xml", tmpdir);
     fd = mkostemps(ret, 4, O_CLOEXEC);
     if (fd == -1) {
         vshError(ctl, _("mkostemps: failed to create temporary file: %s"),
@@ -2919,8 +2915,7 @@ vshReadlineInit(vshControl *ctl)
     rl_completer_quote_characters = quote_characters;
     rl_char_is_quoted_p = vshReadlineCharIsQuoted;
 
-    if (virAsprintf(&histsize_env, "%s_HISTSIZE", ctl->env_prefix) < 0)
-        goto cleanup;
+    histsize_env = g_strdup_printf("%s_HISTSIZE", ctl->env_prefix);
 
     /* Limit the total size of the history buffer */
     if ((histsize_str = getenv(histsize_env))) {
@@ -2946,15 +2941,9 @@ vshReadlineInit(vshControl *ctl)
         goto cleanup;
     }
 
-    if (virAsprintf(&ctl->historydir, "%s/%s", userdir, ctl->name) < 0) {
-        vshError(ctl, "%s", _("Out of memory"));
-        goto cleanup;
-    }
+    ctl->historydir = g_strdup_printf("%s/%s", userdir, ctl->name);
 
-    if (virAsprintf(&ctl->historyfile, "%s/history", ctl->historydir) < 0) {
-        vshError(ctl, "%s", _("Out of memory"));
-        goto cleanup;
-    }
+    ctl->historyfile = g_strdup_printf("%s/history", ctl->historydir);
 
     read_history(ctl->historyfile);
     ret = 0;
@@ -3036,8 +3025,7 @@ vshInitDebug(vshControl *ctl)
     char *env = NULL;
 
     if (ctl->debug == VSH_DEBUG_DEFAULT) {
-        if (virAsprintf(&env, "%s_DEBUG", ctl->env_prefix) < 0)
-            return -1;
+        env = g_strdup_printf("%s_DEBUG", ctl->env_prefix);
 
         /* log level not set from commandline, check env variable */
         debugEnv = getenv(env);
@@ -3055,8 +3043,7 @@ vshInitDebug(vshControl *ctl)
     }
 
     if (ctl->logfile == NULL) {
-        if (virAsprintf(&env, "%s_LOG_FILE", ctl->env_prefix) < 0)
-            return -1;
+        env = g_strdup_printf("%s_LOG_FILE", ctl->env_prefix);
 
         /* log file not set from cmdline */
         debugEnv = getenv(env);

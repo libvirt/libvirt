@@ -214,10 +214,9 @@ virshDomainInterfaceStateCompleter(vshControl *ctl,
     if (virMacAddrParse(iface, &macaddr) == 0)
         virMacAddrFormat(&macaddr, macstr);
 
-    if (virAsprintf(&xpath, "/domain/devices/interface[(mac/@address = '%s') or "
-                            "                          (target/@dev = '%s')]",
-                           macstr, iface) < 0)
-        return NULL;
+    xpath = g_strdup_printf("/domain/devices/interface[(mac/@address = '%s') or "
+                            "                          (target/@dev = '%s')]", macstr,
+                            iface);
 
     if ((ninterfaces = virXPathNodeSet(xpath, ctxt, &interfaces)) < 0)
         return NULL;
