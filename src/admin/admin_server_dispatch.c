@@ -135,12 +135,11 @@ get_nonnull_server(virNetDaemonPtr dmn, admin_nonnull_server srv)
     return virNetDaemonGetServer(dmn, srv.name);
 }
 
-static int G_GNUC_WARN_UNUSED_RESULT
+static void
 make_nonnull_server(admin_nonnull_server *srv_dst,
                     virNetServerPtr srv_src)
 {
     srv_dst->name = g_strdup(virNetServerGetName(srv_src));
-    return 0;
 }
 
 static virNetServerClientPtr
@@ -149,14 +148,13 @@ get_nonnull_client(virNetServerPtr srv, admin_nonnull_client clnt)
     return virNetServerGetClient(srv, clnt.id);
 }
 
-static int
+static void
 make_nonnull_client(admin_nonnull_client *clt_dst,
                     virNetServerClientPtr clt_src)
 {
     clt_dst->id = virNetServerClientGetID(clt_src);
     clt_dst->timestamp = virNetServerClientGetTimestamp(clt_src);
     clt_dst->transport = virNetServerClientGetTransport(clt_src);
-    return 0;
 }
 
 /* Functions */
