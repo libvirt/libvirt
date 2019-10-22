@@ -910,7 +910,7 @@ testQemuCapsIterate(const char *suffix,
         goto cleanup;
 
     while ((rc = virDirRead(dir, &ent, TEST_QEMU_CAPS_PATH)) > 0) {
-        char *tmp = ent->d_name;
+        g_autofree char *tmp = g_strdup(ent->d_name);
         char *base = NULL;
         char *archName = NULL;
 
@@ -918,9 +918,11 @@ testQemuCapsIterate(const char *suffix,
         if (!virStringStripSuffix(tmp, suffix))
             continue;
 
-        /* Find the last dot, moving on if none is present */
-        if (!(archName = strrchr(tmp, '.')))
-            continue;
+        /* Find the last dot */
+        if (!(archName = strrchr(tmp, '.'))) {
+            VIR_TEST_VERBOSE("malformed file name '%s'", ent->d_name);
+            goto cleanup;
+        }
 
         /* The base name is everything before the last dot, and
          * the architecture name everything after it */
