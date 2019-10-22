@@ -1033,16 +1033,17 @@ remoteRelayDomainEventTunable(virConnectPtr conn,
 
     /* build return data */
     memset(&data, 0, sizeof(data));
-    data.callbackID = callback->callbackID;
-    make_nonnull_domain(&data.dom, dom);
 
     if (virTypedParamsSerialize(params, nparams,
                                 REMOTE_DOMAIN_EVENT_TUNABLE_MAX,
                                 (virTypedParameterRemotePtr *) &data.params.params_val,
                                 &data.params.params_len,
-                                VIR_TYPED_PARAM_STRING_OKAY) < 0) {
-        goto error;
-    }
+                                VIR_TYPED_PARAM_STRING_OKAY) < 0)
+        return -1;
+
+    data.callbackID = callback->callbackID;
+    make_nonnull_domain(&data.dom, dom);
+
 
     remoteDispatchObjectEventSend(callback->client, remoteProgram,
                                   REMOTE_PROC_DOMAIN_EVENT_CALLBACK_TUNABLE,
@@ -1050,11 +1051,6 @@ remoteRelayDomainEventTunable(virConnectPtr conn,
                                   &data);
 
     return 0;
-
- error:
-    xdr_free((xdrproc_t)xdr_remote_domain_event_callback_tunable_msg,
-             (char *) &data);
-    return -1;
 }
 
 
@@ -1177,27 +1173,22 @@ remoteRelayDomainEventJobCompleted(virConnectPtr conn,
 
     /* build return data */
     memset(&data, 0, sizeof(data));
-    data.callbackID = callback->callbackID;
-    make_nonnull_domain(&data.dom, dom);
 
     if (virTypedParamsSerialize(params, nparams,
                                 REMOTE_DOMAIN_JOB_STATS_MAX,
                                 (virTypedParameterRemotePtr *) &data.params.params_val,
                                 &data.params.params_len,
-                                VIR_TYPED_PARAM_STRING_OKAY) < 0) {
-        goto error;
-    }
+                                VIR_TYPED_PARAM_STRING_OKAY) < 0)
+        return -1;
+
+    data.callbackID = callback->callbackID;
+    make_nonnull_domain(&data.dom, dom);
 
     remoteDispatchObjectEventSend(callback->client, remoteProgram,
                                   REMOTE_PROC_DOMAIN_EVENT_CALLBACK_JOB_COMPLETED,
                                   (xdrproc_t)xdr_remote_domain_event_callback_job_completed_msg,
                                   &data);
     return 0;
-
- error:
-    xdr_free((xdrproc_t)xdr_remote_domain_event_callback_job_completed_msg,
-             (char *) &data);
-    return -1;
 }
 
 
