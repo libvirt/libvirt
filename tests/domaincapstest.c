@@ -267,17 +267,23 @@ test_virDomainCapsFormat(const void *opaque)
 }
 
 static int
-doTestQemu(const char *partialName,
-           const char *capsName,
-           const char *emulator,
+doTestQemu(const char *version,
            const char *machine,
            const char *arch,
            virDomainVirtType type,
            void *opaque)
 {
     g_autofree char *name = NULL;
+    g_autofree char *capsName = NULL;
+    g_autofree char *emulator = NULL;
 
-    name = g_strdup_printf("qemu_%s.%s", partialName, arch);
+    name = g_strdup_printf("qemu_%s%s%s%s.%s",
+                           version,
+                           (type == VIR_DOMAIN_VIRT_QEMU ? "-tcg" : ""),
+                           (machine ? "-" : ""), (machine ? machine : ""),
+                           arch);
+    capsName = g_strdup_printf("caps_%s", version);
+    emulator = g_strdup_printf("/usr/bin/qemu-system-%s", arch);
 
     struct testData data = {
         .name = name,
@@ -326,9 +332,9 @@ mymain(void)
             ret = -1; \
     } while (0)
 
-#define DO_TEST_QEMU(Name, CapsName, Emulator, Machine, Arch, Type) \
+#define DO_TEST_QEMU(Version, Machine, Arch, Type) \
     do { \
-        if (doTestQemu(Name, CapsName, Emulator, Machine, Arch, Type, cfg) < 0) \
+        if (doTestQemu(Version, Machine, Arch, Type, cfg) < 0) \
             ret = -1; \
     } while (0)
 
@@ -378,101 +384,40 @@ mymain(void)
     virFileWrapperAddPrefix("/home/user/.config/qemu/firmware",
                             abs_srcdir "/qemufirmwaredata/home/user/.config/qemu/firmware");
 
-    DO_TEST_QEMU("1.7.0", "caps_1.7.0",
-                 "/usr/bin/qemu-system-x86_64", NULL,
-                 "x86_64", VIR_DOMAIN_VIRT_KVM);
+    DO_TEST_QEMU("1.7.0", NULL, "x86_64", VIR_DOMAIN_VIRT_KVM);
 
-    DO_TEST_QEMU("2.6.0", "caps_2.6.0",
-                 "/usr/bin/qemu-system-x86_64", NULL,
-                 "x86_64", VIR_DOMAIN_VIRT_KVM);
+    DO_TEST_QEMU("2.6.0", NULL, "x86_64", VIR_DOMAIN_VIRT_KVM);
+    DO_TEST_QEMU("2.6.0", NULL, "aarch64", VIR_DOMAIN_VIRT_KVM);
+    DO_TEST_QEMU("2.6.0", "virt", "aarch64", VIR_DOMAIN_VIRT_KVM);
+    DO_TEST_QEMU("2.6.0", NULL, "ppc64", VIR_DOMAIN_VIRT_KVM);
 
-    DO_TEST_QEMU("2.8.0", "caps_2.8.0",
-                 "/usr/bin/qemu-system-x86_64", NULL,
-                 "x86_64", VIR_DOMAIN_VIRT_KVM);
+    DO_TEST_QEMU("2.7.0", NULL, "s390x", VIR_DOMAIN_VIRT_KVM);
 
-    DO_TEST_QEMU("2.8.0-tcg", "caps_2.8.0",
-                 "/usr/bin/qemu-system-x86_64", NULL,
-                 "x86_64", VIR_DOMAIN_VIRT_QEMU);
+    DO_TEST_QEMU("2.8.0", NULL, "x86_64", VIR_DOMAIN_VIRT_KVM);
+    DO_TEST_QEMU("2.8.0", NULL, "x86_64", VIR_DOMAIN_VIRT_QEMU);
+    DO_TEST_QEMU("2.8.0", NULL, "s390x", VIR_DOMAIN_VIRT_KVM);
 
-    DO_TEST_QEMU("2.9.0", "caps_2.9.0",
-                 "/usr/bin/qemu-system-x86_64", NULL,
-                 "x86_64", VIR_DOMAIN_VIRT_KVM);
+    DO_TEST_QEMU("2.9.0", NULL, "x86_64", VIR_DOMAIN_VIRT_KVM);
+    DO_TEST_QEMU("2.9.0", "q35", "x86_64", VIR_DOMAIN_VIRT_KVM);
+    DO_TEST_QEMU("2.9.0", NULL, "x86_64", VIR_DOMAIN_VIRT_QEMU);
 
-    DO_TEST_QEMU("2.9.0-q35", "caps_2.9.0",
-                 "/usr/bin/qemu-system-x86_64", "q35",
-                 "x86_64", VIR_DOMAIN_VIRT_KVM);
+    DO_TEST_QEMU("2.12.0", NULL, "x86_64", VIR_DOMAIN_VIRT_KVM);
+    DO_TEST_QEMU("2.12.0", "virt", "aarch64", VIR_DOMAIN_VIRT_KVM);
+    DO_TEST_QEMU("2.12.0", NULL, "ppc64", VIR_DOMAIN_VIRT_KVM);
+    DO_TEST_QEMU("2.12.0", NULL, "s390x", VIR_DOMAIN_VIRT_KVM);
 
-    DO_TEST_QEMU("2.9.0-tcg", "caps_2.9.0",
-                 "/usr/bin/qemu-system-x86_64", NULL,
-                 "x86_64", VIR_DOMAIN_VIRT_QEMU);
+    DO_TEST_QEMU("3.0.0", NULL, "s390x", VIR_DOMAIN_VIRT_KVM);
 
-    DO_TEST_QEMU("2.12.0", "caps_2.12.0",
-                 "/usr/bin/qemu-system-x86_64", NULL,
-                 "x86_64", VIR_DOMAIN_VIRT_KVM);
+    DO_TEST_QEMU("3.1.0", NULL, "x86_64", VIR_DOMAIN_VIRT_KVM);
 
-    DO_TEST_QEMU("2.6.0", "caps_2.6.0",
-                 "/usr/bin/qemu-system-aarch64", NULL,
-                 "aarch64", VIR_DOMAIN_VIRT_KVM);
+    DO_TEST_QEMU("4.0.0", NULL, "x86_64", VIR_DOMAIN_VIRT_KVM);
+    DO_TEST_QEMU("4.0.0", NULL, "s390x", VIR_DOMAIN_VIRT_KVM);
 
-    DO_TEST_QEMU("2.6.0-virt", "caps_2.6.0",
-                 "/usr/bin/qemu-system-aarch64", "virt",
-                 "aarch64", VIR_DOMAIN_VIRT_KVM);
+    DO_TEST_QEMU("4.1.0", NULL, "x86_64", VIR_DOMAIN_VIRT_KVM);
 
-    DO_TEST_QEMU("2.12.0-virt", "caps_2.12.0",
-                 "/usr/bin/qemu-system-aarch64", "virt",
-                 "aarch64", VIR_DOMAIN_VIRT_KVM);
-
-    DO_TEST_QEMU("2.6.0", "caps_2.6.0",
-                 "/usr/bin/qemu-system-ppc64", NULL,
-                 "ppc64", VIR_DOMAIN_VIRT_KVM);
-
-    DO_TEST_QEMU("2.12.0", "caps_2.12.0",
-                 "/usr/bin/qemu-system-ppc64", NULL,
-                 "ppc64", VIR_DOMAIN_VIRT_KVM);
-
-    DO_TEST_QEMU("2.7.0", "caps_2.7.0",
-                 "/usr/bin/qemu-system-s390x", NULL,
-                 "s390x", VIR_DOMAIN_VIRT_KVM);
-
-    DO_TEST_QEMU("2.8.0", "caps_2.8.0",
-                 "/usr/bin/qemu-system-s390x", NULL,
-                 "s390x", VIR_DOMAIN_VIRT_KVM);
-
-    DO_TEST_QEMU("2.12.0", "caps_2.12.0",
-                 "/usr/bin/qemu-system-s390x", NULL,
-                 "s390x", VIR_DOMAIN_VIRT_KVM);
-
-    DO_TEST_QEMU("3.0.0", "caps_3.0.0",
-                 "/usr/bin/qemu-system-s390x", NULL,
-                 "s390x", VIR_DOMAIN_VIRT_KVM);
-
-    DO_TEST_QEMU("3.1.0", "caps_3.1.0",
-                 "/usr/bin/qemu-system-x86_64", NULL,
-                 "x86_64", VIR_DOMAIN_VIRT_KVM);
-
-    DO_TEST_QEMU("4.0.0", "caps_4.0.0",
-                 "/usr/bin/qemu-system-x86_64", NULL,
-                 "x86_64", VIR_DOMAIN_VIRT_KVM);
-
-    DO_TEST_QEMU("4.0.0", "caps_4.0.0",
-                 "/usr/bin/qemu-system-s390x", NULL,
-                 "s390x", VIR_DOMAIN_VIRT_KVM);
-
-    DO_TEST_QEMU("4.1.0", "caps_4.1.0",
-                 "/usr/bin/qemu-system-x86_64", NULL,
-                 "x86_64", VIR_DOMAIN_VIRT_KVM);
-
-    DO_TEST_QEMU("4.2.0", "caps_4.2.0",
-                 "/usr/bin/qemu-system-x86_64", NULL,
-                 "x86_64", VIR_DOMAIN_VIRT_KVM);
-
-    DO_TEST_QEMU("4.2.0", "caps_4.2.0",
-                 "/usr/bin/qemu-system-ppc64", NULL,
-                 "ppc64", VIR_DOMAIN_VIRT_KVM);
-
-    DO_TEST_QEMU("4.2.0", "caps_4.2.0",
-                 "/usr/bin/qemu-system-aarch64", NULL,
-                 "aarch64", VIR_DOMAIN_VIRT_KVM);
+    DO_TEST_QEMU("4.2.0", NULL, "x86_64", VIR_DOMAIN_VIRT_KVM);
+    DO_TEST_QEMU("4.2.0", NULL, "ppc64", VIR_DOMAIN_VIRT_KVM);
+    DO_TEST_QEMU("4.2.0", NULL, "aarch64", VIR_DOMAIN_VIRT_KVM);
 
     virObjectUnref(cfg);
 
