@@ -225,26 +225,23 @@ daemonUnixSocketPaths(struct daemonConfig *config,
     char *rundir = NULL;
 
     if (config->unix_sock_dir) {
-        if (virAsprintf(sockfile, "%s/%s-sock",
-                        config->unix_sock_dir, SOCK_PREFIX) < 0)
-            goto cleanup;
+        *sockfile = g_strdup_printf("%s/%s-sock", config->unix_sock_dir,
+                                    SOCK_PREFIX);
 
         if (privileged) {
-            if (virAsprintf(rosockfile, "%s/%s-sock-ro",
-                            config->unix_sock_dir, SOCK_PREFIX) < 0 ||
-                virAsprintf(admsockfile, "%s/%s-admin-sock",
-                            config->unix_sock_dir, SOCK_PREFIX) < 0)
-                goto cleanup;
+            *rosockfile = g_strdup_printf("%s/%s-sock-ro",
+                                          config->unix_sock_dir, SOCK_PREFIX);
+            *admsockfile = g_strdup_printf("%s/%s-admin-sock",
+                                           config->unix_sock_dir, SOCK_PREFIX);
         }
     } else {
         if (privileged) {
-            if (virAsprintf(sockfile, "%s/libvirt/%s-sock",
-                            RUNSTATEDIR, SOCK_PREFIX) < 0 ||
-                virAsprintf(rosockfile, "%s/libvirt/%s-sock-ro",
-                            RUNSTATEDIR, SOCK_PREFIX) < 0 ||
-                virAsprintf(admsockfile, "%s/libvirt/%s-admin-sock",
-                            RUNSTATEDIR, SOCK_PREFIX) < 0)
-                goto cleanup;
+            *sockfile = g_strdup_printf("%s/libvirt/%s-sock",
+                                        RUNSTATEDIR, SOCK_PREFIX);
+            *rosockfile = g_strdup_printf("%s/libvirt/%s-sock-ro",
+                                          RUNSTATEDIR, SOCK_PREFIX);
+            *admsockfile = g_strdup_printf("%s/libvirt/%s-admin-sock",
+                                           RUNSTATEDIR, SOCK_PREFIX);
         } else {
             mode_t old_umask;
 
@@ -258,11 +255,8 @@ daemonUnixSocketPaths(struct daemonConfig *config,
             }
             umask(old_umask);
 
-            if (virAsprintf(sockfile, "%s/%s-sock",
-                            rundir, SOCK_PREFIX) < 0 ||
-                virAsprintf(admsockfile, "%s/%s-admin-sock",
-                            rundir, SOCK_PREFIX) < 0)
-                goto cleanup;
+            *sockfile = g_strdup_printf("%s/%s-sock", rundir, SOCK_PREFIX);
+            *admsockfile = g_strdup_printf("%s/%s-admin-sock", rundir, SOCK_PREFIX);
         }
     }
 
@@ -659,8 +653,7 @@ daemonSetupLogging(struct daemonConfig *config,
     /* Define the default output. This is only applied if there was no setting
      * from either the config or the environment.
      */
-    if (virLogSetDefaultOutput(DAEMON_NAME, godaemon, privileged) < 0)
-        return -1;
+    virLogSetDefaultOutput(DAEMON_NAME, godaemon, privileged);
 
     if (virLogGetNbOutputs() == 0)
         virLogSetOutputs(virLogGetDefaultOutput());

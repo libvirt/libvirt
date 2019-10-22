@@ -781,9 +781,7 @@ remoteGetUNIXSocketHelper(remoteDriverTransport transport,
         if (!(userdir = virGetUserRuntimeDirectory()))
             return NULL;
 
-        if (virAsprintf(&sockname, "%s/%s-sock",
-                        userdir, sock_prefix) < 0)
-            return NULL;
+        sockname = g_strdup_printf("%s/%s-sock", userdir, sock_prefix);
     } else {
         /* Intentionally do *NOT* use RUNSTATEDIR here. We might
          * be connecting to a remote machine, and cannot assume
@@ -791,11 +789,9 @@ remoteGetUNIXSocketHelper(remoteDriverTransport transport,
          * any machine with /run will have a /var/run symlink.
          * The portable option is to thus use $LOCALSTATEDIR/run
          */
-        if (virAsprintf(&sockname, "%s/run/libvirt/%s-%s",
-                        LOCALSTATEDIR, sock_prefix,
-                        flags & VIR_DRV_OPEN_REMOTE_RO ?
-                        "sock-ro" : "sock") < 0)
-            return NULL;
+        sockname = g_strdup_printf("%s/run/libvirt/%s-%s", LOCALSTATEDIR,
+                                   sock_prefix,
+                                   flags & VIR_DRV_OPEN_REMOTE_RO ? "sock-ro" : "sock");
     }
 
     VIR_DEBUG("Built UNIX sockname %s for transport %s prefix %s flags=0x%x",
@@ -818,9 +814,8 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
     g_autofree char *direct_sock_name = NULL;
     g_autofree char *legacy_sock_name = NULL;
 
-    if (driver &&
-        virAsprintf(&direct_daemon, "virt%sd", driver) < 0)
-        return NULL;
+    if (driver)
+        direct_daemon = g_strdup_printf("virt%sd", driver);
 
     legacy_daemon = g_strdup("libvirtd");
 
@@ -1003,8 +998,7 @@ doRemoteOpen(virConnectPtr conn,
 
     /* Remote server defaults to "localhost" if not specified. */
     if (conn->uri && conn->uri->port != 0) {
-        if (virAsprintf(&port, "%d", conn->uri->port) < 0)
-            goto failed;
+        port = g_strdup_printf("%d", conn->uri->port);
     } else if (transport == REMOTE_DRIVER_TRANSPORT_TLS) {
         port = g_strdup(LIBVIRTD_TLS_PORT);
     } else if (transport == REMOTE_DRIVER_TRANSPORT_TCP) {

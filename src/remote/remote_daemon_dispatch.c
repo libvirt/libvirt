@@ -1974,8 +1974,7 @@ remoteDispatchProbeURI(bool readonly,
             g_autofree char *daemonname = NULL;
             g_autofree char *daemonpath = NULL;
 
-            if (virAsprintf(&daemonname, "virt%sd", drivers[i]) < 0)
-                return -1;
+            daemonname = g_strdup_printf("virt%sd", drivers[i]);
 
             if (!(daemonpath = virFileFindResource(daemonname, "src", SBINDIR)))
                 return -1;
@@ -1985,8 +1984,7 @@ remoteDispatchProbeURI(bool readonly,
                 continue;
             }
 
-            if (virAsprintf(probeduri, "%s:///session", drivers[i]) < 0)
-                return -1;
+            *probeduri = g_strdup_printf("%s:///session", drivers[i]);
 
             VIR_DEBUG("Probed URI %s via daemon %s", *probeduri, daemonpath);
             return 0;
@@ -2019,18 +2017,15 @@ remoteDispatchProbeURI(bool readonly,
         for (i = 0; i < (ssize_t) G_N_ELEMENTS(drivers) && !*probeduri; i++) {
             g_autofree char *sockname = NULL;
 
-            if (virAsprintf(&sockname, "%s/libvirt/virt%sd-%s",
-                            RUNSTATEDIR, drivers[i],
-                            readonly ? "sock-ro" : "sock") < 0)
-                return -1;
+            sockname = g_strdup_printf("%s/libvirt/virt%sd-%s", RUNSTATEDIR,
+                                       drivers[i], readonly ? "sock-ro" : "sock");
 
             if (!virFileExists(sockname)) {
                 VIR_DEBUG("Missing sock %s for driver %s", sockname, drivers[i]);
                 continue;
             }
 
-            if (virAsprintf(probeduri, "%s:///system", drivers[i]) < 0)
-                return -1;
+            *probeduri = g_strdup_printf("%s:///system", drivers[i]);
 
             VIR_DEBUG("Probed URI %s via sock %s", *probeduri, sockname);
             return 0;
@@ -3644,9 +3639,8 @@ remoteDispatchAuthList(virNetServerPtr server,
             virResetLastError();
         } else if (callerUid == 0) {
             char *ident;
-            if (virAsprintf(&ident, "pid:%lld,uid:%d",
-                            (long long) callerPid, (int) callerUid) < 0)
-                goto cleanup;
+            ident = g_strdup_printf("pid:%lld,uid:%d", (long long)callerPid,
+                                    (int)callerUid);
             VIR_INFO("Bypass polkit auth for privileged client %s", ident);
             virNetServerSetClientAuthenticated(server, client);
             auth = VIR_NET_SERVER_SERVICE_AUTH_NONE;
