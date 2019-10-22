@@ -212,8 +212,7 @@ libxlMakeChrdevStr(virDomainChrDefPtr def, char **buf)
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
     case VIR_DOMAIN_CHR_TYPE_PIPE:
-        if (virAsprintf(buf, "%s:%s", type, srcdef->data.file.path) < 0)
-            return -1;
+        *buf = g_strdup_printf("%s:%s", type, srcdef->data.file.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_DEV:
@@ -232,12 +231,8 @@ libxlMakeChrdevStr(virDomainChrDefPtr def, char **buf)
         if (bindService == NULL)
             bindService = "0";
 
-        if (virAsprintf(buf, "udp:%s:%s@%s:%s",
-                        connectHost,
-                        srcdef->data.udp.connectService,
-                        bindHost,
-                        bindService) < 0)
-            return -1;
+        *buf = g_strdup_printf("udp:%s:%s@%s:%s", connectHost,
+                               srcdef->data.udp.connectService, bindHost, bindService);
         break;
     }
 
@@ -249,20 +244,15 @@ libxlMakeChrdevStr(virDomainChrDefPtr def, char **buf)
         else
             prefix = "tcp";
 
-        if (virAsprintf(buf, "%s:%s:%s%s",
-                        prefix,
-                        srcdef->data.tcp.host,
-                        srcdef->data.tcp.service,
-                        srcdef->data.tcp.listen ? ",server,nowait" : "") < 0)
-            return -1;
+        *buf = g_strdup_printf("%s:%s:%s%s", prefix, srcdef->data.tcp.host,
+                               srcdef->data.tcp.service,
+                               srcdef->data.tcp.listen ? ",server,nowait" : "");
         break;
     }
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
-        if (virAsprintf(buf, "unix:%s%s",
-                        srcdef->data.nix.path,
-                        srcdef->data.nix.listen ? ",server,nowait" : "") < 0)
-            return -1;
+        *buf = g_strdup_printf("unix:%s%s", srcdef->data.nix.path,
+                               srcdef->data.nix.listen ? ",server,nowait" : "");
         break;
 
     default:
@@ -1932,11 +1922,12 @@ libxlPrepareChannel(virDomainChrDefPtr channel,
     if (channel->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_XEN &&
         channel->source->type == VIR_DOMAIN_CHR_TYPE_UNIX &&
         !channel->source->data.nix.path) {
-        if (virAsprintf(&channel->source->data.nix.path,
-                        "%s/%s-%s", channelDir, domainName,
-                        channel->target.name ? channel->target.name
-                        : "unknown.sock") < 0)
-            return -1;
+        const char *target = channel->target.name;
+        if (!target)
+            target = "unknown.sock";
+        channel->source->data.nix.path = g_strdup_printf("%s/%s-%s", channelDir,
+                                                         domainName,
+                                                         target);
 
         channel->source->data.nix.listen = true;
     }

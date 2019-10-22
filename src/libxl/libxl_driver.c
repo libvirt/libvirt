@@ -693,8 +693,7 @@ libxlStateInitialize(bool privileged,
     if (!(cfg = libxlDriverConfigNew()))
         goto error;
 
-    if (virAsprintf(&driverConf, "%s/libxl.conf", cfg->configBaseDir) < 0)
-        goto error;
+    driverConf = g_strdup_printf("%s/libxl.conf", cfg->configBaseDir);
 
     if (libxlDriverConfigLoadFile(cfg, driverConf) < 0)
         goto error;
@@ -5380,16 +5379,13 @@ libxlDiskSectorSize(int domid, int devno)
     }
 
     path = val = NULL;
-    if (virAsprintf(&path, "/local/domain/%d/device/vbd/%d/backend",
-                    domid, devno) < 0)
-        goto cleanup;
+    path = g_strdup_printf("/local/domain/%d/device/vbd/%d/backend", domid, devno);
 
     if ((val = xs_read(handle, XBT_NULL, path, &len)) == NULL)
         goto cleanup;
 
     VIR_FREE(path);
-    if (virAsprintf(&path, "%s/physical-sector-size", val) < 0)
-        goto cleanup;
+    path = g_strdup_printf("%s/physical-sector-size", val);
 
     VIR_FREE(val);
     if ((val = xs_read(handle, XBT_NULL, path, &len)) == NULL)
@@ -5427,9 +5423,8 @@ libxlDomainBlockStatsVBD(virDomainObjPtr vm,
 
     stats->backend = g_strdup("vbd");
 
-    if (virAsprintf(&path, "/sys/bus/xen-backend/devices/vbd-%d-%d/statistics",
-                    vm->def->id, devno) < 0)
-        return ret;
+    path = g_strdup_printf("/sys/bus/xen-backend/devices/vbd-%d-%d/statistics",
+                           vm->def->id, devno);
 
     if (!virFileExists(path)) {
         virReportError(VIR_ERR_OPERATION_FAILED,
@@ -5438,8 +5433,8 @@ libxlDomainBlockStatsVBD(virDomainObjPtr vm,
     }
 
 # define LIBXL_SET_VBDSTAT(FIELD, VAR, MUL) \
-    if ((virAsprintf(&name, "%s/"FIELD, path) < 0) || \
-        (virFileReadAll(name, 256, &val) < 0) || \
+    name = g_strdup_printf("%s/"FIELD, path); \
+    if ((virFileReadAll(name, 256, &val) < 0) || \
         (sscanf(val, "%llu", &status) != 1)) { \
         virReportError(VIR_ERR_OPERATION_FAILED, \
                        _("cannot read %s"), name); \

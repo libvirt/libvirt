@@ -158,8 +158,7 @@ libxlLoggerNew(const char *logDir, virLogPriority minLevel)
     if ((logger.files = virHashCreate(3, libxlLoggerFileFree)) == NULL)
         return NULL;
 
-    if (virAsprintf(&path, "%s/libxl-driver.log", logDir) < 0)
-        goto error;
+    path = g_strdup_printf("%s/libxl-driver.log", logDir);
 
     if ((logger.defaultLogFile = fopen(path, "a")) == NULL)
         goto error;
@@ -196,9 +195,8 @@ libxlLoggerOpenFile(libxlLoggerPtr logger,
     char *domidstr = NULL;
     char ebuf[1024];
 
-    if (virAsprintf(&path, "%s/%s.log", logger->logDir, name) < 0 ||
-        virAsprintf(&domidstr, "%d", id) < 0)
-        goto cleanup;
+    path = g_strdup_printf("%s/%s.log", logger->logDir, name);
+    domidstr = g_strdup_printf("%d", id);
 
     if (!(logFile = fopen(path, "a"))) {
         VIR_WARN("Failed to open log file %s: %s",
@@ -222,8 +220,7 @@ void
 libxlLoggerCloseFile(libxlLoggerPtr logger, int id)
 {
     char *domidstr = NULL;
-    if (virAsprintf(&domidstr, "%d", id) < 0)
-        return;
+    domidstr = g_strdup_printf("%d", id);
 
     ignore_value(virHashRemoveEntry(logger->files, domidstr));
 
