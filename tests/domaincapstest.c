@@ -303,8 +303,11 @@ doTestQemuInternal(const char *version,
 }
 
 static int
-doTestQemu(const char *version,
+doTestQemu(const char *inputDir G_GNUC_UNUSED,
+           const char *prefix G_GNUC_UNUSED,
+           const char *version,
            const char *arch,
+           const char *suffix G_GNUC_UNUSED,
            void *opaque)
 {
     if (STREQ(arch, "x86_64")) {
@@ -376,12 +379,6 @@ mymain(void)
             ret = -1; \
     } while (0)
 
-#define DO_TEST_QEMU(Version, Arch) \
-    do { \
-        if (doTestQemu(Version, Arch, cfg) < 0) \
-            ret = -1; \
-    } while (0)
-
 #define DO_TEST_LIBXL(Name, Emulator, Machine, Arch, Type) \
     do { \
         struct testData data = { \
@@ -428,36 +425,24 @@ mymain(void)
     virFileWrapperAddPrefix("/home/user/.config/qemu/firmware",
                             abs_srcdir "/qemufirmwaredata/home/user/.config/qemu/firmware");
 
-    DO_TEST_QEMU("1.7.0", "x86_64");
+    if (testQemuCapsIterate(".xml", doTestQemu, cfg) < 0)
+        return EXIT_FAILURE;
 
-    DO_TEST_QEMU("2.6.0", "x86_64");
-    DO_TEST_QEMU("2.6.0", "aarch64");
-    DO_TEST_QEMU("2.6.0", "ppc64");
-
-    DO_TEST_QEMU("2.7.0", "s390x");
-
-    DO_TEST_QEMU("2.8.0", "x86_64");
-    DO_TEST_QEMU("2.8.0", "s390x");
-
-    DO_TEST_QEMU("2.9.0", "x86_64");
-
-    DO_TEST_QEMU("2.12.0", "x86_64");
-    DO_TEST_QEMU("2.12.0", "aarch64");
-    DO_TEST_QEMU("2.12.0", "ppc64");
-    DO_TEST_QEMU("2.12.0", "s390x");
-
-    DO_TEST_QEMU("3.0.0", "s390x");
-
-    DO_TEST_QEMU("3.1.0", "x86_64");
-
-    DO_TEST_QEMU("4.0.0", "x86_64");
-    DO_TEST_QEMU("4.0.0", "s390x");
-
-    DO_TEST_QEMU("4.1.0", "x86_64");
-
-    DO_TEST_QEMU("4.2.0", "x86_64");
-    DO_TEST_QEMU("4.2.0", "ppc64");
-    DO_TEST_QEMU("4.2.0", "aarch64");
+    /*
+     * Run "tests/qemucapsprobe /path/to/qemu/binary >foo.replies"
+     * to generate updated or new *.replies data files.
+     *
+     * If you manually edit replies files you can run
+     * "tests/qemucapsfixreplies foo.replies" to fix the replies ids.
+     *
+     * Once a replies file has been generated and tweaked if necessary,
+     * you can drop it into tests/qemucapabilitiesdata/ (with a sensible
+     * name - look at what's already there for inspiration) and test
+     * programs will automatically pick it up.
+     *
+     * To generate the corresponding output files after a new replies
+     * file has been added, run "VIR_TEST_REGENERATE_OUTPUT=1 make check".
+     */
 
     virObjectUnref(cfg);
 
