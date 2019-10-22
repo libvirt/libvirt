@@ -435,14 +435,14 @@ sc_prohibit_strtol:
 	halt='use virStrToDouble, not strtod variants' \
 	  $(_sc_search_regexp)
 
-# Use virAsprintf rather than as'printf since *strp is undefined on error.
-# But for plain %s, virAsprintf is overkill compared to strdup.
+# Use g_strdup_printf rather than as'printf since *strp is undefined on error.
+# But for plain %s, g_strdup_printf is overkill compared to g_strdup.
 sc_prohibit_asprintf:
 	@prohibit='\<v?a[s]printf\>' \
-	halt='use virAsprintf, not asprintf' \
+	halt='use g_strdup_printf, not asprintf' \
 	  $(_sc_search_regexp)
-	@prohibit='virAsprintf.*, *"%s",' \
-	halt='use VIR_STRDUP instead of virAsprintf with "%s"' \
+	@prohibit='g_strdup_printf.*, *"%s",' \
+	halt='use g_strdup instead of g_strdup_printf with "%s"' \
 	  $(_sc_search_regexp)
 
 sc_prohibit_strdup:

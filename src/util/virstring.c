@@ -744,25 +744,6 @@ virVasprintfInternal(char **strp,
     return ret;
 }
 
-int
-virAsprintfInternal(char **strp,
-                    const char *fmt, ...)
-{
-    va_list ap;
-    char *str = NULL;
-    int ret;
-
-    va_start(ap, fmt);
-    ret = g_vasprintf(&str, fmt, ap);
-    va_end(ap);
-
-    if (!*str)
-        abort();
-    *strp = str;
-
-    return ret;
-}
-
 /**
  * virStrncpy:
  *
