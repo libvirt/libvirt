@@ -1721,11 +1721,8 @@ virCPUx86DataParse(xmlXPathContextPtr ctxt)
                 virReportOOMError(); \
                 goto error; \
             } \
-            if (message && \
-                virAsprintf(message, "%s: %s", _(MSG), flagsStr) < 0) { \
-                VIR_FREE(flagsStr); \
-                goto error; \
-            } \
+            if (message) \
+                *message = g_strdup_printf("%s: %s", _(MSG), flagsStr); \
             VIR_DEBUG("%s: %s", MSG, flagsStr); \
             VIR_FREE(flagsStr); \
             ret = VIR_CPU_COMPARE_INCOMPATIBLE; \
@@ -1766,11 +1763,10 @@ x86Compute(virCPUDefPtr host,
         if (!found) {
             VIR_DEBUG("CPU arch %s does not match host arch",
                       virArchToString(cpu->arch));
-            if (message &&
-                virAsprintf(message,
-                            _("CPU arch %s does not match host arch"),
-                            virArchToString(cpu->arch)) < 0)
-                goto error;
+            if (message) {
+                *message = g_strdup_printf(_("CPU arch %s does not match host arch"),
+                                           virArchToString(cpu->arch));
+            }
             return VIR_CPU_COMPARE_INCOMPATIBLE;
         }
         arch = cpu->arch;
@@ -1782,12 +1778,11 @@ x86Compute(virCPUDefPtr host,
         (!host->vendor || STRNEQ(cpu->vendor, host->vendor))) {
         VIR_DEBUG("host CPU vendor does not match required CPU vendor %s",
                   cpu->vendor);
-        if (message &&
-            virAsprintf(message,
-                        _("host CPU vendor does not match required "
-                          "CPU vendor %s"),
-                        cpu->vendor) < 0)
-            goto error;
+        if (message) {
+            *message = g_strdup_printf(_("host CPU vendor does not match required "
+                                         "CPU vendor %s"),
+                                       cpu->vendor);
+        }
 
         return VIR_CPU_COMPARE_INCOMPATIBLE;
     }
