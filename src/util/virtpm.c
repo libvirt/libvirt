@@ -59,33 +59,31 @@ virTPMCreateCancelPath(const char *devpath)
     const char *dev;
     const char *prefix[] = {"misc/", "tpm/"};
     size_t i;
-
-    if (devpath) {
-        dev = strrchr(devpath, '/');
-        if (dev) {
-            dev++;
-            for (i = 0; i < G_N_ELEMENTS(prefix); i++) {
-                if (virAsprintf(&path, "/sys/class/%s%s/device/cancel",
-                                prefix[i], dev) < 0)
-                     goto cleanup;
-
-                if (virFileExists(path))
-                    break;
-
-                VIR_FREE(path);
-            }
-            if (!path)
-                path = g_strdup("/dev/null");
-        } else {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("TPM device path %s is invalid"), devpath);
-        }
-    } else {
+    if (!devpath) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Missing TPM device path"));
+        return NULL;
     }
 
- cleanup:
+    if (!(dev = strrchr(devpath, '/'))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("TPM device path %s is invalid"), devpath);
+        return NULL;
+    }
+
+    dev++;
+    for (i = 0; i < G_N_ELEMENTS(prefix); i++) {
+        path = g_strdup_printf("/sys/class/%s%s/device/cancel", prefix[i],
+                               dev);
+
+        if (virFileExists(path))
+            break;
+
+        VIR_FREE(path);
+    }
+    if (!path)
+        path = g_strdup("/dev/null");
+
     return path;
 }
 

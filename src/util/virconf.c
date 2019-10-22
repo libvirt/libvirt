@@ -1514,19 +1514,13 @@ virConfLoadConfigPath(const char *name)
 {
     char *path;
     if (geteuid() == 0) {
-        if (virAsprintf(&path, "%s/libvirt/%s",
-                        SYSCONFDIR, name) < 0)
-            return NULL;
+        path = g_strdup_printf("%s/libvirt/%s", SYSCONFDIR, name);
     } else {
         char *userdir = virGetUserConfigDirectory();
         if (!userdir)
             return NULL;
 
-        if (virAsprintf(&path, "%s/%s",
-                        userdir, name) < 0) {
-            VIR_FREE(userdir);
-            return NULL;
-        }
+        path = g_strdup_printf("%s/%s", userdir, name);
         VIR_FREE(userdir);
     }
 

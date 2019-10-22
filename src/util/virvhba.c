@@ -52,10 +52,8 @@ virVHBAPathExists(const char *sysfs_prefix,
     char *sysfs_path = NULL;
     bool ret = false;
 
-    if (virAsprintf(&sysfs_path, "%s/host%d",
-                    sysfs_prefix ? sysfs_prefix : SYSFS_FC_HOST_PATH,
-                    host) < 0)
-        return false;
+    sysfs_path = g_strdup_printf("%s/host%d",
+                                 sysfs_prefix ? sysfs_prefix : SYSFS_FC_HOST_PATH, host);
 
     if (virFileExists(sysfs_path))
         ret = true;
@@ -85,24 +83,17 @@ virVHBAIsVportCapable(const char *sysfs_prefix,
     char *fc_host_path = NULL;
     bool ret = false;
 
-    if (virAsprintf(&fc_host_path,
-                    "%s/host%d/%s",
-                    sysfs_prefix ? sysfs_prefix : SYSFS_FC_HOST_PATH,
-                    host,
-                    "vport_create") < 0)
-        return false;
+    fc_host_path = g_strdup_printf("%s/host%d/%s",
+                                   sysfs_prefix ? sysfs_prefix : SYSFS_FC_HOST_PATH, host,
+                                   "vport_create");
 
-    if (virAsprintf(&scsi_host_path,
-                    "%s/host%d/%s",
-                    sysfs_prefix ? sysfs_prefix : SYSFS_SCSI_HOST_PATH,
-                    host,
-                    "vport_create") < 0)
-        goto cleanup;
+    scsi_host_path = g_strdup_printf("%s/host%d/%s",
+                                     sysfs_prefix ? sysfs_prefix : SYSFS_SCSI_HOST_PATH, host,
+                                     "vport_create");
 
     if (virFileExists(fc_host_path) || virFileExists(scsi_host_path))
         ret = true;
 
- cleanup:
     VIR_FREE(fc_host_path);
     VIR_FREE(scsi_host_path);
     return ret;
@@ -129,10 +120,8 @@ virVHBAGetConfig(const char *sysfs_prefix,
     char *buf = NULL;
     char *result = NULL;
 
-    if (virAsprintf(&sysfs_path, "%s/host%d/%s",
-                    sysfs_prefix ? sysfs_prefix : SYSFS_FC_HOST_PATH,
-                    host, entry) < 0)
-        goto cleanup;
+    sysfs_path = g_strdup_printf("%s/host%d/%s",
+                                 sysfs_prefix ? sysfs_prefix : SYSFS_FC_HOST_PATH, host, entry);
 
     if (!virFileExists(sysfs_path))
         goto cleanup;
@@ -269,15 +258,13 @@ virVHBAManageVport(const int parent_host,
         goto cleanup;
     }
 
-    if (virAsprintf(&operation_path, "%s/host%d/%s",
-                    SYSFS_FC_HOST_PATH, parent_host, operation_file) < 0)
-        goto cleanup;
+    operation_path = g_strdup_printf("%s/host%d/%s", SYSFS_FC_HOST_PATH,
+                                     parent_host, operation_file);
 
     if (!virFileExists(operation_path)) {
         VIR_FREE(operation_path);
-        if (virAsprintf(&operation_path, "%s/host%d/%s",
-                        SYSFS_SCSI_HOST_PATH, parent_host, operation_file) < 0)
-            goto cleanup;
+        operation_path = g_strdup_printf("%s/host%d/%s", SYSFS_SCSI_HOST_PATH,
+                                         parent_host, operation_file);
 
         if (!virFileExists(operation_path)) {
             virReportError(VIR_ERR_OPERATION_INVALID,
@@ -294,8 +281,7 @@ virVHBAManageVport(const int parent_host,
      * in calling either the Add or Remove device functions. This translates
      * into either adding or removing a node device object and a node device
      * lifecycle event for applications to consume. */
-    if (virAsprintf(&vport_name, "%s:%s", wwpn, wwnn) < 0)
-        goto cleanup;
+    vport_name = g_strdup_printf("%s:%s", wwpn, wwnn);
 
     if (virFileWriteStr(operation_path, vport_name, 0) == 0)
         ret = 0;
@@ -335,8 +321,7 @@ vhbaReadCompareWWN(const char *prefix,
     char *p;
     int ret = -1;
 
-    if (virAsprintf(&path, "%s/%s/%s", prefix, d_name, f_name) < 0)
-        return -1;
+    path = g_strdup_printf("%s/%s/%s", prefix, d_name, f_name);
 
     if (!virFileExists(path)) {
         ret = 0;
@@ -440,9 +425,8 @@ virVHBAGetHostByFabricWWN(const char *sysfs_prefix,
 
         /* Existing vHBA's will have the same fabric_name, but won't
          * have the vport_create file - so we check for both */
-        if (virAsprintf(&vport_create_path, "%s/%s/vport_create", prefix,
-                        entry->d_name) < 0)
-            goto cleanup;
+        vport_create_path = g_strdup_printf("%s/%s/vport_create", prefix,
+                                            entry->d_name);
 
         if (!virFileExists(vport_create_path))
             continue;

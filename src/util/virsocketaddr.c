@@ -477,9 +477,8 @@ virSocketAddrFormatFull(const virSocketAddr *addr,
      * nicely for UNIX sockets */
     if (addr->data.sa.sa_family == AF_UNIX) {
         if (withService) {
-            if (virAsprintf(&addrstr, VIR_LOOPBACK_IPV4_ADDR"%s0",
-                            separator ? separator : ":") < 0)
-                return NULL;
+            addrstr = g_strdup_printf(VIR_LOOPBACK_IPV4_ADDR "%s0",
+                                      separator ? separator : ":");
         } else {
             addrstr = g_strdup(VIR_LOOPBACK_IPV4_ADDR);
         }
@@ -503,16 +502,12 @@ virSocketAddrFormatFull(const virSocketAddr *addr,
          * a.b.c.d;port or e:f:g:h:i:j:k:l;port, so use square brackets for
          * IPv6 only if no separator is passed to the function
          */
-        if (!separator && VIR_SOCKET_ADDR_FAMILY(addr) == AF_INET6) {
-            if (virAsprintf(&ipv6_host, "[%s]", host) < 0)
-                return NULL;
-        }
+        if (!separator && VIR_SOCKET_ADDR_FAMILY(addr) == AF_INET6)
+            ipv6_host = g_strdup_printf("[%s]", host);
 
-        if (virAsprintf(&addrstr, "%s%s%s",
-                        ipv6_host ? ipv6_host : host,
-                        separator ? separator : ":", port) == -1) {
-            return NULL;
-        }
+        addrstr = g_strdup_printf("%s%s%s",
+                                  ipv6_host ? ipv6_host : host,
+                                  separator ? separator : ":", port);
     } else {
         addrstr = g_strdup(host);
     }

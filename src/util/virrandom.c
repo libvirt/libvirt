@@ -194,8 +194,7 @@ virRandomGenerateWWN(char **wwn,
         return -1;
     }
 
-    if (virAsprintf(wwn, "5" "%s%09llx", oui,
-                    (unsigned long long)virRandomBits(36)) < 0)
-        return -1;
+    *wwn = g_strdup_printf("5" "%s%09llx", oui,
+                           (unsigned long long)virRandomBits(36));
     return 0;
 }

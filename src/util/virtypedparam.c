@@ -176,22 +176,22 @@ virTypedParameterToString(virTypedParameterPtr param)
 
     switch (param->type) {
     case VIR_TYPED_PARAM_INT:
-        ignore_value(virAsprintf(&value, "%d", param->value.i));
+        value = g_strdup_printf("%d", param->value.i);
         break;
     case VIR_TYPED_PARAM_UINT:
-        ignore_value(virAsprintf(&value, "%u", param->value.ui));
+        value = g_strdup_printf("%u", param->value.ui);
         break;
     case VIR_TYPED_PARAM_LLONG:
-        ignore_value(virAsprintf(&value, "%lld", param->value.l));
+        value = g_strdup_printf("%lld", param->value.l);
         break;
     case VIR_TYPED_PARAM_ULLONG:
-        ignore_value(virAsprintf(&value, "%llu", param->value.ul));
+        value = g_strdup_printf("%llu", param->value.ul);
         break;
     case VIR_TYPED_PARAM_DOUBLE:
-        ignore_value(virAsprintf(&value, "%g", param->value.d));
+        value = g_strdup_printf("%g", param->value.d);
         break;
     case VIR_TYPED_PARAM_BOOLEAN:
-        ignore_value(virAsprintf(&value, "%d", param->value.b));
+        value = g_strdup_printf("%d", param->value.b);
         break;
     case VIR_TYPED_PARAM_STRING:
         value = g_strdup(param->value.s);

@@ -213,10 +213,8 @@ virStorageBackendCreateIfaceIQN(const char *initiatoriqn,
     g_autofree char *temp_ifacename = NULL;
     g_autoptr(virCommand) cmd = NULL;
 
-    if (virAsprintf(&temp_ifacename,
-                    "libvirt-iface-%08llx",
-                    (unsigned long long)virRandomBits(32)) < 0)
-        return -1;
+    temp_ifacename = g_strdup_printf("libvirt-iface-%08llx",
+                                     (unsigned long long)virRandomBits(32));
 
     VIR_DEBUG("Attempting to create interface '%s' with IQN '%s'",
               temp_ifacename, initiatoriqn);

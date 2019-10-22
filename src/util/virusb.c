@@ -85,14 +85,11 @@ VIR_ONCE_GLOBAL_INIT(virUSB);
 static int virUSBSysReadFile(const char *f_name, const char *d_name,
                              int base, unsigned int *value)
 {
-    int tmp;
     g_autofree char *buf = NULL;
     g_autofree char *filename = NULL;
     char *ignore = NULL;
 
-    tmp = virAsprintf(&filename, USB_SYSFS "/devices/%s/%s", d_name, f_name);
-    if (tmp < 0)
-        return -1;
+    filename = g_strdup_printf(USB_SYSFS "/devices/%s/%s", d_name, f_name);
 
     if (virFileReadAll(filename, 1024, &buf) < 0)
         return -1;
@@ -315,7 +312,6 @@ virUSBDeviceNew(unsigned int bus,
                 const char *vroot)
 {
     virUSBDevicePtr dev;
-    int rc;
 
     if (VIR_ALLOC(dev) < 0)
         return NULL;
@@ -333,16 +329,11 @@ virUSBDeviceNew(unsigned int bus,
     }
 
     if (vroot) {
-        rc = virAsprintf(&dev->path, "%s/%03d/%03d",
-                         vroot, dev->bus, dev->dev);
+        dev->path = g_strdup_printf("%s/%03d/%03d",
+                                    vroot, dev->bus, dev->dev);
     } else {
-        rc = virAsprintf(&dev->path, USB_DEVFS "%03d/%03d",
-                         dev->bus, dev->dev);
-    }
-
-    if (rc < 0) {
-        virUSBDeviceFree(dev);
-        return NULL;
+        dev->path = g_strdup_printf(USB_DEVFS "%03d/%03d",
+                                    dev->bus, dev->dev);
     }
 
     /* XXX fixme. this should be product/vendor */

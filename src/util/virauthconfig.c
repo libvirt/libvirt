@@ -113,13 +113,11 @@ int virAuthConfigLookup(virAuthConfigPtr auth,
     if (!hostname)
         hostname = "localhost";
 
-    if (virAsprintf(&authgroup, "auth-%s-%s", service, hostname) < 0)
-        return -1;
+    authgroup = g_strdup_printf("auth-%s-%s", service, hostname);
 
     if (!virKeyFileHasGroup(auth->keyfile, authgroup)) {
        VIR_FREE(authgroup);
-       if (virAsprintf(&authgroup, "auth-%s-%s", service, "default") < 0)
-            return -1;
+       authgroup = g_strdup_printf("auth-%s-%s", service, "default");
     }
 
     if (!virKeyFileHasGroup(auth->keyfile, authgroup))
@@ -132,8 +130,7 @@ int virAuthConfigLookup(virAuthConfigPtr auth,
         return -1;
     }
 
-    if (virAsprintf(&credgroup, "credentials-%s", authcred) < 0)
-        return -1;
+    credgroup = g_strdup_printf("credentials-%s", authcred);
 
     if (!virKeyFileHasGroup(auth->keyfile, credgroup)) {
         virReportError(VIR_ERR_CONF_SYNTAX,

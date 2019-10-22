@@ -2319,8 +2319,7 @@ virResctrlDeterminePath(const char *parentpath,
         return NULL;
     }
 
-    if (virAsprintf(&path, "%s/%s-%s", parentpath, prefix, id) < 0)
-        return NULL;
+    path = g_strdup_printf("%s/%s-%s", parentpath, prefix, id);
 
     return path;
 }
@@ -2416,8 +2415,7 @@ virResctrlAllocCreate(virResctrlInfoPtr resctrl,
     if (!alloc_str)
         goto cleanup;
 
-    if (virAsprintf(&schemata_path, "%s/schemata", alloc->path) < 0)
-        goto cleanup;
+    schemata_path = g_strdup_printf("%s/schemata", alloc->path);
 
     VIR_DEBUG("Writing resctrl schemata '%s' into '%s'", alloc_str, schemata_path);
     if (virFileWriteStr(schemata_path, alloc_str, 0) < 0) {
@@ -2451,11 +2449,9 @@ virResctrlAddPID(const char *path,
         return -1;
     }
 
-    if (virAsprintf(&tasks, "%s/tasks", path) < 0)
-        return -1;
+    tasks = g_strdup_printf("%s/tasks", path);
 
-    if (virAsprintf(&pidstr, "%lld", (long long int) pid) < 0)
-        goto cleanup;
+    pidstr = g_strdup_printf("%lld", (long long int)pid);
 
     if (virFileWriteStr(tasks, pidstr, 0) < 0) {
         virReportSystemError(errno,
@@ -2566,8 +2562,7 @@ virResctrlMonitorDeterminePath(virResctrlMonitorPtr monitor,
         return 0;
     }
 
-    if (virAsprintf(&parentpath, "%s/mon_groups", monitor->alloc->path) < 0)
-        return -1;
+    parentpath = g_strdup_printf("%s/mon_groups", monitor->alloc->path);
 
     monitor->path = virResctrlDeterminePath(parentpath, machinename,
                                             monitor->id);
@@ -2699,8 +2694,7 @@ virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
         return -1;
     }
 
-    if (virAsprintf(&datapath, "%s/mon_data", monitor->path) < 0)
-        return -1;
+    datapath = g_strdup_printf("%s/mon_data", monitor->path);
 
     if (virDirOpen(&dirp, datapath) < 0)
         goto cleanup;
@@ -2717,8 +2711,7 @@ virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
          * "mon_L3_01" are two target directories for a two nodes system
          * with resource utilization data file for each node respectively.
          */
-        if (virAsprintf(&filepath, "%s/%s", datapath, ent->d_name) < 0)
-            goto cleanup;
+        filepath = g_strdup_printf("%s/%s", datapath, ent->d_name);
 
         if (!virFileIsDir(filepath))
             continue;

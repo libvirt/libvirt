@@ -89,8 +89,7 @@ virQEMUBuildCommandLineJSONArrayNumbered(const char *key,
         member = virJSONValueArrayGet((virJSONValuePtr) array, i);
         g_autofree char *prefix = NULL;
 
-        if (virAsprintf(&prefix, "%s.%zu", key, i) < 0)
-            return 0;
+        prefix = g_strdup_printf("%s.%zu", key, i);
 
         if (virQEMUBuildCommandLineJSONRecurse(prefix, member, buf,
                                                virQEMUBuildCommandLineJSONArrayNumbered,
@@ -113,8 +112,7 @@ virQEMUBuildCommandLineJSONIterate(const char *key,
     if (data->prefix) {
         g_autofree char *tmpkey = NULL;
 
-        if (virAsprintf(&tmpkey, "%s.%s", data->prefix, key) < 0)
-            return -1;
+        tmpkey = g_strdup_printf("%s.%s", data->prefix, key);
 
         return virQEMUBuildCommandLineJSONRecurse(tmpkey, value, data->buf,
                                                   data->arrayFunc, false);

@@ -487,9 +487,8 @@ virNetDevIPGetAcceptRA(const char *ifname)
     char *suffix;
     int accept_ra = -1;
 
-    if (virAsprintf(&path, "/proc/sys/net/ipv6/conf/%s/accept_ra",
-                    ifname ? ifname : "all") < 0)
-        return -1;
+    path = g_strdup_printf("/proc/sys/net/ipv6/conf/%s/accept_ra",
+                           ifname ? ifname : "all");
 
     if ((virFileReadAll(path, 512, &buf) < 0) ||
         (virStrToLong_i(buf, &suffix, 10, &accept_ra) < 0))

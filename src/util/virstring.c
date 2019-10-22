@@ -707,18 +707,15 @@ int
 virDoubleToStr(char **strp, double number)
 {
     virLocale oldlocale;
-    int rc;
 
     if (virLocaleSetRaw(&oldlocale) < 0)
         return -1;
 
-    rc = virAsprintf(strp, "%lf", number);
+    *strp = g_strdup_printf("%lf", number);
 
     virLocaleRevert(&oldlocale);
     virLocaleFixupRadix(strp);
 
-    if (rc < 0)
-        return -1;
     return 0;
 }
 

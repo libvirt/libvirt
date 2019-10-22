@@ -111,7 +111,7 @@ int virStrToDouble(char const *s,
     G_GNUC_WARN_UNUSED_RESULT;
 
 int virDoubleToStr(char **strp, double number)
-    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
+    ATTRIBUTE_NONNULL(1);
 
 void virSkipSpaces(const char **str) ATTRIBUTE_NONNULL(1);
 void virSkipSpacesAndBackslash(const char **str) ATTRIBUTE_NONNULL(1);

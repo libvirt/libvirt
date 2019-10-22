@@ -294,8 +294,7 @@ virNetDevMacVLanIsMacvtap(const char *ifname)
     if (virNetDevGetIndex(ifname, &ifindex) < 0)
         return false;
 
-    if (virAsprintf(&tapname, "/dev/tap%d", ifindex) < 0)
-        return false;
+    tapname = g_strdup_printf("/dev/tap%d", ifindex);
 
     return virFileExists(tapname);
 }
@@ -393,8 +392,7 @@ virNetDevMacVLanTapOpen(const char *ifname,
     if (virNetDevGetIndex(ifname, &ifindex) < 0)
         return -1;
 
-    if (virAsprintf(&tapname, "/dev/tap%d", ifindex) < 0)
-        goto cleanup;
+    tapname = g_strdup_printf("/dev/tap%d", ifindex);
 
     for (i = 0; i < tapfdSize; i++) {
         int fd = -1;

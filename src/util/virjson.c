@@ -497,8 +497,7 @@ virJSONValuePtr
 virJSONValueNewNumberInt(int data)
 {
     g_autofree char *str = NULL;
-    if (virAsprintf(&str, "%i", data) < 0)
-        return NULL;
+    str = g_strdup_printf("%i", data);
     return virJSONValueNewNumber(str);
 }
 
@@ -507,8 +506,7 @@ virJSONValuePtr
 virJSONValueNewNumberUint(unsigned int data)
 {
     g_autofree char *str = NULL;
-    if (virAsprintf(&str, "%u", data) < 0)
-        return NULL;
+    str = g_strdup_printf("%u", data);
     return virJSONValueNewNumber(str);
 }
 
@@ -517,8 +515,7 @@ virJSONValuePtr
 virJSONValueNewNumberLong(long long data)
 {
     g_autofree char *str = NULL;
-    if (virAsprintf(&str, "%lld", data) < 0)
-        return NULL;
+    str = g_strdup_printf("%lld", data);
     return virJSONValueNewNumber(str);
 }
 
@@ -527,8 +524,7 @@ virJSONValuePtr
 virJSONValueNewNumberUlong(unsigned long long data)
 {
     g_autofree char *str = NULL;
-    if (virAsprintf(&str, "%llu", data) < 0)
-        return NULL;
+    str = g_strdup_printf("%llu", data);
     return virJSONValueNewNumber(str);
 }
 

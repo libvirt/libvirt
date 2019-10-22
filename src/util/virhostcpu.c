@@ -627,8 +627,7 @@ virHostCPUGetInfoPopulateLinux(FILE *cpuinfo,
     /* OK, we've parsed clock speed out of /proc/cpuinfo. Get the
      * core, node, socket, thread and topology information from /sys
      */
-    if (virAsprintf(&sysfs_nodedir, "%s/node", SYSFS_SYSTEM_PATH) < 0)
-        goto cleanup;
+    sysfs_nodedir = g_strdup_printf("%s/node", SYSFS_SYSTEM_PATH);
 
     if (virDirOpenQuiet(&nodedir, sysfs_nodedir) < 0) {
         /* the host isn't probably running a NUMA architecture */
@@ -671,9 +670,8 @@ virHostCPUGetInfoPopulateLinux(FILE *cpuinfo,
 
         (*nodes)++;
 
-        if (virAsprintf(&sysfs_cpudir, "%s/node/%s", SYSFS_SYSTEM_PATH,
-                        nodedirent->d_name) < 0)
-            goto cleanup;
+        sysfs_cpudir = g_strdup_printf("%s/node/%s", SYSFS_SYSTEM_PATH,
+                                       nodedirent->d_name);
 
         if ((nodecpus = virHostCPUParseNode(sysfs_cpudir, arch,
                                             present_cpus_map,
@@ -706,8 +704,7 @@ virHostCPUGetInfoPopulateLinux(FILE *cpuinfo,
  fallback:
     VIR_FREE(sysfs_cpudir);
 
-    if (virAsprintf(&sysfs_cpudir, "%s/cpu", SYSFS_SYSTEM_PATH) < 0)
-        goto cleanup;
+    sysfs_cpudir = g_strdup_printf("%s/cpu", SYSFS_SYSTEM_PATH);
 
     if ((nodecpus = virHostCPUParseNode(sysfs_cpudir, arch,
                                         present_cpus_map,

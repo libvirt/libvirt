@@ -114,8 +114,7 @@ virNetDevBandwidthManipulateFilter(const char *ifname,
     }
 
     /* u32 filters must have 800:: prefix. Don't ask. */
-    if (virAsprintf(&filter_id, "800::%u", id) < 0)
-        goto cleanup;
+    filter_id = g_strdup_printf("800::%u", id);
 
     if (remove_old) {
         int cmd_ret = 0;
@@ -132,10 +131,9 @@ virNetDevBandwidthManipulateFilter(const char *ifname,
     if (create_new) {
         virMacAddrGetRaw(ifmac_ptr, ifmac);
 
-        if (virAsprintf(&mac[0], "0x%02x%02x%02x%02x", ifmac[2],
-                        ifmac[3], ifmac[4], ifmac[5]) < 0 ||
-            virAsprintf(&mac[1], "0x%02x%02x", ifmac[0], ifmac[1]) < 0)
-            goto cleanup;
+        mac[0] = g_strdup_printf("0x%02x%02x%02x%02x", ifmac[2],
+                                 ifmac[3], ifmac[4], ifmac[5]);
+        mac[1] = g_strdup_printf("0x%02x%02x", ifmac[0], ifmac[1]);
 
         virCommandFree(cmd);
         cmd = virCommandNew(TC);
@@ -232,14 +230,11 @@ virNetDevBandwidthSet(const char *ifname,
     virNetDevBandwidthClear(ifname);
 
     if (tx && tx->average) {
-        if (virAsprintf(&average, "%llukbps", tx->average) < 0)
-            goto cleanup;
-        if (tx->peak &&
-            (virAsprintf(&peak, "%llukbps", tx->peak) < 0))
-            goto cleanup;
-        if (tx->burst &&
-            (virAsprintf(&burst, "%llukb", tx->burst) < 0))
-            goto cleanup;
+        average = g_strdup_printf("%llukbps", tx->average);
+        if (tx->peak)
+            peak = g_strdup_printf("%llukbps", tx->peak);
+        if (tx->burst)
+            burst = g_strdup_printf("%llukb", tx->burst);
 
         cmd = virCommandNew(TC);
         virCommandAddArgList(cmd, "qdisc", "add", "dev", ifname, "root",
@@ -362,10 +357,8 @@ virNetDevBandwidthSet(const char *ifname,
     }
 
     if (rx) {
-        if (virAsprintf(&average, "%llukbps", rx->average) < 0)
-            goto cleanup;
-        if (virAsprintf(&burst, "%llukb", rx->burst ? rx->burst : rx->average) < 0)
-            goto cleanup;
+        average = g_strdup_printf("%llukbps", rx->average);
+        burst = g_strdup_printf("%llukb", rx->burst ? rx->burst : rx->average);
 
         virCommandFree(cmd);
         cmd = virCommandNew(TC);
@@ -575,13 +568,12 @@ virNetDevBandwidthPlug(const char *brname,
         return -1;
     }
 
-    if (virAsprintf(&class_id, "1:%x", id) < 0 ||
-        virAsprintf(&qdisc_id, "%x:", id) < 0 ||
-        virAsprintf(&floor, "%llukbps", bandwidth->in->floor) < 0 ||
-        virAsprintf(&ceil, "%llukbps", net_bandwidth->in->peak ?
-                    net_bandwidth->in->peak :
-                    net_bandwidth->in->average) < 0)
-        goto cleanup;
+    class_id = g_strdup_printf("1:%x", id);
+    qdisc_id = g_strdup_printf("%x:", id);
+    floor = g_strdup_printf("%llukbps", bandwidth->in->floor);
+    ceil = g_strdup_printf("%llukbps", net_bandwidth->in->peak ?
+                           net_bandwidth->in->peak :
+                           net_bandwidth->in->average);
 
     cmd = virCommandNew(TC);
     virCommandAddArgList(cmd, "class", "add", "dev", brname, "parent", "1:1",
@@ -640,9 +632,8 @@ virNetDevBandwidthUnplug(const char *brname,
         return -1;
     }
 
-    if (virAsprintf(&class_id, "1:%x", id) < 0 ||
-        virAsprintf(&qdisc_id, "%x:", id) < 0)
-        goto cleanup;
+    class_id = g_strdup_printf("1:%x", id);
+    qdisc_id = g_strdup_printf("%x:", id);
 
     cmd = virCommandNew(TC);
     virCommandAddArgList(cmd, "qdisc", "del", "dev", brname,
@@ -700,12 +691,11 @@ virNetDevBandwidthUpdateRate(const char *ifname,
     char *rate = NULL;
     char *ceil = NULL;
 
-    if (virAsprintf(&class_id, "1:%x", id) < 0 ||
-        virAsprintf(&rate, "%llukbps", new_rate) < 0 ||
-        virAsprintf(&ceil, "%llukbps", bandwidth->in->peak ?
-                    bandwidth->in->peak :
-                    bandwidth->in->average) < 0)
-        goto cleanup;
+    class_id = g_strdup_printf("1:%x", id);
+    rate = g_strdup_printf("%llukbps", new_rate);
+    ceil = g_strdup_printf("%llukbps", bandwidth->in->peak ?
+                           bandwidth->in->peak :
+                           bandwidth->in->average);
 
     cmd = virCommandNew(TC);
     virCommandAddArgList(cmd, "class", "change", "dev", ifname,
@@ -751,8 +741,7 @@ virNetDevBandwidthUpdateFilter(const char *ifname,
     int ret = -1;
     char *class_id = NULL;
 
-    if (virAsprintf(&class_id, "1:%x", id) < 0)
-        goto cleanup;
+    class_id = g_strdup_printf("1:%x", id);
 
     if (virNetDevBandwidthManipulateFilter(ifname, ifmac_ptr, id,
                                            class_id, true, true) < 0)

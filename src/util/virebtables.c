@@ -58,10 +58,7 @@ ebtablesContextNew(const char *driver)
     if (VIR_ALLOC(ctx) < 0)
         return NULL;
 
-    if (virAsprintf(&ctx->chain, "libvirt_%s_FORWARD", driver) < 0) {
-        VIR_FREE(ctx);
-        return NULL;
-    }
+    ctx->chain = g_strdup_printf("libvirt_%s_FORWARD", driver);
 
     return ctx;
 }

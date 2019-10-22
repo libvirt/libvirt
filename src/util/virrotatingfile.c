@@ -195,8 +195,7 @@ virRotatingFileWriterDelete(virRotatingFileWriterPtr file)
 
     for (i = 0; i < file->maxbackup; i++) {
         char *oldpath;
-        if (virAsprintf(&oldpath, "%s.%zu", file->basepath, i) < 0)
-            return -1;
+        oldpath = g_strdup_printf("%s.%zu", file->basepath, i);
 
         if (unlink(oldpath) < 0 &&
             errno != ENOENT) {
@@ -308,8 +307,7 @@ virRotatingFileReaderNew(const char *path,
 
     for (i = 0; i < maxbackup; i++) {
         char *tmppath;
-        if (virAsprintf(&tmppath, "%s.%zu", path, i) < 0)
-            goto error;
+        tmppath = g_strdup_printf("%s.%zu", path, i);
 
         file->entries[file->nentries - (i + 2)] = virRotatingFileReaderEntryNew(tmppath);
         VIR_FREE(tmppath);
@@ -382,15 +380,13 @@ virRotatingFileWriterRollover(virRotatingFileWriterPtr file)
             goto cleanup;
         }
     } else {
-        if (virAsprintf(&nextpath, "%s.%zu", file->basepath, file->maxbackup - 1) < 0)
-            return -1;
+        nextpath = g_strdup_printf("%s.%zu", file->basepath, file->maxbackup - 1);
 
         for (i = file->maxbackup; i > 0; i--) {
             if (i == 1) {
                 thispath = g_strdup(file->basepath);
             } else {
-                if (virAsprintf(&thispath, "%s.%zu", file->basepath, i - 2) < 0)
-                    goto cleanup;
+                thispath = g_strdup_printf("%s.%zu", file->basepath, i - 2);
             }
             VIR_DEBUG("Rollover %s -> %s", thispath, nextpath);
 

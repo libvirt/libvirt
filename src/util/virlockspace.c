@@ -67,7 +67,7 @@ static char *virLockSpaceGetResourcePath(virLockSpacePtr lockspace,
 {
     char *ret;
     if (lockspace->dir)
-        ignore_value(virAsprintf(&ret, "%s/%s", lockspace->dir, resname));
+        ret = g_strdup_printf("%s/%s", lockspace->dir, resname);
     else
         ret = g_strdup(resname);
     return ret;

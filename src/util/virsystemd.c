@@ -295,8 +295,7 @@ int virSystemdCreateMachine(const char *name,
 
     ret = -1;
 
-    if (virAsprintf(&creatorname, "libvirt-%s", drivername) < 0)
-        goto cleanup;
+    creatorname = g_strdup_printf("libvirt-%s", drivername);
 
     if (partition) {
         if (!(slicename = virSystemdMakeSliceName(partition)))

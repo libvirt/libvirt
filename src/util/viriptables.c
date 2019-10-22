@@ -401,7 +401,7 @@ static char *iptablesFormatNetwork(virSocketAddr *netaddr,
     if (!netstr)
         return NULL;
 
-    ignore_value(virAsprintf(&ret, "%s/%d", netstr, prefix));
+    ret = g_strdup_printf("%s/%d", netstr, prefix);
 
     return ret;
 }
@@ -905,30 +905,24 @@ iptablesForwardMasquerade(virFirewallPtr fw,
         }
 
         if (port->start < port->end && port->end < 65536) {
-            if (virAsprintf(&portRangeStr, ":%u-%u",
-                            port->start, port->end) < 0)
-                return -1;
+            portRangeStr = g_strdup_printf(":%u-%u", port->start, port->end);
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid port range '%u-%u'."),
                            port->start, port->end);
+            return -1;
         }
     }
 
     /* Use --jump SNAT if public addr is specified */
     if (addrStartStr && addrStartStr[0]) {
-        int r = 0;
-
         if (addrEndStr && addrEndStr[0]) {
-            r = virAsprintf(&natRangeStr, "%s-%s%s", addrStartStr, addrEndStr,
-                            portRangeStr ? portRangeStr : "");
+            natRangeStr = g_strdup_printf("%s-%s%s", addrStartStr, addrEndStr,
+                                          portRangeStr ? portRangeStr : "");
         } else {
-            r = virAsprintf(&natRangeStr, "%s%s", addrStartStr,
-                            portRangeStr ? portRangeStr : "");
+            natRangeStr = g_strdup_printf("%s%s", addrStartStr,
+                                          portRangeStr ? portRangeStr : "");
         }
-
-        if (r < 0)
-            return -1;
 
         virFirewallRuleAddArgList(fw, rule,
                                   "--jump", "SNAT",

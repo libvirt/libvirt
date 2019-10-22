@@ -538,23 +538,18 @@ virNumaGetHugePageInfoPath(char **path,
                            unsigned int page_size,
                            const char *suffix)
 {
-    int ret;
-
     if (node == -1) {
         /* We are aiming at overall system info */
-        ret = virAsprintf(path,
-                          HUGEPAGES_SYSTEM_PREFIX HUGEPAGES_PREFIX "%ukB/%s",
-                          page_size, NULLSTR_EMPTY(suffix));
+        *path = g_strdup_printf(HUGEPAGES_SYSTEM_PREFIX HUGEPAGES_PREFIX "%ukB/%s",
+                                page_size, NULLSTR_EMPTY(suffix));
     } else {
         /* We are aiming on specific NUMA node */
-        ret = virAsprintf(path,
-                          HUGEPAGES_NUMA_PREFIX "node%d/hugepages/"
-                          HUGEPAGES_PREFIX "%ukB/%s",
-                          node, page_size, NULLSTR_EMPTY(suffix));
+        *path = g_strdup_printf(HUGEPAGES_NUMA_PREFIX "node%d/hugepages/"
+                                HUGEPAGES_PREFIX "%ukB/%s",
+                                node, page_size, NULLSTR_EMPTY(suffix));
     }
 
-    if (ret >= 0 && !virFileExists(*path)) {
-        ret = -1;
+    if (!virFileExists(*path)) {
         if (node != -1) {
             if (!virNumaNodeIsAvailable(node)) {
                 virReportError(VIR_ERR_OPERATION_FAILED,
@@ -570,9 +565,10 @@ virNumaGetHugePageInfoPath(char **path,
                            _("page size %u is not available"),
                            page_size);
         }
+        return -1;
     }
 
-    return ret;
+    return 0;
 }
 
 static int
@@ -582,9 +578,9 @@ virNumaGetHugePageInfoDir(char **path, int node)
         *path = g_strdup(HUGEPAGES_SYSTEM_PREFIX);
         return 0;
     } else {
-        return virAsprintf(path,
-                           HUGEPAGES_NUMA_PREFIX "node%d/hugepages/",
-                           node);
+        *path = g_strdup_printf(HUGEPAGES_NUMA_PREFIX "node%d/hugepages/",
+                                node);
+        return 0;
     }
 }
 
@@ -930,8 +926,7 @@ virNumaSetPagePoolSize(int node,
      * all the pages we wanted. So do the second read to check.
      */
     VIR_FREE(nr_buf);
-    if (virAsprintf(&nr_buf, "%llu", page_count) < 0)
-        return -1;
+    nr_buf = g_strdup_printf("%llu", page_count);
 
     if (virFileWriteStr(nr_path, nr_buf, 0) < 0) {
         virReportSystemError(errno,

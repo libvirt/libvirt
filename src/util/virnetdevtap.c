@@ -395,8 +395,7 @@ int virNetDevTapCreate(char **ifname,
         for (i = 0; i <= IF_MAXUNIT; i++) {
             g_autofree char *newname = NULL;
 
-            if (virAsprintf(&newname, *ifname, i) < 0)
-                goto cleanup;
+            newname = g_strdup_printf(*ifname, i);
 
             if (virNetDevExists(newname) == 0) {
                 newifname = g_steal_pointer(&newname);
@@ -416,8 +415,7 @@ int virNetDevTapCreate(char **ifname,
 
     if (tapfd) {
         g_autofree char *dev_path = NULL;
-        if (virAsprintf(&dev_path, "/dev/%s", ifr.ifr_name) < 0)
-            goto cleanup;
+        dev_path = g_strdup_printf("/dev/%s", ifr.ifr_name);
 
         if ((*tapfd = open(dev_path, O_RDWR)) < 0) {
             virReportSystemError(errno,
