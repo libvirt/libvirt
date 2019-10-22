@@ -614,16 +614,13 @@ nodeStateInitialize(bool privileged G_GNUC_UNUSED,
     nodeDeviceLock();
 
     if (privileged) {
-        if (virAsprintf(&driver->stateDir,
-                        "%s/libvirt/nodedev", RUNSTATEDIR) < 0)
-            goto failure;
+        driver->stateDir = g_strdup_printf("%s/libvirt/nodedev", RUNSTATEDIR);
     } else {
         g_autofree char *rundir = NULL;
 
         if (!(rundir = virGetUserRuntimeDirectory()))
             goto failure;
-        if (virAsprintf(&driver->stateDir, "%s/nodedev/run", rundir) < 0)
-            goto failure;
+        driver->stateDir = g_strdup_printf("%s/nodedev/run", rundir);
     }
 
     if (virFileMakePathWithMode(driver->stateDir, S_IRWXU) < 0) {
