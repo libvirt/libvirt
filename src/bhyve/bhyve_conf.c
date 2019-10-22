@@ -59,10 +59,6 @@ virBhyveDriverConfigNew(void)
     cfg->firmwareDir = g_strdup(DATADIR "/uefi-firmware");
 
     return cfg;
-
- error:
-    virObjectUnref(cfg);
-    return NULL;
 }
 
 int
