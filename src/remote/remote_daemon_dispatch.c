@@ -722,14 +722,12 @@ remoteRelayDomainEventDiskChange(virConnectPtr conn,
     /* build return data */
     memset(&data, 0, sizeof(data));
     if (oldSrcPath) {
-        if (VIR_ALLOC(data.oldSrcPath) < 0)
-            goto error;
+        data.oldSrcPath = g_new0(remote_nonnull_string, 1);
         *(data.oldSrcPath) = g_strdup(oldSrcPath);
     }
 
     if (newSrcPath) {
-        if (VIR_ALLOC(data.newSrcPath) < 0)
-            goto error;
+        data.newSrcPath = g_new0(remote_nonnull_string, 1);
         *(data.newSrcPath) = g_strdup(newSrcPath);
     }
 
@@ -751,11 +749,6 @@ remoteRelayDomainEventDiskChange(virConnectPtr conn,
     }
 
     return 0;
-
- error:
-    xdr_free((xdrproc_t)xdr_remote_domain_event_disk_change_msg,
-             (char *) &data);
-    return -1;
 }
 
 
@@ -1263,8 +1256,7 @@ remoteRelayDomainEventMetadataChange(virConnectPtr conn,
 
     data.type = type;
     if (nsuri) {
-        if (VIR_ALLOC(data.nsuri) < 0)
-            goto error;
+        data.nsuri = g_new0(remote_nonnull_string, 1);
         *(data.nsuri) = g_strdup(nsuri);
     }
 
@@ -1277,11 +1269,6 @@ remoteRelayDomainEventMetadataChange(virConnectPtr conn,
                                   &data);
 
     return 0;
-
- error:
-    xdr_free((xdrproc_t)xdr_remote_domain_event_callback_metadata_change_msg,
-             (char *) &data);
-    return -1;
 }
 
 
@@ -1309,8 +1296,7 @@ remoteRelayDomainEventBlockThreshold(virConnectPtr conn,
     data.callbackID = callback->callbackID;
     data.dev = g_strdup(dev);
     if (path) {
-        if (VIR_ALLOC(data.path) < 0)
-            goto error;
+        data.path = g_new0(remote_nonnull_string, 1);
         *(data.path) = g_strdup(path);
     }
     data.threshold = threshold;
@@ -1322,11 +1308,6 @@ remoteRelayDomainEventBlockThreshold(virConnectPtr conn,
                                   (xdrproc_t)xdr_remote_domain_event_block_threshold_msg, &data);
 
     return 0;
-
- error:
-    xdr_free((xdrproc_t)xdr_remote_domain_event_block_threshold_msg,
-             (char *) &data);
-    return -1;
 }
 
 
