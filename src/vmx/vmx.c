@@ -2081,8 +2081,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
                 goto cleanup;
             }
 
-            if (virAsprintf(&prefix, "scsi%d:%d", controllerOrBus, unit) < 0)
-                goto cleanup;
+            prefix = g_strdup_printf("scsi%d:%d", controllerOrBus, unit);
 
             (*def)->dst =
                virIndexToDiskName
@@ -2104,8 +2103,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
                 goto cleanup;
             }
 
-            if (virAsprintf(&prefix, "ide%d:%d", controllerOrBus, unit) < 0)
-                goto cleanup;
+            prefix = g_strdup_printf("ide%d:%d", controllerOrBus, unit);
 
             (*def)->dst = virIndexToDiskName(controllerOrBus * 2 + unit, "hd");
 
@@ -2134,8 +2132,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virConfPtr con
                 goto cleanup;
             }
 
-            if (virAsprintf(&prefix, "floppy%d", unit) < 0)
-                goto cleanup;
+            prefix = g_strdup_printf("floppy%d", unit);
 
             (*def)->dst = virIndexToDiskName(unit, "fd");
 
@@ -2842,9 +2839,7 @@ virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
 
         (*def)->source->data.tcp.host = g_strdup(parsedUri->server);
 
-        if (virAsprintf(&(*def)->source->data.tcp.service, "%d",
-                        parsedUri->port) < 0)
-            goto cleanup;
+        (*def)->source->data.tcp.service = g_strdup_printf("%d", parsedUri->port);
 
         /* See vSphere API documentation about VirtualSerialPortURIBackingInfo */
         if (parsedUri->scheme == NULL ||
