@@ -464,11 +464,8 @@ virLockDaemonUnixSocketPaths(bool privileged,
         }
         umask(old_umask);
 
-        if (virAsprintf(sockfile, "%s/virtlockd-sock", rundir) < 0 ||
-            virAsprintf(adminSockfile, "%s/virtlockd-admin-sock", rundir) < 0) {
-            VIR_FREE(rundir);
-            goto error;
-        }
+        *sockfile = g_strdup_printf("%s/virtlockd-sock", rundir);
+        *adminSockfile = g_strdup_printf("%s/virtlockd-admin-sock", rundir);
 
         VIR_FREE(rundir);
     }
@@ -531,8 +528,7 @@ virLockDaemonSetupLogging(virLockDaemonConfigPtr config,
     /* Define the default output. This is only applied if there was no setting
      * from either the config or the environment.
      */
-    if (virLogSetDefaultOutput("virtlockd", godaemon, privileged) < 0)
-        return -1;
+    virLogSetDefaultOutput("virtlockd", godaemon, privileged);
 
     if (virLogGetNbOutputs() == 0)
         virLogSetOutputs(virLogGetDefaultOutput());
@@ -845,10 +841,7 @@ virLockDaemonExecRestartStatePath(bool privileged,
         }
         umask(old_umask);
 
-        if (virAsprintf(state_file, "%s/virtlockd-restart-exec.json", rundir) < 0) {
-            VIR_FREE(rundir);
-            goto error;
-        }
+        *state_file = g_strdup_printf("%s/virtlockd-restart-exec.json", rundir);
 
         VIR_FREE(rundir);
     }
@@ -865,7 +858,7 @@ virLockDaemonGetExecRestartMagic(void)
 {
     char *ret;
 
-    ignore_value(virAsprintf(&ret, "%lld", (long long int)getpid()));
+    ret = g_strdup_printf("%lld", (long long int)getpid());
     return ret;
 }
 
