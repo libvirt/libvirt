@@ -101,16 +101,13 @@ netcfStateInitialize(bool privileged,
     driver->privileged = privileged;
 
     if (privileged) {
-        if (virAsprintf(&driver->stateDir,
-                        "%s/libvirt/interface", RUNSTATEDIR) < 0)
-            goto error;
+        driver->stateDir = g_strdup_printf("%s/libvirt/interface", RUNSTATEDIR);
     } else {
         g_autofree char *rundir = NULL;
 
         if (!(rundir = virGetUserRuntimeDirectory()))
             goto error;
-        if (virAsprintf(&driver->stateDir, "%s/interface/run", rundir) < 0)
-            goto error;
+        driver->stateDir = g_strdup_printf("%s/interface/run", rundir);
     }
 
     if (virFileMakePathWithMode(driver->stateDir, S_IRWXU) < 0) {
