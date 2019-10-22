@@ -362,8 +362,7 @@ openvzReadFSConf(virDomainDefPtr def,
         if (VIR_ALLOC(fs) < 0)
             goto error;
 
-        if (virAsprintf(&veid_str, "%d", veid) < 0)
-            goto error;
+        veid_str = g_strdup_printf("%d", veid);
 
         fs->type = VIR_DOMAIN_FS_TYPE_MOUNT;
         if (!(fs->src->path = virStringReplace(temp, "$VEID", veid_str)))
@@ -534,8 +533,7 @@ int openvzLoadDomains(struct openvz_driver *driver)
             def->id = -1;
         else
             def->id = veid;
-        if (virAsprintf(&def->name, "%i", veid) < 0)
-            goto cleanup;
+        def->name = g_strdup_printf("%i", veid);
 
         openvzGetVPSUUID(veid, uuidstr, sizeof(uuidstr));
         ret = virUUIDParse(uuidstr, def->uuid);
@@ -626,8 +624,7 @@ openvzWriteConfigParam(const char * conf_file, const char *param, const char *va
     char *line = NULL;
     size_t line_size = 0;
 
-    if (virAsprintf(&temp_file, "%s.tmp", conf_file)<0)
-        return -1;
+    temp_file = g_strdup_printf("%s.tmp", conf_file);
 
     fp = fopen(conf_file, "r");
     if (fp == NULL)
@@ -823,9 +820,8 @@ openvzCopyDefaultConfig(int vpsid)
     if (confdir == NULL)
         goto cleanup;
 
-    if (virAsprintf(&default_conf_file, "%s/ve-%s.conf-sample", confdir,
-                    configfile_value) < 0)
-        goto cleanup;
+    default_conf_file = g_strdup_printf("%s/ve-%s.conf-sample", confdir,
+                                        configfile_value);
 
     if (openvzLocateConfFile(vpsid, &conf_file, "conf") < 0)
         goto cleanup;
@@ -855,9 +851,7 @@ openvzLocateConfFileDefault(int vpsid, char **conffile, const char *ext)
     if (confdir == NULL)
         return -1;
 
-    if (virAsprintf(conffile, "%s/%d.%s", confdir, vpsid,
-                    ext ? ext : "conf") < 0)
-        ret = -1;
+    *conffile = g_strdup_printf("%s/%d.%s", confdir, vpsid, ext ? ext : "conf");
 
     VIR_FREE(confdir);
     return ret;

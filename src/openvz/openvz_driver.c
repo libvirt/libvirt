@@ -702,7 +702,7 @@ openvzGenerateVethName(int veid, char *dev_name_ve)
 
     if (sscanf(dev_name_ve, "%*[^0-9]%d", &ifNo) != 1)
         return NULL;
-    ignore_value(virAsprintf(&ret, "veth%d.%d.", veid, ifNo));
+    ret = g_strdup_printf("veth%d.%d.", veid, ifNo);
     return ret;
 }
 
@@ -729,7 +729,7 @@ openvzGenerateContainerVethName(int veid)
         }
 
         /* set new name */
-        ignore_value(virAsprintf(&name, "eth%d", max + 1));
+        name = g_strdup_printf("eth%d", max + 1);
     }
 
     VIR_FREE(temp);
@@ -2207,8 +2207,7 @@ openvzDomainMigratePrepare3Params(virConnectPtr dconn,
         }
     }
 
-    if (virAsprintf(uri_out, "ssh://%s", hostname) < 0)
-        goto error;
+    *uri_out = g_strdup_printf("ssh://%s", hostname);
 
     ret = 0;
     goto done;
