@@ -133,9 +133,6 @@ int virStrdup(char **dest, const char *src)
 
 int virStrndup(char **dest, const char *src, ssize_t n)
     G_GNUC_WARN_UNUSED_RESULT ATTRIBUTE_NONNULL(1);
-int virVasprintfInternal(char **strp, const char *fmt, va_list list)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_PRINTF(2, 0)
-    G_GNUC_WARN_UNUSED_RESULT;
 
 /**
  * VIR_STRDUP:
@@ -207,15 +204,6 @@ int virVasprintfInternal(char **strp, const char *fmt, va_list list)
 #define VIR_STRNDUP_QUIET(dst, src, n) virStrndup(&(dst), src, n)
 
 size_t virStringListLength(const char * const *strings);
-
-/**
- * virVasprintf
- *
- * Like glibc's vasprintf but aborts on OOM
- *
- * Returns number of bytes printed on success, aborts on OOM
- */
-#define virVasprintf(strp, fmt, list) virVasprintfInternal(strp, fmt, list)
 
 int virStringSortCompare(const void *a, const void *b);
 int virStringSortRevCompare(const void *a, const void *b);

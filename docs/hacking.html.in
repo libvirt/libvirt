@@ -1043,11 +1043,6 @@ BAD:
       <dt><code>VIR_STRDUP</code>, <code>VIR_STRNDUP</code></dt>
       <dd>Prefer the GLib APIs <code>g_strdup</code> and <code>g_strndup</code>.</dd>
 
-      <dt><code>virAsprintf</code>, <code>virVasprintf</code></dt>
-      <dd>The GLib APIs <code>g_strdup_printf</code> / <code>g_strdup_vprint</code> should be used
-        instead. Don't use <code>g_vasprintf</code> unless having the string length
-        returned is unavoidable.</dd>
-
       <dt><code>virStrerror</code></dt>
       <dd>The GLib <code>g_strerror()</code> function should be used instead,
         which has a simpler calling convention as an added benefit.</dd>

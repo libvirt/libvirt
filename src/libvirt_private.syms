@@ -3120,7 +3120,6 @@ virStrToLong_ull;
 virStrToLong_ullp;
 virStrToLong_ulp;
 virTrimSpaces;
-virVasprintfInternal;
 
 
 # util/virsysinfo.h
