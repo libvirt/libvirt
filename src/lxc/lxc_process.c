@@ -138,8 +138,7 @@ lxcProcessRemoveDomainStatus(virLXCDriverConfigPtr cfg,
     char ebuf[1024];
     char *file = NULL;
 
-    if (virAsprintf(&file, "%s/%s.xml", cfg->stateDir, vm->def->name) < 0)
-        return;
+    file = g_strdup_printf("%s/%s.xml", cfg->stateDir, vm->def->name);
 
     if (unlink(file) < 0 && errno != ENOENT && errno != ENOTDIR)
         VIR_WARN("Failed to remove domain XML for %s: %s",
@@ -419,10 +418,8 @@ static int virLXCProcessSetupNamespaceName(virConnectPtr conn, int ns_type, cons
         goto cleanup;
     }
 
-    if (virAsprintf(&path, "/proc/%lld/ns/%s",
-                    (long long int)priv->initpid,
-                    nsInfoLocal[ns_type]) < 0)
-        goto cleanup;
+    path = g_strdup_printf("/proc/%lld/ns/%s", (long long int)priv->initpid,
+                           nsInfoLocal[ns_type]);
 
     if ((fd = open(path, O_RDONLY)) < 0) {
         virReportSystemError(errno,
@@ -443,10 +440,7 @@ static int virLXCProcessSetupNamespacePID(int ns_type, const char *name)
     int fd;
     char *path;
 
-    if (virAsprintf(&path, "/proc/%s/ns/%s",
-                    name,
-                    nsInfoLocal[ns_type]) < 0)
-        return -1;
+    path = g_strdup_printf("/proc/%s/ns/%s", name, nsInfoLocal[ns_type]);
     fd = open(path, O_RDONLY);
     VIR_FREE(path);
     if (fd < 0) {
@@ -470,8 +464,7 @@ static int virLXCProcessSetupNamespaceNet(int ns_type, const char *name)
         return -1;
     }
 
-    if (virAsprintf(&path, "%s/netns/%s", RUNSTATEDIR, name) < 0)
-        return  -1;
+    path = g_strdup_printf("%s/netns/%s", RUNSTATEDIR, name);
     fd = open(path, O_RDONLY);
     VIR_FREE(path);
     if (fd < 0) {
@@ -632,8 +625,7 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
 
         /* Make sure all net definitions will have a name in the container */
         if (!net->ifname_guest) {
-            if (virAsprintf(&net->ifname_guest, "eth%zu", niface) < 0)
-                goto cleanup;
+            net->ifname_guest = g_strdup_printf("eth%zu", niface);
             niface++;
         }
     }
@@ -757,9 +749,7 @@ virLXCProcessGetNsInode(pid_t pid,
     struct stat sb;
     int ret = -1;
 
-    if (virAsprintf(&path, "/proc/%lld/ns/%s",
-                    (long long)pid, nsname) < 0)
-        goto cleanup;
+    path = g_strdup_printf("/proc/%lld/ns/%s", (long long)pid, nsname);
 
     if (stat(path, &sb) < 0) {
         virReportSystemError(errno,
@@ -984,9 +974,7 @@ virLXCProcessBuildControllerCmd(virLXCDriverPtr driver,
     for (i = 0; i < VIR_LXC_DOMAIN_NAMESPACE_LAST; i++) {
         if (nsInheritFDs[i] > 0) {
             char *tmp = NULL;
-            if (virAsprintf(&tmp, "--share-%s",
-                            nsInfoLocal[i]) < 0)
-                goto error;
+            tmp = g_strdup_printf("--share-%s", nsInfoLocal[i]);
             virCommandAddArg(cmd, tmp);
             virCommandAddArgFormat(cmd, "%d", nsInheritFDs[i]);
             virCommandPassFD(cmd, nsInheritFDs[i], 0);
@@ -1269,9 +1257,7 @@ int virLXCProcessStart(virConnectPtr conn,
         vm->def->resource = res;
     }
 
-    if (virAsprintf(&logfile, "%s/%s.log",
-                    cfg->logDir, vm->def->name) < 0)
-        goto cleanup;
+    logfile = g_strdup_printf("%s/%s.log", cfg->logDir, vm->def->name);
 
     if (!(pidfile = virPidFileBuildPath(cfg->stateDir, vm->def->name)))
         goto cleanup;
@@ -1358,8 +1344,7 @@ int virLXCProcessStart(virConnectPtr conn,
         vm->def->consoles[i]->source->data.file.path = ttyPath;
 
         VIR_FREE(vm->def->consoles[i]->info.alias);
-        if (virAsprintf(&vm->def->consoles[i]->info.alias, "console%zu", i) < 0)
-            goto cleanup;
+        vm->def->consoles[i]->info.alias = g_strdup_printf("console%zu", i);
     }
 
     VIR_DEBUG("Setting up Interfaces");
