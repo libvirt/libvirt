@@ -35,7 +35,8 @@ typedef struct _testQemuData testQemuData;
 typedef testQemuData *testQemuDataPtr;
 struct _testQemuData {
     virQEMUDriver driver;
-    const char *dataDir;
+    const char *inputDir;
+    const char *outputDir;
     const char *archName;
     const char *base;
     int ret;
@@ -48,7 +49,8 @@ testQemuDataInit(testQemuDataPtr data)
     if (qemuTestDriverInit(&data->driver) < 0)
         return -1;
 
-    data->dataDir = TEST_QEMU_CAPS_PATH;
+    data->inputDir = TEST_QEMU_CAPS_PATH;
+    data->outputDir = TEST_QEMU_CAPS_PATH;
 
     data->ret = 0;
 
@@ -77,9 +79,9 @@ testQemuCaps(const void *opaque)
     const char *p;
 
     if (virAsprintf(&repliesFile, "%s/%s.%s.replies",
-                    data->dataDir, data->base, data->archName) < 0 ||
+                    data->inputDir, data->base, data->archName) < 0 ||
         virAsprintf(&capsFile, "%s/%s.%s.xml",
-                    data->dataDir, data->base, data->archName) < 0)
+                    data->outputDir, data->base, data->archName) < 0)
         goto cleanup;
 
     if (!(mon = qemuMonitorTestNewFromFileFull(repliesFile, &data->driver, NULL,
@@ -146,7 +148,7 @@ testQemuCapsCopy(const void *opaque)
     char *actual = NULL;
 
     if (virAsprintf(&capsFile, "%s/%s.%s.xml",
-                    data->dataDir, data->base, data->archName) < 0)
+                    data->outputDir, data->base, data->archName) < 0)
         goto cleanup;
 
     if (!(caps = virCapabilitiesNew(virArchFromString(data->archName),
