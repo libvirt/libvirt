@@ -596,8 +596,8 @@ remoteRelayDomainEventGraphics(virConnectPtr conn,
     data.remote.service = g_strdup(remote->service);
 
     data.subject.subject_len = subject->nidentity;
-    if (VIR_ALLOC_N(data.subject.subject_val, data.subject.subject_len) < 0)
-        goto error;
+    data.subject.subject_val = g_new0(remote_domain_event_graphics_identity,
+                                      data.subject.subject_len);
 
     for (i = 0; i < data.subject.subject_len; i++) {
         data.subject.subject_val[i].type = g_strdup(subject->identities[i].type);
@@ -619,11 +619,6 @@ remoteRelayDomainEventGraphics(virConnectPtr conn,
     }
 
     return 0;
-
- error:
-    xdr_free((xdrproc_t)xdr_remote_domain_event_lifecycle_msg,
-             (char *) &data);
-    return -1;
 }
 
 static int
