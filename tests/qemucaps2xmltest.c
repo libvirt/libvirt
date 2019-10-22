@@ -33,6 +33,7 @@ struct _testQemuData {
     const char *outputDir;
     const char *base;
     const char *archName;
+    const char *suffix;
     int ret;
 };
 
@@ -145,8 +146,9 @@ testQemuCapsXML(const void *opaque)
                     data->outputDir, data->archName) < 0)
         goto cleanup;
 
-    if (virAsprintf(&capsFile, "%s/%s.%s.xml",
-                    data->inputDir, data->base, data->archName) < 0)
+    if (virAsprintf(&capsFile, "%s/%s.%s.%s",
+                    data->inputDir, data->base,
+                    data->archName, data->suffix) < 0)
         goto cleanup;
 
     if (virTestLoadFile(capsFile, &capsData) < 0)
@@ -176,6 +178,7 @@ static int
 doCapsTest(const char *inputDir,
            const char *base,
            const char *archName,
+           const char *suffix,
            void *opaque)
 {
     testQemuDataPtr data = (testQemuDataPtr) opaque;
@@ -187,6 +190,7 @@ doCapsTest(const char *inputDir,
     data->inputDir = inputDir;
     data->base = base;
     data->archName = archName;
+    data->suffix = suffix;
 
     if (virTestRun(title, testQemuCapsXML, data) < 0)
         data->ret = -1;

@@ -936,9 +936,16 @@ testQemuCapsIterate(const char *suffix,
         archName[0] = '\0';
         archName++;
 
-        /* Run the user-provided callback */
-        if (callback(TEST_QEMU_CAPS_PATH, base, archName, opaque) < 0)
+        /* Run the user-provided callback.
+         *
+         * We skip the dot that, as verified earlier, starts the suffix
+         * to make it nicer to rebuild the original file name from inside
+         * the callback.
+         */
+        if (callback(TEST_QEMU_CAPS_PATH, base,
+                     archName, suffix + 1, opaque) < 0) {
             goto cleanup;
+        }
     }
 
     if (rc < 0)

@@ -38,6 +38,7 @@ struct _testQemuData {
     const char *inputDir;
     const char *outputDir;
     const char *archName;
+    const char *suffix;
     const char *base;
     int ret;
 };
@@ -77,8 +78,9 @@ testQemuCaps(const void *opaque)
     unsigned int fakeMicrocodeVersion = 0;
     const char *p;
 
-    if (virAsprintf(&repliesFile, "%s/%s.%s.replies",
-                    data->inputDir, data->base, data->archName) < 0 ||
+    if (virAsprintf(&repliesFile, "%s/%s.%s.%s",
+                    data->inputDir, data->base,
+                    data->archName, data->suffix) < 0 ||
         virAsprintf(&capsFile, "%s/%s.%s.xml",
                     data->outputDir, data->base, data->archName) < 0)
         goto cleanup;
@@ -182,6 +184,7 @@ static int
 doCapsTest(const char *inputDir,
            const char *base,
            const char *archName,
+           const char *suffix,
            void *opaque)
 {
     testQemuDataPtr data = (testQemuDataPtr) opaque;
@@ -196,6 +199,7 @@ doCapsTest(const char *inputDir,
     data->inputDir = inputDir;
     data->base = base;
     data->archName = archName;
+    data->suffix = suffix;
 
     if (virTestRun(title, testQemuCaps, data) < 0)
         data->ret = -1;
