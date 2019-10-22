@@ -299,9 +299,8 @@ mymain(void)
 #define DO_TEST_QEMU(Name, CapsName, Emulator, Machine, Arch, Type) \
     do { \
         char *name = NULL; \
-        if (virAsprintf(&name, "qemu_%s%s%s.%s", \
+        if (virAsprintf(&name, "qemu_%s.%s", \
                         Name, \
-                        Machine ? "-" : "", Machine ? Machine : "", \
                         Arch) < 0) { \
             ret = -1; \
             break; \
@@ -387,7 +386,7 @@ mymain(void)
                  "/usr/bin/qemu-system-x86_64", NULL,
                  "x86_64", VIR_DOMAIN_VIRT_KVM);
 
-    DO_TEST_QEMU("2.9.0", "caps_2.9.0",
+    DO_TEST_QEMU("2.9.0-q35", "caps_2.9.0",
                  "/usr/bin/qemu-system-x86_64", "q35",
                  "x86_64", VIR_DOMAIN_VIRT_KVM);
 
@@ -403,11 +402,11 @@ mymain(void)
                  "/usr/bin/qemu-system-aarch64", NULL,
                  "aarch64", VIR_DOMAIN_VIRT_KVM);
 
-    DO_TEST_QEMU("2.6.0", "caps_2.6.0",
+    DO_TEST_QEMU("2.6.0-virt", "caps_2.6.0",
                  "/usr/bin/qemu-system-aarch64", "virt",
                  "aarch64", VIR_DOMAIN_VIRT_KVM);
 
-    DO_TEST_QEMU("2.12.0", "caps_2.12.0",
+    DO_TEST_QEMU("2.12.0-virt", "caps_2.12.0",
                  "/usr/bin/qemu-system-aarch64", "virt",
                  "aarch64", VIR_DOMAIN_VIRT_KVM);
 
