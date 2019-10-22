@@ -605,17 +605,14 @@ virStorageBackendDiskPartFormat(virStoragePoolObjPtr pool,
             /* XXX Only support one extended partition */
             switch (virStorageBackendDiskPartTypeToCreate(pool)) {
             case VIR_STORAGE_VOL_DISK_TYPE_PRIMARY:
-                if (virAsprintf(partFormat, "primary %s", partedFormat) < 0)
-                    return -1;
+                *partFormat = g_strdup_printf("primary %s", partedFormat);
                 break;
             case VIR_STORAGE_VOL_DISK_TYPE_LOGICAL:
                 /* make sure we have an extended partition */
                 if (virStoragePoolObjSearchVolume(pool,
                                                   virStorageVolPartFindExtended,
                                                   NULL)) {
-                    if (virAsprintf(partFormat, "logical %s",
-                                    partedFormat) < 0)
-                        return -1;
+                    *partFormat = g_strdup_printf("logical %s", partedFormat);
                 } else {
                     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("no extended partition found and no "

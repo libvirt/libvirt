@@ -61,8 +61,7 @@ virStorageBackendVzPoolStart(virStoragePoolObjPtr pool)
     if (!(usr_name = virGetUserName(def->target.perms.uid)))
         return -1;
 
-    if (virAsprintf(&mode, "%o", def->target.perms.mode) < 0)
-        return -1;
+    mode = g_strdup_printf("%o", def->target.perms.mode);
 
     cmd = virCommandNewArgList(VSTORAGE_MOUNT,
                                "-c", def->source.name,
@@ -91,8 +90,7 @@ virStorageBackendVzIsMounted(virStoragePoolObjPtr pool)
     char buf[1024];
     g_autofree char *cluster = NULL;
 
-    if (virAsprintf(&cluster, "vstorage://%s", def->source.name) < 0)
-        return -1;
+    cluster = g_strdup_printf("vstorage://%s", def->source.name);
 
     if ((mtab = fopen(_PATH_MOUNTED, "r")) == NULL) {
         virReportSystemError(errno,

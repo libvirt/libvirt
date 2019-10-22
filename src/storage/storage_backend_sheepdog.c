@@ -226,9 +226,7 @@ virStorageBackendSheepdogCreateVol(virStoragePoolObjPtr pool,
     vol->type = VIR_STORAGE_VOL_NETWORK;
 
     VIR_FREE(vol->key);
-    if (virAsprintf(&vol->key, "%s/%s",
-                    def->source.name, vol->name) < 0)
-        return -1;
+    vol->key = g_strdup_printf("%s/%s", def->source.name, vol->name);
 
     VIR_FREE(vol->target.path);
     vol->target.path = g_strdup(vol->name);
@@ -340,8 +338,7 @@ virStorageBackendSheepdogRefreshVol(virStoragePoolObjPtr pool,
     vol->type = VIR_STORAGE_VOL_NETWORK;
 
     VIR_FREE(vol->key);
-    if (virAsprintf(&vol->key, "%s/%s", def->source.name, vol->name) < 0)
-        return -1;
+    vol->key = g_strdup_printf("%s/%s", def->source.name, vol->name);
 
     VIR_FREE(vol->target.path);
     vol->target.path = g_strdup(vol->name);

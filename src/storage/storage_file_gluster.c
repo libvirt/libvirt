@@ -311,11 +311,11 @@ virStorageFileBackendGlusterGetUniqueIdentifier(virStorageSourcePtr src)
                                                     priv)))
         return NULL;
 
-    ignore_value(virAsprintf(&priv->canonpath, "gluster://%s:%u/%s/%s",
-                             src->hosts->name,
-                             src->hosts->port,
-                             src->volume,
-                             filePath));
+    priv->canonpath = g_strdup_printf("gluster://%s:%u/%s/%s",
+                                      src->hosts->name,
+                                      src->hosts->port,
+                                      src->volume,
+                                      filePath);
 
     return priv->canonpath;
 }

@@ -894,10 +894,8 @@ storageBackendCreateQemuImgSetBacking(virStoragePoolObjPtr pool,
     /* Convert relative backing store paths to absolute paths for access
      * validation.
      */
-    if ('/' != *(info->backingPath) &&
-        virAsprintf(&absolutePath, "%s/%s", def->target.path,
-                    info->backingPath) < 0)
-        return -1;
+    if (*(info->backingPath) != '/')
+        absolutePath = g_strdup_printf("%s/%s", def->target.path, info->backingPath);
     accessRetCode = access(absolutePath ? absolutePath :
                            info->backingPath, R_OK);
     if (accessRetCode != 0) {
@@ -1129,8 +1127,7 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
                            _("path to secret data file is required"));
             goto error;
         }
-        if (virAsprintf(&info.secretAlias, "%s_encrypt0", vol->name) < 0)
-            goto error;
+        info.secretAlias = g_strdup_printf("%s_encrypt0", vol->name);
         if (storageBackendCreateQemuImgSecretObject(cmd, secretPath,
                                                     info.secretAlias) < 0)
             goto error;
@@ -1143,9 +1140,7 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObjPtr pool,
                            _("path to inputvol secret data file is required"));
             goto error;
         }
-        if (virAsprintf(&inputSecretAlias, "%s_encrypt0",
-                        inputvol->name) < 0)
-            goto error;
+        inputSecretAlias = g_strdup_printf("%s_encrypt0", inputvol->name);
         if (storageBackendCreateQemuImgSecretObject(cmd, inputSecretPath,
                                                     inputSecretAlias) < 0)
             goto error;
@@ -1670,12 +1665,10 @@ storageBackendIsPloopDir(char *path)
     g_autofree char *root = NULL;
     g_autofree char *desc = NULL;
 
-    if (virAsprintf(&root, "%s/root.hds", path) < 0)
-        return false;
+    root = g_strdup_printf("%s/root.hds", path);
     if (!virFileExists(root))
         return false;
-    if (virAsprintf(&desc, "%s/DiskDescriptor.xml", path) < 0)
-        return false;
+    desc = g_strdup_printf("%s/DiskDescriptor.xml", path);
     if (!virFileExists(desc))
         return false;
 
@@ -1693,8 +1686,7 @@ storageBackendRedoPloopUpdate(virStorageSourcePtr target, struct stat *sb,
 {
     g_autofree char *path = NULL;
 
-    if (virAsprintf(&path, "%s/root.hds", target->path) < 0)
-        return -1;
+    path = g_strdup_printf("%s/root.hds", target->path);
     VIR_FORCE_CLOSE(*fd);
     if ((*fd = virStorageBackendVolOpen(path, sb, flags)) < 0)
         return -1;
@@ -1944,11 +1936,7 @@ virStorageBackendStablePath(virStoragePoolObjPtr pool,
      */
  retry:
     while ((direrr = virDirRead(dh, &dent, NULL)) > 0) {
-        if (virAsprintf(&stablepath, "%s/%s",
-                        def->target.path, dent->d_name) < 0) {
-            VIR_DIR_CLOSE(dh);
-            return NULL;
-        }
+        stablepath = g_strdup_printf("%s/%s", def->target.path, dent->d_name);
 
         if (virFileLinkPointsTo(stablepath, devpath)) {
             VIR_DIR_CLOSE(dh);
@@ -2044,9 +2032,7 @@ virStorageBackendVolCreateLocal(virStoragePoolObjPtr pool,
     }
 
     VIR_FREE(vol->target.path);
-    if (virAsprintf(&vol->target.path, "%s/%s",
-                    def->target.path, vol->name) < 0)
-        return -1;
+    vol->target.path = g_strdup_printf("%s/%s", def->target.path, vol->name);
 
     if (virFileExists(vol->target.path)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -2283,8 +2269,7 @@ storageBackendResizeQemuImg(virStoragePoolObjPtr pool,
               storageBackendCreateQemuImgSecretPath(pool, vol)))
             goto cleanup;
 
-        if (virAsprintf(&secretAlias, "%s_encrypt0", vol->name) < 0)
-            goto cleanup;
+        secretAlias = g_strdup_printf("%s_encrypt0", vol->name);
     }
 
     /* Round capacity as qemu-img resize errors out on sizes which are not
@@ -2421,8 +2406,7 @@ virStorageBackendVolUploadLocal(virStoragePoolObjPtr pool G_GNUC_UNUSED,
             return -1;
         }
 
-        if (virAsprintf(&path, "%s/root.hds", vol->target.path) < 0)
-            return -1;
+        path = g_strdup_printf("%s/root.hds", vol->target.path);
         target_path = path;
     }
 
@@ -2456,8 +2440,7 @@ virStorageBackendVolDownloadLocal(virStoragePoolObjPtr pool G_GNUC_UNUSED,
                              " will be lost"));
             return -1;
         }
-        if (virAsprintf(&path, "%s/root.hds", vol->target.path) < 0)
-            return -1;
+        path = g_strdup_printf("%s/root.hds", vol->target.path);
         target_path = path;
     }
 
@@ -2669,11 +2652,9 @@ storageBackendVolWipePloop(virStorageVolDefPtr vol,
         return -1;
     }
 
-    if (virAsprintf(&target_path, "%s/root.hds", vol->target.path) < 0)
-        return -1;
+    target_path = g_strdup_printf("%s/root.hds", vol->target.path);
 
-    if (virAsprintf(&disk_desc, "%s/DiskDescriptor.xml", vol->target.path) < 0)
-        return -1;
+    disk_desc = g_strdup_printf("%s/DiskDescriptor.xml", vol->target.path);
 
     if (storageBackendVolWipeLocalFile(target_path, algorithm,
                                        vol->target.allocation, false) < 0)
@@ -3531,9 +3512,7 @@ virStorageBackendRefreshLocal(virStoragePoolObjPtr pool)
         vol->name = g_strdup(ent->d_name);
 
         vol->type = VIR_STORAGE_VOL_FILE;
-        if (virAsprintf(&vol->target.path, "%s/%s",
-                        def->target.path, vol->name) < 0)
-            goto cleanup;
+        vol->target.path = g_strdup_printf("%s/%s", def->target.path, vol->name);
 
         vol->key = g_strdup(vol->target.path);
 
@@ -3674,11 +3653,9 @@ virStorageBackendSCSINewLun(virStoragePoolObjPtr pool,
      * in the volume name. We only need uniqueness per-pool, so
      * just leave 'host' out
      */
-    if (virAsprintf(&(vol->name), "unit:%u:%u:%u", bus, target, lun) < 0)
-        return -1;
+    vol->name = g_strdup_printf("unit:%u:%u:%u", bus, target, lun);
 
-    if (virAsprintf(&devpath, "/dev/%s", dev) < 0)
-        return -1;
+    devpath = g_strdup_printf("/dev/%s", dev);
 
     VIR_DEBUG("Trying to create volume for '%s'", devpath);
 
@@ -3738,8 +3715,7 @@ getNewStyleBlockDevice(const char *lun_path,
     int direrr;
     g_autofree char *block_path = NULL;
 
-    if (virAsprintf(&block_path, "%s/block", lun_path) < 0)
-        goto cleanup;
+    block_path = g_strdup_printf("%s/block", lun_path);
 
     VIR_DEBUG("Looking for block device in '%s'", block_path);
 
@@ -3817,9 +3793,8 @@ getBlockDevice(uint32_t host,
 
     *block_device = NULL;
 
-    if (virAsprintf(&lun_path, "/sys/bus/scsi/devices/%u:%u:%u:%u",
-                    host, bus, target, lun) < 0)
-        goto cleanup;
+    lun_path = g_strdup_printf("/sys/bus/scsi/devices/%u:%u:%u:%u", host, bus,
+                               target, lun);
 
     if (virDirOpen(&lun_dir, lun_path) < 0)
         goto cleanup;
@@ -3871,9 +3846,8 @@ getDeviceType(uint32_t host,
     FILE *typefile;
     g_autofree char *type_path = NULL;
 
-    if (virAsprintf(&type_path, "/sys/bus/scsi/devices/%u:%u:%u:%u/type",
-                    host, bus, target, lun) < 0)
-        return -1;
+    type_path = g_strdup_printf("/sys/bus/scsi/devices/%u:%u:%u:%u/type", host,
+                                bus, target, lun);
 
     typefile = fopen(type_path, "r");
     if (typefile == NULL) {
@@ -4061,15 +4035,11 @@ virStorageBackendFileSystemGetPoolSource(virStoragePoolObjPtr pool)
 
     if (def->type == VIR_STORAGE_POOL_NETFS) {
         if (def->source.format == VIR_STORAGE_POOL_NETFS_CIFS) {
-            if (virAsprintf(&src, "//%s/%s",
-                            def->source.hosts[0].name,
-                            def->source.dir) < 0)
-                return NULL;
+            src = g_strdup_printf("//%s/%s", def->source.hosts[0].name,
+                                  def->source.dir);
         } else {
-            if (virAsprintf(&src, "%s:%s",
-                            def->source.hosts[0].name,
-                            def->source.dir) < 0)
-                return NULL;
+            src = g_strdup_printf("%s:%s", def->source.hosts[0].name,
+                                  def->source.dir);
         }
     } else {
         src = g_strdup(def->source.devices[0].path);
@@ -4184,9 +4154,8 @@ virStorageBackendFileSystemMountCmd(const char *cmdstr,
     virCommandPtr cmd = NULL;
     g_autofree char *nfsVers = NULL;
 
-    if (def->type == VIR_STORAGE_POOL_NETFS && def->source.protocolVer > 0 &&
-        virAsprintf(&nfsVers, "nfsvers=%u", def->source.protocolVer) < 0)
-        return NULL;
+    if (def->type == VIR_STORAGE_POOL_NETFS && def->source.protocolVer > 0)
+        nfsVers = g_strdup_printf("nfsvers=%u", def->source.protocolVer);
 
     cmd = virCommandNew(cmdstr);
     if (netauto)

@@ -87,9 +87,7 @@ virStorageBackendZFSCheckPool(virStoragePoolObjPtr pool G_GNUC_UNUSED,
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     g_autofree char *devpath = NULL;
 
-    if (virAsprintf(&devpath, "/dev/zvol/%s",
-                    def->source.name) < 0)
-        return -1;
+    devpath = g_strdup_printf("/dev/zvol/%s", def->source.name);
     *isActive = virFileIsDir(devpath);
 
     return 0;
@@ -139,9 +137,8 @@ virStorageBackendZFSParseVol(virStoragePoolObjPtr pool,
         volume->key = g_strdup(tokens[0]);
 
     if (volume->target.path == NULL) {
-        if (virAsprintf(&volume->target.path, "%s/%s",
-                        def->target.path, volume->name) < 0)
-            goto cleanup;
+        volume->target.path = g_strdup_printf("%s/%s", def->target.path,
+                                              volume->name);
     }
 
     if (virStrToLong_ull(tokens[1], NULL, 10, &volume->target.capacity) < 0) {
@@ -308,9 +305,7 @@ virStorageBackendZFSCreateVol(virStoragePoolObjPtr pool,
     vol->type = VIR_STORAGE_VOL_BLOCK;
 
     VIR_FREE(vol->target.path);
-    if (virAsprintf(&vol->target.path, "%s/%s",
-                    def->target.path, vol->name) < 0)
-        return -1;
+    vol->target.path = g_strdup_printf("%s/%s", def->target.path, vol->name);
 
     vol->key = g_strdup(vol->target.path);
 
