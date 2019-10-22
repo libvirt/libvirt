@@ -120,6 +120,7 @@
 /src/admin/admin_client.h
 /src/admin/admin_protocol.[ch]
 /src/admin/admin_server_dispatch_stubs.h
+/src/bhyve/test_libvirtd_bhyve.aug
 /src/bhyve/test_virtbhyved.aug
 /src/bhyve/virtbhyved.aug
 /src/bhyve/virtbhyved.conf
