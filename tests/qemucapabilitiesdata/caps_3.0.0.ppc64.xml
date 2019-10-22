@@ -155,7 +155,7 @@
   <flag name='ramfb'/>
   <version>2012050</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>42900757</microcodeVersion>
+  <microcodeVersion>42900239</microcodeVersion>
   <package>v2.12.0-1689-g518d23a</package>
   <arch>ppc64</arch>
   <cpu type='kvm' name='default'/>

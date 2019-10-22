@@ -37,9 +37,10 @@ struct _testQemuData {
     virQEMUDriver driver;
     const char *inputDir;
     const char *outputDir;
+    const char *prefix;
+    const char *version;
     const char *archName;
     const char *suffix;
-    const char *base;
     int ret;
 };
 
@@ -78,11 +79,12 @@ testQemuCaps(const void *opaque)
     unsigned int fakeMicrocodeVersion = 0;
     const char *p;
 
-    if (virAsprintf(&repliesFile, "%s/%s.%s.%s",
-                    data->inputDir, data->base,
+    if (virAsprintf(&repliesFile, "%s/%s_%s.%s.%s",
+                    data->inputDir, data->prefix, data->version,
                     data->archName, data->suffix) < 0 ||
-        virAsprintf(&capsFile, "%s/%s.%s.xml",
-                    data->outputDir, data->base, data->archName) < 0)
+        virAsprintf(&capsFile, "%s/%s_%s.%s.xml",
+                    data->outputDir, data->prefix, data->version,
+                    data->archName) < 0)
         goto cleanup;
 
     if (!(mon = qemuMonitorTestNewFromFileFull(repliesFile, &data->driver, NULL,
@@ -114,7 +116,7 @@ testQemuCaps(const void *opaque)
 
         fakeMicrocodeVersion *= 100000;
 
-        for (p = data->base; *p; p++)
+        for (p = data->version; *p; p++)
             fakeMicrocodeVersion += *p;
 
         virQEMUCapsSetMicrocodeVersion(capsActual, fakeMicrocodeVersion);
@@ -148,8 +150,9 @@ testQemuCapsCopy(const void *opaque)
     virQEMUCapsPtr copy = NULL;
     char *actual = NULL;
 
-    if (virAsprintf(&capsFile, "%s/%s.%s.xml",
-                    data->outputDir, data->base, data->archName) < 0)
+    if (virAsprintf(&capsFile, "%s/%s_%s.%s.xml",
+                    data->outputDir, data->prefix, data->version,
+                    data->archName) < 0)
         goto cleanup;
 
     if (!(caps = virCapabilitiesNew(virArchFromString(data->archName),
@@ -182,7 +185,8 @@ testQemuCapsCopy(const void *opaque)
 
 static int
 doCapsTest(const char *inputDir,
-           const char *base,
+           const char *prefix,
+           const char *version,
            const char *archName,
            const char *suffix,
            void *opaque)
@@ -191,13 +195,14 @@ doCapsTest(const char *inputDir,
     g_autofree char *title = NULL;
     g_autofree char *copyTitle = NULL;
 
-    if (virAsprintf(&title, "%s (%s)", base, archName) < 0 ||
-        virAsprintf(&copyTitle, "copy %s (%s)", base, archName) < 0) {
+    if (virAsprintf(&title, "%s (%s)", version, archName) < 0 ||
+        virAsprintf(&copyTitle, "copy %s (%s)", version, archName) < 0) {
         return -1;
     }
 
     data->inputDir = inputDir;
-    data->base = base;
+    data->prefix = prefix;
+    data->version = version;
     data->archName = archName;
     data->suffix = suffix;
 

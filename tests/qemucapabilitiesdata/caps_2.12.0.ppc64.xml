@@ -153,7 +153,7 @@
   <flag name='memory-backend-file.align'/>
   <version>2011090</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>42900807</microcodeVersion>
+  <microcodeVersion>42900289</microcodeVersion>
   <package>v2.12.0-rc0</package>
   <arch>ppc64</arch>
   <cpu type='kvm' name='default'/>

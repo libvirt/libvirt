@@ -31,7 +31,8 @@ typedef testQemuData *testQemuDataPtr;
 struct _testQemuData {
     const char *inputDir;
     const char *outputDir;
-    const char *base;
+    const char *prefix;
+    const char *version;
     const char *archName;
     const char *suffix;
     int ret;
@@ -146,8 +147,8 @@ testQemuCapsXML(const void *opaque)
                     data->outputDir, data->archName) < 0)
         goto cleanup;
 
-    if (virAsprintf(&capsFile, "%s/%s.%s.%s",
-                    data->inputDir, data->base,
+    if (virAsprintf(&capsFile, "%s/%s_%s.%s.%s",
+                    data->inputDir, data->prefix, data->version,
                     data->archName, data->suffix) < 0)
         goto cleanup;
 
@@ -176,7 +177,8 @@ testQemuCapsXML(const void *opaque)
 
 static int
 doCapsTest(const char *inputDir,
-           const char *base,
+           const char *prefix,
+           const char *version,
            const char *archName,
            const char *suffix,
            void *opaque)
@@ -184,11 +186,12 @@ doCapsTest(const char *inputDir,
     testQemuDataPtr data = (testQemuDataPtr) opaque;
     g_autofree char *title = NULL;
 
-    if (virAsprintf(&title, "%s (%s)", base, archName) < 0)
+    if (virAsprintf(&title, "%s (%s)", version, archName) < 0)
         return -1;
 
     data->inputDir = inputDir;
-    data->base = base;
+    data->prefix = prefix;
+    data->version = version;
     data->archName = archName;
     data->suffix = suffix;
 

@@ -91,7 +91,7 @@
   <flag name='zpci'/>
   <version>2007000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>39100763</microcodeVersion>
+  <microcodeVersion>39100245</microcodeVersion>
   <package></package>
   <arch>s390x</arch>
   <cpu type='kvm' name='host'/>

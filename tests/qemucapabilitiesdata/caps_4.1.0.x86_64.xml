@@ -214,7 +214,7 @@
   <flag name='ramfb'/>
   <version>4001000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>43100759</microcodeVersion>
+  <microcodeVersion>43100241</microcodeVersion>
   <package>v4.1.0</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>

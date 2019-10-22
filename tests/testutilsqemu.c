@@ -917,12 +917,18 @@ testQemuCapsIterate(const char *suffix,
 
     while ((rc = virDirRead(dir, &ent, TEST_QEMU_CAPS_PATH)) > 0) {
         g_autofree char *tmp = g_strdup(ent->d_name);
-        char *base = NULL;
+        char *version = NULL;
         char *archName = NULL;
 
         /* Strip the trailing suffix, moving on if it's not present */
         if (!virStringStripSuffix(tmp, suffix))
             continue;
+
+        /* Strip the leading prefix */
+        if (!(version = STRSKIP(tmp, "caps_"))) {
+            VIR_TEST_VERBOSE("malformed file name '%s'", ent->d_name);
+            goto cleanup;
+        }
 
         /* Find the last dot */
         if (!(archName = strrchr(tmp, '.'))) {
@@ -930,9 +936,9 @@ testQemuCapsIterate(const char *suffix,
             goto cleanup;
         }
 
-        /* The base name is everything before the last dot, and
-         * the architecture name everything after it */
-        base = tmp;
+        /* The version number and the architecture name are separated by
+         * a dot: overwriting that dot with \0 results in both being usable
+         * as independent, null-terminated strings */
         archName[0] = '\0';
         archName++;
 
@@ -942,7 +948,7 @@ testQemuCapsIterate(const char *suffix,
          * to make it nicer to rebuild the original file name from inside
          * the callback.
          */
-        if (callback(TEST_QEMU_CAPS_PATH, base,
+        if (callback(TEST_QEMU_CAPS_PATH, "caps", version,
                      archName, suffix + 1, opaque) < 0) {
             goto cleanup;
         }

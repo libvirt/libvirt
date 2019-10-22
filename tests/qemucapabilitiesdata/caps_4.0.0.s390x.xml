@@ -136,7 +136,7 @@
   <flag name='query-cpu-model-comparison'/>
   <version>4000000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>39100758</microcodeVersion>
+  <microcodeVersion>39100240</microcodeVersion>
   <package>v4.0.0</package>
   <arch>s390x</arch>
   <hostCPU type='kvm' model='z14.2-base' migratability='no'>

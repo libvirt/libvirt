@@ -155,7 +155,7 @@
   <flag name='memory-backend-file.align'/>
   <version>2012000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>61700807</microcodeVersion>
+  <microcodeVersion>61700289</microcodeVersion>
   <package>v2.12.0</package>
   <arch>aarch64</arch>
   <cpu type='kvm' name='pxa262'/>

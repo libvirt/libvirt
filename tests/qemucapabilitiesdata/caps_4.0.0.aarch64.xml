@@ -168,7 +168,7 @@
   <flag name='ramfb'/>
   <version>4000000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>61700758</microcodeVersion>
+  <microcodeVersion>61700240</microcodeVersion>
   <package>v4.0.0</package>
   <arch>aarch64</arch>
   <cpu type='kvm' name='pxa262'/>

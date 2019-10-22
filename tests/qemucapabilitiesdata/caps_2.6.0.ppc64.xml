@@ -119,7 +119,7 @@
   <flag name='hda-output'/>
   <version>2006000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>42900762</microcodeVersion>
+  <microcodeVersion>42900244</microcodeVersion>
   <package></package>
   <arch>ppc64</arch>
   <cpu type='kvm' name='default'/>

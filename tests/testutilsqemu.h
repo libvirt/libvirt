@@ -97,7 +97,8 @@ char *testQemuGetLatestCapsForArch(const char *arch,
 virHashTablePtr testQemuGetLatestCaps(void);
 
 typedef int (*testQemuCapsIterateCallback)(const char *inputDir,
-                                           const char *base,
+                                           const char *prefix,
+                                           const char *version,
                                            const char *archName,
                                            const char *suffix,
                                            void *opaque);

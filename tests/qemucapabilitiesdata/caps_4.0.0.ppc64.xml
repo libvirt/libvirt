@@ -173,7 +173,7 @@
   <flag name='machine.pseries.cap-ccf-assist'/>
   <version>4000000</version>
   <kvmVersion>0</kvmVersion>
-  <microcodeVersion>42900758</microcodeVersion>
+  <microcodeVersion>42900240</microcodeVersion>
   <package>v4.0.0</package>
   <arch>ppc64</arch>
   <cpu type='kvm' name='default'/>
