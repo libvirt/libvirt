@@ -387,11 +387,9 @@ esxVI_CURL_Download(esxVI_CURL *curl, const char *url, char **content,
             return -1;
         }
 
-        if (virAsprintf(&range, "%llu-%llu", offset, offset + *length - 1) < 0)
-            goto cleanup;
+        range = g_strdup_printf("%llu-%llu", offset, offset + *length - 1);
     } else if (offset > 0) {
-        if (virAsprintf(&range, "%llu-", offset) < 0)
-            goto cleanup;
+        range = g_strdup_printf("%llu-", offset);
     }
 
     virMutexLock(&curl->lock);
@@ -1477,10 +1475,8 @@ esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
 
             goto cleanup;
         } else {
-            if (virAsprintf(&xpathExpression,
-                            "/soapenv:Envelope/soapenv:Body/vim:%sResponse",
-                            methodName) < 0)
-                goto cleanup;
+            xpathExpression = g_strdup_printf("/soapenv:Envelope/soapenv:Body/vim:%sResponse",
+                                              methodName);
 
             responseNode = virXPathNode(xpathExpression, xpathContext);
 
@@ -3576,15 +3572,12 @@ esxVI_LookupFileInfoByDatastorePath(esxVI_Context *ctx,
          * The <path> part of the datatore path didn't contain a '/', assume
          * that the <path> part is actually the file name.
          */
-        if (virAsprintf(&datastorePathWithoutFileName, "[%s]",
-                        datastoreName) < 0)
-            goto cleanup;
+        datastorePathWithoutFileName = g_strdup_printf("[%s]", datastoreName);
 
         fileName = g_strdup(directoryAndFileName);
     } else {
-        if (virAsprintf(&datastorePathWithoutFileName, "[%s] %s",
-                        datastoreName, directoryName) < 0)
-            goto cleanup;
+        datastorePathWithoutFileName = g_strdup_printf("[%s] %s", datastoreName,
+                                                       directoryName);
 
         length = strlen(directoryName);
 
@@ -3810,8 +3803,7 @@ esxVI_LookupDatastoreContentByDatastoreName
     floppyImageFileQuery = NULL;
 
     /* Search datastore for files */
-    if (virAsprintf(&datastorePath, "[%s]", datastoreName) < 0)
-        goto cleanup;
+    datastorePath = g_strdup_printf("[%s]", datastoreName);
 
     if (esxVI_SearchDatastoreSubFolders_Task(ctx, hostDatastoreBrowser,
                                              datastorePath, searchSpec,
@@ -4526,10 +4518,9 @@ esxVI_WaitForTaskCompletion(esxVI_Context *ctx,
         } else if (!taskInfo->error->localizedMessage) {
             *errorMessage = g_strdup(taskInfo->error->fault->_actualType);
         } else {
-            if (virAsprintf(errorMessage, "%s - %s",
-                            taskInfo->error->fault->_actualType,
-                            taskInfo->error->localizedMessage) < 0)
-                goto cleanup;
+            *errorMessage = g_strdup_printf("%s - %s",
+                                            taskInfo->error->fault->_actualType,
+                                            taskInfo->error->localizedMessage);
         }
     }
 

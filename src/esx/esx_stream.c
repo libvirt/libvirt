@@ -415,11 +415,9 @@ esxStreamOpen(virStreamPtr stream, esxPrivate *priv, const char *url,
     streamPriv->mode = mode;
 
     if (length > 0) {
-        if (virAsprintf(&range, "%llu-%llu", offset, offset + length - 1) < 0)
-            goto cleanup;
+        range = g_strdup_printf("%llu-%llu", offset, offset + length - 1);
     } else if (offset > 0) {
-        if (virAsprintf(&range, "%llu-", offset) < 0)
-            goto cleanup;
+        range = g_strdup_printf("%llu-", offset);
     }
 
     if (esxVI_CURL_Alloc(&streamPriv->curl) < 0 ||
@@ -448,9 +446,8 @@ esxStreamOpen(virStreamPtr stream, esxPrivate *priv, const char *url,
     curl_easy_setopt(streamPriv->curl->handle, CURLOPT_PASSWORD,
                      priv->primary->password);
 #else
-    if (virAsprintf(&userpwd, "%s:%s", priv->primary->username,
-                    priv->primary->password) < 0)
-        goto cleanup;
+    userpwd = g_strdup_printf("%s:%s", priv->primary->username,
+                              priv->primary->password);
 
     curl_easy_setopt(streamPriv->curl->handle, CURLOPT_USERPWD, userpwd);
 #endif
