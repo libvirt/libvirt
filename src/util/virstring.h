@@ -241,18 +241,6 @@ size_t virStringListLength(const char * const *strings);
 
 #define virAsprintf(strp, ...) virAsprintfInternal(strp, __VA_ARGS__)
 
-/**
- * virAsprintfQuiet:
- * @strp: variable to hold result (char **)
- * @fmt: printf format
- *
- * Like glibc's asprintf but makes sure *strp == NULL on failure.
- *
- * Returns number of bytes printed on success, aborts on OOM
- */
-
-#define virAsprintfQuiet(strp, ...) virAsprintf(strp, __VA_ARGS__)
-
 int virStringSortCompare(const void *a, const void *b);
 int virStringSortRevCompare(const void *a, const void *b);
 int virStringToUpper(char **dst, const char *src);
