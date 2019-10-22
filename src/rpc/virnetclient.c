@@ -343,8 +343,7 @@ virNetClientCheckKeyExists(const char *homedir,
 {
     char *path;
 
-    if (virAsprintf(&path, "%s/.ssh/%s", homedir, name) < 0)
-        return -1;
+    path = g_strdup_printf("%s/.ssh/%s", homedir, name);
 
     if (!(virFileExists(path))) {
         VIR_FREE(path);
@@ -565,10 +564,8 @@ virNetClientPtr virNetClientNewLibssh(const char *host,
         knownhosts = g_strdup(knownHostsPath);
     } else {
         confdir = virGetUserConfigDirectory();
-        if (confdir) {
-            if (virAsprintf(&knownhosts, "%s/known_hosts", confdir) < 0)
-                goto cleanup;
-        }
+        if (confdir)
+            knownhosts = g_strdup_printf("%s/known_hosts", confdir);
     }
 
     if (privkeyPath) {
@@ -602,16 +599,10 @@ virNetClientPtr virNetClientNewLibssh(const char *host,
     if (!(nc = virBufferContentAndReset(&buf)))
         goto no_memory;
 
-    if (virAsprintf(&command,
-         "sh -c "
-         "'if '%s' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
-             "ARG=-q0;"
-         "else "
-             "ARG=;"
-         "fi;"
-         "'%s' $ARG -U %s'",
-         nc, nc, socketPath) < 0)
-        goto cleanup;
+    command = g_strdup_printf("sh -c "
+                              "'if '%s' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
+                              "ARG=-q0;" "else " "ARG=;" "fi;" "'%s' $ARG -U %s'", nc, nc,
+                              socketPath);
 
     if (virNetSocketNewConnectLibssh(host, port,
                                      family,

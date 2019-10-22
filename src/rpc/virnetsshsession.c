@@ -362,15 +362,8 @@ virNetSSHCheckHostKey(virNetSSHSessionPtr sess)
             keyhashstr = virBufferContentAndReset(&buff);
 
             askKey.type = VIR_CRED_ECHOPROMPT;
-            if (virAsprintf((char **)&askKey.prompt,
-                            _("Accept SSH host key with hash '%s' for "
-                              "host '%s:%d' (%s/%s)?"),
-                            keyhashstr,
-                            sess->hostname, sess->port,
-                            "y", "n") < 0) {
-                VIR_FREE(keyhashstr);
-                return -1;
-            }
+            askKey.prompt = g_strdup_printf(_("Accept SSH host key with hash '%s' for " "host '%s:%d' (%s/%s)?"),
+                                            keyhashstr, sess->hostname, sess->port, "y", "n");
 
             if (sess->cred->cb(&askKey, 1, sess->cred->cbdata)) {
                 virReportError(VIR_ERR_SSH, "%s",
@@ -628,10 +621,8 @@ virNetSSHAuthenticatePrivkey(virNetSSHSessionPtr sess,
         return -1;
     }
 
-    if (virAsprintf((char **)&retr_passphrase.prompt,
-                    _("Passphrase for key '%s'"),
-                    priv->filename) < 0)
-        return -1;
+    retr_passphrase.prompt = g_strdup_printf(_("Passphrase for key '%s'"),
+                                             priv->filename);
 
     if (sess->cred->cb(&retr_passphrase, 1, sess->cred->cbdata)) {
         virReportError(VIR_ERR_SSH, "%s",

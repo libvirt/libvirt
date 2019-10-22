@@ -698,8 +698,7 @@ int virNetSocketNewConnectUNIX(const char *path,
             goto cleanup;
         }
 
-        if (virAsprintf(&lockpath, "%s/%s.lock", rundir, binname) < 0)
-            goto cleanup;
+        lockpath = g_strdup_printf("%s/%s.lock", rundir, binname);
 
         if ((lockfd = open(lockpath, O_RDWR | O_CREAT, 0600)) < 0 ||
             virSetCloseExec(lockfd) < 0) {
