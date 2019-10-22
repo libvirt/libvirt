@@ -937,7 +937,7 @@ testQemuCapsIterate(const char *suffix,
         archName++;
 
         /* Run the user-provided callback */
-        if (callback(base, archName, opaque) < 0)
+        if (callback(TEST_QEMU_CAPS_PATH, base, archName, opaque) < 0)
             goto cleanup;
     }
 

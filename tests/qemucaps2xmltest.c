@@ -39,7 +39,6 @@ struct _testQemuData {
 static int
 testQemuDataInit(testQemuDataPtr data)
 {
-    data->inputDir = TEST_QEMU_CAPS_PATH;
     data->outputDir = abs_srcdir "/qemucaps2xmloutdata";
 
     data->ret = 0;
@@ -174,7 +173,8 @@ testQemuCapsXML(const void *opaque)
 }
 
 static int
-doCapsTest(const char *base,
+doCapsTest(const char *inputDir,
+           const char *base,
            const char *archName,
            void *opaque)
 {
@@ -184,6 +184,7 @@ doCapsTest(const char *base,
     if (virAsprintf(&title, "%s (%s)", base, archName) < 0)
         return -1;
 
+    data->inputDir = inputDir;
     data->base = base;
     data->archName = archName;
 

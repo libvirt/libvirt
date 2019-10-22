@@ -49,7 +49,6 @@ testQemuDataInit(testQemuDataPtr data)
     if (qemuTestDriverInit(&data->driver) < 0)
         return -1;
 
-    data->inputDir = TEST_QEMU_CAPS_PATH;
     data->outputDir = TEST_QEMU_CAPS_PATH;
 
     data->ret = 0;
@@ -180,7 +179,8 @@ testQemuCapsCopy(const void *opaque)
 
 
 static int
-doCapsTest(const char *base,
+doCapsTest(const char *inputDir,
+           const char *base,
            const char *archName,
            void *opaque)
 {
@@ -193,6 +193,7 @@ doCapsTest(const char *base,
         return -1;
     }
 
+    data->inputDir = inputDir;
     data->base = base;
     data->archName = archName;
 
