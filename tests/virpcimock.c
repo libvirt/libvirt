@@ -39,11 +39,7 @@ static int (*real_close)(int fd);
 static DIR * (*real_opendir)(const char *name);
 static char *(*real_virFileCanonicalizePath)(const char *path);
 
-/* Don't make static, since it causes problems with clang
- * when passed as an arg to virAsprintf()
- * vircgroupmock.c:462:22: error: static variable 'fakesysfsdir' is used in an inline function with external linkage [-Werror,-Wstatic-in-inline]
- */
-char *fakerootdir;
+static char *fakerootdir;
 
 /* To add a new mocked prefix in virpcimock:
  * - add the prefix here as a define to make it easier to track what we
