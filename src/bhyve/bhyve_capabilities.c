@@ -159,11 +159,8 @@ virBhyveDomainCapsBuild(bhyveConnPtr conn,
                 firmwares_alloc, firmwares->nvalues, 1) < 0)
                 goto cleanup;
 
-            if (virAsprintf(
-                    &firmwares->values[firmwares->nvalues],
-                    "%s/%s", firmware_dir, entry->d_name) < 0)
-                goto cleanup;
-
+            firmwares->values[firmwares->nvalues] = g_strdup_printf("%s/%s",
+                                                    firmware_dir, entry->d_name);
             firmwares->nvalues++;
         }
     } else {

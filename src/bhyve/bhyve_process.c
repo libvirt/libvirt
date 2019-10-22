@@ -86,11 +86,10 @@ bhyveNetCleanup(virDomainObjPtr vm)
     }
 }
 
-static int
+static void
 virBhyveFormatDevMapFile(const char *vm_name, char **fn_out)
 {
-    return virAsprintf(fn_out, "%s/grub_bhyve-%s-device.map", BHYVE_STATE_DIR,
-                       vm_name);
+    *fn_out = g_strdup_printf("%s/grub_bhyve-%s-device.map", BHYVE_STATE_DIR, vm_name);
 }
 
 int
@@ -113,9 +112,7 @@ virBhyveProcessStart(virConnectPtr conn,
     int ret = -1, rc;
     virCapsPtr caps = NULL;
 
-    if (virAsprintf(&logfile, "%s/%s.log",
-                    BHYVE_LOG_DIR, vm->def->name) < 0)
-       return -1;
+    logfile = g_strdup_printf("%s/%s.log", BHYVE_LOG_DIR, vm->def->name);
 
     caps = bhyveDriverGetCapabilities(privconn);
     if (!caps)
@@ -165,9 +162,7 @@ virBhyveProcessStart(virConnectPtr conn,
          * domain is ready to be started, so we can build
          * and execute bhyveload command */
 
-        rc = virBhyveFormatDevMapFile(vm->def->name, &devmap_file);
-        if (rc < 0)
-            goto cleanup;
+        virBhyveFormatDevMapFile(vm->def->name, &devmap_file);
 
         if (!(load_cmd = virBhyveProcessBuildLoadCmd(conn, vm->def, devmap_file,
                                                      &devicemap)))
@@ -408,8 +403,7 @@ virBhyveProcessReconnect(virDomainObjPtr vm,
     if (kp == NULL || nprocs != 1)
         goto cleanup;
 
-    if (virAsprintf(&expected_proctitle, "bhyve: %s", vm->def->name) < 0)
-        goto cleanup;
+    expected_proctitle = g_strdup_printf("bhyve: %s", vm->def->name);
 
     proc_argv = kvm_getargv(data->kd, kp, 0);
     if (proc_argv && proc_argv[0]) {
