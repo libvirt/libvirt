@@ -89,7 +89,7 @@ EXTRA_DIST = \
 	capabilityschemadata \
 	commanddata \
 	cputestdata \
-	domaincapsschemadata \
+	domaincapsdata \
 	domainconfdata \
 	domainschemadata \
 	fchostdata \

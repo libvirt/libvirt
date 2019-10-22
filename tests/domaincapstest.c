@@ -217,7 +217,7 @@ test_virDomainCapsFormat(const void *opaque)
     char *domCapsXML = NULL;
     int ret = -1;
 
-    if (virAsprintf(&path, "%s/domaincapsschemadata/%s.xml",
+    if (virAsprintf(&path, "%s/domaincapsdata/%s.xml",
                     abs_srcdir, data->name) < 0)
         goto cleanup;
 
