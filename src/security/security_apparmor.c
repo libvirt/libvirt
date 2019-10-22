@@ -76,15 +76,11 @@ profile_status(const char *str, const int check_enforcing)
     int rc = -2;
 
     /* create string that is '<str> \0' for accurate matching */
-    if (virAsprintf(&tmp, "%s ", str) == -1)
-        return rc;
+    tmp = g_strdup_printf("%s ", str);
 
     if (check_enforcing != 0) {
         /* create string that is '<str> (enforce)\0' for accurate matching */
-        if (virAsprintf(&etmp, "%s (enforce)", str) == -1) {
-            VIR_FREE(tmp);
-            return rc;
-        }
+        etmp = g_strdup_printf("%s (enforce)", str);
     }
 
     if (virFileReadAll(APPARMOR_PROFILES_PATH, MAX_FILE_LEN, &content) < 0) {
@@ -130,8 +126,7 @@ profile_status_file(const char *str)
     int rc = -1;
     int len;
 
-    if (virAsprintf(&profile, "%s/%s", APPARMOR_DIR "/libvirt", str) == -1)
-        return rc;
+    profile = g_strdup_printf("%s/%s", APPARMOR_DIR "/libvirt", str);
 
     if (!virFileExists(profile))
         goto failed;
@@ -143,8 +138,7 @@ profile_status_file(const char *str)
     }
 
     /* create string that is ' <str> flags=(complain)\0' */
-    if (virAsprintf(&tmp, " %s flags=(complain)", str) == -1)
-        goto failed;
+    tmp = g_strdup_printf(" %s flags=(complain)", str);
 
     if (strstr(content, tmp) != NULL)
         rc = 0;
@@ -227,8 +221,7 @@ get_profile_name(virDomainDefPtr def)
     char *name = NULL;
 
     virUUIDFormat(def->uuid, uuidstr);
-    if (virAsprintf(&name, "%s%s", AA_PREFIX, uuidstr) < 0)
-        return NULL;
+    name = g_strdup_printf("%s%s", AA_PREFIX, uuidstr);
 
     return name;
 }
@@ -360,13 +353,8 @@ AppArmorSecurityManagerProbe(const char *virtDriver G_GNUC_UNUSED)
         return rc;
 
     /* see if template file exists */
-    if (virAsprintf(&template_qemu, "%s/TEMPLATE.qemu",
-                               APPARMOR_DIR "/libvirt") == -1)
-        return rc;
-
-    if (virAsprintf(&template_lxc, "%s/TEMPLATE.lxc",
-                               APPARMOR_DIR "/libvirt") == -1)
-        goto cleanup;
+    template_qemu = g_strdup_printf("%s/TEMPLATE.qemu", APPARMOR_DIR "/libvirt");
+    template_lxc = g_strdup_printf("%s/TEMPLATE.lxc", APPARMOR_DIR "/libvirt");
 
     if (!virFileExists(template_qemu)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1038,9 +1026,8 @@ AppArmorSetChardevLabel(virSecurityManagerPtr mgr,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PIPE:
-        if (virAsprintf(&in, "%s.in", dev_source->data.file.path) < 0 ||
-            virAsprintf(&out, "%s.out", dev_source->data.file.path) < 0)
-            goto done;
+        in = g_strdup_printf("%s.in", dev_source->data.file.path);
+        out = g_strdup_printf("%s.out", dev_source->data.file.path);
         if (virFileExists(in)) {
             if (reload_profile(mgr, def, in, true) < 0)
                 goto done;
@@ -1104,8 +1091,7 @@ AppArmorSetPathLabel(virSecurityManagerPtr mgr,
     char *full_path = NULL;
 
     if (allowSubtree) {
-        if (virAsprintf(&full_path, "%s/{,**}", path) < 0)
-            return -1;
+        full_path = g_strdup_printf("%s/{,**}", path);
         rc = reload_profile(mgr, def, full_path, true);
         VIR_FREE(full_path);
     } else {
@@ -1128,7 +1114,6 @@ AppArmorSetFDLabel(virSecurityManagerPtr mgr,
                    virDomainDefPtr def,
                    int fd)
 {
-    int rc = -1;
     char *proc = NULL;
     char *fd_path = NULL;
 
@@ -1138,8 +1123,7 @@ AppArmorSetFDLabel(virSecurityManagerPtr mgr,
     if (!secdef || !secdef->imagelabel)
         return 0;
 
-    if (virAsprintf(&proc, "/proc/self/fd/%d", fd) == -1)
-        return rc;
+    proc = g_strdup_printf("/proc/self/fd/%d", fd);
 
     if (virFileResolveLink(proc, &fd_path) < 0) {
         /* it's a deleted file, presumably.  Ignore? */
