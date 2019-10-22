@@ -469,25 +469,19 @@ secretStateInitialize(bool privileged,
     driver->privileged = privileged;
 
     if (privileged) {
-        if (virAsprintf(&driver->configDir,
-                        "%s/libvirt/secrets", SYSCONFDIR) < 0)
-            goto error;
-        if (virAsprintf(&driver->stateDir,
-                        "%s/libvirt/secrets", RUNSTATEDIR) < 0)
-            goto error;
+        driver->configDir = g_strdup_printf("%s/libvirt/secrets", SYSCONFDIR);
+        driver->stateDir = g_strdup_printf("%s/libvirt/secrets", RUNSTATEDIR);
     } else {
         g_autofree char *rundir = NULL;
         g_autofree char *cfgdir = NULL;
 
         if (!(cfgdir = virGetUserConfigDirectory()))
             goto error;
-        if (virAsprintf(&driver->configDir, "%s/secrets/", cfgdir) < 0)
-            goto error;
+        driver->configDir = g_strdup_printf("%s/secrets/", cfgdir);
 
         if (!(rundir = virGetUserRuntimeDirectory()))
             goto error;
-        if (virAsprintf(&driver->stateDir, "%s/secrets/run", rundir) < 0)
-            goto error;
+        driver->stateDir = g_strdup_printf("%s/secrets/run", rundir);
     }
 
     if (virFileMakePathWithMode(driver->configDir, S_IRWXU) < 0) {
