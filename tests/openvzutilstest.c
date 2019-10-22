@@ -17,7 +17,8 @@ static int
 testLocateConfFile(int vpsid G_GNUC_UNUSED, char **conffile,
                    const char *ext G_GNUC_UNUSED)
 {
-    return virAsprintf(conffile, "%s/openvzutilstest.conf", abs_srcdir);
+    *conffile = g_strdup_printf("%s/openvzutilstest.conf", abs_srcdir);
+    return 0;
 }
 
 struct testConfigParam {
@@ -40,8 +41,7 @@ testReadConfigParam(const void *data G_GNUC_UNUSED)
     char *conf = NULL;
     char *value = NULL;
 
-    if (virAsprintf(&conf, "%s/openvzutilstest.conf", abs_srcdir) < 0)
-        return -1;
+    conf = g_strdup_printf("%s/openvzutilstest.conf", abs_srcdir);
 
     for (i = 0; i < G_N_ELEMENTS(configParams); ++i) {
         if (openvzReadConfigParam(conf, configParams[i].param,

@@ -60,9 +60,7 @@ testUserXattrEnabled(void)
     ssize_t len;
     const char *con_value = "system_u:object_r:svirt_image_t:s0:c41,c264";
     char *path = NULL;
-    if (virAsprintf(&path, "%s/securityselinuxlabeldata/testxattr",
-                    abs_builddir) < 0)
-        goto cleanup;
+    path = g_strdup_printf("%s/securityselinuxlabeldata/testxattr", abs_builddir);
 
     if (virFileMakePath(abs_builddir "/securityselinuxlabeldata") < 0 ||
         virFileTouch(path, 0600) < 0)
@@ -90,9 +88,7 @@ testSELinuxMungePath(char **path)
 {
     char *tmp;
 
-    if (virAsprintf(&tmp, "%s/securityselinuxlabeldata%s",
-                    abs_builddir, *path) < 0)
-        return -1;
+    tmp = g_strdup_printf("%s/securityselinuxlabeldata%s", abs_builddir, *path);
 
     VIR_FREE(*path);
     *path = tmp;
@@ -112,9 +108,8 @@ testSELinuxLoadFileList(const char *testname,
     *files = NULL;
     *nfiles = 0;
 
-    if (virAsprintf(&path, "%s/securityselinuxlabeldata/%s.txt",
-                    abs_srcdir, testname) < 0)
-        goto cleanup;
+    path = g_strdup_printf("%s/securityselinuxlabeldata/%s.txt", abs_srcdir,
+                           testname);
 
     if (!(fp = fopen(path, "r")))
         goto cleanup;
@@ -140,9 +135,8 @@ testSELinuxLoadFileList(const char *testname,
         *tmp = '\0';
         tmp++;
 
-        if (virAsprintf(&file, "%s/securityselinuxlabeldata%s",
-                        abs_builddir, line) < 0)
-            goto cleanup;
+        file = g_strdup_printf("%s/securityselinuxlabeldata%s", abs_builddir,
+                               line);
         if (*tmp != '\0' && *tmp != '\n') {
             context = g_strdup(tmp);
 
@@ -178,9 +172,8 @@ testSELinuxLoadDef(const char *testname)
     virDomainDefPtr def = NULL;
     size_t i;
 
-    if (virAsprintf(&xmlfile, "%s/securityselinuxlabeldata/%s.xml",
-                    abs_srcdir, testname) < 0)
-        goto cleanup;
+    xmlfile = g_strdup_printf("%s/securityselinuxlabeldata/%s.xml", abs_srcdir,
+                              testname);
 
     if (!(def = virDomainDefParseFile(xmlfile, driver.caps, driver.xmlopt,
                                       NULL, 0)))

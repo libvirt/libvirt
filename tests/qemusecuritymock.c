@@ -117,10 +117,7 @@ get_key(const char *path,
 {
     char *ret;
 
-    if (virAsprintf(&ret, "%s:%s", path, name) < 0) {
-        fprintf(stderr, "Unable to create hash table key\n");
-        abort();
-    }
+    ret = g_strdup_printf("%s:%s", path, name);
 
     return ret;
 }

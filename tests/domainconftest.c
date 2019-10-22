@@ -46,9 +46,8 @@ static int testGetFilesystem(const void *opaque)
     const struct testGetFilesystemData *data = opaque;
     virDomainFSDefPtr fsdef;
 
-    if (virAsprintf(&filename, "%s/domainconfdata/%s.xml",
-                    abs_srcdir, data->filename) < 0)
-        goto cleanup;
+    filename = g_strdup_printf("%s/domainconfdata/%s.xml", abs_srcdir,
+                               data->filename);
 
     if (!(def = virDomainDefParseFile(filename, caps, xmlopt, NULL, 0)))
         goto cleanup;

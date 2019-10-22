@@ -252,9 +252,8 @@ mymain(void)
 {
     int ret = 0;
 
-    if (virAsprintf(&custom_uri, "test://%s/../examples/xml/test/testnode.xml",
-                    abs_srcdir) < 0)
-        return EXIT_FAILURE;
+    custom_uri = g_strdup_printf("test://%s/../examples/xml/test/testnode.xml",
+                                 abs_srcdir);
 
     if (virTestRun("virsh list (default)",
                    testCompareListDefault, NULL) != 0)

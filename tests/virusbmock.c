@@ -53,17 +53,12 @@ static char *get_fake_path(const char *real_path)
     const char *p = NULL;
     char *path = NULL;
 
-    if ((p = STRSKIP(real_path, USB_SYSFS)) &&
-        virAsprintfQuiet(&path, "%s/%s/%s", abs_srcdir, FAKE_USB_SYSFS, p) < 0)
-        goto error;
+    if ((p = STRSKIP(real_path, USB_SYSFS)))
+        path = g_strdup_printf("%s/%s/%s", abs_srcdir, FAKE_USB_SYSFS, p);
     else if (!p)
         path = g_strdup(real_path);
 
     return path;
-
- error:
-    errno = ENOMEM;
-    return NULL;
 }
 
 DIR *opendir(const char *name)

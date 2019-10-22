@@ -106,11 +106,8 @@ fakeStoragePoolLookupByName(virConnectPtr conn,
     virStoragePoolPtr ret = NULL;
 
     if (STRNEQ(name, "inactive")) {
-        if (virAsprintf(&xmlpath, "%s/%s%s.xml",
-                        abs_srcdir,
-                        STORAGE_POOL_XML_PATH,
-                        name) < 0)
-            return NULL;
+        xmlpath = g_strdup_printf("%s/%s%s.xml", abs_srcdir,
+                                  STORAGE_POOL_XML_PATH, name);
 
         if (!virFileExists(xmlpath)) {
             virReportError(VIR_ERR_NO_STORAGE_POOL,
@@ -190,7 +187,7 @@ fakeStorageVolGetPath(virStorageVolPtr vol)
 {
     char *ret = NULL;
 
-    ignore_value(virAsprintf(&ret, "/some/%s/device/%s", vol->key, vol->name));
+    ret = g_strdup_printf("/some/%s/device/%s", vol->key, vol->name);
 
     return ret;
 }
@@ -208,11 +205,8 @@ fakeStoragePoolGetXMLDesc(virStoragePoolPtr pool,
         return NULL;
     }
 
-    if (virAsprintf(&xmlpath, "%s/%s%s.xml",
-                    abs_srcdir,
-                    STORAGE_POOL_XML_PATH,
-                    pool->name) < 0)
-        return NULL;
+    xmlpath = g_strdup_printf("%s/%s%s.xml", abs_srcdir, STORAGE_POOL_XML_PATH,
+                              pool->name);
 
     if (virTestLoadFile(xmlpath, &xmlbuf) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -594,18 +588,14 @@ testCompareXMLToArgv(const void *data)
     return ret;
 }
 
-static int
+static void
 testInfoSetPaths(struct testQemuInfo *info,
                  const char *suffix)
 {
-    if (virAsprintf(&info->infile, "%s/qemuxml2argvdata/%s.xml",
-                    abs_srcdir, info->name) < 0 ||
-        virAsprintf(&info->outfile, "%s/qemuxml2argvdata/%s%s.args",
-                    abs_srcdir, info->name, suffix ? suffix : "") < 0) {
-        return -1;
-    }
-
-    return 0;
+    info->infile = g_strdup_printf("%s/qemuxml2argvdata/%s.xml",
+                                   abs_srcdir, info->name);
+    info->outfile = g_strdup_printf("%s/qemuxml2argvdata/%s%s.args",
+                                    abs_srcdir, info->name, suffix ? suffix : "");
 }
 
 # define FAKEROOTDIRTEMPLATE abs_builddir "/fakerootdir-XXXXXX"
@@ -713,10 +703,7 @@ mymain(void)
         if (testQemuInfoSetArgs(&info, capslatest, \
                                 __VA_ARGS__, ARG_END) < 0) \
             return EXIT_FAILURE; \
-        if (testInfoSetPaths(&info, _suffix) < 0) { \
-            VIR_TEST_DEBUG("Failed to generate paths for '%s'", _name); \
-            return EXIT_FAILURE; \
-        } \
+        testInfoSetPaths(&info, _suffix); \
         if (virTestRun("QEMU XML-2-ARGV " _name _suffix, \
                        testCompareXMLToArgv, &info) < 0) \
             ret = -1; \

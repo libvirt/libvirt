@@ -188,7 +188,7 @@ canonicalize_file_name(const char *path)
         char *ret;
 
         if ((p = STRSKIP(path, "/some/symlink")))
-            ignore_value(virAsprintfQuiet(&ret, "/gluster%s", p));
+            ret = g_strdup_printf("/gluster%s", p);
         else
             ret = g_strdup(path);
 

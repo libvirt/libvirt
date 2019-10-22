@@ -108,14 +108,11 @@ testCompareXMLToArgvHelper(const void *data)
     g_autofree char *poolxml = NULL;
     g_autofree char *cmdline = NULL;
 
-    if (virAsprintf(&poolxml, "%s/storagepoolxml2xmlin/%s.xml",
-                    abs_srcdir, info->pool) < 0)
-        return -1;
+    poolxml = g_strdup_printf("%s/storagepoolxml2xmlin/%s.xml", abs_srcdir,
+                              info->pool);
 
-    if (virAsprintf(&cmdline, "%s/storagepoolxml2argvdata/%s%s.argv",
-                    abs_srcdir, info->pool, info->platformSuffix) < 0 &&
-        !info->shouldFail)
-        return -1;
+    cmdline = g_strdup_printf("%s/storagepoolxml2argvdata/%s%s.argv",
+                              abs_srcdir, info->pool, info->platformSuffix);
 
     return testCompareXMLToArgvFiles(info->shouldFail, poolxml, cmdline);
 }

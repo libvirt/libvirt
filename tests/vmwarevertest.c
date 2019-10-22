@@ -43,9 +43,7 @@ testVerStrParse(const void *data)
     unsigned long version;
     int vmware_type;
 
-    if (virAsprintf(&path, "%s/vmwareverdata/%s.txt", abs_srcdir,
-                    info->name) < 0)
-        return -1;
+    path = g_strdup_printf("%s/vmwareverdata/%s.txt", abs_srcdir, info->name);
 
     if (virTestLoadFile(path, &databuf) < 0)
         goto cleanup;

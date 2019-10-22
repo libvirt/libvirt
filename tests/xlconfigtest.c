@@ -187,18 +187,14 @@ testCompareHelper(const void *data)
     char *xml = NULL;
     char *cfg = NULL;
 
-    if (virAsprintf(&xml, "%s/xlconfigdata/test-%s.xml",
-                    abs_srcdir, info->name) < 0 ||
-        virAsprintf(&cfg, "%s/xlconfigdata/test-%s.cfg",
-                    abs_srcdir, info->name) < 0)
-        goto cleanup;
+    xml = g_strdup_printf("%s/xlconfigdata/test-%s.xml", abs_srcdir, info->name);
+    cfg = g_strdup_printf("%s/xlconfigdata/test-%s.cfg", abs_srcdir, info->name);
 
     if (info->mode == 0)
         result = testCompareParseXML(cfg, xml, info->replaceVars);
     else
         result = testCompareFormatXML(cfg, xml, info->replaceVars);
 
- cleanup:
     VIR_FREE(xml);
     VIR_FREE(cfg);
 

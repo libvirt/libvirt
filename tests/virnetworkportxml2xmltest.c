@@ -66,13 +66,11 @@ testCompareXMLToXMLHelper(const void *data)
     int ret = -1;
     char *xml = NULL;
 
-    if (virAsprintf(&xml, "%s/virnetworkportxml2xmldata/%s.xml",
-                    abs_srcdir, info->name) < 0)
-        goto cleanup;
+    xml = g_strdup_printf("%s/virnetworkportxml2xmldata/%s.xml", abs_srcdir,
+                          info->name);
 
     ret = testCompareXMLToXMLFiles(xml);
 
- cleanup:
     VIR_FREE(xml);
 
     return ret;

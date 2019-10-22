@@ -86,16 +86,11 @@ testCompareXMLToConfHelper(const void *data)
     char *inxml = NULL;
     char *outconf = NULL;
 
-    if (virAsprintf(&inxml, "%s/networkxml2confdata/%s.xml",
-                    abs_srcdir, info->name) < 0 ||
-        virAsprintf(&outconf, "%s/networkxml2confdata/%s.conf",
-                    abs_srcdir, info->name) < 0) {
-        goto cleanup;
-    }
+    inxml = g_strdup_printf("%s/networkxml2confdata/%s.xml", abs_srcdir, info->name);
+    outconf = g_strdup_printf("%s/networkxml2confdata/%s.conf", abs_srcdir, info->name);
 
     result = testCompareXMLToConfFiles(inxml, outconf, info->caps);
 
- cleanup:
     VIR_FREE(inxml);
     VIR_FREE(outconf);
 

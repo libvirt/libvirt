@@ -158,13 +158,11 @@ mymain(void)
 
     collie_test *test = node_info_tests;
 
-    if (virAsprintf(&poolxml, "%s/storagepoolxml2xmlin/pool-sheepdog.xml",
-                    abs_srcdir) < 0)
-        goto cleanup;
+    poolxml = g_strdup_printf("%s/storagepoolxml2xmlin/pool-sheepdog.xml",
+                              abs_srcdir);
 
-    if (virAsprintf(&volxml, "%s/storagevolxml2xmlin/vol-sheepdog.xml",
-                    abs_srcdir) < 0)
-        goto cleanup;
+    volxml = g_strdup_printf("%s/storagevolxml2xmlin/vol-sheepdog.xml",
+                             abs_srcdir);
 
 #define DO_TEST_NODE(collie) \
     do { \
@@ -202,7 +200,6 @@ mymain(void)
         ++test;
     }
 
- cleanup:
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 

@@ -39,11 +39,8 @@ static int testConfRoundTrip(const void *opaque)
     char *srcfile = NULL;
     char *dstfile = NULL;
 
-    if (virAsprintf(&srcfile, "%s/virconfdata/%s.conf",
-                    abs_srcdir, name) < 0 ||
-        virAsprintf(&dstfile, "%s/virconfdata/%s.out",
-                    abs_srcdir, name) < 0)
-        goto cleanup;
+    srcfile = g_strdup_printf("%s/virconfdata/%s.conf", abs_srcdir, name);
+    dstfile = g_strdup_printf("%s/virconfdata/%s.out", abs_srcdir, name);
 
     if (VIR_ALLOC_N_QUIET(buffer, len) < 0) {
         fprintf(stderr, "out of memory\n");

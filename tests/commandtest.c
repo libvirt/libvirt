@@ -67,11 +67,8 @@ static int checkoutput(const char *testname,
     char *actualname = NULL;
     char *actuallog = NULL;
 
-    if (virAsprintf(&expectname, "%s/commanddata/%s.log", abs_srcdir,
-                    testname) < 0)
-        goto cleanup;
-    if (virAsprintf(&actualname, "%s/commandhelper.log", abs_builddir) < 0)
-        goto cleanup;
+    expectname = g_strdup_printf("%s/commanddata/%s.log", abs_srcdir, testname);
+    actualname = g_strdup_printf("%s/commandhelper.log", abs_builddir);
 
     if (virFileReadAll(expectname, 1024*64, &expectlog) < 0) {
         fprintf(stderr, "cannot read %s\n", expectname);
@@ -86,8 +83,7 @@ static int checkoutput(const char *testname,
     if (prefix) {
         char *tmp = NULL;
 
-        if (virAsprintf(&tmp, "%s%s", prefix, expectlog) < 0)
-            goto cleanup;
+        tmp = g_strdup_printf("%s%s", prefix, expectlog);
 
         VIR_FREE(expectlog);
         expectlog = tmp;
@@ -595,8 +591,7 @@ static int test15(const void *unused G_GNUC_UNUSED)
     char *cwd = NULL;
     int ret = -1;
 
-    if (virAsprintf(&cwd, "%s/commanddata", abs_srcdir) < 0)
-        goto cleanup;
+    cwd = g_strdup_printf("%s/commanddata", abs_srcdir);
     virCommandSetWorkingDirectory(cmd, cwd);
     virCommandSetUmask(cmd, 002);
 
@@ -815,8 +810,7 @@ static int test20(const void *unused G_GNUC_UNUSED)
 
     sigaction(SIGPIPE, &sig_action, NULL);
 
-    if (virAsprintf(&buf, "1\n%100000d\n", 2) < 0)
-        goto cleanup;
+    buf = g_strdup_printf("1\n%100000d\n", 2);
     virCommandSetInputBuffer(cmd, buf);
 
     if (virCommandRun(cmd, NULL) < 0) {
@@ -1174,13 +1168,10 @@ static int test27(const void *unused G_GNUC_UNUSED)
     buffer2[buflen - 2] = '\n';
     buffer2[buflen - 1] = 0;
 
-    if (virAsprintf(&outexpect, TEST27_OUTEXPECT_TEMP,
-                    buffer0, buffer1, buffer2) < 0 ||
-        virAsprintf(&errexpect, TEST27_ERREXPECT_TEMP,
-                    buffer0, buffer1, buffer2) < 0) {
-        printf("Could not virAsprintf expected output\n");
-        goto cleanup;
-    }
+    outexpect = g_strdup_printf(TEST27_OUTEXPECT_TEMP,
+                                buffer0, buffer1, buffer2);
+    errexpect = g_strdup_printf(TEST27_ERREXPECT_TEMP,
+                                buffer0, buffer1, buffer2);
 
     if (pipe(pipe1) < 0 || pipe(pipe2) < 0) {
         printf("Could not create pipe: %s\n", g_strerror(errno));

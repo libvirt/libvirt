@@ -343,11 +343,7 @@ mymain(void)
 {
     int ret = 0;
 
-    if (virAsprintf(&fchost_prefix, "%s/%s", abs_srcdir,
-                    "fchostdata/fc_host/") < 0) {
-        ret = -1;
-        goto cleanup;
-    }
+    fchost_prefix = g_strdup_printf("%s/%s", abs_srcdir, "fchostdata/fc_host/");
 
     if (virTestRun("virVHBAPathExists", test1, NULL) < 0)
         ret = -1;
@@ -377,7 +373,6 @@ mymain(void)
                    test11_xml) < 0)
         ret = -1;
 
- cleanup:
     VIR_FREE(fchost_prefix);
     return ret;
 }

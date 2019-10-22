@@ -109,17 +109,13 @@ testCompareXMLToArgvFiles(bool shouldFail,
         } else {
             char *createCmdline = actualCmdline;
             g_autofree char *cvtCmdline = NULL;
-            int rc;
 
             if (!(cvtCmdline = virCommandToString(cmd, false)))
                 goto cleanup;
 
-            rc = virAsprintf(&actualCmdline, "%s\n%s",
-                             createCmdline, cvtCmdline);
+            actualCmdline = g_strdup_printf("%s\n%s", createCmdline, cvtCmdline);
 
             VIR_FREE(createCmdline);
-            if (rc < 0)
-                goto cleanup;
         }
 
         if (convertStep == VIR_STORAGE_VOL_ENCRYPT_NONE)
@@ -162,23 +158,18 @@ testCompareXMLToArgvHelper(const void *data)
     g_autofree char *inputvolxml = NULL;
     g_autofree char *cmdline = NULL;
 
-    if (info->inputvol &&
-        virAsprintf(&inputvolxml, "%s/storagevolxml2xmlin/%s.xml",
-                    abs_srcdir, info->inputvol) < 0)
-        return -1;
-    if (info->inputpool &&
-        virAsprintf(&inputpoolxml, "%s/storagepoolxml2xmlin/%s.xml",
-                    abs_srcdir, info->inputpool) < 0)
-        return -1;
-    if (virAsprintf(&poolxml, "%s/storagepoolxml2xmlin/%s.xml",
-                    abs_srcdir, info->pool) < 0 ||
-        virAsprintf(&volxml, "%s/storagevolxml2xmlin/%s.xml",
-                    abs_srcdir, info->vol) < 0) {
-        return -1;
-    }
-    if (virAsprintf(&cmdline, "%s/storagevolxml2argvdata/%s.argv",
-                    abs_srcdir, info->cmdline) < 0 && !info->shouldFail)
-        return -1;
+    if (info->inputvol)
+        inputvolxml = g_strdup_printf("%s/storagevolxml2xmlin/%s.xml",
+                                      abs_srcdir, info->inputvol);
+    if (info->inputpool)
+        inputpoolxml = g_strdup_printf("%s/storagepoolxml2xmlin/%s.xml",
+                                       abs_srcdir, info->inputpool);
+    poolxml = g_strdup_printf("%s/storagepoolxml2xmlin/%s.xml",
+                              abs_srcdir, info->pool);
+    volxml = g_strdup_printf("%s/storagevolxml2xmlin/%s.xml",
+                             abs_srcdir, info->vol);
+    cmdline = g_strdup_printf("%s/storagevolxml2argvdata/%s.argv",
+                              abs_srcdir, info->cmdline);
 
     return testCompareXMLToArgvFiles(info->shouldFail, poolxml, volxml,
                                      inputpoolxml, inputvolxml,

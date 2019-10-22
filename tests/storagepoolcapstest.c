@@ -62,10 +62,8 @@ test_virStoragePoolCapsFormat(const void *opaque)
     if (!(poolCaps = virStoragePoolCapsNew(driverCaps)))
         return -1;
 
-    if (virAsprintf(&path, "%s/storagepoolcapsschemadata/poolcaps-%s.xml",
-                    abs_srcdir, data->filename) < 0) {
-        return -1;
-    }
+    path = g_strdup_printf("%s/storagepoolcapsschemadata/poolcaps-%s.xml",
+                           abs_srcdir, data->filename);
 
     if (!(poolCapsXML = virStoragePoolCapsFormat(poolCaps)))
         return -1;

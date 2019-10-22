@@ -109,9 +109,8 @@ checkPath(const char *path,
     char *relPath = NULL;
     char *crippledPath = NULL;
 
-    if (path[0] != '/' &&
-        virAsprintfQuiet(&relPath, "./%s", path) < 0)
-        goto error;
+    if (path[0] != '/')
+        relPath = g_strdup_printf("./%s", path);
 
     /* Le sigh. virFileCanonicalizePath() expects @path to exist, otherwise
      * it will return an error. So if we are called over an non-existent
@@ -141,9 +140,6 @@ checkPath(const char *path,
     VIR_FREE(fullPath);
 
     return;
- error:
-    fprintf(stderr, "Out of memory\n");
-    abort();
 }
 
 

@@ -29,17 +29,15 @@ testCompareXMLToXMLHelper(const void *data)
     char *xml_out = NULL;
     int ret = -1;
 
-    if (virAsprintf(&xml_in, "%s/genericxml2xmlindata/%s.xml",
-                    abs_srcdir, info->name) < 0 ||
-        virAsprintf(&xml_out, "%s/genericxml2xmloutdata/%s.xml",
-                    abs_srcdir, info->name) < 0)
-        goto cleanup;
+    xml_in = g_strdup_printf("%s/genericxml2xmlindata/%s.xml",
+                             abs_srcdir, info->name);
+    xml_out = g_strdup_printf("%s/genericxml2xmloutdata/%s.xml",
+                              abs_srcdir, info->name);
 
     ret = testCompareDomXML2XMLFiles(caps, xmlopt, xml_in,
                                      info->different ? xml_out : xml_in,
                                      !info->inactive_only, 0,
                                      info->expectResult);
- cleanup:
     VIR_FREE(xml_in);
     VIR_FREE(xml_out);
     return ret;

@@ -124,9 +124,7 @@ virMockStatRedirect(const char *path, char **newpath)
         if (!tmp)
             continue;
 
-        if (virAsprintfQuiet(newpath, "%s%s", overrides[i], tmp) < 0)
-            return -1;
-
+        *newpath = g_strdup_printf("%s%s", overrides[i], tmp);
         break;
     }
 

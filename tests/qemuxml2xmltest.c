@@ -98,48 +98,31 @@ testInfoSetPaths(struct testQemuInfo *info,
     VIR_FREE(info->infile);
     VIR_FREE(info->outfile);
 
-    if (virAsprintf(&info->infile, "%s/qemuxml2argvdata/%s.xml",
-                    abs_srcdir, info->name) < 0)
-        goto error;
+    info->infile = g_strdup_printf("%s/qemuxml2argvdata/%s.xml", abs_srcdir,
+                                   info->name);
 
-    if (virAsprintf(&info->outfile,
-                    "%s/qemuxml2xmloutdata/%s-%s%s.xml",
-                    abs_srcdir, info->name,
-                    when == WHEN_ACTIVE ? "active" : "inactive",
-                    suffix) < 0)
-        goto error;
+    info->outfile = g_strdup_printf("%s/qemuxml2xmloutdata/%s-%s%s.xml",
+                                    abs_srcdir, info->name,
+                                    when == WHEN_ACTIVE ? "active" : "inactive", suffix);
 
     if (!virFileExists(info->outfile)) {
         VIR_FREE(info->outfile);
 
-        if (virAsprintf(&info->outfile,
-                        "%s/qemuxml2xmloutdata/%s%s.xml",
-                        abs_srcdir, info->name, suffix) < 0)
-            goto error;
+        info->outfile = g_strdup_printf("%s/qemuxml2xmloutdata/%s%s.xml",
+                                        abs_srcdir, info->name, suffix);
     }
 
     return 0;
-
- error:
-    testQemuInfoClear(info);
-    return -1;
 }
 
 
 static const char *statusPath = abs_srcdir "/qemustatusxml2xmldata/";
 
-static int
+static void
 testInfoSetStatusPaths(struct testQemuInfo *info)
 {
-    if (virAsprintf(&info->infile, "%s%s-in.xml", statusPath, info->name) < 0 ||
-        virAsprintf(&info->outfile, "%s%s-out.xml", statusPath, info->name) < 0)
-        goto error;
-
-    return 0;
-
- error:
-    testQemuInfoClear(info);
-    return -1;
+    info->infile = g_strdup_printf("%s%s-in.xml", statusPath, info->name);
+    info->outfile = g_strdup_printf("%s%s-out.xml", statusPath, info->name);
 }
 
 
@@ -1286,11 +1269,11 @@ mymain(void)
         if (testQemuInfoSetArgs(&info, capslatest, \
                                 ARG_QEMU_CAPS, QEMU_CAPS_LAST, \
                                 ARG_END) < 0 || \
-            qemuTestCapsCacheInsert(driver.qemuCapsCache, info.qemuCaps) < 0 || \
-            testInfoSetStatusPaths(&info) < 0) { \
+            qemuTestCapsCacheInsert(driver.qemuCapsCache, info.qemuCaps) < 0) { \
             VIR_TEST_DEBUG("Failed to generate status test data for '%s'", _name); \
             return -1; \
         } \
+        testInfoSetStatusPaths(&info); \
 \
         if (virTestRun("QEMU status XML-2-XML " _name, \
                        testCompareStatusXMLToXMLFiles, &info) < 0) \

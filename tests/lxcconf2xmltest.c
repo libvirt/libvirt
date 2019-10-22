@@ -71,15 +71,13 @@ testCompareXMLToConfigHelperLegacy(const void *data)
     char *xml = NULL;
     char *config = NULL;
 
-    if (virAsprintf(&xml, "%s/lxcconf2xmldata/lxcconf2xml-%s.xml",
-                    abs_srcdir, info->name) < 0 ||
-        virAsprintf(&config, "%s/lxcconf2xmldata/lxcconf2xml-%s.config",
-                    abs_srcdir, info->name) < 0)
-        goto cleanup;
+    xml = g_strdup_printf("%s/lxcconf2xmldata/lxcconf2xml-%s.xml",
+                          abs_srcdir, info->name);
+    config = g_strdup_printf("%s/lxcconf2xmldata/lxcconf2xml-%s.config",
+                             abs_srcdir, info->name);
 
     result = testCompareXMLToConfigFiles(xml, config, info->expectError);
 
- cleanup:
     VIR_FREE(xml);
     VIR_FREE(config);
     return result;
@@ -93,15 +91,13 @@ testCompareXMLToConfigHelperV3(const void *data)
     char *xml = NULL;
     char *config = NULL;
 
-    if (virAsprintf(&xml, "%s/lxcconf2xmldata/lxcconf2xml-%s.xml",
-                    abs_srcdir, info->name) < 0 ||
-        virAsprintf(&config, "%s/lxcconf2xmldata/lxcconf2xml-%s-v3.config",
-                    abs_srcdir, info->name) < 0)
-        goto cleanup;
+    xml = g_strdup_printf("%s/lxcconf2xmldata/lxcconf2xml-%s.xml",
+                          abs_srcdir, info->name);
+    config = g_strdup_printf("%s/lxcconf2xmldata/lxcconf2xml-%s-v3.config",
+                             abs_srcdir, info->name);
 
     result = testCompareXMLToConfigFiles(xml, config, info->expectError);
 
- cleanup:
     VIR_FREE(xml);
     VIR_FREE(config);
     return result;

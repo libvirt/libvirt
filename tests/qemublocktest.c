@@ -82,8 +82,7 @@ testBackingXMLjsonXML(const void *args)
     if (!(propsstr = virJSONValueToString(wrapper, false)))
         return -1;
 
-    if (virAsprintf(&protocolwrapper, "json:%s", propsstr) < 0)
-        return -1;
+    protocolwrapper = g_strdup_printf("json:%s", propsstr);
 
     if (virStorageSourceNewFromBackingAbsolute(protocolwrapper,
                                                &jsonsrc) < 0) {
@@ -163,9 +162,8 @@ testQemuDiskXMLToJSONFakeSecrets(virStorageSourcePtr src)
         srcpriv->secinfo->type = VIR_DOMAIN_SECRET_INFO_TYPE_AES;
         srcpriv->secinfo->s.aes.username = g_strdup(src->auth->username);
 
-        if (virAsprintf(&srcpriv->secinfo->s.aes.alias, "%s-secalias",
-                        NULLSTR(src->nodestorage)) < 0)
-            return -1;
+        srcpriv->secinfo->s.aes.alias = g_strdup_printf("%s-secalias",
+                                                        NULLSTR(src->nodestorage));
     }
 
     if (src->encryption) {
@@ -173,9 +171,8 @@ testQemuDiskXMLToJSONFakeSecrets(virStorageSourcePtr src)
             return -1;
 
         srcpriv->encinfo->type = VIR_DOMAIN_SECRET_INFO_TYPE_AES;
-        if (virAsprintf(&srcpriv->encinfo->s.aes.alias, "%s-encalias",
-                        NULLSTR(src->nodeformat)) < 0)
-            return -1;
+        srcpriv->encinfo->s.aes.alias = g_strdup_printf("%s-encalias",
+                                                        NULLSTR(src->nodeformat));
     }
 
     return 0;
@@ -197,9 +194,7 @@ testQemuDiskXMLToProps(const void *opaque)
     char *xmlstr = NULL;
     int ret = -1;
 
-    if (virAsprintf(&xmlpath, "%s%s.xml",
-                    testQemuDiskXMLToJSONPath, data->name) < 0)
-        goto cleanup;
+    xmlpath = g_strdup_printf("%s%s.xml", testQemuDiskXMLToJSONPath, data->name);
 
     if (virTestLoadFile(xmlpath, &xmlstr) < 0)
         goto cleanup;
@@ -316,9 +311,7 @@ testQemuDiskXMLToPropsValidateFile(const void *opaque)
     if (data->fail)
         return EXIT_AM_SKIP;
 
-    if (virAsprintf(&jsonpath, "%s%s.json",
-                    testQemuDiskXMLToJSONPath, data->name) < 0)
-        goto cleanup;
+    jsonpath = g_strdup_printf("%s%s.json", testQemuDiskXMLToJSONPath, data->name);
 
     for (i = 0; i < data->nprops; i++) {
         char *jsonstr;
@@ -364,9 +357,7 @@ testQemuImageCreateLoadDiskXML(const char *name,
     g_autofree char *xmlpath = NULL;
     virStorageSourcePtr ret = NULL;
 
-    if (virAsprintf(&xmlpath, "%s%s.xml",
-                    testQemuImageCreatePath, name) < 0)
-        return NULL;
+    xmlpath = g_strdup_printf("%s%s.xml", testQemuImageCreatePath, name);
 
     if (!(doc = virXMLParseFileCtxt(xmlpath, &ctxt)))
         return NULL;
@@ -462,9 +453,7 @@ testQemuImageCreate(const void *opaque)
     virBufferTrim(&actualbuf, "\n", -1);
     virBufferAddLit(&actualbuf, "\n");
 
-    if (virAsprintf(&jsonpath, "%s%s.json",
-                    testQemuImageCreatePath, data->name) < 0)
-        return -1;
+    jsonpath = g_strdup_printf("%s%s.json", testQemuImageCreatePath, data->name);
 
     if (!(actual = virBufferContentAndReset(&actualbuf)))
         return -1;
@@ -485,9 +474,8 @@ testQemuDiskXMLToPropsValidateFileSrcOnly(const void *opaque)
     if (data->fail)
         return EXIT_AM_SKIP;
 
-    if (virAsprintf(&jsonpath, "%s%s-srconly.json",
-                    testQemuDiskXMLToJSONPath, data->name) < 0)
-        return -1;
+    jsonpath = g_strdup_printf("%s%s-srconly.json", testQemuDiskXMLToJSONPath,
+                               data->name);
 
     for (i = 0; i < data->npropssrc; i++) {
         g_autofree char *jsonstr = NULL;

@@ -31,11 +31,10 @@ testCompareXMLToXMLHelper(const void *data)
     bool is_different = info->flags & FLAG_IS_DIFFERENT;
     int ret = -1;
 
-    if (virAsprintf(&xml_in, "%s/bhyvexml2argvdata/bhyvexml2argv-%s.xml",
-                    abs_srcdir, info->name) < 0 ||
-        virAsprintf(&xml_out, "%s/bhyvexml2xmloutdata/bhyvexml2xmlout-%s.xml",
-                    abs_srcdir, info->name) < 0)
-        goto cleanup;
+    xml_in = g_strdup_printf("%s/bhyvexml2argvdata/bhyvexml2argv-%s.xml",
+                             abs_srcdir, info->name);
+    xml_out = g_strdup_printf("%s/bhyvexml2xmloutdata/bhyvexml2xmlout-%s.xml",
+                              abs_srcdir, info->name);
 
     ret = testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt, xml_in,
                                      is_different ? xml_out : xml_in,
@@ -49,7 +48,6 @@ testCompareXMLToXMLHelper(const void *data)
         virResetLastError();
     }
 
- cleanup:
     VIR_FREE(xml_in);
     VIR_FREE(xml_out);
     return ret;

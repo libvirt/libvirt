@@ -24,9 +24,7 @@ testParseFormatFW(const void *opaque)
     g_autofree char *expected = NULL;
     g_autofree char *actual = NULL;
 
-    if (virAsprintf(&path, "%s/qemufirmwaredata/%s",
-                    abs_srcdir, filename) < 0)
-        return -1;
+    path = g_strdup_printf("%s/qemufirmwaredata/%s", abs_srcdir, filename);
 
     if (!(fw = qemuFirmwareParse(path)))
         return -1;

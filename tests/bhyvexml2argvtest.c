@@ -119,19 +119,17 @@ testCompareXMLToArgvHelper(const void *data)
     char *xml = NULL;
     char *args = NULL, *ldargs = NULL, *dmargs = NULL;
 
-    if (virAsprintf(&xml, "%s/bhyvexml2argvdata/bhyvexml2argv-%s.xml",
-                    abs_srcdir, info->name) < 0 ||
-        virAsprintf(&args, "%s/bhyvexml2argvdata/bhyvexml2argv-%s.args",
-                    abs_srcdir, info->name) < 0 ||
-        virAsprintf(&ldargs, "%s/bhyvexml2argvdata/bhyvexml2argv-%s.ldargs",
-                    abs_srcdir, info->name) < 0 ||
-        virAsprintf(&dmargs, "%s/bhyvexml2argvdata/bhyvexml2argv-%s.devmap",
-                    abs_srcdir, info->name) < 0)
-        goto cleanup;
+    xml = g_strdup_printf("%s/bhyvexml2argvdata/bhyvexml2argv-%s.xml",
+                          abs_srcdir, info->name);
+    args = g_strdup_printf("%s/bhyvexml2argvdata/bhyvexml2argv-%s.args",
+                           abs_srcdir, info->name);
+    ldargs = g_strdup_printf("%s/bhyvexml2argvdata/bhyvexml2argv-%s.ldargs",
+                             abs_srcdir, info->name);
+    dmargs = g_strdup_printf("%s/bhyvexml2argvdata/bhyvexml2argv-%s.devmap",
+                             abs_srcdir, info->name);
 
     ret = testCompareXMLToArgvFiles(xml, args, ldargs, dmargs, info->flags);
 
- cleanup:
     VIR_FREE(xml);
     VIR_FREE(args);
     VIR_FREE(ldargs);

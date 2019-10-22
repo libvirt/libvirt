@@ -137,9 +137,8 @@ int virTestMain(int argc,
             } \
             if (!preload) { \
                 newenv = (char *) lib; \
-            } else if (virAsprintf(&newenv, "%s:%s", lib, preload) < 0) { \
-                perror("virAsprintf"); \
-                return EXIT_FAILURE; \
+            } else { \
+                newenv = g_strdup_printf("%s:%s", lib, preload); \
             } \
             setenv(PRELOAD_VAR, newenv, 1); \
             FORCE_FLAT_NAMESPACE \

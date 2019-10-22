@@ -349,11 +349,8 @@ mymain(void)
             domain, bus, slot, function, NULL \
         }; \
         char *label = NULL; \
-        if (virAsprintf(&label, "%s(%04x:%02x:%02x.%x)", \
-                        #fnc, domain, bus, slot, function) < 0) { \
-            ret = -1; \
-            break; \
-        } \
+        label = g_strdup_printf("%s(%04x:%02x:%02x.%x)", \
+                                #fnc, domain, bus, slot, function); \
         if (virTestRun(label, fnc, &data) < 0) \
             ret = -1; \
         VIR_FREE(label); \
@@ -365,12 +362,9 @@ mymain(void)
             domain, bus, slot, function, driver \
         }; \
         char *label = NULL; \
-        if (virAsprintf(&label, "PCI driver %04x:%02x:%02x.%x is %s", \
-                        domain, bus, slot, function, \
-                        NULLSTR(driver)) < 0) { \
-            ret = -1; \
-            break; \
-        } \
+        label = g_strdup_printf("PCI driver %04x:%02x:%02x.%x is %s", \
+                                domain, bus, slot, function, \
+                                NULLSTR(driver)); \
         if (virTestRun(label, testVirPCIDeviceCheckDriverTest, \
                        &data) < 0) \
             ret = -1; \

@@ -376,9 +376,8 @@ static void init_sysfs(void)
 
     VIR_FREE(fakesysfscgroupdir);
 
-    if (virAsprintfQuiet(&fakesysfscgroupdir, "%s%s",
-                         fakerootdir, SYSFS_CGROUP_PREFIX) < 0)
-        abort();
+    fakesysfscgroupdir = g_strdup_printf("%s%s",
+                                         fakerootdir, SYSFS_CGROUP_PREFIX);
 
     if (virFileMakePath(fakesysfscgroupdir) < 0) {
         fprintf(stderr, "Cannot create %s\n", fakesysfscgroupdir);
@@ -459,10 +458,8 @@ FILE *fopen(const char *path, const char *mode)
             errno = EACCES;
             return NULL;
         }
-        if (virAsprintfQuiet(&filepath, "%s/vircgroupdata/%s.%s",
-                             abs_srcdir, filename, type) < 0) {
-            abort();
-        }
+        filepath = g_strdup_printf("%s/vircgroupdata/%s.%s",
+                                   abs_srcdir, filename, type);
         rc = real_fopen(filepath, mode);
         free(filepath);
         return rc;

@@ -796,11 +796,9 @@ qemuMonitorJSONTestAttachOneChardev(virDomainXMLOptionPtr xmlopt,
     if (!reply)
         reply = "";
 
-    if (virAsprintf(&jsonreply, "{\"return\": {%s}}", reply) < 0)
-        goto cleanup;
+    jsonreply = g_strdup_printf("{\"return\": {%s}}", reply);
 
-    if (virAsprintf(&fulllabel, "qemuMonitorJSONTestAttachChardev(%s)", label) < 0)
-        goto cleanup;
+    fulllabel = g_strdup_printf("qemuMonitorJSONTestAttachChardev(%s)", label);
 
     data.chr = chr;
     data.fail = fail;
@@ -2459,13 +2457,10 @@ testQemuMonitorJSONGetCPUData(const void *opaque)
     if (!(test = qemuMonitorTestNewSchema(data->xmlopt, data->schema)))
         return -1;
 
-    if (virAsprintf(&jsonFile,
-                    "%s/qemumonitorjsondata/qemumonitorjson-getcpu-%s.json",
-                    abs_srcdir, data->name) < 0 ||
-        virAsprintf(&dataFile,
-                    "%s/qemumonitorjsondata/qemumonitorjson-getcpu-%s.data",
-                    abs_srcdir, data->name) < 0)
-        goto cleanup;
+    jsonFile = g_strdup_printf("%s/qemumonitorjsondata/qemumonitorjson-getcpu-%s.json",
+                               abs_srcdir, data->name);
+    dataFile = g_strdup_printf("%s/qemumonitorjsondata/qemumonitorjson-getcpu-%s.data",
+                               abs_srcdir, data->name);
 
     if (virTestLoadFile(jsonFile, &jsonStr) < 0)
         goto cleanup;
@@ -2712,16 +2707,12 @@ testQemuMonitorCPUInfo(const void *opaque)
     if (!(test = qemuMonitorTestNewSchema(data->xmlopt, data->schema)))
         return -1;
 
-    if (virAsprintf(&queryCpusFile,
-                    "%s/qemumonitorjsondata/qemumonitorjson-cpuinfo-%s-cpus.json",
-                    abs_srcdir, data->name) < 0 ||
-        virAsprintf(&queryHotpluggableFile,
-                    "%s/qemumonitorjsondata/qemumonitorjson-cpuinfo-%s-hotplug.json",
-                    abs_srcdir, data->name) < 0 ||
-        virAsprintf(&dataFile,
-                    "%s/qemumonitorjsondata/qemumonitorjson-cpuinfo-%s.data",
-                    abs_srcdir, data->name) < 0)
-        goto cleanup;
+    queryCpusFile = g_strdup_printf("%s/qemumonitorjsondata/qemumonitorjson-cpuinfo-%s-cpus.json",
+                                    abs_srcdir, data->name);
+    queryHotpluggableFile = g_strdup_printf("%s/qemumonitorjsondata/qemumonitorjson-cpuinfo-%s-hotplug.json",
+                                            abs_srcdir, data->name);
+    dataFile = g_strdup_printf("%s/qemumonitorjsondata/qemumonitorjson-cpuinfo-%s.data",
+                               abs_srcdir, data->name);
 
     if (virTestLoadFile(queryCpusFile, &queryCpusStr) < 0)
         goto cleanup;
@@ -2816,9 +2807,8 @@ testBlockNodeNameDetect(const void *opaque)
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     int ret = -1;
 
-    if (virAsprintf(&resultFile, "%s/%s%s.result",
-                    abs_srcdir, pathprefix, testname) < 0)
-        goto cleanup;
+    resultFile = g_strdup_printf("%s/%s%s.result", abs_srcdir, pathprefix,
+                                 testname);
 
     if (!(namedNodesJson = virTestLoadFileJSON(pathprefix, testname,
                                                "-named-nodes.json", NULL)))
@@ -2958,13 +2948,10 @@ testQueryJobs(const void *opaque)
     if (!test)
         return -1;
 
-    if (virAsprintf(&filenameJSON,
-                    abs_srcdir "/qemumonitorjsondata/query-jobs-%s.json",
-                    data->name) < 0 ||
-        virAsprintf(&filenameResult,
-                    abs_srcdir "/qemumonitorjsondata/query-jobs-%s.result",
-                    data->name) < 0)
-        goto cleanup;
+    filenameJSON = g_strdup_printf(abs_srcdir "/qemumonitorjsondata/query-jobs-%s.json",
+                                   data->name);
+    filenameResult = g_strdup_printf(abs_srcdir "/qemumonitorjsondata/query-jobs-%s.result",
+                                     data->name);
 
     if (virTestLoadFile(filenameJSON, &fileJSON) < 0)
         goto cleanup;

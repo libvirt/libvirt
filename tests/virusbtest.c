@@ -52,10 +52,8 @@ static int testDeviceFileActor(virUSBDevicePtr dev,
     char *str = NULL;
     int ret = 0;
 
-    if (virAsprintf(&str, USB_DEVFS "%03d/%03d",
-                    virUSBDeviceGetBus(dev),
-                    virUSBDeviceGetDevno(dev)) < 0)
-        return -1;
+    str = g_strdup_printf(USB_DEVFS "%03d/%03d", virUSBDeviceGetBus(dev),
+                          virUSBDeviceGetDevno(dev));
 
     if (STRNEQ(path, str)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,

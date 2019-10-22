@@ -196,8 +196,7 @@ testSocketAccept(const void *opaque)
             VIR_WARN("Failed to create temporary directory");
             goto cleanup;
         }
-        if (virAsprintf(&path, "%s/test.sock", tmpdir) < 0)
-            goto cleanup;
+        path = g_strdup_printf("%s/test.sock", tmpdir);
 
         if (virNetSocketNewListenUNIX(path, 0700, -1, getegid(), &usock) < 0)
             goto cleanup;
@@ -321,8 +320,7 @@ static int testSocketUNIXAddrs(const void *data G_GNUC_UNUSED)
         VIR_WARN("Failed to create temporary directory");
         goto cleanup;
     }
-    if (virAsprintf(&path, "%s/test.sock", tmpdir) < 0)
-        goto cleanup;
+    path = g_strdup_printf("%s/test.sock", tmpdir);
 
     if (virNetSocketNewListenUNIX(path, 0700, -1, getegid(), &lsock) < 0)
         goto cleanup;

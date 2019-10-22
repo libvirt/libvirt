@@ -62,16 +62,11 @@ testCompareXMLToXMLHelper(const void *data)
     char *inxml = NULL;
     char *outxml = NULL;
 
-    if (virAsprintf(&inxml, "%s/nwfilterxml2xmlin/%s.xml",
-                    abs_srcdir, tp->name) < 0 ||
-        virAsprintf(&outxml, "%s/nwfilterxml2xmlout/%s.xml",
-                    abs_srcdir, tp->name) < 0) {
-        goto cleanup;
-    }
+    inxml = g_strdup_printf("%s/nwfilterxml2xmlin/%s.xml", abs_srcdir, tp->name);
+    outxml = g_strdup_printf("%s/nwfilterxml2xmlout/%s.xml", abs_srcdir, tp->name);
 
     result = testCompareXMLToXMLFiles(inxml, outxml, tp->expect_warning);
 
- cleanup:
     VIR_FREE(inxml);
     VIR_FREE(outxml);
 

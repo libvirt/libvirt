@@ -45,8 +45,7 @@ prepareObjects(virQEMUDriverPtr driver,
     g_autofree char *domxml = NULL;
     g_autofree char *latestCapsFile = NULL;
 
-    if (virAsprintf(&filename, "%s/qemuxml2argvdata/%s.xml", abs_srcdir, xmlname) < 0)
-        return -1;
+    filename = g_strdup_printf("%s/qemuxml2argvdata/%s.xml", abs_srcdir, xmlname);
 
     if (virTestLoadFile(filename, &domxml) < 0)
         return -1;

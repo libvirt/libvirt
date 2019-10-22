@@ -75,9 +75,8 @@ cpuTestLoadXML(virArch arch, const char *name)
     xmlXPathContextPtr ctxt = NULL;
     virCPUDefPtr cpu = NULL;
 
-    if (virAsprintf(&xml, "%s/cputestdata/%s-%s.xml",
-                    abs_srcdir, virArchToString(arch), name) < 0)
-        goto cleanup;
+    xml = g_strdup_printf("%s/cputestdata/%s-%s.xml", abs_srcdir,
+                          virArchToString(arch), name);
 
     if (!(doc = virXMLParseFileCtxt(xml, &ctxt)))
         goto cleanup;
@@ -105,9 +104,8 @@ cpuTestLoadMultiXML(virArch arch,
     int n;
     size_t i;
 
-    if (virAsprintf(&xml, "%s/cputestdata/%s-%s.xml",
-                    abs_srcdir, virArchToString(arch), name) < 0)
-        goto cleanup;
+    xml = g_strdup_printf("%s/cputestdata/%s-%s.xml", abs_srcdir,
+                          virArchToString(arch), name);
 
     if (!(doc = virXMLParseFileCtxt(xml, &ctxt)))
         goto cleanup;
@@ -150,9 +148,8 @@ cpuTestCompareXML(virArch arch,
     char *actual = NULL;
     int ret = -1;
 
-    if (virAsprintf(&xml, "%s/cputestdata/%s-%s.xml",
-                    abs_srcdir, virArchToString(arch), name) < 0)
-        goto cleanup;
+    xml = g_strdup_printf("%s/cputestdata/%s-%s.xml", abs_srcdir,
+                          virArchToString(arch), name);
 
     if (!(actual = virCPUDefFormat(cpu, NULL)))
         goto cleanup;
@@ -341,8 +338,7 @@ cpuTestBaseline(const void *arg)
         suffix = "migratable";
     else
         suffix = "result";
-    if (virAsprintf(&result, "%s-%s", data->name, suffix) < 0)
-        goto cleanup;
+    result = g_strdup_printf("%s-%s", data->name, suffix);
 
     if (cpuTestCompareXML(data->arch, baseline, result) < 0)
         goto cleanup;
@@ -395,8 +391,7 @@ cpuTestUpdate(const void *arg)
     if (virCPUUpdate(host->arch, cpu, migHost) < 0)
         goto cleanup;
 
-    if (virAsprintf(&result, "%s+%s", data->host, data->name) < 0)
-        goto cleanup;
+    result = g_strdup_printf("%s+%s", data->host, data->name);
 
     ret = cpuTestCompareXML(data->arch, cpu, result);
 
@@ -481,9 +476,8 @@ cpuTestMakeQEMUCaps(const struct data *data)
     bool fail_no_props = true;
     char *json = NULL;
 
-    if (virAsprintf(&json, "%s/cputestdata/%s-cpuid-%s.json",
-                    abs_srcdir, virArchToString(data->arch), data->host) < 0)
-        goto error;
+    json = g_strdup_printf("%s/cputestdata/%s-cpuid-%s.json", abs_srcdir,
+                           virArchToString(data->arch), data->host);
 
     if (!(testMon = qemuMonitorTestNewFromFile(json, driver.xmlopt, true)))
         goto error;
@@ -585,9 +579,8 @@ cpuTestCPUID(bool guest, const void *arg)
     char *result = NULL;
     virDomainCapsCPUModelsPtr models = NULL;
 
-    if (virAsprintf(&hostFile, "%s/cputestdata/%s-cpuid-%s.xml",
-                    abs_srcdir, virArchToString(data->arch), data->host) < 0)
-        goto cleanup;
+    hostFile = g_strdup_printf("%s/cputestdata/%s-cpuid-%s.xml", abs_srcdir,
+                               virArchToString(data->arch), data->host);
 
     if (virTestLoadFile(hostFile, &host) < 0 ||
         !(hostData = virCPUDataParse(host)))
@@ -618,10 +611,7 @@ cpuTestCPUID(bool guest, const void *arg)
     if (cpuDecode(cpu, hostData, models) < 0)
         goto cleanup;
 
-    if (virAsprintf(&result, "cpuid-%s-%s",
-                    data->host,
-                    guest ? "guest" : "host") < 0)
-        goto cleanup;
+    result = g_strdup_printf("cpuid-%s-%s", data->host, guest ? "guest" : "host");
 
     ret = cpuTestCompareXML(data->arch, cpu, result);
 
@@ -663,17 +653,12 @@ cpuTestCompareSignature(const struct data *data,
 
     signature = virCPUx86DataGetSignature(hostData, &family, &model, &stepping);
 
-    if (virAsprintf(&result, "%s/cputestdata/%s-cpuid-%s.sig",
-                    abs_srcdir, virArchToString(data->arch), data->host) < 0)
-        return -1;
+    result = g_strdup_printf("%s/cputestdata/%s-cpuid-%s.sig", abs_srcdir,
+                             virArchToString(data->arch), data->host);
 
-    if (virAsprintf(&sigStr,
-                    "%1$06lx\n"
-                    "family:   %2$3u (0x%2$02x)\n"
-                    "model:    %3$3u (0x%3$02x)\n"
-                    "stepping: %4$3u (0x%4$02x)\n",
-                    signature, family, model, stepping) < 0)
-        return -1;
+    sigStr = g_strdup_printf("%1$06lx\n" "family:   %2$3u (0x%2$02x)\n"
+                             "model:    %3$3u (0x%3$02x)\n" "stepping: %4$3u (0x%4$02x)\n",
+                             signature, family, model, stepping);
 
     return virTestCompareToFile(sigStr, result);
 }
@@ -688,9 +673,8 @@ cpuTestCPUIDSignature(const void *arg)
     char *host = NULL;
     int ret = -1;
 
-    if (virAsprintf(&hostFile, "%s/cputestdata/%s-cpuid-%s.xml",
-                    abs_srcdir, virArchToString(data->arch), data->host) < 0)
-        goto cleanup;
+    hostFile = g_strdup_printf("%s/cputestdata/%s-cpuid-%s.xml", abs_srcdir,
+                               virArchToString(data->arch), data->host);
 
     if (virTestLoadFile(hostFile, &host) < 0 ||
         !(hostData = virCPUDataParse(host)))
@@ -813,24 +797,24 @@ cpuTestUpdateLive(const void *arg)
     virDomainCapsCPUModelsPtr models = NULL;
     int ret = -1;
 
-    if (virAsprintf(&cpuFile, "cpuid-%s-guest", data->host) < 0 ||
-        !(cpu = cpuTestLoadXML(data->arch, cpuFile)))
+    cpuFile = g_strdup_printf("cpuid-%s-guest", data->host);
+    if (!(cpu = cpuTestLoadXML(data->arch, cpuFile)))
         goto cleanup;
 
-    if (virAsprintf(&enabledFile, "%s/cputestdata/%s-cpuid-%s-enabled.xml",
-                    abs_srcdir, virArchToString(data->arch), data->host) < 0 ||
-        virTestLoadFile(enabledFile, &enabled) < 0 ||
+    enabledFile = g_strdup_printf("%s/cputestdata/%s-cpuid-%s-enabled.xml",
+                                  abs_srcdir, virArchToString(data->arch), data->host);
+    if (virTestLoadFile(enabledFile, &enabled) < 0 ||
         !(enabledData = virCPUDataParse(enabled)))
         goto cleanup;
 
-    if (virAsprintf(&disabledFile, "%s/cputestdata/%s-cpuid-%s-disabled.xml",
-                    abs_srcdir, virArchToString(data->arch), data->host) < 0 ||
-        virTestLoadFile(disabledFile, &disabled) < 0 ||
+    disabledFile = g_strdup_printf("%s/cputestdata/%s-cpuid-%s-disabled.xml",
+                                   abs_srcdir, virArchToString(data->arch), data->host);
+    if (virTestLoadFile(disabledFile, &disabled) < 0 ||
         !(disabledData = virCPUDataParse(disabled)))
         goto cleanup;
 
-    if (virAsprintf(&expectedFile, "cpuid-%s-json", data->host) < 0 ||
-        !(expected = cpuTestLoadXML(data->arch, expectedFile)))
+    expectedFile = g_strdup_printf("cpuid-%s-json", data->host);
+    if (!(expected = cpuTestLoadXML(data->arch, expectedFile)))
         goto cleanup;
 
     /* In case the host CPU signature does not exactly match any CPU model from
@@ -902,8 +886,7 @@ cpuTestJSONCPUID(const void *arg)
     char *result = NULL;
     int ret = -1;
 
-    if (virAsprintf(&result, "cpuid-%s-json", data->host) < 0)
-        goto cleanup;
+    result = g_strdup_printf("cpuid-%s-json", data->host);
 
     if (!(qemuCaps = cpuTestMakeQEMUCaps(data)))
         goto cleanup;
@@ -1024,11 +1007,8 @@ mymain(void)
         tmp = virTestLogContentAndReset(); \
         VIR_FREE(tmp); \
  \
-        if (virAsprintf(&testLabel, "%s(%s): %s", \
-                        #api, virArchToString(arch), name) < 0) { \
-            ret = -1; \
-            break; \
-        } \
+        testLabel = g_strdup_printf("%s(%s): %s", #api, \
+                                    virArchToString(arch), name); \
  \
         if (virTestRun(testLabel, api, &data) < 0) { \
             if (virTestGetDebug()) { \
@@ -1068,12 +1048,9 @@ mymain(void)
             suffix = " (expanded)"; \
         if ((flags) & VIR_CONNECT_BASELINE_CPU_MIGRATABLE) \
             suffix = " (migratable)"; \
-        if (virAsprintf(&label, "%s%s", name, suffix) < 0) { \
-            ret = -1; \
-        } else { \
-            DO_TEST(arch, cpuTestBaseline, label, NULL, \
-                    "baseline-" name, NULL, flags, result); \
-        } \
+        label = g_strdup_printf("%s%s", name, suffix); \
+        DO_TEST(arch, cpuTestBaseline, label, NULL, \
+                "baseline-" name, NULL, flags, result); \
         VIR_FREE(label); \
     } while (0)
 

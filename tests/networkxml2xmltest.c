@@ -90,17 +90,12 @@ testCompareXMLToXMLHelper(const void *data)
     char *inxml = NULL;
     char *outxml = NULL;
 
-    if (virAsprintf(&inxml, "%s/networkxml2xmlin/%s.xml",
-                    abs_srcdir, info->name) < 0 ||
-        virAsprintf(&outxml, "%s/networkxml2xmlout/%s.xml",
-                    abs_srcdir, info->name) < 0) {
-        goto cleanup;
-    }
+    inxml = g_strdup_printf("%s/networkxml2xmlin/%s.xml", abs_srcdir, info->name);
+    outxml = g_strdup_printf("%s/networkxml2xmlout/%s.xml", abs_srcdir, info->name);
 
     result = testCompareXMLToXMLFiles(inxml, outxml, info->flags,
                                       info->expectResult);
 
- cleanup:
     VIR_FREE(inxml);
     VIR_FREE(outxml);
 

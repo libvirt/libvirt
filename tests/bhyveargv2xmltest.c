@@ -106,15 +106,13 @@ testCompareXMLToArgvHelper(const void *data)
     char *xml = NULL;
     char *args = NULL;
 
-    if (virAsprintf(&xml, "%s/bhyveargv2xmldata/bhyveargv2xml-%s.xml",
-                    abs_srcdir, info->name) < 0 ||
-        virAsprintf(&args, "%s/bhyveargv2xmldata/bhyveargv2xml-%s.args",
-                    abs_srcdir, info->name) < 0)
-        goto cleanup;
+    xml = g_strdup_printf("%s/bhyveargv2xmldata/bhyveargv2xml-%s.xml",
+                          abs_srcdir, info->name);
+    args = g_strdup_printf("%s/bhyveargv2xmldata/bhyveargv2xml-%s.args",
+                           abs_srcdir, info->name);
 
     result = testCompareXMLToArgvFiles(xml, args, info->flags);
 
- cleanup:
     VIR_FREE(xml);
     VIR_FREE(args);
     return result;

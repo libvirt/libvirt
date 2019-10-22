@@ -103,8 +103,7 @@ testGetCaps(char *capsData, const testQemuData *data)
     virArch arch = virArchFromString(data->archName);
     g_autofree char *binary = NULL;
 
-    if (virAsprintf(&binary, "/usr/bin/qemu-system-%s", data->archName) < 0)
-        goto error;
+    binary = g_strdup_printf("/usr/bin/qemu-system-%s", data->archName);
 
     if ((qemuCaps = testQemuGetCaps(capsData)) == NULL) {
         fprintf(stderr, "failed to parse qemu capabilities flags");
@@ -143,14 +142,11 @@ testQemuCapsXML(const void *opaque)
     char *capsXml = NULL;
     virCapsPtr capsProvided = NULL;
 
-    if (virAsprintf(&xmlFile, "%s/caps.%s.xml",
-                    data->outputDir, data->archName) < 0)
-        goto cleanup;
+    xmlFile = g_strdup_printf("%s/caps.%s.xml", data->outputDir, data->archName);
 
-    if (virAsprintf(&capsFile, "%s/%s_%s.%s.%s",
-                    data->inputDir, data->prefix, data->version,
-                    data->archName, data->suffix) < 0)
-        goto cleanup;
+    capsFile = g_strdup_printf("%s/%s_%s.%s.%s",
+                               data->inputDir, data->prefix, data->version,
+                               data->archName, data->suffix);
 
     if (virTestLoadFile(capsFile, &capsData) < 0)
         goto cleanup;
@@ -186,8 +182,7 @@ doCapsTest(const char *inputDir,
     testQemuDataPtr data = (testQemuDataPtr) opaque;
     g_autofree char *title = NULL;
 
-    if (virAsprintf(&title, "%s (%s)", version, archName) < 0)
-        return -1;
+    title = g_strdup_printf("%s (%s)", version, archName);
 
     data->inputDir = inputDir;
     data->prefix = prefix;

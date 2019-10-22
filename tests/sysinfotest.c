@@ -90,16 +90,14 @@ sysinfotest_run(const char *test,
 
     testdata.func = func;
 
-    if ((decoder &&
-         virAsprintf(&testdata.decoder, "%s/%s", abs_srcdir, decoder) < 0) ||
-        (sysinfo &&
-         virAsprintf(&testdata.sysinfo, "%s/%s", abs_srcdir, sysinfo) < 0) ||
-        (cpuinfo &&
-         virAsprintf(&testdata.cpuinfo, "%s/%s", abs_srcdir, cpuinfo) < 0) ||
-        (expected &&
-         virAsprintf(&testdata.expected, "%s/%s", abs_srcdir, expected) < 0)) {
-        goto error;
-    }
+    if (decoder)
+        testdata.decoder = g_strdup_printf("%s/%s", abs_srcdir, decoder);
+    if (sysinfo)
+        testdata.sysinfo = g_strdup_printf("%s/%s", abs_srcdir, sysinfo);
+    if (cpuinfo)
+        testdata.cpuinfo = g_strdup_printf("%s/%s", abs_srcdir, cpuinfo);
+    if (expected)
+        testdata.expected = g_strdup_printf("%s/%s", abs_srcdir, expected);
 
     if (virTestRun(test, testSysinfo, &testdata) < 0)
         goto error;
