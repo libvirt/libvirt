@@ -384,6 +384,21 @@ testme "0" "dri egl" "-r -u $valid_uuid" "$test_xml" "/dev/dri/testegl1.*rw,$"
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<graphics type='spice'><gl enable='yes' rendernode='/dev/dri/testegl2'/></graphics></devices>,g" "$template_xml" > "$test_xml"
 testme "0" "dri spice" "-r -u $valid_uuid" "$test_xml" "/dev/dri/testegl2.*rw,$"
 
+sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<shmem name='my_shmem0'><model type='ivshmem'/><size unit='M'>4</size></shmem></devices>,g" "$template_xml" > "$test_xml"
+testme "0" "shmem" "-r -u $valid_uuid" "$test_xml" "\"/var/lib/libvirt/shmem-my_shmem0-sock\"\s*rw,$"
+
+sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<shmem name='my_shmem0'><model type='ivshmem'/><size unit='M'>4</size><server path='/var/lib/libvirt/ivshmem_socket'/></shmem></devices>,g" "$template_xml" > "$test_xml"
+testme "0" "shmem serverpath" "-r -u $valid_uuid" "$test_xml" "\"/var/lib/libvirt/ivshmem_socket\"\s*rw,$"
+
+sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<shmem name='my_shmem0'><model type='ivshmem-plain'/><size unit='M'>4</size></shmem></devices>,g" "$template_xml" > "$test_xml"
+testme "0" "shmem plain" "-r -u $valid_uuid" "$test_xml" "\"/dev/shm/my_shmem0\"\s*rw,$"
+
+sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<shmem name='shmem_server'><model type='ivshmem-doorbell'/></shmem></devices>,g" "$template_xml" > "$test_xml"
+testme "0" "shmem doorbell" "-r -u $valid_uuid" "$test_xml" "\"/var/lib/libvirt/shmem-shmem_server-sock\"\s*rw,$"
+
+sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<shmem name='shmem_server'><model type='ivshmem-doorbell'/><server path='/var/lib/libvirt/ivshmem_socket'/></shmem></devices>,g" "$template_xml" > "$test_xml"
+testme "0" "shmem doorbell serverpath" "-r -u $valid_uuid" "$test_xml" "\"/var/lib/libvirt/ivshmem_socket\"\s*rw,$"
+
 testme "0" "help" "-h"
 
 echo "" >$output
