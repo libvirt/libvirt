@@ -71,8 +71,8 @@ int vmwareParseVersionStr(int type, const char *buf, unsigned long *version);
 
 int vmwareDomainConfigDisplay(vmwareDomainPtr domain, virDomainDefPtr vmdef);
 
-int vmwareConstructVmxPath(char *directoryName, char *name,
-                           char **vmxPath);
+void  vmwareConstructVmxPath(char *directoryName, char *name,
+                             char **vmxPath);
 
 int vmwareVmxPath(virDomainDefPtr vmdef, char **vmxPath);
 
