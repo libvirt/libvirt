@@ -134,15 +134,6 @@ syntax-check: $(local-check)
 # We use .gnulib, not gnulib.
 gnulib_dir = $(srcdir)/.gnulib
 
-# List of additional files that we want to pick up in our POTFILES.in
-# This is all gnulib files, as well as generated files for RPC code.
-generated_files = \
-  $(srcdir)/src/*/{remote_daemon,admin_server,log_daemon,lock_daemon}_dispatch_*stubs.h \
-  $(srcdir)/src/lxc/{lxc_monitor,lxc_controller}_dispatch.h \
-  $(srcdir)/src/remote/*_client_bodies.h \
-  $(srcdir)/src/*/*_protocol.[ch] \
-  $(srcdir)/gnulib/lib/*.[ch]
-
 # We haven't converted all scripts to using gnulib's init.sh yet.
 _test_script_regex = \<\(init\|test-lib\)\.sh\>
 
@@ -1978,7 +1969,16 @@ perl_translatable_files_list_ =						\
 # Verify that all source files using _() (more specifically, files that
 # match $(_gl_translatable_string_re)) are listed in po/POTFILES.in.
 po_file ?= $(srcdir)/po/POTFILES
-generated_files ?= $(srcdir)/lib/*.[ch]
+
+# List of additional files that we want to pick up in our POTFILES.in
+# This is all gnulib files, as well as generated files for RPC code.
+generated_files = \
+  $(srcdir)/src/*/{remote_daemon,admin_server,log_daemon,lock_daemon}_dispatch_*stubs.h \
+  $(srcdir)/src/lxc/{lxc_monitor,lxc_controller}_dispatch.h \
+  $(srcdir)/src/remote/*_client_bodies.h \
+  $(srcdir)/src/*/*_protocol.[ch] \
+  $(srcdir)/gnulib/lib/*.[ch]
+
 _gl_translatable_string_re ?= \b(N?_|gettext *)\([^)"]*("|$$)
 
 # sc_po_check can fail if generated files are not built first
