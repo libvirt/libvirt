@@ -833,6 +833,82 @@ virQEMUCapsInitGuest(virCapsPtr caps,
     return ret;
 }
 
+
+static int
+virQEMUCapsGetMachineTypesCaps(virQEMUCapsPtr qemuCaps,
+                               size_t *nmachines,
+                               virCapsGuestMachinePtr **machines)
+{
+    size_t i;
+
+    *machines = NULL;
+    *nmachines = qemuCaps->nmachineTypes;
+
+    if (*nmachines &&
+        VIR_ALLOC_N(*machines, qemuCaps->nmachineTypes) < 0)
+        goto error;
+
+    for (i = 0; i < qemuCaps->nmachineTypes; i++) {
+        virCapsGuestMachinePtr mach;
+        if (VIR_ALLOC(mach) < 0)
+            goto error;
+        (*machines)[i] = mach;
+        if (qemuCaps->machineTypes[i].alias) {
+            mach->name = g_strdup(qemuCaps->machineTypes[i].alias);
+            mach->canonical = g_strdup(qemuCaps->machineTypes[i].name);
+        } else {
+            mach->name = g_strdup(qemuCaps->machineTypes[i].name);
+        }
+        mach->maxCpus = qemuCaps->machineTypes[i].maxCpus;
+    }
+
+    /* Make sure all canonical machine types also have their own entry so that
+     * /capabilities/guest/arch[@name='...']/machine/text() XPath selects all
+     * supported machine types.
+     */
+    i = 0;
+    while (i < *nmachines) {
+        size_t j;
+        bool found = false;
+        virCapsGuestMachinePtr machine = (*machines)[i];
+
+        if (!machine->canonical) {
+            i++;
+            continue;
+        }
+
+        for (j = 0; j < *nmachines; j++) {
+            if (STREQ(machine->canonical, (*machines)[j]->name)) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            virCapsGuestMachinePtr mach;
+            if (VIR_ALLOC(mach) < 0)
+                goto error;
+            if (VIR_INSERT_ELEMENT_COPY(*machines, i, *nmachines, mach) < 0) {
+                VIR_FREE(mach);
+                goto error;
+            }
+            mach->name = g_strdup(machine->canonical);
+            mach->maxCpus = machine->maxCpus;
+            i++;
+        }
+        i++;
+    }
+
+    return 0;
+
+ error:
+    virCapabilitiesFreeMachines(*machines, *nmachines);
+    *nmachines = 0;
+    *machines = NULL;
+    return -1;
+}
+
+
 int
 virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
                                const char *binary,
@@ -2018,80 +2094,6 @@ virQEMUCapsIsCPUModeSupported(virQEMUCapsPtr qemuCaps,
     }
 
     return false;
-}
-
-
-int virQEMUCapsGetMachineTypesCaps(virQEMUCapsPtr qemuCaps,
-                                   size_t *nmachines,
-                                   virCapsGuestMachinePtr **machines)
-{
-    size_t i;
-
-    *machines = NULL;
-    *nmachines = qemuCaps->nmachineTypes;
-
-    if (*nmachines &&
-        VIR_ALLOC_N(*machines, qemuCaps->nmachineTypes) < 0)
-        goto error;
-
-    for (i = 0; i < qemuCaps->nmachineTypes; i++) {
-        virCapsGuestMachinePtr mach;
-        if (VIR_ALLOC(mach) < 0)
-            goto error;
-        (*machines)[i] = mach;
-        if (qemuCaps->machineTypes[i].alias) {
-            mach->name = g_strdup(qemuCaps->machineTypes[i].alias);
-            mach->canonical = g_strdup(qemuCaps->machineTypes[i].name);
-        } else {
-            mach->name = g_strdup(qemuCaps->machineTypes[i].name);
-        }
-        mach->maxCpus = qemuCaps->machineTypes[i].maxCpus;
-    }
-
-    /* Make sure all canonical machine types also have their own entry so that
-     * /capabilities/guest/arch[@name='...']/machine/text() XPath selects all
-     * supported machine types.
-     */
-    i = 0;
-    while (i < *nmachines) {
-        size_t j;
-        bool found = false;
-        virCapsGuestMachinePtr machine = (*machines)[i];
-
-        if (!machine->canonical) {
-            i++;
-            continue;
-        }
-
-        for (j = 0; j < *nmachines; j++) {
-            if (STREQ(machine->canonical, (*machines)[j]->name)) {
-                found = true;
-                break;
-            }
-        }
-
-        if (!found) {
-            virCapsGuestMachinePtr mach;
-            if (VIR_ALLOC(mach) < 0)
-                goto error;
-            if (VIR_INSERT_ELEMENT_COPY(*machines, i, *nmachines, mach) < 0) {
-                VIR_FREE(mach);
-                goto error;
-            }
-            mach->name = g_strdup(machine->canonical);
-            mach->maxCpus = machine->maxCpus;
-            i++;
-        }
-        i++;
-    }
-
-    return 0;
-
- error:
-    virCapabilitiesFreeMachines(*machines, *nmachines);
-    *nmachines = 0;
-    *machines = NULL;
-    return -1;
 }
 
 
