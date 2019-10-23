@@ -39,6 +39,7 @@ libvirt_driver_nodedev_la_SOURCES = $(NODE_DEVICE_DRIVER_SOURCES)
 
 libvirt_driver_nodedev_la_CFLAGS = \
 	-I$(srcdir)/access \
+	-I$(builddir)/access \
 	-I$(srcdir)/conf \
 	$(AM_CFLAGS) \
 	$(LIBNL_CFLAGS) \

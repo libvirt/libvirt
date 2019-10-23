@@ -94,6 +94,7 @@ libvirt_driver_lxc_impl_la_CFLAGS = \
 	$(FUSE_CFLAGS) \
 	$(XDR_CFLAGS) \
 	-I$(srcdir)/access \
+	-I$(builddir)/access \
 	-I$(srcdir)/conf \
 	-I$(builddir)/lxc \
 	-I$(builddir)/rpc \

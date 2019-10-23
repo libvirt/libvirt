@@ -1,3 +1,6 @@
+@BUILDDIR@/src/access/viraccessapicheck.c
+@BUILDDIR@/src/access/viraccessapichecklxc.c
+@BUILDDIR@/src/access/viraccessapicheckqemu.c
 @SRCDIR@/gnulib/lib/gai_strerror.c
 @SRCDIR@/gnulib/lib/regcomp.c
 @SRCDIR@/src/access/viraccessdriverpolkit.c

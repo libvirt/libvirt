@@ -37,6 +37,7 @@ libvirt_driver_nwfilter_impl_la_CFLAGS = \
 	$(LIBNL_CFLAGS) \
 	$(DBUS_CFLAGS) \
 	-I$(srcdir)/access \
+	-I$(builddir)/access \
 	-I$(srcdir)/conf \
 	$(AM_CFLAGS) \
 	$(NULL)

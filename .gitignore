@@ -41,13 +41,6 @@ Makefile.in
 # libvirt related ignores
 /build/
 /ci/scratch/
-/src/access/org.libvirt.api.policy
-/src/access/viraccessapicheck.c
-/src/access/viraccessapicheck.h
-/src/access/viraccessapichecklxc.c
-/src/access/viraccessapichecklxc.h
-/src/access/viraccessapicheckqemu.c
-/src/access/viraccessapicheckqemu.h
 /src/admin/admin_client.h
 /src/admin/admin_server_dispatch_stubs.h
 /src/esx/*.generated.*

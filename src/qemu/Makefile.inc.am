@@ -95,6 +95,7 @@ libvirt_driver_qemu_impl_la_CFLAGS = \
 	$(SELINUX_CFLAGS) \
 	$(XDR_CFLAGS) \
 	-I$(srcdir)/access \
+	-I$(builddir)/access \
 	-I$(srcdir)/conf \
 	-I$(srcdir)/secret \
 	$(AM_CFLAGS) \

@@ -48,6 +48,7 @@ REMOTE_DAEMON_CFLAGS = \
 	$(PIE_CFLAGS) \
 	$(COVERAGE_CFLAGS) \
 	-I$(srcdir)/access \
+	-I$(builddir)/access \
 	-I$(srcdir)/conf \
 	-I$(srcdir)/rpc \
 	-I$(builddir)/rpc \

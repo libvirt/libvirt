@@ -89,6 +89,7 @@ endif WITH_DTRACE_PROBES
 libvirt_admin_la_CFLAGS = \
 	$(AM_CFLAGS) \
 	-I$(builddir)/admin \
+	-I$(builddir)/access \
 	-I$(srcdir)/remote \
 	-I$(srcdir)/rpc \
 	-I$(builddir)/rpc \
