@@ -1600,6 +1600,19 @@ virQEMUCapsSEVInfoCopy(virSEVCapabilityPtr *dst,
 }
 
 
+static int
+virQEMUCapsAccelCopy(virQEMUCapsAccelPtr dst,
+                     virQEMUCapsAccelPtr src)
+{
+    if (virQEMUCapsHostCPUDataCopy(&dst->hostCPU, &src->hostCPU) < 0)
+        return -1;
+
+    dst->cpuModels = qemuMonitorCPUDefsCopy(src->cpuModels);
+
+    return 0;
+}
+
+
 virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
 {
     virQEMUCapsPtr ret = virQEMUCapsNew();
@@ -1626,11 +1639,8 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
 
     ret->arch = qemuCaps->arch;
 
-    ret->kvm.cpuModels = qemuMonitorCPUDefsCopy(qemuCaps->kvm.cpuModels);
-    ret->tcg.cpuModels = qemuMonitorCPUDefsCopy(qemuCaps->tcg.cpuModels);
-
-    if (virQEMUCapsHostCPUDataCopy(&ret->kvm.hostCPU, &qemuCaps->kvm.hostCPU) < 0 ||
-        virQEMUCapsHostCPUDataCopy(&ret->tcg.hostCPU, &qemuCaps->tcg.hostCPU) < 0)
+    if (virQEMUCapsAccelCopy(&ret->kvm, &qemuCaps->kvm) < 0 ||
+        virQEMUCapsAccelCopy(&ret->tcg, &qemuCaps->tcg) < 0)
         goto error;
 
     if (VIR_ALLOC_N(ret->machineTypes, qemuCaps->nmachineTypes) < 0)
