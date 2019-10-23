@@ -15333,20 +15333,16 @@ virDomainVideoResolutionDefParseXML(xmlNodePtr node)
     if (VIR_ALLOC(def) < 0)
         goto cleanup;
 
-    if (x) {
-        if (virStrToLong_uip(x, NULL, 10, &def->x) < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("cannot parse video x-resolution '%s'"), x);
-            goto cleanup;
-        }
+    if (virStrToLong_uip(x, NULL, 10, &def->x) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("cannot parse video x-resolution '%s'"), x);
+        goto cleanup;
     }
 
-    if (y) {
-        if (virStrToLong_uip(y, NULL, 10, &def->y) < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("cannot parse video y-resolution '%s'"), y);
-            goto cleanup;
-        }
+    if (virStrToLong_uip(y, NULL, 10, &def->y) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("cannot parse video y-resolution '%s'"), y);
+        goto cleanup;
     }
 
  cleanup:
