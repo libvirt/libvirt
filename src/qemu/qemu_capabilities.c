@@ -3340,26 +3340,22 @@ virQEMUCapsSetCPUModelInfo(virQEMUCapsPtr qemuCaps,
 
 
 static int
-virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsPtr qemuCaps,
+virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsAccelPtr caps,
                                 xmlXPathContextPtr ctxt,
-                                virDomainVirtType virtType)
+                                const char *typeStr)
 {
     char *str = NULL;
     xmlNodePtr hostCPUNode;
     xmlNodePtr *nodes = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
     qemuMonitorCPUModelInfoPtr hostCPU = NULL;
+    g_autofree char *xpath = g_strdup_printf("./hostCPU[@type='%s']", typeStr);
     int ret = -1;
     size_t i;
     int n;
     int val;
 
-    if (virtType == VIR_DOMAIN_VIRT_KVM)
-        hostCPUNode = virXPathNode("./hostCPU[@type='kvm']", ctxt);
-    else
-        hostCPUNode = virXPathNode("./hostCPU[@type='tcg']", ctxt);
-
-    if (!hostCPUNode) {
+    if (!(hostCPUNode = virXPathNode(xpath, ctxt))) {
         ret = 0;
         goto cleanup;
     }
@@ -3460,8 +3456,7 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsPtr qemuCaps,
         }
     }
 
-    virQEMUCapsSetCPUModelInfo(qemuCaps, virtType, hostCPU);
-    hostCPU = NULL;
+    caps->hostCPU.info = g_steal_pointer(&hostCPU);
     ret = 0;
 
  cleanup:
@@ -3473,22 +3468,18 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsPtr qemuCaps,
 
 
 static int
-virQEMUCapsLoadCPUModels(virQEMUCapsPtr qemuCaps,
+virQEMUCapsLoadCPUModels(virQEMUCapsAccelPtr caps,
                          xmlXPathContextPtr ctxt,
-                         virDomainVirtType type)
+                         const char *typeStr)
 {
     g_autoptr(qemuMonitorCPUDefs) defs = NULL;
     g_autofree xmlNodePtr * nodes = NULL;
+    g_autofree char *xpath = g_strdup_printf("./cpu[@type='%s']", typeStr);
     size_t i;
     int n;
     xmlNodePtr node;
 
-    if (type == VIR_DOMAIN_VIRT_KVM)
-        n = virXPathNodeSet("./cpu[@type='kvm']", ctxt, &nodes);
-    else
-        n = virXPathNodeSet("./cpu[@type='tcg']", ctxt, &nodes);
-
-    if (n < 0) {
+    if ((n = virXPathNodeSet(xpath, ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to parse qemu capabilities cpus"));
         return -1;
@@ -3552,11 +3543,7 @@ virQEMUCapsLoadCPUModels(virQEMUCapsPtr qemuCaps,
         }
     }
 
-    if (type == VIR_DOMAIN_VIRT_KVM)
-        qemuCaps->kvm.cpuModels = g_steal_pointer(&defs);
-    else
-        qemuCaps->tcg.cpuModels = g_steal_pointer(&defs);
-
+    caps->cpuModels = g_steal_pointer(&defs);
     return 0;
 }
 
@@ -3566,10 +3553,13 @@ virQEMUCapsLoadAccel(virQEMUCapsPtr qemuCaps,
                      xmlXPathContextPtr ctxt,
                      virDomainVirtType type)
 {
-    if (virQEMUCapsLoadHostCPUModelInfo(qemuCaps, ctxt, type) < 0)
+    virQEMUCapsAccelPtr caps = virQEMUCapsGetAccel(qemuCaps, type);
+    const char *typeStr = type == VIR_DOMAIN_VIRT_KVM ? "kvm" : "tcg";
+
+    if (virQEMUCapsLoadHostCPUModelInfo(caps, ctxt, typeStr) < 0)
         return -1;
 
-    if (virQEMUCapsLoadCPUModels(qemuCaps, ctxt, type) < 0)
+    if (virQEMUCapsLoadCPUModels(caps, ctxt, typeStr) < 0)
         return -1;
 
     return 0;
