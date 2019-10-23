@@ -717,6 +717,9 @@ libvirt_iohelper_CFLAGS = \
 endif WITH_LIBVIRTD
 
 
+generated-sources: $(BUILT_SOURCES)
+
+
 install-data-local: $(INSTALL_DATA_LOCAL) \
 		$(INSTALL_DATA_DIRS:%=install-data-%)
 	$(MKDIR_P) "$(DESTDIR)$(localstatedir)/cache/libvirt"

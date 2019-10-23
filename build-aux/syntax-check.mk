@@ -1953,6 +1953,9 @@ sc_m4_quote_check:
 	halt='quote the first arg to AC_DEF*'				\
 	  $(_sc_search_regexp)
 
+gen_source_files:
+	$(MAKE) -C src generated-sources
+
 fix_po_file_diag = \
 'you have changed the set of files with translatable diagnostics;\n\
 apply the above patch\n'
@@ -1977,7 +1980,9 @@ perl_translatable_files_list_ =						\
 po_file ?= $(srcdir)/po/POTFILES
 generated_files ?= $(srcdir)/lib/*.[ch]
 _gl_translatable_string_re ?= \b(N?_|gettext *)\([^)"]*("|$$)
-sc_po_check:
+
+# sc_po_check can fail if generated files are not built first
+sc_po_check: gen_source_files
 	@if test -f $(po_file); then					\
 	  $(GREP) -E -v '^(#|$$)' $(po_file)				\
 	    | $(GREP) -v '^src/false\.c$$' | sort > $@-1;		\
@@ -2159,24 +2164,6 @@ test-wrap-argv:
 
 group-qemu-caps:
 	$(AM_V_GEN)$(PERL) $(top_srcdir)/tests/group-qemu-caps.pl --check $(top_srcdir)/
-
-# sc_po_check can fail if generated files are not built first
-sc_po_check: \
-		$(srcdir)/src/remote/remote_daemon_dispatch_stubs.h \
-		$(srcdir)/src/remote/remote_daemon_dispatch_qemu_stubs.h \
-		$(srcdir)/src/remote/remote_client_bodies.h \
-		$(srcdir)/src/admin/admin_server_dispatch_stubs.h \
-		$(srcdir)/src/admin/admin_client.h
-$(srcdir)/src/remote/remote_daemon_dispatch_stubs.h: $(srcdir)/src/remote/remote_protocol.x
-	$(MAKE) -C src remote/remote_daemon_dispatch_stubs.h
-$(srcdir)/src/remote/remote_daemon_dispatch_qemu_stubs.h: $(srcdir)/src/remote/qemu_protocol.x
-	$(MAKE) -C src remote/remote_daemon_dispatch_qemu_stubs.h
-$(srcdir)/src/remote/remote_client_bodies.h: $(srcdir)/src/remote/remote_protocol.x
-	$(MAKE) -C src remote/remote_client_bodies.h
-$(srcdir)/src/admin/admin_server_dispatch_stubs.h: $(srcdir)/src/admin/admin_protocol.x
-	$(MAKE) -C src admin/admin_server_dispatch_stubs.h
-$(srcdir)/src/admin/admin_client.h: $(srcdir)/src/admin/admin_protocol.x
-	$(MAKE) -C src admin/admin_client.h
 
 # List all syntax-check exemptions:
 exclude_file_name_regexp--sc_avoid_strcase = ^tools/vsh\.h$$
