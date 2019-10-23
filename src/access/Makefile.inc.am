@@ -43,13 +43,14 @@ ACCESS_DRIVER_POLKIT_POLICY = access/org.libvirt.api.policy
 GENERATED_SYM_FILES += $(ACCESS_DRIVER_SYM_FILES)
 
 EXTRA_DIST += \
-	$(ACCESS_DRIVER_POLKIT_POLICY) \
 	access/genpolkit.pl \
 	$(NULL)
 
 
 libvirt_driver_access_la_SOURCES = \
 	$(ACCESS_DRIVER_SOURCES) \
+	$(NULL)
+nodist_libvirt_driver_access_la_SOURCES = \
 	$(ACCESS_DRIVER_GENERATED) \
 	$(NULL)
 noinst_LTLIBRARIES += libvirt_driver_access.la

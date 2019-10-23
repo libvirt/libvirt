@@ -22,8 +22,6 @@ LXC_GENERATED = \
 LXC_MONITOR_PROTOCOL = $(srcdir)/lxc/lxc_monitor_protocol.x
 
 LXC_DRIVER_SOURCES = \
-	$(LXC_MONITOR_PROTOCOL_GENERATED) \
-	$(LXC_MONITOR_GENERATED) \
 	lxc/lxc_conf.c \
 	lxc/lxc_conf.h \
 	lxc/lxc_container.c \
@@ -47,8 +45,6 @@ LXC_DRIVER_SOURCES = \
 	$(NULL)
 
 LXC_CONTROLLER_SOURCES = \
-	$(LXC_MONITOR_PROTOCOL_GENERATED) \
-	$(LXC_CONTROLLER_GENERATED) \
 	lxc/lxc_conf.c \
 	lxc/lxc_conf.h \
 	lxc/lxc_container.c \
@@ -62,13 +58,17 @@ LXC_CONTROLLER_SOURCES = \
 	lxc/lxc_controller.c \
 	$(NULL)
 
-
-DRIVER_SOURCE_FILES += $(LXC_DRIVER_SOURCES)
-STATEFUL_DRIVER_SOURCE_FILES += $(LXC_DRIVER_SOURCES)
+DRIVER_SOURCE_FILES += \
+	$(LXC_MONITOR_PROTOCOL_GENERATED) \
+	$(LXC_MONITOR_GENERATED) \
+	$(LXC_DRIVER_SOURCES)
+STATEFUL_DRIVER_SOURCE_FILES += \
+	$(LXC_MONITOR_PROTOCOL_GENERATED) \
+	$(LXC_MONITOR_GENERATED) \
+	$(LXC_DRIVER_SOURCES)
 EXTRA_DIST += \
 	$(LXC_DRIVER_SOURCES) \
 	$(LXC_MONITOR_PROTOCOL) \
-	$(LXC_GENERATED) \
 	$(LXC_CONTROLLER_SOURCES) \
 	$(NULL)
 
@@ -112,7 +112,11 @@ libvirt_driver_lxc_impl_la_CFLAGS += $(BLKID_CFLAGS)
 libvirt_driver_lxc_impl_la_LIBADD += $(BLKID_LIBS)
 endif WITH_BLKID
 libvirt_driver_lxc_impl_la_LIBADD += $(SECDRIVER_LIBS)
-libvirt_driver_lxc_impl_la_SOURCES = $(LXC_DRIVER_SOURCES)
+libvirt_driver_lxc_impl_la_SOURCES = \
+	$(LXC_DRIVER_SOURCES)
+nodist_libvirt_driver_lxc_impl_la_SOURCES = \
+	$(LXC_MONITOR_PROTOCOL_GENERATED) \
+	$(LXC_MONITOR_GENERATED)
 
 
 sbin_PROGRAMS += virtlxcd
@@ -123,6 +127,7 @@ augeastest_DATA += lxc/test_virtlxcd.aug
 CLEANFILES += lxc/virtlxcd.aug
 
 virtlxcd_SOURCES = $(REMOTE_DAEMON_SOURCES)
+nodst_virtlxcd_SOURCES = $(REMOTE_DAEMON_GENERATED)
 virtlxcd_CFLAGS = \
        $(REMOTE_DAEMON_CFLAGS) \
        -DDAEMON_NAME="\"virtlxcd\"" \
@@ -182,6 +187,10 @@ libexec_PROGRAMS += libvirt_lxc
 libvirt_lxc_SOURCES = \
 	$(LXC_CONTROLLER_SOURCES) \
 	$(DATATYPES_SOURCES) \
+	$(NULL)
+nodist_libvirt_lxc_SOURCES = \
+	$(LXC_MONITOR_PROTOCOL_GENERATED) \
+	$(LXC_CONTROLLER_GENERATED) \
 	$(NULL)
 libvirt_lxc_LDFLAGS = \
 	$(AM_LDFLAGS) \

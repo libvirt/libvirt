@@ -253,9 +253,8 @@ KEYMANS = $(KEYPODS:%.pod=%.7)
 
 man7_MANS += $(KEYMANS)
 
-UTIL_SOURCES += $(KEYTABLES)
 BUILT_SOURCES += $(KEYTABLES)
-MAINTAINERCLEANFILES += $(KEYTABLES)
+CLEANFILES += $(KEYTABLES)
 CLEANFILES += $(KEYMANS) $(KEYPODS)
 
 UTIL_IO_HELPER_SOURCES = util/iohelper.c
@@ -265,6 +264,9 @@ libvirt_la_LIBADD = $(libvirt_la_BUILT_LIBADD)
 libvirt_la_BUILT_LIBADD += libvirt_util.la
 libvirt_util_la_SOURCES = \
 	$(UTIL_SOURCES) \
+	$(NULL)
+nodist_libvirt_util_la_SOURCES = \
+	$(KEYTABLES) \
 	$(NULL)
 libvirt_util_la_CFLAGS = \
 	$(CAPNG_CFLAGS) \

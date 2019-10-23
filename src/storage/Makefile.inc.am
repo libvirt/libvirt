@@ -152,6 +152,7 @@ augeastest_DATA += storage/test_virtstoraged.aug
 CLEANFILES += storage/virtstoraged.aug
 
 virtstoraged_SOURCES = $(REMOTE_DAEMON_SOURCES)
+nodist_virtstoraged_SOURCES = $(REMOTE_DAEMON_GENERATED)
 virtstoraged_CFLAGS = \
        $(REMOTE_DAEMON_CFLAGS) \
        -DDAEMON_NAME="\"virtstoraged\"" \

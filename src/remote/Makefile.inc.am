@@ -15,7 +15,6 @@ REMOTE_DRIVER_GENERATED = \
 REMOTE_DRIVER_SOURCES = \
 	remote/remote_driver.c \
 	remote/remote_driver.h \
-	$(REMOTE_DRIVER_GENERATED) \
 	$(NULL)
 
 REMOTE_DAEMON_GENERATED = \
@@ -33,7 +32,6 @@ REMOTE_DAEMON_SOURCES = \
 	remote/remote_daemon_dispatch.h \
 	remote/remote_daemon_stream.c \
 	remote/remote_daemon_stream.h \
-	$(REMOTE_DAEMON_GENERATED) \
 	$(NULL)
 
 REMOTE_DAEMON_CFLAGS = \
@@ -140,7 +138,9 @@ REMOTE_DRIVER_PROTOCOL = \
 	$(LXC_PROTOCOL) \
 	$(NULL)
 
-DRIVER_SOURCE_FILES += $(REMOTE_DRIVER_SOURCES)
+DRIVER_SOURCE_FILES += \
+	$(REMOTE_DRIVER_GENERATED) \
+	$(REMOTE_DRIVER_SOURCES)
 
 EXTRA_DIST += \
 	$(REMOTE_DRIVER_PROTOCOL) \
@@ -161,11 +161,9 @@ BUILT_SOURCES += \
 	$(REMOTE_DRIVER_GENERATED) \
 	$(REMOTE_DAEMON_GENERATED) \
 	$(NULL)
-MAINTAINERCLEANFILES += \
+CLEANFILES += \
 	$(REMOTE_DRIVER_GENERATED) \
 	$(REMOTE_DAEMON_GENERATED) \
-	$(NULL)
-CLEANFILES += \
 	remote/libvirtd.conf \
 	remote/virtproxyd.conf \
 	$(NULL)
@@ -182,10 +180,13 @@ libvirt_driver_remote_la_CFLAGS = \
 	$(AM_CFLAGS) \
 	$(NULL)
 libvirt_driver_remote_la_LDFLAGS = $(AM_LDFLAGS)
-libvirt_driver_remote_la_SOURCES = $(REMOTE_DRIVER_SOURCES)
+libvirt_driver_remote_la_SOURCES = \
+	$(REMOTE_DRIVER_SOURCES)
+nodist_libvirt_driver_remote_la_SOURCES = \
+	$(REMOTE_DRIVER_GENERATED)
 
 if WITH_DTRACE_PROBES
-nodist_libvirt_driver_remote_la_SOURCES = libvirt_probes.h
+nodist_libvirt_driver_remote_la_SOURCES += libvirt_probes.h
 endif WITH_DTRACE_PROBES
 
 if WITH_SASL
@@ -230,6 +231,8 @@ man8_MANS += libvirtd.8
 
 libvirtd_SOURCES = $(REMOTE_DAEMON_SOURCES)
 
+nodist_libvirtd_SOURCES = $(REMOTE_DAEMON_GENERATED)
+
 libvirtd_CFLAGS = \
 	$(REMOTE_DAEMON_CFLAGS) \
 	-DSOCK_PREFIX="\"libvirt\"" \
@@ -243,6 +246,7 @@ libvirtd_LDFLAGS = $(REMOTE_DAEMON_LD_FLAGS)
 libvirtd_LDADD = $(REMOTE_DAEMON_LD_ADD)
 
 virtproxyd_SOURCES = $(REMOTE_DAEMON_SOURCES)
+nodist_virtproxyd_SOURCES = $(REMOTE_DAEMON_GENERATED)
 virtproxyd_CFLAGS = \
 	$(REMOTE_DAEMON_CFLAGS) \
 	-DSOCK_PREFIX="\"libvirt\"" \

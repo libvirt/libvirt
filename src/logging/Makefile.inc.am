@@ -10,7 +10,6 @@ LOG_DAEMON_GENERATED = \
 	$(NULL)
 
 LOG_DRIVER_SOURCES = \
-	$(LOG_PROTOCOL_GENERATED) \
 	logging/log_manager.c \
 	logging/log_manager.h \
 	$(NULL)
@@ -30,10 +29,8 @@ LOG_PROTOCOL = $(srcdir)/logging/log_protocol.x
 
 EXTRA_DIST += \
 	$(LOG_PROTOCOL) \
-	$(LOG_PROTOCOL_GENERATED) \
-	$(LOG_DAEMON_GENERATED) \
 	$(LOG_DAEMON_SOURCES) \
-	$(LOG_DRIVER_SOURCES) \
+	$(LOG_DRIVER) \
         logging/virtlogd.aug \
         logging/virtlogd.conf \
         logging/test_virtlogd.aug.in \
@@ -42,7 +39,7 @@ BUILT_SOURCES += \
 	$(LOG_PROTOCOL_GENERATED) \
 	$(LOG_DAEMON_GENERATED) \
 	$(NULL)
-MAINTAINERCLEANFILES += \
+CLEANFILES += \
 	$(LOG_PROTOCOL_GENERATED) \
 	$(LOG_DAEMON_GENERATED) \
 	$(NULL)
@@ -66,6 +63,9 @@ libvirt_la_BUILT_LIBADD += libvirt_driver_log.la
 libvirt_driver_log_la_SOURCES = \
 	$(LOG_DRIVER_SOURCES) \
 	$(NULL)
+nodist_libvirt_driver_log_la_SOURCES = \
+	$(LOG_PROTOCOL_GENERATED) \
+	$(NULL)
 libvirt_driver_log_la_CFLAGS = \
 	-I$(builddir)/logging \
 	-I$(builddir)/rpc \
@@ -80,6 +80,8 @@ man8_MANS += virtlogd.8
 
 virtlogd_SOURCES = \
 		$(LOG_DAEMON_SOURCES) \
+		$(NULL)
+nodist_virtlogd_SOURCES = \
 		$(LOG_PROTOCOL_GENERATED) \
 		$(LOG_DAEMON_GENERATED) \
 		$(NULL)

@@ -44,7 +44,6 @@ ESX_DRIVER_EXTRA_DIST = \
 	esx/README \
 	esx/esx_vi_generator.input \
 	esx/esx_vi_generator.py \
-	$(ESX_DRIVER_GENERATED) \
 	$(NULL)
 
 ESX_GENERATED_STAMP = .esx_vi_generator.stamp
@@ -54,7 +53,6 @@ DRIVER_SOURCE_FILES += $(ESX_DRIVER_SOURCES)
 EXTRA_DIST += \
 	$(ESX_DRIVER_SOURCES) \
 	$(ESX_DRIVER_EXTRA_DIST) \
-	$(ESX_GENERATED_STAMP) \
 	$(NULL)
 
 BUILT_SOURCES += $(ESX_DRIVER_GENERATED)
@@ -66,7 +64,7 @@ $(ESX_GENERATED_STAMP): $(srcdir)/esx/esx_vi_generator.input \
 	$(AM_V_GEN) $(RUNUTF8) $(PYTHON) \
 		$(srcdir)/esx/esx_vi_generator.py $(srcdir) $(builddir) && touch $@
 
-MAINTAINERCLEANFILES += $(ESX_DRIVER_GENERATED) $(ESX_GENERATED_STAMP)
+CLEANFILES += $(ESX_DRIVER_GENERATED) $(ESX_GENERATED_STAMP)
 
 if WITH_ESX
 USED_SYM_FILES += $(srcdir)/libvirt_esx.syms

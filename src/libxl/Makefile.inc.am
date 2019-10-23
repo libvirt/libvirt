@@ -64,6 +64,7 @@ augeastest_DATA += libxl/test_virtxend.aug
 CLEANFILES += libxl/virtxend.aug
 
 virtxend_SOURCES = $(REMOTE_DAEMON_SOURCES)
+nodist_virtxend_SOURCES = $(REMOTE_DAEMON_GENERATED)
 virtxend_CFLAGS = \
        $(REMOTE_DAEMON_CFLAGS) \
        -DDAEMON_NAME="\"virtxend\"" \

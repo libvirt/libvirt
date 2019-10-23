@@ -134,6 +134,7 @@ augeastest_DATA += qemu/test_virtqemud.aug
 CLEANFILES += qemu/virtqemud.aug
 
 virtqemud_SOURCES = $(REMOTE_DAEMON_SOURCES)
+nodist_virtqemud_SOURCES = $(REMOTE_DAEMON_GENERATED)
 virtqemud_CFLAGS = \
        $(REMOTE_DAEMON_CFLAGS) \
        -DDAEMON_NAME="\"virtqemud\"" \

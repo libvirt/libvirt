@@ -47,6 +47,7 @@ augeastest_DATA += vz/test_virtvzd.aug
 CLEANFILES += vz/virtvzd.aug
 
 virtvzd_SOURCES = $(REMOTE_DAEMON_SOURCES)
+nodist_virtvzd_SOURCES = $(REMOTE_DAEMON_GENERATED)
 virtvzd_CFLAGS = \
        $(REMOTE_DAEMON_CFLAGS) \
        -DDAEMON_NAME="\"virtvzd\"" \

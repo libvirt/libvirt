@@ -73,6 +73,7 @@ augeastest_DATA += vbox/test_virtvboxd.aug
 CLEANFILES += vbox/virtvboxd.aug
 
 virtvboxd_SOURCES = $(REMOTE_DAEMON_SOURCES)
+nodist_virtvboxd_SOURCES = $(REMOTE_DAEMON_GENERATED)
 virtvboxd_CFLAGS = \
        $(REMOTE_DAEMON_CFLAGS) \
        -DDAEMON_NAME="\"virtvboxd\"" \

@@ -59,6 +59,7 @@ augeastest_DATA += network/test_virtnetworkd.aug
 CLEANFILES += network/virtnetworkd.aug
 
 virtnetworkd_SOURCES = $(REMOTE_DAEMON_SOURCES)
+nodist_virtnetworkd_SOURCES = $(REMOTE_DAEMON_GENERATED)
 virtnetworkd_CFLAGS = \
        $(REMOTE_DAEMON_CFLAGS) \
        -DDAEMON_NAME="\"virtnetworkd\"" \

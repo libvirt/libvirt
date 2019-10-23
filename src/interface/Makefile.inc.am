@@ -52,6 +52,7 @@ augeastest_DATA += interface/test_virtinterfaced.aug
 CLEANFILES += interface/virtinterfaced.aug
 
 virtinterfaced_SOURCES = $(REMOTE_DAEMON_SOURCES)
+nodist_virtinterfaced_SOURCES = $(REMOTE_DAEMON_GENERATED)
 virtinterfaced_CFLAGS = \
        $(REMOTE_DAEMON_CFLAGS) \
        -DDAEMON_NAME="\"virtinterfaced\"" \

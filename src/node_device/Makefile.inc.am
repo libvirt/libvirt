@@ -77,6 +77,7 @@ augeastest_DATA += node_device/test_virtnodedevd.aug
 CLEANFILES += node_device/virtnodedevd.aug
 
 virtnodedevd_SOURCES = $(REMOTE_DAEMON_SOURCES)
+nodist_virtnodedevd_SOURCES = $(REMOTE_DAEMON_GENERATED)
 virtnodedevd_CFLAGS = \
        $(REMOTE_DAEMON_CFLAGS) \
        -DDAEMON_NAME="\"virtnodedevd\"" \

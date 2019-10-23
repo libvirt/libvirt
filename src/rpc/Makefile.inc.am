@@ -16,7 +16,7 @@ VIR_NET_RPC_GENERATED = \
 	$(NULL)
 
 BUILT_SOURCES += $(VIR_NET_RPC_GENERATED)
-MAINTAINERCLEANFILES += $(VIR_NET_RPC_GENERATED)
+CLEANFILES += $(VIR_NET_RPC_GENERATED)
 
 noinst_LTLIBRARIES += \
 	libvirt-net-rpc.la \
@@ -39,6 +39,9 @@ libvirt_net_rpc_la_SOURCES = \
 	rpc/virnetsocket.c \
 	rpc/virkeepalive.h \
 	rpc/virkeepalive.c \
+	$(NULL)
+
+nodist_libvirt_net_rpc_la_SOURCES = \
 	$(VIR_NET_RPC_GENERATED) \
 	$(NULL)
 

@@ -9,22 +9,21 @@ ADMIN_PROTOCOL_GENERATED = \
 	admin/admin_server_dispatch_stubs.h \
 	$(NULL)
 
-EXTRA_DIST += $(ADMIN_PROTOCOL) $(ADMIN_PROTOCOL_GENERATED)
+EXTRA_DIST += $(ADMIN_PROTOCOL)
 BUILT_SOURCES += $(ADMIN_PROTOCOL_GENERATED)
-MAINTAINERCLEANFILES += $(ADMIN_PROTOCOL_GENERATED)
+CLEANFILES += $(ADMIN_PROTOCOL_GENERATED)
 
 admin/admin_server_dispatch.c: admin/admin_server_dispatch_stubs.h
 
 noinst_LTLIBRARIES += libvirt_driver_admin.la
 libvirt_driver_admin_la_SOURCES = \
-	admin/admin_protocol.c \
-	admin/admin_protocol.h \
 	admin/admin_server.c \
 	admin/admin_server.h \
 	admin/admin_server_dispatch.c \
 	admin/admin_server_dispatch.h \
-	admin/admin_server_dispatch_stubs.h \
 	$(NULL)
+nodist_libvirt_driver_admin_la_SOURCES = \
+	$(ADMIN_PROTOCOL_GENERATED)
 libvirt_driver_admin_la_CFLAGS = \
 	$(AM_CFLAGS) \
 	$(XDR_CFLAGS) \
@@ -60,8 +59,10 @@ lib_LTLIBRARIES += libvirt-admin.la
 
 libvirt_admin_la_SOURCES = \
 	admin/libvirt-admin.c \
-	$(ADMIN_PROTOCOL_GENERATED) \
 	$(DATATYPES_SOURCES)
+
+nodist_libvirt_admin_la_SOURCES = \
+	$(ADMIN_PROTOCOL_GENERATED)
 
 libvirt_admin_la_LDFLAGS = \
 	$(VERSION_SCRIPT_FLAGS)$(LIBVIRT_ADMIN_SYMBOL_FILE) \

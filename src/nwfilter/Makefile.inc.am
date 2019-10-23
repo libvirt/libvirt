@@ -60,6 +60,7 @@ augeastest_DATA += nwfilter/test_virtnwfilterd.aug
 CLEANFILES += nwfilter/virtnwfilterd.aug
 
 virtnwfilterd_SOURCES = $(REMOTE_DAEMON_SOURCES)
+nodist_virtnwfilterd_SOURCES = $(REMOTE_DAEMON_GENERATED)
 virtnwfilterd_CFLAGS = \
        $(REMOTE_DAEMON_CFLAGS) \
        -DDAEMON_NAME="\"virtnwfilterd\"" \
