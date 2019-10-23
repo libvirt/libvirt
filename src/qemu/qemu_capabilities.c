@@ -1674,6 +1674,14 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
 }
 
 
+static void
+virQEMUCapsAccelClear(virQEMUCapsAccelPtr caps)
+{
+    virQEMUCapsHostCPUDataClear(&caps->hostCPU);
+    virObjectUnref(caps->cpuModels);
+}
+
+
 void virQEMUCapsDispose(void *obj)
 {
     virQEMUCapsPtr qemuCaps = obj;
@@ -1686,9 +1694,6 @@ void virQEMUCapsDispose(void *obj)
     VIR_FREE(qemuCaps->machineTypes);
 
     virHashFree(qemuCaps->domCapsCache);
-    virObjectUnref(qemuCaps->kvm.cpuModels);
-    virObjectUnref(qemuCaps->tcg.cpuModels);
-
     virBitmapFree(qemuCaps->flags);
 
     VIR_FREE(qemuCaps->package);
@@ -1699,8 +1704,8 @@ void virQEMUCapsDispose(void *obj)
 
     virSEVCapabilitiesFree(qemuCaps->sevCapabilities);
 
-    virQEMUCapsHostCPUDataClear(&qemuCaps->kvm.hostCPU);
-    virQEMUCapsHostCPUDataClear(&qemuCaps->tcg.hostCPU);
+    virQEMUCapsAccelClear(&qemuCaps->kvm);
+    virQEMUCapsAccelClear(&qemuCaps->tcg);
 }
 
 void
