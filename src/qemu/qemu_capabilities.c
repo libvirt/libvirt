@@ -3557,6 +3557,21 @@ virQEMUCapsLoadCPUModels(virQEMUCapsPtr qemuCaps,
 }
 
 
+static int
+virQEMUCapsLoadAccel(virQEMUCapsPtr qemuCaps,
+                     xmlXPathContextPtr ctxt,
+                     virDomainVirtType type)
+{
+    if (virQEMUCapsLoadHostCPUModelInfo(qemuCaps, ctxt, type) < 0)
+        return -1;
+
+    if (virQEMUCapsLoadCPUModels(qemuCaps, ctxt, type) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 struct _virQEMUCapsCachePriv {
     char *libDir;
     uid_t runUid;
@@ -3768,12 +3783,8 @@ virQEMUCapsLoadCache(virArch hostArch,
     }
     VIR_FREE(str);
 
-    if (virQEMUCapsLoadHostCPUModelInfo(qemuCaps, ctxt, VIR_DOMAIN_VIRT_KVM) < 0 ||
-        virQEMUCapsLoadHostCPUModelInfo(qemuCaps, ctxt, VIR_DOMAIN_VIRT_QEMU) < 0)
-        goto cleanup;
-
-    if (virQEMUCapsLoadCPUModels(qemuCaps, ctxt, VIR_DOMAIN_VIRT_KVM) < 0 ||
-        virQEMUCapsLoadCPUModels(qemuCaps, ctxt, VIR_DOMAIN_VIRT_QEMU) < 0)
+    if (virQEMUCapsLoadAccel(qemuCaps, ctxt, VIR_DOMAIN_VIRT_KVM) < 0 ||
+        virQEMUCapsLoadAccel(qemuCaps, ctxt, VIR_DOMAIN_VIRT_QEMU) < 0)
         goto cleanup;
 
     if ((n = virXPathNodeSet("./machine", ctxt, &nodes)) < 0) {
@@ -4006,6 +4017,16 @@ virQEMUCapsFormatCPUModels(virQEMUCapsPtr qemuCaps,
 
 
 static void
+virQEMUCapsFormatAccel(virQEMUCapsPtr qemuCaps,
+                       virBufferPtr buf,
+                       virDomainVirtType type)
+{
+    virQEMUCapsFormatHostCPUModelInfo(qemuCaps, buf, type);
+    virQEMUCapsFormatCPUModels(qemuCaps, buf, type);
+}
+
+
+static void
 virQEMUCapsFormatSEVInfo(virQEMUCapsPtr qemuCaps, virBufferPtr buf)
 {
     virSEVCapabilityPtr sev = virQEMUCapsGetSEVCapabilities(qemuCaps);
@@ -4067,11 +4088,8 @@ virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps)
     virBufferAsprintf(&buf, "<arch>%s</arch>\n",
                       virArchToString(qemuCaps->arch));
 
-    virQEMUCapsFormatHostCPUModelInfo(qemuCaps, &buf, VIR_DOMAIN_VIRT_KVM);
-    virQEMUCapsFormatHostCPUModelInfo(qemuCaps, &buf, VIR_DOMAIN_VIRT_QEMU);
-
-    virQEMUCapsFormatCPUModels(qemuCaps, &buf, VIR_DOMAIN_VIRT_KVM);
-    virQEMUCapsFormatCPUModels(qemuCaps, &buf, VIR_DOMAIN_VIRT_QEMU);
+    virQEMUCapsFormatAccel(qemuCaps, &buf, VIR_DOMAIN_VIRT_KVM);
+    virQEMUCapsFormatAccel(qemuCaps, &buf, VIR_DOMAIN_VIRT_QEMU);
 
     for (i = 0; i < qemuCaps->nmachineTypes; i++) {
         virBufferEscapeString(&buf, "<machine name='%s'",

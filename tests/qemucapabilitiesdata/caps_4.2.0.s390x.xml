@@ -163,46 +163,6 @@
     <property name='te' type='boolean' value='true'/>
     <property name='cmm' type='boolean' value='true'/>
   </hostCPU>
-  <hostCPU type='tcg' model='z13.2-base' migratability='no'>
-    <property name='dateh2' type='boolean' value='false'/>
-    <property name='aen' type='boolean' value='true'/>
-    <property name='gen13ptff' type='boolean' value='false'/>
-    <property name='kmac-tdea-192' type='boolean' value='false'/>
-    <property name='kmc-tdea-192' type='boolean' value='false'/>
-    <property name='parseh' type='boolean' value='false'/>
-    <property name='aefsi' type='boolean' value='true'/>
-    <property name='csske' type='boolean' value='false'/>
-    <property name='hfpm' type='boolean' value='false'/>
-    <property name='hfpue' type='boolean' value='false'/>
-    <property name='dfp' type='boolean' value='false'/>
-    <property name='km-dea' type='boolean' value='false'/>
-    <property name='vx' type='boolean' value='true'/>
-    <property name='emon' type='boolean' value='false'/>
-    <property name='kimd-sha-1' type='boolean' value='false'/>
-    <property name='cmpsceh' type='boolean' value='false'/>
-    <property name='dfppc' type='boolean' value='false'/>
-    <property name='dfpzc' type='boolean' value='false'/>
-    <property name='dfphp' type='boolean' value='false'/>
-    <property name='kmc-dea' type='boolean' value='false'/>
-    <property name='klmd-sha-1' type='boolean' value='false'/>
-    <property name='asnlxr' type='boolean' value='false'/>
-    <property name='esop' type='boolean' value='true'/>
-    <property name='km-tdea-192' type='boolean' value='false'/>
-    <property name='km-tdea-128' type='boolean' value='false'/>
-    <property name='kmac-dea' type='boolean' value='false'/>
-    <property name='iep' type='boolean' value='true'/>
-    <property name='kmc-tdea-128' type='boolean' value='false'/>
-    <property name='ais' type='boolean' value='true'/>
-    <property name='kmac-tdea-128' type='boolean' value='false'/>
-    <property name='zpci' type='boolean' value='true'/>
-    <property name='nonqks' type='boolean' value='false'/>
-    <property name='sea_esop2' type='boolean' value='true'/>
-    <property name='pfpo' type='boolean' value='false'/>
-    <property name='msa4-base' type='boolean' value='true'/>
-    <property name='msa3-base' type='boolean' value='true'/>
-    <property name='msa5-base' type='boolean' value='true'/>
-    <property name='tods' type='boolean' value='false'/>
-  </hostCPU>
   <cpu type='kvm' name='z800-base' typename='z800-base-s390x-cpu' usable='yes'/>
   <cpu type='kvm' name='z890.2-base' typename='z890.2-base-s390x-cpu' usable='yes'/>
   <cpu type='kvm' name='z9EC.2' typename='z9EC.2-s390x-cpu' usable='yes'/>
@@ -411,6 +371,46 @@
   <cpu type='kvm' name='qemu' typename='qemu-s390x-cpu' usable='no'>
     <blocker name='ais'/>
   </cpu>
+  <hostCPU type='tcg' model='z13.2-base' migratability='no'>
+    <property name='dateh2' type='boolean' value='false'/>
+    <property name='aen' type='boolean' value='true'/>
+    <property name='gen13ptff' type='boolean' value='false'/>
+    <property name='kmac-tdea-192' type='boolean' value='false'/>
+    <property name='kmc-tdea-192' type='boolean' value='false'/>
+    <property name='parseh' type='boolean' value='false'/>
+    <property name='aefsi' type='boolean' value='true'/>
+    <property name='csske' type='boolean' value='false'/>
+    <property name='hfpm' type='boolean' value='false'/>
+    <property name='hfpue' type='boolean' value='false'/>
+    <property name='dfp' type='boolean' value='false'/>
+    <property name='km-dea' type='boolean' value='false'/>
+    <property name='vx' type='boolean' value='true'/>
+    <property name='emon' type='boolean' value='false'/>
+    <property name='kimd-sha-1' type='boolean' value='false'/>
+    <property name='cmpsceh' type='boolean' value='false'/>
+    <property name='dfppc' type='boolean' value='false'/>
+    <property name='dfpzc' type='boolean' value='false'/>
+    <property name='dfphp' type='boolean' value='false'/>
+    <property name='kmc-dea' type='boolean' value='false'/>
+    <property name='klmd-sha-1' type='boolean' value='false'/>
+    <property name='asnlxr' type='boolean' value='false'/>
+    <property name='esop' type='boolean' value='true'/>
+    <property name='km-tdea-192' type='boolean' value='false'/>
+    <property name='km-tdea-128' type='boolean' value='false'/>
+    <property name='kmac-dea' type='boolean' value='false'/>
+    <property name='iep' type='boolean' value='true'/>
+    <property name='kmc-tdea-128' type='boolean' value='false'/>
+    <property name='ais' type='boolean' value='true'/>
+    <property name='kmac-tdea-128' type='boolean' value='false'/>
+    <property name='zpci' type='boolean' value='true'/>
+    <property name='nonqks' type='boolean' value='false'/>
+    <property name='sea_esop2' type='boolean' value='true'/>
+    <property name='pfpo' type='boolean' value='false'/>
+    <property name='msa4-base' type='boolean' value='true'/>
+    <property name='msa3-base' type='boolean' value='true'/>
+    <property name='msa5-base' type='boolean' value='true'/>
+    <property name='tods' type='boolean' value='false'/>
+  </hostCPU>
   <cpu type='tcg' name='z800-base' typename='z800-base-s390x-cpu' usable='yes'/>
   <cpu type='tcg' name='z890.2-base' typename='z890.2-base-s390x-cpu' usable='no'>
     <blocker name='klmd-sha-1'/>

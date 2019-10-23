@@ -196,27 +196,6 @@
     <property name='sve1408' type='boolean' value='false'/>
     <property name='sve1664' type='boolean' value='false'/>
   </hostCPU>
-  <hostCPU type='tcg' model='max' migratability='no'>
-    <property name='sve768' type='boolean' value='true'/>
-    <property name='sve128' type='boolean' value='true'/>
-    <property name='sve1024' type='boolean' value='true'/>
-    <property name='sve1280' type='boolean' value='true'/>
-    <property name='sve896' type='boolean' value='true'/>
-    <property name='sve256' type='boolean' value='true'/>
-    <property name='sve1536' type='boolean' value='true'/>
-    <property name='sve1792' type='boolean' value='true'/>
-    <property name='sve384' type='boolean' value='true'/>
-    <property name='sve' type='boolean' value='true'/>
-    <property name='sve2048' type='boolean' value='true'/>
-    <property name='sve512' type='boolean' value='true'/>
-    <property name='aarch64' type='boolean' value='true'/>
-    <property name='pmu' type='boolean' value='true'/>
-    <property name='sve1920' type='boolean' value='true'/>
-    <property name='sve1152' type='boolean' value='true'/>
-    <property name='sve640' type='boolean' value='true'/>
-    <property name='sve1408' type='boolean' value='true'/>
-    <property name='sve1664' type='boolean' value='true'/>
-  </hostCPU>
   <cpu type='kvm' name='pxa262' typename='pxa262-arm-cpu'/>
   <cpu type='kvm' name='pxa270-a0' typename='pxa270-a0-arm-cpu'/>
   <cpu type='kvm' name='arm1136' typename='arm1136-arm-cpu'/>
@@ -254,6 +233,27 @@
   <cpu type='kvm' name='cortex-r5' typename='cortex-r5-arm-cpu'/>
   <cpu type='kvm' name='pxa270-a1' typename='pxa270-a1-arm-cpu'/>
   <cpu type='kvm' name='pxa270' typename='pxa270-arm-cpu'/>
+  <hostCPU type='tcg' model='max' migratability='no'>
+    <property name='sve768' type='boolean' value='true'/>
+    <property name='sve128' type='boolean' value='true'/>
+    <property name='sve1024' type='boolean' value='true'/>
+    <property name='sve1280' type='boolean' value='true'/>
+    <property name='sve896' type='boolean' value='true'/>
+    <property name='sve256' type='boolean' value='true'/>
+    <property name='sve1536' type='boolean' value='true'/>
+    <property name='sve1792' type='boolean' value='true'/>
+    <property name='sve384' type='boolean' value='true'/>
+    <property name='sve' type='boolean' value='true'/>
+    <property name='sve2048' type='boolean' value='true'/>
+    <property name='sve512' type='boolean' value='true'/>
+    <property name='aarch64' type='boolean' value='true'/>
+    <property name='pmu' type='boolean' value='true'/>
+    <property name='sve1920' type='boolean' value='true'/>
+    <property name='sve1152' type='boolean' value='true'/>
+    <property name='sve640' type='boolean' value='true'/>
+    <property name='sve1408' type='boolean' value='true'/>
+    <property name='sve1664' type='boolean' value='true'/>
+  </hostCPU>
   <cpu type='tcg' name='pxa262' typename='pxa262-arm-cpu'/>
   <cpu type='tcg' name='pxa270-a0' typename='pxa270-a0-arm-cpu'/>
   <cpu type='tcg' name='arm1136' typename='arm1136-arm-cpu'/>

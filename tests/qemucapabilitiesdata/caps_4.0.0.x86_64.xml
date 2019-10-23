@@ -483,6 +483,187 @@
     <property name='avx512pf' type='boolean' value='false'/>
     <property name='xstore-en' type='boolean' value='false'/>
   </hostCPU>
+  <cpu type='kvm' name='max' typename='max-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='host' typename='host-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='base' typename='base-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='qemu64' typename='qemu64-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='qemu32' typename='qemu32-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='phenom' typename='phenom-x86_64-cpu' usable='no'>
+    <blocker name='mmxext'/>
+    <blocker name='fxsr-opt'/>
+    <blocker name='3dnowext'/>
+    <blocker name='3dnow'/>
+    <blocker name='sse4a'/>
+    <blocker name='npt'/>
+  </cpu>
+  <cpu type='kvm' name='pentium3' typename='pentium3-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='pentium2' typename='pentium2-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='pentium' typename='pentium-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='n270' typename='n270-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='kvm64' typename='kvm64-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='kvm32' typename='kvm32-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='coreduo' typename='coreduo-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='core2duo' typename='core2duo-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='athlon' typename='athlon-x86_64-cpu' usable='no'>
+    <blocker name='mmxext'/>
+    <blocker name='3dnowext'/>
+    <blocker name='3dnow'/>
+  </cpu>
+  <cpu type='kvm' name='Westmere-IBRS' typename='Westmere-IBRS-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='Westmere' typename='Westmere-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='Skylake-Server-IBRS' typename='Skylake-Server-IBRS-x86_64-cpu' usable='no'>
+    <blocker name='avx512f'/>
+    <blocker name='avx512dq'/>
+    <blocker name='clwb'/>
+    <blocker name='avx512cd'/>
+    <blocker name='avx512bw'/>
+    <blocker name='avx512vl'/>
+    <blocker name='pku'/>
+    <blocker name='avx512f'/>
+    <blocker name='avx512f'/>
+    <blocker name='avx512f'/>
+    <blocker name='pku'/>
+  </cpu>
+  <cpu type='kvm' name='Skylake-Server' typename='Skylake-Server-x86_64-cpu' usable='no'>
+    <blocker name='avx512f'/>
+    <blocker name='avx512dq'/>
+    <blocker name='clwb'/>
+    <blocker name='avx512cd'/>
+    <blocker name='avx512bw'/>
+    <blocker name='avx512vl'/>
+    <blocker name='pku'/>
+    <blocker name='avx512f'/>
+    <blocker name='avx512f'/>
+    <blocker name='avx512f'/>
+    <blocker name='pku'/>
+  </cpu>
+  <cpu type='kvm' name='Skylake-Client-IBRS' typename='Skylake-Client-IBRS-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='Skylake-Client' typename='Skylake-Client-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='SandyBridge-IBRS' typename='SandyBridge-IBRS-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='SandyBridge' typename='SandyBridge-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='Penryn' typename='Penryn-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='Opteron_G5' typename='Opteron_G5-x86_64-cpu' usable='no'>
+    <blocker name='sse4a'/>
+    <blocker name='misalignsse'/>
+    <blocker name='xop'/>
+    <blocker name='fma4'/>
+    <blocker name='tbm'/>
+    <blocker name='npt'/>
+    <blocker name='nrip-save'/>
+  </cpu>
+  <cpu type='kvm' name='Opteron_G4' typename='Opteron_G4-x86_64-cpu' usable='no'>
+    <blocker name='sse4a'/>
+    <blocker name='misalignsse'/>
+    <blocker name='xop'/>
+    <blocker name='fma4'/>
+    <blocker name='npt'/>
+    <blocker name='nrip-save'/>
+  </cpu>
+  <cpu type='kvm' name='Opteron_G3' typename='Opteron_G3-x86_64-cpu' usable='no'>
+    <blocker name='sse4a'/>
+    <blocker name='misalignsse'/>
+  </cpu>
+  <cpu type='kvm' name='Opteron_G2' typename='Opteron_G2-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='Opteron_G1' typename='Opteron_G1-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='Nehalem-IBRS' typename='Nehalem-IBRS-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='Nehalem' typename='Nehalem-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='KnightsMill' typename='KnightsMill-x86_64-cpu' usable='no'>
+    <blocker name='avx512f'/>
+    <blocker name='avx512pf'/>
+    <blocker name='avx512er'/>
+    <blocker name='avx512cd'/>
+    <blocker name='avx512-vpopcntdq'/>
+    <blocker name='avx512-4vnniw'/>
+    <blocker name='avx512-4fmaps'/>
+    <blocker name='avx512f'/>
+    <blocker name='avx512f'/>
+    <blocker name='avx512f'/>
+  </cpu>
+  <cpu type='kvm' name='IvyBridge-IBRS' typename='IvyBridge-IBRS-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='IvyBridge' typename='IvyBridge-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='Icelake-Server' typename='Icelake-Server-x86_64-cpu' usable='no'>
+    <blocker name='avx512f'/>
+    <blocker name='avx512dq'/>
+    <blocker name='clwb'/>
+    <blocker name='avx512cd'/>
+    <blocker name='avx512bw'/>
+    <blocker name='avx512vl'/>
+    <blocker name='avx512vbmi'/>
+    <blocker name='pku'/>
+    <blocker name='avx512vbmi2'/>
+    <blocker name='gfni'/>
+    <blocker name='vaes'/>
+    <blocker name='vpclmulqdq'/>
+    <blocker name='avx512vnni'/>
+    <blocker name='avx512bitalg'/>
+    <blocker name='avx512-vpopcntdq'/>
+    <blocker name='la57'/>
+    <blocker name='wbnoinvd'/>
+    <blocker name='avx512f'/>
+    <blocker name='avx512f'/>
+    <blocker name='avx512f'/>
+    <blocker name='pku'/>
+  </cpu>
+  <cpu type='kvm' name='Icelake-Client' typename='Icelake-Client-x86_64-cpu' usable='no'>
+    <blocker name='avx512vbmi'/>
+    <blocker name='pku'/>
+    <blocker name='avx512vbmi2'/>
+    <blocker name='gfni'/>
+    <blocker name='vaes'/>
+    <blocker name='vpclmulqdq'/>
+    <blocker name='avx512vnni'/>
+    <blocker name='avx512bitalg'/>
+    <blocker name='avx512-vpopcntdq'/>
+    <blocker name='wbnoinvd'/>
+    <blocker name='pku'/>
+  </cpu>
+  <cpu type='kvm' name='Haswell-noTSX-IBRS' typename='Haswell-noTSX-IBRS-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='Haswell-noTSX' typename='Haswell-noTSX-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='Haswell-IBRS' typename='Haswell-IBRS-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='Haswell' typename='Haswell-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='EPYC-IBPB' typename='EPYC-IBPB-x86_64-cpu' usable='no'>
+    <blocker name='sha-ni'/>
+    <blocker name='mmxext'/>
+    <blocker name='fxsr-opt'/>
+    <blocker name='cr8legacy'/>
+    <blocker name='sse4a'/>
+    <blocker name='misalignsse'/>
+    <blocker name='osvw'/>
+    <blocker name='ibpb'/>
+    <blocker name='npt'/>
+    <blocker name='nrip-save'/>
+  </cpu>
+  <cpu type='kvm' name='EPYC' typename='EPYC-x86_64-cpu' usable='no'>
+    <blocker name='sha-ni'/>
+    <blocker name='mmxext'/>
+    <blocker name='fxsr-opt'/>
+    <blocker name='cr8legacy'/>
+    <blocker name='sse4a'/>
+    <blocker name='misalignsse'/>
+    <blocker name='osvw'/>
+    <blocker name='npt'/>
+    <blocker name='nrip-save'/>
+  </cpu>
+  <cpu type='kvm' name='Conroe' typename='Conroe-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='Cascadelake-Server' typename='Cascadelake-Server-x86_64-cpu' usable='no'>
+    <blocker name='avx512f'/>
+    <blocker name='avx512dq'/>
+    <blocker name='clwb'/>
+    <blocker name='avx512cd'/>
+    <blocker name='avx512bw'/>
+    <blocker name='avx512vl'/>
+    <blocker name='pku'/>
+    <blocker name='avx512vnni'/>
+    <blocker name='avx512f'/>
+    <blocker name='avx512f'/>
+    <blocker name='avx512f'/>
+    <blocker name='pku'/>
+  </cpu>
+  <cpu type='kvm' name='Broadwell-noTSX-IBRS' typename='Broadwell-noTSX-IBRS-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='Broadwell-noTSX' typename='Broadwell-noTSX-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='Broadwell-IBRS' typename='Broadwell-IBRS-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='Broadwell' typename='Broadwell-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='486' typename='486-x86_64-cpu' usable='yes'/>
   <hostCPU type='tcg' model='base' migratability='yes'>
     <property name='phys-bits' type='number' value='0'/>
     <property name='core-id' type='number' value='-1'/>
@@ -753,187 +934,6 @@
     <property name='avx512pf' type='boolean' value='false'/>
     <property name='xstore-en' type='boolean' value='false'/>
   </hostCPU>
-  <cpu type='kvm' name='max' typename='max-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='host' typename='host-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='base' typename='base-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='qemu64' typename='qemu64-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='qemu32' typename='qemu32-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='phenom' typename='phenom-x86_64-cpu' usable='no'>
-    <blocker name='mmxext'/>
-    <blocker name='fxsr-opt'/>
-    <blocker name='3dnowext'/>
-    <blocker name='3dnow'/>
-    <blocker name='sse4a'/>
-    <blocker name='npt'/>
-  </cpu>
-  <cpu type='kvm' name='pentium3' typename='pentium3-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='pentium2' typename='pentium2-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='pentium' typename='pentium-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='n270' typename='n270-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='kvm64' typename='kvm64-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='kvm32' typename='kvm32-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='coreduo' typename='coreduo-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='core2duo' typename='core2duo-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='athlon' typename='athlon-x86_64-cpu' usable='no'>
-    <blocker name='mmxext'/>
-    <blocker name='3dnowext'/>
-    <blocker name='3dnow'/>
-  </cpu>
-  <cpu type='kvm' name='Westmere-IBRS' typename='Westmere-IBRS-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='Westmere' typename='Westmere-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='Skylake-Server-IBRS' typename='Skylake-Server-IBRS-x86_64-cpu' usable='no'>
-    <blocker name='avx512f'/>
-    <blocker name='avx512dq'/>
-    <blocker name='clwb'/>
-    <blocker name='avx512cd'/>
-    <blocker name='avx512bw'/>
-    <blocker name='avx512vl'/>
-    <blocker name='pku'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
-  </cpu>
-  <cpu type='kvm' name='Skylake-Server' typename='Skylake-Server-x86_64-cpu' usable='no'>
-    <blocker name='avx512f'/>
-    <blocker name='avx512dq'/>
-    <blocker name='clwb'/>
-    <blocker name='avx512cd'/>
-    <blocker name='avx512bw'/>
-    <blocker name='avx512vl'/>
-    <blocker name='pku'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
-  </cpu>
-  <cpu type='kvm' name='Skylake-Client-IBRS' typename='Skylake-Client-IBRS-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='Skylake-Client' typename='Skylake-Client-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='SandyBridge-IBRS' typename='SandyBridge-IBRS-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='SandyBridge' typename='SandyBridge-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='Penryn' typename='Penryn-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='Opteron_G5' typename='Opteron_G5-x86_64-cpu' usable='no'>
-    <blocker name='sse4a'/>
-    <blocker name='misalignsse'/>
-    <blocker name='xop'/>
-    <blocker name='fma4'/>
-    <blocker name='tbm'/>
-    <blocker name='npt'/>
-    <blocker name='nrip-save'/>
-  </cpu>
-  <cpu type='kvm' name='Opteron_G4' typename='Opteron_G4-x86_64-cpu' usable='no'>
-    <blocker name='sse4a'/>
-    <blocker name='misalignsse'/>
-    <blocker name='xop'/>
-    <blocker name='fma4'/>
-    <blocker name='npt'/>
-    <blocker name='nrip-save'/>
-  </cpu>
-  <cpu type='kvm' name='Opteron_G3' typename='Opteron_G3-x86_64-cpu' usable='no'>
-    <blocker name='sse4a'/>
-    <blocker name='misalignsse'/>
-  </cpu>
-  <cpu type='kvm' name='Opteron_G2' typename='Opteron_G2-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='Opteron_G1' typename='Opteron_G1-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='Nehalem-IBRS' typename='Nehalem-IBRS-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='Nehalem' typename='Nehalem-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='KnightsMill' typename='KnightsMill-x86_64-cpu' usable='no'>
-    <blocker name='avx512f'/>
-    <blocker name='avx512pf'/>
-    <blocker name='avx512er'/>
-    <blocker name='avx512cd'/>
-    <blocker name='avx512-vpopcntdq'/>
-    <blocker name='avx512-4vnniw'/>
-    <blocker name='avx512-4fmaps'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-  </cpu>
-  <cpu type='kvm' name='IvyBridge-IBRS' typename='IvyBridge-IBRS-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='IvyBridge' typename='IvyBridge-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='Icelake-Server' typename='Icelake-Server-x86_64-cpu' usable='no'>
-    <blocker name='avx512f'/>
-    <blocker name='avx512dq'/>
-    <blocker name='clwb'/>
-    <blocker name='avx512cd'/>
-    <blocker name='avx512bw'/>
-    <blocker name='avx512vl'/>
-    <blocker name='avx512vbmi'/>
-    <blocker name='pku'/>
-    <blocker name='avx512vbmi2'/>
-    <blocker name='gfni'/>
-    <blocker name='vaes'/>
-    <blocker name='vpclmulqdq'/>
-    <blocker name='avx512vnni'/>
-    <blocker name='avx512bitalg'/>
-    <blocker name='avx512-vpopcntdq'/>
-    <blocker name='la57'/>
-    <blocker name='wbnoinvd'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
-  </cpu>
-  <cpu type='kvm' name='Icelake-Client' typename='Icelake-Client-x86_64-cpu' usable='no'>
-    <blocker name='avx512vbmi'/>
-    <blocker name='pku'/>
-    <blocker name='avx512vbmi2'/>
-    <blocker name='gfni'/>
-    <blocker name='vaes'/>
-    <blocker name='vpclmulqdq'/>
-    <blocker name='avx512vnni'/>
-    <blocker name='avx512bitalg'/>
-    <blocker name='avx512-vpopcntdq'/>
-    <blocker name='wbnoinvd'/>
-    <blocker name='pku'/>
-  </cpu>
-  <cpu type='kvm' name='Haswell-noTSX-IBRS' typename='Haswell-noTSX-IBRS-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='Haswell-noTSX' typename='Haswell-noTSX-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='Haswell-IBRS' typename='Haswell-IBRS-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='Haswell' typename='Haswell-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='EPYC-IBPB' typename='EPYC-IBPB-x86_64-cpu' usable='no'>
-    <blocker name='sha-ni'/>
-    <blocker name='mmxext'/>
-    <blocker name='fxsr-opt'/>
-    <blocker name='cr8legacy'/>
-    <blocker name='sse4a'/>
-    <blocker name='misalignsse'/>
-    <blocker name='osvw'/>
-    <blocker name='ibpb'/>
-    <blocker name='npt'/>
-    <blocker name='nrip-save'/>
-  </cpu>
-  <cpu type='kvm' name='EPYC' typename='EPYC-x86_64-cpu' usable='no'>
-    <blocker name='sha-ni'/>
-    <blocker name='mmxext'/>
-    <blocker name='fxsr-opt'/>
-    <blocker name='cr8legacy'/>
-    <blocker name='sse4a'/>
-    <blocker name='misalignsse'/>
-    <blocker name='osvw'/>
-    <blocker name='npt'/>
-    <blocker name='nrip-save'/>
-  </cpu>
-  <cpu type='kvm' name='Conroe' typename='Conroe-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='Cascadelake-Server' typename='Cascadelake-Server-x86_64-cpu' usable='no'>
-    <blocker name='avx512f'/>
-    <blocker name='avx512dq'/>
-    <blocker name='clwb'/>
-    <blocker name='avx512cd'/>
-    <blocker name='avx512bw'/>
-    <blocker name='avx512vl'/>
-    <blocker name='pku'/>
-    <blocker name='avx512vnni'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='avx512f'/>
-    <blocker name='pku'/>
-  </cpu>
-  <cpu type='kvm' name='Broadwell-noTSX-IBRS' typename='Broadwell-noTSX-IBRS-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='Broadwell-noTSX' typename='Broadwell-noTSX-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='Broadwell-IBRS' typename='Broadwell-IBRS-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='Broadwell' typename='Broadwell-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='486' typename='486-x86_64-cpu' usable='yes'/>
   <cpu type='tcg' name='max' typename='max-x86_64-cpu' usable='yes'/>
   <cpu type='tcg' name='host' typename='host-x86_64-cpu' usable='no'>
     <blocker name='kvm'/>
