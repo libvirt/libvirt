@@ -28,8 +28,9 @@ libvirt_driver_admin_la_SOURCES = \
 libvirt_driver_admin_la_CFLAGS = \
 	$(AM_CFLAGS) \
 	$(XDR_CFLAGS) \
-	-I$(top_srcdir)/src/util \
 	-I$(top_srcdir)/src/admin \
+	-I$(top_builddir)/src/admin \
+	-I$(top_srcdir)/src/util \
 	-I$(top_builddir)/src/rpc \
 	$(NULL)
 libvirt_driver_admin_la_LIBADD = ../gnulib/lib/libgnu.la
@@ -123,13 +124,13 @@ admin/admin_client.h: $(srcdir)/rpc/gendispatch.pl \
 		$(ADMIN_PROTOCOL) Makefile.am
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=client \
 	  admin ADMIN $(ADMIN_PROTOCOL) \
-	  > $(srcdir)/admin/admin_client.h
+	  > admin/admin_client.h
 
 admin/admin_server_dispatch_stubs.h: $(srcdir)/rpc/gendispatch.pl \
 		$(ADMIN_PROTOCOL) Makefile.am
 	$(AM_V_GEN)$(PERL) -w $(srcdir)/rpc/gendispatch.pl --mode=server \
 	  admin ADMIN $(ADMIN_PROTOCOL) \
-	  > $(srcdir)/admin/admin_server_dispatch_stubs.h
+	  > admin/admin_server_dispatch_stubs.h
 
 admin/libvirt_admin.syms: admin/libvirt_admin_public.syms $(ADMIN_SYM_FILES) \
 		$(top_builddir)/config.status

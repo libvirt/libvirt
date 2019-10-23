@@ -41,8 +41,6 @@ Makefile.in
 # libvirt related ignores
 /build/
 /ci/scratch/
-/src/admin/admin_client.h
-/src/admin/admin_server_dispatch_stubs.h
 /src/esx/*.generated.*
 /src/hyperv/*.generated.*
 /src/locking/lock_daemon_dispatch_stubs.h

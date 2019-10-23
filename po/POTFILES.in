@@ -1,13 +1,14 @@
 @BUILDDIR@/src/access/viraccessapicheck.c
 @BUILDDIR@/src/access/viraccessapichecklxc.c
 @BUILDDIR@/src/access/viraccessapicheckqemu.c
+@BUILDDIR@/src/admin/admin_client.h
+@BUILDDIR@/src/admin/admin_server_dispatch_stubs.h
 @SRCDIR@/gnulib/lib/gai_strerror.c
 @SRCDIR@/gnulib/lib/regcomp.c
 @SRCDIR@/src/access/viraccessdriverpolkit.c
 @SRCDIR@/src/access/viraccessmanager.c
 @SRCDIR@/src/admin/admin_server.c
 @SRCDIR@/src/admin/admin_server_dispatch.c
-@SRCDIR@/src/admin/admin_server_dispatch_stubs.h
 @SRCDIR@/src/admin/libvirt-admin.c
 @SRCDIR@/src/bhyve/bhyve_capabilities.c
 @SRCDIR@/src/bhyve/bhyve_command.c
