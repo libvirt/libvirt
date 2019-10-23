@@ -3907,12 +3907,11 @@ virQEMUCapsLoadCache(virArch hostArch,
 
 
 static void
-virQEMUCapsFormatHostCPUModelInfo(virQEMUCapsPtr qemuCaps,
+virQEMUCapsFormatHostCPUModelInfo(virQEMUCapsAccelPtr caps,
                                   virBufferPtr buf,
-                                  virDomainVirtType type)
+                                  const char *typeStr)
 {
-    qemuMonitorCPUModelInfoPtr model = virQEMUCapsGetCPUModelInfo(qemuCaps, type);
-    const char *typeStr = type == VIR_DOMAIN_VIRT_KVM ? "kvm" : "tcg";
+    qemuMonitorCPUModelInfoPtr model = caps->hostCPU.info;
     size_t i;
 
     if (!model)
@@ -3962,21 +3961,12 @@ virQEMUCapsFormatHostCPUModelInfo(virQEMUCapsPtr qemuCaps,
 
 
 static void
-virQEMUCapsFormatCPUModels(virQEMUCapsPtr qemuCaps,
+virQEMUCapsFormatCPUModels(virQEMUCapsAccelPtr caps,
                            virBufferPtr buf,
-                           virDomainVirtType type)
+                           const char *typeStr)
 {
-    qemuMonitorCPUDefsPtr defs;
-    const char *typeStr;
+    qemuMonitorCPUDefsPtr defs = caps->cpuModels;
     size_t i;
-
-    if (type == VIR_DOMAIN_VIRT_KVM) {
-        typeStr = "kvm";
-        defs = qemuCaps->kvm.cpuModels;
-    } else {
-        typeStr = "tcg";
-        defs = qemuCaps->tcg.cpuModels;
-    }
 
     if (!defs)
         return;
@@ -4015,8 +4005,11 @@ virQEMUCapsFormatAccel(virQEMUCapsPtr qemuCaps,
                        virBufferPtr buf,
                        virDomainVirtType type)
 {
-    virQEMUCapsFormatHostCPUModelInfo(qemuCaps, buf, type);
-    virQEMUCapsFormatCPUModels(qemuCaps, buf, type);
+    virQEMUCapsAccelPtr caps = virQEMUCapsGetAccel(qemuCaps, type);
+    const char *typeStr = type == VIR_DOMAIN_VIRT_KVM ? "kvm" : "tcg";
+
+    virQEMUCapsFormatHostCPUModelInfo(caps, buf, typeStr);
+    virQEMUCapsFormatCPUModels(caps, buf, typeStr);
 }
 
 
