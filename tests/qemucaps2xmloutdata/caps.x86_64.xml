@@ -17,11 +17,11 @@
       <domain type='kvm'/>
     </arch>
     <features>
+      <acpi default='on' toggle='yes'/>
+      <apic default='on' toggle='no'/>
       <cpuselection/>
       <deviceboot/>
       <disksnapshot default='on' toggle='no'/>
-      <acpi default='on' toggle='yes'/>
-      <apic default='on' toggle='no'/>
     </features>
   </guest>
 

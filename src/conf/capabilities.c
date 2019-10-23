@@ -150,15 +150,6 @@ virCapabilitiesFreeGuestDomain(virCapsGuestDomainPtr dom)
     VIR_FREE(dom);
 }
 
-static void
-virCapabilitiesFreeGuestFeature(virCapsGuestFeaturePtr feature)
-{
-    if (feature == NULL)
-        return;
-    VIR_FREE(feature->name);
-    VIR_FREE(feature);
-}
-
 void
 virCapabilitiesFreeGuest(virCapsGuestPtr guest)
 {
@@ -175,10 +166,6 @@ virCapabilitiesFreeGuest(virCapsGuestPtr guest)
     for (i = 0; i < guest->arch.ndomains; i++)
         virCapabilitiesFreeGuestDomain(guest->arch.domains[i]);
     VIR_FREE(guest->arch.domains);
-
-    for (i = 0; i < guest->nfeatures; i++)
-        virCapabilitiesFreeGuestFeature(guest->features[i]);
-    VIR_FREE(guest->features);
 
     VIR_FREE(guest);
 }
@@ -552,6 +539,24 @@ virCapabilitiesAddGuestDomain(virCapsGuestPtr guest,
 }
 
 
+struct virCapsGuestFeatureInfo {
+    const char *name;
+    bool togglesRequired;
+};
+
+static const struct virCapsGuestFeatureInfo virCapsGuestFeatureInfos[VIR_CAPS_GUEST_FEATURE_TYPE_LAST] = {
+    [VIR_CAPS_GUEST_FEATURE_TYPE_PAE] = { "pae", false },
+    [VIR_CAPS_GUEST_FEATURE_TYPE_NONPAE] = { "nonpae", false },
+    [VIR_CAPS_GUEST_FEATURE_TYPE_IA64_BE] = { "ia64_be", false },
+    [VIR_CAPS_GUEST_FEATURE_TYPE_ACPI] = { "acpi", true },
+    [VIR_CAPS_GUEST_FEATURE_TYPE_APIC] = { "apic", true },
+    [VIR_CAPS_GUEST_FEATURE_TYPE_CPUSELECTION] = { "cpuselection", false },
+    [VIR_CAPS_GUEST_FEATURE_TYPE_DEVICEBOOT] = { "deviceboot", false },
+    [VIR_CAPS_GUEST_FEATURE_TYPE_DISKSNAPSHOT] = { "disksnapshot", true },
+    [VIR_CAPS_GUEST_FEATURE_TYPE_HAP] = { "hap", true },
+};
+
+
 /**
  * virCapabilitiesAddGuestFeature:
  * @guest: guest to associate feature with
@@ -567,25 +572,32 @@ virCapabilitiesAddGuestFeature(virCapsGuestPtr guest,
                                bool defaultOn,
                                bool toggle)
 {
-    virCapsGuestFeaturePtr feature;
+    virCapsGuestFeaturePtr feature = NULL;
+    bool togglesRequired = false;
+    size_t i;
 
-    if (VIR_ALLOC(feature) < 0)
-        goto no_memory;
+    for (i = 0; i < VIR_CAPS_GUEST_FEATURE_TYPE_LAST; i++) {
+        if (STRNEQ(name, virCapsGuestFeatureInfos[i].name))
+            continue;
 
-    feature->name = g_strdup(name);
-    feature->defaultOn = defaultOn;
-    feature->toggle = toggle;
+        feature = guest->features + i;
+        togglesRequired = virCapsGuestFeatureInfos[i].togglesRequired;
+    }
 
-    if (VIR_RESIZE_N(guest->features, guest->nfeatures_max,
-                     guest->nfeatures, 1) < 0)
-        goto no_memory;
-    guest->features[guest->nfeatures++] = feature;
+    if (!feature) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("invalid feature '%s'"), name);
+        return NULL;
+    }
+
+    feature->present = true;
+
+    if (togglesRequired) {
+        feature->defaultOn = virTristateSwitchFromBool(defaultOn);
+        feature->toggle = virTristateBoolFromBool(toggle);
+    }
 
     return feature;
-
- no_memory:
-    virCapabilitiesFreeGuestFeature(feature);
-    return NULL;
 }
 
 /**
@@ -1193,6 +1205,40 @@ virCapabilitiesFormatHostXML(virCapsHostPtr host,
 
 
 static void
+virCapabilitiesFormatGuestFeatures(virCapsGuestPtr guest,
+                                   virBufferPtr buf)
+{
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+    size_t i;
+
+    virBufferSetChildIndent(&childBuf, buf);
+
+    for (i = 0; i < VIR_CAPS_GUEST_FEATURE_TYPE_LAST; i++) {
+        virCapsGuestFeaturePtr feature = guest->features + i;
+
+        if (!feature->present)
+            continue;
+
+        virBufferAsprintf(&childBuf, "<%s", virCapsGuestFeatureInfos[i].name);
+
+        if (feature->defaultOn) {
+            virBufferAsprintf(&childBuf, " default='%s'",
+                              virTristateSwitchTypeToString(feature->defaultOn));
+        }
+
+        if (feature->toggle) {
+            virBufferAsprintf(&childBuf, " toggle='%s'",
+                              virTristateBoolTypeToString(feature->toggle));
+        }
+
+        virBufferAddLit(&childBuf, "/>\n");
+    }
+
+    virXMLFormatElement(buf, "features", NULL, &childBuf);
+}
+
+
+static void
 virCapabilitiesFormatGuestXML(virCapsGuestPtr *guests,
                               size_t nguests,
                               virBufferPtr buf)
@@ -1261,29 +1307,8 @@ virCapabilitiesFormatGuestXML(virCapsGuestPtr *guests,
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</arch>\n");
 
-        if (guests[i]->nfeatures) {
-            virBufferAddLit(buf, "<features>\n");
-            virBufferAdjustIndent(buf, 2);
+        virCapabilitiesFormatGuestFeatures(guests[i], buf);
 
-            for (j = 0; j < guests[i]->nfeatures; j++) {
-                if (STREQ(guests[i]->features[j]->name, "pae") ||
-                    STREQ(guests[i]->features[j]->name, "nonpae") ||
-                    STREQ(guests[i]->features[j]->name, "ia64_be") ||
-                    STREQ(guests[i]->features[j]->name, "cpuselection") ||
-                    STREQ(guests[i]->features[j]->name, "deviceboot")) {
-                    virBufferAsprintf(buf, "<%s/>\n",
-                                      guests[i]->features[j]->name);
-                } else {
-                    virBufferAsprintf(buf, "<%s default='%s' toggle='%s'/>\n",
-                                      guests[i]->features[j]->name,
-                                      guests[i]->features[j]->defaultOn ? "on" : "off",
-                                      guests[i]->features[j]->toggle ? "yes" : "no");
-                }
-            }
-
-            virBufferAdjustIndent(buf, -2);
-            virBufferAddLit(buf, "</features>\n");
-        }
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</guest>\n\n");
     }

@@ -32,10 +32,24 @@
 
 #include <libxml/xpath.h>
 
+typedef enum {
+    VIR_CAPS_GUEST_FEATURE_TYPE_PAE = 0,
+    VIR_CAPS_GUEST_FEATURE_TYPE_NONPAE,
+    VIR_CAPS_GUEST_FEATURE_TYPE_IA64_BE,
+    VIR_CAPS_GUEST_FEATURE_TYPE_ACPI,
+    VIR_CAPS_GUEST_FEATURE_TYPE_APIC,
+    VIR_CAPS_GUEST_FEATURE_TYPE_CPUSELECTION,
+    VIR_CAPS_GUEST_FEATURE_TYPE_DEVICEBOOT,
+    VIR_CAPS_GUEST_FEATURE_TYPE_DISKSNAPSHOT,
+    VIR_CAPS_GUEST_FEATURE_TYPE_HAP,
+
+    VIR_CAPS_GUEST_FEATURE_TYPE_LAST
+} virCapsGuestFeatureType;
+
 struct _virCapsGuestFeature {
-    char *name;
-    bool defaultOn;
-    bool toggle;
+    bool present;
+    virTristateSwitch defaultOn;
+    virTristateBool toggle;
 };
 
 struct _virCapsGuestMachine {
@@ -68,9 +82,7 @@ struct _virCapsGuestArch {
 struct _virCapsGuest {
     int ostype;
     virCapsGuestArch arch;
-    size_t nfeatures;
-    size_t nfeatures_max;
-    virCapsGuestFeaturePtr *features;
+    virCapsGuestFeature features[VIR_CAPS_GUEST_FEATURE_TYPE_LAST];
 };
 
 struct _virCapsHostNUMACellCPU {
