@@ -2428,6 +2428,20 @@ virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
 }
 
 
+static bool
+virQEMUCapsIsMachineSupported(virQEMUCapsPtr qemuCaps,
+                              const char *canonical_machine)
+{
+    size_t i;
+
+    for (i = 0; i < qemuCaps->nmachineTypes; i++) {
+        if (STREQ(canonical_machine, qemuCaps->machineTypes[i].name))
+            return true;
+    }
+    return false;
+}
+
+
 static int
 virQEMUCapsProbeQMPMachineProps(virQEMUCapsPtr qemuCaps,
                                 qemuMonitorPtr mon)
@@ -5143,20 +5157,6 @@ virQEMUCapsSupportsVmport(virQEMUCapsPtr qemuCaps,
     return qemuDomainIsI440FX(def) ||
         qemuDomainIsQ35(def) ||
         STREQ(def->os.machine, "isapc");
-}
-
-
-bool
-virQEMUCapsIsMachineSupported(virQEMUCapsPtr qemuCaps,
-                              const char *canonical_machine)
-{
-    size_t i;
-
-    for (i = 0; i < qemuCaps->nmachineTypes; i++) {
-        if (STREQ(canonical_machine, qemuCaps->machineTypes[i].name))
-            return true;
-    }
-    return false;
 }
 
 
