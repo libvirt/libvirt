@@ -4026,6 +4026,28 @@ virQEMUCapsFormatCPUModels(virQEMUCapsAccelPtr caps,
 
 
 static void
+virQEMUCapsFormatMachines(virQEMUCapsPtr qemuCaps,
+                          virBufferPtr buf)
+{
+    size_t i;
+
+    for (i = 0; i < qemuCaps->nmachineTypes; i++) {
+        virBufferEscapeString(buf, "<machine name='%s'",
+                              qemuCaps->machineTypes[i].name);
+        virBufferEscapeString(buf, " alias='%s'",
+                              qemuCaps->machineTypes[i].alias);
+        if (qemuCaps->machineTypes[i].hotplugCpus)
+            virBufferAddLit(buf, " hotplugCpus='yes'");
+        virBufferAsprintf(buf, " maxCpus='%u'",
+                          qemuCaps->machineTypes[i].maxCpus);
+        if (qemuCaps->machineTypes[i].qemuDefault)
+            virBufferAddLit(buf, " default='yes'");
+        virBufferAddLit(buf, "/>\n");
+    }
+}
+
+
+static void
 virQEMUCapsFormatAccel(virQEMUCapsPtr qemuCaps,
                        virBufferPtr buf,
                        virDomainVirtType type)
@@ -4103,20 +4125,7 @@ virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps)
     virQEMUCapsFormatAccel(qemuCaps, &buf, VIR_DOMAIN_VIRT_KVM);
     virQEMUCapsFormatAccel(qemuCaps, &buf, VIR_DOMAIN_VIRT_QEMU);
 
-    for (i = 0; i < qemuCaps->nmachineTypes; i++) {
-        virBufferEscapeString(&buf, "<machine name='%s'",
-                              qemuCaps->machineTypes[i].name);
-        if (qemuCaps->machineTypes[i].alias)
-            virBufferEscapeString(&buf, " alias='%s'",
-                              qemuCaps->machineTypes[i].alias);
-        if (qemuCaps->machineTypes[i].hotplugCpus)
-            virBufferAddLit(&buf, " hotplugCpus='yes'");
-        virBufferAsprintf(&buf, " maxCpus='%u'",
-                          qemuCaps->machineTypes[i].maxCpus);
-        if (qemuCaps->machineTypes[i].qemuDefault)
-            virBufferAddLit(&buf, " default='yes'");
-        virBufferAddLit(&buf, "/>\n");
-    }
+    virQEMUCapsFormatMachines(qemuCaps, &buf);
 
     for (i = 0; i < qemuCaps->ngicCapabilities; i++) {
         virGICCapabilityPtr cap;
