@@ -120,6 +120,8 @@
 /src/admin/admin_client.h
 /src/admin/admin_protocol.[ch]
 /src/admin/admin_server_dispatch_stubs.h
+/src/admin/libvirt_admin.def
+/src/admin/libvirt_admin.syms
 /src/bhyve/test_libvirtd_bhyve.aug
 /src/bhyve/test_virtbhyved.aug
 /src/bhyve/virtbhyved.aug
@@ -137,7 +139,6 @@
 /src/libvirt_access_lxc.xml
 /src/libvirt_access_qemu.syms
 /src/libvirt_access_qemu.xml
-/src/libvirt_admin.syms
 /src/libvirt_*.stp
 /src/libvirt_*helper
 /src/libvirt_*probes.h
