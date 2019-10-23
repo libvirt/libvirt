@@ -3557,6 +3557,60 @@ virQEMUCapsLoadCPUModels(virQEMUCapsAccelPtr caps,
 
 
 static int
+virQEMUCapsLoadMachines(virQEMUCapsPtr qemuCaps,
+                        xmlXPathContextPtr ctxt)
+{
+    g_autofree xmlNodePtr *nodes = NULL;
+    char *str = NULL;
+    size_t i;
+    int n;
+
+    if ((n = virXPathNodeSet("./machine", ctxt, &nodes)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to parse qemu capabilities machines"));
+        return -1;
+    }
+
+    if (n == 0)
+        return 0;
+
+    qemuCaps->nmachineTypes = n;
+    if (VIR_ALLOC_N(qemuCaps->machineTypes, qemuCaps->nmachineTypes) < 0)
+        return -1;
+
+    for (i = 0; i < n; i++) {
+        if (!(qemuCaps->machineTypes[i].name = virXMLPropString(nodes[i], "name"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("missing machine name in QEMU capabilities cache"));
+            return -1;
+        }
+        qemuCaps->machineTypes[i].alias = virXMLPropString(nodes[i], "alias");
+
+        str = virXMLPropString(nodes[i], "maxCpus");
+        if (str &&
+            virStrToLong_ui(str, NULL, 10, &(qemuCaps->machineTypes[i].maxCpus)) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("malformed machine cpu count in QEMU capabilities cache"));
+            return -1;
+        }
+        VIR_FREE(str);
+
+        str = virXMLPropString(nodes[i], "hotplugCpus");
+        if (STREQ_NULLABLE(str, "yes"))
+            qemuCaps->machineTypes[i].hotplugCpus = true;
+        VIR_FREE(str);
+
+        str = virXMLPropString(nodes[i], "default");
+        if (STREQ_NULLABLE(str, "yes"))
+            qemuCaps->machineTypes[i].qemuDefault = true;
+        VIR_FREE(str);
+    }
+
+    return 0;
+}
+
+
+static int
 virQEMUCapsLoadAccel(virQEMUCapsPtr qemuCaps,
                      xmlXPathContextPtr ctxt,
                      virDomainVirtType type)
@@ -3789,45 +3843,8 @@ virQEMUCapsLoadCache(virArch hostArch,
         virQEMUCapsLoadAccel(qemuCaps, ctxt, VIR_DOMAIN_VIRT_QEMU) < 0)
         goto cleanup;
 
-    if ((n = virXPathNodeSet("./machine", ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("failed to parse qemu capabilities machines"));
+    if (virQEMUCapsLoadMachines(qemuCaps, ctxt) < 0)
         goto cleanup;
-    }
-    if (n > 0) {
-        qemuCaps->nmachineTypes = n;
-        if (VIR_ALLOC_N(qemuCaps->machineTypes, qemuCaps->nmachineTypes) < 0)
-            goto cleanup;
-
-        for (i = 0; i < n; i++) {
-            if (!(qemuCaps->machineTypes[i].name = virXMLPropString(nodes[i], "name"))) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("missing machine name in QEMU capabilities cache"));
-                goto cleanup;
-            }
-            qemuCaps->machineTypes[i].alias = virXMLPropString(nodes[i], "alias");
-
-            str = virXMLPropString(nodes[i], "maxCpus");
-            if (str &&
-                virStrToLong_ui(str, NULL, 10, &(qemuCaps->machineTypes[i].maxCpus)) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("malformed machine cpu count in QEMU capabilities cache"));
-                goto cleanup;
-            }
-            VIR_FREE(str);
-
-            str = virXMLPropString(nodes[i], "hotplugCpus");
-            if (STREQ_NULLABLE(str, "yes"))
-                qemuCaps->machineTypes[i].hotplugCpus = true;
-            VIR_FREE(str);
-
-            str = virXMLPropString(nodes[i], "default");
-            if (STREQ_NULLABLE(str, "yes"))
-                qemuCaps->machineTypes[i].qemuDefault = true;
-            VIR_FREE(str);
-        }
-    }
-    VIR_FREE(nodes);
 
     if ((n = virXPathNodeSet("./gic", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
