@@ -722,6 +722,17 @@ virQEMUCapsFindTarget(virArch hostarch,
 }
 
 
+static virQEMUCapsAccelPtr
+virQEMUCapsGetAccel(virQEMUCapsPtr qemuCaps,
+                    virDomainVirtType type)
+{
+    if (type == VIR_DOMAIN_VIRT_KVM)
+        return &qemuCaps->kvm;
+
+    return &qemuCaps->tcg;
+}
+
+
 static void
 virQEMUCapsSetDefaultMachine(virQEMUCapsPtr qemuCaps,
                              size_t defIdx)
@@ -1868,12 +1879,8 @@ virQEMUCapsAddCPUDefinitions(virQEMUCapsPtr qemuCaps,
 {
     size_t i;
     size_t start;
-    qemuMonitorCPUDefsPtr defs = NULL;
-
-    if (type == VIR_DOMAIN_VIRT_KVM && qemuCaps->kvm.cpuModels)
-        defs = qemuCaps->kvm.cpuModels;
-    else if (type == VIR_DOMAIN_VIRT_QEMU && qemuCaps->tcg.cpuModels)
-        defs = qemuCaps->tcg.cpuModels;
+    virQEMUCapsAccelPtr accel = virQEMUCapsGetAccel(qemuCaps, type);
+    qemuMonitorCPUDefsPtr defs = accel->cpuModels;
 
     if (defs) {
         start = defs->ncpus;
@@ -1886,10 +1893,7 @@ virQEMUCapsAddCPUDefinitions(virQEMUCapsPtr qemuCaps,
         if (!(defs = qemuMonitorCPUDefsNew(count)))
             return -1;
 
-        if (type == VIR_DOMAIN_VIRT_KVM)
-            qemuCaps->kvm.cpuModels = defs;
-        else
-            qemuCaps->tcg.cpuModels = defs;
+        accel->cpuModels = defs;
     }
 
     for (i = 0; i < count; i++) {
@@ -1940,12 +1944,7 @@ virQEMUCapsGetCPUModels(virQEMUCapsPtr qemuCaps,
 {
     qemuMonitorCPUDefsPtr defs;
 
-    if (type == VIR_DOMAIN_VIRT_KVM)
-        defs = qemuCaps->kvm.cpuModels;
-    else
-        defs = qemuCaps->tcg.cpuModels;
-
-    if (!defs)
+    if (!(defs = virQEMUCapsGetAccel(qemuCaps, type)->cpuModels))
         return NULL;
 
     return virQEMUCapsCPUDefsToModels(defs, modelWhitelist, modelBlacklist);
@@ -2020,10 +2019,7 @@ virQEMUCapsIsCPUModeSupported(virQEMUCapsPtr qemuCaps,
                                          VIR_QEMU_CAPS_HOST_CPU_REPORTED);
 
     case VIR_CPU_MODE_CUSTOM:
-        if (type == VIR_DOMAIN_VIRT_KVM)
-            cpus = qemuCaps->kvm.cpuModels;
-        else
-            cpus = qemuCaps->tcg.cpuModels;
+        cpus = virQEMUCapsGetAccel(qemuCaps, type)->cpuModels;
         return cpus && cpus->ncpus > 0;
 
     case VIR_CPU_MODE_LAST:
