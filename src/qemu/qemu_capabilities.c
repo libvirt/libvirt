@@ -2524,7 +2524,7 @@ virQEMUCapsFetchCPUModels(qemuMonitorPtr mon,
 }
 
 
-int
+static int
 virQEMUCapsProbeQMPCPUDefinitions(virQEMUCapsPtr qemuCaps,
                                   qemuMonitorPtr mon,
                                   bool tcg)
@@ -2543,6 +2543,14 @@ virQEMUCapsProbeQMPCPUDefinitions(virQEMUCapsPtr qemuCaps,
         qemuCaps->kvm.cpuModels = defs;
 
     return 0;
+}
+
+
+int
+virQEMUCapsProbeCPUDefinitionsTest(virQEMUCapsPtr qemuCaps,
+                                   qemuMonitorPtr mon)
+{
+    return virQEMUCapsProbeQMPCPUDefinitions(qemuCaps, mon, false);
 }
 
 

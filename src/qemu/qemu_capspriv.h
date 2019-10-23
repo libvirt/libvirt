@@ -95,9 +95,8 @@ virQEMUCapsSetSEVCapabilities(virQEMUCapsPtr qemuCaps,
                               virSEVCapability *capabilities);
 
 int
-virQEMUCapsProbeQMPCPUDefinitions(virQEMUCapsPtr qemuCaps,
-                                  qemuMonitorPtr mon,
-                                  bool tcg);
+virQEMUCapsProbeCPUDefinitionsTest(virQEMUCapsPtr qemuCaps,
+                                   qemuMonitorPtr mon);
 
 void
 virQEMUCapsSetMicrocodeVersion(virQEMUCapsPtr qemuCaps,

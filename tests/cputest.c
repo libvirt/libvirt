@@ -507,9 +507,8 @@ cpuTestMakeQEMUCaps(const struct data *data)
     virQEMUCapsSetCPUModelInfo(qemuCaps, VIR_DOMAIN_VIRT_KVM, model);
     model = NULL;
 
-    if (virQEMUCapsProbeQMPCPUDefinitions(qemuCaps,
-                                          qemuMonitorTestGetMonitor(testMon),
-                                          false) < 0)
+    if (virQEMUCapsProbeCPUDefinitionsTest(qemuCaps,
+                                           qemuMonitorTestGetMonitor(testMon)) < 0)
         goto error;
 
  cleanup:
