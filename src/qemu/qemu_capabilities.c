@@ -1951,24 +1951,14 @@ virQEMUCapsGetCPUModels(virQEMUCapsPtr qemuCaps,
 }
 
 
-static virQEMUCapsHostCPUDataPtr
-virQEMUCapsGetHostCPUData(virQEMUCapsPtr qemuCaps,
-                          virDomainVirtType type)
-{
-    if (type == VIR_DOMAIN_VIRT_KVM)
-        return &qemuCaps->kvm.hostCPU;
-    else
-        return &qemuCaps->tcg.hostCPU;
-}
-
-
 virCPUDefPtr
 virQEMUCapsGetHostModel(virQEMUCapsPtr qemuCaps,
                         virDomainVirtType type,
                         virQEMUCapsHostCPUType cpuType)
 {
-    virQEMUCapsHostCPUDataPtr cpuData = virQEMUCapsGetHostCPUData(qemuCaps, type);
+    virQEMUCapsHostCPUDataPtr cpuData;
 
+    cpuData = &virQEMUCapsGetAccel(qemuCaps, type)->hostCPU;
     switch (cpuType) {
     case VIR_QEMU_CAPS_HOST_CPU_REPORTED:
         return cpuData->reported;
@@ -1993,8 +1983,9 @@ virQEMUCapsSetHostModel(virQEMUCapsPtr qemuCaps,
                         virCPUDefPtr migratable,
                         virCPUDefPtr full)
 {
-    virQEMUCapsHostCPUDataPtr cpuData = virQEMUCapsGetHostCPUData(qemuCaps, type);
+    virQEMUCapsHostCPUDataPtr cpuData;
 
+    cpuData = &virQEMUCapsGetAccel(qemuCaps, type)->hostCPU;
     cpuData->reported = reported;
     cpuData->migratable = migratable;
     cpuData->full = full;
@@ -3335,9 +3326,7 @@ qemuMonitorCPUModelInfoPtr
 virQEMUCapsGetCPUModelInfo(virQEMUCapsPtr qemuCaps,
                            virDomainVirtType type)
 {
-    virQEMUCapsHostCPUDataPtr cpuData = virQEMUCapsGetHostCPUData(qemuCaps, type);
-
-    return cpuData->info;
+    return virQEMUCapsGetAccel(qemuCaps, type)->hostCPU.info;
 }
 
 
@@ -3346,9 +3335,7 @@ virQEMUCapsSetCPUModelInfo(virQEMUCapsPtr qemuCaps,
                            virDomainVirtType type,
                            qemuMonitorCPUModelInfoPtr modelInfo)
 {
-    virQEMUCapsHostCPUDataPtr cpuData = virQEMUCapsGetHostCPUData(qemuCaps, type);
-
-    cpuData->info = modelInfo;
+    virQEMUCapsGetAccel(qemuCaps, type)->hostCPU.info = modelInfo;
 }
 
 
