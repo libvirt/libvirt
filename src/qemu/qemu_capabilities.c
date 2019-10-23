@@ -2526,21 +2526,14 @@ virQEMUCapsFetchCPUModels(qemuMonitorPtr mon,
 
 static int
 virQEMUCapsProbeQMPCPUDefinitions(virQEMUCapsPtr qemuCaps,
-                                  qemuMonitorPtr mon,
-                                  bool tcg)
+                                  virQEMUCapsAccelPtr accel,
+                                  qemuMonitorPtr mon)
 {
-    qemuMonitorCPUDefsPtr defs = NULL;
-
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_DEFINITIONS))
         return 0;
 
-    if (virQEMUCapsFetchCPUDefinitions(mon, qemuCaps->arch, &defs) < 0)
+    if (virQEMUCapsFetchCPUDefinitions(mon, qemuCaps->arch, &accel->cpuModels) < 0)
         return -1;
-
-    if (tcg || !virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
-        qemuCaps->tcg.cpuModels = defs;
-    else
-        qemuCaps->kvm.cpuModels = defs;
 
     return 0;
 }
@@ -2550,35 +2543,27 @@ int
 virQEMUCapsProbeCPUDefinitionsTest(virQEMUCapsPtr qemuCaps,
                                    qemuMonitorPtr mon)
 {
-    return virQEMUCapsProbeQMPCPUDefinitions(qemuCaps, mon, false);
+    return virQEMUCapsProbeQMPCPUDefinitions(qemuCaps, &qemuCaps->kvm, mon);
 }
 
 
 static int
 virQEMUCapsProbeQMPHostCPU(virQEMUCapsPtr qemuCaps,
+                           virQEMUCapsAccelPtr accel,
                            qemuMonitorPtr mon,
-                           bool tcg)
+                           virDomainVirtType virtType)
 {
+    const char *model = virtType == VIR_DOMAIN_VIRT_KVM ? "host" : "max";
     qemuMonitorCPUModelInfoPtr modelInfo = NULL;
     qemuMonitorCPUModelInfoPtr nonMigratable = NULL;
     virHashTablePtr hash = NULL;
-    const char *model;
     virCPUDefPtr cpu;
     qemuMonitorCPUModelExpansionType type;
-    virDomainVirtType virtType;
     bool fail_no_props = true;
     int ret = -1;
 
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION))
         return 0;
-
-    if (tcg || !virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM)) {
-        virtType = VIR_DOMAIN_VIRT_QEMU;
-        model = "max";
-    } else {
-        virtType = VIR_DOMAIN_VIRT_KVM;
-        model = "host";
-    }
 
     if (VIR_ALLOC(cpu) < 0)
         goto cleanup;
@@ -2647,8 +2632,7 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCapsPtr qemuCaps,
         modelInfo->migratability = true;
     }
 
-    virQEMUCapsSetCPUModelInfo(qemuCaps, virtType, modelInfo);
-    modelInfo = NULL;
+    accel->hostCPU.info = g_steal_pointer(&modelInfo);
     ret = 0;
 
  cleanup:
@@ -4565,6 +4549,8 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
 {
     int major, minor, micro;
     g_autofree char *package = NULL;
+    virQEMUCapsAccelPtr accel;
+    virDomainVirtType type;
 
     /* @mon is supposed to be locked by callee */
 
@@ -4602,6 +4588,13 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
     if (virQEMUCapsProbeQMPKVMState(qemuCaps, mon) < 0)
         return -1;
 
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
+        type = VIR_DOMAIN_VIRT_KVM;
+    else
+        type = VIR_DOMAIN_VIRT_QEMU;
+
+    accel = virQEMUCapsGetAccel(qemuCaps, type);
+
     if (virQEMUCapsProbeQMPEvents(qemuCaps, mon) < 0)
         return -1;
     if (virQEMUCapsProbeQMPDevices(qemuCaps, mon) < 0)
@@ -4610,7 +4603,7 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
         return -1;
     if (virQEMUCapsProbeQMPMachineProps(qemuCaps, mon) < 0)
         return -1;
-    if (virQEMUCapsProbeQMPCPUDefinitions(qemuCaps, mon, false) < 0)
+    if (virQEMUCapsProbeQMPCPUDefinitions(qemuCaps, accel, mon) < 0)
         return -1;
     if (virQEMUCapsProbeQMPTPM(qemuCaps, mon) < 0)
         return -1;
@@ -4630,7 +4623,7 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
     /* The following probes rely on other previously probed capabilities.
      * No capabilities bits should be set below this point. */
 
-    if (virQEMUCapsProbeQMPHostCPU(qemuCaps, mon, false) < 0)
+    if (virQEMUCapsProbeQMPHostCPU(qemuCaps, accel, mon, type) < 0)
         return -1;
 
     return 0;
@@ -4641,10 +4634,12 @@ int
 virQEMUCapsInitQMPMonitorTCG(virQEMUCapsPtr qemuCaps,
                              qemuMonitorPtr mon)
 {
-    if (virQEMUCapsProbeQMPCPUDefinitions(qemuCaps, mon, true) < 0)
+    virQEMUCapsAccelPtr accel = virQEMUCapsGetAccel(qemuCaps, VIR_DOMAIN_VIRT_QEMU);
+
+    if (virQEMUCapsProbeQMPCPUDefinitions(qemuCaps, accel, mon) < 0)
         return -1;
 
-    if (virQEMUCapsProbeQMPHostCPU(qemuCaps, mon, true) < 0)
+    if (virQEMUCapsProbeQMPHostCPU(qemuCaps, accel, mon, VIR_DOMAIN_VIRT_QEMU) < 0)
         return -1;
 
     return 0;
