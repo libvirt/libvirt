@@ -20,8 +20,8 @@ REMOTE_DRIVER_SOURCES = \
 
 REMOTE_DAEMON_GENERATED = \
 	remote/remote_daemon_dispatch_stubs.h \
-	remote/remote_daemon_dispatch_lxc_stubs.h \
-	remote/remote_daemon_dispatch_qemu_stubs.h \
+	remote/lxc_daemon_dispatch_stubs.h \
+	remote/qemu_daemon_dispatch_stubs.h \
 	$(NULL)
 
 REMOTE_DAEMON_SOURCES = \
@@ -442,17 +442,17 @@ remote/remote_daemon_dispatch_stubs.h: $(srcdir)/rpc/gendispatch.pl \
 	  --mode=server remote REMOTE $(REMOTE_PROTOCOL) \
 	  > $(srcdir)/remote/remote_daemon_dispatch_stubs.h
 
-remote/remote_daemon_dispatch_lxc_stubs.h: $(srcdir)/rpc/gendispatch.pl \
+remote/lxc_daemon_dispatch_stubs.h: $(srcdir)/rpc/gendispatch.pl \
 		$(LXC_PROTOCOL) Makefile.am
 	$(AM_V_GEN)$(PERL) -w $(top_srcdir)/src/rpc/gendispatch.pl \
 	  --mode=server lxc LXC $(LXC_PROTOCOL) \
-	  > $(srcdir)/remote/remote_daemon_dispatch_lxc_stubs.h
+	  > $(srcdir)/remote/lxc_daemon_dispatch_stubs.h
 
-remote/remote_daemon_dispatch_qemu_stubs.h: $(srcdir)/rpc/gendispatch.pl \
+remote/qemu_daemon_dispatch_stubs.h: $(srcdir)/rpc/gendispatch.pl \
 		$(QEMU_PROTOCOL) Makefile.am
 	$(AM_V_GEN)$(PERL) -w $(top_srcdir)/src/rpc/gendispatch.pl \
 	  --mode=server qemu QEMU $(QEMU_PROTOCOL) \
-	  > $(srcdir)/remote/remote_daemon_dispatch_qemu_stubs.h
+	  > $(srcdir)/remote/qemu_daemon_dispatch_stubs.h
 
 libvirtd.8.in: remote/libvirtd.pod
 	$(AM_V_GEN)$(POD2MAN) --section=8 $< $@-t1 && \

@@ -1976,7 +1976,8 @@ po_file ?= $(srcdir)/po/POTFILES.in
 generated_files = \
   $(builddir)/src/*.[ch] \
   $(builddir)/src/*/*.[ch] \
-  $(srcdir)/src/*/{remote_daemon,admin_server,log_daemon,lock_daemon}_dispatch_*stubs.h \
+  $(srcdir)/src/*/{remote,qemu,lxc,log,lock}_daemon_dispatch_stubs.h \
+  $(srcdir)/src/admin/admin_server_dispatch_stubs.h \
   $(srcdir)/src/lxc/{lxc_monitor,lxc_controller}_dispatch.h \
   $(srcdir)/src/remote/*_client_bodies.h \
   $(srcdir)/src/*/*_protocol.[ch] \

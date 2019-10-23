@@ -131,8 +131,8 @@ remoteGetStorageConn(virNetServerClientPtr client);
 
 
 #include "remote_daemon_dispatch_stubs.h"
-#include "remote_daemon_dispatch_qemu_stubs.h"
-#include "remote_daemon_dispatch_lxc_stubs.h"
+#include "qemu_daemon_dispatch_stubs.h"
+#include "lxc_daemon_dispatch_stubs.h"
 
 
 /* Prototypes */
