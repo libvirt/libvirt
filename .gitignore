@@ -39,12 +39,8 @@ Makefile.in
 .git-module-status
 
 # libvirt related ignores
-!/po/*.mini.po
 /build/
 /ci/scratch/
-/po/*gmo
-/po/*po
-/po/*pot
 /src/access/org.libvirt.api.policy
 /src/access/viraccessapicheck.c
 /src/access/viraccessapicheck.h

@@ -16,17 +16,16 @@ LANGS := \
 
 
 POTFILE_DEPS := $(shell $(SED) 's,^,$(top_srcdir)/,' $(srcdir)/POTFILES)
-POTFILE := $(srcdir)/$(DOMAIN).pot
-POFILES := $(LANGS:%=$(srcdir)/%.po)
-GMOFILES := $(LANGS:%=$(srcdir)/%.gmo)
+POTFILE := $(DOMAIN).pot
+POMINIFILES := $(LANGS:%=%.mini.po)
+POFILES := $(LANGS:%=%.po)
+GMOFILES := $(LANGS:%=%.gmo)
 
-MAINTAINERCLEANFILES = $(POTFILE) $(POFILES) $(GMOFILES)
+CLEANFILES = $(POTFILE) $(POFILES) $(GMOFILES)
 
 EXTRA_DIST = \
 	POTFILES \
-	$(POTFILE) \
-	$(POFILES) \
-	$(GMOFILES)
+	$(POMINIFILES)
 
 if HAVE_GNU_GETTEXT_TOOLS
 
@@ -63,10 +62,18 @@ update-mini-po: $(POTFILE)
 	done
 
 push-pot: $(POTFILE)
-	zanata push --push-type=source
+	zanata push \
+		--project-config $(srcdir)/zanata.xml \
+		--push-type=source \
+		--transdir $(builddir) \
+		--srcdir $(srcdir)
 
 pull-po: $(POTFILE)
-	zanata pull --create-skeletons
+	zanata pull \
+		--project-config $(srcdir)/zanata.xml \
+		--create-skeletons \
+		--transdir $(builddir) \
+		--srcdir $(srcdir)
 	$(MAKE) update-mini-po
 	$(MAKE) update-gmo
 
@@ -76,11 +83,11 @@ $(POTFILE): POTFILES $(POTFILE_DEPS)
 	$(SED) $(SED_PO_FIXUP_ARGS) < $@-t > $@
 	rm -f $@-t
 
-$(srcdir)/%.po: $(srcdir)/%.mini.po $(POTFILE)
+%.po: %.mini.po $(POTFILE)
 	$(MSGMERGE) --no-fuzzy-matching $< $(POTFILE) | \
 	  $(SED) $(SED_PO_FIXUP_ARGS) > $@
 
-$(srcdir)/%.gmo: $(srcdir)/%.po
+%.gmo: %.po
 	rm -f $@ $@-t
 	$(MSGFMT) -c -o $@-t $<
 	mv $@-t $@
@@ -99,7 +106,7 @@ install-data-hook: $(GMOFILES)
 	for lang in $(LANGS); do \
 	  d=$(DESTDIR)$(langinstdir)/$$lang/LC_MESSAGES; \
 	  mkdir -p $$d; \
-	  install -m 0644 $(srcdir)/$$lang.gmo $$d/$(DOMAIN).mo; \
+	  install -m 0644 $$lang.gmo $$d/$(DOMAIN).mo; \
 	done
 
 uninstall-hook:
