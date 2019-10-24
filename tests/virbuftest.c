@@ -85,12 +85,12 @@ static int testBufAutoIndent(const void *data G_GNUC_UNUSED)
         ret = -1;
     }
     virBufferAdjustIndent(buf, -3);
-    if (virBufferGetIndent(buf, false) != -1 ||
-        virBufferGetIndent(buf, true) != -1 ||
-        virBufferError(buf) != -1) {
-        VIR_TEST_DEBUG("Usage error not flagged");
+    if (virBufferGetIndent(buf, false) != 0 ||
+        virBufferGetIndent(buf, true) != 0) {
+        VIR_TEST_DEBUG("Indentation level not truncated");
         ret = -1;
     }
+    virBufferAdjustIndent(buf, 3);
     virBufferFreeAndReset(buf);
     if (virBufferGetIndent(buf, false) != 0 ||
         virBufferGetIndent(buf, true) != 0 ||
@@ -298,32 +298,6 @@ static int testBufAddBuffer(const void *data G_GNUC_UNUSED)
     return ret;
 }
 
-static int
-testBufAddBuffer2(const void *opaque G_GNUC_UNUSED)
-{
-    g_auto(virBuffer) buf1 = VIR_BUFFER_INITIALIZER;
-    g_auto(virBuffer) buf2 = VIR_BUFFER_INITIALIZER;
-
-    /* Intent of this test is to demonstrate a memleak that happen with
-     * virBufferAddBuffer */
-
-    virBufferAddLit(&buf1, "Hello world!\n");
-    virBufferAddLit(&buf2, "Hello world!\n");
-
-    /* Intentional usage error */
-    virBufferAdjustIndent(&buf2, -2);
-
-    virBufferAddBuffer(&buf1, &buf2);
-
-    if (virBufferCurrentContent(&buf1) ||
-        !virBufferCurrentContent(&buf2)) {
-        VIR_TEST_DEBUG("Unexpected buffer content");
-        return -1;
-    }
-
-    return 0;
-}
-
 struct testBufAddStrData {
     const char *data;
     const char *expect;
@@ -481,7 +455,6 @@ mymain(void)
     DO_TEST("Auto-indentation", testBufAutoIndent, 0);
     DO_TEST("Trim", testBufTrim, 0);
     DO_TEST("AddBuffer", testBufAddBuffer, 0);
-    DO_TEST("AddBuffer2", testBufAddBuffer2, 0);
     DO_TEST("set indent", testBufSetIndent, 0);
     DO_TEST("autoclean", testBufferAutoclean, 0);
 

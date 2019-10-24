@@ -56,8 +56,8 @@ virBufferSetError(virBufferPtr buf, int error)
  * negative to decrease).  Automatic indentation is performed by all
  * additive functions when the existing buffer is empty or ends with a
  * newline (however, note that no indentation is added after newlines
- * embedded in an appended string).  If @indent would cause overflow,
- * the buffer error indicator is set.
+ * embedded in an appended string).  If @indent would cause overflow, the
+ * indentation level is truncated.
  */
 void
 virBufferAdjustIndent(virBufferPtr buf, int indent)
@@ -67,12 +67,12 @@ virBufferAdjustIndent(virBufferPtr buf, int indent)
 
     if (indent > 0) {
         if (INT_MAX - indent < buf->indent) {
-            virBufferSetError(buf, -1);
+            buf->indent = INT_MAX;
             return;
         }
     } else {
         if (buf->indent < -indent) {
-            virBufferSetError(buf, -1);
+            buf->indent = 0;
             return;
         }
     }
