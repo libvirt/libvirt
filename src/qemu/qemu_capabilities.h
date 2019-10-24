@@ -604,13 +604,17 @@ bool virQEMUCapsIsCPUModeSupported(virQEMUCapsPtr qemuCaps,
                                    virDomainVirtType type,
                                    virCPUMode mode);
 const char *virQEMUCapsGetCanonicalMachine(virQEMUCapsPtr qemuCaps,
+                                           virDomainVirtType virtType,
                                            const char *name);
 int virQEMUCapsGetMachineMaxCpus(virQEMUCapsPtr qemuCaps,
+                                 virDomainVirtType virtType,
                                  const char *name);
 bool virQEMUCapsGetMachineHotplugCpus(virQEMUCapsPtr qemuCaps,
+                                      virDomainVirtType virtType,
                                       const char *name);
 
 void virQEMUCapsFilterByMachineType(virQEMUCapsPtr qemuCaps,
+                                    virDomainVirtType virtType,
                                     const char *machineType);
 
 virFileCachePtr virQEMUCapsCacheNew(const char *libDir,
@@ -620,6 +624,7 @@ virFileCachePtr virQEMUCapsCacheNew(const char *libDir,
 virQEMUCapsPtr virQEMUCapsCacheLookup(virFileCachePtr cache,
                                       const char *binary);
 virQEMUCapsPtr virQEMUCapsCacheLookupCopy(virFileCachePtr cache,
+                                          virDomainVirtType virtType,
                                           const char *binary,
                                           const char *machineType);
 virQEMUCapsPtr virQEMUCapsCacheLookupByArch(virFileCachePtr cache,
@@ -645,7 +650,8 @@ bool virQEMUCapsSupportsGICVersion(virQEMUCapsPtr qemuCaps,
                                    virDomainVirtType virtType,
                                    virGICVersion version);
 
-const char *virQEMUCapsGetPreferredMachine(virQEMUCapsPtr qemuCaps);
+const char *virQEMUCapsGetPreferredMachine(virQEMUCapsPtr qemuCaps,
+                                           virDomainVirtType virtType);
 
 int virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
                                    const char *binary,

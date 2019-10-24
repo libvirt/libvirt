@@ -83,6 +83,7 @@ fillQemuCaps(virDomainCapsPtr domCaps,
     virCapsPtr caps = NULL;
     virQEMUCapsPtr qemuCaps = NULL;
     virDomainCapsLoaderPtr loader = &domCaps->os.loader;
+    virDomainVirtType virtType;
 
     if (!(caps = virCapabilitiesNew(domCaps->arch, false, false)) ||
         fakeHostCPU(caps, domCaps->arch) < 0)
@@ -92,13 +93,18 @@ fillQemuCaps(virDomainCapsPtr domCaps,
     if (!(qemuCaps = qemuTestParseCapabilities(caps, path)))
         goto cleanup;
 
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
+        virtType = VIR_DOMAIN_VIRT_KVM;
+    else
+        virtType = VIR_DOMAIN_VIRT_QEMU;
+
     if (machine) {
         VIR_FREE(domCaps->machine);
-        domCaps->machine = g_strdup(virQEMUCapsGetCanonicalMachine(qemuCaps, machine));
+        domCaps->machine = g_strdup(virQEMUCapsGetCanonicalMachine(qemuCaps, virtType, machine));
     }
 
     if (!domCaps->machine)
-        domCaps->machine = g_strdup(virQEMUCapsGetPreferredMachine(qemuCaps));
+        domCaps->machine = g_strdup(virQEMUCapsGetPreferredMachine(qemuCaps, virtType));
 
     if (virQEMUCapsFillDomainCaps(caps, domCaps, qemuCaps,
                                   false,

@@ -2105,8 +2105,10 @@ virQEMUCapsIsCPUModeSupported(virQEMUCapsPtr qemuCaps,
  * Resolves aliased machine names to the actual machine name. If qemuCaps isn't
  * present @name is returned.
  */
-const char *virQEMUCapsGetCanonicalMachine(virQEMUCapsPtr qemuCaps,
-                                           const char *name)
+const char *
+virQEMUCapsGetCanonicalMachine(virQEMUCapsPtr qemuCaps,
+                               virDomainVirtType virtType G_GNUC_UNUSED,
+                               const char *name)
 {
     size_t i;
 
@@ -2124,8 +2126,10 @@ const char *virQEMUCapsGetCanonicalMachine(virQEMUCapsPtr qemuCaps,
 }
 
 
-int virQEMUCapsGetMachineMaxCpus(virQEMUCapsPtr qemuCaps,
-                                 const char *name)
+int
+virQEMUCapsGetMachineMaxCpus(virQEMUCapsPtr qemuCaps,
+                             virDomainVirtType virtType G_GNUC_UNUSED,
+                             const char *name)
 {
     size_t i;
 
@@ -2143,8 +2147,10 @@ int virQEMUCapsGetMachineMaxCpus(virQEMUCapsPtr qemuCaps,
 }
 
 
-bool virQEMUCapsGetMachineHotplugCpus(virQEMUCapsPtr qemuCaps,
-                                      const char *name)
+bool
+virQEMUCapsGetMachineHotplugCpus(virQEMUCapsPtr qemuCaps,
+                                 virDomainVirtType virtType G_GNUC_UNUSED,
+                                 const char *name)
 {
     size_t i;
 
@@ -2430,6 +2436,7 @@ virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
 
 static bool
 virQEMUCapsIsMachineSupported(virQEMUCapsPtr qemuCaps,
+                              virDomainVirtType virtType G_GNUC_UNUSED,
                               const char *canonical_machine)
 {
     size_t i;
@@ -2444,6 +2451,7 @@ virQEMUCapsIsMachineSupported(virQEMUCapsPtr qemuCaps,
 
 static int
 virQEMUCapsProbeQMPMachineProps(virQEMUCapsPtr qemuCaps,
+                                virDomainVirtType virtType,
                                 qemuMonitorPtr mon)
 {
     char **values;
@@ -2455,10 +2463,10 @@ virQEMUCapsProbeQMPMachineProps(virQEMUCapsPtr qemuCaps,
 
     for (i = 0; i < G_N_ELEMENTS(virQEMUCapsMachineProps); i++) {
         virQEMUCapsObjectTypeProps props = virQEMUCapsMachineProps[i];
-        const char *canon = virQEMUCapsGetCanonicalMachine(qemuCaps, props.type);
+        const char *canon = virQEMUCapsGetCanonicalMachine(qemuCaps, virtType, props.type);
         g_autofree char *type = NULL;
 
-        if (!virQEMUCapsIsMachineSupported(qemuCaps, canon))
+        if (!virQEMUCapsIsMachineSupported(qemuCaps, virtType, canon))
             continue;
 
         /* The QOM type for machine types is the machine type name
@@ -4643,7 +4651,7 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
         return -1;
     if (virQEMUCapsProbeQMPMachineTypes(qemuCaps, mon) < 0)
         return -1;
-    if (virQEMUCapsProbeQMPMachineProps(qemuCaps, mon) < 0)
+    if (virQEMUCapsProbeQMPMachineProps(qemuCaps, type, mon) < 0)
         return -1;
     if (virQEMUCapsProbeQMPCPUDefinitions(qemuCaps, accel, mon) < 0)
         return -1;
@@ -4880,6 +4888,7 @@ static const struct virQEMUCapsMachineTypeFilter virQEMUCapsMachineFilter[] = {
 
 void
 virQEMUCapsFilterByMachineType(virQEMUCapsPtr qemuCaps,
+                               virDomainVirtType virtType,
                                const char *machineType)
 {
     size_t i;
@@ -4898,7 +4907,7 @@ virQEMUCapsFilterByMachineType(virQEMUCapsPtr qemuCaps,
             virQEMUCapsClear(qemuCaps, filter->flags[j]);
     }
 
-    if (!virQEMUCapsGetMachineHotplugCpus(qemuCaps, machineType))
+    if (!virQEMUCapsGetMachineHotplugCpus(qemuCaps, virtType, machineType))
         virQEMUCapsClear(qemuCaps, QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS);
 }
 
@@ -4972,6 +4981,7 @@ virQEMUCapsCacheLookup(virFileCachePtr cache,
 
 virQEMUCapsPtr
 virQEMUCapsCacheLookupCopy(virFileCachePtr cache,
+                           virDomainVirtType virtType,
                            const char *binary,
                            const char *machineType)
 {
@@ -4987,7 +4997,7 @@ virQEMUCapsCacheLookupCopy(virFileCachePtr cache,
     if (!ret)
         return NULL;
 
-    virQEMUCapsFilterByMachineType(ret, machineType);
+    virQEMUCapsFilterByMachineType(ret, virtType, machineType);
     return ret;
 }
 
@@ -5130,20 +5140,6 @@ virQEMUCapsCacheLookupDefault(virFileCachePtr cache,
         binary = virQEMUCapsGetBinary(qemuCaps);
     }
 
-    if (machine) {
-        /* Turn @machine into canonical name */
-        machine = virQEMUCapsGetCanonicalMachine(qemuCaps, machine);
-
-        if (!virQEMUCapsIsMachineSupported(qemuCaps, machine)) {
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("the machine '%s' is not supported by emulator '%s'"),
-                           machine, binary);
-            goto cleanup;
-        }
-    } else {
-        machine = virQEMUCapsGetPreferredMachine(qemuCaps);
-    }
-
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
         capsType = VIR_DOMAIN_VIRT_KVM;
     else
@@ -5157,6 +5153,20 @@ virQEMUCapsCacheLookupDefault(virFileCachePtr cache,
                        _("KVM is not supported by '%s' on this host"),
                        binary);
         goto cleanup;
+    }
+
+    if (machine) {
+        /* Turn @machine into canonical name */
+        machine = virQEMUCapsGetCanonicalMachine(qemuCaps, virttype, machine);
+
+        if (!virQEMUCapsIsMachineSupported(qemuCaps, virttype, machine)) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("the machine '%s' is not supported by emulator '%s'"),
+                           machine, binary);
+            goto cleanup;
+        }
+    } else {
+        machine = virQEMUCapsGetPreferredMachine(qemuCaps, virttype);
     }
 
     if (retArch)
@@ -5191,7 +5201,8 @@ virQEMUCapsSupportsVmport(virQEMUCapsPtr qemuCaps,
  * Note that this may differ from QEMU's own default machine
  */
 const char *
-virQEMUCapsGetPreferredMachine(virQEMUCapsPtr qemuCaps)
+virQEMUCapsGetPreferredMachine(virQEMUCapsPtr qemuCaps,
+                               virDomainVirtType virtType G_GNUC_UNUSED)
 {
     if (!qemuCaps->nmachineTypes)
         return NULL;
@@ -5649,6 +5660,7 @@ virQEMUCapsFillDomainCaps(virCapsPtr caps,
     virQEMUCapsFillDomainFeaturesFromQEMUCaps(qemuCaps, domCaps);
 
     domCaps->maxvcpus = virQEMUCapsGetMachineMaxCpus(qemuCaps,
+                                                     domCaps->virttype,
                                                      domCaps->machine);
     if (domCaps->virttype == VIR_DOMAIN_VIRT_KVM) {
         int hostmaxvcpus;

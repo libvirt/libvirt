@@ -4306,7 +4306,8 @@ qemuCanonicalizeMachine(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
 {
     const char *canon;
 
-    if (!(canon = virQEMUCapsGetCanonicalMachine(qemuCaps, def->os.machine)))
+    if (!(canon = virQEMUCapsGetCanonicalMachine(qemuCaps, def->virtType,
+                                                 def->os.machine)))
         return 0;
 
     if (STRNEQ(canon, def->os.machine)) {
@@ -4841,7 +4842,8 @@ static int
 qemuDomainValidateCpuCount(const virDomainDef *def,
                             virQEMUCapsPtr qemuCaps)
 {
-    unsigned int maxCpus = virQEMUCapsGetMachineMaxCpus(qemuCaps, def->os.machine);
+    unsigned int maxCpus = virQEMUCapsGetMachineMaxCpus(qemuCaps, def->virtType,
+                                                        def->os.machine);
 
     if (virDomainDefGetVcpus(def) == 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -8940,6 +8942,7 @@ qemuDomainDefFormatBufInternal(virQEMUDriverPtr driver,
             qCaps = virObjectRef(qemuCaps);
         } else {
             if (!(qCaps = virQEMUCapsCacheLookupCopy(driver->qemuCapsCache,
+                                                     def->virtType,
                                                      def->emulator,
                                                      def->os.machine)))
                 goto cleanup;
@@ -14976,6 +14979,7 @@ qemuDomainUpdateQEMUCaps(virDomainObjPtr vm,
 
     virObjectUnref(priv->qemuCaps);
     if (!(priv->qemuCaps = virQEMUCapsCacheLookupCopy(qemuCapsCache,
+                                                      vm->def->virtType,
                                                       vm->def->emulator,
                                                       vm->def->os.machine)))
         return -1;
