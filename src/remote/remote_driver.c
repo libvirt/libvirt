@@ -215,8 +215,10 @@ static int remoteSplitURIScheme(virURIPtr uri,
 
     *driver = *transport = NULL;
 
-    if (VIR_STRNDUP(*driver, uri->scheme, p ? p - uri->scheme : -1) < 0)
-        return -1;
+    if (p)
+        *driver = g_strndup(uri->scheme, p - uri->scheme);
+    else
+        *driver = g_strdup(uri->scheme);
 
     if (p) {
         *transport = g_strdup(p + 1);

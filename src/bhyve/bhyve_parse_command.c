@@ -150,8 +150,10 @@ bhyveCommandLineToArgv(const char *nativeConfig,
         start = curr;
         next = strchr(curr, '\n');
 
-        if (VIR_STRNDUP(line, curr, next ? next - curr : -1) < 0)
-            goto error;
+        if (next)
+            line = g_strndup(curr, next - curr);
+        else
+            line = g_strdup(curr);
 
         if (VIR_RESIZE_N(lines, lines_alloc, line_count, 2) < 0) {
             VIR_FREE(line);
@@ -194,8 +196,10 @@ bhyveCommandLineToArgv(const char *nativeConfig,
                 next = strchr(start, ' ');
             }
 
-            if (VIR_STRNDUP(arg, curr, next ? next - curr : -1) < 0)
-                goto error;
+            if (next)
+                arg = g_strndup(curr, next - curr);
+            else
+                arg = g_strdup(curr);
 
             if (next && (*next == '\'' || *next == '"'))
                 next++;
@@ -366,8 +370,10 @@ bhyveParsePCISlot(const char *slotdef,
 
        next = strchr(curr, ':');
 
-       if (VIR_STRNDUP(val, curr, next? next - curr : -1) < 0)
-           goto error;
+       if (next)
+           val = g_strndup(curr, next - curr);
+       else
+           val = g_strdup(curr);
 
        if (virStrToLong_ui(val, NULL, 10, &values[i]) < 0)
            goto error;
@@ -441,9 +447,10 @@ bhyveParsePCIDisk(virDomainDefPtr def,
         goto error;
 
     separator = strchr(config, ',');
-    if (VIR_STRNDUP(disk->src->path, config,
-                    separator? separator - config : -1) < 0)
-        goto error;
+    if (separator)
+        disk->src->path = g_strndup(config, separator - config);
+    else
+        disk->src->path = g_strdup(config);
 
     if (bus == VIR_DOMAIN_DISK_BUS_VIRTIO) {
         idx = *nvirtiodisk;
@@ -515,9 +522,10 @@ bhyveParsePCINet(virDomainDefPtr def,
     }
 
     separator = strchr(config, ',');
-    if (VIR_STRNDUP(net->ifname, config,
-                    separator? separator - config : -1) < 0)
-        goto error;
+    if (separator)
+        net->ifname = g_strndup(config, separator - config);
+    else
+        net->ifname = g_strdup(config);
 
     if (!separator)
         goto cleanup;
@@ -575,11 +583,12 @@ bhyveParseBhyvePCIArg(virDomainDefPtr def,
         goto error;
 
     conf = strchr(separator+1, ',');
-    if (conf)
+    if (conf) {
         conf++; /* Skip initial comma */
-
-    if (VIR_STRNDUP(emulation, separator, conf? conf - separator - 1 : -1) < 0)
-        goto error;
+        emulation = g_strndup(separator, conf - separator - 1);
+    } else {
+        emulation = g_strdup(separator);
+    }
 
     if (bhyveParsePCISlot(slotdef, &pcislot, &bus, &function) < 0)
         goto error;

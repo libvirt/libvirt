@@ -823,9 +823,11 @@ xenParseSxprChar(const char *value,
 
         offset2 = strchr(offset, ',');
         offset++;
-        if (VIR_STRNDUP(def->source->data.tcp.service, offset,
-                        offset2 ? offset2 - offset : -1) < 0)
-            goto error;
+        if (offset2)
+            def->source->data.tcp.service = g_strndup(offset,
+                                                      offset2 - offset);
+        else
+            def->source->data.tcp.service = g_strdup(offset);
 
         if (offset2 && strstr(offset2, ",server"))
             def->source->data.tcp.listen = true;
@@ -875,9 +877,10 @@ xenParseSxprChar(const char *value,
     case VIR_DOMAIN_CHR_TYPE_UNIX:
     {
         const char *offset = strchr(value, ',');
-        if (VIR_STRNDUP(def->source->data.nix.path, value,
-                        offset ? offset - value : -1) < 0)
-            goto error;
+        if (offset)
+            def->source->data.nix.path = g_strndup(value, offset - value);
+        else
+            def->source->data.nix.path = g_strdup(value);
 
         if (offset != NULL &&
             strstr(offset, ",server") != NULL)
