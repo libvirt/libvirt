@@ -663,7 +663,7 @@ virBufferURIEncodeString(virBufferPtr buf, const char *str)
     int grow_size = 0;
     const char *p;
     unsigned char uc;
-    const char *hex = "0123456789abcdef";
+    const char *hex = "0123456789ABCDEF";
 
     if ((buf == NULL) || (str == NULL))
         return;
