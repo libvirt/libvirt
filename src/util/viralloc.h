@@ -33,25 +33,6 @@
  * GLib array data types. See the hacking file for more guidance.
  */
 
-/* Return 1 if an array of N objects, each of size S, cannot exist due
-   to size arithmetic overflow.  S must be positive and N must be
-   nonnegative.  This is a macro, not an inline function, so that it
-   works correctly even when SIZE_MAX < N.
-
-   By gnulib convention, SIZE_MAX represents overflow in size
-   calculations, so the conservative dividend to use here is
-   SIZE_MAX - 1, since SIZE_MAX might represent an overflowed value.
-   However, malloc (SIZE_MAX) fails on all known hosts where
-   sizeof(ptrdiff_t) <= sizeof(size_t), so do not bother to test for
-   exactly-SIZE_MAX allocations on such hosts; this avoids a test and
-   branch when S is known to be 1.  */
-#ifndef xalloc_oversized
-# define xalloc_oversized(n, s) \
-    ((size_t) (sizeof(ptrdiff_t) <= sizeof(size_t) ? -1 : -2) / (s) < (n))
-#endif
-
-
-
 /* Don't call these directly - use the macros below */
 int virAlloc(void *ptrptr, size_t size)
     G_GNUC_WARN_UNUSED_RESULT ATTRIBUTE_NONNULL(1);
