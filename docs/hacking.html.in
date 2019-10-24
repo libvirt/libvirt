@@ -1040,9 +1040,6 @@ BAD:
         a single method. Keep the style consistent, converting existing
         code to GLib style in a separate, prior commit.</dd>
 
-      <dt><code>VIR_STRDUP</code>, <code>VIR_STRNDUP</code></dt>
-      <dd>Prefer the GLib APIs <code>g_strdup</code> and <code>g_strndup</code>.</dd>
-
       <dt><code>virStrerror</code></dt>
       <dd>The GLib <code>g_strerror()</code> function should be used instead,
         which has a simpler calling convention as an added benefit.</dd>
@@ -1071,8 +1068,6 @@ BAD:
     <p>String allocation macros and functions:</p>
     <table class="top_table">
         <tr><th>deprecated version</th><th>GLib version</th><th>Notes</th></tr>
-        <tr><td><code>VIR_STRDUP</code></td><td><code>g_strdup</code></td><td></td></tr>
-        <tr><td><code>VIR_STRNDUP</code></td><td><code>g_strndup</code></td><td></td></tr>
         <tr><td><code>virAsprintf</code></td><td><code>g_strdup_printf</code></td><td></td></tr>
         <tr><td><code>virVasprintf</code></td><td><code>g_strdup_vprint</code></td>
             <td>use <code>g_vasprintf</code> if you really need to know the returned length</td></tr>
@@ -1108,6 +1103,9 @@ BAD:
       <dd>The GLib macros <code>g_autoptr</code> and <code>G_DEFINE_AUTOPTR_CLEANUP_FUNC</code>
         should be used to manage autoclean of virObject classes.
         This matches usage with GObject classes.</dd>
+
+      <dt><code>VIR_STRDUP</code>, <code>VIR_STRNDUP</code></dt>
+      <dd>Prefer the GLib APIs <code>g_strdup</code> and <code>g_strndup</code>.</dd>
     </dl>
     <table class="top_table">
         <tr><th>deleted version</th><th>GLib version</th><th>Notes</th></tr>
@@ -1128,6 +1126,8 @@ BAD:
         <tr><td><code>ATTRIBUTE_RETURN_CHECK</code></td><td><code>G_GNUC_WARN_UNUSED_RESULT</code></td><td></td></tr>
         <tr><td><code>ATTRIBUTE_SENTINEL</code></td><td><code>G_GNUC_NULL_TERMINATED</code></td><td></td></tr>
         <tr><td><code>ATTRIBUTE_UNUSED</code></td><td><code>G_GNUC_UNUSED</code></td><td></td></tr>
+        <tr><td><code>VIR_STRDUP</code></td><td><code>g_strdup</code></td><td></td></tr>
+        <tr><td><code>VIR_STRNDUP</code></td><td><code>g_strndup</code></td><td></td></tr>
     </table>
 
 
