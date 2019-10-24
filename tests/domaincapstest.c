@@ -266,6 +266,9 @@ test_virDomainCapsFormat(const void *opaque)
     return ret;
 }
 
+
+#if WITH_QEMU
+
 static int
 doTestQemuInternal(const char *version,
                    const char *machine,
@@ -348,6 +351,8 @@ doTestQemu(const char *inputDir G_GNUC_UNUSED,
 
     return 0;
 }
+
+#endif
 
 static int
 mymain(void)
