@@ -468,10 +468,7 @@ char * vshReadline(vshControl *ctl, const char *prompt);
 void *_vshMalloc(vshControl *ctl, size_t sz, const char *filename, int line);
 #define vshMalloc(_ctl, _sz)    _vshMalloc(_ctl, _sz, __FILE__, __LINE__)
 
-void *_vshCalloc(vshControl *ctl, size_t nmemb, size_t sz,
-                 const char *filename, int line);
-#define vshCalloc(_ctl, _nmemb, _sz) \
-    _vshCalloc(_ctl, _nmemb, _sz, __FILE__, __LINE__)
+void *vshCalloc(vshControl *ctl, size_t nmemb, size_t sz);
 
 /* Macros to help dealing with mutually exclusive options. */
 

@@ -129,17 +129,9 @@ _vshMalloc(vshControl *ctl, size_t size, const char *filename, int line)
 }
 
 void *
-_vshCalloc(vshControl *ctl, size_t nmemb, size_t size, const char *filename,
-           int line)
+vshCalloc(vshControl *ctl G_GNUC_UNUSED, size_t nmemb, size_t size)
 {
-    char *x;
-
-    if (!xalloc_oversized(nmemb, size) &&
-        VIR_ALLOC_N(x, nmemb * size) == 0)
-        return x;
-    vshError(ctl, _("%s: %d: failed to allocate %d bytes"),
-             filename, line, (int) (size*nmemb));
-    exit(EXIT_FAILURE);
+    return g_malloc0_n(nmemb, size);
 }
 
 int
