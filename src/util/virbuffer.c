@@ -64,11 +64,19 @@ virBufferAdjustIndent(virBufferPtr buf, int indent)
 {
     if (!buf || buf->error)
         return;
-    if (indent > 0 ? INT_MAX - indent < buf->indent
-        : buf->indent < -indent) {
-        virBufferSetError(buf, -1);
-        return;
+
+    if (indent > 0) {
+        if (INT_MAX - indent < buf->indent) {
+            virBufferSetError(buf, -1);
+            return;
+        }
+    } else {
+        if (buf->indent < -indent) {
+            virBufferSetError(buf, -1);
+            return;
+        }
     }
+
     buf->indent += indent;
 }
 
