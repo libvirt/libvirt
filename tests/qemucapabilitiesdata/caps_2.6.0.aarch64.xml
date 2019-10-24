@@ -158,36 +158,6 @@
   <cpu type='kvm' name='cortex-r5'/>
   <cpu type='kvm' name='pxa270-a1'/>
   <cpu type='kvm' name='pxa270'/>
-  <cpu type='tcg' name='pxa262'/>
-  <cpu type='tcg' name='pxa270-a0'/>
-  <cpu type='tcg' name='arm1136'/>
-  <cpu type='tcg' name='cortex-a15'/>
-  <cpu type='tcg' name='pxa260'/>
-  <cpu type='tcg' name='arm1136-r2'/>
-  <cpu type='tcg' name='pxa261'/>
-  <cpu type='tcg' name='pxa255'/>
-  <cpu type='tcg' name='arm926'/>
-  <cpu type='tcg' name='arm11mpcore'/>
-  <cpu type='tcg' name='pxa250'/>
-  <cpu type='tcg' name='ti925t'/>
-  <cpu type='tcg' name='cortex-a57'/>
-  <cpu type='tcg' name='sa1110'/>
-  <cpu type='tcg' name='arm1176'/>
-  <cpu type='tcg' name='cortex-a53'/>
-  <cpu type='tcg' name='sa1100'/>
-  <cpu type='tcg' name='pxa270-c5'/>
-  <cpu type='tcg' name='cortex-a9'/>
-  <cpu type='tcg' name='cortex-a8'/>
-  <cpu type='tcg' name='pxa270-c0'/>
-  <cpu type='tcg' name='arm1026'/>
-  <cpu type='tcg' name='pxa270-b1'/>
-  <cpu type='tcg' name='cortex-m3'/>
-  <cpu type='tcg' name='cortex-m4'/>
-  <cpu type='tcg' name='pxa270-b0'/>
-  <cpu type='tcg' name='arm946'/>
-  <cpu type='tcg' name='cortex-r5'/>
-  <cpu type='tcg' name='pxa270-a1'/>
-  <cpu type='tcg' name='pxa270'/>
   <machine name='integratorcp' maxCpus='1'/>
   <machine name='nuri' maxCpus='2'/>
   <machine name='verdex' maxCpus='1'/>
@@ -229,6 +199,36 @@
   <machine name='vexpress-a15' maxCpus='4'/>
   <machine name='canon-a1100' maxCpus='1'/>
   <machine name='lm3s811evb' maxCpus='1'/>
+  <cpu type='tcg' name='pxa262'/>
+  <cpu type='tcg' name='pxa270-a0'/>
+  <cpu type='tcg' name='arm1136'/>
+  <cpu type='tcg' name='cortex-a15'/>
+  <cpu type='tcg' name='pxa260'/>
+  <cpu type='tcg' name='arm1136-r2'/>
+  <cpu type='tcg' name='pxa261'/>
+  <cpu type='tcg' name='pxa255'/>
+  <cpu type='tcg' name='arm926'/>
+  <cpu type='tcg' name='arm11mpcore'/>
+  <cpu type='tcg' name='pxa250'/>
+  <cpu type='tcg' name='ti925t'/>
+  <cpu type='tcg' name='cortex-a57'/>
+  <cpu type='tcg' name='sa1110'/>
+  <cpu type='tcg' name='arm1176'/>
+  <cpu type='tcg' name='cortex-a53'/>
+  <cpu type='tcg' name='sa1100'/>
+  <cpu type='tcg' name='pxa270-c5'/>
+  <cpu type='tcg' name='cortex-a9'/>
+  <cpu type='tcg' name='cortex-a8'/>
+  <cpu type='tcg' name='pxa270-c0'/>
+  <cpu type='tcg' name='arm1026'/>
+  <cpu type='tcg' name='pxa270-b1'/>
+  <cpu type='tcg' name='cortex-m3'/>
+  <cpu type='tcg' name='cortex-m4'/>
+  <cpu type='tcg' name='pxa270-b0'/>
+  <cpu type='tcg' name='arm946'/>
+  <cpu type='tcg' name='cortex-r5'/>
+  <cpu type='tcg' name='pxa270-a1'/>
+  <cpu type='tcg' name='pxa270'/>
   <gic version='3' kernel='no' emulated='no'/>
   <gic version='2' kernel='yes' emulated='yes'/>
 </qemuCaps>

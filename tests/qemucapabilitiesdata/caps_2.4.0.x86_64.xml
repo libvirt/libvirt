@@ -165,34 +165,6 @@
   <cpu type='kvm' name='core2duo'/>
   <cpu type='kvm' name='phenom'/>
   <cpu type='kvm' name='qemu64'/>
-  <cpu type='tcg' name='Opteron_G5'/>
-  <cpu type='tcg' name='Opteron_G4'/>
-  <cpu type='tcg' name='Opteron_G3'/>
-  <cpu type='tcg' name='Opteron_G2'/>
-  <cpu type='tcg' name='Opteron_G1'/>
-  <cpu type='tcg' name='Broadwell'/>
-  <cpu type='tcg' name='Broadwell-noTSX'/>
-  <cpu type='tcg' name='Haswell'/>
-  <cpu type='tcg' name='Haswell-noTSX'/>
-  <cpu type='tcg' name='IvyBridge'/>
-  <cpu type='tcg' name='SandyBridge'/>
-  <cpu type='tcg' name='Westmere'/>
-  <cpu type='tcg' name='Nehalem'/>
-  <cpu type='tcg' name='Penryn'/>
-  <cpu type='tcg' name='Conroe'/>
-  <cpu type='tcg' name='n270'/>
-  <cpu type='tcg' name='athlon'/>
-  <cpu type='tcg' name='pentium3'/>
-  <cpu type='tcg' name='pentium2'/>
-  <cpu type='tcg' name='pentium'/>
-  <cpu type='tcg' name='486'/>
-  <cpu type='tcg' name='coreduo'/>
-  <cpu type='tcg' name='kvm32'/>
-  <cpu type='tcg' name='qemu32'/>
-  <cpu type='tcg' name='kvm64'/>
-  <cpu type='tcg' name='core2duo'/>
-  <cpu type='tcg' name='phenom'/>
-  <cpu type='tcg' name='qemu64'/>
   <machine name='pc-i440fx-2.4' alias='pc' maxCpus='255' default='yes'/>
   <machine name='pc-1.3' maxCpus='255'/>
   <machine name='pc-0.12' maxCpus='255'/>
@@ -222,4 +194,32 @@
   <machine name='pc-q35-2.4' alias='q35' maxCpus='255'/>
   <machine name='pc-q35-2.3' maxCpus='255'/>
   <machine name='pc-0.13' maxCpus='255'/>
+  <cpu type='tcg' name='Opteron_G5'/>
+  <cpu type='tcg' name='Opteron_G4'/>
+  <cpu type='tcg' name='Opteron_G3'/>
+  <cpu type='tcg' name='Opteron_G2'/>
+  <cpu type='tcg' name='Opteron_G1'/>
+  <cpu type='tcg' name='Broadwell'/>
+  <cpu type='tcg' name='Broadwell-noTSX'/>
+  <cpu type='tcg' name='Haswell'/>
+  <cpu type='tcg' name='Haswell-noTSX'/>
+  <cpu type='tcg' name='IvyBridge'/>
+  <cpu type='tcg' name='SandyBridge'/>
+  <cpu type='tcg' name='Westmere'/>
+  <cpu type='tcg' name='Nehalem'/>
+  <cpu type='tcg' name='Penryn'/>
+  <cpu type='tcg' name='Conroe'/>
+  <cpu type='tcg' name='n270'/>
+  <cpu type='tcg' name='athlon'/>
+  <cpu type='tcg' name='pentium3'/>
+  <cpu type='tcg' name='pentium2'/>
+  <cpu type='tcg' name='pentium'/>
+  <cpu type='tcg' name='486'/>
+  <cpu type='tcg' name='coreduo'/>
+  <cpu type='tcg' name='kvm32'/>
+  <cpu type='tcg' name='qemu32'/>
+  <cpu type='tcg' name='kvm64'/>
+  <cpu type='tcg' name='core2duo'/>
+  <cpu type='tcg' name='phenom'/>
+  <cpu type='tcg' name='qemu64'/>
 </qemuCaps>

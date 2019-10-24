@@ -233,64 +233,6 @@
   <cpu type='kvm' name='cortex-r5' typename='cortex-r5-arm-cpu'/>
   <cpu type='kvm' name='pxa270-a1' typename='pxa270-a1-arm-cpu'/>
   <cpu type='kvm' name='pxa270' typename='pxa270-arm-cpu'/>
-  <hostCPU type='tcg' model='max' migratability='no'>
-    <property name='sve768' type='boolean' value='true'/>
-    <property name='sve128' type='boolean' value='true'/>
-    <property name='sve1024' type='boolean' value='true'/>
-    <property name='sve1280' type='boolean' value='true'/>
-    <property name='sve896' type='boolean' value='true'/>
-    <property name='sve256' type='boolean' value='true'/>
-    <property name='sve1536' type='boolean' value='true'/>
-    <property name='sve1792' type='boolean' value='true'/>
-    <property name='sve384' type='boolean' value='true'/>
-    <property name='sve' type='boolean' value='true'/>
-    <property name='sve2048' type='boolean' value='true'/>
-    <property name='sve512' type='boolean' value='true'/>
-    <property name='aarch64' type='boolean' value='true'/>
-    <property name='pmu' type='boolean' value='true'/>
-    <property name='sve1920' type='boolean' value='true'/>
-    <property name='sve1152' type='boolean' value='true'/>
-    <property name='sve640' type='boolean' value='true'/>
-    <property name='sve1408' type='boolean' value='true'/>
-    <property name='sve1664' type='boolean' value='true'/>
-  </hostCPU>
-  <cpu type='tcg' name='pxa262' typename='pxa262-arm-cpu'/>
-  <cpu type='tcg' name='pxa270-a0' typename='pxa270-a0-arm-cpu'/>
-  <cpu type='tcg' name='arm1136' typename='arm1136-arm-cpu'/>
-  <cpu type='tcg' name='cortex-a15' typename='cortex-a15-arm-cpu'/>
-  <cpu type='tcg' name='pxa260' typename='pxa260-arm-cpu'/>
-  <cpu type='tcg' name='arm1136-r2' typename='arm1136-r2-arm-cpu'/>
-  <cpu type='tcg' name='pxa261' typename='pxa261-arm-cpu'/>
-  <cpu type='tcg' name='pxa255' typename='pxa255-arm-cpu'/>
-  <cpu type='tcg' name='cortex-a72' typename='cortex-a72-arm-cpu'/>
-  <cpu type='tcg' name='cortex-m33' typename='cortex-m33-arm-cpu'/>
-  <cpu type='tcg' name='arm926' typename='arm926-arm-cpu'/>
-  <cpu type='tcg' name='cortex-r5f' typename='cortex-r5f-arm-cpu'/>
-  <cpu type='tcg' name='arm11mpcore' typename='arm11mpcore-arm-cpu'/>
-  <cpu type='tcg' name='pxa250' typename='pxa250-arm-cpu'/>
-  <cpu type='tcg' name='ti925t' typename='ti925t-arm-cpu'/>
-  <cpu type='tcg' name='cortex-a57' typename='cortex-a57-arm-cpu'/>
-  <cpu type='tcg' name='sa1110' typename='sa1110-arm-cpu'/>
-  <cpu type='tcg' name='host' typename='host-arm-cpu'/>
-  <cpu type='tcg' name='arm1176' typename='arm1176-arm-cpu'/>
-  <cpu type='tcg' name='cortex-a53' typename='cortex-a53-arm-cpu'/>
-  <cpu type='tcg' name='sa1100' typename='sa1100-arm-cpu'/>
-  <cpu type='tcg' name='pxa270-c5' typename='pxa270-c5-arm-cpu'/>
-  <cpu type='tcg' name='cortex-a9' typename='cortex-a9-arm-cpu'/>
-  <cpu type='tcg' name='cortex-a8' typename='cortex-a8-arm-cpu'/>
-  <cpu type='tcg' name='cortex-a7' typename='cortex-a7-arm-cpu'/>
-  <cpu type='tcg' name='pxa270-c0' typename='pxa270-c0-arm-cpu'/>
-  <cpu type='tcg' name='arm1026' typename='arm1026-arm-cpu'/>
-  <cpu type='tcg' name='pxa270-b1' typename='pxa270-b1-arm-cpu'/>
-  <cpu type='tcg' name='cortex-m3' typename='cortex-m3-arm-cpu'/>
-  <cpu type='tcg' name='max' typename='max-arm-cpu'/>
-  <cpu type='tcg' name='cortex-m4' typename='cortex-m4-arm-cpu'/>
-  <cpu type='tcg' name='pxa270-b0' typename='pxa270-b0-arm-cpu'/>
-  <cpu type='tcg' name='arm946' typename='arm946-arm-cpu'/>
-  <cpu type='tcg' name='cortex-m0' typename='cortex-m0-arm-cpu'/>
-  <cpu type='tcg' name='cortex-r5' typename='cortex-r5-arm-cpu'/>
-  <cpu type='tcg' name='pxa270-a1' typename='pxa270-a1-arm-cpu'/>
-  <cpu type='tcg' name='pxa270' typename='pxa270-arm-cpu'/>
   <machine name='integratorcp' maxCpus='1'/>
   <machine name='nuri' maxCpus='2'/>
   <machine name='mps2-an511' maxCpus='1'/>
@@ -362,6 +304,64 @@
   <machine name='virt-3.1' maxCpus='512'/>
   <machine name='canon-a1100' maxCpus='1'/>
   <machine name='lm3s811evb' maxCpus='1'/>
+  <hostCPU type='tcg' model='max' migratability='no'>
+    <property name='sve768' type='boolean' value='true'/>
+    <property name='sve128' type='boolean' value='true'/>
+    <property name='sve1024' type='boolean' value='true'/>
+    <property name='sve1280' type='boolean' value='true'/>
+    <property name='sve896' type='boolean' value='true'/>
+    <property name='sve256' type='boolean' value='true'/>
+    <property name='sve1536' type='boolean' value='true'/>
+    <property name='sve1792' type='boolean' value='true'/>
+    <property name='sve384' type='boolean' value='true'/>
+    <property name='sve' type='boolean' value='true'/>
+    <property name='sve2048' type='boolean' value='true'/>
+    <property name='sve512' type='boolean' value='true'/>
+    <property name='aarch64' type='boolean' value='true'/>
+    <property name='pmu' type='boolean' value='true'/>
+    <property name='sve1920' type='boolean' value='true'/>
+    <property name='sve1152' type='boolean' value='true'/>
+    <property name='sve640' type='boolean' value='true'/>
+    <property name='sve1408' type='boolean' value='true'/>
+    <property name='sve1664' type='boolean' value='true'/>
+  </hostCPU>
+  <cpu type='tcg' name='pxa262' typename='pxa262-arm-cpu'/>
+  <cpu type='tcg' name='pxa270-a0' typename='pxa270-a0-arm-cpu'/>
+  <cpu type='tcg' name='arm1136' typename='arm1136-arm-cpu'/>
+  <cpu type='tcg' name='cortex-a15' typename='cortex-a15-arm-cpu'/>
+  <cpu type='tcg' name='pxa260' typename='pxa260-arm-cpu'/>
+  <cpu type='tcg' name='arm1136-r2' typename='arm1136-r2-arm-cpu'/>
+  <cpu type='tcg' name='pxa261' typename='pxa261-arm-cpu'/>
+  <cpu type='tcg' name='pxa255' typename='pxa255-arm-cpu'/>
+  <cpu type='tcg' name='cortex-a72' typename='cortex-a72-arm-cpu'/>
+  <cpu type='tcg' name='cortex-m33' typename='cortex-m33-arm-cpu'/>
+  <cpu type='tcg' name='arm926' typename='arm926-arm-cpu'/>
+  <cpu type='tcg' name='cortex-r5f' typename='cortex-r5f-arm-cpu'/>
+  <cpu type='tcg' name='arm11mpcore' typename='arm11mpcore-arm-cpu'/>
+  <cpu type='tcg' name='pxa250' typename='pxa250-arm-cpu'/>
+  <cpu type='tcg' name='ti925t' typename='ti925t-arm-cpu'/>
+  <cpu type='tcg' name='cortex-a57' typename='cortex-a57-arm-cpu'/>
+  <cpu type='tcg' name='sa1110' typename='sa1110-arm-cpu'/>
+  <cpu type='tcg' name='host' typename='host-arm-cpu'/>
+  <cpu type='tcg' name='arm1176' typename='arm1176-arm-cpu'/>
+  <cpu type='tcg' name='cortex-a53' typename='cortex-a53-arm-cpu'/>
+  <cpu type='tcg' name='sa1100' typename='sa1100-arm-cpu'/>
+  <cpu type='tcg' name='pxa270-c5' typename='pxa270-c5-arm-cpu'/>
+  <cpu type='tcg' name='cortex-a9' typename='cortex-a9-arm-cpu'/>
+  <cpu type='tcg' name='cortex-a8' typename='cortex-a8-arm-cpu'/>
+  <cpu type='tcg' name='cortex-a7' typename='cortex-a7-arm-cpu'/>
+  <cpu type='tcg' name='pxa270-c0' typename='pxa270-c0-arm-cpu'/>
+  <cpu type='tcg' name='arm1026' typename='arm1026-arm-cpu'/>
+  <cpu type='tcg' name='pxa270-b1' typename='pxa270-b1-arm-cpu'/>
+  <cpu type='tcg' name='cortex-m3' typename='cortex-m3-arm-cpu'/>
+  <cpu type='tcg' name='max' typename='max-arm-cpu'/>
+  <cpu type='tcg' name='cortex-m4' typename='cortex-m4-arm-cpu'/>
+  <cpu type='tcg' name='pxa270-b0' typename='pxa270-b0-arm-cpu'/>
+  <cpu type='tcg' name='arm946' typename='arm946-arm-cpu'/>
+  <cpu type='tcg' name='cortex-m0' typename='cortex-m0-arm-cpu'/>
+  <cpu type='tcg' name='cortex-r5' typename='cortex-r5-arm-cpu'/>
+  <cpu type='tcg' name='pxa270-a1' typename='pxa270-a1-arm-cpu'/>
+  <cpu type='tcg' name='pxa270' typename='pxa270-arm-cpu'/>
   <gic version='3' kernel='yes' emulated='yes'/>
   <gic version='2' kernel='no' emulated='yes'/>
 </qemuCaps>

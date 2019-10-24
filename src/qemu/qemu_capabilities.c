@@ -4131,9 +4131,9 @@ virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps)
                       virArchToString(qemuCaps->arch));
 
     virQEMUCapsFormatAccel(qemuCaps, &buf, VIR_DOMAIN_VIRT_KVM);
-    virQEMUCapsFormatAccel(qemuCaps, &buf, VIR_DOMAIN_VIRT_QEMU);
-
     virQEMUCapsFormatMachines(qemuCaps, &buf);
+
+    virQEMUCapsFormatAccel(qemuCaps, &buf, VIR_DOMAIN_VIRT_QEMU);
 
     for (i = 0; i < qemuCaps->ngicCapabilities; i++) {
         virGICCapabilityPtr cap;
