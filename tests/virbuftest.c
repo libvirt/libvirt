@@ -163,6 +163,7 @@ static int testBufTrim(const void *data G_GNUC_UNUSED)
     virBufferTrim(buf, "a", 2);
 
     virBufferAddLit(buf, ",b,,");
+    virBufferTrim(buf, NULL, -1);
     virBufferTrim(buf, "b", -1);
     virBufferTrim(buf, "b,,", 1);
     virBufferTrim(buf, ",", -1);
@@ -175,12 +176,6 @@ static int testBufTrim(const void *data G_GNUC_UNUSED)
     result = virBufferContentAndReset(buf);
     if (!result || STRNEQ(result, expected)) {
         virTestDifference(stderr, expected, result);
-        goto cleanup;
-    }
-
-    virBufferTrim(buf, NULL, -1);
-    if (virBufferError(buf) != -1) {
-        VIR_TEST_DEBUG("Usage error not flagged");
         goto cleanup;
     }
 
