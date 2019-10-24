@@ -167,8 +167,7 @@ xenParseXMDisk(char *entry, int hvm)
         /* The main type  phy:, file:, tap: ... */
         if ((tmp = strchr(src, ':')) != NULL) {
             len = tmp - src;
-            if (VIR_STRNDUP(tmp, src, len) < 0)
-                goto error;
+            tmp = g_strndup(src, len);
 
             if (virDomainDiskSetDriver(disk, tmp) < 0) {
                 VIR_FREE(tmp);
@@ -192,8 +191,7 @@ xenParseXMDisk(char *entry, int hvm)
                 goto error;
             len = tmp - src;
 
-            if (VIR_STRNDUP(driverType, src, len) < 0)
-                goto error;
+            driverType = g_strndup(src, len);
 
             if (STREQ(driverType, "aio"))
                 virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_RAW);

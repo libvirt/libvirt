@@ -884,8 +884,7 @@ virNWFilterVarAccessParse(const char *varAccess)
 
     if (input[idx] == '\0') {
         /* in the form 'IP', which is equivalent to IP[@0] */
-        if (VIR_STRNDUP(dest->varName, input, idx) < 0)
-            goto err_exit;
+        dest->varName = g_strndup(input, idx);
         dest->accessType = VIR_NWFILTER_VAR_ACCESS_ITERATOR;
         dest->u.iterId = 0;
         return dest;
@@ -898,8 +897,7 @@ virNWFilterVarAccessParse(const char *varAccess)
 
         varNameLen = idx;
 
-        if (VIR_STRNDUP(dest->varName, input, varNameLen) < 0)
-            goto err_exit;
+        dest->varName = g_strndup(input, varNameLen);
 
         input += idx + 1;
         virSkipSpaces(&input);

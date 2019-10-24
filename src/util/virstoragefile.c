@@ -420,8 +420,7 @@ cowGetBackingStore(char **res,
         return BACKING_STORE_OK;
     }
 
-    if (VIR_STRNDUP(*res, (const char*)buf + 4 + 4, COW_FILENAME_MAXLEN) < 0)
-        return BACKING_STORE_ERROR;
+    *res = g_strndup((const char *)buf + 4 + 4, COW_FILENAME_MAXLEN);
     return BACKING_STORE_OK;
 }
 

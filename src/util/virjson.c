@@ -462,10 +462,7 @@ virJSONValueNewStringLen(const char *data,
         return NULL;
 
     val->type = VIR_JSON_TYPE_STRING;
-    if (VIR_STRNDUP(val->data.string, data, length) < 0) {
-        VIR_FREE(val);
-        return NULL;
-    }
+    val->data.string = g_strndup(data, length);
 
     return val;
 }
@@ -1632,8 +1629,7 @@ virJSONParserHandleNumber(void *ctx,
     char *str;
     virJSONValuePtr value;
 
-    if (VIR_STRNDUP(str, s, l) < 0)
-        return -1;
+    str = g_strndup(s, l);
     value = virJSONValueNewNumber(str);
     VIR_FREE(str);
 
@@ -1690,8 +1686,7 @@ virJSONParserHandleMapKey(void *ctx,
     state = &parser->state[parser->nstate-1];
     if (state->key)
         return 0;
-    if (VIR_STRNDUP(state->key, (const char *)stringVal, stringLen) < 0)
-        return 0;
+    state->key = g_strndup((const char *)stringVal, stringLen);
     return 1;
 }
 

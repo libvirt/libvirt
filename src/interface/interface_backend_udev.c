@@ -953,12 +953,8 @@ udevGetIfaceDefVlan(struct udev *udev G_GNUC_UNUSED,
         goto cleanup;
     }
 
-    if (VIR_STRNDUP(ifacedef->data.vlan.tag, vid_pos, vid_len) < 0)
-        goto cleanup;
-    if (VIR_STRNDUP(ifacedef->data.vlan.dev_name, dev_pos, dev_len) < 0) {
-        VIR_FREE(ifacedef->data.vlan.tag);
-        goto cleanup;
-    }
+    ifacedef->data.vlan.tag = g_strndup(vid_pos, vid_len);
+    ifacedef->data.vlan.dev_name = g_strndup(dev_pos, dev_len);
 
     ret = 0;
 

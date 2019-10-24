@@ -431,9 +431,7 @@ virNetLibsshAuthenticatePrivkeyCb(const char *prompt,
         goto error;
     }
 
-    if (VIR_STRNDUP(actual_prompt, prompt,
-                    virLengthForPromptString(prompt)) < 0)
-        goto error;
+    actual_prompt = g_strndup(prompt, virLengthForPromptString(prompt));
 
     memset(&retr_passphrase, 0, sizeof(virConnectCredential));
     retr_passphrase.type = cred_type;
@@ -716,8 +714,7 @@ virNetLibsshAuthenticateKeyboardInteractive(virNetLibsshSessionPtr sess,
 
                 prompt = virBufferContentAndReset(&prompt_buff);
             } else {
-                if (VIR_STRNDUP(prompt, promptStr, promptStrLen) < 0)
-                    goto prompt_error;
+                prompt = g_strndup(promptStr, promptStrLen);
             }
 
             memset(&retr_passphrase, 0, sizeof(virConnectCredential));

@@ -400,8 +400,8 @@ virNWFilterRuleDefAddString(virNWFilterRuleDefPtr nwf,
 {
     char *tmp;
 
-    if (VIR_STRNDUP(tmp, string, maxstrlen) < 0 ||
-        VIR_APPEND_ELEMENT_COPY(nwf->strings, nwf->nstrings, tmp) < 0)
+    tmp = g_strndup(string, maxstrlen);
+    if (VIR_APPEND_ELEMENT_COPY(nwf->strings, nwf->nstrings, tmp) < 0)
         VIR_FREE(tmp);
 
     return tmp;

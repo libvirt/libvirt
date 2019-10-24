@@ -1153,8 +1153,7 @@ xenParseVif(char *entry, const char *vif_typename)
         } else if (STRPREFIX(key, "script=")) {
             int len = nextkey ? (nextkey - data) : strlen(data);
             VIR_FREE(script);
-            if (VIR_STRNDUP(script, data, len) < 0)
-                return NULL;
+            script = g_strndup(data, len);
         } else if (STRPREFIX(key, "model=")) {
             int len = nextkey ? (nextkey - data) : strlen(data);
             if (virStrncpy(model, data, len, sizeof(model)) < 0) {

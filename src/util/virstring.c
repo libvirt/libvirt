@@ -89,8 +89,7 @@ virStringSplitCount(const char *string,
             if (VIR_RESIZE_N(tokens, maxtokens, ntokens, 1) < 0)
                 goto error;
 
-            if (VIR_STRNDUP(tokens[ntokens], remainder, len) < 0)
-                goto error;
+            tokens[ntokens] = g_strndup(remainder, len);
             ntokens++;
             remainder = tmp + delimlen;
             tmp = strstr(remainder, delim);

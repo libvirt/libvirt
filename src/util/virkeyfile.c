@@ -173,8 +173,7 @@ static int virKeyFileParseValue(virKeyFileParserCtxtPtr ctxt)
     len = ctxt->cur - valuestart;
     if (IS_EOF && !IS_EOL(CUR))
         len++;
-    if (VIR_STRNDUP(value, valuestart, len) < 0)
-        goto cleanup;
+    value = g_strndup(valuestart, len);
 
     if (virHashAddEntry(ctxt->group, key, value) < 0) {
         VIR_FREE(value);

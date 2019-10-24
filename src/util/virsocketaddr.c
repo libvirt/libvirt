@@ -593,10 +593,7 @@ virSocketAddrGetPath(virSocketAddrPtr addr G_GNUC_UNUSED)
         return NULL;
     }
 
-    if (VIR_STRNDUP(path,
-                    addr->data.un.sun_path,
-                    sizeof(addr->data.un.sun_path)) < 0)
-        return NULL;
+    path = g_strndup(addr->data.un.sun_path, sizeof(addr->data.un.sun_path));
 
     return path;
 #else

@@ -1104,13 +1104,11 @@ xenParseXLChannel(virConfPtr conf, virDomainDefPtr def)
                 } else if (STRPREFIX(key, "name=")) {
                     int len = nextkey ? (nextkey - data) : strlen(data);
                     VIR_FREE(name);
-                    if (VIR_STRNDUP(name, data, len) < 0)
-                        goto cleanup;
+                    name = g_strndup(data, len);
                 } else if (STRPREFIX(key, "path=")) {
                     int len = nextkey ? (nextkey - data) : strlen(data);
                     VIR_FREE(path);
-                    if (VIR_STRNDUP(path, data, len) < 0)
-                        goto cleanup;
+                    path = g_strndup(data, len);
                 }
 
                 while (nextkey && (nextkey[0] == ',' ||

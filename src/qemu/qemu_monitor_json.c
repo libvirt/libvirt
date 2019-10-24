@@ -271,8 +271,7 @@ int qemuMonitorJSONIOProcess(qemuMonitorPtr mon,
         if (nl) {
             int got = nl - (data + used);
             char *line;
-            if (VIR_STRNDUP(line, data + used, got) < 0)
-                return -1;
+            line = g_strndup(data + used, got);
             used += got + strlen(LINE_ENDING);
             line[got] = '\0'; /* kill \n */
             if (qemuMonitorJSONIOProcessLine(mon, line, msg) < 0) {
