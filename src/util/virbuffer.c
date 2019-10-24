@@ -467,11 +467,7 @@ virBufferEscapeString(virBufferPtr buf, const char *format, const char *str)
         return;
     }
 
-    if (xalloc_oversized(6, len) ||
-        VIR_ALLOC_N_QUIET(escaped, 6 * len + 1) < 0) {
-        virBufferSetError(buf, errno);
-        return;
-    }
+    escaped = g_malloc0_n(len + 1, 6);
 
     cur = str;
     out = escaped;
@@ -616,11 +612,7 @@ virBufferEscape(virBufferPtr buf, char escape, const char *toescape,
         return;
     }
 
-    if (xalloc_oversized(2, len) ||
-        VIR_ALLOC_N_QUIET(escaped, 2 * len + 1) < 0) {
-        virBufferSetError(buf, errno);
-        return;
-    }
+    escaped = g_malloc0_n(len + 1, 2);
 
     cur = str;
     out = escaped;
@@ -715,11 +707,8 @@ virBufferEscapeShell(virBufferPtr buf, const char *str)
 
     if (*str) {
         len = strlen(str);
-        if (xalloc_oversized(4, len) ||
-            VIR_ALLOC_N_QUIET(escaped, 4 * len + 3) < 0) {
-            virBufferSetError(buf, errno);
-            return;
-        }
+
+        escaped = g_malloc0_n(len + 1, 4);
     } else {
         virBufferAddLit(buf, "''");
         return;
