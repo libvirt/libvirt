@@ -584,6 +584,8 @@ struct _virQEMUCapsHostCPUData {
 typedef struct _virQEMUCapsAccel virQEMUCapsAccel;
 typedef virQEMUCapsAccel *virQEMUCapsAccelPtr;
 struct _virQEMUCapsAccel {
+    size_t nmachineTypes;
+    virQEMUCapsMachineTypePtr machineTypes;
     virQEMUCapsHostCPUData hostCPU;
     qemuMonitorCPUDefsPtr cpuModels;
 };
@@ -619,9 +621,6 @@ struct _virQEMUCaps {
     virArch arch;
 
     virHashTablePtr domCapsCache;
-
-    size_t nmachineTypes;
-    virQEMUCapsMachineTypePtr machineTypes;
 
     size_t ngicCapabilities;
     virGICCapability *gicCapabilities;
@@ -736,16 +735,16 @@ virQEMUCapsGetAccel(virQEMUCapsPtr qemuCaps,
 
 
 static void
-virQEMUCapsSetDefaultMachine(virQEMUCapsPtr qemuCaps,
+virQEMUCapsSetDefaultMachine(virQEMUCapsAccelPtr caps,
                              size_t defIdx)
 {
-    virQEMUCapsMachineType tmp = qemuCaps->machineTypes[defIdx];
+    virQEMUCapsMachineType tmp = caps->machineTypes[defIdx];
 
-    memmove(qemuCaps->machineTypes + 1,
-            qemuCaps->machineTypes,
-            sizeof(qemuCaps->machineTypes[0]) * defIdx);
+    memmove(caps->machineTypes + 1,
+            caps->machineTypes,
+            sizeof(caps->machineTypes[0]) * defIdx);
 
-    qemuCaps->machineTypes[0] = tmp;
+    caps->machineTypes[0] = tmp;
 }
 
 
@@ -842,26 +841,34 @@ virQEMUCapsGetMachineTypesCaps(virQEMUCapsPtr qemuCaps,
                                virCapsGuestMachinePtr **machines)
 {
     size_t i;
+    virQEMUCapsAccelPtr accel;
+
+    /* Guest capabilities do not report TCG vs. KVM caps separately. We just
+     * take the set of machine types we probed first. */
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
+        accel = &qemuCaps->kvm;
+    else
+        accel = &qemuCaps->tcg;
 
     *machines = NULL;
-    *nmachines = qemuCaps->nmachineTypes;
+    *nmachines = accel->nmachineTypes;
 
     if (*nmachines &&
-        VIR_ALLOC_N(*machines, qemuCaps->nmachineTypes) < 0)
+        VIR_ALLOC_N(*machines, accel->nmachineTypes) < 0)
         goto error;
 
-    for (i = 0; i < qemuCaps->nmachineTypes; i++) {
+    for (i = 0; i < accel->nmachineTypes; i++) {
         virCapsGuestMachinePtr mach;
         if (VIR_ALLOC(mach) < 0)
             goto error;
         (*machines)[i] = mach;
-        if (qemuCaps->machineTypes[i].alias) {
-            mach->name = g_strdup(qemuCaps->machineTypes[i].alias);
-            mach->canonical = g_strdup(qemuCaps->machineTypes[i].name);
+        if (accel->machineTypes[i].alias) {
+            mach->name = g_strdup(accel->machineTypes[i].alias);
+            mach->canonical = g_strdup(accel->machineTypes[i].name);
         } else {
-            mach->name = g_strdup(qemuCaps->machineTypes[i].name);
+            mach->name = g_strdup(accel->machineTypes[i].name);
         }
-        mach->maxCpus = qemuCaps->machineTypes[i].maxCpus;
+        mach->maxCpus = accel->machineTypes[i].maxCpus;
     }
 
     /* Make sure all canonical machine types also have their own entry so that
@@ -1690,8 +1697,8 @@ virQEMUCapsSEVInfoCopy(virSEVCapabilityPtr *dst,
 
 
 static void
-virQEMUCapsCopyMachineTypes(virQEMUCapsPtr dst,
-                            virQEMUCapsPtr src)
+virQEMUCapsAccelCopyMachineTypes(virQEMUCapsAccelPtr dst,
+                                 virQEMUCapsAccelPtr src)
 {
     size_t i;
 
@@ -1712,6 +1719,8 @@ static int
 virQEMUCapsAccelCopy(virQEMUCapsAccelPtr dst,
                      virQEMUCapsAccelPtr src)
 {
+    virQEMUCapsAccelCopyMachineTypes(dst, src);
+
     if (virQEMUCapsHostCPUDataCopy(&dst->hostCPU, &src->hostCPU) < 0)
         return -1;
 
@@ -1751,8 +1760,6 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
         virQEMUCapsAccelCopy(&ret->tcg, &qemuCaps->tcg) < 0)
         goto error;
 
-    virQEMUCapsCopyMachineTypes(ret, qemuCaps);
-
     if (VIR_ALLOC_N(ret->gicCapabilities, qemuCaps->ngicCapabilities) < 0)
         goto error;
     ret->ngicCapabilities = qemuCaps->ngicCapabilities;
@@ -1775,6 +1782,14 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
 static void
 virQEMUCapsAccelClear(virQEMUCapsAccelPtr caps)
 {
+    size_t i;
+
+    for (i = 0; i < caps->nmachineTypes; i++) {
+        VIR_FREE(caps->machineTypes[i].name);
+        VIR_FREE(caps->machineTypes[i].alias);
+    }
+    VIR_FREE(caps->machineTypes);
+
     virQEMUCapsHostCPUDataClear(&caps->hostCPU);
     virObjectUnref(caps->cpuModels);
 }
@@ -1783,13 +1798,6 @@ virQEMUCapsAccelClear(virQEMUCapsAccelPtr caps)
 void virQEMUCapsDispose(void *obj)
 {
     virQEMUCapsPtr qemuCaps = obj;
-    size_t i;
-
-    for (i = 0; i < qemuCaps->nmachineTypes; i++) {
-        VIR_FREE(qemuCaps->machineTypes[i].name);
-        VIR_FREE(qemuCaps->machineTypes[i].alias);
-    }
-    VIR_FREE(qemuCaps->machineTypes);
 
     virHashFree(qemuCaps->domCapsCache);
     virBitmapFree(qemuCaps->flags);
@@ -2118,19 +2126,22 @@ virQEMUCapsIsCPUModeSupported(virQEMUCapsPtr qemuCaps,
  */
 const char *
 virQEMUCapsGetCanonicalMachine(virQEMUCapsPtr qemuCaps,
-                               virDomainVirtType virtType G_GNUC_UNUSED,
+                               virDomainVirtType virtType,
                                const char *name)
 {
+    virQEMUCapsAccelPtr accel;
     size_t i;
 
     if (!name || !qemuCaps)
         return name;
 
-    for (i = 0; i < qemuCaps->nmachineTypes; i++) {
-        if (!qemuCaps->machineTypes[i].alias)
+    accel = virQEMUCapsGetAccel(qemuCaps, virtType);
+
+    for (i = 0; i < accel->nmachineTypes; i++) {
+        if (!accel->machineTypes[i].alias)
             continue;
-        if (STREQ(qemuCaps->machineTypes[i].alias, name))
-            return qemuCaps->machineTypes[i].name;
+        if (STREQ(accel->machineTypes[i].alias, name))
+            return accel->machineTypes[i].name;
     }
 
     return name;
@@ -2139,19 +2150,22 @@ virQEMUCapsGetCanonicalMachine(virQEMUCapsPtr qemuCaps,
 
 int
 virQEMUCapsGetMachineMaxCpus(virQEMUCapsPtr qemuCaps,
-                             virDomainVirtType virtType G_GNUC_UNUSED,
+                             virDomainVirtType virtType,
                              const char *name)
 {
+    virQEMUCapsAccelPtr accel;
     size_t i;
 
     if (!name)
         return 0;
 
-    for (i = 0; i < qemuCaps->nmachineTypes; i++) {
-        if (!qemuCaps->machineTypes[i].maxCpus)
+    accel = virQEMUCapsGetAccel(qemuCaps, virtType);
+
+    for (i = 0; i < accel->nmachineTypes; i++) {
+        if (!accel->machineTypes[i].maxCpus)
             continue;
-        if (STREQ(qemuCaps->machineTypes[i].name, name))
-            return qemuCaps->machineTypes[i].maxCpus;
+        if (STREQ(accel->machineTypes[i].name, name))
+            return accel->machineTypes[i].maxCpus;
     }
 
     return 0;
@@ -2160,14 +2174,17 @@ virQEMUCapsGetMachineMaxCpus(virQEMUCapsPtr qemuCaps,
 
 bool
 virQEMUCapsGetMachineHotplugCpus(virQEMUCapsPtr qemuCaps,
-                                 virDomainVirtType virtType G_GNUC_UNUSED,
+                                 virDomainVirtType virtType,
                                  const char *name)
 {
+    virQEMUCapsAccelPtr accel;
     size_t i;
 
-    for (i = 0; i < qemuCaps->nmachineTypes; i++) {
-        if (STREQ_NULLABLE(qemuCaps->machineTypes[i].name, name))
-            return qemuCaps->machineTypes[i].hotplugCpus;
+    accel = virQEMUCapsGetAccel(qemuCaps, virtType);
+
+    for (i = 0; i < accel->nmachineTypes; i++) {
+        if (STREQ_NULLABLE(accel->machineTypes[i].name, name))
+            return accel->machineTypes[i].hotplugCpus;
     }
 
     return false;
@@ -2380,6 +2397,7 @@ verify(G_N_ELEMENTS(preferredMachines) == VIR_ARCH_LAST);
 
 static int
 virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
+                                virQEMUCapsAccelPtr accel,
                                 qemuMonitorPtr mon)
 {
     qemuMonitorMachineInfoPtr *machines = NULL;
@@ -2393,7 +2411,7 @@ virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
     if ((nmachines = qemuMonitorGetMachines(mon, &machines)) < 0)
         return -1;
 
-    if (VIR_ALLOC_N(qemuCaps->machineTypes, nmachines) < 0)
+    if (VIR_ALLOC_N(accel->machineTypes, nmachines) < 0)
         goto cleanup;
 
     for (i = 0; i < nmachines; i++) {
@@ -2401,7 +2419,7 @@ virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
         if (STREQ(machines[i]->name, "none"))
             continue;
 
-        mach = &(qemuCaps->machineTypes[qemuCaps->nmachineTypes++]);
+        mach = &(accel->machineTypes[accel->nmachineTypes++]);
 
         mach->alias = g_strdup(machines[i]->alias);
         mach->name = g_strdup(machines[i]->name);
@@ -2412,12 +2430,12 @@ virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
         if (preferredMachine &&
             (STREQ_NULLABLE(mach->alias, preferredMachine) ||
              STREQ(mach->name, preferredMachine))) {
-            preferredIdx = qemuCaps->nmachineTypes - 1;
+            preferredIdx = accel->nmachineTypes - 1;
         }
 
         if (machines[i]->isDefault) {
             mach->qemuDefault = true;
-            defIdx = qemuCaps->nmachineTypes - 1;
+            defIdx = accel->nmachineTypes - 1;
         }
     }
 
@@ -2433,7 +2451,7 @@ virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
     if (preferredIdx == -1)
         preferredIdx = defIdx;
     if (preferredIdx != -1)
-        virQEMUCapsSetDefaultMachine(qemuCaps, preferredIdx);
+        virQEMUCapsSetDefaultMachine(accel, preferredIdx);
 
     ret = 0;
 
@@ -2447,13 +2465,14 @@ virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
 
 static bool
 virQEMUCapsIsMachineSupported(virQEMUCapsPtr qemuCaps,
-                              virDomainVirtType virtType G_GNUC_UNUSED,
+                              virDomainVirtType virtType,
                               const char *canonical_machine)
 {
+    virQEMUCapsAccelPtr accel = virQEMUCapsGetAccel(qemuCaps, virtType);
     size_t i;
 
-    for (i = 0; i < qemuCaps->nmachineTypes; i++) {
-        if (STREQ(canonical_machine, qemuCaps->machineTypes[i].name))
+    for (i = 0; i < accel->nmachineTypes; i++) {
+        if (STREQ(canonical_machine, accel->machineTypes[i].name))
             return true;
     }
     return false;
@@ -3576,15 +3595,17 @@ virQEMUCapsLoadCPUModels(virQEMUCapsAccelPtr caps,
 
 
 static int
-virQEMUCapsLoadMachines(virQEMUCapsPtr qemuCaps,
-                        xmlXPathContextPtr ctxt)
+virQEMUCapsLoadMachines(virQEMUCapsAccelPtr caps,
+                        xmlXPathContextPtr ctxt,
+                        const char *typeStr)
 {
+    g_autofree char *xpath = g_strdup_printf("./machine[@type='%s']", typeStr);
     g_autofree xmlNodePtr *nodes = NULL;
     char *str = NULL;
     size_t i;
     int n;
 
-    if ((n = virXPathNodeSet("./machine", ctxt, &nodes)) < 0) {
+    if ((n = virXPathNodeSet(xpath, ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to parse qemu capabilities machines"));
         return -1;
@@ -3593,21 +3614,21 @@ virQEMUCapsLoadMachines(virQEMUCapsPtr qemuCaps,
     if (n == 0)
         return 0;
 
-    qemuCaps->nmachineTypes = n;
-    if (VIR_ALLOC_N(qemuCaps->machineTypes, qemuCaps->nmachineTypes) < 0)
+    caps->nmachineTypes = n;
+    if (VIR_ALLOC_N(caps->machineTypes, caps->nmachineTypes) < 0)
         return -1;
 
     for (i = 0; i < n; i++) {
-        if (!(qemuCaps->machineTypes[i].name = virXMLPropString(nodes[i], "name"))) {
+        if (!(caps->machineTypes[i].name = virXMLPropString(nodes[i], "name"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("missing machine name in QEMU capabilities cache"));
             return -1;
         }
-        qemuCaps->machineTypes[i].alias = virXMLPropString(nodes[i], "alias");
+        caps->machineTypes[i].alias = virXMLPropString(nodes[i], "alias");
 
         str = virXMLPropString(nodes[i], "maxCpus");
         if (str &&
-            virStrToLong_ui(str, NULL, 10, &(qemuCaps->machineTypes[i].maxCpus)) < 0) {
+            virStrToLong_ui(str, NULL, 10, &(caps->machineTypes[i].maxCpus)) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("malformed machine cpu count in QEMU capabilities cache"));
             return -1;
@@ -3616,12 +3637,12 @@ virQEMUCapsLoadMachines(virQEMUCapsPtr qemuCaps,
 
         str = virXMLPropString(nodes[i], "hotplugCpus");
         if (STREQ_NULLABLE(str, "yes"))
-            qemuCaps->machineTypes[i].hotplugCpus = true;
+            caps->machineTypes[i].hotplugCpus = true;
         VIR_FREE(str);
 
         str = virXMLPropString(nodes[i], "default");
         if (STREQ_NULLABLE(str, "yes"))
-            qemuCaps->machineTypes[i].qemuDefault = true;
+            caps->machineTypes[i].qemuDefault = true;
         VIR_FREE(str);
     }
 
@@ -3641,6 +3662,9 @@ virQEMUCapsLoadAccel(virQEMUCapsPtr qemuCaps,
         return -1;
 
     if (virQEMUCapsLoadCPUModels(caps, ctxt, typeStr) < 0)
+        return -1;
+
+    if (virQEMUCapsLoadMachines(caps, ctxt, typeStr) < 0)
         return -1;
 
     return 0;
@@ -3862,9 +3886,6 @@ virQEMUCapsLoadCache(virArch hostArch,
         virQEMUCapsLoadAccel(qemuCaps, ctxt, VIR_DOMAIN_VIRT_QEMU) < 0)
         goto cleanup;
 
-    if (virQEMUCapsLoadMachines(qemuCaps, ctxt) < 0)
-        goto cleanup;
-
     if ((n = virXPathNodeSet("./gic", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to parse qemu capabilities gic"));
@@ -4045,21 +4066,23 @@ virQEMUCapsFormatCPUModels(virQEMUCapsAccelPtr caps,
 
 
 static void
-virQEMUCapsFormatMachines(virQEMUCapsPtr qemuCaps,
-                          virBufferPtr buf)
+virQEMUCapsFormatMachines(virQEMUCapsAccelPtr caps,
+                          virBufferPtr buf,
+                          const char *typeStr)
 {
     size_t i;
 
-    for (i = 0; i < qemuCaps->nmachineTypes; i++) {
-        virBufferEscapeString(buf, "<machine name='%s'",
-                              qemuCaps->machineTypes[i].name);
+    for (i = 0; i < caps->nmachineTypes; i++) {
+        virBufferAsprintf(buf, "<machine type='%s'", typeStr);
+        virBufferEscapeString(buf, " name='%s'",
+                              caps->machineTypes[i].name);
         virBufferEscapeString(buf, " alias='%s'",
-                              qemuCaps->machineTypes[i].alias);
-        if (qemuCaps->machineTypes[i].hotplugCpus)
+                              caps->machineTypes[i].alias);
+        if (caps->machineTypes[i].hotplugCpus)
             virBufferAddLit(buf, " hotplugCpus='yes'");
         virBufferAsprintf(buf, " maxCpus='%u'",
-                          qemuCaps->machineTypes[i].maxCpus);
-        if (qemuCaps->machineTypes[i].qemuDefault)
+                          caps->machineTypes[i].maxCpus);
+        if (caps->machineTypes[i].qemuDefault)
             virBufferAddLit(buf, " default='yes'");
         virBufferAddLit(buf, "/>\n");
     }
@@ -4076,6 +4099,8 @@ virQEMUCapsFormatAccel(virQEMUCapsPtr qemuCaps,
 
     virQEMUCapsFormatHostCPUModelInfo(caps, buf, typeStr);
     virQEMUCapsFormatCPUModels(caps, buf, typeStr);
+    virQEMUCapsFormatMachines(caps, buf, typeStr);
+
 }
 
 
@@ -4142,8 +4167,6 @@ virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps)
                       virArchToString(qemuCaps->arch));
 
     virQEMUCapsFormatAccel(qemuCaps, &buf, VIR_DOMAIN_VIRT_KVM);
-    virQEMUCapsFormatMachines(qemuCaps, &buf);
-
     virQEMUCapsFormatAccel(qemuCaps, &buf, VIR_DOMAIN_VIRT_QEMU);
 
     for (i = 0; i < qemuCaps->ngicCapabilities; i++) {
@@ -4660,7 +4683,7 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
         return -1;
     if (virQEMUCapsProbeQMPDevices(qemuCaps, mon) < 0)
         return -1;
-    if (virQEMUCapsProbeQMPMachineTypes(qemuCaps, mon) < 0)
+    if (virQEMUCapsProbeQMPMachineTypes(qemuCaps, accel, mon) < 0)
         return -1;
     if (virQEMUCapsProbeQMPMachineProps(qemuCaps, type, mon) < 0)
         return -1;
@@ -4702,6 +4725,8 @@ virQEMUCapsInitQMPMonitorTCG(virQEMUCapsPtr qemuCaps,
 
     if (virQEMUCapsProbeQMPHostCPU(qemuCaps, accel, mon, VIR_DOMAIN_VIRT_QEMU) < 0)
         return -1;
+
+    virQEMUCapsAccelCopyMachineTypes(&qemuCaps->tcg, &qemuCaps->kvm);
 
     return 0;
 }
@@ -5213,11 +5238,13 @@ virQEMUCapsSupportsVmport(virQEMUCapsPtr qemuCaps,
  */
 const char *
 virQEMUCapsGetPreferredMachine(virQEMUCapsPtr qemuCaps,
-                               virDomainVirtType virtType G_GNUC_UNUSED)
+                               virDomainVirtType virtType)
 {
-    if (!qemuCaps->nmachineTypes)
+    virQEMUCapsAccelPtr accel = virQEMUCapsGetAccel(qemuCaps, virtType);
+
+    if (!accel->nmachineTypes)
         return NULL;
-    return qemuCaps->machineTypes[0].name;
+    return accel->machineTypes[0].name;
 }
 
 
@@ -5722,6 +5749,9 @@ virQEMUCapsStripMachineAliases(virQEMUCapsPtr qemuCaps)
 {
     size_t i;
 
-    for (i = 0; i < qemuCaps->nmachineTypes; i++)
-        VIR_FREE(qemuCaps->machineTypes[i].alias);
+    for (i = 0; i < qemuCaps->kvm.nmachineTypes; i++)
+        VIR_FREE(qemuCaps->kvm.machineTypes[i].alias);
+
+    for (i = 0; i < qemuCaps->tcg.nmachineTypes; i++)
+        VIR_FREE(qemuCaps->tcg.machineTypes[i].alias);
 }

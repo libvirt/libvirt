@@ -594,31 +594,31 @@
   <cpu type='kvm' name='750_v3.1'/>
   <cpu type='kvm' name='power8e_v2.1'/>
   <cpu type='kvm' name='mpc8568e'/>
-  <machine name='pseries-2.12' alias='pseries' hotplugCpus='yes' maxCpus='1024' default='yes'/>
-  <machine name='ref405ep' maxCpus='1'/>
-  <machine name='sam460ex' maxCpus='1'/>
-  <machine name='virtex-ml507' maxCpus='1'/>
-  <machine name='powernv' maxCpus='2048'/>
-  <machine name='ppce500' maxCpus='32'/>
-  <machine name='mpc8544ds' maxCpus='15'/>
-  <machine name='pseries-2.12-sxxm' hotplugCpus='yes' maxCpus='1024'/>
-  <machine name='bamboo' maxCpus='1'/>
-  <machine name='g3beige' maxCpus='1'/>
-  <machine name='pseries-2.10' hotplugCpus='yes' maxCpus='1024'/>
-  <machine name='prep' maxCpus='1'/>
-  <machine name='pseries-2.11' hotplugCpus='yes' maxCpus='1024'/>
-  <machine name='pseries-2.9' hotplugCpus='yes' maxCpus='1024'/>
-  <machine name='mac99' maxCpus='1'/>
-  <machine name='pseries-2.6' maxCpus='1024'/>
-  <machine name='pseries-2.7' hotplugCpus='yes' maxCpus='1024'/>
-  <machine name='pseries-2.8' hotplugCpus='yes' maxCpus='1024'/>
-  <machine name='pseries-2.4' maxCpus='1024'/>
-  <machine name='pseries-2.5' maxCpus='1024'/>
-  <machine name='pseries-2.2' maxCpus='1024'/>
-  <machine name='taihu' maxCpus='1'/>
-  <machine name='pseries-2.3' maxCpus='1024'/>
-  <machine name='pseries-2.1' maxCpus='1024'/>
-  <machine name='40p' maxCpus='1'/>
+  <machine type='kvm' name='pseries-2.12' alias='pseries' hotplugCpus='yes' maxCpus='1024' default='yes'/>
+  <machine type='kvm' name='ref405ep' maxCpus='1'/>
+  <machine type='kvm' name='sam460ex' maxCpus='1'/>
+  <machine type='kvm' name='virtex-ml507' maxCpus='1'/>
+  <machine type='kvm' name='powernv' maxCpus='2048'/>
+  <machine type='kvm' name='ppce500' maxCpus='32'/>
+  <machine type='kvm' name='mpc8544ds' maxCpus='15'/>
+  <machine type='kvm' name='pseries-2.12-sxxm' hotplugCpus='yes' maxCpus='1024'/>
+  <machine type='kvm' name='bamboo' maxCpus='1'/>
+  <machine type='kvm' name='g3beige' maxCpus='1'/>
+  <machine type='kvm' name='pseries-2.10' hotplugCpus='yes' maxCpus='1024'/>
+  <machine type='kvm' name='prep' maxCpus='1'/>
+  <machine type='kvm' name='pseries-2.11' hotplugCpus='yes' maxCpus='1024'/>
+  <machine type='kvm' name='pseries-2.9' hotplugCpus='yes' maxCpus='1024'/>
+  <machine type='kvm' name='mac99' maxCpus='1'/>
+  <machine type='kvm' name='pseries-2.6' maxCpus='1024'/>
+  <machine type='kvm' name='pseries-2.7' hotplugCpus='yes' maxCpus='1024'/>
+  <machine type='kvm' name='pseries-2.8' hotplugCpus='yes' maxCpus='1024'/>
+  <machine type='kvm' name='pseries-2.4' maxCpus='1024'/>
+  <machine type='kvm' name='pseries-2.5' maxCpus='1024'/>
+  <machine type='kvm' name='pseries-2.2' maxCpus='1024'/>
+  <machine type='kvm' name='taihu' maxCpus='1'/>
+  <machine type='kvm' name='pseries-2.3' maxCpus='1024'/>
+  <machine type='kvm' name='pseries-2.1' maxCpus='1024'/>
+  <machine type='kvm' name='40p' maxCpus='1'/>
   <cpu type='tcg' name='default' typename='604-powerpc64-cpu'/>
   <cpu type='tcg' name='ppc' typename='604-powerpc64-cpu'/>
   <cpu type='tcg' name='ppc32' typename='604-powerpc64-cpu'/>
@@ -1056,4 +1056,29 @@
   <cpu type='tcg' name='750_v3.1'/>
   <cpu type='tcg' name='power8e_v2.1'/>
   <cpu type='tcg' name='mpc8568e'/>
+  <machine type='tcg' name='pseries-2.12' alias='pseries' hotplugCpus='yes' maxCpus='1024' default='yes'/>
+  <machine type='tcg' name='ref405ep' maxCpus='1'/>
+  <machine type='tcg' name='sam460ex' maxCpus='1'/>
+  <machine type='tcg' name='virtex-ml507' maxCpus='1'/>
+  <machine type='tcg' name='powernv' maxCpus='2048'/>
+  <machine type='tcg' name='ppce500' maxCpus='32'/>
+  <machine type='tcg' name='mpc8544ds' maxCpus='15'/>
+  <machine type='tcg' name='pseries-2.12-sxxm' hotplugCpus='yes' maxCpus='1024'/>
+  <machine type='tcg' name='bamboo' maxCpus='1'/>
+  <machine type='tcg' name='g3beige' maxCpus='1'/>
+  <machine type='tcg' name='pseries-2.10' hotplugCpus='yes' maxCpus='1024'/>
+  <machine type='tcg' name='prep' maxCpus='1'/>
+  <machine type='tcg' name='pseries-2.11' hotplugCpus='yes' maxCpus='1024'/>
+  <machine type='tcg' name='pseries-2.9' hotplugCpus='yes' maxCpus='1024'/>
+  <machine type='tcg' name='mac99' maxCpus='1'/>
+  <machine type='tcg' name='pseries-2.6' maxCpus='1024'/>
+  <machine type='tcg' name='pseries-2.7' hotplugCpus='yes' maxCpus='1024'/>
+  <machine type='tcg' name='pseries-2.8' hotplugCpus='yes' maxCpus='1024'/>
+  <machine type='tcg' name='pseries-2.4' maxCpus='1024'/>
+  <machine type='tcg' name='pseries-2.5' maxCpus='1024'/>
+  <machine type='tcg' name='pseries-2.2' maxCpus='1024'/>
+  <machine type='tcg' name='taihu' maxCpus='1'/>
+  <machine type='tcg' name='pseries-2.3' maxCpus='1024'/>
+  <machine type='tcg' name='pseries-2.1' maxCpus='1024'/>
+  <machine type='tcg' name='40p' maxCpus='1'/>
 </qemuCaps>
