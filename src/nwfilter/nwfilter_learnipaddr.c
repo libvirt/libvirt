@@ -456,11 +456,6 @@ learnIPAddressThread(void *arg)
                           macaddr);
     }
 
-    if (virBufferError(&buf)) {
-        req->status = ENOMEM;
-        goto done;
-    }
-
     filter = virBufferContentAndReset(&buf);
 
     if (pcap_compile(handle, &fp, filter, 1, 0) != 0) {

@@ -36,11 +36,6 @@ testFilterXML(char *xml)
         virBufferStrcat(&buf, *xmlLine, "\n", NULL);
     }
 
-    if (virBufferError(&buf)) {
-        virReportOOMError();
-        goto cleanup;
-    }
-
     ret = virBufferContentAndReset(&buf);
 
  cleanup:

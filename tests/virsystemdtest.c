@@ -570,9 +570,6 @@ testActivation(bool useNames)
     setenv("LISTEN_FDS", nfdstr, 1);
     setenv("LISTEN_PID", pidstr, 1);
 
-    if (virBufferError(&names))
-        goto cleanup;
-
     if (useNames)
         setenv("LISTEN_FDNAMES", virBufferCurrentContent(&names), 1);
     else

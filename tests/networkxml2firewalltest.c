@@ -76,9 +76,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (networkAddFirewallRules(def) < 0)
         goto cleanup;
 
-    if (virBufferError(&buf))
-        goto cleanup;
-
     actual = actualargv = virBufferContentAndReset(&buf);
     virTestClearCommandPath(actualargv);
     virCommandSetDryRun(NULL, NULL, NULL);

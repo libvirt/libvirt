@@ -1592,7 +1592,6 @@ virBufferAsprintf;
 virBufferCheckErrorInternal;
 virBufferContentAndReset;
 virBufferCurrentContent;
-virBufferError;
 virBufferEscape;
 virBufferEscapeRegex;
 virBufferEscapeSexpr;

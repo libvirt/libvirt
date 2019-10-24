@@ -341,10 +341,6 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</volume>\n");
 
-    if (virBufferError(&buf)) {
-        vshError(ctl, "%s", _("Failed to allocate XML buffer"));
-        goto cleanup;
-    }
     xml = virBufferContentAndReset(&buf);
 
     if (printXML) {

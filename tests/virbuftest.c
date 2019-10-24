@@ -29,15 +29,13 @@ static int testBufAutoIndent(const void *data G_GNUC_UNUSED)
         ret = -1;
     }
     if (virBufferGetIndent(buf) != 3 ||
-        virBufferGetEffectiveIndent(buf) != 3 ||
-        virBufferError(buf)) {
+        virBufferGetEffectiveIndent(buf) != 3) {
         VIR_TEST_DEBUG("Wrong indentation");
         ret = -1;
     }
     virBufferAdjustIndent(buf, -2);
     if (virBufferGetIndent(buf) != 1 ||
-        virBufferGetEffectiveIndent(buf) != 1 ||
-        virBufferError(buf)) {
+        virBufferGetEffectiveIndent(buf) != 1) {
         VIR_TEST_DEBUG("Wrong indentation");
         ret = -1;
     }
@@ -50,17 +48,12 @@ static int testBufAutoIndent(const void *data G_GNUC_UNUSED)
     virBufferAdjustIndent(buf, 3);
     virBufferFreeAndReset(buf);
     if (virBufferGetIndent(buf) != 0 ||
-        virBufferGetEffectiveIndent(buf) != 0 ||
-        virBufferError(buf)) {
+        virBufferGetEffectiveIndent(buf) != 0) {
         VIR_TEST_DEBUG("Reset didn't clear indentation");
         ret = -1;
     }
     virBufferAdjustIndent(buf, 2);
     virBufferAddLit(buf, "1");
-    if (virBufferError(buf)) {
-        VIR_TEST_DEBUG("Buffer had error");
-        return -1;
-    }
     if (STRNEQ(virBufferCurrentContent(buf), "  1")) {
         VIR_TEST_DEBUG("Wrong content");
         ret = -1;
@@ -86,11 +79,6 @@ static int testBufAutoIndent(const void *data G_GNUC_UNUSED)
     virBufferAddChar(buf, '\n');
     virBufferEscapeShell(buf, " 11");
     virBufferAddChar(buf, '\n');
-
-    if (virBufferError(buf)) {
-        VIR_TEST_DEBUG("Buffer had error");
-        return -1;
-    }
 
     result = virBufferContentAndReset(buf);
     if (!result || STRNEQ(result, expected)) {
@@ -124,11 +112,6 @@ static int testBufTrim(const void *data G_GNUC_UNUSED)
     virBufferTrim(buf, "b", -1);
     virBufferTrim(buf, "b,,", 1);
     virBufferTrim(buf, ",", -1);
-
-    if (virBufferError(buf)) {
-        VIR_TEST_DEBUG("Buffer had error");
-        return -1;
-    }
 
     result = virBufferContentAndReset(buf);
     if (!result || STRNEQ(result, expected)) {

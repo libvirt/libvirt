@@ -763,8 +763,6 @@ virTestLogContentAndReset(void)
 {
     char *ret;
 
-    if (virBufferError(&testLog.buf))
-        return NULL;
     ret = virBufferContentAndReset(&testLog.buf);
     if (!ret)
         ret = g_strdup("");

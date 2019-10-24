@@ -268,10 +268,6 @@ cpuTestGuestCPU(const void *arg)
         virBufferAsprintf(&buf, ",%s", data->modelsName);
     virBufferAddLit(&buf, "-result");
 
-    if (virBufferError(&buf)) {
-        virBufferFreeAndReset(&buf);
-        goto cleanup;
-    }
     result = virBufferContentAndReset(&buf);
 
     if (cpuTestCompareXML(data->arch, cpu, result) < 0)

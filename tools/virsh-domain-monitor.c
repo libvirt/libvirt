@@ -2410,12 +2410,6 @@ cmdDomIfAddr(vshControl *ctl, const vshCmd *cmd)
                               type, iface->addrs[j].addr,
                               iface->addrs[j].prefix);
 
-            if (virBufferError(&buf)) {
-                virBufferFreeAndReset(&buf);
-                virReportOOMError();
-                goto cleanup;
-            }
-
             ip_addr_str = virBufferContentAndReset(&buf);
 
             if (!ip_addr_str)

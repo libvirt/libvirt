@@ -431,10 +431,6 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
                     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
                     virNWFilterVarAccessPrint(rule->varAccess[j], &buf);
-                    if (virBufferError(&buf)) {
-                        virReportOOMError();
-                        return -1;
-                    }
 
                     val = virNWFilterVarValueCreateSimpleCopyValue("1");
                     if (!val) {

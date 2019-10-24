@@ -1314,12 +1314,6 @@ get_files(vahControl * ctl)
         if (vah_add_file(&buf, ctl->newfile, "rwk") != 0)
             goto cleanup;
 
-    if (virBufferError(&buf)) {
-        virBufferFreeAndReset(&buf);
-        vah_error(NULL, 0, _("failed to allocate file buffer"));
-        goto cleanup;
-    }
-
     rc = 0;
     ctl->files = virBufferContentAndReset(&buf);
 
@@ -1505,11 +1499,6 @@ main(int argc, char **argv)
             }
             if (ctl->files)
                 virBufferAdd(&buf, ctl->files, -1);
-        }
-
-        if (virBufferError(&buf)) {
-            virBufferFreeAndReset(&buf);
-            vah_error(ctl, 1, _("failed to allocate buffer"));
         }
 
         included_files = virBufferContentAndReset(&buf);

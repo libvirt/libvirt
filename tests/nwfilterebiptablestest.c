@@ -109,9 +109,6 @@ testNWFilterEBIPTablesAllTeardown(const void *opaque G_GNUC_UNUSED)
     if (ebiptables_driver.allTeardown("vnet0") < 0)
         goto cleanup;
 
-    if (virBufferError(&buf))
-        goto cleanup;
-
     actual = virBufferContentAndReset(&buf);
     virTestClearCommandPath(actual);
 
@@ -180,9 +177,6 @@ testNWFilterEBIPTablesTearOldRules(const void *opaque G_GNUC_UNUSED)
     if (ebiptables_driver.tearOldRules("vnet0") < 0)
         goto cleanup;
 
-    if (virBufferError(&buf))
-        goto cleanup;
-
     actual = virBufferContentAndReset(&buf);
     virTestClearCommandPath(actual);
 
@@ -229,9 +223,6 @@ testNWFilterEBIPTablesRemoveBasicRules(const void *opaque G_GNUC_UNUSED)
     if (ebiptables_driver.removeBasicRules("vnet0") < 0)
         goto cleanup;
 
-    if (virBufferError(&buf))
-        goto cleanup;
-
     actual = virBufferContentAndReset(&buf);
     virTestClearCommandPath(actual);
 
@@ -261,9 +252,6 @@ testNWFilterEBIPTablesTearNewRules(const void *opaque G_GNUC_UNUSED)
     virCommandSetDryRun(&buf, NULL, NULL);
 
     if (ebiptables_driver.tearNewRules("vnet0") < 0)
-        goto cleanup;
-
-    if (virBufferError(&buf))
         goto cleanup;
 
     actual = virBufferContentAndReset(&buf);
@@ -333,9 +321,6 @@ testNWFilterEBIPTablesApplyBasicRules(const void *opaque G_GNUC_UNUSED)
     virCommandSetDryRun(&buf, NULL, NULL);
 
     if (ebiptables_driver.applyBasicRules("vnet0", &mac) < 0)
-        goto cleanup;
-
-    if (virBufferError(&buf))
         goto cleanup;
 
     actual = virBufferContentAndReset(&buf);
@@ -425,9 +410,6 @@ testNWFilterEBIPTablesApplyDHCPOnlyRules(const void *opaque G_GNUC_UNUSED)
     if (ebiptables_driver.applyDHCPOnlyRules("vnet0", &mac, &val, false) < 0)
         goto cleanup;
 
-    if (virBufferError(&buf))
-        goto cleanup;
-
     actual = virBufferContentAndReset(&buf);
     virTestClearCommandPath(actual);
 
@@ -496,9 +478,6 @@ testNWFilterEBIPTablesApplyDropAllRules(const void *opaque G_GNUC_UNUSED)
     virCommandSetDryRun(&buf, NULL, NULL);
 
     if (ebiptables_driver.applyDropAllRules("vnet0") < 0)
-        goto cleanup;
-
-    if (virBufferError(&buf))
         goto cleanup;
 
     actual = virBufferContentAndReset(&buf);

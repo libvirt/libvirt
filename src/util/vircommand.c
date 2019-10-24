@@ -1389,11 +1389,6 @@ virCommandAddEnvBuffer(virCommandPtr cmd, virBufferPtr buf)
         return;
     }
 
-    if (virBufferError(buf)) {
-        cmd->has_error = ENOMEM;
-        virBufferFreeAndReset(buf);
-        return;
-    }
     if (!virBufferUse(buf)) {
         cmd->has_error = EINVAL;
         return;
@@ -1525,8 +1520,7 @@ virCommandAddArgBuffer(virCommandPtr cmd, virBufferPtr buf)
     }
 
     /* Arg plus trailing NULL. */
-    if (virBufferError(buf) ||
-        VIR_RESIZE_N(cmd->args, cmd->maxargs, cmd->nargs, 1 + 1) < 0) {
+    if (VIR_RESIZE_N(cmd->args, cmd->maxargs, cmd->nargs, 1 + 1) < 0) {
         cmd->has_error = ENOMEM;
         virBufferFreeAndReset(buf);
         return;

@@ -394,9 +394,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (ebiptables_driver.applyNewRules("vnet0", inst.rules, inst.nrules) < 0)
         goto cleanup;
 
-    if (virBufferError(&buf))
-        goto cleanup;
-
     actualargv = virBufferContentAndReset(&buf);
     virTestClearCommandPath(actualargv);
     virCommandSetDryRun(NULL, NULL, NULL);

@@ -277,21 +277,6 @@ void virBufferFreeAndReset(virBufferPtr buf)
 }
 
 /**
- * virBufferError:
- * @buf: the buffer
- *
- * Check to see if the buffer is in an error state due
- * to failed memory allocation or usage error
- *
- * Return positive errno value or -1 on usage error, 0 if normal
- */
-int
-virBufferError(const virBuffer *buf G_GNUC_UNUSED)
-{
-    return 0;
-}
-
-/**
  * virBufferCheckErrorInternal:
  * @buf: the buffer
  *

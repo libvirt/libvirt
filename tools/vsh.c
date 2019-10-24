@@ -2269,9 +2269,6 @@ vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format,
     virBufferTrim(&buf, "\n", -1);
     virBufferAddChar(&buf, '\n');
 
-    if (virBufferError(&buf))
-        goto error;
-
     str = virBufferContentAndReset(&buf);
     len = strlen(str);
 
@@ -2532,9 +2529,6 @@ vshTreePrintInternal(vshControl *ctl,
     int ret = -1;
     const char *dev = (lookup)(devid, false, opaque);
 
-    if (virBufferError(indent))
-        goto cleanup;
-
     /* Print this device, with indent if not at root */
     vshPrint(ctl, "%s%s%s\n", virBufferCurrentContent(indent),
              root ? "" : "+- ", dev);
@@ -2543,8 +2537,6 @@ vshTreePrintInternal(vshControl *ctl,
     if (!root) {
         virBufferAddChar(indent, devid == lastdev ? ' ' : '|');
         virBufferAddChar(indent, ' ');
-        if (virBufferError(indent))
-            goto cleanup;
     }
 
     /* Determine the index of the last child device */
@@ -2561,8 +2553,6 @@ vshTreePrintInternal(vshControl *ctl,
 
     /* Finally print all children */
     virBufferAddLit(indent, "  ");
-    if (virBufferError(indent))
-        goto cleanup;
     for (i = 0; i < num_devices; i++) {
         const char *parent = (lookup)(i, true, opaque);
 
@@ -3315,10 +3305,6 @@ cmdEcho(vshControl *ctl, const vshCmd *cmd)
 
         if (xml) {
             virBufferEscapeString(&xmlbuf, "%s", arg);
-            if (virBufferError(&xmlbuf)) {
-                vshError(ctl, "%s", _("Failed to allocate XML buffer"));
-                return false;
-            }
             str = virBufferContentAndReset(&xmlbuf);
         } else {
             str = g_strdup(arg);
@@ -3332,10 +3318,6 @@ cmdEcho(vshControl *ctl, const vshCmd *cmd)
         VIR_FREE(str);
     }
 
-    if (virBufferError(&buf)) {
-        vshError(ctl, "%s", _("Failed to allocate XML buffer"));
-        return false;
-    }
     arg = virBufferContentAndReset(&buf);
     if (arg) {
         if (err)

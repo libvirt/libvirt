@@ -754,11 +754,6 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</disk>\n");
 
-    if (virBufferError(&buf)) {
-        vshError(ctl, "%s", _("Failed to allocate XML buffer"));
-        goto cleanup;
-    }
-
     xml = virBufferContentAndReset(&buf);
 
     if (vshCommandOptBool(cmd, "print-xml")) {
@@ -1071,11 +1066,6 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
 
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</interface>\n");
-
-    if (virBufferError(&buf)) {
-        vshError(ctl, "%s", _("Failed to allocate XML buffer"));
-        goto cleanup;
-    }
 
     xml = virBufferContentAndReset(&buf);
 
@@ -8396,10 +8386,6 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
 
     virBufferTrim(&buf, " ", -1);
 
-    if (virBufferError(&buf)) {
-        vshError(ctl, "%s", _("Failed to collect new description/title"));
-        goto cleanup;
-    }
     desc = virBufferContentAndReset(&buf);
 
     if (edit || desc) {
@@ -9517,10 +9503,6 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
 
     virBufferTrim(&buf, " ", -1);
 
-    if (virBufferError(&buf)) {
-        vshError(ctl, "%s", _("Failed to collect command"));
-        return false;
-    }
     monitor_cmd = virBufferContentAndReset(&buf);
 
     if (vshCommandOptBool(cmd, "hmp"))
@@ -9818,10 +9800,6 @@ cmdQemuAgentCommand(vshControl *ctl, const vshCmd *cmd)
 
     virBufferTrim(&buf, " ", -1);
 
-    if (virBufferError(&buf)) {
-        vshError(ctl, "%s", _("Failed to collect command"));
-        goto cleanup;
-    }
     guest_agent_cmd = virBufferContentAndReset(&buf);
 
     judge = vshCommandOptInt(ctl, cmd, "timeout", &timeout);
@@ -11549,12 +11527,6 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
                               params ? "&" : "?",
                               passwd);
             params = true;
-        }
-
-        /* Ensure we can print our URI */
-        if (virBufferError(&buf)) {
-            vshError(ctl, "%s", _("Failed to create display URI"));
-            goto cleanup;
         }
 
         /* Print out our full URI */

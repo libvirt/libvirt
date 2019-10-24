@@ -446,12 +446,6 @@ virBitmapFormat(virBitmapPtr bitmap)
         start = prev = cur;
     }
 
-    if (virBufferError(&buf)) {
-        virBufferFreeAndReset(&buf);
-        virReportOOMError();
-        return NULL;
-    }
-
     return virBufferContentAndReset(&buf);
 }
 

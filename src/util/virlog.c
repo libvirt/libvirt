@@ -1137,11 +1137,6 @@ virLogGetFilters(void)
     }
     virLogUnlock();
 
-    if (virBufferError(&filterbuf)) {
-        virBufferFreeAndReset(&filterbuf);
-        return NULL;
-    }
-
     return virBufferContentAndReset(&filterbuf);
 }
 
@@ -1184,9 +1179,6 @@ virLogGetOutputs(void)
                 goto error;
         }
     }
-
-    if (virBufferError(&outputbuf))
-        goto error;
 
     virLogUnlock();
     return virBufferContentAndReset(&outputbuf);

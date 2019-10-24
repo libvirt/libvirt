@@ -416,11 +416,6 @@ virshBuildPoolXML(vshControl *ctl,
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</pool>\n");
 
-    if (virBufferError(&buf)) {
-        vshError(ctl, "%s", _("Failed to allocate XML buffer"));
-        return false;
-    }
-
     *xml = virBufferContentAndReset(&buf);
     *retname = name;
     return true;
@@ -1480,10 +1475,6 @@ cmdPoolDiscoverSourcesAs(vshControl * ctl, const vshCmd * cmd G_GNUC_UNUSED)
         }
         virBufferAdjustIndent(&buf, -2);
         virBufferAddLit(&buf, "</source>\n");
-        if (virBufferError(&buf)) {
-            vshError(ctl, "%s", _("Out of memory"));
-            return false;
-        }
         srcSpec = virBufferContentAndReset(&buf);
     }
 

@@ -445,11 +445,6 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</domainsnapshot>\n");
 
-    if (virBufferError(&buf)) {
-        vshError(ctl, "%s", _("Out of memory"));
-        goto cleanup;
-    }
-
     buffer = virBufferContentAndReset(&buf);
 
     if (vshCommandOptBool(cmd, "print-xml")) {

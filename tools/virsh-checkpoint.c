@@ -267,11 +267,6 @@ cmdCheckpointCreateAs(vshControl *ctl,
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</domaincheckpoint>\n");
 
-    if (virBufferError(&buf)) {
-        vshError(ctl, "%s", _("Out of memory"));
-        goto cleanup;
-    }
-
     buffer = virBufferContentAndReset(&buf);
 
     if (vshCommandOptBool(cmd, "print-xml")) {
