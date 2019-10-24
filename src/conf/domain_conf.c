@@ -28487,7 +28487,7 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
         xmlIndentTreeOutput = 1;
         xmlbuf = xmlBufferCreate();
         if (xmlNodeDump(xmlbuf, def->metadata->doc, def->metadata,
-                        virBufferGetIndent(buf, false) / 2, 1) < 0) {
+                        virBufferGetIndent(buf) / 2, 1) < 0) {
             xmlBufferFree(xmlbuf);
             xmlIndentTreeOutput = oldIndentTreeOutput;
             goto error;

@@ -107,9 +107,9 @@ void virBufferSetIndent(virBufferPtr, int indent);
  * child buffer.
  */
 #define virBufferSetChildIndent(childBuf_, parentBuf_) \
-    virBufferSetIndent(childBuf_, virBufferGetIndent(parentBuf_, false) + 2)
+    virBufferSetIndent(childBuf_, virBufferGetIndent(parentBuf_) + 2)
 
-int virBufferGetIndent(const virBuffer *buf, bool dynamic);
+size_t virBufferGetIndent(const virBuffer *buf);
 size_t virBufferGetEffectiveIndent(const virBuffer *buf);
 
 void virBufferTrim(virBufferPtr buf, const char *trim, int len);

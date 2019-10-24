@@ -430,7 +430,7 @@ testQEMUSchemaValidateAlternate(virJSONValuePtr obj,
 
     virBufferAddLit(debug, "(\n");
     virBufferAdjustIndent(debug, 3);
-    indent = virBufferGetIndent(debug, false);
+    indent = virBufferGetIndent(debug);
 
     n = virJSONValueArraySize(members);
     for (i = 0; i < n; i++) {

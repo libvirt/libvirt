@@ -102,18 +102,12 @@ virBufferSetIndent(virBufferPtr buf, int indent)
 /**
  * virBufferGetIndent:
  * @buf: the buffer
- * @dynamic: if false, return set value; if true, return 0 unless next
- * append would be affected by auto-indent
  *
- * Return the current auto-indent value, or -1 if there has been an error.
+ * Return the current auto-indent setting of @buf.
  */
-int
-virBufferGetIndent(const virBuffer *buf, bool dynamic)
+size_t
+virBufferGetIndent(const virBuffer *buf)
 {
-    if (!buf || buf->error)
-        return -1;
-    if (dynamic && buf->use && buf->content[buf->use - 1] != '\n')
-        return 0;
     return buf->indent;
 }
 
