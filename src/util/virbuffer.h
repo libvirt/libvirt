@@ -33,14 +33,12 @@
 typedef struct _virBuffer virBuffer;
 typedef virBuffer *virBufferPtr;
 
-#define VIR_BUFFER_INITIALIZER { 0, 0, 0, 0, NULL }
+#define VIR_BUFFER_INITIALIZER { NULL, 0, 0 }
 
 struct _virBuffer {
-    size_t size;
-    size_t use;
+    GString *str;
     int error; /* errno value, or -1 for usage error */
     int indent;
-    char *content;
 };
 
 const char *virBufferCurrentContent(virBufferPtr buf);

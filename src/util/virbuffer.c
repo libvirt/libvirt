@@ -21,7 +21,6 @@
 #include <config.h>
 
 #include <stdarg.h>
-#include "c-ctype.h"
 
 #include "virbuffer.h"
 #include "virerror.h"
@@ -40,10 +39,7 @@
 static void
 virBufferSetError(virBufferPtr buf, int error)
 {
-    VIR_FREE(buf->content);
-    buf->size = 0;
-    buf->use = 0;
-    buf->indent = 0;
+    virBufferFreeAndReset(buf);
     buf->error = error;
 }
 
@@ -122,7 +118,7 @@ virBufferGetIndent(const virBuffer *buf)
 size_t
 virBufferGetEffectiveIndent(const virBuffer *buf)
 {
-    if (buf->use && buf->content[buf->use - 1] != '\n')
+    if (buf->str && buf->str->len && buf->str->str[buf->str->len - 1] != '\n')
         return 0;
 
     return buf->indent;
@@ -130,34 +126,37 @@ virBufferGetEffectiveIndent(const virBuffer *buf)
 
 
 /**
- * virBufferGrow:
+ * virBufferInitialize
  * @buf: the buffer
- * @len: the minimum free size to allocate on top of existing used space
  *
- * Grow the available space of a buffer to at least @len bytes.
- *
- * Returns zero on success or -1 on error
+ * Ensures that the internal GString container is allocated.
  */
-static int
-virBufferGrow(virBufferPtr buf, unsigned int len)
+static void
+virBufferInitialize(virBufferPtr buf)
 {
-    int size;
-
-    if (buf->error)
-        return -1;
-
-    if ((len + buf->use) < buf->size)
-        return 0;
-
-    size = buf->use + len + 1000;
-
-    if (VIR_REALLOC_N_QUIET(buf->content, size) < 0) {
-        virBufferSetError(buf, errno);
-        return -1;
-    }
-    buf->size = size;
-    return 0;
+    if (!buf->str)
+        buf->str = g_string_new(NULL);
 }
+
+
+static void
+virBufferApplyIndent(virBufferPtr buf)
+{
+    const char space[] = "                               ";
+    size_t spacesz = sizeof(space) - 1;
+    size_t toindent = virBufferGetEffectiveIndent(buf);
+
+    if (toindent == 0)
+        return;
+
+    while (toindent > spacesz) {
+        g_string_append_len(buf->str, space, spacesz);
+        toindent -= spacesz;
+    }
+
+    g_string_append_len(buf->str, space, toindent);
+}
+
 
 /**
  * virBufferAdd:
@@ -172,25 +171,16 @@ virBufferGrow(virBufferPtr buf, unsigned int len)
 void
 virBufferAdd(virBufferPtr buf, const char *str, int len)
 {
-    unsigned int needSize;
-    size_t indent;
-
     if (!str || !buf || buf->error || (len == 0 && buf->indent == 0))
         return;
 
-    indent = virBufferGetEffectiveIndent(buf);
+    virBufferInitialize(buf);
+    virBufferApplyIndent(buf);
 
     if (len < 0)
-        len = strlen(str);
-
-    needSize = buf->use + indent + len + 2;
-    if (virBufferGrow(buf, needSize - buf->use) < 0)
-        return;
-
-    memset(&buf->content[buf->use], ' ', indent);
-    memcpy(&buf->content[buf->use + indent], str, len);
-    buf->use += indent + len;
-    buf->content[buf->use] = '\0';
+        g_string_append(buf->str, str);
+    else
+        g_string_append_len(buf->str, str, len);
 }
 
 /**
@@ -207,7 +197,7 @@ virBufferAdd(virBufferPtr buf, const char *str, int len)
 void
 virBufferAddBuffer(virBufferPtr buf, virBufferPtr toadd)
 {
-    if (!toadd)
+    if (!toadd || !toadd->str)
         return;
 
     if (!buf)
@@ -219,12 +209,8 @@ virBufferAddBuffer(virBufferPtr buf, virBufferPtr toadd)
         goto cleanup;
     }
 
-    if (virBufferGrow(buf, toadd->use) < 0)
-        goto cleanup;
-
-    memcpy(&buf->content[buf->use], toadd->content, toadd->use);
-    buf->use += toadd->use;
-    buf->content[buf->use] = '\0';
+    virBufferInitialize(buf);
+    g_string_append_len(buf->str, toadd->str->str, toadd->str->len);
 
  cleanup:
     virBufferFreeAndReset(toadd);
@@ -259,7 +245,12 @@ virBufferCurrentContent(virBufferPtr buf)
 {
     if (!buf || buf->error)
         return NULL;
-    return buf->use ? buf->content : "";
+
+    if (!buf->str ||
+        buf->str->len == 0)
+        return "";
+
+    return buf->str->str;
 }
 
 /**
@@ -277,16 +268,14 @@ virBufferCurrentContent(virBufferPtr buf)
 char *
 virBufferContentAndReset(virBufferPtr buf)
 {
-    char *str;
-    if (buf == NULL)
+    char *str = NULL;
+
+    if (!buf)
         return NULL;
 
-    if (buf->error) {
-        memset(buf, 0, sizeof(*buf));
-        return NULL;
-    }
+    if (buf->str)
+        str = g_string_free(buf->str, false);
 
-    str = buf->content;
     memset(buf, 0, sizeof(*buf));
     return str;
 }
@@ -299,8 +288,13 @@ virBufferContentAndReset(virBufferPtr buf)
  */
 void virBufferFreeAndReset(virBufferPtr buf)
 {
-    if (buf)
-        virBufferSetError(buf, 0);
+    if (!buf)
+        return;
+
+    if (buf->str)
+        g_string_free(buf->str, true);
+
+    memset(buf, 0, sizeof(*buf));
 }
 
 /**
@@ -360,10 +354,10 @@ virBufferCheckErrorInternal(const virBuffer *buf,
 size_t
 virBufferUse(const virBuffer *buf)
 {
-    if (buf == NULL)
+    if (!buf || !buf->str)
         return 0;
 
-    return buf->use;
+    return buf->str->len;
 }
 
 /**
@@ -394,48 +388,16 @@ virBufferAsprintf(virBufferPtr buf, const char *format, ...)
 void
 virBufferVasprintf(virBufferPtr buf, const char *format, va_list argptr)
 {
-    int size, count, grow_size;
-    va_list copy;
-
     if ((format == NULL) || (buf == NULL))
         return;
 
     if (buf->error)
         return;
 
-    virBufferAddLit(buf, ""); /* auto-indent */
+    virBufferInitialize(buf);
+    virBufferApplyIndent(buf);
 
-    if (buf->size == 0 &&
-        virBufferGrow(buf, 100) < 0)
-        return;
-
-    va_copy(copy, argptr);
-
-    size = buf->size - buf->use;
-    if ((count = vsnprintf(&buf->content[buf->use],
-                           size, format, copy)) < 0) {
-        virBufferSetError(buf, errno);
-        va_end(copy);
-        return;
-    }
-    va_end(copy);
-
-    /* Grow buffer if necessary and retry */
-    if (count >= size) {
-        buf->content[buf->use] = 0;
-
-        grow_size = (count + 1 > 1000) ? count + 1 : 1000;
-        if (virBufferGrow(buf, grow_size) < 0)
-            return;
-
-        size = buf->size - buf->use;
-        if ((count = vsnprintf(&buf->content[buf->use],
-                               size, format, argptr)) < 0) {
-            virBufferSetError(buf, errno);
-            return;
-        }
-    }
-    buf->use += count;
+    g_string_append_vprintf(buf->str, format, argptr);
 }
 
 
@@ -638,16 +600,6 @@ virBufferEscape(virBufferPtr buf, char escape, const char *toescape,
 }
 
 
-static bool
-virBufferURIEncodeCharIsUnencoded(char c)
-{
-    if (c == '-' || c == '.' || c == '_' || c == '~')
-        return true;
-
-    return c_isalnum(c);
-}
-
-
 /**
  * virBufferURIEncodeString:
  * @buf: the buffer to append to
@@ -660,41 +612,16 @@ virBufferURIEncodeCharIsUnencoded(char c)
 void
 virBufferURIEncodeString(virBufferPtr buf, const char *str)
 {
-    int grow_size = 0;
-    const char *p;
-    unsigned char uc;
-    const char *hex = "0123456789ABCDEF";
-
     if ((buf == NULL) || (str == NULL))
         return;
 
     if (buf->error)
         return;
 
-    virBufferAddLit(buf, ""); /* auto-indent */
+    virBufferInitialize(buf);
+    virBufferApplyIndent(buf);
 
-    for (p = str; *p; ++p) {
-        if (virBufferURIEncodeCharIsUnencoded(*p))
-            grow_size++;
-        else
-            grow_size += 3; /* %ab */
-    }
-
-    if (virBufferGrow(buf, grow_size) < 0)
-        return;
-
-    for (p = str; *p; ++p) {
-        if (virBufferURIEncodeCharIsUnencoded(*p)) {
-            buf->content[buf->use++] = *p;
-        } else {
-            uc = (unsigned char) *p;
-            buf->content[buf->use++] = '%';
-            buf->content[buf->use++] = hex[uc >> 4];
-            buf->content[buf->use++] = hex[uc & 0xf];
-        }
-    }
-
-    buf->content[buf->use] = '\0';
+    g_string_append_uri_escaped(buf->str, str, NULL, false);
 }
 
 /**
@@ -810,21 +737,27 @@ virBufferTrim(virBufferPtr buf, const char *str, int len)
 {
     size_t len2 = 0;
 
-    if (!buf || buf->error)
+    if (!buf || buf->error || !buf->str)
         return;
+
     if (!str && len < 0)
         return;
 
-    if (len > 0 && len > buf->use)
+
+    if (len > 0 && len > buf->str->len)
         return;
+
     if (str) {
         len2 = strlen(str);
-        if (len2 > buf->use ||
-            memcmp(&buf->content[buf->use - len2], str, len2) != 0)
+        if (len2 > buf->str->len ||
+            memcmp(&buf->str->str[buf->str->len - len2], str, len2) != 0)
             return;
     }
-    buf->use -= len < 0 ? len2 : len;
-    buf->content[buf->use] = '\0';
+
+    if (len < 0)
+        len = len2;
+
+    g_string_truncate(buf->str, buf->str->len - len);
 }
 
 
