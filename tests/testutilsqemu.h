@@ -63,6 +63,7 @@ struct testQemuInfo {
     int migrateFd;
     unsigned int flags;
     unsigned int parseFlags;
+    virArch arch;
 };
 
 virCapsPtr testQemuCapsInit(void);
