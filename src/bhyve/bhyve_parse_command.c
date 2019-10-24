@@ -282,8 +282,7 @@ bhyveParseBhyveLPCArg(virDomainDefPtr def,
     if (!separator)
         goto error;
 
-    if (VIR_STRNDUP(type, arg, separator - arg) < 0)
-        goto error;
+    type = g_strndup(arg, separator - arg);
 
     /* Only support com%d */
     if (STRPREFIX(type, "com") && type[4] == 0) {
@@ -578,8 +577,7 @@ bhyveParseBhyvePCIArg(virDomainDefPtr def,
     else
         separator++; /* Skip comma */
 
-    if (VIR_STRNDUP(slotdef, arg, separator - arg - 1) < 0)
-        goto error;
+    slotdef = g_strndup(arg, separator - arg - 1);
 
     conf = strchr(separator+1, ',');
     if (conf) {

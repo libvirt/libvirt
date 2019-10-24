@@ -3138,7 +3138,6 @@ virCommandRunRegex(virCommandPtr cmd,
             /* NB match #0 is the full pattern, so we offset j by 1 */
             for (j = 1; j <= nvars[i]; j++)
                 groups[ngroup++] = g_match_info_fetch(info, j);
-
         }
         /* We've matched on the last regex, so callback time */
         if (i == nregex) {

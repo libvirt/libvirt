@@ -386,8 +386,7 @@ virConfParseString(virConfParserCtxtPtr ctxt)
             virConfError(ctxt, VIR_ERR_CONF_SYNTAX, _("unterminated string"));
             return NULL;
         }
-        if (VIR_STRNDUP(ret, base, ctxt->cur - base) < 0)
-            return NULL;
+        ret = g_strndup(base, ctxt->cur - base);
         NEXT;
     } else if ((ctxt->cur + 6 < ctxt->end) &&
                (STRPREFIX(ctxt->cur, "\"\"\""))) {
@@ -407,8 +406,7 @@ virConfParseString(virConfParserCtxtPtr ctxt)
             virConfError(ctxt, VIR_ERR_CONF_SYNTAX, _("unterminated string"));
             return NULL;
         }
-        if (VIR_STRNDUP(ret, base, ctxt->cur - base) < 0)
-            return NULL;
+        ret = g_strndup(base, ctxt->cur - base);
         ctxt->cur += 3;
     } else if (CUR == '"') {
         NEXT;
@@ -419,8 +417,7 @@ virConfParseString(virConfParserCtxtPtr ctxt)
             virConfError(ctxt, VIR_ERR_CONF_SYNTAX, _("unterminated string"));
             return NULL;
         }
-        if (VIR_STRNDUP(ret, base, ctxt->cur - base) < 0)
-            return NULL;
+        ret = g_strndup(base, ctxt->cur - base);
         NEXT;
     } else if (ctxt->conf->flags & VIR_CONF_FLAG_LXC_FORMAT) {
         base = ctxt->cur;
@@ -430,8 +427,7 @@ virConfParseString(virConfParserCtxtPtr ctxt)
         /* Reverse to exclude the trailing blanks from the value */
         while ((ctxt->cur > base) && (IS_BLANK(CUR)))
             ctxt->cur--;
-        if (VIR_STRNDUP(ret, base, ctxt->cur - base) < 0)
-            return NULL;
+        ret = g_strndup(base, ctxt->cur - base);
     }
     return ret;
 }
@@ -567,8 +563,7 @@ virConfParseName(virConfParserCtxtPtr ctxt)
             ((ctxt->conf->flags & VIR_CONF_FLAG_LXC_FORMAT) &&
              (CUR == '.'))))
         NEXT;
-    if (VIR_STRNDUP(ret, base, ctxt->cur - base) < 0)
-        return NULL;
+    ret = g_strndup(base, ctxt->cur - base);
     return ret;
 }
 
@@ -591,8 +586,7 @@ virConfParseComment(virConfParserCtxtPtr ctxt)
     NEXT;
     base = ctxt->cur;
     while ((ctxt->cur < ctxt->end) && (!IS_EOL(CUR))) NEXT;
-    if (VIR_STRNDUP(comm, base, ctxt->cur - base) < 0)
-        return -1;
+    comm = g_strndup(base, ctxt->cur - base);
     if (virConfAddEntry(ctxt->conf, NULL, NULL, comm) == NULL) {
         VIR_FREE(comm);
         return -1;
@@ -666,11 +660,7 @@ virConfParseStatement(virConfParserCtxtPtr ctxt)
         NEXT;
         base = ctxt->cur;
         while ((ctxt->cur < ctxt->end) && (!IS_EOL(CUR))) NEXT;
-        if (VIR_STRNDUP(comm, base, ctxt->cur - base) < 0) {
-            VIR_FREE(name);
-            virConfFreeValue(value);
-            return -1;
-        }
+        comm = g_strndup(base, ctxt->cur - base);
     }
     if (virConfAddEntry(ctxt->conf, name, value, comm) == NULL) {
         VIR_FREE(name);

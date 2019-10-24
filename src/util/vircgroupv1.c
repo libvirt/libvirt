@@ -780,9 +780,8 @@ virCgroupV1IdentifyRoot(virCgroupPtr group)
             return NULL;
         }
 
-        if (VIR_STRNDUP(ret, group->legacy[i].mountPoint,
-                        tmp - group->legacy[i].mountPoint) < 0)
-            return NULL;
+        ret = g_strndup(group->legacy[i].mountPoint,
+                        tmp - group->legacy[i].mountPoint);
         return ret;
     }
 

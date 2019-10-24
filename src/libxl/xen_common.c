@@ -848,9 +848,8 @@ xenParseSxprChar(const char *value,
 
         offset2 = strchr(offset, '@');
         if (offset2 != NULL) {
-            if (VIR_STRNDUP(def->source->data.udp.connectService,
-                            offset + 1, offset2 - offset - 1) < 0)
-                goto error;
+            def->source->data.udp.connectService = g_strndup(offset + 1,
+                                                             offset2 - offset - 1);
 
             offset3 = strchr(offset2, ':');
             if (offset3 == NULL) {
@@ -992,8 +991,7 @@ xenParseVifBridge(virDomainNetDefPtr net, char *bridge)
 
     if ((vlanstr = strchr(bridge, '.'))) {
         /* 'bridge' string contains a bridge name and single vlan tag */
-        if (VIR_STRNDUP(net->data.bridge.brname, bridge, vlanstr - bridge) < 0)
-            return -1;
+        net->data.bridge.brname = g_strndup(bridge, vlanstr - bridge);
 
         vlanstr++;
         if (virStrToLong_ui(vlanstr, NULL, 10, &tag) < 0)

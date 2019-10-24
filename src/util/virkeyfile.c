@@ -117,8 +117,7 @@ static int virKeyFileParseGroup(virKeyFileParserCtxtPtr ctxt)
         return -1;
     }
 
-    if (VIR_STRNDUP(ctxt->groupname, name, ctxt->cur - name) < 0)
-        return -1;
+    ctxt->groupname = g_strndup(name, ctxt->cur - name);
 
     NEXT;
 
@@ -161,8 +160,7 @@ static int virKeyFileParseValue(virKeyFileParserCtxtPtr ctxt)
         return -1;
     }
 
-    if (VIR_STRNDUP(key, keystart, ctxt->cur - keystart) < 0)
-        return -1;
+    key = g_strndup(keystart, ctxt->cur - keystart);
 
     NEXT;
     valuestart = ctxt->cur;

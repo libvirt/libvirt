@@ -485,8 +485,7 @@ virSysinfoParseS390Delimited(const char *base, const char *name, char **value,
         start += 1;
         end = strchrnul(start, delim2);
         virSkipSpaces(&start);
-        if (VIR_STRNDUP(*value, start, end - start) < 0)
-            return NULL;
+        *value = g_strndup(start, end - start);
         virTrimSpaces(*value, NULL);
         return end;
     }

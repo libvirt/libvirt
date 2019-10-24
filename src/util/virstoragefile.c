@@ -2945,8 +2945,7 @@ virStorageSourceParseBackingColon(virStorageSourcePtr src,
         return -1;
     }
 
-    if (VIR_STRNDUP(protocol, path, p - path) < 0)
-        return -1;
+    protocol = g_strndup(path, p - path);
 
     if ((src->protocol = virStorageNetProtocolTypeFromString(protocol)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,

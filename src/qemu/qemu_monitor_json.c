@@ -643,15 +643,11 @@ qemuMonitorJSONParseKeywords(const char *str,
             separator = endmark;
         }
 
-        if (VIR_STRNDUP(keyword, start, separator - start) < 0)
-            goto error;
+        keyword = g_strndup(start, separator - start);
 
         if (separator < endmark) {
             separator++;
-            if (VIR_STRNDUP(value, separator, endmark - separator) < 0) {
-                VIR_FREE(keyword);
-                goto error;
-            }
+            value = g_strndup(separator, endmark - separator);
             if (strchr(value, ',')) {
                 char *p = strchr(value, ',') + 1;
                 char *q = p + 1;

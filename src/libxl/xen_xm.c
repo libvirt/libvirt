@@ -131,8 +131,7 @@ xenParseXMDisk(char *entry, int hvm)
         /* No source file given, eg CDROM with no media */
         ignore_value(virDomainDiskSetSource(disk, NULL));
     } else {
-        if (VIR_STRNDUP(tmp, head, offset - head) < 0)
-            goto error;
+        tmp = g_strndup(head, offset - head);
 
         if (virDomainDiskSetSource(disk, tmp) < 0) {
             VIR_FREE(tmp);

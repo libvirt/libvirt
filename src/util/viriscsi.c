@@ -160,8 +160,7 @@ virStorageBackendIQNFound(const char *initiatoriqn,
         if (!(next = strchr(current, ' ')))
             goto error;
 
-        if (VIR_STRNDUP(iface, current, (next - current)) < 0)
-            goto cleanup;
+        iface = g_strndup(current, next - current);
 
         current = next + 1;
 

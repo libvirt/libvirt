@@ -9251,8 +9251,7 @@ qemuDomainParseBlkioDeviceStr(char *blkioDeviceStr, const char *type,
         if (!p)
             goto parse_error;
 
-        if (VIR_STRNDUP(result[i].path, temp, p - temp) < 0)
-            goto cleanup;
+        result[i].path = g_strndup(temp, p - temp);
 
         /* value */
         temp = p + 1;

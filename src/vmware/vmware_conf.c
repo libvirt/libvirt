@@ -348,8 +348,7 @@ vmwareParsePath(const char *path, char **directory, char **filename)
             return -1;
         }
 
-        if (VIR_STRNDUP(*directory, path, separator - path - 1) < 0)
-            goto error;
+        *directory = g_strndup(path, separator - path - 1);
         *filename = g_strdup(separator);
 
     } else {
@@ -357,9 +356,6 @@ vmwareParsePath(const char *path, char **directory, char **filename)
     }
 
     return 0;
-
- error:
-    return -1;
 }
 
 void
