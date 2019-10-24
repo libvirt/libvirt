@@ -86,10 +86,8 @@
 #define STRCASEPREFIX(a, b) (c_strncasecmp(a, b, strlen(b)) == 0)
 #define STRSKIP(a, b) (STRPREFIX(a, b) ? (a) + strlen(b) : NULL)
 
-#define STREQ_NULLABLE(a, b) \
-    ((a) ? (b) && STREQ((a), (b)) : !(b))
-#define STRNEQ_NULLABLE(a, b) \
-    ((a) ? !(b) || STRNEQ((a), (b)) : !!(b))
+#define STREQ_NULLABLE(a, b) (g_strcmp0(a, b) == 0)
+#define STRNEQ_NULLABLE(a, b) (g_strcmp0(a, b) != 0)
 
 #define NUL_TERMINATE(buf) do { (buf)[sizeof(buf)-1] = '\0'; } while (0)
 
