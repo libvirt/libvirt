@@ -201,22 +201,22 @@ virBufferAddBuffer(virBufferPtr buf, virBufferPtr toadd)
         return;
 
     if (!buf)
-        goto done;
+        goto cleanup;
 
     if (buf->error || toadd->error) {
         if (!buf->error)
             virBufferSetError(buf, toadd->error);
-        goto done;
+        goto cleanup;
     }
 
     if (virBufferGrow(buf, toadd->use) < 0)
-        goto done;
+        goto cleanup;
 
     memcpy(&buf->content[buf->use], toadd->content, toadd->use);
     buf->use += toadd->use;
     buf->content[buf->use] = '\0';
 
- done:
+ cleanup:
     virBufferFreeAndReset(toadd);
 }
 
