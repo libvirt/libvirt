@@ -33,11 +33,10 @@
 typedef struct _virBuffer virBuffer;
 typedef virBuffer *virBufferPtr;
 
-#define VIR_BUFFER_INITIALIZER { NULL, 0, 0 }
+#define VIR_BUFFER_INITIALIZER { NULL, 0 }
 
 struct _virBuffer {
     GString *str;
-    int error; /* errno value, or -1 for usage error */
     int indent;
 };
 
@@ -45,11 +44,7 @@ const char *virBufferCurrentContent(virBufferPtr buf);
 char *virBufferContentAndReset(virBufferPtr buf);
 void virBufferFreeAndReset(virBufferPtr buf);
 int virBufferError(const virBuffer *buf);
-int virBufferCheckErrorInternal(const virBuffer *buf,
-                                int domcode,
-                                const char *filename,
-                                const char *funcname,
-                                size_t linenr)
+int virBufferCheckErrorInternal(const virBuffer *buf)
     ATTRIBUTE_NONNULL(1);
 
 G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(virBuffer, virBufferFreeAndReset);
@@ -63,8 +58,8 @@ G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(virBuffer, virBufferFreeAndReset);
  * and -1 is returned.
  */
 #define virBufferCheckError(buf) \
-    virBufferCheckErrorInternal(buf, VIR_FROM_THIS, __FILE__, __FUNCTION__, \
-    __LINE__)
+    virBufferCheckErrorInternal(buf)
+
 size_t virBufferUse(const virBuffer *buf);
 void virBufferAdd(virBufferPtr buf, const char *str, int len);
 void virBufferAddBuffer(virBufferPtr buf, virBufferPtr toadd);

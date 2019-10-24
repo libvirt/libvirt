@@ -23,25 +23,10 @@
 #include <stdarg.h>
 
 #include "virbuffer.h"
-#include "virerror.h"
 #include "virstring.h"
 #include "viralloc.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
-
-/**
- * virBufferFail
- * @buf: the buffer
- * @error: which error occurred (errno value, or -1 for usage)
- *
- * Mark the buffer as failed, free the content and set the error flag.
- */
-static void
-virBufferSetError(virBufferPtr buf, int error)
-{
-    virBufferFreeAndReset(buf);
-    buf->error = error;
-}
 
 /**
  * virBufferAdjustIndent:
@@ -58,7 +43,7 @@ virBufferSetError(virBufferPtr buf, int error)
 void
 virBufferAdjustIndent(virBufferPtr buf, int indent)
 {
-    if (!buf || buf->error)
+    if (!buf)
         return;
 
     if (indent > 0) {
@@ -88,7 +73,7 @@ virBufferAdjustIndent(virBufferPtr buf, int indent)
 void
 virBufferSetIndent(virBufferPtr buf, int indent)
 {
-    if (!buf || buf->error)
+    if (!buf)
         return;
 
     buf->indent = indent;
@@ -171,7 +156,7 @@ virBufferApplyIndent(virBufferPtr buf)
 void
 virBufferAdd(virBufferPtr buf, const char *str, int len)
 {
-    if (!str || !buf || buf->error || (len == 0 && buf->indent == 0))
+    if (!str || !buf || (len == 0 && buf->indent == 0))
         return;
 
     virBufferInitialize(buf);
@@ -202,12 +187,6 @@ virBufferAddBuffer(virBufferPtr buf, virBufferPtr toadd)
 
     if (!buf)
         goto cleanup;
-
-    if (buf->error || toadd->error) {
-        if (!buf->error)
-            virBufferSetError(buf, toadd->error);
-        goto cleanup;
-    }
 
     virBufferInitialize(buf);
     g_string_append_len(buf->str, toadd->str->str, toadd->str->len);
@@ -243,7 +222,7 @@ virBufferAddChar(virBufferPtr buf, char c)
 const char *
 virBufferCurrentContent(virBufferPtr buf)
 {
-    if (!buf || buf->error)
+    if (!buf)
         return NULL;
 
     if (!buf->str ||
@@ -307,12 +286,9 @@ void virBufferFreeAndReset(virBufferPtr buf)
  * Return positive errno value or -1 on usage error, 0 if normal
  */
 int
-virBufferError(const virBuffer *buf)
+virBufferError(const virBuffer *buf G_GNUC_UNUSED)
 {
-    if (buf == NULL)
-        return -1;
-
-    return buf->error;
+    return 0;
 }
 
 /**
@@ -324,25 +300,9 @@ virBufferError(const virBuffer *buf)
  * Return -1 if an error has been reported, 0 otherwise.
  */
 int
-virBufferCheckErrorInternal(const virBuffer *buf,
-                            int domcode,
-                            const char *filename,
-                            const char *funcname,
-                            size_t linenr)
+virBufferCheckErrorInternal(const virBuffer *buf G_GNUC_UNUSED)
 {
-    if (buf->error == 0)
-        return 0;
-
-    if (buf->error == ENOMEM) {
-        virReportOOMErrorFull(domcode, filename, funcname, linenr);
-        errno = ENOMEM;
-    } else {
-        virReportErrorHelper(domcode, VIR_ERR_INTERNAL_ERROR, filename,
-                             funcname, linenr, "%s",
-                             _("Invalid buffer API usage"));
-        errno = EINVAL;
-    }
-    return -1;
+    return 0;
 }
 
 /**
@@ -391,9 +351,6 @@ virBufferVasprintf(virBufferPtr buf, const char *format, va_list argptr)
     if ((format == NULL) || (buf == NULL))
         return;
 
-    if (buf->error)
-        return;
-
     virBufferInitialize(buf);
     virBufferApplyIndent(buf);
 
@@ -428,9 +385,6 @@ virBufferEscapeString(virBufferPtr buf, const char *format, const char *str)
     };
 
     if ((format == NULL) || (buf == NULL) || (str == NULL))
-        return;
-
-    if (buf->error)
         return;
 
     len = strlen(str);
@@ -575,9 +529,6 @@ virBufferEscape(virBufferPtr buf, char escape, const char *toescape,
     if ((format == NULL) || (buf == NULL) || (str == NULL))
         return;
 
-    if (buf->error)
-        return;
-
     len = strlen(str);
     if (strcspn(str, toescape) == len) {
         virBufferAsprintf(buf, format, str);
@@ -615,9 +566,6 @@ virBufferURIEncodeString(virBufferPtr buf, const char *str)
     if ((buf == NULL) || (str == NULL))
         return;
 
-    if (buf->error)
-        return;
-
     virBufferInitialize(buf);
     virBufferApplyIndent(buf);
 
@@ -641,9 +589,6 @@ virBufferEscapeShell(virBufferPtr buf, const char *str)
     const char *cur;
 
     if ((buf == NULL) || (str == NULL))
-        return;
-
-    if (buf->error)
         return;
 
     /* Only quote if str includes shell metacharacters. */
@@ -693,9 +638,6 @@ virBufferStrcatVArgs(virBufferPtr buf,
 {
     char *str;
 
-    if (buf->error)
-        return;
-
     while ((str = va_arg(ap, char *)) != NULL)
         virBufferAdd(buf, str, -1);
 }
@@ -737,7 +679,7 @@ virBufferTrim(virBufferPtr buf, const char *str, int len)
 {
     size_t len2 = 0;
 
-    if (!buf || buf->error || !buf->str)
+    if (!buf || !buf->str)
         return;
 
     if (!str && len < 0)
@@ -775,7 +717,7 @@ virBufferAddStr(virBufferPtr buf,
 {
     const char *end;
 
-    if (!buf || !str || buf->error)
+    if (!buf || !str)
         return;
 
     while (*str) {
