@@ -1448,10 +1448,6 @@ virLogManagerFree;
 virLogManagerNew;
 
 
-# secret/secret_util.h
-virSecretGetSecretString;
-
-
 # security/security_driver.h
 virSecurityDriverLookup;
 
@@ -3001,6 +2997,7 @@ virSecurityLabelDefNew;
 
 
 # util/virsecret.h
+virSecretGetSecretString;
 virSecretLookupDefClear;
 virSecretLookupDefCopy;
 virSecretLookupFormatSecret;

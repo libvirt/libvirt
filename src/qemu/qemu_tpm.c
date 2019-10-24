@@ -42,7 +42,7 @@
 #include "configmake.h"
 #include "qemu_tpm.h"
 #include "virtpm.h"
-#include "secret_util.h"
+#include "virsecret.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

@@ -41,7 +41,7 @@
 #include "libxl_conf.h"
 #include "libxl_utils.h"
 #include "virstoragefile.h"
-#include "secret_util.h"
+#include "virsecret.h"
 #include "cpu/cpu.h"
 #include "xen_common.h"
 #include "xen_xl.h"

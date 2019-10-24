@@ -21,6 +21,7 @@
 
 #include <config.h>
 
+#include "datatypes.h"
 #include "viralloc.h"
 #include "virerror.h"
 #include "virlog.h"
@@ -124,4 +125,72 @@ virSecretLookupFormatSecret(virBufferPtr buf,
     } else {
         virBufferAddLit(buf, "/>\n");
     }
+}
+
+
+/* virSecretGetSecretString:
+ * @conn: Pointer to the connection driver to make secret driver call
+ * @seclookupdef: Secret lookup def
+ * @secretUsageType: Type of secret usage for usage lookup
+ * @secret: returned secret as a sized stream of unsigned chars
+ * @secret_size: Return size of the secret - either raw text or base64
+ *
+ * Lookup the secret for the usage type and return it as raw text.
+ * It is up to the caller to encode the secret further.
+ *
+ * Returns 0 on success, -1 on failure.  On success the memory in secret
+ * needs to be cleared and free'd after usage.
+ */
+int
+virSecretGetSecretString(virConnectPtr conn,
+                         virSecretLookupTypeDefPtr seclookupdef,
+                         virSecretUsageType secretUsageType,
+                         uint8_t **secret,
+                         size_t *secret_size)
+{
+    virSecretPtr sec = NULL;
+    int ret = -1;
+
+    switch (seclookupdef->type) {
+    case VIR_SECRET_LOOKUP_TYPE_UUID:
+        sec = conn->secretDriver->secretLookupByUUID(conn, seclookupdef->u.uuid);
+        break;
+
+    case VIR_SECRET_LOOKUP_TYPE_USAGE:
+        sec = conn->secretDriver->secretLookupByUsage(conn, secretUsageType,
+                                                      seclookupdef->u.usage);
+        break;
+    }
+
+    if (!sec)
+        goto cleanup;
+
+    /* NB: NONE is a byproduct of the qemuxml2argvtest test mocking
+     * for UUID lookups. Normal secret XML processing would fail if
+     * the usage type was NONE and since we have no way to set the
+     * expected usage in that environment, let's just accept NONE */
+    if (sec->usageType != VIR_SECRET_USAGE_TYPE_NONE &&
+        sec->usageType != secretUsageType) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+        virUUIDFormat(seclookupdef->u.uuid, uuidstr);
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("secret with uuid %s is of type '%s' not "
+                         "expected '%s' type"),
+                       uuidstr, virSecretUsageTypeToString(sec->usageType),
+                       virSecretUsageTypeToString(secretUsageType));
+        goto cleanup;
+    }
+
+    *secret = conn->secretDriver->secretGetValue(sec, secret_size, 0,
+                                                 VIR_SECRET_GET_VALUE_INTERNAL_CALL);
+
+    if (!*secret)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virObjectUnref(sec);
+    return ret;
 }

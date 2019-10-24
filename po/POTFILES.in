@@ -190,7 +190,6 @@
 @SRCDIR@/src/rpc/virnetsshsession.c
 @SRCDIR@/src/rpc/virnettlscontext.c
 @SRCDIR@/src/secret/secret_driver.c
-@SRCDIR@/src/secret/secret_util.c
 @SRCDIR@/src/security/security_apparmor.c
 @SRCDIR@/src/security/security_dac.c
 @SRCDIR@/src/security/security_driver.c

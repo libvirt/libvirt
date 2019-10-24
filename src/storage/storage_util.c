@@ -62,7 +62,7 @@
 #include "viralloc.h"
 #include "internal.h"
 #include "secret_conf.h"
-#include "secret_util.h"
+#include "virsecret.h"
 #include "vircrypto.h"
 #include "viruuid.h"
 #include "virstoragefile.h"

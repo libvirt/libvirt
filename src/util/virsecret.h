@@ -56,3 +56,11 @@ int virSecretLookupParseSecret(xmlNodePtr secretnode,
 void virSecretLookupFormatSecret(virBufferPtr buf,
                                  const char *secrettype,
                                  virSecretLookupTypeDefPtr def);
+
+int virSecretGetSecretString(virConnectPtr conn,
+                             virSecretLookupTypeDefPtr seclookupdef,
+                             virSecretUsageType secretUsageType,
+                             uint8_t **ret_secret,
+                             size_t *ret_secret_size)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4)
+    ATTRIBUTE_NONNULL(5) G_GNUC_WARN_UNUSED_RESULT;

@@ -83,7 +83,7 @@
 #include "virnuma.h"
 #include "virstring.h"
 #include "virhostdev.h"
-#include "secret_util.h"
+#include "virsecret.h"
 #include "configmake.h"
 #include "nwfilter_conf.h"
 #include "netdev_bandwidth_conf.h"

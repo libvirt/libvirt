@@ -56,7 +56,7 @@
 #include "vircrypto.h"
 #include "virrandom.h"
 #include "virsystemd.h"
-#include "secret_util.h"
+#include "virsecret.h"
 #include "logging/log_manager.h"
 #include "locking/domain_lock.h"
 #include "virdomainsnapshotobjlist.h"

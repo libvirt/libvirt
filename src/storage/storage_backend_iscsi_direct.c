@@ -24,7 +24,7 @@
 #include <iscsi/scsi-lowlevel.h>
 
 #include "datatypes.h"
-#include "secret_util.h"
+#include "virsecret.h"
 #include "storage_backend_iscsi_direct.h"
 #include "storage_util.h"
 #include "viralloc.h"
