@@ -1689,6 +1689,25 @@ virQEMUCapsSEVInfoCopy(virSEVCapabilityPtr *dst,
 }
 
 
+static void
+virQEMUCapsCopyMachineTypes(virQEMUCapsPtr dst,
+                            virQEMUCapsPtr src)
+{
+    size_t i;
+
+    dst->machineTypes = g_new0(virQEMUCapsMachineType, src->nmachineTypes);
+
+    dst->nmachineTypes = src->nmachineTypes;
+    for (i = 0; i < src->nmachineTypes; i++) {
+        dst->machineTypes[i].name = g_strdup(src->machineTypes[i].name);
+        dst->machineTypes[i].alias = g_strdup(src->machineTypes[i].alias);
+        dst->machineTypes[i].maxCpus = src->machineTypes[i].maxCpus;
+        dst->machineTypes[i].hotplugCpus = src->machineTypes[i].hotplugCpus;
+        dst->machineTypes[i].qemuDefault = src->machineTypes[i].qemuDefault;
+    }
+}
+
+
 static int
 virQEMUCapsAccelCopy(virQEMUCapsAccelPtr dst,
                      virQEMUCapsAccelPtr src)
@@ -1732,17 +1751,7 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
         virQEMUCapsAccelCopy(&ret->tcg, &qemuCaps->tcg) < 0)
         goto error;
 
-    if (VIR_ALLOC_N(ret->machineTypes, qemuCaps->nmachineTypes) < 0)
-        goto error;
-    ret->nmachineTypes = qemuCaps->nmachineTypes;
-    for (i = 0; i < qemuCaps->nmachineTypes; i++) {
-        ret->machineTypes[i].name = g_strdup(qemuCaps->machineTypes[i].name);
-        ret->machineTypes[i].alias = g_strdup(qemuCaps->machineTypes[i].alias);
-        ret->machineTypes[i].maxCpus = qemuCaps->machineTypes[i].maxCpus;
-        ret->machineTypes[i].hotplugCpus = qemuCaps->machineTypes[i].hotplugCpus;
-        ret->machineTypes[i].qemuDefault = qemuCaps->machineTypes[i].qemuDefault;
-
-    }
+    virQEMUCapsCopyMachineTypes(ret, qemuCaps);
 
     if (VIR_ALLOC_N(ret->gicCapabilities, qemuCaps->ngicCapabilities) < 0)
         goto error;
