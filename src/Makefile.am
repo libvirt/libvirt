@@ -100,6 +100,10 @@ COMMON_UNIT_VARS = \
 	-e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
 	$(NULL)
 
+# Set these variables before we include any of the subdirs as libvirt-admin.la
+# has to be installed after libvirt.la.
+lib_LTLIBRARIES += libvirt.la libvirt-qemu.la libvirt-lxc.la
+
 include util/Makefile.inc.am
 include conf/Makefile.inc.am
 include cpu/Makefile.inc.am
@@ -145,8 +149,6 @@ SECDRIVER_CFLAGS += $(APPARMOR_CFLAGS)
 SECDRIVER_LIBS += $(APPARMOR_LIBS)
 endif WITH_SECDRIVER_APPARMOR
 
-
-lib_LTLIBRARIES += libvirt.la libvirt-qemu.la libvirt-lxc.la
 
 moddir = $(libdir)/libvirt/connection-driver
 
