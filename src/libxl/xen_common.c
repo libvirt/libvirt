@@ -815,9 +815,8 @@ xenParseSxprChar(const char *value,
             goto error;
         }
 
-        if (offset != value &&
-            VIR_STRNDUP(def->source->data.tcp.host, value, offset - value) < 0)
-            goto error;
+        if (offset != value)
+            def->source->data.tcp.host = g_strndup(value, offset - value);
 
         offset2 = strchr(offset, ',');
         offset++;
@@ -843,9 +842,9 @@ xenParseSxprChar(const char *value,
             goto error;
         }
 
-        if (offset != value &&
-            VIR_STRNDUP(def->source->data.udp.connectHost, value, offset - value) < 0)
-            goto error;
+        if (offset != value)
+            def->source->data.udp.connectHost = g_strndup(value,
+                                                          offset - value);
 
         offset2 = strchr(offset, '@');
         if (offset2 != NULL) {
@@ -860,10 +859,9 @@ xenParseSxprChar(const char *value,
                 goto error;
             }
 
-            if (offset3 > (offset2 + 1) &&
-                VIR_STRNDUP(def->source->data.udp.bindHost,
-                            offset2 + 1, offset3 - offset2 - 1) < 0)
-                goto error;
+            if (offset3 > (offset2 + 1))
+                def->source->data.udp.bindHost = g_strndup(offset2 + 1,
+                                                           offset3 - offset2 - 1);
 
             def->source->data.udp.bindService = g_strdup(offset3 + 1);
         } else {

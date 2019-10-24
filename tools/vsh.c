@@ -348,9 +348,8 @@ vshCmddefCheckInternals(vshControl *ctl,
                          cmd->name);
                 return -1; /* alias options are tracked by the original name */
             }
-            if ((p = strchr(name, '=')) &&
-                VIR_STRNDUP(name, name, p - name) < 0)
-                return -1;
+            if ((p = strchr(name, '=')))
+                name = g_strndup(name, p - name);
             for (j = i + 1; cmd->opts[j].name; j++) {
                 if (STREQ(name, cmd->opts[j].name) &&
                     cmd->opts[j].type != VSH_OT_ALIAS)
