@@ -4,6 +4,9 @@ Libvirt Message Translation
 Libvirt translatable messages are maintained using the GNU Gettext tools and
 file formats, in combination with the Zanata web service.
 
+python-zanata-client is required in order to use make to pull/push translations
+from/to Zanata server.
+
 Source repository
 =================
 
