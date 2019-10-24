@@ -638,6 +638,16 @@ virBufferEscape(virBufferPtr buf, char escape, const char *toescape,
 }
 
 
+static bool
+virBufferURIEncodeCharIsUnencoded(char c)
+{
+    if (c == '-' || c == '.' || c == '_' || c == '~')
+        return true;
+
+    return c_isalnum(c);
+}
+
+
 /**
  * virBufferURIEncodeString:
  * @buf: the buffer to append to
@@ -664,7 +674,7 @@ virBufferURIEncodeString(virBufferPtr buf, const char *str)
     virBufferAddLit(buf, ""); /* auto-indent */
 
     for (p = str; *p; ++p) {
-        if (c_isalnum(*p))
+        if (virBufferURIEncodeCharIsUnencoded(*p))
             grow_size++;
         else
             grow_size += 3; /* %ab */
@@ -674,7 +684,7 @@ virBufferURIEncodeString(virBufferPtr buf, const char *str)
         return;
 
     for (p = str; *p; ++p) {
-        if (c_isalnum(*p)) {
+        if (virBufferURIEncodeCharIsUnencoded(*p)) {
             buf->content[buf->use++] = *p;
         } else {
             uc = (unsigned char) *p;

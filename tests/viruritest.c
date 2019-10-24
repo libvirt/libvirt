@@ -184,7 +184,7 @@ mymain(void)
         { NULL, NULL, false },
     };
     TEST_FULL("spice://[3ffe::104]:5900/?tlsSubject=C=XX,L=Testtown,O=Test%20Company,CN=tester.test",
-              "spice://[3ffe::104]:5900/?tlsSubject=C%3dXX%2cL%3dTesttown%2cO%3dTest%20Company%2cCN%3dtester%2etest",
+              "spice://[3ffe::104]:5900/?tlsSubject=C%3dXX%2cL%3dTesttown%2cO%3dTest%20Company%2cCN%3dtester.test",
               "spice", "3ffe::104", 5900, "/", "tlsSubject=C=XX,L=Testtown,O=Test%20Company,CN=tester.test", NULL, NULL, spiceparams);
 
     virURIParam params1[] = {
