@@ -886,55 +886,6 @@ virStringIsEmpty(const char *str)
     return str[0] == '\0';
 }
 
-/**
- * virStrdup:
- * @dest: where to store duplicated string
- * @src: the source string to duplicate
- *
- * Wrapper over strdup, which aborts on OOM error.
- *
- * Returns: 0 for NULL src, 1 on successful copy, aborts on OOM
- */
-int
-virStrdup(char **dest,
-          const char *src)
-{
-    *dest = NULL;
-    if (!src)
-        return 0;
-    *dest = g_strdup(src);
-
-    return 1;
-}
-
-/**
- * virStrndup:
- * @dest: where to store duplicated string
- * @src: the source string to duplicate
- * @n: how many bytes to copy
- *
- * Wrapper over strndup, which aborts on OOM error.
- *
- * In case @n is smaller than zero, the whole @src string is
- * copied.
- *
- * Returns: 0 for NULL src, 1 on successful copy, aborts on OOM
- */
-int
-virStrndup(char **dest,
-           const char *src,
-           ssize_t n)
-{
-    *dest = NULL;
-    if (!src)
-        return 0;
-    if (n < 0)
-        n = strlen(src);
-    *dest = g_strndup(src, n);
-
-    return 1;
-}
-
 
 size_t virStringListLength(const char * const *strings)
 {
