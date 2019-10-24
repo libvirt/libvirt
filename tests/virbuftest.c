@@ -13,45 +13,6 @@ struct testInfo {
     int doEscape;
 };
 
-static int testBufInfiniteLoop(const void *data)
-{
-    virBuffer bufinit = VIR_BUFFER_INITIALIZER;
-    virBufferPtr buf = &bufinit;
-    char *addstr = NULL, *bufret = NULL;
-    int ret = -1;
-    const struct testInfo *info = data;
-    int len;
-
-    virBufferAddChar(buf, 'a');
-
-    /*
-     * Infinite loop used to trigger if:
-     * (strlen + 1 > 1000) && (strlen == buf-size - buf-use - 1)
-     * which was the case after the above addchar at the time of the bug.
-     * This test is a bit fragile, since it relies on virBuffer internals.
-     */
-    len = buf->size - buf->use - 1;
-    if (virAsprintf(&addstr, "%*s", len, "a") < 0)
-        goto out;
-
-    if (info->doEscape)
-        virBufferEscapeString(buf, "%s", addstr);
-    else
-        virBufferAsprintf(buf, "%s", addstr);
-
-    ret = 0;
- out:
-    bufret = virBufferContentAndReset(buf);
-    if (!bufret) {
-        VIR_TEST_DEBUG("Buffer had error set");
-        ret = -1;
-    }
-
-    VIR_FREE(addstr);
-    VIR_FREE(bufret);
-    return ret;
-}
-
 static int testBufAutoIndent(const void *data G_GNUC_UNUSED)
 {
     virBuffer bufinit = VIR_BUFFER_INITIALIZER;
@@ -450,8 +411,6 @@ mymain(void)
             ret = -1; \
     } while (0)
 
-    DO_TEST("EscapeString infinite loop", testBufInfiniteLoop, 1);
-    DO_TEST("VSprintf infinite loop", testBufInfiniteLoop, 0);
     DO_TEST("Auto-indentation", testBufAutoIndent, 0);
     DO_TEST("Trim", testBufTrim, 0);
     DO_TEST("AddBuffer", testBufAddBuffer, 0);
