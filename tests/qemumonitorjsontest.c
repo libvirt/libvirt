@@ -2836,9 +2836,6 @@ testBlockNodeNameDetect(const void *opaque)
 
     virBufferTrim(&buf, "\n", -1);
 
-    if (virBufferCheckError(&buf) < 0)
-        goto cleanup;
-
     actual = virBufferContentAndReset(&buf);
 
     if (virTestCompareToFile(actual, resultFile) < 0)
@@ -2983,9 +2980,6 @@ testQueryJobs(const void *opaque)
         testQueryJobsPrintJob(&buf, jobs[i]);
 
     virBufferTrim(&buf, "\n", -1);
-
-    if (virBufferCheckError(&buf) < 0)
-        goto cleanup;
 
     actual = virBufferContentAndReset(&buf);
 

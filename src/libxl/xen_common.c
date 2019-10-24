@@ -1598,9 +1598,6 @@ xenFormatSxprChr(virDomainChrDefPtr def,
         return -1;
     }
 
-    if (virBufferCheckError(buf) < 0)
-        return -1;
-
     return 0;
 }
 
@@ -1619,8 +1616,6 @@ xenFormatSerial(virConfValuePtr list, virDomainChrDefPtr serial)
     } else {
         virBufferAddLit(&buf, "none");
     }
-    if (virBufferCheckError(&buf) < 0)
-        goto cleanup;
 
     if (VIR_ALLOC(val) < 0)
         goto cleanup;
@@ -1786,9 +1781,6 @@ xenFormatNet(virConnectPtr conn,
 
     if (net->bandwidth && net->bandwidth->out && net->bandwidth->out->average)
         virBufferAsprintf(&buf, ",rate=%lluKB/s", net->bandwidth->out->average);
-
-    if (virBufferCheckError(&buf) < 0)
-        goto cleanup;
 
     if (VIR_ALLOC(val) < 0)
         goto cleanup;
@@ -2318,8 +2310,6 @@ xenFormatVfb(virConfPtr conf, virDomainDefPtr def)
                     virBufferAsprintf(&buf, ",keymap=%s",
                                       def->graphics[0]->data.vnc.keymap);
             }
-            if (virBufferCheckError(&buf) < 0)
-                return -1;
 
             vfbstr = virBufferContentAndReset(&buf);
 
@@ -2371,9 +2361,6 @@ xenFormatSound(virConfPtr conf, virDomainDefPtr def)
             virBufferAddChar(&buf, ',');
         virBufferEscapeSexpr(&buf, "%s", model);
     }
-
-    if (virBufferCheckError(&buf) < 0)
-        return -1;
 
     str = virBufferContentAndReset(&buf);
 

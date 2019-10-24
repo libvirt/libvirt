@@ -277,20 +277,6 @@ void virBufferFreeAndReset(virBufferPtr buf)
 }
 
 /**
- * virBufferCheckErrorInternal:
- * @buf: the buffer
- *
- * Report an error if the buffer is in an error state.
- *
- * Return -1 if an error has been reported, 0 otherwise.
- */
-int
-virBufferCheckErrorInternal(const virBuffer *buf G_GNUC_UNUSED)
-{
-    return 0;
-}
-
-/**
  * virBufferUse:
  * @buf: the usage of the string in the buffer
  *

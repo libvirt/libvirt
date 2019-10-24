@@ -4088,8 +4088,7 @@ virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps)
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</qemuCaps>\n");
 
-    if (virBufferCheckError(&buf) == 0)
-        ret = virBufferContentAndReset(&buf);
+    ret = virBufferContentAndReset(&buf);
 
     return ret;
 }

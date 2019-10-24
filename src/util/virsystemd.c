@@ -116,9 +116,6 @@ char *virSystemdMakeScopeName(const char *name,
     virSystemdEscapeName(&buf, name);
     virBufferAddLit(&buf, ".scope");
 
-    if (virBufferCheckError(&buf) < 0)
-        return NULL;
-
     return virBufferContentAndReset(&buf);
 }
 
@@ -132,9 +129,6 @@ char *virSystemdMakeSliceName(const char *partition)
 
     virSystemdEscapeName(&buf, partition);
     virBufferAddLit(&buf, ".slice");
-
-    if (virBufferCheckError(&buf) < 0)
-        return NULL;
 
     return virBufferContentAndReset(&buf);
 }

@@ -654,7 +654,6 @@ virDomainCapsFormat(virDomainCapsPtr const caps)
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</domainCapabilities>\n");
 
-    virBufferCheckError(&buf);
     return virBufferContentAndReset(&buf);
 }
 

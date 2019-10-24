@@ -1445,9 +1445,6 @@ virConfWriteFile(const char *filename, virConfPtr conf)
         cur = cur->next;
     }
 
-    if (virBufferCheckError(&buf) < 0)
-        return -1;
-
     fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
     if (fd < 0) {
         virBufferFreeAndReset(&buf);
@@ -1497,9 +1494,6 @@ virConfWriteMem(char *memory, int *len, virConfPtr conf)
         virConfSaveEntry(&buf, cur);
         cur = cur->next;
     }
-
-    if (virBufferCheckError(&buf) < 0)
-        return -1;
 
     use = virBufferUse(&buf);
     content = virBufferContentAndReset(&buf);

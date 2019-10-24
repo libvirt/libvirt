@@ -398,9 +398,6 @@ esxUtil_EscapeBase64(const char *string)
         }
     }
 
-    if (virBufferCheckError(&buffer) < 0)
-        return NULL;
-
     return virBufferContentAndReset(&buffer);
 }
 
@@ -463,9 +460,6 @@ esxUtil_EscapeForXml(const char *string)
     virBuffer buffer = VIR_BUFFER_INITIALIZER;
 
     virBufferEscapeString(&buffer, "%s", string);
-
-    if (virBufferCheckError(&buffer) < 0)
-        return NULL;
 
     return virBufferContentAndReset(&buffer);
 }

@@ -898,18 +898,10 @@ int virNetSocketNewConnectSSH(const char *nodename,
     virCommandAddArgList(cmd, "--", nodename, "sh", "-c", NULL);
 
     virBufferEscapeShell(&buf, netcat);
-    if (virBufferCheckError(&buf) < 0) {
-        virCommandFree(cmd);
-        return -1;
-    }
     quoted = virBufferContentAndReset(&buf);
 
     virBufferEscapeShell(&buf, quoted);
     VIR_FREE(quoted);
-    if (virBufferCheckError(&buf) < 0) {
-        virCommandFree(cmd);
-        return -1;
-    }
     quoted = virBufferContentAndReset(&buf);
 
     /*

@@ -131,8 +131,6 @@ qemuMonitorTestAddErrorResponse(qemuMonitorTestPtr test,
         usermsg = "unexpected command";
 
     virBufferEscape(&buf, '\\', "\"", "%s", usermsg);
-    if (virBufferCheckError(&buf) < 0)
-        return -1;
     escapemsg = virBufferContentAndReset(&buf);
 
     /* replace newline/carriage return with space */

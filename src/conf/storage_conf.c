@@ -1233,9 +1233,6 @@ virStoragePoolDefFormat(virStoragePoolDefPtr def)
     if (virStoragePoolDefFormatBuf(&buf, def) < 0)
         goto error;
 
-    if (virBufferCheckError(&buf) < 0)
-        goto error;
-
     return virBufferContentAndReset(&buf);
 
  error:
@@ -1668,9 +1665,6 @@ virStorageVolDefFormat(virStoragePoolDefPtr pool,
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</volume>\n");
 
-    if (virBufferCheckError(&buf) < 0)
-        goto cleanup;
-
     return virBufferContentAndReset(&buf);
 
  cleanup:
@@ -1708,9 +1702,6 @@ virStoragePoolSaveState(const char *stateFile,
 
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</poolstate>\n");
-
-    if (virBufferCheckError(&buf) < 0)
-        return -1;
 
     if (!(xml = virBufferContentAndReset(&buf)))
         return -1;
@@ -1780,9 +1771,6 @@ virStoragePoolSourceListFormat(virStoragePoolSourceListPtr def)
 
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</sources>\n");
-
-    if (virBufferCheckError(&buf) < 0)
-        goto cleanup;
 
     return virBufferContentAndReset(&buf);
 

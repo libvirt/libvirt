@@ -865,9 +865,6 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
             notes++;
         }
 
-        if (virBufferCheckError(&buf))
-            goto cleanup;
-
         def->description = virBufferContentAndReset(&buf);
     }
 

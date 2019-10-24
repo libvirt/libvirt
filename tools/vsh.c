@@ -3464,9 +3464,6 @@ cmdComplete(vshControl *ctl, const vshCmd *cmd)
         arg = opt->data;
     }
 
-    if (virBufferCheckError(&buf) < 0)
-        goto cleanup;
-
     vshReadlineInit(ctl);
 
     if (!(rl_line_buffer = virBufferContentAndReset(&buf)))

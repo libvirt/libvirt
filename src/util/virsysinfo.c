@@ -1510,9 +1510,6 @@ virSysinfoFormat(virBufferPtr buf, virSysinfoDefPtr def)
         return -1;
     }
 
-    if (virBufferCheckError(buf) < 0)
-        return -1;
-
     return 0;
 }
 

@@ -297,8 +297,5 @@ virNWFilterBindingObjFormat(const virNWFilterBindingObj *obj)
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</filterbindingstatus>\n");
 
-    if (virBufferCheckError(&buf) < 0)
-        return NULL;
-
     return virBufferContentAndReset(&buf);
 }

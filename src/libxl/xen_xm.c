@@ -351,9 +351,6 @@ xenFormatXMDisk(virConfValuePtr list,
         return -1;
     }
 
-    if (virBufferCheckError(&buf) < 0)
-        goto cleanup;
-
     if (VIR_ALLOC(val) < 0)
         goto cleanup;
 

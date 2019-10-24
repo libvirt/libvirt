@@ -155,8 +155,6 @@ char *virStringListJoin(const char **strings,
             virBufferAdd(&buf, delim, -1);
         strings++;
     }
-    if (virBufferCheckError(&buf) < 0)
-        return NULL;
     ret = virBufferContentAndReset(&buf);
     if (!ret)
         ret = g_strdup("");
@@ -1196,9 +1194,6 @@ virStringReplace(const char *haystack,
 
         tmp1 = tmp2;
     }
-
-    if (virBufferCheckError(&buf) < 0)
-        return NULL;
 
     return virBufferContentAndReset(&buf);
 }

@@ -323,9 +323,6 @@ qemuMonitorJSONCommandWithFd(qemuMonitorPtr mon,
         goto cleanup;
     virBufferAddLit(&cmdbuf, "\r\n");
 
-    if (virBufferCheckError(&cmdbuf) < 0)
-        goto cleanup;
-
     msg.txLength = virBufferUse(&cmdbuf);
     msg.txBuffer = virBufferContentAndReset(&cmdbuf);
     msg.txFD = scm_fd;

@@ -2660,9 +2660,6 @@ virNetworkDefFormat(const virNetworkDef *def,
     if (virNetworkDefFormatBuf(&buf, def, xmlopt, flags) < 0)
         goto error;
 
-    if (virBufferCheckError(&buf) < 0)
-        goto error;
-
     return virBufferContentAndReset(&buf);
 
  error:

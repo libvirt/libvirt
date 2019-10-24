@@ -275,9 +275,6 @@ char *virURIFormatParams(virURIPtr uri)
         }
     }
 
-    if (virBufferCheckError(&buf) < 0)
-        return NULL;
-
     return virBufferContentAndReset(&buf);
 }
 

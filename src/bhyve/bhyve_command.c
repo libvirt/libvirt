@@ -227,9 +227,6 @@ bhyveBuildAHCIControllerArgStr(const virDomainDef *def,
         virBufferFreeAndReset(&device);
     }
 
-    if (virBufferCheckError(&buf) < 0)
-        goto error;
-
     virCommandAddArg(cmd, "-s");
     virCommandAddArgFormat(cmd, "%d:0,ahci%s",
                            controller->info.addr.pci.slot,

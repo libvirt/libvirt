@@ -511,11 +511,6 @@ hypervSerializeEprParam(hypervParamPtr p, hypervPrivate *priv,
     }
     wsmc_set_action_option(options, FLAG_ENUMERATION_ENUM_EPR);
 
-    /* Get query and create filter based on it */
-    if (virBufferCheckError(p->epr.query) < 0) {
-        virBufferFreeAndReset(p->epr.query);
-        goto cleanup;
-    }
     query_string = virBufferContentAndReset(p->epr.query);
 
     filter = filter_create_simple(WSM_WQL_FILTER_DIALECT, query_string);
@@ -982,11 +977,6 @@ hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
     WsXmlNodeH node = NULL;
     XML_TYPE_PTR data = NULL;
     hypervObject *object;
-
-    if (virBufferCheckError(wqlQuery->query) < 0) {
-        virBufferFreeAndReset(wqlQuery->query);
-        return -1;
-    }
 
     query_string = virBufferContentAndReset(wqlQuery->query);
 

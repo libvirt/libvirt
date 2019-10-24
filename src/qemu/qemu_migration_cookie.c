@@ -877,9 +877,6 @@ qemuMigrationCookieXMLFormatStr(virQEMUDriverPtr driver,
         return NULL;
     }
 
-    if (virBufferCheckError(&buf) < 0)
-        return NULL;
-
     return virBufferContentAndReset(&buf);
 }
 

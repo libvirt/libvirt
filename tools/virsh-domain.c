@@ -2417,8 +2417,6 @@ cmdBlockcopy(vshControl *ctl, const vshCmd *cmd)
             virBufferEscapeString(&buf, "<driver type='%s'/>\n", format);
             virBufferAdjustIndent(&buf, -2);
             virBufferAddLit(&buf, "</disk>\n");
-            if (virBufferCheckError(&buf) < 0)
-                goto cleanup;
             xmlstr = virBufferContentAndReset(&buf);
         }
 

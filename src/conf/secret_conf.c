@@ -298,9 +298,6 @@ virSecretDefFormat(const virSecretDef *def)
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</secret>\n");
 
-    if (virBufferCheckError(&buf) < 0)
-        goto error;
-
     return virBufferContentAndReset(&buf);
 
  error:

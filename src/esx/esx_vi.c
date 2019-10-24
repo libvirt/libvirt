@@ -415,9 +415,6 @@ esxVI_CURL_Download(esxVI_CURL *curl, const char *url, char **content,
         goto cleanup;
     }
 
-    if (virBufferCheckError(&buffer) < 0)
-        goto cleanup;
-
     if (length)
         *length = virBufferUse(&buffer);
 
@@ -1237,9 +1234,6 @@ esxVI_Context_LookupManagedObjectsByPath(esxVI_Context *ctx, const char *path)
         goto cleanup;
     }
 
-    if (virBufferCheckError(&buffer) < 0)
-        goto cleanup;
-
     ctx->datacenterPath = virBufferContentAndReset(&buffer);
 
     /* Lookup (Cluster)ComputeResource */
@@ -1301,9 +1295,6 @@ esxVI_Context_LookupManagedObjectsByPath(esxVI_Context *ctx, const char *path)
                        _("Could not retrieve resource pool"));
         goto cleanup;
     }
-
-    if (virBufferCheckError(&buffer) < 0)
-        goto cleanup;
 
     ctx->computeResourcePath = virBufferContentAndReset(&buffer);
 
@@ -1437,9 +1428,6 @@ esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
     virMutexUnlock(&ctx->curl->lock);
 
     if ((*response)->responseCode < 0)
-        goto cleanup;
-
-    if (virBufferCheckError(&buffer) < 0)
         goto cleanup;
 
     (*response)->content = virBufferContentAndReset(&buffer);
@@ -4329,9 +4317,6 @@ esxVI_HandleVirtualMachineQuestion
 
             ++answerIndex;
         }
-
-        if (virBufferCheckError(&buffer) < 0)
-            goto cleanup;
 
         possibleAnswers = virBufferContentAndReset(&buffer);
     }

@@ -948,9 +948,6 @@ libxlMakeNetworkDiskSrcStr(virStorageSourcePtr src,
         if (src->configFile)
             virBufferEscape(&buf, '\\', ":", ":conf=%s", src->configFile);
 
-        if (virBufferCheckError(&buf) < 0)
-            goto cleanup;
-
         ret = virBufferContentAndReset(&buf);
         break;
     }
@@ -1314,8 +1311,6 @@ libxlMakeNic(virDomainDefPtr def,
                     }
                 }
             }
-            if (virBufferCheckError(&buf) < 0)
-                goto cleanup;
             x_nic->bridge = g_strdup(virBufferCurrentContent(&buf));
             G_GNUC_FALLTHROUGH;
         case VIR_DOMAIN_NET_TYPE_ETHERNET:

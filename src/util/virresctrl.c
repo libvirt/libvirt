@@ -1437,7 +1437,7 @@ virResctrlAllocMemoryBandwidthFormat(virResctrlAllocPtr alloc,
 
     virBufferTrim(buf, ";", 1);
     virBufferAddChar(buf, '\n');
-    return virBufferCheckError(buf);
+    return 0;
 }
 
 
@@ -1582,7 +1582,7 @@ virResctrlAllocFormatCache(virResctrlAllocPtr alloc,
         }
     }
 
-    return virBufferCheckError(buf);
+    return 0;
 }
 
 

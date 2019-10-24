@@ -50,14 +50,7 @@ char *virPidFileBuildPath(const char *dir, const char* name)
     virBufferAsprintf(&buf, "%s", dir);
     virBufferEscapeString(&buf, "/%s.pid", name);
 
-    if (virBufferCheckError(&buf) < 0)
-        goto error;
-
     return virBufferContentAndReset(&buf);
-
- error:
-    virBufferFreeAndReset(&buf);
-    return NULL;
 }
 
 

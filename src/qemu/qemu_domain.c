@@ -7407,16 +7407,12 @@ qemuDomainChrDefDropDefaultPath(virDomainChrDefPtr chr,
     virBufferAddLit(&buf, "/([^/]+\\.)|(domain-[^/]+/)");
     virBufferEscapeRegex(&buf, "%s$", chr->target.name);
 
-    if (virBufferCheckError(&buf) < 0)
-        goto cleanup;
-
     regexp = virBufferContentAndReset(&buf);
 
     if (virStringMatch(chr->source->data.nix.path, regexp))
         VIR_FREE(chr->source->data.nix.path);
 
     ret = 0;
- cleanup:
     VIR_FREE(regexp);
     virObjectUnref(cfg);
     return ret;

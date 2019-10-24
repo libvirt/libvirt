@@ -123,9 +123,6 @@
         virBufferAddLit(&buffer, "</"#_name">"); \
         virBufferAddLit(&buffer, ESX_VI__SOAP__REQUEST_FOOTER); \
  \
-        if (virBufferCheckError(&buffer) < 0) \
-            goto cleanup; \
- \
         request = virBufferContentAndReset(&buffer); \
  \
         if (esxVI_Context_Execute(ctx, methodName, request, &response, \

@@ -134,9 +134,6 @@ libxlMigrationBakeCookie(libxlMigrationCookiePtr mig,
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</libxl-migration>\n");
 
-    if (virBufferCheckError(&buf) < 0)
-        return -1;
-
     *cookieout = virBufferContentAndReset(&buf);
     *cookieoutlen = strlen(*cookieout) + 1;
 

@@ -1124,9 +1124,6 @@ virInterfaceDefDevFormat(virBufferPtr buf,
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</interface>\n");
 
-    if (virBufferCheckError(buf) < 0)
-        goto cleanup;
-
     return 0;
 
  cleanup:

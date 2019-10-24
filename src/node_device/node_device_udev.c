@@ -304,9 +304,6 @@ udevGenerateDeviceName(struct udev_device *device,
     if (s != NULL)
         virBufferAsprintf(&buf, "_%s", s);
 
-    if (virBufferCheckError(&buf) < 0)
-        return -1;
-
     def->name = virBufferContentAndReset(&buf);
 
     for (i = 0; i < strlen(def->name); i++) {

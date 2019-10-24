@@ -862,9 +862,6 @@ virLockManagerSanlockRegisterKillscript(int sock,
     virBufferEscape(&buf, '\\', "\\ ", "%s",
                     virDomainLockFailureTypeToString(action));
 
-    if (virBufferCheckError(&buf) < 0)
-        goto cleanup;
-
     /* Unfortunately, sanlock_killpath() does not use const for either
      * path or args even though it will just copy them into its own
      * buffers.

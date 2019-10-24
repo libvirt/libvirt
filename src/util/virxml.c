@@ -1387,10 +1387,6 @@ virXMLFormatElement(virBufferPtr buf,
         return 0;
     }
 
-    if ((attrBuf && virBufferCheckError(attrBuf) < 0) ||
-        (childBuf && virBufferCheckError(childBuf) < 0))
-        goto cleanup;
-
     virBufferAsprintf(buf, "<%s", name);
 
     if (attrBuf && virBufferUse(attrBuf) > 0)
@@ -1406,7 +1402,6 @@ virXMLFormatElement(virBufferPtr buf,
 
     ret = 0;
 
- cleanup:
     virBufferFreeAndReset(attrBuf);
     virBufferFreeAndReset(childBuf);
     return ret;

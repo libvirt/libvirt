@@ -1428,9 +1428,6 @@ xenFormatXLVnode(virConfValuePtr list,
     int ret = -1;
     virConfValuePtr numaPnode, tmp;
 
-    if (virBufferCheckError(buf) < 0)
-        goto cleanup;
-
     if (VIR_ALLOC(numaPnode) < 0)
         goto cleanup;
 
@@ -1623,9 +1620,6 @@ xenFormatXLDiskSrcNet(virStorageSourcePtr src)
             }
         }
 
-        if (virBufferCheckError(&buf) < 0)
-            goto cleanup;
-
         ret = virBufferContentAndReset(&buf);
         break;
     }
@@ -1747,9 +1741,6 @@ xenFormatXLDisk(virConfValuePtr list, virDomainDiskDefPtr disk)
 
     if (target)
         virBufferAsprintf(&buf, ",target=%s", target);
-
-    if (virBufferCheckError(&buf) < 0)
-        goto cleanup;
 
     if (VIR_ALLOC(val) < 0)
         goto cleanup;

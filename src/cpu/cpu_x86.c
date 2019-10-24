@@ -1652,9 +1652,6 @@ virCPUx86DataFormat(const virCPUData *data)
     }
     virBufferAddLit(&buf, "</cpudata>\n");
 
-    if (virBufferCheckError(&buf) < 0)
-        return NULL;
-
     return virBufferContentAndReset(&buf);
 }
 
@@ -1991,9 +1988,6 @@ x86FormatSignatures(virCPUx86ModelPtr model)
     }
 
     virBufferTrim(&buf, ",", -1);
-
-    if (virBufferCheckError(&buf) < 0)
-        return NULL;
 
     return virBufferContentAndReset(&buf);
 }
@@ -3074,10 +3068,6 @@ virCPUx86UpdateLive(virCPUDefPtr cpu,
 
     virBufferTrim(&bufAdded, ",", -1);
     virBufferTrim(&bufRemoved, ",", -1);
-
-    if (virBufferCheckError(&bufAdded) < 0 ||
-        virBufferCheckError(&bufRemoved) < 0)
-        goto cleanup;
 
     added = virBufferContentAndReset(&bufAdded);
     removed = virBufferContentAndReset(&bufRemoved);

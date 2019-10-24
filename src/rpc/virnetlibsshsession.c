@@ -694,9 +694,6 @@ virNetLibsshAuthenticateKeyboardInteractive(virNetLibsshSessionPtr sess,
         if (virBufferUse(&buff) > 0)
             virBufferAddChar(&buff, '\n');
 
-        if (virBufferCheckError(&buff) < 0)
-            return -1;
-
         for (iprompt = 0; iprompt < nprompts; ++iprompt) {
             virConnectCredential retr_passphrase;
             const char *promptStr;
@@ -726,9 +723,6 @@ virNetLibsshAuthenticateKeyboardInteractive(virNetLibsshSessionPtr sess,
 
                 virBufferAddBuffer(&prompt_buff, &buff);
                 virBufferAdd(&prompt_buff, promptStr, promptStrLen);
-
-                if (virBufferCheckError(&prompt_buff) < 0)
-                    goto prompt_error;
 
                 prompt = virBufferContentAndReset(&prompt_buff);
             } else {

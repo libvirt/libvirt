@@ -133,9 +133,6 @@ virSaveCookieFormat(virObjectPtr obj,
     if (virSaveCookieFormatBuf(&buf, obj, saveCookie) < 0)
         goto error;
 
-    if (virBufferCheckError(&buf) < 0)
-        goto error;
-
     return virBufferContentAndReset(&buf);
 
  error:

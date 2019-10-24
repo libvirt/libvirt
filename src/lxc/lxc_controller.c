@@ -1399,9 +1399,6 @@ virLXCControllerSetupUsernsMap(virDomainIdMapEntryPtr map,
         virBufferAsprintf(&map_value, "%u %u %u\n",
                           map[i].start, map[i].target, map[i].count);
 
-    if (virBufferCheckError(&map_value) < 0)
-        goto cleanup;
-
     VIR_DEBUG("Set '%s' to '%s'", path, virBufferCurrentContent(&map_value));
 
     if (virFileWriteStr(path, virBufferCurrentContent(&map_value), 0) < 0) {

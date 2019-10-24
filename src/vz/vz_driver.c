@@ -458,8 +458,6 @@ vzConnectGetSysinfo(virConnectPtr conn, unsigned int flags)
 
     if (virSysinfoFormat(&buf, driver->hostsysinfo) < 0)
         return NULL;
-    if (virBufferCheckError(&buf) < 0)
-        return NULL;
 
     return virBufferContentAndReset(&buf);
 }
@@ -2767,9 +2765,6 @@ vzBakeCookie(vzDriverPtr driver,
 
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</vz-migration>\n");
-
-    if (virBufferCheckError(&buf) < 0)
-        return -1;
 
     *cookieout = virBufferContentAndReset(&buf);
     *cookieoutlen = strlen(*cookieout) + 1;

@@ -201,8 +201,6 @@ int cpuMapLoad(const char *arch,
         goto cleanup;
 
     virBufferAsprintf(&buf, "./arch[@name='%s']", arch);
-    if (virBufferCheckError(&buf) < 0)
-        goto cleanup;
 
     xpath = virBufferContentAndReset(&buf);
 

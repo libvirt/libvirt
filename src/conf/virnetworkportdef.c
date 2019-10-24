@@ -323,9 +323,6 @@ virNetworkPortDefFormat(const virNetworkPortDef *def)
         return NULL;
     }
 
-    if (virBufferCheckError(&buf) < 0)
-        return NULL;
-
     return virBufferContentAndReset(&buf);
 }
 

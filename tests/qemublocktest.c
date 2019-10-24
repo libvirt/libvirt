@@ -330,9 +330,6 @@ testQemuDiskXMLToPropsValidateFile(const void *opaque)
         VIR_FREE(jsonstr);
     }
 
-    if (virBufferCheckError(&buf) < 0)
-        goto cleanup;
-
     actual = virBufferContentAndReset(&buf);
 
     ret = virTestCompareToFile(actual, jsonpath);
@@ -500,9 +497,6 @@ testQemuDiskXMLToPropsValidateFileSrcOnly(const void *opaque)
 
         virBufferAdd(&buf, jsonstr, -1);
     }
-
-    if (virBufferCheckError(&buf) < 0)
-        return -1;
 
     actual = virBufferContentAndReset(&buf);
 

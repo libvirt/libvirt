@@ -369,7 +369,6 @@ virBitmapToString(virBitmapPtr bitmap,
                           bitmap->map[sz]);
     }
 
-    virBufferCheckError(&buf);
     ret = virBufferContentAndReset(&buf);
     if (!ret)
         return NULL;

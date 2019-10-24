@@ -734,10 +734,6 @@ virCapabilitiesDomainDataLookupInternal(virCapsPtr caps,
         if (virBufferCurrentContent(&buf) &&
             !virBufferCurrentContent(&buf)[0])
             virBufferAsprintf(&buf, "%s", _("any configuration"));
-        if (virBufferCheckError(&buf) < 0) {
-            virBufferFreeAndReset(&buf);
-            goto error;
-        }
 
         virReportError(VIR_ERR_INVALID_ARG,
                        _("could not find capabilities for %s"),
@@ -930,9 +926,6 @@ virCapabilitiesFormatResctrlMonitor(virBufferPtr buf,
                           monitor->features[i]);
     }
 
-    if (virBufferCheckError(&childrenBuf) < 0)
-        return -1;
-
     virBufferAddBuffer(buf, &childrenBuf);
     virBufferAddLit(buf, "</monitor>\n");
 
@@ -1014,9 +1007,6 @@ virCapabilitiesFormatCaches(virBufferPtr buf,
                               controls->max_allocation);
         }
 
-        if (virBufferCheckError(&childrenBuf) < 0)
-            return -1;
-
         if (virBufferUse(&childrenBuf)) {
             virBufferAddLit(buf, ">\n");
             virBufferAddBuffer(buf, &childrenBuf);
@@ -1067,9 +1057,6 @@ virCapabilitiesFormatMemoryBandwidth(virBufferPtr buf,
                           "maxAllocs='%u'/>\n",
                           control->granularity, control->min,
                           control->max_allocation);
-
-        if (virBufferCheckError(&childrenBuf) < 0)
-            return -1;
 
         if (virBufferUse(&childrenBuf)) {
             virBufferAddLit(buf, ">\n");
@@ -1366,9 +1353,6 @@ virCapabilitiesFormatXML(virCapsPtr caps)
 
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</capabilities>\n");
-
-    if (virBufferCheckError(&buf) < 0)
-        return NULL;
 
     return virBufferContentAndReset(&buf);
 

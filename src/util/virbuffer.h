@@ -43,21 +43,8 @@ struct _virBuffer {
 const char *virBufferCurrentContent(virBufferPtr buf);
 char *virBufferContentAndReset(virBufferPtr buf);
 void virBufferFreeAndReset(virBufferPtr buf);
-int virBufferCheckErrorInternal(const virBuffer *buf)
-    ATTRIBUTE_NONNULL(1);
 
 G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(virBuffer, virBufferFreeAndReset);
-
-/**
- * virBufferCheckError
- *
- * Checks if the buffer is in error state and reports an error.
- *
- * Returns 0 if no error has occurred, otherwise an error is reported
- * and -1 is returned.
- */
-#define virBufferCheckError(buf) \
-    virBufferCheckErrorInternal(buf)
 
 size_t virBufferUse(const virBuffer *buf);
 void virBufferAdd(virBufferPtr buf, const char *str, int len);

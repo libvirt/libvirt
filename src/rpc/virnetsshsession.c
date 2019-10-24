@@ -359,9 +359,6 @@ virNetSSHCheckHostKey(virNetSSHSessionPtr sess)
                 virBufferAsprintf(&buff, "%02hhX:", keyhash[i]);
             virBufferTrim(&buff, ":", 1);
 
-            if (virBufferCheckError(&buff) < 0)
-                return -1;
-
             keyhashstr = virBufferContentAndReset(&buff);
 
             askKey.type = VIR_CRED_ECHOPROMPT;
@@ -423,9 +420,6 @@ virNetSSHCheckHostKey(virNetSSHSessionPtr sess)
         /* construct a "[hostname]:port" string to have the hostkey bound
          * to port number */
         virBufferAsprintf(&buff, "[%s]:%d", sess->hostname, sess->port);
-
-        if (virBufferCheckError(&buff) < 0)
-            return -1;
 
         hostnameStr = virBufferContentAndReset(&buff);
 

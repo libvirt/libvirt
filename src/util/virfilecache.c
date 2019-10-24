@@ -118,9 +118,6 @@ virFileCacheGetFileName(virFileCachePtr cache,
     if (cache->suffix)
         virBufferAsprintf(&buf, ".%s", cache->suffix);
 
-    if (virBufferCheckError(&buf) < 0)
-        return NULL;
-
     return virBufferContentAndReset(&buf);
 }
 

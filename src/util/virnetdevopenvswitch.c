@@ -107,15 +107,12 @@ virNetDevOpenvswitchConstructVlans(virCommandPtr cmd, virNetDevVlanPtr virtVlan)
             virBufferAsprintf(&buf, "%d", virtVlan->tag[i]);
         }
 
-        if (virBufferCheckError(&buf) < 0)
-            goto cleanup;
         virCommandAddArg(cmd, virBufferCurrentContent(&buf));
     } else if (virtVlan->nTags) {
         virCommandAddArgFormat(cmd, "tag=%d", virtVlan->tag[0]);
     }
 
     ret = 0;
- cleanup:
     virBufferFreeAndReset(&buf);
     return ret;
 }

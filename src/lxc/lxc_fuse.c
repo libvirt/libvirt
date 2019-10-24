@@ -223,10 +223,6 @@ static int lxcProcReadMeminfo(char *hostpath, virDomainDefPtr def,
             virBufferAdd(new_meminfo, line, -1);
         }
 
-        if (virBufferCheckError(new_meminfo) < 0) {
-            res = -errno;
-            goto cleanup;
-        }
     }
     res = strlen(virBufferCurrentContent(new_meminfo));
     if (res > size)

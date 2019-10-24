@@ -951,8 +951,6 @@ virNWFilterPrintTCPFlags(uint8_t flags)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     printTCPFlags(&buf, flags);
-    if (virBufferCheckError(&buf) < 0)
-        return NULL;
     return virBufferContentAndReset(&buf);
 }
 
@@ -2600,15 +2598,11 @@ virNWFilterIsAllowedChain(const char *chainname)
         printed = true;
     }
 
-    if (virBufferCheckError(&buf) < 0)
-        goto err_exit;
-
     msg = virBufferContentAndReset(&buf);
 
     virReportError(VIR_ERR_INVALID_ARG, "%s", msg);
     VIR_FREE(msg);
 
- err_exit:
     return NULL;
 }
 
@@ -3077,9 +3071,6 @@ virNWFilterDefFormat(const virNWFilterDef *def)
 
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</filter>\n");
-
-    if (virBufferCheckError(&buf) < 0)
-        goto err_exit;
 
     return virBufferContentAndReset(&buf);
 

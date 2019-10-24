@@ -2125,9 +2125,6 @@ virCommandToString(virCommandPtr cmd, bool linebreaks)
         prevopt = (cmd->args[i][0] == '-');
     }
 
-    if (virBufferCheckError(&buf) < 0)
-        return NULL;
-
     return virBufferContentAndReset(&buf);
 }
 

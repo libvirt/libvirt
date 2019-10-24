@@ -220,8 +220,6 @@ phypExec(LIBSSH2_SESSION *session, const char *cmd, int *exit_status,
     channel = NULL;
     VIR_FREE(buffer);
 
-    if (virBufferCheckError(&tex_ret) < 0)
-        return NULL;
     return virBufferContentAndReset(&tex_ret);
 
  err:
@@ -242,8 +240,6 @@ phypExecBuffer(LIBSSH2_SESSION *session, virBufferPtr buf, int *exit_status,
     char *cmd;
     char *ret;
 
-    if (virBufferCheckError(buf) < 0)
-        return NULL;
     cmd = virBufferContentAndReset(buf);
     ret = phypExec(session, cmd, exit_status, conn);
     VIR_FREE(cmd);

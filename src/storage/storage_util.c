@@ -758,9 +758,6 @@ storageBackendCreateQemuImgOpts(virStorageEncryptionInfoDefPtr encinfo,
 
     virBufferTrim(&buf, ",", -1);
 
-    if (virBufferCheckError(&buf) < 0)
-        goto error;
-
     *opts = virBufferContentAndReset(&buf);
     return 0;
 
@@ -946,11 +943,6 @@ storageBackendCreateQemuImgSecretObject(virCommandPtr cmd,
     virBufferAsprintf(&buf, "secret,id=%s,file=", secretAlias);
     virQEMUBuildBufferEscapeComma(&buf, secretPath);
 
-    if (virBufferCheckError(&buf) < 0) {
-        virBufferFreeAndReset(&buf);
-        return -1;
-    }
-
     commandStr = virBufferContentAndReset(&buf);
 
     virCommandAddArgList(cmd, "--object", commandStr, NULL);
@@ -975,11 +967,6 @@ storageBackendResizeQemuImgImageOpts(virCommandPtr cmd,
     virBufferAsprintf(&buf, "driver=luks,key-secret=%s,file.filename=",
                       secretAlias);
     virQEMUBuildBufferEscapeComma(&buf, path);
-
-    if (virBufferCheckError(&buf) < 0) {
-        virBufferFreeAndReset(&buf);
-        return -1;
-    }
 
     commandStr = virBufferContentAndReset(&buf);
 

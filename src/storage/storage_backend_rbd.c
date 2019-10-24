@@ -266,9 +266,6 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
         }
     }
 
-    if (virBufferCheckError(&mon_host) < 0)
-        goto cleanup;
-
     mon_buff = virBufferContentAndReset(&mon_host);
     if (virStorageBackendRBDRADOSConfSet(ptr->cluster,
                                          "mon_host",
@@ -1223,9 +1220,6 @@ virStorageBackendRBDCloneImage(rados_ioctx_t io,
                   origvol);
 
         virBufferAsprintf(&snapname, "libvirt-%d", (int)virRandomInt(65534));
-
-        if (virBufferCheckError(&snapname) < 0)
-            goto cleanup;
 
         snapname_buff = virBufferContentAndReset(&snapname);
 

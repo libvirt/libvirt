@@ -668,9 +668,6 @@ virCPUDefFormat(virCPUDefPtr def,
     if (virCPUDefFormatBufFull(&buf, def, numa) < 0)
         goto cleanup;
 
-    if (virBufferCheckError(&buf) < 0)
-        goto cleanup;
-
     return virBufferContentAndReset(&buf);
 
  cleanup:
@@ -729,10 +726,6 @@ virCPUDefFormatBufFull(virBufferPtr buf,
         goto cleanup;
 
     if (virDomainNumaDefCPUFormatXML(&childrenBuf, numa) < 0)
-        goto cleanup;
-
-    if (virBufferCheckError(&attributeBuf) < 0 ||
-        virBufferCheckError(&childrenBuf) < 0)
         goto cleanup;
 
     /* Put it all together */

@@ -496,9 +496,6 @@ virDomainCheckpointDefFormatInternal(virBufferPtr buf,
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</domaincheckpoint>\n");
 
-    if (virBufferCheckError(buf) < 0)
-        goto error;
-
     return 0;
 
  error:

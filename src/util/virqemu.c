@@ -274,9 +274,6 @@ virQEMUBuildDriveCommandlineFromJSON(virJSONValuePtr srcdef)
                                     virQEMUBuildCommandLineJSONArrayNumbered) < 0)
         goto cleanup;
 
-    if (virBufferCheckError(&buf) < 0)
-        goto cleanup;
-
     ret = virBufferContentAndReset(&buf);
 
  cleanup:

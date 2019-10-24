@@ -1985,8 +1985,6 @@ virDomainUSBAddressPortFormat(unsigned int *port)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     virDomainUSBAddressPortFormatBuf(&buf, port);
-    if (virBufferCheckError(&buf) < 0)
-        return NULL;
     return virBufferContentAndReset(&buf);
 }
 

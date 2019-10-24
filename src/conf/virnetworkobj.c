@@ -843,9 +843,6 @@ virNetworkObjFormat(virNetworkObjPtr obj,
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</networkstatus>");
 
-    if (virBufferCheckError(&buf) < 0)
-        goto error;
-
     return virBufferContentAndReset(&buf);
 
  error:

@@ -151,9 +151,6 @@ addnhostsNew(const char *name,
     virBufferEscapeString(&buf, "/%s", name);
     virBufferAsprintf(&buf, ".%s", DNSMASQ_ADDNHOSTSFILE_SUFFIX);
 
-    if (virBufferCheckError(&buf) < 0)
-                goto error;
-
     if (!(addnhostsfile->path = virBufferContentAndReset(&buf)))
         goto error;
 
@@ -364,9 +361,6 @@ hostsfileNew(const char *name,
     virBufferAsprintf(&buf, "%s", config_dir);
     virBufferEscapeString(&buf, "/%s", name);
     virBufferAsprintf(&buf, ".%s", DNSMASQ_HOSTSFILE_SUFFIX);
-
-    if (virBufferCheckError(&buf) < 0)
-                goto error;
 
     if (!(hostsfile->path = virBufferContentAndReset(&buf)))
         goto error;

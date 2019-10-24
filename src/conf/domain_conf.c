@@ -24848,9 +24848,6 @@ virDomainFSDefFormat(virBufferPtr buf,
 
     virDomainVirtioOptionsFormat(&driverBuf, def->virtio);
 
-    if (virBufferCheckError(&driverBuf) < 0)
-        goto cleanup;
-
     if (virBufferUse(&driverBuf)) {
         virBufferAddLit(buf, "<driver");
         virBufferAddBuffer(buf, &driverBuf);
@@ -25291,9 +25288,6 @@ virDomainVirtioNetGuestOptsFormat(char **outstr,
     }
     virBufferTrim(&buf, " ", -1);
 
-    if (virBufferCheckError(&buf) < 0)
-        return -1;
-
     *outstr = virBufferContentAndReset(&buf);
     return 0;
 }
@@ -25334,9 +25328,6 @@ virDomainVirtioNetHostOptsFormat(char **outstr,
     }
     virBufferTrim(&buf, " ", -1);
 
-    if (virBufferCheckError(&buf) < 0)
-        return -1;
-
     *outstr = virBufferContentAndReset(&buf);
     return 0;
 }
@@ -25373,9 +25364,6 @@ virDomainVirtioNetDriverFormat(char **outstr,
                           def->driver.virtio.tx_queue_size);
 
     virDomainVirtioOptionsFormat(&buf, def->virtio);
-
-    if (virBufferCheckError(&buf) < 0)
-        return -1;
 
     *outstr = virBufferContentAndReset(&buf);
     return 0;
@@ -26077,9 +26065,6 @@ virDomainSmartcardDefFormat(virBufferPtr buf,
     if (virDomainDeviceInfoFormat(&childBuf, &def->info, flags) < 0)
         goto cleanup;
 
-    if (virBufferCheckError(&childBuf) < 0)
-        goto cleanup;
-
     virBufferAsprintf(buf, "<smartcard mode='%s'", mode);
     if (def->type == VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH &&
         virDomainChrAttrsDefFormat(buf, def->data.passthru, false) < 0) {
@@ -26188,9 +26173,6 @@ virDomainSoundDefFormat(virBufferPtr buf,
         virDomainSoundCodecDefFormat(&childBuf, def->codecs[i]);
 
     if (virDomainDeviceInfoFormat(&childBuf, &def->info, flags) < 0)
-        goto cleanup;
-
-    if (virBufferCheckError(&childBuf) < 0)
         goto cleanup;
 
     virBufferAsprintf(buf, "<sound model='%s'",  model);
@@ -26578,8 +26560,6 @@ virDomainVideoDefFormat(virBufferPtr buf,
     virBufferAddLit(buf, "<video>\n");
     virBufferAdjustIndent(buf, 2);
     virDomainVirtioOptionsFormat(&driverBuf, def->virtio);
-    if (virBufferCheckError(&driverBuf) < 0)
-        goto cleanup;
     if (virBufferUse(&driverBuf) || (def->driver && def->driver->vgaconf) ||
         def->backend != VIR_DOMAIN_VIDEO_BACKEND_TYPE_DEFAULT) {
         virBufferAddLit(buf, "<driver");
@@ -27657,9 +27637,6 @@ virDomainCachetuneDefFormat(virBufferPtr buf,
             goto cleanup;
     }
 
-    if (virBufferCheckError(&childrenBuf) < 0)
-        goto cleanup;
-
     if (!virBufferUse(&childrenBuf)) {
         ret = 0;
         goto cleanup;
@@ -27716,9 +27693,6 @@ virDomainMemorytuneDefFormat(virBufferPtr buf,
     if (virResctrlAllocForeachMemory(resctrl->alloc,
                                      virDomainMemorytuneDefFormatHelper,
                                      &childrenBuf) < 0)
-        goto cleanup;
-
-    if (virBufferCheckError(&childrenBuf) < 0)
         goto cleanup;
 
     if (!virBufferUse(&childrenBuf)) {
@@ -27862,9 +27836,6 @@ virDomainCputuneDefFormat(virBufferPtr buf,
 
     for (i = 0; i < def->nresctrls; i++)
         virDomainMemorytuneDefFormat(&childrenBuf, def->resctrls[i], flags);
-
-    if (virBufferCheckError(&childrenBuf) < 0)
-        return -1;
 
     if (virBufferUse(&childrenBuf)) {
         virBufferAddLit(buf, "<cputune>\n");
@@ -28932,9 +28903,6 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
     virBufferAdjustIndent(buf, -2);
     virBufferAsprintf(buf, "</%s>\n", rootname);
 
-    if (virBufferCheckError(buf) < 0)
-        goto error;
-
     return 0;
 
  error:
@@ -29008,9 +28976,6 @@ virDomainObjFormat(virDomainXMLOptionPtr xmlopt,
 
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</domstatus>\n");
-
-    if (virBufferCheckError(&buf) < 0)
-        goto error;
 
     return virBufferContentAndReset(&buf);
 
@@ -30446,8 +30411,6 @@ virDomainGetBlkioParametersAssignFromDef(virDomainDefPtr def,
                               def->blkio.devices[i].param); \
         } \
         virBufferTrim(&buf, ",", -1); \
-        if (virBufferCheckError(&buf) < 0) \
-            goto error; \
         data = virBufferContentAndReset(&buf); \
         if (virTypedParameterAssign(&(params[(*nparams)++]), name, \
                                     VIR_TYPED_PARAM_STRING, data) < 0) \
@@ -30565,7 +30528,6 @@ virDomainGenerateMachineName(const char *drivername,
     virBufferAsprintf(&buf, "%d-", id);
     virDomainMachineNameAppendValid(&buf, name);
 
-    virBufferCheckError(&buf);
     return virBufferContentAndReset(&buf);
 }
 

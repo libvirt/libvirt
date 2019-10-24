@@ -325,9 +325,6 @@ esxFormatVMXFileName(const char *fileName, void *opaque)
         virBufferAddChar(&buffer, separator);
         virBufferAdd(&buffer, directoryAndFileName, -1);
 
-        if (virBufferCheckError(&buffer) < 0)
-            goto cleanup;
-
         result = virBufferContentAndReset(&buffer);
     } else if (*fileName == '/') {
         /* FIXME: need to deal with Windows paths here too */
@@ -2413,9 +2410,6 @@ esxDomainScreenshot(virDomainPtr domain, virStreamPtr stream,
                       domain->conn->uri->server, domain->conn->uri->port);
     virBufferURIEncodeString(&buffer, virtualMachine->obj->value);
 
-    if (virBufferCheckError(&buffer))
-        goto cleanup;
-
     url = virBufferContentAndReset(&buffer);
 
     mimeType = g_strdup("image/png");
@@ -2633,9 +2627,6 @@ esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     virBufferURIEncodeString(&buffer, priv->primary->datacenterPath);
     virBufferAddLit(&buffer, "&dsName=");
     virBufferURIEncodeString(&buffer, datastoreName);
-
-    if (virBufferCheckError(&buffer) < 0)
-        goto cleanup;
 
     url = virBufferContentAndReset(&buffer);
 
@@ -3099,9 +3090,6 @@ esxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
     virBufferURIEncodeString(&buffer, priv->primary->datacenterPath);
     virBufferAddLit(&buffer, "&dsName=");
     virBufferURIEncodeString(&buffer, datastoreName);
-
-    if (virBufferCheckError(&buffer) < 0)
-        goto cleanup;
 
     url = virBufferContentAndReset(&buffer);
 

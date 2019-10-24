@@ -258,8 +258,6 @@ bhyveConnectGetSysinfo(virConnectPtr conn, unsigned int flags)
 
     if (virSysinfoFormat(&buf, privconn->hostsysinfo) < 0)
         return NULL;
-    if (virBufferCheckError(&buf) < 0)
-        return NULL;
 
     return virBufferContentAndReset(&buf);
 }
@@ -742,9 +740,6 @@ bhyveConnectDomainXMLToNative(virConnectPtr conn,
         goto cleanup;
 
     virBufferAdd(&buf, virCommandToString(cmd, false), -1);
-
-    if (virBufferCheckError(&buf) < 0)
-        goto cleanup;
 
     ret = virBufferContentAndReset(&buf);
 

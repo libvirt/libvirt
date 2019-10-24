@@ -303,9 +303,6 @@ _printDataType(virNWFilterVarCombIterPtr vars,
             }
         }
 
-        if (virBufferCheckError(&vb) < 0)
-            return -1;
-
         flags = virBufferContentAndReset(&vb);
 
         if (virStrcpy(buf, flags, bufsize) < 0) {
@@ -1559,8 +1556,6 @@ printStateMatchFlags(int32_t flags, char **bufptr)
                                     "",
                                     flags,
                                     false);
-    if (virBufferCheckError(&buf) < 0)
-        return -1;
     *bufptr = virBufferContentAndReset(&buf);
     return 0;
 }
@@ -2412,9 +2407,6 @@ ebtablesCreateRuleInstance(virFirewallPtr fw,
 
             if (ENTRY_WANT_NEG_SIGN(&rule->p.ipv6HdrFilter.dataICMPTypeStart))
                 virFirewallRuleAddArg(fw, fwrule, "!");
-
-            if (virBufferCheckError(&buf) < 0)
-                 goto cleanup;
 
             r = virBufferContentAndReset(&buf);
 
