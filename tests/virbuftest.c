@@ -19,7 +19,7 @@ static int testBufAutoIndent(const void *data G_GNUC_UNUSED)
     int ret = 0;
 
     if (virBufferGetIndent(buf, false) != 0 ||
-        virBufferGetIndent(buf, true) != 0) {
+        virBufferGetEffectiveIndent(buf) != 0) {
         VIR_TEST_DEBUG("Wrong indentation");
         ret = -1;
     }
@@ -29,28 +29,28 @@ static int testBufAutoIndent(const void *data G_GNUC_UNUSED)
         ret = -1;
     }
     if (virBufferGetIndent(buf, false) != 3 ||
-        virBufferGetIndent(buf, true) != 3 ||
+        virBufferGetEffectiveIndent(buf) != 3 ||
         virBufferError(buf)) {
         VIR_TEST_DEBUG("Wrong indentation");
         ret = -1;
     }
     virBufferAdjustIndent(buf, -2);
     if (virBufferGetIndent(buf, false) != 1 ||
-        virBufferGetIndent(buf, true) != 1 ||
+        virBufferGetEffectiveIndent(buf) != 1 ||
         virBufferError(buf)) {
         VIR_TEST_DEBUG("Wrong indentation");
         ret = -1;
     }
     virBufferAdjustIndent(buf, -3);
     if (virBufferGetIndent(buf, false) != 0 ||
-        virBufferGetIndent(buf, true) != 0) {
+        virBufferGetEffectiveIndent(buf) != 0) {
         VIR_TEST_DEBUG("Indentation level not truncated");
         ret = -1;
     }
     virBufferAdjustIndent(buf, 3);
     virBufferFreeAndReset(buf);
     if (virBufferGetIndent(buf, false) != 0 ||
-        virBufferGetIndent(buf, true) != 0 ||
+        virBufferGetEffectiveIndent(buf) != 0 ||
         virBufferError(buf)) {
         VIR_TEST_DEBUG("Reset didn't clear indentation");
         ret = -1;
@@ -66,7 +66,7 @@ static int testBufAutoIndent(const void *data G_GNUC_UNUSED)
         ret = -1;
     }
     if (virBufferGetIndent(buf, false) != 2 ||
-        virBufferGetIndent(buf, true) != 0) {
+        virBufferGetEffectiveIndent(buf) != 0) {
         VIR_TEST_DEBUG("Wrong indentation");
         ret = -1;
     }

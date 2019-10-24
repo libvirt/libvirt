@@ -110,6 +110,7 @@ void virBufferSetIndent(virBufferPtr, int indent);
     virBufferSetIndent(childBuf_, virBufferGetIndent(parentBuf_, false) + 2)
 
 int virBufferGetIndent(const virBuffer *buf, bool dynamic);
+size_t virBufferGetEffectiveIndent(const virBuffer *buf);
 
 void virBufferTrim(virBufferPtr buf, const char *trim, int len);
 void virBufferAddStr(virBufferPtr buf, const char *str);

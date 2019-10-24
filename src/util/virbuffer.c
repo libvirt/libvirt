@@ -117,6 +117,24 @@ virBufferGetIndent(const virBuffer *buf, bool dynamic)
     return buf->indent;
 }
 
+
+/**
+ * virBufferGetEffectiveIndent:
+ * @buf: the buffer
+ *
+ * Returns the number of spaces that need to be appended to @buf to honour
+ * auto-indentation.
+ */
+size_t
+virBufferGetEffectiveIndent(const virBuffer *buf)
+{
+    if (buf->use && buf->content[buf->use - 1] != '\n')
+        return 0;
+
+    return buf->indent;
+}
+
+
 /**
  * virBufferGrow:
  * @buf: the buffer
@@ -161,14 +179,12 @@ void
 virBufferAdd(virBufferPtr buf, const char *str, int len)
 {
     unsigned int needSize;
-    int indent;
+    size_t indent;
 
-    if (!str || !buf || (len == 0 && buf->indent == 0))
+    if (!str || !buf || buf->error || (len == 0 && buf->indent == 0))
         return;
 
-    indent = virBufferGetIndent(buf, true);
-    if (indent < 0)
-        return;
+    indent = virBufferGetEffectiveIndent(buf);
 
     if (len < 0)
         len = strlen(str);

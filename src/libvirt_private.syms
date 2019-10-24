@@ -1600,6 +1600,7 @@ virBufferEscapeShell;
 virBufferEscapeSQL;
 virBufferEscapeString;
 virBufferFreeAndReset;
+virBufferGetEffectiveIndent;
 virBufferGetIndent;
 virBufferSetIndent;
 virBufferStrcat;
