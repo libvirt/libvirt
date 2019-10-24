@@ -24756,3 +24756,392 @@
   },
   "id": "libvirt-4"
 }
+
+{
+  "execute": "query-machines",
+  "id": "libvirt-5"
+}
+
+{
+  "return": [
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-0.15",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": true
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-2.12",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-2.0",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-q35-4.2",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 288,
+      "deprecated": false,
+      "alias": "q35"
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-2.5",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-4.2",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "is-default": true,
+      "cpu-max": 255,
+      "deprecated": false,
+      "alias": "pc"
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-1.5",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-0.12",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": true
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-q35-2.7",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-2.2",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-1.1",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "none",
+      "numa-mem-supported": false,
+      "cpu-max": 1,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-2.7",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-q35-2.4",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-q35-2.10",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 288,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-1.7",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-0.14",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": true
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-q35-2.9",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 288,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-2.11",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-q35-3.1",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 288,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-q35-4.1",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 288,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-2.4",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-1.3",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-4.1",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-2.9",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "isapc",
+      "numa-mem-supported": true,
+      "default-cpu-type": "486-x86_64-cpu",
+      "cpu-max": 1,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-1.4",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-q35-2.6",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-3.1",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-q35-2.12",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 288,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-2.1",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-1.0",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-2.6",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-q35-4.0.1",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 288,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-1.6",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-0.13",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": true
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-q35-2.8",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 288,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-2.10",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-q35-3.0",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 288,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-q35-4.0",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 288,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-2.3",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-1.2",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-4.0",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-2.8",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-q35-2.5",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-3.0",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 255,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-q35-2.11",
+      "numa-mem-supported": true,
+      "default-cpu-type": "qemu64-x86_64-cpu",
+      "cpu-max": 288,
+      "deprecated": false
+    }
+  ],
+  "id": "libvirt-5"
+}

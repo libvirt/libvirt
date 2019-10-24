@@ -3145,3 +3145,81 @@
   ],
   "id": "libvirt-2"
 }
+
+{
+  "execute": "query-machines",
+  "id": "libvirt-3"
+}
+
+{
+  "return": [
+    {
+      "name": "pc-q35-1.4",
+      "cpu-max": 255
+    },
+    {
+      "name": "pc-q35-1.5",
+      "cpu-max": 255,
+      "alias": "q35"
+    },
+    {
+      "name": "isapc",
+      "cpu-max": 1
+    },
+    {
+      "name": "pc-0.10",
+      "cpu-max": 255
+    },
+    {
+      "name": "pc-0.11",
+      "cpu-max": 255
+    },
+    {
+      "name": "pc-0.12",
+      "cpu-max": 255
+    },
+    {
+      "name": "pc-0.13",
+      "cpu-max": 255
+    },
+    {
+      "name": "pc-0.14",
+      "cpu-max": 255
+    },
+    {
+      "name": "pc-0.15",
+      "cpu-max": 255
+    },
+    {
+      "name": "pc-1.0",
+      "cpu-max": 255
+    },
+    {
+      "name": "pc-1.1",
+      "cpu-max": 255
+    },
+    {
+      "name": "pc-1.2",
+      "cpu-max": 255
+    },
+    {
+      "name": "pc-1.3",
+      "cpu-max": 255
+    },
+    {
+      "name": "pc-i440fx-1.4",
+      "cpu-max": 255
+    },
+    {
+      "name": "pc-i440fx-1.5",
+      "is-default": true,
+      "cpu-max": 255,
+      "alias": "pc"
+    },
+    {
+      "name": "none",
+      "cpu-max": 1
+    }
+  ],
+  "id": "libvirt-3"
+}

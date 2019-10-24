@@ -23195,3 +23195,217 @@
   },
   "id": "libvirt-6"
 }
+
+{
+  "execute": "query-machines",
+  "id": "libvirt-7"
+}
+
+{
+  "return": [
+    {
+      "hotpluggable-cpus": true,
+      "name": "isapc",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-1.1",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-1.2",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-1.3",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-2.8",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-1.0",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "none",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-2.9",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-2.6",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-2.7",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-2.3",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-2.4",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-2.5",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-2.1",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-2.2",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-2.0",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-q35-2.11",
+      "cpu-max": 288
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-q35-2.12",
+      "cpu-max": 288
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-q35-3.0",
+      "cpu-max": 288,
+      "alias": "q35"
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-q35-2.10",
+      "cpu-max": 288
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-1.7",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-q35-2.9",
+      "cpu-max": 288
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-0.15",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-1.5",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-q35-2.7",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-1.6",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-2.11",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-q35-2.8",
+      "cpu-max": 288
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-0.13",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-2.12",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-0.14",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-3.0",
+      "is-default": true,
+      "cpu-max": 255,
+      "alias": "pc"
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-q35-2.4",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-q35-2.5",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-q35-2.6",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-1.4",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-i440fx-2.10",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-0.11",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-0.12",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "pc-0.10",
+      "cpu-max": 255
+    }
+  ],
+  "id": "libvirt-7"
+}

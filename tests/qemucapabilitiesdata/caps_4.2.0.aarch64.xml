@@ -424,7 +424,6 @@
   <machine type='tcg' name='witherspoon-bmc' maxCpus='2'/>
   <machine type='tcg' name='xilinx-zynq-a9' maxCpus='1'/>
   <machine type='tcg' name='mps2-an385' maxCpus='1'/>
-  <machine type='tcg' name='ast2600-evb' maxCpus='2'/>
   <machine type='tcg' name='vexpress-a9' maxCpus='4'/>
   <machine type='tcg' name='mps2-an521' maxCpus='2'/>
   <machine type='tcg' name='mcimx6ul-evk' maxCpus='1'/>

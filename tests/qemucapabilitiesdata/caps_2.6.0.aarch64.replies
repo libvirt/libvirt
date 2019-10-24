@@ -13033,3 +13033,183 @@
   ],
   "id": "libvirt-2"
 }
+
+{
+  "execute": "query-machines",
+  "id": "libvirt-3"
+}
+
+{
+  "return": [
+    {
+      "name": "integratorcp",
+      "cpu-max": 1
+    },
+    {
+      "name": "nuri",
+      "cpu-max": 2
+    },
+    {
+      "name": "verdex",
+      "cpu-max": 1
+    },
+    {
+      "name": "smdkc210",
+      "cpu-max": 2
+    },
+    {
+      "name": "collie",
+      "cpu-max": 1
+    },
+    {
+      "name": "imx25-pdk",
+      "cpu-max": 1
+    },
+    {
+      "name": "none",
+      "cpu-max": 1
+    },
+    {
+      "name": "spitz",
+      "cpu-max": 1
+    },
+    {
+      "name": "realview-pbx-a9",
+      "cpu-max": 4
+    },
+    {
+      "name": "realview-eb",
+      "cpu-max": 1
+    },
+    {
+      "name": "versatilepb",
+      "cpu-max": 1
+    },
+    {
+      "name": "realview-pb-a8",
+      "cpu-max": 1
+    },
+    {
+      "name": "musicpal",
+      "cpu-max": 1
+    },
+    {
+      "name": "z2",
+      "cpu-max": 1
+    },
+    {
+      "name": "akita",
+      "cpu-max": 1
+    },
+    {
+      "name": "kzm",
+      "cpu-max": 1
+    },
+    {
+      "name": "realview-eb-mpcore",
+      "cpu-max": 4
+    },
+    {
+      "name": "sx1",
+      "cpu-max": 1
+    },
+    {
+      "name": "sx1-v1",
+      "cpu-max": 1
+    },
+    {
+      "name": "virt-2.6",
+      "cpu-max": 255,
+      "alias": "virt"
+    },
+    {
+      "name": "cubieboard",
+      "cpu-max": 1
+    },
+    {
+      "name": "highbank",
+      "cpu-max": 4
+    },
+    {
+      "name": "raspi2",
+      "cpu-max": 4
+    },
+    {
+      "name": "netduino2",
+      "cpu-max": 1
+    },
+    {
+      "name": "terrier",
+      "cpu-max": 1
+    },
+    {
+      "name": "n810",
+      "cpu-max": 1
+    },
+    {
+      "name": "mainstone",
+      "cpu-max": 1
+    },
+    {
+      "name": "palmetto-bmc",
+      "cpu-max": 1
+    },
+    {
+      "name": "midway",
+      "cpu-max": 4
+    },
+    {
+      "name": "cheetah",
+      "cpu-max": 1
+    },
+    {
+      "name": "tosa",
+      "cpu-max": 1
+    },
+    {
+      "name": "borzoi",
+      "cpu-max": 1
+    },
+    {
+      "name": "versatileab",
+      "cpu-max": 1
+    },
+    {
+      "name": "lm3s6965evb",
+      "cpu-max": 1
+    },
+    {
+      "name": "n800",
+      "cpu-max": 1
+    },
+    {
+      "name": "connex",
+      "cpu-max": 1
+    },
+    {
+      "name": "xilinx-zynq-a9",
+      "cpu-max": 1
+    },
+    {
+      "name": "xlnx-ep108",
+      "cpu-max": 1
+    },
+    {
+      "name": "vexpress-a9",
+      "cpu-max": 4
+    },
+    {
+      "name": "vexpress-a15",
+      "cpu-max": 4
+    },
+    {
+      "name": "canon-a1100",
+      "cpu-max": 1
+    },
+    {
+      "name": "lm3s811evb",
+      "cpu-max": 1
+    }
+  ],
+  "id": "libvirt-3"
+}

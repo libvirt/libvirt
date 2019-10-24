@@ -4726,7 +4726,8 @@ virQEMUCapsInitQMPMonitorTCG(virQEMUCapsPtr qemuCaps,
     if (virQEMUCapsProbeQMPHostCPU(qemuCaps, accel, mon, VIR_DOMAIN_VIRT_QEMU) < 0)
         return -1;
 
-    virQEMUCapsAccelCopyMachineTypes(&qemuCaps->tcg, &qemuCaps->kvm);
+    if (virQEMUCapsProbeQMPMachineTypes(qemuCaps, accel, mon) < 0)
+        return -1;
 
     return 0;
 }

@@ -22414,3 +22414,135 @@
     "desc": "Property '.migratable' not found"
   }
 }
+
+{
+  "execute": "query-machines",
+  "id": "libvirt-5"
+}
+
+{
+  "return": [
+    {
+      "hotpluggable-cpus": true,
+      "name": "s390-ccw-virtio-4.0",
+      "numa-mem-supported": false,
+      "default-cpu-type": "qemu-s390x-cpu",
+      "cpu-max": 248,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "s390-ccw-virtio-3.1",
+      "numa-mem-supported": false,
+      "default-cpu-type": "qemu-s390x-cpu",
+      "cpu-max": 248,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "s390-ccw-virtio-2.6",
+      "numa-mem-supported": false,
+      "default-cpu-type": "qemu-s390x-cpu",
+      "cpu-max": 248,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "s390-ccw-virtio-2.12",
+      "numa-mem-supported": false,
+      "default-cpu-type": "qemu-s390x-cpu",
+      "cpu-max": 248,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "s390-ccw-virtio-2.9",
+      "numa-mem-supported": false,
+      "default-cpu-type": "qemu-s390x-cpu",
+      "cpu-max": 248,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "s390-ccw-virtio-3.0",
+      "numa-mem-supported": false,
+      "default-cpu-type": "qemu-s390x-cpu",
+      "cpu-max": 248,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "s390-ccw-virtio-4.2",
+      "numa-mem-supported": false,
+      "default-cpu-type": "qemu-s390x-cpu",
+      "is-default": true,
+      "cpu-max": 248,
+      "deprecated": false,
+      "alias": "s390-ccw-virtio"
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "s390-ccw-virtio-2.5",
+      "numa-mem-supported": false,
+      "default-cpu-type": "qemu-s390x-cpu",
+      "cpu-max": 248,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "s390-ccw-virtio-2.11",
+      "numa-mem-supported": false,
+      "default-cpu-type": "qemu-s390x-cpu",
+      "cpu-max": 248,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "s390-ccw-virtio-2.8",
+      "numa-mem-supported": false,
+      "default-cpu-type": "qemu-s390x-cpu",
+      "cpu-max": 248,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "s390-ccw-virtio-4.1",
+      "numa-mem-supported": false,
+      "default-cpu-type": "qemu-s390x-cpu",
+      "cpu-max": 248,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "none",
+      "numa-mem-supported": false,
+      "cpu-max": 1,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "s390-ccw-virtio-2.4",
+      "numa-mem-supported": false,
+      "default-cpu-type": "qemu-s390x-cpu",
+      "cpu-max": 248,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "s390-ccw-virtio-2.10",
+      "numa-mem-supported": false,
+      "default-cpu-type": "qemu-s390x-cpu",
+      "cpu-max": 248,
+      "deprecated": false
+    },
+    {
+      "hotpluggable-cpus": true,
+      "name": "s390-ccw-virtio-2.7",
+      "numa-mem-supported": false,
+      "default-cpu-type": "qemu-s390x-cpu",
+      "cpu-max": 248,
+      "deprecated": false
+    }
+  ],
+  "id": "libvirt-5"
+}

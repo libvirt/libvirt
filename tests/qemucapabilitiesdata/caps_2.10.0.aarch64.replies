@@ -16489,3 +16489,275 @@
   ],
   "id": "libvirt-2"
 }
+
+{
+  "execute": "query-machines",
+  "id": "libvirt-3"
+}
+
+{
+  "return": [
+    {
+      "hotpluggable-cpus": false,
+      "name": "integratorcp",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "nuri",
+      "cpu-max": 2
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "mps2-an511",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "verdex",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "ast2500-evb",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "smdkc210",
+      "cpu-max": 2
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "collie",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "imx25-pdk",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "none",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "spitz",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "realview-pbx-a9",
+      "cpu-max": 4
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "realview-eb",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "versatilepb",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "realview-pb-a8",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "virt-2.9",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "musicpal",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "z2",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "akita",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "virt-2.7",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "kzm",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "virt-2.8",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "realview-eb-mpcore",
+      "cpu-max": 4
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "sx1",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "sx1-v1",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "virt-2.6",
+      "cpu-max": 255
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "cubieboard",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "highbank",
+      "cpu-max": 4
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "raspi2",
+      "cpu-max": 4
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "netduino2",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "terrier",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "n810",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "mainstone",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "palmetto-bmc",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "sabrelite",
+      "cpu-max": 4
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "midway",
+      "cpu-max": 4
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "romulus-bmc",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "cheetah",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "tosa",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "borzoi",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "versatileab",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "lm3s6965evb",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "n800",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "virt-2.10",
+      "cpu-max": 255,
+      "alias": "virt"
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "connex",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "xilinx-zynq-a9",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "xlnx-ep108",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "mps2-an385",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "vexpress-a9",
+      "cpu-max": 4
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "vexpress-a15",
+      "cpu-max": 4
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "xlnx-zcu102",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "canon-a1100",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "lm3s811evb",
+      "cpu-max": 1
+    }
+  ],
+  "id": "libvirt-3"
+}

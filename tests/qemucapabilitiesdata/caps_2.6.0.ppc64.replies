@@ -15511,3 +15511,80 @@
   ],
   "id": "libvirt-2"
 }
+
+{
+  "execute": "query-machines",
+  "id": "libvirt-3"
+}
+
+{
+  "return": [
+    {
+      "name": "ref405ep",
+      "cpu-max": 1
+    },
+    {
+      "name": "none",
+      "cpu-max": 1
+    },
+    {
+      "name": "virtex-ml507",
+      "cpu-max": 1
+    },
+    {
+      "name": "ppce500",
+      "cpu-max": 32
+    },
+    {
+      "name": "mpc8544ds",
+      "cpu-max": 15
+    },
+    {
+      "name": "bamboo",
+      "cpu-max": 1
+    },
+    {
+      "name": "g3beige",
+      "cpu-max": 1
+    },
+    {
+      "name": "prep",
+      "cpu-max": 1
+    },
+    {
+      "name": "mac99",
+      "cpu-max": 1
+    },
+    {
+      "name": "pseries-2.6",
+      "is-default": true,
+      "cpu-max": 255,
+      "alias": "pseries"
+    },
+    {
+      "name": "pseries-2.4",
+      "cpu-max": 255
+    },
+    {
+      "name": "pseries-2.5",
+      "cpu-max": 255
+    },
+    {
+      "name": "pseries-2.2",
+      "cpu-max": 255
+    },
+    {
+      "name": "taihu",
+      "cpu-max": 1
+    },
+    {
+      "name": "pseries-2.3",
+      "cpu-max": 255
+    },
+    {
+      "name": "pseries-2.1",
+      "cpu-max": 255
+    }
+  ],
+  "id": "libvirt-3"
+}

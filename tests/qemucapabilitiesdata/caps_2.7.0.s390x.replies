@@ -11995,3 +11995,41 @@
   ],
   "id": "libvirt-2"
 }
+
+{
+  "execute": "query-machines",
+  "id": "libvirt-3"
+}
+
+{
+  "return": [
+    {
+      "hotpluggable-cpus": false,
+      "name": "s390-ccw-virtio-2.5",
+      "cpu-max": 248
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "s390-ccw-virtio-2.4",
+      "cpu-max": 248
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "none",
+      "cpu-max": 1
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "s390-ccw-virtio-2.7",
+      "is-default": true,
+      "cpu-max": 248,
+      "alias": "s390-ccw-virtio"
+    },
+    {
+      "hotpluggable-cpus": false,
+      "name": "s390-ccw-virtio-2.6",
+      "cpu-max": 248
+    }
+  ],
+  "id": "libvirt-3"
+}
