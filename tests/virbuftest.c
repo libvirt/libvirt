@@ -9,10 +9,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-struct testInfo {
-    int doEscape;
-};
-
 static int testBufAutoIndent(const void *data G_GNUC_UNUSED)
 {
     virBuffer bufinit = VIR_BUFFER_INITIALIZER;
@@ -404,18 +400,17 @@ mymain(void)
     int ret = 0;
 
 
-#define DO_TEST(msg, cb, data) \
+#define DO_TEST(msg, cb) \
     do { \
-        struct testInfo info = { data }; \
-        if (virTestRun("Buf: " msg, cb, &info) < 0) \
+        if (virTestRun("Buf: " msg, cb, NULL) < 0) \
             ret = -1; \
     } while (0)
 
-    DO_TEST("Auto-indentation", testBufAutoIndent, 0);
-    DO_TEST("Trim", testBufTrim, 0);
-    DO_TEST("AddBuffer", testBufAddBuffer, 0);
-    DO_TEST("set indent", testBufSetIndent, 0);
-    DO_TEST("autoclean", testBufferAutoclean, 0);
+    DO_TEST("Auto-indentation", testBufAutoIndent);
+    DO_TEST("Trim", testBufTrim);
+    DO_TEST("AddBuffer", testBufAddBuffer);
+    DO_TEST("set indent", testBufSetIndent);
+    DO_TEST("autoclean", testBufferAutoclean);
 
 #define DO_TEST_ADD_STR(DATA, EXPECT) \
     do { \
