@@ -7254,8 +7254,7 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
         break;
     }
 
-    if (virXMLFormatElement(buf, "address", &attrBuf, &childBuf) < 0)
-        goto cleanup;
+    virXMLFormatElement(buf, "address", &attrBuf, &childBuf);
 
     ret = 0;
 
@@ -24120,8 +24119,7 @@ virDomainDiskSourceFormatPrivateData(virBufferPtr buf,
     if (xmlopt->privateData.storageFormat(src, &childBuf) < 0)
         goto cleanup;
 
-    if (virXMLFormatElement(buf, "privateData", NULL, &childBuf) < 0)
-        goto cleanup;
+    virXMLFormatElement(buf, "privateData", NULL, &childBuf);
 
     ret = 0;
 
@@ -24227,8 +24225,7 @@ virDomainDiskSourceFormat(virBufferPtr buf,
     if (virDomainDiskSourceFormatPrivateData(&childBuf, src, flags, xmlopt) < 0)
         return -1;
 
-    if (virXMLFormatElement(buf, element, &attrBuf, &childBuf) < 0)
-        return -1;
+    virXMLFormatElement(buf, element, &attrBuf, &childBuf);
 
     return 0;
 }
@@ -24280,8 +24277,7 @@ virDomainDiskBackingStoreFormat(virBufferPtr buf,
     if (virDomainDiskBackingStoreFormat(&childBuf, backingStore, xmlopt, flags) < 0)
         return -1;
 
-    if (virXMLFormatElement(buf, "backingStore", &attrBuf, &childBuf) < 0)
-        return -1;
+    virXMLFormatElement(buf, "backingStore", &attrBuf, &childBuf);
 
     return 0;
 }
@@ -24332,7 +24328,9 @@ virDomainDiskDefFormatIotune(virBufferPtr buf,
     FORMAT_IOTUNE(read_iops_sec_max_length);
     FORMAT_IOTUNE(write_iops_sec_max_length);
 
-    return virXMLFormatElement(buf, "iotune", NULL, &childBuf);
+    virXMLFormatElement(buf, "iotune", NULL, &childBuf);
+
+    return 0;
 }
 
 #undef FORMAT_IOTUNE
@@ -24394,7 +24392,8 @@ virDomainDiskDefFormatDriver(virBufferPtr buf,
 
     virDomainVirtioOptionsFormat(&driverBuf, disk->virtio);
 
-    return virXMLFormatElement(buf, "driver", &driverBuf, NULL);
+    virXMLFormatElement(buf, "driver", &driverBuf, NULL);
+    return 0;
 }
 
 
@@ -24444,8 +24443,7 @@ virDomainDiskDefFormatMirror(virBufferPtr buf,
     if (virDomainDiskBackingStoreFormat(&childBuf, disk->mirror, xmlopt, flags) < 0)
         return -1;
 
-    if (virXMLFormatElement(buf, "mirror", &attrBuf, &childBuf) < 0)
-        return -1;
+    virXMLFormatElement(buf, "mirror", &attrBuf, &childBuf);
 
     return 0;
 }
@@ -24469,7 +24467,8 @@ virDomainDiskDefFormatPrivateData(virBufferPtr buf,
     if (xmlopt->privateData.diskFormat(disk, &childBuf) < 0)
         return -1;
 
-    return virXMLFormatElement(buf, "privateData", NULL, &childBuf);
+    virXMLFormatElement(buf, "privateData", NULL, &childBuf);
+    return 0;
 }
 
 
@@ -24627,7 +24626,9 @@ virDomainControllerDriverFormat(virBufferPtr buf,
 
     virDomainVirtioOptionsFormat(&driverBuf, def->virtio);
 
-    return virXMLFormatElement(buf, "driver", &driverBuf, NULL);
+    virXMLFormatElement(buf, "driver", &driverBuf, NULL);
+
+    return 0;
 }
 
 
@@ -24779,7 +24780,9 @@ virDomainControllerDefFormat(virBufferPtr buf,
                           "pcihole64>\n", def->opts.pciopts.pcihole64size);
     }
 
-    return virXMLFormatElement(buf, "controller", &attrBuf, &childBuf);
+    virXMLFormatElement(buf, "controller", &attrBuf, &childBuf);
+
+    return 0;
 }
 
 
@@ -25622,8 +25625,7 @@ virDomainNetDefFormat(virBufferPtr buf,
                           virTristateBoolTypeToString(def->managed_tap));
     }
 
-    if (virXMLFormatElement(buf, "target", &attrBuf, NULL) < 0)
-        return -1;
+    virXMLFormatElement(buf, "target", &attrBuf, NULL);
 
     if (def->ifname_guest || def->ifname_guest_actual) {
         virBufferAddLit(buf, "<guest");
@@ -25772,8 +25774,7 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
             virDomainSourceDefFormatSeclabel(&childBuf, def->nseclabels,
                                              def->seclabels, flags);
 
-            if (virXMLFormatElement(buf, "source", &attrBuf, &childBuf) < 0)
-                goto error;
+            virXMLFormatElement(buf, "source", &attrBuf, &childBuf);
         }
         break;
 
@@ -25816,8 +25817,7 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
         virDomainChrSourceReconnectDefFormat(&childBuf,
                                              &def->data.tcp.reconnect);
 
-        if (virXMLFormatElement(buf, "source", &attrBuf, &childBuf) < 0)
-            goto error;
+        virXMLFormatElement(buf, "source", &attrBuf, &childBuf);
 
         virBufferAsprintf(buf, "<protocol type='%s'/>\n",
                           virDomainChrTcpProtocolTypeToString(
@@ -25835,8 +25835,7 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
             virDomainChrSourceReconnectDefFormat(&childBuf,
                                                  &def->data.nix.reconnect);
 
-            if (virXMLFormatElement(buf, "source", &attrBuf, &childBuf) < 0)
-                goto error;
+            virXMLFormatElement(buf, "source", &attrBuf, &childBuf);
         }
         break;
 
@@ -25857,9 +25856,6 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
     }
 
     return 0;
-
- error:
-    return -1;
 }
 
 
@@ -26223,10 +26219,10 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
 
     virDomainVirtioOptionsFormat(&driverAttrBuf, def->virtio);
 
-    if (virXMLFormatElement(&childrenBuf, "driver", &driverAttrBuf, NULL) < 0)
-        return -1;
+    virXMLFormatElement(&childrenBuf, "driver", &driverAttrBuf, NULL);
+    virXMLFormatElement(buf, "memballoon", &attrBuf, &childrenBuf);
 
-    return virXMLFormatElement(buf, "memballoon", &attrBuf, &childrenBuf);
+    return 0;
 }
 
 static int
@@ -26275,7 +26271,9 @@ virDomainWatchdogDefFormat(virBufferPtr buf,
     if (virDomainDeviceInfoFormat(&childBuf, &def->info, flags) < 0)
         return -1;
 
-    return virXMLFormatElement(buf, "watchdog", &attrBuf, &childBuf);
+    virXMLFormatElement(buf, "watchdog", &attrBuf, &childBuf);
+
+    return 0;
 }
 
 static int virDomainPanicDefFormat(virBufferPtr buf,
@@ -26292,7 +26290,9 @@ static int virDomainPanicDefFormat(virBufferPtr buf,
     if (virDomainDeviceInfoFormat(&childrenBuf, &def->info, 0) < 0)
         return -1;
 
-    return virXMLFormatElement(buf, "panic", &attrBuf, &childrenBuf);
+    virXMLFormatElement(buf, "panic", &attrBuf, &childrenBuf);
+
+    return 0;
 }
 
 static int
@@ -26375,8 +26375,7 @@ virDomainRNGDefFormat(virBufferPtr buf,
 
     virDomainVirtioOptionsFormat(&driverAttrBuf, def->virtio);
 
-    if (virXMLFormatElement(buf, "driver", &driverAttrBuf, NULL) < 0)
-        return -1;
+    virXMLFormatElement(buf, "driver", &driverAttrBuf, NULL);
 
     if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
         return -1;
@@ -26658,14 +26657,15 @@ virDomainInputDefFormat(virBufferPtr buf,
     virBufferSetChildIndent(&childBuf, buf);
     virDomainVirtioOptionsFormat(&driverAttrBuf, def->virtio);
 
-    if (virXMLFormatElement(&childBuf, "driver", &driverAttrBuf, NULL) < 0)
-        return -1;
+    virXMLFormatElement(&childBuf, "driver", &driverAttrBuf, NULL);
 
     virBufferEscapeString(&childBuf, "<source evdev='%s'/>\n", def->source.evdev);
     if (virDomainDeviceInfoFormat(&childBuf, &def->info, flags) < 0)
         return -1;
 
-    return virXMLFormatElement(buf, "input", &attrBuf, &childBuf);
+    virXMLFormatElement(buf, "input", &attrBuf, &childBuf);
+
+    return 0;
 }
 
 
@@ -27367,7 +27367,9 @@ virDomainHubDefFormat(virBufferPtr buf,
 
     virBufferAsprintf(&attrBuf, " type='%s'", type);
 
-    return virXMLFormatElement(buf, "hub", &attrBuf, &childBuf);
+    virXMLFormatElement(buf, "hub", &attrBuf, &childBuf);
+
+    return 0;
 }
 
 
@@ -27938,18 +27940,15 @@ virDomainIOMMUDefFormat(virBufferPtr buf,
                           virTristateSwitchTypeToString(iommu->iotlb));
     }
 
-    if (virXMLFormatElement(&childBuf, "driver", &driverAttrBuf, NULL) < 0)
-        goto cleanup;
+    virXMLFormatElement(&childBuf, "driver", &driverAttrBuf, NULL);
 
     virBufferAsprintf(&attrBuf, " model='%s'",
                       virDomainIOMMUModelTypeToString(iommu->model));
 
-    if (virXMLFormatElement(buf, "iommu", &attrBuf, &childBuf) < 0)
-        goto cleanup;
+    virXMLFormatElement(buf, "iommu", &attrBuf, &childBuf);
 
     ret = 0;
 
- cleanup:
     return ret;
 }
 
@@ -27984,8 +27983,7 @@ virDomainMemtuneFormat(virBufferPtr buf,
                           mem->swap_hard_limit);
     }
 
-    if (virXMLFormatElement(buf, "memtune", NULL, &childBuf) < 0)
-        goto cleanup;
+    virXMLFormatElement(buf, "memtune", NULL, &childBuf);
 
     virBufferSetChildIndent(&childBuf, buf);
 
@@ -28007,11 +28005,9 @@ virDomainMemtuneFormat(virBufferPtr buf,
     if (mem->discard)
         virBufferAddLit(&childBuf, "<discard/>\n");
 
-    if (virXMLFormatElement(buf, "memoryBacking", NULL, &childBuf) < 0)
-        goto cleanup;
+    virXMLFormatElement(buf, "memoryBacking", NULL, &childBuf);
 
     ret = 0;
- cleanup:
     return ret;
 }
 
@@ -28038,14 +28034,12 @@ virDomainVsockDefFormat(virBufferPtr buf,
     }
     if (vsock->guest_cid != 0)
         virBufferAsprintf(&cidAttrBuf, " address='%u'", vsock->guest_cid);
-    if (virXMLFormatElement(&childBuf, "cid", &cidAttrBuf, NULL) < 0)
-        goto cleanup;
+    virXMLFormatElement(&childBuf, "cid", &cidAttrBuf, NULL);
 
     if (virDomainDeviceInfoFormat(&childBuf, &vsock->info, 0) < 0)
         goto cleanup;
 
-    if (virXMLFormatElement(buf, "vsock", &attrBuf, &childBuf) < 0)
-        goto cleanup;
+    virXMLFormatElement(buf, "vsock", &attrBuf, &childBuf);
 
     ret = 0;
 
@@ -28095,7 +28089,9 @@ virDomainDefFormatBlkiotune(virBufferPtr buf,
         virBufferAddLit(&childrenBuf, "</device>\n");
     }
 
-    return virXMLFormatElement(buf, "blkiotune", NULL, &childrenBuf);
+    virXMLFormatElement(buf, "blkiotune", NULL, &childrenBuf);
+
+    return 0;
 }
 
 
@@ -28181,8 +28177,7 @@ virDomainDefFormatFeatures(virBufferPtr buf,
                                   unit, short_size);
             }
 
-            if (virXMLFormatElement(&childBuf, "smm", &tmpAttrBuf, &tmpChildBuf) < 0)
-                return -1;
+            virXMLFormatElement(&childBuf, "smm", &tmpAttrBuf, &tmpChildBuf);
 
             break;
 
@@ -28313,8 +28308,7 @@ virDomainDefFormatFeatures(virBufferPtr buf,
                 virBufferAsprintf(&tmpAttrBuf, " policy='%s'",
                                   virDomainCapabilitiesPolicyTypeToString(def->features[i]));
 
-            if (virXMLFormatElement(&childBuf, "capabilities", &tmpAttrBuf, &tmpChildBuf) < 0)
-                return -1;
+            virXMLFormatElement(&childBuf, "capabilities", &tmpAttrBuf, &tmpChildBuf);
             break;
 
         case VIR_DOMAIN_FEATURE_GIC:
@@ -28351,8 +28345,7 @@ virDomainDefFormatFeatures(virBufferPtr buf,
                                   def->hpt_maxpagesize);
             }
 
-            if (virXMLFormatElement(&childBuf, "hpt", &tmpAttrBuf, &tmpChildBuf) < 0)
-                return -1;
+            virXMLFormatElement(&childBuf, "hpt", &tmpAttrBuf, &tmpChildBuf);
             break;
 
         case VIR_DOMAIN_FEATURE_MSRS:
@@ -28369,7 +28362,8 @@ virDomainDefFormatFeatures(virBufferPtr buf,
         }
     }
 
-    return virXMLFormatElement(buf, "features", NULL, &childBuf);
+    virXMLFormatElement(buf, "features", NULL, &childBuf);
+    return 0;
 }
 
 int

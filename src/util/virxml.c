@@ -1371,21 +1371,16 @@ virXMLValidatorFree(virXMLValidatorPtr validator)
  * formatted.
  *
  * Both passed buffers are always consumed and freed.
- *
- * Returns 0 on success, -1 on error.
  */
-int
+void
 virXMLFormatElement(virBufferPtr buf,
                     const char *name,
                     virBufferPtr attrBuf,
                     virBufferPtr childBuf)
 {
-    int ret = -1;
-
     if ((!attrBuf || virBufferUse(attrBuf) == 0) &&
-        (!childBuf || virBufferUse(childBuf) == 0)) {
-        return 0;
-    }
+        (!childBuf || virBufferUse(childBuf) == 0))
+        return;
 
     virBufferAsprintf(buf, "<%s", name);
 
@@ -1400,11 +1395,8 @@ virXMLFormatElement(virBufferPtr buf,
         virBufferAddLit(buf, "/>\n");
     }
 
-    ret = 0;
-
     virBufferFreeAndReset(attrBuf);
     virBufferFreeAndReset(childBuf);
-    return ret;
 }
 
 

@@ -1505,10 +1505,7 @@ virSysinfoFormat(virBufferPtr buf, virSysinfoDefPtr def)
 
     virBufferAsprintf(&attrBuf, " type='%s'", type);
 
-    if (virXMLFormatElement(buf, "sysinfo", &attrBuf, &childrenBuf) < 0) {
-        virBufferFreeAndReset(buf);
-        return -1;
-    }
+    virXMLFormatElement(buf, "sysinfo", &attrBuf, &childrenBuf);
 
     return 0;
 }

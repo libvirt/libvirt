@@ -2327,8 +2327,7 @@ qemuStorageSourcePrivateDataFormat(virStorageSourcePtr src,
     if (src->tlsAlias)
         virBufferAsprintf(&tmp, "<TLSx509 alias='%s'/>\n", src->tlsAlias);
 
-    if (virXMLFormatElement(buf, "objects", NULL, &tmp) < 0)
-        goto cleanup;
+    virXMLFormatElement(buf, "objects", NULL, &tmp);
 
     ret = 0;
 
@@ -2461,8 +2460,7 @@ qemuDomainObjPrivateXMLFormatBlockjobFormatSource(virBufferPtr buf,
         virDomainDiskBackingStoreFormat(&childBuf, src, xmlopt, xmlflags) < 0)
         return -1;
 
-    if (virXMLFormatElement(buf, element, &attrBuf, &childBuf) < 0)
-        return -1;
+    virXMLFormatElement(buf, element, &attrBuf, &childBuf);
 
     return 0;
 }
@@ -2515,8 +2513,7 @@ qemuDomainObjPrivateXMLFormatBlockjobIterator(void *payload,
                                                               true) < 0)
             return -1;
 
-        if (virXMLFormatElement(&childBuf, "chains", NULL, &chainsBuf) < 0)
-            return -1;
+        virXMLFormatElement(&childBuf, "chains", NULL, &chainsBuf);
     }
 
     switch ((qemuBlockJobType) job->type) {
@@ -2559,7 +2556,8 @@ qemuDomainObjPrivateXMLFormatBlockjobIterator(void *payload,
             break;
     }
 
-    return virXMLFormatElement(data->buf, "blockjob", &attrBuf, &childBuf);
+    virXMLFormatElement(data->buf, "blockjob", &attrBuf, &childBuf);
+    return 0;
 }
 
 
@@ -2585,7 +2583,8 @@ qemuDomainObjPrivateXMLFormatBlockjobs(virBufferPtr buf,
                        &iterdata) < 0)
         return -1;
 
-    return virXMLFormatElement(buf, "blockjobs", &attrBuf, &childBuf);
+    virXMLFormatElement(buf, "blockjobs", &attrBuf, &childBuf);
+    return 0;
 }
 
 
@@ -2627,8 +2626,7 @@ qemuDomainObjPrivateXMLFormatNBDMigrationSource(virBufferPtr buf,
                                   VIR_DOMAIN_DEF_FORMAT_STATUS, xmlopt) < 0)
         goto cleanup;
 
-    if (virXMLFormatElement(buf, "migrationSource", &attrBuf, &childBuf) < 0)
-        goto cleanup;
+    virXMLFormatElement(buf, "migrationSource", &attrBuf, &childBuf);
 
     ret = 0;
 
@@ -2664,8 +2662,7 @@ qemuDomainObjPrivateXMLFormatNBDMigration(virBufferPtr buf,
                                                             priv->driver->xmlopt) < 0)
             goto cleanup;
 
-        if (virXMLFormatElement(buf, "disk", &attrBuf, &childBuf) < 0)
-            goto cleanup;
+        virXMLFormatElement(buf, "disk", &attrBuf, &childBuf);
     }
 
     ret = 0;
@@ -2714,8 +2711,7 @@ qemuDomainObjPrivateXMLFormatJob(virBufferPtr buf,
     if (priv->job.migParams)
         qemuMigrationParamsFormat(&childBuf, priv->job.migParams);
 
-    if (virXMLFormatElement(buf, "job", &attrBuf, &childBuf) < 0)
-        goto cleanup;
+    virXMLFormatElement(buf, "job", &attrBuf, &childBuf);
 
     ret = 0;
 

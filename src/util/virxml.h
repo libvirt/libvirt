@@ -215,12 +215,11 @@ virXMLValidateAgainstSchema(const char *schemafile,
 void
 virXMLValidatorFree(virXMLValidatorPtr validator);
 
-int
+void
 virXMLFormatElement(virBufferPtr buf,
                     const char *name,
                     virBufferPtr attrBuf,
-                    virBufferPtr childBuf)
-    G_GNUC_WARN_UNUSED_RESULT;
+                    virBufferPtr childBuf);
 
 struct _virXPathContextNodeSave {
     xmlXPathContextPtr ctxt;
