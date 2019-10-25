@@ -27985,6 +27985,17 @@ virDomainMemtuneFormat(virBufferPtr buf,
 
     virXMLFormatElement(buf, "memtune", NULL, &childBuf);
 
+    ret = 0;
+    return ret;
+}
+
+
+static void
+virDomainMemorybackingFormat(virBufferPtr buf,
+                             const virDomainMemtune *mem)
+{
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+
     virBufferSetChildIndent(&childBuf, buf);
 
     if (mem->nhugepages)
@@ -28006,9 +28017,6 @@ virDomainMemtuneFormat(virBufferPtr buf,
         virBufferAddLit(&childBuf, "<discard/>\n");
 
     virXMLFormatElement(buf, "memoryBacking", NULL, &childBuf);
-
-    ret = 0;
-    return ret;
 }
 
 
@@ -28483,6 +28491,8 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
 
     if (virDomainMemtuneFormat(buf, &def->mem) < 0)
         goto error;
+
+    virDomainMemorybackingFormat(buf, &def->mem);
 
     if (virDomainCpuDefFormat(buf, def) < 0)
         goto error;
