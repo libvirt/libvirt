@@ -313,6 +313,8 @@ doTestQemu(const char *inputDir G_GNUC_UNUSED,
            const char *suffix G_GNUC_UNUSED,
            void *opaque)
 {
+    int ret = 0;
+
     if (STREQ(arch, "x86_64")) {
         /* For x86_64 we test three combinations:
          *
@@ -321,13 +323,16 @@ doTestQemu(const char *inputDir G_GNUC_UNUSED,
          *   - TCG with default machine
          */
         if (doTestQemuInternal(version, NULL, arch,
-                               VIR_DOMAIN_VIRT_KVM, opaque) < 0 ||
-            doTestQemuInternal(version, "q35", arch,
-                               VIR_DOMAIN_VIRT_KVM, opaque) < 0 ||
-            doTestQemuInternal(version, NULL, arch,
-                               VIR_DOMAIN_VIRT_QEMU, opaque) < 0) {
-            return -1;
-        }
+                               VIR_DOMAIN_VIRT_KVM, opaque) < 0)
+            ret = -1;
+
+        if (doTestQemuInternal(version, "q35", arch,
+                               VIR_DOMAIN_VIRT_KVM, opaque) < 0)
+            ret = -1;
+
+        if (doTestQemuInternal(version, NULL, arch,
+                               VIR_DOMAIN_VIRT_QEMU, opaque) < 0)
+            ret = -1;
     } else if (STREQ(arch, "aarch64")) {
         /* For aarch64 we test two combinations:
          *
@@ -335,21 +340,22 @@ doTestQemu(const char *inputDir G_GNUC_UNUSED,
          *   - KVM with virt machine
          */
         if (doTestQemuInternal(version, NULL, arch,
-                               VIR_DOMAIN_VIRT_KVM, opaque) < 0 ||
-            doTestQemuInternal(version, "virt", arch,
-                               VIR_DOMAIN_VIRT_KVM, opaque) < 0) {
-            return -1;
-        }
+                               VIR_DOMAIN_VIRT_KVM, opaque) < 0)
+            ret = -1;
+
+        if (doTestQemuInternal(version, "virt", arch,
+                               VIR_DOMAIN_VIRT_KVM, opaque) < 0)
+            ret = -1;
     } else if (STRPREFIX(arch, "riscv")) {
         /* Unfortunately we have to skip RISC-V at the moment */
         return 0;
     } else {
         if (doTestQemuInternal(version, NULL, arch,
                                VIR_DOMAIN_VIRT_KVM, opaque) < 0)
-            return -1;
+            ret = -1;
     }
 
-    return 0;
+    return ret;
 }
 
 #endif
@@ -431,7 +437,7 @@ mymain(void)
                             abs_srcdir "/qemufirmwaredata/home/user/.config/qemu/firmware");
 
     if (testQemuCapsIterate(".xml", doTestQemu, cfg) < 0)
-        return EXIT_FAILURE;
+        ret = -1;
 
     /*
      * Run "tests/qemucapsprobe /path/to/qemu/binary >foo.replies"

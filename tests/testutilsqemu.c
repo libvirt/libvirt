@@ -902,6 +902,7 @@ testQemuCapsIterate(const char *suffix,
     DIR *dir = NULL;
     int rc;
     int ret = -1;
+    bool fail = false;
 
     if (!callback)
         return 0;
@@ -949,12 +950,11 @@ testQemuCapsIterate(const char *suffix,
          * the callback.
          */
         if (callback(TEST_QEMU_CAPS_PATH, "caps", version,
-                     archName, suffix + 1, opaque) < 0) {
-            goto cleanup;
-        }
+                     archName, suffix + 1, opaque) < 0)
+            fail = true;
     }
 
-    if (rc < 0)
+    if (rc < 0 || fail)
         goto cleanup;
 
     ret = 0;
