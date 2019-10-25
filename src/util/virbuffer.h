@@ -35,6 +35,15 @@ typedef virBuffer *virBufferPtr;
 
 #define VIR_BUFFER_INITIALIZER { NULL, 0 }
 
+/**
+ * VIR_BUFFER_INIT_CHILD:
+ * @parentbuf: parent buffer for XML element formatting
+ *
+ * Intitialize a virBuffer structure and set up the indentation level for
+ * formatting XML subelements of @parentbuf.
+ */
+#define VIR_BUFFER_INIT_CHILD(parentbuf) { NULL, (parentbuf)->indent + 2 }
+
 struct _virBuffer {
     GString *str;
     int indent;
