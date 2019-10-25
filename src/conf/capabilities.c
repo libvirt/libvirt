@@ -1024,7 +1024,6 @@ virCapabilitiesFormatMemoryBandwidth(virBufferPtr buf,
                                      virCapsHostMemBWPtr memBW)
 {
     size_t i = 0;
-    virBuffer childrenBuf = VIR_BUFFER_INITIALIZER;
 
     if (!memBW->nnodes)
         return 0;
@@ -1033,17 +1032,18 @@ virCapabilitiesFormatMemoryBandwidth(virBufferPtr buf,
     virBufferAdjustIndent(buf, 2);
 
     for (i = 0; i < memBW->nnodes; i++) {
+        g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) childrenBuf = VIR_BUFFER_INITIALIZER;
         virCapsHostMemBWNodePtr node = memBW->nodes[i];
         virResctrlInfoMemBWPerNodePtr control = &node->control;
-        char *cpus_str = virBitmapFormat(node->cpus);
+        g_autofree char *cpus_str = virBitmapFormat(node->cpus);
 
         if (!cpus_str)
             return -1;
 
-        virBufferAsprintf(buf,
-                          "<node id='%u' cpus='%s'",
+        virBufferAsprintf(&attrBuf,
+                          " id='%u' cpus='%s'",
                           node->id, cpus_str);
-        VIR_FREE(cpus_str);
 
         virBufferSetChildIndent(&childrenBuf, buf);
         virBufferAsprintf(&childrenBuf,
@@ -1052,13 +1052,7 @@ virCapabilitiesFormatMemoryBandwidth(virBufferPtr buf,
                           control->granularity, control->min,
                           control->max_allocation);
 
-        if (virBufferUse(&childrenBuf)) {
-            virBufferAddLit(buf, ">\n");
-            virBufferAddBuffer(buf, &childrenBuf);
-            virBufferAddLit(buf, "</node>\n");
-        } else {
-            virBufferAddLit(buf, "/>\n");
-        }
+        virXMLFormatElement(buf, "node", &attrBuf, &childrenBuf);
     }
 
     if (virCapabilitiesFormatResctrlMonitor(buf, memBW->monitor) < 0)
