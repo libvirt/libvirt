@@ -5572,21 +5572,16 @@ virQEMUCapsFillDomainFeatureSEVCaps(virQEMUCapsPtr qemuCaps,
                                     virDomainCapsPtr domCaps)
 {
     virSEVCapability *cap = qemuCaps->sevCapabilities;
-    g_autoptr(virSEVCapability) sev = NULL;
 
     if (!cap)
         return 0;
 
-    if (VIR_ALLOC(sev) < 0)
-        return -1;
+    domCaps->sev = g_new0(virSEVCapability, 1);
 
-    sev->pdh = g_strdup(cap->pdh);
-
-    sev->cert_chain = g_strdup(cap->cert_chain);
-
-    sev->cbitpos = cap->cbitpos;
-    sev->reduced_phys_bits = cap->reduced_phys_bits;
-    domCaps->sev = g_steal_pointer(&sev);
+    domCaps->sev->pdh = g_strdup(cap->pdh);
+    domCaps->sev->cert_chain = g_strdup(cap->cert_chain);
+    domCaps->sev->cbitpos = cap->cbitpos;
+    domCaps->sev->reduced_phys_bits = cap->reduced_phys_bits;
 
     return 0;
 }
