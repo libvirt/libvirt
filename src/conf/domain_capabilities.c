@@ -321,7 +321,7 @@ virDomainCapsEnumClear(virDomainCapsEnumPtr capsEnum)
 
 static int
 virDomainCapsEnumFormat(virBufferPtr buf,
-                        virDomainCapsEnumPtr capsEnum,
+                        const virDomainCapsEnum *capsEnum,
                         const char *capsEnumName,
                         virDomainCapsValToStr valToStr)
 {
@@ -362,7 +362,7 @@ virDomainCapsEnumFormat(virBufferPtr buf,
 
 static void
 virDomainCapsStringValuesFormat(virBufferPtr buf,
-                                virDomainCapsStringValuesPtr values)
+                                const virDomainCapsStringValues *values)
 {
     size_t i;
 
@@ -406,7 +406,7 @@ virDomainCapsStringValuesFormat(virBufferPtr buf,
 
 static void
 virDomainCapsLoaderFormat(virBufferPtr buf,
-                          virDomainCapsLoaderPtr loader)
+                          const virDomainCapsLoader *loader)
 {
     FORMAT_PROLOGUE(loader);
 
@@ -420,9 +420,9 @@ virDomainCapsLoaderFormat(virBufferPtr buf,
 
 static void
 virDomainCapsOSFormat(virBufferPtr buf,
-                      virDomainCapsOSPtr os)
+                      const virDomainCapsOS *os)
 {
-    virDomainCapsLoaderPtr loader = &os->loader;
+    const virDomainCapsLoader *loader = &os->loader;
 
     FORMAT_PROLOGUE(os);
 
@@ -453,7 +453,7 @@ virDomainCapsCPUCustomFormat(virBufferPtr buf,
 
 static void
 virDomainCapsCPUFormat(virBufferPtr buf,
-                       virDomainCapsCPUPtr cpu)
+                       const virDomainCapsCPU *cpu)
 {
     virBufferAddLit(buf, "<cpu>\n");
     virBufferAdjustIndent(buf, 2);
@@ -492,7 +492,7 @@ virDomainCapsCPUFormat(virBufferPtr buf,
 
 static void
 virDomainCapsDeviceDiskFormat(virBufferPtr buf,
-                              virDomainCapsDeviceDiskPtr const disk)
+                              const virDomainCapsDeviceDisk *disk)
 {
     FORMAT_PROLOGUE(disk);
 
@@ -506,7 +506,7 @@ virDomainCapsDeviceDiskFormat(virBufferPtr buf,
 
 static void
 virDomainCapsDeviceGraphicsFormat(virBufferPtr buf,
-                                  virDomainCapsDeviceGraphicsPtr const graphics)
+                                  const virDomainCapsDeviceGraphics *graphics)
 {
     FORMAT_PROLOGUE(graphics);
 
@@ -518,7 +518,7 @@ virDomainCapsDeviceGraphicsFormat(virBufferPtr buf,
 
 static void
 virDomainCapsDeviceVideoFormat(virBufferPtr buf,
-                               virDomainCapsDeviceVideoPtr const video)
+                               const virDomainCapsDeviceVideo *video)
 {
     FORMAT_PROLOGUE(video);
 
@@ -530,7 +530,7 @@ virDomainCapsDeviceVideoFormat(virBufferPtr buf,
 
 static void
 virDomainCapsDeviceHostdevFormat(virBufferPtr buf,
-                                 virDomainCapsDeviceHostdevPtr const hostdev)
+                                 const virDomainCapsDeviceHostdev *hostdev)
 {
     FORMAT_PROLOGUE(hostdev);
 
@@ -546,7 +546,7 @@ virDomainCapsDeviceHostdevFormat(virBufferPtr buf,
 
 static void
 virDomainCapsDeviceRNGFormat(virBufferPtr buf,
-                             virDomainCapsDeviceRNGPtr const rng)
+                             const virDomainCapsDeviceRNG *rng)
 {
     FORMAT_PROLOGUE(rng);
 
@@ -575,7 +575,7 @@ virDomainCapsDeviceRNGFormat(virBufferPtr buf,
  */
 static void
 virDomainCapsFeatureGICFormat(virBufferPtr buf,
-                              virDomainCapsFeatureGICPtr const gic)
+                              const virDomainCapsFeatureGIC *gic)
 {
     FORMAT_PROLOGUE(gic);
 
@@ -586,7 +586,7 @@ virDomainCapsFeatureGICFormat(virBufferPtr buf,
 
 static void
 virDomainCapsFeatureSEVFormat(virBufferPtr buf,
-                              virSEVCapabilityPtr const sev)
+                              const virSEVCapability *sev)
 {
     if (!sev) {
         virBufferAddLit(buf, "<sev supported='no'/>\n");
@@ -605,7 +605,7 @@ virDomainCapsFeatureSEVFormat(virBufferPtr buf,
 
 
 char *
-virDomainCapsFormat(virDomainCapsPtr const caps)
+virDomainCapsFormat(const virDomainCaps *caps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *virttype_str = virDomainVirtTypeToString(caps->virttype);
@@ -669,7 +669,7 @@ virDomainCapsFormat(virDomainCapsPtr const caps)
 
 
 static int
-virDomainCapsDeviceRNGDefValidate(virDomainCapsPtr const caps,
+virDomainCapsDeviceRNGDefValidate(const virDomainCaps *caps,
                                   const virDomainRNGDef *dev)
 {
     if (ENUM_VALUE_MISSING(caps->rng.model, dev->model)) {
@@ -683,7 +683,7 @@ virDomainCapsDeviceRNGDefValidate(virDomainCapsPtr const caps,
 
 
 int
-virDomainCapsDeviceDefValidate(virDomainCapsPtr const caps,
+virDomainCapsDeviceDefValidate(const virDomainCaps *caps,
                                const virDomainDeviceDef *dev,
                                const virDomainDef *def G_GNUC_UNUSED)
 {
