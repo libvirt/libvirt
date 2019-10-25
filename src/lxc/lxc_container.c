@@ -1950,7 +1950,7 @@ static int lxcContainerDropCapabilities(virDomainDefPtr def,
     size_t i;
     int policy = def->features[VIR_DOMAIN_FEATURE_CAPABILITIES];
 
-    /* Maps virDomainCapsFeature to CAPS_* */
+    /* Maps virDomainProcessCapsFeature to CAPS_* */
     static int capsMapping[] = {CAP_AUDIT_CONTROL,
                                 CAP_AUDIT_WRITE,
                                 CAP_BLOCK_SUSPEND,
@@ -1996,7 +1996,7 @@ static int lxcContainerDropCapabilities(virDomainDefPtr def,
         capng_clear(CAPNG_SELECT_BOTH);
 
     /* Apply all single capabilities changes */
-    for (i = 0; i < VIR_DOMAIN_CAPS_FEATURE_LAST; i++) {
+    for (i = 0; i < VIR_DOMAIN_PROCES_CAPS_FEATURE_LAST; i++) {
         bool toDrop = false;
         int state = def->caps_features[i];
 
@@ -2013,21 +2013,21 @@ static int lxcContainerDropCapabilities(virDomainDefPtr def,
                                         capsMapping[i])) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Failed to add capability %s: %d"),
-                               virDomainCapsFeatureTypeToString(i), ret);
+                               virDomainProcessCapsFeatureTypeToString(i), ret);
                 return -1;
             }
             break;
 
         case VIR_DOMAIN_CAPABILITIES_POLICY_DEFAULT:
             switch (i) {
-            case VIR_DOMAIN_CAPS_FEATURE_SYS_BOOT: /* No use of reboot */
+            case VIR_DOMAIN_PROCES_CAPS_FEATURE_SYS_BOOT: /* No use of reboot */
                 toDrop = !keepReboot && (state != VIR_TRISTATE_SWITCH_ON);
                 break;
-            case VIR_DOMAIN_CAPS_FEATURE_SYS_MODULE: /* No kernel module loading */
-            case VIR_DOMAIN_CAPS_FEATURE_SYS_TIME: /* No changing the clock */
-            case VIR_DOMAIN_CAPS_FEATURE_MKNOD: /* No creating device nodes */
-            case VIR_DOMAIN_CAPS_FEATURE_AUDIT_CONTROL: /* No messing with auditing status */
-            case VIR_DOMAIN_CAPS_FEATURE_MAC_ADMIN: /* No messing with LSM config */
+            case VIR_DOMAIN_PROCES_CAPS_FEATURE_SYS_MODULE: /* No kernel module loading */
+            case VIR_DOMAIN_PROCES_CAPS_FEATURE_SYS_TIME: /* No changing the clock */
+            case VIR_DOMAIN_PROCES_CAPS_FEATURE_MKNOD: /* No creating device nodes */
+            case VIR_DOMAIN_PROCES_CAPS_FEATURE_AUDIT_CONTROL: /* No messing with auditing status */
+            case VIR_DOMAIN_PROCES_CAPS_FEATURE_MAC_ADMIN: /* No messing with LSM config */
                 toDrop = (state != VIR_TRISTATE_SWITCH_ON);
                 break;
             default: /* User specified capabilities to drop */
@@ -2045,7 +2045,7 @@ static int lxcContainerDropCapabilities(virDomainDefPtr def,
                                               capsMapping[i])) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Failed to remove capability %s: %d"),
-                               virDomainCapsFeatureTypeToString(i), ret);
+                               virDomainProcessCapsFeatureTypeToString(i), ret);
                 return -1;
             }
             break;

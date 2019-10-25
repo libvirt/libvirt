@@ -305,7 +305,7 @@ virLXCTeardownHostUSBDeviceCgroup(virUSBDevicePtr dev G_GNUC_UNUSED,
 static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
                                       virCgroupPtr cgroup)
 {
-    int capMknod = def->caps_features[VIR_DOMAIN_CAPS_FEATURE_MKNOD];
+    int capMknod = def->caps_features[VIR_DOMAIN_PROCES_CAPS_FEATURE_MKNOD];
     int ret = -1;
     size_t i;
     static virLXCCgroupDevicePolicy devices[] = {

@@ -211,8 +211,8 @@ VIR_ENUM_IMPL(virDomainMsrsUnknown,
               "fault",
 );
 
-VIR_ENUM_IMPL(virDomainCapsFeature,
-              VIR_DOMAIN_CAPS_FEATURE_LAST,
+VIR_ENUM_IMPL(virDomainProcessCapsFeature,
+              VIR_DOMAIN_PROCES_CAPS_FEATURE_LAST,
               "audit_control",
               "audit_write",
               "block_suspend",
@@ -20616,7 +20616,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
 
     for (i = 0; i < n; i++) {
-        int val = virDomainCapsFeatureTypeFromString((const char *)nodes[i]->name);
+        int val = virDomainProcessCapsFeatureTypeFromString((const char *)nodes[i]->name);
         if (val < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unexpected capability feature '%s'"), nodes[i]->name);
@@ -20627,7 +20627,7 @@ virDomainDefParseXML(xmlDocPtr xml,
             if ((def->caps_features[val] = virTristateSwitchTypeFromString(tmp)) == -1) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("unknown state attribute '%s' of feature capability '%s'"),
-                               tmp, virDomainCapsFeatureTypeToString(val));
+                               tmp, virDomainProcessCapsFeatureTypeToString(val));
                 goto error;
             }
             VIR_FREE(tmp);
@@ -28295,10 +28295,10 @@ virDomainDefFormatFeatures(virBufferPtr buf,
         case VIR_DOMAIN_FEATURE_CAPABILITIES:
             virBufferSetChildIndent(&tmpChildBuf, &childBuf);
 
-            for (j = 0; j < VIR_DOMAIN_CAPS_FEATURE_LAST; j++) {
+            for (j = 0; j < VIR_DOMAIN_PROCES_CAPS_FEATURE_LAST; j++) {
                 if (def->caps_features[j] != VIR_TRISTATE_SWITCH_ABSENT)
                     virBufferAsprintf(&tmpChildBuf, "<%s state='%s'/>\n",
-                                      virDomainCapsFeatureTypeToString(j),
+                                      virDomainProcessCapsFeatureTypeToString(j),
                                       virTristateSwitchTypeToString(def->caps_features[j]));
             }
 

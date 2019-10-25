@@ -1043,8 +1043,8 @@ lxcSetCapDrop(virDomainDefPtr def, virConfPtr properties)
     if (virConfGetValueString(properties, "lxc.cap.drop", &value) > 0)
         toDrop = virStringSplit(value, " ", 0);
 
-    for (i = 0; i < VIR_DOMAIN_CAPS_FEATURE_LAST; i++) {
-        capString = virDomainCapsFeatureTypeToString(i);
+    for (i = 0; i < VIR_DOMAIN_PROCES_CAPS_FEATURE_LAST; i++) {
+        capString = virDomainProcessCapsFeatureTypeToString(i);
         if (toDrop != NULL &&
             virStringListHasString((const char **)toDrop, capString))
             def->caps_features[i] = VIR_TRISTATE_SWITCH_OFF;
