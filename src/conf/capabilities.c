@@ -948,7 +948,7 @@ virCapabilitiesFormatCaches(virBufferPtr buf,
 
     for (i = 0; i < cache->nbanks; i++) {
         virCapsHostCacheBankPtr bank = cache->banks[i];
-        char *cpus_str = virBitmapFormat(bank->cpus);
+        g_autofree char *cpus_str = virBitmapFormat(bank->cpus);
         const char *unit = NULL;
         unsigned long long short_size = virFormatIntPretty(bank->size, &unit);
 
@@ -965,7 +965,6 @@ virCapabilitiesFormatCaches(virBufferPtr buf,
                           bank->id, bank->level,
                           virCacheTypeToString(bank->type),
                           short_size, unit, cpus_str);
-        VIR_FREE(cpus_str);
 
         virBufferSetChildIndent(&childrenBuf, buf);
         for (j = 0; j < bank->ncontrols; j++) {
