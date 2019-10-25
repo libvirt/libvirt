@@ -5250,7 +5250,7 @@ virQEMUCapsFillDomainOSCaps(virDomainCapsOSPtr os,
 }
 
 
-static int
+static void
 virQEMUCapsFillDomainCPUCaps(virCapsPtr caps,
                              virQEMUCapsPtr qemuCaps,
                              virDomainCapsPtr domCaps)
@@ -5287,23 +5287,19 @@ virQEMUCapsFillDomainCPUCaps(virCapsPtr caps,
         }
         domCaps->cpu.custom = filtered;
     }
-
-    return 0;
 }
 
 
-static int
+static void
 virQEMUCapsFillDomainIOThreadCaps(virQEMUCapsPtr qemuCaps,
                                   virDomainCapsPtr domCaps)
 {
     domCaps->iothreads = virTristateBoolFromBool(
             virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_IOTHREAD));
-
-    return 0;
 }
 
 
-static int
+static void
 virQEMUCapsFillDomainDeviceDiskCaps(virQEMUCapsPtr qemuCaps,
                                     const char *machine,
                                     virDomainCapsDeviceDiskPtr disk)
@@ -5348,12 +5344,10 @@ virQEMUCapsFillDomainDeviceDiskCaps(virQEMUCapsPtr qemuCaps,
         VIR_DOMAIN_CAPS_ENUM_SET(disk->model,
                                  VIR_DOMAIN_DISK_MODEL_VIRTIO_NON_TRANSITIONAL);
     }
-
-    return 0;
 }
 
 
-static int
+static void
 virQEMUCapsFillDomainDeviceGraphicsCaps(virQEMUCapsPtr qemuCaps,
                                         virDomainCapsDeviceGraphicsPtr dev)
 {
@@ -5365,12 +5359,10 @@ virQEMUCapsFillDomainDeviceGraphicsCaps(virQEMUCapsPtr qemuCaps,
         VIR_DOMAIN_CAPS_ENUM_SET(dev->type, VIR_DOMAIN_GRAPHICS_TYPE_VNC);
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPICE))
         VIR_DOMAIN_CAPS_ENUM_SET(dev->type, VIR_DOMAIN_GRAPHICS_TYPE_SPICE);
-
-    return 0;
 }
 
 
-static int
+static void
 virQEMUCapsFillDomainDeviceVideoCaps(virQEMUCapsPtr qemuCaps,
                                      virDomainCapsDeviceVideoPtr dev)
 {
@@ -5389,12 +5381,10 @@ virQEMUCapsFillDomainDeviceVideoCaps(virQEMUCapsPtr qemuCaps,
         VIR_DOMAIN_CAPS_ENUM_SET(dev->modelType, VIR_DOMAIN_VIDEO_TYPE_VIRTIO);
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_BOCHS_DISPLAY))
         VIR_DOMAIN_CAPS_ENUM_SET(dev->modelType, VIR_DOMAIN_VIDEO_TYPE_BOCHS);
-
-    return 0;
 }
 
 
-static int
+static void
 virQEMUCapsFillDomainDeviceHostdevCaps(virQEMUCapsPtr qemuCaps,
                                        virDomainCapsDeviceHostdevPtr hostdev)
 {
@@ -5432,12 +5422,10 @@ virQEMUCapsFillDomainDeviceHostdevCaps(virQEMUCapsPtr qemuCaps,
                                  VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT,
                                  VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO);
     }
-
-    return 0;
 }
 
 
-static int
+static void
 virQEMUCapsFillDomainDeviceRNGCaps(virQEMUCapsPtr qemuCaps,
                                    virDomainCapsDeviceRNGPtr rng)
 {
@@ -5460,8 +5448,6 @@ virQEMUCapsFillDomainDeviceRNGCaps(virQEMUCapsPtr qemuCaps,
         VIR_DOMAIN_CAPS_ENUM_SET(rng->backendModel, VIR_DOMAIN_RNG_BACKEND_EGD);
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_RNG_RANDOM))
         VIR_DOMAIN_CAPS_ENUM_SET(rng->backendModel, VIR_DOMAIN_RNG_BACKEND_RANDOM);
-
-    return 0;
 }
 
 
@@ -5523,10 +5509,8 @@ virQEMUCapsSupportsGICVersion(virQEMUCapsPtr qemuCaps,
  * and virtualization type. Moreover, a common format is used to store
  * information about enumerations in @domCaps, so further processing is
  * required.
- *
- * Returns: 0 on success, <0 on failure
  */
-static int
+static void
 virQEMUCapsFillDomainFeatureGICCaps(virQEMUCapsPtr qemuCaps,
                                     virDomainCapsPtr domCaps)
 {
@@ -5536,7 +5520,7 @@ virQEMUCapsFillDomainFeatureGICCaps(virQEMUCapsPtr qemuCaps,
     gic->supported = VIR_TRISTATE_BOOL_NO;
 
     if (!qemuDomainMachineIsARMVirt(domCaps->machine, domCaps->arch))
-        return 0;
+        return;
 
     for (version = VIR_GIC_VERSION_LAST - 1;
          version > VIR_GIC_VERSION_NONE;
@@ -5551,8 +5535,6 @@ virQEMUCapsFillDomainFeatureGICCaps(virQEMUCapsPtr qemuCaps,
         VIR_DOMAIN_CAPS_ENUM_SET(gic->version,
                                  version);
     }
-
-    return 0;
 }
 
 
@@ -5564,17 +5546,15 @@ virQEMUCapsFillDomainFeatureGICCaps(virQEMUCapsPtr qemuCaps,
  * Take the information about SEV capabilities that has been obtained
  * using the 'query-sev-capabilities' QMP command and stored in @qemuCaps
  * and convert it to a form suitable for @domCaps.
- *
- * Returns: 0 on success, -1 on failure
  */
-static int
+static void
 virQEMUCapsFillDomainFeatureSEVCaps(virQEMUCapsPtr qemuCaps,
                                     virDomainCapsPtr domCaps)
 {
     virSEVCapability *cap = qemuCaps->sevCapabilities;
 
     if (!cap)
-        return 0;
+        return;
 
     domCaps->sev = g_new0(virSEVCapability, 1);
 
@@ -5582,8 +5562,6 @@ virQEMUCapsFillDomainFeatureSEVCaps(virQEMUCapsPtr qemuCaps,
     domCaps->sev->cert_chain = g_strdup(cap->cert_chain);
     domCaps->sev->cbitpos = cap->cbitpos;
     domCaps->sev->reduced_phys_bits = cap->reduced_phys_bits;
-
-    return 0;
 }
 
 
@@ -5623,18 +5601,18 @@ virQEMUCapsFillDomainCaps(virCapsPtr caps,
                                     domCaps->machine,
                                     domCaps->arch,
                                     privileged,
-                                    firmwares, nfirmwares) < 0 ||
-        virQEMUCapsFillDomainCPUCaps(caps, qemuCaps, domCaps) < 0 ||
-        virQEMUCapsFillDomainIOThreadCaps(qemuCaps, domCaps) < 0 ||
-        virQEMUCapsFillDomainDeviceDiskCaps(qemuCaps,
-                                            domCaps->machine, disk) < 0 ||
-        virQEMUCapsFillDomainDeviceGraphicsCaps(qemuCaps, graphics) < 0 ||
-        virQEMUCapsFillDomainDeviceVideoCaps(qemuCaps, video) < 0 ||
-        virQEMUCapsFillDomainDeviceHostdevCaps(qemuCaps, hostdev) < 0 ||
-        virQEMUCapsFillDomainDeviceRNGCaps(qemuCaps, rng) < 0 ||
-        virQEMUCapsFillDomainFeatureGICCaps(qemuCaps, domCaps) < 0 ||
-        virQEMUCapsFillDomainFeatureSEVCaps(qemuCaps, domCaps) < 0)
+                                    firmwares, nfirmwares) < 0)
         return -1;
+
+    virQEMUCapsFillDomainCPUCaps(caps, qemuCaps, domCaps);
+    virQEMUCapsFillDomainIOThreadCaps(qemuCaps, domCaps);
+    virQEMUCapsFillDomainDeviceDiskCaps(qemuCaps, domCaps->machine, disk);
+    virQEMUCapsFillDomainDeviceGraphicsCaps(qemuCaps, graphics);
+    virQEMUCapsFillDomainDeviceVideoCaps(qemuCaps, video);
+    virQEMUCapsFillDomainDeviceHostdevCaps(qemuCaps, hostdev);
+    virQEMUCapsFillDomainDeviceRNGCaps(qemuCaps, rng);
+    virQEMUCapsFillDomainFeatureGICCaps(qemuCaps, domCaps);
+    virQEMUCapsFillDomainFeatureSEVCaps(qemuCaps, domCaps);
 
     return 0;
 }
