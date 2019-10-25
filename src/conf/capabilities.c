@@ -938,7 +938,6 @@ virCapabilitiesFormatCaches(virBufferPtr buf,
 {
     size_t i = 0;
     size_t j = 0;
-    virBuffer childrenBuf = VIR_BUFFER_INITIALIZER;
 
     if (!cache->nbanks)
         return 0;
@@ -947,6 +946,8 @@ virCapabilitiesFormatCaches(virBufferPtr buf,
     virBufferAdjustIndent(buf, 2);
 
     for (i = 0; i < cache->nbanks; i++) {
+        g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) childrenBuf = VIR_BUFFER_INITIALIZER;
         virCapsHostCacheBankPtr bank = cache->banks[i];
         g_autofree char *cpus_str = virBitmapFormat(bank->cpus);
         const char *unit = NULL;
@@ -959,8 +960,8 @@ virCapabilitiesFormatCaches(virBufferPtr buf,
          * Let's just *hope* the size is aligned to KiBs so that it does not
          * bite is back in the future
          */
-        virBufferAsprintf(buf,
-                          "<bank id='%u' level='%u' type='%s' "
+        virBufferAsprintf(&attrBuf,
+                          " id='%u' level='%u' type='%s' "
                           "size='%llu' unit='%s' cpus='%s'",
                           bank->id, bank->level,
                           virCacheTypeToString(bank->type),
@@ -1006,13 +1007,7 @@ virCapabilitiesFormatCaches(virBufferPtr buf,
                               controls->max_allocation);
         }
 
-        if (virBufferUse(&childrenBuf)) {
-            virBufferAddLit(buf, ">\n");
-            virBufferAddBuffer(buf, &childrenBuf);
-            virBufferAddLit(buf, "</bank>\n");
-        } else {
-            virBufferAddLit(buf, "/>\n");
-        }
+        virXMLFormatElement(buf, "bank", &attrBuf, &childrenBuf);
     }
 
     if (virCapabilitiesFormatResctrlMonitor(buf, cache->monitor) < 0)
