@@ -15229,6 +15229,58 @@ qemuDomainSnapshotDiskCleanup(qemuDomainSnapshotDiskDataPtr data,
 
 
 static int
+qemuDomainSnapshotDiskPrepareOneBlockdev(virQEMUDriverPtr driver,
+                                         virDomainObjPtr vm,
+                                         qemuDomainSnapshotDiskDataPtr dd,
+                                         virQEMUDriverConfigPtr cfg,
+                                         bool reuse,
+                                         virHashTablePtr blockNamedNodeData,
+                                         qemuDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    g_autoptr(virStorageSource) terminator = NULL;
+    int rc;
+
+    /* create a terminator for the snapshot disks so that qemu does not try
+     * to open them at first */
+    if (!(terminator = virStorageSourceNew()))
+        return -1;
+
+    if (qemuDomainPrepareStorageSourceBlockdev(dd->disk, dd->src,
+                                               priv, cfg) < 0)
+        return -1;
+
+    if (!(dd->crdata = qemuBuildStorageSourceChainAttachPrepareBlockdevTop(dd->src,
+                                                                           terminator,
+                                                                           priv->qemuCaps)))
+        return -1;
+
+    if (reuse) {
+        if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+            return -1;
+
+        rc = qemuBlockStorageSourceAttachApply(qemuDomainGetMonitor(vm),
+                                               dd->crdata->srcdata[0]);
+
+        if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+            return -1;
+    } else {
+        if (qemuBlockStorageSourceCreateDetectSize(blockNamedNodeData,
+                                                   dd->src, dd->disk->src) < 0)
+            return -1;
+
+        if (qemuBlockStorageSourceCreate(vm, dd->src, dd->disk->src,
+                                         NULL, dd->crdata->srcdata[0],
+                                         asyncJob) < 0)
+            return -1;
+    }
+
+    dd->blockdevadded = true;
+    return 0;
+}
+
+
+static int
 qemuDomainSnapshotDiskPrepareOne(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm,
                                  virQEMUDriverConfigPtr cfg,
@@ -15240,12 +15292,9 @@ qemuDomainSnapshotDiskPrepareOne(virQEMUDriverPtr driver,
                                  bool blockdev,
                                  qemuDomainAsyncJob asyncJob)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDiskDefPtr persistdisk;
-    g_autoptr(virStorageSource) terminator = NULL;
     bool supportsCreate;
     bool supportsBacking;
-    int rc;
 
     dd->disk = disk;
 
@@ -15314,43 +15363,10 @@ qemuDomainSnapshotDiskPrepareOne(virQEMUDriverPtr driver,
 
     dd->prepared = true;
 
-    if (blockdev) {
-        /* create a terminator for the snapshot disks so that qemu does not try
-         * to open them at first */
-        if (!(terminator = virStorageSourceNew()))
-            return -1;
-
-        if (qemuDomainPrepareStorageSourceBlockdev(dd->disk, dd->src,
-                                                   priv, cfg) < 0)
-            return -1;
-
-        if (!(dd->crdata = qemuBuildStorageSourceChainAttachPrepareBlockdevTop(dd->src,
-                                                                               terminator,
-                                                                               priv->qemuCaps)))
-            return -1;
-
-        if (reuse) {
-            if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
-                return -1;
-
-            rc = qemuBlockStorageSourceAttachApply(qemuDomainGetMonitor(vm),
-                                                   dd->crdata->srcdata[0]);
-
-            if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
-                return -1;
-        } else {
-            if (qemuBlockStorageSourceCreateDetectSize(blockNamedNodeData,
-                                                       dd->src, dd->disk->src) < 0)
-                return -1;
-
-            if (qemuBlockStorageSourceCreate(vm, dd->src, dd->disk->src,
-                                             NULL, dd->crdata->srcdata[0],
-                                             asyncJob) < 0)
-                return -1;
-        }
-
-        dd->blockdevadded = true;
-    }
+    if (blockdev &&
+        qemuDomainSnapshotDiskPrepareOneBlockdev(driver, vm, dd, cfg, reuse,
+                                                 blockNamedNodeData, asyncJob) < 0)
+        return -1;
 
     return 0;
 }
