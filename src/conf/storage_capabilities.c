@@ -93,7 +93,7 @@ virStoragePoolCapsIsLoaded(virCapsPtr driverCaps,
 static int
 virStoragePoolCapsFormatPool(virBufferPtr buf,
                              int poolType,
-                             virStoragePoolCapsPtr const caps)
+                             const virStoragePoolCaps *caps)
 {
     bool isLoaded = virStoragePoolCapsIsLoaded(caps->driverCaps, poolType);
 
@@ -115,7 +115,7 @@ virStoragePoolCapsFormatPool(virBufferPtr buf,
 
 
 char *
-virStoragePoolCapsFormat(virStoragePoolCapsPtr const caps)
+virStoragePoolCapsFormat(const virStoragePoolCaps *caps)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     size_t i;

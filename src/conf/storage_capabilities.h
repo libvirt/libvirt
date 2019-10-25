@@ -37,4 +37,4 @@ virStoragePoolCapsPtr
 virStoragePoolCapsNew(virCapsPtr driverCaps);
 
 char *
-virStoragePoolCapsFormat(virStoragePoolCapsPtr const caps);
+virStoragePoolCapsFormat(const virStoragePoolCaps *caps);
