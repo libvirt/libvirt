@@ -2799,7 +2799,13 @@ qemuDomainAttachMediatedDevice(virQEMUDriverPtr driver,
         if (qemuDomainEnsurePCIAddress(vm, &dev, driver) < 0)
             return -1;
         break;
-    case VIR_MDEV_MODEL_TYPE_VFIO_CCW:
+    case VIR_MDEV_MODEL_TYPE_VFIO_CCW: {
+        const char *devName = hostdev->source.subsys.u.mdev.uuidstr;
+        bool releaseaddr = false;
+
+        if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev, devName) < 0)
+            return -1;
+    }   break;
     case VIR_MDEV_MODEL_TYPE_LAST:
         break;
     }
