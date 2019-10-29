@@ -5634,11 +5634,11 @@ qemuMonitorJSONGetCPUDefinitions(qemuMonitorPtr mon,
             len = virJSONValueArraySize(blockers);
 
             if (len == 0) {
-                cpu->usable = VIR_TRISTATE_BOOL_YES;
+                cpu->usable = VIR_DOMCAPS_CPU_USABLE_YES;
                 continue;
             }
 
-            cpu->usable = VIR_TRISTATE_BOOL_NO;
+            cpu->usable = VIR_DOMCAPS_CPU_USABLE_NO;
             if (VIR_ALLOC_N(cpu->blockers, len + 1) < 0)
                 return -1;
 

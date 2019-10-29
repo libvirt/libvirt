@@ -478,11 +478,11 @@ testQemuMonitorJSONGetCPUDefinitions(const void *opaque)
     } while (0)
 
 #define CHECK(i, wantname) \
-    CHECK_FULL(i, wantname, VIR_TRISTATE_BOOL_ABSENT)
+    CHECK_FULL(i, wantname, VIR_DOMCAPS_CPU_USABLE_UNKNOWN)
 
 #define CHECK_USABLE(i, wantname, usable) \
     CHECK_FULL(i, wantname, \
-               usable ? VIR_TRISTATE_BOOL_YES : VIR_TRISTATE_BOOL_NO)
+               usable ? VIR_DOMCAPS_CPU_USABLE_YES : VIR_DOMCAPS_CPU_USABLE_NO)
 
     CHECK(0, "qemu64");
     CHECK_USABLE(1, "Opteron_G4", false);

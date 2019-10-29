@@ -1088,7 +1088,7 @@ typedef struct _qemuMonitorCPUDefInfo qemuMonitorCPUDefInfo;
 typedef qemuMonitorCPUDefInfo *qemuMonitorCPUDefInfoPtr;
 
 struct _qemuMonitorCPUDefInfo {
-    virTristateBool usable;
+    virDomainCapsCPUUsable usable;
     char *name;
     char **blockers; /* NULL-terminated string list */
 };
