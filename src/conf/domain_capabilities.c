@@ -597,16 +597,14 @@ static void
 virDomainCapsFormatFeatures(const virDomainCaps *caps,
                             virBufferPtr buf)
 {
-    virBufferAddLit(buf, "<features>\n");
-    virBufferAdjustIndent(buf, 2);
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
 
-    virDomainCapsFeatureGICFormat(buf, &caps->gic);
-    qemuDomainCapsFeatureFormatSimple(buf, "vmcoreinfo", caps->vmcoreinfo);
-    qemuDomainCapsFeatureFormatSimple(buf, "genid", caps->genid);
-    virDomainCapsFeatureSEVFormat(buf, caps->sev);
+    virDomainCapsFeatureGICFormat(&childBuf, &caps->gic);
+    qemuDomainCapsFeatureFormatSimple(&childBuf, "vmcoreinfo", caps->vmcoreinfo);
+    qemuDomainCapsFeatureFormatSimple(&childBuf, "genid", caps->genid);
+    virDomainCapsFeatureSEVFormat(&childBuf, caps->sev);
 
-    virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</features>\n");
+    virXMLFormatElement(buf, "features", NULL, &childBuf);
 }
 
 
