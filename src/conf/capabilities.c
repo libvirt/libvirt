@@ -915,7 +915,7 @@ virCapabilitiesFormatResctrlMonitor(virBufferPtr buf,
                                     virResctrlInfoMonPtr monitor)
 {
     size_t i = 0;
-    virBuffer childrenBuf = VIR_BUFFER_INITIALIZER;
+    virBuffer childrenBuf = VIR_BUFFER_INIT_CHILD(buf);
 
     /* monitor not supported, no capability */
     if (!monitor)
@@ -937,7 +937,6 @@ virCapabilitiesFormatResctrlMonitor(virBufferPtr buf,
                       "maxMonitors='%u'>\n",
                       monitor->max_monitor);
 
-    virBufferSetChildIndent(&childrenBuf, buf);
     for (i = 0; i < monitor->nfeatures; i++) {
         virBufferAsprintf(&childrenBuf,
                           "<feature name='%s'/>\n",
@@ -965,7 +964,7 @@ virCapabilitiesFormatCaches(virBufferPtr buf,
 
     for (i = 0; i < cache->nbanks; i++) {
         g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
-        g_auto(virBuffer) childrenBuf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) childrenBuf = VIR_BUFFER_INIT_CHILD(buf);
         virCapsHostCacheBankPtr bank = cache->banks[i];
         g_autofree char *cpus_str = virBitmapFormat(bank->cpus);
         const char *unit = NULL;
@@ -985,7 +984,6 @@ virCapabilitiesFormatCaches(virBufferPtr buf,
                           virCacheTypeToString(bank->type),
                           short_size, unit, cpus_str);
 
-        virBufferSetChildIndent(&childrenBuf, buf);
         for (j = 0; j < bank->ncontrols; j++) {
             const char *min_unit;
             virResctrlInfoPerCachePtr controls = bank->controls[j];
@@ -1051,7 +1049,7 @@ virCapabilitiesFormatMemoryBandwidth(virBufferPtr buf,
 
     for (i = 0; i < memBW->nnodes; i++) {
         g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
-        g_auto(virBuffer) childrenBuf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) childrenBuf = VIR_BUFFER_INIT_CHILD(buf);
         virCapsHostMemBWNodePtr node = memBW->nodes[i];
         virResctrlInfoMemBWPerNodePtr control = &node->control;
         g_autofree char *cpus_str = virBitmapFormat(node->cpus);
@@ -1063,7 +1061,6 @@ virCapabilitiesFormatMemoryBandwidth(virBufferPtr buf,
                           " id='%u' cpus='%s'",
                           node->id, cpus_str);
 
-        virBufferSetChildIndent(&childrenBuf, buf);
         virBufferAsprintf(&childrenBuf,
                           "<control granularity='%u' min ='%u' "
                           "maxAllocs='%u'/>\n",
@@ -1214,10 +1211,8 @@ static void
 virCapabilitiesFormatGuestFeatures(virCapsGuestPtr guest,
                                    virBufferPtr buf)
 {
-    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
     size_t i;
-
-    virBufferSetChildIndent(&childBuf, buf);
 
     for (i = 0; i < VIR_CAPS_GUEST_FEATURE_TYPE_LAST; i++) {
         virCapsGuestFeaturePtr feature = guest->features + i;
