@@ -27953,12 +27953,11 @@ virDomainIOMMUDefFormat(virBufferPtr buf,
 }
 
 
-static int
+static void
 virDomainMemtuneFormat(virBufferPtr buf,
                        const virDomainMemtune *mem)
 {
     g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
-    int ret = -1;
 
     virBufferSetChildIndent(&childBuf, buf);
 
@@ -27984,9 +27983,6 @@ virDomainMemtuneFormat(virBufferPtr buf,
     }
 
     virXMLFormatElement(buf, "memtune", NULL, &childBuf);
-
-    ret = 0;
-    return ret;
 }
 
 
@@ -28489,9 +28485,7 @@ virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
     if (virDomainDefFormatBlkiotune(buf, def) < 0)
         goto error;
 
-    if (virDomainMemtuneFormat(buf, &def->mem) < 0)
-        goto error;
-
+    virDomainMemtuneFormat(buf, &def->mem);
     virDomainMemorybackingFormat(buf, &def->mem);
 
     if (virDomainCpuDefFormat(buf, def) < 0)
