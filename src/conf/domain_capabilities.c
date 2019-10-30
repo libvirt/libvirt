@@ -40,6 +40,7 @@ VIR_ENUM_IMPL(virDomainCapsFeature,
               "iothreads",
               "vmcoreinfo",
               "genid",
+              "backingStoreInput",
 );
 
 static virClassPtr virDomainCapsClass;

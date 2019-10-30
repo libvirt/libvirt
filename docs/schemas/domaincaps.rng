@@ -208,6 +208,9 @@
         <ref name='vmgenid'/>
       </optional>
       <optional>
+        <ref name='backingStoreInput'/>
+      </optional>
+      <optional>
         <ref name='sev'/>
       </optional>
     </element>
@@ -228,6 +231,12 @@
 
   <define name='vmgenid'>
     <element name='genid'>
+      <ref name='supported'/>
+    </element>
+  </define>
+
+  <define name='backingStoreInput'>
+    <element name='backingStoreInput'>
       <ref name='supported'/>
     </element>
   </define>
