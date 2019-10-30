@@ -2289,7 +2289,7 @@ static int
 qemuStorageSourcePrivateDataFormat(virStorageSourcePtr src,
                                    virBufferPtr buf)
 {
-    g_auto(virBuffer) tmp = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) tmp = VIR_BUFFER_INIT_CHILD(buf);
     qemuDomainStorageSourcePrivatePtr srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
     int ret = -1;
 
@@ -2307,8 +2307,6 @@ qemuStorageSourcePrivateDataFormat(virStorageSourcePtr src,
 
     if (virStorageSourcePrivateDataFormatRelPath(src, buf) < 0)
         goto cleanup;
-
-    virBufferSetChildIndent(&tmp, buf);
 
     if (srcPriv) {
         qemuStorageSourcePrivateDataFormatSecinfo(&tmp, srcPriv->secinfo, "auth");
@@ -2435,10 +2433,8 @@ qemuDomainObjPrivateXMLFormatBlockjobFormatSource(virBufferPtr buf,
                                                   bool chain)
 {
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
-    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
     unsigned int xmlflags = VIR_DOMAIN_DEF_FORMAT_STATUS;
-
-    virBufferSetChildIndent(&childBuf, buf);
 
     virBufferAsprintf(&attrBuf, " type='%s' format='%s'",
                       virStorageTypeToString(src->type),
@@ -2462,19 +2458,16 @@ qemuDomainObjPrivateXMLFormatBlockjobIterator(void *payload,
                                               const void *name G_GNUC_UNUSED,
                                               void *opaque)
 {
+    struct qemuDomainPrivateBlockJobFormatData *data = opaque;
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
-    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
-    g_auto(virBuffer) chainsBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(data->buf);
+    g_auto(virBuffer) chainsBuf = VIR_BUFFER_INIT_CHILD(&childBuf);
     qemuBlockJobDataPtr job = payload;
     const char *state = qemuBlockjobStateTypeToString(job->state);
     const char *newstate = NULL;
-    struct qemuDomainPrivateBlockJobFormatData *data = opaque;
 
     if (job->newstate != -1)
         newstate = qemuBlockjobStateTypeToString(job->newstate);
-
-    virBufferSetChildIndent(&childBuf, data->buf);
-    virBufferSetChildIndent(&chainsBuf, &childBuf);
 
     virBufferEscapeString(&attrBuf, " name='%s'", job->name);
     virBufferEscapeString(&attrBuf, " type='%s'", qemuBlockjobTypeToString(job->type));
@@ -2558,15 +2551,13 @@ qemuDomainObjPrivateXMLFormatBlockjobs(virBufferPtr buf,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
-    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
     bool bj = qemuDomainHasBlockjob(vm, false);
     struct qemuDomainPrivateBlockJobFormatData iterdata = { priv->driver->xmlopt,
                                                             &childBuf };
 
     virBufferAsprintf(&attrBuf, " active='%s'",
                       virTristateBoolTypeToString(virTristateBoolFromBool(bj)));
-
-    virBufferSetChildIndent(&childBuf, buf);
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV) &&
         virHashForEach(priv->blockjobs,
@@ -2604,10 +2595,8 @@ qemuDomainObjPrivateXMLFormatNBDMigrationSource(virBufferPtr buf,
                                                 virDomainXMLOptionPtr xmlopt)
 {
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
-    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
     int ret = -1;
-
-    virBufferSetChildIndent(&childBuf, buf);
 
     virBufferAsprintf(&attrBuf, " type='%s' format='%s'",
                       virStorageTypeToString(src->type),
@@ -2631,18 +2620,16 @@ qemuDomainObjPrivateXMLFormatNBDMigration(virBufferPtr buf,
                                           virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
-    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
     size_t i;
     virDomainDiskDefPtr disk;
     qemuDomainDiskPrivatePtr diskPriv;
     int ret = -1;
 
     for (i = 0; i < vm->def->ndisks; i++) {
+        g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
         disk = vm->def->disks[i];
         diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-
-        virBufferSetChildIndent(&childBuf, buf);
 
         virBufferAsprintf(&attrBuf, " dev='%s' migrating='%s'",
                           disk->dst, diskPriv->migrating ? "yes" : "no");
@@ -2669,7 +2656,7 @@ qemuDomainObjPrivateXMLFormatJob(virBufferPtr buf,
                                  qemuDomainObjPrivatePtr priv)
 {
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
-    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
     qemuDomainJob job = priv->job.active;
     int ret = -1;
 
@@ -2679,8 +2666,6 @@ qemuDomainObjPrivateXMLFormatJob(virBufferPtr buf,
     if (job == QEMU_JOB_NONE &&
         priv->job.asyncJob == QEMU_ASYNC_JOB_NONE)
         return 0;
-
-    virBufferSetChildIndent(&childBuf, buf);
 
     virBufferAsprintf(&attrBuf, " type='%s' async='%s'",
                       qemuDomainJobTypeToString(job),
