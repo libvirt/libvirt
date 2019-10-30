@@ -373,19 +373,24 @@ virDomainCapsStringValuesFormat(virBufferPtr buf,
         virBufferAddLit(buf, "</" #item ">\n"); \
     } while (0)
 
-#define FORMAT_SINGLE(name, supported) \
-    do { \
-        if (supported != VIR_TRISTATE_BOOL_ABSENT) { \
-            virBufferAsprintf(&buf, "<%s supported='%s'/>\n", name, \
-                    (supported == VIR_TRISTATE_BOOL_YES) ? "yes" : "no"); \
-        } \
-    } while (0)
-
 #define ENUM_PROCESS(master, capsEnum, valToStr) \
     do { \
         virDomainCapsEnumFormat(buf, &master->capsEnum, \
                                 #capsEnum, valToStr); \
     } while (0)
+
+
+static void
+qemuDomainCapsFeatureFormatSimple(virBufferPtr buf,
+                                  const char *featurename,
+                                  virTristateBool supported)
+{
+    if (supported == VIR_TRISTATE_BOOL_ABSENT)
+        return;
+
+    virBufferAsprintf(buf, "<%s supported='%s'/>\n", featurename,
+                      virTristateBoolTypeToString(supported));
+}
 
 
 static void
@@ -607,7 +612,7 @@ virDomainCapsFormat(const virDomainCaps *caps)
     if (caps->maxvcpus)
         virBufferAsprintf(&buf, "<vcpu max='%d'/>\n", caps->maxvcpus);
 
-    FORMAT_SINGLE("iothreads", caps->iothreads);
+    qemuDomainCapsFeatureFormatSimple(&buf, "iothreads", caps->iothreads);
 
     virDomainCapsOSFormat(&buf, &caps->os);
     virDomainCapsCPUFormat(&buf, &caps->cpu);
@@ -628,8 +633,8 @@ virDomainCapsFormat(const virDomainCaps *caps)
     virBufferAdjustIndent(&buf, 2);
 
     virDomainCapsFeatureGICFormat(&buf, &caps->gic);
-    FORMAT_SINGLE("vmcoreinfo", caps->vmcoreinfo);
-    FORMAT_SINGLE("genid", caps->genid);
+    qemuDomainCapsFeatureFormatSimple(&buf, "vmcoreinfo", caps->vmcoreinfo);
+    qemuDomainCapsFeatureFormatSimple(&buf, "genid", caps->genid);
     virDomainCapsFeatureSEVFormat(&buf, caps->sev);
 
     virBufferAdjustIndent(&buf, -2);
