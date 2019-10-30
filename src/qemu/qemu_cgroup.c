@@ -25,7 +25,6 @@
 #include "qemu_domain.h"
 #include "qemu_process.h"
 #include "qemu_extdevice.h"
-#include "vircgroup.h"
 #include "virlog.h"
 #include "viralloc.h"
 #include "virerror.h"
