@@ -553,7 +553,9 @@ VIR_ENUM_IMPL(virQEMUCaps,
     );
 
 
-struct virQEMUCapsMachineType {
+typedef struct _virQEMUCapsMachineType virQEMUCapsMachineType;
+typedef virQEMUCapsMachineType *virQEMUCapsMachineTypePtr;
+struct _virQEMUCapsMachineType {
     char *name;
     char *alias;
     unsigned int maxCpus;
@@ -619,7 +621,7 @@ struct _virQEMUCaps {
     virHashTablePtr domCapsCache;
 
     size_t nmachineTypes;
-    struct virQEMUCapsMachineType *machineTypes;
+    virQEMUCapsMachineTypePtr machineTypes;
 
     size_t ngicCapabilities;
     virGICCapability *gicCapabilities;
@@ -737,7 +739,7 @@ static void
 virQEMUCapsSetDefaultMachine(virQEMUCapsPtr qemuCaps,
                              size_t defIdx)
 {
-    struct virQEMUCapsMachineType tmp = qemuCaps->machineTypes[defIdx];
+    virQEMUCapsMachineType tmp = qemuCaps->machineTypes[defIdx];
 
     memmove(qemuCaps->machineTypes + 1,
             qemuCaps->machineTypes,
@@ -2386,7 +2388,7 @@ virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
         goto cleanup;
 
     for (i = 0; i < nmachines; i++) {
-        struct virQEMUCapsMachineType *mach;
+        virQEMUCapsMachineTypePtr mach;
         if (STREQ(machines[i]->name, "none"))
             continue;
 
