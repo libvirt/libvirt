@@ -1482,7 +1482,7 @@ int
 virSysinfoFormat(virBufferPtr buf, virSysinfoDefPtr def)
 {
     virBuffer attrBuf = VIR_BUFFER_INITIALIZER;
-    virBuffer childrenBuf = VIR_BUFFER_INITIALIZER;
+    virBuffer childrenBuf = VIR_BUFFER_INIT_CHILD(buf);
     const char *type = virSysinfoTypeToString(def->type);
 
     if (!type) {
@@ -1492,8 +1492,6 @@ virSysinfoFormat(virBufferPtr buf, virSysinfoDefPtr def)
         virBufferFreeAndReset(buf);
         return -1;
     }
-
-    virBufferSetChildIndent(&childrenBuf, buf);
 
     virSysinfoBIOSFormat(&childrenBuf, def->bios);
     virSysinfoSystemFormat(&childrenBuf, def->system);
