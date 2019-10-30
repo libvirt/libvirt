@@ -7110,7 +7110,7 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
                           unsigned int flags)
 {
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
-    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
 
     if ((flags & VIR_DOMAIN_DEF_FORMAT_ALLOW_BOOT) && info->bootIndex) {
         virBufferAsprintf(buf, "<boot order='%u'", info->bootIndex);
@@ -7176,7 +7176,6 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
         }
 
         if (!virZPCIDeviceAddressIsEmpty(&info->addr.pci.zpci)) {
-            virBufferSetChildIndent(&childBuf, buf);
             virBufferAsprintf(&childBuf,
                               "<zpci uid='0x%.4x' fid='0x%.8x'/>\n",
                               info->addr.pci.zpci.uid,
@@ -24051,13 +24050,11 @@ virDomainDiskSourceFormatPrivateData(virBufferPtr buf,
                                      unsigned int flags,
                                      virDomainXMLOptionPtr xmlopt)
 {
-    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
 
     if (!(flags & VIR_DOMAIN_DEF_FORMAT_STATUS) ||
         !xmlopt || !xmlopt->privateData.storageFormat)
         return 0;
-
-    virBufferSetChildIndent(&childBuf, buf);
 
     if (xmlopt->privateData.storageFormat(src, &childBuf) < 0)
         return -1;
@@ -24090,9 +24087,7 @@ virDomainDiskSourceFormat(virBufferPtr buf,
                           virDomainXMLOptionPtr xmlopt)
 {
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
-    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
-
-    virBufferSetChildIndent(&childBuf, buf);
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
 
     switch ((virStorageType)src->type) {
     case VIR_STORAGE_TYPE_FILE:
@@ -24177,11 +24172,9 @@ virDomainDiskBackingStoreFormat(virBufferPtr buf,
                                 unsigned int flags)
 {
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
-    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
     bool inactive = flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE;
     virStorageSourcePtr backingStore = src->backingStore;
-
-    virBufferSetChildIndent(&childBuf, buf);
 
     if (!backingStore)
         return 0;
@@ -24232,9 +24225,7 @@ static int
 virDomainDiskDefFormatIotune(virBufferPtr buf,
                              virDomainDiskDefPtr disk)
 {
-    virBuffer childBuf = VIR_BUFFER_INITIALIZER;
-
-    virBufferSetChildIndent(&childBuf, buf);
+    virBuffer childBuf = VIR_BUFFER_INIT_CHILD(buf);
 
     FORMAT_IOTUNE(total_bytes_sec);
     FORMAT_IOTUNE(read_bytes_sec);
@@ -24343,10 +24334,8 @@ virDomainDiskDefFormatMirror(virBufferPtr buf,
                              virDomainXMLOptionPtr xmlopt)
 {
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
-    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
     const char *formatStr = NULL;
-
-    virBufferSetChildIndent(&childBuf, buf);
 
     /* For now, mirroring is currently output-only: we only output it
      * for live domains, therefore we ignore it on input except for
@@ -24394,14 +24383,12 @@ virDomainDiskDefFormatPrivateData(virBufferPtr buf,
                                   unsigned int flags,
                                   virDomainXMLOptionPtr xmlopt)
 {
-    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
 
     if (!(flags & VIR_DOMAIN_DEF_FORMAT_STATUS) ||
         !xmlopt ||
         !xmlopt->privateData.diskFormat)
         return 0;
-
-    virBufferSetChildIndent(&childBuf, buf);
 
     if (xmlopt->privateData.diskFormat(disk, &childBuf) < 0)
         return -1;
@@ -24580,9 +24567,7 @@ virDomainControllerDefFormat(virBufferPtr buf,
     const char *model = NULL;
     const char *modelName = NULL;
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
-    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
-
-    virBufferSetChildIndent(&childBuf, buf);
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
 
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -25680,9 +25665,7 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
                             unsigned int flags)
 {
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
-    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
-
-    virBufferSetChildIndent(&childBuf, buf);
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
 
     switch ((virDomainChrType)def->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
@@ -25958,10 +25941,8 @@ virDomainSmartcardDefFormat(virBufferPtr buf,
                             unsigned int flags)
 {
     const char *mode = virDomainSmartcardTypeToString(def->type);
-    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
     size_t i;
-
-    virBufferSetChildIndent(&childBuf, buf);
 
     if (!mode) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -26084,10 +26065,8 @@ virDomainSoundDefFormat(virBufferPtr buf,
                         unsigned int flags)
 {
     const char *model = virDomainSoundModelTypeToString(def->model);
-    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
     size_t i;
-
-    virBufferSetChildIndent(&childBuf, buf);
 
     if (!model) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -26121,7 +26100,7 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
 {
     const char *model = virDomainMemballoonModelTypeToString(def->model);
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
-    g_auto(virBuffer) childrenBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childrenBuf = VIR_BUFFER_INIT_CHILD(buf);
     g_auto(virBuffer) driverAttrBuf = VIR_BUFFER_INITIALIZER;
 
     if (!model) {
@@ -26135,8 +26114,6 @@ virDomainMemballoonDefFormat(virBufferPtr buf,
     if (def->autodeflate != VIR_TRISTATE_SWITCH_ABSENT)
         virBufferAsprintf(&attrBuf, " autodeflate='%s'",
                           virTristateSwitchTypeToString(def->autodeflate));
-
-    virBufferSetChildIndent(&childrenBuf, buf);
 
     if (def->period)
         virBufferAsprintf(&childrenBuf, "<stats period='%i'/>\n", def->period);
@@ -26177,9 +26154,7 @@ virDomainWatchdogDefFormat(virBufferPtr buf,
     const char *model = virDomainWatchdogModelTypeToString(def->model);
     const char *action = virDomainWatchdogActionTypeToString(def->action);
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
-    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
-
-    virBufferSetChildIndent(&childBuf, buf);
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
 
     if (!model) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -26207,13 +26182,12 @@ static int virDomainPanicDefFormat(virBufferPtr buf,
                                    virDomainPanicDefPtr def)
 {
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
-    g_auto(virBuffer) childrenBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childrenBuf = VIR_BUFFER_INIT_CHILD(buf);
 
     if (def->model)
         virBufferAsprintf(&attrBuf, " model='%s'",
                           virDomainPanicModelTypeToString(def->model));
 
-    virBufferSetChildIndent(&childrenBuf, buf);
     if (virDomainDeviceInfoFormat(&childrenBuf, &def->info, 0) < 0)
         return -1;
 
@@ -26542,7 +26516,7 @@ virDomainInputDefFormat(virBufferPtr buf,
     const char *type = virDomainInputTypeToString(def->type);
     const char *bus = virDomainInputBusTypeToString(def->bus);
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
-    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
     g_auto(virBuffer) driverAttrBuf = VIR_BUFFER_INITIALIZER;
 
     /* don't format keyboard into migratable XML for backward compatibility */
@@ -26577,7 +26551,6 @@ virDomainInputDefFormat(virBufferPtr buf,
         virBufferAsprintf(&attrBuf, " model='%s'", model);
     }
 
-    virBufferSetChildIndent(&childBuf, buf);
     virDomainVirtioOptionsFormat(&driverAttrBuf, def->virtio);
 
     virXMLFormatElement(&childBuf, "driver", &driverAttrBuf, NULL);
@@ -27275,9 +27248,7 @@ virDomainHubDefFormat(virBufferPtr buf,
 {
     const char *type = virDomainHubTypeToString(def->type);
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
-    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
-
-    virBufferSetChildIndent(&childBuf, buf);
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
 
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -27544,11 +27515,10 @@ virDomainCachetuneDefFormat(virBufferPtr buf,
                             virDomainResctrlDefPtr resctrl,
                             unsigned int flags)
 {
-    g_auto(virBuffer) childrenBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childrenBuf = VIR_BUFFER_INIT_CHILD(buf);
     size_t i = 0;
     g_autofree char *vcpus = NULL;
 
-    virBufferSetChildIndent(&childrenBuf, buf);
     if (virResctrlAllocForeachCache(resctrl->alloc,
                                     virDomainCachetuneDefFormatHelper,
                                     &childrenBuf) < 0)
@@ -27605,10 +27575,9 @@ virDomainMemorytuneDefFormat(virBufferPtr buf,
                             virDomainResctrlDefPtr resctrl,
                             unsigned int flags)
 {
-    g_auto(virBuffer) childrenBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childrenBuf = VIR_BUFFER_INIT_CHILD(buf);
     g_autofree char *vcpus = NULL;
 
-    virBufferSetChildIndent(&childrenBuf, buf);
     if (virResctrlAllocForeachMemory(resctrl->alloc,
                                      virDomainMemorytuneDefFormatHelper,
                                      &childrenBuf) < 0)
@@ -27645,9 +27614,8 @@ virDomainCputuneDefFormat(virBufferPtr buf,
                           unsigned int flags)
 {
     size_t i;
-    g_auto(virBuffer) childrenBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childrenBuf = VIR_BUFFER_INIT_CHILD(buf);
 
-    virBufferSetChildIndent(&childrenBuf, buf);
 
     if (def->cputune.sharesSpecified)
         virBufferAsprintf(&childrenBuf, "<shares>%llu</shares>\n",
@@ -27826,11 +27794,9 @@ static int
 virDomainIOMMUDefFormat(virBufferPtr buf,
                         const virDomainIOMMUDef *iommu)
 {
-    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) driverAttrBuf = VIR_BUFFER_INITIALIZER;
-
-    virBufferSetChildIndent(&childBuf, buf);
 
     if (iommu->intremap != VIR_TRISTATE_SWITCH_ABSENT) {
         virBufferAsprintf(&driverAttrBuf, " intremap='%s'",
@@ -27864,9 +27830,7 @@ static void
 virDomainMemtuneFormat(virBufferPtr buf,
                        const virDomainMemtune *mem)
 {
-    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
-
-    virBufferSetChildIndent(&childBuf, buf);
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
 
     if (virMemoryLimitIsSet(mem->hard_limit)) {
         virBufferAsprintf(&childBuf,
@@ -27897,9 +27861,7 @@ static void
 virDomainMemorybackingFormat(virBufferPtr buf,
                              const virDomainMemtune *mem)
 {
-    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
-
-    virBufferSetChildIndent(&childBuf, buf);
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
 
     if (mem->nhugepages)
         virDomainHugepagesFormat(&childBuf, mem->hugepages, mem->nhugepages);
@@ -27927,7 +27889,7 @@ static int
 virDomainVsockDefFormat(virBufferPtr buf,
                         virDomainVsockDefPtr vsock)
 {
-    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) cidAttrBuf = VIR_BUFFER_INITIALIZER;
 
@@ -27935,8 +27897,6 @@ virDomainVsockDefFormat(virBufferPtr buf,
         virBufferAsprintf(&attrBuf, " model='%s'",
                           virDomainVsockModelTypeToString(vsock->model));
     }
-
-    virBufferSetChildIndent(&childBuf, buf);
 
     if (vsock->auto_cid != VIR_TRISTATE_BOOL_ABSENT) {
         virBufferAsprintf(&cidAttrBuf, " auto='%s'",
@@ -27959,10 +27919,9 @@ static int
 virDomainDefFormatBlkiotune(virBufferPtr buf,
                             virDomainDefPtr def)
 {
-    g_auto(virBuffer) childrenBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childrenBuf = VIR_BUFFER_INIT_CHILD(buf);
     ssize_t n;
 
-    virBufferSetChildIndent(&childrenBuf, buf);
     if (def->blkio.weight)
         virBufferAsprintf(&childrenBuf, "<weight>%u</weight>\n",
                           def->blkio.weight);
@@ -28006,14 +27965,12 @@ static int
 virDomainDefFormatFeatures(virBufferPtr buf,
                            virDomainDefPtr def)
 {
-    g_auto(virBuffer) tmpAttrBuf = VIR_BUFFER_INITIALIZER;
-    g_auto(virBuffer) tmpChildBuf = VIR_BUFFER_INITIALIZER;
-    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
     size_t i;
 
-    virBufferSetChildIndent(&childBuf, buf);
-
     for (i = 0; i < VIR_DOMAIN_FEATURE_LAST; i++) {
+        g_auto(virBuffer) tmpAttrBuf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) tmpChildBuf = VIR_BUFFER_INIT_CHILD(&childBuf);
         const char *name = virDomainFeatureTypeToString(i);
         size_t j;
 
@@ -28079,7 +28036,6 @@ virDomainDefFormatFeatures(virBufferPtr buf,
                 unsigned long long short_size = virFormatIntPretty(def->tseg_size,
                                                                    &unit);
 
-                virBufferSetChildIndent(&tmpChildBuf, &childBuf);
                 virBufferAsprintf(&tmpChildBuf, "<tseg unit='%s'>%llu</tseg>\n",
                                   unit, short_size);
             }
@@ -28200,8 +28156,6 @@ virDomainDefFormatFeatures(virBufferPtr buf,
             break;
 
         case VIR_DOMAIN_FEATURE_CAPABILITIES:
-            virBufferSetChildIndent(&tmpChildBuf, &childBuf);
-
             for (j = 0; j < VIR_DOMAIN_PROCES_CAPS_FEATURE_LAST; j++) {
                 if (def->caps_features[j] != VIR_TRISTATE_SWITCH_ABSENT)
                     virBufferAsprintf(&tmpChildBuf, "<%s state='%s'/>\n",
@@ -28246,7 +28200,6 @@ virDomainDefFormatFeatures(virBufferPtr buf,
                                   virDomainHPTResizingTypeToString(def->hpt_resizing));
             }
             if (def->hpt_maxpagesize > 0) {
-                virBufferSetChildIndent(&tmpChildBuf, &childBuf);
                 virBufferAsprintf(&tmpChildBuf,
                                   "<maxpagesize unit='KiB'>%llu</maxpagesize>\n",
                                   def->hpt_maxpagesize);
