@@ -258,10 +258,10 @@ virStorageBackendFileSystemIsMounted(virStoragePoolObjPtr pool)
         goto cleanup;
     }
 
-    while ((getmntent_r(mtab, &ent, buf, sizeof(buf))) != NULL) {
-        if (!(src = virStorageBackendFileSystemGetPoolSource(pool)))
-            goto cleanup;
+    if ((src = virStorageBackendFileSystemGetPoolSource(pool)) == NULL)
+        goto cleanup;
 
+    while ((getmntent_r(mtab, &ent, buf, sizeof(buf))) != NULL) {
         /* compare both mount destinations and sources to be sure the mounted
          * FS pool is really the one we're looking for
          */
@@ -273,8 +273,6 @@ virStorageBackendFileSystemIsMounted(virStoragePoolObjPtr pool)
             ret = 1;
             goto cleanup;
         }
-
-        VIR_FREE(src);
     }
 
     ret = 0;
