@@ -610,7 +610,7 @@ struct _virDomain {
 /**
 * _virNetwork:
 *
-* Internal structure associated to a domain
+* Internal structure associated to a network
 */
 struct _virNetwork {
     virObject parent;
