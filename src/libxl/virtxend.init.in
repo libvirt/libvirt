@@ -1,0 +1,26 @@
+#!/sbin/openrc-run
+
+description="Virtualization xen daemon"
+
+VIRTXEND_OPTS=${VIRTXEND_OPTS:-"${VIRTXEND_OPTS}"}
+VIRTXEND_TIMEOUT=${VIRTXEND_TERMTIMEOUT:-"TERM/25/KILL/5"}
+
+command="@sbindir@/virtxend"
+command_args="-d ${VIRTXEND_OPTS}"
+pidfile="@runstatedir@/virtxend.pid"
+retry="${VIRTXEND_TERMTIMEOUT}"
+
+extra_started_commands="reload"
+description_reload="re-exec the daemon to enforce configuration reload"
+
+depend() {
+    use dbus
+    after nfs nfsmount
+}
+
+reload() {
+    ebegin "re-exec() virtxend"
+
+    start-stop-daemon --signal SIGHUP \
+      --exec "${command}" --pidfile "${pidfile}"
+}

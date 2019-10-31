@@ -1,0 +1,26 @@
+#!/sbin/openrc-run
+
+description="Virtualization vz daemon"
+
+VIRTVZD_OPTS=${VIRTVZD_OPTS:-"${VIRTVZD_OPTS}"}
+VIRTVZD_TIMEOUT=${VIRTVZD_TERMTIMEOUT:-"TERM/25/KILL/5"}
+
+command="@sbindir@/virtvzd"
+command_args="-d ${VIRTVZD_OPTS}"
+pidfile="@runstatedir@/virtvzd.pid"
+retry="${VIRTVZD_TERMTIMEOUT}"
+
+extra_started_commands="reload"
+description_reload="re-exec the daemon to enforce configuration reload"
+
+depend() {
+    use ceph dbus iscsid virtlockd
+    after nfs nfsmount
+}
+
+reload() {
+    ebegin "re-exec() virtvzd"
+
+    start-stop-daemon --signal SIGHUP \
+      --exec "${command}" --pidfile "${pidfile}"
+}

@@ -1,0 +1,26 @@
+#!/sbin/openrc-run
+
+description="Virtualization interface daemon"
+
+VIRTINTERFACED_OPTS=${VIRTINTERFACED_OPTS:-"${VIRTINTERFACED_OPTS}"}
+VIRTINTERFACED_TIMEOUT=${VIRTINTERFACED_TERMTIMEOUT:-"TERM/25/KILL/5"}
+
+command="@sbindir@/virtinterfaced"
+command_args="-d ${VIRTINTERFACED_OPTS}"
+pidfile="@runstatedir@/virtinterfaced.pid"
+retry="${VIRTINTERFACED_TERMTIMEOUT}"
+
+extra_started_commands="reload"
+description_reload="re-exec the daemon to enforce configuration reload"
+
+depend() {
+    use dbus
+    after nfs nfsmount
+}
+
+reload() {
+    ebegin "re-exec() virtinterfaced"
+
+    start-stop-daemon --signal SIGHUP \
+      --exec "${command}" --pidfile "${pidfile}"
+}

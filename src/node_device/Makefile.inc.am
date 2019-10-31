@@ -96,12 +96,23 @@ SYSTEMD_UNIT_FILES_IN += \
 	node_device/virtnodedevd.service.in \
 	$(NULL)
 
+OPENRC_INIT_FILES += \
+	virtnodedevd.init \
+	$(NULL)
+OPENRC_INIT_FILES_IN += \
+	node_device/virtnodedevd.init.in \
+	$(NULL)
+
 VIRTNODEDEVD_UNIT_VARS = \
 	$(VIRTD_UNIT_VARS) \
 	-e 's|[@]name[@]|Libvirt nodedev|g' \
 	-e 's|[@]service[@]|virtnodedevd|g' \
 	-e 's|[@]sockprefix[@]|virtnodedevd|g' \
 	$(NULL)
+
+virtnodedevd.init: node_device/virtnodedevd.init.in \
+		$(top_builddir)/config.status
+	$(AM_V_GEN)$(SED) $(LIBVIRTD_INIT_VARS) $< > $@-t && mv $@-t $@
 
 virtnodedevd.service: node_device/virtnodedevd.service.in \
 		$(top_builddir)/config.status

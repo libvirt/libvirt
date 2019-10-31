@@ -1,0 +1,26 @@
+#!/sbin/openrc-run
+
+description="Virtualization lxc daemon"
+
+VIRTLXCD_OPTS=${VIRTLXCD_OPTS:-"${VIRTLXCD_OPTS}"}
+VIRTLXCD_TIMEOUT=${VIRTLXCD_TERMTIMEOUT:-"TERM/25/KILL/5"}
+
+command="@sbindir@/virtlxcd"
+command_args="-d ${VIRTLXCD_OPTS}"
+pidfile="@runstatedir@/virtlxcd.pid"
+retry="${VIRTLXCD_TERMTIMEOUT}"
+
+extra_started_commands="reload"
+description_reload="re-exec the daemon to enforce configuration reload"
+
+depend() {
+    use ceph dbus iscsid virtlockd
+    after nfs nfsmount
+}
+
+reload() {
+    ebegin "re-exec() virtlxcd"
+
+    start-stop-daemon --signal SIGHUP \
+      --exec "${command}" --pidfile "${pidfile}"
+}

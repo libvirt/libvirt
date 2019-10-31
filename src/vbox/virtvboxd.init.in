@@ -1,0 +1,26 @@
+#!/sbin/openrc-run
+
+description="Virtualization vbox daemon"
+
+VIRTVBOXD_OPTS=${VIRTVBOXD_OPTS:-"${VIRTVBOXD_OPTS}"}
+VIRTVBOXD_TIMEOUT=${VIRTVBOXD_TERMTIMEOUT:-"TERM/25/KILL/5"}
+
+command="@sbindir@/virtvboxd"
+command_args="-d ${VIRTVBOXD_OPTS}"
+pidfile="@runstatedir@/virtvboxd.pid"
+retry="${VIRTVBOXD_TERMTIMEOUT}"
+
+extra_started_commands="reload"
+description_reload="re-exec the daemon to enforce configuration reload"
+
+depend() {
+    use ceph dbus iscsid virtlockd
+    after nfs nfsmount
+}
+
+reload() {
+    ebegin "re-exec() virtvboxd"
+
+    start-stop-daemon --signal SIGHUP \
+      --exec "${command}" --pidfile "${pidfile}"
+}

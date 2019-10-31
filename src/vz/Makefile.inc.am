@@ -67,12 +67,22 @@ SYSTEMD_UNIT_FILES_IN += \
 	vz/virtvzd.service.in \
 	$(NULL)
 
+OPENRC_INIT_FILES += \
+	virtvzd.init \
+	$(NULL)
+OPENRC_INIT_FILES_IN += \
+	vz/virtvzd.init.in \
+	$(NULL)
+
 VIRTVZD_UNIT_VARS = \
 	$(VIRTD_UNIT_VARS) \
 	-e 's|[@]name[@]|Libvirt vz|g' \
 	-e 's|[@]service[@]|virtvzd|g' \
 	-e 's|[@]sockprefix[@]|virtvzd|g' \
 	$(NULL)
+
+virtvzd.init: vz/virtvzd.init.in $(top_builddir)/config.status
+	$(AM_V_GEN)$(SED) $(LIBVIRTD_INIT_VARS) $< > $@-t && mv $@-t $@
 
 virtvzd.service: vz/virtvzd.service.in $(top_builddir)/config.status
 	$(AM_V_GEN)$(SED) $(VIRTVZD_UNIT_VARS) $< > $@-t && mv $@-t $@

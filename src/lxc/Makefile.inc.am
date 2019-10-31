@@ -146,12 +146,22 @@ SYSTEMD_UNIT_FILES_IN += \
 	lxc/virtlxcd.service.in \
 	$(NULL)
 
+OPENRC_INIT_FILES += \
+	virtlxcd.init \
+	$(NULL)
+OPENRC_INIT_FILES_IN += \
+	lxc/virtlxcd.init.in \
+	$(NULL)
+
 VIRTLXCD_UNIT_VARS = \
 	$(VIRTD_UNIT_VARS) \
 	-e 's|[@]name[@]|Libvirt lxc|g' \
 	-e 's|[@]service[@]|virtlxcd|g' \
 	-e 's|[@]sockprefix[@]|virtlxcd|g' \
 	$(NULL)
+
+virtlxcd.init: lxc/virtlxcd.init.in $(top_builddir)/config.status
+	$(AM_V_GEN)$(SED) $(LIBVIRTD_INIT_VARS) $< > $@-t && mv $@-t $@
 
 virtlxcd.service: lxc/virtlxcd.service.in $(top_builddir)/config.status
 	$(AM_V_GEN)$(SED) $(VIRTLXCD_UNIT_VARS) $< > $@-t && mv $@-t $@

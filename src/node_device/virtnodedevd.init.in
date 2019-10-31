@@ -1,0 +1,26 @@
+#!/sbin/openrc-run
+
+description="Virtualization nodedev daemon"
+
+VIRTNODEDEVD_OPTS=${VIRTNODEDEVD_OPTS:-"${VIRTNODEDEVD_OPTS}"}
+VIRTNODEDEVD_TIMEOUT=${VIRTNODEDEVD_TERMTIMEOUT:-"TERM/25/KILL/5"}
+
+command="@sbindir@/virtnodedevd"
+command_args="-d ${VIRTNODEDEVD_OPTS}"
+pidfile="@runstatedir@/virtnodedevd.pid"
+retry="${VIRTNODEDEVD_TERMTIMEOUT}"
+
+extra_started_commands="reload"
+description_reload="re-exec the daemon to enforce configuration reload"
+
+depend() {
+    use ceph dbus iscsid virtlockd
+    after nfs nfsmount
+}
+
+reload() {
+    ebegin "re-exec() virtnodedevd"
+
+    start-stop-daemon --signal SIGHUP \
+      --exec "${command}" --pidfile "${pidfile}"
+}

@@ -84,6 +84,9 @@ RPC_PROBE_FILES =
 LOGROTATE_FILES_IN =
 SYSTEMD_UNIT_FILES =
 SYSTEMD_UNIT_FILES_IN =
+OPENRC_INIT_FILES =
+OPENRC_INIT_FILES_IN =
+OPENRC_CONF_FILES =
 SYSCONF_FILES =
 sbin_PROGRAMS =
 DRIVER_SOURCES =
@@ -529,7 +532,9 @@ libvirt_lxc_la_LDFLAGS = \
 libvirt_lxc_la_CFLAGS = $(AM_CFLAGS)
 libvirt_lxc_la_LIBADD = libvirt.la $(CYGWIN_EXTRA_LIBADD)
 
-EXTRA_DIST += $(SYSCONF_FILES)
+EXTRA_DIST += \
+	$(SYSCONF_FILES) \
+	$(OPENRC_CONF_FILES)
 
 install-sysconfig:
 	$(MKDIR_P) $(DESTDIR)$(sysconfdir)/sysconfig
@@ -547,6 +552,25 @@ uninstall-sysconfig:
 	  rm -f $(DESTDIR)$(sysconfdir)/sysconfig/$$tgt; \
 	done
 	rmdir $(DESTDIR)$(sysconfdir)/sysconfig || :
+
+OPENRC_CONF_DIR = $(sysconfdir)/conf.d
+
+install-openrc-conf:
+	$(MKDIR_P) $(DESTDIR)$(OPENRC_CONF_DIR)
+	for f in $(OPENRC_CONF_FILES:%.confd=%) ; \
+	do \
+		tgt=`basename $$f`; \
+		$(INSTALL_DATA) $(srcdir)/$$f.confd \
+			$(DESTDIR)$(OPENRC_CONF_DIR)/$$tgt; \
+	done
+
+uninstall-openrc-conf:
+	for f in $(OPENRC_CONF_FILES:%.confd=%) ; \
+	do \
+		tgt=`basename $$f`; \
+		rm -f $(DESTDIR)$(OPENRC_CONF_DIR)/$$tgt; \
+	done
+	rmdir $(DESTDIR)$(OPENRC_CONF_DIR) || :
 
 LOGROTATE_FILES := $(LOGROTATE_FILES_IN:remote/%.in=%)
 
@@ -582,6 +606,7 @@ endif WITH_LIBVIRTD
 
 EXTRA_DIST += \
         $(SYSTEMD_UNIT_FILES_IN) \
+        $(OPENRC_INIT_FILES_IN) \
         $(NULL)
 
 
@@ -607,6 +632,35 @@ uninstall-systemd: uninstall-sysconfig
 INSTALL_DATA_LOCAL += install-systemd
 UNINSTALL_LOCAL += uninstall-systemd
 endif LIBVIRT_INIT_SCRIPT_SYSTEMD
+
+if LIBVIRT_INIT_SCRIPT_OPENRC
+
+OPENRC_INIT_DIR = $(sysconfdir)/init.d
+
+BUILT_SOURCES += $(OPENRC_INIT_FILES)
+DISTCLEANFILES += $(OPENRC_INIT_FILES)
+
+install-openrc: $(OPENRC_INIT_FILES) install-openrc-conf
+	$(MKDIR_P) $(DESTDIR)$(OPENRC_INIT_DIR)
+	for f in $(OPENRC_INIT_FILES:%.init=%) ; \
+	do \
+		tgt=`basename $$f`; \
+		$(INSTALL_SCRIPT) $$f.init \
+		$(DESTDIR)$(OPENRC_INIT_DIR)/$$tgt ; \
+	done
+
+uninstall-openrc: uninstall-openrc-conf
+	for f in $(OPENRC_INIT_FILES:%.init=%) ; \
+	do \
+		tgt=`basename $$f`; \
+		rm -f $(DESTDIR)$(OPENRC_INIT_DIR)/$$tgt ; \
+	done
+	rmdir $(DESTDIR)$(OPENRC_INIT_DIR) || :
+
+INSTALL_DATA_LOCAL += install-openrc
+UNINSTALL_LOCAL += uninstall-openrc
+endif LIBVIRT_INIT_SCRIPT_OPENRC
+
 endif WITH_LIBVIRTD
 
 

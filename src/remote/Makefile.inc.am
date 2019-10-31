@@ -126,6 +126,19 @@ SYSTEMD_UNIT_FILES_IN += \
 	$(GUEST_UNIT_FILES_IN) \
 	$(NULL)
 
+OPENRC_INIT_FILES += \
+	libvirtd.init \
+	virtproxyd.init \
+	$(NULL)
+OPENRC_INIT_FILES_IN += \
+	remote/libvirtd.init.in \
+	remote/virtproxyd.init.in \
+	$(NULL)
+OPENRC_CONF_FILES += \
+	remote/libvirtd.confd \
+	remote/virtproxyd.confd \
+	$(NULL)
+
 REMOTE_PROTOCOL = $(srcdir)/remote/remote_protocol.x
 LXC_PROTOCOL = $(srcdir)/remote/lxc_protocol.x
 QEMU_PROTOCOL = $(srcdir)/remote/qemu_protocol.x
@@ -393,6 +406,17 @@ LIBVIRTD_UNIT_VARS = \
 	-e 's|[@]deps[@]||g' \
 	$(NULL)
 
+LIBVIRTD_INIT_VARS = \
+	$(COMMON_UNIT_VARS)
+
+if WITH_FIREWALLD
+LIBVIRTD_INIT_VARS += \
+	-e 's|[@]NEED_FIREWALLD[@]|need firewalld|g'
+else ! WITH_FIREWALLD
+LIBVIRTD_INIT_VARS += \
+	-e 's|[@]NEED_FIREWALLD[@]||g'
+endif ! WITH_FIREWALLD
+
 VIRTD_UNIT_VARS = \
 	$(COMMON_UNIT_VARS) \
 	-e 's|[@]deps[@]|Conflicts=$(LIBVIRTD_SOCKET_UNIT_FILES)|g' \
@@ -404,6 +428,12 @@ VIRTPROXYD_UNIT_VARS = \
 	-e 's|[@]service[@]|virtproxyd|g' \
 	-e 's|[@]sockprefix[@]|libvirt|g' \
 	$(NULL)
+
+libvirtd.init: remote/libvirtd.init.in $(top_builddir)/config.status
+	$(AM_V_GEN)$(SED) $(LIBVIRTD_INIT_VARS) $< > $@-t && mv $@-t $@
+
+virtproxyd.init: remote/virtproxyd.init.in $(top_builddir)/config.status
+	$(AM_V_GEN)$(SED) $(LIBVIRTD_INIT_VARS) $< > $@-t && mv $@-t $@
 
 libvirtd.service: remote/libvirtd.service.in $(top_builddir)/config.status
 	$(AM_V_GEN)$(SED) $(LIBVIRTD_UNIT_VARS) $< > $@-t && mv $@-t $@

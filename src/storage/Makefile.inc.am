@@ -173,12 +173,22 @@ SYSTEMD_UNIT_FILES_IN += \
 	storage/virtstoraged.service.in \
 	$(NULL)
 
+OPENRC_INIT_FILES += \
+	virtstoraged.init \
+	$(NULL)
+OPENRC_INIT_FILES_IN += \
+	storage/virtstoraged.init.in \
+	$(NULL)
+
 VIRTSTORAGED_UNIT_VARS = \
 	$(VIRTD_UNIT_VARS) \
 	-e 's|[@]name[@]|Libvirt storage|g' \
 	-e 's|[@]service[@]|virtstoraged|g' \
 	-e 's|[@]sockprefix[@]|virtstoraged|g' \
 	$(NULL)
+
+virtstoraged.init: storage/virtstoraged.init.in $(top_builddir)/config.status
+	$(AM_V_GEN)$(SED) $(LIBVIRTD_INIT_VARS) $< > $@-t && mv $@-t $@
 
 virtstoraged.service: storage/virtstoraged.service.in \
 		$(top_builddir)/config.status

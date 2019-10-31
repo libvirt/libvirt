@@ -80,12 +80,22 @@ SYSTEMD_UNIT_FILES_IN += \
 	network/virtnetworkd.service.in \
 	$(NULL)
 
+OPENRC_INIT_FILES += \
+	virtnetworkd.init \
+	$(NULL)
+OPENRC_INIT_FILES_IN += \
+	network/virtnetworkd.init.in \
+	$(NULL)
+
 VIRTNETWORKD_UNIT_VARS = \
 	$(VIRTD_UNIT_VARS) \
 	-e 's|[@]name[@]|Libvirt network|g' \
 	-e 's|[@]service[@]|virtnetworkd|g' \
 	-e 's|[@]sockprefix[@]|virtnetworkd|g' \
 	$(NULL)
+
+virtnetworkd.init: network/virtnetworkd.init.in $(top_builddir)/config.status
+	$(AM_V_GEN)$(SED) $(LIBVIRTD_INIT_VARS) $< > $@-t && mv $@-t $@
 
 virtnetworkd.service: network/virtnetworkd.service.in \
 		$(top_builddir)/config.status

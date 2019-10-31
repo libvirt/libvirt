@@ -1,0 +1,26 @@
+#!/sbin/openrc-run
+
+description="Virtualization nwfilter daemon"
+
+VIRTNWFILTERD_OPTS=${VIRTNWFILTERD_OPTS:-"${VIRTNWFILTERD_OPTS}"}
+VIRTNWFILTERD_TIMEOUT=${VIRTNWFILTERD_TERMTIMEOUT:-"TERM/25/KILL/5"}
+
+command="@sbindir@/virtnwfilterd"
+command_args="-d ${VIRTNWFILTERD_OPTS}"
+pidfile="@runstatedir@/virtnwfilterd.pid"
+retry="${VIRTNWFILTERD_TERMTIMEOUT}"
+
+extra_started_commands="reload"
+description_reload="re-exec the daemon to enforce configuration reload"
+
+depend() {
+    use ceph dbus iscsid virtlockd
+    after nfs nfsmount
+}
+
+reload() {
+    ebegin "re-exec() virtnwfilterd"
+
+    start-stop-daemon --signal SIGHUP \
+      --exec "${command}" --pidfile "${pidfile}"
+}

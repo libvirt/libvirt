@@ -154,12 +154,22 @@ SYSTEMD_UNIT_FILES_IN += \
 	qemu/virtqemud.service.in \
 	$(NULL)
 
+OPENRC_INIT_FILES += \
+	virtqemud.init \
+	$(NULL)
+OPENRC_INIT_FILES_IN += \
+	qemu/virtqemud.init.in \
+	$(NULL)
+
 VIRTQEMUD_UNIT_VARS = \
 	$(VIRTD_UNIT_VARS) \
 	-e 's|[@]name[@]|Libvirt qemu|g' \
 	-e 's|[@]service[@]|virtqemud|g' \
 	-e 's|[@]sockprefix[@]|virtqemud|g' \
 	$(NULL)
+
+virtqemud.init: qemu/virtqemud.init.in $(top_builddir)/config.status
+	$(AM_V_GEN)$(SED) $(LIBVIRTD_INIT_VARS) $< > $@-t && mv $@-t $@
 
 virtqemud.service: qemu/virtqemud.service.in $(top_builddir)/config.status
 	$(AM_V_GEN)$(SED) $(VIRTQEMUD_UNIT_VARS) $< > $@-t && mv $@-t $@

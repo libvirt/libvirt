@@ -19,7 +19,7 @@ dnl
 
 AC_DEFUN([LIBVIRT_ARG_INIT_SCRIPT],[
     LIBVIRT_ARG_WITH([INIT_SCRIPT],
-                     [Style of init script to install: systemd, check, none],
+                     [Style of init script to install: systemd, openrc, check, none],
                      [check])
 ])
 
@@ -32,12 +32,16 @@ AC_DEFUN([LIBVIRT_CHECK_INIT_SCRIPT],[
     if test "$with_init_script" = check && type systemctl >/dev/null 2>&1; then
         with_init_script=systemd
     fi
+    if test "$with_init_script" = check && type openrc >/dev/null 2>&1; then
+        with_init_script=openrc
+    fi
     if test "$with_init_script" = check; then
         with_init_script=none
     fi
 
     AS_CASE([$with_init_script],
         [systemd],[],
+        [openrc],[],
         [none],[],
         [*],[
             AC_MSG_ERROR([Unknown initscript flavour $with_init_script])
@@ -46,6 +50,8 @@ AC_DEFUN([LIBVIRT_CHECK_INIT_SCRIPT],[
 
     AM_CONDITIONAL([LIBVIRT_INIT_SCRIPT_SYSTEMD],
                    [test "$with_init_script" = "systemd"])
+    AM_CONDITIONAL([LIBVIRT_INIT_SCRIPT_OPENRC],
+                   [test "$with_init_script" = "openrc"])
 
     AC_MSG_RESULT($with_init_script)
 ])

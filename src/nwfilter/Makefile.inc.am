@@ -81,12 +81,23 @@ SYSTEMD_UNIT_FILES_IN += \
 	nwfilter/virtnwfilterd.service.in \
 	$(NULL)
 
+OPENRC_INIT_FILES += \
+	virtnwfilterd.init \
+	$(NULL)
+OPENRC_INIT_FILES_IN += \
+	nwfilter/virtnwfilterd.init.in \
+	$(NULL)
+
 VIRTNWFILTERD_UNIT_VARS = \
 	$(VIRTD_UNIT_VARS) \
 	-e 's|[@]name[@]|Libvirt nwfilter|g' \
 	-e 's|[@]service[@]|virtnwfilterd|g' \
 	-e 's|[@]sockprefix[@]|virtnwfilterd|g' \
 	$(NULL)
+
+virtnwfilterd.init: nwfilter/virtnwfilterd.init.in \
+		$(top_builddir)/config.status
+	$(AM_V_GEN)$(SED) $(LIBVIRTD_INIT_VARS) $< > $@-t && mv $@-t $@
 
 virtnwfilterd.service: nwfilter/virtnwfilterd.service.in \
 		$(top_builddir)/config.status

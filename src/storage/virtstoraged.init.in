@@ -1,0 +1,26 @@
+#!/sbin/openrc-run
+
+description="Virtualization storage daemon"
+
+VIRTSTORAGED_OPTS=${VIRTSTORAGED_OPTS:-"${VIRTSTORAGED_OPTS}"}
+VIRTSTORAGED_TIMEOUT=${VIRTSTORAGED_TERMTIMEOUT:-"TERM/25/KILL/5"}
+
+command="@sbindir@/virtstoraged"
+command_args="-d ${VIRTSTORAGED_OPTS}"
+pidfile="@runstatedir@/virtstoraged.pid"
+retry="${VIRTSTORAGED_TERMTIMEOUT}"
+
+extra_started_commands="reload"
+description_reload="re-exec the daemon to enforce configuration reload"
+
+depend() {
+    use ceph dbus iscsid virtlockd
+    after nfs nfsmount
+}
+
+reload() {
+    ebegin "re-exec() virtstoraged"
+
+    start-stop-daemon --signal SIGHUP \
+      --exec "${command}" --pidfile "${pidfile}"
+}
