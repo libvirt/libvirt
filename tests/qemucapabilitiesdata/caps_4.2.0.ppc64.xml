@@ -176,7 +176,7 @@
   <version>4001050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900242</microcodeVersion>
-  <package>v4.1.0-1378-g98b2e3c9ab</package>
+  <package>v4.1.0-2198-g9e583f2</package>
   <arch>ppc64</arch>
   <cpu type='kvm' name='default'/>
   <cpu type='kvm' name='ppc'/>

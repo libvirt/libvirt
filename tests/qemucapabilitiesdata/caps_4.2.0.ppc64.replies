@@ -21,7 +21,7 @@
       "minor": 1,
       "major": 4
     },
-    "package": "v4.1.0-1378-g98b2e3c9ab"
+    "package": "v4.1.0-2198-g9e583f2"
   },
   "id": "libvirt-2"
 }
@@ -6097,7 +6097,7 @@
       "hotpluggable-cpus": true,
       "name": "pseries-3.1",
       "numa-mem-supported": true,
-      "default-cpu-type": "power8_v2.0-powerpc64-cpu",
+      "default-cpu-type": "host-powerpc64-cpu",
       "cpu-max": 1024,
       "deprecated": false
     },
@@ -6105,7 +6105,7 @@
       "hotpluggable-cpus": true,
       "name": "pseries-2.12-sxxm",
       "numa-mem-supported": true,
-      "default-cpu-type": "power8_v2.0-powerpc64-cpu",
+      "default-cpu-type": "host-powerpc64-cpu",
       "cpu-max": 1024,
       "deprecated": false
     },
@@ -6129,7 +6129,7 @@
       "hotpluggable-cpus": true,
       "name": "pseries-3.0",
       "numa-mem-supported": true,
-      "default-cpu-type": "power8_v2.0-powerpc64-cpu",
+      "default-cpu-type": "host-powerpc64-cpu",
       "cpu-max": 1024,
       "deprecated": false
     },
@@ -6137,7 +6137,7 @@
       "hotpluggable-cpus": true,
       "name": "pseries-2.10",
       "numa-mem-supported": true,
-      "default-cpu-type": "power8_v2.0-powerpc64-cpu",
+      "default-cpu-type": "host-powerpc64-cpu",
       "cpu-max": 1024,
       "deprecated": false
     },
@@ -6153,7 +6153,7 @@
       "hotpluggable-cpus": true,
       "name": "pseries-2.11",
       "numa-mem-supported": true,
-      "default-cpu-type": "power8_v2.0-powerpc64-cpu",
+      "default-cpu-type": "host-powerpc64-cpu",
       "cpu-max": 1024,
       "deprecated": false
     },
@@ -6161,7 +6161,7 @@
       "hotpluggable-cpus": true,
       "name": "pseries-2.12",
       "numa-mem-supported": true,
-      "default-cpu-type": "power8_v2.0-powerpc64-cpu",
+      "default-cpu-type": "host-powerpc64-cpu",
       "cpu-max": 1024,
       "deprecated": false
     },
@@ -6169,7 +6169,7 @@
       "hotpluggable-cpus": true,
       "name": "pseries-2.9",
       "numa-mem-supported": true,
-      "default-cpu-type": "power8_v2.0-powerpc64-cpu",
+      "default-cpu-type": "host-powerpc64-cpu",
       "cpu-max": 1024,
       "deprecated": false
     },
@@ -6185,7 +6185,7 @@
       "hotpluggable-cpus": false,
       "name": "pseries-2.6",
       "numa-mem-supported": true,
-      "default-cpu-type": "power7_v2.3-powerpc64-cpu",
+      "default-cpu-type": "host-powerpc64-cpu",
       "cpu-max": 1024,
       "deprecated": false
     },
@@ -6193,7 +6193,7 @@
       "hotpluggable-cpus": true,
       "name": "pseries-2.7",
       "numa-mem-supported": true,
-      "default-cpu-type": "power7_v2.3-powerpc64-cpu",
+      "default-cpu-type": "host-powerpc64-cpu",
       "cpu-max": 1024,
       "deprecated": false
     },
@@ -6201,7 +6201,7 @@
       "hotpluggable-cpus": true,
       "name": "pseries-2.8",
       "numa-mem-supported": true,
-      "default-cpu-type": "power8_v2.0-powerpc64-cpu",
+      "default-cpu-type": "host-powerpc64-cpu",
       "cpu-max": 1024,
       "deprecated": false
     },
@@ -6209,7 +6209,7 @@
       "hotpluggable-cpus": true,
       "name": "pseries-4.2",
       "numa-mem-supported": true,
-      "default-cpu-type": "power9_v2.0-powerpc64-cpu",
+      "default-cpu-type": "host-powerpc64-cpu",
       "is-default": true,
       "cpu-max": 1024,
       "deprecated": false,
@@ -6219,7 +6219,7 @@
       "hotpluggable-cpus": false,
       "name": "pseries-2.4",
       "numa-mem-supported": true,
-      "default-cpu-type": "power7_v2.3-powerpc64-cpu",
+      "default-cpu-type": "host-powerpc64-cpu",
       "cpu-max": 1024,
       "deprecated": false
     },
@@ -6227,7 +6227,7 @@
       "hotpluggable-cpus": false,
       "name": "pseries-2.5",
       "numa-mem-supported": true,
-      "default-cpu-type": "power7_v2.3-powerpc64-cpu",
+      "default-cpu-type": "host-powerpc64-cpu",
       "cpu-max": 1024,
       "deprecated": false
     },
@@ -6235,7 +6235,7 @@
       "hotpluggable-cpus": true,
       "name": "pseries-4.0",
       "numa-mem-supported": true,
-      "default-cpu-type": "power9_v2.0-powerpc64-cpu",
+      "default-cpu-type": "host-powerpc64-cpu",
       "cpu-max": 1024,
       "deprecated": false
     },
@@ -6243,7 +6243,7 @@
       "hotpluggable-cpus": true,
       "name": "pseries-4.1",
       "numa-mem-supported": true,
-      "default-cpu-type": "power9_v2.0-powerpc64-cpu",
+      "default-cpu-type": "host-powerpc64-cpu",
       "cpu-max": 1024,
       "deprecated": false
     },
@@ -6251,7 +6251,7 @@
       "hotpluggable-cpus": false,
       "name": "pseries-2.2",
       "numa-mem-supported": true,
-      "default-cpu-type": "power7_v2.3-powerpc64-cpu",
+      "default-cpu-type": "host-powerpc64-cpu",
       "cpu-max": 1024,
       "deprecated": false
     },
@@ -6266,7 +6266,7 @@
       "hotpluggable-cpus": false,
       "name": "pseries-2.3",
       "numa-mem-supported": true,
-      "default-cpu-type": "power7_v2.3-powerpc64-cpu",
+      "default-cpu-type": "host-powerpc64-cpu",
       "cpu-max": 1024,
       "deprecated": false
     },
@@ -6274,7 +6274,7 @@
       "hotpluggable-cpus": false,
       "name": "pseries-2.1",
       "numa-mem-supported": true,
-      "default-cpu-type": "power7_v2.3-powerpc64-cpu",
+      "default-cpu-type": "host-powerpc64-cpu",
       "cpu-max": 1024,
       "deprecated": false
     },
