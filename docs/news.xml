@@ -59,6 +59,15 @@
           support should be available to pSeries guests.
         </description>
       </change>
+      <change>
+        <summary>
+          Xen: Support specifying ACPI firmware path
+        </summary>
+        <description>
+          The libxl driver now supports specifying an ACPI firmware path
+          using the <code>acpi</code> element.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
