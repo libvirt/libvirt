@@ -364,7 +364,7 @@
         to the ACPI table. The <code>type</code> attribute contains the
         ACPI table type (currently only <code>slic</code> is supported)
         <span class="since">Since 1.3.5 (QEMU)</span>
-        <span class="since">Since 5.8.0 (Xen)</span></dd>
+        <span class="since">Since 5.9.0 (Xen)</span></dd>
     </dl>
 
     <h4><a id="elementsOSContainer">Container boot</a></h4>
