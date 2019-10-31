@@ -858,6 +858,7 @@ LIBVIRT_5.7.0 {
 } LIBVIRT_5.6.0;
 
 LIBVIRT_5.8.0 {
+    global:
         virConnectSetIdentity;
 } LIBVIRT_5.7.0;
 
