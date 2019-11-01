@@ -9416,12 +9416,49 @@ qemuBuildRedirdevCommandLine(virLogManagerPtr logManager,
 
 
 static void
+qemuBuldDomainLoaderPflashCommandLine(virCommandPtr cmd,
+                                      virDomainLoaderDefPtr loader)
+{
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    int unit = 0;
+
+    if (loader->secure == VIR_TRISTATE_BOOL_YES) {
+        virCommandAddArgList(cmd,
+                             "-global",
+                             "driver=cfi.pflash01,property=secure,value=on",
+                             NULL);
+    }
+
+    virBufferAddLit(&buf, "file=");
+    virQEMUBuildBufferEscapeComma(&buf, loader->path);
+    virBufferAsprintf(&buf, ",if=pflash,format=raw,unit=%d", unit);
+    unit++;
+
+    if (loader->readonly) {
+        virBufferAsprintf(&buf, ",readonly=%s",
+                          virTristateSwitchTypeToString(loader->readonly));
+    }
+
+    virCommandAddArg(cmd, "-drive");
+    virCommandAddArgBuffer(cmd, &buf);
+
+    if (loader->nvram) {
+        virBufferFreeAndReset(&buf);
+        virBufferAddLit(&buf, "file=");
+        virQEMUBuildBufferEscapeComma(&buf, loader->nvram);
+        virBufferAsprintf(&buf, ",if=pflash,format=raw,unit=%d", unit);
+
+        virCommandAddArg(cmd, "-drive");
+        virCommandAddArgBuffer(cmd, &buf);
+    }
+}
+
+
+static void
 qemuBuildDomainLoaderCommandLine(virCommandPtr cmd,
                                  virDomainDefPtr def)
 {
     virDomainLoaderDefPtr loader = def->os.loader;
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    int unit = 0;
 
     if (!loader)
         return;
@@ -9433,36 +9470,7 @@ qemuBuildDomainLoaderCommandLine(virCommandPtr cmd,
         break;
 
     case VIR_DOMAIN_LOADER_TYPE_PFLASH:
-
-        if (loader->secure == VIR_TRISTATE_BOOL_YES) {
-            virCommandAddArgList(cmd,
-                                 "-global",
-                                 "driver=cfi.pflash01,property=secure,value=on",
-                                 NULL);
-        }
-
-        virBufferAddLit(&buf, "file=");
-        virQEMUBuildBufferEscapeComma(&buf, loader->path);
-        virBufferAsprintf(&buf, ",if=pflash,format=raw,unit=%d", unit);
-        unit++;
-
-        if (loader->readonly) {
-            virBufferAsprintf(&buf, ",readonly=%s",
-                              virTristateSwitchTypeToString(loader->readonly));
-        }
-
-        virCommandAddArg(cmd, "-drive");
-        virCommandAddArgBuffer(cmd, &buf);
-
-        if (loader->nvram) {
-            virBufferFreeAndReset(&buf);
-            virBufferAddLit(&buf, "file=");
-            virQEMUBuildBufferEscapeComma(&buf, loader->nvram);
-            virBufferAsprintf(&buf, ",if=pflash,format=raw,unit=%d", unit);
-
-            virCommandAddArg(cmd, "-drive");
-            virCommandAddArgBuffer(cmd, &buf);
-        }
+        qemuBuldDomainLoaderPflashCommandLine(cmd, loader);
         break;
 
     case VIR_DOMAIN_LOADER_TYPE_NONE:
