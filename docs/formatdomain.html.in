@@ -3847,7 +3847,7 @@
     &lt;readonly/&gt;
   &lt;/filesystem&gt;
   &lt;filesystem type='file' accessmode='passthrough'&gt;
-    &lt;driver name='loop' type='raw'/&gt;
+    &lt;driver type='loop' format='raw'/&gt;
     &lt;driver type='path' wrpolicy='immediate'/&gt;
     &lt;source file='/export/to/guest.img'/&gt;
     &lt;target dir='/import/from/host'/&gt;
