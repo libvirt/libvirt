@@ -496,6 +496,17 @@ testCompareXMLToArgv(const void *data)
         }
     }
 
+    for (i = 0; i < vm->def->nfss; i++) {
+        virDomainFSDefPtr fs = vm->def->fss[i];
+        char *s;
+
+        if (fs->fsdriver != VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS)
+            continue;
+
+        s = g_strdup_printf("/tmp/lib/domain--1-guest/fs%zu.vhost-fs.sock", i);
+        QEMU_DOMAIN_FS_PRIVATE(fs)->vhostuser_fs_sock = s;
+    }
+
     if (vm->def->vsock) {
         virDomainVsockDefPtr vsock = vm->def->vsock;
         qemuDomainVsockPrivatePtr vsockPriv =

@@ -20,11 +20,13 @@
 
 #include <config.h>
 
+#include "qemu_command.h"
 #include "qemu_extdevice.h"
 #include "qemu_vhost_user_gpu.h"
 #include "qemu_domain.h"
 #include "qemu_tpm.h"
 #include "qemu_slirp.h"
+#include "qemu_virtiofs.h"
 
 #include "viralloc.h"
 #include "virlog.h"
@@ -153,7 +155,7 @@ qemuExtDevicesCleanupHost(virQEMUDriverPtr driver,
 int
 qemuExtDevicesStart(virQEMUDriverPtr driver,
                     virDomainObjPtr vm,
-                    virLogManagerPtr logManager G_GNUC_UNUSED,
+                    virLogManagerPtr logManager,
                     bool incomingMigration)
 {
     virDomainDefPtr def = vm->def;
@@ -181,6 +183,15 @@ qemuExtDevicesStart(virQEMUDriverPtr driver,
         if (slirp &&
             qemuSlirpStart(slirp, vm, driver, net, false, incomingMigration) < 0)
             return -1;
+    }
+
+    for (i = 0; i < def->nfss; i++) {
+        virDomainFSDefPtr fs = def->fss[i];
+
+        if (fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS) {
+            if (qemuVirtioFSStart(logManager, driver, vm, fs) < 0)
+                return -1;
+        }
     }
 
     return 0;
@@ -213,6 +224,13 @@ qemuExtDevicesStop(virQEMUDriverPtr driver,
 
         if (slirp)
             qemuSlirpStop(slirp, vm, driver, net, false);
+    }
+
+    for (i = 0; i < def->nfss; i++) {
+        virDomainFSDefPtr fs = def->fss[i];
+
+        if (fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS)
+            qemuVirtioFSStop(driver, vm, fs);
     }
 }
 

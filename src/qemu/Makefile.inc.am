@@ -67,6 +67,8 @@ QEMU_DRIVER_SOURCES = \
 	qemu/qemu_vhost_user.h \
 	qemu/qemu_vhost_user_gpu.c \
 	qemu/qemu_vhost_user_gpu.h \
+	qemu/qemu_virtiofs.c \
+	qemu/qemu_virtiofs.h \
 	qemu/qemu_checkpoint.c \
 	qemu/qemu_checkpoint.h \
 	qemu/qemu_backup.c \

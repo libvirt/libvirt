@@ -568,7 +568,7 @@ typedef qemuDomainFSPrivate *qemuDomainFSPrivatePtr;
 struct _qemuDomainFSPrivate {
     virObject parent;
 
-    int dummy;
+    char *vhostuser_fs_sock;
 };
 
 

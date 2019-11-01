@@ -172,6 +172,7 @@
 @SRCDIR@/src/qemu/qemu_tpm.c
 @SRCDIR@/src/qemu/qemu_vhost_user.c
 @SRCDIR@/src/qemu/qemu_vhost_user_gpu.c
+@SRCDIR@/src/qemu/qemu_virtiofs.c
 @SRCDIR@/src/remote/remote_daemon.c
 @SRCDIR@/src/remote/remote_daemon_config.c
 @SRCDIR@/src/remote/remote_daemon_dispatch.c

@@ -1433,8 +1433,11 @@ qemuDomainFSPrivateNew(void)
 
 
 static void
-qemuDomainFSPrivateDispose(void *obj G_GNUC_UNUSED)
+qemuDomainFSPrivateDispose(void *obj)
 {
+    qemuDomainFSPrivatePtr priv = obj;
+
+    g_free(priv->vhostuser_fs_sock);
 }
 
 static virClassPtr qemuDomainVideoPrivateClass;
