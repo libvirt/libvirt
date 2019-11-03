@@ -169,7 +169,7 @@ virNetDevSetMAC(const char *ifname G_GNUC_UNUSED,
 int
 virNetDevExists(const char *ifname)
 {
-    return STREQ_NULLABLE(ifname, "mytap0");
+    return STREQ(ifname, "mytap0");
 }
 
 
