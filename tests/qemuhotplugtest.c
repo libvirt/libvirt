@@ -595,7 +595,7 @@ mymain(void)
     int ret = 0;
     struct qemuHotplugTestData data = {0};
     struct testQemuHotplugCpuParams cpudata;
-    char *fakerootdir;
+    g_autofree char *fakerootdir = NULL;
 
     fakerootdir = g_strdup(FAKEROOTDIRTEMPLATE);
 
@@ -875,7 +875,6 @@ mymain(void)
 
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
-    VIR_FREE(fakerootdir);
 
     qemuTestDriverFree(&driver);
     virObjectUnref(data.vm);
