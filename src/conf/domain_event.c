@@ -1935,8 +1935,12 @@ virDomainQemuMonitorEventNew(int id,
         return NULL;
 
     /* event is mandatory, details are optional */
-    if (!event)
+    if (!event) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unexpected event=NULL name=%s uuid=%s details=%s"),
+                       name, uuidstr, NULLSTR(details));
         goto error;
+    }
 
     ev->event = g_strdup(event);
     ev->seconds = seconds;
