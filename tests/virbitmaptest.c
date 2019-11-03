@@ -682,9 +682,11 @@ test13(const void *opaque G_GNUC_UNUSED)
 
     for (i = 0; i < G_N_ELEMENTS(strings); i++) {
         map = virBitmapNewString(strings[i]);
-        str = virBitmapToString(map, false, true);
+        if (!map)
+            goto cleanup;
 
-        if (!map || !str)
+        str = virBitmapToString(map, false, true);
+        if (!str)
             goto cleanup;
 
         if (STRNEQ(strings[i], str)) {
