@@ -3509,13 +3509,13 @@ vboxDumpDisplay(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
                 VBOX_UTF8_FREE(valueDisplayUtf8);
         }
 
-        if (STREQ(valueTypeUtf8, "sdl")) {
+        if (STREQ_NULLABLE(valueTypeUtf8, "sdl")) {
             graphics->type = VIR_DOMAIN_GRAPHICS_TYPE_SDL;
             graphics->data.sdl.display = valueDisplayUtf8;
             valueDisplayUtf8 = NULL;
         }
 
-        if (STREQ(valueTypeUtf8, "gui")) {
+        if (STREQ_NULLABLE(valueTypeUtf8, "gui")) {
             graphics->type = VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP;
             graphics->data.desktop.display = valueDisplayUtf8;
             valueDisplayUtf8 = NULL;
