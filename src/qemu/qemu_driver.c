@@ -6831,7 +6831,7 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
         qemuDomainFixupCPUs(vm, &cookie->cpu) < 0)
         goto cleanup;
 
-    if (!cookie->slirpHelper)
+    if (cookie && !cookie->slirpHelper)
         priv->disableSlirp = true;
 
     if (qemuProcessStart(conn, driver, vm, cookie ? cookie->cpu : NULL,
