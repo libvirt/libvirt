@@ -1127,7 +1127,9 @@ checkUserInfo(virTypedParameterPtr params,
 
     snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
              "user.%zu.domain", nth);
-    virTypedParamsGetString(params, nparams, param_name, &domain);
+    if (virTypedParamsGetString(params, nparams, param_name, &domain) < 0)
+        return -1;
+
     if (STRNEQ_NULLABLE(expDomain, domain)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "Expected domain '%s', got '%s'",
