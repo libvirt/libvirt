@@ -155,24 +155,17 @@ $ROOT
       named <code>$VMNAME.libvirt-{qemu,lxc}</code>. Each consumer is associated
       with exactly one partition, which also have a corresponding cgroup usually
       named <code>$PARTNAME.partition</code>. The exceptions to this naming rule
-      are the three top level default partitions, named <code>/system</code> (for
-      system services), <code>/user</code> (for user login sessions) and
-      <code>/machine</code> (for virtual machines and containers). By default
-      every consumer will of course be associated with the <code>/machine</code>
-      partition.
+      is the top level default partition for virtual machines and containers
+      <code>/machine</code>.
     </p>
 
     <p>
-      Given this, a possible systemd cgroups layout involving 3 qemu guests,
+      Given this, a possible non-systemd cgroups layout involving 3 qemu guests,
       3 lxc containers and 2 custom child slices, would be:
     </p>
 
     <pre>
 $ROOT
-  |
-  +- system
-  |   |
-  |   +- libvirtd.service
   |
   +- machine
       |
