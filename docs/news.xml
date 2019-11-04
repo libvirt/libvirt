@@ -43,6 +43,36 @@
 
 <libvirt>
   <release version="v5.9.0" date="unreleased">
+    <section title="Packaging changes">
+      <change>
+        <summary>
+          Start linking against GLib and using its features
+        </summary>
+        <description>
+          Up until now, libvirt has been dealing with platform portability and
+          the lack of certain features in libc by using gnulib and implementing
+          its own functions and data structures respectively; going forward, it
+          will prefer the facilities offered by GLib instead.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Stop distributing generated documentation
+        </summary>
+        <description>
+          Most downstreams already patch the libvirt source to some extent, so
+          this change will probably not affect them.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Rewrite several Perl scripts in Python
+        </summary>
+        <description>
+          Phasing out Perl usage is part of the project strategy.
+        </description>
+      </change>
+    </section>
     <section title="New features">
       <change>
         <summary>
@@ -71,8 +101,34 @@
           using the <code>acpi</code> element.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Support specifying resolution for video devices
+        </summary>
+      </change>
+    </section>
+    <section title="Removed features">
+      <change>
+        <summary>
+          logging: Drop support for including stack traces
+        </summary>
+        <description>
+          This feature was intended to aid debugging, but in practice it
+          resulted in logs that were too verbose to be useful and also resulted
+          in a significant performance penalty.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          qemu: Implement CPU comparison/baseline on s390x
+        </summary>
+        <description>
+          This functionality has been historically limited to x86_64, but it's
+          now available on s390x too.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
       <change>
@@ -89,6 +145,46 @@
           domain shut off is ignored and the domain is autostarted again.
           This is now fixed.
         </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Properly advertise bochs-display availability
+        </summary>
+        <description>
+          Support for <code>bochs-display</code> was introduced in libvirt
+          5.6.0, but until now the model was not listed in the domain
+          capabilities.
+        </description>
+      </change>
+      <change>
+        <summary>
+          security: Don't remember labels for TPM devices
+        </summary>
+        <description>
+          Due to the way they're implemented in the kernel, trying to remember
+          labels for TPM devices makes it impossible to use them.
+        </description>
+      </change>
+      <change>
+        <summary>
+          security: Properly rollback after failure in a stacked driver
+        </summary>
+        <description>
+          When multiple security drivers are involved, failure in one of them
+          would result in only the corresponding changes being rolled back,
+          leaving the ones performed by drivers that had been activated earlier
+          in place. All changes are rolled back now.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Fix build with musl libc
+        </summary>
+      </change>
+      <change>
+        <summary>
+          Improve compatibility with non-bash shells
+        </summary>
       </change>
     </section>
   </release>
