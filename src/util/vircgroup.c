@@ -847,9 +847,6 @@ virCgroupNewPartition(const char *path,
     if (virCgroupSetPartitionSuffix(path, &newPath) < 0)
         goto cleanup;
 
-    if (virCgroupNew(-1, newPath, NULL, controllers, group) < 0)
-        goto cleanup;
-
     if (STRNEQ(newPath, "/")) {
         char *tmp;
         parentPath = g_strdup(newPath);
@@ -860,7 +857,12 @@ virCgroupNewPartition(const char *path,
 
         if (virCgroupNew(-1, parentPath, NULL, controllers, &parent) < 0)
             goto cleanup;
+    }
 
+    if (virCgroupNew(-1, newPath, parent, controllers, group) < 0)
+        goto cleanup;
+
+    if (parent) {
         if (virCgroupMakeGroup(parent, *group, create, VIR_CGROUP_NONE) < 0)
             goto cleanup;
     }
