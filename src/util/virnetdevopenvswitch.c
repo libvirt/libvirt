@@ -469,11 +469,22 @@ virNetDevOpenvswitchInterfaceGetMaster(const char *ifname, char **master)
 
 
 /**
- * virNetDevOpenvswitchVhostuserGetIfname:
+ * virNetDevOpenvswitchGetVhostuserIfname:
  * @path: the path of the unix socket
+ * @server: true if OVS creates the @path
  * @ifname: the retrieved name of the interface
  *
- * Retrieves the ovs ifname from vhostuser unix socket path.
+ * Retrieves the OVS ifname from vhostuser UNIX socket path.
+ * There are two types of vhostuser ports which differ in client/server
+ * role:
+ *
+ * dpdkvhostuser - OVS creates the socket and QEMU connects to it
+ *                 (@server = true)
+ * dpdkvhostuserclient - QEMU creates the socket and OVS connects to it
+ *                       (@server = false)
+ *
+ * Since the way of retrieving ifname is different in these two cases,
+ * caller must set @server according to the interface definition.
  *
  * Returns: 1 if interface is an openvswitch interface,
  *          0 if it is not, but no other error occurred,
@@ -481,33 +492,46 @@ virNetDevOpenvswitchInterfaceGetMaster(const char *ifname, char **master)
  */
 int
 virNetDevOpenvswitchGetVhostuserIfname(const char *path,
+                                       bool server,
                                        char **ifname)
 {
-    const char *tmpIfname = NULL;
-    int status;
     g_autoptr(virCommand) cmd = NULL;
+    int status;
 
-    /* Openvswitch vhostuser path are hardcoded to
-     * /<runstatedir>/openvswitch/<ifname>
-     * for example: /var/run/openvswitch/dpdkvhostuser0
-     *
-     * so we pick the filename and check it's a openvswitch interface
-     */
-    if (!path ||
-        !(tmpIfname = strrchr(path, '/')))
-        return 0;
-
-    tmpIfname++;
     cmd = virCommandNew(OVS_VSCTL);
     virNetDevOpenvswitchAddTimeout(cmd);
-    virCommandAddArgList(cmd, "get", "Interface", tmpIfname, "name", NULL);
-    if (virCommandRun(cmd, &status) < 0 ||
-        status) {
+
+    if (server) {
+        virCommandAddArgList(cmd, "--no-headings", "--columns=name", "find",
+                             "Interface", NULL);
+        virCommandAddArgPair(cmd, "options:vhost-server-path", "path");
+    } else {
+        const char *tmpIfname = NULL;
+
+        /* Openvswitch vhostuser path is hardcoded to
+         * /<runstatedir>/openvswitch/<ifname>
+         * for example: /var/run/openvswitch/dpdkvhostuser0
+         *
+         * so we pick the filename and check it's an openvswitch interface
+         */
+        if (!path ||
+            !(tmpIfname = strrchr(path, '/'))) {
+            return 0;
+        }
+
+        tmpIfname++;
+        virCommandAddArgList(cmd, "get", "Interface", tmpIfname, "name", NULL);
+    }
+
+    virCommandSetOutputBuffer(cmd, ifname);
+    if (virCommandRun(cmd, &status) < 0)
+        return -1;
+
+    if (status != 0) {
         /* it's not a openvswitch vhostuser interface. */
         return 0;
     }
 
-    *ifname = g_strdup(tmpIfname);
     return 1;
 }
 

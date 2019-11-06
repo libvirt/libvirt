@@ -8004,6 +8004,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
             goto cleanup;
 
         if (virNetDevOpenvswitchGetVhostuserIfname(net->data.vhostuser->data.nix.path,
+                                                   net->data.vhostuser->data.nix.listen,
                                                    &net->ifname) < 0)
             goto cleanup;
 

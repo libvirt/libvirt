@@ -217,6 +217,7 @@ virCommandPassFD(virCommandPtr cmd,
 
 int
 virNetDevOpenvswitchGetVhostuserIfname(const char *path G_GNUC_UNUSED,
+                                       bool server G_GNUC_UNUSED,
                                        char **ifname)
 {
     *ifname = g_strdup("vhost-user0");
