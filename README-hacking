@@ -11,7 +11,7 @@ We've opted to keep only the highest-level sources in the GIT repository.
 This eases our maintenance burden, (fewer merges etc.), but imposes more
 requirements on anyone wishing to build from the just-checked-out sources.
 Note the requirements to build the released archive are much less and
-are just the requirements of the standard ./configure && make procedure.
+are just the requirements of the standard configure && make procedure.
 Specific development tools and versions will be checked for and listed by
 the bootstrap script.
 
@@ -34,10 +34,14 @@ reduce download time and disk space requirements:
 
         $ export GNULIB_SRCDIR=/path/to/gnulib
 
-The next step is to get all required pieces from gnulib,
-to run autoreconf, and to invoke ./configure:
+We require to have the build directory different than the source directory:
 
-        $ ./autogen.sh
+        $ mkdir build && cd build
+
+The next step is to get all required pieces from gnulib,
+to run autoreconf, and to invoke ../autogen.sh:
+
+        $ ../autogen.sh
 
 And there you are!  Just
 
@@ -47,6 +51,7 @@ And there you are!  Just
 At this point, there should be no difference between your local copy,
 and the GIT master copy:
 
+        $ cd ..
         $ git diff
 
 should output no difference.

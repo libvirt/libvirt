@@ -17,6 +17,12 @@ dnl License along with this library.  If not, see
 dnl <http://www.gnu.org/licenses/>.
 
 AC_INIT([libvirt], [5.10.0], [libvir-list@redhat.com], [], [https://libvirt.org])
+
+if test $srcdir = "."
+then
+  AC_MSG_ERROR([Build directory must be different from source directory])
+fi
+
 AC_CONFIG_SRCDIR([src/libvirt.c])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_HEADERS([config.h])

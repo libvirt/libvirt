@@ -53,7 +53,8 @@ matrix:
       script:
         # We can't run 'distcheck' or 'syntax-check' because they fail on
         # macOS, but doing 'install' and 'dist' gives us some useful coverage
-        - ./autogen.sh --prefix=$(pwd)/install-root && make -j3 && make -j3 install && make -j3 dist
+        - mkdir build && cd build
+        - ../autogen.sh --prefix=$(pwd)/install-root && make -j3 && make -j3 install && make -j3 dist
 
 git:
   submodules: true

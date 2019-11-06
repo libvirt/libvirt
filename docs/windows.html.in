@@ -180,7 +180,8 @@
     </p>
 
 <pre>
-./configure \
+mkdir build &amp;&amp; cd build
+../configure \
   --without-sasl \
   --without-polkit \
   --without-python \

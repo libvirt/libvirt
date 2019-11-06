@@ -1163,7 +1163,13 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
 %endif
 
 rm -f po/stamp-po
-%configure --with-runstatedir=%{_rundir} \
+
+%define _configure ../configure
+mkdir %{_vpath_builddir}
+cd %{_vpath_builddir}
+
+%configure --enable-dependency-tracking \
+           --with-runstatedir=%{_rundir} \
            %{?arg_qemu} \
            %{?arg_openvz} \
            %{?arg_lxc} \
@@ -1232,6 +1238,7 @@ rm -fr %{buildroot}
 
 export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
 
+cd %{_vpath_builddir}
 %make_install %{?_smp_mflags} SYSTEMD_UNIT_DIR=%{_unitdir} V=1
 
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
@@ -1313,6 +1320,7 @@ mv $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_qemu_probes.stp \
 %endif
 
 %check
+cd %{_vpath_builddir}
 if ! make %{?_smp_mflags} check VIR_TEST_DEBUG=1
 then
   cat test-suite.log || true

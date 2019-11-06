@@ -9,13 +9,15 @@
     <h2><a id="compiling">Compiling a release tarball</a></h2>
 
     <p>
-      libvirt uses the standard configure/make/install steps:
+      libvirt uses the standard configure/make/install steps and mandates
+      that the build directory is different that the source directory:
     </p>
 
     <pre>
 $ xz -c libvirt-x.x.x.tar.xz | tar xvf -
 $ cd libvirt-x.x.x
-$ ./configure</pre>
+$ mkdir build &amp;&amp; cd build
+$ ../configure</pre>
 
     <p>
       The <i>configure</i> script can be given options to change its default
@@ -28,7 +30,7 @@ $ ./configure</pre>
     </p>
 
     <pre>
-$ ./configure <i>--help</i></pre>
+$ ../configure <i>--help</i></pre>
 
     <p>
       When you have determined which options you want to use (if any),
@@ -49,7 +51,7 @@ $ ./configure <i>--help</i></pre>
     </p>
 
     <pre>
-$ ./configure <i>[possible options]</i>
+$ ../configure <i>[possible options]</i>
 $ make
 $ <b>sudo</b> <i>make install</i></pre>
 

@@ -38,11 +38,13 @@ Installation
 ------------
 
 Libvirt uses the GNU Autotools build system, so in general can be built
-and installed with the usual commands. For example, to build in a manner
-that is suitable for installing as root, use:
+and installed with the usual commands, however, we mandate to have the
+build directory different than the source directory. For example, to build
+in a manner that is suitable for installing as root, use:
 
 ```
-$ ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var
+$ mkdir build && cd build
+$ ../configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var
 $ make
 $ sudo make install
 ```
@@ -50,7 +52,8 @@ $ sudo make install
 While to build & install as an unprivileged user
 
 ```
-$ ./configure --prefix=$HOME/usr
+$ mkdir build && cd build
+$ ../configure --prefix=$HOME/usr
 $ make
 $ make install
 ```
