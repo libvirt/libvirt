@@ -8719,6 +8719,11 @@ qemuDomainObjEnterMonitorInternal(virQEMUDriverPtr driver,
     } else if (priv->job.asyncOwner == virThreadSelfID()) {
         VIR_WARN("This thread seems to be the async job owner; entering"
                  " monitor without asking for a nested job is dangerous");
+    } else if (priv->job.owner != virThreadSelfID()) {
+        VIR_WARN("Entering a monitor without owning a job. "
+                 "Job %s owner %s (%llu)",
+                 qemuDomainJobTypeToString(priv->job.active),
+                 priv->job.ownerAPI, priv->job.owner);
     }
 
     VIR_DEBUG("Entering monitor (mon=%p vm=%p name=%s)",
