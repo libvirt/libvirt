@@ -21194,7 +21194,7 @@ static int
 qemuDomainGetStatsIOThread(virQEMUDriverPtr driver,
                            virDomainObjPtr dom,
                            virTypedParamListPtr params,
-                           unsigned int privflags G_GNUC_UNUSED)
+                           unsigned int privflags)
 {
     qemuDomainObjPrivatePtr priv = dom->privateData;
     size_t i;
@@ -21202,7 +21202,7 @@ qemuDomainGetStatsIOThread(virQEMUDriverPtr driver,
     int niothreads;
     int ret = -1;
 
-    if (!virDomainObjIsActive(dom))
+    if (!HAVE_JOB(privflags) || !virDomainObjIsActive(dom))
         return 0;
 
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_IOTHREAD))
