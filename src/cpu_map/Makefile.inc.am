@@ -2,6 +2,7 @@
 
 cpumapdir = $(pkgdatadir)/cpu_map
 cpumap_DATA = \
+	cpu_map/arm_features.xml \
 	cpu_map/index.xml \
 	cpu_map/ppc64_vendors.xml \
 	cpu_map/ppc64_POWER7.xml \
