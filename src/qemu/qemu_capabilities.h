@@ -667,6 +667,7 @@ bool virQEMUCapsGuestIsNative(virArch host,
                               virArch guest);
 
 bool virQEMUCapsCPUFilterFeatures(const char *name,
+                                  virCPUFeaturePolicy policy,
                                   void *opaque);
 
 const char *

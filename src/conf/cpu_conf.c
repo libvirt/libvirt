@@ -147,7 +147,7 @@ virCPUDefCopyModelFilter(virCPUDefPtr dst,
     dst->nfeatures = 0;
 
     for (i = 0; i < src->nfeatures; i++) {
-        if (filter && !filter(src->features[i].name, opaque))
+        if (filter && !filter(src->features[i].name, src->features[i].policy, opaque))
             continue;
 
         n = dst->nfeatures++;
@@ -937,7 +937,7 @@ virCPUDefFilterFeatures(virCPUDefPtr cpu,
     size_t i = 0;
 
     while (i < cpu->nfeatures) {
-        if (filter(cpu->features[i].name, opaque)) {
+        if (filter(cpu->features[i].name, cpu->features[i].policy, opaque)) {
             i++;
             continue;
         }
@@ -972,7 +972,7 @@ virCPUDefCheckFeatures(virCPUDefPtr cpu,
     *features = NULL;
 
     for (i = 0; i < cpu->nfeatures; i++) {
-        if (filter(cpu->features[i].name, opaque)) {
+        if (filter(cpu->features[i].name, cpu->features[i].policy, opaque)) {
             if (virStringListAdd(&list, cpu->features[i].name) < 0)
                 return -1;
             n++;

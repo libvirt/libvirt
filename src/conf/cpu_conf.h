@@ -161,6 +161,7 @@ virCPUDefCopyModel(virCPUDefPtr dst,
  * Returns true if feature @name should copied, false otherwise.
  */
 typedef bool (*virCPUDefFeatureFilter)(const char *name,
+                                       virCPUFeaturePolicy policy,
                                        void *opaque);
 
 int

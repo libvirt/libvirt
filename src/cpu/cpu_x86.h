@@ -42,7 +42,9 @@ int virCPUx86DataSetVendor(virCPUDataPtr cpuData,
                            const char *vendor);
 
 bool virCPUx86FeatureFilterSelectMSR(const char *name,
+                                     virCPUFeaturePolicy policy,
                                      void *opaque);
 
 bool virCPUx86FeatureFilterDropMSR(const char *name,
+                                   virCPUFeaturePolicy policy,
                                    void *opaque);
