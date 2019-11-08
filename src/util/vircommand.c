@@ -217,6 +217,10 @@ virCommandFDSet(virCommandPtr cmd,
 
 #ifndef WIN32
 
+static void virDummyHandler(int sig G_GNUC_UNUSED)
+{
+}
+
 /**
  * virFork:
  *
@@ -311,6 +315,14 @@ virFork(void)
              * return value */
             ignore_value(sigaction(i, &sig_action, NULL));
         }
+
+        /* Code that runs between fork & execve might trigger
+         * SIG_PIPE, so we must explicitly set that to a no-op
+         * handler. This handler will get reset to SIG_DFL when
+         * execve() runs
+         */
+        sig_action.sa_handler = virDummyHandler;
+        ignore_value(sigaction(SIGPIPE, &sig_action, NULL));
 
         /* Unmask all signals in child, since we've no idea what the
          * caller's done with their signal mask and don't want to
@@ -550,7 +562,6 @@ virExec(virCommandPtr cmd)
     g_autofree char *binarystr = NULL;
     const char *binary = NULL;
     int ret;
-    struct sigaction waxon, waxoff;
     g_autofree gid_t *groups = NULL;
     int ngroups;
 
@@ -718,21 +729,6 @@ virExec(virCommandPtr cmd)
         }
     }
 
-    /* virFork reset all signal handlers to the defaults.
-     * This is good for the child process, but our hook
-     * risks running something that generates SIGPIPE,
-     * so we need to temporarily block that again
-     */
-    memset(&waxoff, 0, sizeof(waxoff));
-    waxoff.sa_handler = SIG_IGN;
-    sigemptyset(&waxoff.sa_mask);
-    memset(&waxon, 0, sizeof(waxon));
-    if (sigaction(SIGPIPE, &waxoff, &waxon) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Could not disable SIGPIPE"));
-        goto fork_error;
-    }
-
     if (virProcessSetMaxMemLock(0, cmd->maxMemLock) < 0)
         goto fork_error;
     if (virProcessSetMaxProcesses(0, cmd->maxProcesses) < 0)
@@ -782,12 +778,6 @@ virExec(virCommandPtr cmd)
 
     if (virCommandHandshakeChild(cmd) < 0)
        goto fork_error;
-
-    if (sigaction(SIGPIPE, &waxon, NULL) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Could not re-enable SIGPIPE"));
-        goto fork_error;
-    }
 
     /* Close logging again to ensure no FDs leak to child */
     virLogReset();
