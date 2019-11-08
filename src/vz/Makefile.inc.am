@@ -29,6 +29,7 @@ libvirt_driver_vz_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
 libvirt_driver_vz_impl_la_CFLAGS = \
 	-I$(srcdir)/conf \
 	-I$(srcdir)/access \
+	-I$(builddir)/access \
 	$(AM_CFLAGS) \
 	$(PARALLELS_SDK_CFLAGS) \
 	$(LIBNL_CFLAGS) \
