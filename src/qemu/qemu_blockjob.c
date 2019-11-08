@@ -1106,6 +1106,7 @@ qemuBlockJobProcessEventCompletedActiveCommit(virQEMUDriverPtr driver,
         cfgbase = cfgbaseparent->backingStore;
         cfgbaseparent->backingStore = NULL;
         cfgdisk->src = cfgbase;
+        cfgdisk->src->readonly = cfgtop->readonly;
         virObjectUnref(cfgtop);
     }
 
@@ -1115,6 +1116,7 @@ qemuBlockJobProcessEventCompletedActiveCommit(virQEMUDriverPtr driver,
 
     baseparent->backingStore = NULL;
     job->disk->src = job->data.commit.base;
+    job->disk->src->readonly = job->data.commit.top->readonly;
 
     qemuBlockJobEventProcessConcludedRemoveChain(driver, vm, asyncJob, job->data.commit.top);
     virObjectUnref(job->data.commit.top);
