@@ -13203,16 +13203,14 @@ qemuDomainCreateDeviceRecursive(const char *device,
                                             allow_noent, ttl - 1) < 0)
             goto cleanup;
     } else if (isDev) {
-        if (create &&
-            mknod(devicePath, sb.st_mode, sb.st_rdev) < 0) {
-            if (errno == EEXIST) {
-                ret = 0;
-            } else {
+        if (create) {
+            unlink(devicePath);
+            if (mknod(devicePath, sb.st_mode, sb.st_rdev) < 0) {
                 virReportSystemError(errno,
                                      _("Failed to make device %s"),
                                      devicePath);
+                goto cleanup;
             }
-            goto cleanup;
         }
     } else if (isReg) {
         if (create &&
@@ -13996,17 +13994,12 @@ qemuDomainAttachDeviceMknodHelper(pid_t pid G_GNUC_UNUSED,
     } else if (isDev) {
         VIR_DEBUG("Creating dev %s (%d,%d)",
                   data->file, major(data->sb.st_rdev), minor(data->sb.st_rdev));
+        unlink(data->file);
         if (mknod(data->file, data->sb.st_mode, data->sb.st_rdev) < 0) {
-            /* Because we are not removing devices on hotunplug, or
-             * we might be creating part of backing chain that
-             * already exist due to a different disk plugged to
-             * domain, accept EEXIST. */
-            if (errno != EEXIST) {
-                virReportSystemError(errno,
-                                     _("Unable to create device %s"),
-                                     data->file);
-                goto cleanup;
-            }
+            virReportSystemError(errno,
+                                 _("Unable to create device %s"),
+                                 data->file);
+            goto cleanup;
         } else {
             delDevice = true;
         }
