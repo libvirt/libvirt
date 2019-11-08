@@ -56,6 +56,7 @@ VC_LIST_ALWAYS_EXCLUDE_REGEX ?= ^$$
 # when $(srcdir) is a pathological name like "....", the leading sed command
 # removes only the intended prefix.
 _dot_escaped_srcdir = $(subst .,\.,$(srcdir))
+_dot_escaped_builddir = $(subst .,\.,$(builddir))
 
 # Post-process $(VC_LIST) output, prepending $(srcdir)/, but only
 # when $(srcdir) is not ".".
@@ -1968,11 +1969,13 @@ perl_translatable_files_list_ =						\
 
 # Verify that all source files using _() (more specifically, files that
 # match $(_gl_translatable_string_re)) are listed in po/POTFILES.in.
-po_file ?= $(srcdir)/po/POTFILES
+po_file ?= $(srcdir)/po/POTFILES.in
 
 # List of additional files that we want to pick up in our POTFILES.in
 # This is all gnulib files, as well as generated files for RPC code.
 generated_files = \
+  $(builddir)/src/*.[ch] \
+  $(builddir)/src/*/*.[ch] \
   $(srcdir)/src/*/{remote_daemon,admin_server,log_daemon,lock_daemon}_dispatch_*stubs.h \
   $(srcdir)/src/lxc/{lxc_monitor,lxc_controller}_dispatch.h \
   $(srcdir)/src/remote/*_client_bodies.h \
@@ -1989,7 +1992,8 @@ sc_po_check: gen_source_files
 	  { $(VC_LIST_EXCEPT); echo $(generated_files); }		\
 	    | xargs perl $(perl_translatable_files_list_)		\
 	    | xargs $(GREP) -E -l '$(_gl_translatable_string_re)'	\
-	    | $(SED) 's|^$(_dot_escaped_srcdir)/||'			\
+	    | $(SED) 's|^$(_dot_escaped_srcdir)|@SRCDIR@|'		\
+	    | $(SED) 's|^$(_dot_escaped_builddir)|@BUILDDIR@|'		\
 	    | sort -u > $@-2;						\
 	  diff -u -L $(po_file) -L $(po_file) $@-1 $@-2			\
 	    || { printf '$(ME): '$(fix_po_file_diag) 1>&2; exit 1; };	\

@@ -15,16 +15,21 @@ LANGS := \
 	uk ur vi wba yo zh_CN zh_HK zh_TW zu
 
 
-POTFILE_DEPS := $(shell $(SED) 's,^,$(top_srcdir)/,' $(srcdir)/POTFILES)
+POTFILES_IN = $(srcdir)/POTFILES.in
+POTFILES: $(POTFILES_IN)
+	$(AM_V_GEN) cat $(POTFILES_IN) | \
+		$(SED) 's|[@]SRCDIR[@]|$(top_srcdir)|' | \
+		$(SED) 's|[@]BUILDDIR[@]|$(top_builddir)|' > $@
+POTFILE_DEPS = $(shell cat POTFILES)
 POTFILE := $(DOMAIN).pot
 POMINIFILES := $(LANGS:%=%.mini.po)
 POFILES := $(LANGS:%=%.po)
 GMOFILES := $(LANGS:%=%.gmo)
 
-CLEANFILES = $(POTFILE) $(POFILES) $(GMOFILES)
+CLEANFILES = $(POTFILE) $(POFILES) $(GMOFILES) POTFILES
 
 EXTRA_DIST = \
-	POTFILES \
+	$(POTFILES_IN) \
 	$(POMINIFILES)
 
 if HAVE_GNU_GETTEXT_TOOLS
@@ -38,7 +43,6 @@ XGETTEXT_ARGS = \
 	--package-name="$(PACKAGE_NAME)" \
 	--package-version="$(PACKAGE_VERSION)" \
 	--msgid-bugs-address="$(MSGID_BUGS_ADDRESS)" \
-	--directory=$(top_srcdir) \
 	$(NULL)
 
 SED_PO_FIXUP_ARGS = \
@@ -79,7 +83,7 @@ pull-po: $(POTFILE)
 
 $(POTFILE): POTFILES $(POTFILE_DEPS)
 	$(XGETTEXT) -o $@-t $(XGETTEXT_ARGS) \
-	  --files-from=$(abs_srcdir)/POTFILES
+	  --files-from=$(abs_builddir)/POTFILES
 	$(SED) $(SED_PO_FIXUP_ARGS) < $@-t > $@
 	rm -f $@-t
 
