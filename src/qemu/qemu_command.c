@@ -1303,7 +1303,7 @@ qemuCheckDiskConfig(virDomainDiskDefPtr disk,
             disk->bus != VIR_DOMAIN_DISK_BUS_SCSI) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("disk device='lun' is not supported for bus='%s'"),
-                           virDomainDiskQEMUBusTypeToString(disk->bus));
+                           virDomainDiskBusTypeToString(disk->bus));
             return -1;
         }
 
