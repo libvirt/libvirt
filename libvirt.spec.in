@@ -1532,7 +1532,7 @@ exit 0
 
 %files docs
 %doc AUTHORS ChangeLog NEWS README README.md
-%doc libvirt-docs/*
+%doc %{_vpath_builddir}/libvirt-docs/*
 
 %files daemon
 
@@ -1892,7 +1892,7 @@ exit 0
 %config(noreplace) %{_sysconfdir}/sysconfig/libvirt-guests
 %attr(0755, root, root) %{_libexecdir}/libvirt-guests.sh
 
-%files libs -f %{name}.lang
+%files libs -f %{_vpath_builddir}/%{name}.lang
 %license COPYING COPYING.LESSER
 %config(noreplace) %{_sysconfdir}/libvirt/libvirt.conf
 %config(noreplace) %{_sysconfdir}/libvirt/libvirt-admin.conf
