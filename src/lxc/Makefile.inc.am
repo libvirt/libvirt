@@ -127,7 +127,7 @@ augeastest_DATA += lxc/test_virtlxcd.aug
 CLEANFILES += lxc/virtlxcd.aug
 
 virtlxcd_SOURCES = $(REMOTE_DAEMON_SOURCES)
-nodst_virtlxcd_SOURCES = $(REMOTE_DAEMON_GENERATED)
+nodist_virtlxcd_SOURCES = $(REMOTE_DAEMON_GENERATED)
 virtlxcd_CFLAGS = \
        $(REMOTE_DAEMON_CFLAGS) \
        -DDAEMON_NAME="\"virtlxcd\"" \
