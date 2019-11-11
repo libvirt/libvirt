@@ -429,6 +429,18 @@
           traditional libvirtd by default.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Support kvm-hint-dedicated performance hint
+        </summary>
+        <description>
+          With <code>&lt;hint-dedicated state='on'/&gt;</code> and
+          <code>&lt;cpu mode='host-passthrough'/&gt;</code>, it
+          allows a guest to enable optimizations when running on dedicated
+          vCPUs. QEMU newer than 2.12.1 and kernel newer than 4.17
+          are required.
+        </description>
+      </change>
     </section>
     <section title="Removed features">
       <change>
