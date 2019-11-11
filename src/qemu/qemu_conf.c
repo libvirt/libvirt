@@ -32,6 +32,7 @@
 #include "qemu_conf.h"
 #include "qemu_capabilities.h"
 #include "qemu_domain.h"
+#include "qemu_firmware.h"
 #include "qemu_security.h"
 #include "viruuid.h"
 #include "virbuffer.h"
@@ -799,7 +800,8 @@ virQEMUDriverConfigLoadLogEntry(virQEMUDriverConfigPtr cfg,
 
 static int
 virQEMUDriverConfigLoadNVRAMEntry(virQEMUDriverConfigPtr cfg,
-                                  virConfPtr conf)
+                                  virConfPtr conf,
+                                  bool privileged)
 {
     VIR_AUTOSTRINGLIST nvram = NULL;
     size_t i;
@@ -807,7 +809,20 @@ virQEMUDriverConfigLoadNVRAMEntry(virQEMUDriverConfigPtr cfg,
     if (virConfGetValueStringList(conf, "nvram", false, &nvram) < 0)
         return -1;
     if (nvram) {
+        VIR_AUTOSTRINGLIST fwList = NULL;
+
         virFirmwareFreeList(cfg->firmwares, cfg->nfirmwares);
+
+        if (qemuFirmwareFetchConfigs(&fwList, privileged) < 0)
+            return -1;
+
+        if (fwList) {
+            VIR_WARN("Obsolete nvram variable is set while firmware metadata "
+                     "files found. Note that the nvram config file variable is "
+                     "going to be ignored.");
+            cfg->nfirmwares = 0;
+            return 0;
+        }
 
         cfg->nfirmwares = virStringListLength((const char *const *)nvram);
         if (nvram[0] && VIR_ALLOC_N(cfg->firmwares, cfg->nfirmwares) < 0)
@@ -1041,7 +1056,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     if (virQEMUDriverConfigLoadLogEntry(cfg, conf) < 0)
         return -1;
 
-    if (virQEMUDriverConfigLoadNVRAMEntry(cfg, conf) < 0)
+    if (virQEMUDriverConfigLoadNVRAMEntry(cfg, conf, privileged) < 0)
         return -1;
 
     if (virQEMUDriverConfigLoadGlusterDebugEntry(cfg, conf) < 0)

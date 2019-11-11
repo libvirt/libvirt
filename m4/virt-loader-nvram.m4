@@ -30,6 +30,8 @@ AC_DEFUN([LIBVIRT_CHECK_LOADER_NVRAM], [
     l=$(echo $with_loader_nvram | tr ':' '\n' | wc -l)
     if test $(expr $l % 2) -ne 0 ; then
       AC_MSG_ERROR([Malformed --with-loader-nvram argument])
+    elif test $l -gt 0 ; then
+      AC_MSG_WARN([Note that --with-loader-nvram is obsolete and will be removed soon])
     fi
     AC_DEFINE_UNQUOTED([DEFAULT_LOADER_NVRAM], ["$with_loader_nvram"],
                        [List of loader:nvram pairs])
@@ -37,5 +39,11 @@ AC_DEFUN([LIBVIRT_CHECK_LOADER_NVRAM], [
 ])
 
 AC_DEFUN([LIBVIRT_RESULT_LOADER_NVRAM], [
-  LIBVIRT_RESULT([Loader/NVRAM], [$with_loader_nvram])
+  if test "x$with_loader_nvram" != "xno" && \
+     test "x$with_loader_nvram" != "x" ; then
+    LIBVIRT_RESULT([Loader/NVRAM], [$with_loader_nvram],
+                   [!!! Using this configure option is strongly discouraged !!!])
+  else
+    LIBVIRT_RESULT([Loader/NVRAM], [$with_loader_nvram])
+  fi
 ])
