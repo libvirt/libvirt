@@ -321,4 +321,4 @@ virDomainQemuMonitorEventNew(int id,
                              long long seconds,
                              unsigned int micros,
                              const char *details)
-    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
