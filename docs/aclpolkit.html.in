@@ -64,7 +64,7 @@
     </p>
 
     <h3><a id="object_connect">virConnectPtr</a></h3>
-    <table class="acl">
+    <table>
       <thead>
         <tr>
           <th>Attribute</th>
@@ -80,7 +80,7 @@
     </table>
 
     <h3><a id="object_domain">virDomainPtr</a></h3>
-    <table class="acl">
+    <table>
       <thead>
         <tr>
           <th>Attribute</th>
@@ -104,7 +104,7 @@
     </table>
 
     <h3><a id="object_interface">virInterfacePtr</a></h3>
-    <table class="acl">
+    <table>
       <thead>
         <tr>
           <th>Attribute</th>
@@ -128,7 +128,7 @@
     </table>
 
     <h3><a id="object_network">virNetworkPtr</a></h3>
-    <table class="acl">
+    <table>
       <thead>
         <tr>
           <th>Attribute</th>
@@ -152,7 +152,7 @@
     </table>
 
     <h3><a id="object_node_device">virNodeDevicePtr</a></h3>
-    <table class="acl">
+    <table>
       <thead>
         <tr>
           <th>Attribute</th>
@@ -172,7 +172,7 @@
     </table>
 
     <h3><a id="object_nwfilter">virNWFilterPtr</a></h3>
-    <table class="acl">
+    <table>
       <thead>
         <tr>
           <th>Attribute</th>
@@ -196,7 +196,7 @@
     </table>
 
     <h3><a id="object_secret">virSecretPtr</a></h3>
-    <table class="acl">
+    <table>
       <thead>
         <tr>
           <th>Attribute</th>
@@ -232,7 +232,7 @@
     </table>
 
     <h3><a id="object_storage_pool">virStoragePoolPtr</a></h3>
-    <table class="acl">
+    <table>
       <thead>
         <tr>
           <th>Attribute</th>
@@ -256,7 +256,7 @@
     </table>
 
     <h3><a id="object_storage_vol">virStorageVolPtr</a></h3>
-    <table class="acl">
+    <table>
       <thead>
         <tr>
           <th>Attribute</th>
@@ -317,7 +317,7 @@
     </p>
 
     <h3><a id="object_connect_driver">Connection Driver Name</a></h3>
-    <table class="acl">
+    <table>
       <thead>
         <tr>
           <th>Connection Driver</th>

@@ -85,7 +85,7 @@ foreach my $object (sort { $a cmp $b } keys %perms) {
     my $olink = lc "object_" . $object;
     print <<EOF;
 <h3><a id="$olink">$class</a></h3>
-<table class="acl">
+<table>
   <thead>
     <tr>
       <th>Permission</th>

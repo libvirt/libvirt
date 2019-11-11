@@ -43,7 +43,7 @@
 
     <xsl:if test="count(exsl:node-set($acls)/api[@name=$api]/check) > 0">
       <h5>Access control parameter checks</h5>
-      <table class="acl">
+      <table>
         <thead>
           <tr>
             <th>Object</th>
@@ -56,7 +56,7 @@
     </xsl:if>
     <xsl:if test="count(exsl:node-set($acls)/api[@name=$api]/filter) > 0">
       <h5>Access control return value filters</h5>
-      <table class="acl">
+      <table>
         <thead>
           <tr>
             <th>Object</th>

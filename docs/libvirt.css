@@ -161,37 +161,37 @@ p.image {
     text-align: center;
 }
 
-.top_table {
+table {
     border-collapse: collapse;
     min-width: 60%;
     margin-left: auto;
     margin-right: auto;
 }
 
-.top_table th {
+table th {
     background: rgb(0, 95, 97);
     color: rgb(255, 255, 255);
     padding: 0.5em;
 }
 
-.top_table th a {
+table th a {
     color: inherit;
     text-decoration: inherit;
 }
 
-.top_table td, .top_table th {
+table td, table th {
     border: 1px solid rgb(60, 133, 124);
 }
 
-.top_table td {
+table td {
     padding: 4px;
 }
 
-.top_table tr:hover td, .top_table col:hover td {
+table tr:hover td, table col:hover td {
     background: #eeeeee;
 }
 
-.top_table tr td:hover {
+table tr td:hover {
     background: #c5dbd8;
 }
 
@@ -289,42 +289,12 @@ img.diagram {
     margin-right: auto;
 }
 
-table.data th, table.data td {
-    padding: 0.3em;
-}
 
-table.data {
-    border-spacing: 0px;
-}
-
-table.data thead th {
-    background: rgb(178,178,178);
-    text-align: center;
-}
-
-table.data {
-    border: 1px solid black;
-    border-collapse: collapse;
-}
-
-table.data thead tr th {
-    border: 1px solid black;
-}
-
-table.data tr.head th {
-    border-left: 1px solid black;
-    border-right: 1px solid black;
-}
-
-table.data tbody td {
-    background: rgb(240,240,240);
-}
-
-table.data tbody td.y {
+table tbody td.y {
     background: rgb(220,255,220);
     text-align: center;
 }
-table.data tbody td.n {
+table tbody td.n {
     background: rgb(255,220,220);
     text-align: center;
 }
@@ -377,6 +347,18 @@ table.data tbody td.n {
     text-decoration: none;
 }
 
+.api table td,.api table th {
+    border: 0px;
+}
+
+.api table tr:hover td, .api table col:hover td {
+    background: inherit;
+}
+
+.api table tr td:hover {
+    background: inherit;
+}
+
 dl.variablelist > dt {
     display: block;
     float: left;
@@ -390,21 +372,6 @@ dl.variablelist > dt {
 
 dl.variablelist > dt:after {
     content: ": ";
-}
-
-table.acl {
-    margin: 1em;
-    border-spacing: 0px;
-    border: 1px solid #ccc;
-}
-
-table.acl tr, table.acl td {
-    padding: 0.3em;
-    border: 1px solid #ccc;
-}
-
-table.acl thead {
-    background: #ddd;
 }
 
 div.description pre.code {

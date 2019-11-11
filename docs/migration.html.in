@@ -257,7 +257,7 @@
       combinations.
     </p>
 
-    <table class="data">
+    <table>
       <thead>
         <tr class="head">
           <th colspan="3">Before migration</th>
