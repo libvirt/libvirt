@@ -26,7 +26,7 @@ HYPERV_DRIVER_EXTRA_DIST = \
 	hyperv/hyperv_wmi_generator.py \
 	$(NULL)
 
-DRIVER_SOURCE_FILES += $(HYPERV_DRIVER_SOURCES)
+DRIVER_SOURCE_FILES += $(addprefix $(srcdir)/,$(HYPERV_DRIVER_SOURCES))
 
 EXTRA_DIST += \
 	$(HYPERV_DRIVER_SOURCES) \

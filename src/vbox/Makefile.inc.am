@@ -31,8 +31,8 @@ VBOX_DRIVER_EXTRA_DIST = \
 	$(NULL)
 
 DRIVER_SOURCE_FILES += \
-	$(VBOX_DRIVER_SOURCES) \
-	vbox/vbox_tmpl.c \
+	$(addprefix $(srcdir)/,$(VBOX_DRIVER_SOURCES)) \
+	$(srcdir)/vbox/vbox_tmpl.c \
 	$(NULL)
 
 EXTRA_DIST += \

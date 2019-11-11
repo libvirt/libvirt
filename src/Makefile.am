@@ -342,10 +342,7 @@ EXTRA_DIST += check-drivername.pl
 
 check-driverimpls:
 	$(AM_V_GEN)$(PERL) $(srcdir)/check-driverimpls.pl \
-		$(filter /%,$(DRIVER_SOURCE_FILES)) \
-		$(filter $(srcdir)/%,$(DRIVER_SOURCE_FILES)) \
-		$(addprefix $(srcdir)/,$(filter-out $(srcdir)/%, \
-			$(filter-out /%,$(DRIVER_SOURCE_FILES))))
+		$(DRIVER_SOURCE_FILES)
 
 check-aclrules:
 	$(AM_V_GEN)$(PERL) $(srcdir)/check-aclrules.pl \
