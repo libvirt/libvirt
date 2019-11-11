@@ -195,25 +195,15 @@ esxConnectListStoragePools(virConnectPtr conn, char **const names,
 
 
 static virStoragePoolPtr
-esxStoragePoolLookupByName(virConnectPtr conn,
-                           const char *name)
+datastoreToStoragePoolPtr(virConnectPtr conn,
+                          const char *name,
+                          esxVI_ObjectContent *datastore)
 {
     esxPrivate *priv = conn->privateData;
-    esxVI_ObjectContent *datastore = NULL;
     esxVI_DatastoreHostMount *hostMount = NULL;
     /* VIR_CRYPTO_HASH_SIZE_MD5 = VIR_UUID_BUFLEN = 16 */
     unsigned char md5[VIR_CRYPTO_HASH_SIZE_MD5];
     virStoragePoolPtr pool = NULL;
-
-    if (esxVI_LookupDatastoreByName(priv->primary, name, NULL, &datastore,
-                                    esxVI_Occurrence_OptionalItem) < 0) {
-        goto cleanup;
-    }
-
-    if (!datastore) {
-        /* Not found, let the base storage driver handle error reporting */
-        goto cleanup;
-    }
 
     /*
      * Datastores don't have a UUID, but we can use the 'host.mountInfo.path'
@@ -239,8 +229,35 @@ esxStoragePoolLookupByName(virConnectPtr conn,
     pool = virGetStoragePool(conn, name, md5, &esxStorageBackendVMFS, NULL);
 
  cleanup:
-    esxVI_ObjectContent_Free(&datastore);
     esxVI_DatastoreHostMount_Free(&hostMount);
+
+    return pool;
+}
+
+
+
+static virStoragePoolPtr
+esxStoragePoolLookupByName(virConnectPtr conn,
+                           const char *name)
+{
+    esxPrivate *priv = conn->privateData;
+    esxVI_ObjectContent *datastore = NULL;
+    virStoragePoolPtr pool = NULL;
+
+    if (esxVI_LookupDatastoreByName(priv->primary, name, NULL, &datastore,
+                                    esxVI_Occurrence_OptionalItem) < 0) {
+        goto cleanup;
+    }
+
+    if (!datastore) {
+        /* Not found, let the base storage driver handle error reporting */
+        goto cleanup;
+    }
+
+    pool = datastoreToStoragePoolPtr(conn, name, datastore);
+
+ cleanup:
+    esxVI_ObjectContent_Free(&datastore);
 
     return pool;
 }
