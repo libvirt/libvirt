@@ -389,6 +389,16 @@
           backend. It requires QEMU newer than 4.1.
         </description>
       </change>
+      <change>
+        <summary>
+          Introduce virConnectSetIdentity API
+        </summary>
+        <description>
+          When split daemons are in use, this API is used to forward uid,
+          gid and SELinux info from <code>virproxyd</code> to other driver
+          daemons such as <code>virtqemud</code>.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
