@@ -176,11 +176,14 @@
     <xsl:apply-templates select="exsl:node-set($inchtml)/html:html/html:body/*" mode="content"/>
   </xsl:template>
 
-  <xsl:template match="html:h2 | html:h3 | html:h4 | html:h5 | html:h6" mode="content">
+  <xsl:template match="html:h1 | html:h2 | html:h3 | html:h4 | html:h5 | html:h6" mode="content">
     <xsl:element name="{name()}">
       <xsl:apply-templates mode="copy" />
       <xsl:if test="./html:a/@id">
         <a class="headerlink" href="#{html:a/@id}" title="Permalink to this headline">&#xb6;</a>
+      </xsl:if>
+      <xsl:if test="./html:a[@class='toc-backref']">
+        <a class="headerlink" href="#{../@id}" title="Permalink to this headline">&#xb6;</a>
       </xsl:if>
     </xsl:element>
   </xsl:template>

@@ -419,6 +419,7 @@ a.headerlink {
     visibility: hidden;
 }
 
+h1:hover > a.headerlink,
 h2:hover > a.headerlink,
 h3:hover > a.headerlink,
 h4:hover > a.headerlink,
