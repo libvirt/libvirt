@@ -36,6 +36,11 @@
     %define qemu_kvm_arches x86_64 %{power64} aarch64 s390x
 %endif
 
+# On RHEL 7 and older macro _vpath_builddir is not defined.
+%if 0%{?rhel} <= 7
+    %define _vpath_builddir %{_target_platform}
+%endif
+
 %ifarch %{qemu_kvm_arches}
     %define with_qemu_kvm      %{with_qemu}
 %else
