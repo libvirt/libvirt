@@ -350,7 +350,7 @@ check-driverimpls:
 check-aclrules:
 	$(AM_V_GEN)$(PERL) $(srcdir)/check-aclrules.pl \
 		$(REMOTE_PROTOCOL) \
-		$(addprefix $(srcdir)/,$(filter-out /%,$(STATEFUL_DRIVER_SOURCE_FILES)))
+		$(STATEFUL_DRIVER_SOURCE_FILES)
 
 check-aclperms:
 	$(AM_V_GEN)$(PERL) $(srcdir)/check-aclperms.pl \
