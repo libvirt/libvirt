@@ -546,6 +546,12 @@
             <empty/>
           </element>
         </optional>
+        <optional>
+          <element name='hap'>
+            <ref name='featuretoggle'/>
+            <empty/>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>
