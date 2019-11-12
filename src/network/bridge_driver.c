@@ -5380,19 +5380,18 @@ networkUpdatePortBandwidth(virNetworkObjPtr obj,
 
     /* Okay, there are three possible scenarios: */
 
-    if (oldBandwidth && oldBandwidth->in && oldBandwidth->in->floor &&
-        newBandwidth->in && newBandwidth->in->floor) {
+    if (old_floor > 0 && new_floor > 0) {
         /* Either we just need to update @floor .. */
 
         if (virNetDevBandwidthUpdateRate(def->bridge,
                                          *class_id,
                                          def->bandwidth,
-                                         newBandwidth->in->floor) < 0)
+                                         new_floor) < 0)
             return -1;
 
         tmp_floor_sum = virNetworkObjGetFloorSum(obj);
-        tmp_floor_sum -= oldBandwidth->in->floor;
-        tmp_floor_sum += newBandwidth->in->floor;
+        tmp_floor_sum -= old_floor;
+        tmp_floor_sum += new_floor;
         virNetworkObjSetFloorSum(obj, tmp_floor_sum);
         new_rate -= tmp_floor_sum;
 
@@ -5401,17 +5400,17 @@ networkUpdatePortBandwidth(virNetworkObjPtr obj,
             virNetworkObjSaveStatus(driver->stateDir,
                                     obj, network_driver->xmlopt) < 0) {
             /* Ouch, rollback */
-            tmp_floor_sum -= newBandwidth->in->floor;
-            tmp_floor_sum += oldBandwidth->in->floor;
+            tmp_floor_sum -= new_floor;
+            tmp_floor_sum += old_floor;
             virNetworkObjSetFloorSum(obj, tmp_floor_sum);
 
             ignore_value(virNetDevBandwidthUpdateRate(def->bridge,
                                                       *class_id,
                                                       def->bandwidth,
-                                                      oldBandwidth->in->floor));
+                                                      old_floor));
             return -1;
         }
-    } else if (newBandwidth->in && newBandwidth->in->floor) {
+    } else if (new_floor > 0) {
         /* .. or we need to plug in new .. */
 
         if (networkPlugBandwidthImpl(obj, mac, newBandwidth,
