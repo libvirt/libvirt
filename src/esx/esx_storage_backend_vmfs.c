@@ -54,25 +54,11 @@ verify(VIR_CRYPTO_HASH_SIZE_MD5 == VIR_UUID_BUFLEN);
 
 
 static int
-esxLookupVMFSStoragePoolType(esxVI_Context *ctx, const char *poolName,
-                             int *poolType)
+datastorePoolType(esxVI_ObjectContent *datastore, int *poolType)
 {
     int result = -1;
-    esxVI_String *propertyNameList = NULL;
-    esxVI_ObjectContent *datastore = NULL;
     esxVI_DynamicProperty *dynamicProperty = NULL;
     esxVI_DatastoreInfo *datastoreInfo = NULL;
-
-    if (esxVI_String_AppendValueToList(&propertyNameList, "info") < 0 ||
-        esxVI_LookupDatastoreByName(ctx, poolName, propertyNameList, &datastore,
-                                    esxVI_Occurrence_OptionalItem) < 0) {
-        goto cleanup;
-    }
-
-    if (!datastore) {
-        /* Not found, let the base storage driver handle error reporting */
-        goto cleanup;
-    }
 
     for (dynamicProperty = datastore->propSet; dynamicProperty;
          dynamicProperty = dynamicProperty->_next) {
@@ -101,9 +87,40 @@ esxLookupVMFSStoragePoolType(esxVI_Context *ctx, const char *poolName,
     result = 0;
 
  cleanup:
+    esxVI_DatastoreInfo_Free(&datastoreInfo);
+
+    return result;
+}
+
+
+
+static int
+esxLookupVMFSStoragePoolType(esxVI_Context *ctx, const char *poolName,
+                             int *poolType)
+{
+    int result = -1;
+    esxVI_String *propertyNameList = NULL;
+    esxVI_ObjectContent *datastore = NULL;
+
+    if (esxVI_String_AppendValueToList(&propertyNameList, "info") < 0 ||
+        esxVI_LookupDatastoreByName(ctx, poolName, propertyNameList, &datastore,
+                                    esxVI_Occurrence_OptionalItem) < 0) {
+        goto cleanup;
+    }
+
+    if (!datastore) {
+        /* Not found, let the base storage driver handle error reporting */
+        goto cleanup;
+    }
+
+    if (datastorePoolType(datastore, poolType) < 0)
+        goto cleanup;
+
+    result = 0;
+
+ cleanup:
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&datastore);
-    esxVI_DatastoreInfo_Free(&datastoreInfo);
 
     return result;
 }
