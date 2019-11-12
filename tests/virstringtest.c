@@ -39,7 +39,6 @@ struct testStreqData {
 static int testStreq(const void *args)
 {
     const struct testStreqData *data = args;
-    int ret = -1;
     bool equal = true;
     bool streq_rv, strneq_rv;
     size_t i;
@@ -63,19 +62,17 @@ static int testStreq(const void *args)
         virFilePrintf(stderr,
                       "STREQ not working correctly. Expected %d got %d",
                       (int) equal, (int) streq_rv);
-        goto cleanup;
+        return -1;
     }
 
     if (strneq_rv == equal) {
         virFilePrintf(stderr,
                       "STRNEQ not working correctly. Expected %d got %d",
                       (int) equal, (int) strneq_rv);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 struct testSplitData {
@@ -381,7 +378,6 @@ testStringSortCompare(const void *opaque G_GNUC_UNUSED)
     const char *sortrlist[] = {
         "turducken", "tasty", "goat", "chicken", "astro",
     };
-    int ret = -1;
     size_t i;
 
     qsort(randlist, G_N_ELEMENTS(randlist), sizeof(randlist[0]),
@@ -393,18 +389,16 @@ testStringSortCompare(const void *opaque G_GNUC_UNUSED)
         if (STRNEQ(randlist[i], sortlist[i])) {
             fprintf(stderr, "sortlist[%zu] '%s' != randlist[%zu] '%s'\n",
                     i, sortlist[i], i, randlist[i]);
-            goto cleanup;
+            return -1;
         }
         if (STRNEQ(randrlist[i], sortrlist[i])) {
             fprintf(stderr, "sortrlist[%zu] '%s' != randrlist[%zu] '%s'\n",
                     i, sortrlist[i], i, randrlist[i]);
-            goto cleanup;
+            return -1;
         }
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 

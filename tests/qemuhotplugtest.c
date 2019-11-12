@@ -60,17 +60,16 @@ qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
                          virDomainObjPtr *vm,
                          const char *domxml)
 {
-    int ret = -1;
     qemuDomainObjPrivatePtr priv = NULL;
     const unsigned int parseFlags = 0;
 
     if (!(*vm = virDomainObjNew(xmlopt)))
-        goto cleanup;
+        return -1;
 
     priv = (*vm)->privateData;
 
     if (!(priv->qemuCaps = virQEMUCapsNew()))
-        goto cleanup;
+        return -1;
 
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_VIRTIO_SCSI);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE_USB_STORAGE);
@@ -85,31 +84,29 @@ qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE_CIRRUS_VGA);
 
     if (qemuTestCapsCacheInsert(driver.qemuCapsCache, priv->qemuCaps) < 0)
-        goto cleanup;
+        return -1;
 
     if (!((*vm)->def = virDomainDefParseString(domxml,
                                                driver.caps,
                                                driver.xmlopt,
                                                NULL,
                                                parseFlags)))
-        goto cleanup;
+        return -1;
 
     if (qemuDomainAssignAddresses((*vm)->def, priv->qemuCaps,
                                   &driver, *vm, true) < 0) {
-        goto cleanup;
+        return -1;
     }
 
     if (qemuAssignDeviceAliases((*vm)->def, priv->qemuCaps) < 0)
-        goto cleanup;
+        return -1;
 
     (*vm)->def->id = QEMU_HOTPLUG_TEST_DOMAIN_ID;
 
     if (qemuDomainSetPrivatePaths(&driver, *vm) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int

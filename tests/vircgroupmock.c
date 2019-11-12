@@ -104,7 +104,6 @@ static int make_file(const char *path,
 
 static int make_controller_v1(const char *path, mode_t mode)
 {
-    int ret = -1;
     const char *controller;
 
     if (!STRPREFIX(path, fakesysfscgroupdir)) {
@@ -119,12 +118,12 @@ static int make_controller_v1(const char *path, mode_t mode)
         return symlink("cpu,cpuacct", path);
 
     if (real_mkdir(path, mode) < 0)
-        goto cleanup;
+        return -1;
 
 # define MAKE_FILE(name, value) \
     do { \
         if (make_file(path, name, value) < 0) \
-            goto cleanup; \
+            return -1; \
     } while (0)
 
     if (STRPREFIX(controller, "cpu,cpuacct")) {
@@ -225,14 +224,12 @@ static int make_controller_v1(const char *path, mode_t mode)
 
     } else {
         errno = EINVAL;
-        goto cleanup;
+        return -1;
     }
 
 # undef MAKE_FILE
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 

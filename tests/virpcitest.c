@@ -224,13 +224,12 @@ testVirPCIDeviceIsAssignable(const void *opaque)
     virPCIDevicePtr dev;
 
     if (!(dev = virPCIDeviceNew(data->domain, data->bus, data->slot, data->function)))
-        goto cleanup;
+        return -1;
 
     if (virPCIDeviceIsAssignable(dev, true))
         ret = 0;
 
     virPCIDeviceFree(dev);
- cleanup:
     return ret;
 }
 

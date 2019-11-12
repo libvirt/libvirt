@@ -160,16 +160,13 @@ mymain(void)
             return EXIT_AM_SKIP;
         }
 
-        ret = -1;
-        goto cleanup;
+        return EXIT_FAILURE;
     }
 
     basefile = g_strdup_printf("%s/networkxml2firewalldata/base.args", abs_srcdir);
 
-    if (virTestLoadFile(basefile, &baseargs) < 0) {
-        ret = -1;
-        goto cleanup;
-    }
+    if (virTestLoadFile(basefile, &baseargs) < 0)
+        return EXIT_FAILURE;
 
     DO_TEST("nat-default");
     DO_TEST("nat-tftp");
@@ -178,7 +175,6 @@ mymain(void)
     DO_TEST("nat-ipv6");
     DO_TEST("route-default");
 
- cleanup:
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 

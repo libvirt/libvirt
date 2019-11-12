@@ -164,8 +164,7 @@ mymain(void)
 #define DO_TEST_FLUSH_PROLOGUE \
     do { \
         if (!(mgr = virMacMapNew(NULL))) { \
-            ret = -1; \
-            goto cleanup; \
+            return EXIT_FAILURE; \
         } \
     } while (0)
 
@@ -222,7 +221,7 @@ mymain(void)
     DO_TEST_FLUSH("dom1", "9e:89:49:99:51:0e", "89:b4:3f:08:88:2c", "54:0b:4c:e2:0a:39");
     DO_TEST_FLUSH("dom1", "bb:88:07:19:51:9d", "b7:f1:1a:40:a2:95", "88:94:39:a3:90:b4");
     DO_TEST_FLUSH_EPILOGUE("complex");
- cleanup:
+
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 

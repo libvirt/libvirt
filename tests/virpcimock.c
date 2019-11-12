@@ -298,7 +298,6 @@ find_fd(int fd, size_t *indx)
 static int
 add_fd(int fd, const char *path)
 {
-    int ret = -1;
     size_t i;
 
     if (find_fd(fd, &i)) {
@@ -309,38 +308,34 @@ add_fd(int fd, const char *path)
 
     if (VIR_REALLOC_N_QUIET(callbacks, nCallbacks + 1) < 0) {
         errno = ENOMEM;
-        goto cleanup;
+        return -1;
     }
 
     callbacks[nCallbacks].path = g_strdup(path);
     callbacks[nCallbacks++].fd = fd;
-    ret = 0;
- cleanup:
-    return ret;
+
+    return 0;
 }
 
 static int
 remove_fd(int fd)
 {
-    int ret = -1;
     size_t i;
 
     if (find_fd(fd, &i)) {
         struct fdCallback cb = callbacks[i];
 
         if (pci_driver_handle_change(cb.fd, cb.path) < 0)
-            goto cleanup;
+            return -1;
 
         VIR_FREE(cb.path);
         if (VIR_DELETE_ELEMENT(callbacks, i, nCallbacks) < 0) {
             errno = EINVAL;
-            goto cleanup;
+            return -1;
         }
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -907,36 +902,30 @@ pci_driver_handle_change(int fd G_GNUC_UNUSED, const char *path)
 static int
 pci_driver_handle_bind(const char *path)
 {
-    int ret = -1;
     struct pciDevice *dev = pci_device_find_by_content(path);
     struct pciDriver *driver = pci_driver_find_by_path(path);
 
     if (!driver || !dev) {
         /* No driver, no device or failing driver requested */
         errno = ENODEV;
-        goto cleanup;
+        return -1;
     }
 
-    ret = pci_driver_bind(driver, dev);
- cleanup:
-    return ret;
+    return pci_driver_bind(driver, dev);
 }
 
 static int
 pci_driver_handle_unbind(const char *path)
 {
-    int ret = -1;
     struct pciDevice *dev = pci_device_find_by_content(path);
 
     if (!dev || !dev->driver) {
         /* No device, device not binded or failing driver requested */
         errno = ENODEV;
-        goto cleanup;
+        return -1;
     }
 
-    ret = pci_driver_unbind(dev->driver, dev);
- cleanup:
-    return ret;
+    return pci_driver_unbind(dev->driver, dev);
 }
 
 

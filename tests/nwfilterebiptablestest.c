@@ -518,8 +518,7 @@ mymain(void)
             return EXIT_AM_SKIP;
         }
 
-        ret = -1;
-        goto cleanup;
+        return EXIT_FAILURE;
     }
 
     if (virTestRun("ebiptablesAllTeardown",
@@ -557,7 +556,6 @@ mymain(void)
                    NULL) < 0)
         ret = -1;
 
- cleanup:
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 

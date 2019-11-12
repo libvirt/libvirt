@@ -30,38 +30,35 @@ test1(const void *data G_GNUC_UNUSED)
      * unaligned access.  */
     char array[] = { 1, 2, 3, 4, 5, 6, 7, 8,
                      0x89, 0x8a, 0x8b, 0x8c, 0x8d };
-    int ret = -1;
 
     if (virReadBufInt64BE(array) != 0x0102030405060708ULL)
-        goto cleanup;
+        return -1;
     if (virReadBufInt64BE(array + 5) != 0x060708898a8b8c8dULL)
-        goto cleanup;
+        return -1;
     if (virReadBufInt64LE(array) != 0x0807060504030201ULL)
-        goto cleanup;
+        return -1;
     if (virReadBufInt64LE(array + 5) != 0x8d8c8b8a89080706ULL)
-        goto cleanup;
+        return -1;
 
     if (virReadBufInt32BE(array) != 0x01020304U)
-        goto cleanup;
+        return -1;
     if (virReadBufInt32BE(array + 9) != 0x8a8b8c8dU)
-        goto cleanup;
+        return -1;
     if (virReadBufInt32LE(array) != 0x04030201U)
-        goto cleanup;
+        return -1;
     if (virReadBufInt32LE(array + 9) != 0x8d8c8b8aU)
-        goto cleanup;
+        return -1;
 
     if (virReadBufInt16BE(array) != 0x0102U)
-        goto cleanup;
+        return -1;
     if (virReadBufInt16BE(array + 11) != 0x8c8dU)
-        goto cleanup;
+        return -1;
     if (virReadBufInt16LE(array) != 0x0201U)
-        goto cleanup;
+        return -1;
     if (virReadBufInt16LE(array + 11) != 0x8d8cU)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
@@ -70,38 +67,35 @@ test2(const void *data G_GNUC_UNUSED)
     /* Unsigned char should work without cast, even if unaligned access.  */
     unsigned char array[] = { 1, 2, 3, 4, 5, 6, 7, 8,
                               0x89, 0x8a, 0x8b, 0x8c, 0x8d };
-    int ret = -1;
 
     if (virReadBufInt64BE(array) != 0x0102030405060708ULL)
-        goto cleanup;
+        return -1;
     if (virReadBufInt64BE(array + 5) != 0x060708898a8b8c8dULL)
-        goto cleanup;
+        return -1;
     if (virReadBufInt64LE(array) != 0x0807060504030201ULL)
-        goto cleanup;
+        return -1;
     if (virReadBufInt64LE(array + 5) != 0x8d8c8b8a89080706ULL)
-        goto cleanup;
+        return -1;
 
     if (virReadBufInt32BE(array) != 0x01020304U)
-        goto cleanup;
+        return -1;
     if (virReadBufInt32BE(array + 9) != 0x8a8b8c8dU)
-        goto cleanup;
+        return -1;
     if (virReadBufInt32LE(array) != 0x04030201U)
-        goto cleanup;
+        return -1;
     if (virReadBufInt32LE(array + 9) != 0x8d8c8b8aU)
-        goto cleanup;
+        return -1;
 
     if (virReadBufInt16BE(array) != 0x0102U)
-        goto cleanup;
+        return -1;
     if (virReadBufInt16BE(array + 11) != 0x8c8dU)
-        goto cleanup;
+        return -1;
     if (virReadBufInt16LE(array) != 0x0201U)
-        goto cleanup;
+        return -1;
     if (virReadBufInt16LE(array + 11) != 0x8d8cU)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int

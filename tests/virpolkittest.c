@@ -145,26 +145,20 @@ VIR_MOCK_WRAP_RET_ARGS(dbus_connection_send_with_reply_and_block,
 
 static int testPolkitAuthSuccess(const void *opaque G_GNUC_UNUSED)
 {
-    int ret = -1;
-
     if (virPolkitCheckAuth("org.libvirt.test.success",
                            THE_PID,
                            THE_TIME,
                            THE_UID,
                            NULL,
                            true) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
 static int testPolkitAuthDenied(const void *opaque G_GNUC_UNUSED)
 {
-    int ret = -1;
     int rv;
     virErrorPtr err;
 
@@ -177,28 +171,24 @@ static int testPolkitAuthDenied(const void *opaque G_GNUC_UNUSED)
 
     if (rv == 0) {
         fprintf(stderr, "Unexpected auth success\n");
-        goto cleanup;
+        return -1;
     } else if (rv != -2) {
-        goto cleanup;
+        return -1;
     }
 
     err = virGetLastError();
     if (!err || !strstr(err->message,
                         _("access denied by policy"))) {
         fprintf(stderr, "Incorrect error response\n");
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
 static int testPolkitAuthChallenge(const void *opaque G_GNUC_UNUSED)
 {
-    int ret = -1;
     int rv;
     virErrorPtr err;
 
@@ -211,9 +201,9 @@ static int testPolkitAuthChallenge(const void *opaque G_GNUC_UNUSED)
 
     if (rv == 0) {
         fprintf(stderr, "Unexpected auth success\n");
-        goto cleanup;
+        return -1;
     } else if (rv != -2) {
-        goto cleanup;
+        return -1;
     }
 
     err = virGetLastError();
@@ -221,19 +211,15 @@ static int testPolkitAuthChallenge(const void *opaque G_GNUC_UNUSED)
         err->code != VIR_ERR_AUTH_UNAVAILABLE ||
         !strstr(err->message, _("no polkit agent available to authenticate"))) {
         fprintf(stderr, "Incorrect error response\n");
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
 static int testPolkitAuthCancelled(const void *opaque G_GNUC_UNUSED)
 {
-    int ret = -1;
     int rv;
     virErrorPtr err;
 
@@ -246,28 +232,24 @@ static int testPolkitAuthCancelled(const void *opaque G_GNUC_UNUSED)
 
     if (rv == 0) {
         fprintf(stderr, "Unexpected auth success\n");
-        goto cleanup;
+        return -1;
     } else if (rv != -2) {
-        goto cleanup;
+        return -1;
     }
 
     err = virGetLastError();
     if (!err || !strstr(err->message,
                        _("user cancelled authentication process"))) {
         fprintf(stderr, "Incorrect error response\n");
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
 static int testPolkitAuthDetailsSuccess(const void *opaque G_GNUC_UNUSED)
 {
-    int ret = -1;
     const char *details[] = {
         "org.libvirt.test.person", "Fred",
         NULL,
@@ -279,18 +261,14 @@ static int testPolkitAuthDetailsSuccess(const void *opaque G_GNUC_UNUSED)
                            THE_UID,
                            details,
                            true) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
 static int testPolkitAuthDetailsDenied(const void *opaque G_GNUC_UNUSED)
 {
-    int ret = -1;
     int rv;
     virErrorPtr err;
     const char *details[] = {
@@ -307,22 +285,19 @@ static int testPolkitAuthDetailsDenied(const void *opaque G_GNUC_UNUSED)
 
     if (rv == 0) {
         fprintf(stderr, "Unexpected auth success\n");
-        goto cleanup;
+        return -1;
     } else if (rv != -2) {
-        goto cleanup;
+        return -1;
     }
 
     err = virGetLastError();
     if (!err || !strstr(err->message,
                         _("access denied by policy"))) {
         fprintf(stderr, "Incorrect error response\n");
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 

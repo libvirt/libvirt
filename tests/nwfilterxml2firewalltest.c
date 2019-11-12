@@ -327,24 +327,22 @@ static int testSetOneParameter(virHashTablePtr vars,
                                const char *name,
                                const char *value)
 {
-    int ret = -1;
     virNWFilterVarValuePtr val;
 
     if ((val = virHashLookup(vars, name)) == NULL) {
         val = virNWFilterVarValueCreateSimpleCopyValue(value);
         if (!val)
-            goto cleanup;
+            return -1;
         if (virHashUpdateEntry(vars, name, val) < 0) {
             virNWFilterVarValueFree(val);
-            goto cleanup;
+            return -1;
         }
     } else {
         if (virNWFilterVarValueAddValueCopy(val, value) < 0)
-            goto cleanup;
+            return -1;
     }
-    ret = 0;
- cleanup:
-    return ret;
+
+    return 0;
 }
 
 static int testSetDefaultParameters(virHashTablePtr vars)
@@ -468,8 +466,7 @@ mymain(void)
             fprintf(stderr, "iptables/ip6tables/ebtables tools not present");
             return EXIT_AM_SKIP;
         }
-        ret = -1;
-        goto cleanup;
+        return EXIT_FAILURE;
     }
 
     DO_TEST("ah");
@@ -512,7 +509,6 @@ mymain(void)
     DO_TEST("udplite-ipv6");
     DO_TEST("vlan");
 
- cleanup:
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 

@@ -943,12 +943,11 @@ test23(const void *unused G_GNUC_UNUSED)
     /* Not strictly a virCommand test, but this is the easiest place
      * to test this lower-level interface.  It takes a double fork to
      * test virProcessExitWithStatus.  */
-    int ret = -1;
     int status = -1;
     pid_t pid;
 
     if ((pid = virFork()) < 0)
-        goto cleanup;
+        return -1;
     if (pid == 0) {
         if ((pid = virFork()) < 0)
             _exit(EXIT_FAILURE);
@@ -961,14 +960,14 @@ test23(const void *unused G_GNUC_UNUSED)
     }
 
     if (virProcessWait(pid, &status, true) < 0)
-        goto cleanup;
+        return -1;
     if (!WIFEXITED(status) || WEXITSTATUS(status) != 42) {
         printf("Unexpected status %d\n", status);
-        goto cleanup;
+        return -1;
     }
 
     if ((pid = virFork()) < 0)
-        goto cleanup;
+        return -1;
     if (pid == 0) {
         if ((pid = virFork()) < 0)
             _exit(EXIT_FAILURE);
@@ -983,15 +982,13 @@ test23(const void *unused G_GNUC_UNUSED)
     }
 
     if (virProcessWait(pid, &status, true) < 0)
-        goto cleanup;
+        return -1;
     if (!WIFSIGNALED(status) || WTERMSIG(status) != SIGKILL) {
         printf("Unexpected status %d\n", status);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int test25(const void *unused G_GNUC_UNUSED)

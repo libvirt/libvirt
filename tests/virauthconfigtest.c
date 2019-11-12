@@ -41,7 +41,6 @@ struct ConfigLookupData {
 
 static int testAuthLookup(const void *args)
 {
-    int ret = -1;
     const struct ConfigLookupData *data = args;
     const char *actual = NULL;
     int rv;
@@ -53,7 +52,7 @@ static int testAuthLookup(const void *args)
                              &actual);
 
     if (rv < 0)
-        goto cleanup;
+        return -1;
 
     if (data->expect) {
         if (!actual ||
@@ -62,7 +61,7 @@ static int testAuthLookup(const void *args)
                      data->expect, data->hostname,
                      data->service, data->credname,
                      NULLSTR(actual));
-            goto cleanup;
+            return -1;
         }
     } else {
         if (actual) {
@@ -70,13 +69,11 @@ static int testAuthLookup(const void *args)
                      data->hostname,
                      data->service, data->credname,
                      actual);
-            goto cleanup;
+            return -1;
         }
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 

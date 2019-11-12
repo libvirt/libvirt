@@ -359,10 +359,8 @@ testUpdateQEMUCaps(const struct testQemuInfo *info,
                    virDomainObjPtr vm,
                    virCapsPtr caps)
 {
-    int ret = -1;
-
     if (!caps)
-        goto cleanup;
+        return -1;
 
     virQEMUCapsSetArch(info->qemuCaps, vm->def->os.arch);
 
@@ -370,17 +368,14 @@ testUpdateQEMUCaps(const struct testQemuInfo *info,
 
     if (testAddCPUModels(info->qemuCaps,
                          !!(info->flags & FLAG_SKIP_LEGACY_CPUS)) < 0)
-        goto cleanup;
+        return -1;
 
     virQEMUCapsInitHostCPUModel(info->qemuCaps, caps->host.arch,
                                 VIR_DOMAIN_VIRT_KVM);
     virQEMUCapsInitHostCPUModel(info->qemuCaps, caps->host.arch,
                                 VIR_DOMAIN_VIRT_QEMU);
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
