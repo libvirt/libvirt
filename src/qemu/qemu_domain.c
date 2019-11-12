@@ -4435,6 +4435,7 @@ qemuDomainDefVcpusPostParse(virDomainDefPtr def)
 
 static int
 qemuDomainDefSetDefaultCPU(virDomainDefPtr def,
+                           virCapsPtr caps,
                            virQEMUCapsPtr qemuCaps)
 {
     const char *model;
@@ -4465,26 +4466,36 @@ qemuDomainDefSetDefaultCPU(virDomainDefPtr def,
         return -1;
     }
 
-    VIR_DEBUG("Setting default CPU model for domain '%s' to %s",
-              def->name, model);
-
     if (!def->cpu)
         def->cpu = g_new0(virCPUDef, 1);
 
-    /* We need to turn off all CPU checks when the domain is started because
-     * the default CPU (e.g., qemu64) may not be runnable on any host. QEMU
-     * will just disable the unavailable features and we will update the CPU
-     * definition accordingly and set check to FULL when starting the domain. */
     def->cpu->type = VIR_CPU_TYPE_GUEST;
-    def->cpu->check = VIR_CPU_CHECK_NONE;
 
     if (STREQ(model, "host")) {
-        def->cpu->mode = VIR_CPU_MODE_HOST_PASSTHROUGH;
+        if (ARCH_IS_S390(def->os.arch) &&
+            virQEMUCapsIsCPUModeSupported(qemuCaps, caps, def->virtType,
+                                          VIR_CPU_MODE_HOST_MODEL)) {
+            def->cpu->mode = VIR_CPU_MODE_HOST_MODEL;
+        } else {
+            def->cpu->mode = VIR_CPU_MODE_HOST_PASSTHROUGH;
+        }
+
+        VIR_DEBUG("Setting default CPU mode for domain '%s' to %s",
+                  def->name, virCPUModeTypeToString(def->cpu->mode));
     } else {
+        /* We need to turn off all CPU checks when the domain is started
+         * because the default CPU (e.g., qemu64) may not be runnable on any
+         * host. QEMU will just disable the unavailable features and we will
+         * update the CPU definition accordingly and set check to FULL when
+         * starting the domain. */
+        def->cpu->check = VIR_CPU_CHECK_NONE;
         def->cpu->mode = VIR_CPU_MODE_CUSTOM;
         def->cpu->match = VIR_CPU_MATCH_EXACT;
         def->cpu->fallback = VIR_CPU_FALLBACK_FORBID;
         def->cpu->model = g_strdup(model);
+
+        VIR_DEBUG("Setting default CPU model for domain '%s' to %s",
+                  def->name, model);
     }
 
     return 0;
@@ -4669,7 +4680,7 @@ qemuDomainDefPostParseBasic(virDomainDefPtr def,
 
 static int
 qemuDomainDefPostParse(virDomainDefPtr def,
-                       virCapsPtr caps G_GNUC_UNUSED,
+                       virCapsPtr caps,
                        unsigned int parseFlags,
                        void *opaque,
                        void *parseOpaque)
@@ -4701,7 +4712,7 @@ qemuDomainDefPostParse(virDomainDefPtr def,
     if (qemuCanonicalizeMachine(def, qemuCaps) < 0)
         return -1;
 
-    if (qemuDomainDefSetDefaultCPU(def, qemuCaps) < 0)
+    if (qemuDomainDefSetDefaultCPU(def, caps, qemuCaps) < 0)
         return -1;
 
     qemuDomainDefEnableDefaultFeatures(def, qemuCaps);
