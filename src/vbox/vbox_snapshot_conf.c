@@ -749,18 +749,17 @@ virVBoxSnapshotConfAddSnapshotToXmlMachine(virVBoxSnapshotConfSnapshotPtr snapsh
                                            virVBoxSnapshotConfMachinePtr machine,
                                            const char *snapshotParentName)
 {
-    int ret = -1;
     virVBoxSnapshotConfSnapshotPtr parentSnapshot = NULL;
 
     if (snapshot == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Snapshot is Null"));
-        goto cleanup;
+        return -1;
     }
     if (machine == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Machine is Null"));
-        goto cleanup;
+        return -1;
     }
 
     /*If parent is NULL and the machine has no snapshot yet,
@@ -770,32 +769,29 @@ virVBoxSnapshotConfAddSnapshotToXmlMachine(virVBoxSnapshotConfSnapshotPtr snapsh
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Unable to add this snapshot, there is already a snapshot "
                              "linked to the machine"));
-            goto cleanup;
+            return -1;
         }
         machine->snapshot = snapshot;
-        ret = 0;
-        goto cleanup;
+        return 0;
     } else {
         if (machine->snapshot == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("The machine has no snapshot and it should have it"));
-            goto cleanup;
+            return -1;
         }
         parentSnapshot = virVBoxSnapshotConfSnapshotByName(machine->snapshot, snapshotParentName);
         if (parentSnapshot == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unable to find the snapshot %s"), snapshotParentName);
-            goto cleanup;
+            return -1;
         }
         if (VIR_EXPAND_N(parentSnapshot->children, parentSnapshot->nchildren, 1) < 0)
-            goto cleanup;
+            return -1;
 
         parentSnapshot->children[parentSnapshot->nchildren - 1] = snapshot;
-        ret = 0;
     }
 
- cleanup:
-    return ret;
+    return 0;
 }
 
 /*
@@ -809,18 +805,17 @@ virVBoxSnapshotConfAddHardDiskToMediaRegistry(virVBoxSnapshotConfHardDiskPtr har
                                               virVBoxSnapshotConfMediaRegistryPtr mediaRegistry,
                                               const char *parentHardDiskId)
 {
-    int ret = -1;
     size_t i = 0;
     virVBoxSnapshotConfHardDiskPtr parentDisk = NULL;
     if (hardDisk == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Hard disk is null"));
-        goto cleanup;
+        return -1;
     }
     if (mediaRegistry == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Media Registry is null"));
-        goto cleanup;
+        return -1;
     }
 
     for (i = 0; i < mediaRegistry->ndisks; i++) {
@@ -831,19 +826,17 @@ virVBoxSnapshotConfAddHardDiskToMediaRegistry(virVBoxSnapshotConfHardDiskPtr har
     if (parentDisk == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unable to get the parent disk"));
-        goto cleanup;
+        return -1;
     }
     /*Hard disk found*/
     if (VIR_EXPAND_N(parentDisk->children, parentDisk->nchildren, 1) < 0)
-        goto cleanup;
+        return -1;
 
     parentDisk->children[parentDisk->nchildren - 1] = hardDisk;
     if (hardDisk->parent == NULL)
         hardDisk->parent = parentDisk;
-    ret = 0;
 
- cleanup:
-    return ret;
+    return 0;
 }
 
 /*
@@ -856,48 +849,47 @@ int
 virVBoxSnapshotConfRemoveSnapshot(virVBoxSnapshotConfMachinePtr machine,
                                   const char *snapshotName)
 {
-    int ret = -1;
     size_t i = 0;
     virVBoxSnapshotConfSnapshotPtr snapshot = NULL;
     virVBoxSnapshotConfSnapshotPtr parentSnapshot = NULL;
     if (machine == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("machine is null"));
-        goto cleanup;
+        return -1;
     }
     if (snapshotName == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("snapshotName is null"));
-        goto cleanup;
+        return -1;
     }
     if (machine->snapshot == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("the machine has no snapshot"));
-        goto cleanup;
+        return -1;
     }
     snapshot = virVBoxSnapshotConfSnapshotByName(machine->snapshot, snapshotName);
     if (snapshot == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unable to find the snapshot with name %s"), snapshotName);
-        goto cleanup;
+        return -1;
     }
     if (snapshot->nchildren > 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("This snapshot has children, "
                          "please delete theses snapshots before"));
-        goto cleanup;
+        return -1;
     }
 
     if (snapshot->parent == NULL) {
         if (machine->snapshot != snapshot) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("You are trying to remove a snapshot which does not exists"));
-            goto cleanup;
+            return -1;
         }
         machine->snapshot = NULL;
         virVBoxSnapshotConfSnapshotFree(snapshot);
-        ret = 0;
-        goto cleanup;
+
+        return 0;
     }
     parentSnapshot = snapshot->parent;
 
@@ -905,11 +897,9 @@ virVBoxSnapshotConfRemoveSnapshot(virVBoxSnapshotConfMachinePtr machine,
     while (i < parentSnapshot->nchildren && parentSnapshot->children[i] != snapshot)
         ++i;
     if (VIR_DELETE_ELEMENT(parentSnapshot->children, i, parentSnapshot->nchildren) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 /*
@@ -922,19 +912,18 @@ int
 virVBoxSnapshotConfRemoveHardDisk(virVBoxSnapshotConfMediaRegistryPtr mediaRegistry,
                                   const char *uuid)
 {
-    int ret = -1;
     size_t i = 0;
     virVBoxSnapshotConfHardDiskPtr hardDisk = NULL;
     virVBoxSnapshotConfHardDiskPtr parentHardDisk = NULL;
     if (mediaRegistry == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Media registry is null"));
-        goto cleanup;
+        return -1;
     }
     if (uuid == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Uuid is null"));
-        goto cleanup;
+        return -1;
     }
 
     for (i = 0; i < mediaRegistry->ndisks; i++) {
@@ -945,7 +934,7 @@ virVBoxSnapshotConfRemoveHardDisk(virVBoxSnapshotConfMediaRegistryPtr mediaRegis
     if (hardDisk == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unable to find the hard disk with uuid %s"), uuid);
-        goto cleanup;
+        return -1;
     }
     if (hardDisk->parent == NULL) {
         /* it means that the hard disk is in 'root' */
@@ -954,9 +943,9 @@ virVBoxSnapshotConfRemoveHardDisk(virVBoxSnapshotConfMediaRegistryPtr mediaRegis
                 break;
         }
         if (VIR_DELETE_ELEMENT(mediaRegistry->disks, i, mediaRegistry->ndisks) < 0)
-            goto cleanup;
-        ret = 0;
-        goto cleanup;
+            return -1;
+
+        return 0;
     }
 
     parentHardDisk = hardDisk->parent;
@@ -965,11 +954,9 @@ virVBoxSnapshotConfRemoveHardDisk(virVBoxSnapshotConfMediaRegistryPtr mediaRegis
         ++i;
     hardDisk->parent = NULL;
     if (VIR_DELETE_ELEMENT(parentHardDisk->children, i, parentHardDisk->nchildren) < 0)
-        goto cleanup;
-    ret = 0;
+        return -1;
 
- cleanup:
-    return ret;
+    return 0;
 }
 
 /*vboxSnapshotSaveVboxFile: Create a VirtualBox XML file from a vboxSnapshotXmlMachinePtr.

@@ -2199,21 +2199,21 @@ static int vboxDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
     int ret = -1;
 
     if (!data->vboxObj)
-        return ret;
+        return -1;
 
     virCheckFlags(0, -1);
 
     if (!dom->name) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Error while reading the domain name"));
-        goto cleanup;
+        return -1;
     }
 
     rc = gVBoxAPI.UArray.vboxArrayGet(&machines, data->vboxObj, ARRAY_GET_MACHINES);
     if (NS_FAILED(rc)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not get list of machines, rc=%08x"), (unsigned)rc);
-        goto cleanup;
+        return -1;
     }
 
     for (i = 0; i < machines.count; ++i) {
@@ -2257,7 +2257,6 @@ static int vboxDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
     /* Do the cleanup and take care you dont leak any memory */
     gVBoxAPI.UArray.vboxArrayRelease(&machines);
 
- cleanup:
     return ret;
 }
 
@@ -2752,13 +2751,13 @@ static int vboxDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
     int ret = -1;
 
     if (!data->vboxObj)
-        return ret;
+        return -1;
 
     rc = gVBoxAPI.UArray.vboxArrayGet(&machines, data->vboxObj, ARRAY_GET_MACHINES);
     if (NS_FAILED(rc)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not get list of machines, rc=%08x"), (unsigned)rc);
-        goto cleanup;
+        return -1;
     }
 
     info->nrVirtCpu = 0;
@@ -2820,7 +2819,6 @@ static int vboxDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
 
     gVBoxAPI.UArray.vboxArrayRelease(&machines);
 
- cleanup:
     return ret;
 }
 
