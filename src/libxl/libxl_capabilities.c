@@ -547,46 +547,26 @@ libxlCapsInitGuests(libxl_ctx *ctx, virCapsPtr caps)
                                           NULL) == NULL)
             return -1;
 
-        if (guest_archs[i].pae &&
-            virCapabilitiesAddGuestFeature(guest,
-                                           "pae",
-                                           1,
-                                           0) == NULL)
-            return -1;
+        if (guest_archs[i].pae)
+            virCapabilitiesAddGuestFeature(guest, VIR_CAPS_GUEST_FEATURE_TYPE_PAE);
 
-        if (guest_archs[i].nonpae &&
-            virCapabilitiesAddGuestFeature(guest,
-                                           "nonpae",
-                                           1,
-                                           0) == NULL)
-            return -1;
+        if (guest_archs[i].nonpae)
+            virCapabilitiesAddGuestFeature(guest, VIR_CAPS_GUEST_FEATURE_TYPE_NONPAE);
 
-        if (guest_archs[i].ia64_be &&
-            virCapabilitiesAddGuestFeature(guest,
-                                           "ia64_be",
-                                           1,
-                                           0) == NULL)
-            return -1;
+        if (guest_archs[i].ia64_be)
+            virCapabilitiesAddGuestFeature(guest, VIR_CAPS_GUEST_FEATURE_TYPE_IA64_BE);
 
         if (guest_archs[i].hvm) {
-            if (virCapabilitiesAddGuestFeature(guest,
-                                               "acpi",
-                                               1,
-                                               1) == NULL)
-                return -1;
+            virCapabilitiesAddGuestFeatureWithToggle(guest, VIR_CAPS_GUEST_FEATURE_TYPE_ACPI,
+                                                     true, true);
 
-            if (virCapabilitiesAddGuestFeature(guest, "apic",
-                                               1,
-                                               0) == NULL)
-                return -1;
+            virCapabilitiesAddGuestFeatureWithToggle(guest, VIR_CAPS_GUEST_FEATURE_TYPE_APIC,
+                                                     true, false);
         }
 
         if (guest_archs[i].hvm || guest_archs[i].pvh) {
-            if (virCapabilitiesAddGuestFeature(guest,
-                                               "hap",
-                                               1,
-                                               1) == NULL)
-                return -1;
+            virCapabilitiesAddGuestFeatureWithToggle(guest, VIR_CAPS_GUEST_FEATURE_TYPE_HAP,
+                                                     true, true);
         }
     }
 

@@ -110,8 +110,7 @@ testQemuAddI686Guest(virCapsPtr caps)
                                           machines)))
         goto error;
 
-    if (!virCapabilitiesAddGuestFeature(guest, "cpuselection", true, false))
-        goto error;
+    virCapabilitiesAddGuestFeature(guest, VIR_CAPS_GUEST_FEATURE_TYPE_CPUSELECTION);
 
     machines = NULL;
 
@@ -161,8 +160,7 @@ testQemuAddX86_64Guest(virCapsPtr caps)
                                           machines)))
         goto error;
 
-    if (!virCapabilitiesAddGuestFeature(guest, "cpuselection", true, false))
-        goto error;
+    virCapabilitiesAddGuestFeature(guest, VIR_CAPS_GUEST_FEATURE_TYPE_CPUSELECTION);
 
     machines = NULL;
 

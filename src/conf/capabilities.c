@@ -557,48 +557,54 @@ static const struct virCapsGuestFeatureInfo virCapsGuestFeatureInfos[VIR_CAPS_GU
 };
 
 
+static void
+virCapabilitiesAddGuestFeatureInternal(virCapsGuestPtr guest,
+                                       virCapsGuestFeatureType feature,
+                                       bool defaultOn,
+                                       bool toggle)
+{
+    guest->features[feature].present = true;
+
+    if (virCapsGuestFeatureInfos[feature].togglesRequired) {
+        guest->features[feature].defaultOn = virTristateSwitchFromBool(defaultOn);
+        guest->features[feature].toggle = virTristateBoolFromBool(toggle);
+    }
+}
+
+
 /**
  * virCapabilitiesAddGuestFeature:
  * @guest: guest to associate feature with
- * @name: name of feature ('pae', 'acpi', 'apic')
- * @defaultOn: true if it defaults to on
- * @toggle: true if its state can be toggled
+ * @feature: feature to add
  *
  * Registers a feature for a guest domain.
  */
-virCapsGuestFeaturePtr
+void
 virCapabilitiesAddGuestFeature(virCapsGuestPtr guest,
-                               const char *name,
-                               bool defaultOn,
-                               bool toggle)
+                               virCapsGuestFeatureType feature)
 {
-    virCapsGuestFeaturePtr feature = NULL;
-    bool togglesRequired = false;
-    size_t i;
-
-    for (i = 0; i < VIR_CAPS_GUEST_FEATURE_TYPE_LAST; i++) {
-        if (STRNEQ(name, virCapsGuestFeatureInfos[i].name))
-            continue;
-
-        feature = guest->features + i;
-        togglesRequired = virCapsGuestFeatureInfos[i].togglesRequired;
-    }
-
-    if (!feature) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("invalid feature '%s'"), name);
-        return NULL;
-    }
-
-    feature->present = true;
-
-    if (togglesRequired) {
-        feature->defaultOn = virTristateSwitchFromBool(defaultOn);
-        feature->toggle = virTristateBoolFromBool(toggle);
-    }
-
-    return feature;
+    virCapabilitiesAddGuestFeatureInternal(guest, feature, false, false);
 }
+
+
+/**
+ * virCapabilitiesAddGuestFeatureWithToggle:
+ * @guest: guest to associate feature with
+ * @feature: feature to add
+ * @defaultOn: true if it defaults to on
+ * @toggle: true if its state can be toggled
+ *
+ * Registers a feature with toggles for a guest domain.
+ */
+void
+virCapabilitiesAddGuestFeatureWithToggle(virCapsGuestPtr guest,
+                                         virCapsGuestFeatureType feature,
+                                         bool defaultOn,
+                                         bool toggle)
+{
+    virCapabilitiesAddGuestFeatureInternal(guest, feature, defaultOn, toggle);
+}
+
 
 /**
  * virCapabilitiesHostSecModelAddBaseLabel

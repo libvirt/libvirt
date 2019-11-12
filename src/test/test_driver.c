@@ -350,10 +350,8 @@ testBuildCapabilities(virConnectPtr conn)
                                           NULL) == NULL)
             goto error;
 
-        if (virCapabilitiesAddGuestFeature(guest, "pae", true, true) == NULL)
-            goto error;
-        if (virCapabilitiesAddGuestFeature(guest, "nonpae", true, true) == NULL)
-            goto error;
+        virCapabilitiesAddGuestFeature(guest, VIR_CAPS_GUEST_FEATURE_TYPE_PAE);
+        virCapabilitiesAddGuestFeature(guest, VIR_CAPS_GUEST_FEATURE_TYPE_NONPAE);
     }
 
     caps->host.nsecModels = 1;

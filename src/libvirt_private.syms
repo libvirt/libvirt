@@ -46,6 +46,7 @@ virAccessPermStorageVolTypeToString;
 virCapabilitiesAddGuest;
 virCapabilitiesAddGuestDomain;
 virCapabilitiesAddGuestFeature;
+virCapabilitiesAddGuestFeatureWithToggle;
 virCapabilitiesAddHostFeature;
 virCapabilitiesAddHostMigrateTransport;
 virCapabilitiesAddHostNUMACell;

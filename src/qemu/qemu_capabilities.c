@@ -849,14 +849,10 @@ virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
 
     /* CPU selection is always available, because all QEMU versions
      * we support can use at least '-cpu host' */
-    if (!virCapabilitiesAddGuestFeature(guest, "cpuselection", true, false))
-        goto cleanup;
-
-    if (!virCapabilitiesAddGuestFeature(guest, "deviceboot", true, false))
-        goto cleanup;
-
-    if (!virCapabilitiesAddGuestFeature(guest, "disksnapshot", true, false))
-        goto cleanup;
+    virCapabilitiesAddGuestFeature(guest, VIR_CAPS_GUEST_FEATURE_TYPE_CPUSELECTION);
+    virCapabilitiesAddGuestFeature(guest, VIR_CAPS_GUEST_FEATURE_TYPE_DEVICEBOOT);
+    virCapabilitiesAddGuestFeatureWithToggle(guest, VIR_CAPS_GUEST_FEATURE_TYPE_DISKSNAPSHOT,
+                                             true, false);
 
     if (virCapabilitiesAddGuestDomain(guest,
                                       VIR_DOMAIN_VIRT_QEMU,
@@ -877,20 +873,18 @@ virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
         }
     }
 
-    if ((ARCH_IS_X86(guestarch) || guestarch == VIR_ARCH_AARCH64) &&
-        virCapabilitiesAddGuestFeature(guest, "acpi", true, true) == NULL) {
-        goto cleanup;
-    }
+    if ((ARCH_IS_X86(guestarch) || guestarch == VIR_ARCH_AARCH64))
+        virCapabilitiesAddGuestFeatureWithToggle(guest, VIR_CAPS_GUEST_FEATURE_TYPE_ACPI,
+                                                 true, true);
 
-    if (ARCH_IS_X86(guestarch) &&
-        virCapabilitiesAddGuestFeature(guest, "apic", true, false) == NULL) {
-        goto cleanup;
-    }
+    if (ARCH_IS_X86(guestarch))
+        virCapabilitiesAddGuestFeatureWithToggle(guest, VIR_CAPS_GUEST_FEATURE_TYPE_APIC,
+                                                 true, false);
 
-    if ((guestarch == VIR_ARCH_I686) &&
-        (virCapabilitiesAddGuestFeature(guest, "pae", true, false) == NULL ||
-         virCapabilitiesAddGuestFeature(guest, "nonpae", true, false) == NULL))
-        goto cleanup;
+    if (guestarch == VIR_ARCH_I686) {
+        virCapabilitiesAddGuestFeature(guest, VIR_CAPS_GUEST_FEATURE_TYPE_PAE);
+        virCapabilitiesAddGuestFeature(guest, VIR_CAPS_GUEST_FEATURE_TYPE_NONPAE);
+    }
 
     ret = 0;
 

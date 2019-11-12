@@ -283,11 +283,14 @@ virCapabilitiesAddGuestDomain(virCapsGuestPtr guest,
                               int nmachines,
                               virCapsGuestMachinePtr *machines);
 
-virCapsGuestFeaturePtr
+void
 virCapabilitiesAddGuestFeature(virCapsGuestPtr guest,
-                               const char *name,
-                               bool defaultOn,
-                               bool toggle);
+                               virCapsGuestFeatureType feature);
+void
+virCapabilitiesAddGuestFeatureWithToggle(virCapsGuestPtr guest,
+                                         virCapsGuestFeatureType feature,
+                                         bool defaultOn,
+                                         bool toggle);
 
 int
 virCapabilitiesAddStoragePool(virCapsPtr caps,
