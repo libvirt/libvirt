@@ -46,8 +46,8 @@ VIR_ENUM_IMPL(virCPUMode,
 
 VIR_ENUM_IMPL(virCPUMatch,
               VIR_CPU_MATCH_LAST,
-              "minimum",
               "exact",
+              "minimum",
               "strict",
 );
 
@@ -388,12 +388,7 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
         char *match = virXMLPropString(ctxt->node, "match");
         char *check;
 
-        if (!match) {
-            if (virXPathBoolean("boolean(./model)", ctxt))
-                def->match = VIR_CPU_MATCH_EXACT;
-            else
-                def->match = -1;
-        } else {
+        if (match) {
             def->match = virCPUMatchTypeFromString(match);
             VIR_FREE(match);
 

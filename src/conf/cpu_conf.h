@@ -52,8 +52,8 @@ typedef enum {
 VIR_ENUM_DECL(virCPUMode);
 
 typedef enum {
-    VIR_CPU_MATCH_MINIMUM,
     VIR_CPU_MATCH_EXACT,
+    VIR_CPU_MATCH_MINIMUM,
     VIR_CPU_MATCH_STRICT,
 
     VIR_CPU_MATCH_LAST
