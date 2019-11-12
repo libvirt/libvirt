@@ -148,13 +148,31 @@ esxConnectListStoragePools(virConnectPtr conn, char **const names,
 
 
 static virStoragePoolPtr
+targetToStoragePool(virConnectPtr conn,
+                    const char *name,
+                    esxVI_HostInternetScsiHbaStaticTarget *target)
+{
+    /* VIR_CRYPTO_HASH_SIZE_MD5 = VIR_UUID_BUFLEN = 16 */
+    unsigned char md5[VIR_CRYPTO_HASH_SIZE_MD5];
+
+    /*
+     * HostInternetScsiHbaStaticTarget does not provide a uuid field,
+     * but iScsiName (or widely known as IQN) is unique across the multiple
+     * hosts, using it to compute key
+     */
+    if (virCryptoHashBuf(VIR_CRYPTO_HASH_MD5, target->iScsiName, md5) < 0)
+        return NULL;
+
+    return virGetStoragePool(conn, name, md5, &esxStorageBackendISCSI, NULL);
+}
+
+
+static virStoragePoolPtr
 esxStoragePoolLookupByName(virConnectPtr conn,
                            const char *name)
 {
     esxPrivate *priv = conn->privateData;
     esxVI_HostInternetScsiHbaStaticTarget *target = NULL;
-    /* VIR_CRYPTO_HASH_SIZE_MD5 = VIR_UUID_BUFLEN = 16 */
-    unsigned char md5[VIR_CRYPTO_HASH_SIZE_MD5];
     virStoragePoolPtr pool = NULL;
 
     /*
@@ -172,15 +190,7 @@ esxStoragePoolLookupByName(virConnectPtr conn,
         goto cleanup;
     }
 
-    /*
-     * HostInternetScsiHbaStaticTarget does not provide a uuid field,
-     * but iScsiName (or widely known as IQN) is unique across the multiple
-     * hosts, using it to compute key
-     */
-    if (virCryptoHashBuf(VIR_CRYPTO_HASH_MD5, target->iScsiName, md5) < 0)
-        goto cleanup;
-
-    pool = virGetStoragePool(conn, name, md5, &esxStorageBackendISCSI, NULL);
+    pool = targetToStoragePool(conn, name, target);
 
  cleanup:
     esxVI_HostInternetScsiHbaStaticTarget_Free(&target);
