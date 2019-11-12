@@ -543,8 +543,7 @@ virFileRewrite(const char *path,
 
  cleanup:
     VIR_FORCE_CLOSE(fd);
-    if (newfile)
-        unlink(newfile);
+    unlink(newfile);
     return ret;
 }
 
