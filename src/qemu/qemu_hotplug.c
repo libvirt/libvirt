@@ -3325,7 +3325,7 @@ qemuDomainChangeNetBridge(virDomainObjPtr vm,
 
     if (!oldbridge || !newbridge) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Missing bridge name"));
-        return ret;
+        return -1;
     }
 
     VIR_DEBUG("Change bridge for interface %s: %s -> %s",
@@ -3334,7 +3334,7 @@ qemuDomainChangeNetBridge(virDomainObjPtr vm,
     if (virNetDevExists(newbridge) != 1) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("bridge %s doesn't exist"), newbridge);
-        return ret;
+        return -1;
     }
 
     ret = virNetDevBridgeRemovePort(oldbridge, olddev->ifname);
@@ -4003,20 +4003,19 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     const char *type = virDomainGraphicsTypeToString(dev->type);
     size_t i;
-    int ret = -1;
 
     if (!olddev) {
         virReportError(VIR_ERR_DEVICE_MISSING,
                        _("cannot find existing graphics device to modify of "
                          "type '%s'"), type);
-        return ret;
+        return -1;
     }
 
     if (dev->nListens != olddev->nListens) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("cannot change the number of listen addresses "
                          "on '%s' graphics"), type);
-        return ret;
+        return -1;
     }
 
     for (i = 0; i < dev->nListens; i++) {
@@ -4027,7 +4026,7 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                            _("cannot change the type of listen address "
                              "on '%s' graphics"), type);
-            return ret;
+            return -1;
         }
 
         switch (newlisten->type) {
@@ -4036,7 +4035,7 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
                 virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                                _("cannot change listen address setting "
                                  "on '%s' graphics"), type);
-                return ret;
+                return -1;
             }
 
             break;
@@ -4046,7 +4045,7 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
                 virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                                _("cannot change listen address setting "
                                  "on '%s' graphics"), type);
-                return ret;
+                return -1;
             }
 
             break;
@@ -4056,7 +4055,7 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
                 virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                                _("cannot change listen socket setting "
                                  "on '%s' graphics"), type);
-                return ret;
+                return -1;
             }
             break;
 
@@ -4074,12 +4073,12 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
              (olddev->data.vnc.port != dev->data.vnc.port))) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("cannot change port settings on vnc graphics"));
-            return ret;
+            return -1;
         }
         if (STRNEQ_NULLABLE(olddev->data.vnc.keymap, dev->data.vnc.keymap)) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("cannot change keymap setting on vnc graphics"));
-            return ret;
+            return -1;
         }
 
         /* If a password lifetime was, or is set, or action if connected has
@@ -4092,13 +4091,12 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
                             dev->data.vnc.auth.passwd)) {
             VIR_DEBUG("Updating password on VNC server %p %p",
                       dev->data.vnc.auth.passwd, cfg->vncPassword);
-            ret = qemuDomainChangeGraphicsPasswords(driver, vm,
-                                                    VIR_DOMAIN_GRAPHICS_TYPE_VNC,
-                                                    &dev->data.vnc.auth,
-                                                    cfg->vncPassword,
-                                                    QEMU_ASYNC_JOB_NONE);
-            if (ret < 0)
-                return ret;
+            if (qemuDomainChangeGraphicsPasswords(driver, vm,
+                                                  VIR_DOMAIN_GRAPHICS_TYPE_VNC,
+                                                  &dev->data.vnc.auth,
+                                                  cfg->vncPassword,
+                                                  QEMU_ASYNC_JOB_NONE) < 0)
+                return -1;
 
             /* Steal the new dev's  char * reference */
             VIR_FREE(olddev->data.vnc.auth.passwd);
@@ -4107,8 +4105,6 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
             olddev->data.vnc.auth.validTo = dev->data.vnc.auth.validTo;
             olddev->data.vnc.auth.expires = dev->data.vnc.auth.expires;
             olddev->data.vnc.auth.connected = dev->data.vnc.auth.connected;
-        } else {
-            ret = 0;
         }
         break;
 
@@ -4120,13 +4116,13 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
              (olddev->data.spice.tlsPort != dev->data.spice.tlsPort))) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("cannot change port settings on spice graphics"));
-            return ret;
+            return -1;
         }
         if (STRNEQ_NULLABLE(olddev->data.spice.keymap,
                             dev->data.spice.keymap)) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                             _("cannot change keymap setting on spice graphics"));
-            return ret;
+            return -1;
         }
 
         /* We must reset the password if it has changed but also if:
@@ -4143,14 +4139,12 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
                             dev->data.spice.auth.passwd)) {
             VIR_DEBUG("Updating password on SPICE server %p %p",
                       dev->data.spice.auth.passwd, cfg->spicePassword);
-            ret = qemuDomainChangeGraphicsPasswords(driver, vm,
-                                                    VIR_DOMAIN_GRAPHICS_TYPE_SPICE,
-                                                    &dev->data.spice.auth,
-                                                    cfg->spicePassword,
-                                                    QEMU_ASYNC_JOB_NONE);
-
-            if (ret < 0)
-                return ret;
+            if (qemuDomainChangeGraphicsPasswords(driver, vm,
+                                                  VIR_DOMAIN_GRAPHICS_TYPE_SPICE,
+                                                  &dev->data.spice.auth,
+                                                  cfg->spicePassword,
+                                                  QEMU_ASYNC_JOB_NONE) < 0)
+                return -1;
 
             /* Steal the new dev's char * reference */
             VIR_FREE(olddev->data.spice.auth.passwd);
@@ -4161,7 +4155,6 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
             olddev->data.spice.auth.connected = dev->data.spice.auth.connected;
         } else {
             VIR_DEBUG("Not updating since password didn't change");
-            ret = 0;
         }
         break;
 
@@ -4178,7 +4171,7 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
         break;
     }
 
-    return ret;
+    return 0;
 }
 
 

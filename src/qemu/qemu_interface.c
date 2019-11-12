@@ -53,7 +53,6 @@ VIR_LOG_INIT("qemu.qemu_interface");
 int
 qemuInterfaceStartDevice(virDomainNetDefPtr net)
 {
-    int ret = -1;
     virDomainNetType actualType = virDomainNetGetActualType(net);
 
     switch (actualType) {
@@ -71,7 +70,7 @@ qemuInterfaceStartDevice(virDomainNetDefPtr net)
             if (virNetDevBridgeFDBAdd(&net->mac, net->ifname,
                                       VIR_NETDEVBRIDGE_FDB_FLAG_MASTER |
                                       VIR_NETDEVBRIDGE_FDB_FLAG_TEMP) < 0)
-                goto cleanup;
+                return -1;
         }
         break;
 
@@ -84,9 +83,9 @@ qemuInterfaceStartDevice(virDomainNetDefPtr net)
          * some sort of "blip" in the physdev's status.
          */
         if (physdev && virNetDevGetOnline(physdev, &isOnline) < 0)
-            goto cleanup;
+            return -1;
         if (!isOnline && virNetDevSetOnline(physdev, true) < 0)
-            goto cleanup;
+            return -1;
 
         /* macvtap devices share their MAC address with the guest
          * domain, and if they are set online prior to the domain CPUs
@@ -101,13 +100,13 @@ qemuInterfaceStartDevice(virDomainNetDefPtr net)
          * we are starting the domain CPUs.
          */
         if (virNetDevSetOnline(net->ifname, true) < 0)
-            goto cleanup;
+            return -1;
         break;
     }
 
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
         if (virNetDevIPInfoAddToDev(net->ifname, &net->hostIP) < 0)
-            goto cleanup;
+            return -1;
 
         break;
 
@@ -124,9 +123,7 @@ qemuInterfaceStartDevice(virDomainNetDefPtr net)
         break;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 /**
@@ -159,7 +156,6 @@ qemuInterfaceStartDevices(virDomainDefPtr def)
 int
 qemuInterfaceStopDevice(virDomainNetDefPtr net)
 {
-    int ret = -1;
     virDomainNetType actualType = virDomainNetGetActualType(net);
 
     switch (actualType) {
@@ -173,7 +169,7 @@ qemuInterfaceStopDevice(virDomainNetDefPtr net)
             if (virNetDevBridgeFDBDel(&net->mac, net->ifname,
                                       VIR_NETDEVBRIDGE_FDB_FLAG_MASTER |
                                       VIR_NETDEVBRIDGE_FDB_FLAG_TEMP) < 0)
-                goto cleanup;
+                return -1;
         }
         break;
 
@@ -186,7 +182,7 @@ qemuInterfaceStopDevice(virDomainNetDefPtr net)
          * on this network.
          */
         if (virNetDevSetOnline(net->ifname, false) < 0)
-            goto cleanup;
+            return -1;
 
         /* also mark the physdev down for passthrough macvtap, as the
          * physdev has the same MAC address as the macvtap device.
@@ -194,7 +190,7 @@ qemuInterfaceStopDevice(virDomainNetDefPtr net)
         if (virDomainNetGetActualDirectMode(net) ==
             VIR_NETDEV_MACVLAN_MODE_PASSTHRU &&
             physdev && virNetDevSetOnline(physdev, false) < 0)
-            goto cleanup;
+            return -1;
         break;
     }
 
@@ -212,9 +208,7 @@ qemuInterfaceStopDevice(virDomainNetDefPtr net)
         break;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 /**

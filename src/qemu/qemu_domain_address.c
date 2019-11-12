@@ -223,7 +223,6 @@ static int
 qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def)
 {
     size_t i;
-    int ret = -1;
 
     /* Default values match QEMU. See spapr_(llan|vscsi|vty).c */
 
@@ -234,7 +233,7 @@ qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def)
             net->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
 
         if (qemuDomainAssignSpaprVIOAddress(def, &net->info, VIO_ADDR_NET) < 0)
-            goto cleanup;
+            return -1;
     }
 
     for (i = 0; i < def->ncontrollers; i++) {
@@ -246,7 +245,7 @@ qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def)
         }
         if (qemuDomainAssignSpaprVIOAddress(def, &cont->info,
                                             VIO_ADDR_SCSI) < 0) {
-            goto cleanup;
+            return -1;
         }
     }
 
@@ -257,7 +256,7 @@ qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def)
         }
         if (qemuDomainAssignSpaprVIOAddress(def, &def->serials[i]->info,
                                             VIO_ADDR_SERIAL) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (def->nvram) {
@@ -265,15 +264,12 @@ qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def)
             def->nvram->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
         if (qemuDomainAssignSpaprVIOAddress(def, &def->nvram->info,
                                             VIO_ADDR_NVRAM) < 0)
-            goto cleanup;
+            return -1;
     }
 
     /* No other devices are currently supported on spapr-vio */
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -1376,7 +1372,6 @@ static int
 qemuDomainSetupIsolationGroups(virDomainDefPtr def)
 {
     int idx;
-    int ret = -1;
 
     /* Only pSeries guests care about isolation groups at the moment */
     if (!qemuDomainIsPSeries(def))
@@ -1384,7 +1379,7 @@ qemuDomainSetupIsolationGroups(virDomainDefPtr def)
 
     idx = virDomainControllerFind(def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 0);
     if (idx < 0)
-        goto cleanup;
+        return -1;
 
     /* We want to prevent hostdevs from being plugged into the default PHB:
      * we can make sure that doesn't happen by locking its isolation group */
@@ -1394,13 +1389,10 @@ qemuDomainSetupIsolationGroups(virDomainDefPtr def)
     if (virDomainDeviceInfoIterate(def,
                                    qemuDomainFillDeviceIsolationGroupIter,
                                    NULL) < 0) {
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -1500,7 +1492,6 @@ qemuDomainCollectPCIAddress(virDomainDefPtr def G_GNUC_UNUSED,
                             void *opaque)
 {
     virDomainPCIAddressSetPtr addrs = opaque;
-    int ret = -1;
     virPCIDeviceAddressPtr addr = &info->addr.pci;
 
     if (!virDeviceInfoPCIAddressIsPresent(info) ||
@@ -1577,12 +1568,10 @@ qemuDomainCollectPCIAddress(virDomainDefPtr def G_GNUC_UNUSED,
     if (virDomainPCIAddressReserveAddr(addrs, addr,
                                        info->pciConnectFlags,
                                        info->isolationGroup) < 0) {
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int

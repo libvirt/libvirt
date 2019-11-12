@@ -2293,7 +2293,6 @@ qemuStorageSourcePrivateDataFormat(virStorageSourcePtr src,
 {
     g_auto(virBuffer) tmp = VIR_BUFFER_INIT_CHILD(buf);
     qemuDomainStorageSourcePrivatePtr srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
-    int ret = -1;
 
     if (src->nodestorage || src->nodeformat) {
         virBufferAddLit(buf, "<nodenames>\n");
@@ -2308,7 +2307,7 @@ qemuStorageSourcePrivateDataFormat(virStorageSourcePtr src,
         virBufferAsprintf(buf, "<reservations mgralias='%s'/>\n", src->pr->mgralias);
 
     if (virStorageSourcePrivateDataFormatRelPath(src, buf) < 0)
-        goto cleanup;
+        return -1;
 
     if (srcPriv) {
         qemuStorageSourcePrivateDataFormatSecinfo(&tmp, srcPriv->secinfo, "auth");
@@ -2320,10 +2319,7 @@ qemuStorageSourcePrivateDataFormat(virStorageSourcePtr src,
 
     virXMLFormatElement(buf, "objects", NULL, &tmp);
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -2598,7 +2594,6 @@ qemuDomainObjPrivateXMLFormatNBDMigrationSource(virBufferPtr buf,
 {
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
-    int ret = -1;
 
     virBufferAsprintf(&attrBuf, " type='%s' format='%s'",
                       virStorageTypeToString(src->type),
@@ -2606,14 +2601,11 @@ qemuDomainObjPrivateXMLFormatNBDMigrationSource(virBufferPtr buf,
 
     if (virDomainDiskSourceFormat(&childBuf, src, "source", 0, false,
                                   VIR_DOMAIN_DEF_FORMAT_STATUS, xmlopt) < 0)
-        goto cleanup;
+        return -1;
 
     virXMLFormatElement(buf, "migrationSource", &attrBuf, &childBuf);
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -2625,7 +2617,6 @@ qemuDomainObjPrivateXMLFormatNBDMigration(virBufferPtr buf,
     size_t i;
     virDomainDiskDefPtr disk;
     qemuDomainDiskPrivatePtr diskPriv;
-    int ret = -1;
 
     for (i = 0; i < vm->def->ndisks; i++) {
         g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
@@ -2640,15 +2631,12 @@ qemuDomainObjPrivateXMLFormatNBDMigration(virBufferPtr buf,
             qemuDomainObjPrivateXMLFormatNBDMigrationSource(&childBuf,
                                                             diskPriv->migrSource,
                                                             priv->driver->xmlopt) < 0)
-            goto cleanup;
+            return -1;
 
         virXMLFormatElement(buf, "disk", &attrBuf, &childBuf);
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -2660,7 +2648,6 @@ qemuDomainObjPrivateXMLFormatJob(virBufferPtr buf,
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
     qemuDomainJob job = priv->job.active;
-    int ret = -1;
 
     if (!qemuDomainTrackJob(job))
         job = QEMU_JOB_NONE;
@@ -2684,17 +2671,14 @@ qemuDomainObjPrivateXMLFormatJob(virBufferPtr buf,
 
     if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT &&
         qemuDomainObjPrivateXMLFormatNBDMigration(&childBuf, vm) < 0)
-        goto cleanup;
+        return -1;
 
     if (priv->job.migParams)
         qemuMigrationParamsFormat(&childBuf, priv->job.migParams);
 
     virXMLFormatElement(buf, "job", &attrBuf, &childBuf);
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -4013,11 +3997,10 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
     bool addDefaultUSBKBD = false;
     bool addDefaultUSBMouse = false;
     bool addPanicDevice = false;
-    int ret = -1;
 
     /* add implicit input devices */
     if (qemuDomainDefAddImplicitInputDevice(def) < 0)
-        goto cleanup;
+        return -1;
 
     /* Add implicit PCI root controller if the machine has one */
     switch (def->os.arch) {
@@ -4130,12 +4113,12 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
     if (addDefaultUSB &&
         virDomainControllerFind(def, VIR_DOMAIN_CONTROLLER_TYPE_USB, 0) < 0 &&
         virDomainDefAddUSBController(def, 0, usbModel) < 0)
-        goto cleanup;
+        return -1;
 
     if (addImplicitSATA &&
         virDomainDefMaybeAddController(
             def, VIR_DOMAIN_CONTROLLER_TYPE_SATA, 0, -1) < 0)
-        goto cleanup;
+        return -1;
 
     pciRoot = virDomainControllerFind(def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 0);
 
@@ -4150,11 +4133,11 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
                                  "model='pci-root' for this machine type, "
                                  "but model='%s' was found instead"),
                                virDomainControllerModelPCITypeToString(def->controllers[pciRoot]->model));
-                goto cleanup;
+                return -1;
             }
         } else if (!virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 0,
                                               VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT)) {
-            goto cleanup;
+            return -1;
         }
     }
 
@@ -4173,18 +4156,18 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
                                  "model='pcie-root' for this machine type, "
                                  "but model='%s' was found instead"),
                                virDomainControllerModelPCITypeToString(def->controllers[pciRoot]->model));
-                goto cleanup;
+                return -1;
             }
         } else if (!virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 0,
                                              VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT)) {
-            goto cleanup;
+            return -1;
         }
     }
 
     if (addDefaultMemballoon && !def->memballoon) {
         virDomainMemballoonDefPtr memballoon;
         if (VIR_ALLOC(memballoon) < 0)
-            goto cleanup;
+            return -1;
 
         memballoon->model = VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO;
         def->memballoon = memballoon;
@@ -4219,14 +4202,14 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
         virDomainDefMaybeAddInput(def,
                                   VIR_DOMAIN_INPUT_TYPE_KBD,
                                   VIR_DOMAIN_INPUT_BUS_USB) < 0)
-        goto cleanup;
+        return -1;
 
     if (addDefaultUSBMouse &&
         def->ngraphics > 0 &&
         virDomainDefMaybeAddInput(def,
                                   VIR_DOMAIN_INPUT_TYPE_MOUSE,
                                   VIR_DOMAIN_INPUT_BUS_USB) < 0)
-        goto cleanup;
+        return -1;
 
     if (addPanicDevice) {
         size_t j;
@@ -4245,14 +4228,12 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
                 VIR_APPEND_ELEMENT_COPY(def->panics,
                                         def->npanics, panic) < 0) {
                 VIR_FREE(panic);
-                goto cleanup;
+                return -1;
             }
         }
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -13338,19 +13319,16 @@ qemuDomainPopulateDevices(virQEMUDriverConfigPtr cfg,
 {
     const char *const *devices = (const char *const *) cfg->cgroupDeviceACL;
     size_t i;
-    int ret = -1;
 
     if (!devices)
         devices = defaultDeviceACL;
 
     for (i = 0; devices[i]; i++) {
         if (qemuDomainCreateDevice(devices[i], data, true) < 0)
-            goto cleanup;
+            return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -13699,7 +13677,6 @@ qemuDomainSetupLoader(virQEMUDriverConfigPtr cfg G_GNUC_UNUSED,
                       const struct qemuDomainCreateDeviceData *data)
 {
     virDomainLoaderDefPtr loader = vm->def->os.loader;
-    int ret = -1;
 
     VIR_DEBUG("Setting up loader");
 
@@ -13707,16 +13684,16 @@ qemuDomainSetupLoader(virQEMUDriverConfigPtr cfg G_GNUC_UNUSED,
         switch ((virDomainLoader) loader->type) {
         case VIR_DOMAIN_LOADER_TYPE_ROM:
             if (qemuDomainCreateDevice(loader->path, data, false) < 0)
-                goto cleanup;
+                return -1;
             break;
 
         case VIR_DOMAIN_LOADER_TYPE_PFLASH:
             if (qemuDomainCreateDevice(loader->path, data, false) < 0)
-                goto cleanup;
+                return -1;
 
             if (loader->nvram &&
                 qemuDomainCreateDevice(loader->nvram, data, false) < 0)
-                goto cleanup;
+                return -1;
             break;
 
         case VIR_DOMAIN_LOADER_TYPE_NONE:
@@ -13726,9 +13703,7 @@ qemuDomainSetupLoader(virQEMUDriverConfigPtr cfg G_GNUC_UNUSED,
     }
 
     VIR_DEBUG("Setup loader");
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -14318,7 +14293,6 @@ qemuDomainDetachDeviceUnlink(virQEMUDriverPtr driver G_GNUC_UNUSED,
                              char * const *devMountsPath,
                              size_t ndevMountsPath)
 {
-    int ret = -1;
     size_t i;
 
     if (STRPREFIX(file, QEMU_DEVPREFIX)) {
@@ -14333,13 +14307,11 @@ qemuDomainDetachDeviceUnlink(virQEMUDriverPtr driver G_GNUC_UNUSED,
             if (virProcessRunInMountNamespace(vm->pid,
                                               qemuDomainDetachDeviceUnlinkHelper,
                                               (void *)file) < 0)
-                goto cleanup;
+                return -1;
         }
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 

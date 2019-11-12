@@ -314,8 +314,6 @@ qemuTPMEmulatorPrepareHost(virDomainTPMDefPtr tpm,
                            uid_t qemu_user,
                            const char *shortName)
 {
-    int ret = -1;
-
     if (virTPMEmulatorInit() < 0)
         return -1;
 
@@ -326,7 +324,7 @@ qemuTPMEmulatorPrepareHost(virDomainTPMDefPtr tpm,
     /* ... and adjust ownership */
     if (virDirCreate(logDir, 0730, swtpm_user, swtpm_group,
                      VIR_DIR_CREATE_ALLOW_EXIST) < 0)
-        goto cleanup;
+        return -1;
 
     /* create logfile name ... */
     if (!tpm->data.emulator.logfile)
@@ -334,7 +332,7 @@ qemuTPMEmulatorPrepareHost(virDomainTPMDefPtr tpm,
 
     if (!virFileExists(tpm->data.emulator.logfile) &&
         virFileTouch(tpm->data.emulator.logfile, 0644) < 0) {
-        goto cleanup;
+        return -1;
     }
 
     /* ... and make sure it can be accessed by swtpm_user */
@@ -342,7 +340,7 @@ qemuTPMEmulatorPrepareHost(virDomainTPMDefPtr tpm,
         virReportSystemError(errno,
                              _("Could not chown on swtpm logfile %s"),
                              tpm->data.emulator.logfile);
-        goto cleanup;
+        return -1;
     }
 
     /*
@@ -354,20 +352,16 @@ qemuTPMEmulatorPrepareHost(virDomainTPMDefPtr tpm,
     */
     if (virDirCreate(swtpmStateDir, 0770, qemu_user, swtpm_group,
                      VIR_DIR_CREATE_ALLOW_EXIST) < 0)
-        goto cleanup;
+        return -1;
 
     /* create the socket filename */
     if (!tpm->data.emulator.source.data.nix.path &&
         !(tpm->data.emulator.source.data.nix.path =
           qemuTPMCreateEmulatorSocket(swtpmStateDir, shortName)))
-        goto cleanup;
+        return -1;
     tpm->data.emulator.source.type = VIR_DOMAIN_CHR_TYPE_UNIX;
 
-    ret = 0;
-
- cleanup:
-
-    return ret;
+    return 0;
 }
 
 /*

@@ -2243,24 +2243,21 @@ qemuProcessRefreshPRManagerState(virDomainObjPtr vm,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuMonitorPRManagerInfoPtr prManagerInfo;
     const char *managedAlias = qemuDomainGetManagedPRAlias();
-    int ret = -1;
 
     if (!(prManagerInfo = virHashLookup(info, managedAlias))) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("missing info on pr-manager %s"),
                        managedAlias);
-        goto cleanup;
+        return -1;
     }
 
     priv->prDaemonRunning = prManagerInfo->connected;
 
     if (!priv->prDaemonRunning &&
         qemuProcessStartManagedPRDaemon(vm) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -4982,16 +4979,15 @@ qemuProcessSetupGraphics(virQEMUDriverPtr driver,
     virDomainGraphicsDefPtr graphics;
     bool allocate = !(flags & VIR_QEMU_PROCESS_START_PRETEND);
     size_t i;
-    int ret = -1;
 
     for (i = 0; i < vm->def->ngraphics; i++) {
         graphics = vm->def->graphics[i];
 
         if (qemuProcessGraphicsSetupRenderNode(graphics, qemuCaps) < 0)
-            goto cleanup;
+            return -1;
 
         if (qemuProcessGraphicsSetupListen(driver, graphics, vm) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (allocate) {
@@ -4999,7 +4995,7 @@ qemuProcessSetupGraphics(virQEMUDriverPtr driver,
             graphics = vm->def->graphics[i];
 
             if (qemuProcessGraphicsReservePorts(graphics, false) < 0)
-                goto cleanup;
+                return -1;
         }
     }
 
@@ -5007,13 +5003,10 @@ qemuProcessSetupGraphics(virQEMUDriverPtr driver,
         graphics = vm->def->graphics[i];
 
         if (qemuProcessGraphicsAllocatePorts(driver, graphics, allocate) < 0)
-            goto cleanup;
+            return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -5114,20 +5107,15 @@ qemuProcessMakeDir(virQEMUDriverPtr driver,
                    virDomainObjPtr vm,
                    const char *path)
 {
-    int ret = -1;
-
     if (virFileMakePathWithMode(path, 0750) < 0) {
         virReportSystemError(errno, _("Cannot create directory '%s'"), path);
-        goto cleanup;
+        return -1;
     }
 
     if (qemuSecurityDomainSetPathLabel(driver, vm, path, true) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -8443,7 +8431,6 @@ static int
 qemuProcessQMPInit(qemuProcessQMPPtr proc)
 {
     char *template = NULL;
-    int ret = -1;
 
     VIR_DEBUG("proc=%p, emulator=%s", proc, proc->binary);
 
@@ -8454,11 +8441,11 @@ qemuProcessQMPInit(qemuProcessQMPPtr proc)
                              _("Failed to create unique directory with "
                                "template '%s' for probing QEMU"),
                              template);
-        goto cleanup;
+        return -1;
     }
 
     if (qemuProcessQEMULabelUniqPath(proc) < 0)
-        goto cleanup;
+        return -1;
 
     proc->monpath = g_strdup_printf("%s/%s", proc->uniqDir, "qmp.monitor");
 
@@ -8471,10 +8458,7 @@ qemuProcessQMPInit(qemuProcessQMPPtr proc)
      */
     proc->pidfile = g_strdup_printf("%s/%s", proc->uniqDir, "qmp.pid");
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -8483,7 +8467,6 @@ qemuProcessQMPLaunch(qemuProcessQMPPtr proc)
 {
     const char *machine;
     int status = 0;
-    int ret = -1;
     int rc;
 
     if (proc->forceTCG)
@@ -8527,7 +8510,7 @@ qemuProcessQMPLaunch(qemuProcessQMPPtr proc)
     virCommandSetErrorBuffer(proc->cmd, &(proc->stdErr));
 
     if (virCommandRun(proc->cmd, &status) < 0)
-        goto cleanup;
+        return -1;
 
     if (status != 0) {
         VIR_DEBUG("QEMU %s exited with status %d", proc->binary, status);
@@ -8535,18 +8518,15 @@ qemuProcessQMPLaunch(qemuProcessQMPPtr proc)
                        _("Failed to start QEMU binary %s for probing: %s"),
                        proc->binary,
                        proc->stdErr ? proc->stdErr : _("unknown error"));
-        goto cleanup;
+        return -1;
     }
 
     if ((rc = virPidFileReadPath(proc->pidfile, &proc->pid)) < 0) {
         virReportSystemError(-rc, _("Failed to read pidfile %s"), proc->pidfile);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -8619,21 +8599,16 @@ qemuProcessQMPConnectMonitor(qemuProcessQMPPtr proc)
 int
 qemuProcessQMPStart(qemuProcessQMPPtr proc)
 {
-    int ret = -1;
-
     VIR_DEBUG("proc=%p, emulator=%s", proc, proc->binary);
 
     if (qemuProcessQMPInit(proc) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuProcessQMPLaunch(proc) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuProcessQMPConnectMonitor(proc) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }

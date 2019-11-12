@@ -1768,7 +1768,6 @@ qemuMigrationDstOPDRelocate(virQEMUDriverPtr driver G_GNUC_UNUSED,
                             qemuMigrationCookiePtr cookie)
 {
     virDomainNetDefPtr netptr;
-    int ret = -1;
     size_t i;
 
     for (i = 0; i < cookie->network->nnets; i++) {
@@ -1785,7 +1784,7 @@ qemuMigrationDstOPDRelocate(virQEMUDriverPtr driver G_GNUC_UNUSED,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Unable to run command to set OVS port data for "
                                  "interface %s"), netptr->ifname);
-                goto cleanup;
+                return -1;
             }
             break;
         default:
@@ -1793,9 +1792,7 @@ qemuMigrationDstOPDRelocate(virQEMUDriverPtr driver G_GNUC_UNUSED,
         }
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -1846,7 +1843,6 @@ qemuMigrationDstRun(virQEMUDriverPtr driver,
                     qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int ret = -1;
     int rv;
 
     VIR_DEBUG("Setting up incoming migration with URI %s", uri);
@@ -1857,21 +1853,17 @@ qemuMigrationDstRun(virQEMUDriverPtr driver,
     rv = qemuMonitorMigrateIncoming(priv->mon, uri);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || rv < 0)
-        goto cleanup;
+        return -1;
 
     if (asyncJob == QEMU_ASYNC_JOB_MIGRATION_IN) {
         /* qemuMigrationDstWaitForCompletion is called from the Finish phase */
-        ret = 0;
-        goto cleanup;
+        return 0;
     }
 
     if (qemuMigrationDstWaitForCompletion(driver, vm, asyncJob, false) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -4657,9 +4649,9 @@ qemuMigrationSrcPerformPhase(virQEMUDriverPtr driver,
     if (!(flags & VIR_MIGRATE_CHANGE_PROTECTION)) {
         if (qemuMigrationJobStart(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
                                   flags) < 0)
-            goto cleanup;
+            return ret;
     } else if (!qemuMigrationJobIsActive(vm, QEMU_ASYNC_JOB_MIGRATION_OUT)) {
-        goto cleanup;
+        return ret;
     }
 
     qemuMigrationJobStartPhase(driver, vm, QEMU_MIGRATION_PHASE_PERFORM3);
@@ -4694,7 +4686,6 @@ qemuMigrationSrcPerformPhase(virQEMUDriverPtr driver,
     if (!virDomainObjIsActive(vm))
         qemuDomainRemoveInactiveJob(driver, vm);
 
- cleanup:
     return ret;
 }
 
@@ -5318,7 +5309,6 @@ qemuMigrationSrcCancel(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     bool storage = false;
     size_t i;
-    int ret = -1;
 
     VIR_DEBUG("Canceling unfinished outgoing migration of domain %s",
               vm->def->name);
@@ -5326,7 +5316,7 @@ qemuMigrationSrcCancel(virQEMUDriverPtr driver,
     qemuDomainObjEnterMonitor(driver, vm);
     ignore_value(qemuMonitorMigrateCancel(priv->mon));
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        goto cleanup;
+        return -1;
 
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDefPtr disk = vm->def->disks[i];
@@ -5348,12 +5338,9 @@ qemuMigrationSrcCancel(virQEMUDriverPtr driver,
     if (storage &&
         qemuMigrationSrcNBDCopyCancel(driver, vm, false,
                                       QEMU_ASYNC_JOB_NONE, NULL) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
