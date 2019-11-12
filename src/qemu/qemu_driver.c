@@ -14613,18 +14613,31 @@ qemuDomainSnapshotCreateInactiveExternal(virQEMUDriverPtr driver,
 
     /* update disk definitions */
     for (i = 0; i < snapdef->ndisks; i++) {
+        g_autoptr(virStorageSource) newsrc = NULL;
+
         snapdisk = &(snapdef->disks[i]);
         defdisk = vm->def->disks[snapdisk->idx];
 
-        if (snapdisk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
-            VIR_FREE(defdisk->src->path);
-            defdisk->src->path = g_strdup(snapdisk->src->path);
-            defdisk->src->format = snapdisk->src->format;
+        if (snapdisk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)
+            continue;
 
-            if (virDomainSaveConfig(cfg->configDir, driver->caps, vm->def) < 0)
-                goto cleanup;
+        if (!(newsrc = virStorageSourceCopy(snapdisk->src, false)))
+            goto cleanup;
+
+        if (virStorageSourceInitChainElement(newsrc, defdisk->src, false) < 0)
+            goto cleanup;
+
+        if (virStorageSourceHasBacking(defdisk->src)) {
+            newsrc->backingStore = g_steal_pointer(&defdisk->src);
+        } else {
+            virObjectUnref(defdisk->src);
         }
+
+        defdisk->src = g_steal_pointer(&newsrc);
     }
+
+    if (virDomainSaveConfig(cfg->configDir, driver->caps, vm->def) < 0)
+        goto cleanup;
 
     ret = 0;
 
