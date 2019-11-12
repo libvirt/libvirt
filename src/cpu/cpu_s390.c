@@ -49,15 +49,15 @@ virCPUs390Update(virCPUDefPtr guest,
     int ret = -1;
     size_t i;
 
-    if (guest->match == VIR_CPU_MATCH_MINIMUM) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("match mode %s not supported"),
-                       virCPUMatchTypeToString(guest->match));
-        goto cleanup;
-    }
-
-    if (guest->mode != VIR_CPU_MODE_HOST_MODEL) {
-        ret = 0;
+    if (guest->mode == VIR_CPU_MODE_CUSTOM) {
+        if (guest->match == VIR_CPU_MATCH_MINIMUM) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("match mode %s not supported"),
+                           virCPUMatchTypeToString(guest->match));
+        } else {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("optional CPU features are not supported"));
+        }
         goto cleanup;
     }
 
