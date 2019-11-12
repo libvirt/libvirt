@@ -14,7 +14,6 @@
     <boot dev='hd'/>
   </os>
   <cpu mode='host-model' check='partial'>
-    <model fallback='allow'/>
     <feature policy='require' name='abm'/>
     <feature policy='force' name='ds'/>
     <feature policy='disable' name='invtsc'/>

@@ -751,16 +751,12 @@ virCPUDefFormatBuf(virBufferPtr buf,
 {
     size_t i;
     bool formatModel;
-    bool formatFallback;
 
     if (!def)
         return 0;
 
     formatModel = (def->mode == VIR_CPU_MODE_CUSTOM ||
                    def->mode == VIR_CPU_MODE_HOST_MODEL);
-    formatFallback = (def->type == VIR_CPU_TYPE_GUEST &&
-                      (def->mode == VIR_CPU_MODE_HOST_MODEL ||
-                       (def->mode == VIR_CPU_MODE_CUSTOM && def->model)));
 
     if (!def->model && def->mode == VIR_CPU_MODE_CUSTOM && def->nfeatures) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -768,9 +764,10 @@ virCPUDefFormatBuf(virBufferPtr buf,
         return -1;
     }
 
-    if ((formatModel && def->model) || formatFallback) {
+    if (formatModel && def->model) {
         virBufferAddLit(buf, "<model");
-        if (formatFallback) {
+
+        if (def->type == VIR_CPU_TYPE_GUEST) {
             const char *fallback;
 
             fallback = virCPUFallbackTypeToString(def->fallback);
@@ -784,11 +781,8 @@ virCPUDefFormatBuf(virBufferPtr buf,
             if (def->vendor_id)
                 virBufferEscapeString(buf, " vendor_id='%s'", def->vendor_id);
         }
-        if (formatModel && def->model) {
-            virBufferEscapeString(buf, ">%s</model>\n", def->model);
-        } else {
-            virBufferAddLit(buf, "/>\n");
-        }
+
+        virBufferEscapeString(buf, ">%s</model>\n", def->model);
     }
 
     if (formatModel && def->vendor)
