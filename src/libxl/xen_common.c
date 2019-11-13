@@ -24,8 +24,6 @@
 
 #include <config.h>
 
-#include <regex.h>
-
 #include "internal.h"
 #include "virerror.h"
 #include "virconf.h"
@@ -1063,10 +1061,10 @@ static const char *vif_bytes_per_sec_re = "^[0-9]+[GMK]?[Bb]/s$";
 static int
 xenParseSxprVifRate(const char *rate, unsigned long long *kbytes_per_sec)
 {
+    g_autoptr(GRegex) regex = NULL;
+    g_autoptr(GError) err = NULL;
     g_autofree char *trate = NULL;
     char *p;
-    regex_t rec;
-    int err;
     char *suffix;
     unsigned long long tmp;
     int ret = -1;
@@ -1077,17 +1075,14 @@ xenParseSxprVifRate(const char *rate, unsigned long long *kbytes_per_sec)
     if (p != NULL)
         *p = 0;
 
-    err = regcomp(&rec, vif_bytes_per_sec_re, REG_EXTENDED|REG_NOSUB);
-    if (err != 0) {
-        char error[100];
-        regerror(err, &rec, error, sizeof(error));
+    regex = g_regex_new(vif_bytes_per_sec_re, 0, 0, &err);
+    if (!regex) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to compile regular expression '%s': %s"),
-                       vif_bytes_per_sec_re, error);
-        goto cleanup;
+                       _("Failed to compile regex %s"), err->message);
+        return -1;
     }
 
-    if (regexec(&rec, trate, 0, NULL, 0)) {
+    if (!g_regex_match(regex, trate, 0, NULL)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Invalid rate '%s' specified"), rate);
         goto cleanup;
@@ -1111,7 +1106,6 @@ xenParseSxprVifRate(const char *rate, unsigned long long *kbytes_per_sec)
     ret = 0;
 
  cleanup:
-    regfree(&rec);
     return ret;
 }
 
