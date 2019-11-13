@@ -23,7 +23,6 @@
 
 #include <sys/wait.h>
 #include <sys/stat.h>
-#include <regex.h>
 #include <unistd.h>
 #include <fcntl.h>
 
@@ -121,16 +120,15 @@ static int
 virStorageBackendLogicalParseVolExtents(virStorageVolDefPtr vol,
                                         char **const groups)
 {
+    g_autoptr(GRegex) re = NULL;
+    g_autoptr(GError) err = NULL;
+    g_autoptr(GMatchInfo) info = NULL;
     int nextents, ret = -1;
     const char *regex_unit = "(\\S+)\\((\\S+)\\)";
-    char *p = NULL;
     size_t i;
-    int err, nvars;
     unsigned long long offset, size, length;
     virStorageVolSourceExtent extent;
     g_autofree char *regex = NULL;
-    g_autofree regex_t *reg = NULL;
-    g_autofree regmatch_t *vars = NULL;
 
     memset(&extent, 0, sizeof(extent));
 
@@ -174,53 +172,29 @@ virStorageBackendLogicalParseVolExtents(virStorageVolDefPtr vol,
         strcat(regex, regex_unit);
     }
 
-    if (VIR_ALLOC(reg) < 0)
-        goto cleanup;
-
-    /* Each extent has a "path:offset" pair, and vars[0] will
-     * be the whole matched string.
-     */
-    nvars = (nextents * 2) + 1;
-    if (VIR_ALLOC_N(vars, nvars) < 0)
-        goto cleanup;
-
-    err = regcomp(reg, regex, REG_EXTENDED);
-    if (err != 0) {
-        char error[100];
-        regerror(err, reg, error, sizeof(error));
+    re = g_regex_new(regex, 0, 0, &err);
+    if (!re) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to compile regex %s"),
-                       error);
-        goto cleanup;
+                       _("Failed to compile regex %s"), err->message);
+        return -1;
     }
 
-    err = regexec(reg, groups[3], nvars, vars, 0);
-    regfree(reg);
-    if (err != 0) {
+    if (!g_regex_match(re, groups[3], 0, &info)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("malformed volume extent devices value"));
         goto cleanup;
     }
 
-    p = groups[3];
-
-    /* vars[0] is skipped */
+    /* Each extent has a "path:offset" pair, and match #0
+     * is the whole matched string.
+     */
     for (i = 0; i < nextents; i++) {
         size_t j;
-        int len;
         g_autofree char *offset_str = NULL;
 
         j = (i * 2) + 1;
-        len = vars[j].rm_eo - vars[j].rm_so;
-        p[vars[j].rm_eo] = '\0';
-
-        if (VIR_STRNDUP(extent.path,
-                        p + vars[j].rm_so, len) < 0)
-            goto cleanup;
-
-        len = vars[j + 1].rm_eo - vars[j + 1].rm_so;
-        if (VIR_STRNDUP(offset_str, p + vars[j + 1].rm_so, len) < 0)
-            goto cleanup;
+        extent.path = g_match_info_fetch(info, j);
+        offset_str = g_match_info_fetch(info, j + 1);
 
         if (virStrToLong_ull(offset_str, NULL, 10, &offset) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
