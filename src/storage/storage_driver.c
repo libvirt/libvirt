@@ -2825,7 +2825,7 @@ virStoragePoolObjFindPoolByUUID(const unsigned char *uuid)
  *
  * Generate a name for a temporary file using the driver stateDir
  * as a path, the pool name, and the volume name to be used as input
- * for a mkostemp
+ * for mkstemp
  *
  * Returns a string pointer on success, NULL on failure
  */

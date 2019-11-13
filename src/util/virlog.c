@@ -992,13 +992,7 @@ virLogOutputToJournald(virLogSourcePtr source,
      * and pass an FD to the journal
      */
 
-    /* NB: mkostemp is not declared async signal safe by
-     * POSIX, but this is Linux only code and the GLibc
-     * impl is safe enough, only using open() and inline
-     * asm to read a timestamp (falling back to gettimeofday
-     * on some arches
-     */
-    if ((buffd = mkostemp(path, O_CLOEXEC|O_RDWR)) < 0)
+    if ((buffd = g_mkstemp_full(path, O_CLOEXEC, S_IRUSR | S_IWUSR)) < 0)
         return;
 
     if (unlink(path) < 0)
