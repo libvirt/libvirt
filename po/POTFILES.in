@@ -6,7 +6,6 @@
 @BUILDDIR@/src/remote/remote_client_bodies.h
 @BUILDDIR@/src/remote/remote_daemon_dispatch_stubs.h
 @SRCDIR@/gnulib/lib/gai_strerror.c
-@SRCDIR@/gnulib/lib/regcomp.c
 @SRCDIR@/src/access/viraccessdriverpolkit.c
 @SRCDIR@/src/access/viraccessmanager.c
 @SRCDIR@/src/admin/admin_server.c
