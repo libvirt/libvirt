@@ -1063,7 +1063,7 @@ static const char *vif_bytes_per_sec_re = "^[0-9]+[GMK]?[Bb]/s$";
 static int
 xenParseSxprVifRate(const char *rate, unsigned long long *kbytes_per_sec)
 {
-    char *trate = NULL;
+    g_autofree char *trate = NULL;
     char *p;
     regex_t rec;
     int err;
@@ -1112,7 +1112,6 @@ xenParseSxprVifRate(const char *rate, unsigned long long *kbytes_per_sec)
 
  cleanup:
     regfree(&rec);
-    VIR_FREE(trate);
     return ret;
 }
 
