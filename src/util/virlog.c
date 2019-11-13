@@ -28,7 +28,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <regex.h>
 #include <sys/uio.h>
 #if HAVE_SYSLOG_H
 # include <syslog.h>
@@ -61,7 +60,7 @@
 
 VIR_LOG_INIT("util.log");
 
-static regex_t *virLogRegex;
+static GRegex *virLogRegex;
 static char virLogHostname[HOST_NAME_MAX+1];
 
 
@@ -268,10 +267,7 @@ virLogOnceInit(void)
     virLogLock();
     virLogDefaultPriority = VIR_LOG_DEFAULT;
 
-    if (VIR_ALLOC_QUIET(virLogRegex) >= 0) {
-        if (regcomp(virLogRegex, VIR_LOG_REGEX, REG_EXTENDED) != 0)
-            VIR_FREE(virLogRegex);
-    }
+    virLogRegex = g_regex_new(VIR_LOG_REGEX, G_REGEX_OPTIMIZE, 0, NULL);
 
     /* We get and remember the hostname early, because at later time
      * it might not be possible to load NSS modules via getaddrinfo()
@@ -1262,12 +1258,11 @@ virLogSetFromEnv(void)
  */
 bool virLogProbablyLogMessage(const char *str)
 {
-    bool ret = false;
     if (!virLogRegex)
         return false;
-    if (regexec(virLogRegex, str, 0, NULL, 0) == 0)
-        ret = true;
-    return ret;
+    if (g_regex_match(virLogRegex, str, 0, NULL))
+        return true;
+    return false;
 }
 
 
