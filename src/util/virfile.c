@@ -81,7 +81,6 @@
 #include "virutil.h"
 
 #include "c-ctype.h"
-#include "areadlink.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -1623,18 +1622,6 @@ virFileIsLink(const char *linkpath)
         return -errno;
 
     return S_ISLNK(st.st_mode) != 0;
-}
-
-/*
- * Read where symlink is pointing to.
- *
- * Returns 0 on success (@linkpath is a successfully read link),
- *        -1 with errno set upon error.
- */
-int
-virFileReadLink(const char *linkpath, char **resultpath)
-{
-    return (*resultpath = areadlink(linkpath)) ? 0 : -1;
 }
 
 /*
