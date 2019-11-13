@@ -116,9 +116,7 @@ virBhyveDomainCapsFill(virDomainCapsPtr caps,
     }
 
     caps->hostdev.supported = VIR_TRISTATE_BOOL_NO;
-    caps->iothreads = VIR_TRISTATE_BOOL_NO;
-    caps->vmcoreinfo = VIR_TRISTATE_BOOL_NO;
-    caps->genid = VIR_TRISTATE_BOOL_NO;
+    virDomainCapsFeaturesInitUnsupported(caps);
     caps->gic.supported = VIR_TRISTATE_BOOL_NO;
 
     return 0;

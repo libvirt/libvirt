@@ -225,6 +225,8 @@ int virDomainCapsEnumSet(virDomainCapsEnumPtr capsEnum,
                          unsigned int *values);
 void virDomainCapsEnumClear(virDomainCapsEnumPtr capsEnum);
 
+void virDomainCapsFeaturesInitUnsupported(virDomainCapsPtr caps);
+
 char * virDomainCapsFormat(const virDomainCaps *caps);
 
 int virDomainCapsDeviceDefValidate(const virDomainCaps *caps,
