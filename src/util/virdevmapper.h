@@ -20,6 +20,8 @@
 
 #pragma once
 
+#include "internal.h"
+
 int
 virDevMapperGetTargets(const char *path,
-                       char ***devPaths);
+                       char ***devPaths) G_GNUC_NO_INLINE;

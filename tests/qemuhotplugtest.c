@@ -87,6 +87,8 @@ qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_VNC);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_SPICE);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_SPICE_FILE_XFER_DISABLE);
+    virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_PR_MANAGER_HELPER);
+    virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_SCSI_BLOCK);
 
     if (qemuTestCapsCacheInsert(driver.qemuCapsCache, priv->qemuCaps) < 0)
         return -1;
@@ -748,6 +750,17 @@ mymain(void)
                    "human-monitor-command", HMP(""));
     DO_TEST_DETACH("base-with-scsi-controller-live", "disk-scsi-2", false, false,
                    "device_del", QMP_DEVICE_DELETED("scsi3-0-5-6") QMP_OK,
+                   "human-monitor-command", HMP(""));
+
+    DO_TEST_ATTACH("base-live", "disk-scsi-multipath", false, true,
+                   "object-add", QMP_OK,
+                   "human-monitor-command", HMP("OK\\r\\n"),
+                   "device_add", QMP_OK);
+    DO_TEST_DETACH("base-live", "disk-scsi-multipath", true, true,
+                   "device_del", QMP_OK,
+                   "human-monitor-command", HMP(""));
+    DO_TEST_DETACH("base-live", "disk-scsi-multipath", false, false,
+                   "device_del", QMP_DEVICE_DELETED("scsi0-0-0-0") QMP_OK,
                    "human-monitor-command", HMP(""));
 
     DO_TEST_ATTACH("base-live", "qemu-agent", false, true,

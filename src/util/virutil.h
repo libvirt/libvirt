@@ -120,7 +120,7 @@ bool virValidateWWN(const char *wwn);
 
 int virGetDeviceID(const char *path,
                    int *maj,
-                   int *min);
+                   int *min) G_GNUC_NO_INLINE;
 int virSetDeviceUnprivSGIO(const char *path,
                            const char *sysfs_dir,
                            int unpriv_sgio);

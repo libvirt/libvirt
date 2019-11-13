@@ -1,0 +1,8 @@
+<disk type='block' device='lun'>
+    <driver name='qemu' type='raw'/>
+    <source dev='/dev/mapper/virt'>
+        <reservations managed='yes'/>
+    </source>
+    <target dev='sda' bus='scsi'/>
+  <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+</disk>

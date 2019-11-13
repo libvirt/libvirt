@@ -62,6 +62,7 @@
 #include "virdomaincheckpointobjlist.h"
 #include "backup_conf.h"
 #include "virutil.h"
+#include "virdevmapper.h"
 
 #ifdef __linux__
 # include <sys/sysmacros.h>
@@ -14623,6 +14624,9 @@ qemuDomainSetupDisk(virQEMUDriverConfigPtr cfg G_GNUC_UNUSED,
     bool hasNVMe = false;
 
     for (next = disk->src; virStorageSourceIsBacking(next); next = next->backingStore) {
+        VIR_AUTOSTRINGLIST targetPaths = NULL;
+        size_t i;
+
         if (next->type == VIR_STORAGE_TYPE_NVME) {
             g_autofree char *nvmePath = NULL;
 
@@ -14641,6 +14645,19 @@ qemuDomainSetupDisk(virQEMUDriverConfigPtr cfg G_GNUC_UNUSED,
 
             if (qemuDomainCreateDevice(next->path, data, false) < 0)
                 return -1;
+
+            if (virDevMapperGetTargets(next->path, &targetPaths) < 0 &&
+                errno != ENOSYS && errno != EBADF) {
+                virReportSystemError(errno,
+                                     _("Unable to get devmapper targets for %s"),
+                                     next->path);
+                return -1;
+            }
+
+            for (i = 0; targetPaths && targetPaths[i]; i++) {
+                if (qemuDomainCreateDevice(targetPaths[i], data, false) < 0)
+                    return -1;
+            }
         }
     }
 
@@ -15656,21 +15673,19 @@ qemuDomainNamespaceSetupDisk(virDomainObjPtr vm,
                              virStorageSourcePtr src)
 {
     virStorageSourcePtr next;
-    char **paths = NULL;
+    VIR_AUTOSTRINGLIST paths = NULL;
     size_t npaths = 0;
     bool hasNVMe = false;
-    g_autofree char *dmPath = NULL;
-    g_autofree char *vfioPath = NULL;
-    int ret = -1;
 
     for (next = src; virStorageSourceIsBacking(next); next = next->backingStore) {
+        VIR_AUTOSTRINGLIST targetPaths = NULL;
         g_autofree char *tmpPath = NULL;
 
         if (next->type == VIR_STORAGE_TYPE_NVME) {
             hasNVMe = true;
 
             if (!(tmpPath = virPCIDeviceAddressGetIOMMUGroupDev(&next->nvme->pciAddr)))
-                goto cleanup;
+                return -1;
         } else {
             if (virStorageSourceIsEmpty(next) ||
                 !virStorageSourceIsLocalStorage(next)) {
@@ -15681,30 +15696,35 @@ qemuDomainNamespaceSetupDisk(virDomainObjPtr vm,
             tmpPath = g_strdup(next->path);
         }
 
-        if (VIR_APPEND_ELEMENT(paths, npaths, tmpPath) < 0)
-            goto cleanup;
+        if (virStringListAdd(&paths, tmpPath) < 0)
+            return -1;
+
+        if (virDevMapperGetTargets(next->path, &targetPaths) < 0 &&
+            errno != ENOSYS && errno != EBADF) {
+            virReportSystemError(errno,
+                                 _("Unable to get devmapper targets for %s"),
+                                 next->path);
+            return -1;
+        }
+
+        if (virStringListMerge(&paths, &targetPaths) < 0)
+            return -1;
     }
 
     /* qemu-pr-helper might require access to /dev/mapper/control. */
-    if (src->pr) {
-        dmPath = g_strdup(QEMU_DEVICE_MAPPER_CONTROL_PATH);
-        if (VIR_APPEND_ELEMENT_COPY(paths, npaths, dmPath) < 0)
-            goto cleanup;
-    }
+    if (src->pr &&
+        virStringListAdd(&paths, QEMU_DEVICE_MAPPER_CONTROL_PATH) < 0)
+        return -1;
 
-    if (hasNVMe) {
-        vfioPath = g_strdup(QEMU_DEV_VFIO);
-        if (VIR_APPEND_ELEMENT(paths, npaths, vfioPath) < 0)
-            goto cleanup;
-    }
+    if (hasNVMe &&
+        virStringListAdd(&paths, QEMU_DEV_VFIO) < 0)
+        return -1;
 
+    npaths = virStringListLength((const char **) paths);
     if (qemuDomainNamespaceMknodPaths(vm, (const char **) paths, npaths) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    virStringListFreeCount(paths, npaths);
-    return ret;
+    return 0;
 }
 
 
