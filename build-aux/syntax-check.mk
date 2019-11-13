@@ -475,11 +475,11 @@ sc_prohibit_risky_id_promotion:
 	halt='cast -1 to ([ug]id_t) before comparing against id' \
 	  $(_sc_search_regexp)
 
-# Use snprintf rather than s'printf, even if buffer is provably large enough,
+# Use g_snprintf rather than s'printf, even if buffer is provably large enough,
 # since gnulib has more guarantees for snprintf portability
 sc_prohibit_sprintf:
 	@prohibit='\<[s]printf\>' \
-	halt='use snprintf, not sprintf' \
+	halt='use g_snprintf, not sprintf' \
 	  $(_sc_search_regexp)
 
 sc_prohibit_readlink:
