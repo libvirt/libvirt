@@ -33,7 +33,6 @@
 #include <sys/wait.h>
 #include <sys/ioctl.h>
 #include <sys/un.h>
-#include <byteswap.h>
 
 
 #include "qemu_driver.h"
@@ -2803,11 +2802,11 @@ struct _virQEMUSaveData {
 static inline void
 bswap_header(virQEMUSaveHeaderPtr hdr)
 {
-    hdr->version = bswap_32(hdr->version);
-    hdr->data_len = bswap_32(hdr->data_len);
-    hdr->was_running = bswap_32(hdr->was_running);
-    hdr->compressed = bswap_32(hdr->compressed);
-    hdr->cookieOffset = bswap_32(hdr->cookieOffset);
+    hdr->version = GUINT32_SWAP_LE_BE(hdr->version);
+    hdr->data_len = GUINT32_SWAP_LE_BE(hdr->data_len);
+    hdr->was_running = GUINT32_SWAP_LE_BE(hdr->was_running);
+    hdr->compressed = GUINT32_SWAP_LE_BE(hdr->compressed);
+    hdr->cookieOffset = GUINT32_SWAP_LE_BE(hdr->cookieOffset);
 }
 
 
