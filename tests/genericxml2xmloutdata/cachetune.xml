@@ -6,9 +6,9 @@
   <vcpu placement='static'>4</vcpu>
   <cputune>
     <cachetune vcpus='0-1'>
-      <monitor level='3' vcpus='0-1'/>
       <cache id='0' level='3' type='both' size='3' unit='MiB'/>
       <cache id='1' level='3' type='both' size='3' unit='MiB'/>
+      <monitor level='3' vcpus='0-1'/>
     </cachetune>
     <cachetune vcpus='3'>
       <cache id='0' level='3' type='both' size='3' unit='MiB'/>

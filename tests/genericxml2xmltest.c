@@ -161,9 +161,9 @@ mymain(void)
     DO_TEST_FULL("chardev-reconnect-invalid-mode", 0, false,
                  TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
 
-    DO_TEST("cachetune");
     DO_TEST("cachetune-small");
     DO_TEST("cachetune-cdp");
+    DO_TEST_DIFFERENT("cachetune");
     DO_TEST_DIFFERENT("cachetune-extra-tunes");
     DO_TEST_FULL("cachetune-colliding-allocs", false, true,
                  TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);

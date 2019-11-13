@@ -980,41 +980,41 @@
             <attribute name="vcpus">
               <ref name='cpuset'/>
             </attribute>
-            <zeroOrMore>
-              <element name="cache">
-                <attribute name="id">
-                  <ref name='unsignedInt'/>
-                </attribute>
-                <attribute name="level">
-                  <ref name='unsignedInt'/>
-                </attribute>
-                <attribute name="type">
-                  <choice>
-                    <value>both</value>
-                    <value>code</value>
-                    <value>data</value>
-                  </choice>
-                </attribute>
-                <attribute name="size">
-                  <ref name='unsignedLong'/>
-                </attribute>
-                <optional>
-                  <attribute name='unit'>
-                    <ref name='unit'/>
+            <oneOrMore>
+              <choice>
+                <element name="cache">
+                  <attribute name="id">
+                    <ref name='unsignedInt'/>
                   </attribute>
-                </optional>
-              </element>
-            </zeroOrMore>
-            <zeroOrMore>
-              <element name="monitor">
-                <attribute name="level">
-                  <ref name='unsignedInt'/>
-                </attribute>
-                <attribute name="vcpus">
-                  <ref name='cpuset'/>
-                </attribute>
-              </element>
-            </zeroOrMore>
+                  <attribute name="level">
+                    <ref name='unsignedInt'/>
+                  </attribute>
+                  <attribute name="type">
+                    <choice>
+                      <value>both</value>
+                      <value>code</value>
+                      <value>data</value>
+                    </choice>
+                  </attribute>
+                  <attribute name="size">
+                    <ref name='unsignedLong'/>
+                  </attribute>
+                  <optional>
+                    <attribute name='unit'>
+                      <ref name='unit'/>
+                    </attribute>
+                  </optional>
+                </element>
+                <element name="monitor">
+                  <attribute name="level">
+                    <ref name='unsignedInt'/>
+                  </attribute>
+                  <attribute name="vcpus">
+                    <ref name='cpuset'/>
+                  </attribute>
+                </element>
+              </choice>
+            </oneOrMore>
           </element>
         </zeroOrMore>
         <zeroOrMore>
