@@ -1187,7 +1187,7 @@ const char
     /* calculate length of the rest of the string */
     len -= (virtTestCounterPrefixEndOffset - virtTestCounterStr);
 
-    snprintf(virtTestCounterPrefixEndOffset, len, "%d", ++virtTestCounter);
+    g_snprintf(virtTestCounterPrefixEndOffset, len, "%d", ++virtTestCounter);
 
     return virtTestCounterStr;
 }

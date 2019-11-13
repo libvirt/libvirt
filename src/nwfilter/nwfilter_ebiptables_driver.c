@@ -76,9 +76,9 @@ enum ctdirStatus {
 static enum ctdirStatus iptables_ctdir_corrected;
 
 #define PRINT_ROOT_CHAIN(buf, prefix, ifname) \
-    snprintf(buf, sizeof(buf), "libvirt-%c-%s", prefix, ifname)
+    g_snprintf(buf, sizeof(buf), "libvirt-%c-%s", prefix, ifname)
 #define PRINT_CHAIN(buf, prefix, ifname, suffix) \
-    snprintf(buf, sizeof(buf), "%c-%s-%s", prefix, ifname, suffix)
+    g_snprintf(buf, sizeof(buf), "%c-%s-%s", prefix, ifname, suffix)
 
 #define VIRT_IN_CHAIN      "libvirt-in"
 #define VIRT_OUT_CHAIN     "libvirt-out"
@@ -86,7 +86,7 @@ static enum ctdirStatus iptables_ctdir_corrected;
 #define HOST_IN_CHAIN      "libvirt-host-in"
 
 #define PRINT_IPT_ROOT_CHAIN(buf, prefix, ifname) \
-    snprintf(buf, sizeof(buf), "%c%c-%s", prefix[0], prefix[1], ifname)
+    g_snprintf(buf, sizeof(buf), "%c%c-%s", prefix[0], prefix[1], ifname)
 
 static bool newMatchState;
 
@@ -204,7 +204,7 @@ _printDataType(virNWFilterVarCombIterPtr vars,
         data = virSocketAddrFormat(&item->u.ipaddr);
         if (!data)
             return -1;
-        if (snprintf(buf, bufsize, "%s", data) >= bufsize) {
+        if (g_snprintf(buf, bufsize, "%s", data) >= bufsize) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("buffer too small for IP address"));
             VIR_FREE(data);
@@ -218,7 +218,7 @@ _printDataType(virNWFilterVarCombIterPtr vars,
         if (!data)
             return -1;
 
-        if (snprintf(buf, bufsize, "%s", data) >= bufsize) {
+        if (g_snprintf(buf, bufsize, "%s", data) >= bufsize) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("buffer too small for IPv6 address"));
             VIR_FREE(data);
@@ -240,8 +240,8 @@ _printDataType(virNWFilterVarCombIterPtr vars,
 
     case DATATYPE_IPV6MASK:
     case DATATYPE_IPMASK:
-        if (snprintf(buf, bufsize, "%d",
-                     item->u.u8) >= bufsize) {
+        if (g_snprintf(buf, bufsize, "%d",
+                       item->u.u8) >= bufsize) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Buffer too small for uint8 type"));
             return -1;
@@ -250,8 +250,8 @@ _printDataType(virNWFilterVarCombIterPtr vars,
 
     case DATATYPE_UINT32:
     case DATATYPE_UINT32_HEX:
-        if (snprintf(buf, bufsize, asHex ? "0x%x" : "%u",
-                     item->u.u32) >= bufsize) {
+        if (g_snprintf(buf, bufsize, asHex ? "0x%x" : "%u",
+                       item->u.u32) >= bufsize) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Buffer too small for uint32 type"));
             return -1;
@@ -260,8 +260,8 @@ _printDataType(virNWFilterVarCombIterPtr vars,
 
     case DATATYPE_UINT16:
     case DATATYPE_UINT16_HEX:
-        if (snprintf(buf, bufsize, asHex ? "0x%x" : "%d",
-                     item->u.u16) >= bufsize) {
+        if (g_snprintf(buf, bufsize, asHex ? "0x%x" : "%d",
+                       item->u.u16) >= bufsize) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Buffer too small for uint16 type"));
             return -1;
@@ -270,8 +270,8 @@ _printDataType(virNWFilterVarCombIterPtr vars,
 
     case DATATYPE_UINT8:
     case DATATYPE_UINT8_HEX:
-        if (snprintf(buf, bufsize, asHex ? "0x%x" : "%d",
-                     item->u.u8) >= bufsize) {
+        if (g_snprintf(buf, bufsize, asHex ? "0x%x" : "%d",
+                       item->u.u8) >= bufsize) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Buffer too small for uint8 type"));
             return -1;
@@ -3192,11 +3192,11 @@ iptablesCheckBridgeNFCallEnabled(bool isIPv6)
             if (read(fd, buffer, 1) == 1) {
                 if (buffer[0] == '0') {
                     char msg[256];
-                    snprintf(msg, sizeof(msg),
-                             _("To enable ip%stables filtering for the VM do "
-                              "'echo 1 > %s'"),
-                             isIPv6 ? "6" : "",
-                             pathname);
+                    g_snprintf(msg, sizeof(msg),
+                               _("To enable ip%stables filtering for the VM do "
+                                "'echo 1 > %s'"),
+                               isIPv6 ? "6" : "",
+                               pathname);
                     VIR_WARN("%s", msg);
                     if (isIPv6)
                         lastReportIPv6 = now;

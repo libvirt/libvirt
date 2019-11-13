@@ -2342,8 +2342,8 @@ virSecurityDACGetProcessLabelInternal(pid_t pid,
         goto cleanup;
     }
 
-    snprintf(seclabel->label, VIR_SECURITY_LABEL_BUFLEN,
-             "+%u:+%u", (unsigned int)sb.st_uid, (unsigned int)sb.st_gid);
+    g_snprintf(seclabel->label, VIR_SECURITY_LABEL_BUFLEN,
+               "+%u:+%u", (unsigned int)sb.st_uid, (unsigned int)sb.st_gid);
     ret = 0;
 
  cleanup:
@@ -2371,8 +2371,8 @@ virSecurityDACGetProcessLabelInternal(pid_t pid,
         return -1;
     }
 
-    snprintf(seclabel->label, VIR_SECURITY_LABEL_BUFLEN,
-             "+%u:+%u", (unsigned int)p.ki_uid, (unsigned int)p.ki_groups[0]);
+    g_snprintf(seclabel->label, VIR_SECURITY_LABEL_BUFLEN,
+               "+%u:+%u", (unsigned int)p.ki_uid, (unsigned int)p.ki_groups[0]);
 
     return 0;
 }

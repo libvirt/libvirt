@@ -564,8 +564,8 @@ testActivation(bool useNames)
     for (i = 0; i < nsockIP; i++)
         virBufferAddLit(&names, ":demo-ip.socket");
 
-    snprintf(nfdstr, sizeof(nfdstr), "%zu", 1 + nsockIP);
-    snprintf(pidstr, sizeof(pidstr), "%lld", (long long)getpid());
+    g_snprintf(nfdstr, sizeof(nfdstr), "%zu", 1 + nsockIP);
+    g_snprintf(pidstr, sizeof(pidstr), "%lld", (long long)getpid());
 
     setenv("LISTEN_FDS", nfdstr, 1);
     setenv("LISTEN_PID", pidstr, 1);

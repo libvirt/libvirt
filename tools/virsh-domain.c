@@ -12098,7 +12098,7 @@ virshDomainDetachInterface(char *doc,
         goto cleanup;
     }
 
-    snprintf(buf, sizeof(buf), "/domain/devices/interface[@type='%s']", type);
+    g_snprintf(buf, sizeof(buf), "/domain/devices/interface[@type='%s']", type);
     obj = xmlXPathEval(BAD_CAST buf, ctxt);
     if (obj == NULL || obj->type != XPATH_NODESET ||
         obj->nodesetval == NULL || obj->nodesetval->nodeNr == 0) {

@@ -3961,7 +3961,7 @@ virStorageBackendSCSIFindLUs(virStoragePoolObjPtr pool,
     if (virDirOpen(&devicedir, device_path) < 0)
         return -1;
 
-    snprintf(devicepattern, sizeof(devicepattern), "%u:%%u:%%u:%%u\n", scanhost);
+    g_snprintf(devicepattern, sizeof(devicepattern), "%u:%%u:%%u:%%u\n", scanhost);
 
     while ((retval = virDirRead(devicedir, &lun_dirent, device_path)) > 0) {
         int rc;

@@ -1381,7 +1381,7 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
 
     /* press the keys */
     for (i = 0; i < nkeycodes; i++) {
-        snprintf(keycodeStr, sizeof(keycodeStr), "%d", translatedKeycodes[i]);
+        g_snprintf(keycodeStr, sizeof(keycodeStr), "%d", translatedKeycodes[i]);
 
         params = hypervCreateInvokeParamsList(priv, "PressKey", selector,
                 Msvm_Keyboard_WmiInfo);
@@ -1409,7 +1409,7 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
 
     /* release the keys */
     for (i = 0; i < nkeycodes; i++) {
-        snprintf(keycodeStr, sizeof(keycodeStr), "%d", translatedKeycodes[i]);
+        g_snprintf(keycodeStr, sizeof(keycodeStr), "%d", translatedKeycodes[i]);
         params = hypervCreateInvokeParamsList(priv, "ReleaseKey", selector,
                 Msvm_Keyboard_WmiInfo);
 

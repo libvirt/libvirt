@@ -227,7 +227,7 @@ vshTableSafeEncode(const char *s, size_t *width)
     while (p && *p) {
         if ((*p == '\\' && *(p + 1) == 'x') ||
             c_iscntrl(*p)) {
-            snprintf(buf, HEX_ENCODE_LENGTH + 1, "\\x%02x", *p);
+            g_snprintf(buf, HEX_ENCODE_LENGTH + 1, "\\x%02x", *p);
             buf += HEX_ENCODE_LENGTH;
             *width += HEX_ENCODE_LENGTH;
             p++;
@@ -245,7 +245,7 @@ vshTableSafeEncode(const char *s, size_t *width)
                  * printable char according to the current locales.
                  */
                 if (!c_isprint(*p)) {
-                    snprintf(buf, HEX_ENCODE_LENGTH + 1, "\\x%02x", *p);
+                    g_snprintf(buf, HEX_ENCODE_LENGTH + 1, "\\x%02x", *p);
                     buf += HEX_ENCODE_LENGTH;
                     *width += HEX_ENCODE_LENGTH;
                 } else {
@@ -255,7 +255,7 @@ vshTableSafeEncode(const char *s, size_t *width)
             } else if (!iswprint(wc)) {
                 size_t i;
                 for (i = 0; i < len; i++) {
-                    snprintf(buf, HEX_ENCODE_LENGTH + 1, "\\x%02x", p[i]);
+                    g_snprintf(buf, HEX_ENCODE_LENGTH + 1, "\\x%02x", p[i]);
                     buf += HEX_ENCODE_LENGTH;
                     *width += HEX_ENCODE_LENGTH;
                 }

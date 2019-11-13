@@ -1111,8 +1111,8 @@ checkUserInfo(virTypedParameterPtr params,
     const char *domain = NULL;
     unsigned long long logintime = 0;
 
-    snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-             "user.%zu.name", nth);
+    g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+               "user.%zu.name", nth);
     if (virTypedParamsGetString(params, nparams, param_name, &username) < 0)
         return -1;
 
@@ -1123,8 +1123,8 @@ checkUserInfo(virTypedParameterPtr params,
         return -1;
     }
 
-    snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-             "user.%zu.domain", nth);
+    g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+               "user.%zu.domain", nth);
     if (virTypedParamsGetString(params, nparams, param_name, &domain) < 0)
         return -1;
 
@@ -1135,8 +1135,8 @@ checkUserInfo(virTypedParameterPtr params,
         return -1;
     }
 
-    snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-             "user.%zu.login-time", nth);
+    g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+               "user.%zu.login-time", nth);
     if (virTypedParamsGetULLong(params, nparams, param_name, &logintime) < 0)
         return -1;
 

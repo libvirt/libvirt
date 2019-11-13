@@ -2003,7 +2003,7 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
         dom = list->domains[i];
         id = virDomainGetID(dom);
         if (id != (unsigned int) -1)
-            snprintf(id_buf, sizeof(id_buf), "%d", id);
+            g_snprintf(id_buf, sizeof(id_buf), "%d", id);
         else
             ignore_value(virStrcpyStatic(id_buf, "-"));
 

@@ -187,10 +187,10 @@ const char *
 virMacAddrFormat(const virMacAddr *addr,
                  char *str)
 {
-    snprintf(str, VIR_MAC_STRING_BUFLEN,
-             "%02x:%02x:%02x:%02x:%02x:%02x",
-             addr->addr[0], addr->addr[1], addr->addr[2],
-             addr->addr[3], addr->addr[4], addr->addr[5]);
+    g_snprintf(str, VIR_MAC_STRING_BUFLEN,
+               "%02x:%02x:%02x:%02x:%02x:%02x",
+               addr->addr[0], addr->addr[1], addr->addr[2],
+               addr->addr[3], addr->addr[4], addr->addr[5]);
     str[VIR_MAC_STRING_BUFLEN-1] = '\0';
     return str;
 }

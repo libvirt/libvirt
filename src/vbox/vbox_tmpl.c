@@ -214,7 +214,7 @@ static PRUnichar *PRUnicharFromInt(PCVBOXXPCOM pFuncs, int n) {
     PRUnichar *strUtf16 = NULL;
     char s[24];
 
-    snprintf(s, sizeof(s), "%d", n);
+    g_snprintf(s, sizeof(s), "%d", n);
 
     pFuncs->pfnUtf8ToUtf16(s, &strUtf16);
 

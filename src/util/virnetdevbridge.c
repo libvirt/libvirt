@@ -126,7 +126,7 @@ static int virNetDevBridgeSet(const char *brname,
 
     if (virFileExists(path)) {
         char valuestr[INT_BUFSIZE_BOUND(value)];
-        snprintf(valuestr, sizeof(valuestr), "%lu", value);
+        g_snprintf(valuestr, sizeof(valuestr), "%lu", value);
         if (virFileWriteStr(path, valuestr, 0) >= 0)
             return 0;
         VIR_DEBUG("Unable to set bridge %s %s via sysfs", brname, paramname);
@@ -219,7 +219,7 @@ virNetDevBridgePortSet(const char *brname,
     int ret = -1;
     g_autofree char *path = NULL;
 
-    snprintf(valuestr, sizeof(valuestr), "%lu", value);
+    g_snprintf(valuestr, sizeof(valuestr), "%lu", value);
 
     path = g_strdup_printf(SYSFS_NET_DIR "%s/brif/%s/%s", brname, ifname,
                            paramname);

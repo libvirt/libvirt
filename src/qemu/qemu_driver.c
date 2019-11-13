@@ -5106,8 +5106,8 @@ qemuDomainPinVcpuLive(virDomainObjPtr vm,
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
         goto cleanup;
 
-    if (snprintf(paramField, VIR_TYPED_PARAM_FIELD_LENGTH,
-                 VIR_DOMAIN_TUNABLE_CPU_VCPUPIN, vcpu) < 0) {
+    if (g_snprintf(paramField, VIR_TYPED_PARAM_FIELD_LENGTH,
+                   VIR_DOMAIN_TUNABLE_CPU_VCPUPIN, vcpu) < 0) {
         goto cleanup;
     }
 
@@ -5801,8 +5801,8 @@ qemuDomainPinIOThread(virDomainPtr dom,
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
             goto endjob;
 
-        if (snprintf(paramField, VIR_TYPED_PARAM_FIELD_LENGTH,
-                     VIR_DOMAIN_TUNABLE_CPU_IOTHREADSPIN, iothread_id) < 0) {
+        if (g_snprintf(paramField, VIR_TYPED_PARAM_FIELD_LENGTH,
+                       VIR_DOMAIN_TUNABLE_CPU_IOTHREADSPIN, iothread_id) < 0) {
             goto endjob;
         }
 

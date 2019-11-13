@@ -319,8 +319,8 @@ virUSBDeviceNew(unsigned int bus,
     dev->bus     = bus;
     dev->dev     = devno;
 
-    if (snprintf(dev->name, sizeof(dev->name), "%.3d:%.3d",
-                 dev->bus, dev->dev) >= sizeof(dev->name)) {
+    if (g_snprintf(dev->name, sizeof(dev->name), "%.3d:%.3d",
+                   dev->bus, dev->dev) >= sizeof(dev->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("dev->name buffer overflow: %.3d:%.3d"),
                        dev->bus, dev->dev);
@@ -337,8 +337,8 @@ virUSBDeviceNew(unsigned int bus,
     }
 
     /* XXX fixme. this should be product/vendor */
-    if (snprintf(dev->id, sizeof(dev->id), "%d %d", dev->bus,
-                 dev->dev) >= sizeof(dev->id)) {
+    if (g_snprintf(dev->id, sizeof(dev->id), "%d %d", dev->bus,
+                   dev->dev) >= sizeof(dev->id)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("dev->id buffer overflow: %d %d"),
                        dev->bus, dev->dev);

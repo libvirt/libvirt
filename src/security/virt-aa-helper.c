@@ -155,7 +155,7 @@ parserCommand(const char *profile_name, const char cmd)
         return -1;
     }
 
-    snprintf(flag, 3, "-%c", cmd);
+    g_snprintf(flag, 3, "-%c", cmd);
 
     profile = g_strdup_printf("%s/%s", APPARMOR_DIR "/libvirt", profile_name);
 

@@ -67,7 +67,7 @@ int virPidFileWritePath(const char *pidfile,
         goto cleanup;
     }
 
-    snprintf(pidstr, sizeof(pidstr), "%lld", (long long) pid);
+    g_snprintf(pidstr, sizeof(pidstr), "%lld", (long long) pid);
 
     if (safewrite(fd, pidstr, strlen(pidstr)) < 0) {
         rc = -errno;
@@ -392,7 +392,7 @@ int virPidFileAcquirePath(const char *path,
         /* Someone else must be racing with us, so try again */
     }
 
-    snprintf(pidstr, sizeof(pidstr), "%lld", (long long) pid);
+    g_snprintf(pidstr, sizeof(pidstr), "%lld", (long long) pid);
 
     if (ftruncate(fd, 0) < 0) {
         virReportSystemError(errno,

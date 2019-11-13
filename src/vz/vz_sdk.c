@@ -3171,10 +3171,10 @@ static int prlsdkAddSerial(PRL_HANDLE sdkdom, virDomainChrDefPtr chr)
 
 static const char * prlsdkFormatMac(virMacAddrPtr mac, char *macstr)
 {
-    snprintf(macstr, PRL_MAC_STRING_BUFNAME,
-             "%02X%02X%02X%02X%02X%02X",
-             mac->addr[0], mac->addr[1], mac->addr[2],
-             mac->addr[3], mac->addr[4], mac->addr[5]);
+    g_snprintf(macstr, PRL_MAC_STRING_BUFNAME,
+               "%02X%02X%02X%02X%02X%02X",
+               mac->addr[0], mac->addr[1], mac->addr[2],
+               mac->addr[3], mac->addr[4], mac->addr[5]);
     macstr[PRL_MAC_STRING_BUFNAME - 1] = '\0';
     return macstr;
 }

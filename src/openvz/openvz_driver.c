@@ -1248,7 +1248,7 @@ static int openvzDomainSetVcpusInternal(virDomainObjPtr vm,
     if (pcpus > 0 && pcpus < nvcpus)
         nvcpus = pcpus;
 
-    snprintf(str_vcpus, sizeof(str_vcpus), "%d", nvcpus);
+    g_snprintf(str_vcpus, sizeof(str_vcpus), "%d", nvcpus);
 
     openvzSetProgramSentinal(prog, vm->def->name);
     if (virRun(prog, NULL) < 0)
@@ -1503,7 +1503,7 @@ static int openvzConnectListDefinedDomains(virConnectPtr conn G_GNUC_UNUSED,
                            _("Could not parse VPS ID %s"), buf);
             continue;
         }
-        snprintf(vpsname, sizeof(vpsname), "%d", veid);
+        g_snprintf(vpsname, sizeof(vpsname), "%d", veid);
         names[got] = g_strdup(vpsname);
         got ++;
     }
@@ -1600,7 +1600,7 @@ openvzDomainSetMemoryInternal(virDomainObjPtr vm,
     };
 
     /* memory has to be changed its format from kbyte to byte */
-    snprintf(str_mem, sizeof(str_mem), "%llu", mem * 1024);
+    g_snprintf(str_mem, sizeof(str_mem), "%llu", mem * 1024);
 
     openvzSetProgramSentinal(prog, vm->def->name);
     if (virRun(prog, NULL) < 0)

@@ -172,7 +172,7 @@ int virHostValidateNamespace(const char *hvname,
     virHostMsgCheck(hvname, "for namespace %s", ns_name);
     char nspath[100];
 
-    snprintf(nspath, sizeof(nspath), "/proc/self/ns/%s", ns_name);
+    g_snprintf(nspath, sizeof(nspath), "/proc/self/ns/%s", ns_name);
 
     if (access(nspath, F_OK) < 0) {
         virHostMsgFail(level, "%s", hint);

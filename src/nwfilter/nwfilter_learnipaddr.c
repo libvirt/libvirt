@@ -61,7 +61,7 @@ VIR_LOG_INIT("nwfilter.nwfilter_learnipaddr");
 
 #define IFINDEX2STR(VARNAME, ifindex) \
     char VARNAME[INT_BUFSIZE_BOUND(ifindex)]; \
-    snprintf(VARNAME, sizeof(VARNAME), "%d", ifindex);
+    g_snprintf(VARNAME, sizeof(VARNAME), "%d", ifindex);
 
 #define PKT_TIMEOUT_MS 500 /* ms */
 

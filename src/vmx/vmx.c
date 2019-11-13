@@ -500,7 +500,7 @@ def->parallels[0]...
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 #define VMX_BUILD_NAME_EXTRA(_suffix, _extra) \
-    snprintf(_suffix##_name, sizeof(_suffix##_name), "%s."_extra, prefix);
+    g_snprintf(_suffix##_name, sizeof(_suffix##_name), "%s."_extra, prefix);
 
 #define VMX_BUILD_NAME(_suffix) \
     VMX_BUILD_NAME_EXTRA(_suffix, #_suffix)
@@ -640,7 +640,7 @@ virVMXEscapeHex(const char *string, char escape, const char *special)
         if (*tmp1 == escape || strspn(tmp1, special) > 0) {
             *tmp2++ = escape;
 
-            snprintf(tmp2, 3, "%02x", (unsigned int)*tmp1);
+            g_snprintf(tmp2, 3, "%02x", (unsigned int)*tmp1);
 
             tmp2 += 2;
         } else {
@@ -1951,9 +1951,9 @@ virVMXParseSCSIController(virConfPtr conf, int controller, bool *present,
         return -1;
     }
 
-    snprintf(present_name, sizeof(present_name), "scsi%d.present", controller);
-    snprintf(virtualDev_name, sizeof(virtualDev_name), "scsi%d.virtualDev",
-             controller);
+    g_snprintf(present_name, sizeof(present_name), "scsi%d.present", controller);
+    g_snprintf(virtualDev_name, sizeof(virtualDev_name), "scsi%d.virtualDev",
+               controller);
 
     if (virVMXGetConfigBoolean(conf, present_name, present, false, true) < 0)
         goto cleanup;
@@ -2443,7 +2443,7 @@ int virVMXParseFileSystem(virConfPtr conf, int number, virDomainFSDefPtr *def)
         return -1;
     }
 
-    snprintf(prefix, sizeof(prefix), "sharedFolder%d", number);
+    g_snprintf(prefix, sizeof(prefix), "sharedFolder%d", number);
 
     VMX_BUILD_NAME(present);
     VMX_BUILD_NAME(enabled);
@@ -2548,7 +2548,7 @@ virVMXParseEthernet(virConfPtr conf, int controller, virDomainNetDefPtr *def)
         return -1;
     }
 
-    snprintf(prefix, sizeof(prefix), "ethernet%d", controller);
+    g_snprintf(prefix, sizeof(prefix), "ethernet%d", controller);
 
     VMX_BUILD_NAME(present);
     VMX_BUILD_NAME(startConnected);
@@ -2753,7 +2753,7 @@ virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
         return -1;
     }
 
-    snprintf(prefix, sizeof(prefix), "serial%d", port);
+    g_snprintf(prefix, sizeof(prefix), "serial%d", port);
 
     VMX_BUILD_NAME(present);
     VMX_BUILD_NAME(startConnected);
@@ -2930,7 +2930,7 @@ virVMXParseParallel(virVMXContext *ctx, virConfPtr conf, int port,
         return -1;
     }
 
-    snprintf(prefix, sizeof(prefix), "parallel%d", port);
+    g_snprintf(prefix, sizeof(prefix), "parallel%d", port);
 
     VMX_BUILD_NAME(present);
     VMX_BUILD_NAME(startConnected);

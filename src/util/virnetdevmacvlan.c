@@ -526,11 +526,11 @@ typedef struct virNetlinkCallbackData *virNetlinkCallbackDataPtr;
 static int instance2str(const unsigned char *p, char *dst, size_t size)
 {
     if (dst && size > INSTANCE_STRLEN) {
-        snprintf(dst, size, "%02x%02x%02x%02x-%02x%02x-%02x%02x-"
-                 "%02x%02x-%02x%02x%02x%02x%02x%02x",
-                 p[0], p[1], p[2], p[3],
-                 p[4], p[5], p[6], p[7],
-                 p[8], p[9], p[10], p[11], p[12], p[13], p[14], p[15]);
+        g_snprintf(dst, size, "%02x%02x%02x%02x-%02x%02x-%02x%02x-"
+                   "%02x%02x-%02x%02x%02x%02x%02x%02x",
+                   p[0], p[1], p[2], p[3],
+                   p[4], p[5], p[6], p[7],
+                   p[8], p[9], p[10], p[11], p[12], p[13], p[14], p[15]);
         return 0;
     }
     return -1;
@@ -997,7 +997,7 @@ virNetDevMacVLanCreateWithVPortProfile(const char *ifnameRequested,
             virMutexUnlock(&virNetDevMacVLanCreateMutex);
             return -1;
         }
-        snprintf(ifname, sizeof(ifname), pattern, reservedID);
+        g_snprintf(ifname, sizeof(ifname), pattern, reservedID);
         if (virNetDevMacVLanCreate(ifname, type, macaddress, linkdev,
                                    macvtapMode, &do_retry) < 0) {
             virNetDevMacVLanReleaseID(reservedID, flags);

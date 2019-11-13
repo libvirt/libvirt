@@ -418,12 +418,12 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
                                 continue;
                             }
 
-                            snprintf(xlCPU,
-                                    sizeof(xlCPU),
-                                    "%s=0",
-                                    xenTranslateCPUFeature(
-                                        def->cpu->features[i].name,
-                                        false));
+                            g_snprintf(xlCPU,
+                                       sizeof(xlCPU),
+                                       "%s=0",
+                                       xenTranslateCPUFeature(
+                                           def->cpu->features[i].name,
+                                           false));
                             if (libxl_cpuid_parse_config(&b_info->cpuid, xlCPU)) {
                                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                         _("unsupported cpu feature '%s'"),
@@ -440,11 +440,11 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
                                 continue;
                             }
 
-                            snprintf(xlCPU,
-                                    sizeof(xlCPU),
-                                    "%s=1",
-                                    xenTranslateCPUFeature(
-                                        def->cpu->features[i].name, false));
+                            g_snprintf(xlCPU,
+                                       sizeof(xlCPU),
+                                       "%s=1",
+                                       xenTranslateCPUFeature(
+                                           def->cpu->features[i].name, false));
                             if (libxl_cpuid_parse_config(&b_info->cpuid, xlCPU)) {
                                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                         _("unsupported cpu feature '%s'"),

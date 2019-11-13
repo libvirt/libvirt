@@ -417,9 +417,9 @@ pci_device_create_iommu(const struct pciDevice *dev,
     if (virFileMakePath(iommuPath) < 0)
         ABORT("Unable to create: %s", iommuPath);
 
-    if (snprintf(tmp, sizeof(tmp),
-                 "../../../../devices/pci%04x:%02x/%s",
-                 dev->addr.domain, dev->addr.bus, devid) < 0) {
+    if (g_snprintf(tmp, sizeof(tmp),
+                   "../../../../devices/pci%04x:%02x/%s",
+                   dev->addr.domain, dev->addr.bus, devid) < 0) {
         ABORT("@tmp overflow");
     }
 
@@ -512,15 +512,15 @@ pci_device_new_from_stub(const struct pciDevice *data)
         make_file(devpath, "config", "some dummy config", -1);
     }
 
-    if (snprintf(tmp, sizeof(tmp),  "0x%.4x", dev->vendor) < 0)
+    if (g_snprintf(tmp, sizeof(tmp),  "0x%.4x", dev->vendor) < 0)
         ABORT("@tmp overflow");
     make_file(devpath, "vendor", tmp, -1);
 
-    if (snprintf(tmp, sizeof(tmp),  "0x%.4x", dev->device) < 0)
+    if (g_snprintf(tmp, sizeof(tmp),  "0x%.4x", dev->device) < 0)
         ABORT("@tmp overflow");
     make_file(devpath, "device", tmp, -1);
 
-    if (snprintf(tmp, sizeof(tmp),  "0x%.4x", dev->klass) < 0)
+    if (g_snprintf(tmp, sizeof(tmp),  "0x%.4x", dev->klass) < 0)
         ABORT("@tmp overflow");
     make_file(devpath, "class", tmp, -1);
 
@@ -528,15 +528,15 @@ pci_device_new_from_stub(const struct pciDevice *data)
 
     pci_device_create_iommu(dev, devid);
 
-    if (snprintf(tmp, sizeof(tmp),
-                 "../../../kernel/iommu_groups/%d", dev->iommuGroup) < 0) {
+    if (g_snprintf(tmp, sizeof(tmp),
+                   "../../../kernel/iommu_groups/%d", dev->iommuGroup) < 0) {
         ABORT("@tmp overflow");
     }
     make_symlink(devpath, "iommu_group", tmp);
 
-    if (snprintf(tmp, sizeof(tmp),
-                 "../../../devices/pci%04x:%02x/%s",
-                 dev->addr.domain, dev->addr.bus, devid) < 0) {
+    if (g_snprintf(tmp, sizeof(tmp),
+                   "../../../devices/pci%04x:%02x/%s",
+                   dev->addr.domain, dev->addr.bus, devid) < 0) {
         ABORT("@tmp overflow");
     }
 
@@ -545,9 +545,9 @@ pci_device_new_from_stub(const struct pciDevice *data)
     make_symlink(devsympath, devid, tmp);
 
     if (dev->physfn) {
-        if (snprintf(tmp, sizeof(tmp),
-                     "%s%s/devices/%s", fakerootdir,
-                     SYSFS_PCI_PREFIX, dev->physfn) < 0) {
+        if (g_snprintf(tmp, sizeof(tmp),
+                       "%s%s/devices/%s", fakerootdir,
+                       SYSFS_PCI_PREFIX, dev->physfn) < 0) {
             ABORT("@tmp overflow");
         }
         make_symlink(devpath, "physfn", tmp);

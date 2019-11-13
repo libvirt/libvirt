@@ -794,7 +794,7 @@ virHostCPUGetStatsLinux(FILE *procstat,
     if (cpuNum == VIR_NODE_CPU_STATS_ALL_CPUS) {
         strcpy(cpu_header, "cpu ");
     } else {
-        snprintf(cpu_header, sizeof(cpu_header), "cpu%d ", cpuNum);
+        g_snprintf(cpu_header, sizeof(cpu_header), "cpu%d ", cpuNum);
     }
 
     while (fgets(line, sizeof(line), procstat) != NULL) {

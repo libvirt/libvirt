@@ -209,11 +209,11 @@ int virTimeStringThenRaw(unsigned long long when, char *buf)
     fields.tm_year += 1900;
     fields.tm_mon += 1;
 
-    if (snprintf(buf, VIR_TIME_STRING_BUFLEN,
-                 "%4d-%02d-%02d %02d:%02d:%02d.%03d+0000",
-                 fields.tm_year, fields.tm_mon, fields.tm_mday,
-                 fields.tm_hour, fields.tm_min, fields.tm_sec,
-                 (int) (when % 1000)) >= VIR_TIME_STRING_BUFLEN) {
+    if (g_snprintf(buf, VIR_TIME_STRING_BUFLEN,
+                   "%4d-%02d-%02d %02d:%02d:%02d.%03d+0000",
+                   fields.tm_year, fields.tm_mon, fields.tm_mday,
+                   fields.tm_hour, fields.tm_min, fields.tm_sec,
+                   (int) (when % 1000)) >= VIR_TIME_STRING_BUFLEN) {
         errno = ERANGE;
         return -1;
     }

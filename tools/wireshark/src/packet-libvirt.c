@@ -169,7 +169,7 @@ format_xdr_bytes(guint8 *bytes, guint32 length)
     for (i = 0; i < length; i++) {
         /* We know that buf has enough size to contain
            2 * length + '\0' characters. */
-        snprintf(buf, 2*(length - i) + 1, "%02x", bytes[i]);
+        g_snprintf(buf, 2*(length - i) + 1, "%02x", bytes[i]);
         buf += 2;
     }
     return buf - length*2;

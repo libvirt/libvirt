@@ -192,7 +192,7 @@ iptablesInput(virFirewallPtr fw,
 {
     char portstr[32];
 
-    snprintf(portstr, sizeof(portstr), "%d", port);
+    g_snprintf(portstr, sizeof(portstr), "%d", port);
     portstr[sizeof(portstr) - 1] = '\0';
 
     virFirewallAddRule(fw, layer,
@@ -217,7 +217,7 @@ iptablesOutput(virFirewallPtr fw,
 {
     char portstr[32];
 
-    snprintf(portstr, sizeof(portstr), "%d", port);
+    g_snprintf(portstr, sizeof(portstr), "%d", port);
     portstr[sizeof(portstr) - 1] = '\0';
 
     virFirewallAddRule(fw, layer,
@@ -1100,7 +1100,7 @@ iptablesOutputFixUdpChecksum(virFirewallPtr fw,
 {
     char portstr[32];
 
-    snprintf(portstr, sizeof(portstr), "%d", port);
+    g_snprintf(portstr, sizeof(portstr), "%d", port);
     portstr[sizeof(portstr) - 1] = '\0';
 
     virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,

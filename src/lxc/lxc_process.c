@@ -1415,10 +1415,10 @@ int virLXCProcessStart(virConnectPtr conn,
         if (virLXCProcessReadLogOutput(vm, logfile, pos, ebuf,
                                        sizeof(ebuf)) <= 0) {
             if (WIFEXITED(status))
-                snprintf(ebuf, sizeof(ebuf), _("unexpected exit status %d"),
-                         WEXITSTATUS(status));
+                g_snprintf(ebuf, sizeof(ebuf), _("unexpected exit status %d"),
+                           WEXITSTATUS(status));
             else
-                snprintf(ebuf, sizeof(ebuf), "%s", _("terminated abnormally"));
+                g_snprintf(ebuf, sizeof(ebuf), "%s", _("terminated abnormally"));
         }
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("guest failed to start: %s"), ebuf);

@@ -719,24 +719,24 @@ vshCmddefHelp(vshControl *ctl, const vshCmdDef *def)
         for (opt = def->opts; opt->name; opt++) {
             switch (opt->type) {
             case VSH_OT_BOOL:
-                snprintf(buf, sizeof(buf), "--%s", opt->name);
+                g_snprintf(buf, sizeof(buf), "--%s", opt->name);
                 break;
             case VSH_OT_INT:
-                snprintf(buf, sizeof(buf),
-                         (opt->flags & VSH_OFLAG_REQ) ? _("[--%s] <number>")
-                         : _("--%s <number>"), opt->name);
+                g_snprintf(buf, sizeof(buf),
+                           (opt->flags & VSH_OFLAG_REQ) ? _("[--%s] <number>")
+                           : _("--%s <number>"), opt->name);
                 break;
             case VSH_OT_STRING:
-                snprintf(buf, sizeof(buf), _("--%s <string>"), opt->name);
+                g_snprintf(buf, sizeof(buf), _("--%s <string>"), opt->name);
                 break;
             case VSH_OT_DATA:
-                snprintf(buf, sizeof(buf), _("[--%s] <string>"),
-                         opt->name);
+                g_snprintf(buf, sizeof(buf), _("[--%s] <string>"),
+                           opt->name);
                 break;
             case VSH_OT_ARGV:
-                snprintf(buf, sizeof(buf),
-                         shortopt ? _("[--%s] <string>") : _("<%s>"),
-                         opt->name);
+                g_snprintf(buf, sizeof(buf),
+                           shortopt ? _("[--%s] <string>") : _("<%s>"),
+                           opt->name);
                 break;
             case VSH_OT_ALIAS:
                 continue;
@@ -2690,7 +2690,7 @@ vshReadlineOptionsGenerator(const char *text,
 
         name_len = strlen(name);
         ret[ret_size] = vshMalloc(NULL, name_len + 3);
-        snprintf(ret[ret_size], name_len + 3,  "--%s", name);
+        g_snprintf(ret[ret_size], name_len + 3,  "--%s", name);
         ret_size++;
         /* Terminate the string list properly. */
         ret[ret_size] = NULL;

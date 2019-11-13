@@ -1394,8 +1394,8 @@ virPCIDeviceNew(unsigned int domain,
     }
 
     /* strings contain '0x' prefix */
-    if (snprintf(dev->id, sizeof(dev->id), "%s %s", &vendor[2],
-                 &product[2]) >= sizeof(dev->id)) {
+    if (g_snprintf(dev->id, sizeof(dev->id), "%s %s", &vendor[2],
+                   &product[2]) >= sizeof(dev->id)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("dev->id buffer overflow: %s %s"),
                        &vendor[2], &product[2]);

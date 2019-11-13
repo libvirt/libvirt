@@ -2225,61 +2225,61 @@ qemuAgentGetFSInfoParams(qemuAgentPtr mon,
 
     for (i = 0; i < nfs; i++) {
         char param_name[VIR_TYPED_PARAM_FIELD_LENGTH];
-        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                 "fs.%zu.name", i);
+        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                   "fs.%zu.name", i);
         if (virTypedParamsAddString(params, nparams, maxparams,
                                     param_name, fsinfo[i]->name) < 0)
             goto cleanup;
-        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                 "fs.%zu.mountpoint", i);
+        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                   "fs.%zu.mountpoint", i);
         if (virTypedParamsAddString(params, nparams, maxparams,
                                     param_name, fsinfo[i]->mountpoint) < 0)
             goto cleanup;
-        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                 "fs.%zu.fstype", i);
+        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                   "fs.%zu.fstype", i);
         if (virTypedParamsAddString(params, nparams, maxparams,
                                     param_name, fsinfo[i]->fstype) < 0)
             goto cleanup;
 
         /* disk usage values are not returned by older guest agents, so
          * only add the params if the value is set */
-        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                 "fs.%zu.total-bytes", i);
+        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                   "fs.%zu.total-bytes", i);
         if (fsinfo[i]->total_bytes != -1 &&
             virTypedParamsAddULLong(params, nparams, maxparams,
                                     param_name, fsinfo[i]->total_bytes) < 0)
             goto cleanup;
 
-        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                 "fs.%zu.used-bytes", i);
+        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                   "fs.%zu.used-bytes", i);
         if (fsinfo[i]->used_bytes != -1 &&
             virTypedParamsAddULLong(params, nparams, maxparams,
                                     param_name, fsinfo[i]->used_bytes) < 0)
             goto cleanup;
 
-        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                 "fs.%zu.disk.count", i);
+        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                   "fs.%zu.disk.count", i);
         if (virTypedParamsAddUInt(params, nparams, maxparams,
                                   param_name, fsinfo[i]->ndisks) < 0)
             goto cleanup;
         for (j = 0; j < fsinfo[i]->ndisks; j++) {
             qemuAgentDiskInfoPtr d = fsinfo[i]->disks[j];
-            snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                     "fs.%zu.disk.%zu.alias", i, j);
+            g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                       "fs.%zu.disk.%zu.alias", i, j);
             if (d->alias &&
                 virTypedParamsAddString(params, nparams, maxparams,
                                         param_name, d->alias) < 0)
                 goto cleanup;
 
-            snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                     "fs.%zu.disk.%zu.serial", i, j);
+            g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                       "fs.%zu.disk.%zu.serial", i, j);
             if (d->serial &&
                 virTypedParamsAddString(params, nparams, maxparams,
                                         param_name, d->serial) < 0)
                 goto cleanup;
 
-            snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                     "fs.%zu.disk.%zu.device", i, j);
+            g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                       "fs.%zu.disk.%zu.device", i, j);
             if (d->devnode &&
                 virTypedParamsAddString(params, nparams, maxparams,
                                         param_name, d->devnode) < 0)
@@ -2582,15 +2582,15 @@ qemuAgentGetUsers(qemuAgentPtr mon,
             return -1;
         }
 
-        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, "user.%zu.name", i);
+        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, "user.%zu.name", i);
         if (virTypedParamsAddString(params, nparams, maxparams,
                                     param_name, strvalue) < 0)
             return -1;
 
         /* 'domain' is only present for windows guests */
         if ((strvalue = virJSONValueObjectGetString(entry, "domain"))) {
-            snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                     "user.%zu.domain", i);
+            g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                       "user.%zu.domain", i);
             if (virTypedParamsAddString(params, nparams, maxparams,
                                         param_name, strvalue) < 0)
                 return -1;
@@ -2601,8 +2601,8 @@ qemuAgentGetUsers(qemuAgentPtr mon,
                            _("'login-time' missing in reply of guest-get-users"));
             return -1;
         }
-        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                 "user.%zu.login-time", i);
+        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                   "user.%zu.login-time", i);
         if (virTypedParamsAddULLong(params, nparams, maxparams,
                                     param_name, logintime * 1000) < 0)
             return -1;

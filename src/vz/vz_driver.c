@@ -3453,8 +3453,8 @@ vzDomainGetJobStats(virDomainPtr domain,
 #define VZ_ADD_STAT_PARAM_UUL(group, field, counter) \
 do { \
     if (stat.field != -1) { \
-        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, \
-                 group ".%zu." counter, i); \
+        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, \
+                   group ".%zu." counter, i); \
         if (virTypedParamsAddULLong(&record->params, \
                                     &record->nparams, \
                                     maxparams, \
@@ -3490,8 +3490,8 @@ vzDomainGetBlockStats(virDomainObjPtr dom,
                                 IS_CT(dom->def)) < 0)
             return -1;
 
-        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                 "block.%zu.name", i);
+        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                   "block.%zu.name", i);
         if (virTypedParamsAddString(&record->params,
                                     &record->nparams,
                                     maxparams,
@@ -3500,8 +3500,8 @@ vzDomainGetBlockStats(virDomainObjPtr dom,
             return -1;
 
         if (virStorageSourceIsLocalStorage(disk->src) && disk->src->path) {
-            snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                     "block.%zu.path", i);
+            g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                       "block.%zu.path", i);
             if (virTypedParamsAddString(&record->params,
                                         &record->nparams,
                                         maxparams,
@@ -3516,8 +3516,8 @@ vzDomainGetBlockStats(virDomainObjPtr dom,
         VZ_ADD_STAT_PARAM_UUL("block", wr_bytes, "wr.bytes");
 
         if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
-            snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                     "block.%zu.capacity", i);
+            g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                       "block.%zu.capacity", i);
             if (virTypedParamsAddULLong(&record->params,
                                         &record->nparams,
                                         maxparams,
@@ -3555,7 +3555,7 @@ vzDomainGetNetStats(virDomainObjPtr dom,
                               &stat) < 0)
             return -1;
 
-        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, "net.%zu.name", i);
+        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, "net.%zu.name", i);
         if (virTypedParamsAddString(&record->params,
                                     &record->nparams,
                                     maxparams,
@@ -3600,7 +3600,7 @@ vzDomainGetVCPUStats(virDomainObjPtr dom,
                                                  VIR_VCPU_OFFLINE;
         unsigned long long time;
 
-        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, "vcpu.%zu.state", i);
+        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, "vcpu.%zu.state", i);
         if (virTypedParamsAddInt(&record->params,
                                  &record->nparams,
                                  maxparams,
@@ -3611,7 +3611,7 @@ vzDomainGetVCPUStats(virDomainObjPtr dom,
         if (prlsdkGetVcpuStats(privdom->stats, i, &time) < 0)
             return -1;
 
-        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, "vcpu.%zu.time", i);
+        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, "vcpu.%zu.time", i);
         if (virTypedParamsAddULLong(&record->params,
                                     &record->nparams,
                                     maxparams,

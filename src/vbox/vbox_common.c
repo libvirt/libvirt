@@ -1288,14 +1288,14 @@ vboxAttachNetwork(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
         PRUnichar *MACAddress = NULL;
 
         virMacAddrFormat(&def->nets[i]->mac, macaddr);
-        snprintf(macaddrvbox, VIR_MAC_STRING_BUFLEN - 5,
-                 "%02X%02X%02X%02X%02X%02X",
-                 def->nets[i]->mac.addr[0],
-                 def->nets[i]->mac.addr[1],
-                 def->nets[i]->mac.addr[2],
-                 def->nets[i]->mac.addr[3],
-                 def->nets[i]->mac.addr[4],
-                 def->nets[i]->mac.addr[5]);
+        g_snprintf(macaddrvbox, VIR_MAC_STRING_BUFLEN - 5,
+                   "%02X%02X%02X%02X%02X%02X",
+                   def->nets[i]->mac.addr[0],
+                   def->nets[i]->mac.addr[1],
+                   def->nets[i]->mac.addr[2],
+                   def->nets[i]->mac.addr[3],
+                   def->nets[i]->mac.addr[4],
+                   def->nets[i]->mac.addr[5]);
         macaddrvbox[VIR_MAC_STRING_BUFLEN - 6] = '\0';
 
         VIR_DEBUG("NIC(%zu): Type:   %d", i, def->nets[i]->type);
@@ -1786,15 +1786,15 @@ vboxAttachUSB(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
             continue;
 
         if (def->hostdevs[i]->source.subsys.u.usb.vendor) {
-            snprintf(vendorId, sizeof(vendorId), "%x",
-                     def->hostdevs[i]->source.subsys.u.usb.vendor);
+            g_snprintf(vendorId, sizeof(vendorId), "%x",
+                       def->hostdevs[i]->source.subsys.u.usb.vendor);
             VBOX_UTF8_TO_UTF16(vendorId, &vendorIdUtf16);
             gVBoxAPI.UIUSBDeviceFilter.SetVendorId(filter, vendorIdUtf16);
             VBOX_UTF16_FREE(vendorIdUtf16);
         }
         if (def->hostdevs[i]->source.subsys.u.usb.product) {
-            snprintf(productId, sizeof(productId), "%x",
-                     def->hostdevs[i]->source.subsys.u.usb.product);
+            g_snprintf(productId, sizeof(productId), "%x",
+                       def->hostdevs[i]->source.subsys.u.usb.product);
             VBOX_UTF8_TO_UTF16(productId, &productIdUtf16);
             gVBoxAPI.UIUSBDeviceFilter.SetProductId(filter,
                                                     productIdUtf16);

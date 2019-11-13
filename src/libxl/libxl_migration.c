@@ -745,7 +745,7 @@ libxlDomainMigrationDstPrepare(virConnectPtr dconn,
         *uri_out = g_strdup_printf("tcp://%s:%d", hostname, port);
     }
 
-    snprintf(portstr, sizeof(portstr), "%d", port);
+    g_snprintf(portstr, sizeof(portstr), "%d", port);
 
     if (virNetSocketNewListenTCP(hostname, portstr,
                                  AF_UNSPEC,
@@ -1221,7 +1221,7 @@ libxlDomainMigrationSrcPerform(libxlDriverPrivatePtr driver,
 
     hostname = uri->server;
     port = uri->port;
-    snprintf(portstr, sizeof(portstr), "%d", port);
+    g_snprintf(portstr, sizeof(portstr), "%d", port);
 
     /* socket connect to dst host:port */
     if (virNetSocketNewConnectTCP(hostname, portstr,

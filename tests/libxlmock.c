@@ -99,7 +99,7 @@ VIR_MOCK_IMPL_RET_ARGS(virFileMakePath, int,
 {
     /* replace log path with a writable directory */
     if (strstr(path, "/log/")) {
-        snprintf((char*)path, strlen(path), ".");
+        g_snprintf((char*)path, strlen(path), ".");
         return 0;
     }
     return real_virFileMakePath(path);

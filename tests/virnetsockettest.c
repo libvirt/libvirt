@@ -211,7 +211,7 @@ testSocketAccept(const void *opaque)
 
         cdata.path = path;
     } else {
-        snprintf(portstr, sizeof(portstr), "%d", data->port);
+        g_snprintf(portstr, sizeof(portstr), "%d", data->port);
         if (virNetSocketNewListenTCP(data->lnode, portstr,
                                      AF_UNSPEC,
                                      &lsock, &nlsock) < 0)
