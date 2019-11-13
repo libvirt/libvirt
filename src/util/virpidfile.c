@@ -182,7 +182,7 @@ int virPidFileRead(const char *dir,
  * If @binpath is NULL the check for the executable path
  * is skipped.
  *
- * Returns -errno upon error, or zero on successful
+ * Returns -1 upon error, or zero on successful
  * reading of the pidfile. If the PID was not still
  * alive, zero will be returned, but @pid will be
  * set to -1.
@@ -191,8 +191,8 @@ int virPidFileReadPathIfAlive(const char *path,
                               pid_t *pid,
                               const char *binPath)
 {
-    int ret;
-    bool isLink;
+    int rc;
+    bool isLink = false;
     size_t procLinkLen;
     const char deletedText[] = " (deleted)";
     size_t deletedTextLen = strlen(deletedText);
@@ -205,16 +205,15 @@ int virPidFileReadPathIfAlive(const char *path,
     /* only set this at the very end on success */
     *pid = -1;
 
-    if ((ret = virPidFileReadPath(path, &retPid)) < 0)
-        return ret;
+    if (virPidFileReadPath(path, &retPid) < 0)
+        return -1;
 
 #ifndef WIN32
     /* Check that it's still alive.  Safe to skip this sanity check on
      * mingw, which lacks kill().  */
     if (kill(retPid, 0) < 0) {
-        ret = 0;
-        retPid = -1;
-        goto cleanup;
+        *pid = -1;
+        return 0;
     }
 #endif
 
@@ -222,23 +221,24 @@ int virPidFileReadPathIfAlive(const char *path,
         /* we only knew the pid, and that pid is alive, so we can
          * return it.
          */
-        ret = 0;
-        goto cleanup;
+        *pid = retPid;
+        return 0;
     }
 
     procPath = g_strdup_printf("/proc/%lld/exe", (long long)retPid);
 
-    if ((ret = virFileIsLink(procPath)) < 0)
-        return ret;
+    if ((rc = virFileIsLink(procPath)) < 0)
+        return -1;
 
-    isLink = ret;
+    if (rc == 1)
+        isLink = true;
 
     if (isLink && virFileLinkPointsTo(procPath, binPath)) {
         /* the link in /proc/$pid/exe is a symlink to a file
          * that has the same inode as the file at binpath.
          */
-        ret = 0;
-        goto cleanup;
+        *pid = retPid;
+        return 0;
     }
 
     /* Even if virFileLinkPointsTo returns a mismatch, it could be
@@ -248,24 +248,22 @@ int virPidFileReadPathIfAlive(const char *path,
      * part, and see if it has the same canonicalized name as binpath.
      */
     if (!(procLink = areadlink(procPath)))
-        return -errno;
+        return -1;
 
     procLinkLen = strlen(procLink);
     if (procLinkLen > deletedTextLen)
         procLink[procLinkLen - deletedTextLen] = 0;
 
-    if ((ret = virFileResolveAllLinks(binPath, &resolvedBinPath)) < 0)
-        return ret;
-    if ((ret = virFileResolveAllLinks(procLink, &resolvedProcLink)) < 0)
-        return ret;
+    if (virFileResolveAllLinks(binPath, &resolvedBinPath) < 0)
+        return -1;
+    if (virFileResolveAllLinks(procLink, &resolvedProcLink) < 0)
+        return -1;
 
-    ret = STREQ(resolvedBinPath, resolvedProcLink) ? 0 : -1;
+    if (STRNEQ(resolvedBinPath, resolvedProcLink))
+        return -1;
 
- cleanup:
-    /* return the originally set pid of -1 unless we proclaim success */
-    if (ret == 0)
-        *pid = retPid;
-    return ret;
+    *pid = retPid;
+    return 0;
 }
 
 
