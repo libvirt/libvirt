@@ -1820,6 +1820,17 @@ events until a timeout or interrupt key.
 When I<--timestamp> is used, a human-readable timestamp will be printed
 before the event.
 
+=item B<guest-agent-timeout> I<domain> I<--timeout> B<value>
+
+Set how long to wait for a response from guest agent commands. By default,
+agent commands block forever waiting for a response. B<value> must be a
+positive value (wait for given amount of seconds) or one of the following
+values:
+
+ -2 - block forever waiting for a resuly,
+ -1 - reset timeout to the default value,
+  0 - do not wait at all,
+
 =item B<guestinfo> I<domain> [I<--user>] [I<--os>] [I<--timezone>]
 [I<--hostname>] [I<--filesystem>]
 

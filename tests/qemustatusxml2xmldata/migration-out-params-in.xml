@@ -271,6 +271,7 @@
   <chardevStdioLogd/>
   <allowReboot value='yes'/>
   <blockjobs active='no'/>
+  <agentTimeout>-2</agentTimeout>
   <domain type='kvm' id='7'>
     <name>nest</name>
     <uuid>994cee0d-2a70-4937-9693-0431e39d20f7</uuid>

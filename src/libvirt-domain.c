@@ -12497,3 +12497,52 @@ int virDomainGetLaunchSecurityInfo(virDomainPtr domain,
     virDispatchError(domain->conn);
     return -1;
 }
+
+
+/**
+ * virDomainAgentSetResponseTimeout:
+ * @domain: a domain object
+ * @timeout: timeout in seconds
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Set how long to wait for a response from guest agent commands. By default,
+ * agent commands block forever waiting for a response.
+ *
+ * @timeout must be a value from virDomainAgentCommandTimeoutValues or
+ * positive:
+ *
+ *   VIR_DOMAIN_AGENT_COMMAND_TIMEOUT_BLOCK(-2): meaning to block forever
+ *      waiting for a result.
+ *   VIR_DOMAIN_AGENT_COMMAND_TIMEOUT_DEFAULT(-1): use default timeout value.
+ *   VIR_DOMAIN_AGENT_COMMAND_TIMEOUT_NOWAIT(0): does not wait.
+ *   positive value: wait for @timeout seconds
+ *
+ * Returns 0 on success, -1 on failure
+ */
+int
+virDomainAgentSetResponseTimeout(virDomainPtr domain,
+                                 int timeout,
+                                 unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "timeout=%i, flags=0x%x",
+                     timeout, flags);
+
+    virResetLastError();
+
+    virCheckDomainReturn(domain, -1);
+    conn = domain->conn;
+
+    if (conn->driver->domainAgentSetResponseTimeout) {
+        if (conn->driver->domainAgentSetResponseTimeout(domain, timeout, flags) < 0)
+            goto error;
+        return 0;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(conn);
+    return -1;
+}

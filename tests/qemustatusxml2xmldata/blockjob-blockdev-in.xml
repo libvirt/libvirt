@@ -338,6 +338,7 @@
       </chains>
     </blockjob>
   </blockjobs>
+  <agentTimeout>-2</agentTimeout>
   <domain type='kvm' id='4'>
     <name>copy</name>
     <uuid>0439a4a8-db56-4933-9183-d8681d7b0746</uuid>

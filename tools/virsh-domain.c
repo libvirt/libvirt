@@ -13972,6 +13972,52 @@ cmdDomFSInfo(vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
+ * "guest-agent-timeout" command
+ */
+static const vshCmdInfo info_guest_agent_timeout[] = {
+    {.name = "help",
+     .data = N_("Set the guest agent timeout")
+    },
+    {.name = "desc",
+     .data = N_("Set the number of seconds to wait for a response from the guest agent.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_guest_agent_timeout[] = {
+    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    {.name = "timeout",
+     .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ_OPT,
+     .help = N_("timeout seconds.")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdGuestAgentTimeout(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    int timeout;
+    const unsigned int flags = 0;
+    bool ret = false;
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (vshCommandOptInt(ctl, cmd, "timeout", &timeout) < 0)
+        goto cleanup;
+
+    if (virDomainAgentSetResponseTimeout(dom, timeout, flags) < 0)
+        goto cleanup;
+
+    ret = true;
+ cleanup:
+    virshDomainFree(dom);
+    return ret;
+}
+
+/*
  * "guestinfo" command
  */
 static const vshCmdInfo info_guestinfo[] = {
@@ -14490,6 +14536,12 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdQemuAgentCommand,
      .opts = opts_qemu_agent_command,
      .info = info_qemu_agent_command,
+     .flags = 0
+    },
+    {.name = "guest-agent-timeout",
+     .handler = cmdGuestAgentTimeout,
+     .opts = opts_guest_agent_timeout,
+     .info = info_guest_agent_timeout,
      .flags = 0
     },
     {.name = "reboot",

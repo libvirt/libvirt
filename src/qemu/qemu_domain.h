@@ -293,6 +293,7 @@ struct _qemuDomainObjPrivate {
     virDomainChrSourceDefPtr monConfig;
     bool monError;
     unsigned long long monStart;
+    int agentTimeout;
 
     qemuAgentPtr agent;
     bool agentError;

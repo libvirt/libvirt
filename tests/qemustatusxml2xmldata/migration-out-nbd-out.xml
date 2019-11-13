@@ -260,6 +260,7 @@
   <chardevStdioLogd/>
   <allowReboot value='yes'/>
   <blockjobs active='no'/>
+  <agentTimeout>-2</agentTimeout>
   <domain type='kvm' id='4'>
     <name>upstream</name>
     <uuid>dcf47dbd-46d1-4d5b-b442-262a806a333a</uuid>

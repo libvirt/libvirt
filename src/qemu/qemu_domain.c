@@ -2093,6 +2093,8 @@ qemuDomainObjPrivateAlloc(void *opaque)
     if (!(priv->dbusVMStates = virHashCreate(5, dbusVMStateHashFree)))
         goto error;
 
+    /* agent commands block by default, user can choose different behavior */
+    priv->agentTimeout = VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_BLOCK;
     priv->migMaxBandwidth = QEMU_DOMAIN_MIG_BANDWIDTH_MAX;
     priv->driver = opaque;
 
@@ -2875,6 +2877,8 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf,
     if (qemuDomainObjPrivateXMLFormatSlirp(buf, vm) < 0)
         return -1;
 
+    virBufferAsprintf(buf, "<agentTimeout>%i</agentTimeout>\n", priv->agentTimeout);
+
     return 0;
 }
 
@@ -3515,6 +3519,12 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unsupported monitor type '%s'"),
                        virDomainChrTypeToString(priv->monConfig->type));
+        goto error;
+    }
+
+    if (virXPathInt("string(./agentTimeout)", ctxt, &priv->agentTimeout) == -2) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to parse agent timeout"));
         goto error;
     }
 

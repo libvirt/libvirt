@@ -22685,6 +22685,61 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
     return ret;
 }
 
+
+static int
+qemuDomainAgentSetResponseTimeout(virDomainPtr dom,
+                                  int timeout,
+                                  unsigned int flags)
+{
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    g_autoptr(virQEMUDriverConfig) cfg = NULL;
+    virDomainObjPtr vm = NULL;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (timeout < VIR_DOMAIN_QEMU_AGENT_COMMAND_MIN) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("guest agent timeout '%d' is "
+                         "less than the minimum '%d'"),
+                       timeout, VIR_DOMAIN_QEMU_AGENT_COMMAND_MIN);
+        return -1;
+    }
+
+    if (!(vm = qemuDomainObjFromDomain(dom)))
+        return -1;
+
+    cfg = virQEMUDriverGetConfig(driver);
+
+    if (virDomainAgentSetResponseTimeoutEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    /* If domain has an agent, change its timeout. Otherwise just save the
+     * request so that we can set the timeout when the agent appears */
+    if (qemuDomainAgentAvailable(vm, false)) {
+        /* We don't need to acquire a job since we're not interacting with the
+         * agent or the qemu monitor. We're only setting a struct member, so
+         * just acquire the mutex lock. Worst case, any in-process agent
+         * commands will use the newly-set agent timeout. */
+        virObjectLock(QEMU_DOMAIN_PRIVATE(vm)->agent);
+        qemuAgentSetResponseTimeout(QEMU_DOMAIN_PRIVATE(vm)->agent, timeout);
+        virObjectUnlock(QEMU_DOMAIN_PRIVATE(vm)->agent);
+    }
+
+    QEMU_DOMAIN_PRIVATE(vm)->agentTimeout = timeout;
+
+    if (virDomainObjIsActive(vm) &&
+        virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
 static virHypervisorDriver qemuHypervisorDriver = {
     .name = QEMU_DRIVER_NAME,
     .connectURIProbe = qemuConnectURIProbe,
@@ -22921,6 +22976,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainCheckpointGetParent = qemuDomainCheckpointGetParent, /* 5.6.0 */
     .domainCheckpointDelete = qemuDomainCheckpointDelete, /* 5.6.0 */
     .domainGetGuestInfo = qemuDomainGetGuestInfo, /* 5.7.0 */
+    .domainAgentSetResponseTimeout = qemuDomainAgentSetResponseTimeout, /* 5.10.0 */
 };
 
 

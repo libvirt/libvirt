@@ -862,4 +862,9 @@ LIBVIRT_5.8.0 {
         virConnectSetIdentity;
 } LIBVIRT_5.7.0;
 
+LIBVIRT_5.10.0 {
+    global:
+        virDomainAgentSetResponseTimeout;
+} LIBVIRT_5.8.0;
+
 # .... define new API here using predicted next version number ....

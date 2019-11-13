@@ -3744,6 +3744,16 @@ struct remote_connect_set_identity_args {
     unsigned int flags;
 };
 
+struct remote_domain_agent_set_response_timeout_args {
+    remote_nonnull_domain dom;
+    int timeout;
+    unsigned int flags;
+};
+
+struct remote_domain_agent_set_response_timeout_ret {
+    int result;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -6617,5 +6627,11 @@ enum remote_procedure {
      * @generate: client
      * @acl: connect:write
      */
-    REMOTE_PROC_CONNECT_SET_IDENTITY = 419
+    REMOTE_PROC_CONNECT_SET_IDENTITY = 419,
+
+    /**
+     * @generate: both
+     * @acl: domain:write
+     */
+    REMOTE_PROC_DOMAIN_AGENT_SET_RESPONSE_TIMEOUT = 420
 };

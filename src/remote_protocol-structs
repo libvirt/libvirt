@@ -3114,6 +3114,14 @@ struct remote_connect_set_identity_args {
         } params;
         u_int                      flags;
 };
+struct remote_domain_agent_set_response_timeout_args {
+        remote_nonnull_domain      dom;
+        int                        timeout;
+        u_int                      flags;
+};
+struct remote_domain_agent_set_response_timeout_ret {
+        int                        result;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -3534,4 +3542,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_CHECKPOINT_DELETE = 417,
         REMOTE_PROC_DOMAIN_GET_GUEST_INFO = 418,
         REMOTE_PROC_CONNECT_SET_IDENTITY = 419,
+        REMOTE_PROC_DOMAIN_AGENT_SET_RESPONSE_TIMEOUT = 420,
 };

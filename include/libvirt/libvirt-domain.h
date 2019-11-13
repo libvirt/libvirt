@@ -4916,4 +4916,14 @@ int virDomainGetGuestInfo(virDomainPtr domain,
                           int *nparams,
                           unsigned int flags);
 
+typedef enum {
+    VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_BLOCK = -2,
+    VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_DEFAULT = -1,
+    VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_NOWAIT = 0,
+} virDomainAgentResponseTimeoutValues;
+
+int virDomainAgentSetResponseTimeout(virDomainPtr domain,
+                                     int timeout,
+                                     unsigned int flags);
+
 #endif /* LIBVIRT_DOMAIN_H */
