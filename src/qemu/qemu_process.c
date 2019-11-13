@@ -8447,7 +8447,7 @@ qemuProcessQMPInit(qemuProcessQMPPtr proc)
 
     template = g_strdup_printf("%s/qmp-XXXXXX", proc->libDir);
 
-    if (!(proc->uniqDir = mkdtemp(template))) {
+    if (!(proc->uniqDir = g_mkdtemp(template))) {
         virReportSystemError(errno,
                              _("Failed to create unique directory with "
                                "template '%s' for probing QEMU"),

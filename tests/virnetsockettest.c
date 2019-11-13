@@ -191,7 +191,7 @@ testSocketAccept(const void *opaque)
 
     if (!data) {
         virNetSocketPtr usock;
-        tmpdir = mkdtemp(template);
+        tmpdir = g_mkdtemp(template);
         if (tmpdir == NULL) {
             VIR_WARN("Failed to create temporary directory");
             goto cleanup;
@@ -315,7 +315,7 @@ static int testSocketUNIXAddrs(const void *data G_GNUC_UNUSED)
     char *tmpdir;
     char template[] = "/tmp/libvirt_XXXXXX";
 
-    tmpdir = mkdtemp(template);
+    tmpdir = g_mkdtemp(template);
     if (tmpdir == NULL) {
         VIR_WARN("Failed to create temporary directory");
         goto cleanup;

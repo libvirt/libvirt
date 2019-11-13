@@ -330,7 +330,7 @@ mymain(void)
 
     fakerootdir = g_strdup(FAKEROOTDIRTEMPLATE);
 
-    if (!mkdtemp(fakerootdir)) {
+    if (!g_mkdtemp(fakerootdir)) {
         VIR_TEST_DEBUG("Cannot create fakerootdir");
         abort();
     }

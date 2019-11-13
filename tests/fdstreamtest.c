@@ -319,7 +319,7 @@ mymain(void)
     char scratchdir[] = SCRATCHDIRTEMPLATE;
     int ret = 0;
 
-    if (!mkdtemp(scratchdir)) {
+    if (!g_mkdtemp(scratchdir)) {
         virFilePrintf(stderr, "Cannot create fdstreamdir");
         abort();
     }

@@ -1045,7 +1045,7 @@ qemuMonitorCommonTestNew(virDomainXMLOptionPtr xmlopt,
 
     tmpdir_template = g_strdup("/tmp/libvirt_XXXXXX");
 
-    if (!(test->tmpdir = mkdtemp(tmpdir_template))) {
+    if (!(test->tmpdir = g_mkdtemp(tmpdir_template))) {
         virReportSystemError(errno, "%s",
                              "Failed to create temporary directory");
         goto error;

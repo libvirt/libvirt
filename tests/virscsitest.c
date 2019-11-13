@@ -194,7 +194,7 @@ mymain(void)
 
     virscsi_prefix = g_strdup_printf("%s" VIR_SCSI_DATA, abs_srcdir);
 
-    tmpdir = mkdtemp(template);
+    tmpdir = g_mkdtemp(template);
 
     if (tmpdir == NULL) {
         VIR_WARN("Failed to create temporary directory");

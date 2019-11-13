@@ -709,14 +709,14 @@ int qemuTestDriverInit(virQEMUDriver *driver)
     driver->config->libDir = g_strdup("/tmp/lib");
     driver->config->channelTargetDir = g_strdup("/tmp/channel");
 
-    if (!mkdtemp(statedir)) {
+    if (!g_mkdtemp(statedir)) {
         virFilePrintf(stderr, "Cannot create fake stateDir");
         goto error;
     }
 
     driver->config->stateDir = g_strdup(statedir);
 
-    if (!mkdtemp(configdir)) {
+    if (!g_mkdtemp(configdir)) {
         virFilePrintf(stderr, "Cannot create fake configDir");
         goto error;
     }
