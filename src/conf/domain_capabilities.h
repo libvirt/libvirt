@@ -156,6 +156,14 @@ struct _virSEVCapability {
     unsigned int reduced_phys_bits;
 };
 
+typedef enum {
+    VIR_DOMAIN_CAPS_FEATURE_IOTHREADS = 0,
+    VIR_DOMAIN_CAPS_FEATURE_VMCOREINFO,
+    VIR_DOMAIN_CAPS_FEATURE_GENID,
+
+    VIR_DOMAIN_CAPS_FEATURE_LAST
+} virDomainCapsFeature;
+
 struct _virDomainCaps {
     virObjectLockable parent;
 
@@ -166,7 +174,6 @@ struct _virDomainCaps {
 
     /* Some machine specific info */
     int maxvcpus;
-    virTristateBool iothreads;  /* Whether I/O threads are supported or not. */
 
     virDomainCapsOS os;
     virDomainCapsCPU cpu;
@@ -178,10 +185,10 @@ struct _virDomainCaps {
     /* add new domain devices here */
 
     virDomainCapsFeatureGIC gic;
-    virTristateBool vmcoreinfo;
-    virTristateBool genid;
     virSEVCapabilityPtr sev;
     /* add new domain features here */
+
+    virTristateBool features[VIR_DOMAIN_CAPS_FEATURE_LAST];
 };
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainCaps, virObjectUnref);

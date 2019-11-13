@@ -33,6 +33,15 @@ VIR_ENUM_IMPL(virDomainCapsCPUUsable,
               "unknown", "yes", "no",
 );
 
+
+VIR_ENUM_DECL(virDomainCapsFeature);
+VIR_ENUM_IMPL(virDomainCapsFeature,
+              VIR_DOMAIN_CAPS_FEATURE_LAST,
+              "iothreads",
+              "vmcoreinfo",
+              "genid",
+);
+
 static virClassPtr virDomainCapsClass;
 static virClassPtr virDomainCapsCPUModelsClass;
 
@@ -317,9 +326,10 @@ virDomainCapsEnumClear(virDomainCapsEnumPtr capsEnum)
 void
 virDomainCapsFeaturesInitUnsupported(virDomainCapsPtr caps)
 {
-    caps->iothreads = VIR_TRISTATE_BOOL_NO;
-    caps->vmcoreinfo = VIR_TRISTATE_BOOL_NO;
-    caps->genid = VIR_TRISTATE_BOOL_NO;
+    size_t i;
+
+    for (i = 0; i < VIR_DOMAIN_CAPS_FEATURE_LAST; i++)
+        caps->features[i] = VIR_TRISTATE_BOOL_NO;
 }
 
 
@@ -612,10 +622,19 @@ virDomainCapsFormatFeatures(const virDomainCaps *caps,
                             virBufferPtr buf)
 {
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+    size_t i;
 
     virDomainCapsFeatureGICFormat(&childBuf, &caps->gic);
-    qemuDomainCapsFeatureFormatSimple(&childBuf, "vmcoreinfo", caps->vmcoreinfo);
-    qemuDomainCapsFeatureFormatSimple(&childBuf, "genid", caps->genid);
+
+    for (i = 0; i < VIR_DOMAIN_CAPS_FEATURE_LAST; i++) {
+        if (i == VIR_DOMAIN_CAPS_FEATURE_IOTHREADS)
+            continue;
+
+        qemuDomainCapsFeatureFormatSimple(&childBuf,
+                                          virDomainCapsFeatureTypeToString(i),
+                                          caps->features[i]);
+    }
+
     virDomainCapsFeatureSEVFormat(&childBuf, caps->sev);
 
     virXMLFormatElement(buf, "features", NULL, &childBuf);
@@ -641,7 +660,8 @@ virDomainCapsFormat(const virDomainCaps *caps)
     if (caps->maxvcpus)
         virBufferAsprintf(&buf, "<vcpu max='%d'/>\n", caps->maxvcpus);
 
-    qemuDomainCapsFeatureFormatSimple(&buf, "iothreads", caps->iothreads);
+    qemuDomainCapsFeatureFormatSimple(&buf, "iothreads",
+                                      caps->features[VIR_DOMAIN_CAPS_FEATURE_IOTHREADS]);
 
     virDomainCapsOSFormat(&buf, &caps->os);
     virDomainCapsCPUFormat(&buf, &caps->cpu);

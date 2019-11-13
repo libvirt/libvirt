@@ -5285,7 +5285,7 @@ static void
 virQEMUCapsFillDomainIOThreadCaps(virQEMUCapsPtr qemuCaps,
                                   virDomainCapsPtr domCaps)
 {
-    domCaps->iothreads = virTristateBoolFromBool(
+    domCaps->features[VIR_DOMAIN_CAPS_FEATURE_IOTHREADS] = virTristateBoolFromBool(
             virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_IOTHREAD));
 }
 
@@ -5584,10 +5584,10 @@ virQEMUCapsFillDomainCaps(virCapsPtr caps,
         domCaps->maxvcpus = MIN(domCaps->maxvcpus, hostmaxvcpus);
     }
 
-    domCaps->vmcoreinfo = virTristateBoolFromBool(
+    domCaps->features[VIR_DOMAIN_CAPS_FEATURE_VMCOREINFO] = virTristateBoolFromBool(
             virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VMCOREINFO));
 
-    domCaps->genid = virTristateBoolFromBool(
+    domCaps->features[VIR_DOMAIN_CAPS_FEATURE_GENID] = virTristateBoolFromBool(
             virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VMGENID));
 
     if (virQEMUCapsFillDomainOSCaps(os,
