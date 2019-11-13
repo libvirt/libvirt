@@ -22,7 +22,6 @@
 
 #include <config.h>
 
-#include <regex.h>
 #include <libxl.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -1664,7 +1663,8 @@ static int
 libxlGetAutoballoonConf(libxlDriverConfigPtr cfg,
                         virConfPtr conf)
 {
-    regex_t regex;
+    g_autoptr(GRegex) regex = NULL;
+    g_autoptr(GError) err = NULL;
     int res;
 
     res = virConfGetValueBool(conf, "autoballoon", &cfg->autoballoon);
@@ -1673,21 +1673,15 @@ libxlGetAutoballoonConf(libxlDriverConfigPtr cfg,
     else if (res == 1)
         return 0;
 
-    if ((res = regcomp(&regex,
-                      "(^| )dom0_mem=((|min:|max:)[0-9]+[bBkKmMgG]?,?)+($| )",
-                       REG_NOSUB | REG_EXTENDED)) != 0) {
-        char error[100];
-        regerror(res, &regex, error, sizeof(error));
+    regex = g_regex_new("(^| )dom0_mem=((|min:|max:)[0-9]+[bBkKmMgG]?,?)+($| )",
+                        0, 0, &err);
+    if (!regex) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to compile regex %s"),
-                       error);
-
+                       _("Failed to compile regex %s"), err->message);
         return -1;
     }
 
-    res = regexec(&regex, cfg->verInfo->commandline, 0, NULL, 0);
-    regfree(&regex);
-    cfg->autoballoon = res == REG_NOMATCH;
+    cfg->autoballoon = !g_regex_match(regex, cfg->verInfo->commandline, 0, NULL);
     return 0;
 }
 
