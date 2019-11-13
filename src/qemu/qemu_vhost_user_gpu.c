@@ -61,7 +61,7 @@ qemuVhostUserGPUCreatePidFilename(const char *stateDir,
  * @alias: video device alias
  * @pid: pointer to pid
  *
- * Return -errno upon error, or zero on successful reading of the pidfile.
+ * Return -1 upon error, or zero on successful reading of the pidfile.
  * If the PID was not still alive, zero will be returned, and @pid will be
  * set to -1;
  */
@@ -74,11 +74,13 @@ qemuVhostUserGPUGetPid(const char *binPath,
 {
     g_autofree char *pidfile = NULL;
 
-    pidfile = qemuVhostUserGPUCreatePidFilename(stateDir, shortName, alias);
-    if (!pidfile)
-        return -ENOMEM;
+    if (!(pidfile = qemuVhostUserGPUCreatePidFilename(stateDir, shortName, alias)))
+        return -1;
 
-    return virPidFileReadPathIfAlive(pidfile, pid, binPath);
+    if (virPidFileReadPathIfAlive(pidfile, pid, binPath) < 0)
+        return -1;
+
+    return 0;
 }
 
 
