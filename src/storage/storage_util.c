@@ -18,7 +18,6 @@
 
 #include <config.h>
 
-#include <regex.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>

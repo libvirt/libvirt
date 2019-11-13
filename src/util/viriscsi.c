@@ -22,8 +22,6 @@
 
 #include <config.h>
 
-#include <regex.h>
-
 #include "viriscsi.h"
 
 #include "viralloc.h"

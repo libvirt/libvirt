@@ -27,7 +27,6 @@
 #include <libxl_utils.h>
 #include <xenstore.h>
 #include <fcntl.h>
-#include <regex.h>
 
 #include "internal.h"
 #include "virlog.h"
