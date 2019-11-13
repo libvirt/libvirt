@@ -19,7 +19,6 @@
 #include <config.h>
 
 #include <glib/gprintf.h>
-#include <regex.h>
 #include <locale.h>
 
 #include "c-ctype.h"
@@ -1089,24 +1088,18 @@ bool
 virStringMatch(const char *str,
                const char *regexp)
 {
-    regex_t re;
-    int rv;
+    g_autoptr(GRegex) regex = NULL;
+    g_autoptr(GError) err = NULL;
 
     VIR_DEBUG("match '%s' for '%s'", str, regexp);
 
-    if ((rv = regcomp(&re, regexp, REG_EXTENDED | REG_NOSUB)) != 0) {
-        char error[100];
-        regerror(rv, &re, error, sizeof(error));
-        VIR_WARN("error while compiling regular expression '%s': %s",
-                 regexp, error);
+    regex = g_regex_new(regexp, 0, 0, &err);
+    if (!regex) {
+        VIR_WARN("Failed to compile regex %s", err->message);
         return false;
     }
 
-    rv = regexec(&re, str, 0, NULL, 0);
-
-    regfree(&re);
-
-    return rv == 0;
+    return g_regex_match(regex, str, 0, NULL);
 }
 
 /**
