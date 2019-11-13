@@ -337,7 +337,9 @@ error: invalid argument in libvirt was built without the 'esx' driver
             Memory size has to be a multiple of 4096
         </li>
         <li>
-            Number of virtual CPU has to be 1 or a multiple of 2
+            Number of virtual CPU has to be 1 or a multiple of 2.
+            <span class="since">Since 4.10.0</span> any number of vCPUs is
+            supported.
         </li>
         <li>
             Valid MAC address prefixes are <code>00:0c:29</code> and
