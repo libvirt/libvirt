@@ -282,7 +282,7 @@ int virPidFileReadPathIfAlive(const char *path,
  * and its executable path resolves to @binpath. This adds
  * protection against recycling of previously reaped pids.
  *
- * Returns -errno upon error, or zero on successful
+ * Returns -1 upon error, or zero on successful
  * reading of the pidfile. If the PID was not still
  * alive, zero will be returned, but @pid will be
  * set to -1.
@@ -295,12 +295,15 @@ int virPidFileReadIfAlive(const char *dir,
     g_autofree char *pidfile = NULL;
 
     if (name == NULL || dir == NULL)
-        return -EINVAL;
+        return -1;
 
     if (!(pidfile = virPidFileBuildPath(dir, name)))
-        return -ENOMEM;
+        return -1;
 
-    return virPidFileReadPathIfAlive(pidfile, pid, binpath);
+    if (virPidFileReadPathIfAlive(pidfile, pid, binpath) < 0)
+        return -1;
+
+    return 0;
 }
 
 
