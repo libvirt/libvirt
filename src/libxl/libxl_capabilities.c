@@ -397,7 +397,7 @@ libxlCapsInitGuests(libxl_ctx *ctx, virCapsPtr caps)
         return -1;
     }
 
-    regex = g_regex_new(XEN_CAP_REGEX, G_REGEX_EXTENDED, 0, &err);
+    regex = g_regex_new(XEN_CAP_REGEX, 0, 0, &err);
     if (!regex) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to compile regex %s"), err->message);
