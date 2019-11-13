@@ -277,14 +277,12 @@ qemuTPMEmulatorGetPid(const char *swtpmStateDir,
 {
     int ret;
     g_autofree char *swtpm = virTPMGetSwtpm();
-    char *pidfile = qemuTPMEmulatorCreatePidFilename(swtpmStateDir,
-                                                     shortName);
+    g_autofree char *pidfile = qemuTPMEmulatorCreatePidFilename(swtpmStateDir,
+                                                                shortName);
     if (!pidfile)
         return -ENOMEM;
 
     ret = virPidFileReadPathIfAlive(pidfile, pid, swtpm);
-
-    VIR_FREE(pidfile);
 
     return ret;
 }
