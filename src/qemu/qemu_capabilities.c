@@ -5571,6 +5571,8 @@ virQEMUCapsFillDomainCaps(virCapsPtr caps,
     virDomainCapsDeviceVideoPtr video = &domCaps->video;
     virDomainCapsDeviceRNGPtr rng = &domCaps->rng;
 
+    virDomainCapsFeaturesInitUnsupported(domCaps);
+
     domCaps->maxvcpus = virQEMUCapsGetMachineMaxCpus(qemuCaps,
                                                      domCaps->machine);
     if (domCaps->virttype == VIR_DOMAIN_VIRT_KVM) {
