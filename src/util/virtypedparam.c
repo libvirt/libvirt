@@ -764,7 +764,7 @@ virTypedParamSetNameVPrintf(virTypedParameterPtr par,
                             const char *fmt,
                             va_list ap)
 {
-    if (vsnprintf(par->field, VIR_TYPED_PARAM_FIELD_LENGTH, fmt, ap) > VIR_TYPED_PARAM_FIELD_LENGTH) {
+    if (g_vsnprintf(par->field, VIR_TYPED_PARAM_FIELD_LENGTH, fmt, ap) > VIR_TYPED_PARAM_FIELD_LENGTH) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Field name too long"));
         return -1;
     }

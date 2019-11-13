@@ -1288,7 +1288,7 @@ void virReportErrorHelper(int domcode,
 
     if (fmt) {
         va_start(args, fmt);
-        vsnprintf(errorMessage, sizeof(errorMessage)-1, fmt, args);
+        g_vsnprintf(errorMessage, sizeof(errorMessage)-1, fmt, args);
         va_end(args);
     } else {
         errorMessage[0] = '\0';
@@ -1358,7 +1358,7 @@ void virReportSystemErrorFull(int domcode,
         int n;
 
         va_start(args, fmt);
-        n = vsnprintf(msgDetailBuf, sizeof(msgDetailBuf), fmt, args);
+        n = g_vsnprintf(msgDetailBuf, sizeof(msgDetailBuf), fmt, args);
         va_end(args);
 
         size_t len = strlen(errnoDetail);

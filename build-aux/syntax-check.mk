@@ -445,6 +445,12 @@ sc_prohibit_asprintf:
 	halt='use g_strdup instead of g_strdup_printf with "%s"' \
 	  $(_sc_search_regexp)
 
+sc_prohobit_vsnprintf:
+	@prohibit='\<vsnprintf\>' \
+	in_vc_files='\.[chx]$$' \
+	halt='use g_vsnprintf, not vsnprintf' \
+	  $(_sc_search_regexp)
+
 sc_prohibit_strdup:
 	@prohibit='\<strn?dup\> *\(' \
 	halt='use VIR_STRDUP, not strdup' \
