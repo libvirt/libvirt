@@ -266,7 +266,7 @@ qemuTPMEmulatorCreatePidFilename(const char *swtpmStateDir,
  * @shortName: short name of the domain
  * @pid: pointer to pid
  *
- * Return -errno upon error, or zero on successful reading of the pidfile.
+ * Return -1 upon error, or zero on successful reading of the pidfile.
  * If the PID was not still alive, zero will be returned, and @pid will be
  * set to -1;
  */
@@ -275,16 +275,16 @@ qemuTPMEmulatorGetPid(const char *swtpmStateDir,
                       const char *shortName,
                       pid_t *pid)
 {
-    int ret;
     g_autofree char *swtpm = virTPMGetSwtpm();
     g_autofree char *pidfile = qemuTPMEmulatorCreatePidFilename(swtpmStateDir,
                                                                 shortName);
     if (!pidfile)
-        return -ENOMEM;
+        return -1;
 
-    ret = virPidFileReadPathIfAlive(pidfile, pid, swtpm);
+    if (virPidFileReadPathIfAlive(pidfile, pid, swtpm) < 0)
+        return -1;
 
-    return ret;
+    return 0;
 }
 
 
