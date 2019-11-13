@@ -970,7 +970,7 @@ virCapabilitiesFormatCaches(virBufferPtr buf,
     size_t i = 0;
     size_t j = 0;
 
-    if (!cache->nbanks)
+    if (!cache->nbanks && !cache->monitor)
         return 0;
 
     virBufferAddLit(buf, "<cache>\n");
@@ -1055,7 +1055,7 @@ virCapabilitiesFormatMemoryBandwidth(virBufferPtr buf,
 {
     size_t i = 0;
 
-    if (!memBW->nnodes)
+    if (!memBW->nnodes && !memBW->monitor)
         return 0;
 
     virBufferAddLit(buf, "<memory_bandwidth>\n");
