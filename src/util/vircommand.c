@@ -22,7 +22,6 @@
 #include <config.h>
 
 #include <poll.h>
-#include <regex.h>
 #include <signal.h>
 #include <stdarg.h>
 #include <sys/stat.h>
@@ -3077,11 +3076,9 @@ virCommandRunRegex(virCommandPtr cmd,
                    const char *prefix,
                    int *exitstatus)
 {
-    int err;
-    regex_t *reg;
-    g_autofree regmatch_t *vars = NULL;
+    GRegex **reg = NULL;
     size_t i, j, k;
-    int totgroups = 0, ngroup = 0, maxvars = 0;
+    int totgroups = 0, ngroup = 0;
     char **groups;
     g_autofree char *outbuf = NULL;
     VIR_AUTOSTRINGLIST lines = NULL;
@@ -3092,28 +3089,22 @@ virCommandRunRegex(virCommandPtr cmd,
         return -1;
 
     for (i = 0; i < nregex; i++) {
-        err = regcomp(&reg[i], regex[i], REG_EXTENDED);
-        if (err != 0) {
-            char error[100];
-            regerror(err, &reg[i], error, sizeof(error));
+        g_autoptr(GError) err = NULL;
+        reg[i] = g_regex_new(regex[i], G_REGEX_OPTIMIZE, 0, &err);
+        if (!reg[i]) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to compile regex %s"), error);
+                           _("Failed to compile regex %s"), err->message);
             for (j = 0; j < i; j++)
-                regfree(&reg[j]);
+                g_regex_unref(reg[j]);
             VIR_FREE(reg);
             return -1;
         }
 
         totgroups += nvars[i];
-        if (nvars[i] > maxvars)
-            maxvars = nvars[i];
-
     }
 
     /* Storage for matched variables */
     if (VIR_ALLOC_N(groups, totgroups) < 0)
-        goto cleanup;
-    if (VIR_ALLOC_N(vars, maxvars+1) < 0)
         goto cleanup;
 
     virCommandSetOutputBuffer(cmd, &outbuf);
@@ -3130,6 +3121,7 @@ virCommandRunRegex(virCommandPtr cmd,
         goto cleanup;
 
     for (k = 0; lines[k]; k++) {
+        g_autoptr(GMatchInfo) info = NULL;
         const char *p = NULL;
 
         /* ignore any command prefix */
@@ -3140,15 +3132,12 @@ virCommandRunRegex(virCommandPtr cmd,
 
         ngroup = 0;
         for (i = 0; i < nregex; i++) {
-            if (regexec(&reg[i], p, nvars[i]+1, vars, 0) != 0)
+            if (!(g_regex_match(reg[i], p, 0, &info)))
                 break;
 
-            /* NB vars[0] is the full pattern, so we offset j by 1 */
-            for (j = 1; j <= nvars[i]; j++) {
-                if (VIR_STRNDUP(groups[ngroup++], p + vars[j].rm_so,
-                                vars[j].rm_eo - vars[j].rm_so) < 0)
-                    goto cleanup;
-            }
+            /* NB match #0 is the full pattern, so we offset j by 1 */
+            for (j = 1; j <= nvars[i]; j++)
+                groups[ngroup++] = g_match_info_fetch(info, j);
 
         }
         /* We've matched on the last regex, so callback time */
@@ -3170,7 +3159,7 @@ virCommandRunRegex(virCommandPtr cmd,
     }
 
     for (i = 0; i < nregex; i++)
-        regfree(&reg[i]);
+        g_regex_unref(reg[i]);
 
     VIR_FREE(reg);
     return ret;
