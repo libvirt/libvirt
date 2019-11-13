@@ -482,6 +482,11 @@ sc_prohibit_sprintf:
 	halt='use g_snprintf, not sprintf' \
 	  $(_sc_search_regexp)
 
+sc_prohibit_snprintf:
+	@prohibit='\<snprintf\>' \
+	halt='use g_snprintf, not snprintf' \
+	  $(_sc_search_regexp)
+
 sc_prohibit_readlink:
 	@prohibit='\<readlink *\(' \
 	halt='use virFileResolveLink, not readlink' \
@@ -2276,6 +2281,9 @@ exclude_file_name_regexp--sc_prohibit_setuid = ^src/util/virutil\.c|tools/virt-l
 
 exclude_file_name_regexp--sc_prohibit_sprintf = \
   ^(build-aux/syntax-check\.mk|docs/hacking\.html\.in|.*\.stp|.*\.pl)$$
+
+exclude_file_name_regexp--sc_prohibit_snprintf = \
+  ^(build-aux/syntax-check\.mk|docs/hacking\.html\.in|tools/virt-login-shell\.c)$$
 
 exclude_file_name_regexp--sc_prohibit_strncpy = ^src/util/virstring\.c$$
 
