@@ -35,7 +35,6 @@
 #include "virlog.h"
 #include "virerror.h"
 #include "c-ctype.h"
-#include "areadlink.h"
 #include "virstring.h"
 #include "virprocess.h"
 
@@ -247,7 +246,7 @@ int virPidFileReadPathIfAlive(const char *path,
      * "$procpath (deleted)".  Read that link, remove the " (deleted)"
      * part, and see if it has the same canonicalized name as binpath.
      */
-    if (!(procLink = areadlink(procPath)))
+    if (!(procLink = g_file_read_link(procPath, NULL)))
         return -1;
 
     procLinkLen = strlen(procLink);
