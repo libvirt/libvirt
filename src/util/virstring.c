@@ -1017,29 +1017,26 @@ virStringSearch(const char *str,
                 size_t max_matches,
                 char ***matches)
 {
-    regex_t re;
-    regmatch_t rem;
+    g_autoptr(GRegex) regex = NULL;
+    g_autoptr(GError) err = NULL;
     size_t nmatches = 0;
     ssize_t ret = -1;
-    int rv = -1;
 
     *matches = NULL;
 
     VIR_DEBUG("search '%s' for '%s'", str, regexp);
 
-    if ((rv = regcomp(&re, regexp, REG_EXTENDED)) != 0) {
-        char error[100];
-        regerror(rv, &re, error, sizeof(error));
+    regex = g_regex_new(regexp, 0, 0, &err);
+    if (!regex) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Error while compiling regular expression '%s': %s"),
-                       regexp, error);
+                       _("Failed to compile regex %s"), err->message);
         return -1;
     }
 
-    if (re.re_nsub != 1) {
+    if (g_regex_get_capture_count(regex) != 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Regular expression '%s' must have exactly 1 match group, not %zu"),
-                       regexp, re.re_nsub);
+                       _("Regular expression '%s' must have exactly 1 match group, not %d"),
+                       regexp, g_regex_get_capture_count(regex));
         goto cleanup;
     }
 
@@ -1050,29 +1047,29 @@ virStringSearch(const char *str,
         goto cleanup;
 
     while ((nmatches - 1) < max_matches) {
+        g_autoptr(GMatchInfo) info = NULL;
         char *match;
+        int endpos;
 
-        if (regexec(&re, str, 1, &rem, 0) != 0)
+        if (!g_regex_match(regex, str, 0, &info))
             break;
 
         if (VIR_EXPAND_N(*matches, nmatches, 1) < 0)
             goto cleanup;
 
-        if (VIR_STRNDUP(match, str + rem.rm_so,
-                        rem.rm_eo - rem.rm_so) < 0)
-            goto cleanup;
+        match = g_match_info_fetch(info, 1);
 
         VIR_DEBUG("Got '%s'", match);
 
         (*matches)[nmatches-2] = match;
 
-        str = str + rem.rm_eo;
+        g_match_info_fetch_pos(info, 1, NULL, &endpos);
+        str += endpos;
     }
 
     ret = nmatches - 1; /* don't count the trailing null */
 
  cleanup:
-    regfree(&re);
     if (ret < 0) {
         virStringListFree(*matches);
         *matches = NULL;
