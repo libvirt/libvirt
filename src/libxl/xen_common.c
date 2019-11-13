@@ -1067,7 +1067,6 @@ xenParseSxprVifRate(const char *rate, unsigned long long *kbytes_per_sec)
     char *p;
     char *suffix;
     unsigned long long tmp;
-    int ret = -1;
 
     trate = g_strdup(rate);
 
@@ -1085,13 +1084,13 @@ xenParseSxprVifRate(const char *rate, unsigned long long *kbytes_per_sec)
     if (!g_regex_match(regex, trate, 0, NULL)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Invalid rate '%s' specified"), rate);
-        goto cleanup;
+        return -1;
     }
 
     if (virStrToLong_ull(rate, &suffix, 10, &tmp)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to parse rate '%s'"), rate);
-        goto cleanup;
+        return -1;
     }
 
     if (*suffix == 'G')
@@ -1103,10 +1102,7 @@ xenParseSxprVifRate(const char *rate, unsigned long long *kbytes_per_sec)
        tmp /= 8;
 
     *kbytes_per_sec = tmp;
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
