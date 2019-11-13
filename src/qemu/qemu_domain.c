@@ -13167,12 +13167,13 @@ qemuDomainCreateDeviceRecursive(const char *device,
     }
 
     if (isLink) {
+        g_autoptr(GError) gerr = NULL;
+
         /* We are dealing with a symlink. Create a dangling symlink and descend
          * down one level which hopefully creates the symlink's target. */
-        if (virFileReadLink(device, &target) < 0) {
-            virReportSystemError(errno,
-                                 _("unable to resolve symlink %s"),
-                                 device);
+        if (!(target = g_file_read_link(device, &gerr))) {
+            virReportError(VIR_ERR_SYSTEM_ERROR,
+                           _("failed to resolve symlink %s: %s"), device, gerr->message);
             goto cleanup;
         }
 
@@ -14161,10 +14162,11 @@ qemuDomainAttachDeviceMknodRecursive(virQEMUDriverPtr driver,
 
         data.target = target;
     } else if (isLink) {
-        if (virFileReadLink(file, &target) < 0) {
-            virReportSystemError(errno,
-                                 _("unable to resolve symlink %s"),
-                                 file);
+        g_autoptr(GError) gerr = NULL;
+
+        if (!(target = g_file_read_link(file, &gerr))) {
+            virReportError(VIR_ERR_SYSTEM_ERROR,
+                           _("failed to resolve symlink %s: %s"), file, gerr->message);
             return ret;
         }
 
