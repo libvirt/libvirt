@@ -15269,8 +15269,11 @@ virDomainVideoAccelDefParseXML(xmlNodePtr node)
     accel2d = virXMLPropString(node, "accel2d");
     rendernode = virXMLPropString(node, "rendernode");
 
-    if (!accel3d && !accel2d && !rendernode)
+    if (!accel3d && !accel2d && !rendernode) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("missing values for acceleration"));
         return NULL;
+    }
 
     def = g_new0(virDomainVideoAccelDef, 1);
 
@@ -15278,7 +15281,7 @@ virDomainVideoAccelDefParseXML(xmlNodePtr node)
         if ((val = virTristateBoolTypeFromString(accel3d)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown accel3d value '%s'"), accel3d);
-            goto cleanup;
+            return NULL;
         }
         def->accel3d = val;
     }
@@ -15287,7 +15290,7 @@ virDomainVideoAccelDefParseXML(xmlNodePtr node)
         if ((val = virTristateBoolTypeFromString(accel2d)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown accel2d value '%s'"), accel2d);
-            goto cleanup;
+            return NULL;
         }
         def->accel2d = val;
     }
@@ -15295,7 +15298,6 @@ virDomainVideoAccelDefParseXML(xmlNodePtr node)
     if (rendernode)
         def->rendernode = virFileSanitizePath(rendernode);
 
- cleanup:
     return g_steal_pointer(&def);
 }
 
@@ -15414,8 +15416,10 @@ virDomainVideoDefParseXML(virDomainXMLOptionPtr xmlopt,
                 while (child != NULL) {
                     if (child->type == XML_ELEMENT_NODE) {
                         if (def->accel == NULL &&
-                            virXMLNodeNameEqual(child, "acceleration"))
-                            def->accel = virDomainVideoAccelDefParseXML(child);
+                            virXMLNodeNameEqual(child, "acceleration")) {
+                            if ((def->accel = virDomainVideoAccelDefParseXML(child)) == NULL)
+                                goto error;
+                        }
                         if (def->res == NULL &&
                             virXMLNodeNameEqual(child, "resolution")) {
                             if ((def->res = virDomainVideoResolutionDefParseXML(child)) == NULL)
