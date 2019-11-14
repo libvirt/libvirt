@@ -944,9 +944,8 @@ virNetSocketNewConnectLibSSH2(const char *host,
     int ret = -1;
     int portN;
 
-    char *authMethodNext = NULL;
-    char *authMethodsCopy = NULL;
-    char *authMethod;
+    VIR_AUTOSTRINGLIST authMethodList = NULL;
+    char **authMethodNext;
 
     /* port number will be verified while opening the socket */
     if (virStrToLong_i(port, NULL, 10, &portN) < 0) {
@@ -987,11 +986,12 @@ virNetSocketNewConnectLibSSH2(const char *host,
     if (virNetSSHSessionSetChannelCommand(sess, command) != 0)
         goto error;
 
-    authMethodsCopy = g_strdup(authMethods);
+    if (!(authMethodList = virStringSplit(authMethods, ",", 0)))
+        goto error;
 
-    authMethodNext = authMethodsCopy;
+    for (authMethodNext = authMethodList; *authMethodNext; authMethodNext++) {
+        const char *authMethod = *authMethodNext;
 
-    while ((authMethod = strsep(&authMethodNext, ","))) {
         if (STRCASEEQ(authMethod, "keyboard-interactive")) {
             ret = virNetSSHSessionAuthAddKeyboardAuth(sess, username, -1);
         } else if (STRCASEEQ(authMethod, "password")) {
@@ -1028,13 +1028,11 @@ virNetSocketNewConnectLibSSH2(const char *host,
     sock->sshSession = sess;
     *retsock = sock;
 
-    VIR_FREE(authMethodsCopy);
     return 0;
 
  error:
     virObjectUnref(sock);
     virObjectUnref(sess);
-    VIR_FREE(authMethodsCopy);
     return ret;
 }
 #else
@@ -1079,9 +1077,8 @@ virNetSocketNewConnectLibssh(const char *host,
     int ret = -1;
     int portN;
 
-    char *authMethodNext = NULL;
-    char *authMethodsCopy = NULL;
-    char *authMethod;
+    VIR_AUTOSTRINGLIST authMethodList = NULL;
+    char **authMethodNext;
 
     /* port number will be verified while opening the socket */
     if (virStrToLong_i(port, NULL, 10, &portN) < 0) {
@@ -1121,11 +1118,12 @@ virNetSocketNewConnectLibssh(const char *host,
     if (virNetLibsshSessionSetChannelCommand(sess, command) != 0)
         goto error;
 
-    authMethodsCopy = g_strdup(authMethods);
+    if (!(authMethodList = virStringSplit(authMethods, ",", 0)))
+        goto error;
 
-    authMethodNext = authMethodsCopy;
+    for (authMethodNext = authMethodList; *authMethodNext; authMethodNext++) {
+        const char *authMethod = *authMethodNext;
 
-    while ((authMethod = strsep(&authMethodNext, ","))) {
         if (STRCASEEQ(authMethod, "keyboard-interactive")) {
             ret = virNetLibsshSessionAuthAddKeyboardAuth(sess, -1);
         } else if (STRCASEEQ(authMethod, "password")) {
@@ -1164,13 +1162,11 @@ virNetSocketNewConnectLibssh(const char *host,
     sock->ownsFd = false;
     *retsock = sock;
 
-    VIR_FREE(authMethodsCopy);
     return 0;
 
  error:
     virObjectUnref(sock);
     virObjectUnref(sess);
-    VIR_FREE(authMethodsCopy);
     return ret;
 }
 #else
