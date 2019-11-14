@@ -6319,6 +6319,12 @@ virDomainVideoDefValidate(const virDomainVideoDef *video,
         return -1;
     }
 
+    if (video->res && (video->res->x == 0 || video->res->y == 0)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("video resolution values must be greater than 0"));
+        return -1;
+    }
+
     return 0;
 }
 
