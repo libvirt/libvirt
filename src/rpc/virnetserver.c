@@ -199,7 +199,7 @@ virNetServerDispatchNewMessage(virNetServerClientPtr client,
         if (VIR_ALLOC(job) < 0)
             goto error;
 
-        job->client = client;
+        job->client = virObjectRef(client);
         job->msg = msg;
 
         if (prog) {
@@ -207,7 +207,6 @@ virNetServerDispatchNewMessage(virNetServerClientPtr client,
             priority = virNetServerProgramGetPriority(prog, msg->header.proc);
         }
 
-        virObjectRef(client);
         if (virThreadPoolSendJob(srv->workers, priority, job) < 0) {
             virObjectUnref(client);
             VIR_FREE(job);
