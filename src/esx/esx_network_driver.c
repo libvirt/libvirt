@@ -167,19 +167,10 @@ esxNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 
 
 static virNetworkPtr
-esxNetworkLookupByName(virConnectPtr conn, const char *name)
+virtualswitchToNetwork(virConnectPtr conn,
+                       esxVI_HostVirtualSwitch *hostVirtualSwitch)
 {
-    virNetworkPtr network = NULL;
-    esxPrivate *priv = conn->privateData;
-    esxVI_HostVirtualSwitch *hostVirtualSwitch = NULL;
     unsigned char md5[VIR_CRYPTO_HASH_SIZE_MD5]; /* VIR_CRYPTO_HASH_SIZE_MD5 = VIR_UUID_BUFLEN = 16 */
-
-    if (esxVI_EnsureSession(priv->primary) < 0 ||
-        esxVI_LookupHostVirtualSwitchByName(priv->primary, name,
-                                            &hostVirtualSwitch,
-                                            esxVI_Occurrence_RequiredItem) < 0) {
-        return NULL;
-    }
 
     /*
      * HostVirtualSwitch doesn't have a UUID, but we can use the key property
@@ -192,7 +183,26 @@ esxNetworkLookupByName(virConnectPtr conn, const char *name)
     if (virCryptoHashBuf(VIR_CRYPTO_HASH_MD5, hostVirtualSwitch->key, md5) < 0)
         return NULL;
 
-    network = virGetNetwork(conn, hostVirtualSwitch->name, md5);
+    return virGetNetwork(conn, hostVirtualSwitch->name, md5);
+}
+
+
+
+static virNetworkPtr
+esxNetworkLookupByName(virConnectPtr conn, const char *name)
+{
+    virNetworkPtr network = NULL;
+    esxPrivate *priv = conn->privateData;
+    esxVI_HostVirtualSwitch *hostVirtualSwitch = NULL;
+
+    if (esxVI_EnsureSession(priv->primary) < 0 ||
+        esxVI_LookupHostVirtualSwitchByName(priv->primary, name,
+                                            &hostVirtualSwitch,
+                                            esxVI_Occurrence_RequiredItem) < 0) {
+        return NULL;
+    }
+
+    network = virtualswitchToNetwork(conn, hostVirtualSwitch);
 
     esxVI_HostVirtualSwitch_Free(&hostVirtualSwitch);
 
