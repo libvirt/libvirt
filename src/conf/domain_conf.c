@@ -15259,25 +15259,15 @@ virDomainVideoDefaultType(const virDomainDef *def)
 static virDomainVideoAccelDefPtr
 virDomainVideoAccelDefParseXML(xmlNodePtr node)
 {
-    xmlNodePtr cur;
     g_autofree virDomainVideoAccelDefPtr def = NULL;
     int val;
     g_autofree char *accel2d = NULL;
     g_autofree char *accel3d = NULL;
     g_autofree char *rendernode = NULL;
 
-    cur = node->children;
-    while (cur != NULL) {
-        if (cur->type == XML_ELEMENT_NODE) {
-            if (!accel3d && !accel2d &&
-                virXMLNodeNameEqual(cur, "acceleration")) {
-                accel3d = virXMLPropString(cur, "accel3d");
-                accel2d = virXMLPropString(cur, "accel2d");
-                rendernode = virXMLPropString(cur, "rendernode");
-            }
-        }
-        cur = cur->next;
-    }
+    accel3d = virXMLPropString(node, "accel3d");
+    accel2d = virXMLPropString(node, "accel2d");
+    rendernode = virXMLPropString(node, "rendernode");
 
     if (!accel3d && !accel2d && !rendernode)
         return NULL;
@@ -15312,22 +15302,12 @@ virDomainVideoAccelDefParseXML(xmlNodePtr node)
 static virDomainVideoResolutionDefPtr
 virDomainVideoResolutionDefParseXML(xmlNodePtr node)
 {
-    xmlNodePtr cur;
     g_autofree virDomainVideoResolutionDefPtr def = NULL;
     g_autofree char *x = NULL;
     g_autofree char *y = NULL;
 
-    cur = node->children;
-    while (cur != NULL) {
-        if (cur->type == XML_ELEMENT_NODE) {
-            if (!x && !y &&
-                virXMLNodeNameEqual(cur, "resolution")) {
-                x = virXMLPropString(cur, "x");
-                y = virXMLPropString(cur, "y");
-            }
-        }
-        cur = cur->next;
-    }
+    x = virXMLPropString(node, "x");
+    y = virXMLPropString(node, "y");
 
     if (!x || !y)
         return NULL;
@@ -15415,6 +15395,7 @@ virDomainVideoDefParseXML(virDomainXMLOptionPtr xmlopt,
         if (cur->type == XML_ELEMENT_NODE) {
             if (!type && !vram && !ram && !heads &&
                 virXMLNodeNameEqual(cur, "model")) {
+                xmlNodePtr child;
                 type = virXMLPropString(cur, "type");
                 ram = virXMLPropString(cur, "ram");
                 vram = virXMLPropString(cur, "vram");
@@ -15427,8 +15408,18 @@ virDomainVideoDefParseXML(virDomainXMLOptionPtr xmlopt,
                     VIR_FREE(primary);
                 }
 
-                def->accel = virDomainVideoAccelDefParseXML(cur);
-                def->res = virDomainVideoResolutionDefParseXML(cur);
+                child = cur->children;
+                while (child != NULL) {
+                    if (child->type == XML_ELEMENT_NODE) {
+                        if (def->accel == NULL &&
+                            virXMLNodeNameEqual(child, "acceleration"))
+                            def->accel = virDomainVideoAccelDefParseXML(child);
+                        if (def->res == NULL &&
+                            virXMLNodeNameEqual(child, "resolution"))
+                            def->res = virDomainVideoResolutionDefParseXML(child);
+                    }
+                    child = child->next;
+                }
             }
             if (virXMLNodeNameEqual(cur, "driver")) {
                 if (virDomainVirtioOptionsParseXML(cur, &def->virtio) < 0)
