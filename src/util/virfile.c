@@ -1645,19 +1645,23 @@ virFindFileInPath(const char *file)
      * copy of that path, after validating that it is executable
      */
     if (IS_ABSOLUTE_FILE_NAME(file)) {
-        char *ret = NULL;
-        if (virFileIsExecutable(file))
-            ret = g_strdup(file);
-        return ret;
+        if (!virFileIsExecutable(file))
+            return NULL;
+
+        return g_strdup(file);
     }
 
     /* If we are passed an anchored path (containing a /), then there
      * is no path search - it must exist in the current directory
      */
     if (strchr(file, '/')) {
-        if (virFileIsExecutable(file))
-            ignore_value(virFileAbsPath(file, &path));
-        return path;
+        char *abspath = NULL;
+
+        if (!virFileIsExecutable(file))
+            return NULL;
+
+        ignore_value(virFileAbsPath(file, &abspath));
+        return abspath;
     }
 
     /* copy PATH env so we can tweak it */
