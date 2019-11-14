@@ -78,6 +78,7 @@ VIR_LOG_INIT("daemon.remote");
 
 struct daemonClientEventCallback {
     virNetServerClientPtr client;
+    virNetServerProgramPtr program;
     int eventID;
     int callbackID;
     bool legacy;
@@ -149,6 +150,7 @@ remoteEventCallbackFree(void *opaque)
     daemonClientEventCallbackPtr callback = opaque;
     if (!callback)
         return;
+    virObjectUnref(callback->program);
     virObjectUnref(callback->client);
     VIR_FREE(callback);
 }
@@ -334,7 +336,7 @@ remoteRelayDomainEventLifecycle(virConnectPtr conn,
     data.detail = detail;
 
     if (callback->legacy) {
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_LIFECYCLE,
                                       (xdrproc_t)xdr_remote_domain_event_lifecycle_msg,
                                       &data);
@@ -342,7 +344,7 @@ remoteRelayDomainEventLifecycle(virConnectPtr conn,
         remote_domain_event_callback_lifecycle_msg msg = { callback->callbackID,
                                                            data };
 
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_CALLBACK_LIFECYCLE,
                                       (xdrproc_t)xdr_remote_domain_event_callback_lifecycle_msg,
                                       &msg);
@@ -371,14 +373,14 @@ remoteRelayDomainEventReboot(virConnectPtr conn,
     make_nonnull_domain(&data.dom, dom);
 
     if (callback->legacy) {
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_REBOOT,
                                       (xdrproc_t)xdr_remote_domain_event_reboot_msg, &data);
     } else {
         remote_domain_event_callback_reboot_msg msg = { callback->callbackID,
                                                         data };
 
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_CALLBACK_REBOOT,
                                       (xdrproc_t)xdr_remote_domain_event_callback_reboot_msg, &msg);
     }
@@ -410,14 +412,14 @@ remoteRelayDomainEventRTCChange(virConnectPtr conn,
     data.offset = offset;
 
     if (callback->legacy) {
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_RTC_CHANGE,
                                       (xdrproc_t)xdr_remote_domain_event_rtc_change_msg, &data);
     } else {
         remote_domain_event_callback_rtc_change_msg msg = { callback->callbackID,
                                                             data };
 
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_CALLBACK_RTC_CHANGE,
                                       (xdrproc_t)xdr_remote_domain_event_callback_rtc_change_msg, &msg);
     }
@@ -448,14 +450,14 @@ remoteRelayDomainEventWatchdog(virConnectPtr conn,
     data.action = action;
 
     if (callback->legacy) {
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_WATCHDOG,
                                       (xdrproc_t)xdr_remote_domain_event_watchdog_msg, &data);
     } else {
         remote_domain_event_callback_watchdog_msg msg = { callback->callbackID,
                                                           data };
 
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_CALLBACK_WATCHDOG,
                                       (xdrproc_t)xdr_remote_domain_event_callback_watchdog_msg, &msg);
     }
@@ -491,14 +493,14 @@ remoteRelayDomainEventIOError(virConnectPtr conn,
     data.action = action;
 
     if (callback->legacy) {
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_IO_ERROR,
                                       (xdrproc_t)xdr_remote_domain_event_io_error_msg, &data);
     } else {
         remote_domain_event_callback_io_error_msg msg = { callback->callbackID,
                                                           data };
 
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_CALLBACK_IO_ERROR,
                                       (xdrproc_t)xdr_remote_domain_event_callback_io_error_msg, &msg);
     }
@@ -536,14 +538,14 @@ remoteRelayDomainEventIOErrorReason(virConnectPtr conn,
     make_nonnull_domain(&data.dom, dom);
 
     if (callback->legacy) {
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_IO_ERROR_REASON,
                                       (xdrproc_t)xdr_remote_domain_event_io_error_reason_msg, &data);
     } else {
         remote_domain_event_callback_io_error_reason_msg msg = { callback->callbackID,
                                                                  data };
 
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_CALLBACK_IO_ERROR_REASON,
                                       (xdrproc_t)xdr_remote_domain_event_callback_io_error_reason_msg, &msg);
     }
@@ -606,14 +608,14 @@ remoteRelayDomainEventGraphics(virConnectPtr conn,
     make_nonnull_domain(&data.dom, dom);
 
     if (callback->legacy) {
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_GRAPHICS,
                                       (xdrproc_t)xdr_remote_domain_event_graphics_msg, &data);
     } else {
         remote_domain_event_callback_graphics_msg msg = { callback->callbackID,
                                                           data };
 
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_CALLBACK_GRAPHICS,
                                       (xdrproc_t)xdr_remote_domain_event_callback_graphics_msg, &msg);
     }
@@ -647,14 +649,14 @@ remoteRelayDomainEventBlockJob(virConnectPtr conn,
     make_nonnull_domain(&data.dom, dom);
 
     if (callback->legacy) {
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_BLOCK_JOB,
                                       (xdrproc_t)xdr_remote_domain_event_block_job_msg, &data);
     } else {
         remote_domain_event_callback_block_job_msg msg = { callback->callbackID,
                                                            data };
 
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_CALLBACK_BLOCK_JOB,
                                       (xdrproc_t)xdr_remote_domain_event_callback_block_job_msg, &msg);
     }
@@ -683,14 +685,14 @@ remoteRelayDomainEventControlError(virConnectPtr conn,
     make_nonnull_domain(&data.dom, dom);
 
     if (callback->legacy) {
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_CONTROL_ERROR,
                                       (xdrproc_t)xdr_remote_domain_event_control_error_msg, &data);
     } else {
         remote_domain_event_callback_control_error_msg msg = { callback->callbackID,
                                                                data };
 
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_CALLBACK_CONTROL_ERROR,
                                       (xdrproc_t)xdr_remote_domain_event_callback_control_error_msg, &msg);
     }
@@ -736,14 +738,14 @@ remoteRelayDomainEventDiskChange(virConnectPtr conn,
     make_nonnull_domain(&data.dom, dom);
 
     if (callback->legacy) {
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_DISK_CHANGE,
                                       (xdrproc_t)xdr_remote_domain_event_disk_change_msg, &data);
     } else {
         remote_domain_event_callback_disk_change_msg msg = { callback->callbackID,
                                                              data };
 
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_CALLBACK_DISK_CHANGE,
                                       (xdrproc_t)xdr_remote_domain_event_callback_disk_change_msg, &msg);
     }
@@ -777,14 +779,14 @@ remoteRelayDomainEventTrayChange(virConnectPtr conn,
     make_nonnull_domain(&data.dom, dom);
 
     if (callback->legacy) {
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_TRAY_CHANGE,
                                       (xdrproc_t)xdr_remote_domain_event_tray_change_msg, &data);
     } else {
         remote_domain_event_callback_tray_change_msg msg = { callback->callbackID,
                                                              data };
 
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_CALLBACK_TRAY_CHANGE,
                                       (xdrproc_t)xdr_remote_domain_event_callback_tray_change_msg, &msg);
     }
@@ -813,14 +815,14 @@ remoteRelayDomainEventPMWakeup(virConnectPtr conn,
     make_nonnull_domain(&data.dom, dom);
 
     if (callback->legacy) {
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_PMWAKEUP,
                                       (xdrproc_t)xdr_remote_domain_event_pmwakeup_msg, &data);
     } else {
         remote_domain_event_callback_pmwakeup_msg msg = { callback->callbackID,
                                                           reason, data };
 
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_CALLBACK_PMWAKEUP,
                                       (xdrproc_t)xdr_remote_domain_event_callback_pmwakeup_msg, &msg);
     }
@@ -849,14 +851,14 @@ remoteRelayDomainEventPMSuspend(virConnectPtr conn,
     make_nonnull_domain(&data.dom, dom);
 
     if (callback->legacy) {
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_PMSUSPEND,
                                       (xdrproc_t)xdr_remote_domain_event_pmsuspend_msg, &data);
     } else {
         remote_domain_event_callback_pmsuspend_msg msg = { callback->callbackID,
                                                            reason, data };
 
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_CALLBACK_PMSUSPEND,
                                       (xdrproc_t)xdr_remote_domain_event_callback_pmsuspend_msg, &msg);
     }
@@ -886,14 +888,14 @@ remoteRelayDomainEventBalloonChange(virConnectPtr conn,
     data.actual = actual;
 
     if (callback->legacy) {
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_BALLOON_CHANGE,
                                       (xdrproc_t)xdr_remote_domain_event_balloon_change_msg, &data);
     } else {
         remote_domain_event_callback_balloon_change_msg msg = { callback->callbackID,
                                                                 data };
 
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_CALLBACK_BALLOON_CHANGE,
                                       (xdrproc_t)xdr_remote_domain_event_callback_balloon_change_msg, &msg);
     }
@@ -923,14 +925,14 @@ remoteRelayDomainEventPMSuspendDisk(virConnectPtr conn,
     make_nonnull_domain(&data.dom, dom);
 
     if (callback->legacy) {
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_PMSUSPEND_DISK,
                                       (xdrproc_t)xdr_remote_domain_event_pmsuspend_disk_msg, &data);
     } else {
         remote_domain_event_callback_pmsuspend_disk_msg msg = { callback->callbackID,
                                                                 reason, data };
 
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_CALLBACK_PMSUSPEND_DISK,
                                       (xdrproc_t)xdr_remote_domain_event_callback_pmsuspend_disk_msg, &msg);
     }
@@ -962,7 +964,7 @@ remoteRelayDomainEventDeviceRemoved(virConnectPtr conn,
     make_nonnull_domain(&data.dom, dom);
 
     if (callback->legacy) {
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_DEVICE_REMOVED,
                                       (xdrproc_t)xdr_remote_domain_event_device_removed_msg,
                                       &data);
@@ -970,7 +972,7 @@ remoteRelayDomainEventDeviceRemoved(virConnectPtr conn,
         remote_domain_event_callback_device_removed_msg msg = { callback->callbackID,
                                                                 data };
 
-        remoteDispatchObjectEventSend(callback->client, remoteProgram,
+        remoteDispatchObjectEventSend(callback->client, callback->program,
                                       REMOTE_PROC_DOMAIN_EVENT_CALLBACK_DEVICE_REMOVED,
                                       (xdrproc_t)xdr_remote_domain_event_callback_device_removed_msg,
                                       &msg);
@@ -1006,7 +1008,7 @@ remoteRelayDomainEventBlockJob2(virConnectPtr conn,
     data.status = status;
     make_nonnull_domain(&data.dom, dom);
 
-    remoteDispatchObjectEventSend(callback->client, remoteProgram,
+    remoteDispatchObjectEventSend(callback->client, callback->program,
                                   REMOTE_PROC_DOMAIN_EVENT_BLOCK_JOB_2,
                                   (xdrproc_t)xdr_remote_domain_event_block_job_2_msg, &data);
 
@@ -1045,7 +1047,7 @@ remoteRelayDomainEventTunable(virConnectPtr conn,
     make_nonnull_domain(&data.dom, dom);
 
 
-    remoteDispatchObjectEventSend(callback->client, remoteProgram,
+    remoteDispatchObjectEventSend(callback->client, callback->program,
                                   REMOTE_PROC_DOMAIN_EVENT_CALLBACK_TUNABLE,
                                   (xdrproc_t)xdr_remote_domain_event_callback_tunable_msg,
                                   &data);
@@ -1079,7 +1081,7 @@ remoteRelayDomainEventAgentLifecycle(virConnectPtr conn,
     data.state = state;
     data.reason = reason;
 
-    remoteDispatchObjectEventSend(callback->client, remoteProgram,
+    remoteDispatchObjectEventSend(callback->client, callback->program,
                                   REMOTE_PROC_DOMAIN_EVENT_CALLBACK_AGENT_LIFECYCLE,
                                   (xdrproc_t)xdr_remote_domain_event_callback_agent_lifecycle_msg,
                                   &data);
@@ -1111,7 +1113,7 @@ remoteRelayDomainEventDeviceAdded(virConnectPtr conn,
     make_nonnull_domain(&data.dom, dom);
     data.callbackID = callback->callbackID;
 
-    remoteDispatchObjectEventSend(callback->client, remoteProgram,
+    remoteDispatchObjectEventSend(callback->client, callback->program,
                                   REMOTE_PROC_DOMAIN_EVENT_CALLBACK_DEVICE_ADDED,
                                   (xdrproc_t)xdr_remote_domain_event_callback_device_added_msg,
                                   &data);
@@ -1144,7 +1146,7 @@ remoteRelayDomainEventMigrationIteration(virConnectPtr conn,
 
     data.iteration = iteration;
 
-    remoteDispatchObjectEventSend(callback->client, remoteProgram,
+    remoteDispatchObjectEventSend(callback->client, callback->program,
                                   REMOTE_PROC_DOMAIN_EVENT_CALLBACK_MIGRATION_ITERATION,
                                   (xdrproc_t)xdr_remote_domain_event_callback_migration_iteration_msg,
                                   &data);
@@ -1184,7 +1186,7 @@ remoteRelayDomainEventJobCompleted(virConnectPtr conn,
     data.callbackID = callback->callbackID;
     make_nonnull_domain(&data.dom, dom);
 
-    remoteDispatchObjectEventSend(callback->client, remoteProgram,
+    remoteDispatchObjectEventSend(callback->client, callback->program,
                                   REMOTE_PROC_DOMAIN_EVENT_CALLBACK_JOB_COMPLETED,
                                   (xdrproc_t)xdr_remote_domain_event_callback_job_completed_msg,
                                   &data);
@@ -1216,7 +1218,7 @@ remoteRelayDomainEventDeviceRemovalFailed(virConnectPtr conn,
     make_nonnull_domain(&data.dom, dom);
     data.callbackID = callback->callbackID;
 
-    remoteDispatchObjectEventSend(callback->client, remoteProgram,
+    remoteDispatchObjectEventSend(callback->client, callback->program,
                                   REMOTE_PROC_DOMAIN_EVENT_CALLBACK_DEVICE_REMOVAL_FAILED,
                                   (xdrproc_t)xdr_remote_domain_event_callback_device_removal_failed_msg,
                                   &data);
@@ -1254,7 +1256,7 @@ remoteRelayDomainEventMetadataChange(virConnectPtr conn,
     make_nonnull_domain(&data.dom, dom);
     data.callbackID = callback->callbackID;
 
-    remoteDispatchObjectEventSend(callback->client, remoteProgram,
+    remoteDispatchObjectEventSend(callback->client, callback->program,
                                   REMOTE_PROC_DOMAIN_EVENT_CALLBACK_METADATA_CHANGE,
                                   (xdrproc_t)xdr_remote_domain_event_callback_metadata_change_msg,
                                   &data);
@@ -1294,7 +1296,7 @@ remoteRelayDomainEventBlockThreshold(virConnectPtr conn,
     data.excess = excess;
     make_nonnull_domain(&data.dom, dom);
 
-    remoteDispatchObjectEventSend(callback->client, remoteProgram,
+    remoteDispatchObjectEventSend(callback->client, callback->program,
                                   REMOTE_PROC_DOMAIN_EVENT_BLOCK_THRESHOLD,
                                   (xdrproc_t)xdr_remote_domain_event_block_threshold_msg, &data);
 
@@ -1356,7 +1358,7 @@ remoteRelayNetworkEventLifecycle(virConnectPtr conn,
     data.event = event;
     data.detail = detail;
 
-    remoteDispatchObjectEventSend(callback->client, remoteProgram,
+    remoteDispatchObjectEventSend(callback->client, callback->program,
                                   REMOTE_PROC_NETWORK_EVENT_LIFECYCLE,
                                   (xdrproc_t)xdr_remote_network_event_lifecycle_msg, &data);
 
@@ -1393,7 +1395,7 @@ remoteRelayStoragePoolEventLifecycle(virConnectPtr conn,
     data.event = event;
     data.detail = detail;
 
-    remoteDispatchObjectEventSend(callback->client, remoteProgram,
+    remoteDispatchObjectEventSend(callback->client, callback->program,
                                   REMOTE_PROC_STORAGE_POOL_EVENT_LIFECYCLE,
                                   (xdrproc_t)xdr_remote_storage_pool_event_lifecycle_msg,
                                   &data);
@@ -1421,7 +1423,7 @@ remoteRelayStoragePoolEventRefresh(virConnectPtr conn,
     make_nonnull_storage_pool(&data.pool, pool);
     data.callbackID = callback->callbackID;
 
-    remoteDispatchObjectEventSend(callback->client, remoteProgram,
+    remoteDispatchObjectEventSend(callback->client, callback->program,
                                   REMOTE_PROC_STORAGE_POOL_EVENT_REFRESH,
                                   (xdrproc_t)xdr_remote_storage_pool_event_refresh_msg,
                                   &data);
@@ -1460,7 +1462,7 @@ remoteRelayNodeDeviceEventLifecycle(virConnectPtr conn,
     data.event = event;
     data.detail = detail;
 
-    remoteDispatchObjectEventSend(callback->client, remoteProgram,
+    remoteDispatchObjectEventSend(callback->client, callback->program,
                                   REMOTE_PROC_NODE_DEVICE_EVENT_LIFECYCLE,
                                   (xdrproc_t)xdr_remote_node_device_event_lifecycle_msg,
                                   &data);
@@ -1488,7 +1490,7 @@ remoteRelayNodeDeviceEventUpdate(virConnectPtr conn,
     make_nonnull_node_device(&data.dev, dev);
     data.callbackID = callback->callbackID;
 
-    remoteDispatchObjectEventSend(callback->client, remoteProgram,
+    remoteDispatchObjectEventSend(callback->client, callback->program,
                                   REMOTE_PROC_NODE_DEVICE_EVENT_UPDATE,
                                   (xdrproc_t)xdr_remote_node_device_event_update_msg,
                                   &data);
@@ -1527,7 +1529,7 @@ remoteRelaySecretEventLifecycle(virConnectPtr conn,
     data.event = event;
     data.detail = detail;
 
-    remoteDispatchObjectEventSend(callback->client, remoteProgram,
+    remoteDispatchObjectEventSend(callback->client, callback->program,
                                   REMOTE_PROC_SECRET_EVENT_LIFECYCLE,
                                   (xdrproc_t)xdr_remote_secret_event_lifecycle_msg,
                                   &data);
@@ -1555,7 +1557,7 @@ remoteRelaySecretEventValueChanged(virConnectPtr conn,
     make_nonnull_secret(&data.secret, secret);
     data.callbackID = callback->callbackID;
 
-    remoteDispatchObjectEventSend(callback->client, remoteProgram,
+    remoteDispatchObjectEventSend(callback->client, callback->program,
                                   REMOTE_PROC_SECRET_EVENT_VALUE_CHANGED,
                                   (xdrproc_t)xdr_remote_secret_event_value_changed_msg,
                                   &data);
@@ -1603,7 +1605,7 @@ remoteRelayDomainQemuMonitorEvent(virConnectPtr conn,
     }
     make_nonnull_domain(&data.dom, dom);
 
-    remoteDispatchObjectEventSend(callback->client, qemuProgram,
+    remoteDispatchObjectEventSend(callback->client, callback->program,
                                   QEMU_PROC_DOMAIN_MONITOR_EVENT,
                                   (xdrproc_t)xdr_qemu_domain_monitor_event_msg,
                                   &data);
@@ -4253,6 +4255,7 @@ remoteDispatchConnectDomainEventRegister(virNetServerPtr server G_GNUC_UNUSED,
     if (VIR_ALLOC(callback) < 0)
         goto cleanup;
     callback->client = virObjectRef(client);
+    callback->program = virObjectRef(remoteProgram);
     callback->eventID = VIR_DOMAIN_EVENT_ID_LIFECYCLE;
     callback->callbackID = -1;
     callback->legacy = true;
@@ -4481,6 +4484,7 @@ remoteDispatchConnectDomainEventRegisterAny(virNetServerPtr server G_GNUC_UNUSED
     if (VIR_ALLOC(callback) < 0)
         goto cleanup;
     callback->client = virObjectRef(client);
+    callback->program = virObjectRef(remoteProgram);
     callback->eventID = args->eventID;
     callback->callbackID = -1;
     callback->legacy = true;
@@ -4556,6 +4560,7 @@ remoteDispatchConnectDomainEventCallbackRegisterAny(virNetServerPtr server G_GNU
     if (VIR_ALLOC(callback) < 0)
         goto cleanup;
     callback->client = virObjectRef(client);
+    callback->program = virObjectRef(remoteProgram);
     callback->eventID = args->eventID;
     callback->callbackID = -1;
     ref = callback;
@@ -6038,6 +6043,7 @@ remoteDispatchConnectNetworkEventRegisterAny(virNetServerPtr server G_GNUC_UNUSE
     if (VIR_ALLOC(callback) < 0)
         goto cleanup;
     callback->client = virObjectRef(client);
+    callback->program = virObjectRef(remoteProgram);
     callback->eventID = args->eventID;
     callback->callbackID = -1;
     ref = callback;
@@ -6158,6 +6164,7 @@ remoteDispatchConnectStoragePoolEventRegisterAny(virNetServerPtr server G_GNUC_U
     if (VIR_ALLOC(callback) < 0)
         goto cleanup;
     callback->client = virObjectRef(client);
+    callback->program = virObjectRef(remoteProgram);
     callback->eventID = args->eventID;
     callback->callbackID = -1;
     ref = callback;
@@ -6277,6 +6284,7 @@ remoteDispatchConnectNodeDeviceEventRegisterAny(virNetServerPtr server G_GNUC_UN
     if (VIR_ALLOC(callback) < 0)
         goto cleanup;
     callback->client = virObjectRef(client);
+    callback->program = virObjectRef(remoteProgram);
     callback->eventID = args->eventID;
     callback->callbackID = -1;
     ref = callback;
@@ -6396,6 +6404,7 @@ remoteDispatchConnectSecretEventRegisterAny(virNetServerPtr server G_GNUC_UNUSED
     if (VIR_ALLOC(callback) < 0)
         goto cleanup;
     callback->client = virObjectRef(client);
+    callback->program = virObjectRef(remoteProgram);
     callback->eventID = args->eventID;
     callback->callbackID = -1;
     ref = callback;
@@ -6510,6 +6519,7 @@ qemuDispatchConnectDomainMonitorEventRegister(virNetServerPtr server G_GNUC_UNUS
     if (VIR_ALLOC(callback) < 0)
         goto cleanup;
     callback->client = virObjectRef(client);
+    callback->program = virObjectRef(qemuProgram);
     callback->eventID = -1;
     callback->callbackID = -1;
     ref = callback;
