@@ -4282,10 +4282,10 @@ remoteDispatchConnectDomainEventRegister(virNetServerPtr server G_GNUC_UNUSED,
     rv = 0;
 
  cleanup:
+    virMutexUnlock(&priv->lock);
     remoteEventCallbackFree(callback);
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    virMutexUnlock(&priv->lock);
     return rv;
 }
 
@@ -4331,9 +4331,9 @@ remoteDispatchConnectDomainEventDeregister(virNetServerPtr server G_GNUC_UNUSED,
     rv = 0;
 
  cleanup:
+    virMutexUnlock(&priv->lock);
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    virMutexUnlock(&priv->lock);
     return rv;
 }
 
@@ -4511,10 +4511,10 @@ remoteDispatchConnectDomainEventRegisterAny(virNetServerPtr server G_GNUC_UNUSED
     rv = 0;
 
  cleanup:
+    virMutexUnlock(&priv->lock);
     remoteEventCallbackFree(callback);
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    virMutexUnlock(&priv->lock);
     return rv;
 }
 
@@ -4587,11 +4587,11 @@ remoteDispatchConnectDomainEventCallbackRegisterAny(virNetServerPtr server G_GNU
     rv = 0;
 
  cleanup:
+    virMutexUnlock(&priv->lock);
     remoteEventCallbackFree(callback);
     if (rv < 0)
         virNetMessageSaveError(rerr);
     virObjectUnref(dom);
-    virMutexUnlock(&priv->lock);
     return rv;
 }
 
@@ -4646,9 +4646,9 @@ remoteDispatchConnectDomainEventDeregisterAny(virNetServerPtr server G_GNUC_UNUS
     rv = 0;
 
  cleanup:
+    virMutexUnlock(&priv->lock);
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    virMutexUnlock(&priv->lock);
     return rv;
 }
 
@@ -4691,9 +4691,9 @@ remoteDispatchConnectDomainEventCallbackDeregisterAny(virNetServerPtr server G_G
     rv = 0;
 
  cleanup:
+    virMutexUnlock(&priv->lock);
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    virMutexUnlock(&priv->lock);
     return rv;
 }
 
@@ -6070,11 +6070,11 @@ remoteDispatchConnectNetworkEventRegisterAny(virNetServerPtr server G_GNUC_UNUSE
     rv = 0;
 
  cleanup:
+    virMutexUnlock(&priv->lock);
     remoteEventCallbackFree(callback);
     if (rv < 0)
         virNetMessageSaveError(rerr);
     virObjectUnref(net);
-    virMutexUnlock(&priv->lock);
     return rv;
 }
 
@@ -6117,9 +6117,9 @@ remoteDispatchConnectNetworkEventDeregisterAny(virNetServerPtr server G_GNUC_UNU
     rv = 0;
 
  cleanup:
+    virMutexUnlock(&priv->lock);
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    virMutexUnlock(&priv->lock);
     return rv;
 }
 
@@ -6191,11 +6191,11 @@ remoteDispatchConnectStoragePoolEventRegisterAny(virNetServerPtr server G_GNUC_U
     rv = 0;
 
  cleanup:
+    virMutexUnlock(&priv->lock);
     remoteEventCallbackFree(callback);
     if (rv < 0)
         virNetMessageSaveError(rerr);
     virObjectUnref(pool);
-    virMutexUnlock(&priv->lock);
     return rv;
 }
 
@@ -6237,9 +6237,9 @@ remoteDispatchConnectStoragePoolEventDeregisterAny(virNetServerPtr server G_GNUC
     rv = 0;
 
  cleanup:
+    virMutexUnlock(&priv->lock);
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    virMutexUnlock(&priv->lock);
     return rv;
 }
 
@@ -6311,11 +6311,11 @@ remoteDispatchConnectNodeDeviceEventRegisterAny(virNetServerPtr server G_GNUC_UN
     rv = 0;
 
  cleanup:
+    virMutexUnlock(&priv->lock);
     remoteEventCallbackFree(callback);
     if (rv < 0)
         virNetMessageSaveError(rerr);
     virObjectUnref(dev);
-    virMutexUnlock(&priv->lock);
     return rv;
 }
 
@@ -6357,9 +6357,9 @@ remoteDispatchConnectNodeDeviceEventDeregisterAny(virNetServerPtr server G_GNUC_
     rv = 0;
 
  cleanup:
+    virMutexUnlock(&priv->lock);
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    virMutexUnlock(&priv->lock);
     return rv;
 }
 
@@ -6431,11 +6431,11 @@ remoteDispatchConnectSecretEventRegisterAny(virNetServerPtr server G_GNUC_UNUSED
     rv = 0;
 
  cleanup:
+    virMutexUnlock(&priv->lock);
     remoteEventCallbackFree(callback);
     if (rv < 0)
         virNetMessageSaveError(rerr);
     virObjectUnref(secret);
-    virMutexUnlock(&priv->lock);
     return rv;
 }
 
@@ -6477,9 +6477,9 @@ remoteDispatchConnectSecretEventDeregisterAny(virNetServerPtr server G_GNUC_UNUS
     rv = 0;
 
  cleanup:
+    virMutexUnlock(&priv->lock);
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    virMutexUnlock(&priv->lock);
     return rv;
 }
 
@@ -6547,11 +6547,11 @@ qemuDispatchConnectDomainMonitorEventRegister(virNetServerPtr server G_GNUC_UNUS
     rv = 0;
 
  cleanup:
+    virMutexUnlock(&priv->lock);
     remoteEventCallbackFree(callback);
     if (rv < 0)
         virNetMessageSaveError(rerr);
     virObjectUnref(dom);
-    virMutexUnlock(&priv->lock);
     return rv;
 }
 
@@ -6595,9 +6595,9 @@ qemuDispatchConnectDomainMonitorEventDeregister(virNetServerPtr server G_GNUC_UN
     rv = 0;
 
  cleanup:
+    virMutexUnlock(&priv->lock);
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    virMutexUnlock(&priv->lock);
     return rv;
 }
 
