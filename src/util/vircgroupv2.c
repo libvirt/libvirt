@@ -292,7 +292,8 @@ virCgroupV2ParseControllersFile(virCgroupPtr group,
 static int
 virCgroupV2DetectControllers(virCgroupPtr group,
                              int controllers,
-                             virCgroupPtr parent)
+                             virCgroupPtr parent,
+                             int detected)
 {
     size_t i;
 
@@ -308,6 +309,8 @@ virCgroupV2DetectControllers(virCgroupPtr group,
 
     if (controllers >= 0)
         group->unified.controllers &= controllers;
+
+    group->unified.controllers &= ~detected;
 
     for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++)
         VIR_DEBUG("Controller '%s' present=%s",

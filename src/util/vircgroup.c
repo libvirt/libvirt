@@ -403,7 +403,8 @@ virCgroupDetect(virCgroupPtr group,
 
     for (i = 0; i < VIR_CGROUP_BACKEND_TYPE_LAST; i++) {
         if (group->backends[i]) {
-            int rc = group->backends[i]->detectControllers(group, controllers, parent);
+            int rc = group->backends[i]->detectControllers(group, controllers, parent,
+                                                           controllersAvailable);
             if (rc < 0)
                 return -1;
             controllersAvailable |= rc;

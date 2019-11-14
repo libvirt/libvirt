@@ -403,7 +403,8 @@ virCgroupV1StealPlacement(virCgroupPtr group)
 static int
 virCgroupV1DetectControllers(virCgroupPtr group,
                              int controllers,
-                             virCgroupPtr parent G_GNUC_UNUSED)
+                             virCgroupPtr parent G_GNUC_UNUSED,
+                             int detected)
 {
     size_t i;
     size_t j;
@@ -413,6 +414,11 @@ virCgroupV1DetectControllers(virCgroupPtr group,
         /* First mark requested but non-existing controllers to be ignored */
         for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
             if (((1 << i) & controllers)) {
+                int type = 1 << i;
+                if (type & detected) {
+                    VIR_FREE(group->legacy[i].mountPoint);
+                    VIR_FREE(group->legacy[i].placement);
+                }
                 /* Remove non-existent controllers  */
                 if (!group->legacy[i].mountPoint) {
                     VIR_DEBUG("Requested controller '%s' not mounted, ignoring",
@@ -453,6 +459,11 @@ virCgroupV1DetectControllers(virCgroupPtr group,
         VIR_DEBUG("Auto-detecting controllers");
         controllers = 0;
         for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
+            int type = 1 << i;
+            if (type & detected) {
+                VIR_FREE(group->legacy[i].mountPoint);
+                VIR_FREE(group->legacy[i].placement);
+            }
             VIR_DEBUG("Controller '%s' present=%s",
                       virCgroupV1ControllerTypeToString(i),
                       group->legacy[i].mountPoint ? "yes" : "no");
