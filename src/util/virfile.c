@@ -1634,10 +1634,9 @@ char *
 virFindFileInPath(const char *file)
 {
     const char *origpath = NULL;
-    char *path = NULL;
+    g_autofree char *path = NULL;
     char *pathiter;
     char *pathseg;
-    char *fullpath = NULL;
 
     if (file == NULL)
         return NULL;
@@ -1672,14 +1671,12 @@ virFindFileInPath(const char *file)
      */
     pathiter = path;
     while ((pathseg = strsep(&pathiter, ":")) != NULL) {
-        fullpath = g_strdup_printf("%s/%s", pathseg, file);
+        g_autofree char *fullpath = g_strdup_printf("%s/%s", pathseg, file);
         if (virFileIsExecutable(fullpath))
-            break;
-        VIR_FREE(fullpath);
+            return g_steal_pointer(&fullpath);
     }
 
-    VIR_FREE(path);
-    return fullpath;
+    return NULL;
 }
 
 
