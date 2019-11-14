@@ -99,8 +99,10 @@ virHostGetBootTimeOnceInit(void)
     endutxent();
 # endif /* HAVE_GETUTXID */
 
+# ifdef __linux__
     if (bootTimeErrno != 0 || bootTime == 0)
         bootTimeErrno = -virHostGetBootTimeProcfs(&bootTime);
+# endif /* __linux__ */
 }
 
 #else /* !defined(HAVE_GETUTXID) && !defined(__linux__) */
