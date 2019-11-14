@@ -15309,24 +15309,26 @@ virDomainVideoResolutionDefParseXML(xmlNodePtr node)
     x = virXMLPropString(node, "x");
     y = virXMLPropString(node, "y");
 
-    if (!x || !y)
+    if (!x || !y) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("missing values for resolution"));
         return NULL;
+    }
 
     def = g_new0(virDomainVideoResolutionDef, 1);
 
     if (virStrToLong_uip(x, NULL, 10, &def->x) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("cannot parse video x-resolution '%s'"), x);
-        goto cleanup;
+        return NULL;
     }
 
     if (virStrToLong_uip(y, NULL, 10, &def->y) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("cannot parse video y-resolution '%s'"), y);
-        goto cleanup;
+        return NULL;
     }
 
- cleanup:
     return g_steal_pointer(&def);
 }
 
@@ -15415,8 +15417,10 @@ virDomainVideoDefParseXML(virDomainXMLOptionPtr xmlopt,
                             virXMLNodeNameEqual(child, "acceleration"))
                             def->accel = virDomainVideoAccelDefParseXML(child);
                         if (def->res == NULL &&
-                            virXMLNodeNameEqual(child, "resolution"))
-                            def->res = virDomainVideoResolutionDefParseXML(child);
+                            virXMLNodeNameEqual(child, "resolution")) {
+                            if ((def->res = virDomainVideoResolutionDefParseXML(child)) == NULL)
+                                goto error;
+                        }
                     }
                     child = child->next;
                 }
