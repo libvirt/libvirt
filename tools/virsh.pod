@@ -1827,7 +1827,7 @@ agent commands block forever waiting for a response. B<value> must be a
 positive value (wait for given amount of seconds) or one of the following
 values:
 
- -2 - block forever waiting for a resuly,
+ -2 - block forever waiting for a result,
  -1 - reset timeout to the default value,
   0 - do not wait at all,
 
