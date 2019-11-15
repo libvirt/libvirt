@@ -397,6 +397,12 @@ struct _qemuDomainObjPrivate {
 
     virHashTablePtr dbusVMStates;
     bool disableSlirp;
+
+    /* Until we add full support for backing chains for pflash drives, these
+     * pointers hold the temporary virStorageSources for creating the -blockdev
+     * commandline for pflash drives. */
+    virStorageSourcePtr pflash0;
+    virStorageSourcePtr pflash1;
 };
 
 #define QEMU_DOMAIN_PRIVATE(vm) \

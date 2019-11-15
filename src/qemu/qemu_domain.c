@@ -2167,6 +2167,11 @@ qemuDomainObjPrivateDataClear(qemuDomainObjPrivatePtr priv)
 
     virHashRemoveAll(priv->blockjobs);
     virHashRemoveAll(priv->dbusVMStates);
+
+    virObjectUnref(priv->pflash0);
+    priv->pflash0 = NULL;
+    virObjectUnref(priv->pflash1);
+    priv->pflash1 = NULL;
 }
 
 
