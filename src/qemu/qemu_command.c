@@ -9425,7 +9425,8 @@ qemuBuildRedirdevCommandLine(virLogManagerPtr logManager,
 
 static void
 qemuBuldDomainLoaderPflashCommandLine(virCommandPtr cmd,
-                                      virDomainLoaderDefPtr loader)
+                                      virDomainLoaderDefPtr loader,
+                                      virQEMUCapsPtr qemuCaps)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     int unit = 0;
@@ -9436,6 +9437,10 @@ qemuBuldDomainLoaderPflashCommandLine(virCommandPtr cmd,
                              "driver=cfi.pflash01,property=secure,value=on",
                              NULL);
     }
+
+    /* with blockdev we instantiate the pflash when formatting -machine */
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV))
+        return;
 
     virBufferAddLit(&buf, "file=");
     virQEMUBuildBufferEscapeComma(&buf, loader->path);
@@ -9464,7 +9469,8 @@ qemuBuldDomainLoaderPflashCommandLine(virCommandPtr cmd,
 
 static void
 qemuBuildDomainLoaderCommandLine(virCommandPtr cmd,
-                                 virDomainDefPtr def)
+                                 virDomainDefPtr def,
+                                 virQEMUCapsPtr qemuCaps)
 {
     virDomainLoaderDefPtr loader = def->os.loader;
 
@@ -9478,7 +9484,7 @@ qemuBuildDomainLoaderCommandLine(virCommandPtr cmd,
         break;
 
     case VIR_DOMAIN_LOADER_TYPE_PFLASH:
-        qemuBuldDomainLoaderPflashCommandLine(cmd, loader);
+        qemuBuldDomainLoaderPflashCommandLine(cmd, loader, qemuCaps);
         break;
 
     case VIR_DOMAIN_LOADER_TYPE_NONE:
@@ -10263,7 +10269,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     if (qemuBuildCpuCommandLine(cmd, driver, def, qemuCaps) < 0)
         return NULL;
 
-    qemuBuildDomainLoaderCommandLine(cmd, def);
+    qemuBuildDomainLoaderCommandLine(cmd, def, qemuCaps);
 
     if (!migrateURI && !snapshot && qemuDomainAlignMemorySizes(def) < 0)
         return NULL;

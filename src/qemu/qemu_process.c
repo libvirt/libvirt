@@ -6291,6 +6291,8 @@ qemuProcessPrepareDomain(virQEMUDriverPtr driver,
     VIR_DEBUG("Prepare bios/uefi paths");
     if (qemuFirmwareFillDomain(driver, vm, flags) < 0)
         goto cleanup;
+    if (qemuDomainInitializePflashStorageSource(vm) < 0)
+        goto cleanup;
 
     VIR_DEBUG("Preparing external devices");
     if (qemuExtDevicesPrepareDomain(driver, vm) < 0)
@@ -8018,6 +8020,10 @@ qemuProcessReconnect(void *opaque)
         goto error;
 
     if (qemuDomainPerfRestart(obj) < 0)
+        goto error;
+
+    /* recreate the pflash storage sources */
+    if (qemuDomainInitializePflashStorageSource(obj) < 0)
         goto error;
 
     /* XXX: Need to change as long as lock is introduced for
