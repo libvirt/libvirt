@@ -362,6 +362,7 @@ typedef enum {
     VIR_STORAGE_POOL_FS_HFSPLUS,
     VIR_STORAGE_POOL_FS_XFS,
     VIR_STORAGE_POOL_FS_OCFS2,
+    VIR_STORAGE_POOL_FS_VMFS,
     VIR_STORAGE_POOL_FS_LAST,
 } virStoragePoolFormatFileSystem;
 VIR_ENUM_DECL(virStoragePoolFormatFileSystem);

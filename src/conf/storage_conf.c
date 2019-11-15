@@ -67,6 +67,7 @@ VIR_ENUM_IMPL(virStoragePoolFormatFileSystem,
               "auto", "ext2", "ext3",
               "ext4", "ufs", "iso9660", "udf",
               "gfs", "gfs2", "vfat", "hfs+", "xfs", "ocfs2",
+              "vmfs",
 );
 
 VIR_ENUM_IMPL(virStoragePoolFormatFileSystemNet,

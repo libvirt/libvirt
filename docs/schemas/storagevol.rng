@@ -194,6 +194,7 @@
       <value>hfs+</value>
       <value>xfs</value>
       <value>ocfs2</value>
+      <value>vmfs</value>
     </choice>
   </define>
 

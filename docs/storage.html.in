@@ -202,6 +202,9 @@
       <li>
         <code>ocfs2</code>
       </li>
+      <li>
+        <code>vmfs</code>
+      </li>
     </ul>
 
     <h3>Valid volume format types</h3>
