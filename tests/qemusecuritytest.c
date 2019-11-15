@@ -217,4 +217,5 @@ mymain(void)
     return ret;
 }
 
-VIR_TEST_MAIN(mymain)
+VIR_TEST_MAIN_PRELOAD(mymain,
+                      VIR_TEST_MOCK("domaincaps"))
