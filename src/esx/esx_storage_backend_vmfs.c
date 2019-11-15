@@ -531,6 +531,7 @@ esxStoragePoolGetXMLDesc(virStoragePoolPtr pool, unsigned int flags)
         }
     } else if (esxVI_VmfsDatastoreInfo_DynamicCast(info)) {
         def.type = VIR_STORAGE_POOL_FS;
+        def.source.format = VIR_STORAGE_POOL_FS_VMFS;
         /*
          * FIXME: I'm not sure how to represent the source and target of a
          * VMFS based datastore in libvirt terms
