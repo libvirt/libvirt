@@ -1235,3 +1235,6 @@ qemuDomainSupportsCheckpointsBlockjobs(virDomainObjPtr vm)
 
 int
 qemuDomainMakeCPUMigratable(virCPUDefPtr cpu);
+
+int
+qemuDomainInitializePflashStorageSource(virDomainObjPtr vm);

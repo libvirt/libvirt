@@ -15609,3 +15609,61 @@ qemuDomainSupportsCheckpointsBlockjobs(virDomainObjPtr vm)
 
     return 0;
 }
+
+/**
+ * qemuDomainInitializePflashStorageSource:
+ *
+ * This helper converts the specification of the source of the 'loader' in case
+ * PFLASH is required to virStorageSources in case QEMU_CAPS_BLOCKDEV is present.
+ *
+ * This helper is used in the intermediate state when we don't support full
+ * backing chains for pflash drives in the XML.
+ *
+ * The nodenames used here have a different prefix to allow for a later
+ * conversion. The prefixes are 'libvirt-pflash0-storage',
+ * 'libvirt-pflash0-format' for pflash0 and 'libvirt-pflash1-storage' and
+ * 'libvirt-pflash1-format' for pflash1.
+ */
+int
+qemuDomainInitializePflashStorageSource(virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virDomainDefPtr def = vm->def;
+    g_autoptr(virStorageSource) pflash0 = NULL;
+    g_autoptr(virStorageSource) pflash1 = NULL;
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV))
+        return 0;
+
+    if (!def->os.loader ||
+        def->os.loader->type != VIR_DOMAIN_LOADER_TYPE_PFLASH)
+        return 0;
+
+    if (!(pflash0 = virStorageSourceNew()))
+        return -1;
+
+    pflash0->type = VIR_STORAGE_TYPE_FILE;
+    pflash0->format = VIR_STORAGE_FILE_RAW;
+    pflash0->path = g_strdup(def->os.loader->path);
+    pflash0->readonly = def->os.loader->readonly;
+    pflash0->nodeformat = g_strdup("libvirt-pflash0-format");
+    pflash0->nodestorage = g_strdup("libvirt-pflash0-storage");
+
+
+    if (def->os.loader->nvram) {
+        if (!(pflash1 = virStorageSourceNew()))
+            return -1;
+
+        pflash1->type = VIR_STORAGE_TYPE_FILE;
+        pflash1->format = VIR_STORAGE_FILE_RAW;
+        pflash1->path = g_strdup(def->os.loader->nvram);
+        pflash1->readonly = false;
+        pflash1->nodeformat = g_strdup("libvirt-pflash1-format");
+        pflash1->nodestorage = g_strdup("libvirt-pflash1-storage");
+    }
+
+    priv->pflash0 = g_steal_pointer(&pflash0);
+    priv->pflash1 = g_steal_pointer(&pflash1);
+
+    return 0;
+}
