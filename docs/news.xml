@@ -53,6 +53,19 @@
           which were introduced in QEMU 4.2.0.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Support boot display for GPU mediated devices
+        </summary>
+        <description>
+          Until now, GPU mediated devices generally did not show any output
+          until the guest OS had initialized the vGPU. By specifying the
+          <code>ramfb</code> attribute, QEMU can be configured to use ramfb as
+          a boot display for the device: this allows for display of firmware
+          messages, boot loader menu, and other output before the guest OS has
+          initialized the vGPU.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
