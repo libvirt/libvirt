@@ -7043,7 +7043,8 @@ static int
 qemuBuildMachineCommandLine(virCommandPtr cmd,
                             virQEMUDriverConfigPtr cfg,
                             const virDomainDef *def,
-                            virQEMUCapsPtr qemuCaps)
+                            virQEMUCapsPtr qemuCaps,
+                            qemuDomainObjPrivatePtr priv)
 {
     virTristateSwitch vmport = def->features[VIR_DOMAIN_FEATURE_VMPORT];
     virTristateSwitch smm = def->features[VIR_DOMAIN_FEATURE_SMM];
@@ -7342,6 +7343,13 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
 
     if (def->sev)
         virBufferAddLit(&buf, ",memory-encryption=sev0");
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+        if (priv->pflash0)
+            virBufferAsprintf(&buf, ",pflash0=%s", priv->pflash0->nodeformat);
+        if (priv->pflash1)
+            virBufferAsprintf(&buf, ",pflash1=%s", priv->pflash1->nodeformat);
+    }
 
     virCommandAddArgBuffer(cmd, &buf);
 
@@ -10247,7 +10255,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     if (enableFips)
         virCommandAddArg(cmd, "-enable-fips");
 
-    if (qemuBuildMachineCommandLine(cmd, cfg, def, qemuCaps) < 0)
+    if (qemuBuildMachineCommandLine(cmd, cfg, def, qemuCaps, priv) < 0)
         return NULL;
 
     qemuBuildTSEGCommandLine(cmd, def);
