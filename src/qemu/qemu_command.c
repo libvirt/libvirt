@@ -9884,6 +9884,47 @@ qemuBuildManagedPRCommandLine(virCommandPtr cmd,
 }
 
 
+static int
+qemuBuildPflashBlockdevOne(virCommandPtr cmd,
+                           virStorageSourcePtr src,
+                           virQEMUCapsPtr qemuCaps)
+{
+    g_autoptr(qemuBlockStorageSourceChainData) data = NULL;
+    size_t i;
+
+    if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdev(src,
+                                                                  qemuCaps)))
+        return -1;
+
+    for (i = data->nsrcdata; i > 0; i--) {
+        if (qemuBuildBlockStorageSourceAttachDataCommandline(cmd,
+                                                             data->srcdata[i - 1]) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+qemuBuildPflashBlockdevCommandLine(virCommandPtr cmd,
+                                   qemuDomainObjPrivatePtr priv)
+{
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV))
+        return 0;
+
+    if (priv->pflash0 &&
+        qemuBuildPflashBlockdevOne(cmd, priv->pflash0, priv->qemuCaps) < 0)
+        return -1;
+
+    if (priv->pflash1 &&
+        qemuBuildPflashBlockdevOne(cmd, priv->pflash1, priv->qemuCaps) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 static virJSONValuePtr
 qemuBuildDBusVMStateInfoPropsInternal(const char *alias,
                                       const char *addr)
@@ -10198,6 +10239,9 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
         return NULL;
 
     if (qemuBuildManagedPRCommandLine(cmd, def, priv) < 0)
+        return NULL;
+
+    if (qemuBuildPflashBlockdevCommandLine(cmd, priv) < 0)
         return NULL;
 
     if (enableFips)
