@@ -17,22 +17,19 @@
  */
 #include <config.h>
 
-#include <sys/syscall.h>
-
-#include "internal.h"
-
-#include "viralloc.h"
-#include "virbpf.h"
-#include "virerror.h"
-#include "virfile.h"
 #include "virlog.h"
-#include "virstring.h"
+#include "virerror.h"
+#include "virbpf.h"
 
 VIR_LOG_INIT("util.bpf");
 
 #define VIR_FROM_THIS VIR_FROM_BPF
 
-#if HAVE_DECL_BPF_PROG_QUERY
+#if HAVE_SYS_SYSCALL_H && HAVE_DECL_BPF_PROG_QUERY
+# include <sys/syscall.h>
+# include <unistd.h>
+
+
 int
 virBPFCreateMap(unsigned int mapType,
                 unsigned int keySize,
@@ -294,7 +291,11 @@ virBPFDeleteElem(int mapfd,
 
     return syscall(SYS_bpf, BPF_MAP_DELETE_ELEM, &attr, sizeof(attr));
 }
-#else /* HAVE_DECL_BPF_PROG_QUERY */
+
+
+#else /* !HAVE_SYS_SYSCALL_H || !HAVE_DECL_BPF_PROG_QUERY */
+
+
 int
 virBPFCreateMap(unsigned int mapType G_GNUC_UNUSED,
                 unsigned int keySize G_GNUC_UNUSED,
@@ -433,4 +434,4 @@ virBPFDeleteElem(int mapfd G_GNUC_UNUSED,
                          _("BPF not supported with this kernel"));
     return -1;
 }
-#endif /* HAVE_DECL_BPF_PROG_QUERY */
+#endif /* !HAVE_SYS_SYSCALL_H || !HAVE_DECL_BPF_PROG_QUERY */
