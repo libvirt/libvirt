@@ -34,7 +34,6 @@
 #include "intprops.h"
 #include "virlog.h"
 #include "virerror.h"
-#include "c-ctype.h"
 #include "virstring.h"
 #include "virprocess.h"
 
@@ -130,7 +129,7 @@ int virPidFileReadPath(const char *path,
     pidstr[bytes] = '\0';
 
     if (virStrToLong_ll(pidstr, &endptr, 10, &pid_value) < 0 ||
-        !(*endptr == '\0' || c_isspace(*endptr)) ||
+        !(*endptr == '\0' || g_ascii_isspace(*endptr)) ||
         (pid_t) pid_value != pid_value) {
         rc = -1;
         goto cleanup;

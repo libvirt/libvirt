@@ -38,7 +38,6 @@
 # include <sys/resource.h>
 #endif
 
-#include "c-ctype.h"
 #include "viralloc.h"
 #define LIBVIRT_VIRHOSTCPUPRIV_H_ALLOW
 #include "virhostcpupriv.h"
@@ -512,7 +511,7 @@ virHostCPUParseFrequencyString(const char *str,
     str += strlen(prefix);
 
     /* Skip all whitespace */
-    while (c_isspace(*str))
+    while (g_ascii_isspace(*str))
         str++;
     if (*str == '\0')
         goto error;
@@ -524,7 +523,7 @@ virHostCPUParseFrequencyString(const char *str,
     str++;
 
     /* Skip all whitespace */
-    while (c_isspace(*str))
+    while (g_ascii_isspace(*str))
         str++;
     if (*str == '\0')
         goto error;
@@ -533,7 +532,7 @@ virHostCPUParseFrequencyString(const char *str,
      * followed by a fractional part (which gets discarded) or some
      * leading whitespace */
     if (virStrToLong_ui(str, &p, 10, &ui) < 0 ||
-        (*p != '.' && *p != '\0' && !c_isspace(*p))) {
+        (*p != '.' && *p != '\0' && !g_ascii_isspace(*p))) {
         goto error;
     }
 

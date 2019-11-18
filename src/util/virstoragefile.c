@@ -30,7 +30,6 @@
 #include "virerror.h"
 #include "virlog.h"
 #include "virfile.h"
-#include "c-ctype.h"
 #include "vircommand.h"
 #include "virhash.h"
 #include "virendian.h"
@@ -1376,7 +1375,7 @@ int virStorageFileGetLVMKey(const char *path,
         char *tmp = *key;
 
         /* Find first non-space character */
-        while (*tmp && c_isspace(*tmp))
+        while (*tmp && g_ascii_isspace(*tmp))
             tmp++;
         /* Kill leading spaces */
         if (tmp != *key)

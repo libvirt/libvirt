@@ -102,7 +102,7 @@ virUUIDParse(const char *uuidstr, unsigned char *uuid)
      * 32 hexadecimal digits the end.
      */
     cur = uuidstr;
-    while (c_isspace(*cur))
+    while (g_ascii_isspace(*cur))
         cur++;
 
     for (i = 0; i < VIR_UUID_BUFLEN;) {
@@ -128,7 +128,7 @@ virUUIDParse(const char *uuidstr, unsigned char *uuid)
     }
 
     while (*cur) {
-        if (!c_isspace(*cur))
+        if (!g_ascii_isspace(*cur))
             goto error;
         cur++;
     }

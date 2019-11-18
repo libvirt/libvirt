@@ -25,7 +25,6 @@
 
 #include "virerror.h"
 #include "virfile.h"
-#include "c-ctype.h"
 #include "datatypes.h"
 #include "domain_conf.h"
 #include "interface_driver.h"
@@ -932,7 +931,7 @@ udevGetIfaceDefVlan(struct udev *udev G_GNUC_UNUSED,
     vid_pos += strlen(vid_prefix);
 
     if ((vid_len = strspn(vid_pos, "0123456789")) == 0 ||
-        !c_isspace(vid_pos[vid_len])) {
+        !g_ascii_isspace(vid_pos[vid_len])) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to find the VID for the VLAN device '%s'"),
                        name);

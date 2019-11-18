@@ -31,7 +31,6 @@
 #include "virlog.h"
 #include "virstring.h"
 #include "virutil.h"
-#include "c-ctype.h"
 
 #define VIR_FROM_THIS VIR_FROM_BHYVE
 
@@ -212,7 +211,7 @@ bhyveCommandLineToArgv(const char *nativeConfig,
             arglist[args_count++] = arg;
             arglist[args_count] = NULL;
 
-            while (next && c_isspace(*next))
+            while (next && g_ascii_isspace(*next))
                 next++;
 
             curr = next;

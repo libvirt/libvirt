@@ -49,7 +49,6 @@ VIR_ENUM_IMPL(virNetDevVPortProfileOp,
 #if WITH_VIRTUALPORT
 
 # include <fcntl.h>
-# include <c-ctype.h>
 # include <sys/socket.h>
 # include <sys/ioctl.h>
 
@@ -482,7 +481,7 @@ virNetDevVPortProfileGetLldpadPid(void)
             char *endptr;
 
             if (virStrToLong_ui(buffer, &endptr, 10, &res) == 0
-                && (*endptr == '\0' || c_isspace(*endptr))
+                && (*endptr == '\0' || g_ascii_isspace(*endptr))
                 && res != 0) {
                 pid = res;
             } else {

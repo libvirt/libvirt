@@ -794,7 +794,7 @@ virSkipSpaces(const char **str)
 {
     const char *cur = *str;
 
-    while (c_isspace(*cur))
+    while (g_ascii_isspace(*cur))
         cur++;
     *str = cur;
 }
@@ -811,7 +811,7 @@ virSkipSpacesAndBackslash(const char **str)
 {
     const char *cur = *str;
 
-    while (c_isspace(*cur) || *cur == '\\')
+    while (g_ascii_isspace(*cur) || *cur == '\\')
         cur++;
     *str = cur;
 }
@@ -840,7 +840,7 @@ virTrimSpaces(char *str, char **endp)
         end = str + strlen(str);
     else
         end = *endp;
-    while (end > str && c_isspace(end[-1]))
+    while (end > str && g_ascii_isspace(end[-1]))
         end--;
     if (endp) {
         if (!*endp)

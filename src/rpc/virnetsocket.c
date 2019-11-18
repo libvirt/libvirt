@@ -40,7 +40,6 @@
 # include <sys/ucred.h>
 #endif
 
-#include "c-ctype.h"
 #ifdef WITH_SELINUX
 # include <selinux/selinux.h>
 #endif
@@ -1813,7 +1812,7 @@ static ssize_t virNetSocketReadWire(virNetSocketPtr sock, char *buf, size_t len)
         errout != NULL) {
         size_t elen = strlen(errout);
         /* remove trailing whitespace */
-        while (elen && c_isspace(errout[elen - 1]))
+        while (elen && g_ascii_isspace(errout[elen - 1]))
             errout[--elen] = '\0';
     }
 

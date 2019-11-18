@@ -42,7 +42,6 @@
 #include "nwfilter_params.h"
 #include "nwfilter_conf.h"
 #include "domain_conf.h"
-#include "c-ctype.h"
 #include "virfile.h"
 #include "virstring.h"
 
@@ -775,7 +774,7 @@ parseStringItems(const struct int_map *int_map,
     i = 0;
     while (input[i]) {
         found = false;
-        while (c_isspace(input[i]) || input[i] == sep)
+        while (g_ascii_isspace(input[i]) || input[i] == sep)
             i++;
         if (!input[i])
             break;
