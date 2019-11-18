@@ -1444,7 +1444,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
             } else if (data_only) {
                 goto get_data;
             } else if (tkdata[0] == '-' && tkdata[1] == '-' &&
-                       c_isalnum(tkdata[2])) {
+                       g_ascii_isalnum(tkdata[2])) {
                 char *optstr = strchr(tkdata + 2, '=');
                 size_t opt_index = 0;
 

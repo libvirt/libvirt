@@ -21,7 +21,6 @@
 #include <config.h>
 
 
-#include "c-ctype.h"
 #include "virlog.h"
 #include "viralloc.h"
 #include "virfile.h"
@@ -155,7 +154,7 @@ static int virKeyFileParseValue(virKeyFileParserCtxtPtr ctxt)
     }
 
     keystart = ctxt->cur;
-    while (!IS_EOF && c_isalnum(CUR) && CUR != '=')
+    while (!IS_EOF && g_ascii_isalnum(CUR) && CUR != '=')
         ctxt->cur++;
     if (CUR != '=') {
         virKeyFileError(ctxt, VIR_ERR_CONF_SYNTAX, "expected end of value name, expected '='");
@@ -224,7 +223,7 @@ static int virKeyFileParseStatement(virKeyFileParserCtxtPtr ctxt)
 
     if (CUR == '[') {
         ret = virKeyFileParseGroup(ctxt);
-    } else if (c_isalnum(CUR)) {
+    } else if (g_ascii_isalnum(CUR)) {
         ret = virKeyFileParseValue(ctxt);
     } else if (CUR == '#' || CUR == ';') {
         ret = virKeyFileParseComment(ctxt);

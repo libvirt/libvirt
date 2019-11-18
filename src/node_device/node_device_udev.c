@@ -22,7 +22,6 @@
 #include <libudev.h>
 #include <pciaccess.h>
 #include <scsi/scsi.h>
-#include <c-ctype.h>
 
 #include "dirname.h"
 #include "node_device_conf.h"
@@ -307,7 +306,7 @@ udevGenerateDeviceName(struct udev_device *device,
     def->name = virBufferContentAndReset(&buf);
 
     for (i = 0; i < strlen(def->name); i++) {
-        if (!(c_isalnum(*(def->name + i))))
+        if (!(g_ascii_isalnum(*(def->name + i))))
             *(def->name + i) = '_';
     }
 

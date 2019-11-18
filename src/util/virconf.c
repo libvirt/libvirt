@@ -562,7 +562,7 @@ virConfParseName(virConfParserCtxtPtr ctxt)
         return NULL;
     }
     while ((ctxt->cur < ctxt->end) &&
-           (c_isalnum(CUR) || (CUR == '_') ||
+           (g_ascii_isalnum(CUR) || (CUR == '_') ||
             ((ctxt->conf->flags & VIR_CONF_FLAG_VMX_FORMAT) &&
              ((CUR == ':') || (CUR == '.') || (CUR == '-'))) ||
             ((ctxt->conf->flags & VIR_CONF_FLAG_LXC_FORMAT) &&
