@@ -166,7 +166,7 @@ virConnectListSecrets(virConnectPtr conn, char **uuids, int maxuuids)
     virResetLastError();
 
     virCheckConnectReturn(conn, -1);
-    virCheckNonNullArgGoto(uuids, error);
+    virCheckNonNullArrayArgGoto(uuids, maxuuids, error);
     virCheckNonNegativeArgGoto(maxuuids, error);
 
     if (conn->secretDriver != NULL && conn->secretDriver->connectListSecrets != NULL) {

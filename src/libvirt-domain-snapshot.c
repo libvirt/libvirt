@@ -398,7 +398,7 @@ virDomainSnapshotListNames(virDomainPtr domain, char **names, int nameslen,
     virCheckDomainReturn(domain, -1);
     conn = domain->conn;
 
-    virCheckNonNullArgGoto(names, error);
+    virCheckNonNullArrayArgGoto(names, nameslen, error);
     virCheckNonNegativeArgGoto(nameslen, error);
 
     if (conn->driver->domainSnapshotListNames) {
@@ -600,7 +600,7 @@ virDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
     virCheckDomainSnapshotReturn(snapshot, -1);
     conn = snapshot->domain->conn;
 
-    virCheckNonNullArgGoto(names, error);
+    virCheckNonNullArrayArgGoto(names, nameslen, error);
     virCheckNonNegativeArgGoto(nameslen, error);
 
     if (conn->driver->domainSnapshotListChildrenNames) {

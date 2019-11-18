@@ -169,7 +169,7 @@ virNodeListDevices(virConnectPtr conn,
     virResetLastError();
 
     virCheckConnectReturn(conn, -1);
-    virCheckNonNullArgGoto(names, error);
+    virCheckNonNullArrayArgGoto(names, maxnames, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
     if (conn->nodeDeviceDriver && conn->nodeDeviceDriver->nodeListDevices) {
@@ -415,7 +415,7 @@ virNodeDeviceListCaps(virNodeDevicePtr dev,
     virResetLastError();
 
     virCheckNodeDeviceReturn(dev, -1);
-    virCheckNonNullArgGoto(names, error);
+    virCheckNonNullArrayArgGoto(names, maxnames, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
     if (dev->conn->nodeDeviceDriver && dev->conn->nodeDeviceDriver->nodeDeviceListCaps) {

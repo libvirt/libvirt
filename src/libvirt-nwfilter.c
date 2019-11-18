@@ -127,7 +127,7 @@ virConnectListNWFilters(virConnectPtr conn, char **const names, int maxnames)
     virResetLastError();
 
     virCheckConnectReturn(conn, -1);
-    virCheckNonNullArgGoto(names, error);
+    virCheckNonNullArrayArgGoto(names, maxnames, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
     if (conn->nwfilterDriver && conn->nwfilterDriver->connectListNWFilters) {

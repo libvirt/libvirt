@@ -197,7 +197,7 @@ virConnectListStoragePools(virConnectPtr conn,
     virResetLastError();
 
     virCheckConnectReturn(conn, -1);
-    virCheckNonNullArgGoto(names, error);
+    virCheckNonNullArrayArgGoto(names, maxnames, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
     if (conn->storageDriver && conn->storageDriver->connectListStoragePools) {
@@ -277,7 +277,7 @@ virConnectListDefinedStoragePools(virConnectPtr conn,
     virResetLastError();
 
     virCheckConnectReturn(conn, -1);
-    virCheckNonNullArgGoto(names, error);
+    virCheckNonNullArrayArgGoto(names, maxnames, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
     if (conn->storageDriver && conn->storageDriver->connectListDefinedStoragePools) {
@@ -1268,7 +1268,7 @@ virStoragePoolListVolumes(virStoragePoolPtr pool,
     virResetLastError();
 
     virCheckStoragePoolReturn(pool, -1);
-    virCheckNonNullArgGoto(names, error);
+    virCheckNonNullArrayArgGoto(names, maxnames, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
     if (pool->conn->storageDriver && pool->conn->storageDriver->storagePoolListVolumes) {

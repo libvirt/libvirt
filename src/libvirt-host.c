@@ -910,7 +910,7 @@ virNodeGetCellsFreeMemory(virConnectPtr conn, unsigned long long *freeMems,
     virResetLastError();
 
     virCheckConnectReturn(conn, -1);
-    virCheckNonNullArgGoto(freeMems, error);
+    virCheckNonNullArrayArgGoto(freeMems, maxCells, error);
     virCheckPositiveArgGoto(maxCells, error);
     virCheckNonNegativeArgGoto(startCell, error);
 

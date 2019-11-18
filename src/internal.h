@@ -429,6 +429,19 @@
         } \
     } while (0)
 
+/* This check is intended to be used with legacy APIs only which expect the
+ * caller to pre-allocate the target buffer.
+ * We want to allow callers pass NULL arrays if the size is declared as 0 and
+ * still succeed in calling the API.
+ */
+#define virCheckNonNullArrayArgGoto(argname, argsize, label) \
+    do { \
+        if (!argname && argsize > 0) { \
+            virReportInvalidNonNullArg(argname); \
+            goto label; \
+        } \
+    } while (0)
+
 
 /* Count leading zeros in an unsigned int.
  *

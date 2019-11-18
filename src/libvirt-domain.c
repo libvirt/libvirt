@@ -59,7 +59,7 @@ virConnectListDomains(virConnectPtr conn, int *ids, int maxids)
     virResetLastError();
 
     virCheckConnectReturn(conn, -1);
-    virCheckNonNullArgGoto(ids, error);
+    virCheckNonNullArrayArgGoto(ids, maxids, error);
     virCheckNonNegativeArgGoto(maxids, error);
 
     if (conn->driver->connectListDomains) {
@@ -6386,7 +6386,7 @@ virConnectListDefinedDomains(virConnectPtr conn, char **const names,
     virResetLastError();
 
     virCheckConnectReturn(conn, -1);
-    virCheckNonNullArgGoto(names, error);
+    virCheckNonNullArrayArgGoto(names, maxnames, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
     if (conn->driver->connectListDefinedDomains) {
@@ -7298,7 +7298,7 @@ virDomainGetVcpuPinInfo(virDomainPtr domain, int ncpumaps,
     virCheckDomainReturn(domain, -1);
     conn = domain->conn;
 
-    virCheckNonNullArgGoto(cpumaps, error);
+    virCheckNonNullArrayArgGoto(cpumaps, ncpumaps, error);
     virCheckPositiveArgGoto(ncpumaps, error);
     virCheckPositiveArgGoto(maplen, error);
 
@@ -10996,10 +10996,7 @@ virDomainGetDiskErrors(virDomainPtr dom,
 
     virCheckDomainReturn(dom, -1);
 
-    if (maxerrors)
-        virCheckNonNullArgGoto(errors, error);
-    else
-        virCheckNullArgGoto(errors, error);
+    virCheckNonNullArrayArgGoto(errors, maxerrors, error);
 
     if (dom->conn->driver->domainGetDiskErrors) {
         int ret = dom->conn->driver->domainGetDiskErrors(dom, errors,
@@ -11136,10 +11133,7 @@ virDomainFSFreeze(virDomainPtr dom,
 
     virCheckDomainReturn(dom, -1);
     virCheckReadOnlyGoto(dom->conn->flags, error);
-    if (nmountpoints)
-        virCheckNonNullArgGoto(mountpoints, error);
-    else
-        virCheckNullArgGoto(mountpoints, error);
+    virCheckNonNullArrayArgGoto(mountpoints, nmountpoints, error);
 
     if (dom->conn->driver->domainFSFreeze) {
         int ret = dom->conn->driver->domainFSFreeze(
@@ -11181,10 +11175,7 @@ virDomainFSThaw(virDomainPtr dom,
 
     virCheckDomainReturn(dom, -1);
     virCheckReadOnlyGoto(dom->conn->flags, error);
-    if (nmountpoints)
-        virCheckNonNullArgGoto(mountpoints, error);
-    else
-        virCheckNullArgGoto(mountpoints, error);
+    virCheckNonNullArrayArgGoto(mountpoints, nmountpoints, error);
 
     if (dom->conn->driver->domainFSThaw) {
         int ret = dom->conn->driver->domainFSThaw(

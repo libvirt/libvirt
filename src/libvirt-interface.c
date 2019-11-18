@@ -166,7 +166,7 @@ virConnectListInterfaces(virConnectPtr conn, char **const names, int maxnames)
     virResetLastError();
 
     virCheckConnectReturn(conn, -1);
-    virCheckNonNullArgGoto(names, error);
+    virCheckNonNullArrayArgGoto(names, maxnames, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
     if (conn->interfaceDriver && conn->interfaceDriver->connectListInterfaces) {
@@ -245,7 +245,7 @@ virConnectListDefinedInterfaces(virConnectPtr conn,
     virResetLastError();
 
     virCheckConnectReturn(conn, -1);
-    virCheckNonNullArgGoto(names, error);
+    virCheckNonNullArrayArgGoto(names, maxnames, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
     if (conn->interfaceDriver && conn->interfaceDriver->connectListDefinedInterfaces) {

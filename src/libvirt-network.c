@@ -175,7 +175,7 @@ virConnectListNetworks(virConnectPtr conn, char **const names, int maxnames)
     virResetLastError();
 
     virCheckConnectReturn(conn, -1);
-    virCheckNonNullArgGoto(names, error);
+    virCheckNonNullArrayArgGoto(names, maxnames, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
     if (conn->networkDriver && conn->networkDriver->connectListNetworks) {
@@ -252,7 +252,7 @@ virConnectListDefinedNetworks(virConnectPtr conn, char **const names,
     virResetLastError();
 
     virCheckConnectReturn(conn, -1);
-    virCheckNonNullArgGoto(names, error);
+    virCheckNonNullArrayArgGoto(names, maxnames, error);
     virCheckNonNegativeArgGoto(maxnames, error);
 
     if (conn->networkDriver && conn->networkDriver->connectListDefinedNetworks) {
