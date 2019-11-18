@@ -135,6 +135,9 @@
         <dt><a href="hacking.html">Contributor guidelines</a></dt>
         <dd>General hacking guidelines for contributors</dd>
 
+        <dt><a href="styleguide.html">Docs style guide</a></dt>
+        <dd>Style guidelines for reStructuredText docs</dd>
+
         <dt><a href="strategy.html">Project strategy</a></dt>
         <dd>Sets a vision for future direction &amp; technical choices</dd>
 
