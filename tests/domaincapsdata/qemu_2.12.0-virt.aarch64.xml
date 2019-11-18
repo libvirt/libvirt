@@ -140,6 +140,7 @@
     </gic>
     <vmcoreinfo supported='yes'/>
     <genid supported='no'/>
+    <backingStoreInput supported='no'/>
     <sev supported='no'/>
   </features>
 </domainCapabilities>
