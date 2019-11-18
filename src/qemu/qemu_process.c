@@ -7331,7 +7331,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     int retries = 0;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virErrorPtr orig_err;
-    virDomainDefPtr def;
+    virDomainDefPtr def = vm->def;
     virNetDevVPortProfilePtr vport = NULL;
     size_t i;
     char *timestamp;
@@ -7386,7 +7386,6 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     virDomainConfVMNWFilterTeardown(vm);
 
     if (cfg->macFilter) {
-        def = vm->def;
         for (i = 0; i < def->nnets; i++) {
             virDomainNetDefPtr net = def->nets[i];
             if (net->ifname == NULL)
@@ -7483,7 +7482,6 @@ void qemuProcessStop(virQEMUDriverPtr driver,
 
     qemuHostdevReAttachDomainDevices(driver, vm->def);
 
-    def = vm->def;
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDefPtr net = def->nets[i];
         vport = virDomainNetGetActualVirtPortProfile(net);
