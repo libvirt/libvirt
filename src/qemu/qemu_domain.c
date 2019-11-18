@@ -9105,7 +9105,7 @@ qemuDomainDefFormatBufInternal(virQEMUDriverPtr driver,
                 goto cleanup;
         }
 
-        if (qemuDomainMakeCPUMigratable(def->cpu) < 0)
+        if (def->cpu && qemuDomainMakeCPUMigratable(def->cpu) < 0)
             goto cleanup;
     }
 
