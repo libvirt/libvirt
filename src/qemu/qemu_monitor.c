@@ -199,14 +199,13 @@ VIR_ENUM_IMPL(qemuMonitorDumpStatus,
 
 
 #if DEBUG_RAW_IO
-# include <c-ctype.h>
 static char *
 qemuMonitorEscapeNonPrintable(const char *text)
 {
     size_t i;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     for (i = 0; text[i] != '\0'; i++) {
-        if (c_isprint(text[i]) ||
+        if (g_ascii_isprint(text[i]) ||
             text[i] == '\n' ||
             (text[i] == '\r' && text[i + 1] == '\n'))
             virBufferAddChar(&buf, text[i]);

@@ -25,7 +25,6 @@
 #include <stddef.h>
 #include <wchar.h>
 #include <wctype.h>
-#include "c-ctype.h"
 
 #include "viralloc.h"
 #include "virbuffer.h"
@@ -244,7 +243,7 @@ vshTableSafeEncode(const char *s, size_t *width)
                  * Not valid multibyte sequence -- maybe it's
                  * printable char according to the current locales.
                  */
-                if (!c_isprint(*p)) {
+                if (!g_ascii_isprint(*p)) {
                     g_snprintf(buf, HEX_ENCODE_LENGTH + 1, "\\x%02x", *p);
                     buf += HEX_ENCODE_LENGTH;
                     *width += HEX_ENCODE_LENGTH;

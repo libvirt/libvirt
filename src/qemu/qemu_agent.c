@@ -146,7 +146,6 @@ VIR_ONCE_GLOBAL_INIT(qemuAgent);
 
 
 #if DEBUG_RAW_IO
-# include <c-ctype.h>
 static char *
 qemuAgentEscapeNonPrintable(const char *text)
 {
@@ -155,7 +154,7 @@ qemuAgentEscapeNonPrintable(const char *text)
     for (i = 0; text[i] != '\0'; i++) {
         if (text[i] == '\\')
             virBufferAddLit(&buf, "\\\\");
-        else if (c_isprint(text[i]) || text[i] == '\n' ||
+        else if (g_ascii_isprint(text[i]) || text[i] == '\n' ||
                  (text[i] == '\r' && text[i+1] == '\n'))
             virBufferAddChar(&buf, text[i]);
         else

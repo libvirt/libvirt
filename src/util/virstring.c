@@ -1350,7 +1350,7 @@ virStringIsPrintable(const char *str)
     size_t i;
 
     for (i = 0; str[i]; i++)
-        if (!c_isprint(str[i]))
+        if (!g_ascii_isprint(str[i]))
             return false;
 
     return true;
@@ -1369,7 +1369,7 @@ virStringBufferIsPrintable(const uint8_t *buf,
     size_t i;
 
     for (i = 0; i < buflen; i++)
-        if (!c_isprint(buf[i]))
+        if (!g_ascii_isprint(buf[i]))
             return false;
 
     return true;
