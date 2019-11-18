@@ -56,13 +56,14 @@ struct _virConfParserCtxt {
 #define CUR (*ctxt->cur)
 #define NEXT if (ctxt->cur < ctxt->end) ctxt->cur++;
 #define IS_EOL(c) (((c) == '\n') || ((c) == '\r'))
+#define IS_BLANK(c) (((c) == ' ') || ((c) == '\t'))
 
 #define SKIP_BLANKS_AND_EOL \
-  do { while ((ctxt->cur < ctxt->end) && (c_isblank(CUR) || IS_EOL(CUR))) { \
+  do { while ((ctxt->cur < ctxt->end) && (IS_BLANK(CUR) || IS_EOL(CUR))) { \
          if (CUR == '\n') ctxt->line++; \
          ctxt->cur++; } } while (0)
 #define SKIP_BLANKS \
-  do { while ((ctxt->cur < ctxt->end) && (c_isblank(CUR))) \
+  do { while ((ctxt->cur < ctxt->end) && (IS_BLANK(CUR))) \
           ctxt->cur++; } while (0)
 
 VIR_ENUM_IMPL(virConf,
@@ -428,7 +429,7 @@ virConfParseString(virConfParserCtxtPtr ctxt)
         while ((ctxt->cur < ctxt->end) && (!IS_EOL(CUR)))
             NEXT;
         /* Reverse to exclude the trailing blanks from the value */
-        while ((ctxt->cur > base) && (c_isblank(CUR)))
+        while ((ctxt->cur > base) && (IS_BLANK(CUR)))
             ctxt->cur--;
         if (VIR_STRNDUP(ret, base, ctxt->cur - base) < 0)
             return NULL;

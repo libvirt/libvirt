@@ -77,6 +77,7 @@ struct _virKeyFileParserCtxt {
 
 #define IS_EOF (ctxt->cur >= ctxt->end)
 #define IS_EOL(c) (((c) == '\n') || ((c) == '\r'))
+#define IS_BLANK(c) (((c) == ' ') || ((c) == '\t'))
 #define CUR (*ctxt->cur)
 #define NEXT if (!IS_EOF) ctxt->cur++;
 
@@ -205,7 +206,7 @@ static int virKeyFileParseComment(virKeyFileParserCtxtPtr ctxt)
 
 static int virKeyFileParseBlank(virKeyFileParserCtxtPtr ctxt)
 {
-    while ((ctxt->cur < ctxt->end) && c_isblank(CUR))
+    while ((ctxt->cur < ctxt->end) && IS_BLANK(CUR))
         ctxt->cur++;
 
     if (!((ctxt->cur == ctxt->end) || IS_EOL(CUR))) {
@@ -226,7 +227,7 @@ static int virKeyFileParseStatement(virKeyFileParserCtxtPtr ctxt)
         ret = virKeyFileParseValue(ctxt);
     } else if (CUR == '#' || CUR == ';') {
         ret = virKeyFileParseComment(ctxt);
-    } else if (c_isblank(CUR) || IS_EOL(CUR)) {
+    } else if (IS_BLANK(CUR) || IS_EOL(CUR)) {
         ret = virKeyFileParseBlank(ctxt);
     } else {
         virKeyFileError(ctxt, VIR_ERR_CONF_SYNTAX, "unexpected statement");
