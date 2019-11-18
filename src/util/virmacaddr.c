@@ -21,7 +21,6 @@
 #include <config.h>
 
 
-#include "c-ctype.h"
 #include "virmacaddr.h"
 #include "virrandom.h"
 #include "virutil.h"
@@ -42,8 +41,8 @@ virMacAddrCompare(const char *p, const char *q)
             ++p;
         while (*q == '0' && g_ascii_isxdigit(q[1]))
             ++q;
-        c = c_tolower(*p);
-        d = c_tolower(*q);
+        c = g_ascii_tolower(*p);
+        d = g_ascii_tolower(*q);
 
         if (c == 0 || d == 0)
             break;

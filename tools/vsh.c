@@ -25,7 +25,6 @@
 #include <stdarg.h>
 #include <unistd.h>
 #include <sys/time.h>
-#include "c-ctype.h"
 #include <fcntl.h>
 #include <time.h>
 #include <sys/stat.h>
@@ -2343,7 +2342,7 @@ vshAskReedit(vshControl *ctl, const char *msg, bool relax_avail)
     while (true) {
         vshPrint(ctl, "\r%s %s %s: ", msg, _("Try again?"),
                  relax_avail ? "[y,n,i,f,?]" : "[y,n,f,?]");
-        c = c_tolower(getchar());
+        c = g_ascii_tolower(getchar());
 
         if (c == '?') {
             vshPrintRaw(ctl,

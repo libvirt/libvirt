@@ -35,7 +35,6 @@
 #include "internal.h"
 #include "virbitmap.h"
 #include "virbuffer.h"
-#include "c-ctype.h"
 #include "conf/domain_conf.h"
 #include "viralloc.h"
 #include "vircommand.h"
@@ -8844,7 +8843,7 @@ static int getSignalNumber(const char *signame)
     char *p = str;
 
     for (i = 0; signame[i]; i++)
-        p[i] = c_tolower(signame[i]);
+        p[i] = g_ascii_tolower(signame[i]);
 
     if (virStrToLong_i(p, NULL, 10, &signum) >= 0)
         return signum;

@@ -63,7 +63,6 @@
 # include <sys/un.h>
 #endif
 
-#include "c-ctype.h"
 #include "mgetgroups.h"
 #include "virerror.h"
 #include "virlog.h"
@@ -201,7 +200,7 @@ virScaleInteger(unsigned long long *value, const char *suffix,
 
         if (!suffix[1] || STRCASEEQ(suffix + 1, "iB")) {
             base = 1024;
-        } else if (c_tolower(suffix[1]) == 'b' && !suffix[2]) {
+        } else if (g_ascii_tolower(suffix[1]) == 'b' && !suffix[2]) {
             base = 1000;
         } else {
             virReportError(VIR_ERR_INVALID_ARG,
@@ -209,7 +208,7 @@ virScaleInteger(unsigned long long *value, const char *suffix,
             return -1;
         }
         scale = 1;
-        switch (c_tolower(*suffix)) {
+        switch (g_ascii_tolower(*suffix)) {
         case 'e':
             scale *= base;
             G_GNUC_FALLTHROUGH;

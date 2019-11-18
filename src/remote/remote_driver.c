@@ -49,7 +49,6 @@
 #include "virauth.h"
 #include "virauthconfig.h"
 #include "virstring.h"
-#include "c-ctype.h"
 
 #define VIR_FROM_THIS VIR_FROM_REMOTE
 
@@ -225,7 +224,7 @@ static int remoteSplitURIScheme(virURIPtr uri,
 
         p = *transport;
         while (*p) {
-            *p = c_tolower(*p);
+            *p = g_ascii_tolower(*p);
             p++;
         }
     }

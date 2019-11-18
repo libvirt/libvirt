@@ -22,8 +22,6 @@
 
 #include <config.h>
 
-#include <c-ctype.h>
-
 #include "internal.h"
 #include "virerror.h"
 #include "virfile.h"
@@ -1095,7 +1093,7 @@ virVMXHandleLegacySCSIDiskDriverName(virDomainDefPtr def,
     tmp = copy;
 
     for (; *tmp != '\0'; ++tmp)
-        *tmp = c_tolower(*tmp);
+        *tmp = g_ascii_tolower(*tmp);
 
     model = virDomainControllerModelSCSITypeFromString(copy);
     VIR_FREE(copy);
@@ -1977,7 +1975,7 @@ virVMXParseSCSIController(virConfPtr conf, int controller, bool *present,
         tmp = virtualDev_string;
 
         for (; *tmp != '\0'; ++tmp)
-            *tmp = c_tolower(*tmp);
+            *tmp = g_ascii_tolower(*tmp);
 
         *virtualDev = virVMXControllerModelSCSITypeFromString(virtualDev_string);
 
