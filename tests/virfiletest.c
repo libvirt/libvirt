@@ -133,7 +133,7 @@ makeSparseFile(const off_t offsets[],
     off_t len = 0;
     size_t i;
 
-    if ((fd = g_mkstemp_full(path,  O_CLOEXEC, S_IRUSR | S_IWUSR)) < 0)
+    if ((fd = g_mkstemp_full(path, O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR)) < 0)
         goto error;
 
     if (unlink(path) < 0)

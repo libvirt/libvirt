@@ -992,7 +992,7 @@ virLogOutputToJournald(virLogSourcePtr source,
      * and pass an FD to the journal
      */
 
-    if ((buffd = g_mkstemp_full(path, O_CLOEXEC, S_IRUSR | S_IWUSR)) < 0)
+    if ((buffd = g_mkstemp_full(path, O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR)) < 0)
         return;
 
     if (unlink(path) < 0)

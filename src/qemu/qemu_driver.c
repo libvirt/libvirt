@@ -4024,7 +4024,7 @@ qemuDomainScreenshot(virDomainPtr dom,
     if (!(tmp = g_strdup_printf("%s/qemu.screendump.XXXXXX", cfg->cacheDir)))
         goto endjob;
 
-    if ((tmp_fd = g_mkstemp_full(tmp, O_CLOEXEC, S_IRUSR | S_IWUSR)) == -1) {
+    if ((tmp_fd = g_mkstemp_full(tmp, O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR)) == -1) {
         virReportSystemError(errno, _("g_mkstemp(\"%s\") failed"), tmp);
         goto endjob;
     }
@@ -11970,7 +11970,7 @@ qemuDomainMemoryPeek(virDomainPtr dom,
         goto endjob;
 
     /* Create a temporary filename. */
-    if ((fd = g_mkstemp_full(tmp, O_CLOEXEC, S_IRUSR | S_IWUSR)) == -1) {
+    if ((fd = g_mkstemp_full(tmp, O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR)) == -1) {
         virReportSystemError(errno,
                              _("g_mkstemp(\"%s\") failed"), tmp);
         goto endjob;

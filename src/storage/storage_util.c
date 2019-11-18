@@ -1215,7 +1215,7 @@ storageBackendCreateQemuImgSecretPath(virStoragePoolObjPtr pool,
     if (!(secretPath = virStoragePoolObjBuildTempFilePath(pool, vol)))
         goto cleanup;
 
-    if ((fd = g_mkstemp_full(secretPath, O_CLOEXEC, S_IRUSR | S_IWUSR)) < 0) {
+    if ((fd = g_mkstemp_full(secretPath, O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR)) < 0) {
         virReportSystemError(errno, "%s",
                              _("failed to open secret file for write"));
         goto error;

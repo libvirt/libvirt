@@ -2400,7 +2400,7 @@ vshEditWriteToTempFile(vshControl *ctl, const char *doc)
     tmpdir = getenv("TMPDIR");
     if (!tmpdir) tmpdir = "/tmp";
     ret = g_strdup_printf("%s/virshXXXXXX.xml", tmpdir);
-    fd = g_mkstemp_full(ret, O_CLOEXEC, S_IRUSR | S_IWUSR);
+    fd = g_mkstemp_full(ret, O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR);
     if (fd == -1) {
         vshError(ctl, _("g_mkstemp_full: failed to create temporary file: %s"),
                  virStrerror(errno, ebuf, sizeof(ebuf)));

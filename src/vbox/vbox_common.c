@@ -7385,7 +7385,7 @@ vboxDomainScreenshot(virDomainPtr dom,
 
     tmp = g_strdup_printf("%s/vbox.screendump.XXXXXX", cacheDir);
 
-    if ((tmp_fd = g_mkstemp_full(tmp, O_CLOEXEC, S_IRUSR | S_IWUSR)) == -1) {
+    if ((tmp_fd = g_mkstemp_full(tmp, O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR)) == -1) {
         virReportSystemError(errno, _("g_mkstemp(\"%s\") failed"), tmp);
         VIR_FREE(tmp);
         VBOX_RELEASE(machine);
