@@ -21,7 +21,6 @@
 #include <glib/gprintf.h>
 #include <locale.h>
 
-#include "c-ctype.h"
 #include "virstring.h"
 #include "virthread.h"
 #include "viralloc.h"
@@ -1329,7 +1328,7 @@ virStringToUpper(char **dst, const char *src)
         return -1;
 
     for (i = 0; src[i]; i++) {
-        cap[i] = c_toupper(src[i]);
+        cap[i] = g_ascii_toupper(src[i]);
         if (cap[i] == '-')
             cap[i] = '_';
     }

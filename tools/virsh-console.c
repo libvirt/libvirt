@@ -29,7 +29,6 @@
 # include <poll.h>
 # include <unistd.h>
 # include <signal.h>
-# include <c-ctype.h>
 
 # include "internal.h"
 # include "virsh.h"
@@ -399,7 +398,7 @@ static char
 virshGetEscapeChar(const char *s)
 {
     if (*s == '^')
-        return CONTROL(c_toupper(s[1]));
+        return CONTROL(g_ascii_toupper(s[1]));
 
     return *s;
 }
