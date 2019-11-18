@@ -1062,7 +1062,7 @@ elsif ($mode eq "server") {
         print "\n";
 
         print "    $conn_type $conn_var = $conn_method(client);\n";
-        print "    if (!$conn_var) \n";
+        print "    if (!$conn_var)\n";
         print "        goto cleanup;\n";
         print "\n";
 
@@ -1144,7 +1144,7 @@ elsif ($mode eq "server") {
             print "\n";
         } else {
             if ($modern_ret_as_list) {
-                print "    if ((nresults = \n";
+                print "    if ((nresults =\n";
                 my $indln = "            $prefix$call->{ProcName}(";
                 print $indln;
                 print join(",\n" . ' ' x (length $indln), @args_list);
