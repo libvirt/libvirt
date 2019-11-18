@@ -66,6 +66,19 @@
           initialized the vGPU.
         </description>
       </change>
+      <change>
+        <summary>
+          Add API to change the response timeout for guest agent commands
+        </summary>
+        <description>
+          By default, when a command is sent to the guest agent, libvirt waits
+          forever for a response from the guest agent. If the guest is
+          unresponsive for any reason, this can block the calling thread
+          indefinitely. By setting a custom timeout using
+          <code>virDomainAgentSetResponseTimeout()</code>, API users can change
+          this behavior.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
