@@ -65,10 +65,10 @@ virBPFLoadProg(struct bpf_insn *insns,
     memset(&attr, 0, sizeof(attr));
 
     attr.prog_type = progType;
-    attr.insn_cnt = (uint32_t)insnCnt;
-    attr.insns = (uint64_t)insns;
-    attr.license = (uint64_t)"GPL";
-    attr.log_buf = (uint64_t)logbuf;
+    attr.insn_cnt = insnCnt;
+    attr.insns = (uintptr_t)insns;
+    attr.license = (uintptr_t)"GPL";
+    attr.log_buf = (uintptr_t)logbuf;
     attr.log_size = LOG_BUF_SIZE;
     attr.log_level = 1;
 
@@ -130,7 +130,7 @@ virBPFQueryProg(int targetfd,
     attr.query.target_fd = targetfd;
     attr.query.attach_type = attachType;
     attr.query.prog_cnt = maxprogids;
-    attr.query.prog_ids = (uint64_t)progids;
+    attr.query.prog_ids = (uintptr_t)progids;
 
     rc = syscall(SYS_bpf, BPF_PROG_QUERY, &attr, sizeof(attr));
 
@@ -166,7 +166,7 @@ virBPFGetProgInfo(int progfd,
 
     attr.info.bpf_fd = progfd;
     attr.info.info_len = sizeof(struct bpf_prog_info);
-    attr.info.info = (uint64_t)info;
+    attr.info.info = (uintptr_t)info;
 
     rc = syscall(SYS_bpf, BPF_OBJ_GET_INFO_BY_FD, &attr, sizeof(attr));
     if (rc < 0)
@@ -180,12 +180,12 @@ virBPFGetProgInfo(int progfd,
 
         memset(info, 0, sizeof(struct bpf_prog_info));
         info->nr_map_ids = maplen;
-        info->map_ids = (uint64_t)retmapIDs;
+        info->map_ids = (uintptr_t)retmapIDs;
 
         memset(&attr, 0, sizeof(attr));
         attr.info.bpf_fd = progfd;
         attr.info.info_len = sizeof(struct bpf_prog_info);
-        attr.info.info = (uint64_t)info;
+        attr.info.info = (uintptr_t)info;
 
         rc = syscall(SYS_bpf, BPF_OBJ_GET_INFO_BY_FD, &attr, sizeof(attr));
         if (rc < 0)
@@ -221,7 +221,7 @@ virBPFGetMapInfo(int mapfd,
 
     attr.info.bpf_fd = mapfd;
     attr.info.info_len = sizeof(struct bpf_map_info);
-    attr.info.info = (uint64_t)info;
+    attr.info.info = (uintptr_t)info;
 
     return syscall(SYS_bpf, BPF_OBJ_GET_INFO_BY_FD, &attr, sizeof(attr));
 }
@@ -237,8 +237,8 @@ virBPFLookupElem(int mapfd,
     memset(&attr, 0, sizeof(attr));
 
     attr.map_fd = mapfd;
-    attr.key = (uint64_t)key;
-    attr.value = (uint64_t)val;
+    attr.key = (uintptr_t)key;
+    attr.value = (uintptr_t)val;
 
     return syscall(SYS_bpf, BPF_MAP_LOOKUP_ELEM, &attr, sizeof(attr));
 }
@@ -254,8 +254,8 @@ virBPFGetNextElem(int mapfd,
     memset(&attr, 0, sizeof(attr));
 
     attr.map_fd = mapfd;
-    attr.key = (uint64_t)key;
-    attr.next_key = (uint64_t)nextKey;
+    attr.key = (uintptr_t)key;
+    attr.next_key = (uintptr_t)nextKey;
 
     return syscall(SYS_bpf, BPF_MAP_GET_NEXT_KEY, &attr, sizeof(attr));
 }
@@ -271,8 +271,8 @@ virBPFUpdateElem(int mapfd,
     memset(&attr, 0, sizeof(attr));
 
     attr.map_fd = mapfd;
-    attr.key = (uint64_t)key;
-    attr.value = (uint64_t)val;
+    attr.key = (uintptr_t)key;
+    attr.value = (uintptr_t)val;
 
     return syscall(SYS_bpf, BPF_MAP_UPDATE_ELEM, &attr, sizeof(attr));
 }
@@ -287,7 +287,7 @@ virBPFDeleteElem(int mapfd,
     memset(&attr, 0, sizeof(attr));
 
     attr.map_fd = mapfd;
-    attr.key = (uint64_t)key;
+    attr.key = (uintptr_t)key;
 
     return syscall(SYS_bpf, BPF_MAP_DELETE_ELEM, &attr, sizeof(attr));
 }
