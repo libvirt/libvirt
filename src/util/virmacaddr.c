@@ -38,9 +38,9 @@ virMacAddrCompare(const char *p, const char *q)
 {
     unsigned char c, d;
     do {
-        while (*p == '0' && c_isxdigit(p[1]))
+        while (*p == '0' && g_ascii_isxdigit(p[1]))
             ++p;
-        while (*q == '0' && c_isxdigit(q[1]))
+        while (*q == '0' && g_ascii_isxdigit(q[1]))
             ++q;
         c = c_tolower(*p);
         d = c_tolower(*q);
@@ -153,7 +153,7 @@ virMacAddrParse(const char* str, virMacAddrPtr addr)
         /* This is solely to avoid accepting the leading
          * space or "+" that strtoul would otherwise accept.
          */
-        if (!c_isxdigit(*str))
+        if (!g_ascii_isxdigit(*str))
             break;
 
         result = strtoul(str, &end_ptr, 16); /* exempt from syntax-check */

@@ -1525,7 +1525,7 @@ virValidateWWN(const char *wwn)
         p += 2;
 
     for (i = 0; p[i]; i++) {
-        if (!c_isxdigit(p[i]))
+        if (!g_ascii_isxdigit(p[i]))
             break;
     }
 

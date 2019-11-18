@@ -672,7 +672,7 @@ virVMXUnescapeHex(char *string, char escape)
     /* Unescape from 'cXX' where c is the escape char and X is a hex digit */
     while (*tmp1 != '\0') {
         if (*tmp1 == escape) {
-            if (!c_isxdigit(tmp1[1]) || !c_isxdigit(tmp1[2]))
+            if (!g_ascii_isxdigit(tmp1[1]) || !g_ascii_isxdigit(tmp1[2]))
                 return -1;
 
             *tmp2++ = virHexToBin(tmp1[1]) * 16 + virHexToBin(tmp1[2]);

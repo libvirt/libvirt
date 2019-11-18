@@ -28,7 +28,6 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "c-ctype.h"
 #include "internal.h"
 #include "virutil.h"
 #include "virerror.h"
@@ -113,14 +112,14 @@ virUUIDParse(const char *uuidstr, unsigned char *uuid)
             cur++;
             continue;
         }
-        if (!c_isxdigit(*cur))
+        if (!g_ascii_isxdigit(*cur))
             goto error;
         uuid[i] = virHexToBin(*cur);
         uuid[i] *= 16;
         cur++;
         if (*cur == 0)
             goto error;
-        if (!c_isxdigit(*cur))
+        if (!g_ascii_isxdigit(*cur))
             goto error;
         uuid[i] += virHexToBin(*cur);
         i++;
