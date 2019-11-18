@@ -226,7 +226,7 @@ vshTableSafeEncode(const char *s, size_t *width)
 
     while (p && *p) {
         if ((*p == '\\' && *(p + 1) == 'x') ||
-            c_iscntrl(*p)) {
+            g_ascii_iscntrl(*p)) {
             g_snprintf(buf, HEX_ENCODE_LENGTH + 1, "\\x%02x", *p);
             buf += HEX_ENCODE_LENGTH;
             *width += HEX_ENCODE_LENGTH;
