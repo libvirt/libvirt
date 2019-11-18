@@ -7611,6 +7611,18 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     for (i = 0; i < vm->def->niothreadids; i++)
         vm->def->iothreadids[i]->thread_id = 0;
 
+    /* Do this explicitly after vm->pid is reset so that security drivers don't
+     * try to enter the domain's namespace which is non-existent by now as qemu
+     * is no longer running. */
+    for (i = 0; i < def->ndisks; i++) {
+        virDomainDiskDefPtr disk = def->disks[i];
+
+        if (disk->mirror)
+            qemuBlockRemoveImageMetadata(driver, vm, disk->dst, disk->mirror);
+
+        qemuBlockRemoveImageMetadata(driver, vm, disk->dst, disk->src);
+    }
+
     /* clear all private data entries which are no longer needed */
     qemuDomainObjPrivateDataClear(priv);
 
