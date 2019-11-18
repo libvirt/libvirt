@@ -29,7 +29,6 @@
 #include "virbuffer.h"
 #include "virconf.h"
 #include "virutil.h"
-#include "c-ctype.h"
 #include "virlog.h"
 #include "viralloc.h"
 #include "virfile.h"
@@ -350,11 +349,11 @@ virConfParseLong(virConfParserCtxtPtr ctxt, long long *val)
     } else if (CUR == '+') {
         NEXT;
     }
-    if ((ctxt->cur >= ctxt->end) || (!c_isdigit(CUR))) {
+    if ((ctxt->cur >= ctxt->end) || (!g_ascii_isdigit(CUR))) {
         virConfError(ctxt, VIR_ERR_CONF_SYNTAX, _("unterminated number"));
         return -1;
     }
-    while ((ctxt->cur < ctxt->end) && (c_isdigit(CUR))) {
+    while ((ctxt->cur < ctxt->end) && (g_ascii_isdigit(CUR))) {
         l = l * 10 + (CUR - '0');
         NEXT;
     }
@@ -514,7 +513,7 @@ virConfParseValue(virConfParserCtxtPtr ctxt)
             virConfFreeList(lst);
             return NULL;
         }
-    } else if (c_isdigit(CUR) || (CUR == '-') || (CUR == '+')) {
+    } else if (g_ascii_isdigit(CUR) || (CUR == '-') || (CUR == '+')) {
         if (ctxt->conf->flags & VIR_CONF_FLAG_VMX_FORMAT) {
             virConfError(ctxt, VIR_ERR_CONF_SYNTAX,
                          _("numbers not allowed in VMX format"));

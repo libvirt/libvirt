@@ -567,7 +567,7 @@ udevBridgeScanDirFilter(const struct dirent *entry)
      */
     if (strlen(entry->d_name) >= 5) {
         if (STRPREFIX(entry->d_name, VIR_NET_GENERATED_TAP_PREFIX) &&
-            c_isdigit(entry->d_name[4]))
+            g_ascii_isdigit(entry->d_name[4]))
             return 0;
     }
 

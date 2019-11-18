@@ -26,7 +26,6 @@
 #include "virbitmap.h"
 #include "viralloc.h"
 #include "virbuffer.h"
-#include "c-ctype.h"
 #include "virstring.h"
 #include "virutil.h"
 #include "virerror.h"
@@ -506,7 +505,7 @@ virBitmapParseSeparator(const char *str,
             neg = true;
         }
 
-        if (!c_isdigit(*cur))
+        if (!g_ascii_isdigit(*cur))
             goto error;
 
         if (virStrToLong_i(cur, &tmp, 10, &start) < 0)
@@ -642,7 +641,7 @@ virBitmapParseUnlimited(const char *str)
             neg = true;
         }
 
-        if (!c_isdigit(*cur))
+        if (!g_ascii_isdigit(*cur))
             goto error;
 
         if (virStrToLong_i(cur, &tmp, 10, &start) < 0)

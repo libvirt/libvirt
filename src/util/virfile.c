@@ -80,8 +80,6 @@
 #include "virstring.h"
 #include "virutil.h"
 
-#include "c-ctype.h"
-
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 VIR_LOG_INIT("util.file");
@@ -696,7 +694,7 @@ static int virFileLoopDeviceOpenSearch(char **dev_name)
          * new kernels have a dev named 'loop-control'
          */
         if (!STRPREFIX(de->d_name, "loop") ||
-            !c_isdigit(de->d_name[4]))
+            !g_ascii_isdigit(de->d_name[4]))
             continue;
 
         looppath = g_strdup_printf("/dev/%s", de->d_name);

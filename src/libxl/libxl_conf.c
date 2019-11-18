@@ -29,7 +29,6 @@
 #include "internal.h"
 #include "virlog.h"
 #include "virerror.h"
-#include "c-ctype.h"
 #include "datatypes.h"
 #include "virconf.h"
 #include "virfile.h"
@@ -1860,7 +1859,7 @@ libxlDriverGetDom0MaxmemConf(libxlDriverConfigPtr cfg,
                 char *p = mem_tokens[j] + 4;
                 unsigned long long multiplier = 1;
 
-                while (c_isdigit(*p))
+                while (g_ascii_isdigit(*p))
                     p++;
                 if (virStrToLong_ull(mem_tokens[j] + 4, &p, 10, maxmem) < 0)
                     break;
