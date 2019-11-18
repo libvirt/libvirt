@@ -25,8 +25,6 @@
 #include "virerror.h"
 #include "virlog.h"
 
-#include "c-ctype.h"
-
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
 VIR_LOG_INIT("qemu.qemu_qapi");
@@ -165,7 +163,7 @@ virQEMUQAPISchemaTraverseObject(virJSONValuePtr cur,
     const char *query = virQEMUQAPISchemaTraverseContextNextQuery(ctxt);
     char modifier = *query;
 
-    if (!c_isalpha(modifier))
+    if (!g_ascii_isalpha(modifier))
         query++;
 
     /* exit on modifers for other types */
@@ -218,7 +216,7 @@ virQEMUQAPISchemaTraverseCommand(virJSONValuePtr cur,
     const char *querytype;
     char modifier = *query;
 
-    if (!c_isalpha(modifier))
+    if (!g_ascii_isalpha(modifier))
         query++;
 
     /* exit on modifers for other types */

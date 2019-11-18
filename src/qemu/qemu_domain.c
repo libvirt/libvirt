@@ -40,7 +40,6 @@
 #include "viralloc.h"
 #include "virlog.h"
 #include "virerror.h"
-#include "c-ctype.h"
 #include "cpu/cpu.h"
 #include "viruuid.h"
 #include "virfile.h"
@@ -3934,7 +3933,7 @@ qemuDomainDefNamespaceParseCommandlineArgs(qemuDomainXmlNsDefPtr nsdef,
 static int
 qemuDomainDefNamespaceParseCommandlineEnvNameValidate(const char *envname)
 {
-    if (!c_isalpha(envname[0]) && envname[0] != '_') {
+    if (!g_ascii_isalpha(envname[0]) && envname[0] != '_') {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Invalid environment name, it must begin with a letter or underscore"));
         return -1;

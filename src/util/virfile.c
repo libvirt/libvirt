@@ -3190,7 +3190,7 @@ virFileIsAbsPath(const char *path)
         return true;
 
 #ifdef WIN32
-    if (c_isalpha(path[0]) &&
+    if (g_ascii_isalpha(path[0]) &&
         path[1] == ':' &&
         VIR_FILE_IS_DIR_SEPARATOR(path[2]))
         return true;
@@ -3242,7 +3242,7 @@ virFileSkipRoot(const char *path)
 
 #ifdef WIN32
     /* Skip X:\ */
-    if (c_isalpha(path[0]) &&
+    if (g_ascii_isalpha(path[0]) &&
         path[1] == ':' &&
         VIR_FILE_IS_DIR_SEPARATOR(path[2]))
         return path + 3;

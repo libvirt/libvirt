@@ -37,7 +37,6 @@
 #include "virxml.h"
 #include "viruuid.h"
 #include "virbuffer.h"
-#include "c-ctype.h"
 #include "virfile.h"
 #include "virstring.h"
 
@@ -482,7 +481,7 @@ virNetworkDHCPHostDefParseXML(const char *networkName,
     }
 
     name = virXMLPropString(node, "name");
-    if (name && (!c_isalpha(name[0]))) {
+    if (name && (!g_ascii_isalpha(name[0]))) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("Cannot use host name '%s' in network '%s'"),
                        name, networkName);
