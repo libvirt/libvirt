@@ -456,7 +456,7 @@ virCgroupV2DevicesReallocMap(int mapfd,
     int ret = -1;
     VIR_AUTOCLOSE newmapfd = virCgroupV2DevicesCreateMap(size);
 
-    VIR_DEBUG("realloc devices map mapfd:%d, size:%lu", mapfd, size);
+    VIR_DEBUG("realloc devices map mapfd:%d, size:%zu", mapfd, size);
 
     if (newmapfd < 0)
         return -1;
