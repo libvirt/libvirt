@@ -393,11 +393,11 @@ int virDiskNameParse(const char *name, int *disk, int *partition)
         }
     }
 
-    if (!ptr || !c_islower(*ptr))
+    if (!ptr || !g_ascii_islower(*ptr))
         return -1;
 
     for (i = 0; *ptr; i++) {
-        if (!c_islower(*ptr))
+        if (!g_ascii_islower(*ptr))
             break;
 
         idx = (idx + (i < 1 ? 0 : 1)) * 26;
