@@ -286,14 +286,16 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
  * -1 on fatal client error
  */
 static int
-daemonStreamFilter(virNetServerClientPtr client G_GNUC_UNUSED,
+daemonStreamFilter(virNetServerClientPtr client,
                    virNetMessagePtr msg,
                    void *opaque)
 {
     daemonClientStream *stream = opaque;
     int ret = 0;
 
+    virObjectUnlock(client);
     virMutexLock(&stream->priv->lock);
+    virObjectLock(client);
 
     if (msg->header.type != VIR_NET_STREAM &&
         msg->header.type != VIR_NET_STREAM_HOLE)

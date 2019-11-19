@@ -40,6 +40,9 @@ typedef void (*virNetServerClientDispatchFunc)(virNetServerClientPtr client,
                                                virNetMessagePtr msg,
                                                void *opaque);
 
+/*
+ * @client is locked when this callback is called
+ */
 typedef int (*virNetServerClientFilterFunc)(virNetServerClientPtr client,
                                             virNetMessagePtr msg,
                                             void *opaque);
