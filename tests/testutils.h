@@ -84,6 +84,7 @@ unsigned int virTestGetDebug(void);
 unsigned int virTestGetVerbose(void);
 unsigned int virTestGetExpensive(void);
 unsigned int virTestGetRegenerate(void);
+void virTestPropagateLibvirtError(void);
 
 #define VIR_TEST_DEBUG(fmt, ...) \
     do { \

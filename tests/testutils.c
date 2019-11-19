@@ -81,6 +81,30 @@ virTestGetFlag(const char *name)
 }
 
 
+/**
+ * virTestPropagateLibvirtError:
+ *
+ * In cases when a libvirt utility function which reports libvirt errors is
+ * used in the test suite outside of the virTestRun call and the failure of such
+ * a function would cause an test failure the error message reported by that
+ * function will not be propagated to the user as the error callback is not
+ * invoked.
+ *
+ * In cases when the error message may be beneficial in debugging this helper
+ * provides means to dispatch the errors including invocation of the error
+ * callback.
+ */
+void
+virTestPropagateLibvirtError(void)
+{
+    if (virGetLastErrorCode() == VIR_ERR_OK)
+        return;
+
+    if (virTestGetVerbose() || virTestGetDebug())
+        virDispatchError(NULL);
+}
+
+
 /*
  * Runs test
  *
@@ -112,10 +136,7 @@ virTestRun(const char *title,
 
     virResetLastError();
     ret = body(data);
-    if (virGetLastErrorCode()) {
-        if (virTestGetVerbose() || virTestGetDebug())
-            virDispatchError(NULL);
-    }
+    virTestPropagateLibvirtError();
 
     if (virTestGetVerbose()) {
         if (ret == 0)
