@@ -446,7 +446,7 @@ testHashGetItems(const void *data G_GNUC_UNUSED)
 static int
 testHashEqualCompValue(const void *value1, const void *value2)
 {
-    return c_strcasecmp(value1, value2);
+    return g_ascii_strcasecmp(value1, value2);
 }
 
 static int

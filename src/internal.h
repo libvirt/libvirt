@@ -75,9 +75,9 @@
 
 /* String equality tests, suggested by Jim Meyering. */
 #define STREQ(a, b) (strcmp(a, b) == 0)
-#define STRCASEEQ(a, b) (c_strcasecmp(a, b) == 0)
+#define STRCASEEQ(a, b) (g_ascii_strcasecmp(a, b) == 0)
 #define STRNEQ(a, b) (strcmp(a, b) != 0)
-#define STRCASENEQ(a, b) (c_strcasecmp(a, b) != 0)
+#define STRCASENEQ(a, b) (g_ascii_strcasecmp(a, b) != 0)
 #define STREQLEN(a, b, n) (strncmp(a, b, n) == 0)
 #define STRCASEEQLEN(a, b, n) (c_strncasecmp(a, b, n) == 0)
 #define STRNEQLEN(a, b, n) (strncmp(a, b, n) != 0)
