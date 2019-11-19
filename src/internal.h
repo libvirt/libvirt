@@ -63,7 +63,6 @@
 #include "libvirt/libvirt-admin.h"
 #include "libvirt/virterror.h"
 
-#include "c-strcase.h"
 #include "glibcompat.h"
 
 /* Merely casting to (void) is not sufficient since the
@@ -79,11 +78,11 @@
 #define STRNEQ(a, b) (strcmp(a, b) != 0)
 #define STRCASENEQ(a, b) (g_ascii_strcasecmp(a, b) != 0)
 #define STREQLEN(a, b, n) (strncmp(a, b, n) == 0)
-#define STRCASEEQLEN(a, b, n) (c_strncasecmp(a, b, n) == 0)
+#define STRCASEEQLEN(a, b, n) (g_ascii_strncasecmp(a, b, n) == 0)
 #define STRNEQLEN(a, b, n) (strncmp(a, b, n) != 0)
-#define STRCASENEQLEN(a, b, n) (c_strncasecmp(a, b, n) != 0)
+#define STRCASENEQLEN(a, b, n) (g_ascii_strncasecmp(a, b, n) != 0)
 #define STRPREFIX(a, b) (strncmp(a, b, strlen(b)) == 0)
-#define STRCASEPREFIX(a, b) (c_strncasecmp(a, b, strlen(b)) == 0)
+#define STRCASEPREFIX(a, b) (g_ascii_strncasecmp(a, b, strlen(b)) == 0)
 #define STRSKIP(a, b) (STRPREFIX(a, b) ? (a) + strlen(b) : NULL)
 
 #define STREQ_NULLABLE(a, b) (g_strcmp0(a, b) == 0)
