@@ -197,3 +197,9 @@ int
 qemuBlockStorageSourceCreateDetectSize(virHashTablePtr blockNamedNodeData,
                                        virStorageSourcePtr src,
                                        virStorageSourcePtr templ);
+
+int
+qemuBlockRemoveImageMetadata(virQEMUDriverPtr driver,
+                             virDomainObjPtr vm,
+                             const char *diskTarget,
+                             virStorageSourcePtr src);
