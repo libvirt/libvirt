@@ -12272,7 +12272,7 @@ virDomainSetVcpu(virDomainPtr domain,
  *      "timezone.offset" - the offset to UTC in seconds as an int
  *
  * VIR_DOMAIN_GUEST_INFO_FILESYSTEM:
- *  Returns inforamtion about the filesystems within the domain.  The typed
+ *  Returns information about the filesystems within the domain.  The typed
  *  parameter keys are in this format:
  *
  *      "fs.count" - the number of filesystems defined on this domain
