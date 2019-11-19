@@ -40,7 +40,6 @@
 #include "virprobe.h"
 #include "virstring.h"
 #include "cpu/cpu_x86.h"
-#include "c-strcasestr.h"
 #include "virenum.h"
 
 #ifdef WITH_DTRACE_PROBES
