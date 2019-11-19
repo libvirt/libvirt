@@ -76,8 +76,10 @@ testSchemaDir(const char *schema,
         .validator = validator,
     };
 
-    if (virDirOpen(&dir, dir_path) < 0)
+    if (virDirOpen(&dir, dir_path) < 0) {
+        virTestPropagateLibvirtError();
         return -1;
+    }
 
     while ((rc = virDirRead(dir, &ent, dir_path)) > 0) {
         g_autofree char *test_name = NULL;
@@ -97,8 +99,10 @@ testSchemaDir(const char *schema,
             ret = -1;
     }
 
-    if (rc < 0)
+    if (rc < 0) {
+        virTestPropagateLibvirtError();
         ret = -1;
+    }
 
     VIR_DIR_CLOSE(dir);
     return ret;
