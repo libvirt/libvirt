@@ -72,8 +72,6 @@ testSchemaDir(const char *schema,
     struct dirent *ent;
     int ret = 0;
     int rc;
-    char *test_name = NULL;
-    char *xml_path = NULL;
     struct testSchemaData data = {
         .validator = validator,
     };
@@ -82,6 +80,9 @@ testSchemaDir(const char *schema,
         return -1;
 
     while ((rc = virDirRead(dir, &ent, dir_path)) > 0) {
+        g_autofree char *test_name = NULL;
+        g_autofree char *xml_path = NULL;
+
         if (!virStringHasSuffix(ent->d_name, ".xml"))
             continue;
         if (ent->d_name[0] == '.')
@@ -94,16 +95,11 @@ testSchemaDir(const char *schema,
         data.xml_path = xml_path;
         if (virTestRun(test_name, testSchemaFile, &data) < 0)
             ret = -1;
-
-        VIR_FREE(test_name);
-        VIR_FREE(xml_path);
     }
 
     if (rc < 0)
         ret = -1;
 
-    VIR_FREE(test_name);
-    VIR_FREE(xml_path);
     VIR_DIR_CLOSE(dir);
     return ret;
 }
@@ -114,19 +110,16 @@ testSchemaDirs(const char *schema, virXMLValidatorPtr validator, ...)
 {
     va_list args;
     int ret = 0;
-    char *dir_path = NULL;
     const char *dir;
 
     va_start(args, validator);
 
     while ((dir = va_arg(args, char *))) {
-        dir_path = g_strdup_printf("%s/%s", abs_srcdir, dir);
+        g_autofree char *dir_path = g_strdup_printf("%s/%s", abs_srcdir, dir);
         if (testSchemaDir(schema, validator, dir_path) < 0)
             ret = -1;
-        VIR_FREE(dir_path);
     }
 
-    VIR_FREE(dir_path);
     va_end(args);
     return ret;
 }
@@ -136,20 +129,15 @@ static int
 testSchemaGrammar(const void *opaque)
 {
     struct testSchemaData *data = (struct testSchemaData *) opaque;
-    char *schema_path;
-    int ret = -1;
+    g_autofree char *schema_path = NULL;
 
     schema_path = g_strdup_printf("%s/docs/schemas/%s", abs_top_srcdir,
                                   data->schema);
 
     if (!(data->validator = virXMLValidatorInit(schema_path)))
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(schema_path);
-    return ret;
+    return 0;
 }
 
 
