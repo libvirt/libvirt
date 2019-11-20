@@ -590,7 +590,7 @@ sc_avoid_ctype_macros:
 
 sc_avoid_strcase:
 	@prohibit='\bstrn?case(cmp|str) *\(' \
-	halt='use c-strcase.h instead of raw strcase functions' \
+	halt='use GLib strcase functions instead of raw strcase functions' \
 	  $(_sc_search_regexp)
 
 sc_prohibit_virBufferAdd_with_string_literal:
