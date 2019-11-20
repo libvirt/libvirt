@@ -49,6 +49,9 @@ apipng = \
   html/home.png \
   html/right.png
 
+apirefdir = $(HTML_DIR)/html
+apiref_DATA = $(apihtml) $(apipng)
+
 css = \
   generic.css \
   libvirt.css \
@@ -58,6 +61,9 @@ css = \
 javascript = \
   js/main.js \
   $(NULL)
+
+javascriptdir = $(HTML_DIR)/js
+javascript_DATA = $(javascript)
 
 fonts = \
   fonts/LICENSE.md \
@@ -72,6 +78,9 @@ fonts = \
   fonts/overpass-mono-regular.woff \
   fonts/overpass-mono-semibold.woff \
   fonts/overpass-regular.woff
+
+fontsdir = $(HTML_DIR)/fonts
+fonts_DATA = $(fonts)
 
 logofiles = \
   logos/logo-base.svg \
@@ -92,6 +101,9 @@ logofiles = \
   logos/logo-banner-light-256.png \
   logos/logo-banner-light-800.png
 
+logofilesdir = $(HTML_DIR)/logos
+logofiles_DATA = $(logofiles)
+
 png = \
   32favicon.png \
   libvirt-daemon-arch.png \
@@ -107,14 +119,19 @@ gif = \
   architecture.gif \
   node.gif
 
-
 internals_html_in = \
   $(patsubst $(srcdir)/%,%,$(wildcard $(srcdir)/internals/*.html.in))
 internals_html = $(internals_html_in:%.html.in=%.html)
 
+internalsdir = $(HTML_DIR)/internals
+internals_DATA = $(internals_html)
+
 kbase_html_in = \
   $(patsubst $(srcdir)/%,%,$(wildcard $(srcdir)/kbase/*.html.in))
 kbase_html = $(kbase_html_in:%.html.in=%.html)
+
+kbasedir = $(HTML_DIR)/kbase
+kbase_DATA = $(kbase_html)
 
 # Generate hvsupport.html and news.html first, since they take one extra step.
 dot_html_generated_in = \
@@ -125,6 +142,9 @@ dot_html_in = \
 dot_html = \
   $(dot_html_generated_in:%.html.in=%.html) \
   $(dot_html_in:%.html.in=%.html)
+
+htmldir = $(HTML_DIR)
+html_DATA = $(css) $(png) $(gif) $(dot_html)
 
 xml = \
   libvirt-api.xml \
@@ -200,15 +220,10 @@ timestamp="$(shell if test -n "$$SOURCE_DATE_EPOCH"; \
 		     date -u; \
 		   fi)"
 
-all-am: web
-
 api: libvirt-api.xml libvirt-refs.xml
 qemu_api: libvirt-qemu-api.xml libvirt-qemu-refs.xml
 lxc_api: libvirt-lxc-api.xml libvirt-lxc-refs.xml
 admin_api: libvirt-admin-api.xml libvirt-admin-refs.xml
-
-web: $(dot_html) $(internals_html) $(kbase_html) \
-	html/index.html
 
 hvsupport.html: hvsupport.html.in
 
@@ -325,56 +340,3 @@ $(APIBUILD_STAMP): $(srcdir)/apibuild.py \
 	$(AM_V_GEN)srcdir=$(srcdir) builddir=$(builddir) \
 		$(RUNUTF8) $(PYTHON) $(APIBUILD)
 	touch $@
-
-
-check-local: all
-dist-local: all
-
-rebuild: api qemu_api lxc_api admin_api all
-
-install-data-local:
-	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)
-	for f in $(css) $(gif) $(png); do \
-	  $(INSTALL) -m 0644 $(srcdir)/$$f $(DESTDIR)$(HTML_DIR); done
-	for f in $(dot_html); do \
-	  $(INSTALL) -m 0644 $$f $(DESTDIR)$(HTML_DIR); done
-	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)/js
-	for f in $(javascript); do \
-	  $(INSTALL) -m 0644 $(srcdir)/$$f $(DESTDIR)$(HTML_DIR)/js/; done
-	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)/logos
-	for f in $(logofiles); do \
-	  $(INSTALL) -m 0644 $(srcdir)/$$f $(DESTDIR)$(HTML_DIR)/logos; done
-	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)/html
-	for h in $(apihtml); do \
-	  $(INSTALL) -m 0644 $$h $(DESTDIR)$(HTML_DIR)/html; done
-	for p in $(apipng); do \
-	  $(INSTALL) -m 0644 $(srcdir)/$$p $(DESTDIR)$(HTML_DIR)/html; done
-	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)/internals
-	for f in $(internals_html); do \
-	  $(INSTALL) -m 0644 $$f $(DESTDIR)$(HTML_DIR)/internals; done
-	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)/kbase
-	for f in $(kbase_html); do \
-	  $(INSTALL) -m 0644 $$f $(DESTDIR)$(HTML_DIR)/kbase; done
-	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)/fonts
-	for f in $(fonts); do \
-	  $(INSTALL) -m 0644 $(srcdir)/$$f $(DESTDIR)$(HTML_DIR)/fonts; \
-	done
-
-uninstall-local:
-	for f in $(css) $(dot_html) $(gif) $(png) $(fonts); do \
-	  rm -f $(DESTDIR)$(HTML_DIR)/$$f; \
-	done
-	for f in $(logofiles); do \
-	  rm -f $(DESTDIR)$(HTML_DIR)/$$f; \
-	done
-	for f in $(javascript); do \
-	  rm -f $(DESTDIR)$(HTML_DIR)/$$f; \
-	done
-	for h in $(apihtml); do rm -f $(DESTDIR)$(HTML_DIR)/$$h; done
-	for p in $(apipng); do rm -f $(DESTDIR)$(HTML_DIR)/$$p; done
-	for f in $(internals_html); do \
-	  rm -f $(DESTDIR)$(HTML_DIR)/$$f; \
-	done
-	for f in $(kbase_html); do \
-	  rm -f $(DESTDIR)$(HTML_DIR)/$$f; \
-	done
