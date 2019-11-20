@@ -39,6 +39,30 @@ modules_admin = libvirt-admin
 modules_qemu = libvirt-qemu
 modules_lxc = libvirt-lxc
 
+all: vpathhack
+
+# This hack enables us to view the web pages
+# from within the uninstalled build tree
+vpathhack:
+	@for dir in fonts js logos; \
+	do \
+	  test -e $$dir || ln -s $(srcdir)/$$dir $$dir ; \
+	done
+	@for file in $(css); \
+	do \
+	  test -e $$file || ln -s $(srcdir)/$$file $$file ; \
+	done
+
+clean-local:
+	for dir in fonts js logos; \
+	do \
+	  rm -f $$dir ; \
+	done
+	for file in $(css); \
+	do \
+	  rm -f $$file ; \
+	done
+
 apihtml = \
   html/index.html \
   $(apihtml_generated)
