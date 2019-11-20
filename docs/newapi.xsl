@@ -22,7 +22,6 @@
   <!-- Build keys for all symbols -->
   <xsl:key name="symbols" match="/api/symbols/*" use="@name"/>
 
-  <xsl:param name="builddir" select="'..'"/>
   <xsl:param name="indexfile" select="'index.html'"/>
 
   <!-- the target directory for the HTML output -->

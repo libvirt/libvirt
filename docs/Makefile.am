@@ -293,6 +293,7 @@ EXTRA_DIST += \
 	    style=subsite.xsl; \
 	  fi; \
 	  $(XSLTPROC) --stringparam pagename $$name \
+	    --stringparam builddir '$(abs_top_builddir)' \
 	    --stringparam timestamp $(timestamp) --nonet \
 	    $(top_srcdir)/docs/$$style $< > $@ \
 	    || { rm $@ && exit 1; }
