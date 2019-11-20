@@ -55,13 +55,13 @@ aclfile = sys.argv[1]
 with open(aclfile, "r") as fh:
     for line in fh:
         if in_opts:
-            if line.find("*/") != -1:
+            if "*/" in line:
                 in_opts = False
             else:
                 m = re.search(r'''\*\s*\@(\w+):\s*(.*?)\s*$''', line)
                 if m is not None:
                     opts[m.group(1)] = m.group(2)
-        elif line.find("**") != -1:
+        elif "**" in line:
             in_opts = True
         else:
             m = re.search(r'''VIR_ACCESS_PERM_(%s)_((?:\w|_)+),''' %

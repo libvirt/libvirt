@@ -36,9 +36,9 @@ ret = 0
 with open(symfile, "r") as fh:
     for line in fh:
         line = line.strip()
-        if line.find("{") != -1:
+        if "{" in line:
             continue
-        if line.find("}") != -1:
+        if "}" in line:
             continue
         if line in ["global:", "local:"]:
             continue
@@ -46,7 +46,7 @@ with open(symfile, "r") as fh:
             continue
         if line[0] == '#':
             continue
-        if line.find("*") != -1:
+        if "*" in line:
             continue
 
         line = line.strip(";")

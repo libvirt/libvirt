@@ -49,9 +49,9 @@ with open(dtrace, "r") as fh:
         line = line.strip()
         if line == "":
             continue
-        if line.find("provider ") != -1 and line.find("{") != -1:
+        if "provider " in line and "{" in line:
             continue
-        if line.find("};") != -1:
+        if "};" in line:
             continue
 
         if line.startswith("#"):
@@ -126,7 +126,7 @@ for file in filelist:
         for idx in range(len(argbits)):
             arg = argbits[idx]
             isstr = False
-            if arg.find("char *") != -1:
+            if 'char *' in arg:
                 isstr = True
 
             m = re.search(r'''^.*\s\*?(\S+)$''', arg)

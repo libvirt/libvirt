@@ -46,7 +46,7 @@ def load_file(fh):
             instatus = True
         elif re.search(r'''enum remote_auth_type''', line):
             inauth = True
-        elif line.find("}") != -1:
+        elif "}" in line:
             intype = False
             instatus = False
             inauth = False

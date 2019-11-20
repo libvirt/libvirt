@@ -33,7 +33,7 @@ def checkdriverimpls(filename):
         for line in fh:
             lineno = lineno + 1
             if intable:
-                if line.find("}") != -1:
+                if "}" in line:
                     intable = False
                     mainprefix = None
                     continue

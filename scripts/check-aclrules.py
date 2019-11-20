@@ -128,7 +128,7 @@ with open(proto, "r") as fh:
                     api = name_to_ProcName(m.group(1))
                     # Event filtering is handled in daemon/remote.c
                     # instead of drivers
-                    if line.find("_EVENT_REGISTER") == -1:
+                    if "_EVENT_REGISTER" not in line:
                         filteredmap[api] = True
                     incomment = False
 
