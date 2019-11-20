@@ -23,6 +23,7 @@
   <xsl:key name="symbols" match="/api/symbols/*" use="@name"/>
 
   <xsl:param name="builddir" select="'..'"/>
+  <xsl:param name="indexfile" select="'index.html'"/>
 
   <!-- the target directory for the HTML output -->
   <xsl:variable name="htmldir">html</xsl:variable>
@@ -101,10 +102,10 @@
           <td><a accesskey="p" href="libvirt-{$previous/@name}.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></img></a></td>
 	  <th align="left"><a href="libvirt-{$previous/@name}.html"><xsl:value-of select="$previous/@name"/></a></th>
 	</xsl:if>
-        <td><a accesskey="u" href="index.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></img></a></td>
-	<th align="left"><a href="index.html">API documentation</a></th>
-        <td><a accesskey="h" href="../index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></img></a></td>
-        <th align="center"><a href="../index.html">The virtualization API</a></th>
+        <td><a accesskey="u" href="{$indexfile}"><img src="up.png" width="24" height="24" border="0" alt="Up"></img></a></td>
+	<th align="left"><a href="{$indexfile}">API documentation</a></th>
+        <td><a accesskey="h" href="../{$indexfile}"><img src="home.png" width="24" height="24" border="0" alt="Home"></img></a></td>
+        <th align="center"><a href="../{$indexfile}">The virtualization API</a></th>
         <xsl:if test="$next">
 	  <th align="right"><a href="libvirt-{$next/@name}.html"><xsl:value-of select="$next/@name"/></a></th>
           <td><a accesskey="n" href="libvirt-{$next/@name}.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></img></a></td>
@@ -830,12 +831,12 @@
       <xsl:call-template name="mainpage"/>
     </xsl:variable>
     <xsl:document
-      href="{concat($htmldir, '/index.html')}"
+      href="{concat($htmldir, '/', $indexfile)}"
       method="xml"
       indent="yes"
       encoding="UTF-8">
       <xsl:apply-templates select="exsl:node-set($mainpage)" mode="page">
-        <xsl:with-param name="pagename" select="concat($htmldir, '/index.html')"/>
+        <xsl:with-param name="pagename" select="concat($htmldir, '', $indexfile)"/>
         <xsl:with-param name="timestamp" select="$timestamp"/>
       </xsl:apply-templates>
     </xsl:document>

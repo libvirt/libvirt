@@ -106,6 +106,10 @@
           <a href="html/libvirt-libvirt-secret.html">secret</a>,
           <a href="html/libvirt-libvirt-storage.html">storage</a>,
           <a href="html/libvirt-libvirt-stream.html">stream</a>
+          and
+          <a href="html/index-admin.html">admin</a>,
+          <a href="html/index-qemu.html">QEMU</a>,
+          <a href="html/index-lxc.html">LXC</a> libs
         </dd>
 
         <dt><a href="drivers.html">Drivers</a></dt>

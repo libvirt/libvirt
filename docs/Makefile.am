@@ -35,12 +35,40 @@ modules = \
 	virterror \
 	$(NULL)
 
+modules_admin = libvirt-admin
+modules_qemu = libvirt-qemu
+modules_lxc = libvirt-lxc
+
 apihtml = \
   html/index.html \
   $(apihtml_generated)
 
 apihtml_generated = \
 	$(addprefix html/libvirt-,$(addsuffix .html,$(modules))) \
+	$(NULL)
+
+apiadminhtml = \
+  html/index-admin.html \
+  $(apiadminhtml_generated)
+
+apiadminhtml_generated = \
+	$(addprefix html/libvirt-,$(addsuffix .html,$(modules_admin))) \
+	$(NULL)
+
+apiqemuhtml = \
+  html/index-qemu.html \
+  $(apiqemuhtml_generated)
+
+apiqemuhtml_generated = \
+	$(addprefix html/libvirt-,$(addsuffix .html,$(modules_qemu))) \
+	$(NULL)
+
+apilxchtml = \
+  html/index-lxc.html \
+  $(apilxchtml_generated)
+
+apilxchtml_generated = \
+	$(addprefix html/libvirt-,$(addsuffix .html,$(modules_lxc))) \
 	$(NULL)
 
 apipng = \
@@ -50,7 +78,7 @@ apipng = \
   html/right.png
 
 apirefdir = $(HTML_DIR)/html
-apiref_DATA = $(apihtml) $(apipng)
+apiref_DATA = $(apihtml) $(apiadminhtml) $(apiqemuhtml) $(apilxchtml) $(apipng)
 
 css = \
   generic.css \
@@ -188,6 +216,9 @@ aclperms.htmlinc: $(top_srcdir)/src/access/viraccessperm.h \
 CLEANFILES = \
   $(dot_html) \
   $(apihtml) \
+  $(apiadminhtml) \
+  $(apiqemuhtml) \
+  $(apilxchtml) \
   $(internals_html) \
   $(kbase_html) \
   $(api_DATA) \
@@ -252,12 +283,23 @@ EXTRA_DIST += \
 	  || { rm $@ && exit 1; }
 
 $(apihtml_generated): html/index.html
+$(apiadminhtml_generated): html/index-admin.html
+$(apiqemuhtml_generated): html/index-qemu.html
+$(apilxchtml_generated): html/index-lxc.html
 
 html/index.html: libvirt-api.xml newapi.xsl page.xsl $(APIBUILD_STAMP)
 	$(AM_V_GEN)$(XSLTPROC) --nonet -o ./ \
 	  --stringparam builddir '$(abs_top_builddir)' \
 	  --stringparam timestamp $(timestamp) \
 	  $(srcdir)/newapi.xsl libvirt-api.xml && \
+	  $(XMLLINT) --nonet --noout html/*.html
+
+html/index-%.html: libvirt-%-api.xml newapi.xsl page.xsl $(APIBUILD_STAMP)
+	$(AM_V_GEN)$(XSLTPROC) --nonet -o ./ \
+	  --stringparam builddir '$(abs_top_builddir)' \
+	  --stringparam timestamp $(timestamp) \
+	  --stringparam indexfile $(@:html/%=%) \
+	  $(srcdir)/newapi.xsl $< && \
 	  $(XMLLINT) --nonet --noout html/*.html
 
 python_generated_files = \
