@@ -97,7 +97,7 @@ def fixup_name(name):
 
 def name_to_ProcName(name):
     elems = []
-    if name.find("_") != -1 or name.lower() in ["open", "close"]:
+    if "_" in name or name.lower() in ["open", "close"]:
         elems = [n.lower().capitalize() for n in name.split("_")]
     else:
         elems = [name]
@@ -116,11 +116,11 @@ with open(proto, "r") as fh:
     filtered = False
 
     for line in fh:
-        if line.find("/**") != -1:
+        if "/**" in line:
             incomment = True
             filtered = False
         elif incomment:
-            if line.find("* @aclfilter") != -1:
+            if "* @aclfilter" in line:
                 filtered = True
             elif filtered:
                 m = re.search(r'''REMOTE_PROC_(.*)\s+=\s*\d+''', line)
@@ -211,7 +211,7 @@ def process_file(filename):
             # an ACL function
             if intable:
                 assign = re.search(r'''\.(\w+)\s*=\s*(\w+),?''', line)
-                if line.find("}") != -1:
+                if "}" in line:
                     intable = False
                     table = None
                 elif assign is not None:
@@ -247,9 +247,9 @@ def process_file(filename):
                         intable = True
                         table = name
 
-            if line.find("{") != -1:
+            if "{" in line:
                 brace = brace + 1
-            if line.find("}") != -1:
+            if "}" in line:
                 brace = brace - 1
 
     return errs
