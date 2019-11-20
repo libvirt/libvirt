@@ -72,11 +72,11 @@ h6 {
   font-size: 0.8em;
 }
 
-code, pre {
+code, pre, tt {
   font-family: LibvirtOverpassMono;
 }
 
-dd code, p code {
+dd code, p code, tt {
   background-color: #eeeeee;
 }
 
