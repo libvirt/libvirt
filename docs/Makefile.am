@@ -147,20 +147,16 @@ htmldir = $(HTML_DIR)
 html_DATA = $(css) $(png) $(gif) $(dot_html)
 
 xml = \
-  libvirt-api.xml \
-  libvirt-refs.xml
+  libvirt-api.xml
 
 qemu_xml = \
-  libvirt-qemu-api.xml \
-  libvirt-qemu-refs.xml
+  libvirt-qemu-api.xml
 
 lxc_xml = \
-  libvirt-lxc-api.xml \
-  libvirt-lxc-refs.xml
+  libvirt-lxc-api.xml
 
 admin_xml = \
-  libvirt-admin-api.xml \
-  libvirt-admin-refs.xml
+  libvirt-admin-api.xml
 
 apidir = $(pkgdatadir)/api
 api_DATA = \
@@ -220,10 +216,10 @@ timestamp="$(shell if test -n "$$SOURCE_DATE_EPOCH"; \
 		     date -u; \
 		   fi)"
 
-api: libvirt-api.xml libvirt-refs.xml
-qemu_api: libvirt-qemu-api.xml libvirt-qemu-refs.xml
-lxc_api: libvirt-lxc-api.xml libvirt-lxc-refs.xml
-admin_api: libvirt-admin-api.xml libvirt-admin-refs.xml
+api: libvirt-api.xml
+qemu_api: libvirt-qemu-api.xml
+lxc_api: libvirt-lxc-api.xml
+admin_api: libvirt-admin-api.xml
 
 hvsupport.html: hvsupport.html.in
 
@@ -285,13 +281,9 @@ python_generated_files = \
 		html/libvirt-libvirt-admin.html \
 		html/libvirt-virterror.html \
 		libvirt-api.xml \
-		libvirt-refs.xml \
 		libvirt-lxc-api.xml \
-		libvirt-lxc-refs.xml \
 		libvirt-qemu-api.xml \
-		libvirt-qemu-refs.xml \
 		libvirt-admin-api.xml \
-		libvirt-admin-refs.xml \
 		$(NULL)
 
 APIBUILD=$(srcdir)/apibuild.py
