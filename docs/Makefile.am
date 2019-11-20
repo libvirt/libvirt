@@ -146,18 +146,6 @@ dot_html = \
 htmldir = $(HTML_DIR)
 html_DATA = $(css) $(png) $(gif) $(dot_html)
 
-xml = \
-  libvirt-api.xml
-
-qemu_xml = \
-  libvirt-qemu-api.xml
-
-lxc_xml = \
-  libvirt-lxc-api.xml
-
-admin_xml = \
-  libvirt-admin-api.xml
-
 apidir = $(pkgdatadir)/api
 api_DATA = \
        libvirt-api.xml \
@@ -202,10 +190,7 @@ CLEANFILES = \
   $(apihtml) \
   $(internals_html) \
   $(kbase_html) \
-  $(xml) \
-  $(qemu_xml) \
-  $(lxc_xml) \
-  $(admin_xml) \
+  $(api_DATA) \
   $(dot_html_generated_in) \
   aclperms.htmlinc
 
@@ -280,10 +265,7 @@ python_generated_files = \
 		html/libvirt-libvirt-qemu.html \
 		html/libvirt-libvirt-admin.html \
 		html/libvirt-virterror.html \
-		libvirt-api.xml \
-		libvirt-lxc-api.xml \
-		libvirt-qemu-api.xml \
-		libvirt-admin-api.xml \
+		$(api_DATA) \
 		$(NULL)
 
 APIBUILD=$(srcdir)/apibuild.py
