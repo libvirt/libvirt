@@ -150,13 +150,21 @@ def process_file(filename):
                 # Looks for anything which appears to be a function
                 # body name. Doesn't matter if we pick up bogus stuff
                 # here, as long as we don't miss valid stuff
-                m = re.search(r'''\b(\w+)\(''', line)
+                m = None
+                if "(" in line:
+                    m = re.search(r'''\b(\w+)\(''', line)
                 if m is not None:
                     maybefunc = m.group(1)
             elif brace > 0:
-                ensureacl = re.search(r'''(\w+)EnsureACL''', line)
-                checkacl = re.search(r'''(\w+)CheckACL''', line)
-                stub = re.search(r'''\b(\w+)\(''', line)
+                ensureacl = None
+                checkacl = None
+                stub = None
+                if "EnsureACL" in line:
+                    ensureacl = re.search(r'''(\w+)EnsureACL''', line)
+                if "CheckACL" in line:
+                    checkacl = re.search(r'''(\w+)CheckACL''', line)
+                if "(" in line:
+                    stub = re.search(r'''\b(\w+)\(''', line)
                 if ensureacl is not None:
                     # Record the fact that maybefunc contains an
                     # ACL call, and make sure it is the right call!
@@ -210,7 +218,9 @@ def process_file(filename):
             # every func listed there, has an impl which calls
             # an ACL function
             if intable:
-                assign = re.search(r'''\.(\w+)\s*=\s*(\w+),?''', line)
+                assign = None
+                if "=" in line:
+                    assign = re.search(r'''\.(\w+)\s*=\s*(\w+),?''', line)
                 if "}" in line:
                     intable = False
                     table = None
@@ -237,8 +247,10 @@ def process_file(filename):
                                   file=sys.stderr)
                             errs = True
             else:
-                m = re.search(r'''^(?:static\s+)?(vir(?:\w+)?Driver)\s+''',
-                              line)
+                m = None
+                if "Driver" in line:
+                    m = re.search(r'''^(?:static\s+)?(vir(?:\w+)?Driver)\s+''',
+                                  line)
                 if m is not None:
                     name = m.group(1)
                     if name not in ["virNWFilterCallbackDriver",
