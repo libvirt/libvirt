@@ -232,11 +232,6 @@ timestamp="$(shell if test -n "$$SOURCE_DATE_EPOCH"; \
 		     date -u; \
 		   fi)"
 
-api: libvirt-api.xml
-qemu_api: libvirt-qemu-api.xml
-lxc_api: libvirt-lxc-api.xml
-admin_api: libvirt-admin-api.xml
-
 hvsupport.html: hvsupport.html.in
 
 hvsupport.html.in: $(srcdir)/hvsupport.pl $(api_DATA) \
