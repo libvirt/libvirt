@@ -272,21 +272,6 @@ virDomainCapsEnumClear(virDomainCapsEnumPtr capsEnum)
 }
 
 
-/**
- * @caps: domain caps
- *
- * Initializes all features in 'caps' as unsupported.
- */
-void
-virDomainCapsFeaturesInitUnsupported(virDomainCapsPtr caps)
-{
-    size_t i;
-
-    for (i = 0; i < VIR_DOMAIN_CAPS_FEATURE_LAST; i++)
-        caps->features[i] = VIR_TRISTATE_BOOL_NO;
-}
-
-
 static int
 virDomainCapsEnumFormat(virBufferPtr buf,
                         const virDomainCapsEnum *capsEnum,

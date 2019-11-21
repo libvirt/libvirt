@@ -200,7 +200,6 @@ virDomainCapsCPUUsableTypeToString;
 virDomainCapsDeviceDefValidate;
 virDomainCapsEnumClear;
 virDomainCapsEnumSet;
-virDomainCapsFeaturesInitUnsupported;
 virDomainCapsFormat;
 virDomainCapsNew;
 virSEVCapabilitiesFree;

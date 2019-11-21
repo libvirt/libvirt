@@ -764,8 +764,9 @@ libxlMakeDomainCapabilities(virDomainCapsPtr domCaps,
         libxlMakeDomainDeviceHostdevCaps(hostdev) < 0)
         return -1;
 
-    virDomainCapsFeaturesInitUnsupported(domCaps);
-
+    domCaps->features[VIR_DOMAIN_CAPS_FEATURE_IOTHREADS] = VIR_TRISTATE_BOOL_NO;
+    domCaps->features[VIR_DOMAIN_CAPS_FEATURE_VMCOREINFO] = VIR_TRISTATE_BOOL_NO;
+    domCaps->features[VIR_DOMAIN_CAPS_FEATURE_GENID] = VIR_TRISTATE_BOOL_NO;
     domCaps->gic.supported = VIR_TRISTATE_BOOL_NO;
 
     return 0;

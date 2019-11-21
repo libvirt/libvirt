@@ -5447,6 +5447,8 @@ virQEMUCapsFillDomainFeaturesFromQEMUCaps(virQEMUCapsPtr qemuCaps,
     for (i = 0; i < G_N_ELEMENTS(domCapsTuples); i++) {
         if (virQEMUCapsGet(qemuCaps, domCapsTuples[i].qemucap))
             domCaps->features[domCapsTuples[i].domcap] = VIR_TRISTATE_BOOL_YES;
+        else
+            domCaps->features[domCapsTuples[i].domcap] = VIR_TRISTATE_BOOL_NO;
     }
 }
 
@@ -5735,7 +5737,6 @@ virQEMUCapsFillDomainCaps(virCapsPtr caps,
     virDomainCapsDeviceVideoPtr video = &domCaps->video;
     virDomainCapsDeviceRNGPtr rng = &domCaps->rng;
 
-    virDomainCapsFeaturesInitUnsupported(domCaps);
     virQEMUCapsFillDomainFeaturesFromQEMUCaps(qemuCaps, domCaps);
 
     domCaps->maxvcpus = virQEMUCapsGetMachineMaxCpus(qemuCaps,
