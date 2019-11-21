@@ -123,8 +123,7 @@ void
 virObjectFreeCallback(void *opaque);
 
 void
-virObjectFreeHashData(void *opaque,
-                      const void *name);
+virObjectFreeHashData(void *opaque);
 
 void *
 virObjectLockableNew(virClassPtr klass)

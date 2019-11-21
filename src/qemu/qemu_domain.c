@@ -2063,8 +2063,7 @@ qemuDomainSetPrivatePaths(virQEMUDriverPtr driver,
 
 
 static void
-dbusVMStateHashFree(void *opaque,
-                    const void *name G_GNUC_UNUSED)
+dbusVMStateHashFree(void *opaque)
 {
     qemuDBusVMStateFree(opaque);
 }

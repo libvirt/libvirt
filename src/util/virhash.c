@@ -56,7 +56,6 @@ struct _virHashTable {
     size_t size;
     size_t nbElems;
     virHashDataFree dataFree;
-    virHashDataFreeSimple dataFreeSimple;
     virHashKeyCode keyCode;
     virHashKeyEqual keyEqual;
     virHashKeyCopy keyCopy;
@@ -106,7 +105,7 @@ static void virHashStrFree(void *name)
 
 
 void
-virHashValueFree(void *value, const void *name G_GNUC_UNUSED)
+virHashValueFree(void *value)
 {
     VIR_FREE(value);
 }
@@ -134,7 +133,6 @@ virHashComputeKey(const virHashTable *table, const void *name)
  */
 virHashTablePtr virHashCreateFull(ssize_t size,
                                   virHashDataFree dataFree,
-                                  virHashDataFreeSimple dataFreeSimple,
                                   virHashKeyCode keyCode,
                                   virHashKeyEqual keyEqual,
                                   virHashKeyCopy keyCopy,
@@ -151,10 +149,7 @@ virHashTablePtr virHashCreateFull(ssize_t size,
     table->seed = virRandomBits(32);
     table->size = size;
     table->nbElems = 0;
-    if (dataFree)
-        table->dataFree = dataFree;
-    else
-        table->dataFreeSimple = dataFreeSimple;
+    table->dataFree = dataFree;
     table->keyCode = keyCode;
     table->keyEqual = keyEqual;
     table->keyCopy = keyCopy;
@@ -178,10 +173,9 @@ virHashTablePtr virHashCreateFull(ssize_t size,
  * Returns the newly created object, or NULL if an error occurred.
  */
 virHashTablePtr
-virHashNew(virHashDataFreeSimple dataFree)
+virHashNew(virHashDataFree dataFree)
 {
     return virHashCreateFull(32,
-                             NULL,
                              dataFree,
                              virHashStrCode,
                              virHashStrEqual,
@@ -203,7 +197,6 @@ virHashTablePtr virHashCreate(ssize_t size, virHashDataFree dataFree)
 {
     return virHashCreateFull(size,
                              dataFree,
-                             NULL,
                              virHashStrCode,
                              virHashStrEqual,
                              virHashStrCopy,
@@ -324,9 +317,7 @@ virHashFree(virHashTablePtr table)
             virHashEntryPtr next = iter->next;
 
             if (table->dataFree)
-                table->dataFree(iter->payload, iter->name);
-            if (table->dataFreeSimple)
-                table->dataFreeSimple(iter->payload);
+                table->dataFree(iter->payload);
             if (table->keyFree)
                 table->keyFree(iter->name);
             VIR_FREE(iter);
@@ -358,9 +349,7 @@ virHashAddOrUpdateEntry(virHashTablePtr table, const void *name,
         if (table->keyEqual(entry->name, name)) {
             if (is_update) {
                 if (table->dataFree)
-                    table->dataFree(entry->payload, entry->name);
-                if (table->dataFreeSimple)
-                    table->dataFreeSimple(entry->payload);
+                    table->dataFree(entry->payload);
                 entry->payload = userdata;
                 return 0;
             } else {
@@ -518,12 +507,9 @@ void *virHashSteal(virHashTablePtr table, const void *name)
     void *data = virHashLookup(table, name);
     if (data) {
         virHashDataFree dataFree = table->dataFree;
-        virHashDataFreeSimple dataFreeSimple = table->dataFreeSimple;
         table->dataFree = NULL;
-        table->dataFreeSimple = NULL;
         virHashRemoveEntry(table, name);
         table->dataFree = dataFree;
-        table->dataFreeSimple = dataFreeSimple;
     }
     return data;
 }
@@ -601,7 +587,7 @@ virHashRemoveEntry(virHashTablePtr table, const void *name)
     for (entry = *nextptr; entry; entry = entry->next) {
         if (table->keyEqual(entry->name, name)) {
             if (table->dataFree)
-                table->dataFree(entry->payload, entry->name);
+                table->dataFree(entry->payload);
             if (table->keyFree)
                 table->keyFree(entry->name);
             *nextptr = entry->next;
@@ -689,7 +675,7 @@ virHashRemoveSet(virHashTablePtr table,
             } else {
                 count++;
                 if (table->dataFree)
-                    table->dataFree(entry->payload, entry->name);
+                    table->dataFree(entry->payload);
                 if (table->keyFree)
                     table->keyFree(entry->name);
                 *nextptr = entry->next;

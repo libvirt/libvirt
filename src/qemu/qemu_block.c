@@ -93,8 +93,7 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuBlockNodeNameBackingChainData,
 
 
 static void
-qemuBlockNodeNameBackingChainDataHashEntryFree(void *opaque,
-                                               const void *name G_GNUC_UNUSED)
+qemuBlockNodeNameBackingChainDataHashEntryFree(void *opaque)
 {
     qemuBlockNodeNameBackingChainDataFree(opaque);
 }

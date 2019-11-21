@@ -42,7 +42,7 @@ typedef struct _virJSONValue virJSONValue;
 typedef virJSONValue *virJSONValuePtr;
 
 void virJSONValueFree(virJSONValuePtr value);
-void virJSONValueHashFree(void *opaque, const void *name);
+void virJSONValueHashFree(void *opaque);
 
 virJSONType virJSONValueGetType(const virJSONValue *value);
 

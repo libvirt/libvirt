@@ -338,7 +338,7 @@ bool qemuSharedDeviceEntryDomainExists(qemuSharedDeviceEntryPtr entry,
 char *qemuGetSharedDeviceKey(const char *disk_path)
     ATTRIBUTE_NONNULL(1);
 
-void qemuSharedDeviceEntryFree(void *payload, const void *name);
+void qemuSharedDeviceEntryFree(void *payload);
 
 int qemuAddSharedDisk(virQEMUDriverPtr driver,
                       virDomainDiskDefPtr disk,

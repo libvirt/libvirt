@@ -5432,8 +5432,7 @@ qemuMigrationJobFinish(virQEMUDriverPtr driver, virDomainObjPtr vm)
 
 
 static void
-qemuMigrationDstErrorFree(void *data,
-                       const void *name G_GNUC_UNUSED)
+qemuMigrationDstErrorFree(void *data)
 {
     virErrorPtr err = data;
     virFreeError(err);

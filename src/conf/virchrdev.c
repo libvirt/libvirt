@@ -212,7 +212,7 @@ typedef struct {
  *
  * @data Opaque data, struct holding information about the device
  */
-static void virChrdevHashEntryFree(void *data, const void *key G_GNUC_UNUSED)
+static void virChrdevHashEntryFree(void *data)
 {
     virChrdevHashEntry *ent = data;
 
@@ -455,6 +455,6 @@ int virChrdevOpen(virChrdevsPtr devs,
         VIR_FREE(cbdata->path);
     VIR_FREE(cbdata);
     virMutexUnlock(&devs->lock);
-    virChrdevHashEntryFree(ent, NULL);
+    virChrdevHashEntryFree(ent);
     return -1;
 }

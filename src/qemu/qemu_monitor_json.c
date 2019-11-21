@@ -2925,7 +2925,7 @@ qemuMonitorJSONBlockGetNamedNodeData(qemuMonitorPtr mon)
     if (!(nodes = qemuMonitorJSONQueryNamedBlockNodes(mon)))
         return NULL;
 
-    if (!(ret = virHashNew((virHashDataFreeSimple) qemuMonitorJSONBlockNamedNodeDataFree)))
+    if (!(ret = virHashNew((virHashDataFree) qemuMonitorJSONBlockNamedNodeDataFree)))
         return NULL;
 
     if (virJSONValueArrayForeachSteal(nodes,

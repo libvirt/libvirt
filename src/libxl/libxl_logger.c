@@ -47,7 +47,7 @@ struct xentoollog_logger_libvirt {
 };
 
 static void
-libxlLoggerFileFree(void *payload, const void *key G_GNUC_UNUSED)
+libxlLoggerFileFree(void *payload)
 {
     FILE *file = payload;
     VIR_FORCE_FCLOSE(file);

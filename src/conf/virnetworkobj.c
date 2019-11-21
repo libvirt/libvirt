@@ -94,7 +94,7 @@ virNetworkObjLoadAllPorts(virNetworkObjPtr net,
 
 
 static void
-virNetworkObjPortFree(void *val, const void *key G_GNUC_UNUSED)
+virNetworkObjPortFree(void *val)
 {
     virNetworkPortDefFree(val);
 }

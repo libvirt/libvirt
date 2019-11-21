@@ -619,7 +619,7 @@ virNWFilterVarCombIterGetVarValue(virNWFilterVarCombIterPtr ci,
 }
 
 static void
-hashDataFree(void *payload, const void *name G_GNUC_UNUSED)
+hashDataFree(void *payload)
 {
     virNWFilterVarValueFree(payload);
 }

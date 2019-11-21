@@ -1516,7 +1516,7 @@ qemuSharedDeviceEntryDomainExists(qemuSharedDeviceEntryPtr entry,
 }
 
 void
-qemuSharedDeviceEntryFree(void *payload, const void *name G_GNUC_UNUSED)
+qemuSharedDeviceEntryFree(void *payload)
 {
     qemuSharedDeviceEntryPtr entry = payload;
     size_t i;
@@ -1566,7 +1566,7 @@ qemuSharedDeviceEntryInsert(virQEMUDriverPtr driver,
     return 0;
 
  error:
-    qemuSharedDeviceEntryFree(entry, NULL);
+    qemuSharedDeviceEntryFree(entry);
     return -1;
 }
 

@@ -660,7 +660,7 @@ virNWFilterSnoopReqUnlock(virNWFilterSnoopReqPtr req)
  * virNWFilterSnoopReqRelease - hash table free function to kill a request
  */
 static void
-virNWFilterSnoopReqRelease(void *req0, const void *name G_GNUC_UNUSED)
+virNWFilterSnoopReqRelease(void *req0)
 {
     virNWFilterSnoopReqPtr req = req0;
 
@@ -721,7 +721,7 @@ virNWFilterSnoopReqPut(virNWFilterSnoopReqPtr req)
          * - if we still have a valid lease, keep the req for restarts
          */
         if (virHashLookup(virNWFilterSnoopState.snoopReqs, req->ifkey) != req) {
-            virNWFilterSnoopReqRelease(req, NULL);
+            virNWFilterSnoopReqRelease(req);
         } else if (!req->start || req->start->timeout < time(0)) {
             ignore_value(virHashRemoveEntry(virNWFilterSnoopState.snoopReqs,
                                             req->ifkey));

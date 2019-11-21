@@ -262,8 +262,7 @@ virDomainMomentAssignDef(virDomainMomentObjListPtr moments,
 
 
 static void
-virDomainMomentObjListDataFree(void *payload,
-                               const void *name G_GNUC_UNUSED)
+virDomainMomentObjListDataFree(void *payload)
 {
     virDomainMomentObjPtr obj = payload;
 

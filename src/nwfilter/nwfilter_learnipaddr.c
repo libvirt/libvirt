@@ -307,7 +307,7 @@ virNWFilterHasLearnReq(int ifindex)
 
 
 static void
-freeLearnReqEntry(void *payload, const void *name G_GNUC_UNUSED)
+freeLearnReqEntry(void *payload)
 {
     virNWFilterIPAddrLearnReqFree(payload);
 }

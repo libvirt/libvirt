@@ -139,8 +139,7 @@ virLockDaemonUnlock(virLockDaemonPtr lockd)
     virMutexUnlock(&lockd->lock);
 }
 
-static void virLockDaemonLockSpaceDataFree(void *data,
-                                           const void *key G_GNUC_UNUSED)
+static void virLockDaemonLockSpaceDataFree(void *data)
 {
     virLockSpaceFree(data);
 }

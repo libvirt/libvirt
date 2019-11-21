@@ -231,7 +231,7 @@ virLockSpaceResourceNew(virLockSpacePtr lockspace,
 }
 
 
-static void virLockSpaceResourceDataFree(void *opaque, const void *name G_GNUC_UNUSED)
+static void virLockSpaceResourceDataFree(void *opaque)
 {
     virLockSpaceResourcePtr res = opaque;
     virLockSpaceResourceFree(res);

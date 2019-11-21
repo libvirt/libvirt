@@ -619,12 +619,12 @@ int virSystemdCanHybridSleep(bool *result)
 
 
 static void
-virSystemdActivationEntryFree(void *data, const void *name)
+virSystemdActivationEntryFree(void *data)
 {
     virSystemdActivationEntryPtr ent = data;
     size_t i;
 
-    VIR_DEBUG("Closing activation FDs for %s", (const char *)name);
+    VIR_DEBUG("Closing activation FDs");
     for (i = 0; i < ent->nfds; i++) {
         VIR_DEBUG("Closing activation FD %d", ent->fds[i]);
         VIR_FORCE_CLOSE(ent->fds[i]);
@@ -647,7 +647,7 @@ virSystemdActivationAddFD(virSystemdActivationPtr act,
             return -1;
 
         if (VIR_ALLOC_N(ent->fds, 1) < 0) {
-            virSystemdActivationEntryFree(ent, name);
+            virSystemdActivationEntryFree(ent);
             return -1;
         }
 
@@ -655,7 +655,7 @@ virSystemdActivationAddFD(virSystemdActivationPtr act,
 
         VIR_DEBUG("Record first FD %d with name %s", fd, name);
         if (virHashAddEntry(act->fds, name, ent) < 0) {
-            virSystemdActivationEntryFree(ent, name);
+            virSystemdActivationEntryFree(ent);
             return -1;
         }
 

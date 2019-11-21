@@ -589,8 +589,7 @@ void virObjectFreeCallback(void *opaque)
  * typedef.
  */
 void
-virObjectFreeHashData(void *opaque,
-                      const void *name G_GNUC_UNUSED)
+virObjectFreeHashData(void *opaque)
 {
     virObjectUnref(opaque);
 }

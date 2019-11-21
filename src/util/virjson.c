@@ -425,8 +425,7 @@ virJSONValueFree(virJSONValuePtr value)
 
 
 void
-virJSONValueHashFree(void *opaque,
-                     const void *name G_GNUC_UNUSED)
+virJSONValueHashFree(void *opaque)
 {
     virJSONValueFree(opaque);
 }
