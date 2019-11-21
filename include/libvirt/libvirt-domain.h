@@ -3578,6 +3578,13 @@ typedef enum {
  */
 # define VIR_DOMAIN_JOB_AUTO_CONVERGE_THROTTLE  "auto_converge_throttle"
 
+/**
+ * VIR_DOMAIN_JOB_SUCCESS:
+ *
+ * virDomainGetJobStats field: Present only in statistics for a completed job.
+ * Successful completion of the job as VIR_TYPED_PARAM_BOOLEAN.
+ */
+# define VIR_DOMAIN_JOB_SUCCESS "success"
 
 /**
  * virConnectDomainEventGenericCallback:
