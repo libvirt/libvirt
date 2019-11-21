@@ -6153,10 +6153,8 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
 
     vshPrint(ctl, "%-17s %-12s\n", _("Job type:"),
              virshDomainJobToString(info.type));
-    if (info.type != VIR_DOMAIN_JOB_BOUNDED &&
-        info.type != VIR_DOMAIN_JOB_UNBOUNDED &&
-        (!(flags & VIR_DOMAIN_JOB_STATS_COMPLETED) ||
-         info.type != VIR_DOMAIN_JOB_COMPLETED)) {
+
+    if (info.type == VIR_DOMAIN_JOB_NONE) {
         ret = true;
         goto cleanup;
     }
@@ -6168,6 +6166,14 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
 
     vshPrint(ctl, "%-17s %-12s\n", _("Operation:"),
              virshDomainJobOperationToString(op));
+
+    if (info.type != VIR_DOMAIN_JOB_BOUNDED &&
+        info.type != VIR_DOMAIN_JOB_UNBOUNDED &&
+        (!(flags & VIR_DOMAIN_JOB_STATS_COMPLETED) ||
+         info.type != VIR_DOMAIN_JOB_COMPLETED)) {
+        ret = true;
+        goto cleanup;
+    }
 
     vshPrint(ctl, "%-17s %-12llu ms\n", _("Time elapsed:"), info.timeElapsed);
     if ((rc = virTypedParamsGetULLong(params, nparams,
