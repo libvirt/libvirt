@@ -1381,11 +1381,16 @@ Returns basic information about the domain.
 Abort the currently running domain job.
 
 =item B<domjobinfo> I<domain> [I<--completed> [I<--keep-completed>]]
+[I<--anystats>]
 
 Returns information about jobs running on a domain. I<--completed> tells
 virsh to return information about a recently finished job. Statistics of
 a completed job are automatically destroyed once read (unless
 I<--keep-completed> is used) or when libvirtd is restarted.
+
+Normally only statistics for running and successful completed jobs are printed.
+I<--anystats> can be used to also display statistics for failed jobs.
+
 Note that time information returned for completed
 migrations may be completely irrelevant unless both source and
 destination hosts have synchronized time (i.e., NTP daemon is running

@@ -6029,6 +6029,10 @@ static const vshCmdOptDef opts_domjobinfo[] = {
      .type = VSH_OT_BOOL,
      .help = N_("don't destroy statistics of a recently completed job when reading")
     },
+    {.name = "anystats",
+     .type = VSH_OT_BOOL,
+     .help = N_("print statistics for any kind of job (even failed ones)")
+    },
     {.name = NULL}
 };
 
@@ -6167,7 +6171,8 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
     vshPrint(ctl, "%-17s %-12s\n", _("Operation:"),
              virshDomainJobOperationToString(op));
 
-    if (info.type != VIR_DOMAIN_JOB_BOUNDED &&
+    if (!vshCommandOptBool(cmd, "anystats") &&
+        info.type != VIR_DOMAIN_JOB_BOUNDED &&
         info.type != VIR_DOMAIN_JOB_UNBOUNDED &&
         (!(flags & VIR_DOMAIN_JOB_STATS_COMPLETED) ||
          info.type != VIR_DOMAIN_JOB_COMPLETED)) {
