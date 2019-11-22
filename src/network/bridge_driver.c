@@ -4567,13 +4567,6 @@ networkAllocatePort(virNetworkObjPtr obj,
             return -1;
         }
 
-        if (!port->bandwidth) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("QOS must be defined for network '%s'"),
-                           netdef->name);
-            return -1;
-        }
-
         if (networkPlugBandwidth(obj, &port->mac, port->bandwidth, &port->class_id) < 0)
             return -1;
         break;
@@ -4638,13 +4631,6 @@ networkAllocatePort(virNetworkObjPtr obj,
                                    netdef->name);
                     return -1;
                 }
-            }
-
-            if (!port->bandwidth) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("QOS must be defined for network '%s'"),
-                               netdef->name);
-                return -1;
             }
 
             if (networkPlugBandwidth(obj, &port->mac, port->bandwidth, &port->class_id) < 0)
