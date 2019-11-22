@@ -1444,6 +1444,8 @@ qemuMigrationJobName(virDomainObjPtr vm)
         return _("snapshot job");
     case QEMU_ASYNC_JOB_START:
         return _("start job");
+    case QEMU_ASYNC_JOB_BACKUP:
+        return _("backup job");
     case QEMU_ASYNC_JOB_LAST:
     default:
         return _("job");

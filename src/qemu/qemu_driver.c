@@ -14041,6 +14041,10 @@ static int qemuDomainAbortJob(virDomainPtr dom)
         ret = qemuDomainAbortJobMigration(vm);
         break;
 
+    case QEMU_ASYNC_JOB_BACKUP:
+        /* TODO: to be implemented later */
+        break;
+
     case QEMU_ASYNC_JOB_LAST:
     default:
         virReportEnumRangeError(qemuDomainAsyncJob, priv->job.asyncJob);
