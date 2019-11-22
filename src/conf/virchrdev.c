@@ -202,23 +202,30 @@ static void virChrdevLockFileRemove(const char *dev G_GNUC_UNUSED)
 }
 #endif /* #ifdef VIR_CHRDEV_LOCK_FILE_PATH */
 
+typedef struct {
+    char *dev;
+    virStreamPtr st;
+} virChrdevHashEntry;
+
 /**
  * Frees an entry from the hash containing domain's active devices
  *
  * @data Opaque data, struct holding information about the device
- * @name Path of the device.
  */
-static void virChrdevHashEntryFree(void *data,
-                                    const void *name)
+static void virChrdevHashEntryFree(void *data, const void *key G_GNUC_UNUSED)
 {
-    const char *dev = name;
-    virStreamPtr st = data;
+    virChrdevHashEntry *ent = data;
+
+    if (!ent)
+        return;
 
     /* free stream reference */
-    virObjectUnref(st);
+    virObjectUnref(ent->st);
 
     /* delete lock file */
-    virChrdevLockFileRemove(dev);
+    virChrdevLockFileRemove(ent->dev);
+
+    g_free(ent);
 }
 
 /**
@@ -290,9 +297,9 @@ static int virChrdevFreeClearCallbacks(void *payload,
                                        const void *name G_GNUC_UNUSED,
                                        void *data G_GNUC_UNUSED)
 {
-    virStreamPtr st = payload;
+    virChrdevHashEntry *ent = payload;
 
-    virFDStreamSetInternalCloseCb(st, NULL, NULL, NULL);
+    virFDStreamSetInternalCloseCb(ent->st, NULL, NULL, NULL);
     return 0;
 }
 
@@ -337,7 +344,7 @@ int virChrdevOpen(virChrdevsPtr devs,
                   bool force)
 {
     virChrdevStreamInfoPtr cbdata = NULL;
-    virStreamPtr savedStream;
+    virChrdevHashEntry *ent;
     char *path;
     int ret;
     bool added = false;
@@ -363,7 +370,7 @@ int virChrdevOpen(virChrdevsPtr devs,
 
     virMutexLock(&devs->lock);
 
-    if ((savedStream = virHashLookup(devs->hash, path))) {
+    if ((ent = virHashLookup(devs->hash, path))) {
         if (!force) {
              /* entry found, device is busy */
             virMutexUnlock(&devs->lock);
@@ -376,8 +383,8 @@ int virChrdevOpen(virChrdevsPtr devs,
             * same thread. We need to unregister the callback and abort the
             * stream manually before we create a new device connection.
             */
-           virFDStreamSetInternalCloseCb(savedStream, NULL, NULL, NULL);
-           virStreamAbort(savedStream);
+           virFDStreamSetInternalCloseCb(ent->st, NULL, NULL, NULL);
+           virStreamAbort(ent->st);
            virHashRemoveEntry(devs->hash, path);
            /* continue adding a new stream connection */
        }
@@ -398,8 +405,15 @@ int virChrdevOpen(virChrdevsPtr devs,
     if (VIR_ALLOC(cbdata) < 0)
         goto error;
 
-    if (virHashAddEntry(devs->hash, path, st) < 0)
+    if (VIR_ALLOC(ent) < 0)
         goto error;
+
+    ent->st = st;
+    ent->dev = g_strdup(path);
+
+    if (virHashAddEntry(devs->hash, path, ent) < 0)
+        goto error;
+    ent = NULL;
     added = true;
 
     cbdata->devs = devs;
@@ -441,5 +455,6 @@ int virChrdevOpen(virChrdevsPtr devs,
         VIR_FREE(cbdata->path);
     VIR_FREE(cbdata);
     virMutexUnlock(&devs->lock);
+    virChrdevHashEntryFree(ent, NULL);
     return -1;
 }
