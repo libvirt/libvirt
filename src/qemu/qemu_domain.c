@@ -519,6 +519,12 @@ qemuDomainJobInfoToInfo(qemuDomainJobInfoPtr jobInfo,
         info->memRemaining = info->memTotal - info->memProcessed;
         break;
 
+    case QEMU_DOMAIN_JOB_STATS_TYPE_BACKUP:
+        info->fileTotal = jobInfo->stats.backup.total;
+        info->fileProcessed = jobInfo->stats.backup.transferred;
+        info->fileRemaining = info->fileTotal - info->fileProcessed;
+        break;
+
     case QEMU_DOMAIN_JOB_STATS_TYPE_NONE:
         break;
     }
@@ -751,6 +757,59 @@ qemuDomainDumpJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
 }
 
 
+static int
+qemuDomainBackupJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
+                                int *type,
+                                virTypedParameterPtr *params,
+                                int *nparams)
+{
+    qemuDomainBackupStats *stats = &jobInfo->stats.backup;
+    g_autoptr(virTypedParamList) par = g_new0(virTypedParamList, 1);
+
+    if (virTypedParamListAddInt(par, jobInfo->operation,
+                                VIR_DOMAIN_JOB_OPERATION) < 0)
+        return -1;
+
+    if (virTypedParamListAddULLong(par, jobInfo->timeElapsed,
+                                   VIR_DOMAIN_JOB_TIME_ELAPSED) < 0)
+        return -1;
+
+    if (stats->transferred > 0 || stats->total > 0) {
+        if (virTypedParamListAddULLong(par, stats->total,
+                                       VIR_DOMAIN_JOB_DISK_TOTAL) < 0)
+            return -1;
+
+        if (virTypedParamListAddULLong(par, stats->transferred,
+                                       VIR_DOMAIN_JOB_DISK_PROCESSED) < 0)
+            return -1;
+
+        if (virTypedParamListAddULLong(par, stats->total - stats->transferred,
+                                       VIR_DOMAIN_JOB_DISK_REMAINING) < 0)
+            return -1;
+    }
+
+    if (stats->tmp_used > 0 || stats->tmp_total > 0) {
+        if (virTypedParamListAddULLong(par, stats->tmp_used,
+                                       VIR_DOMAIN_JOB_DISK_TEMP_USED) < 0)
+            return -1;
+
+        if (virTypedParamListAddULLong(par, stats->tmp_total,
+                                       VIR_DOMAIN_JOB_DISK_TEMP_TOTAL) < 0)
+            return -1;
+    }
+
+    if (jobInfo->status != QEMU_DOMAIN_JOB_STATUS_ACTIVE &&
+        virTypedParamListAddBoolean(par,
+                                    jobInfo->status == QEMU_DOMAIN_JOB_STATUS_COMPLETED,
+                                    VIR_DOMAIN_JOB_SUCCESS) < 0)
+        return -1;
+
+    *nparams = virTypedParamListStealParams(par, params);
+    *type = qemuDomainJobStatusToType(jobInfo->status);
+    return 0;
+}
+
+
 int
 qemuDomainJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
                           int *type,
@@ -764,6 +823,9 @@ qemuDomainJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
 
     case QEMU_DOMAIN_JOB_STATS_TYPE_MEMDUMP:
         return qemuDomainDumpJobInfoToParams(jobInfo, type, params, nparams);
+
+    case QEMU_DOMAIN_JOB_STATS_TYPE_BACKUP:
+        return qemuDomainBackupJobInfoToParams(jobInfo, type, params, nparams);
 
     case QEMU_DOMAIN_JOB_STATS_TYPE_NONE:
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

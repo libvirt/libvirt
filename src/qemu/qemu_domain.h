@@ -126,6 +126,7 @@ typedef enum {
     QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION,
     QEMU_DOMAIN_JOB_STATS_TYPE_SAVEDUMP,
     QEMU_DOMAIN_JOB_STATS_TYPE_MEMDUMP,
+    QEMU_DOMAIN_JOB_STATS_TYPE_BACKUP,
 } qemuDomainJobStatsType;
 
 
@@ -134,6 +135,14 @@ typedef qemuDomainMirrorStats *qemuDomainMirrorStatsPtr;
 struct _qemuDomainMirrorStats {
     unsigned long long transferred;
     unsigned long long total;
+};
+
+typedef struct _qemuDomainBackupStats qemuDomainBackupStats;
+struct _qemuDomainBackupStats {
+    unsigned long long transferred;
+    unsigned long long total;
+    unsigned long long tmp_used;
+    unsigned long long tmp_total;
 };
 
 typedef struct _qemuDomainJobInfo qemuDomainJobInfo;
@@ -160,6 +169,7 @@ struct _qemuDomainJobInfo {
     union {
         qemuMonitorMigrationStats mig;
         qemuMonitorDumpStats dump;
+        qemuDomainBackupStats backup;
     } stats;
     qemuDomainMirrorStats mirrorStats;
 };
