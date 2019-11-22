@@ -6025,6 +6025,10 @@ static const vshCmdOptDef opts_domjobinfo[] = {
      .type = VSH_OT_BOOL,
      .help = N_("return statistics of a recently completed job")
     },
+    {.name = "keep-completed",
+     .type = VSH_OT_BOOL,
+     .help = N_("don't destroy statistics of a recently completed job when reading")
+    },
     {.name = NULL}
 };
 
@@ -6117,11 +6121,16 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
     int op;
     int rc;
 
+    VSH_REQUIRE_OPTION("keep-completed", "completed");
+
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
     if (vshCommandOptBool(cmd, "completed"))
         flags |= VIR_DOMAIN_JOB_STATS_COMPLETED;
+
+    if (vshCommandOptBool(cmd, "keep-completed"))
+        flags |= VIR_DOMAIN_JOB_STATS_KEEP_COMPLETED;
 
     memset(&info, 0, sizeof(info));
 
