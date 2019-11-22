@@ -8796,7 +8796,8 @@ virDomainGetJobInfo(virDomainPtr domain, virDomainJobInfoPtr info)
  * flag may be used to query statistics of a completed incoming pre-copy
  * migration (statistics for post-copy migration are only available on the
  * source host). Statistics of a completed job are automatically destroyed
- * once read or when libvirtd is restarted. Note that time information
+ * once read (unless the VIR_DOMAIN_JOB_STATS_COMPLETED_KEEP is used as well)
+ * or when libvirtd is restarted. Note that time information
  * returned for completed migrations may be completely irrelevant unless both
  * source and destination hosts have synchronized time (i.e., NTP daemon is
  * running on both of them). The statistics of a completed job can also be
@@ -8823,6 +8824,9 @@ virDomainGetJobStats(virDomainPtr domain,
     virCheckNonNullArgGoto(type, error);
     virCheckNonNullArgGoto(params, error);
     virCheckNonNullArgGoto(nparams, error);
+    VIR_REQUIRE_FLAG_GOTO(VIR_DOMAIN_JOB_STATS_KEEP_COMPLETED,
+                          VIR_DOMAIN_JOB_STATS_COMPLETED,
+                          error);
 
     conn = domain->conn;
 

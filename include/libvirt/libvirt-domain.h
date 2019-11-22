@@ -3246,6 +3246,8 @@ struct _virDomainJobInfo {
 typedef enum {
     VIR_DOMAIN_JOB_STATS_COMPLETED = 1 << 0, /* return stats of a recently
                                               * completed job */
+    VIR_DOMAIN_JOB_STATS_KEEP_COMPLETED = 1 << 1, /* don't remove completed
+                                                     stats when reading them */
 } virDomainGetJobStatsFlags;
 
 int virDomainGetJobInfo(virDomainPtr dom,
