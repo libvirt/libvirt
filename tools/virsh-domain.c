@@ -6065,6 +6065,42 @@ virshDomainJobOperationToString(int op)
     return str ? _(str) : _("unknown");
 }
 
+
+static int
+virshDomainJobStatsToDomainJobInfo(virTypedParameterPtr params,
+                                   int nparams,
+                                   virDomainJobInfo *info)
+{
+    if (virTypedParamsGetULLong(params, nparams, VIR_DOMAIN_JOB_TIME_ELAPSED,
+                                &info->timeElapsed) < 0 ||
+        virTypedParamsGetULLong(params, nparams, VIR_DOMAIN_JOB_TIME_REMAINING,
+                                &info->timeRemaining) < 0 ||
+        virTypedParamsGetULLong(params, nparams, VIR_DOMAIN_JOB_DATA_TOTAL,
+                                &info->dataTotal) < 0 ||
+        virTypedParamsGetULLong(params, nparams, VIR_DOMAIN_JOB_DATA_PROCESSED,
+                                &info->dataProcessed) < 0 ||
+        virTypedParamsGetULLong(params, nparams, VIR_DOMAIN_JOB_DATA_REMAINING,
+                                &info->dataRemaining) < 0 ||
+        virTypedParamsGetULLong(params, nparams, VIR_DOMAIN_JOB_MEMORY_TOTAL,
+                                &info->memTotal) < 0 ||
+        virTypedParamsGetULLong(params, nparams, VIR_DOMAIN_JOB_MEMORY_PROCESSED,
+                                &info->memProcessed) < 0 ||
+        virTypedParamsGetULLong(params, nparams, VIR_DOMAIN_JOB_MEMORY_REMAINING,
+                                &info->memRemaining) < 0 ||
+        virTypedParamsGetULLong(params, nparams, VIR_DOMAIN_JOB_DISK_TOTAL,
+                                &info->fileTotal) < 0 ||
+        virTypedParamsGetULLong(params, nparams, VIR_DOMAIN_JOB_DISK_PROCESSED,
+                                &info->fileProcessed) < 0 ||
+        virTypedParamsGetULLong(params, nparams, VIR_DOMAIN_JOB_DISK_REMAINING,
+                                &info->fileRemaining) < 0) {
+        vshSaveLibvirtError();
+        return -1;
+    }
+
+    return 0;
+}
+
+
 static bool
 cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
 {
@@ -6091,40 +6127,8 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
 
     rc = virDomainGetJobStats(dom, &info.type, &params, &nparams, flags);
     if (rc == 0) {
-        if (virTypedParamsGetULLong(params, nparams,
-                                    VIR_DOMAIN_JOB_TIME_ELAPSED,
-                                    &info.timeElapsed) < 0 ||
-            virTypedParamsGetULLong(params, nparams,
-                                    VIR_DOMAIN_JOB_TIME_REMAINING,
-                                    &info.timeRemaining) < 0 ||
-            virTypedParamsGetULLong(params, nparams,
-                                    VIR_DOMAIN_JOB_DATA_TOTAL,
-                                    &info.dataTotal) < 0 ||
-            virTypedParamsGetULLong(params, nparams,
-                                    VIR_DOMAIN_JOB_DATA_PROCESSED,
-                                    &info.dataProcessed) < 0 ||
-            virTypedParamsGetULLong(params, nparams,
-                                    VIR_DOMAIN_JOB_DATA_REMAINING,
-                                    &info.dataRemaining) < 0 ||
-            virTypedParamsGetULLong(params, nparams,
-                                    VIR_DOMAIN_JOB_MEMORY_TOTAL,
-                                    &info.memTotal) < 0 ||
-            virTypedParamsGetULLong(params, nparams,
-                                    VIR_DOMAIN_JOB_MEMORY_PROCESSED,
-                                    &info.memProcessed) < 0 ||
-            virTypedParamsGetULLong(params, nparams,
-                                    VIR_DOMAIN_JOB_MEMORY_REMAINING,
-                                    &info.memRemaining) < 0 ||
-            virTypedParamsGetULLong(params, nparams,
-                                    VIR_DOMAIN_JOB_DISK_TOTAL,
-                                    &info.fileTotal) < 0 ||
-            virTypedParamsGetULLong(params, nparams,
-                                    VIR_DOMAIN_JOB_DISK_PROCESSED,
-                                    &info.fileProcessed) < 0 ||
-            virTypedParamsGetULLong(params, nparams,
-                                    VIR_DOMAIN_JOB_DISK_REMAINING,
-                                    &info.fileRemaining) < 0)
-            goto save_error;
+        if (virshDomainJobStatsToDomainJobInfo(params, nparams, &info) < 0)
+            goto cleanup;
     } else if (last_error->code == VIR_ERR_NO_SUPPORT) {
         if (flags) {
             vshError(ctl, "%s", _("Optional flags are not supported by the "
