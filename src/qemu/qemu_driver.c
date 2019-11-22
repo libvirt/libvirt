@@ -13926,6 +13926,8 @@ qemuDomainGetJobInfo(virDomainPtr dom,
     virDomainObjPtr vm;
     int ret = -1;
 
+    memset(info, 0, sizeof(*info));
+
     if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
@@ -13936,8 +13938,6 @@ qemuDomainGetJobInfo(virDomainPtr dom,
         goto cleanup;
 
     if (jobInfo.status == QEMU_DOMAIN_JOB_STATUS_NONE) {
-        memset(info, 0, sizeof(*info));
-        info->type = VIR_DOMAIN_JOB_NONE;
         ret = 0;
         goto cleanup;
     }
