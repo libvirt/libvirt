@@ -5531,7 +5531,8 @@ qemuProcessInit(virQEMUDriverPtr driver,
     if (vm->def->postParseFailed) {
         VIR_DEBUG("re-running the post parse callback");
 
-        if (virDomainDefPostParse(vm->def, caps, 0, driver->xmlopt, priv->qemuCaps) < 0)
+        /* we don't have the private copy of qemuCaps at this point */
+        if (virDomainDefPostParse(vm->def, caps, 0, driver->xmlopt, NULL) < 0)
             goto cleanup;
     }
 
