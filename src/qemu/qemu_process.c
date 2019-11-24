@@ -5502,6 +5502,7 @@ qemuProcessPrepareQEMUCaps(virDomainObjPtr vm,
                            virFileCachePtr qemuCapsCache)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    size_t i;
 
     virObjectUnref(priv->qemuCaps);
     if (!(priv->qemuCaps = virQEMUCapsCacheLookupCopy(qemuCapsCache,
@@ -5509,6 +5510,14 @@ qemuProcessPrepareQEMUCaps(virDomainObjPtr vm,
                                                       vm->def->emulator,
                                                       vm->def->os.machine)))
         return -1;
+
+    /* clear the 'blockdev' capability for VMs which have disks that need -drive */
+    for (i = 0; i < vm->def->ndisks; i++) {
+        if (qemuDiskBusNeedsDriveArg(vm->def->disks[i]->bus)) {
+            virQEMUCapsClear(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
+            break;
+        }
+    }
 
     return 0;
 }
@@ -6272,15 +6281,6 @@ qemuProcessPrepareDomain(virQEMUDriverPtr driver,
     priv->rememberOwner = cfg->rememberOwner;
 
     qemuProcessPrepareAllowReboot(vm);
-
-    /* clear the 'blockdev' capability for VMs which have disks that need
-     * -drive or which have floppies where we can't reliably get the QOM path */
-    for (i = 0; i < vm->def->ndisks; i++) {
-        if (qemuDiskBusNeedsDriveArg(vm->def->disks[i]->bus)) {
-            virQEMUCapsClear(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
-            break;
-        }
-    }
 
     /*
      * Normally PCI addresses are assigned in the virDomainCreate
