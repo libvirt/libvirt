@@ -4602,8 +4602,7 @@ virQEMUCapsInitProcessCaps(virQEMUCapsPtr qemuCaps)
     /* Prealloc on NVDIMMs is broken on older QEMUs leading to
      * user data corruption. If we are dealing with such version
      * of QEMU pretend we don't know how to NVDIMM. */
-    if (qemuCaps->version < 2009000 &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_NVDIMM))
+    if (qemuCaps->version < 2009000)
         virQEMUCapsClear(qemuCaps, QEMU_CAPS_DEVICE_NVDIMM);
 
     if (ARCH_IS_X86(qemuCaps->arch) &&
