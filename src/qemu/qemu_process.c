@@ -5487,6 +5487,34 @@ qemuProcessStartUpdateCustomCaps(virDomainObjPtr vm)
 
 
 /**
+ * qemuProcessPrepareQEMUCaps:
+ * @vm: domain object
+ * @qemuCapsCache: cache of QEMU capabilities
+ *
+ * Prepare the capabilities of a QEMU process for startup. This includes
+ * copying the caps to a static cache and potential post-processing depending
+ * on the configuration of the VM and startup process.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+static int
+qemuProcessPrepareQEMUCaps(virDomainObjPtr vm,
+                           virFileCachePtr qemuCapsCache)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    virObjectUnref(priv->qemuCaps);
+    if (!(priv->qemuCaps = virQEMUCapsCacheLookupCopy(qemuCapsCache,
+                                                      vm->def->virtType,
+                                                      vm->def->emulator,
+                                                      vm->def->os.machine)))
+        return -1;
+
+    return 0;
+}
+
+
+/**
  * qemuProcessInit:
  *
  * Prepares the domain up to the point when priv->qemuCaps is initialized. The
@@ -5537,7 +5565,7 @@ qemuProcessInit(virQEMUDriverPtr driver,
     }
 
     VIR_DEBUG("Determining emulator version");
-    if (qemuDomainUpdateQEMUCaps(vm, driver->qemuCapsCache) < 0)
+    if (qemuProcessPrepareQEMUCaps(vm, driver->qemuCapsCache) < 0)
         goto cleanup;
 
     if (flags & VIR_QEMU_PROCESS_START_STANDALONE)

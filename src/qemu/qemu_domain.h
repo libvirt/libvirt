@@ -1155,10 +1155,6 @@ int
 qemuDomainFixupCPUs(virDomainObjPtr vm,
                     virCPUDefPtr *origCPU);
 
-int
-qemuDomainUpdateQEMUCaps(virDomainObjPtr vm,
-                         virFileCachePtr qemuCapsCache);
-
 char *
 qemuDomainGetMachineName(virDomainObjPtr vm);
 
