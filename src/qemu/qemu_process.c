@@ -5524,6 +5524,10 @@ qemuProcessPrepareQEMUCaps(virDomainObjPtr vm,
     if (processStartFlags & VIR_QEMU_PROCESS_START_STANDALONE)
         virQEMUCapsClear(priv->qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS);
 
+    /* Update qemu capabilities according to lists passed in via namespace */
+    if (qemuProcessStartUpdateCustomCaps(vm) < 0)
+        return -1;
+
     return 0;
 }
 
@@ -5594,10 +5598,6 @@ qemuProcessInit(virQEMUDriverPtr driver,
      */
     VIR_DEBUG("Setting current domain def as transient");
     if (virDomainObjSetDefTransient(caps, driver->xmlopt, vm, priv->qemuCaps) < 0)
-        goto cleanup;
-
-    /* Update qemu capabilities according to lists passed in via namespace */
-    if (qemuProcessStartUpdateCustomCaps(vm) < 0)
         goto cleanup;
 
     if (flags & VIR_QEMU_PROCESS_START_PRETEND) {
