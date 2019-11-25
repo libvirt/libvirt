@@ -6033,6 +6033,10 @@ static const vshCmdOptDef opts_domjobinfo[] = {
      .type = VSH_OT_BOOL,
      .help = N_("print statistics for any kind of job (even failed ones)")
     },
+    {.name = "rawstats",
+     .type = VSH_OT_BOOL,
+     .help = N_("print the raw data returned by libvirt")
+    },
     {.name = NULL}
 };
 
@@ -6124,6 +6128,8 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
     int ivalue;
     int op;
     int rc;
+    size_t i;
+    bool rawstats = vshCommandOptBool(cmd, "rawstats");
 
     VSH_REQUIRE_OPTION("keep-completed", "completed");
 
@@ -6143,9 +6149,9 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
         if (virshDomainJobStatsToDomainJobInfo(params, nparams, &info) < 0)
             goto cleanup;
     } else if (last_error->code == VIR_ERR_NO_SUPPORT) {
-        if (flags) {
-            vshError(ctl, "%s", _("Optional flags are not supported by the "
-                                  "daemon"));
+        if (flags != 0 || rawstats) {
+            vshError(ctl, "%s",
+                     _("Optional flags or --rawstats are not supported by the daemon"));
             goto cleanup;
         }
         vshDebug(ctl, VSH_ERR_DEBUG, "detailed statistics not supported\n");
@@ -6154,6 +6160,18 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
     }
     if (rc < 0)
         goto cleanup;
+
+    if (rawstats) {
+        vshPrint(ctl, "Job type: %d\n\n", info.type);
+
+        for (i = 0; i < nparams; i++) {
+            g_autofree char *par = virTypedParameterToString(&params[i]);
+            vshPrint(ctl, "%s: %s\n", params[i].field, NULLSTR(par));
+        }
+
+        ret = true;
+        goto cleanup;
+    }
 
     vshPrint(ctl, "%-17s %-12s\n", _("Job type:"),
              virshDomainJobToString(info.type));
