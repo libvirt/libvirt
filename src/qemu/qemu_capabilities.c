@@ -1798,7 +1798,7 @@ virQEMUCapsAccelClear(virQEMUCapsAccelPtr caps)
     VIR_FREE(caps->machineTypes);
 
     virQEMUCapsHostCPUDataClear(&caps->hostCPU);
-    virObjectUnref(caps->cpuModels);
+    qemuMonitorCPUDefsFree(caps->cpuModels);
 }
 
 
