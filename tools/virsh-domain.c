@@ -6388,6 +6388,24 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
         vshPrint(ctl, "%-17s %-13d\n", _("Auto converge throttle:"), ivalue);
     }
 
+    if ((rc = virTypedParamsGetULLong(params, nparams,
+                                      VIR_DOMAIN_JOB_DISK_TEMP_USED,
+                                      &value)) < 0) {
+        goto save_error;
+    } else if (rc) {
+        val = vshPrettyCapacity(value, &unit);
+        vshPrint(ctl, "%-17s %-.3lf %s\n", _("Temporary disk space use:"), val, unit);
+    }
+
+    if ((rc = virTypedParamsGetULLong(params, nparams,
+                                      VIR_DOMAIN_JOB_DISK_TEMP_TOTAL,
+                                      &value)) < 0) {
+        goto save_error;
+    } else if (rc) {
+        val = vshPrettyCapacity(value, &unit);
+        vshPrint(ctl, "%-17s %-.3lf %s\n", _("Temporary disk space total:"), val, unit);
+    }
+
     ret = true;
 
  cleanup:
