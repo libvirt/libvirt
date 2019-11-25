@@ -52,7 +52,7 @@ with open(symfile, "r") as fh:
         line = line.strip(";")
 
         if line in wantsyms:
-            print("Symbol $1 is listed twice", file=sys.stderr)
+            print("Symbol %s is listed twice" % line, file=sys.stderr)
             ret = 1
         else:
             wantsyms[line] = True
