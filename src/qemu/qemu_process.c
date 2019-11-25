@@ -5528,6 +5528,9 @@ qemuProcessPrepareQEMUCaps(virDomainObjPtr vm,
     if (qemuProcessStartUpdateCustomCaps(vm) < 0)
         return -1;
 
+    /* re-process capability lockouts since we might have removed capabilities */
+    virQEMUCapsInitProcessCapsInterlock(priv->qemuCaps);
+
     return 0;
 }
 
