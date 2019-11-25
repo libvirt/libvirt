@@ -13964,7 +13964,8 @@ qemuDomainGetJobStats(virDomainPtr dom,
     bool completed = !!(flags & VIR_DOMAIN_JOB_STATS_COMPLETED);
     int ret = -1;
 
-    virCheckFlags(VIR_DOMAIN_JOB_STATS_COMPLETED, -1);
+    virCheckFlags(VIR_DOMAIN_JOB_STATS_COMPLETED |
+                  VIR_DOMAIN_JOB_STATS_KEEP_COMPLETED, -1);
 
     if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
@@ -13986,7 +13987,7 @@ qemuDomainGetJobStats(virDomainPtr dom,
 
     ret = qemuDomainJobInfoToParams(&jobInfo, type, params, nparams);
 
-    if (completed && ret == 0)
+    if (completed && ret == 0 && !(flags & VIR_DOMAIN_JOB_STATS_KEEP_COMPLETED))
         VIR_FREE(priv->job.completed);
 
  cleanup:
