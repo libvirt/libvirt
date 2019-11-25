@@ -3601,6 +3601,20 @@ typedef enum {
 # define VIR_DOMAIN_JOB_SUCCESS "success"
 
 /**
+ * VIR_DOMAIN_JOB_DISK_TEMP_USED:
+ * virDomainGetJobStats field: current usage of temporary disk space for the
+ * job in bytes as VIR_TYPED_PARAM_ULLONG.
+ */
+# define VIR_DOMAIN_JOB_DISK_TEMP_USED "disk_temp_used"
+
+/**
+ * VIR_DOMAIN_JOB_DISK_TEMP_TOTAL:
+ * virDomainGetJobStats field: possible total temporary disk space for the
+ * job in bytes as VIR_TYPED_PARAM_ULLONG.
+ */
+# define VIR_DOMAIN_JOB_DISK_TEMP_TOTAL "disk_temp_total"
+
+/**
  * virConnectDomainEventGenericCallback:
  * @conn: the connection pointer
  * @dom: the domain pointer
