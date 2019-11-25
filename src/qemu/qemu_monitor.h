@@ -154,8 +154,8 @@ struct _qemuMonitorJobInfo {
     qemuMonitorJobType type;
     qemuMonitorJobStatus status;
     char *error;
-    long long progressCurrent;
-    long long progressTotal;
+    unsigned long long progressCurrent;
+    unsigned long long progressTotal;
 };
 
 

@@ -9221,6 +9221,12 @@ qemuMonitorJSONGetJobInfoOne(virJSONValuePtr data)
     job->id = g_strdup(id);
     job->error = g_strdup(errmsg);
 
+    /* failure to fetch progress stats is not fatal */
+    ignore_value(virJSONValueObjectGetNumberUlong(data, "current-progress",
+                                                  &job->progressCurrent));
+    ignore_value(virJSONValueObjectGetNumberUlong(data, "total-progress",
+                                                  &job->progressTotal));
+
     return g_steal_pointer(&job);
 }
 
