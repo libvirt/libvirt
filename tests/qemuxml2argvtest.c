@@ -2059,6 +2059,7 @@ mymain(void)
     DO_TEST("video-none-device",
             QEMU_CAPS_VNC);
     DO_TEST_PARSE_ERROR("video-invalid-multiple-devices", NONE);
+    DO_TEST_PARSE_ERROR("default-video-type-x86_64-caps-test-0", NONE);
 
     DO_TEST("virtio-rng-default",
             QEMU_CAPS_DEVICE_VIRTIO_RNG,
