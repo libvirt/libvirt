@@ -293,9 +293,24 @@ daemonStreamFilter(virNetServerClientPtr client,
     daemonClientStream *stream = opaque;
     int ret = 0;
 
+    /* We must honour lock ordering here. Client private data lock must
+     * be acquired before client lock. Bu we are already called with
+     * client locked. To avoid stream disappearing while we unlock
+     * everything, let's increase its refcounter. This has some
+     * implications though. */
+    stream->refs++;
     virObjectUnlock(client);
     virMutexLock(&stream->priv->lock);
     virObjectLock(client);
+
+    if (stream->refs == 1) {
+        /* So we are the only ones holding the reference to the stream.
+         * Return 1 to signal to the caller that we've processed the
+         * message. And to "process" means free. */
+        virNetMessageFree(msg);
+        ret = 1;
+        goto cleanup;
+    }
 
     if (msg->header.type != VIR_NET_STREAM &&
         msg->header.type != VIR_NET_STREAM_HOLE)
@@ -318,6 +333,10 @@ daemonStreamFilter(virNetServerClientPtr client,
 
  cleanup:
     virMutexUnlock(&stream->priv->lock);
+    /* Don't pass client here, because client is locked here and this
+     * function might try to lock it again which would result in a
+     * deadlock. */
+    daemonFreeClientStream(NULL, stream);
     return ret;
 }
 
