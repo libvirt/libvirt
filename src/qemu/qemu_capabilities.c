@@ -4578,6 +4578,21 @@ virQEMUCapsInitQMPVersionCaps(virQEMUCapsPtr qemuCaps)
 
 
 /**
+ * virQEMUCapsInitProcessCapsInterlock:
+ * @qemuCaps: QEMU capabilities
+ *
+ * A capability which requires a different capability being present in order
+ * for libvirt to be able to drive it properly should be processed here.
+ */
+void
+virQEMUCapsInitProcessCapsInterlock(virQEMUCapsPtr qemuCaps)
+{
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV))
+        virQEMUCapsClear(qemuCaps, QEMU_CAPS_INCREMENTAL_BACKUP);
+}
+
+
+/**
  * virQEMUCapsInitProcessCaps:
  * @qemuCaps: QEMU capabilities
  *
@@ -4627,6 +4642,8 @@ virQEMUCapsInitProcessCaps(virQEMUCapsPtr qemuCaps)
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_DISK_DEVICE_ID) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_SAVEVM_MONITOR_NODES))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_BLOCKDEV);
+
+    virQEMUCapsInitProcessCapsInterlock(qemuCaps);
 }
 
 

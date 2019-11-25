@@ -555,6 +555,8 @@ void virQEMUCapsClear(virQEMUCapsPtr qemuCaps,
 bool virQEMUCapsGet(virQEMUCapsPtr qemuCaps,
                     virQEMUCapsFlags flag);
 
+void virQEMUCapsInitProcessCapsInterlock(virQEMUCapsPtr qemuCaps);
+
 bool virQEMUCapsHasPCIMultiBus(virQEMUCapsPtr qemuCaps,
                                const virDomainDef *def);
 
