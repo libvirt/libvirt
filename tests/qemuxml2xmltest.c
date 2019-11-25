@@ -372,7 +372,8 @@ mymain(void)
     DO_TEST("graphics-egl-headless-rendernode",
             QEMU_CAPS_DEVICE_CIRRUS_VGA,
             QEMU_CAPS_EGL_HEADLESS,
-            QEMU_CAPS_EGL_HEADLESS_RENDERNODE);
+            QEMU_CAPS_EGL_HEADLESS_RENDERNODE,
+            QEMU_CAPS_DEVICE_CIRRUS_VGA);
 
     DO_TEST("input-usbmouse", NONE);
     DO_TEST("input-usbtablet", NONE);
