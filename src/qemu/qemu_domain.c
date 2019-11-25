@@ -7881,19 +7881,25 @@ qemuDomainDeviceNetDefPostParse(virDomainNetDefPtr net,
 
 
 static int
+qemuDomainDefaultVideoDevice(const virDomainDef *def)
+{
+    if (ARCH_IS_PPC64(def->os.arch))
+        return VIR_DOMAIN_VIDEO_TYPE_VGA;
+    else if (qemuDomainIsARMVirt(def) ||
+             qemuDomainIsRISCVVirt(def) ||
+             ARCH_IS_S390(def->os.arch))
+        return VIR_DOMAIN_VIDEO_TYPE_VIRTIO;
+    else
+        return VIR_DOMAIN_VIDEO_TYPE_CIRRUS;
+}
+
+
+static int
 qemuDomainDeviceVideoDefPostParse(virDomainVideoDefPtr video,
                                   const virDomainDef *def)
 {
-    if (video->type == VIR_DOMAIN_VIDEO_TYPE_DEFAULT) {
-        if (ARCH_IS_PPC64(def->os.arch))
-            video->type = VIR_DOMAIN_VIDEO_TYPE_VGA;
-        else if (qemuDomainIsARMVirt(def) ||
-                 qemuDomainIsRISCVVirt(def) ||
-                 ARCH_IS_S390(def->os.arch))
-            video->type = VIR_DOMAIN_VIDEO_TYPE_VIRTIO;
-        else
-            video->type = VIR_DOMAIN_VIDEO_TYPE_CIRRUS;
-    }
+    if (video->type == VIR_DOMAIN_VIDEO_TYPE_DEFAULT)
+        video->type = qemuDomainDefaultVideoDevice(def);
 
     if (video->type == VIR_DOMAIN_VIDEO_TYPE_QXL &&
         !video->vgamem) {
