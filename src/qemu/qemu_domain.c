@@ -7881,25 +7881,32 @@ qemuDomainDeviceNetDefPostParse(virDomainNetDefPtr net,
 
 
 static int
-qemuDomainDefaultVideoDevice(const virDomainDef *def)
+qemuDomainDefaultVideoDevice(const virDomainDef *def,
+                          virQEMUCapsPtr qemuCaps)
 {
-    if (ARCH_IS_PPC64(def->os.arch))
+    if (ARCH_IS_PPC64(def->os.arch)) {
         return VIR_DOMAIN_VIDEO_TYPE_VGA;
-    else if (qemuDomainIsARMVirt(def) ||
-             qemuDomainIsRISCVVirt(def) ||
-             ARCH_IS_S390(def->os.arch))
+    } else if (qemuDomainIsARMVirt(def) ||
+               qemuDomainIsRISCVVirt(def) ||
+               ARCH_IS_S390(def->os.arch)) {
         return VIR_DOMAIN_VIDEO_TYPE_VIRTIO;
-    else
-        return VIR_DOMAIN_VIDEO_TYPE_CIRRUS;
+    } else {
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_CIRRUS_VGA))
+            return VIR_DOMAIN_VIDEO_TYPE_CIRRUS;
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VGA))
+            return VIR_DOMAIN_VIDEO_TYPE_VGA;
+        return VIR_DOMAIN_VIDEO_TYPE_DEFAULT;
+    }
 }
 
 
 static int
 qemuDomainDeviceVideoDefPostParse(virDomainVideoDefPtr video,
-                                  const virDomainDef *def)
+                                  const virDomainDef *def,
+                                  virQEMUCapsPtr qemuCaps)
 {
     if (video->type == VIR_DOMAIN_VIDEO_TYPE_DEFAULT)
-        video->type = qemuDomainDefaultVideoDevice(def);
+        video->type = qemuDomainDefaultVideoDevice(def, qemuCaps);
 
     if (video->type == VIR_DOMAIN_VIDEO_TYPE_QXL &&
         !video->vgamem) {
@@ -7993,7 +8000,7 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         break;
 
     case VIR_DOMAIN_DEVICE_VIDEO:
-        ret = qemuDomainDeviceVideoDefPostParse(dev->data.video, def);
+        ret = qemuDomainDeviceVideoDefPostParse(dev->data.video, def, qemuCaps);
         break;
 
     case VIR_DOMAIN_DEVICE_PANIC:
