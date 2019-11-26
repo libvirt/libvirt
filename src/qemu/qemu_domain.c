@@ -2475,6 +2475,8 @@ qemuDomainObjPrivateXMLFormatBlockjobIterator(void *payload,
     virBufferEscapeString(&attrBuf, " type='%s'", qemuBlockjobTypeToString(job->type));
     virBufferEscapeString(&attrBuf, " state='%s'", state);
     virBufferEscapeString(&attrBuf, " newstate='%s'", newstate);
+    if (job->brokentype != QEMU_BLOCKJOB_TYPE_NONE)
+        virBufferEscapeString(&attrBuf, " brokentype='%s'", qemuBlockjobTypeToString(job->brokentype));
     virBufferEscapeString(&childBuf, "<errmsg>%s</errmsg>", job->errmsg);
 
     if (job->disk) {
@@ -2536,6 +2538,8 @@ qemuDomainObjPrivateXMLFormatBlockjobIterator(void *payload,
                 virBufferAddLit(&attrBuf, " shallownew='yes'");
             break;
 
+
+        case QEMU_BLOCKJOB_TYPE_BROKEN:
         case QEMU_BLOCKJOB_TYPE_NONE:
         case QEMU_BLOCKJOB_TYPE_INTERNAL:
         case QEMU_BLOCKJOB_TYPE_LAST:
@@ -3100,6 +3104,8 @@ qemuDomainObjPrivateXMLParseBlockjobDataSpecific(qemuBlockJobDataPtr job,
             }
             break;
 
+
+        case QEMU_BLOCKJOB_TYPE_BROKEN:
         case QEMU_BLOCKJOB_TYPE_NONE:
         case QEMU_BLOCKJOB_TYPE_INTERNAL:
         case QEMU_BLOCKJOB_TYPE_LAST:
@@ -3125,6 +3131,7 @@ qemuDomainObjPrivateXMLParseBlockjobData(virDomainObjPtr vm,
     g_autoptr(qemuBlockJobData) job = NULL;
     g_autofree char *name = NULL;
     g_autofree char *typestr = NULL;
+    g_autofree char *brokentypestr = NULL;
     int type;
     g_autofree char *statestr = NULL;
     int state = QEMU_BLOCKJOB_STATE_FAILED;
@@ -3146,12 +3153,16 @@ qemuDomainObjPrivateXMLParseBlockjobData(virDomainObjPtr vm,
      * clean it up */
     if (!(typestr = virXPathString("string(./@type)", ctxt)) ||
         (type = qemuBlockjobTypeFromString(typestr)) < 0) {
-        type = QEMU_BLOCKJOB_TYPE_NONE;
+        type = QEMU_BLOCKJOB_TYPE_BROKEN;
         invalidData = true;
     }
 
     if (!(job = qemuBlockJobDataNew(type, name)))
         return -1;
+
+    if ((brokentypestr = virXPathString("string(./@brokentype)", ctxt)) &&
+        (job->brokentype = qemuBlockjobTypeFromString(brokentypestr)) < 0)
+        job->brokentype = QEMU_BLOCKJOB_TYPE_NONE;
 
     if (!(statestr = virXPathString("string(./@state)", ctxt)) ||
         (state = qemuBlockjobStateTypeFromString(statestr)) < 0)

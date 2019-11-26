@@ -300,6 +300,7 @@
         </source>
       </src>
     </blockjob>
+    <blockjob name='broken-test' type='broken' state='ready' brokentype='commit'/>
     <blockjob name='test-orphan-job0' type='copy' state='ready'>
       <chains>
         <disk type='file' format='qcow2'>

@@ -66,7 +66,8 @@ VIR_ENUM_IMPL(qemuBlockjob,
               "commit",
               "active-commit",
               "",
-              "create");
+              "create",
+              "broken");
 
 static virClassPtr qemuBlockJobDataClass;
 
@@ -125,6 +126,23 @@ qemuBlockJobDataNew(qemuBlockJobType type,
     job->type = type;
 
     return g_steal_pointer(&job);
+}
+
+
+/**
+ * qemuBlockJobMarkBroken:
+ * @job: job to mark as broken
+ *
+ * In case when we are unable to parse the block job data from the XML
+ * successfully we'll need to mark the job as broken and then attempt to abort
+ * it. This function marks the job as broken.
+ */
+static void
+qemuBlockJobMarkBroken(qemuBlockJobDataPtr job)
+{
+    qemuBlockJobDataDisposeJobdata(job);
+    job->brokentype = job->type;
+    job->type = QEMU_BLOCKJOB_TYPE_BROKEN;
 }
 
 
@@ -461,6 +479,9 @@ qemuBlockJobRefreshJobs(virQEMUDriverPtr driver,
          * in qemu and just forget about it in libvirt because there's not much
          * we coud do besides killing the VM */
         if (job->invalidData) {
+
+            qemuBlockJobMarkBroken(job);
+
             qemuDomainObjEnterMonitor(driver, vm);
 
             rc = qemuMonitorJobCancel(priv->mon, job->name, true);
@@ -1255,6 +1276,8 @@ qemuBlockJobEventProcessConcludedTransition(qemuBlockJobDataPtr job,
             qemuBlockJobProcessEventConcludedCopyAbort(driver, vm, job, asyncJob);
         break;
 
+
+    case QEMU_BLOCKJOB_TYPE_BROKEN:
     case QEMU_BLOCKJOB_TYPE_NONE:
     case QEMU_BLOCKJOB_TYPE_INTERNAL:
     case QEMU_BLOCKJOB_TYPE_LAST:

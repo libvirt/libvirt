@@ -63,6 +63,7 @@ typedef enum {
     /* Additional enum values local to qemu */
     QEMU_BLOCKJOB_TYPE_INTERNAL,
     QEMU_BLOCKJOB_TYPE_CREATE,
+    QEMU_BLOCKJOB_TYPE_BROKEN,
     QEMU_BLOCKJOB_TYPE_LAST
 } qemuBlockJobType;
 verify((int)QEMU_BLOCKJOB_TYPE_INTERNAL == VIR_DOMAIN_BLOCK_JOB_TYPE_LAST);
@@ -130,6 +131,8 @@ struct _qemuBlockJobData {
     bool synchronous; /* API call is waiting for this job */
 
     int newstate; /* qemuBlockjobState, subset of events emitted by qemu */
+
+    int brokentype; /* the previous type of a broken blockjob qemuBlockJobType */
 
     bool invalidData; /* the job data (except name) is not valid */
     bool reconnected; /* internal field for tracking whether job is live after reconnect to qemu */

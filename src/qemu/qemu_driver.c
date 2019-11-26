@@ -17418,6 +17418,7 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
     case QEMU_BLOCKJOB_TYPE_COMMIT:
     case QEMU_BLOCKJOB_TYPE_INTERNAL:
     case QEMU_BLOCKJOB_TYPE_CREATE:
+    case QEMU_BLOCKJOB_TYPE_BROKEN:
         virReportError(VIR_ERR_OPERATION_INVALID,
                        _("job type '%s' does not support pivot"),
                        qemuBlockjobTypeToString(job->type));
