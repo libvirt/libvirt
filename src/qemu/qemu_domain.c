@@ -4972,7 +4972,6 @@ qemuDomainValidateCpuCount(const virDomainDef *def,
 
 static int
 qemuDomainDefValidate(const virDomainDef *def,
-                      virCapsPtr caps G_GNUC_UNUSED,
                       void *opaque)
 {
     virQEMUDriverPtr driver = opaque;

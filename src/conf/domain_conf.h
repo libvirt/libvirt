@@ -2671,7 +2671,6 @@ typedef void (*virDomainDefPostParseDataFree)(void *parseOpaque);
  * for configurations that were previously accepted. This shall not modify the
  * config. */
 typedef int (*virDomainDefValidateCallback)(const virDomainDef *def,
-                                            virCapsPtr caps,
                                             void *opaque);
 
 /* Called once per device, for adjusting per-device settings while

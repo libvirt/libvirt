@@ -7115,7 +7115,7 @@ virDomainDefValidateInternal(const virDomainDef *def,
  */
 int
 virDomainDefValidate(virDomainDefPtr def,
-                     virCapsPtr caps,
+                     virCapsPtr caps G_GNUC_UNUSED,
                      unsigned int parseFlags,
                      virDomainXMLOptionPtr xmlopt)
 {
@@ -7130,7 +7130,7 @@ virDomainDefValidate(virDomainDefPtr def,
 
     /* call the domain config callback */
     if (xmlopt->config.domainValidateCallback &&
-        xmlopt->config.domainValidateCallback(def, caps, xmlopt->config.priv) < 0)
+        xmlopt->config.domainValidateCallback(def, xmlopt->config.priv) < 0)
         return -1;
 
     /* iterate the devices */
