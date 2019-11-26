@@ -296,7 +296,7 @@ storageStateInitialize(bool privileged,
 
     if ((driver->lockFD =
          virPidFileAcquire(driver->stateDir, "driver",
-                           true, getpid())) < 0)
+                           false, getpid())) < 0)
         goto error;
 
     if (virStoragePoolObjLoadAllState(driver->pools,
