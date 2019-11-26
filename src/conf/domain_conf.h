@@ -2664,7 +2664,6 @@ typedef int (*virDomainDefAssignAddressesCallback)(virDomainDef *def,
                                                    void *parseOpaque);
 
 typedef int (*virDomainDefPostParseDataAlloc)(const virDomainDef *def,
-                                              virCapsPtr caps,
                                               unsigned int parseFlags,
                                               void *opaque,
                                               void **parseOpaque);

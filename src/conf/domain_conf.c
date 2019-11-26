@@ -5506,7 +5506,7 @@ virDomainDeviceDefPostParseOne(virDomainDeviceDefPtr dev,
     int ret;
 
     if (!parseOpaque && xmlopt->config.domainPostParseDataAlloc) {
-        if (xmlopt->config.domainPostParseDataAlloc(def, caps, flags,
+        if (xmlopt->config.domainPostParseDataAlloc(def, flags,
                                                     xmlopt->config.priv,
                                                     &data) < 0)
             return -1;
@@ -5841,7 +5841,7 @@ virDomainDefPostParse(virDomainDefPtr def,
 
     if (!data.parseOpaque &&
         xmlopt->config.domainPostParseDataAlloc) {
-        ret = xmlopt->config.domainPostParseDataAlloc(def, caps, parseFlags,
+        ret = xmlopt->config.domainPostParseDataAlloc(def, parseFlags,
                                                       xmlopt->config.priv,
                                                       &data.parseOpaque);
 

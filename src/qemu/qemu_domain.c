@@ -8142,7 +8142,6 @@ qemuDomainDefAssignAddresses(virDomainDef *def,
 
 static int
 qemuDomainPostParseDataAlloc(const virDomainDef *def,
-                             virCapsPtr caps G_GNUC_UNUSED,
                              unsigned int parseFlags G_GNUC_UNUSED,
                              void *opaque,
                              void **parseOpaque)
