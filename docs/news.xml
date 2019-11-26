@@ -187,6 +187,17 @@
           down, these scripts were rewritten into Python.
         </description>
       </change>
+      <change>
+        <summary>
+          Provide init scripts for sub-deaemons
+        </summary>
+        <description>
+          So far libvirt shipped systemd unit files for sub-daemons. With this
+          release, init scripts are available too. Package maintainers can
+          choose which one to install via <code>--with-init-script</code>
+          configure option.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
       <change>
