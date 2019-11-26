@@ -402,7 +402,7 @@ int qemuTestDriverInit(virQEMUDriver *driver)
     if (!driver->qemuCapsCache)
         goto error;
 
-    driver->xmlopt = virQEMUDriverCreateXMLConf(driver);
+    driver->xmlopt = virQEMUDriverCreateXMLConf(driver, "none");
     if (!driver->xmlopt)
         goto error;
 

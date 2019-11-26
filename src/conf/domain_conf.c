@@ -8919,13 +8919,12 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
 static int
 virSecurityLabelDefsParseXML(virDomainDefPtr def,
                              xmlXPathContextPtr ctxt,
-                             virCapsPtr caps,
+                             virDomainXMLOptionPtr xmlopt,
                              unsigned int flags)
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
     size_t i = 0, j;
     int n;
-    virCapsHostPtr host = &caps->host;
     g_autofree xmlNodePtr *list = NULL;
 
     /* Allocate a security labels based on XML */
@@ -8968,15 +8967,16 @@ virSecurityLabelDefsParseXML(virDomainDefPtr def,
      */
     if (def->nseclabels == 1 &&
         !def->seclabels[0]->model &&
-        host->nsecModels > 0) {
+        xmlopt != NULL &&
+        xmlopt->config.defSecModel != NULL) {
         if (def->seclabels[0]->type == VIR_DOMAIN_SECLABEL_NONE ||
             (def->seclabels[0]->type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
              !def->seclabels[0]->baselabel &&
              (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))) {
             /* Copy model from host. */
             VIR_DEBUG("Found seclabel without a model, using '%s'",
-                      host->secModels[0].model);
-            def->seclabels[0]->model = g_strdup(host->secModels[0].model);
+                      xmlopt->config.defSecModel);
+            def->seclabels[0]->model = g_strdup(xmlopt->config.defSecModel);
 
             if (STREQ(def->seclabels[0]->model, "none") &&
                 flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) {
@@ -19781,7 +19781,7 @@ virDomainMemorytuneDefParse(virDomainDefPtr def,
 static virDomainDefPtr
 virDomainDefParseXML(xmlDocPtr xml,
                      xmlXPathContextPtr ctxt,
-                     virCapsPtr caps,
+                     virCapsPtr caps G_GNUC_UNUSED,
                      virDomainXMLOptionPtr xmlopt,
                      unsigned int flags)
 {
@@ -19889,7 +19889,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     /* analysis of security label, done early even though we format it
      * late, so devices can refer to this for defaults */
     if (!(flags & VIR_DOMAIN_DEF_PARSE_SKIP_SECLABEL)) {
-        if (virSecurityLabelDefsParseXML(def, ctxt, caps, flags) == -1)
+        if (virSecurityLabelDefsParseXML(def, ctxt, xmlopt, flags) == -1)
             goto error;
     }
 

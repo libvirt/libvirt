@@ -656,6 +656,8 @@ qemuStateInitialize(bool privileged,
     g_autofree char *memoryBackingPath = NULL;
     bool autostart = true;
     size_t i;
+    const char *defsecmodel = NULL;
+    g_autofree virSecurityManagerPtr *sec_managers = NULL;
 
     if (VIR_ALLOC(qemu_driver) < 0)
         return VIR_DRV_STATE_INIT_ERROR;
@@ -916,7 +918,14 @@ qemuStateInitialize(bool privileged,
     if ((qemu_driver->caps = virQEMUDriverCreateCapabilities(qemu_driver)) == NULL)
         goto error;
 
-    if (!(qemu_driver->xmlopt = virQEMUDriverCreateXMLConf(qemu_driver)))
+    if (!(sec_managers = qemuSecurityGetNested(qemu_driver->securityManager)))
+        goto error;
+
+    if (sec_managers[0] != NULL)
+        defsecmodel = qemuSecurityGetModel(sec_managers[0]);
+
+    if (!(qemu_driver->xmlopt = virQEMUDriverCreateXMLConf(qemu_driver,
+                                                           defsecmodel)))
         goto error;
 
     /* If hugetlbfs is present, then we need to create a sub-directory within

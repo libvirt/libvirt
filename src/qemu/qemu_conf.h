@@ -366,7 +366,8 @@ int qemuRemoveSharedDisk(virQEMUDriverPtr driver,
 int qemuSetUnprivSGIO(virDomainDeviceDefPtr dev);
 
 int qemuDriverAllocateID(virQEMUDriverPtr driver);
-virDomainXMLOptionPtr virQEMUDriverCreateXMLConf(virQEMUDriverPtr driver);
+virDomainXMLOptionPtr virQEMUDriverCreateXMLConf(virQEMUDriverPtr driver,
+                                                 const char *defsecmodel);
 
 int qemuTranslateSnapshotDiskSourcePool(virDomainSnapshotDiskDefPtr def);
 

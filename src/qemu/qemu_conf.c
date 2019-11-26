@@ -1191,9 +1191,11 @@ virQEMUDriverIsPrivileged(virQEMUDriverPtr driver)
 }
 
 virDomainXMLOptionPtr
-virQEMUDriverCreateXMLConf(virQEMUDriverPtr driver)
+virQEMUDriverCreateXMLConf(virQEMUDriverPtr driver,
+                           const char *defsecmodel)
 {
     virQEMUDriverDomainDefParserConfig.priv = driver;
+    virQEMUDriverDomainDefParserConfig.defSecModel = defsecmodel;
     return virDomainXMLOptionNew(&virQEMUDriverDomainDefParserConfig,
                                  &virQEMUDriverPrivateDataCallbacks,
                                  &virQEMUDriverDomainXMLNamespace,
