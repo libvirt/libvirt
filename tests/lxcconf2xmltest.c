@@ -42,7 +42,7 @@ testCompareXMLToConfigFiles(const char *xmlfile,
         if (testSanitizeDef(vmdef) < 0)
             goto fail;
 
-        if (!(actualxml = virDomainDefFormat(vmdef, caps, 0)))
+        if (!(actualxml = virDomainDefFormat(vmdef, xmlopt, caps, 0)))
             goto fail;
 
         if (virTestCompareToFile(actualxml, xmlfile) < 0)

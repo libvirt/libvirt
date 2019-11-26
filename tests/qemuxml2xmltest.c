@@ -68,7 +68,7 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
         goto cleanup;
     }
 
-    if (!(actual = virDomainObjFormat(driver.xmlopt, obj, NULL,
+    if (!(actual = virDomainObjFormat(obj, driver.xmlopt, NULL,
                                       VIR_DOMAIN_DEF_FORMAT_SECURE |
                                       VIR_DOMAIN_DEF_FORMAT_STATUS |
                                       VIR_DOMAIN_DEF_FORMAT_ACTUAL_NET |

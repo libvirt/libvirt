@@ -495,7 +495,7 @@ bhyveDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     if (!caps)
         goto cleanup;
 
-    ret = virDomainDefFormat(vm->def, caps,
+    ret = virDomainDefFormat(vm->def, privconn->xmlopt, caps,
                              virDomainDefFormatConvertXMLFlags(flags));
 
     virObjectUnref(caps);
@@ -1583,7 +1583,7 @@ bhyveConnectDomainXMLFromNative(virConnectPtr conn,
     if (def == NULL)
         goto cleanup;
 
-    xml = virDomainDefFormat(def, capabilities, 0);
+    xml = virDomainDefFormat(def, privconn->xmlopt, capabilities, 0);
 
  cleanup:
     virObjectUnref(capabilities);

@@ -935,7 +935,7 @@ vmwareDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     if (!(vm = vmwareDomObjFromDomain(driver, dom->uuid)))
         return NULL;
 
-    ret = virDomainDefFormat(vm->def, driver->caps,
+    ret = virDomainDefFormat(vm->def, driver->xmlopt, driver->caps,
                              virDomainDefFormatConvertXMLFlags(flags));
 
     virDomainObjEndAPI(&vm);
@@ -968,7 +968,7 @@ vmwareConnectDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
     def = virVMXParseConfig(&ctx, driver->xmlopt, driver->caps, nativeConfig);
 
     if (def != NULL)
-        xml = virDomainDefFormat(def, driver->caps,
+        xml = virDomainDefFormat(def, driver->xmlopt, driver->caps,
                                  VIR_DOMAIN_DEF_FORMAT_INACTIVE);
 
     virDomainDefFree(def);

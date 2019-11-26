@@ -63,3 +63,4 @@ int strtoI(const char *str);
 int openvzSetDefinedUUID(int vpsid, unsigned char *uuid);
 int openvzGetVEID(const char *name);
 int openvzReadNetworkConf(virDomainDefPtr def, int veid);
+virDomainXMLOptionPtr openvzXMLOption(void);

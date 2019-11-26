@@ -3247,7 +3247,7 @@ phypDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     if (virDomainDefSetVcpus(&def, vcpus) < 0)
         goto err;
 
-    return virDomainDefFormat(&def, phyp_driver->caps,
+    return virDomainDefFormat(&def, phyp_driver->xmlopt, phyp_driver->caps,
                               virDomainDefFormatConvertXMLFlags(flags));
 
  err:

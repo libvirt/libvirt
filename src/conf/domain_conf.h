@@ -3104,23 +3104,33 @@ void virDomainIOThreadIDDel(virDomainDefPtr def, unsigned int iothread_id);
 unsigned int virDomainDefFormatConvertXMLFlags(unsigned int flags);
 
 char *virDomainDefFormat(virDomainDefPtr def,
+                         virDomainXMLOptionPtr xmlopt,
                          virCapsPtr caps,
-                         unsigned int flags);
-char *virDomainObjFormat(virDomainXMLOptionPtr xmlopt,
-                         virDomainObjPtr obj,
+                         unsigned int flags)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
+    ATTRIBUTE_NONNULL(3);
+char *virDomainObjFormat(virDomainObjPtr obj,
+                         virDomainXMLOptionPtr xmlopt,
                          virCapsPtr caps,
-                         unsigned int flags);
+                         unsigned int flags)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
+    ATTRIBUTE_NONNULL(3);
 int virDomainDefFormatInternal(virDomainDefPtr def,
+                               virDomainXMLOptionPtr xmlopt,
                                virCapsPtr caps,
-                               unsigned int flags,
                                virBufferPtr buf,
-                               virDomainXMLOptionPtr xmlopt);
+                               unsigned int flags)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
+    ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
 int virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
-                                          virCapsPtr caps,
-                                          unsigned int flags,
-                                          virBufferPtr buf,
                                           virDomainXMLOptionPtr xmlopt,
-                                          const char *rootname);
+                                          virCapsPtr caps,
+                                          virBufferPtr buf,
+                                          const char *rootname,
+                                          unsigned int flags)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
+    ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
+    ATTRIBUTE_NONNULL(5);
 
 int virDomainDiskSourceFormat(virBufferPtr buf,
                               virStorageSourcePtr src,

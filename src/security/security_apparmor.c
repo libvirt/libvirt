@@ -168,7 +168,7 @@ load_profile(virSecurityManagerPtr mgr G_GNUC_UNUSED,
     char *xml = NULL;
     virCommandPtr cmd = NULL;
 
-    xml = virDomainDefFormat(def, NULL, VIR_DOMAIN_DEF_FORMAT_SECURE);
+    xml = virDomainDefFormat(def, NULL, NULL, VIR_DOMAIN_DEF_FORMAT_SECURE);
     if (!xml)
         goto cleanup;
 

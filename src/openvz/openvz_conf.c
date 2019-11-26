@@ -1078,3 +1078,58 @@ int openvzGetVEID(const char *name)
                    _("Failed to parse vzlist output"));
     return -1;
 }
+
+
+static int
+openvzDomainDefPostParse(virDomainDefPtr def,
+                         virCapsPtr caps G_GNUC_UNUSED,
+                         unsigned int parseFlags G_GNUC_UNUSED,
+                         void *opaque G_GNUC_UNUSED,
+                         void *parseOpaque G_GNUC_UNUSED)
+{
+    /* fill the init path */
+    if (def->os.type == VIR_DOMAIN_OSTYPE_EXE && !def->os.init)
+        def->os.init = g_strdup("/sbin/init");
+
+    return 0;
+}
+
+
+static int
+openvzDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
+                               const virDomainDef *def G_GNUC_UNUSED,
+                               virCapsPtr caps G_GNUC_UNUSED,
+                               unsigned int parseFlags G_GNUC_UNUSED,
+                               void *opaque G_GNUC_UNUSED,
+                               void *parseOpaque G_GNUC_UNUSED)
+{
+    if (dev->type == VIR_DOMAIN_DEVICE_CHR &&
+        dev->data.chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
+        dev->data.chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE)
+        dev->data.chr->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_OPENVZ;
+
+    /* forbid capabilities mode hostdev in this kind of hypervisor */
+    if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV &&
+        dev->data.hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("hostdev mode 'capabilities' is not "
+                         "supported in %s"),
+                       virDomainVirtTypeToString(def->virtType));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+virDomainDefParserConfig openvzDomainDefParserConfig = {
+    .domainPostParseCallback = openvzDomainDefPostParse,
+    .devicesPostParseCallback = openvzDomainDeviceDefPostParse,
+    .features = VIR_DOMAIN_DEF_FEATURE_NAME_SLASH,
+};
+
+virDomainXMLOptionPtr openvzXMLOption(void)
+{
+    return virDomainXMLOptionNew(&openvzDomainDefParserConfig,
+                                 NULL, NULL, NULL, NULL);
+}

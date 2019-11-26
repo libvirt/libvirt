@@ -171,7 +171,7 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
 
     /* now that we know it's stopped call the hook if present */
     if (virHookPresent(VIR_HOOK_DRIVER_LXC)) {
-        char *xml = virDomainDefFormat(vm->def, driver->caps, 0);
+        char *xml = virDomainDefFormat(vm->def, driver->xmlopt, driver->caps, 0);
 
         /* we can't stop the operation even if the script raised an error */
         virHookCall(VIR_HOOK_DRIVER_LXC, vm->def->name,
@@ -248,7 +248,7 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
 
     /* The "release" hook cleans up additional resources */
     if (virHookPresent(VIR_HOOK_DRIVER_LXC)) {
-        char *xml = virDomainDefFormat(vm->def, driver->caps, 0);
+        char *xml = virDomainDefFormat(vm->def, driver->xmlopt, driver->caps, 0);
 
         /* we can't stop the operation even if the script raised an error */
         virHookCall(VIR_HOOK_DRIVER_LXC, vm->def->name,
@@ -1271,7 +1271,7 @@ int virLXCProcessStart(virConnectPtr conn,
 
     /* Run an early hook to set-up missing devices */
     if (virHookPresent(VIR_HOOK_DRIVER_LXC)) {
-        char *xml = virDomainDefFormat(vm->def, driver->caps, 0);
+        char *xml = virDomainDefFormat(vm->def, driver->xmlopt, driver->caps, 0);
         int hookret;
 
         hookret = virHookCall(VIR_HOOK_DRIVER_LXC, vm->def->name,
@@ -1379,7 +1379,7 @@ int virLXCProcessStart(virConnectPtr conn,
 
     /* now that we know it is about to start call the hook if present */
     if (virHookPresent(VIR_HOOK_DRIVER_LXC)) {
-        char *xml = virDomainDefFormat(vm->def, driver->caps, 0);
+        char *xml = virDomainDefFormat(vm->def, driver->xmlopt, driver->caps, 0);
         int hookret;
 
         hookret = virHookCall(VIR_HOOK_DRIVER_LXC, vm->def->name,
@@ -1521,7 +1521,7 @@ int virLXCProcessStart(virConnectPtr conn,
 
     /* finally we can call the 'started' hook script if any */
     if (virHookPresent(VIR_HOOK_DRIVER_LXC)) {
-        char *xml = virDomainDefFormat(vm->def, driver->caps, 0);
+        char *xml = virDomainDefFormat(vm->def, driver->xmlopt, driver->caps, 0);
         int hookret;
 
         hookret = virHookCall(VIR_HOOK_DRIVER_LXC, vm->def->name,
@@ -1701,7 +1701,7 @@ virLXCProcessReconnectDomain(virDomainObjPtr vm,
 
         /* now that we know it's reconnected call the hook if present */
         if (virHookPresent(VIR_HOOK_DRIVER_LXC)) {
-            char *xml = virDomainDefFormat(vm->def, driver->caps, 0);
+            char *xml = virDomainDefFormat(vm->def, driver->xmlopt, driver->caps, 0);
             int hookret;
 
             /* we can't stop the operation even if the script raised an error */

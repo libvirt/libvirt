@@ -489,8 +489,8 @@ virDomainCheckpointDefFormatInternal(virBufferPtr buf,
     }
 
     if (!(flags & VIR_DOMAIN_CHECKPOINT_FORMAT_NO_DOMAIN) &&
-        virDomainDefFormatInternal(def->parent.dom, caps, domainflags, buf,
-                                   xmlopt) < 0)
+        virDomainDefFormatInternal(def->parent.dom, xmlopt,
+                                   caps, buf, domainflags) < 0)
         goto error;
 
     virBufferAdjustIndent(buf, -2);

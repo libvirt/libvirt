@@ -891,8 +891,8 @@ virDomainSnapshotDefFormatInternal(virBufferPtr buf,
     }
 
     if (def->parent.dom) {
-        if (virDomainDefFormatInternal(def->parent.dom, caps, domainflags, buf,
-                                       xmlopt) < 0)
+        if (virDomainDefFormatInternal(def->parent.dom, xmlopt,
+                                       caps, buf, domainflags) < 0)
             goto error;
     } else if (uuidstr) {
         virBufferAddLit(buf, "<domain>\n");
@@ -903,9 +903,9 @@ virDomainSnapshotDefFormatInternal(virBufferPtr buf,
     }
 
     if (def->parent.inactiveDom) {
-        if (virDomainDefFormatInternalSetRootName(def->parent.inactiveDom, caps,
-                                                  domainflags, buf, xmlopt,
-                                                  "inactiveDomain") < 0)
+        if (virDomainDefFormatInternalSetRootName(def->parent.inactiveDom, xmlopt,
+                                                  caps, buf, "inactiveDomain",
+                                                  domainflags) < 0)
             goto error;
     }
 

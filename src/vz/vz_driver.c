@@ -728,7 +728,7 @@ vzDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     def = (flags & VIR_DOMAIN_XML_INACTIVE) &&
         dom->newDef ? dom->newDef : dom->def;
 
-    ret = virDomainDefFormat(def, privconn->driver->caps, flags);
+    ret = virDomainDefFormat(def, driver->xmlopt, privconn->driver->caps, flags);
 
  cleanup:
     virDomainObjEndAPI(&dom);
@@ -2872,7 +2872,7 @@ vzDomainMigrateBeginStep(virDomainObjPtr dom,
                      | VZ_MIGRATION_COOKIE_DOMAIN_NAME) < 0)
         return NULL;
 
-    return virDomainDefFormat(dom->def, driver->caps,
+    return virDomainDefFormat(dom->def, driver->xmlopt, driver->caps,
                               VIR_DOMAIN_XML_MIGRATABLE);
 }
 

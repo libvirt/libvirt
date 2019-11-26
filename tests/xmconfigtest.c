@@ -100,7 +100,7 @@ testCompareFormatXML(const char *xmcfg, const char *xml)
     if (!(def = xenParseXM(conf, caps, xmlopt)))
         goto fail;
 
-    if (!(gotxml = virDomainDefFormat(def, caps, VIR_DOMAIN_DEF_FORMAT_SECURE)))
+    if (!(gotxml = virDomainDefFormat(def, xmlopt, caps, VIR_DOMAIN_DEF_FORMAT_SECURE)))
         goto fail;
 
     if (virTestCompareToFile(gotxml, xml) < 0)

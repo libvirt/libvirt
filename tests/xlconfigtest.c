@@ -146,7 +146,8 @@ testCompareFormatXML(const char *xlcfg, const char *xml, bool replaceVars)
     if (!(def = xenParseXL(conf, caps, xmlopt)))
         goto fail;
 
-    if (!(gotxml = virDomainDefFormat(def, caps, VIR_DOMAIN_XML_INACTIVE |
+    if (!(gotxml = virDomainDefFormat(def, xmlopt, caps,
+                                      VIR_DOMAIN_XML_INACTIVE |
                                       VIR_DOMAIN_XML_SECURE)))
         goto fail;
 

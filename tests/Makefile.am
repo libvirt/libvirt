@@ -749,7 +749,8 @@ if WITH_OPENVZ
 openvzutilstest_SOURCES = \
 	openvzutilstest.c \
 	testutils.c testutils.h
-openvzutilstest_LDADD = $(LDADDS)
+openvzutilstest_LDADD = $(LDADDS) \
+	../src/libvirt_driver_openvz.la
 else ! WITH_OPENVZ
 EXTRA_DIST += openvzutilstest.c
 endif ! WITH_OPENVZ
