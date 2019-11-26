@@ -5878,7 +5878,7 @@ virDomainDefPostParse(virDomainDefPtr def,
         goto cleanup;
 
     if (xmlopt->config.assignAddressesCallback) {
-        ret = xmlopt->config.assignAddressesCallback(def, caps, parseFlags,
+        ret = xmlopt->config.assignAddressesCallback(def, parseFlags,
                                                      xmlopt->config.priv,
                                                      data.parseOpaque);
         if (virDomainDefPostParseCheckFailure(def, parseFlags, ret) < 0)

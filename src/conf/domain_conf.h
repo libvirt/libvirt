@@ -2660,7 +2660,6 @@ typedef int (*virDomainDeviceDefPostParseCallback)(virDomainDeviceDefPtr dev,
  * @opaque is opaque data set by driver (usually pointer to driver
  * private data). */
 typedef int (*virDomainDefAssignAddressesCallback)(virDomainDef *def,
-                                                   virCapsPtr caps,
                                                    unsigned int parseFlags,
                                                    void *opaque,
                                                    void *parseOpaque);
