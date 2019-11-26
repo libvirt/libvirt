@@ -2096,7 +2096,7 @@ virQEMUCapsSetHostModel(virQEMUCapsPtr qemuCaps,
 
 bool
 virQEMUCapsIsCPUModeSupported(virQEMUCapsPtr qemuCaps,
-                              virCapsPtr caps,
+                              virArch hostarch,
                               virDomainVirtType type,
                               virCPUMode mode)
 {
@@ -2105,7 +2105,7 @@ virQEMUCapsIsCPUModeSupported(virQEMUCapsPtr qemuCaps,
     switch (mode) {
     case VIR_CPU_MODE_HOST_PASSTHROUGH:
         return type == VIR_DOMAIN_VIRT_KVM &&
-               virQEMUCapsGuestIsNative(caps->host.arch, qemuCaps->arch);
+               virQEMUCapsGuestIsNative(hostarch, qemuCaps->arch);
 
     case VIR_CPU_MODE_HOST_MODEL:
         return !!virQEMUCapsGetHostModel(qemuCaps, type,
@@ -5412,22 +5412,22 @@ virQEMUCapsFillDomainOSCaps(virDomainCapsOSPtr os,
 
 
 static void
-virQEMUCapsFillDomainCPUCaps(virCapsPtr caps,
-                             virQEMUCapsPtr qemuCaps,
+virQEMUCapsFillDomainCPUCaps(virQEMUCapsPtr qemuCaps,
+                             virArch hostarch,
                              virDomainCapsPtr domCaps)
 {
-    if (virQEMUCapsIsCPUModeSupported(qemuCaps, caps, domCaps->virttype,
+    if (virQEMUCapsIsCPUModeSupported(qemuCaps, hostarch, domCaps->virttype,
                                       VIR_CPU_MODE_HOST_PASSTHROUGH))
         domCaps->cpu.hostPassthrough = true;
 
-    if (virQEMUCapsIsCPUModeSupported(qemuCaps, caps, domCaps->virttype,
+    if (virQEMUCapsIsCPUModeSupported(qemuCaps, hostarch, domCaps->virttype,
                                       VIR_CPU_MODE_HOST_MODEL)) {
         virCPUDefPtr cpu = virQEMUCapsGetHostModel(qemuCaps, domCaps->virttype,
                                                    VIR_QEMU_CAPS_HOST_CPU_REPORTED);
         domCaps->cpu.hostModel = virCPUDefCopy(cpu);
     }
 
-    if (virQEMUCapsIsCPUModeSupported(qemuCaps, caps, domCaps->virttype,
+    if (virQEMUCapsIsCPUModeSupported(qemuCaps, hostarch, domCaps->virttype,
                                       VIR_CPU_MODE_CUSTOM)) {
         const char *blacklist[] = { "host", NULL };
         VIR_AUTOSTRINGLIST models = NULL;
@@ -5746,9 +5746,9 @@ virQEMUCapsFillDomainFeatureSEVCaps(virQEMUCapsPtr qemuCaps,
 
 
 int
-virQEMUCapsFillDomainCaps(virCapsPtr caps,
+virQEMUCapsFillDomainCaps(virQEMUCapsPtr qemuCaps,
+                          virArch hostarch,
                           virDomainCapsPtr domCaps,
-                          virQEMUCapsPtr qemuCaps,
                           bool privileged,
                           virFirmwarePtr *firmwares,
                           size_t nfirmwares)
@@ -5781,7 +5781,7 @@ virQEMUCapsFillDomainCaps(virCapsPtr caps,
                                     firmwares, nfirmwares) < 0)
         return -1;
 
-    virQEMUCapsFillDomainCPUCaps(caps, qemuCaps, domCaps);
+    virQEMUCapsFillDomainCPUCaps(qemuCaps, hostarch, domCaps);
     virQEMUCapsFillDomainDeviceDiskCaps(qemuCaps, domCaps->machine, disk);
     virQEMUCapsFillDomainDeviceGraphicsCaps(qemuCaps, graphics);
     virQEMUCapsFillDomainDeviceVideoCaps(qemuCaps, video);

@@ -6047,7 +6047,7 @@ qemuProcessDropUnknownCPUFeatures(const char *name,
 static int
 qemuProcessUpdateGuestCPU(virDomainDefPtr def,
                           virQEMUCapsPtr qemuCaps,
-                          virCapsPtr caps,
+                          virArch hostarch,
                           unsigned int flags)
 {
     if (!def->cpu)
@@ -6069,7 +6069,7 @@ qemuProcessUpdateGuestCPU(virDomainDefPtr def,
         def->cpu->mode = VIR_CPU_MODE_CUSTOM;
     }
 
-    if (!virQEMUCapsIsCPUModeSupported(qemuCaps, caps, def->virtType,
+    if (!virQEMUCapsIsCPUModeSupported(qemuCaps, hostarch, def->virtType,
                                        def->cpu->mode)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("CPU mode '%s' for %s %s domain on %s host is not "
@@ -6077,11 +6077,11 @@ qemuProcessUpdateGuestCPU(virDomainDefPtr def,
                        virCPUModeTypeToString(def->cpu->mode),
                        virArchToString(def->os.arch),
                        virDomainVirtTypeToString(def->virtType),
-                       virArchToString(caps->host.arch));
+                       virArchToString(hostarch));
         return -1;
     }
 
-    if (virCPUConvertLegacy(caps->host.arch, def->cpu) < 0)
+    if (virCPUConvertLegacy(hostarch, def->cpu) < 0)
         return -1;
 
     /* nothing to update for host-passthrough */
@@ -6089,7 +6089,7 @@ qemuProcessUpdateGuestCPU(virDomainDefPtr def,
         g_autoptr(virDomainCapsCPUModels) cpuModels = NULL;
 
         if (def->cpu->check == VIR_CPU_CHECK_PARTIAL &&
-            virCPUCompare(caps->host.arch,
+            virCPUCompare(hostarch,
                           virQEMUCapsGetHostModel(qemuCaps, def->virtType,
                                                   VIR_QEMU_CAPS_HOST_CPU_FULL),
                           def->cpu, true) < 0)
@@ -6351,7 +6351,7 @@ qemuProcessPrepareDomain(virQEMUDriverPtr driver,
     priv->pausedReason = VIR_DOMAIN_PAUSED_UNKNOWN;
 
     VIR_DEBUG("Updating guest CPU definition");
-    if (qemuProcessUpdateGuestCPU(vm->def, priv->qemuCaps, caps, flags) < 0)
+    if (qemuProcessUpdateGuestCPU(vm->def, priv->qemuCaps, driver->hostarch, flags) < 0)
         goto cleanup;
 
     for (i = 0; i < vm->def->nshmems; i++)
@@ -7827,7 +7827,7 @@ qemuProcessRefreshCPU(virQEMUDriverPtr driver,
     if (!caps)
         return -1;
 
-    if (!virQEMUCapsGuestIsNative(caps->host.arch, vm->def->os.arch) ||
+    if (!virQEMUCapsGuestIsNative(driver->hostarch, vm->def->os.arch) ||
         !caps->host.cpu ||
         !vm->def->cpu) {
         ret = 0;

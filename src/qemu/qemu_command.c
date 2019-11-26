@@ -6657,18 +6657,14 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
                         virQEMUCapsPtr qemuCaps)
 {
     size_t i;
-    g_autoptr(virCaps) caps = NULL;
     virCPUDefPtr cpu = def->cpu;
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        return -1;
 
     switch ((virCPUMode) cpu->mode) {
     case VIR_CPU_MODE_HOST_PASSTHROUGH:
         virBufferAddLit(buf, "host");
 
         if (def->os.arch == VIR_ARCH_ARMV7L &&
-            caps->host.arch == VIR_ARCH_AARCH64) {
+            driver->hostarch == VIR_ARCH_AARCH64) {
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_AARCH64_OFF)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("QEMU binary does not support CPU "

@@ -673,6 +673,7 @@ qemuStateInitialize(bool privileged,
     qemu_driver->inhibitOpaque = opaque;
 
     qemu_driver->privileged = privileged;
+    qemu_driver->hostarch = virArchFromHost();
 
     if (!(qemu_driver->domains = virDomainObjListNew()))
         goto error;
@@ -13424,7 +13425,7 @@ qemuConnectCompareCPU(virConnectPtr conn,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         return VIR_CPU_COMPARE_ERROR;
 
-    return virCPUCompareXML(caps->host.arch, caps->host.cpu,
+    return virCPUCompareXML(driver->hostarch, caps->host.cpu,
                             xmlDesc, failIncompatible);
 }
 

@@ -413,7 +413,7 @@ testCompareXMLToArgv(const void *data)
     qemuDomainObjPrivatePtr priv = NULL;
 
     if (info->arch != VIR_ARCH_NONE && info->arch != VIR_ARCH_X86_64)
-        qemuTestSetHostArch(driver.caps, info->arch);
+        qemuTestSetHostArch(&driver, info->arch);
 
     memset(&monitor_chr, 0, sizeof(monitor_chr));
 
@@ -584,7 +584,7 @@ testCompareXMLToArgv(const void *data)
     virObjectUnref(conn);
     VIR_FREE(migrateURI);
     if (info->arch != VIR_ARCH_NONE && info->arch != VIR_ARCH_X86_64)
-        qemuTestSetHostArch(driver.caps, VIR_ARCH_NONE);
+        qemuTestSetHostArch(&driver, VIR_ARCH_NONE);
 
     return ret;
 }
@@ -1724,11 +1724,11 @@ mymain(void)
     DO_TEST("cpu-host-passthrough", QEMU_CAPS_KVM);
     DO_TEST_FAILURE("cpu-qemu-host-passthrough", QEMU_CAPS_KVM);
 
-    qemuTestSetHostArch(driver.caps, VIR_ARCH_S390X);
+    qemuTestSetHostArch(&driver, VIR_ARCH_S390X);
     DO_TEST("cpu-s390-zEC12", QEMU_CAPS_KVM, QEMU_CAPS_CCW, QEMU_CAPS_VIRTIO_S390);
     DO_TEST("cpu-s390-features", QEMU_CAPS_KVM, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION);
     DO_TEST_FAILURE("cpu-s390-features", QEMU_CAPS_KVM);
-    qemuTestSetHostArch(driver.caps, VIR_ARCH_NONE);
+    qemuTestSetHostArch(&driver, VIR_ARCH_NONE);
 
     qemuTestSetHostCPU(driver.caps, cpuHaswell);
     DO_TEST("cpu-Haswell", QEMU_CAPS_KVM);
@@ -1855,7 +1855,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_SPAPR_VTY);
     DO_TEST_PARSE_ERROR("pseries-no-parallel", NONE);
 
-    qemuTestSetHostArch(driver.caps, VIR_ARCH_PPC64);
+    qemuTestSetHostArch(&driver, VIR_ARCH_PPC64);
     DO_TEST("pseries-cpu-compat", QEMU_CAPS_KVM,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_DEVICE_SPAPR_VTY);
@@ -1877,7 +1877,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_SPAPR_VTY);
     qemuTestSetHostCPU(driver.caps, NULL);
 
-    qemuTestSetHostArch(driver.caps, VIR_ARCH_NONE);
+    qemuTestSetHostArch(&driver, VIR_ARCH_NONE);
 
     DO_TEST("pseries-panic-missing",
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
@@ -2552,7 +2552,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM);
     DO_TEST("aarch64-virt-default-nic",
             QEMU_CAPS_DEVICE_VIRTIO_MMIO);
-    qemuTestSetHostArch(driver.caps, VIR_ARCH_AARCH64);
+    qemuTestSetHostArch(&driver, VIR_ARCH_AARCH64);
     DO_TEST("aarch64-cpu-passthrough",
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_KVM);
@@ -2668,7 +2668,7 @@ mymain(void)
     /* SVE aarch64 CPU features work on modern QEMU */
     DO_TEST_CAPS_ARCH_LATEST("aarch64-features-sve", "aarch64");
 
-    qemuTestSetHostArch(driver.caps, VIR_ARCH_NONE);
+    qemuTestSetHostArch(&driver, VIR_ARCH_NONE);
 
     DO_TEST("kvm-pit-delay", QEMU_CAPS_KVM_PIT_TICK_POLICY);
     DO_TEST("kvm-pit-discard", QEMU_CAPS_KVM_PIT_TICK_POLICY);

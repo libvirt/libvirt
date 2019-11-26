@@ -1341,7 +1341,6 @@ virQEMUDriverGetDomainCapabilities(virQEMUDriverPtr driver,
                                    virDomainVirtType virttype)
 {
     g_autoptr(virDomainCaps) domCaps = NULL;
-    g_autoptr(virCaps) caps = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     virHashTablePtr domCapsCache = virQEMUCapsGetDomainCapsCache(qemuCaps);
     struct virQEMUDriverSearchDomcapsData data = {
@@ -1350,9 +1349,6 @@ virQEMUDriverGetDomainCapabilities(virQEMUDriverPtr driver,
         .arch = arch,
         .virttype = virttype,
     };
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        return NULL;
 
     domCaps = virHashSearch(domCapsCache,
                             virQEMUDriverSearchDomcaps, &data, NULL);
@@ -1364,7 +1360,7 @@ virQEMUDriverGetDomainCapabilities(virQEMUDriverPtr driver,
                                          data.arch, data.virttype)))
             return NULL;
 
-        if (virQEMUCapsFillDomainCaps(caps, domCaps, qemuCaps,
+        if (virQEMUCapsFillDomainCaps(qemuCaps, driver->hostarch, domCaps,
                                       driver->privileged,
                                       cfg->firmwares, cfg->nfirmwares) < 0)
             return NULL;

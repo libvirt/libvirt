@@ -262,6 +262,9 @@ struct _virQEMUDriver {
      */
     virCapsPtr caps;
 
+    /* Immutable value */
+    virArch hostarch;
+
     /* Immutable pointer, Immutable object */
     virDomainXMLOptionPtr xmlopt;
 

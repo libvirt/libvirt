@@ -80,8 +80,8 @@ extern virCPUDefPtr cpuHaswell;
 extern virCPUDefPtr cpuPower8;
 extern virCPUDefPtr cpuPower9;
 
-void qemuTestSetHostArch(virCapsPtr caps,
-                        virArch arch);
+void qemuTestSetHostArch(virQEMUDriverPtr driver,
+                         virArch arch);
 void qemuTestSetHostCPU(virCapsPtr caps,
                         virCPUDefPtr cpu);
 

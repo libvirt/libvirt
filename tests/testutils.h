@@ -43,6 +43,8 @@ extern char *progname;
 # error Fix Makefile.am
 #endif
 
+extern virArch virTestHostArch;
+
 int virTestRun(const char *title,
                int (*body)(const void *data),
                const void *data);

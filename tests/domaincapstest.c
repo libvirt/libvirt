@@ -106,7 +106,7 @@ fillQemuCaps(virDomainCapsPtr domCaps,
     if (!domCaps->machine)
         domCaps->machine = g_strdup(virQEMUCapsGetPreferredMachine(qemuCaps, virtType));
 
-    if (virQEMUCapsFillDomainCaps(caps, domCaps, qemuCaps,
+    if (virQEMUCapsFillDomainCaps(qemuCaps, caps->host.arch, domCaps,
                                   false,
                                   cfg->firmwares,
                                   cfg->nfirmwares) < 0)

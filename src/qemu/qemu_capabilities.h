@@ -604,7 +604,7 @@ int virQEMUCapsGetCPUFeatures(virQEMUCapsPtr qemuCaps,
                               char ***features);
 
 bool virQEMUCapsIsCPUModeSupported(virQEMUCapsPtr qemuCaps,
-                                   virCapsPtr caps,
+                                   virArch hostarch,
                                    virDomainVirtType type,
                                    virCPUMode mode);
 const char *virQEMUCapsGetCanonicalMachine(virQEMUCapsPtr qemuCaps,
@@ -665,9 +665,9 @@ int virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
                                    virQEMUCapsPtr qemuCaps,
                                    virArch guestarch);
 
-int virQEMUCapsFillDomainCaps(virCapsPtr caps,
+int virQEMUCapsFillDomainCaps(virQEMUCapsPtr qemuCaps,
+                              virArch hostarch,
                               virDomainCapsPtr domCaps,
-                              virQEMUCapsPtr qemuCaps,
                               bool privileged,
                               virFirmwarePtr *firmwares,
                               size_t nfirmwares);

@@ -60,6 +60,15 @@ static virBitmapPtr testBitmap;
 char *progname;
 static char *python;
 
+virArch virTestHostArch = VIR_ARCH_X86_64;
+
+virArch
+virArchFromHost(void)
+{
+    return virTestHostArch;
+}
+
+
 static int virTestUseTerminalColors(void)
 {
     return isatty(STDOUT_FILENO);

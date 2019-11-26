@@ -576,13 +576,16 @@ virCapsPtr testQemuCapsInit(void)
 
 
 void
-qemuTestSetHostArch(virCapsPtr caps,
+qemuTestSetHostArch(virQEMUDriverPtr driver,
                     virArch arch)
 {
     if (arch == VIR_ARCH_NONE)
         arch = VIR_ARCH_X86_64;
-    caps->host.arch = arch;
-    qemuTestSetHostCPU(caps, NULL);
+
+    virTestHostArch = arch;
+    driver->hostarch = virArchFromHost();
+    driver->caps->host.arch = virArchFromHost();
+    qemuTestSetHostCPU(driver->caps, NULL);
 }
 
 
@@ -693,6 +696,8 @@ int qemuTestDriverInit(virQEMUDriver *driver)
 
     if (virMutexInit(&driver->lock) < 0)
         return -1;
+
+    driver->hostarch = virArchFromHost();
 
     driver->config = virQEMUDriverConfigNew(false);
     if (!driver->config)

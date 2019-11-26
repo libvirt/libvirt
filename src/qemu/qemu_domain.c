@@ -4446,7 +4446,7 @@ qemuDomainDefVcpusPostParse(virDomainDefPtr def)
 
 static int
 qemuDomainDefSetDefaultCPU(virDomainDefPtr def,
-                           virCapsPtr caps,
+                           virArch hostarch,
                            virQEMUCapsPtr qemuCaps)
 {
     const char *model;
@@ -4484,7 +4484,7 @@ qemuDomainDefSetDefaultCPU(virDomainDefPtr def,
 
     if (STREQ(model, "host")) {
         if (ARCH_IS_S390(def->os.arch) &&
-            virQEMUCapsIsCPUModeSupported(qemuCaps, caps, def->virtType,
+            virQEMUCapsIsCPUModeSupported(qemuCaps, hostarch, def->virtType,
                                           VIR_CPU_MODE_HOST_MODEL)) {
             def->cpu->mode = VIR_CPU_MODE_HOST_MODEL;
         } else {
@@ -4691,7 +4691,7 @@ qemuDomainDefPostParseBasic(virDomainDefPtr def,
 
 static int
 qemuDomainDefPostParse(virDomainDefPtr def,
-                       virCapsPtr caps,
+                       virCapsPtr caps G_GNUC_UNUSED,
                        unsigned int parseFlags,
                        void *opaque,
                        void *parseOpaque)
@@ -4723,7 +4723,7 @@ qemuDomainDefPostParse(virDomainDefPtr def,
     if (qemuCanonicalizeMachine(def, qemuCaps) < 0)
         return -1;
 
-    if (qemuDomainDefSetDefaultCPU(def, caps, qemuCaps) < 0)
+    if (qemuDomainDefSetDefaultCPU(def, driver->hostarch, qemuCaps) < 0)
         return -1;
 
     qemuDomainDefEnableDefaultFeatures(def, qemuCaps);
