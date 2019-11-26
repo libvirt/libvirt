@@ -501,8 +501,10 @@ qemuBlockJobRefreshJobs(virQEMUDriverPtr driver,
 
     /* remove data for job which qemu didn't report (the algorithm is
      * inefficient, but the possibility of such jobs is very low */
-    while ((job = virHashSearch(priv->blockjobs, qemuBlockJobRefreshJobsFindInactive, NULL, NULL)))
+    while ((job = virHashSearch(priv->blockjobs, qemuBlockJobRefreshJobsFindInactive, NULL, NULL))) {
+        VIR_WARN("dropping blockjob '%s' untracked by qemu", job->name);
         qemuBlockJobUnregister(job, vm);
+    }
 
     ret = 0;
 
