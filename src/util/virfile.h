@@ -209,6 +209,7 @@ enum {
     VIR_FILE_SHFS_CEPH = (1 << 6),
     VIR_FILE_SHFS_GPFS = (1 << 7),
     VIR_FILE_SHFS_QB = (1 << 8),
+    VIR_FILE_SHFS_ACFS = (1 << 9),
 };
 
 int virFileIsSharedFSType(const char *path, int fstypes) ATTRIBUTE_NONNULL(1);

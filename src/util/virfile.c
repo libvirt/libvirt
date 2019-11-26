@@ -3426,6 +3426,8 @@ int virFilePrintf(FILE *fp, const char *msg, ...)
 #  define QB_MAGIC 0x51626d6e
 # endif
 
+# define VIR_ACFS_MAGIC 0x61636673
+
 # define PROC_MOUNTS "/proc/mounts"
 
 static int
@@ -3577,6 +3579,9 @@ virFileIsSharedFSType(const char *path,
         return 1;
     if ((fstypes & VIR_FILE_SHFS_QB) &&
         (f_type == QB_MAGIC))
+        return 1;
+    if ((fstypes & VIR_FILE_SHFS_ACFS) &&
+        (f_type == VIR_ACFS_MAGIC))
         return 1;
 
     return 0;
@@ -3765,7 +3770,8 @@ int virFileIsSharedFS(const char *path)
                                  VIR_FILE_SHFS_CIFS |
                                  VIR_FILE_SHFS_CEPH |
                                  VIR_FILE_SHFS_GPFS|
-                                 VIR_FILE_SHFS_QB);
+                                 VIR_FILE_SHFS_QB |
+                                 VIR_FILE_SHFS_ACFS);
 }
 
 
