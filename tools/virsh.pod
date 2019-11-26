@@ -994,6 +994,10 @@ I<--bytes> with a scaled value permits a finer granularity to be selected.
 A scaled value used without I<--bytes> will be rounded down to MiB/s. Note
 that the I<--bytes> may be unsupported by the hypervisor.
 
+Note that the progress reported for blockjobs corresponding to a pull-mode
+backup don't report progress of the backup but rather usage of temporary
+space required for the backup.
+
 =item B<blockpull> I<domain> I<path> [I<bandwidth>] [I<--bytes>] [I<base>]
 [I<--wait> [I<--verbose>] [I<--timeout> B<seconds>] [I<--async>]]
 [I<--keep-relative>]

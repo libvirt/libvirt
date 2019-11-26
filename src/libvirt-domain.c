@@ -9949,6 +9949,10 @@ virDomainBlockJobAbort(virDomainPtr dom, const char *disk,
  * and was no-op. In this case libvirt reports cur = 1 and end = 1.
  * Since 2.3.0.
  *
+ * Note that the progress reported for blockjobs corresponding to a pull-mode
+ * backup don't report progress of the backup but rather usage of temporary
+ * space required for the backup.
+ *
  * Returns -1 in case of failure, 0 when nothing found, 1 when info was found.
  */
 int
