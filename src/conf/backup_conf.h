@@ -70,6 +70,13 @@ struct _virDomainBackupDef {
 
     size_t ndisks; /* should not exceed dom->ndisks */
     virDomainBackupDiskDef *disks;
+
+    /* internal data */
+    /* statistic totals for completed disks */
+    unsigned long long push_transferred;
+    unsigned long long push_total;
+    unsigned long long pull_tmp_used;
+    unsigned long long pull_tmp_total;
 };
 
 typedef enum {
