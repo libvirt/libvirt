@@ -1305,13 +1305,13 @@ qemuBlockJobEventProcessConcluded(qemuBlockJobDataPtr job,
             dismissed = true;
     }
 
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+        goto cleanup;
+
     if (job->invalidData) {
         VIR_WARN("terminating job '%s' with invalid data", job->name);
         goto cleanup;
     }
-
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
-        goto cleanup;
 
     if ((job->newstate == QEMU_BLOCKJOB_STATE_COMPLETED ||
          job->newstate == QEMU_BLOCKJOB_STATE_FAILED) &&
