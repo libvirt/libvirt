@@ -2638,7 +2638,6 @@ typedef int (*virDomainDefPostParseBasicCallback)(virDomainDefPtr def,
  * value and the failure is noted in def->postParseFailed. Drivers should then
  * re-run the post parse callback when attempting to use such definition. */
 typedef int (*virDomainDefPostParseCallback)(virDomainDefPtr def,
-                                             virCapsPtr caps,
                                              unsigned int parseFlags,
                                              void *opaque,
                                              void *parseOpaque);

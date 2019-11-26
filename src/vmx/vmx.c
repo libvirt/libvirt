@@ -530,7 +530,6 @@ VIR_ENUM_IMPL(virVMXControllerModelSCSI,
 
 static int
 virVMXDomainDefPostParse(virDomainDefPtr def,
-                         virCapsPtr _caps G_GNUC_UNUSED,
                          unsigned int parseFlags G_GNUC_UNUSED,
                          void *opaque,
                          void *parseOpaque G_GNUC_UNUSED)

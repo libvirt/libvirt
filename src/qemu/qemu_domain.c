@@ -4694,7 +4694,6 @@ qemuDomainDefPostParseBasic(virDomainDefPtr def,
 
 static int
 qemuDomainDefPostParse(virDomainDefPtr def,
-                       virCapsPtr caps G_GNUC_UNUSED,
                        unsigned int parseFlags,
                        void *opaque,
                        void *parseOpaque G_GNUC_UNUSED)

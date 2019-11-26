@@ -5857,7 +5857,7 @@ virDomainDefPostParse(virDomainDefPtr def,
 
     /* call the domain config callback */
     if (xmlopt->config.domainPostParseCallback) {
-        ret = xmlopt->config.domainPostParseCallback(def, caps, parseFlags,
+        ret = xmlopt->config.domainPostParseCallback(def, parseFlags,
                                                      xmlopt->config.priv,
                                                      data.parseOpaque);
         if (virDomainDefPostParseCheckFailure(def, parseFlags, ret) < 0)

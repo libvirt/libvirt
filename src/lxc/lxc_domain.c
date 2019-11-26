@@ -351,7 +351,6 @@ virDomainXMLPrivateDataCallbacks virLXCDriverPrivateDataCallbacks = {
 
 static int
 virLXCDomainDefPostParse(virDomainDefPtr def,
-                         virCapsPtr _caps G_GNUC_UNUSED,
                          unsigned int parseFlags G_GNUC_UNUSED,
                          void *opaque,
                          void *parseOpaque G_GNUC_UNUSED)

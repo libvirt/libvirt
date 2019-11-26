@@ -1062,7 +1062,6 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
 
 static int
 phypDomainDefPostParse(virDomainDefPtr def,
-                       virCapsPtr caps G_GNUC_UNUSED,
                        unsigned int parseFlags G_GNUC_UNUSED,
                        void *opaque,
                        void *parseOpaque G_GNUC_UNUSED)

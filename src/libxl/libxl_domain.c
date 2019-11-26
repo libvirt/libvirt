@@ -367,7 +367,6 @@ libxlDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 
 static int
 libxlDomainDefPostParse(virDomainDefPtr def,
-                        virCapsPtr caps G_GNUC_UNUSED,
                         unsigned int parseFlags G_GNUC_UNUSED,
                         void *opaque,
                         void *parseOpaque G_GNUC_UNUSED)
