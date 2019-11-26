@@ -465,6 +465,8 @@ qemuBlockJobRefreshJobs(virQEMUDriverPtr driver,
 
             if (rc < 0)
                 qemuBlockJobUnregister(job, vm);
+            else
+                job->reconnected = true;
             continue;
         }
 
