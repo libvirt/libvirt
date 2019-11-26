@@ -93,6 +93,22 @@ static const char *const *kvm_machines[VIR_ARCH_LAST] = {
     [VIR_ARCH_S390X] = s390x_machines,
 };
 
+
+char *
+virFindFileInPath(const char *file)
+{
+    if (g_str_has_prefix(file, "qemu-system") ||
+        g_str_equal(file, "qemu-kvm")) {
+        return g_strdup_printf("/usr/bin/%s", file);
+    }
+
+    /* Nothing in tests should be relying on real files
+     * in host OS, so we return NULL to try to force
+     * an error in such a case
+     */
+    return NULL;
+}
+
 static int
 testQemuAddGuest(virCapsPtr caps,
                  virArch arch)

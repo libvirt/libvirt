@@ -799,6 +799,26 @@ virQEMUCapsFindBinaryForArch(virArch hostarch,
     return ret;
 }
 
+
+char *
+virQEMUCapsGetDefaultEmulator(virArch hostarch,
+                              virArch guestarch)
+{
+    char *binary = NULL;
+    /* Check for existence of base emulator, or alternate base
+     * which can be used with magic cpu choice
+     */
+    binary = virQEMUCapsFindBinaryForArch(hostarch, guestarch);
+
+    /* RHEL doesn't follow the usual naming for QEMU binaries and ships
+     * a single binary named qemu-kvm outside of $PATH instead */
+    if (virQEMUCapsGuestIsNative(hostarch, guestarch) && !binary)
+        binary = g_strdup("/usr/libexec/qemu-kvm");
+
+    return binary;
+}
+
+
 static int
 virQEMUCapsInitGuest(virCapsPtr caps,
                      virFileCachePtr cache,
@@ -809,15 +829,7 @@ virQEMUCapsInitGuest(virCapsPtr caps,
     virQEMUCapsPtr qemuCaps = NULL;
     int ret = -1;
 
-    /* Check for existence of base emulator, or alternate base
-     * which can be used with magic cpu choice
-     */
-    binary = virQEMUCapsFindBinaryForArch(hostarch, guestarch);
-
-    /* RHEL doesn't follow the usual naming for QEMU binaries and ships
-     * a single binary named qemu-kvm outside of $PATH instead */
-    if (virQEMUCapsGuestIsNative(hostarch, guestarch) && !binary)
-        binary = g_strdup("/usr/libexec/qemu-kvm");
+    binary = virQEMUCapsGetDefaultEmulator(hostarch, guestarch);
 
     /* Ignore binary if extracting version info fails */
     if (binary) {

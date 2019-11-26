@@ -4677,13 +4677,16 @@ qemuDomainDefTsegPostParse(virDomainDefPtr def,
 
 static int
 qemuDomainDefPostParseBasic(virDomainDefPtr def,
-                            virCapsPtr caps,
                             void *opaque G_GNUC_UNUSED)
 {
+    virQEMUDriverPtr driver = opaque;
+
     /* check for emulator and create a default one if needed */
-    if (!def->emulator &&
-        !(def->emulator = virDomainDefGetDefaultEmulator(def, caps)))
-        return 1;
+    if (!def->emulator) {
+        if (!(def->emulator = virQEMUCapsGetDefaultEmulator(
+                  driver->hostarch, def->os.arch)))
+            return 1;
+    }
 
     return 0;
 }

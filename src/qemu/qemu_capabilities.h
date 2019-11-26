@@ -627,6 +627,8 @@ const char *virQEMUCapsGetMachineDefaultCPU(virQEMUCapsPtr qemuCaps,
 void virQEMUCapsFilterByMachineType(virQEMUCapsPtr qemuCaps,
                                     virDomainVirtType virtType,
                                     const char *machineType);
+char * virQEMUCapsGetDefaultEmulator(virArch hostarch,
+                                     virArch guestarch);
 
 virFileCachePtr virQEMUCapsCacheNew(const char *libDir,
                                     const char *cacheDir,

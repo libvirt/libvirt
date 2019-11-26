@@ -2627,7 +2627,6 @@ typedef enum {
  * parseOpaque is used. This callback is run prior to
  * virDomainDefPostParseCallback. */
 typedef int (*virDomainDefPostParseBasicCallback)(virDomainDefPtr def,
-                                                  virCapsPtr caps,
                                                   void *opaque);
 
 /* Called once after everything else has been parsed, for adjusting
