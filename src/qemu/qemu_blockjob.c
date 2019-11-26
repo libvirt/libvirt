@@ -1270,8 +1270,6 @@ qemuBlockJobEventProcessConcluded(qemuBlockJobDataPtr job,
     qemuMonitorJobInfoPtr *jobinfo = NULL;
     size_t njobinfo = 0;
     size_t i;
-    int rc = 0;
-    bool dismissed = false;
     bool refreshed = false;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
@@ -1279,7 +1277,7 @@ qemuBlockJobEventProcessConcluded(qemuBlockJobDataPtr job,
 
     /* we need to fetch the error state as the event does not propagate it */
     if (job->newstate == QEMU_BLOCKJOB_STATE_CONCLUDED &&
-        (rc = qemuMonitorGetJobInfo(qemuDomainGetMonitor(vm), &jobinfo, &njobinfo)) == 0) {
+        qemuMonitorGetJobInfo(qemuDomainGetMonitor(vm), &jobinfo, &njobinfo) == 0) {
 
         for (i = 0; i < njobinfo; i++) {
             if (STRNEQ_NULLABLE(job->name, jobinfo[i]->id))
@@ -1297,19 +1295,14 @@ qemuBlockJobEventProcessConcluded(qemuBlockJobDataPtr job,
             break;
         }
 
-        if (i == njobinfo) {
+        if (i == njobinfo)
             VIR_WARN("failed to refresh job '%s'", job->name);
-            rc = -1;
-        }
     }
 
     /* dismiss job in qemu */
-    if (rc >= 0) {
-        if ((rc = qemuMonitorJobDismiss(qemuDomainGetMonitor(vm), job->name)) >= 0)
-            dismissed = true;
-    }
+    ignore_value(qemuMonitorJobDismiss(qemuDomainGetMonitor(vm), job->name));
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
 
     if (job->invalidData) {
@@ -1340,10 +1333,8 @@ qemuBlockJobEventProcessConcluded(qemuBlockJobDataPtr job,
     }
 
  cleanup:
-    if (dismissed) {
-        qemuBlockJobUnregister(job, vm);
-        qemuDomainSaveConfig(vm);
-    }
+    qemuBlockJobUnregister(job, vm);
+    qemuDomainSaveConfig(vm);
 
     for (i = 0; i < njobinfo; i++)
         qemuMonitorJobInfoFree(jobinfo[i]);
