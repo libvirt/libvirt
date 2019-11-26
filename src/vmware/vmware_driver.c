@@ -133,7 +133,6 @@ vmwareDomainDefPostParse(virDomainDefPtr def,
 static int
 vmwareDomainDeviceDefPostParse(virDomainDeviceDefPtr dev G_GNUC_UNUSED,
                                const virDomainDef *def G_GNUC_UNUSED,
-                               virCapsPtr caps G_GNUC_UNUSED,
                                unsigned int parseFlags G_GNUC_UNUSED,
                                void *opaque G_GNUC_UNUSED,
                                void *parseOpaque G_GNUC_UNUSED)

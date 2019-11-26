@@ -2648,7 +2648,6 @@ typedef int (*virDomainDefPostParseCallback)(virDomainDefPtr def,
  * private data). */
 typedef int (*virDomainDeviceDefPostParseCallback)(virDomainDeviceDefPtr dev,
                                                    const virDomainDef *def,
-                                                   virCapsPtr caps,
                                                    unsigned int parseFlags,
                                                    void *opaque,
                                                    void *parseOpaque);

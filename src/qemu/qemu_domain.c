@@ -8031,7 +8031,6 @@ qemuDomainHostdevDefPostParse(virDomainHostdevDefPtr hostdev,
 static int
 qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                              const virDomainDef *def,
-                             virCapsPtr caps G_GNUC_UNUSED,
                              unsigned int parseFlags,
                              void *opaque,
                              void *parseOpaque)

@@ -271,7 +271,6 @@ vzDomainDefValidate(const virDomainDef *def,
 static int
 vzDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                            const virDomainDef *def,
-                           virCapsPtr caps G_GNUC_UNUSED,
                            unsigned int parseFlags G_GNUC_UNUSED,
                            void *opaque G_GNUC_UNUSED,
                            void *parseOpaque G_GNUC_UNUSED)
