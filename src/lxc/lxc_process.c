@@ -790,7 +790,7 @@ static void virLXCProcessMonitorInitNotify(virLXCMonitorPtr mon G_GNUC_UNUSED,
     }
     virDomainAuditInit(vm, initpid, inode);
 
-    if (virDomainSaveStatus(lxc_driver->xmlopt, cfg->stateDir, vm, lxc_driver->caps) < 0)
+    if (virDomainObjSave(vm, lxc_driver->xmlopt, lxc_driver->caps, cfg->stateDir) < 0)
         VIR_WARN("Cannot update XML with PID for LXC %s", vm->def->name);
 
     virObjectUnlock(vm);
@@ -1457,7 +1457,7 @@ int virLXCProcessStart(virConnectPtr conn,
 
     /* Write domain status to disk for the controller to
      * read when it starts */
-    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
+    if (virDomainObjSave(vm, driver->xmlopt, driver->caps, cfg->stateDir) < 0)
         goto cleanup;
 
     /* Allow the child to exec the controller */
@@ -1696,7 +1696,7 @@ virLXCProcessReconnectDomain(virDomainObjPtr vm,
 
         virLXCProcessReconnectNotifyNets(vm->def);
 
-        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
+        if (virDomainObjSave(vm, driver->xmlopt, driver->caps, cfg->stateDir) < 0)
             VIR_WARN("Cannot update XML for running LXC guest %s", vm->def->name);
 
         /* now that we know it's reconnected call the hook if present */

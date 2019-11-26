@@ -3292,17 +3292,21 @@ ssize_t virDomainRedirdevDefFind(virDomainDefPtr def,
                                  virDomainRedirdevDefPtr redirdev);
 virDomainRedirdevDefPtr virDomainRedirdevDefRemove(virDomainDefPtr def, size_t idx);
 
-int virDomainSaveXML(const char *configDir,
-                     virDomainDefPtr def,
-                     const char *xml);
+int virDomainDefSave(virDomainDefPtr def,
+                     virDomainXMLOptionPtr xmlopt,
+                     virCapsPtr caps,
+                     const char *configDir)
+    G_GNUC_WARN_UNUSED_RESULT
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
+    ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
 
-int virDomainSaveConfig(const char *configDir,
-                        virCapsPtr caps,
-                        virDomainDefPtr def);
-int virDomainSaveStatus(virDomainXMLOptionPtr xmlopt,
-                        const char *statusDir,
-                        virDomainObjPtr obj,
-                        virCapsPtr caps) G_GNUC_WARN_UNUSED_RESULT;
+int virDomainObjSave(virDomainObjPtr obj,
+                     virDomainXMLOptionPtr xmlopt,
+                     virCapsPtr caps,
+                     const char *statusDir)
+    G_GNUC_WARN_UNUSED_RESULT
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
+    ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
 
 typedef void (*virDomainLoadConfigNotify)(virDomainObjPtr dom,
                                           int newDomain,

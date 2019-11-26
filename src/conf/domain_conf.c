@@ -29062,10 +29062,10 @@ virDomainDefCompatibleDevice(virDomainDefPtr def,
     return 0;
 }
 
-int
-virDomainSaveXML(const char *configDir,
-                 virDomainDefPtr def,
-                 const char *xml)
+static int
+virDomainDefSaveXML(virDomainDefPtr def,
+                    const char *configDir,
+                    const char *xml)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     g_autofree char *configFile = NULL;
@@ -29090,23 +29090,24 @@ virDomainSaveXML(const char *configDir,
 }
 
 int
-virDomainSaveConfig(const char *configDir,
-                    virCapsPtr caps,
-                    virDomainDefPtr def)
+virDomainDefSave(virDomainDefPtr def,
+                 virDomainXMLOptionPtr xmlopt G_GNUC_UNUSED,
+                 virCapsPtr caps,
+                 const char *configDir)
 {
     g_autofree char *xml = NULL;
 
     if (!(xml = virDomainDefFormat(def, caps, VIR_DOMAIN_DEF_FORMAT_SECURE)))
         return -1;
 
-    return virDomainSaveXML(configDir, def, xml);
+    return virDomainDefSaveXML(def, configDir, xml);
 }
 
 int
-virDomainSaveStatus(virDomainXMLOptionPtr xmlopt,
-                    const char *statusDir,
-                    virDomainObjPtr obj,
-                    virCapsPtr caps)
+virDomainObjSave(virDomainObjPtr obj,
+                 virDomainXMLOptionPtr xmlopt,
+                 virCapsPtr caps,
+                 const char *statusDir)
 {
     unsigned int flags = (VIR_DOMAIN_DEF_FORMAT_SECURE |
                           VIR_DOMAIN_DEF_FORMAT_STATUS |
@@ -29119,7 +29120,7 @@ virDomainSaveStatus(virDomainXMLOptionPtr xmlopt,
     if (!(xml = virDomainObjFormat(xmlopt, obj, caps, flags)))
         return -1;
 
-    return virDomainSaveXML(statusDir, obj->def, xml);
+    return virDomainDefSaveXML(obj->def, statusDir, xml);
 }
 
 
@@ -30221,7 +30222,7 @@ virDomainObjSetMetadata(virDomainObjPtr vm,
         if (virDomainDefSetMetadata(def, type, metadata, key, uri) < 0)
             return -1;
 
-        if (virDomainSaveStatus(xmlopt, stateDir, vm, caps) < 0)
+        if (virDomainObjSave(vm, xmlopt, caps, stateDir) < 0)
             return -1;
     }
 
@@ -30230,7 +30231,7 @@ virDomainObjSetMetadata(virDomainObjPtr vm,
                                     uri) < 0)
             return -1;
 
-        if (virDomainSaveConfig(configDir, caps, persistentDef) < 0)
+        if (virDomainDefSave(persistentDef, xmlopt, caps, configDir) < 0)
             return -1;
     }
 

@@ -211,9 +211,8 @@ virBhyveProcessStart(virConnectPtr conn,
     virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
     priv->mon = bhyveMonitorOpen(vm, driver);
 
-    if (virDomainSaveStatus(driver->xmlopt,
-                            BHYVE_STATE_DIR,
-                            vm, caps) < 0)
+    if (virDomainObjSave(vm, driver->xmlopt, caps,
+                         BHYVE_STATE_DIR) < 0)
         goto cleanup;
 
     ret = 0;
@@ -430,9 +429,8 @@ virBhyveProcessReconnect(virDomainObjPtr vm,
         vm->def->id = -1;
         virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF,
                              VIR_DOMAIN_SHUTOFF_UNKNOWN);
-        ignore_value(virDomainSaveStatus(data->driver->xmlopt,
-                                         BHYVE_STATE_DIR,
-                                         vm, caps));
+        ignore_value(virDomainObjSave(vm, data->driver->xmlopt, caps,
+                                      BHYVE_STATE_DIR));
     }
 
     virObjectUnref(caps);

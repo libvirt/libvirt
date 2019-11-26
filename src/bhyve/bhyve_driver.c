@@ -545,8 +545,8 @@ bhyveDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flag
     def = NULL;
     vm->persistent = 1;
 
-    if (virDomainSaveConfig(BHYVE_CONFIG_DIR, caps,
-                            vm->newDef ? vm->newDef : vm->def) < 0) {
+    if (virDomainDefSave(vm->newDef ? vm->newDef : vm->def,
+                         privconn->xmlopt, caps, BHYVE_CONFIG_DIR) < 0) {
         virDomainObjListRemove(privconn->domains, vm);
         goto cleanup;
     }

@@ -1037,7 +1037,7 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriverPtr driver,
                                               tlsAlias, flags) < 0)
             return -1;
 
-        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0) {
+        if (virDomainObjSave(vm, driver->xmlopt, driver->caps, cfg->stateDir) < 0) {
             VIR_WARN("Failed to save status on vm %s", vm->def->name);
             return -1;
         }
@@ -3020,7 +3020,7 @@ qemuMigrationSrcConfirmPhase(virQEMUDriverPtr driver,
         qemuMigrationParamsReset(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
                                  priv->job.migParams, priv->job.apiFlags);
 
-        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
+        if (virDomainObjSave(vm, driver->xmlopt, driver->caps, cfg->stateDir) < 0)
             VIR_WARN("Failed to save status on vm %s", vm->def->name);
     }
 
@@ -4871,7 +4871,7 @@ qemuMigrationDstPersist(virQEMUDriverPtr driver,
                                                priv->qemuCaps)))
         goto error;
 
-    if (virDomainSaveConfig(cfg->configDir, driver->caps, vmdef) < 0 &&
+    if (virDomainDefSave(vmdef, driver->xmlopt, driver->caps, cfg->configDir) < 0 &&
         !ignoreSaveError)
         goto error;
 
@@ -5124,7 +5124,7 @@ qemuMigrationDstFinish(virQEMUDriverPtr driver,
     }
 
     if (virDomainObjIsActive(vm) &&
-        virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
+        virDomainObjSave(vm, driver->xmlopt, driver->caps, cfg->stateDir) < 0)
         VIR_WARN("Failed to save status on vm %s", vm->def->name);
 
     /* Guest is successfully running, so cancel previous auto destroy */

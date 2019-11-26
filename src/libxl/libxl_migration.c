@@ -1326,7 +1326,7 @@ libxlDomainMigrationDstFinish(virConnectPtr dconn,
                                                    driver->xmlopt, vm, NULL)))
             goto cleanup;
 
-        if (virDomainSaveConfig(cfg->configDir, cfg->caps, vmdef) < 0)
+        if (virDomainDefSave(vmdef, driver->xmlopt, cfg->caps, cfg->configDir) < 0)
             goto cleanup;
 
         event = virDomainEventLifecycleNewFromObj(vm,
@@ -1338,7 +1338,7 @@ libxlDomainMigrationDstFinish(virConnectPtr dconn,
         event = NULL;
     }
 
-    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, cfg->caps) < 0)
+    if (virDomainObjSave(vm, driver->xmlopt, cfg->caps, cfg->stateDir) < 0)
         goto cleanup;
 
     dom = virGetDomain(dconn, vm->def->name, vm->def->uuid, vm->def->id);
@@ -1388,7 +1388,7 @@ libxlDomainMigrationSrcConfirm(libxlDriverPrivatePtr driver,
                                  VIR_DOMAIN_PAUSED_MIGRATION);
             event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_SUSPENDED,
                                      VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED);
-            ignore_value(virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, cfg->caps));
+            ignore_value(virDomainObjSave(vm, driver->xmlopt, cfg->caps, cfg->stateDir));
         }
         goto cleanup;
     }
