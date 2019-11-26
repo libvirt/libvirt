@@ -8143,9 +8143,6 @@ qemuProcessReconnect(void *opaque)
         qemuBlockNodeNamesDetect(driver, obj, QEMU_ASYNC_JOB_NONE) < 0)
         goto error;
 
-    if (qemuProcessRefreshBlockjobs(driver, obj) < 0)
-        goto error;
-
     if (qemuRefreshVirtioChannelState(driver, obj, QEMU_ASYNC_JOB_NONE) < 0)
         goto error;
 
@@ -8156,6 +8153,9 @@ qemuProcessReconnect(void *opaque)
         goto error;
 
     if (qemuProcessRecoverJob(driver, obj, &oldjob, &stopFlags) < 0)
+        goto error;
+
+    if (qemuProcessRefreshBlockjobs(driver, obj) < 0)
         goto error;
 
     if (qemuProcessUpdateDevices(driver, obj) < 0)
