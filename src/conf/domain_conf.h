@@ -2706,6 +2706,7 @@ struct _virDomainDefParserConfig {
     unsigned int features; /* virDomainDefFeatures */
     unsigned char macPrefix[VIR_MAC_PREFIX_BUFLEN];
     virArch defArch;
+    const char *netPrefix;
 };
 
 typedef void *(*virDomainXMLPrivateDataAllocFunc)(void *);
@@ -3149,7 +3150,7 @@ virDomainDiskBackingStoreFormat(virBufferPtr buf,
 
 int virDomainNetDefFormat(virBufferPtr buf,
                           virDomainNetDefPtr def,
-                          char *prefix,
+                          virDomainXMLOptionPtr xmlopt,
                           unsigned int flags);
 
 typedef enum {

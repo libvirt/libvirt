@@ -437,6 +437,7 @@ libxlDomainDefPostParse(virDomainDefPtr def,
 
 virDomainDefParserConfig libxlDomainDefParserConfig = {
     .macPrefix = { 0x00, 0x16, 0x3e },
+    .netPrefix = LIBXL_GENERATED_PREFIX_XEN,
     .devicesPostParseCallback = libxlDomainDeviceDefPostParse,
     .domainPostParseCallback = libxlDomainDefPostParse,
     .features = VIR_DOMAIN_DEF_FEATURE_NET_MODEL_STRING,
