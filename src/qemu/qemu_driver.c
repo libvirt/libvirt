@@ -18477,7 +18477,7 @@ qemuDomainBlockCopy(virDomainPtr dom, const char *disk, const char *destxml,
         }
     }
 
-    if (!(diskdef = virDomainDiskDefParse(destxml, vm->def, driver->xmlopt,
+    if (!(diskdef = virDomainDiskDefParse(destxml, driver->xmlopt,
                                           VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                           VIR_DOMAIN_DEF_PARSE_DISK_SOURCE)))
         goto cleanup;

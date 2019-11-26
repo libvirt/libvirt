@@ -200,7 +200,7 @@ testQemuDiskXMLToProps(const void *opaque)
         goto cleanup;
 
     /* qemu stores node names in the status XML portion */
-    if (!(disk = virDomainDiskDefParse(xmlstr, NULL, data->driver->xmlopt,
+    if (!(disk = virDomainDiskDefParse(xmlstr, data->driver->xmlopt,
                                        VIR_DOMAIN_DEF_PARSE_STATUS)))
         goto cleanup;
 
