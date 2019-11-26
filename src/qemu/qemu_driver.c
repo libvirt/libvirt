@@ -14044,7 +14044,8 @@ static int qemuDomainAbortJob(virDomainPtr dom)
         break;
 
     case QEMU_ASYNC_JOB_BACKUP:
-        /* TODO: to be implemented later */
+        qemuBackupJobCancelBlockjobs(vm, priv->backup, true);
+        ret = 0;
         break;
 
     case QEMU_ASYNC_JOB_LAST:
