@@ -1313,7 +1313,8 @@ qemuBlockJobEventProcessConcluded(qemuBlockJobDataPtr job,
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
         goto cleanup;
 
-    if (job->newstate == QEMU_BLOCKJOB_STATE_COMPLETED &&
+    if ((job->newstate == QEMU_BLOCKJOB_STATE_COMPLETED ||
+         job->newstate == QEMU_BLOCKJOB_STATE_FAILED) &&
         job->state == QEMU_BLOCKJOB_STATE_ABORTING)
         job->newstate = QEMU_BLOCKJOB_STATE_CANCELLED;
 
