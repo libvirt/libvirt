@@ -19613,14 +19613,11 @@ virDomainCachetuneDefParse(virDomainDefPtr def,
 static int
 virDomainDefParseCaps(virDomainDefPtr def,
                       xmlXPathContextPtr ctxt,
-                      virDomainXMLOptionPtr xmlopt,
-                      virCapsPtr caps,
-                      unsigned int flags)
+                      virDomainXMLOptionPtr xmlopt)
 {
     g_autofree char *virttype = NULL;
     g_autofree char *arch = NULL;
     g_autofree char *ostype = NULL;
-    g_autofree virCapsDomainDataPtr capsdata = NULL;
 
     virttype = virXPathString("string(./@type)", ctxt);
     ostype = virXPathString("string(./os/type[1])", ctxt);
@@ -19679,18 +19676,6 @@ virDomainDefParseCaps(virDomainDefPtr def,
             def->os.arch = xmlopt->config.defArch;
         else
             def->os.arch = virArchFromHost();
-    }
-
-    if (!(capsdata = virCapabilitiesDomainDataLookup(caps, def->os.type,
-                                                     def->os.arch,
-                                                     def->virtType,
-                                                     NULL, NULL))) {
-        if (!(flags & VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE))
-            return -1;
-        virResetLastError();
-    } else {
-        if (!def->os.machine)
-            def->os.machine = g_strdup(capsdata->machinetype);
     }
 
     return 0;
@@ -19846,7 +19831,7 @@ virDomainDefParseXML(xmlDocPtr xml,
             id = -1;
     def->id = (int)id;
 
-    if (virDomainDefParseCaps(def, ctxt, xmlopt, caps, flags) < 0)
+    if (virDomainDefParseCaps(def, ctxt, xmlopt) < 0)
         goto error;
 
     /* Extract domain name */

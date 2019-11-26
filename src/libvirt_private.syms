@@ -54,6 +54,7 @@ virCapabilitiesAddStoragePool;
 virCapabilitiesAllocMachines;
 virCapabilitiesClearHostNUMACellCPUTopology;
 virCapabilitiesDomainDataLookup;
+virCapabilitiesDomainSupported;
 virCapabilitiesFormatXML;
 virCapabilitiesFreeGuest;
 virCapabilitiesFreeMachines;

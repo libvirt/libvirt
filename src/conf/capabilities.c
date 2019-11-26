@@ -816,6 +816,23 @@ virCapabilitiesDomainDataLookup(virCapsPtr caps,
 }
 
 
+bool
+virCapabilitiesDomainSupported(virCapsPtr caps,
+                               int ostype,
+                               virArch arch,
+                               int virttype)
+{
+    g_autofree virCapsDomainDataPtr capsdata = NULL;
+
+    capsdata = virCapabilitiesDomainDataLookup(caps, ostype,
+                                               arch,
+                                               virttype,
+                                               NULL, NULL);
+
+    return capsdata != NULL;
+}
+
+
 int
 virCapabilitiesAddStoragePool(virCapsPtr caps,
                               int poolType)

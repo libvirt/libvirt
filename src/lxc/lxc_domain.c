@@ -356,6 +356,11 @@ virLXCDomainDefPostParse(virDomainDefPtr def,
                          void *opaque G_GNUC_UNUSED,
                          void *parseOpaque G_GNUC_UNUSED)
 {
+    if (!virCapabilitiesDomainSupported(caps, def->os.type,
+                                        def->os.arch,
+                                        def->virtType))
+        return -1;
+
     /* check for emulator and create a default one if needed */
     if (!def->emulator &&
         !(def->emulator = virDomainDefGetDefaultEmulator(def, caps)))

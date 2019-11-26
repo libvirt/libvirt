@@ -1061,12 +1061,17 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
 
 
 static int
-phypDomainDefPostParse(virDomainDefPtr def G_GNUC_UNUSED,
-                       virCapsPtr caps G_GNUC_UNUSED,
+phypDomainDefPostParse(virDomainDefPtr def,
+                       virCapsPtr caps,
                        unsigned int parseFlags G_GNUC_UNUSED,
                        void *opaque G_GNUC_UNUSED,
                        void *parseOpaque G_GNUC_UNUSED)
 {
+    if (!virCapabilitiesDomainSupported(caps, def->os.type,
+                                        def->os.arch,
+                                        def->virtType))
+        return -1;
+
     return 0;
 }
 

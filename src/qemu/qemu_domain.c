@@ -4691,7 +4691,7 @@ qemuDomainDefPostParseBasic(virDomainDefPtr def,
 
 static int
 qemuDomainDefPostParse(virDomainDefPtr def,
-                       virCapsPtr caps G_GNUC_UNUSED,
+                       virCapsPtr caps,
                        unsigned int parseFlags,
                        void *opaque,
                        void *parseOpaque)
@@ -4703,6 +4703,11 @@ qemuDomainDefPostParse(virDomainDefPtr def,
      * with the capabilities populated. */
     virQEMUCapsPtr qemuCaps = parseOpaque;
 
+    if (!virCapabilitiesDomainSupported(caps, def->os.type,
+                                        def->os.arch,
+                                        def->virtType))
+        return -1;
+
     if (def->os.bootloader || def->os.bootloaderArgs) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("bootloader is not supported by QEMU"));
@@ -4710,9 +4715,15 @@ qemuDomainDefPostParse(virDomainDefPtr def,
     }
 
     if (!def->os.machine) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("missing machine type"));
-        return -1;
+        g_autofree virCapsDomainDataPtr capsdata = NULL;
+
+        if (!(capsdata = virCapabilitiesDomainDataLookup(caps, def->os.type,
+                                                         def->os.arch,
+                                                         def->virtType,
+                                                         NULL, NULL))) {
+            return -1;
+        }
+        def->os.machine = g_strdup(capsdata->machinetype);
     }
 
     qemuDomainNVRAMPathGenerate(cfg, def);

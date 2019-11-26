@@ -309,6 +309,13 @@ virCapabilitiesDomainDataLookup(virCapsPtr caps,
                                 const char *emulator,
                                 const char *machinetype);
 
+bool
+virCapabilitiesDomainSupported(virCapsPtr caps,
+                               int ostype,
+                               virArch arch,
+                               int domaintype);
+
+
 void
 virCapabilitiesClearHostNUMACellCPUTopology(virCapsHostNUMACellCPUPtr cpu,
                                             size_t ncpus);

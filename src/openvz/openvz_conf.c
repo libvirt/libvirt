@@ -1082,11 +1082,16 @@ int openvzGetVEID(const char *name)
 
 static int
 openvzDomainDefPostParse(virDomainDefPtr def,
-                         virCapsPtr caps G_GNUC_UNUSED,
+                         virCapsPtr caps,
                          unsigned int parseFlags G_GNUC_UNUSED,
                          void *opaque G_GNUC_UNUSED,
                          void *parseOpaque G_GNUC_UNUSED)
 {
+    if (!virCapabilitiesDomainSupported(caps, def->os.type,
+                                        def->os.arch,
+                                        def->virtType))
+        return -1;
+
     /* fill the init path */
     if (def->os.type == VIR_DOMAIN_OSTYPE_EXE && !def->os.init)
         def->os.init = g_strdup("/sbin/init");

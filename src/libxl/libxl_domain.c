@@ -367,11 +367,16 @@ libxlDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 
 static int
 libxlDomainDefPostParse(virDomainDefPtr def,
-                        virCapsPtr caps G_GNUC_UNUSED,
+                        virCapsPtr caps,
                         unsigned int parseFlags G_GNUC_UNUSED,
                         void *opaque G_GNUC_UNUSED,
                         void *parseOpaque G_GNUC_UNUSED)
 {
+    if (!virCapabilitiesDomainSupported(caps, def->os.type,
+                                        def->os.arch,
+                                        def->virtType))
+        return -1;
+
     /* Xen PV domains always have a PV console, so add one to the domain config
      * via post-parse callback if not explicitly specified in the XML. */
     if (def->os.type != VIR_DOMAIN_OSTYPE_HVM && def->nconsoles == 0) {

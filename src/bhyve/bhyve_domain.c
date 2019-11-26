@@ -74,11 +74,16 @@ bhyveDomainDefNeedsISAController(virDomainDefPtr def)
 
 static int
 bhyveDomainDefPostParse(virDomainDefPtr def,
-                        virCapsPtr caps G_GNUC_UNUSED,
+                        virCapsPtr caps,
                         unsigned int parseFlags G_GNUC_UNUSED,
                         void *opaque G_GNUC_UNUSED,
                         void *parseOpaque G_GNUC_UNUSED)
 {
+    if (!virCapabilitiesDomainSupported(caps, def->os.type,
+                                        def->os.arch,
+                                        def->virtType))
+        return -1;
+
     /* Add an implicit PCI root controller */
     if (virDomainDefMaybeAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 0,
                                        VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT) < 0)
