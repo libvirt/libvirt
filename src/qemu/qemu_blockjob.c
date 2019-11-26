@@ -72,6 +72,14 @@ static virClassPtr qemuBlockJobDataClass;
 
 
 static void
+qemuBlockJobDataDisposeJobdata(qemuBlockJobDataPtr job)
+{
+    if (job->type == QEMU_BLOCKJOB_TYPE_CREATE)
+        virObjectUnref(job->data.create.src);
+}
+
+
+static void
 qemuBlockJobDataDispose(void *obj)
 {
     qemuBlockJobDataPtr job = obj;
@@ -79,8 +87,7 @@ qemuBlockJobDataDispose(void *obj)
     virObjectUnref(job->chain);
     virObjectUnref(job->mirrorChain);
 
-    if (job->type == QEMU_BLOCKJOB_TYPE_CREATE)
-        virObjectUnref(job->data.create.src);
+    qemuBlockJobDataDisposeJobdata(job);
 
     g_free(job->name);
     g_free(job->errmsg);
