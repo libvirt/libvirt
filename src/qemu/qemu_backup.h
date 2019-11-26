@@ -39,3 +39,8 @@ qemuBackupNotifyBlockjobEnd(virDomainObjPtr vm,
                             qemuBlockjobState state,
                             unsigned long long cur,
                             unsigned long long end);
+
+int
+qemuBackupGetJobInfoStats(virQEMUDriverPtr driver,
+                          virDomainObjPtr vm,
+                          qemuDomainJobInfoPtr jobInfo);

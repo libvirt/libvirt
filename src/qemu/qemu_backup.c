@@ -938,3 +938,101 @@ qemuBackupNotifyBlockjobEnd(virDomainObjPtr vm,
 
     /* otherwise we must wait for the jobs to end */
 }
+
+
+static void
+qemuBackupGetJobInfoStatsUpdateOne(virDomainObjPtr vm,
+                                   bool push,
+                                   const char *diskdst,
+                                   qemuDomainBackupStats *stats,
+                                   qemuMonitorJobInfoPtr *blockjobs,
+                                   size_t nblockjobs)
+{
+    virDomainDiskDefPtr domdisk;
+    qemuMonitorJobInfoPtr monblockjob = NULL;
+    g_autoptr(qemuBlockJobData) diskblockjob = NULL;
+    size_t i;
+
+    /* it's just statistics so let's not worry so much about errors */
+    if (!(domdisk = virDomainDiskByTarget(vm->def, diskdst)))
+        return;
+
+    if (!(diskblockjob = qemuBlockJobDiskGetJob(domdisk)))
+        return;
+
+    for (i = 0; i < nblockjobs; i++) {
+        if (STREQ_NULLABLE(blockjobs[i]->id, diskblockjob->name)) {
+            monblockjob = blockjobs[i];
+            break;
+        }
+    }
+    if (!monblockjob)
+        return;
+
+    if (push) {
+        stats->total += monblockjob->progressTotal;
+        stats->transferred += monblockjob->progressCurrent;
+    } else {
+        stats->tmp_used += monblockjob->progressCurrent;
+        stats->tmp_total += monblockjob->progressTotal;
+    }
+}
+
+
+int
+qemuBackupGetJobInfoStats(virQEMUDriverPtr driver,
+                          virDomainObjPtr vm,
+                          qemuDomainJobInfoPtr jobInfo)
+{
+    qemuDomainBackupStats *stats = &jobInfo->stats.backup;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuMonitorJobInfoPtr *blockjobs = NULL;
+    size_t nblockjobs = 0;
+    size_t i;
+    int rc;
+    int ret = -1;
+
+    if (!priv->backup) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("backup job data missing"));
+        return -1;
+    }
+
+    if (qemuDomainJobInfoUpdateTime(jobInfo) < 0)
+        return -1;
+
+    jobInfo->status = QEMU_DOMAIN_JOB_STATUS_ACTIVE;
+
+    qemuDomainObjEnterMonitor(driver, vm);
+
+    rc = qemuMonitorGetJobInfo(priv->mon, &blockjobs, &nblockjobs);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+        goto cleanup;
+
+    /* count in completed jobs */
+    stats->total = priv->backup->push_total;
+    stats->transferred = priv->backup->push_transferred;
+    stats->tmp_used = priv->backup->pull_tmp_used;
+    stats->tmp_total = priv->backup->pull_tmp_total;
+
+    for (i = 0; i < priv->backup->ndisks; i++) {
+        if (priv->backup->disks[i].state != VIR_DOMAIN_BACKUP_DISK_STATE_RUNNING)
+            continue;
+
+        qemuBackupGetJobInfoStatsUpdateOne(vm,
+                                           priv->backup->type == VIR_DOMAIN_BACKUP_TYPE_PUSH,
+                                           priv->backup->disks[i].name,
+                                           stats,
+                                           blockjobs,
+                                           nblockjobs);
+    }
+
+    ret = 0;
+
+ cleanup:
+    for (i = 0; i < nblockjobs; i++)
+        qemuMonitorJobInfoFree(blockjobs[i]);
+    g_free(blockjobs);
+    return ret;
+}

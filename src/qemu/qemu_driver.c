@@ -13860,7 +13860,8 @@ qemuDomainGetJobStatsInternal(virQEMUDriverPtr driver,
         break;
 
     case QEMU_DOMAIN_JOB_STATS_TYPE_BACKUP:
-        /* TODO implement for backup job */
+        if (qemuBackupGetJobInfoStats(driver, vm, jobInfo) < 0)
+            goto cleanup;
         break;
 
     case QEMU_DOMAIN_JOB_STATS_TYPE_NONE:
