@@ -5382,7 +5382,7 @@ qemuProcessStartValidate(virQEMUDriverPtr driver,
      * VM that was running before (migration, snapshots, save). It's more
      * important to start such VM than keep the configuration clean */
     if ((flags & VIR_QEMU_PROCESS_START_NEW) &&
-        virDomainDefValidate(vm->def, caps, 0, driver->xmlopt) < 0)
+        virDomainDefValidate(vm->def, 0, driver->xmlopt) < 0)
         return -1;
 
     if (qemuProcessStartValidateGraphics(vm) < 0)
@@ -5581,7 +5581,7 @@ qemuProcessInit(virQEMUDriverPtr driver,
         VIR_DEBUG("re-running the post parse callback");
 
         /* we don't have the private copy of qemuCaps at this point */
-        if (virDomainDefPostParse(vm->def, caps, 0, driver->xmlopt, NULL) < 0)
+        if (virDomainDefPostParse(vm->def, 0, driver->xmlopt, NULL) < 0)
             goto cleanup;
     }
 

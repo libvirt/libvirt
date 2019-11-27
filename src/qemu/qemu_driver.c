@@ -8101,7 +8101,7 @@ qemuCheckDiskConfigAgainstDomain(const virDomainDef *def,
 static int
 qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
                              virDomainDeviceDefPtr dev,
-                             virCapsPtr caps,
+                             virCapsPtr caps G_GNUC_UNUSED,
                              virQEMUCapsPtr qemuCaps,
                              unsigned int parse_flags,
                              virDomainXMLOptionPtr xmlopt)
@@ -8301,7 +8301,7 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
          return -1;
     }
 
-    if (virDomainDefPostParse(vmdef, caps, parse_flags, xmlopt, qemuCaps) < 0)
+    if (virDomainDefPostParse(vmdef, parse_flags, xmlopt, qemuCaps) < 0)
         return -1;
 
     return 0;
@@ -8311,7 +8311,7 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
 static int
 qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
                              virDomainDeviceDefPtr dev,
-                             virCapsPtr caps,
+                             virCapsPtr caps G_GNUC_UNUSED,
                              virQEMUCapsPtr qemuCaps,
                              unsigned int parse_flags,
                              virDomainXMLOptionPtr xmlopt)
@@ -8504,7 +8504,7 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
         return -1;
     }
 
-    if (virDomainDefPostParse(vmdef, caps, parse_flags, xmlopt, qemuCaps) < 0)
+    if (virDomainDefPostParse(vmdef, parse_flags, xmlopt, qemuCaps) < 0)
         return -1;
 
     return 0;
@@ -8513,7 +8513,7 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
 static int
 qemuDomainUpdateDeviceConfig(virDomainDefPtr vmdef,
                              virDomainDeviceDefPtr dev,
-                             virCapsPtr caps,
+                             virCapsPtr caps G_GNUC_UNUSED,
                              virQEMUCapsPtr qemuCaps,
                              unsigned int parse_flags,
                              virDomainXMLOptionPtr xmlopt)
@@ -8612,7 +8612,7 @@ qemuDomainUpdateDeviceConfig(virDomainDefPtr vmdef,
         return -1;
     }
 
-    if (virDomainDefPostParse(vmdef, caps, parse_flags, xmlopt, qemuCaps) < 0)
+    if (virDomainDefPostParse(vmdef, parse_flags, xmlopt, qemuCaps) < 0)
         return -1;
 
     return 0;

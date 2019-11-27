@@ -1276,7 +1276,7 @@ virVMXConfigScanResultsCollector(const char* name,
 virDomainDefPtr
 virVMXParseConfig(virVMXContext *ctx,
                   virDomainXMLOptionPtr xmlopt,
-                  virCapsPtr caps,
+                  virCapsPtr caps G_GNUC_UNUSED,
                   const char *vmx)
 {
     bool success = false;
@@ -1845,7 +1845,7 @@ virVMXParseConfig(virVMXContext *ctx,
         }
     }
 
-    if (virDomainDefPostParse(def, caps, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
+    if (virDomainDefPostParse(def, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
                               xmlopt, NULL) < 0)
         goto cleanup;
 

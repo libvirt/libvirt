@@ -1213,7 +1213,7 @@ xenParseXL(virConfPtr conf,
     if (xenParseXLChannel(conf, def) < 0)
         goto cleanup;
 
-    if (virDomainDefPostParse(def, caps, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
+    if (virDomainDefPostParse(def, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
                               xmlopt, NULL) < 0)
         goto cleanup;
 

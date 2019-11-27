@@ -2783,7 +2783,6 @@ virDomainSCSIDriveAddressIsUsed(const virDomainDef *def,
                                 const virDomainDeviceDriveAddress *addr);
 
 int virDomainDefPostParse(virDomainDefPtr def,
-                          virCapsPtr caps,
                           unsigned int parseFlags,
                           virDomainXMLOptionPtr xmlopt,
                           void *parseOpaque);
@@ -2796,7 +2795,6 @@ int virDomainDeviceValidateAliasForHotplug(virDomainObjPtr vm,
 bool virDomainDeviceAliasIsUserAlias(const char *aliasStr);
 
 int virDomainDefValidate(virDomainDefPtr def,
-                         virCapsPtr caps,
                          unsigned int parseFlags,
                          virDomainXMLOptionPtr xmlopt);
 

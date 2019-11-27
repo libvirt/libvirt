@@ -5810,7 +5810,6 @@ virDomainDefPostParseCheckFailure(virDomainDefPtr def,
 
 int
 virDomainDefPostParse(virDomainDefPtr def,
-                      virCapsPtr caps G_GNUC_UNUSED,
                       unsigned int parseFlags,
                       virDomainXMLOptionPtr xmlopt,
                       void *parseOpaque)
@@ -7115,7 +7114,6 @@ virDomainDefValidateInternal(const virDomainDef *def,
  */
 int
 virDomainDefValidate(virDomainDefPtr def,
-                     virCapsPtr caps G_GNUC_UNUSED,
                      unsigned int parseFlags,
                      virDomainXMLOptionPtr xmlopt)
 {
@@ -21566,11 +21564,11 @@ virDomainObjParseXML(xmlDocPtr xml,
         parseOpaque = xmlopt->privateData.getParseOpaque(obj);
 
     /* callback to fill driver specific domain aspects */
-    if (virDomainDefPostParse(obj->def, caps, flags, xmlopt, parseOpaque) < 0)
+    if (virDomainDefPostParse(obj->def, flags, xmlopt, parseOpaque) < 0)
         goto error;
 
     /* validate configuration */
-    if (virDomainDefValidate(obj->def, caps, flags, xmlopt) < 0)
+    if (virDomainDefValidate(obj->def, flags, xmlopt) < 0)
         goto error;
 
     return obj;
@@ -21655,11 +21653,11 @@ virDomainDefParseNode(xmlDocPtr xml,
         return NULL;
 
     /* callback to fill driver specific domain aspects */
-    if (virDomainDefPostParse(def, caps, flags, xmlopt, parseOpaque) < 0)
+    if (virDomainDefPostParse(def, flags, xmlopt, parseOpaque) < 0)
         return NULL;
 
     /* validate configuration */
-    if (virDomainDefValidate(def, caps, flags, xmlopt) < 0)
+    if (virDomainDefValidate(def, flags, xmlopt) < 0)
         return NULL;
 
     return g_steal_pointer(&def);
