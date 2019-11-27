@@ -9713,7 +9713,6 @@ qemuFindQemuImgBinary(virQEMUDriverPtr driver)
 int
 qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
                                 virDomainMomentObjPtr snapshot,
-                                virCapsPtr caps G_GNUC_UNUSED,
                                 virDomainXMLOptionPtr xmlopt,
                                 const char *snapshotDir)
 {
@@ -9886,7 +9885,7 @@ qemuDomainSnapshotDiscard(virQEMUDriverPtr driver,
                          snap->def->parent_name);
             } else {
                 virDomainSnapshotSetCurrent(vm->snapshots, parentsnap);
-                if (qemuDomainSnapshotWriteMetadata(vm, parentsnap, driver->caps,
+                if (qemuDomainSnapshotWriteMetadata(vm, parentsnap,
                                                     driver->xmlopt,
                                                     cfg->snapshotDir) < 0) {
                     VIR_WARN("failed to set parent snapshot '%s' as current",

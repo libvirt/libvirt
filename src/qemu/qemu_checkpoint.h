@@ -57,7 +57,6 @@ qemuCheckpointDelete(virDomainObjPtr vm,
 int
 qemuCheckpointCreateCommon(virQEMUDriverPtr driver,
                            virDomainObjPtr vm,
-                           virCapsPtr caps,
                            virDomainCheckpointDefPtr *def,
                            virJSONValuePtr *actions,
                            virDomainMomentObjPtr *chk);

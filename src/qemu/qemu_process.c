@@ -6725,7 +6725,6 @@ qemuProcessLaunch(virConnectPtr conn,
     virCommandPtr cmd = NULL;
     struct qemuProcessHookData hookData;
     virQEMUDriverConfigPtr cfg;
-    virCapsPtr caps = NULL;
     size_t nnicindexes = 0;
     int *nicindexes = NULL;
     size_t i;
@@ -6761,9 +6760,6 @@ qemuProcessLaunch(virConnectPtr conn,
     hookData.driver = driver;
     /* We don't increase cfg's reference counter here. */
     hookData.cfg = cfg;
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
 
     VIR_DEBUG("Creating domain log file");
     if (!(logCtxt = qemuDomainLogContextNew(driver, vm,
@@ -7042,7 +7038,6 @@ qemuProcessLaunch(virConnectPtr conn,
     virCommandFree(cmd);
     virObjectUnref(logCtxt);
     virObjectUnref(cfg);
-    virObjectUnref(caps);
     VIR_FREE(nicindexes);
     return ret;
 }
@@ -8009,7 +8004,6 @@ qemuProcessReconnect(void *opaque)
     size_t i;
     unsigned int stopFlags = 0;
     bool jobStarted = false;
-    virCapsPtr caps = NULL;
     bool retry = true;
     bool tryMonReconn = false;
 
@@ -8023,9 +8017,6 @@ qemuProcessReconnect(void *opaque)
 
     cfg = virQEMUDriverGetConfig(driver);
     priv = obj->privateData;
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto error;
 
     if (qemuDomainObjBeginJob(driver, obj, QEMU_JOB_MODIFY) < 0)
         goto error;
@@ -8257,7 +8248,6 @@ qemuProcessReconnect(void *opaque)
     }
     virDomainObjEndAPI(&obj);
     virObjectUnref(cfg);
-    virObjectUnref(caps);
     virNWFilterUnlockFilterUpdates();
     virIdentitySetCurrent(NULL);
     return;

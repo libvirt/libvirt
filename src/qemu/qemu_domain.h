@@ -763,7 +763,6 @@ const char *qemuFindQemuImgBinary(virQEMUDriverPtr driver);
 
 int qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
                                     virDomainMomentObjPtr snapshot,
-                                    virCapsPtr caps,
                                     virDomainXMLOptionPtr xmlopt,
                                     const char *snapshotDir);
 

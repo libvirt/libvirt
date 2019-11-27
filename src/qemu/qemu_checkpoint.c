@@ -78,7 +78,6 @@ qemuCheckpointObjFromCheckpoint(virDomainObjPtr vm,
 static int
 qemuCheckpointWriteMetadata(virDomainObjPtr vm,
                             virDomainMomentObjPtr checkpoint,
-                            virCapsPtr caps G_GNUC_UNUSED,
                             virDomainXMLOptionPtr xmlopt,
                             const char *checkpointDir)
 {
@@ -197,7 +196,7 @@ qemuCheckpointDiscard(virQEMUDriverPtr driver,
         virDomainCheckpointSetCurrent(vm->checkpoints, NULL);
         if (update_parent && parent) {
             virDomainCheckpointSetCurrent(vm->checkpoints, parent);
-            if (qemuCheckpointWriteMetadata(vm, parent, driver->caps,
+            if (qemuCheckpointWriteMetadata(vm, parent,
                                             driver->xmlopt,
                                             cfg->checkpointDir) < 0) {
                 VIR_WARN("failed to set parent checkpoint '%s' as current",
@@ -239,7 +238,6 @@ qemuCheckpointDiscardAllMetadata(virQEMUDriverPtr driver,
 /* Called inside job lock */
 static int
 qemuCheckpointPrepare(virQEMUDriverPtr driver,
-                      virCapsPtr caps G_GNUC_UNUSED,
                       virDomainObjPtr vm,
                       virDomainCheckpointDefPtr def)
 {
@@ -373,7 +371,6 @@ qemuCheckpointRedefine(virQEMUDriverPtr driver,
 int
 qemuCheckpointCreateCommon(virQEMUDriverPtr driver,
                            virDomainObjPtr vm,
-                           virCapsPtr caps,
                            virDomainCheckpointDefPtr *def,
                            virJSONValuePtr *actions,
                            virDomainMomentObjPtr *chk)
@@ -381,7 +378,7 @@ qemuCheckpointCreateCommon(virQEMUDriverPtr driver,
     g_autoptr(virJSONValue) tmpactions = NULL;
     virDomainMomentObjPtr parent;
 
-    if (qemuCheckpointPrepare(driver, caps, vm, *def) < 0)
+    if (qemuCheckpointPrepare(driver, vm, *def) < 0)
         return -1;
 
     if ((parent = virDomainCheckpointGetCurrent(vm->checkpoints)))
@@ -406,14 +403,13 @@ qemuCheckpointCreateCommon(virQEMUDriverPtr driver,
 static virDomainMomentObjPtr
 qemuCheckpointCreate(virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
-                     virCapsPtr caps,
                      virDomainCheckpointDefPtr *def)
 {
     g_autoptr(virJSONValue) actions = NULL;
     virDomainMomentObjPtr chk = NULL;
     int rc;
 
-    if (qemuCheckpointCreateCommon(driver, vm, caps, def, &actions, &chk) < 0)
+    if (qemuCheckpointCreateCommon(driver, vm, def, &actions, &chk) < 0)
         return NULL;
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -437,7 +433,7 @@ qemuCheckpointCreateFinalize(virQEMUDriverPtr driver,
     if (update_current)
         virDomainCheckpointSetCurrent(vm->checkpoints, chk);
 
-    if (qemuCheckpointWriteMetadata(vm, chk, driver->caps,
+    if (qemuCheckpointWriteMetadata(vm, chk,
                                     driver->xmlopt,
                                     cfg->checkpointDir) < 0) {
         /* if writing of metadata fails, error out rather than trying
@@ -469,7 +465,6 @@ qemuCheckpointCreateXML(virDomainPtr domain,
     bool redefine = flags & VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE;
     unsigned int parse_flags = 0;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
-    g_autoptr(virCaps) caps = NULL;
     g_autoptr(virDomainCheckpointDef) def = NULL;
 
     virCheckFlags(VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE, NULL);
@@ -484,9 +479,6 @@ qemuCheckpointCreateXML(virDomainPtr domain,
                        _("incremental backup is not supported yet"));
         return NULL;
     }
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        return NULL;
 
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
@@ -506,7 +498,7 @@ qemuCheckpointCreateXML(virDomainPtr domain,
     if (redefine) {
         chk = qemuCheckpointRedefine(driver, vm, &def, &update_current);
     } else {
-        chk = qemuCheckpointCreate(driver, vm, caps, &def);
+        chk = qemuCheckpointCreate(driver, vm, &def);
     }
 
     if (!chk)
@@ -557,7 +549,6 @@ struct virQEMUCheckpointReparent {
     const char *dir;
     virDomainMomentObjPtr parent;
     virDomainObjPtr vm;
-    virCapsPtr caps;
     virDomainXMLOptionPtr xmlopt;
     int err;
 };
@@ -579,7 +570,7 @@ qemuCheckpointReparentChildren(void *payload,
     if (rep->parent->def)
         moment->def->parent_name = g_strdup(rep->parent->def->name);
 
-    rep->err = qemuCheckpointWriteMetadata(rep->vm, moment, rep->caps,
+    rep->err = qemuCheckpointWriteMetadata(rep->vm, moment,
                                            rep->xmlopt, rep->dir);
     return 0;
 }
@@ -639,7 +630,7 @@ qemuCheckpointDelete(virDomainObjPtr vm,
         if (rem.found) {
             virDomainCheckpointSetCurrent(vm->checkpoints, chk);
             if (flags & VIR_DOMAIN_CHECKPOINT_DELETE_CHILDREN_ONLY) {
-                if (qemuCheckpointWriteMetadata(vm, chk, driver->caps,
+                if (qemuCheckpointWriteMetadata(vm, chk,
                                                 driver->xmlopt,
                                                 cfg->checkpointDir) < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -655,7 +646,6 @@ qemuCheckpointDelete(virDomainObjPtr vm,
         rep.parent = chk->parent;
         rep.vm = vm;
         rep.err = 0;
-        rep.caps = driver->caps;
         rep.xmlopt = driver->xmlopt;
         virDomainMomentForEachChild(chk, qemuCheckpointReparentChildren,
                                     &rep);
