@@ -68,7 +68,6 @@ prepareObjects(virQEMUDriverPtr driver,
         return -1;
 
     if (!(vm->def = virDomainDefParseString(domxml,
-                                            driver->caps,
                                             driver->xmlopt,
                                             NULL,
                                             0)))

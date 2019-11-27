@@ -1858,7 +1858,7 @@ vboxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags
     if (!data->vboxObj)
         return ret;
 
-    if (!(def = virDomainDefParseString(xml, data->caps, data->xmlopt,
+    if (!(def = virDomainDefParseString(xml, data->xmlopt,
                                         NULL, parse_flags)))
         return ret;
 
@@ -4257,7 +4257,7 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
 
     def->os.type = VIR_DOMAIN_OSTYPE_HVM;
 
-    dev = virDomainDeviceDefParse(xml, def, data->caps, data->xmlopt, NULL,
+    dev = virDomainDeviceDefParse(xml, def, data->xmlopt, NULL,
                                   VIR_DOMAIN_DEF_PARSE_INACTIVE);
     if (dev == NULL)
         goto cleanup;
@@ -4376,7 +4376,7 @@ static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml)
 
     def->os.type = VIR_DOMAIN_OSTYPE_HVM;
 
-    dev = virDomainDeviceDefParse(xml, def, data->caps, data->xmlopt, NULL,
+    dev = virDomainDeviceDefParse(xml, def, data->xmlopt, NULL,
                                   VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                   VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
     if (dev == NULL)

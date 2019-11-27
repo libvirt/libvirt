@@ -37,7 +37,7 @@ testCompareMemLock(const void *data)
     xml = g_strdup_printf("%s/qemumemlockdata/qemumemlock-%s.xml", abs_srcdir,
                           info->name);
 
-    if (!(def = virDomainDefParseFile(xml, driver.caps, driver.xmlopt, NULL,
+    if (!(def = virDomainDefParseFile(xml, driver.xmlopt, NULL,
                                       VIR_DOMAIN_DEF_PARSE_INACTIVE))) {
         goto cleanup;
     }

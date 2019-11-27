@@ -945,7 +945,7 @@ testParseDomains(testDriverPtr privconn,
             goto error;
 
         def = virDomainDefParseNode(ctxt->doc, node,
-                                    privconn->caps, privconn->xmlopt, NULL,
+                                    privconn->xmlopt, NULL,
                                     VIR_DOMAIN_DEF_PARSE_INACTIVE);
         if (!def)
             goto error;
@@ -1678,7 +1678,7 @@ testDomainCreateXML(virConnectPtr conn, const char *xml,
         parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
     virObjectLock(privconn);
-    if ((def = virDomainDefParseString(xml, privconn->caps, privconn->xmlopt,
+    if ((def = virDomainDefParseString(xml, privconn->xmlopt,
                                        NULL, parse_flags)) == NULL)
         goto cleanup;
 
@@ -2294,7 +2294,7 @@ testDomainSaveImageOpen(testDriverPtr driver,
     }
     xml[len] = '\0';
 
-    if (!(def = virDomainDefParseString(xml, driver->caps, driver->xmlopt, NULL,
+    if (!(def = virDomainDefParseString(xml, driver->xmlopt, NULL,
                                         VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                         VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
         goto error;
@@ -2437,7 +2437,7 @@ testDomainSaveImageDefineXML(virConnectPtr conn,
         goto cleanup;
     VIR_FORCE_CLOSE(fd);
 
-    if ((newdef = virDomainDefParseString(dxml, privconn->caps, privconn->xmlopt, NULL,
+    if ((newdef = virDomainDefParseString(dxml, privconn->xmlopt, NULL,
                                           VIR_DOMAIN_DEF_PARSE_INACTIVE)) == NULL)
         goto cleanup;
 
@@ -3989,7 +3989,7 @@ static virDomainPtr testDomainDefineXMLFlags(virConnectPtr conn,
     if (flags & VIR_DOMAIN_DEFINE_VALIDATE)
         parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
-    if ((def = virDomainDefParseString(xml, privconn->caps, privconn->xmlopt,
+    if ((def = virDomainDefParseString(xml, privconn->xmlopt,
                                        NULL, parse_flags)) == NULL)
         goto cleanup;
 

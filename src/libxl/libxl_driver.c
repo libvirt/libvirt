@@ -1042,7 +1042,7 @@ libxlDomainCreateXML(virConnectPtr conn, const char *xml,
     if (flags & VIR_DOMAIN_START_VALIDATE)
         parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
-    if (!(def = virDomainDefParseString(xml, cfg->caps, driver->xmlopt,
+    if (!(def = virDomainDefParseString(xml, driver->xmlopt,
                                         NULL, parse_flags)))
         goto cleanup;
 
@@ -2730,7 +2730,7 @@ libxlConnectDomainXMLToNative(virConnectPtr conn, const char * nativeFormat,
         goto cleanup;
 
     if (!(def = virDomainDefParseString(domainXml,
-                                        cfg->caps, driver->xmlopt, NULL,
+                                        driver->xmlopt, NULL,
                                         VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 
@@ -2850,7 +2850,7 @@ libxlDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flag
     if (flags & VIR_DOMAIN_DEFINE_VALIDATE)
         parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
-    if (!(def = virDomainDefParseString(xml, cfg->caps, driver->xmlopt,
+    if (!(def = virDomainDefParseString(xml, driver->xmlopt,
                                         NULL, parse_flags)))
         goto cleanup;
 
@@ -4116,7 +4116,7 @@ libxlDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
 
     if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
         if (!(dev = virDomainDeviceDefParse(xml, vm->def,
-                                            cfg->caps, driver->xmlopt, NULL,
+                                            driver->xmlopt, NULL,
                                             VIR_DOMAIN_DEF_PARSE_INACTIVE)))
             goto endjob;
 
@@ -4133,7 +4133,7 @@ libxlDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
         /* If dev exists it was created to modify the domain config. Free it. */
         virDomainDeviceDefFree(dev);
         if (!(dev = virDomainDeviceDefParse(xml, vm->def,
-                                            cfg->caps, driver->xmlopt, NULL,
+                                            driver->xmlopt, NULL,
                                             VIR_DOMAIN_DEF_PARSE_INACTIVE)))
             goto endjob;
 
@@ -4205,7 +4205,7 @@ libxlDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
 
     if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
         if (!(dev = virDomainDeviceDefParse(xml, vm->def,
-                                            cfg->caps, driver->xmlopt, NULL,
+                                            driver->xmlopt, NULL,
                                             VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                             VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
             goto endjob;
@@ -4223,7 +4223,7 @@ libxlDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
         /* If dev exists it was created to modify the domain config. Free it. */
         virDomainDeviceDefFree(dev);
         if (!(dev = virDomainDeviceDefParse(xml, vm->def,
-                                            cfg->caps, driver->xmlopt, NULL,
+                                            driver->xmlopt, NULL,
                                             VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                             VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
             goto endjob;
@@ -4293,7 +4293,7 @@ libxlDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
 
     if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
         if (!(dev = virDomainDeviceDefParse(xml, vm->def,
-                                            cfg->caps, driver->xmlopt, NULL,
+                                            driver->xmlopt, NULL,
                                             VIR_DOMAIN_DEF_PARSE_INACTIVE)))
             goto cleanup;
 
@@ -4312,7 +4312,7 @@ libxlDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
         /* If dev exists it was created to modify the domain config. Free it. */
         virDomainDeviceDefFree(dev);
         if (!(dev = virDomainDeviceDefParse(xml, vm->def,
-                                            cfg->caps, driver->xmlopt, NULL,
+                                            driver->xmlopt, NULL,
                                             VIR_DOMAIN_DEF_PARSE_INACTIVE)))
             goto cleanup;
 

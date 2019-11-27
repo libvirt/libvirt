@@ -185,7 +185,7 @@ testQemuAgentGetFSInfoCommon(virDomainXMLOptionPtr xmlopt,
 
     domain_filename = g_strdup_printf("%s/qemuagentdata/fsinfo.xml", abs_srcdir);
 
-    if (!(ret_def = virDomainDefParseFile(domain_filename, driver.caps, xmlopt,
+    if (!(ret_def = virDomainDefParseFile(domain_filename, xmlopt,
                                           NULL, VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 

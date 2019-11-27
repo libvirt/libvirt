@@ -1684,7 +1684,7 @@ phypDomainAttachDeviceFlags(virDomainPtr domain,
 
     def->os.type = VIR_DOMAIN_OSTYPE_LINUX;
 
-    dev = virDomainDeviceDefParse(xml, def, phyp_driver->caps, NULL, NULL,
+    dev = virDomainDeviceDefParse(xml, def, NULL, NULL,
                                   VIR_DOMAIN_DEF_PARSE_INACTIVE);
     if (!dev)
         goto cleanup;
@@ -3531,7 +3531,7 @@ phypDomainCreateXML(virConnectPtr conn,
     if (flags & VIR_DOMAIN_START_VALIDATE)
         parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
-    if (!(def = virDomainDefParseString(xml, phyp_driver->caps,
+    if (!(def = virDomainDefParseString(xml,
                                         phyp_driver->xmlopt,
                                         NULL,
                                         parse_flags)))

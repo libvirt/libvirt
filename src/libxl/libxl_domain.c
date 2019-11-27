@@ -732,7 +732,7 @@ libxlDomainManagedSavePath(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
  */
 int
 libxlDomainSaveImageOpen(libxlDriverPrivatePtr driver,
-                         libxlDriverConfigPtr cfg,
+                         libxlDriverConfigPtr cfg G_GNUC_UNUSED,
                          const char *from,
                          virDomainDefPtr *ret_def,
                          libxlSavefileHeaderPtr ret_hdr)
@@ -780,7 +780,7 @@ libxlDomainSaveImageOpen(libxlDriverPrivatePtr driver,
         goto error;
     }
 
-    if (!(def = virDomainDefParseString(xml, cfg->caps, driver->xmlopt, NULL,
+    if (!(def = virDomainDefParseString(xml, driver->xmlopt, NULL,
                                         VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                         VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
         goto error;

@@ -87,7 +87,6 @@ qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
         return -1;
 
     if (!((*vm)->def = virDomainDefParseString(domxml,
-                                               driver.caps,
                                                driver.xmlopt,
                                                NULL,
                                                parseFlags)))
@@ -277,7 +276,7 @@ testQemuHotplug(const void *data)
         device_parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
 
     if (!(dev = virDomainDeviceDefParse(device_xml, vm->def,
-                                        caps, driver.xmlopt, NULL,
+                                        driver.xmlopt, NULL,
                                         device_parse_flags)))
         goto cleanup;
 

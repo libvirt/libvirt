@@ -1748,7 +1748,6 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
     virObjectEventPtr event = NULL;
     virObjectEventPtr event2 = NULL;
     unsigned int start_flags = VIR_QEMU_PROCESS_START_COLD;
-    g_autoptr(virCaps) caps = NULL;
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                VIR_DOMAIN_DEF_PARSE_ABI_UPDATE;
 
@@ -1765,10 +1764,7 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
 
     virNWFilterReadLockFilterUpdates();
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
-
-    if (!(def = virDomainDefParseString(xml, caps, driver->xmlopt,
+    if (!(def = virDomainDefParseString(xml, driver->xmlopt,
                                         NULL, parse_flags)))
         goto cleanup;
 
@@ -3277,12 +3273,8 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver,
     int ret = -1;
     virObjectEventPtr event = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    g_autoptr(virCaps) caps = NULL;
     virQEMUSaveDataPtr data = NULL;
     qemuDomainSaveCookiePtr cookie = NULL;
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
 
     if (!qemuMigrationSrcIsAllowed(driver, vm, false, 0))
         goto cleanup;
@@ -3326,7 +3318,7 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver,
     if (xmlin) {
         virDomainDefPtr def = NULL;
 
-        if (!(def = virDomainDefParseString(xmlin, caps, driver->xmlopt,
+        if (!(def = virDomainDefParseString(xmlin, driver->xmlopt,
                                             priv->qemuCaps,
                                             VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                             VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE))) {
@@ -6581,12 +6573,8 @@ qemuDomainSaveImageUpdateDef(virQEMUDriverPtr driver,
     virDomainDefPtr ret = NULL;
     virDomainDefPtr newdef_migr = NULL;
     virDomainDefPtr newdef = NULL;
-    g_autoptr(virCaps) caps = NULL;
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
-
-    if (!(newdef = virDomainDefParseString(newxml, caps, driver->xmlopt, NULL,
+    if (!(newdef = virDomainDefParseString(newxml, driver->xmlopt, NULL,
                                            VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 
@@ -6659,7 +6647,6 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
     virQEMUSaveHeaderPtr header;
     virDomainDefPtr def = NULL;
     int oflags = open_write ? O_RDWR : O_RDONLY;
-    g_autoptr(virCaps) caps = NULL;
     size_t xml_len;
     size_t cookie_len;
 
@@ -6672,9 +6659,6 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
         }
         oflags |= directFlag;
     }
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto error;
 
     if ((fd = qemuOpenFile(driver, NULL, path, oflags, NULL)) < 0)
         goto error;
@@ -6770,7 +6754,7 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
     }
 
     /* Create a domain from this XML */
-    if (!(def = virDomainDefParseString(data->xml, caps, driver->xmlopt, qemuCaps,
+    if (!(def = virDomainDefParseString(data->xml, driver->xmlopt, qemuCaps,
                                         VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                         VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
         goto error;
@@ -7343,7 +7327,6 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
     virCommandPtr cmd = NULL;
     char *ret = NULL;
     size_t i;
-    g_autoptr(virCaps) caps = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -7356,13 +7339,10 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
-
     if (!(vm = virDomainObjNew(driver->xmlopt)))
         goto cleanup;
 
-    if (!(vm->def = virDomainDefParseString(xmlData, caps, driver->xmlopt, NULL,
+    if (!(vm->def = virDomainDefParseString(xmlData, driver->xmlopt, NULL,
                                             VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                             VIR_DOMAIN_DEF_PARSE_ABI_UPDATE)))
         goto cleanup;
@@ -7587,7 +7567,6 @@ qemuDomainDefineXMLFlags(virConnectPtr conn,
     virDomainPtr dom = NULL;
     virObjectEventPtr event = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    g_autoptr(virCaps) caps = NULL;
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                VIR_DOMAIN_DEF_PARSE_ABI_UPDATE;
 
@@ -7596,10 +7575,7 @@ qemuDomainDefineXMLFlags(virConnectPtr conn,
     if (flags & VIR_DOMAIN_DEFINE_VALIDATE)
         parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
-
-    if (!(def = virDomainDefParseString(xml, caps, driver->xmlopt,
+    if (!(def = virDomainDefParseString(xml, driver->xmlopt,
                                         NULL, parse_flags)))
         goto cleanup;
 
@@ -8651,7 +8627,7 @@ qemuDomainAttachDeviceLiveAndConfig(virDomainObjPtr vm,
         if (!vmdef)
             goto cleanup;
 
-        if (!(devConf = virDomainDeviceDefParse(xml, vmdef, caps,
+        if (!(devConf = virDomainDeviceDefParse(xml, vmdef,
                                                 driver->xmlopt, priv->qemuCaps,
                                                 parse_flags)))
             goto cleanup;
@@ -8672,7 +8648,7 @@ qemuDomainAttachDeviceLiveAndConfig(virDomainObjPtr vm,
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        if (!(devLive = virDomainDeviceDefParse(xml, vm->def, caps,
+        if (!(devLive = virDomainDeviceDefParse(xml, vm->def,
                                                 driver->xmlopt, priv->qemuCaps,
                                                 parse_flags)))
             goto cleanup;
@@ -8803,7 +8779,7 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
         !(flags & VIR_DOMAIN_AFFECT_LIVE))
         parse_flags |= VIR_DOMAIN_DEF_PARSE_INACTIVE;
 
-    dev = dev_copy = virDomainDeviceDefParse(xml, vm->def, caps,
+    dev = dev_copy = virDomainDeviceDefParse(xml, vm->def,
                                              driver->xmlopt, priv->qemuCaps,
                                              parse_flags);
     if (dev == NULL)
@@ -8900,7 +8876,7 @@ qemuDomainDetachDeviceLiveAndConfig(virQEMUDriverPtr driver,
         !(flags & VIR_DOMAIN_AFFECT_LIVE))
         parse_flags |= VIR_DOMAIN_DEF_PARSE_INACTIVE;
 
-    dev = dev_copy = virDomainDeviceDefParse(xml, vm->def, caps,
+    dev = dev_copy = virDomainDeviceDefParse(xml, vm->def,
                                              driver->xmlopt, priv->qemuCaps,
                                              parse_flags);
     if (dev == NULL)
@@ -15972,7 +15948,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
         if (!(xml = qemuDomainDefFormatLive(driver, priv->qemuCaps,
                                             vm->def, priv->origCPU,
                                             true, true)) ||
-            !(def->parent.dom = virDomainDefParseString(xml, caps, driver->xmlopt,
+            !(def->parent.dom = virDomainDefParseString(xml, driver->xmlopt,
                                                         priv->qemuCaps,
                                                         VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                                         VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))

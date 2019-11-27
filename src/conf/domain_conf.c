@@ -16419,7 +16419,6 @@ virDomainVsockDefParseXML(virDomainXMLOptionPtr xmlopt,
 virDomainDeviceDefPtr
 virDomainDeviceDefParse(const char *xmlStr,
                         const virDomainDef *def,
-                        virCapsPtr caps G_GNUC_UNUSED,
                         virDomainXMLOptionPtr xmlopt,
                         void *parseOpaque,
                         unsigned int flags)
@@ -19773,7 +19772,6 @@ virDomainMemorytuneDefParse(virDomainDefPtr def,
 static virDomainDefPtr
 virDomainDefParseXML(xmlDocPtr xml,
                      xmlXPathContextPtr ctxt,
-                     virCapsPtr caps G_GNUC_UNUSED,
                      virDomainXMLOptionPtr xmlopt,
                      unsigned int flags)
 {
@@ -21478,7 +21476,6 @@ virDomainDefParseXML(xmlDocPtr xml,
 static virDomainObjPtr
 virDomainObjParseXML(xmlDocPtr xml,
                      xmlXPathContextPtr ctxt,
-                     virCapsPtr caps,
                      virDomainXMLOptionPtr xmlopt,
                      unsigned int flags)
 {
@@ -21505,7 +21502,7 @@ virDomainObjParseXML(xmlDocPtr xml,
 
     oldnode = ctxt->node;
     ctxt->node = config;
-    obj->def = virDomainDefParseXML(xml, ctxt, caps, xmlopt, flags);
+    obj->def = virDomainDefParseXML(xml, ctxt, xmlopt, flags);
     ctxt->node = oldnode;
     if (!obj->def)
         goto error;
@@ -21582,7 +21579,6 @@ virDomainObjParseXML(xmlDocPtr xml,
 static virDomainDefPtr
 virDomainDefParse(const char *xmlStr,
                   const char *filename,
-                  virCapsPtr caps,
                   virDomainXMLOptionPtr xmlopt,
                   void *parseOpaque,
                   unsigned int flags)
@@ -21604,7 +21600,7 @@ virDomainDefParse(const char *xmlStr,
         goto cleanup;
     }
 
-    def = virDomainDefParseNode(xml, root, caps, xmlopt, parseOpaque, flags);
+    def = virDomainDefParseNode(xml, root, xmlopt, parseOpaque, flags);
 
  cleanup:
     xmlFreeDoc(xml);
@@ -21614,29 +21610,26 @@ virDomainDefParse(const char *xmlStr,
 
 virDomainDefPtr
 virDomainDefParseString(const char *xmlStr,
-                        virCapsPtr caps,
                         virDomainXMLOptionPtr xmlopt,
                         void *parseOpaque,
                         unsigned int flags)
 {
-    return virDomainDefParse(xmlStr, NULL, caps, xmlopt, parseOpaque, flags);
+    return virDomainDefParse(xmlStr, NULL, xmlopt, parseOpaque, flags);
 }
 
 virDomainDefPtr
 virDomainDefParseFile(const char *filename,
-                      virCapsPtr caps,
                       virDomainXMLOptionPtr xmlopt,
                       void *parseOpaque,
                       unsigned int flags)
 {
-    return virDomainDefParse(NULL, filename, caps, xmlopt, parseOpaque, flags);
+    return virDomainDefParse(NULL, filename, xmlopt, parseOpaque, flags);
 }
 
 
 virDomainDefPtr
 virDomainDefParseNode(xmlDocPtr xml,
                       xmlNodePtr root,
-                      virCapsPtr caps,
                       virDomainXMLOptionPtr xmlopt,
                       void *parseOpaque,
                       unsigned int flags)
@@ -21649,7 +21642,7 @@ virDomainDefParseNode(xmlDocPtr xml,
 
     ctxt->node = root;
 
-    if (!(def = virDomainDefParseXML(xml, ctxt, caps, xmlopt, flags)))
+    if (!(def = virDomainDefParseXML(xml, ctxt, xmlopt, flags)))
         return NULL;
 
     /* callback to fill driver specific domain aspects */
@@ -21667,7 +21660,6 @@ virDomainDefParseNode(xmlDocPtr xml,
 virDomainObjPtr
 virDomainObjParseNode(xmlDocPtr xml,
                       xmlNodePtr root,
-                      virCapsPtr caps,
                       virDomainXMLOptionPtr xmlopt,
                       unsigned int flags)
 {
@@ -21685,13 +21677,12 @@ virDomainObjParseNode(xmlDocPtr xml,
         return NULL;
 
     ctxt->node = root;
-    return virDomainObjParseXML(xml, ctxt, caps, xmlopt, flags);
+    return virDomainObjParseXML(xml, ctxt, xmlopt, flags);
 }
 
 
 virDomainObjPtr
 virDomainObjParseFile(const char *filename,
-                      virCapsPtr caps,
                       virDomainXMLOptionPtr xmlopt,
                       unsigned int flags)
 {
@@ -21701,7 +21692,7 @@ virDomainObjParseFile(const char *filename,
 
     if ((xml = virXMLParseFile(filename))) {
         obj = virDomainObjParseNode(xml, xmlDocGetRootElement(xml),
-                                    caps, xmlopt, flags);
+                                    xmlopt, flags);
         xmlFreeDoc(xml);
     }
 
@@ -29378,7 +29369,7 @@ virDomainDefCopy(virDomainDefPtr src,
     if (!(xml = virDomainDefFormat(src, xmlopt, format_flags)))
         return NULL;
 
-    return virDomainDefParseString(xml, caps, xmlopt, parseOpaque, parse_flags);
+    return virDomainDefParseString(xml, xmlopt, parseOpaque, parse_flags);
 }
 
 virDomainDefPtr
@@ -29835,7 +29826,7 @@ virDomainNetFindByName(virDomainDefPtr def,
 virDomainDeviceDefPtr
 virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
                        const virDomainDef *def,
-                       virCapsPtr caps,
+                       virCapsPtr caps G_GNUC_UNUSED,
                        virDomainXMLOptionPtr xmlopt,
                        void *parseOpaque)
 {
@@ -29923,7 +29914,7 @@ virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
         return NULL;
 
     xmlStr = virBufferContentAndReset(&buf);
-    return virDomainDeviceDefParse(xmlStr, def, caps, xmlopt, parseOpaque,
+    return virDomainDeviceDefParse(xmlStr, def, xmlopt, parseOpaque,
                                    VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                    VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
 }

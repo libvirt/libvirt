@@ -519,7 +519,7 @@ bhyveDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flag
     if (!caps)
         return NULL;
 
-    if ((def = virDomainDefParseString(xml, caps, privconn->xmlopt,
+    if ((def = virDomainDefParseString(xml, privconn->xmlopt,
                                        NULL, parse_flags)) == NULL)
         goto cleanup;
 
@@ -681,7 +681,6 @@ bhyveConnectDomainXMLToNative(virConnectPtr conn,
     bhyveConnPtr privconn = conn->privateData;
     virDomainDefPtr def = NULL;
     virCommandPtr cmd = NULL, loadcmd = NULL;
-    virCapsPtr caps = NULL;
     char *ret = NULL;
 
     virCheckFlags(0, NULL);
@@ -695,10 +694,7 @@ bhyveConnectDomainXMLToNative(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (!(caps = bhyveDriverGetCapabilities(privconn)))
-        goto cleanup;
-
-    if (!(def = virDomainDefParseString(xmlData, caps, privconn->xmlopt,
+    if (!(def = virDomainDefParseString(xmlData, privconn->xmlopt,
                                         NULL, VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 
@@ -741,7 +737,6 @@ bhyveConnectDomainXMLToNative(virConnectPtr conn,
     virCommandFree(loadcmd);
     virCommandFree(cmd);
     virDomainDefFree(def);
-    virObjectUnref(caps);
     return ret;
 }
 
@@ -898,7 +893,6 @@ bhyveDomainCreateXML(virConnectPtr conn,
     virDomainDefPtr def = NULL;
     virDomainObjPtr vm = NULL;
     virObjectEventPtr event = NULL;
-    virCapsPtr caps = NULL;
     unsigned int start_flags = 0;
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
 
@@ -910,11 +904,7 @@ bhyveDomainCreateXML(virConnectPtr conn,
     if (flags & VIR_DOMAIN_START_AUTODESTROY)
         start_flags |= VIR_BHYVE_PROCESS_START_AUTODESTROY;
 
-    caps = bhyveDriverGetCapabilities(privconn);
-    if (!caps)
-        return NULL;
-
-    if ((def = virDomainDefParseString(xml, caps, privconn->xmlopt,
+    if ((def = virDomainDefParseString(xml, privconn->xmlopt,
                                        NULL, parse_flags)) == NULL)
         goto cleanup;
 
@@ -947,7 +937,6 @@ bhyveDomainCreateXML(virConnectPtr conn,
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid, vm->def->id);
 
  cleanup:
-    virObjectUnref(caps);
     virDomainDefFree(def);
     virDomainObjEndAPI(&vm);
     virObjectEventStateQueue(privconn->domainEventState, event);

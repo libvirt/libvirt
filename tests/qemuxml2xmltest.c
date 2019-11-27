@@ -58,7 +58,7 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
     char *actual = NULL;
     int ret = -1;
 
-    if (!(obj = virDomainObjParseFile(data->infile, driver.caps, driver.xmlopt,
+    if (!(obj = virDomainObjParseFile(data->infile, driver.xmlopt,
                                       VIR_DOMAIN_DEF_PARSE_STATUS |
                                       VIR_DOMAIN_DEF_PARSE_ACTUAL_NET |
                                       VIR_DOMAIN_DEF_PARSE_PCI_ORIG_STATES |

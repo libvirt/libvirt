@@ -239,7 +239,7 @@ qemuCheckpointDiscardAllMetadata(virQEMUDriverPtr driver,
 /* Called inside job lock */
 static int
 qemuCheckpointPrepare(virQEMUDriverPtr driver,
-                      virCapsPtr caps,
+                      virCapsPtr caps G_GNUC_UNUSED,
                       virDomainObjPtr vm,
                       virDomainCheckpointDefPtr def)
 {
@@ -253,7 +253,7 @@ qemuCheckpointPrepare(virQEMUDriverPtr driver,
     if (!(xml = qemuDomainDefFormatLive(driver, priv->qemuCaps,
                                         vm->def, priv->origCPU,
                                         true, true)) ||
-        !(def->parent.dom = virDomainDefParseString(xml, caps, driver->xmlopt,
+        !(def->parent.dom = virDomainDefParseString(xml, driver->xmlopt,
                                                     priv->qemuCaps,
                                                     VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                                     VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))

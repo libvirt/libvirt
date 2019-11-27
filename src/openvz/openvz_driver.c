@@ -858,7 +858,7 @@ openvzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
         parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
     openvzDriverLock(driver);
-    if ((vmdef = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
+    if ((vmdef = virDomainDefParseString(xml, driver->xmlopt,
                                          NULL, parse_flags)) == NULL)
         goto cleanup;
 
@@ -948,7 +948,7 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
         parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
     openvzDriverLock(driver);
-    if ((vmdef = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
+    if ((vmdef = virDomainDefParseString(xml, driver->xmlopt,
                                          NULL, parse_flags)) == NULL)
         goto cleanup;
 
@@ -1909,7 +1909,7 @@ openvzDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
     if (!(def = virDomainObjGetOneDef(vm, flags)))
         goto cleanup;
 
-    dev = virDomainDeviceDefParse(xml, def, driver->caps, driver->xmlopt, NULL,
+    dev = virDomainDeviceDefParse(xml, def, driver->xmlopt, NULL,
                                   VIR_DOMAIN_DEF_PARSE_INACTIVE);
     if (!dev)
         goto cleanup;
@@ -2113,7 +2113,7 @@ openvzDomainMigratePrepare3Params(virConnectPtr dconn,
         goto error;
     }
 
-    if (!(def = virDomainDefParseString(dom_xml, driver->caps, driver->xmlopt,
+    if (!(def = virDomainDefParseString(dom_xml, driver->xmlopt,
                                         NULL,
                                         VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                         VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))

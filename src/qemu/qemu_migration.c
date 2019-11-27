@@ -1974,7 +1974,6 @@ qemuMigrationSrcBeginPhase(virQEMUDriverPtr driver,
     qemuMigrationCookiePtr mig = NULL;
     virDomainDefPtr def = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virCapsPtr caps = NULL;
     unsigned int cookieFlags = QEMU_MIGRATION_COOKIE_LOCKSTATE;
 
     VIR_DEBUG("driver=%p, vm=%p, xmlin=%s, dname=%s,"
@@ -1983,9 +1982,6 @@ qemuMigrationSrcBeginPhase(virQEMUDriverPtr driver,
               driver, vm, NULLSTR(xmlin), NULLSTR(dname),
               cookieout, cookieoutlen, nmigrate_disks,
               migrate_disks, flags);
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
 
     /* Only set the phase if we are inside QEMU_ASYNC_JOB_MIGRATION_OUT.
      * Otherwise we will start the async job later in the perform phase losing
@@ -2103,7 +2099,7 @@ qemuMigrationSrcBeginPhase(virQEMUDriverPtr driver,
     }
 
     if (xmlin) {
-        if (!(def = virDomainDefParseString(xmlin, caps, driver->xmlopt, priv->qemuCaps,
+        if (!(def = virDomainDefParseString(xmlin, driver->xmlopt, priv->qemuCaps,
                                             VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                             VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
             goto cleanup;
@@ -2119,7 +2115,6 @@ qemuMigrationSrcBeginPhase(virQEMUDriverPtr driver,
 
  cleanup:
     qemuMigrationCookieFree(mig);
-    virObjectUnref(caps);
     virDomainDefFree(def);
     return rv;
 }
@@ -2318,7 +2313,6 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
     char *xmlout = NULL;
     unsigned int cookieFlags;
     unsigned int startFlags;
-    virCapsPtr caps = NULL;
     qemuProcessIncomingDefPtr incoming = NULL;
     bool taint_hook = false;
     bool stopProcess = false;
@@ -2369,9 +2363,6 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
-
     if (!qemuMigrationSrcIsAllowedHostdev(*def))
         goto cleanup;
 
@@ -2400,7 +2391,7 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
                 virDomainDefPtr newdef;
 
                 VIR_DEBUG("Using hook-filtered domain XML: %s", xmlout);
-                newdef = virDomainDefParseString(xmlout, caps, driver->xmlopt, NULL,
+                newdef = virDomainDefParseString(xmlout, driver->xmlopt, NULL,
                                                  VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                                  VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
                 if (!newdef)
@@ -2648,7 +2639,6 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
     virDomainObjEndAPI(&vm);
     virObjectEventStateQueue(driver->domainEventState, event);
     qemuMigrationCookieFree(mig);
-    virObjectUnref(caps);
     virNWFilterUnlockFilterUpdates();
     virErrorRestore(&origErr);
     return ret;
@@ -2886,7 +2876,6 @@ qemuMigrationAnyPrepareDef(virQEMUDriverPtr driver,
                            const char *dname,
                            char **origname)
 {
-    virCapsPtr caps = NULL;
     virDomainDefPtr def;
     char *name = NULL;
 
@@ -2896,10 +2885,7 @@ qemuMigrationAnyPrepareDef(virQEMUDriverPtr driver,
         return NULL;
     }
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        return NULL;
-
-    if (!(def = virDomainDefParseString(dom_xml, caps, driver->xmlopt,
+    if (!(def = virDomainDefParseString(dom_xml, driver->xmlopt,
                                         qemuCaps,
                                         VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                         VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
@@ -2911,7 +2897,6 @@ qemuMigrationAnyPrepareDef(virQEMUDriverPtr driver,
     }
 
  cleanup:
-    virObjectUnref(caps);
     if (def && origname)
         *origname = name;
     else

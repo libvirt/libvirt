@@ -175,7 +175,7 @@ testSELinuxLoadDef(const char *testname)
     xmlfile = g_strdup_printf("%s/securityselinuxlabeldata/%s.xml", abs_srcdir,
                               testname);
 
-    if (!(def = virDomainDefParseFile(xmlfile, driver.caps, driver.xmlopt,
+    if (!(def = virDomainDefParseFile(xmlfile, driver.xmlopt,
                                       NULL, 0)))
         goto cleanup;
 

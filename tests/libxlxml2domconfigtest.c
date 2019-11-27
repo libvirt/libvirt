@@ -76,7 +76,7 @@ testCompareXMLToDomConfig(const char *xmlfile,
     if (!(gports = virPortAllocatorRangeNew("vnc", 5900, 6000)))
         goto cleanup;
 
-    if (!(vmdef = virDomainDefParseFile(xmlfile, cfg->caps, driver->xmlopt,
+    if (!(vmdef = virDomainDefParseFile(xmlfile, driver->xmlopt,
                                         NULL, VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 

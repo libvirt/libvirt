@@ -421,7 +421,7 @@ vmwareDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
     ctx.datacenterPath = NULL;
 
     vmwareDriverLock(driver);
-    if ((vmdef = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
+    if ((vmdef = virDomainDefParseString(xml, driver->xmlopt,
                                          NULL, parse_flags)) == NULL)
         goto cleanup;
 
@@ -683,7 +683,7 @@ vmwareDomainCreateXML(virConnectPtr conn, const char *xml,
 
     vmwareDriverLock(driver);
 
-    if ((vmdef = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
+    if ((vmdef = virDomainDefParseString(xml, driver->xmlopt,
                                          NULL, parse_flags)) == NULL)
         goto cleanup;
 

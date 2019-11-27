@@ -2744,7 +2744,7 @@ esxConnectDomainXMLToNative(virConnectPtr conn, const char *nativeFormat,
     if (virtualHW_version < 0)
         return NULL;
 
-    def = virDomainDefParseString(domainXml, priv->caps, priv->xmlopt,
+    def = virDomainDefParseString(domainXml, priv->xmlopt,
                                   NULL, VIR_DOMAIN_DEF_PARSE_INACTIVE);
 
     if (!def)
@@ -2960,7 +2960,7 @@ esxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
         return NULL;
 
     /* Parse domain XML */
-    def = virDomainDefParseString(xml, priv->caps, priv->xmlopt,
+    def = virDomainDefParseString(xml, priv->xmlopt,
                                   NULL, parse_flags);
 
     if (!def)

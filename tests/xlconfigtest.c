@@ -83,11 +83,11 @@ testCompareParseXML(const char *xlcfg, const char *xml, bool replaceVars)
     if (replaceVars) {
         if (!(replacedXML = testReplaceVarsXML(xml)))
             goto fail;
-        if (!(def = virDomainDefParseString(replacedXML, cfg->caps, driver->xmlopt,
+        if (!(def = virDomainDefParseString(replacedXML, driver->xmlopt,
                                             NULL, VIR_DOMAIN_XML_INACTIVE)))
             goto fail;
     } else {
-        if (!(def = virDomainDefParseFile(xml, cfg->caps, driver->xmlopt,
+        if (!(def = virDomainDefParseFile(xml, driver->xmlopt,
                                           NULL, VIR_DOMAIN_XML_INACTIVE)))
             goto fail;
     }

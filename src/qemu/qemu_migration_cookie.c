@@ -1198,10 +1198,6 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
     xmlNodePtr *nodes = NULL;
     size_t i;
     int n;
-    virCapsPtr caps = NULL;
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto error;
 
     /* We don't store the uuid, name, hostname, or hostuuid
      * values. We just compare them to local data to do some
@@ -1330,7 +1326,7 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
             goto error;
         }
         mig->persistent = virDomainDefParseNode(doc, nodes[0],
-                                                caps, driver->xmlopt, qemuCaps,
+                                                driver->xmlopt, qemuCaps,
                                                 VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                                 VIR_DOMAIN_DEF_PARSE_ABI_UPDATE_MIGRATION |
                                                 VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
@@ -1369,13 +1365,11 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
         !(mig->caps = qemuMigrationCookieCapsXMLParse(ctxt)))
         goto error;
 
-    virObjectUnref(caps);
     return 0;
 
  error:
     VIR_FREE(tmp);
     VIR_FREE(nodes);
-    virObjectUnref(caps);
     return -1;
 }
 

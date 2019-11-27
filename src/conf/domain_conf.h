@@ -3035,7 +3035,6 @@ typedef enum {
 
 virDomainDeviceDefPtr virDomainDeviceDefParse(const char *xmlStr,
                                               const virDomainDef *def,
-                                              virCapsPtr caps,
                                               virDomainXMLOptionPtr xmlopt,
                                               void *parseOpaque,
                                               unsigned int flags);
@@ -3043,28 +3042,23 @@ virDomainDiskDefPtr virDomainDiskDefParse(const char *xmlStr,
                                           virDomainXMLOptionPtr xmlopt,
                                           unsigned int flags);
 virDomainDefPtr virDomainDefParseString(const char *xmlStr,
-                                        virCapsPtr caps,
                                         virDomainXMLOptionPtr xmlopt,
                                         void *parseOpaque,
                                         unsigned int flags);
 virDomainDefPtr virDomainDefParseFile(const char *filename,
-                                      virCapsPtr caps,
                                       virDomainXMLOptionPtr xmlopt,
                                       void *parseOpaque,
                                       unsigned int flags);
 virDomainDefPtr virDomainDefParseNode(xmlDocPtr doc,
                                       xmlNodePtr root,
-                                      virCapsPtr caps,
                                       virDomainXMLOptionPtr xmlopt,
                                       void *parseOpaque,
                                       unsigned int flags);
 virDomainObjPtr virDomainObjParseNode(xmlDocPtr xml,
                                       xmlNodePtr root,
-                                      virCapsPtr caps,
                                       virDomainXMLOptionPtr xmlopt,
                                       unsigned int flags);
 virDomainObjPtr virDomainObjParseFile(const char *filename,
-                                      virCapsPtr caps,
                                       virDomainXMLOptionPtr xmlopt,
                                       unsigned int flags);
 

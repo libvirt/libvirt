@@ -49,7 +49,7 @@ static int testGetFilesystem(const void *opaque)
     filename = g_strdup_printf("%s/domainconfdata/%s.xml", abs_srcdir,
                                data->filename);
 
-    if (!(def = virDomainDefParseFile(filename, caps, xmlopt, NULL, 0)))
+    if (!(def = virDomainDefParseFile(filename, xmlopt, NULL, 0)))
         goto cleanup;
 
     fsdef = virDomainGetFilesystemForTarget(def,

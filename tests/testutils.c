@@ -1107,7 +1107,8 @@ virDomainXMLOptionPtr virTestGenericDomainXMLConfInit(void)
 
 
 int
-testCompareDomXML2XMLFiles(virCapsPtr caps, virDomainXMLOptionPtr xmlopt,
+testCompareDomXML2XMLFiles(virCapsPtr caps G_GNUC_UNUSED,
+                           virDomainXMLOptionPtr xmlopt,
                            const char *infile, const char *outfile, bool live,
                            unsigned int parseFlags,
                            testCompareDomXML2XMLResult expectResult)
@@ -1129,7 +1130,7 @@ testCompareDomXML2XMLFiles(virCapsPtr caps, virDomainXMLOptionPtr xmlopt,
     if (!live)
         format_flags |= VIR_DOMAIN_DEF_FORMAT_INACTIVE;
 
-    if (!(def = virDomainDefParseFile(infile, caps, xmlopt, NULL, parse_flags))) {
+    if (!(def = virDomainDefParseFile(infile, xmlopt, NULL, parse_flags))) {
         result = TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE;
         goto out;
     }

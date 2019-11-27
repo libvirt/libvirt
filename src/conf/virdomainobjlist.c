@@ -483,7 +483,7 @@ virDomainObjListRename(virDomainObjListPtr doms,
 
 static virDomainObjPtr
 virDomainObjListLoadConfig(virDomainObjListPtr doms,
-                           virCapsPtr caps,
+                           virCapsPtr caps G_GNUC_UNUSED,
                            virDomainXMLOptionPtr xmlopt,
                            const char *configDir,
                            const char *autostartDir,
@@ -499,7 +499,7 @@ virDomainObjListLoadConfig(virDomainObjListPtr doms,
 
     if ((configFile = virDomainConfigFile(configDir, name)) == NULL)
         goto error;
-    if (!(def = virDomainDefParseFile(configFile, caps, xmlopt, NULL,
+    if (!(def = virDomainDefParseFile(configFile, xmlopt, NULL,
                                       VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                       VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE |
                                       VIR_DOMAIN_DEF_PARSE_ALLOW_POST_PARSE_FAIL)))
@@ -536,7 +536,7 @@ static virDomainObjPtr
 virDomainObjListLoadStatus(virDomainObjListPtr doms,
                            const char *statusDir,
                            const char *name,
-                           virCapsPtr caps,
+                           virCapsPtr caps G_GNUC_UNUSED,
                            virDomainXMLOptionPtr xmlopt,
                            virDomainLoadConfigNotify notify,
                            void *opaque)
@@ -548,7 +548,7 @@ virDomainObjListLoadStatus(virDomainObjListPtr doms,
     if ((statusFile = virDomainConfigFile(statusDir, name)) == NULL)
         goto error;
 
-    if (!(obj = virDomainObjParseFile(statusFile, caps, xmlopt,
+    if (!(obj = virDomainObjParseFile(statusFile, xmlopt,
                                       VIR_DOMAIN_DEF_PARSE_STATUS |
                                       VIR_DOMAIN_DEF_PARSE_ACTUAL_NET |
                                       VIR_DOMAIN_DEF_PARSE_PCI_ORIG_STATES |

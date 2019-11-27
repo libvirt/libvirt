@@ -74,7 +74,7 @@ testCompareFiles(const char *xml, const char *vmx, int virtualHW_version)
     char *formatted = NULL;
     virDomainDefPtr def = NULL;
 
-    def = virDomainDefParseFile(xml, caps, xmlopt, NULL,
+    def = virDomainDefParseFile(xml, xmlopt, NULL,
                                 VIR_DOMAIN_DEF_PARSE_INACTIVE);
 
     if (def == NULL)

@@ -222,7 +222,7 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
  */
 static virDomainSnapshotDefPtr
 virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
-                          virCapsPtr caps,
+                          virCapsPtr caps G_GNUC_UNUSED,
                           virDomainXMLOptionPtr xmlopt,
                           void *parseOpaque,
                           bool *current,
@@ -301,7 +301,7 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
                 goto cleanup;
             }
             def->parent.dom = virDomainDefParseNode(ctxt->node->doc, domainNode,
-                                                    caps, xmlopt, parseOpaque,
+                                                    xmlopt, parseOpaque,
                                                     domainflags);
             if (!def->parent.dom)
                 goto cleanup;
@@ -314,7 +314,7 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
          * parent.dom for config and live XML. */
         if ((inactiveDomNode = virXPathNode("./inactiveDomain", ctxt))) {
             def->parent.inactiveDom = virDomainDefParseNode(ctxt->node->doc, inactiveDomNode,
-                                                            caps, xmlopt, NULL, domainflags);
+                                                            xmlopt, NULL, domainflags);
             if (!def->parent.inactiveDom)
                 goto cleanup;
         }

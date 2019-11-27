@@ -121,7 +121,7 @@ virDomainCheckpointDiskDefParseXML(xmlNodePtr node,
  */
 static virDomainCheckpointDefPtr
 virDomainCheckpointDefParse(xmlXPathContextPtr ctxt,
-                            virCapsPtr caps,
+                            virCapsPtr caps G_GNUC_UNUSED,
                             virDomainXMLOptionPtr xmlopt,
                             void *parseOpaque,
                             unsigned int flags)
@@ -170,7 +170,7 @@ virDomainCheckpointDefParse(xmlXPathContextPtr ctxt,
                 return NULL;
             }
             def->parent.dom = virDomainDefParseNode(ctxt->node->doc, domainNode,
-                                                    caps, xmlopt, parseOpaque,
+                                                    xmlopt, parseOpaque,
                                                     domainflags);
             if (!def->parent.dom)
                 return NULL;

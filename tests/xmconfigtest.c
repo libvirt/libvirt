@@ -53,7 +53,7 @@ testCompareParseXML(const char *xmcfg, const char *xml)
     conn = virGetConnect();
     if (!conn) goto fail;
 
-    if (!(def = virDomainDefParseFile(xml, cfg->caps, driver->xmlopt, NULL,
+    if (!(def = virDomainDefParseFile(xml, driver->xmlopt, NULL,
                                       VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto fail;
 

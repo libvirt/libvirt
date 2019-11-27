@@ -792,7 +792,7 @@ vzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
     if (flags & VIR_DOMAIN_DEFINE_VALIDATE)
         parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
-    if ((def = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
+    if ((def = virDomainDefParseString(xml, driver->xmlopt,
                                        NULL, parse_flags)) == NULL)
         goto cleanup;
 
@@ -2992,7 +2992,7 @@ vzDomainMigratePrepare3Params(virConnectPtr conn,
                      | VZ_MIGRATION_COOKIE_DOMAIN_NAME) < 0)
         goto cleanup;
 
-    if (!(def = virDomainDefParseString(dom_xml, driver->caps, driver->xmlopt,
+    if (!(def = virDomainDefParseString(dom_xml, driver->xmlopt,
                                         NULL,
                                         VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;

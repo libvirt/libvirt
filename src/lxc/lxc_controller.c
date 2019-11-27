@@ -212,7 +212,7 @@ static virLXCControllerPtr virLXCControllerNew(const char *name)
         goto error;
 
     if ((ctrl->vm = virDomainObjParseFile(configFile,
-                                          driver->caps, driver->xmlopt,
+                                          driver->xmlopt,
                                           0)) == NULL)
         goto error;
     ctrl->def = ctrl->vm->def;
