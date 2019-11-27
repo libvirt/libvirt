@@ -18443,24 +18443,23 @@ qemuDomainBlockPull(virDomainPtr dom, const char *path, unsigned long bandwidth,
                     unsigned int flags)
 {
     virDomainObjPtr vm;
-    int ret = -1;
-
     virCheckFlags(VIR_DOMAIN_BLOCK_PULL_BANDWIDTH_BYTES, -1);
 
     if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
 
-    if (virDomainBlockPullEnsureACL(dom->conn, vm->def) < 0)
-        goto cleanup;
+    if (virDomainBlockPullEnsureACL(dom->conn, vm->def) < 0) {
+        virDomainObjEndAPI(&vm);
+        return -1;
+    }
 
-    if (qemuDomainSupportsCheckpointsBlockjobs(vm) < 0)
-        goto cleanup;
+    if (qemuDomainSupportsCheckpointsBlockjobs(vm) < 0) {
+        virDomainObjEndAPI(&vm);
+        return -1;
+    }
 
-    ret = qemuDomainBlockPullCommon(vm, path, NULL, bandwidth, flags);
-
- cleanup:
-    virDomainObjEndAPI(&vm);
-    return ret;
+    /* qemuDomainBlockPullCommon consumes the reference on @vm */
+    return qemuDomainBlockPullCommon(vm, path, NULL, bandwidth, flags);
 }
 
 
