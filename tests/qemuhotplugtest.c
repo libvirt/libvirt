@@ -200,7 +200,7 @@ testQemuHotplugCheckResult(virDomainObjPtr vm,
     char *actual;
     int ret;
 
-    actual = virDomainDefFormat(vm->def, driver.xmlopt, driver.caps,
+    actual = virDomainDefFormat(vm->def, driver.xmlopt,
                                 VIR_DOMAIN_DEF_FORMAT_SECURE);
     if (!actual)
         return -1;
@@ -466,7 +466,7 @@ testQemuHotplugCpuFinalize(struct testQemuHotplugCpuData *data)
     char *configXML = NULL;
 
     if (data->file_xml_res_live) {
-        if (!(activeXML = virDomainDefFormat(data->vm->def, driver.xmlopt, driver.caps,
+        if (!(activeXML = virDomainDefFormat(data->vm->def, driver.xmlopt,
                                              VIR_DOMAIN_DEF_FORMAT_SECURE)))
             goto cleanup;
 
@@ -475,7 +475,7 @@ testQemuHotplugCpuFinalize(struct testQemuHotplugCpuData *data)
     }
 
     if (data->file_xml_res_conf) {
-        if (!(configXML = virDomainDefFormat(data->vm->newDef, driver.xmlopt, driver.caps,
+        if (!(configXML = virDomainDefFormat(data->vm->newDef, driver.xmlopt,
                                              VIR_DOMAIN_DEF_FORMAT_SECURE |
                                              VIR_DOMAIN_DEF_FORMAT_INACTIVE)))
             goto cleanup;

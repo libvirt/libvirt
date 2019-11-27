@@ -77,7 +77,7 @@ testCompareXMLToArgvFiles(const char *xmlfile,
         goto fail;
     }
 
-    if (vmdef && !(actualxml = virDomainDefFormat(vmdef, driver.caps, 0)))
+    if (vmdef && !(actualxml = virDomainDefFormat(vmdef, driver.xmlopt, 0)))
         goto fail;
 
     if (vmdef && virTestCompareToFile(actualxml, xmlfile) < 0)

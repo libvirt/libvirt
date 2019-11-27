@@ -1140,7 +1140,7 @@ testCompareDomXML2XMLFiles(virCapsPtr caps, virDomainXMLOptionPtr xmlopt,
         goto out;
     }
 
-    if (!(actual = virDomainDefFormat(def, xmlopt, caps, format_flags))) {
+    if (!(actual = virDomainDefFormat(def, xmlopt, format_flags))) {
         result = TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_FORMAT;
         goto out;
     }

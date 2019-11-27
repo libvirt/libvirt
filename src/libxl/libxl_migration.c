@@ -420,7 +420,7 @@ libxlDomainMigrationSrcBegin(virConnectPtr conn,
     if (!libxlDomainMigrationIsAllowed(def))
         goto endjob;
 
-    xml = virDomainDefFormat(def, driver->xmlopt, cfg->caps, VIR_DOMAIN_DEF_FORMAT_SECURE);
+    xml = virDomainDefFormat(def, driver->xmlopt, VIR_DOMAIN_DEF_FORMAT_SECURE);
     /* Valid xml means success! EndJob in the confirm phase */
     if (xml)
         goto cleanup;
@@ -494,7 +494,7 @@ libxlDomainMigrationPrepareAny(virConnectPtr dconn,
         char *xml;
         int hookret;
 
-        if (!(xml = virDomainDefFormat(*def, driver->xmlopt, cfg->caps,
+        if (!(xml = virDomainDefFormat(*def, driver->xmlopt,
                                        VIR_DOMAIN_XML_SECURE |
                                        VIR_DOMAIN_XML_MIGRATABLE)))
             return -1;

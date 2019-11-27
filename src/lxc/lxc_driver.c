@@ -987,7 +987,7 @@ static char *lxcDomainGetXMLDesc(virDomainPtr dom,
 
     ret = virDomainDefFormat((flags & VIR_DOMAIN_XML_INACTIVE) &&
                              vm->newDef ? vm->newDef : vm->def,
-                             driver->xmlopt, driver->caps,
+                             driver->xmlopt,
                              virDomainDefFormatConvertXMLFlags(flags));
 
  cleanup:
@@ -1019,7 +1019,7 @@ static char *lxcConnectDomainXMLFromNative(virConnectPtr conn,
     if (!(def = lxcParseConfigString(nativeConfig, caps, driver->xmlopt)))
         goto cleanup;
 
-    xml = virDomainDefFormat(def, driver->xmlopt, caps, 0);
+    xml = virDomainDefFormat(def, driver->xmlopt, 0);
 
  cleanup:
     virObjectUnref(caps);

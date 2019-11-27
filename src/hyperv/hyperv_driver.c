@@ -887,7 +887,7 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     /* FIXME: devices section is totally missing */
 
     /* XXX xmlopts must be non-NULL */
-    xml = virDomainDefFormat(def, NULL, NULL,
+    xml = virDomainDefFormat(def, NULL,
                              virDomainDefFormatConvertXMLFlags(flags));
 
  cleanup:

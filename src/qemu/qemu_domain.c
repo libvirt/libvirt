@@ -9218,7 +9218,7 @@ qemuDomainDefFormatBufInternal(virQEMUDriverPtr driver,
     }
 
  format:
-    ret = virDomainDefFormatInternal(def, driver->xmlopt, caps, buf,
+    ret = virDomainDefFormatInternal(def, driver->xmlopt, buf,
                                      virDomainDefFormatConvertXMLFlags(flags));
 
  cleanup:

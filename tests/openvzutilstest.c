@@ -116,7 +116,7 @@ testReadNetworkConf(const void *data G_GNUC_UNUSED)
         goto cleanup;
     }
 
-    actual = virDomainDefFormat(def, driver.xmlopt, driver.caps, VIR_DOMAIN_DEF_FORMAT_INACTIVE);
+    actual = virDomainDefFormat(def, driver.xmlopt, VIR_DOMAIN_DEF_FORMAT_INACTIVE);
 
     if (actual == NULL) {
         fprintf(stderr, "ERROR: %s\n", virGetLastErrorMessage());

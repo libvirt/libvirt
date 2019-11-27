@@ -23607,8 +23607,8 @@ virDomainDefCheckABIStabilityFlags(virDomainDefPtr src,
  error:
     virErrorPreserveLast(&err);
 
-    strSrc = virDomainDefFormat(src, xmlopt, NULL, 0);
-    strDst = virDomainDefFormat(dst, xmlopt, NULL, 0);
+    strSrc = virDomainDefFormat(src, xmlopt, 0);
+    strDst = virDomainDefFormat(dst, xmlopt, 0);
     VIR_DEBUG("XMLs that failed stability check were: src=\"%s\", dst=\"%s\"",
               NULLSTR(strSrc), NULLSTR(strDst));
 
@@ -28295,11 +28295,10 @@ virDomainDefFormatFeatures(virBufferPtr buf,
 int
 virDomainDefFormatInternal(virDomainDefPtr def,
                            virDomainXMLOptionPtr xmlopt,
-                           virCapsPtr caps,
                            virBufferPtr buf,
                            unsigned int flags)
 {
-    return virDomainDefFormatInternalSetRootName(def, xmlopt, caps, buf,
+    return virDomainDefFormatInternalSetRootName(def, xmlopt, buf,
                                                  "domain", flags);
 }
 
@@ -28311,7 +28310,6 @@ virDomainDefFormatInternal(virDomainDefPtr def,
 int
 virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
                                       virDomainXMLOptionPtr xmlopt,
-                                      virCapsPtr caps G_GNUC_UNUSED,
                                       virBufferPtr buf,
                                       const char *rootname,
                                       unsigned int flags)
@@ -28850,13 +28848,12 @@ unsigned int virDomainDefFormatConvertXMLFlags(unsigned int flags)
 char *
 virDomainDefFormat(virDomainDefPtr def,
                    virDomainXMLOptionPtr xmlopt,
-                   virCapsPtr caps,
                    unsigned int flags)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
     virCheckFlags(VIR_DOMAIN_DEF_FORMAT_COMMON_FLAGS, NULL);
-    if (virDomainDefFormatInternal(def, xmlopt, caps, &buf, flags) < 0)
+    if (virDomainDefFormatInternal(def, xmlopt, &buf, flags) < 0)
         return NULL;
 
     return virBufferContentAndReset(&buf);
@@ -28866,7 +28863,6 @@ virDomainDefFormat(virDomainDefPtr def,
 char *
 virDomainObjFormat(virDomainObjPtr obj,
                    virDomainXMLOptionPtr xmlopt,
-                   virCapsPtr caps,
                    unsigned int flags)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
@@ -28891,7 +28887,7 @@ virDomainObjFormat(virDomainObjPtr obj,
         xmlopt->privateData.format(&buf, obj) < 0)
         goto error;
 
-    if (virDomainDefFormatInternal(obj->def, xmlopt, caps, &buf, flags) < 0)
+    if (virDomainDefFormatInternal(obj->def, xmlopt, &buf, flags) < 0)
         goto error;
 
     virBufferAdjustIndent(&buf, -2);
@@ -29052,12 +29048,12 @@ virDomainDefSaveXML(virDomainDefPtr def,
 int
 virDomainDefSave(virDomainDefPtr def,
                  virDomainXMLOptionPtr xmlopt,
-                 virCapsPtr caps,
+                 virCapsPtr caps G_GNUC_UNUSED,
                  const char *configDir)
 {
     g_autofree char *xml = NULL;
 
-    if (!(xml = virDomainDefFormat(def, xmlopt, caps, VIR_DOMAIN_DEF_FORMAT_SECURE)))
+    if (!(xml = virDomainDefFormat(def, xmlopt, VIR_DOMAIN_DEF_FORMAT_SECURE)))
         return -1;
 
     return virDomainDefSaveXML(def, configDir, xml);
@@ -29066,7 +29062,7 @@ virDomainDefSave(virDomainDefPtr def,
 int
 virDomainObjSave(virDomainObjPtr obj,
                  virDomainXMLOptionPtr xmlopt,
-                 virCapsPtr caps,
+                 virCapsPtr caps G_GNUC_UNUSED,
                  const char *statusDir)
 {
     unsigned int flags = (VIR_DOMAIN_DEF_FORMAT_SECURE |
@@ -29077,7 +29073,7 @@ virDomainObjSave(virDomainObjPtr obj,
 
     g_autofree char *xml = NULL;
 
-    if (!(xml = virDomainObjFormat(obj, xmlopt, caps, flags)))
+    if (!(xml = virDomainObjFormat(obj, xmlopt, flags)))
         return -1;
 
     return virDomainDefSaveXML(obj->def, statusDir, xml);
@@ -29367,7 +29363,7 @@ virDomainUSBDeviceDefForeach(virDomainDefPtr def,
  * snapshots).  */
 virDomainDefPtr
 virDomainDefCopy(virDomainDefPtr src,
-                 virCapsPtr caps,
+                 virCapsPtr caps G_GNUC_UNUSED,
                  virDomainXMLOptionPtr xmlopt,
                  void *parseOpaque,
                  bool migratable)
@@ -29381,7 +29377,7 @@ virDomainDefCopy(virDomainDefPtr src,
         format_flags |= VIR_DOMAIN_DEF_FORMAT_INACTIVE | VIR_DOMAIN_DEF_FORMAT_MIGRATABLE;
 
     /* Easiest to clone via a round-trip through XML.  */
-    if (!(xml = virDomainDefFormat(src, xmlopt, caps, format_flags)))
+    if (!(xml = virDomainDefFormat(src, xmlopt, format_flags)))
         return NULL;
 
     return virDomainDefParseString(xml, caps, xmlopt, parseOpaque, parse_flags);

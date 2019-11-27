@@ -101,7 +101,7 @@ testCompareFormatXML(const char *xmcfg, const char *xml)
     if (!(def = xenParseXM(conf, cfg->caps, driver->xmlopt)))
         goto fail;
 
-    if (!(gotxml = virDomainDefFormat(def, driver->xmlopt, cfg->caps, VIR_DOMAIN_DEF_FORMAT_SECURE)))
+    if (!(gotxml = virDomainDefFormat(def, driver->xmlopt, VIR_DOMAIN_DEF_FORMAT_SECURE)))
         goto fail;
 
     if (virTestCompareToFile(gotxml, xml) < 0)

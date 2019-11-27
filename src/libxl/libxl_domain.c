@@ -851,7 +851,7 @@ libxlDomainCleanup(libxlDriverPrivatePtr driver,
 
     /* now that we know it's stopped call the hook if present */
     if (virHookPresent(VIR_HOOK_DRIVER_LIBXL)) {
-        char *xml = virDomainDefFormat(vm->def, driver->xmlopt, cfg->caps, 0);
+        char *xml = virDomainDefFormat(vm->def, driver->xmlopt, 0);
 
         /* we can't stop the operation even if the script raised an error */
         ignore_value(virHookCall(VIR_HOOK_DRIVER_LIBXL, vm->def->name,
@@ -920,7 +920,7 @@ libxlDomainCleanup(libxlDriverPrivatePtr driver,
 
     /* The "release" hook cleans up additional resources */
     if (virHookPresent(VIR_HOOK_DRIVER_LIBXL)) {
-        char *xml = virDomainDefFormat(vm->def, driver->xmlopt, cfg->caps, 0);
+        char *xml = virDomainDefFormat(vm->def, driver->xmlopt, 0);
 
         /* we can't stop the operation even if the script raised an error */
         ignore_value(virHookCall(VIR_HOOK_DRIVER_LIBXL, vm->def->name,
@@ -1327,7 +1327,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver,
 
     /* Run an early hook to set-up missing devices */
     if (virHookPresent(VIR_HOOK_DRIVER_LIBXL)) {
-        char *xml = virDomainDefFormat(vm->def, driver->xmlopt, cfg->caps, 0);
+        char *xml = virDomainDefFormat(vm->def, driver->xmlopt, 0);
         int hookret;
 
         hookret = virHookCall(VIR_HOOK_DRIVER_LIBXL, vm->def->name,
@@ -1365,7 +1365,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver,
 
     /* now that we know it is about to start call the hook if present */
     if (virHookPresent(VIR_HOOK_DRIVER_LIBXL)) {
-        char *xml = virDomainDefFormat(vm->def, driver->xmlopt, cfg->caps, 0);
+        char *xml = virDomainDefFormat(vm->def, driver->xmlopt, 0);
         int hookret;
 
         hookret = virHookCall(VIR_HOOK_DRIVER_LIBXL, vm->def->name,
@@ -1450,7 +1450,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver,
         libxlDomainCreateChannelPTY(vm->def, cfg->ctx);
 #endif
 
-    if ((dom_xml = virDomainDefFormat(vm->def, driver->xmlopt, cfg->caps, 0)) == NULL)
+    if ((dom_xml = virDomainDefFormat(vm->def, driver->xmlopt, 0)) == NULL)
         goto destroy_dom;
 
     if (libxl_userdata_store(cfg->ctx, domid, "libvirt-xml",
@@ -1478,7 +1478,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver,
 
     /* finally we can call the 'started' hook script if any */
     if (virHookPresent(VIR_HOOK_DRIVER_LIBXL)) {
-        char *xml = virDomainDefFormat(vm->def, driver->xmlopt, cfg->caps, 0);
+        char *xml = virDomainDefFormat(vm->def, driver->xmlopt, 0);
         int hookret;
 
         hookret = virHookCall(VIR_HOOK_DRIVER_LIBXL, vm->def->name,

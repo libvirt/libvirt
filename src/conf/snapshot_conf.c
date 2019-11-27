@@ -838,7 +838,7 @@ static int
 virDomainSnapshotDefFormatInternal(virBufferPtr buf,
                                    const char *uuidstr,
                                    virDomainSnapshotDefPtr def,
-                                   virCapsPtr caps,
+                                   virCapsPtr caps G_GNUC_UNUSED,
                                    virDomainXMLOptionPtr xmlopt,
                                    unsigned int flags)
 {
@@ -892,7 +892,7 @@ virDomainSnapshotDefFormatInternal(virBufferPtr buf,
 
     if (def->parent.dom) {
         if (virDomainDefFormatInternal(def->parent.dom, xmlopt,
-                                       caps, buf, domainflags) < 0)
+                                       buf, domainflags) < 0)
             goto error;
     } else if (uuidstr) {
         virBufferAddLit(buf, "<domain>\n");
@@ -904,7 +904,7 @@ virDomainSnapshotDefFormatInternal(virBufferPtr buf,
 
     if (def->parent.inactiveDom) {
         if (virDomainDefFormatInternalSetRootName(def->parent.inactiveDom, xmlopt,
-                                                  caps, buf, "inactiveDomain",
+                                                  buf, "inactiveDomain",
                                                   domainflags) < 0)
             goto error;
     }

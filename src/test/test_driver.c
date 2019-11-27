@@ -2178,7 +2178,7 @@ testDomainSaveImageWrite(testDriverPtr driver,
     int fd = -1;
     g_autofree char *xml = NULL;
 
-    xml = virDomainDefFormat(def, driver->xmlopt, driver->caps,
+    xml = virDomainDefFormat(def, driver->xmlopt,
                              VIR_DOMAIN_DEF_FORMAT_SECURE);
 
     if (xml == NULL) {
@@ -2468,7 +2468,7 @@ testDomainSaveImageGetXMLDesc(virConnectPtr conn,
     if ((fd = testDomainSaveImageOpen(privconn, path, &def)) < 0)
         goto cleanup;
 
-    ret = virDomainDefFormat(def, privconn->xmlopt, privconn->caps,
+    ret = virDomainDefFormat(def, privconn->xmlopt,
                              VIR_DOMAIN_DEF_FORMAT_SECURE);
 
  cleanup:
@@ -3180,7 +3180,7 @@ static char *testDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     def = (flags & VIR_DOMAIN_XML_INACTIVE) &&
         privdom->newDef ? privdom->newDef : privdom->def;
 
-    ret = virDomainDefFormat(def, privconn->xmlopt, privconn->caps,
+    ret = virDomainDefFormat(def, privconn->xmlopt,
                              virDomainDefFormatConvertXMLFlags(flags));
 
     virDomainObjEndAPI(&privdom);

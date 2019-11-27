@@ -41,7 +41,7 @@ testCompareXMLToConfigFiles(const char *xmlfile,
         if (testSanitizeDef(vmdef) < 0)
             goto fail;
 
-        if (!(actualxml = virDomainDefFormat(vmdef, driver->xmlopt, driver->caps, 0)))
+        if (!(actualxml = virDomainDefFormat(vmdef, driver->xmlopt, 0)))
             goto fail;
 
         if (virTestCompareToFile(actualxml, xmlfile) < 0)

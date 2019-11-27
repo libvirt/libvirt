@@ -473,7 +473,7 @@ static char *openvzDomainGetXMLDesc(virDomainPtr dom, unsigned int flags) {
     if (!(vm = openvzDomObjFromDomain(driver, dom->uuid)))
         return NULL;
 
-    ret = virDomainDefFormat(vm->def, driver->xmlopt, driver->caps,
+    ret = virDomainDefFormat(vm->def, driver->xmlopt,
                              virDomainDefFormatConvertXMLFlags(flags));
 
     virDomainObjEndAPI(&vm);
@@ -2067,7 +2067,7 @@ openvzDomainMigrateBegin3Params(virDomainPtr domain,
         goto cleanup;
     }
 
-    xml = virDomainDefFormat(vm->def, driver->xmlopt, driver->caps,
+    xml = virDomainDefFormat(vm->def, driver->xmlopt,
                              VIR_DOMAIN_DEF_FORMAT_SECURE);
 
  cleanup:

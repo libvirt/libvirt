@@ -446,7 +446,7 @@ virDomainCheckpointDiskDefFormat(virBufferPtr buf,
 static int
 virDomainCheckpointDefFormatInternal(virBufferPtr buf,
                                      virDomainCheckpointDefPtr def,
-                                     virCapsPtr caps,
+                                     virCapsPtr caps G_GNUC_UNUSED,
                                      virDomainXMLOptionPtr xmlopt,
                                      unsigned int flags)
 {
@@ -490,7 +490,7 @@ virDomainCheckpointDefFormatInternal(virBufferPtr buf,
 
     if (!(flags & VIR_DOMAIN_CHECKPOINT_FORMAT_NO_DOMAIN) &&
         virDomainDefFormatInternal(def->parent.dom, xmlopt,
-                                   caps, buf, domainflags) < 0)
+                                   buf, domainflags) < 0)
         goto error;
 
     virBufferAdjustIndent(buf, -2);

@@ -459,7 +459,7 @@ libxlReconnectDomain(virDomainObjPtr vm,
     /* now that we know it's reconnected call the hook if present */
     if (virHookPresent(VIR_HOOK_DRIVER_LIBXL) &&
         STRNEQ("Domain-0", vm->def->name)) {
-        char *xml = virDomainDefFormat(vm->def, driver->xmlopt, cfg->caps, 0);
+        char *xml = virDomainDefFormat(vm->def, driver->xmlopt, 0);
         int hookret;
 
         /* we can't stop the operation even if the script raised an error */
@@ -1828,7 +1828,7 @@ libxlDoDomainSave(libxlDriverPrivatePtr driver,
         goto cleanup;
     }
 
-    if ((xml = virDomainDefFormat(vm->def, driver->xmlopt, cfg->caps, 0)) == NULL)
+    if ((xml = virDomainDefFormat(vm->def, driver->xmlopt, 0)) == NULL)
         goto cleanup;
     xml_len = strlen(xml) + 1;
 
@@ -2652,7 +2652,7 @@ libxlDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     else
         def = vm->def;
 
-    ret = virDomainDefFormat(def, driver->xmlopt, cfg->caps,
+    ret = virDomainDefFormat(def, driver->xmlopt,
                              virDomainDefFormatConvertXMLFlags(flags));
 
  cleanup:
@@ -2703,7 +2703,7 @@ libxlConnectDomainXMLFromNative(virConnectPtr conn,
         goto cleanup;
     }
 
-    xml = virDomainDefFormat(def, driver->xmlopt, cfg->caps, VIR_DOMAIN_DEF_FORMAT_INACTIVE);
+    xml = virDomainDefFormat(def, driver->xmlopt, VIR_DOMAIN_DEF_FORMAT_INACTIVE);
 
  cleanup:
     virDomainDefFree(def);

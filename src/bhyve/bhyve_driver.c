@@ -480,7 +480,6 @@ bhyveDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 {
     bhyveConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr vm;
-    virCapsPtr caps = NULL;
     char *ret = NULL;
 
     virCheckFlags(VIR_DOMAIN_XML_COMMON_FLAGS, NULL);
@@ -491,14 +490,9 @@ bhyveDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     if (virDomainGetXMLDescEnsureACL(domain->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    caps = bhyveDriverGetCapabilities(privconn);
-    if (!caps)
-        goto cleanup;
-
-    ret = virDomainDefFormat(vm->def, privconn->xmlopt, caps,
+    ret = virDomainDefFormat(vm->def, privconn->xmlopt,
                              virDomainDefFormatConvertXMLFlags(flags));
 
-    virObjectUnref(caps);
  cleanup:
     virDomainObjEndAPI(&vm);
     return ret;
@@ -1561,16 +1555,11 @@ bhyveConnectDomainXMLFromNative(virConnectPtr conn,
     char *xml = NULL;
     virDomainDefPtr def = NULL;
     bhyveConnPtr privconn = conn->privateData;
-    virCapsPtr capabilities = NULL;
     unsigned caps = bhyveDriverGetCaps(conn);
 
     virCheckFlags(0, NULL);
 
     if (virConnectDomainXMLFromNativeEnsureACL(conn) < 0)
-        return NULL;
-
-    capabilities = bhyveDriverGetCapabilities(privconn);
-    if (!capabilities)
         return NULL;
 
     if (STRNEQ(nativeFormat, BHYVE_CONFIG_FORMAT_ARGV)) {
@@ -1583,10 +1572,9 @@ bhyveConnectDomainXMLFromNative(virConnectPtr conn,
     if (def == NULL)
         goto cleanup;
 
-    xml = virDomainDefFormat(def, privconn->xmlopt, capabilities, 0);
+    xml = virDomainDefFormat(def, privconn->xmlopt, 0);
 
  cleanup:
-    virObjectUnref(capabilities);
     virDomainDefFree(def);
     return xml;
 }

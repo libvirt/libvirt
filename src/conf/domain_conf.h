@@ -3101,26 +3101,22 @@ unsigned int virDomainDefFormatConvertXMLFlags(unsigned int flags);
 
 char *virDomainDefFormat(virDomainDefPtr def,
                          virDomainXMLOptionPtr xmlopt,
-                         virCapsPtr caps,
                          unsigned int flags)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
     ATTRIBUTE_NONNULL(3);
 char *virDomainObjFormat(virDomainObjPtr obj,
                          virDomainXMLOptionPtr xmlopt,
-                         virCapsPtr caps,
                          unsigned int flags)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
     ATTRIBUTE_NONNULL(3);
 int virDomainDefFormatInternal(virDomainDefPtr def,
                                virDomainXMLOptionPtr xmlopt,
-                               virCapsPtr caps,
                                virBufferPtr buf,
                                unsigned int flags)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
     ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
 int virDomainDefFormatInternalSetRootName(virDomainDefPtr def,
                                           virDomainXMLOptionPtr xmlopt,
-                                          virCapsPtr caps,
                                           virBufferPtr buf,
                                           const char *rootname,
                                           unsigned int flags)
