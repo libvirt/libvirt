@@ -74,7 +74,6 @@ virDomainCheckpointFormatConvertXMLFlags(unsigned int flags);
 
 virDomainCheckpointDefPtr
 virDomainCheckpointDefParseString(const char *xmlStr,
-                                  virCapsPtr caps,
                                   virDomainXMLOptionPtr xmlopt,
                                   void *parseOpaque,
                                   unsigned int flags);
@@ -84,7 +83,6 @@ virDomainCheckpointDefNew(void);
 
 char *
 virDomainCheckpointDefFormat(virDomainCheckpointDefPtr def,
-                             virCapsPtr caps,
                              virDomainXMLOptionPtr xmlopt,
                              unsigned int flags);
 

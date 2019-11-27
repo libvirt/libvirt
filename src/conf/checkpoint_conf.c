@@ -115,13 +115,10 @@ virDomainCheckpointDiskDefParseXML(xmlNodePtr node,
     return 0;
 }
 
-/* flags is bitwise-or of virDomainCheckpointParseFlags.  If flags
- * does not include VIR_DOMAIN_CHECKPOINT_PARSE_REDEFINE, then caps
- * is ignored.
+/* flags is bitwise-or of virDomainCheckpointParseFlags.
  */
 static virDomainCheckpointDefPtr
 virDomainCheckpointDefParse(xmlXPathContextPtr ctxt,
-                            virCapsPtr caps G_GNUC_UNUSED,
                             virDomainXMLOptionPtr xmlopt,
                             void *parseOpaque,
                             unsigned int flags)
@@ -201,7 +198,6 @@ virDomainCheckpointDefParse(xmlXPathContextPtr ctxt,
 static virDomainCheckpointDefPtr
 virDomainCheckpointDefParseNode(xmlDocPtr xml,
                                 xmlNodePtr root,
-                                virCapsPtr caps,
                                 virDomainXMLOptionPtr xmlopt,
                                 void *parseOpaque,
                                 unsigned int flags)
@@ -227,12 +223,11 @@ virDomainCheckpointDefParseNode(xmlDocPtr xml,
         return NULL;
 
     ctxt->node = root;
-    return virDomainCheckpointDefParse(ctxt, caps, xmlopt, parseOpaque, flags);
+    return virDomainCheckpointDefParse(ctxt, xmlopt, parseOpaque, flags);
 }
 
 virDomainCheckpointDefPtr
 virDomainCheckpointDefParseString(const char *xmlStr,
-                                  virCapsPtr caps,
                                   virDomainXMLOptionPtr xmlopt,
                                   void *parseOpaque,
                                   unsigned int flags)
@@ -244,7 +239,7 @@ virDomainCheckpointDefParseString(const char *xmlStr,
     if ((xml = virXMLParse(NULL, xmlStr, _("(domain_checkpoint)")))) {
         xmlKeepBlanksDefault(keepBlanksDefault);
         ret = virDomainCheckpointDefParseNode(xml, xmlDocGetRootElement(xml),
-                                              caps, xmlopt, parseOpaque, flags);
+                                              xmlopt, parseOpaque, flags);
         xmlFreeDoc(xml);
     }
     xmlKeepBlanksDefault(keepBlanksDefault);
@@ -446,7 +441,6 @@ virDomainCheckpointDiskDefFormat(virBufferPtr buf,
 static int
 virDomainCheckpointDefFormatInternal(virBufferPtr buf,
                                      virDomainCheckpointDefPtr def,
-                                     virCapsPtr caps G_GNUC_UNUSED,
                                      virDomainXMLOptionPtr xmlopt,
                                      unsigned int flags)
 {
@@ -505,7 +499,6 @@ virDomainCheckpointDefFormatInternal(virBufferPtr buf,
 
 char *
 virDomainCheckpointDefFormat(virDomainCheckpointDefPtr def,
-                             virCapsPtr caps,
                              virDomainXMLOptionPtr xmlopt,
                              unsigned int flags)
 {
@@ -514,7 +507,7 @@ virDomainCheckpointDefFormat(virDomainCheckpointDefPtr def,
     virCheckFlags(VIR_DOMAIN_CHECKPOINT_FORMAT_SECURE |
                   VIR_DOMAIN_CHECKPOINT_FORMAT_NO_DOMAIN |
                   VIR_DOMAIN_CHECKPOINT_FORMAT_SIZE, NULL);
-    if (virDomainCheckpointDefFormatInternal(&buf, def, caps, xmlopt,
+    if (virDomainCheckpointDefFormatInternal(&buf, def, xmlopt,
                                              flags) < 0)
         return NULL;
 

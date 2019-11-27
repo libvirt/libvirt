@@ -216,13 +216,11 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
 }
 
 /* flags is bitwise-or of virDomainSnapshotParseFlags.
- * If flags does not include VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE, then
- * caps are ignored. If flags does not include
+ * If flags does not include
  * VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL, then current is ignored.
  */
 static virDomainSnapshotDefPtr
 virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
-                          virCapsPtr caps G_GNUC_UNUSED,
                           virDomainXMLOptionPtr xmlopt,
                           void *parseOpaque,
                           bool *current,
@@ -420,7 +418,6 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
 virDomainSnapshotDefPtr
 virDomainSnapshotDefParseNode(xmlDocPtr xml,
                               xmlNodePtr root,
-                              virCapsPtr caps,
                               virDomainXMLOptionPtr xmlopt,
                               void *parseOpaque,
                               bool *current,
@@ -449,12 +446,11 @@ virDomainSnapshotDefParseNode(xmlDocPtr xml,
         return NULL;
 
     ctxt->node = root;
-    return virDomainSnapshotDefParse(ctxt, caps, xmlopt, parseOpaque, current, flags);
+    return virDomainSnapshotDefParse(ctxt, xmlopt, parseOpaque, current, flags);
 }
 
 virDomainSnapshotDefPtr
 virDomainSnapshotDefParseString(const char *xmlStr,
-                                virCapsPtr caps,
                                 virDomainXMLOptionPtr xmlopt,
                                 void *parseOpaque,
                                 bool *current,
@@ -467,7 +463,7 @@ virDomainSnapshotDefParseString(const char *xmlStr,
     if ((xml = virXMLParse(NULL, xmlStr, _("(domain_snapshot)")))) {
         xmlKeepBlanksDefault(keepBlanksDefault);
         ret = virDomainSnapshotDefParseNode(xml, xmlDocGetRootElement(xml),
-                                            caps, xmlopt, parseOpaque,
+                                            xmlopt, parseOpaque,
                                             current, flags);
         xmlFreeDoc(xml);
     }
@@ -838,7 +834,6 @@ static int
 virDomainSnapshotDefFormatInternal(virBufferPtr buf,
                                    const char *uuidstr,
                                    virDomainSnapshotDefPtr def,
-                                   virCapsPtr caps G_GNUC_UNUSED,
                                    virDomainXMLOptionPtr xmlopt,
                                    unsigned int flags)
 {
@@ -931,7 +926,6 @@ virDomainSnapshotDefFormatInternal(virBufferPtr buf,
 char *
 virDomainSnapshotDefFormat(const char *uuidstr,
                            virDomainSnapshotDefPtr def,
-                           virCapsPtr caps,
                            virDomainXMLOptionPtr xmlopt,
                            unsigned int flags)
 {
@@ -940,7 +934,7 @@ virDomainSnapshotDefFormat(const char *uuidstr,
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_FORMAT_SECURE |
                   VIR_DOMAIN_SNAPSHOT_FORMAT_INTERNAL |
                   VIR_DOMAIN_SNAPSHOT_FORMAT_CURRENT, NULL);
-    if (virDomainSnapshotDefFormatInternal(&buf, uuidstr, def, caps,
+    if (virDomainSnapshotDefFormatInternal(&buf, uuidstr, def,
                                            xmlopt, flags) < 0)
         return NULL;
 

@@ -5301,7 +5301,6 @@ vboxSnapshotRedefine(virDomainPtr dom,
         currentSnapshotXmlFilePath = g_strdup_printf("%s%s.xml",
                                                      machineLocationPath, snapshotMachineDesc->currentSnapshot);
         char *snapshotContent = virDomainSnapshotDefFormat(NULL, def,
-                                                           data->caps,
                                                            data->xmlopt,
                                                            VIR_DOMAIN_SNAPSHOT_FORMAT_SECURE);
         if (snapshotContent == NULL) {
@@ -5431,7 +5430,7 @@ vboxDomainSnapshotCreateXML(virDomainPtr dom,
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_VALIDATE)
         parse_flags |= VIR_DOMAIN_SNAPSHOT_PARSE_VALIDATE;
 
-    if (!(def = virDomainSnapshotDefParseString(xmlDesc, data->caps,
+    if (!(def = virDomainSnapshotDefParseString(xmlDesc,
                                                 data->xmlopt, NULL, NULL,
                                                 parse_flags)))
         goto cleanup;
@@ -6244,7 +6243,7 @@ static char *vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
 
     virUUIDFormat(dom->uuid, uuidstr);
     memcpy(defdom->uuid, dom->uuid, VIR_UUID_BUFLEN);
-    ret = virDomainSnapshotDefFormat(uuidstr, def, data->caps, data->xmlopt, 0);
+    ret = virDomainSnapshotDefFormat(uuidstr, def, data->xmlopt, 0);
 
  cleanup:
     VBOX_RELEASE(parent);
@@ -6858,7 +6857,6 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
         goto cleanup;
     }
     def = virDomainSnapshotDefParseString(defXml,
-                                          data->caps,
                                           data->xmlopt, NULL, NULL,
                                           VIR_DOMAIN_SNAPSHOT_PARSE_DISKS |
                                           VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE);

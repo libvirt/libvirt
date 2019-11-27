@@ -54,7 +54,7 @@ testCompareXMLToXMLFiles(const char *inxml,
     if (virTestLoadFile(outxml, &outXmlData) < 0)
         goto cleanup;
 
-    if (!(def = virDomainSnapshotDefParseString(inXmlData, driver.caps,
+    if (!(def = virDomainSnapshotDefParseString(inXmlData,
                                                 driver.xmlopt, NULL, &cur,
                                                 parseflags)))
         goto cleanup;
@@ -69,7 +69,7 @@ testCompareXMLToXMLFiles(const char *inxml,
         def->state = VIR_DOMAIN_RUNNING;
     }
 
-    if (!(actual = virDomainSnapshotDefFormat(uuid, def, driver.caps,
+    if (!(actual = virDomainSnapshotDefFormat(uuid, def,
                                               driver.xmlopt,
                                               formatflags)))
         goto cleanup;

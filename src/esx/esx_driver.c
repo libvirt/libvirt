@@ -4075,7 +4075,7 @@ esxDomainSnapshotCreateXML(virDomainPtr domain, const char *xmlDesc,
     if (esxVI_EnsureSession(priv->primary) < 0)
         return NULL;
 
-    def = virDomainSnapshotDefParseString(xmlDesc, priv->caps,
+    def = virDomainSnapshotDefParseString(xmlDesc,
                                           priv->xmlopt, NULL, NULL, parse_flags);
 
     if (!def)
@@ -4176,7 +4176,7 @@ esxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
 
     virUUIDFormat(snapshot->domain->uuid, uuid_string);
 
-    xml = virDomainSnapshotDefFormat(uuid_string, &def, priv->caps, priv->xmlopt,
+    xml = virDomainSnapshotDefFormat(uuid_string, &def, priv->xmlopt,
                                      0);
 
  cleanup:

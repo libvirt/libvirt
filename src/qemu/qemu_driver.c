@@ -393,7 +393,6 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
                           VIR_DOMAIN_SNAPSHOT_PARSE_DISKS |
                           VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL);
     int ret = -1;
-    g_autoptr(virCaps) caps = NULL;
     int direrr;
     qemuDomainObjPrivatePtr priv;
 
@@ -408,9 +407,6 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
                        vm->def->name);
         goto cleanup;
     }
-
-    if (!(caps = virQEMUDriverGetCapabilities(qemu_driver, false)))
-        goto cleanup;
 
     VIR_INFO("Scanning for snapshots for domain %s in %s", vm->def->name,
              snapDir);
@@ -440,7 +436,7 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
             continue;
         }
 
-        def = virDomainSnapshotDefParseString(xmlStr, caps,
+        def = virDomainSnapshotDefParseString(xmlStr,
                                               qemu_driver->xmlopt,
                                               priv->qemuCaps, &cur,
                                               flags);
@@ -506,7 +502,6 @@ qemuDomainCheckpointLoad(virDomainObjPtr vm,
     virDomainMomentObjPtr current = NULL;
     unsigned int flags = VIR_DOMAIN_CHECKPOINT_PARSE_REDEFINE;
     int ret = -1;
-    g_autoptr(virCaps) caps = NULL;
     int direrr;
     qemuDomainObjPrivatePtr priv;
 
@@ -520,9 +515,6 @@ qemuDomainCheckpointLoad(virDomainObjPtr vm,
                        vm->def->name);
         goto cleanup;
     }
-
-    if (!(caps = virQEMUDriverGetCapabilities(qemu_driver, false)))
-        goto cleanup;
 
     VIR_INFO("Scanning for checkpoints for domain %s in %s", vm->def->name,
              chkDir);
@@ -552,7 +544,7 @@ qemuDomainCheckpointLoad(virDomainObjPtr vm,
             continue;
         }
 
-        def = virDomainCheckpointDefParseString(xmlStr, caps,
+        def = virDomainCheckpointDefParseString(xmlStr,
                                                 qemu_driver->xmlopt,
                                                 priv->qemuCaps,
                                                 flags);
@@ -15793,7 +15785,6 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     int align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL;
     bool align_match = true;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
-    g_autoptr(virCaps) caps = NULL;
     qemuDomainObjPrivatePtr priv;
     virDomainSnapshotState state;
     g_autoptr(virDomainSnapshotDef) def = NULL;
@@ -15834,9 +15825,6 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     if (qemuDomainSupportsCheckpointsBlockjobs(vm) < 0)
         goto cleanup;
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
-
     if (!vm->persistent && (flags & VIR_DOMAIN_SNAPSHOT_CREATE_HALT)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("cannot halt after transient domain snapshot"));
@@ -15849,7 +15837,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_VALIDATE)
         parse_flags |= VIR_DOMAIN_SNAPSHOT_PARSE_VALIDATE;
 
-    if (!(def = virDomainSnapshotDefParseString(xmlDesc, caps, driver->xmlopt,
+    if (!(def = virDomainSnapshotDefParseString(xmlDesc, driver->xmlopt,
                                                 priv->qemuCaps, NULL, parse_flags)))
         goto cleanup;
 
@@ -16378,7 +16366,7 @@ qemuDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
     virUUIDFormat(snapshot->domain->uuid, uuidstr);
 
     xml = virDomainSnapshotDefFormat(uuidstr, virDomainSnapshotObjGetDef(snap),
-                                     driver->caps, driver->xmlopt,
+                                     driver->xmlopt,
                                      virDomainSnapshotFormatConvertXMLFlags(flags));
 
  cleanup:

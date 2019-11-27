@@ -53,7 +53,7 @@ testCompareXMLToXMLFiles(const char *inxml,
         virTestLoadFile(outxml, &outXmlData) < 0)
         return -1;
 
-    if (!(def = virDomainCheckpointDefParseString(inXmlData, driver.caps,
+    if (!(def = virDomainCheckpointDefParseString(inXmlData,
                                                   driver.xmlopt, NULL,
                                                   parseflags))) {
         if (flags & TEST_INVALID)
@@ -91,7 +91,7 @@ testCompareXMLToXMLFiles(const char *inxml,
     if (!def->parent.dom)
         formatflags |= VIR_DOMAIN_CHECKPOINT_FORMAT_NO_DOMAIN;
 
-    if (!(actual = virDomainCheckpointDefFormat(def, driver.caps,
+    if (!(actual = virDomainCheckpointDefFormat(def,
                                                 driver.xmlopt,
                                                 formatflags)))
         return -1;

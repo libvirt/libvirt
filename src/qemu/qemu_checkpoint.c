@@ -78,7 +78,7 @@ qemuCheckpointObjFromCheckpoint(virDomainObjPtr vm,
 static int
 qemuCheckpointWriteMetadata(virDomainObjPtr vm,
                             virDomainMomentObjPtr checkpoint,
-                            virCapsPtr caps,
+                            virCapsPtr caps G_GNUC_UNUSED,
                             virDomainXMLOptionPtr xmlopt,
                             const char *checkpointDir)
 {
@@ -88,7 +88,7 @@ qemuCheckpointWriteMetadata(virDomainObjPtr vm,
     g_autofree char *chkDir = NULL;
     g_autofree char *chkFile = NULL;
 
-    newxml = virDomainCheckpointDefFormat(def, caps, xmlopt, flags);
+    newxml = virDomainCheckpointDefFormat(def, xmlopt, flags);
     if (newxml == NULL)
         return -1;
 
@@ -494,7 +494,7 @@ qemuCheckpointCreateXML(virDomainPtr domain,
         return NULL;
     }
 
-    if (!(def = virDomainCheckpointDefParseString(xmlDesc, caps, driver->xmlopt,
+    if (!(def = virDomainCheckpointDefParseString(xmlDesc, driver->xmlopt,
                                                   priv->qemuCaps, parse_flags)))
         return NULL;
     /* Unlike snapshots, the RNG schema already ensured a sane filename. */
@@ -548,7 +548,7 @@ qemuCheckpointGetXMLDesc(virDomainObjPtr vm,
     chkdef = virDomainCheckpointObjGetDef(chk);
 
     format_flags = virDomainCheckpointFormatConvertXMLFlags(flags);
-    return virDomainCheckpointDefFormat(chkdef, driver->caps, driver->xmlopt,
+    return virDomainCheckpointDefFormat(chkdef, driver->xmlopt,
                                         format_flags);
 }
 

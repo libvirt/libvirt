@@ -884,7 +884,6 @@ testParseDomainSnapshots(testDriverPtr privconn,
             goto error;
 
         def = virDomainSnapshotDefParseNode(ctxt->doc, node,
-                                            privconn->caps,
                                             privconn->xmlopt,
                                             NULL,
                                             &cur,
@@ -8413,7 +8412,7 @@ testDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
     virUUIDFormat(snapshot->domain->uuid, uuidstr);
 
     xml = virDomainSnapshotDefFormat(uuidstr, virDomainSnapshotObjGetDef(snap),
-                                     privconn->caps, privconn->xmlopt,
+                                     privconn->xmlopt,
                                      virDomainSnapshotFormatConvertXMLFlags(flags));
 
  cleanup:
@@ -8557,7 +8556,6 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
         parse_flags |= VIR_DOMAIN_SNAPSHOT_PARSE_VALIDATE;
 
     if (!(def = virDomainSnapshotDefParseString(xmlDesc,
-                                                privconn->caps,
                                                 privconn->xmlopt,
                                                 NULL, NULL,
                                                 parse_flags)))
@@ -9013,7 +9011,7 @@ testDomainCheckpointCreateXML(virDomainPtr domain,
         goto cleanup;
     }
 
-    if (!(def = virDomainCheckpointDefParseString(xmlDesc, privconn->caps,
+    if (!(def = virDomainCheckpointDefParseString(xmlDesc,
                                                   privconn->xmlopt, NULL,
                                                   parse_flags)))
         goto cleanup;
@@ -9216,7 +9214,7 @@ testDomainCheckpointGetXMLDesc(virDomainCheckpointPtr checkpoint,
     }
 
     format_flags = virDomainCheckpointFormatConvertXMLFlags(flags);
-    xml = virDomainCheckpointDefFormat(chkdef, privconn->caps,
+    xml = virDomainCheckpointDefFormat(chkdef,
                                        privconn->xmlopt, format_flags);
 
  cleanup:
