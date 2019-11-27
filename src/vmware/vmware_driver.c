@@ -139,6 +139,7 @@ vmwareDomainDeviceDefPostParse(virDomainDeviceDefPtr dev G_GNUC_UNUSED,
 virDomainDefParserConfig vmwareDomainDefParserConfig = {
     .devicesPostParseCallback = vmwareDomainDeviceDefPostParse,
     .domainPostParseCallback = vmwareDomainDefPostParse,
+    .defArch = VIR_ARCH_I686,
 };
 
 static virDomainXMLOptionPtr

@@ -2705,6 +2705,7 @@ struct _virDomainDefParserConfig {
     /* data */
     unsigned int features; /* virDomainDefFeatures */
     unsigned char macPrefix[VIR_MAC_PREFIX_BUFLEN];
+    virArch defArch;
 };
 
 typedef void *(*virDomainXMLPrivateDataAllocFunc)(void *);

@@ -175,7 +175,11 @@
         and <a id="attributeOSTypeMachine"><code>machine</code></a> referring
         to the machine type. The <a href="formatcaps.html">Capabilities XML</a>
         provides details on allowed values for
-        these. <span class="since">Since 0.0.1</span></dd>
+        these. If <code>arch</code> is omitted then for most hypervisor
+        drivers, the host native arch will be chosen. For the <code>test</code>,
+        <code>ESX</code> and <code>VMWare</code> hypervisor drivers, however,
+        the <code>i686</code> arch will always be chosen even on an
+        <code>x86_64</code> host. <span class="since">Since 0.0.1</span></dd>
       <dt><a id="elementLoader"><code>loader</code></a></dt>
       <dd>The optional <code>loader</code> tag refers to a firmware blob,
         which is specified by absolute path,

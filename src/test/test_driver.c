@@ -424,6 +424,7 @@ testDriverNew(void)
                     VIR_DOMAIN_DEF_FEATURE_USER_ALIAS |
                     VIR_DOMAIN_DEF_FEATURE_FW_AUTOSELECT |
                     VIR_DOMAIN_DEF_FEATURE_NET_MODEL_STRING,
+        .defArch = VIR_ARCH_I686,
     };
     virDomainXMLPrivateDataCallbacks privatecb = {
         .alloc = testDomainObjPrivateAlloc,

@@ -19613,6 +19613,7 @@ virDomainCachetuneDefParse(virDomainDefPtr def,
 static int
 virDomainDefParseCaps(virDomainDefPtr def,
                       xmlXPathContextPtr ctxt,
+                      virDomainXMLOptionPtr xmlopt,
                       virCapsPtr caps,
                       unsigned int flags)
 {
@@ -19673,6 +19674,13 @@ virDomainDefParseCaps(virDomainDefPtr def,
         return -1;
     }
 
+    if (def->os.arch == VIR_ARCH_NONE) {
+        if (xmlopt && xmlopt->config.defArch != VIR_ARCH_NONE)
+            def->os.arch = xmlopt->config.defArch;
+        else
+            def->os.arch = virArchFromHost();
+    }
+
     if (!(capsdata = virCapabilitiesDomainDataLookup(caps, def->os.type,
                                                      def->os.arch,
                                                      def->virtType,
@@ -19681,8 +19689,6 @@ virDomainDefParseCaps(virDomainDefPtr def,
             return -1;
         virResetLastError();
     } else {
-        if (!def->os.arch)
-            def->os.arch = capsdata->arch;
         if (!def->os.machine)
             def->os.machine = g_strdup(capsdata->machinetype);
     }
@@ -19840,7 +19846,7 @@ virDomainDefParseXML(xmlDocPtr xml,
             id = -1;
     def->id = (int)id;
 
-    if (virDomainDefParseCaps(def, ctxt, caps, flags) < 0)
+    if (virDomainDefParseCaps(def, ctxt, xmlopt, caps, flags) < 0)
         goto error;
 
     /* Extract domain name */
