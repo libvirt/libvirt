@@ -781,7 +781,6 @@ libxlStateInitialize(bool privileged,
                                        cfg->stateDir,
                                        cfg->autostartDir,
                                        true,
-                                       cfg->caps,
                                        libxl_driver->xmlopt,
                                        NULL, NULL) < 0)
         goto error;
@@ -793,7 +792,6 @@ libxlStateInitialize(bool privileged,
                                        cfg->configDir,
                                        cfg->autostartDir,
                                        false,
-                                       cfg->caps,
                                        libxl_driver->xmlopt,
                                        NULL, NULL) < 0)
         goto error;
@@ -833,7 +831,6 @@ libxlStateReload(void)
                                    cfg->configDir,
                                    cfg->autostartDir,
                                    true,
-                                   cfg->caps,
                                    libxl_driver->xmlopt,
                                    NULL, libxl_driver);
 

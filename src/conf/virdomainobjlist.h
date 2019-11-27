@@ -66,7 +66,6 @@ int virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
                                    const char *configDir,
                                    const char *autostartDir,
                                    bool liveStatus,
-                                   virCapsPtr caps,
                                    virDomainXMLOptionPtr xmlopt,
                                    virDomainLoadConfigNotify notify,
                                    void *opaque);

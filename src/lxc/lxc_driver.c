@@ -1529,7 +1529,6 @@ static int lxcStateInitialize(bool privileged,
                               virStateInhibitCallback callback G_GNUC_UNUSED,
                               void *opaque G_GNUC_UNUSED)
 {
-    virCapsPtr caps = NULL;
     virLXCDriverConfigPtr cfg = NULL;
     bool autostart = true;
 
@@ -1581,9 +1580,6 @@ static int lxcStateInitialize(bool privileged,
     if (!(lxc_driver->hostdevMgr = virHostdevManagerGetDefault()))
         goto cleanup;
 
-    if (!(caps = virLXCDriverGetCapabilities(lxc_driver, true)))
-        goto cleanup;
-
     if (!(lxc_driver->xmlopt = lxcDomainXMLConfInit(lxc_driver)))
         goto cleanup;
 
@@ -1605,7 +1601,6 @@ static int lxcStateInitialize(bool privileged,
     if (virDomainObjListLoadAllConfigs(lxc_driver->domains,
                                        cfg->stateDir,
                                        NULL, true,
-                                       caps,
                                        lxc_driver->xmlopt,
                                        NULL, NULL) < 0)
         goto cleanup;
@@ -1616,7 +1611,6 @@ static int lxcStateInitialize(bool privileged,
     if (virDomainObjListLoadAllConfigs(lxc_driver->domains,
                                        cfg->configDir,
                                        cfg->autostartDir, false,
-                                       caps,
                                        lxc_driver->xmlopt,
                                        NULL, NULL) < 0)
         goto cleanup;
@@ -1627,11 +1621,9 @@ static int lxcStateInitialize(bool privileged,
     if (autostart)
         virLXCProcessAutostartAll(lxc_driver);
 
-    virObjectUnref(caps);
     return VIR_DRV_STATE_INIT_COMPLETE;
 
  cleanup:
-    virObjectUnref(caps);
     lxcStateCleanup();
     return VIR_DRV_STATE_INIT_ERROR;
 }
@@ -1659,23 +1651,17 @@ static int
 lxcStateReload(void)
 {
     virLXCDriverConfigPtr cfg = NULL;
-    virCapsPtr caps = NULL;
 
     if (!lxc_driver)
         return 0;
-
-    if (!(caps = virLXCDriverGetCapabilities(lxc_driver, false)))
-        return -1;
 
     cfg = virLXCDriverGetConfig(lxc_driver);
 
     virDomainObjListLoadAllConfigs(lxc_driver->domains,
                                    cfg->configDir,
                                    cfg->autostartDir, false,
-                                   caps,
                                    lxc_driver->xmlopt,
                                    lxcNotifyLoadDomain, lxc_driver);
-    virObjectUnref(caps);
     virObjectUnref(cfg);
     return 0;
 }

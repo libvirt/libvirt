@@ -483,7 +483,6 @@ virDomainObjListRename(virDomainObjListPtr doms,
 
 static virDomainObjPtr
 virDomainObjListLoadConfig(virDomainObjListPtr doms,
-                           virCapsPtr caps G_GNUC_UNUSED,
                            virDomainXMLOptionPtr xmlopt,
                            const char *configDir,
                            const char *autostartDir,
@@ -536,7 +535,6 @@ static virDomainObjPtr
 virDomainObjListLoadStatus(virDomainObjListPtr doms,
                            const char *statusDir,
                            const char *name,
-                           virCapsPtr caps G_GNUC_UNUSED,
                            virDomainXMLOptionPtr xmlopt,
                            virDomainLoadConfigNotify notify,
                            void *opaque)
@@ -586,7 +584,6 @@ virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
                                const char *configDir,
                                const char *autostartDir,
                                bool liveStatus,
-                               virCapsPtr caps,
                                virDomainXMLOptionPtr xmlopt,
                                virDomainLoadConfigNotify notify,
                                void *opaque)
@@ -616,13 +613,11 @@ virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
             dom = virDomainObjListLoadStatus(doms,
                                              configDir,
                                              entry->d_name,
-                                             caps,
                                              xmlopt,
                                              notify,
                                              opaque);
         else
             dom = virDomainObjListLoadConfig(doms,
-                                             caps,
                                              xmlopt,
                                              configDir,
                                              autostartDir,

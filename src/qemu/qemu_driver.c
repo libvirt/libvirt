@@ -972,7 +972,6 @@ qemuStateInitialize(bool privileged,
     if (virDomainObjListLoadAllConfigs(qemu_driver->domains,
                                        cfg->stateDir,
                                        NULL, true,
-                                       qemu_driver->caps,
                                        qemu_driver->xmlopt,
                                        NULL, NULL) < 0)
         goto error;
@@ -994,7 +993,6 @@ qemuStateInitialize(bool privileged,
     if (virDomainObjListLoadAllConfigs(qemu_driver->domains,
                                        cfg->configDir,
                                        cfg->autostartDir, false,
-                                       qemu_driver->caps,
                                        qemu_driver->xmlopt,
                                        NULL, NULL) < 0)
         goto error;
@@ -1059,19 +1057,15 @@ static int
 qemuStateReload(void)
 {
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
-    g_autoptr(virCaps) caps = NULL;
 
     if (!qemu_driver)
-        return 0;
-
-    if (!(caps = virQEMUDriverGetCapabilities(qemu_driver, false)))
         return 0;
 
     cfg = virQEMUDriverGetConfig(qemu_driver);
     virDomainObjListLoadAllConfigs(qemu_driver->domains,
                                    cfg->configDir,
                                    cfg->autostartDir, false,
-                                   caps, qemu_driver->xmlopt,
+                                   qemu_driver->xmlopt,
                                    qemuNotifyLoadDomain, qemu_driver);
     return 0;
 }
