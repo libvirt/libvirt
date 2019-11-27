@@ -915,6 +915,8 @@ virDomainSnapshotDefFormat;
 virDomainSnapshotDefIsExternal;
 virDomainSnapshotDefNew;
 virDomainSnapshotDefParseString;
+virDomainSnapshotDiskDefFree;
+virDomainSnapshotDiskDefParseXML;
 virDomainSnapshotFormatConvertXMLFlags;
 virDomainSnapshotIsExternal;
 virDomainSnapshotLocationTypeFromString;

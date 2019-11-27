@@ -655,8 +655,7 @@ qemublocktest_SOURCES = \
 	$(NULL)
 qemublocktest_LDADD = \
 	libqemumonitortestutils.la \
-	../src/libvirt_conf.la \
-	../src/libvirt_util.la \
+	../src/libvirt.la \
 	$(qemu_LDADDS) \
 	$(NULL)
 
@@ -930,8 +929,7 @@ storagevolxml2argvtest_SOURCES = \
 storagevolxml2argvtest_LDADD = \
 	$(LIBXML_LIBS) \
 	../src/libvirt_driver_storage_impl.la \
-	../src/libvirt_conf.la \
-	../src/libvirt_util.la \
+	../src/libvirt.la \
 	$(LDADDS)
 
 storagepoolxml2argvtest_SOURCES = \
@@ -940,8 +938,7 @@ storagepoolxml2argvtest_SOURCES = \
 storagepoolxml2argvtest_LDADD = \
 	$(LIBXML_LIBS) \
 	../src/libvirt_driver_storage_impl.la \
-	../src/libvirt_conf.la \
-	../src/libvirt_util.la \
+	../src/libvirt.la \
 	$(LDADDS)
 
 storagepoolxml2xmltest_SOURCES = \
@@ -1141,8 +1138,6 @@ virstoragetest_SOURCES = \
 	virstoragetest.c testutils.h testutils.c
 virstoragetest_LDADD = $(LDADDS) \
 	../src/libvirt.la \
-	../src/libvirt_conf.la \
-	../src/libvirt_util.la \
 	../src/libvirt_driver_storage_impl.la \
 	../gnulib/lib/libgnu.la \
 	$(NULL)
