@@ -5980,7 +5980,7 @@ qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
 
     qemuDomainVcpuPersistOrder(vm->def);
 
-    if (virDomainObjSave(vm, driver->xmlopt, driver->caps, cfg->stateDir) < 0)
+    if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
         goto cleanup;
 
     ret = 0;
@@ -6055,7 +6055,7 @@ qemuDomainHotplugAddVcpu(virQEMUDriverPtr driver,
 
     qemuDomainVcpuPersistOrder(vm->def);
 
-    if (virDomainObjSave(vm, driver->xmlopt, driver->caps, cfg->stateDir) < 0)
+    if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
         goto cleanup;
 
     ret = 0;
@@ -6313,7 +6313,7 @@ qemuDomainSetVcpusInternal(virQEMUDriverPtr driver,
     if (persistentDef) {
         qemuDomainSetVcpusConfig(persistentDef, nvcpus, hotpluggable);
 
-        if (virDomainDefSave(persistentDef, driver->xmlopt, driver->caps, cfg->configDir) < 0)
+        if (virDomainDefSave(persistentDef, driver->xmlopt, cfg->configDir) < 0)
             goto cleanup;
     }
 
@@ -6513,7 +6513,7 @@ qemuDomainSetVcpuInternal(virQEMUDriverPtr driver,
     if (persistentDef) {
         qemuDomainSetVcpuConfig(persistentDef, map, state);
 
-        if (virDomainDefSave(persistentDef, driver->xmlopt, driver->caps, cfg->configDir) < 0)
+        if (virDomainDefSave(persistentDef, driver->xmlopt, cfg->configDir) < 0)
             goto cleanup;
     }
 

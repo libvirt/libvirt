@@ -110,13 +110,8 @@ virBhyveProcessStart(virConnectPtr conn,
     bhyveConnPtr privconn = conn->privateData;
     bhyveDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1, rc;
-    virCapsPtr caps = NULL;
 
     logfile = g_strdup_printf("%s/%s.log", BHYVE_LOG_DIR, vm->def->name);
-
-    caps = bhyveDriverGetCapabilities(privconn);
-    if (!caps)
-        goto cleanup;
 
     if ((logfd = open(logfile, O_WRONLY | O_APPEND | O_CREAT,
                       S_IRUSR | S_IWUSR)) < 0) {
@@ -211,14 +206,13 @@ virBhyveProcessStart(virConnectPtr conn,
     virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
     priv->mon = bhyveMonitorOpen(vm, driver);
 
-    if (virDomainObjSave(vm, driver->xmlopt, caps,
+    if (virDomainObjSave(vm, driver->xmlopt,
                          BHYVE_STATE_DIR) < 0)
         goto cleanup;
 
     ret = 0;
 
  cleanup:
-    virObjectUnref(caps);
     if (devicemap != NULL) {
         rc = unlink(devmap_file);
         if (rc < 0 && errno != ENOENT)
@@ -384,17 +378,12 @@ virBhyveProcessReconnect(virDomainObjPtr vm,
     char *expected_proctitle = NULL;
     bhyveDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
-    virCapsPtr caps = NULL;
 
     if (!virDomainObjIsActive(vm))
         return 0;
 
     if (!vm->pid)
         return 0;
-
-    caps = bhyveDriverGetCapabilities(data->driver);
-    if (!caps)
-        return -1;
 
     virObjectLock(vm);
 
@@ -429,11 +418,10 @@ virBhyveProcessReconnect(virDomainObjPtr vm,
         vm->def->id = -1;
         virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF,
                              VIR_DOMAIN_SHUTOFF_UNKNOWN);
-        ignore_value(virDomainObjSave(vm, data->driver->xmlopt, caps,
+        ignore_value(virDomainObjSave(vm, data->driver->xmlopt,
                                       BHYVE_STATE_DIR));
     }
 
-    virObjectUnref(caps);
     virObjectUnlock(vm);
     VIR_FREE(expected_proctitle);
 

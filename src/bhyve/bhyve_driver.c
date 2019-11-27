@@ -540,7 +540,7 @@ bhyveDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flag
     vm->persistent = 1;
 
     if (virDomainDefSave(vm->newDef ? vm->newDef : vm->def,
-                         privconn->xmlopt, caps, BHYVE_CONFIG_DIR) < 0) {
+                         privconn->xmlopt, BHYVE_CONFIG_DIR) < 0) {
         virDomainObjListRemove(privconn->domains, vm);
         goto cleanup;
     }
@@ -1063,7 +1063,6 @@ bhyveDomainSetMetadata(virDomainPtr dom,
 {
     bhyveConnPtr privconn = dom->conn->privateData;
     virDomainObjPtr vm;
-    virCapsPtr caps = NULL;
     int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
@@ -1075,10 +1074,7 @@ bhyveDomainSetMetadata(virDomainPtr dom,
     if (virDomainSetMetadataEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    if (!(caps = bhyveDriverGetCapabilities(privconn)))
-        goto cleanup;
-
-    ret = virDomainObjSetMetadata(vm, type, metadata, key, uri, caps,
+    ret = virDomainObjSetMetadata(vm, type, metadata, key, uri,
                                   privconn->xmlopt, BHYVE_STATE_DIR,
                                   BHYVE_CONFIG_DIR, flags);
 
@@ -1090,7 +1086,6 @@ bhyveDomainSetMetadata(virDomainPtr dom,
 
 
  cleanup:
-    virObjectUnref(caps);
     virDomainObjEndAPI(&vm);
     return ret;
 }

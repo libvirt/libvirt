@@ -3283,7 +3283,6 @@ virDomainRedirdevDefPtr virDomainRedirdevDefRemove(virDomainDefPtr def, size_t i
 
 int virDomainDefSave(virDomainDefPtr def,
                      virDomainXMLOptionPtr xmlopt,
-                     virCapsPtr caps,
                      const char *configDir)
     G_GNUC_WARN_UNUSED_RESULT
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
@@ -3291,7 +3290,6 @@ int virDomainDefSave(virDomainDefPtr def,
 
 int virDomainObjSave(virDomainObjPtr obj,
                      virDomainXMLOptionPtr xmlopt,
-                     virCapsPtr caps,
                      const char *statusDir)
     G_GNUC_WARN_UNUSED_RESULT
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
@@ -3541,7 +3539,6 @@ int virDomainObjSetMetadata(virDomainObjPtr vm,
                             const char *metadata,
                             const char *key,
                             const char *uri,
-                            virCapsPtr caps,
                             virDomainXMLOptionPtr xmlopt,
                             const char *stateDir,
                             const char *configDir,

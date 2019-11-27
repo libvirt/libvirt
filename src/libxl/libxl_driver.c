@@ -453,7 +453,7 @@ libxlReconnectDomain(virDomainObjPtr vm,
 
     libxlReconnectNotifyNets(vm->def);
 
-    if (virDomainObjSave(vm, driver->xmlopt, cfg->caps, cfg->stateDir) < 0)
+    if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
         VIR_WARN("Cannot update XML for running Xen guest %s", vm->def->name);
 
     /* now that we know it's reconnected call the hook if present */
@@ -1188,7 +1188,7 @@ libxlDomainSuspend(virDomainPtr dom)
                                          VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
     }
 
-    if (virDomainObjSave(vm, driver->xmlopt, cfg->caps, cfg->stateDir) < 0)
+    if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
         goto endjob;
 
     ret = 0;
@@ -1242,7 +1242,7 @@ libxlDomainResume(virDomainPtr dom)
                                          VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
     }
 
-    if (virDomainObjSave(vm, driver->xmlopt, cfg->caps, cfg->stateDir) < 0)
+    if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
         goto endjob;
 
     ret = 0;
@@ -1667,7 +1667,7 @@ libxlDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
             virDomainDefSetMemoryTotal(persistentDef, newmem);
             if (persistentDef->mem.cur_balloon > newmem)
                 persistentDef->mem.cur_balloon = newmem;
-            ret = virDomainDefSave(persistentDef, driver->xmlopt, cfg->caps, cfg->configDir);
+            ret = virDomainDefSave(persistentDef, driver->xmlopt, cfg->configDir);
             goto endjob;
         }
 
@@ -1700,7 +1700,7 @@ libxlDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
         if (flags & VIR_DOMAIN_MEM_CONFIG) {
             sa_assert(persistentDef);
             persistentDef->mem.cur_balloon = newmem;
-            ret = virDomainDefSave(persistentDef, driver->xmlopt, cfg->caps, cfg->configDir);
+            ret = virDomainDefSave(persistentDef, driver->xmlopt, cfg->configDir);
             goto endjob;
         }
     }
@@ -2351,13 +2351,13 @@ libxlDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     ret = 0;
 
     if (flags & VIR_DOMAIN_VCPU_LIVE) {
-        if (virDomainObjSave(vm, driver->xmlopt, cfg->caps, cfg->stateDir) < 0) {
+        if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0) {
             VIR_WARN("Unable to save status on vm %s after changing vcpus",
                      vm->def->name);
         }
     }
     if (flags & VIR_DOMAIN_VCPU_CONFIG) {
-        if (virDomainDefSave(def, driver->xmlopt, cfg->caps, cfg->configDir) < 0) {
+        if (virDomainDefSave(def, driver->xmlopt, cfg->configDir) < 0) {
             VIR_WARN("Unable to save configuration of vm %s after changing vcpus",
                      vm->def->name);
         }
@@ -2507,9 +2507,9 @@ libxlDomainPinVcpuFlags(virDomainPtr dom, unsigned int vcpu,
     ret = 0;
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        ret = virDomainObjSave(vm, driver->xmlopt, cfg->caps, cfg->stateDir);
+        ret = virDomainObjSave(vm, driver->xmlopt, cfg->stateDir);
     } else if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        ret = virDomainDefSave(targetDef, driver->xmlopt, cfg->caps, cfg->configDir);
+        ret = virDomainDefSave(targetDef, driver->xmlopt, cfg->configDir);
     }
 
  endjob:
@@ -2870,7 +2870,7 @@ libxlDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flag
     vm->persistent = 1;
 
     if (virDomainDefSave(vm->newDef ? vm->newDef : vm->def,
-                         driver->xmlopt, cfg->caps, cfg->configDir) < 0) {
+                         driver->xmlopt, cfg->configDir) < 0) {
         virDomainObjListRemove(driver->domains, vm);
         goto cleanup;
     }
@@ -4143,7 +4143,7 @@ libxlDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
          * update domain status forcibly because the domain status may be
          * changed even if we attach the device failed.
          */
-        if (virDomainObjSave(vm, driver->xmlopt, cfg->caps, cfg->stateDir) < 0)
+        if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
             goto endjob;
     }
 
@@ -4151,7 +4151,7 @@ libxlDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
 
     /* Finally, if no error until here, we can save config. */
     if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
-        ret = virDomainDefSave(vmdef, driver->xmlopt, cfg->caps, cfg->configDir);
+        ret = virDomainDefSave(vmdef, driver->xmlopt, cfg->configDir);
         if (!ret) {
             virDomainObjAssignDef(vm, vmdef, false, NULL);
             vmdef = NULL;
@@ -4233,7 +4233,7 @@ libxlDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
          * update domain status forcibly because the domain status may be
          * changed even if we attach the device failed.
          */
-        if (virDomainObjSave(vm, driver->xmlopt, cfg->caps, cfg->stateDir) < 0)
+        if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
             goto endjob;
     }
 
@@ -4241,7 +4241,7 @@ libxlDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
 
     /* Finally, if no error until here, we can save config. */
     if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
-        ret = virDomainDefSave(vmdef, driver->xmlopt, cfg->caps, cfg->configDir);
+        ret = virDomainDefSave(vmdef, driver->xmlopt, cfg->configDir);
         if (!ret) {
             virDomainObjAssignDef(vm, vmdef, false, NULL);
             vmdef = NULL;
@@ -4320,13 +4320,13 @@ libxlDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
          * update domain status forcibly because the domain status may be
          * changed even if we attach the device failed.
          */
-        if (virDomainObjSave(vm, driver->xmlopt, cfg->caps, cfg->stateDir) < 0)
+        if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
             ret = -1;
     }
 
     /* Finally, if no error until here, we can save config. */
     if (!ret && (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG)) {
-        ret = virDomainDefSave(vmdef, driver->xmlopt, cfg->caps, cfg->configDir);
+        ret = virDomainDefSave(vmdef, driver->xmlopt, cfg->configDir);
         if (!ret) {
             virDomainObjAssignDef(vm, vmdef, false, NULL);
             vmdef = NULL;
@@ -6526,7 +6526,7 @@ libxlDomainSetMetadata(virDomainPtr dom,
     if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
         goto cleanup;
 
-    ret = virDomainObjSetMetadata(vm, type, metadata, key, uri, cfg->caps,
+    ret = virDomainObjSetMetadata(vm, type, metadata, key, uri,
                                   driver->xmlopt, cfg->stateDir,
                                   cfg->configDir, flags);
 
