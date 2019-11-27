@@ -81,8 +81,134 @@
       </change>
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          Devices CGroup v2 support
+        </summary>
+        <description>
+          Libvirt supported all controllers of CGroup v2 but the devices
+          controller which is implemented in this release.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Cold plug of sound device
+        </summary>
+        <description>
+          The QEMU driver now can handle cold plug of
+          <code>&lt;sound/&gt;</code> devices.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Probe for default CPU types
+        </summary>
+        <description>
+          With QEMU 4.2.0 we can probe for the default CPU model used by QEMU
+          for a particular machine type and store it in the domain XML. This
+          way the chosen CPU model is more visible to users and libvirt will
+          make sure the guest will see the exact same CPU after migration.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Adaptation to qemu's blockdev
+        </summary>
+        <description>
+          QEMU introduced a new way of specifying disks on the command line
+          which enables fine-grained control over the block stack. Libvirt has
+          adapted to this.
+        </description>
+      </change>
+    </section>
+    <section title="Refactors">
+      <change>
+        <summary>
+          More GLib integration
+        </summary>
+        <description>
+          More patches were merged that replace our internal functions with
+          GLib ones. Also some effort was invested in replacing gnulib modules
+          with GLib functions.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Rewrite of Perl scripts into Python
+        </summary>
+        <description>
+          Libvirt used Perl scripts to check for coding style, generate some
+          code and things like that. To bring the number of languages used
+          down, these scripts were rewritten into Python.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
+      <change>
+        <summary>
+          Warn verbosely if using old loader:nvram pairs
+        </summary>
+        <description>
+          Some distributions still use <code>--with-loader-nvram</code> or
+          <code>nvram</code> variable in qemu.conf. This is now discouraged in
+          favour of FW descriptors. However, instead of silently ignoring user's
+          config, libvirt warns if outdated config is detected.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Drop pconfig from Icelake-Server CPU model
+        </summary>
+        <description>
+          The pconfig feature was enabled in QEMU by accident in 3.1.0. All
+          other newer versions do not support it and it was removed from the
+          Icelake-Server CPU model in QEMU.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Wait longer for device removal confirmation on PPC64
+        </summary>
+        <description>
+          After sending device hot unplug request to QEMU, libvirt waits up to
+          5 seconds for qemu to confirm the device removal. On some
+          architectures (like PPC64) this can take longer time and libvirt now
+          reflects that.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Forcibly create nodes in domain's namespace
+        </summary>
+        <description>
+          The QEMU driver starts a domain in a namepsace with private
+          <code>/dev</code> and creates only those nodes there which the domain
+          is configured to have. However, it may have happened that if a node
+          changed its minor number this change wasn't propagated to the
+          namespace.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Various AppArmor bugfixes
+        </summary>
+        <description>
+          The AppArmor driver now knows how to handle
+          <code>&lt;shmem/&gt;</code> devices and also snapshotting more disks
+          at once.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Improved video model autoselection
+        </summary>
+        <description>
+          If a graphics device was added to XML that had no video device,
+          libvirt automatically added a video device which was always of type
+          'cirrus' on x86_64, even if the underlying qemu didn't support
+          cirrus. Libvirt now bases the decision on qemu's capabilities.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v5.9.0" date="2019-11-05">
