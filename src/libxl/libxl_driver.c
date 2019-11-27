@@ -1601,7 +1601,7 @@ libxlDomainGetMaxMemory(virDomainPtr dom)
  * domain configuration if needed. Return -1 on error.
  */
 static int
-virDomainLiveConfigHelperMethod(virCapsPtr caps,
+virDomainLiveConfigHelperMethod(virCapsPtr caps G_GNUC_UNUSED,
                                 virDomainXMLOptionPtr xmlopt,
                                 virDomainObjPtr dom,
                                 unsigned int *flags,
@@ -1611,7 +1611,7 @@ virDomainLiveConfigHelperMethod(virCapsPtr caps,
         return -1;
 
     if (*flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        if (!(*persistentDef = virDomainObjGetPersistentDef(caps, xmlopt, dom, NULL))) {
+        if (!(*persistentDef = virDomainObjGetPersistentDef(xmlopt, dom, NULL))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Get persistent config failed"));
             return -1;
@@ -2298,7 +2298,7 @@ libxlDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         goto endjob;
     }
 
-    if (!(def = virDomainObjGetPersistentDef(cfg->caps, driver->xmlopt, vm, NULL)))
+    if (!(def = virDomainObjGetPersistentDef(driver->xmlopt, vm, NULL)))
         goto endjob;
 
     maplen = VIR_CPU_MAPLEN(nvcpus);
@@ -4121,8 +4121,7 @@ libxlDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
             goto endjob;
 
         /* Make a copy for updated domain. */
-        if (!(vmdef = virDomainObjCopyPersistentDef(vm, cfg->caps,
-                                                    driver->xmlopt, NULL)))
+        if (!(vmdef = virDomainObjCopyPersistentDef(vm, driver->xmlopt, NULL)))
             goto endjob;
 
         if (libxlDomainAttachDeviceConfig(vmdef, dev) < 0)
@@ -4211,8 +4210,7 @@ libxlDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
             goto endjob;
 
         /* Make a copy for updated domain. */
-        if (!(vmdef = virDomainObjCopyPersistentDef(vm, cfg->caps,
-                                                    driver->xmlopt, NULL)))
+        if (!(vmdef = virDomainObjCopyPersistentDef(vm, driver->xmlopt, NULL)))
             goto endjob;
 
         if (libxlDomainDetachDeviceConfig(vmdef, dev) < 0)
@@ -4298,8 +4296,7 @@ libxlDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
             goto cleanup;
 
         /* Make a copy for updated domain. */
-        if (!(vmdef = virDomainObjCopyPersistentDef(vm, cfg->caps,
-                                                    driver->xmlopt, NULL)))
+        if (!(vmdef = virDomainObjCopyPersistentDef(vm, driver->xmlopt, NULL)))
             goto cleanup;
 
         if ((ret = libxlDomainUpdateDeviceConfig(vmdef, dev)) < 0)

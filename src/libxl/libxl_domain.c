@@ -1322,7 +1322,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver,
         VIR_FREE(managed_save_path);
     }
 
-    if (virDomainObjSetDefTransient(cfg->caps, driver->xmlopt, vm, NULL) < 0)
+    if (virDomainObjSetDefTransient(driver->xmlopt, vm, NULL) < 0)
         goto cleanup;
 
     /* Run an early hook to set-up missing devices */
@@ -1550,8 +1550,8 @@ libxlDomainDefCheckABIStability(libxlDriverPrivatePtr driver,
     g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
     bool ret = false;
 
-    if (!(migratableDefSrc = virDomainDefCopy(src, cfg->caps, driver->xmlopt, NULL, true)) ||
-        !(migratableDefDst = virDomainDefCopy(dst, cfg->caps, driver->xmlopt, NULL, true)))
+    if (!(migratableDefSrc = virDomainDefCopy(src, driver->xmlopt, NULL, true)) ||
+        !(migratableDefDst = virDomainDefCopy(dst, driver->xmlopt, NULL, true)))
         goto cleanup;
 
     ret = virDomainDefCheckABIStability(migratableDefSrc,

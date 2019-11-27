@@ -4852,7 +4852,7 @@ qemuMigrationDstPersist(virQEMUDriverPtr driver,
     oldDef = vm->newDef;
     vm->newDef = qemuMigrationCookieGetPersistent(mig);
 
-    if (!(vmdef = virDomainObjGetPersistentDef(caps, driver->xmlopt, vm,
+    if (!(vmdef = virDomainObjGetPersistentDef(driver->xmlopt, vm,
                                                priv->qemuCaps)))
         goto error;
 

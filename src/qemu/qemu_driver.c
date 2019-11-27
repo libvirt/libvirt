@@ -8622,7 +8622,7 @@ qemuDomainAttachDeviceLiveAndConfig(virDomainObjPtr vm,
      * rely on the correct vm->def or vm->newDef being passed, so call the
      * device parse based on which definition is in use */
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        vmdef = virDomainObjCopyPersistentDef(vm, caps, driver->xmlopt,
+        vmdef = virDomainObjCopyPersistentDef(vm, driver->xmlopt,
                                               priv->qemuCaps);
         if (!vmdef)
             goto cleanup;
@@ -8791,7 +8791,7 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
          * create a deep copy of device as adding
          * to CONFIG takes one instance.
          */
-        dev_copy = virDomainDeviceDefCopy(dev, vm->def, caps,
+        dev_copy = virDomainDeviceDefCopy(dev, vm->def,
                                           driver->xmlopt, priv->qemuCaps);
         if (!dev_copy)
             goto endjob;
@@ -8799,7 +8799,7 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         /* Make a copy for updated domain. */
-        vmdef = virDomainObjCopyPersistentDef(vm, caps, driver->xmlopt,
+        vmdef = virDomainObjCopyPersistentDef(vm, driver->xmlopt,
                                               priv->qemuCaps);
         if (!vmdef)
             goto endjob;
@@ -8888,7 +8888,7 @@ qemuDomainDetachDeviceLiveAndConfig(virQEMUDriverPtr driver,
          * create a deep copy of device as adding
          * to CONFIG takes one instance.
          */
-        dev_copy = virDomainDeviceDefCopy(dev, vm->def, caps,
+        dev_copy = virDomainDeviceDefCopy(dev, vm->def,
                                           driver->xmlopt, priv->qemuCaps);
         if (!dev_copy)
             goto cleanup;
@@ -8896,7 +8896,7 @@ qemuDomainDetachDeviceLiveAndConfig(virQEMUDriverPtr driver,
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         /* Make a copy for updated domain. */
-        vmdef = virDomainObjCopyPersistentDef(vm, caps, driver->xmlopt, priv->qemuCaps);
+        vmdef = virDomainObjCopyPersistentDef(vm, driver->xmlopt, priv->qemuCaps);
         if (!vmdef)
             goto cleanup;
 
@@ -8977,7 +8977,7 @@ qemuDomainDetachDeviceAliasLiveAndConfig(virQEMUDriverPtr driver,
     if (persistentDef) {
         virDomainDeviceDef dev;
 
-        if (!(vmdef = virDomainObjCopyPersistentDef(vm, caps, driver->xmlopt,
+        if (!(vmdef = virDomainObjCopyPersistentDef(vm, driver->xmlopt,
                                                     priv->qemuCaps)))
             goto cleanup;
 
@@ -10580,7 +10580,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
 
     if (persistentDef) {
         /* Make a copy for updated domain. */
-        if (!(persistentDefCopy = virDomainObjCopyPersistentDef(vm, caps,
+        if (!(persistentDefCopy = virDomainObjCopyPersistentDef(vm,
                                                                 driver->xmlopt,
                                                                 priv->qemuCaps)))
             goto endjob;
@@ -15955,7 +15955,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
             goto endjob;
 
         if (vm->newDef) {
-            def->parent.inactiveDom = virDomainDefCopy(vm->newDef, caps,
+            def->parent.inactiveDom = virDomainDefCopy(vm->newDef,
                                                        driver->xmlopt, priv->qemuCaps, true);
             if (!def->parent.inactiveDom)
                 goto endjob;
@@ -16483,7 +16483,6 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     virDomainDefPtr config = NULL;
     virDomainDefPtr inactiveConfig = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
-    g_autoptr(virCaps) caps = NULL;
     bool was_stopped = false;
     qemuDomainSaveCookiePtr cookie;
     virCPUDefPtr origCPU = NULL;
@@ -16518,9 +16517,6 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     cfg = virQEMUDriverGetConfig(driver);
 
     if (virDomainRevertToSnapshotEnsureACL(snapshot->domain->conn, vm->def) < 0)
-        goto cleanup;
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
     if (qemuDomainHasBlockjob(vm, false)) {
@@ -16574,14 +16570,14 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     }
 
     if (snap->def->dom) {
-        config = virDomainDefCopy(snap->def->dom, caps,
+        config = virDomainDefCopy(snap->def->dom,
                                   driver->xmlopt, priv->qemuCaps, true);
         if (!config)
             goto endjob;
     }
 
     if (snap->def->inactiveDom) {
-        inactiveConfig = virDomainDefCopy(snap->def->inactiveDom, caps,
+        inactiveConfig = virDomainDefCopy(snap->def->inactiveDom,
                                           driver->xmlopt, priv->qemuCaps, true);
         if (!inactiveConfig)
             goto endjob;
@@ -16594,7 +16590,7 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
          */
         if (snapdef->state == VIR_DOMAIN_SNAPSHOT_RUNNING ||
             snapdef->state == VIR_DOMAIN_SNAPSHOT_PAUSED) {
-            inactiveConfig = virDomainDefCopy(snap->def->dom, caps,
+            inactiveConfig = virDomainDefCopy(snap->def->dom,
                                               driver->xmlopt, priv->qemuCaps, true);
             if (!inactiveConfig)
                 goto endjob;

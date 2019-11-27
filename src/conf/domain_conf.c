@@ -3678,8 +3678,7 @@ virDomainObjWaitUntil(virDomainObjPtr vm,
  * @return 0 on success, -1 on failure
  */
 int
-virDomainObjSetDefTransient(virCapsPtr caps,
-                            virDomainXMLOptionPtr xmlopt,
+virDomainObjSetDefTransient(virDomainXMLOptionPtr xmlopt,
                             virDomainObjPtr domain,
                             void *parseOpaque)
 {
@@ -3691,7 +3690,7 @@ virDomainObjSetDefTransient(virCapsPtr caps,
     if (domain->newDef)
         return 0;
 
-    if (!(domain->newDef = virDomainDefCopy(domain->def, caps, xmlopt,
+    if (!(domain->newDef = virDomainDefCopy(domain->def, xmlopt,
                                             parseOpaque, false)))
         goto out;
 
@@ -3729,13 +3728,12 @@ virDomainObjRemoveTransientDef(virDomainObjPtr domain)
  * @return NULL on error, virDOmainDefPtr on success
  */
 virDomainDefPtr
-virDomainObjGetPersistentDef(virCapsPtr caps,
-                             virDomainXMLOptionPtr xmlopt,
+virDomainObjGetPersistentDef(virDomainXMLOptionPtr xmlopt,
                              virDomainObjPtr domain,
                              void *parseOpaque)
 {
     if (virDomainObjIsActive(domain) &&
-        virDomainObjSetDefTransient(caps, xmlopt, domain, parseOpaque) < 0)
+        virDomainObjSetDefTransient(xmlopt, domain, parseOpaque) < 0)
         return NULL;
 
     if (domain->newDef)
@@ -29352,7 +29350,6 @@ virDomainUSBDeviceDefForeach(virDomainDefPtr def,
  * snapshots).  */
 virDomainDefPtr
 virDomainDefCopy(virDomainDefPtr src,
-                 virCapsPtr caps G_GNUC_UNUSED,
                  virDomainXMLOptionPtr xmlopt,
                  void *parseOpaque,
                  bool migratable)
@@ -29374,14 +29371,13 @@ virDomainDefCopy(virDomainDefPtr src,
 
 virDomainDefPtr
 virDomainObjCopyPersistentDef(virDomainObjPtr dom,
-                              virCapsPtr caps,
                               virDomainXMLOptionPtr xmlopt,
                               void *parseOpaque)
 {
     virDomainDefPtr cur;
 
-    cur = virDomainObjGetPersistentDef(caps, xmlopt, dom, parseOpaque);
-    return virDomainDefCopy(cur, caps, xmlopt, parseOpaque, false);
+    cur = virDomainObjGetPersistentDef(xmlopt, dom, parseOpaque);
+    return virDomainDefCopy(cur, xmlopt, parseOpaque, false);
 }
 
 
@@ -29826,7 +29822,6 @@ virDomainNetFindByName(virDomainDefPtr def,
 virDomainDeviceDefPtr
 virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
                        const virDomainDef *def,
-                       virCapsPtr caps G_GNUC_UNUSED,
                        virDomainXMLOptionPtr xmlopt,
                        void *parseOpaque)
 {

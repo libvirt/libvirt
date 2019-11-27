@@ -5600,7 +5600,7 @@ qemuProcessInit(virQEMUDriverPtr driver,
      * report implicit runtime defaults in the XML, like vnc listen/socket
      */
     VIR_DEBUG("Setting current domain def as transient");
-    if (virDomainObjSetDefTransient(caps, driver->xmlopt, vm, priv->qemuCaps) < 0)
+    if (virDomainObjSetDefTransient(driver->xmlopt, vm, priv->qemuCaps) < 0)
         goto cleanup;
 
     if (flags & VIR_QEMU_PROCESS_START_PRETEND) {

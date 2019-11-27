@@ -9034,17 +9034,13 @@ qemuDomainDefFormatBufInternal(virQEMUDriverPtr driver,
 {
     int ret = -1;
     virDomainDefPtr copy = NULL;
-    virCapsPtr caps = NULL;
 
     virCheckFlags(VIR_DOMAIN_XML_COMMON_FLAGS | VIR_DOMAIN_XML_UPDATE_CPU, -1);
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
 
     if (!(flags & (VIR_DOMAIN_XML_UPDATE_CPU | VIR_DOMAIN_XML_MIGRATABLE)))
         goto format;
 
-    if (!(copy = virDomainDefCopy(def, caps, driver->xmlopt, qemuCaps,
+    if (!(copy = virDomainDefCopy(def, driver->xmlopt, qemuCaps,
                                   flags & VIR_DOMAIN_XML_MIGRATABLE)))
         goto cleanup;
 
@@ -9218,7 +9214,6 @@ qemuDomainDefFormatBufInternal(virQEMUDriverPtr driver,
 
  cleanup:
     virDomainDefFree(copy);
-    virObjectUnref(caps);
     return ret;
 }
 

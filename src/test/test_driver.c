@@ -696,8 +696,7 @@ testDomainStartState(testDriverPtr privconn,
     virDomainObjSetState(dom, VIR_DOMAIN_RUNNING, reason);
     dom->def->id = virAtomicIntAdd(&privconn->nextDomID, 1);
 
-    if (virDomainObjSetDefTransient(privconn->caps,
-                                    privconn->xmlopt,
+    if (virDomainObjSetDefTransient(privconn->xmlopt,
                                     dom, NULL) < 0) {
         goto cleanup;
     }
@@ -8571,7 +8570,6 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
             goto cleanup;
     } else {
         if (!(def->parent.dom = virDomainDefCopy(vm->def,
-                                                 privconn->caps,
                                                  privconn->xmlopt,
                                                  NULL,
                                                  true)))
@@ -8794,7 +8792,7 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
 
     virDomainSnapshotSetCurrent(vm->snapshots, NULL);
 
-    config = virDomainDefCopy(snap->def->dom, privconn->caps,
+    config = virDomainDefCopy(snap->def->dom,
                               privconn->xmlopt, NULL, true);
     if (!config)
         goto cleanup;
@@ -9027,7 +9025,6 @@ testDomainCheckpointCreateXML(virDomainPtr domain,
             goto cleanup;
     } else {
         if (!(def->parent.dom = virDomainDefCopy(vm->def,
-                                                 privconn->caps,
                                                  privconn->xmlopt,
                                                  NULL,
                                                  true)))
