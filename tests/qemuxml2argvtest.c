@@ -412,6 +412,9 @@ testCompareXMLToArgv(const void *data)
     size_t i;
     qemuDomainObjPrivatePtr priv = NULL;
 
+    if (info->arch != VIR_ARCH_NONE && info->arch != VIR_ARCH_X86_64)
+        qemuTestSetHostArch(driver.caps, info->arch);
+
     memset(&monitor_chr, 0, sizeof(monitor_chr));
 
     if (!(conn = virGetConnect()))
@@ -580,6 +583,9 @@ testCompareXMLToArgv(const void *data)
     virSetConnectStorage(NULL);
     virObjectUnref(conn);
     VIR_FREE(migrateURI);
+    if (info->arch != VIR_ARCH_NONE && info->arch != VIR_ARCH_X86_64)
+        qemuTestSetHostArch(driver.caps, VIR_ARCH_NONE);
+
     return ret;
 }
 
@@ -699,13 +705,9 @@ mymain(void)
                                 __VA_ARGS__, ARG_END) < 0) \
             return EXIT_FAILURE; \
         testInfoSetPaths(&info, _suffix); \
-        if (info.arch != VIR_ARCH_NONE && info.arch != VIR_ARCH_X86_64) \
-            qemuTestSetHostArch(driver.caps, info.arch); \
         if (virTestRun("QEMU XML-2-ARGV " _name _suffix, \
                        testCompareXMLToArgv, &info) < 0) \
             ret = -1; \
-        if (info.arch != VIR_ARCH_NONE && info.arch != VIR_ARCH_X86_64) \
-            qemuTestSetHostArch(driver.caps, VIR_ARCH_NONE); \
         testQemuInfoClear(&info); \
     } while (0)
 
