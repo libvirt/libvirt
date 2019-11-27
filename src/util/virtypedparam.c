@@ -403,10 +403,6 @@ virTypedParamsFilter(virTypedParameterPtr params,
 {
     size_t i, n = 0;
 
-    virCheckNonNullArgGoto(params, error);
-    virCheckNonNullArgGoto(name, error);
-    virCheckNonNullArgGoto(ret, error);
-
     if (VIR_ALLOC_N(*ret, nparams) < 0)
         goto error;
 
