@@ -311,16 +311,19 @@ html/index.html: libvirt-api.xml newapi.xsl page.xsl $(APIBUILD_STAMP)
 	$(AM_V_GEN)$(XSLTPROC) --nonet -o ./ \
 	  --stringparam builddir '$(abs_top_builddir)' \
 	  --stringparam timestamp $(timestamp) \
-	  $(srcdir)/newapi.xsl libvirt-api.xml && \
-	  $(XMLLINT) --nonet --noout html/*.html
+	  $(srcdir)/newapi.xsl libvirt-api.xml
 
 html/index-%.html: libvirt-%-api.xml newapi.xsl page.xsl $(APIBUILD_STAMP)
 	$(AM_V_GEN)$(XSLTPROC) --nonet -o ./ \
 	  --stringparam builddir '$(abs_top_builddir)' \
 	  --stringparam timestamp $(timestamp) \
 	  --stringparam indexfile $(@:html/%=%) \
-	  $(srcdir)/newapi.xsl $< && \
-	  $(XMLLINT) --nonet --noout html/*.html
+	  $(srcdir)/newapi.xsl $<
+
+check-html:
+	$(XMLLINT) --nonet --noout html/*.html
+
+check-local: check-html
 
 python_generated_files = \
 		html/libvirt-libvirt-lxc.html \
