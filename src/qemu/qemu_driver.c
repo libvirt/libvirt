@@ -15344,7 +15344,8 @@ qemuDomainSnapshotDiskPrepareOne(virQEMUDriverPtr driver,
                                  virHashTablePtr blockNamedNodeData,
                                  bool reuse,
                                  bool blockdev,
-                                 qemuDomainAsyncJob asyncJob)
+                                 qemuDomainAsyncJob asyncJob,
+                                 virJSONValuePtr actions)
 {
     virDomainDiskDefPtr persistdisk;
     bool supportsCreate;
@@ -15417,10 +15418,17 @@ qemuDomainSnapshotDiskPrepareOne(virQEMUDriverPtr driver,
 
     dd->prepared = true;
 
-    if (blockdev &&
-        qemuDomainSnapshotDiskPrepareOneBlockdev(driver, vm, dd, cfg, reuse,
-                                                 blockNamedNodeData, asyncJob) < 0)
-        return -1;
+    if (blockdev) {
+        if (qemuDomainSnapshotDiskPrepareOneBlockdev(driver, vm, dd, cfg, reuse,
+                                                     blockNamedNodeData, asyncJob) < 0)
+            return -1;
+
+        if (qemuBlockSnapshotAddBlockdev(actions, dd->disk, dd->src) < 0)
+            return -1;
+    } else {
+        if (qemuBlockSnapshotAddLegacy(actions, dd->disk, dd->src, reuse) < 0)
+            return -1;
+    }
 
     return 0;
 }
@@ -15442,7 +15450,8 @@ qemuDomainSnapshotDiskPrepare(virQEMUDriverPtr driver,
                               virHashTablePtr blockNamedNodeData,
                               qemuDomainAsyncJob asyncJob,
                               qemuDomainSnapshotDiskDataPtr *rdata,
-                              size_t *rndata)
+                              size_t *rndata,
+                              virJSONValuePtr actions)
 {
     size_t i;
     qemuDomainSnapshotDiskDataPtr data;
@@ -15462,7 +15471,8 @@ qemuDomainSnapshotDiskPrepare(virQEMUDriverPtr driver,
                                              data + ndata++,
                                              blockNamedNodeData,
                                              reuse, blockdev,
-                                             asyncJob) < 0)
+                                             asyncJob,
+                                             actions) < 0)
             goto cleanup;
     }
 
@@ -15575,32 +15585,13 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
      * have to roll back later */
     if (qemuDomainSnapshotDiskPrepare(driver, vm, snap, cfg, reuse, blockdev,
                                       blockNamedNodeData, asyncJob,
-                                      &diskdata, &ndiskdata) < 0)
+                                      &diskdata, &ndiskdata, actions) < 0)
         goto cleanup;
 
     /* check whether there's anything to do */
     if (ndiskdata == 0) {
         ret = 0;
         goto cleanup;
-    }
-
-     /* Based on earlier qemuDomainSnapshotPrepare, all disks in this list are
-      * now either VIR_DOMAIN_SNAPSHOT_LOCATION_NONE, or
-      * VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL with a valid file name and
-      * qcow2 format.  */
-    for (i = 0; i < ndiskdata; i++) {
-        if (blockdev) {
-            if (qemuBlockSnapshotAddBlockdev(actions,
-                                             diskdata[i].disk,
-                                             diskdata[i].src) < 0)
-                goto cleanup;
-        } else {
-            if (qemuBlockSnapshotAddLegacy(actions,
-                                           diskdata[i].disk,
-                                           diskdata[i].src,
-                                           reuse) < 0)
-                goto cleanup;
-        }
     }
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
