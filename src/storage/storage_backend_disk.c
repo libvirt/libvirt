@@ -531,6 +531,25 @@ virStorageBackendDiskBuildPool(virStoragePoolObjPtr pool,
 }
 
 
+/**
+ * Wipe the existing partition table
+ */
+static int
+virStorageBackendDiskDeletePool(virStoragePoolObjPtr pool,
+                                unsigned int flags)
+{
+    virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
+
+    virCheckFlags(0, -1);
+
+    if (virStorageBackendZeroPartitionTable(def->source.devices[0].path,
+                                            1024 * 1024) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 struct virStorageVolNumData {
     int count;
 };
@@ -954,6 +973,7 @@ virStorageBackend virStorageBackendDisk = {
     .startPool = virStorageBackendDiskStartPool,
     .buildPool = virStorageBackendDiskBuildPool,
     .refreshPool = virStorageBackendDiskRefreshPool,
+    .deletePool = virStorageBackendDiskDeletePool,
 
     .createVol = virStorageBackendDiskCreateVol,
     .deleteVol = virStorageBackendDiskDeleteVol,
