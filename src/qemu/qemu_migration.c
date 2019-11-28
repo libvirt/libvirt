@@ -5170,13 +5170,12 @@ qemuMigrationDstFinish(virQEMUDriverPtr driver,
 int
 qemuMigrationSrcToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
                        int fd,
-                       const char *compressor,
+                       virCommandPtr compressor,
                        qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int rc;
     int ret = -1;
-    virCommandPtr cmd = NULL;
     int pipeFD[2] = { -1, -1 };
     unsigned long saveMigBandwidth = priv->migMaxBandwidth;
     char *errbuf = NULL;
@@ -5221,25 +5220,17 @@ qemuMigrationSrcToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
                                     QEMU_MONITOR_MIGRATE_BACKGROUND,
                                     fd);
     } else {
-        const char *prog = compressor;
-        const char *args[] = {
-            prog,
-            "-c",
-            NULL
-        };
-
-        cmd = virCommandNewArgs(args);
-        virCommandSetInputFD(cmd, pipeFD[0]);
-        virCommandSetOutputFD(cmd, &fd);
-        virCommandSetErrorBuffer(cmd, &errbuf);
-        virCommandDoAsyncIO(cmd);
+        virCommandSetInputFD(compressor, pipeFD[0]);
+        virCommandSetOutputFD(compressor, &fd);
+        virCommandSetErrorBuffer(compressor, &errbuf);
+        virCommandDoAsyncIO(compressor);
         if (virSetCloseExec(pipeFD[1]) < 0) {
             virReportSystemError(errno, "%s",
                                  _("Unable to set cloexec flag"));
             ignore_value(qemuDomainObjExitMonitor(driver, vm));
             goto cleanup;
         }
-        if (virCommandRunAsync(cmd, NULL) < 0) {
+        if (virCommandRunAsync(compressor, NULL) < 0) {
             ignore_value(qemuDomainObjExitMonitor(driver, vm));
             goto cleanup;
         }
@@ -5260,7 +5251,7 @@ qemuMigrationSrcToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
     if (rc < 0) {
         if (rc == -2) {
             virErrorPreserveLast(&orig_err);
-            virCommandAbort(cmd);
+            virCommandAbort(compressor);
             if (virDomainObjIsActive(vm) &&
                 qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) == 0) {
                 qemuMonitorMigrateCancel(priv->mon);
@@ -5270,7 +5261,7 @@ qemuMigrationSrcToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
         goto cleanup;
     }
 
-    if (cmd && virCommandWait(cmd, NULL) < 0)
+    if (compressor && virCommandWait(compressor, NULL) < 0)
         goto cleanup;
 
     qemuDomainEventEmitJobCompleted(driver, vm);
@@ -5290,10 +5281,9 @@ qemuMigrationSrcToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
 
     VIR_FORCE_CLOSE(pipeFD[0]);
     VIR_FORCE_CLOSE(pipeFD[1]);
-    if (cmd) {
+    if (errbuf) {
         VIR_DEBUG("Compression binary stderr: %s", NULLSTR(errbuf));
         VIR_FREE(errbuf);
-        virCommandFree(cmd);
     }
 
     virErrorRestore(&orig_err);

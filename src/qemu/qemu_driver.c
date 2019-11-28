@@ -3177,7 +3177,7 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
                      const char *path,
                      virQEMUSaveDataPtr data,
-                     const char *compressedpath,
+                     virCommandPtr compressor,
                      unsigned int flags,
                      qemuDomainAsyncJob asyncJob)
 {
@@ -3216,7 +3216,7 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
         goto cleanup;
 
     /* Perform the migration */
-    if (qemuMigrationSrcToFile(driver, vm, fd, compressedpath, asyncJob) < 0)
+    if (qemuMigrationSrcToFile(driver, vm, fd, compressor, asyncJob) < 0)
         goto cleanup;
 
     /* Touch up file header to mark image complete. */
@@ -3259,7 +3259,7 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
 static int
 qemuDomainSaveInternal(virQEMUDriverPtr driver,
                        virDomainObjPtr vm, const char *path,
-                       int compressed, const char *compressedpath,
+                       int compressed, virCommandPtr compressor,
                        const char *xmlin, unsigned int flags)
 {
     g_autofree char *xml = NULL;
@@ -3345,7 +3345,7 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver,
         goto endjob;
     xml = NULL;
 
-    ret = qemuDomainSaveMemory(driver, vm, path, data, compressedpath,
+    ret = qemuDomainSaveMemory(driver, vm, path, data, compressor,
                                flags, QEMU_ASYNC_JOB_SAVE);
     if (ret < 0)
         goto endjob;
@@ -3406,13 +3406,14 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver,
  */
 static int ATTRIBUTE_NONNULL(2)
 qemuGetCompressionProgram(const char *imageFormat,
-                          char **compresspath,
+                          virCommandPtr *compressor,
                           const char *styleFormat,
                           bool use_raw_on_fail)
 {
     int ret;
+    const char *prog;
 
-    *compresspath = NULL;
+    *compressor = NULL;
 
     if (!imageFormat)
         return QEMU_SAVE_FORMAT_RAW;
@@ -3423,8 +3424,13 @@ qemuGetCompressionProgram(const char *imageFormat,
     if (ret == QEMU_SAVE_FORMAT_RAW)
         return QEMU_SAVE_FORMAT_RAW;
 
-    if (!(*compresspath = virFindFileInPath(imageFormat)))
+    if (!(prog = virFindFileInPath(imageFormat)))
         goto error;
+
+    *compressor = virCommandNew(prog);
+    virCommandAddArg(*compressor, "-c");
+    if (ret == QEMU_SAVE_FORMAT_XZ)
+        virCommandAddArg(*compressor, "-3");
 
     return ret;
 
@@ -3466,7 +3472,7 @@ qemuDomainSaveFlags(virDomainPtr dom, const char *path, const char *dxml,
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
     int compressed;
-    g_autofree char *compressedpath = NULL;
+    g_autoptr(virCommand) compressor = NULL;
     int ret = -1;
     virDomainObjPtr vm = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
@@ -3477,7 +3483,7 @@ qemuDomainSaveFlags(virDomainPtr dom, const char *path, const char *dxml,
 
     cfg = virQEMUDriverGetConfig(driver);
     if ((compressed = qemuGetCompressionProgram(cfg->saveImageFormat,
-                                                &compressedpath,
+                                                &compressor,
                                                 "save", false)) < 0)
         goto cleanup;
 
@@ -3491,7 +3497,7 @@ qemuDomainSaveFlags(virDomainPtr dom, const char *path, const char *dxml,
         goto cleanup;
 
     ret = qemuDomainSaveInternal(driver, vm, path, compressed,
-                                 compressedpath, dxml, flags);
+                                 compressor, dxml, flags);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -3522,7 +3528,7 @@ qemuDomainManagedSave(virDomainPtr dom, unsigned int flags)
     virQEMUDriverPtr driver = dom->conn->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
     int compressed;
-    g_autofree char *compressedpath = NULL;
+    g_autoptr(virCommand) compressor = NULL;
     virDomainObjPtr vm;
     g_autofree char *name = NULL;
     int ret = -1;
@@ -3548,7 +3554,7 @@ qemuDomainManagedSave(virDomainPtr dom, unsigned int flags)
 
     cfg = virQEMUDriverGetConfig(driver);
     if ((compressed = qemuGetCompressionProgram(cfg->saveImageFormat,
-                                                &compressedpath,
+                                                &compressor,
                                                 "save", false)) < 0)
         goto cleanup;
 
@@ -3558,7 +3564,7 @@ qemuDomainManagedSave(virDomainPtr dom, unsigned int flags)
     VIR_INFO("Saving state of domain '%s' to '%s'", vm->def->name, name);
 
     ret = qemuDomainSaveInternal(driver, vm, name, compressed,
-                                 compressedpath, NULL, flags);
+                                 compressor, NULL, flags);
     if (ret == 0)
         vm->hasManagedSave = true;
 
@@ -3754,14 +3760,14 @@ doCoreDump(virQEMUDriverPtr driver,
     unsigned int flags = VIR_FILE_WRAPPER_NON_BLOCKING;
     const char *memory_dump_format = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    g_autofree char *compressedpath = NULL;
+    g_autoptr(virCommand) compressor = NULL;
 
     /* We reuse "save" flag for "dump" here. Then, we can support the same
      * format in "save" and "dump". This path doesn't need the compression
      * program to exist and can ignore the return value - it only cares to
-     * get the compressedpath */
+     * get the compressor */
     ignore_value(qemuGetCompressionProgram(cfg->dumpImageFormat,
-                                           &compressedpath,
+                                           &compressor,
                                            "dump", true));
 
     /* Create an empty file with appropriate ownership.  */
@@ -3809,7 +3815,7 @@ doCoreDump(virQEMUDriverPtr driver,
         if (!qemuMigrationSrcIsAllowed(driver, vm, false, 0))
             goto cleanup;
 
-        ret = qemuMigrationSrcToFile(driver, vm, fd, compressedpath,
+        ret = qemuMigrationSrcToFile(driver, vm, fd, compressor,
                                      QEMU_ASYNC_JOB_DUMP);
     }
 
@@ -15586,7 +15592,7 @@ qemuDomainSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
     int thaw = 0; /* 1 if freeze succeeded, -1 if freeze failed */
     bool pmsuspended = false;
     int compressed;
-    g_autofree char *compressedpath = NULL;
+    g_autoptr(virCommand) compressor = NULL;
     virQEMUSaveDataPtr data = NULL;
 
     /* If quiesce was requested, then issue a freeze command, and a
@@ -15656,7 +15662,7 @@ qemuDomainSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
                                           JOB_MASK(QEMU_JOB_MIGRATION_OP)));
 
         if ((compressed = qemuGetCompressionProgram(cfg->snapshotImageFormat,
-                                                    &compressedpath,
+                                                    &compressor,
                                                     "snapshot", false)) < 0)
             goto cleanup;
 
@@ -15673,7 +15679,7 @@ qemuDomainSnapshotCreateActiveExternal(virQEMUDriverPtr driver,
         xml = NULL;
 
         if ((ret = qemuDomainSaveMemory(driver, vm, snapdef->file, data,
-                                        compressedpath, 0,
+                                        compressor, 0,
                                         QEMU_ASYNC_JOB_SNAPSHOT)) < 0)
             goto cleanup;
 
