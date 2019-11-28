@@ -9153,7 +9153,8 @@ qemuMonitorJSONTransactionBitmapAdd(virJSONValuePtr actions,
                                     const char *node,
                                     const char *name,
                                     bool persistent,
-                                    bool disabled)
+                                    bool disabled,
+                                    unsigned long long granularity)
 {
     return qemuMonitorJSONTransactionAdd(actions,
                                          "block-dirty-bitmap-add",
@@ -9161,6 +9162,7 @@ qemuMonitorJSONTransactionBitmapAdd(virJSONValuePtr actions,
                                          "s:name", name,
                                          "b:persistent", persistent,
                                          "b:disabled", disabled,
+                                         "P:granularity", granularity,
                                          NULL);
 }
 

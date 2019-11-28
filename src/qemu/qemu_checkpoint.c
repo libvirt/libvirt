@@ -309,7 +309,7 @@ qemuCheckpointAddActions(virDomainObjPtr vm,
         if (disk->type != VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP)
             continue;
         node = qemuDomainDiskNodeFormatLookup(vm, disk->name);
-        if (qemuMonitorTransactionBitmapAdd(actions, node, disk->bitmap, true, false) < 0)
+        if (qemuMonitorTransactionBitmapAdd(actions, node, disk->bitmap, true, false, 0) < 0)
             return -1;
 
         /* We only want one active bitmap for a disk along the

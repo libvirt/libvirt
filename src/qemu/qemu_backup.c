@@ -201,7 +201,7 @@ qemuBackupDiskPrepareOneBitmaps(struct qemuBackupDiskData *dd,
                                         dd->domdisk->src->nodeformat,
                                         dd->incrementalBitmap,
                                         false,
-                                        true) < 0)
+                                        true, 0) < 0)
         return -1;
 
     if (qemuMonitorTransactionBitmapMerge(actions,
@@ -214,7 +214,7 @@ qemuBackupDiskPrepareOneBitmaps(struct qemuBackupDiskData *dd,
                                         dd->store->nodeformat,
                                         dd->incrementalBitmap,
                                         false,
-                                        true) < 0)
+                                        true, 0) < 0)
         return -1;
 
     if (qemuMonitorTransactionBitmapMerge(actions,

@@ -2956,7 +2956,7 @@ testQemuMonitorJSONTransaction(const void *opaque)
         qemuMonitorTransactionBitmapMergeSourceAddBitmap(mergebitmaps, "node2", "bitmap2") < 0)
         return -1;
 
-    if (qemuMonitorTransactionBitmapAdd(actions, "node1", "bitmap1", true, true) < 0 ||
+    if (qemuMonitorTransactionBitmapAdd(actions, "node1", "bitmap1", true, true, 1234) < 0 ||
         qemuMonitorTransactionBitmapRemove(actions, "node2", "bitmap2") < 0 ||
         qemuMonitorTransactionBitmapEnable(actions, "node3", "bitmap3") < 0 ||
         qemuMonitorTransactionBitmapDisable(actions, "node4", "bitmap4") < 0 ||

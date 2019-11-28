@@ -4543,9 +4543,11 @@ qemuMonitorTransactionBitmapAdd(virJSONValuePtr actions,
                                 const char *node,
                                 const char *name,
                                 bool persistent,
-                                bool disabled)
+                                bool disabled,
+                                unsigned long long granularity)
 {
-    return qemuMonitorJSONTransactionBitmapAdd(actions, node, name, persistent, disabled);
+    return qemuMonitorJSONTransactionBitmapAdd(actions, node, name, persistent,
+                                               disabled, granularity);
 }
 
 

@@ -1374,7 +1374,8 @@ qemuMonitorTransactionBitmapAdd(virJSONValuePtr actions,
                                 const char *node,
                                 const char *name,
                                 bool persistent,
-                                bool disabled);
+                                bool disabled,
+                                unsigned long long granularity);
 int
 qemuMonitorTransactionBitmapRemove(virJSONValuePtr actions,
                                    const char *node,
