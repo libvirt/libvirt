@@ -1249,8 +1249,6 @@ virSecuritySELinuxSetFileconImpl(const char *path,
                                  const char *tcon,
                                  bool privileged)
 {
-    security_context_t econ;
-
     /* Be aware that this function might run in a separate process.
      * Therefore, any driver state changes would be thrown away. */
 
@@ -1258,15 +1256,6 @@ virSecuritySELinuxSetFileconImpl(const char *path,
 
     if (setfilecon_raw(path, (const char *)tcon) < 0) {
         int setfilecon_errno = errno;
-
-        if (getfilecon_raw(path, &econ) >= 0) {
-            if (STREQ(tcon, econ)) {
-                freecon(econ);
-                /* It's alright, there's nothing to change anyway. */
-                return 1;
-            }
-            freecon(econ);
-        }
 
         /* If the error complaint is related to an image hosted on a (possibly
          * read-only) NFS mount, or a usbfs/sysfs filesystem not supporting
@@ -1401,21 +1390,10 @@ virSecuritySELinuxSetFilecon(virSecurityManagerPtr mgr,
 static int
 virSecuritySELinuxFSetFilecon(int fd, char *tcon)
 {
-    security_context_t econ;
-
     VIR_INFO("Setting SELinux context on fd %d to '%s'", fd, tcon);
 
     if (fsetfilecon_raw(fd, tcon) < 0) {
         int fsetfilecon_errno = errno;
-
-        if (fgetfilecon_raw(fd, &econ) >= 0) {
-            if (STREQ(tcon, econ)) {
-                freecon(econ);
-                /* It's alright, there's nothing to change anyway. */
-                return 0;
-            }
-            freecon(econ);
-        }
 
         /* if the error complaint is related to an image hosted on
          * an nfs mount, or a usbfs/sysfs filesystem not supporting
