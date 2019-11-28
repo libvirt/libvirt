@@ -2869,11 +2869,81 @@ qemuMonitorJSONBlockStatsUpdateCapacityBlockdev(qemuMonitorPtr mon,
 
 
 static void
+qemuMonitorJSONBlockNamedNodeDataBitmapFree(qemuBlockNamedNodeDataBitmapPtr bitmap)
+{
+    if (!bitmap)
+        return;
+
+    g_free(bitmap->name);
+    g_free(bitmap);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuBlockNamedNodeDataBitmap,
+                              qemuMonitorJSONBlockNamedNodeDataBitmapFree);
+
+
+static void
 qemuMonitorJSONBlockNamedNodeDataFree(qemuBlockNamedNodeDataPtr data)
 {
+    size_t i;
+
+    if (!data)
+        return;
+
+    for (i = 0; i < data->nbitmaps; i++)
+        qemuMonitorJSONBlockNamedNodeDataBitmapFree(data->bitmaps[i]);
+    g_free(data->bitmaps);
     g_free(data);
 }
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuBlockNamedNodeData, qemuMonitorJSONBlockNamedNodeDataFree);
+
+
+static qemuBlockNamedNodeDataBitmapPtr
+qemuMonitorJSONBlockGetNamedNodeDataBitmapOne(virJSONValuePtr val)
+{
+    g_autoptr(qemuBlockNamedNodeDataBitmap) bitmap = NULL;
+    const char *name;
+
+    bitmap = g_new0(qemuBlockNamedNodeDataBitmap, 1);
+
+    if (!(name = virJSONValueObjectGetString(val, "name")))
+        return NULL;
+
+    bitmap->name = g_strdup(name);
+
+    ignore_value(virJSONValueObjectGetBoolean(val, "recording", &bitmap->recording));
+    ignore_value(virJSONValueObjectGetBoolean(val, "persistent", &bitmap->persistent));
+    ignore_value(virJSONValueObjectGetBoolean(val, "busy", &bitmap->busy));
+    ignore_value(virJSONValueObjectGetBoolean(val, "inconsistent", &bitmap->inconsistent));
+    ignore_value(virJSONValueObjectGetNumberUlong(val, "granularity", &bitmap->granularity));
+    ignore_value(virJSONValueObjectGetNumberUlong(val, "count", &bitmap->dirtybytes));
+
+    return g_steal_pointer(&bitmap);
+}
+
+
+static void
+qemuMonitorJSONBlockGetNamedNodeDataBitmaps(virJSONValuePtr bitmaps,
+                                            qemuBlockNamedNodeDataPtr data)
+{
+    size_t nbitmaps = virJSONValueArraySize(bitmaps);
+    size_t i;
+
+    data->bitmaps = g_new0(qemuBlockNamedNodeDataBitmapPtr, nbitmaps);
+
+    for (i = 0; i < nbitmaps; i++) {
+        virJSONValuePtr bitmap = virJSONValueArrayGet(bitmaps, i);
+        qemuBlockNamedNodeDataBitmapPtr tmp;
+
+        if (!bitmap)
+            continue;
+
+        if (!(tmp = qemuMonitorJSONBlockGetNamedNodeDataBitmapOne(bitmap)))
+            continue;
+
+        data->bitmaps[data->nbitmaps++] = tmp;
+    }
+}
 
 
 static int
@@ -2883,6 +2953,7 @@ qemuMonitorJSONBlockGetNamedNodeDataWorker(size_t pos G_GNUC_UNUSED,
 {
     virHashTablePtr nodes = opaque;
     virJSONValuePtr img;
+    virJSONValuePtr bitmaps;
     const char *nodename;
     g_autoptr(qemuBlockNamedNodeData) ent = NULL;
 
@@ -2898,6 +2969,9 @@ qemuMonitorJSONBlockGetNamedNodeDataWorker(size_t pos G_GNUC_UNUSED,
     /* if actual-size is missing, image is not thin provisioned */
     if (virJSONValueObjectGetNumberUlong(img, "actual-size", &ent->physical) < 0)
         ent->physical = ent->capacity;
+
+    if ((bitmaps = virJSONValueObjectGetArray(val, "dirty-bitmaps")))
+        qemuMonitorJSONBlockGetNamedNodeDataBitmaps(bitmaps, ent);
 
     if (virHashAddEntry(nodes, nodename, ent) < 0)
         return -1;

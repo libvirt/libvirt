@@ -676,12 +676,27 @@ int qemuMonitorBlockStatsUpdateCapacityBlockdev(qemuMonitorPtr mon,
                                                 virHashTablePtr stats)
     ATTRIBUTE_NONNULL(2);
 
+typedef struct _qemuBlockNamedNodeDataBitmap qemuBlockNamedNodeDataBitmap;
+typedef qemuBlockNamedNodeDataBitmap *qemuBlockNamedNodeDataBitmapPtr;
+struct _qemuBlockNamedNodeDataBitmap {
+    char *name;
+    bool recording;
+    bool busy;
+    bool persistent;
+    bool inconsistent;
+
+    unsigned long long dirtybytes;
+    unsigned long long granularity;
+};
 
 typedef struct _qemuBlockNamedNodeData qemuBlockNamedNodeData;
 typedef qemuBlockNamedNodeData *qemuBlockNamedNodeDataPtr;
 struct _qemuBlockNamedNodeData {
     unsigned long long capacity;
     unsigned long long physical;
+
+    qemuBlockNamedNodeDataBitmapPtr *bitmaps;
+    size_t nbitmaps;
 };
 
 virHashTablePtr
