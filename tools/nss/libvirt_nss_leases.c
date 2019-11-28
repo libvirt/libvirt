@@ -379,6 +379,7 @@ findLeases(const char *file,
     };
     yajl_handle parser = NULL;
     char line[1024];
+    ssize_t nreadTotal = 0;
     int rv;
 
     if ((fd = open(file, O_RDONLY)) < 0) {
@@ -398,6 +399,7 @@ findLeases(const char *file,
             goto cleanup;
         if (rv == 0)
             break;
+        nreadTotal += rv;
 
         if (yajl_parse(parser, (const unsigned char *)line, rv)  !=
             yajl_status_ok) {
@@ -409,7 +411,8 @@ findLeases(const char *file,
         }
     }
 
-    if (yajl_complete_parse(parser) != yajl_status_ok) {
+    if (nreadTotal > 0 &&
+        yajl_complete_parse(parser) != yajl_status_ok) {
         ERROR("Parse failed %s",
               yajl_get_error(parser, 1, NULL, 0));
         goto cleanup;
