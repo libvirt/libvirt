@@ -15282,6 +15282,44 @@ qemuDomainSnapshotDiskCleanup(qemuDomainSnapshotDiskDataPtr data,
 }
 
 
+/**
+ * qemuDomainSnapshotDiskBitmapsPropagate:
+ *
+ * This function propagates any active persistent bitmap present in the original
+ * image into the new snapshot. This is necessary to keep tracking the changed
+ * blocks in the active bitmaps as the backing file will become read-only.
+ * We leave the original bitmap active as in cases when the overlay is
+ * discarded (snapshot revert with abandoning the history) everything works as
+ * expected.
+ */
+static int
+qemuDomainSnapshotDiskBitmapsPropagate(qemuDomainSnapshotDiskDataPtr dd,
+                                       virJSONValuePtr actions,
+                                       virHashTablePtr blockNamedNodeData)
+{
+    qemuBlockNamedNodeDataPtr entry;
+    size_t i;
+
+    if (!(entry = virHashLookup(blockNamedNodeData, dd->disk->src->nodeformat)))
+        return 0;
+
+    for (i = 0; i < entry->nbitmaps; i++) {
+        qemuBlockNamedNodeDataBitmapPtr bitmap = entry->bitmaps[i];
+
+        /* we don't care about temporary, inconsistent, or disabled bitmaps */
+        if (!bitmap->persistent || !bitmap->recording || bitmap->inconsistent)
+            continue;
+
+        if (qemuMonitorTransactionBitmapAdd(actions, dd->src->nodeformat,
+                                            bitmap->name, true, false,
+                                            bitmap->granularity) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
 static int
 qemuDomainSnapshotDiskPrepareOneBlockdev(virQEMUDriverPtr driver,
                                          virDomainObjPtr vm,
@@ -15421,6 +15459,9 @@ qemuDomainSnapshotDiskPrepareOne(virQEMUDriverPtr driver,
     if (blockdev) {
         if (qemuDomainSnapshotDiskPrepareOneBlockdev(driver, vm, dd, cfg, reuse,
                                                      blockNamedNodeData, asyncJob) < 0)
+            return -1;
+
+        if (qemuDomainSnapshotDiskBitmapsPropagate(dd, actions, blockNamedNodeData) < 0)
             return -1;
 
         if (qemuBlockSnapshotAddBlockdev(actions, dd->disk, dd->src) < 0)
