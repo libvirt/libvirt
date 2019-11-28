@@ -15592,7 +15592,7 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
         if (blockdev) {
             if (qemuBlockSnapshotAddBlockdev(actions,
                                              diskdata[i].disk,
-                                             diskdata[i].src))
+                                             diskdata[i].src) < 0)
                 goto cleanup;
         } else {
             if (qemuBlockSnapshotAddLegacy(actions,
