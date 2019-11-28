@@ -234,8 +234,6 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
     cfg->prHelperName = g_strdup(QEMU_PR_HELPER);
     cfg->slirpHelperName = g_strdup(QEMU_SLIRP_HELPER);
 
-    cfg->clearEmulatorCapabilities = true;
-
     cfg->securityDefaultConfined = true;
     cfg->securityRequireConfined = false;
 
@@ -602,8 +600,6 @@ virQEMUDriverConfigLoadProcessEntry(virQEMUDriverConfigPtr cfg,
         }
     }
 
-    if (virConfGetValueBool(conf, "clear_emulator_capabilities", &cfg->clearEmulatorCapabilities) < 0)
-        return -1;
     if (virConfGetValueString(conf, "bridge_helper", &cfg->bridgeHelperName) < 0)
         return -1;
 

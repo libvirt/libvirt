@@ -6812,11 +6812,6 @@ qemuProcessLaunch(virConnectPtr conn,
     if (qemuDomainCreateNamespace(driver, vm) < 0)
         goto cleanup;
 
-    VIR_DEBUG("Clear emulator capabilities: %d",
-              cfg->clearEmulatorCapabilities);
-    if (cfg->clearEmulatorCapabilities)
-        virCommandClearCaps(cmd);
-
     VIR_DEBUG("Setting up raw IO");
     if (qemuProcessSetupRawIO(driver, vm, cmd) < 0)
         goto cleanup;

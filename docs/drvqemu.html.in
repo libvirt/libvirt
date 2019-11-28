@@ -187,41 +187,29 @@ chmod o+x /path/to/directory
       </li>
     </ul>
 
+    <p>
+      The libvirt maintainers <strong>strongly recommend against</strong>
+      running QEMU as the root user/group. This should not be required
+      in most supported usage scenarios, as libvirt will generally do the
+      right thing to grant QEMU access to files it is permitted to
+      use when it is running non-root.
+    </p>
+
     <h3><a id="securitycap">Linux process capabilities</a></h3>
 
     <p>
-      The libvirt QEMU driver has a build time option allowing it to use
-      the <a href="http://people.redhat.com/sgrubb/libcap-ng/index.html">libcap-ng</a>
-      library to manage process capabilities. If this build option is
-      enabled, then the QEMU driver will use this to ensure that all
-      process capabilities are dropped before executing a QEMU virtual
-      machine. Process capabilities are what gives the 'root' account
-      its high power, in particular the CAP_DAC_OVERRIDE capability
-      is what allows a process running as 'root' to access files owned
-      by any user.
+      In versions of libvirt prior to 6.0.0, even if QEMU was configured
+      to run as the root user / group, libvirt would strip all process
+      capabilities. This meant that QEMU could only read/write files
+      owned by root, or with open permissions. In reality, stripping
+      capabilities did not have any security benefit, as it was trivial
+      to get commands to run in another context with full capabilities,
+      for example, by creating a cronjob.
     </p>
-
     <p>
-      If the QEMU driver is configured to run virtual machines as non-root,
-      then they will already lose all their process capabilities at time
-      of startup. The Linux capability feature is thus aimed primarily at
-      the scenario where the QEMU processes are running as root. In this
-      case, before launching a QEMU virtual machine, libvirtd will use
-      libcap-ng APIs to drop all process capabilities. It is important
-      for administrators to note that this implies the QEMU process will
-      <strong>only</strong> be able to access files owned by root, and
-      not files owned by any other user.
-    </p>
-
-    <p>
-      Thus, if a vendor / distributor has configured their libvirt package
-      to run as 'qemu' by default, a number of changes will be required
-      before an administrator can change a host to run guests as root.
-      In particular it will be necessary to change ownership on the
-      directories <code>/var/run/libvirt/qemu/</code>,
-      <code>/var/lib/libvirt/qemu/</code> and
-      <code>/var/cache/libvirt/qemu/</code> back to root, in addition
-      to changing the <code>/etc/libvirt/qemu.conf</code> settings.
+      Thus since 6.0.0, if QEMU is running as root, it will keep all
+      process capabilities. Behaviour when QEMU is running non-root
+      is unchanged, it still has no capabilities.
     </p>
 
     <h3><a id="securityselinux">SELinux basic confinement</a></h3>

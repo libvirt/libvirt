@@ -9512,8 +9512,7 @@ void qemuDomainObjCheckTaint(virQEMUDriverPtr driver,
     bool custom_hypervisor_feat = false;
 
     if (virQEMUDriverIsPrivileged(driver) &&
-        (!cfg->clearEmulatorCapabilities ||
-         cfg->user == 0 ||
+        (cfg->user == 0 ||
          cfg->group == 0))
         qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HIGH_PRIVILEGES, logCtxt);
 
