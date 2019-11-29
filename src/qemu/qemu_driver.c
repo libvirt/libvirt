@@ -18009,7 +18009,9 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     qemuBlockJobDataPtr job = NULL;
     g_autoptr(virStorageSource) mirror = mirrorsrc;
     bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
-    bool mirror_initialized = false;
+    bool supports_create = false;
+    bool supports_access = false;
+    bool supports_detect = false;
     g_autoptr(qemuBlockStorageSourceChainData) data = NULL;
     g_autoptr(qemuBlockStorageSourceChainData) crdata = NULL;
     virStorageSourcePtr n;
@@ -18090,14 +18092,17 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
         goto endjob;
     }
 
-    if (virStorageFileSupportsCreate(mirror) == 1) {
+    supports_access = virStorageFileSupportsAccess(mirror) == 1;
+    supports_create = virStorageFileSupportsCreate(mirror) == 1;
+    supports_detect = virStorageFileSupportsBackingChainTraversal(mirror) == 1;
+
+    if (supports_access || supports_create || supports_detect) {
         if (qemuDomainStorageFileInit(driver, vm, mirror, NULL) < 0)
             goto endjob;
-
-        mirror_initialized = true;
     }
 
-    if (qemuDomainBlockCopyValidateMirror(mirror, disk->dst, &existing) < 0)
+    if (supports_access &&
+        qemuDomainBlockCopyValidateMirror(mirror, disk->dst, &existing) < 0)
         goto endjob;
 
     if (!mirror->format) {
@@ -18108,7 +18113,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
              * can also pass the RAW flag or use XML to tell us the format.
              * So if we get here, we assume it is safe for us to probe the
              * format from the file that we will be using.  */
-            if (!mirror_initialized ||
+            if (!supports_detect ||
                 !virStorageSourceIsLocalStorage(mirror) ||
                 (mirror->format = virStorageFileProbeFormat(mirror->path, cfg->user,
                                                             cfg->group)) < 0) {
@@ -18132,7 +18137,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     /* pre-create the image file. In case when 'blockdev' is used this is
      * required so that libvirt can properly label the image for access by qemu */
     if (!existing) {
-        if (mirror_initialized) {
+        if (supports_create) {
             if (virStorageFileCreate(mirror) < 0) {
                 virReportSystemError(errno, "%s", _("failed to create copy target"));
                 goto endjob;
