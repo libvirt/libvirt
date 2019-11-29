@@ -1053,10 +1053,10 @@ virCapsPtr virTestGenericCapsInit(void)
  * Build NUMA topology with cell id starting from (0 + seq)
  * for testing
  */
-int
-virTestCapsBuildNUMATopology(virCapsPtr caps,
-                             int seq)
+virCapsHostNUMAPtr
+virTestCapsBuildNUMATopology(int seq)
 {
+    virCapsHostNUMAPtr caps = virCapabilitiesHostNUMANew();
     virCapsHostNUMACellCPUPtr cell_cpus = NULL;
     int core_id, cell_id;
     int id;
@@ -1077,22 +1077,21 @@ virTestCapsBuildNUMATopology(virCapsPtr caps,
         }
         id++;
 
-        if (virCapabilitiesAddHostNUMACell(caps, cell_id + seq,
-                                           MAX_MEM_IN_CELL,
-                                           MAX_CPUS_IN_CELL, cell_cpus,
-                                           VIR_ARCH_NONE, NULL,
-                                           VIR_ARCH_NONE, NULL) < 0)
-           goto error;
+        virCapabilitiesHostNUMAAddCell(caps, cell_id + seq,
+                                       MAX_MEM_IN_CELL,
+                                       MAX_CPUS_IN_CELL, cell_cpus,
+                                       VIR_ARCH_NONE, NULL,
+                                       VIR_ARCH_NONE, NULL);
 
         cell_cpus = NULL;
     }
 
-    return 0;
+    return caps;
 
  error:
-    virCapabilitiesClearHostNUMACellCPUTopology(cell_cpus, MAX_CPUS_IN_CELL);
+    virCapabilitiesHostNUMAUnref(caps);
     VIR_FREE(cell_cpus);
-    return -1;
+    return NULL;
 }
 
 static virDomainDefParserConfig virTestGenericDomainDefParserConfig = {

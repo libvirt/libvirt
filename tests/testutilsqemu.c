@@ -205,7 +205,7 @@ virCapsPtr testQemuCapsInit(void)
      * Build a NUMA topology with cell_id (NUMA node id
      * being 3(0 + 3),4(1 + 3), 5 and 6
      */
-    if (virTestCapsBuildNUMATopology(caps, 3) < 0)
+    if (!(caps->host.numa = virTestCapsBuildNUMATopology(3)))
         goto cleanup;
 
     for (i = 0; i < VIR_ARCH_LAST; i++) {

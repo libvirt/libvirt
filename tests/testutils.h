@@ -157,8 +157,7 @@ int virTestMain(int argc,
 #define VIR_TEST_MOCK(mock) (abs_builddir "/.libs/lib" mock "mock" MOCK_EXT)
 
 virCapsPtr virTestGenericCapsInit(void);
-int virTestCapsBuildNUMATopology(virCapsPtr caps,
-                                 int seq);
+virCapsHostNUMAPtr virTestCapsBuildNUMATopology(int seq);
 virDomainXMLOptionPtr virTestGenericDomainXMLConfInit(void);
 
 typedef enum {

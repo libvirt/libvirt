@@ -113,6 +113,11 @@ struct _virCapsHostNUMACell {
     virCapsHostNUMACellPageInfoPtr pageinfo;
 };
 
+struct _virCapsHostNUMA {
+    gint refs;
+    GPtrArray *cells;
+};
+
 struct _virCapsHostSecModelLabel {
     char *type;
     char *label;
@@ -168,9 +173,8 @@ struct _virCapsHost {
     size_t nmigrateTrans;
     size_t nmigrateTrans_max;
     char **migrateTrans;
-    size_t nnumaCell;
-    size_t nnumaCell_max;
-    virCapsHostNUMACellPtr *numaCell;
+
+    virCapsHostNUMAPtr numa;
 
     virResctrlInfoPtr resctrl;
 
@@ -225,7 +229,11 @@ virCapabilitiesNew(virArch hostarch,
                    bool liveMigrate);
 
 void
-virCapabilitiesFreeNUMAInfo(virCapsPtr caps);
+virCapabilitiesHostNUMAUnref(virCapsHostNUMAPtr caps);
+void
+virCapabilitiesHostNUMARef(virCapsHostNUMAPtr caps);
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCapsHostNUMA, virCapabilitiesHostNUMAUnref);
 
 int
 virCapabilitiesAddHostFeature(virCapsPtr caps,
@@ -239,8 +247,8 @@ int
 virCapabilitiesSetNetPrefix(virCapsPtr caps,
                             const char *prefix);
 
-int
-virCapabilitiesAddHostNUMACell(virCapsPtr caps,
+void
+virCapabilitiesHostNUMAAddCell(virCapsHostNUMAPtr caps,
                                int num,
                                unsigned long long mem,
                                int ncpus,
@@ -323,14 +331,15 @@ virCapabilitiesClearHostNUMACellCPUTopology(virCapsHostNUMACellCPUPtr cpu,
 char *
 virCapabilitiesFormatXML(virCapsPtr caps);
 
-virBitmapPtr virCapabilitiesGetCpusForNodemask(virCapsPtr caps,
-                                               virBitmapPtr nodemask);
+virBitmapPtr virCapabilitiesHostNUMAGetCpus(virCapsHostNUMAPtr caps,
+                                            virBitmapPtr nodemask);
 
 int virCapabilitiesGetNodeInfo(virNodeInfoPtr nodeinfo);
 
 int virCapabilitiesInitPages(virCapsPtr caps);
 
-int virCapabilitiesInitNUMA(virCapsPtr caps);
+virCapsHostNUMAPtr virCapabilitiesHostNUMANew(void);
+virCapsHostNUMAPtr virCapabilitiesHostNUMANewHost(void);
 
 bool virCapsHostCacheBankEquals(virCapsHostCacheBankPtr a,
                                 virCapsHostCacheBankPtr b);

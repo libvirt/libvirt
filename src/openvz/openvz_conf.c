@@ -155,7 +155,7 @@ virCapsPtr openvzCapsInit(void)
                                    false, false)) == NULL)
         goto no_memory;
 
-    if (virCapabilitiesInitNUMA(caps) < 0)
+    if (!(caps->host.numa = virCapabilitiesHostNUMANewHost()))
         goto no_memory;
 
     if (virCapabilitiesInitCaches(caps) < 0)

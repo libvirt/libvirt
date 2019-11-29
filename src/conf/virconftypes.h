@@ -66,6 +66,9 @@ typedef virCapsHostMemBW *virCapsHostMemBWPtr;
 typedef struct _virCapsHostMemBWNode virCapsHostMemBWNode;
 typedef virCapsHostMemBWNode *virCapsHostMemBWNodePtr;
 
+typedef struct _virCapsHostNUMA virCapsHostNUMA;
+typedef virCapsHostNUMA *virCapsHostNUMAPtr;
+
 typedef struct _virCapsHostNUMACell virCapsHostNUMACell;
 typedef virCapsHostNUMACell *virCapsHostNUMACellPtr;
 

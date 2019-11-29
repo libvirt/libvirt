@@ -182,14 +182,19 @@ virCapabilitiesFreeStoragePool(virCapsStoragePoolPtr pool)
 
 
 void
-virCapabilitiesFreeNUMAInfo(virCapsPtr caps)
+virCapabilitiesHostNUMAUnref(virCapsHostNUMAPtr caps)
 {
-    size_t i;
+    if (g_atomic_int_dec_and_test(&caps->refs)) {
+        g_ptr_array_unref(caps->cells);
 
-    for (i = 0; i < caps->host.nnumaCell; i++)
-        virCapabilitiesFreeHostNUMACell(caps->host.numaCell[i]);
-    VIR_FREE(caps->host.numaCell);
-    caps->host.nnumaCell = 0;
+        VIR_FREE(caps);
+    }
+}
+
+void
+virCapabilitiesHostNUMARef(virCapsHostNUMAPtr caps)
+{
+    g_atomic_int_inc(&caps->refs);
 }
 
 static void
@@ -234,7 +239,8 @@ virCapsDispose(void *object)
         VIR_FREE(caps->host.features[i]);
     VIR_FREE(caps->host.features);
 
-    virCapabilitiesFreeNUMAInfo(caps);
+    if (caps->host.numa)
+        virCapabilitiesHostNUMAUnref(caps->host.numa);
 
     for (i = 0; i < caps->host.nmigrateTrans; i++)
         VIR_FREE(caps->host.migrateTrans[i]);
@@ -320,7 +326,7 @@ virCapabilitiesSetNetPrefix(virCapsPtr caps,
 
 
 /**
- * virCapabilitiesAddHostNUMACell:
+ * virCapabilitiesHostNUMAAddCell:
  * @caps: capabilities to extend
  * @num: ID number of NUMA cell
  * @mem: Total size of memory in the NUMA node (in KiB)
@@ -334,8 +340,8 @@ virCapabilitiesSetNetPrefix(virCapsPtr caps,
  * Registers a new NUMA cell for a host, passing in a
  * array of CPU IDs belonging to the cell
  */
-int
-virCapabilitiesAddHostNUMACell(virCapsPtr caps,
+void
+virCapabilitiesHostNUMAAddCell(virCapsHostNUMAPtr caps,
                                int num,
                                unsigned long long mem,
                                int ncpus,
@@ -345,14 +351,7 @@ virCapabilitiesAddHostNUMACell(virCapsPtr caps,
                                int npageinfo,
                                virCapsHostNUMACellPageInfoPtr pageinfo)
 {
-    virCapsHostNUMACellPtr cell;
-
-    if (VIR_RESIZE_N(caps->host.numaCell, caps->host.nnumaCell_max,
-                     caps->host.nnumaCell, 1) < 0)
-        return -1;
-
-    if (VIR_ALLOC(cell) < 0)
-        return -1;
+    virCapsHostNUMACellPtr cell = g_new0(virCapsHostNUMACell, 1);
 
     cell->num = num;
     cell->mem = mem;
@@ -363,9 +362,7 @@ virCapabilitiesAddHostNUMACell(virCapsPtr caps,
     cell->npageinfo = npageinfo;
     cell->pageinfo = pageinfo;
 
-    caps->host.numaCell[caps->host.nnumaCell++] = cell;
-
-    return 0;
+    g_ptr_array_add(caps->cells, cell);
 }
 
 
@@ -857,9 +854,8 @@ virCapabilitiesAddStoragePool(virCapsPtr caps,
 
 
 static int
-virCapabilitiesFormatNUMATopology(virBufferPtr buf,
-                                  size_t ncells,
-                                  virCapsHostNUMACellPtr *cells)
+virCapabilitiesHostNUMAFormat(virCapsHostNUMAPtr caps,
+                              virBufferPtr buf)
 {
     size_t i;
     size_t j;
@@ -867,48 +863,49 @@ virCapabilitiesFormatNUMATopology(virBufferPtr buf,
 
     virBufferAddLit(buf, "<topology>\n");
     virBufferAdjustIndent(buf, 2);
-    virBufferAsprintf(buf, "<cells num='%zu'>\n", ncells);
+    virBufferAsprintf(buf, "<cells num='%d'>\n", caps->cells->len);
     virBufferAdjustIndent(buf, 2);
-    for (i = 0; i < ncells; i++) {
-        virBufferAsprintf(buf, "<cell id='%d'>\n", cells[i]->num);
+    for (i = 0; i < caps->cells->len; i++) {
+        virCapsHostNUMACellPtr cell = g_ptr_array_index(caps->cells, i);
+        virBufferAsprintf(buf, "<cell id='%d'>\n", cell->num);
         virBufferAdjustIndent(buf, 2);
 
         /* Print out the numacell memory total if it is available */
-        if (cells[i]->mem)
+        if (cell->mem)
             virBufferAsprintf(buf, "<memory unit='KiB'>%llu</memory>\n",
-                              cells[i]->mem);
+                              cell->mem);
 
-        for (j = 0; j < cells[i]->npageinfo; j++) {
+        for (j = 0; j < cell->npageinfo; j++) {
             virBufferAsprintf(buf, "<pages unit='KiB' size='%u'>%llu</pages>\n",
-                              cells[i]->pageinfo[j].size,
-                              cells[i]->pageinfo[j].avail);
+                              cell->pageinfo[j].size,
+                              cell->pageinfo[j].avail);
         }
 
-        if (cells[i]->nsiblings) {
+        if (cell->nsiblings) {
             virBufferAddLit(buf, "<distances>\n");
             virBufferAdjustIndent(buf, 2);
-            for (j = 0; j < cells[i]->nsiblings; j++) {
+            for (j = 0; j < cell->nsiblings; j++) {
                 virBufferAsprintf(buf, "<sibling id='%d' value='%d'/>\n",
-                                  cells[i]->siblings[j].node,
-                                  cells[i]->siblings[j].distance);
+                                  cell->siblings[j].node,
+                                  cell->siblings[j].distance);
             }
             virBufferAdjustIndent(buf, -2);
             virBufferAddLit(buf, "</distances>\n");
         }
 
-        virBufferAsprintf(buf, "<cpus num='%d'>\n", cells[i]->ncpus);
+        virBufferAsprintf(buf, "<cpus num='%d'>\n", cell->ncpus);
         virBufferAdjustIndent(buf, 2);
-        for (j = 0; j < cells[i]->ncpus; j++) {
-            virBufferAsprintf(buf, "<cpu id='%d'", cells[i]->cpus[j].id);
+        for (j = 0; j < cell->ncpus; j++) {
+            virBufferAsprintf(buf, "<cpu id='%d'", cell->cpus[j].id);
 
-            if (cells[i]->cpus[j].siblings) {
-                if (!(siblings = virBitmapFormat(cells[i]->cpus[j].siblings)))
+            if (cell->cpus[j].siblings) {
+                if (!(siblings = virBitmapFormat(cell->cpus[j].siblings)))
                     return -1;
 
                 virBufferAsprintf(buf,
                                   " socket_id='%d' core_id='%d' siblings='%s'",
-                                  cells[i]->cpus[j].socket_id,
-                                  cells[i]->cpus[j].core_id,
+                                  cell->cpus[j].socket_id,
+                                  cell->cpus[j].core_id,
                                   siblings);
                 VIR_FREE(siblings);
             }
@@ -1187,9 +1184,8 @@ virCapabilitiesFormatHostXML(virCapsHostPtr host,
         virBufferAsprintf(buf, "<netprefix>%s</netprefix>\n",
                           host->netprefix);
 
-    if (host->nnumaCell &&
-        virCapabilitiesFormatNUMATopology(buf, host->nnumaCell,
-                                          host->numaCell) < 0)
+    if (host->numa &&
+        virCapabilitiesHostNUMAFormat(host->numa, buf) < 0)
         goto error;
 
     if (virCapabilitiesFormatCaches(buf, &host->cache) < 0)
@@ -1394,14 +1390,15 @@ virCapabilitiesFormatXML(virCapsPtr caps)
 
 /* get the maximum ID of cpus in the host */
 static unsigned int
-virCapabilitiesGetHostMaxcpu(virCapsPtr caps)
+virCapabilitiesHostNUMAGetMaxcpu(virCapsHostNUMAPtr caps)
 {
     unsigned int maxcpu = 0;
     size_t node;
     size_t cpu;
 
-    for (node = 0; node < caps->host.nnumaCell; node++) {
-        virCapsHostNUMACellPtr cell = caps->host.numaCell[node];
+    for (node = 0; node < caps->cells->len; node++) {
+        virCapsHostNUMACellPtr cell =
+            g_ptr_array_index(caps->cells, node);
 
         for (cpu = 0; cpu < cell->ncpus; cpu++) {
             if (cell->cpus[cpu].id > maxcpu)
@@ -1414,19 +1411,19 @@ virCapabilitiesGetHostMaxcpu(virCapsPtr caps)
 
 /* set cpus of a numa node in the bitmask */
 static int
-virCapabilitiesGetCpusForNode(virCapsPtr caps,
-                              size_t node,
-                              virBitmapPtr cpumask)
+virCapabilitiesHostNUMAGetCellCpus(virCapsHostNUMAPtr caps,
+                                   size_t node,
+                                   virBitmapPtr cpumask)
 {
     virCapsHostNUMACellPtr cell = NULL;
     size_t cpu;
     size_t i;
     /* The numa node numbers can be non-contiguous. Ex: 0,1,16,17. */
-    for (i = 0; i < caps->host.nnumaCell; i++) {
-        if (caps->host.numaCell[i]->num == node) {
-            cell = caps->host.numaCell[i];
+    for (i = 0; i < caps->cells->len; i++) {
+        cell = g_ptr_array_index(caps->cells, i);
+        if (cell->num == node)
             break;
-        }
+        cell = NULL;
     }
 
     for (cpu = 0; cell && cpu < cell->ncpus; cpu++) {
@@ -1443,11 +1440,11 @@ virCapabilitiesGetCpusForNode(virCapsPtr caps,
 }
 
 virBitmapPtr
-virCapabilitiesGetCpusForNodemask(virCapsPtr caps,
-                                  virBitmapPtr nodemask)
+virCapabilitiesHostNUMAGetCpus(virCapsHostNUMAPtr caps,
+                               virBitmapPtr nodemask)
 {
     virBitmapPtr ret = NULL;
-    unsigned int maxcpu = virCapabilitiesGetHostMaxcpu(caps);
+    unsigned int maxcpu = virCapabilitiesHostNUMAGetMaxcpu(caps);
     ssize_t node = -1;
 
     if (!(ret = virBitmapNew(maxcpu + 1)))
@@ -1455,7 +1452,7 @@ virCapabilitiesGetCpusForNodemask(virCapsPtr caps,
 
 
     while ((node = virBitmapNextSetBit(nodemask, node)) >= 0) {
-        if (virCapabilitiesGetCpusForNode(caps, node, ret) < 0) {
+        if (virCapabilitiesHostNUMAGetCellCpus(caps, node, ret) < 0) {
             virBitmapFree(ret);
             return NULL;
         }
@@ -1591,7 +1588,7 @@ virCapabilitiesGetNUMAPagesInfo(int node,
 
 
 static int
-virCapabilitiesInitNUMAFake(virCapsPtr caps)
+virCapabilitiesHostNUMAInitFake(virCapsHostNUMAPtr caps)
 {
     virNodeInfo nodeinfo;
     virCapsHostNUMACellCPUPtr cpus;
@@ -1631,16 +1628,18 @@ virCapabilitiesInitNUMAFake(virCapsPtr caps)
         }
     }
 
-    if (virCapabilitiesAddHostNUMACell(caps, 0,
-                                       nodeinfo.memory,
+    caps = g_new0(virCapsHostNUMA, 1);
+    caps->cells = g_ptr_array_new_with_free_func(
+        (GDestroyNotify)virCapabilitiesFreeHostNUMACell);
+    virCapabilitiesHostNUMAAddCell(caps, 0,
+                                   nodeinfo.memory,
 #ifdef __linux__
-                                       onlinecpus, cpus,
+                                   onlinecpus, cpus,
 #else
-                                       ncpus, cpus,
+                                   ncpus, cpus,
 #endif
-                                       0, NULL,
-                                       0, NULL) < 0)
-        goto error;
+                                   0, NULL,
+                                   0, NULL);
 
     return 0;
 
@@ -1651,8 +1650,9 @@ virCapabilitiesInitNUMAFake(virCapsPtr caps)
     return -1;
 }
 
-int
-virCapabilitiesInitNUMA(virCapsPtr caps)
+
+static int
+virCapabilitiesHostNUMAInitReal(virCapsHostNUMAPtr caps)
 {
     int n;
     unsigned long long memory;
@@ -1665,11 +1665,7 @@ virCapabilitiesInitNUMA(virCapsPtr caps)
     int ret = -1;
     int ncpus = 0;
     int cpu;
-    bool topology_failed = false;
     int max_node;
-
-    if (!virNumaIsAvailable())
-        return virCapabilitiesInitNUMAFake(caps);
 
     if ((max_node = virNumaGetMaxNode()) < 0)
         goto cleanup;
@@ -1690,10 +1686,8 @@ virCapabilitiesInitNUMA(virCapsPtr caps)
 
         for (i = 0; i < virBitmapSize(cpumap); i++) {
             if (virBitmapIsBitSet(cpumap, i)) {
-                if (virCapabilitiesFillCPUInfo(i, cpus + cpu++) < 0) {
-                    topology_failed = true;
-                    virResetLastError();
-                }
+                if (virCapabilitiesFillCPUInfo(i, cpus + cpu++) < 0)
+                    goto cleanup;
             }
         }
 
@@ -1707,11 +1701,10 @@ virCapabilitiesInitNUMA(virCapsPtr caps)
         virNumaGetNodeMemory(n, &memory, NULL);
         memory >>= 10;
 
-        if (virCapabilitiesAddHostNUMACell(caps, n, memory,
-                                           ncpus, cpus,
-                                           nsiblings, siblings,
-                                           npageinfo, pageinfo) < 0)
-            goto cleanup;
+        virCapabilitiesHostNUMAAddCell(caps, n, memory,
+                                       ncpus, cpus,
+                                       nsiblings, siblings,
+                                       npageinfo, pageinfo);
 
         cpus = NULL;
         siblings = NULL;
@@ -1723,15 +1716,50 @@ virCapabilitiesInitNUMA(virCapsPtr caps)
     ret = 0;
 
  cleanup:
-    if ((topology_failed || ret < 0) && cpus)
-        virCapabilitiesClearHostNUMACellCPUTopology(cpus, ncpus);
-
     virBitmapFree(cpumap);
     VIR_FREE(cpus);
     VIR_FREE(siblings);
     VIR_FREE(pageinfo);
     return ret;
 }
+
+
+virCapsHostNUMAPtr
+virCapabilitiesHostNUMANew(void)
+{
+    virCapsHostNUMAPtr caps = NULL;
+
+    caps = g_new0(virCapsHostNUMA, 1);
+    caps->refs = 1;
+    caps->cells = g_ptr_array_new_with_free_func(
+        (GDestroyNotify)virCapabilitiesFreeHostNUMACell);
+
+    return caps;
+}
+
+
+virCapsHostNUMAPtr
+virCapabilitiesHostNUMANewHost(void)
+{
+    virCapsHostNUMAPtr caps = virCapabilitiesHostNUMANew();
+
+    if (virNumaIsAvailable()) {
+        if (virCapabilitiesHostNUMAInitReal(caps) == 0)
+            return caps;
+
+        virCapabilitiesHostNUMAUnref(caps);
+        caps = virCapabilitiesHostNUMANew();
+        VIR_WARN("Failed to query host NUMA topology, faking single NUMA node");
+    }
+
+    if (virCapabilitiesHostNUMAInitFake(caps) < 0) {
+        virCapabilitiesHostNUMAUnref(caps);
+        return NULL;
+    }
+
+    return caps;
+}
+
 
 int
 virCapabilitiesInitPages(virCapsPtr caps)

@@ -71,7 +71,7 @@ vmwareCapsInit(void)
                                    false, false)) == NULL)
         goto error;
 
-    if (virCapabilitiesInitNUMA(caps) < 0)
+    if (!(caps->host.numa = virCapabilitiesHostNUMANewHost()))
         goto error;
 
     if (virCapabilitiesInitCaches(caps) < 0)

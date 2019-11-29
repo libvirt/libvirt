@@ -322,11 +322,8 @@ phypCapsInit(void)
      * unexpected failures. We don't want to break the QEMU
      * driver in this scenario, so log errors & carry on
      */
-    if (virCapabilitiesInitNUMA(caps) < 0) {
-        virCapabilitiesFreeNUMAInfo(caps);
-        VIR_WARN
-            ("Failed to query host NUMA topology, disabling NUMA capabilities");
-    }
+    if (!(caps->host.numa = virCapabilitiesHostNUMANewHost()))
+        goto no_memory;
 
     if (virCapabilitiesInitCaches(caps) < 0)
         VIR_WARN("Failed to get host CPU cache info");

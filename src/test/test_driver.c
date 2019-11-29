@@ -302,6 +302,7 @@ testBuildCapabilities(virConnectPtr conn)
     caps->host.pagesSize[caps->host.nPagesSize++] = 2048;
     caps->host.pagesSize[caps->host.nPagesSize++] = 1024 * 1024;
 
+    caps->host.numa = virCapabilitiesHostNUMANew();
     for (i = 0; i < privconn->numCells; i++) {
         virCapsHostNUMACellCPUPtr cpu_cells;
         virCapsHostNUMACellPageInfoPtr pages;
@@ -326,10 +327,10 @@ testBuildCapabilities(virConnectPtr conn)
 
         pages[0].avail = privconn->cells[i].mem / pages[0].size;
 
-        if (virCapabilitiesAddHostNUMACell(caps, i, privconn->cells[i].mem,
-                                           privconn->cells[i].numCpus,
-                                           cpu_cells, 0, NULL, nPages, pages) < 0)
-            goto error;
+        virCapabilitiesHostNUMAAddCell(caps->host.numa,
+                                       i, privconn->cells[i].mem,
+                                       privconn->cells[i].numCpus,
+                                       cpu_cells, 0, NULL, nPages, pages);
     }
 
     for (i = 0; i < G_N_ELEMENTS(guest_types); i++) {

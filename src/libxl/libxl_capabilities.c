@@ -320,6 +320,7 @@ libxlCapsInitNuma(libxl_ctx *ctx, virCapsPtr caps)
         }
     }
 
+    caps->host.numa = virCapabilitiesHostNUMANew();
     for (i = 0; i < nr_nodes; i++) {
         if (numa_info[i].size == LIBXL_NUMAINFO_INVALID_ENTRY)
             continue;
@@ -337,15 +338,11 @@ libxlCapsInitNuma(libxl_ctx *ctx, virCapsPtr caps)
             }
         }
 
-        if (virCapabilitiesAddHostNUMACell(caps, i,
-                                           numa_info[i].size / 1024,
-                                           nr_cpus_node[i], cpus[i],
-                                           nr_siblings, siblings,
-                                           0, NULL) < 0) {
-            virCapabilitiesClearHostNUMACellCPUTopology(cpus[i],
-                                                        nr_cpus_node[i]);
-            goto cleanup;
-        }
+        virCapabilitiesHostNUMAAddCell(caps->host.numa, i,
+                                       numa_info[i].size / 1024,
+                                       nr_cpus_node[i], cpus[i],
+                                       nr_siblings, siblings,
+                                       0, NULL);
 
         /* This is safe, as the CPU list is now stored in the NUMA cell */
         cpus[i] = NULL;
@@ -357,7 +354,10 @@ libxlCapsInitNuma(libxl_ctx *ctx, virCapsPtr caps)
     if (ret != 0) {
         for (i = 0; cpus && i < nr_nodes; i++)
             VIR_FREE(cpus[i]);
-        virCapabilitiesFreeNUMAInfo(caps);
+        if (caps->host.numa) {
+            virCapabilitiesHostNUMAUnref(caps->host.numa);
+            caps->host.numa = NULL;
+        }
         VIR_FREE(siblings);
     }
 

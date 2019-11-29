@@ -6161,7 +6161,7 @@ qemuProcessPrepareDomainNUMAPlacement(virDomainObjPtr vm,
     /* numad may return a nodeset that only contains cpus but cgroups don't play
      * well with that. Set the autoCpuset from all cpus from that nodeset, but
      * assign autoNodeset only with nodes containing memory. */
-    if (!(priv->autoCpuset = virCapabilitiesGetCpusForNodemask(caps, numadNodeset)))
+    if (!(priv->autoCpuset = virCapabilitiesHostNUMAGetCpus(caps->host.numa, numadNodeset)))
         goto cleanup;
 
     virBitmapIntersect(numadNodeset, hostMemoryNodeset);
