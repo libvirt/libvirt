@@ -205,14 +205,6 @@ virCapsPtr testQemuCapsInit(void)
     caps->host.secModels[0].model = g_strdup("none");
     caps->host.secModels[0].doi = g_strdup("0");
 
-    if (!(cpuDefault = virCPUDefCopy(&cpuDefaultData)) ||
-        !(cpuHaswell = virCPUDefCopy(&cpuHaswellData)) ||
-        !(cpuPower8 = virCPUDefCopy(&cpuPower8Data)) ||
-        !(cpuPower9 = virCPUDefCopy(&cpuPower9Data)))
-        goto cleanup;
-
-    qemuTestSetHostCPU(caps, NULL);
-
     if (!(caps->host.numa = virCapabilitiesHostNUMANewHost()))
         goto cleanup;
 
@@ -237,9 +229,6 @@ virCapsPtr testQemuCapsInit(void)
 
  cleanup:
     caps->host.cpu = NULL;
-    virCPUDefFree(cpuDefault);
-    virCPUDefFree(cpuHaswell);
-    virCPUDefFree(cpuPower8);
     virObjectUnref(caps);
     return NULL;
 }
@@ -255,16 +244,15 @@ qemuTestSetHostArch(virQEMUDriverPtr driver,
     virTestHostArch = arch;
     driver->hostarch = virArchFromHost();
     driver->caps->host.arch = virArchFromHost();
-    qemuTestSetHostCPU(driver->caps, NULL);
+    qemuTestSetHostCPU(driver, arch, NULL);
 }
 
 
 void
-qemuTestSetHostCPU(virCapsPtr caps,
+qemuTestSetHostCPU(virQEMUDriverPtr driver,
+                   virArch arch,
                    virCPUDefPtr cpu)
 {
-    virArch arch = caps->host.arch;
-
     if (!cpu) {
         if (ARCH_IS_X86(arch))
             cpu = cpuDefault;
@@ -274,11 +262,19 @@ qemuTestSetHostCPU(virCapsPtr caps,
 
     unsetenv("VIR_TEST_MOCK_FAKE_HOST_CPU");
     if (cpu) {
-        caps->host.arch = cpu->arch;
         if (cpu->model)
             setenv("VIR_TEST_MOCK_FAKE_HOST_CPU", cpu->model, 1);
     }
-    caps->host.cpu = cpu;
+    if (driver) {
+        if (cpu)
+            driver->caps->host.arch = cpu->arch;
+        driver->caps->host.cpu = cpu;
+
+        virCPUDefFree(driver->hostcpu);
+        if (cpu)
+            virCPUDefRef(cpu);
+        driver->hostcpu = cpu;
+    }
 }
 
 
@@ -297,17 +293,6 @@ qemuTestParseCapabilitiesArch(virArch arch,
  error:
     virObjectUnref(qemuCaps);
     return NULL;
-}
-
-
-virQEMUCapsPtr
-qemuTestParseCapabilities(virCapsPtr caps,
-                          const char *capsFile)
-{
-    if (!caps)
-        return NULL;
-
-    return qemuTestParseCapabilitiesArch(caps->host.arch, capsFile);
 }
 
 
@@ -382,6 +367,12 @@ int qemuTestDriverInit(virQEMUDriver *driver)
 
     memset(driver, 0, sizeof(*driver));
 
+    if (!(cpuDefault = virCPUDefCopy(&cpuDefaultData)) ||
+        !(cpuHaswell = virCPUDefCopy(&cpuHaswellData)) ||
+        !(cpuPower8 = virCPUDefCopy(&cpuPower8Data)) ||
+        !(cpuPower9 = virCPUDefCopy(&cpuPower9Data)))
+        return -1;
+
     if (virMutexInit(&driver->lock) < 0)
         return -1;
 
@@ -438,6 +429,8 @@ int qemuTestDriverInit(virQEMUDriver *driver)
         goto error;
     if (!(driver->securityManager = virSecurityManagerNewStack(mgr)))
         goto error;
+
+    qemuTestSetHostCPU(driver, driver->hostarch, NULL);
 
     return 0;
 

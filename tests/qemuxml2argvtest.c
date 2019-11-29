@@ -1733,7 +1733,7 @@ mymain(void)
     DO_TEST_FAILURE("cpu-s390-features", QEMU_CAPS_KVM);
     qemuTestSetHostArch(&driver, VIR_ARCH_NONE);
 
-    qemuTestSetHostCPU(driver.caps, cpuHaswell);
+    qemuTestSetHostCPU(&driver, driver.hostarch, cpuHaswell);
     DO_TEST("cpu-Haswell", QEMU_CAPS_KVM);
     DO_TEST("cpu-Haswell2", QEMU_CAPS_KVM);
     DO_TEST("cpu-Haswell3", QEMU_CAPS_KVM);
@@ -1744,7 +1744,7 @@ mymain(void)
     DO_TEST_CAPS_VER("cpu-tsc-frequency", "4.0.0");
     DO_TEST_CAPS_VER("cpu-translation", "4.0.0");
     DO_TEST_CAPS_LATEST("cpu-translation");
-    qemuTestSetHostCPU(driver.caps, NULL);
+    qemuTestSetHostCPU(&driver, driver.hostarch, NULL);
 
     DO_TEST("encrypted-disk", QEMU_CAPS_QCOW2_LUKS, QEMU_CAPS_OBJECT_SECRET);
     DO_TEST("encrypted-disk-usage", QEMU_CAPS_QCOW2_LUKS, QEMU_CAPS_OBJECT_SECRET);
@@ -1873,12 +1873,12 @@ mymain(void)
                     QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
                     QEMU_CAPS_KVM);
 
-    qemuTestSetHostCPU(driver.caps, cpuPower9);
+    qemuTestSetHostCPU(&driver, driver.hostarch, cpuPower9);
     DO_TEST("pseries-cpu-compat-power9",
             QEMU_CAPS_KVM,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_DEVICE_SPAPR_VTY);
-    qemuTestSetHostCPU(driver.caps, NULL);
+    qemuTestSetHostCPU(&driver, driver.hostarch, NULL);
 
     qemuTestSetHostArch(&driver, VIR_ARCH_NONE);
 

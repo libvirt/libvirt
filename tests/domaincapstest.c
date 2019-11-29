@@ -54,8 +54,7 @@ fillStringValues(virDomainCapsStringValuesPtr values, ...)
 # include "testutilshostcpus.h"
 
 static int
-fakeHostCPU(virCapsPtr caps,
-            virArch arch)
+fakeHostCPU(virArch arch)
 {
     virCPUDefPtr cpu;
 
@@ -66,7 +65,7 @@ fakeHostCPU(virCapsPtr caps,
         return -1;
     }
 
-    qemuTestSetHostCPU(caps, cpu);
+    qemuTestSetHostCPU(NULL, arch, cpu);
 
     return 0;
 }
@@ -80,17 +79,15 @@ fillQemuCaps(virDomainCapsPtr domCaps,
 {
     int ret = -1;
     char *path = NULL;
-    virCapsPtr caps = NULL;
     virQEMUCapsPtr qemuCaps = NULL;
     virDomainCapsLoaderPtr loader = &domCaps->os.loader;
     virDomainVirtType virtType;
 
-    if (!(caps = virCapabilitiesNew(domCaps->arch, false, false)) ||
-        fakeHostCPU(caps, domCaps->arch) < 0)
+    if (fakeHostCPU(domCaps->arch) < 0)
         goto cleanup;
 
     path = g_strdup_printf("%s/%s.%s.xml", TEST_QEMU_CAPS_PATH, name, arch);
-    if (!(qemuCaps = qemuTestParseCapabilities(caps, path)))
+    if (!(qemuCaps = qemuTestParseCapabilitiesArch(domCaps->arch, path)))
         goto cleanup;
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
@@ -106,7 +103,7 @@ fillQemuCaps(virDomainCapsPtr domCaps,
     if (!domCaps->machine)
         domCaps->machine = g_strdup(virQEMUCapsGetPreferredMachine(qemuCaps, virtType));
 
-    if (virQEMUCapsFillDomainCaps(qemuCaps, caps->host.arch, domCaps,
+    if (virQEMUCapsFillDomainCaps(qemuCaps, domCaps->arch, domCaps,
                                   false,
                                   cfg->firmwares,
                                   cfg->nfirmwares) < 0)
@@ -134,7 +131,6 @@ fillQemuCaps(virDomainCapsPtr domCaps,
 
     ret = 0;
  cleanup:
-    virObjectUnref(caps);
     virObjectUnref(qemuCaps);
     VIR_FREE(path);
     return ret;

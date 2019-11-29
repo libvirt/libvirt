@@ -72,8 +72,6 @@ virDomainXMLOptionPtr testQemuXMLConfInit(void);
 
 virQEMUCapsPtr qemuTestParseCapabilitiesArch(virArch arch,
                                              const char *capsFile);
-virQEMUCapsPtr qemuTestParseCapabilities(virCapsPtr caps,
-                                         const char *capsFile);
 
 extern virCPUDefPtr cpuDefault;
 extern virCPUDefPtr cpuHaswell;
@@ -82,7 +80,8 @@ extern virCPUDefPtr cpuPower9;
 
 void qemuTestSetHostArch(virQEMUDriverPtr driver,
                          virArch arch);
-void qemuTestSetHostCPU(virCapsPtr caps,
+void qemuTestSetHostCPU(virQEMUDriverPtr driver,
+                        virArch arch,
                         virCPUDefPtr cpu);
 
 int qemuTestDriverInit(virQEMUDriver *driver);

@@ -267,6 +267,11 @@ struct _virQEMUDriver {
      */
     virCapsHostNUMAPtr hostnuma;
 
+    /* Lazy initialized on first use, immutable thereafter.
+     * Require lock to get the pointer & do optional initialization
+     */
+    virCPUDefPtr hostcpu;
+
     /* Immutable value */
     virArch hostarch;
 
@@ -325,6 +330,7 @@ virQEMUDriverConfigPtr virQEMUDriverGetConfig(virQEMUDriverPtr driver);
 bool virQEMUDriverIsPrivileged(virQEMUDriverPtr driver);
 
 virCapsHostNUMAPtr virQEMUDriverGetHostNUMACaps(virQEMUDriverPtr driver);
+virCPUDefPtr virQEMUDriverGetHostCPU(virQEMUDriverPtr driver);
 virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver);
 virCapsPtr virQEMUDriverGetCapabilities(virQEMUDriverPtr driver,
                                         bool refresh);

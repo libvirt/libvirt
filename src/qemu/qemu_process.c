@@ -5291,12 +5291,13 @@ qemuProcessStartValidateDisks(virDomainObjPtr vm,
 
 
 static int
-qemuProcessStartValidateTSC(virDomainObjPtr vm,
-                            virCapsPtr caps)
+qemuProcessStartValidateTSC(virQEMUDriverPtr driver,
+                            virDomainObjPtr vm)
 {
     size_t i;
     unsigned long long freq = 0;
     virHostCPUTscInfoPtr tsc;
+    g_autoptr(virCPUDef) cpu = NULL;
 
     for (i = 0; i < vm->def->clock.ntimers; i++) {
         virDomainTimerDefPtr timer = vm->def->clock.timers[i];
@@ -5313,12 +5314,13 @@ qemuProcessStartValidateTSC(virDomainObjPtr vm,
 
     VIR_DEBUG("Requested TSC frequency %llu Hz", freq);
 
-    if (!caps->host.cpu || !caps->host.cpu->tsc) {
+    cpu = virQEMUDriverGetHostCPU(driver);
+    if (!cpu || !cpu->tsc) {
         VIR_DEBUG("Host TSC frequency could not be probed");
         return 0;
     }
 
-    tsc = caps->host.cpu->tsc;
+    tsc = cpu->tsc;
     VIR_DEBUG("Host TSC frequency %llu Hz, scaling %s",
               tsc->frequency, virTristateBoolTypeToString(tsc->scaling));
 
@@ -5356,7 +5358,6 @@ static int
 qemuProcessStartValidate(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          virQEMUCapsPtr qemuCaps,
-                         virCapsPtr caps,
                          unsigned int flags)
 {
     if (!(flags & VIR_QEMU_PROCESS_START_PRETEND)) {
@@ -5424,7 +5425,7 @@ qemuProcessStartValidate(virQEMUDriverPtr driver,
     if (qemuProcessStartValidateDisks(vm, qemuCaps) < 0)
         return -1;
 
-    if (qemuProcessStartValidateTSC(vm, caps) < 0)
+    if (qemuProcessStartValidateTSC(driver, vm) < 0)
         return -1;
 
     VIR_DEBUG("Checking for any possible (non-fatal) issues");
@@ -5555,7 +5556,6 @@ qemuProcessInit(virQEMUDriverPtr driver,
                 bool migration,
                 unsigned int flags)
 {
-    virCapsPtr caps = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int stopFlags;
     virCPUDefPtr origCPU = NULL;
@@ -5571,9 +5571,6 @@ qemuProcessInit(virQEMUDriverPtr driver,
                        _("VM is already active"));
         goto cleanup;
     }
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
 
     /* in case when the post parse callback failed we need to re-run it on the
      * old config prior we start the VM */
@@ -5592,7 +5589,7 @@ qemuProcessInit(virQEMUDriverPtr driver,
     if (qemuDomainUpdateCPU(vm, updatedCPU, &origCPU) < 0)
         goto cleanup;
 
-    if (qemuProcessStartValidate(driver, vm, priv->qemuCaps, caps, flags) < 0)
+    if (qemuProcessStartValidate(driver, vm, priv->qemuCaps, flags) < 0)
         goto cleanup;
 
     /* Do this upfront, so any part of the startup process can add
@@ -5632,7 +5629,6 @@ qemuProcessInit(virQEMUDriverPtr driver,
 
  cleanup:
     virCPUDefFree(origCPU);
-    virObjectUnref(caps);
     return ret;
 
  stop:
@@ -7805,20 +7801,20 @@ static int
 qemuProcessRefreshCPU(virQEMUDriverPtr driver,
                       virDomainObjPtr vm)
 {
-    virCapsPtr caps = virQEMUDriverGetCapabilities(driver, false);
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virCPUDefPtr host = NULL;
-    virCPUDefPtr cpu = NULL;
-    int ret = -1;
+    g_autoptr(virCPUDef) host = NULL;
+    g_autoptr(virCPUDef) hostmig = NULL;
+    g_autoptr(virCPUDef) cpu = NULL;
 
-    if (!caps)
-        return -1;
+    if (!virQEMUCapsGuestIsNative(driver->hostarch, vm->def->os.arch))
+        return 0;
 
-    if (!virQEMUCapsGuestIsNative(driver->hostarch, vm->def->os.arch) ||
-        !caps->host.cpu ||
-        !vm->def->cpu) {
-        ret = 0;
-        goto cleanup;
+    if (!vm->def->cpu)
+        return 0;
+
+    if (!(host = virQEMUDriverGetHostCPU(driver))) {
+        virResetLastError();
+        return 0;
     }
 
     /* If the domain with a host-model CPU was started by an old libvirt
@@ -7827,20 +7823,20 @@ qemuProcessRefreshCPU(virQEMUDriverPtr driver,
      * running domain.
      */
     if (vm->def->cpu->mode == VIR_CPU_MODE_HOST_MODEL) {
-        if (!(host = virCPUCopyMigratable(caps->host.cpu->arch, caps->host.cpu)))
-            goto cleanup;
+        if (!(hostmig = virCPUCopyMigratable(host->arch, host)))
+            return -1;
 
-        if (!(cpu = virCPUDefCopyWithoutModel(host)) ||
-            virCPUDefCopyModelFilter(cpu, host, false,
+        if (!(cpu = virCPUDefCopyWithoutModel(hostmig)) ||
+            virCPUDefCopyModelFilter(cpu, hostmig, false,
                                      virQEMUCapsCPUFilterFeatures,
-                                     &caps->host.cpu->arch) < 0)
-            goto cleanup;
+                                     &host->arch) < 0)
+            return -1;
 
         if (virCPUUpdate(vm->def->os.arch, vm->def->cpu, cpu) < 0)
-            goto cleanup;
+            return -1;
 
         if (qemuProcessUpdateCPU(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)
-            goto cleanup;
+            return -1;
     } else if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION)) {
         /* We only try to fix CPUs when the libvirt/QEMU combo used to start
          * the domain did not know about query-cpu-model-expansion in which
@@ -7848,16 +7844,10 @@ qemuProcessRefreshCPU(virQEMUDriverPtr driver,
          * doesn't know about.
          */
         if (qemuDomainFixupCPUs(vm, &priv->origCPU) < 0)
-            goto cleanup;
+            return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    virCPUDefFree(cpu);
-    virCPUDefFree(host);
-    virObjectUnref(caps);
-    return ret;
+    return 0;
 }
 
 

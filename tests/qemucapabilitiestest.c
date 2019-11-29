@@ -144,7 +144,6 @@ testQemuCapsCopy(const void *opaque)
     int ret = -1;
     const testQemuData *data = opaque;
     char *capsFile = NULL;
-    virCapsPtr caps = NULL;
     virQEMUCapsPtr orig = NULL;
     virQEMUCapsPtr copy = NULL;
     char *actual = NULL;
@@ -153,11 +152,8 @@ testQemuCapsCopy(const void *opaque)
                                data->outputDir, data->prefix, data->version,
                                data->archName);
 
-    if (!(caps = virCapabilitiesNew(virArchFromString(data->archName),
-                                    false, false)))
-        goto cleanup;
-
-    if (!(orig = qemuTestParseCapabilities(caps, capsFile)))
+    if (!(orig = qemuTestParseCapabilitiesArch(
+              virArchFromString(data->archName), capsFile)))
         goto cleanup;
 
     if (!(copy = virQEMUCapsNewCopy(orig)))
@@ -173,7 +169,6 @@ testQemuCapsCopy(const void *opaque)
 
  cleanup:
     VIR_FREE(capsFile);
-    virObjectUnref(caps);
     virObjectUnref(orig);
     virObjectUnref(copy);
     VIR_FREE(actual);

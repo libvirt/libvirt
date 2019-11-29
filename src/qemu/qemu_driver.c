@@ -13360,7 +13360,7 @@ qemuConnectCompareCPU(virConnectPtr conn,
                       unsigned int flags)
 {
     virQEMUDriverPtr driver = conn->privateData;
-    g_autoptr(virCaps) caps = NULL;
+    g_autoptr(virCPUDef) cpu = NULL;
     bool failIncompatible;
 
     virCheckFlags(VIR_CONNECT_COMPARE_CPU_FAIL_INCOMPATIBLE,
@@ -13371,10 +13371,10 @@ qemuConnectCompareCPU(virConnectPtr conn,
 
     failIncompatible = !!(flags & VIR_CONNECT_COMPARE_CPU_FAIL_INCOMPATIBLE);
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+    if (!(cpu = virQEMUDriverGetHostCPU(driver)))
         return VIR_CPU_COMPARE_ERROR;
 
-    return virCPUCompareXML(driver->hostarch, caps->host.cpu,
+    return virCPUCompareXML(driver->hostarch, cpu,
                             xmlDesc, failIncompatible);
 }
 

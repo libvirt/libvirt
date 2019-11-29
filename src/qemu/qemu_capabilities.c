@@ -1035,9 +1035,6 @@ virQEMUCapsInit(virFileCachePtr cache)
     if (virCapabilitiesInitCaches(caps) < 0)
         VIR_WARN("Failed to get host CPU cache info");
 
-    if (!(caps->host.cpu = virCPUProbeHost(caps->host.arch)))
-        VIR_WARN("Failed to get host CPU");
-
     /* Add the power management features of the host */
     if (virNodeSuspendGetTargetMask(&caps->host.powerMgmt) < 0)
         VIR_WARN("Failed to get host power management capabilities");

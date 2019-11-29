@@ -1220,6 +1220,22 @@ virQEMUDriverGetHostNUMACaps(virQEMUDriverPtr driver)
 }
 
 
+virCPUDefPtr
+virQEMUDriverGetHostCPU(virQEMUDriverPtr driver)
+{
+    qemuDriverLock(driver);
+
+    if (!driver->hostcpu)
+        driver->hostcpu = virCPUProbeHost(virArchFromHost());
+
+    qemuDriverUnlock(driver);
+
+    virCPUDefRef(driver->hostcpu);
+
+    return driver->hostcpu;
+}
+
+
 virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver)
 {
     size_t i, j;
@@ -1272,6 +1288,7 @@ virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver)
     }
 
     caps->host.numa = virQEMUDriverGetHostNUMACaps(driver);
+    caps->host.cpu = virQEMUDriverGetHostCPU(driver);
     return g_steal_pointer(&caps);
 }
 
