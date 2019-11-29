@@ -100,6 +100,8 @@ typedef virResctrlInfo *virResctrlInfoPtr;
 virResctrlInfoPtr
 virResctrlInfoNew(void);
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virResctrlInfo, virObjectUnref);
+
 int
 virResctrlInfoGetCache(virResctrlInfoPtr resctrl,
                        unsigned int level,
