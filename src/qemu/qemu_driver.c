@@ -21208,13 +21208,16 @@ qemuDomainGetStatsIOThread(virQEMUDriverPtr driver,
     for (i = 0; i < niothreads; i++) {
         if (iothreads[i]->poll_valid) {
             if (virTypedParamListAddULLong(params, iothreads[i]->poll_max_ns,
-                                           "iothread.%zu.poll-max-ns", i) < 0)
+                                           "iothread.%u.poll-max-ns",
+                                           iothreads[i]->iothread_id) < 0)
                 goto cleanup;
             if (virTypedParamListAddUInt(params, iothreads[i]->poll_grow,
-                                         "iothread.%zu.poll-grow", i) < 0)
+                                         "iothread.%u.poll-grow",
+                                         iothreads[i]->iothread_id) < 0)
                 goto cleanup;
             if (virTypedParamListAddUInt(params, iothreads[i]->poll_shrink,
-                                         "iothread.%zu.poll-shrink", i) < 0)
+                                         "iothread.%u.poll-shrink",
+                                         iothreads[i]->iothread_id) < 0)
                 goto cleanup;
         }
     }
