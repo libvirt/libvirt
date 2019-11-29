@@ -31,7 +31,7 @@ cat <<\EOF > D.xml || fail=1
   <on_reboot>restart</on_reboot>
   <on_crash>destroy</on_crash>
   <devices>
-    <emulator>/usr/bin/qemu-system-i686</emulator>
+    <emulator>/usr/bin/qemu-system-i386</emulator>
     <controller type='usb' index='0'/>
     <serial type='pty'>
       <target port='0'/>

@@ -7,7 +7,7 @@ XDG_DATA_HOME=/tmp/lib/domain--1-f14/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-f14/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-f14/.config \
 QEMU_AUDIO_DRV=spice \
-/usr/bin/qemu-system-i686 \
+/usr/bin/qemu-system-i386 \
 -name f14 \
 -S \
 -machine pc,accel=kvm,usb=off,dump-guest-core=off \

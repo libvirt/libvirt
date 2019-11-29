@@ -19,7 +19,7 @@
   <on_reboot>restart</on_reboot>
   <on_crash>destroy</on_crash>
   <devices>
-    <emulator>/usr/bin/qemu-system-i686</emulator>
+    <emulator>/usr/bin/qemu-system-i386</emulator>
     <controller type='usb' index='0'/>
     <controller type='ide' index='0'/>
     <controller type='pci' index='0' model='pci-root'/>

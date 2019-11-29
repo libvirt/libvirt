@@ -9,7 +9,7 @@
     <boot dev='hd'/>
   </os>
   <devices>
-    <emulator>/usr/bin/qemu-system-i686</emulator>
+    <emulator>/usr/bin/qemu-system-i386</emulator>
     <!-- Intentionally mixed up ordering to check we assign
          addresses to the correct matching companions -->
     <controller type='usb' index='0' model='ich9-ehci1'>

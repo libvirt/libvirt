@@ -9,7 +9,7 @@
     <boot dev='hd'/>
   </os>
   <devices>
-    <emulator>/usr/bin/qemu-system-i686</emulator>
+    <emulator>/usr/bin/qemu-system-i386</emulator>
     <controller type='usb' index='0'/>
     <memballoon model='virtio'/>
     <hub type='usb'>

@@ -16,7 +16,7 @@
     <suspend-to-mem enabled='no'/>
   </pm>
   <devices>
-    <emulator>/usr/bin/qemu-system-i686</emulator>
+    <emulator>/usr/bin/qemu-system-i386</emulator>
     <disk type='block' device='disk'>
       <driver name='qemu' type='raw'/>
       <source dev='/dev/HostVG/QEMUGuest1'/>

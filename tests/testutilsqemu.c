@@ -33,7 +33,7 @@ typedef enum {
 } QEMUBinType;
 
 static const char *QEMUBinList[] = {
-    "/usr/bin/qemu-system-i686",
+    "/usr/bin/qemu-system-i386",
     "/usr/bin/qemu-system-x86_64",
     "/usr/bin/qemu-system-aarch64",
     "/usr/bin/qemu-system-arm",

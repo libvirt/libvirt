@@ -10,7 +10,7 @@
   </os>
   <clock offset='utc'/>
   <devices>
-    <emulator>/usr/bin/qemu-system-i686</emulator>
+    <emulator>/usr/bin/qemu-system-i386</emulator>
     <disk type='file' device='disk'>
       <driver name='qemu' type='iso'/>
       <source file='/dev/HostVG/QEMUGuest1'/>

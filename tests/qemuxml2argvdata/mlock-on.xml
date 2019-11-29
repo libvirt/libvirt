@@ -12,7 +12,7 @@
     <boot dev='hd'/>
   </os>
   <devices>
-    <emulator>/usr/bin/qemu-system-i686</emulator>
+    <emulator>/usr/bin/qemu-system-i386</emulator>
     <memballoon model='none'/>
   </devices>
 </domain>

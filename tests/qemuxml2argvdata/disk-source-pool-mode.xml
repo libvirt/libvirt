@@ -13,7 +13,7 @@
   <on_reboot>restart</on_reboot>
   <on_crash>destroy</on_crash>
   <devices>
-    <emulator>/usr/bin/qemu-system-i686</emulator>
+    <emulator>/usr/bin/qemu-system-i386</emulator>
     <disk type='volume' device='cdrom'>
       <source pool='pool-iscsi-auth' volume='unit:0:0:1' mode='host'>
         <seclabel model='selinux' relabel='yes'>

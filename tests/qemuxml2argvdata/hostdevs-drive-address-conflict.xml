@@ -13,7 +13,7 @@
   <on_reboot>restart</on_reboot>
   <on_crash>destroy</on_crash>
   <devices>
-    <emulator>/usr/bin/qemu-system-i686</emulator>
+    <emulator>/usr/bin/qemu-system-i386</emulator>
     <hostdev mode='subsystem' type='scsi' managed='no'>
       <source>
         <adapter name='scsi_host2'/>
