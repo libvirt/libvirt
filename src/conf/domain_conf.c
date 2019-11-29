@@ -2753,6 +2753,14 @@ void virDomainSoundDefFree(virDomainSoundDefPtr def)
     VIR_FREE(def);
 }
 
+virDomainSoundDefPtr
+virDomainSoundDefRemove(virDomainDefPtr def, size_t idx)
+{
+    virDomainSoundDefPtr ret = def->sounds[idx];
+    VIR_DELETE_ELEMENT(def->sounds, idx, def->nsounds);
+    return ret;
+}
+
 void virDomainMemballoonDefFree(virDomainMemballoonDefPtr def)
 {
     if (!def)
@@ -14551,6 +14559,46 @@ virDomainSoundDefParseXML(virDomainXMLOptionPtr xmlopt,
     virDomainSoundDefFree(def);
     def = NULL;
     goto cleanup;
+}
+
+
+static bool
+virDomainSoundDefEquals(const virDomainSoundDef *a,
+                        const virDomainSoundDef *b)
+{
+    size_t i;
+
+    if (a->model != b->model)
+        return false;
+
+    if (a->ncodecs != b->ncodecs)
+        return false;
+
+    for (i = 0; i < a->ncodecs; i++) {
+        if (a->codecs[i]->type != b->codecs[i]->type)
+            return false;
+    }
+
+    if (a->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+        !virDomainDeviceInfoAddressIsEqual(&a->info, &b->info))
+        return false;
+
+    return true;
+}
+
+
+ssize_t
+virDomainSoundDefFind(const virDomainDef *def,
+                      const virDomainSoundDef *sound)
+{
+    size_t i;
+
+    for (i = 0; i < def->nsounds; i++) {
+        if (virDomainSoundDefEquals(sound, def->sounds[i]))
+            return i;
+    }
+
+    return -1;
 }
 
 

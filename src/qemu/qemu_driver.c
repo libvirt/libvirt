@@ -8308,6 +8308,7 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
 {
     virDomainDiskDefPtr disk, det_disk;
     virDomainNetDefPtr net;
+    virDomainSoundDefPtr sound;
     virDomainHostdevDefPtr hostdev, det_hostdev;
     virDomainLeaseDefPtr lease, det_lease;
     virDomainControllerDefPtr cont, det_cont;
@@ -8334,6 +8335,16 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
 
         /* this is guaranteed to succeed */
         virDomainNetDefFree(virDomainNetRemove(vmdef, idx));
+        break;
+
+    case VIR_DOMAIN_DEVICE_SOUND:
+        sound = dev->data.sound;
+        if ((idx = virDomainSoundDefFind(vmdef, sound)) < 0) {
+            virReportError(VIR_ERR_DEVICE_MISSING, "%s",
+                           _("device not present in domain configuration"));
+            return -1;
+        }
+        virDomainSoundDefFree(virDomainSoundDefRemove(vmdef, idx));
         break;
 
     case VIR_DOMAIN_DEVICE_HOSTDEV: {
@@ -8466,7 +8477,6 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
         vmdef->vsock = NULL;
         break;
 
-    case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_VIDEO:
     case VIR_DOMAIN_DEVICE_GRAPHICS:
     case VIR_DOMAIN_DEVICE_HUB:

@@ -2883,7 +2883,10 @@ void virDomainChrDefFree(virDomainChrDefPtr def);
 int virDomainChrSourceDefCopy(virDomainChrSourceDefPtr dest,
                               virDomainChrSourceDefPtr src);
 void virDomainSoundCodecDefFree(virDomainSoundCodecDefPtr def);
+ssize_t virDomainSoundDefFind(const virDomainDef *def,
+                              const virDomainSoundDef *sound);
 void virDomainSoundDefFree(virDomainSoundDefPtr def);
+virDomainSoundDefPtr virDomainSoundDefRemove(virDomainDefPtr def, size_t idx);
 void virDomainMemballoonDefFree(virDomainMemballoonDefPtr def);
 void virDomainNVRAMDefFree(virDomainNVRAMDefPtr def);
 void virDomainWatchdogDefFree(virDomainWatchdogDefPtr def);
