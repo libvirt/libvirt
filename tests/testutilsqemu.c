@@ -109,6 +109,18 @@ virFindFileInPath(const char *file)
     return NULL;
 }
 
+
+virCapsHostNUMAPtr
+virCapabilitiesHostNUMANewHost(void)
+{
+    /*
+     * Build a NUMA topology with cell_id (NUMA node id
+     * being 3(0 + 3),4(1 + 3), 5 and 6
+     */
+    return virTestCapsBuildNUMATopology(3);
+}
+
+
 static int
 testQemuAddGuest(virCapsPtr caps,
                  virArch arch)
@@ -201,11 +213,7 @@ virCapsPtr testQemuCapsInit(void)
 
     qemuTestSetHostCPU(caps, NULL);
 
-    /*
-     * Build a NUMA topology with cell_id (NUMA node id
-     * being 3(0 + 3),4(1 + 3), 5 and 6
-     */
-    if (!(caps->host.numa = virTestCapsBuildNUMATopology(3)))
+    if (!(caps->host.numa = virCapabilitiesHostNUMANewHost()))
         goto cleanup;
 
     for (i = 0; i < VIR_ARCH_LAST; i++) {

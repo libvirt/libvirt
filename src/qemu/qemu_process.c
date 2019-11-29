@@ -6129,14 +6129,14 @@ qemuProcessUpdateGuestCPU(virDomainDefPtr def,
 
 
 static int
-qemuProcessPrepareDomainNUMAPlacement(virDomainObjPtr vm,
-                                      virCapsPtr caps)
+qemuProcessPrepareDomainNUMAPlacement(virQEMUDriverPtr driver,
+                                      virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    char *nodeset = NULL;
-    virBitmapPtr numadNodeset = NULL;
-    virBitmapPtr hostMemoryNodeset = NULL;
-    int ret = -1;
+    g_autofree char *nodeset = NULL;
+    g_autoptr(virBitmap) numadNodeset = NULL;
+    g_autoptr(virBitmap) hostMemoryNodeset = NULL;
+    g_autoptr(virCapsHostNUMA) caps = NULL;
 
     /* Get the advisory nodeset from numad if 'placement' of
      * either <vcpu> or <numatune> is 'auto'.
@@ -6148,33 +6148,30 @@ qemuProcessPrepareDomainNUMAPlacement(virDomainObjPtr vm,
                                             virDomainDefGetMemoryTotal(vm->def));
 
     if (!nodeset)
-        goto cleanup;
+        return -1;
 
     if (!(hostMemoryNodeset = virNumaGetHostMemoryNodeset()))
-        goto cleanup;
+        return -1;
 
     VIR_DEBUG("Nodeset returned from numad: %s", nodeset);
 
     if (virBitmapParse(nodeset, &numadNodeset, VIR_DOMAIN_CPUMASK_LEN) < 0)
-        goto cleanup;
+        return -1;
+
+    if (!(caps = virQEMUDriverGetHostNUMACaps(driver)))
+        return -1;
 
     /* numad may return a nodeset that only contains cpus but cgroups don't play
      * well with that. Set the autoCpuset from all cpus from that nodeset, but
      * assign autoNodeset only with nodes containing memory. */
-    if (!(priv->autoCpuset = virCapabilitiesHostNUMAGetCpus(caps->host.numa, numadNodeset)))
-        goto cleanup;
+    if (!(priv->autoCpuset = virCapabilitiesHostNUMAGetCpus(caps, numadNodeset)))
+        return -1;
 
     virBitmapIntersect(numadNodeset, hostMemoryNodeset);
 
     priv->autoNodeset = g_steal_pointer(&numadNodeset);
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(nodeset);
-    virBitmapFree(numadNodeset);
-    virBitmapFree(hostMemoryNodeset);
-    return ret;
+    return 0;
 }
 
 
@@ -6252,10 +6249,6 @@ qemuProcessPrepareDomain(virQEMUDriverPtr driver,
     size_t i;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    virCapsPtr caps;
-
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
 
     priv->machineName = qemuDomainGetMachineName(vm);
     if (!priv->machineName)
@@ -6271,7 +6264,7 @@ qemuProcessPrepareDomain(virQEMUDriverPtr driver,
         }
         virDomainAuditSecurityLabel(vm, true);
 
-        if (qemuProcessPrepareDomainNUMAPlacement(vm, caps) < 0)
+        if (qemuProcessPrepareDomainNUMAPlacement(driver, vm) < 0)
             goto cleanup;
     }
 
@@ -6359,7 +6352,6 @@ qemuProcessPrepareDomain(virQEMUDriverPtr driver,
 
     ret = 0;
  cleanup:
-    virObjectUnref(caps);
     virObjectUnref(cfg);
     return ret;
 }

@@ -2922,7 +2922,7 @@ qemuDomainObjPrivateXMLParseAutomaticPlacement(xmlXPathContextPtr ctxt,
                                                qemuDomainObjPrivatePtr priv,
                                                virQEMUDriverPtr driver)
 {
-    virCapsPtr caps = NULL;
+    g_autoptr(virCapsHostNUMA) caps = NULL;
     char *nodeset;
     char *cpuset;
     int nodesetSize = 0;
@@ -2935,15 +2935,15 @@ qemuDomainObjPrivateXMLParseAutomaticPlacement(xmlXPathContextPtr ctxt,
     if (!nodeset && !cpuset)
         return 0;
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+    if (!(caps = virQEMUDriverGetHostNUMACaps(driver)))
         goto cleanup;
 
     /* Figure out how big the nodeset bitmap needs to be.
      * This is necessary because NUMA node IDs are not guaranteed to
      * start from 0 or be densely allocated */
-    for (i = 0; i < caps->host.numa->cells->len; i++) {
+    for (i = 0; i < caps->cells->len; i++) {
         virCapsHostNUMACellPtr cell =
-            g_ptr_array_index(caps->host.numa->cells, i);
+            g_ptr_array_index(caps->cells, i);
         nodesetSize = MAX(nodesetSize, cell->num + 1);
     }
 
@@ -2957,7 +2957,7 @@ qemuDomainObjPrivateXMLParseAutomaticPlacement(xmlXPathContextPtr ctxt,
     } else {
         /* autoNodeset is present in this case, since otherwise we wouldn't
          * reach this code */
-        if (!(priv->autoCpuset = virCapabilitiesHostNUMAGetCpus(caps->host.numa,
+        if (!(priv->autoCpuset = virCapabilitiesHostNUMAGetCpus(caps,
                                                                 priv->autoNodeset)))
             goto cleanup;
     }

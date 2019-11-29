@@ -1032,13 +1032,6 @@ virQEMUCapsInit(virFileCachePtr cache)
                                    true, true)) == NULL)
         goto error;
 
-    /* Some machines have problematic NUMA topology causing
-     * unexpected failures. We don't want to break the QEMU
-     * driver in this scenario, so log errors & carry on
-     */
-    if (!(caps->host.numa = virCapabilitiesHostNUMANewHost()))
-        goto error;
-
     if (virCapabilitiesInitCaches(caps) < 0)
         VIR_WARN("Failed to get host CPU cache info");
 

@@ -1204,6 +1204,22 @@ virQEMUDriverCreateXMLConf(virQEMUDriverPtr driver,
 }
 
 
+virCapsHostNUMAPtr
+virQEMUDriverGetHostNUMACaps(virQEMUDriverPtr driver)
+{
+    qemuDriverLock(driver);
+
+    if (!driver->hostnuma)
+        driver->hostnuma = virCapabilitiesHostNUMANewHost();
+
+    qemuDriverUnlock(driver);
+
+    virCapabilitiesHostNUMARef(driver->hostnuma);
+
+    return driver->hostnuma;
+}
+
+
 virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver)
 {
     size_t i, j;
@@ -1255,6 +1271,7 @@ virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver)
                   "DOI \"%s\"", model, doi);
     }
 
+    caps->host.numa = virQEMUDriverGetHostNUMACaps(driver);
     return g_steal_pointer(&caps);
 }
 
