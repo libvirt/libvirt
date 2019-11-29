@@ -2720,8 +2720,7 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCapsPtr qemuCaps,
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION))
         return 0;
 
-    if (VIR_ALLOC(cpu) < 0)
-        goto cleanup;
+    cpu = virCPUDefNew();
 
     cpu->model = g_strdup(model);
 
@@ -3355,10 +3354,7 @@ virQEMUCapsInitCPUModel(virQEMUCapsPtr qemuCaps,
 static virCPUDefPtr
 virQEMUCapsNewHostCPUModel(void)
 {
-    virCPUDefPtr cpu;
-
-    if (VIR_ALLOC(cpu) < 0)
-        return NULL;
+    virCPUDefPtr cpu = virCPUDefNew();
 
     cpu->type = VIR_CPU_TYPE_GUEST;
     cpu->mode = VIR_CPU_MODE_CUSTOM;

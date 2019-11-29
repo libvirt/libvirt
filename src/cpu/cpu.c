@@ -393,8 +393,7 @@ virCPUGetHost(virArch arch,
     if (!(driver = cpuGetSubDriver(arch)))
         return NULL;
 
-    if (VIR_ALLOC(cpu) < 0)
-        return NULL;
+    cpu = virCPUDefNew();
 
     switch (type) {
     case VIR_CPU_TYPE_HOST:

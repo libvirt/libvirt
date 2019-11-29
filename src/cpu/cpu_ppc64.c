@@ -757,8 +757,7 @@ virCPUppc64Baseline(virCPUDefPtr *cpus,
         }
     }
 
-    if (VIR_ALLOC(cpu) < 0)
-        goto error;
+    cpu = virCPUDefNew();
 
     cpu->model = g_strdup(model->name);
 

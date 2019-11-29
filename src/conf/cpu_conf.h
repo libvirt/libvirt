@@ -122,6 +122,7 @@ struct _virCPUCacheDef {
 typedef struct _virCPUDef virCPUDef;
 typedef virCPUDef *virCPUDefPtr;
 struct _virCPUDef {
+    int refs;
     int type;           /* enum virCPUType */
     int mode;           /* enum virCPUMode */
     int match;          /* enum virCPUMatch */
@@ -142,6 +143,7 @@ struct _virCPUDef {
     virHostCPUTscInfoPtr tsc;
 };
 
+virCPUDefPtr virCPUDefNew(void);
 
 void ATTRIBUTE_NONNULL(1)
 virCPUDefFreeFeatures(virCPUDefPtr def);
@@ -149,6 +151,8 @@ virCPUDefFreeFeatures(virCPUDefPtr def);
 void ATTRIBUTE_NONNULL(1)
 virCPUDefFreeModel(virCPUDefPtr def);
 
+void
+virCPUDefRef(virCPUDefPtr def);
 void
 virCPUDefFree(virCPUDefPtr def);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCPUDef, virCPUDefFree);

@@ -482,8 +482,7 @@ cpuTestMakeQEMUCaps(const struct data *data)
     if (!(testMon = qemuMonitorTestNewFromFile(json, driver.xmlopt, true)))
         goto error;
 
-    if (VIR_ALLOC(cpu) < 0)
-        goto cleanup;
+    cpu = virCPUDefNew();
 
     cpu->model = g_strdup("host");
 
@@ -584,9 +583,7 @@ cpuTestCPUID(bool guest, const void *arg)
         !(hostData = virCPUDataParse(host)))
         goto cleanup;
 
-    if (VIR_ALLOC(cpu) < 0)
-        goto cleanup;
-
+    cpu = virCPUDefNew();
     cpu->arch = hostData->arch;
     if (guest) {
         cpu->type = VIR_CPU_TYPE_GUEST;
@@ -889,9 +886,7 @@ cpuTestJSONCPUID(const void *arg)
     if (!(qemuCaps = cpuTestMakeQEMUCaps(data)))
         goto cleanup;
 
-    if (VIR_ALLOC(cpu) < 0)
-        goto cleanup;
-
+    cpu = virCPUDefNew();
     cpu->arch = data->arch;
     cpu->type = VIR_CPU_TYPE_GUEST;
     cpu->match = VIR_CPU_MATCH_EXACT;

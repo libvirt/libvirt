@@ -82,6 +82,13 @@ VIR_ENUM_IMPL(virCPUCacheMode,
 );
 
 
+virCPUDefPtr virCPUDefNew(void)
+{
+    virCPUDefPtr cpu = g_new0(virCPUDef, 1);
+    cpu->refs = 1;
+    return cpu;
+}
+
 void
 virCPUDefFreeFeatures(virCPUDefPtr def)
 {
@@ -105,15 +112,23 @@ virCPUDefFreeModel(virCPUDefPtr def)
 }
 
 void
+virCPUDefRef(virCPUDefPtr def)
+{
+    g_atomic_int_inc(&def->refs);
+}
+
+void
 virCPUDefFree(virCPUDefPtr def)
 {
     if (!def)
         return;
 
-    virCPUDefFreeModel(def);
-    VIR_FREE(def->cache);
-    VIR_FREE(def->tsc);
-    VIR_FREE(def);
+    if (g_atomic_int_dec_and_test(&def->refs)) {
+        virCPUDefFreeModel(def);
+        VIR_FREE(def->cache);
+        VIR_FREE(def->tsc);
+        VIR_FREE(def);
+    }
 }
 
 
@@ -214,9 +229,10 @@ virCPUDefCopyWithoutModel(const virCPUDef *cpu)
 {
     virCPUDefPtr copy;
 
-    if (!cpu || VIR_ALLOC(copy) < 0)
+    if (!cpu)
         return NULL;
 
+    copy = virCPUDefNew();
     copy->type = cpu->type;
     copy->mode = cpu->mode;
     copy->match = cpu->match;
@@ -340,8 +356,7 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
         goto cleanup;
     }
 
-    if (VIR_ALLOC(def) < 0)
-        goto cleanup;
+    def = virCPUDefNew();
 
     if (type == VIR_CPU_TYPE_AUTO) {
         if (virXPathBoolean("boolean(./arch)", ctxt)) {

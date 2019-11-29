@@ -211,10 +211,7 @@ virCPUarmBaseline(virCPUDefPtr *cpus,
 {
     virCPUDefPtr cpu = NULL;
 
-    if (VIR_ALLOC(cpu) < 0) {
-        virCPUDefFree(cpu);
-        return NULL;
-    }
+    cpu = virCPUDefNew();
 
     cpu->model = g_strdup(cpus[0]->model);
 

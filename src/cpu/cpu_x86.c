@@ -775,8 +775,7 @@ x86DataToCPU(const virCPUx86Data *data,
     virCPUx86Data modelData = VIR_CPU_X86_DATA_INIT;
     virCPUx86VendorPtr vendor;
 
-    if (VIR_ALLOC(cpu) < 0)
-        goto error;
+    cpu = virCPUDefNew();
 
     cpu->model = g_strdup(model->name);
 
@@ -2807,8 +2806,7 @@ virCPUx86Baseline(virCPUDefPtr *cpus,
     if (!(base_model = x86ModelFromCPU(cpus[0], map, -1)))
         goto error;
 
-    if (VIR_ALLOC(cpu) < 0)
-        goto error;
+    cpu = virCPUDefNew();
 
     cpu->type = VIR_CPU_TYPE_GUEST;
     cpu->match = VIR_CPU_MATCH_EXACT;

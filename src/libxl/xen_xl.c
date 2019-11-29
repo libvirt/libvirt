@@ -177,10 +177,7 @@ xenParseXLOS(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
             }
 
             if (!def->cpu) {
-                virCPUDefPtr cpu;
-                if (VIR_ALLOC(cpu) < 0)
-                    return -1;
-
+                virCPUDefPtr cpu = virCPUDefNew();
                 cpu->mode = VIR_CPU_MODE_HOST_PASSTHROUGH;
                 cpu->type = VIR_CPU_TYPE_GUEST;
                 cpu->nfeatures = 0;
@@ -266,8 +263,7 @@ xenParseXLCPUID(virConfPtr conf, virDomainDefPtr def)
         return 0;
 
     if (!def->cpu) {
-        if (VIR_ALLOC(def->cpu) < 0)
-            goto cleanup;
+        def->cpu = virCPUDefNew();
         def->cpu->mode = VIR_CPU_MODE_HOST_PASSTHROUGH;
         def->cpu->type = VIR_CPU_TYPE_GUEST;
         def->cpu->nfeatures = 0;
@@ -445,8 +441,7 @@ xenParseXLVnuma(virConfPtr conf,
     if (!virDomainNumaSetNodeCount(numa, nr_nodes))
         goto cleanup;
 
-    if (VIR_ALLOC(cpu) < 0)
-        goto cleanup;
+    cpu = virCPUDefNew();
 
     list = list->list;
     while (list) {

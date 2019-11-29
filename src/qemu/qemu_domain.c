@@ -4481,7 +4481,7 @@ qemuDomainDefSetDefaultCPU(virDomainDefPtr def,
     }
 
     if (!def->cpu)
-        def->cpu = g_new0(virCPUDef, 1);
+        def->cpu = virCPUDefNew();
 
     def->cpu->type = VIR_CPU_TYPE_GUEST;
 

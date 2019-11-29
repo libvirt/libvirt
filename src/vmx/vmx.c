@@ -1475,8 +1475,7 @@ virVMXParseConfig(virVMXContext *ctx,
         goto cleanup;
 
     if (coresPerSocket > 1) {
-        if (VIR_ALLOC(cpu) < 0)
-            goto cleanup;
+        cpu = virCPUDefNew();
 
         cpu->type = VIR_CPU_TYPE_GUEST;
         cpu->mode = VIR_CPU_MODE_CUSTOM;

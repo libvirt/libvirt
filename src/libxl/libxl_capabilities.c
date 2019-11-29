@@ -169,8 +169,7 @@ libxlCapsInitCPU(virCapsPtr caps, libxl_physinfo *phy_info,
     if (!phy_info->hw_cap[0])
         return 0;
 
-    if (VIR_ALLOC(cpu) < 0)
-        goto error;
+    cpu = virCPUDefNew();
 
     host_pae = phy_info->hw_cap[0] & LIBXL_X86_FEATURE_PAE_MASK;
     if (host_pae &&
