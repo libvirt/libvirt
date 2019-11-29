@@ -65,7 +65,15 @@
 %else
     %define with_storage_sheepdog 0
 %endif
+
 %define with_storage_gluster 0%{!?_without_storage_gluster:1}
+%ifnarch %{qemu_kvm_arches}
+    # gluster is only built where qemu driver is enabled on RHEL 8
+    %if 0%{?rhel} >= 8
+        %define with_storage_gluster 0
+    %endif
+%endif
+
 %define with_numactl          0%{!?_without_numactl:1}
 
 # F25+ has zfs-fuse
