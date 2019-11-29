@@ -18104,15 +18104,14 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
         if (!mirror_reuse) {
             mirror->format = disk->src->format;
         } else {
-            if (mirror_initialized &&
-                virStorageSourceIsLocalStorage(mirror)) {
-                /* If the user passed the REUSE_EXT flag, then either they
-                 * can also pass the RAW flag or use XML to tell us the format.
-                 * So if we get here, we assume it is safe for us to probe the
-                 * format from the file that we will be using.  */
-                mirror->format = virStorageFileProbeFormat(mirror->path, cfg->user,
-                                                           cfg->group);
-            } else {
+            /* If the user passed the REUSE_EXT flag, then either they
+             * can also pass the RAW flag or use XML to tell us the format.
+             * So if we get here, we assume it is safe for us to probe the
+             * format from the file that we will be using.  */
+            if (!mirror_initialized ||
+                !virStorageSourceIsLocalStorage(mirror) ||
+                (mirror->format = virStorageFileProbeFormat(mirror->path, cfg->user,
+                                                            cfg->group)) < 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("reused mirror destination format must be specified"));
                 goto endjob;
