@@ -11615,11 +11615,11 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  *
  *     The typed parameter keys are in this format:
  *
- *     "iothread.cnt" - maximum number of IOThreads in the subsequent list
- *                      as unsigned int. Each IOThread in the list will
- *                      will use it's iothread_id value as the <id>. There
- *                      may be fewer <id> entries than the iothread.cnt
- *                      value if the polling values are not supported.
+ *     "iothread.count" - maximum number of IOThreads in the subsequent list
+ *                        as unsigned int. Each IOThread in the list will
+ *                        will use it's iothread_id value as the <id>. There
+ *                        may be fewer <id> entries than the iothread.count
+ *                        value if the polling values are not supported.
  *     "iothread.<id>.poll-max-ns" - maximum polling time in ns as an unsigned
  *                                   long long. A 0 (zero) means polling is
  *                                   disabled.
