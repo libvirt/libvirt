@@ -475,9 +475,12 @@ testCompareXMLToArgv(const void *data)
     if (qemuProcessPrepareMonitorChr(&monitor_chr, priv->libDir) < 0)
         goto cleanup;
 
-    if (!(info->flags & FLAG_REAL_CAPS) &&
-        testUpdateQEMUCaps(info, vm, driver.caps) < 0)
-        goto cleanup;
+    if (!(info->flags & FLAG_REAL_CAPS)) {
+        if (testUpdateQEMUCaps(info, vm, driver.caps) < 0)
+            goto cleanup;
+        if (qemuTestCapsCacheInsert(driver.qemuCapsCache, info->qemuCaps) < 0)
+            goto cleanup;
+    }
 
     log = virTestLogContentAndReset();
     VIR_FREE(log);

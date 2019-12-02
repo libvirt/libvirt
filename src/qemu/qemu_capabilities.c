@@ -2434,49 +2434,72 @@ static const char *preferredMachines[] =
 verify(G_N_ELEMENTS(preferredMachines) == VIR_ARCH_LAST);
 
 
+void
+virQEMUCapsAddMachine(virQEMUCapsPtr qemuCaps,
+                      virDomainVirtType virtType,
+                      const char *name,
+                      const char *alias,
+                      const char *defaultCPU,
+                      int maxCpus,
+                      bool hotplugCpus,
+                      bool isDefault)
+{
+    virQEMUCapsAccelPtr accel = virQEMUCapsGetAccel(qemuCaps, virtType);
+    virQEMUCapsMachineTypePtr mach;
+
+    accel->machineTypes = g_renew(virQEMUCapsMachineType,
+                                  accel->machineTypes,
+                                  ++accel->nmachineTypes);
+
+    mach = &(accel->machineTypes[accel->nmachineTypes - 1]);
+
+    mach->alias = g_strdup(alias);
+    mach->name = g_strdup(name);
+    mach->defaultCPU = g_strdup(defaultCPU);
+
+    mach->maxCpus = maxCpus;
+    mach->hotplugCpus = hotplugCpus;
+
+    mach->qemuDefault = isDefault;
+}
+
 static int
 virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
-                                virQEMUCapsAccelPtr accel,
+                                virDomainVirtType virtType,
                                 qemuMonitorPtr mon)
 {
     qemuMonitorMachineInfoPtr *machines = NULL;
     int nmachines = 0;
-    int ret = -1;
     size_t i;
     ssize_t defIdx = -1;
     ssize_t preferredIdx = -1;
     const char *preferredMachine = preferredMachines[qemuCaps->arch];
+    virQEMUCapsAccelPtr accel = virQEMUCapsGetAccel(qemuCaps, virtType);
 
     if ((nmachines = qemuMonitorGetMachines(mon, &machines)) < 0)
         return -1;
 
-    if (VIR_ALLOC_N(accel->machineTypes, nmachines) < 0)
-        goto cleanup;
-
     for (i = 0; i < nmachines; i++) {
-        virQEMUCapsMachineTypePtr mach;
         if (STREQ(machines[i]->name, "none"))
             continue;
 
-        mach = &(accel->machineTypes[accel->nmachineTypes++]);
-
-        mach->alias = g_strdup(machines[i]->alias);
-        mach->name = g_strdup(machines[i]->name);
-        mach->defaultCPU = g_strdup(machines[i]->defaultCPU);
-
-        mach->maxCpus = machines[i]->maxCpus;
-        mach->hotplugCpus = machines[i]->hotplugCpus;
+        virQEMUCapsAddMachine(qemuCaps,
+                              virtType,
+                              machines[i]->name,
+                              machines[i]->alias,
+                              machines[i]->defaultCPU,
+                              machines[i]->maxCpus,
+                              machines[i]->hotplugCpus,
+                              machines[i]->isDefault);
 
         if (preferredMachine &&
-            (STREQ_NULLABLE(mach->alias, preferredMachine) ||
-             STREQ(mach->name, preferredMachine))) {
+            (STREQ_NULLABLE(machines[i]->alias, preferredMachine) ||
+             STREQ(machines[i]->name, preferredMachine))) {
             preferredIdx = accel->nmachineTypes - 1;
         }
 
-        if (machines[i]->isDefault) {
-            mach->qemuDefault = true;
+        if (machines[i]->isDefault)
             defIdx = accel->nmachineTypes - 1;
-        }
     }
 
     /*
@@ -2493,13 +2516,10 @@ virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
     if (preferredIdx != -1)
         virQEMUCapsSetDefaultMachine(accel, preferredIdx);
 
-    ret = 0;
-
- cleanup:
     for (i = 0; i < nmachines; i++)
         qemuMonitorMachineInfoFree(machines[i]);
     VIR_FREE(machines);
-    return ret;
+    return 0;
 }
 
 
@@ -4745,7 +4765,7 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
         return -1;
     if (virQEMUCapsProbeQMPDevices(qemuCaps, mon) < 0)
         return -1;
-    if (virQEMUCapsProbeQMPMachineTypes(qemuCaps, accel, mon) < 0)
+    if (virQEMUCapsProbeQMPMachineTypes(qemuCaps, type, mon) < 0)
         return -1;
     if (virQEMUCapsProbeQMPMachineProps(qemuCaps, type, mon) < 0)
         return -1;
@@ -4788,7 +4808,7 @@ virQEMUCapsInitQMPMonitorTCG(virQEMUCapsPtr qemuCaps,
     if (virQEMUCapsProbeQMPHostCPU(qemuCaps, accel, mon, VIR_DOMAIN_VIRT_QEMU) < 0)
         return -1;
 
-    if (virQEMUCapsProbeQMPMachineTypes(qemuCaps, accel, mon) < 0)
+    if (virQEMUCapsProbeQMPMachineTypes(qemuCaps, VIR_DOMAIN_VIRT_QEMU, mon) < 0)
         return -1;
 
     return 0;

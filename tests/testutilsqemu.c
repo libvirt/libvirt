@@ -20,99 +20,115 @@ virCPUDefPtr cpuHaswell;
 virCPUDefPtr cpuPower8;
 virCPUDefPtr cpuPower9;
 
-typedef enum {
-    TEST_UTILS_QEMU_BIN_I686,
-    TEST_UTILS_QEMU_BIN_X86_64,
-    TEST_UTILS_QEMU_BIN_AARCH64,
-    TEST_UTILS_QEMU_BIN_ARM,
-    TEST_UTILS_QEMU_BIN_PPC64,
-    TEST_UTILS_QEMU_BIN_PPC,
-    TEST_UTILS_QEMU_BIN_RISCV32,
-    TEST_UTILS_QEMU_BIN_RISCV64,
-    TEST_UTILS_QEMU_BIN_S390X
-} QEMUBinType;
 
-static const char *QEMUBinList[] = {
-    "/usr/bin/qemu-system-i386",
-    "/usr/bin/qemu-system-x86_64",
-    "/usr/bin/qemu-system-aarch64",
-    "/usr/bin/qemu-system-arm",
-    "/usr/bin/qemu-system-ppc64",
-    "/usr/bin/qemu-system-ppc",
-    "/usr/bin/qemu-system-riscv32",
-    "/usr/bin/qemu-system-riscv64",
-    "/usr/bin/qemu-system-s390x"
+static const char *qemu_emulators[VIR_ARCH_LAST] = {
+    [VIR_ARCH_I686] = "/usr/bin/qemu-system-i386",
+    [VIR_ARCH_X86_64] = "/usr/bin/qemu-system-x86_64",
+    [VIR_ARCH_AARCH64] = "/usr/bin/qemu-system-aarch64",
+    [VIR_ARCH_ARMV7L] = "/usr/bin/qemu-system-arm",
+    [VIR_ARCH_PPC64] = "/usr/bin/qemu-system-ppc64",
+    [VIR_ARCH_PPC] = "/usr/bin/qemu-system-ppc",
+    [VIR_ARCH_RISCV32] = "/usr/bin/qemu-system-riscv32",
+    [VIR_ARCH_RISCV64] = "/usr/bin/qemu-system-riscv64",
+    [VIR_ARCH_S390X] = "/usr/bin/qemu-system-s390x"
 };
 
+static const virArch arch_alias[VIR_ARCH_LAST] = {
+    [VIR_ARCH_PPC64LE] = VIR_ARCH_PPC64,
+    [VIR_ARCH_ARMV6L] = VIR_ARCH_ARMV7L,
+};
 
-static virCapsGuestMachinePtr *testQemuAllocMachines(int *nmachines)
+static const char *const i386_machines[] = {
+    "pc", "isapc", NULL
+};
+static const char *const x86_64_machines_kvm[] = {
+    "pc", "isapc", NULL
+};
+static const char *const x86_64_machines_qemu[] = {
+    "pc-0.11", "pc", "pc-0.10", "isapc", NULL
+};
+static const char *const aarch64_machines[] = {
+    "virt", NULL
+};
+static const char *const arm_machines[] = {
+    "vexpress-a9", "vexpress-a15", "versatilepb", NULL
+};
+static const char *const ppc64_machines[] = {
+    "pseries", NULL
+};
+static const char *const ppc_machines[] = {
+    "g3beige", "mac99", "prep", "ppce500", NULL
+};
+static const char *const riscv32_machines[] = {
+    "spike_v1.10", "spike_v1.9.1", "sifive_e", "virt", "sifive_u", NULL
+};
+static const char *const riscv64_machines[] = {
+    "spike_v1.10", "spike_v1.9.1", "sifive_e", "virt", "sifive_u", NULL
+};
+static const char *const s390x_machines[] = {
+    "s390-virtio", "s390-ccw-virtio", NULL
+};
+
+static const char *const *qemu_machines[VIR_ARCH_LAST] = {
+    [VIR_ARCH_I686] = i386_machines,
+    [VIR_ARCH_X86_64] = x86_64_machines_qemu,
+    [VIR_ARCH_AARCH64] = aarch64_machines,
+    [VIR_ARCH_ARMV7L] = arm_machines,
+    [VIR_ARCH_PPC64] = ppc64_machines,
+    [VIR_ARCH_PPC] = ppc_machines,
+    [VIR_ARCH_RISCV32] = riscv32_machines,
+    [VIR_ARCH_RISCV64] = riscv64_machines,
+    [VIR_ARCH_S390X] = s390x_machines,
+};
+
+static const char *const *kvm_machines[VIR_ARCH_LAST] = {
+    [VIR_ARCH_I686] = i386_machines,
+    [VIR_ARCH_X86_64] = x86_64_machines_kvm,
+    [VIR_ARCH_AARCH64] = aarch64_machines,
+    [VIR_ARCH_ARMV7L] = arm_machines,
+    [VIR_ARCH_PPC64] = ppc64_machines,
+    [VIR_ARCH_PPC] = ppc_machines,
+    [VIR_ARCH_RISCV32] = riscv32_machines,
+    [VIR_ARCH_RISCV64] = riscv64_machines,
+    [VIR_ARCH_S390X] = s390x_machines,
+};
+
+static int
+testQemuAddGuest(virCapsPtr caps,
+                 virArch arch)
 {
-    virCapsGuestMachinePtr *machines;
-    static const char *const x86_machines[] = {
-        "pc", "isapc"
-    };
+    size_t nmachines;
+    virCapsGuestMachinePtr *machines = NULL;
+    virCapsGuestPtr guest;
+    virArch emu_arch = arch;
 
-    machines = virCapabilitiesAllocMachines(x86_machines,
-                                            G_N_ELEMENTS(x86_machines));
+    if (arch_alias[arch] != VIR_ARCH_NONE)
+        emu_arch = arch_alias[arch];
+
+    if (qemu_emulators[emu_arch] == NULL)
+        return 0;
+
+    nmachines = g_strv_length((gchar **)qemu_machines[emu_arch]);
+    machines = virCapabilitiesAllocMachines(qemu_machines[emu_arch],
+                                            nmachines);
     if (machines == NULL)
-        return NULL;
-
-    *nmachines = G_N_ELEMENTS(x86_machines);
-
-    return machines;
-}
-
-/* Newer versions of qemu have versioned machine types to allow
- * compatibility with older releases.
- * The 'pc' machine type is an alias of the newest machine type.
- */
-static virCapsGuestMachinePtr *testQemuAllocNewerMachines(int *nmachines)
-{
-    virCapsGuestMachinePtr *machines;
-    char *canonical;
-    static const char *const x86_machines[] = {
-        "pc-0.11", "pc", "pc-0.10", "isapc"
-    };
-
-    canonical = g_strdup(x86_machines[0]);
-
-    machines = virCapabilitiesAllocMachines(x86_machines,
-                                            G_N_ELEMENTS(x86_machines));
-    if (machines == NULL) {
-        VIR_FREE(canonical);
-        return NULL;
-    }
-
-    machines[1]->canonical = canonical;
-
-    *nmachines = G_N_ELEMENTS(x86_machines);
-
-    return machines;
-}
-
-
-static int
-testQemuAddI686Guest(virCapsPtr caps)
-{
-    int nmachines = 0;
-    virCapsGuestMachinePtr *machines = NULL;
-    virCapsGuestPtr guest;
-
-    if (!(machines = testQemuAllocMachines(&nmachines)))
         goto error;
 
     if (!(guest = virCapabilitiesAddGuest(caps,
                                           VIR_DOMAIN_OSTYPE_HVM,
-                                          VIR_ARCH_I686,
-                                          QEMUBinList[TEST_UTILS_QEMU_BIN_I686],
+                                          arch,
+                                          qemu_emulators[emu_arch],
                                           NULL,
                                           nmachines,
                                           machines)))
         goto error;
 
-    virCapabilitiesAddGuestFeature(guest, VIR_CAPS_GUEST_FEATURE_TYPE_CPUSELECTION);
-
     machines = NULL;
+    nmachines = 0;
+
+    if (arch == VIR_ARCH_I686 ||
+        arch == VIR_ARCH_X86_64)
+        virCapabilitiesAddGuestFeature(guest, VIR_CAPS_GUEST_FEATURE_TYPE_CPUSELECTION);
 
     if (!virCapabilitiesAddGuestDomain(guest,
                                        VIR_DOMAIN_VIRT_QEMU,
@@ -122,12 +138,15 @@ testQemuAddI686Guest(virCapsPtr caps)
                                        NULL))
         goto error;
 
-    if (!(machines = testQemuAllocMachines(&nmachines)))
+    nmachines = g_strv_length((char **)kvm_machines[emu_arch]);
+    machines = virCapabilitiesAllocMachines(kvm_machines[emu_arch],
+                                            nmachines);
+    if (machines == NULL)
         goto error;
 
     if (!virCapabilitiesAddGuestDomain(guest,
                                        VIR_DOMAIN_VIRT_KVM,
-                                       QEMUBinList[TEST_UTILS_QEMU_BIN_I686],
+                                       qemu_emulators[emu_arch],
                                        NULL,
                                        nmachines,
                                        machines))
@@ -140,356 +159,11 @@ testQemuAddI686Guest(virCapsPtr caps)
     return -1;
 }
 
-
-static int
-testQemuAddX86_64Guest(virCapsPtr caps)
-{
-    int nmachines = 0;
-    virCapsGuestMachinePtr *machines = NULL;
-    virCapsGuestPtr guest;
-
-    if (!(machines = testQemuAllocNewerMachines(&nmachines)))
-        goto error;
-
-    if (!(guest = virCapabilitiesAddGuest(caps,
-                                          VIR_DOMAIN_OSTYPE_HVM,
-                                          VIR_ARCH_X86_64,
-                                          QEMUBinList[TEST_UTILS_QEMU_BIN_X86_64],
-                                          NULL,
-                                          nmachines,
-                                          machines)))
-        goto error;
-
-    virCapabilitiesAddGuestFeature(guest, VIR_CAPS_GUEST_FEATURE_TYPE_CPUSELECTION);
-
-    machines = NULL;
-
-    if (!virCapabilitiesAddGuestDomain(guest,
-                                       VIR_DOMAIN_VIRT_QEMU,
-                                       NULL,
-                                       NULL,
-                                       0,
-                                       NULL))
-        goto error;
-
-    if (!(machines = testQemuAllocMachines(&nmachines)))
-        goto error;
-
-    if (!virCapabilitiesAddGuestDomain(guest,
-                                       VIR_DOMAIN_VIRT_KVM,
-                                       QEMUBinList[TEST_UTILS_QEMU_BIN_X86_64],
-                                       NULL,
-                                       nmachines,
-                                       machines))
-        goto error;
-
-    machines = NULL;
-
-    if (!virCapabilitiesAddGuestDomain(guest,
-                                       VIR_DOMAIN_VIRT_KVM,
-                                       QEMUBinList[TEST_UTILS_QEMU_BIN_X86_64],
-                                       NULL,
-                                       0,
-                                       NULL))
-        goto error;
-
-    return 0;
-
- error:
-    virCapabilitiesFreeMachines(machines, nmachines);
-    return -1;
-}
-
-
-static int testQemuAddPPC64Guest(virCapsPtr caps)
-{
-    static const char *machine[] = { "pseries" };
-    virCapsGuestMachinePtr *machines = NULL;
-    virCapsGuestPtr guest;
-
-    machines = virCapabilitiesAllocMachines(machine, 1);
-    if (!machines)
-        goto error;
-
-    guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_PPC64,
-                                    QEMUBinList[TEST_UTILS_QEMU_BIN_PPC64],
-                                    NULL, 1, machines);
-    if (!guest)
-        goto error;
-
-    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU, NULL, NULL, 0, NULL))
-        goto error;
-    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
-                                       NULL, NULL, 0, NULL))
-        goto error;
-
-    return 0;
-
- error:
-    /* No way to free a guest? */
-    virCapabilitiesFreeMachines(machines, 1);
-    return -1;
-}
-
-static int testQemuAddPPC64LEGuest(virCapsPtr caps)
-{
-    static const char *machine[] = { "pseries" };
-    virCapsGuestMachinePtr *machines = NULL;
-    virCapsGuestPtr guest;
-
-    machines = virCapabilitiesAllocMachines(machine, 1);
-    if (!machines)
-        goto error;
-
-    guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_PPC64LE,
-                                    QEMUBinList[TEST_UTILS_QEMU_BIN_PPC64],
-                                    NULL, 1, machines);
-    if (!guest)
-        goto error;
-
-    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU, NULL, NULL, 0, NULL))
-        goto error;
-    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
-                                       NULL, NULL, 0, NULL))
-        goto error;
-
-    return 0;
-
- error:
-    /* No way to free a guest? */
-    virCapabilitiesFreeMachines(machines, 1);
-    return -1;
-}
-
-static int testQemuAddPPCGuest(virCapsPtr caps)
-{
-    static const char *machine[] = { "g3beige",
-                                     "mac99",
-                                     "prep",
-                                     "ppce500" };
-    virCapsGuestMachinePtr *machines = NULL;
-    virCapsGuestPtr guest;
-
-    machines = virCapabilitiesAllocMachines(machine, 1);
-    if (!machines)
-        goto error;
-
-    guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_PPC,
-                                    QEMUBinList[TEST_UTILS_QEMU_BIN_PPC],
-                                    NULL, 1, machines);
-    if (!guest)
-        goto error;
-
-    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU, NULL, NULL, 0, NULL))
-        goto error;
-    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
-                                       NULL, NULL, 0, NULL))
-        goto error;
-
-    return 0;
-
- error:
-    /* No way to free a guest? */
-    virCapabilitiesFreeMachines(machines, 1);
-    return -1;
-}
-
-static int testQemuAddRISCV32Guest(virCapsPtr caps)
-{
-    static const char *names[] = { "spike_v1.10",
-                                   "spike_v1.9.1",
-                                   "sifive_e",
-                                   "virt",
-                                   "sifive_u" };
-    static const int nmachines = G_N_ELEMENTS(names);
-    virCapsGuestMachinePtr *machines = NULL;
-    virCapsGuestPtr guest;
-
-    machines = virCapabilitiesAllocMachines(names, nmachines);
-    if (!machines)
-        goto error;
-
-    guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_RISCV32,
-                                    QEMUBinList[TEST_UTILS_QEMU_BIN_RISCV32],
-                                    NULL, nmachines, machines);
-    if (!guest)
-        goto error;
-
-    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU, NULL, NULL, 0, NULL))
-        goto error;
-
-    return 0;
-
- error:
-    virCapabilitiesFreeMachines(machines, nmachines);
-    return -1;
-}
-
-static int testQemuAddRISCV64Guest(virCapsPtr caps)
-{
-    static const char *names[] = { "spike_v1.10",
-                                   "spike_v1.9.1",
-                                   "sifive_e",
-                                   "virt",
-                                   "sifive_u" };
-    static const int nmachines = G_N_ELEMENTS(names);
-    virCapsGuestMachinePtr *machines = NULL;
-    virCapsGuestPtr guest;
-
-    machines = virCapabilitiesAllocMachines(names, nmachines);
-    if (!machines)
-        goto error;
-
-    guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_RISCV64,
-                                    QEMUBinList[TEST_UTILS_QEMU_BIN_RISCV64],
-                                    NULL, nmachines, machines);
-    if (!guest)
-        goto error;
-
-    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU, NULL, NULL, 0, NULL))
-        goto error;
-
-    return 0;
-
- error:
-    virCapabilitiesFreeMachines(machines, nmachines);
-    return -1;
-}
-
-static int testQemuAddS390Guest(virCapsPtr caps)
-{
-    static const char *s390_machines[] = { "s390-virtio",
-                                           "s390-ccw-virtio" };
-    virCapsGuestMachinePtr *machines = NULL;
-    virCapsGuestPtr guest;
-
-    machines = virCapabilitiesAllocMachines(s390_machines,
-                                            G_N_ELEMENTS(s390_machines));
-    if (!machines)
-        goto error;
-
-    guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_S390X,
-                                    QEMUBinList[TEST_UTILS_QEMU_BIN_S390X],
-                                    NULL,
-                                    G_N_ELEMENTS(s390_machines),
-                                    machines);
-    if (!guest)
-        goto error;
-
-    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU, NULL, NULL, 0, NULL))
-        goto error;
-    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
-                                       NULL, NULL, 0, NULL))
-        goto error;
-
-    return 0;
-
- error:
-    virCapabilitiesFreeMachines(machines, G_N_ELEMENTS(s390_machines));
-    return -1;
-}
-
-static int testQemuAddArm6Guest(virCapsPtr caps)
-{
-    static const char *machines[] = { "versatilepb" };
-    virCapsGuestMachinePtr *capsmachines = NULL;
-    virCapsGuestPtr guest;
-
-    capsmachines = virCapabilitiesAllocMachines(machines,
-                                                G_N_ELEMENTS(machines));
-    if (!capsmachines)
-        goto error;
-
-    guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_ARMV6L,
-                                    QEMUBinList[TEST_UTILS_QEMU_BIN_ARM],
-                                    NULL,
-                                    G_N_ELEMENTS(machines),
-                                    capsmachines);
-    if (!guest)
-        goto error;
-
-    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU, NULL, NULL, 0, NULL))
-        goto error;
-    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
-                                       NULL, NULL, 0, NULL))
-        goto error;
-
-    return 0;
-
- error:
-    virCapabilitiesFreeMachines(capsmachines, G_N_ELEMENTS(machines));
-    return -1;
-}
-
-static int testQemuAddArm7Guest(virCapsPtr caps)
-{
-    static const char *machines[] = { "vexpress-a9",
-                                      "vexpress-a15",
-                                      "versatilepb" };
-    virCapsGuestMachinePtr *capsmachines = NULL;
-    virCapsGuestPtr guest;
-
-    capsmachines = virCapabilitiesAllocMachines(machines,
-                                                G_N_ELEMENTS(machines));
-    if (!capsmachines)
-        goto error;
-
-    guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_ARMV7L,
-                                    QEMUBinList[TEST_UTILS_QEMU_BIN_ARM],
-                                    NULL,
-                                    G_N_ELEMENTS(machines),
-                                    capsmachines);
-    if (!guest)
-        goto error;
-
-    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU, NULL, NULL, 0, NULL))
-        goto error;
-    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
-                                       NULL, NULL, 0, NULL))
-        goto error;
-
-    return 0;
-
- error:
-    virCapabilitiesFreeMachines(capsmachines, G_N_ELEMENTS(machines));
-    return -1;
-}
-
-static int testQemuAddAARCH64Guest(virCapsPtr caps)
-{
-    static const char *machines[] = { "virt"};
-    virCapsGuestMachinePtr *capsmachines = NULL;
-    virCapsGuestPtr guest;
-
-    capsmachines = virCapabilitiesAllocMachines(machines,
-                                                G_N_ELEMENTS(machines));
-    if (!capsmachines)
-        goto error;
-
-    guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_AARCH64,
-                                    QEMUBinList[TEST_UTILS_QEMU_BIN_AARCH64],
-                                    NULL,
-                                    G_N_ELEMENTS(machines),
-                                    capsmachines);
-    if (!guest)
-        goto error;
-
-    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU, NULL, NULL, 0, NULL))
-        goto error;
-    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
-                                       NULL, NULL, 0, NULL))
-        goto error;
-
-    return 0;
-
- error:
-    virCapabilitiesFreeMachines(capsmachines, G_N_ELEMENTS(machines));
-    return -1;
-}
 
 virCapsPtr testQemuCapsInit(void)
 {
     virCapsPtr caps;
+    size_t i;
 
     if (!(caps = virCapabilitiesNew(VIR_ARCH_X86_64, false, false)))
         return NULL;
@@ -518,38 +192,10 @@ virCapsPtr testQemuCapsInit(void)
     if (virTestCapsBuildNUMATopology(caps, 3) < 0)
         goto cleanup;
 
-    if (testQemuAddI686Guest(caps) < 0)
-        goto cleanup;
-
-    if (testQemuAddX86_64Guest(caps) < 0)
-        goto cleanup;
-
-    if (testQemuAddPPC64Guest(caps))
-        goto cleanup;
-
-    if (testQemuAddPPC64LEGuest(caps))
-        goto cleanup;
-
-    if (testQemuAddPPCGuest(caps))
-        goto cleanup;
-
-    if (testQemuAddRISCV32Guest(caps) < 0)
-        goto cleanup;
-
-    if (testQemuAddRISCV64Guest(caps) < 0)
-        goto cleanup;
-
-    if (testQemuAddS390Guest(caps))
-        goto cleanup;
-
-    if (testQemuAddArm6Guest(caps))
-        goto cleanup;
-
-    if (testQemuAddArm7Guest(caps))
-        goto cleanup;
-
-    if (testQemuAddAARCH64Guest(caps))
-        goto cleanup;
+    for (i = 0; i < VIR_ARCH_LAST; i++) {
+        if (testQemuAddGuest(caps, i) < 0)
+            goto cleanup;
+    }
 
     if (virTestGetDebug()) {
         char *caps_str;
@@ -658,26 +304,44 @@ void qemuTestDriverFree(virQEMUDriver *driver)
 int qemuTestCapsCacheInsert(virFileCachePtr cache,
                             virQEMUCapsPtr caps)
 {
-    size_t i;
-    virQEMUCapsPtr tmpCaps;
+    size_t i, j;
 
-    if (caps) {
-        tmpCaps = caps;
-    } else {
-        if (!(tmpCaps = virQEMUCapsNew()))
-            return -ENOMEM;
-    }
-
-    for (i = 0; i < G_N_ELEMENTS(QEMUBinList); i++) {
-        virObjectRef(tmpCaps);
-        if (virFileCacheInsertData(cache, QEMUBinList[i], tmpCaps) < 0) {
+    for (i = 0; i < G_N_ELEMENTS(qemu_emulators); i++) {
+        virQEMUCapsPtr tmpCaps;
+        if (qemu_emulators[i] == NULL)
+            continue;
+        if (caps) {
+            tmpCaps = virQEMUCapsNewCopy(caps);
+        } else {
+            tmpCaps = virQEMUCapsNew();
+        }
+        virQEMUCapsSetArch(tmpCaps, i);
+        for (j = 0; qemu_machines[i][j] != NULL; j++) {
+            virQEMUCapsAddMachine(tmpCaps,
+                                  VIR_DOMAIN_VIRT_QEMU,
+                                  qemu_machines[i][j],
+                                  NULL,
+                                  NULL,
+                                  0,
+                                  false,
+                                  false);
+        }
+        for (j = 0; kvm_machines[i][j] != NULL; j++) {
+            virQEMUCapsAddMachine(tmpCaps,
+                                  VIR_DOMAIN_VIRT_KVM,
+                                  kvm_machines[i][j],
+                                  NULL,
+                                  NULL,
+                                  0,
+                                  false,
+                                  false);
+            virQEMUCapsSet(tmpCaps, QEMU_CAPS_KVM);
+        }
+        if (virFileCacheInsertData(cache, qemu_emulators[i], tmpCaps) < 0) {
             virObjectUnref(tmpCaps);
             return -1;
         }
     }
-
-    if (!caps)
-        virObjectUnref(tmpCaps);
 
     return 0;
 }
