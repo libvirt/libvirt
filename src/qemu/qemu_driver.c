@@ -907,9 +907,6 @@ qemuStateInitialize(bool privileged,
     if (!qemu_driver->qemuCapsCache)
         goto error;
 
-    if ((qemu_driver->caps = virQEMUDriverCreateCapabilities(qemu_driver)) == NULL)
-        goto error;
-
     if (!(sec_managers = qemuSecurityGetNested(qemu_driver->securityManager)))
         goto error;
 

@@ -1318,13 +1318,14 @@ virCapsPtr virQEMUDriverGetCapabilities(virQEMUDriverPtr driver,
         driver->caps = caps;
     } else {
         qemuDriverLock(driver);
-    }
 
-    if (driver->caps->nguests == 0 && !refresh) {
-        VIR_DEBUG("Capabilities didn't detect any guests. Forcing a "
-            "refresh.");
-        qemuDriverUnlock(driver);
-        return virQEMUDriverGetCapabilities(driver, true);
+        if (driver->caps == NULL ||
+            driver->caps->nguests == 0) {
+            VIR_DEBUG("Capabilities didn't detect any guests. Forcing a "
+                      "refresh.");
+            qemuDriverUnlock(driver);
+            return virQEMUDriverGetCapabilities(driver, true);
+        }
     }
 
     ret = virObjectRef(driver->caps);
