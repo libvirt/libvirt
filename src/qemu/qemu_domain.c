@@ -10255,7 +10255,7 @@ qemuDomainCleanupRun(virQEMUDriverPtr driver,
     priv->ncleanupCallbacks_max = 0;
 }
 
-static void
+void
 qemuDomainGetImageIds(virQEMUDriverConfigPtr cfg,
                       virDomainObjPtr vm,
                       virStorageSourcePtr src,

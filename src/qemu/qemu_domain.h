@@ -839,6 +839,13 @@ bool qemuDomainDiskChangeSupported(virDomainDiskDefPtr disk,
 const char *qemuDomainDiskNodeFormatLookup(virDomainObjPtr vm,
                                            const char *disk);
 
+void qemuDomainGetImageIds(virQEMUDriverConfigPtr cfg,
+                           virDomainObjPtr vm,
+                           virStorageSourcePtr src,
+                           virStorageSourcePtr parentSrc,
+                           uid_t *uid,
+                           gid_t *gid);
+
 int qemuDomainStorageFileInit(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               virStorageSourcePtr src,
