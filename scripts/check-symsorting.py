@@ -59,8 +59,8 @@ def check_sorting(group, symfile, line, groupfile, lastgroup):
             issorted = False
 
     if not issorted:
-        actual = group[first:(last - first + 1)]
-        expect = sortedgroup[first:(last - first + 1)]
+        actual = group[first:last]
+        expect = sortedgroup[first:last]
         print("Symbol block at %s:%s: symbols not sorted" %
               (symfile, line), file=sys.stderr)
         for g in actual:
