@@ -1051,6 +1051,20 @@ typedef enum {
  */
 # define VIR_MIGRATE_PARAM_PARALLEL_CONNECTIONS     "parallel.connections"
 
+/**
+ * VIR_MIGRATE_PARAM_TLS_DESTINATION:
+ *
+ * virDomainMigrate* params field: override the destination host name used for
+ * TLS verification. As VIR_TYPED_PARAM_STRING.
+ *
+ * Normally the TLS certificate from the destination host must match the host's
+ * name for TLS verification to succeed. When the certificate does not match
+ * the destination hostname and the expected cetificate's hostname is known,
+ * this parameter can be used to pass this expected hostname when starting
+ * the migration.
+ */
+# define VIR_MIGRATE_PARAM_TLS_DESTINATION          "tls.destination"
+
 /* Domain migration. */
 virDomainPtr virDomainMigrate (virDomainPtr domain, virConnectPtr dconn,
                                unsigned long flags, const char *dname,
