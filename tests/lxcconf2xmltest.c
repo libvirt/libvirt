@@ -10,8 +10,7 @@
 
 # define VIR_FROM_THIS VIR_FROM_NONE
 
-static virCapsPtr caps;
-static virDomainXMLOptionPtr xmlopt;
+static virLXCDriverPtr driver;
 
 static int testSanitizeDef(virDomainDefPtr vmdef)
 {
@@ -34,7 +33,7 @@ testCompareXMLToConfigFiles(const char *xmlfile,
     if (virTestLoadFile(configfile, &config) < 0)
         goto fail;
 
-    vmdef = lxcParseConfigString(config, caps, xmlopt);
+    vmdef = lxcParseConfigString(config, driver->caps, driver->xmlopt);
     if ((vmdef && expectError) || (!vmdef && !expectError))
         goto fail;
 
@@ -42,7 +41,7 @@ testCompareXMLToConfigFiles(const char *xmlfile,
         if (testSanitizeDef(vmdef) < 0)
             goto fail;
 
-        if (!(actualxml = virDomainDefFormat(vmdef, xmlopt, caps, 0)))
+        if (!(actualxml = virDomainDefFormat(vmdef, driver->xmlopt, driver->caps, 0)))
             goto fail;
 
         if (virTestCompareToFile(actualxml, xmlfile) < 0)
@@ -109,13 +108,8 @@ mymain(void)
 {
     int ret = EXIT_SUCCESS;
 
-    if (!(caps = testLXCCapsInit()))
+    if (!(driver = testLXCDriverInit()))
         return EXIT_FAILURE;
-
-    if (!(xmlopt = lxcDomainXMLConfInit())) {
-        virObjectUnref(caps);
-        return EXIT_FAILURE;
-    }
 
 # define DO_TEST(name, expectError) \
     do { \
@@ -166,8 +160,7 @@ mymain(void)
     DO_TEST3("blkiotune", false);
     DO_TEST3("ethernet", false);
 
-    virObjectUnref(xmlopt);
-    virObjectUnref(caps);
+    testLXCDriverFree(driver);
 
     return ret;
 }

@@ -351,11 +351,15 @@ virDomainXMLPrivateDataCallbacks virLXCDriverPrivateDataCallbacks = {
 
 static int
 virLXCDomainDefPostParse(virDomainDefPtr def,
-                         virCapsPtr caps,
+                         virCapsPtr _caps G_GNUC_UNUSED,
                          unsigned int parseFlags G_GNUC_UNUSED,
-                         void *opaque G_GNUC_UNUSED,
+                         void *opaque,
                          void *parseOpaque G_GNUC_UNUSED)
 {
+    virLXCDriverPtr driver = opaque;
+    g_autoptr(virCaps) caps = virLXCDriverGetCapabilities(driver, false);
+    if (!caps)
+        return -1;
     if (!virCapabilitiesDomainSupported(caps, def->os.type,
                                         def->os.arch,
                                         def->virtType))

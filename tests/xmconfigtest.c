@@ -34,8 +34,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-static virCapsPtr caps;
-static virDomainXMLOptionPtr xmlopt;
+static libxlDriverPrivatePtr driver;
 
 static int
 testCompareParseXML(const char *xmcfg, const char *xml)
@@ -46,6 +45,7 @@ testCompareParseXML(const char *xmcfg, const char *xml)
     virConnectPtr conn = NULL;
     int wrote = 4096;
     virDomainDefPtr def = NULL;
+    g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
 
     if (VIR_ALLOC_N(gotxmcfgData, wrote) < 0)
         goto fail;
@@ -53,11 +53,11 @@ testCompareParseXML(const char *xmcfg, const char *xml)
     conn = virGetConnect();
     if (!conn) goto fail;
 
-    if (!(def = virDomainDefParseFile(xml, caps, xmlopt, NULL,
+    if (!(def = virDomainDefParseFile(xml, cfg->caps, driver->xmlopt, NULL,
                                       VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto fail;
 
-    if (!virDomainDefCheckABIStability(def, def, xmlopt)) {
+    if (!virDomainDefCheckABIStability(def, def, driver->xmlopt)) {
         fprintf(stderr, "ABI stability check failed on %s", xml);
         goto fail;
     }
@@ -90,6 +90,7 @@ testCompareFormatXML(const char *xmcfg, const char *xml)
     g_autoptr(virConf) conf = NULL;
     int ret = -1;
     virDomainDefPtr def = NULL;
+    g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
 
     if (virTestLoadFile(xmcfg, &xmcfgData) < 0)
         goto fail;
@@ -97,10 +98,10 @@ testCompareFormatXML(const char *xmcfg, const char *xml)
     if (!(conf = virConfReadString(xmcfgData, 0)))
         goto fail;
 
-    if (!(def = xenParseXM(conf, caps, xmlopt)))
+    if (!(def = xenParseXM(conf, cfg->caps, driver->xmlopt)))
         goto fail;
 
-    if (!(gotxml = virDomainDefFormat(def, xmlopt, caps, VIR_DOMAIN_DEF_FORMAT_SECURE)))
+    if (!(gotxml = virDomainDefFormat(def, driver->xmlopt, cfg->caps, VIR_DOMAIN_DEF_FORMAT_SECURE)))
         goto fail;
 
     if (virTestCompareToFile(gotxml, xml) < 0)
@@ -152,10 +153,7 @@ mymain(void)
 {
     int ret = 0;
 
-    if (!(caps = testXLInitCaps()))
-        return EXIT_FAILURE;
-
-    if (!(xmlopt = libxlCreateXMLConf()))
+    if (!(driver = testXLInitDriver()))
         return EXIT_FAILURE;
 
 #define DO_TEST_PARSE(name) \
@@ -225,10 +223,9 @@ mymain(void)
     DO_TEST("disk-drv-blktap-raw");
     DO_TEST("disk-drv-blktap2-raw");
 
-    virObjectUnref(caps);
-    virObjectUnref(xmlopt);
+    testXLFreeDriver(driver);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIR_TEST_MAIN(mymain)
+VIR_TEST_MAIN_PRELOAD(mymain, VIR_TEST_MOCK("xl"))

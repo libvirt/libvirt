@@ -159,11 +159,41 @@ static void virLXCControllerQuitTimer(int timer G_GNUC_UNUSED, void *opaque)
 }
 
 
+static virLXCDriverPtr
+virLXCControllerDriverNew(void)
+{
+    virLXCDriverPtr driver = g_new0(virLXCDriver, 1);
+
+    if (virMutexInit(&driver->lock) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("cannot initialize mutex"));
+        g_free(driver);
+        return NULL;
+    }
+
+    driver->caps = virLXCDriverCapsInit(NULL);
+    driver->xmlopt = lxcDomainXMLConfInit(driver);
+
+    return driver;
+}
+
+
+static void
+virLXCControllerDriverFree(virLXCDriverPtr driver)
+{
+    if (!driver)
+        return;
+    virObjectUnref(driver->xmlopt);
+    virObjectUnref(driver->caps);
+    virMutexDestroy(&driver->lock);
+    g_free(driver);
+}
+
+
 static virLXCControllerPtr virLXCControllerNew(const char *name)
 {
     virLXCControllerPtr ctrl = NULL;
-    virCapsPtr caps = NULL;
-    virDomainXMLOptionPtr xmlopt = NULL;
+    virLXCDriverPtr driver = NULL;
     char *configFile = NULL;
 
     if (VIR_ALLOC(ctrl) < 0)
@@ -174,10 +204,7 @@ static virLXCControllerPtr virLXCControllerNew(const char *name)
 
     ctrl->name = g_strdup(name);
 
-    if (!(caps = virLXCDriverCapsInit(NULL)))
-        goto error;
-
-    if (!(xmlopt = lxcDomainXMLConfInit()))
+    if (!(driver = virLXCControllerDriverNew()))
         goto error;
 
     if ((configFile = virDomainConfigFile(LXC_STATE_DIR,
@@ -185,7 +212,7 @@ static virLXCControllerPtr virLXCControllerNew(const char *name)
         goto error;
 
     if ((ctrl->vm = virDomainObjParseFile(configFile,
-                                          caps, xmlopt,
+                                          driver->caps, driver->xmlopt,
                                           0)) == NULL)
         goto error;
     ctrl->def = ctrl->vm->def;
@@ -197,8 +224,7 @@ static virLXCControllerPtr virLXCControllerNew(const char *name)
 
  cleanup:
     VIR_FREE(configFile);
-    virObjectUnref(caps);
-    virObjectUnref(xmlopt);
+    virLXCControllerDriverFree(driver);
     return ctrl;
 
  error:

@@ -98,7 +98,10 @@ testReadNetworkConf(const void *data G_GNUC_UNUSED)
         "    </interface>\n"
         "  </devices>\n"
         "</domain>\n";
-    virDomainXMLOptionPtr xmlopt = openvzXMLOption();
+    struct openvz_driver driver = {0};
+
+    driver.xmlopt = openvzXMLOption(&driver);
+    driver.caps = openvzCapsInit();
 
     if (!(def = virDomainDefNew()))
         goto cleanup;
@@ -113,7 +116,7 @@ testReadNetworkConf(const void *data G_GNUC_UNUSED)
         goto cleanup;
     }
 
-    actual = virDomainDefFormat(def, xmlopt, NULL, VIR_DOMAIN_DEF_FORMAT_INACTIVE);
+    actual = virDomainDefFormat(def, driver.xmlopt, driver.caps, VIR_DOMAIN_DEF_FORMAT_INACTIVE);
 
     if (actual == NULL) {
         fprintf(stderr, "ERROR: %s\n", virGetLastErrorMessage());
@@ -128,7 +131,8 @@ testReadNetworkConf(const void *data G_GNUC_UNUSED)
     result = 0;
 
  cleanup:
-    virObjectUnref(xmlopt);
+    virObjectUnref(driver.xmlopt);
+    virObjectUnref(driver.caps);
     VIR_FREE(actual);
     virDomainDefFree(def);
 

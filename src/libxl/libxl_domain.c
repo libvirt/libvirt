@@ -367,12 +367,15 @@ libxlDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 
 static int
 libxlDomainDefPostParse(virDomainDefPtr def,
-                        virCapsPtr caps,
+                        virCapsPtr caps G_GNUC_UNUSED,
                         unsigned int parseFlags G_GNUC_UNUSED,
-                        void *opaque G_GNUC_UNUSED,
+                        void *opaque,
                         void *parseOpaque G_GNUC_UNUSED)
 {
-    if (!virCapabilitiesDomainSupported(caps, def->os.type,
+    libxlDriverPrivatePtr driver = opaque;
+    g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
+
+    if (!virCapabilitiesDomainSupported(cfg->caps, def->os.type,
                                         def->os.arch,
                                         def->virtType))
         return -1;

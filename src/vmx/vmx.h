@@ -29,7 +29,7 @@
 
 typedef struct _virVMXContext virVMXContext;
 
-virDomainXMLOptionPtr virVMXDomainXMLConfInit(void);
+virDomainXMLOptionPtr virVMXDomainXMLConfInit(virCapsPtr caps);
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

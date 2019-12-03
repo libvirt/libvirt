@@ -1584,7 +1584,7 @@ static int lxcStateInitialize(bool privileged,
     if (!(caps = virLXCDriverGetCapabilities(lxc_driver, true)))
         goto cleanup;
 
-    if (!(lxc_driver->xmlopt = lxcDomainXMLConfInit()))
+    if (!(lxc_driver->xmlopt = lxcDomainXMLConfInit(lxc_driver)))
         goto cleanup;
 
     if (!(lxc_driver->closeCallbacks = virCloseCallbacksNew()))

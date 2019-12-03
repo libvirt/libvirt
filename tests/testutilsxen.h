@@ -18,7 +18,10 @@
 
 #include "capabilities.h"
 #ifdef WITH_LIBXL
-# include "libxl/libxl_capabilities.h"
-#endif
+# include "libxl/libxl_conf.h"
 
-virCapsPtr testXLInitCaps(void);
+libxlDriverPrivatePtr testXLInitDriver(void);
+
+void testXLFreeDriver(libxlDriverPrivatePtr driver);
+
+#endif /* WITH_LIBXL */

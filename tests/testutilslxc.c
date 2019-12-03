@@ -6,8 +6,10 @@
 # include "viralloc.h"
 # include "domain_conf.h"
 
+# define VIR_FROM_THIS VIR_FROM_LXC
 
-virCapsPtr testLXCCapsInit(void)
+virCapsPtr
+testLXCCapsInit(void)
 {
     virCapsPtr caps;
     virCapsGuestPtr guest;
@@ -54,4 +56,34 @@ virCapsPtr testLXCCapsInit(void)
     virObjectUnref(caps);
     return NULL;
 }
+
+
+virLXCDriverPtr
+testLXCDriverInit(void)
+{
+    virLXCDriverPtr driver = g_new0(virLXCDriver, 1);
+
+    if (virMutexInit(&driver->lock) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", "cannot initialize mutex");
+        g_free(driver);
+        return NULL;
+    }
+
+    driver->caps = testLXCCapsInit();
+    driver->xmlopt = lxcDomainXMLConfInit(driver);
+
+    return driver;
+}
+
+
+void
+testLXCDriverFree(virLXCDriverPtr driver)
+{
+    virObjectUnref(driver->xmlopt);
+    virObjectUnref(driver->caps);
+    virMutexDestroy(&driver->lock);
+    g_free(driver);
+}
+
 #endif

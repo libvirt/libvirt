@@ -1062,12 +1062,13 @@ openSSHSession(virConnectPtr conn, virConnectAuthPtr auth,
 
 static int
 phypDomainDefPostParse(virDomainDefPtr def,
-                       virCapsPtr caps,
+                       virCapsPtr caps G_GNUC_UNUSED,
                        unsigned int parseFlags G_GNUC_UNUSED,
-                       void *opaque G_GNUC_UNUSED,
+                       void *opaque,
                        void *parseOpaque G_GNUC_UNUSED)
 {
-    if (!virCapabilitiesDomainSupported(caps, def->os.type,
+    phyp_driverPtr driver = opaque;
+    if (!virCapabilitiesDomainSupported(driver->caps, def->os.type,
                                         def->os.arch,
                                         def->virtType))
         return -1;
@@ -1157,6 +1158,7 @@ phypConnectOpen(virConnectPtr conn,
     if ((phyp_driver->caps = phypCapsInit()) == NULL)
         goto failure;
 
+    virPhypDriverDomainDefParserConfig.priv = phyp_driver;
     if (!(phyp_driver->xmlopt = virDomainXMLOptionNew(&virPhypDriverDomainDefParserConfig,
                                                       NULL, NULL, NULL, NULL)))
         goto failure;

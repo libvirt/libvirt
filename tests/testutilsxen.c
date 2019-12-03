@@ -6,7 +6,9 @@
 #include "testutilshostcpus.h"
 #include "domain_conf.h"
 
-virCapsPtr
+#define VIR_FROM_THIS VIR_FROM_LIBXL
+
+static virCapsPtr
 testXLInitCaps(void)
 {
     virCapsPtr caps;
@@ -78,4 +80,34 @@ testXLInitCaps(void)
     virCapabilitiesFreeMachines(machines, nmachines);
     virObjectUnref(caps);
     return NULL;
+}
+
+
+libxlDriverPrivatePtr testXLInitDriver(void)
+{
+    libxlDriverPrivatePtr driver = g_new0(libxlDriverPrivate, 1);
+
+    if (virMutexInit(&driver->lock) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", "cannot initialize mutex");
+        g_free(driver);
+        return NULL;
+    }
+
+    driver->config = libxlDriverConfigNew();
+
+    driver->config->caps = testXLInitCaps();
+
+    driver->xmlopt = libxlCreateXMLConf(driver);
+
+    return driver;
+}
+
+void testXLFreeDriver(libxlDriverPrivatePtr driver)
+{
+    virObjectUnref(driver->config->caps);
+    virObjectUnref(driver->config);
+    virObjectUnref(driver->xmlopt);
+    virMutexDestroy(&driver->lock);
+    g_free(driver);
 }

@@ -16,8 +16,7 @@
 
 # define VIR_FROM_THIS VIR_FROM_NONE
 
-static virCapsPtr caps;
-static virDomainXMLOptionPtr xmlopt;
+static virLXCDriverPtr driver;
 
 struct testInfo {
     const char *name;
@@ -39,7 +38,7 @@ testCompareXMLToXMLHelper(const void *data)
     xml_out = g_strdup_printf("%s/lxcxml2xmloutdata/lxc-%s.xml",
                               abs_srcdir, info->name);
 
-    ret = testCompareDomXML2XMLFiles(caps, xmlopt, xml_in,
+    ret = testCompareDomXML2XMLFiles(driver->caps, driver->xmlopt, xml_in,
                                      info->different ? xml_out : xml_in,
                                      !info->inactive_only,
                                      info->parse_flags,
@@ -55,10 +54,7 @@ mymain(void)
 {
     int ret = 0;
 
-    if ((caps = testLXCCapsInit()) == NULL)
-        return EXIT_FAILURE;
-
-    if (!(xmlopt = lxcDomainXMLConfInit()))
+    if (!(driver = testLXCDriverInit()))
         return EXIT_FAILURE;
 
 # define DO_TEST_FULL(name, is_different, inactive, parse_flags) \
@@ -95,8 +91,7 @@ mymain(void)
     DO_TEST("initdir");
     DO_TEST("inituser");
 
-    virObjectUnref(caps);
-    virObjectUnref(xmlopt);
+    testLXCDriverFree(driver);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

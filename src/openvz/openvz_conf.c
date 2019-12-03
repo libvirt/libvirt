@@ -1082,12 +1082,13 @@ int openvzGetVEID(const char *name)
 
 static int
 openvzDomainDefPostParse(virDomainDefPtr def,
-                         virCapsPtr caps,
+                         virCapsPtr caps G_GNUC_UNUSED,
                          unsigned int parseFlags G_GNUC_UNUSED,
-                         void *opaque G_GNUC_UNUSED,
+                         void *opaque,
                          void *parseOpaque G_GNUC_UNUSED)
 {
-    if (!virCapabilitiesDomainSupported(caps, def->os.type,
+    struct openvz_driver *driver = opaque;
+    if (!virCapabilitiesDomainSupported(driver->caps, def->os.type,
                                         def->os.arch,
                                         def->virtType))
         return -1;
@@ -1133,8 +1134,9 @@ virDomainDefParserConfig openvzDomainDefParserConfig = {
     .features = VIR_DOMAIN_DEF_FEATURE_NAME_SLASH,
 };
 
-virDomainXMLOptionPtr openvzXMLOption(void)
+virDomainXMLOptionPtr openvzXMLOption(struct openvz_driver *driver)
 {
+    openvzDomainDefParserConfig.priv = driver;
     return virDomainXMLOptionNew(&openvzDomainDefParserConfig,
                                  NULL, NULL, NULL, NULL);
 }

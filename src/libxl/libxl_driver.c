@@ -769,7 +769,7 @@ libxlStateInitialize(bool privileged,
         goto error;
     }
 
-    if (!(libxl_driver->xmlopt = libxlCreateXMLConf()))
+    if (!(libxl_driver->xmlopt = libxlCreateXMLConf(libxl_driver)))
         goto error;
 
     /* Add Domain-0 */

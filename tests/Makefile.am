@@ -1048,11 +1048,17 @@ endif WITH_LXC
 if WITH_QEMU
 vircapstest_SOURCES += testutilsqemu.c testutilsqemu.h
 endif WITH_QEMU
+vircapstest_LDADD =
 if WITH_QEMU
-vircapstest_LDADD = $(qemu_LDADDS)
-else ! WITH_QEMU
-vircapstest_LDADD = $(LDADDS)
-endif ! WITH_QEMU
+vircapstest_LDADD += ../src/libvirt_driver_qemu_impl.la
+if WITH_DTRACE_PROBES
+vircapstest_LDADD += ../src/libvirt_qemu_probes.lo
+endif WITH_DTRACE_PROBES
+endif WITH_QEMU
+if WITH_LXC
+vircapstest_LDADD += ../src/libvirt_driver_lxc_impl.la
+endif WITH_LXC
+vircapstest_LDADD += $(LDADDS)
 
 libdomaincapsmock_la_SOURCES = domaincapsmock.c
 libdomaincapsmock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)

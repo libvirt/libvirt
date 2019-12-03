@@ -603,6 +603,10 @@ int virQEMUCapsGetCPUFeatures(virQEMUCapsPtr qemuCaps,
                               bool migratable,
                               char ***features);
 
+bool virQEMUCapsIsArchSupported(virQEMUCapsPtr qemuCaps,
+                                virArch arch);
+bool virQEMUCapsIsVirtTypeSupported(virQEMUCapsPtr qemuCaps,
+                                    virDomainVirtType virtType);
 bool virQEMUCapsIsCPUModeSupported(virQEMUCapsPtr qemuCaps,
                                    virArch hostarch,
                                    virDomainVirtType type,

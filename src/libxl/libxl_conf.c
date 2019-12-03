@@ -2470,8 +2470,9 @@ libxlBuildDomainConfig(virPortAllocatorRangePtr graphicsports,
 }
 
 virDomainXMLOptionPtr
-libxlCreateXMLConf(void)
+libxlCreateXMLConf(libxlDriverPrivatePtr driver)
 {
+    libxlDomainDefParserConfig.priv = driver;
     return virDomainXMLOptionNew(&libxlDomainDefParserConfig,
                                  &libxlDomainXMLPrivateDataCallbacks,
                                  NULL, NULL, NULL);

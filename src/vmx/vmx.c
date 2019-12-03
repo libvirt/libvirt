@@ -530,11 +530,12 @@ VIR_ENUM_IMPL(virVMXControllerModelSCSI,
 
 static int
 virVMXDomainDefPostParse(virDomainDefPtr def,
-                         virCapsPtr caps,
+                         virCapsPtr _caps G_GNUC_UNUSED,
                          unsigned int parseFlags G_GNUC_UNUSED,
-                         void *opaque G_GNUC_UNUSED,
+                         void *opaque,
                          void *parseOpaque G_GNUC_UNUSED)
 {
+    virCapsPtr caps = opaque;
     if (!virCapabilitiesDomainSupported(caps, def->os.type,
                                         def->os.arch,
                                         def->virtType))
@@ -612,8 +613,9 @@ static virXMLNamespace virVMXDomainXMLNamespace = {
 };
 
 virDomainXMLOptionPtr
-virVMXDomainXMLConfInit(void)
+virVMXDomainXMLConfInit(virCapsPtr caps)
 {
+    virVMXDomainDefParserConfig.priv = caps;
     return virDomainXMLOptionNew(&virVMXDomainDefParserConfig, NULL,
                                  &virVMXDomainXMLNamespace, NULL, NULL);
 }

@@ -18,7 +18,11 @@
 
 #include "capabilities.h"
 
+#include "lxc/lxc_conf.h"
+
 #define FAKEDEVDIR0 "/fakedevdir0/bla/fasl"
 #define FAKEDEVDIR1 "/fakedevdir1/bla/fasl"
 
 virCapsPtr testLXCCapsInit(void);
+virLXCDriverPtr testLXCDriverInit(void);
+void testLXCDriverFree(virLXCDriverPtr driver);

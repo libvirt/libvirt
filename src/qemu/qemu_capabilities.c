@@ -2095,6 +2095,44 @@ virQEMUCapsSetHostModel(virQEMUCapsPtr qemuCaps,
 
 
 bool
+virQEMUCapsIsArchSupported(virQEMUCapsPtr qemuCaps,
+                           virArch arch)
+{
+    if (arch == qemuCaps->arch)
+        return true;
+
+    if (qemuCaps->arch == VIR_ARCH_X86_64 && arch == VIR_ARCH_I686)
+        return true;
+
+    if (qemuCaps->arch == VIR_ARCH_AARCH64 && arch == VIR_ARCH_ARMV7L)
+        return true;
+
+    if (qemuCaps->arch == VIR_ARCH_ARMV7L && arch == VIR_ARCH_ARMV6L)
+        return true;
+
+    if (qemuCaps->arch == VIR_ARCH_PPC64 && arch == VIR_ARCH_PPC64LE)
+        return true;
+
+    return false;
+}
+
+
+bool
+virQEMUCapsIsVirtTypeSupported(virQEMUCapsPtr qemuCaps,
+                               virDomainVirtType virtType)
+{
+    if (virtType == VIR_DOMAIN_VIRT_QEMU)
+        return true;
+
+    if (virtType == VIR_DOMAIN_VIRT_KVM &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
+        return true;
+
+    return false;
+}
+
+
+bool
 virQEMUCapsIsCPUModeSupported(virQEMUCapsPtr qemuCaps,
                               virArch hostarch,
                               virDomainVirtType type,

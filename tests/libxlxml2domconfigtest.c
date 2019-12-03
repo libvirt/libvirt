@@ -41,7 +41,7 @@
 
 # define VIR_FROM_THIS VIR_FROM_LIBXL
 
-static virCapsPtr caps;
+static libxlDriverPrivatePtr driver;
 
 static int
 testCompareXMLToDomConfig(const char *xmlfile,
@@ -50,19 +50,13 @@ testCompareXMLToDomConfig(const char *xmlfile,
     int ret = -1;
     libxl_domain_config actualconfig;
     libxl_domain_config expectconfig;
-    libxlDriverConfigPtr cfg;
     xentoollog_logger *log = NULL;
     virPortAllocatorRangePtr gports = NULL;
-    virDomainXMLOptionPtr xmlopt = NULL;
     virDomainDefPtr vmdef = NULL;
     char *actualjson = NULL;
     char *tempjson = NULL;
     char *expectjson = NULL;
-
-    if (!(cfg = libxlDriverConfigNew()))
-        return -1;
-
-    cfg->caps = caps;
+    g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
 
     libxl_domain_config_init(&actualconfig);
     libxl_domain_config_init(&expectconfig);
@@ -82,10 +76,7 @@ testCompareXMLToDomConfig(const char *xmlfile,
     if (!(gports = virPortAllocatorRangeNew("vnc", 5900, 6000)))
         goto cleanup;
 
-    if (!(xmlopt = libxlCreateXMLConf()))
-        goto cleanup;
-
-    if (!(vmdef = virDomainDefParseFile(xmlfile, caps, xmlopt,
+    if (!(vmdef = virDomainDefParseFile(xmlfile, cfg->caps, driver->xmlopt,
                                         NULL, VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
@@ -128,12 +119,9 @@ testCompareXMLToDomConfig(const char *xmlfile,
     VIR_FREE(tempjson);
     virDomainDefFree(vmdef);
     virPortAllocatorRangeFree(gports);
-    virObjectUnref(xmlopt);
     libxl_domain_config_dispose(&actualconfig);
     libxl_domain_config_dispose(&expectconfig);
     xtl_logger_destroy(log);
-    cfg->caps = NULL;
-    virObjectUnref(cfg);
     return ret;
 }
 
@@ -177,7 +165,7 @@ mymain(void)
         return EXIT_FAILURE;
     }
 
-    if ((caps = testXLInitCaps()) == NULL)
+    if ((driver = testXLInitDriver()) == NULL)
         return EXIT_FAILURE;
 
 # define DO_TEST(name) \
@@ -215,6 +203,8 @@ mymain(void)
 # endif
 
     unlink("libxl-driver.log");
+
+    testXLFreeDriver(driver);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

@@ -207,7 +207,7 @@ libxlMakeUSB(virDomainHostdevDefPtr hostdev, libxl_device_usbdev *usbdev);
 #endif
 
 virDomainXMLOptionPtr
-libxlCreateXMLConf(void);
+libxlCreateXMLConf(libxlDriverPrivatePtr driver);
 
 #ifdef LIBXL_HAVE_DEVICE_CHANNEL
 # define LIBXL_ATTR_UNUSED

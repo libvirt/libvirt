@@ -112,7 +112,7 @@ int virLXCLoadDriverConfig(virLXCDriverConfigPtr cfg,
 virCapsPtr virLXCDriverCapsInit(virLXCDriverPtr driver);
 virCapsPtr virLXCDriverGetCapabilities(virLXCDriverPtr driver,
                                        bool refresh);
-virDomainXMLOptionPtr lxcDomainXMLConfInit(void);
+virDomainXMLOptionPtr lxcDomainXMLConfInit(virLXCDriverPtr driver);
 
 static inline void lxcDriverLock(virLXCDriverPtr driver)
 {

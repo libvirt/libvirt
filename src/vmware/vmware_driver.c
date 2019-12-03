@@ -117,12 +117,13 @@ vmwareDataFreeFunc(void *data)
 
 static int
 vmwareDomainDefPostParse(virDomainDefPtr def,
-                         virCapsPtr caps,
+                         virCapsPtr caps G_GNUC_UNUSED,
                          unsigned int parseFlags G_GNUC_UNUSED,
                          void *opaque G_GNUC_UNUSED,
                          void *parseOpaque G_GNUC_UNUSED)
 {
-    if (!virCapabilitiesDomainSupported(caps, def->os.type,
+    struct vmware_driver *driver = opaque;
+    if (!virCapabilitiesDomainSupported(driver->caps, def->os.type,
                                         def->os.arch,
                                         def->virtType))
         return -1;
@@ -148,11 +149,11 @@ virDomainDefParserConfig vmwareDomainDefParserConfig = {
 };
 
 static virDomainXMLOptionPtr
-vmwareDomainXMLConfigInit(void)
+vmwareDomainXMLConfigInit(struct vmware_driver *driver)
 {
     virDomainXMLPrivateDataCallbacks priv = { .alloc = vmwareDataAllocFunc,
                                               .free = vmwareDataFreeFunc };
-
+    vmwareDomainDefParserConfig.priv = driver;
     return virDomainXMLOptionNew(&vmwareDomainDefParserConfig, &priv,
                                  NULL, NULL, NULL);
 }
@@ -235,7 +236,7 @@ vmwareConnectOpen(virConnectPtr conn,
     if (!(driver->caps = vmwareCapsInit()))
         goto cleanup;
 
-    if (!(driver->xmlopt = vmwareDomainXMLConfigInit()))
+    if (!(driver->xmlopt = vmwareDomainXMLConfigInit(driver)))
         goto cleanup;
 
     if (vmwareLoadDomains(driver) < 0)

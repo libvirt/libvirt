@@ -241,12 +241,13 @@ vzDomainDefAddDefaultInputDevices(virDomainDefPtr def)
 
 static int
 vzDomainDefPostParse(virDomainDefPtr def,
-                     virCapsPtr caps,
+                     virCapsPtr caps G_GNUC_UNUSED,
                      unsigned int parseFlags G_GNUC_UNUSED,
-                     void *opaque G_GNUC_UNUSED,
+                     void *opaque,
                      void *parseOpaque G_GNUC_UNUSED)
 {
-    if (!virCapabilitiesDomainSupported(caps, def->os.type,
+    vzDriverPtr driver = opaque;
+    if (!virCapabilitiesDomainSupported(driver->caps, def->os.type,
                                         def->os.arch,
                                         def->virtType))
         return -1;
@@ -289,10 +290,12 @@ vzDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 static int
 vzDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                           const virDomainDef *def,
-                          void *opaque G_GNUC_UNUSED)
+                          void *opaque)
 {
+    vzDriverPtr driver = opaque;
+
     if (dev->type == VIR_DOMAIN_DEVICE_DISK)
-        return vzCheckUnsupportedDisk(def, dev->data.disk, opaque);
+        return vzCheckUnsupportedDisk(def, dev->data.disk, driver->vzCaps);
     else if (dev->type == VIR_DOMAIN_DEVICE_GRAPHICS)
         return vzCheckUnsupportedGraphics(dev->data.graphics);
 
@@ -323,7 +326,7 @@ vzDriverObjNew(void)
     if (!(driver = virObjectLockableNew(vzDriverClass)))
         return NULL;
 
-    vzDomainDefParserConfig.priv = &driver->vzCaps;
+    vzDomainDefParserConfig.priv = driver;
 
     if (!(driver->caps = vzBuildCapabilities()) ||
         !(driver->xmlopt = virDomainXMLOptionNew(&vzDomainDefParserConfig,

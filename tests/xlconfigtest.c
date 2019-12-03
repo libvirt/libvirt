@@ -36,9 +36,7 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-static virCapsPtr caps;
-static virDomainXMLOptionPtr xmlopt;
-
+static libxlDriverPrivatePtr driver;
 
 /*
  * This function provides a mechanism to replace variables in test
@@ -74,6 +72,7 @@ testCompareParseXML(const char *xlcfg, const char *xml, bool replaceVars)
     int ret = -1;
     virDomainDefPtr def = NULL;
     char *replacedXML = NULL;
+    g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
 
     if (VIR_ALLOC_N(gotxlcfgData, wrote) < 0)
         goto fail;
@@ -84,16 +83,16 @@ testCompareParseXML(const char *xlcfg, const char *xml, bool replaceVars)
     if (replaceVars) {
         if (!(replacedXML = testReplaceVarsXML(xml)))
             goto fail;
-        if (!(def = virDomainDefParseString(replacedXML, caps, xmlopt,
+        if (!(def = virDomainDefParseString(replacedXML, cfg->caps, driver->xmlopt,
                                             NULL, VIR_DOMAIN_XML_INACTIVE)))
             goto fail;
     } else {
-        if (!(def = virDomainDefParseFile(xml, caps, xmlopt,
+        if (!(def = virDomainDefParseFile(xml, cfg->caps, driver->xmlopt,
                                           NULL, VIR_DOMAIN_XML_INACTIVE)))
             goto fail;
     }
 
-    if (!virDomainDefCheckABIStability(def, def, xmlopt)) {
+    if (!virDomainDefCheckABIStability(def, def, driver->xmlopt)) {
         fprintf(stderr, "ABI stability check failed on %s", xml);
         goto fail;
     }
@@ -133,6 +132,7 @@ testCompareFormatXML(const char *xlcfg, const char *xml, bool replaceVars)
     virConnectPtr conn;
     virDomainDefPtr def = NULL;
     char *replacedXML = NULL;
+    g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
 
     conn = virGetConnect();
     if (!conn) goto fail;
@@ -143,10 +143,10 @@ testCompareFormatXML(const char *xlcfg, const char *xml, bool replaceVars)
     if (!(conf = virConfReadString(xlcfgData, 0)))
         goto fail;
 
-    if (!(def = xenParseXL(conf, caps, xmlopt)))
+    if (!(def = xenParseXL(conf, cfg->caps, driver->xmlopt)))
         goto fail;
 
-    if (!(gotxml = virDomainDefFormat(def, xmlopt, caps,
+    if (!(gotxml = virDomainDefFormat(def, driver->xmlopt, cfg->caps,
                                       VIR_DOMAIN_XML_INACTIVE |
                                       VIR_DOMAIN_XML_SECURE)))
         goto fail;
@@ -208,10 +208,7 @@ mymain(void)
 {
     int ret = 0;
 
-    if (!(caps = testXLInitCaps()))
-        return EXIT_FAILURE;
-
-    if (!(xmlopt = libxlCreateXMLConf()))
+    if (!(driver = testXLInitDriver()))
         return EXIT_FAILURE;
 
 #define DO_TEST_PARSE(name, replace) \
@@ -303,10 +300,9 @@ mymain(void)
     DO_TEST("usb");
     DO_TEST("usbctrl");
 
-    virObjectUnref(caps);
-    virObjectUnref(xmlopt);
+    testXLFreeDriver(driver);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIR_TEST_MAIN(mymain)
+VIR_TEST_MAIN_PRELOAD(mymain, VIR_TEST_MOCK("xl"))

@@ -1311,7 +1311,7 @@ static virDrvOpenStatus openvzConnectOpen(virConnectPtr conn,
     if (!(driver->caps = openvzCapsInit()))
         goto cleanup;
 
-    if (!(driver->xmlopt = openvzXMLOption()))
+    if (!(driver->xmlopt = openvzXMLOption(driver)))
         goto cleanup;
 
     if (openvzLoadDomains(driver) < 0)

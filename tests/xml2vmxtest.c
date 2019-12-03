@@ -207,7 +207,7 @@ mymain(void)
     if (caps == NULL)
         return EXIT_FAILURE;
 
-    if (!(xmlopt = virVMXDomainXMLConfInit()))
+    if (!(xmlopt = virVMXDomainXMLConfInit(caps)))
         return EXIT_FAILURE;
 
     ctx.opaque = NULL;

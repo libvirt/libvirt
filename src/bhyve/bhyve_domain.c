@@ -20,6 +20,7 @@
 
 #include <config.h>
 
+#include "bhyve_driver.h"
 #include "bhyve_conf.h"
 #include "bhyve_device.h"
 #include "bhyve_domain.h"
@@ -74,11 +75,16 @@ bhyveDomainDefNeedsISAController(virDomainDefPtr def)
 
 static int
 bhyveDomainDefPostParse(virDomainDefPtr def,
-                        virCapsPtr caps,
+                        virCapsPtr _caps G_GNUC_UNUSED,
                         unsigned int parseFlags G_GNUC_UNUSED,
-                        void *opaque G_GNUC_UNUSED,
+                        void *opaque,
                         void *parseOpaque G_GNUC_UNUSED)
 {
+    bhyveConnPtr driver = opaque;
+    g_autoptr(virCaps) caps = bhyveDriverGetCapabilities(driver);
+    if (!caps)
+        return -1;
+
     if (!virCapabilitiesDomainSupported(caps, def->os.type,
                                         def->os.arch,
                                         def->virtType))

@@ -928,7 +928,7 @@ esxConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
     if (!priv->caps)
         goto cleanup;
 
-    if (!(priv->xmlopt = virVMXDomainXMLConfInit()))
+    if (!(priv->xmlopt = virVMXDomainXMLConfInit(priv->caps)))
         goto cleanup;
 
     conn->privateData = priv;
