@@ -89,6 +89,10 @@ BuildRequires: mingw64-libssh2
 BuildRequires: mingw32-curl
 BuildRequires: mingw64-curl
 %endif
+BuildRequires: cpp
+%if 0%{?fedora} || 0%{?rhel} > 7
+BuildRequires: rpcgen
+%endif
 
 BuildArch:      noarch
 
