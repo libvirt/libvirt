@@ -9,9 +9,7 @@ grep 'model name' /proc/cpuinfo | head -n1
 cpuid -1r
 echo
 
-for python in python3 python2; do
-    $python <<EOF
-from __future__ import print_function
+python3 <<EOF
 from struct import pack, unpack
 from fcntl import ioctl
 import sys, errno
@@ -50,11 +48,6 @@ try:
 except IOError as e:
     pass
 EOF
-
-    if [[ $? -eq 0 ]]; then
-        break
-    fi
-done
 
 qemu=qemu-system-x86_64
 for cmd in /usr/bin/$qemu /usr/bin/qemu-kvm /usr/libexec/qemu-kvm; do

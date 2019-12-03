@@ -701,9 +701,9 @@ if test "$with_linux" = "yes"; then
 fi
 
 dnl Allow perl/python overrides
-AC_PATH_PROGS([PYTHON], [python3 python2 python])
+AC_PATH_PROGS([PYTHON], [python3])
 if test -z "$PYTHON"; then
-    AC_MSG_ERROR(['python3', 'python2' or 'python' binary is required to build libvirt])
+    AC_MSG_ERROR(['python3' binary is required to build libvirt])
 fi
 AC_PATH_PROG([FLAKE8], [flake8])
 if test -z "$FLAKE8"; then

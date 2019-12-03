@@ -188,14 +188,6 @@
 
 %define with_bash_completion  0%{!?_without_bash_completion:1}
 
-# Use Python 3 when possible, Python 2 otherwise
-%if 0%{?fedora} || 0%{?rhel} > 7
-    %define python python3
-%else
-    %define python python2
-%endif
-
-
 %if %{with_qemu} || %{with_lxc}
 # numad is used to manage the CPU and memory placement dynamically,
 # it's not available on many non-x86 architectures.
@@ -281,7 +273,7 @@ BuildRequires: perl-interpreter
 %else
 BuildRequires: perl
 %endif
-BuildRequires: %{python}
+BuildRequires: python3
 BuildRequires: systemd-units
 %if %{with_libxl}
 BuildRequires: xen-devel

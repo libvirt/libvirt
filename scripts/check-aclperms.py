@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright (C) 2013-2019 Red Hat, Inc.
 #
@@ -20,8 +20,6 @@
 # a virAccessPerm enum matches the enum constant name. We do
 # a lot of auto-generation of code, so when these don't match
 # problems occur, preventing auth from succeeding at all.
-
-from __future__ import print_function
 
 import re
 import sys

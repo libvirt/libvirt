@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # This is the API builder, it parses the C sources and build the
 # API formal description in XML.
@@ -7,8 +7,6 @@
 #
 # daniel@veillard.com
 #
-
-from __future__ import print_function
 
 import os
 import sys

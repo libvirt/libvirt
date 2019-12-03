@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 #
 # hyperv_wmi_generator.py: generates most of the WMI type mapping code
@@ -19,8 +19,6 @@
 # License along with this library.  If not, see
 # <http://www.gnu.org/licenses/>.
 #
-
-from __future__ import print_function
 
 import sys
 import os

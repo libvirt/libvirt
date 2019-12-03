@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright (C) 2013-2019 Red Hat, Inc.
 #
@@ -31,8 +31,6 @@
 # point listed, it will validate if there was a previously
 # detected EnsureACL call recorded.
 #
-
-from __future__ import print_function
 
 import re
 import sys

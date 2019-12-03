@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright (C) 2012-2019 Red Hat, Inc.
 #
@@ -16,8 +16,6 @@
 # License along with this library.  If not, see
 # <http://www.gnu.org/licenses/>.
 #
-
-from __future__ import print_function
 
 import re
 import sys

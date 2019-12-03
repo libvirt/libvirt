@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 #
 # esx_vi_generator.py: generates most of the SOAP type mapping code
@@ -21,8 +21,6 @@
 # License along with this library.  If not, see
 # <http://www.gnu.org/licenses/>.
 #
-
-from __future__ import print_function
 
 import sys
 import os

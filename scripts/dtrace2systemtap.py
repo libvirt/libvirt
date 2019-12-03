@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright (C) 2011-2019 Red Hat, Inc.
 #
@@ -22,8 +22,6 @@
 #
 #  python dtrace2systemtap.py probes.d > libvirt_probes.stp
 #
-
-from __future__ import print_function
 
 import re
 import sys

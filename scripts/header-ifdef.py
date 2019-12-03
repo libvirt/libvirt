@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright (C) 2018-2019 Red Hat, Inc.
 #
@@ -43,8 +43,6 @@
 # # define SYMBOL
 # ....content....
 # #endif /* SYMBOL */
-
-from __future__ import print_function
 
 import os.path
 import re
