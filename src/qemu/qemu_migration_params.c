@@ -197,6 +197,10 @@ static const qemuMigrationParamsTPMapItem qemuMigrationParamsTPMap[] = {
     {.typedParam = VIR_MIGRATE_PARAM_PARALLEL_CONNECTIONS,
      .param = QEMU_MIGRATION_PARAM_MULTIFD_CHANNELS,
      .party = QEMU_MIGRATION_SOURCE | QEMU_MIGRATION_DESTINATION},
+
+    {.typedParam = VIR_MIGRATE_PARAM_TLS_DESTINATION,
+     .param = QEMU_MIGRATION_PARAM_TLS_HOSTNAME,
+     .party = QEMU_MIGRATION_SOURCE},
 };
 
 static const qemuMigrationParamType qemuMigrationParamTypes[] = {
@@ -1007,7 +1011,10 @@ qemuMigrationParamsEnableTLS(virQEMUDriverPtr driver,
 
     if (qemuMigrationParamsSetString(migParams,
                                      QEMU_MIGRATION_PARAM_TLS_CREDS,
-                                     *tlsAlias) < 0 ||
+                                     *tlsAlias) < 0)
+        goto error;
+
+    if (!migParams->params[QEMU_MIGRATION_PARAM_TLS_HOSTNAME].set &&
         qemuMigrationParamsSetString(migParams,
                                      QEMU_MIGRATION_PARAM_TLS_HOSTNAME,
                                      NULLSTR_EMPTY(hostname)) < 0)
