@@ -500,11 +500,10 @@ sockettest_SOURCES = \
 sockettest_LDADD = $(LDADDS)
 
 if WITH_LIBXL
-libxl_LDADDS = ../src/libvirt_driver_libxl_impl.la
-if WITH_NETWORK
-libxl_LDADDS += ../src/libvirt_driver_network_impl.la
-endif WITH_NETWORK
-libxl_LDADDS += $(LDADDS)
+libxl_LDADDS = \
+	../src/libvirt_driver_libxl_impl.la \
+	$(LDADDS) \
+	$(NULL)
 
 libxltestdriver_la_SOURCES =
 libxltestdriver_la_LDFLAGS = $(DRIVERLIB_LDFLAGS)
@@ -547,12 +546,6 @@ if WITH_QEMU
 libqemumonitortestutils_la_SOURCES = $(QEMUMONITORTESTUTILS_SOURCES)
 
 qemu_LDADDS = ../src/libvirt_driver_qemu_impl.la
-if WITH_NETWORK
-qemu_LDADDS += ../src/libvirt_driver_network_impl.la
-endif WITH_NETWORK
-if WITH_STORAGE
-qemu_LDADDS += ../src/libvirt_driver_storage_impl.la
-endif WITH_STORAGE
 if WITH_DTRACE_PROBES
 qemu_LDADDS += ../src/libvirt_qemu_probes.lo
 endif WITH_DTRACE_PROBES
@@ -733,11 +726,10 @@ endif ! WITH_QEMU
 
 if WITH_LXC
 
-lxc_LDADDS = ../src/libvirt_driver_lxc_impl.la
-if WITH_NETWORK
-lxc_LDADDS += ../src/libvirt_driver_network_impl.la
-endif WITH_NETWORK
-lxc_LDADDS += $(LDADDS)
+lxc_LDADDS = \
+	../src/libvirt_driver_lxc_impl.la \
+	$(LDADDS) \
+	$(NULL)
 
 lxcxml2xmltest_SOURCES = \
 	lxcxml2xmltest.c testutilslxc.c testutilslxc.h \
@@ -818,11 +810,10 @@ libbhyveargv2xmlmock_la_SOURCES = \
 libbhyveargv2xmlmock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
 libbhyveargv2xmlmock_la_LIBADD = $(MOCKLIBS_LIBS)
 
-bhyve_LDADDS = ../src/libvirt_driver_bhyve_impl.la
-if WITH_STORAGE
-bhyve_LDADDS += ../src/libvirt_driver_storage_impl.la
-endif WITH_STORAGE
-bhyve_LDADDS += $(LDADDS)
+bhyve_LDADDS = \
+	../src/libvirt_driver_bhyve_impl.la \
+	$(LDADDS) \
+	$(NULL)
 bhyvexml2argvtest_SOURCES = \
 	bhyvexml2argvtest.c \
 	testutils.c testutils.h
