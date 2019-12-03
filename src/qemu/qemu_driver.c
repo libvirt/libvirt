@@ -152,13 +152,6 @@ static int qemuOpenFileAs(uid_t fallback_uid, gid_t fallback_gid,
                           const char *path, int oflags,
                           bool *needUnlink);
 
-static int qemuGetDHCPInterfaces(virDomainPtr dom,
-                                 virDomainObjPtr vm,
-                                 virDomainInterfacePtr **ifaces);
-
-static int qemuARPGetInterfaces(virDomainObjPtr vm,
-                                virDomainInterfacePtr **ifaces);
-
 static virQEMUDriverPtr qemu_driver;
 
 /* Looks up the domain object from snapshot and unlocks the
@@ -21723,64 +21716,6 @@ qemuDomainGetFSInfo(virDomainPtr dom,
     return ret;
 }
 
-static int
-qemuDomainInterfaceAddresses(virDomainPtr dom,
-                             virDomainInterfacePtr **ifaces,
-                             unsigned int source,
-                             unsigned int flags)
-{
-    virQEMUDriverPtr driver = dom->conn->privateData;
-    virDomainObjPtr vm = NULL;
-    qemuAgentPtr agent;
-    int ret = -1;
-
-    virCheckFlags(0, -1);
-
-    if (!(vm = qemuDomainObjFromDomain(dom)))
-        goto cleanup;
-
-    if (virDomainInterfaceAddressesEnsureACL(dom->conn, vm->def) < 0)
-        goto cleanup;
-
-    if (virDomainObjCheckActive(vm) < 0)
-        goto cleanup;
-
-    switch (source) {
-    case VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE:
-        ret = qemuGetDHCPInterfaces(dom, vm, ifaces);
-        break;
-
-    case VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_AGENT:
-        if (qemuDomainObjBeginAgentJob(driver, vm, QEMU_AGENT_JOB_QUERY) < 0)
-            goto cleanup;
-
-        if (!qemuDomainAgentAvailable(vm, true))
-            goto endjob;
-
-        agent = qemuDomainObjEnterAgent(vm);
-        ret = qemuAgentGetInterfaces(agent, ifaces);
-        qemuDomainObjExitAgent(vm, agent);
-
-    endjob:
-        qemuDomainObjEndAgentJob(vm);
-
-        break;
-
-    case VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_ARP:
-        ret = qemuARPGetInterfaces(vm, ifaces);
-        break;
-
-    default:
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
-                       _("Unknown IP address data source %d"),
-                       source);
-        break;
-    }
-
- cleanup:
-    virDomainObjEndAPI(&vm);
-    return ret;
-}
 
 static int
 qemuGetDHCPInterfaces(virDomainPtr dom,
@@ -21929,6 +21864,66 @@ qemuARPGetInterfaces(virDomainObjPtr vm,
     }
     VIR_FREE(ifaces_ret);
 
+    return ret;
+}
+
+
+static int
+qemuDomainInterfaceAddresses(virDomainPtr dom,
+                             virDomainInterfacePtr **ifaces,
+                             unsigned int source,
+                             unsigned int flags)
+{
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    qemuAgentPtr agent;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(vm = qemuDomainObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainInterfaceAddressesEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto cleanup;
+
+    switch (source) {
+    case VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE:
+        ret = qemuGetDHCPInterfaces(dom, vm, ifaces);
+        break;
+
+    case VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_AGENT:
+        if (qemuDomainObjBeginAgentJob(driver, vm, QEMU_AGENT_JOB_QUERY) < 0)
+            goto cleanup;
+
+        if (!qemuDomainAgentAvailable(vm, true))
+            goto endjob;
+
+        agent = qemuDomainObjEnterAgent(vm);
+        ret = qemuAgentGetInterfaces(agent, ifaces);
+        qemuDomainObjExitAgent(vm, agent);
+
+    endjob:
+        qemuDomainObjEndAgentJob(vm);
+
+        break;
+
+    case VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_ARP:
+        ret = qemuARPGetInterfaces(vm, ifaces);
+        break;
+
+    default:
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+                       _("Unknown IP address data source %d"),
+                       source);
+        break;
+    }
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
     return ret;
 }
 
