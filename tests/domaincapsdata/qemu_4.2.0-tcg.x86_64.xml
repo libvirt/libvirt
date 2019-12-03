@@ -185,6 +185,7 @@
     <vmcoreinfo supported='yes'/>
     <genid supported='yes'/>
     <backingStoreInput supported='yes'/>
+    <backup supported='no'/>
     <sev supported='no'/>
   </features>
 </domainCapabilities>

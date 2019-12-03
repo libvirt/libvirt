@@ -180,6 +180,7 @@
     <vmcoreinfo supported='yes'/>
     <genid supported='yes'/>
     <backingStoreInput supported='no'/>
+    <backup supported='no'/>
     <sev supported='yes'>
       <cbitpos>47</cbitpos>
       <reducedPhysBits>1</reducedPhysBits>
