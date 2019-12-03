@@ -10566,6 +10566,10 @@ static const vshCmdOptDef opts_migrate[] = {
      .type = VSH_OT_INT,
      .help = N_("migration bandwidth limit in MiB/s")
     },
+    {.name = "tls-destination",
+     .type = VSH_OT_STRING,
+     .help = N_("override the destination host name used for TLS verification")
+    },
     {.name = NULL}
 };
 
@@ -10788,6 +10792,13 @@ doMigrate(void *opaque)
                                     ullOpt) < 0)
             goto save_error;
     }
+
+    if (vshCommandOptStringReq(ctl, cmd, "tls-destination", &opt) < 0)
+        goto out;
+    if (opt &&
+        virTypedParamsAddString(&params, &nparams, &maxparams,
+                                VIR_MIGRATE_PARAM_TLS_DESTINATION, opt) < 0)
+        goto save_error;
 
     if (vshCommandOptBool(cmd, "live"))
         flags |= VIR_MIGRATE_LIVE;

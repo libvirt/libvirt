@@ -2174,7 +2174,7 @@ I<domain> I<desturi> [I<migrateuri>] [I<graphicsuri>] [I<listen-address>] [I<dna
 [I<auto-converge-increment>] [I<--persistent-xml> B<file>] [I<--tls>]
 [I<--postcopy-bandwidth> B<bandwidth>]
 [I<--parallel> [I<--parallel-connections> B<connections>]]
-[I<--bandwidth> B<bandwidth>]
+[I<--bandwidth> B<bandwidth>] [I<--tls-destination> B<hostname>]
 
 Migrate domain to another host.  Add I<--live> for live migration; <--p2p>
 for peer-2-peer migration; I<--direct> for direct migration; or I<--tunnelled>
@@ -2267,7 +2267,11 @@ respectively. I<--comp-xbzrle-cache> sets size of page cache in bytes.
 Providing I<--tls> causes the migration to use the host configured TLS setup
 (see migrate_tls_x509_cert_dir in /etc/libvirt/qemu.conf) in order to perform
 the migration of the domain. Usage requires proper TLS setup for both source
-and target.
+and target. Normally the TLS certificate from the destination host must match
+the host's name for TLS verification to succeed. When the certificate does not
+match the destination hostname and the expected cetificate's hostname is
+known, I<--tls-destination> can be used to pass the expected B<hostname> when
+starting the migration.
 
 I<--parallel> option will cause migration data to be sent over multiple
 parallel connections. The number of such connections can be set using
