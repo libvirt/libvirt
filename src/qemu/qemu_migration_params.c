@@ -413,6 +413,51 @@ qemuMigrationParamsSetTPULL(qemuMigrationParamsPtr migParams,
 
 
 static int
+qemuMigrationParamsGetTPString(qemuMigrationParamsPtr migParams,
+                               qemuMigrationParam param,
+                               virTypedParameterPtr params,
+                               int nparams,
+                               const char *name)
+{
+    const char *value = NULL;
+    int rc;
+
+    if (qemuMigrationParamsCheckType(param, QEMU_MIGRATION_PARAM_TYPE_STRING) < 0)
+        return -1;
+
+    if (!params)
+        return 0;
+
+    if ((rc = virTypedParamsGetString(params, nparams, name, &value)) < 0)
+        return -1;
+
+    migParams->params[param].value.s = g_strdup(value);
+    migParams->params[param].set = !!rc;
+    return 0;
+}
+
+
+static int
+qemuMigrationParamsSetTPString(qemuMigrationParamsPtr migParams,
+                               qemuMigrationParam param,
+                               virTypedParameterPtr *params,
+                               int *nparams,
+                               int *maxparams,
+                               const char *name)
+{
+    if (qemuMigrationParamsCheckType(param, QEMU_MIGRATION_PARAM_TYPE_STRING) < 0)
+        return -1;
+
+    if (!migParams->params[param].set)
+        return 0;
+
+    return virTypedParamsAddString(params, nparams, maxparams, name,
+                                   migParams->params[param].value.s);
+}
+
+
+
+static int
 qemuMigrationParamsSetCompression(virTypedParameterPtr params,
                                   int nparams,
                                   unsigned long flags,
@@ -536,7 +581,12 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
             break;
 
         case QEMU_MIGRATION_PARAM_TYPE_BOOL:
+            break;
+
         case QEMU_MIGRATION_PARAM_TYPE_STRING:
+            if (qemuMigrationParamsGetTPString(migParams, item->param, params,
+                                               nparams, item->typedParam) < 0)
+                goto error;
             break;
         }
     }
@@ -612,7 +662,13 @@ qemuMigrationParamsDump(qemuMigrationParamsPtr migParams,
             break;
 
         case QEMU_MIGRATION_PARAM_TYPE_BOOL:
+            break;
+
         case QEMU_MIGRATION_PARAM_TYPE_STRING:
+            if (qemuMigrationParamsSetTPString(migParams, item->param,
+                                               params, nparams, maxparams,
+                                               item->typedParam) < 0)
+                return -1;
             break;
         }
     }
