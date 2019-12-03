@@ -1307,7 +1307,7 @@ mv $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_qemu_probes.stp \
 cd %{_vpath_builddir}
 if ! make %{?_smp_mflags} check VIR_TEST_DEBUG=1
 then
-  cat test-suite.log || true
+  cat tests/test-suite.log || true
   exit 1
 fi
 
