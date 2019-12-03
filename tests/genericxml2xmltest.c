@@ -8,6 +8,7 @@
 #include "testutils.h"
 #include "internal.h"
 #include "virstring.h"
+#include "conf/backup_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -41,6 +42,41 @@ testCompareXMLToXMLHelper(const void *data)
     VIR_FREE(xml_in);
     VIR_FREE(xml_out);
     return ret;
+}
+
+
+static int
+testCompareBackupXML(const void *data)
+{
+    const char *testname = data;
+    g_autofree char *xml_in = NULL;
+    g_autofree char *file_in = NULL;
+    g_autofree char *file_out = NULL;
+    g_autoptr(virDomainBackupDef) backup = NULL;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_autofree char *actual = NULL;
+
+    file_in = g_strdup_printf("%s/domainbackupxml2xmlin/%s.xml",
+                              abs_srcdir, testname);
+    file_out = g_strdup_printf("%s/domainbackupxml2xmlout/%s.xml",
+                               abs_srcdir, testname);
+
+    if (virFileReadAll(file_in, 1024 * 64, &xml_in) < 0)
+        return -1;
+
+    if (!(backup = virDomainBackupDefParseString(xml_in, xmlopt, 0))) {
+        VIR_TEST_VERBOSE("failed to parse backup def '%s'", file_in);
+        return -1;
+    }
+
+    if (virDomainBackupDefFormat(&buf, backup, false) < 0) {
+        VIR_TEST_VERBOSE("failed to format backup def '%s'", file_in);
+        return -1;
+    }
+
+    actual = virBufferContentAndReset(&buf);
+
+    return virTestCompareToFile(actual, file_out);
 }
 
 
@@ -148,6 +184,16 @@ mymain(void)
     DO_TEST("launch-security-sev");
 
     DO_TEST_DIFFERENT("cputune");
+
+#define DO_TEST_BACKUP(name) \
+    if (virTestRun("QEMU BACKUP XML-2-XML " name, testCompareBackupXML, name) < 0) \
+        ret = -1;
+
+    DO_TEST_BACKUP("empty");
+    DO_TEST_BACKUP("backup-pull");
+    DO_TEST_BACKUP("backup-pull-seclabel");
+    DO_TEST_BACKUP("backup-push");
+    DO_TEST_BACKUP("backup-push-seclabel");
 
     virObjectUnref(caps);
     virObjectUnref(xmlopt);
