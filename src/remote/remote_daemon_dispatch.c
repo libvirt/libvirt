@@ -7250,9 +7250,6 @@ remoteDispatchNetworkPortGetParameters(virNetServerPtr server G_GNUC_UNUSED,
 static virDomainPtr
 get_nonnull_domain(virConnectPtr conn, remote_nonnull_domain domain)
 {
-    /* Should we believe the domain.id sent by the client?  Maybe
-     * this should be a check rather than an assignment? XXX
-     */
     return virGetDomain(conn, domain.name, BAD_CAST domain.uuid, domain.id);
 }
 
