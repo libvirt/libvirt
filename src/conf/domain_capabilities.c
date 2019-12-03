@@ -41,6 +41,7 @@ VIR_ENUM_IMPL(virDomainCapsFeature,
               "vmcoreinfo",
               "genid",
               "backingStoreInput",
+              "backup",
 );
 
 static virClassPtr virDomainCapsClass;

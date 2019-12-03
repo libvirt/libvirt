@@ -517,6 +517,7 @@
     &lt;vmcoreinfo supported='yes'/&gt;
     &lt;genid supported='yes'/&gt;
     &lt;backingStoreInput supported='yes'/&gt;
+    &lt;backup supported='yes'/&gt;
     &lt;sev&gt;
       &lt;cbitpos&gt;47&lt;/cbitpos&gt;
       &lt;reduced-phys-bits&gt;1&lt;/reduced-phys-bits&gt;
@@ -558,6 +559,13 @@
     <p>Reports whether the hypervisor will obey the &lt;backingStore&gt;
     elements configured for a &lt;disk&gt; when booting the guest, hotplugging
     the disk to a running guest, or similar.
+    </p>
+
+    <h4><a id="featureBackup">backup</a></h4>
+
+    <p>Reports whether the hypervisor supports the backup, checkpoint, and
+    related features. (<code>virDomainBackupBegin</code>,
+    <code>virDomainCheckpointCreateXML</code> etc).
     </p>
 
     <h4><a id="elementsSEV">SEV capabilities</a></h4>

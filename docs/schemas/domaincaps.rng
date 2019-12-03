@@ -211,6 +211,9 @@
         <ref name='backingStoreInput'/>
       </optional>
       <optional>
+        <ref name='backup'/>
+      </optional>
+      <optional>
         <ref name='sev'/>
       </optional>
     </element>
@@ -237,6 +240,12 @@
 
   <define name='backingStoreInput'>
     <element name='backingStoreInput'>
+      <ref name='supported'/>
+    </element>
+  </define>
+
+  <define name='backup'>
+    <element name='backup'>
       <ref name='supported'/>
     </element>
   </define>
