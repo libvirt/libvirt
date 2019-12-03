@@ -21724,9 +21724,6 @@ qemuGetDHCPInterfaces(virDomainObjPtr vm,
     g_autoptr(virConnect) conn = NULL;
     virDomainInterfacePtr *ifaces_ret = NULL;
     size_t ifaces_count = 0;
-    int rv = -1;
-    int n_leases = 0;
-    virNetworkDHCPLeasePtr *leases = NULL;
     size_t i;
 
     if (!(conn = virGetConnectNetwork()))
@@ -21735,6 +21732,8 @@ qemuGetDHCPInterfaces(virDomainObjPtr vm,
     for (i = 0; i < vm->def->nnets; i++) {
         g_autoptr(virNetwork) network = NULL;
         char macaddr[VIR_MAC_STRING_BUFLEN];
+        virNetworkDHCPLeasePtr *leases = NULL;
+        int n_leases = 0;
         virDomainInterfacePtr iface = NULL;
         size_t j;
 
@@ -21753,21 +21752,15 @@ qemuGetDHCPInterfaces(virDomainObjPtr vm,
             goto error;
 
         if (n_leases) {
-            if (VIR_EXPAND_N(ifaces_ret, ifaces_count, 1) < 0)
-                goto error;
+            ifaces_ret = g_renew(typeof(*ifaces_ret), ifaces_ret, ifaces_count + 1);
+            ifaces_ret[ifaces_count] = g_new0(typeof(**ifaces_ret), 1);
+            iface = ifaces_ret[ifaces_count];
+            ifaces_count++;
 
-            if (VIR_ALLOC(ifaces_ret[ifaces_count - 1]) < 0)
-                goto error;
-
-            iface = ifaces_ret[ifaces_count - 1];
             /* Assuming each lease corresponds to a separate IP */
             iface->naddrs = n_leases;
-
-            if (VIR_ALLOC_N(iface->addrs, iface->naddrs) < 0)
-                goto error;
-
+            iface->addrs = g_new0(typeof(*iface->addrs), iface->naddrs);
             iface->name = g_strdup(vm->def->nets[i]->ifname);
-
             iface->hwaddr = g_strdup(macaddr);
         }
 
@@ -21776,28 +21769,17 @@ qemuGetDHCPInterfaces(virDomainObjPtr vm,
             virDomainIPAddressPtr ip_addr = &iface->addrs[j];
 
             ip_addr->addr = g_strdup(lease->ipaddr);
-
             ip_addr->type = lease->type;
             ip_addr->prefix = lease->prefix;
-        }
 
-        for (j = 0; j < n_leases; j++)
-            virNetworkDHCPLeaseFree(leases[j]);
+            virNetworkDHCPLeaseFree(lease);
+        }
 
         VIR_FREE(leases);
     }
 
     *ifaces = g_steal_pointer(&ifaces_ret);
-    rv = ifaces_count;
-
- cleanup:
-    if (leases) {
-        for (i = 0; i < n_leases; i++)
-            virNetworkDHCPLeaseFree(leases[i]);
-    }
-    VIR_FREE(leases);
-
-    return rv;
+    return ifaces_count;
 
  error:
     if (ifaces_ret) {
@@ -21806,7 +21788,7 @@ qemuGetDHCPInterfaces(virDomainObjPtr vm,
     }
     VIR_FREE(ifaces_ret);
 
-    goto cleanup;
+    return -1;
 }
 
 
