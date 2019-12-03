@@ -467,6 +467,9 @@
   </feature>
 
   <!-- More AMD-specific features -->
+  <feature name='clzero'>
+    <cpuid eax_in='0x80000008' ebx='0x00000001'/>
+  </feature>
   <feature name='wbnoinvd'>
     <cpuid eax_in='0x80000008' ebx='0x00000200'/>
   </feature>
