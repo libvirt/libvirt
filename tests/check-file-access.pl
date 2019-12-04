@@ -24,8 +24,12 @@
 use strict;
 use warnings;
 
-my $access_file = "test_file_access.txt";
-my $whitelist_file = "file_access_whitelist.txt";
+sub usage {
+    die "$0 access_file file_access_whitelist\n";
+}
+
+my $access_file = shift or usage();
+my $whitelist_file = shift or usage();
 
 my @known_actions = ("open", "fopen", "access", "stat", "lstat", "connect");
 
