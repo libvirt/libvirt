@@ -50,6 +50,6 @@ int virLXCProcessValidateInterface(virDomainNetDefPtr net);
 char *virLXCProcessSetupInterfaceTap(virDomainDefPtr vm,
                                      virDomainNetDefPtr net,
                                      const char *brname);
-char *virLXCProcessSetupInterfaceDirect(virConnectPtr conn,
+char *virLXCProcessSetupInterfaceDirect(virLXCDriverPtr driver,
                                         virDomainDefPtr def,
                                         virDomainNetDefPtr net);

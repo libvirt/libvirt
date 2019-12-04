@@ -3789,9 +3789,8 @@ lxcDomainAttachDeviceDiskLive(virLXCDriverPtr driver,
 }
 
 
-/* XXX conn required for network -> bridge resolution */
 static int
-lxcDomainAttachDeviceNetLive(virConnectPtr conn,
+lxcDomainAttachDeviceNetLive(virLXCDriverPtr driver,
                              virDomainObjPtr vm,
                              virDomainNetDefPtr net)
 {
@@ -3852,7 +3851,7 @@ lxcDomainAttachDeviceNetLive(virConnectPtr conn,
             goto cleanup;
         break;
     case VIR_DOMAIN_NET_TYPE_DIRECT: {
-        if (!(veth = virLXCProcessSetupInterfaceDirect(conn, vm->def, net)))
+        if (!(veth = virLXCProcessSetupInterfaceDirect(driver, vm->def, net)))
             goto cleanup;
     }   break;
     case VIR_DOMAIN_NET_TYPE_USER:
@@ -4219,8 +4218,7 @@ lxcDomainAttachDeviceHostdevLive(virLXCDriverPtr driver,
 
 
 static int
-lxcDomainAttachDeviceLive(virConnectPtr conn,
-                          virLXCDriverPtr driver,
+lxcDomainAttachDeviceLive(virLXCDriverPtr driver,
                           virDomainObjPtr vm,
                           virDomainDeviceDefPtr dev)
 {
@@ -4234,7 +4232,7 @@ lxcDomainAttachDeviceLive(virConnectPtr conn,
         break;
 
     case VIR_DOMAIN_DEVICE_NET:
-        ret = lxcDomainAttachDeviceNetLive(conn, vm,
+        ret = lxcDomainAttachDeviceNetLive(driver, vm,
                                            dev->data.net);
         if (!ret)
             dev->data.net = NULL;
@@ -4718,7 +4716,7 @@ static int lxcDomainAttachDeviceFlags(virDomainPtr dom,
                                          true) < 0)
             goto endjob;
 
-        if ((ret = lxcDomainAttachDeviceLive(dom->conn, driver, vm, dev_copy)) < 0)
+        if ((ret = lxcDomainAttachDeviceLive(driver, vm, dev_copy)) < 0)
             goto endjob;
         /*
          * update domain status forcibly because the domain status may be

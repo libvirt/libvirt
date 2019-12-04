@@ -326,13 +326,13 @@ virLXCProcessSetupInterfaceTap(virDomainDefPtr vm,
 }
 
 
-char *virLXCProcessSetupInterfaceDirect(virConnectPtr conn,
-                                        virDomainDefPtr def,
-                                        virDomainNetDefPtr net)
+char *
+virLXCProcessSetupInterfaceDirect(virLXCDriverPtr driver,
+                                  virDomainDefPtr def,
+                                  virDomainNetDefPtr net)
 {
     char *ret = NULL;
     char *res_ifname = NULL;
-    virLXCDriverPtr driver = conn->privateData;
     const virNetDevBandwidth *bw;
     const virNetDevVPortProfile *prof;
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
@@ -392,9 +392,10 @@ static const char *nsInfoLocal[VIR_LXC_DOMAIN_NAMESPACE_LAST] = {
     [VIR_LXC_DOMAIN_NAMESPACE_SHAREUTS] = "uts",
 };
 
-static int virLXCProcessSetupNamespaceName(virConnectPtr conn, int ns_type, const char *name)
+static int virLXCProcessSetupNamespaceName(virLXCDriverPtr driver,
+                                           int ns_type,
+                                           const char *name)
 {
-    virLXCDriverPtr driver = conn->privateData;
     int fd = -1;
     virDomainObjPtr vm;
     virLXCDomainObjPrivatePtr priv;
@@ -474,7 +475,7 @@ static int virLXCProcessSetupNamespaceNet(int ns_type, const char *name)
 
 /**
  * virLXCProcessSetupNamespaces:
- * @conn: pointer to connection
+ * @driver: pointer to driver structure
  * @def: pointer to virtual machines namespaceData
  * @nsFDs: out parameter to store the namespace FD
  *
@@ -483,9 +484,10 @@ static int virLXCProcessSetupNamespaceNet(int ns_type, const char *name)
  *
  * Returns 0 on success or -1 in case of error
  */
-static int virLXCProcessSetupNamespaces(virConnectPtr conn,
-                                        lxcDomainDefPtr lxcDef,
-                                        int *nsFDs)
+static int
+virLXCProcessSetupNamespaces(virLXCDriverPtr driver,
+                             lxcDomainDefPtr lxcDef,
+                             int *nsFDs)
 {
     size_t i;
 
@@ -500,7 +502,8 @@ static int virLXCProcessSetupNamespaces(virConnectPtr conn,
         case VIR_LXC_DOMAIN_NAMESPACE_SOURCE_NONE:
             continue;
         case VIR_LXC_DOMAIN_NAMESPACE_SOURCE_NAME:
-            if ((nsFDs[i] = virLXCProcessSetupNamespaceName(conn, i, lxcDef->ns_val[i])) < 0)
+            if ((nsFDs[i] = virLXCProcessSetupNamespaceName(driver, i,
+                                                            lxcDef->ns_val[i])) < 0)
                 return -1;
             break;
         case VIR_LXC_DOMAIN_NAMESPACE_SOURCE_PID:
@@ -519,7 +522,7 @@ static int virLXCProcessSetupNamespaces(virConnectPtr conn,
 
 /**
  * virLXCProcessSetupInterfaces:
- * @conn: pointer to connection
+ * @driver: pointer to driver structure
  * @def: pointer to virtual machine structure
  * @veths: string list of interface names
  *
@@ -529,9 +532,10 @@ static int virLXCProcessSetupNamespaces(virConnectPtr conn,
  *
  * Returns 0 on success or -1 in case of error
  */
-static int virLXCProcessSetupInterfaces(virConnectPtr conn,
-                                        virDomainDefPtr def,
-                                        char ***veths)
+static int
+virLXCProcessSetupInterfaces(virLXCDriverPtr driver,
+                             virDomainDefPtr def,
+                             char ***veths)
 {
     int ret = -1;
     size_t i;
@@ -585,7 +589,7 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
                 goto cleanup;
             break;
         case VIR_DOMAIN_NET_TYPE_DIRECT:
-            if (!(veth = virLXCProcessSetupInterfaceDirect(conn, def, net)))
+            if (!(veth = virLXCProcessSetupInterfaceDirect(driver, def, net)))
                 goto cleanup;
             break;
 
@@ -1344,11 +1348,11 @@ int virLXCProcessStart(virConnectPtr conn,
     }
 
     VIR_DEBUG("Setting up Interfaces");
-    if (virLXCProcessSetupInterfaces(conn, vm->def, &veths) < 0)
+    if (virLXCProcessSetupInterfaces(driver, vm->def, &veths) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting up namespaces if any");
-    if (virLXCProcessSetupNamespaces(conn, vm->def->namespaceData, nsInheritFDs) < 0)
+    if (virLXCProcessSetupNamespaces(driver, vm->def->namespaceData, nsInheritFDs) < 0)
         goto cleanup;
 
     VIR_DEBUG("Preparing to launch");
