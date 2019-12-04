@@ -6460,7 +6460,7 @@
   </define>
   <define name="driveUnit">
     <data type="string">
-      <param name="pattern">[0-9]{1,2}</param>
+      <param name="pattern">[0-9]{1,5}</param>
     </data>
   </define>
   <define name="driveSCSIUnit">
