@@ -5549,7 +5549,8 @@ any other provided XML elements in *srcSpec*.
 For a "logical" pool, the contents of the *srcSpec* file are ignored,
 although if provided the file must at least exist.
 
-For an "iscsi" pool, the minimal expect XML required is the <host> element
+For an "iscsi" or "iscsi-direct" pool,
+the minimal expect XML required is the <host> element
 with a "name" attribute describing the IP address or hostname to be used to
 find the pool (the iSCSI server address). Optionally, the "port" attribute
 may be provided, although it will default to 3260. Optionally, an <initiator>
