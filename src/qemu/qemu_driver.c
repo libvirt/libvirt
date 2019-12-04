@@ -21722,26 +21722,27 @@ qemuGetDHCPInterfaces(virDomainObjPtr vm,
                       virDomainInterfacePtr **ifaces)
 {
     g_autoptr(virConnect) conn = NULL;
+    virDomainInterfacePtr *ifaces_ret = NULL;
+    size_t ifaces_count = 0;
     int rv = -1;
     int n_leases = 0;
-    size_t i, j;
-    size_t ifaces_count = 0;
-    g_autoptr(virNetwork) network = NULL;
-    char macaddr[VIR_MAC_STRING_BUFLEN];
-    virDomainInterfacePtr iface = NULL;
     virNetworkDHCPLeasePtr *leases = NULL;
-    virDomainInterfacePtr *ifaces_ret = NULL;
+    size_t i;
 
     if (!(conn = virGetConnectNetwork()))
         return -1;
 
     for (i = 0; i < vm->def->nnets; i++) {
+        g_autoptr(virNetwork) network = NULL;
+        char macaddr[VIR_MAC_STRING_BUFLEN];
+        virDomainInterfacePtr iface = NULL;
+        size_t j;
+
         if (vm->def->nets[i]->type != VIR_DOMAIN_NET_TYPE_NETWORK)
             continue;
 
         virMacAddrFormat(&(vm->def->nets[i]->mac), macaddr);
 
-        virObjectUnref(network);
         network = virNetworkLookupByName(conn,
                                          vm->def->nets[i]->data.network.name);
         if (!network)
