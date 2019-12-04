@@ -4926,7 +4926,7 @@
     </optional>
     <optional>
       <attribute name="port">
-        <ref name="driveUnit"/>
+        <ref name="virtioserialPort"/>
       </attribute>
     </optional>
   </define>
@@ -4936,7 +4936,7 @@
     </attribute>
     <optional>
       <attribute name="slot">
-        <ref name="driveUnit"/>
+        <ref name="ccidSlot"/>
       </attribute>
     </optional>
   </define>
@@ -6486,6 +6486,16 @@
   <define name='aliasName'>
     <data type="string">
       <param name="pattern">[a-zA-Z0-9_\-.]+</param>
+    </data>
+  </define>
+  <define name="virtioserialPort">
+    <data type="string">
+      <param name="pattern">[0-9]{1,2}</param>
+    </data>
+  </define>
+  <define name="ccidSlot">
+    <data type="string">
+      <param name="pattern">[0-9]{1,2}</param>
     </data>
   </define>
   <define name='alias'>
