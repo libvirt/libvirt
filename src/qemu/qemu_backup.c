@@ -173,24 +173,70 @@ qemuBackupDiskDataCleanup(virDomainObjPtr vm,
 virJSONValuePtr
 qemuBackupDiskPrepareOneBitmapsChain(virDomainMomentDefPtr *incremental,
                                      virStorageSourcePtr backingChain,
-                                     virHashTablePtr blockNamedNodeData G_GNUC_UNUSED,
-                                     const char *diskdst G_GNUC_UNUSED)
+                                     virHashTablePtr blockNamedNodeData,
+                                     const char *diskdst)
 {
+    qemuBlockNamedNodeDataBitmapPtr bitmap;
     g_autoptr(virJSONValue) ret = NULL;
+    size_t incridx = 0;
 
     if (!(ret = virJSONValueNewArray()))
         return NULL;
 
-    /* TODO: this code works only if the bitmaps are present on a single node.
-     * The algorithm needs to be changed so that it looks into the backing chain
-     * so that we can combine all relevant bitmaps for a given backing chain */
-    while (*incremental) {
+    if (!(bitmap = qemuBlockNamedNodeDataGetBitmapByName(blockNamedNodeData,
+                                                         backingChain,
+                                                         incremental[0]->name))) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("failed to find bitmap '%s' in image '%s%u'"),
+                       incremental[0]->name, diskdst, backingChain->id);
+        return NULL;
+    }
+
+    while (bitmap) {
+        if (bitmap->inconsistent) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("bitmap '%s' for image '%s%u' is inconsistent"),
+                           bitmap->name, diskdst, backingChain->id);
+            return NULL;
+        }
+
         if (qemuMonitorTransactionBitmapMergeSourceAddBitmap(ret,
                                                              backingChain->nodeformat,
-                                                             (*incremental)->name) < 0)
+                                                             bitmap->name) < 0)
             return NULL;
 
-        incremental++;
+        if (backingChain->backingStore &&
+            (bitmap = qemuBlockNamedNodeDataGetBitmapByName(blockNamedNodeData,
+                                                            backingChain->backingStore,
+                                                            incremental[incridx]->name))) {
+            backingChain = backingChain->backingStore;
+            continue;
+        }
+
+        if (incremental[incridx + 1]) {
+            if ((bitmap = qemuBlockNamedNodeDataGetBitmapByName(blockNamedNodeData,
+                                                                backingChain,
+                                                                incremental[incridx + 1]->name))) {
+                incridx++;
+                continue;
+            }
+
+            if (backingChain->backingStore &&
+                (bitmap = qemuBlockNamedNodeDataGetBitmapByName(blockNamedNodeData,
+                                                                backingChain->backingStore,
+                                                                incremental[incridx + 1]->name))) {
+                incridx++;
+                backingChain = backingChain->backingStore;
+                continue;
+            }
+
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("failed to find bitmap '%s' in image '%s%u'"),
+                           incremental[incridx]->name, diskdst, backingChain->id);
+            return NULL;
+        } else {
+            break;
+        }
     }
 
     return g_steal_pointer(&ret);
