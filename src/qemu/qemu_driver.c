@@ -21718,10 +21718,10 @@ qemuDomainGetFSInfo(virDomainPtr dom,
 
 
 static int
-qemuGetDHCPInterfaces(virDomainPtr dom,
-                      virDomainObjPtr vm,
+qemuGetDHCPInterfaces(virDomainObjPtr vm,
                       virDomainInterfacePtr **ifaces)
 {
+    g_autoptr(virConnect) conn = NULL;
     int rv = -1;
     int n_leases = 0;
     size_t i, j;
@@ -21732,21 +21732,20 @@ qemuGetDHCPInterfaces(virDomainPtr dom,
     virNetworkDHCPLeasePtr *leases = NULL;
     virDomainInterfacePtr *ifaces_ret = NULL;
 
-    if (!dom->conn->networkDriver ||
-        !dom->conn->networkDriver->networkGetDHCPLeases) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Network driver does not support DHCP lease query"));
+    if (!(conn = virGetConnectNetwork()))
         return -1;
-    }
 
     for (i = 0; i < vm->def->nnets; i++) {
         if (vm->def->nets[i]->type != VIR_DOMAIN_NET_TYPE_NETWORK)
             continue;
 
         virMacAddrFormat(&(vm->def->nets[i]->mac), macaddr);
+
         virObjectUnref(network);
-        network = virNetworkLookupByName(dom->conn,
+        network = virNetworkLookupByName(conn,
                                          vm->def->nets[i]->data.network.name);
+        if (!network)
+            goto error;
 
         if ((n_leases = virNetworkGetDHCPLeases(network, macaddr,
                                                 &leases, 0)) < 0)
@@ -21892,7 +21891,7 @@ qemuDomainInterfaceAddresses(virDomainPtr dom,
 
     switch (source) {
     case VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE:
-        ret = qemuGetDHCPInterfaces(dom, vm, ifaces);
+        ret = qemuGetDHCPInterfaces(vm, ifaces);
         break;
 
     case VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_AGENT:
