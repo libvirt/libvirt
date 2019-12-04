@@ -4850,7 +4850,7 @@ virDomainSCSIDriveAddressIsUsed(const virDomainDef *def,
             break;
         }
 
-        if (max != -1 && addr->unit >= max)
+        if (max != -1 && addr->unit > max)
             return true;
         if (reserved != -1 && addr->unit == reserved)
             return true;
