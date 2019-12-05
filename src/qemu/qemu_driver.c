@@ -19759,6 +19759,59 @@ qemuDomainProbeQMPCurrentMachine(virQEMUDriverPtr driver,
 }
 
 
+/* returns -1 on error, or if query is not supported, 0 if query was successful */
+static int
+qemuDomainQueryWakeupSuspendSupport(virQEMUDriverPtr driver,
+                                    virDomainObjPtr vm,
+                                    bool *wakeupSupported)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int ret = -1;
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QUERY_CURRENT_MACHINE))
+        return -1;
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        return -1;
+
+    if ((ret = virDomainObjCheckActive(vm)) < 0)
+        goto endjob;
+
+    ret = qemuDomainProbeQMPCurrentMachine(driver, vm, wakeupSupported);
+
+ endjob:
+    qemuDomainObjEndJob(driver, vm);
+    return ret;
+}
+
+
+static int
+qemuDomainPMSuspendAgent(virQEMUDriverPtr driver,
+                         virDomainObjPtr vm,
+                         unsigned int target)
+{
+    qemuAgentPtr agent;
+    int ret = -1;
+
+    if (qemuDomainObjBeginAgentJob(driver, vm, QEMU_AGENT_JOB_MODIFY) < 0)
+        return -1;
+
+    if ((ret = virDomainObjCheckActive(vm)) < 0)
+        goto endjob;
+
+    if (!qemuDomainAgentAvailable(vm, true))
+        goto endjob;
+
+    agent = qemuDomainObjEnterAgent(vm);
+    ret = qemuAgentSuspend(agent, target);
+    qemuDomainObjExitAgent(vm, agent);
+
+ endjob:
+    qemuDomainObjEndAgentJob(vm);
+    return ret;
+}
+
+
 static int
 qemuDomainPMSuspendForDuration(virDomainPtr dom,
                                unsigned int target,
@@ -19766,11 +19819,9 @@ qemuDomainPMSuspendForDuration(virDomainPtr dom,
                                unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
-    qemuDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
-    qemuAgentPtr agent;
-    qemuDomainJob job = QEMU_JOB_NONE;
     int ret = -1;
+    bool wakeupSupported;
 
     virCheckFlags(0, -1);
 
@@ -19795,17 +19846,6 @@ qemuDomainPMSuspendForDuration(virDomainPtr dom,
     if (virDomainPMSuspendForDurationEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    priv = vm->privateData;
-
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QUERY_CURRENT_MACHINE))
-        job = QEMU_JOB_MODIFY;
-
-    if (qemuDomainObjBeginJobWithAgent(driver, vm, job, QEMU_AGENT_JOB_MODIFY) < 0)
-        goto cleanup;
-
-    if (virDomainObjCheckActive(vm) < 0)
-        goto endjob;
-
     /*
      * The case we want to handle here is when QEMU has the API (i.e.
      * QEMU_CAPS_QUERY_CURRENT_MACHINE is set). Otherwise, do not interfere
@@ -19813,16 +19853,11 @@ qemuDomainPMSuspendForDuration(virDomainPtr dom,
      * that don't know about this cap, will keep their old behavior of
      * suspending 'in the dark'.
      */
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QUERY_CURRENT_MACHINE)) {
-        bool wakeupSupported;
-
-        if (qemuDomainProbeQMPCurrentMachine(driver, vm, &wakeupSupported) < 0)
-            goto endjob;
-
+    if (qemuDomainQueryWakeupSuspendSupport(driver, vm, &wakeupSupported) == 0) {
         if (!wakeupSupported) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("Domain does not have suspend support"));
-            goto endjob;
+            goto cleanup;
         }
     }
 
@@ -19832,29 +19867,18 @@ qemuDomainPMSuspendForDuration(virDomainPtr dom,
              target == VIR_NODE_SUSPEND_TARGET_HYBRID)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("S3 state is disabled for this domain"));
-            goto endjob;
+            goto cleanup;
         }
 
         if (vm->def->pm.s4 == VIR_TRISTATE_BOOL_NO &&
             target == VIR_NODE_SUSPEND_TARGET_DISK) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("S4 state is disabled for this domain"));
-            goto endjob;
+            goto cleanup;
         }
     }
 
-    if (!qemuDomainAgentAvailable(vm, true))
-        goto endjob;
-
-    agent = qemuDomainObjEnterAgent(vm);
-    ret = qemuAgentSuspend(agent, target);
-    qemuDomainObjExitAgent(vm, agent);
-
- endjob:
-    if (job)
-        qemuDomainObjEndJobWithAgent(driver, vm);
-    else
-        qemuDomainObjEndAgentJob(vm);
+    ret = qemuDomainPMSuspendAgent(driver, vm, target);
 
  cleanup:
     virDomainObjEndAPI(&vm);
