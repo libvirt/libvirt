@@ -1919,6 +1919,77 @@ static int qemuDomainResume(virDomainPtr dom)
     return ret;
 }
 
+
+static int
+qemuDomainShutdownFlagsAgent(virQEMUDriverPtr driver,
+                             virDomainObjPtr vm,
+                             bool isReboot,
+                             bool reportError)
+{
+    int ret = -1;
+    qemuAgentPtr agent;
+    int agentFlag = isReboot ?  QEMU_AGENT_SHUTDOWN_REBOOT :
+        QEMU_AGENT_SHUTDOWN_POWERDOWN;
+
+    if (qemuDomainObjBeginAgentJob(driver, vm,
+                                   QEMU_AGENT_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_RUNNING) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
+        goto endjob;
+    }
+
+    if (!qemuDomainAgentAvailable(vm, reportError))
+        goto endjob;
+
+    qemuDomainSetFakeReboot(driver, vm, false);
+    agent = qemuDomainObjEnterAgent(vm);
+    ret = qemuAgentShutdown(agent, agentFlag);
+    qemuDomainObjExitAgent(vm, agent);
+
+ endjob:
+    qemuDomainObjEndAgentJob(vm);
+
+ cleanup:
+    return ret;
+}
+
+
+static int
+qemuDomainShutdownFlagsMonitor(virQEMUDriverPtr driver,
+                               virDomainObjPtr vm,
+                               bool isReboot)
+{
+    int ret = -1;
+    qemuDomainObjPrivatePtr priv;
+
+    priv = vm->privateData;
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_RUNNING) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
+        goto endjob;
+    }
+
+    qemuDomainSetFakeReboot(driver, vm, isReboot);
+    qemuDomainObjEnterMonitor(driver, vm);
+    ret = qemuMonitorSystemPowerdown(priv->mon);
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        ret = -1;
+
+ endjob:
+    qemuDomainObjEndJob(driver, vm);
+
+ cleanup:
+    return ret;
+}
+
+
 static int qemuDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
@@ -1928,8 +1999,6 @@ static int qemuDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
     bool useAgent = false, agentRequested, acpiRequested;
     bool isReboot = false;
     bool agentForced;
-    qemuDomainAgentJob agentJob = QEMU_AGENT_JOB_NONE;
-    int agentFlag = QEMU_AGENT_SHUTDOWN_POWERDOWN;
 
     virCheckFlags(VIR_DOMAIN_SHUTDOWN_ACPI_POWER_BTN |
                   VIR_DOMAIN_SHUTDOWN_GUEST_AGENT, -1);
@@ -1940,7 +2009,6 @@ static int qemuDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
     if (vm->def->onPoweroff == VIR_DOMAIN_LIFECYCLE_ACTION_RESTART ||
         vm->def->onPoweroff == VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME) {
         isReboot = true;
-        agentFlag = QEMU_AGENT_SHUTDOWN_REBOOT;
         VIR_INFO("Domain on_poweroff setting overridden, attempting reboot");
     }
 
@@ -1955,61 +2023,26 @@ static int qemuDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
     if (virDomainShutdownFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    if (useAgent)
-        agentJob = QEMU_AGENT_JOB_MODIFY;
-
-    if (qemuDomainObjBeginJobWithAgent(driver, vm,
-                                       QEMU_JOB_MODIFY,
-                                       agentJob) < 0)
-        goto cleanup;
-
-    if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_RUNNING) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("domain is not running"));
-        goto endjob;
-    }
-
     agentForced = agentRequested && !acpiRequested;
-    if (!qemuDomainAgentAvailable(vm, agentForced)) {
-        if (agentForced)
-            goto endjob;
-        useAgent = false;
-    }
-
-
     if (useAgent) {
-        qemuAgentPtr agent;
-        qemuDomainSetFakeReboot(driver, vm, false);
-        agent = qemuDomainObjEnterAgent(vm);
-        ret = qemuAgentShutdown(agent, agentFlag);
-        qemuDomainObjExitAgent(vm, agent);
+        ret = qemuDomainShutdownFlagsAgent(driver, vm, isReboot, agentForced);
+        if (ret < 0 && agentForced)
+            goto cleanup;
     }
 
     /* If we are not enforced to use just an agent, try ACPI
      * shutdown as well in case agent did not succeed.
      */
-    if (!useAgent ||
-        (ret < 0 && (acpiRequested || !flags))) {
-
+    if (!useAgent || (ret < 0 && (acpiRequested || !flags))) {
         /* Even if agent failed, we have to check if guest went away
          * by itself while our locks were down.  */
         if (useAgent && !virDomainObjIsActive(vm)) {
             ret = 0;
-            goto endjob;
+            goto cleanup;
         }
 
-        qemuDomainSetFakeReboot(driver, vm, isReboot);
-        qemuDomainObjEnterMonitor(driver, vm);
-        ret = qemuMonitorSystemPowerdown(priv->mon);
-        if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            ret = -1;
+        ret = qemuDomainShutdownFlagsMonitor(driver, vm, isReboot);
     }
-
- endjob:
-    if (agentJob)
-        qemuDomainObjEndJobWithAgent(driver, vm);
-    else
-        qemuDomainObjEndJob(driver, vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
