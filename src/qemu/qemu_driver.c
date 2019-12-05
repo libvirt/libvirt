@@ -5039,8 +5039,6 @@ qemuDomainSetVcpusFlags(virDomainPtr dom,
     virDomainDefPtr persistentDef;
     bool hotpluggable = !!(flags & VIR_DOMAIN_VCPU_HOTPLUGGABLE);
     bool useAgent = !!(flags & VIR_DOMAIN_VCPU_GUEST);
-    qemuDomainJob job = QEMU_JOB_NONE;
-    qemuDomainAgentJob agentJob = QEMU_AGENT_JOB_NONE;
     int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
@@ -5055,13 +5053,14 @@ qemuDomainSetVcpusFlags(virDomainPtr dom,
     if (virDomainSetVcpusFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    if (useAgent)
-        agentJob = QEMU_AGENT_JOB_MODIFY;
-    else
-        job = QEMU_JOB_MODIFY;
 
-    if (qemuDomainObjBeginJobWithAgent(driver, vm, job, agentJob) < 0)
-        goto cleanup;
+    if (useAgent) {
+        if (qemuDomainObjBeginAgentJob(driver, vm, QEMU_AGENT_JOB_MODIFY) < 0)
+            goto cleanup;
+    } else {
+        if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+            goto cleanup;
+    }
 
     if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto endjob;
@@ -5075,7 +5074,7 @@ qemuDomainSetVcpusFlags(virDomainPtr dom,
                                          nvcpus, hotpluggable);
 
  endjob:
-    if (agentJob)
+    if (useAgent)
         qemuDomainObjEndAgentJob(vm);
     else
         qemuDomainObjEndJob(driver, vm);
