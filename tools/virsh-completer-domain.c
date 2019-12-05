@@ -24,6 +24,7 @@
 #include "viralloc.h"
 #include "virmacaddr.h"
 #include "virsh-domain.h"
+#include "virsh-domain-monitor.h"
 #include "virsh-util.h"
 #include "virsh.h"
 #include "virstring.h"
@@ -299,17 +300,19 @@ virshDomainShutdownModeCompleter(vshControl *ctl,
 
 
 char **
-virshDomainInterfaceAddrSourceCompleter(vshControl *ctl,
-                                        const vshCmd *cmd,
+virshDomainInterfaceAddrSourceCompleter(vshControl *ctl G_GNUC_UNUSED,
+                                        const vshCmd *cmd G_GNUC_UNUSED,
                                         unsigned int flags)
 {
-    const char *sources[] = {"lease", "agent", "arp", NULL};
-    const char *source = NULL;
+    char **ret = NULL;
+    size_t i;
 
     virCheckFlags(0, NULL);
 
-    if (vshCommandOptStringQuiet(ctl, cmd, "source", &source) < 0)
-        return NULL;
+    ret = g_new0(typeof(*ret), VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LAST + 1);
 
-    return virshCommaStringListComplete(source, sources);
+    for (i = 0; i < VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LAST; i++)
+        ret[i] = g_strdup(virshDomainInterfaceAddressesSourceTypeToString(i));
+
+    return ret;
 }

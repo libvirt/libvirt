@@ -2358,7 +2358,6 @@ static const vshCmdOptDef opts_domifaddr[] = {
     {.name = NULL}
 };
 
-VIR_ENUM_DECL(virshDomainInterfaceAddressesSource);
 VIR_ENUM_IMPL(virshDomainInterfaceAddressesSource,
               VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LAST,
               "lease",

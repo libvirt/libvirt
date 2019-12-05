@@ -31,6 +31,7 @@
 #include "virpolkit.h"
 #include "vsh.h"
 #include "virsh-completer.h"
+#include "virenum.h"
 
 #define VIRSH_PROMPT_RW    "virsh # "
 #define VIRSH_PROMPT_RO    "virsh > "
