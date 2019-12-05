@@ -2056,6 +2056,72 @@ static int qemuDomainShutdown(virDomainPtr dom)
 
 
 static int
+qemuDomainRebootAgent(virQEMUDriverPtr driver,
+                      virDomainObjPtr vm,
+                      bool isReboot,
+                      bool agentForced)
+{
+    qemuAgentPtr agent;
+    int ret = -1;
+    int agentFlag = QEMU_AGENT_SHUTDOWN_REBOOT;
+
+    if (!isReboot)
+        agentFlag = QEMU_AGENT_SHUTDOWN_POWERDOWN;
+
+    if (qemuDomainObjBeginAgentJob(driver, vm,
+                                   QEMU_AGENT_JOB_MODIFY) < 0)
+        return -1;
+
+    if (!qemuDomainAgentAvailable(vm, agentForced))
+        goto endjob;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto endjob;
+
+    qemuDomainSetFakeReboot(driver, vm, false);
+    agent = qemuDomainObjEnterAgent(vm);
+    ret = qemuAgentShutdown(agent, agentFlag);
+    qemuDomainObjExitAgent(vm, agent);
+
+ endjob:
+    qemuDomainObjEndAgentJob(vm);
+    return ret;
+}
+
+
+static int
+qemuDomainRebootMonitor(virQEMUDriverPtr driver,
+                        virDomainObjPtr vm,
+                        bool isReboot)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int ret = -1;
+
+    if (qemuDomainObjBeginJob(driver, vm,
+                              QEMU_JOB_MODIFY) < 0)
+        return -1;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto endjob;
+
+#if !WITH_YAJL
+    virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                   _("ACPI reboot is not supported without the JSON monitor"));
+    goto endjob;
+#endif
+    qemuDomainSetFakeReboot(driver, vm, isReboot);
+    qemuDomainObjEnterMonitor(driver, vm);
+    ret = qemuMonitorSystemPowerdown(priv->mon);
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        ret = -1;
+
+ endjob:
+    qemuDomainObjEndJob(driver, vm);
+    return ret;
+}
+
+
+static int
 qemuDomainReboot(virDomainPtr dom, unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
@@ -2065,8 +2131,6 @@ qemuDomainReboot(virDomainPtr dom, unsigned int flags)
     bool useAgent = false, agentRequested, acpiRequested;
     bool isReboot = true;
     bool agentForced;
-    qemuDomainAgentJob agentJob = QEMU_AGENT_JOB_NONE;
-    int agentFlag = QEMU_AGENT_SHUTDOWN_REBOOT;
 
     virCheckFlags(VIR_DOMAIN_REBOOT_ACPI_POWER_BTN |
                   VIR_DOMAIN_REBOOT_GUEST_AGENT, -1);
@@ -2076,7 +2140,6 @@ qemuDomainReboot(virDomainPtr dom, unsigned int flags)
 
     if (vm->def->onReboot == VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY ||
         vm->def->onReboot == VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE) {
-        agentFlag = QEMU_AGENT_SHUTDOWN_POWERDOWN;
         isReboot = false;
         VIR_INFO("Domain on_reboot setting overridden, shutting down");
     }
@@ -2092,55 +2155,20 @@ qemuDomainReboot(virDomainPtr dom, unsigned int flags)
     if (virDomainRebootEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    if (useAgent)
-        agentJob = QEMU_AGENT_JOB_MODIFY;
-
-    if (qemuDomainObjBeginJobWithAgent(driver, vm,
-                                       QEMU_JOB_MODIFY,
-                                       agentJob) < 0)
-        goto cleanup;
-
     agentForced = agentRequested && !acpiRequested;
-    if (!qemuDomainAgentAvailable(vm, agentForced)) {
-        if (agentForced)
-            goto endjob;
-        useAgent = false;
-    }
+    if (useAgent)
+        ret = qemuDomainRebootAgent(driver, vm, isReboot, agentForced);
 
-    if (virDomainObjCheckActive(vm) < 0)
-        goto endjob;
-
-    if (useAgent) {
-        qemuAgentPtr agent;
-
-        qemuDomainSetFakeReboot(driver, vm, false);
-        agent = qemuDomainObjEnterAgent(vm);
-        ret = qemuAgentShutdown(agent, agentFlag);
-        qemuDomainObjExitAgent(vm, agent);
-    }
+    if (ret < 0 && agentForced)
+        goto cleanup;
 
     /* If we are not enforced to use just an agent, try ACPI
      * shutdown as well in case agent did not succeed.
      */
     if ((!useAgent) ||
         (ret < 0 && (acpiRequested || !flags))) {
-#if !WITH_YAJL
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("ACPI reboot is not supported without the JSON monitor"));
-        goto endjob;
-#endif
-        qemuDomainSetFakeReboot(driver, vm, isReboot);
-        qemuDomainObjEnterMonitor(driver, vm);
-        ret = qemuMonitorSystemPowerdown(priv->mon);
-        if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            ret = -1;
+        ret = qemuDomainRebootMonitor(driver, vm, isReboot);
     }
-
- endjob:
-    if (agentJob)
-        qemuDomainObjEndJobWithAgent(driver, vm);
-    else
-        qemuDomainObjEndJob(driver, vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
