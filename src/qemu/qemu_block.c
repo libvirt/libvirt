@@ -2612,3 +2612,35 @@ qemuBlockRemoveImageMetadata(virQEMUDriverPtr driver,
 
     return ret;
 }
+
+
+/**
+ * qemuBlockNamedNodeDataGetBitmapByName:
+ * @blockNamedNodeData: hash table returned by qemuMonitorBlockGetNamedNodeData
+ * @src: disk source to find the bitmap for
+ * @bitmap: name of the bitmap to find
+ *
+ * Looks up a bitmap named @bitmap of the @src image.
+ */
+qemuBlockNamedNodeDataBitmapPtr
+qemuBlockNamedNodeDataGetBitmapByName(virHashTablePtr blockNamedNodeData,
+                                      virStorageSourcePtr src,
+                                      const char *bitmap)
+{
+    qemuBlockNamedNodeDataPtr nodedata;
+    size_t i;
+
+    if (!(nodedata = virHashLookup(blockNamedNodeData, src->nodeformat)))
+        return NULL;
+
+    for (i = 0; i < nodedata->nbitmaps; i++) {
+        qemuBlockNamedNodeDataBitmapPtr bitmapdata = nodedata->bitmaps[i];
+
+        if (STRNEQ(bitmapdata->name, bitmap))
+            continue;
+
+        return bitmapdata;
+    }
+
+    return NULL;
+}

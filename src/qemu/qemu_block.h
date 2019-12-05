@@ -203,3 +203,8 @@ qemuBlockRemoveImageMetadata(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
                              const char *diskTarget,
                              virStorageSourcePtr src);
+
+qemuBlockNamedNodeDataBitmapPtr
+qemuBlockNamedNodeDataGetBitmapByName(virHashTablePtr blockNamedNodeData,
+                                      virStorageSourcePtr src,
+                                      const char *bitmap);
