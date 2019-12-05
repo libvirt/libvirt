@@ -20304,6 +20304,35 @@ qemuDomainGetTime(virDomainPtr dom,
 
 
 static int
+qemuDomainSetTimeAgent(virQEMUDriverPtr driver,
+                       virDomainObjPtr vm,
+                       long long seconds,
+                       unsigned int nseconds,
+                       bool rtcSync)
+{
+    qemuAgentPtr agent;
+    int ret = -1;
+
+    if (qemuDomainObjBeginAgentJob(driver, vm, QEMU_AGENT_JOB_MODIFY) < 0)
+        return -1;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto endjob;
+
+    if (!qemuDomainAgentAvailable(vm, true))
+        goto endjob;
+
+    agent = qemuDomainObjEnterAgent(vm);
+    ret = qemuAgentSetTime(agent, seconds, nseconds, rtcSync);
+    qemuDomainObjExitAgent(vm, agent);
+
+ endjob:
+    qemuDomainObjEndJob(driver, vm);
+    return ret;
+}
+
+
+static int
 qemuDomainSetTime(virDomainPtr dom,
                   long long seconds,
                   unsigned int nseconds,
@@ -20312,7 +20341,6 @@ qemuDomainSetTime(virDomainPtr dom,
     virQEMUDriverPtr driver = dom->conn->privateData;
     qemuDomainObjPrivatePtr priv;
     virDomainObjPtr vm;
-    qemuAgentPtr agent;
     bool rtcSync = flags & VIR_DOMAIN_TIME_SYNC;
     int ret = -1;
     int rv;
@@ -20327,14 +20355,6 @@ qemuDomainSetTime(virDomainPtr dom,
 
     priv = vm->privateData;
 
-    if (qemuDomainObjBeginJobWithAgent(driver, vm,
-                                       QEMU_JOB_MODIFY,
-                                       QEMU_AGENT_JOB_MODIFY) < 0)
-        goto cleanup;
-
-    if (virDomainObjCheckActive(vm) < 0)
-        goto endjob;
-
     /* On x86, the rtc-reset-reinjection QMP command must be called after
      * setting the time to avoid trouble down the line. If the command is
      * not available, don't set the time at all and report an error */
@@ -20344,18 +20364,14 @@ qemuDomainSetTime(virDomainPtr dom,
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("cannot set time: qemu doesn't support "
                          "rtc-reset-reinjection command"));
-        goto endjob;
+        goto cleanup;
     }
 
-    if (!qemuDomainAgentAvailable(vm, true))
-        goto endjob;
+    if (qemuDomainSetTimeAgent(driver, vm, seconds, nseconds, rtcSync) < 0)
+        goto cleanup;
 
-    agent = qemuDomainObjEnterAgent(vm);
-    rv = qemuAgentSetTime(agent, seconds, nseconds, rtcSync);
-    qemuDomainObjExitAgent(vm, agent);
-
-    if (rv < 0)
-        goto endjob;
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
 
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
@@ -20374,7 +20390,7 @@ qemuDomainSetTime(virDomainPtr dom,
     ret = 0;
 
  endjob:
-    qemuDomainObjEndJobWithAgent(driver, vm);
+    qemuDomainObjEndJob(driver, vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
