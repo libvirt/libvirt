@@ -14036,36 +14036,59 @@ static int qemuDomainAbortJob(virDomainPtr dom)
 
     priv = vm->privateData;
 
-    if (!priv->job.asyncJob) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("no job is active on the domain"));
-        goto endjob;
-    }
+    switch (priv->job.asyncJob) {
+    case QEMU_ASYNC_JOB_NONE:
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("no job is active on the domain"));
+        break;
 
-    if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_IN) {
+    case QEMU_ASYNC_JOB_MIGRATION_IN:
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("cannot abort incoming migration;"
                          " use virDomainDestroy instead"));
-        goto endjob;
-    }
+        break;
 
-    if (priv->job.asyncJob == QEMU_ASYNC_JOB_DUMP &&
-        priv->job.apiFlags & VIR_DUMP_MEMORY_ONLY) {
+    case QEMU_ASYNC_JOB_START:
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("cannot abort memory-only dump"));
-        goto endjob;
-    }
+                       _("cannot abort VM start;"
+                         " use virDomainDestroy instead"));
+        break;
 
-    if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT &&
-        (priv->job.current->status == QEMU_DOMAIN_JOB_STATUS_POSTCOPY ||
-         (virDomainObjGetState(vm, &reason) == VIR_DOMAIN_PAUSED &&
-          reason == VIR_DOMAIN_PAUSED_POSTCOPY))) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("cannot abort migration in post-copy mode"));
-        goto endjob;
-    }
+    case QEMU_ASYNC_JOB_MIGRATION_OUT:
+        if ((priv->job.current->status == QEMU_DOMAIN_JOB_STATUS_POSTCOPY ||
+             (virDomainObjGetState(vm, &reason) == VIR_DOMAIN_PAUSED &&
+              reason == VIR_DOMAIN_PAUSED_POSTCOPY))) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("cannot abort migration in post-copy mode"));
+            goto endjob;
+        }
 
-    ret = qemuDomainAbortJobMigration(vm);
+        ret = qemuDomainAbortJobMigration(vm);
+        break;
+
+    case QEMU_ASYNC_JOB_SAVE:
+        ret = qemuDomainAbortJobMigration(vm);
+        break;
+
+    case QEMU_ASYNC_JOB_DUMP:
+        if (priv->job.apiFlags & VIR_DUMP_MEMORY_ONLY) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("cannot abort memory-only dump"));
+            goto endjob;
+        }
+
+        ret = qemuDomainAbortJobMigration(vm);
+        break;
+
+    case QEMU_ASYNC_JOB_SNAPSHOT:
+        ret = qemuDomainAbortJobMigration(vm);
+        break;
+
+    case QEMU_ASYNC_JOB_LAST:
+    default:
+        virReportEnumRangeError(qemuDomainAsyncJob, priv->job.asyncJob);
+        break;
+    }
 
  endjob:
     qemuDomainObjEndJob(driver, vm);
