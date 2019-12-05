@@ -44,10 +44,47 @@
 <libvirt>
   <release version="v6.0.0" date="unreleased">
     <section title="New features">
+      <change>
+        <summary>
+          docs: the python docutils toolset is now required
+        </summary>
+        <description>
+          The use of rst2html has been introduced for the
+          website build process since docs are now being
+          written in the RST as an alternative to HTML.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          qemu: xz save image compression is faster
+        </summary>
+        <description>
+          When using the xz format to compressed virtual
+          machine saved state images, the "-3" compression
+          level preset is now used. This results in slightly
+          larger files, but with a massively reduced time
+          to compress. The xz format offers the best compression
+          level for saved state images, albeit still with the
+          slowest running time. For the fastest possible
+          running time, at cost of the larest compressed size,
+          lzop should be used.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
+    </section>
+    <section title="Removed features">
+      <change>
+        <summary>
+          support for python2 is removed
+        </summary>
+        <description>
+          Libvirt is no longer able to be built using the
+          Python 2 binary. Python 3 must be used instead.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v5.10.0" date="2019-12-02">
