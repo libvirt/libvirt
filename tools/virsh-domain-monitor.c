@@ -2358,6 +2358,13 @@ static const vshCmdOptDef opts_domifaddr[] = {
     {.name = NULL}
 };
 
+VIR_ENUM_DECL(virshDomainInterfaceAddressesSource);
+VIR_ENUM_IMPL(virshDomainInterfaceAddressesSource,
+              VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LAST,
+              "lease",
+              "agent",
+              "arp");
+
 static bool
 cmdDomIfAddr(vshControl *ctl, const vshCmd *cmd)
 {
@@ -2379,17 +2386,10 @@ cmdDomIfAddr(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "source", &sourcestr) < 0)
         goto cleanup;
 
-    if (sourcestr) {
-        if (STREQ(sourcestr, "lease")) {
-            source = VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE;
-        } else if (STREQ(sourcestr, "agent")) {
-            source = VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_AGENT;
-        } else if (STREQ(sourcestr, "arp")) {
-            source = VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_ARP;
-        } else {
-            vshError(ctl, _("Unknown data source '%s'"), sourcestr);
-            goto cleanup;
-        }
+    if (sourcestr &&
+        (source = virshDomainInterfaceAddressesSourceTypeFromString(sourcestr)) < 0) {
+        vshError(ctl, _("Unknown data source '%s'"), sourcestr);
+        goto cleanup;
     }
 
     if ((ifaces_count = virDomainInterfaceAddresses(dom, &ifaces, source, 0)) < 0) {
