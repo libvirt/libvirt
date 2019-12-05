@@ -1265,6 +1265,39 @@ get_files(vahControl * ctl)
         }
     }
 
+    for (i = 0; i < ctl->def->nsmartcards; i++) {
+        virDomainSmartcardDefPtr sc = ctl->def->smartcards[i];
+        virDomainSmartcardType sc_type = sc->type;
+        char *sc_db = (char *)VIR_DOMAIN_SMARTCARD_DEFAULT_DATABASE;
+        if (sc->data.cert.database)
+            sc_db = sc->data.cert.database;
+        switch (sc_type) {
+            /*
+             * Note: At time of writing, to get this working, qemu seccomp sandbox has
+             * to be disabled or the host must be running QEMU with commit
+             * 9a1565a03b79d80b236bc7cc2dbce52a2ef3a1b8.
+             * It's possibly due to libcacard:vcard_emul_new_event_thread(), which calls
+             * PR_CreateThread(), which calls {g,s}etpriority(). And resourcecontrol seccomp
+             * filter forbids it (cf src/qemu/qemu_command.c which seems to always use
+             * resourcecontrol=deny).
+             */
+            case VIR_DOMAIN_SMARTCARD_TYPE_HOST:
+                virBufferAddLit(&buf, "  \"/etc/pki/nssdb/{,*}\" rk,\n");
+                break;
+            case VIR_DOMAIN_SMARTCARD_TYPE_HOST_CERTIFICATES:
+                virBufferAsprintf(&buf, "  \"%s/{,*}\" rk,\n", sc_db);
+                break;
+            /*
+             * Nothing to do for passthrough, as the smartcard
+             * access is done through TCP or Spice
+             */
+            case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH:
+                break;
+            case VIR_DOMAIN_SMARTCARD_TYPE_LAST:
+                break;
+        }
+    }
+
     if (ctl->def->virtType == VIR_DOMAIN_VIRT_KVM) {
         for (i = 0; i < ctl->def->nnets; i++) {
             virDomainNetDefPtr net = ctl->def->nets[i];
