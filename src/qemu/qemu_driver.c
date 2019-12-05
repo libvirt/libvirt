@@ -13996,6 +13996,24 @@ qemuDomainGetJobStats(virDomainPtr dom,
 }
 
 
+static int
+qemuDomainAbortJobMigration(virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int ret;
+
+    VIR_DEBUG("Cancelling migration job at client request");
+
+    qemuDomainObjAbortAsyncJob(vm);
+    qemuDomainObjEnterMonitor(priv->driver, vm);
+    ret = qemuMonitorMigrateCancel(priv->mon);
+    if (qemuDomainObjExitMonitor(priv->driver, vm) < 0)
+        ret = -1;
+
+    return ret;
+}
+
+
 static int qemuDomainAbortJob(virDomainPtr dom)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
@@ -14047,12 +14065,7 @@ static int qemuDomainAbortJob(virDomainPtr dom)
         goto endjob;
     }
 
-    VIR_DEBUG("Cancelling job at client request");
-    qemuDomainObjAbortAsyncJob(vm);
-    qemuDomainObjEnterMonitor(driver, vm);
-    ret = qemuMonitorMigrateCancel(priv->mon);
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        ret = -1;
+    ret = qemuDomainAbortJobMigration(vm);
 
  endjob:
     qemuDomainObjEndJob(driver, vm);
