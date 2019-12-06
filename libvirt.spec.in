@@ -266,8 +266,11 @@ BuildRequires: gettext-devel
 BuildRequires: libtool
 %endif
 BuildRequires: /usr/bin/pod2man
-# Replace with python3-docutils when we drop py2 support
-BuildRequires: /usr/bin/rst2html
+%if 0%{?rhel} == 7
+BuildRequires: python36-docutils
+%else
+BuildRequires: python3-docutils
+%endif
 BuildRequires: gcc
 BuildRequires: git
 %if 0%{?fedora} || 0%{?rhel} > 7
