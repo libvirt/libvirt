@@ -7914,19 +7914,18 @@ static int
 qemuDomainDefaultVideoDevice(const virDomainDef *def,
                           virQEMUCapsPtr qemuCaps)
 {
-    if (ARCH_IS_PPC64(def->os.arch)) {
+    if (ARCH_IS_PPC64(def->os.arch))
         return VIR_DOMAIN_VIDEO_TYPE_VGA;
-    } else if (qemuDomainIsARMVirt(def) ||
-               qemuDomainIsRISCVVirt(def) ||
-               ARCH_IS_S390(def->os.arch)) {
+    if (qemuDomainIsARMVirt(def) ||
+        qemuDomainIsRISCVVirt(def) ||
+        ARCH_IS_S390(def->os.arch)) {
         return VIR_DOMAIN_VIDEO_TYPE_VIRTIO;
-    } else {
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_CIRRUS_VGA))
-            return VIR_DOMAIN_VIDEO_TYPE_CIRRUS;
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VGA))
-            return VIR_DOMAIN_VIDEO_TYPE_VGA;
-        return VIR_DOMAIN_VIDEO_TYPE_DEFAULT;
     }
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_CIRRUS_VGA))
+        return VIR_DOMAIN_VIDEO_TYPE_CIRRUS;
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VGA))
+        return VIR_DOMAIN_VIDEO_TYPE_VGA;
+    return VIR_DOMAIN_VIDEO_TYPE_DEFAULT;
 }
 
 
