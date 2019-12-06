@@ -776,6 +776,43 @@ qemuMigrationSrcNBDCopyCancel(virQEMUDriverPtr driver,
 }
 
 
+static virStorageSourcePtr
+qemuMigrationSrcNBDStorageCopyBlockdevPrepareSource(virDomainDiskDefPtr disk,
+                                                    const char *host,
+                                                    int port,
+                                                    const char *tlsAlias)
+{
+    g_autoptr(virStorageSource) copysrc = NULL;
+
+    if (!(copysrc = virStorageSourceNew()))
+        return NULL;
+
+    copysrc->type = VIR_STORAGE_TYPE_NETWORK;
+    copysrc->protocol = VIR_STORAGE_NET_PROTOCOL_NBD;
+    copysrc->format = VIR_STORAGE_FILE_RAW;
+
+    if (!(copysrc->backingStore = virStorageSourceNew()))
+        return NULL;
+
+    if (!(copysrc->path = qemuAliasDiskDriveFromDisk(disk)))
+        return NULL;
+
+    copysrc->hosts = g_new0(virStorageNetHostDef, 1);
+
+    copysrc->nhosts = 1;
+    copysrc->hosts->transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
+    copysrc->hosts->port = port;
+    copysrc->hosts->name = g_strdup(host);
+
+    copysrc->tlsAlias = g_strdup(tlsAlias);
+
+    copysrc->nodestorage = g_strdup_printf("migration-%s-storage", disk->dst);
+    copysrc->nodeformat = g_strdup_printf("migration-%s-format", disk->dst);
+
+    return g_steal_pointer(&copysrc);
+}
+
+
 static int
 qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriverPtr driver,
                                        virDomainObjPtr vm,
@@ -794,30 +831,8 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriverPtr driver,
 
     VIR_DEBUG("starting blockdev mirror for disk=%s to host=%s", diskAlias, host);
 
-    if (!(copysrc = virStorageSourceNew()))
+    if (!(copysrc = qemuMigrationSrcNBDStorageCopyBlockdevPrepareSource(disk, host, port, tlsAlias)))
         return -1;
-
-    copysrc->type = VIR_STORAGE_TYPE_NETWORK;
-    copysrc->protocol = VIR_STORAGE_NET_PROTOCOL_NBD;
-    copysrc->format = VIR_STORAGE_FILE_RAW;
-
-    if (!(copysrc->backingStore = virStorageSourceNew()))
-        return -1;
-
-    copysrc->path = g_strdup(diskAlias);
-
-    if (VIR_ALLOC_N(copysrc->hosts, 1) < 0)
-        return -1;
-
-    copysrc->nhosts = 1;
-    copysrc->hosts->transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
-    copysrc->hosts->port = port;
-    copysrc->hosts->name = g_strdup(host);
-
-    copysrc->tlsAlias = g_strdup(tlsAlias);
-
-    copysrc->nodestorage = g_strdup_printf("migration-%s-storage", disk->dst);
-    copysrc->nodeformat = g_strdup_printf("migration-%s-format", disk->dst);
 
     /* Migration via blockdev-mirror was supported sooner than the auto-read-only
      * feature was added to qemu */
