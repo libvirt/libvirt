@@ -12490,8 +12490,8 @@ qemuDomainDiskByName(virDomainDefPtr def,
     virDomainDiskDefPtr ret;
 
     if (!(ret = virDomainDiskByName(def, name, true))) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("No device found for specified path"));
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("disk '%s' not found in domain"), name);
         return NULL;
     }
 
