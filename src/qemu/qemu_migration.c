@@ -649,7 +649,6 @@ qemuMigrationSrcNBDCopyCancelOne(virQEMUDriverPtr driver,
                                  qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int ret = -1;
     int status;
     int rv;
 
@@ -659,26 +658,22 @@ qemuMigrationSrcNBDCopyCancelOne(virQEMUDriverPtr driver,
     case VIR_DOMAIN_BLOCK_JOB_CANCELED:
         if (failNoJob) {
             qemuMigrationNBDReportMirrorError(job, disk->dst);
-            goto cleanup;
+            return -1;
         }
         G_GNUC_FALLTHROUGH;
     case VIR_DOMAIN_BLOCK_JOB_COMPLETED:
-        ret = 1;
-        goto cleanup;
+        return 1;
     }
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
-        goto cleanup;
+        return -1;
 
     rv = qemuMonitorBlockJobCancel(priv->mon, job->name);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || rv < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
