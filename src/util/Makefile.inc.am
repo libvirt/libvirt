@@ -310,7 +310,7 @@ util/virkeycodetable_%.h: $(srcdir)/keycodemapdb/data/keymaps.csv \
 					      -e 's,\.h,,'` && \
 		$(MKDIR_P) util/ && \
 		$(RUNUTF8) $(PYTHON) $(srcdir)/keycodemapdb/tools/keymap-gen \
-			--lang stdc --varname virKeyCodeTable_$$NAME code-table \
+			code-table --lang stdc --varname virKeyCodeTable_$$NAME \
 			$(srcdir)/keycodemapdb/data/keymaps.csv $$NAME > $@-tmp && \
 		mv $@-tmp $@ || rm -f $@-tmp
 
@@ -320,7 +320,7 @@ util/virkeynametable_%.h: $(srcdir)/keycodemapdb/data/keymaps.csv \
 					      -e 's,\.h,,'` && \
 		$(MKDIR_P) util/ && \
 		$(RUNUTF8) $(PYTHON) $(srcdir)/keycodemapdb/tools/keymap-gen \
-			--lang stdc --varname virKeyNameTable_$$NAME name-table \
+			name-table --lang stdc --varname virKeyNameTable_$$NAME \
 			$(srcdir)/keycodemapdb/data/keymaps.csv $$NAME > $@-tmp && \
 		mv $@-tmp $@ || rm -f $@-tmp
 
@@ -330,9 +330,9 @@ util/virkeycode-%.pod: $(srcdir)/keycodemapdb/data/keymaps.csv \
 					      -e 's,\.pod,,'` && \
 		$(MKDIR_P) util/ && \
 		$(RUNUTF8) $(PYTHON) $(srcdir)/keycodemapdb/tools/keymap-gen \
-		--lang pod \
-		--varname "virkeycode-$$NAME - Key code values for $$NAME" \
-		code-docs \
+		code-docs --lang pod \
+		--title "virkeycode-$$NAME" \
+		--subtitle "Key code values for $$NAME" \
 		$(srcdir)/keycodemapdb/data/keymaps.csv $$NAME > \
 			$@-tmp && mv $@-tmp $@ || rm $@-tmp
 
@@ -342,9 +342,9 @@ util/virkeyname-%.pod: $(srcdir)/keycodemapdb/data/keymaps.csv \
 					      -e 's,\.pod,,'` && \
 		$(MKDIR_P) util/ && \
 		$(RUNUTF8) $(PYTHON) $(srcdir)/keycodemapdb/tools/keymap-gen \
-		--lang pod \
-		--varname "virkeyname-$$NAME - Key name values for $$NAME" \
-		name-docs \
+		name-docs --lang pod \
+		--title "virkeyname-$$NAME" \
+		--subtitle "Key name values for $$NAME" \
 		$(srcdir)/keycodemapdb/data/keymaps.csv $$NAME > \
 			$@-tmp && mv $@-tmp $@ || rm $@-tmp
 
