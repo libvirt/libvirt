@@ -132,14 +132,13 @@ int
 qemuMonitorTextCreateSnapshot(qemuMonitorPtr mon,
                               const char *name)
 {
-    char *cmd = NULL;
-    char *reply = NULL;
-    int ret = -1;
+    g_autofree char *cmd = NULL;
+    g_autofree char *reply = NULL;
 
     cmd = g_strdup_printf("savevm \"%s\"", name);
 
     if (qemuMonitorJSONHumanCommand(mon, cmd, &reply))
-        goto cleanup;
+        return -1;
 
     if (strstr(reply, "Error while creating snapshot") ||
         strstr(reply, "Could not open VM state file") ||
@@ -148,19 +147,14 @@ qemuMonitorTextCreateSnapshot(qemuMonitorPtr mon,
         (strstr(reply, "Error") && strstr(reply, "while writing VM"))) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("Failed to take snapshot: %s"), reply);
-        goto cleanup;
+        return -1;
     } else if (strstr(reply, "No block device can accept snapshots")) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("this domain does not have a device to take snapshots"));
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(cmd);
-    VIR_FREE(reply);
-    return ret;
+    return 0;
 }
 
 int qemuMonitorTextLoadSnapshot(qemuMonitorPtr mon, const char *name)
