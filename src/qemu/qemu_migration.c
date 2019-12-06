@@ -829,7 +829,7 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriverPtr driver,
     int mon_ret = 0;
     g_autoptr(virStorageSource) copysrc = NULL;
 
-    VIR_DEBUG("starting blockdev mirror for disk=%s to host=%s", diskAlias, host);
+    VIR_DEBUG("starting blockdev mirror for disk=%s to host=%s", disk->dst, host);
 
     if (!(copysrc = qemuMigrationSrcNBDStorageCopyBlockdevPrepareSource(disk, host, port, tlsAlias)))
         return -1;
