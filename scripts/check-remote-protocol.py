@@ -86,8 +86,12 @@ out, err = pdwtagsproc.communicate()
 out = out.decode("utf-8")
 err = err.decode("utf-8")
 
-if out == "" and err != "":
-    print("WARNING: no output, pdwtags appears broken:", file=sys.stderr)
+if out == "" or pdwtagsproc.returncode != 0:
+    if out == "":
+        print("WARNING: no output, pdwtags appears broken:", file=sys.stderr)
+    else:
+        print("WARNING: exit code %d, pdwtags appears broken:" %
+              pdwtagsproc.returncode, file=sys.stderr)
     for l in err.strip().split("\n"):
         print("WARNING: %s" % l, file=sys.stderr)
     print("WARNING: skipping the remote protocol test", file=sys.stderr)
