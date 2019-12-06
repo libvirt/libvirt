@@ -377,7 +377,6 @@ qemuMigrationDstStartNBDServer(virQEMUDriverPtr driver,
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     unsigned short port = 0;
-    char *diskAlias = NULL;
     size_t i;
     virStorageNetHostDef server = {
         .name = (char *)listenAddr, /* cast away const */
@@ -392,6 +391,7 @@ qemuMigrationDstStartNBDServer(virQEMUDriverPtr driver,
 
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDefPtr disk = vm->def->disks[i];
+        g_autofree char *diskAlias = NULL;
 
         /* check whether disk should be migrated */
         if (!qemuMigrationAnyCopyDisk(disk, nmigrate_disks, migrate_disks))
@@ -404,7 +404,6 @@ qemuMigrationDstStartNBDServer(virQEMUDriverPtr driver,
             goto cleanup;
         }
 
-        VIR_FREE(diskAlias);
         if (!(diskAlias = qemuAliasDiskDriveFromDisk(disk)))
             goto cleanup;
 
@@ -433,7 +432,6 @@ qemuMigrationDstStartNBDServer(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    VIR_FREE(diskAlias);
     if (ret < 0 && nbdPort == 0)
         virPortAllocatorRelease(port);
     return ret;
