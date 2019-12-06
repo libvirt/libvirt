@@ -1139,7 +1139,9 @@ qemuBlockJobProcessEventConcludedCopyPivot(virQEMUDriverPtr driver,
 {
     VIR_DEBUG("copy job '%s' on VM '%s' pivoted", job->name, vm->def->name);
 
-    if (!job->disk)
+    /* mirror may be NULL for copy job corresponding to migration */
+    if (!job->disk ||
+        !job->disk->mirror)
         return;
 
     /* for shallow copy without reusing external image the user can either not
@@ -1166,7 +1168,9 @@ qemuBlockJobProcessEventConcludedCopyAbort(virQEMUDriverPtr driver,
 {
     VIR_DEBUG("copy job '%s' on VM '%s' aborted", job->name, vm->def->name);
 
-    if (!job->disk)
+    /* mirror may be NULL for copy job corresponding to migration */
+    if (!job->disk ||
+        !job->disk->mirror)
         return;
 
     qemuBlockJobEventProcessConcludedRemoveChain(driver, vm, asyncJob, job->disk->mirror);
@@ -1383,7 +1387,8 @@ qemuBlockJobEventProcess(virQEMUDriverPtr driver,
         break;
 
     case QEMU_BLOCKJOB_STATE_READY:
-        if (job->disk && job->disk->mirror) {
+        /* mirror may be NULL for copy job corresponding to migration */
+        if (job->disk) {
             job->disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_READY;
             qemuBlockJobEmitEvents(driver, vm, job->disk, job->type, job->newstate);
         }
