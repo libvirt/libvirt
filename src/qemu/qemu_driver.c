@@ -11890,12 +11890,8 @@ qemuDomainBlockPeek(virDomainPtr dom,
     if (virDomainBlockPeekEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    /* Check the path belongs to this domain.  */
-    if (!(disk = virDomainDiskByName(vm->def, path, true))) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("invalid disk or path '%s'"), path);
+    if (!(disk = qemuDomainDiskByName(vm->def, path)))
         goto cleanup;
-    }
 
     if (disk->src->format != VIR_STORAGE_FILE_RAW) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
@@ -17828,11 +17824,8 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom,
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
-    if (!(disk = virDomainDiskByName(vm->def, path, true))) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("disk %s not found in the domain"), path);
+    if (!(disk = qemuDomainDiskByName(vm->def, path)))
         goto endjob;
-    }
 
     if (!(job = qemuBlockJobDiskGetJob(disk))) {
         ret = 0;
