@@ -54,8 +54,6 @@ AM_LDFLAGS_MOD = \
 	$(AM_LDFLAGS)
 AM_LDFLAGS_MOD_NOUNDEF = $(AM_LDFLAGS_MOD) $(NO_UNDEFINED_LDFLAGS)
 
-POD2MAN = pod2man -c "Virtualization Support" -r "$(PACKAGE)-$(VERSION)"
-
 EXTRA_DIST = $(conf_DATA)
 
 BUILT_SOURCES =
@@ -84,15 +82,11 @@ endif WITH_DTRACE_PROBES
 libexec_PROGRAMS =
 RPC_PROBE_FILES =
 LOGROTATE_FILES_IN =
-PODFILES =
-MANINFILES =
 SYSTEMD_UNIT_FILES =
 SYSTEMD_UNIT_FILES_IN =
 SYSCONF_FILES =
 sbin_PROGRAMS =
-man8_MANS =
 DRIVER_SOURCES =
-man7_MANS =
 
 COMMON_UNIT_VARS = \
 	-e 's|[@]runstatedir[@]|$(runstatedir)|g' \
@@ -586,20 +580,8 @@ UNINSTALL_LOCAL += uninstall-logrotate
 endif WITH_LIBVIRTD
 
 
-%.8: %.8.in $(top_srcdir)/configure.ac
-	$(AM_V_GEN)sed \
-		-e 's|[@]sysconfdir[@]|$(sysconfdir)|g' \
-		-e 's|[@]runstatedir[@]|$(runstatedir)|g' \
-		< $< > $@-t && \
-	mv $@-t $@
-
-CLEANFILES += \
-	$(man8_MANS) \
-	$(MANINFILES)
-
 EXTRA_DIST += \
         $(SYSTEMD_UNIT_FILES_IN) \
-        $(PODFILES) \
         $(NULL)
 
 

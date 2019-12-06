@@ -265,7 +265,6 @@ BuildRequires: automake
 BuildRequires: gettext-devel
 BuildRequires: libtool
 %endif
-BuildRequires: /usr/bin/pod2man
 %if 0%{?rhel} == 7
 BuildRequires: python36-docutils
 %else
