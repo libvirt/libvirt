@@ -649,7 +649,6 @@ qemuMigrationSrcNBDCopyCancelOne(virQEMUDriverPtr driver,
                                  qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    char *diskAlias = NULL;
     int ret = -1;
     int status;
     int rv;
@@ -668,13 +667,10 @@ qemuMigrationSrcNBDCopyCancelOne(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (!(diskAlias = qemuAliasDiskDriveFromDisk(disk)))
-        return -1;
-
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         goto cleanup;
 
-    rv = qemuMonitorBlockJobCancel(priv->mon, diskAlias);
+    rv = qemuMonitorBlockJobCancel(priv->mon, job->name);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || rv < 0)
         goto cleanup;
@@ -682,7 +678,6 @@ qemuMigrationSrcNBDCopyCancelOne(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    VIR_FREE(diskAlias);
     return ret;
 }
 
