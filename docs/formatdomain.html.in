@@ -2226,7 +2226,7 @@
           <td>hint-dedicated</td>
           <td>Allows a guest to enable optimizations when running on dedicated vCPUs</td>
           <td>on, off</td>
-          <td><span class="since">5.7.0 (QEMU 2.12.1)</span></td>
+          <td><span class="since">5.7.0 (QEMU 2.12.0)</span></td>
         </tr>
       </table>
       </dd>
