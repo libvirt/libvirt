@@ -817,7 +817,9 @@ static int
 qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriverPtr driver,
                                        virDomainObjPtr vm,
                                        virDomainDiskDefPtr disk,
-                                       const char *diskAlias,
+                                       const char *jobname,
+                                       const char *sourcename,
+                                       bool persistjob,
                                        const char *host,
                                        int port,
                                        unsigned long long mirror_speed,
@@ -848,8 +850,8 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriverPtr driver,
     mon_ret = qemuBlockStorageSourceAttachApply(qemuDomainGetMonitor(vm), data);
 
     if (mon_ret == 0)
-        mon_ret = qemuMonitorBlockdevMirror(qemuDomainGetMonitor(vm), NULL, false,
-                                            diskAlias, copysrc->nodeformat,
+        mon_ret = qemuMonitorBlockdevMirror(qemuDomainGetMonitor(vm), jobname, persistjob,
+                                            sourcename, copysrc->nodeformat,
                                             mirror_speed, 0, 0, mirror_shallow);
 
     if (mon_ret != 0)
@@ -914,6 +916,9 @@ qemuMigrationSrcNBDStorageCopyOne(virQEMUDriverPtr driver,
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     qemuBlockJobDataPtr job = NULL;
     char *diskAlias = NULL;
+    const char *jobname = NULL;
+    const char *sourcename = NULL;
+    bool persistjob = false;
     int rc;
     int ret = -1;
 
@@ -923,12 +928,23 @@ qemuMigrationSrcNBDStorageCopyOne(virQEMUDriverPtr driver,
     if (!(job = qemuBlockJobDiskNew(vm, disk, QEMU_BLOCKJOB_TYPE_COPY, diskAlias)))
         goto cleanup;
 
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+        jobname = diskAlias;
+        sourcename = disk->src->nodeformat;
+        persistjob = true;
+    } else {
+        jobname = NULL;
+        sourcename = diskAlias;
+        persistjob = false;
+    }
+
     qemuBlockJobSyncBegin(job);
 
     if (flags & VIR_MIGRATE_TLS ||
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
         rc = qemuMigrationSrcNBDStorageCopyBlockdev(driver, vm,
-                                                    disk, diskAlias,
+                                                    disk, jobname,
+                                                    sourcename, persistjob,
                                                     host, port,
                                                     mirror_speed,
                                                     mirror_shallow,
