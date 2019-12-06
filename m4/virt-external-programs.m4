@@ -33,10 +33,13 @@ AC_DEFUN([LIBVIRT_CHECK_EXTERNAL_PROGRAMS], [
   then
     AC_MSG_ERROR("xsltproc is required to build libvirt")
   fi
-  AC_PATH_PROGS([RST2HTML], [rst2html rst2html.py rst2html-3], [])
+
+  dnl Drop the rst2html (aka HTML4) variants once we
+  dnl stop supporting Ubuntu 16.04 (Xenial)
+  AC_PATH_PROGS([RST2HTML], [rst2html5 rst2html5.py rst2html5-3 rst2html rst2html.py rst2html-3], [])
   if test -z "$RST2HTML"
   then
-    AC_MSG_ERROR("rst2html is required to build libvirt")
+    AC_MSG_ERROR("rst2html5/rst2html is required to build libvirt")
   fi
   AC_PATH_PROG([AUGPARSE], [augparse], [/usr/bin/augparse])
   AC_PROG_MKDIR_P
