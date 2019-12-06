@@ -161,7 +161,6 @@ int qemuMonitorTextLoadSnapshot(qemuMonitorPtr mon, const char *name)
     char *cmd = NULL;
     char *reply = NULL;
     int ret = -1;
-    char *safename;
 
     cmd = g_strdup_printf("loadvm \"%s\"", name);
 
@@ -194,7 +193,6 @@ int qemuMonitorTextLoadSnapshot(qemuMonitorPtr mon, const char *name)
     ret = 0;
 
  cleanup:
-    VIR_FREE(safename);
     VIR_FREE(cmd);
     VIR_FREE(reply);
     return ret;
