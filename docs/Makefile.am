@@ -173,10 +173,10 @@ gif = \
 
 internals_html_in = \
   $(patsubst $(srcdir)/%,%,$(wildcard $(srcdir)/internals/*.html.in))
-kbase_rst = \
-  $(patsubst $(srcdir)/%,%,$(wildcard $(srcdir)/kbase/*.rst))
-kbase_rst_html_in = \
-  $(kbase_rst:%.rst=%.html.in)
+internals_rst = \
+  $(patsubst $(srcdir)/%,%,$(wildcard $(srcdir)/internals/*.rst))
+internals_rst_html_in = \
+  $(internals_rst:%.rst=%.html.in)
 internals_html = \
   $(internals_html_in:%.html.in=%.html) \
   $(internals_rst_html_in:%.html.in=%.html)
