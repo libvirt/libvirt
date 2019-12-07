@@ -335,8 +335,13 @@ BuildRequires: device-mapper-devel
 # For XFS reflink clone support
 BuildRequires: xfsprogs-devel
 %if %{with_storage_rbd}
+%if 0%{?fedora} || 0%{?rhel} > 7
+BuildRequires: librados-devel
+BuildRequires: librbd-devel
+%else
 BuildRequires: librados2-devel
 BuildRequires: librbd1-devel
+%endif
 %endif
 %if %{with_storage_gluster}
 BuildRequires: glusterfs-api-devel >= 3.4.1
