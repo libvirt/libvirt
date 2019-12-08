@@ -539,6 +539,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     /* 350 */
     QEMU_CAPS_DEVICE_I8042, /* PS/2 controller */
     QEMU_CAPS_OBJECT_RNG_BUILTIN, /* -object rng-builtin */
+    QEMU_CAPS_VIRTIO_NET_FAILOVER, /* virtio-net-*.failover */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

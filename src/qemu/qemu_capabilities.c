@@ -558,6 +558,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 350 */
               "i8042",
               "rng-builtin",
+              "virtio-net.failover",
     );
 
 
@@ -1305,6 +1306,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVirtioNet[] = {
     { "disable-legacy", QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY },
     { "iommu_platform", QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM },
     { "ats", QEMU_CAPS_VIRTIO_PCI_ATS },
+    { "failover", QEMU_CAPS_VIRTIO_NET_FAILOVER },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsSpaprPCIHostBridge[] = {
