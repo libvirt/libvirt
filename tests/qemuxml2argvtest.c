@@ -944,11 +944,11 @@ mymain(void)
             QEMU_CAPS_DEVICE_PC_DIMM,
             QEMU_CAPS_OBJECT_MEMORY_FILE,
             QEMU_CAPS_OBJECT_MEMORY_FILE_DISCARD);
-    DO_TEST("hugepages-default", NONE);
-    DO_TEST("hugepages-default-2M", NONE);
+    DO_TEST("hugepages-default", QEMU_CAPS_OBJECT_MEMORY_FILE);
+    DO_TEST("hugepages-default-2M", QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("hugepages-default-system-size", NONE);
     DO_TEST_PARSE_ERROR("hugepages-default-1G-nodeset-2M", NONE);
-    DO_TEST("hugepages-nodeset", NONE);
+    DO_TEST("hugepages-nodeset", QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST_PARSE_ERROR("hugepages-nodeset-nonexist",
                         QEMU_CAPS_DEVICE_PC_DIMM,
                         QEMU_CAPS_OBJECT_MEMORY_FILE,
@@ -1711,10 +1711,10 @@ mymain(void)
     DO_TEST("cpu-numa2", NONE);
     DO_TEST("cpu-numa-no-memory-element", NONE);
     DO_TEST_PARSE_ERROR("cpu-numa3", NONE);
-    DO_TEST_FAILURE("cpu-numa-disjoint", NONE);
+    DO_TEST_PARSE_ERROR("cpu-numa-disjoint", NONE);
     DO_TEST("cpu-numa-disjoint", QEMU_CAPS_NUMA);
     DO_TEST_FAILURE("cpu-numa-memshared", QEMU_CAPS_OBJECT_MEMORY_RAM);
-    DO_TEST_FAILURE("cpu-numa-memshared", NONE);
+    DO_TEST_PARSE_ERROR("cpu-numa-memshared", NONE);
     DO_TEST("cpu-numa-memshared", QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("cpu-host-model", NONE);
     DO_TEST("cpu-host-model-vendor", NONE);
@@ -1777,12 +1777,12 @@ mymain(void)
     DO_TEST("numatune-memnode",
             QEMU_CAPS_NUMA,
             QEMU_CAPS_OBJECT_MEMORY_RAM);
-    DO_TEST_FAILURE("numatune-memnode", NONE);
+    DO_TEST_PARSE_ERROR("numatune-memnode", NONE);
 
     DO_TEST("numatune-memnode-no-memory",
             QEMU_CAPS_NUMA,
             QEMU_CAPS_OBJECT_MEMORY_RAM);
-    DO_TEST_FAILURE("numatune-memnode-no-memory", NONE);
+    DO_TEST_PARSE_ERROR("numatune-memnode-no-memory", NONE);
 
     DO_TEST("numatune-distances", QEMU_CAPS_NUMA, QEMU_CAPS_NUMA_DIST);
 

@@ -5226,6 +5226,69 @@ qemuDomainDefValidateMemory(const virDomainDef *def,
 
 
 static int
+qemuDomainDefValidateNuma(const virDomainDef *def,
+                          virQEMUCapsPtr qemuCaps)
+{
+    const long system_page_size = virGetSystemPageSizeKB();
+    size_t ncells = virDomainNumaGetNodeCount(def->numa);
+    size_t i;
+    bool hasMemoryCap = virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM) ||
+                        virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE) ||
+                        virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_MEMFD);
+
+    if (virDomainNumatuneHasPerNodeBinding(def->numa) && !hasMemoryCap) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Per-node memory binding is not supported "
+                         "with this QEMU"));
+        return -1;
+    }
+
+    if (def->mem.nhugepages &&
+        def->mem.hugepages[0].size != system_page_size &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("huge pages per NUMA node are not "
+                         "supported with this QEMU"));
+        return -1;
+    }
+
+    for (i = 0; i < ncells; i++) {
+        g_autofree char * cpumask = NULL;
+
+        if (!hasMemoryCap &&
+            virDomainNumaGetNodeMemoryAccessMode(def->numa, i)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Shared memory mapping is not supported "
+                             "with this QEMU"));
+            return -1;
+        }
+
+        if (!(cpumask = virBitmapFormat(virDomainNumaGetNodeCpumask(def->numa, i))))
+            return -1;
+
+        if (strchr(cpumask, ',') &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_NUMA)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("disjoint NUMA cpu ranges are not supported "
+                             "with this QEMU"));
+            return -1;
+        }
+
+    }
+
+    if (virDomainNumaNodesDistancesAreBeingSet(def->numa) &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_NUMA_DIST)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("setting NUMA distances is not "
+                         "supported with this qemu"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainValidateCpuCount(const virDomainDef *def,
                             virQEMUCapsPtr qemuCaps)
 {
@@ -5410,6 +5473,9 @@ qemuDomainDefValidate(const virDomainDef *def,
         goto cleanup;
 
     if (qemuDomainDefValidateMemory(def, qemuCaps) < 0)
+        goto cleanup;
+
+    if (qemuDomainDefValidateNuma(def, qemuCaps) < 0)
         goto cleanup;
 
     if (cfg->vncTLS && cfg->vncTLSx509secretUUID &&

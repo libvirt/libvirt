@@ -289,20 +289,21 @@ mymain(void)
     DO_TEST("pmu-feature-off", NONE);
 
     DO_TEST("pages-discard", NONE);
-    DO_TEST("pages-discard-hugepages", NONE);
+    DO_TEST("pages-discard-hugepages", QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("pages-dimm-discard", NONE);
-    DO_TEST("hugepages-default", NONE);
-    DO_TEST("hugepages-default-2M", NONE);
+    DO_TEST("hugepages-default", QEMU_CAPS_OBJECT_MEMORY_FILE);
+    DO_TEST("hugepages-default-2M", QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("hugepages-default-system-size", NONE);
-    DO_TEST("hugepages-nodeset", NONE);
-    DO_TEST("hugepages-numa-default-2M", NONE);
-    DO_TEST("hugepages-numa-default-dimm", NONE);
-    DO_TEST("hugepages-numa-nodeset", NONE);
-    DO_TEST("hugepages-numa-nodeset-part", NONE);
-    DO_TEST("hugepages-shared", NONE);
-    DO_TEST("hugepages-memaccess", NONE);
-    DO_TEST("hugepages-memaccess2", NONE);
-    DO_TEST("hugepages-nvdimm", NONE);
+    DO_TEST("hugepages-nodeset", QEMU_CAPS_OBJECT_MEMORY_FILE);
+    DO_TEST("hugepages-numa-default-2M", QEMU_CAPS_OBJECT_MEMORY_FILE);
+    DO_TEST("hugepages-numa-default-dimm", QEMU_CAPS_OBJECT_MEMORY_FILE);
+    DO_TEST("hugepages-numa-nodeset", QEMU_CAPS_OBJECT_MEMORY_FILE);
+    DO_TEST("hugepages-numa-nodeset-part", QEMU_CAPS_OBJECT_MEMORY_FILE);
+    DO_TEST("hugepages-shared", QEMU_CAPS_OBJECT_MEMORY_FILE);
+    DO_TEST("hugepages-memaccess", QEMU_CAPS_OBJECT_MEMORY_FILE);
+    DO_TEST("hugepages-memaccess2", QEMU_CAPS_OBJECT_MEMORY_FILE);
+    DO_TEST("hugepages-nvdimm", QEMU_CAPS_DEVICE_NVDIMM,
+            QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("nosharepages", NONE);
     DO_TEST("restore-v2", NONE);
     DO_TEST("migrate", NONE);
@@ -490,7 +491,8 @@ mymain(void)
     DO_TEST("event_idx", NONE);
     DO_TEST("vhost_queues", NONE);
     DO_TEST("interface-driver", NONE);
-    DO_TEST("interface-server", QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST("interface-server", QEMU_CAPS_DEVICE_CIRRUS_VGA,
+            QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("virtio-lun", NONE);
 
     DO_TEST("usb-none", NONE);
@@ -538,7 +540,8 @@ mymain(void)
     DO_TEST("seclabel-dynamic-none", NONE);
     DO_TEST("seclabel-device-multiple", NONE);
     DO_TEST_FULL("seclabel-dynamic-none-relabel", WHEN_INACTIVE,
-                 ARG_QEMU_CAPS, QEMU_CAPS_DEVICE_CIRRUS_VGA, NONE);
+                 ARG_QEMU_CAPS, QEMU_CAPS_DEVICE_CIRRUS_VGA,
+                 QEMU_CAPS_OBJECT_MEMORY_FILE, NONE);
     DO_TEST("numad-static-vcpu-no-numatune", NONE);
 
     DO_TEST("disk-scsi-lun-passthrough-sgio",
@@ -572,7 +575,8 @@ mymain(void)
     DO_TEST("pseries-phb-numa-node",
             QEMU_CAPS_NUMA,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_SPAPR_PCI_HOST_BRIDGE_NUMA_NODE);
+            QEMU_CAPS_SPAPR_PCI_HOST_BRIDGE_NUMA_NODE,
+            QEMU_CAPS_OBJECT_MEMORY_FILE);
 
     DO_TEST("pseries-many-devices",
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
@@ -1006,12 +1010,12 @@ mymain(void)
     DO_TEST("cpu-numa2", NONE);
     DO_TEST("cpu-numa-no-memory-element", NONE);
     DO_TEST("cpu-numa-disordered", NONE);
-    DO_TEST("cpu-numa-disjoint", NONE);
-    DO_TEST("cpu-numa-memshared", NONE);
+    DO_TEST("cpu-numa-disjoint", QEMU_CAPS_NUMA);
+    DO_TEST("cpu-numa-memshared", QEMU_CAPS_OBJECT_MEMORY_FILE);
 
     DO_TEST("numatune-auto-prefer", NONE);
-    DO_TEST("numatune-memnode", NONE);
-    DO_TEST("numatune-memnode-no-memory", NONE);
+    DO_TEST("numatune-memnode", QEMU_CAPS_NUMA, QEMU_CAPS_OBJECT_MEMORY_FILE);
+    DO_TEST("numatune-memnode-no-memory", QEMU_CAPS_OBJECT_MEMORY_FILE);
 
     DO_TEST("bios-nvram", NONE);
     DO_TEST("bios-nvram-os-interleave", NONE);
@@ -1200,10 +1204,12 @@ mymain(void)
 
     DO_TEST("memfd-memory-numa",
             QEMU_CAPS_OBJECT_MEMORY_MEMFD,
-            QEMU_CAPS_OBJECT_MEMORY_MEMFD_HUGETLB);
+            QEMU_CAPS_OBJECT_MEMORY_MEMFD_HUGETLB,
+            QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("memfd-memory-default-hugepage",
             QEMU_CAPS_OBJECT_MEMORY_MEMFD,
-            QEMU_CAPS_OBJECT_MEMORY_MEMFD_HUGETLB);
+            QEMU_CAPS_OBJECT_MEMORY_MEMFD_HUGETLB,
+            QEMU_CAPS_OBJECT_MEMORY_FILE);
 
     DO_TEST("acpi-table", NONE);
 
@@ -1264,7 +1270,8 @@ mymain(void)
 
     DO_TEST("user-aliases",
             QEMU_CAPS_DEVICE_CIRRUS_VGA,
-            QEMU_CAPS_QCOW2_LUKS);
+            QEMU_CAPS_QCOW2_LUKS,
+            QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("input-virtio-ccw",
             QEMU_CAPS_CCW,
             QEMU_CAPS_VIRTIO_KEYBOARD,

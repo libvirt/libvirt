@@ -7447,26 +7447,6 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
     int rc;
     int ret = -1;
     size_t ncells = virDomainNumaGetNodeCount(def->numa);
-    const long system_page_size = virGetSystemPageSizeKB();
-
-    if (virDomainNumatuneHasPerNodeBinding(def->numa) &&
-        !(virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_RAM) ||
-          virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE) ||
-          virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_MEMFD))) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Per-node memory binding is not supported "
-                         "with this QEMU"));
-        goto cleanup;
-    }
-
-    if (def->mem.nhugepages &&
-        def->mem.hugepages[0].size != system_page_size &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_MEMORY_FILE)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("huge pages per NUMA node are not "
-                         "supported with this QEMU"));
-        goto cleanup;
-    }
 
     if (!virDomainNumatuneNodesetIsAvailable(def->numa, priv->autoNodeset))
         goto cleanup;
@@ -7487,13 +7467,6 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
 
             if (rc == 0)
                 needBackend = true;
-        } else {
-            if (virDomainNumaGetNodeMemoryAccessMode(def->numa, i)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Shared memory mapping is not supported "
-                                 "with this QEMU"));
-                goto cleanup;
-            }
         }
     }
 
@@ -7505,14 +7478,6 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
         VIR_FREE(cpumask);
         if (!(cpumask = virBitmapFormat(virDomainNumaGetNodeCpumask(def->numa, i))))
             goto cleanup;
-
-        if (strchr(cpumask, ',') &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_NUMA)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("disjoint NUMA cpu ranges are not supported "
-                             "with this QEMU"));
-            goto cleanup;
-        }
 
         if (needBackend) {
             virCommandAddArg(cmd, "-object");
@@ -7542,13 +7507,6 @@ qemuBuildNumaArgStr(virQEMUDriverConfigPtr cfg,
      * of nodes, we have to specify all the distances. Even
      * though they might be the default ones. */
     if (virDomainNumaNodesDistancesAreBeingSet(def->numa)) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_NUMA_DIST)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("setting NUMA distances is not "
-                             "supported with this qemu"));
-            goto cleanup;
-        }
-
         for (i = 0; i < ncells; i++) {
             for (j = 0; j < ncells; j++) {
                 size_t distance = virDomainNumaGetNodeDistance(def->numa, i, j);
