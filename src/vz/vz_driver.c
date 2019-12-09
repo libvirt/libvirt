@@ -718,6 +718,7 @@ static char *
 vzDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 {
     vzConnPtr privconn = domain->conn->privateData;
+    vzDriverPtr driver = privconn->driver;
     virDomainDefPtr def;
     virDomainObjPtr dom;
     char *ret = NULL;
