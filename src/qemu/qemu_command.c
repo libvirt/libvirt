@@ -6435,8 +6435,7 @@ qemuBuildIOMMUCommandLine(virCommandPtr cmd,
 
 static int
 qemuBuildGlobalControllerCommandLine(virCommandPtr cmd,
-                                     const virDomainDef *def,
-                                     virQEMUCapsPtr qemuCaps)
+                                     const virDomainDef *def)
 {
     size_t i;
 
@@ -6445,39 +6444,20 @@ qemuBuildGlobalControllerCommandLine(virCommandPtr cmd,
         if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI &&
             cont->opts.pciopts.pcihole64) {
             const char *hoststr = NULL;
-            bool cap = false;
-            bool machine = false;
 
             switch (cont->model) {
             case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
                 hoststr = "i440FX-pcihost";
-                cap = virQEMUCapsGet(qemuCaps, QEMU_CAPS_I440FX_PCI_HOLE64_SIZE);
-                machine = qemuDomainIsI440FX(def);
                 break;
 
             case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
                 hoststr = "q35-pcihost";
-                cap = virQEMUCapsGet(qemuCaps, QEMU_CAPS_Q35_PCI_HOLE64_SIZE);
-                machine = qemuDomainIsQ35(def);
                 break;
 
             default:
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("64-bit PCI hole setting is only for root"
                                  " PCI controllers"));
-                return -1;
-            }
-
-            if (!machine) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                             _("Setting the 64-bit PCI hole size is not "
-                             "supported for machine '%s'"), def->os.machine);
-                return -1;
-            }
-            if (!cap) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("64-bit PCI hole size setting is not supported "
-                                 "with this QEMU binary"));
                 return -1;
             }
 
@@ -10043,7 +10023,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     if (qemuBuildIOMMUCommandLine(cmd, def, qemuCaps) < 0)
         return NULL;
 
-    if (qemuBuildGlobalControllerCommandLine(cmd, def, qemuCaps) < 0)
+    if (qemuBuildGlobalControllerCommandLine(cmd, def) < 0)
         return NULL;
 
     if (qemuBuildControllersCommandLine(cmd, def, qemuCaps) < 0)

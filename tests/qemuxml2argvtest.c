@@ -2526,7 +2526,7 @@ mymain(void)
             QEMU_CAPS_KVM, QEMU_CAPS_VIRTIO_SCSI);
 
     DO_TEST("pcihole64", QEMU_CAPS_I440FX_PCI_HOLE64_SIZE);
-    DO_TEST_FAILURE("pcihole64-none", NONE);
+    DO_TEST_PARSE_ERROR("pcihole64-none", NONE);
     DO_TEST("pcihole64-q35",
             QEMU_CAPS_DEVICE_IOH3420,
             QEMU_CAPS_ICH9_AHCI,
