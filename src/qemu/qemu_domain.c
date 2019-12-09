@@ -5062,15 +5062,39 @@ qemuDomainDefValidateFeatures(const virDomainDef *def,
 
         switch ((virDomainFeature) i) {
         case VIR_DOMAIN_FEATURE_IOAPIC:
-            if (def->features[i] != VIR_DOMAIN_IOAPIC_NONE &&
-                !ARCH_IS_X86(def->os.arch)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("The '%s' feature is not supported for "
-                                 "architecture '%s' or machine type '%s'"),
-                               featureName,
-                               virArchToString(def->os.arch),
-                               def->os.machine);
-                return -1;
+            if (def->features[i] != VIR_DOMAIN_IOAPIC_NONE) {
+                if (!ARCH_IS_X86(def->os.arch)) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("The '%s' feature is not supported for "
+                                     "architecture '%s' or machine type '%s'"),
+                                   featureName,
+                                   virArchToString(def->os.arch),
+                                   def->os.machine);
+                    return -1;
+                }
+
+                if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_KERNEL_IRQCHIP)) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("I/O APIC tuning is not supported by "
+                                     "this QEMU binary"));
+                    return -1;
+                }
+
+                switch ((virDomainIOAPIC) def->features[i]) {
+                case VIR_DOMAIN_IOAPIC_QEMU:
+                    if (!virQEMUCapsGet(qemuCaps,
+                                        QEMU_CAPS_MACHINE_KERNEL_IRQCHIP_SPLIT)) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                       _("split I/O APIC is not supported by this "
+                                         "QEMU binary"));
+                        return -1;
+                    }
+                    break;
+                case VIR_DOMAIN_IOAPIC_KVM:
+                case VIR_DOMAIN_IOAPIC_NONE:
+                case VIR_DOMAIN_IOAPIC_LAST:
+                    break;
+                }
             }
             break;
 
