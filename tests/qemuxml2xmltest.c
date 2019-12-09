@@ -386,9 +386,11 @@ mymain(void)
     DO_TEST("input-usbmouse", NONE);
     DO_TEST("input-usbtablet", NONE);
     DO_TEST("misc-acpi", NONE);
-    DO_TEST("misc-disable-s3", NONE);
-    DO_TEST("misc-disable-suspends", NONE);
-    DO_TEST("misc-enable-s4", NONE);
+    DO_TEST("misc-disable-s3", QEMU_CAPS_PIIX_DISABLE_S3);
+    DO_TEST("misc-disable-suspends",
+            QEMU_CAPS_PIIX_DISABLE_S3,
+            QEMU_CAPS_PIIX_DISABLE_S4);
+    DO_TEST("misc-enable-s4", QEMU_CAPS_PIIX_DISABLE_S4);
     DO_TEST("misc-no-reboot", NONE);
     DO_TEST("misc-uuid", NONE);
     DO_TEST("net-vhostuser", NONE);
@@ -494,7 +496,9 @@ mymain(void)
     DO_TEST("vhost_queues", NONE);
     DO_TEST("interface-driver", NONE);
     DO_TEST("interface-server", QEMU_CAPS_DEVICE_CIRRUS_VGA,
-            QEMU_CAPS_OBJECT_MEMORY_FILE);
+            QEMU_CAPS_OBJECT_MEMORY_FILE,
+            QEMU_CAPS_PIIX_DISABLE_S3,
+            QEMU_CAPS_PIIX_DISABLE_S4);
     DO_TEST("virtio-lun", NONE);
 
     DO_TEST("usb-none", NONE);
@@ -525,7 +529,9 @@ mymain(void)
     DO_TEST("blkdeviotune-max", NONE);
     DO_TEST("blkdeviotune-group-num", NONE);
     DO_TEST("blkdeviotune-max-length", NONE);
-    DO_TEST("controller-usb-order", NONE);
+    DO_TEST("controller-usb-order",
+            QEMU_CAPS_PIIX_DISABLE_S3,
+            QEMU_CAPS_PIIX_DISABLE_S4);
 
     DO_TEST_FULL("seclabel-dynamic-baselabel", WHEN_INACTIVE,
                  ARG_QEMU_CAPS, NONE);
@@ -1274,7 +1280,9 @@ mymain(void)
     DO_TEST("user-aliases",
             QEMU_CAPS_DEVICE_CIRRUS_VGA,
             QEMU_CAPS_QCOW2_LUKS,
-            QEMU_CAPS_OBJECT_MEMORY_FILE);
+            QEMU_CAPS_OBJECT_MEMORY_FILE,
+            QEMU_CAPS_PIIX_DISABLE_S3,
+            QEMU_CAPS_PIIX_DISABLE_S4);
     DO_TEST("input-virtio-ccw",
             QEMU_CAPS_CCW,
             QEMU_CAPS_VIRTIO_KEYBOARD,

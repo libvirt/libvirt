@@ -6296,13 +6296,8 @@ qemuBuildPMCommandLine(virCommandPtr cmd,
         const char *pm_object = "PIIX4_PM";
 
         if (qemuDomainIsQ35(def) &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_DISABLE_S3)) {
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_DISABLE_S3))
             pm_object = "ICH9-LPC";
-        } else if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX_DISABLE_S3)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           "%s", _("setting ACPI S3 not supported"));
-            return -1;
-        }
 
         virCommandAddArg(cmd, "-global");
         virCommandAddArgFormat(cmd, "%s.disable_s3=%d",
@@ -6313,13 +6308,8 @@ qemuBuildPMCommandLine(virCommandPtr cmd,
         const char *pm_object = "PIIX4_PM";
 
         if (qemuDomainIsQ35(def) &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_DISABLE_S4)) {
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_DISABLE_S4))
             pm_object = "ICH9-LPC";
-        } else if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX_DISABLE_S4)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           "%s", _("setting ACPI S4 not supported"));
-            return -1;
-        }
 
         virCommandAddArg(cmd, "-global");
         virCommandAddArgFormat(cmd, "%s.disable_s4=%d",

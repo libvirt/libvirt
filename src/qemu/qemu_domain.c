@@ -5464,6 +5464,38 @@ qemuDomainDefValidateClockTimers(const virDomainDef *def,
 
 
 static int
+qemuDomainDefValidatePM(const virDomainDef *def,
+                        virQEMUCapsPtr qemuCaps)
+{
+    bool q35Dom = qemuDomainIsQ35(def);
+
+    if (def->pm.s3) {
+        bool q35ICH9_S3 = q35Dom &&
+                          virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_DISABLE_S3);
+
+        if (!q35ICH9_S3 && !virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX_DISABLE_S3)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           "%s", _("setting ACPI S3 not supported"));
+            return -1;
+        }
+    }
+
+    if (def->pm.s4) {
+        bool q35ICH9_S4 = q35Dom &&
+                          virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_DISABLE_S4);
+
+        if (!q35ICH9_S4 && !virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX_DISABLE_S4)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           "%s", _("setting ACPI S4 not supported"));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDefValidate(const virDomainDef *def,
                       void *opaque)
 {
@@ -5577,6 +5609,9 @@ qemuDomainDefValidate(const virDomainDef *def,
     }
 
     if (qemuDomainDefValidateClockTimers(def, qemuCaps) < 0)
+        goto cleanup;
+
+    if (qemuDomainDefValidatePM(def, qemuCaps) < 0)
         goto cleanup;
 
     /* QEMU 2.7 (detected via the availability of query-hotpluggable-cpus)
