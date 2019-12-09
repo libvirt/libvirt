@@ -98,10 +98,10 @@ testReadNetworkConf(const void *data G_GNUC_UNUSED)
         "    </interface>\n"
         "  </devices>\n"
         "</domain>\n";
-    struct openvz_driver driver = {0};
-
-    driver.xmlopt = openvzXMLOption(&driver);
-    driver.caps = openvzCapsInit();
+    struct openvz_driver driver = {
+        .xmlopt = openvzXMLOption(&driver),
+        .caps = openvzCapsInit(),
+    };
 
     if (!(def = virDomainDefNew()))
         goto cleanup;
