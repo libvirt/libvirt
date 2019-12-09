@@ -17,8 +17,8 @@
     <emulator>/usr/bin/qemu-system-s390x</emulator>
     <controller type='usb' index='0' model='none'/>
     <controller type='pci' index='0' model='pci-root'/>
-    <graphics type='spice'>
-      <listen type='none'/>
+    <graphics type='vnc' port='-1' autoport='yes'>
+      <listen type='address'/>
     </graphics>
     <video>
       <model type='virtio' heads='1' primary='yes'/>

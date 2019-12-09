@@ -382,22 +382,45 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("default-video-type-ppc64", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST("default-video-type-riscv64", "riscv64");
     DO_TEST_CAPS_ARCH_LATEST("default-video-type-s390x", "s390x");
-    DO_TEST("default-video-type-x86_64-caps-test-0", QEMU_CAPS_DEVICE_VGA);
-    DO_TEST("default-video-type-x86_64-caps-test-1", QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST("default-video-type-x86_64-caps-test-0",
+            QEMU_CAPS_DEVICE_VGA,
+            QEMU_CAPS_SPICE);
+    DO_TEST("default-video-type-x86_64-caps-test-1",
+            QEMU_CAPS_DEVICE_CIRRUS_VGA,
+            QEMU_CAPS_SPICE);
 
     DO_TEST("graphics-sdl", QEMU_CAPS_DEVICE_VGA);
     DO_TEST("graphics-sdl-fullscreen", QEMU_CAPS_DEVICE_CIRRUS_VGA);
-    DO_TEST("graphics-spice", QEMU_CAPS_DEVICE_QXL);
-    DO_TEST("graphics-spice-compression", QEMU_CAPS_DEVICE_QXL);
-    DO_TEST("graphics-spice-qxl-vga", QEMU_CAPS_DEVICE_QXL);
-    DO_TEST("graphics-spice-socket", QEMU_CAPS_DEVICE_CIRRUS_VGA);
-    DO_TEST("graphics-spice-auto-socket", QEMU_CAPS_DEVICE_CIRRUS_VGA);
+
+    cfg->spiceTLS = true;
+    DO_TEST("graphics-spice",
+            QEMU_CAPS_DEVICE_QXL,
+            QEMU_CAPS_SPICE,
+            QEMU_CAPS_SPICE_FILE_XFER_DISABLE);
+    DO_TEST("graphics-spice-compression",
+            QEMU_CAPS_DEVICE_QXL,
+            QEMU_CAPS_SPICE);
+    DO_TEST("graphics-spice-qxl-vga",
+            QEMU_CAPS_DEVICE_QXL,
+            QEMU_CAPS_SPICE);
+    DO_TEST("graphics-spice-socket",
+            QEMU_CAPS_DEVICE_CIRRUS_VGA,
+            QEMU_CAPS_SPICE,
+            QEMU_CAPS_SPICE_UNIX);
+    DO_TEST("graphics-spice-auto-socket",
+            QEMU_CAPS_DEVICE_CIRRUS_VGA,
+            QEMU_CAPS_SPICE,
+            QEMU_CAPS_SPICE_UNIX);
     cfg->spiceAutoUnixSocket = true;
-    DO_TEST("graphics-spice-auto-socket-cfg", QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST("graphics-spice-auto-socket-cfg",
+            QEMU_CAPS_DEVICE_CIRRUS_VGA,
+            QEMU_CAPS_SPICE);
     cfg->spiceAutoUnixSocket = false;
+    cfg->spiceTLS = false;
     DO_TEST("graphics-spice-egl-headless",
             QEMU_CAPS_DEVICE_QXL,
-            QEMU_CAPS_EGL_HEADLESS);
+            QEMU_CAPS_EGL_HEADLESS,
+            QEMU_CAPS_SPICE);
 
     DO_TEST("graphics-egl-headless-rendernode",
             QEMU_CAPS_DEVICE_CIRRUS_VGA,
@@ -443,7 +466,13 @@ mymain(void)
 
     DO_TEST("serial-tcp-tlsx509-chardev", NONE);
     DO_TEST("serial-tcp-tlsx509-chardev-notls", NONE);
-    DO_TEST("serial-spiceport", QEMU_CAPS_DEVICE_QXL);
+
+    cfg->spiceTLS = true;
+    DO_TEST("serial-spiceport",
+            QEMU_CAPS_DEVICE_QXL,
+            QEMU_CAPS_SPICE);
+    cfg->spiceTLS = false;
+
     DO_TEST("serial-spiceport-nospice", NONE);
     DO_TEST("console-compat", NONE);
     DO_TEST("console-compat2", NONE);
@@ -573,7 +602,8 @@ mymain(void)
     DO_TEST("seclabel-device-multiple", NONE);
     DO_TEST_FULL("seclabel-dynamic-none-relabel", WHEN_INACTIVE,
                  ARG_QEMU_CAPS, QEMU_CAPS_DEVICE_CIRRUS_VGA,
-                 QEMU_CAPS_OBJECT_MEMORY_FILE, NONE);
+                 QEMU_CAPS_OBJECT_MEMORY_FILE,
+                 QEMU_CAPS_SPICE, NONE);
     DO_TEST("numad-static-vcpu-no-numatune", NONE);
 
     DO_TEST("disk-scsi-lun-passthrough-sgio",
@@ -693,7 +723,9 @@ mymain(void)
     DO_TEST("graphics-listen-network2",
             QEMU_CAPS_DEVICE_CIRRUS_VGA,
             QEMU_CAPS_VNC);
-    DO_TEST("graphics-spice-timeout", QEMU_CAPS_DEVICE_VGA);
+    DO_TEST("graphics-spice-timeout",
+            QEMU_CAPS_DEVICE_VGA,
+            QEMU_CAPS_SPICE);
     DO_TEST("numad-auto-vcpu-no-numatune", NONE);
     DO_TEST("numad-auto-memory-vcpu-no-cpuset-and-placement", NONE);
     DO_TEST("numad-auto-memory-vcpu-cpuset", NONE);
@@ -1197,7 +1229,11 @@ mymain(void)
             QEMU_CAPS_VIRTIO_GPU_VIRGL);
     DO_TEST("video-virtio-gpu-spice-gl",
             QEMU_CAPS_DEVICE_VIRTIO_GPU,
-            QEMU_CAPS_VIRTIO_GPU_VIRGL);
+            QEMU_CAPS_VIRTIO_GPU_VIRGL,
+            QEMU_CAPS_SPICE,
+            QEMU_CAPS_SPICE_FILE_XFER_DISABLE,
+            QEMU_CAPS_SPICE_GL,
+            QEMU_CAPS_SPICE_RENDERNODE);
     DO_TEST("video-virtio-gpu-sdl-gl",
             QEMU_CAPS_DEVICE_VIRTIO_GPU,
             QEMU_CAPS_VIRTIO_GPU_VIRGL,

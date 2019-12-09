@@ -11,6 +11,6 @@
     <emulator>/usr/bin/qemu-system-aarch64</emulator>
     <controller type='usb' index='0' model='none'/>
     <memballoon model='none'/>
-    <graphics type='spice'/>
+    <graphics type='vnc'/>
   </devices>
 </domain>

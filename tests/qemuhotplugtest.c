@@ -85,6 +85,8 @@ qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_PIIX_DISABLE_S3);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_PIIX_DISABLE_S4);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_VNC);
+    virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_SPICE);
+    virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_SPICE_FILE_XFER_DISABLE);
 
     if (qemuTestCapsCacheInsert(driver.qemuCapsCache, priv->qemuCaps) < 0)
         return -1;
@@ -592,6 +594,7 @@ mymain(void)
     struct qemuHotplugTestData data = {0};
     struct testQemuHotplugCpuParams cpudata;
     g_autofree char *fakerootdir = NULL;
+    g_autoptr(virQEMUDriverConfig) cfg = NULL;
 
     fakerootdir = g_strdup(FAKEROOTDIRTEMPLATE);
 
@@ -604,6 +607,8 @@ mymain(void)
 
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
+
+    cfg = virQEMUDriverGetConfig(&driver);
 
     virEventRegisterDefaultImpl();
 
@@ -671,6 +676,7 @@ mymain(void)
     "    }" \
     "}\r\n"
 
+    cfg->spiceTLS = true;
     DO_TEST_UPDATE("graphics-spice", "graphics-spice-nochange", false, false, NULL);
     DO_TEST_UPDATE("graphics-spice-timeout", "graphics-spice-timeout-nochange", false, false,
                    "set_password", QMP_OK, "expire_password", QMP_OK);
@@ -679,6 +685,7 @@ mymain(void)
     DO_TEST_UPDATE("graphics-spice", "graphics-spice-listen", true, false, NULL);
     DO_TEST_UPDATE("graphics-spice-listen-network", "graphics-spice-listen-network-password", false, false,
                    "set_password", QMP_OK, "expire_password", QMP_OK);
+    cfg->spiceTLS = false;
     /* Strange huh? Currently, only graphics can be updated :-P */
     DO_TEST_UPDATE("disk-cdrom", "disk-cdrom-nochange", true, false, NULL);
 

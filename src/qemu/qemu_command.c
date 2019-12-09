@@ -7568,7 +7568,6 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
 static int
 qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
                                   virCommandPtr cmd,
-                                  virQEMUCapsPtr qemuCaps,
                                   virDomainGraphicsDefPtr graphics)
 {
     g_auto(virBuffer) opt = VIR_BUFFER_INITIALIZER;
@@ -7579,12 +7578,6 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
     bool hasSecure = false;
     bool hasInsecure = false;
 
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPICE)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("spice graphics are not supported with this QEMU"));
-        return -1;
-    }
-
     if (!(glisten = virDomainGraphicsGetListen(graphics, 0))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("missing listen element"));
@@ -7593,13 +7586,6 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
 
     switch (glisten->type) {
     case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPICE_UNIX)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("unix socket for spice graphics are not supported "
-                             "with this QEMU"));
-            return -1;
-        }
-
         virBufferAddLit(&opt, "unix,addr=");
         virQEMUBuildBufferEscapeComma(&opt, glisten->socket);
         virBufferAddLit(&opt, ",");
@@ -7614,12 +7600,6 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
         }
 
         if (tlsPort > 0) {
-            if (!cfg->spiceTLS) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("spice TLS port set in XML configuration, "
-                                 "but TLS is disabled in qemu.conf"));
-                return -1;
-            }
             virBufferAsprintf(&opt, "tls-port=%u,", tlsPort);
             hasSecure = true;
         }
@@ -7758,35 +7738,16 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
     if (graphics->data.spice.copypaste == VIR_TRISTATE_BOOL_NO)
         virBufferAddLit(&opt, "disable-copy-paste,");
 
-    if (graphics->data.spice.filetransfer == VIR_TRISTATE_BOOL_NO) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPICE_FILE_XFER_DISABLE)) {
-           virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                          _("This QEMU can't disable file transfers through spice"));
-            return -1;
-        } else {
-            virBufferAddLit(&opt, "disable-agent-file-xfer,");
-        }
-    }
+    if (graphics->data.spice.filetransfer == VIR_TRISTATE_BOOL_NO)
+        virBufferAddLit(&opt, "disable-agent-file-xfer,");
 
     if (graphics->data.spice.gl == VIR_TRISTATE_BOOL_YES) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPICE_GL)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("This QEMU doesn't support spice OpenGL"));
-            return -1;
-        }
-
         /* spice.gl is a TristateBool, but qemu expects on/off: use
          * TristateSwitch helper */
         virBufferAsprintf(&opt, "gl=%s,",
                           virTristateSwitchTypeToString(graphics->data.spice.gl));
 
         if (graphics->data.spice.rendernode) {
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPICE_RENDERNODE)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("This QEMU doesn't support spice OpenGL rendernode"));
-                return -1;
-            }
-
             virBufferAddLit(&opt, "rendernode=");
             virQEMUBuildBufferEscapeComma(&opt, graphics->data.spice.rendernode);
             virBufferAddLit(&opt, ",");
@@ -7869,7 +7830,7 @@ qemuBuildGraphicsCommandLine(virQEMUDriverConfigPtr cfg,
             break;
         case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
             if (qemuBuildGraphicsSPICECommandLine(cfg, cmd,
-                                                  qemuCaps, graphics) < 0)
+                                                  graphics) < 0)
                 return -1;
 
             break;

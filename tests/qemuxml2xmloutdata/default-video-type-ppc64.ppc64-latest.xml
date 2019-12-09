@@ -19,8 +19,8 @@
     <controller type='pci' index='0' model='pci-root'/>
     <input type='keyboard' bus='usb'/>
     <input type='mouse' bus='usb'/>
-    <graphics type='spice'>
-      <listen type='none'/>
+    <graphics type='vnc' port='-1' autoport='yes'>
+      <listen type='address'/>
     </graphics>
     <video>
       <model type='vga' vram='16384' heads='1' primary='yes'/>

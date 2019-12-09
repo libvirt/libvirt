@@ -7634,8 +7634,83 @@ qemuDomainDeviceDefValidateTPM(virDomainTPMDef *tpm,
 
 
 static int
+qemuDomainDeviceDefValidateSPICEGraphics(const virDomainGraphicsDef *graphics,
+                                         virQEMUDriverPtr driver,
+                                         virQEMUCapsPtr qemuCaps)
+{
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    virDomainGraphicsListenDefPtr glisten = NULL;
+    int tlsPort = graphics->data.spice.tlsPort;
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPICE)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("spice graphics are not supported with this QEMU"));
+        return -1;
+    }
+
+    glisten = virDomainGraphicsGetListen((virDomainGraphicsDefPtr)graphics, 0);
+    if (!glisten) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("missing listen element"));
+        return -1;
+    }
+
+    switch (glisten->type) {
+    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPICE_UNIX)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("unix socket for spice graphics are not supported "
+                             "with this QEMU"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
+    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
+        if (tlsPort > 0 && !cfg->spiceTLS) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("spice TLS port set in XML configuration, "
+                             "but TLS is disabled in qemu.conf"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE:
+        break;
+    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_LAST:
+        break;
+    }
+
+    if (graphics->data.spice.filetransfer == VIR_TRISTATE_BOOL_NO &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPICE_FILE_XFER_DISABLE)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("This QEMU can't disable file transfers through spice"));
+            return -1;
+    }
+
+    if (graphics->data.spice.gl == VIR_TRISTATE_BOOL_YES) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPICE_GL)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("This QEMU doesn't support spice OpenGL"));
+            return -1;
+        }
+
+        if (graphics->data.spice.rendernode &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPICE_RENDERNODE)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("This QEMU doesn't support spice OpenGL rendernode"));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDeviceDefValidateGraphics(const virDomainGraphicsDef *graphics,
                                     const virDomainDef *def,
+                                    virQEMUDriverPtr driver,
                                     virQEMUCapsPtr qemuCaps)
 {
     bool have_egl_headless = false;
@@ -7702,6 +7777,12 @@ qemuDomainDeviceDefValidateGraphics(const virDomainGraphicsDef *graphics,
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
+        if (qemuDomainDeviceDefValidateSPICEGraphics(graphics, driver,
+                                                     qemuCaps) < 0)
+            return -1;
+
+        break;
+
     case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
         break;
     case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
@@ -8109,7 +8190,7 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
 
     case VIR_DOMAIN_DEVICE_GRAPHICS:
         ret = qemuDomainDeviceDefValidateGraphics(dev->data.graphics, def,
-                                                  qemuCaps);
+                                                  driver, qemuCaps);
         break;
 
     case VIR_DOMAIN_DEVICE_INPUT:
