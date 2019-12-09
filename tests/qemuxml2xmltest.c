@@ -515,7 +515,7 @@ mymain(void)
     DO_TEST("ppc64-usb-controller-legacy",
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_PIIX3_USB_UHCI);
-    DO_TEST("usb-port-missing", NONE);
+    DO_TEST("usb-port-missing", QEMU_CAPS_USB_HUB);
     DO_TEST("usb-redir", NONE);
     DO_TEST("usb-redir-filter", NONE);
     DO_TEST("usb-redir-filter-version", NONE);

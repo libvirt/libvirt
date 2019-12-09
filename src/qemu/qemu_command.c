@@ -4779,19 +4779,6 @@ qemuBuildHubDevStr(const virDomainDef *def,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    if (dev->type != VIR_DOMAIN_HUB_TYPE_USB) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("hub type %s not supported"),
-                       virDomainHubTypeToString(dev->type));
-        return NULL;
-    }
-
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_HUB)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("usb-hub not supported by QEMU binary"));
-        return NULL;
-    }
-
     virBufferAddLit(&buf, "usb-hub");
     virBufferAsprintf(&buf, ",id=%s", dev->info.alias);
     if (qemuBuildDeviceAddressStr(&buf, def, &dev->info, qemuCaps) < 0)
