@@ -196,6 +196,13 @@ virCapsPtr virLXCDriverGetCapabilities(virLXCDriverPtr driver,
         driver->caps = caps;
     } else {
         lxcDriverLock(driver);
+
+        if (driver->caps == NULL) {
+            VIR_DEBUG("Capabilities didn't detect any guests. Forcing a "
+                      "refresh.");
+            lxcDriverUnlock(driver);
+            return virLXCDriverGetCapabilities(driver, true);
+        }
     }
 
     ret = virObjectRef(driver->caps);
