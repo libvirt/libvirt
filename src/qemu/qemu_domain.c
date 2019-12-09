@@ -4687,8 +4687,12 @@ qemuDomainDefPostParseBasic(virDomainDefPtr def,
     /* check for emulator and create a default one if needed */
     if (!def->emulator) {
         if (!(def->emulator = virQEMUCapsGetDefaultEmulator(
-                  driver->hostarch, def->os.arch)))
+                  driver->hostarch, def->os.arch))) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("No emulator found for arch '%s'"),
+                           virArchToString(def->os.arch));
             return 1;
+        }
     }
 
     return 0;
