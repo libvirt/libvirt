@@ -89,6 +89,8 @@ bool virDomainNumaNodeDistanceIsUsingDefaults(virDomainNumaPtr numa,
                                               size_t node,
                                               size_t sibling)
     ATTRIBUTE_NONNULL(1);
+bool virDomainNumaNodesDistancesAreBeingSet(virDomainNumaPtr numa)
+    ATTRIBUTE_NONNULL(1);
 size_t virDomainNumaGetNodeDistance(virDomainNumaPtr numa,
                                     size_t node,
                                     size_t sibling)

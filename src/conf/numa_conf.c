@@ -1188,6 +1188,25 @@ virDomainNumaNodeDistanceIsUsingDefaults(virDomainNumaPtr numa,
 }
 
 
+bool
+virDomainNumaNodesDistancesAreBeingSet(virDomainNumaPtr numa)
+{
+    size_t ncells = virDomainNumaGetNodeCount(numa);
+    size_t i, j;
+
+    for (i = 0; i < ncells; i++) {
+        for (j = 0; j < ncells; j++) {
+            if (virDomainNumaNodeDistanceIsUsingDefaults(numa, i, j))
+                continue;
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
 size_t
 virDomainNumaGetNodeDistance(virDomainNumaPtr numa,
                              size_t node,
