@@ -5180,6 +5180,13 @@ qemuDomainDefValidateMemory(const virDomainDef *def,
         return -1;
     }
 
+    if (mem->nosharepages && !virQEMUCapsGet(qemuCaps, QEMU_CAPS_MEM_MERGE)) {
+         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("disable shared memory is not available "
+                          "with this QEMU binary"));
+        return -1;
+    }
+
     return 0;
 }
 

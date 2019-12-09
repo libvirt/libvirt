@@ -7120,16 +7120,8 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
                           cfg->dumpGuestCore ? "on" : "off");
     }
 
-    if (def->mem.nosharepages) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MEM_MERGE)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("disable shared memory is not available "
-                             "with this QEMU binary"));
-            return -1;
-        }
-
+    if (def->mem.nosharepages)
         virBufferAddLit(&buf, ",mem-merge=off");
-    }
 
     if (def->keywrap &&
         !qemuAppendKeyWrapMachineParms(&buf, qemuCaps, def->keywrap))
