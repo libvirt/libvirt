@@ -4098,15 +4098,8 @@ qemuBuildNVRAMDevStr(virDomainNVRAMDefPtr dev)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    if (dev->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO &&
-        dev->info.addr.spaprvio.has_reg) {
-        virBufferAsprintf(&buf, "spapr-nvram.reg=0x%llx",
-                          dev->info.addr.spaprvio.reg);
-    } else {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("nvram address type must be spaprvio"));
-        return NULL;
-    }
+    virBufferAsprintf(&buf, "spapr-nvram.reg=0x%llx",
+                      dev->info.addr.spaprvio.reg);
 
     return virBufferContentAndReset(&buf);
 }
@@ -4114,31 +4107,19 @@ qemuBuildNVRAMDevStr(virDomainNVRAMDefPtr dev)
 
 static int
 qemuBuildNVRAMCommandLine(virCommandPtr cmd,
-                          const virDomainDef *def,
-                          virQEMUCapsPtr qemuCaps)
+                          const virDomainDef *def)
 {
+    g_autofree char *optstr = NULL;
+
     if (!def->nvram)
         return 0;
 
-    if (qemuDomainIsPSeries(def)) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_NVRAM)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("nvram device is not supported by "
-                             "this QEMU binary"));
-            return -1;
-        }
-
-        g_autofree char *optstr = NULL;
-        virCommandAddArg(cmd, "-global");
-        optstr = qemuBuildNVRAMDevStr(def->nvram);
-        if (!optstr)
-            return -1;
-        virCommandAddArg(cmd, optstr);
-    } else {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                      _("nvram device is only supported for PPC64"));
+    virCommandAddArg(cmd, "-global");
+    optstr = qemuBuildNVRAMDevStr(def->nvram);
+    if (!optstr)
         return -1;
-    }
+
+    virCommandAddArg(cmd, optstr);
 
     return 0;
 }
@@ -10266,7 +10247,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
                                 chardevStdioLogd) < 0)
         return NULL;
 
-    if (qemuBuildNVRAMCommandLine(cmd, def, qemuCaps) < 0)
+    if (qemuBuildNVRAMCommandLine(cmd, def) < 0)
         return NULL;
 
     if (qemuBuildVMCoreInfoCommandLine(cmd, def, qemuCaps) < 0)

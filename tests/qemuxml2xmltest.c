@@ -562,7 +562,8 @@ mymain(void)
             QEMU_CAPS_DEVICE_VIRTIO_RNG);
 
     DO_TEST("pseries-nvram",
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
+            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
+            QEMU_CAPS_DEVICE_NVRAM);
     DO_TEST("pseries-panic-missing",
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
     DO_TEST("pseries-panic-no-address",

@@ -5313,6 +5313,39 @@ qemuDomainValidateCpuCount(const virDomainDef *def,
 
 
 static int
+qemuDomainDeviceDefValidateNVRAM(virDomainNVRAMDefPtr nvram,
+                                 const virDomainDef *def,
+                                 virQEMUCapsPtr qemuCaps)
+{
+    if (!nvram)
+        return 0;
+
+    if (qemuDomainIsPSeries(def)) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_NVRAM)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("nvram device is not supported by "
+                             "this QEMU binary"));
+            return -1;
+        }
+    } else {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("nvram device is only supported for PPC64"));
+        return -1;
+    }
+
+    if (!(nvram->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO &&
+          nvram->info.addr.spaprvio.has_reg)) {
+
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("nvram address type must be spaprvio"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDefValidate(const virDomainDef *def,
                       void *opaque)
 {
@@ -7774,10 +7807,13 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
         ret = qemuDomainDeviceDefValidateFS(dev->data.fs, def, qemuCaps);
         break;
 
+    case VIR_DOMAIN_DEVICE_NVRAM:
+        ret = qemuDomainDeviceDefValidateNVRAM(dev->data.nvram, def, qemuCaps);
+        break;
+
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_HUB:
-    case VIR_DOMAIN_DEVICE_NVRAM:
     case VIR_DOMAIN_DEVICE_SHMEM:
     case VIR_DOMAIN_DEVICE_MEMORY:
     case VIR_DOMAIN_DEVICE_PANIC:
