@@ -5367,6 +5367,103 @@ qemuDomainDeviceDefValidateHub(virDomainHubDefPtr hub,
 
 
 static int
+qemuDomainDefValidateClockTimers(const virDomainDef *def,
+                                 virQEMUCapsPtr qemuCaps)
+{
+    size_t i;
+
+    for (i = 0; i < def->clock.ntimers; i++) {
+        virDomainTimerDefPtr timer = def->clock.timers[i];
+
+        switch ((virDomainTimerNameType)timer->name) {
+        case VIR_DOMAIN_TIMER_NAME_PLATFORM:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unsupported timer type (name) '%s'"),
+                           virDomainTimerNameTypeToString(timer->name));
+            return -1;
+
+        case VIR_DOMAIN_TIMER_NAME_TSC:
+        case VIR_DOMAIN_TIMER_NAME_KVMCLOCK:
+        case VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK:
+        case VIR_DOMAIN_TIMER_NAME_LAST:
+            break;
+
+        case VIR_DOMAIN_TIMER_NAME_RTC:
+            switch (timer->track) {
+            case -1: /* unspecified - use hypervisor default */
+            case VIR_DOMAIN_TIMER_TRACK_GUEST:
+            case VIR_DOMAIN_TIMER_TRACK_WALL:
+                break;
+            case VIR_DOMAIN_TIMER_TRACK_BOOT:
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unsupported rtc timer track '%s'"),
+                               virDomainTimerTrackTypeToString(timer->track));
+                return -1;
+            }
+
+            switch (timer->tickpolicy) {
+            case -1:
+            case VIR_DOMAIN_TIMER_TICKPOLICY_DELAY:
+                /* This is the default - missed ticks delivered when
+                   next scheduled, at normal rate */
+                break;
+            case VIR_DOMAIN_TIMER_TICKPOLICY_CATCHUP:
+                /* deliver ticks at a faster rate until caught up */
+                break;
+            case VIR_DOMAIN_TIMER_TICKPOLICY_MERGE:
+            case VIR_DOMAIN_TIMER_TICKPOLICY_DISCARD:
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unsupported rtc timer tickpolicy '%s'"),
+                               virDomainTimerTickpolicyTypeToString(
+                                   timer->tickpolicy));
+                return -1;
+            }
+            break;
+
+        case VIR_DOMAIN_TIMER_NAME_PIT:
+            switch (timer->tickpolicy) {
+            case -1:
+            case VIR_DOMAIN_TIMER_TICKPOLICY_DELAY:
+            case VIR_DOMAIN_TIMER_TICKPOLICY_DISCARD:
+                break;
+            case VIR_DOMAIN_TIMER_TICKPOLICY_CATCHUP:
+                if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM_PIT_TICK_POLICY)) {
+                    /* can't catchup if we don't have kvm-pit */
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("unsupported pit tickpolicy '%s'"),
+                                   virDomainTimerTickpolicyTypeToString(
+                                       timer->tickpolicy));
+                    return -1;
+                }
+                break;
+            case VIR_DOMAIN_TIMER_TICKPOLICY_MERGE:
+                /* no way to support this mode for pit in qemu */
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unsupported pit tickpolicy '%s'"),
+                               virDomainTimerTickpolicyTypeToString(
+                                   timer->tickpolicy));
+                return -1;
+            }
+            break;
+
+        case VIR_DOMAIN_TIMER_NAME_HPET:
+            /* no hpet timer available. The only possible action
+              is to raise an error if present="yes" */
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_HPET) &&
+                timer->present == 1) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               "%s", _("hpet timer is not supported"));
+                return -1;
+            }
+            break;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDefValidate(const virDomainDef *def,
                       void *opaque)
 {
@@ -5478,6 +5575,9 @@ qemuDomainDefValidate(const virDomainDef *def,
             goto cleanup;
         }
     }
+
+    if (qemuDomainDefValidateClockTimers(def, qemuCaps) < 0)
+        goto cleanup;
 
     /* QEMU 2.7 (detected via the availability of query-hotpluggable-cpus)
      * enforces stricter rules than previous versions when it comes to guest

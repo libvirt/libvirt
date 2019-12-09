@@ -266,7 +266,7 @@ mymain(void)
     DO_TEST("cpu-host-kvmclock", NONE);
     DO_TEST("cpu-host-passthrough-features", NONE);
     DO_TEST("cpu-host-model-features", NONE);
-    DO_TEST("clock-catchup", NONE);
+    DO_TEST("clock-catchup", QEMU_CAPS_KVM_PIT_TICK_POLICY);
     DO_TEST("kvmclock", NONE);
     DO_TEST("clock-timer-hyperv-rtc", NONE);
 
