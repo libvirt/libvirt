@@ -1547,7 +1547,6 @@ libxlDomainDefCheckABIStability(libxlDriverPrivatePtr driver,
 {
     virDomainDefPtr migratableDefSrc = NULL;
     virDomainDefPtr migratableDefDst = NULL;
-    g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
     bool ret = false;
 
     if (!(migratableDefSrc = virDomainDefCopy(src, driver->xmlopt, NULL, true)) ||

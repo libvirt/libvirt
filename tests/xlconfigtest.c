@@ -72,7 +72,6 @@ testCompareParseXML(const char *xlcfg, const char *xml, bool replaceVars)
     int ret = -1;
     virDomainDefPtr def = NULL;
     char *replacedXML = NULL;
-    g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
 
     if (VIR_ALLOC_N(gotxlcfgData, wrote) < 0)
         goto fail;

@@ -45,7 +45,6 @@ testCompareParseXML(const char *xmcfg, const char *xml)
     virConnectPtr conn = NULL;
     int wrote = 4096;
     virDomainDefPtr def = NULL;
-    g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
 
     if (VIR_ALLOC_N(gotxmcfgData, wrote) < 0)
         goto fail;
