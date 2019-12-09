@@ -9,7 +9,7 @@ includedir=@abs_top_builddir@/include
 source_includedir=@abs_top_srcdir@/include
 datarootdir=@abs_top_builddir@
 
-libvirt_qemu_api=@datadir@/docs/libvirt-qemu-api.xml
+libvirt_qemu_api=@abs_top_builddir@/docs/libvirt-qemu-api.xml
 
 Name: libvirt
 Version: @VERSION@

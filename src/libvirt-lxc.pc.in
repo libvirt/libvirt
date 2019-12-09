@@ -9,7 +9,7 @@ includedir=@abs_top_builddir@/include
 source_includedir=@abs_top_srcdir@/include
 datarootdir=@abs_top_builddir@
 
-libvirt_lxc_api=@datadir@/docs/libvirt-lxc-api.xml
+libvirt_lxc_api=@abs_top_builddir@/docs/libvirt-lxc-api.xml
 
 Name: libvirt
 Version: @VERSION@
