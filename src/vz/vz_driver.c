@@ -1497,7 +1497,7 @@ static int vzDomainAttachDeviceFlags(virDomainPtr domain, const char *xml,
     if (virDomainAttachDeviceFlagsEnsureACL(domain->conn, dom->def, flags) < 0)
         goto cleanup;
 
-    dev = virDomainDeviceDefParse(xml, dom->def, driver->caps,
+    dev = virDomainDeviceDefParse(xml, dom->def,
                                   driver->xmlopt, NULL, VIR_DOMAIN_XML_INACTIVE);
     if (dev == NULL)
         goto cleanup;
@@ -1553,7 +1553,7 @@ static int vzDomainDetachDeviceFlags(virDomainPtr domain, const char *xml,
     if (virDomainDetachDeviceFlagsEnsureACL(domain->conn, dom->def, flags) < 0)
         goto cleanup;
 
-    dev = virDomainDeviceDefParse(xml, dom->def, driver->caps,
+    dev = virDomainDeviceDefParse(xml, dom->def,
                                   driver->xmlopt, NULL,
                                   VIR_DOMAIN_XML_INACTIVE |
                                   VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
@@ -1645,7 +1645,7 @@ static int vzDomainUpdateDeviceFlags(virDomainPtr domain,
     if (vzCheckConfigUpdateFlags(dom, &flags) < 0)
         goto cleanup;
 
-    if (!(dev = virDomainDeviceDefParse(xml, dom->def, driver->caps,
+    if (!(dev = virDomainDeviceDefParse(xml, dom->def,
                                         driver->xmlopt, NULL,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
@@ -2266,7 +2266,6 @@ vzDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot, unsigned int flags)
     virUUIDFormat(snapshot->domain->uuid, uuidstr);
 
     xml = virDomainSnapshotDefFormat(uuidstr, virDomainSnapshotObjGetDef(snap),
-                                     privconn->driver->caps,
                                      privconn->driver->xmlopt,
                                      virDomainSnapshotFormatConvertXMLFlags(flags));
 
@@ -2597,7 +2596,7 @@ vzDomainSnapshotCreateXML(virDomainPtr domain,
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_VALIDATE)
         parse_flags |= VIR_DOMAIN_SNAPSHOT_PARSE_VALIDATE;
 
-    if (!(def = virDomainSnapshotDefParseString(xmlDesc, driver->caps,
+    if (!(def = virDomainSnapshotDefParseString(xmlDesc,
                                                 driver->xmlopt, NULL, NULL,
                                                 parse_flags)))
         goto cleanup;
