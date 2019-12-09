@@ -2988,13 +2988,9 @@ qemuMonitorJSONBlockGetNamedNodeDataWorker(size_t pos G_GNUC_UNUSED,
 
 
 virHashTablePtr
-qemuMonitorJSONBlockGetNamedNodeData(qemuMonitorPtr mon)
+qemuMonitorJSONBlockGetNamedNodeDataJSON(virJSONValuePtr nodes)
 {
-    g_autoptr(virJSONValue) nodes = NULL;
     g_autoptr(virHashTable) ret = NULL;
-
-    if (!(nodes = qemuMonitorJSONQueryNamedBlockNodes(mon)))
-        return NULL;
 
     if (!(ret = virHashNew((virHashDataFree) qemuMonitorJSONBlockNamedNodeDataFree)))
         return NULL;
@@ -3005,6 +3001,18 @@ qemuMonitorJSONBlockGetNamedNodeData(qemuMonitorPtr mon)
         return NULL;
 
     return g_steal_pointer(&ret);
+}
+
+
+virHashTablePtr
+qemuMonitorJSONBlockGetNamedNodeData(qemuMonitorPtr mon)
+{
+    g_autoptr(virJSONValue) nodes = NULL;
+
+    if (!(nodes = qemuMonitorJSONQueryNamedBlockNodes(mon)))
+        return NULL;
+
+    return qemuMonitorJSONBlockGetNamedNodeDataJSON(nodes);
 }
 
 
