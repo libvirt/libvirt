@@ -174,7 +174,7 @@ qemuBackupDiskDataCleanup(virDomainObjPtr vm,
 static int
 qemuBackupDiskPrepareOneBitmaps(struct qemuBackupDiskData *dd,
                                 virJSONValuePtr actions,
-                                virDomainMomentObjPtr *incremental)
+                                virDomainMomentDefPtr *incremental)
 {
     g_autoptr(virJSONValue) mergebitmaps = NULL;
     g_autoptr(virJSONValue) mergebitmapsstore = NULL;
@@ -188,7 +188,7 @@ qemuBackupDiskPrepareOneBitmaps(struct qemuBackupDiskData *dd,
     while (*incremental) {
         if (qemuMonitorTransactionBitmapMergeSourceAddBitmap(mergebitmaps,
                                                              dd->domdisk->src->nodeformat,
-                                                             (*incremental)->def->name) < 0)
+                                                             (*incremental)->name) < 0)
             return -1;
 
         incremental++;
@@ -232,7 +232,7 @@ qemuBackupDiskPrepareDataOne(virDomainObjPtr vm,
                              virDomainBackupDiskDefPtr backupdisk,
                              struct qemuBackupDiskData *dd,
                              virJSONValuePtr actions,
-                             virDomainMomentObjPtr *incremental,
+                             virDomainMomentDefPtr *incremental,
                              virQEMUDriverConfigPtr cfg,
                              bool removeStore)
 {
@@ -323,7 +323,7 @@ qemuBackupDiskPrepareDataOnePull(virJSONValuePtr actions,
 static ssize_t
 qemuBackupDiskPrepareData(virDomainObjPtr vm,
                           virDomainBackupDefPtr def,
-                          virDomainMomentObjPtr *incremental,
+                          virDomainMomentDefPtr *incremental,
                           virJSONValuePtr actions,
                           virQEMUDriverConfigPtr cfg,
                           struct qemuBackupDiskData **rdd,
@@ -505,24 +505,27 @@ qemuBackupBeginPullExportDisks(virDomainObjPtr vm,
  * @vm: domain object
  * @incrFrom: name of checkpoint representing starting point of incremental backup
  *
- * Returns a NULL terminated list of pointers to checkpoints in chronological
- * order starting from the 'current' checkpoint until reaching @incrFrom.
+ * Returns a NULL terminated list of pointers to checkpoint definitions in
+ * chronological order starting from the 'current' checkpoint until reaching
+ * @incrFrom.
  */
-static virDomainMomentObjPtr *
+static virDomainMomentDefPtr *
 qemuBackupBeginCollectIncrementalCheckpoints(virDomainObjPtr vm,
                                              const char *incrFrom)
 {
     virDomainMomentObjPtr n = virDomainCheckpointGetCurrent(vm->checkpoints);
-    g_autofree virDomainMomentObjPtr *incr = NULL;
+    g_autofree virDomainMomentDefPtr *incr = NULL;
     size_t nincr = 0;
 
     while (n) {
-        if (VIR_APPEND_ELEMENT_COPY(incr, nincr, n) < 0)
+        virDomainMomentDefPtr def = n->def;
+
+        if (VIR_APPEND_ELEMENT_COPY(incr, nincr, def) < 0)
             return NULL;
 
-        if (STREQ(n->def->name, incrFrom)) {
-            virDomainMomentObjPtr terminator = NULL;
-            if (VIR_APPEND_ELEMENT_COPY(incr, nincr, terminator) < 0)
+        if (STREQ(def->name, incrFrom)) {
+            def = NULL;
+            if (VIR_APPEND_ELEMENT_COPY(incr, nincr, def) < 0)
                 return NULL;
 
             return g_steal_pointer(&incr);
@@ -648,7 +651,7 @@ qemuBackupBegin(virDomainObjPtr vm,
     bool pull = false;
     virDomainMomentObjPtr chk = NULL;
     g_autoptr(virDomainCheckpointDef) chkdef = NULL;
-    g_autofree virDomainMomentObjPtr *incremental = NULL;
+    g_autofree virDomainMomentDefPtr *incremental = NULL;
     g_autoptr(virJSONValue) actions = NULL;
     struct qemuBackupDiskData *dd = NULL;
     ssize_t ndd = 0;
