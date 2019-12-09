@@ -5564,6 +5564,45 @@ qemuDomainDefValidateConsole(const virDomainDef *def,
 
 
 static int
+qemuDomainDeviceDefValidateSound(virDomainSoundDefPtr sound,
+                                 virQEMUCapsPtr qemuCaps)
+{
+    switch ((virDomainSoundModel) sound->model) {
+    case VIR_DOMAIN_SOUND_MODEL_USB:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_USB_AUDIO)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("usb-audio controller is not supported "
+                             "by this QEMU binary"));
+            return -1;
+        }
+        break;
+    case VIR_DOMAIN_SOUND_MODEL_ICH9:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_ICH9_INTEL_HDA)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("The ich9-intel-hda audio controller "
+                             "is not supported in this QEMU binary"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_SOUND_MODEL_ES1370:
+    case VIR_DOMAIN_SOUND_MODEL_AC97:
+    case VIR_DOMAIN_SOUND_MODEL_ICH6:
+    case VIR_DOMAIN_SOUND_MODEL_SB16:
+    case VIR_DOMAIN_SOUND_MODEL_PCSPK:
+        break;
+    case VIR_DOMAIN_SOUND_MODEL_LAST:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("sound card model '%s' is not supported by qemu"),
+                       virDomainSoundModelTypeToString(sound->model));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDefValidate(const virDomainDef *def,
                       void *opaque)
 {
@@ -8286,8 +8325,11 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
         ret = qemuDomainDeviceDefValidateHub(dev->data.hub, qemuCaps);
         break;
 
-    case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_SOUND:
+        ret = qemuDomainDeviceDefValidateSound(dev->data.sound, qemuCaps);
+        break;
+
+    case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_SHMEM:
     case VIR_DOMAIN_DEVICE_MEMORY:
     case VIR_DOMAIN_DEVICE_PANIC:

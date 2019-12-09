@@ -4280,30 +4280,15 @@ qemuBuildSoundDevStr(const virDomainDef *def,
         break;
     case VIR_DOMAIN_SOUND_MODEL_USB:
         model = "usb-audio";
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_USB_AUDIO)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("usb-audio controller is not supported "
-                             "by this QEMU binary"));
-            return NULL;
-        }
         break;
     case VIR_DOMAIN_SOUND_MODEL_ICH9:
         model = "ich9-intel-hda";
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_ICH9_INTEL_HDA)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("The ich9-intel-hda audio controller "
-                             "is not supported in this QEMU binary"));
-            return NULL;
-        }
         break;
     case VIR_DOMAIN_SOUND_MODEL_SB16:
         model = "sb16";
         break;
     case VIR_DOMAIN_SOUND_MODEL_PCSPK: /* pc-speaker is handled separately */
     case VIR_DOMAIN_SOUND_MODEL_LAST:
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("sound card model '%s' is not supported by qemu"),
-                       virDomainSoundModelTypeToString(sound->model));
         return NULL;
     }
 

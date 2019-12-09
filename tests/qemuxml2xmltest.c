@@ -456,7 +456,9 @@ mymain(void)
     DO_TEST("net-midonet", NONE);
     DO_TEST("net-openvswitch", NONE);
     DO_TEST("sound", NONE);
-    DO_TEST("sound-device", NONE);
+    DO_TEST("sound-device",
+            QEMU_CAPS_DEVICE_ICH9_INTEL_HDA,
+            QEMU_CAPS_OBJECT_USB_AUDIO);
     DO_TEST("watchdog", NONE);
     DO_TEST("net-bandwidth", QEMU_CAPS_DEVICE_VGA, QEMU_CAPS_VNC);
     DO_TEST("net-bandwidth2", QEMU_CAPS_DEVICE_VGA, QEMU_CAPS_VNC);
