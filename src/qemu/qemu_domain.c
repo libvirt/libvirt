@@ -7630,6 +7630,8 @@ qemuDomainDeviceDefValidateTPM(virDomainTPMDef *tpm,
                                const virDomainDef *def,
                                virQEMUCapsPtr qemuCaps)
 {
+    virQEMUCapsFlags flag;
+
     /* TPM 1.2 and 2 are not compatible, so we choose a specific version here */
     if (tpm->version == VIR_DOMAIN_TPM_VERSION_DEFAULT)
         tpm->version = VIR_DOMAIN_TPM_VERSION_1_2;
@@ -7664,6 +7666,28 @@ qemuDomainDeviceDefValidateTPM(virDomainTPMDef *tpm,
         break;
     case VIR_DOMAIN_TPM_TYPE_LAST:
         break;
+    }
+
+    switch (tpm->model) {
+    case VIR_DOMAIN_TPM_MODEL_TIS:
+        flag = QEMU_CAPS_DEVICE_TPM_TIS;
+        break;
+    case VIR_DOMAIN_TPM_MODEL_CRB:
+        flag = QEMU_CAPS_DEVICE_TPM_CRB;
+        break;
+    case VIR_DOMAIN_TPM_MODEL_LAST:
+    default:
+        virReportEnumRangeError(virDomainTPMModel, tpm->model);
+        return -1;
+    }
+
+    if (!virQEMUCapsGet(qemuCaps, flag)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("The QEMU executable %s does not support TPM "
+                         "model %s"),
+                       def->emulator,
+                       virDomainTPMModelTypeToString(tpm->model));
+        return -1;
     }
 
     return 0;

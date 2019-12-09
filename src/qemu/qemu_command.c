@@ -9109,34 +9109,11 @@ qemuBuildDomainLoaderCommandLine(virCommandPtr cmd,
 
 
 static char *
-qemuBuildTPMDevStr(const virDomainDef *def,
-                   virQEMUCapsPtr qemuCaps)
+qemuBuildTPMDevStr(const virDomainDef *def)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const virDomainTPMDef *tpm = def->tpm;
     const char *model = virDomainTPMModelTypeToString(tpm->model);
-    virQEMUCapsFlags flag;
-
-    switch (tpm->model) {
-    case VIR_DOMAIN_TPM_MODEL_TIS:
-        flag = QEMU_CAPS_DEVICE_TPM_TIS;
-        break;
-    case VIR_DOMAIN_TPM_MODEL_CRB:
-        flag = QEMU_CAPS_DEVICE_TPM_CRB;
-        break;
-    case VIR_DOMAIN_TPM_MODEL_LAST:
-    default:
-        virReportEnumRangeError(virDomainTPMModel, tpm->model);
-        return NULL;
-    }
-
-    if (!virQEMUCapsGet(qemuCaps, flag)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("The QEMU executable %s does not support TPM "
-                       "model %s"),
-                       def->emulator, model);
-        return NULL;
-    }
 
     virBufferAsprintf(&buf, "%s,tpmdev=tpm-%s,id=%s",
                       model, tpm->info.alias, tpm->info.alias);
@@ -9230,8 +9207,7 @@ qemuBuildTPMBackendStr(const virDomainDef *def,
 
 static int
 qemuBuildTPMCommandLine(virCommandPtr cmd,
-                        const virDomainDef *def,
-                        virQEMUCapsPtr qemuCaps)
+                        const virDomainDef *def)
 {
     char *optstr;
     g_autofree char *chardev = NULL;
@@ -9271,7 +9247,7 @@ qemuBuildTPMCommandLine(virCommandPtr cmd,
         VIR_FREE(fdset);
     }
 
-    if (!(optstr = qemuBuildTPMDevStr(def, qemuCaps)))
+    if (!(optstr = qemuBuildTPMDevStr(def)))
         return -1;
 
     virCommandAddArgList(cmd, "-device", optstr, NULL);
@@ -9995,7 +9971,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
                                     chardevStdioLogd) < 0)
         return NULL;
 
-    if (qemuBuildTPMCommandLine(cmd, def, qemuCaps) < 0)
+    if (qemuBuildTPMCommandLine(cmd, def) < 0)
         return NULL;
 
     if (qemuBuildInputCommandLine(cmd, def, qemuCaps) < 0)
