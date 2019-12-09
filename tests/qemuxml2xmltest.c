@@ -1174,7 +1174,8 @@ mymain(void)
             QEMU_CAPS_VIRTIO_GPU_VIRGL);
     DO_TEST("video-virtio-gpu-sdl-gl",
             QEMU_CAPS_DEVICE_VIRTIO_GPU,
-            QEMU_CAPS_VIRTIO_GPU_VIRGL);
+            QEMU_CAPS_VIRTIO_GPU_VIRGL,
+            QEMU_CAPS_SDL_GL);
 
     DO_TEST("virtio-input",
             QEMU_CAPS_VIRTIO_KEYBOARD,

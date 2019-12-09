@@ -7428,18 +7428,9 @@ qemuBuildGraphicsSDLCommandLine(virQEMUDriverConfigPtr cfg G_GNUC_UNUSED,
     virCommandAddArg(cmd, "-display");
     virBufferAddLit(&opt, "sdl");
 
-    if (graphics->data.sdl.gl != VIR_TRISTATE_BOOL_ABSENT) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SDL_GL)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("OpenGL for SDL is not supported with this QEMU "
-                             "binary"));
-            return -1;
-        }
-
+    if (graphics->data.sdl.gl != VIR_TRISTATE_BOOL_ABSENT)
         virBufferAsprintf(&opt, ",gl=%s",
                           virTristateSwitchTypeToString(graphics->data.sdl.gl));
-
-    }
 
     virCommandAddArgBuffer(cmd, &opt);
 
@@ -7896,9 +7887,6 @@ qemuBuildGraphicsCommandLine(virQEMUDriverConfigPtr cfg,
             break;
         case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
         case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unsupported graphics type '%s'"),
-                           virDomainGraphicsTypeToString(graphics->type));
             return -1;
         case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
         default:

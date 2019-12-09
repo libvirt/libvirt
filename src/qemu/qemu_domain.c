@@ -7681,6 +7681,35 @@ qemuDomainDeviceDefValidateGraphics(const virDomainGraphicsDef *graphics,
         }
     }
 
+    switch (graphics->type) {
+    case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
+        if (graphics->data.sdl.gl != VIR_TRISTATE_BOOL_ABSENT) {
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SDL_GL)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("OpenGL for SDL is not supported with this QEMU "
+                                 "binary"));
+                return -1;
+            }
+        }
+        break;
+
+    case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+        break;
+    case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
+        break;
+    case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
+        break;
+    case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+    case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unsupported graphics type '%s'"),
+                       virDomainGraphicsTypeToString(graphics->type));
+        return -1;
+    case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
+    default:
+        return -1;
+    }
+
     return 0;
 }
 
