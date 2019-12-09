@@ -5114,6 +5114,17 @@ qemuDomainDefValidateFeatures(const virDomainDef *def,
             }
             break;
 
+        case VIR_DOMAIN_FEATURE_VMPORT:
+            if (def->features[i] != VIR_TRISTATE_SWITCH_ABSENT &&
+                !virQEMUCapsSupportsVmport(qemuCaps, def)) {
+
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("vmport is not available "
+                                 "with this QEMU binary"));
+                return -1;
+            }
+            break;
+
         case VIR_DOMAIN_FEATURE_ACPI:
         case VIR_DOMAIN_FEATURE_APIC:
         case VIR_DOMAIN_FEATURE_PAE:
@@ -5124,7 +5135,6 @@ qemuDomainDefValidateFeatures(const virDomainDef *def,
         case VIR_DOMAIN_FEATURE_PVSPINLOCK:
         case VIR_DOMAIN_FEATURE_CAPABILITIES:
         case VIR_DOMAIN_FEATURE_PMU:
-        case VIR_DOMAIN_FEATURE_VMPORT:
         case VIR_DOMAIN_FEATURE_VMCOREINFO:
         case VIR_DOMAIN_FEATURE_MSRS:
         case VIR_DOMAIN_FEATURE_LAST:

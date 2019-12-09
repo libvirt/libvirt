@@ -7097,17 +7097,9 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
      */
     virBufferAddLit(&buf, ",usb=off");
 
-    if (vmport) {
-        if (!virQEMUCapsSupportsVmport(qemuCaps, def)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("vmport is not available "
-                             "with this QEMU binary"));
-            return -1;
-        }
-
+    if (vmport != VIR_TRISTATE_SWITCH_ABSENT)
         virBufferAsprintf(&buf, ",vmport=%s",
                           virTristateSwitchTypeToString(vmport));
-    }
 
     if (smm)
         virBufferAsprintf(&buf, ",smm=%s", virTristateSwitchTypeToString(smm));

@@ -840,7 +840,8 @@ mymain(void)
             QEMU_CAPS_SPICE,
             QEMU_CAPS_DEVICE_QXL,
             QEMU_CAPS_HDA_DUPLEX,
-            QEMU_CAPS_USB_REDIR);
+            QEMU_CAPS_USB_REDIR,
+            QEMU_CAPS_MACHINE_VMPORT_OPT);
     DO_TEST("pcie-root",
             QEMU_CAPS_DEVICE_IOH3420,
             QEMU_CAPS_ICH9_AHCI,
