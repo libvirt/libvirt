@@ -6048,20 +6048,13 @@ qemuBuildSmbiosCommandLine(virCommandPtr cmd,
 
 static int
 qemuBuildVMGenIDCommandLine(virCommandPtr cmd,
-                            const virDomainDef *def,
-                            virQEMUCapsPtr qemuCaps)
+                            const virDomainDef *def)
 {
     g_auto(virBuffer) opts = VIR_BUFFER_INITIALIZER;
     char guid[VIR_UUID_STRING_BUFLEN];
 
     if (!def->genidRequested)
         return 0;
-
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VMGENID)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                      _("this QEMU does not support the 'genid' capability"));
-        return -1;
-    }
 
     virUUIDFormat(def->genid, guid);
     virBufferAsprintf(&opts, "vmgenid,guid=%s,id=vmgenid0", guid);
@@ -10070,7 +10063,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     if (qemuBuildSmbiosCommandLine(cmd, driver, def) < 0)
         return NULL;
 
-    if (qemuBuildVMGenIDCommandLine(cmd, def, qemuCaps) < 0)
+    if (qemuBuildVMGenIDCommandLine(cmd, def) < 0)
         return NULL;
 
     /*

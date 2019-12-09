@@ -5458,6 +5458,13 @@ qemuDomainDefValidate(const virDomainDef *def,
         }
     }
 
+    if (def->genidRequested &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VMGENID)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("this QEMU does not support the 'genid' capability"));
+        goto cleanup;
+    }
+
     /* QEMU 2.7 (detected via the availability of query-hotpluggable-cpus)
      * enforces stricter rules than previous versions when it comes to guest
      * CPU topology. Verify known constraints are respected */
