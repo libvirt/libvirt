@@ -5364,17 +5364,6 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
         /* PCI */
         if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             subsys->type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
-            int backend = subsys->u.pci.backend;
-
-            if (backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
-                if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("VFIO PCI device assignment is not "
-                                     "supported by this version of qemu"));
-                    return -1;
-                }
-            }
-
             unsigned int bootIndex = hostdev->info->bootIndex;
 
             /* bootNet will be non-0 if boot order was set and no other
@@ -5457,29 +5446,8 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
 
             switch ((virMediatedDeviceModelType) mdevsrc->model) {
             case VIR_MDEV_MODEL_TYPE_VFIO_PCI:
-                if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("VFIO PCI device assignment is not "
-                                     "supported by this version of QEMU"));
-                    return -1;
-                }
-
-                break;
             case VIR_MDEV_MODEL_TYPE_VFIO_CCW:
-                if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_CCW)) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("VFIO CCW device assignment is not "
-                                     "supported by this version of QEMU"));
-                    return -1;
-                }
-                break;
             case VIR_MDEV_MODEL_TYPE_VFIO_AP:
-                if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_AP)) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("VFIO AP device assignment is not "
-                                     "supported by this version of QEMU"));
-                    return -1;
-                }
                 break;
             case VIR_MDEV_MODEL_TYPE_LAST:
             default:

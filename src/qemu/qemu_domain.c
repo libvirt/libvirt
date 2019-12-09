@@ -6109,6 +6109,13 @@ qemuDomainMdevDefVFIOPCIValidate(const virDomainHostdevDef *hostdev,
 {
     const virDomainHostdevSubsysMediatedDev *dev;
 
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("VFIO PCI device assignment is not "
+                         "supported by this version of QEMU"));
+        return -1;
+    }
+
     /* VFIO-PCI does not support boot */
     if (hostdev->info->bootIndex) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -6152,10 +6159,18 @@ qemuDomainMdevDefVFIOPCIValidate(const virDomainHostdevDef *hostdev,
 
 static int
 qemuDomainMdevDefVFIOAPValidate(const virDomainHostdevDef *hostdev,
-                                const virDomainDef *def)
+                                const virDomainDef *def,
+                                virQEMUCapsPtr qemuCaps)
 {
     size_t i;
     bool vfioap_found = false;
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_AP)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("VFIO AP device assignment is not "
+                         "supported by this version of QEMU"));
+        return -1;
+    }
 
     /* VFIO-AP does not support boot */
     if (hostdev->info->bootIndex) {
@@ -6198,8 +6213,14 @@ qemuDomainMdevDefValidate(const virDomainHostdevDef *hostdev,
     case VIR_MDEV_MODEL_TYPE_VFIO_PCI:
         return qemuDomainMdevDefVFIOPCIValidate(hostdev, def, qemuCaps);
     case VIR_MDEV_MODEL_TYPE_VFIO_AP:
-        return qemuDomainMdevDefVFIOAPValidate(hostdev, def);
+        return qemuDomainMdevDefVFIOAPValidate(hostdev, def, qemuCaps);
     case VIR_MDEV_MODEL_TYPE_VFIO_CCW:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_CCW)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("VFIO CCW device assignment is not "
+                             "supported by this version of QEMU"));
+            return -1;
+        }
         break;
     case VIR_MDEV_MODEL_TYPE_LAST:
     default:
@@ -6217,6 +6238,8 @@ qemuDomainDeviceDefValidateHostdev(const virDomainHostdevDef *hostdev,
                                    const virDomainDef *def,
                                    virQEMUCapsPtr qemuCaps)
 {
+    int backend;
+
     /* forbid capabilities mode hostdev in this kind of hypervisor */
     if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -6229,9 +6252,22 @@ qemuDomainDeviceDefValidateHostdev(const virDomainHostdevDef *hostdev,
     if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
         switch ((virDomainHostdevSubsysType) hostdev->source.subsys.type) {
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
-        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
             break;
+
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
+            backend = hostdev->source.subsys.u.pci.backend;
+
+            if (backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
+                if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("VFIO PCI device assignment is not "
+                                     "supported by this version of qemu"));
+                    return -1;
+                }
+            }
+            break;
+
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
             if (hostdev->info->bootIndex) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

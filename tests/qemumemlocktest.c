@@ -106,6 +106,18 @@ mymain(void)
     DO_TEST("pc-kvm", 0);
     DO_TEST("pc-tcg", 0);
 
+    if (!(qemuCaps = virQEMUCapsNew())) {
+        ret = -1;
+        goto cleanup;
+    }
+
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI);
+
+    if (qemuTestCapsCacheInsert(driver.qemuCapsCache, qemuCaps) < 0) {
+        ret = -1;
+        goto cleanup;
+    };
+
     DO_TEST("pc-hardlimit", 2147483648);
     DO_TEST("pc-locked", VIR_DOMAIN_MEMORY_PARAM_UNLIMITED);
     DO_TEST("pc-hostdev", 2147483648);
@@ -116,10 +128,6 @@ mymain(void)
     DO_TEST("pc-locked+hostdev", VIR_DOMAIN_MEMORY_PARAM_UNLIMITED);
 
     qemuTestSetHostArch(&driver, VIR_ARCH_PPC64);
-    if (!(qemuCaps = virQEMUCapsNew())) {
-        ret = -1;
-        goto cleanup;
-    }
 
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
     if (qemuTestCapsCacheInsert(driver.qemuCapsCache, qemuCaps) < 0) {

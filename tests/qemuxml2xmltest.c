@@ -405,7 +405,7 @@ mymain(void)
     DO_TEST("net-virtio-rxtxqueuesize", NONE);
     DO_TEST("net-hostdev", NONE);
     DO_TEST("net-hostdev-bootorder", NONE);
-    DO_TEST("net-hostdev-vfio", NONE);
+    DO_TEST("net-hostdev-vfio", QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("net-midonet", NONE);
     DO_TEST("net-openvswitch", NONE);
     DO_TEST("sound", NONE);
@@ -432,9 +432,10 @@ mymain(void)
 
     DO_TEST("hostdev-usb-address", NONE);
     DO_TEST("hostdev-pci-address", NONE);
-    DO_TEST("hostdev-pci-multifunction", NONE);
-    DO_TEST("hostdev-vfio", NONE);
+    DO_TEST("hostdev-pci-multifunction", QEMU_CAPS_DEVICE_VFIO_PCI);
+    DO_TEST("hostdev-vfio", QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("hostdev-vfio-zpci",
+            QEMU_CAPS_DEVICE_VFIO_PCI,
             QEMU_CAPS_DEVICE_ZPCI,
             QEMU_CAPS_CCW);
     DO_TEST("hostdev-vfio-zpci-multidomain-many",
@@ -448,10 +449,11 @@ mymain(void)
             QEMU_CAPS_DEVICE_VFIO_PCI,
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_ZPCI);
-    DO_TEST("hostdev-mdev-precreated", NONE);
+    DO_TEST("hostdev-mdev-precreated", QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("hostdev-mdev-display",
             QEMU_CAPS_DEVICE_QXL,
-            QEMU_CAPS_VFIO_PCI_DISPLAY);
+            QEMU_CAPS_VFIO_PCI_DISPLAY,
+            QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("pci-rom", NONE);
     DO_TEST("pci-rom-disabled", NONE);
     DO_TEST("pci-rom-disabled-invalid", NONE);
