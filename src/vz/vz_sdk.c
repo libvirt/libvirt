@@ -544,7 +544,8 @@ prlsdkGetDomainState(virDomainObjPtr dom, PRL_HANDLE sdkdom, VIRTUAL_MACHINE_STA
 }
 
 static int
-prlsdkAddDomainVideoInfoCt(virDomainDefPtr def)
+prlsdkAddDomainVideoInfoCt(virDomainDefPtr def,
+                           virDomainXMLOptionPtr xmlopt)
 {
     virDomainVideoDefPtr video = NULL;
     int ret = -1;
@@ -552,7 +553,7 @@ prlsdkAddDomainVideoInfoCt(virDomainDefPtr def)
     if (def->ngraphics == 0)
         return 0;
 
-    if (!(video = virDomainVideoDefNew()))
+    if (!(video = virDomainVideoDefNew(xmlopt)))
         goto cleanup;
 
     video->type = VIR_DOMAIN_VIDEO_TYPE_PARALLELS;
@@ -1288,10 +1289,13 @@ prlsdkAddSerialInfo(PRL_HANDLE sdkdom,
 
 
 static int
-prlsdkAddDomainHardware(vzDriverPtr driver, PRL_HANDLE sdkdom, virDomainDefPtr def)
+prlsdkAddDomainHardware(vzDriverPtr driver,
+                        PRL_HANDLE sdkdom,
+                        virDomainDefPtr def,
+                        virDomainXMLOptionPtr xmlopt)
 {
     if (IS_CT(def)) {
-        if (prlsdkAddDomainVideoInfoCt(def) < 0)
+        if (prlsdkAddDomainVideoInfoCt(def, xmlopt) < 0)
             goto error;
     } else {
         if (prlsdkAddDomainVideoInfoVm(sdkdom, def) < 0)
@@ -1890,7 +1894,7 @@ prlsdkLoadDomain(vzDriverPtr driver,
         goto error;
 
     /* depends on prlsdkAddVNCInfo */
-    if (prlsdkAddDomainHardware(driver, sdkdom, def) < 0)
+    if (prlsdkAddDomainHardware(driver, sdkdom, def, driver->xmlopt) < 0)
         goto error;
 
     /* depends on prlsdkAddDomainHardware */
