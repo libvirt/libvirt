@@ -7694,9 +7694,14 @@ qemuDomainDeviceDefValidateGraphics(const virDomainGraphicsDef *graphics,
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("vnc graphics are not supported with this QEMU"));
+            return -1;
+        }
         break;
+
     case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
-        break;
     case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
         break;
     case VIR_DOMAIN_GRAPHICS_TYPE_RDP:

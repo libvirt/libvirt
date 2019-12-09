@@ -84,6 +84,7 @@ qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE_CIRRUS_VGA);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_PIIX_DISABLE_S3);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_PIIX_DISABLE_S4);
+    virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_VNC);
 
     if (qemuTestCapsCacheInsert(driver.qemuCapsCache, priv->qemuCaps) < 0)
         return -1;

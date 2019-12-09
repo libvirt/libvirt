@@ -341,20 +341,42 @@ mymain(void)
     DO_TEST("disk-mirror-old", NONE);
     DO_TEST("disk-mirror", NONE);
     DO_TEST("disk-active-commit", NONE);
-    DO_TEST("graphics-listen-network", QEMU_CAPS_DEVICE_CIRRUS_VGA);
-    DO_TEST("graphics-vnc", QEMU_CAPS_DEVICE_CIRRUS_VGA);
-    DO_TEST("graphics-vnc-websocket", QEMU_CAPS_DEVICE_CIRRUS_VGA);
-    DO_TEST("graphics-vnc-sasl", QEMU_CAPS_DEVICE_CIRRUS_VGA);
-    DO_TEST("graphics-vnc-tls", QEMU_CAPS_DEVICE_CIRRUS_VGA);
-    DO_TEST("graphics-vnc-no-listen-attr", QEMU_CAPS_DEVICE_CIRRUS_VGA);
-    DO_TEST("graphics-vnc-remove-generated-socket", QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST("graphics-listen-network",
+            QEMU_CAPS_DEVICE_CIRRUS_VGA,
+            QEMU_CAPS_VNC);
+    DO_TEST("graphics-vnc",
+            QEMU_CAPS_DEVICE_CIRRUS_VGA,
+            QEMU_CAPS_VNC);
+    DO_TEST("graphics-vnc-websocket",
+            QEMU_CAPS_DEVICE_CIRRUS_VGA,
+            QEMU_CAPS_VNC);
+    DO_TEST("graphics-vnc-sasl",
+            QEMU_CAPS_DEVICE_CIRRUS_VGA,
+            QEMU_CAPS_VNC);
+    DO_TEST("graphics-vnc-tls",
+            QEMU_CAPS_DEVICE_CIRRUS_VGA,
+            QEMU_CAPS_VNC);
+    DO_TEST("graphics-vnc-no-listen-attr",
+            QEMU_CAPS_DEVICE_CIRRUS_VGA,
+            QEMU_CAPS_VNC);
+    DO_TEST("graphics-vnc-remove-generated-socket",
+            QEMU_CAPS_DEVICE_CIRRUS_VGA,
+            QEMU_CAPS_VNC);
     cfg->vncAutoUnixSocket = true;
-    DO_TEST("graphics-vnc-auto-socket-cfg", QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST("graphics-vnc-auto-socket-cfg",
+            QEMU_CAPS_DEVICE_CIRRUS_VGA,
+            QEMU_CAPS_VNC);
     cfg->vncAutoUnixSocket = false;
-    DO_TEST("graphics-vnc-socket", QEMU_CAPS_DEVICE_CIRRUS_VGA);
-    DO_TEST("graphics-vnc-auto-socket", QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST("graphics-vnc-socket",
+            QEMU_CAPS_DEVICE_CIRRUS_VGA,
+            QEMU_CAPS_VNC);
+    DO_TEST("graphics-vnc-auto-socket",
+            QEMU_CAPS_DEVICE_CIRRUS_VGA,
+            QEMU_CAPS_VNC);
     DO_TEST("graphics-vnc-egl-headless",
-            QEMU_CAPS_DEVICE_CIRRUS_VGA, QEMU_CAPS_EGL_HEADLESS);
+            QEMU_CAPS_DEVICE_CIRRUS_VGA,
+            QEMU_CAPS_EGL_HEADLESS,
+            QEMU_CAPS_VNC);
 
     DO_TEST_CAPS_ARCH_LATEST("default-video-type-aarch64", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST("default-video-type-ppc64", "ppc64");
@@ -413,8 +435,8 @@ mymain(void)
     DO_TEST("sound", NONE);
     DO_TEST("sound-device", NONE);
     DO_TEST("watchdog", NONE);
-    DO_TEST("net-bandwidth", QEMU_CAPS_DEVICE_VGA);
-    DO_TEST("net-bandwidth2", QEMU_CAPS_DEVICE_VGA);
+    DO_TEST("net-bandwidth", QEMU_CAPS_DEVICE_VGA, QEMU_CAPS_VNC);
+    DO_TEST("net-bandwidth2", QEMU_CAPS_DEVICE_VGA, QEMU_CAPS_VNC);
     DO_TEST("net-mtu", NONE);
     DO_TEST("net-coalesce", NONE);
     DO_TEST("net-many-models", NONE);
@@ -455,7 +477,8 @@ mymain(void)
     DO_TEST("hostdev-mdev-display",
             QEMU_CAPS_DEVICE_QXL,
             QEMU_CAPS_VFIO_PCI_DISPLAY,
-            QEMU_CAPS_DEVICE_VFIO_PCI);
+            QEMU_CAPS_DEVICE_VFIO_PCI,
+            QEMU_CAPS_VNC);
     DO_TEST("pci-rom", NONE);
     DO_TEST("pci-rom-disabled", NONE);
     DO_TEST("pci-rom-disabled-invalid", NONE);
@@ -498,7 +521,8 @@ mymain(void)
     DO_TEST("interface-server", QEMU_CAPS_DEVICE_CIRRUS_VGA,
             QEMU_CAPS_OBJECT_MEMORY_FILE,
             QEMU_CAPS_PIIX_DISABLE_S3,
-            QEMU_CAPS_PIIX_DISABLE_S4);
+            QEMU_CAPS_PIIX_DISABLE_S4,
+            QEMU_CAPS_VNC);
     DO_TEST("virtio-lun", NONE);
 
     DO_TEST("usb-none", NONE);
@@ -666,7 +690,9 @@ mymain(void)
             QEMU_CAPS_SCSI_LSI);
     DO_TEST("console-virtio", NONE);
     DO_TEST("serial-target-port-auto", NONE);
-    DO_TEST("graphics-listen-network2", QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST("graphics-listen-network2",
+            QEMU_CAPS_DEVICE_CIRRUS_VGA,
+            QEMU_CAPS_VNC);
     DO_TEST("graphics-spice-timeout", QEMU_CAPS_DEVICE_VGA);
     DO_TEST("numad-auto-vcpu-no-numatune", NONE);
     DO_TEST("numad-auto-memory-vcpu-no-cpuset-and-placement", NONE);
@@ -1246,7 +1272,7 @@ mymain(void)
             QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS,
             QEMU_CAPS_VNC,
             QEMU_CAPS_DEVICE_VIRTIO_GPU_CCW);
-    DO_TEST("video-none-device", NONE);
+    DO_TEST("video-none-device", QEMU_CAPS_VNC);
 
     DO_TEST_CAPS_LATEST("intel-iommu");
     DO_TEST_CAPS_VER("intel-iommu", "2.6.0");
@@ -1283,7 +1309,8 @@ mymain(void)
             QEMU_CAPS_QCOW2_LUKS,
             QEMU_CAPS_OBJECT_MEMORY_FILE,
             QEMU_CAPS_PIIX_DISABLE_S3,
-            QEMU_CAPS_PIIX_DISABLE_S4);
+            QEMU_CAPS_PIIX_DISABLE_S4,
+            QEMU_CAPS_VNC);
     DO_TEST("input-virtio-ccw",
             QEMU_CAPS_CCW,
             QEMU_CAPS_VIRTIO_KEYBOARD,

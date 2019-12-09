@@ -7448,12 +7448,6 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
     virDomainGraphicsListenDefPtr glisten = NULL;
     bool escapeAddr;
 
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("vnc graphics are not supported with this QEMU"));
-        return -1;
-    }
-
     if (!(glisten = virDomainGraphicsGetListen(graphics, 0))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("missing listen element"));
