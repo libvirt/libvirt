@@ -292,7 +292,7 @@ vzDomainDeviceDefValidate(const virDomainDeviceDef *dev,
     vzDriverPtr driver = opaque;
 
     if (dev->type == VIR_DOMAIN_DEVICE_DISK)
-        return vzCheckUnsupportedDisk(def, dev->data.disk, driver->vzCaps);
+        return vzCheckUnsupportedDisk(def, dev->data.disk, &driver->vzCaps);
     else if (dev->type == VIR_DOMAIN_DEVICE_GRAPHICS)
         return vzCheckUnsupportedGraphics(dev->data.graphics);
 
