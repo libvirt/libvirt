@@ -5465,6 +5465,20 @@ qemuDomainDefValidate(const virDomainDef *def,
         goto cleanup;
     }
 
+    /* Serial graphics adapter */
+    if (def->os.bios.useserial == VIR_TRISTATE_BOOL_YES) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SGA)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("qemu does not support SGA"));
+            goto cleanup;
+        }
+        if (!def->nserials) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("need at least one serial port to use SGA"));
+            goto cleanup;
+        }
+    }
+
     /* QEMU 2.7 (detected via the availability of query-hotpluggable-cpus)
      * enforces stricter rules than previous versions when it comes to guest
      * CPU topology. Verify known constraints are respected */

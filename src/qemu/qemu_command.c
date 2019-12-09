@@ -6068,23 +6068,11 @@ qemuBuildVMGenIDCommandLine(virCommandPtr cmd,
 
 static int
 qemuBuildSgaCommandLine(virCommandPtr cmd,
-                        const virDomainDef *def,
-                        virQEMUCapsPtr qemuCaps)
+                        const virDomainDef *def)
 {
     /* Serial graphics adapter */
-    if (def->os.bios.useserial == VIR_TRISTATE_BOOL_YES) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SGA)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("qemu does not support SGA"));
-            return -1;
-        }
-        if (!def->nserials) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("need at least one serial port to use SGA"));
-            return -1;
-        }
+    if (def->os.bios.useserial == VIR_TRISTATE_BOOL_YES)
         virCommandAddArgList(cmd, "-device", "sga", NULL);
-    }
 
     return 0;
 }
@@ -10087,7 +10075,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     virCommandAddArg(cmd, "-no-user-config");
     virCommandAddArg(cmd, "-nodefaults");
 
-    if (qemuBuildSgaCommandLine(cmd, def, qemuCaps) < 0)
+    if (qemuBuildSgaCommandLine(cmd, def) < 0)
         return NULL;
 
     if (qemuBuildMonitorCommandLine(logManager, secManager, cmd, cfg, def, priv) < 0)
