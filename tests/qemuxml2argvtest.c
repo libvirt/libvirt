@@ -844,7 +844,7 @@ mymain(void)
     DO_TEST("boot-menu-enable", NONE);
     DO_TEST("boot-menu-enable-with-timeout",
             QEMU_CAPS_SPLASH_TIMEOUT);
-    DO_TEST_FAILURE("boot-menu-enable-with-timeout", NONE);
+    DO_TEST_PARSE_ERROR("boot-menu-enable-with-timeout", NONE);
     DO_TEST_PARSE_ERROR("boot-menu-enable-with-timeout-invalid", NONE);
     DO_TEST("boot-menu-disable", NONE);
     DO_TEST("boot-menu-disable-drive", NONE);
@@ -860,7 +860,7 @@ mymain(void)
 
     DO_TEST("reboot-timeout-disabled", QEMU_CAPS_REBOOT_TIMEOUT);
     DO_TEST("reboot-timeout-enabled", QEMU_CAPS_REBOOT_TIMEOUT);
-    DO_TEST_FAILURE("reboot-timeout-enabled", NONE);
+    DO_TEST_PARSE_ERROR("reboot-timeout-enabled", NONE);
 
     DO_TEST("bios",
             QEMU_CAPS_DEVICE_ISA_SERIAL,

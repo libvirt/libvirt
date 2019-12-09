@@ -5496,6 +5496,32 @@ qemuDomainDefValidatePM(const virDomainDef *def,
 
 
 static int
+qemuDomainDefValidateBoot(const virDomainDef *def,
+                          virQEMUCapsPtr qemuCaps)
+{
+    if (def->os.bios.rt_set) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_REBOOT_TIMEOUT)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("reboot timeout is not supported "
+                             "by this QEMU binary"));
+            return -1;
+        }
+    }
+
+    if (def->os.bm_timeout_set) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPLASH_TIMEOUT)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("splash timeout is not supported "
+                             "by this QEMU binary"));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDefValidate(const virDomainDef *def,
                       void *opaque)
 {
@@ -5612,6 +5638,9 @@ qemuDomainDefValidate(const virDomainDef *def,
         goto cleanup;
 
     if (qemuDomainDefValidatePM(def, qemuCaps) < 0)
+        goto cleanup;
+
+    if (qemuDomainDefValidateBoot(def, qemuCaps) < 0)
         goto cleanup;
 
     /* QEMU 2.7 (detected via the availability of query-hotpluggable-cpus)

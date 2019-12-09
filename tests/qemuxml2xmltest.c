@@ -251,13 +251,13 @@ mymain(void)
             QEMU_CAPS_DEVICE_IOH3420,
             QEMU_CAPS_ICH9_AHCI);
     DO_TEST("boot-multi", NONE);
-    DO_TEST("boot-menu-enable-with-timeout", NONE);
+    DO_TEST("boot-menu-enable-with-timeout", QEMU_CAPS_SPLASH_TIMEOUT);
     DO_TEST("boot-menu-disable", NONE);
     DO_TEST("boot-menu-disable-with-timeout", NONE);
     DO_TEST("boot-order", NONE);
 
-    DO_TEST("reboot-timeout-enabled", NONE);
-    DO_TEST("reboot-timeout-disabled", NONE);
+    DO_TEST("reboot-timeout-enabled", QEMU_CAPS_REBOOT_TIMEOUT);
+    DO_TEST("reboot-timeout-disabled", QEMU_CAPS_REBOOT_TIMEOUT);
 
     DO_TEST("clock-utc", NONE);
     DO_TEST("clock-localtime", NONE);

@@ -6336,28 +6336,13 @@ qemuBuildBootCommandLine(virCommandPtr cmd,
     }
 
     if (def->os.bios.rt_set) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_REBOOT_TIMEOUT)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("reboot timeout is not supported "
-                             "by this QEMU binary"));
-            return -1;
-        }
-
         virBufferAsprintf(&boot_buf,
                           "reboot-timeout=%d,",
                           def->os.bios.rt_delay);
     }
 
-    if (def->os.bm_timeout_set) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPLASH_TIMEOUT)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("splash timeout is not supported "
-                             "by this QEMU binary"));
-            return -1;
-        }
-
+    if (def->os.bm_timeout_set)
         virBufferAsprintf(&boot_buf, "splash-time=%u,", def->os.bm_timeout);
-    }
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOT_STRICT))
         virBufferAddLit(&boot_buf, "strict=on,");
