@@ -458,7 +458,10 @@ mymain(void)
     DO_TEST("sound", NONE);
     DO_TEST("sound-device",
             QEMU_CAPS_DEVICE_ICH9_INTEL_HDA,
-            QEMU_CAPS_OBJECT_USB_AUDIO);
+            QEMU_CAPS_OBJECT_USB_AUDIO,
+            QEMU_CAPS_HDA_MICRO,
+            QEMU_CAPS_HDA_DUPLEX,
+            QEMU_CAPS_HDA_OUTPUT);
     DO_TEST("watchdog", NONE);
     DO_TEST("net-bandwidth", QEMU_CAPS_DEVICE_VGA, QEMU_CAPS_VNC);
     DO_TEST("net-bandwidth2", QEMU_CAPS_DEVICE_VGA, QEMU_CAPS_VNC);

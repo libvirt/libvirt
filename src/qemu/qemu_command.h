@@ -41,6 +41,7 @@
 #define QEMU_BLOCK_IOTUNE_MAX 1000000000000000LL
 
 VIR_ENUM_DECL(qemuVideo);
+VIR_ENUM_DECL(qemuSoundCodec);
 
 virCommandPtr qemuBuildCommandLine(virQEMUDriverPtr driver,
                                    virLogManagerPtr logManager,

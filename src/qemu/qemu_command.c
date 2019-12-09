@@ -155,8 +155,6 @@ VIR_ENUM_IMPL(qemuDeviceVideoSecondary,
               "" /* no secondary device for ramfb */,
 );
 
-VIR_ENUM_DECL(qemuSoundCodec);
-
 VIR_ENUM_IMPL(qemuSoundCodec,
               VIR_DOMAIN_SOUND_CODEC_TYPE_LAST,
               "hda-duplex",
@@ -4300,40 +4298,16 @@ qemuBuildSoundDevStr(const virDomainDef *def,
 }
 
 
-static int
-qemuSoundCodecTypeToCaps(int type)
-{
-    switch (type) {
-    case VIR_DOMAIN_SOUND_CODEC_TYPE_DUPLEX:
-        return QEMU_CAPS_HDA_DUPLEX;
-    case VIR_DOMAIN_SOUND_CODEC_TYPE_MICRO:
-        return QEMU_CAPS_HDA_MICRO;
-    case VIR_DOMAIN_SOUND_CODEC_TYPE_OUTPUT:
-        return QEMU_CAPS_HDA_OUTPUT;
-    default:
-        return -1;
-    }
-}
-
-
 static char *
 qemuBuildSoundCodecStr(virDomainSoundDefPtr sound,
-                       virDomainSoundCodecDefPtr codec,
-                       virQEMUCapsPtr qemuCaps)
+                       virDomainSoundCodecDefPtr codec)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *stype;
-    int type, flags;
+    int type;
 
     type = codec->type;
     stype = qemuSoundCodecTypeToString(type);
-    flags = qemuSoundCodecTypeToCaps(type);
-
-    if (flags == -1 || !virQEMUCapsGet(qemuCaps, flags)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("%s not supported in this QEMU binary"), stype);
-        return NULL;
-    }
 
     virBufferAsprintf(&buf, "%s,id=%s-codec%d,bus=%s.0,cad=%d",
                       stype, sound->info.alias, codec->cad, sound->info.alias, codec->cad);
@@ -4374,8 +4348,7 @@ qemuBuildSoundCommandLine(virCommandPtr cmd,
                     g_autofree char *codecstr = NULL;
                     virCommandAddArg(cmd, "-device");
                     if (!(codecstr =
-                          qemuBuildSoundCodecStr(sound, sound->codecs[j],
-                                                 qemuCaps))) {
+                          qemuBuildSoundCodecStr(sound, sound->codecs[j]))) {
                         return -1;
 
                     }
@@ -4389,8 +4362,7 @@ qemuBuildSoundCommandLine(virCommandPtr cmd,
                     };
                     virCommandAddArg(cmd, "-device");
                     if (!(codecstr =
-                          qemuBuildSoundCodecStr(sound, &codec,
-                                                 qemuCaps))) {
+                          qemuBuildSoundCodecStr(sound, &codec))) {
                         return -1;
 
                     }
