@@ -705,6 +705,7 @@ AC_PATH_PROGS([PYTHON], [python3])
 if test -z "$PYTHON"; then
     AC_MSG_ERROR(['python3' binary is required to build libvirt])
 fi
+AC_DEFINE_UNQUOTED([PYTHON], "$PYTHON", [path to python binary])
 AC_PATH_PROG([FLAKE8], [flake8])
 if test -z "$FLAKE8"; then
     AC_MSG_WARN(['flake8' binary is required to check python code style])

@@ -58,7 +58,6 @@ static size_t testCounter;
 static virBitmapPtr testBitmap;
 
 char *progname;
-static char *python;
 
 virArch virTestHostArch = VIR_ARCH_X86_64;
 
@@ -428,14 +427,9 @@ virTestRewrapFile(const char *filename)
           virStringHasSuffix(filename, ".ldargs")))
         return 0;
 
-    if (!python) {
-        fprintf(stderr, "cannot rewrap %s: unable to find python in path", filename);
-        return -1;
-    }
-
     script = g_strdup_printf("%s/scripts/test-wrap-argv.py", abs_top_srcdir);
 
-    cmd = virCommandNewArgList(python, script, "--in-place", filename, NULL);
+    cmd = virCommandNewArgList(PYTHON, script, "--in-place", filename, NULL);
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
@@ -919,9 +913,6 @@ int virTestMain(int argc,
         }
     }
 
-    /* Find python early because some tests override PATH */
-    python = virFindFileInPath("python");
-
     ret = (func)();
 
     virResetLastError();
@@ -931,7 +922,6 @@ int virTestMain(int argc,
         fprintf(stderr, " %-3zu %s\n", testCounter, ret == 0 ? "OK" : "FAIL");
     }
     virLogReset();
-    VIR_FREE(python);
     return ret;
 }
 
