@@ -5520,6 +5520,48 @@ qemuDomainDefValidateBoot(const virDomainDef *def,
     return 0;
 }
 
+static int
+qemuDomainDefValidateConsole(const virDomainDef *def,
+                             virQEMUCapsPtr qemuCaps)
+{
+    size_t i;
+
+    /* Explicit console devices */
+    for (i = 0; i < def->nconsoles; i++) {
+        virDomainChrDefPtr console = def->consoles[i];
+
+        switch (console->targetType) {
+        case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLP:
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SCLPCONSOLE)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("sclpconsole is not supported in this QEMU binary"));
+                return -1;
+            }
+            break;
+
+        case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLPLM:
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SCLPLMCONSOLE)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("sclplmconsole is not supported in this QEMU binary"));
+                return -1;
+            }
+            break;
+
+        case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO:
+        case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL:
+            break;
+
+        default:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unsupported console target type %s"),
+                           NULLSTR(virDomainChrConsoleTargetTypeToString(console->targetType)));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
 
 static int
 qemuDomainDefValidate(const virDomainDef *def,
@@ -5715,6 +5757,9 @@ qemuDomainDefValidate(const virDomainDef *def,
         goto cleanup;
 
     if (qemuDomainDefValidateNuma(def, qemuCaps) < 0)
+        goto cleanup;
+
+    if (qemuDomainDefValidateConsole(def, qemuCaps) < 0)
         goto cleanup;
 
     if (cfg->vncTLS && cfg->vncTLSx509secretUUID &&

@@ -8864,12 +8864,6 @@ qemuBuildConsoleCommandLine(virLogManagerPtr logManager,
 
         switch (console->targetType) {
         case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLP:
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SCLPCONSOLE)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("sclpconsole is not supported in this QEMU binary"));
-                return -1;
-            }
-
             if (!(devstr = qemuBuildChrChardevStr(logManager, secManager,
                                                   cmd, cfg, def,
                                                   console->source,
@@ -8885,12 +8879,6 @@ qemuBuildConsoleCommandLine(virLogManagerPtr logManager,
             break;
 
         case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLPLM:
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SCLPLMCONSOLE)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("sclplmconsole is not supported in this QEMU binary"));
-                return -1;
-            }
-
             if (!(devstr = qemuBuildChrChardevStr(logManager, secManager,
                                                   cmd, cfg, def,
                                                   console->source,
@@ -8924,9 +8912,6 @@ qemuBuildConsoleCommandLine(virLogManagerPtr logManager,
             break;
 
         default:
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unsupported console target type %s"),
-                           NULLSTR(virDomainChrConsoleTargetTypeToString(console->targetType)));
             return -1;
         }
     }
