@@ -14606,6 +14606,7 @@ qemuDomainSnapshotCreateInactiveExternal(virQEMUDriverPtr driver,
             goto cleanup;
 
         if (virStorageSourceHasBacking(defdisk->src)) {
+            defdisk->src->readonly = true;
             newsrc->backingStore = g_steal_pointer(&defdisk->src);
         } else {
             virObjectUnref(defdisk->src);
@@ -15457,6 +15458,7 @@ qemuDomainSnapshotDiskUpdateSource(virQEMUDriverPtr driver,
         qemuDomainSnapshotDiskUpdateSourceRenumber(dd->disk->src);
 
     if (dd->persistdisk) {
+        dd->persistdisk->src->readonly = true;
         dd->persistsrc->backingStore = g_steal_pointer(&dd->persistdisk->src);
         dd->persistdisk->src = g_steal_pointer(&dd->persistsrc);
     }
