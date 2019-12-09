@@ -4944,6 +4944,114 @@ qemuDomainDefGetVcpuHotplugGranularity(const virDomainDef *def)
 
 
 static int
+qemuDomainDefValidatePSeriesFeature(const virDomainDef *def,
+                                    virQEMUCapsPtr qemuCaps,
+                                    int feature)
+{
+    const char *str;
+
+    if (def->features[feature] != VIR_TRISTATE_SWITCH_ABSENT &&
+        !qemuDomainIsPSeries(def)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("The '%s' feature is not supported for "
+                         "architecture '%s' or machine type '%s'"),
+                       virDomainFeatureTypeToString(feature),
+                       virArchToString(def->os.arch),
+                       def->os.machine);
+        return -1;
+    }
+
+    if (def->features[feature] == VIR_TRISTATE_SWITCH_ABSENT)
+        return 0;
+
+    switch (feature) {
+    case VIR_DOMAIN_FEATURE_HPT:
+        if (def->features[feature] != VIR_TRISTATE_SWITCH_ON)
+            break;
+
+        if (def->hpt_resizing != VIR_DOMAIN_HPT_RESIZING_NONE) {
+            if (!virQEMUCapsGet(qemuCaps,
+                                QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("HTP resizing is not supported by this "
+                                "QEMU binary"));
+                return -1;
+            }
+
+            str = virDomainHPTResizingTypeToString(def->hpt_resizing);
+            if (!str) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Invalid setting for HPT resizing"));
+                return -1;
+            }
+        }
+
+        if (def->hpt_maxpagesize > 0 &&
+            !virQEMUCapsGet(qemuCaps,
+                            QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Configuring the page size for HPT guests "
+                             "is not supported by this QEMU binary"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_FEATURE_HTM:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_CAP_HTM)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("HTM configuration is not supported by this "
+                             "QEMU binary"));
+            return -1;
+        }
+
+        str = virTristateSwitchTypeToString(def->features[feature]);
+        if (!str) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Invalid setting for HTM state"));
+            return -1;
+        }
+
+        break;
+
+    case VIR_DOMAIN_FEATURE_NESTED_HV:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Nested HV configuration is not supported by "
+                             "this QEMU binary"));
+            return -1;
+        }
+
+        str = virTristateSwitchTypeToString(def->features[feature]);
+        if (!str) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Invalid setting for nested HV state"));
+            return -1;
+        }
+
+        break;
+
+    case VIR_DOMAIN_FEATURE_CCF_ASSIST:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_CAP_CCF_ASSIST)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("ccf-assist configuration is not supported by "
+                           "this QEMU binary"));
+            return -1;
+        }
+
+        str = virTristateSwitchTypeToString(def->features[feature]);
+        if (!str) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Invalid setting for ccf-assist state"));
+            return -1;
+        }
+
+        break;
+    }
+
+    return 0;
+}
+
+static int
 qemuDomainDefValidateFeatures(const virDomainDef *def,
                               virQEMUCapsPtr qemuCaps)
 {
@@ -4970,16 +5078,8 @@ qemuDomainDefValidateFeatures(const virDomainDef *def,
         case VIR_DOMAIN_FEATURE_HTM:
         case VIR_DOMAIN_FEATURE_NESTED_HV:
         case VIR_DOMAIN_FEATURE_CCF_ASSIST:
-            if (def->features[i] != VIR_TRISTATE_SWITCH_ABSENT &&
-                !qemuDomainIsPSeries(def)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("The '%s' feature is not supported for "
-                                 "architecture '%s' or machine type '%s'"),
-                               featureName,
-                               virArchToString(def->os.arch),
-                               def->os.machine);
+            if (qemuDomainDefValidatePSeriesFeature(def, qemuCaps, i) < 0)
                 return -1;
-            }
             break;
 
         case VIR_DOMAIN_FEATURE_GIC:

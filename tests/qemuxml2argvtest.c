@@ -1934,8 +1934,47 @@ mymain(void)
             QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV,
             QEMU_CAPS_MACHINE_PSERIES_CAP_CCF_ASSIST,
             QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT);
-    DO_TEST_FAILURE("pseries-features",
-                    QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
+
+    /* parse error: no QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT */
+    DO_TEST_PARSE_ERROR("pseries-features",
+                        QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
+                        QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE,
+                        QEMU_CAPS_MACHINE_PSERIES_CAP_HTM,
+                        QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV,
+                        QEMU_CAPS_MACHINE_PSERIES_CAP_CCF_ASSIST);
+
+    /* parse error: no QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE */
+    DO_TEST_PARSE_ERROR("pseries-features",
+                        QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
+                        QEMU_CAPS_MACHINE_PSERIES_CAP_HTM,
+                        QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV,
+                        QEMU_CAPS_MACHINE_PSERIES_CAP_CCF_ASSIST,
+                        QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT);
+
+    /* parse error: no QEMU_CAPS_MACHINE_PSERIES_CAP_HTM */
+    DO_TEST_PARSE_ERROR("pseries-features",
+                        QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
+                        QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE,
+                        QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV,
+                        QEMU_CAPS_MACHINE_PSERIES_CAP_CCF_ASSIST,
+                        QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT);
+
+    /* parse error: no QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV */
+    DO_TEST_PARSE_ERROR("pseries-features",
+                        QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
+                        QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE,
+                        QEMU_CAPS_MACHINE_PSERIES_CAP_HTM,
+                        QEMU_CAPS_MACHINE_PSERIES_CAP_CCF_ASSIST,
+                        QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT);
+
+    /* parse error: no QEMU_CAPS_MACHINE_PSERIES_CAP_CCF_ASSIST */
+    DO_TEST_PARSE_ERROR("pseries-features",
+                        QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
+                        QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE,
+                        QEMU_CAPS_MACHINE_PSERIES_CAP_HTM,
+                        QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV,
+                        QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT);
+
     DO_TEST_PARSE_ERROR("pseries-features-invalid-machine", NONE);
 
     DO_TEST("pseries-serial-native",

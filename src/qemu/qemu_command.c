@@ -7235,33 +7235,11 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
     if (def->features[VIR_DOMAIN_FEATURE_HPT] == VIR_TRISTATE_SWITCH_ON) {
 
         if (def->hpt_resizing != VIR_DOMAIN_HPT_RESIZING_NONE) {
-            const char *str;
-
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("HTP resizing is not supported by this "
-                                 "QEMU binary"));
-                return -1;
-            }
-
-            str = virDomainHPTResizingTypeToString(def->hpt_resizing);
-            if (!str) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Invalid setting for HPT resizing"));
-                return -1;
-            }
-
-            virBufferAsprintf(&buf, ",resize-hpt=%s", str);
+            virBufferAsprintf(&buf, ",resize-hpt=%s",
+                              virDomainHPTResizingTypeToString(def->hpt_resizing));
         }
 
         if (def->hpt_maxpagesize > 0) {
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_CAP_HPT_MAX_PAGE_SIZE)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Configuring the page size for HPT guests "
-                                 "is not supported by this QEMU binary"));
-                return -1;
-            }
-
             virBufferAsprintf(&buf, ",cap-hpt-max-page-size=%lluk",
                               def->hpt_maxpagesize);
         }
@@ -7269,61 +7247,19 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
 
     if (def->features[VIR_DOMAIN_FEATURE_HTM] != VIR_TRISTATE_SWITCH_ABSENT) {
         const char *str;
-
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_CAP_HTM)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("HTM configuration is not supported by this "
-                             "QEMU binary"));
-            return -1;
-        }
-
         str = virTristateSwitchTypeToString(def->features[VIR_DOMAIN_FEATURE_HTM]);
-        if (!str) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Invalid setting for HTM state"));
-            return -1;
-        }
-
         virBufferAsprintf(&buf, ",cap-htm=%s", str);
     }
 
     if (def->features[VIR_DOMAIN_FEATURE_NESTED_HV] != VIR_TRISTATE_SWITCH_ABSENT) {
         const char *str;
-
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_CAP_NESTED_HV)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Nested HV configuration is not supported by "
-                             "this QEMU binary"));
-            return -1;
-        }
-
         str = virTristateSwitchTypeToString(def->features[VIR_DOMAIN_FEATURE_NESTED_HV]);
-        if (!str) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Invalid setting for nested HV state"));
-            return -1;
-        }
-
         virBufferAsprintf(&buf, ",cap-nested-hv=%s", str);
     }
 
     if (def->features[VIR_DOMAIN_FEATURE_CCF_ASSIST] != VIR_TRISTATE_SWITCH_ABSENT) {
         const char *str;
-
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_CAP_CCF_ASSIST)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("ccf-assist configuration is not supported by this "
-                             "QEMU binary"));
-            return -1;
-        }
-
         str = virTristateSwitchTypeToString(def->features[VIR_DOMAIN_FEATURE_CCF_ASSIST]);
-        if (!str) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Invalid setting for ccf-assist state"));
-            return -1;
-        }
-
         virBufferAsprintf(&buf, ",cap-ccf-assist=%s", str);
     }
 
