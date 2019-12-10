@@ -283,11 +283,14 @@ qemuTestParseCapabilitiesArch(virArch arch,
                               const char *capsFile)
 {
     virQEMUCapsPtr qemuCaps = NULL;
+    char *binary = g_strdup_printf("/usr/bin/qemu-system-%s",
+                                   virArchToString(arch));
 
-    if (!(qemuCaps = virQEMUCapsNew()) ||
+    if (!(qemuCaps = virQEMUCapsNewBinary(binary)) ||
         virQEMUCapsLoadCache(arch, qemuCaps, capsFile) < 0)
         goto error;
 
+    virQEMUCapsSetInvalidation(qemuCaps, false);
     return qemuCaps;
 
  error:

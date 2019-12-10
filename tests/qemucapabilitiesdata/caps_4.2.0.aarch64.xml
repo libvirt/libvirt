@@ -1,4 +1,5 @@
 <qemuCaps>
+  <emulator>/usr/bin/qemu-system-aarch64</emulator>
   <qemuctime>0</qemuctime>
   <selfctime>0</selfctime>
   <selfvers>0</selfvers>

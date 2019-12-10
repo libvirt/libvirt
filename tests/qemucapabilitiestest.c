@@ -75,6 +75,7 @@ testQemuCaps(const void *opaque)
     char *capsFile = NULL;
     qemuMonitorTestPtr mon = NULL;
     virQEMUCapsPtr capsActual = NULL;
+    char *binary = NULL;
     char *actual = NULL;
     unsigned int fakeMicrocodeVersion = 0;
     const char *p;
@@ -93,7 +94,10 @@ testQemuCaps(const void *opaque)
     if (qemuProcessQMPInitMonitor(qemuMonitorTestGetMonitor(mon)) < 0)
         goto cleanup;
 
-    if (!(capsActual = virQEMUCapsNew()) ||
+    binary = g_strdup_printf("/usr/bin/qemu-system-%s",
+                             data->archName);
+
+    if (!(capsActual = virQEMUCapsNewBinary(binary)) ||
         virQEMUCapsInitQMPMonitor(capsActual,
                                   qemuMonitorTestGetMonitor(mon)) < 0)
         goto cleanup;
@@ -132,6 +136,7 @@ testQemuCaps(const void *opaque)
     VIR_FREE(repliesFile);
     VIR_FREE(capsFile);
     VIR_FREE(actual);
+    VIR_FREE(binary);
     qemuMonitorTestFree(mon);
     virObjectUnref(capsActual);
     return ret;

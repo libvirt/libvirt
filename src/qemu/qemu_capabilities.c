@@ -3872,6 +3872,7 @@ virQEMUCapsParseSEVInfo(virQEMUCapsPtr qemuCaps, xmlXPathContextPtr ctxt)
  * Parsing a doc that looks like
  *
  * <qemuCaps>
+ *   <emulator>/some/path</emulator>
  *   <qemuctime>234235253</qemuctime>
  *   <selfctime>234235253</selfctime>
  *   <selfvers>1002016</selfvers>
@@ -3915,6 +3916,18 @@ virQEMUCapsLoadCache(virArch hostArch,
         goto cleanup;
     }
 
+    if (!(str = virXPathString("string(./emulator)", ctxt))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("missing emulator in QEMU capabilities cache"));
+        goto cleanup;
+    }
+    if (STRNEQ(str, qemuCaps->binary)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Expected caps for '%s' but saw '%s'"),
+                       qemuCaps->binary, str);
+        goto cleanup;
+    }
+    VIR_FREE(str);
     if (virXPathLongLong("string(./qemuctime)", ctxt, &l) < 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("missing qemuctime in QEMU capabilities XML"));
@@ -4252,6 +4265,8 @@ virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps)
     virBufferAddLit(&buf, "<qemuCaps>\n");
     virBufferAdjustIndent(&buf, 2);
 
+    virBufferEscapeString(&buf, "<emulator>%s</emulator>\n",
+                          qemuCaps->binary);
     virBufferAsprintf(&buf, "<qemuctime>%llu</qemuctime>\n",
                       (long long)qemuCaps->ctime);
     virBufferAsprintf(&buf, "<selfctime>%llu</selfctime>\n",
