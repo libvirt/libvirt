@@ -2725,24 +2725,29 @@ qemuProcessSetupEmulator(virDomainObjPtr vm)
 
 
 static int
-qemuProcessResctrlCreate(virDomainObjPtr vm)
+qemuProcessResctrlCreate(virQEMUDriverPtr driver,
+                         virDomainObjPtr vm)
 {
+    int ret = -1;
     size_t i = 0;
+    virCapsPtr caps = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    g_autoptr(virResctrlInfo) resctrl = NULL;
 
     if (!vm->def->nresctrls)
         return 0;
 
-    if (!(resctrl = virResctrlInfoNew()))
+    /* Force capability refresh since resctrl info can change
+     * XXX: move cache info into virresctrl so caps are not needed */
+    caps = virQEMUDriverGetCapabilities(driver, true);
+    if (!caps)
         return -1;
 
     for (i = 0; i < vm->def->nresctrls; i++) {
         size_t j = 0;
-        if (virResctrlAllocCreate(resctrl,
+        if (virResctrlAllocCreate(caps->host.resctrl,
                                   vm->def->resctrls[i]->alloc,
                                   priv->machineName) < 0)
-            return -1;
+            goto cleanup;
 
         for (j = 0; j < vm->def->resctrls[i]->nmonitors; j++) {
             virDomainResctrlMonDefPtr mon = NULL;
@@ -2750,11 +2755,14 @@ qemuProcessResctrlCreate(virDomainObjPtr vm)
             mon = vm->def->resctrls[i]->monitors[j];
             if (virResctrlMonitorCreate(mon->instance,
                                         priv->machineName) < 0)
-                return -1;
+                goto cleanup;
         }
     }
 
-    return 0;
+    ret = 0;
+ cleanup:
+    virObjectUnref(caps);
+    return ret;
 }
 
 
@@ -6894,7 +6902,7 @@ qemuProcessLaunch(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("Setting up resctrl");
-    if (qemuProcessResctrlCreate(vm) < 0)
+    if (qemuProcessResctrlCreate(driver, vm) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting up managed PR daemon");
