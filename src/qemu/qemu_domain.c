@@ -4853,16 +4853,18 @@ static int
 qemuDomainDefPostParse(virDomainDefPtr def,
                        unsigned int parseFlags,
                        void *opaque,
-                       void *parseOpaque G_GNUC_UNUSED)
+                       void *parseOpaque)
 {
     virQEMUDriverPtr driver = opaque;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    g_autoptr(virQEMUCaps) qemuCaps = NULL;
+    virQEMUCapsPtr qemuCaps = parseOpaque;
 
-    if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache,
-                                            def->emulator))) {
+    /* Note that qemuCaps may be NULL when this function is called. This
+     * function shall not fail in that case. It will be re-run on VM startup
+     * with the capabilities populated.
+     */
+    if (!qemuCaps)
         return 1;
-    }
 
     if (def->os.bootloader || def->os.bootloaderArgs) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
