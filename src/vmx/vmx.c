@@ -2465,7 +2465,7 @@ int virVMXParseFileSystem(virConfPtr conf, int number, virDomainFSDefPtr *def)
     if (!(present && enabled))
         return 0;
 
-    if (!(*def = virDomainFSDefNew()))
+    if (!(*def = virDomainFSDefNew(NULL)))
         return -1;
 
     (*def)->type = VIR_DOMAIN_FS_TYPE_MOUNT;

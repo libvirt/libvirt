@@ -59,7 +59,7 @@ lxcCreateFSDef(int type,
 {
     virDomainFSDefPtr def;
 
-    if (!(def = virDomainFSDefNew()))
+    if (!(def = virDomainFSDefNew(NULL)))
         return NULL;
 
     def->type = type;

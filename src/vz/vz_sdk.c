@@ -825,7 +825,7 @@ prlsdkAddDomainHardDisksInfo(vzDriverPtr driver, PRL_HANDLE sdkdom, virDomainDef
         if (IS_CT(def) &&
             prlsdkInBootList(sdkdom, hdd)) {
 
-            if (!(fs = virDomainFSDefNew()))
+            if (!(fs = virDomainFSDefNew(NULL)))
                 goto error;
 
             if (prlsdkGetFSInfo(hdd, fs) < 0)

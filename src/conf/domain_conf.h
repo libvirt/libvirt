@@ -2866,7 +2866,7 @@ virDomainControllerDefPtr virDomainControllerDefNew(virDomainControllerType type
 void virDomainControllerDefFree(virDomainControllerDefPtr def);
 bool virDomainControllerIsPSeriesPHB(const virDomainControllerDef *cont);
 
-virDomainFSDefPtr virDomainFSDefNew(void);
+virDomainFSDefPtr virDomainFSDefNew(virDomainXMLOptionPtr xmlopt);
 void virDomainFSDefFree(virDomainFSDefPtr def);
 void virDomainActualNetDefFree(virDomainActualNetDefPtr def);
 virDomainVsockDefPtr virDomainVsockDefNew(virDomainXMLOptionPtr xmlopt);

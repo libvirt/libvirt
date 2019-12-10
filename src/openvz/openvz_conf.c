@@ -340,7 +340,7 @@ openvzReadFSConf(virDomainDefPtr def,
                        veid);
         goto error;
     } else if (ret > 0) {
-        if (!(fs = virDomainFSDefNew()))
+        if (!(fs = virDomainFSDefNew(NULL)))
             goto error;
 
         fs->type = VIR_DOMAIN_FS_TYPE_TEMPLATE;

@@ -2279,7 +2279,7 @@ virDomainControllerIsPSeriesPHB(const virDomainControllerDef *cont)
 
 
 virDomainFSDefPtr
-virDomainFSDefNew(void)
+virDomainFSDefNew(virDomainXMLOptionPtr xmlopt G_GNUC_UNUSED)
 {
     virDomainFSDefPtr ret;
 
@@ -11111,7 +11111,7 @@ virDomainFSDefParseXML(virDomainXMLOptionPtr xmlopt,
 
     ctxt->node = node;
 
-    if (!(def = virDomainFSDefNew()))
+    if (!(def = virDomainFSDefNew(xmlopt)))
         return NULL;
 
     type = virXMLPropString(node, "type");
