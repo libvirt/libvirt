@@ -406,6 +406,8 @@ qemuDomainObjRestoreJob(virDomainObjPtr obj,
 static void
 qemuDomainObjFreeJob(qemuDomainObjPrivatePtr priv)
 {
+    qemuDomainObjResetJob(priv);
+    qemuDomainObjResetAsyncJob(priv);
     VIR_FREE(priv->job.current);
     VIR_FREE(priv->job.completed);
     virCondDestroy(&priv->job.cond);
@@ -2225,9 +2227,6 @@ qemuDomainObjPrivateDataClear(qemuDomainObjPrivatePtr priv)
 
     virBitmapFree(priv->migrationCaps);
     priv->migrationCaps = NULL;
-
-    qemuDomainObjResetJob(priv);
-    qemuDomainObjResetAsyncJob(priv);
 
     virHashRemoveAll(priv->blockjobs);
     virHashRemoveAll(priv->dbusVMStates);
