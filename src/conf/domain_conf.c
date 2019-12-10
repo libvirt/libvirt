@@ -2279,7 +2279,7 @@ virDomainControllerIsPSeriesPHB(const virDomainControllerDef *cont)
 
 
 virDomainFSDefPtr
-virDomainFSDefNew(virDomainXMLOptionPtr xmlopt G_GNUC_UNUSED)
+virDomainFSDefNew(virDomainXMLOptionPtr xmlopt)
 {
     virDomainFSDefPtr ret;
 
@@ -2287,6 +2287,11 @@ virDomainFSDefNew(virDomainXMLOptionPtr xmlopt G_GNUC_UNUSED)
         return NULL;
 
     if (!(ret->src = virStorageSourceNew()))
+        goto cleanup;
+
+    if (xmlopt &&
+        xmlopt->privateData.fsNew &&
+        !(ret->privateData = xmlopt->privateData.fsNew()))
         goto cleanup;
 
     return ret;

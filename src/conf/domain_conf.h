@@ -817,6 +817,7 @@ struct _virDomainFSDef {
     unsigned long long space_soft_limit; /* in bytes */
     bool symlinksResolved;
     virDomainVirtioOptionsPtr virtio;
+    virObjectPtr privateData;
 };
 
 
@@ -2740,6 +2741,7 @@ struct _virDomainXMLPrivateDataCallbacks {
     virDomainXMLPrivateDataNewFunc    graphicsNew;
     virDomainXMLPrivateDataNewFunc    networkNew;
     virDomainXMLPrivateDataNewFunc    videoNew;
+    virDomainXMLPrivateDataNewFunc    fsNew;
     virDomainXMLPrivateDataFormatFunc format;
     virDomainXMLPrivateDataParseFunc  parse;
     /* following function shall return a pointer which will be used as the
