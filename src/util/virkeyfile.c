@@ -77,7 +77,7 @@ struct _virKeyFileParserCtxt {
 #define IS_EOF (ctxt->cur >= ctxt->end)
 #define IS_EOL(c) (((c) == '\n') || ((c) == '\r'))
 #define IS_BLANK(c) (((c) == ' ') || ((c) == '\t'))
-#define IS_ASCII(c) ((c) < 128)
+#define IS_ASCII(c) (((unsigned char) (c)) < 128)
 #define CUR (*ctxt->cur)
 #define NEXT if (!IS_EOF) ctxt->cur++;
 
