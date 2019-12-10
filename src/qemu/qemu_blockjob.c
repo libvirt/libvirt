@@ -282,7 +282,8 @@ qemuBlockJobDiskNewCommit(virDomainObjPtr vm,
                           virDomainDiskDefPtr disk,
                           virStorageSourcePtr topparent,
                           virStorageSourcePtr top,
-                          virStorageSourcePtr base)
+                          virStorageSourcePtr base,
+                          bool delete_imgs)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     g_autoptr(qemuBlockJobData) job = NULL;
@@ -305,6 +306,7 @@ qemuBlockJobDiskNewCommit(virDomainObjPtr vm,
     job->data.commit.topparent = topparent;
     job->data.commit.top = top;
     job->data.commit.base = base;
+    job->data.commit.deleteCommittedImages = delete_imgs;
 
     if (qemuBlockJobRegister(job, vm, disk, true) < 0)
         return NULL;

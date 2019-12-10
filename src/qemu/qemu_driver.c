@@ -18686,7 +18686,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
         goto endjob;
 
     if (!(job = qemuBlockJobDiskNewCommit(vm, disk, top_parent, topSource,
-                                          baseSource)))
+                                          baseSource, false)))
         goto endjob;
 
     disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
