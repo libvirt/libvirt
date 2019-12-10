@@ -560,6 +560,18 @@ struct _qemuDomainNetworkPrivate {
 };
 
 
+#define QEMU_DOMAIN_FS_PRIVATE(dev) \
+    ((qemuDomainFSPrivatePtr) (dev)->privateData)
+
+typedef struct _qemuDomainFSPrivate qemuDomainFSPrivate;
+typedef qemuDomainFSPrivate *qemuDomainFSPrivatePtr;
+struct _qemuDomainFSPrivate {
+    virObject parent;
+
+    int dummy;
+};
+
+
 typedef enum {
     QEMU_PROCESS_EVENT_WATCHDOG = 0,
     QEMU_PROCESS_EVENT_GUESTPANIC,
