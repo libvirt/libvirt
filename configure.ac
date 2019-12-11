@@ -354,6 +354,7 @@ dnl Availability of various common functions (non-fatal if missing),
 dnl and various less common threadsafe functions
 AC_CHECK_FUNCS_ONCE([\
   fallocate \
+  getegid \
   geteuid \
   getgid \
   getifaddrs \
