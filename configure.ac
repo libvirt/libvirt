@@ -925,7 +925,6 @@ AC_CONFIG_FILES([run],
 AC_CONFIG_FILES([\
         Makefile src/Makefile include/libvirt/Makefile docs/Makefile \
         gnulib/lib/Makefile \
-        gnulib/tests/Makefile \
         .color_coded \
         .ycm_extra_conf.py \
         libvirt.pc \

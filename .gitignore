@@ -27,12 +27,10 @@ Makefile.in
 
 # gnulib related ignores
 !/gnulib/lib/Makefile.am
-!/gnulib/tests/Makefile.am
 *.rej
 *~
 /gnulib/lib/*
 /gnulib/m4/*
-/gnulib/tests/*
 
 # git related ignores
 *.orig
