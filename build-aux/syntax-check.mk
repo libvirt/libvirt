@@ -569,7 +569,7 @@ sc_size_of_brackets:
 # Ensure that no C source file, docs, or rng schema uses TABs for
 # indentation.  Also match *.h.in files, to get libvirt.h.in.  Exclude
 # files in gnulib, since they're imported.
-space_indent_files=(\.(aug(\.in)?|rng|s?[ch](\.in)?|html.in|py|pl|syms)|(daemon|tools)/.*\.in)
+space_indent_files=(\.(aug(\.in)?|rng|s?[ch](\.in)?|html.in|py|pl|syms)|tools/.*\.in)
 sc_TAB_in_indentation:
 	@prohibit='^ *	' \
 	in_vc_files='$(space_indent_files)$$' \
