@@ -64,17 +64,6 @@ const vshCmdGrp *cmdGroups;
 const vshCmdDef *cmdSet;
 
 
-/* simple handler for oom conditions */
-static void
-vshErrorOOM(void)
-{
-    fflush(stdout);
-    fputs(_("error: Out of memory\n"), stderr);
-    fflush(stderr);
-    exit(EXIT_FAILURE);
-}
-
-
 double
 vshPrettyCapacity(unsigned long long val, const char **unit)
 {
@@ -361,7 +350,7 @@ vshCmddefCheckInternals(vshControl *ctl,
             }
             if ((p = strchr(name, '=')) &&
                 VIR_STRNDUP(name, name, p - name) < 0)
-                vshErrorOOM();
+                return -1;
             for (j = i + 1; cmd->opts[j].name; j++) {
                 if (STREQ(name, cmd->opts[j].name) &&
                     cmd->opts[j].type != VSH_OT_ALIAS)
