@@ -33,6 +33,9 @@
         <dt><a href="kbase/qemu-passthrough-security.html">Security with QEMU passthrough</a></dt>
         <dd>Examination of the security protections used for QEMU and how they need
           configuring to allow use of QEMU passthrough with host files/devices.</dd>
+
+        <dt><a href="kbase/virtiofs.html">Virtio-FS</a></dt>
+        <dd>Share a filesystem between the guest and the host</dd>
       </dl>
     </div>
 
