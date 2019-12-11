@@ -9617,6 +9617,10 @@ static const vshCmdOptDef opts_qemu_monitor_command[] = {
      .type = VSH_OT_BOOL,
      .help = N_("pretty-print any qemu monitor protocol output")
     },
+    {.name = "return-value",
+     .type = VSH_OT_BOOL,
+     .help = N_("extract the value of the 'return' key from the returned string")
+    },
     {.name = "cmd",
      .type = VSH_OT_ARGV,
      .flags = VSH_OFLAG_REQ,
@@ -9631,11 +9635,17 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
     g_autoptr(virshDomain) dom = NULL;
     g_autofree char *monitor_cmd = NULL;
     g_autofree char *result = NULL;
+    g_autoptr(virJSONValue) resultjson = NULL;
     unsigned int flags = 0;
     const vshCmdOpt *opt = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    bool pretty = vshCommandOptBool(cmd, "pretty");
+    bool returnval = vshCommandOptBool(cmd, "return-value");
+    virJSONValuePtr formatjson;
+    g_autofree char *jsonstr = NULL;
 
     VSH_EXCLUSIVE_OPTIONS("hmp", "pretty");
+    VSH_EXCLUSIVE_OPTIONS("hmp", "return-value");
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -9653,17 +9663,33 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
     if (virDomainQemuMonitorCommand(dom, monitor_cmd, &result, flags) < 0)
         return false;
 
-    if (vshCommandOptBool(cmd, "pretty")) {
-        char *tmp;
-        if ((tmp = virJSONStringReformat(result, true))) {
-            VIR_FREE(result);
-            result = tmp;
-            virTrimSpaces(result, NULL);
-        } else {
-            vshResetLibvirtError();
+    if (returnval || pretty) {
+        resultjson = virJSONValueFromString(result);
+
+        if (returnval && !resultjson) {
+            vshError(ctl, "failed to parse JSON returned by qemu");
+            return false;
         }
     }
-    vshPrint(ctl, "%s\n", result);
+
+    /* print raw non-prettified result */
+    if (!resultjson) {
+        vshPrint(ctl, "%s\n", result);
+        return true;
+    }
+
+    if (returnval) {
+        if (!(formatjson = virJSONValueObjectGet(resultjson, "return"))) {
+            vshError(ctl, "'return' member missing");
+            return false;
+        }
+    } else {
+        formatjson = resultjson;
+    }
+
+    jsonstr = virJSONValueToString(formatjson, pretty);
+    virTrimSpaces(jsonstr, NULL);
+    vshPrint(ctl, "%s", jsonstr);
     return true;
 }
 
