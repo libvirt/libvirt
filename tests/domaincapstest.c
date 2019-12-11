@@ -56,7 +56,7 @@ fillStringValues(virDomainCapsStringValuesPtr values, ...)
 static int
 fakeHostCPU(virArch arch)
 {
-    virCPUDefPtr cpu;
+    g_autoptr(virCPUDef) cpu = NULL;
 
     if (!(cpu = testUtilsHostCpusGetDefForArch(arch))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
