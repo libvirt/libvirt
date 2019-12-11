@@ -483,9 +483,7 @@ virDomainBackupAlignDisks(virDomainBackupDefPtr def,
             continue;
 
         backupdisk = &def->disks[ndisks++];
-
-        if (VIR_STRDUP(backupdisk->name, domdisk->dst) < 0)
-            return -1;
+        backupdisk->name = g_strdup(domdisk->dst);
 
         if (backup_all &&
             !virStorageSourceIsEmpty(domdisk->src) &&

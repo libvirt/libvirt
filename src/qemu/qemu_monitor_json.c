@@ -5564,8 +5564,7 @@ int qemuMonitorJSONGetMachines(qemuMonitorPtr mon,
                 goto cleanup;
             }
 
-            if (VIR_STRDUP(info->defaultCPU, tmp) < 0)
-                goto cleanup;
+            info->defaultCPU = g_strdup(tmp);
         }
     }
 
