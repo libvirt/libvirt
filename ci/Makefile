@@ -238,6 +238,17 @@ ci-build@%:
 ci-check@%:
 	$(MAKE) -C $(CI_ROOTDIR) ci-build@$* CI_MAKE_ARGS="check"
 
+ci-list-images:
+	@echo
+	@echo "Available x86 container images:"
+	@echo
+	@sh list-images.sh "$(CI_ENGINE)" "$(CI_IMAGE_PREFIX)" | grep -v cross
+	@echo
+	@echo "Available cross-compiler container images:"
+	@echo
+	@sh list-images.sh "$(CI_ENGINE)" "$(CI_IMAGE_PREFIX)" | grep cross
+	@echo
+
 ci-help:
 	@echo "Build libvirt inside containers used for CI"
 	@echo
@@ -246,30 +257,8 @@ ci-help:
 	@echo "    ci-build@\$$IMAGE - run a default 'make'"
 	@echo "    ci-check@\$$IMAGE - run a 'make check'"
 	@echo "    ci-shell@\$$IMAGE - run an interactive shell"
-	@echo
-	@echo "Available x86 container images:"
-	@echo
-	@echo "    centos-7"
-	@echo "    debian-9"
-	@echo "    debian-10"
-	@echo "    debian-sid"
-	@echo "    fedora-29"
-	@echo "    fedora-30"
-	@echo "    fedora-rawhide"
-	@echo "    ubuntu-16"
-	@echo "    ubuntu-18"
-	@echo
-	@echo "Available cross-compiler container images:"
-	@echo
-	@echo "    debian-{9,10,sid}-cross-aarch64"
-	@echo "    debian-{9,10,sid}-cross-armv6l"
-	@echo "    debian-{9,10,sid}-cross-armv7l"
-	@echo "    debian-{10,sid}-cross-i686"
-	@echo "    debian-{9,10,sid}-cross-mips64el"
-	@echo "    debian-{9,10,sid}-cross-mips"
-	@echo "    debian-{9,10,sid}-cross-mipsel"
-	@echo "    debian-{9,10,sid}-cross-ppc64le"
-	@echo "    debian-{9,10,sid}-cross-s390x"
+	@echo "    ci-list-images  - list available images"
+	@echo "    ci-help         - show this help message"
 	@echo
 	@echo "Available make variables:"
 	@echo
