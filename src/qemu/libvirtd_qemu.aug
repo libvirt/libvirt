@@ -116,6 +116,7 @@ module Libvirtd_qemu =
    let nvram_entry = str_array_entry "nvram"
 
    let debug_level_entry = int_entry "gluster_debug_level"
+                 | bool_entry "virtiofsd_debug"
 
    let memory_entry = str_entry "memory_backing_dir"
 

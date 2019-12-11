@@ -202,6 +202,7 @@ struct _virQEMUDriverConfig {
     virFirmwarePtr *firmwares;
     size_t nfirmwares;
     unsigned int glusterDebugLevel;
+    bool virtiofsdDebug;
 
     char *memoryBackingDir;
 

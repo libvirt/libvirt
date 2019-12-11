@@ -98,6 +98,7 @@ module Test_libvirtd_qemu =
 }
 { "stdio_handler" = "logd" }
 { "gluster_debug_level" = "9" }
+{ "virtiofsd_debug" = "1" }
 { "namespaces"
     { "1" = "mount" }
 }
