@@ -29,7 +29,7 @@ configured in ``/etc/libvirt/virt-login-shell.conf``.
 
 The basic structure of most ``virt-login-shell`` usage is:
 
-.. code-block:: shell
+.. code-block::
 
    virt-login-shell
 
