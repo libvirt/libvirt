@@ -2852,10 +2852,13 @@ mymain(void)
             QEMU_CAPS_NEC_USB_XHCI);
 
     /* VM XML has invalid arch/ostype/virttype combo, but the SKIP flag
-     * will avoid the error. Still, we expect qemu driver to complain about
-     * missing machine error, and not crash */
+     * will avoid the error during parse. This will cause us to fill in
+     * the missing machine type using the i386 binary, despite it being
+     * the wrong binary for the arch. We expect to get a failure about
+     * bad arch later when creating the pretend command.
+     */
     DO_TEST_FULL("missing-machine",
-                 ARG_FLAGS, FLAG_EXPECT_PARSE_ERROR | FLAG_EXPECT_FAILURE,
+                 ARG_FLAGS, FLAG_EXPECT_FAILURE,
                  ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE,
                  ARG_QEMU_CAPS, NONE);
 

@@ -4864,27 +4864,6 @@ qemuDomainDefPostParse(virDomainDefPtr def,
         return 1;
     }
 
-    if (def->os.type != VIR_DOMAIN_OSTYPE_HVM) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Emulator '%s' does not support os type '%s'"),
-                       def->emulator, virDomainOSTypeToString(def->os.type));
-        return -1;
-    }
-
-    if (!virQEMUCapsIsArchSupported(qemuCaps, def->os.arch)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Emulator '%s' does not support arch '%s'"),
-                       def->emulator, virArchToString(def->os.arch));
-        return -1;
-    }
-
-    if (!virQEMUCapsIsVirtTypeSupported(qemuCaps, def->virtType)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Emulator '%s' does not support virt type '%s'"),
-                       def->emulator, virDomainVirtTypeToString(def->virtType));
-        return -1;
-    }
-
     if (def->os.bootloader || def->os.bootloaderArgs) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("bootloader is not supported by QEMU"));
@@ -5140,6 +5119,27 @@ qemuDomainDefValidate(const virDomainDef *def,
     if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache,
                                             def->emulator)))
         goto cleanup;
+
+    if (def->os.type != VIR_DOMAIN_OSTYPE_HVM) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Emulator '%s' does not support os type '%s'"),
+                       def->emulator, virDomainOSTypeToString(def->os.type));
+        goto cleanup;
+    }
+
+    if (!virQEMUCapsIsArchSupported(qemuCaps, def->os.arch)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Emulator '%s' does not support arch '%s'"),
+                       def->emulator, virArchToString(def->os.arch));
+        goto cleanup;
+    }
+
+    if (!virQEMUCapsIsVirtTypeSupported(qemuCaps, def->virtType)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Emulator '%s' does not support virt type '%s'"),
+                       def->emulator, virDomainVirtTypeToString(def->virtType));
+        goto cleanup;
+    }
 
     if (def->mem.min_guarantee) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
