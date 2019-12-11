@@ -796,10 +796,13 @@ virQEMUDriverConfigLoadNVRAMEntry(virQEMUDriverConfigPtr cfg,
 
 
 static int
-virQEMUDriverConfigLoadGlusterDebugEntry(virQEMUDriverConfigPtr cfg,
-                                         virConfPtr conf)
+virQEMUDriverConfigLoadDebugEntry(virQEMUDriverConfigPtr cfg,
+                                  virConfPtr conf)
 {
-    return virConfGetValueUInt(conf, "gluster_debug_level", &cfg->glusterDebugLevel);
+    if (virConfGetValueUInt(conf, "gluster_debug_level", &cfg->glusterDebugLevel) < 0)
+        return -1;
+
+    return 0;
 }
 
 
@@ -1014,7 +1017,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     if (virQEMUDriverConfigLoadNVRAMEntry(cfg, conf, privileged) < 0)
         return -1;
 
-    if (virQEMUDriverConfigLoadGlusterDebugEntry(cfg, conf) < 0)
+    if (virQEMUDriverConfigLoadDebugEntry(cfg, conf) < 0)
         return -1;
 
     if (virQEMUDriverConfigLoadSecurityEntry(cfg, conf, privileged) < 0)

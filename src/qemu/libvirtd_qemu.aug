@@ -115,7 +115,7 @@ module Libvirtd_qemu =
 
    let nvram_entry = str_array_entry "nvram"
 
-   let gluster_debug_level_entry = int_entry "gluster_debug_level"
+   let debug_level_entry = int_entry "gluster_debug_level"
 
    let memory_entry = str_entry "memory_backing_dir"
 
@@ -152,7 +152,7 @@ module Libvirtd_qemu =
              | network_entry
              | log_entry
              | nvram_entry
-             | gluster_debug_level_entry
+             | debug_level_entry
              | memory_entry
              | vxhs_entry
              | nbd_entry
