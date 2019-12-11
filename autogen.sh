@@ -147,7 +147,7 @@ if test -d .git || test -f .git; then
             dry_run=2
         else
             echo "Running bootstrap..."
-            ./bootstrap$no_git --bootstrap-sync || {
+            ./bootstrap$no_git || {
                 die "bootstrap failed"
             }
             gnulib_hash >"$state_file"
