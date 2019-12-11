@@ -21,7 +21,7 @@ matrix:
     - services:
         - docker
       env:
-        - IMAGE="ubuntu-18"
+        - IMAGE="ubuntu-1804"
         - MAKE_ARGS="syntax-check distcheck"
       script:
         - make -C ci/ ci-build@$IMAGE CI_MAKE_ARGS="$MAKE_ARGS"
