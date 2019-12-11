@@ -105,7 +105,6 @@ libxlDriverPrivatePtr testXLInitDriver(void)
 
 void testXLFreeDriver(libxlDriverPrivatePtr driver)
 {
-    virObjectUnref(driver->config->caps);
     virObjectUnref(driver->config);
     virObjectUnref(driver->xmlopt);
     virMutexDestroy(&driver->lock);
