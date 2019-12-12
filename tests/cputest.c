@@ -36,7 +36,7 @@
 #include "cpu/cpu_map.h"
 #include "virstring.h"
 
-#if WITH_QEMU && WITH_YAJL
+#if WITH_QEMU
 # include "testutilsqemu.h"
 # include "qemumonitortestutils.h"
 # define LIBVIRT_QEMU_CAPSPRIV_H_ALLOW
@@ -62,7 +62,7 @@ struct data {
     int result;
 };
 
-#if WITH_QEMU && WITH_YAJL
+#if WITH_QEMU
 static virQEMUDriver driver;
 #endif
 
@@ -465,7 +465,7 @@ typedef enum {
     JSON_MODELS_REQUIRED,
 } cpuTestCPUIDJson;
 
-#if WITH_QEMU && WITH_YAJL
+#if WITH_QEMU
 static virQEMUCapsPtr
 cpuTestMakeQEMUCaps(const struct data *data)
 {
@@ -547,7 +547,7 @@ cpuTestGetCPUModels(const struct data *data,
     return 0;
 }
 
-#else /* if WITH_QEMU && WITH_YAJL */
+#else /* if WITH_QEMU */
 
 static int
 cpuTestGetCPUModels(const struct data *data,
@@ -871,7 +871,7 @@ cpuTestUpdateLive(const void *arg)
 }
 
 
-#if WITH_QEMU && WITH_YAJL
+#if WITH_QEMU
 static int
 cpuTestJSONCPUID(const void *arg)
 {
@@ -970,7 +970,7 @@ mymain(void)
     virDomainCapsCPUModelsPtr ppc_models = NULL;
     int ret = 0;
 
-#if WITH_QEMU && WITH_YAJL
+#if WITH_QEMU
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
 
@@ -1057,7 +1057,7 @@ mymain(void)
             host "/" cpu " (" #models ")", \
             host, cpu, models, 0, result)
 
-#if WITH_QEMU && WITH_YAJL
+#if WITH_QEMU
 # define DO_TEST_JSON(arch, host, json) \
     do { \
         if (json == JSON_MODELS) { \
@@ -1271,7 +1271,7 @@ mymain(void)
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Ice-Lake-Server", JSON_MODELS);
 
  cleanup:
-#if WITH_QEMU && WITH_YAJL
+#if WITH_QEMU
     qemuTestDriverFree(&driver);
 #endif
 

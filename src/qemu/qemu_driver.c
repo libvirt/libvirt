@@ -2104,11 +2104,6 @@ qemuDomainRebootMonitor(virQEMUDriverPtr driver,
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
-#if !WITH_YAJL
-    virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                   _("ACPI reboot is not supported without the JSON monitor"));
-    goto endjob;
-#endif
     qemuDomainSetFakeReboot(driver, vm, isReboot);
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorSystemPowerdown(priv->mon);

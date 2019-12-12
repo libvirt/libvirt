@@ -201,11 +201,6 @@ mymain(void)
     virQEMUDriver driver;
     int ret = 0;
 
-#if !WITH_YAJL
-    fputs("libvirt not compiled with JSON support, skipping this test\n", stderr);
-    return EXIT_AM_SKIP;
-#endif
-
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
 
