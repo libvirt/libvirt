@@ -27,6 +27,7 @@
 # include "virlog.h"
 # include "qemu/qemu_block.h"
 # include "qemu/qemu_qapi.h"
+# include "qemu/qemu_monitor_json.h"
 
 # include "qemu/qemu_command.h"
 
@@ -492,6 +493,71 @@ testQemuDiskXMLToPropsValidateFileSrcOnly(const void *opaque)
 }
 
 
+static const char *bitmapDetectPrefix = "qemublocktestdata/bitmap/";
+
+static void
+testQemuDetectBitmapsWorker(virHashTablePtr nodedata,
+                            const char *nodename,
+                            virBufferPtr buf)
+{
+    qemuBlockNamedNodeDataPtr data;
+    size_t i;
+
+    if (!(data = virHashLookup(nodedata, nodename)))
+        return;
+
+    virBufferAsprintf(buf, "%s:\n", nodename);
+    virBufferAdjustIndent(buf, 1);
+
+    for (i = 0; i < data->nbitmaps; i++) {
+        qemuBlockNamedNodeDataBitmapPtr bitmap = data->bitmaps[i];
+
+        virBufferAsprintf(buf, "%8s: record:%d busy:%d persist:%d inconsist:%d gran:%llu dirty:%llu\n",
+                          bitmap->name, bitmap->recording, bitmap->busy,
+                          bitmap->persistent, bitmap->inconsistent,
+                          bitmap->granularity, bitmap->dirtybytes);
+    }
+
+    virBufferAdjustIndent(buf, -1);
+}
+
+
+static int
+testQemuDetectBitmaps(const void *opaque)
+{
+    const char *name = opaque;
+    g_autoptr(virJSONValue) nodedatajson = NULL;
+    g_autoptr(virHashTable) nodedata = NULL;
+    g_autofree char *actual = NULL;
+    g_autofree char *expectpath = NULL;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    size_t i;
+
+    expectpath = g_strdup_printf("%s/%s%s.out", abs_srcdir,
+                                 bitmapDetectPrefix, name);
+
+    if (!(nodedatajson = virTestLoadFileJSON(bitmapDetectPrefix, name,
+                                             ".json", NULL)))
+        return -1;
+
+    if (!(nodedata = qemuMonitorJSONBlockGetNamedNodeDataJSON(nodedatajson))) {
+        VIR_TEST_VERBOSE("failed to load nodedata JSON");
+        return -1;
+    }
+
+    /* we detect for the first 30 nodenames for simplicity */
+    for (i = 0; i < 30; i++) {
+        g_autofree char *nodename = g_strdup_printf("libvirt-%zu-format", i);
+
+        testQemuDetectBitmapsWorker(nodedata, nodename, &buf);
+    }
+
+    actual = virBufferContentAndReset(&buf);
+
+    return virTestCompareToFile(actual, expectpath);
+}
+
+
 static int
 mymain(void)
 {
@@ -701,6 +767,15 @@ mymain(void)
     TEST_IMAGE_CREATE("network-rbd-qcow2", NULL);
     TEST_IMAGE_CREATE("network-ssh-qcow2", NULL);
     TEST_IMAGE_CREATE("network-sheepdog-qcow2", NULL);
+
+# define TEST_BITMAP_DETECT(testname) \
+    do { \
+        if (virTestRun("bitmap detect " testname, \
+                       testQemuDetectBitmaps, testname) < 0) \
+            ret = -1; \
+    } while (0)
+
+    TEST_BITMAP_DETECT("basic");
 
  cleanup:
     virHashFree(diskxmljsondata.schema);
