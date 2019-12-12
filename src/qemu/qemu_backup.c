@@ -172,7 +172,9 @@ qemuBackupDiskDataCleanup(virDomainObjPtr vm,
 
 static virJSONValuePtr
 qemuBackupDiskPrepareOneBitmapsChain(virDomainMomentDefPtr *incremental,
-                                     virStorageSourcePtr backingChain)
+                                     virStorageSourcePtr backingChain,
+                                     virHashTablePtr blockNamedNodeData G_GNUC_UNUSED,
+                                     const char *diskdst G_GNUC_UNUSED)
 {
     g_autoptr(virJSONValue) ret = NULL;
 
@@ -198,13 +200,16 @@ qemuBackupDiskPrepareOneBitmapsChain(virDomainMomentDefPtr *incremental,
 static int
 qemuBackupDiskPrepareOneBitmaps(struct qemuBackupDiskData *dd,
                                 virJSONValuePtr actions,
-                                virDomainMomentDefPtr *incremental)
+                                virDomainMomentDefPtr *incremental,
+                                virHashTablePtr blockNamedNodeData)
 {
     g_autoptr(virJSONValue) mergebitmaps = NULL;
     g_autoptr(virJSONValue) mergebitmapsstore = NULL;
 
     if (!(mergebitmaps = qemuBackupDiskPrepareOneBitmapsChain(incremental,
-                                                              dd->domdisk->src)))
+                                                              dd->domdisk->src,
+                                                              blockNamedNodeData,
+                                                              dd->domdisk->dst)))
         return -1;
 
     if (!(mergebitmapsstore = virJSONValueCopy(mergebitmaps)))
@@ -246,6 +251,7 @@ qemuBackupDiskPrepareDataOne(virDomainObjPtr vm,
                              struct qemuBackupDiskData *dd,
                              virJSONValuePtr actions,
                              virDomainMomentDefPtr *incremental,
+                             virHashTablePtr blockNamedNodeData,
                              virQEMUDriverConfigPtr cfg,
                              bool removeStore)
 {
@@ -274,7 +280,8 @@ qemuBackupDiskPrepareDataOne(virDomainObjPtr vm,
     if (incremental) {
         dd->incrementalBitmap = g_strdup_printf("backup-%s", dd->domdisk->dst);
 
-        if (qemuBackupDiskPrepareOneBitmaps(dd, actions, incremental) < 0)
+        if (qemuBackupDiskPrepareOneBitmaps(dd, actions, incremental,
+                                            blockNamedNodeData) < 0)
             return -1;
     }
 
@@ -337,6 +344,7 @@ static ssize_t
 qemuBackupDiskPrepareData(virDomainObjPtr vm,
                           virDomainBackupDefPtr def,
                           virDomainMomentDefPtr *incremental,
+                          virHashTablePtr blockNamedNodeData,
                           virJSONValuePtr actions,
                           virQEMUDriverConfigPtr cfg,
                           struct qemuBackupDiskData **rdd,
@@ -359,7 +367,8 @@ qemuBackupDiskPrepareData(virDomainObjPtr vm,
         ndisks++;
 
         if (qemuBackupDiskPrepareDataOne(vm, backupdisk, dd, actions,
-                                         incremental, cfg, removeStore) < 0)
+                                         incremental, blockNamedNodeData,
+                                         cfg, removeStore) < 0)
             goto error;
 
         if (def->type == VIR_DOMAIN_BACKUP_TYPE_PULL) {
@@ -745,8 +754,14 @@ qemuBackupBegin(virDomainObjPtr vm,
             goto endjob;
     }
 
-    if ((ndd = qemuBackupDiskPrepareData(vm, def, incremental, actions, cfg, &dd,
-                                         reuse)) <= 0) {
+    if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, QEMU_ASYNC_JOB_BACKUP) < 0)
+        goto endjob;
+    blockNamedNodeData = qemuMonitorBlockGetNamedNodeData(priv->mon);
+    if (qemuDomainObjExitMonitor(priv->driver, vm) < 0 || !blockNamedNodeData)
+        goto endjob;
+
+    if ((ndd = qemuBackupDiskPrepareData(vm, def, incremental, blockNamedNodeData,
+                                         actions, cfg, &dd, reuse)) <= 0) {
         if (ndd == 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("no disks selected for backup"));
@@ -754,12 +769,6 @@ qemuBackupBegin(virDomainObjPtr vm,
 
         goto endjob;
     }
-
-    if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, QEMU_ASYNC_JOB_BACKUP) < 0)
-        goto endjob;
-    blockNamedNodeData = qemuMonitorBlockGetNamedNodeData(priv->mon);
-    if (qemuDomainObjExitMonitor(priv->driver, vm) < 0 || !blockNamedNodeData)
-        goto endjob;
 
     if (qemuBackupDiskPrepareStorage(vm, dd, ndd, blockNamedNodeData, reuse) < 0)
         goto endjob;
