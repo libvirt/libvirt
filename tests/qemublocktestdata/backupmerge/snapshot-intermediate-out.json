@@ -1,0 +1,14 @@
+[
+  {
+    "node": "libvirt-1-format",
+    "name": "current"
+  },
+  {
+    "node": "libvirt-1-format",
+    "name": "d"
+  },
+  {
+    "node": "libvirt-2-format",
+    "name": "d"
+  }
+]
