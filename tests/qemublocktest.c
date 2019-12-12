@@ -28,6 +28,7 @@
 # include "qemu/qemu_block.h"
 # include "qemu/qemu_qapi.h"
 # include "qemu/qemu_monitor_json.h"
+# include "qemu/qemu_backup.h"
 
 # include "qemu/qemu_command.h"
 
@@ -558,6 +559,145 @@ testQemuDetectBitmaps(const void *opaque)
 }
 
 
+static virStorageSourcePtr
+testQemuBackupIncrementalBitmapCalculateGetFakeImage(size_t idx)
+{
+   virStorageSourcePtr ret;
+
+   if (!(ret = virStorageSourceNew()))
+       abort();
+
+   ret->type = VIR_STORAGE_TYPE_FILE;
+   ret->format = VIR_STORAGE_FILE_QCOW2;
+   ret->path = g_strdup_printf("/image%zu", idx);
+   ret->nodestorage = g_strdup_printf("libvirt-%zu-storage", idx);
+   ret->nodeformat = g_strdup_printf("libvirt-%zu-format", idx);
+
+   return ret;
+}
+
+
+static virStorageSourcePtr
+testQemuBackupIncrementalBitmapCalculateGetFakeChain(void)
+{
+    virStorageSourcePtr ret;
+    virStorageSourcePtr n;
+    size_t i;
+
+    n = ret = testQemuBackupIncrementalBitmapCalculateGetFakeImage(1);
+
+    for (i = 2; i < 10; i++) {
+        n->backingStore = testQemuBackupIncrementalBitmapCalculateGetFakeImage(i);
+        n = n->backingStore;
+    }
+
+    return ret;
+}
+
+
+typedef virDomainMomentDefPtr testMomentList;
+
+static void
+testMomentListFree(testMomentList *list)
+{
+    testMomentList *tmp = list;
+
+    if (!list)
+        return;
+
+    while (*tmp) {
+        virObjectUnref(*tmp);
+        tmp++;
+    }
+
+    g_free(list);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(testMomentList, testMomentListFree);
+
+static virDomainMomentDefPtr
+testQemuBackupGetIncrementalMoment(const char *name)
+{
+    virDomainCheckpointDefPtr checkpoint = NULL;
+
+    if (!(checkpoint = virDomainCheckpointDefNew()))
+        abort();
+
+    checkpoint->parent.name = g_strdup(name);
+
+    return (virDomainMomentDefPtr) checkpoint;
+}
+
+
+static virDomainMomentDefPtr *
+testQemuBackupGetIncremental(const char *incFrom)
+{
+    const char *checkpoints[] = {"current", "d", "c", "b", "a"};
+    virDomainMomentDefPtr *incr;
+    size_t i;
+
+    incr = g_new0(virDomainMomentDefPtr, G_N_ELEMENTS(checkpoints) + 1);
+
+    for (i = 0; i < G_N_ELEMENTS(checkpoints); i++) {
+        incr[i] = testQemuBackupGetIncrementalMoment(checkpoints[i]);
+
+        if (STREQ(incFrom, checkpoints[i]))
+            break;
+    }
+
+    return incr;
+}
+
+static const char *backupDataPrefix = "qemublocktestdata/backupmerge/";
+
+struct testQemuBackupIncrementalBitmapCalculateData {
+    const char *name;
+    virStorageSourcePtr chain;
+    const char *incremental;
+    const char *nodedatafile;
+};
+
+
+static int
+testQemuBackupIncrementalBitmapCalculate(const void *opaque)
+{
+    const struct testQemuBackupIncrementalBitmapCalculateData *data = opaque;
+    g_autoptr(virJSONValue) nodedatajson = NULL;
+    g_autoptr(virHashTable) nodedata = NULL;
+    g_autoptr(virJSONValue) mergebitmaps = NULL;
+    g_autofree char *actual = NULL;
+    g_autofree char *expectpath = NULL;
+    g_autoptr(testMomentList) incremental = NULL;
+
+    expectpath = g_strdup_printf("%s/%s%s-out.json", abs_srcdir,
+                                 backupDataPrefix, data->name);
+
+    if (!(nodedatajson = virTestLoadFileJSON(bitmapDetectPrefix, data->nodedatafile,
+                                             ".json", NULL)))
+        return -1;
+
+    if (!(nodedata = qemuMonitorJSONBlockGetNamedNodeDataJSON(nodedatajson))) {
+        VIR_TEST_VERBOSE("failed to load nodedata JSON\n");
+        return -1;
+    }
+
+    incremental = testQemuBackupGetIncremental(data->incremental);
+
+    if (!(mergebitmaps = qemuBackupDiskPrepareOneBitmapsChain(incremental,
+                                                              data->chain,
+                                                              nodedata,
+                                                              "testdisk"))) {
+        VIR_TEST_VERBOSE("failed to calculate merged bitmaps");
+        return -1;
+    }
+
+    if (!(actual = virJSONValueToString(mergebitmaps, true)))
+        return -1;
+
+    return virTestCompareToFile(actual, expectpath);
+}
+
+
 static int
 mymain(void)
 {
@@ -566,11 +706,15 @@ mymain(void)
     struct testBackingXMLjsonXMLdata xmljsonxmldata;
     struct testQemuDiskXMLToJSONData diskxmljsondata;
     struct testQemuImageCreateData imagecreatedata;
+    struct testQemuBackupIncrementalBitmapCalculateData backupbitmapcalcdata;
     char *capslatest_x86_64 = NULL;
     virQEMUCapsPtr caps_x86_64 = NULL;
+    g_autoptr(virStorageSource) bitmapSourceChain = NULL;
 
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
+
+    bitmapSourceChain = testQemuBackupIncrementalBitmapCalculateGetFakeChain();
 
     diskxmljsondata.driver = &driver;
     imagecreatedata.driver = &driver;
@@ -778,6 +922,22 @@ mymain(void)
     TEST_BITMAP_DETECT("basic");
     TEST_BITMAP_DETECT("synthetic");
     TEST_BITMAP_DETECT("snapshots");
+
+# define TEST_BACKUP_BITMAP_CALCULATE(testname, source, incrbackup, named) \
+    do { \
+        backupbitmapcalcdata.name = testname; \
+        backupbitmapcalcdata.chain = source; \
+        backupbitmapcalcdata.incremental = incrbackup; \
+        backupbitmapcalcdata.nodedatafile = named; \
+        if (virTestRun("incremental backup bitmap " testname, \
+                       testQemuBackupIncrementalBitmapCalculate, \
+                       &backupbitmapcalcdata) < 0) \
+            ret = -1; \
+    } while (0)
+
+    TEST_BACKUP_BITMAP_CALCULATE("basic-flat", bitmapSourceChain, "current", "basic");
+    TEST_BACKUP_BITMAP_CALCULATE("basic-intermediate", bitmapSourceChain, "d", "basic");
+    TEST_BACKUP_BITMAP_CALCULATE("basic-deep", bitmapSourceChain, "a", "basic");
 
  cleanup:
     virHashFree(diskxmljsondata.schema);
