@@ -170,6 +170,30 @@ qemuBackupDiskDataCleanup(virDomainObjPtr vm,
 }
 
 
+static virJSONValuePtr
+qemuBackupDiskPrepareOneBitmapsChain(virDomainMomentDefPtr *incremental,
+                                     virStorageSourcePtr backingChain)
+{
+    g_autoptr(virJSONValue) ret = NULL;
+
+    if (!(ret = virJSONValueNewArray()))
+        return NULL;
+
+    /* TODO: this code works only if the bitmaps are present on a single node.
+     * The algorithm needs to be changed so that it looks into the backing chain
+     * so that we can combine all relevant bitmaps for a given backing chain */
+    while (*incremental) {
+        if (qemuMonitorTransactionBitmapMergeSourceAddBitmap(ret,
+                                                             backingChain->nodeformat,
+                                                             (*incremental)->name) < 0)
+            return NULL;
+
+        incremental++;
+    }
+
+    return g_steal_pointer(&ret);
+}
+
 
 static int
 qemuBackupDiskPrepareOneBitmaps(struct qemuBackupDiskData *dd,
@@ -179,20 +203,9 @@ qemuBackupDiskPrepareOneBitmaps(struct qemuBackupDiskData *dd,
     g_autoptr(virJSONValue) mergebitmaps = NULL;
     g_autoptr(virJSONValue) mergebitmapsstore = NULL;
 
-    if (!(mergebitmaps = virJSONValueNewArray()))
+    if (!(mergebitmaps = qemuBackupDiskPrepareOneBitmapsChain(incremental,
+                                                              dd->domdisk->src)))
         return -1;
-
-    /* TODO: this code works only if the bitmaps are present on a single node.
-     * The algorithm needs to be changed so that it looks into the backing chain
-     * so that we can combine all relevant bitmaps for a given backing chain */
-    while (*incremental) {
-        if (qemuMonitorTransactionBitmapMergeSourceAddBitmap(mergebitmaps,
-                                                             dd->domdisk->src->nodeformat,
-                                                             (*incremental)->name) < 0)
-            return -1;
-
-        incremental++;
-    }
 
     if (!(mergebitmapsstore = virJSONValueCopy(mergebitmaps)))
         return -1;
