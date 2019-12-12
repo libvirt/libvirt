@@ -777,6 +777,7 @@ mymain(void)
 
     TEST_BITMAP_DETECT("basic");
     TEST_BITMAP_DETECT("synthetic");
+    TEST_BITMAP_DETECT("snapshots");
 
  cleanup:
     virHashFree(diskxmljsondata.schema);
