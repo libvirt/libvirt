@@ -9555,6 +9555,84 @@ static const vshCmdOptDef opts_qemu_monitor_command[] = {
     {.name = NULL}
 };
 
+
+static char *
+cmdQemuMonitorCommandConcatCmd(vshControl *ctl,
+                               const vshCmd *cmd,
+                               const vshCmdOpt *opt)
+{
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+
+    while ((opt = vshCommandOptArgv(ctl, cmd, opt)))
+        virBufferAsprintf(&buf, "%s ", opt->data);
+
+    virBufferTrim(&buf, " ");
+
+    return virBufferContentAndReset(&buf);
+}
+
+
+static char *
+cmdQemuMonitorCommandQMPWrap(vshControl *ctl,
+                             const vshCmd *cmd)
+{
+    g_autofree char *fullcmd = cmdQemuMonitorCommandConcatCmd(ctl, cmd, NULL);
+    g_autoptr(virJSONValue) fullcmdjson = virJSONValueFromString(fullcmd);
+    g_autofree char *fullargs = NULL;
+    g_autoptr(virJSONValue) fullargsjson = NULL;
+    const vshCmdOpt *opt = NULL;
+    const char *commandname = NULL;
+    g_autoptr(virJSONValue) command = NULL;
+    g_autoptr(virJSONValue) arguments = NULL;
+
+    /* if we've got a JSON object, pass it through */
+    if (virJSONValueIsObject(fullcmdjson))
+        return g_steal_pointer(&fullcmd);
+
+    /* we try to wrap the command and possible arguments into a JSON object, if
+     * we as fall back we pass through what we've got from the user */
+
+    if ((opt = vshCommandOptArgv(ctl, cmd, opt)))
+        commandname = opt->data;
+
+    /* now we process arguments similarly to how we've dealt with the full command */
+    if ((fullargs = cmdQemuMonitorCommandConcatCmd(ctl, cmd, opt)))
+        fullargsjson = virJSONValueFromString(fullargs);
+
+    /* for empty args or a valid JSON object we just use that */
+    if (!fullargs || virJSONValueIsObject(fullargsjson)) {
+        arguments = g_steal_pointer(&fullargsjson);
+    } else {
+        /* for a non-object we try to concatenate individual _ARGV bits into a
+         * JSON object wrapper and try using that */
+        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+
+        virBufferAddLit(&buf, "{");
+        /* opt points to the _ARGV option bit containing the command so we'll
+         * iterate through the arguments now */
+        while ((opt = vshCommandOptArgv(ctl, cmd, opt)))
+            virBufferAsprintf(&buf, "%s,", opt->data);
+
+        virBufferTrim(&buf, ",");
+        virBufferAddLit(&buf, "}");
+
+        if (!(arguments = virJSONValueFromString(virBufferCurrentContent(&buf)))) {
+            vshError(ctl, _("failed to wrap arguments '%s' into a QMP command wrapper"),
+                     fullargs);
+            return NULL;
+        }
+    }
+
+    if (virJSONValueObjectCreate(&command,
+                                 "s:execute", commandname,
+                                 "A:arguments", &arguments,
+                                 NULL) < 0)
+        return NULL;
+
+    return virJSONValueToString(command, false);
+}
+
+
 static bool
 cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
 {
@@ -9563,8 +9641,6 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
     g_autofree char *result = NULL;
     g_autoptr(virJSONValue) resultjson = NULL;
     unsigned int flags = 0;
-    const vshCmdOpt *opt = NULL;
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     bool pretty = vshCommandOptBool(cmd, "pretty");
     bool returnval = vshCommandOptBool(cmd, "return-value");
     virJSONValue *formatjson;
@@ -9576,15 +9652,17 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    while ((opt = vshCommandOptArgv(ctl, cmd, opt)))
-        virBufferAsprintf(&buf, "%s ", opt->data);
-
-    virBufferTrim(&buf, " ");
-
-    monitor_cmd = virBufferContentAndReset(&buf);
-
-    if (vshCommandOptBool(cmd, "hmp"))
+    if (vshCommandOptBool(cmd, "hmp")) {
         flags |= VIR_DOMAIN_QEMU_MONITOR_COMMAND_HMP;
+        monitor_cmd = cmdQemuMonitorCommandConcatCmd(ctl, cmd, NULL);
+    } else {
+        monitor_cmd = cmdQemuMonitorCommandQMPWrap(ctl, cmd);
+    }
+
+    if (!monitor_cmd) {
+        vshSaveLibvirtError();
+        return NULL;
+    }
 
     if (virDomainQemuMonitorCommand(dom, monitor_cmd, &result, flags) < 0)
         return false;

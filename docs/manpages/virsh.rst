@@ -7802,7 +7802,21 @@ If more than one argument is provided for *command*, they are concatenated with
 a space in between before passing the single command to the monitor.
 
 Note that libvirt uses the QMP to talk to qemu so *command* must be valid JSON
-in QMP format to work properly.
+in QMP format to work properly. If *command* is not a JSON object libvirt tries
+to wrap it as a JSON object to provide convenient interface such as the groups
+of commands with identical handling:
+
+::
+
+   # simple command
+   $ virsh qemu-monitor-command VM commandname
+   $ virsh qemu-monitor-command VM '{"execute":"commandname"}'
+
+   # with arguments
+   $ virsh qemu-monitor-command VM commandname '"arg1":123' '"arg2":"test"'
+   $ virsh qemu-monitor-command VM commandname '{"arg1":123,"arg2":"test"}'
+   $ virsh qemu-monitor-command VM '{"execute":"commandname", "arguments":{"arg1":123,"arg2":"test"}}'
+
 
 If *--pretty* is given the QMP reply is pretty-printed.
 
