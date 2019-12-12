@@ -44,3 +44,10 @@ int
 qemuBackupGetJobInfoStats(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
                           qemuDomainJobInfoPtr jobInfo);
+
+/* exported for testing */
+virJSONValuePtr
+qemuBackupDiskPrepareOneBitmapsChain(virDomainMomentDefPtr *incremental,
+                                     virStorageSourcePtr backingChain,
+                                     virHashTablePtr blockNamedNodeData,
+                                     const char *diskdst);

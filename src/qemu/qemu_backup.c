@@ -170,7 +170,7 @@ qemuBackupDiskDataCleanup(virDomainObjPtr vm,
 }
 
 
-static virJSONValuePtr
+virJSONValuePtr
 qemuBackupDiskPrepareOneBitmapsChain(virDomainMomentDefPtr *incremental,
                                      virStorageSourcePtr backingChain,
                                      virHashTablePtr blockNamedNodeData G_GNUC_UNUSED,
