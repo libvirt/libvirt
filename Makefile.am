@@ -148,4 +148,4 @@ gen-AUTHORS:
 	fi
 
 ci-%:
-	$(MAKE) -C ci/ $@
+	$(MAKE) -C $(srcdir)/ci/ $@
