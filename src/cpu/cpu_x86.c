@@ -1418,7 +1418,7 @@ x86ModelParseSignatures(virCPUx86ModelPtr model,
         }
 
         rc = virXPathUInt("string(@model)", ctxt, &sigModel);
-        if (rc < 0 || sigModel == 0) {
+        if (rc < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid CPU signature model in model %s"),
                            model->name);
