@@ -86,6 +86,7 @@
       <model usable='yes'>Haswell</model>
       <model usable='no'>EPYC-IBPB</model>
       <model usable='no'>EPYC</model>
+      <model usable='no'>Dhyana</model>
       <model usable='yes'>Conroe</model>
       <model usable='no'>Cascadelake-Server</model>
       <model usable='yes'>Broadwell-noTSX-IBRS</model>
