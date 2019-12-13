@@ -339,6 +339,10 @@
     <cpuid eax_in='0x07' ecx_in='0x00' edx='0x80000000'/>
   </feature>
 
+  <feature name='avx512-bf16'>
+    <cpuid eax_in='0x07' ecx_in='0x01' eax='0x00000020'/>
+  </feature>
+
   <!-- Processor Extended State Enumeration sub leaf 1 -->
   <feature name='xsaveopt'>
     <cpuid eax_in='0x0d' ecx_in='0x01' eax='0x00000001'/>
