@@ -54,11 +54,27 @@
     <div class="panel">
       <h2>Application development</h2>
       <dl>
-        <dt><a href="devguide.html">Development Guide</a></dt>
-        <dd>A guide and reference for developing with libvirt</dd>
-
-        <dt><a href="virshcmdref.html">Virsh Commands</a></dt>
-        <dd>Command reference for virsh</dd>
+        <dt><a href="html/index.html">API reference</a></dt>
+        <dd>Reference manual for the C public API, split in
+          <a href="html/libvirt-libvirt-common.html">common</a>,
+          <a href="html/libvirt-libvirt-domain.html">domain</a>,
+          <a href="html/libvirt-libvirt-domain-checkpoint.html">domain checkpoint</a>,
+          <a href="html/libvirt-libvirt-domain-snapshot.html">domain snapshot</a>,
+          <a href="html/libvirt-virterror.html">error</a>,
+          <a href="html/libvirt-libvirt-event.html">event</a>,
+          <a href="html/libvirt-libvirt-host.html">host</a>,
+          <a href="html/libvirt-libvirt-interface.html">interface</a>,
+          <a href="html/libvirt-libvirt-network.html">network</a>,
+          <a href="html/libvirt-libvirt-nodedev.html">node device</a>,
+          <a href="html/libvirt-libvirt-nwfilter.html">network filter</a>,
+          <a href="html/libvirt-libvirt-secret.html">secret</a>,
+          <a href="html/libvirt-libvirt-storage.html">storage</a>,
+          <a href="html/libvirt-libvirt-stream.html">stream</a>
+          and
+          <a href="html/index-admin.html">admin</a>,
+          <a href="html/index-qemu.html">QEMU</a>,
+          <a href="html/index-lxc.html">LXC</a> libs
+        </dd>
 
         <dt><a href="bindings.html">Language bindings and API modules</a></dt>
         <dd>Bindings of the libvirt API for
@@ -96,28 +112,6 @@
 
         <dt><a href="cgroups.html">CGroups</a></dt>
         <dd>Control groups integration</dd>
-
-        <dt><a href="html/index.html">API reference</a></dt>
-        <dd>Reference manual for the C public API, split in
-          <a href="html/libvirt-libvirt-common.html">common</a>,
-          <a href="html/libvirt-libvirt-domain.html">domain</a>,
-          <a href="html/libvirt-libvirt-domain-checkpoint.html">domain checkpoint</a>,
-          <a href="html/libvirt-libvirt-domain-snapshot.html">domain snapshot</a>,
-          <a href="html/libvirt-virterror.html">error</a>,
-          <a href="html/libvirt-libvirt-event.html">event</a>,
-          <a href="html/libvirt-libvirt-host.html">host</a>,
-          <a href="html/libvirt-libvirt-interface.html">interface</a>,
-          <a href="html/libvirt-libvirt-network.html">network</a>,
-          <a href="html/libvirt-libvirt-nodedev.html">node device</a>,
-          <a href="html/libvirt-libvirt-nwfilter.html">network filter</a>,
-          <a href="html/libvirt-libvirt-secret.html">secret</a>,
-          <a href="html/libvirt-libvirt-storage.html">storage</a>,
-          <a href="html/libvirt-libvirt-stream.html">stream</a>
-          and
-          <a href="html/index-admin.html">admin</a>,
-          <a href="html/index-qemu.html">QEMU</a>,
-          <a href="html/index-lxc.html">LXC</a> libs
-        </dd>
 
         <dt><a href="drivers.html">Drivers</a></dt>
         <dd>Hypervisor specific driver information</dd>
