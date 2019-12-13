@@ -1023,14 +1023,21 @@
               <ref name='cpuset'/>
             </attribute>
             <oneOrMore>
-              <element name="node">
-                <attribute name="id">
-                  <ref name='unsignedInt'/>
-                </attribute>
-                <attribute name="bandwidth">
-                  <ref name='unsignedInt'/>
-                </attribute>
-              </element>
+              <choice>
+                <element name="node">
+                  <attribute name="id">
+                    <ref name='unsignedInt'/>
+                  </attribute>
+                  <attribute name="bandwidth">
+                    <ref name='unsignedInt'/>
+                  </attribute>
+                </element>
+                <element name="monitor">
+                  <attribute name="vcpus">
+                    <ref name='cpuset'/>
+                  </attribute>
+                </element>
+              </choice>
             </oneOrMore>
           </element>
         </zeroOrMore>

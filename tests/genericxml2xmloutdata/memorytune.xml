@@ -10,10 +10,10 @@
       <cache id='1' level='3' type='both' size='768' unit='KiB'/>
     </cachetune>
     <memorytune vcpus='0-1'>
-      <monitor vcpus='0-1'/>
       <node id='0' bandwidth='20'/>
-      <monitor vcpus='0'/>
       <node id='1' bandwidth='30'/>
+      <monitor vcpus='0-1'/>
+      <monitor vcpus='0'/>
     </memorytune>
     <memorytune vcpus='3'>
       <node id='0' bandwidth='50'/>
@@ -31,7 +31,7 @@
   <on_reboot>restart</on_reboot>
   <on_crash>destroy</on_crash>
   <devices>
-    <emulator>/usr/bin/qemu-system-i386</emulator>
+    <emulator>/usr/bin/qemu-system-i686</emulator>
     <controller type='usb' index='0'/>
     <controller type='ide' index='0'/>
     <controller type='pci' index='0' model='pci-root'/>

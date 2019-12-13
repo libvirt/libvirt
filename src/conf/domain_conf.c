@@ -19711,10 +19711,14 @@ virDomainMemorytuneDefParse(virDomainDefPtr def,
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
     virDomainResctrlDefPtr resctrl = NULL;
+    virDomainResctrlDefPtr newresctrl = NULL;
     g_autoptr(virBitmap) vcpus = NULL;
     g_autofree xmlNodePtr *nodes = NULL;
     g_autoptr(virResctrlAlloc) alloc = NULL;
     ssize_t i = 0;
+    size_t nmons = 0;
+    size_t ret = -1;
+
     int n;
 
     ctxt->node = node;
@@ -19741,29 +19745,44 @@ virDomainMemorytuneDefParse(virDomainDefPtr def,
             return -1;
     }
 
+    /* First, parse <memorytune/node> element if any <node> element exists */
     for (i = 0; i < n; i++) {
         if (virDomainMemorytuneDefParseMemory(ctxt, nodes[i], alloc) < 0)
             return -1;
     }
-
-    if (n == 0)
-        return 0;
 
     /*
      * If this is a new allocation, format ID and append to resctrl, otherwise
      * just update the existing alloc information, which is done in above
      * virDomainMemorytuneDefParseMemory */
     if (!resctrl) {
-        if (!(resctrl = virDomainResctrlNew(node, alloc, vcpus, flags)))
+        if (!(newresctrl = virDomainResctrlNew(node, alloc, vcpus, flags)))
             return -1;
 
-        if (VIR_APPEND_ELEMENT(def->resctrls, def->nresctrls, resctrl) < 0) {
-            virDomainResctrlDefFree(resctrl);
-            return -1;
-        }
+        resctrl = newresctrl;
     }
 
-    return 0;
+    /* Next, parse <memorytune/monitor> element */
+    nmons = resctrl->nmonitors;
+    if (virDomainResctrlMonDefParse(def, ctxt, node,
+                                    VIR_RESCTRL_MONITOR_TYPE_MEMBW,
+                                    resctrl) < 0)
+        goto cleanup;
+
+    nmons = resctrl->nmonitors - nmons;
+    /* Now @nmons contains the new <monitor> element number found in current
+     * <memorytune> element, and @n holds the number of new <node> element,
+     * only append the new @newresctrl object to domain if any of them is
+     * not zero. */
+    if (newresctrl && (nmons || n)) {
+        if (VIR_APPEND_ELEMENT(def->resctrls, def->nresctrls, newresctrl) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    virDomainResctrlDefFree(newresctrl);
+    return ret;
 }
 
 
@@ -27630,12 +27649,19 @@ virDomainMemorytuneDefFormat(virBufferPtr buf,
 {
     g_auto(virBuffer) childrenBuf = VIR_BUFFER_INIT_CHILD(buf);
     g_autofree char *vcpus = NULL;
+    size_t i = 0;
 
     if (virResctrlAllocForeachMemory(resctrl->alloc,
                                      virDomainMemorytuneDefFormatHelper,
                                      &childrenBuf) < 0)
         return -1;
 
+    for (i = 0; i< resctrl->nmonitors; i++) {
+        if (virDomainResctrlMonDefFormatHelper(resctrl->monitors[i],
+                                               VIR_RESCTRL_MONITOR_TYPE_MEMBW,
+                                               &childrenBuf) < 0)
+            return -1;
+    }
 
     if (!virBufferUse(&childrenBuf))
         return 0;

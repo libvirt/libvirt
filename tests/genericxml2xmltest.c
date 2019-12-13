@@ -173,7 +173,7 @@ mymain(void)
                  TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
     DO_TEST_FULL("cachetune-colliding-monitor", false, true,
                  TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
-    DO_TEST("memorytune");
+    DO_TEST_DIFFERENT("memorytune");
     DO_TEST_FULL("memorytune-colliding-allocs", false, true,
                  TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
     DO_TEST_FULL("memorytune-colliding-cachetune", false, true,
