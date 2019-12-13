@@ -45,7 +45,7 @@ qemuFirmwareFetchConfigs(char ***firmwares,
 
 int
 qemuFirmwareFillDomain(virQEMUDriverPtr driver,
-                       virDomainObjPtr vm,
+                       virDomainDefPtr def,
                        unsigned int flags);
 
 int

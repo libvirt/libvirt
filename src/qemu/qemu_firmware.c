@@ -1202,7 +1202,7 @@ qemuFirmwareFetchParsedConfigs(bool privileged,
 
 int
 qemuFirmwareFillDomain(virQEMUDriverPtr driver,
-                       virDomainObjPtr vm,
+                       virDomainDefPtr def,
                        unsigned int flags)
 {
     VIR_AUTOSTRINGLIST paths = NULL;
@@ -1215,7 +1215,7 @@ qemuFirmwareFillDomain(virQEMUDriverPtr driver,
     if (!(flags & VIR_QEMU_PROCESS_START_NEW))
         return 0;
 
-    if (vm->def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_NONE)
+    if (def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_NONE)
         return 0;
 
     if ((nfirmwares = qemuFirmwareFetchParsedConfigs(driver->privileged,
@@ -1223,7 +1223,7 @@ qemuFirmwareFillDomain(virQEMUDriverPtr driver,
         return -1;
 
     for (i = 0; i < nfirmwares; i++) {
-        if (qemuFirmwareMatchDomain(vm->def, firmwares[i], paths[i])) {
+        if (qemuFirmwareMatchDomain(def, firmwares[i], paths[i])) {
             theone = firmwares[i];
             VIR_DEBUG("Found matching firmware (description path '%s')",
                       paths[i]);
@@ -1234,7 +1234,7 @@ qemuFirmwareFillDomain(virQEMUDriverPtr driver,
     if (!theone) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("Unable to find any firmware to satisfy '%s'"),
-                       virDomainOsDefFirmwareTypeToString(vm->def->os.firmware));
+                       virDomainOsDefFirmwareTypeToString(def->os.firmware));
         goto cleanup;
     }
 
@@ -1243,10 +1243,10 @@ qemuFirmwareFillDomain(virQEMUDriverPtr driver,
      * likely that admin/FW manufacturer messed up. */
     qemuFirmwareSanityCheck(theone, paths[i]);
 
-    if (qemuFirmwareEnableFeatures(driver, vm->def, theone) < 0)
+    if (qemuFirmwareEnableFeatures(driver, def, theone) < 0)
         goto cleanup;
 
-    vm->def->os.firmware = VIR_DOMAIN_OS_DEF_FIRMWARE_NONE;
+    def->os.firmware = VIR_DOMAIN_OS_DEF_FIRMWARE_NONE;
 
     ret = 0;
  cleanup:
