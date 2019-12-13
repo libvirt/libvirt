@@ -17,9 +17,9 @@ debian-9-cross-mips64el:
   <<: *job_definition
   image: quay.io/libvirt/buildenv-libvirt-debian-9-cross-mips64el:latest
 
-debian-9-cross-mipsel:
+debian-9-cross-mips:
   <<: *job_definition
-  image: quay.io/libvirt/buildenv-libvirt-debian-9-cross-mipsel:latest
+  image: quay.io/libvirt/buildenv-libvirt-debian-9-cross-mips:latest
 
 debian-10-cross-aarch64:
   <<: *job_definition
@@ -41,6 +41,6 @@ debian-sid-cross-i686:
   <<: *job_definition
   image: quay.io/libvirt/buildenv-libvirt-debian-sid-cross-i686:latest
 
-debian-sid-cross-mips:
+debian-sid-cross-mipsel:
   <<: *job_definition
-  image: quay.io/libvirt/buildenv-libvirt-debian-sid-cross-mips:latest
+  image: quay.io/libvirt/buildenv-libvirt-debian-sid-cross-mipsel:latest
