@@ -171,7 +171,7 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     # This should be < 256 really. Currently we're down to 4096,
     # but using 1024 bytes sized buffers (mostly for virStrerror)
     # stops us from going down further
-    gl_WARN_ADD([-Wframe-larger-than=4096], [STRICT_FRAME_LIMIT_CFLAGS])
+    wantwarn="$wantwarn -Wframe-larger-than=4096"
     gl_WARN_ADD([-Wframe-larger-than=32768], [RELAXED_FRAME_LIMIT_CFLAGS])
 
     # Extra special flags

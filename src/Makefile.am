@@ -31,8 +31,6 @@ AM_CPPFLAGS =	-I../gnulib/lib \
 		-Dabs_top_srcdir="\"$(abs_top_srcdir)\"" \
 		$(NULL)
 
-WARN_CFLAGS += $(STRICT_FRAME_LIMIT_CFLAGS)
-
 AM_CFLAGS =	$(LIBXML_CFLAGS) \
 		$(GLIB_CFLAGS) \
 		$(WARN_CFLAGS) \
