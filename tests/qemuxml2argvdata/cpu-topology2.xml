@@ -10,7 +10,7 @@
   </os>
   <cpu match='exact'>
     <model>core2duo</model>
-    <topology sockets="1" cores="2" threads="3"/>
+    <topology sockets="1" dies="1" cores="2" threads="3"/>
   </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>

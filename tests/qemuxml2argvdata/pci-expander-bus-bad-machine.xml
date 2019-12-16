@@ -8,7 +8,7 @@
     <type arch='x86_64' machine='q35'>hvm</type>
   </os>
   <cpu>
-    <topology sockets='2' cores='4' threads='2'/>
+    <topology sockets='2' dies='1' cores='4' threads='2'/>
     <numa>
       <cell cpus='0-7' memory='109550' unit='KiB'/>
       <cell cpus='8-15' memory='109550' unit='KiB'/>

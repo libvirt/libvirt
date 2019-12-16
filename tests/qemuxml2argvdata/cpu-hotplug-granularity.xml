@@ -7,7 +7,7 @@
     <type arch='ppc64' machine='pseries'>hvm</type>
   </os>
   <cpu>
-    <topology sockets='1' cores='2' threads='4'/>
+    <topology sockets='1' dies='1' cores='2' threads='4'/>
   </cpu>
   <devices>
     <emulator>/usr/bin/qemu-system-ppc64</emulator>

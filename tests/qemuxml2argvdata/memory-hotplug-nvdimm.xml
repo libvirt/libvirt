@@ -14,7 +14,7 @@
     <gid start='0' target='1000' count='10'/>
   </idmap>
   <cpu>
-    <topology sockets='2' cores='1' threads='1'/>
+    <topology sockets='2' dies='1' cores='1' threads='1'/>
     <numa>
       <cell id='0' cpus='0-1' memory='1048576' unit='KiB'/>
     </numa>

@@ -1485,6 +1485,7 @@ virVMXParseConfig(virVMXContext *ctx,
                              "'numvcpus'"));
             goto cleanup;
         }
+        cpu->dies = 1;
         cpu->cores = coresPerSocket;
         cpu->threads = 1;
 
@@ -3203,6 +3204,12 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
         if (def->cpu->threads != 1) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Only 1 thread per core is supported"));
+            goto cleanup;
+        }
+
+        if (def->cpu->dies != 1) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Only 1 die per socket is supported"));
             goto cleanup;
         }
 

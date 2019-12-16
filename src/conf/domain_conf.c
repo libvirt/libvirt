@@ -2053,7 +2053,8 @@ virDomainDefGetVcpusTopology(const virDomainDef *def,
     tmp = def->cpu->sockets;
 
     /* multiplication of 32bit numbers fits into a 64bit variable */
-    if ((tmp *= def->cpu->cores) > UINT_MAX ||
+    if ((tmp *= def->cpu->dies) > UINT_MAX ||
+        (tmp *= def->cpu->cores) > UINT_MAX ||
         (tmp *= def->cpu->threads) > UINT_MAX) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("cpu topology results in more than %u cpus"), UINT_MAX);

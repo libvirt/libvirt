@@ -1,7 +1,7 @@
 <cpu mode='custom' match='exact'>
   <model fallback='forbid'>Penryn</model>
   <vendor>Intel</vendor>
-  <topology sockets='1' cores='2' threads='1'/>
+  <topology sockets='1' dies='1' cores='2' threads='1'/>
   <feature policy='require' name='dca'/>
   <feature policy='require' name='xtpr'/>
   <feature policy='require' name='tm2'/>

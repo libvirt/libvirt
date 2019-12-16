@@ -1,6 +1,6 @@
 <cpu mode='custom' match='exact'>
   <model fallback='allow'>Penryn</model>
-  <topology sockets='2' cores='4' threads='1'/>
+  <topology sockets='2' dies='1' cores='4' threads='1'/>
   <feature policy='disable' name='dca'/>
   <feature policy='disable' name='xtpr'/>
   <feature policy='disable' name='sse4.2'/>

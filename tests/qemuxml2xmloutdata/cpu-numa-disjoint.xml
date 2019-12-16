@@ -9,7 +9,7 @@
     <boot dev='network'/>
   </os>
   <cpu>
-    <topology sockets='2' cores='4' threads='2'/>
+    <topology sockets='2' dies='1' cores='4' threads='2'/>
     <numa>
       <cell id='0' cpus='0-3,8-11' memory='109550' unit='KiB'/>
       <cell id='1' cpus='4-7,12-15' memory='109550' unit='KiB'/>

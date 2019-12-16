@@ -7,7 +7,7 @@
     <memnode cellid="0" mode="strict" nodeset="1"/>
   </numatune>
   <cpu>
-    <topology sockets='3' cores='1' threads='8'/>
+    <topology sockets='3' dies='1' cores='1' threads='8'/>
     <numa>
       <cell id='0' cpus='0-23' memory='1048576' unit='KiB'/>
     </numa>

@@ -43,7 +43,7 @@
     <boot dev='network'/>
   </os>
   <cpu>
-    <topology sockets='1' cores='4' threads='8'/>
+    <topology sockets='1' dies='1' cores='4' threads='8'/>
   </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>

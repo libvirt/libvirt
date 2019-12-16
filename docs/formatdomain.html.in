@@ -1470,7 +1470,7 @@
 &lt;cpu match='exact'&gt;
   &lt;model fallback='allow'&gt;core2duo&lt;/model&gt;
   &lt;vendor&gt;Intel&lt;/vendor&gt;
-  &lt;topology sockets='1' cores='2' threads='1'/&gt;
+  &lt;topology sockets='1' dies='1' cores='2' threads='1'/&gt;
   &lt;cache level='3' mode='emulate'/&gt;
   &lt;feature policy='disable' name='lahf_lm'/&gt;
 &lt;/cpu&gt;
@@ -1479,7 +1479,7 @@
 <pre>
 &lt;cpu mode='host-model'&gt;
   &lt;model fallback='forbid'/&gt;
-  &lt;topology sockets='1' cores='2' threads='1'/&gt;
+  &lt;topology sockets='1' dies='1' cores='2' threads='1'/&gt;
 &lt;/cpu&gt;
 ...</pre>
 
@@ -1498,7 +1498,7 @@
 <pre>
 ...
 &lt;cpu&gt;
-  &lt;topology sockets='1' cores='2' threads='1'/&gt;
+  &lt;topology sockets='1' dies='1' cores='2' threads='1'/&gt;
 &lt;/cpu&gt;
 ...</pre>
 
@@ -1673,13 +1673,15 @@
 
       <dt><code>topology</code></dt>
       <dd>The <code>topology</code> element specifies requested topology of
-        virtual CPU provided to the guest. Three non-zero values have to be
-        given for <code>sockets</code>, <code>cores</code>, and
-        <code>threads</code>: total number of CPU sockets, number of cores per
-        socket, and number of threads per core, respectively. Hypervisors may
-        require that the maximum number of vCPUs specified by the
-        <code>cpus</code> element equals to the number of vcpus resulting
-        from the topology.</dd>
+        virtual CPU provided to the guest. Four attributes, <code>sockets</code>,
+        <code>dies</code>, <code>cores</code>, and <code>threads</code>,
+        accept non-zero positive integer values. They refer to the total number
+        of CPU sockets, number of dies per socket, number of cores per die, and
+        number of threads per core, respectively. The <code>dies</code>
+        attribute is optional and will default to 1 if omitted, while the other
+        attributes are all mandatory. Hypervisors may require that the maximum
+        number of vCPUs specified by the <code>cpus</code> element equals to
+        the number of vcpus resulting from the topology.</dd>
 
       <dt><code>feature</code></dt>
       <dd>The <code>cpu</code> element can contain zero or more

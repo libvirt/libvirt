@@ -86,6 +86,11 @@
       <attribute name="sockets">
         <ref name="positiveInteger"/>
       </attribute>
+      <optional>
+        <attribute name="dies">
+          <ref name="positiveInteger"/>
+        </attribute>
+      </optional>
       <attribute name="cores">
         <ref name="positiveInteger"/>
       </attribute>

@@ -173,7 +173,7 @@
       &lt;/features&gt;
       &lt;model&gt;core2duo&lt;/model&gt;
       &lt;vendor&gt;Intel&lt;/vendor&gt;
-      &lt;topology sockets="1" cores="2" threads="1"/&gt;
+      &lt;topology sockets="1" dies="1" cores="2" threads="1"/&gt;
       &lt;feature name="lahf_lm"/&gt;
       &lt;feature name='xtpr'/&gt;
       ...

@@ -9,7 +9,7 @@
     <boot dev='hd'/>
   </os>
   <cpu>
-    <topology sockets='2' cores='1' threads='1'/>
+    <topology sockets='2' dies='1' cores='1' threads='1'/>
   </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>

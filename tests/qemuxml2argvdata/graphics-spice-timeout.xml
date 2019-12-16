@@ -18,7 +18,7 @@
   <cpu match='exact'>
     <model>core2duo</model>
     <vendor>Intel</vendor>
-    <topology sockets='1' cores='2' threads='1'/>
+    <topology sockets='1' dies='1' cores='2' threads='1'/>
     <feature policy='require' name='ds'/>
     <feature policy='require' name='acpi'/>
     <feature policy='require' name='ss'/>

@@ -9,7 +9,7 @@
     <boot dev='network'/>
   </os>
   <cpu>
-    <topology sockets="3" cores="2" threads="1"/>
+    <topology sockets="3" dies="1" cores="2" threads="1"/>
   </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>

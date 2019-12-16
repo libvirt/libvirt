@@ -421,6 +421,7 @@ virCPUGetHost(virArch arch,
 
     if (nodeInfo) {
         cpu->sockets = nodeInfo->sockets;
+        cpu->dies = 1;
         cpu->cores = nodeInfo->cores;
         cpu->threads = nodeInfo->threads;
     }

@@ -186,6 +186,7 @@ libxlCapsInitCPU(virCapsPtr caps, libxl_physinfo *phy_info,
     cpu->type = VIR_CPU_TYPE_HOST;
     cpu->cores = phy_info->cores_per_socket;
     cpu->threads = phy_info->threads_per_core;
+    cpu->dies = 1;
     cpu->sockets = phy_info->nr_cpus / (cpu->cores * cpu->threads);
     caps->host.cpu = cpu;
 
