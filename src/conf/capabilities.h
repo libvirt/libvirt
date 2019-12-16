@@ -88,6 +88,7 @@ struct _virCapsGuest {
 struct _virCapsHostNUMACellCPU {
     unsigned int id;
     unsigned int socket_id;
+    unsigned int die_id;
     unsigned int core_id;
     virBitmapPtr siblings;
 };

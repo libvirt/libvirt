@@ -219,6 +219,22 @@ virHostCPUGetSocket(unsigned int cpu, unsigned int *socket)
 }
 
 int
+virHostCPUGetDie(unsigned int cpu, unsigned int *die)
+{
+    int ret = virFileReadValueUint(die,
+                                   "%s/cpu/cpu%u/topology/die_id",
+                                   SYSFS_SYSTEM_PATH, cpu);
+
+    /* If the file is not there, it's 0 */
+    if (ret == -2)
+        *die = 0;
+    else if (ret < 0)
+        return -1;
+
+    return 0;
+}
+
+int
 virHostCPUGetCore(unsigned int cpu, unsigned int *core)
 {
     int ret = virFileReadValueUint(core,
