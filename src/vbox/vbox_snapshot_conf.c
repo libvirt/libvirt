@@ -352,6 +352,7 @@ virVBoxSnapshotConfCreateHardDiskNode(virVBoxSnapshotConfHardDiskPtr hardDisk)
     if (result < 0) {
         xmlUnlinkNode(ret);
         xmlFreeNode(ret);
+        ret = NULL;
     }
     VIR_FREE(uuid);
     return ret;
