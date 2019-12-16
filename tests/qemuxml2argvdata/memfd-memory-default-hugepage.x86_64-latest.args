@@ -16,7 +16,7 @@ file=/tmp/lib/domain--1-instance-00000092/master-key.aes \
 -m 14336 \
 -mem-prealloc \
 -overcommit mem-lock=off \
--smp 8,sockets=1,cores=8,threads=1 \
+-smp 8,sockets=1,dies=1,cores=8,threads=1 \
 -object memory-backend-memfd,id=ram-node0,hugetlb=yes,hugetlbsize=2097152,\
 share=yes,size=15032385536,host-nodes=3,policy=preferred \
 -numa node,nodeid=0,cpus=0-7,memdev=ram-node0 \

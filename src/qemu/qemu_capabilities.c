@@ -553,6 +553,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "blockdev-file-dynamic-auto-read-only",
               "savevm-monitor-nodes",
               "drive-nvme",
+              "smp-dies",
     );
 
 
@@ -2985,6 +2986,7 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "sandbox", "elevateprivileges", QEMU_CAPS_SECCOMP_BLACKLIST },
     { "chardev", "fd", QEMU_CAPS_CHARDEV_FD_PASS },
     { "overcommit", NULL, QEMU_CAPS_OVERCOMMIT },
+    { "smp-opts", "dies", QEMU_CAPS_SMP_DIES },
 };
 
 static int

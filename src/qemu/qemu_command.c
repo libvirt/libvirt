@@ -7084,7 +7084,8 @@ qemuBuildTSEGCommandLine(virCommandPtr cmd,
 
 static int
 qemuBuildSmpCommandLine(virCommandPtr cmd,
-                        virDomainDefPtr def)
+                        virDomainDefPtr def,
+                        virQEMUCapsPtr qemuCaps)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     unsigned int maxvcpus = virDomainDefGetVcpusMax(def);
@@ -7109,12 +7110,14 @@ qemuBuildSmpCommandLine(virCommandPtr cmd,
     /* sockets, cores, and threads are either all zero
      * or all non-zero, thus checking one of them is enough */
     if (def->cpu && def->cpu->sockets) {
-        if (def->cpu->dies != 1) {
+        if (def->cpu->dies != 1 && !virQEMUCapsGet(qemuCaps, QEMU_CAPS_SMP_DIES)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Only 1 die per socket is supported"));
             return -1;
         }
         virBufferAsprintf(&buf, ",sockets=%u", def->cpu->sockets);
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SMP_DIES))
+            virBufferAsprintf(&buf, ",dies=%u", def->cpu->dies);
         virBufferAsprintf(&buf, ",cores=%u", def->cpu->cores);
         virBufferAsprintf(&buf, ",threads=%u", def->cpu->threads);
     } else {
@@ -9802,7 +9805,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     if (qemuBuildMemCommandLine(cmd, cfg, def, qemuCaps, priv) < 0)
         return NULL;
 
-    if (qemuBuildSmpCommandLine(cmd, def) < 0)
+    if (qemuBuildSmpCommandLine(cmd, def, qemuCaps) < 0)
         return NULL;
 
     if (qemuBuildIOThreadCommandLine(cmd, def) < 0)

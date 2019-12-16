@@ -215,6 +215,7 @@
   <flag name='ramfb'/>
   <flag name='blockdev-file-dynamic-auto-read-only'/>
   <flag name='drive-nvme'/>
+  <flag name='smp-dies'/>
   <version>4001000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100241</microcodeVersion>

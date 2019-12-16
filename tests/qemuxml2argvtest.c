@@ -1689,6 +1689,7 @@ mymain(void)
     DO_TEST("qemu-ns-alt", NONE);
 
     DO_TEST("smp", NONE);
+    DO_TEST("smp-dies", QEMU_CAPS_SMP_DIES);
 
     DO_TEST("iothreads", QEMU_CAPS_OBJECT_IOTHREAD);
     DO_TEST("iothreads-ids", QEMU_CAPS_OBJECT_IOTHREAD);
