@@ -248,6 +248,7 @@ mymain(void)
         /* subcores, invalid configuration */
         {"subcores3", VIR_ARCH_PPC64},
         {"with-frequency", VIR_ARCH_S390X},
+        {"with-die", VIR_ARCH_X86_64},
     };
 
     if (virInitialize() < 0)
