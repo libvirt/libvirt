@@ -26,7 +26,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-10-18 13:39+0100\n"
+"POT-Creation-Date: 2019-12-16 16:39+0000\n"
 "PO-Revision-Date: 2018-03-10 04:16+0000\n"
 "Last-Translator: Javier Blanco <javi.deb@gmail.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/libvirt/language/"
@@ -273,10 +273,6 @@ msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: falló al asignar %d bytes"
 
 #, c-format
-msgid "%s: %d: failed to allocate %lu bytes"
-msgstr "%s: %d: falló al asignar %lu bytes"
-
-#, c-format
 msgid "%s: %d: failed to allocate argv"
 msgstr "%s: %d: no se pudo asignar argv"
 
@@ -441,6 +437,11 @@ msgstr "'logical-id' falta en respuesta de guest-get-vcpus"
 
 msgid "'online' missing in reply of guest-get-vcpus"
 msgstr "'online' falta en respuesta de guest-get-vcpus"
+
+msgid "'parent' for vHBA not specified, and cannot find one on this host"
+msgstr ""
+"'parent' para vHBA no está especificado, y no puede encontrar uno en este "
+"host"
 
 msgid "'peak' and 'burst' require 'average' attribute"
 msgstr "'peak' y 'burst' requieren atributo 'average'"
@@ -1071,9 +1072,6 @@ msgstr ""
 "No se  puede adicionar dispositivo USB de host: USB está inhabilitado  en "
 "este host"
 
-msgid "Can't allocate memory"
-msgstr "No se puede asignar memoria"
-
 #, sh-format
 msgid "Can't connect to $uri. Skipping."
 msgstr "No se puede conectar a $uri. Omitiendo."
@@ -1232,6 +1230,9 @@ msgstr "No se puede determinar ruta de dispositivo de globo"
 
 msgid "Cannot determine free memory"
 msgstr "No se puede determinar memoria libre"
+
+msgid "Cannot determine system clock HZ"
+msgstr "No se puede determinar el reloj del sistema HZ"
 
 msgid "Cannot disable close-on-exec flag"
 msgstr "No se puede inhabilitar indicador close-on-exec"
@@ -1436,6 +1437,14 @@ msgid "Cannot parse start time %s in %s"
 msgstr "No se puede analizar tiempo de inicio %s en %s"
 
 #, c-format
+msgid "Cannot parse sys stat '%s'"
+msgstr "No se puede analizar el estado del sistema '%s'"
+
+#, c-format
+msgid "Cannot parse user stat '%s'"
+msgstr "No se puede analizar el estatus del usuario '%s'"
+
+#, c-format
 msgid "Cannot read %s '%s'"
 msgstr "No se  puede leer %s '%s'"
 
@@ -1558,6 +1567,10 @@ msgid "Cannot specify a label if relabelling is turned off. model=%s"
 msgstr ""
 "No se puede especificar una etiqueta si el reetiquetado es turned off. model="
 "%s"
+
+#, c-format
+msgid "Cannot stat %s"
+msgstr "No se puede obtener el estado de %s"
 
 #, c-format
 msgid "Cannot undefine HostVirtualSwitch that has a '%s' port"
@@ -1954,9 +1967,6 @@ msgstr "No se pudo determinar directorio principal"
 msgid "Could not determine kernel version from string %s"
 msgstr "No se pudo determinar versión de kernel de la cadena %s"
 
-msgid "Could not disable SIGPIPE"
-msgstr "No se  pudo inhabilitar SIGPIPE"
-
 #, c-format
 msgid "Could not dlsym %s from '%s': %s"
 msgstr "No se pudo dlsym %s desde '%s': %s"
@@ -2027,6 +2037,10 @@ msgstr ""
 #, c-format
 msgid "Could not find datastore with name '%s'"
 msgstr "No se pudo encontrar un almacenamiento de datos cuyo nombre sea '%s'"
+
+#, c-format
+msgid "Could not find directory separator in %s"
+msgstr "No se pudo encontrar directorio para separador en %s"
 
 #, c-format
 msgid "Could not find domain snapshot with internal name '%s'"
@@ -2371,9 +2385,6 @@ msgstr "No se pudo analizar el número de versión desde %s"
 #, c-format
 msgid "Could not query registry value '%s\\%s'"
 msgstr "No se pudo solicitar valor de registro '%s\\%s'"
-
-msgid "Could not re-enable SIGPIPE"
-msgstr "No se  pudo re-habilitar SIGPIPE"
 
 #, c-format
 msgid "Could not read '%s' from config for container %d"
@@ -3574,6 +3585,10 @@ msgid "Failed to begin network config change transaction"
 msgstr "Falló al iniciar transacción de cambio de network config"
 
 #, c-format
+msgid "Failed to bind cgroup '%s' on '%s'"
+msgstr "No se pudo vincular cgroup '%s' en '%s'"
+
+#, c-format
 msgid "Failed to bind mount directory %s to %s"
 msgstr "Falló al vincular el directorio de montaje %s a %s"
 
@@ -3634,12 +3649,6 @@ msgstr "Falló al cerrar destino de vinculación %s"
 
 msgid "Failed to collect auth credentials"
 msgstr "Falló al recolectar credenciales de autorización"
-
-msgid "Failed to collect command"
-msgstr "Falló  al  recolectar el comando"
-
-msgid "Failed to collect new description/title"
-msgstr "Falló recolectar la nueva descripción o título"
 
 msgid "Failed to commit network config change transaction"
 msgstr "Falló al confirmar transacción de cambio de network config"
@@ -3731,9 +3740,6 @@ msgstr "No se pudo crear directorio para '%s' dev '%s'"
 #, c-format
 msgid "Failed to create directory for device %s"
 msgstr "No se pudo  crear directorio  para dispositivo %s"
-
-msgid "Failed to create display URI"
-msgstr "Falló  la creación de 'display URI'"
 
 #, c-format
 msgid "Failed to create domain from %s"
@@ -4276,6 +4282,10 @@ msgstr "Falló al marcar el dominio %s como iniciado automáticamente"
 #, c-format
 msgid "Failed to mkdir %s"
 msgstr "Falló al crear el directorio %s"
+
+#, c-format
+msgid "Failed to mount %s on %s type %s"
+msgstr "No se pudo montar %s en %s tipo %s"
 
 #, c-format
 msgid "Failed to mount %s on /dev"
@@ -5558,8 +5568,9 @@ msgstr "Argumento inválido "
 msgid "Invalid authentication method: '%s'"
 msgstr "Método de autenticación no válido: '%s'"
 
-msgid "Invalid back reference"
-msgstr "Referencia inversa inválida"
+#, c-format
+msgid "Invalid boolean value for field '%s'"
+msgstr "Valor booleano inválido para campo '%s'"
 
 #, c-format
 msgid "Invalid bridge mac address '%s' in network '%s'"
@@ -5600,15 +5611,9 @@ msgstr ""
 msgid "Invalid character '%c' in id '%s' of network '%s'"
 msgstr "Carácter '%c' es nulo en id '%s' de red '%s'"
 
-msgid "Invalid character class name"
-msgstr "Nombre de clase de carácter inválido"
-
 #, c-format
 msgid "Invalid class ID %d"
 msgstr "Clase ID %d inválida"
-
-msgid "Invalid collation character"
-msgstr "Carácter de colación inválido"
 
 #, c-format
 msgid "Invalid collection period value '%d'"
@@ -5617,9 +5622,6 @@ msgstr "Valor de periodo de colección '%d' no es válido"
 #, c-format
 msgid "Invalid compressed save format %d"
 msgstr "Formato %d de compresión almacenado inválido"
-
-msgid "Invalid content of \\{\\}"
-msgstr "Contenido inválido de \\{\\} "
 
 msgid "Invalid context"
 msgstr "Contexto  inválido"
@@ -5795,18 +5797,9 @@ msgstr "Rango de puerto inválido '%u-%u'."
 msgid "Invalid ports: %s"
 msgstr "Puerto inválido: %s"
 
-msgid "Invalid preceding regular expression"
-msgstr "Expresión regular anterior inválida "
-
 #, c-format
 msgid "Invalid prefix or netmask for '%s'"
 msgstr "Prefijo inválido o máscara de red para '%s'"
-
-msgid "Invalid range end"
-msgstr "Fin de rango inválido"
-
-msgid "Invalid regular expression"
-msgstr "Expresión regular inválida"
 
 #, c-format
 msgid "Invalid relative path '%s'"
@@ -5869,6 +5862,11 @@ msgstr ""
 "IPv6 '%s'"
 
 #, c-format
+msgid "Invalid type '%s' requested for parameter '%s', actual type is '%s'"
+msgstr ""
+"Tipo solicitado '%s' no es válido para el parámetro '%s', tipo actual es '%s'"
+
+#, c-format
 msgid ""
 "Invalid use of 'floor' on interface with MAC address %s - network '%s' has "
 "no inbound QoS set"
@@ -5883,6 +5881,26 @@ msgstr "Valor '%s' no válido parea la entrada VMX '%s'"
 #, c-format
 msgid "Invalid value '%s' for element or attribute '%s'"
 msgstr "Valor '%s' no válido para elemento o atributo '%s'"
+
+#, c-format
+msgid "Invalid value for field '%s': expected double"
+msgstr "Valor inválido para campo '%s': se esperaba double"
+
+#, c-format
+msgid "Invalid value for field '%s': expected int"
+msgstr "Valor inválido para campo '%s': se esperaba int"
+
+#, c-format
+msgid "Invalid value for field '%s': expected long long"
+msgstr "Valor inválido para campo '%s': se esperaba long long"
+
+#, c-format
+msgid "Invalid value for field '%s': expected unsigned int"
+msgstr "Valor inválido para campo '%s': se esperaba sin firma int "
+
+#, c-format
+msgid "Invalid value for field '%s': expected unsigned long long"
+msgstr "Valor inválido para campo '%s': se esperaba sin firma long long "
 
 msgid "Invalid value for number of CPUs to show"
 msgstr "Valor para número de CPU a mostrar es inválido"
@@ -6123,6 +6141,10 @@ msgstr "Memoria máxima, como  entero escalado (predeterminado Kib)"
 msgid "Max memory:"
 msgstr "Memoria máxima:"
 
+#, c-format
+msgid "Memory '%llu' must be less than %llu"
+msgstr "La memoria '%llu' debe ser menor que %llu"
+
 msgid "Memory allocation failure"
 msgstr "Falla en en alojamiento de la memoria"
 
@@ -6139,9 +6161,6 @@ msgstr "Cgroup de memoria no está disponible en este host"
 msgid "Memory during contention, as scaled integer (default KiB)"
 msgstr ""
 "Memoria durante contención,  como  entero escalado (predeterminado Kib)"
-
-msgid "Memory exhausted"
-msgstr "Memoria agotada"
 
 msgid "Memory processed:"
 msgstr "Memoria procesada:"
@@ -6226,6 +6245,10 @@ msgstr "No se encuentra la propiedad '%s'"
 msgid "Missing '%s' property while looking for ManagedEntityStatus"
 msgstr ""
 "No se ha encontrado la propiedad '%s' cuando se buscaba ManagedEntityStatus"
+
+#, c-format
+msgid "Missing '/' separator in cgroup mount '%s'"
+msgstr "Falta el separadro '/' en montaje de cgroup mount '%s'"
 
 msgid "Missing 'cores' attribute in CPU topology"
 msgstr "No se encuentra atributo 'cores' en la topología de CPU "
@@ -6619,6 +6642,10 @@ msgstr "NULL NetworkDef"
 msgid "NULL string parameter '%s'"
 msgstr "Parámetro de cadena NULL '%s'"
 
+#, c-format
+msgid "NULL value for field '%s'"
+msgstr "valor NULL para campo '%s'"
+
 msgid "NUMA cell number"
 msgstr "número de celda NUMA"
 
@@ -6868,9 +6895,6 @@ msgstr "No hay datos provistos para elemento <initarg> "
 msgid "No description for domain: %s"
 msgstr "No hay descripción para dominio: %s"
 
-msgid "No device found for specified path"
-msgstr "No se encontró  ruta especificada"
-
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
 msgstr "No existe un dispositivo con el bus '%s' y el destino '%s' "
@@ -6925,17 +6949,11 @@ msgstr "No se encontró interfaz con dirección MAC %s"
 msgid "No master USB controller specified"
 msgstr "No se especificó el controlador maestro de USB"
 
-msgid "No match"
-msgstr "No coinciden"
-
 msgid "No more available PCI slots"
 msgstr "No hay más ranuras PCI disponibles"
 
 msgid "No per-CPU stats available"
 msgstr "No hay estadísticas por CPU disponibles"
-
-msgid "No previous regular expression"
-msgstr " No hay expresiones regulares previas"
 
 msgid "No qemu command-line argument specified"
 msgstr "No se ha especificado un argumento de línea de comando qemu"
@@ -7512,9 +7530,6 @@ msgstr ""
 "Tal vez no tenga instaladas herramientas IBM en su LPAR. Comuníquese con su "
 "soporte técnico para habilitar esto en el futuro."
 
-msgid "Premature end of regular expression"
-msgstr "Final prematuro de expresión regular"
-
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr ""
 "Se ha llamado a PrepareTunnel, pero no se ha definido una marca  TUNNELLED"
@@ -7719,9 +7734,6 @@ msgstr "Valor de registro '%s\\%s' tiene un tipo  inesperado"
 #, c-format
 msgid "Registry value '%s\\%s' is too short"
 msgstr "Valor de registro '%s\\%s' es demasiado corto"
-
-msgid "Regular expression too big"
-msgstr "Expresión regular demasiado grande"
 
 #, c-format
 msgid "Remote command terminated with non-zero code: %d"
@@ -8437,9 +8449,6 @@ msgid "Stream data too long to send (%zu bytes needed, %zu bytes available)"
 msgstr ""
 "Flujo de datos demasiado largo para envío (se requieren %zu bytes, %zu bytes "
 "disponibles)"
-
-msgid "Success"
-msgstr "Éxito"
 
 msgid "Successfully copied"
 msgstr "Copió con éxito"
@@ -9185,9 +9194,6 @@ msgstr "Total"
 msgid "Total:\n"
 msgstr "Total:\n"
 
-msgid "Trailing backslash"
-msgstr "Barra invertida al final"
-
 msgid "Transition started"
 msgstr "Transición ha iniciado"
 
@@ -9473,6 +9479,10 @@ msgstr "No se puede crear dispositivo de puente "
 #, c-format
 msgid "Unable to create device %s"
 msgstr "No se puede crear dispositivo %s"
+
+#, c-format
+msgid "Unable to create directory %s"
+msgstr "No se  puede crear directorio %s"
 
 msgid "Unable to create epoll fd"
 msgstr "No se puede crear FD epoll"
@@ -10254,6 +10264,10 @@ msgid "Unable to stat bind target %s"
 msgstr "No se puede 'stat bind' target %s"
 
 #, c-format
+msgid "Unable to symlink directory %s to %s"
+msgstr "No se  puede 'symlink' el directorio %s a %s"
+
+#, c-format
 msgid "Unable to truncate %s"
 msgstr "No es posible truncar %s"
 
@@ -10617,15 +10631,6 @@ msgstr "Valor '%s' desconocido para xsd:boolean"
 msgid "Unknown vendor %s referenced by CPU model %s"
 msgstr ""
 "Un vendedor %s desconocido ha sido referenciado por el modelo de CPU %s"
-
-msgid "Unmatched ( or \\("
-msgstr "No coincidente ( o \\("
-
-msgid "Unmatched ) or \\)"
-msgstr "No coincidentes) o \\)"
-
-msgid "Unmatched \\{"
-msgstr "No coincidente \\{"
 
 #, c-format
 msgid "Unrecognized family '%s' in network '%s'"
@@ -11193,14 +11198,6 @@ msgstr "Cantidad de datos a descargar"
 
 msgid "amount of data to upload"
 msgstr "Cantidad de datos a cargar"
-
-#, c-format
-msgid ""
-"an interface connecting to network '%s' is requesting a vlan tag, but that "
-"is not supported for this type of network"
-msgstr ""
-"Una interfaz que se conecta a red '%s' está solicitando una etiqueta de "
-"vlan, pero que no tiene soporte para esta tipo de red"
 
 msgid "apparmor_parser exited with error"
 msgstr "apparmor_parser salió con error"
@@ -12465,6 +12462,14 @@ msgstr "cellNum en %s debe ser menor que o igual a %d"
 msgid "cellNum in %s only accepts %d as a negative value"
 msgstr "cellNum en %s únicamente acepta %d como un valor negativo"
 
+#, c-format
+msgid "cfs_period '%llu' must be in range (1000, 1000000)"
+msgstr "cfs_period '%llu' debe estar en el rango (1000, 1000000)"
+
+#, c-format
+msgid "cfs_quota '%lld' must be in range (1000, %llu)"
+msgstr "cfs_quota '%lld' debe estar en el rango (1000, %llu)"
+
 msgid "cgroup CPU controller is not mounted"
 msgstr "No está montado el controlador de CPU cgroup "
 
@@ -12702,18 +12707,6 @@ msgstr "Cadena de profileid corrupta"
 
 msgid "could not allocate memory"
 msgstr "No se pudo asignar memoria"
-
-msgid "could not allocate memory for disk"
-msgstr "No se pudo asignar memoria para disco"
-
-msgid "could not allocate memory for profile"
-msgstr "No se pudo asignar memoria para perfil"
-
-msgid "could not allocate memory for profile files"
-msgstr "No se pudo  asignar memoria a archivos de perfil"
-
-msgid "could not allocate memory for profile name"
-msgstr "No se pudo asignar memoria para nombre de perfil"
 
 #, c-format
 msgid "could not attach shared folder '%s', rc=%08x"
@@ -13622,6 +13615,9 @@ msgstr "información de trabajo de dominio"
 msgid "domain name or uuid"
 msgstr "nombre del dominio o uuid"
 
+msgid "domain name, id or uuid"
+msgstr "nombre del dominio, ID o uuid"
+
 msgid "domain save job"
 msgstr "tarea de guardado de dominio "
 
@@ -13976,12 +13972,6 @@ msgstr ""
 "Falló al añadir nuevas reglas de filtro a '%s' - intentando restaurar reglas "
 "anteriores"
 
-msgid "failed to allocate buffer"
-msgstr "Falló la asignación de buffer"
-
-msgid "failed to allocate file buffer"
-msgstr "Falló asignar buffer de archivo"
-
 #, c-format
 msgid "failed to apply capabilities: %d"
 msgstr "Falló al aplicar capacidades: %d"
@@ -14019,9 +14009,6 @@ msgstr "Falló  la conexión  al monitor RADOS en: %s"
 
 msgid "failed to connect to the hypervisor"
 msgstr "Falló al conectar con el hipervisor"
-
-msgid "failed to copy security label"
-msgstr "Falló la copia de etiqueta de seguridad"
 
 #, c-format
 msgid "failed to create %s"
@@ -15765,10 +15752,6 @@ msgstr "la máquina no está ejecutándose, de modo que no es posible reiniciarl
 msgid "machine paused, so can't power it down"
 msgstr "la máquina ha sido pausada, de modo que no puede apagarse"
 
-#, c-format
-msgid "machine type %s too big for destination"
-msgstr "Tipo de máquina %s es demasiado grande para destino"
-
 msgid "make live change persistent"
 msgstr "Hacer el cambio en vivo persistente"
 
@@ -16382,14 +16365,6 @@ msgid ""
 msgstr ""
 "mkfs no tiene soporte en  esta plataforma: Falló crear sistema de archivos  "
 "tipo '%s' en el dispositivo '%s'"
-
-#, c-format
-msgid "mkostemp(\"%s\") failed"
-msgstr "mkostemp(\"%s\") falló"
-
-#, c-format
-msgid "mkostemps: failed to create temporary file: %s"
-msgstr "mkostemps: no se pudo crear archivo temporal: %s"
 
 msgid "mode of device reading and writing"
 msgstr "modo del dispositivo leyendo y escribiendo"
@@ -17269,6 +17244,10 @@ msgstr "El parámetro '%s' se  presenta varias veces"
 msgid "parameter=value"
 msgstr "parameter=value"
 
+#, c-format
+msgid "parent %s would create cycle to %s"
+msgstr "El padre %s crearía ciclo para %s"
+
 msgid "parser error"
 msgstr "error de examinador"
 
@@ -17500,9 +17479,6 @@ msgstr "Perfil no existe"
 
 msgid "profile exists"
 msgstr "Existe perfil"
-
-msgid "profile name exceeds maximum length"
-msgstr "nombre de perfil excede la longitud máxima"
 
 msgid "profileid parameter too long"
 msgstr "El parámetro profileid es demasiado extenso"
@@ -18404,9 +18380,6 @@ msgstr "no existe el modelo '%s'"
 
 msgid "template does not exist"
 msgstr "Plantilla no existe"
-
-msgid "template name exceeds maximum length"
-msgstr "Nombre de plantilla excede longitud máxima"
 
 msgid "terminate gracefully"
 msgstr "terminar "

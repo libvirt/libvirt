@@ -7,9 +7,9 @@
 # Marko Mijatovic <jomi86@gmail.com>, 2008.
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.9.0\n"
+"Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-10-18 13:39+0100\n"
+"POT-Creation-Date: 2019-12-16 16:39+0000\n"
 "PO-Revision-Date: 2015-03-03 06:01+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Serbian (Latin) (http://www.transifex.com/projects/p/fedora/"
@@ -68,10 +68,6 @@ msgstr "  IME\n"
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: neuspelo zauzimanje %d bajtova"
-
-#, c-format
-msgid "%s: %d: failed to allocate %lu bytes"
-msgstr "%s: %d: neuspelo zauzimanje %lu bajtova"
 
 #, c-format
 msgid "%s: failed to write log file: %s"
@@ -1163,6 +1159,9 @@ msgstr "domen se ne izvršava"
 
 msgid "domain name or uuid"
 msgstr "ime domena ili uuid"
+
+msgid "domain name, id or uuid"
+msgstr "ime domena, id ili uuid"
 
 msgid "domain state"
 msgstr "stanje domena"

@@ -11,9 +11,9 @@
 # Robert Antoni Buj Gelonch <rbuj@fedoraproject.org>, 2018. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.9.0\n"
+"Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-10-18 13:39+0100\n"
+"POT-Creation-Date: 2019-12-16 16:39+0000\n"
 "PO-Revision-Date: 2018-02-24 11:19+0000\n"
 "Last-Translator: Robert Antoni Buj Gelonch <rbuj@fedoraproject.org>\n"
 "Language-Team: Catalan (http://www.transifex.com/projects/p/libvirt/language/"
@@ -72,10 +72,6 @@ msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: no s'ha pogut assignar %d bytes"
 
 #, c-format
-msgid "%s: %d: failed to allocate %lu bytes"
-msgstr "%s: %d: no s'ha pogut assignar %lu bytes"
-
-#, c-format
 msgid "%s: %d: failed to allocate mountpoints"
 msgstr "%s: %d: ha fallat l'assignació dels punts de muntatge"
 
@@ -126,9 +122,6 @@ msgstr "Quantitat de CPU:"
 
 msgid "CPU:"
 msgstr "CPU:"
-
-msgid "Can't allocate memory"
-msgstr "No es pot assignar memòria"
 
 msgid "Can't create initial configuration"
 msgstr "No es pot crear la configuració inicial"
@@ -896,6 +889,9 @@ msgstr "el domini no s'està executant"
 
 msgid "domain name or uuid"
 msgstr "nom de domini o uuid"
+
+msgid "domain name, id or uuid"
+msgstr "nom de domini, id o uuid"
 
 msgid "domain state"
 msgstr "estat del domini"

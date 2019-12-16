@@ -10,9 +10,9 @@
 # Silvio Pierro <perplesso82@gmail.com>, 2009
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.9.0\n"
+"Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-10-18 13:39+0100\n"
+"POT-Creation-Date: 2019-12-16 16:39+0000\n"
 "PO-Revision-Date: 2015-02-27 05:14+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Italian (http://www.transifex.com/projects/p/libvirt/language/"
@@ -90,10 +90,6 @@ msgstr "%s non implementato su Win32"
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: impossibile allocare %d byte"
-
-#, c-format
-msgid "%s: %d: failed to allocate %lu bytes"
-msgstr "%s: %d: impossibile allocare %lu bytes"
 
 #, c-format
 msgid "%s: %s"
@@ -3473,6 +3469,9 @@ msgstr "Il dominio non è in esecuzione"
 
 msgid "domain name or uuid"
 msgstr "nome del dominio o uuid"
+
+msgid "domain name, id or uuid"
+msgstr "nome del dominio, id o uuid"
 
 msgid "domain state"
 msgstr "stato del dominio"

@@ -22,9 +22,9 @@
 # Jean-Baptiste Holcroft <jean-baptiste@holcroft.fr>, 2019. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.9.0\n"
+"Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-10-18 13:39+0100\n"
+"POT-Creation-Date: 2019-12-16 16:39+0000\n"
 "PO-Revision-Date: 2019-08-30 08:18+0000\n"
 "Last-Translator: Jean-Baptiste Holcroft <jean-baptiste@holcroft.fr>\n"
 "Language-Team: French <trans-fr@lists.fedoraproject.org>\n"
@@ -129,10 +129,6 @@ msgstr ""
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s : %d : impossible d'allouer %d octets"
-
-#, c-format
-msgid "%s: %d: failed to allocate %lu bytes"
-msgstr "%s : %d : impossible d'allouer %lu octets"
 
 #, c-format
 msgid "%s: %s"
@@ -475,9 +471,6 @@ msgstr ""
 msgid "Can't add host USB device: USB is disabled in this host"
 msgstr ""
 "Impossible d'ajouter le périphérique USB hôte : USB désactivé sur cet hôte"
-
-msgid "Can't allocate memory"
-msgstr "Impossible d'allouer de la mémoire"
 
 msgid "Can't create initial configuration"
 msgstr "Impossible de créer la configuration initiale"
@@ -1169,9 +1162,6 @@ msgstr "Valeur allow invalide, soit « oui » ou « non »"
 msgid "Invalid argument"
 msgstr "Argument invalide"
 
-msgid "Invalid back reference"
-msgstr "Référence inverse invalide"
-
 #, c-format
 msgid "Invalid bus type '%s' for disk"
 msgstr "Type de bus « %s » invalide pour un disque"
@@ -1185,15 +1175,6 @@ msgstr "Appel invalide"
 
 msgid "Invalid call, no mutex"
 msgstr "appel invalide, aucun mutex"
-
-msgid "Invalid character class name"
-msgstr "Nom de classe de caractères invalide"
-
-msgid "Invalid collation character"
-msgstr "Caractère d'interclassement invalide"
-
-msgid "Invalid content of \\{\\}"
-msgstr "Contenu invalide de « \\{\\} »"
 
 msgid "Invalid fallback attribute"
 msgstr "Attribut fallback invalide"
@@ -1250,15 +1231,6 @@ msgstr "Numéro de port invalide: %s"
 msgid "Invalid ports: %s"
 msgstr "Ports invalides: %s"
 
-msgid "Invalid preceding regular expression"
-msgstr "Expression rationnelle précédente invalide"
-
-msgid "Invalid range end"
-msgstr "Fin de plage invalide"
-
-msgid "Invalid regular expression"
-msgstr "Expression rationnelle invalide"
-
 #, c-format
 msgid ""
 "Invalid specification for virtio ccw address: cssid='%s' ssid='%s' devno='%s'"
@@ -1301,9 +1273,6 @@ msgstr "Mémoire Max :"
 
 msgid "Memory allocation failure"
 msgstr "Échec d'allocation de mémoire"
-
-msgid "Memory exhausted"
-msgstr "Mémoire épuisée"
 
 msgid "Memory size:"
 msgstr "Taille mémoire :"
@@ -1497,12 +1466,6 @@ msgstr "Pas de message d'erreur fourni"
 msgid "No master USB controller specified"
 msgstr "Aucun contrôleur USB maître spécifié"
 
-msgid "No match"
-msgstr "Aucune correspondance"
-
-msgid "No previous regular expression"
-msgstr "Aucune expression rationnelle précédente"
-
 msgid "No type specified for device address"
 msgstr "Aucun type spécifié pour l'adresse de pérphérique"
 
@@ -1631,9 +1594,6 @@ msgstr "Pool %s démarré\n"
 msgid "Pool %s unmarked as autostarted\n"
 msgstr "Le pool %s ne démarrera plus automatiquement\n"
 
-msgid "Premature end of regular expression"
-msgstr "Fin prématurée de l'expression rationnelle"
-
 msgid "Processing request in progress"
 msgstr "Traitement de la requête en cours"
 
@@ -1642,9 +1602,6 @@ msgstr "erreur RPC"
 
 msgid "Refresh a given pool."
 msgstr "Rafraichir le pool indiqué."
-
-msgid "Regular expression too big"
-msgstr "Expression rationnelle trop grande"
 
 #, c-format
 msgid "Release %s %o failed"
@@ -1766,9 +1723,6 @@ msgstr "Volume de stockage introuvable"
 #, c-format
 msgid "Storage volume not found: %s"
 msgstr "Volume de stockage introuvable : %s"
-
-msgid "Success"
-msgstr "Succès"
 
 msgid "Suspend a running domain."
 msgstr "Suspendre un domaine en cours d'exécution"
@@ -2046,9 +2000,6 @@ msgstr "Thread(s) par coeur :"
 msgid "Total"
 msgstr "Total"
 
-msgid "Trailing backslash"
-msgstr "Barre oblique inverse à la fin"
-
 msgid ""
 "Tune threadpool attributes on a server. See OPTIONS for currently supported "
 "attributes."
@@ -2211,18 +2162,6 @@ msgstr "Politique de démarrage « %s » inconnue"
 #, c-format
 msgid "Unknown value '%s' for <address> 'multifunction' attribute"
 msgstr "Valeur inconnue « %s » pour l'attribut « multifunction » <address>"
-
-msgid "Unmatched ( or \\("
-msgstr "« ( » ou « \\( » non fermé"
-
-msgid "Unmatched ) or \\)"
-msgstr "« ) » ou « \\) » non ouvert"
-
-msgid "Unmatched [, [^, [:, [., or [="
-msgstr "[, [^, [:, [., ou [= non fermé"
-
-msgid "Unmatched \\{"
-msgstr "« { » non fermé"
 
 #, c-format
 msgid "Unsupported CPU placement mode '%s'"
@@ -2716,6 +2655,9 @@ msgstr "le domaine n'est pas actif"
 msgid "domain name or uuid"
 msgstr "nom du domaine ou UUID"
 
+msgid "domain name, id or uuid"
+msgstr "nom du domaine, ID ou UUID"
+
 msgid "domain state"
 msgstr "état du domaine"
 
@@ -2770,9 +2712,6 @@ msgstr "affectation attendue"
 
 msgid "failed to connect to the hypervisor"
 msgstr "impossible de se connecter à l'hyperviseur"
-
-msgid "failed to copy security label"
-msgstr "Impossible de copier le module de sécurité"
 
 msgid "failed to generate XML"
 msgstr "impossible de créer XML"

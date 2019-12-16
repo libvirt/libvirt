@@ -17,9 +17,9 @@
 # Tomoyuki KATO <tomo@dream.daynight.jp>, 2011-2014
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.9.0\n"
+"Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-10-18 13:39+0100\n"
+"POT-Creation-Date: 2019-12-16 16:39+0000\n"
 "PO-Revision-Date: 2015-02-23 06:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/libvirt/"
@@ -277,10 +277,6 @@ msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: %d バイトを割り当てるのに失敗しました"
 
 #, c-format
-msgid "%s: %d: failed to allocate %lu bytes"
-msgstr "%s: %d: %lu バイトを割り当てるのに失敗しました"
-
-#, c-format
 msgid "%s: %d: failed to allocate argv"
 msgstr "%s: %d: 引数の割り当てに失敗しました"
 
@@ -463,6 +459,11 @@ msgstr "guest-get-vcpus の応答に 'logical-id' がありません"
 
 msgid "'online' missing in reply of guest-get-vcpus"
 msgstr "guest-get-vcpus の応答に 'online' がありません"
+
+msgid "'parent' for vHBA not specified, and cannot find one on this host"
+msgstr ""
+"vHBA の 'parent' が指定されていません。また、このホストにおいて見つけられませ"
+"ん"
 
 msgid "'peak' and 'burst' require 'average' attribute"
 msgstr "'peak' および 'burst' は 'average' 属性が必要です"
@@ -1104,12 +1105,13 @@ msgid "Can't add host USB device: USB is disabled in this host"
 msgstr ""
 "ホスト USB デバイスを追加できません: このホストの USB が無効化されています"
 
-msgid "Can't allocate memory"
-msgstr "メモリーを割り当てられません"
-
 #, sh-format
 msgid "Can't connect to $uri. Skipping."
 msgstr "$uri に接続できません。飛ばします。"
+
+#, c-format
+msgid "Can't create %s container: %s"
+msgstr "%s コンテナーを作成できません: %s"
 
 msgid "Can't create initial configuration"
 msgstr "初期設定を作成できません"
@@ -1255,6 +1257,9 @@ msgstr "バルーンデバイスパスがわかりませんでした"
 
 msgid "Cannot determine free memory"
 msgstr "空きメモリーがわかりません"
+
+msgid "Cannot determine system clock HZ"
+msgstr "システムのクロック周波数がわかりません"
 
 msgid "Cannot disable close-on-exec flag"
 msgstr "close-on-exec フラグを無効化できません"
@@ -1459,6 +1464,14 @@ msgid "Cannot parse start time %s in %s"
 msgstr "開始時間 %s (%s) を構文解析できません"
 
 #, c-format
+msgid "Cannot parse sys stat '%s'"
+msgstr "sys 統計情報 '%s' を構文解析できません"
+
+#, c-format
+msgid "Cannot parse user stat '%s'"
+msgstr "user 統計情報 '%s' を構文解析できません"
+
+#, c-format
 msgid "Cannot read %s '%s'"
 msgstr "%s '%s' を読み込めません"
 
@@ -1575,6 +1588,10 @@ msgstr "初期化していない CURL ハンドルを共有できません"
 #, c-format
 msgid "Cannot specify a label if relabelling is turned off. model=%s"
 msgstr "再ラベルが無効にされていると、ラベルを指定できません。model=%s"
+
+#, c-format
+msgid "Cannot stat %s"
+msgstr "%s を統計できません"
 
 #, c-format
 msgid "Cannot stat '%s'"
@@ -1964,9 +1981,6 @@ msgstr "ホームディレクトリーが決定できませんでした"
 msgid "Could not determine kernel version from string %s"
 msgstr "文字列 %s からカーネルバージョンを決定できませんでした"
 
-msgid "Could not disable SIGPIPE"
-msgstr "SIGPIPE を無効化できませんでした"
-
 #, c-format
 msgid "Could not dlsym %s from '%s': %s"
 msgstr "dlsym %s を '%s' から実行できませんでした: %s"
@@ -2036,6 +2050,10 @@ msgstr "絶対パス '%s' を含んでいるデータストアを見つけられ
 #, c-format
 msgid "Could not find datastore with name '%s'"
 msgstr "名前 '%s' を持つデータストアを見つけられませんでした"
+
+#, c-format
+msgid "Could not find directory separator in %s"
+msgstr "%s にディレクトリのセパレーターを見つけられませんでした"
 
 #, c-format
 msgid "Could not find domain snapshot with internal name '%s'"
@@ -2380,9 +2398,6 @@ msgstr "'%s' からバージョン番号を構文解析できませんでした"
 #, c-format
 msgid "Could not query registry value '%s\\%s'"
 msgstr "レジストリ値 '%s\\%s' を問い合わせできませんでした"
-
-msgid "Could not re-enable SIGPIPE"
-msgstr "SIGPIPE を再有効化できませんでした"
 
 #, c-format
 msgid "Could not read '%s' from config for container %d"
@@ -3550,6 +3565,10 @@ msgid "Failed to begin network config change transaction"
 msgstr "ネットワーク設定変更トランザクションを開始できませんでした"
 
 #, c-format
+msgid "Failed to bind cgroup '%s' on '%s'"
+msgstr "cgroup '%s' を '%s' にバインドできませんでした"
+
+#, c-format
 msgid "Failed to bind mount directory %s to %s"
 msgstr "マウントディレクトリー %s を %s にバインドできませんでした"
 
@@ -3608,12 +3627,6 @@ msgstr "バインドターゲット %s の終了に失敗しました"
 
 msgid "Failed to collect auth credentials"
 msgstr "認証情報の収集に失敗しました"
-
-msgid "Failed to collect command"
-msgstr "コマンドを収集できませんでした"
-
-msgid "Failed to collect new description/title"
-msgstr "新しい説明・タイトルの収集に失敗しました"
 
 msgid "Failed to commit network config change transaction"
 msgstr "ネットワーク設定変更トランザクションのコミットに失敗しました"
@@ -3711,9 +3724,6 @@ msgstr "デバイス %s 用のディレクトリの作成に失敗しました"
 
 msgid "Failed to create disk pool geometry"
 msgstr "ディスクプールの位置情報の作成に失敗しました"
-
-msgid "Failed to create display URI"
-msgstr "ディスプレイ URI の作成に失敗しました"
 
 #, c-format
 msgid "Failed to create domain from %s"
@@ -4279,6 +4289,10 @@ msgstr "ドメイン %s の自動起動の設定に失敗しました"
 #, c-format
 msgid "Failed to mkdir %s"
 msgstr "ディレクトリー %s の作成に失敗しました"
+
+#, c-format
+msgid "Failed to mount %s on %s type %s"
+msgstr "%s を %s に %s 形式でマウントできませんでした"
 
 #, c-format
 msgid "Failed to mount %s on /dev"
@@ -5587,8 +5601,9 @@ msgstr "不正な引数"
 msgid "Invalid authentication method: '%s'"
 msgstr "無効な認証方式: '%s'"
 
-msgid "Invalid back reference"
-msgstr "無効な逆参照"
+#, c-format
+msgid "Invalid boolean value for field '%s'"
+msgstr "項目 '%s' に対する無効な論理値"
 
 #, c-format
 msgid "Invalid bridge mac address '%s' in network '%s'"
@@ -5629,15 +5644,9 @@ msgstr ""
 msgid "Invalid character '%c' in id '%s' of network '%s'"
 msgstr "無効な文字 '%c' が ID '%s' のネットワーク '%s' にあります"
 
-msgid "Invalid character class name"
-msgstr "無効な文字クラス名"
-
 #, c-format
 msgid "Invalid class ID %d"
 msgstr "無効なクラス ID %d"
-
-msgid "Invalid collation character"
-msgstr "無効な照合文字"
 
 #, c-format
 msgid "Invalid collection period value '%d'"
@@ -5646,9 +5655,6 @@ msgstr "無効な統計情報収集間隔 '%d'"
 #, c-format
 msgid "Invalid compressed save format %d"
 msgstr "無効な圧縮保存形式 %d"
-
-msgid "Invalid content of \\{\\}"
-msgstr "\\{\\} の内容が無効です"
 
 msgid "Invalid context"
 msgstr "無効なコンテキスト"
@@ -5838,18 +5844,9 @@ msgstr "無効なポート範囲 '%u-%u'。"
 msgid "Invalid ports: %s"
 msgstr "無効なポート: %s"
 
-msgid "Invalid preceding regular expression"
-msgstr "先行の無効な正規表現"
-
 #, c-format
 msgid "Invalid prefix or netmask for '%s'"
 msgstr "'%s' に対する無効なプレフィックスまたはネットマスク"
-
-msgid "Invalid range end"
-msgstr "範囲の終了が無効です"
-
-msgid "Invalid regular expression"
-msgstr "無効な正規表現"
 
 #, c-format
 msgid "Invalid relative path '%s'"
@@ -5910,6 +5907,12 @@ msgstr ""
 "ることは無効です"
 
 #, c-format
+msgid "Invalid type '%s' requested for parameter '%s', actual type is '%s'"
+msgstr ""
+"無効な形式 '%s' がパラメーター '%s' に対して要求されました、実際の形式は "
+"'%s' です"
+
+#, c-format
 msgid ""
 "Invalid use of 'floor' on interface with MAC address %s - network '%s' has "
 "no inbound QoS set"
@@ -5920,6 +5923,26 @@ msgstr ""
 #, c-format
 msgid "Invalid value '%s' for VMX entry '%s'"
 msgstr "無効な値 '%s' が VMX エントリー '%s' にあります"
+
+#, c-format
+msgid "Invalid value for field '%s': expected double"
+msgstr "項目 '%s' に対する無効な値: double 型が期待されます"
+
+#, c-format
+msgid "Invalid value for field '%s': expected int"
+msgstr "項目 '%s' に対する無効な値: int 型が期待されます"
+
+#, c-format
+msgid "Invalid value for field '%s': expected long long"
+msgstr "項目 '%s' に対する無効な値: long long 型が期待されます"
+
+#, c-format
+msgid "Invalid value for field '%s': expected unsigned int"
+msgstr "項目 '%s' に対する無効な値: 符号なし int 型が期待されます"
+
+#, c-format
+msgid "Invalid value for field '%s': expected unsigned long long"
+msgstr "項目 '%s' に対する無効な値: 符号なし long long 型が期待されます"
 
 msgid "Invalid value for number of CPUs to show"
 msgstr "表示する CPU 数の無効な値"
@@ -6162,6 +6185,10 @@ msgstr "メモリーの最大値、単位付き整数 (初期値 KiB)"
 msgid "Max memory:"
 msgstr "最大メモリー:"
 
+#, c-format
+msgid "Memory '%llu' must be less than %llu"
+msgstr "メモリ '%llu' は %llu より小さくなければいけません"
+
 msgid "Memory allocation failure"
 msgstr "メモリーの割り当てに失敗しました"
 
@@ -6177,9 +6204,6 @@ msgstr "メモリー cgroup はこのホストにおいて利用可能ではあ�
 
 msgid "Memory during contention, as scaled integer (default KiB)"
 msgstr "競合中のメモリー、単位付き整数 (初期値 KiB)"
-
-msgid "Memory exhausted"
-msgstr "メモリーを消費しつくしました"
 
 msgid "Memory processed:"
 msgstr "処理済みメモリー:"
@@ -6272,6 +6296,10 @@ msgstr "'%s' プロパティがありません"
 #, c-format
 msgid "Missing '%s' property while looking for ManagedEntityStatus"
 msgstr "ManagedEntityStatus を検索中に '%s' プロパティがありませんでした"
+
+#, c-format
+msgid "Missing '/' separator in cgroup mount '%s'"
+msgstr "cgroup のマウント '%s' に区切り文字 '/' がありません"
 
 msgid "Missing 'cores' attribute in CPU topology"
 msgstr "CPU トポロジーに 'cores' 属性がありません"
@@ -6664,6 +6692,10 @@ msgstr "空の NetworkDef"
 msgid "NULL string parameter '%s'"
 msgstr "NULL 文字列パラメーター '%s'"
 
+#, c-format
+msgid "NULL value for field '%s'"
+msgstr "項目 '%s' の値が空白です"
+
 msgid "NUMA cell number"
 msgstr "NUMA セル番号"
 
@@ -6910,9 +6942,6 @@ msgstr "<initarg> 要素にデータがありません"
 msgid "No description for domain: %s"
 msgstr "ドメインの説明がありません: %s"
 
-msgid "No device found for specified path"
-msgstr "指定されたパスにデバイスが見つかりませんでした"
-
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
 msgstr "バス '%s' とターゲット '%s' を持つデバイスはありません"
@@ -6978,17 +7007,11 @@ msgstr "MAC アドレス %s を持つインターフェースが見つかりま�
 msgid "No master USB controller specified"
 msgstr "マスター USB コントローラーが指定されていません"
 
-msgid "No match"
-msgstr "一致しません"
-
 msgid "No more available PCI slots"
 msgstr "利用可能な PCI スロットがありません"
 
 msgid "No per-CPU stats available"
 msgstr "利用可能な CPU ごとの統計がありません"
-
-msgid "No previous regular expression"
-msgstr "前の正規表現がありません"
 
 msgid "No qemu command-line argument specified"
 msgstr "QEMU コマンドライン引数が指定されていません"
@@ -7552,9 +7575,6 @@ msgstr ""
 "おそらく、LPAR に IBM Tools がインストールされていません。この機能を有効にす"
 "るには、あなたのサポートに連絡してください。"
 
-msgid "Premature end of regular expression"
-msgstr "正規表現の不完全な終端"
-
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr ""
 "PrepareTunnel が呼び出されましたが、TUNNELLED フラグが設定されていません"
@@ -7767,9 +7787,6 @@ msgstr "レジストリ値 '%s\\%s' は予期しない形式です"
 #, c-format
 msgid "Registry value '%s\\%s' is too short"
 msgstr "レジストリ値 '%s\\%s' は短すぎます"
-
-msgid "Regular expression too big"
-msgstr "正規表現が長すぎます"
 
 #, c-format
 msgid "Remote command terminated with non-zero code: %d"
@@ -8493,9 +8510,6 @@ msgid "Stream data too long to send (%zu bytes needed, %zu bytes available)"
 msgstr ""
 "ストリームデータが送信するには長すぎます (%zu バイト必要, %zu バイト利用可能)"
 
-msgid "Success"
-msgstr "成功"
-
 msgid "Successfully copied"
 msgstr "正常にコピーしました"
 
@@ -9199,9 +9213,6 @@ msgstr "合計"
 msgid "Total:\n"
 msgstr "合計:\n"
 
-msgid "Trailing backslash"
-msgstr "トレイリングバックスラッシュ"
-
 msgid "Transition started"
 msgstr "転送が開始されました"
 
@@ -9424,6 +9435,10 @@ msgid "Unable to change to root dir"
 msgstr "root ディレクトリーを変更できません"
 
 #, c-format
+msgid "Unable to chdir(%s)"
+msgstr "chdir(%s) できません"
+
+#, c-format
 msgid "Unable to check interface %s"
 msgstr "インターフェース %s をチェックできません"
 
@@ -9492,6 +9507,10 @@ msgstr "ブリッジデバイスを作成できません"
 #, c-format
 msgid "Unable to create device %s"
 msgstr "デバイス %s を作成できません"
+
+#, c-format
+msgid "Unable to create directory %s"
+msgstr "ディレクトリー %s を作成できません"
 
 msgid "Unable to create epoll fd"
 msgstr "epoll ファイルディスクリプターを作成できません"
@@ -9646,6 +9665,10 @@ msgstr "メッセージペイロードをエンコードできません"
 
 msgid "Unable to encode number of FDs"
 msgstr "ファイル記述子数をエンコードできません"
+
+#, c-format
+msgid "Unable to exec shell %s"
+msgstr "シェル %s を実行できません"
 
 msgid "Unable to find 'cpuacct' cgroups controller mount"
 msgstr "'cpuacct' cgroup コントローラーのマウントを確認できません"
@@ -10280,6 +10303,10 @@ msgid "Unable to stat bind target %s"
 msgstr "バインドターゲット %s の統計を取得できません"
 
 #, c-format
+msgid "Unable to symlink directory %s to %s"
+msgstr "ディレクトリー %s を %s にシンボリックリンクできません"
+
+#, c-format
 msgid "Unable to truncate %s"
 msgstr "%s を切り詰められません"
 
@@ -10645,15 +10672,6 @@ msgstr "xsd:boolean に対して不明な値 '%s' があります"
 #, c-format
 msgid "Unknown vendor %s referenced by CPU model %s"
 msgstr "不明なベンダー %s が CPU モデル %s により参照されています"
-
-msgid "Unmatched ( or \\("
-msgstr "( または \\( が一致しませんでした"
-
-msgid "Unmatched ) or \\)"
-msgstr ") または \\) が一致しませんでした"
-
-msgid "Unmatched \\{"
-msgstr "\\{ が一致しませんでした"
 
 #, c-format
 msgid "Unrecognized family '%s' in network '%s'"
@@ -11221,14 +11239,6 @@ msgstr "ダウンロードするデータの量"
 
 msgid "amount of data to upload"
 msgstr "アップロードするデータの量"
-
-#, c-format
-msgid ""
-"an interface connecting to network '%s' is requesting a vlan tag, but that "
-"is not supported for this type of network"
-msgstr ""
-"ネットワーク '%s' に接続しているインターフェースは VLAN タグが必要です。しか"
-"し、この形式のネットワークに対してサポートされません。"
 
 msgid "apparmor_parser exited with error"
 msgstr "apparmor_parser がエラー終了しました"
@@ -12491,6 +12501,14 @@ msgstr "%s の cellNum は %d より小さいか同じである必要があり�
 msgid "cellNum in %s only accepts %d as a negative value"
 msgstr "%s の cellNum は負の値として %d のみを受け付けます"
 
+#, c-format
+msgid "cfs_period '%llu' must be in range (1000, 1000000)"
+msgstr "cfs_period '%llu' は (1000, 1000000) の範囲にある必要があります"
+
+#, c-format
+msgid "cfs_quota '%lld' must be in range (1000, %llu)"
+msgstr "cfs_quota '%lld' は (1000, %llu) の範囲にある必要があります"
+
 msgid "cgroup CPU controller is not mounted"
 msgstr "cgroup CPU コントローラーがマウントされていません"
 
@@ -12723,18 +12741,6 @@ msgstr "破損した profileid 文字列"
 
 msgid "could not allocate memory"
 msgstr "メモリーを割り当てられませんでした"
-
-msgid "could not allocate memory for disk"
-msgstr "ディスクに対してメモリーを割り当てられませんでした"
-
-msgid "could not allocate memory for profile"
-msgstr "プロファイルに対してメモリーを割り当てられませんでした"
-
-msgid "could not allocate memory for profile files"
-msgstr "プロファイルファイル向けにメモリーを割り当てられませんでした"
-
-msgid "could not allocate memory for profile name"
-msgstr "プロファイル名のためにメモリーを割り当てできませんでした"
 
 #, c-format
 msgid "could not attach shared folder '%s', rc=%08x"
@@ -13639,6 +13645,9 @@ msgstr "ドメインのジョブ情報"
 msgid "domain name or uuid"
 msgstr "ドメインの名前または UUID"
 
+msgid "domain name, id or uuid"
+msgstr "ドメインの名前、ID または UUID"
+
 msgid "domain save job"
 msgstr "ドメイン保存ジョブ"
 
@@ -14000,12 +14009,6 @@ msgstr ""
 "新しいフィルタールールを '%s' に追加することに失敗しました - 古いルールを復元"
 "しています"
 
-msgid "failed to allocate buffer"
-msgstr "バッファーの割り当てに失敗しました"
-
-msgid "failed to allocate file buffer"
-msgstr "ファイルバッファーを割り当てられませんでした"
-
 #, c-format
 msgid "failed to apply capabilities: %d"
 msgstr "ケイパビリティの適用に失敗しました: %d"
@@ -14050,9 +14053,6 @@ msgstr "ハイパーバイザーへの接続に失敗しました"
 
 msgid "failed to convert the XML node tree"
 msgstr "XML ノードツリーの変換に失敗しました"
-
-msgid "failed to copy security label"
-msgstr "セキュリティラベルのコピーに失敗しました"
 
 #, c-format
 msgid "failed to create %s"
@@ -15862,10 +15862,6 @@ msgstr "マシンが実行中ではないので、再起動できません"
 msgid "machine paused, so can't power it down"
 msgstr "マシンが一時停止されているの、電源を切れません"
 
-#, c-format
-msgid "machine type %s too big for destination"
-msgstr "マシン形式 %s が宛先に対して大きすぎます"
-
 msgid "make live change persistent"
 msgstr "実行時設定の変更を永続化させます"
 
@@ -16476,14 +16472,6 @@ msgid ""
 msgstr ""
 "mkfs はこのプラットフォームにおいてサポートされません: '%s' 形式のファイルシ"
 "ステムをデバイス '%s' に作成できませんでした"
-
-#, c-format
-msgid "mkostemp(\"%s\") failed"
-msgstr "mkostemp(\"%s\") に失敗しました"
-
-#, c-format
-msgid "mkostemps: failed to create temporary file: %s"
-msgstr "mkostemps: 一時ファイルの作成に失敗しました: %s"
 
 msgid "mode of device reading and writing"
 msgstr "デバイスの読み書きモード"
@@ -17364,6 +17352,10 @@ msgstr "パラメーター '%s' が複数回現れています"
 msgid "parameter=value"
 msgstr "パラメーター=値"
 
+#, c-format
+msgid "parent %s would create cycle to %s"
+msgstr "親 %s が %s にサイクルを作成しました"
+
 msgid "parser error"
 msgstr "構文解析エラー"
 
@@ -17588,9 +17580,6 @@ msgstr "プロファイルが存在しません"
 
 msgid "profile exists"
 msgstr "プロファイルが存在します"
-
-msgid "profile name exceeds maximum length"
-msgstr "プロファイルの名前が最大長を超えています"
 
 msgid "profileid parameter too long"
 msgstr "profileid パラメーターが長すぎます"
@@ -18479,9 +18468,6 @@ msgstr "テンプレート '%s' が存在しません"
 
 msgid "template does not exist"
 msgstr "テンプレートが存在しません"
-
-msgid "template name exceeds maximum length"
-msgstr "テンプレート名が最大長を超えています"
 
 msgid "terminate gracefully"
 msgstr "穏やかに終了します"

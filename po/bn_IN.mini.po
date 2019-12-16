@@ -8,9 +8,9 @@
 # runab <runab@redhat.com>, 2006-2010
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.9.0\n"
+"Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-10-18 13:39+0100\n"
+"POT-Creation-Date: 2019-12-16 16:39+0000\n"
 "PO-Revision-Date: 2015-02-26 07:10+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Bengali (India) (http://www.transifex.com/projects/p/libvirt/"
@@ -90,10 +90,6 @@ msgstr "Win32-র মধ্যে %s বাস্তবায়িত হয়নি
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: %d বাইট বরাদ্দ করতে ব্যর্থ"
-
-#, c-format
-msgid "%s: %d: failed to allocate %lu bytes"
-msgstr "%s: %d: %lu বাইট বরাদ্দ করতে ব্যর্থ"
 
 #, c-format
 msgid "%s: %s"
@@ -445,9 +441,6 @@ msgstr "অপর একটি USB কন্ট্রোলার যোগ ক�
 
 msgid "Can't add host USB device: USB is disabled in this host"
 msgstr "হোস্ট USB ডিভাইস যোগ করা যায় না: এই হোস্টে USB নিষ্ক্রিয়"
-
-msgid "Can't allocate memory"
-msgstr "মেমরি নির্দিষ্ট করা যায় না"
 
 msgid "Can't create initial configuration"
 msgstr "প্রারম্ভিক কনফিগারেশন তৈরি করা যায় না"
@@ -1891,9 +1884,6 @@ msgstr "অবৈধ অনুমতি মান, হয় 'yes' বা 'no'"
 msgid "Invalid argument"
 msgstr "অবৈধ আর্গুমেন্ট"
 
-msgid "Invalid back reference"
-msgstr "অবৈধ ব্যাক রেফারেন্স"
-
 #, c-format
 msgid "Invalid bridge mac address '%s' in network '%s'"
 msgstr "অবৈধ ব্রিজ mac ঠিকানা '%s', '%s' নেটওয়ার্কে"
@@ -1921,18 +1911,9 @@ msgstr ""
 msgid "Invalid character '%c' in id '%s' of network '%s'"
 msgstr "অবৈধ অক্ষর '%c' অাইডি '%s' তে '%s' নেটওয়ার্কের"
 
-msgid "Invalid character class name"
-msgstr "অবৈধ অক্ষর ক্লাস নাম"
-
-msgid "Invalid collation character"
-msgstr "অবৈধ যৌথ অক্ষর"
-
 #, c-format
 msgid "Invalid compressed save format %d"
 msgstr "সংরক্ষণের কম্প্রেশনের বিন্যাস %d বৈধ নয়"
-
-msgid "Invalid content of \\{\\}"
-msgstr "এর অবৈধ বিষয়বস্তু \\{\\}"
 
 #, c-format
 msgid "Invalid cpuid[%zu] in %s feature"
@@ -2023,15 +2004,6 @@ msgstr "অবৈধ পোর্ট সংখ্যা: %s"
 #, c-format
 msgid "Invalid ports: %s"
 msgstr "অবৈধ পোর্ট: %s"
-
-msgid "Invalid preceding regular expression"
-msgstr "অবৈধ পূর্ববর্তী নিয়মিত এক্সপ্রেশন"
-
-msgid "Invalid range end"
-msgstr "অবৈধ রেঞ্জ প্রান্ত"
-
-msgid "Invalid regular expression"
-msgstr "অবৈধ নিয়মিত এক্সপ্রেশন"
 
 msgid "Invalid secret"
 msgstr "গোপনীয় তথ্য বৈধ নয়"
@@ -2143,9 +2115,6 @@ msgstr "সর্বোচ্চ মেমরি:"
 
 msgid "Memory allocation failure"
 msgstr "মেমরি নির্দিষ্টকরণ ব্যর্থ হয়েছে"
-
-msgid "Memory exhausted"
-msgstr "মেমরি শেষ হয়ে গেছে"
 
 msgid "Memory processed:"
 msgstr "প্রক্রিয়াভুক্ত মেমরি:"
@@ -2458,12 +2427,6 @@ msgstr "কোনো ত্রুটির বার্তা উপস্থি
 msgid "No master USB controller specified"
 msgstr "কোনো মাস্টার USB কন্ট্রোলার নির্দিষ্ট করা হয়নি"
 
-msgid "No match"
-msgstr "কোনো মিল নেই"
-
-msgid "No previous regular expression"
-msgstr "কোনো পূর্ববর্তী নিয়মিত এক্সপ্রেশন নেই"
-
 msgid "No type specified for device address"
 msgstr "ডিভাইসের ঠিকানার জন্য কোনো ধরন নির্ধারণ করা হয়নি"
 
@@ -2669,9 +2632,6 @@ msgstr "পুল %s আরম্ভ করা হয়েছে\n"
 msgid "Pool %s unmarked as autostarted\n"
 msgstr "পুল %s থেকে স্বয়ংক্রিয়রূপে প্রারম্ভকারী চিহ্ন মুছে ফেলা হয়েছে\n"
 
-msgid "Premature end of regular expression"
-msgstr "নিয়মিত এক্সপ্রেশনের অসম্পূর্ণতা"
-
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr "PrepareTunnel কল করা হয়েছে কিন্তু কোনো TUNNELLED ফ্ল্যাগ নির্ধারণ করা হয়নি"
 
@@ -2714,9 +2674,6 @@ msgstr "হাইপার-ভাইসরের সাথে পুনরায়
 
 msgid "Refresh a given pool."
 msgstr "চিহ্নিত পুল নতুন করে নির্মাণ করা হবে।"
-
-msgid "Regular expression too big"
-msgstr "নিয়মিত এক্সপ্রেশন অত্যন্ত বড়"
 
 #, c-format
 msgid "Removable media not supported for %s device"
@@ -2949,9 +2906,6 @@ msgstr "সংগ্রহের ভলিউম পাওয়া যায়নি
 #, c-format
 msgid "Storage volume not found: %s"
 msgstr "সংগ্রহের ভলিউম পাওয়া যায়নি: %s"
-
-msgid "Success"
-msgstr "সফল"
 
 msgid "Suspend a running domain."
 msgstr "ডোমেইন সাসপেন্ড অবস্থায় স্থাপন করুন।"
@@ -3369,9 +3323,6 @@ msgstr "নেটওয়ার্ক ডিভাইসের নাম অত্
 msgid "Total"
 msgstr "সর্বমোট"
 
-msgid "Trailing backslash"
-msgstr "ট্রেলিং ব্যাকস্ল্যাশ"
-
 msgid "Tunnelled migration requested but invalid RPC method called"
 msgstr "টানেল মাইগ্রেশনের অনুরোধ জানানো হয়েছে কিন্তু অবৈধ RPC মেথড কল করা হয়েছে"
 
@@ -3595,15 +3546,6 @@ msgstr "অজানা মান '%s' <address> 'multifunction' অ্যাট
 #, c-format
 msgid "Unknown vendor %s referenced by CPU model %s"
 msgstr "অজানা ভেন্ডার %s রেফারেন্স, CPU মডেল %s দ্বারা"
-
-msgid "Unmatched ( or \\("
-msgstr "গরমিল ( বা \\("
-
-msgid "Unmatched ) or \\)"
-msgstr "গরমিল ) বা \\)"
-
-msgid "Unmatched \\{"
-msgstr "গরমিল \\{"
 
 #, c-format
 msgid "Unrecognized family '%s' in network '%s'"
@@ -4817,6 +4759,9 @@ msgstr "ডোমেইনের কর্ম সংক্রান্ত তথ
 msgid "domain name or uuid"
 msgstr "ডোমেইনের নাম অথবা uuid"
 
+msgid "domain name, id or uuid"
+msgstr "ডোমেইনের নাম, id অথবা uuid"
+
 msgid "domain state"
 msgstr "ডোমেইনের অবস্থা"
 
@@ -4950,9 +4895,6 @@ msgstr "মনিটর সকেটের সাথে সংযোগ স্�
 
 msgid "failed to connect to the hypervisor"
 msgstr "হাইপার-ভাইসরের সাথে সংযোগ করতে ব্যর্থ"
-
-msgid "failed to copy security label"
-msgstr "নিরাপত্তা স্তর অনুলিপি করতে ব্যর্থ"
 
 #, c-format
 msgid "failed to create directory '%s'"

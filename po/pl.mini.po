@@ -10,9 +10,9 @@
 # Piotr Drąg <piotrdrag@gmail.com>, 2016. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.9.0\n"
+"Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-10-18 13:39+0100\n"
+"POT-Creation-Date: 2019-12-16 16:39+0000\n"
 "PO-Revision-Date: 2016-09-16 11:27+0000\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish (http://www.transifex.com/projects/p/fedora/language/"
@@ -127,10 +127,6 @@ msgstr ""
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: przydzielenie %d bajtów się nie powiodło"
-
-#, c-format
-msgid "%s: %d: failed to allocate %lu bytes"
-msgstr "%s: %d: przydzielenie %lu bajtów się nie powiodło"
 
 #, c-format
 msgid "%s: %s"
@@ -665,9 +661,6 @@ msgstr "Nie można usunąć woluminu: %s"
 msgid "Could not destroy domain: %s"
 msgstr "Nie można zniszczyć domeny: %s"
 
-msgid "Could not disable SIGPIPE"
-msgstr "Nie można wyłączyć SIGPIPE"
-
 #, c-format
 msgid "Could not dlsym %s from '%s': %s"
 msgstr "Nie można utworzyć dlsym %s z „%s”: %s"
@@ -836,9 +829,6 @@ msgstr "Nie można przetworzyć prawidłowego indeksu dysku z „%s”"
 #, c-format
 msgid "Could not parse version number from '%s'"
 msgstr "Nie można przetworzyć numeru wersji z „%s”"
-
-msgid "Could not re-enable SIGPIPE"
-msgstr "Nie można ponownie włączyć SIGPIPE"
 
 #, c-format
 msgid "Could not read 'IP_ADDRESS' from config for container %d"
@@ -3957,6 +3947,10 @@ msgstr "Nie można ustalić rozmiaru sps pamięci masowej."
 msgid "Unable to determine storage sps's source adapter."
 msgstr "Nie można ustalić adaptera źródłowego sps pamięci masowej."
 
+#, c-format
+msgid "Unable to exec shell %s"
+msgstr "Nie można wykonać powłoki %s"
+
 msgid "Unable to find 'cpuacct' cgroups controller mount"
 msgstr "Nie można odnaleźć punktu montowania kontrolera cgroups „cpuacct”"
 
@@ -5315,18 +5309,6 @@ msgstr "konwertuje nazwę interfejsu na jego adres MAC"
 msgid "could not allocate memory"
 msgstr "nie można przydzielić pamięci"
 
-msgid "could not allocate memory for disk"
-msgstr "nie można przydzielić pamięci dla dysku"
-
-msgid "could not allocate memory for profile"
-msgstr "nie można przydzielić pamięci dla profilu"
-
-msgid "could not allocate memory for profile files"
-msgstr "nie można przydzielić pamięci plików profilu"
-
-msgid "could not allocate memory for profile name"
-msgstr "nie można przydzielić pamięci dla nazwy profilu"
-
 #, c-format
 msgid "could not change ACPI status to: %s, rc=%08x"
 msgstr "nie można zmienić stanu ACPI na: %s, rc=%08x"
@@ -5785,6 +5767,9 @@ msgstr "informacje o zadaniu domeny"
 msgid "domain name or uuid"
 msgstr "nazwa lub UUID domeny"
 
+msgid "domain name, id or uuid"
+msgstr "nazwa domeny, identyfikator lub UUID"
+
 msgid "domain save job"
 msgstr "zadanie zapisu domeny"
 
@@ -5914,9 +5899,6 @@ msgstr "błąd podczas usypania domeny"
 msgid "error: "
 msgstr "błąd: "
 
-msgid "error: Out of memory\n"
-msgstr "błąd: brak pamięci\n"
-
 msgid "escape for XML use"
 msgstr "sekwencja sterująca do użycia w XML"
 
@@ -5963,12 +5945,6 @@ msgstr "wywołanie systemowe Xena się nie powiodło %s"
 #, c-format
 msgid "failed reading from file '%s'"
 msgstr "odczytanie z pliku „%s” się nie powiodło"
-
-msgid "failed to allocate buffer"
-msgstr "przydzielenie bufora się nie powiodło"
-
-msgid "failed to allocate file buffer"
-msgstr "Przydzielenie bufora pliku się nie powiodło"
 
 #, c-format
 msgid "failed to apply capabilities: %d"
@@ -6840,10 +6816,6 @@ msgstr "maszyna nie jest uruchomiona, więc nie można jej uruchomić ponownie"
 msgid "machine paused, so can't power it down"
 msgstr "maszyna jest wstrzymana, więc nie można jej wyłączyć"
 
-#, c-format
-msgid "machine type %s too big for destination"
-msgstr "typ maszyny %s jest za duży dla celu"
-
 msgid "malformed capacity element"
 msgstr "błędnie sformatowany element pojemności"
 
@@ -7107,10 +7079,6 @@ msgstr "brak modelu watchdoga"
 #, c-format
 msgid "mkdir(\"%s\")"
 msgstr "mkdir(„%s”)"
-
-#, c-format
-msgid "mkostemp(\"%s\") failed"
-msgstr "mkostemp(„%s”) się nie powiodło"
 
 msgid "mode of device reading and writing"
 msgstr "tryb odczytywania i zapisywania urządzenia"
@@ -7669,9 +7637,6 @@ msgstr "profil nie istnieje"
 msgid "profile exists"
 msgstr "profil istnieje"
 
-msgid "profile name exceeds maximum length"
-msgstr "nazwa profilu przekracza maksymalną długość"
-
 msgid "profileid parameter too long"
 msgstr "parametr profileid jest za długi"
 
@@ -8075,9 +8040,6 @@ msgstr "szablon „%s” nie istnieje"
 
 msgid "template does not exist"
 msgstr "szablon nie istnieje"
-
-msgid "template name exceeds maximum length"
-msgstr "nazwa szablonu przekracza maksymalną długość"
 
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: należy podać ścieżkę lub użyć test:///domyślna"

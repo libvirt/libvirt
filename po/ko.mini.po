@@ -13,9 +13,9 @@
 # Seong-ho Cho <darkcircle.0426@gmail.com>, 2014
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.9.0\n"
+"Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-10-18 13:39+0100\n"
+"POT-Creation-Date: 2019-12-16 16:39+0000\n"
 "PO-Revision-Date: 2015-02-27 07:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Korean (http://www.transifex.com/projects/p/libvirt/language/"
@@ -139,10 +139,6 @@ msgstr ""
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: %d 바이트 할당 실패"
-
-#, c-format
-msgid "%s: %d: failed to allocate %lu bytes"
-msgstr "%s: %d: %lu 바이트 할당 실패"
 
 #, c-format
 msgid "%s: %d: failed to allocate argv"
@@ -637,9 +633,6 @@ msgid "Can't add host USB device: USB is disabled in this host"
 msgstr ""
 "호스트 USB 장치를 추가할 수 없음: USB는 이 호스트에서 비활성화되어 있음"
 
-msgid "Can't allocate memory"
-msgstr "메모리를 할당할 수 없음"
-
 #, sh-format
 msgid "Can't connect to $uri. Skipping."
 msgstr "$uri에 연결할 수 없음. 건너뛰기."
@@ -878,6 +871,14 @@ msgstr "'%s'에서 숫자를 구문 분석할 수 없습니다 "
 #, c-format
 msgid "Cannot parse socket address '%s': %s"
 msgstr "소켓 주소 '%s'를 구문 분석할 수 없음: %s"
+
+#, c-format
+msgid "Cannot parse sys stat '%s'"
+msgstr "sys stat '%s'을(를) 구문 분석할 수 없음"
+
+#, c-format
+msgid "Cannot parse user stat '%s'"
+msgstr "user stat '%s'을(를) 구문 분석할 수 없음"
 
 #, c-format
 msgid "Cannot read %s '%s'"
@@ -2183,12 +2184,6 @@ msgstr "바인딩 대상 %s을 종료하는데 실패했습니다 "
 msgid "Failed to collect auth credentials"
 msgstr "인증 크레덴셜 수집 실패"
 
-msgid "Failed to collect command"
-msgstr "명령 수집 실패"
-
-msgid "Failed to collect new description/title"
-msgstr "새로운 설명/제목 수집 실패"
-
 #, c-format
 msgid "Failed to compare host CPU with %s"
 msgstr "호스트 CPU를 %s와 비교하는 데 실패"
@@ -3280,9 +3275,6 @@ msgstr "잘못된 허용 값, 'yes' 또는 'no'중 하나이어야 합니다"
 msgid "Invalid argument"
 msgstr "잘못된 인수"
 
-msgid "Invalid back reference"
-msgstr "잘못된 역 참조"
-
 #, c-format
 msgid "Invalid bridge mac address '%s' in network '%s'"
 msgstr "네트워크 '%s'에서 잘못된 브리지 MAC 주소 '%s'"
@@ -3319,18 +3311,9 @@ msgstr ""
 msgid "Invalid character '%c' in id '%s' of network '%s'"
 msgstr "잘못된 문자 '%c' (id '%s', 네트워크 '%s')"
 
-msgid "Invalid character class name"
-msgstr "잘못된 문자 클래스 이름"
-
-msgid "Invalid collation character"
-msgstr "잘못된 정렬 문자"
-
 #, c-format
 msgid "Invalid compressed save format %d"
 msgstr "잘못된 암축 보존 형태 %d"
-
-msgid "Invalid content of \\{\\}"
-msgstr "\\{\\}의 잘못된 컨텐츠 "
 
 #, c-format
 msgid "Invalid cpuid[%zu] in %s feature"
@@ -3445,18 +3428,9 @@ msgstr "잘못된 포트 번호: %s"
 msgid "Invalid ports: %s"
 msgstr "잘못된 포트: %s"
 
-msgid "Invalid preceding regular expression"
-msgstr "잘못된 선행하는 정규 표현식"
-
 #, c-format
 msgid "Invalid prefix or netmask for '%s'"
 msgstr "'%s'에 대한 잘못된 접두사 또는 넷마스크 "
-
-msgid "Invalid range end"
-msgstr "범위 마지막이 잘못됨"
-
-msgid "Invalid regular expression"
-msgstr "잘못된 정규 표현식"
 
 msgid "Invalid secret"
 msgstr "잘못된 비밀정보"
@@ -3601,9 +3575,6 @@ msgid ""
 "Memory balloon device type '%s' is not supported by this version of qemu"
 msgstr ""
 "이 버전의 qemu에서는 메모리 부울 장치 유형 '%s'을(를) 지원하지 않습니다"
-
-msgid "Memory exhausted"
-msgstr "메모리가 소비됨"
 
 msgid "Memory processed:"
 msgstr "처리된 메모리:"
@@ -4054,12 +4025,6 @@ msgstr "브리지에 인터페이스가 첨부되어 있지 않습니다"
 msgid "No master USB controller specified"
 msgstr "마스터 USB 컨트롤러가 지정되어 있지 않습니다"
 
-msgid "No match"
-msgstr "일치하지 않음"
-
-msgid "No previous regular expression"
-msgstr "이전 정규 표현식이 없음"
-
 #, c-format
 msgid "No storage volume with key or path '%s'"
 msgstr "키 또는 경로 '%s'로된 스토리지 볼륨이 없음 "
@@ -4319,9 +4284,6 @@ msgstr "풀 %s가 시작되었습니다\n"
 msgid "Pool %s unmarked as autostarted\n"
 msgstr "%s 풀의 자동 시작 표시가 해제되었습니다\n"
 
-msgid "Premature end of regular expression"
-msgstr "정규 표현식의 불완전한 종결"
-
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr "PrepareTunnel이 호출되었지만 TUNNELLED 플래그가 설정되지 않았습니다"
 
@@ -4407,9 +4369,6 @@ msgstr "하이퍼바이저로 재연결 됨"
 
 msgid "Refresh a given pool."
 msgstr "주어진 풀을 새로 고침"
-
-msgid "Regular expression too big"
-msgstr "정규 표현식이 너무 김 "
 
 #, c-format
 msgid "Removable media not supported for %s device"
@@ -4725,9 +4684,6 @@ msgstr "저장소 볼륨을 찾을 수 없음: %s"
 
 msgid "StoragePool name already exists."
 msgstr "저장소 풀 이름이 이미 존재합니다. "
-
-msgid "Success"
-msgstr "성공"
 
 msgid "Support for SELinux is not enabled"
 msgstr "SELinux 지원이 활성화되어 있지 않습니다 "
@@ -5192,9 +5148,6 @@ msgstr "개체에 대해 리소스 %d가 너무 많습니다 "
 
 msgid "Total"
 msgstr "전체"
-
-msgid "Trailing backslash"
-msgstr "백슬래시 트레일링"
 
 #, c-format
 msgid "Transport error during %s: %s (%d)"
@@ -5718,15 +5671,6 @@ msgstr "알 수 없는 값 '%s' (xsd:boolean에 대해)"
 #, c-format
 msgid "Unknown vendor %s referenced by CPU model %s"
 msgstr "CPU 모델 %s에 의해 참조되는 알 수 없는 벤더 %s"
-
-msgid "Unmatched ( or \\("
-msgstr "( 또는 \\(이 일치하지 않음"
-
-msgid "Unmatched ) or \\)"
-msgstr ") 또는 \\)가 일치하지 않음"
-
-msgid "Unmatched \\{"
-msgstr "\\{이 일치하지 않음"
 
 #, c-format
 msgid "Unrecognized family '%s' in network '%s'"
@@ -6669,6 +6613,14 @@ msgstr "원본 경로가 없는 CD-ROM 장치를 지원하지 않습니다"
 msgid "cellNum in %s only accepts %d as a negative value"
 msgstr "%s에서의 cellNum은 음수 값으로 %d 만을 허용합니다 "
 
+#, c-format
+msgid "cfs_period '%llu' must be in range (1000, 1000000)"
+msgstr "cfs_period '%llu'은 (1000에서 1000000 사이) 범위에 있어야 합니다"
+
+#, c-format
+msgid "cfs_quota '%lld' must be in range (1000, %llu)"
+msgstr "cfs_quota '%lld'은 (1000에서 %llu 사이) 범위에 있어야 합니다"
+
 msgid "change maximum memory limit"
 msgstr "최대 메모리 크기 제한 변경"
 
@@ -7235,6 +7187,9 @@ msgstr "도메인 작업 정보"
 msgid "domain name or uuid"
 msgstr "도메인명 또는 uuid"
 
+msgid "domain name, id or uuid"
+msgstr "도메인명, id 또는 uuid"
+
 msgid "domain save job"
 msgstr "도메인 저장 작업 "
 
@@ -7385,12 +7340,6 @@ msgstr "Xen syscall %s 실패"
 msgid "failed reading from file '%s'"
 msgstr "파일 '%s'에서 읽기 실패"
 
-msgid "failed to allocate buffer"
-msgstr "버퍼 할당 실패"
-
-msgid "failed to allocate file buffer"
-msgstr "파일 버퍼 할당 실패 "
-
 #, c-format
 msgid "failed to apply capabilities: %d"
 msgstr "기능 적용에 실패: %d"
@@ -7424,9 +7373,6 @@ msgstr "모니터 소켓 연결 실패"
 
 msgid "failed to connect to the hypervisor"
 msgstr "하이퍼바이저에 연결 실패"
-
-msgid "failed to copy security label"
-msgstr "보안 레이블 복사 실패 "
 
 #, c-format
 msgid "failed to create %s"
@@ -8916,10 +8862,6 @@ msgstr "마이그레이션 데이터에서 vporttype 속성이 누락되어 있�
 
 msgid "missing watchdog model"
 msgstr "와치독 모델이 빠짐"
-
-#, c-format
-msgid "mkostemp(\"%s\") failed"
-msgstr "mkostemp(\"%s\") 실패"
 
 msgid "mode of device reading and writing"
 msgstr "읽기 및 쓰기 장치 모드"

@@ -17,9 +17,9 @@
 # sandeep shedmake <sandeep.shedmake@gmail.com>, 2007
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.9.0\n"
+"Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-10-18 13:39+0100\n"
+"POT-Creation-Date: 2019-12-16 16:39+0000\n"
 "PO-Revision-Date: 2015-02-23 12:39+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Hindi (http://www.transifex.com/projects/p/fedora/language/"
@@ -185,10 +185,6 @@ msgstr ""
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: %d बाइट देने में विफल"
-
-#, c-format
-msgid "%s: %d: failed to allocate %lu bytes"
-msgstr "%s: %d: %lu बाइट आबंटन में विफल"
 
 #, c-format
 msgid "%s: %s"
@@ -689,9 +685,6 @@ msgstr "अन्य USB नियंत्रक: USB को इस डोम�
 
 msgid "Can't add host USB device: USB is disabled in this host"
 msgstr "मेजबान USB युक्ति जोड़ नहीं सकता है: USB इस मेजबान में निष्क्रिय है"
-
-msgid "Can't allocate memory"
-msgstr "स्मृति आवंटित नहीं कर सकते है"
 
 msgid "Can't create initial configuration"
 msgstr "प्रारंभिक विन्यास का निर्माण नहीं कर सकते हैं"
@@ -2566,6 +2559,10 @@ msgid "Failed to mkdir %s"
 msgstr "%s को mkdir करने में विफल"
 
 #, c-format
+msgid "Failed to mount %s on %s type %s"
+msgstr "%s प्रकार %s पर %s को माउंट करने में विफल  "
+
+#, c-format
 msgid "Failed to mount %s on /proc/meminfo"
 msgstr "/proc/meminfo को %s पर आरोहित करने में विफल"
 
@@ -3263,9 +3260,6 @@ msgstr "अवैध अनुमति मान, 'हाँ' या 'नही
 msgid "Invalid argument"
 msgstr "अवैध तर्क"
 
-msgid "Invalid back reference"
-msgstr "अवैध बैक संदर्भ"
-
 #, c-format
 msgid "Invalid bridge mac address '%s' in network '%s'"
 msgstr "संजाल '%s' में अमान्य पुल mac पता '%s'"
@@ -3302,18 +3296,9 @@ msgstr ""
 msgid "Invalid character '%c' in id '%s' of network '%s'"
 msgstr "अवैध अक्षर '%c', आईडी '%s' में, नेटवर्क '%s' का "
 
-msgid "Invalid character class name"
-msgstr "अवैध वर्ण वर्ग नाम"
-
-msgid "Invalid collation character"
-msgstr "अवैध कोलेशन वर्ण"
-
 #, c-format
 msgid "Invalid compressed save format %d"
 msgstr "अवैध संपीड़ित सहेज प्रारूप %d"
-
-msgid "Invalid content of \\{\\}"
-msgstr "अमान्य संदेश \\{\\}"
 
 msgid "Invalid context"
 msgstr "अमान्य संदर्भ"
@@ -3435,18 +3420,9 @@ msgstr "अवैध पोर्ट संख्या: %s"
 msgid "Invalid ports: %s"
 msgstr "अवैध पोर्ट: %s"
 
-msgid "Invalid preceding regular expression"
-msgstr "अवैध पूर्ववर्ती नियमित अभिव्यक्ति"
-
 #, c-format
 msgid "Invalid prefix or netmask for '%s'"
 msgstr "अवैध उपसर्ग या '%s' के लिए  netmask"
-
-msgid "Invalid range end"
-msgstr "अवैध दायरा अंत"
-
-msgid "Invalid regular expression"
-msgstr "अवैध रेगुलर एक्सप्रेशन"
 
 msgid "Invalid secret"
 msgstr "अवैध गुप्त"
@@ -3636,9 +3612,6 @@ msgstr "स्मृति बैलून युक्ति प्रकार
 
 msgid "Memory cgroup is not available on this host"
 msgstr "स्मृति cgroup इस होस्ट पर उपलब्ध नहीं है"
-
-msgid "Memory exhausted"
-msgstr "स्मृति खत्म"
 
 msgid "Memory processed:"
 msgstr "स्मृति प्रक्रमित:"
@@ -4098,9 +4071,6 @@ msgstr "कोई ब्रिज नाम निर्दिष्ट नह�
 msgid "No data supplied for <initarg> element"
 msgstr "<initarg> तत्व के लिए कोई आँकड़ा आपूर्ति नहीं"
 
-msgid "No device found for specified path"
-msgstr "निर्दिष्ट पथ के लिए कोई युक्ति नहीं मिला "
-
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
 msgstr "बस '%s' और लक्ष्य '%s' के साथ कोई युक्ति नहीं"
@@ -4138,12 +4108,6 @@ msgstr "कोई ग्राफ़िक्स बैकेंड अनुक
 
 msgid "No master USB controller specified"
 msgstr "कोई मास्टर USB नियंत्रक निर्दिष्ट नहीं"
-
-msgid "No match"
-msgstr "बेमेल"
-
-msgid "No previous regular expression"
-msgstr "कोई पिछली नियमित अभिव्यक्ति नहीं"
 
 msgid "No qemu command-line argument specified"
 msgstr "कोई qemu कमांड-लाइन तर्क निर्दिष्ट नहीं"
@@ -4472,9 +4436,6 @@ msgstr ""
 "संभवतः आप IBM उपकरण आपके LPAR में स्थापित नहीं है.इस सुविधा को सक्षम करने के लिए आपके "
 "समर्थन के लिए संपर्क करे ."
 
-msgid "Premature end of regular expression"
-msgstr "नियमित अभिव्यक्ति का पहले ही अंत"
-
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr "PrepareTunnel बुलाया गया लेनिक कोई TUNNELLED फ्लैग सेट नहीं किया गया"
 
@@ -4578,9 +4539,6 @@ msgstr "दिया पुल ताजा करें."
 
 msgid "Refusing to undefine while domain managed save image exists"
 msgstr "अपरिभाषित करने से इनकार जबकि प्रबंधित डोमेन छवि सहेजने में मौजूद है "
-
-msgid "Regular expression too big"
-msgstr "नियमित अभिव्यक्ति काफी बड़ी है"
 
 #, c-format
 msgid "Removable media not supported for %s device"
@@ -4883,9 +4841,6 @@ msgstr "भंडारण आयतन नहीं मिला: %s"
 
 msgid "StoragePool name already exists."
 msgstr "StoragePool नाम पहले से मौज़ूद है."
-
-msgid "Success"
-msgstr "सफल"
 
 msgid "Support for SELinux is not enabled"
 msgstr "SELinux के लिए समर्थन सक्षम नहीं है"
@@ -5396,9 +5351,6 @@ msgstr "बहुत सारे स्नैपशॉट वर्तमान
 
 msgid "Total"
 msgstr "कुलयोग"
-
-msgid "Trailing backslash"
-msgstr "पूर्व बैकस्लैश"
 
 msgid "Transition started"
 msgstr "संक्रमण शुरू हो गया "
@@ -6148,15 +6100,6 @@ msgstr "अज्ञात  मान \"%s\" xsd के लिये:boolean"
 msgid "Unknown vendor %s referenced by CPU model %s"
 msgstr "अज्ञात विक्रेता %s CPU मॉडल %s के द्वारा संदर्भित"
 
-msgid "Unmatched ( or \\("
-msgstr "बेमेल ( या \\("
-
-msgid "Unmatched ) or \\)"
-msgstr "बेमेल ) या \\)"
-
-msgid "Unmatched \\{"
-msgstr "बेमेल \\{"
-
 #, c-format
 msgid "Unrecognized family '%s' in network '%s'"
 msgstr "संजाल '%s' में अपरिचित परिवार '%s'"
@@ -6462,14 +6405,6 @@ msgstr "नयी क्षमता आबंटित करें, बजा�
 
 msgid "allow the resize to shrink the volume"
 msgstr "वॉल्यूम को सिकोड़ने के लिए फिर आकार दें"
-
-#, c-format
-msgid ""
-"an interface connecting to network '%s' is requesting a vlan tag, but that "
-"is not supported for this type of network"
-msgstr ""
-"एक संजाल '% s' को एक VLAN टैग अनुरोध किया है को जोड़ने इंटरफेस है, लेकिन लगता है कि "
-"नेटवर्क के इस प्रकार के लिए समर्थित नहीं है"
 
 msgid "apparmor_parser exited with error"
 msgstr "apparmor_parser त्रुटि के साथ बाहर निकल गया"
@@ -7467,18 +7402,6 @@ msgstr "अंतरफलक MAC पता अंतरफलक नाम म�
 msgid "could not allocate memory"
 msgstr "स्मृति आवंटित नहीं कर सका"
 
-msgid "could not allocate memory for disk"
-msgstr "डिस्क के लिए स्मृति आवंटित नहीं कर सका"
-
-msgid "could not allocate memory for profile"
-msgstr "प्रोफ़ाइल के लिए स्मृति आवंटित नहीं कर सका"
-
-msgid "could not allocate memory for profile files"
-msgstr "प्रोफ़ाइल फ़ाइलों के लिए स्मृति आवंटित नहीं कर सका"
-
-msgid "could not allocate memory for profile name"
-msgstr "प्रोफ़ाइल नाम के लिए स्मृति आवंटित नहीं कर सका"
-
 msgid "could not build absolute core file path"
 msgstr "निरपेक्ष कोर फाइल पथ नहीं बना सका "
 
@@ -8012,6 +7935,9 @@ msgstr "डोमेन कार्य सूचना"
 msgid "domain name or uuid"
 msgstr "डोमेन नाम या uuid"
 
+msgid "domain name, id or uuid"
+msgstr "डोमेन नाम, id या uuid"
+
 msgid "domain save job"
 msgstr "डोमेन कार्य सहेजें"
 
@@ -8223,12 +8149,6 @@ msgstr "विफल Xen syscall %s"
 msgid "failed reading from file '%s'"
 msgstr "'%s' फ़ाइल से पढ़ने में विफल"
 
-msgid "failed to allocate buffer"
-msgstr "बफर आवंटित करने में विफल"
-
-msgid "failed to allocate file buffer"
-msgstr "फ़ाइल बफर आबंटित करने में विफल"
-
 #, c-format
 msgid "failed to apply capabilities: %d"
 msgstr "क्षमता लागू करने में विफल: %d"
@@ -8252,9 +8172,6 @@ msgstr "मॉनिटर सॉकेट से जुड़ने में �
 
 msgid "failed to connect to the hypervisor"
 msgstr "हाइपरविजर में जुडने में विफल"
-
-msgid "failed to copy security label"
-msgstr "सुरक्षा स्तर नक़ल करने में विफल"
 
 #, c-format
 msgid "failed to create %s"
@@ -9330,10 +9247,6 @@ msgstr "lxc स्थिति ड्राइवर सक्रिय नह�
 msgid "lxcChild() passed invalid vm definition"
 msgstr "lxcChild() ने अवैध vm परिभाषा पास किया"
 
-#, c-format
-msgid "machine type %s too big for destination"
-msgstr "मशीन क़िस्म %s गंतव्य के लिए काफी बड़ा है"
-
 msgid "malformed <sysinfo> uuid element"
 msgstr "विरूपित <sysinfo> uuid तत्व"
 
@@ -10307,6 +10220,10 @@ msgstr "स्मृति के बाहर"
 msgid "parameter=value"
 msgstr "parameter=value"
 
+#, c-format
+msgid "parent %s would create cycle to %s"
+msgstr "%s का जनक %s चक्र बनाया होगा "
+
 msgid "parser error"
 msgstr "विश्लेषक त्रुटि"
 
@@ -10439,9 +10356,6 @@ msgstr "प्रोफ़ाइल ही मौजूद नहीं है�
 
 msgid "profile exists"
 msgstr "प्रोफ़ाइल मौजूद है"
-
-msgid "profile name exceeds maximum length"
-msgstr "प्रोफाइल नाम अधिकतम लंबाई से अधिक है"
 
 msgid "profileid parameter too long"
 msgstr "profileid पैरामीटर बहुत बड़ा"
@@ -10969,9 +10883,6 @@ msgstr "नमूना '%s' मौजूद नहीं है"
 
 msgid "template does not exist"
 msgstr "टेम्पलेट मौजूद नहीं है"
-
-msgid "template name exceeds maximum length"
-msgstr "टेम्पलेट के नाम अधिकतम लंबाई से अधिक है"
 
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: पाथ दीजिये या फिर इस्तेमाल करें test:///default"

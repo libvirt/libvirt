@@ -8,9 +8,9 @@
 # Teguh DC <dheche@songolimo.net>, 2007.
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.9.0\n"
+"Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-10-18 13:39+0100\n"
+"POT-Creation-Date: 2019-12-16 16:39+0000\n"
 "PO-Revision-Date: 2015-02-27 05:03+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Indonesian (http://www.transifex.com/projects/p/libvirt/"
@@ -413,6 +413,9 @@ msgstr "informasi domain di XML"
 
 msgid "domain name or uuid"
 msgstr "nama domain atau uuid"
+
+msgid "domain name, id or uuid"
+msgstr "nama domain, id atau uuid"
 
 msgid "domain state"
 msgstr "status domain"

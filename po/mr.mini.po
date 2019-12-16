@@ -11,10 +11,10 @@
 # sandeeps <sshedmak@redhat.com>, 2013-2014
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.9.0\n"
+"Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-10-18 13:39+0100\n"
-"PO-Revision-Date: 2015-02-27 12:59+0000\n"
+"POT-Creation-Date: 2019-12-16 16:39+0000\n"
+"PO-Revision-Date: 2015-02-27 01:03+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Marathi (http://www.transifex.com/projects/p/libvirt/language/"
 "mr/)\n"
@@ -341,6 +341,10 @@ msgid "%s not implemented on Win32"
 msgstr "%s Win32 वर लागू केले नाही"
 
 #, c-format
+msgid "%s not matched against 'allowed_users' in %s"
+msgstr "%s यास 'allowed_users' विरूद्ध जुळले नाही, %s अंतर्गत"
+
+#, c-format
 msgid "%s not parseable"
 msgstr "%s वाचण्याजोगी नाही"
 
@@ -379,10 +383,6 @@ msgstr ""
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: %d बाइट्स वाटण्यास अपयशी"
-
-#, c-format
-msgid "%s: %d: failed to allocate %lu bytes"
-msgstr "%s: %d: %lu बाइट्स वाटण्यास अपयशी"
 
 #, c-format
 msgid "%s: %d: failed to allocate argv"
@@ -576,6 +576,9 @@ msgstr "फक्त virtio-scsi कंट्रोलरतर्फे 'max_se
 
 msgid "'online' missing in reply of guest-get-vcpus"
 msgstr "guest-get-vcpusच्या प्रतिसादात 'online' आढळले नाही"
+
+msgid "'parent' for vHBA not specified, and cannot find one on this host"
+msgstr "vHBA करिता 'parent' निर्देशीत नाही, व ह्या यजमानावर शोधणे अशक्य"
 
 msgid "'peak' and 'burst' require 'average' attribute"
 msgstr "'peak' व 'burst'ला 'average' गुणधर्म आवश्यक"
@@ -1248,12 +1251,13 @@ msgstr "इतर USB कंट्रोलर समाविष्ट कर�
 msgid "Can't add host USB device: USB is disabled in this host"
 msgstr "यजमान USB साधन समाविष्ट करणे अशक्य: ह्या यजमानात USB बंद आहे"
 
-msgid "Can't allocate memory"
-msgstr "मेमरिचे वाटप करण्यास अपयशी"
-
 #, sh-format
 msgid "Can't connect to $uri. Skipping."
 msgstr "$uri सह जोडणी अशक्य. वगळत आहे."
+
+#, c-format
+msgid "Can't create %s container: %s"
+msgstr "%s कंटेनर: %s चे निर्माण अशक्य"
 
 msgid "Can't create initial configuration"
 msgstr "प्रारंभीक संरचना निर्माण करतेवेळी त्रुटी"
@@ -1420,6 +1424,9 @@ msgstr "बाइनरि '%s' करिता बेसनाव ओळखण�
 msgid "Cannot determine free memory"
 msgstr "मोकळी मेमरि ओळखणे अशक्य"
 
+msgid "Cannot determine system clock HZ"
+msgstr "सिस्टम क्लॉक HZ ओळखणे अशक्य"
+
 msgid "Cannot disable close-on-exec flag"
 msgstr "close-on-exec फ्लॅग बंद करणे अशक्य"
 
@@ -1465,8 +1472,24 @@ msgid "Cannot find CPU model with PVR 0x%08x"
 msgstr "PVR 0x%08xसह CPU प्रतिकृती शोधणे अशक्य"
 
 #, c-format
+msgid "Cannot find byte %sstats for block device '%s'"
+msgstr "ब्लॉक साधन '%s' करिता बाइट %sstats शोधणे अशक्य"
+
+#, c-format
+msgid "Cannot find byte stats for block device '%s'"
+msgstr "ब्लॉक साधन '%s' करिता बाइट आकडेवारि शोधणे अशक्य"
+
+#, c-format
 msgid "Cannot find program %d version %d"
 msgstr "प्रोग्राम %d आवृत्ती %d शोधणे अशक्य"
+
+#, c-format
+msgid "Cannot find request %sstats for block device '%s'"
+msgstr "विनंती %sstats अशक्य, ब्लॉक साधन '%s' करिता"
+
+#, c-format
+msgid "Cannot find request stats for block device '%s'"
+msgstr "ब्लॉक साधन '%s' करिता आकडेवारि शोधणे अशक्य"
 
 #, c-format
 msgid "Cannot find security driver '%s'"
@@ -1537,6 +1560,14 @@ msgstr "init कंट्रोल %s उघडणे अशक्य"
 
 msgid "Cannot open network interface control socket"
 msgstr "नेटवर्क इंटरफेस कंट्रोल सॉकेट उघडणे अशक्य"
+
+#, c-format
+msgid "Cannot parse %srequest stat '%s'"
+msgstr "%srequest आकडेवारि '%s' वाचणे अशक्य"
+
+#, c-format
+msgid "Cannot parse %sstat '%s'"
+msgstr "%sstat '%s' वाचणे अशक्य"
 
 msgid "Cannot parse <HardDisk> 'format' attribute"
 msgstr "<HardDisk> 'format' गुणधर्म वाचणे अशक्य"
@@ -1658,6 +1689,10 @@ msgid "Cannot parse adapter '%s'"
 msgstr "अडॅप्टर '%s' वाचणे अशक्य"
 
 #, c-format
+msgid "Cannot parse byte %sstat '%s'"
+msgstr "बाइट %sstat '%s' वाचणे अशक्य"
+
+#, c-format
 msgid "Cannot parse category in %s"
 msgstr "%s मध्ये विभाग वाचणे अशक्य"
 
@@ -1679,6 +1714,14 @@ msgstr "सॉकेट पत्ता '%s': %s वाचणे अशक्य
 #, c-format
 msgid "Cannot parse start time %s in %s"
 msgstr "%2$s मध्ये सुरू वेळ %1$s वाचणे अशक्य"
+
+#, c-format
+msgid "Cannot parse sys stat '%s'"
+msgstr "sys stat '%s' वाचणे अशक्य"
+
+#, c-format
+msgid "Cannot parse user stat '%s'"
+msgstr "वापरकर्ता stat '%s' वाचणे अशक्य"
 
 #, c-format
 msgid "Cannot parse version string '%s'"
@@ -1812,6 +1855,10 @@ msgstr "अनइनिशिअलाइज्ड् CURL हँडलला �
 #, c-format
 msgid "Cannot specify a label if relabelling is turned off. model=%s"
 msgstr "पुनःलेबल करणे बंद केल्यास, लेबल निर्देशीत करणे अशक्य. model=%s"
+
+#, c-format
+msgid "Cannot stat %s"
+msgstr "%s ला स्टॅट करणे अशक्य"
 
 #, c-format
 msgid "Cannot stat '%s'"
@@ -2212,9 +2259,6 @@ msgstr "मुख्य डिरेक्ट्री ठरवणे अशक
 msgid "Could not determine kernel version from string %s"
 msgstr "स्ट्रिंग %s पासून कर्नल आवृत्ती ओळखणे अशक्य"
 
-msgid "Could not disable SIGPIPE"
-msgstr "SIGPIPE बंद करणे अशक्य"
-
 #, c-format
 msgid "Could not dlsym %s from '%s': %s"
 msgstr "%s dlsym करणे अशक्य, '%s': %s पासून"
@@ -2289,6 +2333,10 @@ msgstr "ॲब्सोल्युट मार्ग '%s' समाविष�
 #, c-format
 msgid "Could not find datastore with name '%s'"
 msgstr "नाव '%s' सह डाटास्टोर शोधणे अशक्य"
+
+#, c-format
+msgid "Could not find directory separator in %s"
+msgstr "%sमध्ये डिरेक्ट्रि सपरेटर शोधणे अशक्य"
 
 #, c-format
 msgid "Could not find domain snapshot with internal name '%s'"
@@ -2635,9 +2683,6 @@ msgstr "'%s' पासून आवृत्ती क्रमांक वा�
 #, c-format
 msgid "Could not query registry value '%s\\%s'"
 msgstr "रेजिस्ट्री मूल्य '%s\\%s' चौकशी करणे अशक्य"
-
-msgid "Could not re-enable SIGPIPE"
-msgstr "SIGPIPE ला पुनःसुरू करणे अशक्य"
 
 #, c-format
 msgid "Could not read '%s' from config for container %d"
@@ -3545,10 +3590,6 @@ msgid "Error while closing medium, rc=%08x"
 msgstr "मिडीयम बंद करतेवेळी त्रुटी, rc=%08x"
 
 #, c-format
-msgid "Error while compiling regular expression '%s': %s"
-msgstr "रेग्युलर एक्सप्रेशन '%s': %s कंपाइल करताना त्रुटी"
-
-#, c-format
 msgid "Error while creating diff storage, rc=%08x"
 msgstr "diff स्टोरेज निर्माणवेळी त्रुटी, rc=%08x"
 
@@ -3892,6 +3933,10 @@ msgid "Failed to bind %s to new root %s"
 msgstr "बाइंड %s ला नवीन रूट %s करिता बाइंड करण्यास अपयशी"
 
 #, c-format
+msgid "Failed to bind cgroup '%s' on '%s'"
+msgstr "cgroup '%s'ची बांधणी अपयशी, '%s' वरील"
+
+#, c-format
 msgid "Failed to bind mount directory %s to %s"
 msgstr "माउंट डिरेक्ट्री %s ला %s करिता बाइंड करण्यास अपयशी"
 
@@ -3957,12 +4002,6 @@ msgstr "बाँड लक्ष्य %s बंद करण्यास अ�
 
 msgid "Failed to collect auth credentials"
 msgstr "अधिप्रमाणन श्रेय प्राप्त करण्यास अपयशी"
-
-msgid "Failed to collect command"
-msgstr "आदेश प्राप्त करण्यास अपयशी"
-
-msgid "Failed to collect new description/title"
-msgstr "नवीन वर्णन/शीर्षक गोळा करण्यास अपयशी"
 
 msgid "Failed to commit network config change transaction"
 msgstr "नेटवर्क काँफिग बदल ट्रांजॅक्शन कमीट करण्यास अपयशी"
@@ -4060,9 +4099,6 @@ msgstr "साधन %s करिता डिरेक्ट्री निर
 
 msgid "Failed to create disk pool geometry"
 msgstr "डिस्क पूल जिओमेट्रि निर्माण करण्यास अपयशी"
-
-msgid "Failed to create display URI"
-msgstr "डिस्पले URI निर्माण करण्यास अपयशी"
 
 #, c-format
 msgid "Failed to create domain from %s"
@@ -4505,6 +4541,10 @@ msgstr "libssh2 सत्र सुरू करण्यास अपयशी"
 msgid "Failed to initialize libvirt"
 msgstr "libvirt सुरू करण्यास अपयशी"
 
+#, c-format
+msgid "Failed to initialize libvirt error handling"
+msgstr "libvirt त्रुटी हाताळणी सुरू करण्यास अपयशी"
+
 msgid "Failed to initialize mutex"
 msgstr "म्युटेक्स् सुरू करण्यास अपयशी"
 
@@ -4646,6 +4686,10 @@ msgstr "%s क्षेत्र स्वचालीत करण्याप�
 #, c-format
 msgid "Failed to mkdir %s"
 msgstr "mkdir %s अपयशी"
+
+#, c-format
+msgid "Failed to mount %s on %s type %s"
+msgstr "%s ला %s वर प्रकार %s म्हणून माउंट करण्यास अपयशी"
 
 #, c-format
 msgid "Failed to mount %s on /dev"
@@ -6032,15 +6076,13 @@ msgstr "अवैध आर्ग्यूमेंट"
 msgid "Invalid authentication method: '%s'"
 msgstr "अवैध ओळख पटवण्याची पद्धत: '%s'"
 
-msgid "Invalid back reference"
-msgstr "अवैध बॅक संदर्भ"
+#, c-format
+msgid "Invalid boolean value for field '%s'"
+msgstr "क्षेत्र '%s' करिता अवैध बूलियन मूल्य"
 
 #, c-format
 msgid "Invalid bridge mac address '%s' in network '%s'"
 msgstr "अवैध ब्रिज मॅक पत्ता '%s', नेटवर्क '%s' मध्ये"
-
-msgid "Invalid buffer API usage"
-msgstr "अवैध बफर API चा वापर"
 
 #, c-format
 msgid "Invalid bus type '%s' for disk"
@@ -6081,18 +6123,12 @@ msgstr ""
 msgid "Invalid character '%c' in id '%s' of network '%s'"
 msgstr "नेटवर्क '%3$s' च्या id '%2$s' मध्ये, अवैध कॅरेक्टर '%1$c'"
 
-msgid "Invalid character class name"
-msgstr "अवैध अक्षर क्लास्चे नाव"
-
 msgid "Invalid character in source channel for char device"
 msgstr "char साधनकरिता स्रोत वाहिनीमध्ये अवैध अक्षर आढळले"
 
 #, c-format
 msgid "Invalid class ID %d"
 msgstr "अवैध क्लास ID %d"
-
-msgid "Invalid collation character"
-msgstr "अवैध कोलेशन अक्षर"
 
 #, c-format
 msgid "Invalid collection period value '%d'"
@@ -6101,9 +6137,6 @@ msgstr "अवैध चयन अवधी मूल्य '%d'"
 #, c-format
 msgid "Invalid compressed save format %d"
 msgstr "अवैध संकुचन साठवा रूपण %d"
-
-msgid "Invalid content of \\{\\}"
-msgstr "अवैध अंतर्भुत माहिती \\{\\}"
 
 msgid "Invalid context"
 msgstr "अवैध संदर्भ"
@@ -6318,18 +6351,9 @@ msgstr "अवैध पोर्ट व्याप्ति '%u-%u'."
 msgid "Invalid ports: %s"
 msgstr "अवैध पोर्टस्: %s"
 
-msgid "Invalid preceding regular expression"
-msgstr "अवैध प्रिसिडिंग रेग्युलर एक्सप्रेशन"
-
 #, c-format
 msgid "Invalid prefix or netmask for '%s'"
 msgstr "'%s' करिता प्रिफिक्स् किंवा नेटमास्क अवैध"
-
-msgid "Invalid range end"
-msgstr "अवैध व्याप्तिची समाप्ति"
-
-msgid "Invalid regular expression"
-msgstr "अवैध रेग्युलर एक्सप्रेशन"
 
 #, c-format
 msgid "Invalid relative path '%s'"
@@ -6392,6 +6416,10 @@ msgid ""
 msgstr "MAC पत्ता '%s' निर्देशीत करणे अवैध, नेटवर्क '%s' IPv6 स्टॅटिक यजमान वर्णनमध्ये"
 
 #, c-format
+msgid "Invalid type '%s' requested for parameter '%s', actual type is '%s'"
+msgstr "घटक '%2$s'करिता अवैध प्रकार '%1$s'साठी विनंती केली, प्रत्यक्ष प्रकार '%3$s' आहे"
+
+#, c-format
 msgid ""
 "Invalid use of 'floor' on interface with MAC address %s - network '%s' has "
 "no inbound QoS set"
@@ -6406,6 +6434,26 @@ msgstr "अवैध मूल्य '%s', '%s' करिता"
 #, c-format
 msgid "Invalid value '%s' for VMX entry '%s'"
 msgstr "VMX नोंदणी '%2$s' करिता अवैध मूल्य '%1$s'"
+
+#, c-format
+msgid "Invalid value for field '%s': expected double"
+msgstr "क्षेत्र '%s' करिता अवैध मूल्य: double अपेक्षित"
+
+#, c-format
+msgid "Invalid value for field '%s': expected int"
+msgstr "क्षेत्र '%s' करिता अवैध मूल्य: int अपेक्षित"
+
+#, c-format
+msgid "Invalid value for field '%s': expected long long"
+msgstr "क्षेत्र '%s' करिता अवैध मूल्य: long long अपेक्षित"
+
+#, c-format
+msgid "Invalid value for field '%s': expected unsigned int"
+msgstr "क्षेत्र '%s' करिता अवैध मूल्य: unsigned int अपेक्षित"
+
+#, c-format
+msgid "Invalid value for field '%s': expected unsigned long long"
+msgstr "क्षेत्र '%s' करिता अवैध मूल्य: unsigned long long अपेक्षित"
 
 msgid "Invalid value for number of CPUs to show"
 msgstr "दाखवण्याजोगी CPUकरिता अवैध मूल्य"
@@ -6687,6 +6735,10 @@ msgstr "मिडीया रेजिस्ट्रि null आहे"
 msgid "Memory"
 msgstr "मेमरि"
 
+#, c-format
+msgid "Memory '%llu' must be less than %llu"
+msgstr "मेमरि '%llu', %llu पेक्षा कमी पाहिजे"
+
 msgid "Memory allocation failure"
 msgstr "मेमरी वाटप अपयशी"
 
@@ -6703,9 +6755,6 @@ msgstr "ह्या यजमानवर मेमरि cgroup उपलब�
 
 msgid "Memory during contention, as scaled integer (default KiB)"
 msgstr "कंटेंशनवेळी मेमरि, स्केल्ड् इंटिजर म्हणून (पूर्वनिर्धारित KiB)"
-
-msgid "Memory exhausted"
-msgstr "मेमरि समाप्त"
 
 msgid "Memory processed:"
 msgstr "मेमरी विश्लेषीत:"
@@ -6808,6 +6857,10 @@ msgstr "'%s' गुणधर्म आढळले नाही"
 #, c-format
 msgid "Missing '%s' property while looking for ManagedEntityStatus"
 msgstr "ManagedEntityStatus करिता शोधतेवेळी '%s' गुणधर्म आढळले नाही"
+
+#, c-format
+msgid "Missing '/' separator in cgroup mount '%s'"
+msgstr "cgroup माउंट '%s' मध्ये '/' विभाजक आढळले नाही"
 
 msgid "Missing 'cores' attribute in CPU topology"
 msgstr "CPU रचनातील न आढळलेले 'cores' गुणधर्म"
@@ -7232,6 +7285,10 @@ msgstr "NULL NetworkDef"
 msgid "NULL string parameter '%s'"
 msgstr "NULL स्ट्रिंग घटक '%s'"
 
+#, c-format
+msgid "NULL value for field '%s'"
+msgstr "क्षेत्र '%s' करिता NULL मूल्य़"
+
 msgid "NUMA cell number"
 msgstr "NUMA कक्ष क्रमांक"
 
@@ -7502,9 +7559,6 @@ msgstr "<initarg> एलिमेंटकरिता डाटा पुरव
 msgid "No description for domain: %s"
 msgstr "डोमेन: %s करिता वर्णन आढळले नाही"
 
-msgid "No device found for specified path"
-msgstr "निर्देशीत मार्गकरिता साधन आढळले नाही"
-
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
 msgstr "बस '%s' व लक्ष्य '%s' सह साधन आढळले नाही"
@@ -7581,9 +7635,6 @@ msgstr "MAC पत्ता %s सह इंटरफेस आढळले न�
 msgid "No master USB controller specified"
 msgstr "मास्टर USB कंट्रोलर निर्देशीत नाही"
 
-msgid "No match"
-msgstr "जोडणी आढळली नाही"
-
 msgid "No more available PCI slots"
 msgstr "एकही PCI स्लॉट्स उपलब्ध नाही"
 
@@ -7592,9 +7643,6 @@ msgstr "iptables --version पासून आउटपुट नाही"
 
 msgid "No per-CPU stats available"
 msgstr "per-CPU आकडेवारि अनुपलब्ध"
-
-msgid "No previous regular expression"
-msgstr "मागील रेग्युलर एक्सप्रेशन नाही"
 
 msgid "No qemu command-line argument specified"
 msgstr "qemu आदेश ओळ घटक निर्देशीत केले नाही"
@@ -7883,9 +7931,6 @@ msgstr "कार्य समर्थीत नाही: %s"
 
 msgid "Option argument is empty"
 msgstr "पर्याय घटक रिक्त आहे"
-
-msgid "Optional flags are not supported by the daemon"
-msgstr "डिमनतर्फे वैकल्पिक प्लॅग्ज समर्थीत नाही"
 
 #, c-format
 msgid "Options --%s and --%s are mutually exclusive"
@@ -8204,9 +8249,6 @@ msgstr ""
 "तुमच्याकडे LPAR मध्ये प्रतिष्ठापीत IBM साधने नाही. ह्या गुणविशेषला सुरू करायचे असल्यास "
 "सपोर्टशी संपर्क करा."
 
-msgid "Premature end of regular expression"
-msgstr "रेग्युलर एक्सप्रेशनची समाप्ति"
-
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr "PrepareTunnel ला कॉल केले परंतु TUNNELLED फ्लॅग सेट केले नाही"
 
@@ -8406,13 +8448,6 @@ msgstr "रेजिस्ट्री मूल्य '%s\\%s' कडे अन
 #, c-format
 msgid "Registry value '%s\\%s' is too short"
 msgstr "रेजिस्ट्री मूल्य '%s\\%s' खूपच छोटे आहे"
-
-#, c-format
-msgid "Regular expression '%s' must have exactly 1 match group, not %zu"
-msgstr "रेग्युलर एक्सप्रेशन '%s' कडे हुबेहुब 1 मॅच ग्रूप पाहिजे, %zu नाही"
-
-msgid "Regular expression too big"
-msgstr "रेग्युलर एक्सप्रेशन खूप मोठे आहे"
 
 msgid "Relative backing during copy not supported yet"
 msgstr "प्रत बनवतेवेळी संबंधीत बँकिंग समर्थीत नाही"
@@ -9186,14 +9221,19 @@ msgstr "StoragePool नाव आधिपासूनच अस्तित्�
 msgid "Stream data too long to send (%zu bytes needed, %zu bytes available)"
 msgstr "पाठण्याजोगी स्ट्रिम डाटा खूपच लांब आहे (%zu बाइट्स् आवश्यक, %zu बाइट्स् उपलब्ध)"
 
-msgid "Success"
-msgstr "यश"
-
 msgid "Successfully copied"
 msgstr "यशस्वीरित्या प्रत निर्माण केले"
 
 msgid "Successfully pivoted"
 msgstr "यशस्वीरित्या पिवोट केले"
+
+#, c-format
+msgid "Sum of %srequest stat overflows"
+msgstr "%srequest आकडेवारि ओव्हरफ्लोजची बेरिज"
+
+#, c-format
+msgid "Sum of byte %sstat overflows"
+msgstr "बाइट %sstat ओव्हरफ्लोजची बेरिज"
 
 msgid "Support for AppArmor is not enabled"
 msgstr "AppArmor करिता समर्थन सुरू नाही"
@@ -9962,9 +10002,6 @@ msgstr "एकूण डाउनटाइम:"
 msgid "Total:\n"
 msgstr "एकूण:\n"
 
-msgid "Trailing backslash"
-msgstr "ट्रेलिंग बॅकस्लॅश"
-
 msgid "Transition started"
 msgstr "ट्रांजिशन सुरू केले"
 
@@ -10236,6 +10273,10 @@ msgid "Unable to change to root dir"
 msgstr "रूट dir करिता बदल करणे अशक्य"
 
 #, c-format
+msgid "Unable to chdir(%s)"
+msgstr "chdir(%s) अशक्य"
+
+#, c-format
 msgid "Unable to check interface %s"
 msgstr "इंटरफेस %s तपासणे अशक्य"
 
@@ -10280,10 +10321,6 @@ msgstr "नवीन मिडीयम बंद करणे अशक्य, 
 
 msgid "Unable to configure libxl's memory management parameters"
 msgstr "libxlचे मेमरि मॅनेजमेंट घटक संरचीत करणे अशक्य"
-
-#, sh-format
-msgid "Unable to connect to libvirt currently. Retrying .. $i"
-msgstr "आत्ता libvirt सह जोडणी अशक्य. पुन्हा प्रयत्न करत आहे .. $i"
 
 #, c-format
 msgid "Unable to convert lease expiry time to long long: %s"
@@ -10334,6 +10371,10 @@ msgstr "ब्रिज साधन निर्माण करणे अश�
 #, c-format
 msgid "Unable to create device %s"
 msgstr "साधन %s निर्माण अशक्य"
+
+#, c-format
+msgid "Unable to create directory %s"
+msgstr "डिरेक्ट्री %s निर्माण करण्यास अशक्य"
 
 #, c-format
 msgid "Unable to create directory '%s'"
@@ -10505,6 +10546,10 @@ msgstr "FDची संख्या एंकोड करण्यास अश
 
 msgid "Unable to enter mount namespace"
 msgstr "माउंट नेमस्पेसमध्ये जाणे अशक्य"
+
+#, c-format
+msgid "Unable to exec shell %s"
+msgstr "शेल %s exec करण्यास अशक्य"
 
 msgid "Unable to find 'cpuacct' cgroups controller mount"
 msgstr "'cpuacct' cgroups कंट्रोलर माउंट शोधण अशक्य"
@@ -11313,6 +11358,10 @@ msgstr "बाइंड स्रोत %s ला stat करण्यास अ
 msgid "Unable to stat bind target %s"
 msgstr "बाइंड लक्ष्य %s ला stat करण्यास अशक्य"
 
+#, c-format
+msgid "Unable to symlink directory %s to %s"
+msgstr "डिरेक्ट्री %s ला %s करिता symlink अशक्य"
+
 msgid "Unable to thaw all processes"
 msgstr "सर्व प्रोसेसना thaw करणे अशक्य"
 
@@ -11768,15 +11817,6 @@ msgstr "xsd:boolean करिता अपरिचीत मूल्य '%s'"
 #, c-format
 msgid "Unknown vendor %s referenced by CPU model %s"
 msgstr "अपरिचीत विक्रेता %s, CPU मॉडल %s तर्फे संदर्भ केलेले"
-
-msgid "Unmatched ( or \\("
-msgstr "जुळले नाही ( किंवा \\("
-
-msgid "Unmatched ) or \\)"
-msgstr "जुळले नाही ) किंवा \\)"
-
-msgid "Unmatched \\{"
-msgstr "जुळले नाही \\{"
 
 msgid "Unpaused"
 msgstr "सुरू"
@@ -12420,14 +12460,6 @@ msgstr "डाउनलोड करण्यासाठीचा डाटा"
 msgid "amount of data to upload"
 msgstr "अपलोड करण्याजोगी डाटा"
 
-#, c-format
-msgid ""
-"an interface connecting to network '%s' is requesting a vlan tag, but that "
-"is not supported for this type of network"
-msgstr ""
-"नेटवर्क '%s' सह जोडणी करणारी इंटरफेस vlan टॅगकरिता विनंती करत आहे, जे या नेटवर्क "
-"प्रकारकरिता समर्थन पुरवत नाही"
-
 msgid "apparmor_parser exited with error"
 msgstr "apparmor_parser त्रुटीविना बाहेर पडले"
 
@@ -12757,6 +12789,10 @@ msgstr "कॉलर cookieout किंवा cookieoutlen कडे दुर�
 
 msgid "caller ignores uri_out"
 msgstr "कॉलर uri_out ला दुर्लक्ष करतो"
+
+#, c-format
+msgid "can't canonicalize path '%s'"
+msgstr "मार्ग '%s' ला कॅनॉनिकलाइज करणे अशक्य"
 
 msgid "can't change link state: device alias not found"
 msgstr "लिंक स्तर बदलणे अशक्य: डिव्हाइस अलायस आढळले नाही"
@@ -13827,6 +13863,14 @@ msgstr "%s मध्ये cellNum %d पेक्षा कमी किंव�
 msgid "cellNum in %s only accepts %d as a negative value"
 msgstr "%s मधील cellNum फक्त %d ला नेगेटिव्ह मूल्य म्हणून स्वीकारते"
 
+#, c-format
+msgid "cfs_period '%llu' must be in range (1000, 1000000)"
+msgstr "cfs_period '%llu' ची व्याप्ति (1000, 1000000) पाहिजे"
+
+#, c-format
+msgid "cfs_quota '%lld' must be in range (1000, %llu)"
+msgstr "cfs_quota '%lld' ची व्याप्ति (1000, %llu) पाहिजे"
+
 msgid "cgroup CPU controller is not mounted"
 msgstr "cgroup CPU कंट्रोलर माउंट केले नाही"
 
@@ -14076,18 +14120,6 @@ msgstr "सदोषीत profileid स्ट्रिंग"
 
 msgid "could not allocate memory"
 msgstr "मेमरिचे वाटप अशक्य"
-
-msgid "could not allocate memory for disk"
-msgstr "डिस्ककरिता मेमरिचे वाटप अशक्य"
-
-msgid "could not allocate memory for profile"
-msgstr "प्रोफाइलकरिता मेमरिचे वाटप अशक्य"
-
-msgid "could not allocate memory for profile files"
-msgstr "प्रोफाइल फाइल्सकरिता मेमरिचे वाटप अशक्य"
-
-msgid "could not allocate memory for profile name"
-msgstr "प्रोफाइल नावकरिता मेमरिचे वाटप अशक्य"
 
 #, c-format
 msgid "could not attach shared folder '%s', rc=%08x"
@@ -15067,6 +15099,9 @@ msgstr "डोमेन जॉबची माहिती"
 msgid "domain name or uuid"
 msgstr "डोमेन नाव किंवा uuid"
 
+msgid "domain name, id or uuid"
+msgstr "डोमेन नाव, id किंवा uuid"
+
 msgid "domain save job"
 msgstr "डोमेन सेव्ह जॉब"
 
@@ -15538,12 +15573,6 @@ msgid ""
 msgstr ""
 "'%s'करिता नवीन फिल्टर नियम समावेश अपयशी - जुणे निय पूर्वस्थितीत आणण्याचा प्रत्न करत आहे"
 
-msgid "failed to allocate buffer"
-msgstr "बफरचे वाटप अपयशी"
-
-msgid "failed to allocate file buffer"
-msgstr "फाइल बफरचे वाटप अपयशी"
-
 #, c-format
 msgid "failed to apply capabilities: %d"
 msgstr "क्षमता लागू करण्यास अपयशी: %d"
@@ -15600,9 +15629,6 @@ msgstr "आकार: '%s' रूपांतरीत करण्यास अ
 
 msgid "failed to convert the XML node tree"
 msgstr "XML नोड ट्री रूपांतरित करण्यास अपयशी"
-
-msgid "failed to copy security label"
-msgstr "सेक्युरिटि लेबलचे प्रत बनवण्यास अपयशी"
 
 #, c-format
 msgid "failed to create %s"
@@ -15999,6 +16025,10 @@ msgid "failed to read libxl header"
 msgstr "libxl शीर्षक वाचण्यास अपयशी"
 
 #, c-format
+msgid "failed to read link of gluster file '%s'"
+msgstr "gluster फाइल '%s' ची दुवा वाचण्यास अपयशी"
+
+#, c-format
 msgid "failed to read metadata length in '%s'"
 msgstr "'%s' अंतर्गत मेटाडेटा लांबी वाचण्यास अपयशी"
 
@@ -16081,6 +16111,10 @@ msgid "failed to set cpuset.cpus in cgroup for emulator threads"
 msgstr "एम्युलेटर थ्रेडस्करिता cpuset.cpus ठरवणे अपयशी"
 
 #, c-format
+msgid "failed to set gluster volfile server '%s'"
+msgstr "gluster volfile सर्व्हर '%s' ठरवण्यास अपयशी"
+
+#, c-format
 msgid "failed to set snapshot '%s' as current"
 msgstr "स्नॅपशॉट '%s' ला सध्याचे म्हणून ठरवण्यास अपयशी"
 
@@ -16092,6 +16126,10 @@ msgstr "stdin फाइल हॅन्डलची मांडणी करण
 
 msgid "failed to setup stdout file handle"
 msgstr "stdout फाइल हॅन्डलची मांडणी करण्यास अपयशी"
+
+#, c-format
+msgid "failed to stat gluster path '%s'"
+msgstr "gluster मार्ग '%s' ची आकडेवारी अपयशी"
 
 #, c-format
 msgid "failed to stat remote file '%s'"
@@ -17813,10 +17851,6 @@ msgstr "मशीन सुरू नाही, पुनःबूट करण�
 msgid "machine paused, so can't power it down"
 msgstr "मशीनला थांबली, म्हणून बंद करणे अशक्य"
 
-#, c-format
-msgid "machine type %s too big for destination"
-msgstr "लक्ष्यकरिता मशीन प्रकार %s खूप मोठे आहे"
-
 msgid "machine type (/domain/os/type/@machine)"
 msgstr "मशीन प्रकार (/domain/os/type/@machine)"
 
@@ -18262,6 +18296,10 @@ msgstr "फिल्टर पॅरामिटिर तक्ता आढळ
 msgid "missing flag name in QEMU capabilities cache"
 msgstr "QEMU क्षमता कॅशे अंतर्गत फ्लॅग नाव आढळले नाही"
 
+#, c-format
+msgid "missing gluster volume name for path '%s'"
+msgstr "मार्ग '%s' करिता gluster वॉल्युम नाव आढळले नाही"
+
 msgid "missing graphics device type"
 msgstr "चित्रलेखीय साधन प्रकार आढळले नाही"
 
@@ -18574,14 +18612,6 @@ msgid ""
 msgstr ""
 "ह्या प्लॅटफॉर्मवर mkfs समर्थीत नाही: साधन '%2$s' वर फाइलप्रणाली प्रकार '%1$s' मेक "
 "करण्यास अपयशी"
-
-#, c-format
-msgid "mkostemp(\"%s\") failed"
-msgstr "mkostemp(\"%s\") अपयशी"
-
-#, c-format
-msgid "mkostemps: failed to create temporary file: %s"
-msgstr "mkostemps: तात्पुर्ती फाइल: %sचे निर्माण अपयशी"
 
 msgid "mktime failed"
 msgstr "mktime अपयशी"
@@ -19576,6 +19606,10 @@ msgstr "घटक '%s' एकपेक्षाजास्त वेळ आढ�
 msgid "parameter=value"
 msgstr "parameter=value"
 
+#, c-format
+msgid "parent %s would create cycle to %s"
+msgstr "पॅरेंट %s, %s करिता सायकल निर्माण करेल"
+
 msgid "parser error"
 msgstr "वाचकाकडून त्रूटी"
 
@@ -19854,9 +19888,6 @@ msgstr "प्रोफाइल अस्तित्वात नाही"
 
 msgid "profile exists"
 msgstr "प्रोफाइल अस्तित्वात आहे"
-
-msgid "profile name exceeds maximum length"
-msgstr "प्रोफाइल नाव कमाल लांबीपेक्षा जास्त आहे"
 
 msgid "profileid parameter too long"
 msgstr "profileid घटक खूप मोठे आहे"
@@ -20926,9 +20957,6 @@ msgstr "साचा '%s' अस्तित्वात नाही"
 
 msgid "template does not exist"
 msgstr "साचा अस्तित्वात नाही"
-
-msgid "template name exceeds maximum length"
-msgstr "साचा नाव कमाल लांबीपेक्षा जास्त आहे"
 
 msgid "terminate gracefully"
 msgstr "औचित्यपूर्ण बंद करा"

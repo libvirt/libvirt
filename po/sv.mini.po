@@ -11,9 +11,9 @@
 # Göran Uddeborg <goeran@uddeborg.se>, 2017. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.9.0\n"
+"Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-10-18 13:39+0100\n"
+"POT-Creation-Date: 2019-12-16 16:39+0000\n"
 "PO-Revision-Date: 2017-02-26 05:02+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish (http://www.transifex.com/projects/p/libvirt/language/"
@@ -79,10 +79,6 @@ msgstr "%s-objekt har ogiltig dynamisk typ"
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: misslyckades att allokera %d bytes"
-
-#, c-format
-msgid "%s: %d: failed to allocate %lu bytes"
-msgstr "%s: %d: misslyckades att allokera %lu bytes"
 
 #, c-format
 msgid "%s: %s"
@@ -460,6 +456,10 @@ msgstr "misslyckades att få gränssnittsinformation"
 #, c-format
 msgid "Failed to get interface stats %s %s"
 msgstr "Misslyckades att hämta gränssnittsstatistik %s %s"
+
+#, c-format
+msgid "Failed to initialize libvirt error handling"
+msgstr "Misslyckades att initiera felhantering för libvirt"
 
 msgid "Failed to list active domains"
 msgstr "Misslyckades att lista aktiva domäner"
@@ -1347,12 +1347,6 @@ msgstr "konvertera ett nätverksnamn till nätverks-UUID"
 msgid "could not allocate memory"
 msgstr "kunde inte allokera minne"
 
-msgid "could not allocate memory for profile files"
-msgstr "kunde inte allokera minne för profilfiler"
-
-msgid "could not allocate memory for profile name"
-msgstr "kunde inte allokera minne för profilnamn"
-
 msgid "could not connect to Xen Store"
 msgstr "kunde inte ansluta till Xen Store"
 
@@ -1452,6 +1446,9 @@ msgstr "domäninformation i XML"
 
 msgid "domain name or uuid"
 msgstr "domännamn eller uuid"
+
+msgid "domain name, id or uuid"
+msgstr "domännman, id eller uuid"
 
 msgid "domain state"
 msgstr "domäntillstånd"

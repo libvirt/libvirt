@@ -9,9 +9,9 @@
 # Richard E. van der Luit <nippur@fedoraproject.org>, 2013
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.9.0\n"
+"Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-10-18 13:39+0100\n"
+"POT-Creation-Date: 2019-12-16 16:39+0000\n"
 "PO-Revision-Date: 2015-02-26 09:23+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/fedora/language/"
@@ -125,10 +125,6 @@ msgstr ""
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: toewijzen van %d bytes mislukte"
-
-#, c-format
-msgid "%s: %d: failed to allocate %lu bytes"
-msgstr "%s: %d: toewijzen van %lu bytes mislukte"
 
 #, c-format
 msgid "%s: %s"
@@ -642,9 +638,6 @@ msgstr "Kon volume niet verwijderen: %s"
 msgid "Could not destroy domain: %s"
 msgstr "Kan domein niet vernietigen: %s"
 
-msgid "Could not disable SIGPIPE"
-msgstr "Kan SIGPIPE niet uitschakelen"
-
 #, c-format
 msgid "Could not dlsym %s from '%s': %s"
 msgstr "Kon niet dlsym %s van '%s': %s"
@@ -811,9 +804,6 @@ msgstr "Kon geen geldige schijf index ontleden uit '%s'"
 #, c-format
 msgid "Could not parse version number from '%s'"
 msgstr "Kan versie nummer niet ontleden uit '%s'"
-
-msgid "Could not re-enable SIGPIPE"
-msgstr "Kan SIGPIPE niet opnieuw inschakelen"
 
 #, c-format
 msgid "Could not read 'IP_ADDRESS' from config for container %d"
@@ -5065,18 +5055,6 @@ msgstr "converteer een interface naam naar interface MAC adres"
 msgid "could not allocate memory"
 msgstr "toewijzen van geheugen mislukte"
 
-msgid "could not allocate memory for disk"
-msgstr "kon geen geheugen toewijzen voor schijf"
-
-msgid "could not allocate memory for profile"
-msgstr "kon geen geheugen toewijzen voor profiel"
-
-msgid "could not allocate memory for profile files"
-msgstr "kon geen geheugen toewijzen voor profiel bestanden"
-
-msgid "could not allocate memory for profile name"
-msgstr "kon geen geheugen toewijzen voor profiel naam"
-
 #, c-format
 msgid "could not change ACPI status to: %s, rc=%08x"
 msgstr "kan ACPI status niet veranderen naar: %s, rc=%08x"
@@ -5533,6 +5511,9 @@ msgstr "domein taak informatie"
 msgid "domain name or uuid"
 msgstr "domein naam of uuid"
 
+msgid "domain name, id or uuid"
+msgstr "domein naam, id of uuid"
+
 msgid "domain save job"
 msgstr "domein opslaan taak"
 
@@ -5704,12 +5685,6 @@ msgstr "Xen syscall %s mislukte"
 #, c-format
 msgid "failed reading from file '%s'"
 msgstr "lezen van bestand '%s' mislukte"
-
-msgid "failed to allocate buffer"
-msgstr "toewijzen van buffer mislukte"
-
-msgid "failed to allocate file buffer"
-msgstr "toewijzen van bestandsbuffer mislukte"
 
 #, c-format
 msgid "failed to apply capabilities: %d"
@@ -6534,10 +6509,6 @@ msgstr "machine draait niet, kan deze dus opnieuw opstarten"
 msgid "machine paused, so can't power it down"
 msgstr "machine is gepauzeerd, kan deze dus niet uitschakelen"
 
-#, c-format
-msgid "machine type %s too big for destination"
-msgstr "machine soort %s te groot voor de bestemming"
-
 msgid "malformed capacity element"
 msgstr "ongeldig capaciteit element"
 
@@ -7313,9 +7284,6 @@ msgstr "profiel bestaat niet"
 msgid "profile exists"
 msgstr "profiel bestaat"
 
-msgid "profile name exceeds maximum length"
-msgstr "profiel naam overschrijdt maximum lengte"
-
 msgid "profileid parameter too long"
 msgstr "profileid parameter is te lang"
 
@@ -7713,9 +7681,6 @@ msgstr "sjabloon '%s' bestaat niet"
 
 msgid "template does not exist"
 msgstr "sjabloon bestaat niet"
-
-msgid "template name exceeds maximum length"
-msgstr "sjabloon naam langer is dan maximum lengte"
 
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: geef een pad op of gebruik test:///default"

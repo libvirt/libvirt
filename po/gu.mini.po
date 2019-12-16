@@ -12,9 +12,9 @@
 # sweta <swkothar@redhat.com>, 2013-2014
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.9.0\n"
+"Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-10-18 13:39+0100\n"
+"POT-Creation-Date: 2019-12-16 16:39+0000\n"
 "PO-Revision-Date: 2015-02-23 06:16+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Gujarati (http://www.transifex.com/projects/p/libvirt/"
@@ -231,6 +231,10 @@ msgid "%s not implemented on Win32"
 msgstr "Win32 પર %s નું અમલીકરણ થયેલ નથી"
 
 #, c-format
+msgid "%s not matched against 'allowed_users' in %s"
+msgstr "%s માં 'allowed_users' વિરુદ્દ %s એ બંધબેસેલ નથી"
+
+#, c-format
 msgid "%s not parseable"
 msgstr "%s નું પદચ્છેદન કરી શક્યા નહિં"
 
@@ -261,10 +265,6 @@ msgstr ""
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: %d બાઈટો ફાળવવામાં નિષ્ફળ"
-
-#, c-format
-msgid "%s: %d: failed to allocate %lu bytes"
-msgstr "%s: %d: %lu બાઈટો ફાળવવામાં નિષ્ફળ"
 
 #, c-format
 msgid "%s: %d: failed to allocate argv"
@@ -430,6 +430,9 @@ msgstr "guest-get-vcpus નાં જવાબમાં 'logical-id' ગેર�
 
 msgid "'online' missing in reply of guest-get-vcpus"
 msgstr "guest-get-vcpus નાં જવાબમાં 'ઓનલાઇન' ગેરહાજર"
+
+msgid "'parent' for vHBA not specified, and cannot find one on this host"
+msgstr "vHBA માટે 'મુખ્ય' સ્પષ્ટ થયેલ નથી, અને આ યજમાન પર એકને શોધી શકાતુ નથી"
 
 msgid "'peak' and 'burst' require 'average' attribute"
 msgstr "'પીક' અને 'બર્સ્ટ' ને 'સરેરાશ' ગુણધર્મની જરૂર છે"
@@ -1061,12 +1064,13 @@ msgstr "બીજા USB નિયંત્રકને ઉમેરી શક�
 msgid "Can't add host USB device: USB is disabled in this host"
 msgstr "યજમાન USB ઉપકરણને ઉમેરી શકાતુ નથી: USB આ યજમાનમાં નિષ્ક્રિય થયેલ છે"
 
-msgid "Can't allocate memory"
-msgstr "મેમરીને ફાળવી શકાતી નથી"
-
 #, sh-format
 msgid "Can't connect to $uri. Skipping."
 msgstr "$uri માં જોડી શકાતુ નથી. છોડી રહ્યા છે."
+
+#, c-format
+msgid "Can't create %s container: %s"
+msgstr "%s પાત્રને બનાવી શકાતુ નથી: %s"
 
 msgid "Can't create initial configuration"
 msgstr "પ્રારંભનુ રૂપરેખાંકન બનાવી શકાતુ નથી"
@@ -1217,6 +1221,9 @@ msgstr "બલુન ઉપકરણ પાથને નક્કી કરી �
 
 msgid "Cannot determine free memory"
 msgstr "મુક્ત મેમરી નક્કી કરી શકાતી નથી"
+
+msgid "Cannot determine system clock HZ"
+msgstr "સિસ્ટમ ઘડિયાળ HZ ને નક્કી કરી શકાતુ નથી"
 
 msgid "Cannot disable close-on-exec flag"
 msgstr "close-on-exec ફ્લેગને નિષ્ક્રિય કરી શકાતુ નથી"
@@ -1418,6 +1425,14 @@ msgid "Cannot parse start time %s in %s"
 msgstr "%s માં શરૂઆત સમય %s નું પદચ્છેદન કરી શકાતુ નથી"
 
 #, c-format
+msgid "Cannot parse sys stat '%s'"
+msgstr "સિસ્ટમ સ્થિતિ '%s' નું પદચ્છેદન કરી શકાતુ નથી"
+
+#, c-format
+msgid "Cannot parse user stat '%s'"
+msgstr "વપરાશકર્તા સ્થિતિ '%s' નું પદચ્છેદન કરી શકાતુ નથી"
+
+#, c-format
 msgid "Cannot read %s '%s'"
 msgstr "%s '%s' ને વાંચી શકાતુ નથી"
 
@@ -1532,6 +1547,10 @@ msgstr "પ્રારંભ ન થયેલ CURL સંચાલનને વ
 #, c-format
 msgid "Cannot specify a label if relabelling is turned off. model=%s"
 msgstr "લેબલને સ્પષ્ટ કરી શકાતુ નથી જો પુન:લેબલ કરવાનું બંધ હોય તો. મોડલ=%s"
+
+#, c-format
+msgid "Cannot stat %s"
+msgstr "સ્થિતિ %s ને કરી શકાતી નથી"
 
 #, c-format
 msgid "Cannot undefine HostVirtualSwitch that has a '%s' port"
@@ -1919,9 +1938,6 @@ msgstr "ઘર ડિરેક્ટરીને નક્કી કરી શ�
 msgid "Could not determine kernel version from string %s"
 msgstr "શબ્દમાળા %s માંથી કર્નલ આવૃત્તિને નક્કી કરી શક્યા નહિં"
 
-msgid "Could not disable SIGPIPE"
-msgstr "SIGPIPE ને નિષ્ક્રિય કરી શક્યા નહિં"
-
 #, c-format
 msgid "Could not dlsym %s from '%s': %s"
 msgstr "'%s' માંથી %s ને dlsym કરી શક્યા નહિં: %s"
@@ -1996,6 +2012,10 @@ msgstr "ચોક્કસ પાથ '%s' ને સમાવતુ માહિ
 #, c-format
 msgid "Could not find datastore with name '%s'"
 msgstr "નામ '%s' સાથે datastore ને શોધી શક્યા નહિં"
+
+#, c-format
+msgid "Could not find directory separator in %s"
+msgstr "%s માં ડિરેક્ટરી વિભાજક શોધી શક્યા નહિં"
 
 #, c-format
 msgid "Could not find domain snapshot with internal name '%s'"
@@ -2334,9 +2354,6 @@ msgstr "'%s' માંથી આવૃત્તિ નંબરનું પદ�
 #, c-format
 msgid "Could not query registry value '%s\\%s'"
 msgstr "રજીસ્ટરી કિંમત '%s\\%s' નુ ક્વેરી કરી શક્યા નહિં"
-
-msgid "Could not re-enable SIGPIPE"
-msgstr "SIGPIPE ને ફરી સક્રિય કરી શક્યા નહિં"
 
 #, c-format
 msgid "Could not read '%s' from config for container %d"
@@ -3492,6 +3509,10 @@ msgid "Failed to begin network config change transaction"
 msgstr "નેટવર્ક રૂપરેખાંકન બદલાવ સ્થળાંતરને શરૂ કરવામાં નિષ્ફળતા"
 
 #, c-format
+msgid "Failed to bind cgroup '%s' on '%s'"
+msgstr "'%s' પર cgroup '%s' બાઇન્ડ કરવામાં નિષ્ફળતા"
+
+#, c-format
 msgid "Failed to bind mount directory %s to %s"
 msgstr "%s માં માઉન્ટ ડિરેક્ટરી %s ને બાંધવામાં નિષ્ફળતા"
 
@@ -3553,12 +3574,6 @@ msgstr "બાઇન્ડ લક્ષ્ય %s ને બંધ કરવા�
 
 msgid "Failed to collect auth credentials"
 msgstr "સત્તા ઓળખાણપત્રને એકઠુ કરવામાં નિષ્ફળ"
-
-msgid "Failed to collect command"
-msgstr "આદેશને સંગ્રહ કરવામાં નિષ્ફળતા"
-
-msgid "Failed to collect new description/title"
-msgstr "નવાં વર્ણન/શીર્ષકને સંગ્રહવામાં નિષ્ફળ"
 
 msgid "Failed to commit network config change transaction"
 msgstr "નેટવર્ક રૂપરેખાંકન બદલાવ સ્થળાંતરને મોકલવામાં નિષ્ફળતા"
@@ -3653,9 +3668,6 @@ msgstr "'%s' dev '%s' માટે ડિરેક્ટરીને બના�
 #, c-format
 msgid "Failed to create directory for device %s"
 msgstr "ઉપકરણ %s માટે ડિરેક્ટરીને બનાવવામાં નિષ્ફળતા"
-
-msgid "Failed to create display URI"
-msgstr "દર્શાવ URI ને બનાવવામાં નિષ્ફળતા"
 
 #, c-format
 msgid "Failed to create domain from %s"
@@ -4195,6 +4207,10 @@ msgstr "ડોમેઈન %s ને આપોઆપ શરૂથયેલ ત�
 #, c-format
 msgid "Failed to mkdir %s"
 msgstr "mkdir %s કરવામાં નિષ્ફળ"
+
+#, c-format
+msgid "Failed to mount %s on %s type %s"
+msgstr "%s પ્રકાર %s પર %s ને માઉન્ટ કરવામાં નિષ્ફળ"
 
 #, c-format
 msgid "Failed to mount %s on /dev"
@@ -5489,15 +5505,13 @@ msgstr "અમાન્ય દલીલ"
 msgid "Invalid authentication method: '%s'"
 msgstr "અયોગ્ય સત્તાધિકરણ પદ્દતિ: '%s'"
 
-msgid "Invalid back reference"
-msgstr "અયોગ્ય બેક સંદર્ભ"
+#, c-format
+msgid "Invalid boolean value for field '%s'"
+msgstr "ક્ષેત્ર '%s' માટે અયોગ્ય બુલિયન કિંમત"
 
 #, c-format
 msgid "Invalid bridge mac address '%s' in network '%s'"
 msgstr "નેટવર્ક '%s' માં અમાન્ય બ્રિજ mac સરનામું '%s' "
-
-msgid "Invalid buffer API usage"
-msgstr "અયોગ્ય બફર API વપરાશ"
 
 #, c-format
 msgid "Invalid bus type '%s' for disk"
@@ -5534,15 +5548,9 @@ msgstr ""
 msgid "Invalid character '%c' in id '%s' of network '%s'"
 msgstr "અયોગ્ય અક્ષર '%c' એ id '%s' માં નેટવર્ક '%s' નું "
 
-msgid "Invalid character class name"
-msgstr "અયોગ્ય અક્ષર ક્લાસ નામ"
-
 #, c-format
 msgid "Invalid class ID %d"
 msgstr "અયોગ્ય વર્ગ ID %d"
-
-msgid "Invalid collation character"
-msgstr "અમાન્ય સરખામણી અક્ષર"
 
 #, c-format
 msgid "Invalid collection period value '%d'"
@@ -5551,9 +5559,6 @@ msgstr "અયોગ્ય સંગ્રહ સમયગાળો કિંમ
 #, c-format
 msgid "Invalid compressed save format %d"
 msgstr "અયોગ્ય સંકુચિત સંગ્રહ બંધારણ %d"
-
-msgid "Invalid content of \\{\\}"
-msgstr "\\{\\} નો અયોગ્ય સમાવિષ્ટ"
 
 msgid "Invalid context"
 msgstr "અયોગ્ય સંદર્ભ"
@@ -5757,18 +5762,9 @@ msgstr "અયોગ્ય પોર્ટ સીમા '%u-%u'."
 msgid "Invalid ports: %s"
 msgstr "અયોગ્ય પોર્ટ: %s"
 
-msgid "Invalid preceding regular expression"
-msgstr "અમાન્ય પૂર્વવર્તી નિયમિત સમીકરણ"
-
 #, c-format
 msgid "Invalid prefix or netmask for '%s'"
 msgstr "અયોગ્ય ઉપસર્ગ અથવા '%s' માટે નેટમાસ્ક"
-
-msgid "Invalid range end"
-msgstr "અયોગ્ય સીમા અંત"
-
-msgid "Invalid regular expression"
-msgstr "અયોગ્ય રેગ્યુલર એક્સપ્રેશન"
 
 #, c-format
 msgid "Invalid relative path '%s'"
@@ -5827,6 +5823,10 @@ msgid ""
 msgstr "નેટવર્ક '%s' IPv6 સ્થિર યજમાન વ્યાખ્યામાં MAC સરનામાં '%s'ને સ્પષ્ટ કરવાનું અયોગ્ય"
 
 #, c-format
+msgid "Invalid type '%s' requested for parameter '%s', actual type is '%s'"
+msgstr "પરિમાણ '%s' માટે સૂચિત અયોગ્ય પ્રકાર '%s', ચોક્કસ પ્રકાર '%s' છે"
+
+#, c-format
 msgid ""
 "Invalid use of 'floor' on interface with MAC address %s - network '%s' has "
 "no inbound QoS set"
@@ -5841,6 +5841,26 @@ msgstr "'%s' માટે અયોગ્ય કિંમત '%s'"
 #, c-format
 msgid "Invalid value '%s' for VMX entry '%s'"
 msgstr "VMX નોંધણી '%s' માટે અયોગ્ય કિંમત '%s'"
+
+#, c-format
+msgid "Invalid value for field '%s': expected double"
+msgstr "ક્ષેત્ર '%s' માટે અમાન્ય કિંત: ઇચ્છિત બમણું"
+
+#, c-format
+msgid "Invalid value for field '%s': expected int"
+msgstr "ક્ષેત્ર '%s' માટે અમાન્ય કિંત: ઇચ્છિત int"
+
+#, c-format
+msgid "Invalid value for field '%s': expected long long"
+msgstr "ક્ષેત્ર '%s' માટે અયોગ્ય કિંમત: લાંબુ લાંબુ ઇચ્છા રાખેલ છે"
+
+#, c-format
+msgid "Invalid value for field '%s': expected unsigned int"
+msgstr "ક્ષેત્ર '%s' માટે અયોગ્ય કિંમત: ઇચ્છિત હસ્તાક્ષર ન થયેલ int"
+
+#, c-format
+msgid "Invalid value for field '%s': expected unsigned long long"
+msgstr "ક્ષેત્ર '%s' માટે અયોગ્ય કિંમત: હસ્તાક્ષર ન થયેલ લાંબા લાંબાની ઇચ્છા રાખેલ છે"
 
 msgid "Invalid value for number of CPUs to show"
 msgstr "બતાવવા માટે CPUs ની સંખ્યા માટે અયોગ્ય કિંમત"
@@ -6081,6 +6101,10 @@ msgstr "મહત્તમ મેમરી:"
 msgid "Memory"
 msgstr "મેમરી"
 
+#, c-format
+msgid "Memory '%llu' must be less than %llu"
+msgstr "મેમરી '%llu' એ %llu કરતા ઓછી હોવી જ જોઇએ"
+
 msgid "Memory allocation failure"
 msgstr "મેમરી સોંપણી નિષ્ફળ"
 
@@ -6094,9 +6118,6 @@ msgstr "મેમરી cgroup આ યજમાન પર ઉપલબ્ધ ન
 
 msgid "Memory during contention, as scaled integer (default KiB)"
 msgstr "તકરાર દરમ્યાન મેમરી, માપાંકિત પૂર્ણાંક તરીકે (મૂળભૂત KiB)"
-
-msgid "Memory exhausted"
-msgstr "થાકેલી મેમરી"
 
 msgid "Memory processed:"
 msgstr "પ્રક્રિયા થયેલ મેમરી:"
@@ -6183,6 +6204,10 @@ msgstr "ગેરહાજર '%s' ગુણધર્મ"
 #, c-format
 msgid "Missing '%s' property while looking for ManagedEntityStatus"
 msgstr "ગુમ થયેલ '%s' ગુણધર્મ જ્યારે ManagedEntityStatus માટે જોઇ રહ્યા છે"
+
+#, c-format
+msgid "Missing '/' separator in cgroup mount '%s'"
+msgstr "cgroup માઉન્ટ '%s' માં ગુમ થયેલ '/' વિભાજક"
 
 msgid "Missing 'cores' attribute in CPU topology"
 msgstr "CPU ટોપૉલોજી માં ગેરહાજર 'cores' ગુણધર્મ"
@@ -6564,6 +6589,10 @@ msgstr "NULL NetworkDef"
 msgid "NULL string parameter '%s'"
 msgstr "NULL શબ્દમાળા પરિમાણ '%s'"
 
+#, c-format
+msgid "NULL value for field '%s'"
+msgstr "ક્ષેત્ર '%s' માટે NULL કિંમત"
+
 msgid "NUMA cell number"
 msgstr "NUMA સેલ નંબર"
 
@@ -6795,9 +6824,6 @@ msgstr "<initarg> ઘટક માટે પૂરી પાડેલ માહ�
 msgid "No description for domain: %s"
 msgstr "ડોમેઇન માટે વર્ણન નથી: %s"
 
-msgid "No device found for specified path"
-msgstr "સ્પષ્ટ થયેલ પાથ માટે ઉપકરણ મળ્યુ નથી"
-
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
 msgstr "બસ '%s' અને લક્ષ્ય '%s' સાથે ઉપકરણ નથી"
@@ -6852,17 +6878,11 @@ msgstr "MAC સરનામાં %s સાથે ઇન્ટરફેસ મ�
 msgid "No master USB controller specified"
 msgstr "મુખ્ય USB નિયંત્રક સ્પષ્ટ થયેલ નથી"
 
-msgid "No match"
-msgstr "બંધબેસતુ નથી"
-
 msgid "No more available PCI slots"
 msgstr "વધારે ઉપલબ્ધ PCI સ્લોટ નથી"
 
 msgid "No per-CPU stats available"
 msgstr "પ્રતિ-CPU સ્થિતિ ઉપલબ્ધ નથી"
-
-msgid "No previous regular expression"
-msgstr "પહેલાંનુ રેગ્યુલર એક્સપ્રેશન નથી"
 
 msgid "No qemu command-line argument specified"
 msgstr "qemu આદેશ-વાક્ય દલીલ સ્પષ્ટ થયેલ છે"
@@ -7420,9 +7440,6 @@ msgstr ""
 "શક્ય રીતે તમારી પાસે તમારાં LPAR માં સ્થાપિત થયેલ IBM સાધનો નથી. આ લક્ષણને સક્રિય કરવા "
 "માટે તમારા આધારનો સંપર્ક કરો."
 
-msgid "Premature end of regular expression"
-msgstr "નિયમિત સમીકરણ નું અપરિપકવ અંત"
-
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr "PrepareTunnel કહેવાયેલ છે પરંતુ TUNNELLED ફ્લેગ સુયોજિત નથી"
 
@@ -7614,9 +7631,6 @@ msgstr "રજીસ્ટરી કિંમત '%s\\%s' પાસે અનિ
 #, c-format
 msgid "Registry value '%s\\%s' is too short"
 msgstr "રજીસ્ટ્રી કિંમત '%s\\%s' ઘણો ટૂંકો છે"
-
-msgid "Regular expression too big"
-msgstr "રેગ્યુલર એક્સપ્રેશન ઘણુ લાંબુ છે"
 
 #, c-format
 msgid "Remote command terminated with non-zero code: %d"
@@ -8335,9 +8349,6 @@ msgstr "StoragePool નામ પહેલેથી અસ્તિત્વ ધ
 msgid "Stream data too long to send (%zu bytes needed, %zu bytes available)"
 msgstr "સ્ટ્રીમ માહિતી મોકલવા ઘણી લાંબી છે (%zu બાઇટ જરૂરી છે, %zu બાઇટ ઉપલબ્ધ)"
 
-msgid "Success"
-msgstr "સફળતા"
-
 msgid "Successfully copied"
 msgstr "સફળતાપૂર્વક નકલ થયેલ છે"
 
@@ -9032,9 +9043,6 @@ msgstr "કુલ"
 msgid "Total:\n"
 msgstr "શીર્ષક:\n"
 
-msgid "Trailing backslash"
-msgstr "બેલસ્લૅશને નીકાળી રહ્યા છે"
-
 msgid "Transition started"
 msgstr "કોઈ પરિસ્થિતિ નથી"
 
@@ -9252,6 +9260,10 @@ msgid "Unable to change to root dir"
 msgstr "રુટ dir ને બદલવાનું અસમર્થ"
 
 #, c-format
+msgid "Unable to chdir(%s)"
+msgstr "chdir(%s) માટે અસમર્થ"
+
+#, c-format
 msgid "Unable to check interface %s"
 msgstr "ઇન્ટરફસે %s ને ચકાસવાનું અસમર્થ"
 
@@ -9324,6 +9336,10 @@ msgstr "બ્રિજ ઉપકરણને બનાવવાનું અસ
 #, c-format
 msgid "Unable to create device %s"
 msgstr "ઉપકરણ %s ને બનાવવાનું અસમર્થ"
+
+#, c-format
+msgid "Unable to create directory %s"
+msgstr "ડિરેક્ટરી %s ને બનાવવાનું અસમર્થ"
 
 msgid "Unable to create epoll fd"
 msgstr "epoll fd ને બનાવવાનું અસમર્થ"
@@ -9481,6 +9497,10 @@ msgstr "સંદેશા પેલોડનુ એનકોડ કરવાન
 
 msgid "Unable to encode number of FDs"
 msgstr "FDs ની સંખ્યાને એનકોડ કરવાનું અસમર્થ"
+
+#, c-format
+msgid "Unable to exec shell %s"
+msgstr "exec shell %s માટે અસમર્થ"
 
 msgid "Unable to find 'cpuacct' cgroups controller mount"
 msgstr "'cpuacct' cgroups નિયંત્રક માઉન્ટ શોધવામાં અસમર્થ"
@@ -10145,6 +10165,10 @@ msgid "Unable to stat bind target %s"
 msgstr "બાઇન્ડ લક્ષ્ય %s નાં આંકડા મેળવવાનું અસમર્થ"
 
 #, c-format
+msgid "Unable to symlink directory %s to %s"
+msgstr "%s માટે ઉપકરણ %s ને પરવાનગી આપવાનું અસમર્થ"
+
+#, c-format
 msgid "Unable to truncate %s"
 msgstr "%s ખોલવામાં નિષ્ફળ"
 
@@ -10534,15 +10558,6 @@ msgstr "xsd:boolean માટે અજ્ઞાત કિંમત '%s'"
 #, c-format
 msgid "Unknown vendor %s referenced by CPU model %s"
 msgstr "CPU મોડલ %s દ્દારા સંદર્ભ થયેલ અજ્ઞાત વિક્રેતા %s"
-
-msgid "Unmatched ( or \\("
-msgstr "( અથવા \\( બંધબેસતુ નથી"
-
-msgid "Unmatched ) or \\)"
-msgstr ") અથવા \\) બંધબેસતુ નથી"
-
-msgid "Unmatched \\{"
-msgstr "બંધબેસતા નથી \\{"
 
 #, c-format
 msgid "Unrecognized family '%s' in network '%s'"
@@ -11104,14 +11119,6 @@ msgstr "ડાઉનલોડ કરવા માટે માહિતી જ�
 
 msgid "amount of data to upload"
 msgstr "અપલોડ કરવા માટે માહિતીનો જથ્થો"
-
-#, c-format
-msgid ""
-"an interface connecting to network '%s' is requesting a vlan tag, but that "
-"is not supported for this type of network"
-msgstr ""
-"નેટવર્ક '%s' માં ઇન્ટરફેસ જોડાઇને vlan ટૅગની માંગણી કરી રહ્યા છે, પરંતુ તે નેટવર્કનાં આ "
-"પ્રકાર માટે આધારભૂત નથી"
 
 msgid "apparmor_parser exited with error"
 msgstr "ભૂલ સાથે apparmor_parser બહાર નીકળ્યુ"
@@ -12407,6 +12414,14 @@ msgstr "%s માં cellNum એ %d કરતા ઓછુ અથવા સર�
 msgid "cellNum in %s only accepts %d as a negative value"
 msgstr "%s માં cellNum એ ફક્ત નકારાત્મક કિંમત તરીકે %d ને સ્વીકારે છે"
 
+#, c-format
+msgid "cfs_period '%llu' must be in range (1000, 1000000)"
+msgstr "cfs_period '%llu' એ સીમામાં હોવુ જ જોઇએ (1000, 1000000)"
+
+#, c-format
+msgid "cfs_quota '%lld' must be in range (1000, %llu)"
+msgstr "cfs_quota '%lld' એ સીમાંમા હોવુ જ જોઇએ (1000, %llu)"
+
 msgid "cgroup CPU controller is not mounted"
 msgstr "cgroup CPU નિયંત્રક માઉન્ટ થયેલ નથી"
 
@@ -12650,18 +12665,6 @@ msgstr "ભાંગેલ profileid શબ્દમાળા"
 
 msgid "could not allocate memory"
 msgstr "મેમરીને ફાળવી શક્યા નહિં"
-
-msgid "could not allocate memory for disk"
-msgstr "ડિસ્ક માટે મેમરી ફાળવી શક્યા નહિં"
-
-msgid "could not allocate memory for profile"
-msgstr "રૂપરેખા માટે મેમરીને ફાળવી શક્યા નહિં"
-
-msgid "could not allocate memory for profile files"
-msgstr "રૂપરેખા ફાઇલો માટે મેમરીને ફાળવી શક્યા નહિં"
-
-msgid "could not allocate memory for profile name"
-msgstr "રૂપરેખા નામ માટે મેમરીને ફાળવી શક્યા નહિં"
 
 #, c-format
 msgid "could not attach shared folder '%s', rc=%08x"
@@ -13540,6 +13543,9 @@ msgstr "ડોમેઈન જોબ જાણકારી"
 msgid "domain name or uuid"
 msgstr "ડોમેઈન નામ અથવા uuid"
 
+msgid "domain name, id or uuid"
+msgstr "ડોમેઈન નામ, id અથવા uuid"
+
 msgid "domain save job"
 msgstr "ડોમેઈન સંગ્રહ જૉબ"
 
@@ -13881,12 +13887,6 @@ msgstr ""
 "'%s' માં નવાં ફિલ્ટર નિયમોને ઉમેરવામાં નિષ્ફળતા - જૂનાં નિયમોને પુન:સંગ્રહ કરવાનો પ્રયત્ન "
 "કરી રહ્યા છે "
 
-msgid "failed to allocate buffer"
-msgstr "બફરને ફાળવવામાં નિષ્ફળતા"
-
-msgid "failed to allocate file buffer"
-msgstr "ફાઇલ બફરને ફાળવવામાં નિષ્ફળતા"
-
 #, c-format
 msgid "failed to apply capabilities: %d"
 msgstr "ક્ષમતાઓ લાગુ કરવામાં નિષ્ફળ: %d"
@@ -13927,9 +13927,6 @@ msgstr "હાયપરવિઝરમાં જોડાવામાં નિ�
 
 msgid "failed to convert the XML node tree"
 msgstr "XML નોડ ટ્રીને રૂપાંતર કરવામાં નિષ્ફળતા"
-
-msgid "failed to copy security label"
-msgstr "સુરક્ષા લેબલની નકલ કરવામાં નિષ્ફળતા"
 
 #, c-format
 msgid "failed to create %s"
@@ -15722,10 +15719,6 @@ msgstr "મશીન ચાલી રહ્યુ નથી, તેથી તે
 msgid "machine paused, so can't power it down"
 msgstr "મશીન અટકાવેલ છે, તેથી પાવર નીચો કરી શકાતો નથી"
 
-#, c-format
-msgid "machine type %s too big for destination"
-msgstr "લક્ષ્ય માટે મશીન પ્રકાર %s ઘણુ લાંબુ છે"
-
 msgid "make live change persistent"
 msgstr "ફેરફાર સતત જીવંત કરો"
 
@@ -16316,14 +16309,6 @@ msgid ""
 msgstr ""
 "mkfs એ આ પ્લેટફોર્મ પર આધારભૂત નથી: ઉપકરણ '%s' પર પ્રકાર '%s' ની ફાઇલસિસ્ટમને "
 "બનાવવામાં નિષ્ફળતા"
-
-#, c-format
-msgid "mkostemp(\"%s\") failed"
-msgstr "mkostemp(\"%s\") નિષ્ફળ"
-
-#, c-format
-msgid "mkostemps: failed to create temporary file: %s"
-msgstr "mkostemps: કામચલાઉ ફાઇલને બનાવવામાં નિષ્ફળતા: %s"
 
 msgid "mktime failed"
 msgstr "mktime નિષ્ફળ"
@@ -17209,6 +17194,10 @@ msgstr "પરિમાણ '%s' ઘણી વખત ઉદ્ભવે છે"
 msgid "parameter=value"
 msgstr "parameter=value"
 
+#, c-format
+msgid "parent %s would create cycle to %s"
+msgstr "મુખ્ય %s એ %s માટે ચક્ર રચના કરશે"
+
 msgid "parser error"
 msgstr "પદચ્છેદન ભૂલ"
 
@@ -17445,9 +17434,6 @@ msgstr "રૂપરેખા અસ્તિત્વ ધરાવતી નથ
 
 msgid "profile exists"
 msgstr "રૂપરેખા અસ્તિત્વ ધરાવે છે"
-
-msgid "profile name exceeds maximum length"
-msgstr "રૂપરેખા નામ એ મહત્તમ લંબાઇને વધારે છે"
 
 msgid "profileid parameter too long"
 msgstr "profileid પરિમાણ ઘણુ લાંબુ છે"
@@ -18348,9 +18334,6 @@ msgstr "ટેમ્પલેટ '%s' અસ્તિત્વમાં નથ�
 
 msgid "template does not exist"
 msgstr "ટૅમ્પલેટ અસ્તિત્વ ધરાવતુ નથી"
-
-msgid "template name exceeds maximum length"
-msgstr "ટૅમ્પલેટ નામ એ મહત્તમ લંબાઇને વધારે છે"
 
 msgid "terminate gracefully"
 msgstr "પ્રભાવશીલ રીતે બંધ કરો"

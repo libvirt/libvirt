@@ -18,9 +18,9 @@
 # Di Wei <dwlinux@outlook.com>, 2019. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.9.0\n"
+"Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-10-18 13:39+0100\n"
+"POT-Creation-Date: 2019-12-16 16:39+0000\n"
 "PO-Revision-Date: 2019-03-29 03:37+0000\n"
 "Last-Translator: Di Wei <dwlinux@outlook.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/projects/p/libvirt/"
@@ -221,6 +221,30 @@ msgstr ""
 msgid ""
 "\n"
 "Usage:\n"
+"  %s [option]\n"
+"\n"
+"Options:\n"
+"  -h | --help            Display program help\n"
+"  -V | --version         Display program version\n"
+"  -c CMD                 Run CMD via shell\n"
+"\n"
+"libvirt login shell\n"
+msgstr ""
+"\n"
+"用法:\n"
+"  %s [选项]\n"
+"\n"
+"选项:\n"
+"  -h | --help            显示帮助信息\n"
+"  -V | --version         显示版本信息\n"
+"  -c CMD                 通过shell运行CMD\n"
+"\n"
+"libvirt 登录 shell\n"
+
+#, c-format
+msgid ""
+"\n"
+"Usage:\n"
 "  %s [options]\n"
 "\n"
 "Options:\n"
@@ -389,6 +413,10 @@ msgid "%s not implemented on Win32"
 msgstr "在 Win32 中没有使用 %s"
 
 #, c-format
+msgid "%s not matched against 'allowed_users' in %s"
+msgstr "%s 未在 %s 的列表'allowed_users' 中"
+
+#, c-format
 msgid "%s not parseable"
 msgstr "%s 无法解析"
 
@@ -427,10 +455,6 @@ msgstr ""
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: 分配 %d 字节内存失败"
-
-#, c-format
-msgid "%s: %d: failed to allocate %lu bytes"
-msgstr "%s: %d: 分配 %lu字节内存失败"
 
 #, c-format
 msgid "%s: %d: failed to allocate argv"
@@ -711,6 +735,9 @@ msgstr "guest-get-fsinfo 回复中缺少 'name' "
 
 msgid "'online' missing in reply of guest-get-vcpus"
 msgstr "guest-get-vcpus 回复中缺少 'online' "
+
+msgid "'parent' for vHBA not specified, and cannot find one on this host"
+msgstr "没有为 vHBA 指定 'parent'，且无法在这台主机中找到它。"
 
 msgid "'pci-controller' missing in guest-get-fsinfo 'disk' data"
 msgstr "guest-get-fsinfo 'disk' 数据缺少 'pci-controller'"
@@ -1395,15 +1422,16 @@ msgstr "无法添加另一个 USB 控制器：这个域禁用 USB"
 msgid "Can't add host USB device: USB is disabled in this host"
 msgstr "无法添加主机 USB 设备：这台主机禁用了 USB"
 
-msgid "Can't allocate memory"
-msgstr "无法分配内存"
-
 msgid "Can't change domain state."
 msgstr "无法更改域状态。"
 
 #, sh-format
 msgid "Can't connect to $uri. Skipping."
 msgstr "无法连接到 $uri。跳过。"
+
+#, c-format
+msgid "Can't create %s container: %s"
+msgstr "不能创建容器 %s : %s"
 
 msgid "Can't create initial configuration"
 msgstr "无法生成初始配置"
@@ -1560,6 +1588,9 @@ msgstr "无法确定布尔值设备路径"
 msgid "Cannot determine free memory"
 msgstr "无法确定剩余内存"
 
+msgid "Cannot determine system clock HZ"
+msgstr "无法确定系统时钟 HZ"
+
 msgid "Cannot disable close-on-exec flag"
 msgstr "无法禁用 close-on-exec 标签"
 
@@ -1595,6 +1626,10 @@ msgstr "无法提取运行的 %s管理程序版本\n"
 #, c-format
 msgid "Cannot find %s - Possibly the package isn't installed"
 msgstr "未找到 %s - 可能没有安装该软件包"
+
+#, c-format
+msgid "Cannot find '%s' in node device database"
+msgstr "未在节点设备数据库中找到 '%s'"
 
 #, c-format
 msgid "Cannot find '%s' in path"
@@ -1767,6 +1802,14 @@ msgid "Cannot parse start time %s in %s"
 msgstr "无法在 %s 中解析启动时间 %s"
 
 #, c-format
+msgid "Cannot parse sys stat '%s'"
+msgstr "无法解析系统统计 '%s'"
+
+#, c-format
+msgid "Cannot parse user stat '%s'"
+msgstr "无法解析用户统计 '%s'"
+
+#, c-format
 msgid "Cannot parse version string '%s'"
 msgstr "无法解析版本字符串 '%s'"
 
@@ -1892,6 +1935,10 @@ msgstr "无法共享未初始化的 CURL 句柄"
 #, c-format
 msgid "Cannot specify a label if relabelling is turned off. model=%s"
 msgstr "如果关闭重新标记功能则无法指定标签。model=%s"
+
+#, c-format
+msgid "Cannot stat %s"
+msgstr "无法统计 %s"
 
 #, c-format
 msgid "Cannot undefine HostVirtualSwitch that has a '%s' port"
@@ -2323,9 +2370,6 @@ msgstr "无法获取主目录"
 msgid "Could not determine kernel version from string %s"
 msgstr "无法从字符串 %s 确定内核版本"
 
-msgid "Could not disable SIGPIPE"
-msgstr "无法禁用 SIGPIPE"
-
 #, c-format
 msgid "Could not dlsym %s from '%s': %s"
 msgstr "无法从 '%s' dlsym %s：%s"
@@ -2395,6 +2439,10 @@ msgstr "无法找到包含绝对路径 '%s' 的数据存储"
 #, c-format
 msgid "Could not find datastore with name '%s'"
 msgstr "无法找到名为 '%s' 的数据存储"
+
+#, c-format
+msgid "Could not find directory separator in %s"
+msgstr "无法在目录分隔符中找到 %s"
 
 #, c-format
 msgid "Could not find domain snapshot with internal name '%s'"
@@ -2742,9 +2790,6 @@ msgstr "无法从 '%s' 中解析版本号"
 #, c-format
 msgid "Could not query registry value '%s\\%s'"
 msgstr "无法查询注册值 '%s\\%s'"
-
-msgid "Could not re-enable SIGPIPE"
-msgstr "无法创新启用 SIGPIPE"
 
 #, c-format
 msgid "Could not read '%s' from config for container %d"
@@ -3956,6 +4001,10 @@ msgid "Failed to bind %s to new root %s"
 msgstr "将 %s 捆绑至新的 root  %s 失败"
 
 #, c-format
+msgid "Failed to bind cgroup '%s' on '%s'"
+msgstr "在 '%s' 中捆绑 cgroup '%s' 失败"
+
+#, c-format
 msgid "Failed to bind mount directory %s to %s"
 msgstr "将挂载目录 %s 捆绑到 %s 失败"
 
@@ -4017,12 +4066,6 @@ msgstr "关闭捆绑目标 %s 失败"
 
 msgid "Failed to collect auth credentials"
 msgstr "收集验证证书失败"
-
-msgid "Failed to collect command"
-msgstr "收集命令失败"
-
-msgid "Failed to collect new description/title"
-msgstr "收集新描述/标题失败"
 
 msgid "Failed to commit network config change transaction"
 msgstr "提交网络更改事务失败"
@@ -4117,9 +4160,6 @@ msgstr "为 '%s' dev '%s' 生成目录失败"
 #, c-format
 msgid "Failed to create directory for device %s"
 msgstr "为设备 %s 生成目录失败"
-
-msgid "Failed to create display URI"
-msgstr "生成显示 URI 失败"
 
 #, c-format
 msgid "Failed to create domain from %s"
@@ -4529,6 +4569,10 @@ msgstr "初始化 libssh2 会话失败"
 msgid "Failed to initialize libvirt"
 msgstr "初始化 libvirt 失败"
 
+#, c-format
+msgid "Failed to initialize libvirt error handling"
+msgstr "初始化libvirt失败"
+
 msgid "Failed to initialize mutex"
 msgstr "初始化互斥锁失败"
 
@@ -4666,6 +4710,10 @@ msgstr "把域 %s标记为自动开始失败"
 #, c-format
 msgid "Failed to mkdir %s"
 msgstr "新建文件夹 %s 失败"
+
+#, c-format
+msgid "Failed to mount %s on %s type %s"
+msgstr "将 %s 在 %s 类型 %s 中挂载失败"
 
 #, c-format
 msgid "Failed to mount %s on /dev"
@@ -5982,8 +6030,9 @@ msgstr "无效参数"
 msgid "Invalid authentication method: '%s'"
 msgstr "无效认证方法：'%s'"
 
-msgid "Invalid back reference"
-msgstr "无效向后引用"
+#, c-format
+msgid "Invalid boolean value for field '%s'"
+msgstr "字段 '%s' 的无效布尔值"
 
 #, c-format
 msgid "Invalid bridge mac address '%s' in network '%s'"
@@ -6026,18 +6075,12 @@ msgstr "无效链名称 '%s'。请使用 '%s' 作为链名称，或者使用以�
 msgid "Invalid character '%c' in id '%s' of network '%s'"
 msgstr "无效字符 '%c' 出现在网络 '%s' id '%s' 中"
 
-msgid "Invalid character class name"
-msgstr "无效字符分类名称"
-
 msgid "Invalid character in source channel for char device"
 msgstr "字符设备的 source channel 中包含无效字符"
 
 #, c-format
 msgid "Invalid class ID %d"
 msgstr "无效等级 ID %d"
-
-msgid "Invalid collation character"
-msgstr "无效校对字符"
 
 #, c-format
 msgid "Invalid collection period value '%d'"
@@ -6046,9 +6089,6 @@ msgstr "无效集合期限值 %d"
 #, c-format
 msgid "Invalid compressed save format %d"
 msgstr "无效压缩保存格式 %d"
-
-msgid "Invalid content of \\{\\}"
-msgstr "无效 \\{\\} 内容"
 
 msgid "Invalid context"
 msgstr "无效上下文"
@@ -6250,18 +6290,9 @@ msgstr "无效端口范围 '%u-%u'。"
 msgid "Invalid ports: %s"
 msgstr "无效端口：%s"
 
-msgid "Invalid preceding regular expression"
-msgstr "前面无效的正则表达式"
-
 #, c-format
 msgid "Invalid prefix or netmask for '%s'"
 msgstr "无效的 '%s' 前缀或者掩码"
-
-msgid "Invalid range end"
-msgstr "无效范围终点"
-
-msgid "Invalid regular expression"
-msgstr "无效正则表达式"
 
 #, c-format
 msgid "Invalid relative path '%s'"
@@ -6332,6 +6363,10 @@ msgid "Invalid trustGuestRxFilters setting '%s' in portgroup"
 msgstr "portgroup 中的无效 trustGuestRxFilters 设置 '%s'"
 
 #, c-format
+msgid "Invalid type '%s' requested for parameter '%s', actual type is '%s'"
+msgstr "参数 '%s' 的无效所需类型 '%s'，应为 '%s'。"
+
+#, c-format
 msgid ""
 "Invalid use of 'floor' on interface with MAC address %s - network '%s' has "
 "no inbound QoS set"
@@ -6348,6 +6383,26 @@ msgstr "元素或属性 '%s' 的无效值 '%s'"
 
 msgid "Invalid value for element priority"
 msgstr "元素优先级的无效值"
+
+#, c-format
+msgid "Invalid value for field '%s': expected double"
+msgstr "字段 '%s' 的无效值：应为 double"
+
+#, c-format
+msgid "Invalid value for field '%s': expected int"
+msgstr "字段 '%s' 的无效值：应为 int"
+
+#, c-format
+msgid "Invalid value for field '%s': expected long long"
+msgstr "字段 '%s' 的无效值：应为 long long"
+
+#, c-format
+msgid "Invalid value for field '%s': expected unsigned int"
+msgstr "字段 '%s' 的无效值：应为未签署的 int"
+
+#, c-format
+msgid "Invalid value for field '%s': expected unsigned long long"
+msgstr "字段 '%s' 的无效值：应为未签名的 long long"
 
 msgid "Invalid value for number of CPUs to show"
 msgstr "要显示 CPU 数的无效值"
@@ -6610,6 +6665,10 @@ msgstr "最大内存，以整数计（默认 KiB）"
 msgid "Max memory:"
 msgstr "最大内存："
 
+#, c-format
+msgid "Memory '%llu' must be less than %llu"
+msgstr "内存 '%llu' 大小必须小于 %llu"
+
 msgid "Memory allocation failure"
 msgstr "内存分配失败"
 
@@ -6623,9 +6682,6 @@ msgstr "这个主机中的没存 cgroup 不可用"
 
 msgid "Memory during contention, as scaled integer (default KiB)"
 msgstr "竞争时的内存，以整数计（默认为 KiB）"
-
-msgid "Memory exhausted"
-msgstr "内存耗尽"
 
 msgid "Memory processed:"
 msgstr "处理的内存："
@@ -6709,6 +6765,10 @@ msgstr "缺少 '%s' 属性"
 #, c-format
 msgid "Missing '%s' property while looking for ManagedEntityStatus"
 msgstr "查找 ManagedEntityStatus 时缺少 '%s' 属性"
+
+#, c-format
+msgid "Missing '/' separator in cgroup mount '%s'"
+msgstr "cgroup 挂载 '%s' 中缺少 '/' 分隔符"
 
 msgid "Missing 'cores' attribute in CPU topology"
 msgstr "CPU 拓扑中缺少 ‘cores’ 属性"
@@ -7131,6 +7191,10 @@ msgid "NULL string parameter '%s'"
 msgstr "NULL 字符串参数 '%s'"
 
 #, c-format
+msgid "NULL value for field '%s'"
+msgstr "字段 '%s' 的 NULL 值"
+
+#, c-format
 msgid "NUMA cell %d has no vCPUs assigned"
 msgstr "没有为 NUMA 单元格 %d 分配 vCPU"
 
@@ -7379,9 +7443,6 @@ msgstr "没有 <initarg> 元素的数据"
 msgid "No description for domain: %s"
 msgstr "没有域描述：%s"
 
-msgid "No device found for specified path"
-msgstr "没有找到指定路径的设备"
-
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
 msgstr "没有总线为 '%s' 且目标为 '%s' 的设备"
@@ -7440,9 +7501,6 @@ msgstr "未找到 MAC 地址为 %s 的接口"
 msgid "No master USB controller specified"
 msgstr "未指定任何主 USB 控制程序"
 
-msgid "No match"
-msgstr "不匹配"
-
 msgid "No more available PCI slots"
 msgstr "没有更多可用 PCI 插槽"
 
@@ -7451,9 +7509,6 @@ msgstr "iptables --version 没有任何输出结果"
 
 msgid "No per-CPU stats available"
 msgstr "没有可用的每个 CPU 统计数据"
-
-msgid "No previous regular expression"
-msgstr "没有上一个正则表达式"
 
 msgid "No qemu command-line argument specified"
 msgstr "未指定 qemu 命令行参数"
@@ -8039,9 +8094,6 @@ msgid ""
 "support to enable this feature."
 msgstr "您可能没有在您的 LAPR 中安装 IBM 工具。联系支持服务启用此功能。"
 
-msgid "Premature end of regular expression"
-msgstr "正则表达式不完整的结尾"
-
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr "调用 PrepareTunnel 但没有设置 TUNNELLED 标签"
 
@@ -8237,9 +8289,6 @@ msgstr "注册值 '%s\\%s' 包含意外类型"
 #, c-format
 msgid "Registry value '%s\\%s' is too short"
 msgstr "注册值 '%s\\%s' 太短"
-
-msgid "Regular expression too big"
-msgstr "正则表达式太大"
 
 #, c-format
 msgid "Remote command terminated with non-zero code: %d"
@@ -8737,6 +8786,10 @@ msgstr "lun 设备不支持设定 wwn"
 msgid "Shared memory:\n"
 msgstr "共享内存：\n"
 
+#, c-format
+msgid "Shell '%s' should have absolute path"
+msgstr "应该以绝对路径方式运行shell '%s' "
+
 msgid "Show block device errors"
 msgstr "显示块设备错误"
 
@@ -8983,9 +9036,6 @@ msgstr "流转包含未传送的数据"
 
 msgid "Stream is not open"
 msgstr "流没有打开"
-
-msgid "Success"
-msgstr "成功"
 
 msgid "Successfully copied"
 msgstr "超过复制"
@@ -9758,9 +9808,6 @@ msgstr "总量"
 msgid "Total:\n"
 msgstr "总计：\n"
 
-msgid "Trailing backslash"
-msgstr "结尾的反斜杠"
-
 msgid "Transition started"
 msgstr "传输开始"
 
@@ -10011,6 +10058,10 @@ msgid "Unable to change to root dir"
 msgstr "不能更改 root 目录"
 
 #, c-format
+msgid "Unable to chdir(%s)"
+msgstr "调用函数chdir(%s)失败"
+
+#, c-format
 msgid "Unable to check interface %s"
 msgstr "无法检查接口 %s"
 
@@ -10083,6 +10134,10 @@ msgstr "无法生成桥接设备"
 #, c-format
 msgid "Unable to create device %s"
 msgstr "无法生成设备 %s"
+
+#, c-format
+msgid "Unable to create directory %s"
+msgstr "无法生成目录 %s"
 
 #, c-format
 msgid "Unable to create directory '%s'"
@@ -10239,6 +10294,10 @@ msgstr "无法编码信息净负荷"
 
 msgid "Unable to encode number of FDs"
 msgstr "无法对 FD 号进行编码"
+
+#, c-format
+msgid "Unable to exec shell %s"
+msgstr "运行shell %s 失败"
 
 msgid "Unable to find 'cpuacct' cgroups controller mount"
 msgstr "无法找到 'cpuacct' cgroups 控制器挂载"
@@ -10897,6 +10956,10 @@ msgstr "无法统计源目标 %s"
 msgid "Unable to stat bind target %s"
 msgstr "无法统计捆绑目标 %s"
 
+#, c-format
+msgid "Unable to symlink directory %s to %s"
+msgstr "无法将目录 %s 符号链接到 %s"
+
 msgid "Unable to thaw all processes"
 msgstr "无法解冻所有进程"
 
@@ -11326,15 +11389,6 @@ msgstr "xsd:boolean 的未知值 '%s'"
 #, c-format
 msgid "Unknown vendor %s referenced by CPU model %s"
 msgstr "CPU 型号 %s 参考的供应商 %s 是未知的"
-
-msgid "Unmatched ( or \\("
-msgstr "( 或者 \\( 不匹配"
-
-msgid "Unmatched ) or \\)"
-msgstr " ) 或者 \\) 不匹配"
-
-msgid "Unmatched \\{"
-msgstr "\\{ 不匹配"
 
 #, c-format
 msgid "Unrecognized family '%s' in network '%s'"
@@ -11958,12 +12012,6 @@ msgstr "要下载的数据量"
 
 msgid "amount of data to upload"
 msgstr "要上传的数据量"
-
-#, c-format
-msgid ""
-"an interface connecting to network '%s' is requesting a vlan tag, but that "
-"is not supported for this type of network"
-msgstr "连接网络 '%s' 的接口需要一个 vlan 标签，但这种网络类型不支持此标签。"
 
 msgid "apparmor_parser exited with error"
 msgstr "apparmor_parser 出错并退出"
@@ -13251,6 +13299,14 @@ msgstr "%s 中的 cellNum 必须小于等于 %d"
 msgid "cellNum in %s only accepts %d as a negative value"
 msgstr "%s 中的 cellNum 只接受负数 %d"
 
+#, c-format
+msgid "cfs_period '%llu' must be in range (1000, 1000000)"
+msgstr "cfs_period '%llu' 必须在范围 (1000, 1000000) 中"
+
+#, c-format
+msgid "cfs_quota '%lld' must be in range (1000, %llu)"
+msgstr "cfs_quota '%lld' 必须在范围 (1000, %llu) 中"
+
 msgid "cgroup CPU controller is not mounted"
 msgstr "未挂载 cgroup CPU 控制器"
 
@@ -13498,18 +13554,6 @@ msgstr "崩溃的 profileid 字符串"
 
 msgid "could not allocate memory"
 msgstr "无法分配内存"
-
-msgid "could not allocate memory for disk"
-msgstr "无法为磁盘分配内存"
-
-msgid "could not allocate memory for profile"
-msgstr "无法为侧写分配内存"
-
-msgid "could not allocate memory for profile files"
-msgstr "无法为侧写文件分配内存"
-
-msgid "could not allocate memory for profile name"
-msgstr "无法为侧写名称分配内存"
 
 #, c-format
 msgid "could not attach shared folder '%s', rc=%08x"
@@ -14433,6 +14477,9 @@ msgstr "域任务信息"
 msgid "domain name or uuid"
 msgstr "域名或 uuid"
 
+msgid "domain name, id or uuid"
+msgstr "域名，id 或 uuid"
+
 msgid "domain save job"
 msgstr "域保存任务"
 
@@ -14674,9 +14721,6 @@ msgstr "挂起域时出错"
 msgid "error: "
 msgstr "错误："
 
-msgid "error: Out of memory\n"
-msgstr "错误：内存耗尽\n"
-
 msgid "escape for XML use"
 msgstr "为了在XML中使用而进行编码"
 
@@ -14819,12 +14863,6 @@ msgid ""
 "failed to add new filter rules to '%s' - attempting to restore old rules"
 msgstr "添加过滤器规则 '%s' 失败 - 尝试恢复原来的规则"
 
-msgid "failed to allocate buffer"
-msgstr "分配缓存失败"
-
-msgid "failed to allocate file buffer"
-msgstr "分配文件缓冲失败"
-
 #, c-format
 msgid "failed to apply capabilities: %d"
 msgstr "应用容量失败：%d"
@@ -14870,9 +14908,6 @@ msgstr "连接管理程序（即虚拟化层）失败"
 #, c-format
 msgid "failed to convert size: '%s'"
 msgstr "转换大小失败：'%s'"
-
-msgid "failed to copy security label"
-msgstr "复制安全标签失败"
 
 #, c-format
 msgid "failed to create %s"
@@ -16873,10 +16908,6 @@ msgstr "机器没有运行，因此无法重启。"
 msgid "machine paused, so can't power it down"
 msgstr "机器已挂起，因此无法关闭。"
 
-#, c-format
-msgid "machine type %s too big for destination"
-msgstr "对于目的地来说机器类型 %s 太大"
-
 msgid "make live change persistent"
 msgstr "让实时更改持久"
 
@@ -17555,14 +17586,6 @@ msgid ""
 "mkfs is not supported on this platform: Failed to make filesystem of type "
 "'%s' on device '%s'"
 msgstr "这个平台不支持 mkfs：在设备 '%s' 中生成文件系统类型 '%s' 失败"
-
-#, c-format
-msgid "mkostemp(\"%s\") failed"
-msgstr "mkostemp(\"%s\") 失败"
-
-#, c-format
-msgid "mkostemps: failed to create temporary file: %s"
-msgstr "mkostemps: 无法创建临时文件: %s"
 
 msgid "mode of device reading and writing"
 msgstr "设备读写模式"
@@ -18466,6 +18489,10 @@ msgstr "多次出现参数 '%s'"
 msgid "parameter=value"
 msgstr "parameter=value"
 
+#, c-format
+msgid "parent %s would create cycle to %s"
+msgstr "上级 %s 无法生成 %s 循环"
+
 msgid "parser error"
 msgstr "语法错误"
 
@@ -18698,9 +18725,6 @@ msgstr "侧写不存在"
 
 msgid "profile exists"
 msgstr "侧写已存在"
-
-msgid "profile name exceeds maximum length"
-msgstr "侧写名称超过上限"
 
 msgid "profileid parameter too long"
 msgstr "profileid 参数过长"
@@ -19647,9 +19671,6 @@ msgstr "模板 '%s' 不存在"
 
 msgid "template does not exist"
 msgstr "模板不存在"
-
-msgid "template name exceeds maximum length"
-msgstr "模板名称超过最大长度"
 
 msgid "terminate gracefully"
 msgstr "优雅地终止"

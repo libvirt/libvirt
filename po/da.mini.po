@@ -9,9 +9,9 @@
 # Magnus Larsson <fedoratrans@gmail.com>, 2006.
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.9.0\n"
+"Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-10-18 13:39+0100\n"
+"POT-Creation-Date: 2019-12-16 16:39+0000\n"
 "PO-Revision-Date: 2015-02-26 08:52+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Danish (http://www.transifex.com/projects/p/fedora/language/"
@@ -53,10 +53,6 @@ msgstr "  NAVN\n"
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: kunne ikke allokere %d byte"
-
-#, c-format
-msgid "%s: %d: failed to allocate %lu bytes"
-msgstr "%s: %d: kunne ikke allokere %lu byte"
 
 msgid "(re)connect to hypervisor"
 msgstr "(gen)tilslut til hypervisor"
@@ -543,6 +539,9 @@ msgstr "domæneinformation i XML"
 
 msgid "domain name or uuid"
 msgstr "domænenavn eller uuid"
+
+msgid "domain name, id or uuid"
+msgstr "domænenavn, id eller uuid"
 
 msgid "domain state"
 msgstr "domænetilstand"

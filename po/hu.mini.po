@@ -8,9 +8,9 @@
 # Gabor Egry <gaba@freemail.hu>, 2007.
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.9.0\n"
+"Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-10-18 13:39+0100\n"
+"POT-Creation-Date: 2019-12-16 16:39+0000\n"
 "PO-Revision-Date: 2015-02-27 04:56+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Hungarian (http://www.transifex.com/projects/p/fedora/"
@@ -52,10 +52,6 @@ msgstr "  NÉV\n"
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: nem sikerült lefoglalni %d bájtot"
-
-#, c-format
-msgid "%s: %d: failed to allocate %lu bytes"
-msgstr "%s: %d: nem sikerült lefoglalni %lu bájtot"
 
 msgid "(re)connect to hypervisor"
 msgstr "(újra) csatlakozás a felügyelőhöz"
@@ -546,6 +542,9 @@ msgstr "tartományinformáció XML-ben"
 
 msgid "domain name or uuid"
 msgstr "tartománynév vagy uuid"
+
+msgid "domain name, id or uuid"
+msgstr "tartománynév, azonosító vagy uuid"
 
 msgid "domain state"
 msgstr "tartományállapot"

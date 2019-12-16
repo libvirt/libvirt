@@ -19,9 +19,9 @@
 # Florian H. <postfuerflo@gmail.com>, 2016. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt 5.9.0\n"
+"Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2019-10-18 13:39+0100\n"
+"POT-Creation-Date: 2019-12-16 16:39+0000\n"
 "PO-Revision-Date: 2016-04-01 11:32+0000\n"
 "Last-Translator: Florian H. <postfuerflo@gmail.com>\n"
 "Language-Team: German (http://www.transifex.com/projects/p/libvirt/language/"
@@ -234,6 +234,10 @@ msgid "%s not implemented on Win32"
 msgstr "%s nicht implementiert auf Win32"
 
 #, c-format
+msgid "%s not matched against 'allowed_users' in %s"
+msgstr "%s nicht gegen 'allowed_users' in %s abgestimmt"
+
+#, c-format
 msgid "%s not parseable"
 msgstr "%s konnte nicht analysiert werden"
 
@@ -264,10 +268,6 @@ msgstr ""
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: scheiterte beim Zuweisen von %d Bytes"
-
-#, c-format
-msgid "%s: %d: failed to allocate %lu bytes"
-msgstr "%s: %d: scheiterte beim Zuweisen von %lu Bytes"
 
 #, c-format
 msgid "%s: %d: failed to allocate argv"
@@ -436,6 +436,10 @@ msgstr "'logical-id' fehlt in Antwort auf guest-get-vcpus"
 
 msgid "'online' missing in reply of guest-get-vcpus"
 msgstr "'online' fehlt in Antwort auf guest-get-vcpus"
+
+msgid "'parent' for vHBA not specified, and cannot find one on this host"
+msgstr ""
+"'parent' für vHBA nicht angegeben, und kann keinen auf diesem Host finden"
 
 msgid "'peak' and 'burst' require 'average' attribute"
 msgstr "'peak' und 'burst' benötigen 'average' Attribut"
@@ -1079,12 +1083,13 @@ msgid "Can't add host USB device: USB is disabled in this host"
 msgstr ""
 "Kann keine Host-USB-Einheit hinzufügen: USB ist in diesem Host deaktiviert"
 
-msgid "Can't allocate memory"
-msgstr "Speicher kann nicht zugewiesen werden"
-
 #, sh-format
 msgid "Can't connect to $uri. Skipping."
 msgstr "Kann nicht mit $uri verbinden. Wird Übersprungen."
+
+#, c-format
+msgid "Can't create %s container: %s"
+msgstr "Kann %s Container nicht erstellen: %s"
 
 msgid "Can't create initial configuration"
 msgstr "Kann initiale Konfiguration nicht erstellen"
@@ -1234,6 +1239,9 @@ msgstr "Kann Ballon-Einheit Pfad nicht bestimmen"
 
 msgid "Cannot determine free memory"
 msgstr "Kann freien Speicher nicht bestimmen"
+
+msgid "Cannot determine system clock HZ"
+msgstr "Kann Systemuhr Hz nicht bestimmen"
 
 msgid "Cannot disable close-on-exec flag"
 msgstr "Kann close-on-exec Flag nicht deaktivieren"
@@ -1438,6 +1446,14 @@ msgid "Cannot parse start time %s in %s"
 msgstr "Start-Zeit %s in %s kann nicht analysiert werden"
 
 #, c-format
+msgid "Cannot parse sys stat '%s'"
+msgstr "System-Status '%s' kann nicht analysiert werden"
+
+#, c-format
+msgid "Cannot parse user stat '%s'"
+msgstr "Benutzer-Status '%s' kann nicht analysiert werden"
+
+#, c-format
 msgid "Cannot read %s '%s'"
 msgstr "Kann %s '%s' nicht lesen"
 
@@ -1558,6 +1574,10 @@ msgid "Cannot specify a label if relabelling is turned off. model=%s"
 msgstr ""
 "Label kann nicht angegeben werden wenn Neuetikettierung ausgeschaltet ist. "
 "model=%s"
+
+#, c-format
+msgid "Cannot stat %s"
+msgstr "Kann Status %s nicht abrufen"
 
 #, c-format
 msgid "Cannot undefine HostVirtualSwitch that has a '%s' port"
@@ -1963,9 +1983,6 @@ msgstr "Konnte Basisverzeichnis nicht ermitteln"
 msgid "Could not determine kernel version from string %s"
 msgstr "Konnte Kernel-Version aus der Zeichenfolge %s nicht ermitteln"
 
-msgid "Could not disable SIGPIPE"
-msgstr "SIGPIPE konnte nicht deaktiviert werden"
-
 #, c-format
 msgid "Could not dlsym %s from '%s': %s"
 msgstr "Konnte nicht dlsym %s von '%s': %s"
@@ -2042,6 +2059,10 @@ msgstr "Datenspeicher mit absolutem Pfad '%s' konnte nicht gefunden werden"
 #, c-format
 msgid "Could not find datastore with name '%s'"
 msgstr "Datenspeicher namens »%s« konnte nicht gefunden werden"
+
+#, c-format
+msgid "Could not find directory separator in %s"
+msgstr "Verzeichnis-Trennungszeichen in %s konnte nicht gefunden werden"
 
 #, c-format
 msgid "Could not find domain snapshot with internal name '%s'"
@@ -2386,9 +2407,6 @@ msgstr "Versionsnummer von »%s« konnte nicht verarbeitet werden"
 #, c-format
 msgid "Could not query registry value '%s\\%s'"
 msgstr "Konnte Registry-Wert '%s\\%s' nicht abfragen"
-
-msgid "Could not re-enable SIGPIPE"
-msgstr "SIGPIPE konnte nicht wieder aktiviert werden"
 
 #, c-format
 msgid "Could not read '%s' from config for container %d"
@@ -3575,6 +3593,10 @@ msgid "Failed to begin network config change transaction"
 msgstr "Anfang der Netzwerk Konfig-Änderungs Transaktion gescheitert"
 
 #, c-format
+msgid "Failed to bind cgroup '%s' on '%s'"
+msgstr "Verbinden von cgroup '%s' mit '%s' fehlgeschlagen"
+
+#, c-format
 msgid "Failed to bind mount directory %s to %s"
 msgstr "Verbinden von Verzeichnis %s mit %s fehlgeschlagen"
 
@@ -3636,12 +3658,6 @@ msgstr "Schließen von Bind-Ziel %s fehlgeschlagen"
 
 msgid "Failed to collect auth credentials"
 msgstr "Sammeln von Auth-Credentials fehlgeschlagen"
-
-msgid "Failed to collect command"
-msgstr "Sammeln von Befehl fehlgeschlagen"
-
-msgid "Failed to collect new description/title"
-msgstr "Sammeln von neuer Beschreibung/Titelangabe fehlgeschlagen"
 
 msgid "Failed to commit network config change transaction"
 msgstr "Übergabe der Netzwerk Konfig-Änderungs Transaktion gescheitert"
@@ -3733,9 +3749,6 @@ msgstr "Fehler beim Anlegen des Verzeichnisses für '%s' dev '%s'"
 #, c-format
 msgid "Failed to create directory for device %s"
 msgstr "Fehler beim Anlegen des Verzeichnisses für Einheit %s"
-
-msgid "Failed to create display URI"
-msgstr "Erstellen der Anzeige-URI fehlgeschlagen"
 
 #, c-format
 msgid "Failed to create domain from %s"
@@ -4277,6 +4290,10 @@ msgstr "Markierung der Domain %s als automatisch zu starten gescheitert"
 #, c-format
 msgid "Failed to mkdir %s"
 msgstr "Anlegen des Verzeichnisses %s fehlgeschlagen"
+
+#, c-format
+msgid "Failed to mount %s on %s type %s"
+msgstr "Anschließen von %s in %s Typ %s fehlgeschlagen"
 
 #, c-format
 msgid "Failed to mount %s on /dev"
@@ -5574,8 +5591,9 @@ msgstr "Ungültiger Parameter"
 msgid "Invalid authentication method: '%s'"
 msgstr "Ungültige Authentifikations-Methode: '%s'"
 
-msgid "Invalid back reference"
-msgstr "Ungültiger Rückverweis"
+#, c-format
+msgid "Invalid boolean value for field '%s'"
+msgstr "Ungültige boolesche Variable für Feld »%s«"
 
 #, c-format
 msgid "Invalid bridge mac address '%s' in network '%s'"
@@ -5616,15 +5634,9 @@ msgstr ""
 msgid "Invalid character '%c' in id '%s' of network '%s'"
 msgstr "Ungültiges Zeichen '%c' in ID '%s' von Netzwerk '%s'"
 
-msgid "Invalid character class name"
-msgstr "Ungültiges Zeichen im Klassen-Namen"
-
 #, c-format
 msgid "Invalid class ID %d"
 msgstr "Ungültige Klassen-ID %d"
-
-msgid "Invalid collation character"
-msgstr "Ungültiger Sortierungs-Charakter"
 
 #, c-format
 msgid "Invalid collection period value '%d'"
@@ -5633,9 +5645,6 @@ msgstr "Ungültiger Erfassungs-Zeitraum Wert '%d'"
 #, c-format
 msgid "Invalid compressed save format %d"
 msgstr "Ungültiges komprimiertes Speicherformat %d"
-
-msgid "Invalid content of \\{\\}"
-msgstr "Ungültiger Inhalt von \\{\\}"
 
 msgid "Invalid context"
 msgstr "Ungültiger Kontext"
@@ -5826,18 +5835,9 @@ msgstr "Ungültiger Port-Bereich '%u-%u'."
 msgid "Invalid ports: %s"
 msgstr "Ungültige Ports: %s"
 
-msgid "Invalid preceding regular expression"
-msgstr "Ungültiger vorhergehender Regulärer Ausdruck"
-
 #, c-format
 msgid "Invalid prefix or netmask for '%s'"
 msgstr "Ungültiges Präfix oder Netzmaske für »%s«"
-
-msgid "Invalid range end"
-msgstr "Ungültiges Bereichs-Ende"
-
-msgid "Invalid regular expression"
-msgstr "Ungültiger regulärer Ausdruck"
 
 #, c-format
 msgid "Invalid relative path '%s'"
@@ -5900,6 +5900,12 @@ msgstr ""
 "statischen Host Definition "
 
 #, c-format
+msgid "Invalid type '%s' requested for parameter '%s', actual type is '%s'"
+msgstr ""
+"Ungültiger Typ '%s' für den Parameter '%s' angefordert, tatsächlicher Typ "
+"ist '%s'"
+
+#, c-format
 msgid ""
 "Invalid use of 'floor' on interface with MAC address %s - network '%s' has "
 "no inbound QoS set"
@@ -5910,6 +5916,26 @@ msgstr ""
 #, c-format
 msgid "Invalid value '%s' for VMX entry '%s'"
 msgstr "Ungültiger Wert '%s' für VMX Eintrag '%s'"
+
+#, c-format
+msgid "Invalid value for field '%s': expected double"
+msgstr "Ungültiger Wert für Feld '%s': Erwartete double"
+
+#, c-format
+msgid "Invalid value for field '%s': expected int"
+msgstr "Ungültiger Wert für Feld '%s': Erwartete int"
+
+#, c-format
+msgid "Invalid value for field '%s': expected long long"
+msgstr "Ungültiger Wert für Feld '%s': Erwartete long long"
+
+#, c-format
+msgid "Invalid value for field '%s': expected unsigned int"
+msgstr "Ungültiger Wert für Feld '%s': Erwartete unsigned int"
+
+#, c-format
+msgid "Invalid value for field '%s': expected unsigned long long"
+msgstr "Ungültiger Wert für Feld '%s': Erwartete unsigned long long"
 
 msgid "Invalid value for number of CPUs to show"
 msgstr "Ungültiger Wert für Anzahl der CPUs anzuzeigen"
@@ -6160,6 +6186,10 @@ msgstr "Maximale Speichergröße, als skalierte ganze Zahl (Standard in KiB)"
 msgid "Max memory:"
 msgstr "Max Speicher:"
 
+#, c-format
+msgid "Memory '%llu' must be less than %llu"
+msgstr "Speicher '%llu' muss kleiner sein als %llu"
+
 msgid "Memory allocation failure"
 msgstr "Fehler bei Speicherzuweisung"
 
@@ -6177,9 +6207,6 @@ msgid "Memory during contention, as scaled integer (default KiB)"
 msgstr ""
 "Speichergröße während Zugriffskonflikt , als skalierte ganze Zahl (Standard "
 "in KiB)"
-
-msgid "Memory exhausted"
-msgstr "Speicher ausgeschöpft"
 
 msgid "Memory processed:"
 msgstr "Benutzter Speicher:"
@@ -6261,6 +6288,10 @@ msgstr "Fehlende »%s«-Eigenschaft"
 #, c-format
 msgid "Missing '%s' property while looking for ManagedEntityStatus"
 msgstr "Fehlende '%s' Eigenschaft bei der Suche nach ManagedEntityStatus"
+
+#, c-format
+msgid "Missing '/' separator in cgroup mount '%s'"
+msgstr "Fehlendes '/' Trennzeichen auf cgroup Anschluss '%s'"
 
 msgid "Missing 'cores' attribute in CPU topology"
 msgstr "Fehlendes 'cores'-Attribut in CPU-Topologie"
@@ -6645,6 +6676,10 @@ msgstr "NULL NetworkDef"
 msgid "NULL string parameter '%s'"
 msgstr "NULL String Parameter '%s'"
 
+#, c-format
+msgid "NULL value for field '%s'"
+msgstr "NULL-Wert für Feld »%s«"
+
 msgid "NUMA cell number"
 msgstr "NUMA-Zell-Nummer"
 
@@ -6888,9 +6923,6 @@ msgstr "Keine Daten für <initarg> Element angegeben"
 msgid "No description for domain: %s"
 msgstr "Keine Beschreibung für Domain: %s"
 
-msgid "No device found for specified path"
-msgstr "Keine Einheit auf angegebenem Pfad gefunden"
-
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
 msgstr "Kein Gerät mit Bus '%s' und Ziel '%s'"
@@ -6945,17 +6977,11 @@ msgstr "Keine Schnittstelle mit MAC-Adresse %s gefunden"
 msgid "No master USB controller specified"
 msgstr "Kein Master USB-Controller angegeben"
 
-msgid "No match"
-msgstr "Keine Übereinstimmung"
-
 msgid "No more available PCI slots"
 msgstr "Keine weiteren PCI-Slots verfügbar"
 
 msgid "No per-CPU stats available"
 msgstr "Keine Pro-CPU-Statistiken verfügbar"
-
-msgid "No previous regular expression"
-msgstr "Kein vorhergehender Regulärer Ausdruck"
 
 msgid "No qemu command-line argument specified"
 msgstr "Kein QEMU Kommandozeilen-Argument angegeben"
@@ -7525,9 +7551,6 @@ msgstr ""
 "Sie sich mit Ihrem Kundendienst in Verbindung, um dieses Feature zu "
 "aktivieren."
 
-msgid "Premature end of regular expression"
-msgstr "Vorzeitiges Ende des Regulären Ausdruckes"
-
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr "PrepareTunnel aufgerufen, jedoch kein TUNNELLED-Flag gesetzt"
 
@@ -7738,9 +7761,6 @@ msgstr "Registry-Wert '%s\\%s' hat unerwarteten Typ"
 #, c-format
 msgid "Registry value '%s\\%s' is too short"
 msgstr "Registry-Wert '%s\\%s' ist zu kurz"
-
-msgid "Regular expression too big"
-msgstr "Regulärer Ausdruck zu lange"
 
 #, c-format
 msgid "Remote command terminated with non-zero code: %d"
@@ -8468,9 +8488,6 @@ msgid "Stream data too long to send (%zu bytes needed, %zu bytes available)"
 msgstr ""
 "Stream-Daten zu lange zu senden (%zu Bytes benötigt,%zu Bytes verfügbar)"
 
-msgid "Success"
-msgstr "Erfolg"
-
 msgid "Successfully copied"
 msgstr "Erfolgreich kopiert"
 
@@ -9194,9 +9211,6 @@ msgstr "Gesamt"
 msgid "Total:\n"
 msgstr "Gesamt:\n"
 
-msgid "Trailing backslash"
-msgstr "Nachgestellter umgekehrter Schrägstrich"
-
 msgid "Transition started"
 msgstr "Übergang gestartet"
 
@@ -9414,6 +9428,10 @@ msgid "Unable to change to root dir"
 msgstr "Wechseln ins root-Verzeichnis fehlgeschlagen"
 
 #, c-format
+msgid "Unable to chdir(%s)"
+msgstr "Kann nicht chdir(%s)"
+
+#, c-format
 msgid "Unable to check interface %s"
 msgstr "Konnte Schnittstelle %s nicht überprüfen"
 
@@ -9484,6 +9502,10 @@ msgstr "Kann Bridge-Einheit nicht erstellen"
 #, c-format
 msgid "Unable to create device %s"
 msgstr "Kann Einheit %s nicht erstellen"
+
+#, c-format
+msgid "Unable to create directory %s"
+msgstr "Konnte Verzeichnis %s nicht erstellen"
 
 msgid "Unable to create epoll fd"
 msgstr "Kann epoll fd nicht erstellen"
@@ -9635,6 +9657,10 @@ msgstr "Kann Inhalt der Nachricht nicht verschlüsseln"
 
 msgid "Unable to encode number of FDs"
 msgstr "Kann Anzahl der FDs nicht verschlüsseln"
+
+#, c-format
+msgid "Unable to exec shell %s"
+msgstr "Kann nicht exec shell %s"
 
 msgid "Unable to find 'cpuacct' cgroups controller mount"
 msgstr "Cgroups Controller Anschluss 'cpuacct' konnte nicht gefunden werden"
@@ -10263,6 +10289,10 @@ msgid "Unable to stat bind target %s"
 msgstr "Konnte stat für Bind-Ziel %s nicht erhalten"
 
 #, c-format
+msgid "Unable to symlink directory %s to %s"
+msgstr "Erstellen Symbolisches Link-Verzeichniss %s zu %s fehlgeschlagen"
+
+#, c-format
 msgid "Unable to truncate %s"
 msgstr "Kann %s nicht kürzen"
 
@@ -10625,15 +10655,6 @@ msgstr "Unbekannter Wert '%s' für xsd:boolean"
 #, c-format
 msgid "Unknown vendor %s referenced by CPU model %s"
 msgstr "Unbekannter Hersteller %s referenziert von CPU-Modell %s"
-
-msgid "Unmatched ( or \\("
-msgstr "Unpaarige ( oder \\("
-
-msgid "Unmatched ) or \\)"
-msgstr "Unpaarige ) or \\)"
-
-msgid "Unmatched \\{"
-msgstr "Unpaarige \\{"
 
 #, c-format
 msgid "Unrecognized family '%s' in network '%s'"
@@ -11205,14 +11226,6 @@ msgstr "Datenmenge zum herunterladen"
 
 msgid "amount of data to upload"
 msgstr "Datenmenge zum hochladen"
-
-#, c-format
-msgid ""
-"an interface connecting to network '%s' is requesting a vlan tag, but that "
-"is not supported for this type of network"
-msgstr ""
-"eine Schnittstellen-Verbindung mit Netzwerk '%s' verlangt ein vlan Tag, aber "
-"das ist nicht für diese Art von Netzwerk unterstützt"
 
 msgid "apparmor_parser exited with error"
 msgstr "apparmor_parser beendete mit Fehler"
@@ -12462,6 +12475,14 @@ msgstr "cellNum in %s muss kleiner oder gleich sein zu %d"
 msgid "cellNum in %s only accepts %d as a negative value"
 msgstr "cellNum in %s akzeptiert nur %d als einen negativen Wert"
 
+#, c-format
+msgid "cfs_period '%llu' must be in range (1000, 1000000)"
+msgstr "cfs_period '%llu' muss im Bereich (1000, 1000000) sein"
+
+#, c-format
+msgid "cfs_quota '%lld' must be in range (1000, %llu)"
+msgstr "cfs_quota '%lld' muss im Bereich (1000, %llu) sein"
+
 msgid "cgroup CPU controller is not mounted"
 msgstr "cgroup CPU Controller ist nicht angeschlossen"
 
@@ -12701,18 +12722,6 @@ msgstr "beschädigter Profile-ID String"
 
 msgid "could not allocate memory"
 msgstr "Speicher konnte nicht zugewiesen werden"
-
-msgid "could not allocate memory for disk"
-msgstr "Speicher für Laufwerk konnte nicht zugewiesen werden"
-
-msgid "could not allocate memory for profile"
-msgstr "Speicher für Profil konnte nicht zugewiesen werden"
-
-msgid "could not allocate memory for profile files"
-msgstr "Speicher für Profildateien konnte nicht zugewiesen werden"
-
-msgid "could not allocate memory for profile name"
-msgstr "Speicher für Profilname konnte nicht zugewiesen werden"
 
 #, c-format
 msgid "could not attach shared folder '%s', rc=%08x"
@@ -13626,6 +13635,9 @@ msgstr "Domain-Job-Informationen"
 msgid "domain name or uuid"
 msgstr "Domain-Name oder UUID"
 
+msgid "domain name, id or uuid"
+msgstr "Domainname, ID oder UUID"
+
 msgid "domain save job"
 msgstr "Domain Sicherungs-Job"
 
@@ -13970,12 +13982,6 @@ msgstr ""
 "konnte neue Filter-Regeln nicht zu '%s' hinzufügen - versuche jetzt die "
 "alten Regeln wiederherzustellen"
 
-msgid "failed to allocate buffer"
-msgstr "Puffer konnte nicht zugewiesen werden"
-
-msgid "failed to allocate file buffer"
-msgstr "Dateipuffer konnte nicht zugewiesen werden"
-
 #, c-format
 msgid "failed to apply capabilities: %d"
 msgstr "Anwenden der Fähigkeiten gescheitert: %d"
@@ -14013,9 +14019,6 @@ msgstr "Verbindung mit RADOS-Monitor gescheitert: %s"
 
 msgid "failed to connect to the hypervisor"
 msgstr "Verbindung zum Hypervisor scheiterte"
-
-msgid "failed to copy security label"
-msgstr "Kann Sicherheits-Label nicht kopieren"
 
 #, c-format
 msgid "failed to create %s"
@@ -15749,10 +15752,6 @@ msgstr "Maschine läuft nicht, kann nicht neu gestartet werden"
 msgid "machine paused, so can't power it down"
 msgstr "Maschine pausiert, kann nicht heruntergefahren werden"
 
-#, c-format
-msgid "machine type %s too big for destination"
-msgstr "Maschinen Typ %s zu groß für Ziel"
-
 msgid "make live change persistent"
 msgstr "Live-Änderung dauerhaft machen "
 
@@ -16347,14 +16346,6 @@ msgid ""
 msgstr ""
 "mkfs wird auf dieser Plattform nicht unterstützt: Anlegen Datei-System vom "
 "Typ '%s' auf Einheit '%s' fehlgeschlagen"
-
-#, c-format
-msgid "mkostemp(\"%s\") failed"
-msgstr "mkostemp(\"%s\") fehlgeschlagen"
-
-#, c-format
-msgid "mkostemps: failed to create temporary file: %s"
-msgstr "mkostemps: Erstellen einer temporären Datei fehlgeschlagen: %s"
 
 msgid "mode of device reading and writing"
 msgstr "Modus für das Lesen und Schreiben von Geräten"
@@ -17228,6 +17219,10 @@ msgstr "Parameter '%s' kommt mehrmals vor"
 msgid "parameter=value"
 msgstr "parameter=value"
 
+#, c-format
+msgid "parent %s would create cycle to %s"
+msgstr "Ursprung %s würde einen Ring nach %s erstellen"
+
 msgid "parser error"
 msgstr "Analyse-Fehler"
 
@@ -17460,9 +17455,6 @@ msgstr "Profil existiert nicht"
 
 msgid "profile exists"
 msgstr "Profil existiert"
-
-msgid "profile name exceeds maximum length"
-msgstr "Profilname übersteigt maximale Länge"
 
 msgid "profileid parameter too long"
 msgstr "»profileid«-Parameter ist zu lang"
@@ -18371,9 +18363,6 @@ msgstr "Vorlage '%s' existiert nicht"
 
 msgid "template does not exist"
 msgstr "Vorlage existiert nicht"
-
-msgid "template name exceeds maximum length"
-msgstr "Vorlagenname übersteigt die maximale Länge"
 
 msgid "terminate gracefully"
 msgstr " würdevoll beenden"
