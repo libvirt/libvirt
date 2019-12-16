@@ -99,6 +99,12 @@
         <meta name="theme-color" content="#ffffff"/>
         <title>libvirt: <xsl:value-of select="html:html/html:body//html:h1"/></title>
         <meta name="description" content="libvirt, virtualization, virtualization API"/>
+        <xsl:if test="$pagename = 'libvirt-go.html'">
+          <meta name="go-import" content="libvirt.org/libvirt-go git https://libvirt.org/git/libvirt-go.git"/>
+        </xsl:if>
+        <xsl:if test="$pagename = 'libvirt-go-xml.html'">
+          <meta name="go-import" content="libvirt.org/libvirt-go-xml git https://libvirt.org/git/libvirt-go-xml.git"/>
+        </xsl:if>
         <xsl:apply-templates select="/html:html/html:head/html:script" mode="content"/>
 
         <script type="text/javascript" src="{$href_base}js/main.js">
