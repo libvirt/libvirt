@@ -5342,6 +5342,10 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
                 *bootHostdevNet = 0;
             }
 
+           /* Ignore unassigned devices  */
+           if (hostdev->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_UNASSIGNED)
+               continue;
+
             if (qemuCommandAddExtDevice(cmd, hostdev->info) < 0)
                 return -1;
 
