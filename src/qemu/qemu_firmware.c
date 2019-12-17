@@ -959,6 +959,21 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
 
     want = qemuFirmwareOSInterfaceTypeFromOsDefFirmware(def->os.firmware);
 
+    if (want == QEMU_FIRMWARE_OS_INTERFACE_NONE &&
+        def->os.loader) {
+        want = qemuFirmwareOSInterfaceTypeFromOsDefFirmware(def->os.loader->type);
+
+        if (fw->mapping.device != QEMU_FIRMWARE_DEVICE_FLASH ||
+            STRNEQ(def->os.loader->path, fw->mapping.data.flash.executable.filename)) {
+            VIR_DEBUG("Not matching FW interface %s or loader "
+                      "path '%s' for user provided path '%s'",
+                      qemuFirmwareDeviceTypeToString(fw->mapping.device),
+                      fw->mapping.data.flash.executable.filename,
+                      def->os.loader->path);
+            return false;
+        }
+    }
+
     for (i = 0; i < fw->ninterfaces; i++) {
         if (fw->interfaces[i] == want)
             break;
@@ -1226,14 +1241,29 @@ qemuFirmwareFillDomain(virQEMUDriverPtr driver,
     qemuFirmwarePtr *firmwares = NULL;
     ssize_t nfirmwares = 0;
     const qemuFirmware *theone = NULL;
+    bool needResult = true;
     size_t i;
     int ret = -1;
 
     if (!(flags & VIR_QEMU_PROCESS_START_NEW))
         return 0;
 
-    if (def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_NONE)
-        return 0;
+    /* Fill in FW paths if either os.firmware is enabled, or
+     * loader path was provided with no nvram varstore. */
+    if (def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_NONE) {
+        /* This is horrific check, but loosely said, if UEFI
+         * image was provided by the old method (by specifying
+         * its path in domain XML) but no template for NVRAM was
+         * specified and the varstore doesn't exist ... */
+        if (!virDomainDefHasOldStyleROUEFI(def) ||
+            def->os.loader->templt ||
+            virFileExists(def->os.loader->nvram))
+            return 0;
+
+        /* ... then we want to consult JSON FW descriptors first,
+         * but we don't want to fail if we haven't found a match. */
+        needResult = false;
+    }
 
     if ((nfirmwares = qemuFirmwareFetchParsedConfigs(driver->privileged,
                                                      &firmwares, &paths)) < 0)
@@ -1249,9 +1279,16 @@ qemuFirmwareFillDomain(virQEMUDriverPtr driver,
     }
 
     if (!theone) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Unable to find any firmware to satisfy '%s'"),
-                       virDomainOsDefFirmwareTypeToString(def->os.firmware));
+        if (needResult) {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("Unable to find any firmware to satisfy '%s'"),
+                           virDomainOsDefFirmwareTypeToString(def->os.firmware));
+        } else {
+            VIR_DEBUG("Unable to find NVRAM template for '%s', "
+                      "falling back to old style",
+                      NULLSTR(def->os.loader ? def->os.loader->path : NULL));
+            ret = 0;
+        }
         goto cleanup;
     }
 
