@@ -606,6 +606,16 @@ char *virGetUserCacheDirectory(void)
 }
 
 
+char *virGetUserRuntimeDirectory(void)
+{
+#ifdef WIN32
+    return g_strdup(g_get_user_runtime_dir());
+#else
+    return g_build_filename(g_get_user_runtime_dir(), "libvirt", NULL);
+#endif
+}
+
+
 #ifdef HAVE_GETPWUID_R
 /* Look up fields from the user database for the given user.  On
  * error, set errno, report the error if not instructed otherwise via @quiet,
@@ -755,20 +765,6 @@ char *virGetUserShell(uid_t uid)
     return ret;
 }
 
-
-char *virGetUserRuntimeDirectory(void)
-{
-    const char *path = getenv("XDG_RUNTIME_DIR");
-
-    if (!path || !path[0]) {
-        return virGetUserCacheDirectory();
-    } else {
-        char *ret;
-
-        ret = g_strdup_printf("%s/libvirt", path);
-        return ret;
-    }
-}
 
 char *virGetUserName(uid_t uid)
 {
@@ -1179,12 +1175,6 @@ virGetUserShell(uid_t uid G_GNUC_UNUSED)
     return NULL;
 }
 
-char *
-virGetUserRuntimeDirectory(void)
-{
-    return virGetUserCacheDirectory();
-}
-
 # else /* !HAVE_GETPWUID_R && !WIN32 */
 char *
 virGetUserDirectoryByUID(uid_t uid G_GNUC_UNUSED)
@@ -1200,15 +1190,6 @@ virGetUserShell(uid_t uid G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("virGetUserShell is not available"));
-
-    return NULL;
-}
-
-char *
-virGetUserRuntimeDirectory(void)
-{
-    virReportError(VIR_ERR_INTERNAL_ERROR,
-                   "%s", _("virGetUserRuntimeDirectory is not available"));
 
     return NULL;
 }
