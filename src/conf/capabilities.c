@@ -1631,9 +1631,6 @@ virCapabilitiesHostNUMAInitFake(virCapsHostNUMAPtr caps)
         }
     }
 
-    caps = g_new0(virCapsHostNUMA, 1);
-    caps->cells = g_ptr_array_new_with_free_func(
-        (GDestroyNotify)virCapabilitiesFreeHostNUMACell);
     virCapabilitiesHostNUMAAddCell(caps, 0,
                                    nodeinfo.memory,
 #ifdef __linux__
