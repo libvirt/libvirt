@@ -1070,100 +1070,14 @@ virDoesGroupExist(const char *name G_GNUC_UNUSED)
 }
 
 # ifdef WIN32
-/* These methods are adapted from GLib2 under terms of LGPLv2+ */
-static int
-virGetWin32SpecialFolder(int csidl, char **path)
-{
-    char buf[MAX_PATH+1];
-    LPITEMIDLIST pidl = NULL;
-    int ret = 0;
-
-    *path = NULL;
-
-    if (SHGetSpecialFolderLocation(NULL, csidl, &pidl) == S_OK) {
-        if (SHGetPathFromIDList(pidl, buf))
-            *path = g_strdup(buf);
-        CoTaskMemFree(pidl);
-    }
-    return ret;
-}
-
-static int
-virGetWin32DirectoryRoot(char **path)
-{
-    char windowsdir[MAX_PATH];
-
-    *path = NULL;
-
-    if (GetWindowsDirectory(windowsdir, G_N_ELEMENTS(windowsdir))) {
-        const char *tmp;
-        /* Usually X:\Windows, but in terminal server environments
-         * might be an UNC path, AFAIK.
-         */
-        tmp = virFileSkipRoot(windowsdir);
-        if (VIR_FILE_IS_DIR_SEPARATOR(tmp[-1]) &&
-            tmp[-2] != ':')
-            tmp--;
-
-        windowsdir[tmp - windowsdir] = '\0';
-    } else {
-        strcpy(windowsdir, "C:\\");
-    }
-
-    *path = g_strdup(windowsdir);
-    return 0;
-}
-
-
-
 char *
 virGetUserDirectoryByUID(uid_t uid G_GNUC_UNUSED)
 {
     /* Since Windows lacks setuid binaries, and since we already fake
      * geteuid(), we can safely assume that this is only called when
      * querying about the current user */
-    const char *dir;
-    char *ret;
 
-    dir = getenv("HOME");
-
-    /* Only believe HOME if it is an absolute path and exists */
-    if (dir) {
-        if (!virFileIsAbsPath(dir) ||
-            !virFileExists(dir))
-            dir = NULL;
-    }
-
-    /* In case HOME is Unix-style (it happens), convert it to
-     * Windows style.
-     */
-    if (dir) {
-        char *p;
-        while ((p = strchr(dir, '/')) != NULL)
-            *p = '\\';
-    }
-
-    if (!dir)
-        /* USERPROFILE is probably the closest equivalent to $HOME? */
-        dir = getenv("USERPROFILE");
-
-    ret = g_strdup(dir);
-
-    if (!ret &&
-        virGetWin32SpecialFolder(CSIDL_PROFILE, &ret) < 0)
-        return NULL;
-
-    if (!ret &&
-        virGetWin32DirectoryRoot(&ret) < 0)
-        return NULL;
-
-    if (!ret) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Unable to determine home directory"));
-        return NULL;
-    }
-
-    return ret;
+    return g_strdup(g_get_home_dir());
 }
 
 char *
