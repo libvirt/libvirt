@@ -582,7 +582,7 @@ virGetHostnameQuiet(void)
 char *
 virGetUserDirectory(void)
 {
-    return virGetUserDirectoryByUID(geteuid());
+    return g_strdup(g_get_home_dir());
 }
 
 
