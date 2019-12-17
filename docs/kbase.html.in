@@ -25,6 +25,10 @@
         <dt><a href="kbase/rpm-deployment.html">RPM deployment</a></dt>
         <dd>Explanation of the different RPM packages and illustration of
           which to pick for installation</dd>
+
+        <dt><a href="kbase/backing_chains.html">Backing chain management</a></dt>
+        <dd>Explanation of how disk backing chain specification impacts libvirt's
+          behaviour and basic troubleshooting steps of disk problems.</dd>
       </dl>
     </div>
 
