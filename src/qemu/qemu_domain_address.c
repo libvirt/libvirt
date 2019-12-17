@@ -2313,6 +2313,11 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
             continue;
         }
 
+        /* do not reserve address for info->type='unassigned' */
+        if (def->hostdevs[i]->info->type ==
+            VIR_DOMAIN_DEVICE_ADDRESS_TYPE_UNASSIGNED)
+            continue;
+
         if (qemuDomainPCIAddressReserveNextAddr(addrs,
                                                 def->hostdevs[i]->info) < 0)
             goto error;

@@ -459,6 +459,7 @@ qemuBuildVirtioDevStr(virBufferPtr buf,
         return -1;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_UNASSIGNED:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST:
     default:
         virReportEnumRangeError(virDomainDeviceAddressType, info->type);

@@ -45,6 +45,7 @@ VIR_ENUM_IMPL(virDomainDeviceAddress,
               "virtio-mmio",
               "isa",
               "dimm",
+              "unassigned",
 );
 
 static int
@@ -120,6 +121,7 @@ virDomainDeviceInfoAddressIsEqual(const virDomainDeviceInfo *a,
     /* address types below don't have any specific data */
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_UNASSIGNED:
         break;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
