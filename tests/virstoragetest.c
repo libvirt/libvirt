@@ -751,7 +751,7 @@ mymain(void)
         .format = VIR_STORAGE_FILE_QCOW2,
     };
     TEST_CHAIN(abswrap, VIR_STORAGE_FILE_QCOW2,
-               (&wrap_as_raw, &qcow2_as_raw), EXP_PASS);
+               (&wrap_as_raw, &qcow2_as_raw), EXP_FAIL);
 
     /* Rewrite qcow2 to a missing backing file, with backing type */
     virCommandFree(cmd);

@@ -4981,12 +4981,25 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
             goto cleanup;
         }
 
-        if (backingFormat == VIR_STORAGE_FILE_AUTO)
+        backingStore->format = backingFormat;
+
+        if (backingStore->format == VIR_STORAGE_FILE_AUTO) {
+            /* Assuming the backing store to be raw can lead to failures. We do
+             * it only when we must not report an error to prevent losing VMs.
+             * Otherwise report an error.
+             */
+            if (report_broken) {
+                virReportError(VIR_ERR_OPERATION_INVALID,
+                               _("format of backing image '%s' of image '%s' was not specified in the image metadata"),
+                               src->backingStoreRaw, NULLSTR(src->path));
+                return -1;
+            }
+
             backingStore->format = VIR_STORAGE_FILE_RAW;
-        else if (backingFormat == VIR_STORAGE_FILE_AUTO_SAFE)
+        }
+
+        if (backingStore->format == VIR_STORAGE_FILE_AUTO_SAFE)
             backingStore->format = VIR_STORAGE_FILE_AUTO;
-        else
-            backingStore->format = backingFormat;
 
         if ((ret = virStorageFileGetMetadataRecurse(backingStore, parent,
                                                     uid, gid,
