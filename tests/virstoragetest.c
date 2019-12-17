@@ -242,8 +242,6 @@ struct _testFileData
 enum {
     EXP_PASS = 0,
     EXP_FAIL = 1,
-    EXP_WARN = 2,
-    ALLOW_PROBE = 4,
 };
 
 struct testChainData
@@ -288,25 +286,15 @@ testStorageChain(const void *args)
         fprintf(stderr, "call should have failed\n");
         return -1;
     }
-    if (data->flags & EXP_WARN) {
-        if (virGetLastErrorCode() == VIR_ERR_OK) {
-            fprintf(stderr, "call should have warned\n");
-            return -1;
-        }
-        virResetLastError();
-        if (virStorageFileChainGetBroken(meta, &broken) || !broken) {
-            fprintf(stderr, "call should identify broken part of chain\n");
-            return -1;
-        }
-    } else {
-        if (virGetLastErrorCode()) {
-            fprintf(stderr, "call should not have warned\n");
-            return -1;
-        }
-        if (virStorageFileChainGetBroken(meta, &broken) || broken) {
-            fprintf(stderr, "chain should not be identified as broken\n");
-            return -1;
-        }
+
+    if (virGetLastErrorCode()) {
+        fprintf(stderr, "call should not have reported error\n");
+        return -1;
+    }
+
+    if (virStorageFileChainGetBroken(meta, &broken) || broken) {
+        fprintf(stderr, "chain should not be identified as broken\n");
+        return -1;
     }
 
     elt = meta;
