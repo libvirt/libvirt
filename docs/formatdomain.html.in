@@ -4203,6 +4203,16 @@
         attributes: <code>iobase</code> and <code>irq</code>.
         <span class="since">Since 1.2.1</span>
       </dd>
+      <dt><code>unassigned</code></dt>
+      <dd>For PCI hostdevs, <code>&lt;address type='unassigned'/&gt;</code>
+        allows the admin to include a PCI hostdev in the domain XML definition,
+        without making it available for the guest. This allows for configurations
+        in which Libvirt manages the device as a regular PCI hostdev,
+        regardless of whether the guest will have access to it.
+        <code>&lt;address type='unassigned'/&gt;</code> is an invalid address
+        type for all other device types.
+        <span class="since">Since 6.0.0</span>
+      </dd>
     </dl>
 
     <h4><a id="elementsVirtio">Virtio-related options</a></h4>
