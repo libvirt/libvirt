@@ -351,6 +351,7 @@ mymain(void)
         return EXIT_FAILURE;
 
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_VNC);
 
     if (qemuTestCapsCacheInsert(driver.qemuCapsCache, qemuCaps) < 0)
         return EXIT_FAILURE;
