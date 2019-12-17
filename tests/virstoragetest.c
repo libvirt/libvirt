@@ -103,7 +103,7 @@ testStorageFileGetMetadata(const char *path,
 
     def->path = g_strdup(path);
 
-    if (virStorageFileGetMetadata(def, uid, gid, false) < 0)
+    if (virStorageFileGetMetadata(def, uid, gid, true) < 0)
         return NULL;
 
     return g_steal_pointer(&def);
@@ -775,7 +775,7 @@ mymain(void)
     qcow2.expBackingStoreRaw = datadir "/bogus";
 
     /* Qcow2 file with missing backing file but specified type */
-    TEST_CHAIN(absqcow2, VIR_STORAGE_FILE_QCOW2, (&qcow2), EXP_WARN);
+    TEST_CHAIN(absqcow2, VIR_STORAGE_FILE_QCOW2, (&qcow2), EXP_FAIL);
 
     /* Rewrite qcow2 to a missing backing file, without backing type */
     virCommandFree(cmd);
@@ -785,7 +785,7 @@ mymain(void)
         ret = -1;
 
     /* Qcow2 file with missing backing file and no specified type */
-    TEST_CHAIN(absqcow2, VIR_STORAGE_FILE_QCOW2, (&qcow2), EXP_WARN);
+    TEST_CHAIN(absqcow2, VIR_STORAGE_FILE_QCOW2, (&qcow2), EXP_FAIL);
 
     /* Rewrite qcow2 to use an nbd: protocol as backend */
     virCommandFree(cmd);
@@ -916,7 +916,7 @@ mymain(void)
     qcow2.expBackingStoreRaw = "qcow2";
 
     /* Behavior of an infinite loop chain */
-    TEST_CHAIN(absqcow2, VIR_STORAGE_FILE_QCOW2, (&qcow2), EXP_WARN);
+    TEST_CHAIN(absqcow2, VIR_STORAGE_FILE_QCOW2, (&qcow2), EXP_FAIL);
 
     /* Rewrite wrap and qcow2 to be mutually-referential loop */
     virCommandFree(cmd);
@@ -933,7 +933,7 @@ mymain(void)
     qcow2.expBackingStoreRaw = "wrap";
 
     /* Behavior of an infinite loop chain */
-    TEST_CHAIN(abswrap, VIR_STORAGE_FILE_QCOW2, (&wrap, &qcow2), EXP_WARN);
+    TEST_CHAIN(abswrap, VIR_STORAGE_FILE_QCOW2, (&wrap, &qcow2), EXP_FAIL);
 
     /* Rewrite qcow2 to use an rbd: protocol as backend */
     virCommandFree(cmd);
