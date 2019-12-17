@@ -54,6 +54,20 @@
           written in the RST as an alternative to HTML.
         </description>
       </change>
+      <change>
+        <summary>
+          new PCI hostdev address type: unassigned
+        </summary>
+        <description>
+          A new PCI hostdev address type 'unassigned' is introduced. An
+          unassigned PCI hostdev behaves like any regular PCI hostdev
+          inside Libvirt, but it is not usable by the guest. This gives
+          the user a new option to manage the binding of PCI devices
+          via Libvirt, declaring PCI hostdevs in the domain XML
+          but allowing just a subset of them to be assigned to the
+          guest.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
