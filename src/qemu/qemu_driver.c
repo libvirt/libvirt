@@ -1135,6 +1135,8 @@ qemuStateCleanup(void)
     virObjectUnref(qemu_driver->domainEventState);
     virObjectUnref(qemu_driver->qemuCapsCache);
     virObjectUnref(qemu_driver->xmlopt);
+    virCPUDefFree(qemu_driver->hostcpu);
+    virCapabilitiesHostNUMAUnref(qemu_driver->hostnuma);
     virObjectUnref(qemu_driver->caps);
     ebtablesContextFree(qemu_driver->ebtables);
     VIR_FREE(qemu_driver->qemuImgBinary);
