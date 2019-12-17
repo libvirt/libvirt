@@ -12476,10 +12476,9 @@ virshUpdateDiskXML(xmlNodePtr disk_node,
         if (tmp->type != XML_ELEMENT_NODE)
             continue;
 
-        if (virXMLNodeNameEqual(tmp, "source"))
+        if (!source && virXMLNodeNameEqual(tmp, "source"))
             source = tmp;
-
-        if (virXMLNodeNameEqual(tmp, "target"))
+        else if (!target_node && virXMLNodeNameEqual(tmp, "target"))
             target_node = tmp;
 
         /*
