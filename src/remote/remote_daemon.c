@@ -57,6 +57,7 @@
 #include "virgettext.h"
 #include "util/virnetdevopenvswitch.h"
 #include "virsystemd.h"
+#include "virhostuptime.h"
 
 #include "driver.h"
 
@@ -1148,6 +1149,14 @@ int main(int argc, char **argv) {
     if (daemonSetupLogging(config, privileged, verbose, godaemon) < 0) {
         VIR_ERROR(_("Can't initialize logging"));
         exit(EXIT_FAILURE);
+    }
+
+    /* Let's try to initialize global variable that holds the host's boot time. */
+    if (virHostBootTimeInit() < 0) {
+        /* This is acceptable failure. Maybe we won't need the boot time
+         * anyway, and if we do, then virHostGetBootTime() returns an
+         * appropriate error. */
+        VIR_DEBUG("Ignoring failed boot time init");
     }
 
     daemonSetupNetDevOpenvswitch(config);
