@@ -10964,6 +10964,7 @@ cmdMigrate(vshControl *ctl, const vshCmd *cmd)
     VSH_REQUIRE_OPTION("postcopy-after-precopy", "postcopy");
     VSH_REQUIRE_OPTION("timeout-postcopy", "postcopy");
     VSH_REQUIRE_OPTION("persistent-xml", "persistent");
+    VSH_REQUIRE_OPTION("tls-destination", "tls");
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
