@@ -3278,7 +3278,7 @@ virFileRemoveLastComponent(char *path)
 {
     char *tmp;
 
-    if ((tmp = strrchr(path, VIR_FILE_DIR_SEPARATOR)))
+    if ((tmp = strrchr(path, G_DIR_SEPARATOR)))
         tmp[1] = '\0';
     else
         path[0] = '\0';
