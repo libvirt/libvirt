@@ -3979,7 +3979,7 @@
           <span class="since"> (since 0.9.13)</span></dd>
         </dl>
 
-      The filesystem block has an optional attribute <code>accessmode</code>
+      The filesystem element has an optional attribute <code>accessmode</code>
       which specifies the security mode for accessing the source
       <span class="since">(since 0.8.5)</span>. Currently this only works
       with <code>type='mount'</code> for the QEMU/KVM driver. The possible
