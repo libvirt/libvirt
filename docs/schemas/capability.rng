@@ -408,8 +408,7 @@
     <element name='os_type'>
       <choice>
         <value>xen</value> <!-- Xen 3.0 pv -->
-        <value>linux</value> <!-- same as 'xen' - meant to be legacy,
-                                  but is also used by phyp driver -->
+        <value>linux</value> <!-- same as 'xen' - meant to be legacy -->
         <value>hvm</value> <!-- unmodified OS -->
         <value>exe</value> <!-- For container based virt -->
         <value>uml</value> <!-- user mode linux; NOT USED ANYMORE -->

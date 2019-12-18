@@ -129,7 +129,7 @@ credentials=defgrp</pre>
       <li><code>libvirt</code> - used for connections to a libvirtd
         server, which is configured with SASL auth</li>
       <li><code>ssh</code> - used for connections to a Phyp server
-        over SSH</li>
+        over SSH, but the Phyp driver has been removed</li>
       <li><code>esx</code> - used for connections to an ESX or
         VirtualCenter server</li>
     </ol>

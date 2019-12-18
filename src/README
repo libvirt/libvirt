@@ -30,7 +30,6 @@ Then there are the hypervisor implementations:
  * hyperv/       - Microsoft Hyper-V support using WinRM
  * lxc/          - Linux Native Containers
  * openvz/       - OpenVZ containers using cli tools
- * phyp/         - IBM Power Hypervisor using CLI tools over SSH
  * qemu/         - QEMU / KVM using qemu CLI/monitor
  * remote/       - Generic libvirt native RPC client
  * test/         - A "mock" driver for testing
@@ -41,7 +40,7 @@ Then there are the hypervisor implementations:
 
 Finally some secondary drivers that are shared for several HVs.
 Currently these are used by LXC, OpenVZ, QEMU and Xen drivers.
-The ESX, Hyper-V, Power Hypervisor, Remote, Test & VirtualBox drivers all
+The ESX, Hyper-V, Remote, Test & VirtualBox drivers all
 implement the secondary drivers directly
 
  * cpu/          - CPU feature management

@@ -366,10 +366,6 @@
           <td>OPENVZ</td>
         </tr>
         <tr>
-          <td>phyp</td>
-          <td>PHYP</td>
-        </tr>
-        <tr>
           <td>qemu</td>
           <td>QEMU</td>
         </tr>

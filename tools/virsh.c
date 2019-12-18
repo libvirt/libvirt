@@ -522,9 +522,6 @@ virshShowVersion(vshControl *ctl G_GNUC_UNUSED)
 #ifdef WITH_VMWARE
     vshPrint(ctl, " VMware");
 #endif
-#ifdef WITH_PHYP
-    vshPrint(ctl, " PHYP");
-#endif
 #ifdef WITH_VBOX
     vshPrint(ctl, " VirtualBox");
 #endif

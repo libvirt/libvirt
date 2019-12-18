@@ -216,7 +216,7 @@
         <value>vmware</value>
         <value>hyperv</value>
         <value>vbox</value>
-        <value>phyp</value>
+        <value>phyp</value> <!-- NOT USED ANYMORE -->
         <value>vz</value>
         <value>bhyve</value>
       </choice>

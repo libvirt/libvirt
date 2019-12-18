@@ -54,7 +54,6 @@
 # Then the hypervisor drivers that run outside libvirtd, in libvirt.so
 %define with_openvz        0%{!?_without_openvz:1}
 %define with_vmware        0%{!?_without_vmware:1}
-%define with_phyp          0%{!?_without_phyp:1}
 %define with_esx           0%{!?_without_esx:1}
 %define with_hyperv        0%{!?_without_hyperv:1}
 
@@ -136,7 +135,6 @@
 %if 0%{?rhel}
     %define with_openvz 0
     %define with_vbox 0
-    %define with_phyp 0
     %define with_vmware 0
     %define with_libxl 0
     %define with_hyperv 0
@@ -366,7 +364,7 @@ BuildRequires: libcap-ng-devel >= 0.5.0
 %if %{with_fuse}
 BuildRequires: fuse-devel >= 2.8.6
 %endif
-%if %{with_phyp} || %{with_libssh2}
+%if %{with_libssh2}
 BuildRequires: libssh2-devel >= 1.3.0
 %endif
 
@@ -1036,12 +1034,6 @@ exit 1
     %define arg_libxl --without-libxl
 %endif
 
-%if %{with_phyp}
-    %define arg_phyp --with-phyp
-%else
-    %define arg_phyp --without-phyp
-%endif
-
 %if %{with_esx}
     %define arg_esx --with-esx
 %else
@@ -1164,7 +1156,6 @@ cd %{_vpath_builddir}
            --with-sasl \
            --with-polkit \
            --with-libvirtd \
-           %{?arg_phyp} \
            %{?arg_esx} \
            %{?arg_hyperv} \
            %{?arg_vmware} \

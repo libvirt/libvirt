@@ -72,9 +72,6 @@
 #ifdef WITH_VMWARE
 # include "vmware/vmware_driver.h"
 #endif
-#ifdef WITH_PHYP
-# include "phyp/phyp_driver.h"
-#endif
 #ifdef WITH_ESX
 # include "esx/esx_driver.h"
 #endif
@@ -288,10 +285,6 @@ virGlobalInit(void)
 #endif
 #ifdef WITH_VMWARE
     if (vmwareRegister() == -1)
-        goto error;
-#endif
-#ifdef WITH_PHYP
-    if (phypRegister() == -1)
         goto error;
 #endif
 #ifdef WITH_ESX
@@ -959,9 +952,6 @@ virConnectOpenInternal(const char *name,
         if (STREQ(virConnectDriverTab[i]->hypervisorDriver->name, "remote") &&
             ret->uri != NULL &&
             (
-#ifndef WITH_PHYP
-             STRCASEEQ(ret->uri->scheme, "phyp") ||
-#endif
 #ifndef WITH_ESX
              STRCASEEQ(ret->uri->scheme, "vpx") ||
              STRCASEEQ(ret->uri->scheme, "esx") ||

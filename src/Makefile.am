@@ -109,7 +109,6 @@ include logging/Makefile.inc.am
 include locking/Makefile.inc.am
 include admin/Makefile.inc.am
 include rpc/Makefile.inc.am
-include phyp/Makefile.inc.am
 include test/Makefile.inc.am
 include esx/Makefile.inc.am
 include hyperv/Makefile.inc.am

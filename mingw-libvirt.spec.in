@@ -19,7 +19,6 @@
 # The mingw build is client only.  Set up defaults for hypervisor drivers
 # that talk via a native remote protocol, and for which prereq mingw
 # libraries exist.
-%define with_phyp          0%{!?_without_phyp:1}
 %define with_esx           0%{!?_without_esx:1}
 # missing libwsman, so can't build hyper-v
 %define with_hyperv        0%{!?_without_hyperv:0}
@@ -28,7 +27,6 @@
 
 # RHEL ships ESX but not PowerHypervisor, HyperV, or libxenserver (xenapi)
 %if 0%{?rhel}
-    %define with_phyp 0
     %define with_xenapi 0
     %define with_hyperv 0
 %endif
@@ -140,10 +138,6 @@ echo "This RPM requires Fedora >= %{min_fedora}"
 exit 1
 %endif
 
-%if ! %{with_phyp}
-    %define _without_phyp --without-phyp
-%endif
-
 %if ! %{with_esx}
     %define _without_esx --without-esx
 %endif
@@ -176,7 +170,6 @@ autoreconf -if
   --without-sasl \
   --without-polkit \
   --without-libvirtd \
-  %{?_without_phyp} \
   %{?_without_esx} \
   %{?_without_hyperv} \
   --without-vmware \
