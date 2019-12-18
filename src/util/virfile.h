@@ -285,7 +285,6 @@ char *virFileBuildPath(const char *dir,
  */
 # define VIR_FILE_DIR_SEPARATOR '\\'
 # define VIR_FILE_DIR_SEPARATOR_S "\\"
-# define VIR_FILE_IS_DIR_SEPARATOR(c) ((c) == VIR_FILE_DIR_SEPARATOR || (c) == '/')
 # define VIR_FILE_PATH_SEPARATOR ';'
 # define VIR_FILE_PATH_SEPARATOR_S ";"
 
@@ -293,7 +292,6 @@ char *virFileBuildPath(const char *dir,
 
 # define VIR_FILE_DIR_SEPARATOR '/'
 # define VIR_FILE_DIR_SEPARATOR_S "/"
-# define VIR_FILE_IS_DIR_SEPARATOR(c) ((c) == VIR_FILE_DIR_SEPARATOR)
 # define VIR_FILE_PATH_SEPARATOR ':'
 # define VIR_FILE_PATH_SEPARATOR_S ":"
 
