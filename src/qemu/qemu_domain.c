@@ -5637,6 +5637,19 @@ qemuDomainDeviceDefValidateSound(virDomainSoundDefPtr sound,
     return 0;
 }
 
+static int
+qemuDomainDeviceDefValidateMemory(virDomainMemoryDefPtr mem,
+                                  virQEMUCapsPtr qemuCaps)
+{
+    if (mem->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_NVDIMM)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("nvdimm isn't supported by this QEMU binary"));
+        return -1;
+    }
+
+    return 0;
+}
 
 static int
 qemuDomainDefValidate(const virDomainDef *def,
@@ -8365,9 +8378,12 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
         ret = qemuDomainDeviceDefValidateSound(dev->data.sound, qemuCaps);
         break;
 
+    case VIR_DOMAIN_DEVICE_MEMORY:
+        ret = qemuDomainDeviceDefValidateMemory(dev->data.memory, qemuCaps);
+        break;
+
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_SHMEM:
-    case VIR_DOMAIN_DEVICE_MEMORY:
     case VIR_DOMAIN_DEVICE_PANIC:
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_LAST:

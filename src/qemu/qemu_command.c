@@ -6982,11 +6982,6 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
 
     for (i = 0; i < def->nmems; i++) {
         if (def->mems[i]->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM) {
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_NVDIMM)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("nvdimm isn't supported by this QEMU binary"));
-                return -1;
-            }
             virBufferAddLit(&buf, ",nvdimm=on");
             break;
         }
