@@ -217,10 +217,10 @@
   <flag name='blockdev-file-dynamic-auto-read-only'/>
   <flag name='savevm-monitor-nodes'/>
   <flag name='drive-nvme'/>
-  <version>4001092</version>
+  <version>4002000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100242</microcodeVersion>
-  <package>v4.2.0-rc2-19-g2061735ff0</package>
+  <package>v4.2.0</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='vmx-entry-load-rtit-ctl' type='boolean' value='false'/>
@@ -416,7 +416,7 @@
     <property name='kvm-steal-time' type='boolean' value='true' migratable='yes'/>
     <property name='kvmclock' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-zero-len-inject' type='boolean' value='false'/>
-    <property name='pschange-mc-no' type='boolean' value='false'/>
+    <property name='pschange-mc-no' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-rdrand-exit' type='boolean' value='true' migratable='yes'/>
     <property name='lwp' type='boolean' value='false'/>
     <property name='amd-ssbd' type='boolean' value='false'/>

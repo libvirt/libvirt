@@ -17,11 +17,11 @@
 {
   "return": {
     "qemu": {
-      "micro": 92,
-      "minor": 1,
+      "micro": 0,
+      "minor": 2,
       "major": 4
     },
-    "package": "v4.2.0-rc2-19-g2061735ff0"
+    "package": "v4.2.0"
   },
   "id": "libvirt-2"
 }
@@ -23614,7 +23614,7 @@
         "kvm-steal-time": true,
         "kvmclock": true,
         "vmx-zero-len-inject": false,
-        "pschange-mc-no": false,
+        "pschange-mc-no": true,
         "vmx-rdrand-exit": true,
         "lwp": false,
         "amd-ssbd": false,
@@ -23930,7 +23930,7 @@
         "kvm-steal-time": true,
         "kvmclock": true,
         "vmx-zero-len-inject": false,
-        "pschange-mc-no": false,
+        "pschange-mc-no": true,
         "vmx-rdrand-exit": true,
         "lwp": false,
         "amd-ssbd": false,
