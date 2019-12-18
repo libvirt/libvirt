@@ -1330,7 +1330,7 @@ mymain(void)
     DO_TEST("cpu-check-default-none2", NONE);
     DO_TEST("cpu-check-default-partial", NONE);
     DO_TEST("cpu-check-default-partial2", NONE);
-    DO_TEST("vmcoreinfo", NONE);
+    DO_TEST("vmcoreinfo", QEMU_CAPS_DEVICE_VMCOREINFO);
 
     DO_TEST("smartcard-host", QEMU_CAPS_CCID_EMULATED);
     DO_TEST("smartcard-host-certificates", QEMU_CAPS_CCID_EMULATED);

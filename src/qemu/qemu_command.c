@@ -9223,20 +9223,12 @@ qemuBuildSEVCommandLine(virDomainObjPtr vm, virCommandPtr cmd,
 
 static int
 qemuBuildVMCoreInfoCommandLine(virCommandPtr cmd,
-                               const virDomainDef *def,
-                               virQEMUCapsPtr qemuCaps)
+                               const virDomainDef *def)
 {
     virTristateSwitch vmci = def->features[VIR_DOMAIN_FEATURE_VMCOREINFO];
 
     if (vmci != VIR_TRISTATE_SWITCH_ON)
         return 0;
-
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VMCOREINFO)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("vmcoreinfo is not available "
-                         "with this QEMU binary"));
-        return -1;
-    }
 
     virCommandAddArgList(cmd, "-device", "vmcoreinfo", NULL);
     return 0;
@@ -9939,7 +9931,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     if (qemuBuildNVRAMCommandLine(cmd, def) < 0)
         return NULL;
 
-    if (qemuBuildVMCoreInfoCommandLine(cmd, def, qemuCaps) < 0)
+    if (qemuBuildVMCoreInfoCommandLine(cmd, def) < 0)
         return NULL;
 
     if (qemuBuildSEVCommandLine(vm, cmd, def->sev) < 0)
