@@ -3178,25 +3178,6 @@ virFileOpenTty(int *ttymaster G_GNUC_UNUSED,
 }
 #endif /* WIN32 */
 
-bool
-virFileIsAbsPath(const char *path)
-{
-    if (!path)
-        return false;
-
-    if (VIR_FILE_IS_DIR_SEPARATOR(path[0]))
-        return true;
-
-#ifdef WIN32
-    if (g_ascii_isalpha(path[0]) &&
-        path[1] == ':' &&
-        VIR_FILE_IS_DIR_SEPARATOR(path[2]))
-        return true;
-#endif
-
-    return false;
-}
-
 /*
  * Creates an absolute path for a potentially relative path.
  * Return 0 if the path was not relative, or on success.

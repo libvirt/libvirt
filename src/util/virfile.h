@@ -299,7 +299,6 @@ char *virFileBuildPath(const char *dir,
 
 #endif /* !WIN32 */
 
-bool virFileIsAbsPath(const char *path);
 int virFileAbsPath(const char *path,
                    char **abspath) G_GNUC_WARN_UNUSED_RESULT;
 void virFileRemoveLastComponent(char *path);
