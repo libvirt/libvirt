@@ -134,7 +134,7 @@ if test -d .git || test -f .git; then
         # dry run, of course...
         if test -z "$dry_run"; then
             echo "Running autoreconf..."
-            autoreconf -if || {
+            autoreconf -v || {
                 die "autoreconf failed"
             }
         fi
