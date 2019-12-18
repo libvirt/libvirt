@@ -260,10 +260,10 @@ qemuTestSetHostCPU(virQEMUDriverPtr driver,
             cpu = cpuPower8;
     }
 
-    unsetenv("VIR_TEST_MOCK_FAKE_HOST_CPU");
+    g_unsetenv("VIR_TEST_MOCK_FAKE_HOST_CPU");
     if (cpu) {
         if (cpu->model)
-            setenv("VIR_TEST_MOCK_FAKE_HOST_CPU", cpu->model, 1);
+            g_setenv("VIR_TEST_MOCK_FAKE_HOST_CPU", cpu->model, TRUE);
     }
     if (driver) {
         if (cpu)

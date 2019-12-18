@@ -79,8 +79,8 @@ testTimeLocalOffset(const void *args)
     const testTimeLocalOffsetData *data = args;
     long actual;
 
-    if (setenv("TZ", data->zone, 1) < 0) {
-        perror("setenv");
+    if (g_setenv("TZ", data->zone, TRUE) == FALSE) {
+        perror("g_setenv");
         return -1;
     }
     tzset();

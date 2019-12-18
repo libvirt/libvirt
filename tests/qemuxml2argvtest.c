@@ -618,15 +618,15 @@ mymain(void)
         abort();
     }
 
-    setenv("LIBVIRT_FAKE_ROOT_DIR", fakerootdir, 1);
+    g_setenv("LIBVIRT_FAKE_ROOT_DIR", fakerootdir, TRUE);
 
     /* Set the timezone because we are mocking the time() function.
      * If we don't do that, then localtime() may return unpredictable
      * results. In order to detect things that just work by a blind
      * chance, we need to set an virtual timezone that no libvirt
      * developer resides in. */
-    if (setenv("TZ", "VIR00:30", 1) < 0) {
-        perror("setenv");
+    if (g_setenv("TZ", "VIR00:30", TRUE) == FALSE) {
+        perror("g_setenv");
         return EXIT_FAILURE;
     }
 
@@ -797,15 +797,15 @@ mymain(void)
     /* Unset or set all envvars here that are copied in qemudBuildCommandLine
      * using ADD_ENV_COPY, otherwise these tests may fail due to unexpected
      * values for these envvars */
-    setenv("PATH", "/bin", 1);
-    setenv("USER", "test", 1);
-    setenv("LOGNAME", "test", 1);
-    setenv("HOME", "/home/test", 1);
-    unsetenv("TMPDIR");
-    unsetenv("LD_PRELOAD");
-    unsetenv("LD_LIBRARY_PATH");
-    unsetenv("QEMU_AUDIO_DRV");
-    unsetenv("SDL_AUDIODRIVER");
+    g_setenv("PATH", "/bin", TRUE);
+    g_setenv("USER", "test", TRUE);
+    g_setenv("LOGNAME", "test", TRUE);
+    g_setenv("HOME", "/home/test", TRUE);
+    g_unsetenv("TMPDIR");
+    g_unsetenv("LD_PRELOAD");
+    g_unsetenv("LD_LIBRARY_PATH");
+    g_unsetenv("QEMU_AUDIO_DRV");
+    g_unsetenv("SDL_AUDIODRIVER");
 
     DO_TEST("minimal", NONE);
     DO_TEST("minimal-sandbox",

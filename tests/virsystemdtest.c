@@ -236,7 +236,7 @@ static int testCreateNoSystemd(const void *opaque G_GNUC_UNUSED)
     };
     int rv;
 
-    setenv("FAIL_NO_SERVICE", "1", 1);
+    g_setenv("FAIL_NO_SERVICE", "1", TRUE);
 
     if ((rv = virSystemdCreateMachine("demo",
                                       "qemu",
@@ -246,11 +246,11 @@ static int testCreateNoSystemd(const void *opaque G_GNUC_UNUSED)
                                       false,
                                       0, NULL,
                                       NULL, 0)) == 0) {
-        unsetenv("FAIL_NO_SERVICE");
+        g_unsetenv("FAIL_NO_SERVICE");
         fprintf(stderr, "%s", "Unexpected create machine success\n");
         return -1;
     }
-    unsetenv("FAIL_NO_SERVICE");
+    g_unsetenv("FAIL_NO_SERVICE");
 
     if (rv != -2) {
         fprintf(stderr, "%s", "Unexpected create machine error\n");
@@ -270,7 +270,7 @@ static int testCreateSystemdNotRunning(const void *opaque G_GNUC_UNUSED)
     };
     int rv;
 
-    setenv("FAIL_NOT_REGISTERED", "1", 1);
+    g_setenv("FAIL_NOT_REGISTERED", "1", TRUE);
 
     if ((rv = virSystemdCreateMachine("demo",
                                       "qemu",
@@ -280,11 +280,11 @@ static int testCreateSystemdNotRunning(const void *opaque G_GNUC_UNUSED)
                                       false,
                                       0, NULL,
                                       NULL, 0)) == 0) {
-        unsetenv("FAIL_NOT_REGISTERED");
+        g_unsetenv("FAIL_NOT_REGISTERED");
         fprintf(stderr, "%s", "Unexpected create machine success\n");
         return -1;
     }
-    unsetenv("FAIL_NOT_REGISTERED");
+    g_unsetenv("FAIL_NOT_REGISTERED");
 
     if (rv != -2) {
         fprintf(stderr, "%s", "Unexpected create machine error\n");
@@ -304,7 +304,7 @@ static int testCreateBadSystemd(const void *opaque G_GNUC_UNUSED)
     };
     int rv;
 
-    setenv("FAIL_BAD_SERVICE", "1", 1);
+    g_setenv("FAIL_BAD_SERVICE", "1", TRUE);
 
     if ((rv = virSystemdCreateMachine("demo",
                                       "qemu",
@@ -314,11 +314,11 @@ static int testCreateBadSystemd(const void *opaque G_GNUC_UNUSED)
                                       false,
                                       0, NULL,
                                       NULL, 0)) == 0) {
-        unsetenv("FAIL_BAD_SERVICE");
+        g_unsetenv("FAIL_BAD_SERVICE");
         fprintf(stderr, "%s", "Unexpected create machine success\n");
         return -1;
     }
-    unsetenv("FAIL_BAD_SERVICE");
+    g_unsetenv("FAIL_BAD_SERVICE");
 
     if (rv != -1) {
         fprintf(stderr, "%s", "Unexpected create machine error\n");
@@ -445,7 +445,7 @@ static int testPMSupportHelper(const void *opaque)
     const struct testPMSupportData *data = opaque;
 
     for (i = 0; i < 4; i++) {
-        setenv("RESULT_SUPPORT",  results[i], 1);
+        g_setenv("RESULT_SUPPORT",  results[i], TRUE);
         if ((rv = data->tested(&result)) < 0) {
             fprintf(stderr, "%s", "Unexpected canSuspend error\n");
             return -1;
@@ -455,12 +455,12 @@ static int testPMSupportHelper(const void *opaque)
             fprintf(stderr, "Unexpected result for answer '%s'\n", results[i]);
             goto error;
         }
-        unsetenv("RESULT_SUPPORT");
+        g_unsetenv("RESULT_SUPPORT");
     }
 
     return 0;
  error:
-    unsetenv("RESULT_SUPPORT");
+    g_unsetenv("RESULT_SUPPORT");
     return -1;
 }
 
@@ -470,14 +470,14 @@ static int testPMSupportHelperNoSystemd(const void *opaque)
     bool result;
     const struct testPMSupportData *data = opaque;
 
-    setenv("FAIL_NO_SERVICE", "1", 1);
+    g_setenv("FAIL_NO_SERVICE", "1", TRUE);
 
     if ((rv = data->tested(&result)) == 0) {
-        unsetenv("FAIL_NO_SERVICE");
+        g_unsetenv("FAIL_NO_SERVICE");
         fprintf(stderr, "%s", "Unexpected canSuspend success\n");
         return -1;
     }
-    unsetenv("FAIL_NO_SERVICE");
+    g_unsetenv("FAIL_NO_SERVICE");
 
     if (rv != -2) {
         fprintf(stderr, "%s", "Unexpected canSuspend error\n");
@@ -493,14 +493,14 @@ static int testPMSupportSystemdNotRunning(const void *opaque)
     bool result;
     const struct testPMSupportData *data = opaque;
 
-    setenv("FAIL_NOT_REGISTERED", "1", 1);
+    g_setenv("FAIL_NOT_REGISTERED", "1", TRUE);
 
     if ((rv = data->tested(&result)) == 0) {
-        unsetenv("FAIL_NOT_REGISTERED");
+        g_unsetenv("FAIL_NOT_REGISTERED");
         fprintf(stderr, "%s", "Unexpected canSuspend success\n");
         return -1;
     }
-    unsetenv("FAIL_NOT_REGISTERED");
+    g_unsetenv("FAIL_NOT_REGISTERED");
 
     if (rv != -2) {
         fprintf(stderr, "%s", "Unexpected canSuspend error\n");
@@ -567,13 +567,13 @@ testActivation(bool useNames)
     g_snprintf(nfdstr, sizeof(nfdstr), "%zu", 1 + nsockIP);
     g_snprintf(pidstr, sizeof(pidstr), "%lld", (long long)getpid());
 
-    setenv("LISTEN_FDS", nfdstr, 1);
-    setenv("LISTEN_PID", pidstr, 1);
+    g_setenv("LISTEN_FDS", nfdstr, TRUE);
+    g_setenv("LISTEN_PID", pidstr, TRUE);
 
     if (useNames)
-        setenv("LISTEN_FDNAMES", virBufferCurrentContent(&names), 1);
+        g_setenv("LISTEN_FDNAMES", virBufferCurrentContent(&names), TRUE);
     else
-        unsetenv("LISTEN_FDNAMES");
+        g_unsetenv("LISTEN_FDNAMES");
 
     map[0].name = "demo-unix.socket";
     map[0].family = AF_UNIX;
@@ -640,7 +640,7 @@ testActivationEmpty(const void *opaque G_GNUC_UNUSED)
 {
     virSystemdActivationPtr act;
 
-    unsetenv("LISTEN_FDS");
+    g_unsetenv("LISTEN_FDS");
 
     if (virSystemdGetActivation(NULL, 0, &act) < 0)
         return -1;

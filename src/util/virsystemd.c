@@ -854,8 +854,8 @@ virSystemdGetListenFDs(void)
         return 0;
     }
 
-    unsetenv("LISTEN_PID");
-    unsetenv("LISTEN_FDS");
+    g_unsetenv("LISTEN_PID");
+    g_unsetenv("LISTEN_FDS");
 
     VIR_DEBUG("Got %u file descriptors", nfds);
 

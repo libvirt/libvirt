@@ -111,7 +111,7 @@ testDomain(const void *opaque)
 
     /* Mocking is enabled only when this env variable is set.
      * See mock code for explanation. */
-    if (setenv(ENVVAR, "1", 0) < 0)
+    if (g_setenv(ENVVAR, "1", FALSE) == FALSE)
         return -1;
 
     if (qemuSecuritySetAllLabel(data->driver, vm, NULL, false) < 0)
@@ -124,7 +124,7 @@ testDomain(const void *opaque)
 
     ret = 0;
  cleanup:
-    unsetenv(ENVVAR);
+    g_unsetenv(ENVVAR);
     freePaths();
     return ret;
 }

@@ -239,7 +239,7 @@ mymain(void)
 {
     int ret = 0;
 
-    setenv("GNUTLS_FORCE_FIPS_MODE", "2", 1);
+    g_setenv("GNUTLS_FORCE_FIPS_MODE", "2", TRUE);
 
     testTLSInit(KEYFILE);
 

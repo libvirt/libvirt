@@ -68,7 +68,7 @@ testVUPrecedence(const void *opaque G_GNUC_UNUSED)
 
     fakehome = g_strdup(abs_srcdir "/qemuvhostuserdata/home/user/.config");
 
-    setenv("XDG_CONFIG_HOME", fakehome, 1);
+    g_setenv("XDG_CONFIG_HOME", fakehome, TRUE);
 
     if (qemuVhostUserFetchConfigs(&vuList, false) < 0)
         return -1;

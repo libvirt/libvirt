@@ -121,7 +121,7 @@ int virTestMain(int argc,
 #ifdef __APPLE__
 # define PRELOAD_VAR "DYLD_INSERT_LIBRARIES"
 # define FORCE_FLAT_NAMESPACE \
-            setenv("DYLD_FORCE_FLAT_NAMESPACE", "1", 1);
+            g_setenv("DYLD_FORCE_FLAT_NAMESPACE", "1", TRUE);
 # define MOCK_EXT ".dylib"
 #else
 # define PRELOAD_VAR "LD_PRELOAD"
@@ -143,7 +143,7 @@ int virTestMain(int argc,
             } else { \
                 newenv = g_strdup_printf("%s:%s", lib, preload); \
             } \
-            setenv(PRELOAD_VAR, newenv, 1); \
+            g_setenv(PRELOAD_VAR, newenv, TRUE); \
             FORCE_FLAT_NAMESPACE \
             execv(argv[0], argv); \
         } \

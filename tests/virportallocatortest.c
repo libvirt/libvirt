@@ -171,7 +171,7 @@ mymain(void)
     if (virTestRun("Test alloc reuse", testAllocReuse, NULL) < 0)
         ret = -1;
 
-    setenv("LIBVIRT_TEST_IPV4ONLY", "really", 1);
+    g_setenv("LIBVIRT_TEST_IPV4ONLY", "really", TRUE);
 
     if (virTestRun("Test IPv4-only alloc all", testAllocAll, NULL) < 0)
         ret = -1;

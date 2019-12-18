@@ -187,7 +187,7 @@ testCgroupDetectMounts(const void *args)
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
-    setenv("VIR_CGROUP_MOCK_FILENAME", data->file, 1);
+    g_setenv("VIR_CGROUP_MOCK_FILENAME", data->file, TRUE);
 
     parsed = g_strdup_printf("%s/vircgroupdata/%s.parsed", abs_srcdir, data->file);
 
@@ -215,7 +215,7 @@ testCgroupDetectMounts(const void *args)
     result = 0;
 
  cleanup:
-    unsetenv("VIR_CGROUP_MOCK_FILENAME");
+    g_unsetenv("VIR_CGROUP_MOCK_FILENAME");
     VIR_FREE(parsed);
     virCgroupFree(&group);
     virBufferFreeAndReset(&buf);
@@ -994,13 +994,13 @@ initFakeFS(const char *mode,
         abort();
     }
 
-    setenv("LIBVIRT_FAKE_ROOT_DIR", fakerootdir, 1);
+    g_setenv("LIBVIRT_FAKE_ROOT_DIR", fakerootdir, TRUE);
 
     if (mode)
-        setenv("VIR_CGROUP_MOCK_MODE", mode, 1);
+        g_setenv("VIR_CGROUP_MOCK_MODE", mode, TRUE);
 
     if (filename)
-        setenv("VIR_CGROUP_MOCK_FILENAME", filename, 1);
+        g_setenv("VIR_CGROUP_MOCK_FILENAME", filename, TRUE);
 
     return fakerootdir;
 }
@@ -1012,9 +1012,9 @@ cleanupFakeFS(char *fakerootdir)
         virFileDeleteTree(fakerootdir);
 
     VIR_FREE(fakerootdir);
-    unsetenv("LIBVIRT_FAKE_ROOT_DIR");
-    unsetenv("VIR_CGROUP_MOCK_MODE");
-    unsetenv("VIR_CGROUP_MOCK_FILENAME");
+    g_unsetenv("LIBVIRT_FAKE_ROOT_DIR");
+    g_unsetenv("VIR_CGROUP_MOCK_MODE");
+    g_unsetenv("VIR_CGROUP_MOCK_FILENAME");
 }
 
 static int

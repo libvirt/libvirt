@@ -160,8 +160,8 @@ mymain(void)
      * results. In order to detect things that just work by a blind
      * chance, we need to set an virtual timezone that no libvirt
      * developer resides in. */
-    if (setenv("TZ", "VIR00:30", 1) < 0) {
-        perror("setenv");
+    if (g_setenv("TZ", "VIR00:30", TRUE) == FALSE) {
+        perror("g_setenv");
         return EXIT_FAILURE;
     }
 

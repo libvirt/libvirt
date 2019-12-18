@@ -1447,11 +1447,11 @@ main(int argc, char **argv)
 
     /* clear the environment */
     environ = NULL;
-    if (setenv("PATH", "/sbin:/usr/sbin", 1) != 0)
+    if (g_setenv("PATH", "/sbin:/usr/sbin", TRUE) == FALSE)
         vah_error(ctl, 1, _("could not set PATH"));
 
     /* ensure the traditional IFS setting */
-    if (setenv("IFS", " \t\n", 1) != 0)
+    if (g_setenv("IFS", " \t\n", TRUE) == FALSE)
         vah_error(ctl, 1, _("could not set IFS"));
 
     if (!(progname = strrchr(argv[0], '/')))

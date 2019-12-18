@@ -127,7 +127,7 @@ virTestRun(const char *title,
     /* Some test are fragile about environ settings.  If that's
      * the case, don't poison it. */
     if (getenv("VIR_TEST_MOCK_PROGNAME"))
-        setenv("VIR_TEST_MOCK_TESTNAME", title, 1);
+        g_setenv("VIR_TEST_MOCK_TESTNAME", title, TRUE);
 
     if (testCounter == 0 && !virTestGetVerbose())
         fprintf(stderr, "      ");
@@ -176,7 +176,7 @@ virTestRun(const char *title,
             fprintf(stderr, "!");
     }
 
-    unsetenv("VIR_TEST_MOCK_TESTNAME");
+    g_unsetenv("VIR_TEST_MOCK_TESTNAME");
     return ret;
 }
 
@@ -836,7 +836,7 @@ virTestSetEnvPath(void)
     }
 
     if (new_path &&
-        setenv("PATH", new_path, 1) < 0)
+        g_setenv("PATH", new_path, TRUE) < 0)
         goto cleanup;
 
     ret = 0;
@@ -870,7 +870,7 @@ int virTestMain(int argc,
     if (STRPREFIX(progname, "lt-"))
         progname += 3;
 
-    setenv("VIR_TEST_MOCK_PROGNAME", progname, 1);
+    g_setenv("VIR_TEST_MOCK_PROGNAME", progname, TRUE);
 
     virFileActivateDirOverrideForProg(argv[0]);
 

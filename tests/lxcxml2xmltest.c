@@ -75,7 +75,7 @@ mymain(void)
     /* Unset or set all envvars here that are copied in lxcdBuildCommandLine
      * using ADD_ENV_COPY, otherwise these tests may fail due to unexpected
      * values for these envvars */
-    setenv("PATH", "/bin", 1);
+    g_setenv("PATH", "/bin", TRUE);
 
     DO_TEST("systemd");
     DO_TEST("hostdev");

@@ -145,7 +145,7 @@ int setcon_raw(const char *context)
         errno = EINVAL;
         return -1;
     }
-    return setenv("FAKE_SELINUX_CONTEXT", context, 1);
+    return g_setenv("FAKE_SELINUX_CONTEXT", context, TRUE);
 }
 
 int setcon(const char *context)
@@ -224,7 +224,7 @@ int security_disable(void)
         return -1;
     }
 
-    return setenv("FAKE_SELINUX_DISABLED", "1", 1);
+    return g_setenv("FAKE_SELINUX_DISABLED", "1", TRUE);
 }
 
 int security_getenforce(void)
