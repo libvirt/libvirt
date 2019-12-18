@@ -1122,38 +1122,29 @@ qemuStateCleanup(void)
     if (!qemu_driver)
         return -1;
 
+    virObjectUnref(qemu_driver->migrationErrors);
+    virObjectUnref(qemu_driver->closeCallbacks);
+    virLockManagerPluginUnref(qemu_driver->lockManager);
+    virSysinfoDefFree(qemu_driver->hostsysinfo);
+    virPortAllocatorRangeFree(qemu_driver->migrationPorts);
+    virPortAllocatorRangeFree(qemu_driver->webSocketPorts);
+    virPortAllocatorRangeFree(qemu_driver->remotePorts);
+    virHashFree(qemu_driver->sharedDevices);
+    virObjectUnref(qemu_driver->hostdevMgr);
+    virObjectUnref(qemu_driver->securityManager);
+    virObjectUnref(qemu_driver->domainEventState);
+    virObjectUnref(qemu_driver->qemuCapsCache);
+    virObjectUnref(qemu_driver->xmlopt);
+    virObjectUnref(qemu_driver->caps);
+    ebtablesContextFree(qemu_driver->ebtables);
+    VIR_FREE(qemu_driver->qemuImgBinary);
+    virObjectUnref(qemu_driver->domains);
+    virThreadPoolFree(qemu_driver->workerPool);
+
     if (qemu_driver->lockFD != -1)
         virPidFileRelease(qemu_driver->config->stateDir, "driver", qemu_driver->lockFD);
-    virThreadPoolFree(qemu_driver->workerPool);
+
     virObjectUnref(qemu_driver->config);
-    virObjectUnref(qemu_driver->hostdevMgr);
-    virHashFree(qemu_driver->sharedDevices);
-    virObjectUnref(qemu_driver->caps);
-    virObjectUnref(qemu_driver->qemuCapsCache);
-
-    virObjectUnref(qemu_driver->domains);
-    virPortAllocatorRangeFree(qemu_driver->remotePorts);
-    virPortAllocatorRangeFree(qemu_driver->webSocketPorts);
-    virPortAllocatorRangeFree(qemu_driver->migrationPorts);
-    virObjectUnref(qemu_driver->migrationErrors);
-
-    virObjectUnref(qemu_driver->xmlopt);
-
-    virSysinfoDefFree(qemu_driver->hostsysinfo);
-
-    virObjectUnref(qemu_driver->closeCallbacks);
-
-    VIR_FREE(qemu_driver->qemuImgBinary);
-
-    virObjectUnref(qemu_driver->securityManager);
-
-    ebtablesContextFree(qemu_driver->ebtables);
-
-    /* Free domain callback list */
-    virObjectUnref(qemu_driver->domainEventState);
-
-    virLockManagerPluginUnref(qemu_driver->lockManager);
-
     virMutexDestroy(&qemu_driver->lock);
     VIR_FREE(qemu_driver);
 
