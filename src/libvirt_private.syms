@@ -77,7 +77,6 @@ virCapabilitiesHostSecModelAddBaseLabel;
 virCapabilitiesInitCaches;
 virCapabilitiesInitPages;
 virCapabilitiesNew;
-virCapabilitiesSetHostCPU;
 virCapabilitiesSetNetPrefix;
 
 

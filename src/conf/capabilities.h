@@ -258,12 +258,6 @@ virCapabilitiesHostNUMAAddCell(virCapsHostNUMAPtr caps,
                                int npageinfo,
                                virCapsHostNUMACellPageInfoPtr pageinfo);
 
-
-int
-virCapabilitiesSetHostCPU(virCapsPtr caps,
-                          virCPUDefPtr cpu);
-
-
 virCapsGuestMachinePtr *
 virCapabilitiesAllocMachines(const char *const *names,
                              int nnames);

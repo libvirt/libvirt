@@ -368,27 +368,6 @@ virCapabilitiesHostNUMAAddCell(virCapsHostNUMAPtr caps,
     g_ptr_array_add(caps->cells, cell);
 }
 
-
-/**
- * virCapabilitiesSetHostCPU:
- * @caps: capabilities to extend
- * @cpu: CPU definition
- *
- * Sets host CPU specification
- */
-int
-virCapabilitiesSetHostCPU(virCapsPtr caps,
-                          virCPUDefPtr cpu)
-{
-    if (cpu == NULL)
-        return -1;
-
-    caps->host.cpu = cpu;
-
-    return 0;
-}
-
-
 /**
  * virCapabilitiesAllocMachines:
  * @machines: machine variants for emulator ('pc', or 'isapc', etc)
