@@ -1332,12 +1332,13 @@ mymain(void)
     DO_TEST("cpu-check-default-partial2", NONE);
     DO_TEST("vmcoreinfo", NONE);
 
-    DO_TEST("smartcard-host", NONE);
-    DO_TEST("smartcard-host-certificates", NONE);
-    DO_TEST("smartcard-host-certificates-database", NONE);
-    DO_TEST("smartcard-passthrough-tcp", NONE);
-    DO_TEST("smartcard-passthrough-spicevmc", NONE);
-    DO_TEST("smartcard-controller", NONE);
+    DO_TEST("smartcard-host", QEMU_CAPS_CCID_EMULATED);
+    DO_TEST("smartcard-host-certificates", QEMU_CAPS_CCID_EMULATED);
+    DO_TEST("smartcard-host-certificates-database",
+            QEMU_CAPS_CCID_EMULATED);
+    DO_TEST("smartcard-passthrough-tcp", QEMU_CAPS_CCID_PASSTHRU);
+    DO_TEST("smartcard-passthrough-spicevmc", QEMU_CAPS_CCID_PASSTHRU);
+    DO_TEST("smartcard-controller", QEMU_CAPS_CCID_EMULATED);
 
     DO_TEST("pseries-cpu-compat-power9",
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
@@ -1352,7 +1353,8 @@ mymain(void)
             QEMU_CAPS_OBJECT_MEMORY_FILE,
             QEMU_CAPS_PIIX_DISABLE_S3,
             QEMU_CAPS_PIIX_DISABLE_S4,
-            QEMU_CAPS_VNC);
+            QEMU_CAPS_VNC,
+            QEMU_CAPS_CCID_EMULATED);
     DO_TEST("input-virtio-ccw",
             QEMU_CAPS_CCW,
             QEMU_CAPS_VIRTIO_KEYBOARD,
