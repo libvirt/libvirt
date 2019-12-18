@@ -67,6 +67,10 @@ typedef void (*virEventHandleCallback)(int watch, int fd, int events, void *opaq
  * listen for specific events. The same file handle can be registered
  * multiple times provided the requested event sets are non-overlapping
  *
+ * @fd will always be a C runtime file descriptor. On Windows
+ * the _get_osfhandle() method can be used if a HANDLE is required
+ * instead.
+ *
  * If the opaque user data requires free'ing when the handle
  * is unregistered, then a 2nd callback can be supplied for
  * this purpose. This callback needs to be invoked from a clean stack.

@@ -60,6 +60,13 @@ static virEventRemoveTimeoutFunc removeTimeoutImpl;
  * requires that an event loop has previously been registered with
  * virEventRegisterImpl() or virEventRegisterDefaultImpl().
  *
+ * @fd must always always be a C runtime file descriptor. On Windows
+ * if the caller only has a HANDLE, the _open_osfhandle() method can
+ * be used to open an associated C runtime file descriptor for use
+ * with this API. After opening a runtime file descriptor, CloseHandle()
+ * must not be used, instead close() will close the runtime file
+ * descriptor and its original associated HANDLE.
+ *
  * Returns -1 if the file handle cannot be registered, otherwise a handle
  * watch number to be used for updating and unregistering for events.
  */

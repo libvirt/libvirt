@@ -2238,7 +2238,7 @@ exclude_file_name_regexp--sc_prohibit_strdup = \
   ^(docs/|examples/|src/util/virstring\.c|tests/vir(netserverclient|cgroup)mock.c|tests/commandhelper\.c|tools/nss/libvirt_nss_(leases|macs)\.c$$)
 
 exclude_file_name_regexp--sc_prohibit_close = \
-  (\.p[yl]$$|\.spec\.in$$|^docs/|^(src/util/virfile\.c|src/libvirt-stream\.c|tests/(vir.+mock\.c|commandhelper\.c|qemusecuritymock\.c)|tools/nss/libvirt_nss_(leases|macs)\.c)$$)
+  (\.p[yl]$$|\.spec\.in$$|^docs/|^(src/util/vir(file|event)\.c|src/libvirt-stream\.c|tests/(vir.+mock\.c|commandhelper\.c|qemusecuritymock\.c)|tools/nss/libvirt_nss_(leases|macs)\.c)$$)
 
 exclude_file_name_regexp--sc_prohibit_empty_lines_at_EOF = \
   (^tests/(virhostcpu|virpcitest)data/|docs/js/.*\.js|docs/fonts/.*\.woff|\.diff|tests/virconfdata/no-newline\.conf$$)
