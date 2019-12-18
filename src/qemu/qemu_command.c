@@ -7738,7 +7738,6 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
 static int
 qemuBuildGraphicsEGLHeadlessCommandLine(virQEMUDriverConfigPtr cfg G_GNUC_UNUSED,
                                         virCommandPtr cmd,
-                                        virQEMUCapsPtr qemuCaps,
                                         virDomainGraphicsDefPtr graphics)
 {
     g_auto(virBuffer) opt = VIR_BUFFER_INITIALIZER;
@@ -7746,13 +7745,6 @@ qemuBuildGraphicsEGLHeadlessCommandLine(virQEMUDriverConfigPtr cfg G_GNUC_UNUSED
     virBufferAddLit(&opt, "egl-headless");
 
     if (graphics->data.egl_headless.rendernode) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_EGL_HEADLESS_RENDERNODE)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("This QEMU doesn't support OpenGL rendernode "
-                             "with egl-headless graphics type"));
-            return -1;
-        }
-
         virBufferAddLit(&opt, ",rendernode=");
         virQEMUBuildBufferEscapeComma(&opt,
                                       graphics->data.egl_headless.rendernode);
@@ -7797,7 +7789,7 @@ qemuBuildGraphicsCommandLine(virQEMUDriverConfigPtr cfg,
             break;
         case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
             if (qemuBuildGraphicsEGLHeadlessCommandLine(cfg, cmd,
-                                                        qemuCaps, graphics) < 0)
+                                                        graphics) < 0)
                 return -1;
 
             break;
