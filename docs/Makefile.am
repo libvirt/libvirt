@@ -214,9 +214,7 @@ manpages7_rst = \
   $(KEYCODES:%=manpages/virkeycode-%.rst) \
   $(KEYNAMES:%=manpages/virkeyname-%.rst) \
   $(NULL)
-manpages8_rst = \
-  manpages/virt-sanlock-cleanup.rst \
-  $(NULL)
+manpages8_rst = $(NULL)
 manpages_rst += \
   $(manpages1_rst) \
   $(manpages7_rst) \
@@ -245,6 +243,11 @@ if WITH_LOGIN_SHELL
 else ! WITH_LOGIN_SHELL
   manpages_rst += manpages/virt-login-shell.rst
 endif ! WITH_LOGIN_SHELL
+if WITH_SANLOCK
+  manpages8_rst += manpages/virt-sanlock-cleanup.rst
+else ! WITH_SANLOCK
+  manpages_rst += manpages/virt-sanlock-cleanup.rst
+endif ! WITH_SANLOCK
 manpages_rst_html_in = \
   $(manpages_rst:%.rst=%.html.in)
 manpages_html = \
