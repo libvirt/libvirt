@@ -302,7 +302,6 @@ char *virFileBuildPath(const char *dir,
 bool virFileIsAbsPath(const char *path);
 int virFileAbsPath(const char *path,
                    char **abspath) G_GNUC_WARN_UNUSED_RESULT;
-const char *virFileSkipRoot(const char *path);
 void virFileRemoveLastComponent(char *path);
 
 int virFileOpenTty(int *ttymaster,

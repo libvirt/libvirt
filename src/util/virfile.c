@@ -3197,60 +3197,6 @@ virFileIsAbsPath(const char *path)
     return false;
 }
 
-
-const char *
-virFileSkipRoot(const char *path)
-{
-#ifdef WIN32
-    /* Skip \\server\share or //server/share */
-    if (VIR_FILE_IS_DIR_SEPARATOR(path[0]) &&
-        VIR_FILE_IS_DIR_SEPARATOR(path[1]) &&
-        path[2] &&
-        !VIR_FILE_IS_DIR_SEPARATOR(path[2]))
-    {
-        const char *p = strchr(path + 2, VIR_FILE_DIR_SEPARATOR);
-        const char *q = strchr(path + 2, '/');
-
-        if (p == NULL || (q != NULL && q < p))
-            p = q;
-
-        if (p && p > path + 2 && p[1]) {
-            path = p + 1;
-
-            while (path[0] &&
-                   !VIR_FILE_IS_DIR_SEPARATOR(path[0]))
-                path++;
-
-            /* Possibly skip a backslash after the share name */
-            if (VIR_FILE_IS_DIR_SEPARATOR(path[0]))
-                path++;
-
-            return path;
-        }
-    }
-#endif
-
-    /* Skip initial slashes */
-    if (VIR_FILE_IS_DIR_SEPARATOR(path[0])) {
-        while (VIR_FILE_IS_DIR_SEPARATOR(path[0]))
-            path++;
-
-        return path;
-    }
-
-#ifdef WIN32
-    /* Skip X:\ */
-    if (g_ascii_isalpha(path[0]) &&
-        path[1] == ':' &&
-        VIR_FILE_IS_DIR_SEPARATOR(path[2]))
-        return path + 3;
-#endif
-
-    return path;
-}
-
-
-
 /*
  * Creates an absolute path for a potentially relative path.
  * Return 0 if the path was not relative, or on success.

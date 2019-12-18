@@ -2038,7 +2038,6 @@ virFileSanitizePath;
 virFileSetACLs;
 virFileSetupDev;
 virFileSetXAttr;
-virFileSkipRoot;
 virFileTouch;
 virFileUnlock;
 virFileUpdatePerm;
