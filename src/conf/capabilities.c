@@ -1596,7 +1596,7 @@ virCapabilitiesHostNUMAInitFake(virCapsHostNUMAPtr caps)
     virNodeInfo nodeinfo;
     virCapsHostNUMACellCPUPtr cpus;
     int ncpus;
-    int s, c, t;
+    int n, s, c, t;
     int id, cid;
     int onlinecpus G_GNUC_UNUSED;
     bool tmp;
@@ -1605,47 +1605,52 @@ virCapabilitiesHostNUMAInitFake(virCapsHostNUMAPtr caps)
         return -1;
 
     ncpus = VIR_NODEINFO_MAXCPUS(nodeinfo);
-    onlinecpus = nodeinfo.cpus;
 
-    if (VIR_ALLOC_N(cpus, ncpus) < 0)
-        return -1;
 
-    id = cid = 0;
-    for (s = 0; s < nodeinfo.sockets; s++) {
-        for (c = 0; c < nodeinfo.cores; c++) {
-            for (t = 0; t < nodeinfo.threads; t++) {
-                if (virHostCPUGetOnline(id, &tmp) < 0)
-                    goto error;
-                if (tmp) {
-                    cpus[cid].id = id;
-                    cpus[cid].socket_id = s;
-                    cpus[cid].core_id = c;
-                    if (!(cpus[cid].siblings = virBitmapNew(ncpus)))
+    id = 0;
+    for (n = 0; n < nodeinfo.nodes; n++) {
+        int nodecpus = nodeinfo.sockets * nodeinfo.cores * nodeinfo.threads;
+        cid = 0;
+
+        if (VIR_ALLOC_N(cpus, nodecpus) < 0)
+            return -1;
+
+        for (s = 0; s < nodeinfo.sockets; s++) {
+            for (c = 0; c < nodeinfo.cores; c++) {
+                g_autoptr(virBitmap) siblings = virBitmapNew(ncpus);
+                for (t = 0; t < nodeinfo.threads; t++)
+                    ignore_value(virBitmapSetBit(siblings, id + t));
+
+                for (t = 0; t < nodeinfo.threads; t++) {
+                    if (virHostCPUGetOnline(id, &tmp) < 0)
                         goto error;
-                    ignore_value(virBitmapSetBit(cpus[cid].siblings, id));
-                    cid++;
-                }
+                    if (tmp) {
+                        cpus[cid].id = id;
+                        cpus[cid].socket_id = s;
+                        cpus[cid].core_id = c;
+                        if (!(cpus[cid].siblings = virBitmapNew(ncpus)))
+                            goto error;
+                        virBitmapCopy(cpus[cid].siblings, siblings);
+                        cid++;
+                    }
 
-                id++;
+                    id++;
+                }
             }
         }
-    }
 
-    virCapabilitiesHostNUMAAddCell(caps, 0,
-                                   nodeinfo.memory,
-#ifdef __linux__
-                                   onlinecpus, cpus,
-#else
-                                   ncpus, cpus,
-#endif
-                                   0, NULL,
-                                   0, NULL);
+        virCapabilitiesHostNUMAAddCell(caps, 0,
+                                       nodeinfo.memory,
+                                       cid, cpus,
+                                       0, NULL,
+                                       0, NULL);
+    }
 
     return 0;
 
  error:
-    for (; id >= 0; id--)
-        virBitmapFree(cpus[id].siblings);
+    for (; cid >= 0; cid--)
+        virBitmapFree(cpus[cid].siblings);
     VIR_FREE(cpus);
     return -1;
 }
