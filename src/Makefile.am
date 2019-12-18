@@ -342,7 +342,7 @@ check-augeas: $(augeas_DATA) $(augeastest_DATA)
 		FILE=$$(basename "$$f"); \
 		"$(AUGPARSE)" \
 		    -I "$(srcdir)/$$DIR" -I "$(builddir)/$$DIR" \
-		    "$$DIR/$$FILE"; \
+		    "$$DIR/$$FILE" || exit 1; \
 	    done; \
 	fi
 .PHONY: check-augeas
