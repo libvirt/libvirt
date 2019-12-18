@@ -184,6 +184,9 @@ virCapabilitiesFreeStoragePool(virCapsStoragePoolPtr pool)
 void
 virCapabilitiesHostNUMAUnref(virCapsHostNUMAPtr caps)
 {
+    if (!caps)
+        return;
+
     if (g_atomic_int_dec_and_test(&caps->refs)) {
         g_ptr_array_unref(caps->cells);
 
