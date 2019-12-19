@@ -126,7 +126,7 @@ virHostGetBootTimeOnceInit(void)
 int
 virHostGetBootTime(unsigned long long *when)
 {
-    if (virOnce(&virHostGetBootTimeOnce, virHostGetBootTimeOnceInit) < 0)
+    if (virHostBootTimeInit() < 0)
         return -1;
 
     if (bootTimeErrno) {
@@ -135,5 +135,15 @@ virHostGetBootTime(unsigned long long *when)
     }
 
     *when = bootTime;
+    return 0;
+}
+
+
+int
+virHostBootTimeInit(void)
+{
+    if (virOnce(&virHostGetBootTimeOnce, virHostGetBootTimeOnceInit) < 0)
+        return -1;
+
     return 0;
 }

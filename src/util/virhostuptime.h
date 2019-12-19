@@ -25,3 +25,6 @@
 int
 virHostGetBootTime(unsigned long long *when)
     G_GNUC_NO_INLINE;
+
+int
+virHostBootTimeInit(void);
