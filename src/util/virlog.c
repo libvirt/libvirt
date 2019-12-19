@@ -173,8 +173,7 @@ virLogSetDefaultOutputToJournald(void)
 static int
 virLogSetDefaultOutputToFile(const char *binary, bool privileged)
 {
-    int ret = -1;
-    char *logdir = NULL;
+    g_autofree char *logdir = NULL;
     mode_t old_umask;
 
     if (privileged) {
@@ -182,12 +181,12 @@ virLogSetDefaultOutputToFile(const char *binary, bool privileged)
                                               virLogDefaultPriority, LOCALSTATEDIR, binary);
     } else {
         if (!(logdir = virGetUserCacheDirectory()))
-            goto cleanup;
+            return -1;
 
         old_umask = umask(077);
         if (virFileMakePath(logdir) < 0) {
             umask(old_umask);
-            goto cleanup;
+            return -1;
         }
         umask(old_umask);
 
@@ -195,10 +194,7 @@ virLogSetDefaultOutputToFile(const char *binary, bool privileged)
                                               virLogDefaultPriority, logdir, binary);
     }
 
-    ret = 0;
- cleanup:
-    VIR_FREE(logdir);
-    return ret;
+    return 0;
 }
 
 
