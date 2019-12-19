@@ -319,6 +319,7 @@ struct _qemuDomainObjPrivate {
     char *lockState;
 
     bool fakeReboot;
+    bool pausedShutdown;
     virTristateBool allowReboot;
 
     int jobs_queued;

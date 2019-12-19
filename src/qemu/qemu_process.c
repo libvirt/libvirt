@@ -501,6 +501,7 @@ qemuProcessFakeReboot(void *opaque)
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
+    priv->pausedShutdown = false;
     if (ret == -1)
         ignore_value(qemuProcessKill(vm, VIR_QEMU_PROCESS_KILL_FORCE));
     virDomainObjEndAPI(&vm);
@@ -523,6 +524,7 @@ qemuProcessShutdownOrReboot(virQEMUDriverPtr driver,
                             vm) < 0) {
             VIR_ERROR(_("Failed to create reboot thread, killing domain"));
             ignore_value(qemuProcessKill(vm, VIR_QEMU_PROCESS_KILL_NOWAIT));
+            priv->pausedShutdown = false;
             virObjectUnref(vm);
         }
     } else {
@@ -584,35 +586,41 @@ qemuProcessHandleShutdown(qemuMonitorPtr mon G_GNUC_UNUSED,
         goto unlock;
     }
 
-    VIR_DEBUG("Transitioned guest %s to shutdown state",
-              vm->def->name);
-    virDomainObjSetState(vm,
-                         VIR_DOMAIN_SHUTDOWN,
-                         VIR_DOMAIN_SHUTDOWN_UNKNOWN);
+    /* In case of fake reboot qemu shutdown state is transient so don't
+     * change domain state nor send events. */
+    if (!priv->fakeReboot) {
+        VIR_DEBUG("Transitioned guest %s to shutdown state",
+                  vm->def->name);
+        virDomainObjSetState(vm,
+                             VIR_DOMAIN_SHUTDOWN,
+                             VIR_DOMAIN_SHUTDOWN_UNKNOWN);
 
-    switch (guest_initiated) {
-    case VIR_TRISTATE_BOOL_YES:
-        detail = VIR_DOMAIN_EVENT_SHUTDOWN_GUEST;
-        break;
+        switch (guest_initiated) {
+        case VIR_TRISTATE_BOOL_YES:
+            detail = VIR_DOMAIN_EVENT_SHUTDOWN_GUEST;
+            break;
 
-    case VIR_TRISTATE_BOOL_NO:
-        detail = VIR_DOMAIN_EVENT_SHUTDOWN_HOST;
-        break;
+        case VIR_TRISTATE_BOOL_NO:
+            detail = VIR_DOMAIN_EVENT_SHUTDOWN_HOST;
+            break;
 
-    case VIR_TRISTATE_BOOL_ABSENT:
-    case VIR_TRISTATE_BOOL_LAST:
-    default:
-        detail = VIR_DOMAIN_EVENT_SHUTDOWN_FINISHED;
-        break;
-    }
+        case VIR_TRISTATE_BOOL_ABSENT:
+        case VIR_TRISTATE_BOOL_LAST:
+        default:
+            detail = VIR_DOMAIN_EVENT_SHUTDOWN_FINISHED;
+            break;
+        }
 
-    event = virDomainEventLifecycleNewFromObj(vm,
-                                              VIR_DOMAIN_EVENT_SHUTDOWN,
-                                              detail);
+        event = virDomainEventLifecycleNewFromObj(vm,
+                                                  VIR_DOMAIN_EVENT_SHUTDOWN,
+                                                  detail);
 
-    if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0) {
-        VIR_WARN("Unable to save status on vm %s after state change",
-                 vm->def->name);
+        if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0) {
+            VIR_WARN("Unable to save status on vm %s after state change",
+                     vm->def->name);
+        }
+    } else {
+        priv->pausedShutdown = true;
     }
 
     if (priv->agent)
@@ -645,7 +653,10 @@ qemuProcessHandleStop(qemuMonitorPtr mon G_GNUC_UNUSED,
     reason = priv->pausedReason;
     priv->pausedReason = VIR_DOMAIN_PAUSED_UNKNOWN;
 
-    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
+    /* In case of fake reboot qemu paused state is transient so don't
+     * reveal it in domain state nor sent events */
+    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING &&
+        !priv->pausedShutdown) {
         if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT) {
             if (priv->job.current->status == QEMU_DOMAIN_JOB_STATUS_POSTCOPY)
                 reason = VIR_DOMAIN_PAUSED_POSTCOPY;
