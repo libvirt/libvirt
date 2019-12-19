@@ -177,8 +177,7 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
 
         cfg->swtpmStateDir = g_strdup_printf("%s/swtpm", cfg->stateDir);
 
-        if (!(cfg->configBaseDir = virGetUserConfigDirectory()))
-            return NULL;
+        cfg->configBaseDir = virGetUserConfigDirectory();
 
         cfg->libDir = g_strdup_printf("%s/qemu/lib", cfg->configBaseDir);
         cfg->saveDir = g_strdup_printf("%s/qemu/save", cfg->configBaseDir);
