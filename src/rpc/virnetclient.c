@@ -455,11 +455,9 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
         knownhosts = g_strdup(knownHostsPath);
     } else {
         confdir = virGetUserConfigDirectory();
-        if (confdir) {
-            virBufferAsprintf(&buf, "%s/known_hosts", confdir);
-            if (!(knownhosts = virBufferContentAndReset(&buf)))
-                goto no_memory;
-        }
+        virBufferAsprintf(&buf, "%s/known_hosts", confdir);
+        if (!(knownhosts = virBufferContentAndReset(&buf)))
+            goto no_memory;
     }
 
     if (privkeyPath) {
@@ -556,8 +554,7 @@ virNetClientPtr virNetClientNewLibssh(const char *host,
         knownhosts = g_strdup(knownHostsPath);
     } else {
         confdir = virGetUserConfigDirectory();
-        if (confdir)
-            knownhosts = g_strdup_printf("%s/known_hosts", confdir);
+        knownhosts = g_strdup_printf("%s/known_hosts", confdir);
     }
 
     if (privkeyPath) {
