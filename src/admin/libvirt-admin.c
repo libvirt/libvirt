@@ -99,12 +99,12 @@ virAdmInitialize(void)
 static char *
 getSocketPath(virURIPtr uri)
 {
-    char *rundir = virGetUserRuntimeDirectory();
-    char *sock_path = NULL;
+    g_autofree char *rundir = virGetUserRuntimeDirectory();
+    g_autofree char *sock_path = NULL;
     size_t i = 0;
 
     if (!uri)
-        goto cleanup;
+        return NULL;
 
 
     for (i = 0; i < uri->paramsCount; i++) {
@@ -116,7 +116,7 @@ getSocketPath(virURIPtr uri)
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unknown URI parameter '%s'"), param->name);
-            goto error;
+            return NULL;
         }
     }
 
@@ -127,7 +127,7 @@ getSocketPath(virURIPtr uri)
         if (!uri->scheme) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            "%s", _("No URI scheme specified"));
-            goto error;
+            return NULL;
         }
         if (STREQ(uri->scheme, "libvirtd")) {
             legacy = true;
@@ -135,7 +135,7 @@ getSocketPath(virURIPtr uri)
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unsupported URI scheme '%s'"),
                            uri->scheme);
-            goto error;
+            return NULL;
         }
 
         if (legacy) {
@@ -148,24 +148,18 @@ getSocketPath(virURIPtr uri)
             sock_path = g_strdup_printf(RUNSTATEDIR "/libvirt/%s", sockbase);
         } else if (STREQ_NULLABLE(uri->path, "/session")) {
             if (!rundir)
-                goto error;
+                return NULL;
 
             sock_path = g_strdup_printf("%s/%s", rundir, sockbase);
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Invalid URI path '%s', try '/system'"),
                            NULLSTR_EMPTY(uri->path));
-            goto error;
+            return NULL;
         }
     }
 
- cleanup:
-    VIR_FREE(rundir);
-    return sock_path;
-
- error:
-    VIR_FREE(sock_path);
-    goto cleanup;
+    return g_steal_pointer(&sock_path);
 }
 
 static int
