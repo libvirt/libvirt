@@ -165,8 +165,6 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
         g_autofree char *cachedir = NULL;
 
         cachedir = virGetUserCacheDirectory();
-        if (!cachedir)
-            return NULL;
 
         cfg->logDir = g_strdup_printf("%s/qemu/log", cachedir);
         cfg->swtpmLogDir = g_strdup_printf("%s/qemu/log", cachedir);
