@@ -1160,8 +1160,7 @@ udevStateInitialize(bool privileged,
     } else {
         g_autofree char *rundir = NULL;
 
-        if (!(rundir = virGetUserRuntimeDirectory()))
-            goto cleanup;
+        rundir = virGetUserRuntimeDirectory();
         driver->stateDir = g_strdup_printf("%s/interface/run", rundir);
     }
 
