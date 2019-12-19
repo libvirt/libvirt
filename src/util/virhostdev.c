@@ -182,8 +182,7 @@ virHostdevManagerNew(void)
         g_autofree char *rundir = NULL;
         mode_t old_umask;
 
-        if (!(rundir = virGetUserRuntimeDirectory()))
-            return NULL;
+        rundir = virGetUserRuntimeDirectory();
 
         hostdevMgr->stateDir = g_strdup_printf("%s/hostdevmgr", rundir);
 

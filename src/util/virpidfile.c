@@ -488,8 +488,7 @@ virPidFileConstructPath(bool privileged,
         }
         *pidfile = g_strdup_printf("%s/%s.pid", runstatedir, progname);
     } else {
-        if (!(rundir = virGetUserRuntimeDirectory()))
-            return -1;
+        rundir = virGetUserRuntimeDirectory();
 
         if (virFileMakePathWithMode(rundir, 0700) < 0) {
             virReportSystemError(errno,
