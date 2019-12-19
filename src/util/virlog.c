@@ -180,8 +180,7 @@ virLogSetDefaultOutputToFile(const char *binary, bool privileged)
         virLogDefaultOutput = g_strdup_printf("%d:file:%s/log/libvirt/%s.log",
                                               virLogDefaultPriority, LOCALSTATEDIR, binary);
     } else {
-        if (!(logdir = virGetUserCacheDirectory()))
-            return -1;
+        logdir = virGetUserCacheDirectory();
 
         old_umask = umask(077);
         if (virFileMakePath(logdir) < 0) {
