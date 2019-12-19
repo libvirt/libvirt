@@ -3175,8 +3175,7 @@ bool
 cmdCd(vshControl *ctl, const vshCmd *cmd)
 {
     const char *dir = NULL;
-    char *dir_malloced = NULL;
-    bool ret = true;
+    g_autofree char *dir_malloced = NULL;
     char ebuf[1024];
 
     if (!ctl->imode) {
@@ -3192,11 +3191,10 @@ cmdCd(vshControl *ctl, const vshCmd *cmd)
     if (chdir(dir) == -1) {
         vshError(ctl, _("cd: %s: %s"),
                  virStrerror(errno, ebuf, sizeof(ebuf)), dir);
-        ret = false;
+        return false;
     }
 
-    VIR_FREE(dir_malloced);
-    return ret;
+    return true;
 }
 
 const vshCmdOptDef opts_echo[] = {
