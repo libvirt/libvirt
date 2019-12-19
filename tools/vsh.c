@@ -2913,11 +2913,6 @@ vshReadlineInit(vshControl *ctl)
      */
     userdir = virGetUserCacheDirectory();
 
-    if (userdir == NULL) {
-        vshError(ctl, "%s", _("Could not determine home directory"));
-        goto cleanup;
-    }
-
     ctl->historydir = g_strdup_printf("%s/%s", userdir, ctl->name);
 
     ctl->historyfile = g_strdup_printf("%s/history", ctl->historydir);
