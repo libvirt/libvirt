@@ -466,10 +466,8 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
         privkey = g_strdup(privkeyPath);
     } else {
         homedir = virGetUserDirectory();
-        if (homedir) {
-            if (virNetClientFindDefaultSshKey(homedir, &privkey) < 0)
-                goto no_memory;
-        }
+        if (virNetClientFindDefaultSshKey(homedir, &privkey) < 0)
+            goto no_memory;
     }
 
     if (!authMethods) {
@@ -566,10 +564,8 @@ virNetClientPtr virNetClientNewLibssh(const char *host,
         privkey = g_strdup(privkeyPath);
     } else {
         homedir = virGetUserDirectory();
-        if (homedir) {
-            if (virNetClientFindDefaultSshKey(homedir, &privkey) < 0)
-                goto no_memory;
-        }
+        if (virNetClientFindDefaultSshKey(homedir, &privkey) < 0)
+            goto no_memory;
     }
 
     if (!authMethods) {

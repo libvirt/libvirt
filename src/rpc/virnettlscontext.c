@@ -805,9 +805,6 @@ static int virNetTLSContextLocateCredentials(const char *pkipath,
          */
         userdir = virGetUserDirectory();
 
-        if (!userdir)
-            goto error;
-
         user_pki_path = g_strdup_printf("%s/.pki/libvirt", userdir);
 
         VIR_DEBUG("Trying to find TLS user credentials in %s", user_pki_path);
@@ -864,15 +861,6 @@ static int virNetTLSContextLocateCredentials(const char *pkipath,
     VIR_FREE(userdir);
 
     return 0;
-
- error:
-    VIR_FREE(*cacert);
-    VIR_FREE(*cacrl);
-    VIR_FREE(*key);
-    VIR_FREE(*cert);
-    VIR_FREE(user_pki_path);
-    VIR_FREE(userdir);
-    return -1;
 }
 
 
