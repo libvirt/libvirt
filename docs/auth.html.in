@@ -274,7 +274,7 @@ to turn on SASL auth in these listeners.
     </p>
     <p>
 Since the libvirt SASL config file defaults to using GSSAPI (Kerberos), a
-config change is rquired to enable plain password auth. This is done by
+config change is required to enable plain password auth. This is done by
 editting <code>/etc/sasl2/libvirt.conf</code> to set the <code>mech_list</code>
 parameter to <code>scram-sha-1</code>.
     </p>
@@ -317,7 +317,7 @@ in these scenarios - only the plain TCP listener needs encryption
 Some operating systems do not install the SASL kerberos plugin by default. It
 may be necessary to install a sub-package such as <code>cyrus-sasl-gssapi</code>.
 To check whether the Kerberos plugin is installed run the <code>pluginviewer</code>
-program and verify that <code>gssapi</code> is listed,eg:
+program and verify that <code>gssapi</code> is listed, e.g.:
 </p>
     <pre>
 # pluginviewer
@@ -359,7 +359,7 @@ kadmin.local: quit
     <p>
 Any client application wishing to connect to a Kerberos enabled libvirt server
 merely needs to run <code>kinit</code> to gain a user principal. This may well
-be done automatically when a user logs into a desktop session, if PAM is setup
+be done automatically when a user logs into a desktop session, if PAM is set up
 to authenticate against Kerberos.
 </p>
   </body>
