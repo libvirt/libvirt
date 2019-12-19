@@ -684,8 +684,7 @@ int virNetSocketNewConnectUNIX(const char *path,
             goto cleanup;
         }
 
-        if (!(rundir = virGetUserRuntimeDirectory()))
-            goto cleanup;
+        rundir = virGetUserRuntimeDirectory();
 
         if (virFileMakePathWithMode(rundir, 0700) < 0) {
             virReportSystemError(errno,
