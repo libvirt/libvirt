@@ -245,8 +245,7 @@ daemonUnixSocketPaths(struct daemonConfig *config,
         } else {
             mode_t old_umask;
 
-            if (!(rundir = virGetUserRuntimeDirectory()))
-                goto cleanup;
+            rundir = virGetUserRuntimeDirectory();
 
             old_umask = umask(077);
             if (virFileMakePath(rundir) < 0) {
@@ -1208,11 +1207,6 @@ int main(int argc, char **argv) {
         run_dir = g_strdup(RUNSTATEDIR "/libvirt");
     } else {
         run_dir = virGetUserRuntimeDirectory();
-
-        if (!run_dir) {
-            VIR_ERROR(_("Can't determine user directory"));
-            goto cleanup;
-        }
     }
     if (privileged)
         old_umask = umask(022);

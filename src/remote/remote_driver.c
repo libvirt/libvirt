@@ -779,8 +779,7 @@ remoteGetUNIXSocketHelper(remoteDriverTransport transport,
                            remoteDriverTransportTypeToString(transport));
             return NULL;
         }
-        if (!(userdir = virGetUserRuntimeDirectory()))
-            return NULL;
+        userdir = virGetUserRuntimeDirectory();
 
         sockname = g_strdup_printf("%s/%s-sock", userdir, sock_prefix);
     } else {
