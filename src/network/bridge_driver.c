@@ -741,8 +741,6 @@ networkStateInitialize(bool privileged,
     } else {
         configdir = virGetUserConfigDirectory();
         rundir = virGetUserRuntimeDirectory();
-        if (!rundir)
-            goto error;
 
         network_driver->networkConfigDir = g_strdup_printf("%s/qemu/networks", configdir);
         network_driver->networkAutostartDir = g_strdup_printf("%s/qemu/networks/autostart", configdir);
