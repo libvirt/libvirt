@@ -618,8 +618,7 @@ nodeStateInitialize(bool privileged G_GNUC_UNUSED,
     } else {
         g_autofree char *rundir = NULL;
 
-        if (!(rundir = virGetUserRuntimeDirectory()))
-            goto failure;
+        rundir = virGetUserRuntimeDirectory();
         driver->stateDir = g_strdup_printf("%s/nodedev/run", rundir);
     }
 
