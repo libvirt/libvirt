@@ -475,8 +475,7 @@ secretStateInitialize(bool privileged,
         g_autofree char *rundir = NULL;
         g_autofree char *cfgdir = NULL;
 
-        if (!(cfgdir = virGetUserConfigDirectory()))
-            goto error;
+        cfgdir = virGetUserConfigDirectory();
         driver->configDir = g_strdup_printf("%s/secrets/", cfgdir);
 
         if (!(rundir = virGetUserRuntimeDirectory()))
