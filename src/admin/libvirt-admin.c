@@ -147,9 +147,6 @@ getSocketPath(virURIPtr uri)
         if (STREQ_NULLABLE(uri->path, "/system")) {
             sock_path = g_strdup_printf(RUNSTATEDIR "/libvirt/%s", sockbase);
         } else if (STREQ_NULLABLE(uri->path, "/session")) {
-            if (!rundir)
-                return NULL;
-
             sock_path = g_strdup_printf("%s/%s", rundir, sockbase);
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
