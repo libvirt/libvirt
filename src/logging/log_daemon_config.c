@@ -44,16 +44,12 @@ virLogDaemonConfigFilePath(bool privileged, char **configfile)
     } else {
         g_autofree char *configdir = NULL;
 
-        if (!(configdir = virGetUserConfigDirectory()))
-            goto error;
+        configdir = virGetUserConfigDirectory();
 
         *configfile = g_strdup_printf("%s/virtlogd.conf", configdir);
     }
 
     return 0;
-
- error:
-    return -1;
 }
 
 
