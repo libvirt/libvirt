@@ -7374,9 +7374,8 @@ vboxDomainScreenshot(virDomainPtr dom,
 
     if (privileged) {
         cacheDir = g_strdup_printf("%s/cache/libvirt", LOCALSTATEDIR);
-    } else if (!(cacheDir = virGetUserCacheDirectory())) {
-        VBOX_RELEASE(machine);
-        return NULL;
+    } else {
+        cacheDir = virGetUserCacheDirectory();
     }
 
     tmp = g_strdup_printf("%s/vbox.screendump.XXXXXX", cacheDir);
