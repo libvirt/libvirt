@@ -442,13 +442,13 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
     virNetClientPtr ret = NULL;
 
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    char *nc = NULL;
-    char *command = NULL;
+    g_autofree char *nc = NULL;
+    g_autofree char *command = NULL;
 
-    char *homedir = NULL;
-    char *confdir = NULL;
-    char *knownhosts = NULL;
-    char *privkey = NULL;
+    g_autofree char *homedir = NULL;
+    g_autofree char *confdir = NULL;
+    g_autofree char *knownhosts = NULL;
+    g_autofree char *privkey = NULL;
 
     /* Use default paths for known hosts an public keys if not provided */
     if (knownHostsPath) {
@@ -517,12 +517,6 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
         goto cleanup;
 
  cleanup:
-    VIR_FREE(command);
-    VIR_FREE(privkey);
-    VIR_FREE(knownhosts);
-    VIR_FREE(homedir);
-    VIR_FREE(confdir);
-    VIR_FREE(nc);
     return ret;
 
  no_memory:
