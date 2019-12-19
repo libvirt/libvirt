@@ -449,29 +449,23 @@ virLockDaemonUnixSocketPaths(bool privileged,
         *sockfile = g_strdup(RUNSTATEDIR "/libvirt/virtlockd-sock");
         *adminSockfile = g_strdup(RUNSTATEDIR "/libvirt/virtlockd-admin-sock");
     } else {
-        char *rundir = NULL;
+        g_autofree char *rundir = NULL;
         mode_t old_umask;
 
         if (!(rundir = virGetUserRuntimeDirectory()))
-            goto error;
+            return -1;
 
         old_umask = umask(077);
         if (virFileMakePath(rundir) < 0) {
-            VIR_FREE(rundir);
             umask(old_umask);
-            goto error;
+            return -1;
         }
         umask(old_umask);
 
         *sockfile = g_strdup_printf("%s/virtlockd-sock", rundir);
         *adminSockfile = g_strdup_printf("%s/virtlockd-admin-sock", rundir);
-
-        VIR_FREE(rundir);
     }
     return 0;
-
- error:
-    return -1;
 }
 
 
