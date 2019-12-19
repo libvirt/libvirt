@@ -81,8 +81,7 @@ daemonConfigFilePath(bool privileged, char **configfile)
     } else {
         g_autofree char *configdir = NULL;
 
-        if (!(configdir = virGetUserConfigDirectory()))
-            return -1;
+        configdir = virGetUserConfigDirectory();
 
         *configfile = g_strdup_printf("%s/%s.conf", configdir, DAEMON_NAME);
     }
