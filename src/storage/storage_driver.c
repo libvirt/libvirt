@@ -278,7 +278,7 @@ storageStateInitialize(bool privileged,
     } else {
         configdir = virGetUserConfigDirectory();
         rundir = virGetUserRuntimeDirectory();
-        if (!(configdir && rundir))
+        if (!rundir)
             goto error;
 
         driver->configDir = g_strdup_printf("%s/storage", configdir);
