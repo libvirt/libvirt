@@ -66,8 +66,7 @@ virAuthGetConfigFilePathURI(virURIPtr uri,
         }
     }
 
-    if (!(userdir = virGetUserConfigDirectory()))
-        return -1;
+    userdir = virGetUserConfigDirectory();
 
     *path = g_strdup_printf("%s/auth.conf", userdir);
 
