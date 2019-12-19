@@ -452,8 +452,7 @@ virLockDaemonUnixSocketPaths(bool privileged,
         g_autofree char *rundir = NULL;
         mode_t old_umask;
 
-        if (!(rundir = virGetUserRuntimeDirectory()))
-            return -1;
+        rundir = virGetUserRuntimeDirectory();
 
         old_umask = umask(077);
         if (virFileMakePath(rundir) < 0) {
@@ -823,8 +822,7 @@ virLockDaemonExecRestartStatePath(bool privileged,
         g_autofree char *rundir = NULL;
         mode_t old_umask;
 
-        if (!(rundir = virGetUserRuntimeDirectory()))
-            return -1;
+        rundir = virGetUserRuntimeDirectory();
 
         old_umask = umask(077);
         if (virFileMakePath(rundir) < 0) {
@@ -1224,10 +1222,7 @@ int main(int argc, char **argv) {
     if (privileged) {
         run_dir = g_strdup(RUNSTATEDIR "/libvirt");
     } else {
-        if (!(run_dir = virGetUserRuntimeDirectory())) {
-            VIR_ERROR(_("Can't determine user directory"));
-            goto cleanup;
-        }
+        run_dir = virGetUserRuntimeDirectory();
     }
 
     if (privileged)

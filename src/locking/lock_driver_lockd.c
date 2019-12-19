@@ -124,8 +124,7 @@ static char *virLockManagerLockDaemonPath(bool privileged)
     } else {
         g_autofree char *rundir = NULL;
 
-        if (!(rundir = virGetUserRuntimeDirectory()))
-            return NULL;
+        rundir = virGetUserRuntimeDirectory();
 
         path = g_strdup_printf("%s/virtlockd-sock", rundir);
     }
