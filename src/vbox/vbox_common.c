@@ -7341,8 +7341,8 @@ vboxDomainScreenshot(virDomainPtr dom,
     vboxIID iid;
     IMachine *machine = NULL;
     nsresult rc;
-    char *tmp;
-    char *cacheDir;
+    g_autofree char *tmp = NULL;
+    g_autofree char *cacheDir = NULL;
     int tmp_fd = -1;
     unsigned int max_screen;
     bool privileged = geteuid() == 0;
@@ -7383,7 +7383,6 @@ vboxDomainScreenshot(virDomainPtr dom,
 
     if ((tmp_fd = g_mkstemp_full(tmp, O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR)) == -1) {
         virReportSystemError(errno, _("g_mkstemp(\"%s\") failed"), tmp);
-        VIR_FREE(tmp);
         VBOX_RELEASE(machine);
         return NULL;
     }
@@ -7454,8 +7453,6 @@ vboxDomainScreenshot(virDomainPtr dom,
 
     VIR_FORCE_CLOSE(tmp_fd);
     unlink(tmp);
-    VIR_FREE(tmp);
-    VIR_FREE(cacheDir);
     VBOX_RELEASE(machine);
     vboxIIDUnalloc(&iid);
     return ret;
