@@ -171,8 +171,6 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
         cfg->cacheDir = g_strdup_printf("%s/qemu/cache", cachedir);
 
         rundir = virGetUserRuntimeDirectory();
-        if (!rundir)
-            return NULL;
         cfg->stateDir = g_strdup_printf("%s/qemu/run", rundir);
 
         cfg->swtpmStateDir = g_strdup_printf("%s/swtpm", cfg->stateDir);
