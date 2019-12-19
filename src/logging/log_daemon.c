@@ -612,29 +612,23 @@ virLogDaemonExecRestartStatePath(bool privileged,
     if (privileged) {
         *state_file = g_strdup(RUNSTATEDIR "/virtlogd-restart-exec.json");
     } else {
-        char *rundir = NULL;
+        g_autofree char *rundir = NULL;
         mode_t old_umask;
 
         if (!(rundir = virGetUserRuntimeDirectory()))
-            goto error;
+            return -1;
 
         old_umask = umask(077);
         if (virFileMakePath(rundir) < 0) {
             umask(old_umask);
-            VIR_FREE(rundir);
-            goto error;
+            return -1;
         }
         umask(old_umask);
 
         *state_file = g_strdup_printf("%s/virtlogd-restart-exec.json", rundir);
-
-        VIR_FREE(rundir);
     }
 
     return 0;
-
- error:
-    return -1;
 }
 
 
