@@ -79,19 +79,15 @@ daemonConfigFilePath(bool privileged, char **configfile)
     if (privileged) {
         *configfile = g_strdup(SYSCONFDIR "/libvirt/" DAEMON_NAME ".conf");
     } else {
-        char *configdir = NULL;
+        g_autofree char *configdir = NULL;
 
         if (!(configdir = virGetUserConfigDirectory()))
-            goto error;
+            return -1;
 
         *configfile = g_strdup_printf("%s/%s.conf", configdir, DAEMON_NAME);
-        VIR_FREE(configdir);
     }
 
     return 0;
-
- error:
-    return -1;
 }
 
 struct daemonConfig*
