@@ -57,6 +57,7 @@
 #include "qemu_security.h"
 #include "qemu_extdevice.h"
 #include "qemu_firmware.h"
+#include "qemu_backup.h"
 
 #include "cpu/cpu.h"
 #include "cpu/cpu_x86.h"
@@ -7503,6 +7504,10 @@ void qemuProcessStop(virQEMUDriverPtr driver,
 
         virResctrlAllocRemove(vm->def->resctrls[i]->alloc);
     }
+
+    /* clean up a possible backup job */
+    if (priv->backup)
+        qemuBackupJobTerminate(vm, QEMU_DOMAIN_JOB_STATUS_CANCELED);
 
     qemuProcessRemoveDomainStatus(driver, vm);
 

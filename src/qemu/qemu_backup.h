@@ -42,6 +42,9 @@ qemuBackupNotifyBlockjobEnd(virDomainObjPtr vm,
                             unsigned long long end,
                             int asyncJob);
 
+void
+qemuBackupJobTerminate(virDomainObjPtr vm,
+                       qemuDomainJobStatus jobstatus);
 
 int
 qemuBackupGetJobInfoStats(virQEMUDriverPtr driver,

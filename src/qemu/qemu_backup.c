@@ -604,7 +604,7 @@ qemuBackupBeginCollectIncrementalCheckpoints(virDomainObjPtr vm,
 }
 
 
-static void
+void
 qemuBackupJobTerminate(virDomainObjPtr vm,
                        qemuDomainJobStatus jobstatus)
 
