@@ -586,6 +586,7 @@ void qemuProcessEventFree(struct qemuProcessEvent *event);
 
 typedef struct _qemuDomainLogContext qemuDomainLogContext;
 typedef qemuDomainLogContext *qemuDomainLogContextPtr;
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuDomainLogContext, virObjectUnref);
 
 typedef struct _qemuDomainSaveCookie qemuDomainSaveCookie;
 typedef qemuDomainSaveCookie *qemuDomainSaveCookiePtr;
