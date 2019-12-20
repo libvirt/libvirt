@@ -612,6 +612,7 @@ struct _virQEMUCaps {
     char *binary;
     time_t ctime;
     time_t libvirtCtime;
+    bool invalidation;
 
     virBitmapPtr flags;
 
@@ -1633,6 +1634,7 @@ virQEMUCapsNew(void)
     if (!(qemuCaps = virObjectNew(virQEMUCapsClass)))
         return NULL;
 
+    qemuCaps->invalidation = true;
     if (!(qemuCaps->flags = virBitmapNew(QEMU_CAPS_LAST)))
         goto error;
 
@@ -1644,6 +1646,14 @@ virQEMUCapsNew(void)
  error:
     virObjectUnref(qemuCaps);
     return NULL;
+}
+
+
+void
+virQEMUCapsSetInvalidation(virQEMUCapsPtr qemuCaps,
+                           bool enabled)
+{
+    qemuCaps->invalidation = enabled;
 }
 
 
@@ -1746,6 +1756,7 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
     if (!ret)
         return NULL;
 
+    ret->invalidation = qemuCaps->invalidation;
     ret->usedQMP = qemuCaps->usedQMP;
     ret->kvmSupportsNesting = qemuCaps->kvmSupportsNesting;
 
@@ -4422,6 +4433,9 @@ virQEMUCapsIsValid(void *data,
     bool kvmUsable;
     struct stat sb;
     bool kvmSupportsNesting;
+
+    if (!qemuCaps->invalidation)
+        return true;
 
     if (!qemuCaps->binary)
         return true;
