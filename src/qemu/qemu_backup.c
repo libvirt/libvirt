@@ -322,7 +322,10 @@ qemuBackupDiskPrepareDataOne(virDomainObjPtr vm,
         return -1;
 
     if (incremental) {
-        dd->incrementalBitmap = g_strdup_printf("backup-%s", dd->domdisk->dst);
+        if (dd->backupdisk->exportbitmap)
+            dd->incrementalBitmap = g_strdup(dd->backupdisk->exportbitmap);
+        else
+            dd->incrementalBitmap = g_strdup_printf("backup-%s", dd->domdisk->dst);
 
         if (qemuBackupDiskPrepareOneBitmaps(dd, actions, incremental,
                                             blockNamedNodeData) < 0)
@@ -368,6 +371,10 @@ static int
 qemuBackupDiskPrepareDataOnePull(virJSONValuePtr actions,
                                  struct qemuBackupDiskData *dd)
 {
+    if (!dd->backupdisk->exportbitmap &&
+        dd->incrementalBitmap)
+        dd->backupdisk->exportbitmap = g_strdup(dd->incrementalBitmap);
+
     if (qemuMonitorTransactionBackup(actions,
                                      dd->domdisk->src->nodeformat,
                                      dd->blockjob->name,
