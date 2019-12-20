@@ -439,7 +439,6 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
                                        virURIPtr uri)
 {
     virNetSocketPtr sock = NULL;
-    virNetClientPtr ret = NULL;
 
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *nc = NULL;
@@ -457,7 +456,7 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
         confdir = virGetUserConfigDirectory();
         virBufferAsprintf(&buf, "%s/known_hosts", confdir);
         if (!(knownhosts = virBufferContentAndReset(&buf)))
-            goto no_memory;
+            return NULL;
     }
 
     if (privkeyPath) {
@@ -465,7 +464,7 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
     } else {
         homedir = virGetUserDirectory();
         if (virNetClientFindDefaultSshKey(homedir, &privkey) < 0)
-            goto no_memory;
+            return NULL;
     }
 
     if (!authMethods) {
@@ -483,11 +482,11 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
 
     virBufferEscapeShell(&buf, netcatPath);
     if (!(nc = virBufferContentAndReset(&buf)))
-        goto no_memory;
+        return NULL;
     virBufferEscapeShell(&buf, nc);
     VIR_FREE(nc);
     if (!(nc = virBufferContentAndReset(&buf)))
-        goto no_memory;
+        return NULL;
 
     virBufferAsprintf(&buf,
          "sh -c "
@@ -500,24 +499,16 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
          nc, nc, socketPath);
 
     if (!(command = virBufferContentAndReset(&buf)))
-        goto no_memory;
+        return NULL;
 
     if (virNetSocketNewConnectLibSSH2(host, port,
                                       family,
                                       username, privkey,
                                       knownhosts, knownHostsVerify, authMethods,
                                       command, authPtr, uri, &sock) != 0)
-        goto cleanup;
+        return NULL;
 
-    if (!(ret = virNetClientNew(sock, NULL)))
-        goto cleanup;
-
- cleanup:
-    return ret;
-
- no_memory:
-    virReportOOMError();
-    goto cleanup;
+   return virNetClientNew(sock, NULL);
 }
 #undef DEFAULT_VALUE
 
@@ -538,7 +529,6 @@ virNetClientPtr virNetClientNewLibssh(const char *host,
                                       virURIPtr uri)
 {
     virNetSocketPtr sock = NULL;
-    virNetClientPtr ret = NULL;
 
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *nc = NULL;
@@ -562,7 +552,7 @@ virNetClientPtr virNetClientNewLibssh(const char *host,
     } else {
         homedir = virGetUserDirectory();
         if (virNetClientFindDefaultSshKey(homedir, &privkey) < 0)
-            goto no_memory;
+            return NULL;
     }
 
     if (!authMethods) {
@@ -580,11 +570,11 @@ virNetClientPtr virNetClientNewLibssh(const char *host,
 
     virBufferEscapeShell(&buf, netcatPath);
     if (!(nc = virBufferContentAndReset(&buf)))
-        goto no_memory;
+        return NULL;
     virBufferEscapeShell(&buf, nc);
     VIR_FREE(nc);
     if (!(nc = virBufferContentAndReset(&buf)))
-        goto no_memory;
+        return NULL;
 
     command = g_strdup_printf("sh -c "
                               "'if '%s' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
@@ -596,17 +586,9 @@ virNetClientPtr virNetClientNewLibssh(const char *host,
                                      username, privkey,
                                      knownhosts, knownHostsVerify, authMethods,
                                      command, authPtr, uri, &sock) != 0)
-        goto cleanup;
+        return NULL;
 
-    if (!(ret = virNetClientNew(sock, NULL)))
-        goto cleanup;
-
- cleanup:
-    return ret;
-
- no_memory:
-    virReportOOMError();
-    goto cleanup;
+    return virNetClientNew(sock, NULL);
 }
 #undef DEFAULT_VALUE
 
