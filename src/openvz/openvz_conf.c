@@ -148,18 +148,18 @@ openvzParseBarrierLimit(const char* value,
 
 virCapsPtr openvzCapsInit(void)
 {
-    virCapsPtr caps;
+    g_autoptr(virCaps) caps = NULL;
     virCapsGuestPtr guest;
 
     if ((caps = virCapabilitiesNew(virArchFromHost(),
                                    false, false)) == NULL)
-        goto no_memory;
+        return NULL;
 
     if (!(caps->host.numa = virCapabilitiesHostNUMANewHost()))
-        goto no_memory;
+        return NULL;
 
     if (virCapabilitiesInitCaches(caps) < 0)
-        goto no_memory;
+        return NULL;
 
     if ((guest = virCapabilitiesAddGuest(caps,
                                          VIR_DOMAIN_OSTYPE_EXE,
@@ -168,7 +168,7 @@ virCapsPtr openvzCapsInit(void)
                                          NULL,
                                          0,
                                          NULL)) == NULL)
-        goto no_memory;
+        return NULL;
 
     if (virCapabilitiesAddGuestDomain(guest,
                                       VIR_DOMAIN_VIRT_OPENVZ,
@@ -176,13 +176,9 @@ virCapsPtr openvzCapsInit(void)
                                       NULL,
                                       0,
                                       NULL) == NULL)
-        goto no_memory;
+        return NULL;
 
-    return caps;
-
- no_memory:
-    virObjectUnref(caps);
-    return NULL;
+    return g_steal_pointer(&caps);
 }
 
 
