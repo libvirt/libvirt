@@ -104,9 +104,7 @@
         <oneOrMore>
           <element name='disk'>
             <attribute name='name'>
-              <choice>
-                <ref name='diskTarget'/>
-              </choice>
+              <ref name='diskTarget'/>
             </attribute>
             <choice>
               <group>
@@ -165,9 +163,7 @@
         <oneOrMore>
           <element name='disk'>
             <attribute name='name'>
-              <choice>
-                <ref name='diskTarget'/>
-              </choice>
+              <ref name='diskTarget'/>
             </attribute>
             <choice>
               <group>
