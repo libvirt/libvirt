@@ -2236,6 +2236,9 @@ qemuDomainObjPrivateDataClear(qemuDomainObjPrivatePtr priv)
 
     virDomainBackupDefFree(priv->backup);
     priv->backup = NULL;
+
+    /* reset node name allocator */
+    qemuDomainStorageIdReset(priv);
 }
 
 
