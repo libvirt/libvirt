@@ -3334,6 +3334,7 @@ virTypedParamsValidate;
 virURIFormat;
 virURIFormatParams;
 virURIFree;
+virURIGetParam;
 virURIParse;
 virURIResolveAlias;
 

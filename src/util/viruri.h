@@ -62,4 +62,6 @@ void virURIFree(virURIPtr uri);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virURI, virURIFree);
 int virURIResolveAlias(virConfPtr conf, const char *alias, char **uri);
 
+const char *virURIGetParam(virURIPtr uri, const char *name);
+
 #define VIR_URI_SERVER(uri) ((uri) && (uri)->server ? (uri)->server : "localhost")
