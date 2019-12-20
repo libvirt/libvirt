@@ -619,26 +619,16 @@ virCapabilitiesHostSecModelAddBaseLabel(virCapsHostSecModelPtr secmodel,
                                         const char *type,
                                         const char *label)
 {
-    char *t = NULL, *l = NULL;
-
     if (type == NULL || label == NULL)
         return -1;
 
-    t = g_strdup(type);
-    l = g_strdup(label);
-
     if (VIR_EXPAND_N(secmodel->labels, secmodel->nlabels, 1) < 0)
-        goto no_memory;
+        return -1;
 
-    secmodel->labels[secmodel->nlabels - 1].type = t;
-    secmodel->labels[secmodel->nlabels - 1].label = l;
+    secmodel->labels[secmodel->nlabels - 1].type = g_strdup(type);
+    secmodel->labels[secmodel->nlabels - 1].label = g_strdup(label);
 
     return 0;
-
- no_memory:
-    VIR_FREE(l);
-    VIR_FREE(t);
-    return -1;
 }
 
 

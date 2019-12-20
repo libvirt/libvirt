@@ -89,12 +89,12 @@ virDomainAuditGenericDev(virDomainObjPtr vm,
                          const char *reason,
                          bool success)
 {
-    char *newdev = NULL;
-    char *olddev = NULL;
+    g_autofree char *newdev = NULL;
+    g_autofree char *olddev = NULL;
+    g_autofree char *vmname = NULL;
+    g_autofree char *oldsrc = NULL;
+    g_autofree char *newsrc = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-    char *vmname = NULL;
-    char *oldsrc = NULL;
-    char *newsrc = NULL;
     const char *virt = virDomainAuditGetVirtType(vm->def);
 
     /* if both new and old source aren't provided don't log anything */
@@ -107,29 +107,17 @@ virDomainAuditGenericDev(virDomainObjPtr vm,
     virUUIDFormat(vm->def->uuid, uuidstr);
 
     if (!(vmname = virAuditEncode("vm", vm->def->name)))
-        goto no_memory;
+        return;
 
     if (!(newsrc = virAuditEncode(newdev, VIR_AUDIT_STR(newsrcpath))))
-        goto no_memory;
+        return;
 
     if (!(oldsrc = virAuditEncode(olddev, VIR_AUDIT_STR(oldsrcpath))))
-        goto no_memory;
+        return;
 
     VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
               "virt=%s resrc=%s reason=%s %s uuid=%s %s %s",
               virt, type, reason, vmname, uuidstr, oldsrc, newsrc);
-
- cleanup:
-    VIR_FREE(newdev);
-    VIR_FREE(olddev);
-    VIR_FREE(vmname);
-    VIR_FREE(oldsrc);
-    VIR_FREE(newsrc);
-    return;
-
- no_memory:
-    VIR_WARN("OOM while encoding audit message");
-    goto cleanup;
 }
 
 
@@ -957,13 +945,13 @@ virDomainAuditInput(virDomainObjPtr vm,
                     bool success)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
-    char *vmname;
+    g_autofree char *vmname = NULL;
     const char *virt = virDomainAuditGetVirtType(vm->def);
 
     virUUIDFormat(vm->def->uuid, uuidstr);
 
     if (!(vmname = virAuditEncode("vm", vm->def->name)))
-        goto no_memory;
+        return;
 
     switch ((virDomainInputType) input->type) {
     case VIR_DOMAIN_INPUT_TYPE_MOUSE:
@@ -980,12 +968,4 @@ virDomainAuditInput(virDomainObjPtr vm,
     case VIR_DOMAIN_INPUT_TYPE_LAST:
         break;
     }
-
- cleanup:
-    VIR_FREE(vmname);
-    return;
-
- no_memory:
-    VIR_WARN("OOM while encoding audit message");
-    goto cleanup;
 }
