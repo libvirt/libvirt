@@ -544,6 +544,7 @@ typedef virQEMUCaps *virQEMUCapsPtr;
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virQEMUCaps, virObjectUnref);
 
 virQEMUCapsPtr virQEMUCapsNew(void);
+virQEMUCapsPtr virQEMUCapsNewBinary(const char *binary);
 
 void virQEMUCapsSet(virQEMUCapsPtr qemuCaps,
                     virQEMUCapsFlags flag) ATTRIBUTE_NONNULL(1);

@@ -1649,6 +1649,17 @@ virQEMUCapsNew(void)
 }
 
 
+virQEMUCapsPtr
+virQEMUCapsNewBinary(const char *binary)
+{
+    virQEMUCapsPtr qemuCaps = virQEMUCapsNew();
+
+    qemuCaps->binary = g_strdup(binary);
+
+    return qemuCaps;
+}
+
+
 void
 virQEMUCapsSetInvalidation(virQEMUCapsPtr qemuCaps,
                            bool enabled)
@@ -1750,7 +1761,7 @@ virQEMUCapsAccelCopy(virQEMUCapsAccelPtr dst,
 
 virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
 {
-    virQEMUCapsPtr ret = virQEMUCapsNew();
+    virQEMUCapsPtr ret = virQEMUCapsNewBinary(qemuCaps->binary);
     size_t i;
 
     if (!ret)
@@ -1759,8 +1770,6 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
     ret->invalidation = qemuCaps->invalidation;
     ret->usedQMP = qemuCaps->usedQMP;
     ret->kvmSupportsNesting = qemuCaps->kvmSupportsNesting;
-
-    ret->binary = g_strdup(qemuCaps->binary);
 
     ret->ctime = qemuCaps->ctime;
 
@@ -4950,10 +4959,8 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
     virQEMUCapsPtr qemuCaps;
     struct stat sb;
 
-    if (!(qemuCaps = virQEMUCapsNew()))
+    if (!(qemuCaps = virQEMUCapsNewBinary(binary)))
         goto error;
-
-    qemuCaps->binary = g_strdup(binary);
 
     /* We would also want to check faccessat if we cared about ACLs,
      * but we don't.  */
@@ -5021,13 +5028,11 @@ virQEMUCapsLoadFile(const char *filename,
                     const char *binary,
                     void *privData)
 {
-    virQEMUCapsPtr qemuCaps = virQEMUCapsNew();
+    virQEMUCapsPtr qemuCaps = virQEMUCapsNewBinary(binary);
     virQEMUCapsCachePrivPtr priv = privData;
 
     if (!qemuCaps)
         return NULL;
-
-    qemuCaps->binary = g_strdup(binary);
 
     if (virQEMUCapsLoadCache(priv->hostArch, qemuCaps, filename) < 0)
         goto error;
