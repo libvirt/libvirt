@@ -302,7 +302,6 @@ qemuBackupDiskPrepareDataOne(virDomainObjPtr vm,
                              bool removeStore)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    g_autoptr(virStorageSource) terminator = NULL;
 
     /* set data structure */
     dd->backupdisk = backupdisk;
@@ -331,17 +330,14 @@ qemuBackupDiskPrepareDataOne(virDomainObjPtr vm,
             return -1;
     }
 
-    /* install terminator to prevent qemu form opening backing images */
-    if (!(terminator = virStorageSourceNew()))
-        return -1;
-
     if (!(dd->blockjob = qemuBlockJobDiskNewBackup(vm, dd->domdisk, dd->store,
                                                    removeStore,
                                                    dd->incrementalBitmap)))
         return -1;
 
+    /* use original disk as backing to prevent opening the backing chain */
     if (!(dd->crdata = qemuBuildStorageSourceChainAttachPrepareBlockdevTop(dd->store,
-                                                                           terminator,
+                                                                           dd->domdisk->src,
                                                                            priv->qemuCaps)))
         return -1;
 
