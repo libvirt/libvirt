@@ -2070,7 +2070,6 @@ qemuProcessLookupPTYs(virDomainChrDefPtr *devices,
                       virHashTablePtr info)
 {
     size_t i;
-    int ret = -1;
 
     for (i = 0; i < count; i++) {
         g_autofree char *id = NULL;
@@ -2088,7 +2087,7 @@ qemuProcessLookupPTYs(virDomainChrDefPtr *devices,
                      */
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("no assigned pty for device %s"), id);
-                    goto cleanup;
+                    return -1;
                 } else {
                     /* 'info chardev' had no pty path for this chardev,
                      * but the log output had, so we're fine
@@ -2102,9 +2101,7 @@ qemuProcessLookupPTYs(virDomainChrDefPtr *devices,
         }
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
@@ -2703,7 +2700,6 @@ static int
 qemuProcessResctrlCreate(virQEMUDriverPtr driver,
                          virDomainObjPtr vm)
 {
-    int ret = -1;
     size_t i = 0;
     g_autoptr(virCaps) caps = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
@@ -2722,7 +2718,7 @@ qemuProcessResctrlCreate(virQEMUDriverPtr driver,
         if (virResctrlAllocCreate(caps->host.resctrl,
                                   vm->def->resctrls[i]->alloc,
                                   priv->machineName) < 0)
-            goto cleanup;
+            return -1;
 
         for (j = 0; j < vm->def->resctrls[i]->nmonitors; j++) {
             virDomainResctrlMonDefPtr mon = NULL;
@@ -2730,13 +2726,11 @@ qemuProcessResctrlCreate(virQEMUDriverPtr driver,
             mon = vm->def->resctrls[i]->monitors[j];
             if (virResctrlMonitorCreate(mon->instance,
                                         priv->machineName) < 0)
-                goto cleanup;
+                return -1;
         }
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -2950,10 +2944,9 @@ qemuProcessInitPasswords(virQEMUDriverPtr driver,
         }
 
         if (ret < 0)
-            goto cleanup;
+            return ret;
     }
 
- cleanup:
     return ret;
 }
 
@@ -3181,7 +3174,7 @@ qemuProcessStartCPUs(virQEMUDriverPtr driver, virDomainObjPtr vm,
 
     /* Bring up netdevs before starting CPUs */
     if (qemuInterfaceStartDevices(vm->def) < 0)
-       goto cleanup;
+       return -1;
 
     VIR_DEBUG("Using lock state '%s'", NULLSTR(priv->lockState));
     if (virDomainLockProcessResume(driver->lockManager, cfg->uri,
@@ -3190,7 +3183,7 @@ qemuProcessStartCPUs(virQEMUDriverPtr driver, virDomainObjPtr vm,
          * to make sure we have state still present if the user
          * tries to resume again
          */
-        goto cleanup;
+        return -1;
     }
     VIR_FREE(priv->lockState);
 
@@ -3211,7 +3204,6 @@ qemuProcessStartCPUs(virQEMUDriverPtr driver, virDomainObjPtr vm,
      * lifecycle event.
      */
 
- cleanup:
     return ret;
 
  release:
@@ -3219,7 +3211,7 @@ qemuProcessStartCPUs(virQEMUDriverPtr driver, virDomainObjPtr vm,
     if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) < 0)
         VIR_WARN("Unable to release lease on %s", vm->def->name);
     VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
-    goto cleanup;
+    return ret;
 }
 
 
@@ -3844,7 +3836,6 @@ qemuProcessBuildDestroyMemoryPaths(virQEMUDriverPtr driver,
     size_t i;
     bool shouldBuildHP = false;
     bool shouldBuildMB = false;
-    int ret = -1;
 
     if (build) {
         shouldBuildHP = qemuProcessNeedHugepagesPath(vm->def, mem);
@@ -3857,27 +3848,25 @@ qemuProcessBuildDestroyMemoryPaths(virQEMUDriverPtr driver,
             path = qemuGetDomainHugepagePath(vm->def, &cfg->hugetlbfs[i]);
 
             if (!path)
-                goto cleanup;
+                return -1;
 
             if (qemuProcessBuildDestroyMemoryPathsImpl(driver, vm,
                                                        path, build) < 0)
-                goto cleanup;
+                return -1;
         }
     }
 
     if (!build || shouldBuildMB) {
         g_autofree char *path = NULL;
         if (qemuGetMemoryBackingDomainPath(vm->def, cfg, &path) < 0)
-            goto cleanup;
+            return -1;
 
         if (qemuProcessBuildDestroyMemoryPathsImpl(driver, vm,
                                                    path, build) < 0)
-            goto cleanup;
+            return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -3888,20 +3877,17 @@ qemuProcessDestroyMemoryBackingPath(virQEMUDriverPtr driver,
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autofree char *path = NULL;
-    int ret = -1;
 
     if (qemuGetMemoryBackingPath(vm->def, cfg, mem->info.alias, &path) < 0)
-        goto cleanup;
+        return -1;
 
     if (unlink(path) < 0 &&
         errno != ENOENT) {
         virReportSystemError(errno, _("Unable to remove %s"), path);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -3945,7 +3931,6 @@ qemuProcessSPICEAllocatePorts(virQEMUDriverPtr driver,
     unsigned short tlsPort;
     size_t i;
     int defaultMode = graphics->data.spice.defaultMode;
-    int ret = -1;
 
     bool needTLSPort = false;
     bool needPort = false;
@@ -3991,13 +3976,12 @@ qemuProcessSPICEAllocatePorts(virQEMUDriverPtr driver,
         if (needTLSPort || graphics->data.spice.tlsPort == -1)
             graphics->data.spice.tlsPort = 5902;
 
-        ret = 0;
-        goto cleanup;
+        return 0;
     }
 
     if (needPort || graphics->data.spice.port == -1) {
         if (virPortAllocatorAcquire(driver->remotePorts, &port) < 0)
-            goto cleanup;
+            return -1;
 
         graphics->data.spice.port = port;
 
@@ -4010,11 +3994,11 @@ qemuProcessSPICEAllocatePorts(virQEMUDriverPtr driver,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Auto allocation of spice TLS port requested "
                              "but spice TLS is disabled in qemu.conf"));
-            goto cleanup;
+            return -1;
         }
 
         if (virPortAllocatorAcquire(driver->remotePorts, &tlsPort) < 0)
-            goto cleanup;
+            return -1;
 
         graphics->data.spice.tlsPort = tlsPort;
 
@@ -4022,10 +4006,7 @@ qemuProcessSPICEAllocatePorts(virQEMUDriverPtr driver,
             graphics->data.spice.tlsPortReserved = true;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -4835,7 +4816,6 @@ qemuProcessGraphicsSetupListen(virQEMUDriverPtr driver,
     char *listenAddr = NULL;
     bool useSocket = false;
     size_t i;
-    int ret = -1;
 
     switch (graphics->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
@@ -4884,7 +4864,7 @@ qemuProcessGraphicsSetupListen(virQEMUDriverPtr driver,
 
             if (qemuProcessGraphicsSetupNetworkAddress(glisten,
                                                        listenAddr) < 0)
-                goto cleanup;
+                return -1;
             break;
 
         case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET:
@@ -4901,10 +4881,7 @@ qemuProcessGraphicsSetupListen(virQEMUDriverPtr driver,
         }
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -5620,7 +5597,6 @@ qemuProcessNetworkPrepareDevices(virQEMUDriverPtr driver,
 {
     virDomainDefPtr def = vm->def;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int ret = -1;
     size_t i;
     g_autoptr(virConnect) conn = NULL;
 
@@ -5634,9 +5610,9 @@ qemuProcessNetworkPrepareDevices(virQEMUDriverPtr driver,
          */
         if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
             if (!conn && !(conn = virGetConnectNetwork()))
-                goto cleanup;
+                return -1;
             if (virDomainNetAllocateActualDevice(conn, def, net) < 0)
-                goto cleanup;
+                return -1;
         }
 
         actualType = virDomainNetGetActualType(net);
@@ -5660,10 +5636,10 @@ qemuProcessNetworkPrepareDevices(virQEMUDriverPtr driver,
                                pcisrc->addr.domain, pcisrc->addr.bus,
                                pcisrc->addr.slot, pcisrc->addr.function,
                                net->data.network.name, def->name);
-                goto cleanup;
+                return -1;
             }
             if (virDomainHostdevInsert(def, hostdev) < 0)
-                goto cleanup;
+                return -1;
         } else if (actualType == VIR_DOMAIN_NET_TYPE_USER &&
                    !priv->disableSlirp &&
                    virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DBUS_VMSTATE)) {
@@ -5673,9 +5649,7 @@ qemuProcessNetworkPrepareDevices(virQEMUDriverPtr driver,
          }
 
     }
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -6211,14 +6185,13 @@ qemuProcessPrepareDomain(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          unsigned int flags)
 {
-    int ret = -1;
     size_t i;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
 
     priv->machineName = qemuDomainGetMachineName(vm);
     if (!priv->machineName)
-        goto cleanup;
+        return -1;
 
     if (!(flags & VIR_QEMU_PROCESS_START_PRETEND)) {
         /* If you are using a SecurityDriver with dynamic labelling,
@@ -6226,12 +6199,12 @@ qemuProcessPrepareDomain(virQEMUDriverPtr driver,
         VIR_DEBUG("Generating domain security label (if required)");
         if (qemuSecurityGenLabel(driver->securityManager, vm->def) < 0) {
             virDomainAuditSecurityLabel(vm, false);
-            goto cleanup;
+            return -1;
         }
         virDomainAuditSecurityLabel(vm, true);
 
         if (qemuProcessPrepareDomainNUMAPlacement(driver, vm) < 0)
-            goto cleanup;
+            return -1;
     }
 
     /* Whether we should use virtlogd as stdio handler for character
@@ -6256,53 +6229,53 @@ qemuProcessPrepareDomain(virQEMUDriverPtr driver,
     VIR_DEBUG("Assigning domain PCI addresses");
     if ((qemuDomainAssignAddresses(vm->def, priv->qemuCaps, driver, vm,
                                    !!(flags & VIR_QEMU_PROCESS_START_NEW))) < 0) {
-        goto cleanup;
+        return -1;
     }
 
     if (qemuAssignDeviceAliases(vm->def, priv->qemuCaps) < 0)
-        goto cleanup;
+        return -1;
 
     VIR_DEBUG("Setting graphics devices");
     if (qemuProcessSetupGraphics(driver, vm, priv->qemuCaps, flags) < 0)
-        goto cleanup;
+        return -1;
 
     VIR_DEBUG("Create domain masterKey");
     if (qemuDomainMasterKeyCreate(vm) < 0)
-        goto cleanup;
+        return -1;
 
     VIR_DEBUG("Setting up storage");
     if (qemuProcessPrepareDomainStorage(driver, vm, priv, cfg, flags) < 0)
-        goto cleanup;
+        return -1;
 
     VIR_DEBUG("Prepare chardev source backends for TLS");
     qemuDomainPrepareChardevSource(vm->def, cfg);
 
     VIR_DEBUG("Prepare device secrets");
     if (qemuDomainSecretPrepare(driver, vm) < 0)
-        goto cleanup;
+        return -1;
 
     VIR_DEBUG("Prepare bios/uefi paths");
     if (qemuFirmwareFillDomain(driver, vm, flags) < 0)
-        goto cleanup;
+        return -1;
     if (qemuDomainInitializePflashStorageSource(vm) < 0)
-        goto cleanup;
+        return -1;
 
     VIR_DEBUG("Preparing external devices");
     if (qemuExtDevicesPrepareDomain(driver, vm) < 0)
-        goto cleanup;
+        return -1;
 
     for (i = 0; i < vm->def->nchannels; i++) {
         if (qemuDomainPrepareChannel(vm->def->channels[i],
                                      priv->channelTargetDir) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (!(priv->monConfig = virDomainChrSourceDefNew(driver->xmlopt)))
-        goto cleanup;
+        return -1;
 
     VIR_DEBUG("Preparing monitor state");
     if (qemuProcessPrepareMonitorChr(priv->monConfig, priv->libDir) < 0)
-        goto cleanup;
+        return -1;
 
     priv->monError = false;
     priv->monStart = 0;
@@ -6311,14 +6284,12 @@ qemuProcessPrepareDomain(virQEMUDriverPtr driver,
 
     VIR_DEBUG("Updating guest CPU definition");
     if (qemuProcessUpdateGuestCPU(vm->def, priv->qemuCaps, driver->hostarch, flags) < 0)
-        goto cleanup;
+        return -1;
 
     for (i = 0; i < vm->def->nshmems; i++)
         qemuDomainPrepareShmemChardev(vm->def->shmems[i]);
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -6330,7 +6301,6 @@ qemuProcessSEVCreateFile(virDomainObjPtr vm,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverPtr driver = priv->driver;
     g_autofree char *configFile = NULL;
-    int ret = -1;
 
     if (!(configFile = virFileBuildPath(priv->libDir, name, ".base64")))
         return -1;
@@ -6338,15 +6308,13 @@ qemuProcessSEVCreateFile(virDomainObjPtr vm,
     if (virFileRewriteStr(configFile, S_IRUSR | S_IWUSR, data) < 0) {
         virReportSystemError(errno, _("failed to write data to config '%s'"),
                              configFile);
-        goto cleanup;
+        return -1;
     }
 
     if (qemuSecurityDomainSetPathLabel(driver, vm, configFile, true) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -6473,17 +6441,16 @@ qemuProcessPrepareHost(virQEMUDriverPtr driver,
                        virDomainObjPtr vm,
                        unsigned int flags)
 {
-    int ret = -1;
     unsigned int hostdev_flags = 0;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
 
     if (qemuPrepareNVRAM(cfg, vm) < 0)
-        goto cleanup;
+        return -1;
 
     if (vm->def->vsock) {
         if (qemuProcessOpenVhostVsock(vm->def->vsock) < 0)
-            goto cleanup;
+            return -1;
     }
     /* network devices must be "prepared" before hostdevs, because
      * setting up a network device might create a new hostdev that
@@ -6491,7 +6458,7 @@ qemuProcessPrepareHost(virQEMUDriverPtr driver,
      */
     VIR_DEBUG("Preparing network devices");
     if (qemuProcessNetworkPrepareDevices(driver, vm) < 0)
-        goto cleanup;
+        return -1;
 
     /* Must be run before security labelling */
     VIR_DEBUG("Preparing host devices");
@@ -6501,17 +6468,17 @@ qemuProcessPrepareHost(virQEMUDriverPtr driver,
         hostdev_flags |= VIR_HOSTDEV_COLD_BOOT;
     if (qemuHostdevPrepareDomainDevices(driver, vm->def, priv->qemuCaps,
                                         hostdev_flags) < 0)
-        goto cleanup;
+        return -1;
 
     VIR_DEBUG("Preparing chr devices");
     if (virDomainChrDefForeach(vm->def,
                                true,
                                qemuProcessPrepareChardevDevice,
                                NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuProcessBuildDestroyMemoryPaths(driver, vm, NULL, true) < 0)
-        goto cleanup;
+        return -1;
 
     /* Ensure no historical cgroup for this VM is lying around bogus
      * settings */
@@ -6522,14 +6489,14 @@ qemuProcessPrepareHost(virQEMUDriverPtr driver,
         virReportSystemError(errno,
                              _("cannot create log directory %s"),
                              cfg->logDir);
-        goto cleanup;
+        return -1;
     }
 
     VIR_FREE(priv->pidfile);
     if (!(priv->pidfile = virPidFileBuildPath(cfg->stateDir, vm->def->name))) {
         virReportSystemError(errno,
                              "%s", _("Failed to build pidfile path."));
-        goto cleanup;
+        return -1;
     }
 
     if (unlink(priv->pidfile) < 0 &&
@@ -6537,7 +6504,7 @@ qemuProcessPrepareHost(virQEMUDriverPtr driver,
         virReportSystemError(errno,
                              _("Cannot remove stale PID file %s"),
                              priv->pidfile);
-        goto cleanup;
+        return -1;
     }
 
     /*
@@ -6546,26 +6513,24 @@ qemuProcessPrepareHost(virQEMUDriverPtr driver,
      */
     if (qemuProcessMakeDir(driver, vm, priv->libDir) < 0 ||
         qemuProcessMakeDir(driver, vm, priv->channelTargetDir) < 0)
-        goto cleanup;
+        return -1;
 
     VIR_DEBUG("Write domain masterKey");
     if (qemuDomainWriteMasterKeyFile(driver, vm) < 0)
-        goto cleanup;
+        return -1;
 
     VIR_DEBUG("Preparing disks (host)");
     if (qemuProcessPrepareHostStorage(driver, vm, flags) < 0)
-        goto cleanup;
+        return -1;
 
     VIR_DEBUG("Preparing external devices");
     if (qemuExtDevicesPrepareHost(driver, vm) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuProcessPrepareSEVGuestInput(vm) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -7041,7 +7006,6 @@ qemuProcessFinishStartup(virQEMUDriverPtr driver,
                          bool startCPUs,
                          virDomainPausedReason pausedReason)
 {
-    int ret = -1;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
 
     if (startCPUs) {
@@ -7052,7 +7016,7 @@ qemuProcessFinishStartup(virQEMUDriverPtr driver,
             if (virGetLastErrorCode() == VIR_ERR_OK)
                 virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                                _("resume operation failed"));
-            goto cleanup;
+            return -1;
         }
     } else {
         virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, pausedReason);
@@ -7060,17 +7024,14 @@ qemuProcessFinishStartup(virQEMUDriverPtr driver,
 
     VIR_DEBUG("Writing domain status to disk");
     if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuProcessStartHook(driver, vm,
                              VIR_HOOK_QEMU_OP_STARTED,
                              VIR_HOOK_SUBOP_BEGIN) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
