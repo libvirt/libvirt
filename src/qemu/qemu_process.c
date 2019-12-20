@@ -7148,11 +7148,9 @@ qemuProcessCreatePretendCmd(virQEMUDriverPtr driver,
                             bool standalone,
                             unsigned int flags)
 {
-    virCommandPtr cmd = NULL;
-
-    virCheckFlagsGoto(VIR_QEMU_PROCESS_START_COLD |
-                      VIR_QEMU_PROCESS_START_PAUSED |
-                      VIR_QEMU_PROCESS_START_AUTODESTROY, cleanup);
+    virCheckFlags(VIR_QEMU_PROCESS_START_COLD |
+                  VIR_QEMU_PROCESS_START_PAUSED |
+                  VIR_QEMU_PROCESS_START_AUTODESTROY, NULL);
 
     flags |= VIR_QEMU_PROCESS_START_PRETEND;
     flags |= VIR_QEMU_PROCESS_START_NEW;
@@ -7161,26 +7159,23 @@ qemuProcessCreatePretendCmd(virQEMUDriverPtr driver,
 
     if (qemuProcessInit(driver, vm, NULL, QEMU_ASYNC_JOB_NONE,
                         !!migrateURI, flags) < 0)
-        goto cleanup;
+        return NULL;
 
     if (qemuProcessPrepareDomain(driver, vm, flags) < 0)
-        goto cleanup;
+        return NULL;
 
     VIR_DEBUG("Building emulator command line");
-    cmd = qemuBuildCommandLine(driver,
-                               NULL,
-                               driver->securityManager,
-                               vm,
-                               migrateURI,
-                               NULL,
-                               VIR_NETDEV_VPORT_PROFILE_OP_NO_OP,
-                               standalone,
-                               enableFips,
-                               NULL,
-                               NULL);
-
- cleanup:
-    return cmd;
+    return qemuBuildCommandLine(driver,
+                                NULL,
+                                driver->securityManager,
+                                vm,
+                                migrateURI,
+                                NULL,
+                                VIR_NETDEV_VPORT_PROFILE_OP_NO_OP,
+                                standalone,
+                                enableFips,
+                                NULL,
+                                NULL);
 }
 
 
