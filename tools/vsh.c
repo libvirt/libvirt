@@ -3296,21 +3296,11 @@ const vshCmdInfo info_pwd[] = {
 bool
 cmdPwd(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
-    char *cwd;
-    bool ret = true;
-    char ebuf[1024];
+    g_autofree char *cwd = g_get_current_dir();
 
-    cwd = getcwd(NULL, 0);
-    if (!cwd) {
-        vshError(ctl, _("pwd: cannot get current directory: %s"),
-                 virStrerror(errno, ebuf, sizeof(ebuf)));
-        ret = false;
-    } else {
-        vshPrint(ctl, _("%s\n"), cwd);
-        VIR_FREE(cwd);
-    }
+    vshPrint(ctl, _("%s\n"), cwd);
 
-    return ret;
+    return true;
 }
 
 const vshCmdInfo info_quit[] = {

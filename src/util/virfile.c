@@ -3187,10 +3187,7 @@ virFileAbsPath(const char *path, char **abspath)
     if (path[0] == '/') {
         *abspath = g_strdup(path);
     } else {
-        g_autofree char *buf = getcwd(NULL, 0);
-
-        if (buf == NULL)
-            return -1;
+        g_autofree char *buf = g_get_current_dir();
 
         *abspath = g_strdup_printf("%s/%s", buf, path);
     }
