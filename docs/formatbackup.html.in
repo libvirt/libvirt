@@ -85,6 +85,15 @@
               <dd>Setting this attribute to <code>yes</code>(default) specifies
                 that the disk should take part in the backup and using
                 <code>no</code> excludes the disk from the backup.</dd>
+              <dt><code>exportname</code></dt>
+              <dd>Allows modification of the NBD export name for the given disk.
+                By default equal to disk target.
+                Valid only for pull mode backups.</dd>
+              <dt><code>exportbitmap</code></dt>
+              <dd>Allows modification of the name of the bitmap describing dirty
+                blocks for an incremental backup exported via NBD export name
+                for the given disk.
+                Valid only for pull mode backups.</dd>
               <dt><code>type</code></dt>
               <dd>A mandatory attribute to describe the type of the
                 disk, except when <code>backup='no'</code> is

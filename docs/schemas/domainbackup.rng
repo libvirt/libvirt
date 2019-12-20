@@ -165,6 +165,14 @@
             <attribute name='name'>
               <ref name='diskTarget'/>
             </attribute>
+            <optional>
+              <attribute name='exportname'>
+                <text/>
+              </attribute>
+              <attribute name='exportbitmap'>
+                <text/>
+              </attribute>
+            </optional>
             <choice>
               <group>
                 <attribute name='backup'>

@@ -51,6 +51,8 @@ typedef virDomainBackupDiskDef *virDomainBackupDiskDefPtr;
 struct _virDomainBackupDiskDef {
     char *name;     /* name matching the <target dev='...' of the domain */
     virTristateBool backup; /* whether backup is requested */
+    char *exportname; /* name of the NBD export for pull mode backup */
+    char *exportbitmap; /* name of the bitmap exposed in NBD for pull mode backup */
 
     /* details of target for push-mode, or of the scratch file for pull-mode */
     virStorageSourcePtr store;
