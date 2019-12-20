@@ -36,7 +36,6 @@
 #if HAVE_SYS_UN_H
 # include <sys/un.h>
 #endif
-#include <fnmatch.h>
 
 #include "virerror.h"
 #include "virlog.h"
@@ -488,7 +487,7 @@ virLogSourceUpdate(virLogSourcePtr source)
         size_t i;
 
         for (i = 0; i < virLogNbFilters; i++) {
-            if (fnmatch(virLogFilters[i]->match, source->name, 0) == 0) {
+            if (g_pattern_match_simple(virLogFilters[i]->match, source->name)) {
                 priority = virLogFilters[i]->priority;
                 break;
             }
@@ -1338,7 +1337,7 @@ virLogFilterNew(const char *match,
         return NULL;
     }
 
-    /* We must treat 'foo' as equiv to '*foo*' for fnmatch
+    /* We must treat 'foo' as equiv to '*foo*' for g_pattern_match
      * todo substring matches, so add 2 extra bytes
      */
     if (VIR_ALLOC_N_QUIET(mdup, mlen + 3) < 0)

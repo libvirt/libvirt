@@ -21,7 +21,6 @@
 #include <config.h>
 
 #include <unistd.h>
-#include <fnmatch.h>
 
 #include <gnutls/gnutls.h>
 #include <gnutls/crypto.h>
@@ -361,15 +360,8 @@ virNetTLSContextCheckCertDNWhitelist(const char *dname,
                                      const char *const*wildcards)
 {
     while (*wildcards) {
-        int ret = fnmatch(*wildcards, dname, 0);
-        if (ret == 0) /* Successful match */
+        if (g_pattern_match_simple(*wildcards, dname))
             return 1;
-        if (ret != FNM_NOMATCH) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Malformed TLS whitelist regular expression '%s'"),
-                           *wildcards);
-            return -1;
-        }
 
         wildcards++;
     }

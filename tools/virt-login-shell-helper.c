@@ -19,7 +19,6 @@
  */
 #include <config.h>
 
-#include <fnmatch.h>
 #include <getopt.h>
 #include <signal.h>
 #include <stdarg.h>
@@ -67,14 +66,14 @@ static int virLoginShellAllowedUser(virConfPtr conf,
             for (i = 0; i < ngroups; i++) {
                 if (!(gname = virGetGroupName(groups[i])))
                     continue;
-                if (fnmatch(entry, gname, 0) == 0) {
+                if (g_pattern_match_simple(entry, gname)) {
                     ret = 0;
                     goto cleanup;
                 }
                 VIR_FREE(gname);
             }
         } else {
-            if (fnmatch(entry, name, 0) == 0) {
+            if (g_pattern_match_simple(entry, name)) {
                 ret = 0;
                 goto cleanup;
             }

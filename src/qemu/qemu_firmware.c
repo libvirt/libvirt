@@ -20,8 +20,6 @@
 
 #include <config.h>
 
-#include <fnmatch.h>
-
 #include "qemu_firmware.h"
 #include "qemu_interop_config.h"
 #include "configmake.h"
@@ -921,7 +919,7 @@ qemuFirmwareMatchesMachineArch(const qemuFirmware *fw,
             continue;
 
         for (j = 0; j < fw->targets[i]->nmachines; j++) {
-            if (fnmatch(fw->targets[i]->machines[j], machine, 0) == 0)
+            if (g_pattern_match_simple(fw->targets[i]->machines[j], machine))
                 return true;
         }
     }

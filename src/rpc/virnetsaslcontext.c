@@ -20,8 +20,6 @@
 
 #include <config.h>
 
-#include <fnmatch.h>
-
 #include "virnetsaslcontext.h"
 #include "virnetmessage.h"
 
@@ -155,16 +153,9 @@ int virNetSASLContextCheckIdentity(virNetSASLContextPtr ctxt,
     }
 
     while (*wildcards) {
-        int rv = fnmatch(*wildcards, identity, 0);
-        if (rv == 0) {
+        if (g_pattern_match_simple(*wildcards, identity)) {
             ret = 1;
             goto cleanup; /* Successful match */
-        }
-        if (rv != FNM_NOMATCH) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Malformed TLS whitelist regular expression '%s'"),
-                           *wildcards);
-            goto cleanup;
         }
 
         wildcards++;

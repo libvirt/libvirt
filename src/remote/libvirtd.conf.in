@@ -262,7 +262,9 @@
 #
 #    "C=GB,ST=London,L=London,O=Red Hat,CN=*"
 #
-# See the POSIX fnmatch function for the format of the wildcards.
+# See the g_pattern_match function for the format of the wildcards:
+#
+# https://developer.gnome.org/glib/stable/glib-Glob-style-pattern-matching.html
 #
 # NB If this is an empty list, no client can connect, so comment out
 # entirely rather than using empty list to disable these checks
@@ -288,7 +290,9 @@
 #
 #    "*@EXAMPLE.COM"
 #
-# See the POSIX fnmatch function for the format of the wildcards.
+# See the g_pattern_match function for the format of the wildcards.
+#
+# https://developer.gnome.org/glib/stable/glib-Glob-style-pattern-matching.html
 #
 # NB If this is an empty list, no client can connect, so comment out
 # entirely rather than using empty list to disable these checks
