@@ -2617,9 +2617,6 @@ qemuDomainObjPrivateXMLFormatBlockjobIterator(void *payload,
                                                                       data->xmlopt,
                                                                       false) < 0)
                     return -1;
-
-                if (job->data.backup.deleteStore)
-                    virBufferAddLit(&childBuf, "<deleteStore/>\n");
             }
             break;
 
@@ -3222,10 +3219,6 @@ qemuDomainObjPrivateXMLParseBlockjobDataSpecific(qemuBlockJobDataPtr job,
             if (!(tmp = virXPathNode("./store", ctxt)) ||
                 !(job->data.backup.store = qemuDomainObjPrivateXMLParseBlockjobChain(tmp, ctxt, xmlopt)))
                 goto broken;
-
-            if (virXPathNode("./deleteStore", ctxt))
-                job->data.backup.deleteStore = true;
-
             break;
 
         case QEMU_BLOCKJOB_TYPE_BROKEN:

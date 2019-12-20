@@ -382,7 +382,6 @@ qemuBlockJobDataPtr
 qemuBlockJobDiskNewBackup(virDomainObjPtr vm,
                           virDomainDiskDefPtr disk,
                           virStorageSourcePtr store,
-                          bool deleteStore,
                           const char *bitmap)
 {
     g_autoptr(qemuBlockJobData) job = NULL;
@@ -395,7 +394,6 @@ qemuBlockJobDiskNewBackup(virDomainObjPtr vm,
 
     job->data.backup.bitmap = g_strdup(bitmap);
     job->data.backup.store = virObjectRef(store);
-    job->data.backup.deleteStore = deleteStore;
 
     /* backup jobs are usually started in bulk by transaction so the caller
      * shall save the status XML */

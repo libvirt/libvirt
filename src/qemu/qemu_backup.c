@@ -298,8 +298,7 @@ qemuBackupDiskPrepareDataOne(virDomainObjPtr vm,
                              virJSONValuePtr actions,
                              virDomainMomentDefPtr *incremental,
                              virHashTablePtr blockNamedNodeData,
-                             virQEMUDriverConfigPtr cfg,
-                             bool removeStore)
+                             virQEMUDriverConfigPtr cfg)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
@@ -331,7 +330,6 @@ qemuBackupDiskPrepareDataOne(virDomainObjPtr vm,
     }
 
     if (!(dd->blockjob = qemuBlockJobDiskNewBackup(vm, dd->domdisk, dd->store,
-                                                   removeStore,
                                                    dd->incrementalBitmap)))
         return -1;
 
@@ -389,13 +387,11 @@ qemuBackupDiskPrepareData(virDomainObjPtr vm,
                           virHashTablePtr blockNamedNodeData,
                           virJSONValuePtr actions,
                           virQEMUDriverConfigPtr cfg,
-                          struct qemuBackupDiskData **rdd,
-                          bool reuse_external)
+                          struct qemuBackupDiskData **rdd)
 {
     struct qemuBackupDiskData *disks = NULL;
     ssize_t ndisks = 0;
     size_t i;
-    bool removeStore = !reuse_external && (def->type == VIR_DOMAIN_BACKUP_TYPE_PULL);
 
     disks = g_new0(struct qemuBackupDiskData, def->ndisks);
 
@@ -410,7 +406,7 @@ qemuBackupDiskPrepareData(virDomainObjPtr vm,
 
         if (qemuBackupDiskPrepareDataOne(vm, backupdisk, dd, actions,
                                          incremental, blockNamedNodeData,
-                                         cfg, removeStore) < 0)
+                                         cfg) < 0)
             goto error;
 
         if (def->type == VIR_DOMAIN_BACKUP_TYPE_PULL) {
@@ -826,7 +822,7 @@ qemuBackupBegin(virDomainObjPtr vm,
         goto endjob;
 
     if ((ndd = qemuBackupDiskPrepareData(vm, def, incremental, blockNamedNodeData,
-                                         actions, cfg, &dd, reuse)) <= 0) {
+                                         actions, cfg, &dd)) <= 0) {
         if (ndd == 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("no disks selected for backup"));

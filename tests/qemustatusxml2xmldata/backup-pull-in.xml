@@ -248,7 +248,6 @@
           </privateData>
         </source>
       </store>
-      <deleteStore/>
     </blockjob>
   </blockjobs>
   <agentTimeout>-2</agentTimeout>

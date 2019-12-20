@@ -113,7 +113,6 @@ typedef qemuBlockJobBackupData *qemuBlockJobDataBackupPtr;
 
 struct _qemuBlockJobBackupData {
     virStorageSourcePtr store;
-    bool deleteStore;
     char *bitmap;
 };
 
@@ -201,7 +200,6 @@ qemuBlockJobDataPtr
 qemuBlockJobDiskNewBackup(virDomainObjPtr vm,
                           virDomainDiskDefPtr disk,
                           virStorageSourcePtr store,
-                          bool deleteStore,
                           const char *bitmap);
 
 qemuBlockJobDataPtr
