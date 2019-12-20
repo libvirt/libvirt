@@ -99,6 +99,16 @@
           Python 2 binary. Python 3 must be used instead.
         </description>
       </change>
+      <change>
+        <summary>
+          'phyp' Power Hypervisor driver removed
+        </summary>
+        <description>
+          The 'phyp' Power Hypervisor driver has not seen active development
+          since 2011 and does not seem to have any real world usage. It
+          has now been removed.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v5.10.0" date="2019-12-02">
