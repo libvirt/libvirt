@@ -69,18 +69,18 @@ static virDomainDefParserConfig vboxDomainDefParserConfig = {
 static virCapsPtr
 vboxCapsInit(void)
 {
-    virCapsPtr caps;
-    virCapsGuestPtr guest;
+    g_autoptr(virCaps) caps = NULL;
+    virCapsGuestPtr guest = NULL;
 
     if ((caps = virCapabilitiesNew(virArchFromHost(),
                                    false, false)) == NULL)
-        goto no_memory;
+        return NULL;
 
     if (!(caps->host.numa = virCapabilitiesHostNUMANewHost()))
-        goto no_memory;
+        return NULL;
 
     if (virCapabilitiesInitCaches(caps) < 0)
-        goto no_memory;
+        return NULL;
 
     if ((guest = virCapabilitiesAddGuest(caps,
                                          VIR_DOMAIN_OSTYPE_HVM,
@@ -89,7 +89,7 @@ vboxCapsInit(void)
                                          NULL,
                                          0,
                                          NULL)) == NULL)
-        goto no_memory;
+        return NULL;
 
     if (virCapabilitiesAddGuestDomain(guest,
                                       VIR_DOMAIN_VIRT_VBOX,
@@ -97,13 +97,9 @@ vboxCapsInit(void)
                                       NULL,
                                       0,
                                       NULL) == NULL)
-        goto no_memory;
+        return NULL;
 
-    return caps;
-
- no_memory:
-    virObjectUnref(caps);
-    return NULL;
+    return g_steal_pointer(&caps);
 }
 
 static void
