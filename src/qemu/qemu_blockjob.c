@@ -1335,9 +1335,6 @@ qemuBlockJobProcessEventConcludedBackup(virQEMUDriverPtr driver,
                                         unsigned long long progressCurrent,
                                         unsigned long long progressTotal)
 {
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    uid_t uid;
-    gid_t gid;
     g_autoptr(qemuBlockStorageSourceAttachData) backend = NULL;
     g_autoptr(virJSONValue) actions = NULL;
 
@@ -1369,18 +1366,8 @@ qemuBlockJobProcessEventConcludedBackup(virQEMUDriverPtr driver,
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         return;
 
-    if (job->data.backup.store) {
+    if (job->data.backup.store)
         qemuDomainStorageSourceAccessRevoke(driver, vm, job->data.backup.store);
-
-        if (job->data.backup.deleteStore &&
-            job->data.backup.store->type == VIR_STORAGE_TYPE_FILE) {
-            qemuDomainGetImageIds(cfg, vm, job->data.backup.store, NULL, &uid, &gid);
-
-            if (virFileRemove(job->data.backup.store->path, uid, gid) < 0)
-                VIR_WARN("failed to remove scratch file '%s'",
-                         job->data.backup.store->path);
-        }
-    }
 }
 
 

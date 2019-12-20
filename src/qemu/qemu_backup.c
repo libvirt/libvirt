@@ -614,6 +614,7 @@ qemuBackupJobTerminate(virDomainObjPtr vm,
 
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    size_t i;
 
     qemuDomainJobInfoUpdateTime(priv->job.current);
 
@@ -629,6 +630,29 @@ qemuBackupJobTerminate(virDomainObjPtr vm,
     priv->job.completed->status = jobstatus;
 
     qemuDomainEventEmitJobCompleted(priv->driver, vm);
+
+    if (!(priv->job.apiFlags & VIR_DOMAIN_BACKUP_BEGIN_REUSE_EXTERNAL) &&
+        (priv->backup->type == VIR_DOMAIN_BACKUP_TYPE_PULL ||
+         (priv->backup->type == VIR_DOMAIN_BACKUP_TYPE_PUSH &&
+          jobstatus != QEMU_DOMAIN_JOB_STATUS_COMPLETED))) {
+
+        g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
+
+        for (i = 0; i < priv->backup->ndisks; i++) {
+            virDomainBackupDiskDefPtr backupdisk = priv->backup->disks + i;
+            uid_t uid;
+            gid_t gid;
+
+            if (!backupdisk->store ||
+                backupdisk->store->type != VIR_STORAGE_TYPE_FILE)
+                continue;
+
+            qemuDomainGetImageIds(cfg, vm, backupdisk->store, NULL, &uid, &gid);
+            if (virFileRemove(backupdisk->store->path, uid, gid) < 0)
+                VIR_WARN("failed to remove scratch file '%s'",
+                         backupdisk->store->path);
+        }
+    }
 
     virDomainBackupDefFree(priv->backup);
     priv->backup = NULL;
