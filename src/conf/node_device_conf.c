@@ -30,7 +30,6 @@
 #include "virstring.h"
 #include "node_device_conf.h"
 #include "device_conf.h"
-#include "dirname.h"
 #include "virxml.h"
 #include "virbuffer.h"
 #include "viruuid.h"
@@ -2445,8 +2444,7 @@ virNodeDeviceGetSCSITargetCaps(const char *sysfsPath,
     VIR_DEBUG("Checking if '%s' is an FC remote port", scsi_target->name);
 
     /* /sys/devices/[...]/host0/rport-0:0-0/target0:0:0 -> rport-0:0-0 */
-    if (!(dir = mdir_name(sysfsPath)))
-        return -1;
+    dir = g_path_get_dirname(sysfsPath);
 
     rport = g_path_get_basename(dir);
 

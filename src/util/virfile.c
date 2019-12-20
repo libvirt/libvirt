@@ -37,7 +37,6 @@
 #endif
 #include <unistd.h>
 #include <dirent.h>
-#include <dirname.h>
 #if defined HAVE_MNTENT_H && defined HAVE_GETMNTENT_R
 # include <mntent.h>
 #endif
@@ -1886,10 +1885,7 @@ int virFileIsMountPoint(const char *file)
     int ret;
     struct stat sb1, sb2;
 
-    if (!(parent = mdir_name(file))) {
-        virReportOOMError();
-        return -1;
-    }
+    parent = g_path_get_dirname(file);
 
     VIR_DEBUG("Comparing '%s' to '%s'", file, parent);
 

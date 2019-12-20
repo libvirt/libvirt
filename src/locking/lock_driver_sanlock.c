@@ -31,7 +31,6 @@
 #include <sanlock_resource.h>
 #include <sanlock_admin.h>
 
-#include "dirname.h"
 #include "lock_driver.h"
 #include "virlog.h"
 #include "virerror.h"
@@ -239,10 +238,7 @@ virLockManagerSanlockSetupLockspace(virLockManagerSanlockDriverPtr driver)
         int perms = 0600;
         VIR_DEBUG("Lockspace %s does not yet exist", path);
 
-        if (!(dir = mdir_name(path))) {
-            virReportOOMError();
-            goto error;
-        }
+        dir = g_path_get_dirname(path);
         if (stat(dir, &st) < 0 || !S_ISDIR(st.st_mode)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unable to create lockspace %s: parent directory"

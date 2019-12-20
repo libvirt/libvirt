@@ -40,7 +40,6 @@
 #include "virstring.h"
 #include "virpidfile.h"
 #include "configmake.h"
-#include "dirname.h"
 #include "qemu_tpm.h"
 #include "virtpm.h"
 #include "secret_util.h"
@@ -80,26 +79,6 @@ qemuTPMCreateEmulatorStoragePath(const char *swtpmStorageDir,
 
     path = g_strdup_printf("%s/%s/%s", swtpmStorageDir, uuidstr, dir);
     return path;
-}
-
-
-/*
- * virtTPMGetTPMStorageDir:
- *
- * @storagepath: directory for swtpm's persistent state
- *
- * Derive the 'TPMStorageDir' from the storagepath by searching
- * for the last '/'.
- */
-static char *
-qemuTPMGetTPMStorageDir(const char *storagepath)
-{
-    char *ret = mdir_name(storagepath);
-
-    if (!ret)
-        virReportOOMError();
-
-    return ret;
 }
 
 
@@ -147,10 +126,7 @@ qemuTPMCreateEmulatorStorage(const char *storagepath,
                              gid_t swtpm_group)
 {
     int ret = -1;
-    char *swtpmStorageDir = qemuTPMGetTPMStorageDir(storagepath);
-
-    if (!swtpmStorageDir)
-        return -1;
+    char *swtpmStorageDir = g_path_get_dirname(storagepath);
 
     if (qemuTPMEmulatorInitStorage(swtpmStorageDir) < 0)
         goto cleanup;
@@ -183,12 +159,9 @@ qemuTPMCreateEmulatorStorage(const char *storagepath,
 static void
 qemuTPMDeleteEmulatorStorage(virDomainTPMDefPtr tpm)
 {
-    char *path = qemuTPMGetTPMStorageDir(tpm->data.emulator.storagepath);
+    g_autofree char *path =  g_path_get_dirname(tpm->data.emulator.storagepath);
 
-    if (path) {
-        ignore_value(virFileDeleteTree(path));
-        VIR_FREE(path);
-    }
+    ignore_value(virFileDeleteTree(path));
 }
 
 

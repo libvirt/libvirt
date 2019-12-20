@@ -99,7 +99,6 @@
 #include "vircgroup.h"
 #include "virperf.h"
 #include "virnuma.h"
-#include "dirname.h"
 #include "netdev_bandwidth_conf.h"
 #include "virqemu.h"
 #include "virdomainsnapshotobjlist.h"
@@ -850,10 +849,8 @@ qemuStateInitialize(bool privileged,
                                  (int)cfg->group);
             goto error;
         }
-        if (!(channeldir = mdir_name(cfg->channelTargetDir))) {
-            virReportOOMError();
-            goto error;
-        }
+        channeldir = g_path_get_dirname(cfg->channelTargetDir);
+
         if (chown(channeldir, cfg->user, cfg->group) < 0) {
             virReportSystemError(errno,
                                  _("unable to set ownership of '%s' to %d:%d"),

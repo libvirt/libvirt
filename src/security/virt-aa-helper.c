@@ -33,7 +33,6 @@
 #include "viralloc.h"
 #include "vircommand.h"
 #include "virlog.h"
-#include "dirname.h"
 #include "driver.h"
 
 #include "security_driver.h"
@@ -754,8 +753,7 @@ vah_add_path(virBufferPtr buf, const char *path, const char *perms, bool recursi
      */
      pathdir = g_strdup(path);
      while (!virFileExists(pathdir)) {
-         if ((pathtmp = mdir_name(pathdir)) == NULL)
-             goto cleanup;
+         pathtmp = g_path_get_dirname(pathdir);
          VIR_FREE(pathdir);
          pathdir = g_steal_pointer(&pathtmp);
      }

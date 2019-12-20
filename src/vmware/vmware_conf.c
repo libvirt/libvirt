@@ -24,7 +24,6 @@
 
 #include "vircommand.h"
 #include "cpu/cpu.h"
-#include "dirname.h"
 #include "viralloc.h"
 #include "virfile.h"
 #include "viruuid.h"
@@ -270,8 +269,7 @@ vmwareExtractVersion(struct vmware_driver *driver)
     char *bin = NULL;
     char *vmwarePath = NULL;
 
-    if ((vmwarePath = mdir_name(driver->vmrun)) == NULL)
-        goto cleanup;
+    vmwarePath = g_path_get_dirname(driver->vmrun);
 
     switch (driver->type) {
         case VMWARE_DRIVER_PLAYER:
@@ -477,8 +475,7 @@ vmwareExtractPid(const char * vmxPath)
     char *tmp = NULL;
     int pid_value = -1;
 
-    if ((vmxDir = mdir_name(vmxPath)) == NULL)
-        goto cleanup;
+    vmxDir = g_path_get_dirname(vmxPath);
 
     logFilePath = g_strdup_printf("%s/vmware.log", vmxDir);
 

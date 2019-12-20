@@ -36,7 +36,6 @@
 #include "virstring.h"
 #include "virutil.h"
 #include "viruri.h"
-#include "dirname.h"
 #include "virbuffer.h"
 #include "virjson.h"
 #include "virstorageencryption.h"
@@ -1690,14 +1689,9 @@ virStorageFileChainLookup(virStorageSourcePtr chain,
 
             if (nameIsFile && virStorageSourceIsLocalStorage(chain)) {
                 if (*parent && virStorageSourceIsLocalStorage(*parent))
-                    parentDir = mdir_name((*parent)->path);
+                    parentDir = g_path_get_dirname((*parent)->path);
                 else
                     parentDir = g_strdup(".");
-
-                if (!parentDir) {
-                    virReportOOMError();
-                    goto error;
-                }
 
                 int result = virFileRelLinkPointsTo(parentDir, name,
                                                     chain->path);
@@ -2658,10 +2652,7 @@ virStorageSourceNewFromBackingRelative(virStorageSourcePtr parent,
     /* store relative name */
     def->relPath = g_strdup(rel);
 
-    if (!(dirname = mdir_name(parent->path))) {
-        virReportOOMError();
-        return NULL;
-    }
+    dirname = g_path_get_dirname(parent->path);
 
     if (STRNEQ(dirname, "/")) {
         def->path = g_strdup_printf("%s/%s", dirname, rel);
