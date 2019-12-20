@@ -1336,7 +1336,8 @@ qemuBlockJobProcessEventConcludedBackup(virQEMUDriverPtr driver,
     g_autoptr(qemuBlockStorageSourceAttachData) backend = NULL;
     g_autoptr(virJSONValue) actions = NULL;
 
-    qemuBackupNotifyBlockjobEnd(vm, job->disk, newstate, progressCurrent, progressTotal);
+    qemuBackupNotifyBlockjobEnd(vm, job->disk, newstate,
+                                progressCurrent, progressTotal, asyncJob);
 
     if (job->data.backup.store &&
         !(backend = qemuBlockStorageSourceDetachPrepare(job->data.backup.store, NULL)))

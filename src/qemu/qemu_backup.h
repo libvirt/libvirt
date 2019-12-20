@@ -31,14 +31,17 @@ qemuBackupGetXMLDesc(virDomainObjPtr vm,
 void
 qemuBackupJobCancelBlockjobs(virDomainObjPtr vm,
                              virDomainBackupDefPtr backup,
-                             bool terminatebackup);
+                             bool terminatebackup,
+                             int asyncJob);
 
 void
 qemuBackupNotifyBlockjobEnd(virDomainObjPtr vm,
                             virDomainDiskDefPtr disk,
                             qemuBlockjobState state,
                             unsigned long long cur,
-                            unsigned long long end);
+                            unsigned long long end,
+                            int asyncJob);
+
 
 int
 qemuBackupGetJobInfoStats(virQEMUDriverPtr driver,
