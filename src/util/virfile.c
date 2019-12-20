@@ -519,7 +519,7 @@ virFileRewrite(const char *path,
         goto cleanup;
     }
 
-    if (fsync(fd) < 0) {
+    if (g_fsync(fd) < 0) {
         virReportSystemError(errno, _("cannot sync file '%s'"),
                              newfile);
         goto cleanup;

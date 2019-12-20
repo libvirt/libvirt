@@ -384,7 +384,7 @@ createRawFile(int fd, virStorageVolDefPtr vol,
         }
     }
 
-    if (fsync(fd) < 0) {
+    if (g_fsync(fd) < 0) {
         ret = -errno;
         virReportSystemError(errno, _("cannot sync data to file '%s'"),
                              vol->target.path);

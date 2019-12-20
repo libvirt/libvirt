@@ -1772,7 +1772,7 @@ virNWFilterSnoopLeaseFileWrite(int lfd, const char *ifkey,
         goto cleanup;
     }
 
-    ignore_value(fsync(lfd));
+    ignore_value(g_fsync(lfd));
 
  cleanup:
     VIR_FREE(lbuf);
