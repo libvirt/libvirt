@@ -71,7 +71,8 @@ virURIParseParams(virURIPtr uri)
         return 0;
 
     while (*query) {
-        char *name = NULL, *value = NULL;
+        g_autofree char *name = NULL;
+        g_autofree char *value = NULL;
 
         /* Find the next separator, or end of the string. */
         end = strchr(query, '&');
@@ -92,13 +93,15 @@ virURIParseParams(virURIPtr uri)
              * and consistent with CGI.pm we assume value is "".
              */
             name = xmlURIUnescapeString(query, end - query, NULL);
-            if (!name) goto no_memory;
+            if (!name)
+                return -1;
         } else if (eq+1 == end) {
             /* Or if we have "name=" here (works around annoying
              * problem when calling xmlURIUnescapeString with len = 0).
              */
             name = xmlURIUnescapeString(query, eq - query, NULL);
-            if (!name) goto no_memory;
+            if (!name)
+                return -1;
         } else if (query == eq) {
             /* If the '=' character is at the beginning then we have
              * "=value" and consistent with CGI.pm we _ignore_ this.
@@ -108,22 +111,15 @@ virURIParseParams(virURIPtr uri)
             /* Otherwise it's "name=value". */
             name = xmlURIUnescapeString(query, eq - query, NULL);
             if (!name)
-                goto no_memory;
+                return -1;
             value = xmlURIUnescapeString(eq+1, end - (eq+1), NULL);
-            if (!value) {
-                VIR_FREE(name);
-                goto no_memory;
-            }
+            if (!value)
+                return -1;
         }
 
         /* Append to the parameter set. */
-        if (virURIParamAppend(uri, name, NULLSTR_EMPTY(value)) < 0) {
-            VIR_FREE(name);
-            VIR_FREE(value);
+        if (virURIParamAppend(uri, name, NULLSTR_EMPTY(value)) < 0)
             return -1;
-        }
-        VIR_FREE(name);
-        VIR_FREE(value);
 
     next:
         query = end;
@@ -131,10 +127,6 @@ virURIParseParams(virURIPtr uri)
     }
 
     return 0;
-
- no_memory:
-    virReportOOMError();
-    return -1;
 }
 
 /**

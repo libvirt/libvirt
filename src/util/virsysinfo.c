@@ -302,33 +302,27 @@ virSysinfoParsePPCProcessor(const char *base, virSysinfoDefPtr ret)
 virSysinfoDefPtr
 virSysinfoReadPPC(void)
 {
-    virSysinfoDefPtr ret = NULL;
-    char *outbuf = NULL;
+    g_auto(virSysinfoDefPtr) ret = NULL;
+    g_autofree char *outbuf = NULL;
 
     if (VIR_ALLOC(ret) < 0)
-        goto no_memory;
+        return NULL;
 
     if (virFileReadAll(CPUINFO, CPUINFO_FILE_LEN, &outbuf) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to open %s"), CPUINFO);
-        goto no_memory;
+        return NULL;
     }
 
     ret->nprocessor = 0;
     ret->processor = NULL;
     if (virSysinfoParsePPCProcessor(outbuf, ret) < 0)
-        goto no_memory;
+        return NULL;
 
     if (virSysinfoParsePPCSystem(outbuf, &ret->system) < 0)
-        goto no_memory;
+        return NULL;
 
-    VIR_FREE(outbuf);
-    return ret;
-
- no_memory:
-    VIR_FREE(outbuf);
-    virSysinfoDefFree(ret);
-    return NULL;
+    return g_steal_pointer(&ret);
 }
 
 
@@ -433,13 +427,13 @@ virSysinfoParseARMProcessor(const char *base, virSysinfoDefPtr ret)
 virSysinfoDefPtr
 virSysinfoReadARM(void)
 {
-    virSysinfoDefPtr ret = NULL;
-    char *outbuf = NULL;
+    g_auto(virSysinfoDefPtr) ret = NULL;
+    g_autofree char *outbuf = NULL;
 
     /* Some ARM systems have DMI tables available. */
     if ((ret = virSysinfoReadDMI())) {
         if (!virSysinfoDefIsEmpty(ret))
-            return ret;
+            return g_steal_pointer(&ret);
         virSysinfoDefFree(ret);
     }
 
@@ -447,29 +441,23 @@ virSysinfoReadARM(void)
     virResetLastError();
 
     if (VIR_ALLOC(ret) < 0)
-        goto no_memory;
+        return NULL;
 
     if (virFileReadAll(CPUINFO, CPUINFO_FILE_LEN, &outbuf) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to open %s"), CPUINFO);
-        goto no_memory;
+        return NULL;
     }
 
     ret->nprocessor = 0;
     ret->processor = NULL;
     if (virSysinfoParseARMProcessor(outbuf, ret) < 0)
-        goto no_memory;
+        return NULL;
 
     if (virSysinfoParseARMSystem(outbuf, &ret->system) < 0)
-        goto no_memory;
+        return NULL;
 
-    VIR_FREE(outbuf);
-    return ret;
-
- no_memory:
-    VIR_FREE(outbuf);
-    virSysinfoDefFree(ret);
-    return NULL;
+    return g_steal_pointer(&ret);
 }
 
 static char *
@@ -606,21 +594,21 @@ virSysinfoParseS390Processor(const char *base, virSysinfoDefPtr ret)
 virSysinfoDefPtr
 virSysinfoReadS390(void)
 {
-    virSysinfoDefPtr ret = NULL;
-    char *outbuf = NULL;
+    g_auto(virSysinfoDefPtr) ret = NULL;
+    g_autofree char *outbuf = NULL;
 
     if (VIR_ALLOC(ret) < 0)
-        goto no_memory;
+        return NULL;
 
     /* Gather info from /proc/cpuinfo */
     if (virFileReadAll(CPUINFO, CPUINFO_FILE_LEN, &outbuf) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to open %s"), CPUINFO);
-        goto no_memory;
+        return NULL;
     }
 
     if (virSysinfoParseS390Processor(outbuf, ret) < 0)
-        goto no_memory;
+        return NULL;
 
     /* Free buffer before reading next file */
     VIR_FREE(outbuf);
@@ -629,19 +617,13 @@ virSysinfoReadS390(void)
     if (virFileReadAll(SYSINFO, 8192, &outbuf) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to open %s"), SYSINFO);
-        goto no_memory;
+        return NULL;
     }
 
     if (virSysinfoParseS390System(outbuf, &ret->system) < 0)
-        goto no_memory;
+        return NULL;
 
-    VIR_FREE(outbuf);
-    return ret;
-
- no_memory:
-    virSysinfoDefFree(ret);
-    VIR_FREE(outbuf);
-    return NULL;
+    return g_steal_pointer(&ret);
 }
 
 

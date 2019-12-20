@@ -144,6 +144,8 @@ void virSysinfoChassisDefFree(virSysinfoChassisDefPtr def);
 void virSysinfoOEMStringsDefFree(virSysinfoOEMStringsDefPtr def);
 void virSysinfoDefFree(virSysinfoDefPtr def);
 
+G_DEFINE_AUTO_CLEANUP_FREE_FUNC(virSysinfoDefPtr, virSysinfoDefFree, NULL);
+
 int virSysinfoFormat(virBufferPtr buf, virSysinfoDefPtr def)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
