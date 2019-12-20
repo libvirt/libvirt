@@ -4289,7 +4289,7 @@ virshWatchJob(vshControl *ctl,
     struct sigaction old_sig_action;
     struct pollfd pollfd[2] = {{.fd = pipe_fd, .events = POLLIN, .revents = 0},
                                {.fd = STDIN_FILENO, .events = POLLIN, .revents = 0}};
-    struct timeval start, curr;
+    unsigned long long start_us, curr_us;
     virDomainJobInfo jobinfo;
     int ret = -1;
     char retchar;
@@ -4311,7 +4311,7 @@ virshWatchJob(vshControl *ctl,
     if (!vshTTYAvailable(ctl))
         npollfd = 1;
 
-    GETTIMEOFDAY(&start);
+    start_us = g_get_real_time();
     while (1) {
         ret = poll((struct pollfd *)&pollfd, npollfd, 500);
         if (ret > 0) {
@@ -4345,10 +4345,8 @@ virshWatchJob(vshControl *ctl,
             goto cleanup;
         }
 
-        GETTIMEOFDAY(&curr);
-        if (timeout_ms && (((int)(curr.tv_sec - start.tv_sec)  * 1000 +
-                            (int)(curr.tv_usec - start.tv_usec) / 1000) >
-                           timeout_ms)) {
+        curr_us = g_get_real_time();
+        if (timeout_ms && ((curr_us - start_us)/1000) > timeout_ms) {
             /* suspend the domain when migration timeouts. */
             vshDebug(ctl, VSH_ERR_DEBUG, "%s timeout", label);
             if (timeout_func)

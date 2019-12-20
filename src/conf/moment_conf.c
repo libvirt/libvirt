@@ -73,13 +73,10 @@ virDomainMomentDefDispose(void *obj)
 int
 virDomainMomentDefPostParse(virDomainMomentDefPtr def)
 {
-    struct timeval tv;
-
-    gettimeofday(&tv, NULL);
+    def->creationTime = g_get_real_time() / (1000*1000);
 
     if (!def->name)
-        def->name = g_strdup_printf("%lld", (long long)tv.tv_sec);
+        def->name = g_strdup_printf("%lld", def->creationTime);
 
-    def->creationTime = tv.tv_sec;
     return 0;
 }

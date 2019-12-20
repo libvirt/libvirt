@@ -2052,29 +2052,19 @@ testDomainGetHostname(virDomainPtr domain,
 static int testDomainGetInfo(virDomainPtr domain,
                              virDomainInfoPtr info)
 {
-    struct timeval tv;
     virDomainObjPtr privdom;
-    int ret = -1;
 
     if (!(privdom = testDomObjFromDomain(domain)))
         return -1;
-
-    if (gettimeofday(&tv, NULL) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("getting time of day"));
-        goto cleanup;
-    }
 
     info->state = virDomainObjGetState(privdom, NULL);
     info->memory = privdom->def->mem.cur_balloon;
     info->maxMem = virDomainDefGetMemoryTotal(privdom->def);
     info->nrVirtCpu = virDomainDefGetVcpus(privdom->def);
-    info->cpuTime = ((tv.tv_sec * 1000ll * 1000ll  * 1000ll) + (tv.tv_usec * 1000ll));
-    ret = 0;
+    info->cpuTime = g_get_real_time() * 1000;
 
- cleanup:
     virDomainObjEndAPI(&privdom);
-    return ret;
+    return 0;
 }
 
 static int
@@ -2933,7 +2923,6 @@ static int testDomainGetVcpus(virDomainPtr domain,
     size_t i;
     int hostcpus;
     int ret = -1;
-    struct timeval tv;
     unsigned long long statbase;
     virBitmapPtr allcpumap = NULL;
 
@@ -2948,13 +2937,7 @@ static int testDomainGetVcpus(virDomainPtr domain,
 
     def = privdom->def;
 
-    if (gettimeofday(&tv, NULL) < 0) {
-        virReportSystemError(errno,
-                             "%s", _("getting time of day"));
-        goto cleanup;
-    }
-
-    statbase = (tv.tv_sec * 1000UL * 1000UL) + tv.tv_usec;
+    statbase = g_get_real_time();
 
     hostcpus = VIR_NODEINFO_MAXCPUS(privconn->nodeInfo);
     if (!(allcpumap = virBitmapNew(hostcpus)))
@@ -4963,7 +4946,6 @@ static int testDomainBlockStats(virDomainPtr domain,
                                 virDomainBlockStatsPtr stats)
 {
     virDomainObjPtr privdom;
-    struct timeval tv;
     unsigned long long statbase;
     int ret = -1;
 
@@ -4985,19 +4967,13 @@ static int testDomainBlockStats(virDomainPtr domain,
         goto error;
     }
 
-    if (gettimeofday(&tv, NULL) < 0) {
-        virReportSystemError(errno,
-                             "%s", _("getting time of day"));
-        goto error;
-    }
-
     /* No significance to these numbers, just enough to mix it up*/
-    statbase = (tv.tv_sec * 1000UL * 1000UL) + tv.tv_usec;
+    statbase = g_get_real_time();
     stats->rd_req = statbase / 10;
     stats->rd_bytes = statbase / 20;
     stats->wr_req = statbase / 30;
     stats->wr_bytes = statbase / 40;
-    stats->errs = tv.tv_sec / 2;
+    stats->errs = statbase / (1000LL * 1000LL * 2);
 
     ret = 0;
  error:
@@ -5136,7 +5112,6 @@ testDomainInterfaceStats(virDomainPtr domain,
                          virDomainInterfaceStatsPtr stats)
 {
     virDomainObjPtr privdom;
-    struct timeval tv;
     unsigned long long statbase;
     virDomainNetDefPtr net = NULL;
     int ret = -1;
@@ -5151,22 +5126,16 @@ testDomainInterfaceStats(virDomainPtr domain,
     if (!(net = virDomainNetFind(privdom->def, device)))
         goto error;
 
-    if (gettimeofday(&tv, NULL) < 0) {
-        virReportSystemError(errno,
-                             "%s", _("getting time of day"));
-        goto error;
-    }
-
     /* No significance to these numbers, just enough to mix it up*/
-    statbase = (tv.tv_sec * 1000UL * 1000UL) + tv.tv_usec;
+    statbase = g_get_real_time();
     stats->rx_bytes = statbase / 10;
     stats->rx_packets = statbase / 100;
-    stats->rx_errs = tv.tv_sec / 1;
-    stats->rx_drop = tv.tv_sec / 2;
+    stats->rx_errs = statbase / (1000LL * 1000LL * 1);
+    stats->rx_drop = statbase / (1000LL * 1000LL * 2);
     stats->tx_bytes = statbase / 20;
     stats->tx_packets = statbase / 110;
-    stats->tx_errs = tv.tv_sec / 3;
-    stats->tx_drop = tv.tv_sec / 4;
+    stats->tx_errs = statbase / (1000LL * 1000LL * 3);
+    stats->tx_drop = statbase / (1000LL * 1000LL * 4);
 
     ret = 0;
  error:

@@ -1286,11 +1286,10 @@ vshCommandRun(vshControl *ctl, const vshCmd *cmd)
     bool ret = true;
 
     while (cmd) {
-        struct timeval before, after;
+        gint64 before, after;
         bool enable_timing = ctl->timing;
 
-        if (enable_timing)
-            GETTIMEOFDAY(&before);
+        before = g_get_real_time();
 
         if ((cmd->def->flags & VSH_CMD_FLAG_NOCONNECT) ||
             (hooks && hooks->connHandler && hooks->connHandler(ctl))) {
@@ -1300,8 +1299,7 @@ vshCommandRun(vshControl *ctl, const vshCmd *cmd)
             ret = false;
         }
 
-        if (enable_timing)
-            GETTIMEOFDAY(&after);
+        after = g_get_real_time();
 
         /* try to automatically catch disconnections */
         if (!ret &&
@@ -1321,8 +1319,7 @@ vshCommandRun(vshControl *ctl, const vshCmd *cmd)
             return ret;
 
         if (enable_timing) {
-            double diff_ms = (((after.tv_sec - before.tv_sec) * 1000.0) +
-                              ((after.tv_usec - before.tv_usec) / 1000.0));
+            double diff_ms = (after - before) / 1000.0;
 
             vshPrint(ctl, _("\n(Time: %.3f ms)\n\n"), diff_ms);
         } else {

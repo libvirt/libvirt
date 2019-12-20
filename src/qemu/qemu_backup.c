@@ -715,7 +715,6 @@ qemuBackupBegin(virDomainObjPtr vm,
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
     g_autoptr(virDomainBackupDef) def = NULL;
     g_autofree char *suffix = NULL;
-    struct timeval tv;
     bool pull = false;
     virDomainMomentObjPtr chk = NULL;
     g_autoptr(virDomainCheckpointDef) chkdef = NULL;
@@ -749,8 +748,8 @@ qemuBackupBegin(virDomainObjPtr vm,
 
         suffix = g_strdup(chkdef->parent.name);
     } else {
-        gettimeofday(&tv, NULL);
-        suffix = g_strdup_printf("%lld", (long long)tv.tv_sec);
+        gint64 now_us = g_get_real_time();
+        suffix = g_strdup_printf("%lld", (long long)now_us/(1000*1000));
     }
 
     if (def->type == VIR_DOMAIN_BACKUP_TYPE_PULL)

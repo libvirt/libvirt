@@ -235,9 +235,9 @@ libxlTimeoutRegisterEventHook(void *priv,
                               void *xl_priv)
 {
     libxlOSEventHookInfoPtr info;
-    struct timeval now;
-    struct timeval res;
-    static struct timeval zero;
+    gint64 now_us;
+    gint64 abs_us;
+    gint64 res_ms;
     int timeout;
 
     if (VIR_ALLOC(info) < 0)
@@ -246,15 +246,16 @@ libxlTimeoutRegisterEventHook(void *priv,
     info->ctx = priv;
     info->xl_priv = xl_priv;
 
-    gettimeofday(&now, NULL);
-    timersub(&abs_t, &now, &res);
-    /* Ensure timeout is not overflowed */
-    if (timercmp(&res, &zero, <)) {
+    now_us = g_get_real_time();
+    abs_us = (abs_t.tv_sec * (1000LL*1000LL)) + abs_t.tv_usec;
+    if (now_us >= abs_us) {
         timeout = 0;
-    } else if (res.tv_sec > INT_MAX / 1000) {
-        timeout = INT_MAX;
     } else {
-        timeout = res.tv_sec * 1000 + (res.tv_usec + 999) / 1000;
+        res_ms = (abs_us - now_us) / 1000;
+        if (res_ms > INT_MAX)
+            timeout = INT_MAX;
+        else
+            timeout = res_ms;
     }
     info->id = virEventAddTimeout(timeout, libxlTimerCallback,
                                   info, libxlOSEventHookInfoFree);

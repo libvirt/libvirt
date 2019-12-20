@@ -43,11 +43,6 @@
 
 VIR_LOG_INIT("util.time");
 
-/* We prefer clock_gettime if available because that is officially
- * async signal safe according to POSIX. Many platforms lack it
- * though, so fallback to gettimeofday everywhere else
- */
-
 /**
  * virTimeMillisNowRaw:
  * @now: filled with current time in milliseconds
@@ -59,22 +54,7 @@ VIR_LOG_INIT("util.time");
  */
 int virTimeMillisNowRaw(unsigned long long *now)
 {
-#ifdef HAVE_CLOCK_GETTIME
-    struct timespec ts;
-
-    if (clock_gettime(CLOCK_REALTIME, &ts) < 0)
-        return -1;
-
-    *now = (ts.tv_sec * 1000ull) + (ts.tv_nsec / (1000ull * 1000ull));
-#else
-    struct timeval tv;
-
-    if (gettimeofday(&tv, NULL) < 0)
-        return -1;
-
-    *now = (tv.tv_sec * 1000ull) + (tv.tv_usec / 1000ull);
-#endif
-
+    *now = g_get_real_time() / 1000;
     return 0;
 }
 
