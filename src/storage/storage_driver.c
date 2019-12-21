@@ -1713,7 +1713,7 @@ storagePoolLookupByTargetPathCallback(virStoragePoolObjPtr obj,
         return false;
 
     def = virStoragePoolObjGetDef(obj);
-    return STREQ(path, def->target.path);
+    return STREQ_NULLABLE(path, def->target.path);
 }
 
 
