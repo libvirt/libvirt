@@ -74,8 +74,17 @@
     <h3>macOS</h3>
 
     <p>
-      The project supports building with the current version of macOS,
-      with the current homebrew package set available.
+      The project aims to support the most recent major version
+      at all times. Support for the previous major version will
+      be dropped 2 years after the new major version is released.
+    </p>
+
+    <p>
+      Note that to compile libvirt will require extra packages
+      to be made available on the macOS host. It is recommended
+      to use <a href="https://brew.sh/">HomeBrew</a> since this
+      is what libvirt CI tests with, however, <a herf="https://www.macports.org/">MacPorts</a>
+      is an alternative option that is likely to work.
     </p>
 
     <h3>FreeBSD</h3>
