@@ -26,14 +26,11 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <time.h>
+#include <gio/gnetworking.h>
 
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
 #include "getpass.h"
-
-#ifdef HAVE_WINSOCK2_H
-# include <winsock2.h>
-#endif
 
 #ifdef WITH_CURL
 # include <curl/curl.h>
@@ -211,21 +208,6 @@ static virConnectAuth virConnectAuthDefault = {
  */
 virConnectAuthPtr virConnectAuthPtrDefault = &virConnectAuthDefault;
 
-#if HAVE_WINSOCK2_H
-static int
-virWinsockInit(void)
-{
-    WORD winsock_version, err;
-    WSADATA winsock_data;
-
-    /* http://msdn2.microsoft.com/en-us/library/ms742213.aspx */
-    winsock_version = MAKEWORD(2, 2);
-    err = WSAStartup(winsock_version, &winsock_data);
-    return err == 0 ? 0 : -1;
-}
-#endif
-
-
 static bool virGlobalError;
 static virOnceControl virGlobalOnce = VIR_ONCE_CONTROL_INITIALIZER;
 
@@ -261,10 +243,7 @@ virGlobalInit(void)
 
     VIR_DEBUG("register drivers");
 
-#if HAVE_WINSOCK2_H
-    if (virWinsockInit() == -1)
-        goto error;
-#endif
+    g_networking_init();
 
 #ifdef HAVE_LIBINTL_H
     if (!bindtextdomain(PACKAGE, LOCALEDIR))

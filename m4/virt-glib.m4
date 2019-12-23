@@ -24,7 +24,7 @@ AC_DEFUN([LIBVIRT_ARG_GLIB], [
 AC_DEFUN([LIBVIRT_CHECK_GLIB],[
   GLIB_REQUIRED=2.48.0
 
-  LIBVIRT_CHECK_PKG([GLIB], [glib-2.0 gobject-2.0], [$GLIB_REQUIRED])
+  LIBVIRT_CHECK_PKG([GLIB], [glib-2.0 gobject-2.0 gio-2.0], [$GLIB_REQUIRED])
 
   if test "$with_glib" = "no" ; then
     AC_MSG_ERROR([glib-2.0, gobject-2.0 >= $GLIB_REQUIRED are required for libvirt])
