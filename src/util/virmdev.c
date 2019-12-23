@@ -18,7 +18,6 @@
 
 #include <config.h>
 
-#include "dirname.h"
 #include "virmdev.h"
 #include "virlog.h"
 #include "virerror.h"
@@ -207,6 +206,7 @@ char *
 virMediatedDeviceGetIOMMUGroupDev(const char *uuidstr)
 {
     g_autofree char *result_path = NULL;
+    g_autofree char *result_file = NULL;
     g_autofree char *iommu_path = NULL;
     g_autofree char *dev_path = virMediatedDeviceGetSysfsPath(uuidstr);
     char *vfio_path = NULL;
@@ -226,7 +226,9 @@ virMediatedDeviceGetIOMMUGroupDev(const char *uuidstr)
         return NULL;
     }
 
-    vfio_path = g_strdup_printf("/dev/vfio/%s", last_component(result_path));
+    result_file = g_path_get_basename(result_path);
+
+    vfio_path = g_strdup_printf("/dev/vfio/%s", result_file);
 
     return vfio_path;
 }
@@ -236,13 +238,13 @@ int
 virMediatedDeviceGetIOMMUGroupNum(const char *uuidstr)
 {
     g_autofree char *vfio_path = NULL;
-    char *group_num_str = NULL;
+    g_autofree char *group_num_str = NULL;
     unsigned int group_num = -1;
 
     if (!(vfio_path = virMediatedDeviceGetIOMMUGroupDev(uuidstr)))
         return -1;
 
-    group_num_str = last_component(vfio_path);
+    group_num_str = g_path_get_basename(vfio_path);
     ignore_value(virStrToLong_ui(group_num_str, NULL, 10, &group_num));
 
     return group_num;
@@ -501,7 +503,7 @@ virMediatedDeviceTypeReadAttrs(const char *sysfspath,
     if (VIR_ALLOC(tmp) < 0)
         return -1;
 
-    tmp->id = g_strdup(last_component(sysfspath));
+    tmp->id = g_path_get_basename(sysfspath);
 
     /* @name sysfs attribute is optional, so getting ENOENT is fine */
     MDEV_GET_SYSFS_ATTR("name", &tmp->name, virFileReadValueString, true);

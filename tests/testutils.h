@@ -36,8 +36,6 @@
 # define fprintf virFilePrintf
 #endif
 
-extern char *progname;
-
 /* Makefile.am provides these two definitions */
 #if !defined(abs_srcdir) || !defined(abs_builddir)
 # error Fix Makefile.am

@@ -23,7 +23,6 @@
 #include <pciaccess.h>
 #include <scsi/scsi.h>
 
-#include "dirname.h"
 #include "node_device_conf.h"
 #include "node_device_event.h"
 #include "node_device_driver.h"
@@ -602,10 +601,10 @@ udevProcessSCSIHost(struct udev_device *device G_GNUC_UNUSED,
                     virNodeDeviceDefPtr def)
 {
     virNodeDevCapSCSIHostPtr scsi_host = &def->caps->data.scsi_host;
-    char *filename = NULL;
+    g_autofree char *filename = NULL;
     char *str;
 
-    filename = last_component(def->sysfs_path);
+    filename = g_path_get_basename(def->sysfs_path);
 
     if (!(str = STRSKIP(filename, "host")) ||
         virStrToLong_ui(str, NULL, 0, &scsi_host->host) < 0) {
@@ -711,9 +710,10 @@ udevProcessSCSIDevice(struct udev_device *device G_GNUC_UNUSED,
     int ret = -1;
     unsigned int tmp = 0;
     virNodeDevCapSCSIPtr scsi = &def->caps->data.scsi;
-    char *filename = NULL, *p = NULL;
+    g_autofree char *filename = NULL;
+    char *p = NULL;
 
-    filename = last_component(def->sysfs_path);
+    filename = g_path_get_basename(def->sysfs_path);
 
     if (virStrToLong_ui(filename, &p, 10, &scsi->host) < 0 || p == NULL ||
         virStrToLong_ui(p + 1, &p, 10, &scsi->bus) < 0 || p == NULL ||
@@ -1038,7 +1038,7 @@ udevProcessMediatedDevice(struct udev_device *dev,
         goto cleanup;
     }
 
-    data->type = g_strdup(last_component(canonicalpath));
+    data->type = g_path_get_basename(canonicalpath);
 
     uuidstr = udev_device_get_sysname(dev);
     if ((iommugrp = virMediatedDeviceGetIOMMUGroupNum(uuidstr)) < 0)

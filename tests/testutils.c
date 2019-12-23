@@ -37,7 +37,6 @@
 #include "virlog.h"
 #include "vircommand.h"
 #include "virrandom.h"
-#include "dirname.h"
 #include "virprocess.h"
 #include "virstring.h"
 
@@ -56,8 +55,6 @@ static unsigned int testRegenerate = -1;
 
 static size_t testCounter;
 static virBitmapPtr testBitmap;
-
-char *progname;
 
 virArch virTestHostArch = VIR_ARCH_X86_64;
 
@@ -857,6 +854,8 @@ int virTestMain(int argc,
     size_t noutputs = 0;
     virLogOutputPtr output = NULL;
     virLogOutputPtr *outputs = NULL;
+    g_autofree char *baseprogname = NULL;
+    const char *progname;
 
     if (getenv("VIR_TEST_FILE_ACCESS"))
         VIR_TEST_PRELOAD(VIR_TEST_MOCK("virtest"));
@@ -866,7 +865,7 @@ int virTestMain(int argc,
         VIR_TEST_PRELOAD(lib);
     va_end(ap);
 
-    progname = last_component(argv[0]);
+    progname = baseprogname = g_path_get_basename(argv[0]);
     if (STRPREFIX(progname, "lt-"))
         progname += 3;
 

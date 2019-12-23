@@ -30,7 +30,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "dirname.h"
 #include "virlog.h"
 #include "vircommand.h"
 #include "virerror.h"
@@ -265,7 +264,7 @@ virPCIDeviceGetDriverPathAndName(virPCIDevicePtr dev, char **path, char **name)
     }
     /* path = "/sys/bus/pci/drivers/${drivername}" */
 
-    *name = g_strdup(last_component(*path));
+    *name = g_path_get_basename(*path);
     /* name = "${drivername}" */
 
     ret = 0;
@@ -1926,7 +1925,7 @@ virPCIDeviceAddressGetIOMMUGroupNum(virPCIDeviceAddressPtr addr)
     g_autofree char *devName = NULL;
     g_autofree char *devPath = NULL;
     g_autofree char *groupPath = NULL;
-    const char *groupNumStr;
+    g_autofree char *groupNumStr = NULL;
     unsigned int groupNum;
 
     devName = g_strdup_printf(VIR_PCI_DEVICE_ADDRESS_FMT, addr->domain, addr->bus,
@@ -1943,7 +1942,7 @@ virPCIDeviceAddressGetIOMMUGroupNum(virPCIDeviceAddressPtr addr)
         return -1;
     }
 
-    groupNumStr = last_component(groupPath);
+    groupNumStr = g_path_get_basename(groupPath);
     if (virStrToLong_ui(groupNumStr, NULL, 10, &groupNum) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("device %s iommu_group symlink %s has "
@@ -1979,7 +1978,7 @@ virPCIDeviceGetIOMMUGroupDev(virPCIDevicePtr dev)
 {
     g_autofree char *devPath = NULL;
     g_autofree char *groupPath = NULL;
-    char *groupDev = NULL;
+    g_autofree char *groupFile = NULL;
 
     if (!(devPath = virPCIFile(dev->name, "iommu_group")))
         return NULL;
@@ -1995,9 +1994,9 @@ virPCIDeviceGetIOMMUGroupDev(virPCIDevicePtr dev)
                        dev->name, devPath);
         return NULL;
     }
-    groupDev = g_strdup_printf("/dev/vfio/%s", last_component(groupPath));
+    groupFile = g_path_get_basename(groupPath);
 
-    return groupDev;
+    return g_strdup_printf("/dev/vfio/%s", groupFile);
 }
 
 static int
@@ -2207,7 +2206,7 @@ virPCIDeviceAddressPtr
 virPCIGetDeviceAddressFromSysfsLink(const char *device_link)
 {
     virPCIDeviceAddressPtr bdf = NULL;
-    char *config_address = NULL;
+    g_autofree char *config_address = NULL;
     g_autofree char *device_path = NULL;
 
     if (!virFileExists(device_link)) {
@@ -2223,7 +2222,7 @@ virPCIGetDeviceAddressFromSysfsLink(const char *device_link)
         return NULL;
     }
 
-    config_address = last_component(device_path);
+    config_address = g_path_get_basename(device_path);
     if (VIR_ALLOC(bdf) < 0)
         return NULL;
 

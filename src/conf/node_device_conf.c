@@ -2448,7 +2448,7 @@ virNodeDeviceGetSCSITargetCaps(const char *sysfsPath,
     if (!(dir = mdir_name(sysfsPath)))
         return -1;
 
-    rport = g_strdup(last_component(dir));
+    rport = g_path_get_basename(dir);
 
     if (!virFCIsCapableRport(rport))
         goto cleanup;

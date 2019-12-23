@@ -55,7 +55,6 @@
 #include "virprobe.h"
 #include "virprocess.h"
 #include "virstring.h"
-#include "dirname.h"
 #include "passfd.h"
 
 #if WITH_SSH2
@@ -668,7 +667,7 @@ int virNetSocketNewConnectUNIX(const char *path,
     remoteAddr.len = sizeof(remoteAddr.data.un);
 
     if (spawnDaemon) {
-        const char *binname;
+        g_autofree char *binname = NULL;
 
         if (spawnDaemon && !binary) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -677,13 +676,7 @@ int virNetSocketNewConnectUNIX(const char *path,
             goto cleanup;
         }
 
-        if (!(binname = last_component(binary)) || binname[0] == '\0') {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Cannot determine basename for binary '%s'"),
-                           binary);
-            goto cleanup;
-        }
-
+        binname = g_path_get_basename(binary);
         rundir = virGetUserRuntimeDirectory();
 
         if (virFileMakePathWithMode(rundir, 0700) < 0) {

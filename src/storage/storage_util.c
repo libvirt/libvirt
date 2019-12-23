@@ -26,7 +26,6 @@
 #include <sys/statvfs.h>
 #include <sys/param.h>
 #include <dirent.h>
-#include "dirname.h"
 #ifdef __linux__
 # include <sys/ioctl.h>
 # include <linux/fs.h>
@@ -1519,7 +1518,7 @@ virStorageBackendVolOpen(const char *path, struct stat *sb,
                          unsigned int flags)
 {
     int fd, mode = 0;
-    char *base = last_component(path);
+    g_autofree char *base = g_path_get_basename(path);
     bool noerror = (flags & VIR_STORAGE_VOL_OPEN_NOERROR);
 
     if (g_lstat(path, sb) < 0) {

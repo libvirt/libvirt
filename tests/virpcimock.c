@@ -28,7 +28,6 @@
 # include "viralloc.h"
 # include "virstring.h"
 # include "virfile.h"
-# include "dirname.h"
 
 static int (*real_access)(const char *path, int mode);
 static int (*real_open)(const char *path, int flags, ...);
@@ -884,7 +883,7 @@ static int
 pci_driver_handle_change(int fd G_GNUC_UNUSED, const char *path)
 {
     int ret;
-    const char *file = last_component(path);
+    g_autofree char *file = g_path_get_basename(path);
 
     if (STREQ(file, "bind"))
         ret = pci_driver_handle_bind(path);

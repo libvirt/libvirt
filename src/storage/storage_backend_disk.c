@@ -22,7 +22,6 @@
 #include <config.h>
 #include <unistd.h>
 
-#include "dirname.h"
 #include "virerror.h"
 #include "virlog.h"
 #include "storage_backend_disk.h"
@@ -777,10 +776,10 @@ virStorageBackendDiskDeleteVol(virStoragePoolObjPtr pool,
                                unsigned int flags)
 {
     char *part_num = NULL;
-    char *dev_name;
+    g_autofree char *dev_name = NULL;
     virStoragePoolDefPtr def = virStoragePoolObjGetDef(pool);
     char *src_path = def->source.devices[0].path;
-    char *srcname = last_component(src_path);
+    g_autofree char *srcname = g_path_get_basename(src_path);
     bool isDevMapperDevice;
     g_autofree char *devpath = NULL;
     g_autoptr(virCommand) cmd = NULL;
@@ -800,7 +799,7 @@ virStorageBackendDiskDeleteVol(virStoragePoolObjPtr pool,
      *     in both places */
     isDevMapperDevice = virIsDevMapperDevice(vol->target.path);
     if (isDevMapperDevice) {
-        dev_name = last_component(vol->target.path);
+        dev_name = g_path_get_basename(vol->target.path);
     } else {
         if (virFileResolveLink(vol->target.path, &devpath) < 0) {
             virReportSystemError(errno,
@@ -808,7 +807,7 @@ virStorageBackendDiskDeleteVol(virStoragePoolObjPtr pool,
                                  vol->target.path);
             return -1;
         }
-        dev_name = last_component(devpath);
+        dev_name = g_path_get_basename(devpath);
     }
 
     VIR_DEBUG("dev_name=%s, srcname=%s", dev_name, srcname);

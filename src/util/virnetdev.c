@@ -18,7 +18,6 @@
 
 #include <config.h>
 
-#include "dirname.h"
 #include "virnetdev.h"
 #include "viralloc.h"
 #include "virnetlink.h"
@@ -1096,7 +1095,7 @@ virNetDevIsPCIDevice(const char *devpath)
 {
     char *subsys_link = NULL;
     char *abs_path = NULL;
-    char *subsys = NULL;
+    g_autofree char *subsys = NULL;
     bool ret = false;
 
     subsys_link = g_strdup_printf("%s/subsystem", devpath);
@@ -1111,7 +1110,7 @@ virNetDevIsPCIDevice(const char *devpath)
         goto cleanup;
     }
 
-    subsys = last_component(abs_path);
+    subsys = g_path_get_basename(abs_path);
     ret = STRPREFIX(subsys, "pci");
 
  cleanup:
