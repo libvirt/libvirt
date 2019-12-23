@@ -1504,6 +1504,7 @@ virSecurityManagerVerify;
 
 
 # util/glibcompat.h
+vir_g_fsync;
 vir_g_strdup_printf;
 vir_g_strdup_vprintf;
 
