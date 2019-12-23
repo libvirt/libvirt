@@ -1473,24 +1473,11 @@ int
 esxVI_DateTime_ConvertToCalendarTime(esxVI_DateTime *dateTime,
                                      long long *secondsSinceEpoch)
 {
-    char value[64] = "";
-    char *tmp;
-    struct tm tm;
-    int milliseconds;
-    char sign;
-    int tz_hours;
-    int tz_minutes;
-    int tz_offset = 0;
+    g_autoptr(GDateTime) then = NULL;
+    g_autoptr(GTimeZone) tz = NULL;
 
     if (!dateTime || !secondsSinceEpoch) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
-
-    if (virStrcpyStatic(value, dateTime->value) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("xsd:dateTime value '%s' too long for destination"),
-                       dateTime->value);
         return -1;
     }
 
@@ -1502,66 +1489,22 @@ esxVI_DateTime_ConvertToCalendarTime(esxVI_DateTime *dateTime,
      *
      * map negative years to 0, since the base for time_t is the year 1970.
      */
-    if (*value == '-') {
+    if (*(dateTime->value) == '-') {
         *secondsSinceEpoch = 0;
         return 0;
     }
 
-    tmp = strptime(value, "%Y-%m-%dT%H:%M:%S", &tm);
+    tz = g_time_zone_new_utc();
+    then = g_date_time_new_from_iso8601(dateTime->value, tz);
 
-    if (!tmp) {
+    if (!then) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("xsd:dateTime value '%s' has unexpected format"),
                        dateTime->value);
         return -1;
     }
 
-    if (*tmp != '\0') {
-        /* skip .ssssss part if present */
-        if (*tmp == '.' &&
-            virStrToLong_i(tmp + 1, &tmp, 10, &milliseconds) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("xsd:dateTime value '%s' has unexpected format"),
-                           dateTime->value);
-            return -1;
-        }
-
-        /* parse timezone offset if present. if missing assume UTC */
-        if (*tmp == '+' || *tmp == '-') {
-            sign = *tmp;
-
-            if (virStrToLong_i(tmp + 1, &tmp, 10, &tz_hours) < 0 ||
-                *tmp != ':' ||
-                virStrToLong_i(tmp + 1, NULL, 10, &tz_minutes) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("xsd:dateTime value '%s' has unexpected format"),
-                               dateTime->value);
-                return -1;
-            }
-
-            tz_offset = tz_hours * 60 * 60 + tz_minutes * 60;
-
-            if (sign == '-')
-                tz_offset = -tz_offset;
-        } else if (STREQ(tmp, "Z")) {
-            /* Z refers to UTC. tz_offset is already initialized to zero */
-        } else {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("xsd:dateTime value '%s' has unexpected format"),
-                           dateTime->value);
-            return -1;
-        }
-    }
-
-    /*
-     * xsd:dateTime represents local time relative to the optional timezone
-     * given as offset. pretend the local time is in UTC and use timegm in
-     * order to avoid interference with the timezone to this computer.
-     * apply timezone correction afterwards, because it's simpler than
-     * handling all the possible over- and underflows when trying to apply
-     * it to the tm struct.
-     */
-    *secondsSinceEpoch = timegm(&tm) - tz_offset;
+    *secondsSinceEpoch = g_date_time_to_unix(then);
 
     return 0;
 }

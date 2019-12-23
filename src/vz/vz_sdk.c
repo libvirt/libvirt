@@ -4607,17 +4607,17 @@ int prlsdkSetMemsize(virDomainObjPtr dom, unsigned int memsize)
 static long long
 prlsdkParseDateTime(const char *str)
 {
-    struct tm tm;
-    const char *tmp;
+    g_autoptr(GDateTime) then = NULL;
+    g_autoptr(GTimeZone) tz = g_time_zone_new_local();
 
-    tmp = strptime(str, "%Y-%m-%d %H:%M:%S", &tm);
-    if (!tmp || *tmp != '\0') {
+    then = g_date_time_new_from_iso8601(str, tz);
+    if (!then) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected DateTime format: '%s'"), str);
         return -1;
     }
 
-    return mktime(&tm);
+    return g_date_time_to_unix(then);
 }
 
 static virDomainSnapshotObjListPtr
