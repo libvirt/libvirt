@@ -31,7 +31,6 @@
 #include "qemu_slirp.h"
 #include "qemu_block.h"
 #include "cpu/cpu.h"
-#include "dirname.h"
 #include "viralloc.h"
 #include "virlog.h"
 #include "virarch.h"

@@ -26,7 +26,6 @@
 #include "virlog.h"
 #include "virstoragefile.h"
 #include "virstring.h"
-#include "dirname.h"
 
 #include "storage/storage_driver.h"
 

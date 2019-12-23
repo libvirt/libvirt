@@ -611,7 +611,7 @@ sc_forbid_manual_xml_indent:
 # dirname and basename from <libgen.h> are not required to be thread-safe
 sc_prohibit_libgen:
 	@prohibit='( (base|dir)name *\(|include .libgen\.h)' \
-	halt='use functions from gnulib "dirname.h", not <libgen.h>' \
+	halt='use functions from GLib, not <libgen.h>' \
 	  $(_sc_search_regexp)
 
 # raw xmlGetProp requires some nasty casts
