@@ -77,8 +77,6 @@
 # include <selinux/selinux.h>
 #endif
 
-#include "dosname.h"
-
 #define QEMU_QXL_VGAMEM_DEFAULT 16 * 1024
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
@@ -14340,7 +14338,7 @@ qemuDomainCreateDeviceRecursive(const char *device,
          *   (want /dev/disk/by-id/../../sda)
          * /dev/stdout -> /proc/self/fd/1 (no change needed)
          */
-        if (IS_RELATIVE_FILE_NAME(target)) {
+        if (!g_path_is_absolute(target)) {
             char *c = NULL, *tmp = NULL, *devTmp = NULL;
 
             devTmp = g_strdup(device);
@@ -15312,7 +15310,7 @@ qemuDomainAttachDeviceMknodRecursive(virQEMUDriverPtr driver,
             return ret;
         }
 
-        if (IS_RELATIVE_FILE_NAME(target)) {
+        if (!g_path_is_absolute(target)) {
             char *c = NULL, *tmp = NULL, *fileTmp = NULL;
 
             fileTmp = g_strdup(file);

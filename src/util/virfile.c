@@ -1562,7 +1562,7 @@ virFileResolveLinkHelper(const char *linkpath,
     /* We don't need the full canonicalization of intermediate
      * directories, if linkpath is absolute and the basename is
      * already a non-symlink.  */
-    if (IS_ABSOLUTE_FILE_NAME(linkpath) && !intermediatePaths) {
+    if (g_path_is_absolute(linkpath) && !intermediatePaths) {
         if (g_lstat(linkpath, &st) < 0)
             return -1;
 
@@ -1640,7 +1640,7 @@ virFindFileInPath(const char *file)
     /* if we are passed an absolute path (starting with /), return a
      * copy of that path, after validating that it is executable
      */
-    if (IS_ABSOLUTE_FILE_NAME(file)) {
+    if (g_path_is_absolute(file)) {
         if (!virFileIsExecutable(file))
             return NULL;
 
