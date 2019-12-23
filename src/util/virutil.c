@@ -503,17 +503,11 @@ static char *
 virGetHostnameImpl(bool quiet)
 {
     int r;
-    char hostname[HOST_NAME_MAX+1], *result = NULL;
+    const char *hostname;
+    char *result = NULL;
     struct addrinfo hints, *info;
 
-    r = gethostname(hostname, sizeof(hostname));
-    if (r == -1) {
-        if (!quiet)
-            virReportSystemError(errno,
-                                 "%s", _("failed to determine host name"));
-        return NULL;
-    }
-    NUL_TERMINATE(hostname);
+    hostname = g_get_host_name();
 
     if (STRPREFIX(hostname, "localhost") || strchr(hostname, '.')) {
         /* in this case, gethostname returned localhost (meaning we can't

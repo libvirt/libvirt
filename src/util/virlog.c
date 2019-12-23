@@ -60,7 +60,6 @@
 VIR_LOG_INIT("util.log");
 
 static GRegex *virLogRegex;
-static char virLogHostname[HOST_NAME_MAX+1];
 
 
 #define VIR_LOG_DATE_REGEX "[0-9]{4}-[0-9]{2}-[0-9]{2}"
@@ -253,8 +252,6 @@ virLogPriorityString(virLogPriority lvl)
 static int
 virLogOnceInit(void)
 {
-    int r;
-
     if (virMutexInit(&virLogMutex) < 0)
         return -1;
 
@@ -263,19 +260,13 @@ virLogOnceInit(void)
 
     virLogRegex = g_regex_new(VIR_LOG_REGEX, G_REGEX_OPTIMIZE, 0, NULL);
 
-    /* We get and remember the hostname early, because at later time
+    /* GLib caches the hostname using a one time thread initializer.
+     * We want to prime this cache early though, because at later time
      * it might not be possible to load NSS modules via getaddrinfo()
      * (e.g. at container startup the host filesystem will not be
      * accessible anymore.
-     * Must not use virGetHostname though as that causes re-entrancy
-     * problems if it triggers logging codepaths
      */
-    r = gethostname(virLogHostname, sizeof(virLogHostname));
-    if (r == -1) {
-        ignore_value(virStrcpyStatic(virLogHostname, "(unknown)"));
-    } else {
-        NUL_TERMINATE(virLogHostname);
-    }
+    ignore_value(g_get_host_name());
 
     virLogUnlock();
     return 0;
@@ -471,7 +462,7 @@ virLogHostnameString(char **rawmsg,
 {
     char *hoststr;
 
-    hoststr = g_strdup_printf("hostname: %s", virLogHostname);
+    hoststr = g_strdup_printf("hostname: %s", g_get_host_name());
 
     virLogFormatString(msg, 0, NULL, VIR_LOG_INFO, hoststr);
     *rawmsg = hoststr;
