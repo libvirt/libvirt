@@ -3256,7 +3256,14 @@ virFileSanitizePath(const char *path)
 char *
 virFileCanonicalizePath(const char *path)
 {
-    return canonicalize_file_name(path); /* exempt from syntax-check */
+#ifdef WIN32
+    /* Does not resolve symlinks, only expands . & .. & repeated /.
+     * It will never fail, so sanitize errno to indicate success */
+    errno = 0;
+    return g_canonicalize_filename(path, NULL);
+#else
+    return realpath(path, NULL); /* exempt from syntax-check */
+#endif
 }
 
 /**

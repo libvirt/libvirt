@@ -24,6 +24,7 @@
 #if HAVE_LINUX_MAGIC_H
 # include <linux/magic.h>
 #endif
+#include <assert.h>
 
 #include "virmock.h"
 #include "virstring.h"
@@ -33,7 +34,7 @@
 
 static FILE *(*real_setmntent)(const char *filename, const char *type);
 static int (*real_statfs)(const char *path, struct statfs *buf);
-static char *(*real_canonicalize_file_name)(const char *path);
+static char *(*real_realpath)(const char *path, char *resolved);
 
 
 static void
@@ -44,7 +45,7 @@ init_syms(void)
 
     VIR_MOCK_REAL_INIT(setmntent);
     VIR_MOCK_REAL_INIT(statfs);
-    VIR_MOCK_REAL_INIT(canonicalize_file_name);
+    VIR_MOCK_REAL_INIT(realpath);
 }
 
 
@@ -116,7 +117,7 @@ statfs_mock(const char *mtab,
     /* We don't need to do this in callers because real statfs(2)
      * does that for us. However, in mocked implementation we
      * need to do this. */
-    if (!(canonPath = canonicalize_file_name(path)))
+    if (!(canonPath = realpath(path, NULL)))
         return -1;
 
     while (getmntent_r(f, &mb, mntbuf, sizeof(mntbuf))) {
@@ -178,7 +179,7 @@ statfs(const char *path, struct statfs *buf)
 
 
 char *
-canonicalize_file_name(const char *path)
+realpath(const char *path, char *resolved)
 {
 
     init_syms();
@@ -187,6 +188,7 @@ canonicalize_file_name(const char *path)
         const char *p;
         char *ret;
 
+        assert(resolved == NULL);
         if ((p = STRSKIP(path, "/some/symlink")))
             ret = g_strdup_printf("/gluster%s", p);
         else
@@ -195,5 +197,5 @@ canonicalize_file_name(const char *path)
         return ret;
     }
 
-    return real_canonicalize_file_name(path);
+    return real_realpath(path, resolved);
 }
