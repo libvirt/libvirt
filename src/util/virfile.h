@@ -372,3 +372,5 @@ int virFileSetXAttr(const char *path,
 int virFileRemoveXAttr(const char *path,
                        const char *name)
     G_GNUC_NO_INLINE;
+
+int virFileDataSync(int fd);

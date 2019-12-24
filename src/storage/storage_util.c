@@ -216,7 +216,7 @@ virStorageBackendCopyToFD(virStorageVolDefPtr vol,
         } while ((amtleft -= interval) > 0);
     }
 
-    if (fdatasync(fd) < 0) {
+    if (virFileDataSync(fd) < 0) {
         ret = -errno;
         virReportSystemError(errno, _("cannot sync data to file '%s'"),
                              vol->target.path);
@@ -2539,7 +2539,7 @@ storageBackendWipeLocal(const char *path,
         remaining -= written;
     }
 
-    if (fdatasync(fd) < 0) {
+    if (virFileDataSync(fd) < 0) {
         virReportSystemError(errno,
                              _("cannot sync data to volume with path '%s'"),
                              path);

@@ -1976,6 +1976,7 @@ virFileChownFiles;
 virFileClose;
 virFileComparePaths;
 virFileCopyACLs;
+virFileDataSync;
 virFileDeleteTree;
 virFileDirectFdFlag;
 virFileExists;

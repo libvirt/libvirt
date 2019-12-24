@@ -4432,3 +4432,14 @@ virFileGetXAttr(const char *path,
 
     return ret;
 }
+
+
+int
+virFileDataSync(int fd)
+{
+#if defined(__APPLE__) || defined(WIN32)
+    return g_fsync(fd);
+#else
+    return fdatasync(fd);
+#endif
+}
