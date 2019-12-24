@@ -2365,7 +2365,7 @@ virSecurityDACGetProcessLabelInternal(pid_t pid,
 
     path = g_strdup_printf("/proc/%d", (int)pid);
 
-    if (lstat(path, &sb) < 0) {
+    if (g_lstat(path, &sb) < 0) {
         virReportSystemError(errno,
                              _("unable to get uid and gid for PID %d via procfs"),
                              pid);

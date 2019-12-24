@@ -14232,7 +14232,7 @@ qemuDomainCreateDeviceRecursive(const char *device,
 {
     char *devicePath = NULL;
     char *target = NULL;
-    struct stat sb;
+    GStatBuf sb;
     int ret = -1;
     bool isLink = false;
     bool isDev = false;
@@ -14250,7 +14250,7 @@ qemuDomainCreateDeviceRecursive(const char *device,
         return ret;
     }
 
-    if (lstat(device, &sb) < 0) {
+    if (g_lstat(device, &sb) < 0) {
         if (errno == ENOENT && allow_noent) {
             /* Ignore non-existent device. */
             return 0;
@@ -15106,7 +15106,7 @@ struct qemuDomainAttachDeviceMknodData {
     virDomainObjPtr vm;
     const char *file;
     const char *target;
-    struct stat sb;
+    GStatBuf sb;
     void *acl;
 #ifdef WITH_SELINUX
     char *tcon;
@@ -15284,7 +15284,7 @@ qemuDomainAttachDeviceMknodRecursive(virQEMUDriverPtr driver,
     data.vm = vm;
     data.file = file;
 
-    if (lstat(file, &data.sb) < 0) {
+    if (g_lstat(file, &data.sb) < 0) {
         virReportSystemError(errno,
                              _("Unable to access %s"), file);
         return ret;

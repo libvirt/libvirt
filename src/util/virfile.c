@@ -1002,11 +1002,11 @@ int virFileDeleteTree(const char *dir)
 
     while ((direrr = virDirRead(dh, &de, dir)) > 0) {
         g_autofree char *filepath = NULL;
-        struct stat sb;
+        GStatBuf sb;
 
         filepath = g_strdup_printf("%s/%s", dir, de->d_name);
 
-        if (lstat(filepath, &sb) < 0) {
+        if (g_lstat(filepath, &sb) < 0) {
             virReportSystemError(errno, _("Cannot access '%s'"),
                                  filepath);
             goto cleanup;
@@ -1555,7 +1555,7 @@ virFileResolveLinkHelper(const char *linkpath,
                          bool intermediatePaths,
                          char **resultpath)
 {
-    struct stat st;
+    GStatBuf st;
 
     *resultpath = NULL;
 
@@ -1563,7 +1563,7 @@ virFileResolveLinkHelper(const char *linkpath,
      * directories, if linkpath is absolute and the basename is
      * already a non-symlink.  */
     if (IS_ABSOLUTE_FILE_NAME(linkpath) && !intermediatePaths) {
-        if (lstat(linkpath, &st) < 0)
+        if (g_lstat(linkpath, &st) < 0)
             return -1;
 
         if (!S_ISLNK(st.st_mode)) {
@@ -1613,9 +1613,9 @@ virFileResolveAllLinks(const char *linkpath, char **resultpath)
 int
 virFileIsLink(const char *linkpath)
 {
-    struct stat st;
+    GStatBuf st;
 
-    if (lstat(linkpath, &st) < 0)
+    if (g_lstat(linkpath, &st) < 0)
         return -errno;
 
     return S_ISLNK(st.st_mode) != 0;

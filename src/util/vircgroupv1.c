@@ -223,7 +223,7 @@ virCgroupV1ResolveMountLink(const char *mntDir,
     g_autofree char *linkSrc = NULL;
     g_autofree char *tmp = NULL;
     char *dirName;
-    struct stat sb;
+    GStatBuf sb;
 
     tmp = g_strdup(mntDir);
 
@@ -241,7 +241,7 @@ virCgroupV1ResolveMountLink(const char *mntDir,
     linkSrc = g_strdup_printf("%s/%s", tmp, typeStr);
     *dirName = '/';
 
-    if (lstat(linkSrc, &sb) < 0) {
+    if (g_lstat(linkSrc, &sb) < 0) {
         if (errno == ENOENT) {
             VIR_WARN("Controller %s co-mounted at %s is missing symlink at %s",
                      typeStr, tmp, linkSrc);

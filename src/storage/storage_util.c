@@ -1522,7 +1522,7 @@ virStorageBackendVolOpen(const char *path, struct stat *sb,
     char *base = last_component(path);
     bool noerror = (flags & VIR_STORAGE_VOL_OPEN_NOERROR);
 
-    if (lstat(path, sb) < 0) {
+    if (g_lstat(path, sb) < 0) {
         if (errno == ENOENT) {
             if (noerror) {
                 VIR_WARN("ignoring missing file '%s'", path);
