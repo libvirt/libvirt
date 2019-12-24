@@ -28,7 +28,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <glib.h>
+#include "glibcompat.h"
 
 #if STATIC_ANALYSIS
 # undef NDEBUG /* Don't let a prior NDEBUG definition cause trouble.  */
@@ -62,8 +62,6 @@
 #include "libvirt/libvirt-qemu.h"
 #include "libvirt/libvirt-admin.h"
 #include "libvirt/virterror.h"
-
-#include "glibcompat.h"
 
 /* Merely casting to (void) is not sufficient since the
  * introduction of the "warn_unused_result" attribute

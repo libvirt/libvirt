@@ -19,6 +19,7 @@
 #pragma once
 
 #include <glib.h>
+#include <glib/gstdio.h>
 
 char *vir_g_strdup_printf(const char *msg, ...)
     G_GNUC_PRINTF(1, 2);
