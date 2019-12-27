@@ -11742,8 +11742,18 @@ static const vshCmdInfo info_domhostname[] = {
 
 static const vshCmdOptDef opts_domhostname[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
+    {.name = "source",
+     .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_NONE,
+     .completer = virshDomainHostnameSourceCompleter,
+     .help = N_("address source: 'lease' or 'agent'")},
     {.name = NULL}
 };
+
+VIR_ENUM_IMPL(virshDomainHostnameSource,
+              VIRSH_DOMAIN_HOSTNAME_SOURCE_LAST,
+              "agent",
+              "lease");
 
 static bool
 cmdDomHostname(vshControl *ctl, const vshCmd *cmd)
@@ -11751,11 +11761,36 @@ cmdDomHostname(vshControl *ctl, const vshCmd *cmd)
     char *hostname;
     virDomainPtr dom;
     bool ret = false;
+    const char *sourcestr = NULL;
+    int flags = 0; /* Use default value. Drivers can have its own default. */
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    hostname = virDomainGetHostname(dom, 0);
+    if (vshCommandOptStringReq(ctl, cmd, "source", &sourcestr) < 0)
+        goto error;
+
+    if (sourcestr) {
+        int source = virshDomainHostnameSourceTypeFromString(sourcestr);
+
+        if (source < 0) {
+            vshError(ctl, _("Unknown data source '%s'"), sourcestr);
+            goto error;
+        }
+
+        switch ((virshDomainHostnameSource) source) {
+        case VIRSH_DOMAIN_HOSTNAME_SOURCE_AGENT:
+            flags |= VIR_DOMAIN_GET_HOSTNAME_AGENT;
+            break;
+        case VIRSH_DOMAIN_HOSTNAME_SOURCE_LEASE:
+            flags |= VIR_DOMAIN_GET_HOSTNAME_LEASE;
+            break;
+        case VIRSH_DOMAIN_HOSTNAME_SOURCE_LAST:
+            break;
+        }
+    }
+
+    hostname = virDomainGetHostname(dom, flags);
     if (hostname == NULL) {
         vshError(ctl, "%s", _("failed to get hostname"));
         goto error;

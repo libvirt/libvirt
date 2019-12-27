@@ -30,4 +30,12 @@ typedef struct virshDomainEventCallback virshDomainEventCallback;
 
 extern virshDomainEventCallback virshDomainEventCallbacks[];
 
+typedef enum {
+    VIRSH_DOMAIN_HOSTNAME_SOURCE_AGENT,
+    VIRSH_DOMAIN_HOSTNAME_SOURCE_LEASE,
+    VIRSH_DOMAIN_HOSTNAME_SOURCE_LAST
+} virshDomainHostnameSource;
+
+VIR_ENUM_DECL(virshDomainHostnameSource);
+
 extern const vshCmdDef domManagementCmds[];

@@ -1797,9 +1797,14 @@ domhostname
 
 .. code-block::
 
-   domhostname domain
+   domhostname domain [--source lease|agent]
 
 Returns the hostname of a domain, if the hypervisor makes it available.
+
+The *--source* argument specifies what data source to use for the
+hostnames, currently 'lease' to read DHCP leases or 'agent' to query
+the guest OS via an agent. If unspecified, driver returns the default
+method available (some drivers support only one type of source).
 
 
 domid

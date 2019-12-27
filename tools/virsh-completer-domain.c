@@ -316,3 +316,22 @@ virshDomainInterfaceAddrSourceCompleter(vshControl *ctl G_GNUC_UNUSED,
 
     return ret;
 }
+
+
+char **
+virshDomainHostnameSourceCompleter(vshControl *ctl G_GNUC_UNUSED,
+                                   const vshCmd *cmd G_GNUC_UNUSED,
+                                   unsigned int flags)
+{
+    char **ret = NULL;
+    size_t i;
+
+    virCheckFlags(0, NULL);
+
+    ret = g_new0(typeof(*ret), VIRSH_DOMAIN_HOSTNAME_SOURCE_LAST + 1);
+
+    for (i = 0; i < VIRSH_DOMAIN_HOSTNAME_SOURCE_LAST; i++)
+        ret[i] = g_strdup(virshDomainHostnameSourceTypeToString(i));
+
+    return ret;
+}
