@@ -204,7 +204,7 @@ struct _virResctrlMonitorStats {
     char **features;
     /* @vals store the statistical record values and @val[0] is the value for
      * @features[0], @val[1] for@features[1] ... respectively */
-    unsigned int *vals;
+    unsigned long long *vals;
     /* The length of @vals array */
     size_t nvals;
 };

@@ -338,6 +338,8 @@ int virFileReadValueInt(int *value, const char *format, ...)
  G_GNUC_PRINTF(2, 3);
 int virFileReadValueUint(unsigned int *value, const char *format, ...)
  G_GNUC_PRINTF(2, 3);
+int virFileReadValueUllong(unsigned long long *value, const char *format, ...)
+ G_GNUC_PRINTF(2, 3);
 int virFileReadValueBitmap(virBitmapPtr *value, const char *format, ...)
  G_GNUC_PRINTF(2, 3);
 int virFileReadValueScaledInt(unsigned long long *value, const char *format, ...)

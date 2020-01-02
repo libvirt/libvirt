@@ -20767,8 +20767,19 @@ qemuDomainGetStatsCpuCache(virQEMUDriverPtr driver,
                                          "cpu.cache.monitor.%zu.bank.%zu.id", i, j) < 0)
                 goto cleanup;
 
-            if (virTypedParamListAddUInt(params, resdata[i]->stats[j]->vals[0],
-                                         "cpu.cache.monitor.%zu.bank.%zu.bytes", i, j) < 0)
+            /* 'resdata[i]->stats[j]->vals[0]' keeps the value of how many last
+             * level cache in bank j currently occupied by the vcpus listed in
+             * resource monitor i, in bytes. This value is reported through a
+             * 64 bit hardware counter, so it is better to be arranged with
+             * data type in 64 bit width, but considering the fact that
+             * physical cache on a CPU could never be designed to be bigger
+             * than 4G bytes in size, to keep the 'domstats' interface
+             * historically consistent, it is safe to report the value with a
+             * truncated 'UInt' data type here. */
+            if (virTypedParamListAddUInt(params,
+                                         (unsigned int)resdata[i]->stats[j]->vals[0],
+                                         "cpu.cache.monitor.%zu.bank.%zu.bytes",
+                                         i, j) < 0)
                 goto cleanup;
         }
     }

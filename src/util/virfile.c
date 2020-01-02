@@ -4124,6 +4124,46 @@ virFileReadValueUint(unsigned int *value, const char *format, ...)
 
 
 /**
+ * virFileReadValueUllong:
+ * @value: pointer to unsigned long long to be filled in with the value
+ * @format, ...: file to read from
+ *
+ * Read unsigned int from @format and put it into @value.
+ *
+ * Return -2 for non-existing file, -1 on other errors and 0 if everything went
+ * fine.
+ */
+int
+virFileReadValueUllong(unsigned long long *value, const char *format, ...)
+{
+    g_autofree char *str = NULL;
+    g_autofree char *path = NULL;
+    va_list ap;
+
+    va_start(ap, format);
+    path = g_strdup_vprintf(format, ap);
+    va_end(ap);
+
+    if (!virFileExists(path))
+        return -2;
+
+    if (virFileReadAll(path, INT_BUFSIZE_BOUND(*value), &str) < 0)
+        return -1;
+
+    virStringTrimOptionalNewline(str);
+
+    if (virStrToLong_ullp(str, NULL, 10, value) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid unsigned long long value '%s' in file '%s'"),
+                       str, path);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+/**
  * virFileReadValueScaledInt:
  * @value: pointer to unsigned long long int to be filled in with the value
  * @format, ...: file to read from

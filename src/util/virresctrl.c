@@ -2678,7 +2678,7 @@ virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
     int rv = -1;
     int ret = -1;
     size_t i = 0;
-    unsigned int val = 0;
+    unsigned long long val = 0;
     DIR *dirp = NULL;
     char *datapath = NULL;
     char *filepath = NULL;
@@ -2734,8 +2734,8 @@ virResctrlMonitorGetStats(virResctrlMonitorPtr monitor,
             goto cleanup;
 
         for (i = 0; resources[i]; i++) {
-            rv = virFileReadValueUint(&val, "%s/%s/%s", datapath,
-                                      ent->d_name, resources[i]);
+            rv = virFileReadValueUllong(&val, "%s/%s/%s", datapath,
+                                        ent->d_name, resources[i]);
             if (rv == -2) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("File '%s/%s/%s' does not exist."),
