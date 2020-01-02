@@ -2160,6 +2160,7 @@ typedef enum {
     VIR_DOMAIN_STATS_BLOCK = (1 << 5), /* return domain block info */
     VIR_DOMAIN_STATS_PERF = (1 << 6), /* return domain perf event info */
     VIR_DOMAIN_STATS_IOTHREAD = (1 << 7), /* return iothread poll info */
+    VIR_DOMAIN_STATS_MEMORY = (1 << 8), /* return domain memory info */
 } virDomainStatsTypes;
 
 typedef enum {

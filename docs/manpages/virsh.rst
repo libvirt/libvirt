@@ -2186,7 +2186,7 @@ domstats
 
    domstats [--raw] [--enforce] [--backing] [--nowait] [--state]
       [--cpu-total] [--balloon] [--vcpu] [--interface]
-      [--block] [--perf] [--iothread]
+      [--block] [--perf] [--iothread] [--memory]
       [[--list-active] [--list-inactive]
        [--list-persistent] [--list-transient] [--list-running]y
        [--list-paused] [--list-shutoff] [--list-other]] | [domain ...]
@@ -2205,7 +2205,7 @@ behavior use the *--raw* flag.
 The individual statistics groups are selectable via specific flags. By
 default all supported statistics groups are returned. Supported
 statistics groups flags are: *--state*, *--cpu-total*, *--balloon*,
-*--vcpu*, *--interface*, *--block*, *--perf*, *--iothread*.
+*--vcpu*, *--interface*, *--block*, *--perf*, *--iothread*, *--memory*.
 
 Note that - depending on the hypervisor type and version or the domain state
 - not all of the following statistics may be returned.
@@ -2371,6 +2371,24 @@ not available for statistical purposes.
   growth is managed by the hypervisor.
 * ``iothread.<id>.poll-shrink`` - polling time shrink value. A value of
   (zero) indicates shrink is managed by hypervisor.
+
+*--memory* returns:
+
+* ``memory.bandwidth.monitor.count`` - the number of memory bandwidth
+  monitors for this domain
+* ``memory.bandwidth.monitor.<num>.name``  - the name of monitor <num>
+* ``memory.bandwidth.monitor.<num>.vcpus`` - the vcpu list of monitor <num>
+* ``memory.bandwidth.monitor.<num>.node.count`` - the number of memory
+    controller in monitor <num>
+* ``memory.bandwidth.monitor.<num>.node.<index>.id`` - host allocated memory
+  controller id for controller <index> of monitor <num>
+* ``memory.bandwidth.monitor.<num>.node.<index>.bytes.local`` - the accumulative
+  bytes consumed by @vcpus that passing through the memory controller in the
+  same processor that the scheduled host CPU belongs to.
+* ``memory.bandwidth.monitor.<num>.node.<index>.bytes.total`` - the total
+  bytes consumed by @vcpus that passing through all memory controllers, either
+  local or remote controller.
+
 
 Selecting a specific statistics groups doesn't guarantee that the
 daemon supports the selected group of stats. Flag *--enforce*

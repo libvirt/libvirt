@@ -20676,6 +20676,9 @@ qemuDomainGetResctrlMonData(virQEMUDriverPtr driver,
             features = caps->host.cache.monitor->features;
         break;
     case VIR_RESCTRL_MONITOR_TYPE_MEMBW:
+        if (caps->host.memBW.monitor)
+            features = caps->host.memBW.monitor->features;
+        break;
     case VIR_RESCTRL_MONITOR_TYPE_UNSUPPORT:
     case VIR_RESCTRL_MONITOR_TYPE_LAST:
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
@@ -20725,6 +20728,94 @@ qemuDomainGetResctrlMonData(virQEMUDriverPtr driver,
  error:
     qemuDomainFreeResctrlMonData(res);
     return -1;
+}
+
+
+static int
+qemuDomainGetStatsMemoryBandwidth(virQEMUDriverPtr driver,
+                                  virDomainObjPtr dom,
+                                  virTypedParamListPtr params)
+{
+    virQEMUResctrlMonDataPtr *resdata = NULL;
+    char **features = NULL;
+    size_t nresdata = 0;
+    size_t i = 0;
+    size_t j = 0;
+    size_t k = 0;
+    int ret = -1;
+
+    if (!virDomainObjIsActive(dom))
+        return 0;
+
+    if (qemuDomainGetResctrlMonData(driver, dom, &resdata, &nresdata,
+                                    VIR_RESCTRL_MONITOR_TYPE_MEMBW) < 0)
+        goto cleanup;
+
+    if (nresdata == 0)
+        return 0;
+
+    if (virTypedParamListAddUInt(params, nresdata,
+                                 "memory.bandwidth.monitor.count") < 0)
+        goto cleanup;
+
+    for (i = 0; i < nresdata; i++) {
+        if (virTypedParamListAddString(params, resdata[i]->name,
+                                       "memory.bandwidth.monitor.%zu.name",
+                                       i) < 0)
+            goto cleanup;
+
+        if (virTypedParamListAddString(params, resdata[i]->vcpus,
+                                       "memory.bandwidth.monitor.%zu.vcpus",
+                                       i) < 0)
+            goto cleanup;
+
+        if (virTypedParamListAddUInt(params, resdata[i]->nstats,
+                                     "memory.bandwidth.monitor.%zu.node.count",
+                                     i) < 0)
+            goto cleanup;
+
+
+        for (j = 0; j < resdata[i]->nstats; j++) {
+            if (virTypedParamListAddUInt(params, resdata[i]->stats[j]->id,
+                                         "memory.bandwidth.monitor.%zu."
+                                         "node.%zu.id",
+                                         i, j) < 0)
+                goto cleanup;
+
+
+            features = resdata[i]->stats[j]->features;
+            for (k = 0; features[k]; k++) {
+                if (STREQ(features[k], "mbm_local_bytes")) {
+                    /* The accumulative data passing through local memory
+                     * controller is recorded with 64 bit counter. */
+                    if (virTypedParamListAddULLong(params,
+                                                   resdata[i]->stats[j]->vals[k],
+                                                   "memory.bandwidth.monitor."
+                                                   "%zu.node.%zu.bytes.local",
+                                                   i, j) < 0)
+                        goto cleanup;
+                }
+
+                if (STREQ(features[k], "mbm_total_bytes")) {
+                    /* The accumulative data passing through local and remote
+                     * memory controller is recorded with 64 bit counter. */
+                    if (virTypedParamListAddULLong(params,
+                                                   resdata[i]->stats[j]->vals[k],
+                                                   "memory.bandwidth.monitor."
+                                                   "%zu.node.%zu.bytes.total",
+                                                   i, j) < 0)
+                        goto cleanup;
+                }
+            }
+        }
+    }
+
+    ret = 0;
+ cleanup:
+    for (i = 0; i < nresdata; i++)
+        qemuDomainFreeResctrlMonData(resdata[i]);
+    VIR_FREE(resdata);
+    return ret;
 }
 
 
@@ -20833,6 +20924,17 @@ qemuDomainGetStatsCpu(virQEMUDriverPtr driver,
         return -1;
 
     return 0;
+}
+
+
+static int
+qemuDomainGetStatsMemory(virQEMUDriverPtr driver,
+                         virDomainObjPtr dom,
+                         virTypedParamListPtr params,
+                         unsigned int privflags G_GNUC_UNUSED)
+
+{
+    return qemuDomainGetStatsMemoryBandwidth(driver, dom, params);
 }
 
 
@@ -21505,6 +21607,7 @@ static struct qemuDomainGetStatsWorker qemuDomainGetStatsWorkers[] = {
     { qemuDomainGetStatsBlock, VIR_DOMAIN_STATS_BLOCK, true },
     { qemuDomainGetStatsPerf, VIR_DOMAIN_STATS_PERF, false },
     { qemuDomainGetStatsIOThread, VIR_DOMAIN_STATS_IOTHREAD, true },
+    { qemuDomainGetStatsMemory, VIR_DOMAIN_STATS_MEMORY, false },
     { NULL, 0, false }
 };
 
