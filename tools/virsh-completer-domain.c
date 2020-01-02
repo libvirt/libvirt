@@ -296,3 +296,20 @@ virshDomainShutdownModeCompleter(vshControl *ctl,
 
     return virshCommaStringListComplete(mode, modes);
 }
+
+
+char **
+virshDomainInterfaceAddrSourceCompleter(vshControl *ctl,
+                                        const vshCmd *cmd,
+                                        unsigned int flags)
+{
+    const char *sources[] = {"lease", "agent", "arp", NULL};
+    const char *source = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (vshCommandOptStringQuiet(ctl, cmd, "source", &source) < 0)
+        return NULL;
+
+    return virshCommaStringListComplete(source, sources);
+}

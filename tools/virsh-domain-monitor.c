@@ -2346,6 +2346,7 @@ static const vshCmdOptDef opts_domifaddr[] = {
     {.name = "source",
      .type = VSH_OT_STRING,
      .flags = VSH_OFLAG_NONE,
+     .completer = virshDomainInterfaceAddrSourceCompleter,
      .help = N_("address source: 'lease', 'agent', or 'arp'")},
     {.name = NULL}
 };

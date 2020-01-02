@@ -53,3 +53,8 @@ char ** virshDomainDeviceAliasCompleter(vshControl *ctl,
 char ** virshDomainShutdownModeCompleter(vshControl *ctl,
                                          const vshCmd *cmd,
                                          unsigned int flags);
+
+char **
+virshDomainInterfaceAddrSourceCompleter(vshControl *ctl,
+                                        const vshCmd *cmd,
+                                        unsigned int flags);
