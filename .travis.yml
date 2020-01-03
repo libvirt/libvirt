@@ -35,6 +35,13 @@ matrix:
     - services:
         - docker
       env:
+        - IMAGE="debian-9"
+        - MAKE_ARGS="syntax-check distcheck"
+      script:
+        - make -C ci/ ci-build@$IMAGE CI_MAKE_ARGS="$MAKE_ARGS"
+    - services:
+        - docker
+      env:
         - IMAGE="fedora-31"
         - MAKE_ARGS="syntax-check distcheck"
       script:
