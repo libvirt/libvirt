@@ -16636,6 +16636,15 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                            _("must respawn qemu to start inactive snapshot"));
             goto endjob;
         }
+        if (vm->hasManagedSave &&
+            !(snapdef->state == VIR_DOMAIN_SNAPSHOT_RUNNING ||
+              snapdef->state == VIR_DOMAIN_SNAPSHOT_PAUSED)) {
+            virReportError(VIR_ERR_SNAPSHOT_REVERT_RISKY, "%s",
+                           _("snapshot without memory state, removal of "
+                             "existing managed saved state strongly "
+                             "recommended to avoid corruption"));
+            goto endjob;
+        }
     }
 
     if (snap->def->dom) {
