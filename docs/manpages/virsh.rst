@@ -6970,7 +6970,7 @@ no vm state leaves the domain in an inactive state.  Passing either the
 transient domains cannot be inactive, it is required to use one of these
 flags when reverting to a disk snapshot of a transient domain.
 
-There are two cases where a snapshot revert involves extra risk, which
+There are a number of cases where a snapshot revert involves extra risk, which
 requires the use of *--force* to proceed:
 
   * One is the case of a snapshot that lacks full domain information for
@@ -6980,13 +6980,20 @@ requires the use of *--force* to proceed:
     libvirt that the snapshot is compatible with the current configuration
     (and if it is not, the domain will likely fail to run).
 
-  * The other is the case of reverting from a running domain to an active
+  * Another is the case of reverting from a running domain to an active
     state where a new hypervisor has to be created rather than reusing the
     existing hypervisor, because it implies drawbacks such as breaking any
     existing VNC or Spice connections; this condition happens with an active
     snapshot that uses a provably incompatible configuration, as well as with
     an inactive snapshot that is combined with the *--start* or *--pause*
     flag.
+
+  * Also, libvirt will refuse to restore snapshots of inactive QEMU domains
+    while there is managed saved state. This is because those snapshots do not
+    contain memory state and will therefore not replace the existing memory
+    state. This ends up switching a disk underneath a running system and will
+    likely cause extensive filesystem corruption or crashes due to swap content
+    mismatches when run.
 
 
 snapshot-delete
