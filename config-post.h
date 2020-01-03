@@ -49,3 +49,13 @@
 #else
 # error You either need at least GCC 4.8 or Clang 3.4 or XCode Clang 5.1 to compile libvirt
 #endif
+
+/* Ask for warnings for anything that was marked deprecated in
+ * the defined version, or before. It is a candidate for rewrite.
+ */
+#define GLIB_VERSION_MIN_REQUIRED GLIB_VERSION_2_48
+
+/* Ask for warnings if code tries to use function that did not
+ * exist in the defined version. These risk breaking builds
+ */
+#define GLIB_VERSION_MAX_ALLOWED GLIB_VERSION_2_48
