@@ -2377,19 +2377,19 @@ cmdDomIfAddr(vshControl *ctl, const vshCmd *cmd)
     const char *sourcestr = NULL;
     int source = VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE;
 
-    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
-        return false;
-
     if (vshCommandOptStringReq(ctl, cmd, "interface", &ifacestr) < 0)
-        goto cleanup;
+        return false;
     if (vshCommandOptStringReq(ctl, cmd, "source", &sourcestr) < 0)
-        goto cleanup;
+        return false;
 
     if (sourcestr &&
         (source = virshDomainInterfaceAddressesSourceTypeFromString(sourcestr)) < 0) {
         vshError(ctl, _("Unknown data source '%s'"), sourcestr);
-        goto cleanup;
+        return false;
     }
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
 
     if ((ifaces_count = virDomainInterfaceAddresses(dom, &ifaces, source, 0)) < 0) {
         vshError(ctl, _("Failed to query for interfaces addresses"));
