@@ -591,13 +591,13 @@ secretConnectSecretEventRegisterAny(virConnectPtr conn,
     int callbackID = -1;
 
     if (virConnectSecretEventRegisterAnyEnsureACL(conn) < 0)
-        goto cleanup;
+        return -1;
 
     if (virSecretEventStateRegisterID(conn, driver->secretEventState,
                                       secret, eventID, callback,
                                       opaque, freecb, &callbackID) < 0)
         callbackID = -1;
- cleanup:
+
     return callbackID;
 }
 
