@@ -173,15 +173,15 @@ hypervCreateInvokeParamsList(hypervPrivate *priv, const char *method,
     hypervWmiClassInfoPtr info = NULL;
 
     if (hypervGetWmiClassInfo(priv, obj, &info) < 0)
-        goto cleanup;
+        return NULL;
 
     if (VIR_ALLOC(params) < 0)
-        goto cleanup;
+        return NULL;
 
     if (VIR_ALLOC_N(params->params,
                 HYPERV_DEFAULT_PARAM_COUNT) < 0) {
         VIR_FREE(params);
-        goto cleanup;
+        return NULL;
     }
 
     params->method = method;
@@ -191,7 +191,6 @@ hypervCreateInvokeParamsList(hypervPrivate *priv, const char *method,
     params->nbParams = 0;
     params->nbAvailParams = HYPERV_DEFAULT_PARAM_COUNT;
 
- cleanup:
     return params;
 }
 
@@ -257,11 +256,10 @@ int
 hypervAddSimpleParam(hypervInvokeParamsListPtr params, const char *name,
         const char *value)
 {
-    int result = -1;
     hypervParamPtr p = NULL;
 
     if (hypervCheckParams(params) < 0)
-        goto cleanup;
+        return -1;
 
     p = &params->params[params->nbParams];
     p->type = HYPERV_SIMPLE_PARAM;
@@ -271,10 +269,7 @@ hypervAddSimpleParam(hypervInvokeParamsListPtr params, const char *name,
 
     params->nbParams++;
 
-    result = 0;
-
- cleanup:
-    return result;
+    return 0;
 }
 
 /*
