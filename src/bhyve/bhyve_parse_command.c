@@ -374,7 +374,7 @@ bhyveParsePCISlot(const char *slotdef,
            val = g_strdup(curr);
 
        if (virStrToLong_ui(val, NULL, 10, &values[i]) < 0)
-           goto error;
+           return -1;
 
        VIR_FREE(val);
 
@@ -404,8 +404,6 @@ bhyveParsePCISlot(const char *slotdef,
     }
 
     return 0;
- error:
-    return -1;
 }
 
 static int
@@ -426,7 +424,7 @@ bhyveParsePCIDisk(virDomainDefPtr def,
     virDomainDiskDefPtr disk = NULL;
 
     if (!(disk = virDomainDiskDefNew(NULL)))
-        goto cleanup;
+        return 0;
 
     disk->bus = bus;
     disk->device = device;
@@ -471,7 +469,6 @@ bhyveParsePCIDisk(virDomainDefPtr def,
     if (VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk) < 0)
         goto error;
 
- cleanup:
     return 0;
 
  error:
@@ -664,17 +661,17 @@ bhyveParseBhyveCommandLine(virDomainDefPtr def,
             if (virStrToLong_i(arg, NULL, 10, &vcpus) < 0) {
                 virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                                _("Failed to parse number of vCPUs"));
-                goto error;
+                return -1;
             }
             if (virDomainDefSetVcpusMax(def, vcpus, xmlopt) < 0)
-                goto error;
+                return -1;
             if (virDomainDefSetVcpus(def, vcpus) < 0)
-                goto error;
+                return -1;
             break;
         case 'l':
             CONSUME_ARG(arg);
             if (bhyveParseBhyveLPCArg(def, caps, arg))
-                goto error;
+                return -1;
             break;
         case 's':
             CONSUME_ARG(arg);
@@ -684,19 +681,19 @@ bhyveParseBhyveCommandLine(virDomainDefPtr def,
                                       &nahcidisks,
                                       &nvirtiodisks,
                                       arg))
-                goto error;
+                return -1;
             break;
         case 'm':
             CONSUME_ARG(arg);
             if (bhyveParseMemsize(arg, &memory)) {
                 virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                                _("Failed to parse memory"));
-                goto error;
+                return -1;
             }
             if (def->mem.cur_balloon != 0 && def->mem.cur_balloon != memory) {
                 virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                            _("Failed to parse memory: size mismatch"));
-                goto error;
+                return -1;
             }
             def->mem.cur_balloon = memory;
             virDomainDefSetMemoryTotal(def, memory);
@@ -714,7 +711,7 @@ bhyveParseBhyveCommandLine(virDomainDefPtr def,
             if (virUUIDParse(arg, def->uuid) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Cannot parse UUID '%s'"), arg);
-                goto error;
+                return -1;
             }
             break;
         case 'S':
@@ -729,7 +726,7 @@ bhyveParseBhyveCommandLine(virDomainDefPtr def,
     if (argc != opti) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("Failed to parse arguments for bhyve command"));
-        goto error;
+        return -1;
     }
 
     if (def->name == NULL) {
@@ -739,13 +736,10 @@ bhyveParseBhyveCommandLine(virDomainDefPtr def,
          * error here */
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("Failed to parse arguments: VM name mismatch"));
-        goto error;
+        return -1;
     }
 
     return 0;
-
- error:
-    return -1;
 }
 
 /*
@@ -761,7 +755,6 @@ bhyveParseBhyveLoadCommandLine(virDomainDefPtr def,
     unsigned arguments = 0;
     size_t memory = 0;
     size_t i = 0;
-    int ret = -1;
     size_t opti;
     const char *arg;
 
@@ -789,12 +782,12 @@ bhyveParseBhyveLoadCommandLine(virDomainDefPtr def,
             if (bhyveParseMemsize(arg, &memory)) {
                 virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                                _("Failed to parse memory"));
-                goto error;
+                return -1;
             }
             if (def->mem.cur_balloon != 0 && def->mem.cur_balloon != memory) {
                 virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                                _("Failed to parse memory: size mismatch"));
-                goto error;
+                return -1;
             }
             def->mem.cur_balloon = memory;
             virDomainDefSetMemoryTotal(def, memory);
@@ -807,7 +800,7 @@ bhyveParseBhyveLoadCommandLine(virDomainDefPtr def,
     if (argc != opti) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("Failed to parse arguments for bhyve command"));
-        goto error;
+        return -1;
     }
 
     if (arguments != 3) {
@@ -824,12 +817,10 @@ bhyveParseBhyveLoadCommandLine(virDomainDefPtr def,
          * error here */
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("Failed to parse arguments: VM name mismatch"));
-        goto error;
+        return -1;
     }
 
-    ret = 0;
- error:
-    return ret;
+    return 0;
 }
 
 static int
@@ -838,14 +829,12 @@ bhyveParseCustomLoaderCommandLine(virDomainDefPtr def,
                                   char **argv)
 {
     if (!argv)
-        goto error;
+        return -1;
 
     def->os.bootloader = g_strdup(argv[0]);
     def->os.bootloaderArgs = virStringListJoin((const char**) &argv[1], " ");
 
     return 0;
- error:
-    return -1;
 }
 
 virDomainDefPtr
