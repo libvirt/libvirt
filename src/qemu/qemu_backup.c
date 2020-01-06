@@ -812,6 +812,8 @@ qemuBackupBegin(virDomainObjPtr vm,
     if (!(actions = virJSONValueNewArray()))
         goto endjob;
 
+    /* The 'chk' checkpoint must be rolled back if the transaction command
+     * which creates it on disk is not executed or fails */
     if (chkdef) {
         if (qemuCheckpointCreateCommon(priv->driver, vm, &chkdef,
                                        &actions, &chk) < 0)
@@ -857,9 +859,11 @@ qemuBackupBegin(virDomainObjPtr vm,
     job_started = true;
     qemuBackupDiskStarted(vm, dd, ndd);
 
-    if (chk &&
-        qemuCheckpointCreateFinalize(priv->driver, vm, cfg, chk, true) < 0)
-        goto endjob;
+    if (chk) {
+        virDomainMomentObjPtr tmpchk = g_steal_pointer(&chk);
+        if (qemuCheckpointCreateFinalize(priv->driver, vm, cfg, tmpchk, true) < 0)
+            goto endjob;
+    }
 
     if (pull) {
         if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, QEMU_ASYNC_JOB_BACKUP) < 0)
@@ -880,6 +884,10 @@ qemuBackupBegin(virDomainObjPtr vm,
 
  endjob:
     qemuBackupDiskDataCleanup(vm, dd, ndd);
+
+    /* if 'chk' is non-NULL here it's a failure and it must be rolled back */
+    qemuCheckpointRollbackMetadata(vm, chk);
+
     if (!job_started && nbd_running &&
         qemuDomainObjEnterMonitorAsync(priv->driver, vm, QEMU_ASYNC_JOB_BACKUP) < 0) {
         ignore_value(qemuMonitorNBDServerStop(priv->mon));
