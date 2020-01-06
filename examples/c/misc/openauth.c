@@ -16,7 +16,7 @@ showError(virConnectPtr conn)
     err = malloc(sizeof(*err));
     if (err == NULL) {
         printf("Could not allocate memory for error data\n");
-        goto out;
+        return;
     }
 
     ret = virConnCopyLastError(conn, err);
@@ -37,16 +37,12 @@ showError(virConnectPtr conn)
 
     virResetError(err);
     free(err);
-
- out:
-    return;
 }
 
 
 static int
 showHypervisorInfo(virConnectPtr conn)
 {
-    int ret = 0;
     unsigned long hvVer, major, minor, release;
     const char *hvType;
 
@@ -56,17 +52,15 @@ showHypervisorInfo(virConnectPtr conn)
      * hypervisor, so check what it returns. */
     hvType = virConnectGetType(conn);
     if (hvType == NULL) {
-        ret = 1;
         printf("Failed to get hypervisor type\n");
         showError(conn);
-        goto out;
+        return 1;
     }
 
     if (virConnectGetVersion(conn, &hvVer) != 0) {
-        ret = 1;
         printf("Failed to get hypervisor version\n");
         showError(conn);
-        goto out;
+        return 1;
     }
 
     major = hvVer / 1000000;
@@ -80,8 +74,7 @@ showHypervisorInfo(virConnectPtr conn)
            minor,
            release);
 
- out:
-    return ret;
+    return 0;
 }
 
 
@@ -227,9 +220,8 @@ main(int argc, char *argv[])
     AuthData authData;
 
     if (argc != 4) {
-        ret = 1;
         printf("Usage: %s <uri> <username> <password>\n", argv[0]);
-        goto out;
+        return 1;
     }
 
     uri = argv[1];
@@ -242,10 +234,9 @@ main(int argc, char *argv[])
     conn = virConnectOpenAuth(uri, &auth, 0);
 
     if (NULL == conn) {
-        ret = 1;
         printf("No connection to hypervisor\n");
         showError(conn);
-        goto out;
+        return 1;
     }
 
     uri = virConnectGetURI(conn);
@@ -278,6 +269,5 @@ main(int argc, char *argv[])
         printf("Disconnected from hypervisor\n");
     }
 
- out:
     return ret;
 }

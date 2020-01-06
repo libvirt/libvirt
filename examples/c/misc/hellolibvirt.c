@@ -10,7 +10,6 @@
 static int
 showHypervisorInfo(virConnectPtr conn)
 {
-    int ret = 0;
     unsigned long hvVer, major, minor, release;
     const char *hvType;
 
@@ -20,17 +19,15 @@ showHypervisorInfo(virConnectPtr conn)
      * hypervisor, so check what it returns. */
     hvType = virConnectGetType(conn);
     if (!hvType) {
-        ret = 1;
         printf("Failed to get hypervisor type: %s\n",
                virGetLastErrorMessage());
-        goto out;
+        return 1;
     }
 
     if (0 != virConnectGetVersion(conn, &hvVer)) {
-        ret = 1;
         printf("Failed to get hypervisor version: %s\n",
                virGetLastErrorMessage());
-        goto out;
+        return 1;
     }
 
     major = hvVer / 1000000;
@@ -44,15 +41,14 @@ showHypervisorInfo(virConnectPtr conn)
            minor,
            release);
 
- out:
-    return ret;
+    return 0;
 }
 
 
 static int
 showDomains(virConnectPtr conn)
 {
-    int ret = 0, numNames, numInactiveDomains, numActiveDomains;
+    int numNames, numInactiveDomains, numActiveDomains;
     ssize_t i;
     int flags = VIR_CONNECT_LIST_DOMAINS_ACTIVE |
                 VIR_CONNECT_LIST_DOMAINS_INACTIVE;
@@ -64,18 +60,16 @@ showDomains(virConnectPtr conn)
      * unexpected results */
     numActiveDomains = virConnectNumOfDomains(conn);
     if (numActiveDomains == -1) {
-        ret = 1;
         printf("Failed to get number of active domains: %s\n",
                virGetLastErrorMessage());
-        goto out;
+        return 1;
     }
 
     numInactiveDomains = virConnectNumOfDefinedDomains(conn);
     if (numInactiveDomains == -1) {
-        ret = 1;
         printf("Failed to get number of inactive domains: %s\n",
                virGetLastErrorMessage());
-        goto out;
+        return 1;
     }
 
     printf("There are %d active and %d inactive domains\n",
@@ -89,10 +83,9 @@ showDomains(virConnectPtr conn)
                                         &nameList,
                                         flags);
     if (numNames == -1) {
-        ret = 1;
         printf("Failed to get a list of all domains: %s\n",
                virGetLastErrorMessage());
-        goto out;
+        return 1;
     }
 
     for (i = 0; i < numNames; i++) {
@@ -105,8 +98,7 @@ showDomains(virConnectPtr conn)
     }
     free(nameList);
 
- out:
-    return ret;
+    return 0;
 }
 
 
@@ -126,10 +118,9 @@ main(int argc, char *argv[])
     conn = virConnectOpenAuth(uri, virConnectAuthPtrDefault, 0);
 
     if (!conn) {
-        ret = 1;
         printf("No connection to hypervisor: %s\n",
                virGetLastErrorMessage());
-        goto out;
+        return 1;
     }
 
     uri = virConnectGetURI(conn);
@@ -162,6 +153,5 @@ main(int argc, char *argv[])
         printf("Disconnected from hypervisor\n");
     }
 
- out:
     return ret;
 }
