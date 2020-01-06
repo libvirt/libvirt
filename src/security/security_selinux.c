@@ -2094,7 +2094,7 @@ virSecuritySELinuxSetHostdevSubsysLabel(virSecurityManagerPtr mgr,
                               usbsrc->device,
                               vroot);
         if (!usb)
-            goto done;
+            return -1;
 
         ret = virUSBDeviceFileIterate(usb, virSecuritySELinuxSetUSBLabel, &data);
         virUSBDeviceFree(usb);
@@ -2107,14 +2107,14 @@ virSecuritySELinuxSetHostdevSubsysLabel(virSecurityManagerPtr mgr,
                             pcisrc->addr.slot, pcisrc->addr.function);
 
         if (!pci)
-            goto done;
+            return -1;
 
         if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
             char *vfioGroupDev = virPCIDeviceGetIOMMUGroupDev(pci);
 
             if (!vfioGroupDev) {
                 virPCIDeviceFree(pci);
-                goto done;
+                return -1;
             }
             ret = virSecuritySELinuxSetPCILabel(pci, vfioGroupDev, &data);
             VIR_FREE(vfioGroupDev);
@@ -2135,7 +2135,7 @@ virSecuritySELinuxSetHostdevSubsysLabel(virSecurityManagerPtr mgr,
                              dev->readonly, dev->shareable);
 
         if (!scsi)
-            goto done;
+            return -1;
 
         ret = virSCSIDeviceFileIterate(scsi,
                                        virSecuritySELinuxSetSCSILabel,
@@ -2149,7 +2149,7 @@ virSecuritySELinuxSetHostdevSubsysLabel(virSecurityManagerPtr mgr,
         virSCSIVHostDevicePtr host = virSCSIVHostDeviceNew(hostsrc->wwpn);
 
         if (!host)
-            goto done;
+            return -1;
 
         ret = virSCSIVHostDeviceFileIterate(host,
                                             virSecuritySELinuxSetHostLabel,
@@ -2162,7 +2162,7 @@ virSecuritySELinuxSetHostdevSubsysLabel(virSecurityManagerPtr mgr,
         char *vfiodev = NULL;
 
         if (!(vfiodev = virMediatedDeviceGetIOMMUGroupDev(mdevsrc->uuidstr)))
-            goto done;
+            return ret;
 
         ret = virSecuritySELinuxSetHostdevLabelHelper(vfiodev, &data);
 
@@ -2175,7 +2175,6 @@ virSecuritySELinuxSetHostdevSubsysLabel(virSecurityManagerPtr mgr,
         break;
     }
 
- done:
     return ret;
 }
 
@@ -2332,7 +2331,7 @@ virSecuritySELinuxRestoreHostdevSubsysLabel(virSecurityManagerPtr mgr,
                               usbsrc->device,
                               vroot);
         if (!usb)
-            goto done;
+            return -1;
 
         ret = virUSBDeviceFileIterate(usb, virSecuritySELinuxRestoreUSBLabel, mgr);
         virUSBDeviceFree(usb);
@@ -2346,14 +2345,14 @@ virSecuritySELinuxRestoreHostdevSubsysLabel(virSecurityManagerPtr mgr,
                             pcisrc->addr.slot, pcisrc->addr.function);
 
         if (!pci)
-            goto done;
+            return -1;
 
         if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
             char *vfioGroupDev = virPCIDeviceGetIOMMUGroupDev(pci);
 
             if (!vfioGroupDev) {
                 virPCIDeviceFree(pci);
-                goto done;
+                return -1;
             }
             ret = virSecuritySELinuxRestorePCILabel(pci, vfioGroupDev, mgr);
             VIR_FREE(vfioGroupDev);
@@ -2373,7 +2372,7 @@ virSecuritySELinuxRestoreHostdevSubsysLabel(virSecurityManagerPtr mgr,
                              dev->readonly, dev->shareable);
 
         if (!scsi)
-            goto done;
+            return -1;
 
         ret = virSCSIDeviceFileIterate(scsi, virSecuritySELinuxRestoreSCSILabel, mgr);
         virSCSIDeviceFree(scsi);
@@ -2385,7 +2384,7 @@ virSecuritySELinuxRestoreHostdevSubsysLabel(virSecurityManagerPtr mgr,
         virSCSIVHostDevicePtr host = virSCSIVHostDeviceNew(hostsrc->wwpn);
 
         if (!host)
-            goto done;
+            return -1;
 
         ret = virSCSIVHostDeviceFileIterate(host,
                                             virSecuritySELinuxRestoreHostLabel,
@@ -2399,7 +2398,7 @@ virSecuritySELinuxRestoreHostdevSubsysLabel(virSecurityManagerPtr mgr,
         char *vfiodev = NULL;
 
         if (!(vfiodev = virMediatedDeviceGetIOMMUGroupDev(mdevsrc->uuidstr)))
-            goto done;
+            return -1;
 
         ret = virSecuritySELinuxRestoreFileLabel(mgr, vfiodev, true);
 
@@ -2412,7 +2411,6 @@ virSecuritySELinuxRestoreHostdevSubsysLabel(virSecurityManagerPtr mgr,
         break;
     }
 
- done:
     return ret;
 }
 

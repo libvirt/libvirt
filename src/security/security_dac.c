@@ -1238,7 +1238,7 @@ virSecurityDACSetHostdevLabel(virSecurityManagerPtr mgr,
             return 0;
 
         if (!(usb = virUSBDeviceNew(usbsrc->bus, usbsrc->device, vroot)))
-            goto done;
+            return -1;
 
         ret = virUSBDeviceFileIterate(usb,
                                       virSecurityDACSetUSBLabel,
@@ -1253,14 +1253,14 @@ virSecurityDACSetHostdevLabel(virSecurityManagerPtr mgr,
                             pcisrc->addr.slot, pcisrc->addr.function);
 
         if (!pci)
-            goto done;
+            return -1;
 
         if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
             char *vfioGroupDev = virPCIDeviceGetIOMMUGroupDev(pci);
 
             if (!vfioGroupDev) {
                 virPCIDeviceFree(pci);
-                goto done;
+                return -1;
             }
             ret = virSecurityDACSetPCILabel(pci, vfioGroupDev, &cbdata);
             VIR_FREE(vfioGroupDev);
@@ -1283,7 +1283,7 @@ virSecurityDACSetHostdevLabel(virSecurityManagerPtr mgr,
                              dev->readonly, dev->shareable);
 
         if (!scsi)
-            goto done;
+            return -1;
 
         ret = virSCSIDeviceFileIterate(scsi,
                                        virSecurityDACSetSCSILabel,
@@ -1297,7 +1297,7 @@ virSecurityDACSetHostdevLabel(virSecurityManagerPtr mgr,
         virSCSIVHostDevicePtr host = virSCSIVHostDeviceNew(hostsrc->wwpn);
 
         if (!host)
-            goto done;
+            return -1;
 
         ret = virSCSIVHostDeviceFileIterate(host,
                                             virSecurityDACSetHostLabel,
@@ -1310,7 +1310,7 @@ virSecurityDACSetHostdevLabel(virSecurityManagerPtr mgr,
         char *vfiodev = NULL;
 
         if (!(vfiodev = virMediatedDeviceGetIOMMUGroupDev(mdevsrc->uuidstr)))
-            goto done;
+            return -1;
 
         ret = virSecurityDACSetHostdevLabelHelper(vfiodev, &cbdata);
 
@@ -1323,7 +1323,6 @@ virSecurityDACSetHostdevLabel(virSecurityManagerPtr mgr,
         break;
     }
 
- done:
     return ret;
 }
 
@@ -1407,7 +1406,7 @@ virSecurityDACRestoreHostdevLabel(virSecurityManagerPtr mgr,
             return 0;
 
         if (!(usb = virUSBDeviceNew(usbsrc->bus, usbsrc->device, vroot)))
-            goto done;
+            return -1;
 
         ret = virUSBDeviceFileIterate(usb, virSecurityDACRestoreUSBLabel, mgr);
         virUSBDeviceFree(usb);
@@ -1421,14 +1420,14 @@ virSecurityDACRestoreHostdevLabel(virSecurityManagerPtr mgr,
                             pcisrc->addr.slot, pcisrc->addr.function);
 
         if (!pci)
-            goto done;
+            return -1;
 
         if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
             char *vfioGroupDev = virPCIDeviceGetIOMMUGroupDev(pci);
 
             if (!vfioGroupDev) {
                 virPCIDeviceFree(pci);
-                goto done;
+                return -1;
             }
             ret = virSecurityDACRestorePCILabel(pci, vfioGroupDev, mgr);
             VIR_FREE(vfioGroupDev);
@@ -1448,7 +1447,7 @@ virSecurityDACRestoreHostdevLabel(virSecurityManagerPtr mgr,
                              dev->readonly, dev->shareable);
 
         if (!scsi)
-            goto done;
+            return -1;
 
         ret = virSCSIDeviceFileIterate(scsi, virSecurityDACRestoreSCSILabel, mgr);
         virSCSIDeviceFree(scsi);
@@ -1460,7 +1459,7 @@ virSecurityDACRestoreHostdevLabel(virSecurityManagerPtr mgr,
         virSCSIVHostDevicePtr host = virSCSIVHostDeviceNew(hostsrc->wwpn);
 
         if (!host)
-            goto done;
+            return -1;
 
         ret = virSCSIVHostDeviceFileIterate(host,
                                             virSecurityDACRestoreHostLabel,
@@ -1474,7 +1473,7 @@ virSecurityDACRestoreHostdevLabel(virSecurityManagerPtr mgr,
         char *vfiodev = NULL;
 
         if (!(vfiodev = virMediatedDeviceGetIOMMUGroupDev(mdevsrc->uuidstr)))
-            goto done;
+            return -1;
 
         ret = virSecurityDACRestoreFileLabel(mgr, vfiodev);
         VIR_FREE(vfiodev);
@@ -1486,7 +1485,6 @@ virSecurityDACRestoreHostdevLabel(virSecurityManagerPtr mgr,
         break;
     }
 
- done:
     return ret;
 }
 
