@@ -1078,15 +1078,13 @@ qemuMonitorCommonTestNew(virDomainXMLOptionPtr xmlopt,
     if (virNetSocketListen(test->server, 1) < 0)
         goto error;
 
- cleanup:
     return test;
 
  error:
     VIR_FREE(path);
     VIR_FREE(tmpdir_template);
     qemuMonitorTestFree(test);
-    test = NULL;
-    goto cleanup;
+    return NULL;
 
 }
 
@@ -1100,10 +1098,10 @@ qemuMonitorCommonTestInit(qemuMonitorTestPtr test)
         return -1;
 
     if (virNetSocketAccept(test->server, &test->client) < 0)
-        goto error;
+        return -1;
 
     if (!test->client)
-        goto error;
+        return -1;
 
     if (test->outgoingLength > 0)
         events = VIR_EVENT_HANDLE_WRITABLE;
@@ -1113,7 +1111,7 @@ qemuMonitorCommonTestInit(qemuMonitorTestPtr test)
                                   qemuMonitorTestIO,
                                   test,
                                   NULL) < 0)
-        goto error;
+        return -1;
 
     virMutexLock(&test->lock);
     if (virThreadCreate(&test->thread,
@@ -1121,15 +1119,12 @@ qemuMonitorCommonTestInit(qemuMonitorTestPtr test)
                         qemuMonitorTestWorker,
                         test) < 0) {
         virMutexUnlock(&test->lock);
-        goto error;
+        return -1;
     }
     test->started = test->running = true;
     virMutexUnlock(&test->lock);
 
     return 0;
-
- error:
-    return -1;
 }
 
 

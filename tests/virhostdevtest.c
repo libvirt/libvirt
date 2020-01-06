@@ -539,8 +539,6 @@ testVirHostdevOther(const void *opaque G_GNUC_UNUSED)
 static int
 testNVMeDiskRoundtrip(const void *opaque G_GNUC_UNUSED)
 {
-    int ret = -1;
-
     /* Don't rely on a state that previous test cases might have
      * left the manager in. Start with a clean slate. */
     virHostdevReAttachPCIDevices(mgr, drv_name, dom_name,
@@ -552,7 +550,7 @@ testNVMeDiskRoundtrip(const void *opaque G_GNUC_UNUSED)
 
     /* Firstly, attach all NVMe disks */
     if (virHostdevPrepareNVMeDevices(mgr, drv_name, dom_name, disks, ndisks) < 0)
-        goto cleanup;
+        return -1;
 
     CHECK_NVME_LIST_COUNT(mgr->activeNVMeHostdevs, 3);
     CHECK_PCI_LIST_COUNT(mgr->activePCIHostdevs, 2);
@@ -560,7 +558,7 @@ testNVMeDiskRoundtrip(const void *opaque G_GNUC_UNUSED)
 
     /* Now, try to detach the first one. */
     if (virHostdevReAttachNVMeDevices(mgr, drv_name, dom_name, disks, 1) < 0)
-        goto cleanup;
+        return -1;
 
     CHECK_NVME_LIST_COUNT(mgr->activeNVMeHostdevs, 2);
     CHECK_PCI_LIST_COUNT(mgr->activePCIHostdevs, 2);
@@ -568,7 +566,7 @@ testNVMeDiskRoundtrip(const void *opaque G_GNUC_UNUSED)
 
     /* And the last one */
     if (virHostdevReAttachNVMeDevices(mgr, drv_name, dom_name, &disks[2], 1) < 0)
-        goto cleanup;
+        return -1;
 
     CHECK_NVME_LIST_COUNT(mgr->activeNVMeHostdevs, 1);
     CHECK_PCI_LIST_COUNT(mgr->activePCIHostdevs, 1);
@@ -576,15 +574,13 @@ testNVMeDiskRoundtrip(const void *opaque G_GNUC_UNUSED)
 
     /* Finally, detach the middle one */
     if (virHostdevReAttachNVMeDevices(mgr, drv_name, dom_name, &disks[1], 1) < 0)
-        goto cleanup;
+        return -1;
 
     CHECK_NVME_LIST_COUNT(mgr->activeNVMeHostdevs, 0);
     CHECK_PCI_LIST_COUNT(mgr->activePCIHostdevs, 0);
     CHECK_PCI_LIST_COUNT(mgr->inactivePCIHostdevs, 0);
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 

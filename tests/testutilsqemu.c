@@ -449,10 +449,9 @@ testQemuCapsSetGIC(virQEMUCapsPtr qemuCaps,
 {
     virGICCapability *gicCapabilities = NULL;
     size_t ngicCapabilities = 0;
-    int ret = -1;
 
     if (VIR_ALLOC_N(gicCapabilities, 2) < 0)
-        goto out;
+        return -1;
 
 # define IMPL_BOTH \
          VIR_GIC_IMPLEMENTATION_KERNEL|VIR_GIC_IMPLEMENTATION_EMULATED
@@ -473,10 +472,7 @@ testQemuCapsSetGIC(virQEMUCapsPtr qemuCaps,
     virQEMUCapsSetGICCapabilities(qemuCaps,
                                   gicCapabilities, ngicCapabilities);
 
-    ret = 0;
-
- out:
-    return ret;
+    return 0;
 }
 
 #endif
