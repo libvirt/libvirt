@@ -1046,7 +1046,7 @@ iptablesHandlePortData(virFirewallPtr fw,
         if (printDataType(vars,
                           portstr, sizeof(portstr),
                           &portData->dataSrcPortStart) < 0)
-            goto err_exit;
+            return -1;
 
         if (ENTRY_WANT_NEG_SIGN(&portData->dataSrcPortStart))
             virFirewallRuleAddArg(fw, fwrule, "!");
@@ -1056,7 +1056,7 @@ iptablesHandlePortData(virFirewallPtr fw,
             if (printDataType(vars,
                               portstralt, sizeof(portstralt),
                               &portData->dataSrcPortEnd) < 0)
-                goto err_exit;
+                return -1;
 
             virFirewallRuleAddArgFormat(fw, fwrule,
                                         "%s:%s", portstr, portstralt);
@@ -1069,7 +1069,7 @@ iptablesHandlePortData(virFirewallPtr fw,
         if (printDataType(vars,
                           portstr, sizeof(portstr),
                           &portData->dataDstPortStart) < 0)
-            goto err_exit;
+            return -1;
 
         if (ENTRY_WANT_NEG_SIGN(&portData->dataDstPortStart))
             virFirewallRuleAddArg(fw, fwrule, "!");
@@ -1079,7 +1079,7 @@ iptablesHandlePortData(virFirewallPtr fw,
             if (printDataType(vars,
                               portstralt, sizeof(portstralt),
                               &portData->dataDstPortEnd) < 0)
-                goto err_exit;
+                return -1;
 
             virFirewallRuleAddArgFormat(fw, fwrule,
                                         "%s:%s", portstr, portstralt);
@@ -1089,9 +1089,6 @@ iptablesHandlePortData(virFirewallPtr fw,
     }
 
     return 0;
-
- err_exit:
-    return -1;
 }
 
 

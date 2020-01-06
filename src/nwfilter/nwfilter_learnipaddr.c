@@ -725,7 +725,7 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
     }
 
     if (VIR_ALLOC(req) < 0)
-        goto err_no_req;
+        return -1;
 
     if (!(req->binding = virNWFilterBindingDefCopy(binding)))
         goto err_free_req;
@@ -752,7 +752,6 @@ virNWFilterLearnIPAddress(virNWFilterTechDriverPtr techdriver,
     virNWFilterDeregisterLearnReq(ifindex);
  err_free_req:
     virNWFilterIPAddrLearnReqFree(req);
- err_no_req:
     return -1;
 }
 
