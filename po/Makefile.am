@@ -45,10 +45,19 @@ XGETTEXT_ARGS = \
 	--msgid-bugs-address="$(MSGID_BUGS_ADDRESS)" \
 	$(NULL)
 
+POT_CREATION_DATE = $(shell \
+	if test -n "$$SOURCE_DATE_EPOCH"; \
+	then \
+		date --date="@$$SOURCE_DATE_EPOCH" +"%F %R%z"; \
+	else \
+		date +'%F %R%z'; \
+	fi)
+
 SED_PO_FIXUP_ARGS = \
        -e "s|text/plain; charset=CHARSET|text/plain; charset=UTF-8|g" \
        -e "s|SOME DESCRIPTIVE TITLE|Libvirt package strings|g" \
        -e "s|Copyright (C) YEAR|Copyright (C) $$(date +'%Y')|" \
+       -e "s|POT-Creation-Date:[^\]*|POT-Creation-Date: $(POT_CREATION_DATE)|" \
        $(NULL)
 
 update-po: $(POFILES)
