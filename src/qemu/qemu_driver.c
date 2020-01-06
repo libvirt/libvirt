@@ -1916,7 +1916,7 @@ qemuDomainShutdownFlagsAgent(virQEMUDriverPtr driver,
 
     if (qemuDomainObjBeginAgentJob(driver, vm,
                                    QEMU_AGENT_JOB_MODIFY) < 0)
-        goto cleanup;
+        return -1;
 
     if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_RUNNING) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -1934,8 +1934,6 @@ qemuDomainShutdownFlagsAgent(virQEMUDriverPtr driver,
 
  endjob:
     qemuDomainObjEndAgentJob(vm);
-
- cleanup:
     return ret;
 }
 
@@ -1951,7 +1949,7 @@ qemuDomainShutdownFlagsMonitor(virQEMUDriverPtr driver,
     priv = vm->privateData;
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
-        goto cleanup;
+        return -1;
 
     if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_RUNNING) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -1967,8 +1965,6 @@ qemuDomainShutdownFlagsMonitor(virQEMUDriverPtr driver,
 
  endjob:
     qemuDomainObjEndJob(driver, vm);
-
- cleanup:
     return ret;
 }
 
@@ -6784,14 +6780,13 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
     *ret_def = def;
     *ret_data = data;
 
- cleanup:
     return fd;
 
  error:
     virDomainDefFree(def);
     virQEMUSaveDataFree(data);
     VIR_FORCE_CLOSE(fd);
-    goto cleanup;
+    return -1;
 }
 
 static int ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5) ATTRIBUTE_NONNULL(6)
@@ -12620,7 +12615,6 @@ qemuDomainMigrateFinish2(virConnectPtr dconn,
 {
     virQEMUDriverPtr driver = dconn->privateData;
     virDomainObjPtr vm;
-    virDomainPtr dom = NULL;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, NULL);
 
@@ -12629,24 +12623,21 @@ qemuDomainMigrateFinish2(virConnectPtr dconn,
         virReportError(VIR_ERR_NO_DOMAIN,
                        _("no domain with matching name '%s'"), dname);
         qemuMigrationDstErrorReport(driver, dname);
-        goto cleanup;
+        return NULL;
     }
 
     if (virDomainMigrateFinish2EnsureACL(dconn, vm->def) < 0) {
         virDomainObjEndAPI(&vm);
-        goto cleanup;
+        return NULL;
     }
 
     /* Do not use cookies in v2 protocol, since the cookie
      * length was not sufficiently large, causing failures
      * migrating between old & new libvirtd
      */
-    dom = qemuMigrationDstFinish(driver, dconn, vm,
-                                 NULL, 0, NULL, NULL, /* No cookies */
-                                 flags, retcode, false);
-
- cleanup:
-    return dom;
+    return qemuMigrationDstFinish(driver, dconn, vm,
+                                  NULL, 0, NULL, NULL, /* No cookies */
+                                  flags, retcode, false);
 }
 
 
@@ -13260,7 +13251,6 @@ qemuNodeDeviceGetPCIInfo(virNodeDeviceDefPtr def,
                          unsigned *function)
 {
     virNodeDevCapsDefPtr cap;
-    int ret = -1;
 
     cap = def->caps;
     while (cap) {
@@ -13278,12 +13268,10 @@ qemuNodeDeviceGetPCIInfo(virNodeDeviceDefPtr def,
     if (!cap) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("device %s is not a PCI device"), def->name);
-        goto out;
+        return -1;
     }
 
-    ret = 0;
- out:
-    return ret;
+    return 0;
 }
 
 static int

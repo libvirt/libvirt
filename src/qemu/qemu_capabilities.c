@@ -781,23 +781,22 @@ virQEMUCapsFindBinaryForArch(virArch hostarch,
     if (hostarch == VIR_ARCH_AARCH64 && guestarch == VIR_ARCH_ARMV7L) {
         archstr = virQEMUCapsArchToString(hostarch);
         if ((ret = virQEMUCapsFindBinary("qemu-system-%s", archstr)) != NULL)
-            goto out;
+            return ret;
     }
 
     /* First attempt: try the guest architecture as it is */
     archstr = virQEMUCapsArchToString(guestarch);
     if ((ret = virQEMUCapsFindBinary("qemu-system-%s", archstr)) != NULL)
-        goto out;
+        return ret;
 
     /* Second attempt: try looking up by target instead */
     target = virQEMUCapsFindTarget(hostarch, guestarch);
     if (target != guestarch) {
         archstr = virQEMUCapsArchToString(target);
         if ((ret = virQEMUCapsFindBinary("qemu-system-%s", archstr)) != NULL)
-            goto out;
+            return ret;
     }
 
- out:
     return ret;
 }
 
@@ -5013,13 +5012,11 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
         qemuCaps->kvmSupportsNesting = virQEMUCapsKVMSupportsNesting();
     }
 
- cleanup:
     return qemuCaps;
 
  error:
     virObjectUnref(qemuCaps);
-    qemuCaps = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 static void *
@@ -5052,13 +5049,11 @@ virQEMUCapsLoadFile(const char *filename,
     if (virQEMUCapsLoadCache(priv->hostArch, qemuCaps, filename) < 0)
         goto error;
 
- cleanup:
     return qemuCaps;
 
  error:
     virObjectUnref(qemuCaps);
-    qemuCaps = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 

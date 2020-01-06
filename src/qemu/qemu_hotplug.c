@@ -2894,41 +2894,38 @@ qemuDomainAttachHostDevice(virQEMUDriverPtr driver,
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
         if (qemuDomainAttachHostPCIDevice(driver, vm,
                                           hostdev) < 0)
-            goto error;
+            return -1;
         break;
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
         if (qemuDomainAttachHostUSBDevice(driver, vm,
                                           hostdev) < 0)
-            goto error;
+            return -1;
         break;
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
         if (qemuDomainAttachHostSCSIDevice(driver, vm,
                                            hostdev) < 0)
-            goto error;
+            return -1;
         break;
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
         if (qemuDomainAttachSCSIVHostDevice(driver, vm, hostdev) < 0)
-            goto error;
+            return -1;
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
         if (qemuDomainAttachMediatedDevice(driver, vm, hostdev) < 0)
-            goto error;
+            return -1;
         break;
 
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("hotplug is not supported for hostdev subsys type '%s'"),
                        virDomainHostdevSubsysTypeToString(hostdev->source.subsys.type));
-        goto error;
+        return -1;
     }
 
     return 0;
-
- error:
-    return -1;
 }
 
 

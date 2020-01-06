@@ -1257,7 +1257,7 @@ qemuDomainFillDeviceIsolationGroup(virDomainDefPtr def,
         /* Only PCI host devices are subject to isolation */
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
             hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
-            goto skip;
+            return 0;
         }
 
         hostAddr = &hostdev->source.subsys.u.pci.addr;
@@ -1265,7 +1265,7 @@ qemuDomainFillDeviceIsolationGroup(virDomainDefPtr def,
         /* If a non-default isolation has already been assigned to the
          * device, we can avoid looking up the information again */
         if (info->isolationGroup > 0)
-            goto skip;
+            return 0;
 
         /* The isolation group depends on the IOMMU group assigned by the host */
         tmp = virPCIDeviceAddressGetIOMMUGroupNum(hostAddr);
@@ -1275,7 +1275,7 @@ qemuDomainFillDeviceIsolationGroup(virDomainDefPtr def,
                      "%04x:%02x:%02x.%x, device won't be isolated",
                      hostAddr->domain, hostAddr->bus,
                      hostAddr->slot, hostAddr->function);
-            goto skip;
+            return 0;
         }
 
         /* The isolation group for a host device is its IOMMU group,
@@ -1301,13 +1301,13 @@ qemuDomainFillDeviceIsolationGroup(virDomainDefPtr def,
          * require us to isolate the guest device, so we can skip them */
         if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK ||
             virDomainNetResolveActualType(iface) != VIR_DOMAIN_NET_TYPE_HOSTDEV) {
-            goto skip;
+            return 0;
         }
 
         /* If a non-default isolation has already been assigned to the
          * device, we can avoid looking up the information again */
         if (info->isolationGroup > 0)
-            goto skip;
+            return 0;
 
         /* Obtain a synthetic isolation group for the device, since at this
          * point in time we don't have access to the IOMMU group of the host
@@ -1319,7 +1319,7 @@ qemuDomainFillDeviceIsolationGroup(virDomainDefPtr def,
                      "configured to use hostdev-backed network '%s', "
                      "device won't be isolated",
                      iface->data.network.name);
-            goto skip;
+            return 0;
         }
 
         info->isolationGroup = tmp;
@@ -1329,7 +1329,6 @@ qemuDomainFillDeviceIsolationGroup(virDomainDefPtr def,
                   iface->data.network.name, info->isolationGroup);
     }
 
- skip:
     return 0;
 }
 
@@ -2131,7 +2130,7 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
                 continue;
 
             if (qemuDomainPCIAddressReserveNextAddr(addrs, &cont->info) < 0)
-                goto error;
+                return -1;
         }
     }
 
@@ -2142,7 +2141,7 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
         /* Only support VirtIO-9p-pci so far. If that changes,
          * we might need to skip devices here */
         if (qemuDomainPCIAddressReserveNextAddr(addrs, &def->fss[i]->info) < 0)
-            goto error;
+            return -1;
     }
 
     /* Network interfaces */
@@ -2159,7 +2158,7 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
         }
 
         if (qemuDomainPCIAddressReserveNextAddr(addrs, &net->info) < 0)
-            goto error;
+            return -1;
     }
 
     /* Sound cards */
@@ -2177,7 +2176,7 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
         }
 
         if (qemuDomainPCIAddressReserveNextAddr(addrs, &sound->info) < 0)
-            goto error;
+            return -1;
     }
 
     /* Device controllers (SCSI, USB, but not IDE, FDC or CCID) */
@@ -2246,7 +2245,7 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
                 if (virDomainPCIAddressReserveAddr(addrs, &addr,
                                                    cont->info.pciConnectFlags,
                                                    cont->info.isolationGroup) < 0) {
-                    goto error;
+                    return -1;
                 }
 
                 cont->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
@@ -2257,14 +2256,14 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
                 if (virDomainPCIAddressReserveNextAddr(addrs, &cont->info,
                                                        cont->info.pciConnectFlags,
                                                        addr.function) < 0) {
-                    goto error;
+                    return -1;
                 }
 
                 cont->info.addr.pci.multi = addr.multi;
             }
         } else {
             if (qemuDomainPCIAddressReserveNextAddr(addrs, &cont->info) < 0)
-                 goto error;
+                 return -1;
         }
     }
 
@@ -2292,11 +2291,11 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("virtio disk cannot have an address of type '%s'"),
                            virDomainDeviceAddressTypeToString(def->disks[i]->info.type));
-            goto error;
+            return -1;
         }
 
         if (qemuDomainPCIAddressReserveNextAddr(addrs, &def->disks[i]->info) < 0)
-            goto error;
+            return -1;
     }
 
     /* Host PCI devices */
@@ -2320,7 +2319,7 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
 
         if (qemuDomainPCIAddressReserveNextAddr(addrs,
                                                 def->hostdevs[i]->info) < 0)
-            goto error;
+            return -1;
     }
 
     /* memballoon. the qemu driver only accepts virtio memballoon devices */
@@ -2328,7 +2327,7 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
         virDeviceInfoPCIAddressIsWanted(&def->memballoon->info)) {
         if (qemuDomainPCIAddressReserveNextAddr(addrs,
                                                 &def->memballoon->info) < 0)
-            goto error;
+            return -1;
     }
 
     /* the qemu driver only accepts virtio rng devices */
@@ -2337,7 +2336,7 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
             continue;
 
         if (qemuDomainPCIAddressReserveNextAddr(addrs, &def->rngs[i]->info) < 0)
-            goto error;
+            return -1;
     }
 
     /* A watchdog - check if it is a PCI device */
@@ -2345,7 +2344,7 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
         def->watchdog->model == VIR_DOMAIN_WATCHDOG_MODEL_I6300ESB &&
         virDeviceInfoPCIAddressIsWanted(&def->watchdog->info)) {
         if (qemuDomainPCIAddressReserveNextAddr(addrs, &def->watchdog->info) < 0)
-            goto error;
+            return -1;
     }
 
     /* Video devices */
@@ -2358,7 +2357,7 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
             continue;
 
         if (qemuDomainPCIAddressReserveNextAddr(addrs, &def->videos[i]->info) < 0)
-            goto error;
+            return -1;
     }
 
     /* Shared Memory */
@@ -2367,7 +2366,7 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
             continue;
 
         if (qemuDomainPCIAddressReserveNextAddr(addrs, &def->shmems[i]->info) < 0)
-            goto error;
+            return -1;
     }
     for (i = 0; i < def->ninputs; i++) {
         if (def->inputs[i]->bus != VIR_DOMAIN_INPUT_BUS_VIRTIO ||
@@ -2375,7 +2374,7 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
             continue;
 
         if (qemuDomainPCIAddressReserveNextAddr(addrs, &def->inputs[i]->info) < 0)
-            goto error;
+            return -1;
     }
     for (i = 0; i < def->nparallels; i++) {
         /* Nada - none are PCI based (yet) */
@@ -2388,7 +2387,7 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
             continue;
 
         if (qemuDomainPCIAddressReserveNextAddr(addrs, &chr->info) < 0)
-            goto error;
+            return -1;
     }
     for (i = 0; i < def->nchannels; i++) {
         /* Nada - none are PCI based (yet) */
@@ -2402,13 +2401,10 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
 
         if (qemuDomainPCIAddressReserveNextAddr(addrs,
                                                 &def->vsock->info) < 0)
-            goto error;
+            return -1;
     }
 
     return 0;
-
- error:
-    return -1;
 }
 
 

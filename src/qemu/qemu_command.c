@@ -1776,12 +1776,12 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
                                                          disk->detect_zeroes);
 
     if (qemuBuildDriveSourceStr(disk, qemuCaps, &opt) < 0)
-        goto error;
+        return NULL;
 
     if (!qemuDiskBusNeedsDriveArg(disk->bus)) {
         g_autofree char *drivealias = qemuAliasDiskDriveFromDisk(disk);
         if (!drivealias)
-            goto error;
+            return NULL;
 
         virBufferAddLit(&opt, "if=none");
         virBufferAsprintf(&opt, ",id=%s", drivealias);
@@ -1791,12 +1791,12 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
         if (idx < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unsupported disk type '%s'"), disk->dst);
-            goto error;
+            return NULL;
         }
 
         /* if we are using -device this will be checked elsewhere */
         if (qemuCheckDiskConfig(disk, qemuCaps) < 0)
-            goto error;
+            return NULL;
 
         virBufferAsprintf(&opt, "if=%s",
                           virDomainDiskQEMUBusTypeToString(disk->bus));
@@ -1849,9 +1849,6 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
     qemuBuildDiskThrottling(disk, &opt);
 
     return virBufferContentAndReset(&opt);
-
- error:
-    return NULL;
 }
 
 
@@ -1941,20 +1938,20 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
     int controllerModel;
 
     if (qemuCheckDiskConfig(disk, qemuCaps) < 0)
-        goto error;
+        return NULL;
 
     if (!qemuDomainCheckCCWS390AddressSupport(def, &disk->info, qemuCaps, disk->dst))
-        goto error;
+        return NULL;
 
     if (disk->iothread && !qemuCheckIOThreads(def, disk))
-        goto error;
+        return NULL;
 
     switch ((virDomainDiskBus) disk->bus) {
     case VIR_DOMAIN_DISK_BUS_IDE:
         if (disk->info.addr.drive.target != 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("target must be 0 for ide controller"));
-            goto error;
+            return NULL;
         }
 
         if (disk->wwn &&
@@ -1962,7 +1959,7 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Setting wwn for ide disk is not supported "
                              "by this QEMU"));
-            goto error;
+            return NULL;
         }
 
         if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
@@ -1979,7 +1976,7 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
             if (!(contAlias = virDomainControllerAliasFind(def,
                                                            VIR_DOMAIN_CONTROLLER_TYPE_IDE,
                                                            disk->info.addr.drive.controller)))
-                goto error;
+                return NULL;
         }
         virBufferAsprintf(&opt, ",bus=%s.%d,unit=%d",
                           contAlias,
@@ -1993,7 +1990,7 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("This QEMU doesn't support scsi-block for "
                                  "lun passthrough"));
-                goto error;
+                return NULL;
             }
         }
 
@@ -2002,7 +1999,7 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Setting wwn for scsi disk is not supported "
                              "by this QEMU"));
-            goto error;
+            return NULL;
         }
 
         /* Properties wwn, vendor and product were introduced in the
@@ -2013,12 +2010,12 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Setting vendor or product for scsi disk is not "
                              "supported by this QEMU"));
-            goto error;
+            return NULL;
         }
 
         controllerModel = qemuDomainFindSCSIControllerModel(def, &disk->info);
         if (controllerModel < 0)
-            goto error;
+            return NULL;
 
         if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
             virBufferAddLit(&opt, "scsi-block");
@@ -2038,21 +2035,21 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
                     scsiVPDDeviceId = g_strdup(disk->serial);
                 } else {
                     if (!(scsiVPDDeviceId = qemuAliasDiskDriveFromDisk(disk)))
-                        goto error;
+                        return NULL;
                 }
             }
         }
 
         if (!(contAlias = virDomainControllerAliasFind(def, VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
                                                        disk->info.addr.drive.controller)))
-           goto error;
+           return NULL;
 
         if (controllerModel == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC) {
             if (disk->info.addr.drive.target != 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("target must be 0 for controller "
                                  "model 'lsilogic'"));
-                goto error;
+                return NULL;
             }
 
             virBufferAsprintf(&opt, ",bus=%s.%d,scsi-id=%d",
@@ -2065,7 +2062,7 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                    _("This QEMU doesn't support target "
                                      "greater than 7"));
-                    goto error;
+                    return NULL;
                 }
 
                 if (disk->info.addr.drive.bus != 0 &&
@@ -2073,7 +2070,7 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                    _("This QEMU only supports both bus and "
                                      "unit equal to 0"));
-                    goto error;
+                    return NULL;
                 }
             }
 
@@ -2093,12 +2090,12 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
         if (disk->info.addr.drive.bus != 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("bus must be 0 for ide controller"));
-            goto error;
+            return NULL;
         }
         if (disk->info.addr.drive.target != 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("target must be 0 for ide controller"));
-            goto error;
+            return NULL;
         }
 
         if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
@@ -2116,7 +2113,7 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
             if (!(contAlias = virDomainControllerAliasFind(def,
                                                            VIR_DOMAIN_CONTROLLER_TYPE_SATA,
                                                            disk->info.addr.drive.controller)))
-                goto error;
+                return NULL;
         }
         virBufferAsprintf(&opt, ",bus=%s.%d",
                           contAlias,
@@ -2126,7 +2123,7 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
     case VIR_DOMAIN_DISK_BUS_VIRTIO:
         if (qemuBuildVirtioDevStr(&opt, "virtio-blk", qemuCaps,
                                   VIR_DOMAIN_DEVICE_DISK, disk) < 0) {
-            goto error;
+            return NULL;
         }
 
         if (disk->iothread)
@@ -2152,17 +2149,17 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("num-queues property isn't supported by this "
                                  "QEMU binary"));
-                goto error;
+                return NULL;
             }
 
             virBufferAsprintf(&opt, ",num-queues=%u", disk->queues);
         }
 
         if (qemuBuildVirtioOptionsStr(&opt, disk->virtio, qemuCaps) < 0)
-            goto error;
+            return NULL;
 
         if (qemuBuildDeviceAddressStr(&opt, def, &disk->info, qemuCaps) < 0)
-            goto error;
+            return NULL;
         break;
 
     case VIR_DOMAIN_DISK_BUS_USB:
@@ -2170,19 +2167,19 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
             disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("unexpected address type for usb disk"));
-            goto error;
+            return NULL;
         }
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_USB_STORAGE)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("This QEMU doesn't support '-device "
                              "usb-storage'"));
-            goto error;
+            return NULL;
 
         }
         virBufferAddLit(&opt, "usb-storage");
 
         if (qemuBuildDeviceAddressStr(&opt, def, &disk->info, qemuCaps) < 0)
-            goto error;
+            return NULL;
         break;
 
     case VIR_DOMAIN_DISK_BUS_FDC:
@@ -2196,7 +2193,7 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unsupported disk bus '%s' with device setup"), bus);
-        goto error;
+        return NULL;
     }
 
     if (disk->src->shared &&
@@ -2204,7 +2201,7 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
         virBufferAddLit(&opt, ",share-rw=on");
 
     if (qemuDomainDiskGetBackendAlias(disk, qemuCaps, &backendAlias) < 0)
-        goto error;
+        return NULL;
 
     if (backendAlias)
         virBufferAsprintf(&opt, ",drive=%s", backendAlias);
@@ -2249,13 +2246,13 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("This QEMU doesn't support setting the "
                                  "removable flag of USB storage devices"));
-                goto error;
+                return NULL;
             }
         }
     }
 
     if (qemuBuildDriveDevCacheStr(disk, &opt, qemuCaps) < 0)
-        goto error;
+        return NULL;
 
     qemuBuildDiskFrontendAttributes(disk, &opt);
 
@@ -2263,9 +2260,6 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
         qemuBuildDiskFrontendAttributeErrorPolicy(disk, &opt);
 
     return virBufferContentAndReset(&opt);
-
- error:
-    return NULL;
 }
 
 char *
@@ -3693,7 +3687,7 @@ qemuBuildNicDevStr(virDomainDefPtr def,
     if (virDomainNetIsVirtioModel(net)) {
         if (qemuBuildVirtioDevStr(&buf, "virtio-net", qemuCaps,
                                   VIR_DOMAIN_DEVICE_NET, net) < 0) {
-            goto error;
+            return NULL;
         }
 
         usingVirtio = true;
@@ -3723,12 +3717,12 @@ qemuBuildNicDevStr(virDomainDefPtr def,
                      */
                     virReportEnumRangeError(virDomainNetVirtioTxModeType,
                                             net->driver.virtio.txmode);
-                    goto error;
+                    return NULL;
             }
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("virtio-net-pci 'tx' option not supported in this QEMU binary"));
-            goto error;
+            return NULL;
         }
     }
     if (usingVirtio) {
@@ -3804,7 +3798,7 @@ qemuBuildNicDevStr(virDomainDefPtr def,
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_NET_RX_QUEUE_SIZE)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("virtio rx_queue_size option is not supported with this QEMU binary"));
-            goto error;
+            return NULL;
         }
         virBufferAsprintf(&buf, ",rx_queue_size=%u", net->driver.virtio.rx_queue_size);
     }
@@ -3812,7 +3806,7 @@ qemuBuildNicDevStr(virDomainDefPtr def,
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_NET_TX_QUEUE_SIZE)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("virtio tx_queue_size option is not supported with this QEMU binary"));
-            goto error;
+            return NULL;
         }
         virBufferAsprintf(&buf, ",tx_queue_size=%u", net->driver.virtio.tx_queue_size);
     }
@@ -3821,7 +3815,7 @@ qemuBuildNicDevStr(virDomainDefPtr def,
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_NET_HOST_MTU)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("setting MTU is not supported with this QEMU binary"));
-            goto error;
+            return NULL;
         }
         virBufferAsprintf(&buf, ",host_mtu=%u", net->mtu);
     }
@@ -3832,19 +3826,16 @@ qemuBuildNicDevStr(virDomainDefPtr def,
                       virMacAddrFormat(&net->mac, macaddr));
 
     if (qemuBuildDeviceAddressStr(&buf, def, &net->info, qemuCaps) < 0)
-        goto error;
+        return NULL;
     if (qemuBuildRomStr(&buf, &net->info) < 0)
-        goto error;
+        return NULL;
     if (bootindex)
         virBufferAsprintf(&buf, ",bootindex=%u", bootindex);
     if (usingVirtio &&
         qemuBuildVirtioOptionsStr(&buf, net->virtio, qemuCaps) < 0)
-        goto error;
+        return NULL;
 
     return virBufferContentAndReset(&buf);
-
- error:
-    return NULL;
 }
 
 

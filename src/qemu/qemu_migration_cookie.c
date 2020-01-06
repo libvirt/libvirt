@@ -971,14 +971,12 @@ qemuMigrationCookieNetworkXMLParse(xmlXPathContextPtr ctxt)
 
     VIR_FREE(interfaces);
 
- cleanup:
     return optr;
 
  error:
     VIR_FREE(interfaces);
     qemuMigrationCookieNetworkFree(optr);
-    optr = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 
@@ -1053,10 +1051,10 @@ qemuMigrationCookieStatisticsXMLParse(xmlXPathContextPtr ctxt)
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
 
     if (!(ctxt->node = virXPathNode("./statistics", ctxt)))
-        goto cleanup;
+        return NULL;
 
     if (VIR_ALLOC(jobInfo) < 0)
-        goto cleanup;
+        return NULL;
 
     stats = &jobInfo->stats.mig;
     jobInfo->status = QEMU_DOMAIN_JOB_STATUS_COMPLETED;
@@ -1127,7 +1125,7 @@ qemuMigrationCookieStatisticsXMLParse(xmlXPathContextPtr ctxt)
 
     virXPathInt("string(./" VIR_DOMAIN_JOB_AUTO_CONVERGE_THROTTLE "[1])",
                 ctxt, &stats->cpu_throttle_percentage);
- cleanup:
+
     return jobInfo;
 }
 

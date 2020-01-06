@@ -243,17 +243,14 @@ qemuHostdevPreparePCIDevices(virQEMUDriverPtr driver,
                              virQEMUCapsPtr qemuCaps,
                              unsigned int flags)
 {
-    int ret = -1;
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
 
     if (!qemuHostdevPreparePCIDevicesCheckSupport(hostdevs, nhostdevs, qemuCaps))
-        goto out;
+        return -1;
 
-    ret = virHostdevPreparePCIDevices(hostdev_mgr, QEMU_DRIVER_NAME,
-                                      name, uuid, hostdevs,
-                                      nhostdevs, flags);
- out:
-    return ret;
+    return virHostdevPreparePCIDevices(hostdev_mgr, QEMU_DRIVER_NAME,
+                                       name, uuid, hostdevs,
+                                       nhostdevs, flags);
 }
 
 int

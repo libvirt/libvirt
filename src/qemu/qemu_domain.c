@@ -13111,7 +13111,7 @@ qemuDomainGetMemLockLimitBytes(virDomainDefPtr def,
     /* prefer the hard limit */
     if (virMemoryLimitIsSet(def->mem.hard_limit)) {
         memKB = def->mem.hard_limit;
-        goto done;
+        return memKB << 10;
     }
 
     /* If the guest wants its memory to be locked, we need to raise the memory
@@ -13159,7 +13159,6 @@ qemuDomainGetMemLockLimitBytes(virDomainDefPtr def,
     if (usesVFIO || forceVFIO)
         memKB = virDomainDefGetMemoryTotal(def) + 1024 * 1024;
 
- done:
     return memKB << 10;
 }
 
@@ -13186,7 +13185,6 @@ qemuDomainAdjustMaxMemLock(virDomainObjPtr vm,
                            bool forceVFIO)
 {
     unsigned long long bytes = 0;
-    int ret = -1;
 
     bytes = qemuDomainGetMemLockLimitBytes(vm->def, forceVFIO);
 
@@ -13208,12 +13206,9 @@ qemuDomainAdjustMaxMemLock(virDomainObjPtr vm,
 
     /* Trying to set the memory locking limit to zero is a no-op */
     if (virProcessSetMaxMemLock(vm->pid, bytes) < 0)
-        goto out;
+        return -1;
 
-    ret = 0;
-
- out:
-     return ret;
+    return 0;
 }
 
 
