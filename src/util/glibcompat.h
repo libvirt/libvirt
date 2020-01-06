@@ -32,6 +32,5 @@ gint vir_g_fsync(gint fd);
 # define g_strdup_vprintf vir_g_strdup_vprintf
 #endif
 
-#if !GLIB_CHECK_VERSION(2, 63, 0)
-# define g_fsync vir_g_fsync
-#endif
+#undef g_fsync
+#define g_fsync vir_g_fsync

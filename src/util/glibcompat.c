@@ -55,6 +55,7 @@ vir_g_strdup_vprintf(const char *msg, va_list args)
 }
 
 
+/* Drop when min glib >= 2.63.0 */
 gint
 vir_g_fsync(gint fd)
 {
