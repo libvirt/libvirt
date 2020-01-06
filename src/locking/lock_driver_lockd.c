@@ -140,7 +140,6 @@ virLockManagerLockDaemonConnectionRegister(virLockManagerPtr lock,
 {
     virLockManagerLockDaemonPrivatePtr priv = lock->privateData;
     virLockSpaceProtocolRegisterArgs args;
-    int rv = -1;
 
     memset(&args, 0, sizeof(args));
 
@@ -157,12 +156,9 @@ virLockManagerLockDaemonConnectionRegister(virLockManagerPtr lock,
                                 0, NULL, NULL, NULL,
                                 (xdrproc_t)xdr_virLockSpaceProtocolRegisterArgs, (char*)&args,
                                 (xdrproc_t)xdr_void, NULL) < 0)
-        goto cleanup;
+        return -1;
 
-    rv = 0;
-
- cleanup:
-    return rv;
+    return 0;
 }
 
 
@@ -173,7 +169,6 @@ virLockManagerLockDaemonConnectionRestrict(virLockManagerPtr lock G_GNUC_UNUSED,
                                            int *counter)
 {
     virLockSpaceProtocolRestrictArgs args;
-    int rv = -1;
 
     memset(&args, 0, sizeof(args));
 
@@ -186,12 +181,9 @@ virLockManagerLockDaemonConnectionRestrict(virLockManagerPtr lock G_GNUC_UNUSED,
                                 0, NULL, NULL, NULL,
                                 (xdrproc_t)xdr_virLockSpaceProtocolRestrictArgs, (char*)&args,
                                 (xdrproc_t)xdr_void, NULL) < 0)
-        goto cleanup;
+        return -1;
 
-    rv = 0;
-
- cleanup:
-    return rv;
+    return 0;
 }
 
 
