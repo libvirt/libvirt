@@ -572,13 +572,13 @@ nodeConnectNodeDeviceEventRegisterAny(virConnectPtr conn,
     int callbackID = -1;
 
     if (virConnectNodeDeviceEventRegisterAnyEnsureACL(conn) < 0)
-        goto cleanup;
+        return -1;
 
     if (virNodeDeviceEventStateRegisterID(conn, driver->nodeDeviceEventState,
                                           device, eventID, callback,
                                           opaque, freecb, &callbackID) < 0)
         callbackID = -1;
- cleanup:
+
     return callbackID;
 }
 
