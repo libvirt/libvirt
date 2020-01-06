@@ -750,12 +750,6 @@ qemuBackupBegin(virDomainObjPtr vm,
 
     virCheckFlags(VIR_DOMAIN_BACKUP_BEGIN_REUSE_EXTERNAL, -1);
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_INCREMENTAL_BACKUP)) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("incremental backup is not supported yet"));
-        return -1;
-    }
-
     if (!(def = virDomainBackupDefParseString(backupXML, priv->driver->xmlopt, 0)))
         return -1;
 
@@ -790,6 +784,12 @@ qemuBackupBegin(virDomainObjPtr vm,
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("cannot perform disk backup for inactive domain"));
+        goto endjob;
+    }
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_INCREMENTAL_BACKUP)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("incremental backup is not supported yet"));
         goto endjob;
     }
 
