@@ -1554,12 +1554,9 @@ openvzDomainSetMemoryInternal(virDomainObjPtr vm,
 
     openvzSetProgramSentinal(prog, vm->def->name);
     if (virRun(prog, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     return 0;
-
- cleanup:
-    return -1;
 }
 
 
@@ -1641,7 +1638,6 @@ openvzDomainGetMemoryParameters(virDomainPtr domain,
                                 unsigned int flags)
 {
     size_t i;
-    int result = -1;
     const char *name;
     long kb_per_pages;
     unsigned long long barrier, limit, val;
@@ -1650,7 +1646,7 @@ openvzDomainGetMemoryParameters(virDomainPtr domain,
 
     kb_per_pages = openvzKBPerPages();
     if (kb_per_pages < 0)
-        goto cleanup;
+        return -1;
 
     if (*nparams == 0) {
         *nparams = OPENVZ_NB_MEM_PARAM;
@@ -1664,44 +1660,42 @@ openvzDomainGetMemoryParameters(virDomainPtr domain,
         case 0:
             name = "privvmpages";
             if (openvzDomainGetBarrierLimit(domain, name, &barrier, &limit) < 0)
-                goto cleanup;
+                return -1;
 
             val = (limit == LONG_MAX) ? VIR_DOMAIN_MEMORY_PARAM_UNLIMITED : limit * kb_per_pages;
             if (virTypedParameterAssign(param, VIR_DOMAIN_MEMORY_HARD_LIMIT,
                                         VIR_TYPED_PARAM_ULLONG, val) < 0)
-                goto cleanup;
+                return -1;
             break;
 
         case 1:
             name = "privvmpages";
             if (openvzDomainGetBarrierLimit(domain, name, &barrier, &limit) < 0)
-                goto cleanup;
+                return -1;
 
             val = (barrier == LONG_MAX) ? VIR_DOMAIN_MEMORY_PARAM_UNLIMITED : barrier * kb_per_pages;
             if (virTypedParameterAssign(param, VIR_DOMAIN_MEMORY_SOFT_LIMIT,
                                         VIR_TYPED_PARAM_ULLONG, val) < 0)
-                goto cleanup;
+                return -1;
             break;
 
         case 2:
             name = "vmguarpages";
             if (openvzDomainGetBarrierLimit(domain, name, &barrier, &limit) < 0)
-                goto cleanup;
+                return -1;
 
             val = (barrier == LONG_MAX) ? 0ull : barrier * kb_per_pages;
             if (virTypedParameterAssign(param, VIR_DOMAIN_MEMORY_MIN_GUARANTEE,
                                         VIR_TYPED_PARAM_ULLONG, val) < 0)
-                goto cleanup;
+                return -1;
             break;
         }
     }
 
     if (*nparams > OPENVZ_NB_MEM_PARAM)
         *nparams = OPENVZ_NB_MEM_PARAM;
-    result = 0;
 
- cleanup:
-    return result;
+    return 0;
 }
 
 
@@ -1712,12 +1706,11 @@ openvzDomainSetMemoryParameters(virDomainPtr domain,
                                 unsigned int flags)
 {
     size_t i;
-    int result = -1;
     long kb_per_pages;
 
     kb_per_pages = openvzKBPerPages();
     if (kb_per_pages < 0)
-        goto cleanup;
+        return -1;
 
     virCheckFlags(0, -1);
     if (virTypedParamsValidate(params, nparams,
@@ -1737,29 +1730,28 @@ openvzDomainSetMemoryParameters(virDomainPtr domain,
         if (STREQ(param->field, VIR_DOMAIN_MEMORY_HARD_LIMIT)) {
             if (openvzDomainGetBarrierLimit(domain, "privvmpages",
                                             &barrier, &limit) < 0)
-                goto cleanup;
+                return -1;
             limit = params[i].value.ul / kb_per_pages;
             if (openvzDomainSetBarrierLimit(domain, "privvmpages",
                                             barrier, limit) < 0)
-                goto cleanup;
+                return -1;
         } else if (STREQ(param->field, VIR_DOMAIN_MEMORY_SOFT_LIMIT)) {
             if (openvzDomainGetBarrierLimit(domain, "privvmpages",
                                             &barrier, &limit) < 0)
-                goto cleanup;
+                return -1;
             barrier = params[i].value.ul / kb_per_pages;
             if (openvzDomainSetBarrierLimit(domain, "privvmpages",
                                             barrier, limit) < 0)
-                goto cleanup;
+                return -1;
         } else if (STREQ(param->field, VIR_DOMAIN_MEMORY_MIN_GUARANTEE)) {
             barrier = params[i].value.ul / kb_per_pages;
             if (openvzDomainSetBarrierLimit(domain, "vmguarpages",
                                             barrier, LONG_MAX) < 0)
-                goto cleanup;
+                return -1;
         }
     }
-    result = 0;
- cleanup:
-    return result;
+
+    return 0;
 }
 
 

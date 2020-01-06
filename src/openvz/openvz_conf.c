@@ -858,18 +858,15 @@ openvzLocateConfDir(void)
 {
     const char *conf_dir_list[] = {"/etc/vz/conf", "/usr/local/etc/conf", NULL};
     size_t i = 0;
-    char *ret = NULL;
 
     while (conf_dir_list[i]) {
-        if (virFileExists(conf_dir_list[i])) {
-            ret = g_strdup(conf_dir_list[i]);
-            goto cleanup;
-        }
+        if (virFileExists(conf_dir_list[i]))
+            return g_strdup(conf_dir_list[i]);
+
         i++;
     }
 
- cleanup:
-    return ret;
+    return NULL;
 }
 
 /* Richard Steven's classic readline() function */
