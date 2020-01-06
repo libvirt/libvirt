@@ -81,7 +81,6 @@ ppc64CheckCompatibilityMode(const char *host_model,
     int host;
     int compat;
     char *tmp;
-    virCPUCompareResult ret = VIR_CPU_COMPARE_ERROR;
 
     if (!compat_mode)
         return VIR_CPU_COMPARE_IDENTICAL;
@@ -94,7 +93,7 @@ ppc64CheckCompatibilityMode(const char *host_model,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s",
                        _("Host CPU does not support compatibility modes"));
-        goto out;
+        return VIR_CPU_COMPARE_ERROR;
     }
 
     /* Valid compatibility modes: power6, power7, power8, power9 */
@@ -105,17 +104,14 @@ ppc64CheckCompatibilityMode(const char *host_model,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unknown compatibility mode %s"),
                        compat_mode);
-        goto out;
+        return VIR_CPU_COMPARE_ERROR;
     }
 
     /* Version check */
     if (compat > host)
-        ret = VIR_CPU_COMPARE_INCOMPATIBLE;
-    else
-        ret = VIR_CPU_COMPARE_IDENTICAL;
+        return VIR_CPU_COMPARE_INCOMPATIBLE;
 
- out:
-    return ret;
+    return VIR_CPU_COMPARE_IDENTICAL;
 }
 
 static void
