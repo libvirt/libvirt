@@ -1473,8 +1473,10 @@ int
 esxVI_DateTime_ConvertToCalendarTime(esxVI_DateTime *dateTime,
                                      long long *secondsSinceEpoch)
 {
+    char *tmp;
     g_autoptr(GDateTime) then = NULL;
     g_autoptr(GTimeZone) tz = NULL;
+    int year, mon, mday, hour, min, sec, milliseconds;
 
     if (!dateTime || !secondsSinceEpoch) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
@@ -1489,22 +1491,64 @@ esxVI_DateTime_ConvertToCalendarTime(esxVI_DateTime *dateTime,
      *
      * map negative years to 0, since the base for time_t is the year 1970.
      */
-    if (*(dateTime->value) == '-') {
+    if (dateTime->value[0] == '-') {
         *secondsSinceEpoch = 0;
         return 0;
     }
 
-    tz = g_time_zone_new_utc();
-    then = g_date_time_new_from_iso8601(dateTime->value, tz);
-
-    if (!then) {
+    if (/* year */
+        virStrToLong_i(dateTime->value, &tmp, 10, &year) < 0 || *tmp != '-' ||
+        /* month */
+        virStrToLong_i(tmp+1, &tmp, 10, &mon) < 0 || *tmp != '-' ||
+        /* day */
+        virStrToLong_i(tmp+1, &tmp, 10, &mday) < 0 || *tmp != 'T' ||
+        /* hour */
+        virStrToLong_i(tmp+1, &tmp, 10, &hour) < 0 || *tmp != ':' ||
+        /* minute */
+        virStrToLong_i(tmp+1, &tmp, 10, &min) < 0 || *tmp != ':' ||
+        /* second */
+        virStrToLong_i(tmp+1, &tmp, 10, &sec) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("xsd:dateTime value '%s' has unexpected format"),
                        dateTime->value);
         return -1;
     }
 
-    *secondsSinceEpoch = g_date_time_to_unix(then);
+    if (*tmp != '\0') {
+        /* skip .ssssss part if present */
+        if (*tmp == '.' &&
+            virStrToLong_i(tmp + 1, &tmp, 10, &milliseconds) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("xsd:dateTime value '%s' has unexpected format"),
+                           dateTime->value);
+            return -1;
+        }
+
+        /* parse timezone offset if present. if missing assume UTC */
+        if (*tmp == '+' || *tmp == '-') {
+            tz = g_time_zone_new(tmp);
+        } else if (STREQ(tmp, "Z")) {
+            tz = g_time_zone_new_utc();
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("xsd:dateTime value '%s' has unexpected format"),
+                           dateTime->value);
+            return -1;
+        }
+    } else {
+        tz = g_time_zone_new_utc();
+    }
+
+    /*
+     * xsd:dateTime represents local time relative to the optional timezone
+     * given as offset. pretend the local time is in UTC and use timegm in
+     * order to avoid interference with the timezone to this computer.
+     * apply timezone correction afterwards, because it's simpler than
+     * handling all the possible over- and underflows when trying to apply
+     * it to the tm struct.
+     */
+    then = g_date_time_new(tz, year, mon, mday, hour, min, sec);
+    *secondsSinceEpoch = (long long)g_date_time_to_unix(then);
 
     return 0;
 }
