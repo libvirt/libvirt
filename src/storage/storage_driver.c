@@ -2771,13 +2771,13 @@ storageConnectStoragePoolEventRegisterAny(virConnectPtr conn,
     int callbackID = -1;
 
     if (virConnectStoragePoolEventRegisterAnyEnsureACL(conn) < 0)
-        goto cleanup;
+        return -1;
 
     if (virStoragePoolEventStateRegisterID(conn, driver->storageEventState,
                                            pool, eventID, callback,
                                            opaque, freecb, &callbackID) < 0)
         callbackID = -1;
- cleanup:
+
     return callbackID;
 }
 

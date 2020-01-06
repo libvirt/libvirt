@@ -572,13 +572,11 @@ virStorageBackendISCSIDirectSetConnection(virStoragePoolObjPtr pool,
     if (portalRet)
         *portalRet = g_steal_pointer(&portal);
 
- cleanup:
     return iscsi;
 
  error:
     iscsi_destroy_context(iscsi);
-    iscsi = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 static int
