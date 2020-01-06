@@ -791,7 +791,7 @@ testParseNodeInfo(virNodeInfoPtr nodeInfo, xmlXPathContextPtr ctxt)
     } else if (ret == -2) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("invalid node cpu nodes value"));
-        goto error;
+        return -1;
     }
 
     ret = virXPathLong("string(/node/cpu/sockets[1])", ctxt, &l);
@@ -800,7 +800,7 @@ testParseNodeInfo(virNodeInfoPtr nodeInfo, xmlXPathContextPtr ctxt)
     } else if (ret == -2) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("invalid node cpu sockets value"));
-        goto error;
+        return -1;
     }
 
     ret = virXPathLong("string(/node/cpu/cores[1])", ctxt, &l);
@@ -809,7 +809,7 @@ testParseNodeInfo(virNodeInfoPtr nodeInfo, xmlXPathContextPtr ctxt)
     } else if (ret == -2) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("invalid node cpu cores value"));
-        goto error;
+        return -1;
     }
 
     ret = virXPathLong("string(/node/cpu/threads[1])", ctxt, &l);
@@ -818,7 +818,7 @@ testParseNodeInfo(virNodeInfoPtr nodeInfo, xmlXPathContextPtr ctxt)
     } else if (ret == -2) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("invalid node cpu threads value"));
-        goto error;
+        return -1;
     }
 
     nodeInfo->cpus = (nodeInfo->cores * nodeInfo->threads *
@@ -830,7 +830,7 @@ testParseNodeInfo(virNodeInfoPtr nodeInfo, xmlXPathContextPtr ctxt)
     } else if (ret == -2) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("invalid node cpu active value"));
-        goto error;
+        return -1;
     }
     ret = virXPathLong("string(/node/cpu/mhz[1])", ctxt, &l);
     if (ret == 0) {
@@ -838,7 +838,7 @@ testParseNodeInfo(virNodeInfoPtr nodeInfo, xmlXPathContextPtr ctxt)
     } else if (ret == -2) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("invalid node cpu mhz value"));
-        goto error;
+        return -1;
     }
 
     str = virXPathString("string(/node/cpu/model[1])", ctxt);
@@ -846,7 +846,7 @@ testParseNodeInfo(virNodeInfoPtr nodeInfo, xmlXPathContextPtr ctxt)
         if (virStrcpyStatic(nodeInfo->model, str) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Model %s too big for destination"), str);
-            goto error;
+            return -1;
         }
     }
 
@@ -856,12 +856,10 @@ testParseNodeInfo(virNodeInfoPtr nodeInfo, xmlXPathContextPtr ctxt)
     } else if (ret == -2) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("invalid node memory value"));
-        goto error;
+        return -1;
     }
 
     return 0;
- error:
-    return -1;
 }
 
 static int
@@ -871,7 +869,6 @@ testParseDomainSnapshots(testDriverPtr privconn,
                          xmlXPathContextPtr ctxt)
 {
     size_t i;
-    int ret = -1;
     testDomainNamespaceDefPtr nsdata = domobj->def->namespaceData;
     xmlNodePtr *nodes = nsdata->snap_nodes;
     bool cur;
@@ -882,7 +879,7 @@ testParseDomainSnapshots(testDriverPtr privconn,
         xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file,
                                                   "domainsnapshot");
         if (!node)
-            goto error;
+            return -1;
 
         def = virDomainSnapshotDefParseNode(ctxt->doc, node,
                                             privconn->xmlopt,
@@ -892,18 +889,18 @@ testParseDomainSnapshots(testDriverPtr privconn,
                                             VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL |
                                             VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE);
         if (!def)
-            goto error;
+            return -1;
 
         if (!(snap = virDomainSnapshotAssignDef(domobj->snapshots, def))) {
             virObjectUnref(def);
-            goto error;
+            return -1;
         }
 
         if (cur) {
             if (virDomainSnapshotGetCurrent(domobj->snapshots)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("more than one snapshot claims to be active"));
-                goto error;
+                return -1;
             }
 
             virDomainSnapshotSetCurrent(domobj->snapshots, snap);
@@ -914,12 +911,10 @@ testParseDomainSnapshots(testDriverPtr privconn,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Snapshots have inconsistent relations for "
                          "domain %s"), domobj->def->name);
-        goto error;
+        return -1;
     }
 
-    ret = 0;
- error:
-    return ret;
+    return 0;
 }
 
 static int
@@ -1236,27 +1231,25 @@ testOpenParse(testDriverPtr privconn,
     if (!virXMLNodeNameEqual(ctxt->node, "node")) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Root element is not 'node'"));
-        goto error;
+        return -1;
     }
 
     if (testParseNodeInfo(&privconn->nodeInfo, ctxt) < 0)
-        goto error;
+        return -1;
     if (testParseDomains(privconn, file, ctxt) < 0)
-        goto error;
+        return -1;
     if (testParseNetworks(privconn, file, ctxt) < 0)
-        goto error;
+        return -1;
     if (testParseInterfaces(privconn, file, ctxt) < 0)
-        goto error;
+        return -1;
     if (testParseStorage(privconn, file, ctxt) < 0)
-        goto error;
+        return -1;
     if (testParseNodedevs(privconn, file, ctxt) < 0)
-        goto error;
+        return -1;
     if (testParseAuthUsers(privconn, ctxt) < 0)
-        goto error;
+        return -1;
 
     return 0;
- error:
-    return -1;
 }
 
 /* No shared state between simultaneous test connections initialized
