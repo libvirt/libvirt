@@ -33,9 +33,9 @@ gint
 vir_g_fsync(gint fd)
 {
 #ifdef G_OS_WIN32
-  return _commit(fd);
+    return _commit(fd);
 #else
-  return fsync(fd);
+    return fsync(fd);
 #endif
 }
 
@@ -46,23 +46,23 @@ vir_g_fsync(gint fd)
 char *
 vir_g_strdup_printf(const char *msg, ...)
 {
-  va_list args;
-  char *ret;
-  va_start(args, msg);
-  ret = g_strdup_vprintf(msg, args);
-  if (!ret)
-    abort();
-  va_end(args);
-  return ret;
+    va_list args;
+    char *ret;
+    va_start(args, msg);
+    ret = g_strdup_vprintf(msg, args);
+    if (!ret)
+        abort();
+    va_end(args);
+    return ret;
 }
 
 
 char *
 vir_g_strdup_vprintf(const char *msg, va_list args)
 {
-  char *ret;
-  ret = g_strdup_vprintf(msg, args);
-  if (!ret)
-    abort();
-  return ret;
+    char *ret;
+    ret = g_strdup_vprintf(msg, args);
+    if (!ret)
+        abort();
+    return ret;
 }
