@@ -380,18 +380,15 @@ static int lxcContainerSetupFDs(int *ttyfd,
  */
 int lxcContainerSendContinue(int control)
 {
-    int rc = -1;
     lxc_message_t msg = LXC_CONTINUE_MSG;
     int writeCount = 0;
 
     VIR_DEBUG("Send continue on fd %d", control);
     writeCount = safewrite(control, &msg, sizeof(msg));
     if (writeCount != sizeof(msg))
-        goto error_out;
+        return -1;
 
-    rc = 0;
- error_out:
-    return rc;
+    return 0;
 }
 
 /**

@@ -1115,7 +1115,7 @@ static void virLXCControllerConsoleUpdateWatch(virLXCControllerConsolePtr consol
                 virReportSystemError(errno, "%s",
                                      _("Unable to add epoll fd"));
                 virNetDaemonQuit(console->daemon);
-                goto cleanup;
+                return;
             }
             console->hostEpoll = events;
             VIR_DEBUG("newHostEvents=%x oldHostEvents=%x", events, console->hostEpoll);
@@ -1127,7 +1127,7 @@ static void virLXCControllerConsoleUpdateWatch(virLXCControllerConsolePtr consol
                                  _("Unable to remove epoll fd"));
             VIR_DEBUG(":fail");
             virNetDaemonQuit(console->daemon);
-            goto cleanup;
+            return;
         }
         console->hostEpoll = 0;
     }
@@ -1153,7 +1153,7 @@ static void virLXCControllerConsoleUpdateWatch(virLXCControllerConsolePtr consol
                                      _("Unable to add epoll fd"));
                 VIR_DEBUG(":fail");
                 virNetDaemonQuit(console->daemon);
-                goto cleanup;
+                return;
             }
             console->contEpoll = events;
             VIR_DEBUG("newHostEvents=%x oldHostEvents=%x", events, console->contEpoll);
@@ -1165,12 +1165,10 @@ static void virLXCControllerConsoleUpdateWatch(virLXCControllerConsolePtr consol
                                  _("Unable to remove epoll fd"));
             VIR_DEBUG(":fail");
             virNetDaemonQuit(console->daemon);
-            goto cleanup;
+            return;
         }
         console->contEpoll = 0;
     }
- cleanup:
-    return;
 }
 
 
