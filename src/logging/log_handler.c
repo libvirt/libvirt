@@ -196,10 +196,10 @@ virLogHandlerNew(bool privileged,
     virLogHandlerPtr handler;
 
     if (virLogHandlerInitialize() < 0)
-        goto error;
+        return NULL;
 
     if (!(handler = virObjectLockableNew(virLogHandlerClass)))
-        goto error;
+        return NULL;
 
     handler->privileged = privileged;
     handler->max_size = max_size;
@@ -208,9 +208,6 @@ virLogHandlerNew(bool privileged,
     handler->opaque = opaque;
 
     return handler;
-
- error:
-    return NULL;
 }
 
 

@@ -213,7 +213,6 @@ virLogManagerDomainGetLogFilePosition(virLogManagerPtr mgr,
 {
     struct virLogManagerProtocolDomainGetLogFilePositionArgs args;
     struct virLogManagerProtocolDomainGetLogFilePositionRet ret;
-    int rv = -1;
 
     memset(&args, 0, sizeof(args));
     memset(&ret, 0, sizeof(ret));
@@ -228,14 +227,12 @@ virLogManagerDomainGetLogFilePosition(virLogManagerPtr mgr,
                                 0, NULL, NULL, NULL,
                                 (xdrproc_t)xdr_virLogManagerProtocolDomainGetLogFilePositionArgs, &args,
                                 (xdrproc_t)xdr_virLogManagerProtocolDomainGetLogFilePositionRet, &ret) < 0)
-        goto cleanup;
+        return -1;
 
     *inode = ret.pos.inode;
     *offset = ret.pos.offset;
 
-    rv = 0;
- cleanup:
-    return rv;
+    return 0;
 }
 
 
@@ -249,7 +246,6 @@ virLogManagerDomainReadLogFile(virLogManagerPtr mgr,
 {
     struct virLogManagerProtocolDomainReadLogFileArgs args;
     struct virLogManagerProtocolDomainReadLogFileRet ret;
-    char *rv = NULL;
 
     memset(&args, 0, sizeof(args));
     memset(&ret, 0, sizeof(ret));
@@ -267,11 +263,9 @@ virLogManagerDomainReadLogFile(virLogManagerPtr mgr,
                                 0, NULL, NULL, NULL,
                                 (xdrproc_t)xdr_virLogManagerProtocolDomainReadLogFileArgs, &args,
                                 (xdrproc_t)xdr_virLogManagerProtocolDomainReadLogFileRet, &ret) < 0)
-        goto cleanup;
+        return NULL;
 
-    rv = ret.data;
- cleanup:
-    return rv;
+    return ret.data;
 }
 
 
