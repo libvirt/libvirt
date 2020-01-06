@@ -29,11 +29,6 @@ virCgroupV2DevicesAvailable(virCgroupPtr group)
     G_GNUC_NO_INLINE;
 
 int
-virCgroupV2DevicesAttachProg(virCgroupPtr group,
-                             int mapfd,
-                             size_t max);
-
-int
 virCgroupV2DevicesDetectProg(virCgroupPtr group);
 
 int

@@ -274,7 +274,7 @@ virCgroupV2DevicesLoadProg(int mapfd)
 }
 
 
-int
+static int
 virCgroupV2DevicesAttachProg(virCgroupPtr group,
                              int mapfd,
                              size_t max)
@@ -588,18 +588,6 @@ bool
 virCgroupV2DevicesAvailable(virCgroupPtr group G_GNUC_UNUSED)
 {
     return false;
-}
-
-
-int
-virCgroupV2DevicesAttachProg(virCgroupPtr group G_GNUC_UNUSED,
-                             int mapfd G_GNUC_UNUSED,
-                             size_t max G_GNUC_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s",
-                         _("cgroups v2 BPF devices not supported "
-                           "with this kernel"));
-    return -1;
 }
 
 
