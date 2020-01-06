@@ -230,19 +230,19 @@ daemonConfigLoadOptions(struct daemonConfig *data,
 {
 #ifdef WITH_IP
     if (virConfGetValueBool(conf, "listen_tcp", &data->listen_tcp) < 0)
-        goto error;
+        return -1;
     if (virConfGetValueBool(conf, "listen_tls", &data->listen_tls) < 0)
-        goto error;
+        return -1;
     if (virConfGetValueString(conf, "tls_port", &data->tls_port) < 0)
-        goto error;
+        return -1;
     if (virConfGetValueString(conf, "tcp_port", &data->tcp_port) < 0)
-        goto error;
+        return -1;
     if (virConfGetValueString(conf, "listen_addr", &data->listen_addr) < 0)
-        goto error;
+        return -1;
 #endif /* !WITH_IP */
 
     if (remoteConfigGetAuth(conf, filename, "auth_unix_rw", &data->auth_unix_rw) < 0)
-        goto error;
+        return -1;
 #if WITH_POLKIT
     /* Change default perms to be wide-open if PolicyKit is enabled.
      * Admin can always override in config file
@@ -253,125 +253,122 @@ daemonConfigLoadOptions(struct daemonConfig *data,
     }
 #endif
     if (remoteConfigGetAuth(conf, filename, "auth_unix_ro", &data->auth_unix_ro) < 0)
-        goto error;
+        return -1;
 
 #ifdef WITH_IP
     if (remoteConfigGetAuth(conf, filename, "auth_tcp", &data->auth_tcp) < 0)
-        goto error;
+        return -1;
     if (remoteConfigGetAuth(conf, filename, "auth_tls", &data->auth_tls) < 0)
-        goto error;
+        return -1;
 #endif /* ! WITH_IP */
 
     if (virConfGetValueStringList(conf, "access_drivers", false,
                                   &data->access_drivers) < 0)
-        goto error;
+        return -1;
 
     if (virConfGetValueString(conf, "unix_sock_group", &data->unix_sock_group) < 0)
-        goto error;
+        return -1;
     if (virConfGetValueString(conf, "unix_sock_admin_perms", &data->unix_sock_admin_perms) < 0)
-        goto error;
+        return -1;
     if (virConfGetValueString(conf, "unix_sock_ro_perms", &data->unix_sock_ro_perms) < 0)
-        goto error;
+        return -1;
     if (virConfGetValueString(conf, "unix_sock_rw_perms", &data->unix_sock_rw_perms) < 0)
-        goto error;
+        return -1;
 
     if (virConfGetValueString(conf, "unix_sock_dir", &data->unix_sock_dir) < 0)
-        goto error;
+        return -1;
 
 #ifdef WITH_IP
     if (virConfGetValueBool(conf, "tls_no_sanity_certificate", &data->tls_no_sanity_certificate) < 0)
-        goto error;
+        return -1;
     if (virConfGetValueBool(conf, "tls_no_verify_certificate", &data->tls_no_verify_certificate) < 0)
-        goto error;
+        return -1;
 
     if (virConfGetValueString(conf, "key_file", &data->key_file) < 0)
-        goto error;
+        return -1;
     if (virConfGetValueString(conf, "cert_file", &data->cert_file) < 0)
-        goto error;
+        return -1;
     if (virConfGetValueString(conf, "ca_file", &data->ca_file) < 0)
-        goto error;
+        return -1;
     if (virConfGetValueString(conf, "crl_file", &data->crl_file) < 0)
-        goto error;
+        return -1;
 
     if (virConfGetValueStringList(conf, "tls_allowed_dn_list", false,
                                   &data->tls_allowed_dn_list) < 0)
-        goto error;
+        return -1;
 
     if (virConfGetValueString(conf, "tls_priority", &data->tls_priority) < 0)
-        goto error;
+        return -1;
 #endif /* ! WITH_IP */
 
     if (virConfGetValueStringList(conf, "sasl_allowed_username_list", false,
                                   &data->sasl_allowed_username_list) < 0)
-        goto error;
+        return -1;
 
     if (virConfGetValueUInt(conf, "min_workers", &data->min_workers) < 0)
-        goto error;
+        return -1;
     if (virConfGetValueUInt(conf, "max_workers", &data->max_workers) < 0)
-        goto error;
+        return -1;
     if (data->max_workers < 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("'max_workers' must be greater than 0"));
-        goto error;
+        return -1;
     }
     if (virConfGetValueUInt(conf, "max_clients", &data->max_clients) < 0)
-        goto error;
+        return -1;
     if (virConfGetValueUInt(conf, "max_queued_clients", &data->max_queued_clients) < 0)
-        goto error;
+        return -1;
     if (virConfGetValueUInt(conf, "max_anonymous_clients", &data->max_anonymous_clients) < 0)
-        goto error;
+        return -1;
 
     if (virConfGetValueUInt(conf, "prio_workers", &data->prio_workers) < 0)
-        goto error;
+        return -1;
 
     if (virConfGetValueUInt(conf, "max_client_requests", &data->max_client_requests) < 0)
-        goto error;
+        return -1;
 
     if (virConfGetValueUInt(conf, "admin_min_workers", &data->admin_min_workers) < 0)
-        goto error;
+        return -1;
     if (virConfGetValueUInt(conf, "admin_max_workers", &data->admin_max_workers) < 0)
-        goto error;
+        return -1;
     if (virConfGetValueUInt(conf, "admin_max_clients", &data->admin_max_clients) < 0)
-        goto error;
+        return -1;
     if (virConfGetValueUInt(conf, "admin_max_queued_clients", &data->admin_max_queued_clients) < 0)
-        goto error;
+        return -1;
     if (virConfGetValueUInt(conf, "admin_max_client_requests", &data->admin_max_client_requests) < 0)
-        goto error;
+        return -1;
 
     if (virConfGetValueUInt(conf, "audit_level", &data->audit_level) < 0)
-        goto error;
+        return -1;
     if (virConfGetValueBool(conf, "audit_logging", &data->audit_logging) < 0)
-        goto error;
+        return -1;
 
     if (virConfGetValueString(conf, "host_uuid", &data->host_uuid) < 0)
-        goto error;
+        return -1;
     if (virConfGetValueString(conf, "host_uuid_source", &data->host_uuid_source) < 0)
-        goto error;
+        return -1;
 
     if (virConfGetValueUInt(conf, "log_level", &data->log_level) < 0)
-        goto error;
+        return -1;
     if (virConfGetValueString(conf, "log_filters", &data->log_filters) < 0)
-        goto error;
+        return -1;
     if (virConfGetValueString(conf, "log_outputs", &data->log_outputs) < 0)
-        goto error;
+        return -1;
 
     if (virConfGetValueInt(conf, "keepalive_interval", &data->keepalive_interval) < 0)
-        goto error;
+        return -1;
     if (virConfGetValueUInt(conf, "keepalive_count", &data->keepalive_count) < 0)
-        goto error;
+        return -1;
 
     if (virConfGetValueInt(conf, "admin_keepalive_interval", &data->admin_keepalive_interval) < 0)
-        goto error;
+        return -1;
     if (virConfGetValueUInt(conf, "admin_keepalive_count", &data->admin_keepalive_count) < 0)
-        goto error;
+        return -1;
 
     if (virConfGetValueUInt(conf, "ovs_timeout", &data->ovs_timeout) < 0)
-        goto error;
+        return -1;
 
     return 0;
-
- error:
-    return -1;
 }
 
 
