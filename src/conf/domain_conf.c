@@ -3682,8 +3682,6 @@ virDomainObjSetDefTransient(virDomainXMLOptionPtr xmlopt,
                             virDomainObjPtr domain,
                             void *parseOpaque)
 {
-    int ret = -1;
-
     if (!domain->persistent)
         return 0;
 
@@ -3692,11 +3690,9 @@ virDomainObjSetDefTransient(virDomainXMLOptionPtr xmlopt,
 
     if (!(domain->newDef = virDomainDefCopy(domain->def, xmlopt,
                                             parseOpaque, false)))
-        goto out;
+        return -1;
 
-    ret = 0;
- out:
-    return ret;
+    return 0;
 }
 
 
@@ -7701,7 +7697,6 @@ static int
 virDomainHostdevSubsysUSBDefParseXML(xmlNodePtr node,
                                      virDomainHostdevDefPtr def)
 {
-    int ret = -1;
     bool got_product, got_vendor;
     xmlNodePtr cur;
     virDomainHostdevSubsysUSBPtr usbsrc = &def->source.subsys.u.usb;
@@ -7715,7 +7710,7 @@ virDomainHostdevSubsysUSBDefParseXML(xmlNodePtr node,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unknown startup policy '%s'"),
                            startupPolicy);
-            goto out;
+            return -1;
         }
     }
 
@@ -7738,12 +7733,12 @@ virDomainHostdevSubsysUSBDefParseXML(xmlNodePtr node,
                     if (virStrToLong_ui(vendor, NULL, 0, &usbsrc->vendor) < 0) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
                                        _("cannot parse vendor id %s"), vendor);
-                        goto out;
+                        return -1;
                     }
                 } else {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    "%s", _("usb vendor needs id"));
-                    goto out;
+                    return -1;
                 }
             } else if (virXMLNodeNameEqual(cur, "product")) {
                 g_autofree char *product = virXMLPropString(cur, "id");
@@ -7755,12 +7750,12 @@ virDomainHostdevSubsysUSBDefParseXML(xmlNodePtr node,
                         virReportError(VIR_ERR_INTERNAL_ERROR,
                                        _("cannot parse product %s"),
                                        product);
-                        goto out;
+                        return -1;
                     }
                 } else {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    "%s", _("usb product needs id"));
-                    goto out;
+                    return -1;
                 }
             } else if (virXMLNodeNameEqual(cur, "address")) {
                 g_autofree char *bus = NULL;
@@ -7771,12 +7766,12 @@ virDomainHostdevSubsysUSBDefParseXML(xmlNodePtr node,
                     if (virStrToLong_ui(bus, NULL, 0, &usbsrc->bus) < 0) {
                         virReportError(VIR_ERR_INTERNAL_ERROR,
                                        _("cannot parse bus %s"), bus);
-                        goto out;
+                        return -1;
                     }
                 } else {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    "%s", _("usb address needs bus id"));
-                    goto out;
+                    return -1;
                 }
 
                 device = virXMLPropString(cur, "device");
@@ -7785,18 +7780,18 @@ virDomainHostdevSubsysUSBDefParseXML(xmlNodePtr node,
                         virReportError(VIR_ERR_INTERNAL_ERROR,
                                        _("cannot parse device %s"),
                                        device);
-                        goto out;
+                        return -1;
                     }
                 } else {
                     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("usb address needs device id"));
-                    goto out;
+                    return -1;
                 }
             } else {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("unknown usb source type '%s'"),
                                cur->name);
-                goto out;
+                return -1;
             }
         }
         cur = cur->next;
@@ -7805,23 +7800,21 @@ virDomainHostdevSubsysUSBDefParseXML(xmlNodePtr node,
     if (got_vendor && usbsrc->vendor == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("vendor cannot be 0."));
-        goto out;
+        return -1;
     }
 
     if (!got_vendor && got_product) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("missing vendor"));
-        goto out;
+        return -1;
     }
     if (got_vendor && !got_product) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("missing product"));
-        goto out;
+        return -1;
     }
 
-    ret = 0;
- out:
-    return ret;
+    return 0;
 }
 
 /* The internal XML for host PCI device's original states:
@@ -7865,7 +7858,6 @@ virDomainHostdevSubsysPCIDefParseXML(xmlNodePtr node,
                                      virDomainHostdevDefPtr def,
                                      unsigned int flags)
 {
-    int ret = -1;
     xmlNodePtr cur;
 
     cur = node->children;
@@ -7876,25 +7868,23 @@ virDomainHostdevSubsysPCIDefParseXML(xmlNodePtr node,
                     &def->source.subsys.u.pci.addr;
 
                 if (virPCIDeviceAddressParseXML(cur, addr) < 0)
-                    goto out;
+                    return -1;
             } else if ((flags & VIR_DOMAIN_DEF_PARSE_PCI_ORIG_STATES) &&
                        virXMLNodeNameEqual(cur, "origstates")) {
                 virDomainHostdevOrigStatesPtr states = &def->origstates;
                 if (virDomainHostdevSubsysPCIOrigStatesDefParseXML(cur, states) < 0)
-                    goto out;
+                    return -1;
             } else {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("unknown pci source type '%s'"),
                                cur->name);
-                goto out;
+                return -1;
             }
         }
         cur = cur->next;
     }
 
-    ret = 0;
- out:
-    return ret;
+    return 0;
 }
 
 
@@ -8622,7 +8612,6 @@ virDomainHostdevDefParseXMLCaps(xmlNodePtr node G_GNUC_UNUSED,
                                 virDomainHostdevDefPtr def)
 {
     xmlNodePtr sourcenode;
-    int ret = -1;
 
     /* @type is passed in from the caller rather than read from the
      * xml document, because it is specified in different places for
@@ -8638,18 +8627,18 @@ virDomainHostdevDefParseXMLCaps(xmlNodePtr node G_GNUC_UNUSED,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown host device source address type '%s'"),
                            type);
-            goto error;
+            return -1;
         }
     } else {
         virReportError(VIR_ERR_XML_ERROR,
                        "%s", _("missing source address type"));
-        goto error;
+        return -1;
     }
 
     if (!(sourcenode = virXPathNode("./source", ctxt))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Missing <source> element in hostdev device"));
-        goto error;
+        return -1;
     }
 
     switch (def->source.caps.type) {
@@ -8658,7 +8647,7 @@ virDomainHostdevDefParseXMLCaps(xmlNodePtr node G_GNUC_UNUSED,
               virXPathString("string(./source/block[1])", ctxt))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Missing <block> element in hostdev storage device"));
-            goto error;
+            return -1;
         }
         break;
     case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_MISC:
@@ -8666,7 +8655,7 @@ virDomainHostdevDefParseXMLCaps(xmlNodePtr node G_GNUC_UNUSED,
               virXPathString("string(./source/char[1])", ctxt))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Missing <char> element in hostdev character device"));
-            goto error;
+            return -1;
         }
         break;
     case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET:
@@ -8674,21 +8663,20 @@ virDomainHostdevDefParseXMLCaps(xmlNodePtr node G_GNUC_UNUSED,
               virXPathString("string(./source/interface[1])", ctxt))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Missing <interface> element in hostdev net device"));
-            goto error;
+            return -1;
         }
         if (virDomainNetIPInfoParseXML(_("Domain hostdev device"),
                                        ctxt, &def->source.caps.u.net.ip) < 0)
-            goto error;
+            return -1;
         break;
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("address type='%s' not supported in hostdev interfaces"),
                        virDomainHostdevCapsTypeToString(def->source.caps.type));
-        goto error;
+        return -1;
     }
-    ret = 0;
- error:
-    return ret;
+
+    return 0;
 }
 
 
@@ -9166,13 +9154,11 @@ virDomainLeaseDefParseXML(xmlNodePtr node)
     def->lockspace = g_steal_pointer(&lockspace);
     def->path = g_steal_pointer(&path);
 
- cleanup:
     return def;
 
  error:
     virDomainLeaseDefFree(def);
-    def = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 static int
@@ -11084,13 +11070,11 @@ virDomainControllerDefParseXML(virDomainXMLOptionPtr xmlopt,
         break;
     }
 
- cleanup:
     return def;
 
  error:
     virDomainControllerDefFree(def);
-    def = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 
@@ -11277,13 +11261,11 @@ virDomainFSDefParseXML(virDomainXMLOptionPtr xmlopt,
     if (virDomainDeviceInfoParseXML(xmlopt, node, &def->info, flags) < 0)
         goto error;
 
- cleanup:
     return def;
 
  error:
     virDomainFSDefFree(def);
-    def = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 static int
@@ -13037,13 +13019,11 @@ virDomainChrDefParseXML(virDomainXMLOptionPtr xmlopt,
         goto error;
     }
 
- cleanup:
     return def;
 
  error:
     virDomainChrDefFree(def);
-    def = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 static virDomainSmartcardDefPtr
@@ -13167,13 +13147,11 @@ virDomainSmartcardDefParseXML(virDomainXMLOptionPtr xmlopt,
         goto error;
     }
 
- cleanup:
     return def;
 
  error:
     virDomainSmartcardDefFree(def);
-    def = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 /* Parse the XML definition for a TPM device
@@ -13295,13 +13273,11 @@ virDomainTPMDefParseXML(virDomainXMLOptionPtr xmlopt,
     if (virDomainDeviceInfoParseXML(xmlopt, node, &def->info, flags) < 0)
         goto error;
 
- cleanup:
     return def;
 
  error:
     virDomainTPMDefFree(def);
-    def = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 static virDomainPanicDefPtr
@@ -13327,13 +13303,11 @@ virDomainPanicDefParseXML(virDomainXMLOptionPtr xmlopt,
         goto error;
     }
 
- cleanup:
     return panic;
 
  error:
     virDomainPanicDefFree(panic);
-    panic = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 /* Parse the XML definition for an input device */
@@ -13485,13 +13459,11 @@ virDomainInputDefParseXML(virDomainXMLOptionPtr xmlopt,
                                        &def->virtio) < 0)
         goto error;
 
- cleanup:
     return def;
 
  error:
     virDomainInputDefFree(def);
-    def = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 
@@ -13524,13 +13496,11 @@ virDomainHubDefParseXML(virDomainXMLOptionPtr xmlopt,
     if (virDomainDeviceInfoParseXML(xmlopt, node, &def->info, flags) < 0)
         goto error;
 
- cleanup:
     return def;
 
  error:
     virDomainHubDefFree(def);
-    def = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 
@@ -13649,12 +13619,11 @@ virDomainTimerDefParseXML(xmlNodePtr node,
         }
     }
 
- cleanup:
     return def;
 
  error:
     VIR_FREE(def);
-    goto cleanup;
+    return def;
 }
 
 
@@ -14541,13 +14510,12 @@ virDomainGraphicsDefParseXML(virDomainXMLOptionPtr xmlopt,
         break;
     }
 
- cleanup:
     return def;
 
  error:
     virDomainGraphicsDefFree(def);
     def = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 
@@ -14567,13 +14535,11 @@ virDomainSoundCodecDefParseXML(xmlNodePtr node)
         goto error;
     }
 
- cleanup:
     return def;
 
  error:
     virDomainSoundCodecDefFree(def);
-    def = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 
@@ -14629,13 +14595,11 @@ virDomainSoundDefParseXML(virDomainXMLOptionPtr xmlopt,
     if (virDomainDeviceInfoParseXML(xmlopt, node, &def->info, flags) < 0)
         goto error;
 
- cleanup:
     return def;
 
  error:
     virDomainSoundDefFree(def);
-    def = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 
@@ -14719,13 +14683,11 @@ virDomainWatchdogDefParseXML(virDomainXMLOptionPtr xmlopt,
     if (virDomainDeviceInfoParseXML(xmlopt, node, &def->info, flags) < 0)
         goto error;
 
- cleanup:
     return def;
 
  error:
     virDomainWatchdogDefFree(def);
-    def = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 
@@ -14832,13 +14794,12 @@ virDomainRNGDefParseXML(virDomainXMLOptionPtr xmlopt,
                                        &def->virtio) < 0)
         goto error;
 
- cleanup:
     return def;
 
  error:
     virDomainRNGDefFree(def);
     def = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 
@@ -14898,13 +14859,11 @@ virDomainMemballoonDefParseXML(virDomainXMLOptionPtr xmlopt,
                                        &def->virtio) < 0)
         goto error;
 
- cleanup:
     return def;
 
  error:
     virDomainMemballoonDefFree(def);
-    def = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 static virDomainNVRAMDefPtr
@@ -15350,13 +15309,11 @@ virSysinfoParseXML(xmlNodePtr node,
             goto error;
     }
 
- cleanup:
     return def;
 
  error:
     virSysinfoDefFree(def);
-    def = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 unsigned int
@@ -15544,16 +15501,15 @@ virDomainVideoDriverDefParseXML(xmlNodePtr node)
         return NULL;
 
     if (VIR_ALLOC(def) < 0)
-        goto cleanup;
+        return def;
 
     if ((val = virDomainVideoVGAConfTypeFromString(vgaconf)) <= 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown vgaconf value '%s'"), vgaconf);
-        goto cleanup;
+        return def;
     }
     def->vgaconf = val;
 
- cleanup:
     return def;
 }
 
@@ -15707,13 +15663,11 @@ virDomainVideoDefParseXML(virDomainXMLOptionPtr xmlopt,
 
     def->driver = virDomainVideoDriverDefParseXML(node);
 
- cleanup:
     return def;
 
  error:
     virDomainVideoDefFree(def);
-    def = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 static virDomainHostdevDefPtr
@@ -15783,13 +15737,11 @@ virDomainHostdevDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
     }
 
- cleanup:
     return def;
 
  error:
     virDomainHostdevDefFree(def);
-    def = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 
@@ -15856,14 +15808,11 @@ virDomainRedirdevDefParseXML(virDomainXMLOptionPtr xmlopt,
         goto error;
     }
 
-
- cleanup:
     return def;
 
  error:
     virDomainRedirdevDefFree(def);
-    def = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 /*
@@ -15979,13 +15928,11 @@ virDomainRedirFilterUSBDevDefParseXML(xmlNodePtr node)
         goto error;
     }
 
- cleanup:
     return def;
 
  error:
     VIR_FREE(def);
-    def = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 static virDomainRedirFilterDefPtr
@@ -16284,13 +16231,11 @@ virDomainSEVDefParseXML(xmlNodePtr sevNode,
     def->dh_cert = virXPathString("string(./dhCert)", ctxt);
     def->session = virXPathString("string(./session)", ctxt);
 
- cleanup:
     return def;
 
  error:
     virDomainSEVDefFree(def);
-    def = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 static virDomainMemoryDefPtr
@@ -18238,7 +18183,7 @@ virDomainIdmapDefParseXML(xmlXPathContextPtr ctxt,
     VIR_XPATH_NODE_AUTORESTORE(ctxt);
 
     if (VIR_ALLOC_N(idmap, num) < 0)
-        goto cleanup;
+        return idmap;
 
     for (i = 0; i < num; i++) {
         ctxt->node = node[i];
@@ -18248,7 +18193,7 @@ virDomainIdmapDefParseXML(xmlXPathContextPtr ctxt,
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("invalid idmap start/target/count settings"));
             VIR_FREE(idmap);
-            goto cleanup;
+            return NULL;
         }
     }
 
@@ -18260,10 +18205,9 @@ virDomainIdmapDefParseXML(xmlXPathContextPtr ctxt,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("You must map the root user of container"));
         VIR_FREE(idmap);
-        goto cleanup;
+        return NULL;
     }
 
- cleanup:
     return idmap;
 }
 
@@ -18300,13 +18244,12 @@ virDomainIOThreadIDDefParseXML(xmlNodePtr node)
         goto error;
     }
 
- cleanup:
     return iothrid;
 
  error:
     virDomainIOThreadIDDefFree(iothrid);
     iothrid = NULL;
-    goto cleanup;
+    return iothrid;
 }
 
 
@@ -29000,18 +28943,15 @@ virDomainObjFormat(virDomainObjPtr obj,
 
     if (xmlopt->privateData.format &&
         xmlopt->privateData.format(&buf, obj) < 0)
-        goto error;
+        return NULL;
 
     if (virDomainDefFormatInternal(obj->def, xmlopt, &buf, flags) < 0)
-        goto error;
+        return NULL;
 
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</domstatus>\n");
 
     return virBufferContentAndReset(&buf);
-
- error:
-    return NULL;
 }
 
 static bool
@@ -29318,7 +29258,7 @@ virDomainChrDefForeach(virDomainDefPtr def,
             rc = -1;
 
         if (abortOnError && rc != 0)
-            goto done;
+            return rc;
     }
 
     for (i = 0; i < def->nparallels; i++) {
@@ -29328,7 +29268,7 @@ virDomainChrDefForeach(virDomainDefPtr def,
             rc = -1;
 
         if (abortOnError && rc != 0)
-            goto done;
+            return rc;
     }
 
     for (i = 0; i < def->nchannels; i++) {
@@ -29338,7 +29278,7 @@ virDomainChrDefForeach(virDomainDefPtr def,
             rc = -1;
 
         if (abortOnError && rc != 0)
-            goto done;
+            return rc;
     }
     for (i = 0; i < def->nconsoles; i++) {
         if (virDomainSkipBackcompatConsole(def, i, false))
@@ -29349,10 +29289,9 @@ virDomainChrDefForeach(virDomainDefPtr def,
             rc = -1;
 
         if (abortOnError && rc != 0)
-            goto done;
+            return rc;
     }
 
- done:
     return rc;
 }
 
@@ -29373,10 +29312,9 @@ virDomainSmartcardDefForeach(virDomainDefPtr def,
             rc = -1;
 
         if (abortOnError && rc != 0)
-            goto done;
+            return rc;
     }
 
- done:
     return rc;
 }
 

@@ -992,7 +992,6 @@ virCPUDefIsEqual(virCPUDefPtr src,
                  virCPUDefPtr dst,
                  bool reportError)
 {
-    bool identical = false;
     size_t i;
 
     if (!src && !dst)
@@ -1004,91 +1003,91 @@ virCPUDefIsEqual(virCPUDefPtr src,
 
     if ((src && !dst) || (!src && dst)) {
         MISMATCH("%s", _("Target CPU does not match source"));
-        goto cleanup;
+        return false;
     }
 
     if (src->type != dst->type) {
         MISMATCH(_("Target CPU type %s does not match source %s"),
                  virCPUTypeToString(dst->type),
                  virCPUTypeToString(src->type));
-        goto cleanup;
+        return false;
     }
 
     if (src->mode != dst->mode) {
         MISMATCH(_("Target CPU mode %s does not match source %s"),
                  virCPUModeTypeToString(dst->mode),
                  virCPUModeTypeToString(src->mode));
-        goto cleanup;
+        return false;
     }
 
     if (src->check != dst->check) {
         MISMATCH(_("Target CPU check %s does not match source %s"),
                  virCPUCheckTypeToString(dst->check),
                  virCPUCheckTypeToString(src->check));
-        goto cleanup;
+        return false;
     }
 
     if (src->arch != dst->arch) {
         MISMATCH(_("Target CPU arch %s does not match source %s"),
                  virArchToString(dst->arch),
                  virArchToString(src->arch));
-        goto cleanup;
+        return false;
     }
 
     if (STRNEQ_NULLABLE(src->model, dst->model)) {
         MISMATCH(_("Target CPU model %s does not match source %s"),
                  NULLSTR(dst->model), NULLSTR(src->model));
-        goto cleanup;
+        return false;
     }
 
     if (STRNEQ_NULLABLE(src->vendor, dst->vendor)) {
         MISMATCH(_("Target CPU vendor %s does not match source %s"),
                  NULLSTR(dst->vendor), NULLSTR(src->vendor));
-        goto cleanup;
+        return false;
     }
 
     if (STRNEQ_NULLABLE(src->vendor_id, dst->vendor_id)) {
         MISMATCH(_("Target CPU vendor id %s does not match source %s"),
                  NULLSTR(dst->vendor_id), NULLSTR(src->vendor_id));
-        goto cleanup;
+        return false;
     }
 
     if (src->sockets != dst->sockets) {
         MISMATCH(_("Target CPU sockets %d does not match source %d"),
                  dst->sockets, src->sockets);
-        goto cleanup;
+        return false;
     }
 
     if (src->cores != dst->cores) {
         MISMATCH(_("Target CPU cores %d does not match source %d"),
                  dst->cores, src->cores);
-        goto cleanup;
+        return false;
     }
 
     if (src->threads != dst->threads) {
         MISMATCH(_("Target CPU threads %d does not match source %d"),
                  dst->threads, src->threads);
-        goto cleanup;
+        return false;
     }
 
     if (src->nfeatures != dst->nfeatures) {
         MISMATCH(_("Target CPU feature count %zu does not match source %zu"),
                  dst->nfeatures, src->nfeatures);
-        goto cleanup;
+        return false;
     }
 
     for (i = 0; i < src->nfeatures; i++) {
         if (STRNEQ(src->features[i].name, dst->features[i].name)) {
             MISMATCH(_("Target CPU feature %s does not match source %s"),
                      dst->features[i].name, src->features[i].name);
-            goto cleanup;
+            return false;
         }
 
         if (src->features[i].policy != dst->features[i].policy) {
             MISMATCH(_("Target CPU feature policy %s does not match source %s"),
                      virCPUFeaturePolicyTypeToString(dst->features[i].policy),
                      virCPUFeaturePolicyTypeToString(src->features[i].policy));
-            goto cleanup;
+            return false;
         }
     }
 
@@ -1098,15 +1097,12 @@ virCPUDefIsEqual(virCPUDefPtr src,
          (src->cache->level != dst->cache->level ||
           src->cache->mode != dst->cache->mode))) {
         MISMATCH("%s", _("Target CPU cache does not match source"));
-        goto cleanup;
+        return false;
     }
 
 #undef MISMATCH
 
-    identical = true;
-
- cleanup:
-    return identical;
+    return true;
 }
 
 

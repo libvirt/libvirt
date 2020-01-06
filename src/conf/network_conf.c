@@ -2240,8 +2240,6 @@ static int
 virNetworkIPDefFormat(virBufferPtr buf,
                       const virNetworkIPDef *def)
 {
-    int result = -1;
-
     virBufferAddLit(buf, "<ip");
 
     if (def->family)
@@ -2249,14 +2247,14 @@ virNetworkIPDefFormat(virBufferPtr buf,
     if (VIR_SOCKET_ADDR_VALID(&def->address)) {
         char *addr = virSocketAddrFormat(&def->address);
         if (!addr)
-            goto error;
+            return -1;
         virBufferAsprintf(buf, " address='%s'", addr);
         VIR_FREE(addr);
     }
     if (VIR_SOCKET_ADDR_VALID(&def->netmask)) {
         char *addr = virSocketAddrFormat(&def->netmask);
         if (!addr)
-            goto error;
+            return -1;
         virBufferAsprintf(buf, " netmask='%s'", addr);
         VIR_FREE(addr);
     }
@@ -2283,11 +2281,11 @@ virNetworkIPDefFormat(virBufferPtr buf,
         for (i = 0; i < def->nranges; i++) {
             char *saddr = virSocketAddrFormat(&def->ranges[i].start);
             if (!saddr)
-                goto error;
+                return -1;
             char *eaddr = virSocketAddrFormat(&def->ranges[i].end);
             if (!eaddr) {
                 VIR_FREE(saddr);
-                goto error;
+                return -1;
             }
             virBufferAsprintf(buf, "<range start='%s' end='%s'/>\n",
                               saddr, eaddr);
@@ -2305,7 +2303,7 @@ virNetworkIPDefFormat(virBufferPtr buf,
             if (VIR_SOCKET_ADDR_VALID(&def->hosts[i].ip)) {
                 char *ipaddr = virSocketAddrFormat(&def->hosts[i].ip);
                 if (!ipaddr)
-                    goto error;
+                    return -1;
                 virBufferAsprintf(buf, " ip='%s'", ipaddr);
                 VIR_FREE(ipaddr);
             }
@@ -2317,7 +2315,7 @@ virNetworkIPDefFormat(virBufferPtr buf,
             if (VIR_SOCKET_ADDR_VALID(&def->bootserver)) {
                 char *ipaddr = virSocketAddrFormat(&def->bootserver);
                 if (!ipaddr)
-                    goto error;
+                    return -1;
                 virBufferEscapeString(buf, " server='%s'", ipaddr);
                 VIR_FREE(ipaddr);
             }
@@ -2332,9 +2330,7 @@ virNetworkIPDefFormat(virBufferPtr buf,
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</ip>\n");
 
-    result = 0;
- error:
-    return result;
+    return 0;
 }
 
 
@@ -2458,7 +2454,7 @@ virNetworkDefFormatBuf(virBufferPtr buf,
                         virBufferGetIndent(buf) / 2, 1) < 0) {
             xmlBufferFree(xmlbuf);
             xmlIndentTreeOutput = oldIndentTreeOutput;
-            goto error;
+            return -1;
         }
         virBufferAsprintf(buf, "%s\n", (char *) xmlBufferContent(xmlbuf));
         xmlBufferFree(xmlbuf);
@@ -2475,7 +2471,7 @@ virNetworkDefFormatBuf(virBufferPtr buf,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unknown forward type %d in network '%s'"),
                            def->forward.type, def->name);
-            goto error;
+            return -1;
         }
         virBufferAddLit(buf, "<forward");
         virBufferEscapeString(buf, " dev='%s'", dev);
@@ -2504,13 +2500,13 @@ virNetworkDefFormatBuf(virBufferPtr buf,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("unexpected hostdev driver name type %d "),
                                def->forward.driverName);
-                goto error;
+                return -1;
             }
             virBufferAsprintf(buf, "<driver name='%s'/>\n", driverName);
         }
         if (def->forward.type == VIR_NETWORK_FORWARD_NAT) {
             if (virNetworkForwardNatDefFormat(buf, &def->forward) < 0)
-                goto error;
+                return -1;
         }
 
         /* For now, hard-coded to at most 1 forward.pfs */
@@ -2562,7 +2558,7 @@ virNetworkDefFormatBuf(virBufferPtr buf,
     case VIR_NETWORK_FORWARD_LAST:
     default:
         virReportEnumRangeError(virNetworkForwardType, def->forward.type);
-        goto error;
+        return -1;
     }
 
     if (hasbridge || def->bridge || def->macTableManager) {
@@ -2608,29 +2604,29 @@ virNetworkDefFormatBuf(virBufferPtr buf,
     }
 
     if (virNetworkDNSDefFormat(buf, &def->dns) < 0)
-        goto error;
+        return -1;
 
     if (virNetDevVlanFormat(&def->vlan, buf) < 0)
-        goto error;
+        return -1;
     if (virNetDevBandwidthFormat(def->bandwidth, 0, buf) < 0)
-        goto error;
+        return -1;
 
     for (i = 0; i < def->nips; i++) {
         if (virNetworkIPDefFormat(buf, &def->ips[i]) < 0)
-            goto error;
+            return -1;
     }
 
     for (i = 0; i < def->nroutes; i++) {
         if (virNetDevIPRouteFormat(buf, def->routes[i]) < 0)
-            goto error;
+            return -1;
     }
 
     if (virNetDevVPortProfileFormat(def->virtPortProfile, buf) < 0)
-        goto error;
+        return -1;
 
     for (i = 0; i < def->nPortGroups; i++)
         if (virPortGroupDefFormat(buf, &def->portGroups[i]) < 0)
-            goto error;
+            return -1;
 
     if (def->namespaceData && def->ns.format) {
         if ((def->ns.format)(buf, def->namespaceData) < 0)
@@ -2641,9 +2637,6 @@ virNetworkDefFormatBuf(virBufferPtr buf,
     virBufferAddLit(buf, "</network>\n");
 
     return 0;
-
- error:
-    return -1;
 }
 
 

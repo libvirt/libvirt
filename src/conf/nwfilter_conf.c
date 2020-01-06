@@ -2903,7 +2903,7 @@ virNWFilterRuleDefDetailsFormat(virBufferPtr buf,
                                  _("formatter for %s %s reported error"),
                                  type,
                                  att[i].name);
-                   goto err_exit;
+                   return;
                }
             } else if ((flags & NWFILTER_ENTRY_ITEM_FLAG_HAS_VAR)) {
                 virBufferAddChar(buf, '$');
@@ -2986,7 +2986,6 @@ virNWFilterRuleDefDetailsFormat(virBufferPtr buf,
        virBufferAsprintf(buf,
                          "<%s/>\n", type);
 
- err_exit:
     return;
 }
 

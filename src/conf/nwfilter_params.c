@@ -672,12 +672,9 @@ virNWFilterHashTablePutAll(virHashTablePtr src,
 
     virHashForEach(src, addToTable, &atts);
     if (atts.errOccurred)
-        goto err_exit;
+        return -1;
 
     return 0;
-
- err_exit:
-    return -1;
 }
 
 /* The general purpose function virNWFilterVarValueEqual returns a

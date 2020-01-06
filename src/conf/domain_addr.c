@@ -1175,7 +1175,7 @@ virDomainPCIAddressGetNextAddr(virDomainPCIAddressSetPtr addrs,
 
     if (addrs->nbuses == 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s", _("No PCI buses available"));
-        goto error;
+        return -1;
     }
 
     /* if the caller asks for "any function", give them function 0 */
@@ -1199,7 +1199,7 @@ virDomainPCIAddressGetNextAddr(virDomainPCIAddressSetPtr addrs,
 
         if (virDomainPCIAddressFindUnusedFunctionOnBus(bus, &a, function,
                                                        flags, &found) < 0) {
-            goto error;
+            return -1;
         }
 
         if (found)
@@ -1223,7 +1223,7 @@ virDomainPCIAddressGetNextAddr(virDomainPCIAddressSetPtr addrs,
 
         if (virDomainPCIAddressFindUnusedFunctionOnBus(bus, &a, function,
                                                        flags, &found) < 0) {
-            goto error;
+            return -1;
         }
 
         /* The isolation group for the bus will actually be changed
@@ -1236,7 +1236,7 @@ virDomainPCIAddressGetNextAddr(virDomainPCIAddressSetPtr addrs,
     if (addrs->dryRun) {
         /* a is already set to the first new bus */
         if (virDomainPCIAddressSetGrow(addrs, &a, flags) < 0)
-            goto error;
+            return -1;
         /* this device will use the first slot of the new bus */
         a.slot = addrs->buses[a.bus].minSlot;
         goto success;
@@ -1244,7 +1244,6 @@ virDomainPCIAddressGetNextAddr(virDomainPCIAddressSetPtr addrs,
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("No more available PCI slots"));
- error:
     return -1;
 
  success:

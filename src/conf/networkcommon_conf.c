@@ -290,7 +290,6 @@ int
 virNetDevIPRouteFormat(virBufferPtr buf,
                        const virNetDevIPRoute *def)
 {
-    int result = -1;
     char *addr = NULL;
 
     virBufferAddLit(buf, "<route");
@@ -299,13 +298,13 @@ virNetDevIPRouteFormat(virBufferPtr buf,
         virBufferAsprintf(buf, " family='%s'", def->family);
 
     if (!(addr = virSocketAddrFormat(&def->address)))
-        goto cleanup;
+        return -1;
     virBufferAsprintf(buf, " address='%s'", addr);
     VIR_FREE(addr);
 
     if (VIR_SOCKET_ADDR_VALID(&def->netmask)) {
         if (!(addr = virSocketAddrFormat(&def->netmask)))
-            goto cleanup;
+            return -1;
         virBufferAsprintf(buf, " netmask='%s'", addr);
         VIR_FREE(addr);
     }
@@ -313,7 +312,7 @@ virNetDevIPRouteFormat(virBufferPtr buf,
         virBufferAsprintf(buf, " prefix='%u'", def->prefix);
 
     if (!(addr = virSocketAddrFormat(&def->gateway)))
-        goto cleanup;
+        return -1;
     virBufferAsprintf(buf, " gateway='%s'", addr);
     VIR_FREE(addr);
 
@@ -321,7 +320,5 @@ virNetDevIPRouteFormat(virBufferPtr buf,
         virBufferAsprintf(buf, " metric='%u'", def->metric);
     virBufferAddLit(buf, "/>\n");
 
-    result = 0;
- cleanup:
-    return result;
+    return 0;
 }

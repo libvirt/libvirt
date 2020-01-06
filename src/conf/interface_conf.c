@@ -1070,19 +1070,19 @@ virInterfaceDefDevFormat(virBufferPtr buf,
     if (def == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("virInterfaceDefFormat NULL def"));
-        goto cleanup;
+        return -1;
     }
 
     if ((def->name == NULL) && (def->type != VIR_INTERFACE_TYPE_VLAN)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("virInterfaceDefFormat missing interface name"));
-        goto cleanup;
+        return -1;
     }
 
     if (!(type = virInterfaceTypeToString(def->type))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected interface type %d"), def->type);
-        goto cleanup;
+        return -1;
     }
 
     virBufferAsprintf(buf, "<interface type='%s' ", type);
@@ -1125,9 +1125,6 @@ virInterfaceDefDevFormat(virBufferPtr buf,
     virBufferAddLit(buf, "</interface>\n");
 
     return 0;
-
- cleanup:
-    return -1;
 }
 
 

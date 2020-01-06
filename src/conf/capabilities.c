@@ -747,11 +747,11 @@ virCapabilitiesDomainDataLookupInternal(virCapsPtr caps,
                        _("could not find capabilities for %s"),
                        virBufferCurrentContent(&buf));
         virBufferFreeAndReset(&buf);
-        goto error;
+        return ret;
     }
 
     if (VIR_ALLOC(ret) < 0)
-        goto error;
+        return ret;
 
     ret->ostype = foundguest->ostype;
     ret->arch = foundguest->arch.id;
@@ -764,7 +764,6 @@ virCapabilitiesDomainDataLookupInternal(virCapsPtr caps,
     if (foundmachine)
         ret->machinetype = foundmachine->name;
 
- error:
     return ret;
 }
 
@@ -1179,13 +1178,13 @@ virCapabilitiesFormatHostXML(virCapsHostPtr host,
 
     if (host->numa &&
         virCapabilitiesHostNUMAFormat(host->numa, buf) < 0)
-        goto error;
+        return -1;
 
     if (virCapabilitiesFormatCaches(buf, &host->cache) < 0)
-        goto error;
+        return -1;
 
     if (virCapabilitiesFormatMemoryBandwidth(buf, &host->memBW) < 0)
-        goto error;
+        return -1;
 
     for (i = 0; i < host->nsecModels; i++) {
         virBufferAddLit(buf, "<secmodel>\n");
@@ -1207,9 +1206,6 @@ virCapabilitiesFormatHostXML(virCapsHostPtr host,
     virBufferAddLit(buf, "</host>\n\n");
 
     return 0;
-
- error:
-    return -1;
 }
 
 

@@ -1774,21 +1774,20 @@ virNetworkObjPortListExportCallback(void *payload,
 
     if (data->filter &&
         !data->filter(data->net->conn, data->def, def))
-        goto cleanup;
+        return 0;
 
     if (!data->ports) {
         data->nports++;
-        goto cleanup;
+        return 0;
     }
 
     if (!(port = virGetNetworkPort(data->net, def->uuid))) {
         data->error = true;
-        goto cleanup;
+        return 0;
     }
 
     data->ports[data->nports++] = port;
 
- cleanup:
     return 0;
 }
 
