@@ -357,24 +357,24 @@ vboxLookupRegistryValue(HKEY key, const char *keyName, const char *valueName)
     if (status != ERROR_SUCCESS) {
         VIR_ERROR(_("Could not query registry value '%s\\%s'"),
                   keyName, valueName);
-        goto cleanup;
+        return NULL;
     }
 
     if (type != REG_SZ) {
         VIR_ERROR(_("Registry value '%s\\%s' has unexpected type"),
                   keyName, valueName);
-        goto cleanup;
+        return NULL;
     }
 
     if (length < 2) {
         VIR_ERROR(_("Registry value '%s\\%s' is too short"),
                   keyName, valueName);
-        goto cleanup;
+        return NULL;
     }
 
     /* +1 for the null-terminator if it's missing */
     if (VIR_ALLOC_N(value, length + 1) < 0)
-        goto cleanup;
+        return NULL;
 
     status = RegQueryValueEx(key, valueName, NULL, NULL, (LPBYTE)value, &length);
 
@@ -382,13 +382,12 @@ vboxLookupRegistryValue(HKEY key, const char *keyName, const char *valueName)
         VIR_FREE(value);
         VIR_ERROR(_("Could not query registry value '%s\\%s'"),
                   keyName, valueName);
-        goto cleanup;
+        return NULL;
     }
 
     if (value[length - 1] != '\0')
         value[length] = '\0';
 
- cleanup:
     return value;
 }
 

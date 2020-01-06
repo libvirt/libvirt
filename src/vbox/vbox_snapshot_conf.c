@@ -1228,23 +1228,20 @@ virVBoxSnapshotConfIsCurrentSnapshot(virVBoxSnapshotConfMachinePtr machine,
     if (machine == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Machine is null"));
-        goto cleanup;
+        return 0;
     }
     if (snapshotName == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("snapshotName is null"));
-        goto cleanup;
+        return 0;
     }
     snapshot = virVBoxSnapshotConfSnapshotByName(machine->snapshot, snapshotName);
     if (snapshot == NULL) {
         virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
                        _("Unable to find the snapshot %s"), snapshotName);
-        goto cleanup;
+        return 0;
     }
     return STREQ(snapshot->uuid, machine->currentSnapshot);
-
- cleanup:
-    return 0;
 }
 
 /*
