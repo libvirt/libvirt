@@ -23,9 +23,22 @@
 
 #include "glibcompat.h"
 
+#undef g_fsync
 #undef g_strdup_printf
 #undef g_strdup_vprintf
-#undef g_fsync
+
+
+/* Drop when min glib >= 2.63.0 */
+gint
+vir_g_fsync(gint fd)
+{
+#ifdef G_OS_WIN32
+  return _commit(fd);
+#else
+  return fsync(fd);
+#endif
+}
+
 
 /* Due to a bug in glib, g_strdup_printf() nor g_strdup_vprintf()
  * abort on OOM.  It's fixed in glib's upstream. Provide our own
@@ -52,16 +65,4 @@ vir_g_strdup_vprintf(const char *msg, va_list args)
   if (!ret)
     abort();
   return ret;
-}
-
-
-/* Drop when min glib >= 2.63.0 */
-gint
-vir_g_fsync(gint fd)
-{
-#ifdef G_OS_WIN32
-  return _commit(fd);
-#else
-  return fsync(fd);
-#endif
 }

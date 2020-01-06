@@ -21,11 +21,11 @@
 #include <glib.h>
 #include <glib/gstdio.h>
 
+gint vir_g_fsync(gint fd);
 char *vir_g_strdup_printf(const char *msg, ...)
     G_GNUC_PRINTF(1, 2);
 char *vir_g_strdup_vprintf(const char *msg, va_list args)
     G_GNUC_PRINTF(1, 0);
-gint vir_g_fsync(gint fd);
 
 #if !GLIB_CHECK_VERSION(2, 64, 0)
 # define g_strdup_printf vir_g_strdup_printf
