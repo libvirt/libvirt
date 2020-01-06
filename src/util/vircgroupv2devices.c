@@ -494,7 +494,7 @@ virCgroupV2DevicesReallocMap(int mapfd,
 int
 virCgroupV2DevicesCreateProg(virCgroupPtr group)
 {
-    VIR_AUTOCLOSE mapfd = -1;
+    int mapfd = -1;
 
     if (group->unified.devices.progfd > 0 && group->unified.devices.mapfd > 0)
         return 0;
@@ -503,13 +503,8 @@ virCgroupV2DevicesCreateProg(virCgroupPtr group)
     if (mapfd < 0)
         return -1;
 
-    if (virCgroupV2DevicesAttachProg(group, mapfd,
-                                     VIR_CGROUP_V2_INITIAL_BPF_MAP_SIZE) < 0) {
-        return -1;
-    }
-
-    mapfd = -1;
-    return 0;
+    return virCgroupV2DevicesAttachProg(group, mapfd,
+                                        VIR_CGROUP_V2_INITIAL_BPF_MAP_SIZE);
 }
 
 
@@ -530,10 +525,8 @@ virCgroupV2DevicesPrepareProg(virCgroupPtr group)
         if (newmapfd < 0)
             return -1;
 
-        if (virCgroupV2DevicesAttachProg(group, newmapfd, max) < 0) {
-            VIR_FORCE_CLOSE(newmapfd);
+        if (virCgroupV2DevicesAttachProg(group, newmapfd, max) < 0)
             return -1;
-        }
     }
 
     return 0;
