@@ -216,16 +216,15 @@ virTPMExecGetCaps(virCommandPtr cmd,
             continue;
 
         if (virBitmapSetBitExpand(bitmap, typ) < 0)
-            goto cleanup;
+            return bitmap;
     }
 
- cleanup:
     return bitmap;
 
  error_bad_json:
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    _("Unexpected JSON format: %s"), outbuf);
-    goto cleanup;
+    return bitmap;
 }
 
 static virBitmapPtr

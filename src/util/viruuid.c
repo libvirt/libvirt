@@ -107,20 +107,20 @@ virUUIDParse(const char *uuidstr, unsigned char *uuid)
     for (i = 0; i < VIR_UUID_BUFLEN;) {
         uuid[i] = 0;
         if (*cur == 0)
-            goto error;
+            return -1;
         if ((*cur == '-') || (*cur == ' ')) {
             cur++;
             continue;
         }
         if (!g_ascii_isxdigit(*cur))
-            goto error;
+            return -1;
         uuid[i] = virHexToBin(*cur);
         uuid[i] *= 16;
         cur++;
         if (*cur == 0)
-            goto error;
+            return -1;
         if (!g_ascii_isxdigit(*cur))
-            goto error;
+            return -1;
         uuid[i] += virHexToBin(*cur);
         i++;
         cur++;
@@ -128,14 +128,11 @@ virUUIDParse(const char *uuidstr, unsigned char *uuid)
 
     while (*cur) {
         if (!g_ascii_isspace(*cur))
-            goto error;
+            return -1;
         cur++;
     }
 
     return 0;
-
- error:
-    return -1;
 }
 
 /**

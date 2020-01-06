@@ -1119,7 +1119,7 @@ virHostCPUGetThreadsPerSubcore(virArch arch)
          * In either case, falling back to the subcore-unaware thread
          * counting logic is the right thing to do */
         if (!virFileExists(KVM_DEVICE))
-            goto out;
+            return 0;
 
         if ((kvmfd = open(KVM_DEVICE, O_RDONLY)) < 0) {
             /* This can happen when running as a regular user if
@@ -1129,8 +1129,7 @@ virHostCPUGetThreadsPerSubcore(virArch arch)
             virReportSystemError(errno,
                                  _("Failed to open '%s'"),
                                  KVM_DEVICE);
-            threads_per_subcore = -1;
-            goto out;
+            return -1;
         }
 
         /* For Phyp and KVM based guests the ioctl for KVM_CAP_PPC_SMT
@@ -1143,7 +1142,6 @@ virHostCPUGetThreadsPerSubcore(virArch arch)
         VIR_FORCE_CLOSE(kvmfd);
     }
 
- out:
     return threads_per_subcore;
 }
 

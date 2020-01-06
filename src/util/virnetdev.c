@@ -823,7 +823,6 @@ virNetDevGetRcvAllMulti(const char *ifname,
 char *virNetDevGetName(int ifindex)
 {
     char name[IFNAMSIZ];
-    char *ifname = NULL;
 
     memset(&name, 0, sizeof(name));
 
@@ -831,13 +830,10 @@ char *virNetDevGetName(int ifindex)
         virReportSystemError(errno,
                              _("Failed to convert interface index %d to a name"),
                              ifindex);
-        goto cleanup;
+        return NULL;
     }
 
-   ifname = g_strdup(name);
-
- cleanup:
-     return ifname;
+    return g_strdup(name);
 }
 #else
 char *virNetDevGetName(int ifindex)
@@ -1702,7 +1698,7 @@ virNetDevParseVfConfig(struct nlattr **tb, int32_t vf, virMacAddrPtr mac,
     if (!tb[IFLA_VFINFO_LIST]) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("missing IFLA_VF_INFO in netlink response"));
-        goto cleanup;
+        return rc;
     }
 
     nla_for_each_nested(tb_vf_info, tb[IFLA_VFINFO_LIST], rem) {
@@ -1713,7 +1709,7 @@ virNetDevParseVfConfig(struct nlattr **tb, int32_t vf, virMacAddrPtr mac,
                              ifla_vf_policy)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("error parsing IFLA_VF_INFO"));
-            goto cleanup;
+            return rc;
         }
 
         if (mac && tb[IFLA_VF_MAC]) {
@@ -1739,7 +1735,6 @@ virNetDevParseVfConfig(struct nlattr **tb, int32_t vf, virMacAddrPtr mac,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("couldn't find IFLA_VF_INFO for VF %d "
                          "in netlink response"), vf);
- cleanup:
     return rc;
 }
 

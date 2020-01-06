@@ -514,16 +514,16 @@ virNetDevTapAttachBridge(const char *tapname,
      */
     if (mtu > 0) {
         if (virNetDevSetMTU(tapname, mtu) < 0)
-            goto error;
+            return -1;
     } else {
         if (virNetDevSetMTUFromDevice(tapname, brname) < 0)
-            goto error;
+            return -1;
     }
     if (actualMTU) {
         int retMTU = virNetDevGetMTU(tapname);
 
         if (retMTU < 0)
-            goto error;
+            return -1;
 
         *actualMTU = retMTU;
     }
@@ -532,21 +532,18 @@ virNetDevTapAttachBridge(const char *tapname,
     if (virtPortProfile) {
         if (virtPortProfile->virtPortType == VIR_NETDEV_VPORT_PROFILE_MIDONET) {
             if (virNetDevMidonetBindPort(tapname, virtPortProfile) < 0)
-                goto error;
+                return -1;
         } else if (virtPortProfile->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH) {
             if (virNetDevOpenvswitchAddPort(brname, tapname, macaddr, vmuuid,
                                             virtPortProfile, virtVlan) < 0)
-                goto error;
+                return -1;
         }
     } else {
         if (virNetDevBridgeAddPort(brname, tapname) < 0)
-            goto error;
+            return -1;
     }
 
     return 0;
-
- error:
-    return -1;
 }
 
 

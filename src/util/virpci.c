@@ -2146,32 +2146,28 @@ virPCIDeviceAddressParse(char *address,
                          virPCIDeviceAddressPtr bdf)
 {
     char *p = NULL;
-    int ret = -1;
 
     if ((address == NULL) || (logStrToLong_ui(address, &p, 16,
                                               &bdf->domain) == -1)) {
-        goto out;
+        return -1;
     }
 
     if ((p == NULL) || (logStrToLong_ui(p+1, &p, 16,
                                         &bdf->bus) == -1)) {
-        goto out;
+        return -1;
     }
 
     if ((p == NULL) || (logStrToLong_ui(p+1, &p, 16,
                                         &bdf->slot) == -1)) {
-        goto out;
+        return -1;
     }
 
     if ((p == NULL) || (logStrToLong_ui(p+1, &p, 16,
                                         &bdf->function) == -1)) {
-        goto out;
+        return -1;
     }
 
-    ret = 0;
-
- out:
-    return ret;
+    return 0;
 }
 
 

@@ -327,12 +327,12 @@ virTypedParamsReplaceString(virTypedParameterPtr *params,
             virReportError(VIR_ERR_INVALID_ARG,
                            _("Parameter '%s' is not a string"),
                            param->field);
-            goto error;
+            return -1;
         }
         old = param->value.s;
     } else {
         if (VIR_EXPAND_N(*params, n, 1) < 0)
-            goto error;
+            return -1;
         param = *params + n - 1;
     }
 
@@ -342,15 +342,12 @@ virTypedParamsReplaceString(virTypedParameterPtr *params,
                                 VIR_TYPED_PARAM_STRING, str) < 0) {
         param->value.s = old;
         VIR_FREE(str);
-        goto error;
+        return -1;
     }
     VIR_FREE(old);
 
     *nparams = n;
     return 0;
-
- error:
-    return -1;
 }
 
 
@@ -404,7 +401,7 @@ virTypedParamsFilter(virTypedParameterPtr params,
     size_t i, n = 0;
 
     if (VIR_ALLOC_N(*ret, nparams) < 0)
-        goto error;
+        return -1;
 
     for (i = 0; i < nparams; i++) {
         if (STREQ(params[i].field, name)) {
@@ -414,9 +411,6 @@ virTypedParamsFilter(virTypedParameterPtr params,
     }
 
     return n;
-
- error:
-    return -1;
 }
 
 

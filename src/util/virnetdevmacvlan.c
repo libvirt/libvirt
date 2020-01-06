@@ -1156,7 +1156,7 @@ int virNetDevMacVLanRestartWithVPortProfile(const char *cr_ifname,
                                                       linkdev, vmuuid,
                                                       virtPortProfile, vmOp);
     if (rc < 0)
-        goto error;
+        return rc;
 
     ignore_value(virNetDevVPortProfileAssociate(cr_ifname,
                                                 virtPortProfile,
@@ -1166,7 +1166,6 @@ int virNetDevMacVLanRestartWithVPortProfile(const char *cr_ifname,
                                                 vmuuid,
                                                 vmOp, true));
 
- error:
     return rc;
 
 }

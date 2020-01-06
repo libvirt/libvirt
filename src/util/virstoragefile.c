@@ -533,13 +533,11 @@ qcow2GetExtensions(const char *buf,
         }
 
         case QCOW2_HDR_EXTENSION_END:
-            goto done;
+            return 0;
         }
 
         offset += len;
     }
-
- done:
 
     return 0;
 }

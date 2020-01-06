@@ -184,16 +184,14 @@ virNetlinkCreateSocket(int protocol)
     }
     nl_socket_enable_msg_peek(nlhandle);
 
- cleanup:
     return nlhandle;
 
  error:
     if (nlhandle) {
         nl_close(nlhandle);
         virNetlinkFree(nlhandle);
-        nlhandle = NULL;
     }
-    goto cleanup;
+    return NULL;
 }
 
 static virNetlinkHandle *

@@ -1102,27 +1102,24 @@ virSocketAddrPrefixToNetmask(unsigned int prefix,
                              virSocketAddrPtr netmask,
                              int family)
 {
-    int result = -1;
-
     netmask->data.stor.ss_family = AF_UNSPEC; /* assume failure */
 
     if (family == AF_INET) {
         int ip;
 
         if (prefix > 32)
-            goto error;
+            return -1;
 
         ip = prefix ? ~((1 << (32 - prefix)) - 1) : 0;
         netmask->data.inet4.sin_addr.s_addr = htonl(ip);
         netmask->data.stor.ss_family = AF_INET;
         netmask->len = sizeof(struct sockaddr_in);
-        result = 0;
 
     } else if (family == AF_INET6) {
         size_t i = 0;
 
         if (prefix > 128)
-            goto error;
+            return -1;
 
         while (prefix >= 8) {
             /* do as much as possible an entire byte at a time */
@@ -1140,11 +1137,9 @@ virSocketAddrPrefixToNetmask(unsigned int prefix,
         }
         netmask->data.stor.ss_family = AF_INET6;
         netmask->len = sizeof(struct sockaddr_in6);
-        result = 0;
     }
 
- error:
-    return result;
+    return 0;
  }
 
 /**

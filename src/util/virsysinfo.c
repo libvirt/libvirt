@@ -1478,7 +1478,7 @@ virSysinfoFormat(virBufferPtr buf, virSysinfoDefPtr def)
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, \
                            _("Target sysinfo %s %s does not match source %s"), \
                            desc, NULLSTR(dst->name), NULLSTR(src->name)); \
-            goto cleanup; \
+            return false; \
         } \
     } while (0)
 
@@ -1486,15 +1486,13 @@ static bool
 virSysinfoBIOSIsEqual(virSysinfoBIOSDefPtr src,
                       virSysinfoBIOSDefPtr dst)
 {
-    bool identical = false;
-
     if (!src && !dst)
         return true;
 
     if ((src && !dst) || (!src && dst)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Target sysinfo does not match source"));
-        goto cleanup;
+        return false;
     }
 
     CHECK_FIELD(vendor, "BIOS vendor");
@@ -1502,24 +1500,20 @@ virSysinfoBIOSIsEqual(virSysinfoBIOSDefPtr src,
     CHECK_FIELD(date, "BIOS date");
     CHECK_FIELD(release, "BIOS release");
 
-    identical = true;
- cleanup:
-    return identical;
+    return true;
 }
 
 static bool
 virSysinfoSystemIsEqual(virSysinfoSystemDefPtr src,
                         virSysinfoSystemDefPtr dst)
 {
-    bool identical = false;
-
     if (!src && !dst)
         return true;
 
     if ((src && !dst) || (!src && dst)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Target sysinfo does not match source"));
-        goto cleanup;
+        return false;
     }
 
     CHECK_FIELD(manufacturer, "system vendor");
@@ -1530,24 +1524,20 @@ virSysinfoSystemIsEqual(virSysinfoSystemDefPtr src,
     CHECK_FIELD(sku, "system sku");
     CHECK_FIELD(family, "system family");
 
-    identical = true;
- cleanup:
-    return identical;
+    return true;
 }
 
 static bool
 virSysinfoBaseBoardIsEqual(virSysinfoBaseBoardDefPtr src,
                            virSysinfoBaseBoardDefPtr dst)
 {
-    bool identical = false;
-
     if (!src && !dst)
         return true;
 
     if ((src && !dst) || (!src && dst)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Target base board does not match source"));
-        goto cleanup;
+        return false;
     }
 
     CHECK_FIELD(manufacturer, "base board vendor");
@@ -1557,9 +1547,7 @@ virSysinfoBaseBoardIsEqual(virSysinfoBaseBoardDefPtr src,
     CHECK_FIELD(asset, "base board asset");
     CHECK_FIELD(location, "base board location");
 
-    identical = true;
- cleanup:
-    return identical;
+    return true;
 }
 
 
@@ -1567,15 +1555,13 @@ static bool
 virSysinfoChassisIsEqual(virSysinfoChassisDefPtr src,
                          virSysinfoChassisDefPtr dst)
 {
-    bool identical = false;
-
     if (!src && !dst)
         return true;
 
     if ((src && !dst) || (!src && dst)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Target chassis does not match source"));
-        goto cleanup;
+        return false;
     }
 
     CHECK_FIELD(manufacturer, "chassis vendor");
@@ -1584,9 +1570,7 @@ virSysinfoChassisIsEqual(virSysinfoChassisDefPtr src,
     CHECK_FIELD(asset, "chassis asset");
     CHECK_FIELD(sku, "chassis sku");
 
-    identical = true;
- cleanup:
-    return identical;
+    return true;
 }
 
 
@@ -1595,7 +1579,6 @@ virSysinfoChassisIsEqual(virSysinfoChassisDefPtr src,
 bool virSysinfoIsEqual(virSysinfoDefPtr src,
                        virSysinfoDefPtr dst)
 {
-    bool identical = false;
     size_t i;
 
     if (!src && !dst)
@@ -1604,7 +1587,7 @@ bool virSysinfoIsEqual(virSysinfoDefPtr src,
     if ((src && !dst) || (!src && dst)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Target sysinfo does not match source"));
-        goto cleanup;
+        return false;
     }
 
     if (src->type != dst->type) {
@@ -1612,32 +1595,29 @@ bool virSysinfoIsEqual(virSysinfoDefPtr src,
                        _("Target sysinfo %s does not match source %s"),
                        virSysinfoTypeToString(dst->type),
                        virSysinfoTypeToString(src->type));
-        goto cleanup;
+        return false;
     }
 
     if (!virSysinfoBIOSIsEqual(src->bios, dst->bios))
-        goto cleanup;
+        return false;
 
     if (!virSysinfoSystemIsEqual(src->system, dst->system))
-        goto cleanup;
+        return false;
 
     if (src->nbaseBoard != dst->nbaseBoard) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target sysinfo base board count '%zu' does not match source '%zu'"),
                        dst->nbaseBoard, src->nbaseBoard);
-        goto cleanup;
+        return false;
     }
 
     for (i = 0; i < src->nbaseBoard; i++)
         if (!virSysinfoBaseBoardIsEqual(src->baseBoard + i,
                                         dst->baseBoard + i))
-            goto cleanup;
+            return false;
 
     if (!virSysinfoChassisIsEqual(src->chassis, dst->chassis))
-        goto cleanup;
+        return false;
 
-    identical = true;
-
- cleanup:
-    return identical;
+    return true;
 }
