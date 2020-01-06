@@ -1036,16 +1036,15 @@ prlsdkGetNetInfo(PRL_HANDLE netAdapter, virDomainNetDefPtr net, bool isCt)
     PRL_UINT32 emulatedType;
     PRL_RESULT pret;
     PRL_BOOL isConnected, isMacFilter;
-    int ret = -1;
 
     /* use device name, shown by prlctl as target device
      * for identifying network adapter in virDomainDefineXML */
     if (!(net->ifname = prlsdkGetStringParamVar(PrlVmDevNet_GetHostInterfaceName,
                                                 netAdapter)))
-        goto cleanup;
+        return -1;
 
     pret = PrlVmDev_GetIndex(netAdapter, &netAdapterIndex);
-    prlsdkCheckRetGoto(pret, cleanup);
+    prlsdkCheckRetExit(pret, -1);
 
     if (isCt && netAdapterIndex == (PRL_UINT32) -1) {
         /* venet devices don't have mac address and
@@ -1058,19 +1057,19 @@ prlsdkGetNetInfo(PRL_HANDLE netAdapter, virDomainNetDefPtr net, bool isCt)
 
     pret = prlsdkGetStringParamBuf(PrlVmDevNet_GetMacAddressCanonical,
                                    netAdapter, macstr, sizeof(macstr));
-    prlsdkCheckRetGoto(pret, cleanup);
+    prlsdkCheckRetExit(pret, -1);
 
     if (virMacAddrParse(macstr, &net->mac) < 0)
-        goto cleanup;
+        return -1;
 
     if (prlsdkGetNetAddresses(netAdapter, net) < 0)
-        goto cleanup;
+        return -1;
 
     if (prlsdkGetRoutes(netAdapter, net) < 0)
-        goto cleanup;
+        return -1;
 
     pret = PrlVmDev_GetEmulatedType(netAdapter, &emulatedType);
-    prlsdkCheckRetGoto(pret, cleanup);
+    prlsdkCheckRetExit(pret, -1);
 
     if (emulatedType == PNA_ROUTED) {
         net->type = VIR_DOMAIN_NET_TYPE_NETWORK;
@@ -1094,7 +1093,7 @@ prlsdkGetNetInfo(PRL_HANDLE netAdapter, virDomainNetDefPtr net, bool isCt)
     if (!isCt) {
         PRL_VM_NET_ADAPTER_TYPE type;
         pret = PrlVmDevNet_GetAdapterType(netAdapter, &type);
-        prlsdkCheckRetGoto(pret, cleanup);
+        prlsdkCheckRetExit(pret, -1);
 
         switch ((int)type) {
         case PNT_RTL:
@@ -1109,12 +1108,12 @@ prlsdkGetNetInfo(PRL_HANDLE netAdapter, virDomainNetDefPtr net, bool isCt)
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unknown adapter type: %X"), type);
-            goto cleanup;
+            return -1;
         }
     }
 
     pret = PrlVmDev_IsConnected(netAdapter, &isConnected);
-    prlsdkCheckRetGoto(pret, cleanup);
+    prlsdkCheckRetExit(pret, -1);
 
     if (isConnected)
         net->linkstate = VIR_DOMAIN_NET_INTERFACE_LINK_STATE_UP;
@@ -1122,14 +1121,12 @@ prlsdkGetNetInfo(PRL_HANDLE netAdapter, virDomainNetDefPtr net, bool isCt)
         net->linkstate = VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DOWN;
 
     pret = PrlVmDevNet_IsPktFilterPreventMacSpoof(netAdapter, &isMacFilter);
-    prlsdkCheckRetGoto(pret, cleanup);
+    prlsdkCheckRetExit(pret, -1);
 
     net->trustGuestRxFilters = isMacFilter ? VIR_TRISTATE_BOOL_YES :
                                              VIR_TRISTATE_BOOL_NO;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
@@ -1296,29 +1293,27 @@ prlsdkAddDomainHardware(vzDriverPtr driver,
 {
     if (IS_CT(def)) {
         if (prlsdkAddDomainVideoInfoCt(def, xmlopt) < 0)
-            goto error;
+            return -1;
     } else {
         if (prlsdkAddDomainVideoInfoVm(sdkdom, def) < 0)
-            goto error;
+            return -1;
     }
 
     if (prlsdkAddDomainHardDisksInfo(driver, sdkdom, def) < 0)
-        goto error;
+        return -1;
 
     if (prlsdkAddDomainOpticalDisksInfo(driver, sdkdom, def) < 0)
-        goto error;
+        return -1;
 
     if (prlsdkAddDomainNetInfo(sdkdom, def) < 0)
-        goto error;
+        return -1;
 
     if (prlsdkAddSerialInfo(sdkdom,
                             &def->serials,
                             &def->nserials) < 0)
-        goto error;
+        return -1;
 
     return 0;
- error:
-    return -1;
 }
 
 
@@ -1507,7 +1502,7 @@ prlsdkConvertDomainType(PRL_HANDLE sdkdom, virDomainDefPtr def)
     PRL_RESULT pret;
 
     pret = PrlVmCfg_GetVmType(sdkdom, &domainType);
-    prlsdkCheckRetGoto(pret, error);
+    prlsdkCheckRetExit(pret, -1);
 
     switch (domainType) {
     case PVT_VM:
@@ -1524,9 +1519,6 @@ prlsdkConvertDomainType(PRL_HANDLE sdkdom, virDomainDefPtr def)
     }
 
     return 0;
-
- error:
-    return -1;
 }
 
 static int
@@ -1536,7 +1528,7 @@ prlsdkConvertCpuMode(PRL_HANDLE sdkdom, virDomainDefPtr def)
     PRL_CPU_MODE cpuMode;
 
     pret = PrlVmCfg_GetCpuMode(sdkdom, &cpuMode);
-    prlsdkCheckRetGoto(pret, error);
+    prlsdkCheckRetExit(pret, -1);
 
     switch (cpuMode) {
     case PCM_CPU_MODE_32:
@@ -1552,8 +1544,6 @@ prlsdkConvertCpuMode(PRL_HANDLE sdkdom, virDomainDefPtr def)
     }
 
     return 0;
- error:
-    return -1;
 }
 
 static PRL_HANDLE
@@ -2741,19 +2731,16 @@ prlsdkRemoveBootDevices(PRL_HANDLE sdkdom)
 
         /* always get device by index 0, because device list resort after delete */
         pret = PrlVmCfg_GetBootDev(sdkdom, 0, &dev);
-        prlsdkCheckRetGoto(pret, error);
+        prlsdkCheckRetExit(pret, -1);
 
         pret = PrlBootDev_GetType(dev, &devType);
-        prlsdkCheckRetGoto(pret, error);
+        prlsdkCheckRetExit(pret, -1);
 
         pret = PrlBootDev_Remove(dev);
-        prlsdkCheckRetGoto(pret, error);
+        prlsdkCheckRetExit(pret, -1);
     }
 
     return 0;
-
- error:
-    return -1;
 }
 
 static int
@@ -3039,7 +3026,6 @@ static int prlsdkApplyGraphicsParams(PRL_HANDLE sdkdom,
 {
     virDomainGraphicsListenDefPtr glisten;
     PRL_RESULT pret;
-    int ret  = -1;
 
     if (!gr) {
         pret = PrlVmCfg_SetVNCMode(sdkdom, PRD_DISABLED);
@@ -3052,23 +3038,21 @@ static int prlsdkApplyGraphicsParams(PRL_HANDLE sdkdom,
 
     if (gr->data.vnc.autoport) {
         pret = PrlVmCfg_SetVNCMode(sdkdom, PRD_AUTO);
-        prlsdkCheckRetGoto(pret, cleanup);
+        prlsdkCheckRetExit(pret, -1);
     } else {
         pret = PrlVmCfg_SetVNCMode(sdkdom, PRD_MANUAL);
-        prlsdkCheckRetGoto(pret, cleanup);
+        prlsdkCheckRetExit(pret, -1);
 
         pret = PrlVmCfg_SetVNCPort(sdkdom, gr->data.vnc.port);
-        prlsdkCheckRetGoto(pret, cleanup);
+        prlsdkCheckRetExit(pret, -1);
     }
 
     glisten = virDomainGraphicsGetListen(gr, 0);
     pret = PrlVmCfg_SetVNCHostName(sdkdom, glisten && glisten->address ?
                                            glisten->address : VIR_LOOPBACK_IPV4_ADDR);
-    prlsdkCheckRetGoto(pret, cleanup);
+    prlsdkCheckRetExit(pret, -1);
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int prlsdkApplyVideoParams(PRL_HANDLE sdkdom G_GNUC_UNUSED, virDomainDefPtr def)
@@ -3087,11 +3071,9 @@ static int prlsdkApplyVideoParams(PRL_HANDLE sdkdom G_GNUC_UNUSED, virDomainDefP
         return -1;
 
     pret = PrlVmCfg_SetVideoRamSize(sdkdom, def->videos[0]->vram >> 10);
-    prlsdkCheckRetGoto(pret, error);
+    prlsdkCheckRetExit(pret, -1);
 
     return 0;
- error:
-    return -1;
 }
 
 static int prlsdkAddSerial(PRL_HANDLE sdkdom, virDomainChrDefPtr chr)
@@ -4524,13 +4506,12 @@ prlsdkGetMemoryStats(PRL_HANDLE sdkstats,
                      virDomainMemoryStatPtr stats,
                      unsigned int nr_stats)
 {
-    int ret = -1;
     long long v = 0, t = 0, u = 0;
     size_t i = 0;
 
 #define PRLSDK_GET_COUNTER(NAME, VALUE) \
     if (prlsdkExtractStatsParam(sdkstats, NAME, &VALUE) < 0) \
-        goto cleanup; \
+        return -1; \
 
 #define PRLSDK_MEMORY_STAT_SET(TAG, VALUE) \
     if (i < nr_stats) { \
@@ -4574,10 +4555,7 @@ prlsdkGetMemoryStats(PRL_HANDLE sdkstats,
 #undef PRLSDK_GET_COUNTER
 #undef PRLSDK_MEMORY_STAT_SET
 
-    ret = i;
- cleanup:
-
-    return ret;
+    return i;
 }
 
 /* memsize is in MiB */
@@ -4589,19 +4567,16 @@ int prlsdkSetMemsize(virDomainObjPtr dom, unsigned int memsize)
 
     job = PrlVm_BeginEdit(privdom->sdkdom);
     if (PRL_FAILED(waitDomainJob(job, dom)))
-        goto error;
+        return -1;
 
     pret = PrlVmCfg_SetRamSize(privdom->sdkdom, memsize);
-    prlsdkCheckRetGoto(pret, error);
+    prlsdkCheckRetExit(pret, -1);
 
     job = PrlVm_CommitEx(privdom->sdkdom, 0);
     if (PRL_FAILED(waitDomainJob(job, dom)))
-        goto error;
+        return -1;
 
     return 0;
-
- error:
-    return -1;
 }
 
 static long long
@@ -4875,19 +4850,16 @@ int prlsdkSetCpuCount(virDomainObjPtr dom, unsigned int count)
 
     job = PrlVm_BeginEdit(privdom->sdkdom);
     if (PRL_FAILED(waitDomainJob(job, dom)))
-        goto error;
+        return -1;
 
     pret = PrlVmCfg_SetCpuCount(privdom->sdkdom, count);
-    prlsdkCheckRetGoto(pret, error);
+    prlsdkCheckRetExit(pret, -1);
 
     job = PrlVm_CommitEx(privdom->sdkdom, 0);
     if (PRL_FAILED(waitDomainJob(job, dom)))
-        goto error;
+        return -1;
 
     return 0;
-
- error:
-    return -1;
 }
 
 int prlsdkResizeImage(virDomainObjPtr dom, virDomainDiskDefPtr disk,
