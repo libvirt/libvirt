@@ -400,6 +400,24 @@ qemuCheckpointCreateCommon(virQEMUDriverPtr driver,
 }
 
 
+/**
+ * qemuCheckpointRollbackMetadata:
+ * @vm: domain object
+ * @chk: checkpoint object
+ *
+ * If @chk is not null remove the @chk object from the list of checkpoints of @vm.
+ */
+void
+qemuCheckpointRollbackMetadata(virDomainObjPtr vm,
+                               virDomainMomentObjPtr chk)
+{
+    if (!chk)
+        return;
+
+    virDomainCheckpointObjListRemove(vm->checkpoints, chk);
+}
+
+
 static virDomainMomentObjPtr
 qemuCheckpointCreate(virQEMUDriverPtr driver,
                      virDomainObjPtr vm,
@@ -415,7 +433,7 @@ qemuCheckpointCreate(virQEMUDriverPtr driver,
     qemuDomainObjEnterMonitor(driver, vm);
     rc = qemuMonitorTransaction(qemuDomainGetMonitor(vm), &actions);
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0) {
-        virDomainCheckpointObjListRemove(vm->checkpoints, chk);
+        qemuCheckpointRollbackMetadata(vm, chk);
         return NULL;
     }
 
@@ -441,7 +459,7 @@ qemuCheckpointCreateFinalize(virQEMUDriverPtr driver,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unable to save metadata for checkpoint %s"),
                        chk->def->name);
-        virDomainCheckpointObjListRemove(vm->checkpoints, chk);
+        qemuCheckpointRollbackMetadata(vm, chk);
         return -1;
     }
 

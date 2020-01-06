@@ -67,3 +67,7 @@ qemuCheckpointCreateFinalize(virQEMUDriverPtr driver,
                              virQEMUDriverConfigPtr cfg,
                              virDomainMomentObjPtr chk,
                              bool update_current);
+
+void
+qemuCheckpointRollbackMetadata(virDomainObjPtr vm,
+                               virDomainMomentObjPtr chk);
