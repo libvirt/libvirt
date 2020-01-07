@@ -3251,7 +3251,7 @@ virSecuritySELinuxSetTapFDLabel(virSecurityManagerPtr mgr,
         goto cleanup;
     }
 
-    /* Label /dev/tap.* devices only. Leave /dev/net/tun alone! */
+    /* Label /dev/tap([0-9]+)? devices only. Leave /dev/net/tun alone! */
     proc = g_strdup_printf("/proc/self/fd/%d", fd);
 
     if (virFileResolveLink(proc, &fd_path) < 0) {
@@ -3267,7 +3267,7 @@ virSecuritySELinuxSetTapFDLabel(virSecurityManagerPtr mgr,
         goto cleanup;
     }
 
-    if (getContext(mgr, "/dev/tap*", buf.st_mode, &fcon) < 0) {
+    if (getContext(mgr, fd_path, buf.st_mode, &fcon) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("cannot lookup default selinux label for tap fd %d"), fd);
         goto cleanup;
