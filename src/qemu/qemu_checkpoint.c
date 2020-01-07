@@ -117,6 +117,7 @@ qemuCheckpointDiscard(virQEMUDriverPtr driver,
     size_t i, j;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autofree char *chkFile = NULL;
+    bool chkcurrent = chk == virDomainCheckpointGetCurrent(vm->checkpoints);
 
     if (!metadata_only && !virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
@@ -172,7 +173,7 @@ qemuCheckpointDiscard(virQEMUDriverPtr driver,
                     if (qemuMonitorTransactionBitmapMergeSourceAddBitmap(arr, node, disk->bitmap) < 0)
                         return -1;
 
-                    if (chk == virDomainCheckpointGetCurrent(vm->checkpoints)) {
+                    if (chkcurrent) {
                         if (qemuMonitorTransactionBitmapEnable(actions, node, disk2->bitmap) < 0)
                             return -1;
                     }
@@ -192,7 +193,7 @@ qemuCheckpointDiscard(virQEMUDriverPtr driver,
             return -1;
     }
 
-    if (chk == virDomainCheckpointGetCurrent(vm->checkpoints)) {
+    if (chkcurrent) {
         virDomainCheckpointSetCurrent(vm->checkpoints, NULL);
         if (update_parent && parent) {
             virDomainCheckpointSetCurrent(vm->checkpoints, parent);
