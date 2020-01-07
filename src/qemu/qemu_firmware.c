@@ -928,22 +928,39 @@ qemuFirmwareMatchesMachineArch(const qemuFirmware *fw,
 }
 
 
+static qemuFirmwareOSInterface
+qemuFirmwareOSInterfaceTypeFromOsDefFirmware(virDomainOsDefFirmware fw)
+{
+    switch (fw) {
+    case VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS:
+        return QEMU_FIRMWARE_OS_INTERFACE_BIOS;
+    case VIR_DOMAIN_OS_DEF_FIRMWARE_EFI:
+        return QEMU_FIRMWARE_OS_INTERFACE_UEFI;
+    case VIR_DOMAIN_OS_DEF_FIRMWARE_NONE:
+    case VIR_DOMAIN_OS_DEF_FIRMWARE_LAST:
+        break;
+    }
+
+    return QEMU_FIRMWARE_OS_INTERFACE_NONE;
+}
+
+
 static bool
 qemuFirmwareMatchDomain(const virDomainDef *def,
                         const qemuFirmware *fw,
                         const char *path)
 {
     size_t i;
+    qemuFirmwareOSInterface want;
     bool supportsS3 = false;
     bool supportsS4 = false;
     bool requiresSMM = false;
     bool supportsSEV = false;
 
+    want = qemuFirmwareOSInterfaceTypeFromOsDefFirmware(def->os.firmware);
+
     for (i = 0; i < fw->ninterfaces; i++) {
-        if ((def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS &&
-             fw->interfaces[i] == QEMU_FIRMWARE_OS_INTERFACE_BIOS) ||
-            (def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_EFI &&
-             fw->interfaces[i] == QEMU_FIRMWARE_OS_INTERFACE_UEFI))
+        if (fw->interfaces[i] == want)
             break;
     }
 
