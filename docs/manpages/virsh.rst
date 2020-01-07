@@ -6734,7 +6734,8 @@ form ``disk[,snapshot=type][,driver=type][,stype=type][,file=name]``.
 A *diskspec* must be provided for disks backed by block devices as libvirt
 doesn't auto-generate file names for those.  The optional ``stype`` parameter
 allows to control the type of the source file. Supported values are 'file'
-(default) and 'block'.
+(default) and 'block'. To exclude a disk from an external snapshot use
+``--diskspec disk,snapshot=no``.
 
 To include a literal comma in ``disk`` or in ``file=name``, escape it with a
 second comma.  A literal *--diskspec* must precede each ``diskspec`` unless
