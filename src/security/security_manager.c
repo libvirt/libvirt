@@ -769,7 +769,7 @@ static int virSecurityManagerCheckModel(virSecurityManagerPtr mgr,
     }
 
     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                   _("Unable to find security driver for model %s"),
+                   _("Security driver model '%s' is not available"),
                    secmodel);
  cleanup:
     VIR_FREE(sec_managers);

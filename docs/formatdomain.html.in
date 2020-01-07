@@ -9011,7 +9011,8 @@ qemu-kvm -net nic,model=? /dev/null
       </dd>
       <dt><code>model</code></dt>
       <dd>A valid security model name, matching the currently
-        activated security model
+      activated security model. Model <code>dac</code> is not available
+      when guest is run by unprivileged user.
       </dd>
       <dt><code>relabel</code></dt>
       <dd>Either <code>yes</code> or <code>no</code>. This must always
