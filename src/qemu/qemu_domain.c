@@ -5697,8 +5697,7 @@ qemuDomainDefValidate(const virDomainDef *def,
 
     /* On x86, UEFI requires ACPI */
     if ((def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_EFI ||
-         (def->os.loader &&
-          def->os.loader->type == VIR_DOMAIN_LOADER_TYPE_PFLASH)) &&
+         virDomainDefHasOldStyleUEFI(def)) &&
         ARCH_IS_X86(def->os.arch) &&
         def->features[VIR_DOMAIN_FEATURE_ACPI] != VIR_TRISTATE_SWITCH_ON) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -5710,8 +5709,7 @@ qemuDomainDefValidate(const virDomainDef *def,
     if (def->features[VIR_DOMAIN_FEATURE_ACPI] == VIR_TRISTATE_SWITCH_ON &&
         def->os.arch == VIR_ARCH_AARCH64 &&
         (def->os.firmware != VIR_DOMAIN_OS_DEF_FIRMWARE_EFI &&
-         (!def->os.loader ||
-          def->os.loader->type != VIR_DOMAIN_LOADER_TYPE_PFLASH))) {
+         !virDomainDefHasOldStyleUEFI(def))) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("ACPI requires UEFI on this architecture"));
         goto cleanup;
@@ -16608,12 +16606,9 @@ void
 qemuDomainNVRAMPathGenerate(virQEMUDriverConfigPtr cfg,
                             virDomainDefPtr def)
 {
-    if (def->os.loader &&
-        def->os.loader->type == VIR_DOMAIN_LOADER_TYPE_PFLASH &&
-        def->os.loader->readonly == VIR_TRISTATE_BOOL_YES &&
+    if (virDomainDefHasOldStyleROUEFI(def) &&
         !def->os.loader->nvram)
         qemuDomainNVRAMPathFormat(cfg, def, &def->os.loader->nvram);
-
 }
 
 
@@ -16740,8 +16735,7 @@ qemuDomainInitializePflashStorageSource(virDomainObjPtr vm)
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV))
         return 0;
 
-    if (!def->os.loader ||
-        def->os.loader->type != VIR_DOMAIN_LOADER_TYPE_PFLASH)
+    if (!virDomainDefHasOldStyleUEFI(def))
         return 0;
 
     if (!(pflash0 = virStorageSourceNew()))

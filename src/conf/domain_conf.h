@@ -3674,6 +3674,12 @@ bool
 virDomainDefHasMdevHostdev(const virDomainDef *def);
 
 bool
+virDomainDefHasOldStyleUEFI(const virDomainDef *def);
+
+bool
+virDomainDefHasOldStyleROUEFI(const virDomainDef *def);
+
+bool
 virDomainGraphicsDefHasOpenGL(const virDomainDef *def);
 
 bool

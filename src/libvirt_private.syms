@@ -311,6 +311,8 @@ virDomainDefHasMdevHostdev;
 virDomainDefHasMemballoon;
 virDomainDefHasMemoryHotplug;
 virDomainDefHasNVMeDisk;
+virDomainDefHasOldStyleROUEFI;
+virDomainDefHasOldStyleUEFI;
 virDomainDefHasUSB;
 virDomainDefHasVcpusOffline;
 virDomainDefHasVFIOHostdev;

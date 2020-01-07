@@ -15218,8 +15218,7 @@ qemuDomainSnapshotPrepare(virDomainObjPtr vm,
      * Avoid the issues by forbidding internal snapshot with pflash completely.
      */
     if (found_internal &&
-        vm->def->os.loader &&
-        vm->def->os.loader->type == VIR_DOMAIN_LOADER_TYPE_PFLASH) {
+        virDomainDefHasOldStyleUEFI(vm->def)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("internal snapshots of a VM with pflash based "
                          "firmware are not supported"));

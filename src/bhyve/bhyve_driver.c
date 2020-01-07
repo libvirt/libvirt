@@ -704,8 +704,7 @@ bhyveConnectDomainXMLToNative(virConnectPtr conn,
     if (def->os.bootloader == NULL &&
         def->os.loader) {
 
-        if ((def->os.loader->readonly != VIR_TRISTATE_BOOL_YES) ||
-            (def->os.loader->type != VIR_DOMAIN_LOADER_TYPE_PFLASH)) {
+        if (!virDomainDefHasOldStyleROUEFI(def)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Only read-only pflash is supported."));
             goto cleanup;

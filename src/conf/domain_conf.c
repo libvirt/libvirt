@@ -31526,6 +31526,22 @@ virDomainDefHasMdevHostdev(const virDomainDef *def)
 }
 
 
+bool
+virDomainDefHasOldStyleUEFI(const virDomainDef *def)
+{
+    return def->os.loader &&
+           def->os.loader->type == VIR_DOMAIN_LOADER_TYPE_PFLASH;
+}
+
+
+bool
+virDomainDefHasOldStyleROUEFI(const virDomainDef *def)
+{
+    return virDomainDefHasOldStyleUEFI(def) &&
+           def->os.loader->readonly == VIR_TRISTATE_BOOL_YES;
+}
+
+
 /**
  * virDomainGraphicsDefHasOpenGL:
  * @def: domain definition
