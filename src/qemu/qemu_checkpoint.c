@@ -105,6 +105,81 @@ qemuCheckpointWriteMetadata(virDomainObjPtr vm,
 
 
 static int
+qemuCheckpointDiscardBitmaps(virDomainObjPtr vm,
+                             virDomainCheckpointDefPtr chkdef,
+                             bool chkcurrent,
+                             virDomainMomentObjPtr parent)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverPtr driver = priv->driver;
+    virDomainMomentObjPtr moment;
+    virDomainCheckpointDefPtr parentdef = NULL;
+    bool search_parents;
+    int rc;
+    g_autoptr(virJSONValue) actions = NULL;
+    size_t i;
+    size_t j;
+
+    if (!(actions = virJSONValueNewArray()))
+        return -1;
+
+    for (i = 0; i < chkdef->ndisks; i++) {
+        virDomainCheckpointDiskDef *disk = &chkdef->disks[i];
+        const char *node;
+
+        if (disk->type != VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP)
+            continue;
+
+        node = qemuDomainDiskNodeFormatLookup(vm, disk->name);
+        /* If any ancestor checkpoint has a bitmap for the same
+         * disk, then this bitmap must be merged to the
+         * ancestor. */
+        search_parents = true;
+        for (moment = parent;
+             search_parents && moment;
+             moment = virDomainCheckpointFindByName(vm->checkpoints,
+                                                    parentdef->parent.parent_name)) {
+            parentdef = virDomainCheckpointObjGetDef(moment);
+            for (j = 0; j < parentdef->ndisks; j++) {
+                virDomainCheckpointDiskDef *disk2;
+                g_autoptr(virJSONValue) arr = NULL;
+
+                disk2 = &parentdef->disks[j];
+                if (STRNEQ(disk->name, disk2->name) ||
+                    disk2->type != VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP)
+                    continue;
+                search_parents = false;
+
+                if (!(arr = virJSONValueNewArray()))
+                    return -1;
+
+                if (qemuMonitorTransactionBitmapMergeSourceAddBitmap(arr, node, disk->bitmap) < 0)
+                    return -1;
+
+                if (chkcurrent) {
+                    if (qemuMonitorTransactionBitmapEnable(actions, node, disk2->bitmap) < 0)
+                        return -1;
+                }
+
+                if (qemuMonitorTransactionBitmapMerge(actions, node, disk2->bitmap, &arr) < 0)
+                    return -1;
+            }
+        }
+
+        if (qemuMonitorTransactionBitmapRemove(actions, node, disk->bitmap) < 0)
+            return -1;
+    }
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    rc = qemuMonitorTransaction(priv->mon, &actions);
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 qemuCheckpointDiscard(virQEMUDriverPtr driver,
                       virDomainObjPtr vm,
                       virDomainMomentObjPtr chk,
@@ -112,9 +187,6 @@ qemuCheckpointDiscard(virQEMUDriverPtr driver,
                       bool metadata_only)
 {
     virDomainMomentObjPtr parent = NULL;
-    virDomainMomentObjPtr moment;
-    virDomainCheckpointDefPtr parentdef = NULL;
-    size_t i, j;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autofree char *chkFile = NULL;
     bool chkcurrent = chk == virDomainCheckpointGetCurrent(vm->checkpoints);
@@ -129,67 +201,10 @@ qemuCheckpointDiscard(virQEMUDriverPtr driver,
                               chk->def->name);
 
     if (!metadata_only) {
-        qemuDomainObjPrivatePtr priv = vm->privateData;
-        bool search_parents;
         virDomainCheckpointDefPtr chkdef = virDomainCheckpointObjGetDef(chk);
-        int rc;
-        g_autoptr(virJSONValue) actions = NULL;
-
-        if (!(actions = virJSONValueNewArray()))
-            return -1;
-
         parent = virDomainCheckpointFindByName(vm->checkpoints,
                                                chk->def->parent_name);
-        for (i = 0; i < chkdef->ndisks; i++) {
-            virDomainCheckpointDiskDef *disk = &chkdef->disks[i];
-            const char *node;
-
-            if (disk->type != VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP)
-                continue;
-
-            node = qemuDomainDiskNodeFormatLookup(vm, disk->name);
-            /* If any ancestor checkpoint has a bitmap for the same
-             * disk, then this bitmap must be merged to the
-             * ancestor. */
-            search_parents = true;
-            for (moment = parent;
-                 search_parents && moment;
-                 moment = virDomainCheckpointFindByName(vm->checkpoints,
-                                                        parentdef->parent.parent_name)) {
-                parentdef = virDomainCheckpointObjGetDef(moment);
-                for (j = 0; j < parentdef->ndisks; j++) {
-                    virDomainCheckpointDiskDef *disk2;
-                    g_autoptr(virJSONValue) arr = NULL;
-
-                    disk2 = &parentdef->disks[j];
-                    if (STRNEQ(disk->name, disk2->name) ||
-                        disk2->type != VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP)
-                        continue;
-                    search_parents = false;
-
-                    if (!(arr = virJSONValueNewArray()))
-                        return -1;
-
-                    if (qemuMonitorTransactionBitmapMergeSourceAddBitmap(arr, node, disk->bitmap) < 0)
-                        return -1;
-
-                    if (chkcurrent) {
-                        if (qemuMonitorTransactionBitmapEnable(actions, node, disk2->bitmap) < 0)
-                            return -1;
-                    }
-
-                    if (qemuMonitorTransactionBitmapMerge(actions, node, disk2->bitmap, &arr) < 0)
-                        return -1;
-                }
-            }
-
-            if (qemuMonitorTransactionBitmapRemove(actions, node, disk->bitmap) < 0)
-                return -1;
-        }
-
-        qemuDomainObjEnterMonitor(driver, vm);
-        rc = qemuMonitorTransaction(priv->mon, &actions);
-        if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+        if (qemuCheckpointDiscardBitmaps(vm, chkdef, chkcurrent, parent) < 0)
             return -1;
     }
 
