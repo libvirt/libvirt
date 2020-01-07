@@ -58,6 +58,9 @@ main(void)
 
 #else
 
+/* Some UNIX lack it in headers & it doesn't hurt to redeclare */
+extern char **environ;
+
 static int checkoutput(const char *testname,
                        char *prefix)
 {

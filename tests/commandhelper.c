@@ -31,6 +31,9 @@
 
 #ifndef WIN32
 
+/* Some UNIX lack it in headers & it doesn't hurt to redeclare */
+extern char **environ;
+
 # define VIR_FROM_THIS VIR_FROM_NONE
 
 static int envsort(const void *a, const void *b)
