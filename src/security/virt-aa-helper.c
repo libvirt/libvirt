@@ -541,7 +541,6 @@ valid_path(const char *path, const bool readonly)
 static int
 verify_xpath_context(xmlXPathContextPtr ctxt)
 {
-    int rc = -1;
     char *tmp = NULL;
 
     if (!ctxt) {
