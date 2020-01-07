@@ -2342,3 +2342,6 @@ exclude_file_name_regexp--sc_prohibit_strcmp = \
 
 exclude_file_name_regexp--sc_prohibit_backslash_alignment = \
   ^build-aux/syntax-check\.mk$$
+
+exclude_file_name_regexp--sc_prohibit_always_true_header_tests = \
+  ^src/util/virfile\.c$$

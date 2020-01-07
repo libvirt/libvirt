@@ -27,7 +27,19 @@
 
 #include <passfd.h>
 #include <fcntl.h>
-#include <pty.h>
+#include <termios.h>
+#ifdef HAVE_PTY_H
+/* Linux openpty */
+# include <pty.h>
+#endif /* !HAVE_PTY_H */
+#ifdef HAVE_UTIL_H
+/* macOS openpty */
+# include <util.h>
+#endif /* !HAVE_LIBUTIL_H */
+#ifdef HAVE_LIBUTIL_H
+/* FreeBSD openpty */
+# include <libutil.h>
+#endif /* !HAVE_LIBUTIL_H */
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/socket.h>

@@ -383,10 +383,13 @@ dnl Availability of various common headers (non-fatal if missing).
 AC_CHECK_HEADERS([\
   ifaddrs.h \
   libtasn1.h \
+  util.h \
+  libutil.h \
   linux/magic.h \
   mntent.h \
   net/ethernet.h \
   netinet/tcp.h \
+  pty.h \
   pwd.h \
   stdarg.h \
   syslog.h \
@@ -430,6 +433,7 @@ dnl header could be found.
 AM_CONDITIONAL([HAVE_LIBTASN1], [test "x$ac_cv_header_libtasn1_h" = "xyes"])
 
 AC_CHECK_LIB([intl],[gettext],[])
+AC_CHECK_LIB([util],[openpty],[])
 
 
 dnl
