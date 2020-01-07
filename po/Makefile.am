@@ -54,11 +54,11 @@ POT_CREATION_DATE = $(shell \
 	fi)
 
 SED_PO_FIXUP_ARGS = \
-       -e "s|text/plain; charset=CHARSET|text/plain; charset=UTF-8|g" \
-       -e "s|SOME DESCRIPTIVE TITLE|Libvirt package strings|g" \
-       -e "s|Copyright (C) YEAR|Copyright (C) $$(date +'%Y')|" \
-       -e "s|POT-Creation-Date:[^\]*|POT-Creation-Date: $(POT_CREATION_DATE)|" \
-       $(NULL)
+	-e "s|text/plain; charset=CHARSET|text/plain; charset=UTF-8|g" \
+	-e "s|SOME DESCRIPTIVE TITLE|Libvirt package strings|g" \
+	-e "s|Copyright (C) YEAR|Copyright (C) $$(date +'%Y')|" \
+	-e "s|POT-Creation-Date:[^\]*|POT-Creation-Date: $(POT_CREATION_DATE)|" \
+	$(NULL)
 
 update-po: $(POFILES)
 
