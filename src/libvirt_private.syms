@@ -226,6 +226,7 @@ virDomainActualNetDefFree;
 virDomainActualNetDefValidate;
 virDomainBlockedReasonTypeFromString;
 virDomainBlockedReasonTypeToString;
+virDomainBlockIoTuneInfoCopy;
 virDomainBlockIoTuneInfoHasAny;
 virDomainBlockIoTuneInfoHasBasic;
 virDomainBlockIoTuneInfoHasMax;

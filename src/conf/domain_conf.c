@@ -5110,6 +5110,32 @@ virDomainRNGDefPostParse(virDomainRNGDefPtr rng)
 }
 
 
+static void
+virDomainDiskExpandGroupIoTune(virDomainDiskDefPtr disk,
+                               const virDomainDef *def)
+{
+    size_t i;
+
+    if (!disk->blkdeviotune.group_name ||
+        virDomainBlockIoTuneInfoHasAny(&disk->blkdeviotune))
+        return;
+
+    for (i = 0; i < def->ndisks; i++) {
+        virDomainDiskDefPtr d = def->disks[i];
+
+        if (STRNEQ_NULLABLE(disk->blkdeviotune.group_name, d->blkdeviotune.group_name) ||
+            !virDomainBlockIoTuneInfoHasAny(&d->blkdeviotune))
+            continue;
+
+
+        VIR_FREE(disk->blkdeviotune.group_name);
+        virDomainBlockIoTuneInfoCopy(&d->blkdeviotune, &disk->blkdeviotune);
+
+        return;
+    }
+}
+
+
 static int
 virDomainDiskDefPostParse(virDomainDiskDefPtr disk,
                           const virDomainDef *def,
@@ -5154,6 +5180,8 @@ virDomainDiskDefPostParse(virDomainDiskDefPtr disk,
         virDomainDiskDefAssignAddress(xmlopt, disk, def) < 0) {
         return -1;
     }
+
+    virDomainDiskExpandGroupIoTune(disk, def);
 
     return 0;
 }
@@ -31757,4 +31785,13 @@ virDomainBlockIoTuneInfoHasAny(const virDomainBlockIoTuneInfo *iotune)
     return virDomainBlockIoTuneInfoHasBasic(iotune) ||
            virDomainBlockIoTuneInfoHasMax(iotune) ||
            virDomainBlockIoTuneInfoHasMaxLength(iotune);
+}
+
+
+void
+virDomainBlockIoTuneInfoCopy(const virDomainBlockIoTuneInfo *src,
+                             virDomainBlockIoTuneInfoPtr dst)
+{
+    *dst = *src;
+    dst->group_name = g_strdup(src->group_name);
 }
