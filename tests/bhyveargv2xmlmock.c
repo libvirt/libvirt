@@ -2,7 +2,9 @@
 
 #include "virnetdev.h"
 #include "internal.h"
+#include "testutilshostcpus.h"
 #include "util/viruuid.h"
+#include "cpu/cpu.h"
 
 #define VIR_FROM_THIS VIR_FROM_BHYVE
 
@@ -24,4 +26,10 @@ virUUIDGenerate(unsigned char *uuid)
     if (virUUIDParse("c7a5fdbd-edaf-9455-926a-d65c16db1809", uuid) < 0)
         return -1;
     return 0;
+}
+
+virCPUDefPtr
+virCPUProbeHost(virArch arch)
+{
+    return testUtilsHostCpusGetDefForArch(arch);
 }

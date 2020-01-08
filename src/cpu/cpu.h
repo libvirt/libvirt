@@ -193,7 +193,7 @@ virCPUGetHost(virArch arch,
               virDomainCapsCPUModelsPtr models);
 
 virCPUDefPtr
-virCPUProbeHost(virArch arch);
+virCPUProbeHost(virArch arch) G_GNUC_NO_INLINE;
 
 virCPUDefPtr
 virCPUBaseline(virArch arch,
