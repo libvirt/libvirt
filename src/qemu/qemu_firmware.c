@@ -929,7 +929,7 @@ qemuFirmwareMatchesMachineArch(const qemuFirmware *fw,
 
 
 static qemuFirmwareOSInterface
-qemuFirmwareOSInterfaceTypeFromOsDefFirmware(virDomainOsDefFirmware fw)
+qemuFirmwareOSInterfaceTypeFromOsDefFirmware(int fw)
 {
     switch (fw) {
     case VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS:
