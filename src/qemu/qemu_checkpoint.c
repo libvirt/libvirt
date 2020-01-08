@@ -125,12 +125,15 @@ qemuCheckpointDiscardBitmaps(virDomainObjPtr vm,
 
     for (i = 0; i < chkdef->ndisks; i++) {
         virDomainCheckpointDiskDef *chkdisk = &chkdef->disks[i];
-        const char *node;
+        virDomainDiskDefPtr domdisk = virDomainDiskByTarget(vm->def, chkdisk->name);
+
+        /* domdisk can be missing e.g. when it was unplugged */
+        if (!domdisk)
+            continue;
 
         if (chkdisk->type != VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP)
             continue;
 
-        node = qemuDomainDiskNodeFormatLookup(vm, chkdisk->name);
         /* If any ancestor checkpoint has a bitmap for the same
          * disk, then this bitmap must be merged to the
          * ancestor. */
@@ -153,20 +156,28 @@ qemuCheckpointDiscardBitmaps(virDomainObjPtr vm,
                 if (!(arr = virJSONValueNewArray()))
                     return -1;
 
-                if (qemuMonitorTransactionBitmapMergeSourceAddBitmap(arr, node, chkdisk->bitmap) < 0)
+                if (qemuMonitorTransactionBitmapMergeSourceAddBitmap(arr,
+                                                                     domdisk->src->nodeformat,
+                                                                     chkdisk->bitmap) < 0)
                     return -1;
 
                 if (chkcurrent) {
-                    if (qemuMonitorTransactionBitmapEnable(actions, node, disk2->bitmap) < 0)
+                    if (qemuMonitorTransactionBitmapEnable(actions,
+                                                           domdisk->src->nodeformat,
+                                                           disk2->bitmap) < 0)
                         return -1;
                 }
 
-                if (qemuMonitorTransactionBitmapMerge(actions, node, disk2->bitmap, &arr) < 0)
+                if (qemuMonitorTransactionBitmapMerge(actions,
+                                                      domdisk->src->nodeformat,
+                                                      disk2->bitmap, &arr) < 0)
                     return -1;
             }
         }
 
-        if (qemuMonitorTransactionBitmapRemove(actions, node, chkdisk->bitmap) < 0)
+        if (qemuMonitorTransactionBitmapRemove(actions,
+                                               domdisk->src->nodeformat,
+                                               chkdisk->bitmap) < 0)
             return -1;
     }
 
