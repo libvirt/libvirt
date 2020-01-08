@@ -67,9 +67,9 @@ struct _virChrdevStreamInfo {
  */
 static char *virChrdevLockFilePath(const char *dev)
 {
-    char *path = NULL;
-    char *sanitizedPath = NULL;
-    char *devCopy;
+    g_autofree char *path = NULL;
+    g_autofree char *sanitizedPath = NULL;
+    g_autofree char *devCopy = NULL;
     char *filename;
     char *p;
 
@@ -92,10 +92,7 @@ static char *virChrdevLockFilePath(const char *dev)
 
     sanitizedPath = virFileSanitizePath(path);
 
-    VIR_FREE(path);
-    VIR_FREE(devCopy);
-
-    return sanitizedPath;
+    return g_steal_pointer(&sanitizedPath);
 }
 
 /**
@@ -107,10 +104,10 @@ static char *virChrdevLockFilePath(const char *dev)
  */
 static int virChrdevLockFileCreate(const char *dev)
 {
-    char *path = NULL;
+    g_autofree char *path = NULL;
     int ret = -1;
-    int lockfd = -1;
-    char *pidStr = NULL;
+    g_autofree char *pidStr = NULL;
+    VIR_AUTOCLOSE lockfd = -1;
     pid_t pid;
 
     /* build lock file path */
@@ -161,7 +158,6 @@ static int virChrdevLockFileCreate(const char *dev)
                              _("Couldn't write to lock file for "
                                "device '%s' in path '%s'"),
                              dev, path);
-        VIR_FORCE_CLOSE(lockfd);
         unlink(path);
         goto cleanup;
     }
@@ -170,9 +166,6 @@ static int virChrdevLockFileCreate(const char *dev)
     ret = 0;
 
  cleanup:
-    VIR_FORCE_CLOSE(lockfd);
-    VIR_FREE(path);
-    VIR_FREE(pidStr);
 
     return ret;
 }
@@ -184,10 +177,8 @@ static int virChrdevLockFileCreate(const char *dev)
  */
 static void virChrdevLockFileRemove(const char *dev)
 {
-    char *path = virChrdevLockFilePath(dev);
-    if (path)
-        unlink(path);
-    VIR_FREE(path);
+    g_autofree char *path = virChrdevLockFilePath(dev);
+    unlink(path);
 }
 #else /* #ifdef VIR_CHRDEV_LOCK_FILE_PATH */
 /* file locking for character devices is disabled */
