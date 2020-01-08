@@ -19160,6 +19160,28 @@ qemuDomainFindGroupBlockIoTune(virDomainDefPtr def,
 
 
 static int
+qemuDomainCheckBlockIoTuneReset(virDomainDiskDefPtr disk,
+                                virDomainBlockIoTuneInfoPtr newiotune)
+{
+    if (virDomainBlockIoTuneInfoHasAny(newiotune))
+        return 0;
+
+    if (newiotune->group_name &&
+        STRNEQ_NULLABLE(newiotune->group_name, disk->blkdeviotune.group_name)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("creating a new group/updating existing with all"
+                         " tune parameters zero is not supported"));
+        return -1;
+    }
+
+    /* all zero means remove any throttling and remove from group for qemu */
+    VIR_FREE(newiotune->group_name);
+
+    return 0;
+}
+
+
+static int
 qemuDomainSetBlockIoTune(virDomainPtr dom,
                          const char *path,
                          virTypedParameterPtr params,
@@ -19417,6 +19439,9 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
                                              set_fields) < 0)
             goto endjob;
 
+        if (qemuDomainCheckBlockIoTuneReset(disk, &info) < 0)
+            goto endjob;
+
 #define CHECK_MAX(val, _bool) \
         do { \
             if (info.val##_max) { \
@@ -19494,6 +19519,9 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
 
         if (qemuDomainSetBlockIoTuneDefaults(&conf_info, conf_cur_info,
                                              set_fields) < 0)
+            goto endjob;
+
+        if (qemuDomainCheckBlockIoTuneReset(conf_disk, &conf_info) < 0)
             goto endjob;
 
         if (virDomainDiskSetBlockIOTune(conf_disk, &conf_info) < 0)
