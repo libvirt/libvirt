@@ -823,6 +823,8 @@ bhyveParseBhyveLoadCommandLine(virDomainDefPtr def,
     return 0;
 }
 
+#undef CONSUME_ARG
+
 static int
 bhyveParseCustomLoaderCommandLine(virDomainDefPtr def,
                                   int argc G_GNUC_UNUSED,
