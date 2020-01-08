@@ -628,7 +628,7 @@ bhyveParseBhyvePCIArg(virDomainDefPtr def,
     if ((opti + 1) == argc) { \
         virReportError(VIR_ERR_INVALID_ARG, _("Missing argument for '%s'"), \
                        argv[opti]); \
-        goto error; \
+        return -1; \
     } \
     var = argv[++opti]
 
