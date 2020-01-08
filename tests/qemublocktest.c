@@ -1003,6 +1003,10 @@ mymain(void)
     } while (0)
 
     TEST_CHECKPOINT_DELETE_MERGE("basic-noparent", "a", NULL);
+    TEST_CHECKPOINT_DELETE_MERGE("basic-intermediate1", "b", "a");
+    TEST_CHECKPOINT_DELETE_MERGE("basic-intermediate2", "c", "b");
+    TEST_CHECKPOINT_DELETE_MERGE("basic-intermediate3", "d", "c");
+    TEST_CHECKPOINT_DELETE_MERGE("basic-current", "current", "d");
 
  cleanup:
     virHashFree(diskxmljsondata.schema);
