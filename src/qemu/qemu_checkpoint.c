@@ -124,13 +124,13 @@ qemuCheckpointDiscardBitmaps(virDomainObjPtr vm,
         return -1;
 
     for (i = 0; i < chkdef->ndisks; i++) {
-        virDomainCheckpointDiskDef *disk = &chkdef->disks[i];
+        virDomainCheckpointDiskDef *chkdisk = &chkdef->disks[i];
         const char *node;
 
-        if (disk->type != VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP)
+        if (chkdisk->type != VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP)
             continue;
 
-        node = qemuDomainDiskNodeFormatLookup(vm, disk->name);
+        node = qemuDomainDiskNodeFormatLookup(vm, chkdisk->name);
         /* If any ancestor checkpoint has a bitmap for the same
          * disk, then this bitmap must be merged to the
          * ancestor. */
@@ -145,7 +145,7 @@ qemuCheckpointDiscardBitmaps(virDomainObjPtr vm,
                 g_autoptr(virJSONValue) arr = NULL;
 
                 disk2 = &parentdef->disks[j];
-                if (STRNEQ(disk->name, disk2->name) ||
+                if (STRNEQ(chkdisk->name, disk2->name) ||
                     disk2->type != VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP)
                     continue;
                 search_parents = false;
@@ -153,7 +153,7 @@ qemuCheckpointDiscardBitmaps(virDomainObjPtr vm,
                 if (!(arr = virJSONValueNewArray()))
                     return -1;
 
-                if (qemuMonitorTransactionBitmapMergeSourceAddBitmap(arr, node, disk->bitmap) < 0)
+                if (qemuMonitorTransactionBitmapMergeSourceAddBitmap(arr, node, chkdisk->bitmap) < 0)
                     return -1;
 
                 if (chkcurrent) {
@@ -166,7 +166,7 @@ qemuCheckpointDiscardBitmaps(virDomainObjPtr vm,
             }
         }
 
-        if (qemuMonitorTransactionBitmapRemove(actions, node, disk->bitmap) < 0)
+        if (qemuMonitorTransactionBitmapRemove(actions, node, chkdisk->bitmap) < 0)
             return -1;
     }
 
