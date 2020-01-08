@@ -19137,6 +19137,28 @@ qemuDomainSetGroupBlockIoTune(virDomainDefPtr def,
 }
 
 
+static virDomainBlockIoTuneInfoPtr
+qemuDomainFindGroupBlockIoTune(virDomainDefPtr def,
+                               virDomainDiskDefPtr disk,
+                               virDomainBlockIoTuneInfoPtr newiotune)
+{
+    size_t i;
+
+    if (!newiotune->group_name ||
+        STREQ_NULLABLE(disk->blkdeviotune.group_name, newiotune->group_name))
+        return &disk->blkdeviotune;
+
+    for (i = 0; i < def->ndisks; i++) {
+        virDomainDiskDefPtr d = def->disks[i];
+
+        if (STREQ_NULLABLE(newiotune->group_name, d->blkdeviotune.group_name))
+            return &d->blkdeviotune;
+    }
+
+    return &disk->blkdeviotune;
+}
+
+
 static int
 qemuDomainSetBlockIoTune(virDomainPtr dom,
                          const char *path,
@@ -19166,6 +19188,9 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     virTypedParameterPtr eventParams = NULL;
     int eventNparams = 0;
     int eventMaxparams = 0;
+    virDomainBlockIoTuneInfoPtr cur_info;
+    virDomainBlockIoTuneInfoPtr conf_cur_info;
+
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -19386,7 +19411,9 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
                 goto endjob;
         }
 
-        if (qemuDomainSetBlockIoTuneDefaults(&info, &disk->blkdeviotune,
+        cur_info = qemuDomainFindGroupBlockIoTune(def, disk, &info);
+
+        if (qemuDomainSetBlockIoTuneDefaults(&info, cur_info,
                                              set_fields) < 0)
             goto endjob;
 
@@ -19463,7 +19490,9 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
             goto endjob;
         }
 
-        if (qemuDomainSetBlockIoTuneDefaults(&conf_info, &conf_disk->blkdeviotune,
+        conf_cur_info = qemuDomainFindGroupBlockIoTune(persistentDef, conf_disk, &info);
+
+        if (qemuDomainSetBlockIoTuneDefaults(&conf_info, conf_cur_info,
                                              set_fields) < 0)
             goto endjob;
 
