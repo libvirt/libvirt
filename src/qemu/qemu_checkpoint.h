@@ -71,3 +71,10 @@ qemuCheckpointCreateFinalize(virQEMUDriverPtr driver,
 void
 qemuCheckpointRollbackMetadata(virDomainObjPtr vm,
                                virDomainMomentObjPtr chk);
+
+int
+qemuCheckpointDiscardDiskBitmaps(virStorageSourcePtr src,
+                                 const char *delbitmap,
+                                 const char *parentbitmap,
+                                 bool chkcurrent,
+                                 virJSONValuePtr actions);

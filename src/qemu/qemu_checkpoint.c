@@ -148,6 +148,46 @@ qemuCheckpointFindActiveDiskInParent(virDomainObjPtr vm,
 }
 
 
+int
+qemuCheckpointDiscardDiskBitmaps(virStorageSourcePtr src,
+                                 const char *delbitmap,
+                                 const char *parentbitmap,
+                                 bool chkcurrent,
+                                 virJSONValuePtr actions)
+{
+    if (parentbitmap) {
+        g_autoptr(virJSONValue) arr = NULL;
+
+        if (!(arr = virJSONValueNewArray()))
+            return -1;
+
+        if (qemuMonitorTransactionBitmapMergeSourceAddBitmap(arr,
+                                                             src->nodeformat,
+                                                             delbitmap) < 0)
+            return -1;
+
+        if (chkcurrent) {
+            if (qemuMonitorTransactionBitmapEnable(actions,
+                                                   src->nodeformat,
+                                                   parentbitmap) < 0)
+                return -1;
+        }
+
+        if (qemuMonitorTransactionBitmapMerge(actions,
+                                              src->nodeformat,
+                                              parentbitmap, &arr) < 0)
+            return -1;
+    }
+
+    if (qemuMonitorTransactionBitmapRemove(actions,
+                                           src->nodeformat,
+                                           delbitmap) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 static int
 qemuCheckpointDiscardBitmaps(virDomainObjPtr vm,
                              virDomainCheckpointDefPtr chkdef,
@@ -167,6 +207,7 @@ qemuCheckpointDiscardBitmaps(virDomainObjPtr vm,
         virDomainCheckpointDiskDef *chkdisk = &chkdef->disks[i];
         virDomainDiskDefPtr domdisk = virDomainDiskByTarget(vm->def, chkdisk->name);
         virDomainCheckpointDiskDef *parentchkdisk = NULL;
+        const char *parentbitmap = NULL;
 
         /* domdisk can be missing e.g. when it was unplugged */
         if (!domdisk)
@@ -178,33 +219,12 @@ qemuCheckpointDiscardBitmaps(virDomainObjPtr vm,
         /* If any ancestor checkpoint has a bitmap for the same
          * disk, then this bitmap must be merged to the
          * ancestor. */
-        if ((parentchkdisk = qemuCheckpointFindActiveDiskInParent(vm, parent, chkdisk->name))) {
-            g_autoptr(virJSONValue) arr = NULL;
+        if ((parentchkdisk = qemuCheckpointFindActiveDiskInParent(vm, parent,
+                                                                  chkdisk->name)))
+            parentbitmap = parentchkdisk->name;
 
-            if (!(arr = virJSONValueNewArray()))
-                return -1;
-
-            if (qemuMonitorTransactionBitmapMergeSourceAddBitmap(arr,
-                                                                 domdisk->src->nodeformat,
-                                                                 chkdisk->bitmap) < 0)
-                return -1;
-
-            if (chkcurrent) {
-                if (qemuMonitorTransactionBitmapEnable(actions,
-                                                       domdisk->src->nodeformat,
-                                                       parentchkdisk->bitmap) < 0)
-                    return -1;
-            }
-
-            if (qemuMonitorTransactionBitmapMerge(actions,
-                                                  domdisk->src->nodeformat,
-                                                  parentchkdisk->bitmap, &arr) < 0)
-                return -1;
-        }
-
-        if (qemuMonitorTransactionBitmapRemove(actions,
-                                               domdisk->src->nodeformat,
-                                               chkdisk->bitmap) < 0)
+        if (qemuCheckpointDiscardDiskBitmaps(domdisk->src, chkdisk->bitmap,
+                                             parentbitmap, chkcurrent, actions) < 0)
             return -1;
     }
 
