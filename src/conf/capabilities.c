@@ -26,7 +26,6 @@
 #include "capabilities.h"
 #include "cpu_conf.h"
 #include "domain_conf.h"
-#include "physmem.h"
 #include "storage_conf.h"
 #include "viralloc.h"
 #include "virarch.h"

@@ -2320,7 +2320,7 @@ exclude_file_name_regexp--sc_prohibit_virXXXFree = \
   ^(docs/|tests/|examples/|tools/|build-aux/syntax-check\.mk|src/test/test_driver.c|src/libvirt_public.syms|include/libvirt/libvirt-(domain|network|nodedev|storage|stream|secret|nwfilter|interface|domain-snapshot).h|src/libvirt-(domain|qemu|network|nodedev|storage|stream|secret|nwfilter|interface|domain-snapshot).c$$)
 
 exclude_file_name_regexp--sc_prohibit_sysconf_pagesize = \
-  ^(build-aux/syntax-check\.mk|src/util/virutil\.c)$$
+  ^(build-aux/syntax-check\.mk|src/util/vir(hostmem|util)\.c)$$
 
 exclude_file_name_regexp--sc_prohibit_pthread_create = \
   ^(build-aux/syntax-check\.mk|src/util/virthread\.c|tests/.*)$$

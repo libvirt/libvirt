@@ -41,7 +41,6 @@
 #include "viralloc.h"
 #define LIBVIRT_VIRHOSTCPUPRIV_H_ALLOW
 #include "virhostcpupriv.h"
-#include "physmem.h"
 #include "virerror.h"
 #include "virarch.h"
 #include "virfile.h"
