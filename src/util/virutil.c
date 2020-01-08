@@ -71,10 +71,10 @@
 #include "verify.h"
 #include "virfile.h"
 #include "vircommand.h"
-#include "nonblocking.h"
 #include "virprocess.h"
 #include "virstring.h"
 #include "virutil.h"
+#include "virsocket.h"
 
 verify(sizeof(gid_t) <= sizeof(unsigned int) &&
        sizeof(uid_t) <= sizeof(unsigned int));
@@ -99,6 +99,21 @@ int virSetInherit(int fd, bool inherit)
     return 0;
 }
 
+
+int virSetBlocking(int fd, bool block)
+{
+    int fflags;
+    if ((fflags = fcntl(fd, F_GETFL)) < 0)
+        return -1;
+    if (block)
+        fflags &= ~O_NONBLOCK;
+    else
+        fflags |= O_NONBLOCK;
+    if ((fcntl(fd, F_SETFL, fflags)) < 0)
+        return -1;
+    return 0;
+}
+
 #else /* WIN32 */
 
 int virSetInherit(int fd G_GNUC_UNUSED, bool inherit G_GNUC_UNUSED)
@@ -110,12 +125,18 @@ int virSetInherit(int fd G_GNUC_UNUSED, bool inherit G_GNUC_UNUSED)
     return 0;
 }
 
-#endif /* WIN32 */
-
 int virSetBlocking(int fd, bool blocking)
 {
-    return set_nonblocking_flag(fd, !blocking);
+    unsigned long arg = blocking ? 0 : 1;
+
+    if (ioctlsocket(fd, FIONBIO, &arg) < 0)
+        return -1;
+
+    return 0;
 }
+
+#endif /* WIN32 */
+
 
 int virSetNonBlock(int fd)
 {

@@ -188,6 +188,8 @@ UTIL_SOURCES = \
 	util/virseclabel.h \
 	util/virsecret.c \
 	util/virsecret.h \
+	util/virsocket.c \
+	util/virsocket.h \
 	util/virsocketaddr.c \
 	util/virsocketaddr.h \
 	util/virstorageencryption.c \
