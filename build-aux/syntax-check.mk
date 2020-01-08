@@ -132,9 +132,6 @@ local-check :=								\
 
 syntax-check: $(local-check)
 
-# We use .gnulib, not gnulib.
-gnulib_dir = $(srcdir)/.gnulib
-
 # We haven't converted all scripts to using gnulib's init.sh yet.
 _test_script_regex = \<\(init\|test-lib\)\.sh\>
 
