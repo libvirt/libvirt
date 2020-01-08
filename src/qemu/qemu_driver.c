@@ -19150,6 +19150,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     virDomainDefPtr def = NULL;
     virDomainDefPtr persistentDef = NULL;
     virDomainBlockIoTuneInfo info;
+    virDomainBlockIoTuneInfo conf_info;
     g_autofree char *drivealias = NULL;
     const char *qdevid = NULL;
     int ret = -1;
@@ -19213,6 +19214,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         return -1;
 
     memset(&info, 0, sizeof(info));
+    memset(&conf_info, 0, sizeof(conf_info));
 
     if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
@@ -19337,6 +19339,8 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         goto endjob;
     }
 
+    virDomainBlockIoTuneInfoCopy(&info, &conf_info);
+
     if (def) {
         supportMaxOptions = virQEMUCapsGet(priv->qemuCaps,
                                            QEMU_CAPS_DRIVE_IOTUNE_MAX);
@@ -19459,12 +19463,14 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
             goto endjob;
         }
 
-        if (qemuDomainSetBlockIoTuneDefaults(&info, &conf_disk->blkdeviotune,
+        if (qemuDomainSetBlockIoTuneDefaults(&conf_info, &conf_disk->blkdeviotune,
                                              set_fields) < 0)
             goto endjob;
 
-        if (virDomainDiskSetBlockIOTune(conf_disk, &info) < 0)
+        if (virDomainDiskSetBlockIOTune(conf_disk, &conf_info) < 0)
             goto endjob;
+
+        qemuDomainSetGroupBlockIoTune(persistentDef, &conf_info);
 
         if (virDomainDefSave(persistentDef, driver->xmlopt,
                              cfg->configDir) < 0)
@@ -19477,6 +19483,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
 
  cleanup:
     VIR_FREE(info.group_name);
+    VIR_FREE(conf_info.group_name);
     virDomainObjEndAPI(&vm);
     if (eventNparams)
         virTypedParamsFree(eventParams, eventNparams);
