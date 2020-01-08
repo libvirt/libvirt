@@ -31795,3 +31795,29 @@ virDomainBlockIoTuneInfoCopy(const virDomainBlockIoTuneInfo *src,
     *dst = *src;
     dst->group_name = g_strdup(src->group_name);
 }
+
+
+bool
+virDomainBlockIoTuneInfoEqual(const virDomainBlockIoTuneInfo *a,
+                              const virDomainBlockIoTuneInfo *b)
+{
+    return a->total_bytes_sec == b->total_bytes_sec &&
+        a->read_bytes_sec == b->read_bytes_sec &&
+        a->write_bytes_sec == b->write_bytes_sec &&
+        a->total_iops_sec == b->total_iops_sec &&
+        a->read_iops_sec == b->read_iops_sec &&
+        a->write_iops_sec == b->write_iops_sec &&
+        a->total_bytes_sec_max == b->total_bytes_sec_max &&
+        a->read_bytes_sec_max == b->read_bytes_sec_max &&
+        a->write_bytes_sec_max == b->write_bytes_sec_max &&
+        a->total_iops_sec_max == b->total_iops_sec_max &&
+        a->read_iops_sec_max == b->read_iops_sec_max &&
+        a->write_iops_sec_max == b->write_iops_sec_max &&
+        a->size_iops_sec == b->size_iops_sec &&
+        a->total_bytes_sec_max_length == b->total_bytes_sec_max_length &&
+        a->read_bytes_sec_max_length == b->read_bytes_sec_max_length &&
+        a->write_bytes_sec_max_length == b->write_bytes_sec_max_length &&
+        a->total_iops_sec_max_length == b->total_iops_sec_max_length &&
+        a->read_iops_sec_max_length == b->read_iops_sec_max_length &&
+        a->write_iops_sec_max_length == b->write_iops_sec_max_length;
+}

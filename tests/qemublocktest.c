@@ -185,6 +185,7 @@ static int
 testQemuDiskXMLToProps(const void *opaque)
 {
     struct testQemuDiskXMLToJSONData *data = (void *) opaque;
+    g_autoptr(virDomainDef) vmdef = NULL;
     virDomainDiskDefPtr disk = NULL;
     virStorageSourcePtr n;
     virJSONValuePtr formatProps = NULL;
@@ -204,7 +205,11 @@ testQemuDiskXMLToProps(const void *opaque)
                                        VIR_DOMAIN_DEF_PARSE_STATUS)))
         goto cleanup;
 
-    if (qemuCheckDiskConfig(disk, data->qemuCaps) < 0 ||
+    if (!(vmdef = virDomainDefNew()) ||
+        virDomainDiskInsert(vmdef, disk) < 0)
+        goto cleanup;
+
+    if (qemuCheckDiskConfig(disk, vmdef, data->qemuCaps) < 0 ||
         qemuDomainDeviceDefValidateDisk(disk, data->qemuCaps) < 0) {
         VIR_TEST_VERBOSE("invalid configuration for disk");
         goto cleanup;
@@ -242,7 +247,6 @@ testQemuDiskXMLToProps(const void *opaque)
  cleanup:
     virJSONValueFree(formatProps);
     virJSONValueFree(storageProps);
-    virDomainDiskDefFree(disk);
     VIR_FREE(xmlpath);
     VIR_FREE(xmlstr);
     return ret;

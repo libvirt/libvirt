@@ -1155,6 +1155,7 @@ qemuDiskConfigBlkdeviotuneEnabled(virDomainDiskDefPtr disk)
  */
 static int
 qemuCheckDiskConfigBlkdeviotune(virDomainDiskDefPtr disk,
+                                const virDomainDef *def,
                                 virQEMUCapsPtr qemuCaps)
 {
     /* group_name by itself is ignored by qemu */
@@ -1164,6 +1165,28 @@ qemuCheckDiskConfigBlkdeviotune(virDomainDiskDefPtr disk,
                        _("group_name can be configured only together with "
                          "settings"));
         return -1;
+    }
+
+    /* checking def here is only for calling from tests */
+    if (disk->blkdeviotune.group_name) {
+        size_t i;
+
+        for (i = 0; i < def->ndisks; i++) {
+            virDomainDiskDefPtr d = def->disks[i];
+
+            if (STREQ(d->dst, disk->dst) ||
+                STRNEQ_NULLABLE(d->blkdeviotune.group_name,
+                                disk->blkdeviotune.group_name))
+                continue;
+
+            if (!virDomainBlockIoTuneInfoEqual(&d->blkdeviotune,
+                                               &disk->blkdeviotune)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("different iotunes for disks %s and %s"),
+                               disk->dst, d->dst);
+                return -1;
+            }
+        }
     }
 
     if (disk->blkdeviotune.total_bytes_sec > QEMU_BLOCK_IOTUNE_MAX ||
@@ -1228,9 +1251,10 @@ qemuCheckDiskConfigBlkdeviotune(virDomainDiskDefPtr disk,
  */
 int
 qemuCheckDiskConfig(virDomainDiskDefPtr disk,
+                    const virDomainDef *def,
                     virQEMUCapsPtr qemuCaps)
 {
-    if (qemuCheckDiskConfigBlkdeviotune(disk, qemuCaps) < 0)
+    if (qemuCheckDiskConfigBlkdeviotune(disk, def, qemuCaps) < 0)
         return -1;
 
     if (disk->wwn) {
@@ -1728,6 +1752,7 @@ qemuBuildDiskFrontendAttributes(virDomainDiskDefPtr disk,
 
 static char *
 qemuBuildDriveStr(virDomainDiskDefPtr disk,
+                  const virDomainDef *def,
                   virQEMUCapsPtr qemuCaps)
 {
     g_auto(virBuffer) opt = VIR_BUFFER_INITIALIZER;
@@ -1754,7 +1779,7 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
         }
 
         /* if we are using -device this will be checked elsewhere */
-        if (qemuCheckDiskConfig(disk, qemuCaps) < 0)
+        if (qemuCheckDiskConfig(disk, def, qemuCaps) < 0)
             return NULL;
 
         virBufferAsprintf(&opt, "if=%s",
@@ -1896,7 +1921,7 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
     g_autofree char *scsiVPDDeviceId = NULL;
     int controllerModel;
 
-    if (qemuCheckDiskConfig(disk, qemuCaps) < 0)
+    if (qemuCheckDiskConfig(disk, def, qemuCaps) < 0)
         return NULL;
 
     if (!qemuDomainCheckCCWS390AddressSupport(def, &disk->info, qemuCaps, disk->dst))
@@ -2401,6 +2426,7 @@ qemuBuildBlockStorageSourceAttachDataCommandline(virCommandPtr cmd,
 static int
 qemuBuildDiskSourceCommandLine(virCommandPtr cmd,
                                virDomainDiskDefPtr disk,
+                               const virDomainDef *def,
                                virQEMUCapsPtr qemuCaps)
 {
     g_autoptr(qemuBlockStorageSourceChainData) data = NULL;
@@ -2420,7 +2446,7 @@ qemuBuildDiskSourceCommandLine(virCommandPtr cmd,
             !(copyOnReadProps = qemuBlockStorageGetCopyOnReadProps(disk)))
             return -1;
     } else {
-        if (!(data = qemuBuildStorageSourceChainAttachPrepareDrive(disk, qemuCaps)))
+        if (!(data = qemuBuildStorageSourceChainAttachPrepareDrive(disk, def, qemuCaps)))
             return -1;
     }
 
@@ -2450,7 +2476,7 @@ qemuBuildDiskCommandLine(virCommandPtr cmd,
 {
     g_autofree char *optstr = NULL;
 
-    if (qemuBuildDiskSourceCommandLine(cmd, disk, qemuCaps) < 0)
+    if (qemuBuildDiskSourceCommandLine(cmd, disk, def, qemuCaps) < 0)
         return -1;
 
     if (!qemuDiskBusNeedsDriveArg(disk->bus)) {
@@ -10164,6 +10190,7 @@ qemuBuildHotpluggableCPUProps(const virDomainVcpuDef *vcpu)
  */
 qemuBlockStorageSourceAttachDataPtr
 qemuBuildStorageSourceAttachPrepareDrive(virDomainDiskDefPtr disk,
+                                         const virDomainDef *def,
                                          virQEMUCapsPtr qemuCaps)
 {
     g_autoptr(qemuBlockStorageSourceAttachData) data = NULL;
@@ -10171,7 +10198,7 @@ qemuBuildStorageSourceAttachPrepareDrive(virDomainDiskDefPtr disk,
     if (VIR_ALLOC(data) < 0)
         return NULL;
 
-    if (!(data->driveCmd = qemuBuildDriveStr(disk, qemuCaps)) ||
+    if (!(data->driveCmd = qemuBuildDriveStr(disk, def, qemuCaps)) ||
         !(data->driveAlias = qemuAliasDiskDriveFromDisk(disk)))
         return NULL;
 
@@ -10229,6 +10256,7 @@ qemuBuildStorageSourceAttachPrepareCommon(virStorageSourcePtr src,
  */
 qemuBlockStorageSourceChainDataPtr
 qemuBuildStorageSourceChainAttachPrepareDrive(virDomainDiskDefPtr disk,
+                                              const virDomainDef *def,
                                               virQEMUCapsPtr qemuCaps)
 {
     g_autoptr(qemuBlockStorageSourceAttachData) elem = NULL;
@@ -10237,7 +10265,7 @@ qemuBuildStorageSourceChainAttachPrepareDrive(virDomainDiskDefPtr disk,
     if (VIR_ALLOC(data) < 0)
         return NULL;
 
-    if (!(elem = qemuBuildStorageSourceAttachPrepareDrive(disk, qemuCaps)))
+    if (!(elem = qemuBuildStorageSourceAttachPrepareDrive(disk, def, qemuCaps)))
         return NULL;
 
     if (qemuBuildStorageSourceAttachPrepareCommon(disk->src, elem, qemuCaps) < 0)

@@ -8136,7 +8136,7 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
         }
         if (virDomainDiskTranslateSourcePool(disk) < 0)
             return -1;
-        if (qemuCheckDiskConfig(disk, NULL) < 0)
+        if (qemuCheckDiskConfig(disk, vmdef, NULL) < 0)
             return -1;
         if (qemuCheckDiskConfigAgainstDomain(vmdef, disk) < 0)
             return -1;
