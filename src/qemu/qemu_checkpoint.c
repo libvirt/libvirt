@@ -104,6 +104,50 @@ qemuCheckpointWriteMetadata(virDomainObjPtr vm,
 }
 
 
+/**
+ * qemuCheckpointFindActiveDiskInParent:
+ * @vm: domain object
+ * @from: starting moment object
+ * @diskname: name (target) of the disk to find
+ *
+ * Find the first checkpoint starting from @from continuing through parents
+ * of the checkpoint which describes disk @diskname. Return the pointer to the
+ * definition of the disk.
+ */
+static virDomainCheckpointDiskDef *
+qemuCheckpointFindActiveDiskInParent(virDomainObjPtr vm,
+                                     virDomainMomentObjPtr from,
+                                     const char *diskname)
+{
+    virDomainMomentObjPtr parent = from;
+    virDomainCheckpointDefPtr parentdef = NULL;
+    size_t i;
+
+    while (parent) {
+        parentdef = virDomainCheckpointObjGetDef(parent);
+
+        for (i = 0; i < parentdef->ndisks; i++) {
+            virDomainCheckpointDiskDef *chkdisk = &parentdef->disks[i];
+
+            if (STRNEQ(chkdisk->name, diskname))
+                continue;
+
+            /* currently inspected checkpoint doesn't describe the disk,
+             * continue into parent checkpoint */
+            if (chkdisk->type != VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP)
+                break;
+
+            return chkdisk;
+        }
+
+        parent = virDomainCheckpointFindByName(vm->checkpoints,
+                                               parentdef->parent.parent_name);
+    }
+
+    return NULL;
+}
+
+
 static int
 qemuCheckpointDiscardBitmaps(virDomainObjPtr vm,
                              virDomainCheckpointDefPtr chkdef,
@@ -112,13 +156,9 @@ qemuCheckpointDiscardBitmaps(virDomainObjPtr vm,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverPtr driver = priv->driver;
-    virDomainMomentObjPtr moment;
-    virDomainCheckpointDefPtr parentdef = NULL;
-    bool search_parents;
     int rc;
     g_autoptr(virJSONValue) actions = NULL;
     size_t i;
-    size_t j;
 
     if (!(actions = virJSONValueNewArray()))
         return -1;
@@ -126,6 +166,7 @@ qemuCheckpointDiscardBitmaps(virDomainObjPtr vm,
     for (i = 0; i < chkdef->ndisks; i++) {
         virDomainCheckpointDiskDef *chkdisk = &chkdef->disks[i];
         virDomainDiskDefPtr domdisk = virDomainDiskByTarget(vm->def, chkdisk->name);
+        virDomainCheckpointDiskDef *parentchkdisk = NULL;
 
         /* domdisk can be missing e.g. when it was unplugged */
         if (!domdisk)
@@ -137,42 +178,28 @@ qemuCheckpointDiscardBitmaps(virDomainObjPtr vm,
         /* If any ancestor checkpoint has a bitmap for the same
          * disk, then this bitmap must be merged to the
          * ancestor. */
-        search_parents = true;
-        for (moment = parent;
-             search_parents && moment;
-             moment = virDomainCheckpointFindByName(vm->checkpoints,
-                                                    parentdef->parent.parent_name)) {
-            parentdef = virDomainCheckpointObjGetDef(moment);
-            for (j = 0; j < parentdef->ndisks; j++) {
-                virDomainCheckpointDiskDef *disk2;
-                g_autoptr(virJSONValue) arr = NULL;
+        if ((parentchkdisk = qemuCheckpointFindActiveDiskInParent(vm, parent, chkdisk->name))) {
+            g_autoptr(virJSONValue) arr = NULL;
 
-                disk2 = &parentdef->disks[j];
-                if (STRNEQ(chkdisk->name, disk2->name) ||
-                    disk2->type != VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP)
-                    continue;
-                search_parents = false;
+            if (!(arr = virJSONValueNewArray()))
+                return -1;
 
-                if (!(arr = virJSONValueNewArray()))
-                    return -1;
+            if (qemuMonitorTransactionBitmapMergeSourceAddBitmap(arr,
+                                                                 domdisk->src->nodeformat,
+                                                                 chkdisk->bitmap) < 0)
+                return -1;
 
-                if (qemuMonitorTransactionBitmapMergeSourceAddBitmap(arr,
-                                                                     domdisk->src->nodeformat,
-                                                                     chkdisk->bitmap) < 0)
-                    return -1;
-
-                if (chkcurrent) {
-                    if (qemuMonitorTransactionBitmapEnable(actions,
-                                                           domdisk->src->nodeformat,
-                                                           disk2->bitmap) < 0)
-                        return -1;
-                }
-
-                if (qemuMonitorTransactionBitmapMerge(actions,
-                                                      domdisk->src->nodeformat,
-                                                      disk2->bitmap, &arr) < 0)
+            if (chkcurrent) {
+                if (qemuMonitorTransactionBitmapEnable(actions,
+                                                       domdisk->src->nodeformat,
+                                                       parentchkdisk->bitmap) < 0)
                     return -1;
             }
+
+            if (qemuMonitorTransactionBitmapMerge(actions,
+                                                  domdisk->src->nodeformat,
+                                                  parentchkdisk->bitmap, &arr) < 0)
+                return -1;
         }
 
         if (qemuMonitorTransactionBitmapRemove(actions,
@@ -324,14 +351,12 @@ qemuCheckpointAddActions(virDomainObjPtr vm,
                          virDomainMomentObjPtr old_current,
                          virDomainCheckpointDefPtr def)
 {
-    size_t i, j;
-    virDomainCheckpointDefPtr olddef;
-    virDomainMomentObjPtr parent;
-    bool search_parents;
+    size_t i;
 
     for (i = 0; i < def->ndisks; i++) {
         virDomainCheckpointDiskDef *chkdisk = &def->disks[i];
         virDomainDiskDefPtr domdisk = virDomainDiskByTarget(vm->def, chkdisk->name);
+        virDomainCheckpointDiskDef *parentchkdisk = NULL;
 
         /* checkpoint definition validator mandates that the corresponding
          * domdisk should exist */
@@ -351,25 +376,13 @@ qemuCheckpointAddActions(virDomainObjPtr vm,
          * iteration; but it is also possible to have to search
          * further than the immediate parent to find another
          * checkpoint with a bitmap on the same disk.  */
-        search_parents = true;
-        for (parent = old_current; search_parents && parent;
-             parent = virDomainCheckpointFindByName(vm->checkpoints,
-                                                    olddef->parent.parent_name)) {
-            olddef = virDomainCheckpointObjGetDef(parent);
-            for (j = 0; j < olddef->ndisks; j++) {
-                virDomainCheckpointDiskDef *disk2;
+        if ((parentchkdisk = qemuCheckpointFindActiveDiskInParent(vm, old_current,
+                                                                  chkdisk->name))) {
 
-                disk2 = &olddef->disks[j];
-                if (STRNEQ(chkdisk->name, disk2->name) ||
-                    disk2->type != VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP)
-                    continue;
-                if (qemuMonitorTransactionBitmapDisable(actions,
-                                                        domdisk->src->nodeformat,
-                                                        disk2->bitmap) < 0)
-                    return -1;
-                search_parents = false;
-                break;
-            }
+            if (qemuMonitorTransactionBitmapDisable(actions,
+                                                    domdisk->src->nodeformat,
+                                                    parentchkdisk->bitmap) < 0)
+                return -1;
         }
     }
     return 0;
