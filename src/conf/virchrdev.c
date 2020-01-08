@@ -311,7 +311,7 @@ static int virChrdevFreeClearCallbacks(void *payload,
  */
 void virChrdevFree(virChrdevsPtr devs)
 {
-    if (!devs || !devs->hash)
+    if (!devs)
         return;
 
     virMutexLock(&devs->lock);
