@@ -225,6 +225,7 @@ static void virChrdevHashEntryFree(void *data)
     /* delete lock file */
     virChrdevLockFileRemove(ent->dev);
 
+    g_free(ent->dev);
     g_free(ent);
 }
 
