@@ -3698,3 +3698,15 @@ virDomainGraphicsGetRenderNode(const virDomainGraphicsDef *graphics);
 
 bool
 virDomainGraphicsNeedsAutoRenderNode(const virDomainGraphicsDef *graphics);
+
+bool
+virDomainBlockIoTuneInfoHasBasic(const virDomainBlockIoTuneInfo *iotune);
+
+bool
+virDomainBlockIoTuneInfoHasMax(const virDomainBlockIoTuneInfo *iotune);
+
+bool
+virDomainBlockIoTuneInfoHasMaxLength(const virDomainBlockIoTuneInfo *iotune);
+
+bool
+virDomainBlockIoTuneInfoHasAny(const virDomainBlockIoTuneInfo *iotune);

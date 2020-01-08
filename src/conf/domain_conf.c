@@ -31712,3 +31712,49 @@ virDomainGraphicsNeedsAutoRenderNode(const virDomainGraphicsDef *graphics)
 
     return true;
 }
+
+
+bool
+virDomainBlockIoTuneInfoHasBasic(const virDomainBlockIoTuneInfo *iotune)
+{
+    return iotune->total_bytes_sec ||
+           iotune->read_bytes_sec ||
+           iotune->write_bytes_sec ||
+           iotune->total_iops_sec ||
+           iotune->read_iops_sec ||
+           iotune->write_iops_sec;
+}
+
+
+bool
+virDomainBlockIoTuneInfoHasMax(const virDomainBlockIoTuneInfo *iotune)
+{
+    return iotune->total_bytes_sec_max ||
+           iotune->read_bytes_sec_max ||
+           iotune->write_bytes_sec_max ||
+           iotune->total_iops_sec_max ||
+           iotune->read_iops_sec_max ||
+           iotune->write_iops_sec_max ||
+           iotune->size_iops_sec;
+}
+
+
+bool
+virDomainBlockIoTuneInfoHasMaxLength(const virDomainBlockIoTuneInfo *iotune)
+{
+    return iotune->total_bytes_sec_max_length ||
+           iotune->read_bytes_sec_max_length ||
+           iotune->write_bytes_sec_max_length ||
+           iotune->total_iops_sec_max_length ||
+           iotune->read_iops_sec_max_length ||
+           iotune->write_iops_sec_max_length;
+}
+
+
+bool
+virDomainBlockIoTuneInfoHasAny(const virDomainBlockIoTuneInfo *iotune)
+{
+    return virDomainBlockIoTuneInfoHasBasic(iotune) ||
+           virDomainBlockIoTuneInfoHasMax(iotune) ||
+           virDomainBlockIoTuneInfoHasMaxLength(iotune);
+}
