@@ -1772,17 +1772,19 @@
         <value>iscsi</value>
       </attribute>
       <attribute name="name"/>
-      <ref name="diskSourceCommon"/>
-      <ref name="diskSourceNetworkHost"/>
-      <optional>
-        <ref name="diskAuth"/>
-      </optional>
-      <optional>
-        <ref name="encryption"/>
-      </optional>
-      <optional>
-        <ref name="initiatorinfo"/>
-      </optional>
+      <interleave>
+        <ref name="diskSourceCommon"/>
+        <ref name="diskSourceNetworkHost"/>
+        <optional>
+          <ref name="diskAuth"/>
+        </optional>
+        <optional>
+          <ref name="encryption"/>
+        </optional>
+        <optional>
+          <ref name="initiatorinfo"/>
+        </optional>
+      </interleave>
     </element>
   </define>
 

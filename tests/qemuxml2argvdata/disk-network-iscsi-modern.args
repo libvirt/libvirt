@@ -58,4 +58,11 @@ file.target=iqn.1992-01.com.example:server,file.lun=0,file.transport=tcp,\
 file.initiator-name=iqn.1992-01.com.example:client,format=raw,if=none,\
 id=drive-scsi0-0-0-1 \
 -device scsi-block,bus=scsi0.0,channel=0,scsi-id=0,lun=1,\
-drive=drive-scsi0-0-0-1,id=scsi0-0-0-1
+drive=drive-scsi0-0-0-1,id=scsi0-0-0-1 \
+-drive file.driver=iscsi,file.portal=example.org:3260,\
+file.target=iqn.1992-01.com.example:server,file.lun=0,file.transport=tcp,\
+file.user=myname,file.password-secret=AQCVn5hO6HzFAhAAq0NCv8jtJcIcE+HOBlMQ1A,\
+file.initiator-name=iqn.1992-01.com.example:client,format=raw,if=none,\
+id=drive-scsi0-0-0-2 \
+-device scsi-block,bus=scsi0.0,channel=0,scsi-id=0,lun=2,\
+drive=drive-scsi0-0-0-2,id=scsi0-0-0-2
