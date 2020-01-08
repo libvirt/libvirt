@@ -858,9 +858,6 @@ int qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
 bool qemuDomainDiskChangeSupported(virDomainDiskDefPtr disk,
                                    virDomainDiskDefPtr orig_disk);
 
-const char *qemuDomainDiskNodeFormatLookup(virDomainObjPtr vm,
-                                           const char *disk);
-
 void qemuDomainGetImageIds(virQEMUDriverConfigPtr cfg,
                            virDomainObjPtr vm,
                            virStorageSourcePtr src,
