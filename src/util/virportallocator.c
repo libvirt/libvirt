@@ -21,10 +21,7 @@
 
 #include <config.h>
 
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
-
+#include "virsocket.h"
 #include "viralloc.h"
 #include "virbitmap.h"
 #include "virportallocator.h"
@@ -192,7 +189,8 @@ virPortAllocatorBindToPort(bool *used,
 
     ret = 0;
  cleanup:
-    VIR_FORCE_CLOSE(fd);
+    if (fd != -1)
+        closesocket(fd);
     return ret;
 }
 

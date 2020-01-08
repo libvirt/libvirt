@@ -44,6 +44,7 @@
 # include <selinux/selinux.h>
 #endif
 
+#include "virsocket.h"
 #include "virnetsocket.h"
 #include "virutil.h"
 #include "viralloc.h"
@@ -403,7 +404,8 @@ int virNetSocketNewListenTCP(const char *nodename,
                 goto error;
             }
             bindErrno = errno;
-            VIR_FORCE_CLOSE(fd);
+            closesocket(fd);
+            fd = -1;
             runp = runp->ai_next;
             continue;
         }
@@ -454,7 +456,8 @@ int virNetSocketNewListenTCP(const char *nodename,
         virObjectUnref(socks[i]);
     VIR_FREE(socks);
     freeaddrinfo(ai);
-    VIR_FORCE_CLOSE(fd);
+    if (fd != -1)
+        closesocket(fd);
     return -1;
 }
 
@@ -521,7 +524,8 @@ int virNetSocketNewListenUNIX(const char *path,
  error:
     if (path[0] != '@')
         unlink(path);
-    VIR_FORCE_CLOSE(fd);
+    if (fd != -1)
+        closesocket(fd);
     return -1;
 }
 #else
@@ -605,7 +609,8 @@ int virNetSocketNewConnectTCP(const char *nodename,
             break;
 
         savedErrno = errno;
-        VIR_FORCE_CLOSE(fd);
+        closesocket(fd);
+        fd = -1;
         runp = runp->ai_next;
     }
 
@@ -637,7 +642,8 @@ int virNetSocketNewConnectTCP(const char *nodename,
 
  error:
     freeaddrinfo(ai);
-    VIR_FORCE_CLOSE(fd);
+    if (fd != -1)
+        closesocket(fd);
     return -1;
 }
 
@@ -758,8 +764,8 @@ int virNetSocketNewConnectUNIX(const char *path,
     VIR_FREE(lockpath);
     VIR_FREE(rundir);
 
-    if (ret < 0)
-        VIR_FORCE_CLOSE(fd);
+    if (ret < 0 && fd != -1)
+        closesocket(fd);
 
     return ret;
 }
@@ -1370,8 +1376,10 @@ void virNetSocketDispose(void *obj)
     virObjectUnref(sock->libsshSession);
 #endif
 
-    if (sock->ownsFd)
-        VIR_FORCE_CLOSE(sock->fd);
+    if (sock->ownsFd && sock->fd != -1) {
+        closesocket(sock->fd);
+        sock->fd = -1;
+    }
     VIR_FORCE_CLOSE(sock->errfd);
 
     virProcessAbort(sock->pid);
@@ -2144,7 +2152,8 @@ int virNetSocketAccept(virNetSocketPtr sock, virNetSocketPtr *clientsock)
     ret = 0;
 
  cleanup:
-    VIR_FORCE_CLOSE(fd);
+    if (fd != -1)
+        closesocket(fd);
     virObjectUnlock(sock);
     return ret;
 }
@@ -2264,7 +2273,10 @@ void virNetSocketClose(virNetSocketPtr sock)
 
     virObjectLock(sock);
 
-    VIR_FORCE_CLOSE(sock->fd);
+    if (sock->fd != -1) {
+        closesocket(sock->fd);
+        sock->fd = -1;
+    }
 
 #ifdef HAVE_SYS_UN_H
     /* If a server socket, then unlink UNIX path */
