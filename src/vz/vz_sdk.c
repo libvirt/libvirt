@@ -2725,7 +2725,7 @@ prlsdkRemoveBootDevices(PRL_HANDLE sdkdom)
     PRL_DEVICE_TYPE devType;
 
     pret = PrlVmCfg_GetBootDevCount(sdkdom, &devCount);
-    prlsdkCheckRetGoto(pret, error);
+    prlsdkCheckRetExit(pret, -1);
 
     for (i = 0; i < devCount; i++) {
 
