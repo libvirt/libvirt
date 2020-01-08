@@ -319,13 +319,13 @@ qemuCheckpointAddActions(virDomainObjPtr vm,
     bool search_parents;
 
     for (i = 0; i < def->ndisks; i++) {
-        virDomainCheckpointDiskDef *disk = &def->disks[i];
+        virDomainCheckpointDiskDef *chkdisk = &def->disks[i];
         const char *node;
 
-        if (disk->type != VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP)
+        if (chkdisk->type != VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP)
             continue;
-        node = qemuDomainDiskNodeFormatLookup(vm, disk->name);
-        if (qemuMonitorTransactionBitmapAdd(actions, node, disk->bitmap, true, false, 0) < 0)
+        node = qemuDomainDiskNodeFormatLookup(vm, chkdisk->name);
+        if (qemuMonitorTransactionBitmapAdd(actions, node, chkdisk->bitmap, true, false, 0) < 0)
             return -1;
 
         /* We only want one active bitmap for a disk along the
@@ -345,7 +345,7 @@ qemuCheckpointAddActions(virDomainObjPtr vm,
                 virDomainCheckpointDiskDef *disk2;
 
                 disk2 = &olddef->disks[j];
-                if (STRNEQ(disk->name, disk2->name) ||
+                if (STRNEQ(chkdisk->name, disk2->name) ||
                     disk2->type != VIR_DOMAIN_CHECKPOINT_TYPE_BITMAP)
                     continue;
                 if (qemuMonitorTransactionBitmapDisable(actions, node, disk2->bitmap) < 0)
