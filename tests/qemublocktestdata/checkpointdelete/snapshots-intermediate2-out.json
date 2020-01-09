@@ -1,0 +1,59 @@
+[
+  {
+    "type": "block-dirty-bitmap-add",
+    "data": {
+      "node": "libvirt-2-format",
+      "name": "b",
+      "persistent": true,
+      "disabled": true,
+      "granularity": 65536
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-merge",
+    "data": {
+      "node": "libvirt-2-format",
+      "target": "b",
+      "bitmaps": [
+        {
+          "node": "libvirt-2-format",
+          "name": "c"
+        }
+      ]
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-remove",
+    "data": {
+      "node": "libvirt-2-format",
+      "name": "c"
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-enable",
+    "data": {
+      "node": "libvirt-3-format",
+      "name": "b"
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-merge",
+    "data": {
+      "node": "libvirt-3-format",
+      "target": "b",
+      "bitmaps": [
+        {
+          "node": "libvirt-3-format",
+          "name": "c"
+        }
+      ]
+    }
+  },
+  {
+    "type": "block-dirty-bitmap-remove",
+    "data": {
+      "node": "libvirt-3-format",
+      "name": "c"
+    }
+  }
+]

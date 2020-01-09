@@ -1019,6 +1019,12 @@ mymain(void)
     TEST_CHECKPOINT_DELETE_MERGE("basic-intermediate3", "d", "c", "basic");
     TEST_CHECKPOINT_DELETE_MERGE("basic-current", "current", "d", "basic");
 
+    TEST_CHECKPOINT_DELETE_MERGE("snapshots-noparent", "a", NULL, "snapshots");
+    TEST_CHECKPOINT_DELETE_MERGE("snapshots-intermediate1", "b", "a", "snapshots");
+    TEST_CHECKPOINT_DELETE_MERGE("snapshots-intermediate2", "c", "b", "snapshots");
+    TEST_CHECKPOINT_DELETE_MERGE("snapshots-intermediate3", "d", "c", "snapshots");
+    TEST_CHECKPOINT_DELETE_MERGE("snapshots-current", "current", "d", "snapshots");
+
  cleanup:
     virHashFree(diskxmljsondata.schema);
     qemuTestDriverFree(&driver);
