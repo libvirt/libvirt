@@ -1025,6 +1025,13 @@ mymain(void)
     TEST_CHECKPOINT_DELETE_MERGE("snapshots-intermediate3", "d", "c", "snapshots");
     TEST_CHECKPOINT_DELETE_MERGE("snapshots-current", "current", "d", "snapshots");
 
+    TEST_CHECKPOINT_DELETE_MERGE("snapshots-synthetic-checkpoint-noparent", "a", NULL, "snapshots-synthetic-checkpoint");
+    TEST_CHECKPOINT_DELETE_MERGE("snapshots-synthetic-checkpoint-intermediate1", "b", "a", "snapshots-synthetic-checkpoint");
+    TEST_CHECKPOINT_DELETE_MERGE("snapshots-synthetic-checkpoint-intermediate2", "c", "b", "snapshots-synthetic-checkpoint");
+    TEST_CHECKPOINT_DELETE_MERGE("snapshots-synthetic-checkpoint-intermediate3", "d", "c", "snapshots-synthetic-checkpoint");
+    TEST_CHECKPOINT_DELETE_MERGE("snapshots-synthetic-checkpoint-current", "current", "d", "snapshots-synthetic-checkpoint");
+
+
  cleanup:
     virHashFree(diskxmljsondata.schema);
     qemuTestDriverFree(&driver);
