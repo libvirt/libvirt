@@ -227,6 +227,7 @@ virDomainAuditRNG(virDomainObjPtr vm,
             newsrcpath = virDomainChrSourceDefGetPath(newDef->source.chardev);
             break;
 
+        case VIR_DOMAIN_RNG_BACKEND_BUILTIN:
         case VIR_DOMAIN_RNG_BACKEND_LAST:
             break;
         }
@@ -242,6 +243,7 @@ virDomainAuditRNG(virDomainObjPtr vm,
             oldsrcpath = virDomainChrSourceDefGetPath(oldDef->source.chardev);
             break;
 
+        case VIR_DOMAIN_RNG_BACKEND_BUILTIN:
         case VIR_DOMAIN_RNG_BACKEND_LAST:
             break;
         }

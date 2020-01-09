@@ -481,6 +481,7 @@
       &lt;enum name='backendModel'&gt;
         &lt;value&gt;random&lt;/value&gt;
         &lt;value&gt;egd&lt;/value&gt;
+        &lt;value&gt;builtin&lt;/value&gt;
       &lt;/enum&gt;
     &lt;/rng&gt;
     ...

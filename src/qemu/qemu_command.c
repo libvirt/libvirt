@@ -5594,6 +5594,12 @@ qemuBuildRNGBackendChrdevStr(virLogManagerPtr logManager,
                                             rng->info.alias, qemuCaps,
                                             cdevflags)))
             return -1;
+        break;
+
+    case VIR_DOMAIN_RNG_BACKEND_BUILTIN:
+        virReportUnsupportedError();
+        return -1;
+        break;
     }
 
     return 0;
@@ -5643,6 +5649,10 @@ qemuBuildRNGBackendProps(virDomainRNGDefPtr rng,
             return -1;
 
         break;
+
+    case VIR_DOMAIN_RNG_BACKEND_BUILTIN:
+        virReportUnsupportedError();
+        return -1;
 
     case VIR_DOMAIN_RNG_BACKEND_LAST:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

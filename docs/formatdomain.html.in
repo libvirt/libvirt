@@ -8259,6 +8259,8 @@ qemu-kvm -net nic,model=? /dev/null
       &lt;source mode='bind' service='1234'/&gt;
       &lt;source mode='connect' host='1.2.3.4' service='1234'/&gt;
     &lt;/backend&gt;
+    &lt;!-- OR --&gt;
+    &lt;backend model='builtin'/&gt;
   &lt;/rng&gt;
 &lt;/devices&gt;
 ...
@@ -8321,6 +8323,14 @@ qemu-kvm -net nic,model=? /dev/null
               The source is specified as a character device. Refer to
               <a href='#elementsCharHostInterface'>character device host interface</a>
               for more information.
+            </p>
+          </dd>
+          <dt><code>builtin</code></dt>
+          <dd>
+            <p>
+              This backend uses qemu builtin random generator, which uses
+              <code>getrandom()</code> syscall as the source of entropy.
+              (<span class="since">Since 6.1.0 and QEMU 4.2</span>)
             </p>
           </dd>
         </dl>
