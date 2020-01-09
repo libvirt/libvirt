@@ -49,7 +49,7 @@ int qemuDomainEnsurePCIAddress(virDomainObjPtr obj,
                                virQEMUDriverPtr driver)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
-int qemuDomainFillDeviceIsolationGroup(virDomainDefPtr def,
+void qemuDomainFillDeviceIsolationGroup(virDomainDefPtr def,
                                        virDomainDeviceDefPtr dev)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 

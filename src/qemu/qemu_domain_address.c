@@ -1249,10 +1249,8 @@ qemuDomainFindUnusedIsolationGroup(virDomainDefPtr def)
  * @dev: device definition
  *
  * Fill isolation group information for a single device.
- *
- * Return: 0 on success, <0 on failure
- * */
-int
+ */
+void
 qemuDomainFillDeviceIsolationGroup(virDomainDefPtr def,
                                    virDomainDeviceDefPtr dev)
 {
@@ -1270,7 +1268,7 @@ qemuDomainFillDeviceIsolationGroup(virDomainDefPtr def,
         /* Only PCI host devices are subject to isolation */
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
             hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
-            return 0;
+            return;
         }
 
         hostAddr = &hostdev->source.subsys.u.pci.addr;
@@ -1278,7 +1276,7 @@ qemuDomainFillDeviceIsolationGroup(virDomainDefPtr def,
         /* If a non-default isolation has already been assigned to the
          * device, we can avoid looking up the information again */
         if (info->isolationGroup > 0)
-            return 0;
+            return;
 
         /* The isolation group depends on the IOMMU group assigned by the host */
         tmp = virPCIDeviceAddressGetIOMMUGroupNum(hostAddr);
@@ -1288,7 +1286,7 @@ qemuDomainFillDeviceIsolationGroup(virDomainDefPtr def,
                      "%04x:%02x:%02x.%x, device won't be isolated",
                      hostAddr->domain, hostAddr->bus,
                      hostAddr->slot, hostAddr->function);
-            return 0;
+            return;
         }
 
         /* The isolation group for a host device is its IOMMU group,
@@ -1314,13 +1312,13 @@ qemuDomainFillDeviceIsolationGroup(virDomainDefPtr def,
          * require us to isolate the guest device, so we can skip them */
         if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK ||
             virDomainNetResolveActualType(iface) != VIR_DOMAIN_NET_TYPE_HOSTDEV) {
-            return 0;
+            return;
         }
 
         /* If a non-default isolation has already been assigned to the
          * device, we can avoid looking up the information again */
         if (info->isolationGroup > 0)
-            return 0;
+            return;
 
         /* Obtain a synthetic isolation group for the device, since at this
          * point in time we don't have access to the IOMMU group of the host
@@ -1332,7 +1330,7 @@ qemuDomainFillDeviceIsolationGroup(virDomainDefPtr def,
                      "configured to use hostdev-backed network '%s', "
                      "device won't be isolated",
                      iface->data.network.name);
-            return 0;
+            return;
         }
 
         info->isolationGroup = tmp;
@@ -1341,8 +1339,6 @@ qemuDomainFillDeviceIsolationGroup(virDomainDefPtr def,
                   "hostdev-backed network '%s' is %u",
                   iface->data.network.name, info->isolationGroup);
     }
-
-    return 0;
 }
 
 
@@ -1364,7 +1360,9 @@ qemuDomainFillDeviceIsolationGroupIter(virDomainDefPtr def,
                                        virDomainDeviceInfoPtr info G_GNUC_UNUSED,
                                        void *opaque G_GNUC_UNUSED)
 {
-    return qemuDomainFillDeviceIsolationGroup(def, dev);
+    qemuDomainFillDeviceIsolationGroup(def, dev);
+
+    return 0;
 }
 
 
