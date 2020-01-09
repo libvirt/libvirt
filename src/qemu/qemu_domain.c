@@ -1497,10 +1497,9 @@ qemuDomainSecretPlainSetup(qemuDomainSecretInfoPtr secinfo,
                            const char *username,
                            virSecretLookupTypeDefPtr seclookupdef)
 {
-    virConnectPtr conn;
+    g_autoptr(virConnect) conn = virGetConnectSecret();
     int ret = -1;
 
-    conn = virGetConnectSecret();
     if (!conn)
         return -1;
 
@@ -1511,7 +1510,6 @@ qemuDomainSecretPlainSetup(qemuDomainSecretInfoPtr secinfo,
                                    &secinfo->s.plain.secret,
                                    &secinfo->s.plain.secretlen);
 
-    virObjectUnref(conn);
     return ret;
 }
 
@@ -1538,7 +1536,7 @@ qemuDomainSecretAESSetup(qemuDomainObjPrivatePtr priv,
                          virSecretLookupTypeDefPtr seclookupdef,
                          bool isLuks)
 {
-    virConnectPtr conn;
+    g_autoptr(virConnect) conn = virGetConnectSecret();
     int ret = -1;
     uint8_t *raw_iv = NULL;
     size_t ivlen = QEMU_DOMAIN_AES_IV_LEN;
@@ -1547,7 +1545,6 @@ qemuDomainSecretAESSetup(qemuDomainObjPrivatePtr priv,
     uint8_t *ciphertext = NULL;
     size_t ciphertextlen = 0;
 
-    conn = virGetConnectSecret();
     if (!conn)
         return -1;
 
@@ -1591,7 +1588,6 @@ qemuDomainSecretAESSetup(qemuDomainObjPrivatePtr priv,
     VIR_DISPOSE_N(raw_iv, ivlen);
     VIR_DISPOSE_N(secret, secretlen);
     VIR_DISPOSE_N(ciphertext, ciphertextlen);
-    virObjectUnref(conn);
     return ret;
 }
 
@@ -2036,7 +2032,7 @@ qemuDomainSecretPrepare(virQEMUDriverPtr driver,
                         virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     size_t i;
     int ret = -1;
 
@@ -2107,7 +2103,6 @@ qemuDomainSecretPrepare(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    virObjectUnref(cfg);
     return ret;
 }
 
@@ -2118,7 +2113,7 @@ qemuDomainSetPrivatePathsOld(virQEMUDriverPtr driver,
                              virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
 
     if (!priv->libDir)
         priv->libDir = g_strdup_printf("%s/domain-%s", cfg->libDir, vm->def->name);
@@ -2126,8 +2121,6 @@ qemuDomainSetPrivatePathsOld(virQEMUDriverPtr driver,
     if (!priv->channelTargetDir)
         priv->channelTargetDir = g_strdup_printf("%s/domain-%s",
                                                  cfg->channelTargetDir, vm->def->name);
-
-    virObjectUnref(cfg);
 }
 
 
@@ -2135,7 +2128,7 @@ int
 qemuDomainSetPrivatePaths(virQEMUDriverPtr driver,
                           virDomainObjPtr vm)
 {
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivatePtr priv = vm->privateData;
     g_autofree char *domname = virDomainDefGetShortName(vm->def);
     int ret = -1;
@@ -2152,7 +2145,6 @@ qemuDomainSetPrivatePaths(virQEMUDriverPtr driver,
 
     ret = 0;
  cleanup:
-    virObjectUnref(cfg);
     return ret;
 }
 
@@ -3646,7 +3638,7 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     size_t i;
     g_autofree xmlNodePtr *nodes = NULL;
     xmlNodePtr node = NULL;
-    virQEMUCapsPtr qemuCaps = NULL;
+    g_autoptr(virQEMUCaps) qemuCaps = NULL;
 
     if (!(priv->monConfig = virDomainChrSourceDefNew(NULL)))
         goto error;
@@ -3850,7 +3842,6 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     priv->monConfig = NULL;
     virStringListFree(priv->qemuDevices);
     priv->qemuDevices = NULL;
-    virObjectUnref(qemuCaps);
     return -1;
 }
 
@@ -5671,8 +5662,8 @@ qemuDomainDefValidate(const virDomainDef *def,
                       void *opaque)
 {
     virQEMUDriverPtr driver = opaque;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    virQEMUCapsPtr qemuCaps = NULL;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUCaps) qemuCaps = NULL;
     int ret = -1;
     size_t i;
 
@@ -5886,8 +5877,6 @@ qemuDomainDefValidate(const virDomainDef *def,
     ret = 0;
 
  cleanup:
-    virObjectUnref(qemuCaps);
-    virObjectUnref(cfg);
     return ret;
 }
 
@@ -8572,7 +8561,7 @@ static int
 qemuDomainChrDefDropDefaultPath(virDomainChrDefPtr chr,
                                 virQEMUDriverPtr driver)
 {
-    virQEMUDriverConfigPtr cfg;
+    g_autoptr(virQEMUDriverConfig) cfg = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *regexp = NULL;
     int ret = -1;
@@ -8596,7 +8585,6 @@ qemuDomainChrDefDropDefaultPath(virDomainChrDefPtr chr,
         VIR_FREE(chr->source->data.nix.path);
 
     ret = 0;
-    virObjectUnref(cfg);
     return ret;
 }
 
@@ -9253,14 +9241,12 @@ static void
 qemuDomainObjSaveStatus(virQEMUDriverPtr driver,
                         virDomainObjPtr obj)
 {
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
 
     if (virDomainObjIsActive(obj)) {
         if (virDomainObjSave(obj, driver->xmlopt, cfg->stateDir) < 0)
             VIR_WARN("Failed to save status on vm %s", obj->def->name);
     }
-
-    virObjectUnref(cfg);
 }
 
 
@@ -9421,7 +9407,7 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
     unsigned long long then;
     bool nested = job == QEMU_JOB_ASYNC_NESTED;
     bool async = job == QEMU_JOB_ASYNC;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     const char *blocker = NULL;
     const char *agentBlocker = NULL;
     int ret = -1;
@@ -9439,10 +9425,8 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
               qemuDomainAgentJobTypeToString(priv->job.agentActive),
               qemuDomainAsyncJobTypeToString(priv->job.asyncJob));
 
-    if (virTimeMillisNow(&now) < 0) {
-        virObjectUnref(cfg);
+    if (virTimeMillisNow(&now) < 0)
         return -1;
-    }
 
     priv->jobs_queued++;
     then = now + QEMU_JOB_WAIT_TIME;
@@ -9524,7 +9508,6 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
     if (qemuDomainTrackJob(job))
         qemuDomainObjSaveStatus(driver, obj);
 
-    virObjectUnref(cfg);
     return 0;
 
  error:
@@ -9616,7 +9599,6 @@ qemuDomainObjBeginJobInternal(virQEMUDriverPtr driver,
 
  cleanup:
     priv->jobs_queued--;
-    virObjectUnref(cfg);
     return ret;
 }
 
@@ -10369,7 +10351,7 @@ void qemuDomainObjCheckTaint(virQEMUDriverPtr driver,
                              qemuDomainLogContextPtr logCtxt)
 {
     size_t i;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivatePtr priv = obj->privateData;
     bool custom_hypervisor_feat = false;
 
@@ -10410,8 +10392,6 @@ void qemuDomainObjCheckTaint(virQEMUDriverPtr driver,
 
     if (obj->def->os.dtb)
         qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_CUSTOM_DTB, logCtxt);
-
-    virObjectUnref(cfg);
 }
 
 
@@ -10420,7 +10400,7 @@ void qemuDomainObjCheckDiskTaint(virQEMUDriverPtr driver,
                                  virDomainDiskDefPtr disk,
                                  qemuDomainLogContextPtr logCtxt)
 {
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
 
     if (disk->rawio == VIR_TRISTATE_BOOL_YES)
         qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HIGH_PRIVILEGES,
@@ -10431,8 +10411,6 @@ void qemuDomainObjCheckDiskTaint(virQEMUDriverPtr driver,
         disk->src->path && virFileIsCDROM(disk->src->path) == 1)
         qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_CDROM_PASSTHROUGH,
                            logCtxt);
-
-    virObjectUnref(cfg);
 }
 
 
@@ -10468,7 +10446,7 @@ qemuDomainLogContextPtr qemuDomainLogContextNew(virQEMUDriverPtr driver,
                                                 virDomainObjPtr vm,
                                                 qemuDomainLogContextMode mode)
 {
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     qemuDomainLogContextPtr ctxt = NULL;
 
     if (qemuDomainInitialize() < 0)
@@ -10542,7 +10520,6 @@ qemuDomainLogContextPtr qemuDomainLogContextNew(virQEMUDriverPtr driver,
     }
 
  cleanup:
-    virObjectUnref(cfg);
     return ctxt;
 
  error:
@@ -10643,7 +10620,7 @@ qemuDomainLogAppendMessage(virQEMUDriverPtr driver,
                            const char *fmt,
                            ...)
 {
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     virLogManagerPtr manager = NULL;
     va_list ap;
     g_autofree char *path = NULL;
@@ -10684,7 +10661,6 @@ qemuDomainLogAppendMessage(virQEMUDriverPtr driver,
     va_end(ap);
     VIR_FORCE_CLOSE(writefd);
     virLogManagerFree(manager);
-    virObjectUnref(cfg);
 
     return ret;
 }
@@ -10868,7 +10844,7 @@ qemuDomainSnapshotDiscard(virQEMUDriverPtr driver,
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
     virDomainMomentObjPtr parentsnap = NULL;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
 
     if (!metadata_only) {
         if (!virDomainObjIsActive(vm)) {
@@ -10918,7 +10894,6 @@ qemuDomainSnapshotDiscard(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    virObjectUnref(cfg);
     return ret;
 }
 
@@ -10962,11 +10937,9 @@ static void
 qemuDomainRemoveInactiveCommon(virQEMUDriverPtr driver,
                                virDomainObjPtr vm)
 {
-    virQEMUDriverConfigPtr cfg;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autofree char *snapDir = NULL;
     g_autofree char *chkDir = NULL;
-
-    cfg = virQEMUDriverGetConfig(driver);
 
     /* Remove any snapshot metadata prior to removing the domain */
     if (qemuDomainSnapshotDiscardAllMetadata(driver, vm) < 0) {
@@ -10989,8 +10962,6 @@ qemuDomainRemoveInactiveCommon(virQEMUDriverPtr driver,
             VIR_WARN("unable to remove checkpoint directory %s", chkDir);
     }
     qemuExtDevicesCleanupHost(driver, vm->def);
-
-    virObjectUnref(cfg);
 }
 
 
@@ -11086,18 +11057,15 @@ qemuDomainSetFakeReboot(virQEMUDriverPtr driver,
                         bool value)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
 
     if (priv->fakeReboot == value)
-        goto cleanup;
+        return;
 
     priv->fakeReboot = value;
 
     if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
         VIR_WARN("Failed to save status on vm %s", vm->def->name);
-
- cleanup:
-    virObjectUnref(cfg);
 }
 
 static void
@@ -11304,7 +11272,7 @@ qemuDomainStorageFileInit(virQEMUDriverPtr driver,
                           virStorageSourcePtr src,
                           virStorageSourcePtr parent)
 {
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     uid_t uid;
     gid_t gid;
     int ret = -1;
@@ -11317,7 +11285,6 @@ qemuDomainStorageFileInit(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    virObjectUnref(cfg);
     return ret;
 }
 
@@ -15029,7 +14996,7 @@ int
 qemuDomainCreateNamespace(virQEMUDriverPtr driver,
                           virDomainObjPtr vm)
 {
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     int ret = -1;
 
     if (virBitmapIsBitSet(cfg->namespaces, QEMU_DOMAIN_NS_MOUNT) &&
@@ -15038,7 +15005,6 @@ qemuDomainCreateNamespace(virQEMUDriverPtr driver,
 
     ret = 0;
  cleanup:
-    virObjectUnref(cfg);
     return ret;
 }
 
@@ -15243,7 +15209,7 @@ qemuDomainAttachDeviceMknodRecursive(virQEMUDriverPtr driver,
                                      size_t ndevMountsPath,
                                      unsigned int ttl)
 {
-    virQEMUDriverConfigPtr cfg = NULL;
+    g_autoptr(virQEMUDriverConfig) cfg = NULL;
     struct qemuDomainAttachDeviceMknodData data;
     int ret = -1;
     g_autofree char *target = NULL;
@@ -15366,7 +15332,6 @@ qemuDomainAttachDeviceMknodRecursive(virQEMUDriverPtr driver,
     virFileFreeACLs(&data.acl);
     if (isReg && target)
         umount(target);
-    virObjectUnref(cfg);
     return ret;
 }
 
@@ -15459,7 +15424,7 @@ qemuDomainNamespaceMknodPaths(virDomainObjPtr vm,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverPtr driver = priv->driver;
-    virQEMUDriverConfigPtr cfg;
+    g_autoptr(virQEMUDriverConfig) cfg = NULL;
     char **devMountsPath = NULL;
     size_t ndevMountsPath = 0;
     int ret = -1;
@@ -15486,7 +15451,6 @@ qemuDomainNamespaceMknodPaths(virDomainObjPtr vm,
     ret = 0;
  cleanup:
     virStringListFreeCount(devMountsPath, ndevMountsPath);
-    virObjectUnref(cfg);
     return ret;
 }
 
@@ -15508,7 +15472,7 @@ qemuDomainNamespaceUnlinkPaths(virDomainObjPtr vm,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverPtr driver = priv->driver;
-    virQEMUDriverConfigPtr cfg;
+    g_autoptr(virQEMUDriverConfig) cfg = NULL;
     char **devMountsPath = NULL;
     size_t ndevMountsPath = 0;
     size_t i;
@@ -15534,7 +15498,6 @@ qemuDomainNamespaceUnlinkPaths(virDomainObjPtr vm,
     ret = 0;
  cleanup:
     virStringListFreeCount(devMountsPath, ndevMountsPath);
-    virObjectUnref(cfg);
     return ret;
 }
 
