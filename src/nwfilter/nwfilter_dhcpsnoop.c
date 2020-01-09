@@ -888,7 +888,7 @@ virNWFilterSnoopReqLeaseDel(virNWFilterSnoopReqPtr req,
  skip_instantiate:
     VIR_FREE(ipl);
 
-    virAtomicIntDecAndTest(&virNWFilterSnoopState.nLeases);
+    ignore_value(virAtomicIntDecAndTest(&virNWFilterSnoopState.nLeases));
 
  lease_not_found:
     VIR_FREE(ipstr);
@@ -1167,7 +1167,7 @@ static void virNWFilterDHCPDecodeWorker(void *jobdata, void *opaque)
                        _("Instantiation of rules failed on "
                          "interface '%s'"), req->binding->portdevname);
     }
-    virAtomicIntDecAndTest(job->qCtr);
+    ignore_value(virAtomicIntDecAndTest(job->qCtr));
     VIR_FREE(job);
 }
 
@@ -1568,7 +1568,7 @@ virNWFilterDHCPSnoopThread(void *req0)
             pcap_close(pcapConf[i].handle);
     }
 
-    virAtomicIntDecAndTest(&virNWFilterSnoopState.nThreads);
+    ignore_value(virAtomicIntDecAndTest(&virNWFilterSnoopState.nThreads));
 
     return;
 }

@@ -50,7 +50,7 @@ testTypes(const void *data G_GNUC_UNUSED)
     testAssertEq(virAtomicIntAdd(&u, 1), 5);
     testAssertEq(u, 6);
 
-    testAssertEq(virAtomicIntInc(&u), 7);
+    testAssertEq(virAtomicIntInc(&u), 6);
     testAssertEq(u, 7);
 
     res = virAtomicIntDecAndTest(&u);

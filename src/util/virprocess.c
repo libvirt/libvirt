@@ -1021,7 +1021,7 @@ int virProcessGetStartTime(pid_t pid,
                            unsigned long long *timestamp)
 {
     static int warned;
-    if (virAtomicIntInc(&warned) == 1) {
+    if (virAtomicIntInc(&warned) == 0) {
         VIR_WARN("Process start time of pid %lld not available on this platform",
                  (long long) pid);
     }
