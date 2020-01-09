@@ -24,6 +24,7 @@
 #include "qemu_capabilities.h"
 #include "qemu_monitor.h"
 #include "qemu_domain.h"
+#include "qemu_block.h"
 
 #include "virerror.h"
 #include "virlog.h"
@@ -150,39 +151,92 @@ qemuCheckpointFindActiveDiskInParent(virDomainObjPtr vm,
 
 int
 qemuCheckpointDiscardDiskBitmaps(virStorageSourcePtr src,
+                                 virHashTablePtr blockNamedNodeData,
                                  const char *delbitmap,
                                  const char *parentbitmap,
-                                 bool chkcurrent,
-                                 virJSONValuePtr actions)
+                                 virJSONValuePtr actions,
+                                 const char *diskdst)
 {
-    if (parentbitmap) {
-        g_autoptr(virJSONValue) arr = NULL;
+    virStorageSourcePtr n = src;
 
-        if (!(arr = virJSONValueNewArray()))
-            return -1;
+    /* find the backing chain entry with bitmap named '@delbitmap' */
+    while (n) {
+        qemuBlockNamedNodeDataBitmapPtr tmp;
 
-        if (qemuMonitorTransactionBitmapMergeSourceAddBitmap(arr,
-                                                             src->nodeformat,
-                                                             delbitmap) < 0)
-            return -1;
+        if ((tmp = qemuBlockNamedNodeDataGetBitmapByName(blockNamedNodeData,
+                                                         n, delbitmap))) {
+            break;
+        }
 
-        if (chkcurrent) {
-            if (qemuMonitorTransactionBitmapEnable(actions,
-                                                   src->nodeformat,
-                                                   parentbitmap) < 0)
+        n = n->backingStore;
+    }
+
+    if (!n) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("bitmap '%s' not found in backing chain of '%s'"),
+                       delbitmap, diskdst);
+        return -1;
+    }
+
+    while (n) {
+        qemuBlockNamedNodeDataBitmapPtr srcbitmap;
+
+        if (!(srcbitmap = qemuBlockNamedNodeDataGetBitmapByName(blockNamedNodeData,
+                                                                n, delbitmap)))
+            break;
+
+        /* For the actual checkpoint deletion we will merge any bitmap into the
+         * bitmap of the parent checkpoint (@parentbitmap) or for any image
+         * where the parent checkpoint bitmap is not present we must rename
+         * the bitmap of the deleted checkpoint into the bitmap of the parent
+         * checkpoint as qemu can't currently take the allocation map and turn
+         * it into a bitmap and thus we wouldn't be able to do a backup. */
+        if (parentbitmap) {
+            qemuBlockNamedNodeDataBitmapPtr dstbitmap;
+            g_autoptr(virJSONValue) arr = NULL;
+
+            dstbitmap = qemuBlockNamedNodeDataGetBitmapByName(blockNamedNodeData,
+                                                              n, parentbitmap);
+
+            if (dstbitmap) {
+                if (srcbitmap->recording && !dstbitmap->recording) {
+                    if (qemuMonitorTransactionBitmapEnable(actions,
+                                                           n->nodeformat,
+                                                           dstbitmap->name) < 0)
+                        return -1;
+                }
+
+            } else {
+                if (qemuMonitorTransactionBitmapAdd(actions,
+                                                    n->nodeformat,
+                                                    parentbitmap,
+                                                    true,
+                                                    !srcbitmap->recording,
+                                                    srcbitmap->granularity) < 0)
+                    return -1;
+            }
+
+            if (!(arr = virJSONValueNewArray()))
+                return -1;
+
+            if (qemuMonitorTransactionBitmapMergeSourceAddBitmap(arr,
+                                                                 n->nodeformat,
+                                                                 srcbitmap->name) < 0)
+                return -1;
+
+            if (qemuMonitorTransactionBitmapMerge(actions,
+                                                  n->nodeformat,
+                                                  parentbitmap, &arr) < 0)
                 return -1;
         }
 
-        if (qemuMonitorTransactionBitmapMerge(actions,
-                                              src->nodeformat,
-                                              parentbitmap, &arr) < 0)
+        if (qemuMonitorTransactionBitmapRemove(actions,
+                                               n->nodeformat,
+                                               srcbitmap->name) < 0)
             return -1;
-    }
 
-    if (qemuMonitorTransactionBitmapRemove(actions,
-                                           src->nodeformat,
-                                           delbitmap) < 0)
-        return -1;
+        n = n->backingStore;
+    }
 
     return 0;
 }
@@ -191,16 +245,21 @@ qemuCheckpointDiscardDiskBitmaps(virStorageSourcePtr src,
 static int
 qemuCheckpointDiscardBitmaps(virDomainObjPtr vm,
                              virDomainCheckpointDefPtr chkdef,
-                             bool chkcurrent,
                              virDomainMomentObjPtr parent)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverPtr driver = priv->driver;
+    g_autoptr(virHashTable) blockNamedNodeData = NULL;
     int rc;
     g_autoptr(virJSONValue) actions = NULL;
     size_t i;
 
     if (!(actions = virJSONValueNewArray()))
+        return -1;
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    blockNamedNodeData = qemuMonitorBlockGetNamedNodeData(priv->mon);
+    if (qemuDomainObjExitMonitor(priv->driver, vm) < 0 || !blockNamedNodeData)
         return -1;
 
     for (i = 0; i < chkdef->ndisks; i++) {
@@ -223,8 +282,9 @@ qemuCheckpointDiscardBitmaps(virDomainObjPtr vm,
                                                                   chkdisk->name)))
             parentbitmap = parentchkdisk->name;
 
-        if (qemuCheckpointDiscardDiskBitmaps(domdisk->src, chkdisk->bitmap,
-                                             parentbitmap, chkcurrent, actions) < 0)
+        if (qemuCheckpointDiscardDiskBitmaps(domdisk->src, blockNamedNodeData,
+                                             chkdisk->bitmap, parentbitmap,
+                                             actions, domdisk->dst) < 0)
             return -1;
     }
 
@@ -262,7 +322,7 @@ qemuCheckpointDiscard(virQEMUDriverPtr driver,
         virDomainCheckpointDefPtr chkdef = virDomainCheckpointObjGetDef(chk);
         parent = virDomainCheckpointFindByName(vm->checkpoints,
                                                chk->def->parent_name);
-        if (qemuCheckpointDiscardBitmaps(vm, chkdef, chkcurrent, parent) < 0)
+        if (qemuCheckpointDiscardBitmaps(vm, chkdef, parent) < 0)
             return -1;
     }
 

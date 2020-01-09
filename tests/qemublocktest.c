@@ -708,6 +708,7 @@ struct testQemuCheckpointDeleteMergeData {
     virStorageSourcePtr chain;
     const char *deletebitmap;
     const char *parentbitmap;
+    const char *nodedatafile;
 };
 
 
@@ -718,22 +719,30 @@ testQemuCheckpointDeleteMerge(const void *opaque)
     g_autofree char *actual = NULL;
     g_autofree char *expectpath = NULL;
     g_autoptr(virJSONValue) actions = NULL;
-    bool currentcheckpoint;
+    g_autoptr(virJSONValue) nodedatajson = NULL;
+    g_autoptr(virHashTable) nodedata = NULL;
 
     expectpath = g_strdup_printf("%s/%s%s-out.json", abs_srcdir,
                                  checkpointDeletePrefix, data->name);
 
+    if (!(nodedatajson = virTestLoadFileJSON(bitmapDetectPrefix, data->nodedatafile,
+                                             ".json", NULL)))
+        return -1;
+
+    if (!(nodedata = qemuMonitorJSONBlockGetNamedNodeDataJSON(nodedatajson))) {
+        VIR_TEST_VERBOSE("failed to load nodedata JSON\n");
+        return -1;
+    }
+
     if (!(actions = virJSONValueNewArray()))
         return -1;
 
-    /* hack to get the 'current' state until the function stops accepting it */
-    currentcheckpoint = STREQ("current", data->deletebitmap);
-
     if (qemuCheckpointDiscardDiskBitmaps(data->chain,
+                                         nodedata,
                                          data->deletebitmap,
                                          data->parentbitmap,
-                                         currentcheckpoint,
-                                         actions) < 0) {
+                                         actions,
+                                         "testdisk") < 0) {
         VIR_TEST_VERBOSE("failed to generate checkpoint delete transaction\n");
         return -1;
     }
@@ -992,22 +1001,23 @@ mymain(void)
     TEST_BACKUP_BITMAP_CALCULATE("snapshot-intermediate", bitmapSourceChain, "d", "snapshots");
     TEST_BACKUP_BITMAP_CALCULATE("snapshot-deep", bitmapSourceChain, "a", "snapshots");
 
-#define TEST_CHECKPOINT_DELETE_MERGE(testname, delbmp, parbmp) \
+#define TEST_CHECKPOINT_DELETE_MERGE(testname, delbmp, parbmp, named) \
     do { \
         checkpointdeletedata.name = testname; \
         checkpointdeletedata.chain = bitmapSourceChain; \
         checkpointdeletedata.deletebitmap = delbmp; \
         checkpointdeletedata.parentbitmap = parbmp; \
+        checkpointdeletedata.nodedatafile = named; \
         if (virTestRun("checkpoint delete " testname, \
                        testQemuCheckpointDeleteMerge, &checkpointdeletedata) < 0) \
         ret = -1; \
     } while (0)
 
-    TEST_CHECKPOINT_DELETE_MERGE("basic-noparent", "a", NULL);
-    TEST_CHECKPOINT_DELETE_MERGE("basic-intermediate1", "b", "a");
-    TEST_CHECKPOINT_DELETE_MERGE("basic-intermediate2", "c", "b");
-    TEST_CHECKPOINT_DELETE_MERGE("basic-intermediate3", "d", "c");
-    TEST_CHECKPOINT_DELETE_MERGE("basic-current", "current", "d");
+    TEST_CHECKPOINT_DELETE_MERGE("basic-noparent", "a", NULL, "basic");
+    TEST_CHECKPOINT_DELETE_MERGE("basic-intermediate1", "b", "a", "basic");
+    TEST_CHECKPOINT_DELETE_MERGE("basic-intermediate2", "c", "b", "basic");
+    TEST_CHECKPOINT_DELETE_MERGE("basic-intermediate3", "d", "c", "basic");
+    TEST_CHECKPOINT_DELETE_MERGE("basic-current", "current", "d", "basic");
 
  cleanup:
     virHashFree(diskxmljsondata.schema);
