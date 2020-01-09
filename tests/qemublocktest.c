@@ -970,6 +970,7 @@ mymain(void)
     TEST_BITMAP_DETECT("basic");
     TEST_BITMAP_DETECT("synthetic");
     TEST_BITMAP_DETECT("snapshots");
+    TEST_BITMAP_DETECT("snapshots-synthetic-checkpoint");
 
 #define TEST_BACKUP_BITMAP_CALCULATE(testname, source, incrbackup, named) \
     do { \
