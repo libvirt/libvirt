@@ -20,3 +20,5 @@
     }
   }
 ]
+reopen nodes:
+libvirt-3-format

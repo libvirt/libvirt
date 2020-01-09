@@ -155,7 +155,8 @@ qemuCheckpointDiscardDiskBitmaps(virStorageSourcePtr src,
                                  const char *delbitmap,
                                  const char *parentbitmap,
                                  virJSONValuePtr actions,
-                                 const char *diskdst)
+                                 const char *diskdst,
+                                 GSList **reopenimages)
 {
     virStorageSourcePtr n = src;
 
@@ -235,6 +236,9 @@ qemuCheckpointDiscardDiskBitmaps(virStorageSourcePtr src,
                                                srcbitmap->name) < 0)
             return -1;
 
+        if (n != src)
+            *reopenimages = g_slist_prepend(*reopenimages, n);
+
         n = n->backingStore;
     }
 
@@ -250,9 +254,12 @@ qemuCheckpointDiscardBitmaps(virDomainObjPtr vm,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverPtr driver = priv->driver;
     g_autoptr(virHashTable) blockNamedNodeData = NULL;
-    int rc;
+    int rc = -1;
     g_autoptr(virJSONValue) actions = NULL;
     size_t i;
+    g_autoptr(GSList) reopenimages = NULL;
+    g_autoptr(GSList) relabelimages = NULL;
+    GSList *next;
 
     if (!(actions = virJSONValueNewArray()))
         return -1;
@@ -284,16 +291,34 @@ qemuCheckpointDiscardBitmaps(virDomainObjPtr vm,
 
         if (qemuCheckpointDiscardDiskBitmaps(domdisk->src, blockNamedNodeData,
                                              chkdisk->bitmap, parentbitmap,
-                                             actions, domdisk->dst) < 0)
+                                             actions, domdisk->dst,
+                                             &reopenimages) < 0)
             return -1;
+    }
+
+    /* label any non-top images for read-write access */
+    for (next = reopenimages; next; next = next->next) {
+        virStorageSourcePtr src = next->data;
+
+        if (qemuDomainStorageSourceAccessAllow(driver, vm, src, false, false) < 0)
+            goto relabel;
+
+        relabelimages = g_slist_prepend(relabelimages, src);
     }
 
     qemuDomainObjEnterMonitor(driver, vm);
     rc = qemuMonitorTransaction(priv->mon, &actions);
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
         return -1;
 
-    return 0;
+ relabel:
+    for (next = relabelimages; next; next = next->next) {
+        virStorageSourcePtr src = next->data;
+
+        ignore_value(qemuDomainStorageSourceAccessAllow(driver, vm, src, true, false));
+    }
+
+    return rc;
 }
 
 

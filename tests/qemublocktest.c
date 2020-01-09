@@ -721,6 +721,9 @@ testQemuCheckpointDeleteMerge(const void *opaque)
     g_autoptr(virJSONValue) actions = NULL;
     g_autoptr(virJSONValue) nodedatajson = NULL;
     g_autoptr(virHashTable) nodedata = NULL;
+    g_autoptr(GSList) reopenimages = NULL;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    GSList *tmp;
 
     expectpath = g_strdup_printf("%s/%s%s-out.json", abs_srcdir,
                                  checkpointDeletePrefix, data->name);
@@ -742,13 +745,25 @@ testQemuCheckpointDeleteMerge(const void *opaque)
                                          data->deletebitmap,
                                          data->parentbitmap,
                                          actions,
-                                         "testdisk") < 0) {
+                                         "testdisk",
+                                         &reopenimages) < 0) {
         VIR_TEST_VERBOSE("failed to generate checkpoint delete transaction\n");
         return -1;
     }
 
-    if (!(actual = virJSONValueToString(actions, true)))
+    if (virJSONValueToBuffer(actions, &buf, true) < 0)
         return -1;
+
+    if (reopenimages) {
+        virBufferAddLit(&buf, "reopen nodes:\n");
+
+        for (tmp = reopenimages; tmp; tmp = tmp->next) {
+            virStorageSourcePtr src = tmp->data;
+            virBufferAsprintf(&buf, "%s\n", src->nodeformat);
+        }
+    }
+
+    actual = virBufferContentAndReset(&buf);
 
     return virTestCompareToFile(actual, expectpath);
 }

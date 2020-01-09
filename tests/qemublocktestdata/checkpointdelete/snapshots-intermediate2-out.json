@@ -57,3 +57,6 @@
     }
   }
 ]
+reopen nodes:
+libvirt-3-format
+libvirt-2-format
