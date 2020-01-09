@@ -44,6 +44,16 @@
 <libvirt>
   <release version="v6.1.0" date="unreleased">
     <section title="New features">
+      <change>
+        <summary>
+          qemu: new rng backend type: builtin
+        </summary>
+        <description>
+          It implements qemu builtin rng backend. That uses getrandom syscall
+          to generate random, no external rng source needed. Available since
+          QEMU 4.2.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
