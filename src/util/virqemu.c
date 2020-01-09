@@ -239,12 +239,14 @@ virQEMUBuildObjectCommandlineFromJSONInternal(virBufferPtr buf,
         return -1;
     }
 
-    virBufferAsprintf(buf, "%s,id=%s,", type, alias);
+    virBufferAsprintf(buf, "%s,id=%s", type, alias);
 
-    if (props &&
-        virQEMUBuildCommandLineJSON(props, buf,
-                                    virQEMUBuildCommandLineJSONArrayBitmap) < 0)
-        return -1;
+    if (props) {
+        virBufferAddLit(buf, ",");
+        if (virQEMUBuildCommandLineJSON(props, buf,
+                                virQEMUBuildCommandLineJSONArrayBitmap) < 0)
+            return -1;
+    }
 
     return 0;
 }
