@@ -127,19 +127,15 @@ int virTestMain(int argc,
 # define MOCK_EXT ".so"
 #endif
 
-#define VIR_TEST_PRELOAD(lib) \
+#define VIR_TEST_PRELOAD(libs) \
     do { \
         const char *preload = getenv(PRELOAD_VAR); \
-        if (preload == NULL || strstr(preload, lib) == NULL) { \
+        if (preload == NULL || strstr(preload, libs) == NULL) { \
             char *newenv; \
-            if (!virFileIsExecutable(lib)) { \
-                perror(lib); \
-                return EXIT_FAILURE; \
-            } \
             if (!preload) { \
-                newenv = (char *) lib; \
+                newenv = (char *) libs; \
             } else { \
-                newenv = g_strdup_printf("%s:%s", lib, preload); \
+                newenv = g_strdup_printf("%s:%s", libs, preload); \
             } \
             g_setenv(PRELOAD_VAR, newenv, TRUE); \
             FORCE_FLAT_NAMESPACE \

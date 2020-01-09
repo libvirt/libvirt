@@ -46,8 +46,14 @@ main(int argc, char **argv)
 {
     virThread thread;
     virQEMUCapsPtr caps;
+    const char *mock = VIR_TEST_MOCK("qemucapsprobe");
 
-    VIR_TEST_PRELOAD(VIR_TEST_MOCK("qemucapsprobe"));
+    if (!virFileIsExecutable(mock)) {
+        perror(mock);
+        return EXIT_FAILURE;
+    }
+
+    VIR_TEST_PRELOAD(mock);
 
     if (argc != 2) {
         fprintf(stderr, "%s QEMU_binary\n", argv[0]);

@@ -856,14 +856,33 @@ int virTestMain(int argc,
     virLogOutputPtr *outputs = NULL;
     g_autofree char *baseprogname = NULL;
     const char *progname;
+    g_autofree const char **preloads = NULL;
+    size_t npreloads = 0;
+    g_autofree char *mock = NULL;
 
-    if (getenv("VIR_TEST_FILE_ACCESS"))
-        VIR_TEST_PRELOAD(VIR_TEST_MOCK("virtest"));
+    if (getenv("VIR_TEST_FILE_ACCESS")) {
+        preloads = g_renew(const char *, preloads, npreloads + 2);
+        preloads[npreloads++] = VIR_TEST_MOCK("virtest");
+        preloads[npreloads] = NULL;
+    }
 
     va_start(ap, func);
-    while ((lib = va_arg(ap, const char *)))
-        VIR_TEST_PRELOAD(lib);
+    while ((lib = va_arg(ap, const char *))) {
+        if (!virFileIsExecutable(lib)) {
+            perror(lib);
+            return EXIT_FAILURE;
+        }
+
+        preloads = g_renew(const char *, preloads, npreloads + 2);
+        preloads[npreloads++] = lib;
+        preloads[npreloads] = NULL;
+    }
     va_end(ap);
+
+    if (preloads) {
+        mock = g_strjoinv(":", (char **)preloads);
+        VIR_TEST_PRELOAD(mock);
+    }
 
     progname = baseprogname = g_path_get_basename(argv[0]);
     if (STRPREFIX(progname, "lt-"))
