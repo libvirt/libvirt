@@ -557,6 +557,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 350 */
               "i8042",
+              "rng-builtin",
     );
 
 
@@ -1272,6 +1273,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "ramfb", QEMU_CAPS_DEVICE_RAMFB },
     { "max-arm-cpu", QEMU_CAPS_ARM_MAX_CPU },
     { "i8042", QEMU_CAPS_DEVICE_I8042 },
+    { "rng-builtin", QEMU_CAPS_OBJECT_RNG_BUILTIN },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVirtioBalloon[] = {

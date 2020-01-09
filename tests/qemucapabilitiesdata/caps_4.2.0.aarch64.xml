@@ -176,6 +176,7 @@
   <flag name='savevm-monitor-nodes'/>
   <flag name='drive-nvme'/>
   <flag name='smp-dies'/>
+  <flag name='rng-builtin'/>
   <version>4001050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>61700242</microcodeVersion>
