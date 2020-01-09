@@ -3106,7 +3106,6 @@ qemuDomainObjPrivateXMLParseAutomaticPlacement(xmlXPathContextPtr ctxt,
     ret = 0;
 
  cleanup:
-    virObjectUnref(caps);
     VIR_FREE(nodeset);
     VIR_FREE(cpuset);
 
