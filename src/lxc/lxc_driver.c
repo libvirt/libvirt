@@ -5291,6 +5291,84 @@ lxcDomainGetCPUStats(virDomainPtr dom,
 }
 
 
+static char *
+lxcDomainGetHostname(virDomainPtr dom,
+                     unsigned int flags)
+{
+    virLXCDriverPtr driver = dom->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    char macaddr[VIR_MAC_STRING_BUFLEN];
+    g_autoptr(virConnect) conn = NULL;
+    virNetworkDHCPLeasePtr *leases = NULL;
+    int n_leases;
+    size_t i, j;
+    char *hostname = NULL;
+
+    virCheckFlags(VIR_DOMAIN_GET_HOSTNAME_LEASE, NULL);
+
+    if (!(vm = lxcDomObjFromDomain(dom)))
+        return NULL;
+
+    if (virDomainGetHostnameEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (virLXCDomainObjBeginJob(driver, vm, LXC_JOB_QUERY) < 0)
+        goto cleanup;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto endjob;
+
+    if (!(conn = virGetConnectNetwork()))
+        goto endjob;
+
+    for (i = 0; i < vm->def->nnets; i++) {
+        g_autoptr(virNetwork) network = NULL;
+        virDomainNetDefPtr net = vm->def->nets[i];
+
+        if (net->type != VIR_DOMAIN_NET_TYPE_NETWORK)
+            continue;
+
+        virMacAddrFormat(&net->mac, macaddr);
+        network = virNetworkLookupByName(conn, net->data.network.name);
+
+        if (!network)
+            goto endjob;
+
+        if ((n_leases = virNetworkGetDHCPLeases(network, macaddr,
+                                                &leases, 0)) < 0)
+            goto endjob;
+
+        for (j = 0; j < n_leases; j++) {
+            virNetworkDHCPLeasePtr lease = leases[j];
+
+            if (lease->hostname && !hostname)
+                hostname = g_strdup(lease->hostname);
+
+            virNetworkDHCPLeaseFree(lease);
+        }
+
+        VIR_FREE(leases);
+
+        if (hostname)
+            goto endjob;
+    }
+
+    if (!hostname) {
+        virReportError(VIR_ERR_NO_HOSTNAME,
+                       _("no hostname found for domain %s"),
+                       vm->def->name);
+        goto endjob;
+    }
+
+ endjob:
+    virLXCDomainObjEndJob(driver, vm);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return hostname;
+}
+
+
 static int
 lxcNodeGetFreePages(virConnectPtr conn,
                     unsigned int npages,
@@ -5436,6 +5514,7 @@ static virHypervisorDriver lxcHypervisorDriver = {
     .domainSetMetadata = lxcDomainSetMetadata, /* 1.1.3 */
     .domainGetMetadata = lxcDomainGetMetadata, /* 1.1.3 */
     .domainGetCPUStats = lxcDomainGetCPUStats, /* 1.2.2 */
+    .domainGetHostname = lxcDomainGetHostname, /* 6.0.0 */
     .nodeGetMemoryParameters = lxcNodeGetMemoryParameters, /* 0.10.2 */
     .nodeSetMemoryParameters = lxcNodeSetMemoryParameters, /* 0.10.2 */
     .domainSendProcessSignal = lxcDomainSendProcessSignal, /* 1.0.1 */
