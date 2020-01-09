@@ -830,7 +830,7 @@ virDomainPCIAddressReserveAddrInternal(virDomainPCIAddressSetPtr addrs,
                                        bool fromConfig)
 {
     int ret = -1;
-    char *addrStr = NULL;
+    g_autofree char *addrStr = NULL;
     virDomainPCIAddressBusPtr bus;
     virErrorNumber errType = (fromConfig
                               ? VIR_ERR_XML_ERROR : VIR_ERR_INTERNAL_ERROR);
@@ -891,7 +891,6 @@ virDomainPCIAddressReserveAddrInternal(virDomainPCIAddressSetPtr addrs,
 
     ret = 0;
  cleanup:
-    VIR_FREE(addrStr);
     return ret;
 }
 
@@ -912,7 +911,7 @@ virDomainPCIAddressEnsureAddr(virDomainPCIAddressSetPtr addrs,
                               virDomainPCIConnectFlags flags)
 {
     int ret = -1;
-    char *addrStr = NULL;
+    g_autofree char *addrStr = NULL;
 
     /* if flags is 0, the particular model of this device on this
      * machinetype doesn't need a PCI address, so we're done.
@@ -955,7 +954,6 @@ virDomainPCIAddressEnsureAddr(virDomainPCIAddressSetPtr addrs,
     ret = 0;
 
  cleanup:
-    VIR_FREE(addrStr);
     return ret;
 }
 
@@ -1108,7 +1106,7 @@ virDomainPCIAddressFindUnusedFunctionOnBus(virDomainPCIAddressBusPtr bus,
                                            bool *found)
 {
     int ret = -1;
-    char *addrStr = NULL;
+    g_autofree char *addrStr = NULL;
 
     *found = false;
 
@@ -1162,7 +1160,6 @@ virDomainPCIAddressFindUnusedFunctionOnBus(virDomainPCIAddressBusPtr bus,
     ret = 0;
 
  cleanup:
-    VIR_FREE(addrStr);
     return ret;
 }
 
@@ -1417,7 +1414,7 @@ virDomainCCWAddressAssign(virDomainDeviceInfoPtr dev,
                           bool autoassign)
 {
     int ret = -1;
-    char *addr = NULL;
+    g_autofree char *addr = NULL;
 
     if (dev->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW)
         return 0;
@@ -1460,7 +1457,6 @@ virDomainCCWAddressAssign(virDomainDeviceInfoPtr dev,
     ret = 0;
 
  cleanup:
-    VIR_FREE(addr);
     return ret;
 }
 
@@ -1690,7 +1686,6 @@ virDomainVirtioSerialAddrReserve(virDomainDefPtr def G_GNUC_UNUSED,
                                  void *data)
 {
     virDomainVirtioSerialAddrSetPtr addrs = data;
-    char *str = NULL;
     int ret = -1;
     virBitmapPtr map = NULL;
     bool b;
@@ -1732,7 +1727,6 @@ virDomainVirtioSerialAddrReserve(virDomainDefPtr def G_GNUC_UNUSED,
     ret = 0;
 
  cleanup:
-    VIR_FREE(str);
     return ret;
 }
 
@@ -2211,7 +2205,7 @@ virDomainUSBAddressSetAddHub(virDomainUSBAddressSetPtr addrs,
     virDomainUSBAddressHubPtr targetHub = NULL, newHub = NULL;
     int ret = -1;
     int targetPort;
-    char *portStr = NULL;
+    g_autofree char *portStr = NULL;
 
     if (hub->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -2245,7 +2239,6 @@ virDomainUSBAddressSetAddHub(virDomainUSBAddressSetPtr addrs,
     ret = 0;
  cleanup:
     virDomainUSBAddressHubFree(newHub);
-    VIR_FREE(portStr);
     return ret;
 }
 
@@ -2352,7 +2345,7 @@ virDomainUSBAddressAssignFromBus(virDomainUSBAddressSetPtr addrs,
 {
     unsigned int portpath[VIR_DOMAIN_DEVICE_USB_MAX_PORT_DEPTH] = { 0 };
     virDomainUSBAddressHubPtr hub = addrs->buses[bus];
-    char *portStr = NULL;
+    g_autofree char *portStr = NULL;
     int ret = -1;
 
     if (!hub)
@@ -2375,7 +2368,6 @@ virDomainUSBAddressAssignFromBus(virDomainUSBAddressSetPtr addrs,
 
     ret = 0;
  cleanup:
-    VIR_FREE(portStr);
     return ret;
 }
 
@@ -2431,7 +2423,7 @@ virDomainUSBAddressReserve(virDomainDeviceInfoPtr info,
 {
     virDomainUSBAddressSetPtr addrs = data;
     virDomainUSBAddressHubPtr targetHub = NULL;
-    char *portStr = NULL;
+    g_autofree char *portStr = NULL;
     int ret = -1;
     int targetPort;
 
@@ -2462,7 +2454,6 @@ virDomainUSBAddressReserve(virDomainDeviceInfoPtr info,
     ret = 0;
 
  cleanup:
-    VIR_FREE(portStr);
     return ret;
 }
 
@@ -2493,7 +2484,7 @@ virDomainUSBAddressRelease(virDomainUSBAddressSetPtr addrs,
                            virDomainDeviceInfoPtr info)
 {
     virDomainUSBAddressHubPtr targetHub = NULL;
-    char *portStr = NULL;
+    g_autofree char *portStr = NULL;
     int targetPort;
     int ret = -1;
 
@@ -2513,6 +2504,5 @@ virDomainUSBAddressRelease(virDomainUSBAddressSetPtr addrs,
     ret = 0;
 
  cleanup:
-    VIR_FREE(portStr);
     return ret;
 }
