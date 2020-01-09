@@ -910,7 +910,7 @@ typedef struct {
 } virErrorMsgTuple;
 
 
-const virErrorMsgTuple virErrorMsgStrings[VIR_ERR_NUMBER_LAST] = {
+static const virErrorMsgTuple virErrorMsgStrings[] = {
     [VIR_ERR_OK] = { NULL, NULL },
     [VIR_ERR_INTERNAL_ERROR] = {
         N_("internal error"),
@@ -1234,6 +1234,8 @@ const virErrorMsgTuple virErrorMsgStrings[VIR_ERR_NUMBER_LAST] = {
         N_("network port not found"),
         N_("network port not found: %s") },
 };
+
+G_STATIC_ASSERT(G_N_ELEMENTS(virErrorMsgStrings) == VIR_ERR_NUMBER_LAST);
 
 
 /**

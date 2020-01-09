@@ -1657,6 +1657,13 @@ class CParser:
                 token = ("name", "virloginit")
             return token
 
+        elif token[0] == "name" and token[1] == "G_STATIC_ASSERT":
+            # skip whole line
+            while token is not None and not (token[0] == "sep" and
+                                             token[1] == ";"):
+                token = self.token()
+            return self.token()
+
         elif token[0] == "name":
             if self.type == "":
                 self.type = token[1]
