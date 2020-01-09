@@ -6070,8 +6070,9 @@ qemuBuildClockArgStr(virDomainClockDefPtr def)
         break;
 
     case VIR_DOMAIN_CLOCK_OFFSET_VARIABLE: {
-        time_t now = time(NULL);
-        struct tm nowbits;
+        g_autoptr(GDateTime) now = g_date_time_new_now_utc();
+        g_autoptr(GDateTime) then = NULL;
+        g_autofree char *thenstr = NULL;
 
         if (def->data.variable.basis == VIR_DOMAIN_CLOCK_BASIS_LOCALTIME) {
             long localOffset;
@@ -6094,8 +6095,8 @@ qemuBuildClockArgStr(virDomainClockDefPtr def)
             def->data.variable.basis = VIR_DOMAIN_CLOCK_BASIS_UTC;
         }
 
-        now += def->data.variable.adjustment;
-        gmtime_r(&now, &nowbits);
+        then = g_date_time_add_seconds(now, def->data.variable.adjustment);
+        thenstr = g_date_time_format(then, "%Y-%m-%dT%H:%M:%S");
 
         /* when an RTC_CHANGE event is received from qemu, we need to
          * have the adjustment used at domain start time available to
@@ -6105,13 +6106,7 @@ qemuBuildClockArgStr(virDomainClockDefPtr def)
         */
         def->data.variable.adjustment0 = def->data.variable.adjustment;
 
-        virBufferAsprintf(&buf, "base=%d-%02d-%02dT%02d:%02d:%02d",
-                          nowbits.tm_year + 1900,
-                          nowbits.tm_mon + 1,
-                          nowbits.tm_mday,
-                          nowbits.tm_hour,
-                          nowbits.tm_min,
-                          nowbits.tm_sec);
+        virBufferAsprintf(&buf, "base=%s", thenstr);
     }   break;
 
     default:

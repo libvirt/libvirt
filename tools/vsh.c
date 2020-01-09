@@ -2182,8 +2182,8 @@ vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format,
     char *str = NULL;
     size_t len;
     const char *lvl = "";
-    time_t stTime;
-    struct tm stTm;
+    g_autoptr(GDateTime) now = g_date_time_new_now_local();
+    g_autofree gchar *nowstr = NULL;
 
     if (ctl->log_fd == -1)
         return;
@@ -2193,15 +2193,9 @@ vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format,
      *
      * [YYYY.MM.DD HH:MM:SS SIGNATURE PID] LOG_LEVEL message
     */
-    time(&stTime);
-    localtime_r(&stTime, &stTm);
-    virBufferAsprintf(&buf, "[%d.%02d.%02d %02d:%02d:%02d %s %d] ",
-                      (1900 + stTm.tm_year),
-                      (1 + stTm.tm_mon),
-                      stTm.tm_mday,
-                      stTm.tm_hour,
-                      stTm.tm_min,
-                      stTm.tm_sec,
+    nowstr = g_date_time_format(now, "%Y.%m.%d %H:%M:%S");
+    virBufferAsprintf(&buf, "[%s %s %d] ",
+                      nowstr,
                       ctl->progname,
                       (int) getpid());
     switch (log_level) {

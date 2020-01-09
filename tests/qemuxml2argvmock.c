@@ -47,12 +47,14 @@ long virGetSystemPageSize(void)
     return 4096;
 }
 
-time_t time(time_t *t)
+GDateTime *g_date_time_new_now_utc(void)
 {
-    const time_t ret = 1234567890;
-    if (t)
-        *t = ret;
-    return ret;
+    return g_date_time_new_from_unix_utc(1234567890);
+}
+
+GDateTime *g_date_time_new_now_local(void)
+{
+    return g_date_time_new_from_unix_local(1234567890);
 }
 
 bool

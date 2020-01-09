@@ -101,20 +101,12 @@ testTimeLocalOffset(const void *args)
 static bool
 isNearYearEnd(void)
 {
-    time_t current = time(NULL);
-    struct tm timeinfo;
+    g_autoptr(GDateTime) now = g_date_time_new_now_local();
 
-    if (current == (time_t)-1) {
-        VIR_DEBUG("time() failed");
-        return false;
-    }
-    if (!localtime_r(&current, &timeinfo)) {
-        VIR_DEBUG("localtime_r() failed");
-        return false;
-    }
-
-    return (timeinfo.tm_mon == 0 && timeinfo.tm_mday == 1) ||
-            (timeinfo.tm_mon == 11 && timeinfo.tm_mday == 31);
+    return ((g_date_time_get_month(now) == 1 &&
+             g_date_time_get_day_of_month(now) == 1) ||
+            (g_date_time_get_month(now) == 12 &&
+             g_date_time_get_day_of_month(now) == 31));
 }
 
 
@@ -186,14 +178,21 @@ mymain(void)
     /* test DST processing with timezones that always
      * have DST in effect; what's more, cover a zone with
      * with an unusual DST different than a usual one hour
+     *
+     * These tests originally used '0' as the first day,
+     * but changed to '1' due to GLib GTimeZone parsing bug:
+     *  https://gitlab.gnome.org/GNOME/glib/issues/1999
+     *
+     * Once we depend on a new enough GLib, we can put then
+     * back to 0 again.
      */
-    TEST_LOCALOFFSET("VIR-00:30VID,0/00:00:00,365/23:59:59",
+    TEST_LOCALOFFSET("VIR-00:30VID,1/00:00:00,364/23:59:59",
                      ((1 * 60) + 30) * 60);
-    TEST_LOCALOFFSET("VIR-02:30VID,0/00:00:00,365/23:59:59",
+    TEST_LOCALOFFSET("VIR-02:30VID,1/00:00:00,364/23:59:59",
                      ((3 * 60) + 30) * 60);
-    TEST_LOCALOFFSET("VIR-02:30VID-04:30,0/00:00:00,365/23:59:59",
+    TEST_LOCALOFFSET("VIR-02:30VID-04:30,1/00:00:00,364/23:59:59",
                      ((4 * 60) + 30) * 60);
-    TEST_LOCALOFFSET("VIR-12:00VID-13:00,0/00:00:00,365/23:59:59",
+    TEST_LOCALOFFSET("VIR-12:00VID-13:00,1/00:00:00,364/23:59:59",
                      ((13 * 60) +  0) * 60);
 
     if (!isNearYearEnd()) {
@@ -209,11 +208,11 @@ mymain(void)
          * tests, except on Dec 31 and Jan 1.
          */
 
-        TEST_LOCALOFFSET("VIR02:45VID00:45,0/00:00:00,365/23:59:59",
+        TEST_LOCALOFFSET("VIR02:45VID00:45,1/00:00:00,364/23:59:59",
                          -45 * 60);
-        TEST_LOCALOFFSET("VIR05:00VID04:00,0/00:00:00,365/23:59:59",
+        TEST_LOCALOFFSET("VIR05:00VID04:00,1/00:00:00,364/23:59:59",
                          ((-4 * 60) +  0) * 60);
-        TEST_LOCALOFFSET("VIR11:00VID10:00,0/00:00:00,365/23:59:59",
+        TEST_LOCALOFFSET("VIR11:00VID10:00,1/00:00:00,364/23:59:59",
                          ((-10 * 60) +  0) * 60);
     }
 

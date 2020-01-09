@@ -302,8 +302,8 @@ char *virTimeStringThen(unsigned long long when)
 /**
  * virTimeLocalOffsetFromUTC:
  *
- * This function is threadsafe, but is *not* async signal safe (due to
- * gmtime_r() and mktime()).
+ * This function is threadsafe, but is *not* async signal safe
+ * due to use of GLib APIs.
  *
  * @offset: pointer to time_t that will be set to the difference
  *          between localtime and UTC in seconds (east of UTC is a
@@ -314,34 +314,11 @@ char *virTimeStringThen(unsigned long long when)
 int
 virTimeLocalOffsetFromUTC(long *offset)
 {
-    struct tm gmtimeinfo;
-    time_t current, utc;
+    g_autoptr(GDateTime) now = g_date_time_new_now_local();
+    GTimeSpan diff = g_date_time_get_utc_offset(now);
 
-    /* time() gives seconds since Epoch in current timezone */
-    if ((current = time(NULL)) == (time_t)-1) {
-        virReportSystemError(errno, "%s",
-                             _("failed to get current system time"));
-        return -1;
-    }
-
-    /* treat current as if it were in UTC */
-    if (!gmtime_r(&current, &gmtimeinfo)) {
-        virReportSystemError(errno, "%s",
-                             _("gmtime_r failed"));
-        return -1;
-    }
-
-    /* tell mktime to figure out itself whether or not DST is in effect */
-    gmtimeinfo.tm_isdst = -1;
-
-    /* mktime() also obeys current timezone rules */
-    if ((utc = mktime(&gmtimeinfo)) == (time_t)-1) {
-        virReportSystemError(errno, "%s",
-                             _("mktime failed"));
-        return -1;
-    }
-
-    *offset = current - utc;
+    /* GTimeSpan measures microseconds, we want seconds */
+    *offset = diff / 1000000;
     return 0;
 }
 

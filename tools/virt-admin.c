@@ -69,40 +69,6 @@ vshAdmClientTransportToString(int transport)
     return str ? _(str) : _("unknown");
 }
 
-/*
- * vshAdmGetTimeStr:
- *
- * Produces string representation (local time) of @then
- * (seconds since epoch UTC) using format 'YYYY-MM-DD HH:MM:SS+ZZZZ'.
- *
- * Returns 0 if conversion finished successfully, -1 in case of an error.
- * Caller is responsible for freeing the string returned.
- */
-static int
-vshAdmGetTimeStr(vshControl *ctl, time_t then, char **result)
-{
-    char *tmp = NULL;
-    struct tm timeinfo;
-
-    if (!localtime_r(&then, &timeinfo))
-        goto error;
-
-    if (VIR_ALLOC_N(tmp, VIRT_ADMIN_TIME_BUFLEN) < 0)
-        goto error;
-
-    if (strftime(tmp, VIRT_ADMIN_TIME_BUFLEN, "%Y-%m-%d %H:%M:%S%z",
-                 &timeinfo) == 0) {
-        VIR_FREE(tmp);
-        goto error;
-    }
-
-    *result = tmp;
-    return 0;
-
- error:
-    vshError(ctl, "%s", _("Timestamp string conversion failed"));
-    return -1;
-}
 
 /*
  * vshAdmCatchDisconnect:
@@ -646,19 +612,19 @@ cmdSrvClientsList(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     for (i = 0; i < nclts; i++) {
-        g_autofree char *timestr = NULL;
+        g_autoptr(GDateTime) then = NULL;
+        g_autofree gchar *thenstr = NULL;
         g_autofree char *idStr = NULL;
         virAdmClientPtr client = clts[i];
         id = virAdmClientGetID(client);
+        then = g_date_time_new_from_unix_local(virAdmClientGetTimestamp(client));
         transport = virAdmClientGetTransport(client);
-        if (vshAdmGetTimeStr(ctl, virAdmClientGetTimestamp(client),
-                             &timestr) < 0)
-            goto cleanup;
 
+        thenstr = g_date_time_format(then,  "%Y-%m-%d %H:%M:%S%z");
         idStr = g_strdup_printf("%llu", id);
         if (vshTableRowAppend(table, idStr,
                               vshAdmClientTransportToString(transport),
-                              timestr, NULL) < 0)
+                              thenstr, NULL) < 0)
             goto cleanup;
     }
 
@@ -714,7 +680,8 @@ cmdClientInfo(vshControl *ctl, const vshCmd *cmd)
     size_t i;
     unsigned long long id;
     const char *srvname = NULL;
-    char *timestr = NULL;
+    g_autoptr(GDateTime) then = NULL;
+    g_autofree gchar *thenstr = NULL;
     virAdmServerPtr srv = NULL;
     virAdmClientPtr clnt = NULL;
     virTypedParameterPtr params = NULL;
@@ -739,12 +706,13 @@ cmdClientInfo(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if (vshAdmGetTimeStr(ctl, virAdmClientGetTimestamp(clnt), &timestr) < 0)
-        goto cleanup;
+
+    then = g_date_time_new_from_unix_local(virAdmClientGetTimestamp(clnt));
+    thenstr = g_date_time_format(then,  "%Y-%m-%d %H:%M:%S%z");
 
     /* this info is provided by the client object itself */
     vshPrint(ctl, "%-15s: %llu\n", "id", virAdmClientGetID(clnt));
-    vshPrint(ctl, "%-15s: %s\n", "connection_time", timestr);
+    vshPrint(ctl, "%-15s: %s\n", "connection_time", thenstr);
     vshPrint(ctl, "%-15s: %s\n", "transport",
              vshAdmClientTransportToString(virAdmClientGetTransport(clnt)));
 
@@ -760,7 +728,6 @@ cmdClientInfo(vshControl *ctl, const vshCmd *cmd)
     virTypedParamsFree(params, nparams);
     virAdmServerFree(srv);
     virAdmClientFree(clnt);
-    VIR_FREE(timestr);
     return ret;
 }
 

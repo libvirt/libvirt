@@ -26790,11 +26790,12 @@ virDomainGraphicsAuthDefFormatAttr(virBufferPtr buf,
                               def->passwd);
 
     if (def->expires) {
-        char strbuf[100];
-        struct tm tmbuf, *tm;
-        tm = gmtime_r(&def->validTo, &tmbuf);
-        strftime(strbuf, sizeof(strbuf), "%Y-%m-%dT%H:%M:%S", tm);
-        virBufferAsprintf(buf, " passwdValidTo='%s'", strbuf);
+        g_autoptr(GDateTime) then = NULL;
+        g_autofree char *thenstr = NULL;
+
+        then = g_date_time_new_from_unix_utc(def->validTo);
+        thenstr = g_date_time_format(then, "%Y-%m-%dT%H:%M:%S");
+        virBufferAsprintf(buf, " passwdValidTo='%s'", thenstr);
     }
 
     if (def->connected)

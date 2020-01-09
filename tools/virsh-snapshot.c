@@ -1492,9 +1492,8 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     virDomainSnapshotPtr snapshot = NULL;
     char *state = NULL;
     long long creation_longlong;
-    time_t creation_time_t;
-    char timestr[100];
-    struct tm time_info;
+    g_autoptr(GDateTime) then = NULL;
+    g_autofree gchar *thenstr = NULL;
     bool tree = vshCommandOptBool(cmd, "tree");
     bool name = vshCommandOptBool(cmd, "name");
     bool from = vshCommandOptBool(cmd, "from");
@@ -1624,22 +1623,16 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
         if (virXPathLongLong("string(/domainsnapshot/creationTime)", ctxt,
                              &creation_longlong) < 0)
             continue;
-        creation_time_t = creation_longlong;
-        if (creation_time_t != creation_longlong) {
-            vshError(ctl, "%s", _("time_t overflow"));
-            continue;
-        }
-        localtime_r(&creation_time_t, &time_info);
-        strftime(timestr, sizeof(timestr), "%Y-%m-%d %H:%M:%S %z",
-                 &time_info);
+        then = g_date_time_new_from_unix_local(creation_longlong);
+        thenstr = g_date_time_format(then, "%Y-%m-%d %H:%M:%S %z");
 
         if (parent) {
-            if (vshTableRowAppend(table, snap_name, timestr, state,
+            if (vshTableRowAppend(table, snap_name, thenstr, state,
                                   NULLSTR_EMPTY(parent_snap),
                                   NULL) < 0)
                 goto cleanup;
         } else {
-            if (vshTableRowAppend(table, snap_name, timestr, state,
+            if (vshTableRowAppend(table, snap_name, thenstr, state,
                                   NULL) < 0)
                 goto cleanup;
         }

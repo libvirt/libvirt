@@ -943,16 +943,14 @@ libxlDomainAutoCoreDump(libxlDriverPrivatePtr driver,
                         virDomainObjPtr vm)
 {
     g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
-    time_t curtime = time(NULL);
-    char timestr[100];
-    struct tm time_info;
+    g_autoptr(GDateTime) now = g_date_time_new_now_local();
+    g_autofree char *nowstr = NULL;
     char *dumpfile = NULL;
 
-    localtime_r(&curtime, &time_info);
-    strftime(timestr, sizeof(timestr), "%Y-%m-%d-%H:%M:%S", &time_info);
+    nowstr = g_date_time_format(now, "%Y-%m-%d-%H:%M:%S");
 
     dumpfile = g_strdup_printf("%s/%s-%s", cfg->autoDumpDir, vm->def->name,
-                               timestr);
+                               nowstr);
 
     /* Unlock virDomainObj while dumping core */
     virObjectUnlock(vm);

@@ -1534,17 +1534,13 @@ cmdDomTime(vshControl *ctl, const vshCmd *cmd)
             goto cleanup;
 
         if (pretty) {
-            char timestr[100];
-            time_t cur_time = seconds;
-            struct tm time_info;
+            g_autoptr(GDateTime) then = NULL;
+            g_autofree char *thenstr = NULL;
 
-            if (!gmtime_r(&cur_time, &time_info)) {
-                vshError(ctl, _("Unable to format time"));
-                goto cleanup;
-            }
-            strftime(timestr, sizeof(timestr), "%Y-%m-%d %H:%M:%S", &time_info);
+            then = g_date_time_new_from_unix_utc(seconds);
+            thenstr = g_date_time_format(then, "%Y-%m-%d %H:%M:%S");
 
-            vshPrint(ctl, _("Time: %s"), timestr);
+            vshPrint(ctl, _("Time: %s"), thenstr);
         } else {
             vshPrint(ctl, _("Time: %lld"), seconds);
         }

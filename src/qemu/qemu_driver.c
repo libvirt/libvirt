@@ -4090,9 +4090,8 @@ getAutoDumpPath(virQEMUDriverPtr driver,
                 virDomainObjPtr vm)
 {
     g_autofree char *domname = virDomainDefGetShortName(vm->def);
-    char timestr[100];
-    struct tm time_info;
-    time_t curtime = time(NULL);
+    g_autoptr(GDateTime) now = g_date_time_new_now_local();
+    g_autofree char *nowstr = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
 
     if (!domname)
@@ -4100,10 +4099,9 @@ getAutoDumpPath(virQEMUDriverPtr driver,
 
     cfg = virQEMUDriverGetConfig(driver);
 
-    localtime_r(&curtime, &time_info);
-    strftime(timestr, sizeof(timestr), "%Y-%m-%d-%H:%M:%S", &time_info);
+    nowstr = g_date_time_format(now, "%Y-%m-%d-%H:%M:%S");
 
-    return g_strdup_printf("%s/%s-%s", cfg->autoDumpPath, domname, timestr);
+    return g_strdup_printf("%s/%s-%s", cfg->autoDumpPath, domname, nowstr);
 }
 
 static void

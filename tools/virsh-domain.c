@@ -5492,9 +5492,8 @@ static const vshCmdOptDef opts_screenshot[] = {
 static char *
 virshGenFileName(vshControl *ctl, virDomainPtr dom, const char *mime)
 {
-    char timestr[100];
-    time_t cur_time;
-    struct tm time_info;
+    g_autoptr(GDateTime) now = g_date_time_new_now_local();
+    g_autofree char *nowstr = NULL;
     const char *ext = NULL;
     char *ret = NULL;
 
@@ -5509,12 +5508,10 @@ virshGenFileName(vshControl *ctl, virDomainPtr dom, const char *mime)
         ext = ".png";
     /* add mime type here */
 
-    time(&cur_time);
-    localtime_r(&cur_time, &time_info);
-    strftime(timestr, sizeof(timestr), "%Y-%m-%d-%H:%M:%S", &time_info);
+    nowstr = g_date_time_format(now, "%Y-%m-%d-%H:%M:%S");
 
-    ret = g_strdup_printf("%s-%s%s", virDomainGetName(dom), timestr,
-                          NULLSTR_EMPTY(ext));
+    ret = g_strdup_printf("%s-%s%s", virDomainGetName(dom),
+                          nowstr, NULLSTR_EMPTY(ext));
 
     return ret;
 }
