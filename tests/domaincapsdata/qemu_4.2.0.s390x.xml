@@ -190,6 +190,7 @@
       <enum name='backendModel'>
         <value>random</value>
         <value>egd</value>
+        <value>builtin</value>
       </enum>
     </rng>
   </devices>

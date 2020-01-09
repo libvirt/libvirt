@@ -630,6 +630,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_VIRTIO_RNG);
     DO_TEST("virtio-rng-egd",
             QEMU_CAPS_DEVICE_VIRTIO_RNG);
+    DO_TEST_CAPS_LATEST("virtio-rng-builtin");
 
     DO_TEST("pseries-nvram",
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
