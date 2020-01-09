@@ -14001,7 +14001,8 @@ qemuDomainNeedsVFIO(const virDomainDef *def)
  *
  * For given device @dev fetch its host path and store it at
  * @path. Optionally, caller can get @perms on the path (e.g.
- * rw/ro).
+ * rw/ro). When called on a missing device, the function will return success
+ * and store NULL at @path.
  *
  * The caller is responsible for freeing the @path when no longer
  * needed.
@@ -14625,7 +14626,7 @@ qemuDomainSetupHostdev(virQEMUDriverConfigPtr cfg G_GNUC_UNUSED,
     if (qemuDomainGetHostdevPath(dev, &path, NULL) < 0)
         return -1;
 
-    if (qemuDomainCreateDevice(path, data, false) < 0)
+    if (path && qemuDomainCreateDevice(path, data, false) < 0)
         return -1;
 
     if (qemuHostdevNeedsVFIO(dev) &&
@@ -15688,7 +15689,7 @@ qemuDomainNamespaceSetupHostdev(virDomainObjPtr vm,
     if (qemuDomainGetHostdevPath(hostdev, &path, NULL) < 0)
         return -1;
 
-    if (qemuDomainNamespaceMknodPath(vm, path) < 0)
+    if (path && qemuDomainNamespaceMknodPath(vm, path) < 0)
         return -1;
 
     if (qemuHostdevNeedsVFIO(hostdev) &&
@@ -15720,7 +15721,7 @@ qemuDomainNamespaceTeardownHostdev(virDomainObjPtr vm,
     if (qemuDomainGetHostdevPath(hostdev, &path, NULL) < 0)
         return -1;
 
-    if (qemuDomainNamespaceUnlinkPath(vm, path) < 0)
+    if (path && qemuDomainNamespaceUnlinkPath(vm, path) < 0)
         return -1;
 
     if (qemuHostdevNeedsVFIO(hostdev) &&

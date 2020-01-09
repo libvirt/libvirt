@@ -426,13 +426,15 @@ qemuSetupHostdevCgroup(virDomainObjPtr vm,
     if (qemuDomainGetHostdevPath(dev, &path, &perms) < 0)
         return -1;
 
-    VIR_DEBUG("Cgroup allow %s perms=%d", path, perms);
-    rv = virCgroupAllowDevicePath(priv->cgroup, path, perms, false);
-    virDomainAuditCgroupPath(vm, priv->cgroup, "allow", path,
-                             virCgroupGetDevicePermsString(perms),
-                             rv);
-    if (rv < 0)
-        return -1;
+    if (path) {
+        VIR_DEBUG("Cgroup allow %s perms=%d", path, perms);
+        rv = virCgroupAllowDevicePath(priv->cgroup, path, perms, false);
+        virDomainAuditCgroupPath(vm, priv->cgroup, "allow", path,
+                                 virCgroupGetDevicePermsString(perms),
+                                 rv);
+        if (rv < 0)
+            return -1;
+    }
 
     if (qemuHostdevNeedsVFIO(dev)) {
         VIR_DEBUG("Cgroup allow %s perms=%d", QEMU_DEV_VFIO, VIR_CGROUP_DEVICE_RW);
@@ -473,13 +475,15 @@ qemuTeardownHostdevCgroup(virDomainObjPtr vm,
     if (qemuDomainGetHostdevPath(dev, &path, NULL) < 0)
         return -1;
 
-    VIR_DEBUG("Cgroup deny %s", path);
-    rv = virCgroupDenyDevicePath(priv->cgroup, path,
-                                 VIR_CGROUP_DEVICE_RWM, false);
-    virDomainAuditCgroupPath(vm, priv->cgroup,
-                             "deny", path, "rwm", rv);
-    if (rv < 0)
-        return -1;
+    if (path) {
+        VIR_DEBUG("Cgroup deny %s", path);
+        rv = virCgroupDenyDevicePath(priv->cgroup, path,
+                                     VIR_CGROUP_DEVICE_RWM, false);
+        virDomainAuditCgroupPath(vm, priv->cgroup,
+                                 "deny", path, "rwm", rv);
+        if (rv < 0)
+            return -1;
+    }
 
     if (qemuHostdevNeedsVFIO(dev) &&
         !qemuDomainNeedsVFIO(vm->def)) {
