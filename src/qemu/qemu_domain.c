@@ -8514,20 +8514,19 @@ qemuDomainDefaultNetModel(const virDomainDef *def,
  * This function clears the path for migration as well, so we need to clear
  * the path even if we are not storing it in the XML.
  */
-static int
+static void
 qemuDomainChrDefDropDefaultPath(virDomainChrDefPtr chr,
                                 virQEMUDriverPtr driver)
 {
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *regexp = NULL;
-    int ret = -1;
 
     if (chr->deviceType != VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL ||
         chr->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO ||
         chr->source->type != VIR_DOMAIN_CHR_TYPE_UNIX ||
         !chr->source->data.nix.path) {
-        return 0;
+        return;
     }
 
     cfg = virQEMUDriverGetConfig(driver);
@@ -8540,9 +8539,6 @@ qemuDomainChrDefDropDefaultPath(virDomainChrDefPtr chr,
 
     if (virStringMatch(chr->source->data.nix.path, regexp))
         VIR_FREE(chr->source->data.nix.path);
-
-    ret = 0;
-    return ret;
 }
 
 
@@ -8804,8 +8800,7 @@ qemuDomainChrDefPostParse(virDomainChrDefPtr chr,
 
     /* clear auto generated unix socket path for inactive definitions */
     if (parseFlags & VIR_DOMAIN_DEF_PARSE_INACTIVE) {
-        if (qemuDomainChrDefDropDefaultPath(chr, driver) < 0)
-            return -1;
+        qemuDomainChrDefDropDefaultPath(chr, driver);
 
         /* For UNIX chardev if no path is provided we generate one.
          * This also implies that the mode is 'bind'. */
@@ -10118,10 +10113,8 @@ qemuDomainDefFormatBufInternal(virQEMUDriverPtr driver,
             }
         }
 
-        for (i = 0; i < def->nchannels; i++) {
-            if (qemuDomainChrDefDropDefaultPath(def->channels[i], driver) < 0)
-                goto cleanup;
-        }
+        for (i = 0; i < def->nchannels; i++)
+            qemuDomainChrDefDropDefaultPath(def->channels[i], driver);
 
         for (i = 0; i < def->nserials; i++) {
             virDomainChrDefPtr serial = def->serials[i];
