@@ -27,7 +27,9 @@
 
 #include <passfd.h>
 #include <fcntl.h>
-#include <termios.h>
+#ifndef WIN32
+# include <termios.h>
+#endif /* !WIN32 */
 #ifdef HAVE_PTY_H
 /* Linux openpty */
 # include <pty.h>

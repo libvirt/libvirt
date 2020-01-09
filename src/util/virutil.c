@@ -35,7 +35,6 @@
 #endif
 
 #include <sys/types.h>
-#include <termios.h>
 
 #if WITH_DEVMAPPER
 # include <libdevmapper.h>

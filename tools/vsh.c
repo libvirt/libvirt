@@ -1928,21 +1928,6 @@ vshTTYRestore(vshControl *ctl G_GNUC_UNUSED)
 }
 
 
-#if !defined(WIN32) && !defined(HAVE_CFMAKERAW)
-/* provide fallback in case cfmakeraw isn't available */
-static void
-cfmakeraw(struct termios *attr)
-{
-    attr->c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP
-                         | INLCR | IGNCR | ICRNL | IXON);
-    attr->c_oflag &= ~OPOST;
-    attr->c_lflag &= ~(ECHO | ECHONL | ICANON | ISIG | IEXTEN);
-    attr->c_cflag &= ~(CSIZE | PARENB);
-    attr->c_cflag |= CS8;
-}
-#endif /* !WIN32 && !HAVE_CFMAKERAW */
-
-
 int
 vshTTYMakeRaw(vshControl *ctl G_GNUC_UNUSED,
               bool report_errors G_GNUC_UNUSED)

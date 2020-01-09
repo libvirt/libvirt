@@ -23,7 +23,6 @@
 #include <stdarg.h>
 #include <unistd.h>
 #include <sys/stat.h>
-#include <termios.h>
 
 #include "internal.h"
 #include "virerror.h"

@@ -31,7 +31,9 @@
 # include <sys/un.h>
 #endif
 #include <netinet/in.h>
-#include <termios.h>
+#ifndef WIN32
+# include <termios.h>
+#endif
 
 #include "virfdstream.h"
 #include "virerror.h"
@@ -1361,7 +1363,7 @@ int virFDStreamCreateFile(virStreamPtr st,
                                        false, false);
 }
 
-#ifdef HAVE_CFMAKERAW
+#ifndef WIN32
 int virFDStreamOpenPTY(virStreamPtr st,
                        const char *path,
                        unsigned long long offset,
@@ -1401,7 +1403,7 @@ int virFDStreamOpenPTY(virStreamPtr st,
     virFDStreamClose(st);
     return -1;
 }
-#else /* !HAVE_CFMAKERAW */
+#else /* WIN32 */
 int virFDStreamOpenPTY(virStreamPtr st,
                        const char *path,
                        unsigned long long offset,
@@ -1413,7 +1415,7 @@ int virFDStreamOpenPTY(virStreamPtr st,
                                        oflags | O_CREAT, 0,
                                        false, false);
 }
-#endif /* !HAVE_CFMAKERAW */
+#endif /* WIN32 */
 
 int virFDStreamOpenBlockDevice(virStreamPtr st,
                                const char *path,

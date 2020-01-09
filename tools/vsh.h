@@ -23,7 +23,9 @@
 #include <stdarg.h>
 #include <unistd.h>
 #include <sys/stat.h>
-#include <termios.h>
+#ifndef WIN32
+# include <termios.h>
+#endif
 
 #include "internal.h"
 #include "virerror.h"
