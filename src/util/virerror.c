@@ -1233,6 +1233,9 @@ static const virErrorMsgTuple virErrorMsgStrings[] = {
     [VIR_ERR_NO_NETWORK_PORT] = {
         N_("network port not found"),
         N_("network port not found: %s") },
+    [VIR_ERR_NO_HOSTNAME] = {
+        N_("no hostname found"),
+        N_("no hostname found: %s") },
 };
 
 G_STATIC_ASSERT(G_N_ELEMENTS(virErrorMsgStrings) == VIR_ERR_NUMBER_LAST);

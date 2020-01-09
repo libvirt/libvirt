@@ -11025,12 +11025,13 @@ virDomainGetDiskErrors(virDomainPtr dom,
 /**
  * virDomainGetHostname:
  * @domain: a domain object
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of virDomainGetHostnameFlags
  *
- * Get the hostname for that domain.
+ * Get the hostname for that domain. If no hostname is found,
+ * then an error is raised with VIR_ERR_NO_HOSTNAME code.
  *
- * Dependent on hypervisor used, this may require a guest agent to be
- * available.
+ * Dependent on hypervisor and @flags used, this may require a
+ * guest agent to be available.
  *
  * Returns the hostname which must be freed by the caller, or
  * NULL if there was an error.

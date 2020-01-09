@@ -1567,6 +1567,12 @@ int                     virDomainSetMemoryStatsPeriod (virDomainPtr domain,
 int                     virDomainGetMaxVcpus    (virDomainPtr domain);
 int                     virDomainGetSecurityLabel (virDomainPtr domain,
                                                    virSecurityLabelPtr seclabel);
+
+typedef enum {
+    VIR_DOMAIN_GET_HOSTNAME_LEASE = (1 << 0), /* Parse DHCP lease file */
+    VIR_DOMAIN_GET_HOSTNAME_AGENT = (1 << 1), /* Query qemu guest agent */
+} virDomainGetHostnameFlags;
+
 char *                  virDomainGetHostname    (virDomainPtr domain,
                                                  unsigned int flags);
 int                     virDomainGetSecurityLabelList (virDomainPtr domain,
