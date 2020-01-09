@@ -20266,25 +20266,16 @@ qemuConnectGetCPUModelNames(virConnectPtr conn,
 }
 
 
-static char *
-qemuDomainGetHostname(virDomainPtr dom,
-                      unsigned int flags)
+static int
+qemuDomainGetHostnameAgent(virQEMUDriverPtr driver,
+                           virDomainObjPtr vm,
+                           char **hostname)
 {
-    virQEMUDriverPtr driver = dom->conn->privateData;
-    virDomainObjPtr vm = NULL;
     qemuAgentPtr agent;
-    char *hostname = NULL;
-
-    virCheckFlags(0, NULL);
-
-    if (!(vm = qemuDomainObjFromDomain(dom)))
-        return NULL;
-
-    if (virDomainGetHostnameEnsureACL(dom->conn, vm->def) < 0)
-        goto cleanup;
+    int ret = -1;
 
     if (qemuDomainObjBeginAgentJob(driver, vm, QEMU_AGENT_JOB_QUERY) < 0)
-        goto cleanup;
+        return -1;
 
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
@@ -20293,11 +20284,113 @@ qemuDomainGetHostname(virDomainPtr dom,
         goto endjob;
 
     agent = qemuDomainObjEnterAgent(vm);
-    ignore_value(qemuAgentGetHostname(agent, &hostname));
+    ignore_value(qemuAgentGetHostname(agent, hostname));
     qemuDomainObjExitAgent(vm, agent);
 
+    ret = 0;
  endjob:
     qemuDomainObjEndAgentJob(vm);
+    return ret;
+}
+
+
+static int
+qemuDomainGetHostnameLease(virQEMUDriverPtr driver,
+                           virDomainObjPtr vm,
+                           char **hostname)
+{
+    char macaddr[VIR_MAC_STRING_BUFLEN];
+    g_autoptr(virConnect) conn = NULL;
+    virNetworkDHCPLeasePtr *leases = NULL;
+    int n_leases;
+    size_t i, j;
+    int ret = -1;
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
+        return -1;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto endjob;
+
+    if (!(conn = virGetConnectNetwork()))
+        goto endjob;
+
+    for (i = 0; i < vm->def->nnets; i++) {
+        g_autoptr(virNetwork) network = NULL;
+        virDomainNetDefPtr net = vm->def->nets[i];
+
+        if (net->type != VIR_DOMAIN_NET_TYPE_NETWORK)
+            continue;
+
+        virMacAddrFormat(&net->mac, macaddr);
+        network = virNetworkLookupByName(conn, net->data.network.name);
+
+        if (!network)
+            goto endjob;
+
+        if ((n_leases = virNetworkGetDHCPLeases(network, macaddr,
+                                                &leases, 0)) < 0)
+            goto endjob;
+
+        for (j = 0; j < n_leases; j++) {
+            virNetworkDHCPLeasePtr lease = leases[j];
+            if (lease->hostname && !*hostname)
+                *hostname = g_strdup(lease->hostname);
+
+            virNetworkDHCPLeaseFree(lease);
+        }
+
+        VIR_FREE(leases);
+
+        if (*hostname)
+            goto endjob;
+    }
+
+    ret = 0;
+ endjob:
+    qemuDomainObjEndJob(driver, vm);
+    return ret;
+}
+
+
+static char *
+qemuDomainGetHostname(virDomainPtr dom,
+                      unsigned int flags)
+{
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    char *hostname = NULL;
+
+    virCheckFlags(VIR_DOMAIN_GET_HOSTNAME_LEASE |
+                  VIR_DOMAIN_GET_HOSTNAME_AGENT, NULL);
+
+    VIR_EXCLUSIVE_FLAGS_RET(VIR_DOMAIN_GET_HOSTNAME_LEASE,
+                            VIR_DOMAIN_GET_HOSTNAME_AGENT,
+                            NULL);
+
+    if (!(flags & VIR_DOMAIN_GET_HOSTNAME_LEASE))
+        flags |= VIR_DOMAIN_GET_HOSTNAME_AGENT;
+
+    if (!(vm = qemuDomainObjFromDomain(dom)))
+        return NULL;
+
+    if (virDomainGetHostnameEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (flags & VIR_DOMAIN_GET_HOSTNAME_AGENT) {
+        if (qemuDomainGetHostnameAgent(driver, vm, &hostname) < 0)
+            goto cleanup;
+    } else if (flags & VIR_DOMAIN_GET_HOSTNAME_LEASE) {
+        if (qemuDomainGetHostnameLease(driver, vm, &hostname) < 0)
+            goto cleanup;
+    }
+
+    if (!hostname) {
+        virReportError(VIR_ERR_NO_HOSTNAME,
+                       _("no hostname found for domain %s"),
+                       vm->def->name);
+        goto cleanup;
+    }
 
  cleanup:
     virDomainObjEndAPI(&vm);
