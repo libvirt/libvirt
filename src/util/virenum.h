@@ -42,7 +42,7 @@ virEnumToString(const char * const *types,
                                  G_N_ELEMENTS(name ## TypeList), \
                                  type); \
     } \
-    verify(G_N_ELEMENTS(name ## TypeList) == lastVal)
+    G_STATIC_ASSERT(G_N_ELEMENTS(name ## TypeList) == lastVal)
 
 #define VIR_ENUM_DECL(name) \
     const char *name ## TypeToString(int type); \
@@ -72,6 +72,6 @@ virTristateSwitch virTristateSwitchFromBool(bool val);
 
 /* the two enums must be in sync to be able to use helpers interchangeably in
  * some special cases */
-verify((int)VIR_TRISTATE_BOOL_YES == (int)VIR_TRISTATE_SWITCH_ON);
-verify((int)VIR_TRISTATE_BOOL_NO == (int)VIR_TRISTATE_SWITCH_OFF);
-verify((int)VIR_TRISTATE_BOOL_ABSENT == (int)VIR_TRISTATE_SWITCH_ABSENT);
+G_STATIC_ASSERT((int)VIR_TRISTATE_BOOL_YES == (int)VIR_TRISTATE_SWITCH_ON);
+G_STATIC_ASSERT((int)VIR_TRISTATE_BOOL_NO == (int)VIR_TRISTATE_SWITCH_OFF);
+G_STATIC_ASSERT((int)VIR_TRISTATE_BOOL_ABSENT == (int)VIR_TRISTATE_SWITCH_ABSENT);

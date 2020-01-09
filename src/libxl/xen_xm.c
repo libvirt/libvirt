@@ -26,7 +26,6 @@
 #include "virerror.h"
 #include "virconf.h"
 #include "viralloc.h"
-#include "verify.h"
 #include "xenxs_private.h"
 #include "xen_xm.h"
 #include "domain_conf.h"
@@ -581,7 +580,7 @@ xenFormatXMInputDevs(virConfPtr conf, virDomainDefPtr def)
 
 /* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is
    either 32, or 64 on a platform where long is big enough.  */
-verify(MAX_VIRT_CPUS <= sizeof(1UL) * CHAR_BIT);
+G_STATIC_ASSERT(MAX_VIRT_CPUS <= sizeof(1UL) * CHAR_BIT);
 
 /*
  * Convert a virDomainDef object into an XM config record.

@@ -2765,7 +2765,7 @@ qemuDomainGetControlInfo(virDomainPtr dom,
 #define QEMU_SAVE_PARTIAL "LibvirtQemudPart"
 #define QEMU_SAVE_VERSION 2
 
-verify(sizeof(QEMU_SAVE_MAGIC) == sizeof(QEMU_SAVE_PARTIAL));
+G_STATIC_ASSERT(sizeof(QEMU_SAVE_MAGIC) == sizeof(QEMU_SAVE_PARTIAL));
 
 typedef enum {
     QEMU_SAVE_FORMAT_RAW = 0,

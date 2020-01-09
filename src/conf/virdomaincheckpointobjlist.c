@@ -91,13 +91,13 @@ virDomainCheckpointObjListGetNames(virDomainCheckpointObjListPtr checkpoints,
                                    unsigned int flags)
 {
     /* We intentionally chose our public flags to match the common flags */
-    verify(VIR_DOMAIN_CHECKPOINT_LIST_ROOTS ==
+    G_STATIC_ASSERT(VIR_DOMAIN_CHECKPOINT_LIST_ROOTS ==
            (int) VIR_DOMAIN_MOMENT_LIST_ROOTS);
-    verify(VIR_DOMAIN_CHECKPOINT_LIST_TOPOLOGICAL ==
+    G_STATIC_ASSERT(VIR_DOMAIN_CHECKPOINT_LIST_TOPOLOGICAL ==
            (int) VIR_DOMAIN_MOMENT_LIST_TOPOLOGICAL);
-    verify(VIR_DOMAIN_CHECKPOINT_LIST_LEAVES ==
+    G_STATIC_ASSERT(VIR_DOMAIN_CHECKPOINT_LIST_LEAVES ==
            (int) VIR_DOMAIN_MOMENT_LIST_LEAVES);
-    verify(VIR_DOMAIN_CHECKPOINT_LIST_NO_LEAVES ==
+    G_STATIC_ASSERT(VIR_DOMAIN_CHECKPOINT_LIST_NO_LEAVES ==
            (int) VIR_DOMAIN_MOMENT_LIST_NO_LEAVES);
 
     return virDomainMomentObjListGetNames(checkpoints->base, from, names,

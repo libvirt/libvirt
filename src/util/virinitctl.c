@@ -96,9 +96,9 @@ struct virInitctlRequest {
 };
 
 # ifdef MAXHOSTNAMELEN
-  verify(sizeof(struct virInitctlRequest) == 320 + MAXHOSTNAMELEN);
+  G_STATIC_ASSERT(sizeof(struct virInitctlRequest) == 320 + MAXHOSTNAMELEN);
 # else
-  verify(sizeof(struct virInitctlRequest) == 384);
+  G_STATIC_ASSERT(sizeof(struct virInitctlRequest) == 384);
 # endif
 
 

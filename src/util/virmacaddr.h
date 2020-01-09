@@ -38,7 +38,7 @@ struct _virMacAddr {
  * must not have any extra members added - it must remain exactly
  * 6 bytes in length.
  */
-verify(sizeof(struct _virMacAddr) == 6);
+G_STATIC_ASSERT(sizeof(struct _virMacAddr) == 6);
 
 
 int virMacAddrCompare(const char *mac1, const char *mac2);

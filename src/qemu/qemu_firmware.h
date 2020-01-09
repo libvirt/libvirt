@@ -57,4 +57,4 @@ qemuFirmwareGetSupported(const char *machine,
                          virFirmwarePtr **fws,
                          size_t *nfws);
 
-verify(VIR_DOMAIN_OS_DEF_FIRMWARE_LAST <= 64);
+G_STATIC_ASSERT(VIR_DOMAIN_OS_DEF_FIRMWARE_LAST <= 64);

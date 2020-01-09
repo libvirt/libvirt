@@ -16,9 +16,9 @@
 #if (4 < __GNUC__ + (6 <= __GNUC_MINOR__) \
      && (201112L <= __STDC_VERSION__  || !defined __STRICT_ANSI__) \
      && !defined __cplusplus)
-# define verify(cond) _Static_assert(cond, "verify (" #cond ")")
+# define G_STATIC_ASSERT(cond) _Static_assert(cond, "verify (" #cond ")")
 #else
-# define verify(cond)
+# define G_STATIC_ASSERT(cond)
 #endif
 
 #ifndef G_GNUC_UNUSED
@@ -1138,10 +1138,10 @@ struct secretEventData secretEvents[] = {
 };
 
 /* make sure that the events are kept in sync */
-verify(G_N_ELEMENTS(domainEvents) == VIR_DOMAIN_EVENT_ID_LAST);
-verify(G_N_ELEMENTS(storagePoolEvents) == VIR_STORAGE_POOL_EVENT_ID_LAST);
-verify(G_N_ELEMENTS(nodeDeviceEvents) == VIR_NODE_DEVICE_EVENT_ID_LAST);
-verify(G_N_ELEMENTS(secretEvents) == VIR_SECRET_EVENT_ID_LAST);
+G_STATIC_ASSERT(G_N_ELEMENTS(domainEvents) == VIR_DOMAIN_EVENT_ID_LAST);
+G_STATIC_ASSERT(G_N_ELEMENTS(storagePoolEvents) == VIR_STORAGE_POOL_EVENT_ID_LAST);
+G_STATIC_ASSERT(G_N_ELEMENTS(nodeDeviceEvents) == VIR_NODE_DEVICE_EVENT_ID_LAST);
+G_STATIC_ASSERT(G_N_ELEMENTS(secretEvents) == VIR_SECRET_EVENT_ID_LAST);
 
 int
 main(int argc, char **argv)

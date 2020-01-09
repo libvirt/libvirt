@@ -33,7 +33,7 @@
  */
 #define VIR_TYPED_PARAM_MULTIPLE (1U << 31)
 
-verify(!(VIR_TYPED_PARAM_LAST & VIR_TYPED_PARAM_MULTIPLE));
+G_STATIC_ASSERT(!(VIR_TYPED_PARAM_LAST & VIR_TYPED_PARAM_MULTIPLE));
 
 typedef struct _virTypedParameterRemoteValue virTypedParameterRemoteValue;
 typedef struct virTypedParameterRemoteValue *virTypedParameterRemoteValuePtr;

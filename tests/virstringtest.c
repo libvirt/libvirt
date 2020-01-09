@@ -20,7 +20,6 @@
 
 
 #include "testutils.h"
-#include "verify.h"
 #include "virerror.h"
 #include "viralloc.h"
 #include "virfile.h"
@@ -420,9 +419,9 @@ struct stringToLongData {
  * not guaranteed by POSIX.  Good luck to you if you are crazy enough
  * to try and port libvirt to a platform with 16-bit int.  Gnulib
  * already assumes that signed integers are two's complement. */
-verify(sizeof(int) == 4);
-verify(sizeof(long) == sizeof(int) || sizeof(long) == sizeof(long long));
-verify(sizeof(long long) == 8);
+G_STATIC_ASSERT(sizeof(int) == 4);
+G_STATIC_ASSERT(sizeof(long) == sizeof(int) || sizeof(long) == sizeof(long long));
+G_STATIC_ASSERT(sizeof(long long) == 8);
 
 static int
 testStringToLong(const void *opaque)

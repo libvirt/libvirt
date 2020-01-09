@@ -2491,7 +2491,7 @@ static const char *preferredMachines[] =
     "sim", /* VIR_ARCH_XTENSA */
     "sim", /* VIR_ARCH_XTENSAEB */
 };
-verify(G_N_ELEMENTS(preferredMachines) == VIR_ARCH_LAST);
+G_STATIC_ASSERT(G_N_ELEMENTS(preferredMachines) == VIR_ARCH_LAST);
 
 
 void

@@ -80,10 +80,10 @@ virClassPtr virClassForObjectRWLockable(void);
  * function or as a macro defined to NULL.
  */
 #define VIR_CLASS_NEW(name, prnt) \
-    verify_expr(offsetof(name, parent) == 0, \
-      (name##Class = virClassNew(prnt, #name, sizeof(name), \
-                                 sizeof(((name *)NULL)->parent), \
-                                 name##Dispose)))
+    (G_STATIC_ASSERT_EXPR(offsetof(name, parent) == 0), \
+     (name##Class = virClassNew(prnt, #name, sizeof(name),\
+                                sizeof(((name *)NULL)->parent), \
+                                name##Dispose)))
 
 virClassPtr
 virClassNew(virClassPtr parent,

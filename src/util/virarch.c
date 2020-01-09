@@ -25,7 +25,6 @@
 
 #include "virlog.h"
 #include "virarch.h"
-#include "verify.h"
 
 VIR_LOG_INIT("util.arch");
 
@@ -81,7 +80,7 @@ static const struct virArchData {
     { "xtensaeb",     32, VIR_ARCH_BIG_ENDIAN },
 };
 
-verify(G_N_ELEMENTS(virArchData) == VIR_ARCH_LAST);
+G_STATIC_ASSERT(G_N_ELEMENTS(virArchData) == VIR_ARCH_LAST);
 
 
 /**

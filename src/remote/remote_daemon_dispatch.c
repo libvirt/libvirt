@@ -1331,7 +1331,7 @@ static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventBlockThreshold),
 };
 
-verify(G_N_ELEMENTS(domainEventCallbacks) == VIR_DOMAIN_EVENT_ID_LAST);
+G_STATIC_ASSERT(G_N_ELEMENTS(domainEventCallbacks) == VIR_DOMAIN_EVENT_ID_LAST);
 
 static int
 remoteRelayNetworkEventLifecycle(virConnectPtr conn,
@@ -1368,7 +1368,7 @@ static virConnectNetworkEventGenericCallback networkEventCallbacks[] = {
     VIR_NETWORK_EVENT_CALLBACK(remoteRelayNetworkEventLifecycle),
 };
 
-verify(G_N_ELEMENTS(networkEventCallbacks) == VIR_NETWORK_EVENT_ID_LAST);
+G_STATIC_ASSERT(G_N_ELEMENTS(networkEventCallbacks) == VIR_NETWORK_EVENT_ID_LAST);
 
 static int
 remoteRelayStoragePoolEventLifecycle(virConnectPtr conn,
@@ -1435,7 +1435,7 @@ static virConnectStoragePoolEventGenericCallback storageEventCallbacks[] = {
     VIR_STORAGE_POOL_EVENT_CALLBACK(remoteRelayStoragePoolEventRefresh),
 };
 
-verify(G_N_ELEMENTS(storageEventCallbacks) == VIR_STORAGE_POOL_EVENT_ID_LAST);
+G_STATIC_ASSERT(G_N_ELEMENTS(storageEventCallbacks) == VIR_STORAGE_POOL_EVENT_ID_LAST);
 
 static int
 remoteRelayNodeDeviceEventLifecycle(virConnectPtr conn,
@@ -1502,7 +1502,7 @@ static virConnectNodeDeviceEventGenericCallback nodeDeviceEventCallbacks[] = {
     VIR_NODE_DEVICE_EVENT_CALLBACK(remoteRelayNodeDeviceEventUpdate),
 };
 
-verify(G_N_ELEMENTS(nodeDeviceEventCallbacks) == VIR_NODE_DEVICE_EVENT_ID_LAST);
+G_STATIC_ASSERT(G_N_ELEMENTS(nodeDeviceEventCallbacks) == VIR_NODE_DEVICE_EVENT_ID_LAST);
 
 static int
 remoteRelaySecretEventLifecycle(virConnectPtr conn,
@@ -1569,7 +1569,7 @@ static virConnectSecretEventGenericCallback secretEventCallbacks[] = {
     VIR_SECRET_EVENT_CALLBACK(remoteRelaySecretEventValueChanged),
 };
 
-verify(G_N_ELEMENTS(secretEventCallbacks) == VIR_SECRET_EVENT_ID_LAST);
+G_STATIC_ASSERT(G_N_ELEMENTS(secretEventCallbacks) == VIR_SECRET_EVENT_ID_LAST);
 
 static void
 remoteRelayDomainQemuMonitorEvent(virConnectPtr conn,

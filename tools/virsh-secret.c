@@ -649,7 +649,7 @@ virshSecretEventCallback virshSecretEventCallbacks[] = {
       VIR_SECRET_EVENT_CALLBACK(vshEventLifecyclePrint), },
     { "value-changed", vshEventGenericPrint, },
 };
-verify(VIR_SECRET_EVENT_ID_LAST == G_N_ELEMENTS(virshSecretEventCallbacks));
+G_STATIC_ASSERT(VIR_SECRET_EVENT_ID_LAST == G_N_ELEMENTS(virshSecretEventCallbacks));
 
 static const vshCmdInfo info_secret_event[] = {
     {.name = "help",

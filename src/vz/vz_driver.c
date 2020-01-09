@@ -122,7 +122,7 @@ vzBuildCapabilities(void)
     if (virCapabilitiesInitCaches(caps) < 0)
         goto error;
 
-    verify(G_N_ELEMENTS(archs) == G_N_ELEMENTS(emulators));
+    G_STATIC_ASSERT(G_N_ELEMENTS(archs) == G_N_ELEMENTS(emulators));
 
     for (i = 0; i < G_N_ELEMENTS(ostypes); i++)
         for (j = 0; j < G_N_ELEMENTS(archs); j++)

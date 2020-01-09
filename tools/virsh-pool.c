@@ -1972,7 +1972,7 @@ virshPoolEventCallback virshPoolEventCallbacks[] = {
       VIR_STORAGE_POOL_EVENT_CALLBACK(vshEventLifecyclePrint), },
     { "refresh", vshEventGenericPrint, }
 };
-verify(VIR_STORAGE_POOL_EVENT_ID_LAST == G_N_ELEMENTS(virshPoolEventCallbacks));
+G_STATIC_ASSERT(VIR_STORAGE_POOL_EVENT_ID_LAST == G_N_ELEMENTS(virshPoolEventCallbacks));
 
 
 static const vshCmdInfo info_pool_event[] = {

@@ -186,7 +186,7 @@ struct _virNWFilterSnoopEthHdr {
     uint16_t eh_type;
     uint8_t eh_data[];
 } ATTRIBUTE_PACKED;
-verify(sizeof(struct _virNWFilterSnoopEthHdr) == 14);
+G_STATIC_ASSERT(sizeof(struct _virNWFilterSnoopEthHdr) == 14);
 
 typedef struct _virNWFilterSnoopDHCPHdr virNWFilterSnoopDHCPHdr;
 typedef virNWFilterSnoopDHCPHdr *virNWFilterSnoopDHCPHdrPtr;
@@ -208,7 +208,7 @@ struct _virNWFilterSnoopDHCPHdr {
     char      d_file[128];
     uint8_t   d_opts[];
 } ATTRIBUTE_PACKED;
-verify(sizeof(struct _virNWFilterSnoopDHCPHdr) == 236);
+G_STATIC_ASSERT(sizeof(struct _virNWFilterSnoopDHCPHdr) == 236);
 
 /* DHCP options */
 

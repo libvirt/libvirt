@@ -386,7 +386,7 @@ static struct FileTypeInfo const fileTypeInfo[] = {
         4+4+4, 8, 512, NULL, vmdk4GetBackingStore, NULL
     },
 };
-verify(G_N_ELEMENTS(fileTypeInfo) == VIR_STORAGE_FILE_LAST);
+G_STATIC_ASSERT(G_N_ELEMENTS(fileTypeInfo) == VIR_STORAGE_FILE_LAST);
 
 
 /* qcow2 compatible features in the order they appear on-disk */
@@ -400,7 +400,7 @@ enum qcow2CompatibleFeature {
 static const int qcow2CompatibleFeatureArray[] = {
     VIR_STORAGE_FILE_FEATURE_LAZY_REFCOUNTS,
 };
-verify(G_N_ELEMENTS(qcow2CompatibleFeatureArray) ==
+G_STATIC_ASSERT(G_N_ELEMENTS(qcow2CompatibleFeatureArray) ==
        QCOW2_COMPATIBLE_FEATURE_LAST);
 
 static int

@@ -56,7 +56,7 @@ typedef enum {
     VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT,
     VIR_DOMAIN_SNAPSHOT_LAST
 } virDomainSnapshotState;
-verify((int)VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT == VIR_DOMAIN_LAST);
+G_STATIC_ASSERT((int)VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT == VIR_DOMAIN_LAST);
 
 /* Stores disk-snapshot information */
 typedef struct _virDomainSnapshotDiskDef virDomainSnapshotDiskDef;

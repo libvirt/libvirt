@@ -49,7 +49,7 @@ VIR_ENUM_DECL(virCgroupController);
  * bit array stored in int. Like this:
  *   1 << VIR_CGROUP_CONTROLLER_CPU
  * Make sure we will not overflow */
-verify(VIR_CGROUP_CONTROLLER_LAST < 8 * sizeof(int));
+G_STATIC_ASSERT(VIR_CGROUP_CONTROLLER_LAST < 8 * sizeof(int));
 
 typedef enum {
     VIR_CGROUP_THREAD_VCPU = 0,
