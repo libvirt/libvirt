@@ -1092,10 +1092,54 @@ qemuMigrationSrcIsAllowedHostdev(const virDomainDef *def)
      * forbidden. */
     for (i = 0; i < def->nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = def->hostdevs[i];
-        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
-            hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("domain has assigned non-USB host devices"));
+        switch ((virDomainHostdevMode)hostdev->mode) {
+        case VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES:
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("cannot migrate a domain with <hostdev mode='capabilities'>"));
+            return false;
+
+        case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
+            switch ((virDomainHostdevSubsysType)hostdev->source.subsys.type) {
+            case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
+                /* USB devices can be "migrated" */
+                continue;
+
+            case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
+            case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
+            case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
+                virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                               _("cannot migrate a domain with <hostdev mode='subsystem' type='%s'>"),
+                               virDomainHostdevSubsysTypeToString(hostdev->source.subsys.type));
+                return false;
+
+            case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
+                /*
+                 * if this is a network interface with <teaming
+                 * type='transient'>, migration *is* allowed because
+                 * the device will be auto-unplugged by QEMU during
+                 * migration.
+                 */
+                if (hostdev->parentnet &&
+                    hostdev->parentnet->teaming.type == VIR_DOMAIN_NET_TEAMING_TYPE_TRANSIENT) {
+                    continue;
+                }
+
+                /* all other PCI hostdevs can't be migrated */
+                virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                               _("cannot migrate a domain with <hostdev mode='subsystem' type='%s'>"),
+                               virDomainHostdevSubsysTypeToString(hostdev->source.subsys.type));
+                return false;
+
+            case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("invalid hostdev subsystem type"));
+                return false;
+            }
+            break;
+
+        case VIR_DOMAIN_HOSTDEV_MODE_LAST:
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("invalid hostdev mode"));
             return false;
         }
     }
