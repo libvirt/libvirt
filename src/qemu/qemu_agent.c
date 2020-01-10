@@ -1894,10 +1894,8 @@ qemuAgentGetFSInfoFillDisks(virJSONValuePtr jsondisks,
 
     ndisks = virJSONValueArraySize(jsondisks);
 
-    if (ndisks &&
-        VIR_ALLOC_N(fsinfo->disks, ndisks) < 0)
-        return -1;
-
+    if (ndisks)
+        fsinfo->disks = g_new0(qemuAgentDiskInfoPtr, ndisks);
     fsinfo->ndisks = ndisks;
 
     for (i = 0; i < fsinfo->ndisks; i++) {
@@ -1914,8 +1912,7 @@ qemuAgentGetFSInfoFillDisks(virJSONValuePtr jsondisks,
             return -1;
         }
 
-        if (VIR_ALLOC(fsinfo->disks[i]) < 0)
-            return -1;
+        fsinfo->disks[i] = g_new0(qemuAgentDiskInfo, 1);
         disk = fsinfo->disks[i];
 
         if ((val = virJSONValueObjectGetString(jsondisk, "bus-type")))
