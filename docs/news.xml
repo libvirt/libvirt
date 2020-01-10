@@ -88,6 +88,19 @@
       </change>
     </section>
     <section title="Bug fixes">
+      <change>
+        <summary>
+          qemu: Report error if backing image format is not specified explicitly
+        </summary>
+        <description>
+          For a long time libvirt was assuming that a backing file is RAW when
+          the format was not specified. This didn't pose a problem until blockdev
+          support was enabled in last release. Libivrt now requires that
+          the format is specified in the image metadata or domain XML and the
+          VM will refuse to start otherwise. Additionally the error message
+          now links to the knowledge base which summarizes how to fix the images.
+        </description>
+      </change>
     </section>
     <section title="Removed features">
       <change>
