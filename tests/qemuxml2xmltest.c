@@ -524,6 +524,7 @@ mymain(void)
     DO_TEST("encrypted-disk-usage", QEMU_CAPS_QCOW2_LUKS);
     DO_TEST("luks-disks", NONE);
     DO_TEST("luks-disks-source", NONE);
+    DO_TEST_CAPS_LATEST("luks-disks-source-qcow2");
     DO_TEST("memtune", NONE);
     DO_TEST("memtune-unlimited", NONE);
     DO_TEST("blkiotune", NONE);
