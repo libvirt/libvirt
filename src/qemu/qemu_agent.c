@@ -1851,7 +1851,6 @@ qemuAgentSetTime(qemuAgentPtr mon,
 typedef struct _qemuAgentDiskInfo qemuAgentDiskInfo;
 typedef qemuAgentDiskInfo *qemuAgentDiskInfoPtr;
 struct _qemuAgentDiskInfo {
-    char *alias;
     char *serial;
     virPCIDeviceAddress pci_controller;
     char *bus_type;
@@ -1880,7 +1879,6 @@ qemuAgentDiskInfoFree(qemuAgentDiskInfoPtr info)
         return;
 
     VIR_FREE(info->serial);
-    VIR_FREE(info->alias);
     VIR_FREE(info->bus_type);
     VIR_FREE(info->devnode);
     VIR_FREE(info);
@@ -1906,7 +1904,8 @@ qemuAgentFSInfoFree(qemuAgentFSInfoPtr info)
 }
 
 static virDomainFSInfoPtr
-qemuAgentFSInfoToPublic(qemuAgentFSInfoPtr agent)
+qemuAgentFSInfoToPublic(qemuAgentFSInfoPtr agent,
+                        virDomainDefPtr vmdef)
 {
     virDomainFSInfoPtr ret = NULL;
     size_t i;
@@ -1924,8 +1923,19 @@ qemuAgentFSInfoToPublic(qemuAgentFSInfoPtr agent)
 
     ret->ndevAlias = agent->ndisks;
 
-    for (i = 0; i < ret->ndevAlias; i++)
-        ret->devAlias[i] = g_strdup(agent->disks[i]->alias);
+    for (i = 0; i < ret->ndevAlias; i++) {
+        qemuAgentDiskInfoPtr agentdisk = agent->disks[i];
+        virDomainDiskDefPtr diskDef;
+
+        if (!(diskDef = virDomainDiskByAddress(vmdef,
+                                               &agentdisk->pci_controller,
+                                               agentdisk->bus,
+                                               agentdisk->target,
+                                               agentdisk->unit)))
+            continue;
+
+        ret->devAlias[i] = g_strdup(diskDef->dst);
+    }
 
     return ret;
 
@@ -1936,8 +1946,7 @@ qemuAgentFSInfoToPublic(qemuAgentFSInfoPtr agent)
 
 static int
 qemuAgentGetFSInfoFillDisks(virJSONValuePtr jsondisks,
-                            qemuAgentFSInfoPtr fsinfo,
-                            virDomainDefPtr vmdef)
+                            qemuAgentFSInfoPtr fsinfo)
 {
     size_t ndisks;
     size_t i;
@@ -1960,7 +1969,6 @@ qemuAgentGetFSInfoFillDisks(virJSONValuePtr jsondisks,
         virJSONValuePtr jsondisk = virJSONValueArrayGet(jsondisks, i);
         virJSONValuePtr pci;
         qemuAgentDiskInfoPtr disk;
-        virDomainDiskDefPtr diskDef;
         const char *val;
 
         if (!jsondisk) {
@@ -2011,14 +2019,6 @@ qemuAgentGetFSInfoFillDisks(virJSONValuePtr jsondisks,
         GET_DISK_ADDR(pci, &disk->pci_controller.function, "function");
 
 #undef GET_DISK_ADDR
-        if (!(diskDef = virDomainDiskByAddress(vmdef,
-                                               &disk->pci_controller,
-                                               disk->bus,
-                                               disk->target,
-                                               disk->unit)))
-            continue;
-
-        disk->alias = g_strdup(diskDef->dst);
     }
 
     return 0;
@@ -2030,8 +2030,7 @@ qemuAgentGetFSInfoFillDisks(virJSONValuePtr jsondisks,
  */
 static int
 qemuAgentGetFSInfoInternal(qemuAgentPtr mon,
-                           qemuAgentFSInfoPtr **info,
-                           virDomainDefPtr vmdef)
+                           qemuAgentFSInfoPtr **info)
 {
     size_t i;
     int ret = -1;
@@ -2147,7 +2146,7 @@ qemuAgentGetFSInfoInternal(qemuAgentPtr mon,
             goto cleanup;
         }
 
-        if (qemuAgentGetFSInfoFillDisks(disk, info_ret[i], vmdef) < 0)
+        if (qemuAgentGetFSInfoFillDisks(disk, info_ret[i]) < 0)
             goto cleanup;
     }
 
@@ -2177,14 +2176,14 @@ qemuAgentGetFSInfo(qemuAgentPtr mon,
     size_t i;
     int nfs;
 
-    nfs = qemuAgentGetFSInfoInternal(mon, &agentinfo, vmdef);
+    nfs = qemuAgentGetFSInfoInternal(mon, &agentinfo);
     if (nfs < 0)
         return ret;
     if (VIR_ALLOC_N(info_ret, nfs) < 0)
         goto cleanup;
 
     for (i = 0; i < nfs; i++) {
-        if (!(info_ret[i] = qemuAgentFSInfoToPublic(agentinfo[i])))
+        if (!(info_ret[i] = qemuAgentFSInfoToPublic(agentinfo[i], vmdef)))
             goto cleanup;
     }
 
@@ -2219,7 +2218,7 @@ qemuAgentGetFSInfoParams(qemuAgentPtr mon,
     size_t i, j;
     int nfs;
 
-    if ((nfs = qemuAgentGetFSInfoInternal(mon, &fsinfo, vmdef)) < 0)
+    if ((nfs = qemuAgentGetFSInfoInternal(mon, &fsinfo)) < 0)
         return nfs;
 
     if (virTypedParamsAddUInt(params, nparams, maxparams,
@@ -2266,13 +2265,22 @@ qemuAgentGetFSInfoParams(qemuAgentPtr mon,
                                   param_name, fsinfo[i]->ndisks) < 0)
             goto cleanup;
         for (j = 0; j < fsinfo[i]->ndisks; j++) {
+            virDomainDiskDefPtr diskdef = NULL;
             qemuAgentDiskInfoPtr d = fsinfo[i]->disks[j];
-            g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                       "fs.%zu.disk.%zu.alias", i, j);
-            if (d->alias &&
-                virTypedParamsAddString(params, nparams, maxparams,
-                                        param_name, d->alias) < 0)
-                goto cleanup;
+            /* match the disk to the target in the vm definition */
+            diskdef = virDomainDiskByAddress(vmdef,
+                                             &d->pci_controller,
+                                             d->bus,
+                                             d->target,
+                                             d->unit);
+            if (diskdef) {
+                g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                           "fs.%zu.disk.%zu.alias", i, j);
+                if (diskdef->dst &&
+                    virTypedParamsAddString(params, nparams, maxparams,
+                                            param_name, diskdef->dst) < 0)
+                    goto cleanup;
+            }
 
             g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
                        "fs.%zu.disk.%zu.serial", i, j);
