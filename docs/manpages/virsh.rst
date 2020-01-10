@@ -6563,10 +6563,13 @@ secret-set-value
 
 .. code-block::
 
-   secret-set-value secret base64
+   secret-set-value secret (--file filename | base64)
 
 Set the value associated with *secret* (specified by its UUID) to the value
-Base64-encoded value *base64*.
+Base64-encoded value *base64* or Base-64-encoded contents of file named
+*filename*.
+
+Note that *--file* and *base64* options are mutually exclusive.
 
 
 secret-get-value
