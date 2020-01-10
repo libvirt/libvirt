@@ -1929,9 +1929,9 @@ qemuAgentFSInfoToPublic(qemuAgentFSInfoPtr agent)
 }
 
 static int
-qemuAgentGetFSInfoInternalDisk(virJSONValuePtr jsondisks,
-                               qemuAgentFSInfoPtr fsinfo,
-                               virDomainDefPtr vmdef)
+qemuAgentGetFSInfoFillDisks(virJSONValuePtr jsondisks,
+                            qemuAgentFSInfoPtr fsinfo,
+                            virDomainDefPtr vmdef)
 {
     size_t ndisks;
     size_t i;
@@ -2143,7 +2143,7 @@ qemuAgentGetFSInfoInternal(qemuAgentPtr mon,
             goto cleanup;
         }
 
-        if (qemuAgentGetFSInfoInternalDisk(disk, info_ret[i], vmdef) < 0)
+        if (qemuAgentGetFSInfoFillDisks(disk, info_ret[i], vmdef) < 0)
             goto cleanup;
     }
 
