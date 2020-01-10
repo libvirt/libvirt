@@ -1853,6 +1853,11 @@ typedef qemuAgentDiskInfo *qemuAgentDiskInfoPtr;
 struct _qemuAgentDiskInfo {
     char *alias;
     char *serial;
+    virPCIDeviceAddress pci_controller;
+    char *bus_type;
+    unsigned int bus;
+    unsigned int target;
+    unsigned int unit;
     char *devnode;
 };
 
@@ -1876,6 +1881,7 @@ qemuAgentDiskInfoFree(qemuAgentDiskInfoPtr info)
 
     VIR_FREE(info->serial);
     VIR_FREE(info->alias);
+    VIR_FREE(info->bus_type);
     VIR_FREE(info->devnode);
     VIR_FREE(info);
 }
@@ -1956,10 +1962,6 @@ qemuAgentGetFSInfoFillDisks(virJSONValuePtr jsondisks,
         qemuAgentDiskInfoPtr disk;
         virDomainDiskDefPtr diskDef;
         const char *val;
-        unsigned int bus;
-        unsigned int target;
-        unsigned int unit;
-        virPCIDeviceAddress pci_address;
 
         if (!jsondisk) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1972,6 +1974,9 @@ qemuAgentGetFSInfoFillDisks(virJSONValuePtr jsondisks,
         if (VIR_ALLOC(fsinfo->disks[i]) < 0)
             return -1;
         disk = fsinfo->disks[i];
+
+        if ((val = virJSONValueObjectGetString(jsondisk, "bus-type")))
+            disk->bus_type = g_strdup(val);
 
         if ((val = virJSONValueObjectGetString(jsondisk, "serial")))
             disk->serial = g_strdup(val);
@@ -1989,9 +1994,9 @@ qemuAgentGetFSInfoFillDisks(virJSONValuePtr jsondisks,
             } \
         } while (0)
 
-        GET_DISK_ADDR(jsondisk, &bus, "bus");
-        GET_DISK_ADDR(jsondisk, &target, "target");
-        GET_DISK_ADDR(jsondisk, &unit, "unit");
+        GET_DISK_ADDR(jsondisk, &disk->bus, "bus");
+        GET_DISK_ADDR(jsondisk, &disk->target, "target");
+        GET_DISK_ADDR(jsondisk, &disk->unit, "unit");
 
         if (!(pci = virJSONValueObjectGet(jsondisk, "pci-controller"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2000,18 +2005,17 @@ qemuAgentGetFSInfoFillDisks(virJSONValuePtr jsondisks,
             return -1;
         }
 
-        GET_DISK_ADDR(pci, &pci_address.domain, "domain");
-        GET_DISK_ADDR(pci, &pci_address.bus, "bus");
-        GET_DISK_ADDR(pci, &pci_address.slot, "slot");
-        GET_DISK_ADDR(pci, &pci_address.function, "function");
+        GET_DISK_ADDR(pci, &disk->pci_controller.domain, "domain");
+        GET_DISK_ADDR(pci, &disk->pci_controller.bus, "bus");
+        GET_DISK_ADDR(pci, &disk->pci_controller.slot, "slot");
+        GET_DISK_ADDR(pci, &disk->pci_controller.function, "function");
 
 #undef GET_DISK_ADDR
-
         if (!(diskDef = virDomainDiskByAddress(vmdef,
-                                               &pci_address,
-                                               bus,
-                                               target,
-                                               unit)))
+                                               &disk->pci_controller,
+                                               disk->bus,
+                                               disk->target,
+                                               disk->unit)))
             continue;
 
         disk->alias = g_strdup(diskDef->dst);
