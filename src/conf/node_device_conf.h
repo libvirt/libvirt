@@ -344,6 +344,8 @@ virNodeDeviceGetWWNs(virNodeDeviceDefPtr def,
 void
 virNodeDeviceDefFree(virNodeDeviceDefPtr def);
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNodeDeviceDef, virNodeDeviceDefFree);
+
 void
 virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps);
 

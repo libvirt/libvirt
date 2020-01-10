@@ -106,10 +106,9 @@ int nodeConnectIsAlive(virConnectPtr conn G_GNUC_UNUSED)
 static int
 nodeDeviceUpdateDriverName(virNodeDeviceDefPtr def)
 {
-    char *driver_link = NULL;
-    char *devpath = NULL;
+    g_autofree char *driver_link = NULL;
+    g_autofree char *devpath = NULL;
     char *p;
-    int ret = -1;
 
     VIR_FREE(def->driver);
 
@@ -117,26 +116,20 @@ nodeDeviceUpdateDriverName(virNodeDeviceDefPtr def)
 
     /* Some devices don't have an explicit driver, so just return
        without a name */
-    if (access(driver_link, R_OK) < 0) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (access(driver_link, R_OK) < 0)
+        return 0;
 
     if (virFileResolveLink(driver_link, &devpath) < 0) {
         virReportSystemError(errno,
                              _("cannot resolve driver link %s"), driver_link);
-        goto cleanup;
+        return -1;
     }
 
     p = strrchr(devpath, '/');
     if (p)
         def->driver = g_strdup(p + 1);
-    ret = 0;
 
- cleanup:
-    VIR_FREE(driver_link);
-    VIR_FREE(devpath);
-    return ret;
+    return 0;
 }
 #else
 /* XXX: Implement me for non-linux */
@@ -468,8 +461,9 @@ nodeDeviceCreateXML(virConnectPtr conn,
                     const char *xmlDesc,
                     unsigned int flags)
 {
-    virNodeDeviceDefPtr def = NULL;
-    char *wwnn = NULL, *wwpn = NULL;
+    g_autoptr(virNodeDeviceDef) def = NULL;
+    g_autofree char *wwnn = NULL;
+    g_autofree char *wwpn = NULL;
     int parent_host = -1;
     virNodeDevicePtr device = NULL;
     const char *virt_type = NULL;
@@ -478,19 +472,19 @@ nodeDeviceCreateXML(virConnectPtr conn,
     virt_type  = virConnectGetType(conn);
 
     if (!(def = virNodeDeviceDefParseString(xmlDesc, CREATE_DEVICE, virt_type)))
-        goto cleanup;
+        return NULL;
 
     if (virNodeDeviceCreateXMLEnsureACL(conn, def) < 0)
-        goto cleanup;
+        return NULL;
 
     if (virNodeDeviceGetWWNs(def, &wwnn, &wwpn) == -1)
-        goto cleanup;
+        return NULL;
 
     if ((parent_host = virNodeDeviceObjListGetParentHost(driver->devs, def)) < 0)
-        goto cleanup;
+        return NULL;
 
     if (virVHBAManageVport(parent_host, wwpn, wwnn, VPORT_CREATE) < 0)
-        goto cleanup;
+        return NULL;
 
     device = nodeDeviceFindNewDevice(conn, wwnn, wwpn);
     /* We don't check the return value, because one way or another,
@@ -501,10 +495,7 @@ nodeDeviceCreateXML(virConnectPtr conn,
                        _("no node device for '%s' with matching "
                          "wwnn '%s' and wwpn '%s'"),
                        def->name, wwnn, wwpn);
- cleanup:
-    virNodeDeviceDefFree(def);
-    VIR_FREE(wwnn);
-    VIR_FREE(wwpn);
+
     return device;
 }
 
@@ -515,8 +506,9 @@ nodeDeviceDestroy(virNodeDevicePtr device)
     int ret = -1;
     virNodeDeviceObjPtr obj = NULL;
     virNodeDeviceDefPtr def;
-    char *parent = NULL;
-    char *wwnn = NULL, *wwpn = NULL;
+    g_autofree char *parent = NULL;
+    g_autofree char *wwnn = NULL;
+    g_autofree char *wwpn = NULL;
     unsigned int parent_host;
 
     if (!(obj = nodeDeviceObjFindByName(device->name)))
@@ -554,9 +546,6 @@ nodeDeviceDestroy(virNodeDevicePtr device)
 
  cleanup:
     virNodeDeviceObjEndAPI(&obj);
-    VIR_FREE(parent);
-    VIR_FREE(wwnn);
-    VIR_FREE(wwpn);
     return ret;
 }
 
