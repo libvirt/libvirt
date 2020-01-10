@@ -1757,6 +1757,7 @@ mymain(void)
     DO_TEST("luks-disks-source", QEMU_CAPS_OBJECT_SECRET);
     DO_TEST_PARSE_ERROR("luks-disks-source-qcow2", QEMU_CAPS_OBJECT_SECRET);
     DO_TEST("luks-disks-source-qcow2", QEMU_CAPS_OBJECT_SECRET, QEMU_CAPS_QCOW2_LUKS);
+    DO_TEST_CAPS_LATEST("luks-disks-source-qcow2");
     DO_TEST_PARSE_ERROR("luks-disk-invalid", NONE);
     DO_TEST_PARSE_ERROR("luks-disks-source-both", QEMU_CAPS_OBJECT_SECRET);
 
