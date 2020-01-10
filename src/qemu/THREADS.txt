@@ -61,11 +61,12 @@ There are a number of locks on various objects
 
     Agent job condition is then used when thread wishes to talk to qemu
     agent monitor. It is possible to acquire just agent job
-    (qemuDomainObjBeginAgentJob), or only normal job
-    (qemuDomainObjBeginJob) or both at the same time
-    (qemuDomainObjBeginJobWithAgent). Which type of job to grab depends
-    whether caller wishes to communicate only with agent socket, or only
-    with qemu monitor socket or both, respectively.
+    (qemuDomainObjBeginAgentJob), or only normal job (qemuDomainObjBeginJob)
+    but not both at the same time. Holding an agent job and a normal job would
+    allow an unresponsive or malicious agent to block normal libvirt API and
+    potentially result in a denial of service. Which type of job to grab
+    depends whether caller wishes to communicate only with agent socket, or
+    only with qemu monitor socket.
 
     Immediately after acquiring the virDomainObjPtr lock, any method
     which intends to update state must acquire asynchronous, normal or
@@ -137,18 +138,6 @@ To acquire the agent job condition
 
   qemuDomainObjEndAgentJob()
     - Sets job.agentActive to 0
-    - Signals on job.cond condition
-
-
-
-To acquire both normal and agent job condition
-
-  qemuDomainObjBeginJobWithAgent()
-    - Waits until there is no normal and no agent job set
-    - Sets both job.active and job.agentActive with required job types
-
-  qemuDomainObjEndJobWithAgent()
-    - Sets both job.active and job.agentActive to 0
     - Signals on job.cond condition
 
 
@@ -289,41 +278,6 @@ Design patterns
      ...do final work...
 
      qemuDomainObjEndAgentJob(obj);
-     virDomainObjEndAPI(&obj);
-
-
- * Invoking both monitor and agent commands on a virDomainObjPtr
-
-     virDomainObjPtr obj;
-     qemuAgentPtr agent;
-
-     obj = qemuDomObjFromDomain(dom);
-
-     qemuDomainObjBeginJobWithAgent(obj, QEMU_JOB_TYPE, QEMU_AGENT_JOB_TYPE);
-
-     if (!virDomainObjIsActive(dom))
-         goto cleanup;
-
-     ...do prep work...
-
-     if (!qemuDomainAgentAvailable(obj, true))
-         goto cleanup;
-
-     agent = qemuDomainObjEnterAgent(obj);
-     qemuAgentXXXX(agent, ..);
-     qemuDomainObjExitAgent(obj, agent);
-
-     ...
-
-     qemuDomainObjEnterMonitor(obj);
-     qemuMonitorXXXX(priv->mon);
-     qemuDomainObjExitMonitor(obj);
-
-     /* Alternatively, talk to the monitor first and then talk to the agent. */
-
-     ...do final work...
-
-     qemuDomainObjEndJobWithAgent(obj);
      virDomainObjEndAPI(&obj);
 
 

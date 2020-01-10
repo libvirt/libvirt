@@ -9640,26 +9640,6 @@ qemuDomainObjBeginAgentJob(virQEMUDriverPtr driver,
                                          QEMU_ASYNC_JOB_NONE, false);
 }
 
-/**
- * qemuDomainObjBeginJobWithAgent:
- *
- * Grabs both monitor and agent types of job. Use if caller talks to
- * both monitor and guest agent. However, if @job (or @agentJob) is
- * QEMU_JOB_NONE (or QEMU_AGENT_JOB_NONE) only agent job is acquired (or
- * monitor job).
- *
- * To end job call qemuDomainObjEndJobWithAgent.
- */
-int
-qemuDomainObjBeginJobWithAgent(virQEMUDriverPtr driver,
-                               virDomainObjPtr obj,
-                               qemuDomainJob job,
-                               qemuDomainAgentJob agentJob)
-{
-    return qemuDomainObjBeginJobInternal(driver, obj, job, agentJob,
-                                         QEMU_ASYNC_JOB_NONE, false);
-}
-
 int qemuDomainObjBeginAsyncJob(virQEMUDriverPtr driver,
                                virDomainObjPtr obj,
                                qemuDomainAsyncJob asyncJob,
@@ -9775,31 +9755,6 @@ qemuDomainObjEndAgentJob(virDomainObjPtr obj)
 }
 
 void
-qemuDomainObjEndJobWithAgent(virQEMUDriverPtr driver,
-                             virDomainObjPtr obj)
-{
-    qemuDomainObjPrivatePtr priv = obj->privateData;
-    qemuDomainJob job = priv->job.active;
-    qemuDomainAgentJob agentJob = priv->job.agentActive;
-
-    priv->jobs_queued--;
-
-    VIR_DEBUG("Stopping both jobs: %s %s (async=%s vm=%p name=%s)",
-              qemuDomainJobTypeToString(job),
-              qemuDomainAgentJobTypeToString(agentJob),
-              qemuDomainAsyncJobTypeToString(priv->job.asyncJob),
-              obj, obj->def->name);
-
-    qemuDomainObjResetJob(priv);
-    qemuDomainObjResetAgentJob(priv);
-    if (qemuDomainTrackJob(job))
-        qemuDomainObjSaveStatus(driver, obj);
-    /* We indeed need to wake up ALL threads waiting because
-     * grabbing a job requires checking more variables. */
-    virCondBroadcast(&priv->job.cond);
-}
-
-void
 qemuDomainObjEndAsyncJob(virQEMUDriverPtr driver, virDomainObjPtr obj)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
@@ -9832,9 +9787,9 @@ qemuDomainObjAbortAsyncJob(virDomainObjPtr obj)
  * obj must be locked before calling
  *
  * To be called immediately before any QEMU monitor API call
- * Must have already either called qemuDomainObjBeginJob() or
- * qemuDomainObjBeginJobWithAgent() and checked that the VM is
- * still active; may not be used for nested async jobs.
+ * Must have already called qemuDomainObjBeginJob() and checked
+ * that the VM is still active; may not be used for nested async
+ * jobs.
  *
  * To be followed with qemuDomainObjExitMonitor() once complete
  */
@@ -9956,9 +9911,8 @@ qemuDomainObjEnterMonitorAsync(virQEMUDriverPtr driver,
  * obj must be locked before calling
  *
  * To be called immediately before any QEMU agent API call.
- * Must have already called qemuDomainObjBeginAgentJob() or
- * qemuDomainObjBeginJobWithAgent() and checked that the VM is
- * still active.
+ * Must have already called qemuDomainObjBeginAgentJob() and
+ * checked that the VM is still active.
  *
  * To be followed with qemuDomainObjExitAgent() once complete
  */
