@@ -68,6 +68,24 @@
       </source>
       <target dev='vde' bus='virtio'/>
     </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source file='/storage/guest_disks/encryptdisk5'>
+        <encryption format='luks'>
+          <secret type='passphrase' uuid='0a81f5b2-8403-7b23-c8d6-21ccc2f80d6f'/>
+        </encryption>
+      </source>
+      <backingStore type='file'>
+        <format type='qcow2'/>
+        <source file='/storage/guest_disks/base.qcow2'>
+          <encryption format='luks'>
+            <secret type='passphrase' uuid='0a81f5b2-8403-7b23-c8d6-21ccc2f80d6f'/>
+          </encryption>
+          </source>
+          <backingStore/>
+      </backingStore>
+      <target dev='vdf' bus='virtio'/>
+    </disk>
     <controller type='usb' index='0'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
     </controller>
