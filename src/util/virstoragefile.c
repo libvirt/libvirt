@@ -4979,7 +4979,8 @@ virStorageFileGetMetadataRecurse(virStorageSourcePtr src,
              */
             if (report_broken) {
                 virReportError(VIR_ERR_OPERATION_INVALID,
-                               _("format of backing image '%s' of image '%s' was not specified in the image metadata"),
+                               _("format of backing image '%s' of image '%s' was not specified in the image metadata "
+                                 "(See https://libvirt.org/kbase/backing_chains.html for troubleshooting)"),
                                src->backingStoreRaw, NULLSTR(src->path));
                 return -1;
             }
