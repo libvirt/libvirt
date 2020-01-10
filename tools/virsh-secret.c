@@ -234,6 +234,10 @@ static const vshCmdOptDef opts_secret_get_value[] = {
      .help = N_("secret UUID"),
      .completer = virshSecretUUIDCompleter,
     },
+    {.name = "plain",
+     .type = VSH_OT_BOOL,
+     .help = N_("get value without converting to base64")
+    },
     {.name = NULL}
 };
 
@@ -244,6 +248,7 @@ cmdSecretGetValue(vshControl *ctl, const vshCmd *cmd)
     VIR_AUTODISPOSE_STR base64 = NULL;
     unsigned char *value;
     size_t value_size;
+    bool plain = vshCommandOptBool(cmd, "plain");
 
     if (!(secret = virshCommandOptSecret(ctl, cmd, NULL)))
         return false;
@@ -251,9 +256,17 @@ cmdSecretGetValue(vshControl *ctl, const vshCmd *cmd)
     if (!(value = virSecretGetValue(secret, &value_size, 0)))
         return false;
 
-    base64 = g_base64_encode(value, value_size);
+    if (plain) {
+        if (fwrite(value, 1, value_size, stdout) != value_size) {
+            VIR_DISPOSE_N(value, value_size);
+            vshError(ctl, "failed to write secret");
+            return false;
+        }
+    } else {
+        base64 = g_base64_encode(value, value_size);
 
-    vshPrint(ctl, "%s", base64);
+        vshPrint(ctl, "%s", base64);
+    }
 
     VIR_DISPOSE_N(value, value_size);
     return true;

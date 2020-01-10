@@ -6576,11 +6576,15 @@ secret-get-value
 
 .. code-block::
 
-   secret-get-value secret
+   secret-get-value [--plain] secret
 
 Output the value associated with *secret* (specified by its UUID) to stdout,
 encoded using Base64.
 
+If the *--plain* flag is used the value is not base64 encoded, but rather
+printed raw. Note that unless virsh is started in quiet mode (*virsh -q*) it
+prints a newline at the end of the command. This newline is not part of the
+secret.
 
 secret-undefine
 ---------------
