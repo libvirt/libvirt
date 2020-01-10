@@ -2547,7 +2547,7 @@ qemuDomainObjPrivateXMLFormatBlockjobFormatSource(virBufferPtr buf,
                       virStorageTypeToString(src->type),
                       virStorageFileFormatTypeToString(src->format));
 
-    if (virDomainDiskSourceFormat(&childBuf, src, "source", 0, true, xmlflags, xmlopt) < 0)
+    if (virDomainDiskSourceFormat(&childBuf, src, "source", 0, true, xmlflags, true, xmlopt) < 0)
         return -1;
 
     if (chain &&
@@ -2746,7 +2746,7 @@ qemuDomainObjPrivateXMLFormatNBDMigrationSource(virBufferPtr buf,
                       virStorageFileFormatTypeToString(src->format));
 
     if (virDomainDiskSourceFormat(&childBuf, src, "source", 0, false,
-                                  VIR_DOMAIN_DEF_FORMAT_STATUS, xmlopt) < 0)
+                                  VIR_DOMAIN_DEF_FORMAT_STATUS, true, xmlopt) < 0)
         return -1;
 
     virXMLFormatElement(buf, "migrationSource", &attrBuf, &childBuf);
