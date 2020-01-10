@@ -1848,30 +1848,6 @@ qemuAgentSetTime(qemuAgentPtr mon,
     return ret;
 }
 
-typedef struct _qemuAgentDiskInfo qemuAgentDiskInfo;
-typedef qemuAgentDiskInfo *qemuAgentDiskInfoPtr;
-struct _qemuAgentDiskInfo {
-    char *serial;
-    virPCIDeviceAddress pci_controller;
-    char *bus_type;
-    unsigned int bus;
-    unsigned int target;
-    unsigned int unit;
-    char *devnode;
-};
-
-typedef struct _qemuAgentFSInfo qemuAgentFSInfo;
-typedef qemuAgentFSInfo *qemuAgentFSInfoPtr;
-struct _qemuAgentFSInfo {
-    char *mountpoint; /* path to mount point */
-    char *name;       /* device name in the guest (e.g. "sda1") */
-    char *fstype;     /* filesystem type */
-    long long total_bytes;
-    long long used_bytes;
-    size_t ndisks;
-    qemuAgentDiskInfoPtr *disks;
-};
-
 static void
 qemuAgentDiskInfoFree(qemuAgentDiskInfoPtr info)
 {
@@ -1884,7 +1860,7 @@ qemuAgentDiskInfoFree(qemuAgentDiskInfoPtr info)
     VIR_FREE(info);
 }
 
-static void
+void
 qemuAgentFSInfoFree(qemuAgentFSInfoPtr info)
 {
     size_t i;
@@ -1901,47 +1877,6 @@ qemuAgentFSInfoFree(qemuAgentFSInfoPtr info)
     VIR_FREE(info->disks);
 
     VIR_FREE(info);
-}
-
-static virDomainFSInfoPtr
-qemuAgentFSInfoToPublic(qemuAgentFSInfoPtr agent,
-                        virDomainDefPtr vmdef)
-{
-    virDomainFSInfoPtr ret = NULL;
-    size_t i;
-
-    if (VIR_ALLOC(ret) < 0)
-        goto error;
-
-    ret->mountpoint = g_strdup(agent->mountpoint);
-    ret->name = g_strdup(agent->name);
-    ret->fstype = g_strdup(agent->fstype);
-
-    if (agent->disks &&
-        VIR_ALLOC_N(ret->devAlias, agent->ndisks) < 0)
-        goto error;
-
-    ret->ndevAlias = agent->ndisks;
-
-    for (i = 0; i < ret->ndevAlias; i++) {
-        qemuAgentDiskInfoPtr agentdisk = agent->disks[i];
-        virDomainDiskDefPtr diskDef;
-
-        if (!(diskDef = virDomainDiskByAddress(vmdef,
-                                               &agentdisk->pci_controller,
-                                               agentdisk->bus,
-                                               agentdisk->target,
-                                               agentdisk->unit)))
-            continue;
-
-        ret->devAlias[i] = g_strdup(diskDef->dst);
-    }
-
-    return ret;
-
- error:
-    virDomainFSInfoFree(ret);
-    return NULL;
 }
 
 static int
@@ -2017,7 +1952,6 @@ qemuAgentGetFSInfoFillDisks(virJSONValuePtr jsondisks,
         GET_DISK_ADDR(pci, &disk->pci_controller.bus, "bus");
         GET_DISK_ADDR(pci, &disk->pci_controller.slot, "slot");
         GET_DISK_ADDR(pci, &disk->pci_controller.function, "function");
-
 #undef GET_DISK_ADDR
     }
 
@@ -2028,9 +1962,9 @@ qemuAgentGetFSInfoFillDisks(virJSONValuePtr jsondisks,
  *          -2 when agent command is not supported by the agent
  *          -1 otherwise
  */
-static int
-qemuAgentGetFSInfoInternal(qemuAgentPtr mon,
-                           qemuAgentFSInfoPtr **info)
+int
+qemuAgentGetFSInfo(qemuAgentPtr mon,
+                   qemuAgentFSInfoPtr **info)
 {
     size_t i;
     int ret = -1;
@@ -2159,151 +2093,6 @@ qemuAgentGetFSInfoInternal(qemuAgentPtr mon,
             qemuAgentFSInfoFree(info_ret[i]);
         VIR_FREE(info_ret);
     }
-    return ret;
-}
-
-/* Returns: 0 on success
- *          -1 otherwise
- */
-int
-qemuAgentGetFSInfo(qemuAgentPtr mon,
-                   virDomainFSInfoPtr **info,
-                   virDomainDefPtr vmdef)
-{
-    int ret = -1;
-    qemuAgentFSInfoPtr *agentinfo = NULL;
-    virDomainFSInfoPtr *info_ret = NULL;
-    size_t i;
-    int nfs;
-
-    nfs = qemuAgentGetFSInfoInternal(mon, &agentinfo);
-    if (nfs < 0)
-        return ret;
-    if (VIR_ALLOC_N(info_ret, nfs) < 0)
-        goto cleanup;
-
-    for (i = 0; i < nfs; i++) {
-        if (!(info_ret[i] = qemuAgentFSInfoToPublic(agentinfo[i], vmdef)))
-            goto cleanup;
-    }
-
-    *info = g_steal_pointer(&info_ret);
-    ret = nfs;
-
- cleanup:
-    for (i = 0; i < nfs; i++) {
-        qemuAgentFSInfoFree(agentinfo[i]);
-        /* if there was an error, free any memory we've allocated for the
-         * return value */
-        if (info_ret)
-            virDomainFSInfoFree(info_ret[i]);
-    }
-    VIR_FREE(agentinfo);
-    VIR_FREE(info_ret);
-    return ret;
-}
-
-/* Returns: 0 on success
- *          -2 when agent command is not supported by the agent
- *          -1 otherwise
- */
-int
-qemuAgentGetFSInfoParams(qemuAgentPtr mon,
-                         virTypedParameterPtr *params,
-                         int *nparams, int *maxparams,
-                         virDomainDefPtr vmdef)
-{
-    int ret = -1;
-    qemuAgentFSInfoPtr *fsinfo = NULL;
-    size_t i, j;
-    int nfs;
-
-    if ((nfs = qemuAgentGetFSInfoInternal(mon, &fsinfo)) < 0)
-        return nfs;
-
-    if (virTypedParamsAddUInt(params, nparams, maxparams,
-                              "fs.count", nfs) < 0)
-        goto cleanup;
-
-    for (i = 0; i < nfs; i++) {
-        char param_name[VIR_TYPED_PARAM_FIELD_LENGTH];
-        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                   "fs.%zu.name", i);
-        if (virTypedParamsAddString(params, nparams, maxparams,
-                                    param_name, fsinfo[i]->name) < 0)
-            goto cleanup;
-        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                   "fs.%zu.mountpoint", i);
-        if (virTypedParamsAddString(params, nparams, maxparams,
-                                    param_name, fsinfo[i]->mountpoint) < 0)
-            goto cleanup;
-        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                   "fs.%zu.fstype", i);
-        if (virTypedParamsAddString(params, nparams, maxparams,
-                                    param_name, fsinfo[i]->fstype) < 0)
-            goto cleanup;
-
-        /* disk usage values are not returned by older guest agents, so
-         * only add the params if the value is set */
-        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                   "fs.%zu.total-bytes", i);
-        if (fsinfo[i]->total_bytes != -1 &&
-            virTypedParamsAddULLong(params, nparams, maxparams,
-                                    param_name, fsinfo[i]->total_bytes) < 0)
-            goto cleanup;
-
-        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                   "fs.%zu.used-bytes", i);
-        if (fsinfo[i]->used_bytes != -1 &&
-            virTypedParamsAddULLong(params, nparams, maxparams,
-                                    param_name, fsinfo[i]->used_bytes) < 0)
-            goto cleanup;
-
-        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                   "fs.%zu.disk.count", i);
-        if (virTypedParamsAddUInt(params, nparams, maxparams,
-                                  param_name, fsinfo[i]->ndisks) < 0)
-            goto cleanup;
-        for (j = 0; j < fsinfo[i]->ndisks; j++) {
-            virDomainDiskDefPtr diskdef = NULL;
-            qemuAgentDiskInfoPtr d = fsinfo[i]->disks[j];
-            /* match the disk to the target in the vm definition */
-            diskdef = virDomainDiskByAddress(vmdef,
-                                             &d->pci_controller,
-                                             d->bus,
-                                             d->target,
-                                             d->unit);
-            if (diskdef) {
-                g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                           "fs.%zu.disk.%zu.alias", i, j);
-                if (diskdef->dst &&
-                    virTypedParamsAddString(params, nparams, maxparams,
-                                            param_name, diskdef->dst) < 0)
-                    goto cleanup;
-            }
-
-            g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                       "fs.%zu.disk.%zu.serial", i, j);
-            if (d->serial &&
-                virTypedParamsAddString(params, nparams, maxparams,
-                                        param_name, d->serial) < 0)
-                goto cleanup;
-
-            g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
-                       "fs.%zu.disk.%zu.device", i, j);
-            if (d->devnode &&
-                virTypedParamsAddString(params, nparams, maxparams,
-                                        param_name, d->devnode) < 0)
-                goto cleanup;
-        }
-    }
-    ret = nfs;
-
- cleanup:
-    for (i = 0; i < nfs; i++)
-        qemuAgentFSInfoFree(fsinfo[i]);
-    VIR_FREE(fsinfo);
-
     return ret;
 }
 

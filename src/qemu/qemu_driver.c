@@ -21904,6 +21904,111 @@ qemuNodeAllocPages(virConnectPtr conn,
                                 startCell, cellCount, add);
 }
 
+static int
+qemuDomainGetFSInfoAgent(virQEMUDriverPtr driver,
+                         virDomainObjPtr vm,
+                         qemuAgentFSInfoPtr **info)
+{
+    int ret = -1;
+    qemuAgentPtr agent;
+
+    if (qemuDomainObjBeginAgentJob(driver, vm,
+                                   QEMU_AGENT_JOB_QUERY) < 0)
+        return ret;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto endjob;
+
+    if (!qemuDomainAgentAvailable(vm, true))
+        goto endjob;
+
+    agent = qemuDomainObjEnterAgent(vm);
+    ret = qemuAgentGetFSInfo(agent, info);
+    qemuDomainObjExitAgent(vm, agent);
+
+ endjob:
+    qemuDomainObjEndAgentJob(vm);
+    return ret;
+}
+
+static virDomainFSInfoPtr
+qemuAgentFSInfoToPublic(qemuAgentFSInfoPtr agent,
+                        virDomainDefPtr vmdef)
+{
+    virDomainFSInfoPtr ret = NULL;
+    size_t i;
+
+    if (VIR_ALLOC(ret) < 0)
+        goto error;
+
+    ret->mountpoint = g_strdup(agent->mountpoint);
+    ret->name = g_strdup(agent->name);
+    ret->fstype = g_strdup(agent->fstype);
+
+    if (agent->disks &&
+        VIR_ALLOC_N(ret->devAlias, agent->ndisks) < 0)
+        goto error;
+
+    ret->ndevAlias = agent->ndisks;
+
+    for (i = 0; i < ret->ndevAlias; i++) {
+        qemuAgentDiskInfoPtr agentdisk = agent->disks[i];
+        virDomainDiskDefPtr diskDef;
+
+        if (!(diskDef = virDomainDiskByAddress(vmdef,
+                                               &agentdisk->pci_controller,
+                                               agentdisk->bus,
+                                               agentdisk->target,
+                                               agentdisk->unit)))
+            continue;
+
+        ret->devAlias[i] = g_strdup(diskDef->dst);
+    }
+
+    return ret;
+
+ error:
+    virDomainFSInfoFree(ret);
+    return NULL;
+}
+
+/* Returns: 0 on success
+ *          -1 otherwise
+ */
+static int
+virDomainFSInfoFormat(qemuAgentFSInfoPtr *agentinfo,
+                      int nagentinfo,
+                      virDomainDefPtr vmdef,
+                      virDomainFSInfoPtr **info)
+{
+    int ret = -1;
+    virDomainFSInfoPtr *info_ret = NULL;
+    size_t i;
+
+    if (nagentinfo < 0)
+        return ret;
+    if (VIR_ALLOC_N(info_ret, nagentinfo) < 0)
+        goto cleanup;
+
+    for (i = 0; i < nagentinfo; i++) {
+        if (!(info_ret[i] = qemuAgentFSInfoToPublic(agentinfo[i], vmdef)))
+            goto cleanup;
+    }
+
+    *info = g_steal_pointer(&info_ret);
+    ret = nagentinfo;
+
+ cleanup:
+    for (i = 0; i < nagentinfo; i++) {
+        qemuAgentFSInfoFree(agentinfo[i]);
+        /* if there was an error, free any memory we've allocated for the
+         * return value */
+        if (info_ret)
+            virDomainFSInfoFree(info_ret[i]);
+    }
+    VIR_FREE(info_ret);
+    return ret;
+}
 
 static int
 qemuDomainGetFSInfo(virDomainPtr dom,
@@ -21912,8 +22017,9 @@ qemuDomainGetFSInfo(virDomainPtr dom,
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
-    qemuAgentPtr agent;
+    qemuAgentFSInfoPtr *agentinfo = NULL;
     int ret = -1;
+    int nfs;
 
     virCheckFlags(0, ret);
 
@@ -21923,25 +22029,22 @@ qemuDomainGetFSInfo(virDomainPtr dom,
     if (virDomainGetFSInfoEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (qemuDomainObjBeginJobWithAgent(driver, vm,
-                                       QEMU_JOB_QUERY,
-                                       QEMU_AGENT_JOB_QUERY) < 0)
+    if ((nfs = qemuDomainGetFSInfoAgent(driver, vm, &agentinfo)) < 0)
+        goto cleanup;
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
         goto cleanup;
 
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
-    if (!qemuDomainAgentAvailable(vm, true))
-        goto endjob;
-
-    agent = qemuDomainObjEnterAgent(vm);
-    ret = qemuAgentGetFSInfo(agent, info, vm->def);
-    qemuDomainObjExitAgent(vm, agent);
+    ret = virDomainFSInfoFormat(agentinfo, nfs, vm->def, info);
 
  endjob:
-    qemuDomainObjEndJobWithAgent(driver, vm);
+    qemuDomainObjEndJob(driver, vm);
 
  cleanup:
+    g_free(agentinfo);
     virDomainObjEndAPI(&vm);
     return ret;
 }
@@ -22947,6 +23050,103 @@ qemuDomainGetGuestInfoCheckSupport(unsigned int *types)
     *types = *types & supportedGuestInfoTypes;
 }
 
+/* Returns: 0 on success
+ *          -1 otherwise
+ */
+static int
+qemuAgentFSInfoFormatParams(qemuAgentFSInfoPtr *fsinfo,
+                            int nfs,
+                            virDomainDefPtr vmdef,
+                            virTypedParameterPtr *params,
+                            int *nparams, int *maxparams)
+{
+    int ret = -1;
+    size_t i, j;
+
+    /* FIXME: get disk target */
+
+    if (virTypedParamsAddUInt(params, nparams, maxparams,
+                              "fs.count", nfs) < 0)
+        goto cleanup;
+
+    for (i = 0; i < nfs; i++) {
+        char param_name[VIR_TYPED_PARAM_FIELD_LENGTH];
+        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                   "fs.%zu.name", i);
+        if (virTypedParamsAddString(params, nparams, maxparams,
+                                    param_name, fsinfo[i]->name) < 0)
+            goto cleanup;
+        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                   "fs.%zu.mountpoint", i);
+        if (virTypedParamsAddString(params, nparams, maxparams,
+                                    param_name, fsinfo[i]->mountpoint) < 0)
+            goto cleanup;
+        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                   "fs.%zu.fstype", i);
+        if (virTypedParamsAddString(params, nparams, maxparams,
+                                    param_name, fsinfo[i]->fstype) < 0)
+            goto cleanup;
+
+        /* disk usage values are not returned by older guest agents, so
+         * only add the params if the value is set */
+        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                   "fs.%zu.total-bytes", i);
+        if (fsinfo[i]->total_bytes != -1 &&
+            virTypedParamsAddULLong(params, nparams, maxparams,
+                                    param_name, fsinfo[i]->total_bytes) < 0)
+            goto cleanup;
+
+        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                   "fs.%zu.used-bytes", i);
+        if (fsinfo[i]->used_bytes != -1 &&
+            virTypedParamsAddULLong(params, nparams, maxparams,
+                                    param_name, fsinfo[i]->used_bytes) < 0)
+            goto cleanup;
+
+        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                   "fs.%zu.disk.count", i);
+        if (virTypedParamsAddUInt(params, nparams, maxparams,
+                                  param_name, fsinfo[i]->ndisks) < 0)
+            goto cleanup;
+        for (j = 0; j < fsinfo[i]->ndisks; j++) {
+            virDomainDiskDefPtr diskdef = NULL;
+            qemuAgentDiskInfoPtr d = fsinfo[i]->disks[j];
+            /* match the disk to the target in the vm definition */
+            diskdef = virDomainDiskByAddress(vmdef,
+                                             &d->pci_controller,
+                                             d->bus,
+                                             d->target,
+                                             d->unit);
+            if (diskdef) {
+                g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                           "fs.%zu.disk.%zu.alias", i, j);
+                if (diskdef->dst &&
+                    virTypedParamsAddString(params, nparams, maxparams,
+                                            param_name, diskdef->dst) < 0)
+                    goto cleanup;
+            }
+
+            g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                       "fs.%zu.disk.%zu.serial", i, j);
+            if (d->serial &&
+                virTypedParamsAddString(params, nparams, maxparams,
+                                        param_name, d->serial) < 0)
+                goto cleanup;
+
+            g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                       "fs.%zu.disk.%zu.device", i, j);
+            if (d->devnode &&
+                virTypedParamsAddString(params, nparams, maxparams,
+                                        param_name, d->devnode) < 0)
+                goto cleanup;
+        }
+    }
+    ret = nfs;
+
+ cleanup:
+    return ret;
+}
+
 static int
 qemuDomainGetGuestInfo(virDomainPtr dom,
                        unsigned int types,
@@ -22962,6 +23162,9 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
     g_autofree char *hostname = NULL;
     unsigned int supportedTypes = types;
     int rc;
+    int nfs = 0;
+    qemuAgentFSInfoPtr *agentfsinfo = NULL;
+    size_t i;
 
     virCheckFlags(0, -1);
     qemuDomainGetGuestInfoCheckSupport(&supportedTypes);
@@ -22972,13 +23175,12 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
     if (virDomainGetGuestInfoEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (qemuDomainObjBeginJobWithAgent(driver, vm,
-                                       QEMU_JOB_QUERY,
-                                       QEMU_AGENT_JOB_QUERY) < 0)
+    if (qemuDomainObjBeginAgentJob(driver, vm,
+                                   QEMU_AGENT_JOB_QUERY) < 0)
         goto cleanup;
 
     if (!qemuDomainAgentAvailable(vm, true))
-        goto endjob;
+        goto endagentjob;
 
     agent = qemuDomainObjEnterAgent(vm);
 
@@ -23013,7 +23215,7 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
         }
     }
     if (supportedTypes & VIR_DOMAIN_GUEST_INFO_FILESYSTEM) {
-        rc = qemuAgentGetFSInfoParams(agent, params, nparams, &maxparams, vm->def);
+        rc = nfs = qemuAgentGetFSInfo(agent, &agentfsinfo);
         if (rc < 0 && !(rc == -2 && types == 0))
             goto exitagent;
     }
@@ -23023,10 +23225,29 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
  exitagent:
     qemuDomainObjExitAgent(vm, agent);
 
+ endagentjob:
+    qemuDomainObjEndAgentJob(vm);
+
+    if (nfs > 0) {
+        if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
+            goto cleanup;
+
+        if (virDomainObjCheckActive(vm) < 0)
+            goto endjob;
+
+        /* we need to convert the agent fsinfo struct to parameters and match
+         * it to the vm disk target */
+        qemuAgentFSInfoFormatParams(agentfsinfo, nfs, vm->def, params, nparams, &maxparams);
+
  endjob:
-    qemuDomainObjEndJobWithAgent(driver, vm);
+        qemuDomainObjEndJob(driver, vm);
+    }
 
  cleanup:
+    for (i = 0; i < nfs; i++)
+        qemuAgentFSInfoFree(agentfsinfo[i]);
+    VIR_FREE(agentfsinfo);
+
     virDomainObjEndAPI(&vm);
     return ret;
 }

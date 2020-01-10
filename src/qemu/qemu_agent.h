@@ -65,19 +65,38 @@ typedef enum {
     QEMU_AGENT_SHUTDOWN_LAST,
 } qemuAgentShutdownMode;
 
+typedef struct _qemuAgentDiskInfo qemuAgentDiskInfo;
+typedef qemuAgentDiskInfo *qemuAgentDiskInfoPtr;
+struct _qemuAgentDiskInfo {
+    char *serial;
+    virPCIDeviceAddress pci_controller;
+    char *bus_type;
+    unsigned int bus;
+    unsigned int target;
+    unsigned int unit;
+    char *devnode;
+};
+
+typedef struct _qemuAgentFSInfo qemuAgentFSInfo;
+typedef qemuAgentFSInfo *qemuAgentFSInfoPtr;
+struct _qemuAgentFSInfo {
+    char *mountpoint; /* path to mount point */
+    char *name;       /* device name in the guest (e.g. "sda1") */
+    char *fstype;     /* filesystem type */
+    long long total_bytes;
+    long long used_bytes;
+    size_t ndisks;
+    qemuAgentDiskInfoPtr *disks;
+};
+void qemuAgentFSInfoFree(qemuAgentFSInfoPtr info);
+
 int qemuAgentShutdown(qemuAgentPtr mon,
                       qemuAgentShutdownMode mode);
 
 int qemuAgentFSFreeze(qemuAgentPtr mon,
                       const char **mountpoints, unsigned int nmountpoints);
 int qemuAgentFSThaw(qemuAgentPtr mon);
-int qemuAgentGetFSInfo(qemuAgentPtr mon, virDomainFSInfoPtr **info,
-                       virDomainDefPtr vmdef);
-
-int qemuAgentGetFSInfoParams(qemuAgentPtr mon,
-                             virTypedParameterPtr *params,
-                             int *nparams, int *maxparams,
-                             virDomainDefPtr vmdef);
+int qemuAgentGetFSInfo(qemuAgentPtr mon, qemuAgentFSInfoPtr **info);
 
 int qemuAgentSuspend(qemuAgentPtr mon,
                      unsigned int target);
