@@ -1854,10 +1854,10 @@ qemuAgentDiskInfoFree(qemuAgentDiskInfoPtr info)
     if (!info)
         return;
 
-    VIR_FREE(info->serial);
-    VIR_FREE(info->bus_type);
-    VIR_FREE(info->devnode);
-    VIR_FREE(info);
+    g_free(info->serial);
+    g_free(info->bus_type);
+    g_free(info->devnode);
+    g_free(info);
 }
 
 void
@@ -1868,15 +1868,15 @@ qemuAgentFSInfoFree(qemuAgentFSInfoPtr info)
     if (!info)
         return;
 
-    VIR_FREE(info->mountpoint);
-    VIR_FREE(info->name);
-    VIR_FREE(info->fstype);
+    g_free(info->mountpoint);
+    g_free(info->name);
+    g_free(info->fstype);
 
     for (i = 0; i < info->ndisks; i++)
         qemuAgentDiskInfoFree(info->disks[i]);
-    VIR_FREE(info->disks);
+    g_free(info->disks);
 
-    VIR_FREE(info);
+    g_free(info);
 }
 
 static int
@@ -1999,8 +1999,7 @@ qemuAgentGetFSInfo(qemuAgentPtr mon,
         *info = NULL;
         goto cleanup;
     }
-    if (VIR_ALLOC_N(info_ret, ndata) < 0)
-        goto cleanup;
+    info_ret = g_new0(qemuAgentFSInfoPtr, ndata);
 
     for (i = 0; i < ndata; i++) {
         /* Reverse the order to arrange in mount order */
@@ -2017,8 +2016,7 @@ qemuAgentGetFSInfo(qemuAgentPtr mon,
             goto cleanup;
         }
 
-        if (VIR_ALLOC(info_ret[i]) < 0)
-            goto cleanup;
+        info_ret[i] = g_new0(qemuAgentFSInfo, 1);
 
         if (!(result = virJSONValueObjectGetString(entry, "mountpoint"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2088,7 +2086,7 @@ qemuAgentGetFSInfo(qemuAgentPtr mon,
     if (info_ret) {
         for (i = 0; i < ndata; i++)
             qemuAgentFSInfoFree(info_ret[i]);
-        VIR_FREE(info_ret);
+        g_free(info_ret);
     }
     return ret;
 }
