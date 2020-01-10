@@ -21938,17 +21938,14 @@ qemuAgentFSInfoToPublic(qemuAgentFSInfoPtr agent,
     virDomainFSInfoPtr ret = NULL;
     size_t i;
 
-    if (VIR_ALLOC(ret) < 0)
-        goto error;
+    ret = g_new0(virDomainFSInfo, 1);
 
     ret->mountpoint = g_strdup(agent->mountpoint);
     ret->name = g_strdup(agent->name);
     ret->fstype = g_strdup(agent->fstype);
 
-    if (agent->disks &&
-        VIR_ALLOC_N(ret->devAlias, agent->ndisks) < 0)
-        goto error;
-
+    if (agent->disks)
+        ret->devAlias = g_new0(char *, agent->ndisks);
     ret->ndevAlias = agent->ndisks;
 
     for (i = 0; i < ret->ndevAlias; i++) {
@@ -21966,10 +21963,6 @@ qemuAgentFSInfoToPublic(qemuAgentFSInfoPtr agent,
     }
 
     return ret;
-
- error:
-    virDomainFSInfoFree(ret);
-    return NULL;
 }
 
 /* Returns: 0 on success
@@ -21987,8 +21980,7 @@ virDomainFSInfoFormat(qemuAgentFSInfoPtr *agentinfo,
 
     if (nagentinfo < 0)
         return ret;
-    if (VIR_ALLOC_N(info_ret, nagentinfo) < 0)
-        goto cleanup;
+    info_ret = g_new0(virDomainFSInfoPtr, nagentinfo);
 
     for (i = 0; i < nagentinfo; i++) {
         if (!(info_ret[i] = qemuAgentFSInfoToPublic(agentinfo[i], vmdef)))
@@ -22006,7 +21998,7 @@ virDomainFSInfoFormat(qemuAgentFSInfoPtr *agentinfo,
         if (info_ret)
             virDomainFSInfoFree(info_ret[i]);
     }
-    VIR_FREE(info_ret);
+    g_free(info_ret);
     return ret;
 }
 

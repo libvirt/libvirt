@@ -11925,15 +11925,15 @@ virDomainFSInfoFree(virDomainFSInfoPtr info)
     if (!info)
         return;
 
-    VIR_FREE(info->mountpoint);
-    VIR_FREE(info->name);
-    VIR_FREE(info->fstype);
+    g_free(info->mountpoint);
+    g_free(info->name);
+    g_free(info->fstype);
 
     for (i = 0; i < info->ndevAlias; i++)
-        VIR_FREE(info->devAlias[i]);
-    VIR_FREE(info->devAlias);
+        g_free(info->devAlias[i]);
+    g_free(info->devAlias);
 
-    VIR_FREE(info);
+    g_free(info);
 }
 
 /**

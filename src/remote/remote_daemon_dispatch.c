@@ -7032,7 +7032,7 @@ remoteDispatchDomainGetFSInfo(virNetServerPtr server G_GNUC_UNUSED,
     if (ninfo >= 0)
         for (i = 0; i < ninfo; i++)
             virDomainFSInfoFree(info[i]);
-    VIR_FREE(info);
+    g_free(info);
 
     return rv;
 }
