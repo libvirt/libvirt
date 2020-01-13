@@ -311,6 +311,11 @@ virCgroupV2DevicesAttachProg(virCgroupPtr group,
         VIR_FORCE_CLOSE(group->unified.devices.progfd);
     }
 
+    if (group->unified.devices.mapfd > 0) {
+        VIR_DEBUG("Closing existing map that was replaced by new one.");
+        VIR_FORCE_CLOSE(group->unified.devices.mapfd);
+    }
+
     group->unified.devices.progfd = progfd;
     group->unified.devices.mapfd = mapfd;
     group->unified.devices.max = max;
