@@ -6803,7 +6803,7 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
     int ret = -1;
     bool restored = false;
     virObjectEventPtr event;
-    int intermediatefd = -1;
+    VIR_AUTOCLOSE intermediatefd = -1;
     virCommandPtr cmd = NULL;
     g_autofree char *errbuf = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
@@ -6829,6 +6829,7 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
 
         if (virCommandRunAsync(cmd, NULL) < 0) {
             *fd = intermediatefd;
+            intermediatefd = -1;
             goto cleanup;
         }
     }
@@ -6872,8 +6873,6 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
 
         virErrorRestore(&orig_err);
     }
-    VIR_FORCE_CLOSE(intermediatefd);
-
     if (VIR_CLOSE(*fd) < 0) {
         virReportSystemError(errno, _("cannot close file: %s"), path);
         restored = false;
