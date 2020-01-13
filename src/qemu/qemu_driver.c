@@ -3293,7 +3293,7 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver,
     virObjectEventPtr event = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUSaveDataPtr data = NULL;
-    qemuDomainSaveCookiePtr cookie = NULL;
+    g_autoptr(qemuDomainSaveCookie) cookie = NULL;
 
     if (!qemuMigrationSrcIsAllowed(driver, vm, false, 0))
         goto cleanup;
@@ -3399,7 +3399,6 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver,
         qemuDomainRemoveInactiveJob(driver, vm);
 
  cleanup:
-    virObjectUnref(cookie);
     virQEMUSaveDataFree(data);
     virObjectEventStateQueue(driver->domainEventState, event);
     return ret;
@@ -6808,7 +6807,7 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
     g_autofree char *errbuf = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     virQEMUSaveHeaderPtr header = &data->header;
-    qemuDomainSaveCookiePtr cookie = NULL;
+    g_autoptr(qemuDomainSaveCookie) cookie = NULL;
 
     if (virSaveCookieParseString(data->cookie, (virObjectPtr *)&cookie,
                                  virDomainXMLOptionGetSaveCookie(driver->xmlopt)) < 0)
@@ -6919,7 +6918,6 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
     ret = 0;
 
  cleanup:
-    virObjectUnref(cookie);
     if (qemuSecurityRestoreSavedStateLabel(driver, vm, path) < 0)
         VIR_WARN("failed to restore save state label on %s", path);
     return ret;

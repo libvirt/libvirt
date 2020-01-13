@@ -15997,27 +15997,23 @@ qemuDomainSaveCookiePtr
 qemuDomainSaveCookieNew(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    qemuDomainSaveCookiePtr cookie = NULL;
+    g_autoptr(qemuDomainSaveCookie) cookie = NULL;
 
     if (qemuDomainInitialize() < 0)
-        goto error;
+        return NULL;
 
     if (!(cookie = virObjectNew(qemuDomainSaveCookieClass)))
-        goto error;
+        return NULL;
 
     if (priv->origCPU && !(cookie->cpu = virCPUDefCopy(vm->def->cpu)))
-        goto error;
+        return NULL;
 
     cookie->slirpHelper = qemuDomainGetSlirpHelperOk(vm);
 
     VIR_DEBUG("Save cookie %p, cpu=%p, slirpHelper=%d",
               cookie, cookie->cpu, cookie->slirpHelper);
 
-    return cookie;
-
- error:
-    virObjectUnref(cookie);
-    return NULL;
+    return g_steal_pointer(&cookie);
 }
 
 
@@ -16025,26 +16021,22 @@ static int
 qemuDomainSaveCookieParse(xmlXPathContextPtr ctxt G_GNUC_UNUSED,
                           virObjectPtr *obj)
 {
-    qemuDomainSaveCookiePtr cookie = NULL;
+    g_autoptr(qemuDomainSaveCookie) cookie = NULL;
 
     if (qemuDomainInitialize() < 0)
-        goto error;
+        return -1;
 
     if (!(cookie = virObjectNew(qemuDomainSaveCookieClass)))
-        goto error;
+        return -1;
 
     if (virCPUDefParseXML(ctxt, "./cpu[1]", VIR_CPU_TYPE_GUEST,
                           &cookie->cpu) < 0)
-        goto error;
+        return -1;
 
     cookie->slirpHelper = virXPathBoolean("boolean(./slirpHelper)", ctxt) > 0;
 
-    *obj = (virObjectPtr) cookie;
+    *obj = (virObjectPtr) g_steal_pointer(&cookie);
     return 0;
-
- error:
-    virObjectUnref(cookie);
-    return -1;
 }
 
 

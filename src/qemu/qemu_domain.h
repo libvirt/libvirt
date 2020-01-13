@@ -610,6 +610,7 @@ struct _qemuDomainSaveCookie {
     bool slirpHelper;
 };
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuDomainSaveCookie, virObjectUnref);
 
 typedef struct _qemuDomainXmlNsDef qemuDomainXmlNsDef;
 typedef qemuDomainXmlNsDef *qemuDomainXmlNsDefPtr;
