@@ -90,6 +90,22 @@
           configure option.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Support cold-unplug of sound devices
+        </summary>
+      </change>
+      <change>
+        <summary>
+          qemu: Implement VIR_MIGRATE_PARAM_TLS_DESTINATION
+        </summary>
+        <description>
+          This flag, which can be enabled using <code>virsh</code>'s
+          <code>--tls-destination</code> option, allows migration to succeed
+          in situations where there is a mismatch between the destination's
+          hostname and the information stored in its TLS certificate.
+        </description>
+      </change>
     </section>
     <section title="Removed features">
       <change>
@@ -120,6 +136,24 @@
           lzop should be used.
         </description>
       </change>
+      <change>
+        <summary>
+          domain: Improve job stat handling
+        </summary>
+        <description>
+          It is now possible to retrieve stats for completed and failed jobs.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Don't hold monitor and agent job at the same time
+        </summary>
+        <description>
+          Before this change, a malicious (or buggy)
+          <code>qemu-guest-agent</code> running in the guest could make other
+          libvirt APIs unavailable for an unbounded amount of time.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
       <change>
@@ -133,6 +167,25 @@
           the format is specified in the image metadata or domain XML and the
           VM will refuse to start otherwise. Additionally the error message
           now links to the knowledge base which summarizes how to fix the images.
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Fix non-shared storage migration over NBD
+        </summary>
+      </change>
+      <change>
+        <summary>
+          qemu: Generate a single MAC address for hotplugged network devices
+        </summary>
+        <description>
+          Since libvirt 4.6.0, when hotplugging a network device that didn't
+          have a MAC address already assigned by the user, two separate
+          addresses would be generated: one for the live configuration, which
+          would show up immediately, and one for the inactive configuration,
+          which would show up after the first reboot. This situation was
+          clearly undesirable, so a single MAC address is now generated and
+          used both for the live configuration and the inactive one.
         </description>
       </change>
     </section>
