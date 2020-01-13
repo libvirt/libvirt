@@ -13428,6 +13428,8 @@ virDomainInputDefParseXML(virDomainXMLOptionPtr xmlopt,
                 def->type == VIR_DOMAIN_INPUT_TYPE_KBD) &&
                 (ARCH_IS_X86(dom->os.arch) || dom->os.arch == VIR_ARCH_NONE)) {
                 def->bus = VIR_DOMAIN_INPUT_BUS_PS2;
+            } else if (ARCH_IS_S390(dom->os.arch)) {
+                def->bus = VIR_DOMAIN_INPUT_BUS_VIRTIO;
             } else {
                 def->bus = VIR_DOMAIN_INPUT_BUS_USB;
             }
