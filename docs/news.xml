@@ -43,7 +43,16 @@
 
 <libvirt>
   <release version="v6.0.0" date="unreleased">
-    <section title="New features">
+    <section title="Packaging changes">
+      <change>
+        <summary>
+          support for python2 is removed
+        </summary>
+        <description>
+          Libvirt is no longer able to be built using the
+          Python 2 binary. Python 3 must be used instead.
+        </description>
+      </change>
       <change>
         <summary>
           docs: the python docutils toolset is now required
@@ -54,6 +63,8 @@
           written in the RST as an alternative to HTML.
         </description>
       </change>
+    </section>
+    <section title="New features">
       <change>
         <summary>
           new PCI hostdev address type: unassigned
@@ -66,6 +77,29 @@
           via Libvirt, declaring PCI hostdevs in the domain XML
           but allowing just a subset of them to be assigned to the
           guest.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Provide init scripts for sub-deaemons
+        </summary>
+        <description>
+          So far libvirt shipped systemd unit files for sub-daemons. With this
+          release, init scripts are available too. Package maintainers can
+          choose which one to install via <code>--with-init-script</code>
+          configure option.
+        </description>
+      </change>
+    </section>
+    <section title="Removed features">
+      <change>
+        <summary>
+          'phyp' Power Hypervisor driver removed
+        </summary>
+        <description>
+          The 'phyp' Power Hypervisor driver has not seen active development
+          since 2011 and does not seem to have any real world usage. It
+          has now been removed.
         </description>
       </change>
     </section>
@@ -99,27 +133,6 @@
           the format is specified in the image metadata or domain XML and the
           VM will refuse to start otherwise. Additionally the error message
           now links to the knowledge base which summarizes how to fix the images.
-        </description>
-      </change>
-    </section>
-    <section title="Removed features">
-      <change>
-        <summary>
-          support for python2 is removed
-        </summary>
-        <description>
-          Libvirt is no longer able to be built using the
-          Python 2 binary. Python 3 must be used instead.
-        </description>
-      </change>
-      <change>
-        <summary>
-          'phyp' Power Hypervisor driver removed
-        </summary>
-        <description>
-          The 'phyp' Power Hypervisor driver has not seen active development
-          since 2011 and does not seem to have any real world usage. It
-          has now been removed.
         </description>
       </change>
     </section>
@@ -222,17 +235,6 @@
           Libvirt used Perl scripts to check for coding style, generate some
           code and things like that. To bring the number of languages used
           down, these scripts were rewritten into Python.
-        </description>
-      </change>
-      <change>
-        <summary>
-          Provide init scripts for sub-deaemons
-        </summary>
-        <description>
-          So far libvirt shipped systemd unit files for sub-daemons. With this
-          release, init scripts are available too. Package maintainers can
-          choose which one to install via <code>--with-init-script</code>
-          configure option.
         </description>
       </change>
     </section>
