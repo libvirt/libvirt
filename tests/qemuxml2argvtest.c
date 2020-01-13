@@ -946,7 +946,7 @@ mymain(void)
             QEMU_CAPS_OBJECT_MEMORY_FILE_DISCARD);
     DO_TEST("hugepages-default", QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("hugepages-default-2M", QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST("hugepages-default-system-size", NONE);
+    DO_TEST("hugepages-default-system-size", QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST_PARSE_ERROR("hugepages-default-1G-nodeset-2M", NONE);
     DO_TEST("hugepages-nodeset", QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST_PARSE_ERROR("hugepages-nodeset-nonexist",

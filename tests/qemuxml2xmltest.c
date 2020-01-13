@@ -293,7 +293,7 @@ mymain(void)
     DO_TEST("pages-dimm-discard", NONE);
     DO_TEST("hugepages-default", QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("hugepages-default-2M", QEMU_CAPS_OBJECT_MEMORY_FILE);
-    DO_TEST("hugepages-default-system-size", NONE);
+    DO_TEST("hugepages-default-system-size", QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("hugepages-nodeset", QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("hugepages-numa-default-2M", QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("hugepages-numa-default-dimm", QEMU_CAPS_OBJECT_MEMORY_FILE);
