@@ -5674,9 +5674,20 @@ virQEMUCapsFillDomainDeviceHostdevCaps(virQEMUCapsPtr qemuCaps,
                              VIR_DOMAIN_STARTUP_POLICY_OPTIONAL);
 
     VIR_DOMAIN_CAPS_ENUM_SET(hostdev->subsysType,
-                             VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB,
                              VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI,
                              VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI);
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI) ||
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX4_USB_UHCI) ||
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_EHCI) ||
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_USB_EHCI1) ||
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_VT82C686B_USB_UHCI) ||
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI) ||
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_NEC_USB_XHCI) ||
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QEMU_XHCI)) {
+        VIR_DOMAIN_CAPS_ENUM_SET(hostdev->subsysType,
+                                 VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB);
+    }
 
     /* No virDomainHostdevCapsType for QEMU */
     virDomainCapsEnumClear(&hostdev->capsType);
