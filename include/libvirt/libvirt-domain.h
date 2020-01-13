@@ -1059,7 +1059,7 @@ typedef enum {
  *
  * Normally the TLS certificate from the destination host must match the host's
  * name for TLS verification to succeed. When the certificate does not match
- * the destination hostname and the expected cetificate's hostname is known,
+ * the destination hostname and the expected certificate's hostname is known,
  * this parameter can be used to pass this expected hostname when starting
  * the migration.
  */
