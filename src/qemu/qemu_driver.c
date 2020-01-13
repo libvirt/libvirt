@@ -6804,7 +6804,7 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
     bool restored = false;
     virObjectEventPtr event;
     VIR_AUTOCLOSE intermediatefd = -1;
-    virCommandPtr cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     g_autofree char *errbuf = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     virQEMUSaveHeaderPtr header = &data->header;
@@ -6920,7 +6920,6 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
 
  cleanup:
     virObjectUnref(cookie);
-    virCommandFree(cmd);
     if (qemuSecurityRestoreSavedStateLabel(driver, vm, path) < 0)
         VIR_WARN("failed to restore save state label on %s", path);
     return ret;
