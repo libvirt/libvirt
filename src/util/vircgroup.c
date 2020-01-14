@@ -174,9 +174,13 @@ virCgroupPartitionNeedsEscaping(const char *path)
         if (STRPREFIX(line, "#subsys_name"))
             continue;
 
-        tmp = strchrnul(line, ' ');
-        *tmp = '\0';
-        len = tmp - line;
+        tmp = strchr(line, ' ');
+        if (tmp) {
+            *tmp = '\0';
+            len = tmp - line;
+        } else {
+            len = strlen(line);
+        }
 
         if (STRPREFIX(path, line) &&
             path[len] == '.') {

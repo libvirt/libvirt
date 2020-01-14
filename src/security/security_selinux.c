@@ -721,14 +721,14 @@ virSecuritySELinuxQEMUInitialize(virSecurityManagerPtr mgr)
         goto error;
     }
 
-    ptr = strchrnul(data->domain_context, '\n');
-    if (ptr && *ptr == '\n') {
+    ptr = strchr(data->domain_context, '\n');
+    if (ptr) {
         *ptr = '\0';
         ptr++;
         if (*ptr != '\0') {
             data->alt_domain_context = g_strdup(ptr);
-            ptr = strchrnul(data->alt_domain_context, '\n');
-            if (ptr && *ptr == '\n')
+            ptr = strchr(data->alt_domain_context, '\n');
+            if (ptr)
                 *ptr = '\0';
         }
     }
@@ -743,12 +743,12 @@ virSecuritySELinuxQEMUInitialize(virSecurityManagerPtr mgr)
         goto error;
     }
 
-    ptr = strchrnul(data->file_context, '\n');
-    if (ptr && *ptr == '\n') {
+    ptr = strchr(data->file_context, '\n');
+    if (ptr) {
         *ptr = '\0';
         data->content_context = g_strdup(ptr + 1);
-        ptr = strchrnul(data->content_context, '\n');
-        if (ptr && *ptr == '\n')
+        ptr = strchr(data->content_context, '\n');
+        if (ptr)
             *ptr = '\0';
     }
 

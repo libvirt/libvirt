@@ -1200,7 +1200,7 @@ virTestCounterReset(const char *prefix)
     virtTestCounter = 0;
 
     ignore_value(virStrcpyStatic(virtTestCounterStr, prefix));
-    virtTestCounterPrefixEndOffset = strchrnul(virtTestCounterStr, '\0');
+    virtTestCounterPrefixEndOffset = virtTestCounterStr + strlen(virtTestCounterStr);
 }
 
 

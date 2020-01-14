@@ -640,6 +640,7 @@ dnsmasqCapsSet(dnsmasqCapsPtr caps,
 static int
 dnsmasqCapsSetFromBuffer(dnsmasqCapsPtr caps, const char *buf)
 {
+    int len;
     const char *p;
 
     caps->noRefresh = true;
@@ -675,10 +676,14 @@ dnsmasqCapsSetFromBuffer(dnsmasqCapsPtr caps, const char *buf)
     return 0;
 
  fail:
-    p = strchrnul(buf, '\n');
+    p = strchr(buf, '\n');
+    if (!p)
+        len = strlen(buf);
+    else
+        len = p - buf;
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    _("cannot parse %s version number in '%.*s'"),
-                   caps->binaryPath, (int) (p - buf), buf);
+                   caps->binaryPath, len, buf);
     return -1;
 
 }

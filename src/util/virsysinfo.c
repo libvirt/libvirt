@@ -460,18 +460,20 @@ virSysinfoReadARM(void)
     return g_steal_pointer(&ret);
 }
 
-static char *
+static const char *
 virSysinfoParseS390Delimited(const char *base, const char *name, char **value,
                              char delim1, char delim2)
 {
     const char *start;
-    char *end;
+    const char *end;
 
     if (delim1 != delim2 &&
         (start = strstr(base, name)) &&
         (start = strchr(start, delim1))) {
         start += 1;
-        end = strchrnul(start, delim2);
+        end = strchr(start, delim2);
+        if (!end)
+            end = start + strlen(start);
         virSkipSpaces(&start);
         *value = g_strndup(start, end - start);
         virTrimSpaces(*value, NULL);
@@ -480,7 +482,7 @@ virSysinfoParseS390Delimited(const char *base, const char *name, char **value,
     return NULL;
 }
 
-static char *
+static const char *
 virSysinfoParseS390Line(const char *base, const char *name, char **value)
 {
     return virSysinfoParseS390Delimited(base, name, value, ':', '\n');
@@ -521,7 +523,7 @@ virSysinfoParseS390System(const char *base, virSysinfoSystemDefPtr *sysdef)
 static int
 virSysinfoParseS390Processor(const char *base, virSysinfoDefPtr ret)
 {
-    char *tmp_base;
+    const char *tmp_base;
     char *manufacturer = NULL;
     char *procline = NULL;
     char *ncpu = NULL;
@@ -555,7 +557,7 @@ virSysinfoParseS390Processor(const char *base, virSysinfoDefPtr ret)
     }
 
     /* now, for each processor found, extract the frequency information */
-    tmp_base = (char *) base;
+    tmp_base = base;
 
     while ((tmp_base = strstr(tmp_base, "cpu number")) &&
            (tmp_base = virSysinfoParseS390Line(tmp_base, "cpu number", &ncpu))) {

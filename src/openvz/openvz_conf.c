@@ -245,7 +245,9 @@ openvzReadNetworkConf(virDomainDefPtr def,
 
             /*parse string*/
             do {
-                char *next = strchrnul(p, ',');
+                char *next = strchr(p, ',');
+                if (!next)
+                    next = strchr(p, '\0');
                 if (STRPREFIX(p, "ifname=")) {
                     /* skip in libvirt */
                 } else if (STRPREFIX(p, "host_ifname=")) {
