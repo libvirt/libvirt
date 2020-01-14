@@ -43,7 +43,6 @@
 #include "viralloc.h"
 #include "virfile.h"
 #include "vircommand.h"
-#include "intprops.h"
 #include "virtypedparam.h"
 #include "viruri.h"
 #include "virauth.h"
@@ -2236,7 +2235,7 @@ remoteDomainGetVcpuPinInfo(virDomainPtr domain,
         goto done;
     }
 
-    if (INT_MULTIPLY_OVERFLOW(ncpumaps, maplen) ||
+    if (VIR_INT_MULTIPLY_OVERFLOW(ncpumaps, maplen) ||
         ncpumaps * maplen > REMOTE_CPUMAPS_MAX) {
         virReportError(VIR_ERR_RPC,
                        _("vCPU map buffer length exceeds maximum: %d > %d"),
@@ -2405,7 +2404,7 @@ remoteDomainGetVcpus(virDomainPtr domain,
                        maxinfo, REMOTE_VCPUINFO_MAX);
         goto done;
     }
-    if (INT_MULTIPLY_OVERFLOW(maxinfo, maplen) ||
+    if (VIR_INT_MULTIPLY_OVERFLOW(maxinfo, maplen) ||
         maxinfo * maplen > REMOTE_CPUMAPS_MAX) {
         virReportError(VIR_ERR_RPC,
                        _("vCPU map buffer length exceeds maximum: %d > %d"),

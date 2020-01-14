@@ -31,7 +31,6 @@
 #include "remote_daemon_stream.h"
 #include "viruuid.h"
 #include "vircommand.h"
-#include "intprops.h"
 #include "virnetserverservice.h"
 #include "virnetserver.h"
 #include "virfile.h"
@@ -2755,7 +2754,7 @@ remoteDispatchDomainGetVcpuPinInfo(virNetServerPtr server G_GNUC_UNUSED,
         goto cleanup;
     }
 
-    if (INT_MULTIPLY_OVERFLOW(args->ncpumaps, args->maplen) ||
+    if (VIR_INT_MULTIPLY_OVERFLOW(args->ncpumaps, args->maplen) ||
         args->ncpumaps * args->maplen > REMOTE_CPUMAPS_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("maxinfo * maplen > REMOTE_CPUMAPS_MAX"));
         goto cleanup;
@@ -2898,7 +2897,7 @@ remoteDispatchDomainGetVcpus(virNetServerPtr server G_GNUC_UNUSED,
         goto cleanup;
     }
 
-    if (INT_MULTIPLY_OVERFLOW(args->maxinfo, args->maplen) ||
+    if (VIR_INT_MULTIPLY_OVERFLOW(args->maxinfo, args->maplen) ||
         args->maxinfo * args->maplen > REMOTE_CPUMAPS_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("maxinfo * maplen > REMOTE_CPUMAPS_MAX"));
         goto cleanup;

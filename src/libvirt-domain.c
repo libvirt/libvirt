@@ -21,8 +21,6 @@
 #include <config.h>
 #include <sys/stat.h>
 
-#include "intprops.h"
-
 #include "datatypes.h"
 #include "viralloc.h"
 #include "virfile.h"
@@ -7302,7 +7300,7 @@ virDomainGetVcpuPinInfo(virDomainPtr domain, int ncpumaps,
     virCheckPositiveArgGoto(ncpumaps, error);
     virCheckPositiveArgGoto(maplen, error);
 
-    if (INT_MULTIPLY_OVERFLOW(ncpumaps, maplen)) {
+    if (VIR_INT_MULTIPLY_OVERFLOW(ncpumaps, maplen)) {
         virReportError(VIR_ERR_OVERFLOW, _("input too large: %d * %d"),
                        ncpumaps, maplen);
         goto error;
@@ -7503,7 +7501,7 @@ virDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
     else
         virCheckZeroArgGoto(maplen, error);
 
-    if (cpumaps && INT_MULTIPLY_OVERFLOW(maxinfo, maplen)) {
+    if (cpumaps && VIR_INT_MULTIPLY_OVERFLOW(maxinfo, maplen)) {
         virReportError(VIR_ERR_OVERFLOW, _("input too large: %d * %d"),
                        maxinfo, maplen);
         goto error;

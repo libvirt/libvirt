@@ -38,6 +38,8 @@
 # define sa_assert(expr) /* empty */
 #endif
 
+#define VIR_INT_MULTIPLY_OVERFLOW(a,b) (G_UNLIKELY ((b) > 0 && (a) > G_MAXINT / (b)))
+
 /* The library itself is allowed to use deprecated functions /
  * variables, so effectively undefine the deprecated attribute
  * which would otherwise be defined in libvirt.h.
