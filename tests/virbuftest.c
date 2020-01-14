@@ -246,7 +246,6 @@ testBufAddStr(const void *opaque)
     const struct testBufAddStrData *data = opaque;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *actual = NULL;
-    int ret = -1;
 
     virBufferAddLit(&buf, "<c>\n");
     virBufferAdjustIndent(&buf, 2);
@@ -256,19 +255,16 @@ testBufAddStr(const void *opaque)
 
     if (!(actual = virBufferContentAndReset(&buf))) {
         VIR_TEST_DEBUG("buf is empty");
-        goto cleanup;
+        return -1;
     }
 
     if (STRNEQ_NULLABLE(actual, data->expect)) {
         VIR_TEST_DEBUG("testBufAddStr(): Strings don't match:");
         virTestDifference(stderr, data->expect, actual);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -278,7 +274,6 @@ testBufEscapeStr(const void *opaque)
     const struct testBufAddStrData *data = opaque;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *actual = NULL;
-    int ret = -1;
 
     virBufferAddLit(&buf, "<c>\n");
     virBufferAdjustIndent(&buf, 2);
@@ -288,19 +283,16 @@ testBufEscapeStr(const void *opaque)
 
     if (!(actual = virBufferContentAndReset(&buf))) {
         VIR_TEST_DEBUG("buf is empty");
-        goto cleanup;
+        return -1;
     }
 
     if (STRNEQ_NULLABLE(actual, data->expect)) {
         VIR_TEST_DEBUG("testBufEscapeStr(): Strings don't match:");
         virTestDifference(stderr, data->expect, actual);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -310,25 +302,21 @@ testBufEscapeRegex(const void *opaque)
     const struct testBufAddStrData *data = opaque;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *actual = NULL;
-    int ret = -1;
 
     virBufferEscapeRegex(&buf, "%s", data->data);
 
     if (!(actual = virBufferContentAndReset(&buf))) {
         VIR_TEST_DEBUG("testBufEscapeRegex: buf is empty");
-        goto cleanup;
+        return -1;
     }
 
     if (STRNEQ_NULLABLE(actual, data->expect)) {
         VIR_TEST_DEBUG("testBufEscapeRegex: Strings don't match:");
         virTestDifference(stderr, data->expect, actual);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -337,7 +325,6 @@ testBufSetIndent(const void *opaque G_GNUC_UNUSED)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *actual = NULL;
-    int ret = -1;
 
     virBufferSetIndent(&buf, 11);
     virBufferAddLit(&buf, "test\n");
@@ -345,17 +332,14 @@ testBufSetIndent(const void *opaque G_GNUC_UNUSED)
     virBufferAddLit(&buf, "test2\n");
 
     if (!(actual = virBufferContentAndReset(&buf)))
-        goto cleanup;
+        return -1;
 
     if (STRNEQ(actual, "           test\n  test2\n")) {
         VIR_TEST_DEBUG("testBufSetIndent: expected indent not set");
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
