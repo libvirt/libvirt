@@ -372,9 +372,9 @@ mymain(void)
     DO_TEST("set indent", testBufSetIndent);
     DO_TEST("autoclean", testBufferAutoclean);
 
-#define DO_TEST_ADD_STR(DATA, EXPECT) \
+#define DO_TEST_ADD_STR(_data, _expect) \
     do { \
-        struct testBufAddStrData info = { DATA, EXPECT }; \
+        struct testBufAddStrData info = { .data = _data, .expect = _expect }; \
         if (virTestRun("Buf: AddStr", testBufAddStr, &info) < 0) \
             ret = -1; \
     } while (0)
@@ -384,9 +384,9 @@ mymain(void)
     DO_TEST_ADD_STR("<a/>\n", "<c>\n  <a/>\n</c>");
     DO_TEST_ADD_STR("<b>\n  <a/>\n</b>\n", "<c>\n  <b>\n    <a/>\n  </b>\n</c>");
 
-#define DO_TEST_ESCAPE(data, expect) \
+#define DO_TEST_ESCAPE(_data, _expect) \
     do { \
-        struct testBufAddStrData info = { data, expect }; \
+        struct testBufAddStrData info = { .data = _data, .expect = _expect }; \
         if (virTestRun("Buf: EscapeStr", testBufEscapeStr, &info) < 0) \
             ret = -1; \
     } while (0)
@@ -400,9 +400,9 @@ mymain(void)
     DO_TEST_ESCAPE("\x01\x01\x02\x03\x05\x08",
                    "<c>\n  <el></el>\n</c>");
 
-#define DO_TEST_ESCAPE_REGEX(data, expect) \
+#define DO_TEST_ESCAPE_REGEX(_data, _expect) \
     do { \
-        struct testBufAddStrData info = { data, expect }; \
+        struct testBufAddStrData info = { .data = _data, .expect = _expect }; \
         if (virTestRun("Buf: EscapeRegex", testBufEscapeRegex, &info) < 0) \
             ret = -1; \
     } while (0)
