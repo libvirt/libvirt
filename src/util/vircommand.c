@@ -21,11 +21,15 @@
 
 #include <config.h>
 
-#include <poll.h>
+#ifndef WIN32
+# include <poll.h>
+#endif
 #include <signal.h>
 #include <stdarg.h>
 #include <sys/stat.h>
-#include <sys/wait.h>
+#ifndef WIN32
+# include <sys/wait.h>
+#endif
 #include <fcntl.h>
 #include <unistd.h>
 
@@ -153,7 +157,9 @@ struct _virCommand {
 static virBufferPtr dryRunBuffer;
 static virCommandDryRunCallback dryRunCallback;
 static void *dryRunOpaque;
+#ifndef WIN32
 static int dryRunStatus;
+#endif /* !WIN32 */
 
 /*
  * virCommandFDIsSet:
@@ -538,6 +544,7 @@ virCommandMassClose(virCommandPtr cmd,
     return 0;
 }
 
+
 /*
  * virExec:
  * @cmd virCommandPtr containing all information about the program to
@@ -805,6 +812,7 @@ virExec(virCommandPtr cmd)
     return -1;
 }
 
+
 /**
  * virRun:
  * @argv NULL terminated argv to run
@@ -839,18 +847,6 @@ virRun(const char *const *argv G_GNUC_UNUSED,
     else
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("virRun is not implemented for WIN32"));
-    return -1;
-}
-
-static int
-virExec(virCommandPtr cmd G_GNUC_UNUSED)
-{
-    /* XXX: Some day we can implement pieces of virCommand/virExec on
-     * top of _spawn() or CreateProcess(), but we can't implement
-     * everything, since mingw completely lacks fork(), so we cannot
-     * run our own code in the child process.  */
-    virReportError(VIR_ERR_INTERNAL_ERROR,
-                   "%s", _("virExec is not implemented for WIN32"));
     return -1;
 }
 
@@ -1682,6 +1678,7 @@ virCommandFreeSendBuffers(virCommandPtr cmd)
 }
 
 
+#ifndef WIN32
 /**
  * virCommandSetSendBuffer
  * @cmd: the command to modify
@@ -1690,7 +1687,6 @@ virCommandFreeSendBuffers(virCommandPtr cmd)
  * given file descriptor. The buffer will be freed automatically
  * and the file descriptor closed.
  */
-#if defined(F_SETFL)
 int
 virCommandSetSendBuffer(virCommandPtr cmd,
                         int fd,
@@ -1724,23 +1720,6 @@ virCommandSetSendBuffer(virCommandPtr cmd,
     return 0;
 }
 
-#else /* !defined(F_SETFL) */
-
-int
-virCommandSetSendBuffer(virCommandPtr cmd,
-                        int fd G_GNUC_UNUSED,
-                        unsigned char *buffer G_GNUC_UNUSED,
-                        size_t buflen G_GNUC_UNUSED)
-{
-    if (!cmd || cmd->has_error)
-        return -1;
-
-    cmd->has_error = ENOTSUP;
-
-    return -1;
-}
-
-#endif
 
 static int
 virCommandSendBuffersFillPollfd(virCommandPtr cmd,
@@ -1796,6 +1775,9 @@ virCommandSendBuffersHandlePoll(virCommandPtr cmd,
     }
     return 0;
 }
+
+#endif /* !WIN32 */
+
 
 /**
  * virCommandSetInputBuffer:
@@ -2105,6 +2087,7 @@ virCommandToString(virCommandPtr cmd, bool linebreaks)
 }
 
 
+#ifndef WIN32
 /*
  * Manage input and output to the child process.
  */
@@ -2276,7 +2259,6 @@ virCommandProcessIO(virCommandPtr cmd)
  * Returns -1 on any error executing the command.
  * Will not return on success.
  */
-#ifndef WIN32
 int virCommandExec(virCommandPtr cmd, gid_t *groups, int ngroups)
 {
     if (!cmd ||cmd->has_error == ENOMEM) {
@@ -2299,19 +2281,7 @@ int virCommandExec(virCommandPtr cmd, gid_t *groups, int ngroups)
                          cmd->args[0]);
     return -1;
 }
-#else
-int virCommandExec(virCommandPtr cmd G_GNUC_UNUSED, gid_t *groups G_GNUC_UNUSED,
-                   int ngroups G_GNUC_UNUSED)
-{
-    /* Mingw execve() has a broken signature. Disable this
-     * function until gnulib fixes the signature, since we
-     * don't really need this on Win32 anyway.
-     */
-    virReportSystemError(ENOSYS, "%s",
-                         _("Executing new processes is not supported on Win32 platform"));
-    return -1;
-}
-#endif
+
 
 /**
  * virCommandRun:
@@ -2516,7 +2486,7 @@ virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
         }
         cmd->infd = infd[0];
         cmd->inpipe = infd[1];
-#if defined (F_SETFL)
+
         if (fcntl(cmd->inpipe, F_SETFL, O_NONBLOCK) < 0) {
             virReportSystemError(errno, "%s",
                                  _("fcntl failed to set O_NONBLOCK"));
@@ -2524,11 +2494,6 @@ virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
             ret = -1;
             goto cleanup;
         }
-#else /* !defined(F_SETFL) */
-        cmd->has_error = ENOTSUP;
-        ret = -1;
-        goto cleanup;
-#endif
     } else if ((cmd->inbuf && cmd->infd == -1) ||
                (cmd->outbuf && cmd->outfdptr != &cmd->outfd) ||
                (cmd->errbuf && cmd->errfdptr != &cmd->errfd)) {
@@ -2719,7 +2684,6 @@ virCommandWait(virCommandPtr cmd, int *exitstatus)
 }
 
 
-#ifndef WIN32
 /**
  * virCommandAbort:
  * @cmd: command to abort
@@ -2738,15 +2702,6 @@ virCommandAbort(virCommandPtr cmd)
     cmd->pid = -1;
     cmd->reap = false;
 }
-#else /* WIN32 */
-void
-virCommandAbort(virCommandPtr cmd G_GNUC_UNUSED)
-{
-    /* Mingw lacks WNOHANG and kill().  But since we haven't ported
-     * virExec to mingw yet, there's no process to be killed,
-     * making this implementation trivially correct for now :)  */
-}
-#endif
 
 
 /**
@@ -2891,6 +2846,92 @@ int virCommandHandshakeNotify(virCommandPtr cmd)
     VIR_FORCE_CLOSE(cmd->handshakeNotify[1]);
     return 0;
 }
+#else /* WIN32 */
+int
+virCommandSetSendBuffer(virCommandPtr cmd,
+                        int fd G_GNUC_UNUSED,
+                        unsigned char *buffer G_GNUC_UNUSED,
+                        size_t buflen G_GNUC_UNUSED)
+{
+    if (!cmd || cmd->has_error)
+        return -1;
+
+    cmd->has_error = ENOTSUP;
+
+    return -1;
+}
+
+
+int
+virCommandExec(virCommandPtr cmd G_GNUC_UNUSED, gid_t *groups G_GNUC_UNUSED,
+               int ngroups G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Executing new processes is not supported on Win32 platform"));
+    return -1;
+}
+
+
+int
+virCommandRun(virCommandPtr cmd G_GNUC_UNUSED, int *exitstatus G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Executing new processes is not supported on Win32 platform"));
+    return -1;
+}
+
+
+int
+virCommandRunAsync(virCommandPtr cmd G_GNUC_UNUSED, pid_t *pid G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Executing new processes is not supported on Win32 platform"));
+    return -1;
+}
+
+
+int
+virCommandWait(virCommandPtr cmd G_GNUC_UNUSED, int *exitstatus G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Executing new processes is not supported on Win32 platform"));
+    return -1;
+}
+
+
+void
+virCommandAbort(virCommandPtr cmd G_GNUC_UNUSED)
+{
+    /* Mingw lacks WNOHANG and kill().  But since we haven't ported
+     * virExec to mingw yet, there's no process to be killed,
+     * making this implementation trivially correct for now :)  */
+}
+
+
+void virCommandRequireHandshake(virCommandPtr cmd)
+{
+    if (!cmd || cmd->has_error)
+        return;
+
+    cmd->has_error = ENOSYS;
+}
+
+
+int virCommandHandshakeWait(virCommandPtr cmd G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Executing new processes is not supported on Win32 platform"));
+    return -1;
+}
+
+
+int virCommandHandshakeNotify(virCommandPtr cmd G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Executing new processes is not supported on Win32 platform"));
+    return -1;
+}
+#endif /* WIN32 */
 
 
 /**
