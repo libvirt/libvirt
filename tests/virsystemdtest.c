@@ -740,6 +740,10 @@ mymain(void)
                  "qemu-7-123456789012345678901234567890123456789012345678901234567");
     TEST_MACHINE("123456789012345678901234567890123456789012345678901234567890", 8,
                  "qemu-8-123456789012345678901234567890123456789012345678901234567");
+    TEST_MACHINE("kstest-network-device-default-httpks_(c9eed63e-981e-48ec-acdc-56b3f8c5f678)", 100,
+                 "qemu-100-kstest-network-device-default-httpksc9eed63e-981e-48ec");
+    TEST_MACHINE("kstest-network-device-default-httpks_(c9eed63e-981e-48ec--cdc-56b3f8c5f678)", 10,
+                 "qemu-10-kstest-network-device-default-httpksc9eed63e-981e-48ec");
 
 # define TESTS_PM_SUPPORT_HELPER(name, function) \
     do { \
