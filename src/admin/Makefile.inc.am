@@ -73,7 +73,6 @@ libvirt_admin_la_LDFLAGS = \
 
 libvirt_admin_la_LIBADD = \
 	libvirt.la \
-	$(CYGWIN_EXTRA_LIBADD) \
 	$(CAPNG_LIBS) \
 	$(YAJL_LIBS) \
 	$(DEVMAPPER_LIBS) \

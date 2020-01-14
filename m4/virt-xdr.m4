@@ -22,18 +22,15 @@ AC_DEFUN([LIBVIRT_CHECK_XDR], [
   if test x"$with_remote" = x"yes" || test x"$with_libvirtd" = x"yes"; then
     dnl Where are the XDR functions?
     dnl If portablexdr is installed, prefer that.
-    dnl Otherwise try -lrpc (Cygwin) -lxdr (some MinGW), -lnsl (Solaris)
+    dnl Otherwise try -lxdr (some MinGW)
     dnl -ltirpc (glibc 2.13.90 or newer) or none (most Unix)
     AC_CHECK_LIB([portablexdr],[xdrmem_create],[],[
-      AC_SEARCH_LIBS([xdrmem_create],[rpc xdr nsl tirpc],[],
+      AC_SEARCH_LIBS([xdrmem_create],[xdr tirpc],[],
         [AC_MSG_ERROR([Cannot find a XDR library])])
     ])
     with_xdr="yes"
 
-    dnl check for cygwin's variation in xdr function names
-    AC_CHECK_FUNCS([xdr_u_int64_t],[],[],[#include <rpc/xdr.h>])
-
-    dnl Cygwin/recent glibc requires -I/usr/include/tirpc for <rpc/rpc.h>
+    dnl Recent glibc requires -I/usr/include/tirpc for <rpc/rpc.h>
     old_CFLAGS=$CFLAGS
     AC_CACHE_CHECK([where to find <rpc/rpc.h>], [lv_cv_xdr_cflags], [
       for add_CFLAGS in '' '-I/usr/include/tirpc' 'missing'; do

@@ -99,7 +99,6 @@ virtlogd_LDADD = \
 		libvirt.la \
 		$(GLIB_LIBS) \
 		../gnulib/lib/libgnu.la \
-		$(CYGWIN_EXTRA_LIBADD) \
 		$(NULL)
 if WITH_DTRACE_PROBES
 virtlogd_LDADD += libvirt_probes.lo

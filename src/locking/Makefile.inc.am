@@ -162,7 +162,6 @@ virtlockd_LDADD = \
 	libvirt_driver_admin.la \
 	$(GLIB_LIBS) \
 	../gnulib/lib/libgnu.la \
-	$(CYGWIN_EXTRA_LIBADD) \
 	$(NULL)
 if WITH_DTRACE_PROBES
 virtlockd_LDADD += libvirt_probes.lo

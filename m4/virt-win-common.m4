@@ -1,4 +1,4 @@
-dnl The Cygwin, MinGW and MSVC common checks
+dnl The MinGW common checks
 dnl
 dnl Copyright (C) 2016 Red Hat, Inc.
 dnl
@@ -22,7 +22,7 @@ AC_DEFUN([LIBVIRT_WIN_CHECK_COMMON], [
   WIN32_EXTRA_LIBS=
 
   case "$host" in
-    *-*-mingw* | *-*-cygwin* | *-*-msvc* )
+    *-*-mingw* )
       WIN32_EXTRA_LIBS="-lole32 -loleaut32"
       # If the host is Windows, and shared libraries are disabled, we
       # need to add -DLIBVIRT_STATIC to the CFLAGS for proper linking
@@ -38,7 +38,5 @@ AC_DEFUN([LIBVIRT_WIN_CHECK_COMMON], [
 
 AC_DEFUN([LIBVIRT_WIN_RESULT_COMMON], [
   details="CFLAGS='$WIN32_EXTRA_CFLAGS' LIBS='$WIN32_EXTRA_LIBS'"
-  LIBVIRT_RESULT([Cygwin], [$with_cygwin], [$details])
-  LIBVIRT_RESULT([MinGW], [$with_cygwin], [$details])
-  LIBVIRT_RESULT([MSVC], [$with_cygwin], [$details])
+  LIBVIRT_RESULT([MinGW], [$with_win], [$details])
 ])

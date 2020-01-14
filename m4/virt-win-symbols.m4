@@ -1,4 +1,4 @@
-dnl The Cygwin, MinGW and MSVC symbols checks
+dnl The MinGW symbols checks
 dnl
 dnl Copyright (C) 2016 Red Hat, Inc.
 dnl
@@ -23,7 +23,7 @@ AC_DEFUN([LIBVIRT_WIN_CHECK_SYMBOLS], [
   LIBVIRT_LXC_SYMBOL_FILE='$(srcdir)/libvirt_lxc.syms'
   LIBVIRT_QEMU_SYMBOL_FILE='$(srcdir)/libvirt_qemu.syms'
   case "$host" in
-    *-*-mingw* | *-*-msvc* )
+    *-*-mingw* )
       # Also set the symbol file to .def, so src/Makefile generates libvirt.def
       # from libvirt.syms and passes libvirt.def instead of libvirt.syms to the
       # linker

@@ -22,7 +22,7 @@ AC_DEFUN([LIBVIRT_COMPILE_PIE],[
     PIE_CFLAGS=
     PIE_LDFLAGS=
     case "$host" in
-      *-*-mingw* | *-*-msvc* | *-*-cygwin* )
+      *-*-mingw* )
          ;; dnl All code is position independent on Win32 target
       *)
       gl_COMPILER_OPTION_IF([-fPIE -DPIE -pie], [

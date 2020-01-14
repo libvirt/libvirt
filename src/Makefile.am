@@ -42,7 +42,6 @@ AM_LDFLAGS =	$(DRIVER_MODULES_LDFLAGS) \
 		$(COVERAGE_LDFLAGS) \
 		$(RELRO_LDFLAGS) \
 		$(NO_INDIRECT_LDFLAGS) \
-		$(CYGWIN_EXTRA_LDFLAGS) \
 		$(MINGW_EXTRA_LDFLAGS) \
 		$(NULL)
 AM_LDFLAGS_MOD = \
@@ -450,8 +449,7 @@ endif WITH_MACOS
 libvirt_la_LDFLAGS += $(NULL)
 libvirt_la_BUILT_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_la_LIBADD += \
-		    $(DRIVER_MODULES_LIBS) \
-		    $(CYGWIN_EXTRA_LIBADD)
+		    $(DRIVER_MODULES_LIBS)
 libvirt_la_CFLAGS = -DIN_LIBVIRT $(AM_CFLAGS)
 # Because we specify libvirt_la_DEPENDENCIES for $(LIBVIRT_SYMBOL_FILE), we
 # lose automake's automatic dependencies on an appropriate subset of
@@ -518,7 +516,7 @@ libvirt_qemu_la_LDFLAGS = \
 		$(AM_LDFLAGS) \
 		$(NULL)
 libvirt_qemu_la_CFLAGS = $(AM_CFLAGS)
-libvirt_qemu_la_LIBADD = libvirt.la $(CYGWIN_EXTRA_LIBADD)
+libvirt_qemu_la_LIBADD = libvirt.la
 
 libvirt_lxc_la_SOURCES = libvirt-lxc.c
 libvirt_lxc_la_LDFLAGS = \
@@ -528,7 +526,7 @@ libvirt_lxc_la_LDFLAGS = \
 		$(AM_LDFLAGS) \
 		$(NULL)
 libvirt_lxc_la_CFLAGS = $(AM_CFLAGS)
-libvirt_lxc_la_LIBADD = libvirt.la $(CYGWIN_EXTRA_LIBADD)
+libvirt_lxc_la_LIBADD = libvirt.la
 
 EXTRA_DIST += \
 	$(SYSCONF_FILES) \

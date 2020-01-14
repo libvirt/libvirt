@@ -1,4 +1,4 @@
-dnl The Cygwin, MinGW and MSVC windres checks
+dnl The MinGW windres checks
 dnl
 dnl Copyright (C) 2016 Red Hat, Inc.
 dnl
@@ -21,7 +21,7 @@ AC_DEFUN([LIBVIRT_WIN_CHECK_WINDRES], [
   dnl Look for windres to build a Windows icon resource.
   with_windres=no
   case "$host" in
-    *-*-mingw* | *-*-cygwin* | *-*-msvc* )
+    *-*-mingw* )
       AC_CHECK_TOOL([WINDRES], [windres], [])
       if test "x$WINDRES" != "x"; then
         with_windres=yes

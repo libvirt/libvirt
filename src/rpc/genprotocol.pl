@@ -47,7 +47,7 @@ open RPCGEN, "-|", "$rpcgen $mode $xdrdef"
 open TARGET, ">$target"
     or die "cannot create $target: $!";
 
-my $fixup = $^O eq "linux" || $^O eq "cygwin" || $^O eq "gnukfreebsd" || $^O eq "freebsd" || $^O eq "darwin";
+my $fixup = $^O eq "linux" || $^O eq "gnukfreebsd" || $^O eq "freebsd" || $^O eq "darwin";
 
 if ($mode eq "-c") {
     print TARGET "#include <config.h>\n";
