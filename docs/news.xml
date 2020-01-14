@@ -115,6 +115,22 @@
           <code>virsh domstats --memory</code>.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Allow accessing NVMe disks directly
+        </summary>
+        <description>
+          Before this release there were two ways to configure a NVMe disk for
+          a domain. The first was using &lt;disk/&gt; with the &lt;source/&gt;
+          pointing to the <code>/dev/nvmeXXXX</code>. The other was using PCI
+          assignment via &lt;hostdev/&gt; element. Both have their
+          disadvantages: the former adds latency of file system and block
+          layers of the host kernel, the latter prohibits domain migration. In
+          this release the third way of configuring NVMe disk is added which
+          combines the advantages and drops disadvantages of the previous two
+          ways. It's accessible via &lt;disk type='nvme'/&gt;.
+        </description>
+      </change>
     </section>
     <section title="Removed features">
       <change>
