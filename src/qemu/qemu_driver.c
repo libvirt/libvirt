@@ -32,8 +32,6 @@
 #include <signal.h>
 #include <sys/wait.h>
 #include <sys/ioctl.h>
-#include <sys/un.h>
-
 
 #include "qemu_driver.h"
 #include "qemu_agent.h"
@@ -104,6 +102,7 @@
 #include "virdomainsnapshotobjlist.h"
 #include "virenum.h"
 #include "virdomaincheckpointobjlist.h"
+#include "virsocket.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 

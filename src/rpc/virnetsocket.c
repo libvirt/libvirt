@@ -22,18 +22,12 @@
 #include <config.h>
 
 #include <sys/stat.h>
-#include <sys/socket.h>
 #include <unistd.h>
 #include <sys/wait.h>
 #include <signal.h>
 #include <fcntl.h>
 #ifdef HAVE_IFADDRS_H
 # include <ifaddrs.h>
-#endif
-#include <netdb.h>
-
-#ifdef HAVE_NETINET_TCP_H
-# include <netinet/tcp.h>
 #endif
 
 #ifdef HAVE_SYS_UCRED_H
@@ -459,7 +453,7 @@ int virNetSocketNewListenTCP(const char *nodename,
 }
 
 
-#if HAVE_SYS_UN_H
+#ifndef WIN32
 int virNetSocketNewListenUNIX(const char *path,
                               mode_t mask,
                               uid_t user,
@@ -645,7 +639,7 @@ int virNetSocketNewConnectTCP(const char *nodename,
 }
 
 
-#ifdef HAVE_SYS_UN_H
+#ifndef WIN32
 int virNetSocketNewConnectUNIX(const char *path,
                                bool spawnDaemon,
                                const char *binary,
@@ -1345,7 +1339,7 @@ void virNetSocketDispose(void *obj)
         sock->watch = -1;
     }
 
-#ifdef HAVE_SYS_UN_H
+#ifndef WIN32
     /* If a server socket, then unlink UNIX path */
     if (sock->unlinkUNIX &&
         sock->localAddr.data.sa.sa_family == AF_UNIX &&
@@ -2273,7 +2267,7 @@ void virNetSocketClose(virNetSocketPtr sock)
         sock->fd = -1;
     }
 
-#ifdef HAVE_SYS_UN_H
+#ifndef WIN32
     /* If a server socket, then unlink UNIX path */
     if (sock->unlinkUNIX &&
         sock->localAddr.data.sa.sa_family == AF_UNIX &&

@@ -21,7 +21,6 @@
 
 #pragma once
 
-#include <netdb.h>
 #include "internal.h"
 #include "viruri.h"
 

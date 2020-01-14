@@ -26,7 +26,6 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/wait.h>
-#include <arpa/inet.h>
 
 #include "virerror.h"
 #include "qemu_conf.h"
@@ -44,7 +43,7 @@
 #include "cpu/cpu.h"
 #include "domain_nwfilter.h"
 #include "virfile.h"
-#include "virsocketaddr.h"
+#include "virsocket.h"
 #include "virstring.h"
 #include "viratomic.h"
 #include "storage_conf.h"

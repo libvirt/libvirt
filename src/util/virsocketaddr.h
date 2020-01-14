@@ -18,13 +18,7 @@
 
 #pragma once
 
-#include <netinet/in.h>
-#include <sys/socket.h>
-#ifdef HAVE_SYS_UN_H
-# include <sys/un.h>
-#endif
-
-#include "internal.h"
+#include "virsocket.h"
 
 #define VIR_LOOPBACK_IPV4_ADDR "127.0.0.1"
 
@@ -34,7 +28,7 @@ typedef struct {
         struct sockaddr_storage stor;
         struct sockaddr_in inet4;
         struct sockaddr_in6 inet6;
-#ifdef HAVE_SYS_UN_H
+#ifndef WIN32
         struct sockaddr_un un;
 #endif
     } data;

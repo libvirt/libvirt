@@ -22,9 +22,8 @@
 
 #ifdef NSS
 
-# include <arpa/inet.h>
 # include "libvirt_nss.h"
-# include "virsocketaddr.h"
+# include "virsocket.h"
 
 # define VIR_FROM_THIS VIR_FROM_NONE
 

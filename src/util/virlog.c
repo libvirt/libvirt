@@ -24,16 +24,11 @@
 #include <stdarg.h>
 #include <time.h>
 #include <sys/time.h>
-#include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
 #if HAVE_SYSLOG_H
 # include <syslog.h>
-#endif
-#include <sys/socket.h>
-#if HAVE_SYS_UN_H
-# include <sys/un.h>
 #endif
 
 #include "virerror.h"
@@ -46,6 +41,7 @@
 #include "virtime.h"
 #include "virstring.h"
 #include "configmake.h"
+#include "virsocket.h"
 
 /* Journald output is only supported on Linux new enough to expose
  * htole64.  */

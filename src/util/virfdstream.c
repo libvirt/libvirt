@@ -25,12 +25,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <sys/socket.h>
 #include <sys/wait.h>
-#if HAVE_SYS_UN_H
-# include <sys/un.h>
-#endif
-#include <netinet/in.h>
 #ifndef WIN32
 # include <termios.h>
 #endif
@@ -46,6 +41,7 @@
 #include "virstring.h"
 #include "virtime.h"
 #include "virprocess.h"
+#include "virsocket.h"
 
 #define VIR_FROM_THIS VIR_FROM_STREAMS
 
@@ -1163,7 +1159,7 @@ int virFDStreamOpen(virStreamPtr st,
 }
 
 
-#if HAVE_SYS_UN_H
+#ifndef WIN32
 int virFDStreamConnectUNIX(virStreamPtr st,
                            const char *path,
                            bool abstract)

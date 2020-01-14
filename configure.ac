@@ -231,9 +231,13 @@ AM_CONDITIONAL([WITH_LINUX], [test "$with_linux" = "yes"])
 AM_CONDITIONAL([WITH_FREEBSD], [test "$with_freebsd" = "yes"])
 AM_CONDITIONAL([WITH_MACOS], [test "$with_macos" = "yes"])
 
-# We don't support the daemon yet
 if test "$with_win" = "yes" ; then
+  # We don't support the daemon yet
   with_libvirtd=no
+
+  # For AI_ADDRCONFIG
+  AC_DEFINE([_WIN32_WINNT], [0x0600], [Win Vista / Server 2008])
+  AC_DEFINE([WINVER], [0x0600], [Win Vista / Server 2008])
 fi
 
 # The daemon requires remote support.  Likewise, if we are not using
@@ -382,7 +386,6 @@ AC_CHECK_HEADERS([\
   linux/magic.h \
   mntent.h \
   net/ethernet.h \
-  netinet/tcp.h \
   net/if.h \
   pty.h \
   pwd.h \
@@ -393,7 +396,6 @@ AC_CHECK_HEADERS([\
   sys/syscall.h \
   sys/sysctl.h \
   sys/ucred.h \
-  sys/un.h \
   ])
 dnl Check whether endian provides handy macros.
 AC_CHECK_DECLS([htole64], [], [], [[#include <endian.h>]])

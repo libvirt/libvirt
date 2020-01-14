@@ -24,8 +24,6 @@
 #include "virbuffer.h"
 #include "viralloc.h"
 
-#include <netdb.h>
-
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 /*

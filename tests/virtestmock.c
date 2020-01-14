@@ -20,16 +20,11 @@
 
 #include "virmock.h"
 #include <unistd.h>
-#include <sys/types.h>
 #include <fcntl.h>
 #include <sys/file.h>
 #include <sys/stat.h>
-#include <sys/socket.h>
-#ifdef HAVE_SYS_UN_H
-# include <sys/un.h>
-#endif
 
-#include "internal.h"
+#include "virsocket.h"
 #include "configmake.h"
 #include "virstring.h"
 #include "viralloc.h"
@@ -202,7 +197,7 @@ int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
 {
     init_syms();
 
-#ifdef HAVE_SYS_UN_H
+#ifndef WIN32
     if (addrlen == sizeof(struct sockaddr_un)) {
         struct sockaddr_un *tmp = (struct sockaddr_un *) addr;
         if (tmp->sun_family == AF_UNIX)

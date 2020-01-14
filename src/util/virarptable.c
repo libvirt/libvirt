@@ -20,7 +20,6 @@
 
 #include <config.h>
 
-#include <arpa/inet.h>
 #ifdef __linux__
 # include <linux/rtnetlink.h>
 #endif

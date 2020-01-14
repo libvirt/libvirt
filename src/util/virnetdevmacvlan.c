@@ -42,8 +42,6 @@ VIR_ENUM_IMPL(virNetDevMacVLanMode,
 
 #if WITH_MACVTAP
 # include <fcntl.h>
-# include <sys/socket.h>
-# include <sys/ioctl.h>
 
 # include <net/if.h>
 # include <linux/if_tun.h>
@@ -61,6 +59,7 @@ VIR_ENUM_IMPL(virNetDevMacVLanMode,
 # include "virnetdev.h"
 # include "virpidfile.h"
 # include "virbitmap.h"
+# include "virsocket.h"
 
 VIR_LOG_INIT("util.netdevmacvlan");
 

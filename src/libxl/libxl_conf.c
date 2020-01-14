@@ -24,7 +24,6 @@
 
 #include <libxl.h>
 #include <sys/types.h>
-#include <sys/socket.h>
 
 #include "internal.h"
 #include "virlog.h"
@@ -47,7 +46,6 @@
 #include "xen_xl.h"
 #include "virnetdevvportprofile.h"
 #include "virenum.h"
-
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
 

@@ -24,8 +24,6 @@
 #include <config.h>
 
 #include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
 
 #include "virnetlink.h"
 #include "virnetdev.h"
@@ -34,6 +32,7 @@
 #include "virmacaddr.h"
 #include "virerror.h"
 #include "viralloc.h"
+#include "virsocket.h"
 
 #define VIR_FROM_THIS VIR_FROM_NET
 

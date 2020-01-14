@@ -31,10 +31,7 @@
 #include <sys/ioctl.h>
 #include <poll.h>
 
-#include <arpa/inet.h>
 #include <net/ethernet.h>
-#include <netinet/ip.h>
-#include <netinet/udp.h>
 #include <net/if_arp.h>
 
 #include "internal.h"
@@ -53,6 +50,7 @@
 #include "nwfilter_ipaddrmap.h"
 #include "nwfilter_learnipaddr.h"
 #include "virstring.h"
+#include "virsocket.h"
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 

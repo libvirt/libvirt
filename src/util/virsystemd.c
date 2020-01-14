@@ -21,11 +21,6 @@
 
 #include <config.h>
 
-#include <sys/socket.h>
-#ifdef HAVE_SYS_UN_H
-# include <sys/un.h>
-#endif
-
 #define LIBVIRT_VIRSYSTEMDPRIV_H_ALLOW
 #include "virsystemdpriv.h"
 
@@ -515,7 +510,7 @@ int virSystemdTerminateMachine(const char *name)
 void
 virSystemdNotifyStartup(void)
 {
-#ifdef HAVE_SYS_UN_H
+#ifndef WIN32
     const char *path;
     const char *msg = "READY=1";
     int fd;
@@ -559,7 +554,7 @@ virSystemdNotifyStartup(void)
         VIR_WARN("Failed to notify systemd");
 
     VIR_FORCE_CLOSE(fd);
-#endif /* HAVE_SYS_UN_H */
+#endif /* !WIN32 */
 }
 
 static int

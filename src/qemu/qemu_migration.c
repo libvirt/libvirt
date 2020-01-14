@@ -21,8 +21,6 @@
 
 #include <config.h>
 
-#include <netdb.h>
-#include <sys/socket.h>
 #include <sys/time.h>
 #include <fcntl.h>
 #include <poll.h>
@@ -62,6 +60,7 @@
 #include "virprocess.h"
 #include "nwfilter_conf.h"
 #include "virdomainsnapshotobjlist.h"
+#include "virsocket.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 

@@ -26,15 +26,11 @@
 #include "viralloc.h"
 #include "virlog.h"
 #include "virstring.h"
+#include "virsocket.h"
 
-#ifndef WIN32
-# include <sys/ioctl.h>
-#endif
-#include <sys/socket.h>
 #ifdef HAVE_NET_IF
 # include <net/if.h>
 #endif
-#include <netinet/in.h>
 
 #ifdef __linux__
 # if defined(HAVE_LIBNL)

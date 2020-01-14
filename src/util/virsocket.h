@@ -79,13 +79,14 @@ int vir_socket(int domain, int type, int protocol);
 #else
 
 # include <sys/socket.h>
-# include <unistd.h>
 # include <sys/ioctl.h>
 # include <arpa/inet.h>
+# include <netinet/ip.h>
 # include <netinet/in.h>
 # include <netinet/udp.h>
 # include <netinet/tcp.h>
 # include <sys/un.h>
+# include <netdb.h>
 
 # define closesocket close
 # define ioctlsocket ioctl

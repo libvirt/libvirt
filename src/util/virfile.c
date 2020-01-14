@@ -42,8 +42,6 @@
 # include <libutil.h>
 #endif /* !HAVE_LIBUTIL_H */
 #include <sys/stat.h>
-#include <sys/types.h>
-#include <sys/socket.h>
 #include <sys/wait.h>
 #if defined(HAVE_SYS_MOUNT_H)
 # include <sys/mount.h>
@@ -90,6 +88,7 @@
 #include "virprocess.h"
 #include "virstring.h"
 #include "virutil.h"
+#include "virsocket.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

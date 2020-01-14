@@ -23,7 +23,6 @@
 
 #include <sys/epoll.h>
 #include <sys/wait.h>
-#include <sys/socket.h>
 
 #ifdef MAJOR_IN_MKDEV
 # include <sys/mkdev.h>
@@ -31,8 +30,6 @@
 # include <sys/sysmacros.h>
 #endif
 
-#include <sys/types.h>
-#include <sys/un.h>
 #include <sys/personality.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -69,6 +66,7 @@
 #include "rpc/virnetdaemon.h"
 #include "virstring.h"
 #include "virgettext.h"
+#include "virsocket.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 

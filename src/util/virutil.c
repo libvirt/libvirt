@@ -44,7 +44,6 @@
 # include <libdevmapper.h>
 #endif
 
-#include <netdb.h>
 #ifdef HAVE_GETPWUID_R
 # include <pwd.h>
 # include <grp.h>
@@ -52,18 +51,6 @@
 #if WITH_CAPNG
 # include <cap-ng.h>
 # include <sys/prctl.h>
-#endif
-
-#ifdef WIN32
-# ifdef HAVE_WINSOCK2_H
-#  include <winsock2.h>
-# endif
-# include <windows.h>
-# include <shlobj.h>
-#endif
-
-#ifdef HAVE_SYS_UN_H
-# include <sys/un.h>
 #endif
 
 #include "virerror.h"

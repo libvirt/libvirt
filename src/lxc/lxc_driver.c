@@ -31,10 +31,7 @@
 # include <sys/sysmacros.h>
 #endif
 
-#include <sys/types.h>
-#include <sys/socket.h>
 #include <sys/stat.h>
-#include <sys/un.h>
 #include <sys/poll.h>
 #include <unistd.h>
 #include <wait.h>
@@ -75,6 +72,7 @@
 #include "viraccessapichecklxc.h"
 #include "virhostdev.h"
 #include "netdev_bandwidth_conf.h"
+#include "virsocket.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 

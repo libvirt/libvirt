@@ -27,9 +27,9 @@
 # include <libxl.h>
 # include <xenstore.h>
 # include <xenctrl.h>
-# include <sys/socket.h>
 
 # include "virfile.h"
+# include "virsocket.h"
 
 VIR_MOCK_IMPL_RET_VOID(xs_daemon_open,
                        struct xs_handle *)

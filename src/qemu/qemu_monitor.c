@@ -22,8 +22,6 @@
 #include <config.h>
 
 #include <poll.h>
-#include <sys/socket.h>
-#include <sys/un.h>
 #include <unistd.h>
 #include <fcntl.h>
 
@@ -41,6 +39,7 @@
 #include "virprobe.h"
 #include "virstring.h"
 #include "virtime.h"
+#include "virsocket.h"
 
 #ifdef WITH_DTRACE_PROBES
 # include "libvirt_qemu_probes.h"

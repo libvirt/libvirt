@@ -21,9 +21,6 @@
 
 #include <config.h>
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/un.h>
 #include <poll.h>
 #include <unistd.h>
 #include <sys/time.h>
@@ -41,6 +38,7 @@
 #include "virstring.h"
 #include "cpu/cpu_x86.h"
 #include "virenum.h"
+#include "virsocket.h"
 
 #ifdef WITH_DTRACE_PROBES
 # include "libvirt_qemu_probes.h"

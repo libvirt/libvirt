@@ -22,7 +22,6 @@
 
 %#include "internal.h"
 %#include "remote_protocol.h"
-%#include <arpa/inet.h>
 
 /*----- Protocol. -----*/
 struct qemu_domain_monitor_command_args {

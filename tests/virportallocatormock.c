@@ -23,10 +23,7 @@
 #endif
 
 #if defined(__linux__) && defined(RTLD_NEXT)
-# include "internal.h"
-# include <sys/socket.h>
-# include <arpa/inet.h>
-# include <netinet/in.h>
+# include "virsocket.h"
 # include <unistd.h>
 
 static bool host_has_ipv6;

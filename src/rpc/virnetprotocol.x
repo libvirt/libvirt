@@ -20,7 +20,7 @@
 
 %#include "internal.h"
 %#include "virxdrdefs.h"
-%#include <arpa/inet.h>
+%#include "virsocket.h"
 
 /*----- Data types. -----*/
 

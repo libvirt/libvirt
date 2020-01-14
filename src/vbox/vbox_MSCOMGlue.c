@@ -22,11 +22,6 @@
 
 #include <config.h>
 
-#ifdef HAVE_WINSOCK2_H
-# include <winsock2.h>
-#endif
-#include <windows.h>
-
 #define nsCID CLSID
 
 #include "internal.h"
@@ -35,6 +30,7 @@
 #include "virerror.h"
 #include "virstring.h"
 #include "virutil.h"
+#include "virsocket.h"
 #include "vbox_MSCOMGlue.h"
 
 #define VIR_FROM_THIS VIR_FROM_VBOX

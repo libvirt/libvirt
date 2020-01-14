@@ -49,8 +49,6 @@ VIR_ENUM_IMPL(virNetDevVPortProfileOp,
 #if WITH_VIRTUALPORT
 
 # include <fcntl.h>
-# include <sys/socket.h>
-# include <sys/ioctl.h>
 
 # include <net/if.h>
 # include <linux/if_tun.h>
@@ -59,6 +57,7 @@ VIR_ENUM_IMPL(virNetDevVPortProfileOp,
 # include "virfile.h"
 # include "virlog.h"
 # include "virnetdev.h"
+# include "virsocket.h"
 
 VIR_LOG_INIT("util.netdevvportprofile");
 

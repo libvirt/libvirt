@@ -43,9 +43,6 @@
 #include <fcntl.h>
 #include <poll.h>
 
-#include <arpa/inet.h>
-#include <netinet/ip.h>
-#include <netinet/udp.h>
 #include <net/if.h>
 
 #include "viralloc.h"

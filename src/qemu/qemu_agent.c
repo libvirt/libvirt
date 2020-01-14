@@ -21,9 +21,6 @@
 
 #include <config.h>
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/un.h>
 #include <poll.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -41,6 +38,7 @@
 #include "virobject.h"
 #include "virstring.h"
 #include "virenum.h"
+#include "virsocket.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
