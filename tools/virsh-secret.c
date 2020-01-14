@@ -250,7 +250,7 @@ cmdSecretSetValue(vshControl *ctl, const vshCmd *cmd)
         vshPrint(ctl, "%s", _("Enter new value for secret:"));
         fflush(stdout);
 
-        if (!(file_buf = getpass(""))) {
+        if (!(file_buf = virGetPassword())) {
             vshError(ctl, "%s", _("Failed to read secret"));
             return false;
         }

@@ -28,6 +28,10 @@
 #include <poll.h>
 #include <sys/stat.h>
 
+#ifdef WIN32
+# include <conio.h>
+#endif /* WIN32 */
+
 #ifdef MAJOR_IN_MKDEV
 # include <sys/mkdev.h>
 #elif MAJOR_IN_SYSMACROS
@@ -1730,4 +1734,29 @@ virHostGetDRMRenderNode(void)
  cleanup:
     VIR_DIR_CLOSE(driDir);
     return ret;
+}
+
+/*
+ * Get a password from the console input stream.
+ * The caller must free the returned password.
+ *
+ * Returns: the password, or NULL
+ */
+char *virGetPassword(void)
+{
+#ifdef WIN32
+    GString *pw = g_string_new("");
+
+    while (1) {
+        char c = _getch();
+        if (c == '\r')
+            break;
+
+        g_string_append_c(pw, c);
+    }
+
+    return g_string_free(pw, FALSE);
+#else /* !WIN32 */
+    return g_strdup(getpass(""));
+#endif /* ! WIN32 */
 }

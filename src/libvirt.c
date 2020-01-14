@@ -30,7 +30,6 @@
 
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
-#include "getpass.h"
 
 #ifdef WITH_CURL
 # include <curl/curl.h>
@@ -157,9 +156,9 @@ virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
             if (fflush(stdout) != 0)
                 return -1;
 
-            bufptr = getpass("");
-            if (!bufptr)
-                return -1;
+            bufptr = virGetPassword();
+            if (STREQ(bufptr, ""))
+                VIR_FREE(bufptr);
             break;
 
         default:
@@ -167,7 +166,7 @@ virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
         }
 
         if (cred[i].type != VIR_CRED_EXTERNAL) {
-            cred[i].result = g_strdup(STREQ(bufptr, "") && cred[i].defresult ? cred[i].defresult : bufptr);
+            cred[i].result = bufptr ? bufptr : g_strdup(cred[i].defresult ? cred[i].defresult : "");
             cred[i].resultlen = strlen(cred[i].result);
         }
     }

@@ -159,3 +159,5 @@ char *virHostGetDRMRenderNode(void) G_GNUC_NO_INLINE;
  */
 #define VIR_ASSIGN_IS_OVERFLOW(lvalue, rvalue) \
     (((lvalue) = (rvalue)) != (rvalue))
+
+char *virGetPassword(void);
