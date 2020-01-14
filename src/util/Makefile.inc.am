@@ -65,8 +65,6 @@ UTIL_SOURCES = \
 	util/vireventglib.h \
 	util/vireventglibwatch.c \
 	util/vireventglibwatch.h \
-	util/vireventpoll.c \
-	util/vireventpoll.h \
 	util/virfcp.c \
 	util/virfcp.h \
 	util/virfdstream.c \
