@@ -12,6 +12,7 @@
 struct testBufAddStrData {
     const char *data;
     const char *expect;
+    const char *arg;
 };
 
 static int testBufAutoIndent(const void *data G_GNUC_UNUSED)
@@ -128,6 +129,30 @@ static int testBufTrim(const void *data G_GNUC_UNUSED)
  cleanup:
     virBufferFreeAndReset(buf);
     return ret;
+}
+
+static int
+testBufTrimChars(const void *opaque)
+{
+    const struct testBufAddStrData *data = opaque;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    g_autofree char *actual = NULL;
+
+    virBufferAddStr(&buf, data->data);
+    virBufferTrimChars(&buf, data->arg);
+
+    if (!(actual = virBufferContentAndReset(&buf))) {
+        VIR_TEST_DEBUG("buf is empty");
+        return -1;
+    }
+
+    if (STRNEQ_NULLABLE(actual, data->expect)) {
+        VIR_TEST_DEBUG("testBufEscapeStr(): Strings don't match:");
+        virTestDifference(stderr, data->expect, actual);
+        return -1;
+    }
+
+    return 0;
 }
 
 static int testBufAddBuffer(const void *data G_GNUC_UNUSED)
@@ -410,6 +435,17 @@ mymain(void)
     DO_TEST_ESCAPE_REGEX("noescape", "noescape");
     DO_TEST_ESCAPE_REGEX("^$.|?*+()[]{}\\",
                          "\\^\\$\\.\\|\\?\\*\\+\\(\\)\\[\\]\\{\\}\\\\");
+
+#define DO_TEST_TRIM_CHARS(_data, _arg, _expect) \
+    do { \
+        struct testBufAddStrData info = { .data = _data, .expect = _expect, .arg = _arg }; \
+        if (virTestRun("Buf: Trim: " #_data, testBufTrimChars, &info) < 0) \
+            ret = -1; \
+    } while (0)
+
+    DO_TEST_TRIM_CHARS("Trimmm", "m", "Tri");
+    DO_TEST_TRIM_CHARS("-abcd-efgh--", "-", "-abcd-efgh");
+    DO_TEST_TRIM_CHARS("-hABC-efgh--", "-h", "-hABC-efg");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

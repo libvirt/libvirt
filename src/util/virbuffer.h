@@ -92,4 +92,5 @@ size_t virBufferGetIndent(const virBuffer *buf);
 size_t virBufferGetEffectiveIndent(const virBuffer *buf);
 
 void virBufferTrim(virBufferPtr buf, const char *trim, int len);
+void virBufferTrimChars(virBufferPtr buf, const char *trim);
 void virBufferAddStr(virBufferPtr buf, const char *str);

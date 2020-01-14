@@ -673,6 +673,32 @@ virBufferTrim(virBufferPtr buf, const char *str, int len)
     g_string_truncate(buf->str, buf->str->len - len);
 }
 
+/**
+ * virBufferTrimChars:
+ * @buf: the buffer to trim
+ * @trim: the characters to be trimmed
+ *
+ * Trim the tail of the buffer. The longest string that can be formed with
+ * the characters from @trim is trimmed.
+ */
+void
+virBufferTrimChars(virBufferPtr buf, const char *trim)
+{
+    ssize_t i;
+
+    if (!buf || !buf->str)
+        return;
+
+    if (!trim)
+        return;
+
+    for (i = buf->str->len - 1; i > 0; i--) {
+        if (!strchr(trim, buf->str->str[i]))
+            break;
+    }
+
+    g_string_truncate(buf->str, i + 1);
+}
 
 /**
  * virBufferAddStr:
