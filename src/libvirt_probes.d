@@ -15,6 +15,20 @@ provider libvirt {
 
 	probe event_poll_run(int nfds, int timeout);
 
+	# file: src/util/vireventglib.c
+	# prefix: event_glib
+	probe event_glib_add_handle(int watch, int fd, int events, void *cb, void *opaque, void *ff);
+	probe event_glib_update_handle(int watch, int events);
+	probe event_glib_remove_handle(int watch);
+	probe event_glib_remove_handle_idle(int watch, void *ff, void *opaque);
+	probe event_glib_dispatch_handle(int watch, int events, void *cb, void *opaque);
+
+	probe event_glib_add_timeout(int timer, int frequency, void *cb, void *opaque, void *ff);
+	probe event_glib_update_timeout(int timer, int frequency);
+	probe event_glib_remove_timeout(int timer);
+	probe event_glib_remove_timeout_idle(int timer, void *ff, void *opaque);
+	probe event_glib_dispatch_timeout(int timer, void *cb, void *opaque);
+
 	# file: src/util/virdbus.c
 	# prefix: dbus
 	probe dbus_method_call(const char *interface, const char *member, const char *object, const char *destination);
