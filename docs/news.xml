@@ -106,6 +106,15 @@
           hostname and the information stored in its TLS certificate.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Support reporting memory bandwidth usage stats
+        </summary>
+        <description>
+          Implement Intel RDT-MBM in libvirt. The stats can be obtained via
+          <code>virsh domstats --memory</code>.
+        </description>
+      </change>
     </section>
     <section title="Removed features">
       <change>
