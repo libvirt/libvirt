@@ -25,8 +25,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <sys/wait.h>
 #ifndef WIN32
+# include <sys/wait.h>
 # include <termios.h>
 #endif
 
@@ -47,6 +47,7 @@
 
 VIR_LOG_INIT("fdstream");
 
+#ifndef WIN32
 typedef enum {
     VIR_FDSTREAM_MSG_TYPE_DATA,
     VIR_FDSTREAM_MSG_TYPE_HOLE,
@@ -1159,7 +1160,6 @@ int virFDStreamOpen(virStreamPtr st,
 }
 
 
-#ifndef WIN32
 int virFDStreamConnectUNIX(virStreamPtr st,
                            const char *path,
                            bool abstract)
@@ -1209,16 +1209,7 @@ int virFDStreamConnectUNIX(virStreamPtr st,
     VIR_FORCE_CLOSE(fd);
     return -1;
 }
-#else
-int virFDStreamConnectUNIX(virStreamPtr st G_GNUC_UNUSED,
-                           const char *path G_GNUC_UNUSED,
-                           bool abstract G_GNUC_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s",
-                         _("UNIX domain sockets are not supported on this platform"));
-    return -1;
-}
-#endif
+
 
 static int
 virFDStreamOpenFileInternal(virStreamPtr st,
@@ -1240,9 +1231,6 @@ virFDStreamOpenFileInternal(virStreamPtr st,
               st, path, oflags, offset, length, mode);
 
     oflags |= O_NOCTTY;
-#ifdef O_BINARY
-    oflags |= O_BINARY;
-#endif
 
     if (oflags & O_CREAT)
         fd = open(path, oflags, mode);
@@ -1362,7 +1350,6 @@ int virFDStreamCreateFile(virStreamPtr st,
                                        false, false);
 }
 
-#ifndef WIN32
 int virFDStreamOpenPTY(virStreamPtr st,
                        const char *path,
                        unsigned long long offset,
@@ -1402,19 +1389,6 @@ int virFDStreamOpenPTY(virStreamPtr st,
     virFDStreamClose(st);
     return -1;
 }
-#else /* WIN32 */
-int virFDStreamOpenPTY(virStreamPtr st,
-                       const char *path,
-                       unsigned long long offset,
-                       unsigned long long length,
-                       int oflags)
-{
-    return virFDStreamOpenFileInternal(st, path,
-                                       offset, length,
-                                       oflags | O_CREAT, 0,
-                                       false, false);
-}
-#endif /* WIN32 */
 
 int virFDStreamOpenBlockDevice(virStreamPtr st,
                                const char *path,
@@ -1447,3 +1421,93 @@ int virFDStreamSetInternalCloseCb(virStreamPtr st,
     virObjectUnlock(fdst);
     return 0;
 }
+
+#else /* WIN32 */
+
+int
+virFDStreamOpen(virStreamPtr st G_GNUC_UNUSED,
+                int fd G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("File streams are not supported on this platform"));
+    return -1;
+}
+
+
+int
+virFDStreamConnectUNIX(virStreamPtr st G_GNUC_UNUSED,
+                       const char *path G_GNUC_UNUSED,
+                       bool abstract G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("File streams are not supported on this platform"));
+    return -1;
+}
+
+
+int
+virFDStreamOpenFile(virStreamPtr st G_GNUC_UNUSED,
+                    const char *path G_GNUC_UNUSED,
+                    unsigned long long offset G_GNUC_UNUSED,
+                    unsigned long long length G_GNUC_UNUSED,
+                    int oflags G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("File streams are not supported on this platform"));
+    return -1;
+}
+
+
+int
+virFDStreamCreateFile(virStreamPtr st G_GNUC_UNUSED,
+                      const char *path G_GNUC_UNUSED,
+                      unsigned long long offset G_GNUC_UNUSED,
+                      unsigned long long length G_GNUC_UNUSED,
+                      int oflags G_GNUC_UNUSED,
+                      mode_t mode G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("File streams are not supported on this platform"));
+    return -1;
+}
+
+
+int
+virFDStreamOpenPTY(virStreamPtr st G_GNUC_UNUSED,
+                   const char *path G_GNUC_UNUSED,
+                   unsigned long long offset G_GNUC_UNUSED,
+                   unsigned long long length G_GNUC_UNUSED,
+                   int oflags G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("File streams are not supported on this platform"));
+    return -1;
+}
+
+
+int
+virFDStreamOpenBlockDevice(virStreamPtr st G_GNUC_UNUSED,
+                           const char *path G_GNUC_UNUSED,
+                           unsigned long long offset G_GNUC_UNUSED,
+                           unsigned long long length G_GNUC_UNUSED,
+                           bool sparse G_GNUC_UNUSED,
+                           int oflags G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("File streams are not supported on this platform"));
+    return -1;
+}
+
+
+int
+virFDStreamSetInternalCloseCb(virStreamPtr st G_GNUC_UNUSED,
+                              virFDStreamInternalCloseCb cb G_GNUC_UNUSED,
+                              void *opaque G_GNUC_UNUSED,
+                              virFDStreamInternalCloseCbFreeOpaque fcb G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("File streams are not supported on this platform"));
+    return -1;
+}
+
+#endif /* WIN32 */
