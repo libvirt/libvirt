@@ -244,7 +244,7 @@ struct testBufAddStrData {
 };
 
 static int
-testBufAddStr(const void *opaque G_GNUC_UNUSED)
+testBufAddStr(const void *opaque)
 {
     const struct testBufAddStrData *data = opaque;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -277,7 +277,7 @@ testBufAddStr(const void *opaque G_GNUC_UNUSED)
 
 
 static int
-testBufEscapeStr(const void *opaque G_GNUC_UNUSED)
+testBufEscapeStr(const void *opaque)
 {
     const struct testBufAddStrData *data = opaque;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
