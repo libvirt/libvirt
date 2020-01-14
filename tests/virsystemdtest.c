@@ -33,7 +33,6 @@
 # include "virlog.h"
 # include "virmock.h"
 # include "rpc/virnetsocket.h"
-# include "intprops.h"
 # define VIR_FROM_THIS VIR_FROM_NONE
 
 VIR_LOG_INIT("tests.systemdtest");
@@ -548,8 +547,8 @@ testActivation(bool useNames)
     size_t nsockIP;
     int ret = -1;
     size_t i;
-    char nfdstr[INT_BUFSIZE_BOUND(size_t)];
-    char pidstr[INT_BUFSIZE_BOUND(pid_t)];
+    char nfdstr[VIR_INT64_STR_BUFLEN];
+    char pidstr[VIR_INT64_STR_BUFLEN];
     virSystemdActivationMap map[2];
     int *fds = NULL;
     size_t nfds = 0;

@@ -33,11 +33,12 @@
  * so don't introduce a link time dep, which we must avoid
  */
 #include "gnulib/lib/configmake.h"
-#include "gnulib/lib/intprops.h"
+
+#define VIR_INT64_STR_BUFLEN 21
 
 int main(int argc, char **argv) {
-    char uidstr[INT_BUFSIZE_BOUND(uid_t)];
-    char gidstr[INT_BUFSIZE_BOUND(gid_t)];
+    char uidstr[VIR_INT64_STR_BUFLEN];
+    char gidstr[VIR_INT64_STR_BUFLEN];
     const char * newargv[6];
     size_t nargs = 0;
     char *newenv[] = {

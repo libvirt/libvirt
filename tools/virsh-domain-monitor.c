@@ -29,7 +29,6 @@
 
 #include "internal.h"
 #include "conf/virdomainobjlist.h"
-#include "intprops.h"
 #include "viralloc.h"
 #include "virmacaddr.h"
 #include "virxml.h"
@@ -1964,7 +1963,7 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     virshDomainListPtr list = NULL;
     virDomainPtr dom;
-    char id_buf[INT_BUFSIZE_BOUND(unsigned int)];
+    char id_buf[VIR_INT64_STR_BUFLEN];
     unsigned int id;
     unsigned int flags = VIR_CONNECT_LIST_DOMAINS_ACTIVE;
     vshTablePtr table = NULL;

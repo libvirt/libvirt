@@ -22,6 +22,8 @@
 
 #include "internal.h"
 
+#define VIR_INT64_STR_BUFLEN 21
+
 char **virStringSplitCount(const char *string,
                            const char *delim,
                            size_t max_tokens,

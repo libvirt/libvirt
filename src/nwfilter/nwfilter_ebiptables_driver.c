@@ -40,7 +40,6 @@
 #include "virfile.h"
 #include "vircommand.h"
 #include "configmake.h"
-#include "intprops.h"
 #include "virstring.h"
 #include "virfirewall.h"
 
@@ -820,10 +819,9 @@ iptablesHandleIPHdr(virFirewallPtr fw,
                     bool directionIn,
                     bool *skipRule, bool *skipMatch)
 {
-    char ipaddr[INET6_ADDRSTRLEN],
-         ipaddralt[INET6_ADDRSTRLEN],
-         number[MAX(INT_BUFSIZE_BOUND(uint32_t),
-                    INT_BUFSIZE_BOUND(int))];
+    char ipaddr[INET6_ADDRSTRLEN];
+    char ipaddralt[INET6_ADDRSTRLEN];
+    char number[VIR_INT64_STR_BUFLEN];
     const char *src = "--source";
     const char *dst = "--destination";
     const char *srcrange = "--src-range";
@@ -968,8 +966,7 @@ iptablesHandleIPHdrAfterStateMatch(virFirewallPtr fw,
                                    ipHdrDataDefPtr ipHdr,
                                    bool directionIn)
 {
-    char number[MAX(INT_BUFSIZE_BOUND(uint32_t),
-                    INT_BUFSIZE_BOUND(int))];
+    char number[VIR_INT64_STR_BUFLEN];
     char str[MAX_IPSET_NAME_LENGTH];
 
     if (HAS_ENTRY_ITEM(&ipHdr->dataIPSet) &&
@@ -1152,10 +1149,8 @@ _iptablesCreateRuleInstance(virFirewallPtr fw,
                             bool maySkipICMP)
 {
     char chain[MAX_CHAINNAME_LENGTH];
-    char number[MAX(INT_BUFSIZE_BOUND(uint32_t),
-                    INT_BUFSIZE_BOUND(int))];
-    char numberalt[MAX(INT_BUFSIZE_BOUND(uint32_t),
-                       INT_BUFSIZE_BOUND(int))];
+    char number[VIR_INT64_STR_BUFLEN];
+    char numberalt[VIR_INT64_STR_BUFLEN];
     const char *target;
     bool srcMacSkipped = false;
     bool skipRule = false;
@@ -1789,16 +1784,14 @@ ebtablesCreateRuleInstance(virFirewallPtr fw,
                            virNWFilterVarCombIterPtr vars,
                            bool reverse)
 {
-    char macaddr[VIR_MAC_STRING_BUFLEN],
-         ipaddr[INET_ADDRSTRLEN],
-         ipmask[INET_ADDRSTRLEN],
-         ipv6addr[INET6_ADDRSTRLEN],
-         number[MAX(INT_BUFSIZE_BOUND(uint32_t),
-                    INT_BUFSIZE_BOUND(int))],
-         numberalt[MAX(INT_BUFSIZE_BOUND(uint32_t),
-                       INT_BUFSIZE_BOUND(int))],
-         field[MAX(VIR_MAC_STRING_BUFLEN, INET6_ADDRSTRLEN)],
-         fieldalt[MAX(VIR_MAC_STRING_BUFLEN, INET6_ADDRSTRLEN)];
+    char macaddr[VIR_MAC_STRING_BUFLEN];
+    char ipaddr[INET_ADDRSTRLEN];
+    char ipmask[INET_ADDRSTRLEN];
+    char ipv6addr[INET6_ADDRSTRLEN];
+    char number[VIR_INT64_STR_BUFLEN];
+    char numberalt[VIR_INT64_STR_BUFLEN];
+    char field[VIR_INT64_STR_BUFLEN];
+    char fieldalt[VIR_INT64_STR_BUFLEN];
     char chain[MAX_CHAINNAME_LENGTH];
     const char *target;
     bool hasMask = false;

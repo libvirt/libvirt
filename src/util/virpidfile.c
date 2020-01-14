@@ -31,7 +31,6 @@
 #include "virfile.h"
 #include "viralloc.h"
 #include "virutil.h"
-#include "intprops.h"
 #include "virlog.h"
 #include "virerror.h"
 #include "virstring.h"
@@ -57,7 +56,7 @@ int virPidFileWritePath(const char *pidfile,
 {
     int rc;
     int fd;
-    char pidstr[INT_BUFSIZE_BOUND(pid)];
+    char pidstr[VIR_INT64_STR_BUFLEN];
 
     if ((fd = open(pidfile,
                    O_WRONLY | O_CREAT | O_TRUNC,
@@ -110,7 +109,7 @@ int virPidFileReadPath(const char *path,
     int rc;
     ssize_t bytes;
     long long pid_value = 0;
-    char pidstr[INT_BUFSIZE_BOUND(pid_value)];
+    char pidstr[VIR_INT64_STR_BUFLEN];
     char *endptr = NULL;
 
     *pid = 0;
@@ -333,7 +332,7 @@ int virPidFileAcquirePath(const char *path,
                           pid_t pid)
 {
     int fd = -1;
-    char pidstr[INT_BUFSIZE_BOUND(pid)];
+    char pidstr[VIR_INT64_STR_BUFLEN];
 
     if (path[0] == '\0')
         return 0;

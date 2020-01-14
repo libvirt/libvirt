@@ -36,7 +36,6 @@
 #include "openwsman.h"
 #include "virstring.h"
 #include "virkeycode.h"
-#include "intprops.h"
 
 #define VIR_FROM_THIS VIR_FROM_HYPERV
 
@@ -1339,7 +1338,7 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
     Msvm_Keyboard *keyboard = NULL;
     virBuffer query = VIR_BUFFER_INITIALIZER;
     hypervInvokeParamsListPtr params = NULL;
-    char keycodeStr[INT_BUFSIZE_BOUND(int)];
+    char keycodeStr[VIR_INT64_STR_BUFLEN];
 
     virCheckFlags(0, -1);
 

@@ -43,7 +43,6 @@
 #include "virhostcpupriv.h"
 #include "physmem.h"
 #include "virerror.h"
-#include "intprops.h"
 #include "virarch.h"
 #include "virfile.h"
 #include "virtypedparam.h"
@@ -791,7 +790,7 @@ virHostCPUGetStatsLinux(FILE *procstat,
     char line[1024];
     unsigned long long usr, ni, sys, idle, iowait;
     unsigned long long irq, softirq, steal, guest, guest_nice;
-    char cpu_header[4 + INT_BUFSIZE_BOUND(cpuNum)];
+    char cpu_header[4 + VIR_INT64_STR_BUFLEN];
 
     if ((*nparams) == 0) {
         /* Current number of cpu stats supported by linux */

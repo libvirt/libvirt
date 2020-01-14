@@ -39,7 +39,6 @@
 
 #include "internal.h"
 
-#include "intprops.h"
 #include "virbuffer.h"
 #include "viralloc.h"
 #include "virlog.h"
@@ -58,10 +57,6 @@
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 
 VIR_LOG_INIT("nwfilter.nwfilter_learnipaddr");
-
-#define IFINDEX2STR(VARNAME, ifindex) \
-    char VARNAME[INT_BUFSIZE_BOUND(ifindex)]; \
-    g_snprintf(VARNAME, sizeof(VARNAME), "%d", ifindex);
 
 #define PKT_TIMEOUT_MS 500 /* ms */
 
@@ -239,7 +234,7 @@ static int
 virNWFilterRegisterLearnReq(virNWFilterIPAddrLearnReqPtr req)
 {
     int res = -1;
-    IFINDEX2STR(ifindex_str, req->ifindex);
+    g_autofree char *ifindex_str = g_strdup_printf("%d", req->ifindex);
 
     virMutexLock(&pendingLearnReqLock);
 
@@ -260,6 +255,7 @@ virNWFilterTerminateLearnReq(const char *ifname)
     int rc = -1;
     int ifindex;
     virNWFilterIPAddrLearnReqPtr req;
+    g_autofree char *ifindex_str = NULL;
 
     /* It's possible that it's already been removed as a result of
      * virNWFilterDeregisterLearnReq during learnIPAddressThread() exit
@@ -274,7 +270,7 @@ virNWFilterTerminateLearnReq(const char *ifname)
         return rc;
     }
 
-    IFINDEX2STR(ifindex_str, ifindex);
+    ifindex_str = g_strdup_printf("%d", ifindex);
 
     virMutexLock(&pendingLearnReqLock);
 
@@ -294,7 +290,7 @@ bool
 virNWFilterHasLearnReq(int ifindex)
 {
     void *res;
-    IFINDEX2STR(ifindex_str, ifindex);
+    g_autofree char *ifindex_str = g_strdup_printf("%d", ifindex);
 
     virMutexLock(&pendingLearnReqLock);
 
@@ -319,7 +315,7 @@ static virNWFilterIPAddrLearnReqPtr
 virNWFilterDeregisterLearnReq(int ifindex)
 {
     virNWFilterIPAddrLearnReqPtr res;
-    IFINDEX2STR(ifindex_str, ifindex);
+    g_autofree char *ifindex_str = g_strdup_printf("%d", ifindex);
 
     virMutexLock(&pendingLearnReqLock);
 

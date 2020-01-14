@@ -45,7 +45,6 @@
 #include "virthread.h"
 #include "virfile.h"
 #include "virtime.h"
-#include "intprops.h"
 #include "virstring.h"
 #include "configmake.h"
 
@@ -832,7 +831,7 @@ virLogNewOutputToSyslog(virLogPriority priority,
 #  define IOVEC_SET_STRING(iov, str) IOVEC_SET(iov, str, strlen(str))
 
 /* Used for conversion of numbers to strings, and for length of binary data */
-#  define JOURNAL_BUF_SIZE (MAX(INT_BUFSIZE_BOUND(int), sizeof(uint64_t)))
+#  define JOURNAL_BUF_SIZE (MAX(VIR_INT64_STR_BUFLEN, sizeof(uint64_t)))
 
 struct journalState
 {

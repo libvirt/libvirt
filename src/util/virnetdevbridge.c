@@ -25,7 +25,6 @@
 #include "virfile.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "intprops.h"
 #include "virstring.h"
 
 #include <sys/ioctl.h>
@@ -125,8 +124,7 @@ static int virNetDevBridgeSet(const char *brname,
     path = g_strdup_printf(SYSFS_NET_DIR "%s/bridge/%s", brname, paramname);
 
     if (virFileExists(path)) {
-        char valuestr[INT_BUFSIZE_BOUND(value)];
-        g_snprintf(valuestr, sizeof(valuestr), "%lu", value);
+        g_autofree char *valuestr = g_strdup_printf("%lu", value);
         if (virFileWriteStr(path, valuestr, 0) >= 0)
             return 0;
         VIR_DEBUG("Unable to set bridge %s %s via sysfs", brname, paramname);
@@ -169,7 +167,7 @@ static int virNetDevBridgeGet(const char *brname,
     if (virFileExists(path)) {
         g_autofree char *valuestr = NULL;
 
-        if (virFileReadAll(path, INT_BUFSIZE_BOUND(unsigned long),
+        if (virFileReadAll(path, VIR_INT64_STR_BUFLEN,
                            &valuestr) < 0)
             return -1;
 
@@ -215,7 +213,7 @@ virNetDevBridgePortSet(const char *brname,
                        const char *paramname,
                        unsigned long value)
 {
-    char valuestr[INT_BUFSIZE_BOUND(value)];
+    char valuestr[VIR_INT64_STR_BUFLEN];
     int ret = -1;
     g_autofree char *path = NULL;
 
@@ -251,7 +249,7 @@ virNetDevBridgePortGet(const char *brname,
     path = g_strdup_printf(SYSFS_NET_DIR "%s/brif/%s/%s", brname, ifname,
                            paramname);
 
-    if (virFileReadAll(path, INT_BUFSIZE_BOUND(unsigned long), &valuestr) < 0)
+    if (virFileReadAll(path, VIR_INT64_STR_BUFLEN, &valuestr) < 0)
         return -1;
 
     if (virStrToLong_ul(valuestr, NULL, 10, value) < 0) {

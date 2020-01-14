@@ -68,7 +68,6 @@
 #endif
 
 #include "configmake.h"
-#include "intprops.h"
 #include "viralloc.h"
 #include "vircommand.h"
 #include "virerror.h"
@@ -4067,7 +4066,7 @@ virFileReadValueInt(int *value, const char *format, ...)
     if (!virFileExists(path))
         return -2;
 
-    if (virFileReadAll(path, INT_BUFSIZE_BOUND(*value), &str) < 0)
+    if (virFileReadAll(path, VIR_INT64_STR_BUFLEN, &str) < 0)
         return -1;
 
     virStringTrimOptionalNewline(str);
@@ -4107,7 +4106,7 @@ virFileReadValueUint(unsigned int *value, const char *format, ...)
     if (!virFileExists(path))
         return -2;
 
-    if (virFileReadAll(path, INT_BUFSIZE_BOUND(*value), &str) < 0)
+    if (virFileReadAll(path, VIR_INT64_STR_BUFLEN, &str) < 0)
         return -1;
 
     virStringTrimOptionalNewline(str);
@@ -4147,7 +4146,7 @@ virFileReadValueUllong(unsigned long long *value, const char *format, ...)
     if (!virFileExists(path))
         return -2;
 
-    if (virFileReadAll(path, INT_BUFSIZE_BOUND(*value), &str) < 0)
+    if (virFileReadAll(path, VIR_INT64_STR_BUFLEN, &str) < 0)
         return -1;
 
     virStringTrimOptionalNewline(str);
@@ -4188,7 +4187,7 @@ virFileReadValueScaledInt(unsigned long long *value, const char *format, ...)
     if (!virFileExists(path))
         return -2;
 
-    if (virFileReadAll(path, INT_BUFSIZE_BOUND(*value), &str) < 0)
+    if (virFileReadAll(path, VIR_INT64_STR_BUFLEN, &str) < 0)
         return -1;
 
     virStringTrimOptionalNewline(str);
