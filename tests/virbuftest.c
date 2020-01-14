@@ -9,6 +9,11 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+struct testBufAddStrData {
+    const char *data;
+    const char *expect;
+};
+
 static int testBufAutoIndent(const void *data G_GNUC_UNUSED)
 {
     virBuffer bufinit = VIR_BUFFER_INITIALIZER;
@@ -234,11 +239,6 @@ static int testBufAddBuffer(const void *data G_GNUC_UNUSED)
     virBufferFreeAndReset(&buf2);
     return ret;
 }
-
-struct testBufAddStrData {
-    const char *data;
-    const char *expect;
-};
 
 static int
 testBufAddStr(const void *opaque)
