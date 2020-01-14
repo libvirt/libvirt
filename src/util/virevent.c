@@ -22,7 +22,7 @@
 #include <config.h>
 
 #include "virevent.h"
-#include "vireventpoll.h"
+#include "vireventglib.h"
 #include "virlog.h"
 #include "virerror.h"
 
@@ -309,17 +309,7 @@ int virEventRegisterDefaultImpl(void)
 
     virResetLastError();
 
-    if (virEventPollInit() < 0) {
-        virDispatchError(NULL);
-        return -1;
-    }
-
-    virEventRegisterImpl(virEventPollAddHandle,
-                         virEventPollUpdateHandle,
-                         virEventPollRemoveHandle,
-                         virEventPollAddTimeout,
-                         virEventPollUpdateTimeout,
-                         virEventPollRemoveTimeout);
+    virEventGLibRegister();
 
     return 0;
 }
@@ -350,10 +340,5 @@ int virEventRunDefaultImpl(void)
     VIR_DEBUG("running default event implementation");
     virResetLastError();
 
-    if (virEventPollRunOnce() < 0) {
-        virDispatchError(NULL);
-        return -1;
-    }
-
-    return 0;
+    return virEventGLibRunOnce();
 }
