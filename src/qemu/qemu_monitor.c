@@ -167,6 +167,7 @@ VIR_ENUM_IMPL(qemuMonitorMigrationStatus,
               "device", "postcopy-active",
               "completed", "failed",
               "cancelling", "cancelled",
+              "wait-unplug",
 );
 
 VIR_ENUM_IMPL(qemuMonitorVMStatus,
