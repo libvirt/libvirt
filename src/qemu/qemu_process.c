@@ -1653,6 +1653,7 @@ qemuProcessHandleMigrationStatus(qemuMonitorPtr mon G_GNUC_UNUSED,
     virDomainObjBroadcast(vm);
 
     if (status == QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY &&
+        priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT &&
         virDomainObjGetState(vm, &reason) == VIR_DOMAIN_PAUSED &&
         reason == VIR_DOMAIN_PAUSED_MIGRATION) {
         VIR_DEBUG("Correcting paused state reason for domain %s to %s",
