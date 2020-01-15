@@ -24999,7 +24999,7 @@ virDomainFSDefFormat(virBufferPtr buf,
     const char *fsdriver = virDomainFSDriverTypeToString(def->fsdriver);
     const char *wrpolicy = virDomainFSWrpolicyTypeToString(def->wrpolicy);
     const char *src = def->src->path;
-    g_auto(virBuffer) driverBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) driverAttrBuf = VIR_BUFFER_INITIALIZER;
 
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -25024,25 +25024,21 @@ virDomainFSDefFormat(virBufferPtr buf,
 
     virBufferAdjustIndent(buf, 2);
     if (def->fsdriver) {
-        virBufferAsprintf(&driverBuf, " type='%s'", fsdriver);
+        virBufferAsprintf(&driverAttrBuf, " type='%s'", fsdriver);
 
         if (def->format)
-            virBufferAsprintf(&driverBuf, " format='%s'",
+            virBufferAsprintf(&driverAttrBuf, " format='%s'",
                               virStorageFileFormatTypeToString(def->format));
 
         /* Don't generate anything if wrpolicy is set to default */
         if (def->wrpolicy)
-            virBufferAsprintf(&driverBuf, " wrpolicy='%s'", wrpolicy);
+            virBufferAsprintf(&driverAttrBuf, " wrpolicy='%s'", wrpolicy);
 
     }
 
-    virDomainVirtioOptionsFormat(&driverBuf, def->virtio);
+    virDomainVirtioOptionsFormat(&driverAttrBuf, def->virtio);
 
-    if (virBufferUse(&driverBuf)) {
-        virBufferAddLit(buf, "<driver");
-        virBufferAddBuffer(buf, &driverBuf);
-        virBufferAddLit(buf, "/>\n");
-    }
+    virXMLFormatElement(buf, "driver", &driverAttrBuf, NULL);
 
     switch (def->type) {
     case VIR_DOMAIN_FS_TYPE_MOUNT:
