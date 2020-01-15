@@ -22,7 +22,6 @@
 
 #include <config.h>
 
-#include <poll.h>
 #include <libxml/parser.h>
 #include <libxml/xpathInternals.h>
 
@@ -641,67 +640,6 @@ esxVI_SharedCURL_Remove(esxVI_SharedCURL *shared, esxVI_CURL *curl)
  * MultiCURL
  */
 
-#if ESX_EMULATE_CURL_MULTI_WAIT
-
-static int
-esxVI_MultiCURL_SocketCallback(CURL *handle G_GNUC_UNUSED,
-                               curl_socket_t fd, int action,
-                               void *callback_opaque,
-                               void *socket_opaque G_GNUC_UNUSED)
-{
-    esxVI_MultiCURL *multi = callback_opaque;
-    size_t i;
-    struct pollfd *pollfd = NULL;
-    struct pollfd dummy;
-
-    if (action & CURL_POLL_REMOVE) {
-        for (i = 0; i < multi->npollfds; ++i) {
-            if (multi->pollfds[i].fd == fd) {
-                VIR_DELETE_ELEMENT(multi->pollfds, i, multi->npollfds);
-                break;
-            }
-        }
-    } else {
-        for (i = 0; i < multi->npollfds; ++i) {
-            if (multi->pollfds[i].fd == fd) {
-                pollfd = &multi->pollfds[i];
-                break;
-            }
-        }
-
-        if (pollfd == NULL) {
-            if (VIR_APPEND_ELEMENT(multi->pollfds, multi->npollfds, dummy) < 0)
-                return 0; /* curl_multi_socket() doc says "The callback MUST return 0." */
-
-            pollfd = &multi->pollfds[multi->npollfds - 1];
-        }
-
-        pollfd->fd = fd;
-        pollfd->events = 0;
-
-        if (action & CURL_POLL_IN)
-            pollfd->events |= POLLIN;
-
-        if (action & CURL_POLL_OUT)
-            pollfd->events |= POLLOUT;
-    }
-
-    return 0;
-}
-
-static int
-esxVI_MultiCURL_TimerCallback(CURLM *handle G_GNUC_UNUSED,
-                              long timeout_ms G_GNUC_UNUSED,
-                              void *callback_opaque)
-{
-    esxVI_MultiCURL *multi = callback_opaque;
-
-    multi->timeoutPending = true;
-
-    return 0;
-}
-
-#endif
 
 /* esxVI_MultiCURL_Alloc */
 ESX_VI__TEMPLATE__ALLOC(MultiCURL)
@@ -717,10 +655,6 @@ ESX_VI__TEMPLATE__FREE(MultiCURL,
 
     if (item->handle)
         curl_multi_cleanup(item->handle);
-
-#if ESX_EMULATE_CURL_MULTI_WAIT
-    VIR_FREE(item->pollfds);
-#endif
 })
 
 int
@@ -747,14 +681,6 @@ esxVI_MultiCURL_Add(esxVI_MultiCURL *multi, esxVI_CURL *curl)
             return -1;
         }
 
-#if ESX_EMULATE_CURL_MULTI_WAIT
-        curl_multi_setopt(multi->handle, CURLMOPT_SOCKETFUNCTION,
-                          esxVI_MultiCURL_SocketCallback);
-        curl_multi_setopt(multi->handle, CURLMOPT_SOCKETDATA, multi);
-        curl_multi_setopt(multi->handle, CURLMOPT_TIMERFUNCTION,
-                          esxVI_MultiCURL_TimerCallback);
-        curl_multi_setopt(multi->handle, CURLMOPT_TIMERDATA, multi);
-#endif
     }
 
     virMutexLock(&curl->lock);
@@ -803,81 +729,6 @@ esxVI_MultiCURL_Remove(esxVI_MultiCURL *multi, esxVI_CURL *curl)
     return 0;
 }
 
-#if ESX_EMULATE_CURL_MULTI_WAIT
-
-int
-esxVI_MultiCURL_Wait(esxVI_MultiCURL *multi, int *runningHandles)
-{
-    long timeout = -1;
-    CURLMcode errorCode;
-    int rc;
-    size_t i;
-    int action;
-
-    if (multi->timeoutPending) {
-        do {
-            errorCode = curl_multi_socket_action(multi->handle, CURL_SOCKET_TIMEOUT,
-                                                 0, runningHandles);
-        } while (errorCode == CURLM_CALL_MULTI_SOCKET);
-
-        if (errorCode != CURLM_OK) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Could not trigger socket action: %s (%d)"),
-                           curl_multi_strerror(errorCode), errorCode);
-            return -1;
-        }
-
-        multi->timeoutPending = false;
-    }
-
-    if (multi->npollfds == 0)
-        return 0;
-
-    curl_multi_timeout(multi->handle, &timeout);
-
-    if (timeout < 0)
-        timeout = 1000; /* default to 1 sec timeout */
-
-    do {
-        rc = poll(multi->pollfds, multi->npollfds, timeout);
-    } while (rc < 0 && (errno == EAGAIN || errno == EINTR));
-
-    if (rc < 0) {
-        virReportSystemError(errno, "%s", _("Could not wait for transfer"));
-        return -1;
-    }
-
-    for (i = 0; i < multi->npollfds && rc > 0; ++i) {
-        if (multi->pollfds[i].revents == 0)
-            continue;
-
-        --rc;
-        action = 0;
-
-        if (multi->pollfds[i].revents & POLLIN)
-            action |= CURL_POLL_IN;
-
-        if (multi->pollfds[i].revents & POLLOUT)
-            action |= CURL_POLL_OUT;
-
-        do {
-            errorCode = curl_multi_socket_action(multi->handle,
-                                                 multi->pollfds[i].fd, action,
-                                                 runningHandles);
-        } while (errorCode == CURLM_CALL_MULTI_SOCKET);
-
-        if (errorCode != CURLM_OK) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Could not trigger socket action: %s (%d)"),
-                           curl_multi_strerror(errorCode), errorCode);
-            return -1;
-        }
-    }
-
-    return 0;
-}
-
-#else
 
 int
 esxVI_MultiCURL_Wait(esxVI_MultiCURL *multi, int *runningHandles)
@@ -901,8 +752,6 @@ esxVI_MultiCURL_Wait(esxVI_MultiCURL *multi, int *runningHandles)
 
     return esxVI_MultiCURL_Perform(multi, runningHandles);
 }
-
-#endif
 
 int
 esxVI_MultiCURL_Perform(esxVI_MultiCURL *multi, int *runningHandles)
