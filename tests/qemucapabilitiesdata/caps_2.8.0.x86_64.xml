@@ -159,6 +159,7 @@
   <flag name='hda-output'/>
   <flag name='vhost-vsock'/>
   <flag name='mch'/>
+  <flag name='i8042'/>
   <version>2008000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100246</microcodeVersion>

@@ -177,6 +177,7 @@
   <flag name='blockdev-file-dynamic-auto-read-only'/>
   <flag name='drive-nvme'/>
   <flag name='smp-dies'/>
+  <flag name='i8042'/>
   <version>4001050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900242</microcodeVersion>

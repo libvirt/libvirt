@@ -131,6 +131,7 @@
   <flag name='blockdev-del'/>
   <flag name='vhost-vsock'/>
   <flag name='iothread.poll-max-ns'/>
+  <flag name='i8042'/>
   <version>2009000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900247</microcodeVersion>

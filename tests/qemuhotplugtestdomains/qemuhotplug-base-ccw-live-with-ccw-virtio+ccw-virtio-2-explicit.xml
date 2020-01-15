@@ -53,12 +53,6 @@
       <alias name='virtio-serial0'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
     </controller>
-    <input type='mouse' bus='ps2'>
-      <alias name='input0'/>
-    </input>
-    <input type='keyboard' bus='ps2'>
-      <alias name='input1'/>
-    </input>
     <memballoon model='none'/>
     <panic model='s390'/>
   </devices>

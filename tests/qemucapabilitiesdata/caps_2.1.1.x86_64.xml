@@ -107,6 +107,7 @@
   <flag name='isa-serial'/>
   <flag name='hda-output'/>
   <flag name='mch'/>
+  <flag name='i8042'/>
   <version>2001001</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100240</microcodeVersion>

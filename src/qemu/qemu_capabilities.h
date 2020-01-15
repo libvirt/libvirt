@@ -536,6 +536,9 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_DRIVE_NVME, /* -drive file.driver=nvme */
     QEMU_CAPS_SMP_DIES, /*  -smp dies= */
 
+    /* 350 */
+    QEMU_CAPS_DEVICE_I8042, /* PS/2 controller */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 

@@ -159,6 +159,7 @@
   <flag name='overcommit'/>
   <flag name='bochs-display'/>
   <flag name='drive-nvme'/>
+  <flag name='i8042'/>
   <version>3000091</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900240</microcodeVersion>

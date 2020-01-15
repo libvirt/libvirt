@@ -202,6 +202,7 @@
   <flag name='bochs-display'/>
   <flag name='ramfb'/>
   <flag name='drive-nvme'/>
+  <flag name='i8042'/>
   <version>3000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100239</microcodeVersion>

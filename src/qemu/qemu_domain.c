@@ -8039,12 +8039,20 @@ qemuDomainDeviceDefValidateGraphics(const virDomainGraphicsDef *graphics,
 
 static int
 qemuDomainDeviceDefValidateInput(const virDomainInputDef *input,
-                                 const virDomainDef *def G_GNUC_UNUSED,
+                                 const virDomainDef *def,
                                  virQEMUCapsPtr qemuCaps)
 {
     const char *baseName;
     int cap;
     int ccwCap;
+
+    if (input->bus == VIR_DOMAIN_INPUT_BUS_PS2 && !ARCH_IS_X86(def->os.arch) &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_I8042)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("%s is not supported by this QEMU binary"),
+                       virDomainInputBusTypeToString(input->bus));
+        return -1;
+    }
 
     if (input->bus != VIR_DOMAIN_INPUT_BUS_VIRTIO)
         return 0;

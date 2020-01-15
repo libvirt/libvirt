@@ -554,6 +554,9 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "savevm-monitor-nodes",
               "drive-nvme",
               "smp-dies",
+
+              /* 350 */
+              "i8042",
     );
 
 
@@ -1245,6 +1248,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "vhost-user-vga", QEMU_CAPS_DEVICE_VHOST_USER_VGA },
     { "ramfb", QEMU_CAPS_DEVICE_RAMFB },
     { "max-arm-cpu", QEMU_CAPS_ARM_MAX_CPU },
+    { "i8042", QEMU_CAPS_DEVICE_I8042 },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsDevicePropsVirtioBalloon[] = {

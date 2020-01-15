@@ -151,6 +151,7 @@
   <flag name='sdl-gl'/>
   <flag name='hda-output'/>
   <flag name='mch'/>
+  <flag name='i8042'/>
   <version>2006000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100244</microcodeVersion>
