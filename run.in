@@ -21,12 +21,10 @@
 # With this script you can run libvirt programs without needing to
 # install them first.  You just have to do for example:
 #
-#   ./run ./tools/virsh [args ...]
+#   ./run virsh [args ...]
 #
-# If you are already in the tools/ subdirectory, then the following
-# command will also work:
-#
-#   ../run ./virsh [...]
+# Note that this runs the locally compiled copy of virsh which
+# is usually want you want.
 #
 # You can also run the C programs under valgrind like this:
 #
@@ -38,7 +36,7 @@
 #
 # This also works with sudo (eg. if you need root access for libvirt):
 #
-#   sudo ./run ./tools/virsh list --all
+#   sudo ./run virsh list --all
 #
 #----------------------------------------------------------------------
 
@@ -57,6 +55,9 @@ export LD_LIBRARY_PATH
 
 prepend PKG_CONFIG_PATH "$b/src"
 export PKG_CONFIG_PATH
+
+prepend PATH "$b/tools"
+export PATH
 
 # Ensure that any 3rd party apps using libvirt.so from the build tree get
 # files resolved to the build/source tree too. Typically useful for language
