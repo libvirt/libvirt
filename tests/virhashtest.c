@@ -511,6 +511,28 @@ testHashEqual(const void *data G_GNUC_UNUSED)
 
 
 static int
+testHashDuplicate(const void *data G_GNUC_UNUSED)
+{
+    g_autoptr(virHashTable) hash = NULL;
+
+    if (!(hash = virHashCreate(0, NULL)))
+        return -1;
+
+    if (virHashAddEntry(hash, "a", NULL) < 0) {
+        VIR_TEST_VERBOSE("\nfailed to add key 'a' to hash");
+        return -1;
+    }
+
+    if (virHashAddEntry(hash, "a", NULL) >= 0) {
+        VIR_TEST_VERBOSE("\nadding of key 'a' should have failed");
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -546,6 +568,7 @@ mymain(void)
     DO_TEST("Search", Search);
     DO_TEST("GetItems", GetItems);
     DO_TEST("Equal", Equal);
+    DO_TEST("Duplicate entry", Duplicate);
 
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
