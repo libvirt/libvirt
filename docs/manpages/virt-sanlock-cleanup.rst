@@ -6,7 +6,7 @@ virt-sanlock-cleanup
 remove stale sanlock resource lease files
 -----------------------------------------
 
-:Manual section: 1
+:Manual section: 8
 :Manual group: Virtualization Support
 
 .. contents::
