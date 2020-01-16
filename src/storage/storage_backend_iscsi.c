@@ -22,7 +22,6 @@
 #include <config.h>
 
 #include <dirent.h>
-#include <sys/wait.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>

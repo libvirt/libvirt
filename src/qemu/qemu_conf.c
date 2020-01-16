@@ -25,7 +25,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <sys/wait.h>
 
 #include "virerror.h"
 #include "qemu_conf.h"

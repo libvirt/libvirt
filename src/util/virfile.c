@@ -42,7 +42,6 @@
 # include <libutil.h>
 #endif /* !HAVE_LIBUTIL_H */
 #include <sys/stat.h>
-#include <sys/wait.h>
 #if defined(HAVE_SYS_MOUNT_H)
 # include <sys/mount.h>
 #endif

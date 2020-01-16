@@ -30,7 +30,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <pwd.h>
-#include <sys/wait.h>
 #include <sys/time.h>
 #include <sys/statvfs.h>
 

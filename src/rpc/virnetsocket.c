@@ -23,7 +23,6 @@
 
 #include <sys/stat.h>
 #include <unistd.h>
-#include <sys/wait.h>
 #include <signal.h>
 #include <fcntl.h>
 #ifdef HAVE_IFADDRS_H

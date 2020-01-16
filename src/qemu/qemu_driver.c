@@ -30,7 +30,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <signal.h>
-#include <sys/wait.h>
 #include <sys/ioctl.h>
 
 #include "qemu_driver.h"

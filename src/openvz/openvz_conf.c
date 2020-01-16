@@ -29,7 +29,6 @@
 #include <dirent.h>
 #include <time.h>
 #include <sys/stat.h>
-#include <sys/wait.h>
 
 #include "virerror.h"
 #include "openvz_conf.h"

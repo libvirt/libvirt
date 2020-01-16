@@ -30,7 +30,6 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <pwd.h>
-#include <sys/wait.h>
 #include <sys/ioctl.h>
 #include <net/if.h>
 #ifdef HAVE_SYSCTLBYNAME

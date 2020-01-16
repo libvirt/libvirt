@@ -51,7 +51,6 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <sys/wait.h>
 #include <stdarg.h>
 #include <sys/utsname.h>
 

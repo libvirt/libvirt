@@ -26,7 +26,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 #ifndef WIN32
-# include <sys/wait.h>
 # include <termios.h>
 #endif
 
