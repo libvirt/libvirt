@@ -2502,6 +2502,13 @@ virCgroupPidCopy(const void *name)
 }
 
 
+static char *
+virCgroupPidPrintHuman(const void *name)
+{
+    return g_strdup_printf("%ld", (const long)name);
+}
+
+
 int
 virCgroupKillRecursiveInternal(virCgroupPtr group,
                                int signum,
@@ -2587,6 +2594,7 @@ virCgroupKillRecursive(virCgroupPtr group, int signum)
                                              virCgroupPidCode,
                                              virCgroupPidEqual,
                                              virCgroupPidCopy,
+                                             virCgroupPidPrintHuman,
                                              NULL);
 
     VIR_DEBUG("group=%p path=%s signum=%d", group, group->path, signum);

@@ -1007,6 +1007,13 @@ virZPCIAddrKeyCopy(const void *name)
 }
 
 
+static char *
+virZPCIAddrKeyPrintHuman(const void *name)
+{
+    return g_strdup_printf("%u", *((unsigned int *)name));
+}
+
+
 static void
 virZPCIAddrKeyFree(void *name)
 {
@@ -1041,6 +1048,7 @@ virDomainPCIAddressSetExtensionAlloc(virDomainPCIAddressSetPtr addrs,
                                                        virZPCIAddrKeyCode,
                                                        virZPCIAddrKeyEqual,
                                                        virZPCIAddrKeyCopy,
+                                                       virZPCIAddrKeyPrintHuman,
                                                        virZPCIAddrKeyFree)))
             goto error;
 
@@ -1048,6 +1056,7 @@ virDomainPCIAddressSetExtensionAlloc(virDomainPCIAddressSetPtr addrs,
                                                        virZPCIAddrKeyCode,
                                                        virZPCIAddrKeyEqual,
                                                        virZPCIAddrKeyCopy,
+                                                       virZPCIAddrKeyPrintHuman,
                                                        virZPCIAddrKeyFree)))
             goto error;
     }

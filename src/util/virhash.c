@@ -59,6 +59,7 @@ struct _virHashTable {
     virHashKeyCode keyCode;
     virHashKeyEqual keyEqual;
     virHashKeyCopy keyCopy;
+    virHashKeyPrintHuman keyPrint;
     virHashKeyFree keyFree;
 };
 
@@ -98,6 +99,14 @@ static void *virHashStrCopy(const void *name)
     return ret;
 }
 
+
+static char *
+virHashStrPrintHuman(const void *name)
+{
+    return g_strdup(name);
+}
+
+
 static void virHashStrFree(void *name)
 {
     VIR_FREE(name);
@@ -136,6 +145,7 @@ virHashTablePtr virHashCreateFull(ssize_t size,
                                   virHashKeyCode keyCode,
                                   virHashKeyEqual keyEqual,
                                   virHashKeyCopy keyCopy,
+                                  virHashKeyPrintHuman keyPrint,
                                   virHashKeyFree keyFree)
 {
     virHashTablePtr table = NULL;
@@ -153,6 +163,7 @@ virHashTablePtr virHashCreateFull(ssize_t size,
     table->keyCode = keyCode;
     table->keyEqual = keyEqual;
     table->keyCopy = keyCopy;
+    table->keyPrint = keyPrint;
     table->keyFree = keyFree;
 
     if (VIR_ALLOC_N(table->table, size) < 0) {
@@ -180,6 +191,7 @@ virHashNew(virHashDataFree dataFree)
                              virHashStrCode,
                              virHashStrEqual,
                              virHashStrCopy,
+                             virHashStrPrintHuman,
                              virHashStrFree);
 }
 
@@ -200,6 +212,7 @@ virHashTablePtr virHashCreate(ssize_t size, virHashDataFree dataFree)
                              virHashStrCode,
                              virHashStrEqual,
                              virHashStrCopy,
+                             virHashStrPrintHuman,
                              virHashStrFree);
 }
 
@@ -353,8 +366,13 @@ virHashAddOrUpdateEntry(virHashTablePtr table, const void *name,
                 entry->payload = userdata;
                 return 0;
             } else {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Duplicate key"));
+                g_autofree char *keystr = NULL;
+
+                if (table->keyPrint)
+                    keystr = table->keyPrint(name);
+
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Duplicate hash table key '%s'"), NULLSTR(keystr));
                 return -1;
             }
         }

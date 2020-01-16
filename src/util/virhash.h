@@ -87,6 +87,18 @@ typedef bool (*virHashKeyEqual)(const void *namea, const void *nameb);
  */
 typedef void *(*virHashKeyCopy)(const void *name);
 /**
+ * virHashKeyPrintHuman:
+ * @name: the hash key
+ *
+ * Get a human readable version of the key for error messages. Caller
+ * will free the returned string.
+ *
+ * Returns a string representation of the key for use in error messages. Caller
+ * promises to always free the returned string.
+ */
+typedef char *(*virHashKeyPrintHuman) (const void *name);
+
+/**
  * virHashKeyFree:
  * @name: the hash key
  *
@@ -108,6 +120,7 @@ virHashTablePtr virHashCreateFull(ssize_t size,
                                   virHashKeyCode keyCode,
                                   virHashKeyEqual keyEqual,
                                   virHashKeyCopy keyCopy,
+                                  virHashKeyPrintHuman keyPrint,
                                   virHashKeyFree keyFree);
 void virHashFree(virHashTablePtr table);
 ssize_t virHashSize(const virHashTable *table);
