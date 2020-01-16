@@ -1593,6 +1593,15 @@ mymain(void)
                        "<source protocol='vxhs' name='c6718f6b-0401-441d-a8c3-1f0064d75ee0'>\n"
                        "  <host name='example.com' port='9999'/>\n"
                        "</source>\n");
+    TEST_BACKING_PARSE_FULL("json:{ \"driver\": \"raw\","
+                                    "\"offset\": 10752,"
+                                    "\"size\": 4063232,"
+                                    "\"file\": { \"driver\": \"file\","
+                                                "\"filename\": \"/tmp/testfle\""
+                                              "}"
+                                  "}",
+                            "<source file='/tmp/testfle'/>\n", 0);
+
 #endif /* WITH_YAJL */
 
  cleanup:
