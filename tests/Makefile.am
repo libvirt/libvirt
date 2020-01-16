@@ -16,8 +16,6 @@
 ## License along with this library.  If not, see
 ## <http://www.gnu.org/licenses/>.
 
-SHELL = $(PREFERABLY_POSIX_SHELL)
-
 AM_CPPFLAGS = \
 	-I$(top_builddir) -I$(top_srcdir) \
 	-I$(top_builddir)/gnulib/lib -I$(top_srcdir)/gnulib/lib \
@@ -484,7 +482,6 @@ TESTS_ENVIRONMENT = \
   abs_top_srcdir="$(abs_top_srcdir)" \
   abs_builddir="$(abs_builddir)" \
   abs_srcdir="$(abs_srcdir)" \
-  SHELL="$(SHELL)" \
   LIBVIRT_AUTOSTART=0 \
   LC_ALL=C \
   VIR_TEST_EXPENSIVE=$(VIR_TEST_EXPENSIVE) \
