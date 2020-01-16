@@ -21,7 +21,12 @@
 
 #include <config.h>
 
-#include <sys/utsname.h>
+#ifdef WIN32
+# define WIN32_LEAN_AND_MEAN
+# include <windows.h>
+#else
+# include <sys/utsname.h>
+#endif
 
 #include "virlog.h"
 #include "virarch.h"
@@ -154,6 +159,50 @@ virArch virArchFromString(const char *archstr)
  * uname 'machine' field, since this will canonicalize
  * architecture names like 'amd64' into 'x86_64'.
  */
+#ifdef WIN32
+
+/*
+ * Missing in ming64 headers 6.0.0, but defined as '12' in:
+ *
+ * https://docs.microsoft.com/en-us/windows/win32/api/sysinfoapi/ns-sysinfoapi-system_info
+ */
+# ifndef PROCESSOR_ARCHITECTURE_ARM64
+#  define PROCESSOR_ARCHITECTURE_ARM64 12
+# endif
+
+virArch virArchFromHost(void)
+{
+    SYSTEM_INFO info;
+
+    GetSystemInfo(&info);
+
+    switch (info.wProcessorArchitecture) {
+    case PROCESSOR_ARCHITECTURE_AMD64:
+        return VIR_ARCH_X86_64;
+    case PROCESSOR_ARCHITECTURE_IA64:
+        return VIR_ARCH_ITANIUM;
+    case PROCESSOR_ARCHITECTURE_INTEL:
+    case PROCESSOR_ARCHITECTURE_IA32_ON_WIN64:
+        return VIR_ARCH_I686;
+    case PROCESSOR_ARCHITECTURE_MIPS:
+        return VIR_ARCH_MIPS;
+    case PROCESSOR_ARCHITECTURE_ALPHA:
+        return VIR_ARCH_ALPHA;
+    case PROCESSOR_ARCHITECTURE_PPC:
+        return VIR_ARCH_PPC;
+    case PROCESSOR_ARCHITECTURE_SHX:
+        return VIR_ARCH_SH4;
+    case PROCESSOR_ARCHITECTURE_ARM:
+        return VIR_ARCH_ARMV7L;
+    case PROCESSOR_ARCHITECTURE_ARM64:
+        return VIR_ARCH_AARCH64;
+    default:
+        VIR_WARN("Unknown host arch '%d', report to libvir-list@redhat.com",
+                 info.wProcessorArchitecture);
+        return VIR_ARCH_NONE;
+    }
+}
+#else /* !WIN32 */
 virArch virArchFromHost(void)
 {
     struct utsname ut;
@@ -184,3 +233,4 @@ virArch virArchFromHost(void)
 
     return arch;
 }
+#endif /* !WIN32 */
