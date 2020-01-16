@@ -42,22 +42,20 @@
 #
 #----------------------------------------------------------------------
 
+# Function to intelligently prepend a path to an environment variable.
+# See http://stackoverflow.com/a/9631350
+prepend()
+{
+    eval $1="$2\${$1:+:\$$1}"
+}
+
 # Find this script.
 b=@abs_builddir@
 
-library_path="$b/src/.libs"
-if [ -z "$LD_LIBRARY_PATH" ]; then
-    LD_LIBRARY_PATH=$library_path
-else
-    LD_LIBRARY_PATH="$library_path:$LD_LIBRARY_PATH"
-fi
+prepend LD_LIBRARY_PATH "$b/src/.libs"
 export LD_LIBRARY_PATH
 
-if [ -z "$PKG_CONFIG_PATH" ]; then
-    PKG_CONFIG_PATH="$b/src"
-else
-    PKG_CONFIG_PATH="$b/src:$PKG_CONFIG_PATH"
-fi
+prepend PKG_CONFIG_PATH "$b/src"
 export PKG_CONFIG_PATH
 
 # Ensure that any 3rd party apps using libvirt.so from the build tree get
