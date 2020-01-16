@@ -634,6 +634,11 @@ mymain(void)
         return EXIT_FAILURE;
 
     driver.hostdevMgr = virHostdevManagerGetDefault();
+    if (driver.hostdevMgr == NULL) {
+        VIR_TEST_VERBOSE("Could not initialize HostdevManager - %s\n",
+                         virGetLastErrorMessage());
+        return EXIT_FAILURE;
+    }
 
 
 #define DO_TEST(file, ACTION, dev, fial, kep, ...) \
