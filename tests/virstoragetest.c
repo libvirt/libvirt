@@ -1274,6 +1274,26 @@ mymain(void)
                        "<source protocol='nbd' name='exportname'>\n"
                        "  <host name='example.org' port='1234'/>\n"
                        "</source>\n");
+    TEST_BACKING_PARSE("nbd+unix://?socket=/tmp/sock",
+                       "<source protocol='nbd'>\n"
+                       "  <host transport='unix' socket='/tmp/sock'/>\n"
+                       "</source>\n");
+    TEST_BACKING_PARSE("nbd+unix:///?socket=/tmp/sock",
+                       "<source protocol='nbd'>\n"
+                       "  <host transport='unix' socket='/tmp/sock'/>\n"
+                       "</source>\n");
+    TEST_BACKING_PARSE("nbd+unix:////?socket=/tmp/sock",
+                       "<source protocol='nbd' name='/'>\n"
+                       "  <host transport='unix' socket='/tmp/sock'/>\n"
+                       "</source>\n");
+    TEST_BACKING_PARSE("nbd+unix:///exp?socket=/tmp/sock",
+                       "<source protocol='nbd' name='exp'>\n"
+                       "  <host transport='unix' socket='/tmp/sock'/>\n"
+                       "</source>\n");
+    TEST_BACKING_PARSE("nbd+unix:////exp?socket=/tmp/sock",
+                       "<source protocol='nbd' name='/exp'>\n"
+                       "  <host transport='unix' socket='/tmp/sock'/>\n"
+                       "</source>\n");
     TEST_BACKING_PARSE_FULL("iscsi://testuser:testpass@example.org:1234/exportname",
                             "<source protocol='iscsi' name='exportname'>\n"
                             "  <host name='example.org' port='1234'/>\n"
