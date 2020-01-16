@@ -2964,7 +2964,7 @@ virStorageSourceParseNBDColonString(const char *nbdstr,
         }
 
         src->hosts->socket = g_strdup(backing[2]);
-
+        src->hosts->transport = VIR_STORAGE_NET_HOST_TRANS_UNIX;
    } else {
         src->hosts->name = g_strdup(backing[1]);
 
