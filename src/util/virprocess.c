@@ -24,7 +24,9 @@
 
 #include <fcntl.h>
 #include <signal.h>
-#include <sys/wait.h>
+#ifndef WIN32
+# include <sys/wait.h>
+#endif
 #include <unistd.h>
 #if HAVE_SYS_MOUNT_H
 # include <sys/mount.h>
@@ -121,6 +123,8 @@ VIR_ENUM_IMPL(virProcessSchedPolicy,
               "rr",
 );
 
+
+#ifndef WIN32
 /**
  * virProcessTranslateStatus:
  * @status: child exit status to translate
@@ -146,7 +150,6 @@ virProcessTranslateStatus(int status)
 }
 
 
-#ifndef WIN32
 /**
  * virProcessAbort:
  * @pid: child process to kill
@@ -206,14 +209,6 @@ virProcessAbort(pid_t pid)
  cleanup:
     errno = saved_errno;
 }
-#else
-void
-virProcessAbort(pid_t pid)
-{
-    /* Not yet ported to mingw.  Any volunteers?  */
-    VIR_DEBUG("failed to reap child %lld, abandoning it", (long long)pid);
-}
-#endif
 
 
 /**
@@ -281,6 +276,33 @@ virProcessWait(pid_t pid, int *exitstatus, bool raw)
                    (long long) pid, NULLSTR(st));
     return -1;
 }
+
+#else /* WIN32 */
+
+char *
+virProcessTranslateStatus(int status)
+{
+    return g_strdup_printf(_("invalid value %d"), status);
+}
+
+
+void
+virProcessAbort(pid_t pid)
+{
+    /* Not yet ported to mingw.  Any volunteers?  */
+    VIR_DEBUG("failed to reap child %lld, abandoning it", (long long)pid);
+}
+
+
+int
+virProcessWait(pid_t pid, int *exitstatus G_GNUC_UNUSED, bool raw G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, _("unable to wait for process %lld"),
+                         (long long) pid);
+    return -1;
+}
+
+#endif /* WIN32 */
 
 
 /* send signal to a single process */
@@ -1036,6 +1058,7 @@ int virProcessGetStartTime(pid_t pid,
 #endif
 
 
+#ifdef __linux__
 typedef struct _virProcessNamespaceHelperData virProcessNamespaceHelperData;
 struct _virProcessNamespaceHelperData {
     pid_t pid;
@@ -1088,7 +1111,22 @@ virProcessRunInMountNamespace(pid_t pid,
     return virProcessRunInFork(virProcessNamespaceHelper, &data);
 }
 
+#else /* ! __linux__ */
 
+int
+virProcessRunInMountNamespace(pid_t pid G_GNUC_UNUSED,
+                              virProcessNamespaceCallback cb G_GNUC_UNUSED,
+                              void *opaque G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Namespaces are not supported on this platform"));
+    return -1;
+}
+
+#endif /* ! __linux__ */
+
+
+#ifndef WIN32
 static int
 virProcessRunInForkHelper(int errfd,
                           pid_t ppid,
@@ -1174,8 +1212,21 @@ virProcessRunInFork(virProcessForkCallback cb,
     return ret;
 }
 
+#else /* WIN32 */
 
-#if defined(HAVE_SYS_MOUNT_H) && defined(HAVE_UNSHARE)
+int
+virProcessRunInFork(virProcessForkCallback cb G_GNUC_UNUSED,
+                    void *opaque G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Process spawning is not supported on this platform"));
+    return -1;
+}
+
+#endif /* WIN32 */
+
+
+#if defined(__linux__)
 int
 virProcessSetupPrivateMountNS(void)
 {
@@ -1194,23 +1245,13 @@ virProcessSetupPrivateMountNS(void)
     return 0;
 }
 
-#else /* !defined(HAVE_SYS_MOUNT_H) || !defined(HAVE_UNSHARE) */
 
-int
-virProcessSetupPrivateMountNS(void)
-{
-    virReportSystemError(ENOSYS, "%s",
-                         _("Namespaces are not supported on this platform."));
-    return -1;
-}
-#endif /* !defined(HAVE_SYS_MOUNT_H) || !defined(HAVE_UNSHARE) */
-
-#if defined(__linux__)
 G_GNUC_NORETURN static int
 virProcessDummyChild(void *argv G_GNUC_UNUSED)
 {
     _exit(0);
 }
+
 
 /**
  * virProcessNamespaceAvailable:
@@ -1270,12 +1311,21 @@ virProcessNamespaceAvailable(unsigned int ns)
 #else /* !defined(__linux__) */
 
 int
+virProcessSetupPrivateMountNS(void)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Namespaces are not supported on this platform."));
+    return -1;
+}
+
+int
 virProcessNamespaceAvailable(unsigned int ns G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Namespaces are not supported on this platform."));
     return -1;
 }
+
 #endif /* !defined(__linux__) */
 
 /**
@@ -1296,6 +1346,7 @@ virProcessExitWithStatus(int status)
 {
     int value = EXIT_CANNOT_INVOKE;
 
+#ifndef WIN32
     if (WIFEXITED(status)) {
         value = WEXITSTATUS(status);
     } else if (WIFSIGNALED(status)) {
@@ -1312,6 +1363,9 @@ virProcessExitWithStatus(int status)
         raise(WTERMSIG(status));
         value = 128 + WTERMSIG(status);
     }
+#else /* WIN32 */
+    (void)status;
+#endif /* WIN32 */
     exit(value);
 }
 
