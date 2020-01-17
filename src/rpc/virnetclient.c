@@ -838,16 +838,19 @@ int virNetClientSetTLSSession(virNetClientPtr client,
     char buf[1];
     int len;
     struct pollfd fds[1];
+
+#ifndef WIN32
     sigset_t oldmask, blockedsigs;
 
     sigemptyset(&blockedsigs);
-#ifdef SIGWINCH
+# ifdef SIGWINCH
     sigaddset(&blockedsigs, SIGWINCH);
-#endif
-#ifdef SIGCHLD
+# endif
+# ifdef SIGCHLD
     sigaddset(&blockedsigs, SIGCHLD);
-#endif
+# endif
     sigaddset(&blockedsigs, SIGPIPE);
+#endif /* !WIN32 */
 
     virObjectLock(client);
 
@@ -873,19 +876,23 @@ int virNetClientSetTLSSession(virNetClientPtr client,
         else
             fds[0].events = POLLOUT;
 
+#ifndef WIN32
         /* Block SIGWINCH from interrupting poll in curses programs,
          * then restore the original signal mask again immediately
          * after the call (RHBZ#567931).  Same for SIGCHLD and SIGPIPE
          * at the suggestion of Paolo Bonzini and Daniel Berrange.
          */
         ignore_value(pthread_sigmask(SIG_BLOCK, &blockedsigs, &oldmask));
+#endif /* !WIN32 */
 
     repoll:
         ret = poll(fds, G_N_ELEMENTS(fds), -1);
         if (ret < 0 && (errno == EAGAIN || errno == EINTR))
             goto repoll;
 
+#ifndef WIN32
         ignore_value(pthread_sigmask(SIG_SETMASK, &oldmask, NULL));
+#endif /* !WIN32 */
     }
 
     ret = virNetTLSContextCheckCertificate(tls, client->tls);
@@ -901,15 +908,19 @@ int virNetClientSetTLSSession(virNetClientPtr client,
     fds[0].revents = 0;
     fds[0].events = POLLIN;
 
+#ifndef WIN32
     /* Block SIGWINCH from interrupting poll in curses programs */
     ignore_value(pthread_sigmask(SIG_BLOCK, &blockedsigs, &oldmask));
+#endif /* !WIN32 */
 
     repoll2:
     ret = poll(fds, G_N_ELEMENTS(fds), -1);
     if (ret < 0 && (errno == EAGAIN || errno == EINTR))
         goto repoll2;
 
+#ifndef WIN32
     ignore_value(pthread_sigmask(SIG_SETMASK, &oldmask, NULL));
+#endif /* !WIN32 */
 
     len = virNetTLSSessionRead(client->tls, buf, 1);
     if (len < 0 && errno != ENOMSG) {
@@ -1562,7 +1573,9 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
 
     for (;;) {
         char ignore;
+#ifndef WIN32
         sigset_t oldmask, blockedsigs;
+#endif /* !WIN32 */
         int timeout = -1;
         virNetMessagePtr msg = NULL;
 
@@ -1603,27 +1616,31 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
          * can stuff themselves on the queue */
         virObjectUnlock(client);
 
+#ifndef WIN32
         /* Block SIGWINCH from interrupting poll in curses programs,
          * then restore the original signal mask again immediately
          * after the call (RHBZ#567931).  Same for SIGCHLD and SIGPIPE
          * at the suggestion of Paolo Bonzini and Daniel Berrange.
          */
         sigemptyset(&blockedsigs);
-#ifdef SIGWINCH
+# ifdef SIGWINCH
         sigaddset(&blockedsigs, SIGWINCH);
-#endif
-#ifdef SIGCHLD
+# endif
+# ifdef SIGCHLD
         sigaddset(&blockedsigs, SIGCHLD);
-#endif
+# endif
         sigaddset(&blockedsigs, SIGPIPE);
         ignore_value(pthread_sigmask(SIG_BLOCK, &blockedsigs, &oldmask));
+#endif /* !WIN32 */
 
     repoll:
         ret = poll(fds, G_N_ELEMENTS(fds), timeout);
         if (ret < 0 && (errno == EAGAIN || errno == EINTR))
             goto repoll;
 
+#ifndef WIN32
         ignore_value(pthread_sigmask(SIG_SETMASK, &oldmask, NULL));
+#endif /* !WIN32 */
 
         virObjectLock(client);
 

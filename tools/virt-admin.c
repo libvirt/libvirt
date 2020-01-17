@@ -40,11 +40,6 @@
 #include "vsh-table.h"
 #include "virenum.h"
 
-/* Gnulib doesn't guarantee SA_SIGINFO support.  */
-#ifndef SA_SIGINFO
-# define SA_SIGINFO 0
-#endif
-
 #define VIRT_ADMIN_PROMPT "virt-admin # "
 
 /* we don't need precision to milliseconds in this module */

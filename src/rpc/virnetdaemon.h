@@ -55,6 +55,10 @@ void virNetDaemonAutoShutdown(virNetDaemonPtr dmn,
 void virNetDaemonAddShutdownInhibition(virNetDaemonPtr dmn);
 void virNetDaemonRemoveShutdownInhibition(virNetDaemonPtr dmn);
 
+#ifdef WIN32
+# define siginfo_t void
+#endif
+
 typedef void (*virNetDaemonSignalFunc)(virNetDaemonPtr dmn, siginfo_t *info, void *opaque);
 
 int virNetDaemonAddSignalHandler(virNetDaemonPtr dmn,

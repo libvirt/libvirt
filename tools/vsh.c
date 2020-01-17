@@ -46,11 +46,6 @@
 #include "virtypedparam.h"
 #include "virstring.h"
 
-/* Gnulib doesn't guarantee SA_SIGINFO support.  */
-#ifndef SA_SIGINFO
-# define SA_SIGINFO 0
-#endif
-
 #ifdef WITH_READLINE
 /* For autocompletion */
 vshControl *autoCompleteOpaque;
@@ -2013,6 +2008,7 @@ vshEventLoop(void *opaque)
 
 /* We want to use SIGINT to cancel a wait; but as signal handlers
  * don't have an opaque argument, we have to use static storage.  */
+#ifndef WIN32
 static int vshEventFd = -1;
 static struct sigaction vshEventOldAction;
 
@@ -2027,6 +2023,7 @@ vshEventInt(int sig G_GNUC_UNUSED,
     if (vshEventFd >= 0)
         ignore_value(safewrite(vshEventFd, &reason, 1));
 }
+#endif /* !WIN32 */
 
 
 /* Event loop handler used to limit length of waiting for any other event. */
@@ -2057,10 +2054,13 @@ vshEventTimeout(int timer G_GNUC_UNUSED,
 int
 vshEventStart(vshControl *ctl, int timeout_ms)
 {
+#ifndef WIN32
     struct sigaction action;
+    assert(vshEventFd == -1);
+#endif /* !WIN32 */
 
     assert(ctl->eventPipe[0] == -1 && ctl->eventPipe[1] == -1 &&
-           vshEventFd == -1 && ctl->eventTimerId >= 0);
+           ctl->eventTimerId >= 0);
     if (pipe2(ctl->eventPipe, O_CLOEXEC) < 0) {
         char ebuf[1024];
 
@@ -2068,12 +2068,15 @@ vshEventStart(vshControl *ctl, int timeout_ms)
                  virStrerror(errno, ebuf, sizeof(ebuf)));
         return -1;
     }
+
+#ifndef WIN32
     vshEventFd = ctl->eventPipe[1];
 
     action.sa_sigaction = vshEventInt;
     action.sa_flags = SA_SIGINFO;
     sigemptyset(&action.sa_mask);
     sigaction(SIGINT, &action, &vshEventOldAction);
+#endif /* !WIN32 */
 
     if (timeout_ms)
         virEventUpdateTimeout(ctl->eventTimerId, timeout_ms);
@@ -2140,10 +2143,12 @@ vshEventWait(vshControl *ctl)
 void
 vshEventCleanup(vshControl *ctl)
 {
+#ifndef WIN32
     if (vshEventFd >= 0) {
         sigaction(SIGINT, &vshEventOldAction, NULL);
         vshEventFd = -1;
     }
+#endif /* !WIN32 */
     VIR_FORCE_CLOSE(ctl->eventPipe[0]);
     VIR_FORCE_CLOSE(ctl->eventPipe[1]);
     virEventUpdateTimeout(ctl->eventTimerId, -1);

@@ -56,11 +56,6 @@
 #include "vsh-table.h"
 #include "virenum.h"
 
-/* Gnulib doesn't guarantee SA_SIGINFO support.  */
-#ifndef SA_SIGINFO
-# define SA_SIGINFO 0
-#endif
-
 #define VIRSH_COMMON_OPT_DOMAIN_PERSISTENT \
     {.name = "persistent", \
      .type = VSH_OT_BOOL, \
@@ -1697,12 +1692,14 @@ virshPrintJobProgress(const char *label, unsigned long long remaining,
 
 static volatile sig_atomic_t intCaught;
 
+#ifndef WIN32
 static void virshCatchInt(int sig G_GNUC_UNUSED,
                           siginfo_t *siginfo G_GNUC_UNUSED,
                           void *context G_GNUC_UNUSED)
 {
     intCaught = 1;
 }
+#endif /* !WIN32 */
 
 
 typedef struct _virshBlockJobWaitData virshBlockJobWaitData;
@@ -1842,11 +1839,11 @@ virshBlockJobWait(virshBlockJobWaitDataPtr data)
      * the event to the given block job we will wait for the number of retries
      * before claiming that we entered synchronised phase */
     unsigned int retries = 5;
-
+#ifndef WIN32
     struct sigaction sig_action;
     struct sigaction old_sig_action;
     sigset_t sigmask, oldsigmask;
-
+#endif /* !WIN32 */
     unsigned long long start = 0;
     unsigned long long curr = 0;
 
@@ -1861,6 +1858,7 @@ virshBlockJobWait(virshBlockJobWaitDataPtr data)
     if (data->async_abort)
         abort_flags |= VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC;
 
+#ifndef WIN32
     sigemptyset(&sigmask);
     sigaddset(&sigmask, SIGINT);
 
@@ -1869,6 +1867,7 @@ virshBlockJobWait(virshBlockJobWaitDataPtr data)
     sig_action.sa_flags = SA_SIGINFO;
     sigemptyset(&sig_action.sa_mask);
     sigaction(SIGINT, &sig_action, &old_sig_action);
+#endif /* !WIN32 */
 
     if (data->timeout && virTimeMillisNow(&start) < 0) {
         vshSaveLibvirtError();
@@ -1878,9 +1877,13 @@ virshBlockJobWait(virshBlockJobWaitDataPtr data)
     last.cur = last.end = 0;
 
     while (true) {
+#ifndef WIN32
         pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask);
+#endif /* !WIN32 */
         result = virDomainGetBlockJobInfo(data->dom, data->dev, &info, 0);
+#ifndef WIN32
         pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
+#endif /* !WIN32 */
 
         if (result < 0) {
             vshError(data->ctl, _("failed to query job for disk %s"), data->dev);
@@ -1944,7 +1947,9 @@ virshBlockJobWait(virshBlockJobWaitDataPtr data)
         virshPrintJobProgress(data->job_name, 0, 1);
 
  cleanup:
+#ifndef WIN32
     sigaction(SIGINT, &old_sig_action, NULL);
+#endif /* !WIN32 */
     return ret;
 }
 
@@ -4226,12 +4231,14 @@ doSave(void *opaque)
     unsigned int flags = 0;
     const char *xmlfile = NULL;
     char *xml = NULL;
+#ifndef WIN32
     sigset_t sigmask, oldsigmask;
 
     sigemptyset(&sigmask);
     sigaddset(&sigmask, SIGINT);
     if (pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask) < 0)
         goto out_sig;
+#endif /* !WIN32 */
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &to) < 0)
         goto out;
@@ -4265,8 +4272,10 @@ doSave(void *opaque)
     ret = '0';
 
  out:
+#ifndef WIN32
     pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
  out_sig:
+#endif /* !WIN32 */
     virshDomainFree(dom);
     VIR_FREE(xml);
     ignore_value(safewrite(data->writefd, &ret, sizeof(ret)));
@@ -4285,8 +4294,11 @@ virshWatchJob(vshControl *ctl,
               void *opaque,
               const char *label)
 {
+#ifndef WIN32
     struct sigaction sig_action;
     struct sigaction old_sig_action;
+    sigset_t sigmask, oldsigmask;
+#endif /* !WIN32 */
     struct pollfd pollfd[2] = {{.fd = pipe_fd, .events = POLLIN, .revents = 0},
                                {.fd = STDIN_FILENO, .events = POLLIN, .revents = 0}};
     unsigned long long start_us, curr_us;
@@ -4294,10 +4306,10 @@ virshWatchJob(vshControl *ctl,
     int ret = -1;
     char retchar;
     bool functionReturn = false;
-    sigset_t sigmask, oldsigmask;
     bool jobStarted = false;
     nfds_t npollfd = 2;
 
+#ifndef WIN32
     sigemptyset(&sigmask);
     sigaddset(&sigmask, SIGINT);
 
@@ -4306,6 +4318,7 @@ virshWatchJob(vshControl *ctl,
     sig_action.sa_flags = SA_SIGINFO;
     sigemptyset(&sig_action.sa_mask);
     sigaction(SIGINT, &sig_action, &old_sig_action);
+#endif /* !WIN32 */
 
     /* don't poll on STDIN if we are not using a terminal */
     if (!vshTTYAvailable(ctl))
@@ -4355,9 +4368,13 @@ virshWatchJob(vshControl *ctl,
         }
 
         if (verbose || !jobStarted) {
+#ifndef WIN32
             pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask);
+#endif /* !WIN32 */
             ret = virDomainGetJobInfo(dom, &jobinfo);
+#ifndef WIN32
             pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
+#endif /* !WIN32 */
             if (ret == 0) {
                 if (verbose && jobinfo.dataTotal > 0)
                     virshPrintJobProgress(label, jobinfo.dataRemaining,
@@ -4378,7 +4395,9 @@ virshWatchJob(vshControl *ctl,
     functionReturn = true;
 
  cleanup:
+#ifndef WIN32
     sigaction(SIGINT, &old_sig_action, NULL);
+#endif /* !WIN32 */
     vshTTYRestore(ctl);
     return functionReturn;
 }
@@ -4662,12 +4681,14 @@ doManagedsave(void *opaque)
     virDomainPtr dom = NULL;
     const char *name;
     unsigned int flags = 0;
+#ifndef WIN32
     sigset_t sigmask, oldsigmask;
 
     sigemptyset(&sigmask);
     sigaddset(&sigmask, SIGINT);
     if (pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask) < 0)
         goto out_sig;
+#endif /* !WIN32 */
 
     if (vshCommandOptBool(cmd, "bypass-cache"))
         flags |= VIR_DOMAIN_SAVE_BYPASS_CACHE;
@@ -4686,8 +4707,10 @@ doManagedsave(void *opaque)
 
     ret = '0';
  out:
+#ifndef WIN32
     pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
  out_sig:
+#endif /* !WIN32 */
     virshDomainFree(dom);
     ignore_value(safewrite(data->writefd, &ret, sizeof(ret)));
 }
@@ -5340,17 +5363,19 @@ doDump(void *opaque)
     vshControl *ctl = data->ctl;
     const vshCmd *cmd = data->cmd;
     virDomainPtr dom = NULL;
-    sigset_t sigmask, oldsigmask;
     const char *name = NULL;
     const char *to = NULL;
     unsigned int flags = 0;
     const char *format = NULL;
     unsigned int dumpformat = VIR_DOMAIN_CORE_DUMP_FORMAT_RAW;
+#ifndef WIN32
+    sigset_t sigmask, oldsigmask;
 
     sigemptyset(&sigmask);
     sigaddset(&sigmask, SIGINT);
     if (pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask) < 0)
         goto out_sig;
+#endif /* !WIN32 */
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &to) < 0)
         goto out;
@@ -5407,8 +5432,10 @@ doDump(void *opaque)
 
     ret = '0';
  out:
+#ifndef WIN32
     pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
  out_sig:
+#endif /* !WIN32 */
     if (dom)
         virshDomainFree(dom);
     ignore_value(safewrite(data->writefd, &ret, sizeof(ret)));
@@ -10601,7 +10628,6 @@ doMigrate(void *opaque)
     virshCtrlData *data = opaque;
     vshControl *ctl = data->ctl;
     const vshCmd *cmd = data->cmd;
-    sigset_t sigmask, oldsigmask;
     virTypedParameterPtr params = NULL;
     int nparams = 0;
     int maxparams = 0;
@@ -10609,11 +10635,14 @@ doMigrate(void *opaque)
     unsigned long long ullOpt = 0;
     int rv;
     virConnectPtr dconn = data->dconn;
+#ifndef WIN32
+    sigset_t sigmask, oldsigmask;
 
     sigemptyset(&sigmask);
     sigaddset(&sigmask, SIGINT);
     if (pthread_sigmask(SIG_BLOCK, &sigmask, &oldsigmask) < 0)
         goto out_sig;
+#endif /* !WIN32 */
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         goto out;
@@ -10881,8 +10910,10 @@ doMigrate(void *opaque)
     }
 
  out:
+#ifndef WIN32
     pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
  out_sig:
+#endif /* !WIN32 */
     virTypedParamsFree(params, nparams);
     virshDomainFree(dom);
     ignore_value(safewrite(data->writefd, &ret, sizeof(ret)));

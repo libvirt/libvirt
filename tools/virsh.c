@@ -29,7 +29,6 @@
 #include <time.h>
 #include <sys/stat.h>
 #include <inttypes.h>
-#include <signal.h>
 
 #if WITH_READLINE
 # include <readline/readline.h>
@@ -61,11 +60,6 @@
 #include "virsh-secret.h"
 #include "virsh-snapshot.h"
 #include "virsh-volume.h"
-
-/* Gnulib doesn't guarantee SA_SIGINFO support.  */
-#ifndef SA_SIGINFO
-# define SA_SIGINFO 0
-#endif
 
 static char *progname;
 
