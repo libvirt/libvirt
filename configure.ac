@@ -155,6 +155,9 @@ fi
 gl_EARLY
 gl_INIT
 
+dnl get 64-int interfaces on 32-bit platforms
+AC_SYS_LARGEFILE
+
 AC_TYPE_UID_T
 
 dnl Support building Win32 DLLs (must appear *before* AM_PROG_LIBTOOL)
