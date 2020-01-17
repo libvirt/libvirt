@@ -17,7 +17,9 @@
  */
 #include <config.h>
 
-#include <sys/ioctl.h>
+#ifndef WIN32
+# include <sys/ioctl.h>
+#endif
 #if defined HAVE_SYS_SYSCALL_H
 # include <sys/syscall.h>
 #endif

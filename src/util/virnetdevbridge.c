@@ -27,7 +27,9 @@
 #include "virlog.h"
 #include "virstring.h"
 
-#include <sys/ioctl.h>
+#ifndef WIN32
+# include <sys/ioctl.h>
+#endif
 #include <sys/socket.h>
 #include <net/if.h>
 #include <netinet/in.h>

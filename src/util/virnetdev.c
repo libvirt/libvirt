@@ -31,7 +31,9 @@
 #include "virutil.h"
 #include "virjson.h"
 
-#include <sys/ioctl.h>
+#ifndef WIN32
+# include <sys/ioctl.h>
+#endif
 #include <net/if.h>
 #include <fcntl.h>
 

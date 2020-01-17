@@ -33,7 +33,9 @@
 
 #include <unistd.h>
 #include <sys/types.h>
-#include <sys/ioctl.h>
+#ifndef WIN32
+# include <sys/ioctl.h>
+#endif
 #include <net/if.h>
 #include <fcntl.h>
 #ifdef __linux__

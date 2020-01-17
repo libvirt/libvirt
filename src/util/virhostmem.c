@@ -23,7 +23,6 @@
 
 #include <sys/utsname.h>
 #include <fcntl.h>
-#include <sys/ioctl.h>
 #include <unistd.h>
 
 #if defined(__FreeBSD__) || defined(__APPLE__)

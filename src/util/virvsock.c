@@ -17,7 +17,9 @@
 
 #include <config.h>
 
-#include <sys/ioctl.h>
+#ifdef HAVE_SYS_IOCTL_H
+# include <sys/ioctl.h>
+#endif
 
 #if HAVE_DECL_VHOST_VSOCK_SET_GUEST_CID
 # include <linux/vhost.h>

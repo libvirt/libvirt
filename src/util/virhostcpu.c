@@ -24,7 +24,9 @@
 #include <dirent.h>
 #include <sys/utsname.h>
 #include <fcntl.h>
-#include <sys/ioctl.h>
+#ifndef WIN32
+# include <sys/ioctl.h>
+#endif
 #include <unistd.h>
 
 #if HAVE_LINUX_KVM_H
