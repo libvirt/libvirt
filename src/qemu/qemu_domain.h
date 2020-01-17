@@ -874,6 +874,10 @@ int qemuDomainStorageFileInit(virQEMUDriverPtr driver,
                               virStorageSourcePtr parent);
 char *qemuDomainStorageAlias(const char *device, int depth);
 
+const char *
+qemuDomainDiskGetTopNodename(virDomainDiskDefPtr disk)
+    ATTRIBUTE_NONNULL(1);
+
 int qemuDomainDiskGetBackendAlias(virDomainDiskDefPtr disk,
                                   virQEMUCapsPtr qemuCaps,
                                   char **backendAlias)

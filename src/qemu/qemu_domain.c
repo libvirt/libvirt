@@ -11531,6 +11531,31 @@ qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
 
 
 /**
+ * qemuDomainDiskGetTopNodename:
+ *
+ * @disk: disk definition object
+ *
+ * Returns the pointer to the node-name of the topmost layer used by @disk as
+ * backend. Currently returns the nodename of the copy-on-read filter if enabled
+ * or the nodename of the top image's format driver. Empty disks return NULL.
+ * This must be used only when VIR_QEMU_CAPS_BLOCKDEV is enabled.
+ */
+const char *
+qemuDomainDiskGetTopNodename(virDomainDiskDefPtr disk)
+{
+    qemuDomainDiskPrivatePtr priv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+
+    if (virStorageSourceIsEmpty(disk->src))
+        return NULL;
+
+    if (disk->copy_on_read == VIR_TRISTATE_SWITCH_ON)
+        return priv->nodeCopyOnRead;
+
+    return disk->src->nodeformat;
+}
+
+
+/**
  * qemuDomainDiskGetBackendAlias:
  * @disk: disk definition
  * @qemuCaps: emulator capabilities
@@ -11549,8 +11574,6 @@ qemuDomainDiskGetBackendAlias(virDomainDiskDefPtr disk,
                               virQEMUCapsPtr qemuCaps,
                               char **backendAlias)
 {
-    qemuDomainDiskPrivatePtr priv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-    const char *nodename = NULL;
     *backendAlias = NULL;
 
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV)) {
@@ -11560,16 +11583,7 @@ qemuDomainDiskGetBackendAlias(virDomainDiskDefPtr disk,
         return 0;
     }
 
-    if (virStorageSourceIsEmpty(disk->src))
-        return 0;
-
-    if (disk->copy_on_read == VIR_TRISTATE_SWITCH_ON)
-        nodename = priv->nodeCopyOnRead;
-    else
-        nodename = disk->src->nodeformat;
-
-    *backendAlias = g_strdup(nodename);
-
+    *backendAlias = g_strdup(qemuDomainDiskGetTopNodename(disk));
     return 0;
 }
 
