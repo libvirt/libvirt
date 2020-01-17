@@ -56,7 +56,6 @@
 #include "virprobe.h"
 #include "virprocess.h"
 #include "virstring.h"
-#include "passfd.h"
 
 #if WITH_SSH2
 # include "virnetsshsession.h"
@@ -2029,7 +2028,7 @@ int virNetSocketSendFD(virNetSocketPtr sock, int fd)
     virObjectLock(sock);
     PROBE(RPC_SOCKET_SEND_FD,
           "sock=%p fd=%d", sock, fd);
-    if (sendfd(sock->fd, fd) < 0) {
+    if (virSocketSendFD(sock->fd, fd) < 0) {
         if (errno == EAGAIN)
             ret = 0;
         else
@@ -2062,7 +2061,7 @@ int virNetSocketRecvFD(virNetSocketPtr sock, int *fd)
     }
     virObjectLock(sock);
 
-    if ((*fd = recvfd(sock->fd, O_CLOEXEC)) < 0) {
+    if ((*fd = virSocketRecvFD(sock->fd, O_CLOEXEC)) < 0) {
         if (errno == EAGAIN)
             ret = 0;
         else

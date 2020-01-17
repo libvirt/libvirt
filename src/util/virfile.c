@@ -25,7 +25,6 @@
 #include <config.h>
 #include "internal.h"
 
-#include <passfd.h>
 #include <fcntl.h>
 #ifndef WIN32
 # include <termios.h>
@@ -2268,7 +2267,7 @@ virFileOpenForked(const char *path, int openflags, mode_t mode,
         }
 
         do {
-            ret = sendfd(pair[1], fd);
+            ret = virSocketSendFD(pair[1], fd);
         } while (ret < 0 && errno == EINTR);
 
         if (ret < 0) {
@@ -2302,7 +2301,7 @@ virFileOpenForked(const char *path, int openflags, mode_t mode,
     VIR_FORCE_CLOSE(pair[1]);
 
     do {
-        fd = recvfd(pair[0], 0);
+        fd = virSocketRecvFD(pair[0], 0);
     } while (fd < 0 && errno == EINTR);
     VIR_FORCE_CLOSE(pair[0]); /* NB: this preserves errno */
     if (fd < 0)

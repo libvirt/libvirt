@@ -20,6 +20,9 @@
 
 #include "internal.h"
 
+int virSocketSendFD(int sock, int fd);
+int virSocketRecvFD(int sock, int fdflags);
+
 #ifdef WIN32
 
 # define WIN32_LEAN_AND_MEAN

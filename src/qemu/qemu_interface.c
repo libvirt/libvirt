@@ -25,7 +25,6 @@
 #include "domain_audit.h"
 #include "domain_nwfilter.h"
 #include "qemu_interface.h"
-#include "passfd.h"
 #include "viralloc.h"
 #include "virlog.h"
 #include "virstring.h"
@@ -34,6 +33,7 @@
 #include "virnetdevmacvlan.h"
 #include "virnetdevbridge.h"
 #include "virnetdevvportprofile.h"
+#include "virsocket.h"
 
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -347,7 +347,7 @@ qemuCreateInBridgePortWithHelper(virQEMUDriverConfigPtr cfg,
     }
 
     do {
-        *tapfd = recvfd(pair[0], 0);
+        *tapfd = virSocketRecvFD(pair[0], 0);
     } while (*tapfd < 0 && errno == EINTR);
 
     if (*tapfd < 0) {

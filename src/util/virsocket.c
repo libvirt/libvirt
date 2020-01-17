@@ -19,10 +19,12 @@
 #include <config.h>
 
 #include "virsocket.h"
+#include "virutil.h"
+#include "virfile.h"
+
+#include <fcntl.h>
 
 #ifdef WIN32
-
-# include <fcntl.h>
 
 # define FD2SK(fd) _get_osfhandle(fd)
 # define SK2FD(sk) (_open_osfhandle((intptr_t) (sk), O_RDWR | O_BINARY))
@@ -365,3 +367,136 @@ vir_socket(int domain, int type, int protocol)
 }
 
 #endif /* WIN32 */
+
+
+/* The following two methods are derived from GNULIB's
+ * passfd code */
+
+/* MSG_CMSG_CLOEXEC is defined only on Linux, as of 2011.  */
+#ifndef MSG_CMSG_CLOEXEC
+# define MSG_CMSG_CLOEXEC 0
+#endif
+
+#ifndef WIN32
+/* virSocketSendFD sends the file descriptor fd along the socket
+   to a process calling virSocketRecvFD on the other end.
+
+   Return 0 on success, or -1 with errno set in case of error.
+*/
+int
+virSocketSendFD(int sock, int fd)
+{
+    char byte = 0;
+    struct iovec iov;
+    struct msghdr msg;
+    struct cmsghdr *cmsg;
+    char buf[CMSG_SPACE(sizeof(fd))];
+
+    /* send at least one char */
+    memset(&msg, 0, sizeof(msg));
+    iov.iov_base = &byte;
+    iov.iov_len = 1;
+    msg.msg_iov = &iov;
+    msg.msg_iovlen = 1;
+    msg.msg_name = NULL;
+    msg.msg_namelen = 0;
+
+    msg.msg_control = buf;
+    msg.msg_controllen = sizeof(buf);
+    cmsg = CMSG_FIRSTHDR(&msg);
+    cmsg->cmsg_level = SOL_SOCKET;
+    cmsg->cmsg_type = SCM_RIGHTS;
+    cmsg->cmsg_len = CMSG_LEN(sizeof(fd));
+    /* Initialize the payload: */
+    memcpy(CMSG_DATA(cmsg), &fd, sizeof(fd));
+    msg.msg_controllen = cmsg->cmsg_len;
+
+    if (sendmsg(sock, &msg, 0) != iov.iov_len)
+        return -1;
+    return 0;
+}
+
+
+/* virSocketRecvFD receives a file descriptor through the socket.
+   The flags are a bitmask, possibly including O_CLOEXEC (defined in <fcntl.h>).
+
+   Return the fd on success, or -1 with errno set in case of error.
+*/
+int
+virSocketRecvFD(int sock, int fdflags)
+{
+    char byte = 0;
+    struct iovec iov;
+    struct msghdr msg;
+    int fd = -1;
+    ssize_t len;
+    struct cmsghdr *cmsg;
+    char buf[CMSG_SPACE(sizeof(fd))];
+    int fdflags_recvmsg = fdflags & O_CLOEXEC ? MSG_CMSG_CLOEXEC : 0;
+
+    if ((fdflags & ~O_CLOEXEC) != 0) {
+        errno = EINVAL;
+        return -1;
+    }
+
+    /* send at least one char */
+    memset(&msg, 0, sizeof(msg));
+    iov.iov_base = &byte;
+    iov.iov_len = 1;
+    msg.msg_iov = &iov;
+    msg.msg_iovlen = 1;
+    msg.msg_name = NULL;
+    msg.msg_namelen = 0;
+
+    msg.msg_control = buf;
+    msg.msg_controllen = sizeof(buf);
+    cmsg = CMSG_FIRSTHDR(&msg);
+    cmsg->cmsg_level = SOL_SOCKET;
+    cmsg->cmsg_type = SCM_RIGHTS;
+    cmsg->cmsg_len = CMSG_LEN(sizeof(fd));
+    /* Initialize the payload: */
+    memcpy(CMSG_DATA(cmsg), &fd, sizeof(fd));
+    msg.msg_controllen = cmsg->cmsg_len;
+
+    len = recvmsg(sock, &msg, fdflags_recvmsg);
+    if (len < 0)
+        return -1;
+
+    cmsg = CMSG_FIRSTHDR(&msg);
+    /* be paranoiac */
+    if (len == 0 || cmsg == NULL || cmsg->cmsg_len != CMSG_LEN(sizeof(fd))
+        || cmsg->cmsg_level != SOL_SOCKET || cmsg->cmsg_type != SCM_RIGHTS) {
+        /* fake errno: at end the file is not available */
+        errno = len ? EACCES : ENOTCONN;
+        return -1;
+    }
+
+    memcpy(&fd, CMSG_DATA(cmsg), sizeof(fd));
+
+    /* set close-on-exec flag */
+    if (!MSG_CMSG_CLOEXEC && (fdflags & O_CLOEXEC)) {
+        if (virSetCloseExec(fd) < 0) {
+            int saved_errno = errno;
+            VIR_FORCE_CLOSE(fd);
+            errno = saved_errno;
+            return -1;
+        }
+    }
+
+    return fd;
+}
+#else /* WIN32 */
+int
+virSocketSendFD(int sock G_GNUC_UNUSED, int fd G_GNUC_UNUSED)
+{
+    errno = ENOSYS;
+    return -1;
+}
+
+int
+virSocketRecvFD(int sock G_GNUC_UNUSED, int fdflags G_GNUC_UNUSED)
+{
+    errno = ENOSYS;
+    return -1;
+}
+#endif  /* WIN32 */
