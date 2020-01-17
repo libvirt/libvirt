@@ -25,6 +25,10 @@ AC_DEFUN([LIBVIRT_ARG_POLKIT], [
 AC_DEFUN([LIBVIRT_CHECK_POLKIT], [
   AC_REQUIRE([LIBVIRT_CHECK_DBUS])
 
+  if test "x$with_win" = "xyes"; then
+    with_polkit=no
+  fi
+
   if test "x$with_polkit" = "xcheck"; then
     dnl For --with-polkit=check, also require the pkcheck binary, even
     dnl though we talk to polkit directly over D-Bus.
