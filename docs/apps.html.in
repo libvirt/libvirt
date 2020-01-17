@@ -224,7 +224,7 @@
       <dd>
         Eucalyptus is an on-premise Infrastructure as a Service cloud
         software platform that is open source and
-        AWS-compatible. Eucalyptus uses libivrt virtualization API to
+        AWS-compatible. Eucalyptus uses libvirt virtualization API to
         directly interact with Xen and KVM hypervisors.
       </dd>
 

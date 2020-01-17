@@ -42,7 +42,7 @@
       In addition to have formal messages sent to the audit subsystem it is
       possible to tell libvirt to inject messages into its own logging
       layer. This will result in messages ending up in the systemd journal
-      or <code>/var/log/libvirt/libivrtd.log</code> on non-systemd hosts.
+      or <code>/var/log/libvirt/libvirtd.log</code> on non-systemd hosts.
       This is disabled by default, but can be requested by setting the
       <code>audit_logging=1</code> configuration parameter in the same file
       mentioned above.
