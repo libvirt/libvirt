@@ -386,6 +386,7 @@ AC_CHECK_HEADERS([\
   pwd.h \
   stdarg.h \
   syslog.h \
+  sys/ioctl.h \
   sys/mount.h \
   sys/syscall.h \
   sys/sysctl.h \
