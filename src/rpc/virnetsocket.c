@@ -1384,12 +1384,6 @@ int virNetSocketGetFD(virNetSocketPtr sock)
     return fd;
 }
 
-/* Temp hack - we're still pulling in gnulib
- * fcntl-h indirectly, but not fcntl */
-#ifdef WIN32
-# undef F_DUPFD_CLOEXEC
-#endif
-
 int virNetSocketDupFD(virNetSocketPtr sock, bool cloexec)
 {
     int fd;

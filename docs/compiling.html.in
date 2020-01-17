@@ -70,31 +70,6 @@ $ <b>sudo</b> <i>make install</i></pre>
       will turn on -Werror for builds. This can be disabled with
       --disable-werror, but this is not recommended.
     </p>
-    <p>
-      Libvirt takes advantage of
-      the <a href="http://www.gnu.org/software/gnulib/">gnulib</a>
-      project to provide portability to a number of platforms.  This
-      is normally done dynamically via a git submodule in
-      the <code>.gnulib</code> subdirectory, which is auto-updated as
-      needed when you do incremental builds.  Setting the environment
-      variable <code>GNULIB_SRCDIR</code> to a local directory
-      containing a git checkout of gnulib will let you reduce local
-      disk space requirements and network download time, regardless of
-      which actual commit you have in that reference directory.
-    </p>
-    <p>
-      However, if you are developing on a platform where git is not
-      available, or are behind a firewall that does not allow for git
-      to easily obtain the gnulib submodule, it is possible to instead
-      use a static mode of operation where you are then responsible
-      for updating the git submodule yourself.  In this mode, you must
-      track the exact gnulib commit needed by libvirt (usually not the
-      latest gnulib.git) via alternative means, such as a shared NFS
-      drive or manual download, and run this any time libvirt.git
-      updates the commit stored in the .gnulib submodule:</p>
-    <pre>
-$ GNULIB_SRCDIR=/path/to/gnulib ./autogen.sh --no-git
-    </pre>
 
     <p>To build &amp; install libvirt to your home
       directory the following commands can be run:

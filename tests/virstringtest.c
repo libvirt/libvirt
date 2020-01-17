@@ -417,8 +417,7 @@ struct stringToLongData {
 
 /* This test makes assumptions about our compilation platform that are
  * not guaranteed by POSIX.  Good luck to you if you are crazy enough
- * to try and port libvirt to a platform with 16-bit int.  Gnulib
- * already assumes that signed integers are two's complement. */
+ * to try and port libvirt to a platform with 16-bit int. */
 G_STATIC_ASSERT(sizeof(int) == 4);
 G_STATIC_ASSERT(sizeof(long) == sizeof(int) || sizeof(long) == sizeof(long long));
 G_STATIC_ASSERT(sizeof(long long) == 8);

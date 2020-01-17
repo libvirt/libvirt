@@ -35,7 +35,6 @@ libvirt_driver_libxl_la_LIBADD = \
 	libvirt_driver_libxl_impl.la \
 	libvirt.la \
 	$(GLIB_LIBS) \
-	../gnulib/lib/libgnu.la \
 	$(NULL)
 mod_LTLIBRARIES += libvirt_driver_libxl.la
 libvirt_driver_libxl_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)

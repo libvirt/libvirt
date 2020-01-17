@@ -932,8 +932,7 @@ BAD:
         type is at least four bytes wide).</li>
       <li>If a variable has boolean semantics, give it the <code>bool</code> type
         and use the corresponding <code>true</code> and <code>false</code> macros.
-         It's ok to include &lt;stdbool.h&gt;, since libvirt's use of gnulib ensures
-          that it exists and is usable.</li>
+      </li>
       <li>In the unusual event that you require a specific width, use a
         standard type like <code>int32_t</code>, <code>uint32_t</code>,
         <code>uint64_t</code>, etc.</li>
@@ -1549,7 +1548,7 @@ int foo()
         in the same way, but still make sure they get reviewed if non-trivial.
       </li>
       <li>(ir)regular pulls from other repositories or automated updates, such
-        as the .gnulib submodule updates, pulling in new translations or updating
+        as the keycodemap submodule updates, pulling in new translations or updating
         the container images for the CI system
       </li>
     </ul>

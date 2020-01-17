@@ -67,8 +67,6 @@ libvirt_driver_nodedev_la_LIBADD += \
 	$(NULL)
 endif WITH_UDEV
 
-libvirt_driver_nodedev_la_LIBADD += ../gnulib/lib/libgnu.la
-
 sbin_PROGRAMS += virtnodedevd
 
 nodist_conf_DATA += node_device/virtnodedevd.conf

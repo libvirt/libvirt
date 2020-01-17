@@ -32,7 +32,6 @@ libvirt_driver_admin_la_CFLAGS = \
 	-I$(top_srcdir)/src/util \
 	-I$(top_builddir)/src/rpc \
 	$(NULL)
-libvirt_driver_admin_la_LIBADD = ../gnulib/lib/libgnu.la
 libvirt_driver_admin_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
 
 if WITH_SASL

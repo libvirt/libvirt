@@ -17,14 +17,13 @@
 
 AM_CPPFLAGS = \
 	-I$(top_builddir)/include -I$(top_srcdir)/include \
-	-I$(top_builddir)/gnulib/lib -I$(top_srcdir)/gnulib/lib \
 	-I$(top_builddir)/src -I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/util \
 	-I$(top_srcdir) \
 	$(NULL)
 
-# We do not want to accidentally include stuff from gnulib
-# or the main src/ dir or public API dir. Specific files can
+# We do not want to accidentally include stuff from src/
+# dir or public API dir. Specific files can
 # still be included via their path relative to the root if
 # needed
 STANDALONE_CPPFLAGS = -I$(top_srcdir)
@@ -120,7 +119,6 @@ libvirt_shell_la_LIBADD = \
 		$(LIBXML_LIBS) \
 		$(READLINE_LIBS) \
 		$(GLIB_LIBS) \
-		../gnulib/lib/libgnu.la \
 		$(NULL)
 libvirt_shell_la_SOURCES = \
 		vsh.c vsh.h \
@@ -166,7 +164,6 @@ virt_host_validate_LDFLAGS = \
 virt_host_validate_LDADD = \
 		../src/libvirt.la \
 		$(GLIB_LIBS) \
-		../gnulib/lib/libgnu.la \
 		$(NULL)
 
 virt_host_validate_CFLAGS = \
@@ -193,7 +190,7 @@ virt_login_shell_helper_LDADD = \
 		../src/libvirt.la \
 		../src/libvirt-lxc.la \
 		$(GLIB_LIBS) \
-		../gnulib/lib/libgnu.la
+		$(NULL)
 
 virt_login_shell_helper_CFLAGS = \
 		$(AM_CFLAGS) \

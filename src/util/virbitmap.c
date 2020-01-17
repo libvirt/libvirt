@@ -754,7 +754,7 @@ virBitmapNewData(const void *data,
     if (!bitmap)
         return NULL;
 
-    /* le64toh is not provided by gnulib, so we do the conversion by hand */
+    /* le64toh is not available, so we do the conversion by hand */
     p = bitmap->map;
     for (i = j = 0; i < len; i++, j++) {
         if (j == sizeof(*p)) {
@@ -825,7 +825,7 @@ virBitmapToDataBuf(virBitmapPtr bitmap,
     /* If bitmap and buffer differ in size, only fill to the smaller length */
     len = MIN(len, nbytes);
 
-    /* htole64 is not provided by gnulib, so we do the conversion by hand */
+    /* htole64 is not available, so we do the conversion by hand */
     l = bitmap->map;
     for (i = j = 0; i < len; i++, j++) {
         if (j == sizeof(*l)) {

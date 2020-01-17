@@ -6,6 +6,7 @@
 *#*#
 *.#*#
 .#*
+*~
 
 # autotools related ignores
 !/m4/virt-*.m4
@@ -28,14 +29,8 @@
 /m4/*
 Makefile.in
 
-# gnulib related ignores
-!/gnulib/lib/Makefile.am
-*.rej
-*~
-/gnulib/lib/*
-/gnulib/m4/*
-
 # git related ignores
+*.rej
 *.orig
 .git-module-status
 

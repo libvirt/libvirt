@@ -382,8 +382,7 @@ void virDisposeString(char **strptr)
  * @S: size of trailing array elements
  *
  * Check to make sure that the requested allocation will not cause
- * arithmetic overflow in the allocation size.  The check is
- * essentially the same as that in gnulib's xalloc_oversized.
+ * arithmetic overflow in the allocation size.
  */
 #define VIR_ALLOC_VAR_OVERSIZED(M, N, S) ((((size_t)-1) - (M)) / (S) < (N))
 

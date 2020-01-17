@@ -42,11 +42,6 @@ dnl we don't really need the 'u' even in older toolchains.  Then there is
 dnl older libtool, which spelled it AR_FLAGS
 m4_divert_text([DEFAULTS], [: "${ARFLAGS=cr} ${AR_FLAGS=cr}"])
 
-# Maintainer note - comment this line out if you plan to rerun
-# GNULIB_POSIXCHECK testing to see if libvirt should be using more modules.
-# Leave it uncommented for normal releases, for faster ./configure.
-gl_ASSERT_NO_GNULIB_POSIXCHECK
-
 # Default to using the silent-rules feature when possible.  Formatting
 # chosen to bypass 'grep' checks that cause older automake to warn.
 # Users (include rpm) can still change the default at configure time.
@@ -151,9 +146,6 @@ then
   runstatedir=$with_runstatedir
 fi
 
-
-gl_EARLY
-gl_INIT
 
 dnl get 64-int interfaces on 32-bit platforms
 AC_SYS_LARGEFILE
@@ -746,7 +738,7 @@ AM_CONDITIONAL([WITH_TESTS], [test "$with_test_suite" = "yes"])
 
 LIBVIRT_ARG_ENABLE([EXPENSIVE_TESTS],
                    [set the default for enabling expensive tests ]
-                     [(gnulib and long timeouts), use VIR_TEST_EXPENSIVE to ]
+                     [(long timeouts), use VIR_TEST_EXPENSIVE to ]
                      [override during make],
                    [check])
 case "$enable_expensive_tests" in
@@ -925,7 +917,6 @@ AC_CONFIG_FILES([run],
                 [chmod +x,-w run])
 AC_CONFIG_FILES([\
         Makefile src/Makefile include/libvirt/Makefile docs/Makefile \
-        gnulib/lib/Makefile \
         .color_coded \
         .ycm_extra_conf.py \
         libvirt.pc \

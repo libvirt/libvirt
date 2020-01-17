@@ -140,7 +140,6 @@ libvirt_driver_storage_la_LIBADD = \
 	libvirt_driver_storage_impl.la \
 	libvirt.la \
 	$(GLIB_LIBS) \
-	../gnulib/lib/libgnu.la \
 	$(NULL)
 mod_LTLIBRARIES += libvirt_driver_storage.la
 libvirt_driver_storage_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
@@ -233,7 +232,6 @@ libvirt_storage_backend_fs_la_LDFLAGS = $(AM_LDFLAGS_MOD)
 libvirt_storage_backend_fs_la_LIBADD = \
 	libvirt.la \
 	$(GLIB_LIBS) \
-	../gnulib/lib/libgnu.la \
 	$(NULL)
 
 libvirt_storage_file_fs_la_SOURCES = $(STORAGE_FILE_FS_SOURCES)
@@ -247,7 +245,6 @@ libvirt_storage_file_fs_la_LDFLAGS = $(AM_LDFLAGS_MOD)
 libvirt_storage_file_fs_la_LIBADD = \
 	libvirt.la \
 	$(GLIB_LIBS) \
-	../gnulib/lib/libgnu.la \
 	$(NULL)
 endif WITH_STORAGE
 
@@ -263,7 +260,6 @@ libvirt_storage_backend_logical_la_LDFLAGS = $(AM_LDFLAGS_MOD)
 libvirt_storage_backend_logical_la_LIBADD = \
 	libvirt.la \
 	$(GLIB_LIBS) \
-	../gnulib/lib/libgnu.la \
 	$(NULL)
 endif WITH_STORAGE_LVM
 
@@ -280,7 +276,6 @@ libvirt_storage_backend_iscsi_la_LDFLAGS = $(AM_LDFLAGS_MOD)
 libvirt_storage_backend_iscsi_la_LIBADD = \
 	libvirt.la \
 	$(GLIB_LIBS) \
-	../gnulib/lib/libgnu.la \
 	$(NULL)
 endif WITH_STORAGE_ISCSI
 
@@ -299,7 +294,6 @@ libvirt_storage_backend_iscsi_direct_la_LDFLAGS = $(AM_LDFLAGS_MOD)
 libvirt_storage_backend_iscsi_direct_la_LIBADD = \
 	libvirt.la \
 	$(GLIB_LIBS) \
-	../gnulib/lib/libgnu.la \
 	$(LIBISCSI_LIBS) \
 	$(NULL)
 endif WITH_STORAGE_ISCSI_DIRECT
@@ -316,7 +310,6 @@ libvirt_storage_backend_scsi_la_LDFLAGS = $(AM_LDFLAGS_MOD)
 libvirt_storage_backend_scsi_la_LIBADD = \
 	libvirt.la \
 	$(GLIB_LIBS) \
-	../gnulib/lib/libgnu.la \
 	$(NULL)
 endif WITH_STORAGE_SCSI
 
@@ -326,7 +319,6 @@ libvirt_storage_backend_mpath_la_LIBADD = \
 	libvirt.la \
 	$(DEVMAPPER_LIBS) \
 	$(GLIB_LIBS) \
-	../gnulib/lib/libgnu.la \
 	$(NULL)
 libvirt_storage_backend_mpath_la_CFLAGS = \
 	-I$(srcdir)/conf \
@@ -350,7 +342,6 @@ libvirt_storage_backend_disk_la_LDFLAGS = $(AM_LDFLAGS_MOD)
 libvirt_storage_backend_disk_la_LIBADD = \
 	libvirt.la \
 	$(GLIB_LIBS) \
-	../gnulib/lib/libgnu.la \
 	$(NULL)
 endif WITH_STORAGE_DISK
 
@@ -360,7 +351,6 @@ libvirt_storage_backend_rbd_la_LIBADD = \
 	libvirt.la \
 	$(LIBRBD_LIBS) \
 	$(GLIB_LIBS) \
-	../gnulib/lib/libgnu.la \
 	$(NULL)
 libvirt_storage_backend_rbd_la_CFLAGS = \
 	-I$(srcdir)/conf \
@@ -393,7 +383,6 @@ libvirt_storage_backend_sheepdog_la_LDFLAGS = $(AM_LDFLAGS_MOD)
 libvirt_storage_backend_sheepdog_la_LIBADD = \
 	libvirt.la \
 	$(GLIB_LIBS) \
-	../gnulib/lib/libgnu.la \
 	$(NULL)
 endif WITH_STORAGE_SHEEPDOG
 
@@ -404,7 +393,6 @@ libvirt_storage_backend_gluster_la_LIBADD = \
 	libvirt.la \
 	$(GLUSTERFS_LIBS) \
 	$(GLIB_LIBS) \
-	../gnulib/lib/libgnu.la \
 	$(NULL)
 libvirt_storage_backend_gluster_la_CFLAGS = \
 	-I$(srcdir)/conf \
@@ -422,7 +410,6 @@ libvirt_storage_file_gluster_la_LIBADD = \
 	libvirt.la \
 	$(GLUSTERFS_LIBS) \
 	$(GLIB_LIBS) \
-	../gnulib/lib/libgnu.la \
 	$(NULL)
 libvirt_storage_file_gluster_la_CFLAGS = \
 	-I$(srcdir)/conf \
@@ -447,7 +434,6 @@ libvirt_storage_backend_zfs_la_LDFLAGS = $(AM_LDFLAGS_MOD)
 libvirt_storage_backend_zfs_la_LIBADD = \
 	libvirt.la \
 	$(GLIB_LIBS) \
-	../gnulib/lib/libgnu.la \
 	$(NULL)
 endif WITH_STORAGE_ZFS
 
@@ -464,7 +450,6 @@ libvirt_storage_backend_vstorage_la_LDFLAGS = $(AM_LDFLAGS_MOD)
 libvirt_storage_backend_vstorage_la_LIBADD = \
 	libvirt.la \
 	$(GLIB_LIBS) \
-	../gnulib/lib/libgnu.la \
 	$(NULL)
 endif WITH_STORAGE_VSTORAGE
 
@@ -480,7 +465,6 @@ libvirt_parthelper_LDADD = \
 	$(LIBPARTED_LIBS) \
 	libvirt.la \
 	$(GLIB_LIBS) \
-	../gnulib/lib/libgnu.la \
 	$(NULL)
 if WITH_DTRACE_PROBES
 libvirt_parthelper_LDADD += libvirt_probes.lo

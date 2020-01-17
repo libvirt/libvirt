@@ -46,21 +46,6 @@ int vir_setsockopt(int fd, int level, int optname,
 int vir_socket(int domain, int type, int protocol);
 
 
-/* Get rid of GNULIB's replacements */
-# undef accept
-# undef bind
-# undef closesocket
-# undef connect
-# undef dup
-# undef dup2
-# undef getpeername
-# undef getsockname
-# undef getsockopt
-# undef ioctlsocket
-# undef listen
-# undef setsockopt
-# undef socket
-
 /* Provide our own replacements */
 # define accept vir_accept
 # define bind vir_bind

@@ -1,6 +1,3 @@
-[submodule "gnulib"]
-	path = .gnulib
-	url = https://git.savannah.gnu.org/git/gnulib.git/
 [submodule "keycodemapdb"]
 	path = src/keycodemapdb
 	url = https://gitlab.com/keycodemap/keycodemapdb.git

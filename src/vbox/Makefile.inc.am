@@ -47,7 +47,6 @@ libvirt_driver_vbox_la_LIBADD = \
 	libvirt_driver_vbox_impl.la \
 	libvirt.la \
 	$(GLIB_LIBS) \
-	../gnulib/lib/libgnu.la \
 	$(NULL)
 mod_LTLIBRARIES += libvirt_driver_vbox.la
 libvirt_driver_vbox_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)

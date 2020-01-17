@@ -22,10 +22,7 @@
 
 /*
  * Define __GNUC_PREREQ to a sane default if it isn't yet defined.
- * This is done here so that it's included as early as possible; gnulib relies
- * on this to be defined in features.h, which should be included from ctype.h.
- * This doesn't happen on many non-glibc systems.
- * When __GNUC_PREREQ is not defined, gnulib defines it to 0, which breaks things.
+ * This is done here so that it's included as early as possible;
  */
 #ifndef __GNUC_PREREQ
 # define __GNUC_PREREQ(maj, min) \

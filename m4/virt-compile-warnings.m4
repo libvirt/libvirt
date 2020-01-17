@@ -37,10 +37,6 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     dontwarn="$dontwarn -Wconversion"
     # Too many to deal with
     dontwarn="$dontwarn -Wsign-conversion"
-    # GNULIB gettext.h violates
-    dontwarn="$dontwarn -Wvla"
-    # Many GNULIB header violations
-    dontwarn="$dontwarn -Wundef"
     # Need to allow bad cast for execve()
     dontwarn="$dontwarn -Wcast-qual"
     # We need to use long long in many places
@@ -51,8 +47,6 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     dontwarn="$dontwarn -Wstrict-overflow"
     # Not a problem since we don't use -funsafe-loop-optimizations
     dontwarn="$dontwarn -Wunsafe-loop-optimizations"
-    # Gnulib's stat-time.h violates this
-    dontwarn="$dontwarn -Waggregate-return"
     # gcc 4.4.6 complains this is C++ only; gcc 4.7.0 implies this from -Wall
     dontwarn="$dontwarn -Wenum-compare"
     # gcc 5.1 -Wformat-signedness mishandles enums, not ready for prime time
@@ -139,7 +133,7 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
       wantwarn="$wantwarn -Wno-unused-function"
     fi
 
-    # GNULIB uses '-W' (aka -Wextra) which includes a bunch of stuff.
+    # manywarnings uses '-W' (aka -Wextra) which includes a bunch of stuff.
     # Unfortunately, this means you can't simply use '-Wsign-compare'
     # with gl_MANYWARN_COMPLEMENT
     # So we have -W enabled, and then have to explicitly turn off...
@@ -151,16 +145,16 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     # so use this CLang-specific arg to keep it quiet
     wantwarn="$wantwarn -Wno-typedef-redefinition"
 
-    # GNULIB expects this to be part of -Wc++-compat, but we turn
+    # manywarnings expects this to be part of -Wc++-compat, but we turn
     # that one off, so we need to manually enable this again
     wantwarn="$wantwarn -Wjump-misses-init"
 
-    # GNULIB explicitly filters it out, preferring -Wswitch
+    # manywarnings explicitly filters it out, preferring -Wswitch
     # but that doesn't report missing enums if a default:
     # is present.
     wantwarn="$wantwarn -Wswitch-enum"
 
-    # GNULIB turns on -Wformat=2 which implies -Wformat-nonliteral,
+    # manywarnings turns on -Wformat=2 which implies -Wformat-nonliteral,
     # so we need to manually re-exclude it.
     wantwarn="$wantwarn -Wno-format-nonliteral"
 
@@ -244,9 +238,7 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
         ;;
     esac
 
-    # Silence certain warnings in gnulib, and use improved glibc headers
-    AC_DEFINE([lint], [1],
-      [Define to 1 if the compiler is checking for lint.])
+    # Use security checked glibc headers
     AH_VERBATIM([FORTIFY_SOURCE],
     [/* Enable compile-time and run-time bounds-checking, and some warnings,
         without upsetting newer glibc. */

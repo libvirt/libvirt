@@ -43,7 +43,6 @@ libvirt_driver_interface_la_CFLAGS += $(UDEV_CFLAGS)
 libvirt_driver_interface_la_LIBADD += $(UDEV_LIBS)
 libvirt_driver_interface_la_SOURCES += $(INTERFACE_DRIVER_UDEV_SOURCES)
 endif WITH_UDEV
-libvirt_driver_interface_la_LIBADD += ../gnulib/lib/libgnu.la
 
 sbin_PROGRAMS += virtinterfaced
 

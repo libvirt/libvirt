@@ -44,10 +44,6 @@ VC = $(GIT)
 
 VC_LIST = $(srcdir)/$(_build-aux)/vc-list-files -C $(srcdir)
 
-# You can override this variable in syntax-check.mk if your gnulib submodule lives
-# in a different location.
-gnulib_dir ?= $(srcdir)/gnulib
-
 # You can override this variable in syntax-check.mk to set your own regexp
 # matching files to ignore.
 VC_LIST_ALWAYS_EXCLUDE_REGEX ?= ^$$
@@ -132,8 +128,7 @@ local-check :=								\
 
 syntax-check: $(local-check)
 
-# We haven't converted all scripts to using gnulib's init.sh yet.
-_test_script_regex = \<\(init\|test-lib\)\.sh\>
+_test_script_regex = \<test-lib\.sh\>
 
 # Most developers don't run 'make distcheck'.  We want the official
 # dist to be secure, but don't want to penalize other developers
@@ -420,7 +415,6 @@ sc_prohibit_access_xok:
 	halt='use virFileIsExecutable instead of access(,X_OK)' \
 	  $(_sc_search_regexp)
 
-# Similar to the gnulib syntax-check.mk rule for sc_prohibit_strcmp
 # Use STREQLEN or STRPREFIX rather than comparing strncmp == 0, or != 0.
 snp_ = strncmp *\(.+\)
 sc_prohibit_strncmp:
@@ -473,8 +467,6 @@ sc_prohibit_risky_id_promotion:
 	halt='cast -1 to ([ug]id_t) before comparing against id' \
 	  $(_sc_search_regexp)
 
-# Use g_snprintf rather than s'printf, even if buffer is provably large enough,
-# since gnulib has more guarantees for snprintf portability
 sc_prohibit_sprintf:
 	@prohibit='\<[s]printf\>' \
 	in_vc_files='\.[ch]$$' \
@@ -567,8 +559,7 @@ sc_size_of_brackets:
 	  $(_sc_search_regexp)
 
 # Ensure that no C source file, docs, or rng schema uses TABs for
-# indentation.  Also match *.h.in files, to get libvirt.h.in.  Exclude
-# files in gnulib, since they're imported.
+# indentation.  Also match *.h.in files, to get libvirt.h.in.
 space_indent_files=(\.(aug(\.in)?|rng|s?[ch](\.in)?|html.in|py|pl|syms)|tools/.*\.in)
 sc_TAB_in_indentation:
 	@prohibit='^ *	' \
@@ -1660,79 +1651,12 @@ sc_unmarked_diagnostics:
 	halt='found unmarked diagnostic(s)'				\
 	  $(_sc_search_regexp)
 
-# List headers for which HAVE_HEADER_H is always true, assuming you are
-# using the appropriate gnulib module.  CAUTION: for each "unnecessary"
-# #if HAVE_HEADER_H that you remove, be sure that your project explicitly
-# requires the gnulib module that guarantees the usability of that header.
-gl_assured_headers_ = \
-  cd $(gnulib_dir)/lib && echo *.in.h|$(SED) 's/\.in\.h//g'
-
-# Convert the list of names to upper case, and replace each space with "|".
-az_ = abcdefghijklmnopqrstuvwxyz
-AZ_ = ABCDEFGHIJKLMNOPQRSTUVWXYZ
-gl_header_upper_case_or_ =						\
-  $$($(gl_assured_headers_)						\
-    | tr $(az_)/.- $(AZ_)___						\
-    | tr -s ' ' '|'							\
-    )
-sc_prohibit_always_true_header_tests:
-	@or=$(gl_header_upper_case_or_);				\
-	re="HAVE_($$or)_H";						\
-	prohibit='\<'"$$re"'\>'						\
-	halt=$$(printf '%s\n'						\
-	'do not test the above HAVE_<header>_H symbol(s);'		\
-	'  with the corresponding gnulib module, they are always true')	\
-	  $(_sc_search_regexp)
 
 sc_prohibit_defined_have_decl_tests:
 	@prohibit='(#[	 ]*ifn?def|\<defined)\>[	 (]+HAVE_DECL_'	\
 	halt='HAVE_DECL macros are always defined'			\
 	  $(_sc_search_regexp)
 
-# ==================================================================
-gl_other_headers_ ?= \
-  openat.h	\
-  stat-macros.h
-
-# Perl -lne code to extract "significant" cpp-defined symbols from a
-# gnulib header file, eliminating a few common false-positives.
-# The exempted names below are defined only conditionally in gnulib,
-# and hence sometimes must/may be defined in application code.
-gl_extract_significant_defines_ = \
-  /^\# *define ([^_ (][^ (]*)(\s*\(|\s+\w+)/\
-    && $$2 !~ /(?:rpl_|_used_without_)/\
-    && $$1 !~ /^(?:NSIG|ENODATA)$$/\
-    && $$1 !~ /^(?:SA_RESETHAND|SA_RESTART)$$/\
-    and print $$1
-
-# Create a list of regular expressions matching the names
-# of macros that are guaranteed to be defined by parts of gnulib.
-define def_sym_regex
-	gen_h=$(gl_generated_headers_);					\
-	(cd $(gnulib_dir)/lib;						\
-	  for f in *.in.h $(gl_other_headers_); do			\
-	    test -f $$f							\
-	      && perl -lne '$(gl_extract_significant_defines_)' $$f;	\
-	  done;								\
-	) | sort -u							\
-	  | $(SED) 's/^/^ *# *(define|undef)  */;s/$$/\\>/'
-endef
-
-# Don't define macros that we already get from gnulib header files.
-sc_prohibit_always-defined_macros:
-	@if test -d $(gnulib_dir); then					\
-	  case $$(echo all: | $(GREP) -l -f - $(abs_top_builddir)/Makefile) in $(abs_top_builddir)/Makefile);; *) \
-	    echo '$(ME): skipping $@: you lack GNU grep' 1>&2; exit 0;;	\
-	  esac;								\
-	  regex=$$($(def_sym_regex)); export regex;			\
-	  $(VC_LIST_EXCEPT)						\
-	    | xargs sh -c 'echo $$regex | $(GREP) -E -f - "$$@"'	\
-		dummy /dev/null						\
-	    && { printf '$(ME): define the above'			\
-			' via some gnulib .h file\n' 1>&2;		\
-	         exit 1; }						\
-	    || :;							\
-	fi
 # ==================================================================
 
 # Prohibit checked in backup files.
@@ -1972,11 +1896,10 @@ perl_translatable_files_list_ =						\
 po_file ?= $(srcdir)/po/POTFILES.in
 
 # List of additional files that we want to pick up in our POTFILES.in
-# This is all gnulib files, as well as generated files for RPC code.
+# This is all generated files for RPC code.
 generated_files = \
   $(builddir)/src/*.[ch] \
-  $(builddir)/src/*/*.[ch] \
-  $(srcdir)/gnulib/lib/*.[ch]
+  $(builddir)/src/*/*.[ch]
 
 _gl_translatable_string_re ?= \b(N?_|gettext *)\([^)"]*("|$$)
 
@@ -2011,25 +1934,6 @@ writable-files:
 	  test "$$fail" && exit 1 || : ;				\
 	else :;								\
 	fi
-
-v_etc_file = $(gnulib_dir)/lib/version-etc.c
-sample-test = tests/sample-test
-texi = doc/$(PACKAGE).texi
-# Make sure that the copyright date in $(v_etc_file) is up to date.
-# Do the same for the $(sample-test) and the main doc/.texi file.
-sc_copyright_check:
-	@require='enum { COPYRIGHT_YEAR = '$$(date +%Y)' };'		\
-	in_files=$(v_etc_file)						\
-	halt='out of date copyright in $(v_etc_file); update it'	\
-	  $(_sc_search_regexp)
-	@require='# Copyright \(C\) '$$(date +%Y)' Free'		\
-	in_vc_files=$(sample-test)					\
-	halt='out of date copyright in $(sample-test); update it'	\
-	  $(_sc_search_regexp)
-	@require='Copyright @copyright\{\} .*'$$(date +%Y)		\
-	in_vc_files=$(texi)						\
-	halt='out of date copyright in $(texi); update it'		\
-	  $(_sc_search_regexp)
 
 
 # BRE regex of file contents to identify a test script.
@@ -2078,51 +1982,6 @@ sc_vulnerable_makefile_CVE-2012-3386:
 	  '  see https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2012-3386 for details') \
 	  $(_sc_search_regexp)
 
-# We don't use this feature of syntax-check.mk.
-prev_version_file = /dev/null
-
-ifneq ($(_gl-Makefile),)
-ifeq (0,$(MAKELEVEL))
-  _dry_run_result := $(shell \
-      cd '$(srcdir)'; \
-      test -d .git || test -f .git || { echo 0; exit; }; \
-      $(srcdir)/autogen.sh --dry-run >/dev/null 2>&1; \
-      echo $$?; \
-  )
-  _clean_requested = $(filter %clean,$(MAKECMDGOALS))
-
-  # A return value of 0 means no action is required
-
-  # A return value of 1 means a genuine error has occurred while
-  # performing the dry run, and it should be reported so it can
-  # be investigated
-  ifeq (1,$(_dry_run_result))
-    $(info INFO: autogen.sh error, running again to show details)
-syntax-check.mk Makefile: _autogen_error
-  endif
-
-  # A return value of 2 means that autogen.sh needs to be executed
-  # in earnest before building, probably because of gnulib updates.
-  # We don't run autogen.sh if the clean target has been invoked,
-  # though, as it would be quite pointless
-  ifeq (2,$(_dry_run_result)$(_clean_requested))
-    $(info INFO: running autogen.sh is required, running it now...)
-    $(shell touch $(srcdir)/AUTHORS)
-syntax-check.mk Makefile: _autogen
-  endif
-endif
-endif
-
-# It is necessary to call autogen any time gnulib changes.  Autogen
-# reruns configure, then we regenerate all Makefiles at once.
-.PHONY: _autogen
-_autogen:
-	$(srcdir)/autogen.sh
-	./config.status
-
-.PHONY: _autogen_error
-_autogen_error:
-	$(srcdir)/autogen.sh --dry-run
 
 ifneq ($(_gl-Makefile),)
 syntax-check: spacing-check test-wrap-argv \
@@ -2271,7 +2130,7 @@ exclude_file_name_regexp--sc_require_config_h_first = \
 	^(examples/|tools/virsh-edit\.c$$|tests/virmockstathelpers.c)
 
 exclude_file_name_regexp--sc_trailing_blank = \
-  /sysinfodata/.*\.data|/virhostcpudata/.*\.cpuinfo|^gnulib/local/.*/.*diff$$
+  /sysinfodata/.*\.data|/virhostcpudata/.*\.cpuinfo$$
 
 exclude_file_name_regexp--sc_unmarked_diagnostics = \
   ^(scripts/apibuild.py|tests/virt-aa-helper-test|docs/js/.*\.js)$$
@@ -2319,9 +2178,6 @@ exclude_file_name_regexp--sc_prohibit_sysconf_pagesize = \
 exclude_file_name_regexp--sc_prohibit_pthread_create = \
   ^(build-aux/syntax-check\.mk|src/util/virthread\.c|tests/.*)$$
 
-exclude_file_name_regexp--sc_prohibit_always-defined_macros = \
-  ^tests/virtestmock.c$$
-
 exclude_file_name_regexp--sc_prohibit_readdir = \
   ^(tests/(.*mock|virfilewrapper)\.c|tools/nss/libvirt_nss\.c)$$
 
@@ -2336,9 +2192,6 @@ exclude_file_name_regexp--sc_prohibit_strcmp = \
 
 exclude_file_name_regexp--sc_prohibit_backslash_alignment = \
   ^build-aux/syntax-check\.mk$$
-
-exclude_file_name_regexp--sc_prohibit_always_true_header_tests = \
-  ^src/util/(virfile|virnetdev|virnetdevip)\.[c,h]|$$
 
 exclude_file_name_regexp--sc_prohibit_select = \
   ^build-aux/syntax-check\.mk|src/util/vireventglibwatch\.c$$

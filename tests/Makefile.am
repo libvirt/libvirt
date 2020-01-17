@@ -18,7 +18,6 @@
 
 AM_CPPFLAGS = \
 	-I$(top_builddir) -I$(top_srcdir) \
-	-I$(top_builddir)/gnulib/lib -I$(top_srcdir)/gnulib/lib \
 	-I$(top_builddir)/include -I$(top_srcdir)/include \
 	-I$(top_builddir)/src -I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/util \
@@ -65,19 +64,14 @@ if WITH_DTRACE_PROBES
 PROBES_O += ../src/libvirt_probes.lo
 endif WITH_DTRACE_PROBES
 
-GNULIB_LIBS = \
-       ../gnulib/lib/libgnu.la
-
 LDADDS = \
 	$(NO_INDIRECT_LDFLAGS) \
 	$(PROBES_O) \
-	$(GNULIB_LIBS) \
 	../src/libvirt.la \
 	$(GLIB_LIBS) \
 	$(NULL)
 
 MOCKLIBS_LIBS = \
-	$(GNULIB_LIBS) \
 	../src/libvirt.la
 
 EXTRA_DIST = \
@@ -945,8 +939,7 @@ storagepoolxml2xmltest_SOURCES = \
 	storagepoolxml2xmltest.c \
 	testutils.c testutils.h
 storagepoolxml2xmltest_LDADD = $(LDADDS) \
-	../src/libvirt_driver_storage_impl.la \
-	$(GNULIB_LIBS)
+	../src/libvirt_driver_storage_impl.la
 
 storagepoolcapstest_SOURCES = \
         storagepoolcapstest.c testutils.h testutils.c
@@ -1020,15 +1013,14 @@ commandtest_SOURCES = \
 	commandtest.c testutils.h testutils.c
 commandtest_LDADD = $(LDADDS)
 
-# Must not link to any libvirt modules - libc / gnulib only
+# Must not link to any libvirt modules - libc only
 # otherwise external libraries might unexpectedly leak
 # file descriptors into commandhelper invalidating the
 # test logic assumptions
 commandhelper_SOURCES = \
 	commandhelper.c
 commandhelper_LDADD = \
-	$(NO_INDIRECT_LDFLAGS) \
-	$(GNULIB_LIBS)
+	$(NO_INDIRECT_LDFLAGS)
 
 commandhelper_LDFLAGS = -static
 
@@ -1069,16 +1061,16 @@ domaincapstest_LDADD = $(LDADDS)
 
 if WITH_QEMU
 domaincapstest_SOURCES += testutilsqemu.c testutilsqemu.h
-domaincapstest_LDADD += libqemutestdriver.la $(GNULIB_LIBS)
+domaincapstest_LDADD += libqemutestdriver.la
 endif WITH_QEMU
 
 if WITH_LIBXL
 domaincapstest_SOURCES += testutilsxen.c testutilsxen.h
-domaincapstest_LDADD += libxltestdriver.la $(GNULIB_LIBS)
+domaincapstest_LDADD += libxltestdriver.la
 endif WITH_LIBXL
 
 if WITH_BHYVE
-domaincapstest_LDADD += ../src/libvirt_driver_bhyve_impl.la $(GNULIB_LIBS)
+domaincapstest_LDADD += ../src/libvirt_driver_bhyve_impl.la
 endif WITH_BHYVE
 
 virnetmessagetest_SOURCES = \
@@ -1145,7 +1137,6 @@ virstoragetest_SOURCES = \
 virstoragetest_LDADD = $(LDADDS) \
 	../src/libvirt.la \
 	../src/libvirt_driver_storage_impl.la \
-	../gnulib/lib/libgnu.la \
 	$(NULL)
 
 viridentitytest_SOURCES = \

@@ -25,9 +25,7 @@ if test $? != 0; then
 fi
 find -name test-suite.log -delete
 
-# gl_public_submodule_commit= to disable gnulib's submodule check
-# which breaks due to way we clone the submodules
-make -j"$CI_SMP" gl_public_submodule_commit= $CI_MAKE_ARGS
+make -j"$CI_SMP" $CI_MAKE_ARGS
 
 if test $? != 0; then \
     LOGS=$(find -name test-suite.log)

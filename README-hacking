@@ -28,18 +28,11 @@ You can get a copy of the source repository like this:
         $ git clone https://libvirt.org/git/libvirt.git
         $ cd libvirt
 
-As an optional step, if you already have a copy of the gnulib git
-repository on your hard drive, then you can use it as a reference to
-reduce download time and disk space requirements:
-
-        $ export GNULIB_SRCDIR=/path/to/gnulib
-
 We require to have the build directory different than the source directory:
 
         $ mkdir build && cd build
 
-The next step is to get all required pieces from gnulib,
-to run autoreconf, and to invoke ../autogen.sh:
+The next step is to invoke ../autogen.sh:
 
         $ ../autogen.sh
 

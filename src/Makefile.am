@@ -19,9 +19,7 @@
 # No libraries with the exception of LIBXML should be listed
 # here. List them against the individual XXX_la_CFLAGS targets
 # that actually use them.
-AM_CPPFLAGS =	-I../gnulib/lib \
-		-I$(top_srcdir)/gnulib/lib \
-		-I$(top_srcdir) \
+AM_CPPFLAGS =	-I$(top_srcdir) \
 		-I../include \
 		-I$(top_srcdir)/include \
 		-I$(srcdir)/util \
@@ -439,7 +437,6 @@ if WITH_MACOS
 libvirt_la_LDFLAGS += -Wl,-flat_namespace
 endif WITH_MACOS
 libvirt_la_LDFLAGS += $(NULL)
-libvirt_la_BUILT_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_la_LIBADD += \
 		    $(DRIVER_MODULES_LIBS)
 libvirt_la_CFLAGS = -DIN_LIBVIRT $(AM_CFLAGS)
@@ -662,7 +659,7 @@ libvirt_iohelper_LDFLAGS = \
 libvirt_iohelper_LDADD = \
 		libvirt.la \
 		$(GLIB_LIBS) \
-		../gnulib/lib/libgnu.la
+		$(NULL)
 if WITH_DTRACE_PROBES
 libvirt_iohelper_LDADD += libvirt_probes.lo
 endif WITH_DTRACE_PROBES

@@ -79,7 +79,6 @@ endif WITH_DTRACE_PROBES
 
 REMOTE_DAEMON_LD_ADD += \
 	$(GLIB_LIBS) \
-	../gnulib/lib/libgnu.la \
 	$(NULL)
 
 LOGROTATE_FILES_IN += \

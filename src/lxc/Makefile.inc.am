@@ -84,7 +84,6 @@ libvirt_driver_lxc_la_LIBADD = \
 	libvirt_driver_lxc_impl.la \
 	libvirt.la \
 	$(GLIB_LIBS) \
-	../gnulib/lib/libgnu.la \
 	$(NULL)
 mod_LTLIBRARIES += libvirt_driver_lxc.la
 libvirt_driver_lxc_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
@@ -213,7 +212,6 @@ libvirt_lxc_LDADD = \
 	libvirt.la \
 	$(FUSE_LIBS) \
 	$(GLIB_LIBS) \
-	../gnulib/lib/libgnu.la \
 	$(NULL)
 if WITH_DTRACE_PROBES
 libvirt_lxc_LDADD += libvirt_probes.lo

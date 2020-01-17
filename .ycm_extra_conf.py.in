@@ -1,8 +1,6 @@
 flags = [
   '-I@abs_top_builddir@',
   '-I@abs_top_srcdir@',
-  '-I@abs_top_builddir@/gnulib/lib',
-  '-I@abs_top_srcdir@/gnulib/lib',
   '-I@abs_top_builddir@/include',
   '-I@abs_top_srcdir@/include',
   '-I@abs_top_builddir@/src',

@@ -98,7 +98,6 @@ virtlogd_LDADD = \
 		libvirt_driver_admin.la \
 		libvirt.la \
 		$(GLIB_LIBS) \
-		../gnulib/lib/libgnu.la \
 		$(NULL)
 if WITH_DTRACE_PROBES
 virtlogd_LDADD += libvirt_probes.lo

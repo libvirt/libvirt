@@ -113,7 +113,6 @@ lockd_la_LDFLAGS = $(AM_LDFLAGS_MOD_NOUNDEF)
 lockd_la_LIBADD = \
 	libvirt.la \
 	$(GLIB_LIBS) \
-	../gnulib/lib/libgnu.la \
 	$(NULL)
 augeas_DATA += locking/libvirt_lockd.aug
 if WITH_DTRACE_PROBES
@@ -161,7 +160,6 @@ virtlockd_LDADD = \
 	libvirt.la \
 	libvirt_driver_admin.la \
 	$(GLIB_LIBS) \
-	../gnulib/lib/libgnu.la \
 	$(NULL)
 if WITH_DTRACE_PROBES
 virtlockd_LDADD += libvirt_probes.lo
@@ -182,7 +180,6 @@ sanlock_la_LIBADD = \
 	-lsanlock_client \
 	libvirt.la \
 	$(GLIB_LIBS) \
-	../gnulib/lib/libgnu.la \
 	$(NULL)
 
 augeas_DATA += locking/libvirt_sanlock.aug

@@ -1327,9 +1327,7 @@ virBuildPathInternal(char **path, ...)
     return ret;
 }
 
-/* Like gnulib's fread_file, but read no more than the specified maximum
-   number of bytes.  If the length of the input is <= max_len, and
-   upon error while reading that data, it works just like fread_file.  */
+/* Read no more than the specified maximum number of bytes. */
 static char *
 saferead_lim(int fd, size_t max_len, size_t *length)
 {
@@ -3214,8 +3212,7 @@ virFileOpenTty(int *ttymaster G_GNUC_UNUSED,
                char **ttyName G_GNUC_UNUSED,
                int rawmode G_GNUC_UNUSED)
 {
-    /* mingw completely lacks pseudo-terminals, and the gnulib
-     * replacements are not (yet) license compatible.  */
+    /* mingw completely lacks pseudo-terminals */
     errno = ENOSYS;
     return -1;
 }
