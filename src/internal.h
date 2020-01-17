@@ -155,6 +155,10 @@
     _Pragma ("GCC diagnostic push") \
     _Pragma ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 
+#define VIR_WARNINGS_NO_POINTER_SIGN \
+    _Pragma ("GCC diagnostic push") \
+    _Pragma ("GCC diagnostic ignored \"-Wpointer-sign\"")
+
 #if HAVE_SUGGEST_ATTRIBUTE_FORMAT
 # define VIR_WARNINGS_NO_PRINTF \
     _Pragma ("GCC diagnostic push") \

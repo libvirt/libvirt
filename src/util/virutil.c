@@ -66,7 +66,6 @@
 # include <sys/un.h>
 #endif
 
-#include "mgetgroups.h"
 #include "virerror.h"
 #include "virlog.h"
 #include "virbuffer.h"
@@ -980,6 +979,11 @@ virDoesGroupExist(const char *name)
 }
 
 
+
+/* Work around an incompatibility of OS X 10.11: getgrouplist
+   accepts int *, not gid_t *, and int and gid_t differ in sign.  */
+VIR_WARNINGS_NO_POINTER_SIGN
+
 /* Compute the list of primary and supplementary groups associated
  * with @uid, and including @gid in the list (unless it is -1),
  * storing a malloc'd result into @list. If uid is -1 or doesn't exist in the
@@ -1000,11 +1004,28 @@ virGetGroupList(uid_t uid, gid_t gid, gid_t **list)
     /* invalid users have no supplementary groups */
     if (uid != (uid_t)-1 &&
         virGetUserEnt(uid, &user, &primary, NULL, NULL, true) >= 0) {
-        if ((ret = mgetgroups(user, primary, list)) < 0) {
-            virReportSystemError(errno,
-                                 _("cannot get group list for '%s'"), user);
-            ret = -1;
-            goto cleanup;
+        int nallocgrps = 10;
+        gid_t *grps = g_new(gid_t, nallocgrps);
+
+        while (1) {
+            int nprevallocgrps = nallocgrps;
+            int rv;
+
+            rv = getgrouplist(user, primary, grps, &nallocgrps);
+
+            /* Some systems (like Darwin) have a bug where they
+               never increase max_n_groups.  */
+            if (rv < 0 && nprevallocgrps == nallocgrps)
+                nallocgrps *= 2;
+
+            /* either shrinks to actual size, or enlarges to new size */
+            grps = g_renew(gid_t, grps, nallocgrps);
+
+            if (rv >= 0) {
+                ret = rv;
+                *list = grps;
+                break;
+            }
         }
     }
 
@@ -1028,6 +1049,8 @@ virGetGroupList(uid_t uid, gid_t gid, gid_t **list)
     VIR_FREE(user);
     return ret;
 }
+
+VIR_WARNINGS_RESET
 
 
 /* Set the real and effective uid and gid to the given values, as well
