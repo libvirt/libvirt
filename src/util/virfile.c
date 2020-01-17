@@ -3029,7 +3029,7 @@ virFileMakePathHelper(char *path, mode_t mode)
         *p = '/';
     }
 
-    if (mkdir(path, mode) < 0 && errno != EEXIST)
+    if (g_mkdir(path, mode) < 0 && errno != EEXIST)
         return -1;
 
     return 0;

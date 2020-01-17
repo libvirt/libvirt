@@ -300,7 +300,7 @@ static int testLockSpaceResourceLockPath(const void *args G_GNUC_UNUSED)
     if (!(lockspace = virLockSpaceNew(NULL)))
         goto cleanup;
 
-    if (mkdir(LOCKSPACE_DIR, 0700) < 0)
+    if (g_mkdir(LOCKSPACE_DIR, 0700) < 0)
         goto cleanup;
 
     if (virLockSpaceCreateResource(lockspace, LOCKSPACE_DIR "/foo") < 0)
