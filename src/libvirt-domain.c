@@ -10584,12 +10584,14 @@ virDomainOpenGraphics(virDomainPtr dom,
         goto error;
     }
 
+#ifndef WIN32
     if (!S_ISSOCK(sb.st_mode)) {
         virReportInvalidArg(fd,
                             _("fd %d must be a socket"),
                             fd);
         goto error;
     }
+#endif /* !WIN32 */
 
     virCheckReadOnlyGoto(dom->conn->flags, error);
 

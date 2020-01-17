@@ -1340,11 +1340,13 @@ virSecurityManagerMetadataLock(virSecurityManagerPtr mgr G_GNUC_UNUSED,
         }
 
         if ((fd = open(p, O_RDWR)) < 0) {
+#ifndef WIN32
             if (S_ISSOCK(sb.st_mode)) {
                 /* Sockets can be opened only if there exists the
                  * other side that listens. */
                 continue;
             }
+#endif /* !WIN32 */
 
             virReportSystemError(errno,
                                  _("unable to open %s"),
