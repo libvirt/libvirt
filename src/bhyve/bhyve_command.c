@@ -453,10 +453,10 @@ virBhyveProcessBuildBhyveCmd(virConnectPtr conn,
     /* CPUs */
     virCommandAddArg(cmd, "-c");
     if (def->cpu && def->cpu->sockets) {
-        if (def->dies != 1) {
+        if (def->cpu->dies != 1) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Only 1 die per socket is supported"));
-            goto cleanup;
+            goto error;
         }
         if (nvcpus != def->cpu->sockets * def->cpu->cores * def->cpu->threads) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
