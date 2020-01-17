@@ -20,7 +20,6 @@
  */
 
 #include <config.h>
-#include <poll.h>
 
 #include "virpolkit.h"
 #include "virerror.h"
@@ -36,6 +35,7 @@
 VIR_LOG_INIT("util.polkit");
 
 #if WITH_POLKIT
+# include <poll.h>
 
 struct _virPolkitAgent {
     virCommandPtr cmd;

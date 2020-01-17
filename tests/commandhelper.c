@@ -23,13 +23,13 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <poll.h>
 
 #include "internal.h"
 #define NO_LIBVIRT
 #include "testutils.h"
 
 #ifndef WIN32
+# include <poll.h>
 
 /* Some UNIX lack it in headers & it doesn't hurt to redeclare */
 extern char **environ;
