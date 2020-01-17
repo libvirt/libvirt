@@ -261,7 +261,7 @@ vshTableSafeEncode(const char *s, size_t *width)
             } else {
                 memcpy(buf, p, len);
                 buf += len;
-                *width += wcwidth(wc);
+                *width += g_unichar_iszerowidth(wc) ? 0 : (g_unichar_iswide(wc) ? 2 : 1);
             }
             p += len;
         }

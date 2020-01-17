@@ -19,6 +19,7 @@
 #include <config.h>
 
 #include <locale.h>
+#include <wchar.h>
 #include <wctype.h>
 
 #include "internal.h"
