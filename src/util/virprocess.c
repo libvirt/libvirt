@@ -50,6 +50,11 @@
 # include <sys/cpuset.h>
 #endif
 
+#ifdef WIN32
+# define WIN32_LEAN_AND_MEAN
+# include <windows.h>
+#endif
+
 #include "viratomic.h"
 #include "virprocess.h"
 #include "virerror.h"
