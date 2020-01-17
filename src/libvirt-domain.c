@@ -3546,6 +3546,10 @@ virDomainMigrate(virDomainPtr domain,
                              VIR_MIGRATE_NON_SHARED_INC,
                              error);
 
+    VIR_EXCLUSIVE_FLAGS_GOTO(VIR_MIGRATE_TUNNELLED,
+                             VIR_MIGRATE_PARALLEL,
+                             error);
+
     if (flags & VIR_MIGRATE_OFFLINE) {
         if (!VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                       VIR_DRV_FEATURE_MIGRATION_OFFLINE)) {
@@ -3699,6 +3703,10 @@ virDomainMigrate2(virDomainPtr domain,
 
     VIR_EXCLUSIVE_FLAGS_GOTO(VIR_MIGRATE_NON_SHARED_DISK,
                              VIR_MIGRATE_NON_SHARED_INC,
+                             error);
+
+    VIR_EXCLUSIVE_FLAGS_GOTO(VIR_MIGRATE_TUNNELLED,
+                             VIR_MIGRATE_PARALLEL,
                              error);
 
     if (flags & VIR_MIGRATE_OFFLINE) {
@@ -4087,6 +4095,10 @@ virDomainMigrateToURI(virDomainPtr domain,
     virCheckReadOnlyGoto(domain->conn->flags, error);
     virCheckNonNullArgGoto(duri, error);
 
+    VIR_EXCLUSIVE_FLAGS_GOTO(VIR_MIGRATE_TUNNELLED,
+                             VIR_MIGRATE_PARALLEL,
+                             error);
+
     if (virDomainMigrateUnmanagedCheckCompat(domain, flags) < 0)
         goto error;
 
@@ -4158,6 +4170,10 @@ virDomainMigrateToURI2(virDomainPtr domain,
     /* First checkout the source */
     virCheckDomainReturn(domain, -1);
     virCheckReadOnlyGoto(domain->conn->flags, error);
+
+    VIR_EXCLUSIVE_FLAGS_GOTO(VIR_MIGRATE_TUNNELLED,
+                             VIR_MIGRATE_PARALLEL,
+                             error);
 
     if (virDomainMigrateUnmanagedCheckCompat(domain, flags) < 0)
         goto error;
@@ -4231,6 +4247,10 @@ virDomainMigrateToURI3(virDomainPtr domain,
     /* First checkout the source */
     virCheckDomainReturn(domain, -1);
     virCheckReadOnlyGoto(domain->conn->flags, error);
+
+    VIR_EXCLUSIVE_FLAGS_GOTO(VIR_MIGRATE_TUNNELLED,
+                             VIR_MIGRATE_PARALLEL,
+                             error);
 
     if (virDomainMigrateUnmanagedCheckCompat(domain, flags) < 0)
         goto error;
