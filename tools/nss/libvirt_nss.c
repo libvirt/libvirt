@@ -41,12 +41,7 @@
 # include <nsswitch.h>
 #endif
 
-/*
- * This gnulib files is used for its macros only,
- * so doesn't introduce a link time dep, which we
- * must avoid
- */
-#include "gnulib/lib/configmake.h"
+#include "configmake.h"
 
 #include "libvirt_nss_leases.h"
 
