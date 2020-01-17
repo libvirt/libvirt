@@ -18413,7 +18413,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     qemuBlockJobStarted(job, vm);
 
  endjob:
-    if (rc < 0 &&
+    if (ret < 0 &&
         virDomainObjIsActive(vm) &&
         (data || crdata)) {
         qemuDomainObjEnterMonitor(driver, vm);
