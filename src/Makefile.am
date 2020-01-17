@@ -130,8 +130,6 @@ include storage/Makefile.inc.am
 include remote/Makefile.inc.am
 
 
-THREAD_LIBS = $(LIB_PTHREAD) $(LTLIBMULTITHREAD)
-
 SECDRIVER_CFLAGS =
 SECDRIVER_LIBS =
 if WITH_SECDRIVER_SELINUX

@@ -18,20 +18,24 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_CHECK_PTHREAD], [
-  old_LIBS="$LIBS"
+  dnl Availability of pthread functions
 
-  dnl Availability of pthread functions. Because of $LIB_PTHREAD, we
-  dnl cannot use AC_CHECK_FUNCS_ONCE. LIB_PTHREAD and LIBMULTITHREAD
-  dnl were set during gl_INIT by gnulib.
-  LIBS="$LIBS $LIB_PTHREAD $LIBMULTITHREAD"
-  pthread_found=yes
-  AC_CHECK_FUNCS([pthread_mutexattr_init])
-  AC_CHECK_HEADER([pthread.h],,[pthread_found=no])
+  AC_SEARCH_LIBS([pthread_mutexattr_init],[pthread ""])
 
-  if test "$ac_cv_func_pthread_mutexattr_init:$pthread_found" != "yes:yes"
+  if test "$ac_cv_func_pthread_mutexattr_init" = "no"
   then
-    AC_MSG_ERROR([A pthreads impl is required for building libvirt])
+    AC_MSG_ERROR([libpthread is required for building libvirt])
   fi
+  THREAD_LIBS=""
+  if test "x$ac_cv_func_pthread_mutexattr_init" != "x"
+  then
+    THREAD_LIBS="-l$ac_cv_func_pthread_mutexattr_init"
+  fi
+  AC_SUBST([THREAD_LIBS])
+
+  AC_CHECK_HEADER([pthread.h],,[
+    AC_MSG_ERROR([pthread.h is required for building libvirt])
+  ])
 
   dnl At least mingw64-winpthreads #defines pthread_sigmask to 0,
   dnl which in turn causes compilation to complain about unused variables.
@@ -51,6 +55,4 @@ AC_DEFUN([LIBVIRT_CHECK_PTHREAD], [
     AC_DEFINE([FUNC_PTHREAD_SIGMASK_BROKEN], [1],
       [Define to 1 if pthread_sigmask is not a real function])
   fi
-
-  LIBS="$old_LIBS"
 ])
