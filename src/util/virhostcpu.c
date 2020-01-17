@@ -22,7 +22,6 @@
 #include <config.h>
 
 #include <dirent.h>
-#include <sys/utsname.h>
 #include <fcntl.h>
 #ifndef WIN32
 # include <sys/ioctl.h>

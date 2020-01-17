@@ -21,7 +21,6 @@
 
 #include <config.h>
 
-#include <sys/utsname.h>
 #include <fcntl.h>
 #include <unistd.h>
 
