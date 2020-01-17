@@ -79,6 +79,9 @@
 
 VIR_LOG_INIT("storage.storage_util");
 
+#ifndef S_IRWXUGO
+# define S_IRWXUGO (S_IRWXU | S_IRWXG | S_IRWXO)
+#endif
 
 /* virStorageBackendNamespaceInit:
  * @poolType: virStoragePoolType

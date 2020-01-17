@@ -95,6 +95,17 @@
 
 VIR_LOG_INIT("util.file");
 
+#ifndef S_ISUID
+# define S_ISUID 04000
+#endif
+#ifndef S_ISGID
+# define S_ISGID 02000
+#endif
+#ifndef S_ISVTX
+# define S_ISVTX 01000
+#endif
+
+
 #ifndef O_DIRECT
 # define O_DIRECT 0
 #endif
@@ -314,7 +325,7 @@ virFileWrapperFdNew(int *fd, const char *name, unsigned int flags)
     virFileWrapperFdFree(ret);
     return NULL;
 }
-#else
+#else /* WIN32 */
 virFileWrapperFdPtr
 virFileWrapperFdNew(int *fd G_GNUC_UNUSED,
                     const char *name G_GNUC_UNUSED,
@@ -324,7 +335,7 @@ virFileWrapperFdNew(int *fd G_GNUC_UNUSED,
                    _("virFileWrapperFd unsupported on this platform"));
     return NULL;
 }
-#endif
+#endif /* WIN32 */
 
 /**
  * virFileWrapperFdClose:
@@ -479,7 +490,7 @@ int virFileFlock(int fd, bool lock, bool shared)
     return flock(fd, LOCK_UN);
 }
 
-#else
+#else /* WIN32 */
 
 int virFileLock(int fd G_GNUC_UNUSED,
                 bool shared G_GNUC_UNUSED,
@@ -507,7 +518,7 @@ int virFileFlock(int fd G_GNUC_UNUSED,
     return -1;
 }
 
-#endif
+#endif /* WIN32 */
 
 
 int
@@ -1581,10 +1592,12 @@ virFileResolveLinkHelper(const char *linkpath,
         if (g_lstat(linkpath, &st) < 0)
             return -1;
 
+#ifndef WIN32
         if (!S_ISLNK(st.st_mode)) {
             *resultpath = g_strdup(linkpath);
             return 0;
         }
+#endif /* WIN32 */
     }
 
     *resultpath = virFileCanonicalizePath(linkpath);
@@ -1630,10 +1643,17 @@ virFileIsLink(const char *linkpath)
 {
     GStatBuf st;
 
+    /* Still do this on Windows so we report
+     * errors like ENOENT, etc
+     */
     if (g_lstat(linkpath, &st) < 0)
         return -errno;
 
+#ifndef WIN32
     return S_ISLNK(st.st_mode) != 0;
+#else /* WIN32 */
+    return 0;
+#endif /* WIN32 */
 }
 
 /*
@@ -2615,6 +2635,7 @@ virDirCreateNoFork(const char *path,
         virReportSystemError(errno, _("stat of '%s' failed"), path);
         goto error;
     }
+# ifndef WIN32
     if (((uid != (uid_t) -1 && st.st_uid != uid) ||
          (gid != (gid_t) -1 && st.st_gid != gid))
         && (chown(path, uid, gid) < 0)) {
@@ -2623,6 +2644,7 @@ virDirCreateNoFork(const char *path,
                              path, (unsigned int) uid, (unsigned int) gid);
         goto error;
     }
+# endif /* !WIN32 */
     if (mode != (mode_t) -1 && chmod(path, mode) < 0) {
         ret = -errno;
         virReportSystemError(errno,
@@ -2959,6 +2981,7 @@ void virDirClose(DIR **dirp)
  *
  * Returns -1 on error, with error already reported, 0 on success.
  */
+#ifndef WIN32
 int virFileChownFiles(const char *name,
                       uid_t uid,
                       gid_t gid)
@@ -2999,6 +3022,19 @@ int virFileChownFiles(const char *name,
     return ret;
 }
 
+#else /* WIN32 */
+
+int virFileChownFiles(const char *name,
+                      uid_t uid,
+                      gid_t gid)
+{
+    virReportSystemError(ENOSYS,
+                         _("cannot chown '%s' to (%u, %u)"),
+                         name, (unsigned int) uid,
+                         (unsigned int) gid);
+    return -1;
+}
+#endif /* WIN32 */
 
 static int
 virFileMakePathHelper(char *path, mode_t mode)
