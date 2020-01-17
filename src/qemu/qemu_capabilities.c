@@ -5284,10 +5284,13 @@ virQEMUCapsCacheLookupDefault(virFileCachePtr cache,
                               const char **retMachine)
 {
     int virttype = VIR_DOMAIN_VIRT_NONE;
-    int arch = virArchFromHost();
+    virArch hostarch = virArchFromHost();
+    virArch arch = hostarch;
     virDomainVirtType capsType;
     virQEMUCapsPtr qemuCaps = NULL;
     virQEMUCapsPtr ret = NULL;
+    virArch arch_from_caps;
+    g_autofree char *probedbinary = NULL;
 
     if (virttypeStr &&
         (virttype = virDomainVirtTypeFromString(virttypeStr)) < 0) {
@@ -5303,31 +5306,27 @@ virQEMUCapsCacheLookupDefault(virFileCachePtr cache,
         goto cleanup;
     }
 
-    if (binary) {
-        virArch arch_from_caps;
+    if (!binary) {
+        probedbinary = virQEMUCapsGetDefaultEmulator(hostarch, arch);
+        binary = probedbinary;
+    }
 
-        if (!(qemuCaps = virQEMUCapsCacheLookup(cache, binary)))
-            goto cleanup;
+    if (!(qemuCaps = virQEMUCapsCacheLookup(cache, binary)))
+        goto cleanup;
 
-        arch_from_caps = virQEMUCapsGetArch(qemuCaps);
+    arch_from_caps = virQEMUCapsGetArch(qemuCaps);
 
-        if (arch_from_caps != arch &&
-            !((ARCH_IS_X86(arch) && ARCH_IS_X86(arch_from_caps)) ||
-              (ARCH_IS_PPC(arch) && ARCH_IS_PPC(arch_from_caps)) ||
-              (ARCH_IS_ARM(arch) && ARCH_IS_ARM(arch_from_caps)) ||
-              (ARCH_IS_S390(arch) && ARCH_IS_S390(arch_from_caps)))) {
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("architecture from emulator '%s' doesn't "
-                             "match given architecture '%s'"),
-                           virArchToString(arch_from_caps),
-                           virArchToString(arch));
-            goto cleanup;
-        }
-    } else {
-        if (!(qemuCaps = virQEMUCapsCacheLookupByArch(cache, arch)))
-            goto cleanup;
-
-        binary = virQEMUCapsGetBinary(qemuCaps);
+    if (arch_from_caps != arch &&
+        !((ARCH_IS_X86(arch) && ARCH_IS_X86(arch_from_caps)) ||
+          (ARCH_IS_PPC(arch) && ARCH_IS_PPC(arch_from_caps)) ||
+          (ARCH_IS_ARM(arch) && ARCH_IS_ARM(arch_from_caps)) ||
+          (ARCH_IS_S390(arch) && ARCH_IS_S390(arch_from_caps)))) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("architecture from emulator '%s' doesn't "
+                         "match given architecture '%s'"),
+                       virArchToString(arch_from_caps),
+                       virArchToString(arch));
+        goto cleanup;
     }
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
