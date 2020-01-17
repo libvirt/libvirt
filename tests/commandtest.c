@@ -39,15 +39,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-typedef struct _virCommandTestData virCommandTestData;
-typedef virCommandTestData *virCommandTestDataPtr;
-struct _virCommandTestData {
-    virMutex lock;
-    virThread thread;
-    bool quit;
-    bool running;
-};
-
 #ifdef WIN32
 
 int
@@ -204,8 +195,13 @@ static int test3(const void *unused G_GNUC_UNUSED)
     int newfd1 = dup(STDERR_FILENO);
     int newfd2 = dup(STDERR_FILENO);
     int newfd3 = dup(STDERR_FILENO);
+    struct stat before, after;
     int ret = -1;
 
+    if (fstat(newfd3, &before) < 0) {
+        perror("fstat");
+        goto cleanup;
+    }
     virCommandPassFD(cmd, newfd1, 0);
     virCommandPassFD(cmd, newfd3,
                      VIR_COMMAND_PASS_FD_CLOSE_PARENT);
@@ -216,10 +212,26 @@ static int test3(const void *unused G_GNUC_UNUSED)
     }
 
     if (fcntl(newfd1, F_GETFL) < 0 ||
-        fcntl(newfd2, F_GETFL) < 0 ||
-        fcntl(newfd3, F_GETFL) >= 0) {
-        puts("fds in wrong state");
+        fcntl(newfd2, F_GETFL) < 0) {
+        puts("fds 1/2 were not open");
         goto cleanup;
+    }
+
+    /* We expect newfd3 to be closed, but the
+     * fd might have already been reused by
+     * the event loop. So if it is open, we
+     * check if it matches the stat info we
+     * got earlier
+     */
+    if (fcntl(newfd3, F_GETFL) >= 0 &&
+        fstat(newfd3, &after) >= 0) {
+
+        if (before.st_ino == after.st_ino &&
+            before.st_dev == after.st_dev &&
+            before.st_mode == after.st_mode) {
+            puts("fd 3 should not be open");
+            goto cleanup;
+        }
     }
 
     ret = checkoutput("test3", NULL);
@@ -1241,43 +1253,12 @@ static int test27(const void *unused G_GNUC_UNUSED)
     return ret;
 }
 
-static void virCommandThreadWorker(void *opaque)
-{
-    virCommandTestDataPtr test = opaque;
-
-    virMutexLock(&test->lock);
-
-    while (!test->quit) {
-        virMutexUnlock(&test->lock);
-
-        if (virEventRunDefaultImpl() < 0) {
-            test->quit = true;
-            break;
-        }
-
-        virMutexLock(&test->lock);
-    }
-
-    test->running = false;
-
-    virMutexUnlock(&test->lock);
-    return;
-}
-
-static void
-virCommandTestFreeTimer(int timer G_GNUC_UNUSED,
-                        void *opaque G_GNUC_UNUSED)
-{
-    /* nothing to be done here */
-}
 
 static int
 mymain(void)
 {
     int ret = 0;
     int fd;
-    virCommandTestDataPtr test = NULL;
-    int timer = -1;
     int virinitret;
 
     if (chdir("/tmp") < 0)
@@ -1336,28 +1317,6 @@ mymain(void)
     if (virinitret < 0)
         return EXIT_FAILURE;
 
-    virEventRegisterDefaultImpl();
-    if (VIR_ALLOC(test) < 0)
-        goto cleanup;
-
-    if (virMutexInit(&test->lock) < 0) {
-        printf("Unable to init mutex: %d\n", errno);
-        goto cleanup;
-    }
-
-    virMutexLock(&test->lock);
-
-    if (virThreadCreate(&test->thread,
-                        true,
-                        virCommandThreadWorker,
-                        test) < 0) {
-        virMutexUnlock(&test->lock);
-        goto cleanup;
-    }
-
-    test->running = true;
-    virMutexUnlock(&test->lock);
-
     environ = (char **)newenv;
 
 # define DO_TEST(NAME) \
@@ -1392,24 +1351,6 @@ mymain(void)
     DO_TEST(test25);
     DO_TEST(test26);
     DO_TEST(test27);
-
-    virMutexLock(&test->lock);
-    if (test->running) {
-        test->quit = true;
-        /* HACK: Add a dummy timeout to break event loop */
-        timer = virEventAddTimeout(0, virCommandTestFreeTimer, NULL, NULL);
-    }
-    virMutexUnlock(&test->lock);
-
- cleanup:
-    if (test->running)
-        virThreadJoin(&test->thread);
-
-    if (timer != -1)
-        virEventRemoveTimeout(timer);
-
-    virMutexDestroy(&test->lock);
-    VIR_FREE(test);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

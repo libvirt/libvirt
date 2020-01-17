@@ -1,7 +1,7 @@
 ARG:--readfd
-ARG:5
+ARG:3
 ARG:--readfd
-ARG:7
+ARG:5
 ENV:DISPLAY=:0.0
 ENV:HOME=/home/test
 ENV:HOSTNAME=test
@@ -13,8 +13,8 @@ ENV:USER=test
 FD:0
 FD:1
 FD:2
+FD:3
 FD:5
-FD:7
 DAEMON:no
 CWD:/tmp
 UMASK:0022

@@ -9,8 +9,8 @@ ENV:USER=test
 FD:0
 FD:1
 FD:2
+FD:3
 FD:5
-FD:7
 DAEMON:no
 CWD:/tmp
 UMASK:0022
