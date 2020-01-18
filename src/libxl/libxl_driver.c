@@ -648,8 +648,8 @@ libxlAddDom0(libxlDriverPrivatePtr driver)
 
 static int
 libxlStateInitialize(bool privileged,
-                     virStateInhibitCallback callback G_GNUC_UNUSED,
-                     void *opaque G_GNUC_UNUSED)
+                     virStateInhibitCallback callback,
+                     void *opaque)
 {
     libxlDriverConfigPtr cfg;
     char *driverConf = NULL;
@@ -669,6 +669,9 @@ libxlStateInitialize(bool privileged,
         VIR_FREE(libxl_driver);
         return VIR_DRV_STATE_INIT_ERROR;
     }
+
+    libxl_driver->inhibitCallback = callback;
+    libxl_driver->inhibitOpaque = opaque;
 
     /* Allocate bitmap for vnc port reservation */
     if (!(libxl_driver->reservedGraphicsPorts =
