@@ -18813,7 +18813,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
         jobname = job->name;
         nodetop = topSource->nodeformat;
         nodebase = baseSource->nodeformat;
-        device = disk->src->nodeformat;
+        device = qemuDomainDiskGetTopNodename(disk);
         if (!backingPath && top_parent &&
             !(backingPath = qemuBlockGetBackingStoreString(baseSource)))
             goto endjob;
