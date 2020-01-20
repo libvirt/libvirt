@@ -484,9 +484,9 @@ qemuMonitorIORead(qemuMonitorPtr mon)
 
     if (avail < 1024) {
         if (mon->bufferLength >= QEMU_MONITOR_MAX_RESPONSE) {
-            virReportSystemError(ERANGE,
-                                 _("No complete monitor response found in %d bytes"),
-                                 QEMU_MONITOR_MAX_RESPONSE);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("QEMU monitor reply exceeds buffer size (%d bytes)"),
+                           QEMU_MONITOR_MAX_RESPONSE);
             return -1;
         }
         if (VIR_REALLOC_N(mon->buffer,
