@@ -20464,7 +20464,7 @@ qemuDomainSetTimeAgent(virQEMUDriverPtr driver,
     qemuDomainObjExitAgent(vm, agent);
 
  endjob:
-    qemuDomainObjEndJob(driver, vm);
+    qemuDomainObjEndAgentJob(vm);
     return ret;
 }
 
