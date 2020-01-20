@@ -18386,7 +18386,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
 
     if (blockdev) {
         ret = qemuMonitorBlockdevMirror(priv->mon, job->name, true,
-                                        disk->src->nodeformat,
+                                        qemuDomainDiskGetTopNodename(disk),
                                         mirror->nodeformat, bandwidth,
                                         granularity, buf_size, mirror_shallow);
     } else {

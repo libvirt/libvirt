@@ -931,7 +931,7 @@ qemuMigrationSrcNBDStorageCopyOne(virQEMUDriverPtr driver,
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
         jobname = diskAlias;
-        sourcename = disk->src->nodeformat;
+        sourcename = qemuDomainDiskGetTopNodename(disk);
         persistjob = true;
     } else {
         jobname = NULL;
