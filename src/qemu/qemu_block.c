@@ -2479,7 +2479,8 @@ qemuBlockStorageSourceCreateFormat(virDomainObjPtr vm,
     g_autoptr(virJSONValue) createformatprops = NULL;
     int ret;
 
-    if (src->format == VIR_STORAGE_FILE_RAW)
+    if (src->format == VIR_STORAGE_FILE_RAW &&
+        !src->encryption)
         return 0;
 
     if (qemuBlockStorageSourceCreateGetFormatProps(src, backingStore,
