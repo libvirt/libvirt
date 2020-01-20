@@ -311,6 +311,30 @@ virNetDevBridgePortSetUnicastFlood(const char *brname,
 }
 
 
+int
+virNetDevBridgePortGetIsolated(const char *brname,
+                               const char *ifname,
+                               bool *enable)
+{
+    unsigned long value;
+
+    if (virNetDevBridgePortGet(brname, ifname, "isolated", &value) < 0)
+       return -1;
+
+    *enable = !!value;
+    return 0;
+}
+
+
+int
+virNetDevBridgePortSetIsolated(const char *brname,
+                               const char *ifname,
+                               bool enable)
+{
+    return virNetDevBridgePortSet(brname, ifname, "isolated", enable ? 1 : 0);
+}
+
+
 #else
 int
 virNetDevBridgePortGetLearning(const char *brname G_GNUC_UNUSED,
@@ -352,6 +376,28 @@ virNetDevBridgePortSetUnicastFlood(const char *brname G_GNUC_UNUSED,
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to set bridge port unicast_flood on this platform"));
+    return -1;
+}
+
+
+int
+virNetDevBridgePortGetIsolated(const char *brname G_GNUC_UNUSED,
+                               const char *ifname G_GNUC_UNUSED,
+                               bool *enable G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Unable to get bridge port isolated on this platform"));
+    return -1;
+}
+
+
+int
+virNetDevBridgePortSetIsolated(const char *brname G_GNUC_UNUSED,
+                               const char *ifname G_GNUC_UNUSED,
+                               bool enable G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Unable to set bridge port isolated on this platform"));
     return -1;
 }
 #endif
