@@ -545,6 +545,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 355 */
     QEMU_CAPS_DEVICE_VHOST_USER_FS, /* -device vhost-user-fs */
+    QEMU_CAPS_QMP_QUERY_NAMED_BLOCK_NODES_FLAT, /* query-named-block-nodes supports the 'flat' option */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
