@@ -1740,6 +1740,49 @@ static int lxcConnectGetVersion(virConnectPtr conn, unsigned long *version)
 }
 
 
+static int
+lxcDomainInterfaceAddresses(virDomainPtr dom,
+                            virDomainInterfacePtr **ifaces,
+                            unsigned int source,
+                            unsigned int flags)
+{
+    virDomainObjPtr vm = NULL;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(vm = lxcDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainInterfaceAddressesEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto cleanup;
+
+    switch (source) {
+    case VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE:
+        ret = virDomainNetDHCPInterfaces(vm->def, ifaces);
+        break;
+
+    case VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_ARP:
+        ret = virDomainNetARPInterfaces(vm->def, ifaces);
+        break;
+
+    default:
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+                       _("Unknown IP address data source %d"),
+                       source);
+        break;
+    }
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
+
 static char *lxcConnectGetHostname(virConnectPtr conn)
 {
     if (virConnectGetHostnameEnsureACL(conn) < 0)
@@ -5515,6 +5558,7 @@ static virHypervisorDriver lxcHypervisorDriver = {
     .domainGetMetadata = lxcDomainGetMetadata, /* 1.1.3 */
     .domainGetCPUStats = lxcDomainGetCPUStats, /* 1.2.2 */
     .domainGetHostname = lxcDomainGetHostname, /* 6.0.0 */
+    .domainInterfaceAddresses = lxcDomainInterfaceAddresses, /* 6.1.0 */
     .nodeGetMemoryParameters = lxcNodeGetMemoryParameters, /* 0.10.2 */
     .nodeSetMemoryParameters = lxcNodeSetMemoryParameters, /* 0.10.2 */
     .domainSendProcessSignal = lxcDomainSendProcessSignal, /* 1.0.1 */
