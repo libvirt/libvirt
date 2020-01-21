@@ -3946,7 +3946,11 @@
     &lt;readonly/&gt;
   &lt;/filesystem&gt;
   &lt;filesystem type='mount' accessmode='passthrough'&gt;
-      &lt;driver type='virtiofs'/&gt;
+      &lt;driver type='virtiofs queue='1024'/&gt;
+      &lt;binary path='/usr/libexec/virtiofsd' xattr='on'&gt;
+         &lt;cache mode='always'/&gt;
+         &lt;lock posix='on' flock='on'/&gt;
+      &lt;/binary&gt;
       &lt;source dir='/path'/&gt;
       &lt;target dir='mount_tag'/&gt;
   &lt;/filesystem&gt;
@@ -4073,7 +4077,26 @@
           <a href="#elementsVirtio">Virtio-specific options</a> can also be
           set. (<span class="since">Since 3.5.0</span>)
           </li>
+          <li>
+            For <code>virtiofs</code>, the <code>queue</code> attribute can be used
+            to specify the queue size (i.e. how many requests can the queue fit).
+            (<span class="since">Since 6.2.0</span>)
+          </li>
         </ul>
+      </dd>
+
+      <dt><code>binary</code></dt>
+      <dd>
+        The optional <code>binary</code> element can tune the options for virtiofsd.
+        All of the following attributes and elements are optional.
+        The attribute <code>path</code> can be used to override the path to the daemon.
+        Attribute <code>xattr</code> enables the use of filesystem extended attributes.
+        Caching can be tuned via the <code>cache</code> element, possible <code>mode</code>
+        values being <code>none</code> and <code>always</code>.
+        Locking can be controlled via the <code>lock</code>
+        element - attributes <code>posix</code> and <code>flock</code> both accepting
+        values <code>on</code> or <code>off</code>.
+        (<span class="since">Since 6.2.0</span>)
       </dd>
 
       <dt><code>source</code></dt>

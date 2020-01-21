@@ -2500,6 +2500,9 @@
           <optional>
             <ref name="fsDriver"/>
           </optional>
+          <optional>
+            <ref name="fsBinary"/>
+          </optional>
           <interleave>
             <element name="source">
               <attribute name="dir">
@@ -2649,10 +2652,55 @@
           <attribute name="type">
             <value>virtiofs</value>
           </attribute>
+          <optional>
+            <attribute name="queue">
+              <ref name="unsignedInt"/>
+            </attribute>
+          </optional>
           <ref name='virtioOptions'/>
         </group>
         <empty/>
       </choice>
+    </element>
+  </define>
+  <define name="fsBinary">
+    <element name="binary">
+      <optional>
+        <attribute name="path">
+          <ref name="absFilePath"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="xattr">
+          <ref name="virOnOff"/>
+        </attribute>
+      </optional>
+      <optional>
+        <element name="cache">
+          <optional>
+            <attribute name="mode">
+              <choice>
+                <value>none</value>
+                <value>always</value>
+              </choice>
+            </attribute>
+          </optional>
+        </element>
+      </optional>
+      <optional>
+        <element name="lock">
+          <optional>
+            <attribute name="posix">
+              <ref name="virOnOff"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="flock">
+              <ref name="virOnOff"/>
+            </attribute>
+          </optional>
+        </element>
+      </optional>
     </element>
   </define>
 

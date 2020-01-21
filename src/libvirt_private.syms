@@ -395,6 +395,7 @@ virDomainDiskSourceFormat;
 virDomainDiskTranslateSourcePool;
 virDomainFeatureTypeFromString;
 virDomainFeatureTypeToString;
+virDomainFSCacheModeTypeToString;
 virDomainFSDefFree;
 virDomainFSDefNew;
 virDomainFSDriverTypeToString;
