@@ -8742,26 +8742,19 @@ qemuMonitorJSONSetBlockThreshold(qemuMonitorPtr mon,
 virJSONValuePtr
 qemuMonitorJSONQueryNamedBlockNodes(qemuMonitorPtr mon)
 {
-    virJSONValuePtr cmd;
-    virJSONValuePtr reply = NULL;
-    virJSONValuePtr ret = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("query-named-block-nodes", NULL)))
         return NULL;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        goto cleanup;
+        return NULL;
 
     if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_ARRAY) < 0)
-        goto cleanup;
+        return NULL;
 
-    ret = virJSONValueObjectStealArray(reply, "return");
-
- cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-
-    return ret;
+    return virJSONValueObjectStealArray(reply, "return");
 }
 
 
