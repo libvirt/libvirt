@@ -2620,29 +2620,33 @@
            for this kind of info, and 'type' for the
            storage format. We need the latter too, so
            had to invent a new attribute name -->
-      <optional>
-        <attribute name="type">
-          <choice>
-            <value>path</value>
-            <value>handle</value>
-            <value>loop</value>
-            <value>nbd</value>
-            <value>ploop</value>
-          </choice>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="format">
-          <ref name="storageFormat"/>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="wrpolicy">
-          <value>immediate</value>
-        </attribute>
-      </optional>
-      <ref name='virtioOptions'/>
-      <empty/>
+      <choice>
+        <group>
+          <optional>
+            <attribute name="type">
+              <choice>
+                <value>path</value>
+                <value>handle</value>
+                <value>loop</value>
+                <value>nbd</value>
+                <value>ploop</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="format">
+              <ref name="storageFormat"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="wrpolicy">
+              <value>immediate</value>
+            </attribute>
+          </optional>
+          <ref name='virtioOptions'/>
+        </group>
+        <empty/>
+      </choice>
     </element>
   </define>
 
