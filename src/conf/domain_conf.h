@@ -3186,6 +3186,8 @@ virDomainNetDefPtr virDomainNetFindByName(virDomainDefPtr def, const char *ifnam
 bool virDomainHasNet(virDomainDefPtr def, virDomainNetDefPtr net);
 int virDomainNetInsert(virDomainDefPtr def, virDomainNetDefPtr net);
 int virDomainNetUpdate(virDomainDefPtr def, size_t netidx, virDomainNetDefPtr newnet);
+int virDomainNetDHCPInterfaces(virDomainDefPtr def, virDomainInterfacePtr **ifaces);
+int virDomainNetARPInterfaces(virDomainDefPtr def, virDomainInterfacePtr **ifaces);
 virDomainNetDefPtr virDomainNetRemove(virDomainDefPtr def, size_t i);
 void virDomainNetRemoveHostdev(virDomainDefPtr def, virDomainNetDefPtr net);
 

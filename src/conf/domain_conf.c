@@ -57,6 +57,7 @@
 #include "virnetdev.h"
 #include "virnetdevtap.h"
 #include "virnetdevmacvlan.h"
+#include "virarptable.h"
 #include "virhostdev.h"
 #include "virmdev.h"
 #include "virdomainsnapshotobjlist.h"
@@ -17264,6 +17265,139 @@ virDomainNetUpdate(virDomainDefPtr def,
 
     def->nets[netidx] = newnet;
     return 0;
+}
+
+
+int
+virDomainNetDHCPInterfaces(virDomainDefPtr def,
+                           virDomainInterfacePtr **ifaces)
+{
+    g_autoptr(virConnect) conn = NULL;
+    virDomainInterfacePtr *ifaces_ret = NULL;
+    size_t ifaces_count = 0;
+    size_t i;
+
+    if (!(conn = virGetConnectNetwork()))
+        return -1;
+
+    for (i = 0; i < def->nnets; i++) {
+        g_autoptr(virNetwork) network = NULL;
+        char macaddr[VIR_MAC_STRING_BUFLEN];
+        virNetworkDHCPLeasePtr *leases = NULL;
+        int n_leases = 0;
+        virDomainInterfacePtr iface = NULL;
+        size_t j;
+
+        if (def->nets[i]->type != VIR_DOMAIN_NET_TYPE_NETWORK)
+            continue;
+
+        virMacAddrFormat(&(def->nets[i]->mac), macaddr);
+
+        network = virNetworkLookupByName(conn,
+                                         def->nets[i]->data.network.name);
+        if (!network)
+            goto error;
+
+        if ((n_leases = virNetworkGetDHCPLeases(network, macaddr,
+                                                &leases, 0)) < 0)
+            goto error;
+
+        if (n_leases) {
+            ifaces_ret = g_renew(typeof(*ifaces_ret), ifaces_ret, ifaces_count + 1);
+            ifaces_ret[ifaces_count] = g_new0(typeof(**ifaces_ret), 1);
+            iface = ifaces_ret[ifaces_count];
+            ifaces_count++;
+
+            /* Assuming each lease corresponds to a separate IP */
+            iface->naddrs = n_leases;
+            iface->addrs = g_new0(typeof(*iface->addrs), iface->naddrs);
+            iface->name = g_strdup(def->nets[i]->ifname);
+            iface->hwaddr = g_strdup(macaddr);
+        }
+
+        for (j = 0; j < n_leases; j++) {
+            virNetworkDHCPLeasePtr lease = leases[j];
+            virDomainIPAddressPtr ip_addr = &iface->addrs[j];
+
+            ip_addr->addr = g_strdup(lease->ipaddr);
+            ip_addr->type = lease->type;
+            ip_addr->prefix = lease->prefix;
+
+            virNetworkDHCPLeaseFree(lease);
+        }
+
+        VIR_FREE(leases);
+    }
+
+    *ifaces = g_steal_pointer(&ifaces_ret);
+    return ifaces_count;
+
+ error:
+    if (ifaces_ret) {
+        for (i = 0; i < ifaces_count; i++)
+            virDomainInterfaceFree(ifaces_ret[i]);
+    }
+    VIR_FREE(ifaces_ret);
+
+    return -1;
+}
+
+
+int
+virDomainNetARPInterfaces(virDomainDefPtr def,
+                          virDomainInterfacePtr **ifaces)
+{
+    size_t i, j;
+    size_t ifaces_count = 0;
+    int ret = -1;
+    char macaddr[VIR_MAC_STRING_BUFLEN];
+    virDomainInterfacePtr *ifaces_ret = NULL;
+    virDomainInterfacePtr iface = NULL;
+    virArpTablePtr table;
+
+    table = virArpTableGet();
+    if (!table)
+        goto cleanup;
+
+    for (i = 0; i < def->nnets; i++) {
+        virMacAddrFormat(&(def->nets[i]->mac), macaddr);
+        for (j = 0; j < table->n; j++) {
+            virArpTableEntry entry = table->t[j];
+
+            if (STREQ(entry.mac, macaddr)) {
+                if (VIR_ALLOC(iface) < 0)
+                    goto cleanup;
+
+                iface->name = g_strdup(def->nets[i]->ifname);
+
+                iface->hwaddr = g_strdup(macaddr);
+
+                if (VIR_ALLOC(iface->addrs) < 0)
+                    goto cleanup;
+                iface->naddrs = 1;
+
+                iface->addrs->addr = g_strdup(entry.ipaddr);
+
+                if (VIR_APPEND_ELEMENT(ifaces_ret, ifaces_count, iface) < 0)
+                    goto cleanup;
+            }
+        }
+    }
+
+    *ifaces = g_steal_pointer(&ifaces_ret);
+    ret = ifaces_count;
+
+ cleanup:
+    virArpTableFree(table);
+    virDomainInterfaceFree(iface);
+
+    if (ifaces_ret) {
+        for (i = 0; i < ifaces_count; i++)
+            virDomainInterfaceFree(ifaces_ret[i]);
+    }
+    VIR_FREE(ifaces_ret);
+
+    return ret;
 }
 
 

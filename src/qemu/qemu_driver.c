@@ -22041,139 +22041,6 @@ qemuDomainGetFSInfo(virDomainPtr dom,
 
 
 static int
-qemuGetDHCPInterfaces(virDomainObjPtr vm,
-                      virDomainInterfacePtr **ifaces)
-{
-    g_autoptr(virConnect) conn = NULL;
-    virDomainInterfacePtr *ifaces_ret = NULL;
-    size_t ifaces_count = 0;
-    size_t i;
-
-    if (!(conn = virGetConnectNetwork()))
-        return -1;
-
-    for (i = 0; i < vm->def->nnets; i++) {
-        g_autoptr(virNetwork) network = NULL;
-        char macaddr[VIR_MAC_STRING_BUFLEN];
-        virNetworkDHCPLeasePtr *leases = NULL;
-        int n_leases = 0;
-        virDomainInterfacePtr iface = NULL;
-        size_t j;
-
-        if (vm->def->nets[i]->type != VIR_DOMAIN_NET_TYPE_NETWORK)
-            continue;
-
-        virMacAddrFormat(&(vm->def->nets[i]->mac), macaddr);
-
-        network = virNetworkLookupByName(conn,
-                                         vm->def->nets[i]->data.network.name);
-        if (!network)
-            goto error;
-
-        if ((n_leases = virNetworkGetDHCPLeases(network, macaddr,
-                                                &leases, 0)) < 0)
-            goto error;
-
-        if (n_leases) {
-            ifaces_ret = g_renew(typeof(*ifaces_ret), ifaces_ret, ifaces_count + 1);
-            ifaces_ret[ifaces_count] = g_new0(typeof(**ifaces_ret), 1);
-            iface = ifaces_ret[ifaces_count];
-            ifaces_count++;
-
-            /* Assuming each lease corresponds to a separate IP */
-            iface->naddrs = n_leases;
-            iface->addrs = g_new0(typeof(*iface->addrs), iface->naddrs);
-            iface->name = g_strdup(vm->def->nets[i]->ifname);
-            iface->hwaddr = g_strdup(macaddr);
-        }
-
-        for (j = 0; j < n_leases; j++) {
-            virNetworkDHCPLeasePtr lease = leases[j];
-            virDomainIPAddressPtr ip_addr = &iface->addrs[j];
-
-            ip_addr->addr = g_strdup(lease->ipaddr);
-            ip_addr->type = lease->type;
-            ip_addr->prefix = lease->prefix;
-
-            virNetworkDHCPLeaseFree(lease);
-        }
-
-        VIR_FREE(leases);
-    }
-
-    *ifaces = g_steal_pointer(&ifaces_ret);
-    return ifaces_count;
-
- error:
-    if (ifaces_ret) {
-        for (i = 0; i < ifaces_count; i++)
-            virDomainInterfaceFree(ifaces_ret[i]);
-    }
-    VIR_FREE(ifaces_ret);
-
-    return -1;
-}
-
-
-static int
-qemuARPGetInterfaces(virDomainObjPtr vm,
-                     virDomainInterfacePtr **ifaces)
-{
-    size_t i, j;
-    size_t ifaces_count = 0;
-    int ret = -1;
-    char macaddr[VIR_MAC_STRING_BUFLEN];
-    virDomainInterfacePtr *ifaces_ret = NULL;
-    virDomainInterfacePtr iface = NULL;
-    virArpTablePtr table;
-
-    table = virArpTableGet();
-    if (!table)
-        goto cleanup;
-
-    for (i = 0; i < vm->def->nnets; i++) {
-        virMacAddrFormat(&(vm->def->nets[i]->mac), macaddr);
-        for (j = 0; j < table->n; j++) {
-            virArpTableEntry entry = table->t[j];
-
-            if (STREQ(entry.mac, macaddr)) {
-                if (VIR_ALLOC(iface) < 0)
-                    goto cleanup;
-
-                iface->name = g_strdup(vm->def->nets[i]->ifname);
-
-                iface->hwaddr = g_strdup(macaddr);
-
-                if (VIR_ALLOC(iface->addrs) < 0)
-                    goto cleanup;
-                iface->naddrs = 1;
-
-                iface->addrs->addr = g_strdup(entry.ipaddr);
-
-                if (VIR_APPEND_ELEMENT(ifaces_ret, ifaces_count, iface) < 0)
-                    goto cleanup;
-            }
-        }
-    }
-
-    *ifaces = g_steal_pointer(&ifaces_ret);
-    ret = ifaces_count;
-
- cleanup:
-    virArpTableFree(table);
-    virDomainInterfaceFree(iface);
-
-    if (ifaces_ret) {
-        for (i = 0; i < ifaces_count; i++)
-            virDomainInterfaceFree(ifaces_ret[i]);
-    }
-    VIR_FREE(ifaces_ret);
-
-    return ret;
-}
-
-
-static int
 qemuDomainInterfaceAddresses(virDomainPtr dom,
                              virDomainInterfacePtr **ifaces,
                              unsigned int source,
@@ -22197,7 +22064,7 @@ qemuDomainInterfaceAddresses(virDomainPtr dom,
 
     switch (source) {
     case VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE:
-        ret = qemuGetDHCPInterfaces(vm, ifaces);
+        ret = virDomainNetDHCPInterfaces(vm->def, ifaces);
         break;
 
     case VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_AGENT:
@@ -22217,7 +22084,7 @@ qemuDomainInterfaceAddresses(virDomainPtr dom,
         break;
 
     case VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_ARP:
-        ret = qemuARPGetInterfaces(vm, ifaces);
+        ret = virDomainNetARPInterfaces(vm->def, ifaces);
         break;
 
     default:
