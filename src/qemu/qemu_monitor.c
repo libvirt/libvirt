@@ -2199,17 +2199,20 @@ qemuMonitorBlockStatsUpdateCapacityBlockdev(qemuMonitorPtr mon,
 /**
  * qemuMonitorBlockGetNamedNodeData:
  * @mon: monitor object
+ * @supports_flat: don't query data for backing store
  *
  * Uses 'query-named-block-nodes' to retrieve information about individual
  * storage nodes and returns them in a hash table of qemuBlockNamedNodeDataPtrs
  * filled with the data. The hash table keys are node names.
  */
 virHashTablePtr
-qemuMonitorBlockGetNamedNodeData(qemuMonitorPtr mon)
+qemuMonitorBlockGetNamedNodeData(qemuMonitorPtr mon,
+                                 bool supports_flat)
 {
     QEMU_CHECK_MONITOR_NULL(mon);
+    VIR_DEBUG("supports_flat=%d", supports_flat);
 
-    return qemuMonitorJSONBlockGetNamedNodeData(mon);
+    return qemuMonitorJSONBlockGetNamedNodeData(mon, supports_flat);
 }
 
 

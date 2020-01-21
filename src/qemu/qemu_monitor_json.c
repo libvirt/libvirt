@@ -3014,11 +3014,12 @@ qemuMonitorJSONBlockGetNamedNodeDataJSON(virJSONValuePtr nodes)
 
 
 virHashTablePtr
-qemuMonitorJSONBlockGetNamedNodeData(qemuMonitorPtr mon)
+qemuMonitorJSONBlockGetNamedNodeData(qemuMonitorPtr mon,
+                                     bool supports_flat)
 {
     g_autoptr(virJSONValue) nodes = NULL;
 
-    if (!(nodes = qemuMonitorJSONQueryNamedBlockNodes(mon, false)))
+    if (!(nodes = qemuMonitorJSONQueryNamedBlockNodes(mon, supports_flat)))
         return NULL;
 
     return qemuMonitorJSONBlockGetNamedNodeDataJSON(nodes);

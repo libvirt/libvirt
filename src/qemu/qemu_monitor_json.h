@@ -91,7 +91,8 @@ virHashTablePtr
 qemuMonitorJSONBlockGetNamedNodeDataJSON(virJSONValuePtr nodes);
 
 virHashTablePtr
-qemuMonitorJSONBlockGetNamedNodeData(qemuMonitorPtr mon);
+qemuMonitorJSONBlockGetNamedNodeData(qemuMonitorPtr mon,
+                                     bool supports_flat);
 
 int qemuMonitorJSONBlockResize(qemuMonitorPtr mon,
                                const char *device,

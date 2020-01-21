@@ -698,7 +698,8 @@ struct _qemuBlockNamedNodeData {
 };
 
 virHashTablePtr
-qemuMonitorBlockGetNamedNodeData(qemuMonitorPtr mon);
+qemuMonitorBlockGetNamedNodeData(qemuMonitorPtr mon,
+                                 bool supports_flat);
 
 int qemuMonitorBlockResize(qemuMonitorPtr mon,
                            const char *device,

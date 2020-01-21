@@ -2768,11 +2768,13 @@ qemuBlockGetNamedNodeData(virDomainObjPtr vm,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverPtr driver = priv->driver;
     g_autoptr(virHashTable) blockNamedNodeData = NULL;
+    bool supports_flat = virQEMUCapsGet(priv->qemuCaps,
+                                        QEMU_CAPS_QMP_QUERY_NAMED_BLOCK_NODES_FLAT);
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return NULL;
 
-    blockNamedNodeData = qemuMonitorBlockGetNamedNodeData(priv->mon);
+    blockNamedNodeData = qemuMonitorBlockGetNamedNodeData(priv->mon, supports_flat);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || !blockNamedNodeData)
         return NULL;
