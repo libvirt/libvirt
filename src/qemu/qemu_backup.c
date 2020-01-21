@@ -830,10 +830,7 @@ qemuBackupBegin(virDomainObjPtr vm,
             goto endjob;
     }
 
-    if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, QEMU_ASYNC_JOB_BACKUP) < 0)
-        goto endjob;
-    blockNamedNodeData = qemuMonitorBlockGetNamedNodeData(priv->mon);
-    if (qemuDomainObjExitMonitor(priv->driver, vm) < 0 || !blockNamedNodeData)
+    if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, QEMU_ASYNC_JOB_BACKUP)))
         goto endjob;
 
     if ((ndd = qemuBackupDiskPrepareData(vm, def, incremental, blockNamedNodeData,

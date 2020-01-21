@@ -2670,3 +2670,23 @@ qemuBlockNamedNodeDataGetBitmapByName(virHashTablePtr blockNamedNodeData,
 
     return NULL;
 }
+
+
+virHashTablePtr
+qemuBlockGetNamedNodeData(virDomainObjPtr vm,
+                          qemuDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverPtr driver = priv->driver;
+    g_autoptr(virHashTable) blockNamedNodeData = NULL;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return NULL;
+
+    blockNamedNodeData = qemuMonitorBlockGetNamedNodeData(priv->mon);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || !blockNamedNodeData)
+        return NULL;
+
+    return g_steal_pointer(&blockNamedNodeData);
+}

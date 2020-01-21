@@ -208,3 +208,7 @@ qemuBlockNamedNodeDataBitmapPtr
 qemuBlockNamedNodeDataGetBitmapByName(virHashTablePtr blockNamedNodeData,
                                       virStorageSourcePtr src,
                                       const char *bitmap);
+
+virHashTablePtr
+qemuBlockGetNamedNodeData(virDomainObjPtr vm,
+                          qemuDomainAsyncJob asyncJob);

@@ -15642,15 +15642,9 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
     if (!(actions = virJSONValueNewArray()))
         return -1;
 
-    if (blockdev) {
-        if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
-            return -1;
-
-        blockNamedNodeData = qemuMonitorBlockGetNamedNodeData(priv->mon);
-
-        if (qemuDomainObjExitMonitor(driver, vm) < 0 || !blockNamedNodeData)
-            return -1;
-    }
+    if (blockdev &&
+        !(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, asyncJob)))
+        return -1;
 
     /* prepare a list of objects to use in the vm definition so that we don't
      * have to roll back later */
@@ -18354,9 +18348,7 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
                                                                           priv->qemuCaps)))
                 goto endjob;
         } else {
-            qemuDomainObjEnterMonitor(driver, vm);
-            blockNamedNodeData = qemuMonitorBlockGetNamedNodeData(priv->mon);
-            if (qemuDomainObjExitMonitor(driver, vm) < 0 || !blockNamedNodeData)
+            if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, QEMU_ASYNC_JOB_NONE)))
                 goto endjob;
 
             if (qemuBlockStorageSourceCreateDetectSize(blockNamedNodeData,
