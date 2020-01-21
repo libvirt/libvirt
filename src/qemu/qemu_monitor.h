@@ -39,12 +39,6 @@ typedef qemuMonitor *qemuMonitorPtr;
 typedef struct _qemuMonitorMessage qemuMonitorMessage;
 typedef qemuMonitorMessage *qemuMonitorMessagePtr;
 
-typedef int (*qemuMonitorPasswordHandler)(qemuMonitorPtr mon,
-                                          qemuMonitorMessagePtr msg,
-                                          const char *data,
-                                          size_t len,
-                                          void *opaque);
-
 struct _qemuMonitorMessage {
     int txFD;
 
@@ -62,9 +56,6 @@ struct _qemuMonitorMessage {
      * fatal error occurred on the monitor channel
      */
     bool finished;
-
-    qemuMonitorPasswordHandler passwordHandler;
-    void *passwordOpaque;
 };
 
 typedef enum {
