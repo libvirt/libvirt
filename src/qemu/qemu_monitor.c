@@ -4247,7 +4247,7 @@ qemuMonitorQueryNamedBlockNodes(qemuMonitorPtr mon)
 {
     QEMU_CHECK_MONITOR_NULL(mon);
 
-    return qemuMonitorJSONQueryNamedBlockNodes(mon);
+    return qemuMonitorJSONQueryNamedBlockNodes(mon, false);
 }
 
 

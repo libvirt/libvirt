@@ -2862,7 +2862,7 @@ qemuMonitorJSONBlockStatsUpdateCapacityBlockdev(qemuMonitorPtr mon,
     virJSONValuePtr nodes;
     int ret = -1;
 
-    if (!(nodes = qemuMonitorJSONQueryNamedBlockNodes(mon)))
+    if (!(nodes = qemuMonitorJSONQueryNamedBlockNodes(mon, false)))
         return -1;
 
     if (virJSONValueArrayForeachSteal(nodes,
@@ -3018,7 +3018,7 @@ qemuMonitorJSONBlockGetNamedNodeData(qemuMonitorPtr mon)
 {
     g_autoptr(virJSONValue) nodes = NULL;
 
-    if (!(nodes = qemuMonitorJSONQueryNamedBlockNodes(mon)))
+    if (!(nodes = qemuMonitorJSONQueryNamedBlockNodes(mon, false)))
         return NULL;
 
     return qemuMonitorJSONBlockGetNamedNodeDataJSON(nodes);
@@ -8740,12 +8740,15 @@ qemuMonitorJSONSetBlockThreshold(qemuMonitorPtr mon,
 
 
 virJSONValuePtr
-qemuMonitorJSONQueryNamedBlockNodes(qemuMonitorPtr mon)
+qemuMonitorJSONQueryNamedBlockNodes(qemuMonitorPtr mon,
+                                    bool flat)
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
 
-    if (!(cmd = qemuMonitorJSONMakeCommand("query-named-block-nodes", NULL)))
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-named-block-nodes",
+                                           "B:flat", flat,
+                                           NULL)))
         return NULL;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
