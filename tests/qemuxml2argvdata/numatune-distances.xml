@@ -5,7 +5,7 @@
   <currentMemory unit='KiB'>8388608</currentMemory>
   <vcpu placement='static'>12</vcpu>
   <os>
-    <type arch='x86_64' machine='xenfv'>hvm</type>
+    <type arch='x86_64' machine='pc'>hvm</type>
     <boot dev='hd'/>
   </os>
   <features>
