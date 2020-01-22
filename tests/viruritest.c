@@ -145,7 +145,9 @@ mymain(void)
 {
     int ret = 0;
 
+#ifndef WIN32
     signal(SIGPIPE, SIG_IGN);
+#endif /* WIN32 */
 
 #define TEST_FULL(uri, uri_out, scheme, server, port, path, query, \
                   fragment, user, params) \

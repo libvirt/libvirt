@@ -109,7 +109,9 @@ mymain(void)
 {
     int ret = 0;
 
+#ifndef WIN32
     signal(SIGPIPE, SIG_IGN);
+#endif /* WIN32 */
 
     if (virTestRun("Test parse", testParse, NULL) < 0)
         ret = -1;

@@ -115,7 +115,9 @@ mymain(void)
 {
     int ret = 0;
 
+#ifndef WIN32
     signal(SIGPIPE, SIG_IGN);
+#endif /* WIN32 */
 
 #define TEST_FIELDS(ts, year, mon, day, hour, min, sec) \
     do { \

@@ -84,7 +84,9 @@ mymain(void)
 
     virAuthConfigPtr config;
 
+#ifndef WIN32
     signal(SIGPIPE, SIG_IGN);
+#endif /* WIN32 */
 
 #define TEST_LOOKUP(config, hostname, service, credname, expect) \
     do  { \

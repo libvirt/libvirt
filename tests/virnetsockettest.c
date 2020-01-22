@@ -522,7 +522,9 @@ mymain(void)
     int freePort;
 #endif
 
+#ifndef WIN32
     signal(SIGPIPE, SIG_IGN);
+#endif /* WIN32 */
 
     virEventRegisterDefaultImpl();
 

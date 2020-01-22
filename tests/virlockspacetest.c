@@ -342,7 +342,9 @@ mymain(void)
 {
     int ret = 0;
 
+#ifndef WIN32
     signal(SIGPIPE, SIG_IGN);
+#endif /* WIN32 */
 
     if (virTestRun("Lockspace creation", testLockSpaceCreate, NULL) < 0)
         ret = -1;

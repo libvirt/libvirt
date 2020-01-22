@@ -525,7 +525,9 @@ mymain(void)
 {
     int ret = 0;
 
+#ifndef WIN32
     signal(SIGPIPE, SIG_IGN);
+#endif /* WIN32 */
 
     if (virTestRun("Message Header Encode", testMessageHeaderEncode, NULL) < 0)
         ret = -1;
