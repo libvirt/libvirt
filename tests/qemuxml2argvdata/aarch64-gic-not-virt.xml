@@ -4,7 +4,7 @@
   <memory unit='KiB'>1048576</memory>
   <vcpu placement='static'>1</vcpu>
   <os>
-    <type arch='aarch64' machine='not-virt'>hvm</type>
+    <type arch='aarch64' machine='versatilepb'>hvm</type>
   </os>
   <features>
     <gic/>
