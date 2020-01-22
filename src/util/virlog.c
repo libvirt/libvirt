@@ -28,7 +28,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <sys/uio.h>
 #if HAVE_SYSLOG_H
 # include <syslog.h>
 #endif
@@ -52,6 +51,7 @@
  * htole64.  */
 #if HAVE_SYSLOG_H && defined(__linux__) && HAVE_DECL_HTOLE64
 # define USE_JOURNALD 1
+# include <sys/uio.h>
 #endif
 
 #define VIR_FROM_THIS VIR_FROM_NONE
