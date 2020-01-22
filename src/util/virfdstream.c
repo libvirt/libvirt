@@ -1243,7 +1243,10 @@ virFDStreamOpenFileInternal(virStreamPtr st,
     VIR_DEBUG("st=%p path=%s oflags=0x%x offset=%llu length=%llu mode=0%o",
               st, path, oflags, offset, length, mode);
 
-    oflags |= O_NOCTTY | O_BINARY;
+    oflags |= O_NOCTTY;
+#ifdef O_BINARY
+    oflags |= O_BINARY;
+#endif
 
     if (oflags & O_CREAT)
         fd = open(path, oflags, mode);
