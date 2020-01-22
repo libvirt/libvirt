@@ -71,7 +71,6 @@
 #include "virfile.h"
 #include "virjson.h"
 #include "virqemu.h"
-#include "stat-time.h"
 #include "virstring.h"
 #include "virxml.h"
 #include "virfdstream.h"
@@ -1830,10 +1829,22 @@ virStorageBackendUpdateVolTargetInfoFD(virStorageSourcePtr target,
 
     if (!target->timestamps && VIR_ALLOC(target->timestamps) < 0)
         return -1;
-    target->timestamps->atime = get_stat_atime(sb);
-    target->timestamps->btime = get_stat_birthtime(sb);
-    target->timestamps->ctime = get_stat_ctime(sb);
-    target->timestamps->mtime = get_stat_mtime(sb);
+
+#ifdef __APPLE__
+    target->timestamps->atime = sb->st_atimespec;
+    target->timestamps->btime = sb->st_birthtimespec;
+    target->timestamps->ctime = sb->st_ctimespec;
+    target->timestamps->mtime = sb->st_mtimespec;
+#else /* ! __APPLE__ */
+    target->timestamps->atime = sb->st_atim;
+# ifdef __linux__
+    target->timestamps->btime = (struct timespec){0, 0};
+# else /* ! __linux__ */
+    target->timestamps->btime = sb->st_birthtim;
+# endif /* ! __linux__ */
+    target->timestamps->ctime = sb->st_ctim;
+    target->timestamps->mtime = sb->st_mtim;
+#endif /* ! __APPLE__ */
 
     target->type = VIR_STORAGE_TYPE_FILE;
 
