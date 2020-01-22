@@ -2701,7 +2701,7 @@ virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
 }
 
 
-static bool
+bool
 virQEMUCapsIsMachineSupported(virQEMUCapsPtr qemuCaps,
                               virDomainVirtType virtType,
                               const char *canonical_machine)

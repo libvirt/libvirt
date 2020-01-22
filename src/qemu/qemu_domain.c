@@ -5727,6 +5727,14 @@ qemuDomainDefValidate(const virDomainDef *def,
         goto cleanup;
     }
 
+    if (qemuCaps &&
+        !virQEMUCapsIsMachineSupported(qemuCaps, def->virtType, def->os.machine)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Emulator '%s' does not support machine type '%s'"),
+                       def->emulator, def->os.machine);
+        goto cleanup;
+    }
+
     if (def->mem.min_guarantee) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Parameter 'min_guarantee' not supported by QEMU."));
