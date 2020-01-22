@@ -7,10 +7,10 @@ XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest1/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest1/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 QEMU_AUDIO_DRV=none \
-/usr/bin/qemu-system-i386 \
+/usr/bin/qemu-system-x86_64 \
 -name QEMUGuest1 \
 -S \
--machine pc-i440fx-2.6,accel=tcg,usb=off,dump-guest-core=off \
+-machine pc-i440fx-1.5,accel=tcg,usb=off,dump-guest-core=off \
 -m 214 \
 -realtime mlock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
