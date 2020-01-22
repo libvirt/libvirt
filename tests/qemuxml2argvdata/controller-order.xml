@@ -5,7 +5,7 @@
   <currentMemory unit='KiB'>4194304</currentMemory>
   <vcpu placement='static'>4</vcpu>
   <os>
-    <type arch='x86_64' machine='rhel6.1.0'>hvm</type>
+    <type arch='x86_64' machine='pc'>hvm</type>
     <boot dev='hd'/>
     <boot dev='network'/>
     <boot dev='fd'/>
