@@ -161,10 +161,10 @@ test_virCapsDomainDataLookupQEMU(const void *data G_GNUC_UNUSED)
     /* Checking each parameter individually */
     CAPSCOMP(-1, VIR_ARCH_NONE, VIR_DOMAIN_VIRT_NONE, NULL, NULL,
         VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_X86_64,
-        VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu-system-x86_64", "pc-0.11");
+        VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu-system-x86_64", "pc");
     CAPSCOMP(VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_NONE, VIR_DOMAIN_VIRT_NONE, NULL, NULL,
         VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_X86_64,
-        VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu-system-x86_64", "pc-0.11");
+        VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu-system-x86_64", "pc");
     CAPSCOMP(-1, VIR_ARCH_AARCH64, VIR_DOMAIN_VIRT_NONE, NULL, NULL,
         VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_AARCH64,
         VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu-system-aarch64", "virt");

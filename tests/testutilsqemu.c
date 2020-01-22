@@ -41,11 +41,8 @@ static const virArch arch_alias[VIR_ARCH_LAST] = {
 static const char *const i386_machines[] = {
     "pc", "isapc", NULL
 };
-static const char *const x86_64_machines_kvm[] = {
-    "pc", "isapc", NULL
-};
-static const char *const x86_64_machines_qemu[] = {
-    "pc-0.11", "pc", "pc-0.10", "isapc", NULL
+static const char *const x86_64_machines[] = {
+    "pc", "pc-0.11", "pc-0.10", "isapc", NULL
 };
 static const char *const aarch64_machines[] = {
     "virt", NULL
@@ -71,7 +68,7 @@ static const char *const s390x_machines[] = {
 
 static const char *const *qemu_machines[VIR_ARCH_LAST] = {
     [VIR_ARCH_I686] = i386_machines,
-    [VIR_ARCH_X86_64] = x86_64_machines_qemu,
+    [VIR_ARCH_X86_64] = x86_64_machines,
     [VIR_ARCH_AARCH64] = aarch64_machines,
     [VIR_ARCH_ARMV7L] = arm_machines,
     [VIR_ARCH_PPC64] = ppc64_machines,
@@ -83,7 +80,7 @@ static const char *const *qemu_machines[VIR_ARCH_LAST] = {
 
 static const char *const *kvm_machines[VIR_ARCH_LAST] = {
     [VIR_ARCH_I686] = i386_machines,
-    [VIR_ARCH_X86_64] = x86_64_machines_kvm,
+    [VIR_ARCH_X86_64] = x86_64_machines,
     [VIR_ARCH_AARCH64] = aarch64_machines,
     [VIR_ARCH_ARMV7L] = arm_machines,
     [VIR_ARCH_PPC64] = ppc64_machines,
