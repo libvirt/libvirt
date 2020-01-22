@@ -55,6 +55,8 @@ m4_ifndef([AM_SILENT_RULES],
 
 AC_CANONICAL_HOST
 
+AC_USE_SYSTEM_EXTENSIONS
+
 # First extract pieces from the version number string
 LIBVIRT_MAJOR_VERSION=`echo $VERSION | awk -F. '{print $1}'`
 LIBVIRT_MINOR_VERSION=`echo $VERSION | awk -F. '{print $2}'`
