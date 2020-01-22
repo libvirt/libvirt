@@ -16,7 +16,7 @@
     <memnode cellid='0' mode='preferred' nodeset='3'/>
   </numatune>
   <os>
-    <type arch='x86_64' machine='pc-i440fx-wily'>hvm</type>
+    <type arch='x86_64' machine='pc-i440fx-2.3'>hvm</type>
     <boot dev='hd'/>
   </os>
   <cpu>

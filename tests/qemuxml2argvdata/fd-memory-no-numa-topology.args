@@ -10,7 +10,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name instance-00000092 \
 -S \
--machine pc-i440fx-wily,accel=kvm,usb=off,dump-guest-core=off \
+-machine pc-i440fx-2.3,accel=kvm,usb=off,dump-guest-core=off \
 -m 14336 \
 -mem-prealloc \
 -mem-path /var/lib/libvirt/qemu/ram/libvirt/qemu/-1-instance-00000092/ram \
