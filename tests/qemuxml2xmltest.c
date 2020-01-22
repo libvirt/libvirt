@@ -321,7 +321,11 @@ mymain(void)
     DO_TEST("disk-boot-cdrom", NONE);
     DO_TEST("disk-error-policy", NONE);
     DO_TEST("disk-fmt-qcow", NONE);
-    DO_TEST("disk-cache", QEMU_CAPS_SCSI_LSI);
+    DO_TEST_CAPS_VER("disk-cache", "1.5.3");
+    DO_TEST_CAPS_VER("disk-cache", "2.6.0");
+    DO_TEST_CAPS_VER("disk-cache", "2.7.0");
+    DO_TEST_CAPS_VER("disk-cache", "2.12.0");
+    DO_TEST_CAPS_LATEST("disk-cache");
     DO_TEST("disk-network-nbd", NONE);
     DO_TEST("disk-network-iscsi", QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("disk-network-gluster", NONE);
