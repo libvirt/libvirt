@@ -6,7 +6,6 @@
   <os>
     <type arch='aarch64' machine='virt'>hvm</type>
   </os>
-  <cpu mode='host-passthrough'/>
   <devices>
     <emulator>/usr/bin/qemu-system-aarch64</emulator>
     <controller type='usb' index='0' model='none'/>

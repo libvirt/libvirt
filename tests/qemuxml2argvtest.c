@@ -2112,6 +2112,11 @@ mymain(void)
     DO_TEST_PARSE_ERROR("video-invalid-multiple-devices", NONE);
     DO_TEST_PARSE_ERROR("default-video-type-x86_64-caps-test-0", NONE);
 
+    DO_TEST_CAPS_ARCH_LATEST("default-video-type-aarch64", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("default-video-type-ppc64", "ppc64");
+    DO_TEST_CAPS_ARCH_LATEST("default-video-type-riscv64", "riscv64");
+    DO_TEST_CAPS_ARCH_LATEST("default-video-type-s390x", "s390x");
+
     DO_TEST("virtio-rng-default",
             QEMU_CAPS_DEVICE_VIRTIO_RNG,
             QEMU_CAPS_OBJECT_RNG_RANDOM);

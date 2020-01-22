@@ -8,7 +8,6 @@
     <type arch='riscv64' machine='virt'>hvm</type>
     <boot dev='hd'/>
   </os>
-  <cpu mode='host-passthrough' check='none'/>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>

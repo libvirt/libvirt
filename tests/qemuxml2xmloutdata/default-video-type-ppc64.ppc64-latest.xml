@@ -5,7 +5,7 @@
   <currentMemory unit='KiB'>1048576</currentMemory>
   <vcpu placement='static'>1</vcpu>
   <os>
-    <type arch='ppc64' machine='virt'>hvm</type>
+    <type arch='ppc64' machine='pseries'>hvm</type>
     <boot dev='hd'/>
   </os>
   <cpu mode='host-passthrough' check='none'/>
@@ -15,8 +15,13 @@
   <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-system-ppc64</emulator>
-    <controller type='usb' index='0' model='none'/>
-    <controller type='pci' index='0' model='pci-root'/>
+    <controller type='usb' index='0' model='pci-ohci'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
+    </controller>
+    <controller type='pci' index='0' model='pci-root'>
+      <model name='spapr-pci-host-bridge'/>
+      <target index='0'/>
+    </controller>
     <input type='keyboard' bus='usb'/>
     <input type='mouse' bus='usb'/>
     <graphics type='vnc' port='-1' autoport='yes'>
@@ -24,8 +29,9 @@
     </graphics>
     <video>
       <model type='vga' vram='16384' heads='1' primary='yes'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </video>
     <memballoon model='none'/>
+    <panic model='pseries'/>
   </devices>
 </domain>

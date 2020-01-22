@@ -4,12 +4,11 @@
   <memory unit='KiB'>1048576</memory>
   <vcpu placement='static'>1</vcpu>
   <os>
-    <type arch='ppc64' machine='virt'>hvm</type>
+    <type arch='ppc64' machine='pseries'>hvm</type>
   </os>
   <cpu mode='host-passthrough'/>
   <devices>
     <emulator>/usr/bin/qemu-system-ppc64</emulator>
-    <controller type='usb' index='0' model='none'/>
     <memballoon model='none'/>
     <graphics type='vnc'/>
   </devices>

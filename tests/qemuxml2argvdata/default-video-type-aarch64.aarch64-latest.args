@@ -1,0 +1,35 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/tmp/lib/domain--1-default-video-type-a \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/tmp/lib/domain--1-default-video-type-a/.local/share \
+XDG_CACHE_HOME=/tmp/lib/domain--1-default-video-type-a/.cache \
+XDG_CONFIG_HOME=/tmp/lib/domain--1-default-video-type-a/.config \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-aarch64 \
+-name guest=default-video-type-aarch64-test,debug-threads=on \
+-S \
+-object secret,id=masterKey0,format=raw,\
+file=/tmp/lib/domain--1-default-video-type-a/master-key.aes \
+-machine virt,accel=kvm,usb=off,dump-guest-core=off,gic-version=3 \
+-m 1024 \
+-overcommit mem-lock=off \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid 6ba410c5-1e5c-4d57-bee7-2228e7ffa32f \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-no-acpi \
+-boot strict=on \
+-device pcie-root-port,port=0x8,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,\
+addr=0x1 \
+-device pcie-root-port,port=0x9,chassis=2,id=pci.2,bus=pcie.0,addr=0x1.0x1 \
+-vnc 127.0.0.1:0 \
+-device virtio-gpu-pci,id=video0,max_outputs=1,bus=pci.1,addr=0x0 \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
+resourcecontrol=deny \
+-msg timestamp=on

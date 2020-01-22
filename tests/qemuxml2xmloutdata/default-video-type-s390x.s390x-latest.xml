@@ -5,10 +5,9 @@
   <currentMemory unit='KiB'>1048576</currentMemory>
   <vcpu placement='static'>1</vcpu>
   <os>
-    <type arch='s390x' machine='virt'>hvm</type>
+    <type arch='s390x' machine='s390-ccw-virtio'>hvm</type>
     <boot dev='hd'/>
   </os>
-  <cpu mode='host-passthrough' check='none'/>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
@@ -22,9 +21,7 @@
     </graphics>
     <video>
       <model type='virtio' heads='1' primary='yes'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'>
-        <zpci uid='0x0001' fid='0x00000000'/>
-      </address>
+      <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x0000'/>
     </video>
     <memballoon model='none'/>
     <panic model='s390'/>
