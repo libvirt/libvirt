@@ -381,6 +381,7 @@ AC_CHECK_HEADERS([\
   mntent.h \
   net/ethernet.h \
   netinet/tcp.h \
+  net/if.h \
   pty.h \
   pwd.h \
   stdarg.h \

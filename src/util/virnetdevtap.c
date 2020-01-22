@@ -36,7 +36,9 @@
 #ifndef WIN32
 # include <sys/ioctl.h>
 #endif
-#include <net/if.h>
+#ifdef HAVE_NET_IF
+# include <net/if.h>
+#endif
 #include <fcntl.h>
 #ifdef __linux__
 # include <linux/if_tun.h>    /* IFF_TUN, IFF_NO_PI */

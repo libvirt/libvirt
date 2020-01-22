@@ -31,7 +31,9 @@
 # include <sys/ioctl.h>
 #endif
 #include <sys/socket.h>
-#include <net/if.h>
+#ifdef HAVE_NET_IF
+# include <net/if.h>
+#endif
 #include <netinet/in.h>
 
 #ifdef __linux__
