@@ -3158,6 +3158,25 @@
       <optional>
         <ref name="vlan"/>
       </optional>
+      <optional>
+        <element name="teaming">
+          <choice>
+            <group>
+              <attribute name="type">
+                <value>persistent</value>
+              </attribute>
+            </group>
+            <group>
+              <attribute name="type">
+                <value>transient</value>
+              </attribute>
+              <attribute name="persistent">
+                <ref name="aliasName"/>
+              </attribute>
+            </group>
+          </choice>
+        </element>
+      </optional>
     </interleave>
   </define>
 

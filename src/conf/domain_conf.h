@@ -886,6 +886,15 @@ typedef enum {
     VIR_DOMAIN_NET_VIRTIO_TX_MODE_LAST
 } virDomainNetVirtioTxModeType;
 
+/* the type of teaming device */
+typedef enum {
+    VIR_DOMAIN_NET_TEAMING_TYPE_NONE,
+    VIR_DOMAIN_NET_TEAMING_TYPE_PERSISTENT,
+    VIR_DOMAIN_NET_TEAMING_TYPE_TRANSIENT,
+
+    VIR_DOMAIN_NET_TEAMING_TYPE_LAST
+} virDomainNetTeamingType;
+
 /* link interface states */
 typedef enum {
         VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DEFAULT = 0, /* Default link state (up) */
@@ -960,6 +969,10 @@ struct _virDomainNetDef {
         char *tap;
         char *vhost;
     } backend;
+    struct {
+        virDomainNetTeamingType type;
+        char *persistent; /* alias name of persistent device */
+    } teaming;
     union {
         virDomainChrSourceDefPtr vhostuser;
         struct {
@@ -3430,6 +3443,7 @@ VIR_ENUM_DECL(virDomainFSModel);
 VIR_ENUM_DECL(virDomainNet);
 VIR_ENUM_DECL(virDomainNetBackend);
 VIR_ENUM_DECL(virDomainNetVirtioTxMode);
+VIR_ENUM_DECL(virDomainNetTeaming);
 VIR_ENUM_DECL(virDomainNetInterfaceLinkState);
 VIR_ENUM_DECL(virDomainNetModel);
 VIR_ENUM_DECL(virDomainChrDevice);

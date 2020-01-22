@@ -555,6 +555,13 @@ VIR_ENUM_IMPL(virDomainNetVirtioTxMode,
               "timer",
 );
 
+VIR_ENUM_IMPL(virDomainNetTeaming,
+              VIR_DOMAIN_NET_TEAMING_TYPE_LAST,
+              "none",
+              "persistent",
+              "transient",
+);
+
 VIR_ENUM_IMPL(virDomainNetInterfaceLinkState,
               VIR_DOMAIN_NET_INTERFACE_LINK_STATE_LAST,
               "default",
@@ -6306,6 +6313,21 @@ virDomainNetDefValidate(const virDomainNetDef *net)
                        virDomainNetTypeToString(net->type));
         return -1;
     }
+
+    if (net->teaming.type == VIR_DOMAIN_NET_TEAMING_TYPE_TRANSIENT) {
+        if (!net->teaming.persistent) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("teaming persistent attribute must be set if teaming type is 'transient'"));
+            return -1;
+        }
+    } else {
+        if (net->teaming.persistent) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("teaming persistent attribute not allowed if teaming type is '%s'"),
+                           virDomainNetTeamingTypeToString(net->teaming.type));
+            return -1;
+        }
+    }
     return 0;
 }
 
@@ -11588,6 +11610,8 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     g_autofree char *vhostuser_type = NULL;
     g_autofree char *trustGuestRxFilters = NULL;
     g_autofree char *vhost_path = NULL;
+    g_autofree char *teamingType = NULL;
+    g_autofree char *teamingPersistent = NULL;
     const char *prefix = xmlopt ? xmlopt->config.netPrefix : NULL;
 
     if (!(def = virDomainNetDefNew(xmlopt)))
@@ -11789,6 +11813,10 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                 if (!vhost_path && (tmp = virXMLPropString(cur, "vhost")))
                     vhost_path = virFileSanitizePath(tmp);
                 VIR_FREE(tmp);
+            } else if (virXMLNodeNameEqual(cur, "teaming") &&
+                       !teamingType && !teamingPersistent) {
+                teamingType = virXMLPropString(cur, "type");
+                teamingPersistent =  virXMLPropString(cur, "persistent");
             }
         }
         cur = cur->next;
@@ -12309,6 +12337,19 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
             goto error;
         }
     }
+
+    if (teamingType) {
+        int tmpTeaming;
+
+        if ((tmpTeaming = virDomainNetTeamingTypeFromString(teamingType)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown teaming type '%s'"),
+                           teamingType);
+            goto error;
+        }
+        def->teaming.type = tmpTeaming;
+    }
+    def->teaming.persistent = g_steal_pointer(&teamingPersistent);
 
     rv = virXPathULong("string(./tune/sndbuf)", ctxt, &def->tune.sndbuf);
     if (rv >= 0) {
@@ -25885,6 +25926,12 @@ virDomainNetDefFormat(virBufferPtr buf,
         virBufferAddLit(buf,   "</tune>\n");
     }
 
+    if (def->teaming.type != VIR_DOMAIN_NET_TEAMING_TYPE_NONE) {
+        virBufferAsprintf(buf, "<teaming type='%s'",
+                          virDomainNetTeamingTypeToString(def->teaming.type));
+        virBufferEscapeString(buf, " persistent='%s'", def->teaming.persistent);
+        virBufferAddLit(buf, "/>\n");
+    }
     if (def->linkstate) {
         virBufferAsprintf(buf, "<link state='%s'/>\n",
                           virDomainNetInterfaceLinkStateTypeToString(def->linkstate));

@@ -455,6 +455,12 @@ mymain(void)
     DO_TEST("net-eth-unmanaged-tap", NONE);
     DO_TEST("net-virtio-network-portgroup", NONE);
     DO_TEST("net-virtio-rxtxqueuesize", NONE);
+    DO_TEST("net-virtio-teaming",
+            QEMU_CAPS_VIRTIO_NET_FAILOVER,
+            QEMU_CAPS_DEVICE_VFIO_PCI);
+    DO_TEST("net-virtio-teaming-network",
+            QEMU_CAPS_VIRTIO_NET_FAILOVER,
+            QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("net-hostdev", NONE);
     DO_TEST("net-hostdev-bootorder", NONE);
     DO_TEST("net-hostdev-vfio", QEMU_CAPS_DEVICE_VFIO_PCI);
