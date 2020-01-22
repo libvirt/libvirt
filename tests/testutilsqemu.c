@@ -41,14 +41,22 @@ static const virArch arch_alias[VIR_ARCH_LAST] = {
 static const char *const i386_machines[] = {
     "pc", "isapc", NULL
 };
+/**
+ * Oldest supported qemu-1.5 supports machine types back to pc-0.10.
+ */
 static const char *const x86_64_machines[] = {
-    "pc", "pc-0.11", "pc-0.10", "isapc", NULL
+    "pc", "isapc", "q35",
+    "pc-0.10", "pc-0.11", "pc-0.12", "pc-0.13", "pc-0.15", "pc-1.0", "pc-1.2",
+    "pc-i440fx-1.4", "pc-i440fx-2.1", "pc-i440fx-2.3", "pc-i440fx-2.5",
+    "pc-i440fx-2.6", "pc-i440fx-2.9", "pc-i440fx-2.12",
+    "pc-q35-2.3", "pc-q35-2.4", "pc-q35-2.5", "pc-q35-2.7", "pc-q35-2.10",
+    NULL
 };
 static const char *const aarch64_machines[] = {
-    "virt", NULL
+    "virt", "virt-2.6", "versatilepb", NULL
 };
 static const char *const arm_machines[] = {
-    "vexpress-a9", "vexpress-a15", "versatilepb", NULL
+    "vexpress-a9", "vexpress-a15", "versatilepb", "virt", NULL
 };
 static const char *const ppc64_machines[] = {
     "pseries", NULL
@@ -63,7 +71,7 @@ static const char *const riscv64_machines[] = {
     "spike_v1.10", "spike_v1.9.1", "sifive_e", "virt", "sifive_u", NULL
 };
 static const char *const s390x_machines[] = {
-    "s390-virtio", "s390-ccw-virtio", NULL
+    "s390-virtio", "s390-ccw-virtio", "s390-ccw", NULL
 };
 
 static const char *const *qemu_machines[VIR_ARCH_LAST] = {
