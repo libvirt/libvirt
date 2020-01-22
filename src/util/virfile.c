@@ -95,6 +95,10 @@
 
 VIR_LOG_INIT("util.file");
 
+#ifndef O_DIRECT
+# define O_DIRECT 0
+#endif
+
 int virFileClose(int *fdptr, virFileCloseFlags flags)
 {
     int saved_errno = 0;

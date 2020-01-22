@@ -39,6 +39,10 @@
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
+#ifndef O_DIRECT
+# define O_DIRECT 0
+#endif
+
 static int
 runIO(const char *path, int fd, int oflags)
 {
