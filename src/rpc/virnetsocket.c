@@ -1397,15 +1397,27 @@ int virNetSocketDupFD(virNetSocketPtr sock, bool cloexec)
 {
     int fd;
 
+#ifdef F_DUPFD_CLOEXEC
     if (cloexec)
         fd = fcntl(sock->fd, F_DUPFD_CLOEXEC, 0);
     else
+#endif /* F_DUPFD_CLOEXEC */
         fd = dup(sock->fd);
     if (fd < 0) {
         virReportSystemError(errno, "%s",
                              _("Unable to copy socket file handle"));
         return -1;
     }
+#ifndef F_DUPFD_CLOEXEC
+    if (cloexec &&
+        virSetCloseExec(fd < 0)) {
+        int saveerr = errno;
+        closesocket(fd);
+        errno = saveerr;
+        return -1;
+    }
+#endif /* F_DUPFD_CLOEXEC */
+
     return fd;
 }
 
