@@ -93,9 +93,7 @@ struct _virNetSocket {
     char *remoteAddrStrSASL;
     char *remoteAddrStrURI;
 
-#if WITH_GNUTLS
     virNetTLSSessionPtr tlsSession;
-#endif
 #if WITH_SASL
     virNetSASLSessionPtr saslSession;
 
@@ -1288,13 +1286,11 @@ virJSONValuePtr virNetSocketPreExecRestart(virNetSocketPtr sock)
         goto error;
     }
 #endif
-#if WITH_GNUTLS
     if (sock->tlsSession) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("Unable to save socket state when TLS session is active"));
         goto error;
     }
-#endif
 
     if (!(object = virJSONValueNewObject()))
         goto error;
@@ -1358,12 +1354,10 @@ void virNetSocketDispose(void *obj)
         unlink(sock->localAddr.data.un.sun_path);
 #endif
 
-#if WITH_GNUTLS
     /* Make sure it can't send any more I/O during shutdown */
     if (sock->tlsSession)
         virNetTLSSessionSetIOCallbacks(sock->tlsSession, NULL, NULL, NULL);
     virObjectUnref(sock->tlsSession);
-#endif
 #if WITH_SASL
     virObjectUnref(sock->saslSession);
 #endif
@@ -1660,7 +1654,6 @@ const char *virNetSocketRemoteAddrStringURI(virNetSocketPtr sock)
     return sock->remoteAddrStrURI;
 }
 
-#if WITH_GNUTLS
 static ssize_t virNetSocketTLSSessionWrite(const char *buf,
                                            size_t len,
                                            void *opaque)
@@ -1691,7 +1684,6 @@ void virNetSocketSetTLSSession(virNetSocketPtr sock,
                                    sock);
     virObjectUnlock(sock);
 }
-#endif
 
 #if WITH_SASL
 void virNetSocketSetSASLSession(virNetSocketPtr sock,
@@ -1789,17 +1781,13 @@ static ssize_t virNetSocketReadWire(virNetSocketPtr sock, char *buf, size_t len)
 #endif
 
  reread:
-#if WITH_GNUTLS
     if (sock->tlsSession &&
         virNetTLSSessionGetHandshakeStatus(sock->tlsSession) ==
         VIR_NET_TLS_HANDSHAKE_COMPLETE) {
         ret = virNetTLSSessionRead(sock->tlsSession, buf, len);
     } else {
-#endif
         ret = read(sock->fd, buf, len);
-#if WITH_GNUTLS
     }
-#endif
 
     if ((ret < 0) && (errno == EINTR))
         goto reread;
@@ -1862,17 +1850,13 @@ static ssize_t virNetSocketWriteWire(virNetSocketPtr sock, const char *buf, size
 #endif
 
  rewrite:
-#if WITH_GNUTLS
     if (sock->tlsSession &&
         virNetTLSSessionGetHandshakeStatus(sock->tlsSession) ==
         VIR_NET_TLS_HANDSHAKE_COMPLETE) {
         ret = virNetTLSSessionWrite(sock->tlsSession, buf, len);
     } else {
-#endif
         ret = write(sock->fd, buf, len);
-#if WITH_GNUTLS
     }
-#endif
 
     if (ret < 0) {
         if (errno == EINTR)

@@ -20,9 +20,7 @@
 
 #pragma once
 
-#ifdef WITH_GNUTLS
-# include "virnettlscontext.h"
-#endif
+#include "virnettlscontext.h"
 #include "virnetmessage.h"
 #ifdef WITH_SASL
 # include "virnetsaslcontext.h"
@@ -120,10 +118,8 @@ void virNetClientSetSASLSession(virNetClientPtr client,
                                 virNetSASLSessionPtr sasl);
 #endif
 
-#ifdef WITH_GNUTLS
 int virNetClientSetTLSSession(virNetClientPtr client,
                               virNetTLSContextPtr tls);
-#endif
 
 bool virNetClientIsEncrypted(virNetClientPtr client);
 bool virNetClientIsOpen(virNetClientPtr client);
@@ -131,9 +127,7 @@ bool virNetClientIsOpen(virNetClientPtr client);
 const char *virNetClientLocalAddrStringSASL(virNetClientPtr client);
 const char *virNetClientRemoteAddrStringSASL(virNetClientPtr client);
 
-#ifdef WITH_GNUTLS
 int virNetClientGetTLSKeySize(virNetClientPtr client);
-#endif
 
 void virNetClientClose(virNetClientPtr client);
 

@@ -23,9 +23,7 @@
 
 #include "virsocketaddr.h"
 #include "vircommand.h"
-#ifdef WITH_GNUTLS
-# include "virnettlscontext.h"
-#endif
+#include "virnettlscontext.h"
 #include "virobject.h"
 #ifdef WITH_SASL
 # include "virnetsaslcontext.h"
@@ -152,10 +150,8 @@ ssize_t virNetSocketWrite(virNetSocketPtr sock, const char *buf, size_t len);
 int virNetSocketSendFD(virNetSocketPtr sock, int fd);
 int virNetSocketRecvFD(virNetSocketPtr sock, int *fd);
 
-#ifdef WITH_GNUTLS
 void virNetSocketSetTLSSession(virNetSocketPtr sock,
                                virNetTLSSessionPtr sess);
-#endif
 
 #ifdef WITH_SASL
 void virNetSocketSetSASLSession(virNetSocketPtr sock,

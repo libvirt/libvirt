@@ -45,9 +45,7 @@
 #include "viralloc.h"
 #include "configmake.h"
 #include "virconf.h"
-#if WITH_GNUTLS
-# include "rpc/virnettlscontext.h"
-#endif
+#include "rpc/virnettlscontext.h"
 #include "vircommand.h"
 #include "virfile.h"
 #include "virrandom.h"
@@ -233,9 +231,7 @@ virGlobalInit(void)
 
     virLogSetFromEnv();
 
-#ifdef WITH_GNUTLS
     virNetTLSInit();
-#endif
 
 #if WITH_CURL
     curl_global_init(CURL_GLOBAL_DEFAULT);

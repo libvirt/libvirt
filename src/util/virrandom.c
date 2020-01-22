@@ -24,10 +24,8 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#ifdef WITH_GNUTLS
-# include <gnutls/gnutls.h>
-# include <gnutls/crypto.h>
-#endif
+#include <gnutls/gnutls.h>
+#include <gnutls/crypto.h>
 
 #include "virrandom.h"
 #include "virthread.h"
@@ -40,8 +38,6 @@
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 VIR_LOG_INIT("util.random");
-
-#define RANDOM_SOURCE "/dev/urandom"
 
 /**
  * virRandomBits:
@@ -107,7 +103,7 @@ uint32_t virRandomInt(uint32_t max)
  * @buf: Pointer to location to store bytes
  * @buflen: Number of bytes to store
  *
- * Generate a stream of random bytes from RANDOM_SOURCE
+ * Generate a stream of random bytes using gnutls_rnd()
  * into @buf of size @buflen
  *
  * Returns 0 on success or -1 (with error reported)
@@ -116,45 +112,14 @@ int
 virRandomBytes(unsigned char *buf,
                size_t buflen)
 {
-#if WITH_GNUTLS
     int rv;
 
-    /* Generate the byte stream using gnutls_rnd() if possible */
     if ((rv = gnutls_rnd(GNUTLS_RND_RANDOM, buf, buflen)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to generate byte stream: %s"),
                        gnutls_strerror(rv));
         return -1;
     }
-
-#else /* !WITH_GNUTLS */
-
-    int fd;
-
-    if ((fd = open(RANDOM_SOURCE, O_RDONLY)) < 0) {
-        virReportSystemError(errno,
-                             _("unable to open %s"),
-                             RANDOM_SOURCE);
-        return -1;
-    }
-
-    while (buflen > 0) {
-        ssize_t n;
-
-        if ((n = saferead(fd, buf, buflen)) <= 0) {
-            virReportSystemError(errno,
-                                 _("unable to read from %s"),
-                                 RANDOM_SOURCE);
-            VIR_FORCE_CLOSE(fd);
-            return n < 0 ? -errno : -ENODATA;
-        }
-
-        buf += n;
-        buflen -= n;
-    }
-
-    VIR_FORCE_CLOSE(fd);
-#endif /* !WITH_GNUTLS */
 
     return 0;
 }

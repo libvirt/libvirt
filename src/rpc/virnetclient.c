@@ -70,9 +70,7 @@ struct _virNetClient {
     virNetSocketPtr sock;
     bool asyncIO;
 
-#if WITH_GNUTLS
     virNetTLSSessionPtr tls;
-#endif
     char *hostname;
 
     virNetClientProgramPtr *programs;
@@ -708,9 +706,7 @@ void virNetClientDispose(void *obj)
     if (client->sock)
         virNetSocketRemoveIOCallback(client->sock);
     virObjectUnref(client->sock);
-#if WITH_GNUTLS
     virObjectUnref(client->tls);
-#endif
 #if WITH_SASL
     virObjectUnref(client->sasl);
 #endif
@@ -750,10 +746,8 @@ virNetClientCloseLocked(virNetClientPtr client)
 
     virObjectUnref(client->sock);
     client->sock = NULL;
-#if WITH_GNUTLS
     virObjectUnref(client->tls);
     client->tls = NULL;
-#endif
 #if WITH_SASL
     virObjectUnref(client->sasl);
     client->sasl = NULL;
@@ -837,7 +831,6 @@ void virNetClientSetSASLSession(virNetClientPtr client,
 #endif
 
 
-#if WITH_GNUTLS
 int virNetClientSetTLSSession(virNetClientPtr client,
                               virNetTLSContextPtr tls)
 {
@@ -848,12 +841,12 @@ int virNetClientSetTLSSession(virNetClientPtr client,
     sigset_t oldmask, blockedsigs;
 
     sigemptyset(&blockedsigs);
-# ifdef SIGWINCH
+#ifdef SIGWINCH
     sigaddset(&blockedsigs, SIGWINCH);
-# endif
-# ifdef SIGCHLD
+#endif
+#ifdef SIGCHLD
     sigaddset(&blockedsigs, SIGCHLD);
-# endif
+#endif
     sigaddset(&blockedsigs, SIGPIPE);
 
     virObjectLock(client);
@@ -940,16 +933,13 @@ int virNetClientSetTLSSession(virNetClientPtr client,
     virObjectUnlock(client);
     return -1;
 }
-#endif
 
 bool virNetClientIsEncrypted(virNetClientPtr client)
 {
     bool ret = false;
     virObjectLock(client);
-#if WITH_GNUTLS
     if (client->tls)
         ret = true;
-#endif
 #if WITH_SASL
     if (client->sasl)
         ret = true;
@@ -1041,7 +1031,6 @@ const char *virNetClientRemoteAddrStringSASL(virNetClientPtr client)
     return virNetSocketRemoteAddrStringSASL(client->sock);
 }
 
-#if WITH_GNUTLS
 int virNetClientGetTLSKeySize(virNetClientPtr client)
 {
     int ret = 0;
@@ -1051,7 +1040,6 @@ int virNetClientGetTLSKeySize(virNetClientPtr client)
     virObjectUnlock(client);
     return ret;
 }
-#endif
 
 static int
 virNetClientCallDispatchReply(virNetClientPtr client)
