@@ -6020,6 +6020,21 @@ virQEMUCapsSetMicrocodeVersion(virQEMUCapsPtr qemuCaps,
 }
 
 
+static void
+virQEMUCapsStripMachineAliasesForVirtType(virQEMUCapsPtr qemuCaps,
+                                          virDomainVirtType virtType)
+{
+    virQEMUCapsAccelPtr accel = virQEMUCapsGetAccel(qemuCaps, virtType);
+    size_t i;
+
+    for (i = 0; i < accel->nmachineTypes; i++) {
+        virQEMUCapsMachineTypePtr mach = &accel->machineTypes[i];
+
+        VIR_FREE(mach->alias);
+    }
+}
+
+
 /**
  * virQEMUCapsStripMachineAliases:
  * @qemuCaps: capabilities object to process
@@ -6030,11 +6045,6 @@ virQEMUCapsSetMicrocodeVersion(virQEMUCapsPtr qemuCaps,
 void
 virQEMUCapsStripMachineAliases(virQEMUCapsPtr qemuCaps)
 {
-    size_t i;
-
-    for (i = 0; i < qemuCaps->kvm.nmachineTypes; i++)
-        VIR_FREE(qemuCaps->kvm.machineTypes[i].alias);
-
-    for (i = 0; i < qemuCaps->tcg.nmachineTypes; i++)
-        VIR_FREE(qemuCaps->tcg.machineTypes[i].alias);
+    virQEMUCapsStripMachineAliasesForVirtType(qemuCaps, VIR_DOMAIN_VIRT_KVM);
+    virQEMUCapsStripMachineAliasesForVirtType(qemuCaps, VIR_DOMAIN_VIRT_QEMU);
 }
