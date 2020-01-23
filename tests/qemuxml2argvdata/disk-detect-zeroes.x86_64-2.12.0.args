@@ -12,7 +12,7 @@ QEMU_AUDIO_DRV=none \
 -S \
 -object secret,id=masterKey0,format=raw,\
 file=/tmp/lib/domain--1-test/master-key.aes \
--machine pc-0.13,accel=tcg,usb=off,dump-guest-core=off \
+-machine pc-i440fx-2.12,accel=tcg,usb=off,dump-guest-core=off \
 -m 1024 \
 -realtime mlock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
