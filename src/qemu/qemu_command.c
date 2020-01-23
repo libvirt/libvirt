@@ -3818,6 +3818,8 @@ qemuBuildNicDevStr(virDomainDefPtr def,
         }
         virBufferAsprintf(&buf, ",host_mtu=%u", net->mtu);
     }
+    if (usingVirtio && net->teaming.type == VIR_DOMAIN_NET_TEAMING_TYPE_PERSISTENT)
+       virBufferAddLit(&buf, ",failover=on");
 
     virBufferAsprintf(&buf, ",netdev=host%s", net->info.alias);
     virBufferAsprintf(&buf, ",id=%s", net->info.alias);
@@ -4691,6 +4693,13 @@ qemuBuildPCIHostdevDevStr(const virDomainDef *def,
         return NULL;
     if (qemuBuildRomStr(&buf, dev->info) < 0)
         return NULL;
+
+    if (dev->parentnet &&
+        dev->parentnet->teaming.type == VIR_DOMAIN_NET_TEAMING_TYPE_TRANSIENT &&
+        dev->parentnet->teaming.persistent) {
+        virBufferAsprintf(&buf,  ",failover_pair_id=%s",
+                          dev->parentnet->teaming.persistent);
+    }
 
     return virBufferContentAndReset(&buf);
 }

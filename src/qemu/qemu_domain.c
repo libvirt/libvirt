@@ -6399,12 +6399,20 @@ qemuDomainValidateActualNetDef(const virDomainNetDef *net,
         return -1;
     }
 
+    if (net->teaming.type == VIR_DOMAIN_NET_TEAMING_TYPE_TRANSIENT &&
+        actualType != VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("interface %s - teaming transient device must be type='hostdev', not '%s'"),
+                       macstr, virDomainNetTypeToString(actualType));
+        return -1;
+    }
     return 0;
 }
 
 
 static int
-qemuDomainDeviceDefValidateNetwork(const virDomainNetDef *net)
+qemuDomainDeviceDefValidateNetwork(const virDomainNetDef *net,
+                                   virQEMUCapsPtr qemuCaps)
 {
     bool hasIPv4 = false;
     bool hasIPv6 = false;
@@ -6489,7 +6497,29 @@ qemuDomainDeviceDefValidateNetwork(const virDomainNetDef *net)
         return -1;
     }
 
-    if (net->coalesce && !qemuDomainNetSupportsCoalesce(net->type)) {
+    if (net->teaming.type != VIR_DOMAIN_NET_TEAMING_TYPE_NONE &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_NET_FAILOVER)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("virtio-net failover (teaming) is not supported with this QEMU binary"));
+        return -1;
+    }
+    if (net->teaming.type == VIR_DOMAIN_NET_TEAMING_TYPE_PERSISTENT
+        && !virDomainNetIsVirtioModel(net)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("virtio-net teaming persistent interface must be <model type='virtio'/>, not '%s'"),
+                       virDomainNetGetModelString(net));
+        return -1;
+    }
+    if (net->teaming.type == VIR_DOMAIN_NET_TEAMING_TYPE_TRANSIENT &&
+        net->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
+        net->type != VIR_DOMAIN_NET_TYPE_NETWORK) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("virtio-net teaming transient interface must be type='hostdev', not '%s'"),
+                       virDomainNetTypeToString(net->type));
+        return -1;
+    }
+
+   if (net->coalesce && !qemuDomainNetSupportsCoalesce(net->type)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("coalesce settings on interface type %s are not supported"),
                        virDomainNetTypeToString(net->type));
@@ -8393,7 +8423,7 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
 
     switch ((virDomainDeviceType)dev->type) {
     case VIR_DOMAIN_DEVICE_NET:
-        ret = qemuDomainDeviceDefValidateNetwork(dev->data.net);
+        ret = qemuDomainDeviceDefValidateNetwork(dev->data.net, qemuCaps);
         break;
 
     case VIR_DOMAIN_DEVICE_CHR:
