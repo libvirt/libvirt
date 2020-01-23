@@ -13,7 +13,7 @@ QEMU_AUDIO_DRV=none \
 -object secret,id=masterKey0,format=raw,\
 file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -machine pc,accel=tcg,usb=off,dump-guest-core=off \
--cpu 'qemu32,hv-relaxed,hv-vapic,hv-spinlocks=0x2fff,hv-vpindex,hv-runtime,\
+-cpu 'qemu64,hv-relaxed,hv-vapic,hv-spinlocks=0x2fff,hv-vpindex,hv-runtime,\
 hv-synic,hv-stimer,hv-reset,hv-vendor-id=KVM Hv,hv-frequencies,\
 hv-reenlightenment,hv-tlbflush,hv-ipi,hv-evmcs' \
 -m 214 \

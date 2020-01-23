@@ -13,6 +13,7 @@ QEMU_AUDIO_DRV=none \
 -object secret,id=masterKey0,format=raw,\
 file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -machine pc-q35-2.6,accel=tcg,usb=off,dump-guest-core=off,iommu=on \
+-cpu qemu64 \
 -m 214 \
 -realtime mlock=off \
 -smp 1,sockets=1,cores=1,threads=1 \

@@ -7,6 +7,9 @@
   <os>
     <type arch='s390x' machine='s390-ccw-virtio'>hvm</type>
   </os>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>qemu</model>
+  </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>

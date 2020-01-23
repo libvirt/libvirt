@@ -6029,8 +6029,12 @@ virQEMUCapsStripMachineAliasesForVirtType(virQEMUCapsPtr qemuCaps,
 
     for (i = 0; i < accel->nmachineTypes; i++) {
         virQEMUCapsMachineTypePtr mach = &accel->machineTypes[i];
+        g_autofree char *name = g_steal_pointer(&mach->alias);
 
-        VIR_FREE(mach->alias);
+        if (name) {
+            virQEMUCapsAddMachine(qemuCaps, virtType, name, NULL, mach->defaultCPU,
+                                  mach->maxCpus, mach->hotplugCpus, mach->qemuDefault);
+        }
     }
 }
 
@@ -6038,6 +6042,10 @@ virQEMUCapsStripMachineAliasesForVirtType(virQEMUCapsPtr qemuCaps,
 /**
  * virQEMUCapsStripMachineAliases:
  * @qemuCaps: capabilities object to process
+ *
+ * Replace all aliases by the copy of the machine type they point to without
+ * actually having to modify the name. This allows us to add tests with the
+ * aliased machine without having to change the output files all the time.
  *
  * Remove all aliases so that the tests depending on the latest capabilities
  * file can be stable when new files are added.
