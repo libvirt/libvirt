@@ -2641,6 +2641,22 @@ virQEMUCapsAddMachine(virQEMUCapsPtr qemuCaps,
     mach->qemuDefault = isDefault;
 }
 
+/**
+ * virQEMUCapsHasMachines:
+ * @qemuCaps: qemu capabilities object
+ *
+ * Returns true if @qemuCaps has at least one machine type defined. This is
+ * called by the test suite to figure out whether to populate fake machine types
+ * into the list.
+ */
+bool
+virQEMUCapsHasMachines(virQEMUCapsPtr qemuCaps)
+{
+
+    return !!qemuCaps->kvm.nmachineTypes || !!qemuCaps->tcg.nmachineTypes;
+}
+
+
 static int
 virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
                                 virDomainVirtType virtType,

@@ -108,6 +108,9 @@ virQEMUCapsSetMicrocodeVersion(virQEMUCapsPtr qemuCaps,
 void
 virQEMUCapsStripMachineAliases(virQEMUCapsPtr qemuCaps);
 
+bool
+virQEMUCapsHasMachines(virQEMUCapsPtr qemuCaps);
+
 void
 virQEMUCapsAddMachine(virQEMUCapsPtr qemuCaps,
                       virDomainVirtType virtType,
