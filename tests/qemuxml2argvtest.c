@@ -2177,10 +2177,8 @@ mymain(void)
     DO_TEST("ppce500-serial",
             QEMU_CAPS_KVM);
 
-    DO_TEST("tpm-passthrough",
-            QEMU_CAPS_DEVICE_TPM_PASSTHROUGH, QEMU_CAPS_DEVICE_TPM_TIS);
-    DO_TEST("tpm-passthrough-crb",
-            QEMU_CAPS_DEVICE_TPM_PASSTHROUGH, QEMU_CAPS_DEVICE_TPM_CRB);
+    DO_TEST_CAPS_LATEST("tpm-passthrough");
+    DO_TEST_CAPS_LATEST("tpm-passthrough-crb");
     DO_TEST_PARSE_ERROR("tpm-no-backend-invalid",
                         QEMU_CAPS_DEVICE_TPM_PASSTHROUGH, QEMU_CAPS_DEVICE_TPM_TIS);
     DO_TEST_CAPS_LATEST("tpm-emulator");

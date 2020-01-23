@@ -8,25 +8,30 @@ XDG_CACHE_HOME=/tmp/lib/domain--1-TPM-VM/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-TPM-VM/.config \
 QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
--name TPM-VM \
+-name guest=TPM-VM,debug-threads=on \
 -S \
--machine pc-0.12,accel=tcg,usb=off,dump-guest-core=off \
+-object secret,id=masterKey0,format=raw,\
+file=/tmp/lib/domain--1-TPM-VM/master-key.aes \
+-machine pc-i440fx-2.12,accel=tcg,usb=off,dump-guest-core=off \
+-cpu qemu64 \
 -m 2048 \
--realtime mlock=off \
+-overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid 11d7cd22-da89-3094-6212-079a48a309a1 \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-TPM-VM/monitor.sock,\
-server,nowait \
+-chardev socket,id=charmonitor,fd=1729,server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--boot menu=on \
--usb \
+-boot menu=on,strict=on \
+-device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -tpmdev passthrough,id=tpm-tpm0,path=/dev/fdset/0,cancel-path=/dev/fdset/1 \
 -add-fd set=0,fd=1730 \
 -add-fd set=1,fd=1731 \
 -device tpm-tis,tpmdev=tpm-tpm0,id=tpm0 \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2 \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,\
+resourcecontrol=deny \
+-msg timestamp=on
