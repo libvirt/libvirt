@@ -6,7 +6,7 @@
   <vcpu placement='static'>1</vcpu>
   <iothreads>2</iothreads>
   <os>
-    <type arch='s390x' machine='s390-ccw'>hvm</type>
+    <type arch='s390x' machine='s390-ccw-virtio'>hvm</type>
     <boot dev='hd'/>
   </os>
   <clock offset='utc'/>
