@@ -178,8 +178,10 @@ int virNetSocketCheckProtocols(bool *hasIPv4,
     hints.ai_socktype = SOCK_STREAM;
 
     if ((gaierr = getaddrinfo("::1", NULL, &hints, &ai)) != 0) {
-        if (gaierr == EAI_ADDRFAMILY ||
-            gaierr == EAI_FAMILY ||
+        if (gaierr == EAI_FAMILY ||
+# ifdef EAI_ADDRFAMILY
+            gaierr == EAI_ADDRFAMILY ||
+# endif
             gaierr == EAI_NONAME) {
             *hasIPv6 = false;
         } else {
