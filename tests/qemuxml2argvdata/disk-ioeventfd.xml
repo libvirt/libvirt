@@ -4,7 +4,7 @@
   <memory unit='KiB'>1048576</memory>
   <vcpu placement='static'>1</vcpu>
   <os>
-    <type arch='x86_64' machine='pc-0.13'>hvm</type>
+    <type arch='x86_64' machine='pc'>hvm</type>
     <boot dev='cdrom'/>
     <boot dev='hd'/>
     <bootmenu enable='yes'/>
