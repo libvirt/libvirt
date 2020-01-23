@@ -46,7 +46,7 @@ static const char *const i386_machines[] = {
  */
 static const char *const x86_64_machines[] = {
     "pc", "isapc", "q35",
-    "pc-0.10", "pc-0.11", "pc-0.12", "pc-0.13", "pc-0.15", "pc-1.0", "pc-1.2",
+    "pc-1.0", "pc-1.2",
     "pc-i440fx-1.4", "pc-i440fx-2.1", "pc-i440fx-2.3", "pc-i440fx-2.5",
     "pc-i440fx-2.6", "pc-i440fx-2.9", "pc-i440fx-2.12",
     "pc-q35-2.3", "pc-q35-2.4", "pc-q35-2.5", "pc-q35-2.7", "pc-q35-2.10",
