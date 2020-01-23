@@ -332,28 +332,32 @@ int qemuTestCapsCacheInsert(virFileCachePtr cache,
         } else {
             tmpCaps = virQEMUCapsNew();
         }
-        virQEMUCapsSetArch(tmpCaps, i);
-        for (j = 0; qemu_machines[i][j] != NULL; j++) {
-            virQEMUCapsAddMachine(tmpCaps,
-                                  VIR_DOMAIN_VIRT_QEMU,
-                                  qemu_machines[i][j],
-                                  NULL,
-                                  NULL,
-                                  0,
-                                  false,
-                                  false);
+
+        if (!virQEMUCapsHasMachines(tmpCaps)) {
+            virQEMUCapsSetArch(tmpCaps, i);
+            for (j = 0; qemu_machines[i][j] != NULL; j++) {
+                virQEMUCapsAddMachine(tmpCaps,
+                                      VIR_DOMAIN_VIRT_QEMU,
+                                      qemu_machines[i][j],
+                                      NULL,
+                                      NULL,
+                                      0,
+                                      false,
+                                      false);
+            }
+            for (j = 0; kvm_machines[i][j] != NULL; j++) {
+                virQEMUCapsAddMachine(tmpCaps,
+                                      VIR_DOMAIN_VIRT_KVM,
+                                      kvm_machines[i][j],
+                                      NULL,
+                                      NULL,
+                                      0,
+                                      false,
+                                      false);
+                virQEMUCapsSet(tmpCaps, QEMU_CAPS_KVM);
+            }
         }
-        for (j = 0; kvm_machines[i][j] != NULL; j++) {
-            virQEMUCapsAddMachine(tmpCaps,
-                                  VIR_DOMAIN_VIRT_KVM,
-                                  kvm_machines[i][j],
-                                  NULL,
-                                  NULL,
-                                  0,
-                                  false,
-                                  false);
-            virQEMUCapsSet(tmpCaps, QEMU_CAPS_KVM);
-        }
+
         if (virFileCacheInsertData(cache, qemu_emulators[i], tmpCaps) < 0) {
             virObjectUnref(tmpCaps);
             return -1;
