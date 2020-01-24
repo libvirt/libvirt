@@ -4429,7 +4429,10 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
 
     if (video->backend != VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER &&
         video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO) {
-        if (video->accel && video->accel->accel3d == VIR_TRISTATE_SWITCH_ON) {
+        if (video->accel &&
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_VIRGL) &&
+            (video->accel->accel3d == VIR_TRISTATE_SWITCH_ON ||
+             video->accel->accel3d == VIR_TRISTATE_SWITCH_OFF)) {
             virBufferAsprintf(&buf, ",virgl=%s",
                               virTristateSwitchTypeToString(video->accel->accel3d));
         }
