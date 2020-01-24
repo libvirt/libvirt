@@ -1338,31 +1338,6 @@ virCapsPtr virQEMUDriverGetCapabilities(virQEMUDriverPtr driver,
 }
 
 
-struct virQEMUDriverSearchDomcapsData {
-    const char *path;
-    const char *machine;
-    virArch arch;
-    virDomainVirtType virttype;
-};
-
-
-static int
-virQEMUDriverSearchDomcaps(const void *payload,
-                           const void *name G_GNUC_UNUSED,
-                           const void *opaque)
-{
-    virDomainCapsPtr domCaps = (virDomainCapsPtr) payload;
-    struct virQEMUDriverSearchDomcapsData *data = (struct virQEMUDriverSearchDomcapsData *) opaque;
-
-    if (STREQ_NULLABLE(data->path, domCaps->path) &&
-        STREQ_NULLABLE(data->machine, domCaps->machine) &&
-        data->arch == domCaps->arch &&
-        data->virttype == domCaps->virttype)
-        return 1;
-
-    return 0;
-}
-
 /**
  * virQEMUDriverGetDomainCapabilities:
  *
@@ -1381,40 +1356,16 @@ virQEMUDriverGetDomainCapabilities(virQEMUDriverPtr driver,
                                    virArch arch,
                                    virDomainVirtType virttype)
 {
-    g_autoptr(virDomainCaps) domCaps = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    virHashTablePtr domCapsCache = virQEMUCapsGetDomainCapsCache(qemuCaps);
-    struct virQEMUDriverSearchDomcapsData data = {
-        .path = virQEMUCapsGetBinary(qemuCaps),
-        .machine = machine,
-        .arch = arch,
-        .virttype = virttype,
-    };
 
-    domCaps = virHashSearch(domCapsCache,
-                            virQEMUDriverSearchDomcaps, &data, NULL);
-    if (!domCaps) {
-        g_autofree char *key = NULL;
-
-        /* hash miss, build new domcaps */
-        if (!(domCaps = virDomainCapsNew(data.path, data.machine,
-                                         data.arch, data.virttype)))
-            return NULL;
-
-        if (virQEMUCapsFillDomainCaps(qemuCaps, driver->hostarch, domCaps,
-                                      driver->privileged,
-                                      cfg->firmwares, cfg->nfirmwares) < 0)
-            return NULL;
-
-        key = g_strdup_printf("%d:%d:%s:%s", data.arch, data.virttype,
-                              NULLSTR(data.machine), NULLSTR(data.path));
-
-        if (virHashAddEntry(domCapsCache, key, domCaps) < 0)
-            return NULL;
-    }
-
-    virObjectRef(domCaps);
-    return g_steal_pointer(&domCaps);
+    return virQEMUCapsGetDomainCapsCache(qemuCaps,
+                                         machine,
+                                         arch,
+                                         virttype,
+                                         driver->hostarch,
+                                         driver->privileged,
+                                         cfg->firmwares,
+                                         cfg->nfirmwares);
 }
 
 

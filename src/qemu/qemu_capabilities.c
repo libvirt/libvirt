@@ -598,6 +598,26 @@ struct _virQEMUCapsAccel {
     qemuMonitorCPUDefsPtr cpuModels;
 };
 
+
+typedef struct _virQEMUDomainCapsCache virQEMUDomainCapsCache;
+typedef virQEMUDomainCapsCache *virQEMUDomainCapsCachePtr;
+struct _virQEMUDomainCapsCache {
+    virObjectLockable parent;
+
+    virHashTablePtr cache;
+};
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virQEMUDomainCapsCache, virObjectUnref);
+
+static virClassPtr virQEMUDomainCapsCacheClass;
+static void virQEMUDomainCapsCacheDispose(void *obj)
+{
+    virQEMUDomainCapsCachePtr cache = obj;
+
+    virHashFree(cache->cache);
+}
+
+
 /*
  * Update the XML parser/formatter when adding more
  * information to this struct so that it gets cached
@@ -629,7 +649,7 @@ struct _virQEMUCaps {
 
     virArch arch;
 
-    virHashTablePtr domCapsCache;
+    virQEMUDomainCapsCachePtr domCapsCache;
 
     size_t ngicCapabilities;
     virGICCapability *gicCapabilities;
@@ -653,6 +673,9 @@ static void virQEMUCapsDispose(void *obj);
 static int virQEMUCapsOnceInit(void)
 {
     if (!VIR_CLASS_NEW(virQEMUCaps, virClassForObject()))
+        return -1;
+
+    if (!(VIR_CLASS_NEW(virQEMUDomainCapsCache, virClassForObjectLockable())))
         return -1;
 
     return 0;
@@ -1625,6 +1648,22 @@ int virQEMUCapsGetDefaultVersion(virCapsPtr caps,
 }
 
 
+static virQEMUDomainCapsCachePtr
+virQEMUDomainCapsCacheNew(void)
+{
+    g_autoptr(virQEMUDomainCapsCache) cache = NULL;
+
+    if (virQEMUCapsInitialize() < 0)
+        return NULL;
+
+    if (!(cache = virObjectLockableNew(virQEMUDomainCapsCacheClass)))
+        return NULL;
+
+    if (!(cache->cache = virHashCreate(5, virObjectFreeHashData)))
+        return NULL;
+
+    return g_steal_pointer(&cache);
+}
 
 
 virQEMUCapsPtr
@@ -1642,7 +1681,7 @@ virQEMUCapsNew(void)
     if (!(qemuCaps->flags = virBitmapNew(QEMU_CAPS_LAST)))
         goto error;
 
-    if (!(qemuCaps->domCapsCache = virHashCreate(5, virObjectFreeHashData)))
+    if (!(qemuCaps->domCapsCache = virQEMUDomainCapsCacheNew()))
         goto error;
 
     return qemuCaps;
@@ -1832,7 +1871,7 @@ void virQEMUCapsDispose(void *obj)
 {
     virQEMUCapsPtr qemuCaps = obj;
 
-    virHashFree(qemuCaps->domCapsCache);
+    virObjectUnref(qemuCaps->domCapsCache);
     virBitmapFree(qemuCaps->flags);
 
     VIR_FREE(qemuCaps->package);
@@ -1992,9 +2031,82 @@ const char *virQEMUCapsGetPackage(virQEMUCapsPtr qemuCaps)
 }
 
 
-virHashTablePtr virQEMUCapsGetDomainCapsCache(virQEMUCapsPtr qemuCaps)
+struct virQEMUCapsSearchDomcapsData {
+    const char *path;
+    const char *machine;
+    virArch arch;
+    virDomainVirtType virttype;
+};
+
+
+static int
+virQEMUCapsSearchDomcaps(const void *payload,
+                         const void *name G_GNUC_UNUSED,
+                         const void *opaque)
 {
-    return qemuCaps->domCapsCache;
+    virDomainCapsPtr domCaps = (virDomainCapsPtr) payload;
+    struct virQEMUCapsSearchDomcapsData *data = (struct virQEMUCapsSearchDomcapsData *) opaque;
+
+    if (STREQ_NULLABLE(data->path, domCaps->path) &&
+        STREQ_NULLABLE(data->machine, domCaps->machine) &&
+        data->arch == domCaps->arch &&
+        data->virttype == domCaps->virttype)
+        return 1;
+
+    return 0;
+}
+
+
+virDomainCapsPtr
+virQEMUCapsGetDomainCapsCache(virQEMUCapsPtr qemuCaps,
+                              const char *machine,
+                              virArch arch,
+                              virDomainVirtType virttype,
+                              virArch hostarch,
+                              bool privileged,
+                              virFirmwarePtr *firmwares,
+                              size_t nfirmwares)
+{
+    virQEMUDomainCapsCachePtr cache = qemuCaps->domCapsCache;
+    virDomainCapsPtr domCaps = NULL;
+    const char *path = virQEMUCapsGetBinary(qemuCaps);
+    struct virQEMUCapsSearchDomcapsData data = {
+        .path = path,
+        .machine = machine,
+        .arch = arch,
+        .virttype = virttype,
+    };
+
+    virObjectLock(cache);
+
+    domCaps = virHashSearch(cache->cache, virQEMUCapsSearchDomcaps, &data, NULL);
+
+    if (!domCaps) {
+        g_autoptr(virDomainCaps) tempDomCaps = NULL;
+        g_autofree char *key = NULL;
+
+        /* hash miss, build new domcaps */
+        if (!(tempDomCaps = virDomainCapsNew(path, machine,
+                                             arch, virttype)))
+            goto cleanup;
+
+        if (virQEMUCapsFillDomainCaps(qemuCaps, hostarch, tempDomCaps,
+                                      privileged, firmwares, nfirmwares) < 0)
+            goto cleanup;
+
+        key = g_strdup_printf("%d:%d:%s:%s", arch, virttype,
+                              NULLSTR(machine), path);
+
+        if (virHashAddEntry(cache->cache, key, tempDomCaps) < 0)
+            goto cleanup;
+
+        domCaps = g_steal_pointer(&tempDomCaps);
+    }
+
+    virObjectRef(domCaps);
+ cleanup:
+    virObjectUnlock(cache);
+    return domCaps;
 }
 
 
