@@ -283,7 +283,7 @@ qemuDomainChangeMediaLegacy(virQEMUDriverPtr driver,
             return -1;
 
     } else  {
-        /* otherwise report possible errors from the attempt to eject the media*/
+        /* otherwise report possible errors from the attempt to eject the media */
         if (rc < 0)
             return -1;
     }

@@ -960,7 +960,7 @@ virNetDevVPortProfileOpCommon(const char *ifname, int ifindex,
         return rc;
     }
 
-    if (setlink_only) /*for re-associations on existing links*/
+    if (setlink_only) /* for re-associations on existing links */
         return 0;
 
     if (!nltarget_kernel &&

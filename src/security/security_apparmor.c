@@ -256,7 +256,7 @@ use_apparmor(void)
     rc = profile_status(libvirt_daemon, 1);
     if (rc < 0) {
         rc = profile_status("libvirtd", 1);
-        /* Error or unconfined should all result in -1*/
+        /* Error or unconfined should all result in -1 */
         if (rc < 0)
             rc = -1;
     }

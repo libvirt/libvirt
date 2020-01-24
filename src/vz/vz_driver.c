@@ -4143,7 +4143,7 @@ static virStateDriver vzStateDriver = {
     .stateCleanup = vzStateCleanup,
 };
 
-/* Parallels domain type backward compatibility*/
+/* Parallels domain type backward compatibility */
 static virHypervisorDriver parallelsHypervisorDriver;
 static virConnectDriver parallelsConnectDriver = {
     .localOnly = true,

@@ -3137,7 +3137,7 @@ typedef enum {
     VIR_STORAGE_PARTED_DIFFERENT,   /* Valid label found but not match format */
     VIR_STORAGE_PARTED_UNKNOWN,     /* No or unrecognized label */
     VIR_STORAGE_PARTED_NOPTTYPE,    /* Did not find the Partition Table type */
-    VIR_STORAGE_PARTED_PTTYPE_UNK,  /* Partition Table type unknown*/
+    VIR_STORAGE_PARTED_PTTYPE_UNK,  /* Partition Table type unknown */
 } virStorageBackendPARTEDResult;
 
 /**

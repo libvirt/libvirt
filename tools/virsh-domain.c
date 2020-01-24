@@ -3671,7 +3671,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     const char *vol_string = NULL;  /* string containing volumes to delete */
     char **vol_list = NULL;         /* tokenized vol_string */
     int nvol_list = 0;
-    virshUndefineVolume *vols = NULL; /* info about the volumes to delete*/
+    virshUndefineVolume *vols = NULL; /* info about the volumes to delete */
     size_t nvols = 0;
     xmlDocPtr doc = NULL;
     xmlXPathContextPtr ctxt = NULL;
@@ -7132,7 +7132,7 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    /* Pin mode: pinning specified vcpu to specified physical cpus*/
+    /* Pin mode: pinning specified vcpu to specified physical cpus */
     if (!(cpumap = virshParseCPUList(ctl, &cpumaplen, cpulist, maxcpu)))
         goto cleanup;
 
@@ -7239,7 +7239,7 @@ cmdEmulatorPin(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    /* Pin mode: pinning emulator threads to specified physical cpus*/
+    /* Pin mode: pinning emulator threads to specified physical cpus */
     if (!(cpumap = virshParseCPUList(ctl, &cpumaplen, cpulist, maxcpu)))
         goto cleanup;
 
@@ -11862,7 +11862,7 @@ virshNodeIsSuperset(xmlNodePtr n1, xmlNodePtr n2)
     if (!xmlStrEqual(n1->name, n2->name))
         return false;
 
-    /* Iterate over n2 attributes and check if n1 contains them*/
+    /* Iterate over n2 attributes and check if n1 contains them */
     attr = n2->properties;
     while (attr) {
         if (attr->type == XML_ATTRIBUTE_NODE) {

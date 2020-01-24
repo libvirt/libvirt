@@ -1363,7 +1363,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     if (!table)
         goto cleanup;
 
-    /* Insert the pool info rows into table*/
+    /* Insert the pool info rows into table */
     for (i = 0; i < list->npools; i++) {
         if (vshTableRowAppend(table,
                               virStoragePoolGetName(list->pools[i]),

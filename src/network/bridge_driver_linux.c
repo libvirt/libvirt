@@ -565,7 +565,7 @@ networkAddGeneralIPv4FirewallRules(virFirewallPtr fw,
     iptablesAddTcpOutput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 53);
     iptablesAddUdpOutput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 53);
 
-    /* allow TFTP requests through to dnsmasq if necessary & back out*/
+    /* allow TFTP requests through to dnsmasq if necessary & back out */
     if (ipv4def && ipv4def->tftproot) {
         iptablesAddUdpInput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 69);
         iptablesAddUdpOutput(fw, VIR_FIREWALL_LAYER_IPV4, def->bridge, 69);

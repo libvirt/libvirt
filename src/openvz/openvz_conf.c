@@ -233,7 +233,7 @@ openvzReadNetworkConf(virDomainDefPtr def,
     } else if (ret > 0) {
         token = strtok_r(temp, ";", &saveptr);
         while (token != NULL) {
-            /*add new device to list*/
+            /* add new device to list */
             if (VIR_ALLOC(net) < 0)
                 goto error;
 
@@ -243,7 +243,7 @@ openvzReadNetworkConf(virDomainDefPtr def,
             char cpy_temp[32];
             int len;
 
-            /*parse string*/
+            /* parse string */
             do {
                 char *next = strchr(p, ',');
                 if (!next)

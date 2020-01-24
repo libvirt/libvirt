@@ -616,7 +616,7 @@ testQemuAgentCPU(const void *data)
     if (qemuAgentSetVCPUs(qemuMonitorTestGetAgent(test), cpuinfo, nvcpus) < 0)
         goto cleanup;
 
-    /* try to hotplug two, second one will fail*/
+    /* try to hotplug two, second one will fail */
     if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
         goto cleanup;
 

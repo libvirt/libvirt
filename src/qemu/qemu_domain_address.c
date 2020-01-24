@@ -2211,7 +2211,7 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
             continue;
 
         /* First IDE controller lives on the PIIX3 at slot=1, function=1,
-           dealt with earlier on*/
+           dealt with earlier on */
         if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_IDE &&
             cont->idx == 0)
             continue;

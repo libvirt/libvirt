@@ -15189,7 +15189,7 @@ qemuDomainSnapshotPrepare(virDomainObjPtr vm,
     }
 
     /* internal snapshot requires a disk image to store the memory image to, and
-     * also disks can't be excluded from an internal snapshot*/
+     * also disks can't be excluded from an internal snapshot */
     if ((def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL && !found_internal) ||
         (found_internal && forbid_internal)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

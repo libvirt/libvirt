@@ -4960,7 +4960,7 @@ static int testDomainBlockStats(virDomainPtr domain,
         goto error;
     }
 
-    /* No significance to these numbers, just enough to mix it up*/
+    /* No significance to these numbers, just enough to mix it up */
     statbase = g_get_real_time();
     stats->rd_req = statbase / 10;
     stats->rd_bytes = statbase / 20;
@@ -5119,7 +5119,7 @@ testDomainInterfaceStats(virDomainPtr domain,
     if (!(net = virDomainNetFind(privdom->def, device)))
         goto error;
 
-    /* No significance to these numbers, just enough to mix it up*/
+    /* No significance to these numbers, just enough to mix it up */
     statbase = g_get_real_time();
     stats->rx_bytes = statbase / 10;
     stats->rx_packets = statbase / 100;

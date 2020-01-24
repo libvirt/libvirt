@@ -80,7 +80,7 @@ struct _virLXCDriver {
     /* Immutable pointer, Immutable object */
     virDomainXMLOptionPtr xmlopt;
 
-    /* Immutable pointer, lockless APIs*/
+    /* Immutable pointer, lockless APIs */
     virSysinfoDefPtr hostsysinfo;
 
     /* Atomic inc/dec only */

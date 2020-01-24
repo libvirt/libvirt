@@ -1252,7 +1252,7 @@ virNetClientCallDispatch(virNetClientPtr client)
         return virNetClientCallDispatchMessage(client);
 
     case VIR_NET_STREAM: /* Stream protocol */
-    case VIR_NET_STREAM_HOLE: /* Sparse stream protocol*/
+    case VIR_NET_STREAM_HOLE: /* Sparse stream protocol */
         return virNetClientCallDispatchStream(client);
 
     case VIR_NET_CALL:

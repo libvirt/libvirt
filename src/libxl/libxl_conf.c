@@ -395,7 +395,7 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
             char xlCPU[32];
 
             /* enable nested HVM only if global nested_hvm option enable it and
-             * host support it*/
+             * host support it */
             if (ARCH_IS_X86(def->os.arch)) {
                 vmx = virCPUCheckFeature(caps->host.arch, caps->host.cpu, "vmx");
                 svm = virCPUCheckFeature(caps->host.arch, caps->host.cpu, "svm");

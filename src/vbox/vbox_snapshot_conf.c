@@ -64,7 +64,7 @@ virVBoxSnapshotConfCreateVBoxSnapshotConfHardDiskPtr(xmlNodePtr diskNode,
         hardDisk->children[i]->parent = hardDisk;
     }
     uuid = virXMLPropString(diskNode, "uuid");
-    /*we use virStringSearch because the uuid is between brackets*/
+    /* we use virStringSearch because the uuid is between brackets */
     resultSize = virStringSearch(uuid,
                                  VBOX_UUID_REGEX,
                                  1,
@@ -83,7 +83,7 @@ virVBoxSnapshotConfCreateVBoxSnapshotConfHardDiskPtr(xmlNodePtr diskNode,
         goto cleanup;
     }
     if (location[0] != '/') {
-        /*The location is a relative path, so we must change it into an absolute one. */
+        /* The location is a relative path, so we must change it into an absolute one. */
         tmp = g_strdup_printf("%s%s", machineLocation, location);
         hardDisk->location = g_strdup(tmp);
     } else {
@@ -194,7 +194,7 @@ virVBoxSnapshotConfRetrieveSnapshot(xmlNodePtr snapshotNode,
         goto cleanup;
 
     uuid = virXMLPropString(snapshotNode, "uuid");
-    /*we use virStringSearch because the uuid is between brackets*/
+    /* we use virStringSearch because the uuid is between brackets */
     resultSize = virStringSearch(uuid,
                                  VBOX_UUID_REGEX,
                                  1,
@@ -385,7 +385,7 @@ virVBoxSnapshotConfSerializeSnapshot(xmlNodePtr node,
         goto cleanup;
 
     /* We change the date format from "yyyy-MM-dd hh:mm:ss.msec+timeZone"
-     * to "yyyy-MM-ddThh:mm:ssZ"*/
+     * to "yyyy-MM-ddThh:mm:ssZ" */
     firstRegexResult = virStringSearch(snapshot->timeStamp,
                                        "([0-9]{4}-[0-9]{2}-[0-9]{2})",
                                        1,
@@ -403,13 +403,13 @@ virVBoxSnapshotConfSerializeSnapshot(xmlNodePtr node,
     if (xmlNewProp(node, BAD_CAST "timeStamp", BAD_CAST timeStamp) == NULL)
         goto cleanup;
 
-    /*node description*/
+    /* node description */
     if (snapshot->description != NULL) {
         descriptionNode = xmlNewNode(NULL, BAD_CAST "Description");
         xmlNodeSetContent(descriptionNode, BAD_CAST snapshot->description);
         xmlAddChild(node, descriptionNode);
     }
-    /*hardware*/
+    /* hardware */
     parseError = xmlParseInNodeContext(node,
                                        snapshot->hardware,
                                        (int)strlen(snapshot->hardware),
@@ -422,7 +422,7 @@ virVBoxSnapshotConfSerializeSnapshot(xmlNodePtr node,
     }
     xmlAddChild(node, hardwareNode);
 
-    /*storageController*/
+    /* storageController */
     if (xmlParseInNodeContext(node, snapshot->storageController,
                               (int)strlen(snapshot->storageController),
                               0,
@@ -620,7 +620,7 @@ virVBoxSnapshotConfLoadVboxFile(const char *filePath,
         goto cleanup;
     }
 
-    /*Retrieve MachineNode*/
+    /* Retrieve MachineNode */
     cur = xmlDocGetRootElement(xml);
     xPathContext->node = cur;
     machineNode = virXPathNode("./vbox:Machine", xPathContext);
@@ -645,7 +645,7 @@ virVBoxSnapshotConfLoadVboxFile(const char *filePath,
 
     currentSnapshotAttribute = virXMLPropString(machineNode, "currentSnapshot");
     if (currentSnapshotAttribute != NULL) {
-        /*we use virStringSearch because the uuid is between brackets*/
+        /* we use virStringSearch because the uuid is between brackets */
         searchResultSize = virStringSearch(currentSnapshotAttribute,
                                            VBOX_UUID_REGEX,
                                            1,
@@ -699,7 +699,7 @@ virVBoxSnapshotConfLoadVboxFile(const char *filePath,
     }
     machineDescription->storageController = virXMLNodeToString(xml, cur);
 
-    /*retrieve mediaRegistry*/
+    /* retrieve mediaRegistry */
     cur = virXPathNode("./vbox:MediaRegistry", xPathContext);
     if (cur == NULL) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -713,7 +713,7 @@ virVBoxSnapshotConfLoadVboxFile(const char *filePath,
         goto cleanup;
     }
 
-    /*retrieve snapshot*/
+    /* retrieve snapshot */
     xPathContext->node = machineNode;
     cur = virXPathNode("./vbox:Snapshot", xPathContext);
     if (cur != NULL) {
@@ -763,8 +763,8 @@ virVBoxSnapshotConfAddSnapshotToXmlMachine(virVBoxSnapshotConfSnapshotPtr snapsh
         return -1;
     }
 
-    /*If parent is NULL and the machine has no snapshot yet,
-     *it means that the added snapshot is the first snapshot*/
+    /* If parent is NULL and the machine has no snapshot yet,
+     * it means that the added snapshot is the first snapshot */
     if (snapshotParentName == NULL) {
         if (machine->snapshot != NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -829,7 +829,7 @@ virVBoxSnapshotConfAddHardDiskToMediaRegistry(virVBoxSnapshotConfHardDiskPtr har
                        _("Unable to get the parent disk"));
         return -1;
     }
-    /*Hard disk found*/
+    /* Hard disk found */
     if (VIR_EXPAND_N(parentDisk->children, parentDisk->nchildren, 1) < 0)
         return -1;
 

@@ -4451,7 +4451,7 @@ virDomainDefPostParseMemory(virDomainDefPtr def,
 
     if (numaMemory) {
         /* update the sizes in XML if nothing was set in the XML or ABI update
-         * is supported*/
+         * is supported */
         virDomainDefSetMemoryTotal(def, numaMemory + hotplugMemory);
     } else {
         /* verify that the sum of memory modules doesn't exceed the total
@@ -7773,7 +7773,7 @@ virDomainHostdevSubsysUSBDefParseXML(xmlNodePtr node,
         ignore_value(virStringParseYesNo(autoAddress, &usbsrc->autoAddress));
 
     /* Product can validly be 0, so we need some extra help to determine
-     * if it is uninitialized*/
+     * if it is uninitialized */
     got_product = false;
     got_vendor = false;
 
@@ -12402,7 +12402,7 @@ virDomainChrDefaultTargetType(int devtype)
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL:
     case VIR_DOMAIN_CHR_DEVICE_TYPE_LAST:
-        /* No target type yet*/
+        /* No target type yet */
         break;
     }
 
@@ -12433,7 +12433,7 @@ virDomainChrTargetTypeFromString(int devtype,
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL:
     case VIR_DOMAIN_CHR_DEVICE_TYPE_LAST:
-        /* No target type yet*/
+        /* No target type yet */
         ret = 0;
         break;
     }

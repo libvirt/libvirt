@@ -122,7 +122,7 @@ xenParseXMDisk(char *entry, int hvm)
      * The DEST-DEVICE is optionally post-fixed with disk type
      */
 
-    /* Extract the source file path*/
+    /* Extract the source file path */
     if (!(offset = strchr(head, ',')))
         goto error;
 

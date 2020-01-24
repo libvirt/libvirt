@@ -501,7 +501,7 @@ virNetDevBandwidthEqual(const virNetDevBandwidth *a,
         return false;
     }
 
-    /*out*/
+    /* out */
     if (a->out) {
         if (!b->out)
             return false;

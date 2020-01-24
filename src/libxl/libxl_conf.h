@@ -138,7 +138,7 @@ struct _libxlDriverPrivate {
     /* Immutable pointer, immutable object */
     virPortAllocatorRangePtr migrationPorts;
 
-    /* Immutable pointer, lockless APIs*/
+    /* Immutable pointer, lockless APIs */
     virSysinfoDefPtr hostsysinfo;
 
     /* Immutable pointer. lockless access */

@@ -345,7 +345,7 @@ virNetSSHCheckHostKey(virNetSSHSessionPtr sess)
             }
 
             /* calculate remote key hash, using MD5 algorithm that is
-             * usual in OpenSSH. The returned value should *NOT* be freed*/
+             * usual in OpenSSH. The returned value should *NOT* be freed */
             if (!(keyhash = libssh2_hostkey_hash(sess->session,
                                                  LIBSSH2_HOSTKEY_HASH_MD5))) {
                 virReportError(VIR_ERR_SSH, "%s",
@@ -925,7 +925,7 @@ virNetSSHOpenChannel(virNetSSHSessionPtr sess)
         return -1;
     }
 
-    /* nonblocking mode - currently does nothing*/
+    /* nonblocking mode - currently does nothing */
     libssh2_channel_set_blocking(sess->channel, 0);
 
     /* channel open */

@@ -209,7 +209,7 @@ struct _virStoragePoolSource {
     /* Vendor of the source */
     char *vendor;
 
-    /* Product name of the source*/
+    /* Product name of the source */
     char *product;
 
     /* Pool type specific format such as filesystem type,

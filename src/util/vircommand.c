@@ -2426,7 +2426,7 @@ virCommandDoAsyncIOHelper(void *opaque)
 {
     virCommandPtr cmd = opaque;
     if (virCommandProcessIO(cmd) < 0) {
-        /* If something went wrong, save errno or -1*/
+        /* If something went wrong, save errno or -1 */
         cmd->has_error = errno ? errno : -1;
     }
 }

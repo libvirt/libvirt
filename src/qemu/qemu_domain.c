@@ -7438,7 +7438,7 @@ qemuDomainDeviceDefValidateControllerPCI(const virDomainControllerDef *cont,
         }
 
         /* For all other pci-root and pcie-root controllers, though,
-         * the index must be zero*/
+         * the index must be zero */
         if (cont->idx != 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Index for '%s' controllers must be 0"),
@@ -12354,7 +12354,7 @@ qemuDomainGetMemorySizeAlignment(virDomainDefPtr def)
         return 256 * 1024;
 
     /* Align memory size. QEMU requires rounding to next 4KiB block.
-     * We'll take the "traditional" path and round it to 1MiB*/
+     * We'll take the "traditional" path and round it to 1MiB */
 
     return 1024;
 }

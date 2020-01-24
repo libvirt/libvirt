@@ -234,7 +234,7 @@ virResctrlInfoMonFree(virResctrlInfoMonPtr mon)
 }
 
 
-/* virResctrlAlloc and virResctrlMonitor*/
+/* virResctrlAlloc and virResctrlMonitor */
 
 /*
  * virResctrlAlloc and virResctrlMonitor are representing a resource control

@@ -1074,7 +1074,7 @@ _consoleTakeSnapshot(IConsole *console, PRUnichar *name,
     IMachine *machine;
     nsresult rc;
     PRUnichar *id = NULL;
-    bool bpause = true; /*NO live snapshot*/
+    bool bpause = true; /* NO live snapshot */
 
     rc = console->vtbl->GetMachine(console, &machine);
 

@@ -4059,7 +4059,7 @@ networkDestroy(virNetworkPtr net)
 
     virNetworkObjDeleteAllPorts(obj, driver->stateDir);
 
-    /* @def replaced in virNetworkObjUnsetDefTransient*/
+    /* @def replaced in virNetworkObjUnsetDefTransient */
     def = virNetworkObjGetDef(obj);
 
     event = virNetworkEventLifecycleNew(def->name,

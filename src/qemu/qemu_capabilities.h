@@ -123,7 +123,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     X_QEMU_CAPS_CHARDEV_SPICEVMC, /* newer -chardev spicevmc */
 
     /* 55 */
-    X_QEMU_CAPS_DEVICE_SPICEVMC, /* older -device spicevmc*/
+    X_QEMU_CAPS_DEVICE_SPICEVMC, /* older -device spicevmc */
     QEMU_CAPS_VIRTIO_TX_ALG, /* -device virtio-net-pci,tx=string */
     X_QEMU_CAPS_DEVICE_QXL_VGA, /* primary qxl device named qxl-vga? */
     X_QEMU_CAPS_PCI_MULTIFUNCTION, /* -device multifunction=on|off */
@@ -232,7 +232,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     X_QEMU_CAPS_DTB, /* -dtb file */
     QEMU_CAPS_SCSI_MEGASAS, /* -device megasas */
     X_QEMU_CAPS_IPV6_MIGRATION, /* -incoming [::] */
-    X_QEMU_CAPS_MACHINE_OPT, /* -machine xxxx*/
+    X_QEMU_CAPS_MACHINE_OPT, /* -machine xxxx */
 
     /* 135 */
     X_QEMU_CAPS_MACHINE_USB_OPT, /* -machine xxx,usb=on/off */

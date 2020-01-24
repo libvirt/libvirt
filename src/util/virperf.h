@@ -36,7 +36,7 @@ typedef enum {
     VIR_PERF_EVENT_BRANCH_INSTRUCTIONS, /* Count of branch instructions
                                            for applications */
     VIR_PERF_EVENT_BRANCH_MISSES,  /* Count of branch misses for applications */
-    VIR_PERF_EVENT_BUS_CYCLES,       /* Count of bus cycles for applications*/
+    VIR_PERF_EVENT_BUS_CYCLES,       /* Count of bus cycles for applications */
     VIR_PERF_EVENT_STALLED_CYCLES_FRONTEND, /* Count of stalled cpu cycles in
                                                the frontend of the instruction
                                                processor pipeline */
@@ -44,8 +44,8 @@ typedef enum {
                                               the backend of the instruction
                                               processor pipeline */
     VIR_PERF_EVENT_REF_CPU_CYCLES,   /* Count of ref cpu cycles */
-    VIR_PERF_EVENT_CPU_CLOCK,   /* Count of cpu clock time*/
-    VIR_PERF_EVENT_TASK_CLOCK,   /* Count of task clock time*/
+    VIR_PERF_EVENT_CPU_CLOCK,   /* Count of cpu clock time */
+    VIR_PERF_EVENT_TASK_CLOCK,   /* Count of task clock time */
     VIR_PERF_EVENT_PAGE_FAULTS,   /* Count of total page faults */
     VIR_PERF_EVENT_CONTEXT_SWITCHES,   /* Count of context switches */
     VIR_PERF_EVENT_CPU_MIGRATIONS,   /* Count of cpu migrations */

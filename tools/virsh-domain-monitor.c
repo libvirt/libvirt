@@ -1565,7 +1565,7 @@ static const vshCmdInfo info_list[] = {
     {.name = NULL}
 };
 
-/* compare domains, pack NULLed ones at the end*/
+/* compare domains, pack NULLed ones at the end */
 static int
 virshDomainSorter(const void *a, const void *b)
 {

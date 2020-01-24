@@ -61,12 +61,12 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNetlinkHandle, virNetlinkFree);
 typedef struct _virNetlinkEventSrvPrivate virNetlinkEventSrvPrivate;
 typedef virNetlinkEventSrvPrivate *virNetlinkEventSrvPrivatePtr;
 struct _virNetlinkEventSrvPrivate {
-    /*Server*/
+    /* Server */
     virMutex lock;
     int eventwatch;
     int netlinkfd;
     virNetlinkHandle *netlinknh;
-    /*Events*/
+    /* Events */
     int handled;
     size_t handlesCount;
     size_t handlesAlloc;

@@ -63,7 +63,7 @@ typedef enum {
     VIR_ARCH_SH4EB,        /* SuperH4     32 BE http://en.wikipedia.org/wiki/SuperH */
     VIR_ARCH_SPARC,        /* Sparc       32 BE http://en.wikipedia.org/wiki/Sparc */
     VIR_ARCH_SPARC64,      /* Sparc       64 BE http://en.wikipedia.org/wiki/Sparc */
-    VIR_ARCH_UNICORE32,    /* UniCore     32 LE http://en.wikipedia.org/wiki/Unicore*/
+    VIR_ARCH_UNICORE32,    /* UniCore     32 LE http://en.wikipedia.org/wiki/Unicore */
     VIR_ARCH_X86_64,       /* x86         64 LE http://en.wikipedia.org/wiki/X86 */
 
     VIR_ARCH_XTENSA,       /* XTensa      32 LE http://en.wikipedia.org/wiki/Xtensa#Processor_Cores */

@@ -493,7 +493,7 @@ virLXCProcessSetupNamespaces(virLXCDriverPtr driver,
 
     for (i = 0; i < VIR_LXC_DOMAIN_NAMESPACE_LAST; i++)
         nsFDs[i] = -1;
-    /*If there are no namespace to be opened just return success*/
+    /* If there are no namespaces to be opened just return success */
     if (lxcDef == NULL)
         return 0;
 

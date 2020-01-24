@@ -150,7 +150,7 @@ struct _virCapsHostCache {
 
 struct _virCapsHostMemBWNode {
     unsigned int id;
-    virBitmapPtr cpus;  /* All CPUs that belong to this node*/
+    virBitmapPtr cpus;  /* All CPUs that belong to this node */
     virResctrlInfoMemBWPerNode control;
 };
 

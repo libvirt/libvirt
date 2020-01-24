@@ -143,7 +143,7 @@ testUnicode(const void *opaque G_GNUC_UNUSED)
     return ret;
 }
 
-/* Point of this test is to see how table behaves with right to left writing*/
+/* Point of this test is to see how table behaves with right to left writing */
 static int
 testUnicodeArabic(const void *opaque G_GNUC_UNUSED)
 {

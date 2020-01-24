@@ -508,7 +508,7 @@ esxNetworkUndefine(virNetworkPtr network)
     if (esxVI_EnsureSession(priv->primary) < 0)
         return -1;
 
-    /* Lookup HostVirtualSwitch and HostPortGroup list*/
+    /* Lookup HostVirtualSwitch and HostPortGroup list */
     if (esxVI_LookupHostVirtualSwitchByName(priv->primary, network->name,
                                             &hostVirtualSwitch,
                                             esxVI_Occurrence_RequiredItem) < 0 ||

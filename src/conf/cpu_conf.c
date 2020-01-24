@@ -507,7 +507,7 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
                 goto cleanup;
             }
 
-            /* ensure that the string can be passed to qemu*/
+            /* ensure that the string can be passed to qemu */
             if (strchr(vendor_id, ',')) {
                     virReportError(VIR_ERR_XML_ERROR, "%s",
                                    _("vendor id is invalid"));

@@ -147,4 +147,4 @@ int main(void)
     return EXIT_AM_SKIP;
 }
 
-#endif /*WITH_VBOX*/
+#endif /* WITH_VBOX */
