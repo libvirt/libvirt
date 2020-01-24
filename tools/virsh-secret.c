@@ -186,6 +186,10 @@ static const vshCmdOptDef opts_secret_set_value[] = {
      .type = VSH_OT_BOOL,
      .help = N_("read the secret from file without converting from base64")
     },
+    {.name = "interactive",
+     .type = VSH_OT_BOOL,
+     .help = N_("read the secret from the terminal")
+    },
     {.name = "base64",
      .type = VSH_OT_STRING,
      .help = N_("base64-encoded secret value")
@@ -204,10 +208,14 @@ cmdSecretSetValue(vshControl *ctl, const vshCmd *cmd)
     unsigned char *value;
     size_t value_size;
     bool plain = vshCommandOptBool(cmd, "plain");
+    bool interactive = vshCommandOptBool(cmd, "interactive");
     int res;
 
     VSH_EXCLUSIVE_OPTIONS("file", "base64");
     VSH_EXCLUSIVE_OPTIONS("plain", "base64");
+    VSH_EXCLUSIVE_OPTIONS("interactive", "base64");
+    VSH_EXCLUSIVE_OPTIONS("interactive", "plain");
+    VSH_EXCLUSIVE_OPTIONS("interactive", "file");
 
     if (!(secret = virshCommandOptSecret(ctl, cmd, NULL)))
         return false;
@@ -218,7 +226,7 @@ cmdSecretSetValue(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "file", &filename) < 0)
         return false;
 
-    if (!base64 && !filename) {
+    if (!base64 && !filename && !interactive) {
         vshError(ctl, _("Input secret value is missing"));
         return false;
     }
@@ -236,6 +244,18 @@ cmdSecretSetValue(vshControl *ctl, const vshCmd *cmd)
 
         file_len = read_ret;
         base64 = file_buf;
+    }
+
+    if (interactive) {
+        vshPrint(ctl, "%s", _("Enter new value for secret:"));
+        fflush(stdout);
+
+        if (!(file_buf = getpass(""))) {
+            vshError(ctl, "%s", _("Failed to read secret"));
+            return false;
+        }
+        file_len = strlen(file_buf);
+        plain = true;
     }
 
     if (plain) {

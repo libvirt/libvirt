@@ -6563,14 +6563,17 @@ secret-set-value
 
 .. code-block::
 
-   secret-set-value secret (--file filename [--plain] | base64)
+   secret-set-value secret (--file filename [--plain] | --interactive | base64)
 
 Set the value associated with *secret* (specified by its UUID) to the value
 Base64-encoded value *base64* or Base-64-encoded contents of file named
 *filename*. Using the *--plain* flag is together with *--file* allows to use
 the file contents directly as the secret value.
 
-Note that *--file* and *base64* options are mutually exclusive.
+If *--interactive* flag is used the secret value is read as a password from the
+terminal.
+
+Note that *--file*, *--interactive* and *base64* options are mutually exclusive.
 
 Passing secrets via the *base64* option on command line is INSECURE and
 deprecated. Use the *--file* option instead.
