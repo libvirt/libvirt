@@ -7598,9 +7598,6 @@ virDomainDeviceAliasIsUserAlias(const char *aliasStr)
 }
 
 
-/* Parse the XML definition for a device address
- * @param node XML nodeset to parse for device address definition
- */
 static int
 virDomainDeviceInfoParseXML(virDomainXMLOptionPtr xmlopt G_GNUC_UNUSED,
                             xmlNodePtr node,
@@ -10040,9 +10037,6 @@ virDomainDiskDefParsePrivateData(xmlXPathContextPtr ctxt,
 #define VENDOR_LEN  8
 #define PRODUCT_LEN 16
 
-/* Parse the XML definition for a disk
- * @param node XML nodeset to parse for disk definition
- */
 static virDomainDiskDefPtr
 virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
                          xmlNodePtr node,
@@ -10721,9 +10715,6 @@ virDomainControllerModelTypeToString(virDomainControllerDefPtr def,
 }
 
 
-/* Parse the XML definition for a controller
- * @param node XML nodeset to parse for controller definition
- */
 static virDomainControllerDefPtr
 virDomainControllerDefParseXML(virDomainXMLOptionPtr xmlopt,
                                xmlNodePtr node,
@@ -11094,9 +11085,6 @@ virDomainNetGenerateMAC(virDomainXMLOptionPtr xmlopt,
 }
 
 
-/* Parse the XML definition for a disk
- * @param node XML nodeset to parse for disk definition
- */
 static virDomainFSDefPtr
 virDomainFSDefParseXML(virDomainXMLOptionPtr xmlopt,
                        xmlNodePtr node,
@@ -11521,10 +11509,6 @@ virDomainChrSourceReconnectDefParseXML(virDomainChrSourceReconnectDefPtr def,
 }
 
 
-/* Parse the XML definition for a network interface
- * @param node XML nodeset to parse for net definition
- * @return 0 on success, -1 on failure
- */
 static virDomainNetDefPtr
 virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                         xmlNodePtr node,
@@ -12909,7 +12893,6 @@ virDomainChrDefNew(virDomainXMLOptionPtr xmlopt)
 }
 
 /* Parse the XML definition for a character device
- * @param node XML nodeset to parse for net definition
  *
  * The XML we're dealing with looks like
  *
