@@ -5873,6 +5873,107 @@
 &lt;/devices&gt;
 ...</pre>
 
+    <h5><a id="elementsTeaming">Teaming a virtio/hostdev NIC pair</a></h5>
+
+    <p>
+      <span class="since">Since 6.1.0 (QEMU and KVM only, requires
+        QEMU 4.2.0 or newer axnd a guest virtio-net driver supporting
+        the "failover" feature, such as the one included in Linux
+        kernel 4.18 and newer)
+      </span>
+      The <code>&lt;teaming&gt;</code> element of two interfaces can
+      be used to connect them as a team/bond device in the guest
+      (assuming proper support in the hypervisor and the guest
+      network driver).
+    </p>
+
+<pre>
+...
+&lt;devices&gt;
+  &lt;interface type='network'&gt;
+    &lt;source network='mybridge'/&gt;
+    &lt;mac address='00:11:22:33:44:55'/&gt;
+    &lt;model type='virtio'/&gt;
+    &lt;teaming type='persistent'/&gt;
+    &lt;alias name='ua-backup0'/&gt;
+  &lt;/interface&gt;
+  &lt;interface type='network'&gt;
+    &lt;source network='hostdev-pool'/&gt;
+    &lt;mac address='00:11:22:33:44:55'/&gt;
+    &lt;model type='virtio'/&gt;
+    &lt;teaming type='transient' persistent='ua-backup0'/&gt;
+  &lt;/interface&gt;
+&lt;/devices&gt;
+...</pre>
+
+    <p>
+      The <code>&lt;teaming&gt;</code> element required
+      attribute <code>type</code> will be set to
+      either <code>"persistent"</code> to indicate a device that
+      should always be present in the domain,
+      or <code>"transient"</code> to indicate a device that may
+      periodically be removed, then later re-added to the domain. When
+      type="transient", there should be a second attribute
+      to <code>&lt;teaming&gt;</code> called <code>"persistent"</code>
+      - this attribute should be set to the alias name of the other
+      device in the pair (the one that has <code>&lt;teaming
+      type="persistent'/&gt;</code>).
+    </p>
+    <p>
+      In the particular case of QEMU,
+      libvirt's <code>&lt;teaming&gt;</code> element is used to setup
+      a virtio-net "failover" device pair. For this setup, the
+      persistent device must be an interface with <code>&lt;model
+      type="virtio"/&gt;</code>, and the transient device must
+      be <code>&lt;interface type='hostdev'/&gt;</code>
+      (or <code>&lt;interface type='network'/&gt;</code> where the
+      referenced network defines a pool of SRIOV VFs). The guest will
+      then have a simple network team/bond device made of the virtio
+      NIC + hostdev NIC pair. In this configuration, the
+      higher-performing hostdev NIC will normally be preferred for all
+      network traffic, but when the domain is migrated, QEMU will
+      automatically unplug the VF from the guest, and then hotplug a
+      similar device once migration is completed; while migration is
+      taking place, network traffic will use the virtio NIC. (Of
+      course the emulated virtio NIC and the hostdev NIC must be
+      connected to the same subnet for bonding to work properly).
+    </p>
+    <p>
+      NB1: Since you must know the alias name of the virtio NIC when
+      configuring the hostdev NIC, it will need to be manually set in
+      the virtio NIC's configuration (as with all other manually set
+      alias names, this means it must start with "ua-").
+    </p>
+    <p>
+      NB2: Currently the only implementation of the guest OS
+      virtio-net driver supporting virtio-net failover requires that
+      the MAC addresses of the virtio and hostdev NIC must
+      match. Since that may not always be a requirement in the future,
+      libvirt doesn't enforce this limitation - it is up to the
+      person/management application that is creating the configuration
+      to assure the MAC addresses of the two devices match.
+    </p>
+    <p>
+      NB3: Since the PCI addresses of the SRIOV VFs on the hosts that
+      are the source and destination of the migration will almost
+      certainly be different, either higher level management software
+      will need to modify the <code>&lt;source&gt;</code> of the
+      hostdev NIC (<code>&lt;interface type='hostdev'&gt;</code>) at
+      the start of migration, or (a simpler solution) the
+      configuration will need to use a libvirt "hostdev" virtual
+      network that maintains a pool of such devices, as is implied in
+      the example's use of the libvirt network named "hostdev-pool" -
+      as long as the hostdev network pools on both hosts have the same
+      name, libvirt itself will take care of allocating an appropriate
+      device on both ends of the migration. Similarly the XML for the
+      virtio interface must also either work correctly unmodified on
+      both the source and destination of the migration (e.g. by
+      connecting to the same bridge device on both hosts, or by using
+      the same virtual network), or the management software must
+      properly modify the interface XML during migration so that the
+      virtio device remains connected to the same network segment
+      before and after migration.
+    </p>
 
     <h5><a id="elementsNICSMulticast">Multicast tunnel</a></h5>
 

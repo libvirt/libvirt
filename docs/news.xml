@@ -54,6 +54,34 @@
           QEMU 4.2.
         </description>
       </change>
+      <change>
+        <summary>
+          support for virtio+hostdev NIC &lt;teaming&gt;
+        </summary>
+        <description>
+          QEMU 4.2.0 and later, combined with a sufficiently recent
+          guest virtio-net driver (e.g. the driver included in Linux
+          kernel 4.18 and later), supports setting up a simple network
+          bond device comprised of one virtio emulated NIC and one
+          hostdev NIC (which must be an SRIOV VF). (in QEMU, this is
+          known as the "virtio failover" feature). The allure of this
+          setup is that the bond will always favor the hostdev device,
+          providing better performance, until the guest is migrated -
+          at that time QEMU will automatically unplug the hostdev NIC
+          and the bond will send all traffic via the virtio NIC until
+          migration is completed, then QEMU on the destination side
+          will hotplug a new hostdev NIC and the bond will switch back
+          to using the hostdev for network traffic. The result is that
+          guests desiring the extra performance of a hostdev NIC are
+          now migratable without network downtime (performance is just
+          degraded during migration) and without requiring a
+          complicated bonding configuration in the guest OS network
+          config and complicated unplug/replug logic in the management
+          application on the host - it can instead all be accomplished
+          in libvirt with the interface &lt;teaming&gt; subelement
+          "type" and "persistent" attributes.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
     </section>
