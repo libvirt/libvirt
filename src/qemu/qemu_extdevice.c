@@ -159,11 +159,11 @@ qemuExtDevicesStart(virQEMUDriverPtr driver,
     int ret = 0;
     size_t i;
 
-    if (qemuExtDevicesInitPaths(driver, vm->def) < 0)
+    if (qemuExtDevicesInitPaths(driver, def) < 0)
         return -1;
 
-    for (i = 0; i < vm->def->nvideos; i++) {
-        virDomainVideoDefPtr video = vm->def->videos[i];
+    for (i = 0; i < def->nvideos; i++) {
+        virDomainVideoDefPtr video = def->videos[i];
 
         if (video->backend == VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER) {
             ret = qemuExtVhostUserGPUStart(driver, vm, video);
@@ -172,7 +172,7 @@ qemuExtDevicesStart(virQEMUDriverPtr driver,
         }
     }
 
-    if (vm->def->tpm)
+    if (def->tpm)
         ret = qemuExtTPMStart(driver, vm, incomingMigration);
 
     for (i = 0; i < def->nnets; i++) {
