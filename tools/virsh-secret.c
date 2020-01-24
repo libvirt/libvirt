@@ -217,6 +217,10 @@ cmdSecretSetValue(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
+    /* warn users that the --base64 option passed from command line is wrong */
+    if (base64)
+        vshError(ctl, _("Passing secret value as command-line argument is insecure!"));
+
     if (filename) {
         ssize_t read_ret;
         if ((read_ret = virFileReadAll(filename, 1024, &file_buf)) < 0) {

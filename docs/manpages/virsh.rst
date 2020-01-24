@@ -6571,6 +6571,9 @@ Base64-encoded value *base64* or Base-64-encoded contents of file named
 
 Note that *--file* and *base64* options are mutually exclusive.
 
+Passing secrets via the *base64* option on command line is INSECURE and
+deprecated. Use the *--file* option instead.
+
 
 secret-get-value
 ----------------
