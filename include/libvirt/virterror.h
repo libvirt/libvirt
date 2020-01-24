@@ -313,15 +313,14 @@ typedef enum {
                                            was denied */
     VIR_ERR_DBUS_SERVICE = 89,          /* error from a dbus service */
     VIR_ERR_STORAGE_VOL_EXIST = 90,     /* the storage vol already exists */
-    VIR_ERR_CPU_INCOMPATIBLE = 91,      /* given CPU is incompatible with host
-                                           CPU*/
+    VIR_ERR_CPU_INCOMPATIBLE = 91,      /* given CPU is incompatible with host CPU */
     VIR_ERR_XML_INVALID_SCHEMA = 92,    /* XML document doesn't validate against schema */
     VIR_ERR_MIGRATE_FINISH_OK = 93,     /* Finish API succeeded but it is expected to return NULL */
     VIR_ERR_AUTH_UNAVAILABLE = 94,      /* authentication unavailable */
     VIR_ERR_NO_SERVER = 95,             /* Server was not found */
     VIR_ERR_NO_CLIENT = 96,             /* Client was not found */
     VIR_ERR_AGENT_UNSYNCED = 97,        /* guest agent replies with wrong id
-                                           to guest-sync command (DEPRECATED)*/
+                                           to guest-sync command (DEPRECATED) */
     VIR_ERR_LIBSSH = 98,                /* error in libssh transport driver */
     VIR_ERR_DEVICE_MISSING = 99,        /* fail to find the desired device */
     VIR_ERR_INVALID_NWFILTER_BINDING = 100,  /* invalid nwfilter binding */

@@ -167,7 +167,7 @@ struct _virNodeInfo {
     unsigned int sockets; /* number of CPU sockets per node if nodes > 1,
                              1 in case of unusual NUMA topology */
     unsigned int cores;   /* number of cores per socket, total number of
-                             processors in case of unusual NUMA topology*/
+                             processors in case of unusual NUMA topology */
     unsigned int threads; /* number of threads per core, 1 in case of
                              unusual numa topology */
 };

@@ -1428,7 +1428,7 @@ char *                  virDomainGetSchedulerType(virDomainPtr domain,
 # define VIR_DOMAIN_BLKIO_DEVICE_WRITE_BPS "device_write_bytes_sec"
 
 
-/* Set Blkio tunables for the domain*/
+/* Set Blkio tunables for the domain */
 int     virDomainSetBlkioParameters(virDomainPtr domain,
                                     virTypedParameterPtr params,
                                     int nparams, unsigned int flags);
@@ -1436,7 +1436,7 @@ int     virDomainGetBlkioParameters(virDomainPtr domain,
                                     virTypedParameterPtr params,
                                     int *nparams, unsigned int flags);
 
-/* Manage memory parameters.  */
+/* Manage memory parameters. */
 
 /**
  * VIR_DOMAIN_MEMORY_PARAM_UNLIMITED:
@@ -1483,7 +1483,7 @@ int     virDomainGetBlkioParameters(virDomainPtr domain,
 
 # define VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT "swap_hard_limit"
 
-/* Set memory tunables for the domain*/
+/* Set memory tunables for the domain */
 int     virDomainSetMemoryParameters(virDomainPtr domain,
                                      virTypedParameterPtr params,
                                      int nparams, unsigned int flags);
@@ -1768,7 +1768,7 @@ struct _virDomainBlockInfo {
                                     * holes, similar to 'du') */
     unsigned long long physical;   /* host physical size in bytes of
                                     * the image container (last
-                                    * offset, similar to 'ls')*/
+                                    * offset, similar to 'ls') */
 };
 
 int                     virDomainGetBlockInfo(virDomainPtr dom,
