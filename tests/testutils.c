@@ -377,7 +377,7 @@ virTestCaptureProgramOutput(const char *const argv[], char **buf, int maxlen)
     int pipefd[2];
     int len;
 
-    if (pipe(pipefd) < 0)
+    if (virPipeQuiet(pipefd) < 0)
         return -1;
 
     pid_t pid = fork();

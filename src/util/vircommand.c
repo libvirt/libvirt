@@ -585,11 +585,8 @@ virExec(virCommandPtr cmd)
 
     if (cmd->outfdptr != NULL) {
         if (*cmd->outfdptr == -1) {
-            if (pipe2(pipeout, O_CLOEXEC) < 0) {
-                virReportSystemError(errno,
-                                     "%s", _("cannot create pipe"));
+            if (virPipe(pipeout) < 0)
                 goto cleanup;
-            }
 
             if ((cmd->flags & VIR_EXEC_NONBLOCK) &&
                 virSetNonBlock(pipeout[0]) == -1) {
@@ -612,11 +609,8 @@ virExec(virCommandPtr cmd)
         if (cmd->errfdptr == cmd->outfdptr) {
             childerr = childout;
         } else if (*cmd->errfdptr == -1) {
-            if (pipe2(pipeerr, O_CLOEXEC) < 0) {
-                virReportSystemError(errno,
-                                     "%s", _("Failed to create pipe"));
+            if (virPipe(pipeerr) < 0)
                 goto cleanup;
-            }
 
             if ((cmd->flags & VIR_EXEC_NONBLOCK) &&
                 virSetNonBlock(pipeerr[0]) == -1) {
@@ -2478,9 +2472,7 @@ virCommandRunAsync(virCommandPtr cmd, pid_t *pid)
      * virCommandDoAsyncIO. */
     if (cmd->inbuf && cmd->infd == -1 &&
         (synchronous || cmd->flags & VIR_EXEC_ASYNC_IO)) {
-        if (pipe2(infd, O_CLOEXEC) < 0) {
-            virReportSystemError(errno, "%s",
-                                 _("unable to open pipe"));
+        if (virPipe(infd) < 0) {
             cmd->has_error = -1;
             return -1;
         }
@@ -2724,11 +2716,11 @@ void virCommandRequireHandshake(virCommandPtr cmd)
         return;
     }
 
-    if (pipe2(cmd->handshakeWait, O_CLOEXEC) < 0) {
+    if (virPipeQuiet(cmd->handshakeWait) < 0) {
         cmd->has_error = errno;
         return;
     }
-    if (pipe2(cmd->handshakeNotify, O_CLOEXEC) < 0) {
+    if (virPipeQuiet(cmd->handshakeNotify) < 0) {
         VIR_FORCE_CLOSE(cmd->handshakeWait[0]);
         VIR_FORCE_CLOSE(cmd->handshakeWait[1]);
         cmd->has_error = errno;

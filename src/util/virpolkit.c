@@ -171,7 +171,7 @@ virPolkitAgentCreate(void)
     if (!isatty(STDIN_FILENO))
         goto error;
 
-    if (pipe2(pipe_fd, 0) < 0)
+    if (virPipe(pipe_fd) < 0)
         goto error;
 
     if (VIR_ALLOC(agent) < 0)

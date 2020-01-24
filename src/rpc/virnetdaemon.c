@@ -671,11 +671,8 @@ virNetDaemonSignalSetup(virNetDaemonPtr dmn)
     if (dmn->sigwrite != -1)
         return 0;
 
-    if (pipe2(fds, O_CLOEXEC|O_NONBLOCK) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Unable to create signal pipe"));
+    if (virPipeNonBlock(fds) < 0)
         return -1;
-    }
 
     if ((dmn->sigwatch = virEventAddHandle(fds[0],
                                            VIR_EVENT_HANDLE_READABLE,

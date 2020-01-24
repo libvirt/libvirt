@@ -1174,11 +1174,8 @@ virProcessRunInFork(virProcessForkCallback cb,
     pid_t parent = getpid();
     int errfd[2] = { -1, -1 };
 
-    if (pipe2(errfd, O_CLOEXEC) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Cannot create pipe for child"));
+    if (virPipe(errfd) < 0)
         return -1;
-    }
 
     if ((child = virFork()) < 0)
         goto cleanup;

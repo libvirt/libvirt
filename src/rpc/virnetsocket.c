@@ -794,11 +794,8 @@ int virNetSocketNewConnectCommand(virCommandPtr cmd,
         goto error;
     }
 
-    if (pipe(errfd) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("unable to create socket pair"));
+    if (virPipe(errfd) < 0)
         goto error;
-    }
 
     virCommandSetInputFD(cmd, sv[1]);
     virCommandSetOutputFD(cmd, &sv[1]);

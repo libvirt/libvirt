@@ -2533,11 +2533,8 @@ qemuMigrationDstPrepareAny(virQEMUDriverPtr driver,
         goto done;
 
     if (tunnel &&
-        (pipe(dataFD) < 0 || virSetCloseExec(dataFD[1]) < 0)) {
-        virReportSystemError(errno, "%s",
-                             _("cannot create pipe for tunnelled migration"));
+        virPipe(dataFD) < 0)
         goto stopjob;
-    }
 
     startFlags = VIR_QEMU_PROCESS_START_AUTODESTROY;
 
@@ -3290,11 +3287,8 @@ qemuMigrationSrcStartTunnel(virStreamPtr st,
     qemuMigrationIOThreadPtr io = NULL;
     int wakeupFD[2] = { -1, -1 };
 
-    if (pipe2(wakeupFD, O_CLOEXEC) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Unable to make pipe"));
+    if (virPipe(wakeupFD) < 0)
         goto error;
-    }
 
     if (VIR_ALLOC(io) < 0)
         goto error;
@@ -3908,10 +3902,12 @@ qemuMigrationSrcPerformTunnel(virQEMUDriverPtr driver,
     spec.dest.fd.qemu = -1;
     spec.dest.fd.local = -1;
 
-    if (pipe2(fds, O_CLOEXEC) == 0) {
-        spec.dest.fd.qemu = fds[1];
-        spec.dest.fd.local = fds[0];
-    }
+    if (virPipe(fds) < 0)
+        goto cleanup;
+
+    spec.dest.fd.qemu = fds[1];
+    spec.dest.fd.local = fds[0];
+
     if (spec.dest.fd.qemu == -1 ||
         qemuSecuritySetImageFDLabel(driver->securityManager, vm->def,
                                     spec.dest.fd.qemu) < 0) {
@@ -5273,11 +5269,8 @@ qemuMigrationSrcToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
         return -1;
     }
 
-    if (compressor && pipe(pipeFD) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Failed to create pipe for migration"));
+    if (compressor && virPipe(pipeFD) < 0)
         return -1;
-    }
 
     /* All right! We can use fd migration, which means that qemu
      * doesn't have to open() the file, so while we still have to

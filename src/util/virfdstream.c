@@ -1274,11 +1274,8 @@ virFDStreamOpenFileInternal(virStreamPtr st,
             goto error;
         }
 
-        if (pipe(pipefds) < 0) {
-            virReportSystemError(errno, "%s",
-                                 _("Unable to create pipe"));
+        if (virPipe(pipefds) < 0)
             goto error;
-        }
 
         if (VIR_ALLOC(threadData) < 0)
             goto error;

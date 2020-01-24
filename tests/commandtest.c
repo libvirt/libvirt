@@ -1019,7 +1019,7 @@ static int test25(const void *unused G_GNUC_UNUSED)
     int ngroups;
     virCommandPtr cmd = virCommandNew("some/nonexistent/binary");
 
-    if (pipe(pipeFD) < 0) {
+    if (virPipeQuiet(pipeFD) < 0) {
         fprintf(stderr, "Unable to create pipe\n");
         goto cleanup;
     }
@@ -1187,7 +1187,7 @@ static int test27(const void *unused G_GNUC_UNUSED)
     errexpect = g_strdup_printf(TEST27_ERREXPECT_TEMP,
                                 buffer0, buffer1, buffer2);
 
-    if (pipe(pipe1) < 0 || pipe(pipe2) < 0) {
+    if (virPipeQuiet(pipe1) < 0 || virPipeQuiet(pipe2) < 0) {
         printf("Could not create pipe: %s\n", g_strerror(errno));
         goto cleanup;
     }

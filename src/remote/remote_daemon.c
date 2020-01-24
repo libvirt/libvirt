@@ -113,7 +113,7 @@ VIR_ENUM_IMPL(virDaemonErr,
 static int daemonForkIntoBackground(const char *argv0)
 {
     int statuspipe[2];
-    if (pipe(statuspipe) < 0)
+    if (virPipeQuiet(statuspipe) < 0)
         return -1;
 
     pid_t pid = fork();

@@ -385,11 +385,9 @@ virLogHandlerDomainOpenLogFile(virLogHandlerPtr handler,
         }
     }
 
-    if (pipe(pipefd) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Cannot open fifo pipe"));
+    if (virPipe(pipefd) < 0)
         goto error;
-    }
+
     if (VIR_ALLOC(file) < 0)
         goto error;
 

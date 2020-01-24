@@ -1363,11 +1363,8 @@ int virLXCProcessStart(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (pipe(handshakefds) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Unable to create pipe"));
+    if (virPipe(handshakefds) < 0)
         goto cleanup;
-    }
 
     if (!(cmd = virLXCProcessBuildControllerCmd(driver,
                                                 vm,

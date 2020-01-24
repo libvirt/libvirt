@@ -321,7 +321,7 @@ mymain(void)
     char one = '1';
 
     for (i = 0; i < NUM_FDS; i++) {
-        if (pipe(handles[i].pipeFD) < 0) {
+        if (virPipeQuiet(handles[i].pipeFD) < 0) {
             fprintf(stderr, "Cannot create pipe: %d", errno);
             return EXIT_FAILURE;
         }

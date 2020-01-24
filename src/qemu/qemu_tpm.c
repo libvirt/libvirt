@@ -366,11 +366,8 @@ qemuTPMSetupEncryption(const unsigned char *secretuuid,
                                  &secret, &secret_len) < 0)
         goto error;
 
-    if (pipe(pipefd) == -1) {
-        virReportSystemError(errno, "%s",
-                             _("Unable to create pipe"));
+    if (virPipe(pipefd) < 0)
         goto error;
-    }
 
     if (virCommandSetSendBuffer(cmd, pipefd[1], secret, secret_len) < 0)
         goto error;

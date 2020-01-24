@@ -275,11 +275,8 @@ virFileWrapperFdNew(int *fd, const char *name, unsigned int flags)
         goto error;
     }
 
-    if (pipe2(pipefd, O_CLOEXEC) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unable to create pipe for %s"), name);
+    if (virPipe(pipefd) < 0)
         goto error;
-    }
 
     if (!(iohelper_path = virFileFindResource("libvirt_iohelper",
                                               abs_top_builddir "/src",

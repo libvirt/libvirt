@@ -2061,11 +2061,9 @@ vshEventStart(vshControl *ctl, int timeout_ms)
 
     assert(ctl->eventPipe[0] == -1 && ctl->eventPipe[1] == -1 &&
            ctl->eventTimerId >= 0);
-    if (pipe2(ctl->eventPipe, O_CLOEXEC) < 0) {
-        char ebuf[1024];
-
-        vshError(ctl, _("failed to create pipe: %s"),
-                 virStrerror(errno, ebuf, sizeof(ebuf)));
+    if (virPipe(ctl->eventPipe) < 0) {
+        vshSaveLibvirtError();
+        vshReportError(ctl);
         return -1;
     }
 

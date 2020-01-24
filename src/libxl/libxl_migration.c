@@ -584,7 +584,7 @@ libxlDomainMigrationDstPrepareTunnel3(virConnectPtr dconn,
      * The data flow of tunnel3 migration in the dest side:
      * stream -> pipe -> recvfd of libxlDomainStartRestore
      */
-    if (pipe(dataFD) < 0)
+    if (virPipe(dataFD) < 0)
         goto endjob;
 
     /* Stream data will be written to pipeIn */
@@ -916,10 +916,8 @@ libxlMigrationSrcStartTunnel(libxlDriverPrivatePtr driver,
 
     tc->dataFD[0] = -1;
     tc->dataFD[1] = -1;
-    if (pipe(tc->dataFD) < 0) {
-        virReportError(errno, "%s", _("Unable to make pipes"));
+    if (virPipe(tc->dataFD) < 0)
         goto out;
-    }
 
     arg = &tc->tmThread;
     /* Read from pipe */
