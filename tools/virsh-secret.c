@@ -182,6 +182,10 @@ static const vshCmdOptDef opts_secret_set_value[] = {
      .flags = VSH_OFLAG_REQ_OPT,
      .help = N_("read secret from file"),
     },
+    {.name = "plain",
+     .type = VSH_OT_BOOL,
+     .help = N_("read the secret from file without converting from base64")
+    },
     {.name = "base64",
      .type = VSH_OT_STRING,
      .help = N_("base64-encoded secret value")
@@ -199,9 +203,11 @@ cmdSecretSetValue(vshControl *ctl, const vshCmd *cmd)
     size_t file_len = 0;
     unsigned char *value;
     size_t value_size;
+    bool plain = vshCommandOptBool(cmd, "plain");
     int res;
 
     VSH_EXCLUSIVE_OPTIONS("file", "base64");
+    VSH_EXCLUSIVE_OPTIONS("plain", "base64");
 
     if (!(secret = virshCommandOptSecret(ctl, cmd, NULL)))
         return false;
@@ -232,7 +238,13 @@ cmdSecretSetValue(vshControl *ctl, const vshCmd *cmd)
         base64 = file_buf;
     }
 
-    value = g_base64_decode(base64, &value_size);
+    if (plain) {
+        value = g_steal_pointer(&file_buf);
+        value_size = file_len;
+        file_len = 0;
+    } else {
+        value = g_base64_decode(base64, &value_size);
+    }
 
     res = virSecretSetValue(secret, value, value_size, 0);
     VIR_DISPOSE_N(value, value_size);
