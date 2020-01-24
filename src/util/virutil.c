@@ -31,9 +31,7 @@
 # include <conio.h>
 #endif /* WIN32 */
 
-#ifdef MAJOR_IN_MKDEV
-# include <sys/mkdev.h>
-#elif MAJOR_IN_SYSMACROS
+#ifdef __linux__
 # include <sys/sysmacros.h>
 #endif
 

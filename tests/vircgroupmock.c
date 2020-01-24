@@ -23,13 +23,7 @@
 # include <unistd.h>
 # include <fcntl.h>
 # include <sys/stat.h>
-
-# ifdef MAJOR_IN_MKDEV
-#  include <sys/mkdev.h>
-# elif MAJOR_IN_SYSMACROS
-#  include <sys/sysmacros.h>
-# endif
-
+# include <sys/sysmacros.h>
 # include <stdarg.h>
 # include "testutilslxc.h"
 # include "virstring.h"
