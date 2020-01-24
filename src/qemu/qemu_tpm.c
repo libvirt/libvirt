@@ -865,19 +865,18 @@ qemuExtTPMStart(virQEMUDriverPtr driver,
                 virDomainObjPtr vm,
                 bool incomingMigration)
 {
-    int ret = 0;
     virDomainTPMDefPtr tpm = vm->def->tpm;
 
     switch (tpm->type) {
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
-        ret = qemuExtTPMStartEmulator(driver, vm, incomingMigration);
-        break;
+        return qemuExtTPMStartEmulator(driver, vm, incomingMigration);
+
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
     case VIR_DOMAIN_TPM_TYPE_LAST:
         break;
     }
 
-    return ret;
+    return 0;
 }
 
 
