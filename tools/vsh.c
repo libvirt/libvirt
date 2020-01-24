@@ -2152,7 +2152,11 @@ vshEventCleanup(vshControl *ctl)
     virEventUpdateTimeout(ctl->eventTimerId, -1);
 }
 
-#define LOGFILE_FLAGS (O_WRONLY | O_APPEND | O_CREAT | O_SYNC)
+#ifdef O_SYNC
+# define LOGFILE_FLAGS (O_WRONLY | O_APPEND | O_CREAT | O_SYNC)
+#else
+# define LOGFILE_FLAGS (O_WRONLY | O_APPEND | O_CREAT)
+#endif
 
 /**
  * vshOpenLogFile:
