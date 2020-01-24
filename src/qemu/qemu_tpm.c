@@ -793,7 +793,6 @@ qemuExtTPMStartEmulator(virQEMUDriverPtr driver,
                         virDomainObjPtr vm,
                         bool incomingMigration)
 {
-    int ret = -1;
     g_autoptr(virCommand) cmd = NULL;
     int exitstatus = 0;
     g_autofree char *errbuf = NULL;
@@ -817,23 +816,23 @@ qemuExtTPMStartEmulator(virQEMUDriverPtr driver,
                                             cfg->swtpm_group,
                                             cfg->swtpmStateDir, shortName,
                                             incomingMigration)))
-        goto cleanup;
+        return -1;
 
     if (qemuExtDeviceLogCommand(driver, vm, cmd, "TPM Emulator") < 0)
-        goto cleanup;
+        return -1;
 
     virCommandSetErrorBuffer(cmd, &errbuf);
 
     if (qemuSecurityStartTPMEmulator(driver, vm, cmd,
                                      cfg->swtpm_user, cfg->swtpm_group,
                                      &exitstatus, &cmdret) < 0)
-        goto cleanup;
+        return -1;
 
     if (cmdret < 0 || exitstatus != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not start 'swtpm'. exitstatus: %d, "
                          "error: %s"), exitstatus, errbuf);
-        goto cleanup;
+        return -1;
     }
 
     /* check that the swtpm has written its pid into the file */
@@ -852,15 +851,12 @@ qemuExtTPMStartEmulator(virQEMUDriverPtr driver,
     if (timeout <= 0)
         goto error;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 
  error:
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("swtpm failed to start"));
-    goto cleanup;
+    return -1;
 }
 
 
