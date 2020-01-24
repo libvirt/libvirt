@@ -7599,7 +7599,7 @@ virDomainDeviceAliasIsUserAlias(const char *aliasStr)
 
 
 static int
-virDomainDeviceInfoParseXML(virDomainXMLOptionPtr xmlopt G_GNUC_UNUSED,
+virDomainDeviceInfoParseXML(virDomainXMLOptionPtr xmlopt,
                             xmlNodePtr node,
                             virDomainDeviceInfoPtr info,
                             unsigned int flags)
