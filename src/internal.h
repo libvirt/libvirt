@@ -482,3 +482,9 @@ enum {
 #ifndef ENODATA
 # define ENODATA EIO
 #endif
+
+#ifdef WIN32
+# ifndef ENOMSG
+#  define ENOMSG 122
+# endif
+#endif
