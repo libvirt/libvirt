@@ -188,18 +188,17 @@ static const vshCmdOptDef opts_secret_set_value[] = {
 static bool
 cmdSecretSetValue(vshControl *ctl, const vshCmd *cmd)
 {
-    virSecretPtr secret;
+    g_autoptr(virshSecret) secret = NULL;
     size_t value_size;
     const char *base64 = NULL;
     unsigned char *value;
     int res;
-    bool ret = false;
 
     if (!(secret = virshCommandOptSecret(ctl, cmd, NULL)))
         return false;
 
     if (vshCommandOptStringReq(ctl, cmd, "base64", &base64) < 0)
-        goto cleanup;
+        return false;
 
     value = g_base64_decode(base64, &value_size);
 
@@ -209,14 +208,10 @@ cmdSecretSetValue(vshControl *ctl, const vshCmd *cmd)
 
     if (res != 0) {
         vshError(ctl, "%s", _("Failed to set secret value"));
-        goto cleanup;
+        return false;
     }
     vshPrintExtra(ctl, "%s", _("Secret value set\n"));
-    ret = true;
-
- cleanup:
-    virshSecretFree(secret);
-    return ret;
+    return true;
 }
 
 /*
