@@ -3186,7 +3186,7 @@ static int prlsdkConfigureGateways(PRL_HANDLE sdknet, virDomainNetDefPtr net)
                                  : VIR_SOCKET_ADDR_IPV6_ALL),
                                 VIR_SOCKET_ADDR_FAMILY(addrdst)));
         /* virSocketAddrParse raises an error
-         * and we are not going to report it, reset it expicitly*/
+         * and we are not going to report it, reset it explicitly */
         virResetLastError();
 
         if (!virSocketAddrEqual(addrdst, &zero)) {

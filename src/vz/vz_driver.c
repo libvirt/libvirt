@@ -341,7 +341,7 @@ vzDriverObjNew(void)
     ignore_value(prlsdkLoadDomains(driver));
 
     /* As far as waitDomainJob finally calls virReportErrorHelper
-     * and we are not going to report it, reset it expicitly*/
+     * and we are not going to report it, reset it explicitly */
     virResetLastError();
 
     return driver;
