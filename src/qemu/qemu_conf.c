@@ -1201,32 +1201,42 @@ virQEMUDriverCreateXMLConf(virQEMUDriverPtr driver,
 virCapsHostNUMAPtr
 virQEMUDriverGetHostNUMACaps(virQEMUDriverPtr driver)
 {
+    virCapsHostNUMAPtr hostnuma;
+
     qemuDriverLock(driver);
 
     if (!driver->hostnuma)
         driver->hostnuma = virCapabilitiesHostNUMANewHost();
 
+    hostnuma = driver->hostnuma;
+
     qemuDriverUnlock(driver);
 
-    virCapabilitiesHostNUMARef(driver->hostnuma);
+    if (hostnuma)
+        virCapabilitiesHostNUMARef(hostnuma);
 
-    return driver->hostnuma;
+    return hostnuma;
 }
 
 
 virCPUDefPtr
 virQEMUDriverGetHostCPU(virQEMUDriverPtr driver)
 {
+    virCPUDefPtr hostcpu;
+
     qemuDriverLock(driver);
 
     if (!driver->hostcpu)
         driver->hostcpu = virCPUProbeHost(virArchFromHost());
 
+    hostcpu = driver->hostcpu;
+
     qemuDriverUnlock(driver);
 
-    virCPUDefRef(driver->hostcpu);
+    if (hostcpu)
+        virCPUDefRef(hostcpu);
 
-    return driver->hostcpu;
+    return hostcpu;
 }
 
 
