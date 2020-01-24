@@ -794,12 +794,12 @@ qemuExtTPMStartEmulator(virQEMUDriverPtr driver,
                         bool incomingMigration)
 {
     int ret = -1;
-    virCommandPtr cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     int exitstatus = 0;
-    char *errbuf = NULL;
-    virQEMUDriverConfigPtr cfg;
+    g_autofree char *errbuf = NULL;
+    g_autoptr(virQEMUDriverConfig) cfg = NULL;
     virDomainTPMDefPtr tpm = vm->def->tpm;
-    char *shortName = virDomainDefGetShortName(vm->def);
+    g_autofree char *shortName = virDomainDefGetShortName(vm->def);
     int cmdret = 0, timeout, rc;
     pid_t pid;
 
@@ -855,12 +855,6 @@ qemuExtTPMStartEmulator(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    VIR_FREE(shortName);
-    VIR_FREE(errbuf);
-    virCommandFree(cmd);
-
-    virObjectUnref(cfg);
-
     return ret;
 
  error:
