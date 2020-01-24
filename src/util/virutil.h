@@ -161,3 +161,37 @@ char *virHostGetDRMRenderNode(void) G_GNUC_NO_INLINE;
     (((lvalue) = (rvalue)) != (rvalue))
 
 char *virGetPassword(void);
+
+/*
+ * virPipe:
+ *
+ * Open a pair of FDs which can be used to communicate
+ * with each other. The FDs will have O_CLOEXEC set.
+ * This will report a libvirt error on failure.
+ *
+ * Returns: -1 on error, 0 on success
+ */
+int virPipe(int fds[2]);
+
+/*
+ * virPipeQuiet:
+ *
+ * Open a pair of FDs which can be used to communicate
+ * with each other. The FDs will have O_CLOEXEC set.
+ * This will set errno on failure.
+ *
+ * Returns: -1 on error, 0 on success
+ */
+int virPipeQuiet(int fds[2]);
+
+/*
+ * virPipe:
+ *
+ * Open a pair of FDs which can be used to communicate
+ * with each other. The FDs will have O_CLOEXEC and
+ * O_NONBLOCK set.
+ * This will report a libvirt error on failure.
+ *
+ * Returns: -1 on error, 0 on success
+ */
+int virPipeNonBlock(int fds[2]);

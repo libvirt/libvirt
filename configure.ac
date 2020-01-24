@@ -368,6 +368,7 @@ AC_CHECK_FUNCS_ONCE([\
   newlocale \
   posix_fallocate \
   posix_memalign \
+  pipe2 \
   prlimit \
   sched_getaffinity \
   sched_setscheduler \

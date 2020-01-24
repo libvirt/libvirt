@@ -1769,3 +1769,67 @@ char *virGetPassword(void)
     return g_strdup(getpass(""));
 #endif /* ! WIN32 */
 }
+
+
+static int
+virPipeImpl(int fds[2], bool nonblock, bool errreport)
+{
+#ifdef HAVE_PIPE2
+    int flags = O_CLOEXEC;
+    if (nonblock)
+        flags |= O_NONBLOCK;
+    int rv = pipe2(fds, flags);
+#else /* !HAVE_PIPE2 */
+# ifdef WIN32
+    int rv = _pipe(fds, 4096, _O_BINARY);
+# else /* !WIN32 */
+    int rv = pipe(fds);
+# endif /* !WIN32 */
+#endif /* !HAVE_PIPE2 */
+
+    if (rv < 0) {
+        if (errreport)
+            virReportSystemError(errno, "%s",
+                                 _("Unable to create pipes"));
+        return rv;
+    }
+
+#ifndef HAVE_PIPE2
+    if (nonblock) {
+        if (virSetNonBlock(fds[0]) < 0 ||
+            virSetNonBlock(fds[1]) < 0) {
+            if (errreport)
+                virReportSystemError(errno, "%s",
+                                     _("Unable to set pipes to non-blocking"));
+            virReportSystemError(errno, "%s",
+                                 _("Unable to create pipes"));
+            VIR_FORCE_CLOSE(fds[0]);
+            VIR_FORCE_CLOSE(fds[1]);
+            return -1;
+        }
+    }
+#endif /* !HAVE_PIPE2 */
+
+    return 0;
+}
+
+
+int
+virPipe(int fds[2])
+{
+    return virPipeImpl(fds, false, true);
+}
+
+
+int
+virPipeQuiet(int fds[2])
+{
+    return virPipeImpl(fds, false, false);
+}
+
+
+int
+virPipeNonBlock(int fds[2])
+{
+    return virPipeImpl(fds, true, true);
+}
