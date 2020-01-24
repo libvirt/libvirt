@@ -456,7 +456,7 @@ virCPUProbeHost(virArch arch)
 {
     virNodeInfo nodeinfo;
 
-    if (virCapabilitiesGetNodeInfo(&nodeinfo))
+    if (virCapabilitiesGetNodeInfo(&nodeinfo) < 0)
         return NULL;
 
     return virCPUGetHost(arch, VIR_CPU_TYPE_HOST, &nodeinfo, NULL);
