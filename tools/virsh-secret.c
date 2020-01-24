@@ -240,29 +240,23 @@ static const vshCmdOptDef opts_secret_get_value[] = {
 static bool
 cmdSecretGetValue(vshControl *ctl, const vshCmd *cmd)
 {
-    virSecretPtr secret;
+    g_autoptr(virshSecret) secret = NULL;
     VIR_AUTODISPOSE_STR base64 = NULL;
     unsigned char *value;
     size_t value_size;
-    bool ret = false;
 
-    secret = virshCommandOptSecret(ctl, cmd, NULL);
-    if (secret == NULL)
+    if (!(secret = virshCommandOptSecret(ctl, cmd, NULL)))
         return false;
 
-    value = virSecretGetValue(secret, &value_size, 0);
-    if (value == NULL)
-        goto cleanup;
+    if (!(value = virSecretGetValue(secret, &value_size, 0)))
+        return false;
 
     base64 = g_base64_encode(value, value_size);
 
     vshPrint(ctl, "%s", base64);
-    ret = true;
 
- cleanup:
     VIR_DISPOSE_N(value, value_size);
-    virshSecretFree(secret);
-    return ret;
+    return true;
 }
 
 /*
