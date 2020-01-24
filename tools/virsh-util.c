@@ -250,6 +250,17 @@ virshDomainSnapshotFree(virDomainSnapshotPtr snap)
 }
 
 
+void
+virshSecretFree(virSecretPtr secret)
+{
+    if (!secret)
+        return;
+
+    vshSaveLibvirtHelperError();
+    virSecretFree(secret); /* sc_prohibit_obj_free_apis_in_virsh */
+}
+
+
 int
 virshDomainGetXMLFromDom(vshControl *ctl,
                          virDomainPtr dom,

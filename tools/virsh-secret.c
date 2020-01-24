@@ -20,6 +20,7 @@
 
 #include <config.h>
 #include "virsh-secret.h"
+#include "virsh-util.h"
 
 #include "internal.h"
 #include "virbuffer.h"
@@ -106,8 +107,7 @@ cmdSecretDefine(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     VIR_FREE(buffer);
-    if (res)
-        virSecretFree(res);
+    virshSecretFree(res);
     return ret;
 }
 
@@ -153,7 +153,7 @@ cmdSecretDumpXML(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virSecretFree(secret);
+    virshSecretFree(secret);
     return ret;
 }
 
@@ -215,7 +215,7 @@ cmdSecretSetValue(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virSecretFree(secret);
+    virshSecretFree(secret);
     return ret;
 }
 
@@ -266,7 +266,7 @@ cmdSecretGetValue(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     VIR_DISPOSE_N(value, value_size);
-    virSecretFree(secret);
+    virshSecretFree(secret);
     return ret;
 }
 
@@ -312,7 +312,7 @@ cmdSecretUndefine(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virSecretFree(secret);
+    virshSecretFree(secret);
     return ret;
 }
 
@@ -348,10 +348,9 @@ virshSecretListFree(virshSecretListPtr list)
     size_t i;
 
     if (list && list->secrets) {
-        for (i = 0; i < list->nsecrets; i++) {
-            if (list->secrets[i])
-                virSecretFree(list->secrets[i]);
-        }
+        for (i = 0; i < list->nsecrets; i++)
+            virshSecretFree(list->secrets[i]);
+
         VIR_FREE(list->secrets);
     }
     VIR_FREE(list);
@@ -763,8 +762,7 @@ cmdSecretEvent(vshControl *ctl, const vshCmd *cmd)
     if (eventId >= 0 &&
         virConnectSecretEventDeregisterAny(priv->conn, eventId) < 0)
         ret = false;
-    if (secret)
-        virSecretFree(secret);
+    virshSecretFree(secret);
     return ret;
 }
 

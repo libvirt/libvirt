@@ -45,6 +45,11 @@ void
 virshDomainFree(virDomainPtr dom);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virshDomain, virshDomainFree);
 
+typedef virSecret virshSecret;
+void
+virshSecretFree(virSecretPtr secret);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virshSecret, virshSecretFree);
+
 void
 virshDomainCheckpointFree(virDomainCheckpointPtr chk);
 

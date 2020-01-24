@@ -1118,7 +1118,7 @@ sc_gettext_init:
 	  $(_sc_search_regexp)
 
 sc_prohibit_obj_free_apis_in_virsh:
-	@prohibit='\bvir(Domain|DomainSnapshot)Free\b' \
+	@prohibit='\bvir(Domain|DomainSnapshot|Secret)Free\b' \
 	in_vc_files='virsh.*\.[ch]$$' \
 	exclude='sc_prohibit_obj_free_apis_in_virsh' \
 	halt='avoid using virDomain(Snapshot)Free in virsh, use virsh-prefixed wrappers instead' \

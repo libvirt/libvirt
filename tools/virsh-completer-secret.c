@@ -23,6 +23,7 @@
 #include "virsh-completer-secret.h"
 #include "viralloc.h"
 #include "virsh-secret.h"
+#include "virsh-util.h"
 #include "virsh.h"
 #include "virstring.h"
 
@@ -61,7 +62,7 @@ virshSecretUUIDCompleter(vshControl *ctl,
 
  cleanup:
     for (i = 0; i < nsecrets; i++)
-        virSecretFree(secrets[i]);
+        virshSecretFree(secrets[i]);
     VIR_FREE(secrets);
     return ret;
 }
