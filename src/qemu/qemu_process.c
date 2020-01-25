@@ -6735,7 +6735,9 @@ qemuProcessLaunch(virConnectPtr conn,
     if (qemuProcessGenID(vm, flags) < 0)
         goto cleanup;
 
-    if (qemuExtDevicesStart(driver, vm, incoming != NULL) < 0)
+    if (qemuExtDevicesStart(driver, vm,
+                            qemuDomainLogContextGetManager(logCtxt),
+                            incoming != NULL) < 0)
         goto cleanup;
 
     VIR_DEBUG("Building emulator command line");

@@ -46,6 +46,7 @@ void qemuExtDevicesCleanupHost(virQEMUDriverPtr driver,
 
 int qemuExtDevicesStart(virQEMUDriverPtr driver,
                         virDomainObjPtr vm,
+                        virLogManagerPtr logManager,
                         bool incomingMigration)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
     G_GNUC_WARN_UNUSED_RESULT;
