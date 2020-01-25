@@ -75,6 +75,7 @@
   # access to firmware's etc
   /usr/share/AAVMF/** r,
   /usr/share/bochs/** r,
+  /usr/share/edk2-ovmf/** r,
   /usr/share/kvm/** r,
   /usr/share/misc/sgabios.bin r,
   /usr/share/openbios/** r,
@@ -86,6 +87,7 @@
   /usr/share/qemu-kvm/** r,
   /usr/share/qemu/** r,
   /usr/share/seabios/** r,
+  /usr/share/sgabios/** r,
   /usr/share/slof/** r,
   /usr/share/vgabios/** r,
 
