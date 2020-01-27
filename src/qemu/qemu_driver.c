@@ -14654,7 +14654,7 @@ qemuDomainSnapshotCreateInactiveExternal(virQEMUDriverPtr driver,
             snapdisk->src->format = VIR_STORAGE_FILE_QCOW2;
 
         if (qemuDomainStorageSourceValidateDepth(defdisk->src, 1, defdisk->dst) < 0)
-            return -1;
+            goto cleanup;
 
         /* creates cmd line args: qemu-img create -f qcow2 -o */
         if (!(cmd = virCommandNewArgList(qemuImgPath,
