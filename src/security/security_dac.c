@@ -1263,7 +1263,9 @@ virSecurityDACSetHostdevLabel(virSecurityManagerPtr mgr,
                 virPCIDeviceFree(pci);
                 return -1;
             }
-            ret = virSecurityDACSetPCILabel(pci, vfioGroupDev, &cbdata);
+            ret = virSecurityDACSetHostdevLabelHelper(vfioGroupDev,
+                                                      false,
+                                                      &cbdata);
             VIR_FREE(vfioGroupDev);
         } else {
             ret = virPCIDeviceFileIterate(pci,
@@ -1430,7 +1432,8 @@ virSecurityDACRestoreHostdevLabel(virSecurityManagerPtr mgr,
                 virPCIDeviceFree(pci);
                 return -1;
             }
-            ret = virSecurityDACRestorePCILabel(pci, vfioGroupDev, mgr);
+            ret = virSecurityDACRestoreFileLabelInternal(mgr, NULL,
+                                                         vfioGroupDev, false);
             VIR_FREE(vfioGroupDev);
         } else {
             ret = virPCIDeviceFileIterate(pci, virSecurityDACRestorePCILabel, mgr);

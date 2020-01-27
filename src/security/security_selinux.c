@@ -2118,7 +2118,9 @@ virSecuritySELinuxSetHostdevSubsysLabel(virSecurityManagerPtr mgr,
                 virPCIDeviceFree(pci);
                 return -1;
             }
-            ret = virSecuritySELinuxSetPCILabel(pci, vfioGroupDev, &data);
+            ret = virSecuritySELinuxSetHostdevLabelHelper(vfioGroupDev,
+                                                          false,
+                                                          &data);
             VIR_FREE(vfioGroupDev);
         } else {
             ret = virPCIDeviceFileIterate(pci, virSecuritySELinuxSetPCILabel, &data);
@@ -2356,7 +2358,7 @@ virSecuritySELinuxRestoreHostdevSubsysLabel(virSecurityManagerPtr mgr,
                 virPCIDeviceFree(pci);
                 return -1;
             }
-            ret = virSecuritySELinuxRestorePCILabel(pci, vfioGroupDev, mgr);
+            ret = virSecuritySELinuxRestoreFileLabel(mgr, vfioGroupDev, false);
             VIR_FREE(vfioGroupDev);
         } else {
             ret = virPCIDeviceFileIterate(pci, virSecuritySELinuxRestorePCILabel, mgr);
