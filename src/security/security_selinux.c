@@ -2001,7 +2001,9 @@ virSecuritySELinuxMoveImageMetadata(virSecurityManagerPtr mgr,
 
 
 static int
-virSecuritySELinuxSetHostdevLabelHelper(const char *file, void *opaque)
+virSecuritySELinuxSetHostdevLabelHelper(const char *file,
+                                        bool remember,
+                                        void *opaque)
 {
     virSecurityLabelDefPtr secdef;
     virSecuritySELinuxCallbackDataPtr data = opaque;
@@ -2011,21 +2013,21 @@ virSecuritySELinuxSetHostdevLabelHelper(const char *file, void *opaque)
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
     if (secdef == NULL)
         return 0;
-    return virSecuritySELinuxSetFilecon(mgr, file, secdef->imagelabel, true);
+    return virSecuritySELinuxSetFilecon(mgr, file, secdef->imagelabel, remember);
 }
 
 static int
 virSecuritySELinuxSetPCILabel(virPCIDevicePtr dev G_GNUC_UNUSED,
                               const char *file, void *opaque)
 {
-    return virSecuritySELinuxSetHostdevLabelHelper(file, opaque);
+    return virSecuritySELinuxSetHostdevLabelHelper(file, true, opaque);
 }
 
 static int
 virSecuritySELinuxSetUSBLabel(virUSBDevicePtr dev G_GNUC_UNUSED,
                               const char *file, void *opaque)
 {
-    return virSecuritySELinuxSetHostdevLabelHelper(file, opaque);
+    return virSecuritySELinuxSetHostdevLabelHelper(file, true, opaque);
 }
 
 static int
@@ -2056,7 +2058,7 @@ static int
 virSecuritySELinuxSetHostLabel(virSCSIVHostDevicePtr dev G_GNUC_UNUSED,
                                const char *file, void *opaque)
 {
-    return virSecuritySELinuxSetHostdevLabelHelper(file, opaque);
+    return virSecuritySELinuxSetHostdevLabelHelper(file, true, opaque);
 }
 
 
@@ -2164,7 +2166,7 @@ virSecuritySELinuxSetHostdevSubsysLabel(virSecurityManagerPtr mgr,
         if (!(vfiodev = virMediatedDeviceGetIOMMUGroupDev(mdevsrc->uuidstr)))
             return ret;
 
-        ret = virSecuritySELinuxSetHostdevLabelHelper(vfiodev, &data);
+        ret = virSecuritySELinuxSetHostdevLabelHelper(vfiodev, true, &data);
 
         VIR_FREE(vfiodev);
         break;

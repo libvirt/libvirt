@@ -1144,6 +1144,7 @@ virSecurityDACMoveImageMetadata(virSecurityManagerPtr mgr,
 
 static int
 virSecurityDACSetHostdevLabelHelper(const char *file,
+                                    bool remember,
                                     void *opaque)
 {
     virSecurityDACCallbackDataPtr cbdata = opaque;
@@ -1156,7 +1157,7 @@ virSecurityDACSetHostdevLabelHelper(const char *file,
     if (virSecurityDACGetIds(secdef, priv, &user, &group, NULL, NULL) < 0)
         return -1;
 
-    return virSecurityDACSetOwnership(mgr, NULL, file, user, group, true);
+    return virSecurityDACSetOwnership(mgr, NULL, file, user, group, remember);
 }
 
 
@@ -1165,7 +1166,7 @@ virSecurityDACSetPCILabel(virPCIDevicePtr dev G_GNUC_UNUSED,
                           const char *file,
                           void *opaque)
 {
-    return virSecurityDACSetHostdevLabelHelper(file, opaque);
+    return virSecurityDACSetHostdevLabelHelper(file, true, opaque);
 }
 
 
@@ -1174,7 +1175,7 @@ virSecurityDACSetUSBLabel(virUSBDevicePtr dev G_GNUC_UNUSED,
                           const char *file,
                           void *opaque)
 {
-    return virSecurityDACSetHostdevLabelHelper(file, opaque);
+    return virSecurityDACSetHostdevLabelHelper(file, true, opaque);
 }
 
 
@@ -1183,7 +1184,7 @@ virSecurityDACSetSCSILabel(virSCSIDevicePtr dev G_GNUC_UNUSED,
                            const char *file,
                            void *opaque)
 {
-    return virSecurityDACSetHostdevLabelHelper(file, opaque);
+    return virSecurityDACSetHostdevLabelHelper(file, true, opaque);
 }
 
 
@@ -1192,7 +1193,7 @@ virSecurityDACSetHostLabel(virSCSIVHostDevicePtr dev G_GNUC_UNUSED,
                            const char *file,
                            void *opaque)
 {
-    return virSecurityDACSetHostdevLabelHelper(file, opaque);
+    return virSecurityDACSetHostdevLabelHelper(file, true, opaque);
 }
 
 
@@ -1312,7 +1313,7 @@ virSecurityDACSetHostdevLabel(virSecurityManagerPtr mgr,
         if (!(vfiodev = virMediatedDeviceGetIOMMUGroupDev(mdevsrc->uuidstr)))
             return -1;
 
-        ret = virSecurityDACSetHostdevLabelHelper(vfiodev, &cbdata);
+        ret = virSecurityDACSetHostdevLabelHelper(vfiodev, true, &cbdata);
 
         VIR_FREE(vfiodev);
         break;
