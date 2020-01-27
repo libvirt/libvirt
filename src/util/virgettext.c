@@ -21,6 +21,9 @@
 #include <config.h>
 
 #include <locale.h>
+#ifdef HAVE_XLOCALE_H
+# include <xlocale.h>
+#endif
 
 #include "configmake.h"
 #include "internal.h"

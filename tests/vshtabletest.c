@@ -19,6 +19,9 @@
 #include <config.h>
 
 #include <locale.h>
+#ifdef HAVE_XLOCALE_H
+# include <xlocale.h>
+#endif
 #include <wchar.h>
 #include <wctype.h>
 

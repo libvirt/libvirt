@@ -20,6 +20,9 @@
 
 #include <glib/gprintf.h>
 #include <locale.h>
+#ifdef HAVE_XLOCALE_H
+# include <xlocale.h>
+#endif
 
 #include "virstring.h"
 #include "virthread.h"

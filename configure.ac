@@ -399,6 +399,7 @@ AC_CHECK_HEADERS([\
   sys/syscall.h \
   sys/sysctl.h \
   sys/ucred.h \
+  xlocale.h \
   ])
 dnl Check whether endian provides handy macros.
 AC_CHECK_DECLS([htole64], [], [], [[#include <endian.h>]])
