@@ -151,7 +151,7 @@ int main(int argc, char **argv)
     signal(SIGHUP, qemuShimSigShutdown);
 
     if (root == NULL) {
-        if (!(root = g_dir_make_tmp("libvirt-qemu-shim-XXXXXX", &error))) {
+        if (!(root = g_dir_make_tmp("virt-qemu-run-XXXXXX", &error))) {
             g_printerr("%s: cannot create temporary dir: %s\n",
                        argv[0], error->message);
             return 1;
