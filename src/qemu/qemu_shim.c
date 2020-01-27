@@ -263,7 +263,7 @@ int main(int argc, char **argv)
             conn, dom, VIR_DOMAIN_EVENT_ID_LIFECYCLE,
             VIR_DOMAIN_EVENT_CALLBACK(qemuShimDomShutdown),
             NULL, NULL) < 0) {
-        g_printerr("%s: cannot regiser for lifecycle events: %s\n",
+        g_printerr("%s: cannot register for lifecycle events: %s\n",
                    argv[0], virGetLastErrorMessage());
         goto cleanup;
     }
@@ -285,7 +285,7 @@ int main(int argc, char **argv)
         goto cleanup;
     }
     if (verbose)
-        g_printerr("%s: %lld: guest running, Ctrl-C to stop nowbbbb\n",
+        g_printerr("%s: %lld: guest running, Ctrl-C to stop now\n",
                    argv[0], deltams());
 
     if (debug) {
