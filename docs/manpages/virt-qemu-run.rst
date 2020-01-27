@@ -14,13 +14,13 @@ Run a standalone QEMU guest
 SYNOPSIS
 ========
 
-``virt-qemu-run [OPTIONS...] [IGUEST-XML]
+``virt-qemu-run [OPTIONS...] [GUEST-XML]``
 
 DESCRIPTION
 ===========
 
 This tool provides a way to run a standalone QEMU guest such that it
-is completely independant of libvirtd. It makes use of the embedded
+is completely independent of libvirtd. It makes use of the embedded
 QEMU driver support to run the VM placing files under an isolated
 directory tree. When the guest is run with this tool it is invisible
 to libvirtd and thus also invisible to other libvirt tools such as
