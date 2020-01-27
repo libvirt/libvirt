@@ -45,7 +45,7 @@ qemuShimEventLoop(void *opaque G_GNUC_UNUSED)
 /* Runs in event loop thread context */
 static void
 qemuShimEventLoopStop(int watch G_GNUC_UNUSED,
-                      int fd G_GNUC_UNUSED,
+                      int fd,
                       int event G_GNUC_UNUSED,
                       void *opaque G_GNUC_UNUSED)
 {
@@ -102,7 +102,7 @@ int main(int argc, char **argv)
     GOptionContext *ctx;
     GOptionEntry entries[] = {
         { "secret", 's', 0, G_OPTION_ARG_STRING_ARRAY, &secrets, "Load secret file", "SECRET-XML-FILE,SECRET-VALUE-FILE" },
-        { "root", 'r', 0, G_OPTION_ARG_STRING, &root, "Root directory", "DIR"},
+        { "root", 'r', 0, G_OPTION_ARG_STRING, &root, "Root directory", "DIR" },
         { "debug", 'd', 0, G_OPTION_ARG_NONE, &debug, "Debug output", NULL },
         { "verbose", 'v', 0, G_OPTION_ARG_NONE, &verbose, "Verbose output", NULL },
         { 0 }
