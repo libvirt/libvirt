@@ -566,7 +566,10 @@
 
     <p>Reports whether the hypervisor supports the backup, checkpoint, and
     related features. (<code>virDomainBackupBegin</code>,
-    <code>virDomainCheckpointCreateXML</code> etc).
+    <code>virDomainCheckpointCreateXML</code> etc). The presence of the
+    <code>backup</code> element even if <code>supported='no'</code> implies that
+    the <code>VIR_DOMAIN_UNDEFINE_CHECKPOINTS_METADATA</code> flag for
+    <code>virDomainUndefine</code> is supported.
     </p>
 
     <h4><a id="elementsSEV">SEV capabilities</a></h4>
