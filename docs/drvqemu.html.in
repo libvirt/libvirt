@@ -66,7 +66,7 @@ qemu+ssh://root@example.com/system   (remote access, SSH tunnelled)
     <h3><a id="uriembedded">Embedded driver</a></h3>
 
     <p>
-      Since 6.0.0 the QEMU driver has experimental support for operating
+      Since 6.1.0 the QEMU driver has experimental support for operating
       in an embedded mode. In this scenario, rather than connecting to
       the libvirtd daemon, the QEMU driver runs in the client application
       process directly. To use this the client application must have
@@ -149,7 +149,7 @@ qemu+ssh://root@example.com/system   (remote access, SSH tunnelled)
       when opening a future connection.
     </p>
 
-    <h4><a id="embedAPI">API usage with event loop></a></h4>
+    <h4><a id="embedAPI">API usage with event loop</a></h4>
 
     <p>
       To use the QEMU driver in embedded mode the application must
