@@ -253,6 +253,9 @@ bin_PROGRAMS += virt-qemu-run
 
 virt_qemu_run_SOURCES = $(QEMU_SHIM_SOURCES)
 
-virt_qemu_run_LDADD = libvirt.la
-virt_qemu_run_LDFLAGS = -Wl,--export-dynamic
+virt_qemu_run_LDADD = \
+	libvirt.la \
+	$(GLIB_LIBS) \
+	$(NULL)
+virt_qemu_run_LDFLAGS = -export-dynamic
 endif WITH_QEMU
