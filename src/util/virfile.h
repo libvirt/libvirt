@@ -293,9 +293,6 @@ char *virFileFindMountPoint(const char *type);
     virBuildPathInternal(path, __VA_ARGS__, NULL)
 int virBuildPathInternal(char **path, ...) G_GNUC_NULL_TERMINATED;
 
-int virFilePrintf(FILE *fp, const char *msg, ...)
-    G_GNUC_PRINTF(2, 3);
-
 typedef struct _virHugeTLBFS virHugeTLBFS;
 typedef virHugeTLBFS *virHugeTLBFSPtr;
 struct _virHugeTLBFS {

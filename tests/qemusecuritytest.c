@@ -146,7 +146,7 @@ mymain(void)
                                                             VIR_SECURITY_MANAGER_PRIVILEGED |
                                                             VIR_SECURITY_MANAGER_DYNAMIC_OWNERSHIP,
                                                             NULL))) {
-        virFilePrintf(stderr, "Cannot initialize DAC security driver");
+        fprintf(stderr, "Cannot initialize DAC security driver");
         ret = -1;
         goto cleanup;
     }

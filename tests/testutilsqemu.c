@@ -405,14 +405,14 @@ int qemuTestDriverInit(virQEMUDriver *driver)
     driver->config->channelTargetDir = g_strdup("/tmp/channel");
 
     if (!g_mkdtemp(statedir)) {
-        virFilePrintf(stderr, "Cannot create fake stateDir");
+        fprintf(stderr, "Cannot create fake stateDir");
         goto error;
     }
 
     driver->config->stateDir = g_strdup(statedir);
 
     if (!g_mkdtemp(configdir)) {
-        virFilePrintf(stderr, "Cannot create fake configDir");
+        fprintf(stderr, "Cannot create fake configDir");
         goto error;
     }
 

@@ -3331,37 +3331,6 @@ virFileRemoveLastComponent(char *path)
         path[0] = '\0';
 }
 
-/**
- * virFilePrintf:
- *
- * A replacement for fprintf() which uses g_strdup_vprintf
- * to ensure that portable string format placeholders can
- * be used, since gnulib's fprintf() replacement is not
- * LGPLV2+ compatible
- */
-int virFilePrintf(FILE *fp, const char *msg, ...)
-{
-    va_list vargs;
-    g_autofree char *str = NULL;
-    int ret = -1;
-
-    va_start(vargs, msg);
-
-    str = g_strdup_vprintf(msg, vargs);
-    ret = strlen(str);
-
-    if (fwrite(str, 1, ret, fp) != ret) {
-        virReportSystemError(errno, "%s",
-                             _("Could not write to stream"));
-        ret = -1;
-    }
-
-    va_end(vargs);
-
-    return ret;
-}
-
-
 #ifdef __linux__
 
 # ifndef NFS_SUPER_MAGIC

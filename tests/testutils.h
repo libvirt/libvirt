@@ -30,12 +30,6 @@
 #define EXIT_AM_SKIP 77 /* tell Automake we're skipping a test */
 #define EXIT_AM_HARDFAIL 99 /* tell Automake that the framework is broken */
 
-/* Work around lack of gnulib support for fprintf %z */
-#ifndef NO_LIBVIRT
-# undef fprintf
-# define fprintf virFilePrintf
-#endif
-
 /* Makefile.am provides these two definitions */
 #if !defined(abs_srcdir) || !defined(abs_builddir)
 # error Fix Makefile.am

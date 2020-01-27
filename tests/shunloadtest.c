@@ -40,7 +40,7 @@
 
 #include <config.h>
 
-#define NO_LIBVIRT /* This file intentionally does not link to libvirt */
+#define VIR_NO_GLIB_STDIO /* This file intentionally does not link to libvirt/glib */
 #include "testutils.h"
 
 #ifdef linux

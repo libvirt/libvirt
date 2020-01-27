@@ -58,16 +58,16 @@ static int testStreq(const void *args)
     strneq_rv = STRNEQ_NULLABLE(data->a, data->b);
 
     if (streq_rv != equal) {
-        virFilePrintf(stderr,
-                      "STREQ not working correctly. Expected %d got %d",
-                      (int) equal, (int) streq_rv);
+        fprintf(stderr,
+                "STREQ not working correctly. Expected %d got %d",
+                (int) equal, (int) streq_rv);
         return -1;
     }
 
     if (strneq_rv == equal) {
-        virFilePrintf(stderr,
-                      "STRNEQ not working correctly. Expected %d got %d",
-                      (int) equal, (int) strneq_rv);
+        fprintf(stderr,
+                "STRNEQ not working correctly. Expected %d got %d",
+                (int) equal, (int) strneq_rv);
         return -1;
     }
 
@@ -108,7 +108,7 @@ static int testSplit(const void *args)
     tmp2 = data->tokens;
     while (*tmp1 && *tmp2) {
         if (STRNEQ(*tmp1, *tmp2)) {
-            virFilePrintf(stderr, "Mismatch '%s' vs '%s'\n", *tmp1, *tmp2);
+            fprintf(stderr, "Mismatch '%s' vs '%s'\n", *tmp1, *tmp2);
             goto cleanup;
         }
         tmp1++;
@@ -116,19 +116,19 @@ static int testSplit(const void *args)
         exptokens++;
     }
     if (*tmp1) {
-        virFilePrintf(stderr, "Too many pieces returned\n");
+        fprintf(stderr, "Too many pieces returned\n");
         goto cleanup;
     }
     if (*tmp2) {
-        virFilePrintf(stderr, "Too few pieces returned\n");
+        fprintf(stderr, "Too few pieces returned\n");
         goto cleanup;
     }
 
     if (ntokens != exptokens) {
-        virFilePrintf(stderr,
-                      "Returned token count (%zu) doesn't match "
-                      "expected count (%zu)",
-                      ntokens, exptokens);
+        fprintf(stderr,
+                "Returned token count (%zu) doesn't match "
+                "expected count (%zu)",
+                ntokens, exptokens);
         goto cleanup;
     }
 
@@ -151,7 +151,7 @@ static int testJoin(const void *args)
         return -1;
     }
     if (STRNEQ(got, data->string)) {
-        virFilePrintf(stderr, "Mismatch '%s' vs '%s'\n", got, data->string);
+        fprintf(stderr, "Mismatch '%s' vs '%s'\n", got, data->string);
         goto cleanup;
     }
 
@@ -186,7 +186,7 @@ static int testAdd(const void *args)
     }
 
     if (STRNEQ(got, data->string)) {
-        virFilePrintf(stderr, "Mismatch '%s' vs '%s'\n", got, data->string);
+        fprintf(stderr, "Mismatch '%s' vs '%s'\n", got, data->string);
         goto cleanup;
     }
 
@@ -215,13 +215,13 @@ static int testRemove(const void *args)
     for (i = 0; data->tokens[i]; i++) {
         virStringListRemove(&list, data->tokens[i]);
         if (virStringListHasString((const char **) list, data->tokens[i])) {
-            virFilePrintf(stderr, "Not removed %s", data->tokens[i]);
+            fprintf(stderr, "Not removed %s", data->tokens[i]);
             goto cleanup;
         }
     }
 
     if (list && list[0]) {
-        virFilePrintf(stderr, "Not removed all tokens: %s", list[0]);
+        fprintf(stderr, "Not removed all tokens: %s", list[0]);
         goto cleanup;
     }
 

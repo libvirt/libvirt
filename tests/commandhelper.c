@@ -24,8 +24,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
-#include "internal.h"
-#define NO_LIBVIRT
+#define VIR_NO_GLIB_STDIO /* This file intentionally does not link to libvirt/glib */
 #include "testutils.h"
 
 #ifndef WIN32
