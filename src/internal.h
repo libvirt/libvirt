@@ -488,3 +488,17 @@ enum {
 #  define ENOMSG 122
 # endif
 #endif
+
+/* Ideally callers would use the g_*printf
+ * functions directly but there are alot to
+ * convert, so until then...
+ */
+#ifndef VIR_NO_GLIB_STDIO
+
+# undef printf
+# define printf(...) g_printf(__VA_ARGS__)
+
+# undef fprintf
+# define fprintf(fh, ...) g_fprintf(fh, __VA_ARGS__)
+
+#endif /* VIR_NO_GLIB_STDIO */

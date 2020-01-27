@@ -208,7 +208,10 @@ libvirt_sanlock_helper_LDFLAGS = \
 	$(AM_LDFLAGS) \
 	$(PIE_LDFLAGS) \
 	$(NULL)
-libvirt_sanlock_helper_LDADD = libvirt.la
+libvirt_sanlock_helper_LDADD = \
+	libvirt.la \
+	$(GLIB_LIBS) \
+	$(NULL)
 endif WITH_SANLOCK
 
 conf_DATA += locking/virtlockd.conf
