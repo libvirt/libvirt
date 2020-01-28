@@ -2990,8 +2990,7 @@ qemuMonitorJSONBlockGetNamedNodeDataJSON(virJSONValuePtr nodes)
 {
     g_autoptr(virHashTable) ret = NULL;
 
-    if (!(ret = virHashNew((virHashDataFree) qemuMonitorJSONBlockNamedNodeDataFree)))
-        return NULL;
+    ret = virHashNew((virHashDataFree) qemuMonitorJSONBlockNamedNodeDataFree);
 
     if (virJSONValueArrayForeachSteal(nodes,
                                       qemuMonitorJSONBlockGetNamedNodeDataWorker,

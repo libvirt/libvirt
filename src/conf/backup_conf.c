@@ -439,14 +439,10 @@ virDomainBackupAlignDisks(virDomainBackupDefPtr def,
                           virDomainDefPtr dom,
                           const char *suffix)
 {
-    g_autoptr(virHashTable) disks = NULL;
+    g_autoptr(virHashTable) disks = virHashNew(NULL);
     size_t i;
     int ndisks;
     bool backup_all = false;
-
-
-    if (!(disks = virHashNew(NULL)))
-        return -1;
 
     /* Unlikely to have a guest without disks but technically possible.  */
     if (!dom->ndisks) {
