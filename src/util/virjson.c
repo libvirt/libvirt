@@ -811,6 +811,37 @@ virJSONValueArrayAppendString(virJSONValuePtr object,
 }
 
 
+/**
+ * virJSONValueArrayConcat:
+ * @a: JSON value array (destination)
+ * @c: JSON value array (source)
+ *
+ * Merges the members of @c array into @a. The values are stolen from @c.
+ */
+int
+virJSONValueArrayConcat(virJSONValuePtr a,
+                        virJSONValuePtr c)
+{
+    size_t i;
+
+    if (a->type != VIR_JSON_TYPE_ARRAY ||
+        c->type != VIR_JSON_TYPE_ARRAY) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("expecting JSON array"));
+        return -1;
+    }
+
+    a->data.array.values = g_renew(virJSONValuePtr, a->data.array.values,
+                                   a->data.array.nvalues + c->data.array.nvalues);
+
+    for (i = 0; i < c->data.array.nvalues; i++)
+        a->data.array.values[a->data.array.nvalues++] = g_steal_pointer(&c->data.array.values[i]);
+
+    c->data.array.nvalues = 0;
+
+    return 0;
+}
+
+
 int
 virJSONValueObjectHasKey(virJSONValuePtr object,
                          const char *key)

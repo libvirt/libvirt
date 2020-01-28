@@ -71,6 +71,8 @@ virJSONValuePtr virJSONValueNewArrayFromBitmap(virBitmapPtr bitmap);
 
 int virJSONValueObjectAppend(virJSONValuePtr object, const char *key, virJSONValuePtr value);
 int virJSONValueArrayAppend(virJSONValuePtr object, virJSONValuePtr value);
+int virJSONValueArrayConcat(virJSONValuePtr a,
+                            virJSONValuePtr c);
 
 int virJSONValueObjectHasKey(virJSONValuePtr object, const char *key);
 virJSONValuePtr virJSONValueObjectGet(virJSONValuePtr object, const char *key);
