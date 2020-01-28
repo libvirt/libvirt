@@ -45,3 +45,7 @@ qemuVhostUserFetchConfigs(char ***configs,
 int
 qemuVhostUserFillDomainGPU(virQEMUDriverPtr driver,
                            virDomainVideoDefPtr video);
+
+int
+qemuVhostUserFillDomainFS(virQEMUDriverPtr driver,
+                          virDomainFSDefPtr fs);

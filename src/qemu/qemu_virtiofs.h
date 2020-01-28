@@ -40,3 +40,7 @@ int
 qemuVirtioFSSetupCgroup(virDomainObjPtr vm,
                         virDomainFSDefPtr fs,
                         virCgroupPtr cgroup);
+
+int
+qemuVirtioFSPrepareDomain(virQEMUDriverPtr driver,
+                          virDomainFSDefPtr fs);

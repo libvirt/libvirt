@@ -417,3 +417,42 @@ qemuVhostUserFillDomainGPU(virQEMUDriverPtr driver,
     VIR_FREE(vus);
     return ret;
 }
+
+
+int
+qemuVhostUserFillDomainFS(virQEMUDriverPtr driver,
+                          virDomainFSDefPtr fs)
+{
+    qemuVhostUserPtr *vus = NULL;
+    ssize_t nvus = 0;
+    ssize_t i;
+    int ret = -1;
+
+    if ((nvus = qemuVhostUserFetchParsedConfigs(driver->privileged,
+                                                &vus, NULL)) < 0)
+        goto end;
+
+    for (i = 0; i < nvus; i++) {
+        qemuVhostUserPtr vu = vus[i];
+
+        if (vu->type != QEMU_VHOST_USER_TYPE_FS)
+            continue;
+
+        fs->binary = g_strdup(vu->binary);
+        break;
+    }
+
+    if (i == nvus) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("Unable to find a satisfying virtiofsd"));
+        goto end;
+    }
+
+    ret = 0;
+
+ end:
+    for (i = 0; i < nvus; i++)
+        qemuVhostUserFree(vus[i]);
+    g_free(vus);
+    return ret;
+}

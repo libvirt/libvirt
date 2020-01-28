@@ -105,6 +105,15 @@ qemuExtDevicesPrepareDomain(virQEMUDriverPtr driver,
         }
     }
 
+    for (i = 0; i < vm->def->nfss; i++) {
+        virDomainFSDefPtr fs = vm->def->fss[i];
+
+        if (fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS) {
+            if (qemuVirtioFSPrepareDomain(driver, fs) < 0)
+                return -1;
+        }
+    }
+
     return ret;
 }
 
