@@ -1044,28 +1044,22 @@ virDomainPCIAddressSetExtensionAlloc(virDomainPCIAddressSetPtr addrs,
         if (VIR_ALLOC(addrs->zpciIds) < 0)
             return -1;
 
-        if (!(addrs->zpciIds->uids = virHashCreateFull(10, NULL,
-                                                       virZPCIAddrKeyCode,
-                                                       virZPCIAddrKeyEqual,
-                                                       virZPCIAddrKeyCopy,
-                                                       virZPCIAddrKeyPrintHuman,
-                                                       virZPCIAddrKeyFree)))
-            goto error;
+        addrs->zpciIds->uids = virHashCreateFull(10, NULL,
+                                                 virZPCIAddrKeyCode,
+                                                 virZPCIAddrKeyEqual,
+                                                 virZPCIAddrKeyCopy,
+                                                 virZPCIAddrKeyPrintHuman,
+                                                 virZPCIAddrKeyFree);
 
-        if (!(addrs->zpciIds->fids = virHashCreateFull(10, NULL,
-                                                       virZPCIAddrKeyCode,
-                                                       virZPCIAddrKeyEqual,
-                                                       virZPCIAddrKeyCopy,
-                                                       virZPCIAddrKeyPrintHuman,
-                                                       virZPCIAddrKeyFree)))
-            goto error;
+        addrs->zpciIds->fids = virHashCreateFull(10, NULL,
+                                                 virZPCIAddrKeyCode,
+                                                 virZPCIAddrKeyEqual,
+                                                 virZPCIAddrKeyCopy,
+                                                 virZPCIAddrKeyPrintHuman,
+                                                 virZPCIAddrKeyFree);
     }
 
     return 0;
-
- error:
-    virDomainPCIAddressSetExtensionFree(addrs);
-    return -1;
 }
 
 
