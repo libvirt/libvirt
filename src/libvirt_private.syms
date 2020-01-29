@@ -513,6 +513,7 @@ virDomainNetGetActualBridgeName;
 virDomainNetGetActualDirectDev;
 virDomainNetGetActualDirectMode;
 virDomainNetGetActualHostdev;
+virDomainNetGetActualPortOptionsIsolated;
 virDomainNetGetActualTrustGuestRxFilters;
 virDomainNetGetActualType;
 virDomainNetGetActualVirtPortProfile;

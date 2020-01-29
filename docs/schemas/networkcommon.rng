@@ -280,4 +280,15 @@
       </attribute>
     </element>
   </define>
+
+  <define name="portOptions">
+    <element name="port">
+      <optional>
+        <attribute name="isolated">
+          <ref name="virYesNo"/>
+        </attribute>
+      </optional>
+    </element>
+  </define>
+
 </grammar>

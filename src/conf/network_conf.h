@@ -272,6 +272,7 @@ struct _virNetworkDef {
     virNetDevBandwidthPtr bandwidth;
     virNetDevVlan vlan;
     int trustGuestRxFilters; /* enum virTristateBool */
+    virTristateBool isolatedPort;
 
     /* Application-specific custom metadata */
     xmlNodePtr metadata;
@@ -376,6 +377,14 @@ virNetworkConfigFile(const char *dir,
 
 void
 virNetworkSetBridgeMacAddr(virNetworkDefPtr def);
+
+int
+virNetworkPortOptionsParseXML(xmlXPathContextPtr ctxt,
+                              virTristateBool *isolatedPort);
+
+void
+virNetworkPortOptionsFormat(virTristateBool isolatedPort,
+                            virBufferPtr buf);
 
 VIR_ENUM_DECL(virNetworkForward);
 

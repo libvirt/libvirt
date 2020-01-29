@@ -160,6 +160,7 @@ mymain(void)
     DO_TEST("metadata");
     DO_TEST("set-mtu");
     DO_TEST("dnsmasq-options");
+    DO_TEST("isolated-ports");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

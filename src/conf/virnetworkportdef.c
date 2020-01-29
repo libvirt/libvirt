@@ -161,6 +161,8 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
     if (vlanNode && virNetDevVlanParse(vlanNode, ctxt, &def->vlan) < 0)
         return NULL;
 
+    if (virNetworkPortOptionsParseXML(ctxt, &def->isolatedPort) < 0)
+        return NULL;
 
     trustGuestRxFilters
         = virXPathString("string(./rxfilters/@trustGuest)", ctxt);
@@ -360,6 +362,7 @@ virNetworkPortDefFormatBuf(virBufferPtr buf,
         virNetDevBandwidthFormat(def->bandwidth, def->class_id, buf);
     if (virNetDevVlanFormat(&def->vlan, buf) < 0)
         return -1;
+    virNetworkPortOptionsFormat(def->isolatedPort, buf);
     if (def->trustGuestRxFilters)
         virBufferAsprintf(buf, "<rxfilters trustGuest='%s'/>\n",
                           virTristateBoolTypeToString(def->trustGuestRxFilters));

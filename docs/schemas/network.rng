@@ -332,6 +332,9 @@
         <optional>
           <ref name="vlan"/>
         </optional>
+        <optional>
+          <ref name="portOptions"/>
+        </optional>
 
         <!-- <ip> element -->
         <zeroOrMore>

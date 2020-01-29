@@ -3179,6 +3179,9 @@
         <ref name="vlan"/>
       </optional>
       <optional>
+        <ref name="portOptions"/>
+      </optional>
+      <optional>
         <element name="teaming">
           <choice>
             <group>

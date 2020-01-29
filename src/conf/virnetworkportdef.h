@@ -60,6 +60,7 @@ struct _virNetworkPortDef {
     unsigned int class_id; /* class ID for bandwidth 'floor' */
     virNetDevVlan vlan;
     int trustGuestRxFilters; /* enum virTristateBool */
+    virTristateBool isolatedPort;
 
     int plugtype; /* virNetworkPortPlugType */
     union {

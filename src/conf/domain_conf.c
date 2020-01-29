@@ -11534,6 +11534,9 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
     if (vlanNode && virNetDevVlanParse(vlanNode, ctxt, &actual->vlan) < 0)
         goto error;
 
+    if (virNetworkPortOptionsParseXML(ctxt, &actual->isolatedPort) < 0)
+        goto error;
+
     *def = g_steal_pointer(&actual);
     ret = 0;
  error:
@@ -12429,6 +12432,9 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         if (!def->coalesce)
             goto error;
     }
+
+    if (virNetworkPortOptionsParseXML(ctxt, &def->isolatedPort) < 0)
+        goto error;
 
  cleanup:
     virDomainActualNetDefFree(actual);
@@ -25539,6 +25545,7 @@ virDomainActualNetDefContentsFormat(virBufferPtr buf,
         return -1;
     if (virNetDevBandwidthFormat(virDomainNetGetActualBandwidth(def), 0, buf) < 0)
         return -1;
+    virNetworkPortOptionsFormat(virDomainNetGetActualPortOptionsIsolated(def), buf);
     return 0;
 }
 
@@ -25915,6 +25922,7 @@ virDomainNetDefFormat(virBufferPtr buf,
             return -1;
         if (virNetDevBandwidthFormat(def->bandwidth, 0, buf) < 0)
             return -1;
+        virNetworkPortOptionsFormat(def->isolatedPort, buf);
 
         /* ONLY for internal status storage - format the ActualNetDef
          * as a subelement of <interface> so that no persistent config
@@ -29989,6 +29997,17 @@ virDomainNetGetActualVlan(const virDomainNetDef *iface)
     if (vlan->nTags > 0)
         return vlan;
     return NULL;
+}
+
+
+virTristateBool
+virDomainNetGetActualPortOptionsIsolated(const virDomainNetDef *iface)
+{
+    if (iface->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
+        iface->data.network.actual) {
+        return iface->data.network.actual->isolatedPort;
+    }
+    return iface->isolatedPort;
 }
 
 

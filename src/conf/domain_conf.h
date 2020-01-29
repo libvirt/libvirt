@@ -928,6 +928,7 @@ struct _virDomainActualNetDef {
     virNetDevBandwidthPtr bandwidth;
     virNetDevVlan vlan;
     int trustGuestRxFilters; /* enum virTristateBool */
+    virTristateBool isolatedPort;
     unsigned int class_id; /* class ID for bandwidth 'floor' */
 };
 
@@ -1032,6 +1033,7 @@ struct _virDomainNetDef {
     virNetDevBandwidthPtr bandwidth;
     virNetDevVlan vlan;
     int trustGuestRxFilters; /* enum virTristateBool */
+    virTristateBool isolatedPort;
     int linkstate;
     unsigned int mtu;
     virNetDevCoalescePtr coalesce;
@@ -3239,6 +3241,8 @@ const virNetDevBandwidth *
 virDomainNetGetActualBandwidth(const virDomainNetDef *iface);
 const virNetDevVlan *virDomainNetGetActualVlan(const virDomainNetDef *iface);
 bool virDomainNetGetActualTrustGuestRxFilters(const virDomainNetDef *iface);
+virTristateBool
+virDomainNetGetActualPortOptionsIsolated(const virDomainNetDef *iface);
 const char *virDomainNetGetModelString(const virDomainNetDef *net);
 int virDomainNetSetModelString(virDomainNetDefPtr et,
                                const char *model);
