@@ -1030,6 +1030,7 @@ mymain(void)
     TEST_BITMAP_DETECT("synthetic");
     TEST_BITMAP_DETECT("snapshots");
     TEST_BITMAP_DETECT("snapshots-synthetic-checkpoint");
+    TEST_BITMAP_DETECT("snapshots-synthetic-broken");
 
 #define TEST_BACKUP_BITMAP_CALCULATE(testname, source, incrbackup, named) \
     do { \
@@ -1116,6 +1117,13 @@ mymain(void)
     TEST_BITMAP_VALIDATE("snapshots-synthetic-checkpoint", "c", true);
     TEST_BITMAP_VALIDATE("snapshots-synthetic-checkpoint", "d", true);
     TEST_BITMAP_VALIDATE("snapshots-synthetic-checkpoint", "current", true);
+
+    TEST_BITMAP_VALIDATE("snapshots-synthetic-broken", "a", false);
+    TEST_BITMAP_VALIDATE("snapshots-synthetic-broken", "b", true);
+    TEST_BITMAP_VALIDATE("snapshots-synthetic-broken", "c", true);
+    TEST_BITMAP_VALIDATE("snapshots-synthetic-broken", "d", false);
+    TEST_BITMAP_VALIDATE("snapshots-synthetic-broken", "current", true);
+
  cleanup:
     virHashFree(diskxmljsondata.schema);
     qemuTestDriverFree(&driver);
