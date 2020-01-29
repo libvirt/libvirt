@@ -2728,3 +2728,141 @@ qemuBlockBitmapChainIsValid(virStorageSourcePtr src,
 
     return chain_started;
 }
+
+
+struct qemuBlockBitmapsHandleBlockcopyConcatData {
+    virHashTablePtr bitmaps_merge;
+    virJSONValuePtr actions;
+    const char *mirrornodeformat;
+    bool has_bitmaps;
+};
+
+
+static int
+qemuBlockBitmapsHandleBlockcopyConcatActions(void *payload,
+                                             const void *name,
+                                             void *opaque)
+{
+    struct qemuBlockBitmapsHandleBlockcopyConcatData *data = opaque;
+    virJSONValuePtr createactions = payload;
+    const char *bitmapname = name;
+    g_autoptr(virJSONValue) mergebitmaps = virHashSteal(data->bitmaps_merge, bitmapname);
+
+    data->has_bitmaps = true;
+
+    virJSONValueArrayConcat(data->actions, createactions);
+
+    if (qemuMonitorTransactionBitmapMerge(data->actions,
+                                          data->mirrornodeformat,
+                                          bitmapname,
+                                          &mergebitmaps) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+/**
+ * qemuBlockBitmapsHandleBlockcopy:
+ * @src: disk source
+ * @mirror: mirror source
+ * @blockNamedNodeData: hash table containing data about bitmaps
+ * @shallow: whether shallow copy is requested
+ * @actions: filled with arguments for a 'transaction' command
+ *
+ * Calculates which bitmaps to copy and merge during a virDomainBlockCopy job.
+ * This is designed to be called when the job is already synchronised as it
+ * may result in active bitmaps being created.
+ *
+ * Returns 0 on success and -1 on error. If @actions is NULL when 0 is returned
+ * there are no actions to perform for the given job.
+ */
+int
+qemuBlockBitmapsHandleBlockcopy(virStorageSourcePtr src,
+                                virStorageSourcePtr mirror,
+                                virHashTablePtr blockNamedNodeData,
+                                bool shallow,
+                                virJSONValuePtr *actions)
+{
+    g_autoptr(virHashTable) bitmaps = virHashNew(virJSONValueHashFree);
+    g_autoptr(virHashTable) bitmaps_merge = virHashNew(virJSONValueHashFree);
+    g_autoptr(virHashTable) bitmaps_skip = virHashNew(NULL);
+    g_autoptr(virJSONValue) tmpactions = virJSONValueNewArray();
+    qemuBlockNamedNodeDataPtr entry;
+    virStorageSourcePtr n;
+    size_t i;
+    struct qemuBlockBitmapsHandleBlockcopyConcatData data = { .bitmaps_merge = bitmaps_merge,
+                                                              .actions = tmpactions,
+                                                              .mirrornodeformat = mirror->nodeformat,
+                                                              .has_bitmaps = false, };
+
+    for (n = src; n; n = n->backingStore) {
+        if (!(entry = virHashLookup(blockNamedNodeData, n->nodeformat)))
+            continue;
+
+        for (i = 0; i < entry->nbitmaps; i++) {
+            qemuBlockNamedNodeDataBitmapPtr bitmap = entry->bitmaps[i];
+            virJSONValuePtr bitmap_merge;
+
+            if (virHashHasEntry(bitmaps_skip, bitmap->name))
+                continue;
+
+            if (!(bitmap_merge = virHashLookup(bitmaps_merge, bitmap->name))) {
+                g_autoptr(virJSONValue) tmp = NULL;
+                bool disabled = !bitmap->recording;
+
+                /* disable any non top-layer bitmaps */
+                if (n != src)
+                    disabled = true;
+
+                if (!bitmap->persistent ||
+                    !(qemuBlockBitmapChainIsValid(n, bitmap->name,
+                                                  blockNamedNodeData))) {
+                    ignore_value(virHashAddEntry(bitmaps_skip, bitmap->name, NULL));
+                    continue;
+                }
+
+                /* prepare the data for adding the bitmap to the mirror */
+                tmp = virJSONValueNewArray();
+
+                if (qemuMonitorTransactionBitmapAdd(tmp,
+                                                    mirror->nodeformat,
+                                                    bitmap->name,
+                                                    true,
+                                                    disabled,
+                                                    bitmap->granularity) < 0)
+                    return -1;
+
+                if (virHashAddEntry(bitmaps, bitmap->name, tmp) < 0)
+                    return -1;
+
+                tmp = NULL;
+
+                /* prepare array for merging all the bitmaps from the original chain */
+                tmp = virJSONValueNewArray();
+
+                if (virHashAddEntry(bitmaps_merge, bitmap->name, tmp) < 0)
+                    return -1;
+
+                bitmap_merge = g_steal_pointer(&tmp);
+            }
+
+            if (qemuMonitorTransactionBitmapMergeSourceAddBitmap(bitmap_merge,
+                                                                 n->nodeformat,
+                                                                 bitmap->name) < 0)
+                return -1;
+        }
+
+        if (shallow)
+            break;
+    }
+
+    if (virHashForEach(bitmaps, qemuBlockBitmapsHandleBlockcopyConcatActions,
+                       &data) < 0)
+        return -1;
+
+    if (data.has_bitmaps)
+        *actions = g_steal_pointer(&tmpactions);
+
+    return 0;
+}

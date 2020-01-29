@@ -217,3 +217,10 @@ bool
 qemuBlockBitmapChainIsValid(virStorageSourcePtr src,
                             const char *bitmapname,
                             virHashTablePtr blockNamedNodeData);
+
+int
+qemuBlockBitmapsHandleBlockcopy(virStorageSourcePtr src,
+                                virStorageSourcePtr mirror,
+                                virHashTablePtr blockNamedNodeData,
+                                bool shallow,
+                                virJSONValuePtr *actions);
