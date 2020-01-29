@@ -33,6 +33,11 @@ If the virt-qemu-run program is interrupted (eg Ctrl-C) it will
 immediately terminate the virtual machine without giving the guest
 OS any opportunity to gracefully shutdown.
 
+**NOTE: this tool is currently considered experimental.** Its
+usage and behaviour is still subject to change in future libvirt
+releases. For further information on its usage consult the
+`QEMU driver documentation <https://libvirt.org/drvqemu.html#uriembedded>`_.
+
 OPTIONS
 =======
 
