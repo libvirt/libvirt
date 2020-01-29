@@ -267,21 +267,21 @@ man8_MANS = $(manpages8_rst:%.rst=%.8)
 	   grep -v '^\.\. contents::' < $< | \
 	   sed -e 's|SYSCONFDIR|$(sysconfdir)|g' \
 	       -e 's|RUNSTATEDIR|$(runstatedir)|g' | \
-	   $(RST2MAN) > $@ || { rm $@ && exit 1; }
+	   $(RST2MAN) --strict > $@ || { rm $@ && exit 1; }
 
 %.7: %.rst
 	$(AM_V_GEN)$(MKDIR_P) `dirname $@` && \
 	   grep -v '^\.\. contents::' < $< | \
 	   sed -e 's|SYSCONFDIR|$(sysconfdir)|g' \
 	       -e 's|RUNSTATEDIR|$(runstatedir)|g' | \
-	   $(RST2MAN) > $@ || { rm $@ && exit 1; }
+	   $(RST2MAN) --strict > $@ || { rm $@ && exit 1; }
 
 %.8: %.rst
 	$(AM_V_GEN)$(MKDIR_P) `dirname $@` && \
 	   grep -v '^\.\. contents::' < $< | \
 	   sed -e 's|SYSCONFDIR|$(sysconfdir)|g' \
 	       -e 's|RUNSTATEDIR|$(runstatedir)|g' | \
-	   $(RST2MAN) > $@ || { rm $@ && exit 1; }
+	   $(RST2MAN) --strict > $@ || { rm $@ && exit 1; }
 
 manpages/virkeycode-%.rst: $(top_srcdir)/src/keycodemapdb/data/keymaps.csv \
 		$(top_srcdir)/src/keycodemapdb/tools/keymap-gen Makefile.am
@@ -420,11 +420,11 @@ manpages/%.html.in: manpages/%.rst
 	 grep -v '^:Manual ' < $< | \
 	  sed -e 's|SYSCONFDIR|$(sysconfdir)|g' \
 	     -e 's|RUNSTATEDIR|$(runstatedir)|g' | \
-	  $(RST2HTML) > $@ || { rm $@ && exit 1; }
+	  $(RST2HTML) --strict > $@ || { rm $@ && exit 1; }
 
 %.html.in: %.rst
 	$(AM_V_GEN)$(MKDIR_P) `dirname $@` && \
-	  $(RST2HTML) $< > $@ || { rm $@ && exit 1; }
+	  $(RST2HTML) --strict $< > $@ || { rm $@ && exit 1; }
 
 %.html.tmp: %.html.in site.xsl subsite.xsl page.xsl \
 		$(acl_generated)
