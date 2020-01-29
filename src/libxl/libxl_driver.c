@@ -73,7 +73,7 @@ VIR_LOG_INIT("libxl.libxl_driver");
 #define HYPERVISOR_CAPABILITIES "/proc/xen/capabilities"
 #define HYPERVISOR_XENSTORED "/dev/xen/xenstored"
 
-/* Number of Xen scheduler parameters */
+/* Number of Xen scheduler parameters. credit and credit2 both support 2 */
 #define XEN_SCHED_CREDIT_NPARAM   2
 
 #define LIBXL_CHECK_DOM0_GOTO(name, label) \
@@ -4586,6 +4586,8 @@ libxlDomainGetSchedulerType(virDomainPtr dom, int *nparams)
         break;
     case LIBXL_SCHEDULER_CREDIT2:
         name = "credit2";
+        if (nparams)
+            *nparams = XEN_SCHED_CREDIT_NPARAM;
         break;
     case LIBXL_SCHEDULER_ARINC653:
         name = "arinc653";
@@ -4632,11 +4634,11 @@ libxlDomainGetSchedulerParametersFlags(virDomainPtr dom,
     if (virDomainObjCheckActive(vm) < 0)
         goto cleanup;
 
+    /* Only credit and credit2 are supported for now. */
     sched_id = libxl_get_scheduler(cfg->ctx);
-
-    if (sched_id != LIBXL_SCHEDULER_CREDIT) {
+    if (sched_id != LIBXL_SCHEDULER_CREDIT && sched_id != LIBXL_SCHEDULER_CREDIT2) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Only 'credit' scheduler is supported"));
+                       _("Only 'credit' and 'credit2' schedulers are supported"));
         goto cleanup;
     }
 
@@ -4709,11 +4711,11 @@ libxlDomainSetSchedulerParametersFlags(virDomainPtr dom,
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
+    /* Only credit and credit2 are supported for now. */
     sched_id = libxl_get_scheduler(cfg->ctx);
-
-    if (sched_id != LIBXL_SCHEDULER_CREDIT) {
+    if (sched_id != LIBXL_SCHEDULER_CREDIT && sched_id != LIBXL_SCHEDULER_CREDIT2) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Only 'credit' scheduler is supported"));
+                       _("Only 'credit' and 'credit2' schedulers are supported"));
         goto endjob;
     }
 
