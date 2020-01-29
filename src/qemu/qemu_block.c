@@ -2687,3 +2687,44 @@ qemuBlockGetNamedNodeData(virDomainObjPtr vm,
 
     return g_steal_pointer(&blockNamedNodeData);
 }
+
+
+/**
+ * qemuBlockBitmapChainIsValid:
+ *
+ * Validates that the backing chain of @src contains proper consistent bitmap
+ * data for a chain of bitmaps named @bitmapname.
+ *
+ * A valid chain:
+ * 1) bitmaps of same name are in a consecutive subset of images without gap
+ * 2) don't have any inconsistent bitmaps
+ */
+bool
+qemuBlockBitmapChainIsValid(virStorageSourcePtr src,
+                            const char *bitmapname,
+                            virHashTablePtr blockNamedNodeData)
+{
+    qemuBlockNamedNodeDataBitmapPtr bitmap;
+    virStorageSourcePtr n;
+    bool chain_started = false;
+    bool chain_ended = false;
+
+    for (n = src; n; n = n->backingStore) {
+        if (!(bitmap = qemuBlockNamedNodeDataGetBitmapByName(blockNamedNodeData, n, bitmapname))) {
+            if (chain_started)
+                chain_ended = true;
+
+            continue;
+        }
+
+        if (chain_ended)
+            return false;
+
+        chain_started = true;
+
+        if (bitmap->inconsistent)
+            return false;
+    }
+
+    return chain_started;
+}

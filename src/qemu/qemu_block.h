@@ -212,3 +212,8 @@ qemuBlockNamedNodeDataGetBitmapByName(virHashTablePtr blockNamedNodeData,
 virHashTablePtr
 qemuBlockGetNamedNodeData(virDomainObjPtr vm,
                           qemuDomainAsyncJob asyncJob);
+
+bool
+qemuBlockBitmapChainIsValid(virStorageSourcePtr src,
+                            const char *bitmapname,
+                            virHashTablePtr blockNamedNodeData);

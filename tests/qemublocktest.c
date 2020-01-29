@@ -768,6 +768,41 @@ testQemuCheckpointDeleteMerge(const void *opaque)
 }
 
 
+struct testQemuBlockBitmapValidateData {
+    const char *name;
+    const char *bitmapname;
+    virStorageSourcePtr chain;
+    bool expect;
+};
+
+static int
+testQemuBlockBitmapValidate(const void *opaque)
+{
+    const struct testQemuBlockBitmapValidateData *data = opaque;
+    g_autoptr(virJSONValue) nodedatajson = NULL;
+    g_autoptr(virHashTable) nodedata = NULL;
+    bool actual;
+
+    if (!(nodedatajson = virTestLoadFileJSON(bitmapDetectPrefix, data->name,
+                                             ".json", NULL)))
+        return -1;
+
+    if (!(nodedata = qemuMonitorJSONBlockGetNamedNodeDataJSON(nodedatajson))) {
+        VIR_TEST_VERBOSE("failed to load nodedata JSON\n");
+        return -1;
+    }
+
+    actual = qemuBlockBitmapChainIsValid(data->chain, data->bitmapname, nodedata);
+
+    if (actual != data->expect) {
+        VIR_TEST_VERBOSE("expected rv:'%d' actual rv:'%d'\n", data->expect, actual);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 static int
 mymain(void)
 {
@@ -778,6 +813,7 @@ mymain(void)
     struct testQemuImageCreateData imagecreatedata;
     struct testQemuBackupIncrementalBitmapCalculateData backupbitmapcalcdata;
     struct testQemuCheckpointDeleteMergeData checkpointdeletedata;
+    struct testQemuBlockBitmapValidateData blockbitmapvalidatedata;
     char *capslatest_x86_64 = NULL;
     virQEMUCapsPtr caps_x86_64 = NULL;
     g_autoptr(virStorageSource) bitmapSourceChain = NULL;
@@ -1045,7 +1081,41 @@ mymain(void)
     TEST_CHECKPOINT_DELETE_MERGE("snapshots-synthetic-checkpoint-intermediate3", "d", "c", "snapshots-synthetic-checkpoint");
     TEST_CHECKPOINT_DELETE_MERGE("snapshots-synthetic-checkpoint-current", "current", "d", "snapshots-synthetic-checkpoint");
 
+#define TEST_BITMAP_VALIDATE(testname, bitmap, rc) \
+    do { \
+        blockbitmapvalidatedata.name = testname; \
+        blockbitmapvalidatedata.chain = bitmapSourceChain; \
+        blockbitmapvalidatedata.bitmapname = bitmap; \
+        blockbitmapvalidatedata.expect = rc; \
+        if (virTestRun("bitmap validate " testname " " bitmap, \
+                       testQemuBlockBitmapValidate, \
+                       &blockbitmapvalidatedata) < 0) \
+            ret = -1; \
+    } while (0)
 
+    TEST_BITMAP_VALIDATE("basic", "a", true);
+    TEST_BITMAP_VALIDATE("basic", "b", true);
+    TEST_BITMAP_VALIDATE("basic", "c", true);
+    TEST_BITMAP_VALIDATE("basic", "d", true);
+    TEST_BITMAP_VALIDATE("basic", "current", true);
+
+    TEST_BITMAP_VALIDATE("snapshots", "a", true);
+    TEST_BITMAP_VALIDATE("snapshots", "b", true);
+    TEST_BITMAP_VALIDATE("snapshots", "c", true);
+    TEST_BITMAP_VALIDATE("snapshots", "d", true);
+    TEST_BITMAP_VALIDATE("snapshots", "current", true);
+
+    TEST_BITMAP_VALIDATE("synthetic", "a", false);
+    TEST_BITMAP_VALIDATE("synthetic", "b", true);
+    TEST_BITMAP_VALIDATE("synthetic", "c", true);
+    TEST_BITMAP_VALIDATE("synthetic", "d", true);
+    TEST_BITMAP_VALIDATE("synthetic", "current", true);
+
+    TEST_BITMAP_VALIDATE("snapshots-synthetic-checkpoint", "a", true);
+    TEST_BITMAP_VALIDATE("snapshots-synthetic-checkpoint", "b", true);
+    TEST_BITMAP_VALIDATE("snapshots-synthetic-checkpoint", "c", true);
+    TEST_BITMAP_VALIDATE("snapshots-synthetic-checkpoint", "d", true);
+    TEST_BITMAP_VALIDATE("snapshots-synthetic-checkpoint", "current", true);
  cleanup:
     virHashFree(diskxmljsondata.schema);
     qemuTestDriverFree(&driver);
