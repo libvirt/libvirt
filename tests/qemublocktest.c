@@ -803,6 +803,56 @@ testQemuBlockBitmapValidate(const void *opaque)
 }
 
 
+static const char *blockcopyPrefix = "qemublocktestdata/bitmapblockcopy/";
+
+struct testQemuBlockBitmapBlockcopyData {
+    const char *name;
+    bool shallow;
+    virStorageSourcePtr chain;
+    const char *nodedatafile;
+};
+
+
+static int
+testQemuBlockBitmapBlockcopy(const void *opaque)
+{
+    const struct testQemuBlockBitmapBlockcopyData *data = opaque;
+    g_autofree char *actual = NULL;
+    g_autofree char *expectpath = NULL;
+    g_autoptr(virJSONValue) actions = NULL;
+    g_autoptr(virJSONValue) nodedatajson = NULL;
+    g_autoptr(virHashTable) nodedata = NULL;
+    g_autoptr(virStorageSource) fakemirror = virStorageSourceNew();
+
+    if (!fakemirror)
+        return -1;
+
+    fakemirror->nodeformat = g_strdup("mirror-format-node");
+
+    expectpath = g_strdup_printf("%s/%s%s-out.json", abs_srcdir,
+                                 blockcopyPrefix, data->name);
+
+    if (!(nodedatajson = virTestLoadFileJSON(bitmapDetectPrefix, data->nodedatafile,
+                                             ".json", NULL)))
+        return -1;
+
+    if (!(nodedata = qemuMonitorJSONBlockGetNamedNodeDataJSON(nodedatajson))) {
+        VIR_TEST_VERBOSE("failed to load nodedata JSON\n");
+        return -1;
+    }
+
+    if (qemuBlockBitmapsHandleBlockcopy(data->chain, fakemirror, nodedata,
+                                        data->shallow, &actions) < 0)
+        return -1;
+
+    if (actions &&
+        !(actual = virJSONValueToString(actions, true)))
+        return -1;
+
+    return virTestCompareToFile(actual, expectpath);
+}
+
+
 static int
 mymain(void)
 {
@@ -814,6 +864,7 @@ mymain(void)
     struct testQemuBackupIncrementalBitmapCalculateData backupbitmapcalcdata;
     struct testQemuCheckpointDeleteMergeData checkpointdeletedata;
     struct testQemuBlockBitmapValidateData blockbitmapvalidatedata;
+    struct testQemuBlockBitmapBlockcopyData blockbitmapblockcopydata;
     char *capslatest_x86_64 = NULL;
     virQEMUCapsPtr caps_x86_64 = NULL;
     g_autoptr(virStorageSource) bitmapSourceChain = NULL;
@@ -1124,6 +1175,24 @@ mymain(void)
     TEST_BITMAP_VALIDATE("snapshots-synthetic-broken", "d", false);
     TEST_BITMAP_VALIDATE("snapshots-synthetic-broken", "current", true);
 
+#define TEST_BITMAP_BLOCKCOPY(testname, shllw, ndf) \
+    do { \
+        blockbitmapblockcopydata.name = testname; \
+        blockbitmapblockcopydata.shallow = shllw; \
+        blockbitmapblockcopydata.nodedatafile = ndf; \
+        blockbitmapblockcopydata.chain = bitmapSourceChain;\
+        if (virTestRun("bitmap block copy " testname, \
+                       testQemuBlockBitmapBlockcopy, \
+                       &blockbitmapblockcopydata) < 0) \
+            ret = -1; \
+    } while (0)
+
+    TEST_BITMAP_BLOCKCOPY("basic-shallow", true, "basic");
+    TEST_BITMAP_BLOCKCOPY("basic-deep", false, "basic");
+
+    TEST_BITMAP_BLOCKCOPY("snapshots-shallow", true, "snapshots");
+    TEST_BITMAP_BLOCKCOPY("snapshots-deep", false, "snapshots");
+
  cleanup:
     virHashFree(diskxmljsondata.schema);
     qemuTestDriverFree(&driver);
@@ -1133,4 +1202,4 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIR_TEST_MAIN(mymain)
+VIR_TEST_MAIN_PRELOAD(mymain, VIR_TEST_MOCK("virdeterministichash"))
